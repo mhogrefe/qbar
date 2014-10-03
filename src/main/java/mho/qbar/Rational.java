@@ -2,6 +2,7 @@ package mho.qbar;
 
 import mho.haskellesque.math.BasicMath;
 import mho.haskellesque.numbers.Numbers;
+import mho.haskellesque.ordering.Ordering;
 import mho.haskellesque.tuples.Pair;
 import mho.haskellesque.tuples.Triple;
 import org.jetbrains.annotations.NotNull;
@@ -14,6 +15,7 @@ import java.math.RoundingMode;
 import java.util.*;
 
 import static mho.haskellesque.iterables.IterableUtils.*;
+import static mho.haskellesque.ordering.Ordering.*;
 
 /**
  * The <tt>Rational</tt> class uniquely represents rational numbers. <tt>denominator</tt> is the smallest positive
@@ -618,7 +620,8 @@ public final class Rational implements Comparable<Rational> {
      * @return <tt>this</tt>, rounded
      */
     public @NotNull BigInteger round(@NotNull RoundingMode roundingMode) {
-        int halfCompare = fractionalPart().compareTo(of(1, 2)) * signum();
+        Ordering halfCompare = compare(fractionalPart(), of(1, 2));
+        if (signum() == -1) halfCompare = halfCompare.invert();
         switch (roundingMode) {
             case UNNECESSARY:
                 if (denominator.equals(BigInteger.ONE)) {
@@ -644,20 +647,20 @@ public final class Rational implements Comparable<Rational> {
                     }
                 }
             case HALF_DOWN:
-                if (halfCompare > 0) {
+                if (halfCompare == GT) {
                     return round(RoundingMode.UP);
                 } else {
                     return round(RoundingMode.DOWN);
                 }
             case HALF_UP:
-                if (halfCompare < 0) {
+                if (halfCompare == LT) {
                     return round(RoundingMode.DOWN);
                 } else {
                     return round(RoundingMode.UP);
                 }
             case HALF_EVEN:
-                if (halfCompare < 0) return round(RoundingMode.DOWN);
-                if (halfCompare > 0) return round(RoundingMode.UP);
+                if (halfCompare == LT) return round(RoundingMode.DOWN);
+                if (halfCompare == GT) return round(RoundingMode.UP);
                 BigInteger floor = floor();
                 return floor.testBit(0) ? floor.add(BigInteger.ONE) : floor;
         }
@@ -762,16 +765,15 @@ public final class Rational implements Comparable<Rational> {
      */
     public int binaryExponent() {
         if (this == ONE) return 0;
-        int comp = numerator.compareTo(denominator);
         Rational adjusted = this;
         int exponent = 0;
-        if (comp < 0) {
-            while (adjusted.numerator.compareTo(adjusted.denominator) < 0) {
+        if (lt(numerator, denominator)) {
+            while (lt(adjusted.numerator, adjusted.denominator)) {
                 adjusted = adjusted.shiftLeft(1);
                 exponent--;
             }
         } else {
-            while (adjusted.numerator.compareTo(adjusted.denominator) >= 0) {
+            while (ge(adjusted.numerator, adjusted.denominator)) {
                 adjusted = adjusted.shiftRight(1);
                 exponent++;
             }
@@ -807,7 +809,7 @@ public final class Rational implements Comparable<Rational> {
             return new Pair<>(-negativeRange.snd, -negativeRange.fst);
         }
         int exponent = binaryExponent();
-        if (exponent > 127 || exponent == 127 && compareTo(LARGEST_FLOAT) > 0) {
+        if (exponent > 127 || exponent == 127 && gt(this, LARGEST_FLOAT)) {
             return new Pair<>(Float.MAX_VALUE, Float.POSITIVE_INFINITY);
         }
         Rational fraction;
@@ -852,7 +854,7 @@ public final class Rational implements Comparable<Rational> {
             return new Pair<>(-negativeRange.snd, -negativeRange.fst);
         }
         int exponent = binaryExponent();
-        if (exponent > 1023 || exponent == 1023 && compareTo(LARGEST_DOUBLE) > 0) {
+        if (exponent > 1023 || exponent == 1023 && gt(this, LARGEST_DOUBLE)) {
             return new Pair<>(Double.MAX_VALUE, Double.POSITIVE_INFINITY);
         }
         Rational fraction;
@@ -975,7 +977,7 @@ public final class Rational implements Comparable<Rational> {
             }
         }
         Rational midway = add(loFloat, hiFloat).shiftRight(1);
-        int midwayCompare = this.compareTo(midway);
+        Ordering midwayCompare = compare(this, midway);
         switch (roundingMode) {
             case UNNECESSARY:
                 throw new ArithmeticException("Rational not exactly equal to a float. Use a different rounding mode");
@@ -988,14 +990,14 @@ public final class Rational implements Comparable<Rational> {
             case UP:
                 return floatRange.fst < 0 ? floatRange.fst : floatRange.snd;
             case HALF_DOWN:
-                if (midwayCompare == 0) return signum() == 1 ? floatRange.fst : floatRange.snd;
-                return midwayCompare < 0 ? floatRange.fst : floatRange.snd;
+                if (midwayCompare == EQ) return signum() == 1 ? floatRange.fst : floatRange.snd;
+                return midwayCompare == LT ? floatRange.fst : floatRange.snd;
             case HALF_UP:
-                if (midwayCompare == 0) return signum() == 1 ? floatRange.snd : floatRange.fst;
-                return midwayCompare < 0 ? floatRange.fst : floatRange.snd;
+                if (midwayCompare == EQ) return signum() == 1 ? floatRange.snd : floatRange.fst;
+                return midwayCompare == LT ? floatRange.fst : floatRange.snd;
             case HALF_EVEN:
-                if (midwayCompare == -1) return floatRange.fst;
-                if (midwayCompare == 1) return floatRange.snd;
+                if (midwayCompare == LT) return floatRange.fst;
+                if (midwayCompare == GT) return floatRange.snd;
                 return (Float.floatToIntBits(floatRange.fst) & 1) == 0 ? floatRange.fst : floatRange.snd;
         }
         return 0; //never happens
@@ -1107,7 +1109,7 @@ public final class Rational implements Comparable<Rational> {
             }
         }
         Rational midway = add(loDouble, hiDouble).shiftRight(1);
-        int midwayCompare = this.compareTo(midway);
+        Ordering midwayCompare = compare(this, midway);
         switch (roundingMode) {
             case UNNECESSARY:
                 throw new ArithmeticException("Rational not exactly equal to a double. Use a different rounding mode");
@@ -1120,14 +1122,14 @@ public final class Rational implements Comparable<Rational> {
             case UP:
                 return doubleRange.fst < 0 ? doubleRange.fst : doubleRange.snd;
             case HALF_DOWN:
-                if (midwayCompare == 0) return signum() == 1 ? doubleRange.fst : doubleRange.snd;
-                return midwayCompare < 0 ? doubleRange.fst : doubleRange.snd;
+                if (midwayCompare == EQ) return signum() == 1 ? doubleRange.fst : doubleRange.snd;
+                return midwayCompare == LT ? doubleRange.fst : doubleRange.snd;
             case HALF_UP:
-                if (midwayCompare == 0) return signum() == 1 ? doubleRange.snd : doubleRange.fst;
-                return midwayCompare < 0 ? doubleRange.fst : doubleRange.snd;
+                if (midwayCompare == EQ) return signum() == 1 ? doubleRange.snd : doubleRange.fst;
+                return midwayCompare == LT ? doubleRange.fst : doubleRange.snd;
             case HALF_EVEN:
-                if (midwayCompare == -1) return doubleRange.fst;
-                if (midwayCompare == 1) return doubleRange.snd;
+                if (midwayCompare == LT) return doubleRange.fst;
+                if (midwayCompare == GT) return doubleRange.snd;
                 return (Double.doubleToLongBits(doubleRange.fst) & 1) == 0 ? doubleRange.fst : doubleRange.snd;
         }
         return 0; //never happens
@@ -1300,52 +1302,6 @@ public final class Rational implements Comparable<Rational> {
     @Override
     public int compareTo(@NotNull Rational that) {
         return numerator.multiply(that.denominator).compareTo(that.numerator.multiply(denominator));
-    }
-
-    /**
-     * Finds the minimum of an array of <tt>Rational</tt>s.
-     *
-     * <ul>
-     *  <li><tt>rs</tt> must not be null or empty and may not contain any null elements.</li>
-     *  <li>The result is not null.</li>
-     * </ul>
-     *
-     * @param rs The array of <tt>Rational</tt>s
-     * @return min(<tt>rs</tt>)
-     */
-    public static @NotNull Rational min(@NotNull Rational... rs) {
-        if (rs.length == 0)
-            throw new IllegalArgumentException("argument list must be nonempty");
-        Rational min = rs[0];
-        for (int i = 1; i < rs.length; i++) {
-            if (rs[i] == null)
-                throw new IllegalArgumentException("null argument");
-            if (rs[i].compareTo(min) < 0) min = rs[i];
-        }
-        return min;
-    }
-
-    /**
-     * Finds the maximum of an array of <tt>Rational</tt>s.
-     *
-     * <ul>
-     *  <li><tt>rs</tt> must not be null or empty and may not contain any null elements.</li>
-     *  <li>The result is not null.</li>
-     * </ul>
-     *
-     * @param rs The array of <tt>Rational</tt>s
-     * @return max(<tt>rs</tt>)
-     */
-    public static @NotNull Rational max(@NotNull Rational... rs) {
-        if (rs.length == 0)
-            throw new IllegalArgumentException("argument list must be nonempty");
-        Rational max = rs[0];
-        for (int i = 1; i < rs.length; i++) {
-            if (rs[i] == null)
-                throw new IllegalArgumentException("null argument");
-            if (rs[i].compareTo(max) > 0) max = rs[i];
-        }
-        return max;
     }
 
     /**
