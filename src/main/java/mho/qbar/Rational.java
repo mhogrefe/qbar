@@ -232,13 +232,13 @@ public final class Rational implements Comparable<Rational> {
         if (f == 1.0f) return ONE;
         if (Float.isInfinite(f) || Float.isNaN(f)) return null;
         int bits = Float.floatToIntBits(f);
-        int exponentBits = bits >> 23 & ((1 << 8) - 1);
+        int exponent = bits >> 23 & ((1 << 8) - 1);
         int mantissa = bits & ((1 << 23) - 1);
         Rational rational;
-        if (exponentBits == 0) {
+        if (exponent == 0) {
             rational = of(mantissa).shiftRight(149);
         } else {
-            rational = of(mantissa + (1 << 23), 1 << 23).shiftLeft(exponentBits - 127);
+            rational = of(mantissa + (1 << 23), 1 << 23).shiftLeft(exponent - 127);
         }
         if (bits < 0) rational = rational.negate();
         return rational;
@@ -269,14 +269,14 @@ public final class Rational implements Comparable<Rational> {
         if (d == 1.0) return ONE;
         if (Double.isInfinite(d) || Double.isNaN(d)) return null;
         long bits = Double.doubleToLongBits(d);
-        int exponentBits = (int) (bits >> 52) & ((1 << 11) - 1);
+        int exponent = (int) (bits >> 52) & ((1 << 11) - 1);
         long mantissa = bits & ((1L << 52) - 1);
         Rational rational;
-        if (exponentBits == 0) {
+        if (exponent == 0) {
             rational = of(BigInteger.valueOf(mantissa)).shiftRight(1074);
         } else {
             Rational significand = of(BigInteger.valueOf(mantissa)).shiftRight(52);
-            rational = add(significand, ONE).shiftLeft(exponentBits - 1023);
+            rational = add(significand, ONE).shiftLeft(exponent - 1023);
         }
         if (bits < 0) rational = rational.negate();
         return rational;
@@ -1179,39 +1179,6 @@ public final class Rational implements Comparable<Rational> {
             denominatorResidue = denominatorResidue.divide(five);
         }
         return denominatorResidue.equals(BigInteger.ONE);
-    }
-
-    /**
-     * Returns the number of decimal digits of <tt>this</tt>. For example, 157/50 is 3.14, so it has 3 decimal digits.
-     * This is different from the number of significant figures; 2100 has 2 significant figures but 4 decimal digits.
-     * If <tt>this</tt> does not have a terminating decimal expansion, an <tt>ArithmeticException</tt> is thrown. 0 has
-     * 0 decimal digits.
-     *
-     * <ul>
-     *  <li><tt>this</tt> must be a <tt>Rational</tt> with a terminating decimal expansion.</li>
-     *  <li>The result is non-negative.</li>
-     * </ul>
-     *
-     * @return the number of decimal digits in <tt>this</tt>.
-     */
-    public int numberOfDecimalDigits() {
-        if (this == ZERO) return 0;
-        if (!hasTerminatingDecimalExpansion())
-            throw new ArithmeticException("nonterminating decimal expansion");
-        Rational unscaledRational = this;
-        while (!unscaledRational.denominator.equals(BigInteger.ONE)) {
-            unscaledRational = unscaledRational.multiply(BigInteger.TEN);
-        }
-        BigInteger unscaled = unscaledRational.numerator;
-        while (unscaled.mod(BigInteger.TEN).equals(BigInteger.ZERO)) {
-            unscaled = unscaled.divide(BigInteger.TEN);
-        }
-        int numberOfDigits = 0;
-        while (!unscaled.equals(BigInteger.ZERO)) {
-            unscaled = unscaled.divide(BigInteger.TEN);
-            numberOfDigits++;
-        }
-        return numberOfDigits;
     }
 
     /**
