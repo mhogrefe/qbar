@@ -26,6 +26,26 @@ public class RationalTest {
     }
 
     @Test
+    public void testGetNumerator() {
+        aeq(Rational.ZERO.getNumerator(), "0");
+        aeq(Rational.ONE.getNumerator(), "1");
+        aeq(Rational.read("2").get().getNumerator(), "2");
+        aeq(Rational.read("-2").get().getNumerator(), "-2");
+        aeq(Rational.read("5/3").get().getNumerator(), "5");
+        aeq(Rational.read("-5/3").get().getNumerator(), "-5");
+    }
+
+    @Test
+    public void testGetDenominator() {
+        aeq(Rational.ZERO.getDenominator(), "1");
+        aeq(Rational.ONE.getDenominator(), "1");
+        aeq(Rational.read("2").get().getDenominator(), "1");
+        aeq(Rational.read("-2").get().getDenominator(), "1");
+        aeq(Rational.read("5/3").get().getDenominator(), "3");
+        aeq(Rational.read("-5/3").get().getDenominator(), "3");
+    }
+
+    @Test
     public void testOfBigIntegerBigInteger() {
         aeq(Rational.of(BigInteger.valueOf(2), BigInteger.valueOf(3)), "2/3");
         aeq(Rational.of(BigInteger.valueOf(4), BigInteger.valueOf(6)), "2/3");

@@ -24,7 +24,7 @@ import static mho.haskellesque.ordering.Ordering.*;
  * positive. Arithmetic algorithms taken from Knuth.
  *
  * There is only one instance of ZERO and one instance of ONE, so these may be compared with other <tt>Rational</tt>s
- * using ==. The same is not necessarily true of X!
+ * using ==.
  */
 public final class Rational implements Comparable<Rational> {
     /**
@@ -72,11 +72,11 @@ public final class Rational implements Comparable<Rational> {
     /**
      * <tt>this</tt> times <tt>denominator</tt>
      */
-    public final @NotNull BigInteger numerator;
+    private final @NotNull BigInteger numerator;
     /**
      * the smallest positive <tt>BigInteger</tt> d such that <tt>this</tt>&#x00D7;d is an integer
      */
-    public final @NotNull BigInteger denominator;
+    private final @NotNull BigInteger denominator;
 
     /**
      * Private constructor from <tt>BigInteger</tt>s; assumes arguments are valid
@@ -94,6 +94,32 @@ public final class Rational implements Comparable<Rational> {
     private Rational(@NotNull BigInteger numerator, @NotNull BigInteger denominator) {
         this.numerator = numerator;
         this.denominator = denominator;
+    }
+
+    /**
+     * Returns this <tt>Rational</tt>'s numerator
+     *
+     * <ul>
+     *  <li>The result is non-null.</li>
+     * </ul>
+     *
+     * @return the numerator
+     */
+    public @NotNull BigInteger getNumerator() {
+        return numerator;
+    }
+
+    /**
+     * Returns this <tt>Rational</tt>'s denominator
+     *
+     * <ul>
+     *  <li>The result is positive.</li>
+     * </ul>
+     *
+     * @return the denominator
+     */
+    public @NotNull BigInteger getDenominator() {
+        return denominator;
     }
 
     /**
