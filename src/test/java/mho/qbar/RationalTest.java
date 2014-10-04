@@ -46,7 +46,7 @@ public class RationalTest {
     }
 
     @Test
-    public void testOfBigIntegerBigInteger() {
+    public void testOf_BigInteger_BigInteger() {
         aeq(Rational.of(BigInteger.valueOf(2), BigInteger.valueOf(3)), "2/3");
         aeq(Rational.of(BigInteger.valueOf(4), BigInteger.valueOf(6)), "2/3");
         aeq(Rational.of(BigInteger.valueOf(-4), BigInteger.valueOf(-6)), "2/3");
@@ -61,7 +61,7 @@ public class RationalTest {
     }
 
     @Test
-    public void testOfIntInt() {
+    public void testOf_Int_Int() {
         aeq(Rational.of(2, 3), "2/3");
         aeq(Rational.of(4, 6), "2/3");
         aeq(Rational.of(-4, -6), "2/3");
@@ -76,7 +76,7 @@ public class RationalTest {
     }
 
     @Test
-    public void testOfBigInteger() {
+    public void testOf_BigInteger() {
         aeq(Rational.of(BigInteger.valueOf(23)), "23");
         aeq(Rational.of(BigInteger.valueOf(-23)), "-23");
         assertTrue(Rational.of(BigInteger.valueOf(0)) == Rational.ZERO);
@@ -84,7 +84,7 @@ public class RationalTest {
     }
 
     @Test
-    public void testOfInt() {
+    public void testOf_Int() {
         aeq(Rational.of(23), "23");
         aeq(Rational.of(-23), "-23");
         assertTrue(Rational.of(0) == Rational.ZERO);
@@ -92,7 +92,7 @@ public class RationalTest {
     }
 
     @Test
-    public void testOfFloat() {
+    public void testOf_Float() {
         assertTrue(Rational.of(0.0f) == Rational.ZERO);
         assertTrue(Rational.of(1.0f) == Rational.ONE);
         aeq(Rational.of(13.0f), "13");
@@ -118,7 +118,7 @@ public class RationalTest {
     }
 
     @Test
-    public void testOfDouble() {
+    public void testOf_Double() {
         assertTrue(Rational.of(0.0) == Rational.ZERO);
         assertTrue(Rational.of(1.0) == Rational.ONE);
         aeq(Rational.of(13.0), "13");
@@ -144,7 +144,7 @@ public class RationalTest {
     }
 
     @Test
-    public void testOfBigDecimal() {
+    public void testOf_BigDecimal() {
         assertTrue(Rational.of(BigDecimal.ZERO) == Rational.ZERO);
         assertTrue(Rational.of(BigDecimal.ONE) == Rational.ONE);
         aeq(Rational.of(new BigDecimal("3")), "3");
@@ -253,7 +253,7 @@ public class RationalTest {
     }
 
     @Test
-    public void testMultiplyRationalRational() {
+    public void testMultiply_Rational_Rational() {
         aeq(Rational.multiply(Rational.read("2/3").get(), Rational.read("6/7").get()), "4/7");
         aeq(Rational.multiply(Rational.read("2/3").get(), Rational.read("-6/7").get()), "-4/7");
         aeq(Rational.multiply(Rational.read("-2/3").get(), Rational.read("6/7").get()), "-4/7");
@@ -279,7 +279,7 @@ public class RationalTest {
     }
 
     @Test
-    public void multiplyBigInteger() {
+    public void multiply_BigInteger() {
         aeq(Rational.read("2/3").get().multiply(BigInteger.valueOf(4)), "8/3");
         aeq(Rational.read("2/3").get().multiply(BigInteger.valueOf(-4)), "-8/3");
         aeq(Rational.read("-2/3").get().multiply(BigInteger.valueOf(4)), "-8/3");
@@ -293,7 +293,7 @@ public class RationalTest {
     }
 
     @Test
-    public void multiplyInt() {
+    public void multiply_Int() {
         aeq(Rational.read("2/3").get().multiply(4), "8/3");
         aeq(Rational.read("2/3").get().multiply(-4), "-8/3");
         aeq(Rational.read("-2/3").get().multiply(4), "-8/3");
@@ -309,7 +309,7 @@ public class RationalTest {
     }
 
     @Test
-    public void testDivideRationalRational() {
+    public void testDivide_Rational_Rational() {
         aeq(Rational.divide(Rational.read("2/3").get(), Rational.read("6/7").get()), "7/9");
         aeq(Rational.divide(Rational.read("2/3").get(), Rational.read("-6/7").get()), "-7/9");
         aeq(Rational.divide(Rational.read("-2/3").get(), Rational.read("6/7").get()), "-7/9");
@@ -348,7 +348,7 @@ public class RationalTest {
     }
 
     @Test
-    public void divideBigInteger() {
+    public void divide_BigInteger() {
         aeq(Rational.read("2/3").get().divide(BigInteger.valueOf(4)), "1/6");
         aeq(Rational.read("2/3").get().divide(BigInteger.valueOf(-4)), "-1/6");
         aeq(Rational.read("-2/3").get().divide(BigInteger.valueOf(4)), "-1/6");
@@ -368,7 +368,7 @@ public class RationalTest {
     }
 
     @Test
-    public void divideInt() {
+    public void divide_Int() {
         aeq(Rational.read("2/3").get().divide(4), "1/6");
         aeq(Rational.read("2/3").get().divide(-4), "-1/6");
         aeq(Rational.read("-2/3").get().divide(4), "-1/6");
@@ -844,7 +844,7 @@ public class RationalTest {
     }
 
     @Test
-    public void testToFloatRoundingMode() {
+    public void testToFloat_RoundingMode() {
         aeq(Rational.ZERO.toFloat(RoundingMode.FLOOR), 0.0);
         aeq(Rational.ZERO.toFloat(RoundingMode.CEILING), 0.0);
         aeq(Rational.ZERO.toFloat(RoundingMode.DOWN), 0.0);
@@ -1335,7 +1335,7 @@ public class RationalTest {
     }
 
     @Test
-    public void testToDoubleRoundingMode() {
+    public void testToDouble_RoundingMode() {
         aeq(Rational.ZERO.toDouble(RoundingMode.FLOOR), 0.0);
         aeq(Rational.ZERO.toDouble(RoundingMode.CEILING), 0.0);
         aeq(Rational.ZERO.toDouble(RoundingMode.DOWN), 0.0);
@@ -1747,19 +1747,6 @@ public class RationalTest {
     }
 
     @Test
-    public void numberOfDecimalDigitsTest() {
-        aeq(Rational.ZERO.numberOfDecimalDigits(), 0);
-        aeq(Rational.ONE.numberOfDecimalDigits(), 1);
-        aeq(Rational.read("5").get().numberOfDecimalDigits(), 1);
-        aeq(Rational.read("125").get().numberOfDecimalDigits(), 3);
-        aeq(Rational.read("-125").get().numberOfDecimalDigits(), 3);
-        aeq(Rational.read("3/5").get().numberOfDecimalDigits(), 1);
-        aeq(Rational.read("-3/2").get().numberOfDecimalDigits(), 2);
-        aeq(Rational.read("12000").get().numberOfDecimalDigits(), 2);
-        aeq(Rational.read("7/1000").get().numberOfDecimalDigits(), 1);
-    }
-
-    @Test
     public void toBigDecimalTest() {
         aeq(Rational.ZERO.toBigDecimal(), "0");
         aeq(Rational.ONE.toBigDecimal(), "1");
@@ -1774,7 +1761,7 @@ public class RationalTest {
     }
 
     @Test
-    public void toBigDecimalPrecisionTest() {
+    public void toBigDecimal_Precision() {
         aeq(Rational.ZERO.toBigDecimal(4), "0");
         aeq(Rational.ZERO.toBigDecimal(0), "0");
         aeq(Rational.ONE.toBigDecimal(4), "1");
@@ -1810,7 +1797,7 @@ public class RationalTest {
     }
 
     @Test
-    public void toBigDecimalPrecisionRoundingModeTest() {
+    public void toBigDecimal_Precision_RoundingMode() {
         aeq(Rational.ZERO.toBigDecimal(0, RoundingMode.UNNECESSARY), "0");
         aeq(Rational.ZERO.toBigDecimal(0, RoundingMode.FLOOR), "0");
         aeq(Rational.ZERO.toBigDecimal(0, RoundingMode.CEILING), "0");
@@ -2073,28 +2060,28 @@ public class RationalTest {
     public void equalsTest() {
         assertTrue(Rational.ZERO.equals(Rational.ZERO));
         assertTrue(Rational.ONE.equals(Rational.ONE));
-        assertTrue(Rational.read("4").equals(Rational.read("4")));
-        assertTrue(Rational.read("-4").equals(Rational.read("-4")));
-        assertTrue(Rational.read("5/12").equals(Rational.read("5/12")));
-        assertTrue(Rational.read("-5/12").equals(Rational.read("-5/12")));
+        assertTrue(Rational.read("4").get().equals(Rational.read("4").get()));
+        assertTrue(Rational.read("-4").get().equals(Rational.read("-4").get()));
+        assertTrue(Rational.read("5/12").get().equals(Rational.read("5/12").get()));
+        assertTrue(Rational.read("-5/12").get().equals(Rational.read("-5/12").get()));
         assertFalse(Rational.ZERO.equals(Rational.ONE));
         assertFalse(Rational.ONE.equals(Rational.ZERO));
-        assertFalse(Rational.ZERO.equals(Rational.read("4")));
-        assertFalse(Rational.ZERO.equals(Rational.read("-4")));
-        assertFalse(Rational.ZERO.equals(Rational.read("5/12")));
-        assertFalse(Rational.ZERO.equals(Rational.read("-5/12")));
-        assertFalse(Rational.ONE.equals(Rational.read("4")));
-        assertFalse(Rational.ONE.equals(Rational.read("-4")));
-        assertFalse(Rational.ONE.equals(Rational.read("5/12")));
-        assertFalse(Rational.ONE.equals(Rational.read("-5/12")));
-        assertFalse(Rational.read("4").equals(Rational.ZERO));
-        assertFalse(Rational.read("-4").equals(Rational.ZERO));
-        assertFalse(Rational.read("5/12").equals(Rational.ZERO));
-        assertFalse(Rational.read("-5/12").equals(Rational.ZERO));
-        assertFalse(Rational.read("4").equals(Rational.ONE));
-        assertFalse(Rational.read("-4").equals(Rational.ONE));
-        assertFalse(Rational.read("5/12").equals(Rational.ONE));
-        assertFalse(Rational.read("-5/12").equals(Rational.ONE));
+        assertFalse(Rational.ZERO.equals(Rational.read("4").get()));
+        assertFalse(Rational.ZERO.equals(Rational.read("-4").get()));
+        assertFalse(Rational.ZERO.equals(Rational.read("5/12").get()));
+        assertFalse(Rational.ZERO.equals(Rational.read("-5/12").get()));
+        assertFalse(Rational.ONE.equals(Rational.read("4").get()));
+        assertFalse(Rational.ONE.equals(Rational.read("-4").get()));
+        assertFalse(Rational.ONE.equals(Rational.read("5/12").get()));
+        assertFalse(Rational.ONE.equals(Rational.read("-5/12").get()));
+        assertFalse(Rational.read("4").get().equals(Rational.ZERO));
+        assertFalse(Rational.read("-4").get().equals(Rational.ZERO));
+        assertFalse(Rational.read("5/12").get().equals(Rational.ZERO));
+        assertFalse(Rational.read("-5/12").get().equals(Rational.ZERO));
+        assertFalse(Rational.read("4").get().equals(Rational.ONE));
+        assertFalse(Rational.read("-4").get().equals(Rational.ONE));
+        assertFalse(Rational.read("5/12").get().equals(Rational.ONE));
+        assertFalse(Rational.read("-5/12").get().equals(Rational.ONE));
         assertFalse(Rational.read("4").equals(Rational.read("-4")));
         assertFalse(Rational.read("4").equals(Rational.read("5/12")));
         assertFalse(Rational.read("4").equals(Rational.read("-5/12")));
@@ -2107,15 +2094,13 @@ public class RationalTest {
         assertFalse(Rational.read("-5/12").equals(Rational.read("4")));
         assertFalse(Rational.read("-5/12").equals(Rational.read("-4")));
         assertFalse(Rational.read("-5/12").equals(Rational.read("5/12")));
-        assertFalse(Rational.ZERO.equals(null));
-        assertFalse(Rational.ONE.equals(null));
-        assertFalse(Rational.read("4").equals(null));
-        assertFalse(Rational.read("-4").equals(null));
-        assertFalse(Rational.read("5/12").equals(null));
-        assertFalse(Rational.read("-5/12").equals(null));
-        assertFalse(Rational.read("-5/12").equals(2));
-        assertFalse(Rational.read("-5/12").equals("Hi"));
-        assertFalse(Rational.read("-5/12").equals(1.2e10));
+        assertTrue(Rational.read("4").isPresent());
+        assertTrue(Rational.read("-4").isPresent());
+        assertTrue(Rational.read("5/12").isPresent());
+        assertTrue(Rational.read("-5/12").isPresent());
+        assertTrue(Rational.read("-5/12").isPresent());
+        assertTrue(Rational.read("-5/12").isPresent());
+        assertTrue(Rational.read("-5/12").isPresent());
     }
 
     @Test
