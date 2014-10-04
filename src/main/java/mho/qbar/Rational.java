@@ -832,6 +832,8 @@ public final class Rational implements Comparable<Rational> {
         if (this == ZERO) return new Pair<>(0f, 0f);
         if (numerator.signum() == -1) {
             Pair<Float, Float> negativeRange = negate().floatRange();
+            assert negativeRange.fst != null;
+            assert negativeRange.snd != null;
             return new Pair<>(-negativeRange.snd, -negativeRange.fst);
         }
         int exponent = binaryExponent();
@@ -877,6 +879,8 @@ public final class Rational implements Comparable<Rational> {
         if (this == ZERO) return new Pair<>(0.0, 0.0);
         if (numerator.signum() == -1) {
             Pair<Double, Double> negativeRange = negate().doubleRange();
+            assert negativeRange.fst != null;
+            assert negativeRange.snd != null;
             return new Pair<>(-negativeRange.snd, -negativeRange.fst);
         }
         int exponent = binaryExponent();
@@ -980,6 +984,8 @@ public final class Rational implements Comparable<Rational> {
      */
     public float toFloat(@NotNull RoundingMode roundingMode) {
         Pair<Float, Float> floatRange = floatRange();
+        assert floatRange.fst != null;
+        assert floatRange.snd != null;
         if (floatRange.fst.equals(floatRange.snd)) return floatRange.fst;
         Rational loFloat = of(floatRange.fst);
         Rational hiFloat = of(floatRange.snd);
@@ -1112,6 +1118,8 @@ public final class Rational implements Comparable<Rational> {
      */
     public double toDouble(@NotNull RoundingMode roundingMode) {
         Pair<Double, Double> doubleRange = doubleRange();
+        assert doubleRange.fst != null;
+        assert doubleRange.snd != null;
         if (doubleRange.fst.equals(doubleRange.snd)) return doubleRange.fst;
         Rational loDouble = of(doubleRange.fst);
         Rational hiDouble = of(doubleRange.snd);
@@ -1468,12 +1476,13 @@ public final class Rational implements Comparable<Rational> {
      *  <li>the result </li>
      * </ul>
      *
-     * @param base
-     * @return
+     * @param base the base of the digits
+     * @return a pair consisting of the digits before the decimal point and the digits after
      */
     public @NotNull Pair<List<BigInteger>, Iterable<BigInteger>> digits(BigInteger base) {
         Triple<List<BigInteger>, List<BigInteger>, List<BigInteger>> positionalNotation = positionalNotation(base);
         Iterable<BigInteger> afterDecimal;
+        assert positionalNotation.c != null;
         if (positionalNotation.c.equals(Arrays.asList(BigInteger.ZERO))) {
             afterDecimal = positionalNotation.b;
         } else {
@@ -1523,7 +1532,7 @@ public final class Rational implements Comparable<Rational> {
      * composability.
      *
      * <ul>
-     *  <li><tt>s</tt> cannot be null and cannot be of the form <tt>n.toString() + "/0"</tt>, where <tt>n</tt>is some
+     *  <li><tt>s</tt> cannot be null and cannot be of the form <tt>n.toString() + "/0"</tt>, where <tt>n</tt> is some
      *  <tt>BigInteger</tt>.</li>
      *  <li>The result may contain any <tt>Rational</tt>, or be empty.</li>
      * </ul>
@@ -1579,6 +1588,8 @@ public final class Rational implements Comparable<Rational> {
      * @return the <tt>Rational</tt> with the given numerator and denominator
      */
     private static @NotNull Rational fromPair(@NotNull Pair<BigInteger, BigInteger> pair) {
+        assert pair.fst != null;
+        assert pair.snd != null;
         if (pair.fst.equals(BigInteger.ZERO)) return ZERO;
         if (pair.fst.equals(BigInteger.ONE) && pair.snd.equals(BigInteger.ONE)) return ONE;
         return new Rational(pair.fst, pair.snd);
