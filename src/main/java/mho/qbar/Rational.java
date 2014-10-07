@@ -1,5 +1,6 @@
 package mho.qbar;
 
+import mho.haskellesque.iterables.Exhaustive;
 import mho.haskellesque.math.BasicMath;
 import mho.haskellesque.numbers.Numbers;
 import mho.haskellesque.ordering.Ordering;
@@ -15,6 +16,7 @@ import java.math.RoundingMode;
 import java.util.*;
 
 import static mho.haskellesque.iterables.IterableUtils.*;
+import static mho.haskellesque.math.Combinatorics.*;
 import static mho.haskellesque.ordering.Ordering.*;
 
 /**
@@ -1595,66 +1597,63 @@ public final class Rational implements Comparable<Rational> {
         return new Rational(pair.fst, pair.snd);
     }
 
-//    /**
-//     * @return an iterable that contains every <tt>Rational</tt>.
-//     */
-//    public static @NotNull Iterable<Rational> rationals() {
-//        return new FilteredGenerator<Pair<BigInteger, BigInteger>>(
-//                new PairGenerator<>(
-//                        Generators.bigIntegers(),
-//                        Generators.positiveBigIntegers()
-//                ),
-//                p -> p.fst.gcd(p.snd).equals(BigInteger.ONE))
-//                .map(Rational::fromPair, r -> Pair.of(r.numerator, r.denominator), r -> true);
-//    }
-//
-//    /**
-//     * @return a generator that generates every non-negative <tt>Rational</tt>.
-//     */
-//    public static @NotNull Generator<Rational> nonnegativeRationals() {
-//        return new FilteredGenerator<Pair<BigInteger, BigInteger>>(
-//                new PairGenerator<>(
-//                        Generators.naturalBigIntegers(),
-//                        Generators.positiveBigIntegers()
-//                ),
-//                p -> p.fst.gcd(p.snd).equals(BigInteger.ONE))
-//                .map(Rational::fromPair, r -> Pair.of(r.numerator, r.denominator), r -> r.signum() != -1);
-//    }
-//
-//    /**
-//     * @return a generator that generates every positive <tt>Rational</tt>.
-//     */
-//    public static @NotNull Generator<Rational> positiveRationals() {
-//        return new FilteredGenerator<Pair<BigInteger, BigInteger>>(
-//                new SamePairGenerator<>(Generators.positiveBigIntegers()),
-//                p -> p.fst.gcd(p.snd).equals(BigInteger.ONE))
-//                .map(Rational::fromPair, r -> Pair.of(r.numerator, r.denominator), r -> r.signum() == 1);
-//    }
-//
-//    /**
-//     * @return a generator that generates every negative <tt>Rational</tt>.
-//     */
-//    public static @NotNull Generator<Rational> negativeRationals() {
-//        return new FilteredGenerator<Pair<BigInteger, BigInteger>>(
-//                new PairGenerator<>(
-//                        Generators.negativeBigIntegers(),
-//                        Generators.positiveBigIntegers()
-//                ),
-//                p -> p.fst.gcd(p.snd).equals(BigInteger.ONE))
-//                .map(Rational::fromPair, r -> Pair.of(r.numerator, r.denominator), r -> r.signum() == -1);
-//    }
-//
-//    /**
-//     * @return a generator that generates every non-negative <tt>Rational</tt> less than one.
-//     */
-//    public static @NotNull Generator<Rational> nonnegativeRationalsLessThanOne() {
-//        return new FilteredGenerator<Pair<BigInteger, BigInteger>>(
-//                new PairGenerator<>(
-//                        Generators.naturalBigIntegers(),
-//                        Generators.positiveBigIntegers()
-//                ),
-//                p -> p.fst.compareTo(p.snd) < 0 && p.fst.gcd(p.snd).equals(BigInteger.ONE))
-//                .map(Rational::fromPair, r -> Pair.of(r.numerator, r.denominator),
-//                        r -> r.numerator.signum() != 1 && r.numerator.compareTo(r.denominator) < 0);
-//    }
+    /**
+     * @return an <tt>Iterable</tt> that contains every <tt>Rational</tt>.
+     */
+    public static final @NotNull Iterable<Rational> RATIONALS =
+        map(
+                Rational::fromPair,
+                filter(
+                        p -> p.fst.gcd(p.snd).equals(BigInteger.ONE),
+                        pairs(Exhaustive.BIG_INTEGERS, Exhaustive.POSITIVE_BIG_INTEGERS)
+                )
+        );
+
+    /**
+     * @return an <tt>Iterable</tt> that contains every non-negative <tt>Rational</tt>.
+     */
+    public static @NotNull Iterable<Rational> NONNEGATIVE_RATIONALS =
+        map(
+                Rational::fromPair,
+                filter(
+                        p -> p.fst.gcd(p.snd).equals(BigInteger.ONE),
+                        pairs(Exhaustive.NATURAL_BIG_INTEGERS, Exhaustive.POSITIVE_BIG_INTEGERS)
+                )
+        );
+
+    /**
+     * @return an <tt>Iterable</tt> that contains every positive <tt>Rational</tt>.
+     */
+    public static @NotNull Iterable<Rational> POSITIVE_RATIONALS =
+        map(
+                Rational::fromPair,
+                filter(
+                        p -> p.fst.gcd(p.snd).equals(BigInteger.ONE),
+                        map(list -> new Pair<>(list.get(0), list.get(1)), lists(2, Exhaustive.POSITIVE_BIG_INTEGERS))
+                )
+        );
+
+    /**
+     * @return an <tt>Iterable</tt> that contains every negative <tt>Rational</tt>.
+     */
+    public static @NotNull Iterable<Rational> NEGATIVE_RATIONALS =
+        map(
+                Rational::fromPair,
+                filter(
+                        p -> p.fst.gcd(p.snd).equals(BigInteger.ONE),
+                        pairs(Exhaustive.NEGATIVE_BIG_INTEGERS, Exhaustive.POSITIVE_BIG_INTEGERS)
+                )
+        );
+
+    /**
+     * @return an <tt>Iterable</tt> that contains every non-negative <tt>Rational</tt> less than one.
+     */
+    public static @NotNull Iterable<Rational> NONNEGATIVE_RATIONALS_LESS_THAN_ONE =
+        map(
+                Rational::fromPair,
+                filter(
+                        p -> lt(p.fst, p.snd) && p.fst.gcd(p.snd).equals(BigInteger.ONE),
+                        pairs(Exhaustive.NATURAL_BIG_INTEGERS, Exhaustive.POSITIVE_BIG_INTEGERS)
+                )
+        );
 }
