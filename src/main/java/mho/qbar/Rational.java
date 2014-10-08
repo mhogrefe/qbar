@@ -834,9 +834,9 @@ public final class Rational implements Comparable<Rational> {
         if (this == ZERO) return new Pair<>(0f, 0f);
         if (numerator.signum() == -1) {
             Pair<Float, Float> negativeRange = negate().floatRange();
-            assert negativeRange.fst != null;
-            assert negativeRange.snd != null;
-            return new Pair<>(-negativeRange.snd, -negativeRange.fst);
+            assert negativeRange.a != null;
+            assert negativeRange.b != null;
+            return new Pair<>(-negativeRange.b, -negativeRange.a);
         }
         int exponent = binaryExponent();
         if (exponent > 127 || exponent == 127 && gt(this, LARGEST_FLOAT)) {
@@ -881,9 +881,9 @@ public final class Rational implements Comparable<Rational> {
         if (this == ZERO) return new Pair<>(0.0, 0.0);
         if (numerator.signum() == -1) {
             Pair<Double, Double> negativeRange = negate().doubleRange();
-            assert negativeRange.fst != null;
-            assert negativeRange.snd != null;
-            return new Pair<>(-negativeRange.snd, -negativeRange.fst);
+            assert negativeRange.a != null;
+            assert negativeRange.b != null;
+            return new Pair<>(-negativeRange.b, -negativeRange.a);
         }
         int exponent = binaryExponent();
         if (exponent > 1023 || exponent == 1023 && gt(this, LARGEST_DOUBLE)) {
@@ -986,11 +986,11 @@ public final class Rational implements Comparable<Rational> {
      */
     public float toFloat(@NotNull RoundingMode roundingMode) {
         Pair<Float, Float> floatRange = floatRange();
-        assert floatRange.fst != null;
-        assert floatRange.snd != null;
-        if (floatRange.fst.equals(floatRange.snd)) return floatRange.fst;
-        Rational loFloat = of(floatRange.fst);
-        Rational hiFloat = of(floatRange.snd);
+        assert floatRange.a != null;
+        assert floatRange.b != null;
+        if (floatRange.a.equals(floatRange.b)) return floatRange.a;
+        Rational loFloat = of(floatRange.a);
+        Rational hiFloat = of(floatRange.b);
         if ((loFloat == null || hiFloat == null) && roundingMode == RoundingMode.UNNECESSARY) {
             throw new ArithmeticException("Rational not exactly equal to a float. Use a different rounding mode");
         }
@@ -1016,23 +1016,23 @@ public final class Rational implements Comparable<Rational> {
             case UNNECESSARY:
                 throw new ArithmeticException("Rational not exactly equal to a float. Use a different rounding mode");
             case FLOOR:
-                return floatRange.fst;
+                return floatRange.a;
             case CEILING:
-                return floatRange.snd;
+                return floatRange.b;
             case DOWN:
-                return floatRange.fst < 0 ? floatRange.snd : floatRange.fst;
+                return floatRange.a < 0 ? floatRange.b : floatRange.a;
             case UP:
-                return floatRange.fst < 0 ? floatRange.fst : floatRange.snd;
+                return floatRange.a < 0 ? floatRange.a : floatRange.b;
             case HALF_DOWN:
-                if (midwayCompare == EQ) return signum() == 1 ? floatRange.fst : floatRange.snd;
-                return midwayCompare == LT ? floatRange.fst : floatRange.snd;
+                if (midwayCompare == EQ) return signum() == 1 ? floatRange.a : floatRange.b;
+                return midwayCompare == LT ? floatRange.a : floatRange.b;
             case HALF_UP:
-                if (midwayCompare == EQ) return signum() == 1 ? floatRange.snd : floatRange.fst;
-                return midwayCompare == LT ? floatRange.fst : floatRange.snd;
+                if (midwayCompare == EQ) return signum() == 1 ? floatRange.b : floatRange.a;
+                return midwayCompare == LT ? floatRange.a : floatRange.b;
             case HALF_EVEN:
-                if (midwayCompare == LT) return floatRange.fst;
-                if (midwayCompare == GT) return floatRange.snd;
-                return (Float.floatToIntBits(floatRange.fst) & 1) == 0 ? floatRange.fst : floatRange.snd;
+                if (midwayCompare == LT) return floatRange.a;
+                if (midwayCompare == GT) return floatRange.b;
+                return (Float.floatToIntBits(floatRange.a) & 1) == 0 ? floatRange.a : floatRange.b;
         }
         return 0; //never happens
     }
@@ -1120,11 +1120,11 @@ public final class Rational implements Comparable<Rational> {
      */
     public double toDouble(@NotNull RoundingMode roundingMode) {
         Pair<Double, Double> doubleRange = doubleRange();
-        assert doubleRange.fst != null;
-        assert doubleRange.snd != null;
-        if (doubleRange.fst.equals(doubleRange.snd)) return doubleRange.fst;
-        Rational loDouble = of(doubleRange.fst);
-        Rational hiDouble = of(doubleRange.snd);
+        assert doubleRange.a != null;
+        assert doubleRange.b != null;
+        if (doubleRange.a.equals(doubleRange.b)) return doubleRange.a;
+        Rational loDouble = of(doubleRange.a);
+        Rational hiDouble = of(doubleRange.b);
         if ((loDouble == null || hiDouble == null) && roundingMode == RoundingMode.UNNECESSARY) {
             throw new ArithmeticException("Rational not exactly equal to a double. Use a different rounding mode");
         }
@@ -1150,23 +1150,23 @@ public final class Rational implements Comparable<Rational> {
             case UNNECESSARY:
                 throw new ArithmeticException("Rational not exactly equal to a double. Use a different rounding mode");
             case FLOOR:
-                return doubleRange.fst;
+                return doubleRange.a;
             case CEILING:
-                return doubleRange.snd;
+                return doubleRange.b;
             case DOWN:
-                return doubleRange.fst < 0 ? doubleRange.snd : doubleRange.fst;
+                return doubleRange.a < 0 ? doubleRange.b : doubleRange.a;
             case UP:
-                return doubleRange.fst < 0 ? doubleRange.fst : doubleRange.snd;
+                return doubleRange.a < 0 ? doubleRange.a : doubleRange.b;
             case HALF_DOWN:
-                if (midwayCompare == EQ) return signum() == 1 ? doubleRange.fst : doubleRange.snd;
-                return midwayCompare == LT ? doubleRange.fst : doubleRange.snd;
+                if (midwayCompare == EQ) return signum() == 1 ? doubleRange.a : doubleRange.b;
+                return midwayCompare == LT ? doubleRange.a : doubleRange.b;
             case HALF_UP:
-                if (midwayCompare == EQ) return signum() == 1 ? doubleRange.snd : doubleRange.fst;
-                return midwayCompare == LT ? doubleRange.fst : doubleRange.snd;
+                if (midwayCompare == EQ) return signum() == 1 ? doubleRange.b : doubleRange.a;
+                return midwayCompare == LT ? doubleRange.a : doubleRange.b;
             case HALF_EVEN:
-                if (midwayCompare == LT) return doubleRange.fst;
-                if (midwayCompare == GT) return doubleRange.snd;
-                return (Double.doubleToLongBits(doubleRange.fst) & 1) == 0 ? doubleRange.fst : doubleRange.snd;
+                if (midwayCompare == LT) return doubleRange.a;
+                if (midwayCompare == GT) return doubleRange.b;
+                return (Double.doubleToLongBits(doubleRange.a) & 1) == 0 ? doubleRange.a : doubleRange.b;
         }
         return 0; //never happens
     }
@@ -1590,11 +1590,11 @@ public final class Rational implements Comparable<Rational> {
      * @return the <tt>Rational</tt> with the given numerator and denominator
      */
     private static @NotNull Rational fromPair(@NotNull Pair<BigInteger, BigInteger> pair) {
-        assert pair.fst != null;
-        assert pair.snd != null;
-        if (pair.fst.equals(BigInteger.ZERO)) return ZERO;
-        if (pair.fst.equals(BigInteger.ONE) && pair.snd.equals(BigInteger.ONE)) return ONE;
-        return new Rational(pair.fst, pair.snd);
+        assert pair.a != null;
+        assert pair.b != null;
+        if (pair.a.equals(BigInteger.ZERO)) return ZERO;
+        if (pair.a.equals(BigInteger.ONE) && pair.b.equals(BigInteger.ONE)) return ONE;
+        return new Rational(pair.a, pair.b);
     }
 
     /**
@@ -1604,7 +1604,7 @@ public final class Rational implements Comparable<Rational> {
         map(
                 Rational::fromPair,
                 filter(
-                        p -> p.fst.gcd(p.snd).equals(BigInteger.ONE),
+                        p -> p.a.gcd(p.b).equals(BigInteger.ONE),
                         pairs(Exhaustive.BIG_INTEGERS, Exhaustive.POSITIVE_BIG_INTEGERS)
                 )
         );
@@ -1616,7 +1616,7 @@ public final class Rational implements Comparable<Rational> {
         map(
                 Rational::fromPair,
                 filter(
-                        p -> p.fst.gcd(p.snd).equals(BigInteger.ONE),
+                        p -> p.a.gcd(p.b).equals(BigInteger.ONE),
                         pairs(Exhaustive.NATURAL_BIG_INTEGERS, Exhaustive.POSITIVE_BIG_INTEGERS)
                 )
         );
@@ -1628,7 +1628,7 @@ public final class Rational implements Comparable<Rational> {
         map(
                 Rational::fromPair,
                 filter(
-                        p -> p.fst.gcd(p.snd).equals(BigInteger.ONE),
+                        p -> p.a.gcd(p.b).equals(BigInteger.ONE),
                         map(list -> new Pair<>(list.get(0), list.get(1)), lists(2, Exhaustive.POSITIVE_BIG_INTEGERS))
                 )
         );
@@ -1640,7 +1640,7 @@ public final class Rational implements Comparable<Rational> {
         map(
                 Rational::fromPair,
                 filter(
-                        p -> p.fst.gcd(p.snd).equals(BigInteger.ONE),
+                        p -> p.a.gcd(p.b).equals(BigInteger.ONE),
                         pairs(Exhaustive.NEGATIVE_BIG_INTEGERS, Exhaustive.POSITIVE_BIG_INTEGERS)
                 )
         );
@@ -1652,7 +1652,7 @@ public final class Rational implements Comparable<Rational> {
         map(
                 Rational::fromPair,
                 filter(
-                        p -> lt(p.fst, p.snd) && p.fst.gcd(p.snd).equals(BigInteger.ONE),
+                        p -> lt(p.a, p.b) && p.a.gcd(p.b).equals(BigInteger.ONE),
                         pairs(Exhaustive.NATURAL_BIG_INTEGERS, Exhaustive.POSITIVE_BIG_INTEGERS)
                 )
         );
