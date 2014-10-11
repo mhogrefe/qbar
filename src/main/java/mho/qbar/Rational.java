@@ -76,7 +76,7 @@ public final class Rational implements Comparable<Rational> {
      */
     private final @NotNull BigInteger numerator;
     /**
-     * the smallest positive <tt>BigInteger</tt> d such that <tt>this</tt>&#x00D7;d is an integer
+     * The smallest positive <tt>BigInteger</tt> d such that <tt>this</tt>&#x00D7;d is an integer
      */
     private final @NotNull BigInteger denominator;
 
@@ -1279,6 +1279,7 @@ public final class Rational implements Comparable<Rational> {
      * Calculates the hash code of <tt>this</tt>.
      *
      * <ul>
+     *  <li><tt>this</tt> may be any <tt>Rational</tt>.</li>
      *  <li>(conjecture) The result may be any <tt>int</tt>.</li>
      * </ul>
      *
