@@ -1733,7 +1733,7 @@ public class RationalTest {
     }
 
     @Test
-    public void hasTerminatingDecimalExpansionTest() {
+    public void testHasTerminatingDecimalExpansion() {
         assertTrue(Rational.ZERO.hasTerminatingDecimalExpansion());
         assertTrue(Rational.ONE.hasTerminatingDecimalExpansion());
         assertTrue(Rational.read("60").get().hasTerminatingDecimalExpansion());
@@ -1747,7 +1747,7 @@ public class RationalTest {
     }
 
     @Test
-    public void toBigDecimalTest() {
+    public void testToBigDecimal() {
         aeq(Rational.ZERO.toBigDecimal(), "0");
         aeq(Rational.ONE.toBigDecimal(), "1");
         aeq(Rational.read("-23").get().toBigDecimal(), "-23");
@@ -1761,7 +1761,7 @@ public class RationalTest {
     }
 
     @Test
-    public void toBigDecimal_Precision() {
+    public void testToBigDecimal_Precision() {
         aeq(Rational.ZERO.toBigDecimal(4), "0");
         aeq(Rational.ZERO.toBigDecimal(0), "0");
         aeq(Rational.ONE.toBigDecimal(4), "1");
@@ -1797,7 +1797,7 @@ public class RationalTest {
     }
 
     @Test
-    public void toBigDecimal_Precision_RoundingMode() {
+    public void testToBigDecimal_Precision_RoundingMode() {
         aeq(Rational.ZERO.toBigDecimal(0, RoundingMode.UNNECESSARY), "0");
         aeq(Rational.ZERO.toBigDecimal(0, RoundingMode.FLOOR), "0");
         aeq(Rational.ZERO.toBigDecimal(0, RoundingMode.CEILING), "0");
@@ -2057,7 +2057,7 @@ public class RationalTest {
     }
 
     @Test
-    public void equalsTest() {
+    public void testEquals() {
         assertTrue(Rational.ZERO.equals(Rational.ZERO));
         assertTrue(Rational.ONE.equals(Rational.ONE));
         assertTrue(Rational.read("4").get().equals(Rational.read("4").get()));
@@ -2104,7 +2104,7 @@ public class RationalTest {
     }
 
     @Test
-    public void hashCodeTest() {
+    public void testHashCode() {
         aeq(Rational.ZERO.hashCode(), 1);
         aeq(Rational.ONE.hashCode(), 32);
         aeq(Rational.read("4").hashCode(), 125);
@@ -2114,7 +2114,7 @@ public class RationalTest {
     }
 
     @Test
-    public void compareToTest() {
+    public void testCompareTo() {
         aeq(Rational.ZERO.compareTo(Rational.ZERO), 0);
         aeq(Rational.ONE.compareTo(Rational.ONE), 0);
         assertTrue(eq(Rational.read("4").get(), Rational.read("4").get()));
@@ -2154,7 +2154,7 @@ public class RationalTest {
     }
 
     @Test
-    public void readTest() {
+    public void testRead() {
         assertTrue(Rational.read("0").get() == Rational.ZERO);
         assertTrue(Rational.read("1").get() == Rational.ONE);
         aeq(Rational.read("3").get(), "3");
@@ -2191,7 +2191,7 @@ public class RationalTest {
     }
 
     @Test
-    public void toStringTest() {
+    public void testToString() {
         aeq(Rational.ZERO, "0");
         aeq(Rational.ONE, "1");
         aeq(Rational.read("4").get(), "4");
