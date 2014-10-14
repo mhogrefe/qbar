@@ -4,8 +4,8 @@ import mho.haskellesque.iterables.Exhaustive;
 import mho.haskellesque.math.BasicMath;
 import mho.haskellesque.numbers.Numbers;
 import mho.haskellesque.ordering.Ordering;
-import mho.haskellesque.tuples.Pair;
-import mho.haskellesque.tuples.Triple;
+import mho.haskellesque.structures.Pair;
+import mho.haskellesque.structures.Triple;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
