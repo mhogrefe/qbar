@@ -45,31 +45,38 @@ public final class Rational implements Comparable<Rational> {
     /**
      * The largest subnormal float value, or (2<sup>23</sup>&#x2212;1)/2<sup>149</sup>
      */
-    public static final @NotNull Rational LARGEST_SUBNORMAL_FLOAT = new Rational(BigInteger.ONE.shiftLeft(23).subtract(BigInteger.ONE), BigInteger.ONE.shiftLeft(149));
+    public static final @NotNull Rational LARGEST_SUBNORMAL_FLOAT =
+            new Rational(BigInteger.ONE.shiftLeft(23).subtract(BigInteger.ONE), BigInteger.ONE.shiftLeft(149));
     /**
      * The smallest positive normal float value, or 2<sup>&#x2212;126</sup>
      */
-    public static final @NotNull Rational SMALLEST_NORMAL_FLOAT = new Rational(BigInteger.ONE, BigInteger.ONE.shiftLeft(126));
+    public static final @NotNull Rational SMALLEST_NORMAL_FLOAT =
+            new Rational(BigInteger.ONE, BigInteger.ONE.shiftLeft(126));
     /**
      * The largest finite float value, or 2<sup>128</sup>&#x2212;2<sup>104</sup>
      */
-    public static final @NotNull Rational LARGEST_FLOAT = new Rational(BigInteger.ONE.shiftLeft(128).subtract(BigInteger.ONE.shiftLeft(104)), BigInteger.ONE);
+    public static final @NotNull Rational LARGEST_FLOAT =
+            new Rational(BigInteger.ONE.shiftLeft(128).subtract(BigInteger.ONE.shiftLeft(104)), BigInteger.ONE);
     /**
      * The smallest positive double value, or 2<sup>&#x2212;1074</sup>
      */
-    public static final @NotNull Rational SMALLEST_DOUBLE = new Rational(BigInteger.ONE, BigInteger.ONE.shiftLeft(1074));
+    public static final @NotNull Rational SMALLEST_DOUBLE =
+            new Rational(BigInteger.ONE, BigInteger.ONE.shiftLeft(1074));
     /**
      * The largest subnormal double value, or (2<sup>52</sup>&#x2212;1)/2<sup>1074</sup>
      */
-    public static final @NotNull Rational LARGEST_SUBNORMAL_DOUBLE = new Rational(BigInteger.ONE.shiftLeft(52).subtract(BigInteger.ONE), BigInteger.ONE.shiftLeft(1074));
+    public static final @NotNull Rational LARGEST_SUBNORMAL_DOUBLE =
+            new Rational(BigInteger.ONE.shiftLeft(52).subtract(BigInteger.ONE), BigInteger.ONE.shiftLeft(1074));
     /**
      * The smallest positive normal double value, or 2<sup>&#x2212;1022</sup>
      */
-    public static final @NotNull Rational SMALLEST_NORMAL_DOUBLE = new Rational(BigInteger.ONE, BigInteger.ONE.shiftLeft(1022));
+    public static final @NotNull Rational SMALLEST_NORMAL_DOUBLE =
+            new Rational(BigInteger.ONE, BigInteger.ONE.shiftLeft(1022));
     /**
      * The largest finite double value, or 2<sup>1024</sup>&#x2212;2<sup>971</sup>
      */
-    public static final @NotNull Rational LARGEST_DOUBLE = new Rational(BigInteger.ONE.shiftLeft(1024).subtract(BigInteger.ONE.shiftLeft(971)), BigInteger.ONE);
+    public static final @NotNull Rational LARGEST_DOUBLE =
+            new Rational(BigInteger.ONE.shiftLeft(1024).subtract(BigInteger.ONE.shiftLeft(971)), BigInteger.ONE);
 
     /**
      * <tt>this</tt> times <tt>denominator</tt>
@@ -390,7 +397,8 @@ public final class Rational implements Comparable<Rational> {
             if (sn.equals(sd)) return ONE;
             return new Rational(sn, sd);
         } else {
-            BigInteger t = a.numerator.multiply(b.denominator.divide(d1)).add(b.numerator.multiply(a.denominator.divide(d1)));
+            BigInteger t = a.numerator.multiply(b.denominator.divide(d1))
+                    .add(b.numerator.multiply(a.denominator.divide(d1)));
             if (t.equals(BigInteger.ZERO)) return ZERO;
             BigInteger d2 = t.gcd(d1);
             BigInteger sn = t.divide(d2);
@@ -476,7 +484,8 @@ public final class Rational implements Comparable<Rational> {
     public @NotNull Rational multiply(int that) {
         if (this == ZERO || that == 0) return ZERO;
         if (numerator.equals(BigInteger.ONE) && denominator.equals(BigInteger.valueOf(that))) return ONE;
-        if (numerator.equals(BigInteger.ONE.negate()) && denominator.equals(BigInteger.valueOf(that).negate())) return ONE;
+        if (numerator.equals(BigInteger.ONE.negate()) && denominator.equals(BigInteger.valueOf(that).negate()))
+            return ONE;
         BigInteger g = denominator.gcd(BigInteger.valueOf(that));
         return new Rational(numerator.multiply(BigInteger.valueOf(that).divide(g)), denominator.divide(g));
     }
@@ -1406,7 +1415,8 @@ public final class Rational implements Comparable<Rational> {
      * @return a triple containing the digits before the decimal point, the non-repeating digits after the decimal
      * point, and the repeating digits.
      */
-    public @NotNull Triple<List<BigInteger>, List<BigInteger>, List<BigInteger>> positionalNotation(@NotNull BigInteger base) {
+    public @NotNull Triple<List<BigInteger>, List<BigInteger>, List<BigInteger>>
+    positionalNotation(@NotNull BigInteger base) {
         if (signum() == -1)
             throw new IllegalArgumentException("this cannot be negative");
         BigInteger floor = floor();
@@ -1458,13 +1468,18 @@ public final class Rational implements Comparable<Rational> {
      * @param repeating the repeating portion of the digits after the decimal point
      * @return (beforeDecimalPoint).(nonRepeating)(repeating)(repeating)(repeating)..._(base)
      */
-    public static @NotNull Rational fromPositionalNotation(@NotNull BigInteger base, @NotNull List<BigInteger> beforeDecimalPoint,
-                                                           @NotNull List<BigInteger> nonRepeating, @NotNull List<BigInteger> repeating) {
+    public static @NotNull Rational fromPositionalNotation(
+            @NotNull BigInteger base,
+            @NotNull List<BigInteger> beforeDecimalPoint,
+            @NotNull List<BigInteger> nonRepeating,
+            @NotNull List<BigInteger> repeating
+    ) {
         BigInteger floor = BasicMath.fromDigits(base, beforeDecimalPoint);
         BigInteger nonRepeatingInteger = BasicMath.fromDigits(base, nonRepeating);
         BigInteger repeatingInteger = BasicMath.fromDigits(base, repeating);
         Rational nonRepeatingPart = of(nonRepeatingInteger, base.pow(nonRepeating.size()));
-        Rational repeatingPart = of(repeatingInteger, base.pow(repeating.size()).subtract(BigInteger.ONE)).divide(base.pow(nonRepeating.size()));
+        Rational repeatingPart = of(repeatingInteger, base.pow(repeating.size()).subtract(BigInteger.ONE))
+                .divide(base.pow(nonRepeating.size()));
         return add(add(of(floor), nonRepeatingPart), repeatingPart);
     }
 

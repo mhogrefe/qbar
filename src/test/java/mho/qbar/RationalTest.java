@@ -19,10 +19,26 @@ public class RationalTest {
         aeq(Rational.LARGEST_SUBNORMAL_FLOAT, "8388607/713623846352979940529142984724747568191373312");
         aeq(Rational.SMALLEST_NORMAL_FLOAT, "1/85070591730234615865843651857942052864");
         aeq(Rational.LARGEST_FLOAT, "340282346638528859811704183484516925440");
-        aeq(Rational.SMALLEST_DOUBLE, "1/202402253307310618352495346718917307049556649764142118356901358027430339567995346891960383701437124495187077864316811911389808737385793476867013399940738509921517424276566361364466907742093216341239767678472745068562007483424692698618103355649159556340810056512358769552333414615230502532186327508646006263307707741093494784");
-        aeq(Rational.LARGEST_SUBNORMAL_DOUBLE, "4503599627370495/202402253307310618352495346718917307049556649764142118356901358027430339567995346891960383701437124495187077864316811911389808737385793476867013399940738509921517424276566361364466907742093216341239767678472745068562007483424692698618103355649159556340810056512358769552333414615230502532186327508646006263307707741093494784");
-        aeq(Rational.SMALLEST_NORMAL_DOUBLE, "1/44942328371557897693232629769725618340449424473557664318357520289433168951375240783177119330601884005280028469967848339414697442203604155623211857659868531094441973356216371319075554900311523529863270738021251442209537670585615720368478277635206809290837627671146574559986811484619929076208839082406056034304");
-        aeq(Rational.LARGEST_DOUBLE, "179769313486231570814527423731704356798070567525844996598917476803157260780028538760589558632766878171540458953514382464234321326889464182768467546703537516986049910576551282076245490090389328944075868508455133942304583236903222948165808559332123348274797826204144723168738177180919299881250404026184124858368");
+        aeq(Rational.SMALLEST_DOUBLE,
+                "1/2024022533073106183524953467189173070495566497641421183569013580274303395679953468919603837014371" +
+                "244951870778643168119113898087373857934768670133999407385099215174242765663613644669077420932163412" +
+                "397676784727450685620074834246926986181033556491595563408100565123587695523334146152305025321863275" +
+                "08646006263307707741093494784");
+        aeq(Rational.LARGEST_SUBNORMAL_DOUBLE,
+                "4503599627370495/2024022533073106183524953467189173070495566497641421183569013580274303395679953468" +
+                "919603837014371244951870778643168119113898087373857934768670133999407385099215174242765663613644669" +
+                "077420932163412397676784727450685620074834246926986181033556491595563408100565123587695523334146152" +
+                "30502532186327508646006263307707741093494784");
+        aeq(Rational.SMALLEST_NORMAL_DOUBLE,
+                "1/4494232837155789769323262976972561834044942447355766431835752028943316895137524078317711933060188" +
+                "400528002846996784833941469744220360415562321185765986853109444197335621637131907555490031152352986" +
+                "327073802125144220953767058561572036847827763520680929083762767114657455998681148461992907620883908" +
+                "2406056034304");
+        aeq(Rational.LARGEST_DOUBLE,
+                "179769313486231570814527423731704356798070567525844996598917476803157260780028538760589558632766878" +
+                "171540458953514382464234321326889464182768467546703537516986049910576551282076245490090389328944075" +
+                "868508455133942304583236903222948165808559332123348274797826204144723168738177180919299881250404026" +
+                "184124858368");
     }
 
     @Test
@@ -809,7 +825,10 @@ public class RationalTest {
             fail();
         }
         Rational halfAboveNegativeMax = Rational.add(Rational.LARGEST_FLOAT.negate(), negativeMaxSuccessor).divide(2);
-        Rational justAboveNegativeMax = Rational.add(Rational.LARGEST_FLOAT.negate().multiply(2), negativeMaxSuccessor).divide(3);
+        Rational justAboveNegativeMax = Rational.add(
+                Rational.LARGEST_FLOAT.negate().multiply(2),
+                negativeMaxSuccessor
+        ).divide(3);
         aeq(belowNegativeMax.toFloat(), Float.NEGATIVE_INFINITY);
         aeq(halfAboveNegativeMax.toFloat(), -3.4028233E38);
         aeq(justAboveNegativeMax.toFloat(), -3.4028235E38);
@@ -831,7 +850,10 @@ public class RationalTest {
         aeq(justBelowZero.toFloat(), -0.0);
         aeq(halfAboveZero.toFloat(), 0.0);
         aeq(justAboveZero.toFloat(), 0.0);
-        Rational boundary = Rational.add(Rational.LARGEST_SUBNORMAL_FLOAT, Rational.SMALLEST_NORMAL_FLOAT).shiftRight(1);
+        Rational boundary = Rational.add(
+                Rational.LARGEST_SUBNORMAL_FLOAT,
+                Rational.SMALLEST_NORMAL_FLOAT
+        ).shiftRight(1);
         Rational halfBelowBoundary = Rational.add(Rational.LARGEST_SUBNORMAL_FLOAT, boundary).shiftRight(1);
         Rational halfAboveBoundary = Rational.add(Rational.SMALLEST_NORMAL_FLOAT, boundary).shiftRight(1);
         Rational justBelowBoundary = Rational.add(Rational.LARGEST_SUBNORMAL_FLOAT, boundary.shiftLeft(1)).divide(3);
@@ -1057,7 +1079,10 @@ public class RationalTest {
             fail();
         }
         Rational halfAboveNegativeMax = Rational.add(Rational.LARGEST_FLOAT.negate(), negativeMaxSuccessor).divide(2);
-        Rational justAboveNegativeMax = Rational.add(Rational.LARGEST_FLOAT.negate().multiply(2), negativeMaxSuccessor).divide(3);
+        Rational justAboveNegativeMax = Rational.add(
+                Rational.LARGEST_FLOAT.negate().multiply(2),
+                negativeMaxSuccessor
+        ).divide(3);
         aeq(belowNegativeMax.toFloat(RoundingMode.FLOOR), Float.NEGATIVE_INFINITY);
         aeq(belowNegativeMax.toFloat(RoundingMode.CEILING), -3.4028235E38);
         aeq(belowNegativeMax.toFloat(RoundingMode.DOWN), -3.4028235E38);
@@ -1179,7 +1204,10 @@ public class RationalTest {
             justAboveZero.toFloat(RoundingMode.UNNECESSARY);
             fail();
         } catch (ArithmeticException e) {}
-        Rational boundary = Rational.add(Rational.LARGEST_SUBNORMAL_FLOAT, Rational.SMALLEST_NORMAL_FLOAT).shiftRight(1);
+        Rational boundary = Rational.add(
+                Rational.LARGEST_SUBNORMAL_FLOAT,
+                Rational.SMALLEST_NORMAL_FLOAT
+        ).shiftRight(1);
         Rational halfBelowBoundary = Rational.add(Rational.LARGEST_SUBNORMAL_FLOAT, boundary).shiftRight(1);
         Rational halfAboveBoundary = Rational.add(Rational.SMALLEST_NORMAL_FLOAT, boundary).shiftRight(1);
         Rational justBelowBoundary = Rational.add(Rational.LARGEST_SUBNORMAL_FLOAT, boundary.shiftLeft(1)).divide(3);
@@ -1300,7 +1328,10 @@ public class RationalTest {
             fail();
         }
         Rational halfAboveNegativeMax = Rational.add(Rational.LARGEST_DOUBLE.negate(), negativeMaxSuccessor).divide(2);
-        Rational justAboveNegativeMax = Rational.add(Rational.LARGEST_DOUBLE.negate().multiply(2), negativeMaxSuccessor).divide(3);
+        Rational justAboveNegativeMax = Rational.add(
+                Rational.LARGEST_DOUBLE.negate().multiply(2),
+                negativeMaxSuccessor
+        ).divide(3);
         aeq(belowNegativeMax.toDouble(), Double.NEGATIVE_INFINITY);
         aeq(halfAboveNegativeMax.toDouble(), -1.7976931348623155E308);
         aeq(justAboveNegativeMax.toDouble(), -1.7976931348623157E308);
@@ -1322,7 +1353,10 @@ public class RationalTest {
         aeq(justBelowZero.toDouble(), -0.0);
         aeq(halfAboveZero.toDouble(), 0.0);
         aeq(justAboveZero.toDouble(), 0.0);
-        Rational boundary = Rational.add(Rational.LARGEST_SUBNORMAL_DOUBLE, Rational.SMALLEST_NORMAL_DOUBLE).shiftRight(1);
+        Rational boundary = Rational.add(
+                Rational.LARGEST_SUBNORMAL_DOUBLE,
+                Rational.SMALLEST_NORMAL_DOUBLE
+        ).shiftRight(1);
         Rational halfBelowBoundary = Rational.add(Rational.LARGEST_SUBNORMAL_DOUBLE, boundary).shiftRight(1);
         Rational halfAboveBoundary = Rational.add(Rational.SMALLEST_NORMAL_DOUBLE, boundary).shiftRight(1);
         Rational justBelowBoundary = Rational.add(Rational.LARGEST_SUBNORMAL_DOUBLE, boundary.shiftLeft(1)).divide(3);
@@ -1548,7 +1582,10 @@ public class RationalTest {
             fail();
         }
         Rational halfAboveNegativeMax = Rational.add(Rational.LARGEST_DOUBLE.negate(), negativeMaxSuccessor).divide(2);
-        Rational justAboveNegativeMax = Rational.add(Rational.LARGEST_DOUBLE.negate().multiply(2), negativeMaxSuccessor).divide(3);
+        Rational justAboveNegativeMax = Rational.add(
+                Rational.LARGEST_DOUBLE.negate().multiply(2),
+                negativeMaxSuccessor
+        ).divide(3);
         aeq(belowNegativeMax.toDouble(RoundingMode.FLOOR), Double.NEGATIVE_INFINITY);
         aeq(belowNegativeMax.toDouble(RoundingMode.CEILING), -1.7976931348623157E308);
         aeq(belowNegativeMax.toDouble(RoundingMode.DOWN), -1.7976931348623157E308);
@@ -1670,7 +1707,10 @@ public class RationalTest {
             justAboveZero.toDouble(RoundingMode.UNNECESSARY);
             fail();
         } catch (ArithmeticException e) {}
-        Rational boundary = Rational.add(Rational.LARGEST_SUBNORMAL_DOUBLE, Rational.SMALLEST_NORMAL_DOUBLE).shiftRight(1);
+        Rational boundary = Rational.add(
+                Rational.LARGEST_SUBNORMAL_DOUBLE,
+                Rational.SMALLEST_NORMAL_DOUBLE
+        ).shiftRight(1);
         Rational halfBelowBoundary = Rational.add(Rational.LARGEST_SUBNORMAL_DOUBLE, boundary).shiftRight(1);
         Rational halfAboveBoundary = Rational.add(Rational.SMALLEST_NORMAL_DOUBLE, boundary).shiftRight(1);
         Rational justBelowBoundary = Rational.add(Rational.LARGEST_SUBNORMAL_DOUBLE, boundary.shiftLeft(1)).divide(3);
