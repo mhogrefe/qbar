@@ -1494,40 +1494,6 @@ public final class Rational implements Comparable<Rational> {
         return new Pair<>(positionalNotation.a, afterDecimal);
     }
 
-//    public @NotNull String baseString(@NotNull BigInteger base, int precision, @NotNull RoundingMode roundingMode) {
-//        if (signum() == -1) return "-" + negate().baseString(base, precision, roundingMode);
-//        Pair<List<BigInteger>, Iterable<BigInteger>> digits = digits(base);
-//        int beforeDecimalSize = digits.fst.size();
-//        if (precision != 0 && precision < beforeDecimalSize) {
-//            int exp = beforeDecimalSize - 1;
-//            return divide(base.pow(exp)).baseString(base, precision, roundingMode) + "E+" + MathUtils.baseString(base, BigInteger.valueOf(exp));
-//        }
-//        List<BigInteger> roundedDigits = new ArrayList<>();
-//        if (precision == 0) {
-//            for (BigInteger digit : digits.snd) {
-//                roundedDigits.add(digit);
-//            }
-//        } else {
-//            int remainingPrecision = precision == 0 ? 0 : precision - beforeDecimalSize;
-//            return null;
-//        }
-//        StringBuilder sb = new StringBuilder();
-//        sb.append(MathUtils.baseString(base, floor()));
-//        sb.append('.');
-//        if (base.compareTo(BigInteger.valueOf(36)) <= 0) {
-//            for (BigInteger digit : roundedDigits) {
-//                sb.append(digit.compareTo(BigInteger.valueOf(10)) < 0 ? digit : (char) (digit.intValue() - 10 + 'a'));
-//            }
-//        } else {
-//            for (BigInteger digit : roundedDigits) {
-//                sb.append('(');
-//                sb.append(digit);
-//                sb.append(')');
-//            }
-//        }
-//        return sb.toString();
-//    }
-
     /**
      * Creates a <tt>Rational</tt> from a <tt>String</tt>. Valid strings are of the form <tt>a.toString()</tt> or
      * <tt>a.toString() + "/" + b.toString()</tt>, where <tt>a</tt> and <tt>b</tt> are some <tt>BigInteger</tt>s. If
