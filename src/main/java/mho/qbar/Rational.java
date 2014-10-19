@@ -1581,6 +1581,8 @@ public final class Rational implements Comparable<Rational> {
 
     /**
      * @return an <tt>Iterable</tt> that contains every <tt>Rational</tt>.
+     *
+     * Length is infinite
      */
     public static final @NotNull Iterable<Rational> RATIONALS =
         map(
@@ -1593,6 +1595,8 @@ public final class Rational implements Comparable<Rational> {
 
     /**
      * @return an <tt>Iterable</tt> that contains every non-negative <tt>Rational</tt>.
+     *
+     * Length is infinite
      */
     public static @NotNull Iterable<Rational> NONNEGATIVE_RATIONALS =
         map(
@@ -1605,6 +1609,8 @@ public final class Rational implements Comparable<Rational> {
 
     /**
      * @return an <tt>Iterable</tt> that contains every positive <tt>Rational</tt>.
+     *
+     * Length is infinite
      */
     public static @NotNull Iterable<Rational> POSITIVE_RATIONALS =
         map(
@@ -1617,6 +1623,8 @@ public final class Rational implements Comparable<Rational> {
 
     /**
      * @return an <tt>Iterable</tt> that contains every negative <tt>Rational</tt>.
+     *
+     * Length is infinite
      */
     public static @NotNull Iterable<Rational> NEGATIVE_RATIONALS =
         map(
@@ -1629,6 +1637,8 @@ public final class Rational implements Comparable<Rational> {
 
     /**
      * @return an <tt>Iterable</tt> that contains every non-negative <tt>Rational</tt> less than one.
+     *
+     * Length is infinite
      */
     public static @NotNull Iterable<Rational> NONNEGATIVE_RATIONALS_LESS_THAN_ONE =
         map(
