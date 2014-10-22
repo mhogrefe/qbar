@@ -29,10 +29,6 @@ public class RationalDemos {
                 Rational.RATIONALS;  //todo
     }
 
-    public static void main(String[] args) {
-        ofIntDemo();
-    }
-
     public static void ofBigIntegerBigIntegerDemo() {
         initialize();
         Iterable<Pair<BigInteger, BigInteger>> it = filter(
@@ -67,12 +63,14 @@ public class RationalDemos {
     }
 
     public static void ofFloatDemo() {
+        initialize();
         for (float f : take(LIMIT, P.floats())) {
             System.out.println("of(" + f + ") = " + Rational.of(f));
         }
     }
 
     public static void ofDoubleDemo() {
+        initialize();
         for (double d : take(LIMIT, P.doubles())) {
             System.out.println("of(" + d + ") = " + Rational.of(d));
         }
