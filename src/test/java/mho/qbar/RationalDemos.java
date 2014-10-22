@@ -1,57 +1,68 @@
 package mho.qbar;
 
+import mho.haskellesque.iterables.ExhaustiveProvider;
+import mho.haskellesque.iterables.IterableProvider;
+import mho.haskellesque.iterables.RandomProvider;
 import mho.haskellesque.structures.Pair;
 import mho.haskellesque.structures.Triple;
 
 import java.math.BigInteger;
 import java.math.RoundingMode;
+import java.util.Random;
 
-import static mho.haskellesque.iterables.Exhaustive.*;
 import static mho.haskellesque.iterables.IterableUtils.*;
 import static mho.haskellesque.math.Combinatorics.*;
 
 public class RationalDemos {
+    private static final boolean USE_RANDOM = false;
+    private static final IterableProvider IP = USE_RANDOM ?
+            new RandomProvider(new Random(7706916639046193098L)) :
+            new ExhaustiveProvider();
+
+    private static Iterable<Rational> RATIONALS = USE_RANDOM ?
+            Rational.RATIONALS :
+            Rational.RATIONALS;  //todo
+    
     private static final String NECESSARY_CHARS = "-/0123456789";
     private static final int LIMIT = 10000;
 
-//    public static void ofBigIntegerBigIntegerDemo() {
-//        Iterable<Pair<BigInteger, BigInteger>> g = new FilteredGenerator<Pair<BigInteger, BigInteger>>(
-//                new SamePairGenerator<>(BIG_INTEGERS),
-//                p -> !p.b.equals(BigInteger.ZERO));
-//        for (Pair<BigInteger, BigInteger> p : g.iterate(limit)) {
-//            System.out.println("of(" + p.a + ", " + p.b + ") = " + Rational.of(p.a, p.b));
-//        }
-//    }
-//
-//    public static void ofIntIntDemo() {
-//        Generator<Pair<Integer, Integer>> g = new FilteredGenerator<Pair<Integer, Integer>>(
-//                new SamePairGenerator<>(INTEGERS),
-//                p -> p.b != 0);
-//        for (Pair<Integer, Integer> p : g.iterate(limit)) {
-//            System.out.println("of(" + p.a + ", " + p.b + ") = " + Rational.of(p.a, p.b));
-//        }
-//    }
+    public static void ofBigIntegerBigIntegerDemo() {
+        Iterable<Pair<BigInteger, BigInteger>> it = filter(
+                p -> !p.b.equals(BigInteger.ZERO),
+                pairs(IP.bigIntegers())
+        );
+        for (Pair<BigInteger, BigInteger> p : take(LIMIT, it)) {
+            System.out.println("of(" + p.a + ", " + p.b + ") = " + Rational.of(p.a, p.b));
+        }
+    }
+
+    public static void ofIntIntDemo() {
+        Iterable<Pair<Integer, Integer>> it = filter(p -> p.b != 0, pairs(IP.integers()));
+        for (Pair<Integer, Integer> p : take(LIMIT, it)) {
+            System.out.println("of(" + p.a + ", " + p.b + ") = " + Rational.of(p.a, p.b));
+        }
+    }
 
     public static void ofBigIntegerDemo() {
-        for (BigInteger bi : take(LIMIT, BIG_INTEGERS)) {
+        for (BigInteger bi : take(LIMIT, IP.bigIntegers())) {
             System.out.println("of(" + bi + ") = " + Rational.of(bi));
         }
     }
 
     public static void ofIntDemo() {
-        for (int bi : take(LIMIT, INTEGERS)) {
+        for (int bi : take(LIMIT, IP.integers())) {
             System.out.println("of(" + bi + ") = " + Rational.of(bi));
         }
     }
 
     public static void ofFloatDemo() {
-        for (float f : take(LIMIT, FLOATS)) {
+        for (float f : take(LIMIT, IP.floats())) {
             System.out.println("of(" + f + ") = " + Rational.of(f));
         }
     }
 
     public static void ofDoubleDemo() {
-        for (double d : take(LIMIT, DOUBLES)) {
+        for (double d : take(LIMIT, IP.doubles())) {
             System.out.println("of(" + d + ") = " + Rational.of(d));
         }
     }
@@ -63,49 +74,49 @@ public class RationalDemos {
 //    }
 
     public static void negateDemo() {
-        for (Rational r : take(LIMIT, Rational.RATIONALS)) {
+        for (Rational r : take(LIMIT, RATIONALS)) {
             System.out.println("-(" + r + ") = " + r.negate());
         }
     }
 
     public static void invertDemo() {
-        for (Rational r : take(LIMIT, filter(s -> s != Rational.ZERO, Rational.RATIONALS))) {
+        for (Rational r : take(LIMIT, filter(s -> s != Rational.ZERO, RATIONALS))) {
             System.out.println("1/(" + r + ") = " + r.invert());
         }
     }
 
     public static void absDemo() {
-        for (Rational r : take(LIMIT, Rational.RATIONALS)) {
+        for (Rational r : take(LIMIT, RATIONALS)) {
             System.out.println("|" + r + "| = " + r.abs());
         }
     }
 
     public static void signumDemo() {
-        for (Rational r : take(LIMIT, Rational.RATIONALS)) {
+        for (Rational r : take(LIMIT, RATIONALS)) {
             System.out.println("sgn(" + r + ") = " + r.signum());
         }
     }
 
-//    public static void addDemo() {
-//        for (Pair<Rational, Rational> p : new SamePairGenerator<>(Rational.RATIONALS).iterate(limit)) {
-//            System.out.println(p.a + " + " + p.b + " = " + Rational.add(p.a, p.b));
-//        }
-//    }
-//
-//    public static void subtractDemo() {
-//        for (Pair<Rational, Rational> p : new SamePairGenerator<>(Rational.RATIONALS).iterate(limit)) {
-//            System.out.println(p.a + " - " + p.b + " = " + Rational.subtract(p.a, p.b));
-//        }
-//    }
-//
-//    public static void multiplyRationalRationalDemo() {
-//        for (Pair<Rational, Rational> p : new SamePairGenerator<>(Rational.RATIONALS).iterate(limit)) {
-//            System.out.println(p.a + " * " + p.b + " = " + Rational.multiply(p.a, p.b));
-//        }
-//    }
+    public static void addDemo() {
+        for (Pair<Rational, Rational> p : take(LIMIT, pairs(RATIONALS))) {
+            System.out.println(p.a + " + " + p.b + " = " + Rational.add(p.a, p.b));
+        }
+    }
+
+    public static void subtractDemo() {
+        for (Pair<Rational, Rational> p : take(LIMIT, pairs(RATIONALS))) {
+            System.out.println(p.a + " - " + p.b + " = " + Rational.subtract(p.a, p.b));
+        }
+    }
+
+    public static void multiplyRationalRationalDemo() {
+        for (Pair<Rational, Rational> p : take(LIMIT, pairs(RATIONALS))) {
+            System.out.println(p.a + " * " + p.b + " = " + Rational.multiply(p.a, p.b));
+        }
+    }
 
     public static void multiplyBigIntegerDemo() {
-        for (Pair<Rational, BigInteger> p : take(LIMIT, pairs(Rational.RATIONALS, BIG_INTEGERS))) {
+        for (Pair<Rational, BigInteger> p : take(LIMIT, pairs(RATIONALS, IP.bigIntegers()))) {
             assert p.a != null;
             assert p.b != null;
             System.out.println(p.a + " * " + p.b + " = " + p.a.multiply(p.b));
@@ -113,27 +124,24 @@ public class RationalDemos {
     }
 
     public static void multiplyIntDemo() {
-        for (Pair<Rational, Integer> p : take(LIMIT, pairs(Rational.RATIONALS, INTEGERS))) {
+        for (Pair<Rational, Integer> p : take(LIMIT, pairs(RATIONALS, IP.integers()))) {
             assert p.a != null;
             assert p.b != null;
             System.out.println(p.a + " * " + p.b + " = " + p.a.multiply(p.b));
         }
     }
 
-//    public static void divideRationalRationalDemo() {
-//        Generator<Pair<Rational, Rational>> g = new FilteredGenerator<Pair<Rational, Rational>>(
-//                new SamePairGenerator<>(Rational.RATIONALS),
-//                p -> p.b != Rational.ZERO
-//        );
-//        for (Pair<Rational, Rational> p : g.iterate(limit)) {
-//            System.out.println(p.a + " / " + p.b + " = " + Rational.divide(p.a, p.b));
-//        }
-//    }
+    public static void divideRationalRationalDemo() {
+        Iterable<Pair<Rational, Rational>> it = filter(p -> p.b != Rational.ZERO, pairs(RATIONALS));
+        for (Pair<Rational, Rational> p : take(LIMIT, it)) {
+            System.out.println(p.a + " / " + p.b + " = " + Rational.divide(p.a, p.b));
+        }
+    }
 
     public static void divideBigIntegerDemo() {
         Iterable<Pair<Rational, BigInteger>> it = pairs(
-                Rational.RATIONALS,
-                filter(bi -> !bi.equals(BigInteger.ZERO), BIG_INTEGERS)
+                RATIONALS,
+                filter(bi -> !bi.equals(BigInteger.ZERO), IP.bigIntegers())
         );
         for (Pair<Rational, BigInteger> p : take(LIMIT, it)) {
             assert p.a != null;
@@ -143,7 +151,7 @@ public class RationalDemos {
     }
 
     public static void divideIntDemo() {
-        for (Pair<Rational, Integer> p : take(LIMIT, pairs(Rational.RATIONALS, filter(i -> i != 0, INTEGERS)))) {
+        for (Pair<Rational, Integer> p : take(LIMIT, pairs(RATIONALS, filter(i -> i != 0, IP.integers())))) {
             assert p.a != null;
             assert p.b != null;
             System.out.println(p.a + " / " + p.b + " = " + p.a.divide(p.b));
@@ -153,7 +161,7 @@ public class RationalDemos {
     public static void powDemo() {
         Iterable<Pair<Rational, Integer>> it = filter(
                 p -> p.b >= 0 || p.a != Rational.ZERO,
-                pairs(Rational.RATIONALS, INTEGERS)
+                pairs(RATIONALS, IP.integers())
         );
         for (Pair<Rational, Integer> p : take(LIMIT, it)) {
             assert p.a != null;
@@ -163,19 +171,19 @@ public class RationalDemos {
     }
 
     public static void floorDemo() {
-        for (Rational r : take(LIMIT, Rational.RATIONALS)) {
+        for (Rational r : take(LIMIT, RATIONALS)) {
             System.out.println("floor(" + r + ") = " + r.floor());
         }
     }
 
     public static void ceilingDemo() {
-        for (Rational r : take(LIMIT, Rational.RATIONALS)) {
+        for (Rational r : take(LIMIT, RATIONALS)) {
             System.out.println("ceil(" + r + ") = " + r.ceiling());
         }
     }
 
     public static void fractionalPartDemo() {
-        for (Rational r : take(LIMIT, Rational.RATIONALS)) {
+        for (Rational r : take(LIMIT, RATIONALS)) {
             System.out.println("fractionalPart(" + r + ") = " + r.fractionalPart());
         }
     }
@@ -183,7 +191,7 @@ public class RationalDemos {
     public static void roundDemo() {
         Iterable<Pair<Rational, RoundingMode>> it = filter(
                 p -> p.b != RoundingMode.UNNECESSARY || p.a.getDenominator().equals(BigInteger.ONE),
-                pairs(Rational.RATIONALS, ROUNDING_MODES)
+                pairs(RATIONALS, IP.roundingModes())
         );
         for (Pair<Rational, RoundingMode> p : take(LIMIT, it)) {
             System.out.println("round(" + p.a + ", " + p.b + ") = " + p.a.round(p.b));
@@ -193,7 +201,7 @@ public class RationalDemos {
     public static void roundToDenominatorDemo() {
         Iterable<Triple<Rational, BigInteger, RoundingMode>> it = filter(
                 p -> p.c != RoundingMode.UNNECESSARY || p.b.mod(p.a.getDenominator()).equals(BigInteger.ZERO),
-                triples(Rational.RATIONALS, POSITIVE_BIG_INTEGERS, ROUNDING_MODES)
+                triples(RATIONALS, IP.positiveBigIntegers(), IP.roundingModes())
         );
         for (Triple<Rational, BigInteger, RoundingMode> t : take(LIMIT, it)) {
             System.out.println("round(" + t.a + ", " + t.b + ", " + t.c + ") = " + t.a.roundToDenominator(t.b, t.c));
@@ -201,13 +209,13 @@ public class RationalDemos {
     }
 
     public static void shiftLeftDemo() {
-        for (Pair<Rational, Integer> p : take(LIMIT, pairs(Rational.RATIONALS, INTEGERS))) {
+        for (Pair<Rational, Integer> p : take(LIMIT, pairs(RATIONALS, IP.integers()))) {
             System.out.println(p.a + " << " + p.b + " = " + p.a.shiftLeft(p.b));
         }
     }
 
     public static void shiftRightDemo() {
-        for (Pair<Rational, Integer> p : take(LIMIT, pairs(Rational.RATIONALS, INTEGERS))) {
+        for (Pair<Rational, Integer> p : take(LIMIT, pairs(RATIONALS, IP.integers()))) {
             System.out.println(p.a + " >> " + p.b + " = " + p.a.shiftRight(p.b));
         }
     }
@@ -219,7 +227,7 @@ public class RationalDemos {
     }
 
     public static void toFloatDemo() {
-        for (Rational r : take(LIMIT, Rational.RATIONALS)) {
+        for (Rational r : take(LIMIT, RATIONALS)) {
             System.out.println("toFloat(" + r + ") = " + r.toFloat());
         }
     }
@@ -227,7 +235,7 @@ public class RationalDemos {
     public static void toFloatRoundingModeDemo() {
         Iterable<Pair<Rational, RoundingMode>> it = filter(
                 p -> p.b != RoundingMode.UNNECESSARY || Rational.of(p.a.toFloat(RoundingMode.FLOOR)).equals(p.a),
-                pairs(Rational.RATIONALS, ROUNDING_MODES)
+                pairs(RATIONALS, IP.roundingModes())
         );
         for (Pair<Rational, RoundingMode> p : take(LIMIT, it)) {
             System.out.println("toFloat(" + p.a + ", " + p.b + ") = " + p.a.toFloat(p.b));
@@ -235,7 +243,7 @@ public class RationalDemos {
     }
 
     public static void toDoubleDemo() {
-        for (Rational r : take(LIMIT, Rational.RATIONALS)) {
+        for (Rational r : take(LIMIT, RATIONALS)) {
             System.out.println("toDouble(" + r + ") = " + r.toDouble());
         }
     }
@@ -243,20 +251,20 @@ public class RationalDemos {
     public static void toDoubleRoundingModeDemo() {
         Iterable<Pair<Rational, RoundingMode>> it = filter(
                 p -> p.b != RoundingMode.UNNECESSARY || Rational.of(p.a.toFloat(RoundingMode.FLOOR)).equals(p.a),
-                pairs(Rational.RATIONALS, ROUNDING_MODES));
+                pairs(RATIONALS, IP.roundingModes()));
         for (Pair<Rational, RoundingMode> p : take(LIMIT, it)) {
             System.out.println("toDouble(" + p.a + ", " + p.b + ") = " + p.a.toDouble(p.b));
         }
     }
 
     public static void hasTerminatingDecimalExpansionDemo() {
-        for (Rational r : take(LIMIT, Rational.RATIONALS)) {
+        for (Rational r : take(LIMIT, RATIONALS)) {
             System.out.println("hasTerminatingDecimalExpansion(" + r + ") = " + r.hasTerminatingDecimalExpansion());
         }
     }
 
     public static void toBigDecimalDemo() {
-        Iterable<Rational> it = filter(Rational::hasTerminatingDecimalExpansion, Rational.RATIONALS);
+        Iterable<Rational> it = filter(Rational::hasTerminatingDecimalExpansion, RATIONALS);
         for (Rational r : take(LIMIT, it)) {
             System.out.println("toBigDecimal(" + r + ") = " + r.toBigDecimal());
         }
@@ -265,7 +273,7 @@ public class RationalDemos {
 //    public static void toBigDecimalPrecisionDemo() {
 //        Iterable<Pair<Rational, Integer>> g = filter(
 //                new SubExponentialPairGenerator<>(
-//                        Rational.RATIONALS,
+//                        RATIONALS,
 //                        Generators.naturalIntegers()
 //                ),
 //                p -> p.b != 0 || p.a.hasTerminatingDecimalExpansion());
@@ -277,7 +285,7 @@ public class RationalDemos {
 //    public static void toBigDecimalPrecisionRoundingMode() {
 //        Generator<Pair<Rational, Integer>> pg = new FilteredGenerator<Pair<Rational, Integer>>(
 //                new SubExponentialPairGenerator<>(
-//                        Rational.RATIONALS,
+//                        RATIONALS,
 //                        Generators.naturalIntegers()
 //                ),
 //                p -> p.b != 0 || p.a.hasTerminatingDecimalExpansion());
@@ -292,40 +300,40 @@ public class RationalDemos {
 //        }
 //    }
 
-//    public static void equalsRationalDemo() {
-//        for (Pair<Rational, Rational> p : new SamePairGenerator<>(Rational.RATIONALS).iterate(limit)) {
-//            System.out.println("equals(" + p.a + ", " + p.b + ") = " + p.a.equals(p.b));
-//        }
-//    }
+    public static void equalsRationalDemo() {
+        for (Pair<Rational, Rational> p : take(LIMIT, pairs(RATIONALS))) {
+            System.out.println("equals(" + p.a + ", " + p.b + ") = " + p.a.equals(p.b));
+        }
+    }
 
     public static void equalsNullDemo() {
-        for (Rational r : take(LIMIT, Rational.RATIONALS)) {
+        for (Rational r : take(LIMIT, RATIONALS)) {
             //noinspection ObjectEqualsNull
             System.out.println("equals(" + r + ", null) = " + r.equals(null));
         }
     }
 
     public static void hashCodeDemo() {
-        for (Rational r : take(LIMIT, Rational.RATIONALS)) {
+        for (Rational r : take(LIMIT, RATIONALS)) {
             System.out.println("hashCode(" + r + ") = " + r.hashCode());
         }
     }
 
-//    public static void compareToDemo() {
-//        for (Pair<Rational, Rational> p : new SamePairGenerator<>(Rational.RATIONALS).iterate(limit)) {
-//            System.out.println("compareTo(" + p.a + ", " + p.b + ") = " + p.a.compareTo(p.b));
-//        }
-//    }
+    public static void compareToDemo() {
+        for (Pair<Rational, Rational> p : take(LIMIT, pairs(RATIONALS))) {
+            System.out.println("compareTo(" + p.a + ", " + p.b + ") = " + p.a.compareTo(p.b));
+        }
+    }
 
     public static void continuedFractionDemo() {
-        for (Rational r : take(LIMIT, Rational.RATIONALS)) {
+        for (Rational r : take(LIMIT, RATIONALS)) {
             System.out.println("continuedFraction(" + r + ") = " + r.continuedFraction());
         }
     }
 
 //    public static void fromContinuedFractionDemo() {
-//        Iterable<List<BigInteger>> bisg = pairs(
-//                BIG_INTEGERS,
+//        Iterable<List<BigInteger>> it = pairs(
+//                IP.bigIntegers(),
 //                new ListGenerator<BigInteger>(POSITIVE_BIG_INTEGERS)
 //        ).map(
 //                p -> {
@@ -357,7 +365,7 @@ public class RationalDemos {
 //    }
 
     public static void convergentsDemo() {
-        for (Rational r : take(LIMIT, Rational.RATIONALS)) {
+        for (Rational r : take(LIMIT, RATIONALS)) {
             System.out.println("convergents(" + r + ") = " + r.convergents());
         }
     }
