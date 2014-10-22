@@ -1,6 +1,6 @@
 package mho.qbar;
 
-import mho.haskellesque.iterables.Exhaustive;
+import mho.haskellesque.iterables.ExhaustiveProvider;
 import mho.haskellesque.math.BasicMath;
 import mho.haskellesque.numbers.Numbers;
 import mho.haskellesque.ordering.Ordering;
@@ -29,6 +29,8 @@ import static mho.haskellesque.ordering.Ordering.*;
  * using ==.
  */
 public final class Rational implements Comparable<Rational> {
+    private static final @NotNull ExhaustiveProvider P = new ExhaustiveProvider();
+
     /**
      * 0
      */
@@ -1589,7 +1591,7 @@ public final class Rational implements Comparable<Rational> {
                 Rational::fromPair,
                 filter(
                         p -> p.a.gcd(p.b).equals(BigInteger.ONE),
-                        pairs(Exhaustive.BIG_INTEGERS, Exhaustive.POSITIVE_BIG_INTEGERS)
+                        pairs(P.bigIntegers(), P.positiveBigIntegers())
                 )
         );
 
@@ -1603,7 +1605,7 @@ public final class Rational implements Comparable<Rational> {
                 Rational::fromPair,
                 filter(
                         p -> p.a.gcd(p.b).equals(BigInteger.ONE),
-                        pairs(Exhaustive.NATURAL_BIG_INTEGERS, Exhaustive.POSITIVE_BIG_INTEGERS)
+                        pairs(P.naturalBigIntegers(), P.positiveBigIntegers())
                 )
         );
 
@@ -1615,10 +1617,7 @@ public final class Rational implements Comparable<Rational> {
     public static @NotNull Iterable<Rational> POSITIVE_RATIONALS =
         map(
                 Rational::fromPair,
-                filter(
-                        p -> p.a.gcd(p.b).equals(BigInteger.ONE),
-                        map(list -> new Pair<>(list.get(0), list.get(1)), lists(2, Exhaustive.POSITIVE_BIG_INTEGERS))
-                )
+                filter(p -> p.a.gcd(p.b).equals(BigInteger.ONE), pairs(P.positiveBigIntegers()))
         );
 
     /**
@@ -1631,7 +1630,7 @@ public final class Rational implements Comparable<Rational> {
                 Rational::fromPair,
                 filter(
                         p -> p.a.gcd(p.b).equals(BigInteger.ONE),
-                        pairs(Exhaustive.NEGATIVE_BIG_INTEGERS, Exhaustive.POSITIVE_BIG_INTEGERS)
+                        pairs(P.negativeBigIntegers(), P.positiveBigIntegers())
                 )
         );
 
@@ -1645,7 +1644,7 @@ public final class Rational implements Comparable<Rational> {
                 Rational::fromPair,
                 filter(
                         p -> lt(p.a, p.b) && p.a.gcd(p.b).equals(BigInteger.ONE),
-                        pairs(Exhaustive.NATURAL_BIG_INTEGERS, Exhaustive.POSITIVE_BIG_INTEGERS)
+                        pairs(P.naturalBigIntegers(), P.positiveBigIntegers())
                 )
         );
 }
