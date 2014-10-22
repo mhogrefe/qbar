@@ -1591,7 +1591,7 @@ public final class Rational implements Comparable<Rational> {
                 Rational::fromPair,
                 filter(
                         p -> p.a.gcd(p.b).equals(BigInteger.ONE),
-                        pairs(P.bigIntegers(), P.positiveBigIntegers())
+                        P.pairs(P.bigIntegers(), P.positiveBigIntegers())
                 )
         );
 
@@ -1605,7 +1605,7 @@ public final class Rational implements Comparable<Rational> {
                 Rational::fromPair,
                 filter(
                         p -> p.a.gcd(p.b).equals(BigInteger.ONE),
-                        pairs(P.naturalBigIntegers(), P.positiveBigIntegers())
+                        P.pairs(P.naturalBigIntegers(), P.positiveBigIntegers())
                 )
         );
 
@@ -1617,7 +1617,7 @@ public final class Rational implements Comparable<Rational> {
     public static @NotNull Iterable<Rational> POSITIVE_RATIONALS =
         map(
                 Rational::fromPair,
-                filter(p -> p.a.gcd(p.b).equals(BigInteger.ONE), pairs(P.positiveBigIntegers()))
+                filter(p -> p.a.gcd(p.b).equals(BigInteger.ONE), P.pairs(P.positiveBigIntegers()))
         );
 
     /**
@@ -1630,7 +1630,7 @@ public final class Rational implements Comparable<Rational> {
                 Rational::fromPair,
                 filter(
                         p -> p.a.gcd(p.b).equals(BigInteger.ONE),
-                        pairs(P.negativeBigIntegers(), P.positiveBigIntegers())
+                        P.pairs(P.negativeBigIntegers(), P.positiveBigIntegers())
                 )
         );
 
@@ -1644,7 +1644,7 @@ public final class Rational implements Comparable<Rational> {
                 Rational::fromPair,
                 filter(
                         p -> lt(p.a, p.b) && p.a.gcd(p.b).equals(BigInteger.ONE),
-                        pairs(P.naturalBigIntegers(), P.positiveBigIntegers())
+                        P.pairs(P.naturalBigIntegers(), P.positiveBigIntegers())
                 )
         );
 }

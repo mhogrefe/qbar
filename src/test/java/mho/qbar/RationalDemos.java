@@ -13,19 +13,28 @@ import java.util.Random;
 import static mho.haskellesque.iterables.IterableUtils.*;
 
 public class RationalDemos {
-    private static final boolean USE_RANDOM = false;
-    private static final IterableProvider P = USE_RANDOM ?
-            new RandomProvider(new Random(7706916639046193098L)) :
-            new ExhaustiveProvider();
-
-    private static Iterable<Rational> RATIONALS = USE_RANDOM ?
-            Rational.RATIONALS :
-            Rational.RATIONALS;  //todo
-    
+    private static final boolean USE_RANDOM = true;
     private static final String NECESSARY_CHARS = "-/0123456789";
     private static final int LIMIT = 10000;
 
+    private static IterableProvider P;
+    private static Iterable<Rational> RATIONALS;
+
+    private static void initialize() {
+        P = USE_RANDOM ?
+                new RandomProvider(new Random(7706916639046193098L)) :
+                new ExhaustiveProvider();
+        Iterable<Rational> RATIONALS = USE_RANDOM ?
+                Rational.RATIONALS :
+                Rational.RATIONALS;  //todo
+    }
+
+    public static void main(String[] args) {
+        ofIntDemo();
+    }
+
     public static void ofBigIntegerBigIntegerDemo() {
+        initialize();
         Iterable<Pair<BigInteger, BigInteger>> it = filter(
                 p -> !p.b.equals(BigInteger.ZERO),
                 P.pairs(P.bigIntegers())
@@ -36,6 +45,7 @@ public class RationalDemos {
     }
 
     public static void ofIntIntDemo() {
+        initialize();
         Iterable<Pair<Integer, Integer>> it = filter(p -> p.b != 0, P.pairs(P.integers()));
         for (Pair<Integer, Integer> p : take(LIMIT, it)) {
             System.out.println("of(" + p.a + ", " + p.b + ") = " + Rational.of(p.a, p.b));
@@ -43,12 +53,14 @@ public class RationalDemos {
     }
 
     public static void ofBigIntegerDemo() {
+        initialize();
         for (BigInteger bi : take(LIMIT, P.bigIntegers())) {
             System.out.println("of(" + bi + ") = " + Rational.of(bi));
         }
     }
 
     public static void ofIntDemo() {
+        initialize();
         for (int bi : take(LIMIT, P.integers())) {
             System.out.println("of(" + bi + ") = " + Rational.of(bi));
         }
