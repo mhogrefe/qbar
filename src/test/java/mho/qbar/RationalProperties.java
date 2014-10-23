@@ -35,7 +35,7 @@ public class RationalProperties {
     @Test
     public void testAllProperties() {
         for (boolean useRandom : Arrays.asList(false, true)) {
-            System.out.println("Testing " + (useRandom ? "exhaustively" : "randomly"));
+            System.out.println("Testing " + (useRandom ? "randomly" : "exhaustively"));
             USE_RANDOM = useRandom;
             
             ofBigIntegerBigIntegerProperties();
