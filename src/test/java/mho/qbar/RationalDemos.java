@@ -6,6 +6,7 @@ import mho.haskellesque.iterables.RandomProvider;
 import mho.haskellesque.structures.Pair;
 import mho.haskellesque.structures.Triple;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.util.Random;
@@ -76,11 +77,12 @@ public class RationalDemos {
         }
     }
 
-//    public static void ofBigDecimalDemo() {
-//        for (BigDecimal bd : Generators.bigDecimals().iterate(limit)) {
-//            System.out.println("of(" + bd + ") = " + Rational.of(bd));
-//        }
-//    }
+    public static void ofBigDecimalDemo() {
+        initialize();
+        for (BigDecimal bd : take(LIMIT, P.bigDecimals())) {
+            System.out.println("of(" + bd + ") = " + Rational.of(bd));
+        }
+    }
 
     public static void negateDemo() {
         for (Rational r : take(LIMIT, RATIONALS)) {

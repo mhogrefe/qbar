@@ -9,6 +9,7 @@ import mho.haskellesque.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Random;
@@ -44,7 +45,7 @@ public class RationalProperties {
             ofIntProperties();
             ofFloatProperties();
             ofDoubleProperties();
-//            ofBigDecimalProperties();
+            ofBigDecimalProperties();
 //            negateProperties();
 //            invertProperties();
 //            absProperties();
@@ -182,16 +183,16 @@ public class RationalProperties {
         }
     }
 
-//    public static void ofBigDecimalProperties() {
-//        initialize();
-//        System.out.println("testing of(BigDecimal) properties...");
-//        for (BigDecimal bd : Iterables.bigDecimals().iterate(limit)) {
-//            Rational r = Rational.of(bd);
-//            validate(r);
-//            Assert.assertEquals(bd.toString(), bd.stripTrailingZeros(), r.toBigDecimal().stripTrailingZeros());
-//            Assert.assertTrue(bd.toString(), r.hasTerminatingDecimalExpansion());
-//        }
-//    }
+    public static void ofBigDecimalProperties() {
+        initialize();
+        System.out.println("testing of(BigDecimal) properties...");
+        for (BigDecimal bd : take(LIMIT, P.bigDecimals())) {
+            Rational r = Rational.of(bd);
+            validate(r);
+            Assert.assertEquals(bd.toString(), bd.stripTrailingZeros(), r.toBigDecimal().stripTrailingZeros());
+            Assert.assertTrue(bd.toString(), r.hasTerminatingDecimalExpansion());
+        }
+    }
 //
 //    public static void negateProperties() {
 //        initialize();
