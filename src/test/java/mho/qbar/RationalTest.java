@@ -92,7 +92,7 @@ public class RationalTest {
     }
 
     @Test
-    public void testOf_Int_Int() {
+    public void testOf_int_int() {
         aeq(of(2, 3), "2/3");
         aeq(of(4, 6), "2/3");
         aeq(of(-4, -6), "2/3");
@@ -115,7 +115,7 @@ public class RationalTest {
     }
 
     @Test
-    public void testOf_Int() {
+    public void testOf_int() {
         aeq(of(23), "23");
         aeq(of(-23), "-23");
         assertTrue(of(0) == ZERO);
@@ -123,7 +123,7 @@ public class RationalTest {
     }
 
     @Test
-    public void testOf_Float() {
+    public void testOf_float() {
         assertTrue(of(0.0f) == ZERO);
         assertTrue(of(1.0f) == ONE);
         aeq(of(13.0f), "13");
@@ -149,7 +149,7 @@ public class RationalTest {
     }
 
     @Test
-    public void testOf_Double() {
+    public void testOf_double() {
         assertTrue(of(0.0) == ZERO);
         assertTrue(of(1.0) == ONE);
         aeq(of(13.0), "13");
@@ -324,7 +324,7 @@ public class RationalTest {
     }
 
     @Test
-    public void multiply_Int() {
+    public void multiply_int() {
         aeq(read("2/3").get().multiply(4), "8/3");
         aeq(read("2/3").get().multiply(-4), "-8/3");
         aeq(read("-2/3").get().multiply(4), "-8/3");
@@ -399,7 +399,7 @@ public class RationalTest {
     }
 
     @Test
-    public void divide_Int() {
+    public void divide_int() {
         aeq(read("2/3").get().divide(4), "1/6");
         aeq(read("2/3").get().divide(-4), "-1/6");
         aeq(read("-2/3").get().divide(4), "-1/6");

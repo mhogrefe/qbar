@@ -28,13 +28,14 @@ public class RationalProperties {
     private static Iterable<Rational> T_RATIONALS;
 
     private static void initialize() {
-        RandomProvider randomProvider = new RandomProvider(new Random(7706916639046193098L));
-        P = USE_RANDOM ?
-                randomProvider :
-                new ExhaustiveProvider();
-        T_RATIONALS = USE_RANDOM ?
-                randomRationals(randomProvider) :
-                RATIONALS;
+        if (USE_RANDOM) {
+            RandomProvider randomProvider = new RandomProvider(new Random(7706916639046193098L));
+            P = randomProvider;
+            T_RATIONALS = randomRationals(randomProvider);
+        } else {
+            P = new ExhaustiveProvider();
+            T_RATIONALS = RATIONALS;
+        }
     }
 
     @Test
@@ -43,22 +44,22 @@ public class RationalProperties {
             System.out.println("Testing " + (useRandom ? "randomly" : "exhaustively"));
             USE_RANDOM = useRandom;
             
-            ofBigIntegerBigIntegerProperties();
-            ofIntIntProperties();
-            ofBigIntegerProperties();
-            ofIntProperties();
-            ofFloatProperties();
-            ofDoubleProperties();
-            ofBigDecimalProperties();
-            negateProperties();
-            invertProperties();
-            absProperties();
-            signumProperties();
-            addProperties();
-            subtractProperties();
-//            multiplyRationalRationalProperties();
-//            multiplyBigIntegerProperties();
-//            multiplyIntProperties();
+            properties_Of_BigInteger_BigInteger();
+            propertiesOf_int_int();
+            propertiesOf_BigInteger();
+            propertiesOf_int();
+            propertiesOf_float();
+            propertiesOf_double();
+            propertiesOf_BigDecimal();
+            propertiesNegate();
+            propertiesInvert();
+            propertiesAbs();
+            propertiesSignum();
+            propertiesAdd();
+            propertiesSubtract();
+            propertiesMultiply_Rational_Rational();
+            propertiesMultiply_BigInteger();
+            propertiesMultiply_int();
 //            divideRationalRationalProperties();
 //        divideBigIntegerProperties();
 //        divideIntProperties();
@@ -80,7 +81,7 @@ public class RationalProperties {
         System.out.println("Done");
     }
 
-    public static void ofBigIntegerBigIntegerProperties() {
+    public static void properties_Of_BigInteger_BigInteger() {
         initialize();
         System.out.println("testing of(BigInteger, BigInteger) properties...");
         Iterable<Pair<BigInteger, BigInteger>> it = filter(
@@ -96,7 +97,7 @@ public class RationalProperties {
         }
     }
 
-    public static void ofIntIntProperties() {
+    public static void propertiesOf_int_int() {
         initialize();
         System.out.println("testing of(int, int) properties...");
         BigInteger minInt = BigInteger.valueOf(Integer.MIN_VALUE);
@@ -115,7 +116,7 @@ public class RationalProperties {
         }
     }
 
-    public static void ofBigIntegerProperties() {
+    public static void propertiesOf_BigInteger() {
         initialize();
         System.out.println("testing of(BigInteger) properties...");
         for (BigInteger bi : take(LIMIT, P.bigIntegers())) {
@@ -125,7 +126,7 @@ public class RationalProperties {
         }
     }
 
-    public static void ofIntProperties() {
+    public static void propertiesOf_int() {
         initialize();
         System.out.println("testing of(int) properties...");
         BigInteger minInt = BigInteger.valueOf(Integer.MIN_VALUE);
@@ -139,7 +140,7 @@ public class RationalProperties {
         }
     }
 
-    public static void ofFloatProperties() {
+    public static void propertiesOf_float() {
         initialize();
         System.out.println("testing of(float) properties...");
         BigInteger denominatorLimit = BigInteger.ONE.shiftLeft(149);
@@ -163,7 +164,7 @@ public class RationalProperties {
         }
     }
 
-    public static void ofDoubleProperties() {
+    public static void propertiesOf_double() {
         initialize();
         System.out.println("testing of(double) properties...");
         BigInteger denominatorLimit = BigInteger.ONE.shiftLeft(1074);
@@ -187,7 +188,7 @@ public class RationalProperties {
         }
     }
 
-    public static void ofBigDecimalProperties() {
+    public static void propertiesOf_BigDecimal() {
         initialize();
         System.out.println("testing of(BigDecimal) properties...");
         for (BigDecimal bd : take(LIMIT, P.bigDecimals())) {
@@ -198,7 +199,7 @@ public class RationalProperties {
         }
     }
 
-    public static void negateProperties() {
+    public static void propertiesNegate() {
         initialize();
         System.out.println("testing negate properties...");
         for (Rational r : take(LIMIT, T_RATIONALS)) {
@@ -215,7 +216,7 @@ public class RationalProperties {
         }
     }
 
-    public static void invertProperties() {
+    public static void propertiesInvert() {
         initialize();
         System.out.println("testing invert properties...");
 
@@ -235,7 +236,7 @@ public class RationalProperties {
         }
     }
 
-    public static void absProperties() {
+    public static void propertiesAbs() {
         initialize();
         System.out.println("testing abs properties...");
         for (Rational r : take(LIMIT, T_RATIONALS)) {
@@ -246,7 +247,7 @@ public class RationalProperties {
         }
     }
 
-    public static void signumProperties() {
+    public static void propertiesSignum() {
         initialize();
         System.out.println("testing signum properties...");
         for (Rational r : take(LIMIT, T_RATIONALS)) {
@@ -256,7 +257,7 @@ public class RationalProperties {
         }
     }
 
-    public static void addProperties() {
+    public static void propertiesAdd() {
         initialize();
         System.out.println("testing add properties...");
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(T_RATIONALS))) {
@@ -283,7 +284,7 @@ public class RationalProperties {
         }
     }
 
-    public static void subtractProperties() {
+    public static void propertiesSubtract() {
         initialize();
         System.out.println("testing subtract properties...");
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(T_RATIONALS))) {
@@ -301,117 +302,125 @@ public class RationalProperties {
             Assert.assertTrue(r.toString(), subtract(r, r) == ZERO);
         }
     }
-//
-//    public static void multiplyRationalRationalProperties() {
-//        initialize();
-//        System.out.println("testing multiply(Rational, Rational) properties...");
-//        for (Pair<Rational, Rational> p : P.pairs(T_RATIONALS).iterate(limit)) {
-//            Rational product = multiply(p.a, p.b);
-//            validate(product);
-//            Assert.assertEquals(p.toString(), product, multiply(p.b, p.a));
-//        }
-//
-//        for (Rational r : T_RATIONALS.iterate(limit)) {
-//            Assert.assertEquals(r.toString(), multiply(ONE, r), r);
-//            Assert.assertEquals(r.toString(), multiply(r, ONE), r);
-//            Assert.assertTrue(r.toString(), multiply(ZERO, r) == ZERO);
-//            Assert.assertTrue(r.toString(), multiply(r, ZERO) == ZERO);
-//        }
-//
-//        Iterable<Rational> g = new FilteredIterable<>(
-//                T_RATIONALS,
-//                r -> r != ZERO
-//        );
-//        for (Rational r : g.iterate(limit)) {
-//            Assert.assertTrue(r.toString(), multiply(r, r.invert()) == ONE);
-//        }
-//
-//        for (Triple<Rational, Rational, Rational> t : new SameTripleIterable<>(T_RATIONALS).iterate(limit)) {
-//            Rational product1 = multiply(multiply(t.a, t.b), t.c);
-//            Rational product2 = multiply(t.a, multiply(t.b, t.c));
-//            Assert.assertEquals(t.toString(), product1, product2);
-//        }
-//
-//        for (Triple<Rational, Rational, Rational> t : new SameTripleIterable<>(T_RATIONALS).iterate(limit)) {
-//            Rational expression1 = multiply(add(t.a, t.b), t.c);
-//            Rational expression2 = add(multiply(t.a, t.c), multiply(t.b, t.c));
-//            Assert.assertEquals(t.toString(), expression1, expression2);
-//            Rational expression3 = multiply(t.c, add(t.a, t.b));
-//            Rational expression4 = add(multiply(t.c, t.a), multiply(t.c, t.b));
-//            Assert.assertEquals(t.toString(), expression3, expression4);
-//        }
-//    }
-//
-//    public static void multiplyBigIntegerProperties(int limit) {
-//        initialize();
-//        System.out.println("testing multiply(BigInteger) properties...");
-//        Iterable<Pair<Rational, BigInteger>> g = new PairIterable<>(T_RATIONALS, P.bigIntegers());
-//        for (Pair<Rational, BigInteger> p : g.iterate(limit)) {
-//            Rational product = p.a.multiply(p.b);
-//            validate(product);
-//            Assert.assertEquals(p.toString(), product, multiply(of(p.b), p.a));
-//        }
-//
-//        for (BigInteger bi : P.bigIntegers().iterate(limit)) {
-//            Assert.assertEquals(bi.toString(), ONE.multiply(bi), of(bi));
-//            Assert.assertTrue(bi.toString(), ZERO.multiply(bi) == ZERO);
-//        }
-//
-//        for (Rational r : T_RATIONALS.iterate(limit)) {
-//            Assert.assertEquals(r.toString(), r.multiply(BigInteger.ONE), r);
-//            Assert.assertTrue(r.toString(), r.multiply(BigInteger.ZERO) == ZERO);
-//        }
-//
-//        Iterable<BigInteger> big = new FilteredIterable<>(
-//                P.bigIntegers(),
-//                bi -> !bi.equals(BigInteger.ZERO)
-//        );
-//        for (BigInteger bi : big.iterate(limit)) {
-//            Assert.assertTrue(bi.toString(), of(bi).invert().multiply(bi) == ONE);
-//        }
-//
-//        Iterable<Rational> rg = T_RATIONALS;
-//        for (Triple<Rational, Rational, BigInteger> t : triples(rg, rg, P.bigIntegers()).iterate(limit)) {
-//            Rational expression1 = add(t.a, t.b).multiply(t.c);
-//            Rational expression2 = add(t.a.multiply(t.c), t.b.multiply(t.c));
-//            Assert.assertEquals(t.toString(), expression1, expression2);
-//        }
-//    }
-//
-//    public static void multiplyIntProperties(int limit) {
-//        System.out.println("testing multiply(int) properties...");
-//        Iterable<Pair<Rational, Integer>> g = new PairIterable<>(T_RATIONALS, P.integers());
-//        for (Pair<Rational, Integer> p : g.iterate(limit)) {
-//            Rational product = p.a.multiply(p.b);
-//            validate(product);
-//            Assert.assertEquals(p.toString(), product, multiply(of(p.b), p.a));
-//        }
-//
-//        for (int i : P.integers().iterate(limit)) {
-//            Assert.assertEquals(Integer.toString(i), ONE.multiply(i), of(i));
-//            Assert.assertTrue(Integer.toString(i), ZERO.multiply(i) == ZERO);
-//        }
-//
-//        for (Rational r : T_RATIONALS.iterate(limit)) {
-//            Assert.assertEquals(r.toString(), r.multiply(1), r);
-//            Assert.assertTrue(r.toString(), r.multiply(0) == ZERO);
-//        }
-//
-//        Iterable<Integer> ig = new FilteredIterable<>(
-//                P.integers(),
-//                bi -> bi != 0
-//        );
-//        for (int i : ig.iterate(limit)) {
-//            Assert.assertTrue(Integer.toString(i), of(i).invert().multiply(i) == ONE);
-//        }
-//
-//        Iterable<Rational> rg = T_RATIONALS;
-//        for (Triple<Rational, Rational, Integer> t : new TripleIterable<>(rg, rg, P.integers()).iterate(limit)) {
-//            Rational expression1 = add(t.a, t.b).multiply(t.c);
-//            Rational expression2 = add(t.a.multiply(t.c), t.b.multiply(t.c));
-//            Assert.assertEquals(t.toString(), expression1, expression2);
-//        }
-//    }
+
+    public static void propertiesMultiply_Rational_Rational() {
+        initialize();
+        System.out.println("testing multiply(Rational, Rational) properties...");
+        for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(T_RATIONALS))) {
+            assert p.a != null;
+            assert p.b != null;
+            Rational product = multiply(p.a, p.b);
+            validate(product);
+            Assert.assertEquals(p.toString(), product, multiply(p.b, p.a));
+        }
+
+        for (Rational r : take(LIMIT, T_RATIONALS)) {
+            Assert.assertEquals(r.toString(), multiply(ONE, r), r);
+            Assert.assertEquals(r.toString(), multiply(r, ONE), r);
+            Assert.assertTrue(r.toString(), multiply(ZERO, r) == ZERO);
+            Assert.assertTrue(r.toString(), multiply(r, ZERO) == ZERO);
+        }
+
+        Iterable<Rational> it = filter(r -> r != ZERO, T_RATIONALS);
+        for (Rational r : take(LIMIT, it)) {
+            Assert.assertTrue(r.toString(), multiply(r, r.invert()) == ONE);
+        }
+
+        for (Triple<Rational, Rational, Rational> t : take(LIMIT, P.triples(T_RATIONALS))) {
+            assert t.a != null;
+            assert t.b != null;
+            assert t.c != null;
+            Rational product1 = multiply(multiply(t.a, t.b), t.c);
+            Rational product2 = multiply(t.a, multiply(t.b, t.c));
+            Assert.assertEquals(t.toString(), product1, product2);
+        }
+
+        for (Triple<Rational, Rational, Rational> t : take(LIMIT, P.triples(T_RATIONALS))) {
+            assert t.a != null;
+            assert t.b != null;
+            assert t.c != null;
+            Rational expression1 = multiply(add(t.a, t.b), t.c);
+            Rational expression2 = add(multiply(t.a, t.c), multiply(t.b, t.c));
+            Assert.assertEquals(t.toString(), expression1, expression2);
+            Rational expression3 = multiply(t.c, add(t.a, t.b));
+            Rational expression4 = add(multiply(t.c, t.a), multiply(t.c, t.b));
+            Assert.assertEquals(t.toString(), expression3, expression4);
+        }
+    }
+
+    public static void propertiesMultiply_BigInteger() {
+        initialize();
+        System.out.println("testing multiply(BigInteger) properties...");
+        Iterable<Pair<Rational, BigInteger>> it = P.pairs(T_RATIONALS, P.bigIntegers());
+        for (Pair<Rational, BigInteger> p : take(LIMIT, it)) {
+            assert p.a != null;
+            assert p.b != null;
+            Rational product = p.a.multiply(p.b);
+            validate(product);
+            Assert.assertEquals(p.toString(), product, multiply(of(p.b), p.a));
+        }
+
+        for (BigInteger bi : take(LIMIT, P.bigIntegers())) {
+            Assert.assertEquals(bi.toString(), ONE.multiply(bi), of(bi));
+            Assert.assertTrue(bi.toString(), ZERO.multiply(bi) == ZERO);
+        }
+
+        for (Rational r : take(LIMIT, T_RATIONALS)) {
+            Assert.assertEquals(r.toString(), r.multiply(BigInteger.ONE), r);
+            Assert.assertTrue(r.toString(), r.multiply(BigInteger.ZERO) == ZERO);
+        }
+
+        Iterable<BigInteger> biit = filter(bi -> !bi.equals(BigInteger.ZERO), P.bigIntegers());
+        for (BigInteger bi : take(LIMIT, biit)) {
+            Assert.assertTrue(bi.toString(), of(bi).invert().multiply(bi) == ONE);
+        }
+
+        Iterable<Rational> rit = T_RATIONALS;
+        for (Triple<Rational, Rational, BigInteger> t : take(LIMIT, P.triples(rit, rit, P.bigIntegers()))) {
+            assert t.a != null;
+            assert t.b != null;
+            assert t.c != null;
+            Rational expression1 = add(t.a, t.b).multiply(t.c);
+            Rational expression2 = add(t.a.multiply(t.c), t.b.multiply(t.c));
+            Assert.assertEquals(t.toString(), expression1, expression2);
+        }
+    }
+
+    public static void propertiesMultiply_int() {
+        System.out.println("testing multiply(int) properties...");
+        for (Pair<Rational, Integer> p :take(LIMIT, P.pairs(T_RATIONALS, P.integers()))) {
+            assert p.a != null;
+            assert p.b != null;
+            Rational product = p.a.multiply(p.b);
+            validate(product);
+            Assert.assertEquals(p.toString(), product, multiply(of(p.b), p.a));
+        }
+
+        for (int i : take(LIMIT, P.integers())) {
+            Assert.assertEquals(Integer.toString(i), ONE.multiply(i), of(i));
+            Assert.assertTrue(Integer.toString(i), ZERO.multiply(i) == ZERO);
+        }
+
+        for (Rational r : take(LIMIT, T_RATIONALS)) {
+            Assert.assertEquals(r.toString(), r.multiply(1), r);
+            Assert.assertTrue(r.toString(), r.multiply(0) == ZERO);
+        }
+
+        Iterable<Integer> ig = filter(i -> i != 0, P.integers());
+        for (int i : take(LIMIT, ig)) {
+            Assert.assertTrue(Integer.toString(i), of(i).invert().multiply(i) == ONE);
+        }
+
+        Iterable<Rational> rg = T_RATIONALS;
+        for (Triple<Rational, Rational, Integer> t : take(LIMIT, P.triples(rg, rg, P.integers()))) {
+            assert t.a != null;
+            assert t.b != null;
+            assert t.c != null;
+            Rational expression1 = add(t.a, t.b).multiply(t.c);
+            Rational expression2 = add(t.a.multiply(t.c), t.b.multiply(t.c));
+            Assert.assertEquals(t.toString(), expression1, expression2);
+        }
+    }
 //
 //    public static void divideRationalRationalProperties(int limit) {
 //        System.out.println("testing divide(Rational, Rational) properties...");
