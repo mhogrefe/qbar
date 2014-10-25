@@ -1,5 +1,6 @@
 package mho.qbar;
 
+import mho.haskellesque.iterables.IterableUtils;
 import mho.haskellesque.numbers.Numbers;
 import org.junit.Test;
 
@@ -7,34 +8,37 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
 
+import static mho.haskellesque.iterables.IterableUtils.*;
 import static mho.haskellesque.ordering.Ordering.*;
+import static mho.qbar.Rational.*;
 import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class RationalTest {
     @Test
     public void testConstants() {
-        aeq(Rational.ZERO, "0");
-        aeq(Rational.ONE, "1");
-        aeq(Rational.SMALLEST_FLOAT, "1/713623846352979940529142984724747568191373312");
-        aeq(Rational.LARGEST_SUBNORMAL_FLOAT, "8388607/713623846352979940529142984724747568191373312");
-        aeq(Rational.SMALLEST_NORMAL_FLOAT, "1/85070591730234615865843651857942052864");
-        aeq(Rational.LARGEST_FLOAT, "340282346638528859811704183484516925440");
-        aeq(Rational.SMALLEST_DOUBLE,
+        aeq(ZERO, "0");
+        aeq(ONE, "1");
+        aeq(SMALLEST_FLOAT, "1/713623846352979940529142984724747568191373312");
+        aeq(LARGEST_SUBNORMAL_FLOAT, "8388607/713623846352979940529142984724747568191373312");
+        aeq(SMALLEST_NORMAL_FLOAT, "1/85070591730234615865843651857942052864");
+        aeq(LARGEST_FLOAT, "340282346638528859811704183484516925440");
+        aeq(SMALLEST_DOUBLE,
                 "1/2024022533073106183524953467189173070495566497641421183569013580274303395679953468919603837014371" +
                 "244951870778643168119113898087373857934768670133999407385099215174242765663613644669077420932163412" +
                 "397676784727450685620074834246926986181033556491595563408100565123587695523334146152305025321863275" +
                 "08646006263307707741093494784");
-        aeq(Rational.LARGEST_SUBNORMAL_DOUBLE,
+        aeq(LARGEST_SUBNORMAL_DOUBLE,
                 "4503599627370495/2024022533073106183524953467189173070495566497641421183569013580274303395679953468" +
                 "919603837014371244951870778643168119113898087373857934768670133999407385099215174242765663613644669" +
                 "077420932163412397676784727450685620074834246926986181033556491595563408100565123587695523334146152" +
                 "30502532186327508646006263307707741093494784");
-        aeq(Rational.SMALLEST_NORMAL_DOUBLE,
+        aeq(SMALLEST_NORMAL_DOUBLE,
                 "1/4494232837155789769323262976972561834044942447355766431835752028943316895137524078317711933060188" +
                 "400528002846996784833941469744220360415562321185765986853109444197335621637131907555490031152352986" +
                 "327073802125144220953767058561572036847827763520680929083762767114657455998681148461992907620883908" +
                 "2406056034304");
-        aeq(Rational.LARGEST_DOUBLE,
+        aeq(LARGEST_DOUBLE,
                 "179769313486231570814527423731704356798070567525844996598917476803157260780028538760589558632766878" +
                 "171540458953514382464234321326889464182768467546703537516986049910576551282076245490090389328944075" +
                 "868508455133942304583236903222948165808559332123348274797826204144723168738177180919299881250404026" +
@@ -43,586 +47,586 @@ public class RationalTest {
 
     @Test
     public void testGetNumerator() {
-        aeq(Rational.ZERO.getNumerator(), "0");
-        aeq(Rational.ONE.getNumerator(), "1");
-        aeq(Rational.read("2").get().getNumerator(), "2");
-        aeq(Rational.read("-2").get().getNumerator(), "-2");
-        aeq(Rational.read("5/3").get().getNumerator(), "5");
-        aeq(Rational.read("-5/3").get().getNumerator(), "-5");
+        aeq(ZERO.getNumerator(), "0");
+        aeq(ONE.getNumerator(), "1");
+        aeq(read("2").get().getNumerator(), "2");
+        aeq(read("-2").get().getNumerator(), "-2");
+        aeq(read("5/3").get().getNumerator(), "5");
+        aeq(read("-5/3").get().getNumerator(), "-5");
     }
 
     @Test
     public void testGetDenominator() {
-        aeq(Rational.ZERO.getDenominator(), "1");
-        aeq(Rational.ONE.getDenominator(), "1");
-        aeq(Rational.read("2").get().getDenominator(), "1");
-        aeq(Rational.read("-2").get().getDenominator(), "1");
-        aeq(Rational.read("5/3").get().getDenominator(), "3");
-        aeq(Rational.read("-5/3").get().getDenominator(), "3");
+        aeq(ZERO.getDenominator(), "1");
+        aeq(ONE.getDenominator(), "1");
+        aeq(read("2").get().getDenominator(), "1");
+        aeq(read("-2").get().getDenominator(), "1");
+        aeq(read("5/3").get().getDenominator(), "3");
+        aeq(read("-5/3").get().getDenominator(), "3");
     }
 
     @Test
     public void testOf_BigInteger_BigInteger() {
-        aeq(Rational.of(BigInteger.valueOf(2), BigInteger.valueOf(3)), "2/3");
-        aeq(Rational.of(BigInteger.valueOf(4), BigInteger.valueOf(6)), "2/3");
-        aeq(Rational.of(BigInteger.valueOf(-4), BigInteger.valueOf(-6)), "2/3");
-        aeq(Rational.of(BigInteger.valueOf(4), BigInteger.valueOf(-6)), "-2/3");
-        assertTrue(Rational.of(BigInteger.valueOf(4), BigInteger.valueOf(4)) == Rational.ONE);
-        aeq(Rational.of(BigInteger.valueOf(4), BigInteger.valueOf(1)), "4");
-        assertTrue(Rational.of(BigInteger.valueOf(0), BigInteger.valueOf(1)) == Rational.ZERO);
+        aeq(of(BigInteger.valueOf(2), BigInteger.valueOf(3)), "2/3");
+        aeq(of(BigInteger.valueOf(4), BigInteger.valueOf(6)), "2/3");
+        aeq(of(BigInteger.valueOf(-4), BigInteger.valueOf(-6)), "2/3");
+        aeq(of(BigInteger.valueOf(4), BigInteger.valueOf(-6)), "-2/3");
+        assertTrue(of(BigInteger.valueOf(4), BigInteger.valueOf(4)) == ONE);
+        aeq(of(BigInteger.valueOf(4), BigInteger.valueOf(1)), "4");
+        assertTrue(of(BigInteger.valueOf(0), BigInteger.valueOf(1)) == ZERO);
         try {
-            Rational.of(BigInteger.valueOf(1), BigInteger.ZERO);
+            of(BigInteger.valueOf(1), BigInteger.ZERO);
             fail();
         } catch (ArithmeticException e) {}
     }
 
     @Test
     public void testOf_Int_Int() {
-        aeq(Rational.of(2, 3), "2/3");
-        aeq(Rational.of(4, 6), "2/3");
-        aeq(Rational.of(-4, -6), "2/3");
-        aeq(Rational.of(4, -6), "-2/3");
-        assertTrue(Rational.of(4, 4) == Rational.ONE);
-        aeq(Rational.of(4, 1), "4");
-        assertTrue(Rational.of(0, 1) == Rational.ZERO);
+        aeq(of(2, 3), "2/3");
+        aeq(of(4, 6), "2/3");
+        aeq(of(-4, -6), "2/3");
+        aeq(of(4, -6), "-2/3");
+        assertTrue(of(4, 4) == ONE);
+        aeq(of(4, 1), "4");
+        assertTrue(of(0, 1) == ZERO);
         try {
-            Rational.of(1, 0);
+            of(1, 0);
             fail();
         } catch (ArithmeticException e) {}
     }
 
     @Test
     public void testOf_BigInteger() {
-        aeq(Rational.of(BigInteger.valueOf(23)), "23");
-        aeq(Rational.of(BigInteger.valueOf(-23)), "-23");
-        assertTrue(Rational.of(BigInteger.valueOf(0)) == Rational.ZERO);
-        assertTrue(Rational.of(BigInteger.valueOf(1)) == Rational.ONE);
+        aeq(of(BigInteger.valueOf(23)), "23");
+        aeq(of(BigInteger.valueOf(-23)), "-23");
+        assertTrue(of(BigInteger.valueOf(0)) == ZERO);
+        assertTrue(of(BigInteger.valueOf(1)) == ONE);
     }
 
     @Test
     public void testOf_Int() {
-        aeq(Rational.of(23), "23");
-        aeq(Rational.of(-23), "-23");
-        assertTrue(Rational.of(0) == Rational.ZERO);
-        assertTrue(Rational.of(1) == Rational.ONE);
+        aeq(of(23), "23");
+        aeq(of(-23), "-23");
+        assertTrue(of(0) == ZERO);
+        assertTrue(of(1) == ONE);
     }
 
     @Test
     public void testOf_Float() {
-        assertTrue(Rational.of(0.0f) == Rational.ZERO);
-        assertTrue(Rational.of(1.0f) == Rational.ONE);
-        aeq(Rational.of(13.0f), "13");
-        aeq(Rational.of(-5.0f), "-5");
-        aeq(Rational.of(1.5f), "3/2");
-        aeq(Rational.of(0.15625f), "5/32");
-        aeq(Rational.of(0.1f), "13421773/134217728");
-        aeq(Rational.of(1.0f / 3.0f), "11184811/33554432");
-        aeq(Rational.of(1e10f), "10000000000");
-        aeq(Rational.of(1e30f), "1000000015047466219876688855040");
-        aeq(Rational.of((float) Math.PI), "13176795/4194304");
-        aeq(Rational.of((float) Math.E), "2850325/1048576");
-        aeq(Rational.of((float) Math.sqrt(2)), "11863283/8388608");
-        aeq(Rational.of(Float.MIN_VALUE), Rational.SMALLEST_FLOAT);
-        aeq(Rational.of(-Float.MIN_VALUE), Rational.SMALLEST_FLOAT.negate());
-        aeq(Rational.of(Float.MIN_NORMAL), Rational.SMALLEST_NORMAL_FLOAT);
-        aeq(Rational.of(-Float.MIN_NORMAL), Rational.SMALLEST_NORMAL_FLOAT.negate());
-        aeq(Rational.of(Float.MAX_VALUE), Rational.LARGEST_FLOAT);
-        aeq(Rational.of(-Float.MAX_VALUE), Rational.LARGEST_FLOAT.negate());
-        assertNull(Rational.of(Float.POSITIVE_INFINITY));
-        assertNull(Rational.of(Float.NEGATIVE_INFINITY));
-        assertNull(Rational.of(Float.NaN));
+        assertTrue(of(0.0f) == ZERO);
+        assertTrue(of(1.0f) == ONE);
+        aeq(of(13.0f), "13");
+        aeq(of(-5.0f), "-5");
+        aeq(of(1.5f), "3/2");
+        aeq(of(0.15625f), "5/32");
+        aeq(of(0.1f), "13421773/134217728");
+        aeq(of(1.0f / 3.0f), "11184811/33554432");
+        aeq(of(1e10f), "10000000000");
+        aeq(of(1e30f), "1000000015047466219876688855040");
+        aeq(of((float) Math.PI), "13176795/4194304");
+        aeq(of((float) Math.E), "2850325/1048576");
+        aeq(of((float) Math.sqrt(2)), "11863283/8388608");
+        aeq(of(Float.MIN_VALUE), SMALLEST_FLOAT);
+        aeq(of(-Float.MIN_VALUE), SMALLEST_FLOAT.negate());
+        aeq(of(Float.MIN_NORMAL), SMALLEST_NORMAL_FLOAT);
+        aeq(of(-Float.MIN_NORMAL), SMALLEST_NORMAL_FLOAT.negate());
+        aeq(of(Float.MAX_VALUE), LARGEST_FLOAT);
+        aeq(of(-Float.MAX_VALUE), LARGEST_FLOAT.negate());
+        assertNull(of(Float.POSITIVE_INFINITY));
+        assertNull(of(Float.NEGATIVE_INFINITY));
+        assertNull(of(Float.NaN));
     }
 
     @Test
     public void testOf_Double() {
-        assertTrue(Rational.of(0.0) == Rational.ZERO);
-        assertTrue(Rational.of(1.0) == Rational.ONE);
-        aeq(Rational.of(13.0), "13");
-        aeq(Rational.of(-5.0), "-5");
-        aeq(Rational.of(1.5), "3/2");
-        aeq(Rational.of(0.15625), "5/32");
-        aeq(Rational.of(0.1), "3602879701896397/36028797018963968");
-        aeq(Rational.of(1.0/3.0), "6004799503160661/18014398509481984");
-        aeq(Rational.of(1e10), "10000000000");
-        aeq(Rational.of(1e30), "1000000000000000019884624838656");
-        aeq(Rational.of(Math.PI), "884279719003555/281474976710656");
-        aeq(Rational.of(Math.E), "6121026514868073/2251799813685248");
-        aeq(Rational.of(Math.sqrt(2)), "6369051672525773/4503599627370496");
-        aeq(Rational.of(Double.MIN_VALUE), Rational.SMALLEST_DOUBLE);
-        aeq(Rational.of(-Double.MIN_VALUE), Rational.SMALLEST_DOUBLE.negate());
-        aeq(Rational.of(Double.MIN_NORMAL), Rational.SMALLEST_NORMAL_DOUBLE);
-        aeq(Rational.of(-Double.MIN_NORMAL), Rational.SMALLEST_NORMAL_DOUBLE.negate());
-        aeq(Rational.of(Double.MAX_VALUE), Rational.LARGEST_DOUBLE);
-        aeq(Rational.of(-Double.MAX_VALUE), Rational.LARGEST_DOUBLE.negate());
-        assertNull(Rational.of(Double.POSITIVE_INFINITY));
-        assertNull(Rational.of(Double.NEGATIVE_INFINITY));
-        assertNull(Rational.of(Double.NaN));
+        assertTrue(of(0.0) == ZERO);
+        assertTrue(of(1.0) == ONE);
+        aeq(of(13.0), "13");
+        aeq(of(-5.0), "-5");
+        aeq(of(1.5), "3/2");
+        aeq(of(0.15625), "5/32");
+        aeq(of(0.1), "3602879701896397/36028797018963968");
+        aeq(of(1.0 / 3.0), "6004799503160661/18014398509481984");
+        aeq(of(1e10), "10000000000");
+        aeq(of(1e30), "1000000000000000019884624838656");
+        aeq(of(Math.PI), "884279719003555/281474976710656");
+        aeq(of(Math.E), "6121026514868073/2251799813685248");
+        aeq(of(Math.sqrt(2)), "6369051672525773/4503599627370496");
+        aeq(of(Double.MIN_VALUE), SMALLEST_DOUBLE);
+        aeq(of(-Double.MIN_VALUE), SMALLEST_DOUBLE.negate());
+        aeq(of(Double.MIN_NORMAL), SMALLEST_NORMAL_DOUBLE);
+        aeq(of(-Double.MIN_NORMAL), SMALLEST_NORMAL_DOUBLE.negate());
+        aeq(of(Double.MAX_VALUE), LARGEST_DOUBLE);
+        aeq(of(-Double.MAX_VALUE), LARGEST_DOUBLE.negate());
+        assertNull(of(Double.POSITIVE_INFINITY));
+        assertNull(of(Double.NEGATIVE_INFINITY));
+        assertNull(of(Double.NaN));
     }
 
     @Test
     public void testOf_BigDecimal() {
-        assertTrue(Rational.of(BigDecimal.ZERO) == Rational.ZERO);
-        assertTrue(Rational.of(BigDecimal.ONE) == Rational.ONE);
-        aeq(Rational.of(new BigDecimal("3")), "3");
-        aeq(Rational.of(new BigDecimal("-5")), "-5");
-        aeq(Rational.of(new BigDecimal("0.1")), "1/10");
-        aeq(Rational.of(new BigDecimal("3.14159")), "314159/100000");
-        aeq(Rational.of(new BigDecimal("-2.718281828459045")), "-543656365691809/200000000000000");
-        aeq(Rational.of(new BigDecimal("0.00000000000001")), "1/100000000000000");
-        aeq(Rational.of(new BigDecimal("1000000000000000")), "1000000000000000");
+        assertTrue(of(BigDecimal.ZERO) == ZERO);
+        assertTrue(of(BigDecimal.ONE) == ONE);
+        aeq(of(new BigDecimal("3")), "3");
+        aeq(of(new BigDecimal("-5")), "-5");
+        aeq(of(new BigDecimal("0.1")), "1/10");
+        aeq(of(new BigDecimal("3.14159")), "314159/100000");
+        aeq(of(new BigDecimal("-2.718281828459045")), "-543656365691809/200000000000000");
+        aeq(of(new BigDecimal("0.00000000000001")), "1/100000000000000");
+        aeq(of(new BigDecimal("1000000000000000")), "1000000000000000");
     }
 
     @Test
     public void testNegate() {
-        aeq(Rational.read("2/3").get().negate(), "-2/3");
-        aeq(Rational.read("-2/3").get().negate(), "2/3");
-        aeq(Rational.read("4").get().negate(), "-4");
-        aeq(Rational.read("-4").get().negate(), "4");
-        assertTrue(Rational.ZERO.negate() == Rational.ZERO);
-        aeq(Rational.ONE.negate(), "-1");
-        assertTrue(Rational.read("-1").get().negate() == Rational.ONE);
+        aeq(read("2/3").get().negate(), "-2/3");
+        aeq(read("-2/3").get().negate(), "2/3");
+        aeq(read("4").get().negate(), "-4");
+        aeq(read("-4").get().negate(), "4");
+        assertTrue(ZERO.negate() == ZERO);
+        aeq(ONE.negate(), "-1");
+        assertTrue(read("-1").get().negate() == ONE);
     }
 
     @Test
     public void testInvert() {
-        aeq(Rational.read("2/3").get().invert(), "3/2");
-        aeq(Rational.read("-2/3").get().invert(), "-3/2");
-        aeq(Rational.read("4").get().invert(), "1/4");
-        aeq(Rational.read("1/4").get().invert(), "4");
-        assertTrue(Rational.ONE.invert() == Rational.ONE);
+        aeq(read("2/3").get().invert(), "3/2");
+        aeq(read("-2/3").get().invert(), "-3/2");
+        aeq(read("4").get().invert(), "1/4");
+        aeq(read("1/4").get().invert(), "4");
+        assertTrue(ONE.invert() == ONE);
         try {
-            Rational.ZERO.invert();
+            ZERO.invert();
             fail();
         } catch (ArithmeticException e) {}
     }
 
     @Test
     public void testAbs() {
-        aeq(Rational.read("2/3").get().abs(), "2/3");
-        aeq(Rational.read("-2/3").get().abs(), "2/3");
-        aeq(Rational.read("4").get().abs(), "4");
-        aeq(Rational.read("-4").get().abs(), "4");
-        aeq(Rational.ZERO.abs(), "0");
-        aeq(Rational.ONE.abs(), "1");
+        aeq(read("2/3").get().abs(), "2/3");
+        aeq(read("-2/3").get().abs(), "2/3");
+        aeq(read("4").get().abs(), "4");
+        aeq(read("-4").get().abs(), "4");
+        aeq(ZERO.abs(), "0");
+        aeq(ONE.abs(), "1");
     }
 
     @Test
     public void testSignum() {
-        aeq(Rational.read("2/3").get().signum(), 1);
-        aeq(Rational.read("-2/3").get().signum(), -1);
-        aeq(Rational.read("4").get().signum(), 1);
-        aeq(Rational.read("-4").get().signum(), -1);
-        aeq(Rational.ZERO.signum(), 0);
-        aeq(Rational.ONE.signum(), 1);
+        aeq(read("2/3").get().signum(), 1);
+        aeq(read("-2/3").get().signum(), -1);
+        aeq(read("4").get().signum(), 1);
+        aeq(read("-4").get().signum(), -1);
+        aeq(ZERO.signum(), 0);
+        aeq(ONE.signum(), 1);
     }
 
     @Test
     public void testAdd() {
-        aeq(Rational.add(Rational.read("1/2").get(), Rational.read("1/3").get()), "5/6");
-        aeq(Rational.add(Rational.read("1/2").get(), Rational.read("-1/3").get()), "1/6");
-        aeq(Rational.add(Rational.read("-1/2").get(), Rational.read("1/3").get()), "-1/6");
-        aeq(Rational.add(Rational.read("-1/2").get(), Rational.read("-1/3").get()), "-5/6");
-        aeq(Rational.add(Rational.read("2").get(), Rational.read("1/5").get()), "11/5");
-        aeq(Rational.add(Rational.read("2").get(), Rational.read("-1/5").get()), "9/5");
-        aeq(Rational.add(Rational.read("-2").get(), Rational.read("1/5").get()), "-9/5");
-        aeq(Rational.add(Rational.read("-2").get(), Rational.read("-1/5").get()), "-11/5");
-        aeq(Rational.add(Rational.read("2").get(), Rational.read("5").get()), "7");
-        aeq(Rational.add(Rational.read("2").get(), Rational.read("-5").get()), "-3");
-        aeq(Rational.add(Rational.read("-2").get(), Rational.read("5").get()), "3");
-        aeq(Rational.add(Rational.read("-2").get(), Rational.read("-5").get()), "-7");
-        assertTrue(Rational.add(Rational.read("6/7").get(), Rational.read("1/7").get()) == Rational.ONE);
-        assertTrue(Rational.add(Rational.read("6/7").get(), Rational.read("-6/7").get()) == Rational.ZERO);
-        aeq(Rational.add(Rational.read("1/2").get(), Rational.ZERO), "1/2");
-        aeq(Rational.add(Rational.read("-1/2").get(), Rational.ZERO), "-1/2");
-        aeq(Rational.add(Rational.read("1/2").get(), Rational.ONE), "3/2");
-        aeq(Rational.add(Rational.read("-1/2").get(), Rational.ONE), "1/2");
-        assertTrue(Rational.add(Rational.ZERO, Rational.ZERO) == Rational.ZERO);
-        assertTrue(Rational.add(Rational.ZERO, Rational.ONE) == Rational.ONE);
-        assertTrue(Rational.add(Rational.ONE, Rational.ZERO) == Rational.ONE);
-        aeq(Rational.add(Rational.ONE, Rational.ONE), "2");
+        aeq(add(read("1/2").get(), read("1/3").get()), "5/6");
+        aeq(add(read("1/2").get(), read("-1/3").get()), "1/6");
+        aeq(add(read("-1/2").get(), read("1/3").get()), "-1/6");
+        aeq(add(read("-1/2").get(), read("-1/3").get()), "-5/6");
+        aeq(add(read("2").get(), read("1/5").get()), "11/5");
+        aeq(add(read("2").get(), read("-1/5").get()), "9/5");
+        aeq(add(read("-2").get(), read("1/5").get()), "-9/5");
+        aeq(add(read("-2").get(), read("-1/5").get()), "-11/5");
+        aeq(add(read("2").get(), read("5").get()), "7");
+        aeq(add(read("2").get(), read("-5").get()), "-3");
+        aeq(add(read("-2").get(), read("5").get()), "3");
+        aeq(add(read("-2").get(), read("-5").get()), "-7");
+        assertTrue(add(read("6/7").get(), read("1/7").get()) == ONE);
+        assertTrue(add(read("6/7").get(), read("-6/7").get()) == ZERO);
+        aeq(add(read("1/2").get(), ZERO), "1/2");
+        aeq(add(read("-1/2").get(), ZERO), "-1/2");
+        aeq(add(read("1/2").get(), ONE), "3/2");
+        aeq(add(read("-1/2").get(), ONE), "1/2");
+        assertTrue(add(ZERO, ZERO) == ZERO);
+        assertTrue(add(ZERO, ONE) == ONE);
+        assertTrue(add(ONE, ZERO) == ONE);
+        aeq(add(ONE, ONE), "2");
     }
 
     @Test
     public void testSubtract() {
-        aeq(Rational.subtract(Rational.read("1/2").get(), Rational.read("1/3").get()), "1/6");
-        aeq(Rational.subtract(Rational.read("1/2").get(), Rational.read("-1/3").get()), "5/6");
-        aeq(Rational.subtract(Rational.read("-1/2").get(), Rational.read("1/3").get()), "-5/6");
-        aeq(Rational.subtract(Rational.read("-1/2").get(), Rational.read("-1/3").get()), "-1/6");
-        aeq(Rational.subtract(Rational.read("2").get(), Rational.read("1/5").get()), "9/5");
-        aeq(Rational.subtract(Rational.read("2").get(), Rational.read("-1/5").get()), "11/5");
-        aeq(Rational.subtract(Rational.read("-2").get(), Rational.read("1/5").get()), "-11/5");
-        aeq(Rational.subtract(Rational.read("-2").get(), Rational.read("-1/5").get()), "-9/5");
-        aeq(Rational.subtract(Rational.read("2").get(), Rational.read("5").get()), "-3");
-        aeq(Rational.subtract(Rational.read("2").get(), Rational.read("-5").get()), "7");
-        aeq(Rational.subtract(Rational.read("-2").get(), Rational.read("5").get()), "-7");
-        aeq(Rational.subtract(Rational.read("-2").get(), Rational.read("-5").get()), "3");
-        assertTrue(Rational.subtract(Rational.read("8/7").get(), Rational.read("1/7").get()) == Rational.ONE);
-        assertTrue(Rational.subtract(Rational.read("6/7").get(), Rational.read("6/7").get()) == Rational.ZERO);
-        aeq(Rational.subtract(Rational.read("1/2").get(), Rational.ZERO), "1/2");
-        aeq(Rational.subtract(Rational.read("-1/2").get(), Rational.ZERO), "-1/2");
-        aeq(Rational.subtract(Rational.read("1/2").get(), Rational.ONE), "-1/2");
-        aeq(Rational.subtract(Rational.read("-1/2").get(), Rational.ONE), "-3/2");
-        assertTrue(Rational.subtract(Rational.ZERO, Rational.ZERO) == Rational.ZERO);
-        aeq(Rational.subtract(Rational.ZERO, Rational.ONE), "-1");
-        assertTrue(Rational.subtract(Rational.ONE, Rational.ZERO) == Rational.ONE);
-        assertTrue(Rational.subtract(Rational.ONE, Rational.ONE) == Rational.ZERO);
+        aeq(subtract(read("1/2").get(), read("1/3").get()), "1/6");
+        aeq(subtract(read("1/2").get(), read("-1/3").get()), "5/6");
+        aeq(subtract(read("-1/2").get(), read("1/3").get()), "-5/6");
+        aeq(subtract(read("-1/2").get(), read("-1/3").get()), "-1/6");
+        aeq(subtract(read("2").get(), read("1/5").get()), "9/5");
+        aeq(subtract(read("2").get(), read("-1/5").get()), "11/5");
+        aeq(subtract(read("-2").get(), read("1/5").get()), "-11/5");
+        aeq(subtract(read("-2").get(), read("-1/5").get()), "-9/5");
+        aeq(subtract(read("2").get(), read("5").get()), "-3");
+        aeq(subtract(read("2").get(), read("-5").get()), "7");
+        aeq(subtract(read("-2").get(), read("5").get()), "-7");
+        aeq(subtract(read("-2").get(), read("-5").get()), "3");
+        assertTrue(subtract(read("8/7").get(), read("1/7").get()) == ONE);
+        assertTrue(subtract(read("6/7").get(), read("6/7").get()) == ZERO);
+        aeq(subtract(read("1/2").get(), ZERO), "1/2");
+        aeq(subtract(read("-1/2").get(), ZERO), "-1/2");
+        aeq(subtract(read("1/2").get(), ONE), "-1/2");
+        aeq(subtract(read("-1/2").get(), ONE), "-3/2");
+        assertTrue(subtract(ZERO, ZERO) == ZERO);
+        aeq(subtract(ZERO, ONE), "-1");
+        assertTrue(subtract(ONE, ZERO) == ONE);
+        assertTrue(subtract(ONE, ONE) == ZERO);
     }
 
     @Test
     public void testMultiply_Rational_Rational() {
-        aeq(Rational.multiply(Rational.read("2/3").get(), Rational.read("6/7").get()), "4/7");
-        aeq(Rational.multiply(Rational.read("2/3").get(), Rational.read("-6/7").get()), "-4/7");
-        aeq(Rational.multiply(Rational.read("-2/3").get(), Rational.read("6/7").get()), "-4/7");
-        aeq(Rational.multiply(Rational.read("-2/3").get(), Rational.read("-6/7").get()), "4/7");
-        aeq(Rational.multiply(Rational.read("2/3").get(), Rational.read("4").get()), "8/3");
-        aeq(Rational.multiply(Rational.read("2/3").get(), Rational.read("-4").get()), "-8/3");
-        aeq(Rational.multiply(Rational.read("-2/3").get(), Rational.read("4").get()), "-8/3");
-        aeq(Rational.multiply(Rational.read("-2/3").get(), Rational.read("-4").get()), "8/3");
-        aeq(Rational.multiply(Rational.read("3").get(), Rational.read("5").get()), "15");
-        aeq(Rational.multiply(Rational.read("3").get(), Rational.read("-5").get()), "-15");
-        aeq(Rational.multiply(Rational.read("-3").get(), Rational.read("5").get()), "-15");
-        aeq(Rational.multiply(Rational.read("-3").get(), Rational.read("-5").get()), "15");
-        assertTrue(Rational.multiply(Rational.read("1/4").get(), Rational.read("4").get()) == Rational.ONE);
-        assertTrue(Rational.multiply(Rational.read("-1/4").get(), Rational.read("-4").get()) == Rational.ONE);
-        assertTrue(Rational.multiply(Rational.read("2/3").get(), Rational.ZERO) == Rational.ZERO);
-        assertTrue(Rational.multiply(Rational.read("-2/3").get(), Rational.ZERO) == Rational.ZERO);
-        aeq(Rational.multiply(Rational.read("2/3").get(), Rational.ONE), "2/3");
-        aeq(Rational.multiply(Rational.read("-2/3").get(), Rational.ONE), "-2/3");
-        assertTrue(Rational.multiply(Rational.ZERO, Rational.ZERO) == Rational.ZERO);
-        assertTrue(Rational.multiply(Rational.ZERO, Rational.ONE) == Rational.ZERO);
-        assertTrue(Rational.multiply(Rational.ONE, Rational.ZERO) == Rational.ZERO);
-        assertTrue(Rational.multiply(Rational.ONE, Rational.ONE) == Rational.ONE);
+        aeq(multiply(read("2/3").get(), read("6/7").get()), "4/7");
+        aeq(multiply(read("2/3").get(), read("-6/7").get()), "-4/7");
+        aeq(multiply(read("-2/3").get(), read("6/7").get()), "-4/7");
+        aeq(multiply(read("-2/3").get(), read("-6/7").get()), "4/7");
+        aeq(multiply(read("2/3").get(), read("4").get()), "8/3");
+        aeq(multiply(read("2/3").get(), read("-4").get()), "-8/3");
+        aeq(multiply(read("-2/3").get(), read("4").get()), "-8/3");
+        aeq(multiply(read("-2/3").get(), read("-4").get()), "8/3");
+        aeq(multiply(read("3").get(), read("5").get()), "15");
+        aeq(multiply(read("3").get(), read("-5").get()), "-15");
+        aeq(multiply(read("-3").get(), read("5").get()), "-15");
+        aeq(multiply(read("-3").get(), read("-5").get()), "15");
+        assertTrue(multiply(read("1/4").get(), read("4").get()) == ONE);
+        assertTrue(multiply(read("-1/4").get(), read("-4").get()) == ONE);
+        assertTrue(multiply(read("2/3").get(), ZERO) == ZERO);
+        assertTrue(multiply(read("-2/3").get(), ZERO) == ZERO);
+        aeq(multiply(read("2/3").get(), ONE), "2/3");
+        aeq(multiply(read("-2/3").get(), ONE), "-2/3");
+        assertTrue(multiply(ZERO, ZERO) == ZERO);
+        assertTrue(multiply(ZERO, ONE) == ZERO);
+        assertTrue(multiply(ONE, ZERO) == ZERO);
+        assertTrue(multiply(ONE, ONE) == ONE);
     }
 
     @Test
     public void multiply_BigInteger() {
-        aeq(Rational.read("2/3").get().multiply(BigInteger.valueOf(4)), "8/3");
-        aeq(Rational.read("2/3").get().multiply(BigInteger.valueOf(-4)), "-8/3");
-        aeq(Rational.read("-2/3").get().multiply(BigInteger.valueOf(4)), "-8/3");
-        aeq(Rational.read("-2/3").get().multiply(BigInteger.valueOf(-4)), "8/3");
-        aeq(Rational.read("2/3").get().multiply(BigInteger.valueOf(3)), "2");
-        aeq(Rational.read("2/3").get().multiply(BigInteger.valueOf(-3)), "-2");
-        aeq(Rational.read("-2/3").get().multiply(BigInteger.valueOf(3)), "-2");
-        aeq(Rational.read("-2/3").get().multiply(BigInteger.valueOf(-3)), "2");
-        assertTrue(Rational.read("2/3").get().multiply(BigInteger.ZERO) == Rational.ZERO);
-        aeq(Rational.read("2/3").get().multiply(BigInteger.ONE), "2/3");
+        aeq(read("2/3").get().multiply(BigInteger.valueOf(4)), "8/3");
+        aeq(read("2/3").get().multiply(BigInteger.valueOf(-4)), "-8/3");
+        aeq(read("-2/3").get().multiply(BigInteger.valueOf(4)), "-8/3");
+        aeq(read("-2/3").get().multiply(BigInteger.valueOf(-4)), "8/3");
+        aeq(read("2/3").get().multiply(BigInteger.valueOf(3)), "2");
+        aeq(read("2/3").get().multiply(BigInteger.valueOf(-3)), "-2");
+        aeq(read("-2/3").get().multiply(BigInteger.valueOf(3)), "-2");
+        aeq(read("-2/3").get().multiply(BigInteger.valueOf(-3)), "2");
+        assertTrue(read("2/3").get().multiply(BigInteger.ZERO) == ZERO);
+        aeq(read("2/3").get().multiply(BigInteger.ONE), "2/3");
     }
 
     @Test
     public void multiply_Int() {
-        aeq(Rational.read("2/3").get().multiply(4), "8/3");
-        aeq(Rational.read("2/3").get().multiply(-4), "-8/3");
-        aeq(Rational.read("-2/3").get().multiply(4), "-8/3");
-        aeq(Rational.read("-2/3").get().multiply(-4), "8/3");
-        aeq(Rational.read("2/3").get().multiply(3), "2");
-        aeq(Rational.read("2/3").get().multiply(-3), "-2");
-        aeq(Rational.read("-2/3").get().multiply(3), "-2");
-        aeq(Rational.read("-2/3").get().multiply(-3), "2");
-        assertTrue(Rational.read("2/3").get().multiply(0) == Rational.ZERO);
-        assertTrue(Rational.read("1/3").get().multiply(3) == Rational.ONE);
-        assertTrue(Rational.read("-1/3").get().multiply(-3) == Rational.ONE);
-        aeq(Rational.read("2/3").get().multiply(1), "2/3");
+        aeq(read("2/3").get().multiply(4), "8/3");
+        aeq(read("2/3").get().multiply(-4), "-8/3");
+        aeq(read("-2/3").get().multiply(4), "-8/3");
+        aeq(read("-2/3").get().multiply(-4), "8/3");
+        aeq(read("2/3").get().multiply(3), "2");
+        aeq(read("2/3").get().multiply(-3), "-2");
+        aeq(read("-2/3").get().multiply(3), "-2");
+        aeq(read("-2/3").get().multiply(-3), "2");
+        assertTrue(read("2/3").get().multiply(0) == ZERO);
+        assertTrue(read("1/3").get().multiply(3) == ONE);
+        assertTrue(read("-1/3").get().multiply(-3) == ONE);
+        aeq(read("2/3").get().multiply(1), "2/3");
     }
 
     @Test
     public void testDivide_Rational_Rational() {
-        aeq(Rational.divide(Rational.read("2/3").get(), Rational.read("6/7").get()), "7/9");
-        aeq(Rational.divide(Rational.read("2/3").get(), Rational.read("-6/7").get()), "-7/9");
-        aeq(Rational.divide(Rational.read("-2/3").get(), Rational.read("6/7").get()), "-7/9");
-        aeq(Rational.divide(Rational.read("-2/3").get(), Rational.read("-6/7").get()), "7/9");
-        aeq(Rational.divide(Rational.read("2/3").get(), Rational.read("4").get()), "1/6");
-        aeq(Rational.divide(Rational.read("2/3").get(), Rational.read("-4").get()), "-1/6");
-        aeq(Rational.divide(Rational.read("-2/3").get(), Rational.read("4").get()), "-1/6");
-        aeq(Rational.divide(Rational.read("-2/3").get(), Rational.read("-4").get()), "1/6");
-        aeq(Rational.divide(Rational.read("3").get(), Rational.read("5").get()), "3/5");
-        aeq(Rational.divide(Rational.read("3").get(), Rational.read("-5").get()), "-3/5");
-        aeq(Rational.divide(Rational.read("-3").get(), Rational.read("5").get()), "-3/5");
-        aeq(Rational.divide(Rational.read("-3").get(), Rational.read("-5").get()), "3/5");
-        aeq(Rational.divide(Rational.read("1/4").get(), Rational.read("4").get()), "1/16");
-        assertTrue(Rational.divide(Rational.read("2/3").get(), Rational.read("2/3").get()) == Rational.ONE);
-        assertTrue(Rational.divide(Rational.read("-2/3").get(), Rational.read("-2/3").get()) == Rational.ONE);
-        aeq(Rational.divide(Rational.read("2/3").get(), Rational.ONE), "2/3");
-        aeq(Rational.divide(Rational.read("-2/3").get(), Rational.ONE), "-2/3");
-        assertTrue(Rational.divide(Rational.ZERO, Rational.ONE) == Rational.ZERO);
-        assertTrue(Rational.divide(Rational.ONE, Rational.ONE) == Rational.ONE);
+        aeq(divide(read("2/3").get(), read("6/7").get()), "7/9");
+        aeq(divide(read("2/3").get(), read("-6/7").get()), "-7/9");
+        aeq(divide(read("-2/3").get(), read("6/7").get()), "-7/9");
+        aeq(divide(read("-2/3").get(), read("-6/7").get()), "7/9");
+        aeq(divide(read("2/3").get(), read("4").get()), "1/6");
+        aeq(divide(read("2/3").get(), read("-4").get()), "-1/6");
+        aeq(divide(read("-2/3").get(), read("4").get()), "-1/6");
+        aeq(divide(read("-2/3").get(), read("-4").get()), "1/6");
+        aeq(divide(read("3").get(), read("5").get()), "3/5");
+        aeq(divide(read("3").get(), read("-5").get()), "-3/5");
+        aeq(divide(read("-3").get(), read("5").get()), "-3/5");
+        aeq(divide(read("-3").get(), read("-5").get()), "3/5");
+        aeq(divide(read("1/4").get(), read("4").get()), "1/16");
+        assertTrue(divide(read("2/3").get(), read("2/3").get()) == ONE);
+        assertTrue(divide(read("-2/3").get(), read("-2/3").get()) == ONE);
+        aeq(divide(read("2/3").get(), ONE), "2/3");
+        aeq(divide(read("-2/3").get(), ONE), "-2/3");
+        assertTrue(divide(ZERO, ONE) == ZERO);
+        assertTrue(divide(ONE, ONE) == ONE);
         try {
-            Rational.divide(Rational.read("2/3").get(), Rational.ZERO);
+            divide(read("2/3").get(), ZERO);
             fail();
         } catch (ArithmeticException e) {}
         try {
-            Rational.divide(Rational.read("3").get(), Rational.ZERO);
+            divide(read("3").get(), ZERO);
             fail();
         } catch (ArithmeticException e) {}
         try {
-            Rational.divide(Rational.ONE, Rational.ZERO);
+            divide(ONE, ZERO);
             fail();
         } catch (ArithmeticException e) {}
         try {
-            Rational.divide(Rational.ZERO, Rational.ZERO);
+            divide(ZERO, ZERO);
             fail();
         } catch (ArithmeticException e) {}
     }
 
     @Test
     public void divide_BigInteger() {
-        aeq(Rational.read("2/3").get().divide(BigInteger.valueOf(4)), "1/6");
-        aeq(Rational.read("2/3").get().divide(BigInteger.valueOf(-4)), "-1/6");
-        aeq(Rational.read("-2/3").get().divide(BigInteger.valueOf(4)), "-1/6");
-        aeq(Rational.read("-2/3").get().divide(BigInteger.valueOf(-4)), "1/6");
-        aeq(Rational.read("2/3").get().divide(BigInteger.valueOf(3)), "2/9");
-        aeq(Rational.read("2/3").get().divide(BigInteger.valueOf(-3)), "-2/9");
-        aeq(Rational.read("-2/3").get().divide(BigInteger.valueOf(3)), "-2/9");
-        aeq(Rational.read("-2/3").get().divide(BigInteger.valueOf(-3)), "2/9");
-        aeq(Rational.read("2/3").get().divide(BigInteger.ONE), "2/3");
-        assertTrue(Rational.ZERO.divide(BigInteger.valueOf(3)) == Rational.ZERO);
-        assertTrue(Rational.read("5").get().divide(BigInteger.valueOf(5)) == Rational.ONE);
-        assertTrue(Rational.read("-5").get().divide(BigInteger.valueOf(-5)) == Rational.ONE);
+        aeq(read("2/3").get().divide(BigInteger.valueOf(4)), "1/6");
+        aeq(read("2/3").get().divide(BigInteger.valueOf(-4)), "-1/6");
+        aeq(read("-2/3").get().divide(BigInteger.valueOf(4)), "-1/6");
+        aeq(read("-2/3").get().divide(BigInteger.valueOf(-4)), "1/6");
+        aeq(read("2/3").get().divide(BigInteger.valueOf(3)), "2/9");
+        aeq(read("2/3").get().divide(BigInteger.valueOf(-3)), "-2/9");
+        aeq(read("-2/3").get().divide(BigInteger.valueOf(3)), "-2/9");
+        aeq(read("-2/3").get().divide(BigInteger.valueOf(-3)), "2/9");
+        aeq(read("2/3").get().divide(BigInteger.ONE), "2/3");
+        assertTrue(ZERO.divide(BigInteger.valueOf(3)) == ZERO);
+        assertTrue(read("5").get().divide(BigInteger.valueOf(5)) == ONE);
+        assertTrue(read("-5").get().divide(BigInteger.valueOf(-5)) == ONE);
         try {
-            Rational.read("2/3").get().divide(BigInteger.ZERO);
+            read("2/3").get().divide(BigInteger.ZERO);
             fail();
         } catch (ArithmeticException e) {}
     }
 
     @Test
     public void divide_Int() {
-        aeq(Rational.read("2/3").get().divide(4), "1/6");
-        aeq(Rational.read("2/3").get().divide(-4), "-1/6");
-        aeq(Rational.read("-2/3").get().divide(4), "-1/6");
-        aeq(Rational.read("-2/3").get().divide(-4), "1/6");
-        aeq(Rational.read("2/3").get().divide(3), "2/9");
-        aeq(Rational.read("2/3").get().divide(-3), "-2/9");
-        aeq(Rational.read("-2/3").get().divide(3), "-2/9");
-        aeq(Rational.read("-2/3").get().divide(-3), "2/9");
-        aeq(Rational.read("2/3").get().divide(1), "2/3");
-        assertTrue(Rational.ZERO.divide(3) == Rational.ZERO);
-        assertTrue(Rational.read("5").get().divide(5) == Rational.ONE);
-        assertTrue(Rational.read("-5").get().divide(-5) == Rational.ONE);
+        aeq(read("2/3").get().divide(4), "1/6");
+        aeq(read("2/3").get().divide(-4), "-1/6");
+        aeq(read("-2/3").get().divide(4), "-1/6");
+        aeq(read("-2/3").get().divide(-4), "1/6");
+        aeq(read("2/3").get().divide(3), "2/9");
+        aeq(read("2/3").get().divide(-3), "-2/9");
+        aeq(read("-2/3").get().divide(3), "-2/9");
+        aeq(read("-2/3").get().divide(-3), "2/9");
+        aeq(read("2/3").get().divide(1), "2/3");
+        assertTrue(ZERO.divide(3) == ZERO);
+        assertTrue(read("5").get().divide(5) == ONE);
+        assertTrue(read("-5").get().divide(-5) == ONE);
         try {
-            Rational.read("2/3").get().divide(0);
+            read("2/3").get().divide(0);
             fail();
         } catch (ArithmeticException e) {}
     }
 
     @Test
     public void testPow() {
-        assertTrue(Rational.read("2/3").get().pow(0) == Rational.ONE);
-        aeq(Rational.read("2/3").get().pow(1), "2/3");
-        aeq(Rational.read("2/3").get().pow(2), "4/9");
-        aeq(Rational.read("2/3").get().pow(3), "8/27");
-        aeq(Rational.read("2/3").get().pow(-1), "3/2");
-        aeq(Rational.read("2/3").get().pow(-2), "9/4");
-        aeq(Rational.read("2/3").get().pow(-3), "27/8");
-        aeq(Rational.read("-2/3").get().pow(0), "1");
-        aeq(Rational.read("-2/3").get().pow(1), "-2/3");
-        aeq(Rational.read("-2/3").get().pow(2), "4/9");
-        aeq(Rational.read("-2/3").get().pow(3), "-8/27");
-        aeq(Rational.read("-2/3").get().pow(-1), "-3/2");
-        aeq(Rational.read("-2/3").get().pow(-2), "9/4");
-        aeq(Rational.read("-2/3").get().pow(-3), "-27/8");
-        assertTrue(Rational.read("2").get().pow(0) == Rational.ONE);
-        aeq(Rational.read("2").get().pow(1), "2");
-        aeq(Rational.read("2").get().pow(2), "4");
-        aeq(Rational.read("2").get().pow(3), "8");
-        aeq(Rational.read("2").get().pow(-1), "1/2");
-        aeq(Rational.read("2").get().pow(-2), "1/4");
-        aeq(Rational.read("2").get().pow(-3), "1/8");
-        assertTrue(Rational.read("-2").get().pow(0) == Rational.ONE);
-        aeq(Rational.read("-2").get().pow(1), "-2");
-        aeq(Rational.read("-2").get().pow(2), "4");
-        aeq(Rational.read("-2").get().pow(3), "-8");
-        aeq(Rational.read("-2").get().pow(-1), "-1/2");
-        aeq(Rational.read("-2").get().pow(-2), "1/4");
-        aeq(Rational.read("-2").get().pow(-3), "-1/8");
-        assertTrue(Rational.ZERO.pow(0) == Rational.ONE);
-        assertTrue(Rational.ZERO.pow(1) == Rational.ZERO);
-        assertTrue(Rational.ZERO.pow(2) == Rational.ZERO);
-        assertTrue(Rational.ZERO.pow(3) == Rational.ZERO);
-        assertTrue(Rational.ONE.pow(0) == Rational.ONE);
-        assertTrue(Rational.ONE.pow(1) == Rational.ONE);
-        assertTrue(Rational.ONE.pow(2) == Rational.ONE);
-        assertTrue(Rational.ONE.pow(3) == Rational.ONE);
-        assertTrue(Rational.ONE.pow(-1) == Rational.ONE);
-        assertTrue(Rational.ONE.pow(-2) == Rational.ONE);
-        assertTrue(Rational.ONE.pow(-3) == Rational.ONE);
+        assertTrue(read("2/3").get().pow(0) == ONE);
+        aeq(read("2/3").get().pow(1), "2/3");
+        aeq(read("2/3").get().pow(2), "4/9");
+        aeq(read("2/3").get().pow(3), "8/27");
+        aeq(read("2/3").get().pow(-1), "3/2");
+        aeq(read("2/3").get().pow(-2), "9/4");
+        aeq(read("2/3").get().pow(-3), "27/8");
+        aeq(read("-2/3").get().pow(0), "1");
+        aeq(read("-2/3").get().pow(1), "-2/3");
+        aeq(read("-2/3").get().pow(2), "4/9");
+        aeq(read("-2/3").get().pow(3), "-8/27");
+        aeq(read("-2/3").get().pow(-1), "-3/2");
+        aeq(read("-2/3").get().pow(-2), "9/4");
+        aeq(read("-2/3").get().pow(-3), "-27/8");
+        assertTrue(read("2").get().pow(0) == ONE);
+        aeq(read("2").get().pow(1), "2");
+        aeq(read("2").get().pow(2), "4");
+        aeq(read("2").get().pow(3), "8");
+        aeq(read("2").get().pow(-1), "1/2");
+        aeq(read("2").get().pow(-2), "1/4");
+        aeq(read("2").get().pow(-3), "1/8");
+        assertTrue(read("-2").get().pow(0) == ONE);
+        aeq(read("-2").get().pow(1), "-2");
+        aeq(read("-2").get().pow(2), "4");
+        aeq(read("-2").get().pow(3), "-8");
+        aeq(read("-2").get().pow(-1), "-1/2");
+        aeq(read("-2").get().pow(-2), "1/4");
+        aeq(read("-2").get().pow(-3), "-1/8");
+        assertTrue(ZERO.pow(0) == ONE);
+        assertTrue(ZERO.pow(1) == ZERO);
+        assertTrue(ZERO.pow(2) == ZERO);
+        assertTrue(ZERO.pow(3) == ZERO);
+        assertTrue(ONE.pow(0) == ONE);
+        assertTrue(ONE.pow(1) == ONE);
+        assertTrue(ONE.pow(2) == ONE);
+        assertTrue(ONE.pow(3) == ONE);
+        assertTrue(ONE.pow(-1) == ONE);
+        assertTrue(ONE.pow(-2) == ONE);
+        assertTrue(ONE.pow(-3) == ONE);
         try {
-            Rational.ZERO.pow(-1);
+            ZERO.pow(-1);
             fail();
         } catch (ArithmeticException e) {}
         try {
-            Rational.ZERO.pow(-2);
+            ZERO.pow(-2);
             fail();
         } catch (ArithmeticException e) {}
         try {
-            Rational.ZERO.pow(-3);
+            ZERO.pow(-3);
             fail();
         } catch (ArithmeticException e) {}
     }
 
     @Test
     public void testFloor() {
-        aeq(Rational.read("7/3").get().floor(), 2);
-        aeq(Rational.read("5/3").get().floor(), 1);
-        aeq(Rational.read("2/3").get().floor(), 0);
-        aeq(Rational.read("-1/3").get().floor(), -1);
-        aeq(Rational.read("-4/3").get().floor(), -2);
-        aeq(Rational.read("4").get().floor(), 4);
-        aeq(Rational.read("-2").get().floor(), -2);
-        aeq(Rational.ZERO.floor(), 0);
-        aeq(Rational.ONE.floor(), 1);
+        aeq(read("7/3").get().floor(), 2);
+        aeq(read("5/3").get().floor(), 1);
+        aeq(read("2/3").get().floor(), 0);
+        aeq(read("-1/3").get().floor(), -1);
+        aeq(read("-4/3").get().floor(), -2);
+        aeq(read("4").get().floor(), 4);
+        aeq(read("-2").get().floor(), -2);
+        aeq(ZERO.floor(), 0);
+        aeq(ONE.floor(), 1);
     }
 
     @Test
     public void testCeiling() {
-        aeq(Rational.read("7/3").get().ceiling(), 3);
-        aeq(Rational.read("5/3").get().ceiling(), 2);
-        aeq(Rational.read("2/3").get().ceiling(), 1);
-        aeq(Rational.read("-1/3").get().ceiling(), 0);
-        aeq(Rational.read("-4/3").get().ceiling(), -1);
-        aeq(Rational.read("4").get().ceiling(), 4);
-        aeq(Rational.read("-2").get().ceiling(), -2);
-        aeq(Rational.ZERO.ceiling(), 0);
-        aeq(Rational.ONE.ceiling(), 1);
+        aeq(read("7/3").get().ceiling(), 3);
+        aeq(read("5/3").get().ceiling(), 2);
+        aeq(read("2/3").get().ceiling(), 1);
+        aeq(read("-1/3").get().ceiling(), 0);
+        aeq(read("-4/3").get().ceiling(), -1);
+        aeq(read("4").get().ceiling(), 4);
+        aeq(read("-2").get().ceiling(), -2);
+        aeq(ZERO.ceiling(), 0);
+        aeq(ONE.ceiling(), 1);
     }
 
     @Test
     public void testFractionalPart() {
-        aeq(Rational.read("7/3").get().fractionalPart(), "1/3");
-        aeq(Rational.read("5/3").get().fractionalPart(), "2/3");
-        aeq(Rational.read("2/3").get().fractionalPart(), "2/3");
-        aeq(Rational.read("-1/3").get().fractionalPart(), "2/3");
-        aeq(Rational.read("-4/3").get().fractionalPart(), "2/3");
-        assertTrue(Rational.read("4").get().fractionalPart() == Rational.ZERO);
-        assertTrue(Rational.read("-2").get().fractionalPart() == Rational.ZERO);
-        assertTrue(Rational.ZERO.fractionalPart() == Rational.ZERO);
-        assertTrue(Rational.ONE.fractionalPart() == Rational.ZERO);
+        aeq(read("7/3").get().fractionalPart(), "1/3");
+        aeq(read("5/3").get().fractionalPart(), "2/3");
+        aeq(read("2/3").get().fractionalPart(), "2/3");
+        aeq(read("-1/3").get().fractionalPart(), "2/3");
+        aeq(read("-4/3").get().fractionalPart(), "2/3");
+        assertTrue(read("4").get().fractionalPart() == ZERO);
+        assertTrue(read("-2").get().fractionalPart() == ZERO);
+        assertTrue(ZERO.fractionalPart() == ZERO);
+        assertTrue(ONE.fractionalPart() == ZERO);
     }
 
     @Test
     public void testRound() {
-        aeq(Rational.read("11/2").get().round(RoundingMode.UP), 6);
-        aeq(Rational.read("5/2").get().round(RoundingMode.UP), 3);
-        aeq(Rational.read("8/5").get().round(RoundingMode.UP), 2);
-        aeq(Rational.read("11/10").get().round(RoundingMode.UP), 2);
-        aeq(Rational.ONE.round(RoundingMode.UP), 1);
-        aeq(Rational.ZERO.round(RoundingMode.UP), 0);
-        aeq(Rational.read("-1").get().round(RoundingMode.UP), -1);
-        aeq(Rational.read("-11/10").get().round(RoundingMode.UP), -2);
-        aeq(Rational.read("-8/5").get().round(RoundingMode.UP), -2);
-        aeq(Rational.read("-5/2").get().round(RoundingMode.UP), -3);
-        aeq(Rational.read("-11/2").get().round(RoundingMode.UP), -6);
+        aeq(read("11/2").get().round(RoundingMode.UP), 6);
+        aeq(read("5/2").get().round(RoundingMode.UP), 3);
+        aeq(read("8/5").get().round(RoundingMode.UP), 2);
+        aeq(read("11/10").get().round(RoundingMode.UP), 2);
+        aeq(ONE.round(RoundingMode.UP), 1);
+        aeq(ZERO.round(RoundingMode.UP), 0);
+        aeq(read("-1").get().round(RoundingMode.UP), -1);
+        aeq(read("-11/10").get().round(RoundingMode.UP), -2);
+        aeq(read("-8/5").get().round(RoundingMode.UP), -2);
+        aeq(read("-5/2").get().round(RoundingMode.UP), -3);
+        aeq(read("-11/2").get().round(RoundingMode.UP), -6);
 
-        aeq(Rational.read("11/2").get().round(RoundingMode.DOWN), 5);
-        aeq(Rational.read("5/2").get().round(RoundingMode.DOWN), 2);
-        aeq(Rational.read("8/5").get().round(RoundingMode.DOWN), 1);
-        aeq(Rational.read("11/10").get().round(RoundingMode.DOWN), 1);
-        aeq(Rational.ONE.round(RoundingMode.DOWN), 1);
-        aeq(Rational.ZERO.round(RoundingMode.DOWN), 0);
-        aeq(Rational.read("-1").get().round(RoundingMode.DOWN), -1);
-        aeq(Rational.read("-11/10").get().round(RoundingMode.DOWN), -1);
-        aeq(Rational.read("-8/5").get().round(RoundingMode.DOWN), -1);
-        aeq(Rational.read("-5/2").get().round(RoundingMode.DOWN), -2);
-        aeq(Rational.read("-11/2").get().round(RoundingMode.DOWN), -5);
+        aeq(read("11/2").get().round(RoundingMode.DOWN), 5);
+        aeq(read("5/2").get().round(RoundingMode.DOWN), 2);
+        aeq(read("8/5").get().round(RoundingMode.DOWN), 1);
+        aeq(read("11/10").get().round(RoundingMode.DOWN), 1);
+        aeq(ONE.round(RoundingMode.DOWN), 1);
+        aeq(ZERO.round(RoundingMode.DOWN), 0);
+        aeq(read("-1").get().round(RoundingMode.DOWN), -1);
+        aeq(read("-11/10").get().round(RoundingMode.DOWN), -1);
+        aeq(read("-8/5").get().round(RoundingMode.DOWN), -1);
+        aeq(read("-5/2").get().round(RoundingMode.DOWN), -2);
+        aeq(read("-11/2").get().round(RoundingMode.DOWN), -5);
 
-        aeq(Rational.read("11/2").get().round(RoundingMode.CEILING), 6);
-        aeq(Rational.read("5/2").get().round(RoundingMode.CEILING), 3);
-        aeq(Rational.read("8/5").get().round(RoundingMode.CEILING), 2);
-        aeq(Rational.read("11/10").get().round(RoundingMode.CEILING), 2);
-        aeq(Rational.ONE.round(RoundingMode.CEILING), 1);
-        aeq(Rational.ZERO.round(RoundingMode.CEILING), 0);
-        aeq(Rational.read("-1").get().round(RoundingMode.CEILING), -1);
-        aeq(Rational.read("-11/10").get().round(RoundingMode.CEILING), -1);
-        aeq(Rational.read("-8/5").get().round(RoundingMode.CEILING), -1);
-        aeq(Rational.read("-5/2").get().round(RoundingMode.CEILING), -2);
-        aeq(Rational.read("-11/2").get().round(RoundingMode.CEILING), -5);
+        aeq(read("11/2").get().round(RoundingMode.CEILING), 6);
+        aeq(read("5/2").get().round(RoundingMode.CEILING), 3);
+        aeq(read("8/5").get().round(RoundingMode.CEILING), 2);
+        aeq(read("11/10").get().round(RoundingMode.CEILING), 2);
+        aeq(ONE.round(RoundingMode.CEILING), 1);
+        aeq(ZERO.round(RoundingMode.CEILING), 0);
+        aeq(read("-1").get().round(RoundingMode.CEILING), -1);
+        aeq(read("-11/10").get().round(RoundingMode.CEILING), -1);
+        aeq(read("-8/5").get().round(RoundingMode.CEILING), -1);
+        aeq(read("-5/2").get().round(RoundingMode.CEILING), -2);
+        aeq(read("-11/2").get().round(RoundingMode.CEILING), -5);
 
-        aeq(Rational.read("11/2").get().round(RoundingMode.FLOOR), 5);
-        aeq(Rational.read("5/2").get().round(RoundingMode.FLOOR), 2);
-        aeq(Rational.read("8/5").get().round(RoundingMode.FLOOR), 1);
-        aeq(Rational.read("11/10").get().round(RoundingMode.FLOOR), 1);
-        aeq(Rational.ONE.round(RoundingMode.FLOOR), 1);
-        aeq(Rational.ZERO.round(RoundingMode.FLOOR), 0);
-        aeq(Rational.read("-1").get().round(RoundingMode.FLOOR), -1);
-        aeq(Rational.read("-11/10").get().round(RoundingMode.FLOOR), -2);
-        aeq(Rational.read("-8/5").get().round(RoundingMode.FLOOR), -2);
-        aeq(Rational.read("-5/2").get().round(RoundingMode.FLOOR), -3);
-        aeq(Rational.read("-11/2").get().round(RoundingMode.FLOOR), -6);
+        aeq(read("11/2").get().round(RoundingMode.FLOOR), 5);
+        aeq(read("5/2").get().round(RoundingMode.FLOOR), 2);
+        aeq(read("8/5").get().round(RoundingMode.FLOOR), 1);
+        aeq(read("11/10").get().round(RoundingMode.FLOOR), 1);
+        aeq(ONE.round(RoundingMode.FLOOR), 1);
+        aeq(ZERO.round(RoundingMode.FLOOR), 0);
+        aeq(read("-1").get().round(RoundingMode.FLOOR), -1);
+        aeq(read("-11/10").get().round(RoundingMode.FLOOR), -2);
+        aeq(read("-8/5").get().round(RoundingMode.FLOOR), -2);
+        aeq(read("-5/2").get().round(RoundingMode.FLOOR), -3);
+        aeq(read("-11/2").get().round(RoundingMode.FLOOR), -6);
 
-        aeq(Rational.read("11/2").get().round(RoundingMode.HALF_UP), 6);
-        aeq(Rational.read("5/2").get().round(RoundingMode.HALF_UP), 3);
-        aeq(Rational.read("8/5").get().round(RoundingMode.HALF_UP), 2);
-        aeq(Rational.read("11/10").get().round(RoundingMode.HALF_UP), 1);
-        aeq(Rational.ONE.round(RoundingMode.HALF_UP), 1);
-        aeq(Rational.ZERO.round(RoundingMode.HALF_UP), 0);
-        aeq(Rational.read("-1").get().round(RoundingMode.HALF_UP), -1);
-        aeq(Rational.read("-11/10").get().round(RoundingMode.HALF_UP), -1);
-        aeq(Rational.read("-8/5").get().round(RoundingMode.HALF_UP), -2);
-        aeq(Rational.read("-5/2").get().round(RoundingMode.HALF_UP), -3);
-        aeq(Rational.read("-11/2").get().round(RoundingMode.HALF_UP), -6);
+        aeq(read("11/2").get().round(RoundingMode.HALF_UP), 6);
+        aeq(read("5/2").get().round(RoundingMode.HALF_UP), 3);
+        aeq(read("8/5").get().round(RoundingMode.HALF_UP), 2);
+        aeq(read("11/10").get().round(RoundingMode.HALF_UP), 1);
+        aeq(ONE.round(RoundingMode.HALF_UP), 1);
+        aeq(ZERO.round(RoundingMode.HALF_UP), 0);
+        aeq(read("-1").get().round(RoundingMode.HALF_UP), -1);
+        aeq(read("-11/10").get().round(RoundingMode.HALF_UP), -1);
+        aeq(read("-8/5").get().round(RoundingMode.HALF_UP), -2);
+        aeq(read("-5/2").get().round(RoundingMode.HALF_UP), -3);
+        aeq(read("-11/2").get().round(RoundingMode.HALF_UP), -6);
 
-        aeq(Rational.read("11/2").get().round(RoundingMode.HALF_DOWN), 5);
-        aeq(Rational.read("5/2").get().round(RoundingMode.HALF_DOWN), 2);
-        aeq(Rational.read("8/5").get().round(RoundingMode.HALF_DOWN), 2);
-        aeq(Rational.read("11/10").get().round(RoundingMode.HALF_DOWN), 1);
-        aeq(Rational.ONE.round(RoundingMode.HALF_DOWN), 1);
-        aeq(Rational.ZERO.round(RoundingMode.HALF_DOWN), 0);
-        aeq(Rational.read("-1").get().round(RoundingMode.HALF_DOWN), -1);
-        aeq(Rational.read("-11/10").get().round(RoundingMode.HALF_DOWN), -1);
-        aeq(Rational.read("-8/5").get().round(RoundingMode.HALF_DOWN), -2);
-        aeq(Rational.read("-5/2").get().round(RoundingMode.HALF_DOWN), -2);
-        aeq(Rational.read("-11/2").get().round(RoundingMode.HALF_DOWN), -5);
+        aeq(read("11/2").get().round(RoundingMode.HALF_DOWN), 5);
+        aeq(read("5/2").get().round(RoundingMode.HALF_DOWN), 2);
+        aeq(read("8/5").get().round(RoundingMode.HALF_DOWN), 2);
+        aeq(read("11/10").get().round(RoundingMode.HALF_DOWN), 1);
+        aeq(ONE.round(RoundingMode.HALF_DOWN), 1);
+        aeq(ZERO.round(RoundingMode.HALF_DOWN), 0);
+        aeq(read("-1").get().round(RoundingMode.HALF_DOWN), -1);
+        aeq(read("-11/10").get().round(RoundingMode.HALF_DOWN), -1);
+        aeq(read("-8/5").get().round(RoundingMode.HALF_DOWN), -2);
+        aeq(read("-5/2").get().round(RoundingMode.HALF_DOWN), -2);
+        aeq(read("-11/2").get().round(RoundingMode.HALF_DOWN), -5);
 
-        aeq(Rational.read("11/2").get().round(RoundingMode.HALF_EVEN), 6);
-        aeq(Rational.read("5/2").get().round(RoundingMode.HALF_EVEN), 2);
-        aeq(Rational.read("8/5").get().round(RoundingMode.HALF_EVEN), 2);
-        aeq(Rational.read("11/10").get().round(RoundingMode.HALF_EVEN), 1);
-        aeq(Rational.ONE.round(RoundingMode.HALF_EVEN), 1);
-        aeq(Rational.ZERO.round(RoundingMode.HALF_EVEN), 0);
-        aeq(Rational.read("-1").get().round(RoundingMode.HALF_EVEN), -1);
-        aeq(Rational.read("-11/10").get().round(RoundingMode.HALF_EVEN), -1);
-        aeq(Rational.read("-8/5").get().round(RoundingMode.HALF_EVEN), -2);
-        aeq(Rational.read("-5/2").get().round(RoundingMode.HALF_EVEN), -2);
-        aeq(Rational.read("-11/2").get().round(RoundingMode.HALF_EVEN), -6);
+        aeq(read("11/2").get().round(RoundingMode.HALF_EVEN), 6);
+        aeq(read("5/2").get().round(RoundingMode.HALF_EVEN), 2);
+        aeq(read("8/5").get().round(RoundingMode.HALF_EVEN), 2);
+        aeq(read("11/10").get().round(RoundingMode.HALF_EVEN), 1);
+        aeq(ONE.round(RoundingMode.HALF_EVEN), 1);
+        aeq(ZERO.round(RoundingMode.HALF_EVEN), 0);
+        aeq(read("-1").get().round(RoundingMode.HALF_EVEN), -1);
+        aeq(read("-11/10").get().round(RoundingMode.HALF_EVEN), -1);
+        aeq(read("-8/5").get().round(RoundingMode.HALF_EVEN), -2);
+        aeq(read("-5/2").get().round(RoundingMode.HALF_EVEN), -2);
+        aeq(read("-11/2").get().round(RoundingMode.HALF_EVEN), -6);
 
         try {
-            Rational.read("11/2").get().round(RoundingMode.UNNECESSARY);
+            read("11/2").get().round(RoundingMode.UNNECESSARY);
             fail();
         } catch (ArithmeticException e) {}
         try {
-            Rational.read("5/2").get().round(RoundingMode.UNNECESSARY);
+            read("5/2").get().round(RoundingMode.UNNECESSARY);
             fail();
         } catch (ArithmeticException e) {}
         try {
-            Rational.read("8/5").get().round(RoundingMode.UNNECESSARY);
+            read("8/5").get().round(RoundingMode.UNNECESSARY);
             fail();
         } catch (ArithmeticException e) {}
         try {
-            Rational.read("11/10").get().round(RoundingMode.UNNECESSARY);
+            read("11/10").get().round(RoundingMode.UNNECESSARY);
             fail();
         } catch (ArithmeticException e) {}
-        aeq(Rational.ONE.round(RoundingMode.UNNECESSARY), 1);
-        aeq(Rational.ZERO.round(RoundingMode.UNNECESSARY), 0);
-        aeq(Rational.read("-1").get().round(RoundingMode.UNNECESSARY), -1);
+        aeq(ONE.round(RoundingMode.UNNECESSARY), 1);
+        aeq(ZERO.round(RoundingMode.UNNECESSARY), 0);
+        aeq(read("-1").get().round(RoundingMode.UNNECESSARY), -1);
         try {
-            System.out.println(Rational.read("-11/10").get().round(RoundingMode.UNNECESSARY));
-            fail();
-        } catch (ArithmeticException e) {}
-        try {
-            System.out.println(Rational.read("-8/5").get().round(RoundingMode.UNNECESSARY));
+            System.out.println(read("-11/10").get().round(RoundingMode.UNNECESSARY));
             fail();
         } catch (ArithmeticException e) {}
         try {
-            System.out.println(Rational.read("-5/2").get().round(RoundingMode.UNNECESSARY));
+            System.out.println(read("-8/5").get().round(RoundingMode.UNNECESSARY));
             fail();
         } catch (ArithmeticException e) {}
         try {
-            System.out.println(Rational.read("-11/2").get().round(RoundingMode.UNNECESSARY));
+            System.out.println(read("-5/2").get().round(RoundingMode.UNNECESSARY));
+            fail();
+        } catch (ArithmeticException e) {}
+        try {
+            System.out.println(read("-11/2").get().round(RoundingMode.UNNECESSARY));
             fail();
         } catch (ArithmeticException e) {}
     }
 
     @Test
     public void testRoundToDenominator() {
-        Rational doublePi = Rational.of(Math.PI);
+        Rational doublePi = of(Math.PI);
         if (doublePi == null) {
             fail();
         }
@@ -638,7 +642,7 @@ public class RationalTest {
         aeq(doublePi.roundToDenominator(BigInteger.valueOf(10), RoundingMode.HALF_EVEN), "31/10");
         aeq(doublePi.roundToDenominator(BigInteger.valueOf(100), RoundingMode.HALF_EVEN), "157/50");
         aeq(doublePi.roundToDenominator(BigInteger.valueOf(1000), RoundingMode.HALF_EVEN), "1571/500");
-        aeq(Rational.read("3/10").get().roundToDenominator(BigInteger.valueOf(30), RoundingMode.UNNECESSARY), "3/10");
+        aeq(read("3/10").get().roundToDenominator(BigInteger.valueOf(30), RoundingMode.UNNECESSARY), "3/10");
         try {
             doublePi.roundToDenominator(BigInteger.ZERO, RoundingMode.HALF_EVEN);
             fail();
@@ -655,209 +659,209 @@ public class RationalTest {
 
     @Test
     public void testShiftLeft() {
-        aeq(Rational.read("7/12").get().shiftLeft(0), "7/12");
-        aeq(Rational.read("7/12").get().shiftLeft(1), "7/6");
-        aeq(Rational.read("7/12").get().shiftLeft(2), "7/3");
-        aeq(Rational.read("7/12").get().shiftLeft(3), "14/3");
-        aeq(Rational.read("7/12").get().shiftLeft(4), "28/3");
-        aeq(Rational.read("7/12").get().shiftLeft(-1), "7/24");
-        aeq(Rational.read("7/12").get().shiftLeft(-2), "7/48");
-        aeq(Rational.read("7/12").get().shiftLeft(-3), "7/96");
-        aeq(Rational.read("7/12").get().shiftLeft(-4), "7/192");
-        aeq(Rational.read("4/5").get().shiftLeft(0), "4/5");
-        aeq(Rational.read("4/5").get().shiftLeft(1), "8/5");
-        aeq(Rational.read("4/5").get().shiftLeft(2), "16/5");
-        aeq(Rational.read("4/5").get().shiftLeft(3), "32/5");
-        aeq(Rational.read("4/5").get().shiftLeft(4), "64/5");
-        aeq(Rational.read("4/5").get().shiftLeft(-1), "2/5");
-        aeq(Rational.read("4/5").get().shiftLeft(-2), "1/5");
-        aeq(Rational.read("4/5").get().shiftLeft(-3), "1/10");
-        aeq(Rational.read("4/5").get().shiftLeft(-4), "1/20");
-        assertTrue(Rational.ZERO.shiftLeft(4) == Rational.ZERO);
-        assertTrue(Rational.ONE.shiftLeft(0) == Rational.ONE);
-        aeq(Rational.ONE.shiftLeft(1), "2");
-        aeq(Rational.ONE.shiftLeft(2), "4");
-        aeq(Rational.ONE.shiftLeft(3), "8");
-        aeq(Rational.ONE.shiftLeft(4), "16");
-        aeq(Rational.ONE.shiftLeft(-1), "1/2");
-        aeq(Rational.ONE.shiftLeft(-2), "1/4");
-        aeq(Rational.ONE.shiftLeft(-3), "1/8");
-        aeq(Rational.ONE.shiftLeft(-4), "1/16");
-        aeq(Rational.read("-4/5").get().shiftLeft(0), "-4/5");
-        aeq(Rational.read("-4/5").get().shiftLeft(1), "-8/5");
-        aeq(Rational.read("-4/5").get().shiftLeft(2), "-16/5");
-        aeq(Rational.read("-4/5").get().shiftLeft(3), "-32/5");
-        aeq(Rational.read("-4/5").get().shiftLeft(4), "-64/5");
-        aeq(Rational.read("-4/5").get().shiftLeft(-1), "-2/5");
-        aeq(Rational.read("-4/5").get().shiftLeft(-2), "-1/5");
-        aeq(Rational.read("-4/5").get().shiftLeft(-3), "-1/10");
-        aeq(Rational.read("-4/5").get().shiftLeft(-4), "-1/20");
-        aeq(Rational.read("-1").get().shiftLeft(0), "-1");
-        aeq(Rational.read("-1").get().shiftLeft(1), "-2");
-        aeq(Rational.read("-1").get().shiftLeft(2), "-4");
-        aeq(Rational.read("-1").get().shiftLeft(3), "-8");
-        aeq(Rational.read("-1").get().shiftLeft(4), "-16");
-        aeq(Rational.read("-1").get().shiftLeft(-1), "-1/2");
-        aeq(Rational.read("-1").get().shiftLeft(-2), "-1/4");
-        aeq(Rational.read("-1").get().shiftLeft(-3), "-1/8");
-        aeq(Rational.read("-1").get().shiftLeft(-4), "-1/16");
+        aeq(read("7/12").get().shiftLeft(0), "7/12");
+        aeq(read("7/12").get().shiftLeft(1), "7/6");
+        aeq(read("7/12").get().shiftLeft(2), "7/3");
+        aeq(read("7/12").get().shiftLeft(3), "14/3");
+        aeq(read("7/12").get().shiftLeft(4), "28/3");
+        aeq(read("7/12").get().shiftLeft(-1), "7/24");
+        aeq(read("7/12").get().shiftLeft(-2), "7/48");
+        aeq(read("7/12").get().shiftLeft(-3), "7/96");
+        aeq(read("7/12").get().shiftLeft(-4), "7/192");
+        aeq(read("4/5").get().shiftLeft(0), "4/5");
+        aeq(read("4/5").get().shiftLeft(1), "8/5");
+        aeq(read("4/5").get().shiftLeft(2), "16/5");
+        aeq(read("4/5").get().shiftLeft(3), "32/5");
+        aeq(read("4/5").get().shiftLeft(4), "64/5");
+        aeq(read("4/5").get().shiftLeft(-1), "2/5");
+        aeq(read("4/5").get().shiftLeft(-2), "1/5");
+        aeq(read("4/5").get().shiftLeft(-3), "1/10");
+        aeq(read("4/5").get().shiftLeft(-4), "1/20");
+        assertTrue(ZERO.shiftLeft(4) == ZERO);
+        assertTrue(ONE.shiftLeft(0) == ONE);
+        aeq(ONE.shiftLeft(1), "2");
+        aeq(ONE.shiftLeft(2), "4");
+        aeq(ONE.shiftLeft(3), "8");
+        aeq(ONE.shiftLeft(4), "16");
+        aeq(ONE.shiftLeft(-1), "1/2");
+        aeq(ONE.shiftLeft(-2), "1/4");
+        aeq(ONE.shiftLeft(-3), "1/8");
+        aeq(ONE.shiftLeft(-4), "1/16");
+        aeq(read("-4/5").get().shiftLeft(0), "-4/5");
+        aeq(read("-4/5").get().shiftLeft(1), "-8/5");
+        aeq(read("-4/5").get().shiftLeft(2), "-16/5");
+        aeq(read("-4/5").get().shiftLeft(3), "-32/5");
+        aeq(read("-4/5").get().shiftLeft(4), "-64/5");
+        aeq(read("-4/5").get().shiftLeft(-1), "-2/5");
+        aeq(read("-4/5").get().shiftLeft(-2), "-1/5");
+        aeq(read("-4/5").get().shiftLeft(-3), "-1/10");
+        aeq(read("-4/5").get().shiftLeft(-4), "-1/20");
+        aeq(read("-1").get().shiftLeft(0), "-1");
+        aeq(read("-1").get().shiftLeft(1), "-2");
+        aeq(read("-1").get().shiftLeft(2), "-4");
+        aeq(read("-1").get().shiftLeft(3), "-8");
+        aeq(read("-1").get().shiftLeft(4), "-16");
+        aeq(read("-1").get().shiftLeft(-1), "-1/2");
+        aeq(read("-1").get().shiftLeft(-2), "-1/4");
+        aeq(read("-1").get().shiftLeft(-3), "-1/8");
+        aeq(read("-1").get().shiftLeft(-4), "-1/16");
     }
 
     @Test
     public void testShiftRight() {
-        aeq(Rational.read("7/12").get().shiftRight(0), "7/12");
-        aeq(Rational.read("7/12").get().shiftRight(1), "7/24");
-        aeq(Rational.read("7/12").get().shiftRight(2), "7/48");
-        aeq(Rational.read("7/12").get().shiftRight(3), "7/96");
-        aeq(Rational.read("7/12").get().shiftRight(4), "7/192");
-        aeq(Rational.read("7/12").get().shiftRight(-1), "7/6");
-        aeq(Rational.read("7/12").get().shiftRight(-2), "7/3");
-        aeq(Rational.read("7/12").get().shiftRight(-3), "14/3");
-        aeq(Rational.read("7/12").get().shiftRight(-4), "28/3");
-        aeq(Rational.read("4/5").get().shiftRight(0), "4/5");
-        aeq(Rational.read("4/5").get().shiftRight(1), "2/5");
-        aeq(Rational.read("4/5").get().shiftRight(2), "1/5");
-        aeq(Rational.read("4/5").get().shiftRight(3), "1/10");
-        aeq(Rational.read("4/5").get().shiftRight(4), "1/20");
-        aeq(Rational.read("4/5").get().shiftRight(-1), "8/5");
-        aeq(Rational.read("4/5").get().shiftRight(-2), "16/5");
-        aeq(Rational.read("4/5").get().shiftRight(-3), "32/5");
-        aeq(Rational.read("4/5").get().shiftRight(-4), "64/5");
-        assertTrue(Rational.ZERO.shiftRight(4) == Rational.ZERO);
-        assertTrue(Rational.ONE.shiftRight(0) == Rational.ONE);
-        aeq(Rational.ONE.shiftRight(1), "1/2");
-        aeq(Rational.ONE.shiftRight(2), "1/4");
-        aeq(Rational.ONE.shiftRight(3), "1/8");
-        aeq(Rational.ONE.shiftRight(4), "1/16");
-        aeq(Rational.ONE.shiftRight(-1), "2");
-        aeq(Rational.ONE.shiftRight(-2), "4");
-        aeq(Rational.ONE.shiftRight(-3), "8");
-        aeq(Rational.ONE.shiftRight(-4), "16");
-        aeq(Rational.read("-4/5").get().shiftRight(0), "-4/5");
-        aeq(Rational.read("-4/5").get().shiftRight(1), "-2/5");
-        aeq(Rational.read("-4/5").get().shiftRight(2), "-1/5");
-        aeq(Rational.read("-4/5").get().shiftRight(3), "-1/10");
-        aeq(Rational.read("-4/5").get().shiftRight(4), "-1/20");
-        aeq(Rational.read("-4/5").get().shiftRight(-1), "-8/5");
-        aeq(Rational.read("-4/5").get().shiftRight(-2), "-16/5");
-        aeq(Rational.read("-4/5").get().shiftRight(-3), "-32/5");
-        aeq(Rational.read("-4/5").get().shiftRight(-4), "-64/5");
-        aeq(Rational.read("-1").get().shiftRight(0), "-1");
-        aeq(Rational.read("-1").get().shiftRight(1), "-1/2");
-        aeq(Rational.read("-1").get().shiftRight(2), "-1/4");
-        aeq(Rational.read("-1").get().shiftRight(3), "-1/8");
-        aeq(Rational.read("-1").get().shiftRight(4), "-1/16");
-        aeq(Rational.read("-1").get().shiftRight(-1), "-2");
-        aeq(Rational.read("-1").get().shiftRight(-2), "-4");
-        aeq(Rational.read("-1").get().shiftRight(-3), "-8");
-        aeq(Rational.read("-1").get().shiftRight(-4), "-16");
+        aeq(read("7/12").get().shiftRight(0), "7/12");
+        aeq(read("7/12").get().shiftRight(1), "7/24");
+        aeq(read("7/12").get().shiftRight(2), "7/48");
+        aeq(read("7/12").get().shiftRight(3), "7/96");
+        aeq(read("7/12").get().shiftRight(4), "7/192");
+        aeq(read("7/12").get().shiftRight(-1), "7/6");
+        aeq(read("7/12").get().shiftRight(-2), "7/3");
+        aeq(read("7/12").get().shiftRight(-3), "14/3");
+        aeq(read("7/12").get().shiftRight(-4), "28/3");
+        aeq(read("4/5").get().shiftRight(0), "4/5");
+        aeq(read("4/5").get().shiftRight(1), "2/5");
+        aeq(read("4/5").get().shiftRight(2), "1/5");
+        aeq(read("4/5").get().shiftRight(3), "1/10");
+        aeq(read("4/5").get().shiftRight(4), "1/20");
+        aeq(read("4/5").get().shiftRight(-1), "8/5");
+        aeq(read("4/5").get().shiftRight(-2), "16/5");
+        aeq(read("4/5").get().shiftRight(-3), "32/5");
+        aeq(read("4/5").get().shiftRight(-4), "64/5");
+        assertTrue(ZERO.shiftRight(4) == ZERO);
+        assertTrue(ONE.shiftRight(0) == ONE);
+        aeq(ONE.shiftRight(1), "1/2");
+        aeq(ONE.shiftRight(2), "1/4");
+        aeq(ONE.shiftRight(3), "1/8");
+        aeq(ONE.shiftRight(4), "1/16");
+        aeq(ONE.shiftRight(-1), "2");
+        aeq(ONE.shiftRight(-2), "4");
+        aeq(ONE.shiftRight(-3), "8");
+        aeq(ONE.shiftRight(-4), "16");
+        aeq(read("-4/5").get().shiftRight(0), "-4/5");
+        aeq(read("-4/5").get().shiftRight(1), "-2/5");
+        aeq(read("-4/5").get().shiftRight(2), "-1/5");
+        aeq(read("-4/5").get().shiftRight(3), "-1/10");
+        aeq(read("-4/5").get().shiftRight(4), "-1/20");
+        aeq(read("-4/5").get().shiftRight(-1), "-8/5");
+        aeq(read("-4/5").get().shiftRight(-2), "-16/5");
+        aeq(read("-4/5").get().shiftRight(-3), "-32/5");
+        aeq(read("-4/5").get().shiftRight(-4), "-64/5");
+        aeq(read("-1").get().shiftRight(0), "-1");
+        aeq(read("-1").get().shiftRight(1), "-1/2");
+        aeq(read("-1").get().shiftRight(2), "-1/4");
+        aeq(read("-1").get().shiftRight(3), "-1/8");
+        aeq(read("-1").get().shiftRight(4), "-1/16");
+        aeq(read("-1").get().shiftRight(-1), "-2");
+        aeq(read("-1").get().shiftRight(-2), "-4");
+        aeq(read("-1").get().shiftRight(-3), "-8");
+        aeq(read("-1").get().shiftRight(-4), "-16");
     }
 
     @Test
     public void testBinaryExponent() {
-        aeq(Rational.read("1/3").get().binaryExponent(), -2);
-        aeq(Rational.read("100").get().binaryExponent(), 6);
-        aeq(Rational.read("127").get().binaryExponent(), 6);
-        aeq(Rational.read("128").get().binaryExponent(), 7);
-        aeq(Rational.read("129").get().binaryExponent(), 7);
-        aeq(Rational.read("1/127").get().binaryExponent(), -7);
-        aeq(Rational.read("1/128").get().binaryExponent(), -7);
-        aeq(Rational.read("1/129").get().binaryExponent(), -8);
-        aeq(Rational.ONE.binaryExponent(), 0);
+        aeq(read("1/3").get().binaryExponent(), -2);
+        aeq(read("100").get().binaryExponent(), 6);
+        aeq(read("127").get().binaryExponent(), 6);
+        aeq(read("128").get().binaryExponent(), 7);
+        aeq(read("129").get().binaryExponent(), 7);
+        aeq(read("1/127").get().binaryExponent(), -7);
+        aeq(read("1/128").get().binaryExponent(), -7);
+        aeq(read("1/129").get().binaryExponent(), -8);
+        aeq(ONE.binaryExponent(), 0);
     }
 
     @Test
     public void testToFloat() {
-        aeq(Rational.ZERO.toFloat(), 0.0);
-        aeq(Rational.ONE.toFloat(), 1.0);
-        aeq(Rational.read("1/2").get().toFloat(), 0.5);
-        aeq(Rational.read("1/3").get().toFloat(), 0.33333334);
-        aeq(Rational.read("-1/3").get().toFloat(), -0.33333334);
-        Rational almostOne = Rational.of(BigInteger.TEN.pow(1000).subtract(BigInteger.ONE), BigInteger.TEN.pow(1000));
+        aeq(ZERO.toFloat(), 0.0);
+        aeq(ONE.toFloat(), 1.0);
+        aeq(read("1/2").get().toFloat(), 0.5);
+        aeq(read("1/3").get().toFloat(), 0.33333334);
+        aeq(read("-1/3").get().toFloat(), -0.33333334);
+        Rational almostOne = of(BigInteger.TEN.pow(1000).subtract(BigInteger.ONE), BigInteger.TEN.pow(1000));
         aeq(almostOne.toFloat(), 1.0);
-        Rational floatPi = Rational.of((float) Math.PI);
+        Rational floatPi = of((float) Math.PI);
         if (floatPi == null) {
             fail();
         }
         aeq(floatPi.toFloat(), 3.1415927);
-        Rational trillion = Rational.of(BigInteger.TEN.pow(12));
+        Rational trillion = of(BigInteger.TEN.pow(12));
         aeq(trillion.toFloat(), 1.0E12);
-        Rational piSuccessor = Rational.of(Numbers.successor((float) Math.PI));
+        Rational piSuccessor = of(Numbers.successor((float) Math.PI));
         if (piSuccessor == null) {
             fail();
         }
-        Rational piPredecessor = Rational.of(Numbers.predecessor((float) Math.PI));
+        Rational piPredecessor = of(Numbers.predecessor((float) Math.PI));
         if (piPredecessor == null) {
             fail();
         }
-        Rational halfAbovePi = Rational.add(floatPi, piSuccessor).divide(2);
-        Rational halfBelowPi = Rational.add(floatPi, piPredecessor).divide(2);
-        Rational justAbovePi = Rational.add(floatPi.multiply(2), piSuccessor).divide(3);
-        Rational justBelowPi = Rational.add(floatPi.multiply(2), piPredecessor).divide(3);
+        Rational halfAbovePi = add(floatPi, piSuccessor).divide(2);
+        Rational halfBelowPi = add(floatPi, piPredecessor).divide(2);
+        Rational justAbovePi = add(floatPi.multiply(2), piSuccessor).divide(3);
+        Rational justBelowPi = add(floatPi.multiply(2), piPredecessor).divide(3);
         aeq(halfAbovePi.toFloat(), 3.141593);
         aeq(halfBelowPi.toFloat(), 3.1415925);
         aeq(justAbovePi.toFloat(), 3.1415927);
         aeq(justBelowPi.toFloat(), 3.1415927);
-        Rational subnormal = Rational.of(1e-40f);
+        Rational subnormal = of(1e-40f);
         if (subnormal == null) {
             fail();
         }
-        Rational subnormalSuccessor = Rational.of(Numbers.successor(1e-40f));
+        Rational subnormalSuccessor = of(Numbers.successor(1e-40f));
         if (subnormalSuccessor == null) {
             fail();
         }
-        Rational subnormalPredecessor = Rational.of(Numbers.predecessor(1e-40f));
+        Rational subnormalPredecessor = of(Numbers.predecessor(1e-40f));
         if (subnormalPredecessor == null) {
             fail();
         }
-        Rational halfAboveSubnormal = Rational.add(subnormal, subnormalSuccessor).divide(2);
-        Rational halfBelowSubnormal = Rational.add(subnormal, subnormalPredecessor).divide(2);
-        Rational justAboveSubnormal = Rational.add(subnormal.multiply(2), subnormalSuccessor).divide(3);
-        Rational justBelowSubnormal = Rational.add(subnormal.multiply(2), subnormalPredecessor).divide(3);
+        Rational halfAboveSubnormal = add(subnormal, subnormalSuccessor).divide(2);
+        Rational halfBelowSubnormal = add(subnormal, subnormalPredecessor).divide(2);
+        Rational justAboveSubnormal = add(subnormal.multiply(2), subnormalSuccessor).divide(3);
+        Rational justBelowSubnormal = add(subnormal.multiply(2), subnormalPredecessor).divide(3);
         aeq(subnormal.toFloat(), 1.0E-40);
         aeq(halfAboveSubnormal.toFloat(), 1.0E-40);
         aeq(halfBelowSubnormal.toFloat(), 1.0E-40);
         aeq(justAboveSubnormal.toFloat(), 1.0E-40);
         aeq(justBelowSubnormal.toFloat(), 1.0E-40);
-        Rational belowNegativeMax = Rational.subtract(Rational.LARGEST_FLOAT.negate(), Rational.ONE);
-        Rational negativeMaxSuccessor = Rational.of(Numbers.successor(-Float.MAX_VALUE));
+        Rational belowNegativeMax = subtract(LARGEST_FLOAT.negate(), ONE);
+        Rational negativeMaxSuccessor = of(Numbers.successor(-Float.MAX_VALUE));
         if (negativeMaxSuccessor == null) {
             fail();
         }
-        Rational halfAboveNegativeMax = Rational.add(Rational.LARGEST_FLOAT.negate(), negativeMaxSuccessor).divide(2);
-        Rational justAboveNegativeMax = Rational.add(
-                Rational.LARGEST_FLOAT.negate().multiply(2),
+        Rational halfAboveNegativeMax = add(LARGEST_FLOAT.negate(), negativeMaxSuccessor).divide(2);
+        Rational justAboveNegativeMax = add(
+                LARGEST_FLOAT.negate().multiply(2),
                 negativeMaxSuccessor
         ).divide(3);
         aeq(belowNegativeMax.toFloat(), Float.NEGATIVE_INFINITY);
         aeq(halfAboveNegativeMax.toFloat(), -3.4028233E38);
         aeq(justAboveNegativeMax.toFloat(), -3.4028235E38);
-        Rational aboveMax = Rational.add(Rational.LARGEST_FLOAT, Rational.ONE);
-        Rational maxPredecessor = Rational.of(Numbers.predecessor(Float.MAX_VALUE));
+        Rational aboveMax = add(LARGEST_FLOAT, ONE);
+        Rational maxPredecessor = of(Numbers.predecessor(Float.MAX_VALUE));
         if (maxPredecessor == null) {
             fail();
         }
-        Rational halfBelowMax = Rational.add(Rational.LARGEST_FLOAT, maxPredecessor).divide(2);
-        Rational justBelowMax = Rational.add(Rational.LARGEST_FLOAT.multiply(2), maxPredecessor).divide(3);
+        Rational halfBelowMax = add(LARGEST_FLOAT, maxPredecessor).divide(2);
+        Rational justBelowMax = add(LARGEST_FLOAT.multiply(2), maxPredecessor).divide(3);
         aeq(aboveMax.toFloat(), Float.POSITIVE_INFINITY);
         aeq(halfBelowMax.toFloat(), 3.4028233E38);
         aeq(justBelowMax.toFloat(), 3.4028235E38);
-        Rational halfAboveZero = Rational.SMALLEST_FLOAT.shiftRight(1);
-        Rational justAboveZero = Rational.SMALLEST_FLOAT.divide(3);
+        Rational halfAboveZero = SMALLEST_FLOAT.shiftRight(1);
+        Rational justAboveZero = SMALLEST_FLOAT.divide(3);
         Rational halfBelowZero = halfAboveZero.negate();
         Rational justBelowZero = justAboveZero.negate();
         aeq(halfBelowZero.toFloat(), -0.0);
         aeq(justBelowZero.toFloat(), -0.0);
         aeq(halfAboveZero.toFloat(), 0.0);
         aeq(justAboveZero.toFloat(), 0.0);
-        Rational boundary = Rational.add(
-                Rational.LARGEST_SUBNORMAL_FLOAT,
-                Rational.SMALLEST_NORMAL_FLOAT
+        Rational boundary = add(
+                LARGEST_SUBNORMAL_FLOAT,
+                SMALLEST_NORMAL_FLOAT
         ).shiftRight(1);
-        Rational halfBelowBoundary = Rational.add(Rational.LARGEST_SUBNORMAL_FLOAT, boundary).shiftRight(1);
-        Rational halfAboveBoundary = Rational.add(Rational.SMALLEST_NORMAL_FLOAT, boundary).shiftRight(1);
-        Rational justBelowBoundary = Rational.add(Rational.LARGEST_SUBNORMAL_FLOAT, boundary.shiftLeft(1)).divide(3);
-        Rational justAboveBoundary = Rational.add(Rational.SMALLEST_NORMAL_FLOAT, boundary.shiftLeft(1)).divide(3);
+        Rational halfBelowBoundary = add(LARGEST_SUBNORMAL_FLOAT, boundary).shiftRight(1);
+        Rational halfAboveBoundary = add(SMALLEST_NORMAL_FLOAT, boundary).shiftRight(1);
+        Rational justBelowBoundary = add(LARGEST_SUBNORMAL_FLOAT, boundary.shiftLeft(1)).divide(3);
+        Rational justAboveBoundary = add(SMALLEST_NORMAL_FLOAT, boundary.shiftLeft(1)).divide(3);
         aeq(boundary.toFloat(), 1.17549435E-38);
         aeq(halfBelowBoundary.toFloat(), 1.1754942E-38);
         aeq(justBelowBoundary.toFloat(), 1.1754942E-38);
@@ -867,53 +871,53 @@ public class RationalTest {
 
     @Test
     public void testToFloat_RoundingMode() {
-        aeq(Rational.ZERO.toFloat(RoundingMode.FLOOR), 0.0);
-        aeq(Rational.ZERO.toFloat(RoundingMode.CEILING), 0.0);
-        aeq(Rational.ZERO.toFloat(RoundingMode.DOWN), 0.0);
-        aeq(Rational.ZERO.toFloat(RoundingMode.UP), 0.0);
-        aeq(Rational.ZERO.toFloat(RoundingMode.HALF_DOWN), 0.0);
-        aeq(Rational.ZERO.toFloat(RoundingMode.HALF_UP), 0.0);
-        aeq(Rational.ZERO.toFloat(RoundingMode.HALF_EVEN), 0.0);
-        aeq(Rational.ZERO.toFloat(RoundingMode.UNNECESSARY), 0.0);
-        aeq(Rational.ONE.toFloat(RoundingMode.FLOOR), 1.0);
-        aeq(Rational.ONE.toFloat(RoundingMode.CEILING), 1.0);
-        aeq(Rational.ONE.toFloat(RoundingMode.DOWN), 1.0);
-        aeq(Rational.ONE.toFloat(RoundingMode.UP), 1.0);
-        aeq(Rational.ONE.toFloat(RoundingMode.HALF_DOWN), 1.0);
-        aeq(Rational.ONE.toFloat(RoundingMode.HALF_UP), 1.0);
-        aeq(Rational.ONE.toFloat(RoundingMode.HALF_EVEN), 1.0);
-        aeq(Rational.ONE.toFloat(RoundingMode.UNNECESSARY), 1.0);
-        aeq(Rational.read("1/2").get().toFloat(RoundingMode.FLOOR), 0.5);
-        aeq(Rational.read("1/2").get().toFloat(RoundingMode.CEILING), 0.5);
-        aeq(Rational.read("1/2").get().toFloat(RoundingMode.DOWN), 0.5);
-        aeq(Rational.read("1/2").get().toFloat(RoundingMode.UP), 0.5);
-        aeq(Rational.read("1/2").get().toFloat(RoundingMode.HALF_DOWN), 0.5);
-        aeq(Rational.read("1/2").get().toFloat(RoundingMode.HALF_UP), 0.5);
-        aeq(Rational.read("1/2").get().toFloat(RoundingMode.HALF_EVEN), 0.5);
-        aeq(Rational.read("1/2").get().toFloat(RoundingMode.UNNECESSARY), 0.5);
-        aeq(Rational.read("1/3").get().toFloat(RoundingMode.FLOOR), 0.3333333);
-        aeq(Rational.read("1/3").get().toFloat(RoundingMode.CEILING), 0.33333334);
-        aeq(Rational.read("1/3").get().toFloat(RoundingMode.DOWN), 0.3333333);
-        aeq(Rational.read("1/3").get().toFloat(RoundingMode.UP), 0.33333334);
-        aeq(Rational.read("1/3").get().toFloat(RoundingMode.HALF_DOWN), 0.33333334);
-        aeq(Rational.read("1/3").get().toFloat(RoundingMode.HALF_UP), 0.33333334);
-        aeq(Rational.read("1/3").get().toFloat(RoundingMode.HALF_EVEN), 0.33333334);
+        aeq(ZERO.toFloat(RoundingMode.FLOOR), 0.0);
+        aeq(ZERO.toFloat(RoundingMode.CEILING), 0.0);
+        aeq(ZERO.toFloat(RoundingMode.DOWN), 0.0);
+        aeq(ZERO.toFloat(RoundingMode.UP), 0.0);
+        aeq(ZERO.toFloat(RoundingMode.HALF_DOWN), 0.0);
+        aeq(ZERO.toFloat(RoundingMode.HALF_UP), 0.0);
+        aeq(ZERO.toFloat(RoundingMode.HALF_EVEN), 0.0);
+        aeq(ZERO.toFloat(RoundingMode.UNNECESSARY), 0.0);
+        aeq(ONE.toFloat(RoundingMode.FLOOR), 1.0);
+        aeq(ONE.toFloat(RoundingMode.CEILING), 1.0);
+        aeq(ONE.toFloat(RoundingMode.DOWN), 1.0);
+        aeq(ONE.toFloat(RoundingMode.UP), 1.0);
+        aeq(ONE.toFloat(RoundingMode.HALF_DOWN), 1.0);
+        aeq(ONE.toFloat(RoundingMode.HALF_UP), 1.0);
+        aeq(ONE.toFloat(RoundingMode.HALF_EVEN), 1.0);
+        aeq(ONE.toFloat(RoundingMode.UNNECESSARY), 1.0);
+        aeq(read("1/2").get().toFloat(RoundingMode.FLOOR), 0.5);
+        aeq(read("1/2").get().toFloat(RoundingMode.CEILING), 0.5);
+        aeq(read("1/2").get().toFloat(RoundingMode.DOWN), 0.5);
+        aeq(read("1/2").get().toFloat(RoundingMode.UP), 0.5);
+        aeq(read("1/2").get().toFloat(RoundingMode.HALF_DOWN), 0.5);
+        aeq(read("1/2").get().toFloat(RoundingMode.HALF_UP), 0.5);
+        aeq(read("1/2").get().toFloat(RoundingMode.HALF_EVEN), 0.5);
+        aeq(read("1/2").get().toFloat(RoundingMode.UNNECESSARY), 0.5);
+        aeq(read("1/3").get().toFloat(RoundingMode.FLOOR), 0.3333333);
+        aeq(read("1/3").get().toFloat(RoundingMode.CEILING), 0.33333334);
+        aeq(read("1/3").get().toFloat(RoundingMode.DOWN), 0.3333333);
+        aeq(read("1/3").get().toFloat(RoundingMode.UP), 0.33333334);
+        aeq(read("1/3").get().toFloat(RoundingMode.HALF_DOWN), 0.33333334);
+        aeq(read("1/3").get().toFloat(RoundingMode.HALF_UP), 0.33333334);
+        aeq(read("1/3").get().toFloat(RoundingMode.HALF_EVEN), 0.33333334);
         try {
-            Rational.read("1/3").get().toFloat(RoundingMode.UNNECESSARY);
+            read("1/3").get().toFloat(RoundingMode.UNNECESSARY);
             fail();
         } catch (ArithmeticException e) {}
-        aeq(Rational.read("-1/3").get().toFloat(RoundingMode.FLOOR), -0.33333334);
-        aeq(Rational.read("-1/3").get().toFloat(RoundingMode.CEILING), -0.3333333);
-        aeq(Rational.read("-1/3").get().toFloat(RoundingMode.DOWN), -0.3333333);
-        aeq(Rational.read("-1/3").get().toFloat(RoundingMode.UP), -0.33333334);
-        aeq(Rational.read("-1/3").get().toFloat(RoundingMode.HALF_DOWN), -0.33333334);
-        aeq(Rational.read("-1/3").get().toFloat(RoundingMode.HALF_UP), -0.33333334);
-        aeq(Rational.read("-1/3").get().toFloat(RoundingMode.HALF_EVEN), -0.33333334);
+        aeq(read("-1/3").get().toFloat(RoundingMode.FLOOR), -0.33333334);
+        aeq(read("-1/3").get().toFloat(RoundingMode.CEILING), -0.3333333);
+        aeq(read("-1/3").get().toFloat(RoundingMode.DOWN), -0.3333333);
+        aeq(read("-1/3").get().toFloat(RoundingMode.UP), -0.33333334);
+        aeq(read("-1/3").get().toFloat(RoundingMode.HALF_DOWN), -0.33333334);
+        aeq(read("-1/3").get().toFloat(RoundingMode.HALF_UP), -0.33333334);
+        aeq(read("-1/3").get().toFloat(RoundingMode.HALF_EVEN), -0.33333334);
         try {
-            Rational.read("-1/3").get().toFloat(RoundingMode.UNNECESSARY);
+            read("-1/3").get().toFloat(RoundingMode.UNNECESSARY);
             fail();
         } catch (ArithmeticException e) {}
-        Rational almostOne = Rational.of(BigInteger.TEN.pow(1000).subtract(BigInteger.ONE), BigInteger.TEN.pow(1000));
+        Rational almostOne = of(BigInteger.TEN.pow(1000).subtract(BigInteger.ONE), BigInteger.TEN.pow(1000));
         aeq(almostOne.toFloat(RoundingMode.FLOOR), 0.99999994);
         aeq(almostOne.toFloat(RoundingMode.CEILING), 1.0);
         aeq(almostOne.toFloat(RoundingMode.DOWN), 0.99999994);
@@ -925,7 +929,7 @@ public class RationalTest {
             almostOne.toFloat(RoundingMode.UNNECESSARY);
             fail();
         } catch (ArithmeticException e) {}
-        Rational floatPi = Rational.of((float) Math.PI);
+        Rational floatPi = of((float) Math.PI);
         if (floatPi == null) {
             fail();
         }
@@ -937,7 +941,7 @@ public class RationalTest {
         aeq(floatPi.toFloat(RoundingMode.HALF_UP), 3.1415927);
         aeq(floatPi.toFloat(RoundingMode.HALF_EVEN), 3.1415927);
         aeq(floatPi.toFloat(RoundingMode.UNNECESSARY), 3.1415927);
-        Rational trillion = Rational.of(BigInteger.TEN.pow(12));
+        Rational trillion = of(BigInteger.TEN.pow(12));
         aeq(trillion.toFloat(RoundingMode.FLOOR), 1.0E12);
         aeq(trillion.toFloat(RoundingMode.CEILING), 1.00000006E12);
         aeq(trillion.toFloat(RoundingMode.DOWN), 1.0E12);
@@ -949,18 +953,18 @@ public class RationalTest {
             trillion.toFloat(RoundingMode.UNNECESSARY);
             fail();
         } catch (ArithmeticException e) {}
-        Rational piSuccessor = Rational.of(Numbers.successor((float) Math.PI));
+        Rational piSuccessor = of(Numbers.successor((float) Math.PI));
         if (piSuccessor == null) {
             fail();
         }
-        Rational piPredecessor = Rational.of(Numbers.predecessor((float) Math.PI));
+        Rational piPredecessor = of(Numbers.predecessor((float) Math.PI));
         if (piPredecessor == null) {
             fail();
         }
-        Rational halfAbovePi = Rational.add(floatPi, piSuccessor).divide(2);
-        Rational halfBelowPi = Rational.add(floatPi, piPredecessor).divide(2);
-        Rational justAbovePi = Rational.add(floatPi.multiply(2), piSuccessor).divide(3);
-        Rational justBelowPi = Rational.add(floatPi.multiply(2), piPredecessor).divide(3);
+        Rational halfAbovePi = add(floatPi, piSuccessor).divide(2);
+        Rational halfBelowPi = add(floatPi, piPredecessor).divide(2);
+        Rational justAbovePi = add(floatPi.multiply(2), piSuccessor).divide(3);
+        Rational justBelowPi = add(floatPi.multiply(2), piPredecessor).divide(3);
         aeq(halfAbovePi.toFloat(RoundingMode.FLOOR), 3.1415927);
         aeq(halfAbovePi.toFloat(RoundingMode.CEILING), 3.141593);
         aeq(halfAbovePi.toFloat(RoundingMode.DOWN), 3.1415927);
@@ -1005,22 +1009,22 @@ public class RationalTest {
             justBelowPi.toFloat(RoundingMode.UNNECESSARY);
             fail();
         } catch (ArithmeticException e) {}
-        Rational subnormal = Rational.of(1e-40f);
+        Rational subnormal = of(1e-40f);
         if (subnormal == null) {
             fail();
         }
-        Rational subnormalSuccessor = Rational.of(Numbers.successor(1e-40f));
+        Rational subnormalSuccessor = of(Numbers.successor(1e-40f));
         if (subnormalSuccessor == null) {
             fail();
         }
-        Rational subnormalPredecessor = Rational.of(Numbers.predecessor(1e-40f));
+        Rational subnormalPredecessor = of(Numbers.predecessor(1e-40f));
         if (subnormalPredecessor == null) {
             fail();
         }
-        Rational halfAboveSubnormal = Rational.add(subnormal, subnormalSuccessor).divide(2);
-        Rational halfBelowSubnormal = Rational.add(subnormal, subnormalPredecessor).divide(2);
-        Rational justAboveSubnormal = Rational.add(subnormal.multiply(2), subnormalSuccessor).divide(3);
-        Rational justBelowSubnormal = Rational.add(subnormal.multiply(2), subnormalPredecessor).divide(3);
+        Rational halfAboveSubnormal = add(subnormal, subnormalSuccessor).divide(2);
+        Rational halfBelowSubnormal = add(subnormal, subnormalPredecessor).divide(2);
+        Rational justAboveSubnormal = add(subnormal.multiply(2), subnormalSuccessor).divide(3);
+        Rational justBelowSubnormal = add(subnormal.multiply(2), subnormalPredecessor).divide(3);
         aeq(subnormal.toFloat(RoundingMode.FLOOR), 1.0E-40);
         aeq(subnormal.toFloat(RoundingMode.CEILING), 1.0E-40);
         aeq(subnormal.toFloat(RoundingMode.DOWN), 1.0E-40);
@@ -1073,14 +1077,14 @@ public class RationalTest {
             justBelowSubnormal.toFloat(RoundingMode.UNNECESSARY);
             fail();
         } catch (ArithmeticException e) {}
-        Rational belowNegativeMax = Rational.subtract(Rational.LARGEST_FLOAT.negate(), Rational.ONE);
-        Rational negativeMaxSuccessor = Rational.of(Numbers.successor(-Float.MAX_VALUE));
+        Rational belowNegativeMax = subtract(LARGEST_FLOAT.negate(), ONE);
+        Rational negativeMaxSuccessor = of(Numbers.successor(-Float.MAX_VALUE));
         if (negativeMaxSuccessor == null) {
             fail();
         }
-        Rational halfAboveNegativeMax = Rational.add(Rational.LARGEST_FLOAT.negate(), negativeMaxSuccessor).divide(2);
-        Rational justAboveNegativeMax = Rational.add(
-                Rational.LARGEST_FLOAT.negate().multiply(2),
+        Rational halfAboveNegativeMax = add(LARGEST_FLOAT.negate(), negativeMaxSuccessor).divide(2);
+        Rational justAboveNegativeMax = add(
+                LARGEST_FLOAT.negate().multiply(2),
                 negativeMaxSuccessor
         ).divide(3);
         aeq(belowNegativeMax.toFloat(RoundingMode.FLOOR), Float.NEGATIVE_INFINITY);
@@ -1116,13 +1120,13 @@ public class RationalTest {
             justAboveNegativeMax.toFloat(RoundingMode.UNNECESSARY);
             fail();
         } catch (ArithmeticException e) {}
-        Rational aboveMax = Rational.add(Rational.LARGEST_FLOAT, Rational.ONE);
-        Rational maxPredecessor = Rational.of(Numbers.predecessor(Float.MAX_VALUE));
+        Rational aboveMax = add(LARGEST_FLOAT, ONE);
+        Rational maxPredecessor = of(Numbers.predecessor(Float.MAX_VALUE));
         if (maxPredecessor == null) {
             fail();
         }
-        Rational halfBelowMax = Rational.add(Rational.LARGEST_FLOAT, maxPredecessor).divide(2);
-        Rational justBelowMax = Rational.add(Rational.LARGEST_FLOAT.multiply(2), maxPredecessor).divide(3);
+        Rational halfBelowMax = add(LARGEST_FLOAT, maxPredecessor).divide(2);
+        Rational justBelowMax = add(LARGEST_FLOAT.multiply(2), maxPredecessor).divide(3);
         aeq(aboveMax.toFloat(RoundingMode.FLOOR), 3.4028235E38);
         aeq(aboveMax.toFloat(RoundingMode.CEILING), Float.POSITIVE_INFINITY);
         aeq(aboveMax.toFloat(RoundingMode.DOWN), 3.4028235E38);
@@ -1156,8 +1160,8 @@ public class RationalTest {
             justBelowMax.toFloat(RoundingMode.UNNECESSARY);
             fail();
         } catch (ArithmeticException e) {}
-        Rational halfAboveZero = Rational.SMALLEST_FLOAT.shiftRight(1);
-        Rational justAboveZero = Rational.SMALLEST_FLOAT.divide(3);
+        Rational halfAboveZero = SMALLEST_FLOAT.shiftRight(1);
+        Rational justAboveZero = SMALLEST_FLOAT.divide(3);
         Rational halfBelowZero = halfAboveZero.negate();
         Rational justBelowZero = justAboveZero.negate();
         aeq(halfBelowZero.toFloat(RoundingMode.FLOOR), -1.4E-45);
@@ -1204,14 +1208,14 @@ public class RationalTest {
             justAboveZero.toFloat(RoundingMode.UNNECESSARY);
             fail();
         } catch (ArithmeticException e) {}
-        Rational boundary = Rational.add(
-                Rational.LARGEST_SUBNORMAL_FLOAT,
-                Rational.SMALLEST_NORMAL_FLOAT
+        Rational boundary = add(
+                LARGEST_SUBNORMAL_FLOAT,
+                SMALLEST_NORMAL_FLOAT
         ).shiftRight(1);
-        Rational halfBelowBoundary = Rational.add(Rational.LARGEST_SUBNORMAL_FLOAT, boundary).shiftRight(1);
-        Rational halfAboveBoundary = Rational.add(Rational.SMALLEST_NORMAL_FLOAT, boundary).shiftRight(1);
-        Rational justBelowBoundary = Rational.add(Rational.LARGEST_SUBNORMAL_FLOAT, boundary.shiftLeft(1)).divide(3);
-        Rational justAboveBoundary = Rational.add(Rational.SMALLEST_NORMAL_FLOAT, boundary.shiftLeft(1)).divide(3);
+        Rational halfBelowBoundary = add(LARGEST_SUBNORMAL_FLOAT, boundary).shiftRight(1);
+        Rational halfAboveBoundary = add(SMALLEST_NORMAL_FLOAT, boundary).shiftRight(1);
+        Rational justBelowBoundary = add(LARGEST_SUBNORMAL_FLOAT, boundary.shiftLeft(1)).divide(3);
+        Rational justAboveBoundary = add(SMALLEST_NORMAL_FLOAT, boundary.shiftLeft(1)).divide(3);
         aeq(boundary.toFloat(RoundingMode.FLOOR), 1.1754942E-38);
         aeq(boundary.toFloat(RoundingMode.CEILING), 1.17549435E-38);
         aeq(boundary.toFloat(RoundingMode.DOWN), 1.1754942E-38);
@@ -1271,96 +1275,96 @@ public class RationalTest {
 
     @Test
     public void testToDouble() {
-        aeq(Rational.ZERO.toDouble(), 0.0);
-        aeq(Rational.ONE.toDouble(), 1.0);
-        aeq(Rational.read("1/2").get().toDouble(), 0.5);
-        aeq(Rational.read("1/3").get().toDouble(), 0.3333333333333333);
-        aeq(Rational.read("-1/3").get().toDouble(), -0.3333333333333333);
-        Rational almostOne = Rational.of(BigInteger.TEN.pow(1000).subtract(BigInteger.ONE), BigInteger.TEN.pow(1000));
+        aeq(ZERO.toDouble(), 0.0);
+        aeq(ONE.toDouble(), 1.0);
+        aeq(read("1/2").get().toDouble(), 0.5);
+        aeq(read("1/3").get().toDouble(), 0.3333333333333333);
+        aeq(read("-1/3").get().toDouble(), -0.3333333333333333);
+        Rational almostOne = of(BigInteger.TEN.pow(1000).subtract(BigInteger.ONE), BigInteger.TEN.pow(1000));
         aeq(almostOne.toDouble(), 1.0);
-        Rational pi = Rational.of(Math.PI);
+        Rational pi = of(Math.PI);
         if (pi == null) {
             fail();
         }
         aeq(pi.toDouble(), 3.141592653589793);
-        Rational googol = Rational.of(BigInteger.TEN.pow(100));
+        Rational googol = of(BigInteger.TEN.pow(100));
         aeq(googol.toDouble(), 1.0E100);
-        Rational piSuccessor = Rational.of(Numbers.successor(Math.PI));
+        Rational piSuccessor = of(Numbers.successor(Math.PI));
         if (piSuccessor == null) {
             fail();
         }
-        Rational piPredecessor = Rational.of(Numbers.predecessor(Math.PI));
+        Rational piPredecessor = of(Numbers.predecessor(Math.PI));
         if (piPredecessor == null) {
             fail();
         }
-        Rational halfAbovePi = Rational.add(pi, piSuccessor).divide(2);
-        Rational halfBelowPi = Rational.add(pi, piPredecessor).divide(2);
-        Rational justAbovePi = Rational.add(pi.multiply(2), piSuccessor).divide(3);
-        Rational justBelowPi = Rational.add(pi.multiply(2), piPredecessor).divide(3);
+        Rational halfAbovePi = add(pi, piSuccessor).divide(2);
+        Rational halfBelowPi = add(pi, piPredecessor).divide(2);
+        Rational justAbovePi = add(pi.multiply(2), piSuccessor).divide(3);
+        Rational justBelowPi = add(pi.multiply(2), piPredecessor).divide(3);
         aeq(halfAbovePi.toDouble(), 3.141592653589793);
         aeq(halfBelowPi.toDouble(), 3.141592653589793);
         aeq(justAbovePi.toDouble(), 3.141592653589793);
         aeq(justBelowPi.toDouble(), 3.141592653589793);
-        Rational subnormal = Rational.of(1e-310);
+        Rational subnormal = of(1e-310);
         if (subnormal == null) {
             fail();
         }
-        Rational subnormalSuccessor = Rational.of(Numbers.successor(1e-310));
+        Rational subnormalSuccessor = of(Numbers.successor(1e-310));
         if (subnormalSuccessor == null) {
             fail();
         }
-        Rational subnormalPredecessor = Rational.of(Numbers.predecessor(1e-310));
+        Rational subnormalPredecessor = of(Numbers.predecessor(1e-310));
         if (subnormalPredecessor == null) {
             fail();
         }
-        Rational halfAboveSubnormal = Rational.add(subnormal, subnormalSuccessor).divide(2);
-        Rational halfBelowSubnormal = Rational.add(subnormal, subnormalPredecessor).divide(2);
-        Rational justAboveSubnormal = Rational.add(subnormal.multiply(2), subnormalSuccessor).divide(3);
-        Rational justBelowSubnormal = Rational.add(subnormal.multiply(2), subnormalPredecessor).divide(3);
+        Rational halfAboveSubnormal = add(subnormal, subnormalSuccessor).divide(2);
+        Rational halfBelowSubnormal = add(subnormal, subnormalPredecessor).divide(2);
+        Rational justAboveSubnormal = add(subnormal.multiply(2), subnormalSuccessor).divide(3);
+        Rational justBelowSubnormal = add(subnormal.multiply(2), subnormalPredecessor).divide(3);
         aeq(subnormal.toDouble(), 1.0E-310);
         aeq(halfAboveSubnormal.toDouble(), 1.00000000000005E-310);
         aeq(halfBelowSubnormal.toDouble(), 9.9999999999995E-311);
         aeq(justAboveSubnormal.toDouble(), 1.0E-310);
         aeq(justBelowSubnormal.toDouble(), 1.0E-310);
-        Rational belowNegativeMax = Rational.subtract(Rational.LARGEST_DOUBLE.negate(), Rational.ONE);
-        Rational negativeMaxSuccessor = Rational.of(Numbers.successor(-Double.MAX_VALUE));
+        Rational belowNegativeMax = subtract(LARGEST_DOUBLE.negate(), ONE);
+        Rational negativeMaxSuccessor = of(Numbers.successor(-Double.MAX_VALUE));
         if (negativeMaxSuccessor == null) {
             fail();
         }
-        Rational halfAboveNegativeMax = Rational.add(Rational.LARGEST_DOUBLE.negate(), negativeMaxSuccessor).divide(2);
-        Rational justAboveNegativeMax = Rational.add(
-                Rational.LARGEST_DOUBLE.negate().multiply(2),
+        Rational halfAboveNegativeMax = add(LARGEST_DOUBLE.negate(), negativeMaxSuccessor).divide(2);
+        Rational justAboveNegativeMax = add(
+                LARGEST_DOUBLE.negate().multiply(2),
                 negativeMaxSuccessor
         ).divide(3);
         aeq(belowNegativeMax.toDouble(), Double.NEGATIVE_INFINITY);
         aeq(halfAboveNegativeMax.toDouble(), -1.7976931348623155E308);
         aeq(justAboveNegativeMax.toDouble(), -1.7976931348623157E308);
-        Rational aboveMax = Rational.add(Rational.LARGEST_DOUBLE, Rational.ONE);
-        Rational maxPredecessor = Rational.of(Numbers.predecessor(Double.MAX_VALUE));
+        Rational aboveMax = add(LARGEST_DOUBLE, ONE);
+        Rational maxPredecessor = of(Numbers.predecessor(Double.MAX_VALUE));
         if (maxPredecessor == null) {
             fail();
         }
-        Rational halfBelowMax = Rational.add(Rational.LARGEST_DOUBLE, maxPredecessor).divide(2);
-        Rational justBelowMax = Rational.add(Rational.LARGEST_DOUBLE.multiply(2), maxPredecessor).divide(3);
+        Rational halfBelowMax = add(LARGEST_DOUBLE, maxPredecessor).divide(2);
+        Rational justBelowMax = add(LARGEST_DOUBLE.multiply(2), maxPredecessor).divide(3);
         aeq(aboveMax.toDouble(), Double.POSITIVE_INFINITY);
         aeq(halfBelowMax.toDouble(), 1.7976931348623155E308);
         aeq(justBelowMax.toDouble(), 1.7976931348623157E308);
-        Rational halfAboveZero = Rational.SMALLEST_DOUBLE.shiftRight(1);
-        Rational justAboveZero = Rational.SMALLEST_DOUBLE.divide(3);
+        Rational halfAboveZero = SMALLEST_DOUBLE.shiftRight(1);
+        Rational justAboveZero = SMALLEST_DOUBLE.divide(3);
         Rational halfBelowZero = halfAboveZero.negate();
         Rational justBelowZero = justAboveZero.negate();
         aeq(halfBelowZero.toDouble(), -0.0);
         aeq(justBelowZero.toDouble(), -0.0);
         aeq(halfAboveZero.toDouble(), 0.0);
         aeq(justAboveZero.toDouble(), 0.0);
-        Rational boundary = Rational.add(
-                Rational.LARGEST_SUBNORMAL_DOUBLE,
-                Rational.SMALLEST_NORMAL_DOUBLE
+        Rational boundary = add(
+                LARGEST_SUBNORMAL_DOUBLE,
+                SMALLEST_NORMAL_DOUBLE
         ).shiftRight(1);
-        Rational halfBelowBoundary = Rational.add(Rational.LARGEST_SUBNORMAL_DOUBLE, boundary).shiftRight(1);
-        Rational halfAboveBoundary = Rational.add(Rational.SMALLEST_NORMAL_DOUBLE, boundary).shiftRight(1);
-        Rational justBelowBoundary = Rational.add(Rational.LARGEST_SUBNORMAL_DOUBLE, boundary.shiftLeft(1)).divide(3);
-        Rational justAboveBoundary = Rational.add(Rational.SMALLEST_NORMAL_DOUBLE, boundary.shiftLeft(1)).divide(3);
+        Rational halfBelowBoundary = add(LARGEST_SUBNORMAL_DOUBLE, boundary).shiftRight(1);
+        Rational halfAboveBoundary = add(SMALLEST_NORMAL_DOUBLE, boundary).shiftRight(1);
+        Rational justBelowBoundary = add(LARGEST_SUBNORMAL_DOUBLE, boundary.shiftLeft(1)).divide(3);
+        Rational justAboveBoundary = add(SMALLEST_NORMAL_DOUBLE, boundary.shiftLeft(1)).divide(3);
         aeq(boundary.toDouble(), 2.2250738585072014E-308);
         aeq(halfBelowBoundary.toDouble(), 2.225073858507201E-308);
         aeq(justBelowBoundary.toDouble(), 2.225073858507201E-308);
@@ -1370,53 +1374,53 @@ public class RationalTest {
 
     @Test
     public void testToDouble_RoundingMode() {
-        aeq(Rational.ZERO.toDouble(RoundingMode.FLOOR), 0.0);
-        aeq(Rational.ZERO.toDouble(RoundingMode.CEILING), 0.0);
-        aeq(Rational.ZERO.toDouble(RoundingMode.DOWN), 0.0);
-        aeq(Rational.ZERO.toDouble(RoundingMode.UP), 0.0);
-        aeq(Rational.ZERO.toDouble(RoundingMode.HALF_DOWN), 0.0);
-        aeq(Rational.ZERO.toDouble(RoundingMode.HALF_UP), 0.0);
-        aeq(Rational.ZERO.toDouble(RoundingMode.HALF_EVEN), 0.0);
-        aeq(Rational.ZERO.toDouble(RoundingMode.UNNECESSARY), 0.0);
-        aeq(Rational.ONE.toDouble(RoundingMode.FLOOR), 1.0);
-        aeq(Rational.ONE.toDouble(RoundingMode.CEILING), 1.0);
-        aeq(Rational.ONE.toDouble(RoundingMode.DOWN), 1.0);
-        aeq(Rational.ONE.toDouble(RoundingMode.UP), 1.0);
-        aeq(Rational.ONE.toDouble(RoundingMode.HALF_DOWN), 1.0);
-        aeq(Rational.ONE.toDouble(RoundingMode.HALF_UP), 1.0);
-        aeq(Rational.ONE.toDouble(RoundingMode.HALF_EVEN), 1.0);
-        aeq(Rational.ONE.toDouble(RoundingMode.UNNECESSARY), 1.0);
-        aeq(Rational.read("1/2").get().toDouble(RoundingMode.FLOOR), 0.5);
-        aeq(Rational.read("1/2").get().toDouble(RoundingMode.CEILING), 0.5);
-        aeq(Rational.read("1/2").get().toDouble(RoundingMode.DOWN), 0.5);
-        aeq(Rational.read("1/2").get().toDouble(RoundingMode.UP), 0.5);
-        aeq(Rational.read("1/2").get().toDouble(RoundingMode.HALF_DOWN), 0.5);
-        aeq(Rational.read("1/2").get().toDouble(RoundingMode.HALF_UP), 0.5);
-        aeq(Rational.read("1/2").get().toDouble(RoundingMode.HALF_EVEN), 0.5);
-        aeq(Rational.read("1/2").get().toDouble(RoundingMode.UNNECESSARY), 0.5);
-        aeq(Rational.read("1/3").get().toDouble(RoundingMode.FLOOR), 0.3333333333333333);
-        aeq(Rational.read("1/3").get().toDouble(RoundingMode.CEILING), 0.33333333333333337);
-        aeq(Rational.read("1/3").get().toDouble(RoundingMode.DOWN), 0.3333333333333333);
-        aeq(Rational.read("1/3").get().toDouble(RoundingMode.UP), 0.33333333333333337);
-        aeq(Rational.read("1/3").get().toDouble(RoundingMode.HALF_DOWN), 0.3333333333333333);
-        aeq(Rational.read("1/3").get().toDouble(RoundingMode.HALF_UP), 0.3333333333333333);
-        aeq(Rational.read("1/3").get().toDouble(RoundingMode.HALF_EVEN), 0.3333333333333333);
+        aeq(ZERO.toDouble(RoundingMode.FLOOR), 0.0);
+        aeq(ZERO.toDouble(RoundingMode.CEILING), 0.0);
+        aeq(ZERO.toDouble(RoundingMode.DOWN), 0.0);
+        aeq(ZERO.toDouble(RoundingMode.UP), 0.0);
+        aeq(ZERO.toDouble(RoundingMode.HALF_DOWN), 0.0);
+        aeq(ZERO.toDouble(RoundingMode.HALF_UP), 0.0);
+        aeq(ZERO.toDouble(RoundingMode.HALF_EVEN), 0.0);
+        aeq(ZERO.toDouble(RoundingMode.UNNECESSARY), 0.0);
+        aeq(ONE.toDouble(RoundingMode.FLOOR), 1.0);
+        aeq(ONE.toDouble(RoundingMode.CEILING), 1.0);
+        aeq(ONE.toDouble(RoundingMode.DOWN), 1.0);
+        aeq(ONE.toDouble(RoundingMode.UP), 1.0);
+        aeq(ONE.toDouble(RoundingMode.HALF_DOWN), 1.0);
+        aeq(ONE.toDouble(RoundingMode.HALF_UP), 1.0);
+        aeq(ONE.toDouble(RoundingMode.HALF_EVEN), 1.0);
+        aeq(ONE.toDouble(RoundingMode.UNNECESSARY), 1.0);
+        aeq(read("1/2").get().toDouble(RoundingMode.FLOOR), 0.5);
+        aeq(read("1/2").get().toDouble(RoundingMode.CEILING), 0.5);
+        aeq(read("1/2").get().toDouble(RoundingMode.DOWN), 0.5);
+        aeq(read("1/2").get().toDouble(RoundingMode.UP), 0.5);
+        aeq(read("1/2").get().toDouble(RoundingMode.HALF_DOWN), 0.5);
+        aeq(read("1/2").get().toDouble(RoundingMode.HALF_UP), 0.5);
+        aeq(read("1/2").get().toDouble(RoundingMode.HALF_EVEN), 0.5);
+        aeq(read("1/2").get().toDouble(RoundingMode.UNNECESSARY), 0.5);
+        aeq(read("1/3").get().toDouble(RoundingMode.FLOOR), 0.3333333333333333);
+        aeq(read("1/3").get().toDouble(RoundingMode.CEILING), 0.33333333333333337);
+        aeq(read("1/3").get().toDouble(RoundingMode.DOWN), 0.3333333333333333);
+        aeq(read("1/3").get().toDouble(RoundingMode.UP), 0.33333333333333337);
+        aeq(read("1/3").get().toDouble(RoundingMode.HALF_DOWN), 0.3333333333333333);
+        aeq(read("1/3").get().toDouble(RoundingMode.HALF_UP), 0.3333333333333333);
+        aeq(read("1/3").get().toDouble(RoundingMode.HALF_EVEN), 0.3333333333333333);
         try {
-            Rational.read("1/3").get().toDouble(RoundingMode.UNNECESSARY);
+            read("1/3").get().toDouble(RoundingMode.UNNECESSARY);
             fail();
         } catch (ArithmeticException e) {}
-        aeq(Rational.read("-1/3").get().toDouble(RoundingMode.FLOOR), -0.33333333333333337);
-        aeq(Rational.read("-1/3").get().toDouble(RoundingMode.CEILING), -0.3333333333333333);
-        aeq(Rational.read("-1/3").get().toDouble(RoundingMode.DOWN), -0.3333333333333333);
-        aeq(Rational.read("-1/3").get().toDouble(RoundingMode.UP), -0.33333333333333337);
-        aeq(Rational.read("-1/3").get().toDouble(RoundingMode.HALF_DOWN), -0.3333333333333333);
-        aeq(Rational.read("-1/3").get().toDouble(RoundingMode.HALF_UP), -0.3333333333333333);
-        aeq(Rational.read("-1/3").get().toDouble(RoundingMode.HALF_EVEN), -0.3333333333333333);
+        aeq(read("-1/3").get().toDouble(RoundingMode.FLOOR), -0.33333333333333337);
+        aeq(read("-1/3").get().toDouble(RoundingMode.CEILING), -0.3333333333333333);
+        aeq(read("-1/3").get().toDouble(RoundingMode.DOWN), -0.3333333333333333);
+        aeq(read("-1/3").get().toDouble(RoundingMode.UP), -0.33333333333333337);
+        aeq(read("-1/3").get().toDouble(RoundingMode.HALF_DOWN), -0.3333333333333333);
+        aeq(read("-1/3").get().toDouble(RoundingMode.HALF_UP), -0.3333333333333333);
+        aeq(read("-1/3").get().toDouble(RoundingMode.HALF_EVEN), -0.3333333333333333);
         try {
-            Rational.read("-1/3").get().toDouble(RoundingMode.UNNECESSARY);
+            read("-1/3").get().toDouble(RoundingMode.UNNECESSARY);
             fail();
         } catch (ArithmeticException e) {}
-        Rational almostOne = Rational.of(BigInteger.TEN.pow(1000).subtract(BigInteger.ONE), BigInteger.TEN.pow(1000));
+        Rational almostOne = of(BigInteger.TEN.pow(1000).subtract(BigInteger.ONE), BigInteger.TEN.pow(1000));
         aeq(almostOne.toDouble(RoundingMode.FLOOR), 0.9999999999999999);
         aeq(almostOne.toDouble(RoundingMode.CEILING), 1.0);
         aeq(almostOne.toDouble(RoundingMode.DOWN), 0.9999999999999999);
@@ -1428,7 +1432,7 @@ public class RationalTest {
             almostOne.toDouble(RoundingMode.UNNECESSARY);
             fail();
         } catch (ArithmeticException e) {}
-        Rational pi = Rational.of(Math.PI);
+        Rational pi = of(Math.PI);
         if (pi == null) {
             fail();
         }
@@ -1440,7 +1444,7 @@ public class RationalTest {
         aeq(pi.toDouble(RoundingMode.HALF_UP), 3.141592653589793);
         aeq(pi.toDouble(RoundingMode.HALF_EVEN), 3.141592653589793);
         aeq(pi.toDouble(RoundingMode.UNNECESSARY), 3.141592653589793);
-        Rational googol = Rational.of(BigInteger.TEN.pow(100));
+        Rational googol = of(BigInteger.TEN.pow(100));
         aeq(googol.toDouble(RoundingMode.FLOOR), 9.999999999999998E99);
         aeq(googol.toDouble(RoundingMode.CEILING), 1.0E100);
         aeq(googol.toDouble(RoundingMode.DOWN), 9.999999999999998E99);
@@ -1452,18 +1456,18 @@ public class RationalTest {
             googol.toDouble(RoundingMode.UNNECESSARY);
             fail();
         } catch (ArithmeticException e) {}
-        Rational piSuccessor = Rational.of(Numbers.successor(Math.PI));
+        Rational piSuccessor = of(Numbers.successor(Math.PI));
         if (piSuccessor == null) {
             fail();
         }
-        Rational piPredecessor = Rational.of(Numbers.predecessor(Math.PI));
+        Rational piPredecessor = of(Numbers.predecessor(Math.PI));
         if (piPredecessor == null) {
             fail();
         }
-        Rational halfAbovePi = Rational.add(pi, piSuccessor).divide(2);
-        Rational halfBelowPi = Rational.add(pi, piPredecessor).divide(2);
-        Rational justAbovePi = Rational.add(pi.multiply(2), piSuccessor).divide(3);
-        Rational justBelowPi = Rational.add(pi.multiply(2), piPredecessor).divide(3);
+        Rational halfAbovePi = add(pi, piSuccessor).divide(2);
+        Rational halfBelowPi = add(pi, piPredecessor).divide(2);
+        Rational justAbovePi = add(pi.multiply(2), piSuccessor).divide(3);
+        Rational justBelowPi = add(pi.multiply(2), piPredecessor).divide(3);
         aeq(halfAbovePi.toDouble(RoundingMode.FLOOR), 3.141592653589793);
         aeq(halfAbovePi.toDouble(RoundingMode.CEILING), 3.1415926535897936);
         aeq(halfAbovePi.toDouble(RoundingMode.DOWN), 3.141592653589793);
@@ -1508,22 +1512,22 @@ public class RationalTest {
             justBelowPi.toDouble(RoundingMode.UNNECESSARY);
             fail();
         } catch (ArithmeticException e) {}
-        Rational subnormal = Rational.of(1e-310);
+        Rational subnormal = of(1e-310);
         if (subnormal == null) {
             fail();
         }
-        Rational subnormalSuccessor = Rational.of(Numbers.successor(1e-310));
+        Rational subnormalSuccessor = of(Numbers.successor(1e-310));
         if (subnormalSuccessor == null) {
             fail();
         }
-        Rational subnormalPredecessor = Rational.of(Numbers.predecessor(1e-310));
+        Rational subnormalPredecessor = of(Numbers.predecessor(1e-310));
         if (subnormalPredecessor == null) {
             fail();
         }
-        Rational halfAboveSubnormal = Rational.add(subnormal, subnormalSuccessor).divide(2);
-        Rational halfBelowSubnormal = Rational.add(subnormal, subnormalPredecessor).divide(2);
-        Rational justAboveSubnormal = Rational.add(subnormal.multiply(2), subnormalSuccessor).divide(3);
-        Rational justBelowSubnormal = Rational.add(subnormal.multiply(2), subnormalPredecessor).divide(3);
+        Rational halfAboveSubnormal = add(subnormal, subnormalSuccessor).divide(2);
+        Rational halfBelowSubnormal = add(subnormal, subnormalPredecessor).divide(2);
+        Rational justAboveSubnormal = add(subnormal.multiply(2), subnormalSuccessor).divide(3);
+        Rational justBelowSubnormal = add(subnormal.multiply(2), subnormalPredecessor).divide(3);
         aeq(subnormal.toDouble(RoundingMode.FLOOR), 1.0E-310);
         aeq(subnormal.toDouble(RoundingMode.CEILING), 1.0E-310);
         aeq(subnormal.toDouble(RoundingMode.DOWN), 1.0E-310);
@@ -1576,14 +1580,14 @@ public class RationalTest {
             justBelowSubnormal.toDouble(RoundingMode.UNNECESSARY);
             fail();
         } catch (ArithmeticException e) {}
-        Rational belowNegativeMax = Rational.subtract(Rational.LARGEST_DOUBLE.negate(), Rational.ONE);
-        Rational negativeMaxSuccessor = Rational.of(Numbers.successor(-Double.MAX_VALUE));
+        Rational belowNegativeMax = subtract(LARGEST_DOUBLE.negate(), ONE);
+        Rational negativeMaxSuccessor = of(Numbers.successor(-Double.MAX_VALUE));
         if (negativeMaxSuccessor == null) {
             fail();
         }
-        Rational halfAboveNegativeMax = Rational.add(Rational.LARGEST_DOUBLE.negate(), negativeMaxSuccessor).divide(2);
-        Rational justAboveNegativeMax = Rational.add(
-                Rational.LARGEST_DOUBLE.negate().multiply(2),
+        Rational halfAboveNegativeMax = add(LARGEST_DOUBLE.negate(), negativeMaxSuccessor).divide(2);
+        Rational justAboveNegativeMax = add(
+                LARGEST_DOUBLE.negate().multiply(2),
                 negativeMaxSuccessor
         ).divide(3);
         aeq(belowNegativeMax.toDouble(RoundingMode.FLOOR), Double.NEGATIVE_INFINITY);
@@ -1619,13 +1623,13 @@ public class RationalTest {
             justAboveNegativeMax.toDouble(RoundingMode.UNNECESSARY);
             fail();
         } catch (ArithmeticException e) {}
-        Rational aboveMax = Rational.add(Rational.LARGEST_DOUBLE, Rational.ONE);
-        Rational maxPredecessor = Rational.of(Numbers.predecessor(Double.MAX_VALUE));
+        Rational aboveMax = add(LARGEST_DOUBLE, ONE);
+        Rational maxPredecessor = of(Numbers.predecessor(Double.MAX_VALUE));
         if (maxPredecessor == null) {
             fail();
         }
-        Rational halfBelowMax = Rational.add(Rational.LARGEST_DOUBLE, maxPredecessor).divide(2);
-        Rational justBelowMax = Rational.add(Rational.LARGEST_DOUBLE.multiply(2), maxPredecessor).divide(3);
+        Rational halfBelowMax = add(LARGEST_DOUBLE, maxPredecessor).divide(2);
+        Rational justBelowMax = add(LARGEST_DOUBLE.multiply(2), maxPredecessor).divide(3);
         aeq(aboveMax.toDouble(RoundingMode.FLOOR), 1.7976931348623157E308);
         aeq(aboveMax.toDouble(RoundingMode.CEILING), Double.POSITIVE_INFINITY);
         aeq(aboveMax.toDouble(RoundingMode.DOWN), 1.7976931348623157E308);
@@ -1659,8 +1663,8 @@ public class RationalTest {
             justBelowMax.toDouble(RoundingMode.UNNECESSARY);
             fail();
         } catch (ArithmeticException e) {}
-        Rational halfAboveZero = Rational.SMALLEST_DOUBLE.shiftRight(1);
-        Rational justAboveZero = Rational.SMALLEST_DOUBLE.divide(3);
+        Rational halfAboveZero = SMALLEST_DOUBLE.shiftRight(1);
+        Rational justAboveZero = SMALLEST_DOUBLE.divide(3);
         Rational halfBelowZero = halfAboveZero.negate();
         Rational justBelowZero = justAboveZero.negate();
         aeq(halfBelowZero.toDouble(RoundingMode.FLOOR), -4.9E-324);
@@ -1707,14 +1711,14 @@ public class RationalTest {
             justAboveZero.toDouble(RoundingMode.UNNECESSARY);
             fail();
         } catch (ArithmeticException e) {}
-        Rational boundary = Rational.add(
-                Rational.LARGEST_SUBNORMAL_DOUBLE,
-                Rational.SMALLEST_NORMAL_DOUBLE
+        Rational boundary = add(
+                LARGEST_SUBNORMAL_DOUBLE,
+                SMALLEST_NORMAL_DOUBLE
         ).shiftRight(1);
-        Rational halfBelowBoundary = Rational.add(Rational.LARGEST_SUBNORMAL_DOUBLE, boundary).shiftRight(1);
-        Rational halfAboveBoundary = Rational.add(Rational.SMALLEST_NORMAL_DOUBLE, boundary).shiftRight(1);
-        Rational justBelowBoundary = Rational.add(Rational.LARGEST_SUBNORMAL_DOUBLE, boundary.shiftLeft(1)).divide(3);
-        Rational justAboveBoundary = Rational.add(Rational.SMALLEST_NORMAL_DOUBLE, boundary.shiftLeft(1)).divide(3);
+        Rational halfBelowBoundary = add(LARGEST_SUBNORMAL_DOUBLE, boundary).shiftRight(1);
+        Rational halfAboveBoundary = add(SMALLEST_NORMAL_DOUBLE, boundary).shiftRight(1);
+        Rational justBelowBoundary = add(LARGEST_SUBNORMAL_DOUBLE, boundary.shiftLeft(1)).divide(3);
+        Rational justAboveBoundary = add(SMALLEST_NORMAL_DOUBLE, boundary.shiftLeft(1)).divide(3);
         aeq(boundary.toDouble(RoundingMode.FLOOR), 2.225073858507201E-308);
         aeq(boundary.toDouble(RoundingMode.CEILING), 2.2250738585072014E-308);
         aeq(boundary.toDouble(RoundingMode.DOWN), 2.225073858507201E-308);
@@ -1774,470 +1778,515 @@ public class RationalTest {
 
     @Test
     public void testHasTerminatingDecimalExpansion() {
-        assertTrue(Rational.ZERO.hasTerminatingDecimalExpansion());
-        assertTrue(Rational.ONE.hasTerminatingDecimalExpansion());
-        assertTrue(Rational.read("60").get().hasTerminatingDecimalExpansion());
-        assertTrue(Rational.read("1/2").get().hasTerminatingDecimalExpansion());
-        assertTrue(Rational.read("1/5").get().hasTerminatingDecimalExpansion());
-        assertTrue(Rational.read("-7/100").get().hasTerminatingDecimalExpansion());
-        assertTrue(Rational.read("-3/640").get().hasTerminatingDecimalExpansion());
-        assertFalse(Rational.read("1/3").get().hasTerminatingDecimalExpansion());
-        assertFalse(Rational.read("-1/15").get().hasTerminatingDecimalExpansion());
-        assertFalse(Rational.read("-2/9").get().hasTerminatingDecimalExpansion());
+        assertTrue(ZERO.hasTerminatingDecimalExpansion());
+        assertTrue(ONE.hasTerminatingDecimalExpansion());
+        assertTrue(read("60").get().hasTerminatingDecimalExpansion());
+        assertTrue(read("1/2").get().hasTerminatingDecimalExpansion());
+        assertTrue(read("1/5").get().hasTerminatingDecimalExpansion());
+        assertTrue(read("-7/100").get().hasTerminatingDecimalExpansion());
+        assertTrue(read("-3/640").get().hasTerminatingDecimalExpansion());
+        assertFalse(read("1/3").get().hasTerminatingDecimalExpansion());
+        assertFalse(read("-1/15").get().hasTerminatingDecimalExpansion());
+        assertFalse(read("-2/9").get().hasTerminatingDecimalExpansion());
     }
 
     @Test
     public void testToBigDecimal() {
-        aeq(Rational.ZERO.toBigDecimal(), "0");
-        aeq(Rational.ONE.toBigDecimal(), "1");
-        aeq(Rational.read("-23").get().toBigDecimal(), "-23");
-        aeq(Rational.read("4/5").get().toBigDecimal(), "0.8");
-        aeq(Rational.read("1/64").get().toBigDecimal(), "0.015625");
-        aeq(Rational.read("1234").get().toBigDecimal(), "1234");
+        aeq(ZERO.toBigDecimal(), "0");
+        aeq(ONE.toBigDecimal(), "1");
+        aeq(read("-23").get().toBigDecimal(), "-23");
+        aeq(read("4/5").get().toBigDecimal(), "0.8");
+        aeq(read("1/64").get().toBigDecimal(), "0.015625");
+        aeq(read("1234").get().toBigDecimal(), "1234");
         try {
-            Rational.read("1/3").get().toBigDecimal();
+            read("1/3").get().toBigDecimal();
             fail();
         } catch (ArithmeticException e) {}
     }
 
     @Test
     public void testToBigDecimal_Precision() {
-        aeq(Rational.ZERO.toBigDecimal(4), "0");
-        aeq(Rational.ZERO.toBigDecimal(0), "0");
-        aeq(Rational.ONE.toBigDecimal(4), "1");
-        aeq(Rational.ONE.toBigDecimal(0), "1");
-        aeq(Rational.read("1/2").get().toBigDecimal(0), "0.5");
-        aeq(Rational.read("1/2").get().toBigDecimal(1), "0.5");
-        aeq(Rational.read("1/2").get().toBigDecimal(4), "0.5");
-        aeq(Rational.read("1/64").get().toBigDecimal(0), "0.015625");
-        aeq(Rational.read("1/64").get().toBigDecimal(1), "0.02");
-        aeq(Rational.read("1/64").get().toBigDecimal(2), "0.016");
-        aeq(Rational.read("1/64").get().toBigDecimal(3), "0.0156");
-        aeq(Rational.read("1/64").get().toBigDecimal(4), "0.01563");
-        aeq(Rational.read("1/64").get().toBigDecimal(5), "0.015625");
-        aeq(Rational.read("1/64").get().toBigDecimal(6), "0.015625");
-        aeq(Rational.read("-1/3").get().toBigDecimal(1), "-0.3");
-        aeq(Rational.read("-1/3").get().toBigDecimal(2), "-0.33");
-        aeq(Rational.read("-1/3").get().toBigDecimal(3), "-0.333");
-        aeq(Rational.read("-1/3").get().toBigDecimal(4), "-0.3333");
-        aeq(Rational.read("6789").get().toBigDecimal(0), "6789");
-        aeq(Rational.read("6789").get().toBigDecimal(1), "7E+3");
-        aeq(Rational.read("6789").get().toBigDecimal(2), "6.8E+3");
-        aeq(Rational.read("6789").get().toBigDecimal(3), "6.79E+3");
-        aeq(Rational.read("6789").get().toBigDecimal(4), "6789");
-        aeq(Rational.read("6789").get().toBigDecimal(5), "6789");
+        aeq(ZERO.toBigDecimal(4), "0");
+        aeq(ZERO.toBigDecimal(0), "0");
+        aeq(ONE.toBigDecimal(4), "1");
+        aeq(ONE.toBigDecimal(0), "1");
+        aeq(read("1/2").get().toBigDecimal(0), "0.5");
+        aeq(read("1/2").get().toBigDecimal(1), "0.5");
+        aeq(read("1/2").get().toBigDecimal(4), "0.5");
+        aeq(read("1/64").get().toBigDecimal(0), "0.015625");
+        aeq(read("1/64").get().toBigDecimal(1), "0.02");
+        aeq(read("1/64").get().toBigDecimal(2), "0.016");
+        aeq(read("1/64").get().toBigDecimal(3), "0.0156");
+        aeq(read("1/64").get().toBigDecimal(4), "0.01563");
+        aeq(read("1/64").get().toBigDecimal(5), "0.015625");
+        aeq(read("1/64").get().toBigDecimal(6), "0.015625");
+        aeq(read("-1/3").get().toBigDecimal(1), "-0.3");
+        aeq(read("-1/3").get().toBigDecimal(2), "-0.33");
+        aeq(read("-1/3").get().toBigDecimal(3), "-0.333");
+        aeq(read("-1/3").get().toBigDecimal(4), "-0.3333");
+        aeq(read("6789").get().toBigDecimal(0), "6789");
+        aeq(read("6789").get().toBigDecimal(1), "7E+3");
+        aeq(read("6789").get().toBigDecimal(2), "6.8E+3");
+        aeq(read("6789").get().toBigDecimal(3), "6.79E+3");
+        aeq(read("6789").get().toBigDecimal(4), "6789");
+        aeq(read("6789").get().toBigDecimal(5), "6789");
         try {
-            Rational.read("-1/3").get().toBigDecimal(0);
+            read("-1/3").get().toBigDecimal(0);
             fail();
         } catch (ArithmeticException e) {}
         try {
-            Rational.read("5").get().toBigDecimal(-1);
+            read("5").get().toBigDecimal(-1);
             fail();
         } catch (IllegalArgumentException e) {}
     }
 
     @Test
     public void testToBigDecimal_Precision_RoundingMode() {
-        aeq(Rational.ZERO.toBigDecimal(0, RoundingMode.UNNECESSARY), "0");
-        aeq(Rational.ZERO.toBigDecimal(0, RoundingMode.FLOOR), "0");
-        aeq(Rational.ZERO.toBigDecimal(0, RoundingMode.CEILING), "0");
-        aeq(Rational.ZERO.toBigDecimal(0, RoundingMode.DOWN), "0");
-        aeq(Rational.ZERO.toBigDecimal(0, RoundingMode.UP), "0");
-        aeq(Rational.ZERO.toBigDecimal(0, RoundingMode.HALF_DOWN), "0");
-        aeq(Rational.ZERO.toBigDecimal(0, RoundingMode.HALF_UP), "0");
-        aeq(Rational.ZERO.toBigDecimal(0, RoundingMode.HALF_EVEN), "0");
-        aeq(Rational.ZERO.toBigDecimal(4, RoundingMode.UNNECESSARY), "0");
-        aeq(Rational.ZERO.toBigDecimal(4, RoundingMode.FLOOR), "0");
-        aeq(Rational.ZERO.toBigDecimal(4, RoundingMode.CEILING), "0");
-        aeq(Rational.ZERO.toBigDecimal(4, RoundingMode.DOWN), "0");
-        aeq(Rational.ZERO.toBigDecimal(4, RoundingMode.UP), "0");
-        aeq(Rational.ZERO.toBigDecimal(4, RoundingMode.HALF_DOWN), "0");
-        aeq(Rational.ZERO.toBigDecimal(4, RoundingMode.HALF_UP), "0");
-        aeq(Rational.ZERO.toBigDecimal(4, RoundingMode.HALF_EVEN), "0");
-        aeq(Rational.ONE.toBigDecimal(0, RoundingMode.UNNECESSARY), "1");
-        aeq(Rational.ONE.toBigDecimal(0, RoundingMode.FLOOR), "1");
-        aeq(Rational.ONE.toBigDecimal(0, RoundingMode.CEILING), "1");
-        aeq(Rational.ONE.toBigDecimal(0, RoundingMode.DOWN), "1");
-        aeq(Rational.ONE.toBigDecimal(0, RoundingMode.UP), "1");
-        aeq(Rational.ONE.toBigDecimal(0, RoundingMode.HALF_DOWN), "1");
-        aeq(Rational.ONE.toBigDecimal(0, RoundingMode.HALF_UP), "1");
-        aeq(Rational.ONE.toBigDecimal(0, RoundingMode.HALF_EVEN), "1");
-        aeq(Rational.ONE.toBigDecimal(4, RoundingMode.UNNECESSARY), "1");
-        aeq(Rational.ONE.toBigDecimal(4, RoundingMode.FLOOR), "1");
-        aeq(Rational.ONE.toBigDecimal(4, RoundingMode.CEILING), "1");
-        aeq(Rational.ONE.toBigDecimal(4, RoundingMode.DOWN), "1");
-        aeq(Rational.ONE.toBigDecimal(4, RoundingMode.UP), "1");
-        aeq(Rational.ONE.toBigDecimal(4, RoundingMode.HALF_DOWN), "1");
-        aeq(Rational.ONE.toBigDecimal(4, RoundingMode.HALF_UP), "1");
-        aeq(Rational.ONE.toBigDecimal(4, RoundingMode.HALF_EVEN), "1");
-        aeq(Rational.read("1/2").get().toBigDecimal(0, RoundingMode.UNNECESSARY), "0.5");
-        aeq(Rational.read("1/2").get().toBigDecimal(0, RoundingMode.FLOOR), "0.5");
-        aeq(Rational.read("1/2").get().toBigDecimal(0, RoundingMode.CEILING), "0.5");
-        aeq(Rational.read("1/2").get().toBigDecimal(0, RoundingMode.DOWN), "0.5");
-        aeq(Rational.read("1/2").get().toBigDecimal(0, RoundingMode.UP), "0.5");
-        aeq(Rational.read("1/2").get().toBigDecimal(0, RoundingMode.HALF_DOWN), "0.5");
-        aeq(Rational.read("1/2").get().toBigDecimal(0, RoundingMode.HALF_UP), "0.5");
-        aeq(Rational.read("1/2").get().toBigDecimal(0, RoundingMode.HALF_EVEN), "0.5");
-        aeq(Rational.read("1/2").get().toBigDecimal(1, RoundingMode.UNNECESSARY), "0.5");
-        aeq(Rational.read("1/2").get().toBigDecimal(1, RoundingMode.FLOOR), "0.5");
-        aeq(Rational.read("1/2").get().toBigDecimal(1, RoundingMode.CEILING), "0.5");
-        aeq(Rational.read("1/2").get().toBigDecimal(1, RoundingMode.DOWN), "0.5");
-        aeq(Rational.read("1/2").get().toBigDecimal(1, RoundingMode.UP), "0.5");
-        aeq(Rational.read("1/2").get().toBigDecimal(1, RoundingMode.HALF_DOWN), "0.5");
-        aeq(Rational.read("1/2").get().toBigDecimal(1, RoundingMode.HALF_UP), "0.5");
-        aeq(Rational.read("1/2").get().toBigDecimal(1, RoundingMode.HALF_EVEN), "0.5");
-        aeq(Rational.read("1/2").get().toBigDecimal(4, RoundingMode.UNNECESSARY), "0.5");
-        aeq(Rational.read("1/2").get().toBigDecimal(4, RoundingMode.FLOOR), "0.5");
-        aeq(Rational.read("1/2").get().toBigDecimal(4, RoundingMode.CEILING), "0.5");
-        aeq(Rational.read("1/2").get().toBigDecimal(4, RoundingMode.DOWN), "0.5");
-        aeq(Rational.read("1/2").get().toBigDecimal(4, RoundingMode.UP), "0.5");
-        aeq(Rational.read("1/2").get().toBigDecimal(4, RoundingMode.HALF_DOWN), "0.5");
-        aeq(Rational.read("1/2").get().toBigDecimal(4, RoundingMode.HALF_UP), "0.5");
-        aeq(Rational.read("1/2").get().toBigDecimal(4, RoundingMode.HALF_EVEN), "0.5");
-        aeq(Rational.read("1/64").get().toBigDecimal(0, RoundingMode.UNNECESSARY), "0.015625");
-        aeq(Rational.read("1/64").get().toBigDecimal(0, RoundingMode.FLOOR), "0.015625");
-        aeq(Rational.read("1/64").get().toBigDecimal(0, RoundingMode.CEILING), "0.015625");
-        aeq(Rational.read("1/64").get().toBigDecimal(0, RoundingMode.DOWN), "0.015625");
-        aeq(Rational.read("1/64").get().toBigDecimal(0, RoundingMode.UP), "0.015625");
-        aeq(Rational.read("1/64").get().toBigDecimal(0, RoundingMode.HALF_DOWN), "0.015625");
-        aeq(Rational.read("1/64").get().toBigDecimal(0, RoundingMode.HALF_UP), "0.015625");
-        aeq(Rational.read("1/64").get().toBigDecimal(0, RoundingMode.HALF_EVEN), "0.015625");
+        aeq(ZERO.toBigDecimal(0, RoundingMode.UNNECESSARY), "0");
+        aeq(ZERO.toBigDecimal(0, RoundingMode.FLOOR), "0");
+        aeq(ZERO.toBigDecimal(0, RoundingMode.CEILING), "0");
+        aeq(ZERO.toBigDecimal(0, RoundingMode.DOWN), "0");
+        aeq(ZERO.toBigDecimal(0, RoundingMode.UP), "0");
+        aeq(ZERO.toBigDecimal(0, RoundingMode.HALF_DOWN), "0");
+        aeq(ZERO.toBigDecimal(0, RoundingMode.HALF_UP), "0");
+        aeq(ZERO.toBigDecimal(0, RoundingMode.HALF_EVEN), "0");
+        aeq(ZERO.toBigDecimal(4, RoundingMode.UNNECESSARY), "0");
+        aeq(ZERO.toBigDecimal(4, RoundingMode.FLOOR), "0");
+        aeq(ZERO.toBigDecimal(4, RoundingMode.CEILING), "0");
+        aeq(ZERO.toBigDecimal(4, RoundingMode.DOWN), "0");
+        aeq(ZERO.toBigDecimal(4, RoundingMode.UP), "0");
+        aeq(ZERO.toBigDecimal(4, RoundingMode.HALF_DOWN), "0");
+        aeq(ZERO.toBigDecimal(4, RoundingMode.HALF_UP), "0");
+        aeq(ZERO.toBigDecimal(4, RoundingMode.HALF_EVEN), "0");
+        aeq(ONE.toBigDecimal(0, RoundingMode.UNNECESSARY), "1");
+        aeq(ONE.toBigDecimal(0, RoundingMode.FLOOR), "1");
+        aeq(ONE.toBigDecimal(0, RoundingMode.CEILING), "1");
+        aeq(ONE.toBigDecimal(0, RoundingMode.DOWN), "1");
+        aeq(ONE.toBigDecimal(0, RoundingMode.UP), "1");
+        aeq(ONE.toBigDecimal(0, RoundingMode.HALF_DOWN), "1");
+        aeq(ONE.toBigDecimal(0, RoundingMode.HALF_UP), "1");
+        aeq(ONE.toBigDecimal(0, RoundingMode.HALF_EVEN), "1");
+        aeq(ONE.toBigDecimal(4, RoundingMode.UNNECESSARY), "1");
+        aeq(ONE.toBigDecimal(4, RoundingMode.FLOOR), "1");
+        aeq(ONE.toBigDecimal(4, RoundingMode.CEILING), "1");
+        aeq(ONE.toBigDecimal(4, RoundingMode.DOWN), "1");
+        aeq(ONE.toBigDecimal(4, RoundingMode.UP), "1");
+        aeq(ONE.toBigDecimal(4, RoundingMode.HALF_DOWN), "1");
+        aeq(ONE.toBigDecimal(4, RoundingMode.HALF_UP), "1");
+        aeq(ONE.toBigDecimal(4, RoundingMode.HALF_EVEN), "1");
+        aeq(read("1/2").get().toBigDecimal(0, RoundingMode.UNNECESSARY), "0.5");
+        aeq(read("1/2").get().toBigDecimal(0, RoundingMode.FLOOR), "0.5");
+        aeq(read("1/2").get().toBigDecimal(0, RoundingMode.CEILING), "0.5");
+        aeq(read("1/2").get().toBigDecimal(0, RoundingMode.DOWN), "0.5");
+        aeq(read("1/2").get().toBigDecimal(0, RoundingMode.UP), "0.5");
+        aeq(read("1/2").get().toBigDecimal(0, RoundingMode.HALF_DOWN), "0.5");
+        aeq(read("1/2").get().toBigDecimal(0, RoundingMode.HALF_UP), "0.5");
+        aeq(read("1/2").get().toBigDecimal(0, RoundingMode.HALF_EVEN), "0.5");
+        aeq(read("1/2").get().toBigDecimal(1, RoundingMode.UNNECESSARY), "0.5");
+        aeq(read("1/2").get().toBigDecimal(1, RoundingMode.FLOOR), "0.5");
+        aeq(read("1/2").get().toBigDecimal(1, RoundingMode.CEILING), "0.5");
+        aeq(read("1/2").get().toBigDecimal(1, RoundingMode.DOWN), "0.5");
+        aeq(read("1/2").get().toBigDecimal(1, RoundingMode.UP), "0.5");
+        aeq(read("1/2").get().toBigDecimal(1, RoundingMode.HALF_DOWN), "0.5");
+        aeq(read("1/2").get().toBigDecimal(1, RoundingMode.HALF_UP), "0.5");
+        aeq(read("1/2").get().toBigDecimal(1, RoundingMode.HALF_EVEN), "0.5");
+        aeq(read("1/2").get().toBigDecimal(4, RoundingMode.UNNECESSARY), "0.5");
+        aeq(read("1/2").get().toBigDecimal(4, RoundingMode.FLOOR), "0.5");
+        aeq(read("1/2").get().toBigDecimal(4, RoundingMode.CEILING), "0.5");
+        aeq(read("1/2").get().toBigDecimal(4, RoundingMode.DOWN), "0.5");
+        aeq(read("1/2").get().toBigDecimal(4, RoundingMode.UP), "0.5");
+        aeq(read("1/2").get().toBigDecimal(4, RoundingMode.HALF_DOWN), "0.5");
+        aeq(read("1/2").get().toBigDecimal(4, RoundingMode.HALF_UP), "0.5");
+        aeq(read("1/2").get().toBigDecimal(4, RoundingMode.HALF_EVEN), "0.5");
+        aeq(read("1/64").get().toBigDecimal(0, RoundingMode.UNNECESSARY), "0.015625");
+        aeq(read("1/64").get().toBigDecimal(0, RoundingMode.FLOOR), "0.015625");
+        aeq(read("1/64").get().toBigDecimal(0, RoundingMode.CEILING), "0.015625");
+        aeq(read("1/64").get().toBigDecimal(0, RoundingMode.DOWN), "0.015625");
+        aeq(read("1/64").get().toBigDecimal(0, RoundingMode.UP), "0.015625");
+        aeq(read("1/64").get().toBigDecimal(0, RoundingMode.HALF_DOWN), "0.015625");
+        aeq(read("1/64").get().toBigDecimal(0, RoundingMode.HALF_UP), "0.015625");
+        aeq(read("1/64").get().toBigDecimal(0, RoundingMode.HALF_EVEN), "0.015625");
         try {
-            Rational.read("1/64").get().toBigDecimal(1, RoundingMode.UNNECESSARY);
+            read("1/64").get().toBigDecimal(1, RoundingMode.UNNECESSARY);
             fail();
         } catch (ArithmeticException e) {}
-        aeq(Rational.read("1/64").get().toBigDecimal(1, RoundingMode.FLOOR), "0.01");
-        aeq(Rational.read("1/64").get().toBigDecimal(1, RoundingMode.CEILING), "0.02");
-        aeq(Rational.read("1/64").get().toBigDecimal(1, RoundingMode.DOWN), "0.01");
-        aeq(Rational.read("1/64").get().toBigDecimal(1, RoundingMode.UP), "0.02");
-        aeq(Rational.read("1/64").get().toBigDecimal(1, RoundingMode.HALF_DOWN), "0.02");
-        aeq(Rational.read("1/64").get().toBigDecimal(1, RoundingMode.HALF_UP), "0.02");
-        aeq(Rational.read("1/64").get().toBigDecimal(1, RoundingMode.HALF_EVEN), "0.02");
+        aeq(read("1/64").get().toBigDecimal(1, RoundingMode.FLOOR), "0.01");
+        aeq(read("1/64").get().toBigDecimal(1, RoundingMode.CEILING), "0.02");
+        aeq(read("1/64").get().toBigDecimal(1, RoundingMode.DOWN), "0.01");
+        aeq(read("1/64").get().toBigDecimal(1, RoundingMode.UP), "0.02");
+        aeq(read("1/64").get().toBigDecimal(1, RoundingMode.HALF_DOWN), "0.02");
+        aeq(read("1/64").get().toBigDecimal(1, RoundingMode.HALF_UP), "0.02");
+        aeq(read("1/64").get().toBigDecimal(1, RoundingMode.HALF_EVEN), "0.02");
         try {
-            Rational.read("1/64").get().toBigDecimal(2, RoundingMode.UNNECESSARY);
+            read("1/64").get().toBigDecimal(2, RoundingMode.UNNECESSARY);
             fail();
         } catch (ArithmeticException e) {}
-        aeq(Rational.read("1/64").get().toBigDecimal(2, RoundingMode.FLOOR), "0.015");
-        aeq(Rational.read("1/64").get().toBigDecimal(2, RoundingMode.CEILING), "0.016");
-        aeq(Rational.read("1/64").get().toBigDecimal(2, RoundingMode.DOWN), "0.015");
-        aeq(Rational.read("1/64").get().toBigDecimal(2, RoundingMode.UP), "0.016");
-        aeq(Rational.read("1/64").get().toBigDecimal(2, RoundingMode.HALF_DOWN), "0.016");
-        aeq(Rational.read("1/64").get().toBigDecimal(2, RoundingMode.HALF_UP), "0.016");
-        aeq(Rational.read("1/64").get().toBigDecimal(2, RoundingMode.HALF_EVEN), "0.016");
+        aeq(read("1/64").get().toBigDecimal(2, RoundingMode.FLOOR), "0.015");
+        aeq(read("1/64").get().toBigDecimal(2, RoundingMode.CEILING), "0.016");
+        aeq(read("1/64").get().toBigDecimal(2, RoundingMode.DOWN), "0.015");
+        aeq(read("1/64").get().toBigDecimal(2, RoundingMode.UP), "0.016");
+        aeq(read("1/64").get().toBigDecimal(2, RoundingMode.HALF_DOWN), "0.016");
+        aeq(read("1/64").get().toBigDecimal(2, RoundingMode.HALF_UP), "0.016");
+        aeq(read("1/64").get().toBigDecimal(2, RoundingMode.HALF_EVEN), "0.016");
         try {
-            Rational.read("1/64").get().toBigDecimal(3, RoundingMode.UNNECESSARY);
+            read("1/64").get().toBigDecimal(3, RoundingMode.UNNECESSARY);
             fail();
         } catch (ArithmeticException e) {}
-        aeq(Rational.read("1/64").get().toBigDecimal(3, RoundingMode.FLOOR), "0.0156");
-        aeq(Rational.read("1/64").get().toBigDecimal(3, RoundingMode.CEILING), "0.0157");
-        aeq(Rational.read("1/64").get().toBigDecimal(3, RoundingMode.DOWN), "0.0156");
-        aeq(Rational.read("1/64").get().toBigDecimal(3, RoundingMode.UP), "0.0157");
-        aeq(Rational.read("1/64").get().toBigDecimal(3, RoundingMode.HALF_DOWN), "0.0156");
-        aeq(Rational.read("1/64").get().toBigDecimal(3, RoundingMode.HALF_UP), "0.0156");
-        aeq(Rational.read("1/64").get().toBigDecimal(3, RoundingMode.HALF_EVEN), "0.0156");
+        aeq(read("1/64").get().toBigDecimal(3, RoundingMode.FLOOR), "0.0156");
+        aeq(read("1/64").get().toBigDecimal(3, RoundingMode.CEILING), "0.0157");
+        aeq(read("1/64").get().toBigDecimal(3, RoundingMode.DOWN), "0.0156");
+        aeq(read("1/64").get().toBigDecimal(3, RoundingMode.UP), "0.0157");
+        aeq(read("1/64").get().toBigDecimal(3, RoundingMode.HALF_DOWN), "0.0156");
+        aeq(read("1/64").get().toBigDecimal(3, RoundingMode.HALF_UP), "0.0156");
+        aeq(read("1/64").get().toBigDecimal(3, RoundingMode.HALF_EVEN), "0.0156");
         try {
-            Rational.read("1/64").get().toBigDecimal(4, RoundingMode.UNNECESSARY);
+            read("1/64").get().toBigDecimal(4, RoundingMode.UNNECESSARY);
             fail();
         } catch (ArithmeticException e) {}
-        aeq(Rational.read("1/64").get().toBigDecimal(4, RoundingMode.FLOOR), "0.01562");
-        aeq(Rational.read("1/64").get().toBigDecimal(4, RoundingMode.CEILING), "0.01563");
-        aeq(Rational.read("1/64").get().toBigDecimal(4, RoundingMode.DOWN), "0.01562");
-        aeq(Rational.read("1/64").get().toBigDecimal(4, RoundingMode.UP), "0.01563");
-        aeq(Rational.read("1/64").get().toBigDecimal(4, RoundingMode.HALF_DOWN), "0.01562");
-        aeq(Rational.read("1/64").get().toBigDecimal(4, RoundingMode.HALF_UP), "0.01563");
-        aeq(Rational.read("1/64").get().toBigDecimal(4, RoundingMode.HALF_EVEN), "0.01562");
-        aeq(Rational.read("1/64").get().toBigDecimal(5, RoundingMode.UNNECESSARY), "0.015625");
-        aeq(Rational.read("1/64").get().toBigDecimal(5, RoundingMode.FLOOR), "0.015625");
-        aeq(Rational.read("1/64").get().toBigDecimal(5, RoundingMode.CEILING), "0.015625");
-        aeq(Rational.read("1/64").get().toBigDecimal(5, RoundingMode.DOWN), "0.015625");
-        aeq(Rational.read("1/64").get().toBigDecimal(5, RoundingMode.UP), "0.015625");
-        aeq(Rational.read("1/64").get().toBigDecimal(5, RoundingMode.HALF_DOWN), "0.015625");
-        aeq(Rational.read("1/64").get().toBigDecimal(5, RoundingMode.HALF_UP), "0.015625");
-        aeq(Rational.read("1/64").get().toBigDecimal(5, RoundingMode.HALF_EVEN), "0.015625");
-        aeq(Rational.read("1/64").get().toBigDecimal(6, RoundingMode.UNNECESSARY), "0.015625");
-        aeq(Rational.read("1/64").get().toBigDecimal(6, RoundingMode.FLOOR), "0.015625");
-        aeq(Rational.read("1/64").get().toBigDecimal(6, RoundingMode.CEILING), "0.015625");
-        aeq(Rational.read("1/64").get().toBigDecimal(6, RoundingMode.DOWN), "0.015625");
-        aeq(Rational.read("1/64").get().toBigDecimal(6, RoundingMode.UP), "0.015625");
-        aeq(Rational.read("1/64").get().toBigDecimal(6, RoundingMode.HALF_DOWN), "0.015625");
-        aeq(Rational.read("1/64").get().toBigDecimal(6, RoundingMode.HALF_UP), "0.015625");
-        aeq(Rational.read("1/64").get().toBigDecimal(6, RoundingMode.HALF_EVEN), "0.015625");
+        aeq(read("1/64").get().toBigDecimal(4, RoundingMode.FLOOR), "0.01562");
+        aeq(read("1/64").get().toBigDecimal(4, RoundingMode.CEILING), "0.01563");
+        aeq(read("1/64").get().toBigDecimal(4, RoundingMode.DOWN), "0.01562");
+        aeq(read("1/64").get().toBigDecimal(4, RoundingMode.UP), "0.01563");
+        aeq(read("1/64").get().toBigDecimal(4, RoundingMode.HALF_DOWN), "0.01562");
+        aeq(read("1/64").get().toBigDecimal(4, RoundingMode.HALF_UP), "0.01563");
+        aeq(read("1/64").get().toBigDecimal(4, RoundingMode.HALF_EVEN), "0.01562");
+        aeq(read("1/64").get().toBigDecimal(5, RoundingMode.UNNECESSARY), "0.015625");
+        aeq(read("1/64").get().toBigDecimal(5, RoundingMode.FLOOR), "0.015625");
+        aeq(read("1/64").get().toBigDecimal(5, RoundingMode.CEILING), "0.015625");
+        aeq(read("1/64").get().toBigDecimal(5, RoundingMode.DOWN), "0.015625");
+        aeq(read("1/64").get().toBigDecimal(5, RoundingMode.UP), "0.015625");
+        aeq(read("1/64").get().toBigDecimal(5, RoundingMode.HALF_DOWN), "0.015625");
+        aeq(read("1/64").get().toBigDecimal(5, RoundingMode.HALF_UP), "0.015625");
+        aeq(read("1/64").get().toBigDecimal(5, RoundingMode.HALF_EVEN), "0.015625");
+        aeq(read("1/64").get().toBigDecimal(6, RoundingMode.UNNECESSARY), "0.015625");
+        aeq(read("1/64").get().toBigDecimal(6, RoundingMode.FLOOR), "0.015625");
+        aeq(read("1/64").get().toBigDecimal(6, RoundingMode.CEILING), "0.015625");
+        aeq(read("1/64").get().toBigDecimal(6, RoundingMode.DOWN), "0.015625");
+        aeq(read("1/64").get().toBigDecimal(6, RoundingMode.UP), "0.015625");
+        aeq(read("1/64").get().toBigDecimal(6, RoundingMode.HALF_DOWN), "0.015625");
+        aeq(read("1/64").get().toBigDecimal(6, RoundingMode.HALF_UP), "0.015625");
+        aeq(read("1/64").get().toBigDecimal(6, RoundingMode.HALF_EVEN), "0.015625");
         try {
-            Rational.read("-1/3").get().toBigDecimal(1, RoundingMode.UNNECESSARY);
+            read("-1/3").get().toBigDecimal(1, RoundingMode.UNNECESSARY);
             fail();
         } catch (ArithmeticException e) {}
-        aeq(Rational.read("-1/3").get().toBigDecimal(1, RoundingMode.FLOOR), "-0.4");
-        aeq(Rational.read("-1/3").get().toBigDecimal(1, RoundingMode.CEILING), "-0.3");
-        aeq(Rational.read("-1/3").get().toBigDecimal(1, RoundingMode.DOWN), "-0.3");
-        aeq(Rational.read("-1/3").get().toBigDecimal(1, RoundingMode.UP), "-0.4");
-        aeq(Rational.read("-1/3").get().toBigDecimal(1, RoundingMode.HALF_DOWN), "-0.3");
-        aeq(Rational.read("-1/3").get().toBigDecimal(1, RoundingMode.HALF_UP), "-0.3");
-        aeq(Rational.read("-1/3").get().toBigDecimal(1, RoundingMode.HALF_EVEN), "-0.3");
+        aeq(read("-1/3").get().toBigDecimal(1, RoundingMode.FLOOR), "-0.4");
+        aeq(read("-1/3").get().toBigDecimal(1, RoundingMode.CEILING), "-0.3");
+        aeq(read("-1/3").get().toBigDecimal(1, RoundingMode.DOWN), "-0.3");
+        aeq(read("-1/3").get().toBigDecimal(1, RoundingMode.UP), "-0.4");
+        aeq(read("-1/3").get().toBigDecimal(1, RoundingMode.HALF_DOWN), "-0.3");
+        aeq(read("-1/3").get().toBigDecimal(1, RoundingMode.HALF_UP), "-0.3");
+        aeq(read("-1/3").get().toBigDecimal(1, RoundingMode.HALF_EVEN), "-0.3");
         try {
-            Rational.read("-1/3").get().toBigDecimal(2, RoundingMode.UNNECESSARY);
+            read("-1/3").get().toBigDecimal(2, RoundingMode.UNNECESSARY);
             fail();
         } catch (ArithmeticException e) {}
-        aeq(Rational.read("-1/3").get().toBigDecimal(2, RoundingMode.FLOOR), "-0.34");
-        aeq(Rational.read("-1/3").get().toBigDecimal(2, RoundingMode.CEILING), "-0.33");
-        aeq(Rational.read("-1/3").get().toBigDecimal(2, RoundingMode.DOWN), "-0.33");
-        aeq(Rational.read("-1/3").get().toBigDecimal(2, RoundingMode.UP), "-0.34");
-        aeq(Rational.read("-1/3").get().toBigDecimal(2, RoundingMode.HALF_DOWN), "-0.33");
-        aeq(Rational.read("-1/3").get().toBigDecimal(2, RoundingMode.HALF_UP), "-0.33");
-        aeq(Rational.read("-1/3").get().toBigDecimal(2, RoundingMode.HALF_EVEN), "-0.33");
+        aeq(read("-1/3").get().toBigDecimal(2, RoundingMode.FLOOR), "-0.34");
+        aeq(read("-1/3").get().toBigDecimal(2, RoundingMode.CEILING), "-0.33");
+        aeq(read("-1/3").get().toBigDecimal(2, RoundingMode.DOWN), "-0.33");
+        aeq(read("-1/3").get().toBigDecimal(2, RoundingMode.UP), "-0.34");
+        aeq(read("-1/3").get().toBigDecimal(2, RoundingMode.HALF_DOWN), "-0.33");
+        aeq(read("-1/3").get().toBigDecimal(2, RoundingMode.HALF_UP), "-0.33");
+        aeq(read("-1/3").get().toBigDecimal(2, RoundingMode.HALF_EVEN), "-0.33");
         try {
-            Rational.read("-1/3").get().toBigDecimal(3, RoundingMode.UNNECESSARY);
+            read("-1/3").get().toBigDecimal(3, RoundingMode.UNNECESSARY);
             fail();
         } catch (ArithmeticException e) {}
-        aeq(Rational.read("-1/3").get().toBigDecimal(3, RoundingMode.FLOOR), "-0.334");
-        aeq(Rational.read("-1/3").get().toBigDecimal(3, RoundingMode.CEILING), "-0.333");
-        aeq(Rational.read("-1/3").get().toBigDecimal(3, RoundingMode.DOWN), "-0.333");
-        aeq(Rational.read("-1/3").get().toBigDecimal(3, RoundingMode.UP), "-0.334");
-        aeq(Rational.read("-1/3").get().toBigDecimal(3, RoundingMode.HALF_DOWN), "-0.333");
-        aeq(Rational.read("-1/3").get().toBigDecimal(3, RoundingMode.HALF_UP), "-0.333");
-        aeq(Rational.read("-1/3").get().toBigDecimal(3, RoundingMode.HALF_EVEN), "-0.333");
+        aeq(read("-1/3").get().toBigDecimal(3, RoundingMode.FLOOR), "-0.334");
+        aeq(read("-1/3").get().toBigDecimal(3, RoundingMode.CEILING), "-0.333");
+        aeq(read("-1/3").get().toBigDecimal(3, RoundingMode.DOWN), "-0.333");
+        aeq(read("-1/3").get().toBigDecimal(3, RoundingMode.UP), "-0.334");
+        aeq(read("-1/3").get().toBigDecimal(3, RoundingMode.HALF_DOWN), "-0.333");
+        aeq(read("-1/3").get().toBigDecimal(3, RoundingMode.HALF_UP), "-0.333");
+        aeq(read("-1/3").get().toBigDecimal(3, RoundingMode.HALF_EVEN), "-0.333");
         try {
-            Rational.read("-1/3").get().toBigDecimal(4, RoundingMode.UNNECESSARY);
+            read("-1/3").get().toBigDecimal(4, RoundingMode.UNNECESSARY);
             fail();
         } catch (ArithmeticException e) {}
-        aeq(Rational.read("-1/3").get().toBigDecimal(4, RoundingMode.FLOOR), "-0.3334");
-        aeq(Rational.read("-1/3").get().toBigDecimal(4, RoundingMode.CEILING), "-0.3333");
-        aeq(Rational.read("-1/3").get().toBigDecimal(4, RoundingMode.DOWN), "-0.3333");
-        aeq(Rational.read("-1/3").get().toBigDecimal(4, RoundingMode.UP), "-0.3334");
-        aeq(Rational.read("-1/3").get().toBigDecimal(4, RoundingMode.HALF_DOWN), "-0.3333");
-        aeq(Rational.read("-1/3").get().toBigDecimal(4, RoundingMode.HALF_UP), "-0.3333");
-        aeq(Rational.read("-1/3").get().toBigDecimal(4, RoundingMode.HALF_EVEN), "-0.3333");
-        aeq(Rational.read("6789").get().toBigDecimal(0, RoundingMode.FLOOR), "6789");
-        aeq(Rational.read("6789").get().toBigDecimal(0, RoundingMode.CEILING), "6789");
-        aeq(Rational.read("6789").get().toBigDecimal(0, RoundingMode.DOWN), "6789");
-        aeq(Rational.read("6789").get().toBigDecimal(0, RoundingMode.UP), "6789");
-        aeq(Rational.read("6789").get().toBigDecimal(0, RoundingMode.HALF_DOWN), "6789");
-        aeq(Rational.read("6789").get().toBigDecimal(0, RoundingMode.HALF_UP), "6789");
-        aeq(Rational.read("6789").get().toBigDecimal(0, RoundingMode.HALF_EVEN), "6789");
+        aeq(read("-1/3").get().toBigDecimal(4, RoundingMode.FLOOR), "-0.3334");
+        aeq(read("-1/3").get().toBigDecimal(4, RoundingMode.CEILING), "-0.3333");
+        aeq(read("-1/3").get().toBigDecimal(4, RoundingMode.DOWN), "-0.3333");
+        aeq(read("-1/3").get().toBigDecimal(4, RoundingMode.UP), "-0.3334");
+        aeq(read("-1/3").get().toBigDecimal(4, RoundingMode.HALF_DOWN), "-0.3333");
+        aeq(read("-1/3").get().toBigDecimal(4, RoundingMode.HALF_UP), "-0.3333");
+        aeq(read("-1/3").get().toBigDecimal(4, RoundingMode.HALF_EVEN), "-0.3333");
+        aeq(read("6789").get().toBigDecimal(0, RoundingMode.FLOOR), "6789");
+        aeq(read("6789").get().toBigDecimal(0, RoundingMode.CEILING), "6789");
+        aeq(read("6789").get().toBigDecimal(0, RoundingMode.DOWN), "6789");
+        aeq(read("6789").get().toBigDecimal(0, RoundingMode.UP), "6789");
+        aeq(read("6789").get().toBigDecimal(0, RoundingMode.HALF_DOWN), "6789");
+        aeq(read("6789").get().toBigDecimal(0, RoundingMode.HALF_UP), "6789");
+        aeq(read("6789").get().toBigDecimal(0, RoundingMode.HALF_EVEN), "6789");
         try {
-            Rational.read("6789").get().toBigDecimal(1, RoundingMode.UNNECESSARY);
+            read("6789").get().toBigDecimal(1, RoundingMode.UNNECESSARY);
             fail();
         } catch (ArithmeticException e) {}
-        aeq(Rational.read("6789").get().toBigDecimal(1, RoundingMode.FLOOR), "6E+3");
-        aeq(Rational.read("6789").get().toBigDecimal(1, RoundingMode.CEILING), "7E+3");
-        aeq(Rational.read("6789").get().toBigDecimal(1, RoundingMode.DOWN), "6E+3");
-        aeq(Rational.read("6789").get().toBigDecimal(1, RoundingMode.UP), "7E+3");
-        aeq(Rational.read("6789").get().toBigDecimal(1, RoundingMode.HALF_DOWN), "7E+3");
-        aeq(Rational.read("6789").get().toBigDecimal(1, RoundingMode.HALF_UP), "7E+3");
-        aeq(Rational.read("6789").get().toBigDecimal(1, RoundingMode.HALF_EVEN), "7E+3");
+        aeq(read("6789").get().toBigDecimal(1, RoundingMode.FLOOR), "6E+3");
+        aeq(read("6789").get().toBigDecimal(1, RoundingMode.CEILING), "7E+3");
+        aeq(read("6789").get().toBigDecimal(1, RoundingMode.DOWN), "6E+3");
+        aeq(read("6789").get().toBigDecimal(1, RoundingMode.UP), "7E+3");
+        aeq(read("6789").get().toBigDecimal(1, RoundingMode.HALF_DOWN), "7E+3");
+        aeq(read("6789").get().toBigDecimal(1, RoundingMode.HALF_UP), "7E+3");
+        aeq(read("6789").get().toBigDecimal(1, RoundingMode.HALF_EVEN), "7E+3");
         try {
-            Rational.read("6789").get().toBigDecimal(2, RoundingMode.UNNECESSARY);
+            read("6789").get().toBigDecimal(2, RoundingMode.UNNECESSARY);
             fail();
         } catch (ArithmeticException e) {}
-        aeq(Rational.read("6789").get().toBigDecimal(2, RoundingMode.FLOOR), "6.7E+3");
-        aeq(Rational.read("6789").get().toBigDecimal(2, RoundingMode.CEILING), "6.8E+3");
-        aeq(Rational.read("6789").get().toBigDecimal(2, RoundingMode.DOWN), "6.7E+3");
-        aeq(Rational.read("6789").get().toBigDecimal(2, RoundingMode.UP), "6.8E+3");
-        aeq(Rational.read("6789").get().toBigDecimal(2, RoundingMode.HALF_DOWN), "6.8E+3");
-        aeq(Rational.read("6789").get().toBigDecimal(2, RoundingMode.HALF_UP), "6.8E+3");
-        aeq(Rational.read("6789").get().toBigDecimal(2, RoundingMode.HALF_EVEN), "6.8E+3");
+        aeq(read("6789").get().toBigDecimal(2, RoundingMode.FLOOR), "6.7E+3");
+        aeq(read("6789").get().toBigDecimal(2, RoundingMode.CEILING), "6.8E+3");
+        aeq(read("6789").get().toBigDecimal(2, RoundingMode.DOWN), "6.7E+3");
+        aeq(read("6789").get().toBigDecimal(2, RoundingMode.UP), "6.8E+3");
+        aeq(read("6789").get().toBigDecimal(2, RoundingMode.HALF_DOWN), "6.8E+3");
+        aeq(read("6789").get().toBigDecimal(2, RoundingMode.HALF_UP), "6.8E+3");
+        aeq(read("6789").get().toBigDecimal(2, RoundingMode.HALF_EVEN), "6.8E+3");
         try {
-            Rational.read("6789").get().toBigDecimal(3, RoundingMode.UNNECESSARY);
+            read("6789").get().toBigDecimal(3, RoundingMode.UNNECESSARY);
             fail();
         } catch (ArithmeticException e) {}
-        aeq(Rational.read("6789").get().toBigDecimal(3, RoundingMode.FLOOR), "6.78E+3");
-        aeq(Rational.read("6789").get().toBigDecimal(3, RoundingMode.CEILING), "6.79E+3");
-        aeq(Rational.read("6789").get().toBigDecimal(3, RoundingMode.DOWN), "6.78E+3");
-        aeq(Rational.read("6789").get().toBigDecimal(3, RoundingMode.UP), "6.79E+3");
-        aeq(Rational.read("6789").get().toBigDecimal(3, RoundingMode.HALF_DOWN), "6.79E+3");
-        aeq(Rational.read("6789").get().toBigDecimal(3, RoundingMode.HALF_UP), "6.79E+3");
-        aeq(Rational.read("6789").get().toBigDecimal(3, RoundingMode.HALF_EVEN), "6.79E+3");
-        aeq(Rational.read("6789").get().toBigDecimal(4, RoundingMode.UNNECESSARY), "6789");
-        aeq(Rational.read("6789").get().toBigDecimal(4, RoundingMode.FLOOR), "6789");
-        aeq(Rational.read("6789").get().toBigDecimal(4, RoundingMode.CEILING), "6789");
-        aeq(Rational.read("6789").get().toBigDecimal(4, RoundingMode.DOWN), "6789");
-        aeq(Rational.read("6789").get().toBigDecimal(4, RoundingMode.UP), "6789");
-        aeq(Rational.read("6789").get().toBigDecimal(4, RoundingMode.HALF_DOWN), "6789");
-        aeq(Rational.read("6789").get().toBigDecimal(4, RoundingMode.HALF_UP), "6789");
-        aeq(Rational.read("6789").get().toBigDecimal(4, RoundingMode.HALF_EVEN), "6789");
-        aeq(Rational.read("6789").get().toBigDecimal(5, RoundingMode.UNNECESSARY), "6789");
-        aeq(Rational.read("6789").get().toBigDecimal(5, RoundingMode.FLOOR), "6789");
-        aeq(Rational.read("6789").get().toBigDecimal(5, RoundingMode.CEILING), "6789");
-        aeq(Rational.read("6789").get().toBigDecimal(5, RoundingMode.DOWN), "6789");
-        aeq(Rational.read("6789").get().toBigDecimal(5, RoundingMode.UP), "6789");
-        aeq(Rational.read("6789").get().toBigDecimal(5, RoundingMode.HALF_DOWN), "6789");
-        aeq(Rational.read("6789").get().toBigDecimal(5, RoundingMode.HALF_UP), "6789");
-        aeq(Rational.read("6789").get().toBigDecimal(5, RoundingMode.HALF_EVEN), "6789");
+        aeq(read("6789").get().toBigDecimal(3, RoundingMode.FLOOR), "6.78E+3");
+        aeq(read("6789").get().toBigDecimal(3, RoundingMode.CEILING), "6.79E+3");
+        aeq(read("6789").get().toBigDecimal(3, RoundingMode.DOWN), "6.78E+3");
+        aeq(read("6789").get().toBigDecimal(3, RoundingMode.UP), "6.79E+3");
+        aeq(read("6789").get().toBigDecimal(3, RoundingMode.HALF_DOWN), "6.79E+3");
+        aeq(read("6789").get().toBigDecimal(3, RoundingMode.HALF_UP), "6.79E+3");
+        aeq(read("6789").get().toBigDecimal(3, RoundingMode.HALF_EVEN), "6.79E+3");
+        aeq(read("6789").get().toBigDecimal(4, RoundingMode.UNNECESSARY), "6789");
+        aeq(read("6789").get().toBigDecimal(4, RoundingMode.FLOOR), "6789");
+        aeq(read("6789").get().toBigDecimal(4, RoundingMode.CEILING), "6789");
+        aeq(read("6789").get().toBigDecimal(4, RoundingMode.DOWN), "6789");
+        aeq(read("6789").get().toBigDecimal(4, RoundingMode.UP), "6789");
+        aeq(read("6789").get().toBigDecimal(4, RoundingMode.HALF_DOWN), "6789");
+        aeq(read("6789").get().toBigDecimal(4, RoundingMode.HALF_UP), "6789");
+        aeq(read("6789").get().toBigDecimal(4, RoundingMode.HALF_EVEN), "6789");
+        aeq(read("6789").get().toBigDecimal(5, RoundingMode.UNNECESSARY), "6789");
+        aeq(read("6789").get().toBigDecimal(5, RoundingMode.FLOOR), "6789");
+        aeq(read("6789").get().toBigDecimal(5, RoundingMode.CEILING), "6789");
+        aeq(read("6789").get().toBigDecimal(5, RoundingMode.DOWN), "6789");
+        aeq(read("6789").get().toBigDecimal(5, RoundingMode.UP), "6789");
+        aeq(read("6789").get().toBigDecimal(5, RoundingMode.HALF_DOWN), "6789");
+        aeq(read("6789").get().toBigDecimal(5, RoundingMode.HALF_UP), "6789");
+        aeq(read("6789").get().toBigDecimal(5, RoundingMode.HALF_EVEN), "6789");
         try {
-            Rational.read("5").get().toBigDecimal(-1, RoundingMode.UNNECESSARY);
+            read("5").get().toBigDecimal(-1, RoundingMode.UNNECESSARY);
             fail();
         } catch (IllegalArgumentException e) {}
         try {
-            Rational.read("5").get().toBigDecimal(-1, RoundingMode.FLOOR);
+            read("5").get().toBigDecimal(-1, RoundingMode.FLOOR);
             fail();
         } catch (IllegalArgumentException e) {}
         try {
-            Rational.read("5").get().toBigDecimal(-1, RoundingMode.CEILING);
+            read("5").get().toBigDecimal(-1, RoundingMode.CEILING);
             fail();
         } catch (IllegalArgumentException e) {}
         try {
-            Rational.read("5").get().toBigDecimal(-1, RoundingMode.DOWN);
+            read("5").get().toBigDecimal(-1, RoundingMode.DOWN);
             fail();
         } catch (IllegalArgumentException e) {}
         try {
-            Rational.read("5").get().toBigDecimal(-1, RoundingMode.UP);
+            read("5").get().toBigDecimal(-1, RoundingMode.UP);
             fail();
         } catch (IllegalArgumentException e) {}
         try {
-            Rational.read("5").get().toBigDecimal(-1, RoundingMode.HALF_DOWN);
+            read("5").get().toBigDecimal(-1, RoundingMode.HALF_DOWN);
             fail();
         } catch (IllegalArgumentException e) {}
         try {
-            Rational.read("5").get().toBigDecimal(-1, RoundingMode.HALF_UP);
+            read("5").get().toBigDecimal(-1, RoundingMode.HALF_UP);
             fail();
         } catch (IllegalArgumentException e) {}
         try {
-            Rational.read("5").get().toBigDecimal(-1, RoundingMode.HALF_EVEN);
+            read("5").get().toBigDecimal(-1, RoundingMode.HALF_EVEN);
             fail();
         } catch (IllegalArgumentException e) {}
     }
 
     @Test
     public void testEquals() {
-        assertTrue(Rational.ZERO.equals(Rational.ZERO));
-        assertTrue(Rational.ONE.equals(Rational.ONE));
-        assertTrue(Rational.read("4").get().equals(Rational.read("4").get()));
-        assertTrue(Rational.read("-4").get().equals(Rational.read("-4").get()));
-        assertTrue(Rational.read("5/12").get().equals(Rational.read("5/12").get()));
-        assertTrue(Rational.read("-5/12").get().equals(Rational.read("-5/12").get()));
-        assertFalse(Rational.ZERO.equals(Rational.ONE));
-        assertFalse(Rational.ONE.equals(Rational.ZERO));
-        assertFalse(Rational.ZERO.equals(Rational.read("4").get()));
-        assertFalse(Rational.ZERO.equals(Rational.read("-4").get()));
-        assertFalse(Rational.ZERO.equals(Rational.read("5/12").get()));
-        assertFalse(Rational.ZERO.equals(Rational.read("-5/12").get()));
-        assertFalse(Rational.ONE.equals(Rational.read("4").get()));
-        assertFalse(Rational.ONE.equals(Rational.read("-4").get()));
-        assertFalse(Rational.ONE.equals(Rational.read("5/12").get()));
-        assertFalse(Rational.ONE.equals(Rational.read("-5/12").get()));
-        assertFalse(Rational.read("4").get().equals(Rational.ZERO));
-        assertFalse(Rational.read("-4").get().equals(Rational.ZERO));
-        assertFalse(Rational.read("5/12").get().equals(Rational.ZERO));
-        assertFalse(Rational.read("-5/12").get().equals(Rational.ZERO));
-        assertFalse(Rational.read("4").get().equals(Rational.ONE));
-        assertFalse(Rational.read("-4").get().equals(Rational.ONE));
-        assertFalse(Rational.read("5/12").get().equals(Rational.ONE));
-        assertFalse(Rational.read("-5/12").get().equals(Rational.ONE));
-        assertFalse(Rational.read("4").equals(Rational.read("-4")));
-        assertFalse(Rational.read("4").equals(Rational.read("5/12")));
-        assertFalse(Rational.read("4").equals(Rational.read("-5/12")));
-        assertFalse(Rational.read("-4").equals(Rational.read("4")));
-        assertFalse(Rational.read("-4").equals(Rational.read("5/12")));
-        assertFalse(Rational.read("-4").equals(Rational.read("-5/12")));
-        assertFalse(Rational.read("5/12").equals(Rational.read("4")));
-        assertFalse(Rational.read("5/12").equals(Rational.read("-4")));
-        assertFalse(Rational.read("5/12").equals(Rational.read("-5/12")));
-        assertFalse(Rational.read("-5/12").equals(Rational.read("4")));
-        assertFalse(Rational.read("-5/12").equals(Rational.read("-4")));
-        assertFalse(Rational.read("-5/12").equals(Rational.read("5/12")));
-        assertTrue(Rational.read("4").isPresent());
-        assertTrue(Rational.read("-4").isPresent());
-        assertTrue(Rational.read("5/12").isPresent());
-        assertTrue(Rational.read("-5/12").isPresent());
-        assertTrue(Rational.read("-5/12").isPresent());
-        assertTrue(Rational.read("-5/12").isPresent());
-        assertTrue(Rational.read("-5/12").isPresent());
+        assertTrue(ZERO.equals(ZERO));
+        assertTrue(ONE.equals(ONE));
+        assertTrue(read("4").get().equals(read("4").get()));
+        assertTrue(read("-4").get().equals(read("-4").get()));
+        assertTrue(read("5/12").get().equals(read("5/12").get()));
+        assertTrue(read("-5/12").get().equals(read("-5/12").get()));
+        assertFalse(ZERO.equals(ONE));
+        assertFalse(ONE.equals(ZERO));
+        assertFalse(ZERO.equals(read("4").get()));
+        assertFalse(ZERO.equals(read("-4").get()));
+        assertFalse(ZERO.equals(read("5/12").get()));
+        assertFalse(ZERO.equals(read("-5/12").get()));
+        assertFalse(ONE.equals(read("4").get()));
+        assertFalse(ONE.equals(read("-4").get()));
+        assertFalse(ONE.equals(read("5/12").get()));
+        assertFalse(ONE.equals(read("-5/12").get()));
+        assertFalse(read("4").get().equals(ZERO));
+        assertFalse(read("-4").get().equals(ZERO));
+        assertFalse(read("5/12").get().equals(ZERO));
+        assertFalse(read("-5/12").get().equals(ZERO));
+        assertFalse(read("4").get().equals(ONE));
+        assertFalse(read("-4").get().equals(ONE));
+        assertFalse(read("5/12").get().equals(ONE));
+        assertFalse(read("-5/12").get().equals(ONE));
+        assertFalse(read("4").equals(read("-4")));
+        assertFalse(read("4").equals(read("5/12")));
+        assertFalse(read("4").equals(read("-5/12")));
+        assertFalse(read("-4").equals(read("4")));
+        assertFalse(read("-4").equals(read("5/12")));
+        assertFalse(read("-4").equals(read("-5/12")));
+        assertFalse(read("5/12").equals(read("4")));
+        assertFalse(read("5/12").equals(read("-4")));
+        assertFalse(read("5/12").equals(read("-5/12")));
+        assertFalse(read("-5/12").equals(read("4")));
+        assertFalse(read("-5/12").equals(read("-4")));
+        assertFalse(read("-5/12").equals(read("5/12")));
+        assertTrue(read("4").isPresent());
+        assertTrue(read("-4").isPresent());
+        assertTrue(read("5/12").isPresent());
+        assertTrue(read("-5/12").isPresent());
+        assertTrue(read("-5/12").isPresent());
+        assertTrue(read("-5/12").isPresent());
+        assertTrue(read("-5/12").isPresent());
     }
 
     @Test
     public void testHashCode() {
-        aeq(Rational.ZERO.hashCode(), 1);
-        aeq(Rational.ONE.hashCode(), 32);
-        aeq(Rational.read("4").hashCode(), 125);
-        aeq(Rational.read("-4").hashCode(), -123);
-        aeq(Rational.read("5/12").hashCode(), 167);
-        aeq(Rational.read("-5/12").hashCode(), -143);
+        aeq(ZERO.hashCode(), 1);
+        aeq(ONE.hashCode(), 32);
+        aeq(read("4").hashCode(), 125);
+        aeq(read("-4").hashCode(), -123);
+        aeq(read("5/12").hashCode(), 167);
+        aeq(read("-5/12").hashCode(), -143);
     }
 
     @Test
     public void testCompareTo() {
-        aeq(Rational.ZERO.compareTo(Rational.ZERO), 0);
-        aeq(Rational.ONE.compareTo(Rational.ONE), 0);
-        assertTrue(eq(Rational.read("4").get(), Rational.read("4").get()));
-        assertTrue(eq(Rational.read("-4").get(), Rational.read("-4").get()));
-        assertTrue(eq(Rational.read("5/12").get(), Rational.read("5/12").get()));
-        assertTrue(eq(Rational.read("-5/12").get(), Rational.read("-5/12").get()));
-        assertTrue(lt(Rational.ZERO, Rational.ONE));
-        assertTrue(gt(Rational.ONE, Rational.ZERO));
-        assertTrue(lt(Rational.ZERO, Rational.read("4").get()));
-        assertTrue(gt(Rational.ZERO, Rational.read("-4").get()));
-        assertTrue(lt(Rational.ZERO, Rational.read("5/12").get()));
-        assertTrue(gt(Rational.ZERO, Rational.read("-5/12").get()));
-        assertTrue(lt(Rational.ONE, Rational.read("4").get()));
-        assertTrue(gt(Rational.ONE, Rational.read("-4").get()));
-        assertTrue(gt(Rational.ONE, Rational.read("5/12").get()));
-        assertTrue(gt(Rational.ONE, Rational.read("-5/12").get()));
-        assertTrue(gt(Rational.read("4").get(), Rational.ZERO));
-        assertTrue(lt(Rational.read("-4").get(), Rational.ZERO));
-        assertTrue(gt(Rational.read("5/12").get(), Rational.ZERO));
-        assertTrue(lt(Rational.read("-5/12").get(), Rational.ZERO));
-        assertTrue(gt(Rational.read("4").get(), Rational.ONE));
-        assertTrue(lt(Rational.read("-4").get(), Rational.ONE));
-        assertTrue(lt(Rational.read("5/12").get(), Rational.ONE));
-        assertTrue(lt(Rational.read("-5/12").get(), Rational.ONE));
-        assertTrue(gt(Rational.read("4").get(), Rational.read("-4").get()));
-        assertTrue(gt(Rational.read("4").get(), Rational.read("5/12").get()));
-        assertTrue(gt(Rational.read("4").get(), Rational.read("-5/12").get()));
-        assertTrue(lt(Rational.read("-4").get(), Rational.read("4").get()));
-        assertTrue(lt(Rational.read("-4").get(), Rational.read("5/12").get()));
-        assertTrue(lt(Rational.read("-4").get(), Rational.read("-5/12").get()));
-        assertTrue(lt(Rational.read("5/12").get(), Rational.read("4").get()));
-        assertTrue(gt(Rational.read("5/12").get(), Rational.read("-4").get()));
-        assertTrue(gt(Rational.read("5/12").get(), Rational.read("-5/12").get()));
-        assertTrue(lt(Rational.read("-5/12").get(), Rational.read("4").get()));
-        assertTrue(gt(Rational.read("-5/12").get(), Rational.read("-4").get()));
-        assertTrue(lt(Rational.read("-5/12").get(), Rational.read("5/12").get()));
+        aeq(ZERO.compareTo(ZERO), 0);
+        aeq(ONE.compareTo(ONE), 0);
+        assertTrue(eq(read("4").get(), read("4").get()));
+        assertTrue(eq(read("-4").get(), read("-4").get()));
+        assertTrue(eq(read("5/12").get(), read("5/12").get()));
+        assertTrue(eq(read("-5/12").get(), read("-5/12").get()));
+        assertTrue(lt(ZERO, ONE));
+        assertTrue(gt(ONE, ZERO));
+        assertTrue(lt(ZERO, read("4").get()));
+        assertTrue(gt(ZERO, read("-4").get()));
+        assertTrue(lt(ZERO, read("5/12").get()));
+        assertTrue(gt(ZERO, read("-5/12").get()));
+        assertTrue(lt(ONE, read("4").get()));
+        assertTrue(gt(ONE, read("-4").get()));
+        assertTrue(gt(ONE, read("5/12").get()));
+        assertTrue(gt(ONE, read("-5/12").get()));
+        assertTrue(gt(read("4").get(), ZERO));
+        assertTrue(lt(read("-4").get(), ZERO));
+        assertTrue(gt(read("5/12").get(), ZERO));
+        assertTrue(lt(read("-5/12").get(), ZERO));
+        assertTrue(gt(read("4").get(), ONE));
+        assertTrue(lt(read("-4").get(), ONE));
+        assertTrue(lt(read("5/12").get(), ONE));
+        assertTrue(lt(read("-5/12").get(), ONE));
+        assertTrue(gt(read("4").get(), read("-4").get()));
+        assertTrue(gt(read("4").get(), read("5/12").get()));
+        assertTrue(gt(read("4").get(), read("-5/12").get()));
+        assertTrue(lt(read("-4").get(), read("4").get()));
+        assertTrue(lt(read("-4").get(), read("5/12").get()));
+        assertTrue(lt(read("-4").get(), read("-5/12").get()));
+        assertTrue(lt(read("5/12").get(), read("4").get()));
+        assertTrue(gt(read("5/12").get(), read("-4").get()));
+        assertTrue(gt(read("5/12").get(), read("-5/12").get()));
+        assertTrue(lt(read("-5/12").get(), read("4").get()));
+        assertTrue(gt(read("-5/12").get(), read("-4").get()));
+        assertTrue(lt(read("-5/12").get(), read("5/12").get()));
     }
 
     @Test
     public void testRead() {
-        assertTrue(Rational.read("0").get() == Rational.ZERO);
-        assertTrue(Rational.read("1").get() == Rational.ONE);
-        aeq(Rational.read("3").get(), "3");
-        aeq(Rational.read("-3").get(), "-3");
-        aeq(Rational.read("5/12").get(), "5/12");
-        aeq(Rational.read("-5/12").get(), "-5/12");
-        aeq(Rational.read("12/6").get(), "2");
-        aeq(Rational.read("12/-6").get(), "-2");
-        aeq(Rational.read("6/8").get(), "3/4");
-        aeq(Rational.read("-4/1").get(), "-4");
+        assertTrue(read("0").get() == ZERO);
+        assertTrue(read("1").get() == ONE);
+        aeq(read("3").get(), "3");
+        aeq(read("-3").get(), "-3");
+        aeq(read("5/12").get(), "5/12");
+        aeq(read("-5/12").get(), "-5/12");
+        aeq(read("12/6").get(), "2");
+        aeq(read("12/-6").get(), "-2");
+        aeq(read("6/8").get(), "3/4");
+        aeq(read("-4/1").get(), "-4");
         try {
-            Rational.read("2/0");
+            read("2/0");
             fail();
         } catch (ArithmeticException e) {}
-        assertFalse(Rational.read("").isPresent());
-        assertFalse(Rational.read(" ").isPresent());
-        assertFalse(Rational.read("1 ").isPresent());
-        assertFalse(Rational.read("01").isPresent());
-        assertFalse(Rational.read("-").isPresent());
-        assertFalse(Rational.read("-0").isPresent());
-        assertFalse(Rational.read("--5").isPresent());
-        assertFalse(Rational.read("0.1").isPresent());
-        assertFalse(Rational.read("/1").isPresent());
-        assertFalse(Rational.read("/").isPresent());
-        assertFalse(Rational.read("2//3").isPresent());
-        assertFalse(Rational.read("2/").isPresent());
-        assertFalse(Rational.read("2 /3").isPresent());
-        assertFalse(Rational.read("2/ 3").isPresent());
-        assertFalse(Rational.read("2 / 3").isPresent());
-        assertFalse(Rational.read("a").isPresent());
-        assertFalse(Rational.read("2-3").isPresent());
-        assertFalse(Rational.read("0x12").isPresent());
-        assertFalse(Rational.read("12/3a").isPresent());
+        assertFalse(read("").isPresent());
+        assertFalse(read(" ").isPresent());
+        assertFalse(read("1 ").isPresent());
+        assertFalse(read("01").isPresent());
+        assertFalse(read("-").isPresent());
+        assertFalse(read("-0").isPresent());
+        assertFalse(read("--5").isPresent());
+        assertFalse(read("0.1").isPresent());
+        assertFalse(read("/1").isPresent());
+        assertFalse(read("/").isPresent());
+        assertFalse(read("2//3").isPresent());
+        assertFalse(read("2/").isPresent());
+        assertFalse(read("2 /3").isPresent());
+        assertFalse(read("2/ 3").isPresent());
+        assertFalse(read("2 / 3").isPresent());
+        assertFalse(read("a").isPresent());
+        assertFalse(read("2-3").isPresent());
+        assertFalse(read("0x12").isPresent());
+        assertFalse(read("12/3a").isPresent());
     }
 
     @Test
     public void testToString() {
-        aeq(Rational.ZERO, "0");
-        aeq(Rational.ONE, "1");
-        aeq(Rational.read("4").get(), "4");
-        aeq(Rational.read("-4").get(), "-4");
-        aeq(Rational.read("2/5").get(), "2/5");
-        aeq(Rational.read("-2/5").get(), "-2/5");
+        aeq(ZERO, "0");
+        aeq(ONE, "1");
+        aeq(read("4").get(), "4");
+        aeq(read("-4").get(), "-4");
+        aeq(read("2/5").get(), "2/5");
+        aeq(read("-2/5").get(), "-2/5");
+    }
+
+    @Test
+    public void testRationals() {
+        aeq(take(50, RATIONALS),
+                "[0, 1, 1/2, 1/3, 1/4, -1, -1/2, 2, -1/3, -1/4, 2/3, 1/5, 1/6, 1/7, 1/8, -1/5, -1/6, 2/5, -1/7," +
+                " -1/8, 2/7, -2, 3, 3/2, -2/3, 3/4, -3, -3/2, 4, -3/4, 4/3, -2/5, 3/5, -2/7, 3/7, 3/8, -3/5, 4/5," +
+                " -3/7, -3/8, 4/7, 1/9, 1/10, 1/11, 1/12, -1/9, -1/10, 2/9, -1/11, -1/12]");
+    }
+
+    @Test
+    public void testNonNegativeRationals() {
+        aeq(take(50, NON_NEGATIVE_RATIONALS),
+                "[0, 1, 1/2, 1/3, 1/4, 2, 3, 3/2, 2/3, 3/4, 1/5, 1/6, 1/7, 1/8, 2/5, 3/5, 2/7, 3/7, 3/8, 4, 5, 5/2," +
+                " 4/3, 5/3, 5/4, 6, 7, 7/2, 7/3, 7/4, 4/5, 5/6, 4/7, 5/7, 5/8, 6/5, 7/5, 7/6, 6/7, 7/8, 1/9, 1/10," +
+                " 1/11, 1/12, 2/9, 3/10, 2/11, 3/11, 1/13, 1/14]");
+    }
+
+    @Test
+    public void testPositiveRationals() {
+        aeq(take(50, POSITIVE_RATIONALS),
+                "[1, 1/2, 2, 1/3, 1/4, 2/3, 3, 3/2, 4, 3/4, 4/3, 1/5, 1/6, 2/5, 1/7, 1/8, 2/7, 3/5, 4/5, 3/7, 3/8," +
+                " 4/7, 5, 5/2, 6, 5/3, 5/4, 7, 7/2, 8, 7/3, 7/4, 8/3, 5/6, 6/5, 5/7, 5/8, 6/7, 7/5, 7/6, 8/5, 7/8," +
+                " 8/7, 1/9, 1/10, 2/9, 1/11, 1/12, 2/11, 3/10]");
+    }
+
+    @Test
+    public void testNegativeRationals() {
+        aeq(take(50, NEGATIVE_RATIONALS),
+                "[-1, -1/2, -2, -1/3, -1/4, -2/3, -3, -3/2, -4, -3/4, -4/3, -1/5, -1/6, -2/5, -1/7, -1/8, -2/7," +
+                " -3/5, -4/5, -3/7, -3/8, -4/7, -5, -5/2, -6, -5/3, -5/4, -7, -7/2, -8, -7/3, -7/4, -8/3, -5/6," +
+                " -6/5, -5/7, -5/8, -6/7, -7/5, -7/6, -8/5, -7/8, -8/7, -1/9, -1/10, -2/9, -1/11, -1/12, -2/11," +
+                " -3/10]");
+    }
+
+    @Test
+    public void testNonNegativeRationalsLessThanOne() {
+        aeq(take(50, NONNEGATIVE_RATIONALS_LESS_THAN_ONE),
+                "[0, 1/2, 1/3, 1/4, 2/3, 3/4, 1/5, 1/6, 1/7, 1/8, 2/5, 3/5, 2/7, 3/7, 3/8, 4/5, 5/6, 4/7, 5/7, 5/8," +
+                " 6/7, 7/8, 1/9, 1/10, 1/11, 1/12, 2/9, 3/10, 2/11, 3/11, 1/13, 1/14, 1/15, 1/16, 2/13, 3/13, 3/14," +
+                " 2/15, 3/16, 4/9, 5/9, 4/11, 5/11, 5/12, 7/9, 7/10, 6/11, 7/11, 7/12, 4/13]");
+    }
+
+    private static void aeq(Iterable<?> a, Object b) {
+        assertEquals(IterableUtils.toString(a), b.toString());
     }
 
     private static void aeq(Object a, Object b) {

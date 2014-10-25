@@ -1,6 +1,7 @@
 package mho.qbar;
 
 import mho.haskellesque.iterables.ExhaustiveProvider;
+import mho.haskellesque.iterables.RandomProvider;
 import mho.haskellesque.math.BasicMath;
 import mho.haskellesque.numbers.Numbers;
 import mho.haskellesque.ordering.Ordering;
@@ -1582,7 +1583,7 @@ public final class Rational implements Comparable<Rational> {
     }
 
     /**
-     * @return an <tt>Iterable</tt> that contains every <tt>Rational</tt>.
+     * an <tt>Iterable</tt> that contains every <tt>Rational</tt>. Does not support removal.
      *
      * Length is infinite
      */
@@ -1596,11 +1597,11 @@ public final class Rational implements Comparable<Rational> {
         );
 
     /**
-     * @return an <tt>Iterable</tt> that contains every non-negative <tt>Rational</tt>.
+     * an <tt>Iterable</tt> that contains every non-negative <tt>Rational</tt>. Does not support removal.
      *
      * Length is infinite
      */
-    public static @NotNull Iterable<Rational> NONNEGATIVE_RATIONALS =
+    public static @NotNull Iterable<Rational> NON_NEGATIVE_RATIONALS =
         map(
                 Rational::fromPair,
                 filter(
@@ -1610,7 +1611,7 @@ public final class Rational implements Comparable<Rational> {
         );
 
     /**
-     * @return an <tt>Iterable</tt> that contains every positive <tt>Rational</tt>.
+     * an <tt>Iterable</tt> that contains every positive <tt>Rational</tt>. Does not support removal.
      *
      * Length is infinite
      */
@@ -1621,7 +1622,7 @@ public final class Rational implements Comparable<Rational> {
         );
 
     /**
-     * @return an <tt>Iterable</tt> that contains every negative <tt>Rational</tt>.
+     * an <tt>Iterable</tt> that contains every negative <tt>Rational</tt>. Does not support removal.
      *
      * Length is infinite
      */
@@ -1635,7 +1636,7 @@ public final class Rational implements Comparable<Rational> {
         );
 
     /**
-     * @return an <tt>Iterable</tt> that contains every non-negative <tt>Rational</tt> less than one.
+     * an <tt>Iterable</tt> that contains every <tt>Rational</tt> in the interval [0, 1). Does not support removal.
      *
      * Length is infinite
      */
@@ -1647,4 +1648,142 @@ public final class Rational implements Comparable<Rational> {
                         P.pairs(P.naturalBigIntegers(), P.positiveBigIntegers())
                 )
         );
+
+    /**
+     * a pseudorandom <tt>Iterable</tt> that generates every <tt>Rational</tt>. The bit size is chosen from a geometric
+     * distribution with mean approximately <tt>meanBitSize</tt> (The ratio between the actual mean bit size and
+     * <tt>meanBitSize</tt> decreases as <tt>meanBitSize</tt> increases). Does not support removal.
+     *
+     * Length is infinite
+     */
+    public static @NotNull Iterable<Rational> randomRationals(RandomProvider p, int meanBitSize) {
+        return map(
+                Rational::fromPair,
+                filter(
+                        q -> q.a.gcd(q.b).equals(BigInteger.ONE),
+                        p.pairs(p.bigIntegers(meanBitSize), p.positiveBigIntegers(meanBitSize))
+                )
+        );
+    }
+
+    /**
+     * a pseudorandom <tt>Iterable</tt> that generates every <tt>Rational</tt>. The bit size is chosen from a geometric
+     * distribution with mean approximately 64. Does not support removal.
+     *
+     * Length is infinite
+     */
+    public static @NotNull Iterable<Rational> randomRationals(RandomProvider p) {
+        return randomRationals(p, RandomProvider.BIG_INTEGER_MEAN_BIT_SIZE);
+    }
+
+    /**
+     * a pseudorandom <tt>Iterable</tt> that generates every non-negative <tt>Rational</tt>. The bit size is chosen
+     * from a geometric distribution with mean approximately <tt>meanBitSize</tt> (The ratio between the actual mean
+     * bit size and <tt>meanBitSize</tt> decreases as <tt>meanBitSize</tt> increases). Does not support removal.
+     *
+     * Length is infinite
+     */
+    public static @NotNull Iterable<Rational> randomNonNegativeRationals(RandomProvider p, int meanBitSize) {
+        return map(
+                Rational::fromPair,
+                filter(
+                        q -> q.a.gcd(q.b).equals(BigInteger.ONE),
+                        p.pairs(p.naturalBigIntegers(meanBitSize), p.positiveBigIntegers(meanBitSize))
+                )
+        );
+    }
+
+    /**
+     * a pseudorandom <tt>Iterable</tt> that generates every non-negative <tt>Rational</tt>. The bit size is chosen
+     * from a geometric distribution with mean approximately 64. Does not support removal.
+     *
+     * Length is infinite
+     */
+    public static @NotNull Iterable<Rational> randomNonNegativeRationals(RandomProvider p) {
+        return randomNonNegativeRationals(p, RandomProvider.BIG_INTEGER_MEAN_BIT_SIZE);
+    }
+
+    /**
+     * a pseudorandom <tt>Iterable</tt> that generates every positive <tt>Rational</tt>. The bit size is chosen from a
+     * geometric distribution with mean approximately <tt>meanBitSize</tt> (The ratio between the actual mean bit size
+     * and <tt>meanBitSize</tt> decreases as <tt>meanBitSize</tt> increases). Does not support removal.
+     *
+     * Length is infinite
+     */
+    public static @NotNull Iterable<Rational> randomPositiveRationals(RandomProvider p, int meanBitSize) {
+        return map(
+                Rational::fromPair,
+                filter(
+                        q -> q.a.gcd(q.b).equals(BigInteger.ONE),
+                        p.pairs(p.positiveBigIntegers(meanBitSize), p.positiveBigIntegers(meanBitSize))
+                )
+        );
+    }
+
+    /**
+     * a pseudorandom <tt>Iterable</tt> that generates every positive <tt>Rational</tt>. The bit size is chosen from a
+     * geometric distribution with mean approximately 64. Does not support removal.
+     *
+     * Length is infinite
+     */
+    public static @NotNull Iterable<Rational> randomPositiveRationals(RandomProvider p) {
+        return randomPositiveRationals(p, RandomProvider.BIG_INTEGER_MEAN_BIT_SIZE);
+    }
+
+    /**
+     * a pseudorandom <tt>Iterable</tt> that generates every negative <tt>Rational</tt>. The bit size is chosen from a
+     * geometric distribution with mean approximately <tt>meanBitSize</tt> (The ratio between the actual mean bit size
+     * and <tt>meanBitSize</tt> decreases as <tt>meanBitSize</tt> increases). Does not support removal.
+     *
+     * Length is infinite
+     */
+    public static @NotNull Iterable<Rational> randomNegativeRationals(RandomProvider p, int meanBitSize) {
+        return map(
+                Rational::fromPair,
+                filter(
+                        q -> q.a.gcd(q.b).equals(BigInteger.ONE),
+                        p.pairs(p.negativeBigIntegers(meanBitSize), p.positiveBigIntegers(meanBitSize))
+                )
+        );
+    }
+
+    /**
+     * a pseudorandom <tt>Iterable</tt> that generates every negative <tt>Rational</tt>. The bit size is chosen from a
+     * geometric distribution with mean approximately 64. Does not support removal.
+     *
+     * Length is infinite
+     */
+    public static @NotNull Iterable<Rational> randomNegativeRationals(RandomProvider p) {
+        return randomNegativeRationals(p, RandomProvider.BIG_INTEGER_MEAN_BIT_SIZE);
+    }
+
+    /**
+     * a pseudorandom <tt>Iterable</tt> that generates every <tt>Rational</tt> in the interval [0, 1). The bit size is
+     * chosen from a geometric distribution with mean approximately <tt>meanBitSize</tt> (The ratio between the actual
+     * mean bit size and <tt>meanBitSize</tt> decreases as <tt>meanBitSize</tt> increases). Does not support removal.
+     *
+     * Length is infinite
+     */
+    public static @NotNull Iterable<Rational> randomNonNegativeRationalsLessThanOne(
+            RandomProvider p,
+            int meanBitSize
+    ) {
+        return map(
+                Rational::fromPair,
+                filter(
+                        q -> lt(q.a, q.b) && q.a.gcd(q.b).equals(BigInteger.ONE),
+                        p.pairs(p.naturalBigIntegers(meanBitSize), p.positiveBigIntegers(meanBitSize))
+                )
+        );
+    }
+
+    /**
+     * a pseudorandom <tt>Iterable</tt> that generates every <tt>Rational</tt> in the interval [0, 1). The bit size is
+     * chosen from a geometric distribution with mean approximately 64. Does not support removal.
+     *
+     * Length is infinite
+     */
+    public static @NotNull Iterable<Rational> randomNonNegativeRationalsLessThanOne(RandomProvider p) {
+        return randomNonNegativeRationalsLessThanOne(p, RandomProvider.BIG_INTEGER_MEAN_BIT_SIZE);
+    }
 }
