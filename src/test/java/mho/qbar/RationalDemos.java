@@ -156,14 +156,16 @@ public class RationalDemos {
         }
     }
 
-    public static void divideRationalRationalDemo() {
+    public static void demoDivide_Rational_Rational() {
+        initialize();
         Iterable<Pair<Rational, Rational>> it = filter(p -> p.b != ZERO, P.pairs(T_RATIONALS));
         for (Pair<Rational, Rational> p : take(LIMIT, it)) {
             System.out.println(p.a + " / " + p.b + " = " + divide(p.a, p.b));
         }
     }
 
-    public static void divideBigIntegerDemo() {
+    public static void demoDivide_BigInteger() {
+        initialize();
         Iterable<Pair<Rational, BigInteger>> it = P.pairs(
                 T_RATIONALS,
                 filter(bi -> !bi.equals(BigInteger.ZERO), P.bigIntegers())
@@ -175,7 +177,8 @@ public class RationalDemos {
         }
     }
 
-    public static void divideIntDemo() {
+    public static void demoDivide_int() {
+        initialize();
         for (Pair<Rational, Integer> p : take(LIMIT, P.pairs(T_RATIONALS, filter(i -> i != 0, P.integers())))) {
             assert p.a != null;
             assert p.b != null;
