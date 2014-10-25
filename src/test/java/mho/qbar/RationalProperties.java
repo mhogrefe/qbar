@@ -63,7 +63,7 @@ public class RationalProperties {
             propertiesDivide_Rational_Rational();
             propertiesDivide_BigInteger();
             propertiesDivide_int();
-//        powProperties1();
+            propertiesPow();
 //        powProperties2();
 //        powProperties3();
 //        floorProperties();
@@ -535,37 +535,55 @@ public class RationalProperties {
             assertEquals(r.toString(), r.divide(1), r);
         }
     }
-    
-//
-//    public static void powProperties1() {
-//        Iterable<Pair<Rational, Integer>> g = new FilteredIterable<Pair<Rational, Integer>>(
-//                new PairIterable<>(T_RATIONALS, P.integers()),
-//                p -> p.b >= 0 || p.a != ZERO
-//        );
-//        for (Pair<Rational, Integer> p : g.iterate(limit)) {
-//            Rational r = p.a.pow(p.b);
-//            validate(r);
-//            if (p.a == ZERO && p.b != 0) {
-//                Assert.assertTrue(p.toString(), r == ZERO);
-//            }
-//            if (p.b == 0) {
-//                Assert.assertTrue(p.toString(), r == ONE);
-//            }
-//            if (p.b == 1) {
-//                Assert.assertEquals(p.toString(), r, p.a);
-//            }
-//            if (p.b == -1) {
-//                Assert.assertEquals(p.toString(), r, p.a.invert());
-//            }
-//            if (p.b == 2) {
-//                Assert.assertEquals(p.toString(), r, multiply(p.a, p.a));
-//            }
-//            if (p.a != ZERO) {
-//                Assert.assertEquals(p.toString(), r, p.a.pow(-p.b).invert());
-//                Assert.assertEquals(p.toString(), r, p.a.invert().pow(-p.b));
-//            }
-//        }
-//    }
+
+    public static void propertiesPow() {
+        initialize();
+        System.out.println("testing pow(int) properties...");
+
+        Iterable<Integer> eit;
+        if (P instanceof ExhaustiveProvider) {
+            eit = P.integers();
+        } else {
+            eit = ((RandomProvider) P).integersGeometric(50);
+        }
+        Iterable<Pair<Rational, Integer>> it = filter(p -> p.b >= 0 || p.a != ZERO, P.pairs(T_RATIONALS, eit));
+        for (Pair<Rational, Integer> p : take(LIMIT, it)) {
+            assert p.a != null;
+            assert p.b != null;
+            Rational r = p.a.pow(p.b);
+            validate(r);
+        }
+
+        it = P.pairs(filter(r -> r != ZERO, T_RATIONALS), eit);
+        for (Pair<Rational, Integer> p : take(LIMIT, it)) {
+            assert p.a != null;
+            assert p.b != null;
+            Rational r = p.a.pow(p.b);
+            Assert.assertEquals(p.toString(), r, p.a.pow(-p.b).invert());
+            Assert.assertEquals(p.toString(), r, p.a.invert().pow(-p.b));
+        }
+
+        Iterable<Integer> peit;
+        if (P instanceof ExhaustiveProvider) {
+            peit = P.positiveIntegers();
+        } else {
+            peit = ((RandomProvider) P).positiveIntegersGeometric(50);
+        }
+        for (int i : take(LIMIT, peit)) {
+            assertTrue(Integer.toString(i), ZERO.pow(i) == ZERO);
+        }
+
+        for (Rational r : take(LIMIT, T_RATIONALS)) {
+            assertTrue(r.toString(), r.pow(0) == ONE);
+            assertEquals(r.toString(), r.pow(1), r);
+            assertEquals(r.toString(), r.pow(2), multiply(r, r));
+        }
+
+        Iterable<Rational> rit = filter(r -> r != ZERO, T_RATIONALS);
+        for (Rational r : take(LIMIT, rit)) {
+            assertEquals(r.toString(), r.pow(-1), r.invert());
+        }
+    }
 //
 //    public static void powProperties2() {
 //        Iterable<Integer> ig = P.integers();

@@ -22,6 +22,10 @@ public class RationalDemos {
     private static IterableProvider P;
     private static Iterable<Rational> T_RATIONALS;
 
+    public static void main(String[] args) {
+        demoCeiling();
+    }
+
     private static void initialize() {
         if (USE_RANDOM) {
             RandomProvider randomProvider = new RandomProvider(new Random(7706916639046193098L));
@@ -186,11 +190,15 @@ public class RationalDemos {
         }
     }
 
-    public static void powDemo() {
-        Iterable<Pair<Rational, Integer>> it = filter(
-                p -> p.b >= 0 || p.a != ZERO,
-                P.pairs(T_RATIONALS, P.integers())
-        );
+    public static void demoPow() {
+        initialize();
+        Iterable<Integer> eit;
+        if (P instanceof ExhaustiveProvider) {
+            eit = P.integers();
+        } else {
+            eit = ((RandomProvider) P).integersGeometric(50);
+        }
+        Iterable<Pair<Rational, Integer>> it = filter(p -> p.b >= 0 || p.a != ZERO, P.pairs(T_RATIONALS, eit));
         for (Pair<Rational, Integer> p : take(LIMIT, it)) {
             assert p.a != null;
             assert p.b != null;
@@ -198,13 +206,15 @@ public class RationalDemos {
         }
     }
 
-    public static void floorDemo() {
+    public static void demoFloor() {
+        initialize();
         for (Rational r : take(LIMIT, T_RATIONALS)) {
             System.out.println("floor(" + r + ") = " + r.floor());
         }
     }
 
-    public static void ceilingDemo() {
+    public static void demoCeiling() {
+        initialize();
         for (Rational r : take(LIMIT, T_RATIONALS)) {
             System.out.println("ceil(" + r + ") = " + r.ceiling());
         }
