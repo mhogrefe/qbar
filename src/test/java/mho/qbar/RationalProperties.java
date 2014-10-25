@@ -5,6 +5,7 @@ import mho.haskellesque.iterables.IterableProvider;
 import mho.haskellesque.iterables.RandomProvider;
 import mho.haskellesque.math.BasicMath;
 import mho.haskellesque.structures.Pair;
+import mho.haskellesque.structures.Triple;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Test;
@@ -53,8 +54,8 @@ public class RationalProperties {
             invertProperties();
             absProperties();
             signumProperties();
-//            addProperties();
-//            subtractProperties();
+            addProperties();
+            subtractProperties();
 //            multiplyRationalRationalProperties();
 //            multiplyBigIntegerProperties();
 //            multiplyIntProperties();
@@ -157,6 +158,7 @@ public class RationalProperties {
 
         for (float f : take(LIMIT, P.ordinaryFloats())) {
             Rational r = of(f);
+            assert r != null;
             fae(Float.toString(f), f, r.toFloat());
         }
     }
@@ -180,6 +182,7 @@ public class RationalProperties {
 
         for (double d : take(LIMIT, P.ordinaryDoubles())) {
             Rational r = of(d);
+            assert r != null;
             dae(Double.toString(d), d, r.toDouble());
         }
     }
@@ -253,82 +256,88 @@ public class RationalProperties {
         }
     }
 
-//    public static void addProperties(int limit) {
-//        initialize();
-//        System.out.println("testing add properties...");
-//        Iterable<Pair<Rational, Rational>> g = P.pairs(T_RATIONALS);
-//        for (Pair<Rational, Rational> p : g.iterate(limit)) {
-//            Rational sum = Rational.add(p.a, p.b);
-//            validate(sum);
-//            Assert.assertEquals(p.toString(), sum, Rational.add(p.b, p.a));
-//        }
-//
-//        for (Rational r : T_RATIONALS.iterate(limit)) {
-//            Assert.assertEquals(r.toString(), Rational.add(Rational.ZERO, r), r);
-//            Assert.assertEquals(r.toString(), Rational.add(r, Rational.ZERO), r);
-//            Assert.assertTrue(r.toString(), Rational.add(r, r.negate()) == Rational.ZERO);
-//        }
-//
-//        for (Triple<Rational, Rational, Rational> t : new SameTripleIterable<>(T_RATIONALS).iterate(limit)) {
-//            Rational sum1 = Rational.add(Rational.add(t.a, t.b), t.c);
-//            Rational sum2 = Rational.add(t.a, Rational.add(t.b, t.c));
-//            Assert.assertEquals(t.toString(), sum1, sum2);
-//        }
-//    }
-//
-//    public static void subtractProperties() {
-//        initialize();
-//        System.out.println("testing subtract properties...");
-//        for (Pair<Rational, Rational> p : P.pairs(T_RATIONALS).iterate(limit)) {
-//            Rational difference = Rational.subtract(p.a, p.b);
-//            validate(difference);
-//            Assert.assertEquals(p.toString(), difference, Rational.subtract(p.b, p.a).negate());
-//            Assert.assertEquals(p.toString(), p.a, Rational.add(difference, p.b));
-//        }
-//
-//        for (Rational r : T_RATIONALS.iterate(limit)) {
-//            Assert.assertEquals(r.toString(), Rational.subtract(Rational.ZERO, r), r.negate());
-//            Assert.assertEquals(r.toString(), Rational.subtract(r, Rational.ZERO), r);
-//            Assert.assertTrue(r.toString(), Rational.subtract(r, r) == Rational.ZERO);
-//        }
-//    }
+    public static void addProperties() {
+        initialize();
+        System.out.println("testing add properties...");
+        for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(T_RATIONALS))) {
+            assert p.a != null;
+            assert p.b != null;
+            Rational sum = add(p.a, p.b);
+            validate(sum);
+            Assert.assertEquals(p.toString(), sum, add(p.b, p.a));
+        }
+
+        for (Rational r : take(LIMIT, T_RATIONALS)) {
+            Assert.assertEquals(r.toString(), add(ZERO, r), r);
+            Assert.assertEquals(r.toString(), add(r, ZERO), r);
+            Assert.assertTrue(r.toString(), add(r, r.negate()) == ZERO);
+        }
+
+        for (Triple<Rational, Rational, Rational> t : take(LIMIT, P.triples(T_RATIONALS))) {
+            assert t.a != null;
+            assert t.b != null;
+            assert t.c != null;
+            Rational sum1 = add(add(t.a, t.b), t.c);
+            Rational sum2 = add(t.a, add(t.b, t.c));
+            Assert.assertEquals(t.toString(), sum1, sum2);
+        }
+    }
+
+    public static void subtractProperties() {
+        initialize();
+        System.out.println("testing subtract properties...");
+        for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(T_RATIONALS))) {
+            assert p.a != null;
+            assert p.b != null;
+            Rational difference = subtract(p.a, p.b);
+            validate(difference);
+            Assert.assertEquals(p.toString(), difference, subtract(p.b, p.a).negate());
+            Assert.assertEquals(p.toString(), p.a, add(difference, p.b));
+        }
+
+        for (Rational r : take(LIMIT, T_RATIONALS)) {
+            Assert.assertEquals(r.toString(), subtract(ZERO, r), r.negate());
+            Assert.assertEquals(r.toString(), subtract(r, ZERO), r);
+            Assert.assertTrue(r.toString(), subtract(r, r) == ZERO);
+        }
+    }
 //
 //    public static void multiplyRationalRationalProperties() {
 //        initialize();
 //        System.out.println("testing multiply(Rational, Rational) properties...");
 //        for (Pair<Rational, Rational> p : P.pairs(T_RATIONALS).iterate(limit)) {
-//            Rational product = Rational.multiply(p.a, p.b);
+//            Rational product = multiply(p.a, p.b);
 //            validate(product);
-//            Assert.assertEquals(p.toString(), product, Rational.multiply(p.b, p.a));
+//            Assert.assertEquals(p.toString(), product, multiply(p.b, p.a));
 //        }
 //
 //        for (Rational r : T_RATIONALS.iterate(limit)) {
-//            Assert.assertEquals(r.toString(), Rational.multiply(Rational.ONE, r), r);
-//            Assert.assertEquals(r.toString(), Rational.multiply(r, Rational.ONE), r);
-//            Assert.assertTrue(r.toString(), Rational.multiply(Rational.ZERO, r) == Rational.ZERO);
-//            Assert.assertTrue(r.toString(), Rational.multiply(r, Rational.ZERO) == Rational.ZERO);
+//            Assert.assertEquals(r.toString(), multiply(ONE, r), r);
+//            Assert.assertEquals(r.toString(), multiply(r, ONE), r);
+//            Assert.assertTrue(r.toString(), multiply(ZERO, r) == ZERO);
+//            Assert.assertTrue(r.toString(), multiply(r, ZERO) == ZERO);
 //        }
 //
 //        Iterable<Rational> g = new FilteredIterable<>(
 //                T_RATIONALS,
-//                r -> r != Rational.ZERO
+//                r -> r != ZERO
 //        );
 //        for (Rational r : g.iterate(limit)) {
-//            Assert.assertTrue(r.toString(), Rational.multiply(r, r.invert()) == Rational.ONE);
+//            Assert.assertTrue(r.toString(), multiply(r, r.invert()) == ONE);
 //        }
 //
 //        for (Triple<Rational, Rational, Rational> t : new SameTripleIterable<>(T_RATIONALS).iterate(limit)) {
-//            Rational product1 = Rational.multiply(Rational.multiply(t.a, t.b), t.c);
-//            Rational product2 = Rational.multiply(t.a, Rational.multiply(t.b, t.c));
+//            Rational product1 = multiply(multiply(t.a, t.b), t.c);
+//            Rational product2 = multiply(t.a, multiply(t.b, t.c));
 //            Assert.assertEquals(t.toString(), product1, product2);
 //        }
 //
 //        for (Triple<Rational, Rational, Rational> t : new SameTripleIterable<>(T_RATIONALS).iterate(limit)) {
-//            Rational expression1 = Rational.multiply(Rational.add(t.a, t.b), t.c);
-//            Rational expression2 = Rational.add(Rational.multiply(t.a, t.c), Rational.multiply(t.b, t.c));
+//            Rational expression1 = multiply(add(t.a, t.b), t.c);
+//            Rational expression2 = add(multiply(t.a, t.c), multiply(t.b, t.c));
 //            Assert.assertEquals(t.toString(), expression1, expression2);
-//            Rational expression3 = Rational.multiply(t.c, Rational.add(t.a, t.b));
-//            Rational expression4 = Rational.add(Rational.multiply(t.c, t.a), Rational.multiply(t.c, t.b));
+//            Rational expression3 = multiply(t.c, add(t.a, t.b));
+//            Rational expression4 = add(multiply(t.c, t.a), multiply(t.c, t.b));
 //            Assert.assertEquals(t.toString(), expression3, expression4);
 //        }
 //    }
@@ -340,17 +349,17 @@ public class RationalProperties {
 //        for (Pair<Rational, BigInteger> p : g.iterate(limit)) {
 //            Rational product = p.a.multiply(p.b);
 //            validate(product);
-//            Assert.assertEquals(p.toString(), product, Rational.multiply(Rational.of(p.b), p.a));
+//            Assert.assertEquals(p.toString(), product, multiply(of(p.b), p.a));
 //        }
 //
 //        for (BigInteger bi : P.bigIntegers().iterate(limit)) {
-//            Assert.assertEquals(bi.toString(), Rational.ONE.multiply(bi), Rational.of(bi));
-//            Assert.assertTrue(bi.toString(), Rational.ZERO.multiply(bi) == Rational.ZERO);
+//            Assert.assertEquals(bi.toString(), ONE.multiply(bi), of(bi));
+//            Assert.assertTrue(bi.toString(), ZERO.multiply(bi) == ZERO);
 //        }
 //
 //        for (Rational r : T_RATIONALS.iterate(limit)) {
 //            Assert.assertEquals(r.toString(), r.multiply(BigInteger.ONE), r);
-//            Assert.assertTrue(r.toString(), r.multiply(BigInteger.ZERO) == Rational.ZERO);
+//            Assert.assertTrue(r.toString(), r.multiply(BigInteger.ZERO) == ZERO);
 //        }
 //
 //        Iterable<BigInteger> big = new FilteredIterable<>(
@@ -358,13 +367,13 @@ public class RationalProperties {
 //                bi -> !bi.equals(BigInteger.ZERO)
 //        );
 //        for (BigInteger bi : big.iterate(limit)) {
-//            Assert.assertTrue(bi.toString(), Rational.of(bi).invert().multiply(bi) == Rational.ONE);
+//            Assert.assertTrue(bi.toString(), of(bi).invert().multiply(bi) == ONE);
 //        }
 //
 //        Iterable<Rational> rg = T_RATIONALS;
 //        for (Triple<Rational, Rational, BigInteger> t : triples(rg, rg, P.bigIntegers()).iterate(limit)) {
-//            Rational expression1 = Rational.add(t.a, t.b).multiply(t.c);
-//            Rational expression2 = Rational.add(t.a.multiply(t.c), t.b.multiply(t.c));
+//            Rational expression1 = add(t.a, t.b).multiply(t.c);
+//            Rational expression2 = add(t.a.multiply(t.c), t.b.multiply(t.c));
 //            Assert.assertEquals(t.toString(), expression1, expression2);
 //        }
 //    }
@@ -375,17 +384,17 @@ public class RationalProperties {
 //        for (Pair<Rational, Integer> p : g.iterate(limit)) {
 //            Rational product = p.a.multiply(p.b);
 //            validate(product);
-//            Assert.assertEquals(p.toString(), product, Rational.multiply(Rational.of(p.b), p.a));
+//            Assert.assertEquals(p.toString(), product, multiply(of(p.b), p.a));
 //        }
 //
 //        for (int i : P.integers().iterate(limit)) {
-//            Assert.assertEquals(Integer.toString(i), Rational.ONE.multiply(i), Rational.of(i));
-//            Assert.assertTrue(Integer.toString(i), Rational.ZERO.multiply(i) == Rational.ZERO);
+//            Assert.assertEquals(Integer.toString(i), ONE.multiply(i), of(i));
+//            Assert.assertTrue(Integer.toString(i), ZERO.multiply(i) == ZERO);
 //        }
 //
 //        for (Rational r : T_RATIONALS.iterate(limit)) {
 //            Assert.assertEquals(r.toString(), r.multiply(1), r);
-//            Assert.assertTrue(r.toString(), r.multiply(0) == Rational.ZERO);
+//            Assert.assertTrue(r.toString(), r.multiply(0) == ZERO);
 //        }
 //
 //        Iterable<Integer> ig = new FilteredIterable<>(
@@ -393,13 +402,13 @@ public class RationalProperties {
 //                bi -> bi != 0
 //        );
 //        for (int i : ig.iterate(limit)) {
-//            Assert.assertTrue(Integer.toString(i), Rational.of(i).invert().multiply(i) == Rational.ONE);
+//            Assert.assertTrue(Integer.toString(i), of(i).invert().multiply(i) == ONE);
 //        }
 //
 //        Iterable<Rational> rg = T_RATIONALS;
 //        for (Triple<Rational, Rational, Integer> t : new TripleIterable<>(rg, rg, P.integers()).iterate(limit)) {
-//            Rational expression1 = Rational.add(t.a, t.b).multiply(t.c);
-//            Rational expression2 = Rational.add(t.a.multiply(t.c), t.b.multiply(t.c));
+//            Rational expression1 = add(t.a, t.b).multiply(t.c);
+//            Rational expression2 = add(t.a.multiply(t.c), t.b.multiply(t.c));
 //            Assert.assertEquals(t.toString(), expression1, expression2);
 //        }
 //    }
@@ -408,33 +417,33 @@ public class RationalProperties {
 //        System.out.println("testing divide(Rational, Rational) properties...");
 //        Iterable<Pair<Rational, Rational>> g = new FilteredIterable<Pair<Rational, Rational>>(
 //                P.pairs(T_RATIONALS),
-//                p -> p.b != Rational.ZERO
+//                p -> p.b != ZERO
 //        );
 //        for (Pair<Rational, Rational> p : g.iterate(limit)) {
-//            Rational quotient = Rational.divide(p.a, p.b);
+//            Rational quotient = divide(p.a, p.b);
 //            validate(quotient);
-//            Assert.assertEquals(p.toString(), p.a, Rational.multiply(quotient, p.b));
+//            Assert.assertEquals(p.toString(), p.a, multiply(quotient, p.b));
 //        }
 //
 //        g = new FilteredIterable<Pair<Rational, Rational>>(
 //                P.pairs(T_RATIONALS),
-//                p -> p.a != Rational.ZERO && p.b != Rational.ZERO
+//                p -> p.a != ZERO && p.b != ZERO
 //        );
 //        for (Pair<Rational, Rational> p : g.iterate(limit)) {
-//            Assert.assertEquals(p.toString(), Rational.divide(p.a, p.b), Rational.divide(p.b, p.a).invert());
+//            Assert.assertEquals(p.toString(), divide(p.a, p.b), divide(p.b, p.a).invert());
 //        }
 //
 //        for (Rational r : T_RATIONALS.iterate(limit)) {
-//            Assert.assertEquals(r.toString(), Rational.divide(r, Rational.ONE), r);
+//            Assert.assertEquals(r.toString(), divide(r, ONE), r);
 //        }
 //
 //        Iterable<Rational> rg = new FilteredIterable<Rational>(
 //                T_RATIONALS,
-//                r -> r != Rational.ZERO
+//                r -> r != ZERO
 //        );
 //        for (Rational r : rg.iterate(limit)) {
-//            Assert.assertEquals(r.toString(), Rational.divide(Rational.ONE, r), r.invert());
-//            Assert.assertTrue(r.toString(), Rational.divide(r, r) == Rational.ONE);
+//            Assert.assertEquals(r.toString(), divide(ONE, r), r.invert());
+//            Assert.assertTrue(r.toString(), divide(r, r) == ONE);
 //        }
 //    }
 
@@ -450,21 +459,21 @@ public class RationalProperties {
 //            Rational quotient = p.a.divide(p.b);
 //            validate(quotient);
 //            Assert.assertEquals(p.toString(), p.a, quotient.multiply(p.b));
-//            if (p.a == Rational.ONE) {
-//                Assert.assertEquals(p.toString(), quotient, Rational.of(p.b).invert());
+//            if (p.a == ONE) {
+//                Assert.assertEquals(p.toString(), quotient, of(p.b).invert());
 //            }
 //            if (p.b.equals(BigInteger.ONE)) {
 //                Assert.assertEquals(p.toString(), quotient, p.a);
 //            }
-//            if (p.a.equals(Rational.of(p.b))) {
-//                Assert.assertTrue(p.toString(), quotient == Rational.ONE);
+//            if (p.a.equals(of(p.b))) {
+//                Assert.assertTrue(p.toString(), quotient == ONE);
 //            }
 //        }
 //
 //        g = new PairIterable<>(
 //                new FilteredIterable<Rational>(
 //                        T_RATIONALS,
-//                        r -> r != Rational.ZERO
+//                        r -> r != ZERO
 //                ),
 //                new FilteredIterable<BigInteger>(
 //                        P.bigIntegers(),
@@ -472,7 +481,7 @@ public class RationalProperties {
 //                )
 //        );
 //        for (Pair<Rational, BigInteger> p : g.iterate(limit)) {
-//            Assert.assertEquals(p.toString(), p.a.divide(p.b), Rational.divide(Rational.of(p.b), p.a).invert());
+//            Assert.assertEquals(p.toString(), p.a.divide(p.b), divide(of(p.b), p.a).invert());
 //        }
 //    }
 //
@@ -483,18 +492,18 @@ public class RationalProperties {
 //        for (Pair<Rational, Integer> p : g.iterate(limit)) {
 //            Rational quotient = p.a.divide(p.b);
 //            validate(quotient);
-//            if (p.a != Rational.ZERO) {
-//                Assert.assertEquals(p.toString(), quotient, Rational.divide(Rational.of(p.b), p.a).invert());
+//            if (p.a != ZERO) {
+//                Assert.assertEquals(p.toString(), quotient, divide(of(p.b), p.a).invert());
 //            }
 //            Assert.assertEquals(p.toString(), p.a, quotient.multiply(p.b));
-//            if (p.a == Rational.ONE) {
-//                Assert.assertEquals(p.toString(), quotient, Rational.of(p.b).invert());
+//            if (p.a == ONE) {
+//                Assert.assertEquals(p.toString(), quotient, of(p.b).invert());
 //            }
 //            if (p.b == 1) {
 //                Assert.assertEquals(p.toString(), quotient, p.a);
 //            }
-//            if (p.a.equals(Rational.of(p.b))) {
-//                Assert.assertTrue(p.toString(), quotient == Rational.ONE);
+//            if (p.a.equals(of(p.b))) {
+//                Assert.assertTrue(p.toString(), quotient == ONE);
 //            }
 //        }
 //    }
@@ -502,16 +511,16 @@ public class RationalProperties {
 //    public static void powProperties1(int limit) {
 //        Iterable<Pair<Rational, Integer>> g = new FilteredIterable<Pair<Rational, Integer>>(
 //                new PairIterable<>(T_RATIONALS, P.integers()),
-//                p -> p.b >= 0 || p.a != Rational.ZERO
+//                p -> p.b >= 0 || p.a != ZERO
 //        );
 //        for (Pair<Rational, Integer> p : g.iterate(limit)) {
 //            Rational r = p.a.pow(p.b);
 //            validate(r);
-//            if (p.a == Rational.ZERO && p.b != 0) {
-//                Assert.assertTrue(p.toString(), r == Rational.ZERO);
+//            if (p.a == ZERO && p.b != 0) {
+//                Assert.assertTrue(p.toString(), r == ZERO);
 //            }
 //            if (p.b == 0) {
-//                Assert.assertTrue(p.toString(), r == Rational.ONE);
+//                Assert.assertTrue(p.toString(), r == ONE);
 //            }
 //            if (p.b == 1) {
 //                Assert.assertEquals(p.toString(), r, p.a);
@@ -520,9 +529,9 @@ public class RationalProperties {
 //                Assert.assertEquals(p.toString(), r, p.a.invert());
 //            }
 //            if (p.b == 2) {
-//                Assert.assertEquals(p.toString(), r, Rational.multiply(p.a, p.a));
+//                Assert.assertEquals(p.toString(), r, multiply(p.a, p.a));
 //            }
-//            if (p.a != Rational.ZERO) {
+//            if (p.a != ZERO) {
 //                Assert.assertEquals(p.toString(), r, p.a.pow(-p.b).invert());
 //                Assert.assertEquals(p.toString(), r, p.a.invert().pow(-p.b));
 //            }
@@ -532,12 +541,12 @@ public class RationalProperties {
 //    public static void powProperties2(int limit) {
 //        Iterable<Integer> ig = P.integers();
 //        for (Triple<Rational, Integer, Integer> t : new TripleIterable<>(T_RATIONALS, ig, ig).iterate(limit)) {
-//            if (t.a != Rational.ZERO || t.b >= 0 && t.c >= 0) {
-//                Rational expression1 = Rational.multiply(t.a.pow(t.b), t.a.pow(t.c));
+//            if (t.a != ZERO || t.b >= 0 && t.c >= 0) {
+//                Rational expression1 = multiply(t.a.pow(t.b), t.a.pow(t.c));
 //                Rational expression2 = t.a.pow(t.b + t.c);
 //                Assert.assertEquals(t.toString(), expression1, expression2);
-//                if (t.a != Rational.ZERO || t.c == 0) {
-//                    Rational expression3 = Rational.divide(t.a.pow(t.b), t.a.pow(t.c));
+//                if (t.a != ZERO || t.c == 0) {
+//                    Rational expression3 = divide(t.a.pow(t.b), t.a.pow(t.c));
 //                    Rational expression4 = t.a.pow(t.b - t.c);
 //                    Assert.assertEquals(t.toString(), expression3, expression4);
 //                }
@@ -551,14 +560,14 @@ public class RationalProperties {
 //    public static void powProperties3(int limit) {
 //        Iterable<Rational> rg = T_RATIONALS;
 //        for (Triple<Rational, Rational, Integer> t : new TripleIterable<>(rg, rg, P.integers()).iterate(limit)) {
-//            if (t.a != Rational.ZERO && t.b != Rational.ZERO || t.c >= 0) {
-//                Rational expression1 = Rational.multiply(t.a, t.b).pow(t.c);
-//                Rational expression2 = Rational.multiply(t.a.pow(t.c), t.b.pow(t.c));
+//            if (t.a != ZERO && t.b != ZERO || t.c >= 0) {
+//                Rational expression1 = multiply(t.a, t.b).pow(t.c);
+//                Rational expression2 = multiply(t.a.pow(t.c), t.b.pow(t.c));
 //                Assert.assertEquals(t.toString(), expression1, expression2);
 //            }
-//            if (t.b != Rational.ZERO && (t.a != Rational.ZERO || t.c >= 0)) {
-//                Rational expression3 = Rational.divide(t.a, t.b).pow(t.c);
-//                Rational expression4 = Rational.divide(t.a.pow(t.c), t.b.pow(t.c));
+//            if (t.b != ZERO && (t.a != ZERO || t.c >= 0)) {
+//                Rational expression3 = divide(t.a, t.b).pow(t.c);
+//                Rational expression4 = divide(t.a.pow(t.c), t.b.pow(t.c));
 //                Assert.assertEquals(t.toString(), expression3, expression4);
 //            }
 //        }
@@ -567,16 +576,16 @@ public class RationalProperties {
 //    public static void floorProperties(int limit) {
 //        for (Rational r : T_RATIONALS.iterate(limit)) {
 //            BigInteger floor = r.floor();
-//            Assert.assertTrue(r.toString(), Rational.of(floor).compareTo(r) <= 0);
-//            Assert.assertTrue(r.toString(), Rational.subtract(r, Rational.of(floor)).compareTo(Rational.ONE) <= 0);
+//            Assert.assertTrue(r.toString(), of(floor).compareTo(r) <= 0);
+//            Assert.assertTrue(r.toString(), subtract(r, of(floor)).compareTo(ONE) <= 0);
 //        }
 //    }
 //
 //    public static void ceilingProperties(int limit) {
 //        for (Rational r : T_RATIONALS.iterate(limit)) {
 //            BigInteger ceiling = r.ceiling();
-//            Assert.assertTrue(r.toString(), Rational.of(ceiling).compareTo(r) >= 0);
-//            Assert.assertTrue(r.toString(), Rational.subtract(Rational.of(ceiling), r).compareTo(Rational.ONE) <= 0);
+//            Assert.assertTrue(r.toString(), of(ceiling).compareTo(r) >= 0);
+//            Assert.assertTrue(r.toString(), subtract(of(ceiling), r).compareTo(ONE) <= 0);
 //        }
 //    }
 //
@@ -584,9 +593,9 @@ public class RationalProperties {
 //        for (Rational r : T_RATIONALS.iterate(limit)) {
 //            Rational fractionalPart = r.fractionalPart();
 //            validate(fractionalPart);
-//            Assert.assertTrue(r.toString(), fractionalPart.compareTo(Rational.ZERO) >= 0);
-//            Assert.assertTrue(r.toString(), fractionalPart.compareTo(Rational.ONE) < 0);
-//            Assert.assertEquals(r.toString(), Rational.add(Rational.of(r.floor()), fractionalPart), r);
+//            Assert.assertTrue(r.toString(), fractionalPart.compareTo(ZERO) >= 0);
+//            Assert.assertTrue(r.toString(), fractionalPart.compareTo(ONE) < 0);
+//            Assert.assertEquals(r.toString(), add(of(r.floor()), fractionalPart), r);
 //        }
 //    }
 //
@@ -597,7 +606,7 @@ public class RationalProperties {
 //        for (Pair<Rational, RoundingMode> p : g.iterate(limit)) {
 //            BigInteger rounded = p.a.round(p.b);
 //            Assert.assertTrue(p.toString(), rounded.equals(BigInteger.ZERO) || rounded.signum() == p.a.signum());
-//            Assert.assertTrue(p.toString(), Rational.subtract(p.a, Rational.of(rounded)).abs().compareTo(Rational.ONE) < 0);
+//            Assert.assertTrue(p.toString(), subtract(p.a, of(rounded)).abs().compareTo(ONE) < 0);
 //            if (p.b == RoundingMode.UNNECESSARY) {
 //                Assert.assertEquals(p.toString(), p.a.getNumerator(), rounded);
 //                Assert.assertEquals(p.toString(), p.a.getDenominator, BigInteger.ONE);
@@ -609,17 +618,17 @@ public class RationalProperties {
 //                Assert.assertEquals(p.toString(), rounded, p.a.ceiling());
 //            }
 //            if (p.b == RoundingMode.DOWN) {
-//                Assert.assertTrue(p.toString(), Rational.of(rounded).abs().compareTo(p.a.abs()) <= 0);
+//                Assert.assertTrue(p.toString(), of(rounded).abs().compareTo(p.a.abs()) <= 0);
 //            }
 //            if (p.b == RoundingMode.UP) {
-//                Assert.assertTrue(p.toString(), Rational.of(rounded).abs().compareTo(p.a.abs()) >= 0);
+//                Assert.assertTrue(p.toString(), of(rounded).abs().compareTo(p.a.abs()) >= 0);
 //            }
 //            if (p.b == RoundingMode.HALF_DOWN || p.b == RoundingMode.HALF_UP || p.b == RoundingMode.HALF_EVEN) {
-//                Assert.assertTrue(p.toString(), Rational.subtract(p.a, Rational.of(rounded)).abs().compareTo(Rational.of(1, 2)) <= 0);
+//                Assert.assertTrue(p.toString(), subtract(p.a, of(rounded)).abs().compareTo(of(1, 2)) <= 0);
 //                Rational fractionalPart = p.a.abs().fractionalPart();
-//                if (fractionalPart.compareTo(Rational.of(1, 2)) < 0) {
+//                if (fractionalPart.compareTo(of(1, 2)) < 0) {
 //                    Assert.assertEquals(p.toString(), rounded, p.a.round(RoundingMode.DOWN));
-//                } else if (fractionalPart.compareTo(Rational.of(1, 2)) > 0) {
+//                } else if (fractionalPart.compareTo(of(1, 2)) > 0) {
 //                    Assert.assertEquals(p.toString(), rounded, p.a.round(RoundingMode.UP));
 //                } else {
 //                    if (p.b == RoundingMode.HALF_DOWN) {
@@ -643,12 +652,12 @@ public class RationalProperties {
 //                        p -> p.c != RoundingMode.UNNECESSARY || p.b.mod(p.a.getDenominator).equals(BigInteger.ZERO));
 //        for (Triple<Rational, BigInteger, RoundingMode> t : g.iterate(limit)) {
 //            Rational rounded = t.a.roundToDenominator(t.b, t.c);
-//            Assert.assertTrue(t.toString(), rounded == Rational.ZERO || rounded.signum() == t.a.signum());
+//            Assert.assertTrue(t.toString(), rounded == ZERO || rounded.signum() == t.a.signum());
 //            if (t.b.equals(BigInteger.ONE)) {
 //                Assert.assertEquals(t.toString(), rounded.getNumerator(), t.a.round(t.c));
 //                Assert.assertEquals(t.toString(), rounded.getDenominator, BigInteger.ONE);
 //            }
-//            Assert.assertTrue(t.toString(), Rational.subtract(t.a, rounded).abs().compareTo(Rational.of(BigInteger.ONE, t.b)) < 0);
+//            Assert.assertTrue(t.toString(), subtract(t.a, rounded).abs().compareTo(of(BigInteger.ONE, t.b)) < 0);
 //            if (t.c == RoundingMode.UNNECESSARY) {
 //                Assert.assertEquals(t.toString(), t.a.multiply(t.b).getDenominator, BigInteger.ONE);
 //            }
@@ -665,11 +674,11 @@ public class RationalProperties {
 //                Assert.assertTrue(t.toString(), rounded.abs().compareTo(t.a.abs()) >= 0);
 //            }
 //            if (t.c == RoundingMode.HALF_DOWN || t.c == RoundingMode.HALF_UP || t.c == RoundingMode.HALF_EVEN) {
-//                Assert.assertTrue(t.toString(), Rational.subtract(t.a, rounded).abs().compareTo(Rational.of(t.b).multiply(2).invert()) <= 0);
+//                Assert.assertTrue(t.toString(), subtract(t.a, rounded).abs().compareTo(of(t.b).multiply(2).invert()) <= 0);
 //                Rational fractionalPart = t.a.abs().multiply(t.b).fractionalPart();
-//                if (fractionalPart.compareTo(Rational.of(1, 2)) < 0) {
+//                if (fractionalPart.compareTo(of(1, 2)) < 0) {
 //                    Assert.assertEquals(t.toString(), rounded, t.a.roundToDenominator(t.b, RoundingMode.DOWN));
-//                } else if (fractionalPart.compareTo(Rational.of(1, 2)) > 0) {
+//                } else if (fractionalPart.compareTo(of(1, 2)) > 0) {
 //                    Assert.assertEquals(t.toString(), rounded, t.a.roundToDenominator(t.b, RoundingMode.UP));
 //                } else {
 //                    if (t.c == RoundingMode.HALF_DOWN) {
@@ -713,9 +722,9 @@ public class RationalProperties {
 //    }
 //
 //    public static void binaryExponentProperties(int limit) {
-//        for (Rational r : Rational.positiveRationals().iterate(limit)) {
+//        for (Rational r : positiveRationals().iterate(limit)) {
 //            int exponent = r.binaryExponent();
-//            Rational power = Rational.ONE.shiftLeft(exponent);
+//            Rational power = ONE.shiftLeft(exponent);
 //            Assert.assertTrue(r.toString(), power.compareTo(r) <= 0);
 //            Assert.assertTrue(r.toString(), r.compareTo(power.shiftLeft(1)) < 0);
 //        }
@@ -732,7 +741,7 @@ public class RationalProperties {
 //        Iterable<Pair<Rational, RoundingMode>> g = new FilteredIterable<Pair<Rational, RoundingMode>>(
 //                new PairIterable<>(T_RATIONALS, Iterables.roundingModes()),
 //                p -> p.b != RoundingMode.UNNECESSARY
-//                        || Rational.of(p.a.toFloat(RoundingMode.FLOOR)).equals(p.a));
+//                        || of(p.a.toFloat(RoundingMode.FLOOR)).equals(p.a));
 //        for (Pair<Rational, RoundingMode> p : g.iterate(limit)) {
 //            float rounded = p.a.toFloat(p.b);
 //            Assert.assertTrue(p.toString(), !Float.isNaN(rounded));
@@ -742,71 +751,71 @@ public class RationalProperties {
 //            float up = p.a.signum() == -1 ? predecessor : successor;
 //            float down = p.a.signum() == -1 ? successor : predecessor;
 //            if (p.b == RoundingMode.UNNECESSARY) {
-//                Assert.assertEquals(p.toString(), p.a, Rational.of(rounded));
+//                Assert.assertEquals(p.toString(), p.a, of(rounded));
 //                Assert.assertTrue(p.toString(), Float.isFinite(rounded));
 //                Assert.assertTrue(p.toString(), !new Float(rounded).equals(-0.0f));
 //            }
 //            if (p.b == RoundingMode.FLOOR) {
-//                Assert.assertTrue(p.toString(), Rational.of(rounded).compareTo(p.a) <= 0);
-//                Assert.assertTrue(p.toString(), Rational.of(successor).compareTo(p.a) > 0);
-//                if (p.a.compareTo(Rational.ZERO) >= 0 && p.a.compareTo(Rational.SMALLEST_FLOAT) < 0) {
+//                Assert.assertTrue(p.toString(), of(rounded).compareTo(p.a) <= 0);
+//                Assert.assertTrue(p.toString(), of(successor).compareTo(p.a) > 0);
+//                if (p.a.compareTo(ZERO) >= 0 && p.a.compareTo(SMALLEST_FLOAT) < 0) {
 //                    Assert.assertEquals(p.toString(), rounded, 0.0f);
 //                }
-//                if (p.a.compareTo(Rational.LARGEST_FLOAT.negate()) < 0) {
+//                if (p.a.compareTo(LARGEST_FLOAT.negate()) < 0) {
 //                    Assert.assertTrue(p.toString(), rounded < 0 && Float.isInfinite(rounded));
 //                }
-//                if (p.a.compareTo(Rational.LARGEST_FLOAT) >= 0) {
+//                if (p.a.compareTo(LARGEST_FLOAT) >= 0) {
 //                    Assert.assertEquals(p.toString(), rounded, Float.MAX_VALUE);
 //                }
 //                Assert.assertTrue(p.toString(), rounded < 0 || Float.isFinite(rounded));
 //                Assert.assertTrue(p.toString(), !new Float(rounded).equals(-0.0f));
 //            }
 //            if (p.b == RoundingMode.CEILING) {
-//                Assert.assertTrue(p.toString(), Rational.of(rounded).compareTo(p.a) >= 0);
-//                Assert.assertTrue(p.toString(), Rational.of(predecessor).compareTo(p.a) < 0);
-//                if (p.a == Rational.ZERO) {
+//                Assert.assertTrue(p.toString(), of(rounded).compareTo(p.a) >= 0);
+//                Assert.assertTrue(p.toString(), of(predecessor).compareTo(p.a) < 0);
+//                if (p.a == ZERO) {
 //                    Assert.assertEquals(p.toString(), rounded, 0.0f);
 //                }
-//                if (p.a.compareTo(Rational.ZERO) < 0 && p.a.compareTo(Rational.SMALLEST_FLOAT.negate()) > 0) {
+//                if (p.a.compareTo(ZERO) < 0 && p.a.compareTo(SMALLEST_FLOAT.negate()) > 0) {
 //                    Assert.assertEquals(p.toString(), rounded, -0.0f);
 //                }
-//                if (p.a.compareTo(Rational.LARGEST_FLOAT) > 0) {
+//                if (p.a.compareTo(LARGEST_FLOAT) > 0) {
 //                    Assert.assertTrue(p.toString(), rounded > 0 && Float.isInfinite(rounded));
 //                }
-//                if (p.a.compareTo(Rational.LARGEST_FLOAT.negate()) <= 0) {
+//                if (p.a.compareTo(LARGEST_FLOAT.negate()) <= 0) {
 //                    Assert.assertEquals(p.toString(), rounded, -Float.MAX_VALUE);
 //                }
 //                Assert.assertTrue(p.toString(), rounded > 0 || Float.isFinite(rounded));
 //            }
 //            if (p.b == RoundingMode.DOWN) {
-//                Assert.assertTrue(p.toString(), Rational.of(rounded).abs().compareTo(p.a.abs()) <= 0);
-//                Assert.assertTrue(p.toString(), Rational.of(up).abs().compareTo(p.a.abs()) > 0);
-//                if (p.a.compareTo(Rational.ZERO) >= 0 && p.a.compareTo(Rational.SMALLEST_FLOAT) < 0) {
+//                Assert.assertTrue(p.toString(), of(rounded).abs().compareTo(p.a.abs()) <= 0);
+//                Assert.assertTrue(p.toString(), of(up).abs().compareTo(p.a.abs()) > 0);
+//                if (p.a.compareTo(ZERO) >= 0 && p.a.compareTo(SMALLEST_FLOAT) < 0) {
 //                    Assert.assertEquals(p.toString(), rounded, 0.0f);
 //                }
-//                if (p.a.compareTo(Rational.ZERO) < 0 && p.a.compareTo(Rational.SMALLEST_FLOAT.negate()) > 0) {
+//                if (p.a.compareTo(ZERO) < 0 && p.a.compareTo(SMALLEST_FLOAT.negate()) > 0) {
 //                    Assert.assertEquals(p.toString(), rounded, -0.0f);
 //                }
-//                if (p.a.compareTo(Rational.LARGEST_FLOAT) >= 0) {
+//                if (p.a.compareTo(LARGEST_FLOAT) >= 0) {
 //                    Assert.assertEquals(p.toString(), rounded, Float.MAX_VALUE);
 //                }
-//                if (p.a.compareTo(Rational.LARGEST_FLOAT.negate()) <= 0) {
+//                if (p.a.compareTo(LARGEST_FLOAT.negate()) <= 0) {
 //                    Assert.assertEquals(p.toString(), rounded, -Float.MAX_VALUE);
 //                }
 //                Assert.assertTrue(p.toString(), Float.isFinite(rounded));
 //            }
 //            if (p.b == RoundingMode.UP) {
-//                Assert.assertTrue(p.toString(), Rational.of(rounded).abs().compareTo(p.a.abs()) >= 0);
-//                if (p.a != Rational.ZERO) {
-//                    Assert.assertTrue(p.toString(), Rational.of(down).abs().compareTo(p.a.abs()) < 0);
+//                Assert.assertTrue(p.toString(), of(rounded).abs().compareTo(p.a.abs()) >= 0);
+//                if (p.a != ZERO) {
+//                    Assert.assertTrue(p.toString(), of(down).abs().compareTo(p.a.abs()) < 0);
 //                }
-//                if (p.a == Rational.ZERO) {
+//                if (p.a == ZERO) {
 //                    Assert.assertEquals(p.toString(), rounded, 0.0f);
 //                }
-//                if (p.a.compareTo(Rational.LARGEST_FLOAT) > 0) {
+//                if (p.a.compareTo(LARGEST_FLOAT) > 0) {
 //                    Assert.assertTrue(p.toString(), rounded > 0 && Float.isInfinite(rounded));
 //                }
-//                if (p.a.compareTo(Rational.LARGEST_FLOAT.negate()) < 0) {
+//                if (p.a.compareTo(LARGEST_FLOAT.negate()) < 0) {
 //                    Assert.assertTrue(p.toString(), rounded < 0 && Float.isInfinite(rounded));
 //                }
 //                Assert.assertTrue(p.toString(), !new Float(rounded).equals(-0.0f));
@@ -814,10 +823,10 @@ public class RationalProperties {
 //            if (p.b == RoundingMode.HALF_DOWN || p.b == RoundingMode.HALF_UP || p.b == RoundingMode.HALF_EVEN) {
 //                boolean equidistant = false;
 //                if (Float.isFinite(rounded) && rounded != Float.MAX_VALUE && rounded != -Float.MAX_VALUE) {
-//                    Rational distance = Rational.subtract(Rational.of(rounded), p.a).abs();
-//                    Rational predDistance = Rational.subtract(Rational.of(predecessor), p.a).abs();
-//                    Rational succDistance = Rational.subtract(Rational.of(successor), p.a).abs();
-//                    Assert.assertEquals(p.toString(), Rational.min(distance, predDistance, succDistance), distance);
+//                    Rational distance = subtract(of(rounded), p.a).abs();
+//                    Rational predDistance = subtract(of(predecessor), p.a).abs();
+//                    Rational succDistance = subtract(of(successor), p.a).abs();
+//                    Assert.assertEquals(p.toString(), min(distance, predDistance, succDistance), distance);
 //                    if (distance.equals(predDistance) || distance.equals(succDistance)) {
 //                        equidistant = true;
 //                    }
