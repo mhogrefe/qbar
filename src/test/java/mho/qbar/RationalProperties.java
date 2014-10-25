@@ -1,21 +1,23 @@
 package mho.qbar;
 
-import junit.framework.Assert;
 import mho.haskellesque.iterables.ExhaustiveProvider;
 import mho.haskellesque.iterables.IterableProvider;
 import mho.haskellesque.iterables.RandomProvider;
 import mho.haskellesque.math.BasicMath;
 import mho.haskellesque.structures.Pair;
 import org.jetbrains.annotations.NotNull;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Arrays;
+import java.util.DoubleSummaryStatistics;
 import java.util.Random;
 
 import static mho.haskellesque.iterables.IterableUtils.*;
 import static mho.qbar.Rational.*;
+import static org.junit.Assert.*;
 
 public class RationalProperties {
     private static boolean USE_RANDOM = true;
@@ -89,7 +91,7 @@ public class RationalProperties {
             assert p.b != null;
             Rational r = of(p.a, p.b);
             validate(r);
-            Assert.assertEquals(p.toString(), of(p.a).divide(p.b), r);
+            assertEquals(p.toString(), of(p.a).divide(p.b), r);
         }
     }
 
@@ -104,11 +106,11 @@ public class RationalProperties {
             assert p.b != null;
             Rational r = of(p.a, p.b);
             validate(r);
-            Assert.assertEquals(p.toString(), of(p.a).divide(p.b), r);
-            Assert.assertTrue(p.toString(), r.getNumerator().compareTo(minInt) >= 0);
-            Assert.assertTrue(p.toString(), r.getNumerator().compareTo(maxInt) <= 0);
-            Assert.assertTrue(p.toString(), r.getDenominator().compareTo(minInt) >= 0);
-            Assert.assertTrue(p.toString(), r.getDenominator().compareTo(maxInt) <= 0);
+            assertEquals(p.toString(), of(p.a).divide(p.b), r);
+            assertTrue(p.toString(), r.getNumerator().compareTo(minInt) >= 0);
+            assertTrue(p.toString(), r.getNumerator().compareTo(maxInt) <= 0);
+            assertTrue(p.toString(), r.getDenominator().compareTo(minInt) >= 0);
+            assertTrue(p.toString(), r.getDenominator().compareTo(maxInt) <= 0);
         }
     }
 
@@ -118,7 +120,7 @@ public class RationalProperties {
         for (BigInteger bi : take(LIMIT, P.bigIntegers())) {
             Rational r = of(bi);
             validate(r);
-            Assert.assertEquals(bi.toString(), r.getDenominator(), BigInteger.ONE);
+            assertEquals(bi.toString(), r.getDenominator(), BigInteger.ONE);
         }
     }
 
@@ -130,9 +132,9 @@ public class RationalProperties {
         for (int i : take(LIMIT, P.integers())) {
             Rational r = of(i);
             validate(r);
-            Assert.assertEquals(Integer.toString(i), r.getDenominator(), BigInteger.ONE);
-            Assert.assertTrue(Integer.toString(i), r.getNumerator().compareTo(minInt) >= 0);
-            Assert.assertTrue(Integer.toString(i), r.getNumerator().compareTo(maxInt) <= 0);
+            assertEquals(Integer.toString(i), r.getDenominator(), BigInteger.ONE);
+            assertTrue(Integer.toString(i), r.getNumerator().compareTo(minInt) >= 0);
+            assertTrue(Integer.toString(i), r.getNumerator().compareTo(maxInt) <= 0);
         }
     }
 
@@ -146,17 +148,17 @@ public class RationalProperties {
             Rational r = of(f);
             validate(r);
             if (f != -0.0f) {
-                Assert.assertEquals(Float.toString(f), f, r.toFloat());
+                fae(Float.toString(f), f, r.toFloat());
             }
-            Assert.assertTrue(Float.toString(f), BasicMath.isAPowerOfTwo(r.getDenominator()));
-            Assert.assertTrue(Float.toString(f), r.getDenominator().compareTo(denominatorLimit) <= 0);
-            Assert.assertTrue(Float.toString(f), r.getNumerator().compareTo(numeratorLimit) <= 0);
+            assertTrue(Float.toString(f), BasicMath.isAPowerOfTwo(r.getDenominator()));
+            assertTrue(Float.toString(f), r.getDenominator().compareTo(denominatorLimit) <= 0);
+            assertTrue(Float.toString(f), r.getNumerator().compareTo(numeratorLimit) <= 0);
         }
 
         it = filter(f -> Float.isFinite(f) && !Float.isNaN(f) && f != -0.0f, P.floats());
         for (float f : take(LIMIT, it)) {
             Rational r = of(f);
-            Assert.assertEquals(Float.toString(f), f, r.toFloat());
+            fae(Float.toString(f), f, r.toFloat());
         }
     }
 
@@ -170,17 +172,17 @@ public class RationalProperties {
             Rational r = of(d);
             validate(r);
             if (d != -0.0) {
-                Assert.assertEquals(Double.toString(d), d, r.toDouble());
+                dae(Double.toString(d), d, r.toDouble());
             }
-            Assert.assertTrue(Double.toString(d), BasicMath.isAPowerOfTwo(r.getDenominator()));
-            Assert.assertTrue(Double.toString(d), r.getDenominator().compareTo(denominatorLimit) <= 0);
-            Assert.assertTrue(Double.toString(d), r.getNumerator().compareTo(numeratorLimit) <= 0);
+            assertTrue(Double.toString(d), BasicMath.isAPowerOfTwo(r.getDenominator()));
+            assertTrue(Double.toString(d), r.getDenominator().compareTo(denominatorLimit) <= 0);
+            assertTrue(Double.toString(d), r.getNumerator().compareTo(numeratorLimit) <= 0);
         }
 
         it = filter(d -> Double.isFinite(d) && !Double.isNaN(d) && d != -0.0, P.doubles());
         for (double d : take(LIMIT, it)) {
             Rational r = of(d);
-            Assert.assertEquals(Double.toString(d), d, r.toDouble());
+            dae(Double.toString(d), d, r.toDouble());
         }
     }
 
@@ -190,8 +192,8 @@ public class RationalProperties {
         for (BigDecimal bd : take(LIMIT, P.bigDecimals())) {
             Rational r = of(bd);
             validate(r);
-            Assert.assertEquals(bd.toString(), bd.stripTrailingZeros(), r.toBigDecimal().stripTrailingZeros());
-            Assert.assertTrue(bd.toString(), r.hasTerminatingDecimalExpansion());
+            assertEquals(bd.toString(), bd.stripTrailingZeros(), r.toBigDecimal().stripTrailingZeros());
+            assertTrue(bd.toString(), r.hasTerminatingDecimalExpansion());
         }
     }
 //
@@ -845,9 +847,17 @@ public class RationalProperties {
 //    }
 
     private static void validate(@NotNull Rational r) {
-        Assert.assertEquals(r.toString(), r.getNumerator().gcd(r.getDenominator()), BigInteger.ONE);
-        Assert.assertEquals(r.toString(), r.getDenominator().signum(), 1);
-        if (r.equals(ZERO)) Assert.assertTrue(r.toString(), r == ZERO);
-        if (r.equals(ONE)) Assert.assertTrue(r.toString(), r == ONE);
+        assertEquals(r.toString(), r.getNumerator().gcd(r.getDenominator()), BigInteger.ONE);
+        assertEquals(r.toString(), r.getDenominator().signum(), 1);
+        if (r.equals(ZERO)) assertTrue(r.toString(), r == ZERO);
+        if (r.equals(ONE)) assertTrue(r.toString(), r == ONE);
+    }
+
+    private static void fae(String message, float f1, float f2) {
+        assertEquals(message, Float.floatToIntBits(f1), Float.floatToIntBits(f2));
+    }
+
+    private static void dae(String message, double d1, double d2) {
+        assertEquals(message, Double.doubleToLongBits(d1), Double.doubleToLongBits(d2));
     }
 }

@@ -12,7 +12,6 @@ import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.util.Random;
 
-import static mho.haskellesque.iterables.IterableUtils.*;
 import static mho.haskellesque.iterables.IterableUtils.take;
 import static mho.haskellesque.ordering.Ordering.*;
 import static mho.qbar.Rational.*;
