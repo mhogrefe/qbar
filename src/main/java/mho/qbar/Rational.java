@@ -17,7 +17,6 @@ import java.math.RoundingMode;
 import java.util.*;
 
 import static mho.haskellesque.iterables.IterableUtils.*;
-import static mho.haskellesque.math.Combinatorics.*;
 import static mho.haskellesque.ordering.Ordering.*;
 
 /**
@@ -1650,13 +1649,23 @@ public final class Rational implements Comparable<Rational> {
         );
 
     /**
-     * a pseudorandom <tt>Iterable</tt> that generates every <tt>Rational</tt>. The bit size is chosen from a geometric
-     * distribution with mean approximately <tt>meanBitSize</tt> (The ratio between the actual mean bit size and
-     * <tt>meanBitSize</tt> decreases as <tt>meanBitSize</tt> increases). Does not support removal.
+     * @return a pseudorandom <tt>Iterable</tt> that generates every <tt>Rational</tt>. The numerator's and
+     * denominator's bit size is chosen from a geometric distribution with mean approximately <tt>meanBitSize</tt> (The
+     * ratio between the actual mean bit size and <tt>meanBitSize</tt> decreases as <tt>meanBitSize</tt> increases).
+     * Does not support removal.
+     *
+     * <ul>
+     *  <li><tt>p</tt> must contain an adequate random number generator.</li>
+     *  <li><tt>meanBitSize</tt> must be greater than 2.</li>
+     *  <li>The result is an infinite pseudorandom sequence of all <tt>Rational</tt>s.</li>
+     * </ul>
      *
      * Length is infinite
+     *
+     * @param p the provider of random <tt>Iterable</tt>s
+     * @param meanBitSize the approximate mean bit size of the <tt>Rational</tt>s' numerators and denominators
      */
-    public static @NotNull Iterable<Rational> randomRationals(RandomProvider p, int meanBitSize) {
+    public static @NotNull Iterable<Rational> randomRationals(@NotNull RandomProvider p, int meanBitSize) {
         return map(
                 Rational::fromPair,
                 filter(
@@ -1667,23 +1676,41 @@ public final class Rational implements Comparable<Rational> {
     }
 
     /**
-     * a pseudorandom <tt>Iterable</tt> that generates every <tt>Rational</tt>. The bit size is chosen from a geometric
-     * distribution with mean approximately 64. Does not support removal.
+     * @return a pseudorandom <tt>Iterable</tt> that generates every <tt>Rational</tt>. The numerator's and
+     * denominator's bit size is chosen from a geometric distribution with mean approximately 64. Does not support
+     * removal.
+     *
+     * <ul>
+     *  <li><tt>p</tt> must contain an adequate random number generator.</li>
+     *  <li>The result is an infinite pseudorandom sequence of all <tt>Rational</tt>s.</li>
+     * </ul>
      *
      * Length is infinite
+     *
+     * @param p the provider of random <tt>Iterable</tt>s
      */
-    public static @NotNull Iterable<Rational> randomRationals(RandomProvider p) {
+    public static @NotNull Iterable<Rational> randomRationals(@NotNull RandomProvider p) {
         return randomRationals(p, RandomProvider.BIG_INTEGER_MEAN_BIT_SIZE);
     }
 
     /**
-     * a pseudorandom <tt>Iterable</tt> that generates every non-negative <tt>Rational</tt>. The bit size is chosen
-     * from a geometric distribution with mean approximately <tt>meanBitSize</tt> (The ratio between the actual mean
-     * bit size and <tt>meanBitSize</tt> decreases as <tt>meanBitSize</tt> increases). Does not support removal.
+     * @return a pseudorandom <tt>Iterable</tt> that generates every non-negative <tt>Rational</tt>. The numerator's
+     * and denominator's bit size is chosen from a geometric distribution with mean approximately <tt>meanBitSize</tt>
+     * (The ratio between the actual mean bit size and <tt>meanBitSize</tt> decreases as <tt>meanBitSize</tt>
+     * increases). Does not support removal.
+     *
+     * <ul>
+     *  <li><tt>p</tt> must contain an adequate random number generator.</li>
+     *  <li><tt>meanBitSize</tt> must be greater than 2.</li>
+     *  <li>The result is an infinite pseudorandom sequence of all <tt>Rational</tt>s.</li>
+     * </ul>
      *
      * Length is infinite
+     *
+     * @param p the provider of random <tt>Iterable</tt>s
+     * @param meanBitSize the approximate mean bit size of the <tt>Rational</tt>s' numerators and denominators
      */
-    public static @NotNull Iterable<Rational> randomNonNegativeRationals(RandomProvider p, int meanBitSize) {
+    public static @NotNull Iterable<Rational> randomNonNegativeRationals(@NotNull RandomProvider p, int meanBitSize) {
         return map(
                 Rational::fromPair,
                 filter(
@@ -1694,23 +1721,40 @@ public final class Rational implements Comparable<Rational> {
     }
 
     /**
-     * a pseudorandom <tt>Iterable</tt> that generates every non-negative <tt>Rational</tt>. The bit size is chosen
-     * from a geometric distribution with mean approximately 64. Does not support removal.
+     * @return a pseudorandom <tt>Iterable</tt> that generates every non-negative <tt>Rational</tt>. The numerator's
+     * and denominator's bit size is chosen from a geometric distribution with mean approximately 64. Does not support
+     * removal.
+     *
+     * <ul>
+     *  <li><tt>p</tt> must contain an adequate random number generator.</li>
+     *  <li>The result is an infinite pseudorandom sequence of all non-negative <tt>Rational</tt>s.</li>
+     * </ul>
      *
      * Length is infinite
+     *
+     * @param p the provider of random <tt>Iterable</tt>s
      */
-    public static @NotNull Iterable<Rational> randomNonNegativeRationals(RandomProvider p) {
+    public static @NotNull Iterable<Rational> randomNonNegativeRationals(@NotNull RandomProvider p) {
         return randomNonNegativeRationals(p, RandomProvider.BIG_INTEGER_MEAN_BIT_SIZE);
     }
 
     /**
-     * a pseudorandom <tt>Iterable</tt> that generates every positive <tt>Rational</tt>. The bit size is chosen from a
-     * geometric distribution with mean approximately <tt>meanBitSize</tt> (The ratio between the actual mean bit size
-     * and <tt>meanBitSize</tt> decreases as <tt>meanBitSize</tt> increases). Does not support removal.
+     * @return a pseudorandom <tt>Iterable</tt> that generates every positive <tt>Rational</tt>. The numerator's and
+     * denominator's bit size is chosen from a geometric distribution with mean approximately <tt>meanBitSize</tt> (The
+     * ratio between the actual mean bit size and <tt>meanBitSize</tt> decreases as <tt>meanBitSize</tt> increases). Does not support removal.
+     *
+     * <ul>
+     *  <li><tt>p</tt> must contain an adequate random number generator.</li>
+     *  <li><tt>meanBitSize</tt> must be greater than 2.</li>
+     *  <li>The result is an infinite pseudorandom sequence of all positive <tt>Rational</tt>s.</li>
+     * </ul>
      *
      * Length is infinite
+     *
+     * @param p the provider of random <tt>Iterable</tt>s
+     * @param meanBitSize the approximate mean bit size of the <tt>Rational</tt>s' numerators and denominators
      */
-    public static @NotNull Iterable<Rational> randomPositiveRationals(RandomProvider p, int meanBitSize) {
+    public static @NotNull Iterable<Rational> randomPositiveRationals(@NotNull RandomProvider p, int meanBitSize) {
         return map(
                 Rational::fromPair,
                 filter(
@@ -1721,23 +1765,41 @@ public final class Rational implements Comparable<Rational> {
     }
 
     /**
-     * a pseudorandom <tt>Iterable</tt> that generates every positive <tt>Rational</tt>. The bit size is chosen from a
-     * geometric distribution with mean approximately 64. Does not support removal.
+     * @return a pseudorandom <tt>Iterable</tt> that generates every positive <tt>Rational</tt>. The numerator's and
+     * denominator's bit size is chosen from a geometric distribution with mean approximately 64. Does not support
+     * removal.
+     *
+     * <ul>
+     *  <li><tt>p</tt> must contain an adequate random number generator.</li>
+     *  <li>The result is an infinite pseudorandom sequence of all positive <tt>Rational</tt>s.</li>
+     * </ul>
      *
      * Length is infinite
+     *
+     * @param p the provider of random <tt>Iterable</tt>s
      */
-    public static @NotNull Iterable<Rational> randomPositiveRationals(RandomProvider p) {
+    public static @NotNull Iterable<Rational> randomPositiveRationals(@NotNull RandomProvider p) {
         return randomPositiveRationals(p, RandomProvider.BIG_INTEGER_MEAN_BIT_SIZE);
     }
 
     /**
-     * a pseudorandom <tt>Iterable</tt> that generates every negative <tt>Rational</tt>. The bit size is chosen from a
-     * geometric distribution with mean approximately <tt>meanBitSize</tt> (The ratio between the actual mean bit size
-     * and <tt>meanBitSize</tt> decreases as <tt>meanBitSize</tt> increases). Does not support removal.
+     * @return a pseudorandom <tt>Iterable</tt> that generates every negative <tt>Rational</tt>. The numerator's and
+     * denominator's bit size is chosen from a geometric distribution with mean approximately <tt>meanBitSize</tt> (The
+     * ratio between the actual mean bit size and <tt>meanBitSize</tt> decreases as <tt>meanBitSize</tt> increases).
+     * Does not support removal.
+     *
+     * <ul>
+     *  <li><tt>p</tt> must contain an adequate random number generator.</li>
+     *  <li><tt>meanBitSize</tt> must be greater than 2.</li>
+     *  <li>The result is an infinite pseudorandom sequence of all negative <tt>Rational</tt>s.</li>
+     * </ul>
      *
      * Length is infinite
+     *
+     * @param p the provider of random <tt>Iterable</tt>s
+     * @param meanBitSize the approximate mean bit size of the <tt>Rational</tt>s' numerators and denominators
      */
-    public static @NotNull Iterable<Rational> randomNegativeRationals(RandomProvider p, int meanBitSize) {
+    public static @NotNull Iterable<Rational> randomNegativeRationals(@NotNull RandomProvider p, int meanBitSize) {
         return map(
                 Rational::fromPair,
                 filter(
@@ -1748,24 +1810,42 @@ public final class Rational implements Comparable<Rational> {
     }
 
     /**
-     * a pseudorandom <tt>Iterable</tt> that generates every negative <tt>Rational</tt>. The bit size is chosen from a
-     * geometric distribution with mean approximately 64. Does not support removal.
+     * @return a pseudorandom <tt>Iterable</tt> that generates every negative <tt>Rational</tt>. The numerator's and
+     * denominator's bit size is chosen from a geometric distribution with mean approximately 64. Does not support
+     * removal.
+     *
+     * <ul>
+     *  <li><tt>p</tt> must contain an adequate random number generator.</li>
+     *  <li>The result is an infinite pseudorandom sequence of all negative <tt>Rational</tt>s.</li>
+     * </ul>
      *
      * Length is infinite
+     *
+     * @param p the provider of random <tt>Iterable</tt>s
      */
-    public static @NotNull Iterable<Rational> randomNegativeRationals(RandomProvider p) {
+    public static @NotNull Iterable<Rational> randomNegativeRationals(@NotNull RandomProvider p) {
         return randomNegativeRationals(p, RandomProvider.BIG_INTEGER_MEAN_BIT_SIZE);
     }
 
     /**
-     * a pseudorandom <tt>Iterable</tt> that generates every <tt>Rational</tt> in the interval [0, 1). The bit size is
-     * chosen from a geometric distribution with mean approximately <tt>meanBitSize</tt> (The ratio between the actual
-     * mean bit size and <tt>meanBitSize</tt> decreases as <tt>meanBitSize</tt> increases). Does not support removal.
+     * @return a pseudorandom <tt>Iterable</tt> that generates every <tt>Rational</tt> in the interval [0, 1). The
+     * numerator's and denominator's bit size is chosen from a geometric distribution with mean approximately
+     * <tt>meanBitSize</tt> (The ratio between the actual mean bit size and <tt>meanBitSize</tt> decreases as
+     * <tt>meanBitSize</tt> increases). Does not support removal.
+     *
+     * <ul>
+     *  <li><tt>p</tt> must contain an adequate random number generator.</li>
+     *  <li><tt>meanBitSize</tt> must be greater than 2.</li>
+     *  <li>The result is an infinite pseudorandom sequence of all <tt>Rational</tt>s in the interval [0, 1).</li>
+     * </ul>
      *
      * Length is infinite
+     *
+     * @param p the provider of random <tt>Iterable</tt>s
+     * @param meanBitSize the approximate mean bit size of the <tt>Rational</tt>s' numerators and denominators
      */
     public static @NotNull Iterable<Rational> randomNonNegativeRationalsLessThanOne(
-            RandomProvider p,
+            @NotNull RandomProvider p,
             int meanBitSize
     ) {
         return map(
@@ -1778,12 +1858,20 @@ public final class Rational implements Comparable<Rational> {
     }
 
     /**
-     * a pseudorandom <tt>Iterable</tt> that generates every <tt>Rational</tt> in the interval [0, 1). The bit size is
-     * chosen from a geometric distribution with mean approximately 64. Does not support removal.
+     * @return a pseudorandom <tt>Iterable</tt> that generates every <tt>Rational</tt> in the interval [0, 1). The
+     * numerator's and denominator's bit size is chosen from a geometric distribution with mean approximately 64. Does
+     * not support removal.
+     *
+     * <ul>
+     *  <li><tt>p</tt> must contain an adequate random number generator.</li>
+     *  <li>The result is an infinite pseudorandom sequence of <tt>Rational</tt>s in the interval [0, 1).</li>
+     * </ul>
      *
      * Length is infinite
+     *
+     * @param p the provider of random <tt>Iterable</tt>s
      */
-    public static @NotNull Iterable<Rational> randomNonNegativeRationalsLessThanOne(RandomProvider p) {
+    public static @NotNull Iterable<Rational> randomNonNegativeRationalsLessThanOne(@NotNull RandomProvider p) {
         return randomNonNegativeRationalsLessThanOne(p, RandomProvider.BIG_INTEGER_MEAN_BIT_SIZE);
     }
 }
