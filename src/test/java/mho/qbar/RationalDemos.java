@@ -21,13 +21,18 @@ public class RationalDemos {
     private static IterableProvider P;
     private static Iterable<Rational> RATIONALS;
 
+    public static void main(String[] args) {
+        signumDemo();
+    }
+
     private static void initialize() {
+        RandomProvider randomProvider = new RandomProvider(new Random(7706916639046193098L));
         P = USE_RANDOM ?
-                new RandomProvider(new Random(7706916639046193098L)) :
+                randomProvider :
                 new ExhaustiveProvider();
-        Iterable<Rational> RATIONALS = USE_RANDOM ?
-                Rational.RATIONALS :
-                Rational.RATIONALS;  //todo
+        RATIONALS = USE_RANDOM ?
+                Rational.randomRationals(randomProvider) :
+                Rational.RATIONALS;
     }
 
     public static void ofBigIntegerBigIntegerDemo() {
@@ -85,24 +90,28 @@ public class RationalDemos {
     }
 
     public static void negateDemo() {
+        initialize();
         for (Rational r : take(LIMIT, RATIONALS)) {
             System.out.println("-(" + r + ") = " + r.negate());
         }
     }
 
     public static void invertDemo() {
+        initialize();
         for (Rational r : take(LIMIT, filter(s -> s != Rational.ZERO, RATIONALS))) {
             System.out.println("1/(" + r + ") = " + r.invert());
         }
     }
 
     public static void absDemo() {
+        initialize();
         for (Rational r : take(LIMIT, RATIONALS)) {
             System.out.println("|" + r + "| = " + r.abs());
         }
     }
 
     public static void signumDemo() {
+        initialize();
         for (Rational r : take(LIMIT, RATIONALS)) {
             System.out.println("sgn(" + r + ") = " + r.signum());
         }
