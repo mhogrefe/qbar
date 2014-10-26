@@ -122,10 +122,10 @@ public class RationalProperties {
         initialize();
         System.out.println("testing of(BigInteger) properties...");
 
-        for (BigInteger bi : take(LIMIT, P.bigIntegers())) {
-            Rational r = of(bi);
+        for (BigInteger i : take(LIMIT, P.bigIntegers())) {
+            Rational r = of(i);
             validate(r);
-            assertEquals(bi.toString(), r.getDenominator(), BigInteger.ONE);
+            assertEquals(i.toString(), r.getDenominator(), BigInteger.ONE);
         }
     }
 
@@ -372,9 +372,9 @@ public class RationalProperties {
             assertEquals(p.toString(), product, multiply(of(p.b), p.a));
         }
 
-        for (BigInteger bi : take(LIMIT, P.bigIntegers())) {
-            assertEquals(bi.toString(), ONE.multiply(bi), of(bi));
-            assertTrue(bi.toString(), ZERO.multiply(bi) == ZERO);
+        for (BigInteger i : take(LIMIT, P.bigIntegers())) {
+            assertEquals(i.toString(), ONE.multiply(i), of(i));
+            assertTrue(i.toString(), ZERO.multiply(i) == ZERO);
         }
 
         for (Rational r : take(LIMIT, T_RATIONALS)) {
@@ -382,9 +382,9 @@ public class RationalProperties {
             assertTrue(r.toString(), r.multiply(BigInteger.ZERO) == ZERO);
         }
 
-        Iterable<BigInteger> bis = filter(bi -> !bi.equals(BigInteger.ZERO), P.bigIntegers());
-        for (BigInteger bi : take(LIMIT, bis)) {
-            assertTrue(bi.toString(), of(bi).invert().multiply(bi) == ONE);
+        Iterable<BigInteger> bis = filter(i -> !i.equals(BigInteger.ZERO), P.bigIntegers());
+        for (BigInteger i : take(LIMIT, bis)) {
+            assertTrue(i.toString(), of(i).invert().multiply(i) == ONE);
         }
 
         Iterable<Rational> rs = T_RATIONALS;
@@ -474,7 +474,7 @@ public class RationalProperties {
 
         Iterable<Pair<Rational, BigInteger>> ps = P.pairs(
                 T_RATIONALS,
-                filter(bi -> !bi.equals(BigInteger.ZERO), P.bigIntegers())
+                filter(i -> !i.equals(BigInteger.ZERO), P.bigIntegers())
         );
         for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
             assert p.a != null;
@@ -486,7 +486,7 @@ public class RationalProperties {
 
         ps = P.pairs(
                 (Iterable<Rational>) filter(r -> r != ZERO, T_RATIONALS),
-                filter(bi -> !bi.equals(BigInteger.ZERO), P.bigIntegers())
+                filter(i -> !i.equals(BigInteger.ZERO), P.bigIntegers())
         );
         for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
             assert p.a != null;
@@ -494,10 +494,10 @@ public class RationalProperties {
             assertEquals(p.toString(), p.a.divide(p.b), divide(of(p.b), p.a).invert());
         }
         
-        Iterable<BigInteger> bis = filter(bi -> !bi.equals(BigInteger.ZERO), P.bigIntegers());
-        for (BigInteger bi : take(LIMIT, bis)) {
-            assertEquals(bi.toString(), ONE.divide(bi), of(bi).invert()); 
-            assertEquals(bi.toString(), of(bi).divide(bi), ONE);
+        Iterable<BigInteger> bis = filter(i -> !i.equals(BigInteger.ZERO), P.bigIntegers());
+        for (BigInteger i : take(LIMIT, bis)) {
+            assertEquals(i.toString(), ONE.divide(i), of(i).invert());
+            assertEquals(i.toString(), of(i).divide(i), ONE);
         }
         
         for (Rational r : take(LIMIT, RATIONALS)) {
@@ -660,6 +660,10 @@ public class RationalProperties {
             assertTrue(r.toString(), le(of(floor), r));
             assertTrue(r.toString(), le(subtract(r, of(floor)), ONE));
         }
+
+        for (BigInteger i : take(LIMIT, P.bigIntegers())) {
+            assertEquals(i.toString(), of(i).floor(), i);
+        }
     }
 
     public static void propertiesCeiling() {
@@ -670,6 +674,10 @@ public class RationalProperties {
             BigInteger ceiling = r.ceiling();
             assertTrue(r.toString(), ge(of(ceiling), r));
             assertTrue(r.toString(), le(subtract(of(ceiling), r), ONE));
+        }
+
+        for (BigInteger i : take(LIMIT, P.bigIntegers())) {
+            assertEquals(i.toString(), of(i).ceiling(), i);
         }
     }
 
@@ -683,6 +691,10 @@ public class RationalProperties {
             assertTrue(r.toString(), ge(fractionalPart, ZERO));
             assertTrue(r.toString(), lt(fractionalPart, ONE));
             assertEquals(r.toString(), add(of(r.floor()), fractionalPart), r);
+        }
+
+        for (BigInteger i : take(LIMIT, P.bigIntegers())) {
+            assertEquals(i.toString(), of(i).fractionalPart(), ZERO);
         }
     }
 //
