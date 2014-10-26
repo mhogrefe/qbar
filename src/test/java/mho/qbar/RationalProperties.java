@@ -4,6 +4,7 @@ import mho.haskellesque.iterables.ExhaustiveProvider;
 import mho.haskellesque.iterables.IterableProvider;
 import mho.haskellesque.iterables.RandomProvider;
 import mho.haskellesque.math.BasicMath;
+import mho.haskellesque.ordering.Ordering;
 import mho.haskellesque.structures.Pair;
 import mho.haskellesque.structures.Triple;
 import org.jetbrains.annotations.NotNull;
@@ -16,6 +17,7 @@ import java.util.Arrays;
 import java.util.Random;
 
 import static mho.haskellesque.iterables.IterableUtils.*;
+import static mho.haskellesque.ordering.Ordering.*;
 import static mho.qbar.Rational.*;
 import static org.junit.Assert.*;
 
@@ -64,11 +66,9 @@ public class RationalProperties {
             propertiesDivide_BigInteger();
             propertiesDivide_int();
             propertiesPow();
-//        powProperties2();
-//        powProperties3();
-//        floorProperties();
-//        ceilingProperties();
-//        fractionalPartProperties();
+            propertiesFloor();
+            propertiesCeiling();
+            propertiesFractionalPart();
 //        roundProperties();
 //        roundToDenominatorProperties();
 //        shiftLeftProperties();
@@ -111,10 +111,10 @@ public class RationalProperties {
             Rational r = of(p.a, p.b);
             validate(r);
             assertEquals(p.toString(), of(p.a).divide(p.b), r);
-            assertTrue(p.toString(), r.getNumerator().compareTo(minInt) >= 0);
-            assertTrue(p.toString(), r.getNumerator().compareTo(maxInt) <= 0);
-            assertTrue(p.toString(), r.getDenominator().compareTo(minInt) >= 0);
-            assertTrue(p.toString(), r.getDenominator().compareTo(maxInt) <= 0);
+            assertTrue(p.toString(), ge(r.getNumerator(), minInt));
+            assertTrue(p.toString(), le(r.getNumerator(), maxInt));
+            assertTrue(p.toString(), ge(r.getDenominator(), minInt));
+            assertTrue(p.toString(), le(r.getDenominator(), maxInt));
         }
     }
 
@@ -139,8 +139,8 @@ public class RationalProperties {
             Rational r = of(i);
             validate(r);
             assertEquals(Integer.toString(i), r.getDenominator(), BigInteger.ONE);
-            assertTrue(Integer.toString(i), r.getNumerator().compareTo(minInt) >= 0);
-            assertTrue(Integer.toString(i), r.getNumerator().compareTo(maxInt) <= 0);
+            assertTrue(Integer.toString(i), ge(r.getNumerator(), minInt));
+            assertTrue(Integer.toString(i), le(r.getNumerator(), maxInt));
         }
     }
 
@@ -158,8 +158,8 @@ public class RationalProperties {
                 fae(Float.toString(f), f, r.toFloat());
             }
             assertTrue(Float.toString(f), BasicMath.isAPowerOfTwo(r.getDenominator()));
-            assertTrue(Float.toString(f), r.getDenominator().compareTo(denominatorLimit) <= 0);
-            assertTrue(Float.toString(f), r.getNumerator().compareTo(numeratorLimit) <= 0);
+            assertTrue(Float.toString(f), le(r.getDenominator(), denominatorLimit));
+            assertTrue(Float.toString(f), le(r.getNumerator(), numeratorLimit));
         }
 
         for (float f : take(LIMIT, P.ordinaryFloats())) {
@@ -183,8 +183,8 @@ public class RationalProperties {
                 dae(Double.toString(d), d, r.toDouble());
             }
             assertTrue(Double.toString(d), BasicMath.isAPowerOfTwo(r.getDenominator()));
-            assertTrue(Double.toString(d), r.getDenominator().compareTo(denominatorLimit) <= 0);
-            assertTrue(Double.toString(d), r.getNumerator().compareTo(numeratorLimit) <= 0);
+            assertTrue(Double.toString(d), le(r.getDenominator(), denominatorLimit));
+            assertTrue(Double.toString(d), le(r.getNumerator(), numeratorLimit));
         }
 
         for (double d : take(LIMIT, P.ordinaryDoubles())) {
@@ -208,7 +208,7 @@ public class RationalProperties {
 
     public static void propertiesNegate() {
         initialize();
-        System.out.println("testing negate properties...");
+        System.out.println("testing negate() properties...");
 
         for (Rational r : take(LIMIT, T_RATIONALS)) {
             Rational negativeR = r.negate();
@@ -226,7 +226,7 @@ public class RationalProperties {
 
     public static void propertiesInvert() {
         initialize();
-        System.out.println("testing invert properties...");
+        System.out.println("testing invert() properties...");
 
         Iterable<Rational> rs = filter(r -> r != ZERO, T_RATIONALS);
         for (Rational r : take(LIMIT, rs)) {
@@ -246,30 +246,30 @@ public class RationalProperties {
 
     public static void propertiesAbs() {
         initialize();
-        System.out.println("testing abs properties...");
+        System.out.println("testing abs() properties...");
 
         for (Rational r : take(LIMIT, T_RATIONALS)) {
             Rational absR = r.abs();
             validate(absR);
             assertEquals(r.toString(), absR, absR.abs());
-            assertTrue(r.toString(), absR.compareTo(ZERO) >= 0);
+            assertTrue(r.toString(), ge(absR, ZERO));
         }
     }
 
     public static void propertiesSignum() {
         initialize();
-        System.out.println("testing signum properties...");
+        System.out.println("testing signum() properties...");
 
         for (Rational r : take(LIMIT, T_RATIONALS)) {
             int signumR = r.signum();
-            assertEquals(r.toString(), signumR, Integer.signum(r.compareTo(ZERO)));
+            assertEquals(r.toString(), signumR, Ordering.compare(r, ZERO).toInt());
             assertTrue(r.toString(), signumR == -1 || signumR == 0 || signumR == 1);
         }
     }
 
     public static void propertiesAdd() {
         initialize();
-        System.out.println("testing add properties...");
+        System.out.println("testing add(Rational, Rational) properties...");
 
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(T_RATIONALS))) {
             assert p.a != null;
@@ -297,7 +297,7 @@ public class RationalProperties {
 
     public static void propertiesSubtract() {
         initialize();
-        System.out.println("testing subtract properties...");
+        System.out.println("testing subtract(Rational, Rational) properties...");
 
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(T_RATIONALS))) {
             assert p.a != null;
@@ -651,32 +651,40 @@ public class RationalProperties {
         }
     }
 
-//
-//    public static void floorProperties() {
-//        for (Rational r : T_RATIONALS.iterate(limit)) {
-//            BigInteger floor = r.floor();
-//            assertTrue(r.toString(), of(floor).compareTo(r) <= 0);
-//            assertTrue(r.toString(), subtract(r, of(floor)).compareTo(ONE) <= 0);
-//        }
-//    }
-//
-//    public static void ceilingProperties() {
-//        for (Rational r : T_RATIONALS.iterate(limit)) {
-//            BigInteger ceiling = r.ceiling();
-//            assertTrue(r.toString(), of(ceiling).compareTo(r) >= 0);
-//            assertTrue(r.toString(), subtract(of(ceiling), r).compareTo(ONE) <= 0);
-//        }
-//    }
-//
-//    public static void fractionalPartProperties() {
-//        for (Rational r : T_RATIONALS.iterate(limit)) {
-//            Rational fractionalPart = r.fractionalPart();
-//            validate(fractionalPart);
-//            assertTrue(r.toString(), fractionalPart.compareTo(ZERO) >= 0);
-//            assertTrue(r.toString(), fractionalPart.compareTo(ONE) < 0);
-//            assertEquals(r.toString(), add(of(r.floor()), fractionalPart), r);
-//        }
-//    }
+    public static void propertiesFloor() {
+        initialize();
+        System.out.println("testing floor() properties...");
+
+        for (Rational r : take(LIMIT, T_RATIONALS)) {
+            BigInteger floor = r.floor();
+            assertTrue(r.toString(), le(of(floor), r));
+            assertTrue(r.toString(), le(subtract(r, of(floor)), ONE));
+        }
+    }
+
+    public static void propertiesCeiling() {
+        initialize();
+        System.out.println("testing ceiling() properties...");
+
+        for (Rational r : take(LIMIT, T_RATIONALS)) {
+            BigInteger ceiling = r.ceiling();
+            assertTrue(r.toString(), ge(of(ceiling), r));
+            assertTrue(r.toString(), le(subtract(of(ceiling), r), ONE));
+        }
+    }
+
+    public static void propertiesFractionalPart() {
+        initialize();
+        System.out.println("testing fractionalPart() properties...");
+
+        for (Rational r : take(LIMIT, T_RATIONALS)) {
+            Rational fractionalPart = r.fractionalPart();
+            validate(fractionalPart);
+            assertTrue(r.toString(), ge(fractionalPart, ZERO));
+            assertTrue(r.toString(), lt(fractionalPart, ONE));
+            assertEquals(r.toString(), add(of(r.floor()), fractionalPart), r);
+        }
+    }
 //
 //    public static void roundProperties() {
 //        Iterable<Pair<Rational, RoundingMode>> g = new FilteredIterable<Pair<Rational, RoundingMode>>(

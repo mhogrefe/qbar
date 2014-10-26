@@ -15,7 +15,7 @@ import static mho.haskellesque.iterables.IterableUtils.*;
 import static mho.qbar.Rational.*;
 
 public class RationalDemos {
-    private static final boolean USE_RANDOM = true;
+    private static final boolean USE_RANDOM = false;
     private static final String NECESSARY_CHARS = "-/0123456789";
     private static int LIMIT;
 
@@ -23,7 +23,7 @@ public class RationalDemos {
     private static Iterable<Rational> T_RATIONALS;
 
     public static void main(String[] args) {
-        demoCeiling();
+        demoFractionalPart();
     }
 
     private static void initialize() {
@@ -220,7 +220,8 @@ public class RationalDemos {
         }
     }
 
-    public static void fractionalPartDemo() {
+    public static void demoFractionalPart() {
+        initialize();
         for (Rational r : take(LIMIT, T_RATIONALS)) {
             System.out.println("fractionalPart(" + r + ") = " + r.fractionalPart());
         }
