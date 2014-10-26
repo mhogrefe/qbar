@@ -8,18 +8,20 @@ import mho.haskellesque.ordering.Ordering;
 import mho.haskellesque.structures.Pair;
 import mho.haskellesque.structures.Triple;
 import org.jetbrains.annotations.NotNull;
-import org.junit.Assert;
 import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.RoundingMode;
 import java.util.Arrays;
 import java.util.Random;
 
 import static mho.haskellesque.iterables.IterableUtils.*;
 import static mho.haskellesque.ordering.Ordering.*;
 import static mho.qbar.Rational.*;
+import static mho.qbar.Rational.of;
 import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class RationalProperties {
     private static boolean USE_RANDOM = true;
@@ -69,7 +71,7 @@ public class RationalProperties {
             propertiesFloor();
             propertiesCeiling();
             propertiesFractionalPart();
-//        roundProperties();
+            propertiesRound();
 //        roundToDenominatorProperties();
 //        shiftLeftProperties();
 //        shiftRightProperties();
@@ -697,53 +699,60 @@ public class RationalProperties {
             assertEquals(i.toString(), of(i).fractionalPart(), ZERO);
         }
     }
-//
-//    public static void roundProperties() {
-//        Iterable<Pair<Rational, RoundingMode>> g = new FilteredIterable<Pair<Rational, RoundingMode>>(
-//                new PairIterable<>(T_RATIONALS, Iterables.roundingModes()),
-//                p -> p.b != RoundingMode.UNNECESSARY || p.a.getDenominator.equals(BigInteger.ONE));
-//        for (Pair<Rational, RoundingMode> p : g.iterate(limit)) {
-//            BigInteger rounded = p.a.round(p.b);
-//            assertTrue(p.toString(), rounded.equals(BigInteger.ZERO) || rounded.signum() == p.a.signum());
-//            assertTrue(p.toString(), subtract(p.a, of(rounded)).abs().compareTo(ONE) < 0);
-//            if (p.b == RoundingMode.UNNECESSARY) {
-//                assertEquals(p.toString(), p.a.getNumerator(), rounded);
-//                assertEquals(p.toString(), p.a.getDenominator, BigInteger.ONE);
-//            }
-//            if (p.b == RoundingMode.FLOOR) {
-//                assertEquals(p.toString(), rounded, p.a.floor());
-//            }
-//            if (p.b == RoundingMode.CEILING) {
-//                assertEquals(p.toString(), rounded, p.a.ceiling());
-//            }
-//            if (p.b == RoundingMode.DOWN) {
-//                assertTrue(p.toString(), of(rounded).abs().compareTo(p.a.abs()) <= 0);
-//            }
-//            if (p.b == RoundingMode.UP) {
-//                assertTrue(p.toString(), of(rounded).abs().compareTo(p.a.abs()) >= 0);
-//            }
-//            if (p.b == RoundingMode.HALF_DOWN || p.b == RoundingMode.HALF_UP || p.b == RoundingMode.HALF_EVEN) {
-//                assertTrue(p.toString(), subtract(p.a, of(rounded)).abs().compareTo(of(1, 2)) <= 0);
-//                Rational fractionalPart = p.a.abs().fractionalPart();
-//                if (fractionalPart.compareTo(of(1, 2)) < 0) {
-//                    assertEquals(p.toString(), rounded, p.a.round(RoundingMode.DOWN));
-//                } else if (fractionalPart.compareTo(of(1, 2)) > 0) {
-//                    assertEquals(p.toString(), rounded, p.a.round(RoundingMode.UP));
-//                } else {
-//                    if (p.b == RoundingMode.HALF_DOWN) {
-//                        assertEquals(p.toString(), rounded, p.a.round(RoundingMode.DOWN));
-//                    }
-//                    if (p.b == RoundingMode.HALF_UP) {
-//                        assertEquals(p.toString(), rounded, p.a.round(RoundingMode.UP));
-//                    }
-//                    if (p.b == RoundingMode.HALF_EVEN) {
-//                        assertEquals(p.toString(), rounded.testBit(0), false);
-//                    }
-//                }
-//            }
-//        }
-//    }
-//
+
+    public static void propertiesRound() {
+        initialize();
+        System.out.println("testing round(RoundingMode) properties...");
+
+        Iterable<Pair<Rational, RoundingMode>> ps = filter(
+                p -> p.b != RoundingMode.UNNECESSARY || p.a.getDenominator().equals(BigInteger.ONE),
+                P.pairs(T_RATIONALS, P.roundingModes())
+        );
+        for (Pair<Rational, RoundingMode> p : take(LIMIT, ps)) {
+            assert p.a != null;
+            assert p.b != null;
+            BigInteger rounded = p.a.round(p.b);
+            assertTrue(p.toString(), rounded.equals(BigInteger.ZERO) || rounded.signum() == p.a.signum());
+            assertTrue(p.toString(), lt(subtract(p.a, of(rounded)).abs(), ONE));
+        }
+
+        for (BigInteger i : take(LIMIT, P.bigIntegers())) {
+            assertEquals(i.toString(), of(i).round(RoundingMode.UNNECESSARY), i);
+        }
+
+        for (Rational r : take(LIMIT, T_RATIONALS)) {
+            assertEquals(r.toString(), r.round(RoundingMode.FLOOR), r.floor());
+            assertEquals(r.toString(), r.round(RoundingMode.CEILING), r.ceiling());
+            assertTrue(r.toString(), le(of(r.round(RoundingMode.DOWN)).abs(), r.abs()));
+            assertTrue(r.toString(), ge(of(r.round(RoundingMode.UP)).abs(), r.abs()));
+            assertTrue(r.toString(), le(subtract(r, of(r.round(RoundingMode.HALF_DOWN))).abs(), of(1, 2)));
+            assertTrue(r.toString(), le(subtract(r, of(r.round(RoundingMode.HALF_UP))).abs(), of(1, 2)));
+            assertTrue(r.toString(), le(subtract(r, of(r.round(RoundingMode.HALF_EVEN))).abs(), of(1, 2)));
+        }
+
+        Iterable<Rational> rs = filter(r -> lt(r.abs().fractionalPart(), of(1, 2)), T_RATIONALS);
+        for (Rational r : take(LIMIT, rs)) {
+            assertEquals(r.toString(), r.round(RoundingMode.HALF_DOWN), r.round(RoundingMode.DOWN));
+            assertEquals(r.toString(), r.round(RoundingMode.HALF_UP), r.round(RoundingMode.DOWN));
+            assertEquals(r.toString(), r.round(RoundingMode.HALF_EVEN), r.round(RoundingMode.DOWN));
+        }
+
+        rs = filter(r -> gt(r.abs().fractionalPart(), of(1, 2)), T_RATIONALS);
+        for (Rational r : take(LIMIT, rs)) {
+            assertEquals(r.toString(), r.round(RoundingMode.HALF_DOWN), r.round(RoundingMode.UP));
+            assertEquals(r.toString(), r.round(RoundingMode.HALF_UP), r.round(RoundingMode.UP));
+            assertEquals(r.toString(), r.round(RoundingMode.HALF_EVEN), r.round(RoundingMode.UP));
+        }
+
+        //odd multiples of 1/2
+        rs = map(i -> of(i.shiftLeft(1).add(BigInteger.ONE), BigInteger.valueOf(2)), P.bigIntegers());
+        for (Rational r : take(LIMIT, rs)) {
+            assertEquals(r.toString(), r.round(RoundingMode.HALF_DOWN), r.round(RoundingMode.DOWN));
+            assertEquals(r.toString(), r.round(RoundingMode.HALF_UP), r.round(RoundingMode.UP));
+            assertFalse(r.toString(), r.round(RoundingMode.HALF_EVEN).testBit(0));
+        }
+    }
+
 //    public static void roundToDenominatorProperties() {
 //        Iterable<Triple<Rational, BigInteger, RoundingMode>> g =
 //                new FilteredIterable<Triple<Rational, BigInteger, RoundingMode>>(
@@ -795,7 +804,7 @@ public class RationalProperties {
 //    }
 //
 //    public static void shiftLeftProperties() {
-//        Iterable<Pair<Rational, Integer>> g = new PairIterable<>(T_RATIONALS, P.integers());
+//        Iterable<Pair<Rational, Integer>> g = P.pairs(T_RATIONALS, P.integers());
 //        for (Pair<Rational, Integer> p : g.iterate(limit)) {
 //            Rational shifted = p.a.shiftLeft(p.b);
 //            validate(shifted);
@@ -808,7 +817,7 @@ public class RationalProperties {
 //    }
 //
 //    public static void shiftRightProperties() {
-//        Iterable<Pair<Rational, Integer>> g = new PairIterable<>(T_RATIONALS, P.integers());
+//        Iterable<Pair<Rational, Integer>> g = P.pairs(T_RATIONALS, P.integers());
 //        for (Pair<Rational, Integer> p : g.iterate(limit)) {
 //            Rational shifted = p.a.shiftRight(p.b);
 //            validate(shifted);
@@ -838,7 +847,7 @@ public class RationalProperties {
 //
 //    public static void toFloatRoundingModeProperties() {
 //        Iterable<Pair<Rational, RoundingMode>> g = new FilteredIterable<Pair<Rational, RoundingMode>>(
-//                new PairIterable<>(T_RATIONALS, Iterables.roundingModes()),
+//                P.pairs(T_RATIONALS, Iterables.roundingModes()),
 //                p -> p.b != RoundingMode.UNNECESSARY
 //                        || of(p.a.toFloat(RoundingMode.FLOOR)).equals(p.a));
 //        for (Pair<Rational, RoundingMode> p : g.iterate(limit)) {
