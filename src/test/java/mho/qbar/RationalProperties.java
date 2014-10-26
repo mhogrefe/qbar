@@ -560,8 +560,8 @@ public class RationalProperties {
             assert p.a != null;
             assert p.b != null;
             Rational r = p.a.pow(p.b);
-            Assert.assertEquals(p.toString(), r, p.a.pow(-p.b).invert());
-            Assert.assertEquals(p.toString(), r, p.a.invert().pow(-p.b));
+            assertEquals(p.toString(), r, p.a.pow(-p.b).invert());
+            assertEquals(p.toString(), r, p.a.invert().pow(-p.b));
         }
 
         Iterable<Integer> pexps;
@@ -585,11 +585,11 @@ public class RationalProperties {
             assertEquals(r.toString(), r.pow(-1), r.invert());
         }
 
-        Iterable<Triple<Rational, Integer, Integer>> ts = filter(
+        Iterable<Triple<Rational, Integer, Integer>> ts1 = filter(
                 p -> p.b >= 0 && p.c >= 0 || p.a != ZERO,
                 P.triples(T_RATIONALS, exps, exps)
         );
-        for (Triple<Rational, Integer, Integer> t : take(LIMIT, ts)) {
+        for (Triple<Rational, Integer, Integer> t : take(LIMIT, ts1)) {
             assert t.a != null;
             assert t.b != null;
             assert t.c != null;
@@ -598,11 +598,11 @@ public class RationalProperties {
             assertEquals(t.toString(), expression1, expression2);
         }
 
-        ts = filter(
+        ts1 = filter(
                 t -> t.a != ZERO || t.c == 0 && t.b >= 0,
                 P.triples(T_RATIONALS, exps, exps)
         );
-        for (Triple<Rational, Integer, Integer> t : take(LIMIT, ts)) {
+        for (Triple<Rational, Integer, Integer> t : take(LIMIT, ts1)) {
             assert t.a != null;
             assert t.b != null;
             assert t.c != null;
@@ -611,11 +611,11 @@ public class RationalProperties {
             assertEquals(t.toString(), expression1, expression2);
         }
 
-        ts = filter(
+        ts1 = filter(
                 t -> t.a != ZERO || t.b >= 0 && t.c >= 0,
                 P.triples(T_RATIONALS, exps, exps)
         );
-        for (Triple<Rational, Integer, Integer> t : take(LIMIT, ts)) {
+        for (Triple<Rational, Integer, Integer> t : take(LIMIT, ts1)) {
             assert t.a != null;
             assert t.b != null;
             assert t.c != null;
@@ -623,38 +623,48 @@ public class RationalProperties {
             Rational expression6 = t.a.pow(t.b * t.c);
             assertEquals(t.toString(), expression5, expression6);
         }
+
+        Iterable<Triple<Rational, Rational, Integer>> ts2 = filter(
+                t -> t.a != ZERO && t.b != ZERO || t.c >= 0,
+                P.triples(T_RATIONALS, T_RATIONALS, exps)
+        );
+        for (Triple<Rational, Rational, Integer> t : take(LIMIT, ts2)) {
+            assert t.a != null;
+            assert t.b != null;
+            assert t.c != null;
+            Rational expression1 = multiply(t.a, t.b).pow(t.c);
+            Rational expression2 = multiply(t.a.pow(t.c), t.b.pow(t.c));
+            assertEquals(t.toString(), expression1, expression2);
+        }
+
+        ts2 = filter(
+                t -> t.a != ZERO || t.c >= 0,
+                P.triples(T_RATIONALS, filter(r -> r != ZERO, T_RATIONALS), exps)
+        );
+        for (Triple<Rational, Rational, Integer> t : take(LIMIT, ts2)) {
+            assert t.a != null;
+            assert t.b != null;
+            assert t.c != null;
+            Rational expression1 = divide(t.a, t.b).pow(t.c);
+            Rational expression2 = divide(t.a.pow(t.c), t.b.pow(t.c));
+            assertEquals(t.toString(), expression1, expression2);
+        }
     }
 
-//
-//    public static void powProperties3() {
-//        Iterable<Rational> rg = T_RATIONALS;
-//        for (Triple<Rational, Rational, Integer> t : new TripleIterable<>(rg, rg, P.integers()).iterate(limit)) {
-//            if (t.a != ZERO && t.b != ZERO || t.c >= 0) {
-//                Rational expression1 = multiply(t.a, t.b).pow(t.c);
-//                Rational expression2 = multiply(t.a.pow(t.c), t.b.pow(t.c));
-//                Assert.assertEquals(t.toString(), expression1, expression2);
-//            }
-//            if (t.b != ZERO && (t.a != ZERO || t.c >= 0)) {
-//                Rational expression3 = divide(t.a, t.b).pow(t.c);
-//                Rational expression4 = divide(t.a.pow(t.c), t.b.pow(t.c));
-//                Assert.assertEquals(t.toString(), expression3, expression4);
-//            }
-//        }
-//    }
 //
 //    public static void floorProperties() {
 //        for (Rational r : T_RATIONALS.iterate(limit)) {
 //            BigInteger floor = r.floor();
-//            Assert.assertTrue(r.toString(), of(floor).compareTo(r) <= 0);
-//            Assert.assertTrue(r.toString(), subtract(r, of(floor)).compareTo(ONE) <= 0);
+//            assertTrue(r.toString(), of(floor).compareTo(r) <= 0);
+//            assertTrue(r.toString(), subtract(r, of(floor)).compareTo(ONE) <= 0);
 //        }
 //    }
 //
 //    public static void ceilingProperties() {
 //        for (Rational r : T_RATIONALS.iterate(limit)) {
 //            BigInteger ceiling = r.ceiling();
-//            Assert.assertTrue(r.toString(), of(ceiling).compareTo(r) >= 0);
-//            Assert.assertTrue(r.toString(), subtract(of(ceiling), r).compareTo(ONE) <= 0);
+//            assertTrue(r.toString(), of(ceiling).compareTo(r) >= 0);
+//            assertTrue(r.toString(), subtract(of(ceiling), r).compareTo(ONE) <= 0);
 //        }
 //    }
 //
@@ -662,9 +672,9 @@ public class RationalProperties {
 //        for (Rational r : T_RATIONALS.iterate(limit)) {
 //            Rational fractionalPart = r.fractionalPart();
 //            validate(fractionalPart);
-//            Assert.assertTrue(r.toString(), fractionalPart.compareTo(ZERO) >= 0);
-//            Assert.assertTrue(r.toString(), fractionalPart.compareTo(ONE) < 0);
-//            Assert.assertEquals(r.toString(), add(of(r.floor()), fractionalPart), r);
+//            assertTrue(r.toString(), fractionalPart.compareTo(ZERO) >= 0);
+//            assertTrue(r.toString(), fractionalPart.compareTo(ONE) < 0);
+//            assertEquals(r.toString(), add(of(r.floor()), fractionalPart), r);
 //        }
 //    }
 //
@@ -674,40 +684,40 @@ public class RationalProperties {
 //                p -> p.b != RoundingMode.UNNECESSARY || p.a.getDenominator.equals(BigInteger.ONE));
 //        for (Pair<Rational, RoundingMode> p : g.iterate(limit)) {
 //            BigInteger rounded = p.a.round(p.b);
-//            Assert.assertTrue(p.toString(), rounded.equals(BigInteger.ZERO) || rounded.signum() == p.a.signum());
-//            Assert.assertTrue(p.toString(), subtract(p.a, of(rounded)).abs().compareTo(ONE) < 0);
+//            assertTrue(p.toString(), rounded.equals(BigInteger.ZERO) || rounded.signum() == p.a.signum());
+//            assertTrue(p.toString(), subtract(p.a, of(rounded)).abs().compareTo(ONE) < 0);
 //            if (p.b == RoundingMode.UNNECESSARY) {
-//                Assert.assertEquals(p.toString(), p.a.getNumerator(), rounded);
-//                Assert.assertEquals(p.toString(), p.a.getDenominator, BigInteger.ONE);
+//                assertEquals(p.toString(), p.a.getNumerator(), rounded);
+//                assertEquals(p.toString(), p.a.getDenominator, BigInteger.ONE);
 //            }
 //            if (p.b == RoundingMode.FLOOR) {
-//                Assert.assertEquals(p.toString(), rounded, p.a.floor());
+//                assertEquals(p.toString(), rounded, p.a.floor());
 //            }
 //            if (p.b == RoundingMode.CEILING) {
-//                Assert.assertEquals(p.toString(), rounded, p.a.ceiling());
+//                assertEquals(p.toString(), rounded, p.a.ceiling());
 //            }
 //            if (p.b == RoundingMode.DOWN) {
-//                Assert.assertTrue(p.toString(), of(rounded).abs().compareTo(p.a.abs()) <= 0);
+//                assertTrue(p.toString(), of(rounded).abs().compareTo(p.a.abs()) <= 0);
 //            }
 //            if (p.b == RoundingMode.UP) {
-//                Assert.assertTrue(p.toString(), of(rounded).abs().compareTo(p.a.abs()) >= 0);
+//                assertTrue(p.toString(), of(rounded).abs().compareTo(p.a.abs()) >= 0);
 //            }
 //            if (p.b == RoundingMode.HALF_DOWN || p.b == RoundingMode.HALF_UP || p.b == RoundingMode.HALF_EVEN) {
-//                Assert.assertTrue(p.toString(), subtract(p.a, of(rounded)).abs().compareTo(of(1, 2)) <= 0);
+//                assertTrue(p.toString(), subtract(p.a, of(rounded)).abs().compareTo(of(1, 2)) <= 0);
 //                Rational fractionalPart = p.a.abs().fractionalPart();
 //                if (fractionalPart.compareTo(of(1, 2)) < 0) {
-//                    Assert.assertEquals(p.toString(), rounded, p.a.round(RoundingMode.DOWN));
+//                    assertEquals(p.toString(), rounded, p.a.round(RoundingMode.DOWN));
 //                } else if (fractionalPart.compareTo(of(1, 2)) > 0) {
-//                    Assert.assertEquals(p.toString(), rounded, p.a.round(RoundingMode.UP));
+//                    assertEquals(p.toString(), rounded, p.a.round(RoundingMode.UP));
 //                } else {
 //                    if (p.b == RoundingMode.HALF_DOWN) {
-//                        Assert.assertEquals(p.toString(), rounded, p.a.round(RoundingMode.DOWN));
+//                        assertEquals(p.toString(), rounded, p.a.round(RoundingMode.DOWN));
 //                    }
 //                    if (p.b == RoundingMode.HALF_UP) {
-//                        Assert.assertEquals(p.toString(), rounded, p.a.round(RoundingMode.UP));
+//                        assertEquals(p.toString(), rounded, p.a.round(RoundingMode.UP));
 //                    }
 //                    if (p.b == RoundingMode.HALF_EVEN) {
-//                        Assert.assertEquals(p.toString(), rounded.testBit(0), false);
+//                        assertEquals(p.toString(), rounded.testBit(0), false);
 //                    }
 //                }
 //            }
@@ -721,43 +731,43 @@ public class RationalProperties {
 //                        p -> p.c != RoundingMode.UNNECESSARY || p.b.mod(p.a.getDenominator).equals(BigInteger.ZERO));
 //        for (Triple<Rational, BigInteger, RoundingMode> t : g.iterate(limit)) {
 //            Rational rounded = t.a.roundToDenominator(t.b, t.c);
-//            Assert.assertTrue(t.toString(), rounded == ZERO || rounded.signum() == t.a.signum());
+//            assertTrue(t.toString(), rounded == ZERO || rounded.signum() == t.a.signum());
 //            if (t.b.equals(BigInteger.ONE)) {
-//                Assert.assertEquals(t.toString(), rounded.getNumerator(), t.a.round(t.c));
-//                Assert.assertEquals(t.toString(), rounded.getDenominator, BigInteger.ONE);
+//                assertEquals(t.toString(), rounded.getNumerator(), t.a.round(t.c));
+//                assertEquals(t.toString(), rounded.getDenominator, BigInteger.ONE);
 //            }
-//            Assert.assertTrue(t.toString(), subtract(t.a, rounded).abs().compareTo(of(BigInteger.ONE, t.b)) < 0);
+//            assertTrue(t.toString(), subtract(t.a, rounded).abs().compareTo(of(BigInteger.ONE, t.b)) < 0);
 //            if (t.c == RoundingMode.UNNECESSARY) {
-//                Assert.assertEquals(t.toString(), t.a.multiply(t.b).getDenominator, BigInteger.ONE);
+//                assertEquals(t.toString(), t.a.multiply(t.b).getDenominator, BigInteger.ONE);
 //            }
 //            if (t.c == RoundingMode.FLOOR) {
-//                Assert.assertTrue(t.toString(), rounded.compareTo(t.a) <= 0);
+//                assertTrue(t.toString(), rounded.compareTo(t.a) <= 0);
 //            }
 //            if (t.c == RoundingMode.CEILING) {
-//                Assert.assertTrue(t.toString(), rounded.compareTo(t.a) >= 0);
+//                assertTrue(t.toString(), rounded.compareTo(t.a) >= 0);
 //            }
 //            if (t.c == RoundingMode.DOWN) {
-//                Assert.assertTrue(t.toString(), rounded.abs().compareTo(t.a.abs()) <= 0);
+//                assertTrue(t.toString(), rounded.abs().compareTo(t.a.abs()) <= 0);
 //            }
 //            if (t.c == RoundingMode.UP) {
-//                Assert.assertTrue(t.toString(), rounded.abs().compareTo(t.a.abs()) >= 0);
+//                assertTrue(t.toString(), rounded.abs().compareTo(t.a.abs()) >= 0);
 //            }
 //            if (t.c == RoundingMode.HALF_DOWN || t.c == RoundingMode.HALF_UP || t.c == RoundingMode.HALF_EVEN) {
-//                Assert.assertTrue(t.toString(), subtract(t.a, rounded).abs().compareTo(of(t.b).multiply(2).invert()) <= 0);
+//                assertTrue(t.toString(), subtract(t.a, rounded).abs().compareTo(of(t.b).multiply(2).invert()) <= 0);
 //                Rational fractionalPart = t.a.abs().multiply(t.b).fractionalPart();
 //                if (fractionalPart.compareTo(of(1, 2)) < 0) {
-//                    Assert.assertEquals(t.toString(), rounded, t.a.roundToDenominator(t.b, RoundingMode.DOWN));
+//                    assertEquals(t.toString(), rounded, t.a.roundToDenominator(t.b, RoundingMode.DOWN));
 //                } else if (fractionalPart.compareTo(of(1, 2)) > 0) {
-//                    Assert.assertEquals(t.toString(), rounded, t.a.roundToDenominator(t.b, RoundingMode.UP));
+//                    assertEquals(t.toString(), rounded, t.a.roundToDenominator(t.b, RoundingMode.UP));
 //                } else {
 //                    if (t.c == RoundingMode.HALF_DOWN) {
-//                        Assert.assertEquals(t.toString(), rounded, t.a.roundToDenominator(t.b, RoundingMode.DOWN));
+//                        assertEquals(t.toString(), rounded, t.a.roundToDenominator(t.b, RoundingMode.DOWN));
 //                    }
 //                    if (t.c == RoundingMode.HALF_UP) {
-//                        Assert.assertEquals(t.toString(), rounded, t.a.roundToDenominator(t.b, RoundingMode.UP));
+//                        assertEquals(t.toString(), rounded, t.a.roundToDenominator(t.b, RoundingMode.UP));
 //                    }
 //                    if (t.c == RoundingMode.HALF_EVEN) {
-//                        Assert.assertEquals(t.toString(), rounded.multiply(t.b).getNumerator().testBit(0), false);
+//                        assertEquals(t.toString(), rounded.multiply(t.b).getNumerator().testBit(0), false);
 //                    }
 //                }
 //            }
@@ -769,10 +779,10 @@ public class RationalProperties {
 //        for (Pair<Rational, Integer> p : g.iterate(limit)) {
 //            Rational shifted = p.a.shiftLeft(p.b);
 //            validate(shifted);
-//            Assert.assertEquals(p.toString(), p.a.negate().shiftLeft(p.b), shifted.negate());
-//            Assert.assertEquals(p.toString(), shifted, p.a.shiftRight(-p.b));
+//            assertEquals(p.toString(), p.a.negate().shiftLeft(p.b), shifted.negate());
+//            assertEquals(p.toString(), shifted, p.a.shiftRight(-p.b));
 //            if (p.b >= 0) {
-//                Assert.assertEquals(p.toString(), shifted, p.a.multiply(BigInteger.ONE.shiftLeft(p.b)));
+//                assertEquals(p.toString(), shifted, p.a.multiply(BigInteger.ONE.shiftLeft(p.b)));
 //            }
 //        }
 //    }
@@ -782,10 +792,10 @@ public class RationalProperties {
 //        for (Pair<Rational, Integer> p : g.iterate(limit)) {
 //            Rational shifted = p.a.shiftRight(p.b);
 //            validate(shifted);
-//            Assert.assertEquals(p.toString(), p.a.negate().shiftRight(p.b), shifted.negate());
-//            Assert.assertEquals(p.toString(), shifted, p.a.shiftLeft(-p.b));
+//            assertEquals(p.toString(), p.a.negate().shiftRight(p.b), shifted.negate());
+//            assertEquals(p.toString(), shifted, p.a.shiftLeft(-p.b));
 //            if (p.b >= 0) {
-//                Assert.assertEquals(p.toString(), shifted, p.a.divide(BigInteger.ONE.shiftLeft(p.b)));
+//                assertEquals(p.toString(), shifted, p.a.divide(BigInteger.ONE.shiftLeft(p.b)));
 //            }
 //        }
 //    }
@@ -794,15 +804,15 @@ public class RationalProperties {
 //        for (Rational r : positiveRationals().iterate(limit)) {
 //            int exponent = r.binaryExponent();
 //            Rational power = ONE.shiftLeft(exponent);
-//            Assert.assertTrue(r.toString(), power.compareTo(r) <= 0);
-//            Assert.assertTrue(r.toString(), r.compareTo(power.shiftLeft(1)) < 0);
+//            assertTrue(r.toString(), power.compareTo(r) <= 0);
+//            assertTrue(r.toString(), r.compareTo(power.shiftLeft(1)) < 0);
 //        }
 //    }
 //
 //    public static void toFloatProperties() {
 //        for (Rational r : T_RATIONALS.iterate(limit)) {
 //            float f = r.toFloat();
-//            Assert.assertEquals(r.toString(), f, r.toFloat(RoundingMode.HALF_EVEN));
+//            assertEquals(r.toString(), f, r.toFloat(RoundingMode.HALF_EVEN));
 //        }
 //    }
 //
@@ -813,81 +823,81 @@ public class RationalProperties {
 //                        || of(p.a.toFloat(RoundingMode.FLOOR)).equals(p.a));
 //        for (Pair<Rational, RoundingMode> p : g.iterate(limit)) {
 //            float rounded = p.a.toFloat(p.b);
-//            Assert.assertTrue(p.toString(), !Float.isNaN(rounded));
-//            Assert.assertTrue(p.toString(), rounded == 0.0 || Math.signum(rounded) == p.a.signum());
+//            assertTrue(p.toString(), !Float.isNaN(rounded));
+//            assertTrue(p.toString(), rounded == 0.0 || Math.signum(rounded) == p.a.signum());
 //            float successor = MathUtils.successor(rounded);
 //            float predecessor = MathUtils.predecessor(rounded);
 //            float up = p.a.signum() == -1 ? predecessor : successor;
 //            float down = p.a.signum() == -1 ? successor : predecessor;
 //            if (p.b == RoundingMode.UNNECESSARY) {
-//                Assert.assertEquals(p.toString(), p.a, of(rounded));
-//                Assert.assertTrue(p.toString(), Float.isFinite(rounded));
-//                Assert.assertTrue(p.toString(), !new Float(rounded).equals(-0.0f));
+//                assertEquals(p.toString(), p.a, of(rounded));
+//                assertTrue(p.toString(), Float.isFinite(rounded));
+//                assertTrue(p.toString(), !new Float(rounded).equals(-0.0f));
 //            }
 //            if (p.b == RoundingMode.FLOOR) {
-//                Assert.assertTrue(p.toString(), of(rounded).compareTo(p.a) <= 0);
-//                Assert.assertTrue(p.toString(), of(successor).compareTo(p.a) > 0);
+//                assertTrue(p.toString(), of(rounded).compareTo(p.a) <= 0);
+//                assertTrue(p.toString(), of(successor).compareTo(p.a) > 0);
 //                if (p.a.compareTo(ZERO) >= 0 && p.a.compareTo(SMALLEST_FLOAT) < 0) {
-//                    Assert.assertEquals(p.toString(), rounded, 0.0f);
+//                    assertEquals(p.toString(), rounded, 0.0f);
 //                }
 //                if (p.a.compareTo(LARGEST_FLOAT.negate()) < 0) {
-//                    Assert.assertTrue(p.toString(), rounded < 0 && Float.isInfinite(rounded));
+//                    assertTrue(p.toString(), rounded < 0 && Float.isInfinite(rounded));
 //                }
 //                if (p.a.compareTo(LARGEST_FLOAT) >= 0) {
-//                    Assert.assertEquals(p.toString(), rounded, Float.MAX_VALUE);
+//                    assertEquals(p.toString(), rounded, Float.MAX_VALUE);
 //                }
-//                Assert.assertTrue(p.toString(), rounded < 0 || Float.isFinite(rounded));
-//                Assert.assertTrue(p.toString(), !new Float(rounded).equals(-0.0f));
+//                assertTrue(p.toString(), rounded < 0 || Float.isFinite(rounded));
+//                assertTrue(p.toString(), !new Float(rounded).equals(-0.0f));
 //            }
 //            if (p.b == RoundingMode.CEILING) {
-//                Assert.assertTrue(p.toString(), of(rounded).compareTo(p.a) >= 0);
-//                Assert.assertTrue(p.toString(), of(predecessor).compareTo(p.a) < 0);
+//                assertTrue(p.toString(), of(rounded).compareTo(p.a) >= 0);
+//                assertTrue(p.toString(), of(predecessor).compareTo(p.a) < 0);
 //                if (p.a == ZERO) {
-//                    Assert.assertEquals(p.toString(), rounded, 0.0f);
+//                    assertEquals(p.toString(), rounded, 0.0f);
 //                }
 //                if (p.a.compareTo(ZERO) < 0 && p.a.compareTo(SMALLEST_FLOAT.negate()) > 0) {
-//                    Assert.assertEquals(p.toString(), rounded, -0.0f);
+//                    assertEquals(p.toString(), rounded, -0.0f);
 //                }
 //                if (p.a.compareTo(LARGEST_FLOAT) > 0) {
-//                    Assert.assertTrue(p.toString(), rounded > 0 && Float.isInfinite(rounded));
+//                    assertTrue(p.toString(), rounded > 0 && Float.isInfinite(rounded));
 //                }
 //                if (p.a.compareTo(LARGEST_FLOAT.negate()) <= 0) {
-//                    Assert.assertEquals(p.toString(), rounded, -Float.MAX_VALUE);
+//                    assertEquals(p.toString(), rounded, -Float.MAX_VALUE);
 //                }
-//                Assert.assertTrue(p.toString(), rounded > 0 || Float.isFinite(rounded));
+//                assertTrue(p.toString(), rounded > 0 || Float.isFinite(rounded));
 //            }
 //            if (p.b == RoundingMode.DOWN) {
-//                Assert.assertTrue(p.toString(), of(rounded).abs().compareTo(p.a.abs()) <= 0);
-//                Assert.assertTrue(p.toString(), of(up).abs().compareTo(p.a.abs()) > 0);
+//                assertTrue(p.toString(), of(rounded).abs().compareTo(p.a.abs()) <= 0);
+//                assertTrue(p.toString(), of(up).abs().compareTo(p.a.abs()) > 0);
 //                if (p.a.compareTo(ZERO) >= 0 && p.a.compareTo(SMALLEST_FLOAT) < 0) {
-//                    Assert.assertEquals(p.toString(), rounded, 0.0f);
+//                    assertEquals(p.toString(), rounded, 0.0f);
 //                }
 //                if (p.a.compareTo(ZERO) < 0 && p.a.compareTo(SMALLEST_FLOAT.negate()) > 0) {
-//                    Assert.assertEquals(p.toString(), rounded, -0.0f);
+//                    assertEquals(p.toString(), rounded, -0.0f);
 //                }
 //                if (p.a.compareTo(LARGEST_FLOAT) >= 0) {
-//                    Assert.assertEquals(p.toString(), rounded, Float.MAX_VALUE);
+//                    assertEquals(p.toString(), rounded, Float.MAX_VALUE);
 //                }
 //                if (p.a.compareTo(LARGEST_FLOAT.negate()) <= 0) {
-//                    Assert.assertEquals(p.toString(), rounded, -Float.MAX_VALUE);
+//                    assertEquals(p.toString(), rounded, -Float.MAX_VALUE);
 //                }
-//                Assert.assertTrue(p.toString(), Float.isFinite(rounded));
+//                assertTrue(p.toString(), Float.isFinite(rounded));
 //            }
 //            if (p.b == RoundingMode.UP) {
-//                Assert.assertTrue(p.toString(), of(rounded).abs().compareTo(p.a.abs()) >= 0);
+//                assertTrue(p.toString(), of(rounded).abs().compareTo(p.a.abs()) >= 0);
 //                if (p.a != ZERO) {
-//                    Assert.assertTrue(p.toString(), of(down).abs().compareTo(p.a.abs()) < 0);
+//                    assertTrue(p.toString(), of(down).abs().compareTo(p.a.abs()) < 0);
 //                }
 //                if (p.a == ZERO) {
-//                    Assert.assertEquals(p.toString(), rounded, 0.0f);
+//                    assertEquals(p.toString(), rounded, 0.0f);
 //                }
 //                if (p.a.compareTo(LARGEST_FLOAT) > 0) {
-//                    Assert.assertTrue(p.toString(), rounded > 0 && Float.isInfinite(rounded));
+//                    assertTrue(p.toString(), rounded > 0 && Float.isInfinite(rounded));
 //                }
 //                if (p.a.compareTo(LARGEST_FLOAT.negate()) < 0) {
-//                    Assert.assertTrue(p.toString(), rounded < 0 && Float.isInfinite(rounded));
+//                    assertTrue(p.toString(), rounded < 0 && Float.isInfinite(rounded));
 //                }
-//                Assert.assertTrue(p.toString(), !new Float(rounded).equals(-0.0f));
+//                assertTrue(p.toString(), !new Float(rounded).equals(-0.0f));
 //            }
 //            if (p.b == RoundingMode.HALF_DOWN || p.b == RoundingMode.HALF_UP || p.b == RoundingMode.HALF_EVEN) {
 //                boolean equidistant = false;
@@ -895,7 +905,7 @@ public class RationalProperties {
 //                    Rational distance = subtract(of(rounded), p.a).abs();
 //                    Rational predDistance = subtract(of(predecessor), p.a).abs();
 //                    Rational succDistance = subtract(of(successor), p.a).abs();
-//                    Assert.assertEquals(p.toString(), min(distance, predDistance, succDistance), distance);
+//                    assertEquals(p.toString(), min(distance, predDistance, succDistance), distance);
 //                    if (distance.equals(predDistance) || distance.equals(succDistance)) {
 //                        equidistant = true;
 //                    }
@@ -903,11 +913,11 @@ public class RationalProperties {
 //                //TODO
 //                if (p.b == RoundingMode.HALF_DOWN) {
 //                    if (equidistant) {
-//                        Assert.assertEquals(p.toString(), rounded, p.a.toFloat(RoundingMode.DOWN));
+//                        assertEquals(p.toString(), rounded, p.a.toFloat(RoundingMode.DOWN));
 //                    }
 //                } else if (p.b == RoundingMode.HALF_UP) {
 //                    if (equidistant) {
-//                        Assert.assertEquals(p.toString(), rounded, p.a.toFloat(RoundingMode.UP));
+//                        assertEquals(p.toString(), rounded, p.a.toFloat(RoundingMode.UP));
 //                    }
 //                }
 //            }
