@@ -2,7 +2,7 @@ package mho.qbar;
 
 import mho.haskellesque.iterables.ExhaustiveProvider;
 import mho.haskellesque.iterables.RandomProvider;
-import mho.haskellesque.math.BasicMath;
+import mho.haskellesque.math.MathUtils;
 import mho.haskellesque.numbers.Numbers;
 import mho.haskellesque.ordering.Ordering;
 import mho.haskellesque.structures.Pair;
@@ -178,7 +178,7 @@ public final class Rational implements Comparable<Rational> {
             throw new ArithmeticException("division by zero");
         if (numerator == 0) return ZERO;
         if (numerator == denominator) return ONE;
-        int gcd = BasicMath.gcd(numerator, denominator);
+        int gcd = MathUtils.gcd(numerator, denominator);
         if (denominator < 0) gcd = -gcd;
         return new Rational(BigInteger.valueOf(numerator / gcd), BigInteger.valueOf(denominator / gcd));
     }
@@ -1422,7 +1422,7 @@ public final class Rational implements Comparable<Rational> {
         if (signum() == -1)
             throw new IllegalArgumentException("this cannot be negative");
         BigInteger floor = floor();
-        List<BigInteger> beforeDecimal = toList(BasicMath.digits(base, floor));
+        List<BigInteger> beforeDecimal = toList(MathUtils.digits(base, floor));
         Rational fractionalPart = subtract(this, of(floor));
         BigInteger numerator = fractionalPart.numerator;
         BigInteger denominator = fractionalPart.denominator;
@@ -1476,9 +1476,9 @@ public final class Rational implements Comparable<Rational> {
             @NotNull List<BigInteger> nonRepeating,
             @NotNull List<BigInteger> repeating
     ) {
-        BigInteger floor = BasicMath.fromDigits(base, beforeDecimalPoint);
-        BigInteger nonRepeatingInteger = BasicMath.fromDigits(base, nonRepeating);
-        BigInteger repeatingInteger = BasicMath.fromDigits(base, repeating);
+        BigInteger floor = MathUtils.fromDigits(base, beforeDecimalPoint);
+        BigInteger nonRepeatingInteger = MathUtils.fromDigits(base, nonRepeating);
+        BigInteger repeatingInteger = MathUtils.fromDigits(base, repeating);
         Rational nonRepeatingPart = of(nonRepeatingInteger, base.pow(nonRepeating.size()));
         Rational repeatingPart = of(repeatingInteger, base.pow(repeating.size()).subtract(BigInteger.ONE))
                 .divide(base.pow(nonRepeating.size()));

@@ -15,7 +15,7 @@ import static mho.haskellesque.iterables.IterableUtils.*;
 import static mho.qbar.Rational.*;
 
 public class RationalDemos {
-    private static final boolean USE_RANDOM = false;
+    private static final boolean USE_RANDOM = true;
     private static final String NECESSARY_CHARS = "-/0123456789";
     private static int LIMIT;
 
@@ -23,12 +23,12 @@ public class RationalDemos {
     private static Iterable<Rational> T_RATIONALS;
 
     public static void main(String[] args) {
-        demoFractionalPart();
+        demoRound();
     }
 
     private static void initialize() {
         if (USE_RANDOM) {
-            RandomProvider randomProvider = new RandomProvider(new Random(7706916639046193098L));
+            RandomProvider randomProvider = new RandomProvider(new Random(0x6af477d9a7e54fcaL));
             P = randomProvider;
             T_RATIONALS = randomRationals(randomProvider);
             LIMIT = 1000;
@@ -227,7 +227,8 @@ public class RationalDemos {
         }
     }
 
-    public static void roundDemo() {
+    public static void demoRound() {
+        initialize();
         Iterable<Pair<Rational, RoundingMode>> it = filter(
                 p -> p.b != RoundingMode.UNNECESSARY || p.a.getDenominator().equals(BigInteger.ONE),
                 P.pairs(T_RATIONALS, P.roundingModes())

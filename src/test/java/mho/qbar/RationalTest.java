@@ -23,7 +23,7 @@ public class RationalTest {
 
     @Before
     public void initialize() {
-        P = new RandomProvider(new Random(-1781048559808000493L));
+        P = new RandomProvider(new Random(0xe74871c570ec4e13L));
     }
 
     @Test

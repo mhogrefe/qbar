@@ -3,7 +3,7 @@ package mho.qbar;
 import mho.haskellesque.iterables.ExhaustiveProvider;
 import mho.haskellesque.iterables.IterableProvider;
 import mho.haskellesque.iterables.RandomProvider;
-import mho.haskellesque.math.BasicMath;
+import mho.haskellesque.math.MathUtils;
 import mho.haskellesque.ordering.Ordering;
 import mho.haskellesque.structures.Pair;
 import mho.haskellesque.structures.Triple;
@@ -33,7 +33,7 @@ public class RationalProperties {
 
     private static void initialize() {
         if (USE_RANDOM) {
-            RandomProvider randomProvider = new RandomProvider(new Random(7706916639046193098L));
+            RandomProvider randomProvider = new RandomProvider(new Random(0x6af477d9a7e54fcaL));
             P = randomProvider;
             T_RATIONALS = randomRationals(randomProvider);
         } else {
@@ -163,7 +163,7 @@ public class RationalProperties {
             if (f != -0.0f) {
                 fae(Float.toString(f), f, r.toFloat());
             }
-            assertTrue(Float.toString(f), BasicMath.isAPowerOfTwo(r.getDenominator()));
+            assertTrue(Float.toString(f), MathUtils.isAPowerOfTwo(r.getDenominator()));
             assertTrue(Float.toString(f), le(r.getDenominator(), denominatorLimit));
             assertTrue(Float.toString(f), le(r.getNumerator(), numeratorLimit));
         }
@@ -189,7 +189,7 @@ public class RationalProperties {
             if (d != -0.0) {
                 dae(Double.toString(d), d, r.toDouble());
             }
-            assertTrue(Double.toString(d), BasicMath.isAPowerOfTwo(r.getDenominator()));
+            assertTrue(Double.toString(d), MathUtils.isAPowerOfTwo(r.getDenominator()));
             assertTrue(Double.toString(d), le(r.getDenominator(), denominatorLimit));
             assertTrue(Double.toString(d), le(r.getNumerator(), numeratorLimit));
         }
