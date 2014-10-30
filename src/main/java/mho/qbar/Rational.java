@@ -862,7 +862,7 @@ public final class Rational implements Comparable<Rational> {
             fraction = subtract(shiftRight(exponent), ONE).shiftLeft(23);
             adjustedExponent = exponent + 127;
         }
-        float loFloat = Float.intBitsToFloat((adjustedExponent << 23) + fraction.floor().intValue());
+        float loFloat = Float.intBitsToFloat((adjustedExponent << 23) + fraction.floor().intValueExact());
         float hiFloat = fraction.denominator.equals(BigInteger.ONE) ? loFloat : Numbers.successor(loFloat);
         return new Pair<>(loFloat, hiFloat);
     }
