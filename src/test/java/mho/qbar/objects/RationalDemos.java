@@ -19,15 +19,11 @@ import static mho.haskellesque.iterables.IterableUtils.*;
 import static mho.qbar.objects.Rational.*;
 
 public class RationalDemos {
-    private static final boolean USE_RANDOM = true;
+    private static final boolean USE_RANDOM = false;
     private static final String NECESSARY_CHARS = "-/0123456789";
     private static int LIMIT;
 
     private static QBarIterableProvider P;
-
-    public static void main(String[] args) {
-        demoRound();
-    }
 
     private static void initialize() {
         if (USE_RANDOM) {
@@ -256,7 +252,8 @@ public class RationalDemos {
         }
     }
 
-    public static void roundToDenominatorDemo() {
+    public static void demoRoundToDenominator() {
+        initialize();
         Iterable<Triple<Rational, BigInteger, RoundingMode>> it = filter(
                 p -> {
                     assert p.a != null;
@@ -269,7 +266,8 @@ public class RationalDemos {
             assert t.a != null;
             assert t.b != null;
             assert t.c != null;
-            System.out.println("round(" + t.a + ", " + t.b + ", " + t.c + ") = " + t.a.roundToDenominator(t.b, t.c));
+            System.out.println("roundToDenominator(" + t.a + ", " + t.b + ", " + t.c + ") = " +
+                    t.a.roundToDenominator(t.b, t.c));
         }
     }
 
