@@ -25,6 +25,10 @@ public class RationalDemos {
 
     private static QBarIterableProvider P;
 
+    public static void main(String[] args) {
+        demoCompareTo();
+    }
+
     private static void initialize() {
         if (USE_RANDOM) {
             P = new QBarRandomProvider(new Random(0x6af477d9a7e54fcaL));
@@ -377,31 +381,6 @@ public class RationalDemos {
 //        }
 //    }
 
-    public static void equalsRationalDemo() {
-        for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
-            System.out.println("equals(" + p.a + ", " + p.b + ") = " + p.a.equals(p.b));
-        }
-    }
-
-    public static void equalsNullDemo() {
-        for (Rational r : take(LIMIT, P.rationals())) {
-            //noinspection ObjectEqualsNull
-            System.out.println("equals(" + r + ", null) = " + r.equals(null));
-        }
-    }
-
-    public static void hashCodeDemo() {
-        for (Rational r : take(LIMIT, P.rationals())) {
-            System.out.println("hashCode(" + r + ") = " + r.hashCode());
-        }
-    }
-
-    public static void compareToDemo() {
-        for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
-            System.out.println("compareTo(" + p.a + ", " + p.b + ") = " + p.a.compareTo(p.b));
-        }
-    }
-
     public static void continuedFractionDemo() {
         for (Rational r : take(LIMIT, P.rationals())) {
             System.out.println("continuedFraction(" + r + ") = " + r.continuedFraction());
@@ -508,6 +487,35 @@ public class RationalDemos {
 //            System.out.println("digits(" + p.a + ", " + p.b + ") = " + resultString);
 //        }
 //    }
+
+    public static void demoEquals_Rational() {
+        initialize();
+        for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
+            System.out.println("equals(" + p.a + ", " + p.b + ") = " + p.a.equals(p.b));
+        }
+    }
+
+    public static void demoEquals_null() {
+        initialize();
+        for (Rational r : take(LIMIT, P.rationals())) {
+            //noinspection ObjectEqualsNull
+            System.out.println("equals(" + r + ", null) = " + r.equals(null));
+        }
+    }
+
+    public static void demoHashCode() {
+        initialize();
+        for (Rational r : take(LIMIT, P.rationals())) {
+            System.out.println("hashCode(" + r + ") = " + r.hashCode());
+        }
+    }
+
+    public static void demoCompareTo() {
+        initialize();
+        for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
+            System.out.println("compareTo(" + p.a + ", " + p.b + ") = " + p.a.compareTo(p.b));
+        }
+    }
 
 //    public static void readDemo() {
 //        readDemo(limit, false, false);
