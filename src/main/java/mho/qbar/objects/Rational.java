@@ -1265,59 +1265,6 @@ public final class Rational implements Comparable<Rational> {
     }
 
     /**
-     * Determines whether <tt>this</tt> is equal to <tt>that</tt>.
-     *
-     * <ul>
-     *  <li><tt>this</tt> may be any <tt>Rational</tt>.</li>
-     *  <li><tt>that</tt> may be any <tt>Object</tt>.</li>
-     *  <li>The result may be either <tt>boolean</tt>.</li>
-     * </ul>
-     *
-     * @param that The <tt>Rational</tt> to be compared with <tt>this</tt>
-     * @return <tt>this</tt>=<tt>that</tt>
-     */
-    @Override
-    public boolean equals(Object that) {
-        if (this == that) return true;
-        if (that == null || Rational.class != that.getClass()) return false;
-        Rational r = (Rational) that;
-        return denominator.equals(r.denominator) && numerator.equals(r.numerator);
-    }
-
-    /**
-     * Calculates the hash code of <tt>this</tt>.
-     *
-     * <ul>
-     *  <li><tt>this</tt> may be any <tt>Rational</tt>.</li>
-     *  <li>(conjecture) The result may be any <tt>int</tt>.</li>
-     * </ul>
-     *
-     * @return <tt>this</tt>'s hash code.
-     */
-    @Override
-    public int hashCode() {
-        return 31 * numerator.hashCode() + denominator.hashCode();
-    }
-
-    /**
-     * Compares <tt>this</tt> to <tt>that</tt>, returning 1, &#x2212;1, or 0 if the answer is "greater than", "less
-     * than", or "equal to", respectively.
-     *
-     * <ul>
-     *  <li><tt>this</tt> may be any <tt>Rational</tt>.</li>
-     *  <li><tt>that</tt> cannot be null.</li>
-     *  <li>The result may be &#x2212;1, 0, or 1.</li>
-     * </ul>
-     *
-     * @param that The <tt>Rational</tt> to be compared with <tt>this</tt>
-     * @return <tt>this</tt> compared to <tt>that</tt>
-     */
-    @Override
-    public int compareTo(@NotNull Rational that) {
-        return numerator.multiply(that.denominator).compareTo(that.numerator.multiply(denominator));
-    }
-
-    /**
      * Finds the continued fraction of <tt>this</tt>. If we pretend that the result is an array called a of length n,
      * then <tt>this</tt>=a[0]+1/(a[1]+1/(a[2]+...+1/a[n-1]...)). Every rational number has two such representations;
      * this method returns the shortest one.
@@ -1507,6 +1454,60 @@ public final class Rational implements Comparable<Rational> {
             afterDecimal = concat(positionalNotation.b, cycle(positionalNotation.c));
         }
         return new Pair<>(positionalNotation.a, afterDecimal);
+    }
+
+
+    /**
+     * Determines whether <tt>this</tt> is equal to <tt>that</tt>.
+     *
+     * <ul>
+     *  <li><tt>this</tt> may be any <tt>Rational</tt>.</li>
+     *  <li><tt>that</tt> may be any <tt>Object</tt>.</li>
+     *  <li>The result may be either <tt>boolean</tt>.</li>
+     * </ul>
+     *
+     * @param that The <tt>Rational</tt> to be compared with <tt>this</tt>
+     * @return <tt>this</tt>=<tt>that</tt>
+     */
+    @Override
+    public boolean equals(Object that) {
+        if (this == that) return true;
+        if (that == null || Rational.class != that.getClass()) return false;
+        Rational r = (Rational) that;
+        return denominator.equals(r.denominator) && numerator.equals(r.numerator);
+    }
+
+    /**
+     * Calculates the hash code of <tt>this</tt>.
+     *
+     * <ul>
+     *  <li><tt>this</tt> may be any <tt>Rational</tt>.</li>
+     *  <li>(conjecture) The result may be any <tt>int</tt>.</li>
+     * </ul>
+     *
+     * @return <tt>this</tt>'s hash code.
+     */
+    @Override
+    public int hashCode() {
+        return 31 * numerator.hashCode() + denominator.hashCode();
+    }
+
+    /**
+     * Compares <tt>this</tt> to <tt>that</tt>, returning 1, &#x2212;1, or 0 if the answer is "greater than", "less
+     * than", or "equal to", respectively.
+     *
+     * <ul>
+     *  <li><tt>this</tt> may be any <tt>Rational</tt>.</li>
+     *  <li><tt>that</tt> cannot be null.</li>
+     *  <li>The result may be &#x2212;1, 0, or 1.</li>
+     * </ul>
+     *
+     * @param that The <tt>Rational</tt> to be compared with <tt>this</tt>
+     * @return <tt>this</tt> compared to <tt>that</tt>
+     */
+    @Override
+    public int compareTo(@NotNull Rational that) {
+        return numerator.multiply(that.denominator).compareTo(that.numerator.multiply(denominator));
     }
 
     /**

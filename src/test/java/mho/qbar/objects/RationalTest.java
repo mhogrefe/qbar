@@ -2206,14 +2206,14 @@ public class RationalTest {
     public void testRead() {
         assertTrue(read("0").get() == ZERO);
         assertTrue(read("1").get() == ONE);
-        aeq(read("3").get(), "3");
-        aeq(read("-3").get(), "-3");
-        aeq(read("5/12").get(), "5/12");
-        aeq(read("-5/12").get(), "-5/12");
-        aeq(read("12/6").get(), "2");
-        aeq(read("12/-6").get(), "-2");
-        aeq(read("6/8").get(), "3/4");
-        aeq(read("-4/1").get(), "-4");
+        aeq(read("3").get(), Rational.of(3));
+        aeq(read("-3").get(), Rational.of(-3));
+        aeq(read("5/12").get(), Rational.of(5, 12));
+        aeq(read("-5/12").get(), Rational.of(-5, 12));
+        aeq(read("12/6").get(), Rational.of(2));
+        aeq(read("12/-6").get(), Rational.of(-2));
+        aeq(read("6/8").get(), Rational.of(3, 4));
+        aeq(read("-4/1").get(), Rational.of(-4));
         try {
             read("2/0");
             fail();
@@ -2243,10 +2243,10 @@ public class RationalTest {
     public void testToString() {
         aeq(ZERO, "0");
         aeq(ONE, "1");
-        aeq(read("4").get(), "4");
-        aeq(read("-4").get(), "-4");
-        aeq(read("2/5").get(), "2/5");
-        aeq(read("-2/5").get(), "-2/5");
+        aeq(Rational.of(4), "4");
+        aeq(Rational.of(-4), "-4");
+        aeq(Rational.of(2, 5), "2/5");
+        aeq(Rational.of(-2, 5), "-2/5");
     }
 
     private static void aeq(Iterable<?> a, Object b) {
