@@ -24,15 +24,11 @@ import static mho.haskellesque.iterables.IterableUtils.*;
 import static mho.qbar.objects.Rational.*;
 
 public class RationalDemos {
-    private static final boolean USE_RANDOM = true;
+    private static final boolean USE_RANDOM = false;
     private static final String NECESSARY_CHARS = "-/0123456789";
     private static int LIMIT;
 
     private static QBarIterableProvider P;
-
-    public static void main(String[] args) {
-        demoToString();
-    }
 
     private static void initialize() {
         if (USE_RANDOM) {

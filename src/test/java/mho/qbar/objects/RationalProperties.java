@@ -4,6 +4,7 @@ import mho.haskellesque.iterables.ExhaustiveProvider;
 import mho.haskellesque.iterables.IterableProvider;
 import mho.haskellesque.iterables.RandomProvider;
 import mho.haskellesque.math.MathUtils;
+import mho.haskellesque.numbers.Numbers;
 import mho.haskellesque.ordering.Ordering;
 import mho.haskellesque.structures.Pair;
 import mho.haskellesque.structures.Triple;
@@ -18,6 +19,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.Random;
 
 import static mho.haskellesque.iterables.IterableUtils.*;
@@ -80,6 +82,11 @@ public class RationalProperties {
 //        binaryExponentProperties();
 //        toFloatProperties();
 //        toFloatRoundingModeProperties();
+            propertiesEquals();
+            propertiesHashCode();
+            propertiesCompareTo();
+            propertiesRead();
+//            propertiesToString();
             System.out.println();
         }
         System.out.println("Done");
@@ -1075,6 +1082,105 @@ public class RationalProperties {
 //                    }
 //                }
 //            }
+//        }
+//    }
+
+    public static void propertiesEquals() {
+        initialize();
+        System.out.println("testing equals(Object) properties...");
+
+        for (Rational r : take(LIMIT, P.rationals())) {
+            assertTrue(r.toString(), r.equals(r));
+            //noinspection ObjectEqualsNull
+            assertFalse(r.toString(), r.equals(null));
+        }
+    }
+
+    public static void propertiesHashCode() {
+        initialize();
+        System.out.println("testing hashCode() properties...");
+
+        for (Rational r : take(LIMIT, P.rationals())) {
+            assertEquals(r.toString(), r.hashCode(), r.hashCode());
+        }
+    }
+
+    public static void propertiesCompareTo() {
+        initialize();
+        System.out.println("testing compareTo(Rational) properties...");
+
+        for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
+            assert p.a != null;
+            assert p.b != null;
+            int compare = p.a.compareTo(p.b);
+            assertTrue(p.toString(), compare == -1 || compare == 0 || compare == 1);
+            assertEquals(p.toString(), p.b.compareTo(p.a), -compare);
+            assertEquals(p.toString(), subtract(p.a, p.b).signum(), compare);
+        }
+
+        for (Rational r : take(LIMIT, P.rationals())) {
+            assertEquals(r.toString(), r.compareTo(r), 0);
+        }
+
+        Iterable<Triple<Rational, Rational, Rational>> ts = filter(
+                t -> lt(t.a, t.b) && lt(t.b, t.c),
+                P.triples(P.rationals())
+        );
+        for (Triple<Rational, Rational, Rational> t : take(LIMIT, ts)) {
+            assert t.a != null;
+            assert t.c != null;
+            assertEquals(t.toString(), t.a.compareTo(t.c), -1);
+        }
+    }
+
+    private static boolean goodReadArgument(@NotNull String s) {
+        return s.length() < 2 || !s.endsWith("/0") ||
+                !Numbers.readBigInteger(s.substring(0, s.length() - 2)).isPresent();
+    }
+
+    public static void propertiesRead() {
+        initialize();
+        System.out.println("testing read(String) properties...");
+
+        for (String s : take(LIMIT, filter(RationalProperties::goodReadArgument, P.strings()))) {
+            read(s);
+        }
+
+        for (Rational r : take(LIMIT, P.rationals())) {
+            assertEquals(r.toString(), read(r.toString()).get(), r);
+        }
+
+        Iterable<Character> cs;
+        if (P instanceof QBarExhaustiveProvider) {
+            cs = fromString(NECESSARY_CHARS);
+        } else {
+            cs = ((QBarRandomProvider) P).uniformSample(NECESSARY_CHARS);
+        }
+        Iterable<String> ss = filter(s -> goodReadArgument(s) && read(s).isPresent(), P.strings(cs));
+        for (String s : take(LIMIT, ss)) {
+            assertFalse(s, s.isEmpty());
+        }
+
+        for (String s : take(LIMIT, filter(t -> t.contains("/"), ss))) {
+            int slashIndex = s.indexOf('/');
+            String left = s.substring(0, slashIndex);
+            String right = s.substring(slashIndex + 1);
+            assertTrue(s, Numbers.readBigInteger(left).isPresent());
+            assertTrue(s, Numbers.readBigInteger(right).isPresent());
+        }
+
+        for (String s : take(LIMIT, filter(t -> !t.contains("/"), ss))) {
+            assertTrue(s, Numbers.readBigInteger(s).isPresent());
+        }
+    }
+
+//    public static void propertiesToString() {
+//        initialize();
+//        System.out.println("testing toString() properties...");
+//
+//        for (Rational r : take(LIMIT, P.rationals())) {
+//            String s = r.toString();
+//
 //        }
 //    }
 
