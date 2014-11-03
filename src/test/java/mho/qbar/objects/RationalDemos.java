@@ -12,6 +12,7 @@ import mho.qbar.iterableProviders.QBarExhaustiveProvider;
 import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.iterableProviders.QBarRandomProvider;
 import mho.qbar.objects.Rational;
+import org.jetbrains.annotations.NotNull;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -30,15 +31,7 @@ public class RationalDemos {
     private static QBarIterableProvider P;
 
     public static void main(String[] args) {
-//        demoRead_targeted();
-//        for (String s : filter(RationalDemos::goodReadArgument, Combinatorics.stringsShortlex(NECESSARY_CHARS))) {
-//            Optional<Rational> or = read(s);
-//            if (or.isPresent()) {
-//                Rational r = or.get();
-//                if (r.toString().equals(s)) System.out.println(r);
-//            }
-//        }
-        demoRead_targeted();
+        demoToString();
     }
 
     private static void initialize() {
@@ -46,7 +39,7 @@ public class RationalDemos {
             P = new QBarRandomProvider(new Random(0x6af477d9a7e54fcaL));
             LIMIT = 1000;
         } else {
-            P = new QBarExhaustiveProvider();
+            P = QBarExhaustiveProvider.INSTANCE;
             LIMIT = 10000;
         }
     }
@@ -535,7 +528,7 @@ public class RationalDemos {
         }
     }
 
-    private static boolean goodReadArgument(String s) {
+    private static boolean goodReadArgument(@NotNull String s) {
         return s.length() < 2 || !s.endsWith("/0") ||
                 !Numbers.readBigInteger(s.substring(0, s.length() - 2)).isPresent();
     }
@@ -550,7 +543,13 @@ public class RationalDemos {
 
     public static void demoRead_targeted() {
         initialize();
-        Iterable<String> ss = filter(RationalDemos::goodReadArgument, P.strings(fromString(NECESSARY_CHARS)));
+        Iterable<Character> cs;
+        if (P instanceof QBarExhaustiveProvider) {
+            cs = fromString(NECESSARY_CHARS);
+        } else {
+            cs = ((QBarRandomProvider) P).uniformSample(NECESSARY_CHARS);
+        }
+        Iterable<String> ss = filter(RationalDemos::goodReadArgument, P.strings(cs));
         for (String s : take(LIMIT, ss)) {
             System.out.println("read(" + s + ") = " + read(s));
         }

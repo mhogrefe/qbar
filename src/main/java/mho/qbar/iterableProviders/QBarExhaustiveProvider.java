@@ -11,7 +11,9 @@ import static mho.haskellesque.iterables.IterableUtils.map;
 import static mho.haskellesque.ordering.Ordering.lt;
 
 public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIterableProvider {
-    public QBarExhaustiveProvider() {
+    public static final QBarExhaustiveProvider INSTANCE = new QBarExhaustiveProvider();
+
+    protected QBarExhaustiveProvider() {
         super();
     }
 
