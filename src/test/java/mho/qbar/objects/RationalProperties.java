@@ -86,7 +86,7 @@ public class RationalProperties {
             propertiesHashCode();
             propertiesCompareTo();
             propertiesRead();
-//            propertiesToString();
+            propertiesToString();
             System.out.println();
         }
         System.out.println("Done");
@@ -1161,7 +1161,10 @@ public class RationalProperties {
             assertFalse(s, s.isEmpty());
         }
 
-        for (String s : take(LIMIT, filter(t -> t.contains("/"), ss))) {
+        Pair<Iterable<String>, Iterable<String>> slashPartition = partition(s -> s.contains("/"), ss);
+        assert slashPartition.a != null;
+        assert slashPartition.b != null;
+        for (String s : take(LIMIT, slashPartition.a)) {
             int slashIndex = s.indexOf('/');
             String left = s.substring(0, slashIndex);
             String right = s.substring(slashIndex + 1);
@@ -1169,20 +1172,23 @@ public class RationalProperties {
             assertTrue(s, Numbers.readBigInteger(right).isPresent());
         }
 
-        for (String s : take(LIMIT, filter(t -> !t.contains("/"), ss))) {
+        for (String s : take(LIMIT, slashPartition.b)) {
             assertTrue(s, Numbers.readBigInteger(s).isPresent());
         }
     }
 
-//    public static void propertiesToString() {
-//        initialize();
-//        System.out.println("testing toString() properties...");
-//
-//        for (Rational r : take(LIMIT, P.rationals())) {
-//            String s = r.toString();
-//
-//        }
-//    }
+    public static void propertiesToString() {
+        initialize();
+        System.out.println("testing toString() properties...");
+
+        for (Rational r : take(LIMIT, P.rationals())) {
+            String s = r.toString();
+            assertTrue(isSubsetOf(s, NECESSARY_CHARS));
+            Optional<Rational> readR = read(s);
+            assertTrue(r.toString(), readR.isPresent());
+            assertEquals(r.toString(), readR.get(), r);
+        }
+    }
 
     private static void validate(@NotNull Rational r) {
         assertEquals(r.toString(), r.getNumerator().gcd(r.getDenominator()), BigInteger.ONE);
