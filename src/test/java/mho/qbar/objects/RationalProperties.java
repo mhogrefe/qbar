@@ -1,7 +1,5 @@
 package mho.qbar.objects;
 
-import mho.haskellesque.iterables.ExhaustiveProvider;
-import mho.haskellesque.iterables.IterableProvider;
 import mho.haskellesque.iterables.RandomProvider;
 import mho.haskellesque.math.MathUtils;
 import mho.haskellesque.numbers.Numbers;
@@ -11,7 +9,6 @@ import mho.haskellesque.structures.Triple;
 import mho.qbar.iterableProviders.QBarExhaustiveProvider;
 import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.iterableProviders.QBarRandomProvider;
-import mho.qbar.objects.Rational;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
@@ -30,7 +27,7 @@ import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 
 public class RationalProperties {
-    private static boolean USE_RANDOM = true;
+    private static boolean USE_RANDOM;
     private static final String NECESSARY_CHARS = "-/0123456789";
     private static int LIMIT;
 
@@ -76,7 +73,7 @@ public class RationalProperties {
             propertiesCeiling();
             propertiesFractionalPart();
             propertiesRound();
-//        propertiesRoundToDenominator();
+            propertiesRoundToDenominator();
 //        shiftLeftProperties();
 //        shiftRightProperties();
 //        binaryExponentProperties();
@@ -791,24 +788,6 @@ public class RationalProperties {
             assertEquals(t.toString(), t.b.mod(rounded.getDenominator()), BigInteger.ZERO);
             assertTrue(t.toString(), rounded == ZERO || rounded.signum() == t.a.signum());
             assertTrue(t.toString(), lt(subtract(t.a, rounded).abs(), of(BigInteger.ONE, t.b)));
-            if (t.c == RoundingMode.HALF_DOWN || t.c == RoundingMode.HALF_UP || t.c == RoundingMode.HALF_EVEN) {
-                Rational fractionalPart = t.a.abs().multiply(t.b).fractionalPart();
-                if (fractionalPart.compareTo(of(1, 2)) < 0) {
-                    assertEquals(t.toString(), rounded, t.a.roundToDenominator(t.b, RoundingMode.DOWN));
-                } else if (fractionalPart.compareTo(of(1, 2)) > 0) {
-                    assertEquals(t.toString(), rounded, t.a.roundToDenominator(t.b, RoundingMode.UP));
-                } else {
-                    if (t.c == RoundingMode.HALF_DOWN) {
-                        assertEquals(t.toString(), rounded, t.a.roundToDenominator(t.b, RoundingMode.DOWN));
-                    }
-                    if (t.c == RoundingMode.HALF_UP) {
-                        assertEquals(t.toString(), rounded, t.a.roundToDenominator(t.b, RoundingMode.UP));
-                    }
-                    if (t.c == RoundingMode.HALF_EVEN) {
-                        assertEquals(t.toString(), rounded.multiply(t.b).getNumerator().testBit(0), false);
-                    }
-                }
-            }
         }
 
         Iterable<Pair<Rational, RoundingMode>> ps1 = filter(
@@ -929,15 +908,16 @@ public class RationalProperties {
             );
         }
 
-        Iterable<Rational> rs;
-        if (P instanceof QBarExhaustiveProvider) {
-            rs = P.rationals();
-        } else {
-            rs = filter(r -> lt(r.getDenominator(), BigInteger.TEN.pow(12)), ((QBarRandomProvider) P).rationals(20));
-        }
-        ps2 = P.dependentPairs(rs, r -> MathUtils.factors(r.getDenominator().shiftLeft(1)));
-        for (Pair<Rational, BigInteger> p : take(LIMIT, ps2)) {
-            System.out.println(p);
+        Iterable<Rational> rs = filter(r -> !r.getDenominator().testBit(0), P.rationals());
+        for (Rational r : take(LIMIT, rs)) {
+            BigInteger denominator = r.getDenominator().shiftRight(1);
+            assertEquals(r.toString(), r.abs().multiply(denominator).fractionalPart(), of(1, 2));
+            Rational hd = r.roundToDenominator(denominator, RoundingMode.HALF_DOWN);
+            assertEquals(r.toString(), hd, r.roundToDenominator(denominator, RoundingMode.DOWN));
+            Rational hu = r.roundToDenominator(denominator, RoundingMode.HALF_UP);
+            assertEquals(r.toString(), hu, r.roundToDenominator(denominator, RoundingMode.UP));
+            Rational he = r.roundToDenominator(denominator, RoundingMode.HALF_EVEN);
+            assertEquals(r.toString(), he.multiply(denominator).getNumerator().testBit(0), false);
         }
     }
 
