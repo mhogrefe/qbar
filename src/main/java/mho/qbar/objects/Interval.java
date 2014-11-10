@@ -1,7 +1,6 @@
 package mho.qbar.objects;
 
 import mho.haskellesque.numbers.Numbers;
-import mho.haskellesque.ordering.Ordering;
 import mho.haskellesque.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -15,50 +14,50 @@ import java.util.TreeSet;
 import static mho.haskellesque.ordering.Ordering.*;
 
 /**
- * <p>The <tt>Interval</tt> class represents an interval of real numbers. If we let p and q be rationals, p&#x2264;q,
- * the representable intervals are (&#x2212;&#x221e;, &#x221e;), (&#x2212;&#x221e;, q], [p, &#x221e;), and [p, q]. If
- * p = q, the <tt>Interval</tt> represents a single number. The empty interval cannot be represented.
+ * <p>The {@code Interval} class represents an interval of real numbers. If we let p and q be rationals, p≤q, the
+ * representable intervals are (–∞, ∞), (–∞, q], [p, ∞), and [p, q]. If p = q, the {@code Interval} represents a single
+ * number. The empty interval cannot be represented.
  *
- * <p>In general, the f(I), where I is an <tt>Interval</tt>, is taken to mean the image of I under f. Often this image
- * is not an <tt>Interval</tt> itself, in which case the function might return a set of <tt>Interval</tt>s, whose
- * closed union is the image, or it may just return the closure of the image's convex hull. Similar considerations
- * apply for functions of two <tt>Interval</tt>s, etc.
+ * <p>In general, f(I), where I is an {@code Interval}, is taken to mean the image of I under f. Often this image is
+ * not an {@code Interval} itself, in which case the function might return a set of {@code Interval}s, whose closed
+ * union is the image, or it may just return the closure of the image's convex hull. Similar considerations apply for
+ * functions of two {@code Interval}s, etc.
  */
 public final class Interval implements Comparable<Interval> {
     /**
      * [0, 0]
      */
-    public static final @NotNull
-    Interval ZERO = new Interval(Rational.ZERO, Rational.ZERO);
+    public static final @NotNull Interval ZERO = new Interval(Rational.ZERO, Rational.ZERO);
+
     /**
      * [1, 1]
      */
     public static final @NotNull Interval ONE = new Interval(Rational.ONE, Rational.ONE);
+
     /**
-     * (&#x2212;&#x221e;, &#x221e;)
+     * (–∞, ∞)
      */
     public static final @NotNull Interval ALL = new Interval(null, null);
 
     /**
-     * The lower bound of this interval if the lower bound is finite, or null if the lower bound is &#x2212;&#x221e;
+     * The lower bound of this interval if the lower bound is finite, or null if the lower bound is –∞
      */
-    public final @Nullable
-    Rational lower;
+    public final @Nullable Rational lower;
+
     /**
-     * The upper bound of this interval if the upper bound is finite, or null if the upper bound is &#x221e;
+     * The upper bound of this interval if the upper bound is finite, or null if the upper bound is ∞
      */
     public final @Nullable Rational upper;
 
     /**
-     * Private constructor from <tt>Rational</tt>s; assumes arguments are valid. If lower is null, the
-     * <tt>Interval</tt>'s lower bound is &#x2212;&#x221e;; if upper is null, the <tt>Interval</tt>'s upper bound is
-     * &#x221e;.
+     * Private constructor from {@code Rational}s; assumes arguments are valid. If lower is null, the
+     * {@code Interval}'s lower bound is –∞; if upper is null, the {@code Interval}'s upper bound is ∞.
      *
      * <ul>
-     *  <li><tt>lower</tt> may be any <tt>Rational</tt>, or null.</li>
-     *  <li><tt>upper</tt> may be any <tt>Rational</tt>, or null.</li>
-     *  <li>If <tt>lower</tt> and <tt>upper</tt> are both non-null, <tt>lower</tt> must be less than or equal to
-     *  <tt>upper</tt>.</li>
+     *  <li>{@code lower} may be any {@code Rational}, or null.</li>
+     *  <li>{@code upper} may be any {@code Rational}, or null.</li>
+     *  <li>If {@code lower} and {@code upper} are both non-null, {@code lower} must be less than or equal to
+     *  {@code upper}.</li>
      * </ul>
      *
      * @param lower the lower bound
@@ -70,17 +69,17 @@ public final class Interval implements Comparable<Interval> {
     }
 
     /**
-     * Creates a finitely-bounded <tt>Interval</tt> from <tt>Rationals</tt>.
+     * Creates a finitely-bounded {@code Interval} from {@code Rationals}.
      *
      * <ul>
-     *  <li><tt>lower</tt> cannot be null.</li>
-     *  <li><tt>upper</tt> cannot be null.</li>
-     *  <li><tt>lower</tt> must be less than or equal to <tt>upper</tt>.</li>
+     *  <li>{@code lower} cannot be null.</li>
+     *  <li>{@code upper} cannot be null.</li>
+     *  <li>{@code lower} must be less than or equal to {@code upper}.</li>
      * </ul>
      *
      * @param lower the lower bound
      * @param upper the upper bound
-     * @return [<tt>lower</tt>, <tt>upper</tt>]
+     * @return [{@code lower}, {@code upper}]
      */
     public static @NotNull Interval of(@NotNull Rational lower, @NotNull Rational upper) {
         if (lower.compareTo(upper) > 0)
@@ -89,72 +88,72 @@ public final class Interval implements Comparable<Interval> {
     }
 
     /**
-     * Creates an interval whose lower bound is &#x2212;&#x221e;.
+     * Creates an interval whose lower bound is –∞.
      *
      * <ul>
-     *  <li><tt>upper</tt> cannot be null.</li>
+     *  <li>{@code upper} cannot be null.</li>
      * </ul>
      *
      * @param upper the upper bound
-     * @return (&#x2212;&#x221e;, <tt>upper</tt>]
+     * @return (–∞, {@code upper}]
      */
     public static @NotNull Interval lessThanOrEqualTo(@NotNull Rational upper) {
         return new Interval(null, upper);
     }
 
     /**
-     * Creates an interval whose upper bound is &#x221e;.
+     * Creates an interval whose upper bound is ∞.
      *
      * <ul>
-     *  <li><tt>lower</tt> cannot be null.</li>
+     *  <li>{@code lower} cannot be null.</li>
      * </ul>
      *
      * @param lower the lower bound
-     * @return [<tt>lower</tt>, &#x221e;)
+     * @return [{@code lower}, ∞)
      */
     public static @NotNull Interval greaterThanOrEqualTo(@NotNull Rational lower) {
         return new Interval(lower, null);
     }
 
     /**
-     * Creates an interval containing exactly one <tt>Rational</tt>.
+     * Creates an interval containing exactly one {@code Rational}.
      *
      * <ul>
-     *  <li><tt>x</tt> cannot be null.</li>
+     *  <li>{@code x} cannot be null.</li>
      * </ul>
      *
-     * @param x the value contained in this <tt>Interval</tt>
-     * @return [<tt>x</tt>, <tt>x</tt>]
+     * @param x the value contained in this {@code Interval}
+     * @return [{@code x}, {@code x}]
      */
     public static @NotNull Interval of(@NotNull Rational x) {
         return new Interval(x, x);
     }
 
     /**
-     * Determines whether <tt>this</tt> has finite bounds.
+     * Determines whether {@code this} has finite bounds.
      *
      * <ul>
-     *  <li><tt>this</tt> may be any <tt>Interval</tt>.</li>
-     *  <li>The result may be either <tt>boolean</tt>.</li>
+     *  <li>{@code this} may be any {@code Interval}.</li>
+     *  <li>The result may be either {@code boolean}.</li>
      * </ul>
      *
-     * @return whether <tt>this</tt> is finitely-bounded
+     * @return whether {@code this} is finitely-bounded
      */
     public boolean isFinitelyBounded() {
         return lower != null && upper != null;
     }
 
     /**
-     * Determines whether <tt>this</tt> contains <tt>x</tt>.
+     * Determines whether {@code this} contains {@code x}.
      *
      * <ul>
-     *  <li><tt>this</tt> may be any <tt>Interval</tt>.</li>
-     *  <li><tt>x</tt> cannot be null.</li>
-     *  <li>The result may be either <tt>boolean</tt>.</li>
+     *  <li>{@code this} may be any {@code Interval}.</li>
+     *  <li>{@code x} cannot be null.</li>
+     *  <li>The result may be either {@code boolean}.</li>
      * </ul>
      *
-     * @param x the test <tt>Rational</tt>
-     * @return <tt>x</tt>&#x2208;<tt>this</tt>
+     * @param x the test {@code Rational}
+     * @return {@code x}&#x2208;{@code this}
      */
     public boolean contains(@NotNull Rational x) {
         if (lower == null && upper == null) return true;
@@ -164,14 +163,14 @@ public final class Interval implements Comparable<Interval> {
     }
 
     /**
-     * Determines the diameter (length) of <tt>this</tt>, or null if <tt>this</tt> has infinite diameter.
+     * Determines the diameter (length) of {@code this}, or null if {@code this} has infinite diameter.
      *
      * <ul>
-     *  <li><tt>this</tt> may be any <tt>Interval</tt>.</li>
-     *  <li>The result may be any non-negative <tt>Rational</tt>, or null.</li>
+     *  <li>{@code this} may be any {@code Interval}.</li>
+     *  <li>The result may be any non-negative {@code Rational}, or null.</li>
      * </ul>
      *
-     * @return &#x03bc;(<tt>this</tt>)
+     * @return &#x03bc;({@code this})
      */
     public @Nullable Rational diameter() {
         if (lower == null || upper == null) return null;
@@ -183,14 +182,14 @@ public final class Interval implements Comparable<Interval> {
      * intervals.
      *
      * <ul>
-     *  <li><tt>a</tt> cannot be null.</li>
-     *  <li><tt>b</tt> cannot be null.</li>
+     *  <li>{@code a} cannot be null.</li>
+     *  <li>{@code b} cannot be null.</li>
      *  <li>The result is not null.</li>
      * </ul>
      *
-     * @param a the first <tt>Interval</tt>
-     * @param b the second <tt>Interval</tt>
-     * @return Conv(<tt>a</tt>, <tt>b</tt>)
+     * @param a the first {@code Interval}
+     * @param b the second {@code Interval}
+     * @return Conv({@code a}, {@code b})
      */
     public static @NotNull Interval convexHull(@NotNull Interval a, @NotNull Interval b) {
         return new Interval(
@@ -204,12 +203,12 @@ public final class Interval implements Comparable<Interval> {
      * all of the intervals.
      *
      * <ul>
-     *  <li><tt>as</tt> cannot be null or empty and may not contain any null elements.</li>
+     *  <li>{@code as} cannot be null or empty and may not contain any null elements.</li>
      *  <li>The result is not null.</li>
      * </ul>
      *
-     * @param as the <tt>Interval</tt>s.
-     * @return Conv(<tt>as</tt>)
+     * @param as the {@code Interval}s.
+     * @return Conv({@code as})
      */
     public static @NotNull Interval convexHull(@NotNull SortedSet<Interval> as) {
         if (as.isEmpty())
@@ -226,17 +225,17 @@ public final class Interval implements Comparable<Interval> {
     }
 
     /**
-     * Returns the intersection of two <tt>Interval</tt>s, or null if the intersection is empty.
+     * Returns the intersection of two {@code Interval}s, or null if the intersection is empty.
      *
      * <ul>
-     *  <li><tt>a</tt> cannot be null.</li>
-     *  <li><tt>b</tt> cannot be null.</li>
+     *  <li>{@code a} cannot be null.</li>
+     *  <li>{@code b} cannot be null.</li>
      *  <li>The result is not null.</li>
      * </ul>
      *
-     * @param a the first <tt>Interval</tt>
-     * @param b the second <tt>Interval</tt>
-     * @return <tt>a</tt>&#x2229;<tt>b</tt>
+     * @param a the first {@code Interval}
+     * @param b the second {@code Interval}
+     * @return {@code a}&#x2229;{@code b}
      */
     public static @Nullable Interval intersection(@NotNull Interval a, @NotNull Interval b) {
         Rational lower;
@@ -267,14 +266,14 @@ public final class Interval implements Comparable<Interval> {
      * Determines whether two intervals are disjoint (whether their intersections are empty).
      *
      * <ul>
-     *  <li><tt>a</tt> cannot be null.</li>
-     *  <li><tt>b</tt> cannot be null.</li>
-     *  <li>The result may be either <tt>boolean</tt>.</li>
+     *  <li>{@code a} cannot be null.</li>
+     *  <li>{@code b} cannot be null.</li>
+     *  <li>The result may be either {@code boolean}.</li>
      * </ul>
      *
-     * @param a the first <tt>Interval</tt>
-     * @param b the second <tt>Interval</tt>
-     * @return <tt>a</tt>&#x2229;<tt>b</tt>=&#x2205;
+     * @param a the first {@code Interval}
+     * @param b the second {@code Interval}
+     * @return {@code a}&#x2229;{@code b}=&#x2205;
      */
     public static boolean disjoint(@NotNull Interval a, @NotNull Interval b) {
         return intersection(a, b) == null;
@@ -284,12 +283,12 @@ public final class Interval implements Comparable<Interval> {
      * Transforms a set of intervals into a set of disjoint intervals with the same union as the original set.
      *
      * <ul>
-     *  <li><tt>as</tt> cannot be null and may not contain any null elements.</li>
+     *  <li>{@code as} cannot be null and may not contain any null elements.</li>
      *  <li>The result is a sorted set of pairwise disjoint intervals.</li>
      * </ul>
      *
      * @param as a set of intervals
-     * @return a set of disjoint intervals whose union is the same as the union of <tt>as</tt>
+     * @return a set of disjoint intervals whose union is the same as the union of {@code as}
      */
     public static SortedSet<Interval> makeDisjoint(SortedSet<Interval> as) {
         SortedSet<Interval> simplified = new TreeSet<>();
@@ -309,14 +308,14 @@ public final class Interval implements Comparable<Interval> {
     }
 
     /**
-     * Returns the midpoint of <tt>this</tt>.
+     * Returns the midpoint of {@code this}.
      *
      * <ul>
-     *  <li><tt>this</tt> must be finitely bounded.</li>
+     *  <li>{@code this} must be finitely bounded.</li>
      *  <li>The result is not null.</li>
      * </ul>
      *
-     * @return the average of <tt>lower</tt> and <tt>upper</tt>.
+     * @return the average of {@code lower} and {@code upper}.
      */
     public @NotNull Rational midpoint() {
         if (lower == null || upper == null)
@@ -325,18 +324,18 @@ public final class Interval implements Comparable<Interval> {
     }
 
     /**
-     * Splits <tt>this</tt> into two intervals at <tt>x</tt>.
+     * Splits {@code this} into two intervals at {@code x}.
      *
      * <ul>
-     *  <li><tt>this</tt> may be any <tt>Interval</tt>.</li>
-     *  <li><tt>x</tt> cannot be null.</li>
-     *  <li><tt>this</tt> must contain <tt>x</tt>.</li>
-     *  <li>The result is a pair of <tt>Interval</tt>s, neither null, such that the upper bound of the first is equal
+     *  <li>{@code this} may be any {@code Interval}.</li>
+     *  <li>{@code x} cannot be null.</li>
+     *  <li>{@code this} must contain {@code x}.</li>
+     *  <li>The result is a pair of {@code Interval}s, neither null, such that the upper bound of the first is equal
      *  to the lower bound of the second.</li>
      * </ul>
      *
-     * @param x the point at which <tt>this</tt> is split.
-     * @return the two pieces of <tt>this</tt>.
+     * @param x the point at which {@code this} is split.
+     * @return the two pieces of {@code this}.
      */
     public @NotNull
     Pair<Interval, Interval> split(@NotNull Rational x) {
@@ -346,41 +345,41 @@ public final class Interval implements Comparable<Interval> {
     }
 
     /**
-     * Splits <tt>this</tt> into two equal <tt>Interval</tt>s.
+     * Splits {@code this} into two equal {@code Interval}s.
      *
      * <ul>
-     *  <li><tt>this</tt> must be finitely bounded.</li>
-     *  <li>The result is a pair of equal-diameter, finitely-bounded <tt>Interval</tt>s such the the upper bound of the
+     *  <li>{@code this} must be finitely bounded.</li>
+     *  <li>The result is a pair of equal-diameter, finitely-bounded {@code Interval}s such the the upper bound of the
      *  first is equal to the lower bound of the second.</li>
      * </ul>
      *
-     * @return the two halves of <tt>this</tt>.
+     * @return the two halves of {@code this}.
      */
     public @NotNull Pair<Interval, Interval> bisect() {
         return split(midpoint());
     }
 
     /**
-     * Returns the smallest <tt>Interval</tt> containing all reals that are closer to a given <tt>float</tt> than to
-     * any other <tt>float</tt>; or, if the <tt>float</tt> is positive infinity, all reals that are greater than
-     * <tt>Float.MAX_VALUE</tt>; or, if the <tt>float</tt> is negative infinity, all reals that are less than
-     * <tt>&#x2212;Float.MAX_VALUE</tt>. Positive and negative 0 yield the same result.
+     * Returns the smallest {@code Interval} containing all reals that are closer to a given {@code float} than to
+     * any other {@code float}; or, if the {@code float} is positive infinity, all reals that are greater than
+     * {@code Float.MAX_VALUE}; or, if the {@code float} is negative infinity, all reals that are less than
+     * {@code –Float.MAX_VALUE}. Positive and negative 0 yield the same result.
      *
      * <ul>
-     *  <li><tt>f</tt> may be any <tt>float</tt> except NaN.</li>
+     *  <li>{@code f} may be any {@code float} except NaN.</li>
      *  <li>The result is one of
      *   <ul>
-     *    <li>[<tt>Float.MAX_VALUE</tt>, &#x221e;)</li>
-     *    <li>(&#x2212;&#x221e;, &#x2212;<tt>Float.MAX_VALUE</tt>]</li>
-     *    <li>[(<tt>a</tt>+<tt>b</tt>)/2, (<tt>b</tt>+<tt>c</tt>)/2], where <tt>a</tt>, <tt>b</tt>, and <tt>c</tt> are
-     *    equal to three consecutive finite <tt>float</tt>s (but + and / correspond to real operations, not
-     *    <tt>float</tt> operations).</li>
+     *    <li>[{@code Float.MAX_VALUE}, ∞)</li>
+     *    <li>(–∞, –{@code Float.MAX_VALUE}]</li>
+     *    <li>[({@code a}+{@code b})/2, ({@code b}+{@code c})/2], where {@code a}, {@code b}, and {@code c} are
+     *    equal to three consecutive finite {@code float}s (but + and / correspond to real operations, not
+     *    {@code float} operations).</li>
      *   </ul>
      *  </li>
      * </ul>
      *
-     * @param f a <tt>float</tt>.
-     * @return the closure of the preimage of <tt>f</tt> with respect to rounding-to-nearest-<tt>float</tt>.
+     * @param f a {@code float}.
+     * @return the closure of the preimage of {@code f} with respect to rounding-to-nearest-{@code float}.
      */
     public static @NotNull Interval roundingPreimage(float f) {
         if (Float.isNaN(f))
@@ -405,26 +404,26 @@ public final class Interval implements Comparable<Interval> {
     }
 
     /**
-     * Returns the smallest <tt>Interval</tt> containing all reals that are closer to a given <tt>double</tt> than to
-     * any other <tt>double</tt>; or, if the <tt>double</tt> is positive infinity, all reals that are greater than
-     * <tt>Double.MAX_VALUE</tt>; or, if the <tt>double</tt> is negative infinity, all reals that are less than
-     * <tt>&#x2212;Double.MAX_VALUE</tt>. Positive and negative 0 yield the same result.
+     * Returns the smallest {@code Interval} containing all reals that are closer to a given {@code double} than to
+     * any other {@code double}; or, if the {@code double} is positive infinity, all reals that are greater than
+     * {@code Double.MAX_VALUE}; or, if the {@code double} is negative infinity, all reals that are less than
+     * {@code –Double.MAX_VALUE}. Positive and negative 0 yield the same result.
      *
      * <ul>
-     *  <li><tt>d</tt> may be any <tt>double</tt> except NaN.</li>
+     *  <li>{@code d} may be any {@code double} except NaN.</li>
      *  <li>The result is one of
      *   <ul>
-     *    <li>[<tt>Double.MAX_VALUE</tt>, &#x221e;)</li>
-     *    <li>(&#x2212;&#x221e;, &#x2212;<tt>Double.MAX_VALUE</tt>]</li>
-     *    <li>[(<tt>a</tt>+<tt>b</tt>)/2, (<tt>b</tt>+<tt>c</tt>)/2], where <tt>a</tt>, <tt>b</tt>, and <tt>c</tt> are
-     *    equal to three consecutive finite <tt>double</tt>s (but + and / correspond to real operations, not
-     *    <tt>double</tt> operations).</li>
+     *    <li>[{@code Double.MAX_VALUE}, ∞)</li>
+     *    <li>(–∞, –{@code Double.MAX_VALUE}]</li>
+     *    <li>[({@code a}+{@code b})/2, ({@code b}+{@code c})/2], where {@code a}, {@code b}, and {@code c} are
+     *    equal to three consecutive finite {@code double}s (but + and / correspond to real operations, not
+     *    {@code double} operations).</li>
      *   </ul>
      *  </li>
      * </ul>
      *
-     * @param d a <tt>double</tt>.
-     * @return the closure of the preimage of <tt>d</tt> with respect to rounding-to-nearest-<tt>double</tt>.
+     * @param d a {@code double}.
+     * @return the closure of the preimage of {@code d} with respect to rounding-to-nearest-{@code double}.
      */
     public static @NotNull Interval roundingPreimage(double d) {
         if (Double.isNaN(d))
@@ -449,17 +448,17 @@ public final class Interval implements Comparable<Interval> {
     }
 
     /**
-     * Returns an <tt>Interval</tt> representing all real numbers that round to a specified <tt>BigDecimal</tt> (taking
+     * Returns an {@code Interval} representing all real numbers that round to a specified {@code BigDecimal} (taking
      * precision into account).
      *
      * <ul>
-     *  <li><tt>bd</tt> cannot be null.</li>
-     *  <li>The result is an interval of the form [a&#x00D7;10<sup>b</sup>&#x2212;5&#x00D7;10<sup>c</sup>,
+     *  <li>{@code bd} cannot be null.</li>
+     *  <li>The result is an interval of the form [a&#x00D7;10<sup>b</sup>–5&#x00D7;10<sup>c</sup>,
      *  a&#x00D7;10<sup>b</sup>+5&#x00D7;10<sup>c</sup>], where a, b, and c are integers and c&lt;b.</li>
      * </ul>
      *
-     * @param bd a <tt>BigDecimal</tt>
-     * @return the closure of the preimage of <tt>bd</tt> with respect to rounding-to-nearest-<tt>BigDecimal</tt>.
+     * @param bd a {@code BigDecimal}
+     * @return the closure of the preimage of {@code bd} with respect to rounding-to-nearest-{@code BigDecimal}.
      */
     public static @NotNull Interval roundingPreimage(@NotNull BigDecimal bd) {
         Rational center = Rational.of(bd);
@@ -468,16 +467,16 @@ public final class Interval implements Comparable<Interval> {
     }
 
     /**
-     * Returns a pair of <tt>float</tt>s x, y such that [x, y] is the smallest interval with <tt>float</tt> bounds
-     * which contains <tt>this</tt>. x or y may be infinite if <tt>this</tt>'s bounds are infinite or very large in
+     * Returns a pair of {@code float}s x, y such that [x, y] is the smallest interval with {@code float} bounds
+     * which contains {@code this}. x or y may be infinite if {@code this}'s bounds are infinite or very large in
      * magnitude.
      *
      * <ul>
-     *  <li><tt>this</tt> may be any <tt>Interval</tt>.</li>
+     *  <li>{@code this} may be any {@code Interval}.</li>
      *  <li>The result cannot be null, and neither can either of its elements be null.</li>
      * </ul>
      *
-     * @return the smallest <tt>float</tt> interval containing <tt>this</tt>.
+     * @return the smallest {@code float} interval containing {@code this}.
      */
     public @NotNull Pair<Float, Float> floatRange() {
         float fLower = lower == null ? Float.NEGATIVE_INFINITY : lower.toFloat(RoundingMode.FLOOR);
@@ -486,16 +485,16 @@ public final class Interval implements Comparable<Interval> {
     }
 
     /**
-     * Returns a pair of <tt>double</tt>s x, y such that [x, y] is the smallest interval with <tt>double</tt> bounds
-     * which contains <tt>this</tt>. x or y may be infinite if <tt>this</tt>'s bounds are infinite or very large in
+     * Returns a pair of {@code double}s x, y such that [x, y] is the smallest interval with {@code double} bounds
+     * which contains {@code this}. x or y may be infinite if {@code this}'s bounds are infinite or very large in
      * magnitude.
      *
      * <ul>
-     *  <li><tt>this</tt> may be any <tt>Interval</tt>.</li>
+     *  <li>{@code this} may be any {@code Interval}.</li>
      *  <li>The result cannot be null, and neither can either of its elements be null.</li>
      * </ul>
      *
-     * @return the smallest <tt>double</tt> interval containing <tt>this</tt>.
+     * @return the smallest {@code double} interval containing {@code this}.
      */
     public @NotNull Pair<Double, Double> doubleRange() {
         double dLower = lower == null ? Double.NEGATIVE_INFINITY : lower.toDouble(RoundingMode.FLOOR);
@@ -504,23 +503,23 @@ public final class Interval implements Comparable<Interval> {
     }
 
     /**
-     * Returns a pair of <tt>BigDecimal</tt>s x, y such that [x, y] is the smallest interval with <tt>BigDecimal</tt>
-     * bounds (where the <tt>BigDecimal</tt>s have a number of significant figures at least as large as
-     * <tt>precision</tt>) which contains <tt>this</tt>.
+     * Returns a pair of {@code BigDecimal}s x, y such that [x, y] is the smallest interval with {@code BigDecimal}
+     * bounds (where the {@code BigDecimal}s have a number of significant figures at least as large as
+     * {@code precision}) which contains {@code this}.
      *
      * <ul>
-     *  <li><tt>this</tt> must be a finitely-bounded <tt>Interval</tt>.</li>
-     *  <li><tt>precision</tt> must be non-negative.</li>
-     *  <li>If <tt>precision</tt> is 0, both bounds of <tt>this</tt> must have a terminating decimal expansion.</li>
-     *  <li>The result is either a pair in which at least one <tt>BigDecimal</tt> x has minimal scale (that is, the
+     *  <li>{@code this} must be a finitely-bounded {@code Interval}.</li>
+     *  <li>{@code precision} must be non-negative.</li>
+     *  <li>If {@code precision} is 0, both bounds of {@code this} must have a terminating decimal expansion.</li>
+     *  <li>The result is either a pair in which at least one {@code BigDecimal} x has minimal scale (that is, the
      *  scale is the smallest non-negative n such that x&#x00D7;10<sup>n</sup> is an integer), or a pair in which each
-     *  <tt>BigDecimal</tt> has the same number of significant figures.</li>
+     *  {@code BigDecimal} has the same number of significant figures.</li>
      * </ul>
      *
      * @param precision the maximum number of significant digits in the elements of the result; or 0, if both elements
      *                  must have full precision
-     * @return the smallest <tt>BigDecimal</tt> interval containing <tt>this</tt>, such that the precision of the
-     * <tt>BigDecimal</tt>s is at least <tt>precision</tt>.
+     * @return the smallest {@code BigDecimal} interval containing {@code this}, such that the precision of the
+     * {@code BigDecimal}s is at least {@code precision}.
      */
     public @NotNull Pair<BigDecimal, BigDecimal> bigDecimalRange(int precision) {
         if (lower == null || upper == null)
@@ -531,14 +530,14 @@ public final class Interval implements Comparable<Interval> {
     }
 
     /**
-     * Returns the smallest interval a such that if x&#x2208;<tt>this</tt>, &#x2212;x&#x2208;a.
+     * Returns the smallest interval a such that if x&#x2208;{@code this}, –x&#x2208;a.
      *
      * <ul>
-     *  <li><tt>this</tt> may be any <tt>Interval</tt>.</li>
+     *  <li>{@code this} may be any {@code Interval}.</li>
      *  <li>The result is not null.</li>
      * </ul>
      *
-     * @return &#x2212;<tt>this</tt>
+     * @return –{@code this}
      */
     public @NotNull Interval negate() {
         if (lower == null && upper == null) return this;
@@ -548,17 +547,17 @@ public final class Interval implements Comparable<Interval> {
     }
 
     /**
-     * Returns the smallest interval z such that if a&#x2208;<tt>x</tt> and b&#x2208;<tt>y</tt>, a+b&#x2208;z.
+     * Returns the smallest interval z such that if a&#x2208;{@code x} and b&#x2208;{@code y}, a+b&#x2208;z.
      *
      * <ul>
-     *  <li><tt>x</tt> cannot be null.</li>
-     *  <li><tt>y</tt> cannot be null.</li>
+     *  <li>{@code x} cannot be null.</li>
+     *  <li>{@code y} cannot be null.</li>
      *  <li>The result is not null.</li>
      * </ul>
      *
-     * @param x the first <tt>Interval</tt>
-     * @param y the second <tt>Interval</tt>
-     * @return <tt>x</tt>+<tt>y</tt>
+     * @param x the first {@code Interval}
+     * @param y the second {@code Interval}
+     * @return {@code x}+{@code y}
      */
     public static @NotNull Interval add(@NotNull Interval x, @NotNull Interval y) {
         Rational sLower = x.lower == null || y.lower == null ? null : Rational.add(x.lower, y.lower);
@@ -567,34 +566,34 @@ public final class Interval implements Comparable<Interval> {
     }
 
     /**
-     * Returns the smallest interval z such that if a&#x2208;<tt>x</tt> and b&#x2208;<tt>y</tt>, a&#x2212;b&#x2208;z.
+     * Returns the smallest interval z such that if a&#x2208;{@code x} and b&#x2208;{@code y}, a–b&#x2208;z.
      *
      * <ul>
-     *  <li><tt>x</tt> cannot be null.</li>
-     *  <li><tt>y</tt> cannot be null.</li>
+     *  <li>{@code x} cannot be null.</li>
+     *  <li>{@code y} cannot be null.</li>
      *  <li>The result is not null.</li>
      * </ul>
      *
-     * @param x the first <tt>Interval</tt>
-     * @param y the second <tt>Interval</tt>
-     * @return <tt>x</tt>&#x2212;<tt>y</tt>
+     * @param x the first {@code Interval}
+     * @param y the second {@code Interval}
+     * @return {@code x}–{@code y}
      */
     public static @NotNull Interval subtract(@NotNull Interval x, @NotNull Interval y) {
         return add(x, y.negate());
     }
 
     /**
-     * Returns the smallest interval z such that if a&#x2208;<tt>x</tt> and b&#x2208;<tt>y</tt>, a&#x00D7;b&#x2208;z.
+     * Returns the smallest interval z such that if a&#x2208;{@code x} and b&#x2208;{@code y}, a&#x00D7;b&#x2208;z.
      *
      * <ul>
-     *  <li><tt>x</tt> cannot be null.</li>
-     *  <li><tt>y</tt> cannot be null.</li>
+     *  <li>{@code x} cannot be null.</li>
+     *  <li>{@code y} cannot be null.</li>
      *  <li>The result is not null.</li>
      * </ul>
      *
-     * @param x the first <tt>Interval</tt>
-     * @param y the second <tt>Interval</tt>
-     * @return <tt>x</tt>&#x00D7;<tt>y</tt>
+     * @param x the first {@code Interval}
+     * @param y the second {@code Interval}
+     * @return {@code x}&#x00D7;{@code y}
      */
     public static @NotNull Interval multiply(@NotNull Interval x, @NotNull Interval y) {
         if ((x.lower == Rational.ZERO && x.upper == Rational.ZERO)
@@ -690,16 +689,16 @@ public final class Interval implements Comparable<Interval> {
     }
 
     /**
-     * Determines whether <tt>this</tt> is equal to <tt>that</tt>.
+     * Determines whether {@code this} is equal to {@code that}.
      *
      * <ul>
-     *  <li><tt>this</tt> may be any <tt>Interval</tt>.</li>
-     *  <li><tt>that</tt> may be any <tt>Object</tt>.</li>
+     *  <li>{@code this} may be any {@code Interval}.</li>
+     *  <li>{@code that} may be any {@code Object}.</li>
      *  <li>The result may be either boolean.</li>
      * </ul>
      *
-     * @param that The <tt>Interval</tt> to be compared with <tt>this</tt>
-     * @return <tt>this</tt>=<tt>that</tt>
+     * @param that The {@code Interval} to be compared with {@code this}
+     * @return {@code this}={@code that}
      */
     @Override
     public boolean equals(Object that) {
@@ -711,13 +710,13 @@ public final class Interval implements Comparable<Interval> {
     }
 
     /**
-     * Calculates the hash code of <tt>this</tt>.
+     * Calculates the hash code of {@code this}.
      *
      * <ul>
-     *  <li>(conjecture) The result may be any <tt>int</tt>.</li>
+     *  <li>(conjecture) The result may be any {@code int}.</li>
      * </ul>
      *
-     * @return <tt>this</tt>'s hash code.
+     * @return {@code this}'s hash code.
      */
     @Override
     public int hashCode() {
@@ -727,18 +726,18 @@ public final class Interval implements Comparable<Interval> {
     }
 
     /**
-     * Compares <tt>this</tt> to <tt>that</tt>, returning 1, &#x2212;1, or 0 if the answer is "greater than", "less
-     * than", or "equal to", respectively. <tt>Interval</tt>s are ordered on their lower bound, then on their upper
-     * bound; &#x2212;&#x221e; and &#x221e; behave as expected.
+     * Compares {@code this} to {@code that}, returning 1, –1, or 0 if the answer is "greater than", "less
+     * than", or "equal to", respectively. {@code Interval}s are ordered on their lower bound, then on their upper
+     * bound; –∞ and ∞ behave as expected.
      *
      * <ul>
-     *  <li><tt>this</tt> may be any <tt>Interval</tt>.</li>
-     *  <li><tt>that</tt> cannot be null.</li>
-     *  <li>The result may be &#x2212;1, 0, or 1.</li>
+     *  <li>{@code this} may be any {@code Interval}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>The result may be –1, 0, or 1.</li>
      * </ul>
      *
-     * @param that The <tt>Interval</tt> to be compared with <tt>this</tt>
-     * @return <tt>this</tt> compared to <tt>that</tt>
+     * @param that The {@code Interval} to be compared with {@code this}
+     * @return {@code this} compared to {@code that}
      */
     @Override
     public int compareTo(@NotNull Interval that) {
@@ -752,20 +751,20 @@ public final class Interval implements Comparable<Interval> {
     }
 
     /**
-     * Creates an <tt>Interval</tt> from a <tt>String</tt>. Valid strings are in one of these four forms:
-     * <tt>"(-Infinity, Infinity)"</tt>, <tt>"(-Infinity, " + q.toString() + "]"</tt>,
-     * <tt>"[" + p.toString() + ", Infinity)"</tt>, or <tt>"[" + p.toString() + ", " + q.toString() + "]"</tt>, where
-     * <tt>p</tt> and <tt>q</tt> are <tt>Rational</tt>s.
+     * Creates an {@code Interval} from a {@code String}. Valid strings are in one of these four forms:
+     * {@code "(-Infinity, Infinity)"}, {@code "(-Infinity, " + q.toString() + "]"},
+     * {@code "[" + p.toString() + ", Infinity)"}, or {@code "[" + p.toString() + ", " + q.toString() + "]"}, where
+     * {@code p} and {@code q} are {@code Rational}s.
      *
      * <ul>
-     *  <li><tt>s</tt> cannot be null and cannot be of the form
-     *  <tt>"[" + p.toString() + ", " + q.toString() + "]"</tt>, where <tt>p</tt> and <tt>q</tt> are <tt>Rational</tt>s
-     *  such that <tt>a</tt> is greater than <tt>b</tt>.</li> <li>The result may be any <tt>Interval</tt>, or
+     *  <li>{@code s} cannot be null and cannot be of the form
+     *  {@code "[" + p.toString() + ", " + q.toString() + "]"}, where {@code p} and {@code q} are {@code Rational}s
+     *  such that {@code a} is greater than {@code b}.</li> <li>The result may be any {@code Interval}, or
      *  null.</li>
      * </ul>
      *
-     * @param s a string representation of a <tt>Rational</tt>.
-     * @return the <tt>Rational</tt> represented by <tt>s</tt>, or null if <tt>s</tt> is invalid.
+     * @param s a string representation of a {@code Rational}.
+     * @return the {@code Rational} represented by {@code s}, or null if {@code s} is invalid.
      */
     public static @NotNull Optional<Interval> read(@NotNull String s) {
         if (s.isEmpty()) return Optional.empty();
@@ -800,17 +799,17 @@ public final class Interval implements Comparable<Interval> {
     }
 
     /**
-     * Creates a string representation of <tt>this</tt>.
+     * Creates a string representation of {@code this}.
      *
      * <ul>
-     *  <li><tt>this</tt> may be any <tt>Interval</tt>.</li>
-     *  <li>The result is a string in on of four forms: <tt>"(-Infinity, Infinity)"</tt>,
-     *  <tt>"(-Infinity, " + q.toString() + "]"</tt>, <tt>"[" + p.toString() + ", Infinity)"</tt>, or
-     *  <tt>"[" + p.toString() + ", " + q.toString() + "]"</tt>, where <tt>p</tt> and <tt>q</tt> are <tt>Rational</tt>s
-     *  such that <tt>p</tt> is less than or equal to <tt>q</tt>.</li>
+     *  <li>{@code this} may be any {@code Interval}.</li>
+     *  <li>The result is a string in on of four forms: {@code "(-Infinity, Infinity)"},
+     *  {@code "(-Infinity, " + q.toString() + "]"}, {@code "[" + p.toString() + ", Infinity)"}, or
+     *  {@code "[" + p.toString() + ", " + q.toString() + "]"}, where {@code p} and {@code q} are {@code Rational}s
+     *  such that {@code p} is less than or equal to {@code q}.</li>
      * </ul>
      *
-     * @return a string representation of <tt>this</tt>.
+     * @return a string representation of {@code this}.
      */
     public @NotNull String toString() {
         return (lower == null ? "(-Infinity" : "[" + lower) + ", " + (upper == null ? "Infinity)" : upper + "]");
