@@ -1,6 +1,7 @@
 package mho.qbar.iterableProviders;
 
 import mho.haskellesque.iterables.RandomProvider;
+import mho.qbar.objects.Interval;
 import mho.qbar.objects.Rational;
 import org.jetbrains.annotations.NotNull;
 
@@ -275,5 +276,15 @@ public class QBarRandomProvider extends RandomProvider implements QBarIterablePr
      */
     public @NotNull Iterable<Rational> nonNegativeRationalsLessThanOne() {
         return nonNegativeRationalsLessThanOne(BIG_INTEGER_MEAN_BIT_SIZE);
+    }
+
+    @Override
+    public @NotNull Iterable<Interval> finitelyBoundedIntervals() {
+        return null;
+    }
+
+    @Override
+    public @NotNull Iterable<Interval> intervals() {
+        return null;
     }
 }

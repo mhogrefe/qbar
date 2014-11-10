@@ -231,6 +231,7 @@ public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIt
      *
      * Length is infinite
      */
+    @Override
     public @NotNull Iterable<Interval> finitelyBoundedIntervals() {
         return map(p -> {
             assert p.a != null;
@@ -244,6 +245,7 @@ public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIt
      *
      * Length is infinite
      */
+    @Override
     public @NotNull Iterable<Interval> intervals() {
         return map(
                 p -> {

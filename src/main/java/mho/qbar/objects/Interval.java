@@ -82,7 +82,7 @@ public final class Interval implements Comparable<Interval> {
      * @return [{@code lower}, {@code upper}]
      */
     public static @NotNull Interval of(@NotNull Rational lower, @NotNull Rational upper) {
-        if (lower.compareTo(upper) > 0)
+        if (gt(lower, upper))
             throw new IllegalArgumentException("lower bound cannot be greater than upper bound");
         return new Interval(lower, upper);
     }
@@ -157,9 +157,9 @@ public final class Interval implements Comparable<Interval> {
      */
     public boolean contains(@NotNull Rational x) {
         if (lower == null && upper == null) return true;
-        if (lower == null) return x.compareTo(upper) <= 0;
-        if (upper == null) return x.compareTo(lower) >= 0;
-        return x.compareTo(lower) >= 0 && x.compareTo(upper) <= 0;
+        if (lower == null) return le(x, upper);
+        if (upper == null) return ge(x, lower);
+        return ge(x, lower) && le(x, upper);
     }
 
     /**
@@ -217,7 +217,7 @@ public final class Interval implements Comparable<Interval> {
         Rational upper = null;
         for (Interval a : as) {
             if (a.upper == null) return new Interval(lower, null);
-            if (upper == null || a.upper.compareTo(upper) > 0) {
+            if (upper == null || gt(a.upper, upper)) {
                 upper = a.upper;
             }
         }
@@ -258,7 +258,7 @@ public final class Interval implements Comparable<Interval> {
         } else {
             upper = min(a.upper, b.upper);
         }
-        if (lower != null && upper != null && lower.compareTo(upper) > 0) return null;
+        if (lower != null && upper != null && gt(lower, upper)) return null;
         return new Interval(lower, upper);
     }
 
@@ -618,16 +618,16 @@ public final class Interval implements Comparable<Interval> {
         Rational min = xlyl;
         Rational max = xlyl;
         if (xlyu != null) {
-            if (min == null || xlyu.compareTo(min) < 0) min = xlyu;
-            if (max == null || xlyu.compareTo(max) > 0) max = xlyu;
+            if (min == null || lt(xlyu, min)) min = xlyu;
+            if (max == null || gt(xlyu, max)) max = xlyu;
         }
         if (xuyl != null) {
-            if (min == null || xuyl.compareTo(min) < 0) min = xuyl;
-            if (max == null || xuyl.compareTo(max) > 0) max = xuyl;
+            if (min == null || lt(xuyl, min)) min = xuyl;
+            if (max == null || gt(xuyl, max)) max = xuyl;
         }
         if (xuyu != null) {
-            if (min == null || xuyu.compareTo(min) < 0) min = xuyu;
-            if (max == null || xuyu.compareTo(max) > 0) max = xuyu;
+            if (min == null || lt(xuyu, min)) min = xuyu;
+            if (max == null || gt(xuyu, max)) max = xuyu;
         }
         if (containsNegInf) return new Interval(null, max);
         if (containsInf) return new Interval(min, null);
@@ -650,8 +650,8 @@ public final class Interval implements Comparable<Interval> {
 
     public Interval invert() {
         if ((lower == null && upper == null)
-                || (lower == null && upper.compareTo(Rational.ZERO) > 0)
-                || (upper == null && lower.compareTo(Rational.ZERO) < 0)) return ALL;
+                || (lower == null && upper.signum() == 1)
+                || (upper == null && lower.signum() == -1)) return ALL;
         if (lower == null) return new Interval(upper.invert(), Rational.ZERO);
         if (upper == null) return new Interval(Rational.ZERO, lower.invert());
         if (lower.equals(Rational.ZERO) && upper.equals(Rational.ZERO))
@@ -786,7 +786,7 @@ public final class Interval implements Comparable<Interval> {
         }
         Rational upper = null;
         if (right == ')') {
-            if (!rightString.equals("Infinity")) return null;
+            if (!rightString.equals("Infinity")) return Optional.empty();
         } else {
             Optional<Rational> optUpper = Rational.read(rightString);
             if (!optUpper.isPresent()) return Optional.empty();
