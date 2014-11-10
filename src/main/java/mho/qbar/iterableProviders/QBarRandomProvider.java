@@ -15,6 +15,26 @@ public class QBarRandomProvider extends RandomProvider implements QBarIterablePr
         super(generator);
     }
 
+    @Override
+    public @NotNull Iterable<Rational> range(@NotNull Rational a) {
+        return null;
+    }
+
+    @Override
+    public @NotNull Iterable<Rational> range(@NotNull Rational a, @NotNull Rational b) {
+        return null;
+    }
+
+    @Override
+    public @NotNull Iterable<Rational> rangeBy(@NotNull Rational a, @NotNull Rational i) {
+        return null;
+    }
+
+    @Override
+    public @NotNull Iterable<Rational> rangeBy(@NotNull Rational a, @NotNull Rational i, @NotNull Rational b) {
+        return null;
+    }
+
     /**
      * @return a pseudorandom <tt>Iterable</tt> that generates every <tt>Rational</tt>. The numerator's and
      * denominator's bit size is chosen from a geometric distribution with mean approximately <tt>meanBitSize</tt> (The

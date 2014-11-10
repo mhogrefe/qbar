@@ -76,7 +76,7 @@ public class RationalProperties {
             propertiesCeiling();
             propertiesFractionalPart();
             propertiesRound();
-//        roundToDenominatorProperties();
+//        propertiesRoundToDenominator();
 //        shiftLeftProperties();
 //        shiftRightProperties();
 //        binaryExponentProperties();
@@ -557,7 +557,7 @@ public class RationalProperties {
         System.out.println("testing pow(int) properties...");
 
         Iterable<Integer> exps;
-        if (P instanceof ExhaustiveProvider) {
+        if (P instanceof QBarExhaustiveProvider) {
             exps = P.integers();
         } else {
             exps = ((RandomProvider) P).integersGeometric(20);
@@ -581,7 +581,7 @@ public class RationalProperties {
         }
 
         Iterable<Integer> pexps;
-        if (P instanceof ExhaustiveProvider) {
+        if (P instanceof QBarExhaustiveProvider) {
             pexps = P.positiveIntegers();
         } else {
             pexps = ((RandomProvider) P).positiveIntegersGeometric(20);
@@ -929,10 +929,16 @@ public class RationalProperties {
             );
         }
 
-//        ps2 = filter(
-//                a,
-//                b
-//        );
+        Iterable<Rational> rs;
+        if (P instanceof QBarExhaustiveProvider) {
+            rs = P.rationals();
+        } else {
+            rs = filter(r -> lt(r.getDenominator(), BigInteger.TEN.pow(12)), ((QBarRandomProvider) P).rationals(20));
+        }
+        ps2 = P.dependentPairs(rs, r -> MathUtils.factors(r.getDenominator().shiftLeft(1)));
+        for (Pair<Rational, BigInteger> p : take(LIMIT, ps2)) {
+            System.out.println(p);
+        }
     }
 
 //    public static void shiftLeftProperties() {
