@@ -5,9 +5,13 @@ import mho.qbar.objects.Rational;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Iterator;
 
+import static mho.haskellesque.iterables.IterableUtils.*;
 import static mho.haskellesque.iterables.IterableUtils.filter;
 import static mho.haskellesque.iterables.IterableUtils.map;
+import static mho.haskellesque.ordering.Ordering.gt;
 import static mho.haskellesque.ordering.Ordering.lt;
 
 public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIterableProvider {
@@ -15,6 +19,91 @@ public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIt
 
     protected QBarExhaustiveProvider() {
         super();
+    }
+
+    @Override
+    public @NotNull Iterable<Rational> range(@NotNull Rational a) {
+        return iterate(r -> Rational.add(r, Rational.ONE), a);
+    }
+
+    @Override
+    public @NotNull Iterable<Rational> range(@NotNull Rational a, @NotNull Rational b) {
+        if (gt(a, b)) return new ArrayList<>();
+        return () -> new Iterator<Rational>() {
+            private Rational x = a;
+            private boolean reachedEnd;
+
+            @Override
+            public boolean hasNext() {
+                return !reachedEnd;
+            }
+
+            @Override
+            public Rational next() {
+                reachedEnd = x.equals(b);
+                Rational oldX = x;
+                x = Rational.add(x, Rational.ONE);
+                return oldX;
+            }
+
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException("cannot remove from this iterator");
+            }
+        };
+    }
+
+    @Override
+    public @NotNull Iterable<Rational> rangeBy(@NotNull Rational a, @NotNull Rational i) {
+        return () -> new Iterator<Rational>() {
+            private Rational x = a;
+            private boolean reachedEnd;
+
+            @Override
+            public boolean hasNext() {
+                return !reachedEnd;
+            }
+
+            @Override
+            public Rational next() {
+                Rational oldX = x;
+                x = Rational.add(x, i);
+                reachedEnd = i.signum() == 1 ? lt(x, a) : gt(x, a);
+                return oldX;
+            }
+
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException("cannot remove from this iterator");
+            }
+        };
+    }
+
+    @Override
+    public @NotNull Iterable<Rational> rangeBy(@NotNull Rational a, @NotNull Rational i, @NotNull Rational b) {
+        if (i.signum() == 1 ? gt(a, b) : gt(b, a)) return new ArrayList<>();
+        return () -> new Iterator<Rational>() {
+            private Rational x = a;
+            private boolean reachedEnd;
+
+            @Override
+            public boolean hasNext() {
+                return !reachedEnd;
+            }
+
+            @Override
+            public Rational next() {
+                Rational oldX = x;
+                x = Rational.add(x, i);
+                reachedEnd = i.signum() == 1 ? gt(x, b) : lt(x, b);
+                return oldX;
+            }
+
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException("cannot remove from this iterator");
+            }
+        };
     }
 
     /**
