@@ -109,7 +109,7 @@ public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIt
     }
 
     /**
-     * @return an <tt>Iterable</tt> that contains every <tt>Rational</tt>. Does not support removal.
+     * @return an {@link Iterable} that contains every {@link mho.qbar.objects.Rational}. Does not support removal.
      *
      * Length is infinite
      */
@@ -133,7 +133,7 @@ public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIt
     }
 
     /**
-     * @return an <tt>Iterable</tt> that contains every non-negative <tt>Rational</tt>. Does not support removal.
+     * @return an {@code Iterable} that contains every non-negative {@code Rational}. Does not support removal.
      *
      * Length is infinite
      */
@@ -157,7 +157,7 @@ public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIt
     }
 
     /**
-     * an <tt>Iterable</tt> that contains every positive <tt>Rational</tt>. Does not support removal.
+     * an {@code Iterable} that contains every positive {@code Rational}. Does not support removal.
      *
      * Length is infinite
      */
@@ -178,7 +178,7 @@ public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIt
     }
 
     /**
-     * an <tt>Iterable</tt> that contains every negative <tt>Rational</tt>. Does not support removal.
+     * an {@code Iterable} that contains every negative {@code Rational}. Does not support removal.
      *
      * Length is infinite
      */
@@ -202,7 +202,7 @@ public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIt
     }
 
     /**
-     * an <tt>Iterable</tt> that contains every <tt>Rational</tt> in the interval [0, 1). Does not support removal.
+     * an {@code Iterable} that contains every {@code Rational} in the interval [0, 1). Does not support removal.
      *
      * Length is infinite
      */
@@ -225,6 +225,12 @@ public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIt
         );
     }
 
+    /**
+     * an {@code Iterable} that contains every finitely-bounded {@link mho.qbar.objects.Interval}. Does not support
+     * removal.
+     *
+     * Length is infinite
+     */
     public @NotNull Iterable<Interval> finitelyBoundedIntervals() {
         return map(p -> {
             assert p.a != null;
@@ -233,6 +239,11 @@ public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIt
         }, filter(p -> le(p.a, p.b), pairs(rationals())));
     }
 
+    /**
+     * an {@code Iterable} that contains every {@link mho.qbar.objects.Interval}. Does not support removal.
+     *
+     * Length is infinite
+     */
     public @NotNull Iterable<Interval> intervals() {
         return map(
                 p -> {
