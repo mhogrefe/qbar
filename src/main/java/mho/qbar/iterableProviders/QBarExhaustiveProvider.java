@@ -1,6 +1,7 @@
 package mho.qbar.iterableProviders;
 
 import mho.haskellesque.iterables.ExhaustiveProvider;
+import mho.qbar.objects.Interval;
 import mho.qbar.objects.Rational;
 import org.jetbrains.annotations.NotNull;
 
@@ -11,6 +12,7 @@ import java.util.Iterator;
 import static mho.haskellesque.iterables.IterableUtils.*;
 import static mho.haskellesque.iterables.IterableUtils.filter;
 import static mho.haskellesque.iterables.IterableUtils.map;
+import static mho.haskellesque.ordering.Ordering.*;
 import static mho.haskellesque.ordering.Ordering.gt;
 import static mho.haskellesque.ordering.Ordering.lt;
 
@@ -219,6 +221,35 @@ public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIt
                             return lt(p.a, p.b) && p.a.gcd(p.b).equals(BigInteger.ONE);
                         },
                         pairs(naturalBigIntegers(), positiveBigIntegers())
+                )
+        );
+    }
+
+    public @NotNull Iterable<Interval> finitelyBoundedIntervals() {
+        return map(p -> {
+            assert p.a != null;
+            assert p.b != null;
+            return Interval.of(p.a, p.b);
+        }, filter(p -> le(p.a, p.b), pairs(rationals())));
+    }
+
+    public @NotNull Iterable<Interval> intervals() {
+        return map(
+                p -> {
+                    assert p.a != null;
+                    assert p.b != null;
+                    if (!p.a.isPresent() && !p.b.isPresent()) return Interval.ALL;
+                    if (!p.a.isPresent()) return Interval.lessThanOrEqualTo(p.b.get());
+                    if (!p.b.isPresent()) return Interval.greaterThanOrEqualTo(p.a.get());
+                    return Interval.of(p.a.get(), p.b.get());
+                },
+                filter(
+                        p -> {
+                            assert p.a != null;
+                            assert p.b != null;
+                            return !p.a.isPresent() || !p.b.isPresent() || le(p.a.get(), p.b.get());
+                        },
+                        pairs(optionals(rationals()))
                 )
         );
     }
