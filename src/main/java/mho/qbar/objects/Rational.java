@@ -592,7 +592,6 @@ public final class Rational implements Comparable<Rational> {
         return new Rational(pNumerator, pDenominator);
     }
 
-    //todo continue fixing JavaDoc
     /**
      * Returns the floor of {@code this}.
      *
@@ -601,7 +600,7 @@ public final class Rational implements Comparable<Rational> {
      *  <li>The result is not null.</li>
      * </ul>
      *
-     * @return &#x230A;{@code this}&#x230B;
+     * @return ⌊{@code this}⌋;
      */
     public @NotNull BigInteger floor() {
         if (numerator.signum() < 0) {
@@ -619,7 +618,7 @@ public final class Rational implements Comparable<Rational> {
      *  <li>The result is not null.</li>
      * </ul>
      *
-     * @return &#x2308;{@code this}&#x2309;
+     * @return ⌈{@code this}⌉
      */
     public @NotNull BigInteger ceiling() {
         if (numerator.signum() < 0) {
@@ -634,11 +633,11 @@ public final class Rational implements Comparable<Rational> {
     }
 
     /**
-     * Returns the fractional part of {@code this}; {@code this}–&#x230A;{@code this}&#x230B;.
+     * Returns the fractional part of {@code this}; {@code this}–⌊{@code this}⌉.
      *
      * <ul>
      *  <li>{@code this} may be any {@code Rational}.</li>
-     *  <li>The result is a {@code Rational} x such that 0&#x2264;x&lt;1.</li>
+     *  <li>The result is a {@code Rational} x such that 0≤x{@literal <}1.</li>
      * </ul>
      *
      * @return the fractional part of {@code this}
@@ -649,19 +648,22 @@ public final class Rational implements Comparable<Rational> {
     }
 
     /**
-     * Rounds {@code this} to an integer according to {@code roundingMode}; see documentation for
-     * {@code java.math.RoundingMode} for details.
+     * Rounds {@code this} to an integer according to {@code roundingMode}; see {@link java.math.RoundingMode} for
+     * details.
      *
      * <ul>
      *  <li>{@code this} may be any {@code Rational}.</li>
      *  <li>{@code roundingMode} may be any {@code RoundingMode}.</li>
-     *  <li>If {@code roundingMode} is {@code UNNECESSARY}, {@code this} must be an integer.</li>
+     *  <li>If {@code roundingMode} is {@link java.math.RoundingMode#UNNECESSARY}, {@code this} must be an
+     *  integer.</li>
      *  <li>The result is not null.</li>
      * </ul>
      *
-     * @param roundingMode determines the way in which {@code this} is rounded. Options are {@code UP},
-     *                     {@code DOWN}, {@code CEILING}, {@code FLOOR}, {@code HALF_UP}, {@code HALF_DOWN},
-     *                     {@code HALF_EVEN}, and {@code UNNECESSARY}.
+     * @param roundingMode determines the way in which {@code this} is rounded. Options are
+     * {@link java.math.RoundingMode#UP}, {@link java.math.RoundingMode#DOWN}, {@link java.math.RoundingMode#CEILING},
+     * {@link java.math.RoundingMode#FLOOR}, {@link java.math.RoundingMode#HALF_UP},
+     * {@link java.math.RoundingMode#HALF_DOWN}, {@link java.math.RoundingMode#HALF_EVEN}, and
+     * {@link java.math.RoundingMode#UNNECESSARY}.
      * @return {@code this}, rounded
      */
     public @NotNull BigInteger round(@NotNull RoundingMode roundingMode) {
@@ -712,6 +714,7 @@ public final class Rational implements Comparable<Rational> {
         return null; //never happens
     }
 
+    //todo finish fixing JavaDoc
     /**
      * Rounds {@code this} a rational number that is an integer multiple of 1/{@code denominator} according to
      * {@code roundingMode}; see documentation for {@code java.math.RoundingMode} for details.
