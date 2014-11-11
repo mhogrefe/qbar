@@ -694,7 +694,7 @@ public final class Interval implements Comparable<Interval> {
      * <ul>
      *  <li>{@code this} may be any {@code Interval}.</li>
      *  <li>{@code that} may be any {@code Object}.</li>
-     *  <li>The result may be either boolean.</li>
+     *  <li>The result may be either {@code boolean}.</li>
      * </ul>
      *
      * @param that The {@code Interval} to be compared with {@code this}
@@ -726,9 +726,9 @@ public final class Interval implements Comparable<Interval> {
     }
 
     /**
-     * Compares {@code this} to {@code that}, returning 1, –1, or 0 if the answer is "greater than", "less
-     * than", or "equal to", respectively. {@code Interval}s are ordered on their lower bound, then on their upper
-     * bound; –∞ and ∞ behave as expected.
+     * Compares {@code this} to {@code that}, returning 1, –1, or 0 if the answer is "greater than", "less than", or
+     * "equal to", respectively. {@code Interval}s are ordered on their lower bound, then on their upper bound; –∞ and
+     * ∞ behave as expected.
      *
      * <ul>
      *  <li>{@code this} may be any {@code Interval}.</li>
@@ -757,14 +757,13 @@ public final class Interval implements Comparable<Interval> {
      * {@code p} and {@code q} are {@code Rational}s.
      *
      * <ul>
-     *  <li>{@code s} cannot be null and cannot be of the form
-     *  {@code "[" + p.toString() + ", " + q.toString() + "]"}, where {@code p} and {@code q} are {@code Rational}s
-     *  such that {@code a} is greater than {@code b}.</li> <li>The result may be any {@code Interval}, or
-     *  null.</li>
+     *  <li>{@code s} cannot be null and cannot be of the form {@code "[" + p.toString() + ", " + q.toString() + "]"},
+     *  where {@code p} and {@code q} are {@code Rational}s such that {@code a} is greater than {@code b}.</li>
+     *  <li>The result may be any {@code Optional<Interval>}, or null.</li>
      * </ul>
      *
      * @param s a string representation of a {@code Rational}.
-     * @return the {@code Rational} represented by {@code s}, or null if {@code s} is invalid.
+     * @return the wrapped {@code Rational} represented by {@code s}, or {@code empty} if {@code s} is invalid.
      */
     public static @NotNull Optional<Interval> read(@NotNull String s) {
         if (s.isEmpty()) return Optional.empty();
