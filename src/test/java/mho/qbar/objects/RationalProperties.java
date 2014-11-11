@@ -1,11 +1,11 @@
 package mho.qbar.objects;
 
-import mho.haskellesque.iterables.RandomProvider;
-import mho.haskellesque.math.MathUtils;
-import mho.haskellesque.numbers.Numbers;
-import mho.haskellesque.ordering.Ordering;
-import mho.haskellesque.structures.Pair;
-import mho.haskellesque.structures.Triple;
+import mho.wheels.iterables.RandomProvider;
+import mho.wheels.math.MathUtils;
+import mho.wheels.numbers.Numbers;
+import mho.wheels.ordering.Ordering;
+import mho.wheels.structures.Pair;
+import mho.wheels.structures.Triple;
 import mho.qbar.iterableProviders.QBarExhaustiveProvider;
 import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.iterableProviders.QBarRandomProvider;
@@ -19,8 +19,8 @@ import java.util.Arrays;
 import java.util.Optional;
 import java.util.Random;
 
-import static mho.haskellesque.iterables.IterableUtils.*;
-import static mho.haskellesque.ordering.Ordering.*;
+import static mho.wheels.iterables.IterableUtils.*;
+import static mho.wheels.ordering.Ordering.*;
 import static mho.qbar.objects.Rational.*;
 import static mho.qbar.objects.Rational.of;
 import static org.junit.Assert.*;
@@ -74,8 +74,8 @@ public class RationalProperties {
             propertiesFractionalPart();
             propertiesRound();
             propertiesRoundToDenominator();
-//        shiftLeftProperties();
-//        shiftRightProperties();
+            propertiesShiftLeft();
+            propertiesShiftRight();
 //        binaryExponentProperties();
 //        toFloatProperties();
 //        toFloatRoundingModeProperties();
@@ -921,31 +921,73 @@ public class RationalProperties {
         }
     }
 
-//    public static void shiftLeftProperties() {
-//        Iterable<Pair<Rational, Integer>> g = P.pairs(P.rationals(), P.integers());
-//        for (Pair<Rational, Integer> p : g.iterate(limit)) {
-//            Rational shifted = p.a.shiftLeft(p.b);
-//            validate(shifted);
-//            assertEquals(p.toString(), p.a.negate().shiftLeft(p.b), shifted.negate());
-//            assertEquals(p.toString(), shifted, p.a.shiftRight(-p.b));
-//            if (p.b >= 0) {
-//                assertEquals(p.toString(), shifted, p.a.multiply(BigInteger.ONE.shiftLeft(p.b)));
-//            }
-//        }
-//    }
-//
-//    public static void shiftRightProperties() {
-//        Iterable<Pair<Rational, Integer>> g = P.pairs(P.rationals(), P.integers());
-//        for (Pair<Rational, Integer> p : g.iterate(limit)) {
-//            Rational shifted = p.a.shiftRight(p.b);
-//            validate(shifted);
-//            assertEquals(p.toString(), p.a.negate().shiftRight(p.b), shifted.negate());
-//            assertEquals(p.toString(), shifted, p.a.shiftLeft(-p.b));
-//            if (p.b >= 0) {
-//                assertEquals(p.toString(), shifted, p.a.divide(BigInteger.ONE.shiftLeft(p.b)));
-//            }
-//        }
-//    }
+    public static void propertiesShiftLeft() {
+        initialize();
+        System.out.println("testing shiftLeft(int) properties...");
+
+        Iterable<Integer> is;
+        if (P instanceof QBarExhaustiveProvider) {
+            is = P.integers();
+        } else {
+            is  = ((QBarRandomProvider) P).integersGeometric(50);
+        }
+        Iterable<Pair<Rational, Integer>> ps = P.pairs(P.rationals(), is);
+        for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
+            assert p.a != null;
+            assert p.b != null;
+            Rational shifted = p.a.shiftLeft(p.b);
+            validate(shifted);
+            assertEquals(p.toString(), p.a.negate().shiftLeft(p.b), shifted.negate());
+            assertEquals(p.toString(), shifted, p.a.shiftRight(-p.b));
+        }
+
+        if (P instanceof QBarExhaustiveProvider) {
+            is = P.naturalIntegers();
+        } else {
+            is  = ((QBarRandomProvider) P).naturalIntegersGeometric(50);
+        }
+        ps = P.pairs(P.rationals(), is);
+        for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
+            assert p.a != null;
+            assert p.b != null;
+            Rational shifted = p.a.shiftLeft(p.b);
+            assertEquals(p.toString(), shifted, p.a.multiply(BigInteger.ONE.shiftLeft(p.b)));
+        }
+    }
+
+    public static void propertiesShiftRight() {
+        initialize();
+        System.out.println("testing shiftRight(int) properties...");
+
+        Iterable<Integer> is;
+        if (P instanceof QBarExhaustiveProvider) {
+            is = P.integers();
+        } else {
+            is  = ((QBarRandomProvider) P).integersGeometric(50);
+        }
+        Iterable<Pair<Rational, Integer>> ps = P.pairs(P.rationals(), is);
+        for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
+            assert p.a != null;
+            assert p.b != null;
+            Rational shifted = p.a.shiftRight(p.b);
+            validate(shifted);
+            assertEquals(p.toString(), p.a.negate().shiftRight(p.b), shifted.negate());
+            assertEquals(p.toString(), shifted, p.a.shiftLeft(-p.b));
+        }
+
+        if (P instanceof QBarExhaustiveProvider) {
+            is = P.naturalIntegers();
+        } else {
+            is  = ((QBarRandomProvider) P).naturalIntegersGeometric(50);
+        }
+        ps = P.pairs(P.rationals(), is);
+        for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
+            assert p.a != null;
+            assert p.b != null;
+            Rational shifted = p.a.shiftRight(p.b);
+            assertEquals(p.toString(), shifted, p.a.divide(BigInteger.ONE.shiftLeft(p.b)));
+        }
+    }
 //
 //    public static void binaryExponentProperties() {
 //        for (Rational r : positiveRationals().iterate(limit)) {

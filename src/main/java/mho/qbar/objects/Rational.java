@@ -1,10 +1,10 @@
 package mho.qbar.objects;
 
-import mho.haskellesque.math.MathUtils;
-import mho.haskellesque.numbers.Numbers;
-import mho.haskellesque.ordering.Ordering;
-import mho.haskellesque.structures.Pair;
-import mho.haskellesque.structures.Triple;
+import mho.wheels.math.MathUtils;
+import mho.wheels.numbers.Numbers;
+import mho.wheels.ordering.Ordering;
+import mho.wheels.structures.Pair;
+import mho.wheels.structures.Triple;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -14,8 +14,8 @@ import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.*;
 
-import static mho.haskellesque.iterables.IterableUtils.*;
-import static mho.haskellesque.ordering.Ordering.*;
+import static mho.wheels.iterables.IterableUtils.*;
+import static mho.wheels.ordering.Ordering.*;
 
 /**
  * The {@code Rational} class uniquely represents rational numbers. {@code denominator} is the smallest positive
@@ -633,7 +633,7 @@ public final class Rational implements Comparable<Rational> {
     }
 
     /**
-     * Returns the fractional part of {@code this}; {@code this}–⌊{@code this}⌉.
+     * Returns the fractional part of {@code this}; {@code this}–⌊{@code this}⌋.
      *
      * <ul>
      *  <li>{@code this} may be any {@code Rational}.</li>
@@ -741,7 +741,7 @@ public final class Rational implements Comparable<Rational> {
 
     /**
      * Returns the left shift of {@code this} by {@code bits};
-     * {@code this}&#x00D7;2<sup>{@code bits}</sup>. Negative {@code bits} corresponds to a right shift.
+     * {@code this}×2<sup>{@code bits}</sup>. Negative {@code bits} corresponds to a right shift.
      *
      * <ul>
      *  <li>{@code this} can be any {@code Rational}.</li>
@@ -750,7 +750,7 @@ public final class Rational implements Comparable<Rational> {
      * </ul>
      *
      * @param bits the number of bits to left-shift by
-     * @return {@code this}&lt;&lt;{@code bits}
+     * @return {@code this}≪{@code bits}
      */
     public @NotNull Rational shiftLeft(int bits) {
         if (this == ZERO) return ZERO;
@@ -771,7 +771,7 @@ public final class Rational implements Comparable<Rational> {
 
     /**
      * Returns the right shift of {@code this} by {@code bits};
-     * {@code this}&#x00D7;2<sup>–{@code bits}</sup>. Negative {@code bits} corresponds to a left shift.
+     * {@code this}×2<sup>–{@code bits}</sup>. Negative {@code bits} corresponds to a left shift.
      *
      * <ul>
      *  <li>{@code this} can be any {@code Rational}.</li>
@@ -780,7 +780,7 @@ public final class Rational implements Comparable<Rational> {
      * </ul>
      *
      * @param bits the number of bits to right-shift by
-     * @return {@code this}&gt;&gt;{@code bits}
+     * @return {@code this}≫{@code bits}
      */
     public @NotNull Rational shiftRight(int bits) {
         if (this == ZERO) return ZERO;

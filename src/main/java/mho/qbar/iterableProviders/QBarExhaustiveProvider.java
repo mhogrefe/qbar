@@ -1,6 +1,7 @@
 package mho.qbar.iterableProviders;
 
-import mho.haskellesque.iterables.ExhaustiveProvider;
+import mho.wheels.iterables.ExhaustiveProvider;
+import mho.qbar.objects.Interval;
 import mho.qbar.objects.Rational;
 import org.jetbrains.annotations.NotNull;
 
@@ -8,11 +9,12 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import static mho.haskellesque.iterables.IterableUtils.*;
-import static mho.haskellesque.iterables.IterableUtils.filter;
-import static mho.haskellesque.iterables.IterableUtils.map;
-import static mho.haskellesque.ordering.Ordering.gt;
-import static mho.haskellesque.ordering.Ordering.lt;
+import static mho.wheels.iterables.IterableUtils.*;
+import static mho.wheels.iterables.IterableUtils.filter;
+import static mho.wheels.iterables.IterableUtils.map;
+import static mho.wheels.ordering.Ordering.*;
+import static mho.wheels.ordering.Ordering.gt;
+import static mho.wheels.ordering.Ordering.lt;
 
 public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIterableProvider {
     public static final QBarExhaustiveProvider INSTANCE = new QBarExhaustiveProvider();
@@ -107,7 +109,7 @@ public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIt
     }
 
     /**
-     * @return an <tt>Iterable</tt> that contains every <tt>Rational</tt>. Does not support removal.
+     * @return an {@link Iterable} that contains every {@link mho.qbar.objects.Rational}. Does not support removal.
      *
      * Length is infinite
      */
@@ -131,7 +133,7 @@ public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIt
     }
 
     /**
-     * @return an <tt>Iterable</tt> that contains every non-negative <tt>Rational</tt>. Does not support removal.
+     * @return an {@code Iterable} that contains every non-negative {@code Rational}. Does not support removal.
      *
      * Length is infinite
      */
@@ -155,7 +157,7 @@ public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIt
     }
 
     /**
-     * an <tt>Iterable</tt> that contains every positive <tt>Rational</tt>. Does not support removal.
+     * an {@code Iterable} that contains every positive {@code Rational}. Does not support removal.
      *
      * Length is infinite
      */
@@ -176,7 +178,7 @@ public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIt
     }
 
     /**
-     * an <tt>Iterable</tt> that contains every negative <tt>Rational</tt>. Does not support removal.
+     * an {@code Iterable} that contains every negative {@code Rational}. Does not support removal.
      *
      * Length is infinite
      */
@@ -200,7 +202,7 @@ public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIt
     }
 
     /**
-     * an <tt>Iterable</tt> that contains every <tt>Rational</tt> in the interval [0, 1). Does not support removal.
+     * an {@code Iterable} that contains every {@code Rational} in the interval [0, 1). Does not support removal.
      *
      * Length is infinite
      */
@@ -219,6 +221,48 @@ public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIt
                             return lt(p.a, p.b) && p.a.gcd(p.b).equals(BigInteger.ONE);
                         },
                         pairs(naturalBigIntegers(), positiveBigIntegers())
+                )
+        );
+    }
+
+    /**
+     * an {@code Iterable} that contains every finitely-bounded {@link mho.qbar.objects.Interval}. Does not support
+     * removal.
+     *
+     * Length is infinite
+     */
+    @Override
+    public @NotNull Iterable<Interval> finitelyBoundedIntervals() {
+        return map(p -> {
+            assert p.a != null;
+            assert p.b != null;
+            return Interval.of(p.a, p.b);
+        }, filter(p -> le(p.a, p.b), pairs(rationals())));
+    }
+
+    /**
+     * an {@code Iterable} that contains every {@link mho.qbar.objects.Interval}. Does not support removal.
+     *
+     * Length is infinite
+     */
+    @Override
+    public @NotNull Iterable<Interval> intervals() {
+        return map(
+                p -> {
+                    assert p.a != null;
+                    assert p.b != null;
+                    if (!p.a.isPresent() && !p.b.isPresent()) return Interval.ALL;
+                    if (!p.a.isPresent()) return Interval.lessThanOrEqualTo(p.b.get());
+                    if (!p.b.isPresent()) return Interval.greaterThanOrEqualTo(p.a.get());
+                    return Interval.of(p.a.get(), p.b.get());
+                },
+                filter(
+                        p -> {
+                            assert p.a != null;
+                            assert p.b != null;
+                            return !p.a.isPresent() || !p.b.isPresent() || le(p.a.get(), p.b.get());
+                        },
+                        pairs(optionals(rationals()))
                 )
         );
     }
