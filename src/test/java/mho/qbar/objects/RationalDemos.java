@@ -1,13 +1,13 @@
 package mho.qbar.objects;
 
-import mho.haskellesque.iterables.ExhaustiveProvider;
-import mho.haskellesque.iterables.IterableProvider;
-import mho.haskellesque.iterables.RandomProvider;
-import mho.haskellesque.math.Combinatorics;
-import mho.haskellesque.numbers.Numbers;
-import mho.haskellesque.ordering.Ordering;
-import mho.haskellesque.structures.Pair;
-import mho.haskellesque.structures.Triple;
+import mho.wheels.iterables.ExhaustiveProvider;
+import mho.wheels.iterables.IterableProvider;
+import mho.wheels.iterables.RandomProvider;
+import mho.wheels.math.Combinatorics;
+import mho.wheels.numbers.Numbers;
+import mho.wheels.ordering.Ordering;
+import mho.wheels.structures.Pair;
+import mho.wheels.structures.Triple;
 import mho.qbar.iterableProviders.QBarExhaustiveProvider;
 import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.iterableProviders.QBarRandomProvider;
@@ -20,7 +20,7 @@ import java.math.RoundingMode;
 import java.util.Optional;
 import java.util.Random;
 
-import static mho.haskellesque.iterables.IterableUtils.*;
+import static mho.wheels.iterables.IterableUtils.*;
 import static mho.qbar.objects.Rational.*;
 
 public class RationalDemos {

@@ -1,8 +1,8 @@
 package mho.qbar.objects;
 
-import mho.haskellesque.iterables.IterableUtils;
-import mho.haskellesque.iterables.RandomProvider;
-import mho.haskellesque.numbers.Numbers;
+import mho.wheels.iterables.IterableUtils;
+import mho.wheels.iterables.RandomProvider;
+import mho.wheels.numbers.Numbers;
 import mho.qbar.objects.Rational;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Before;
@@ -13,8 +13,8 @@ import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.util.Random;
 
-import static mho.haskellesque.iterables.IterableUtils.take;
-import static mho.haskellesque.ordering.Ordering.*;
+import static mho.wheels.iterables.IterableUtils.take;
+import static mho.wheels.ordering.Ordering.*;
 import static mho.qbar.objects.Rational.*;
 import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;

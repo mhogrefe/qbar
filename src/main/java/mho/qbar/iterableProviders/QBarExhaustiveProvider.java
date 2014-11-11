@@ -1,6 +1,6 @@
 package mho.qbar.iterableProviders;
 
-import mho.haskellesque.iterables.ExhaustiveProvider;
+import mho.wheels.iterables.ExhaustiveProvider;
 import mho.qbar.objects.Interval;
 import mho.qbar.objects.Rational;
 import org.jetbrains.annotations.NotNull;
@@ -9,12 +9,12 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import static mho.haskellesque.iterables.IterableUtils.*;
-import static mho.haskellesque.iterables.IterableUtils.filter;
-import static mho.haskellesque.iterables.IterableUtils.map;
-import static mho.haskellesque.ordering.Ordering.*;
-import static mho.haskellesque.ordering.Ordering.gt;
-import static mho.haskellesque.ordering.Ordering.lt;
+import static mho.wheels.iterables.IterableUtils.*;
+import static mho.wheels.iterables.IterableUtils.filter;
+import static mho.wheels.iterables.IterableUtils.map;
+import static mho.wheels.ordering.Ordering.*;
+import static mho.wheels.ordering.Ordering.gt;
+import static mho.wheels.ordering.Ordering.lt;
 
 public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIterableProvider {
     public static final QBarExhaustiveProvider INSTANCE = new QBarExhaustiveProvider();

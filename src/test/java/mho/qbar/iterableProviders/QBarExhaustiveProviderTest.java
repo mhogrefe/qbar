@@ -1,10 +1,10 @@
 package mho.qbar.iterableProviders;
 
-import mho.haskellesque.iterables.IterableUtils;
+import mho.wheels.iterables.IterableUtils;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
-import static mho.haskellesque.iterables.IterableUtils.*;
+import static mho.wheels.iterables.IterableUtils.*;
 import static org.junit.Assert.assertEquals;
 
 public class QBarExhaustiveProviderTest {

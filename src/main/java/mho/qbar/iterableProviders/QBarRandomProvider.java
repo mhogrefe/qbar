@@ -1,6 +1,6 @@
 package mho.qbar.iterableProviders;
 
-import mho.haskellesque.iterables.RandomProvider;
+import mho.wheels.iterables.RandomProvider;
 import mho.qbar.objects.Interval;
 import mho.qbar.objects.Rational;
 import org.jetbrains.annotations.NotNull;
@@ -8,8 +8,8 @@ import org.jetbrains.annotations.NotNull;
 import java.math.BigInteger;
 import java.util.Random;
 
-import static mho.haskellesque.iterables.IterableUtils.*;
-import static mho.haskellesque.ordering.Ordering.lt;
+import static mho.wheels.iterables.IterableUtils.*;
+import static mho.wheels.ordering.Ordering.lt;
 
 public class QBarRandomProvider extends RandomProvider implements QBarIterableProvider {
     public QBarRandomProvider(@NotNull Random generator) {

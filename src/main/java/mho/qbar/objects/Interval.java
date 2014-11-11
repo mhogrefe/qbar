@@ -1,7 +1,7 @@
 package mho.qbar.objects;
 
-import mho.haskellesque.numbers.Numbers;
-import mho.haskellesque.structures.Pair;
+import mho.wheels.numbers.Numbers;
+import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -11,7 +11,7 @@ import java.util.Optional;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import static mho.haskellesque.ordering.Ordering.*;
+import static mho.wheels.ordering.Ordering.*;
 
 /**
  * <p>The {@code Interval} class represents an interval of real numbers. If we let p and q be rationals, p≤q, the
