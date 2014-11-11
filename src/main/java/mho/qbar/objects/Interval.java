@@ -178,8 +178,8 @@ public final class Interval implements Comparable<Interval> {
     }
 
     /**
-     * Determines the convex hull of two intervals, or the interval with minimal diameter that is a superset of the two
-     * intervals.
+     * Determines the convex hull of two {@code Interval}s, or the {@code Interval} with minimal diameter that is a
+     * superset of the two {@code Interval}s.
      *
      * <ul>
      *  <li>{@code a} cannot be null.</li>
@@ -199,8 +199,8 @@ public final class Interval implements Comparable<Interval> {
     }
 
     /**
-     * Determines the convex hull of a set of intervals, or the interval with minimal diameter that is a superset of
-     * all of the intervals.
+     * Determines the convex hull of a set of {@code Interval}s, or the {@code Interval} with minimal diameter that is
+     * a superset of all of the {@code Interval}s.
      *
      * <ul>
      *  <li>{@code as} cannot be null or empty and may not contain any null elements.</li>
@@ -235,7 +235,7 @@ public final class Interval implements Comparable<Interval> {
      *
      * @param a the first {@code Interval}
      * @param b the second {@code Interval}
-     * @return {@code a}&#x2229;{@code b}
+     * @return {@code a}∩{@code b}
      */
     public static @Nullable Interval intersection(@NotNull Interval a, @NotNull Interval b) {
         Rational lower;
@@ -263,7 +263,7 @@ public final class Interval implements Comparable<Interval> {
     }
 
     /**
-     * Determines whether two intervals are disjoint (whether their intersections are empty).
+     * Determines whether two {@code Interval}s are disjoint (whether their intersections are empty).
      *
      * <ul>
      *  <li>{@code a} cannot be null.</li>
@@ -273,22 +273,23 @@ public final class Interval implements Comparable<Interval> {
      *
      * @param a the first {@code Interval}
      * @param b the second {@code Interval}
-     * @return {@code a}&#x2229;{@code b}=&#x2205;
+     * @return {@code a}∩{@code b}=∅
      */
     public static boolean disjoint(@NotNull Interval a, @NotNull Interval b) {
         return intersection(a, b) == null;
     }
 
     /**
-     * Transforms a set of intervals into a set of disjoint intervals with the same union as the original set.
+     * Transforms a set of {@code Interval}s into a set of disjoint {@code Interval}s with the same union as the
+     * original set.
      *
      * <ul>
      *  <li>{@code as} cannot be null and may not contain any null elements.</li>
-     *  <li>The result is a sorted set of pairwise disjoint intervals.</li>
+     *  <li>The result is a sorted set of pairwise disjoint {@code Interval}s.</li>
      * </ul>
      *
-     * @param as a set of intervals
-     * @return a set of disjoint intervals whose union is the same as the union of {@code as}
+     * @param as a set of {@code Interval}s
+     * @return a set of disjoint {@code Interval}s whose union is the same as the union of {@code as}
      */
     public static SortedSet<Interval> makeDisjoint(SortedSet<Interval> as) {
         SortedSet<Interval> simplified = new TreeSet<>();
@@ -404,20 +405,20 @@ public final class Interval implements Comparable<Interval> {
     }
 
     /**
-     * Returns the smallest {@code Interval} containing all reals that are closer to a given {@code double} than to
-     * any other {@code double}; or, if the {@code double} is positive infinity, all reals that are greater than
+     * Returns the smallest {@code Interval} containing all reals that are closer to a given {@link double} than to any
+     * other {@code double}; or, if the {@code double} is positive infinity, all reals that are greater than
      * {@code Double.MAX_VALUE}; or, if the {@code double} is negative infinity, all reals that are less than
      * {@code –Double.MAX_VALUE}. Positive and negative 0 yield the same result.
      *
      * <ul>
-     *  <li>{@code d} may be any {@code double} except NaN.</li>
+     *  <li>{@code d} may be any {@code double} except {@code NaN}.</li>
      *  <li>The result is one of
      *   <ul>
      *    <li>[{@code Double.MAX_VALUE}, ∞)</li>
      *    <li>(–∞, –{@code Double.MAX_VALUE}]</li>
-     *    <li>[({@code a}+{@code b})/2, ({@code b}+{@code c})/2], where {@code a}, {@code b}, and {@code c} are
-     *    equal to three consecutive finite {@code double}s (but + and / correspond to real operations, not
-     *    {@code double} operations).</li>
+     *    <li>[({@code a}+{@code b})/2, ({@code b}+{@code c})/2], where {@code a}, {@code b}, and {@code c} are equal
+     *    to three consecutive finite {@code double}s (but + and / correspond to real operations, not {@code double}
+     *    operations).</li>
      *   </ul>
      *  </li>
      * </ul>
@@ -447,8 +448,9 @@ public final class Interval implements Comparable<Interval> {
         return new Interval(lower, upper);
     }
 
+    //todo finish fixing JavaDoc
     /**
-     * Returns an {@code Interval} representing all real numbers that round to a specified {@code BigDecimal} (taking
+     * Returns an {@code Interval} representing all real numbers that round to a specified {@link BigDecimal} (taking
      * precision into account).
      *
      * <ul>
