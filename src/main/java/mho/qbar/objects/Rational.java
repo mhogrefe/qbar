@@ -1,10 +1,10 @@
 package mho.qbar.objects;
 
-import mho.haskellesque.math.MathUtils;
-import mho.haskellesque.numbers.Numbers;
-import mho.haskellesque.ordering.Ordering;
-import mho.haskellesque.structures.Pair;
-import mho.haskellesque.structures.Triple;
+import mho.wheels.math.MathUtils;
+import mho.wheels.numbers.Numbers;
+import mho.wheels.ordering.Ordering;
+import mho.wheels.structures.Pair;
+import mho.wheels.structures.Triple;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -14,8 +14,8 @@ import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.*;
 
-import static mho.haskellesque.iterables.IterableUtils.*;
-import static mho.haskellesque.ordering.Ordering.*;
+import static mho.wheels.iterables.IterableUtils.*;
+import static mho.wheels.ordering.Ordering.*;
 
 /**
  * The {@code Rational} class uniquely represents rational numbers. {@code denominator} is the smallest positive

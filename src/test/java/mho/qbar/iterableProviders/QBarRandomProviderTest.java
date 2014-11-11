@@ -1,13 +1,13 @@
 package mho.qbar.iterableProviders;
 
-import mho.haskellesque.iterables.IterableUtils;
+import mho.wheels.iterables.IterableUtils;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Random;
 
-import static mho.haskellesque.iterables.IterableUtils.*;
+import static mho.wheels.iterables.IterableUtils.*;
 import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 

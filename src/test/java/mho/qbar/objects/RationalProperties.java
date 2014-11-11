@@ -1,11 +1,11 @@
 package mho.qbar.objects;
 
-import mho.haskellesque.iterables.RandomProvider;
-import mho.haskellesque.math.MathUtils;
-import mho.haskellesque.numbers.Numbers;
-import mho.haskellesque.ordering.Ordering;
-import mho.haskellesque.structures.Pair;
-import mho.haskellesque.structures.Triple;
+import mho.wheels.iterables.RandomProvider;
+import mho.wheels.math.MathUtils;
+import mho.wheels.numbers.Numbers;
+import mho.wheels.ordering.Ordering;
+import mho.wheels.structures.Pair;
+import mho.wheels.structures.Triple;
 import mho.qbar.iterableProviders.QBarExhaustiveProvider;
 import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.iterableProviders.QBarRandomProvider;
@@ -19,8 +19,8 @@ import java.util.Arrays;
 import java.util.Optional;
 import java.util.Random;
 
-import static mho.haskellesque.iterables.IterableUtils.*;
-import static mho.haskellesque.ordering.Ordering.*;
+import static mho.wheels.iterables.IterableUtils.*;
+import static mho.wheels.ordering.Ordering.*;
 import static mho.qbar.objects.Rational.*;
 import static mho.qbar.objects.Rational.of;
 import static org.junit.Assert.*;
