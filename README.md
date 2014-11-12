@@ -1,3 +1,5 @@
+![alt tag](https://raw.github.com/mhogrefe/qbar/resources/logo.svg)
+
 qbar
 ====
 
