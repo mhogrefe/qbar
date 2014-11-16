@@ -1118,6 +1118,7 @@ public class RationalProperties {
         System.out.println("testing equals(Object) properties...");
 
         for (Rational r : take(LIMIT, P.rationals())) {
+            //noinspection EqualsWithItself
             assertTrue(r.toString(), r.equals(r));
             //noinspection ObjectEqualsNull
             assertFalse(r.toString(), r.equals(null));
@@ -1151,7 +1152,11 @@ public class RationalProperties {
         }
 
         Iterable<Triple<Rational, Rational, Rational>> ts = filter(
-                t -> lt(t.a, t.b) && lt(t.b, t.c),
+                t -> {
+                    assert t.a != null;
+                    assert t.b != null;
+                    return lt(t.a, t.b) && lt(t.b, t.c);
+                },
                 P.triples(P.rationals())
         );
         for (Triple<Rational, Rational, Rational> t : take(LIMIT, ts)) {

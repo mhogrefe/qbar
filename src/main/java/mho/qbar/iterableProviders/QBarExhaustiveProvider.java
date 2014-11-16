@@ -3,11 +3,15 @@ package mho.qbar.iterableProviders;
 import mho.wheels.iterables.ExhaustiveProvider;
 import mho.qbar.objects.Interval;
 import mho.qbar.objects.Rational;
+import mho.wheels.iterables.IterableUtils;
+import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
+import java.util.Optional;
 
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.iterables.IterableUtils.filter;
@@ -17,7 +21,7 @@ import static mho.wheels.ordering.Ordering.gt;
 import static mho.wheels.ordering.Ordering.lt;
 
 public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIterableProvider {
-    public static final QBarExhaustiveProvider INSTANCE = new QBarExhaustiveProvider();
+    public static final @NotNull QBarExhaustiveProvider INSTANCE = new QBarExhaustiveProvider();
 
     protected QBarExhaustiveProvider() {
         super();
@@ -237,11 +241,14 @@ public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIt
             assert p.a != null;
             assert p.b != null;
             return Interval.of(p.a, p.b);
-        }, filter(p -> le(p.a, p.b), pairs(rationals())));
+        }, filter(p -> {
+            assert p.a != null;
+            return le(p.a, p.b);
+        }, pairs(rationals())));
     }
 
     /**
-     * an {@code Iterable} that contains every {@link mho.qbar.objects.Interval}. Does not support removal.
+     * an {@code Iterable} that contains every {@code Interval}. Does not support removal.
      *
      * Length is infinite
      */
@@ -262,8 +269,87 @@ public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIt
                             assert p.b != null;
                             return !p.a.isPresent() || !p.b.isPresent() || le(p.a.get(), p.b.get());
                         },
-                        pairs(optionals(rationals()))
+                        (Iterable<Pair<Optional<Rational>, Optional<Rational>>>) pairs(optionals(rationals()))
                 )
         );
+    }
+
+    @Override
+    public @NotNull Iterable<Byte> bytes(@NotNull Interval a) {
+        Optional<Interval> intersection = Interval.intersection(
+                a,
+                Interval.of(Rational.of(Byte.MIN_VALUE), Rational.of(Byte.MAX_VALUE))
+        );
+        if (!intersection.isPresent()) return new ArrayList<>();
+        return map(BigInteger::byteValueExact, bigIntegers(intersection.get()));
+    }
+
+    @Override
+    public @NotNull Iterable<Short> shorts(@NotNull Interval a) {
+        Optional<Interval> intersection = Interval.intersection(
+                a,
+                Interval.of(Rational.of(Short.MIN_VALUE), Rational.of(Short.MAX_VALUE))
+        );
+        if (!intersection.isPresent()) return new ArrayList<>();
+        return map(BigInteger::shortValueExact, bigIntegers(intersection.get()));
+    }
+
+    @Override
+    public @NotNull Iterable<Integer> integers(@NotNull Interval a) {
+        Optional<Interval> intersection = Interval.intersection(
+                a,
+                Interval.of(Rational.of(Integer.MIN_VALUE), Rational.of(Integer.MAX_VALUE))
+        );
+        if (!intersection.isPresent()) return new ArrayList<>();
+        return map(BigInteger::intValueExact, bigIntegers(intersection.get()));
+    }
+
+    @Override
+    public @NotNull Iterable<Long> longs(@NotNull Interval a) {
+        Optional<Interval> intersection = Interval.intersection(
+                a,
+                Interval.of(
+                        Rational.of(BigInteger.valueOf(Long.MIN_VALUE)),
+                        Rational.of(BigInteger.valueOf(Long.MAX_VALUE))
+                )
+        );
+        if (!intersection.isPresent()) return new ArrayList<>();
+        return map(BigInteger::longValueExact, bigIntegers(intersection.get()));
+    }
+
+    @Override
+    public @NotNull Iterable<BigInteger> bigIntegers(@NotNull Interval a) {
+        if (!a.getLower().isPresent() && !a.getUpper().isPresent()) {
+            return bigIntegers();
+        } else if (!a.getLower().isPresent()) {
+            return rangeBy(a.getUpper().get().floor(), BigInteger.valueOf(-1));
+        } else if (!a.getUpper().isPresent()) {
+            return range(a.getLower().get().ceiling());
+        } else {
+            return range(a.getLower().get().ceiling(), a.getUpper().get().floor());
+        }
+    }
+
+    @Override
+    public @NotNull Iterable<Rational> rationals(@NotNull Interval a) {
+        if (!a.getLower().isPresent() && !a.getUpper().isPresent()) {
+            return rationals();
+        } else if (!a.getLower().isPresent()) {
+            return map(r -> Rational.subtract(a.getUpper().get(), r), nonNegativeRationals());
+        } else if (!a.getUpper().isPresent()) {
+            return map(r -> Rational.add(r, a.getLower().get()), nonNegativeRationals());
+        } else {
+            Rational diameter = a.diameter().get();
+            if (diameter == Rational.ZERO) return Arrays.asList(a.getLower().get());
+            return concat(
+                    Arrays.asList(a.getLower().get(), a.getUpper().get()),
+                    tail(
+                            map(
+                                    r -> Rational.add(Rational.multiply(r, diameter), a.getLower().get()),
+                                    nonNegativeRationalsLessThanOne()
+                            )
+                    )
+            );
+        }
     }
 }
