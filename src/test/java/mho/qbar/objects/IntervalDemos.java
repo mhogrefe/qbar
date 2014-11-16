@@ -3,8 +3,12 @@ package mho.qbar.objects;
 import mho.qbar.iterableProviders.QBarExhaustiveProvider;
 import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.iterableProviders.QBarRandomProvider;
+import mho.wheels.numbers.Numbers;
+import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
+import org.jetbrains.annotations.NotNull;
 
+import java.util.Optional;
 import java.util.Random;
 
 import static mho.qbar.objects.Interval.*;
@@ -30,7 +34,10 @@ public class IntervalDemos {
 
     public static void demoOf_Rational_Rational() {
         initialize();
-        Iterable<Pair<Rational, Rational>> rs = filter(p -> le(p.a, p.b), P.pairs(P.rationals()));
+        Iterable<Pair<Rational, Rational>> rs = filter(p -> {
+            assert p.a != null;
+            return le(p.a, p.b);
+        }, P.pairs(P.rationals()));
         for (Pair<Rational, Rational> p : take(LIMIT, rs)) {
             assert p.a != null;
             assert p.b != null;
@@ -221,38 +228,72 @@ public class IntervalDemos {
             System.out.println("equals(" + a + ", null) = " + a.equals(null));
         }
     }
-//
-//    public static void hashCodeDemo() {
-//        for (Interval a : Interval.intervals().iterate(limit)) {
-//            System.out.println("hashCode(" + a + ") = " + a.hashCode());
-//        }
-//    }
-//
-//    public static void compareToDemo() {
-//        for (Pair<Interval, Interval> p : new SamePairGenerator<>(Interval.intervals()).iterate(limit)) {
-//            System.out.println("compareTo(" + p.fst + ", " + p.snd + ") = " + p.fst.compareTo(p.snd));
-//        }
-//    }
-//
-//    public static void readDemo() {
-//        readDemo(limit, false, false);
-//    }
-//
-//    public static void readDemo(, boolean ascii, boolean skipNullResults) {
-//        Generator<String> g = new FilteredGenerator<>(
-//                ascii ? Generators.strings(NECESSARY_CHARS) : Generators.strings(),
-//                s -> {
-//                    try {
-//                        Interval.read(s);
-//                    } catch (IllegalArgumentException e) {
-//                        return false;
-//                    }
-//                    return true;
-//                }
-//        );
-//        for (String s : g.iterate(limit)) {
-//            Interval a = Interval.read(s);
-//            if (!skipNullResults || a != null) System.out.println("read(" + s + ") = " + a);
-//        }
-//    }
+
+    public static void demoHashCode() {
+        initialize();
+        for (Interval a : take(LIMIT, P.intervals())) {
+            System.out.println("hashCode(" + a + ") = " + a.hashCode());
+        }
+    }
+
+    public static void demoCompareTo() {
+        initialize();
+        for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
+            assert p.a != null;
+            assert p.b != null;
+            System.out.println(p.a + " " + Ordering.compare(p.a, p.b).toChar() + " " + p.b);
+        }
+    }
+
+    private static boolean goodRationalReadArgument(@NotNull String s) {
+        return s.length() < 2 || isSuffixOf(s, "/0") ||
+                !Numbers.readBigInteger(s.substring(0, s.length() - 2)).isPresent();
+    }
+
+    private static boolean goodReadArgument(@NotNull String s) {
+        if (s.length() < 2 || head(s) != '[' || last(s) != ']') return true;
+        s = init(tail(s));
+        int commaIndex = s.indexOf(", ");
+        if (commaIndex == -1) return true;
+        String aString = s.substring(1, commaIndex);
+        String bString = s.substring(commaIndex + 2);
+        if (!goodRationalReadArgument(aString)) return false;
+        Optional<Rational> oa = Rational.read(aString);
+        if (!oa.isPresent()) return true;
+        Rational a = oa.get();
+        if (!goodRationalReadArgument(bString)) return false;
+        Optional<Rational> ba = Rational.read(bString);
+        if (!ba.isPresent()) return true;
+        Rational b = ba.get();
+        return le(a, b);
+    }
+
+    public static void demoRead() {
+        initialize();
+        Iterable<String> ss = filter(IntervalDemos::goodReadArgument, P.strings());
+        for (String s : take(LIMIT, ss)) {
+            System.out.println("read(" + s + ") = " + read(s));
+        }
+    }
+
+    public static void demoRead_targeted() {
+        initialize();
+        Iterable<Character> cs;
+        if (P instanceof QBarExhaustiveProvider) {
+            cs = fromString(NECESSARY_CHARS);
+        } else {
+            cs = ((QBarRandomProvider) P).uniformSample(NECESSARY_CHARS);
+        }
+        Iterable<String> ss = filter(IntervalDemos::goodReadArgument, P.strings(cs));
+        for (String s : take(LIMIT, ss)) {
+            System.out.println("read(" + s + ") = " + read(s));
+        }
+    }
+
+    public static void demoToString() {
+        initialize();
+        for (Interval a : take(LIMIT, P.intervals())) {
+            System.out.println(a);
+        }
+    }
 }

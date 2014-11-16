@@ -751,6 +751,7 @@ public final class Interval implements Comparable<Interval> {
         return upper == null ? 0 : upper.compareTo(that.upper);
     }
 
+    //todo mention that illegal Rational Strings can't be present
     /**
      * Creates an {@code Interval} from a {@code String}. Valid strings are in one of these four forms:
      * {@code "(-Infinity, Infinity)"}, {@code "(-Infinity, " + q.toString() + "]"},
