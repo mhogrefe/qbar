@@ -12,7 +12,7 @@ import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.ordering.Ordering.*;
 
 public class IntervalDemos {
-    private static final boolean USE_RANDOM = false;
+    private static final boolean USE_RANDOM = true;
     private static final String NECESSARY_CHARS = " ()-/0123456789I[]finty";
     private static int LIMIT;
 
@@ -26,6 +26,10 @@ public class IntervalDemos {
             P = QBarExhaustiveProvider.INSTANCE;
             LIMIT = 10000;
         }
+    }
+
+    public static void main(String[] args) {
+        demoEquals_Interval();
     }
 
     public static void demoOf_Rational_Rational() {

@@ -44,13 +44,13 @@ public class QBarRandomProvider extends RandomProvider implements QBarIterablePr
     }
 
     /**
-     * a pseudorandom {@link Iterable} that generates every {@link Rational}. The numerator's and denominator's bit
-     * size is chosen from a geometric distribution with mean approximately {@code meanBitSize} (The ratio between the
-     * actual mean bit size and {@code meanBitSize} decreases as {@code meanBitSize} increases). Does not support
-     * removal.
+     * a pseudorandom {@link Iterable} that generates every {@link Rational}. Each {@code Rational}'s bit size (defined
+     * as the sum of the numerator's and denominator's bit sizes) is chosen from a geometric distribution with mean
+     * approximately {@code meanBitSize} (The ratio between the actual mean bit size and {@code meanBitSize} decreases
+     * as {@code meanBitSize} increases). Does not support removal.
      *
      * <ul>
-     *  <li>{@code meanBitSize} must be greater than 2.</li>
+     *  <li>{@code meanBitSize} must be greater than 5.</li>
      *  <li>The result is an infinite pseudorandom sequence of all {@code Rational}s.</li>
      * </ul>
      *
@@ -72,14 +72,15 @@ public class QBarRandomProvider extends RandomProvider implements QBarIterablePr
                             assert q.b != null;
                             return q.a.gcd(q.b).equals(BigInteger.ONE);
                         },
-                        pairs(bigIntegers(meanBitSize), positiveBigIntegers(meanBitSize))
+                        pairs(bigIntegers(meanBitSize / 2), positiveBigIntegers(meanBitSize / 2))
                 )
         );
     }
 
     /**
-     * a pseudorandom {@code Iterable} that generates every {@code Rational}. The numerator's and denominator's bit
-     * size is chosen from a geometric distribution with mean approximately 64. Does not support removal.
+     * a pseudorandom {@code Iterable} that generates every {@code Rational}. Each {@code Rational}'s bit size (defined
+     * as the sum of the numerator's and denominator's bit sizes) is chosen from a geometric distribution with mean
+     * approximately 64. Does not support removal.
      *
      * <ul>
      *  <li>The result is an infinite pseudorandom sequence of all {@code Rational}s.</li>
@@ -95,13 +96,13 @@ public class QBarRandomProvider extends RandomProvider implements QBarIterablePr
     }
 
     /**
-     * a pseudorandom {@code Iterable} that generates every non-negative {@code Rational}. The numerator's and
-     * denominator's bit size is chosen from a geometric distribution with mean approximately {@code meanBitSize} (The
-     * ratio between the actual mean bit size and {@code meanBitSize} decreases as {@code meanBitSize} increases). Does
-     * not support removal.
+     * a pseudorandom {@code Iterable} that generates every non-negative {@code Rational}. Each {@code Rational}'s bit
+     * size (defined as the sum of the numerator and denominator's bit size) is chosen from a geometric distribution
+     * with mean approximately {@code meanBitSize} (The ratio between the actual mean bit size and {@code meanBitSize}
+     * decreases as {@code meanBitSize} increases). Does not support removal.
      *
      * <ul>
-     *  <li>{@code meanBitSize} must be greater than 2.</li>
+     *  <li>{@code meanBitSize} must be greater than 5.</li>
      *  <li>The result is an infinite pseudorandom sequence of all {@code Rational}s.</li>
      * </ul>
      *
@@ -123,15 +124,15 @@ public class QBarRandomProvider extends RandomProvider implements QBarIterablePr
                             assert q.b != null;
                             return q.a.gcd(q.b).equals(BigInteger.ONE);
                         },
-                        pairs(naturalBigIntegers(meanBitSize), positiveBigIntegers(meanBitSize))
+                        pairs(naturalBigIntegers(meanBitSize / 2), positiveBigIntegers(meanBitSize / 2))
                 )
         );
     }
 
     /**
-     * a pseudorandom {@code Iterable} that generates every non-negative {@code Rational}. The numerator's and
-     * denominator's bit size is chosen from a geometric distribution with mean approximately 64. Does not support
-     * removal.
+     * a pseudorandom {@code Iterable} that generates every non-negative {@code Rational}. Each {@code Rational}'s bit
+     * size (defined as the sum of the numerator's and denominator's bit sizes) is chosen from a geometric distribution
+     * with mean approximately 64. Does not support removal.
      *
      * <ul>
      *  <li>The result is an infinite pseudorandom sequence of all non-negative {@code Rational}s.</li>
@@ -146,12 +147,13 @@ public class QBarRandomProvider extends RandomProvider implements QBarIterablePr
     }
 
     /**
-     * a pseudorandom {@code Iterable} that generates every positive {@code Rational}. The numerator's and
-     * denominator's bit size is chosen from a geometric distribution with mean approximately {@code meanBitSize} (The
-     * ratio between the actual mean bit size and {@code meanBitSize} decreases as {@code meanBitSize} increases). Does not support removal.
+     * a pseudorandom {@code Iterable} that generates every positive {@code Rational}. Each {@code Rational}'s bit size
+     * (defined as the sum of the numerator 'sand denominator's bit sizes) is chosen from a geometric distribution with
+     * mean approximately {@code meanBitSize} (The ratio between the actual mean bit size and {@code meanBitSize}
+     * decreases as {@code meanBitSize} increases). Does not support removal.
      *
      * <ul>
-     *  <li>{@code meanBitSize} must be greater than 2.</li>
+     *  <li>{@code meanBitSize} must be greater than 5.</li>
      *  <li>The result is an infinite pseudorandom sequence of all positive {@code Rational}s.</li>
      * </ul>
      *
@@ -173,15 +175,15 @@ public class QBarRandomProvider extends RandomProvider implements QBarIterablePr
                             assert q.b != null;
                             return q.a.gcd(q.b).equals(BigInteger.ONE);
                         },
-                        pairs(positiveBigIntegers(meanBitSize), positiveBigIntegers(meanBitSize))
+                        pairs(positiveBigIntegers(meanBitSize / 2), positiveBigIntegers(meanBitSize / 2))
                 )
         );
     }
 
     /**
-     * a pseudorandom {@code Iterable} that generates every positive {@code Rational}. The numerator's and
-     * denominator's bit size is chosen from a geometric distribution with mean approximately 64. Does not support
-     * removal.
+     * a pseudorandom {@code Iterable} that generates every positive {@code Rational}. Each {@code Rational}'s bit size
+     * (defined as the sum of the numerator's and denominator's bit sizes) is chosen from a geometric distribution with
+     * mean approximately 64. Does not support removal.
      *
      * <ul>
      *  <li>The result is an infinite pseudorandom sequence of all positive {@code Rational}s.</li>
@@ -196,13 +198,13 @@ public class QBarRandomProvider extends RandomProvider implements QBarIterablePr
     }
 
     /**
-     * a pseudorandom {@code Iterable} that generates every negative {@code Rational}. The numerator's and
-     * denominator's bit size is chosen from a geometric distribution with mean approximately {@code meanBitSize} (The
-     * ratio between the actual mean bit size and {@code meanBitSize} decreases as {@code meanBitSize} increases).
-     * Does not support removal.
+     * a pseudorandom {@code Iterable} that generates every negative {@code Rational}. Each {@code Rational}'s bit size
+     * (defined as the sum of the numerator's and denominator's bit sizes) is chosen from a geometric distribution with
+     * mean approximately {@code meanBitSize} (The ratio between the actual mean bit size and {@code meanBitSize}
+     * decreases as {@code meanBitSize} increases). Does not support removal.
      *
      * <ul>
-     *  <li>{@code meanBitSize} must be greater than 2.</li>
+     *  <li>{@code meanBitSize} must be greater than 5.</li>
      *  <li>The result is an infinite pseudorandom sequence of all negative {@code Rational}s.</li>
      * </ul>
      *
@@ -219,16 +221,20 @@ public class QBarRandomProvider extends RandomProvider implements QBarIterablePr
                     return Rational.of(p.a, p.b);
                 },
                 filter(
-                        q -> q.a.gcd(q.b).equals(BigInteger.ONE),
-                        pairs(negativeBigIntegers(meanBitSize), positiveBigIntegers(meanBitSize))
+                        q -> {
+                            assert q.a != null;
+                            assert q.b != null;
+                            return q.a.gcd(q.b).equals(BigInteger.ONE);
+                        },
+                        pairs(negativeBigIntegers(meanBitSize / 2), positiveBigIntegers(meanBitSize / 2))
                 )
         );
     }
 
     /**
-     * a pseudorandom {@code Iterable} that generates every negative {@code Rational}. The numerator's and
-     * denominator's bit size is chosen from a geometric distribution with mean approximately 64. Does not support
-     * removal.
+     * a pseudorandom {@code Iterable} that generates every negative {@code Rational}. Each {@code Rational}'s bit size
+     * (defined as the sum of the numerator's and denominator's bit sizes) is chosen from a geometric distribution with
+     * mean approximately 64. Does not support removal.
      *
      * <ul>
      *  <li>The result is an infinite pseudorandom sequence of all negative {@code Rational}s.</li>
@@ -243,13 +249,13 @@ public class QBarRandomProvider extends RandomProvider implements QBarIterablePr
     }
 
     /**
-     * a pseudorandom {@code Iterable} that generates every {@code Rational} in the interval [0, 1). The numerator's
-     * and denominator's bit size is chosen from a geometric distribution with mean approximately {@code meanBitSize}
-     * (The ratio between the actual mean bit size and {@code meanBitSize} decreases as {@code meanBitSize} increases).
-     * Does not support removal.
+     * a pseudorandom {@code Iterable} that generates every {@code Rational} in the interval [0, 1). Each
+     * {@code Rational}'s bit size (defined as the sum of the numerator's and denominator's bit sizes) is chosen from a
+     * geometric distribution with mean approximately {@code meanBitSize} (The ratio between the actual mean bit size
+     * and {@code meanBitSize} decreases as {@code meanBitSize} increases). Does not support removal.
      *
      * <ul>
-     *  <li>{@code meanBitSize} must be greater than 2.</li>
+     *  <li>{@code meanBitSize} must be greater than 5.</li>
      *  <li>The result is an infinite pseudorandom sequence of all {@code Rational}s in the interval [0, 1).</li>
      * </ul>
      *
@@ -271,15 +277,15 @@ public class QBarRandomProvider extends RandomProvider implements QBarIterablePr
                             assert q.b != null;
                             return lt(q.a, q.b) && q.a.gcd(q.b).equals(BigInteger.ONE);
                         },
-                        pairs(naturalBigIntegers(meanBitSize), positiveBigIntegers(meanBitSize))
+                        pairs(naturalBigIntegers(meanBitSize / 2), positiveBigIntegers(meanBitSize / 2))
                 )
         );
     }
 
     /**
-     * a pseudorandom {@code Iterable} that generates every {@code Rational} in the interval [0, 1). The numerator's
-     * and denominator's bit size is chosen from a geometric distribution with mean approximately 64. Does not support
-     * removal.
+     * a pseudorandom {@code Iterable} that generates every {@code Rational} in the interval [0, 1). Each
+     * {@code Rational}'s bit size (defined as the sum of the numerator's and denominator's bit sizes) is chosen from a
+     * geometric distribution with mean approximately 64. Does not support removal.
      *
      * <ul>
      *  <li>The result is an infinite pseudorandom sequence of {@code Rational}s in the interval [0, 1).</li>
@@ -294,13 +300,13 @@ public class QBarRandomProvider extends RandomProvider implements QBarIterablePr
     }
 
     /**
-     * a pseudorandom {@code Iterable} that generates every {@code Interval} with finite bounds. The lower and upper
-     * bounds' numerators' and denominators' bit size is chosen from a geometric distribution with mean approximately
-     * {@code meanBitSize} (The ratio between the actual mean bit size and {@code meanBitSize} decreases as
-     * {@code meanBitSize} increases). Does not support removal.
+     * a pseudorandom {@code Iterable} that generates every {@code Interval} with finite bounds. Each
+     * {@code Interval}'s bit size (defined as the sum of the lower bound's and upper bound's bit sizes) is chosen from
+     * a geometric distribution with mean approximately {@code meanBitSize} (The ratio between the actual mean bit size
+     * and {@code meanBitSize} decreases as {@code meanBitSize} increases). Does not support removal.
      *
      * <ul>
-     *  <li>{@code meanBitSize} must be greater than 2.</li>
+     *  <li>{@code meanBitSize} must be greater than 11.</li>
      *  <li>The result is an infinite pseudorandom sequence of all {@code Interval}s with finite bounds.</li>
      * </ul>
      *
@@ -323,18 +329,17 @@ public class QBarRandomProvider extends RandomProvider implements QBarIterablePr
                             assert p.b != null;
                             return le(p.a, p.b);
                         },
-                        pairs(rationals(meanBitSize))
+                        pairs(rationals(meanBitSize / 2))
                 )
         );   
     }
 
     /**
-     * a pseudorandom {@code Iterable} that generates every {@code Interval} with finite bounds. The lower and upper
-     * bounds' numerators' and denominators' bit size is chosen from a geometric distribution with mean approximately
-     * 64. Does not support removal.
+     * a pseudorandom {@code Iterable} that generates every {@code Interval} with finite bounds. Each
+     * {@code Interval}'s bit sizes (defined as the sum of the lower bound's and upper bound's bit sizes) is chosen
+     * from a geometric distribution with mean approximately 64. Does not support removal.
      *
      * <ul>
-     *  <li>{@code meanBitSize} must be greater than 2.</li>
      *  <li>The result is an infinite pseudorandom sequence of all {@code Interval}s with finite bounds.</li>
      * </ul>
      *
@@ -348,13 +353,13 @@ public class QBarRandomProvider extends RandomProvider implements QBarIterablePr
     }
 
     /**
-     * a pseudorandom {@code Iterable} that generates every {@code Interval}. The lower and upper bounds' numerators'
-     * and denominators' bit size is chosen from a geometric distribution with mean approximately {@code meanBitSize}
-     * (The ratio between the actual mean bit size and {@code meanBitSize} decreases as {@code meanBitSize} increases).
-     * Does not support removal.
+     * a pseudorandom {@code Iterable} that generates every {@code Interval}. Each {@code Interval}'s bit size (defined
+     * as the sum of the lower bound's and upper bound's bit sizes) is chosen from a geometric distribution with mean
+     * approximately {@code meanBitSize} (The ratio between the actual mean bit size and {@code meanBitSize} decreases
+     * as {@code meanBitSize} increases). Does not support removal.
      *
      * <ul>
-     *  <li>{@code meanBitSize} must be greater than 2.</li>
+     *  <li>{@code meanBitSize} must be greater than 11.</li>
      *  <li>The result is an infinite pseudorandom sequence of all {@code Interval}s.</li>
      * </ul>
      *
@@ -381,18 +386,17 @@ public class QBarRandomProvider extends RandomProvider implements QBarIterablePr
                             return !p.a.isPresent() || !p.b.isPresent() || le(p.a.get(), p.b.get());
                         },
                         (Iterable<Pair<Optional<Rational>, Optional<Rational>>>)
-                                pairs(optionals(rationals(meanBitSize)))
+                                pairs(optionals(rationals(meanBitSize / 2)))
                 )
         );  
     }
 
     /**
-     * a pseudorandom {@code Iterable} that generates every {@code Interval}. The lower and upper bounds' numerators'
-     * and denominators' bit size is chosen from a geometric distribution with mean approximately 64. Does not support
-     * removal.
+     * a pseudorandom {@code Iterable} that generates every {@code Interval}. Each {@code Interval}'s bit size (defined
+     * as the sum of the lower bound's and upper bound's bit sizes) is chosen from a geometric distribution with mean
+     * approximately 64. Does not support removal.
      *
      * <ul>
-     *  <li>{@code meanBitSize} must be greater than 2.</li>
      *  <li>The result is an infinite pseudorandom sequence of all {@code Interval}s.</li>
      * </ul>
      *
