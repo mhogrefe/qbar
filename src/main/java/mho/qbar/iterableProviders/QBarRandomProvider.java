@@ -23,24 +23,45 @@ public class QBarRandomProvider extends RandomProvider implements QBarIterablePr
         super(generator);
     }
 
+    public @NotNull Iterable<Rational> range(int meanBitSize, @NotNull Rational a) {
+        return null;
+    }
+
     @Override
     public @NotNull Iterable<Rational> range(@NotNull Rational a) {
+        return range(BIG_INTEGER_MEAN_BIT_SIZE, a);
+    }
+
+    public @NotNull Iterable<Rational> range(int meanBitSize, @NotNull Rational a, @NotNull Rational b) {
         return null;
     }
 
     @Override
     public @NotNull Iterable<Rational> range(@NotNull Rational a, @NotNull Rational b) {
+        return range(BIG_INTEGER_MEAN_BIT_SIZE, a, b);
+    }
+
+    public @NotNull Iterable<Rational> rangeBy(int meanBitSize, @NotNull Rational a, @NotNull Rational i) {
         return null;
     }
 
     @Override
     public @NotNull Iterable<Rational> rangeBy(@NotNull Rational a, @NotNull Rational i) {
+        return rangeBy(BIG_INTEGER_MEAN_BIT_SIZE, a, i);
+    }
+
+    public @NotNull Iterable<Rational> rangeBy(
+            int meanBitSize,
+            @NotNull Rational a,
+            @NotNull Rational i,
+            @NotNull Rational b
+    ) {
         return null;
     }
 
     @Override
     public @NotNull Iterable<Rational> rangeBy(@NotNull Rational a, @NotNull Rational i, @NotNull Rational b) {
-        return null;
+        return rangeBy(BIG_INTEGER_MEAN_BIT_SIZE, a, i, b);
     }
 
     /**
