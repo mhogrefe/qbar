@@ -408,4 +408,33 @@ public class QBarRandomProvider extends RandomProvider implements QBarIterablePr
     public @NotNull Iterable<Interval> intervals() {
         return intervals(BIG_INTEGER_MEAN_BIT_SIZE);
     }
+
+    @Override
+    public @NotNull Iterable<Byte> bytes(@NotNull Interval a) {
+        return null;
+    }
+
+    @Override
+    public @NotNull Iterable<Short> shorts(@NotNull Interval a) {
+        return null;
+    }
+
+    @Override
+    public @NotNull Iterable<Integer> integers(@NotNull Interval a) {
+        return null;
+    }
+
+    @Override
+    public @NotNull Iterable<Long> longs(@NotNull Interval a) {
+        return null;
+    }
+
+    public @NotNull Iterable<BigInteger> bigIntegers(@NotNull Interval a) {
+        return null;
+    }
+
+    @Override
+    public @NotNull Iterable<Rational> rationals(@NotNull Interval a) {
+        return null;
+    }
 }

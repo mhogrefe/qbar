@@ -42,15 +42,15 @@ public final class Interval implements Comparable<Interval> {
     /**
      * The lower bound of this interval if the lower bound is finite, or null if the lower bound is –∞
      */
-    public final @Nullable Rational lower;
+    private final @Nullable Rational lower;
 
     /**
      * The upper bound of this interval if the upper bound is finite, or null if the upper bound is ∞
      */
-    public final @Nullable Rational upper;
+    private final @Nullable Rational upper;
 
     /**
-     * Private constructor from {@code Rational}s; assumes arguments are valid. If lower is null, the
+     * Private constructor from {@link Rational}s; assumes arguments are valid. If lower is null, the
      * {@code Interval}'s lower bound is –∞; if upper is null, the {@code Interval}'s upper bound is ∞.
      *
      * <ul>
@@ -66,6 +66,32 @@ public final class Interval implements Comparable<Interval> {
     private Interval(@Nullable Rational lower, @Nullable Rational upper) {
         this.lower = lower;
         this.upper = upper;
+    }
+
+    /**
+     * Returns this {@code Interval}'s lower bound. If the lower bound is –∞, an empty {@code Optional} is returned.
+     *
+     * <ul>
+     *  <li>The result is non-null.</li>
+     * </ul>
+     *
+     * @return the lower bound
+     */
+    public @NotNull Optional<Rational> getLower() {
+        return lower == null ? Optional.<Rational>empty() : Optional.of(lower);
+    }
+
+    /**
+     * Returns this {@code Interval}'s upper bound. If the lower bound is ∞, an empty {@code Optional} is returned.
+     *
+     * <ul>
+     *  <li>The result is non-null.</li>
+     * </ul>
+     *
+     * @return the upper bound
+     */
+    public @NotNull Optional<Rational> getUpper() {
+        return upper == null ? Optional.<Rational>empty() : Optional.of(upper);
     }
 
     /**
@@ -163,18 +189,19 @@ public final class Interval implements Comparable<Interval> {
     }
 
     /**
-     * Determines the diameter (length) of {@code this}, or null if {@code this} has infinite diameter.
+     * Determines the diameter (length) of {@code this}. If {@code this} has infinite diameter, an empty
+     * {@code Optional} is returned.
      *
      * <ul>
      *  <li>{@code this} may be any {@code Interval}.</li>
-     *  <li>The result may be any non-negative {@code Rational}, or null.</li>
+     *  <li>The result may be null or an {@code Optional} containing a non-negative {@code Rational}.</li>
      * </ul>
      *
-     * @return &#x03bc;({@code this})
+     * @return the diameter of {@code this)
      */
-    public @Nullable Rational diameter() {
-        if (lower == null || upper == null) return null;
-        return Rational.subtract(upper, lower);
+    public @NotNull Optional<Rational> diameter() {
+        if (lower == null || upper == null) return Optional.empty();
+        return Optional.of(Rational.subtract(upper, lower));
     }
 
     /**
@@ -225,7 +252,8 @@ public final class Interval implements Comparable<Interval> {
     }
 
     /**
-     * Returns the intersection of two {@code Interval}s, or null if the intersection is empty.
+     * Returns the intersection of two {@code Interval}s. If the intersection is empty, an empty {@code Optional} is
+     * returned.
      *
      * <ul>
      *  <li>{@code a} cannot be null.</li>
@@ -237,7 +265,7 @@ public final class Interval implements Comparable<Interval> {
      * @param b the second {@code Interval}
      * @return {@code a}∩{@code b}
      */
-    public static @Nullable Interval intersection(@NotNull Interval a, @NotNull Interval b) {
+    public static @NotNull Optional<Interval> intersection(@NotNull Interval a, @NotNull Interval b) {
         Rational lower;
         if (a.lower == null && b.lower == null) {
             lower = null;
@@ -258,8 +286,8 @@ public final class Interval implements Comparable<Interval> {
         } else {
             upper = min(a.upper, b.upper);
         }
-        if (lower != null && upper != null && gt(lower, upper)) return null;
-        return new Interval(lower, upper);
+        if (lower != null && upper != null && gt(lower, upper)) return Optional.empty();
+        return Optional.of(new Interval(lower, upper));
     }
 
     /**
