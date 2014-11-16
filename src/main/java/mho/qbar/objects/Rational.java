@@ -1225,6 +1225,7 @@ public final class Rational implements Comparable<Rational> {
      * @return {@code this}, in {@code BigDecimal} form
      */
     public @NotNull BigDecimal toBigDecimal() {
+        //noinspection BigDecimalMethodWithoutRoundingCalled
         return new BigDecimal(numerator).divide(new BigDecimal(denominator));
     }
 
@@ -1462,6 +1463,7 @@ public final class Rational implements Comparable<Rational> {
         if (positionalNotation.c.equals(Arrays.asList(BigInteger.ZERO))) {
             afterDecimal = positionalNotation.b;
         } else {
+            assert positionalNotation.b != null;
             afterDecimal = concat(positionalNotation.b, cycle(positionalNotation.c));
         }
         return new Pair<>(positionalNotation.a, afterDecimal);
