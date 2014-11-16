@@ -153,7 +153,7 @@ public final class Interval implements Comparable<Interval> {
      * </ul>
      *
      * @param x the test {@code Rational}
-     * @return {@code x}&#x2208;{@code this}
+     * @return {@code x}∈{@code this}
      */
     public boolean contains(@NotNull Rational x) {
         if (lower == null && upper == null) return true;
@@ -448,15 +448,14 @@ public final class Interval implements Comparable<Interval> {
         return new Interval(lower, upper);
     }
 
-    //todo finish fixing JavaDoc
     /**
      * Returns an {@code Interval} representing all real numbers that round to a specified {@link BigDecimal} (taking
      * precision into account).
      *
      * <ul>
      *  <li>{@code bd} cannot be null.</li>
-     *  <li>The result is an interval of the form [a&#x00D7;10<sup>b</sup>–5&#x00D7;10<sup>c</sup>,
-     *  a&#x00D7;10<sup>b</sup>+5&#x00D7;10<sup>c</sup>], where a, b, and c are integers and c&lt;b.</li>
+     *  <li>The result is an interval of the form [a×10<sup>b</sup>–5×10<sup>c</sup>,
+     *  a×10<sup>b</sup>+5×10<sup>c</sup>], where a, b, and c are integers and c{@literal <}b.</li>
      * </ul>
      *
      * @param bd a {@code BigDecimal}
@@ -469,9 +468,8 @@ public final class Interval implements Comparable<Interval> {
     }
 
     /**
-     * Returns a pair of {@code float}s x, y such that [x, y] is the smallest interval with {@code float} bounds
-     * which contains {@code this}. x or y may be infinite if {@code this}'s bounds are infinite or very large in
-     * magnitude.
+     * Returns a pair of {@code float}s x, y such that [x, y] is the smallest interval with {@code float} bounds which
+     * contains {@code this}. x or y may be infinite if {@code this}'s bounds are infinite or very large in magnitude.
      *
      * <ul>
      *  <li>{@code this} may be any {@code Interval}.</li>
@@ -514,7 +512,7 @@ public final class Interval implements Comparable<Interval> {
      *  <li>{@code precision} must be non-negative.</li>
      *  <li>If {@code precision} is 0, both bounds of {@code this} must have a terminating decimal expansion.</li>
      *  <li>The result is either a pair in which at least one {@code BigDecimal} x has minimal scale (that is, the
-     *  scale is the smallest non-negative n such that x&#x00D7;10<sup>n</sup> is an integer), or a pair in which each
+     *  scale is the smallest non-negative n such that x×10<sup>n</sup> is an integer), or a pair in which each
      *  {@code BigDecimal} has the same number of significant figures.</li>
      * </ul>
      *
@@ -532,7 +530,7 @@ public final class Interval implements Comparable<Interval> {
     }
 
     /**
-     * Returns the smallest interval a such that if x&#x2208;{@code this}, –x&#x2208;a.
+     * Returns the smallest interval a such that if x∈{@code this}, –x∈a.
      *
      * <ul>
      *  <li>{@code this} may be any {@code Interval}.</li>
@@ -549,7 +547,7 @@ public final class Interval implements Comparable<Interval> {
     }
 
     /**
-     * Returns the smallest interval z such that if a&#x2208;{@code x} and b&#x2208;{@code y}, a+b&#x2208;z.
+     * Returns the smallest interval z such that if a∈{@code x} and b∈{@code y}, a+b∈z.
      *
      * <ul>
      *  <li>{@code x} cannot be null.</li>
@@ -568,7 +566,7 @@ public final class Interval implements Comparable<Interval> {
     }
 
     /**
-     * Returns the smallest interval z such that if a&#x2208;{@code x} and b&#x2208;{@code y}, a–b&#x2208;z.
+     * Returns the smallest interval z such that if a∈{@code x} and b∈{@code y}, a–b∈z.
      *
      * <ul>
      *  <li>{@code x} cannot be null.</li>
@@ -585,7 +583,7 @@ public final class Interval implements Comparable<Interval> {
     }
 
     /**
-     * Returns the smallest interval z such that if a&#x2208;{@code x} and b&#x2208;{@code y}, a&#x00D7;b&#x2208;z.
+     * Returns the smallest interval z such that if a∈{@code x} and b∈{@code y}, a×b∈z.
      *
      * <ul>
      *  <li>{@code x} cannot be null.</li>
@@ -595,7 +593,7 @@ public final class Interval implements Comparable<Interval> {
      *
      * @param x the first {@code Interval}
      * @param y the second {@code Interval}
-     * @return {@code x}&#x00D7;{@code y}
+     * @return {@code x}×{@code y}
      */
     public static @NotNull Interval multiply(@NotNull Interval x, @NotNull Interval y) {
         if ((x.lower == Rational.ZERO && x.upper == Rational.ZERO)
@@ -696,7 +694,7 @@ public final class Interval implements Comparable<Interval> {
      * <ul>
      *  <li>{@code this} may be any {@code Interval}.</li>
      *  <li>{@code that} may be any {@code Object}.</li>
-     *  <li>The result may be either boolean.</li>
+     *  <li>The result may be either {@code boolean}.</li>
      * </ul>
      *
      * @param that The {@code Interval} to be compared with {@code this}
@@ -715,6 +713,7 @@ public final class Interval implements Comparable<Interval> {
      * Calculates the hash code of {@code this}.
      *
      * <ul>
+     *  <li>@{code this} may be any {@code Interval}.</li>
      *  <li>(conjecture) The result may be any {@code int}.</li>
      * </ul>
      *
@@ -728,9 +727,9 @@ public final class Interval implements Comparable<Interval> {
     }
 
     /**
-     * Compares {@code this} to {@code that}, returning 1, –1, or 0 if the answer is "greater than", "less
-     * than", or "equal to", respectively. {@code Interval}s are ordered on their lower bound, then on their upper
-     * bound; –∞ and ∞ behave as expected.
+     * Compares {@code this} to {@code that}, returning 1, –1, or 0 if the answer is "greater than", "less than", or
+     * "equal to", respectively. {@code Interval}s are ordered on their lower bound, then on their upper bound; –∞ and
+     * ∞ behave as expected.
      *
      * <ul>
      *  <li>{@code this} may be any {@code Interval}.</li>
@@ -752,6 +751,7 @@ public final class Interval implements Comparable<Interval> {
         return upper == null ? 0 : upper.compareTo(that.upper);
     }
 
+    //todo mention that illegal Rational Strings can't be present
     /**
      * Creates an {@code Interval} from a {@code String}. Valid strings are in one of these four forms:
      * {@code "(-Infinity, Infinity)"}, {@code "(-Infinity, " + q.toString() + "]"},
@@ -759,14 +759,13 @@ public final class Interval implements Comparable<Interval> {
      * {@code p} and {@code q} are {@code Rational}s.
      *
      * <ul>
-     *  <li>{@code s} cannot be null and cannot be of the form
-     *  {@code "[" + p.toString() + ", " + q.toString() + "]"}, where {@code p} and {@code q} are {@code Rational}s
-     *  such that {@code a} is greater than {@code b}.</li> <li>The result may be any {@code Interval}, or
-     *  null.</li>
+     *  <li>{@code s} cannot be null and cannot be of the form {@code "[" + p.toString() + ", " + q.toString() + "]"},
+     *  where {@code p} and {@code q} are {@code Rational}s such that {@code a} is greater than {@code b}.</li>
+     *  <li>The result may be any {@code Optional<Interval>}, or null.</li>
      * </ul>
      *
      * @param s a string representation of a {@code Rational}.
-     * @return the {@code Rational} represented by {@code s}, or null if {@code s} is invalid.
+     * @return the wrapped {@code Rational} represented by {@code s}, or {@code empty} if {@code s} is invalid.
      */
     public static @NotNull Optional<Interval> read(@NotNull String s) {
         if (s.isEmpty()) return Optional.empty();
@@ -816,32 +815,4 @@ public final class Interval implements Comparable<Interval> {
     public @NotNull String toString() {
         return (lower == null ? "(-Infinity" : "[" + lower) + ", " + (upper == null ? "Infinity)" : upper + "]");
     }
-
-//    public Generator<Rational> rationals() {
-//        if (lower == null && upper == null) {
-//            return Rational.rationals();
-//        }
-//        if (lower == null) {
-//            return Rational.nonnegativeRationals().map(
-//                    r -> Rational.subtract(upper, r),
-//                    r -> Rational.subtract(upper, r),
-//                    this::contains
-//            );
-//        }
-//        if (upper == null) {
-//            return Rational.nonnegativeRationals().map(
-//                    r -> Rational.add(r, upper),
-//                    r -> Rational.subtract(r, upper),
-//                    this::contains
-//            );
-//        }
-//        if (lower.equals(upper)) {
-//            return Generator.single(lower);
-//        }
-//        return Generator.cat(Generator.single(upper), Rational.nonnegativeRationalsLessThanOne().map(
-//                r -> Rational.add(Rational.multiply(r, diameter()), lower),
-//                r -> Rational.divide(Rational.subtract(r, lower), diameter()),
-//                this::contains
-//        ));
-//    }
 }

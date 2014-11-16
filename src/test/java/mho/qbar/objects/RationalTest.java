@@ -2164,8 +2164,8 @@ public class RationalTest {
 
     @Test
     public void testCompareTo() {
-        aeq(ZERO.compareTo(ZERO), 0);
-        aeq(ONE.compareTo(ONE), 0);
+        assertTrue(eq(ZERO, ZERO));
+        assertTrue(eq(ONE, ONE));
         assertTrue(eq(read("4").get(), read("4").get()));
         assertTrue(eq(read("-4").get(), read("-4").get()));
         assertTrue(eq(read("5/12").get(), read("5/12").get()));

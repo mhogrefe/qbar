@@ -24,7 +24,7 @@ import static mho.wheels.iterables.IterableUtils.*;
 import static mho.qbar.objects.Rational.*;
 
 public class RationalDemos {
-    private static final boolean USE_RANDOM = true;
+    private static final boolean USE_RANDOM = false;
     private static final String NECESSARY_CHARS = "-/0123456789";
     private static int LIMIT;
 
@@ -539,7 +539,7 @@ public class RationalDemos {
     }
 
     private static boolean goodReadArgument(@NotNull String s) {
-        return s.length() < 2 || !s.endsWith("/0") ||
+        return s.length() < 2 || isSuffixOf(s, "/0") ||
                 !Numbers.readBigInteger(s.substring(0, s.length() - 2)).isPresent();
     }
 
