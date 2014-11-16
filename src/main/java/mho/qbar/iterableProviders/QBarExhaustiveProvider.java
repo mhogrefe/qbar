@@ -3,11 +3,13 @@ package mho.qbar.iterableProviders;
 import mho.wheels.iterables.ExhaustiveProvider;
 import mho.qbar.objects.Interval;
 import mho.qbar.objects.Rational;
+import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Optional;
 
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.iterables.IterableUtils.filter;
@@ -17,7 +19,7 @@ import static mho.wheels.ordering.Ordering.gt;
 import static mho.wheels.ordering.Ordering.lt;
 
 public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIterableProvider {
-    public static final QBarExhaustiveProvider INSTANCE = new QBarExhaustiveProvider();
+    public static final @NotNull QBarExhaustiveProvider INSTANCE = new QBarExhaustiveProvider();
 
     protected QBarExhaustiveProvider() {
         super();
@@ -237,11 +239,14 @@ public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIt
             assert p.a != null;
             assert p.b != null;
             return Interval.of(p.a, p.b);
-        }, filter(p -> le(p.a, p.b), pairs(rationals())));
+        }, filter(p -> {
+            assert p.a != null;
+            return le(p.a, p.b);
+        }, pairs(rationals())));
     }
 
     /**
-     * an {@code Iterable} that contains every {@link mho.qbar.objects.Interval}. Does not support removal.
+     * an {@code Iterable} that contains every {@code Interval}. Does not support removal.
      *
      * Length is infinite
      */
@@ -262,7 +267,7 @@ public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIt
                             assert p.b != null;
                             return !p.a.isPresent() || !p.b.isPresent() || le(p.a.get(), p.b.get());
                         },
-                        pairs(optionals(rationals()))
+                        (Iterable<Pair<Optional<Rational>, Optional<Rational>>>) pairs(optionals(rationals()))
                 )
         );
     }
