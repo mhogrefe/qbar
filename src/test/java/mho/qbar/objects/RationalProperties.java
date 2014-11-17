@@ -2,7 +2,7 @@ package mho.qbar.objects;
 
 import mho.wheels.iterables.RandomProvider;
 import mho.wheels.math.MathUtils;
-import mho.wheels.numbers.Numbers;
+import mho.wheels.misc.Readers;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
@@ -1168,7 +1168,7 @@ public class RationalProperties {
 
     private static boolean goodReadArgument(@NotNull String s) {
         return s.length() < 2 || !s.endsWith("/0") ||
-                !Numbers.readBigInteger(s.substring(0, s.length() - 2)).isPresent();
+                !Readers.readBigInteger(s.substring(0, s.length() - 2)).isPresent();
     }
 
     public static void propertiesRead() {
@@ -1201,12 +1201,12 @@ public class RationalProperties {
             int slashIndex = s.indexOf('/');
             String left = s.substring(0, slashIndex);
             String right = s.substring(slashIndex + 1);
-            assertTrue(s, Numbers.readBigInteger(left).isPresent());
-            assertTrue(s, Numbers.readBigInteger(right).isPresent());
+            assertTrue(s, Readers.readBigInteger(left).isPresent());
+            assertTrue(s, Readers.readBigInteger(right).isPresent());
         }
 
         for (String s : take(LIMIT, slashPartition.b)) {
-            assertTrue(s, Numbers.readBigInteger(s).isPresent());
+            assertTrue(s, Readers.readBigInteger(s).isPresent());
         }
     }
 

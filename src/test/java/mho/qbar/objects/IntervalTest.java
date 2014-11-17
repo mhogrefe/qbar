@@ -93,13 +93,13 @@ public class IntervalTest {
 
     @Test
     public void testDiameter() {
-        aeq(ZERO.diameter(), "0");
-        aeq(ONE.diameter(), "0");
-        assertNull(ALL.diameter());
-        aeq(read("[-2, 5/3]").get().diameter(), "11/3");
-        aeq(read("[4, 4]").get().diameter(), "0");
-        assertNull(read("(-Infinity, 3/2]").get().diameter());
-        assertNull(read("[-6, Infinity)").get().diameter());
+        aeq(ZERO.diameter().get(), "0");
+        aeq(ONE.diameter().get(), "0");
+        assertFalse(ALL.diameter().isPresent());
+        aeq(read("[-2, 5/3]").get().diameter().get(), "11/3");
+        aeq(read("[4, 4]").get().diameter().get(), "0");
+        assertFalse(read("(-Infinity, 3/2]").get().diameter().isPresent());
+        assertFalse(read("[-6, Infinity)").get().diameter().isPresent());
     }
 
     @Test

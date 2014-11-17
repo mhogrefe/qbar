@@ -3,7 +3,7 @@ package mho.qbar.objects;
 import mho.qbar.iterableProviders.QBarExhaustiveProvider;
 import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.iterableProviders.QBarRandomProvider;
-import mho.wheels.numbers.Numbers;
+import mho.wheels.misc.Readers;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
@@ -247,7 +247,7 @@ public class IntervalDemos {
 
     private static boolean goodRationalReadArgument(@NotNull String s) {
         return s.length() < 2 || isSuffixOf(s, "/0") ||
-                !Numbers.readBigInteger(s.substring(0, s.length() - 2)).isPresent();
+                !Readers.readBigInteger(s.substring(0, s.length() - 2)).isPresent();
     }
 
     private static boolean goodReadArgument(@NotNull String s) {
