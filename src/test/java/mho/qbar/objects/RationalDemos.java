@@ -1,23 +1,19 @@
 package mho.qbar.objects;
 
 import mho.wheels.iterables.ExhaustiveProvider;
-import mho.wheels.iterables.IterableProvider;
 import mho.wheels.iterables.RandomProvider;
-import mho.wheels.math.Combinatorics;
-import mho.wheels.numbers.Numbers;
+import mho.wheels.misc.Readers;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
 import mho.qbar.iterableProviders.QBarExhaustiveProvider;
 import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.iterableProviders.QBarRandomProvider;
-import mho.qbar.objects.Rational;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
-import java.util.Optional;
 import java.util.Random;
 
 import static mho.wheels.iterables.IterableUtils.*;
@@ -540,7 +536,7 @@ public class RationalDemos {
 
     private static boolean goodReadArgument(@NotNull String s) {
         return s.length() < 2 || isSuffixOf(s, "/0") ||
-                !Numbers.readBigInteger(s.substring(0, s.length() - 2)).isPresent();
+                !Readers.readBigInteger(s.substring(0, s.length() - 2)).isPresent();
     }
 
     public static void demoRead() {

@@ -1,6 +1,6 @@
 package mho.qbar.objects;
 
-import mho.wheels.numbers.Numbers;
+import mho.wheels.misc.FloatUtils;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -421,11 +421,11 @@ public final class Interval implements Comparable<Interval> {
             }
         }
         Rational r = Rational.of(f);
-        float predecessor = Numbers.predecessor(f);
+        float predecessor = FloatUtils.predecessor(f);
         Rational lower = predecessor == Float.NEGATIVE_INFINITY ?
                 null :
                 Rational.add(r, Rational.of(predecessor)).shiftRight(1);
-        float successor = Numbers.successor(f);
+        float successor = FloatUtils.successor(f);
         Rational upper = successor == Float.POSITIVE_INFINITY ?
                 null :
                 Rational.add(r, Rational.of(successor)).shiftRight(1);
@@ -465,11 +465,11 @@ public final class Interval implements Comparable<Interval> {
             }
         }
         Rational r = Rational.of(d);
-        double predecessor = Numbers.predecessor(d);
+        double predecessor = FloatUtils.predecessor(d);
         Rational lower = predecessor == Double.NEGATIVE_INFINITY ?
                 null :
                 Rational.add(r, Rational.of(predecessor)).shiftRight(1);
-        double successor = Numbers.successor(d);
+        double successor = FloatUtils.successor(d);
         Rational upper = predecessor == Double.POSITIVE_INFINITY ?
                 null :
                 Rational.add(r, Rational.of(successor)).shiftRight(1);

@@ -1,19 +1,13 @@
 package mho.qbar.objects;
 
 import mho.wheels.iterables.IterableUtils;
-import mho.wheels.iterables.RandomProvider;
-import mho.wheels.numbers.Numbers;
-import mho.qbar.objects.Rational;
-import org.jetbrains.annotations.NotNull;
-import org.junit.Before;
+import mho.wheels.misc.FloatUtils;
 import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
-import java.util.Random;
 
-import static mho.wheels.iterables.IterableUtils.take;
 import static mho.wheels.ordering.Ordering.*;
 import static mho.qbar.objects.Rational.*;
 import static org.junit.Assert.*;
@@ -791,11 +785,11 @@ public class RationalTest {
         aeq(floatPi.toFloat(), 3.1415927);
         Rational trillion = of(BigInteger.TEN.pow(12));
         aeq(trillion.toFloat(), 1.0E12);
-        Rational piSuccessor = of(Numbers.successor((float) Math.PI));
+        Rational piSuccessor = of(FloatUtils.successor((float) Math.PI));
         if (piSuccessor == null) {
             fail();
         }
-        Rational piPredecessor = of(Numbers.predecessor((float) Math.PI));
+        Rational piPredecessor = of(FloatUtils.predecessor((float) Math.PI));
         if (piPredecessor == null) {
             fail();
         }
@@ -811,11 +805,11 @@ public class RationalTest {
         if (subnormal == null) {
             fail();
         }
-        Rational subnormalSuccessor = of(Numbers.successor(1e-40f));
+        Rational subnormalSuccessor = of(FloatUtils.successor(1e-40f));
         if (subnormalSuccessor == null) {
             fail();
         }
-        Rational subnormalPredecessor = of(Numbers.predecessor(1e-40f));
+        Rational subnormalPredecessor = of(FloatUtils.predecessor(1e-40f));
         if (subnormalPredecessor == null) {
             fail();
         }
@@ -829,7 +823,7 @@ public class RationalTest {
         aeq(justAboveSubnormal.toFloat(), 1.0E-40);
         aeq(justBelowSubnormal.toFloat(), 1.0E-40);
         Rational belowNegativeMax = subtract(LARGEST_FLOAT.negate(), ONE);
-        Rational negativeMaxSuccessor = of(Numbers.successor(-Float.MAX_VALUE));
+        Rational negativeMaxSuccessor = of(FloatUtils.successor(-Float.MAX_VALUE));
         if (negativeMaxSuccessor == null) {
             fail();
         }
@@ -842,7 +836,7 @@ public class RationalTest {
         aeq(halfAboveNegativeMax.toFloat(), -3.4028233E38);
         aeq(justAboveNegativeMax.toFloat(), -3.4028235E38);
         Rational aboveMax = add(LARGEST_FLOAT, ONE);
-        Rational maxPredecessor = of(Numbers.predecessor(Float.MAX_VALUE));
+        Rational maxPredecessor = of(FloatUtils.predecessor(Float.MAX_VALUE));
         if (maxPredecessor == null) {
             fail();
         }
@@ -958,11 +952,11 @@ public class RationalTest {
             trillion.toFloat(RoundingMode.UNNECESSARY);
             fail();
         } catch (ArithmeticException ignored) {}
-        Rational piSuccessor = of(Numbers.successor((float) Math.PI));
+        Rational piSuccessor = of(FloatUtils.successor((float) Math.PI));
         if (piSuccessor == null) {
             fail();
         }
-        Rational piPredecessor = of(Numbers.predecessor((float) Math.PI));
+        Rational piPredecessor = of(FloatUtils.predecessor((float) Math.PI));
         if (piPredecessor == null) {
             fail();
         }
@@ -1018,11 +1012,11 @@ public class RationalTest {
         if (subnormal == null) {
             fail();
         }
-        Rational subnormalSuccessor = of(Numbers.successor(1e-40f));
+        Rational subnormalSuccessor = of(FloatUtils.successor(1e-40f));
         if (subnormalSuccessor == null) {
             fail();
         }
-        Rational subnormalPredecessor = of(Numbers.predecessor(1e-40f));
+        Rational subnormalPredecessor = of(FloatUtils.predecessor(1e-40f));
         if (subnormalPredecessor == null) {
             fail();
         }
@@ -1083,7 +1077,7 @@ public class RationalTest {
             fail();
         } catch (ArithmeticException ignored) {}
         Rational belowNegativeMax = subtract(LARGEST_FLOAT.negate(), ONE);
-        Rational negativeMaxSuccessor = of(Numbers.successor(-Float.MAX_VALUE));
+        Rational negativeMaxSuccessor = of(FloatUtils.successor(-Float.MAX_VALUE));
         if (negativeMaxSuccessor == null) {
             fail();
         }
@@ -1126,7 +1120,7 @@ public class RationalTest {
             fail();
         } catch (ArithmeticException ignored) {}
         Rational aboveMax = add(LARGEST_FLOAT, ONE);
-        Rational maxPredecessor = of(Numbers.predecessor(Float.MAX_VALUE));
+        Rational maxPredecessor = of(FloatUtils.predecessor(Float.MAX_VALUE));
         if (maxPredecessor == null) {
             fail();
         }
@@ -1294,11 +1288,11 @@ public class RationalTest {
         aeq(pi.toDouble(), 3.141592653589793);
         Rational googol = of(BigInteger.TEN.pow(100));
         aeq(googol.toDouble(), 1.0E100);
-        Rational piSuccessor = of(Numbers.successor(Math.PI));
+        Rational piSuccessor = of(FloatUtils.successor(Math.PI));
         if (piSuccessor == null) {
             fail();
         }
-        Rational piPredecessor = of(Numbers.predecessor(Math.PI));
+        Rational piPredecessor = of(FloatUtils.predecessor(Math.PI));
         if (piPredecessor == null) {
             fail();
         }
@@ -1314,11 +1308,11 @@ public class RationalTest {
         if (subnormal == null) {
             fail();
         }
-        Rational subnormalSuccessor = of(Numbers.successor(1e-310));
+        Rational subnormalSuccessor = of(FloatUtils.successor(1e-310));
         if (subnormalSuccessor == null) {
             fail();
         }
-        Rational subnormalPredecessor = of(Numbers.predecessor(1e-310));
+        Rational subnormalPredecessor = of(FloatUtils.predecessor(1e-310));
         if (subnormalPredecessor == null) {
             fail();
         }
@@ -1332,7 +1326,7 @@ public class RationalTest {
         aeq(justAboveSubnormal.toDouble(), 1.0E-310);
         aeq(justBelowSubnormal.toDouble(), 1.0E-310);
         Rational belowNegativeMax = subtract(LARGEST_DOUBLE.negate(), ONE);
-        Rational negativeMaxSuccessor = of(Numbers.successor(-Double.MAX_VALUE));
+        Rational negativeMaxSuccessor = of(FloatUtils.successor(-Double.MAX_VALUE));
         if (negativeMaxSuccessor == null) {
             fail();
         }
@@ -1345,7 +1339,7 @@ public class RationalTest {
         aeq(halfAboveNegativeMax.toDouble(), -1.7976931348623155E308);
         aeq(justAboveNegativeMax.toDouble(), -1.7976931348623157E308);
         Rational aboveMax = add(LARGEST_DOUBLE, ONE);
-        Rational maxPredecessor = of(Numbers.predecessor(Double.MAX_VALUE));
+        Rational maxPredecessor = of(FloatUtils.predecessor(Double.MAX_VALUE));
         if (maxPredecessor == null) {
             fail();
         }
@@ -1461,11 +1455,11 @@ public class RationalTest {
             googol.toDouble(RoundingMode.UNNECESSARY);
             fail();
         } catch (ArithmeticException ignored) {}
-        Rational piSuccessor = of(Numbers.successor(Math.PI));
+        Rational piSuccessor = of(FloatUtils.successor(Math.PI));
         if (piSuccessor == null) {
             fail();
         }
-        Rational piPredecessor = of(Numbers.predecessor(Math.PI));
+        Rational piPredecessor = of(FloatUtils.predecessor(Math.PI));
         if (piPredecessor == null) {
             fail();
         }
@@ -1521,11 +1515,11 @@ public class RationalTest {
         if (subnormal == null) {
             fail();
         }
-        Rational subnormalSuccessor = of(Numbers.successor(1e-310));
+        Rational subnormalSuccessor = of(FloatUtils.successor(1e-310));
         if (subnormalSuccessor == null) {
             fail();
         }
-        Rational subnormalPredecessor = of(Numbers.predecessor(1e-310));
+        Rational subnormalPredecessor = of(FloatUtils.predecessor(1e-310));
         if (subnormalPredecessor == null) {
             fail();
         }
@@ -1586,7 +1580,7 @@ public class RationalTest {
             fail();
         } catch (ArithmeticException ignored) {}
         Rational belowNegativeMax = subtract(LARGEST_DOUBLE.negate(), ONE);
-        Rational negativeMaxSuccessor = of(Numbers.successor(-Double.MAX_VALUE));
+        Rational negativeMaxSuccessor = of(FloatUtils.successor(-Double.MAX_VALUE));
         if (negativeMaxSuccessor == null) {
             fail();
         }
@@ -1629,7 +1623,7 @@ public class RationalTest {
             fail();
         } catch (ArithmeticException ignored) {}
         Rational aboveMax = add(LARGEST_DOUBLE, ONE);
-        Rational maxPredecessor = of(Numbers.predecessor(Double.MAX_VALUE));
+        Rational maxPredecessor = of(FloatUtils.predecessor(Double.MAX_VALUE));
         if (maxPredecessor == null) {
             fail();
         }

@@ -1,7 +1,8 @@
 package mho.qbar.objects;
 
 import mho.wheels.math.MathUtils;
-import mho.wheels.numbers.Numbers;
+import mho.wheels.misc.FloatUtils;
+import mho.wheels.misc.Readers;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
@@ -872,7 +873,7 @@ public final class Rational implements Comparable<Rational> {
             adjustedExponent = exponent + 127;
         }
         float loFloat = Float.intBitsToFloat((adjustedExponent << 23) + fraction.floor().intValueExact());
-        float hiFloat = fraction.denominator.equals(BigInteger.ONE) ? loFloat : Numbers.successor(loFloat);
+        float hiFloat = fraction.denominator.equals(BigInteger.ONE) ? loFloat : FloatUtils.successor(loFloat);
         return new Pair<>(loFloat, hiFloat);
     }
 
@@ -919,7 +920,7 @@ public final class Rational implements Comparable<Rational> {
             adjustedExponent = exponent + 1023;
         }
         double loDouble = Double.longBitsToDouble(((long) adjustedExponent << 52) + fraction.floor().longValue());
-        double hiDouble = fraction.denominator.equals(BigInteger.ONE) ? loDouble : Numbers.successor(loDouble);
+        double hiDouble = fraction.denominator.equals(BigInteger.ONE) ? loDouble : FloatUtils.successor(loDouble);
         return new Pair<>(loDouble, hiDouble);
     }
 
@@ -1535,19 +1536,19 @@ public final class Rational implements Comparable<Rational> {
      *  <li>The result may contain any {@code Rational}, or be empty.</li>
      * </ul>
      *
-     * @param s a string representation of a {@code Rational}.
-     * @return the {@code Rational} represented by {@code s}, or null if {@code s} is invalid.
+     * @param s a string representation of a {@code Rational}
+     * @return the {@code Rational} represented by {@code s}, or an empty {@code Optional} if {@code s} is invalid
      */
     public static @NotNull Optional<Rational> read(@NotNull String s) {
         if (s.isEmpty()) return Optional.empty();
         int slashIndex = s.indexOf("/");
         if (slashIndex == -1) {
-            Optional<BigInteger> n = Numbers.readBigInteger(s);
+            Optional<BigInteger> n = Readers.readBigInteger(s);
             return n.map(Rational::of);
         } else {
-            Optional<BigInteger> numerator = Numbers.readBigInteger(s.substring(0, slashIndex));
+            Optional<BigInteger> numerator = Readers.readBigInteger(s.substring(0, slashIndex));
             if (!numerator.isPresent()) return Optional.empty();
-            Optional<BigInteger> denominator = Numbers.readBigInteger(s.substring(slashIndex + 1));
+            Optional<BigInteger> denominator = Readers.readBigInteger(s.substring(slashIndex + 1));
             if (!denominator.isPresent()) return Optional.empty();
             return Optional.of(of(numerator.get(), denominator.get()));
         }
@@ -1563,7 +1564,7 @@ public final class Rational implements Comparable<Rational> {
      *  positive and {@code a} and {@code b} have no positive common factors greater than 1.</li>
      * </ul>
      *
-     * @return a string representation of {@code this}.
+     * @return a string representation of {@code this}
      */
     public @NotNull String toString() {
         if (denominator.equals(BigInteger.ONE)) {
