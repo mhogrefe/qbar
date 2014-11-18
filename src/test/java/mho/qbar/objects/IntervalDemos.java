@@ -3,12 +3,9 @@ package mho.qbar.objects;
 import mho.qbar.iterableProviders.QBarExhaustiveProvider;
 import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.iterableProviders.QBarRandomProvider;
-import mho.wheels.misc.Readers;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
-import org.jetbrains.annotations.NotNull;
 
-import java.util.Optional;
 import java.util.Random;
 
 import static mho.qbar.objects.Interval.*;
@@ -245,33 +242,9 @@ public class IntervalDemos {
         }
     }
 
-    private static boolean goodRationalReadArgument(@NotNull String s) {
-        return s.length() < 2 || isSuffixOf(s, "/0") ||
-                !Readers.readBigInteger(s.substring(0, s.length() - 2)).isPresent();
-    }
-
-    private static boolean goodReadArgument(@NotNull String s) {
-        if (s.length() < 2 || head(s) != '[' || last(s) != ']') return true;
-        s = init(tail(s));
-        int commaIndex = s.indexOf(", ");
-        if (commaIndex == -1) return true;
-        String aString = s.substring(1, commaIndex);
-        String bString = s.substring(commaIndex + 2);
-        if (!goodRationalReadArgument(aString)) return false;
-        Optional<Rational> oa = Rational.read(aString);
-        if (!oa.isPresent()) return true;
-        Rational a = oa.get();
-        if (!goodRationalReadArgument(bString)) return false;
-        Optional<Rational> ba = Rational.read(bString);
-        if (!ba.isPresent()) return true;
-        Rational b = ba.get();
-        return le(a, b);
-    }
-
     public static void demoRead() {
         initialize();
-        Iterable<String> ss = filter(IntervalDemos::goodReadArgument, P.strings());
-        for (String s : take(LIMIT, ss)) {
+        for (String s : take(LIMIT, P.strings())) {
             System.out.println("read(" + s + ") = " + read(s));
         }
     }
@@ -284,8 +257,7 @@ public class IntervalDemos {
         } else {
             cs = ((QBarRandomProvider) P).uniformSample(NECESSARY_CHARS);
         }
-        Iterable<String> ss = filter(IntervalDemos::goodReadArgument, P.strings(cs));
-        for (String s : take(LIMIT, ss)) {
+        for (String s : take(LIMIT, P.strings(cs))) {
             System.out.println("read(" + s + ") = " + read(s));
         }
     }
