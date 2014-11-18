@@ -2208,10 +2208,7 @@ public class RationalTest {
         aeq(read("12/-6").get(), Rational.of(-2));
         aeq(read("6/8").get(), Rational.of(3, 4));
         aeq(read("-4/1").get(), Rational.of(-4));
-        try {
-            read("2/0");
-            fail();
-        } catch (ArithmeticException ignored) {}
+        assertFalse(read("2/0").isPresent());
         assertFalse(read("").isPresent());
         assertFalse(read(" ").isPresent());
         assertFalse(read("1 ").isPresent());

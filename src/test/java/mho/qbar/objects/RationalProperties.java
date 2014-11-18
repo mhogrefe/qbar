@@ -1166,21 +1166,12 @@ public class RationalProperties {
         }
     }
 
-    private static boolean goodReadArgument(@NotNull String s) {
-        return s.length() < 2 || !s.endsWith("/0") ||
-                !Readers.readBigInteger(s.substring(0, s.length() - 2)).isPresent();
-    }
-
     public static void propertiesRead() {
         initialize();
         System.out.println("testing read(String) properties...");
 
-        for (String s : take(LIMIT, filter(RationalProperties::goodReadArgument, P.strings()))) {
+        for (String s : take(LIMIT, P.strings())) {
             read(s);
-        }
-
-        for (Rational r : take(LIMIT, P.rationals())) {
-            assertEquals(r.toString(), read(r.toString()).get(), r);
         }
 
         Iterable<Character> cs;
@@ -1189,9 +1180,10 @@ public class RationalProperties {
         } else {
             cs = ((QBarRandomProvider) P).uniformSample(NECESSARY_CHARS);
         }
-        Iterable<String> ss = filter(s -> goodReadArgument(s) && read(s).isPresent(), P.strings(cs));
+        Iterable<String> ss = filter(s -> read(s).isPresent(), P.strings(cs));
         for (String s : take(LIMIT, ss)) {
-            assertFalse(s, s.isEmpty());
+            Optional<Rational> or = read(s);
+            validate(or.get());
         }
 
         Pair<Iterable<String>, Iterable<String>> slashPartition = partition(s -> s.contains("/"), ss);

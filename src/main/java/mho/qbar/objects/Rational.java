@@ -1526,13 +1526,12 @@ public final class Rational implements Comparable<Rational> {
 
     /**
      * Creates a {@code Rational} from a {@code String}. Valid strings are of the form {@code a.toString()} or
-     * {@code a.toString() + "/" + b.toString()}, where {@code a} and {@code b} are some {@code BigInteger}s. If
-     * the {@code String} is invalid, the method returns Optional.empty() without throwing an exception; this aids
-     * composability.
+     * {@code a.toString() + "/" + b.toString()}, where {@code a} and {@code b} are some {@code BigInteger}s and
+     * {@code b}≠0. If the {@code String} is invalid, the method returns Optional.empty() without throwing an
+     * exception; this aids composability.
      *
      * <ul>
-     *  <li>{@code s} cannot be null and cannot be of the form {@code n.toString() + "/0"}, where {@code n} is some
-     *  {@code BigInteger}.</li>
+     *  <li>{@code s} must be non-null.</li>
      *  <li>The result may contain any {@code Rational}, or be empty.</li>
      * </ul>
      *
@@ -1549,7 +1548,7 @@ public final class Rational implements Comparable<Rational> {
             Optional<BigInteger> numerator = Readers.readBigInteger(s.substring(0, slashIndex));
             if (!numerator.isPresent()) return Optional.empty();
             Optional<BigInteger> denominator = Readers.readBigInteger(s.substring(slashIndex + 1));
-            if (!denominator.isPresent()) return Optional.empty();
+            if (!denominator.isPresent() || denominator.get().equals(BigInteger.ZERO)) return Optional.empty();
             return Optional.of(of(numerator.get(), denominator.get()));
         }
     }

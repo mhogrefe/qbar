@@ -2,14 +2,12 @@ package mho.qbar.objects;
 
 import mho.wheels.iterables.ExhaustiveProvider;
 import mho.wheels.iterables.RandomProvider;
-import mho.wheels.misc.Readers;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
 import mho.qbar.iterableProviders.QBarExhaustiveProvider;
 import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.iterableProviders.QBarRandomProvider;
-import org.jetbrains.annotations.NotNull;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -534,15 +532,9 @@ public class RationalDemos {
         }
     }
 
-    private static boolean goodReadArgument(@NotNull String s) {
-        return s.length() < 2 || isSuffixOf(s, "/0") ||
-                !Readers.readBigInteger(s.substring(0, s.length() - 2)).isPresent();
-    }
-
     public static void demoRead() {
         initialize();
-        Iterable<String> ss = filter(RationalDemos::goodReadArgument, P.strings());
-        for (String s : take(LIMIT, ss)) {
+        for (String s : take(LIMIT, P.strings())) {
             System.out.println("read(" + s + ") = " + read(s));
         }
     }
@@ -555,8 +547,7 @@ public class RationalDemos {
         } else {
             cs = ((QBarRandomProvider) P).uniformSample(NECESSARY_CHARS);
         }
-        Iterable<String> ss = filter(RationalDemos::goodReadArgument, P.strings(cs));
-        for (String s : take(LIMIT, ss)) {
+        for (String s : take(LIMIT, P.strings(cs))) {
             System.out.println("read(" + s + ") = " + read(s));
         }
     }
