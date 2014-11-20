@@ -562,6 +562,83 @@ public final class Rational implements Comparable<Rational> {
     }
 
     /**
+     * Returns the sum of all the {@code Rational}s in {@code xs}. If {@code xs} is empty, 0 is returned.
+     *
+     * <ul>
+     *  <li>{@code xs} must be finite and may not contain any nulls.</li>
+     *  <li>The result may be any {@code Rational}.</li>
+     * </ul>
+     *
+     * @param xs an {@code Iterable} of {@code Rational}s.
+     * @return Σxs
+     */
+    public static Rational sum(@NotNull Iterable<Rational> xs) {
+        return foldl(p -> add(p.a, p.b), ZERO, xs);
+    }
+
+    /**
+     * Returns the product of all the {@code Rational}s in {@code xs}. If {@code xs} is empty, 1 is returned.
+     *
+     * <ul>
+     *  <li>{@code xs} must be finite and may not contain any nulls.</li>
+     *  <li>The result may be any {@code Rational}.</li>
+     * </ul>
+     *
+     * @param xs an {@code Iterable} of {@code Rational}s.
+     * @return Πxs
+     */
+    public static Rational product(@NotNull Iterable<Rational> xs) {
+        return foldl(p -> multiply(p.a, p.b), ONE, xs);
+    }
+
+    /**
+     * Returns the differences between successive {@code Rational}s in {@code xs}. If {@code xs} contains a single
+     * {@code Rational}, an empty {@code Iterable} is returned. {@code xs} cannot be empty. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code xs} must not be empty and may not contain any nulls.</li>
+     *  <li>The result is finite and does not contain any nulls.</li>
+     * </ul>
+     *
+     * @param xs an {@code Iterable} of {@code Rational}s.
+     * @return Δxs
+     */
+    public static @NotNull Iterable<Rational> deltas(@NotNull Iterable<Rational> xs) {
+        return adjacentPairsWith(p -> subtract(p.b, p.a), xs);
+    }
+
+    /**
+     * The {@code n}th harmonic number, or the sum of the first {@code n} reciprocals.
+     *
+     * <ul>
+     *  <li>{@code n} must be positive.</li>
+     *  <li>The result is a harmonic number.</li>
+     * </ul>
+     *
+     * @param n the index of a harmonic number
+     * @return H<sub>{@code n}</sub>
+     */
+    public static @NotNull Rational harmonicNumber(int n) {
+        return sum(map(i -> of(i).invert(), range(1, n)));
+    }
+
+    /**
+     * an {@code Iterable} that contains every harmonic number. Does not support removal.
+     *
+     * Length is infinite
+     */
+    public static final @NotNull Iterable<Rational> HARMONIC_NUMBERS =
+        tail(scanl(p -> {
+            assert p.a != null;
+            assert p.b != null;
+            return add(p.a, p.b);
+        }, ZERO, map(i -> of(i).invert(), range(1))));
+
+    public static void main(String[] args) {
+        System.out.println(toList(take(20, HARMONIC_NUMBERS)));
+    }
+
+    /**
      * Returns {@code this} raised to the power of {@code p}. 0<sup>0</sup> yields 1.
      *
      * <ul>
