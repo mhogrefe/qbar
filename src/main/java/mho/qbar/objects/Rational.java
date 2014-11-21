@@ -603,7 +603,9 @@ public final class Rational implements Comparable<Rational> {
      * @param xs an {@code Iterable} of {@code Rational}s.
      * @return Δxs
      */
-    public static @NotNull Iterable<Rational> deltas(@NotNull Iterable<Rational> xs) {
+    public static @NotNull Iterable<Rational> delta(@NotNull Iterable<Rational> xs) {
+        if (isEmpty(xs))
+            throw new IllegalArgumentException("cannot get delta of empty Iterable");
         return adjacentPairsWith(p -> subtract(p.b, p.a), xs);
     }
 

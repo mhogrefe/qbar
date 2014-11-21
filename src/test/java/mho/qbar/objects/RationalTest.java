@@ -2,12 +2,21 @@ package mho.qbar.objects;
 
 import mho.wheels.iterables.IterableUtils;
 import mho.wheels.misc.FloatUtils;
+import mho.wheels.misc.Readers;
+import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 
+import static mho.wheels.iterables.IterableUtils.deltaBigDecimal;
+import static mho.wheels.iterables.IterableUtils.sumBigDecimal;
+import static mho.wheels.iterables.IterableUtils.toList;
 import static mho.wheels.ordering.Ordering.*;
 import static mho.qbar.objects.Rational.*;
 import static org.junit.Assert.*;
@@ -404,6 +413,42 @@ public class RationalTest {
             read("2/3").get().divide(0);
             fail();
         } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testSum() {
+        aeq(sum(readRationalList("[10, 21/2, 11]").get()), "63/2");
+        aeq(sum(readRationalList("[-4, 6, -8]").get()), -6);
+        aeq(sum(new ArrayList<>()), 0);
+        try {
+            sum(readRationalListWithNulls("[10, null, 11]").get());
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testProduct() {
+        aeq(product(readRationalList("[10, 21/2, 11]").get()), 1155);
+        aeq(product(readRationalList("[-4, 6, -8]").get()), 192);
+        aeq(product(new ArrayList<>()), 1);
+        try {
+            product(readRationalListWithNulls("[10, null, 11]").get());
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testDelta() {
+        aeq(delta(readRationalList("[31/10, 41/10, 59/10, 23/10]").get()), "[1, 9/5, -18/5]");
+        aeq(delta(Arrays.asList(Rational.of(3))), "[]");
+        try {
+            delta(new ArrayList<>());
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            toList(delta(readRationalListWithNulls("[10, null, 12]").get()));
+            fail();
+        } catch (IllegalArgumentException ignored) {}
     }
 
     @Test
@@ -2246,5 +2291,13 @@ public class RationalTest {
 
     private static void aeq(Object a, Object b) {
         assertEquals(a.toString(), b.toString());
+    }
+
+    private static @NotNull Optional<List<Rational>> readRationalList(@NotNull String s) {
+        return Readers.readList(Rational::read, s);
+    }
+
+    private static @NotNull Optional<List<Rational>> readRationalListWithNulls(@NotNull String s) {
+        return Readers.readListWithNulls(Rational::read, s);
     }
 }

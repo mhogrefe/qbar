@@ -1,6 +1,7 @@
 package mho.qbar.objects;
 
 import mho.wheels.iterables.ExhaustiveProvider;
+import mho.wheels.iterables.IterableUtils;
 import mho.wheels.iterables.RandomProvider;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
@@ -12,6 +13,7 @@ import mho.qbar.iterableProviders.QBarRandomProvider;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
+import java.util.List;
 import java.util.Random;
 
 import static mho.wheels.iterables.IterableUtils.*;
@@ -197,6 +199,30 @@ public class RationalDemos {
             assert p.a != null;
             assert p.b != null;
             System.out.println(p.a + " / " + p.b + " = " + p.a.divide(p.b));
+        }
+    }
+
+    public static void demoSum() {
+        initialize();
+        for (List<Rational> rs : take(LIMIT, P.lists(P.rationals()))) {
+            String listString = tail(init(rs.toString()));
+            System.out.println("Σ(" + listString + ") = " + sum(rs));
+        }
+    }
+
+    public static void demoProduct() {
+        initialize();
+        for (List<Rational> rs : take(LIMIT, P.lists(P.rationals()))) {
+            String listString = tail(init(rs.toString()));
+            System.out.println("Π(" + listString + ") = " + product(rs));
+        }
+    }
+
+    public static void demoDelta() {
+        initialize();
+        for (List<Rational> rs : take(LIMIT, filter(xs -> !xs.isEmpty(), P.lists(P.rationals())))) {
+            String listString = tail(init(rs.toString()));
+            System.out.println("Δ(" + listString + ") = " + IterableUtils.toString(20, delta(rs)));
         }
     }
 
