@@ -20,7 +20,7 @@ import static mho.wheels.iterables.IterableUtils.*;
 import static mho.qbar.objects.Rational.*;
 
 public class RationalDemos {
-    private static final boolean USE_RANDOM = true;
+    private static final boolean USE_RANDOM = false;
     private static final String NECESSARY_CHARS = "-/0123456789";
     private static final int SMALL_LIMIT = 1000;
     private static int LIMIT;
@@ -35,10 +35,6 @@ public class RationalDemos {
             P = QBarExhaustiveProvider.INSTANCE;
             LIMIT = 10000;
         }
-    }
-
-    public static void main(String[] args) {
-        demoHarmonicNumber();
     }
 
     public static void demoOf_BigInteger_BigInteger() {
@@ -69,29 +65,43 @@ public class RationalDemos {
 
     public static void demoOf_BigInteger() {
         initialize();
-        for (BigInteger bi : take(LIMIT, P.bigIntegers())) {
-            System.out.println("of(" + bi + ") = " + of(bi));
+        for (BigInteger i : take(LIMIT, P.bigIntegers())) {
+            System.out.println("of(" + i + ") = " + of(i));
         }
     }
 
     public static void demoOf_int() {
         initialize();
-        for (int bi : take(LIMIT, P.integers())) {
-            System.out.println("of(" + bi + ") = " + of(bi));
+        for (int i : take(LIMIT, P.integers())) {
+            System.out.println("of(" + i + ") = " + of(i));
         }
     }
 
     public static void demoOf_float() {
         initialize();
         for (float f : take(LIMIT, P.floats())) {
-            System.out.println("of(" + f + ") = " + ofExact(f));
+            System.out.println("of(" + f + ") = " + of(f));
         }
     }
 
     public static void demoOf_double() {
         initialize();
         for (double d : take(LIMIT, P.doubles())) {
-            System.out.println("of(" + d + ") = " + ofExact(d));
+            System.out.println("of(" + d + ") = " + of(d));
+        }
+    }
+
+    public static void demoOfExact_float() {
+        initialize();
+        for (float f : take(LIMIT, P.floats())) {
+            System.out.println("ofExact(" + f + ") = " + ofExact(f));
+        }
+    }
+
+    public static void demoOfExact_double() {
+        initialize();
+        for (double d : take(LIMIT, P.doubles())) {
+            System.out.println("ofExact(" + d + ") = " + ofExact(d));
         }
     }
 
