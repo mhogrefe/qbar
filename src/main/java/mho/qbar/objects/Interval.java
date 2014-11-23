@@ -779,16 +779,14 @@ public final class Interval implements Comparable<Interval> {
         return upper == null ? 0 : upper.compareTo(that.upper);
     }
 
-    //todo mention that illegal Rational Strings can't be present
     /**
      * Creates an {@code Interval} from a {@code String}. Valid strings are in one of these four forms:
-     * {@code "(-Infinity, Infinity)"}, {@code "(-Infinity, " + q.toString() + "]"},
-     * {@code "[" + p.toString() + ", Infinity)"}, or {@code "[" + p.toString() + ", " + q.toString() + "]"}, where
-     * {@code p} and {@code q} are {@code Rational}s.
+     * {@code "(-Infinity, Infinity)"}, {@code "(-Infinity, " + q + "]"},
+     * {@code "[" + p + ", Infinity)"}, or {@code "[" + p + ", " + q + "]"}, where {@code p} and {@code q} are valid
+     * inputs to {@link mho.qbar.objects.Rational#read}.
      *
      * <ul>
-     *  <li>{@code s} cannot be null and cannot be of the form {@code "[" + p.toString() + ", " + q.toString() + "]"},
-     *  where {@code p} and {@code q} are {@code Rational}s such that {@code a} is greater than {@code b}.</li>
+     *  <li>{@code s} cannot be null.</li>
      *  <li>The result may be any {@code Optional<Interval>}, or null.</li>
      * </ul>
      *
