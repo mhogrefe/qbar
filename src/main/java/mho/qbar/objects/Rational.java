@@ -222,6 +222,20 @@ public final class Rational implements Comparable<Rational> {
         return new Rational(BigInteger.valueOf(n), BigInteger.ONE);
     }
 
+    public static @Nullable Rational of(float f) {
+        if (f == 0.0) return ZERO;
+        if (f == 1.0) return ONE;
+        if (Float.isInfinite(f) || Float.isNaN(f)) return null;
+        return of(new BigDecimal(Float.toString(f)));
+    }
+
+    public static @Nullable Rational of(double d) {
+        if (d == 0.0) return ZERO;
+        if (d == 1.0) return ONE;
+        if (Double.isInfinite(d) || Double.isNaN(d)) return null;
+        return of(BigDecimal.valueOf(d));
+    }
+
     /**
      * Creates a {@code Rational} from a {@link float}. No rounding occurs; the {@code Rational} has exactly the same
      * value as the {@code float}. For example, {@code of(1.0f/3.0f)} yields 11184811/33554432, not 1/3. Returns null
@@ -243,7 +257,7 @@ public final class Rational implements Comparable<Rational> {
      * @return the {@code Rational} corresponding to {@code f}, or null if {@code f} is {@code Infinity},
      * {@code -Infinity}, or {@code NaN}
      */
-    public static @Nullable Rational of(float f) {
+    public static @Nullable Rational ofExact(float f) {
         if (f == 0.0f) return ZERO;
         if (f == 1.0f) return ONE;
         if (Float.isInfinite(f) || Float.isNaN(f)) return null;
@@ -281,7 +295,7 @@ public final class Rational implements Comparable<Rational> {
      * @return the {@code Rational} corresponding to {@code d}, or null if {@code d} is {@code Infinity},
      * {@code -Infinity}, or {@code NaN}
      */
-    public static @Nullable Rational of(double d) {
+    public static @Nullable Rational ofExact(double d) {
         if (d == 0.0) return ZERO;
         if (d == 1.0) return ONE;
         if (Double.isInfinite(d) || Double.isNaN(d)) return null;
@@ -313,6 +327,580 @@ public final class Rational implements Comparable<Rational> {
      */
     public static @NotNull Rational of(@NotNull BigDecimal d) {
         return divide(of(d.unscaledValue()), of(10).pow(d.scale()));
+    }
+
+    /**
+     * Rounds {@code this} to an integer according to {@code roundingMode}; see {@link java.math.RoundingMode} for
+     * details.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Rational}.</li>
+     *  <li>{@code roundingMode} may be any {@code RoundingMode}.</li>
+     *  <li>If {@code roundingMode} is {@link java.math.RoundingMode#UNNECESSARY}, {@code this} must be an
+     *  integer.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param roundingMode determines the way in which {@code this} is rounded. Options are
+     * {@link java.math.RoundingMode#UP}, {@link java.math.RoundingMode#DOWN}, {@link java.math.RoundingMode#CEILING},
+     * {@link java.math.RoundingMode#FLOOR}, {@link java.math.RoundingMode#HALF_UP},
+     * {@link java.math.RoundingMode#HALF_DOWN}, {@link java.math.RoundingMode#HALF_EVEN}, and
+     * {@link java.math.RoundingMode#UNNECESSARY}.
+     * @return {@code this}, rounded
+     */
+    public @NotNull BigInteger bigIntegerValue(@NotNull RoundingMode roundingMode) {
+        Ordering halfCompare = compare(fractionalPart(), of(1, 2));
+        if (signum() == -1) halfCompare = halfCompare.invert();
+        switch (roundingMode) {
+            case UNNECESSARY:
+                if (denominator.equals(BigInteger.ONE)) {
+                    return numerator;
+                } else {
+                    throw new ArithmeticException("Rational not an integer. Use a different rounding mode");
+                }
+            case FLOOR:
+                return floor();
+            case CEILING:
+                return ceiling();
+            case DOWN:
+                return numerator.divide(denominator);
+            case UP:
+                BigInteger down = numerator.divide(denominator);
+                if (numerator.mod(denominator).equals(BigInteger.ZERO)) {
+                    return down;
+                } else {
+                    if (numerator.signum() == 1) {
+                        return down.add(BigInteger.ONE);
+                    } else {
+                        return down.subtract(BigInteger.ONE);
+                    }
+                }
+            case HALF_DOWN:
+                if (halfCompare == GT) {
+                    return bigIntegerValue(RoundingMode.UP);
+                } else {
+                    return bigIntegerValue(RoundingMode.DOWN);
+                }
+            case HALF_UP:
+                if (halfCompare == LT) {
+                    return bigIntegerValue(RoundingMode.DOWN);
+                } else {
+                    return bigIntegerValue(RoundingMode.UP);
+                }
+            case HALF_EVEN:
+                if (halfCompare == LT) return bigIntegerValue(RoundingMode.DOWN);
+                if (halfCompare == GT) return bigIntegerValue(RoundingMode.UP);
+                BigInteger floor = floor();
+                return floor.testBit(0) ? floor.add(BigInteger.ONE) : floor;
+        }
+        return null; //never happens
+    }
+
+    public @NotNull BigInteger bigIntegerValue() {
+        return bigIntegerValue(RoundingMode.HALF_EVEN);
+    }
+
+    public @NotNull BigInteger bigIntegerValueExact() {
+        return bigIntegerValue(RoundingMode.UNNECESSARY);
+    }
+
+    public byte byteValueExact() {
+        return bigIntegerValueExact().byteValueExact();
+    }
+
+    public short shortValueExact() {
+        return bigIntegerValueExact().shortValueExact();
+    }
+
+    public int intValueExact() {
+        return bigIntegerValueExact().intValueExact();
+    }
+
+    public long longValueExact() {
+        return bigIntegerValueExact().longValueExact();
+    }
+
+    /**
+     * This method returns the floor of the base-2 logarithm of {@code this}. In other words, every positive
+     * {@code Rational} may be written as a×2<sup>b</sup>, where a is a {@code Rational} such that 1≤a{@literal <}2 and
+     * b is an integer; this method returns b.
+     *
+     * <ul>
+     *  <li>{@code this} must be positive.</li>
+     *  <li>The result could be any integer.</li>
+     * </ul>
+     *
+     * @return ⌊{@code log<sub>2</sub>this}⌋
+     */
+    public int binaryExponent() {
+        if (this == ONE) return 0;
+        Rational adjusted = this;
+        int exponent = 0;
+        if (lt(numerator, denominator)) {
+            while (lt(adjusted.numerator, adjusted.denominator)) {
+                adjusted = adjusted.shiftLeft(1);
+                exponent--;
+            }
+        } else {
+            while (ge(adjusted.numerator, adjusted.denominator)) {
+                adjusted = adjusted.shiftRight(1);
+                exponent++;
+            }
+            exponent--;
+        }
+        return exponent;
+    }
+
+    /**
+     * Every {@code Rational}has a <i>left-neighboring {@code float}</i>, or the largest {@code float} that is less
+     * than or equal to the {@code Rational}; this {@code float} may be -Infinity. Likewise, every {@code Rational}
+     * has a <i>right-neighboring {@code float}</i>: the smallest {@code float} greater than or equal to the
+     * {@code Rational}. This float may be Infinity. If {@code this} is exactly equal to some {@code float}, the
+     * left- and right-neighboring {@code float}s will both be equal to that {@code float} and to each other. This
+     * method returns the pair made up of the left- and right-neighboring {@code float}s. If the left-neighboring
+     * {@code float} is a zero, it is a positive zero; if the right-neighboring {@code float} is a zero, it is a
+     * negative zero. The exception is when {@code this} is equal to zero; then both neighbors are positive zeroes.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Rational}.</li>
+     *  <li>The result is a pair of {@code float}s that are either equal, or the second is the next-largest
+     *  {@code float} after the first. Negative zero may not appear in the first slot of the pair, and positive zero
+     *  may only appear in the second slot if the first slot also contains a positive zero. Neither slot may contain a
+     *  {@code NaN}.</li>
+     * </ul>
+     *
+     * @return The pair of left- and right-neighboring {@code float}s.
+     */
+    private @NotNull Pair<Float, Float> floatRange() {
+        if (this == ZERO) return new Pair<>(0f, 0f);
+        if (numerator.signum() == -1) {
+            Pair<Float, Float> negativeRange = negate().floatRange();
+            assert negativeRange.a != null;
+            assert negativeRange.b != null;
+            return new Pair<>(-negativeRange.b, -negativeRange.a);
+        }
+        int exponent = binaryExponent();
+        if (exponent > 127 || exponent == 127 && gt(this, LARGEST_FLOAT)) {
+            return new Pair<>(Float.MAX_VALUE, Float.POSITIVE_INFINITY);
+        }
+        Rational fraction;
+        int adjustedExponent;
+        if (exponent < -126) {
+            fraction = shiftLeft(149);
+            adjustedExponent = 0;
+        } else {
+            fraction = subtract(shiftRight(exponent), ONE).shiftLeft(23);
+            adjustedExponent = exponent + 127;
+        }
+        float loFloat = Float.intBitsToFloat((adjustedExponent << 23) + fraction.floor().intValueExact());
+        float hiFloat = fraction.denominator.equals(BigInteger.ONE) ? loFloat : FloatUtils.successor(loFloat);
+        return new Pair<>(loFloat, hiFloat);
+    }
+
+    /**
+     * Every {@code Rational} has a <i>left-neighboring {@code double}</i>, or the largest {@code double} that is less
+     * than or equal to the {@code Rational}; this {@code double} may be {@code -Infinity}. Likewise, every
+     * {@code Rational} has a <i>right-neighboring {@code double}</i>: the smallest {@code double} greater than or
+     * equal to the {@code Rational}. This double may be {@code Infinity}. If {@code this} is exactly equal to some
+     * {@code double}, the left- and right-neighboring {@code double}s will both be equal to that {@code double} and
+     * to each other. This method returns the pair made up of the left- and right-neighboring {@code double}s. If the
+     * left-neighboring {@code double} is a zero, it is a positive zero; if the right-neighboring {@code double} is a
+     * zero, it is a negative zero. The exception is when {@code this} is equal to zero; then both neighbors are
+     * positive zeroes.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Rational}.</li>
+     *  <li>The result is a pair of {@code double}s that are either equal, or the second is the next-largest
+     *  {@code double} after the first. Negative zero may not appear in the first slot of the pair, and positive zero
+     *  may only appear in the second slot if the first slot also contains a positive zero. Neither slot may contain a
+     *  {@code NaN}.</li>
+     * </ul>
+     *
+     * @return The pair of left- and right-neighboring {@code double}s.
+     */
+    private @NotNull Pair<Double, Double> doubleRange() {
+        if (this == ZERO) return new Pair<>(0.0, 0.0);
+        if (numerator.signum() == -1) {
+            Pair<Double, Double> negativeRange = negate().doubleRange();
+            assert negativeRange.a != null;
+            assert negativeRange.b != null;
+            return new Pair<>(-negativeRange.b, -negativeRange.a);
+        }
+        int exponent = binaryExponent();
+        if (exponent > 1023 || exponent == 1023 && gt(this, LARGEST_DOUBLE)) {
+            return new Pair<>(Double.MAX_VALUE, Double.POSITIVE_INFINITY);
+        }
+        Rational fraction;
+        int adjustedExponent;
+        if (exponent < -1022) {
+            fraction = shiftLeft(1074);
+            adjustedExponent = 0;
+        } else {
+            fraction = subtract(shiftRight(exponent), ONE).shiftLeft(52);
+            adjustedExponent = exponent + 1023;
+        }
+        double loDouble = Double.longBitsToDouble(((long) adjustedExponent << 52) + fraction.floor().longValue());
+        double hiDouble = fraction.denominator.equals(BigInteger.ONE) ? loDouble : FloatUtils.successor(loDouble);
+        return new Pair<>(loDouble, hiDouble);
+    }
+
+    /**
+     * Rounds {@code this} to a {@code float}. The details of the rounding are specified by {@code roundingMode}.
+     * <ul>
+     *  <li>{@code RoundingMode.UNNECESSARY}: If {@code this} is exactly equal to a {@code float}, that {@code float}
+     *  is returned. Otherwise, an {@link java.lang.ArithmeticException} is thrown. If {@code this} is zero, positive
+     *  zero is returned. Negative zero, {@code Infinity}, and {@code -Infinity} cannot be returned.</li>
+     *  <li>{@code RoundingMode.FLOOR}: The largest {@code float} less than or equal to {@code this} is returned. If
+     *  {@code this} is greater than or equal to zero and less than {@code Float.MIN_VALUE}, positive zero is returned.
+     *  If {@code this} is less than –{@code Float.MAX_VALUE}, {@code -Infinity} is returned. If {@code this} is
+     *  greater than or equal to {@code Float.MAX_VALUE}, {@code Float.MAX_VALUE} is returned. Negative zero and
+     *  {@code Infinity} cannot be returned.</li>
+     *  <li>{@code RoundingMode.CEILING}: The smallest {@code float} greater than or equal to {@code this} is returned.
+     *  If {@code this} is equal to zero, positive zero is returned. If {@code this} is less than zero and greater than
+     *  –{@code Float.MIN_VALUE}, negative zero is returned. If {@code this} is greater than {@code Float.MAX_VALUE},
+     *  Infinity is returned. If {@code this} is less than or equal to –{@code Float.MAX_VALUE},
+     *  –{@code Float.MAX_VALUE} is returned. {@code -Infinity} cannot be returned.</li>
+     *  <li>{@code RoundingMode.DOWN}: The first {@code float} going from {@code this} to 0 (possibly equal to
+     *  {@code this}) is returned. If {@code this} is greater than or equal to zero and less than
+     *  {@code Float.MIN_VALUE}, positive zero is returned. If {@code this} is less than zero and greater than
+     *  –{@code Float.MIN_VALUE}, negative zero is returned. If {@code this} is greater than or equal to
+     *  {@code Float.MAX_VALUE}, {@code Float.MAX_VALUE} is returned. If {@code this} is less than or equal to
+     *  –{@code Float.MAX_VALUE}, –{@code Float.MAX_VALUE} is returned. {@code Infinity} and {@code -Infinity} cannot
+     *  be returned.</li>
+     *  <li>{@code RoundingMode.UP}: The first {@code float} going from {@code this} to the infinity of the same sign
+     *  (possibly equal to {@code this}) is returned. If {@code this} is equal to zero, positive zero is returned. If
+     *  {@code this} is greater than {@code Float.MAX_VALUE}, {@code Infinity} is returned. If {@code this} is less
+     *  than {@code Float.MIN_VALUE}, {@code -Infinity} is returned. Negative zero cannot be returned.</li>
+     *  <li>{@code RoundingMode.HALF_DOWN}: If {@code this} is closest to one {@code float}, that {@code float} is
+     *  returned. If there are two closest {@code float}s, the one with the lower absolute value is returned. If
+     *  {@code this} is greater than or equal to zero and less than or equal to {@code Float.MIN_VALUE}/2, positive
+     *  zero is returned. If {@code this} is greater than or equal to –{@code Float.MIN_VALUE}/2 and less than zero,
+     *  negative zero is returned. If {@code this} is greater than or equal to {@code Float.MAX_VALUE},
+     *  {@code Float.MAX_VALUE} is returned. If {@code this} is less than or equal to –{@code Float.MAX_VALUE},
+     *  –{@code Float.MAX_VALUE} is returned. {@code Infinity} and {@code -Infinity} cannot be returned.</li>
+     *  <li>{@code RoundingMode.HALF_UP}: If {@code this} is closest to one {@code float}, that {@code float} is
+     *  returned. If there are two closest {@code float}s, the one with the higher absolute value is returned. If
+     *  {@code this} is greater than or equal to zero and less than {@code Float.MIN_VALUE}/2, positive zero is
+     *  returned. If {@code this} is greater than –{@code Float.MIN_VALUE}/2 and less than zero, negative zero is
+     *  returned. If {@code this} is greater than {@code Float.MAX_VALUE}, {@code Infinity} is returned. If
+     *  {@code this} is less than –{@code Float.MAX_VALUE}, {@code -Infinity} is returned.</li>
+     *  <li>{@code RoundingMode.HALF_EVEN}: If {@code this} is closest to one {@code float}, that {@code float} is
+     *  returned. If there are two closest {@code float}s, the one with the unset lowest-order bit is returned. If
+     *  {@code this} is greater than or equal to zero and less than or equal to {@code Float.MIN_VALUE}/2, positive
+     *  zero is returned. If {@code this} is greater than or equal to –{@code Float.MIN_VALUE}/2 and less than zero,
+     *  negative zero is returned. If {@code this} is greater than {@code Float.MAX_VALUE}, {@code Infinity} is
+     *  returned. If
+     *  {@code this} is less than –{@code Float.MAX_VALUE}, {@code Infinity} is returned.</li>
+     * </ul>
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Rational}.</li>
+     *  <li>{@code roundingMode} cannot be null.</li>
+     *  <li>If {@code roundingMode} is {@code RoundingMode.UNNECESSARY}, {@code this} must be exactly equal to a
+     *  {@code float}.</li>
+     *  <li>The result may be any {@code float} except {@code NaN}.</li>
+     * </ul>
+     *
+     * @param roundingMode specifies the details of how to round {@code this}.
+     * @return {@code this}, rounded
+     */
+    public float floatValue(@NotNull RoundingMode roundingMode) {
+        Pair<Float, Float> floatRange = floatRange();
+        assert floatRange.a != null;
+        assert floatRange.b != null;
+        if (floatRange.a.equals(floatRange.b)) return floatRange.a;
+        Rational loFloat = ofExact(floatRange.a);
+        Rational hiFloat = ofExact(floatRange.b);
+        if ((loFloat == null || hiFloat == null) && roundingMode == RoundingMode.UNNECESSARY) {
+            throw new ArithmeticException("Rational not exactly equal to a float. Use a different rounding mode");
+        }
+        if (loFloat == null) {
+            if (roundingMode == RoundingMode.FLOOR || roundingMode == RoundingMode.UP ||
+                    roundingMode == RoundingMode.HALF_UP || roundingMode == RoundingMode.HALF_EVEN) {
+                return Float.NEGATIVE_INFINITY;
+            } else {
+                return -Float.MAX_VALUE;
+            }
+        }
+        if (hiFloat == null) {
+            if (roundingMode == RoundingMode.CEILING || roundingMode == RoundingMode.UP ||
+                    roundingMode == RoundingMode.HALF_UP || roundingMode == RoundingMode.HALF_EVEN) {
+                return Float.POSITIVE_INFINITY;
+            } else {
+                return Float.MAX_VALUE;
+            }
+        }
+        Rational midway = add(loFloat, hiFloat).shiftRight(1);
+        Ordering midwayCompare = compare(this, midway);
+        switch (roundingMode) {
+            case UNNECESSARY:
+                throw new ArithmeticException("Rational not exactly equal to a float. Use a different rounding mode");
+            case FLOOR:
+                return floatRange.a;
+            case CEILING:
+                return floatRange.b;
+            case DOWN:
+                return floatRange.a < 0 ? floatRange.b : floatRange.a;
+            case UP:
+                return floatRange.a < 0 ? floatRange.a : floatRange.b;
+            case HALF_DOWN:
+                if (midwayCompare == EQ) return signum() == 1 ? floatRange.a : floatRange.b;
+                return midwayCompare == LT ? floatRange.a : floatRange.b;
+            case HALF_UP:
+                if (midwayCompare == EQ) return signum() == 1 ? floatRange.b : floatRange.a;
+                return midwayCompare == LT ? floatRange.a : floatRange.b;
+            case HALF_EVEN:
+                if (midwayCompare == LT) return floatRange.a;
+                if (midwayCompare == GT) return floatRange.b;
+                return (Float.floatToIntBits(floatRange.a) & 1) == 0 ? floatRange.a : floatRange.b;
+        }
+        return 0; //never happens
+    }
+
+    /**
+     * Rounds {@code this} to a {@code float} using {@code RoundingMode.HALF_EVEN}. If {@code this} is closest to one
+     * {@code float}, that {@code float} is returned. If there are two closest {@code float}s, the one with the unset
+     * lowest-order bit is returned. If {@code this} is greater than or equal to zero and less than or equal to
+     * {@code Float.MIN_VALUE}/2, positive zero is returned. If {@code this} is greater than or equal to
+     * –{@code Float.MIN_VALUE}/2 and less than zero, negative zero is returned. If {@code this} is greater than
+     * {@code Float.MAX_VALUE}, Infinity is returned. If {@code this} is less than –{@code Float.MAX_VALUE},
+     * {@code -Infinity} is returned.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Rational}.</li>
+     *  <li>The result may be any {@code float} except {@code NaN}.</li>
+     * </ul>
+     *
+     * @return {@code this}, rounded
+     */
+    public float floatValue() {
+        return floatValue(RoundingMode.HALF_EVEN);
+    }
+    
+    public float floatValueExact() {
+        return floatValue(RoundingMode.UNNECESSARY);
+    }
+
+    /**
+     * Rounds {@code this} to a {@code double}. The details of the rounding are specified by {@code roundingMode}.
+     * <ul>
+     *  <li>{@code RoundingMode.UNNECESSARY}: If {@code this} is exactly equal to a {@code double}, that {@code double}
+     *  is returned. Otherwise, an {@code ArithmeticException} is thrown. If {@code this} is zero, positive zero is
+     *  returned. Negative zero, {@code Infinity}, and {@code -Infinity} cannot be returned.</li>
+     *  <li>{@code RoundingMode.FLOOR}: The largest {@code double} less than or equal to {@code this} is returned. If
+     *  {@code this} is greater than or equal to zero and less than {@code Double.MIN_VALUE}, positive zero is
+     *  returned. If {@code this} is less than –{@code Double.MAX_VALUE}, {@code -Infinity} is returned. If
+     *  {@code this} is greater than or equal to {@code Double.MAX_VALUE}, {@code Double.MAX_VALUE} is returned.
+     *  Negative zero and {@code Infinity} cannot be returned.</li>
+     *  <li>{@code RoundingMode.CEILING}: The smallest {@code double} greater than or equal to {@code this} is
+     *  returned. If {@code this} is equal to zero, positive zero is returned. If {@code this} is less than zero and
+     *  greater than –{@code Double.MIN_VALUE}, negative zero is returned. If {@code this} is greater than
+     *  {@code Double.MAX_VALUE}, {@code Infinity} is returned. If {@code this} is less than or equal to
+     *  –{@code Double.MAX_VALUE}, –{@code Double.MAX_VALUE} is returned. {@code -Infinity} cannot be returned.</li>
+     *  <li>{@code RoundingMode.DOWN}: The first {@code double} going from {@code this} to 0 (possibly equal to
+     *  {@code this}) is returned. If {@code this} is greater than or equal to zero and less than
+     *  {@code Double.MIN_VALUE}, positive zero is returned. If {@code this} is greater than –{@code Double.MIN_VALUE}
+     *  and less than zero, negative zero is returned. If {@code this} is greater than or equal to
+     *  {@code Double.MAX_VALUE}, {@code Double.MAX_VALUE} is returned. If {@code this} is less than or equal to
+     *  –{@code Double.MAX_VALUE}, –{@code Double.MAX_VALUE} is returned. {@code Infinity} and {@code -Infinity} cannot
+     *  be returned.</li>
+     *  <li>{@code RoundingMode.UP}: The first {@code double} going from {@code this} to the infinity of the same sign
+     *  (possibly equal to {@code this}) is returned. If {@code this} is equal to zero, positive zero is returned. If
+     *  {@code this} is greater than {@code Double.MAX_VALUE}, {@code Infinity} is returned. If {@code this} is less
+     *  than {@code Double.MIN_VALUE}, {@code -Infinity} is returned. Negative zero cannot be returned.</li>
+     *  <li>{@code RoundingMode.HALF_DOWN}: If {@code this} is closest to one {@code double}, that {@code double} is
+     *  returned. If there are two closest {@code double}s, the one with the lower absolute value is returned. If
+     *  {@code this} is greater than or equal to zero and less than or equal to {@code Double.MIN_VALUE}/2, positive
+     *  zero is returned. If {@code this} is greater than or equal to –{@code Double.MIN_VALUE}/2 and less than zero,
+     *  negative zero is returned. If {@code this} is greater than or equal to {@code Double.MAX_VALUE},
+     *  {@code Double.MAX_VALUE} is returned. If {@code this} is less than or equal to –{@code Double.MAX_VALUE},
+     *  –{@code Double.MAX_VALUE} is returned. {@code Infinity} and {@code -Infinity} cannot be returned.</li>
+     *  <li>{@code RoundingMode.HALF_UP}: If {@code this} is closest to one {@code double}, that {@code double} is
+     *  returned. If there are two closest {@code double}s, the one with the higher absolute value is returned. If
+     *  {@code this} is greater than or equal to zero and less than {@code Double.MIN_VALUE}/2, positive zero is
+     *  returned. If {@code this} is greater than –{@code Double.MIN_VALUE}/2 and less than zero, negative zero is
+     *  returned. If {@code this} is greater than {@code Double.MAX_VALUE}, {@code Infinity} is returned. If
+     *  {@code this} is less than –{@code Double.MAX_VALUE}, {@code -Infinity} is returned.</li>
+     *  <li>{@code RoundingMode.HALF_EVEN}: If {@code this} is closest to one {@code double}, that {@code double} is
+     *  returned. If there are two closest {@code double}s, the one with the unset lowest-order bit is returned. If
+     *  {@code this} is greater than or equal to zero and less than or equal to {@code Double.MIN_VALUE}/2, positive
+     *  zero is returned. If {@code this} is greater than or equal to –{@code Double.MIN_VALUE}/2 and less than zero,
+     *  negative zero is returned. If {@code this} is greater than {@code Double.MAX_VALUE}, Infinity is returned.
+     *  If {@code this} is less than –{@code Double.MAX_VALUE}, {@code -Infinity} is returned.</li>
+     * </ul>
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Rational}.</li>
+     *  <li>{@code roundingMode} cannot be null.</li>
+     *  <li>If {@code roundingMode} is {@code RoundingMode.UNNECESSARY}, {@code this} must be exactly equal to a
+     *  {@code double}.</li>
+     *  <li>The result may be any {@code double} except {@code NaN}.</li>
+     * </ul>
+     *
+     * @param roundingMode specifies the details of how to round {@code this}.
+     * @return {@code this}, rounded
+     */
+    public double doubleValue(@NotNull RoundingMode roundingMode) {
+        Pair<Double, Double> doubleRange = doubleRange();
+        assert doubleRange.a != null;
+        assert doubleRange.b != null;
+        if (doubleRange.a.equals(doubleRange.b)) return doubleRange.a;
+        Rational loDouble = ofExact(doubleRange.a);
+        Rational hiDouble = ofExact(doubleRange.b);
+        if ((loDouble == null || hiDouble == null) && roundingMode == RoundingMode.UNNECESSARY) {
+            throw new ArithmeticException("Rational not exactly equal to a double. Use a different rounding mode");
+        }
+        if (loDouble == null) {
+            if (roundingMode == RoundingMode.FLOOR || roundingMode == RoundingMode.UP ||
+                    roundingMode == RoundingMode.HALF_UP || roundingMode == RoundingMode.HALF_EVEN) {
+                return Double.NEGATIVE_INFINITY;
+            } else {
+                return -Double.MAX_VALUE;
+            }
+        }
+        if (hiDouble == null) {
+            if (roundingMode == RoundingMode.CEILING || roundingMode == RoundingMode.UP ||
+                    roundingMode == RoundingMode.HALF_UP || roundingMode == RoundingMode.HALF_EVEN) {
+                return Double.POSITIVE_INFINITY;
+            } else {
+                return Double.MAX_VALUE;
+            }
+        }
+        Rational midway = add(loDouble, hiDouble).shiftRight(1);
+        Ordering midwayCompare = compare(this, midway);
+        switch (roundingMode) {
+            case UNNECESSARY:
+                throw new ArithmeticException("Rational not exactly equal to a double. Use a different rounding mode");
+            case FLOOR:
+                return doubleRange.a;
+            case CEILING:
+                return doubleRange.b;
+            case DOWN:
+                return doubleRange.a < 0 ? doubleRange.b : doubleRange.a;
+            case UP:
+                return doubleRange.a < 0 ? doubleRange.a : doubleRange.b;
+            case HALF_DOWN:
+                if (midwayCompare == EQ) return signum() == 1 ? doubleRange.a : doubleRange.b;
+                return midwayCompare == LT ? doubleRange.a : doubleRange.b;
+            case HALF_UP:
+                if (midwayCompare == EQ) return signum() == 1 ? doubleRange.b : doubleRange.a;
+                return midwayCompare == LT ? doubleRange.a : doubleRange.b;
+            case HALF_EVEN:
+                if (midwayCompare == LT) return doubleRange.a;
+                if (midwayCompare == GT) return doubleRange.b;
+                return (Double.doubleToLongBits(doubleRange.a) & 1) == 0 ? doubleRange.a : doubleRange.b;
+        }
+        return 0; //never happens
+    }
+
+    /**
+     * Rounds {@code this} to a {@code double} using {@code RoundingMode.HALF_EVEN}. If {@code this} is closest to one
+     * {@code double}, that {@code double} is returned. If there are two closest {@code double}s, the one with the
+     * unset lowest-order bit is returned. If {@code this} is greater than or equal to zero and less than or equal to
+     * {@code Double.MIN_VALUE}/2, positive zero is returned. If {@code this} is greater than or equal to
+     * –{@code Double.MIN_VALUE}/2 and less than zero, negative zero is returned. If {@code this} is greater than
+     * {@code Double.MAX_VALUE}, Infinity is returned. If {@code this} is less than –{@code Double.MAX_VALUE},
+     * –Infinity is returned.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Rational}.</li>
+     *  <li>The result may be any {@code double} except {@code NaN}.</li>
+     * </ul>
+     *
+     * @return {@code this}, rounded
+     */
+    public double doubleValue() {
+        return doubleValue(RoundingMode.HALF_EVEN);
+    }
+    
+    public double doubleValueExact() {
+        return doubleValue(RoundingMode.UNNECESSARY);
+    }
+
+
+    /**
+     * Determines whether {@code this} has a terminating decimal expansion (that is, whether the denominator has no
+     * prime factors other than 2 or 5).
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Rational}.</li>
+     *  <li>The result may be either {@code boolean}.</li>
+     * </ul>
+     *
+     * @return whether {@code this} has a terminating decimal expansion
+     */
+    public boolean hasTerminatingDecimalExpansion() {
+        BigInteger denominatorResidue = denominator.shiftRight(denominator.getLowestSetBit());
+        BigInteger five = BigInteger.valueOf(5);
+        while (denominatorResidue.mod(five).equals(BigInteger.ZERO)) {
+            denominatorResidue = denominatorResidue.divide(five);
+        }
+        return denominatorResidue.equals(BigInteger.ONE);
+    }
+
+    /**
+     * Rounds {@code this} to a {@link java.math.BigDecimal} with a specified rounding mode (see documentation for
+     * {@code java.math.RoundingMode} for details) and with a specified precision (number of significant digits), or
+     * to full precision if {@code precision} is 0.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Rational}.</li>
+     *  <li>{@code precision} must be non-negative.</li>
+     *  <li>{@code roundingMode} may be any {@code RoundingMode}.</li>
+     *  <li>If {@code precision} is 0, then {@code this} must be a {@code Rational} whose decimal expansion is
+     *  terminating; that is, its denominator must only have 2 or 5 as prime factors.</li>
+     *  <li>If {@code roundingMode} is {@code RoundingMode.UNNECESSARY}, then {@code precision} must be at least as
+     *  large as the number of digits in {@code this}'s decimal expansion.</li>
+     *  <li>The result is a {@code BigDecimal} x such that x's scale is greater than or equal to zero and less than or
+     *  equal to n, where n is the smallest non-negative integer such x×10<sup>n</sup> is an integer.</li>
+     * </ul>
+     *
+     * @param precision the precision with which to round {@code this}. 0 indicates full precision.
+     * @param roundingMode specifies the details of how to round {@code this}.
+     * @return {@code this}, in {@code BigDecimal} form
+     */
+    public @NotNull BigDecimal bigDecimalValue(int precision, @NotNull RoundingMode roundingMode) {
+        MathContext context = new MathContext(precision, roundingMode);
+        return new BigDecimal(numerator).divide(new BigDecimal(denominator), context);
+    }
+
+    /**
+     * Rounds {@code this} to a {@code BigDecimal} with a specified precision (number of significant digits), or to
+     * full precision if {@code precision} is 0.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Rational}.</li>
+     *  <li>{@code precision} must be non-negative.</li>
+     *  <li>If {@code precision} is 0, then {@code this} must be a {@code Rational} whose decimal expansion is
+     *  terminating; that is, its denominator must only have 2 or 5 as prime factors.</li>
+     *  <li>The result is a {@code BigDecimal} x such that x's scale is greater than or equal to zero and less than or
+     *  equal to n, where n is the smallest non-negative integer such that x×10<sup>n</sup> is an integer.</li>
+     * </ul>
+     *
+     * @param precision the precision with which to round {@code this}. 0 indicates full precision.
+     * @return {@code this}, in {@code BigDecimal} form
+     */
+    public @NotNull BigDecimal bigDecimalValue(int precision) {
+        MathContext context = new MathContext(precision);
+        return new BigDecimal(numerator).divide(new BigDecimal(denominator), context);
+    }
+
+    /**
+     * Returns a BigDecimal exactly equal to {@code this}. Throws an {@code ArithmeticException} if {@code this} cannot
+     * be represented as a terminating decimal.
+     *
+     * <ul>
+     *  <li>{@code this} must be a {@code Rational} whose decimal expansion is terminating; that is, its denominator
+     *  must only have 2 or 5 as prime factors.</li>
+     *  <li>The result is a {@code BigDecimal} with minimal scale. That is, the scale is the smallest non-negative n
+     *  such that {@code this}×10<sup>n</sup> is an integer.</li>
+     * </ul>
+     *
+     * @return {@code this}, in {@code BigDecimal} form
+     */
+    public @NotNull BigDecimal bigDecimalValueExact() {
+        //noinspection BigDecimalMethodWithoutRoundingCalled
+        return new BigDecimal(numerator).divide(new BigDecimal(denominator));
     }
 
     /**
@@ -638,10 +1226,6 @@ public final class Rational implements Comparable<Rational> {
             return add(p.a, p.b);
         }, ZERO, map(i -> of(i).invert(), range(1))));
 
-    public static void main(String[] args) {
-        System.out.println(toList(take(20, HARMONIC_NUMBERS)));
-    }
-
     /**
      * Returns {@code this} raised to the power of {@code p}. 0<sup>0</sup> yields 1.
      *
@@ -729,73 +1313,6 @@ public final class Rational implements Comparable<Rational> {
         return subtract(this, of(floor()));
     }
 
-    /**
-     * Rounds {@code this} to an integer according to {@code roundingMode}; see {@link java.math.RoundingMode} for
-     * details.
-     *
-     * <ul>
-     *  <li>{@code this} may be any {@code Rational}.</li>
-     *  <li>{@code roundingMode} may be any {@code RoundingMode}.</li>
-     *  <li>If {@code roundingMode} is {@link java.math.RoundingMode#UNNECESSARY}, {@code this} must be an
-     *  integer.</li>
-     *  <li>The result is not null.</li>
-     * </ul>
-     *
-     * @param roundingMode determines the way in which {@code this} is rounded. Options are
-     * {@link java.math.RoundingMode#UP}, {@link java.math.RoundingMode#DOWN}, {@link java.math.RoundingMode#CEILING},
-     * {@link java.math.RoundingMode#FLOOR}, {@link java.math.RoundingMode#HALF_UP},
-     * {@link java.math.RoundingMode#HALF_DOWN}, {@link java.math.RoundingMode#HALF_EVEN}, and
-     * {@link java.math.RoundingMode#UNNECESSARY}.
-     * @return {@code this}, rounded
-     */
-    public @NotNull BigInteger round(@NotNull RoundingMode roundingMode) {
-        Ordering halfCompare = compare(fractionalPart(), of(1, 2));
-        if (signum() == -1) halfCompare = halfCompare.invert();
-        switch (roundingMode) {
-            case UNNECESSARY:
-                if (denominator.equals(BigInteger.ONE)) {
-                    return numerator;
-                } else {
-                    throw new ArithmeticException("Rational not an integer. Use a different rounding mode");
-                }
-            case FLOOR:
-                return floor();
-            case CEILING:
-                return ceiling();
-            case DOWN:
-                return numerator.divide(denominator);
-            case UP:
-                BigInteger down = numerator.divide(denominator);
-                if (numerator.mod(denominator).equals(BigInteger.ZERO)) {
-                    return down;
-                } else {
-                    if (numerator.signum() == 1) {
-                        return down.add(BigInteger.ONE);
-                    } else {
-                        return down.subtract(BigInteger.ONE);
-                    }
-                }
-            case HALF_DOWN:
-                if (halfCompare == GT) {
-                    return round(RoundingMode.UP);
-                } else {
-                    return round(RoundingMode.DOWN);
-                }
-            case HALF_UP:
-                if (halfCompare == LT) {
-                    return round(RoundingMode.DOWN);
-                } else {
-                    return round(RoundingMode.UP);
-                }
-            case HALF_EVEN:
-                if (halfCompare == LT) return round(RoundingMode.DOWN);
-                if (halfCompare == GT) return round(RoundingMode.UP);
-                BigInteger floor = floor();
-                return floor.testBit(0) ? floor.add(BigInteger.ONE) : floor;
-        }
-        return null; //never happens
-    }
-
     //todo finish fixing JavaDoc
     /**
      * Rounds {@code this} a rational number that is an integer multiple of 1/{@code denominator} according to
@@ -818,7 +1335,7 @@ public final class Rational implements Comparable<Rational> {
     public @NotNull Rational roundToDenominator(@NotNull BigInteger denominator, @NotNull RoundingMode roundingMode) {
         if (denominator.signum() != 1)
             throw new ArithmeticException("must round to a positive denominator");
-        return of(multiply(denominator).round(roundingMode)).divide(denominator);
+        return of(multiply(denominator).bigIntegerValue(roundingMode)).divide(denominator);
     }
 
     /**
@@ -879,483 +1396,6 @@ public final class Rational implements Comparable<Rational> {
             if (shiftedNumerator.equals(BigInteger.ONE) && shiftedDenominator.equals(BigInteger.ONE)) return ONE;
             return new Rational(shiftedNumerator, shiftedDenominator);
         }
-    }
-
-    /**
-     * This method returns the floor of the base-2 logarithm of {@code this}. In other words, every positive
-     * {@code Rational} may be written as a&#x00D7;2<sup>b</sup>, where a is a {@code Rational} such that
-     * 1&#x2264;a&lt;2 and b is an integer; this method returns b.
-     *
-     * <ul>
-     *  <li>{@code this} must be positive.</li>
-     *  <li>The result could be any integer.</li>
-     * </ul>
-     *
-     * @return &#x230A;{@code log<sub>2</sub>this}&#x230B;
-     */
-    public int binaryExponent() {
-        if (this == ONE) return 0;
-        Rational adjusted = this;
-        int exponent = 0;
-        if (lt(numerator, denominator)) {
-            while (lt(adjusted.numerator, adjusted.denominator)) {
-                adjusted = adjusted.shiftLeft(1);
-                exponent--;
-            }
-        } else {
-            while (ge(adjusted.numerator, adjusted.denominator)) {
-                adjusted = adjusted.shiftRight(1);
-                exponent++;
-            }
-            exponent--;
-        }
-        return exponent;
-    }
-
-    /**
-     * Every {@code Rational}has a <i>left-neighboring {@code float}</i>, or the largest {@code float} that is less
-     * than or equal to the {@code Rational}; this {@code float} may be -Infinity. Likewise, every {@code Rational}
-     * has a <i>right-neighboring {@code float}</i>: the smallest {@code float} greater than or equal to the
-     * {@code Rational}. This float may be Infinity. If {@code this} is exactly equal to some {@code float}, the
-     * left- and right-neighboring {@code float}s will both be equal to that {@code float} and to each other. This
-     * method returns the pair made up of the left- and right-neighboring {@code float}s. If the left-neighboring
-     * {@code float} is a zero, it is a positive zero; if the right-neighboring {@code float} is a zero, it is a
-     * negative zero. The exception is when {@code this} is equal to zero; then both neighbors are positive zeroes.
-     *
-     * <ul>
-     *  <li>{@code this} may be any {@code Rational}.</li>
-     *  <li>The result is a pair of {@code float}s that are either equal, or the second is the next-largest
-     *  {@code float} after the first. Negative zero may not appear in the first slot of the pair, and positive zero
-     *  may only appear in the second slot if the first slot also contains a positive zero. Neither slot may contain a
-     *  NaN.</li>
-     * </ul>
-     *
-     * @return The pair of left- and right-neighboring {@code float}s.
-     */
-    private @NotNull Pair<Float, Float> floatRange() {
-        if (this == ZERO) return new Pair<>(0f, 0f);
-        if (numerator.signum() == -1) {
-            Pair<Float, Float> negativeRange = negate().floatRange();
-            assert negativeRange.a != null;
-            assert negativeRange.b != null;
-            return new Pair<>(-negativeRange.b, -negativeRange.a);
-        }
-        int exponent = binaryExponent();
-        if (exponent > 127 || exponent == 127 && gt(this, LARGEST_FLOAT)) {
-            return new Pair<>(Float.MAX_VALUE, Float.POSITIVE_INFINITY);
-        }
-        Rational fraction;
-        int adjustedExponent;
-        if (exponent < -126) {
-            fraction = shiftLeft(149);
-            adjustedExponent = 0;
-        } else {
-            fraction = subtract(shiftRight(exponent), ONE).shiftLeft(23);
-            adjustedExponent = exponent + 127;
-        }
-        float loFloat = Float.intBitsToFloat((adjustedExponent << 23) + fraction.floor().intValueExact());
-        float hiFloat = fraction.denominator.equals(BigInteger.ONE) ? loFloat : FloatUtils.successor(loFloat);
-        return new Pair<>(loFloat, hiFloat);
-    }
-
-    /**
-     * Every {@code Rational}has a <i>left-neighboring {@code double}</i>, or the largest {@code double} that is
-     * less than or equal to the {@code Rational}; this {@code double} may be -Infinity. Likewise, every
-     * {@code Rational} has a <i>right-neighboring {@code double}</i>: the smallest {@code double} greater than or
-     * equal to the {@code Rational}. This double may be Infinity. If {@code this} is exactly equal to some
-     * {@code double}, the left- and right-neighboring {@code double}s will both be equal to that {@code double} and
-     * to each other. This method returns the pair made up of the left- and right-neighboring {@code double}s. If the
-     * left-neighboring {@code double} is a zero, it is a positive zero; if the right-neighboring {@code double} is a
-     * zero, it is a negative zero. The exception is when {@code this} is equal to zero; then both neighbors are
-     * positive zeroes.
-     *
-     * <ul>
-     *  <li>{@code this} may be any {@code Rational}.</li>
-     *  <li>The result is a pair of {@code double}s that are either equal, or the second is the next-largest
-     *  {@code double} after the first. Negative zero may not appear in the first slot of the pair, and positive zero
-     *  may only appear in the second slot if the first slot also contains a positive zero. Neither slot may contain a
-     *  NaN.</li>
-     * </ul>
-     *
-     * @return The pair of left- and right-neighboring {@code double}s.
-     */
-    private @NotNull Pair<Double, Double> doubleRange() {
-        if (this == ZERO) return new Pair<>(0.0, 0.0);
-        if (numerator.signum() == -1) {
-            Pair<Double, Double> negativeRange = negate().doubleRange();
-            assert negativeRange.a != null;
-            assert negativeRange.b != null;
-            return new Pair<>(-negativeRange.b, -negativeRange.a);
-        }
-        int exponent = binaryExponent();
-        if (exponent > 1023 || exponent == 1023 && gt(this, LARGEST_DOUBLE)) {
-            return new Pair<>(Double.MAX_VALUE, Double.POSITIVE_INFINITY);
-        }
-        Rational fraction;
-        int adjustedExponent;
-        if (exponent < -1022) {
-            fraction = shiftLeft(1074);
-            adjustedExponent = 0;
-        } else {
-            fraction = subtract(shiftRight(exponent), ONE).shiftLeft(52);
-            adjustedExponent = exponent + 1023;
-        }
-        double loDouble = Double.longBitsToDouble(((long) adjustedExponent << 52) + fraction.floor().longValue());
-        double hiDouble = fraction.denominator.equals(BigInteger.ONE) ? loDouble : FloatUtils.successor(loDouble);
-        return new Pair<>(loDouble, hiDouble);
-    }
-
-    /**
-     * Rounds {@code this} to a {@code float} using {@code RoundingMode.HALF_EVEN}. If {@code this} is closest to
-     * one {@code float}, that {@code float} is returned. If there are two closest {@code float}s, the one with the
-     * unset lowest-order bit is returned. If {@code this} is greater than or equal to zero and less than or equal to
-     * {@code Float.MIN_VALUE}/2, positive zero is returned. If {@code this} is greater than or equal to
-     * –{@code Float.MIN_VALUE}/2 and less than zero, negative zero is returned. If {@code this} is greater
-     * than {@code Float.MAX_VALUE}, Infinity is returned. If {@code this} is less than
-     * –{@code Float.MAX_VALUE}, –Infinity is returned.
-     *
-     * <ul>
-     *  <li>{@code this} may be any {@code Rational}.</li>
-     *  <li>The result may be any {@code float} except NaN.</li>
-     * </ul>
-     *
-     * @return {@code this}, rounded
-     */
-    public float toFloat() {
-        return toFloat(RoundingMode.HALF_EVEN);
-    }
-
-    /**
-     * Rounds {@code this} to a {@code float}. The details of the rounding are specified by {@code roundingMode}.
-     * <ul>
-     *  <li>{@code UNNECESSARY}: If {@code this} is exactly equal to a {@code float}, that {@code float} is
-     *  returned. Otherwise, an {@code ArithmeticException} is thrown. If {@code this} is zero, positive zero is
-     *  returned. Negative zero, Infinity, and –Infinity cannot be returned.</li>
-     *  <li>{@code FLOOR}: The largest {@code float} less than or equal to {@code this} is returned. If
-     *  {@code this} is greater than or equal to zero and less than {@code Float.MIN_VALUE}, positive zero is
-     *  returned. If {@code this} is less than –{@code Float.MAX_VALUE}, –Infinity is returned. If
-     *  {@code this} is greater than or equal to {@code Float.MAX_VALUE}, {@code Float.MAX_VALUE} is returned.
-     *  Negative zero and Infinity cannot be returned.</li>
-     *  <li>{@code CEILING}: The smallest {@code float} greater than or equal to {@code this} is returned. If
-     *  {@code this} is equal to zero, positive zero is returned. If {@code this} is less than zero and greater than
-     *  –{@code Float.MIN_VALUE}, negative zero is returned. If {@code this} is greater than
-     *  {@code Float.MAX_VALUE}, Infinity is returned. If {@code this} is less than or equal to
-     *  –{@code Float.MAX_VALUE}, –{@code Float.MAX_VALUE} is returned. –Infinity cannot be
-     *  returned.</li>
-     *  <li>{@code DOWN}: The first {@code float} going from {@code this} to 0 (possibly equal to {@code this}) is
-     *  returned. If {@code this} is greater than or equal to zero and less than {@code Float.MIN_VALUE}, positive
-     *  zero is returned. If {@code this} is less than zero and greater than –{@code Float.MIN_VALUE},
-     *  negative zero is returned. If {@code this} is greater than or equal to {@code Float.MAX_VALUE},
-     *  {@code Float.MAX_VALUE} is returned. If {@code this} is less than or equal to
-     *  –{@code Float.MAX_VALUE}, –{@code Float.MAX_VALUE} is returned. Infinity and –Infinity
-     *  cannot be returned.</li>
-     *  <li>{@code UP}: The first {@code float} going from {@code this} to the Infinity of the same sign (possibly
-     *  equal to {@code this}) is returned. If {@code this} is equal to zero, positive zero is returned. If
-     *  {@code this} is greater than {@code Float.MAX_VALUE}, Infinity is returned. If {@code this} is less than
-     *  {@code Float.MIN_VALUE}, –Infinity is returned. Negative zero cannot be returned.</li>
-     *  <li>{@code HALF_DOWN}: If {@code this} is closest to one {@code float}, that {@code float} is returned. If
-     *  there are two closest {@code float}s, the one with the lower absolute value is returned. If {@code this} is
-     *  greater than or equal to zero and less than or equal to {@code Float.MIN_VALUE}/2, positive zero is returned.
-     *  If {@code this} is greater than or equal to –{@code Float.MIN_VALUE}/2 and less than zero, negative
-     *  zero is returned. If {@code this} is greater than or equal to {@code Float.MAX_VALUE},
-     *  {@code Float.MAX_VALUE} is returned. If {@code this} is less than or equal to
-     *  –{@code Float.MAX_VALUE}, –{@code Float.MAX_VALUE} is returned. Infinity and –Infinity
-     *  cannot be returned.</li>
-     *  <li>{@code HALF_UP}: If {@code this} is closest to one {@code float}, that {@code float} is returned. If
-     *  there are two closest {@code float}s, the one with the higher absolute value is returned. If {@code this} is
-     *  greater than or equal to zero and less than {@code Float.MIN_VALUE}/2, positive zero is returned. If
-     *  {@code this} is greater than –{@code Float.MIN_VALUE}/2 and less than zero, negative zero is returned.
-     *  If {@code this} is greater than {@code Float.MAX_VALUE}, Infinity is returned. If {@code this} is less than
-     *  –{@code Float.MAX_VALUE}, –Infinity is returned.</li>
-     *  <li>{@code HALF_EVEN}: If {@code this} is closest to one {@code float}, that {@code float} is returned. If
-     *  there are two closest {@code float}s, the one with the unset lowest-order bit is returned. If {@code this} is
-     *  greater than or equal to zero and less than or equal to {@code Float.MIN_VALUE}/2, positive zero is returned.
-     *  If {@code this} is greater than or equal to –{@code Float.MIN_VALUE}/2 and less than zero, negative
-     *  zero is returned. If {@code this} is greater than {@code Float.MAX_VALUE}, Infinity is returned. If
-     *  {@code this} is less than –{@code Float.MAX_VALUE}, –Infinity is returned.</li>
-     * </ul>
-     *
-     * <ul>
-     *  <li>{@code this} may be any {@code Rational}.</li>
-     *  <li>{@code roundingMode} cannot be null.</li>
-     *  <li>If {@code roundingMode} is {@code UNNECESSARY}, {@code this} must be exactly equal to a
-     *  {@code float}.</li>
-     *  <li>The result may be any {@code float} except NaN.</li>
-     * </ul>
-     *
-     * @param roundingMode specifies the details of how to round {@code this}.
-     * @return {@code this}, rounded
-     */
-    public float toFloat(@NotNull RoundingMode roundingMode) {
-        Pair<Float, Float> floatRange = floatRange();
-        assert floatRange.a != null;
-        assert floatRange.b != null;
-        if (floatRange.a.equals(floatRange.b)) return floatRange.a;
-        Rational loFloat = of(floatRange.a);
-        Rational hiFloat = of(floatRange.b);
-        if ((loFloat == null || hiFloat == null) && roundingMode == RoundingMode.UNNECESSARY) {
-            throw new ArithmeticException("Rational not exactly equal to a float. Use a different rounding mode");
-        }
-        if (loFloat == null) {
-            if (roundingMode == RoundingMode.FLOOR || roundingMode == RoundingMode.UP ||
-                    roundingMode == RoundingMode.HALF_UP || roundingMode == RoundingMode.HALF_EVEN) {
-                return Float.NEGATIVE_INFINITY;
-            } else {
-                return -Float.MAX_VALUE;
-            }
-        }
-        if (hiFloat == null) {
-            if (roundingMode == RoundingMode.CEILING || roundingMode == RoundingMode.UP ||
-                    roundingMode == RoundingMode.HALF_UP || roundingMode == RoundingMode.HALF_EVEN) {
-                return Float.POSITIVE_INFINITY;
-            } else {
-                return Float.MAX_VALUE;
-            }
-        }
-        Rational midway = add(loFloat, hiFloat).shiftRight(1);
-        Ordering midwayCompare = compare(this, midway);
-        switch (roundingMode) {
-            case UNNECESSARY:
-                throw new ArithmeticException("Rational not exactly equal to a float. Use a different rounding mode");
-            case FLOOR:
-                return floatRange.a;
-            case CEILING:
-                return floatRange.b;
-            case DOWN:
-                return floatRange.a < 0 ? floatRange.b : floatRange.a;
-            case UP:
-                return floatRange.a < 0 ? floatRange.a : floatRange.b;
-            case HALF_DOWN:
-                if (midwayCompare == EQ) return signum() == 1 ? floatRange.a : floatRange.b;
-                return midwayCompare == LT ? floatRange.a : floatRange.b;
-            case HALF_UP:
-                if (midwayCompare == EQ) return signum() == 1 ? floatRange.b : floatRange.a;
-                return midwayCompare == LT ? floatRange.a : floatRange.b;
-            case HALF_EVEN:
-                if (midwayCompare == LT) return floatRange.a;
-                if (midwayCompare == GT) return floatRange.b;
-                return (Float.floatToIntBits(floatRange.a) & 1) == 0 ? floatRange.a : floatRange.b;
-        }
-        return 0; //never happens
-    }
-
-    /**
-     * Rounds {@code this} to a {@code double} using {@code RoundingMode.HALF_EVEN}. If {@code this} is closest to
-     * one {@code double}, that {@code double} is returned. If there are two closest {@code double}s, the one with
-     * the unset lowest-order bit is returned. If {@code this} is greater than or equal to zero and less than or equal
-     * to {@code Double.MIN_VALUE}/2, positive zero is returned. If {@code this} is greater than or equal to
-     * –{@code Double.MIN_VALUE}/2 and less than zero, negative zero is returned. If {@code this} is greater
-     * than {@code Double.MAX_VALUE}, Infinity is returned. If {@code this} is less than
-     * –{@code Double.MAX_VALUE}, –Infinity is returned.
-     *
-     * <ul>
-     *  <li>{@code this} may be any {@code Rational}.</li>
-     *  <li>The result may be any {@code double} except NaN.</li>
-     * </ul>
-     *
-     * @return {@code this}, rounded
-     */
-    public double toDouble() {
-        return toDouble(RoundingMode.HALF_EVEN);
-    }
-
-    /**
-     * Rounds {@code this} to a {@code double}. The details of the rounding are specified by {@code roundingMode}.
-     * <ul>
-     *  <li>{@code UNNECESSARY}: If {@code this} is exactly equal to a {@code double}, that {@code double} is
-     *  returned. Otherwise, an {@code ArithmeticException} is thrown. If {@code this} is zero, positive zero is
-     *  returned. Negative zero, Infinity, and –Infinity cannot be returned.</li>
-     *  <li>{@code FLOOR}: The largest {@code double} less than or equal to {@code this} is returned. If
-     *  {@code this} is greater than or equal to zero and less than {@code Double.MIN_VALUE}, positive zero is
-     *  returned. If {@code this} is less than –{@code Double.MAX_VALUE}, –Infinity is returned. If
-     *  {@code this} is greater than or equal to {@code Double.MAX_VALUE}, {@code Double.MAX_VALUE} is returned.
-     *  Negative zero and Infinity cannot be returned.</li>
-     *  <li>{@code CEILING}: The smallest {@code double} greater than or equal to {@code this} is returned. If
-     *  {@code this} is equal to zero, positive zero is returned. If {@code this} is less than zero and greater than
-     *  –{@code Double.MIN_VALUE}, negative zero is returned. If {@code this} is greater than
-     *  {@code Double.MAX_VALUE}, Infinity is returned. If {@code this} is less than or equal to
-     *  –{@code Double.MAX_VALUE}, –{@code Double.MAX_VALUE} is returned. –Infinity cannot be
-     *  returned.</li>
-     *  <li>{@code DOWN}: The first {@code double} going from {@code this} to 0 (possibly equal to {@code this}) is
-     *  returned. If {@code this} is greater than or equal to zero and less than {@code Double.MIN_VALUE}, positive
-     *  zero is returned. If {@code this} is greater than –{@code Double.MIN_VALUE} and less than zero,
-     *  negative zero is returned. If {@code this} is greater than or equal to {@code Double.MAX_VALUE},
-     *  {@code Double.MAX_VALUE} is returned. If {@code this} is less than or equal to
-     *  –{@code Double.MAX_VALUE}, –{@code Double.MAX_VALUE} is returned. Infinity and –Infinity
-     *  cannot be returned.</li>
-     *  <li>{@code UP}: The first {@code double} going from {@code this} to the Infinity of the same sign (possibly
-     *  equal to {@code this}) is returned. If {@code this} is equal to zero, positive zero is returned. If
-     *  {@code this} is greater than {@code Double.MAX_VALUE}, Infinity is returned. If {@code this} is less than
-     *  {@code Double.MIN_VALUE}, –Infinity is returned. Negative zero cannot be returned.</li>
-     *  <li>{@code HALF_DOWN}: If {@code this} is closest to one {@code double}, that {@code double} is returned.
-     *  If there are two closest {@code double}s, the one with the lower absolute value is returned. If {@code this}
-     *  is greater than or equal to zero and less than or equal to {@code Double.MIN_VALUE}/2, positive zero is
-     *  returned. If {@code this} is greater than or equal to –{@code Double.MIN_VALUE}/2 and less than zero,
-     *  negative zero is returned. If {@code this} is greater than or equal to {@code Double.MAX_VALUE},
-     *  {@code Double.MAX_VALUE} is returned. If {@code this} is less than or equal to
-     *  –{@code Double.MAX_VALUE}, –{@code Double.MAX_VALUE} is returned. Infinity and –Infinity
-     *  cannot be returned.</li>
-     *  <li>{@code HALF_UP}: If {@code this} is closest to one {@code double}, that {@code double} is returned. If
-     *  there are two closest {@code double}s, the one with the higher absolute value is returned. If {@code this} is
-     *  greater than or equal to zero and less than {@code Double.MIN_VALUE}/2, positive zero is returned. If
-     *  {@code this} is greater than –{@code Double.MIN_VALUE}/2 and less than zero, negative zero is returned.
-     *  If {@code this} is greater than {@code Double.MAX_VALUE}, Infinity is returned. If {@code this} is less than
-     *  –{@code Double.MAX_VALUE}, –Infinity is returned.</li>
-     *  <li>{@code HALF_EVEN}: If {@code this} is closest to one {@code double}, that {@code double} is returned.
-     *  If there are two closest {@code double}s, the one with the unset lowest-order bit is returned. If
-     *  {@code this} is greater than or equal to zero and less than or equal to {@code Double.MIN_VALUE}/2, positive
-     *  zero is returned. If {@code this} is greater than or equal to –{@code Double.MIN_VALUE}/2 and less
-     *  than zero, negative zero is returned. If {@code this} is greater than {@code Double.MAX_VALUE}, Infinity is
-     *  returned. If {@code this} is less than –{@code Double.MAX_VALUE}, –Infinity is returned.</li>
-     * </ul>
-     *
-     * <ul>
-     *  <li>{@code this} may be any {@code Rational}.</li>
-     *  <li>{@code roundingMode} cannot be null.</li>
-     *  <li>If {@code roundingMode} is {@code UNNECESSARY}, {@code this} must be exactly equal to a
-     *  {@code double}.</li>
-     *  <li>The result may be any {@code double} except NaN.</li>
-     * </ul>
-     *
-     * @param roundingMode specifies the details of how to round {@code this}.
-     * @return {@code this}, rounded
-     */
-    public double toDouble(@NotNull RoundingMode roundingMode) {
-        Pair<Double, Double> doubleRange = doubleRange();
-        assert doubleRange.a != null;
-        assert doubleRange.b != null;
-        if (doubleRange.a.equals(doubleRange.b)) return doubleRange.a;
-        Rational loDouble = of(doubleRange.a);
-        Rational hiDouble = of(doubleRange.b);
-        if ((loDouble == null || hiDouble == null) && roundingMode == RoundingMode.UNNECESSARY) {
-            throw new ArithmeticException("Rational not exactly equal to a double. Use a different rounding mode");
-        }
-        if (loDouble == null) {
-            if (roundingMode == RoundingMode.FLOOR || roundingMode == RoundingMode.UP ||
-                    roundingMode == RoundingMode.HALF_UP || roundingMode == RoundingMode.HALF_EVEN) {
-                return Double.NEGATIVE_INFINITY;
-            } else {
-                return -Double.MAX_VALUE;
-            }
-        }
-        if (hiDouble == null) {
-            if (roundingMode == RoundingMode.CEILING || roundingMode == RoundingMode.UP ||
-                    roundingMode == RoundingMode.HALF_UP || roundingMode == RoundingMode.HALF_EVEN) {
-                return Double.POSITIVE_INFINITY;
-            } else {
-                return Double.MAX_VALUE;
-            }
-        }
-        Rational midway = add(loDouble, hiDouble).shiftRight(1);
-        Ordering midwayCompare = compare(this, midway);
-        switch (roundingMode) {
-            case UNNECESSARY:
-                throw new ArithmeticException("Rational not exactly equal to a double. Use a different rounding mode");
-            case FLOOR:
-                return doubleRange.a;
-            case CEILING:
-                return doubleRange.b;
-            case DOWN:
-                return doubleRange.a < 0 ? doubleRange.b : doubleRange.a;
-            case UP:
-                return doubleRange.a < 0 ? doubleRange.a : doubleRange.b;
-            case HALF_DOWN:
-                if (midwayCompare == EQ) return signum() == 1 ? doubleRange.a : doubleRange.b;
-                return midwayCompare == LT ? doubleRange.a : doubleRange.b;
-            case HALF_UP:
-                if (midwayCompare == EQ) return signum() == 1 ? doubleRange.b : doubleRange.a;
-                return midwayCompare == LT ? doubleRange.a : doubleRange.b;
-            case HALF_EVEN:
-                if (midwayCompare == LT) return doubleRange.a;
-                if (midwayCompare == GT) return doubleRange.b;
-                return (Double.doubleToLongBits(doubleRange.a) & 1) == 0 ? doubleRange.a : doubleRange.b;
-        }
-        return 0; //never happens
-    }
-
-    /**
-     * Determines whether {@code this} has a terminating decimal expansion (that is, whether the denominator has no
-     * prime factors other than 2 or 5).
-     *
-     * <ul>
-     *  <li>{@code this} may be any {@code Rational}.</li>
-     *  <li>The result may be either {@code boolean}.</li>
-     * </ul>
-     *
-     * @return whether {@code this} has a terminating decimal expansion
-     */
-    public boolean hasTerminatingDecimalExpansion() {
-        BigInteger denominatorResidue = denominator.shiftRight(denominator.getLowestSetBit());
-        BigInteger five = BigInteger.valueOf(5);
-        while (denominatorResidue.mod(five).equals(BigInteger.ZERO)) {
-            denominatorResidue = denominatorResidue.divide(five);
-        }
-        return denominatorResidue.equals(BigInteger.ONE);
-    }
-
-    /**
-     * Returns a BigDecimal exactly equal to {@code this}. Throws an {@code ArithmeticException} if {@code this}
-     * cannot be represented as a terminating decimal.
-     *
-     * <ul>
-     *  <li>{@code this} must be a {@code Rational} whose decimal expansion is terminating; that is, its denominator
-     *  must only have 2 or 5 as prime factors.</li>
-     *  <li>The result is a {@code BigDecimal} with minimal scale. That is, the scale is the smallest non-negative n
-     *  such that {@code this}&#x00D7;10<sup>n</sup> is an integer.</li>
-     * </ul>
-     *
-     * @return {@code this}, in {@code BigDecimal} form
-     */
-    public @NotNull BigDecimal toBigDecimal() {
-        //noinspection BigDecimalMethodWithoutRoundingCalled
-        return new BigDecimal(numerator).divide(new BigDecimal(denominator));
-    }
-
-    /**
-     * Rounds {@code this} to a {@code BigDecimal} with a specified precision (number of significant digits), or to
-     * full precision if {@code precision} is 0.
-     *
-     * <ul>
-     *  <li>{@code this} may be any {@code Rational}.</li>
-     *  <li>{@code precision} must be non-negative.</li>
-     *  <li>If {@code precision} is 0, then {@code this} must be a {@code Rational} whose decimal expansion is
-     *  terminating; that is, its denominator must only have 2 or 5 as prime factors.</li>
-     *  <li>The result is a {@code BigDecimal} x such that x's scale is greater than or equal to zero and less than or
-     *  equal to n, where n is the smallest non-negative integer such that x&#x00D7;10<sup>n</sup> is an integer.</li>
-     * </ul>
-     *
-     * @param precision the precision with which to round {@code this}. 0 indicates full precision.
-     * @return {@code this}, in {@code BigDecimal} form
-     */
-    public @NotNull BigDecimal toBigDecimal(int precision) {
-        MathContext context = new MathContext(precision);
-        return new BigDecimal(numerator).divide(new BigDecimal(denominator), context);
-    }
-
-    /**
-     * Rounds {@code this} to a {@code BigDecimal} with a specified rounding mode (see documentation for
-     * {@code java.math.RoundingMode} for details) and with a specified precision (number of significant digits), or
-     * to full precision if {@code precision} is 0.
-     *
-     * <ul>
-     *  <li>{@code this} may be any {@code Rational}.</li>
-     *  <li>{@code precision} must be non-negative.</li>
-     *  <li>{@code roundingMode} may be any {@code RoundingMode}.</li>
-     *  <li>If {@code precision} is 0, then {@code this} must be a {@code Rational} whose decimal expansion is
-     *  terminating; that is, its denominator must only have 2 or 5 as prime factors.</li>
-     *  <li>If {@code roundingMode} is {@code UNNECESSARY}, then {@code precision} must be at least as large as the
-     *  number of digits in {@code this}'s decimal expansion.</li>
-     *  <li>The result is a {@code BigDecimal} x such that x's scale is greater than or equal to zero and less than or
-     *  equal to n, where n is the smallest non-negative integer such x&#x00D7;10<sup>n</sup> is an integer.</li>
-     * </ul>
-     *
-     * @param precision the precision with which to round {@code this}. 0 indicates full precision.
-     * @param roundingMode specifies the details of how to round {@code this}.
-     * @return {@code this}, in {@code BigDecimal} form
-     */
-    public @NotNull BigDecimal toBigDecimal(int precision, @NotNull RoundingMode roundingMode) {
-        MathContext context = new MathContext(precision, roundingMode);
-        return new BigDecimal(numerator).divide(new BigDecimal(denominator), context);
     }
 
     /**
