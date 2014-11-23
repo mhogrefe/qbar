@@ -1,6 +1,7 @@
 package mho.qbar.objects;
 
 import mho.wheels.iterables.RandomProvider;
+import mho.wheels.math.Combinatorics;
 import mho.wheels.math.MathUtils;
 import mho.wheels.misc.Readers;
 import mho.wheels.ordering.Ordering;
@@ -16,6 +17,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 
@@ -66,6 +68,9 @@ public class RationalProperties {
             propertiesDivide_Rational_Rational();
             propertiesDivide_BigInteger();
             propertiesDivide_int();
+            propertiesSum();
+            propertiesProduct();
+            propertiesDelta();
             propertiesPow();
             propertiesFloor();
             propertiesCeiling();
@@ -545,6 +550,94 @@ public class RationalProperties {
 
         for (Rational r : take(LIMIT, P.rationals())) {
             assertEquals(r.toString(), r.divide(1), r);
+        }
+    }
+
+    private static void propertiesSum() {
+        initialize();
+        System.out.println("testing sum(Iterable<Rational>) properties...");
+
+        for (List<Rational> rs : take(LIMIT, P.lists(P.rationals()))) {
+            sum(rs);
+        }
+
+        Iterable<Pair<List<Rational>, List<Rational>>> ps = filter(
+                q -> {
+                    assert q.a != null;
+                    assert q.b != null;
+                    return !q.a.equals(q.b);
+                },
+                P.dependentPairsLogarithmic(P.lists(P.rationals()), Combinatorics::permutationsIncreasing)
+        );
+
+        for (Pair<List<Rational>, List<Rational>> p : take(LIMIT, ps)) {
+            assert p.a != null;
+            assert p.b != null;
+            assertEquals(p.toString(), sum(p.a), sum(p.b));
+        }
+
+        for (Rational r : take(LIMIT, P.rationals())) {
+            assertEquals(r.toString(), sum(Arrays.asList(r)), r);
+        }
+
+        for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
+            assert p.a != null;
+            assert p.b != null;
+            assertEquals(p.toString(), sum(Arrays.asList(p.a, p.b)), add(p.a, p.b));
+        }
+    }
+
+    private static void propertiesProduct() {
+        initialize();
+        System.out.println("testing product(Iterable<Rational>) properties...");
+
+        for (List<Rational> rs : take(LIMIT, P.lists(P.rationals()))) {
+            product(rs);
+        }
+
+        Iterable<Pair<List<Rational>, List<Rational>>> ps = filter(
+                q -> {
+                    assert q.a != null;
+                    assert q.b != null;
+                    return !q.a.equals(q.b);
+                },
+                P.dependentPairsLogarithmic(P.lists(P.rationals()), Combinatorics::permutationsIncreasing)
+        );
+
+        for (Pair<List<Rational>, List<Rational>> p : take(LIMIT, ps)) {
+            assert p.a != null;
+            assert p.b != null;
+            assertEquals(p.toString(), product(p.a), product(p.b));
+        }
+
+        for (Rational r : take(LIMIT, P.rationals())) {
+            assertEquals(r.toString(), product(Arrays.asList(r)), r);
+        }
+
+        for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
+            assert p.a != null;
+            assert p.b != null;
+            assertEquals(p.toString(), product(Arrays.asList(p.a, p.b)), multiply(p.a, p.b));
+        }
+    }
+
+    private static void propertiesDelta() {
+        initialize();
+        System.out.println("testing delta(Iterable<Rational>) properties...");
+
+        for (List<Rational> rs : take(LIMIT, filter(ss -> !ss.isEmpty(), P.lists(P.rationals())))) {
+            Iterable<Rational> reversed = reverse(map(Rational::negate, delta(reverse(rs))));
+            aeq(rs.toString(), delta(rs), reversed);
+        }
+
+        for (Rational r : take(LIMIT, P.rationals())) {
+            assertTrue(r.toString(), isEmpty(delta(Arrays.asList(r))));
+        }
+
+        for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
+            assert p.a != null;
+            assert p.b != null;
+            aeq(p.toString(), delta(Arrays.asList(p.a, p.b)), Arrays.asList(subtract(p.b, p.a)));
         }
     }
 
@@ -1219,6 +1312,10 @@ public class RationalProperties {
         assertEquals(r.toString(), r.getDenominator().signum(), 1);
         if (r.equals(ZERO)) assertTrue(r.toString(), r == ZERO);
         if (r.equals(ONE)) assertTrue(r.toString(), r == ONE);
+    }
+
+    private static <T> void aeq(String message, Iterable<T> xs, Iterable<T> ys) {
+        assertTrue(message, equal(xs, ys));
     }
 
     private static void aeq(String message, float f1, float f2) {
