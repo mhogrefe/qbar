@@ -452,6 +452,21 @@ public class RationalTest {
     }
 
     @Test
+    public void testHarmonicNumber() {
+        aeq(harmonicNumber(1), "1");
+        aeq(harmonicNumber(5), "137/60");
+        aeq(harmonicNumber(10), "7381/2520");
+        try {
+            harmonicNumber(0);
+            fail();
+        } catch (ArithmeticException ignored) {}
+        try {
+            harmonicNumber(-5);
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
     public void testPow() {
         assertTrue(read("2/3").get().pow(0) == ONE);
         aeq(read("2/3").get().pow(1), "2/3");

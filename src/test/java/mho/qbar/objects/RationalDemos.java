@@ -20,8 +20,9 @@ import static mho.wheels.iterables.IterableUtils.*;
 import static mho.qbar.objects.Rational.*;
 
 public class RationalDemos {
-    private static final boolean USE_RANDOM = false;
+    private static final boolean USE_RANDOM = true;
     private static final String NECESSARY_CHARS = "-/0123456789";
+    private static final int SMALL_LIMIT = 1000;
     private static int LIMIT;
 
     private static QBarIterableProvider P;
@@ -34,6 +35,10 @@ public class RationalDemos {
             P = QBarExhaustiveProvider.INSTANCE;
             LIMIT = 10000;
         }
+    }
+
+    public static void main(String[] args) {
+        demoHarmonicNumber();
     }
 
     public static void demoOf_BigInteger_BigInteger() {
@@ -223,6 +228,19 @@ public class RationalDemos {
         for (List<Rational> rs : take(LIMIT, filter(xs -> !xs.isEmpty(), P.lists(P.rationals())))) {
             String listString = tail(init(rs.toString()));
             System.out.println("Δ(" + listString + ") = " + IterableUtils.toString(20, delta(rs)));
+        }
+    }
+
+    public static void demoHarmonicNumber() {
+        initialize();
+        Iterable<Integer> is;
+        if (P instanceof ExhaustiveProvider) {
+            is = P.positiveIntegers();
+        } else {
+            is = ((RandomProvider) P).positiveIntegersGeometric(100);
+        }
+        for (int i : take(SMALL_LIMIT, is)) {
+            System.out.println("H_" + i + " = " + harmonicNumber(i));
         }
     }
 

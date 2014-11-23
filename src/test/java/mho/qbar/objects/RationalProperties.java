@@ -1,5 +1,6 @@
 package mho.qbar.objects;
 
+import mho.wheels.iterables.ExhaustiveProvider;
 import mho.wheels.iterables.RandomProvider;
 import mho.wheels.math.Combinatorics;
 import mho.wheels.math.MathUtils;
@@ -29,6 +30,7 @@ import static org.junit.Assert.*;
 public class RationalProperties {
     private static boolean USE_RANDOM;
     private static final String NECESSARY_CHARS = "-/0123456789";
+    private static final int SMALL_LIMIT = 1000;
     private static int LIMIT;
 
     private static QBarIterableProvider P;
@@ -71,6 +73,7 @@ public class RationalProperties {
             propertiesSum();
             propertiesProduct();
             propertiesDelta();
+            propertiesHarmonicNumber();
             propertiesPow();
             propertiesFloor();
             propertiesCeiling();
@@ -558,7 +561,7 @@ public class RationalProperties {
         System.out.println("testing sum(Iterable<Rational>) properties...");
 
         for (List<Rational> rs : take(LIMIT, P.lists(P.rationals()))) {
-            sum(rs);
+            validate(sum(rs));
         }
 
         Iterable<Pair<List<Rational>, List<Rational>>> ps = filter(
@@ -592,7 +595,7 @@ public class RationalProperties {
         System.out.println("testing product(Iterable<Rational>) properties...");
 
         for (List<Rational> rs : take(LIMIT, P.lists(P.rationals()))) {
-            product(rs);
+            validate(product(rs));
         }
 
         Iterable<Pair<List<Rational>, List<Rational>>> ps = filter(
@@ -638,6 +641,28 @@ public class RationalProperties {
             assert p.a != null;
             assert p.b != null;
             aeq(p.toString(), delta(Arrays.asList(p.a, p.b)), Arrays.asList(subtract(p.b, p.a)));
+        }
+    }
+
+    private static void propertiesHarmonicNumber() {
+        initialize();
+        System.out.println("testing harmonicNumber(int) properties...");
+
+        Iterable<Integer> is;
+        if (P instanceof ExhaustiveProvider) {
+            is = P.positiveIntegers();
+        } else {
+            is = ((RandomProvider) P).positiveIntegersGeometric(100);
+        }
+        for (int i : take(SMALL_LIMIT, is)) {
+            Rational h = harmonicNumber(i);
+            validate(h);
+            assertTrue(Integer.toString(i), ge(h, ONE));
+        }
+
+        is = map(i -> i + 1, is);
+        for (int i : take(SMALL_LIMIT, is)) {
+            assertFalse(Integer.toString(i), harmonicNumber(i).getDenominator().equals(BigInteger.ONE));
         }
     }
 

@@ -621,6 +621,8 @@ public final class Rational implements Comparable<Rational> {
      * @return H<sub>{@code n}</sub>
      */
     public static @NotNull Rational harmonicNumber(int n) {
+        if (n < 1)
+            throw new ArithmeticException("harmonic number must have positive index");
         return sum(map(i -> of(i).invert(), range(1, n)));
     }
 
