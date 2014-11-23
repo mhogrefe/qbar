@@ -22,9 +22,7 @@ import java.util.Random;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.ordering.Ordering.*;
 import static mho.qbar.objects.Rational.*;
-import static mho.qbar.objects.Rational.of;
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
 
 public class RationalProperties {
     private static boolean USE_RANDOM;
@@ -49,7 +47,7 @@ public class RationalProperties {
             System.out.println("Testing " + (useRandom ? "randomly" : "exhaustively"));
             USE_RANDOM = useRandom;
             
-            properties_Of_BigInteger_BigInteger();
+            propertiesOf_BigInteger_BigInteger();
             propertiesOf_int_int();
             propertiesOf_BigInteger();
             propertiesOf_int();
@@ -84,12 +82,13 @@ public class RationalProperties {
             propertiesCompareTo();
             propertiesRead();
             propertiesToString();
+
             System.out.println();
         }
         System.out.println("Done");
     }
 
-    public static void properties_Of_BigInteger_BigInteger() {
+    private static void propertiesOf_BigInteger_BigInteger() {
         initialize();
         System.out.println("testing of(BigInteger, BigInteger) properties...");
 
@@ -109,7 +108,7 @@ public class RationalProperties {
         }
     }
 
-    public static void propertiesOf_int_int() {
+    private static void propertiesOf_int_int() {
         initialize();
         System.out.println("testing of(int, int) properties...");
 
@@ -129,7 +128,7 @@ public class RationalProperties {
         }
     }
 
-    public static void propertiesOf_BigInteger() {
+    private static void propertiesOf_BigInteger() {
         initialize();
         System.out.println("testing of(BigInteger) properties...");
 
@@ -140,7 +139,7 @@ public class RationalProperties {
         }
     }
 
-    public static void propertiesOf_int() {
+    private static void propertiesOf_int() {
         initialize();
         System.out.println("testing of(int) properties...");
 
@@ -155,7 +154,7 @@ public class RationalProperties {
         }
     }
 
-    public static void propertiesOf_float() {
+    private static void propertiesOf_float() {
         initialize();
         System.out.println("testing of(float) properties...");
 
@@ -167,7 +166,7 @@ public class RationalProperties {
             assert r != null;
             validate(r);
             if (f != -0.0f) {
-                fae(Float.toString(f), f, r.toFloat());
+                aeq(Float.toString(f), f, r.toFloat());
             }
             assertTrue(Float.toString(f), MathUtils.isAPowerOfTwo(r.getDenominator()));
             assertTrue(Float.toString(f), le(r.getDenominator(), denominatorLimit));
@@ -177,11 +176,11 @@ public class RationalProperties {
         for (float f : take(LIMIT, P.ordinaryFloats())) {
             Rational r = of(f);
             assert r != null;
-            fae(Float.toString(f), f, r.toFloat());
+            aeq(Float.toString(f), f, r.toFloat());
         }
     }
 
-    public static void propertiesOf_double() {
+    private static void propertiesOf_double() {
         initialize();
         System.out.println("testing of(double) properties...");
 
@@ -193,7 +192,7 @@ public class RationalProperties {
             assert r != null;
             validate(r);
             if (d != -0.0) {
-                dae(Double.toString(d), d, r.toDouble());
+                aeq(Double.toString(d), d, r.toDouble());
             }
             assertTrue(Double.toString(d), MathUtils.isAPowerOfTwo(r.getDenominator()));
             assertTrue(Double.toString(d), le(r.getDenominator(), denominatorLimit));
@@ -203,11 +202,11 @@ public class RationalProperties {
         for (double d : take(LIMIT, P.ordinaryDoubles())) {
             Rational r = of(d);
             assert r != null;
-            dae(Double.toString(d), d, r.toDouble());
+            aeq(Double.toString(d), d, r.toDouble());
         }
     }
 
-    public static void propertiesOf_BigDecimal() {
+    private static void propertiesOf_BigDecimal() {
         initialize();
         System.out.println("testing of(BigDecimal) properties...");
 
@@ -219,7 +218,7 @@ public class RationalProperties {
         }
     }
 
-    public static void propertiesNegate() {
+    private static void propertiesNegate() {
         initialize();
         System.out.println("testing negate() properties...");
 
@@ -237,7 +236,7 @@ public class RationalProperties {
         }
     }
 
-    public static void propertiesInvert() {
+    private static void propertiesInvert() {
         initialize();
         System.out.println("testing invert() properties...");
 
@@ -257,7 +256,7 @@ public class RationalProperties {
         }
     }
 
-    public static void propertiesAbs() {
+    private static void propertiesAbs() {
         initialize();
         System.out.println("testing abs() properties...");
 
@@ -269,7 +268,7 @@ public class RationalProperties {
         }
     }
 
-    public static void propertiesSignum() {
+    private static void propertiesSignum() {
         initialize();
         System.out.println("testing signum() properties...");
 
@@ -280,7 +279,7 @@ public class RationalProperties {
         }
     }
 
-    public static void propertiesAdd() {
+    private static void propertiesAdd() {
         initialize();
         System.out.println("testing add(Rational, Rational) properties...");
 
@@ -308,7 +307,7 @@ public class RationalProperties {
         }
     }
 
-    public static void propertiesSubtract() {
+    private static void propertiesSubtract() {
         initialize();
         System.out.println("testing subtract(Rational, Rational) properties...");
 
@@ -328,7 +327,7 @@ public class RationalProperties {
         }
     }
 
-    public static void propertiesMultiply_Rational_Rational() {
+    private static void propertiesMultiply_Rational_Rational() {
         initialize();
         System.out.println("testing multiply(Rational, Rational) properties...");
 
@@ -371,7 +370,7 @@ public class RationalProperties {
         }
     }
 
-    public static void propertiesMultiply_BigInteger() {
+    private static void propertiesMultiply_BigInteger() {
         initialize();
         System.out.println("testing multiply(BigInteger) properties...");
 
@@ -411,7 +410,7 @@ public class RationalProperties {
         }
     }
 
-    public static void propertiesMultiply_int() {
+    private static void propertiesMultiply_int() {
         initialize();
         System.out.println("testing multiply(int) properties...");
 
@@ -450,7 +449,7 @@ public class RationalProperties {
         }
     }
 
-    public static void propertiesDivide_Rational_Rational() {
+    private static void propertiesDivide_Rational_Rational() {
         initialize();
         System.out.println("testing divide(Rational, Rational) properties...");
 
@@ -481,7 +480,7 @@ public class RationalProperties {
         }
     }
 
-    public static void propertiesDivide_BigInteger() {
+    private static void propertiesDivide_BigInteger() {
         initialize();
         System.out.println("testing divide(BigInteger) properties...");
 
@@ -518,7 +517,7 @@ public class RationalProperties {
         }
     }
 
-    public static void propertiesDivide_int() {
+    private static void propertiesDivide_int() {
         initialize();
         System.out.println("testing divide(int) properties...");
 
@@ -549,7 +548,7 @@ public class RationalProperties {
         }
     }
 
-    public static void propertiesPow() {
+    private static void propertiesPow() {
         initialize();
         System.out.println("testing pow(int) properties...");
 
@@ -664,7 +663,7 @@ public class RationalProperties {
         }
     }
 
-    public static void propertiesFloor() {
+    private static void propertiesFloor() {
         initialize();
         System.out.println("testing floor() properties...");
 
@@ -679,7 +678,7 @@ public class RationalProperties {
         }
     }
 
-    public static void propertiesCeiling() {
+    private static void propertiesCeiling() {
         initialize();
         System.out.println("testing ceiling() properties...");
 
@@ -694,7 +693,7 @@ public class RationalProperties {
         }
     }
 
-    public static void propertiesFractionalPart() {
+    private static void propertiesFractionalPart() {
         initialize();
         System.out.println("testing fractionalPart() properties...");
 
@@ -711,7 +710,7 @@ public class RationalProperties {
         }
     }
 
-    public static void propertiesRound() {
+    private static void propertiesRound() {
         initialize();
         System.out.println("testing round(RoundingMode) properties...");
 
@@ -767,7 +766,7 @@ public class RationalProperties {
         }
     }
 
-    public static void propertiesRoundToDenominator() {
+    private static void propertiesRoundToDenominator() {
         initialize();
         System.out.println("testing roundToDenominator(BigInteger, RoundingMode) properties...");
 
@@ -921,7 +920,7 @@ public class RationalProperties {
         }
     }
 
-    public static void propertiesShiftLeft() {
+    private static void propertiesShiftLeft() {
         initialize();
         System.out.println("testing shiftLeft(int) properties...");
 
@@ -955,7 +954,7 @@ public class RationalProperties {
         }
     }
 
-    public static void propertiesShiftRight() {
+    private static void propertiesShiftRight() {
         initialize();
         System.out.println("testing shiftRight(int) properties...");
 
@@ -989,7 +988,7 @@ public class RationalProperties {
         }
     }
 //
-//    public static void binaryExponentProperties() {
+//    private static void binaryExponentProperties() {
 //        for (Rational r : positiveRationals().iterate(limit)) {
 //            int exponent = r.binaryExponent();
 //            Rational power = ONE.shiftLeft(exponent);
@@ -998,14 +997,14 @@ public class RationalProperties {
 //        }
 //    }
 //
-//    public static void toFloatProperties() {
+//    private static void toFloatProperties() {
 //        for (Rational r : P.rationals().iterate(limit)) {
 //            float f = r.toFloat();
 //            assertEquals(r.toString(), f, r.toFloat(RoundingMode.HALF_EVEN));
 //        }
 //    }
 //
-//    public static void toFloatRoundingModeProperties() {
+//    private static void toFloatRoundingModeProperties() {
 //        Iterable<Pair<Rational, RoundingMode>> g = new FilteredIterable<Pair<Rational, RoundingMode>>(
 //                P.pairs(P.rationals(), Iterables.roundingModes()),
 //                p -> p.b != RoundingMode.UNNECESSARY
@@ -1113,7 +1112,7 @@ public class RationalProperties {
 //        }
 //    }
 
-    public static void propertiesEquals() {
+    private static void propertiesEquals() {
         initialize();
         System.out.println("testing equals(Object) properties...");
 
@@ -1125,7 +1124,7 @@ public class RationalProperties {
         }
     }
 
-    public static void propertiesHashCode() {
+    private static void propertiesHashCode() {
         initialize();
         System.out.println("testing hashCode() properties...");
 
@@ -1134,7 +1133,7 @@ public class RationalProperties {
         }
     }
 
-    public static void propertiesCompareTo() {
+    private static void propertiesCompareTo() {
         initialize();
         System.out.println("testing compareTo(Rational) properties...");
 
@@ -1166,7 +1165,7 @@ public class RationalProperties {
         }
     }
 
-    public static void propertiesRead() {
+    private static void propertiesRead() {
         initialize();
         System.out.println("testing read(String) properties...");
 
@@ -1202,7 +1201,7 @@ public class RationalProperties {
         }
     }
 
-    public static void propertiesToString() {
+    private static void propertiesToString() {
         initialize();
         System.out.println("testing toString() properties...");
 
@@ -1222,11 +1221,11 @@ public class RationalProperties {
         if (r.equals(ONE)) assertTrue(r.toString(), r == ONE);
     }
 
-    private static void fae(String message, float f1, float f2) {
+    private static void aeq(String message, float f1, float f2) {
         assertEquals(message, Float.toString(f1), Float.toString(f2));
     }
 
-    private static void dae(String message, double d1, double d2) {
+    private static void aeq(String message, double d1, double d2) {
         assertEquals(message, Double.toString(d1), Double.toString(d2));
     }
 }
