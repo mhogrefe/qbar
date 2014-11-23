@@ -662,7 +662,9 @@ public class RationalProperties {
 
         is = map(i -> i + 1, is);
         for (int i : take(SMALL_LIMIT, is)) {
-            assertFalse(Integer.toString(i), harmonicNumber(i).getDenominator().equals(BigInteger.ONE));
+            Rational h = harmonicNumber(i);
+            assertTrue(Integer.toString(i), gt(h, harmonicNumber(i - 1)));
+            assertFalse(Integer.toString(i), h.getDenominator().equals(BigInteger.ONE));
         }
     }
 
