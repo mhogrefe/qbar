@@ -430,10 +430,32 @@ public final class Rational implements Comparable<Rational> {
         return null; //never happens
     }
 
+    /**
+     * Rounds {@code this} to the nearest {@code BigInteger}, breaking ties with the half-even rule (see
+     * {@link java.math.RoundingMode#HALF_EVEN}).
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Rational}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @return {@code this}, rounded
+     */
     public @NotNull BigInteger bigIntegerValue() {
         return bigIntegerValue(RoundingMode.HALF_EVEN);
     }
 
+    /**
+     * Converts {@code this} to a {@code BigInteger}. Throws an {@link java.lang.ArithmeticException} if {@code this}
+     * is not integral.
+     *
+     * <ul>
+     *  <li>{@code this} must be an integer.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @return the {@code BigInteger} value of {@code this}
+     */
     public @NotNull BigInteger bigIntegerValueExact() {
         return bigIntegerValue(RoundingMode.UNNECESSARY);
     }
