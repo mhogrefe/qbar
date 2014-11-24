@@ -142,6 +142,34 @@ public class RationalDemos {
         }
     }
 
+    public static void demoByteValueExact() {
+        initialize();
+        for (Rational r : take(LIMIT, map(Rational::of, P.bytes()))) {
+            System.out.println("byteValueExact(" + r + ") = " + r.byteValueExact());
+        }
+    }
+
+    public static void demoShortValueExact() {
+        initialize();
+        for (Rational r : take(LIMIT, map(Rational::of, P.shorts()))) {
+            System.out.println("shortValueExact(" + r + ") = " + r.shortValueExact());
+        }
+    }
+
+    public static void demoIntValueExact() {
+        initialize();
+        for (Rational r : take(LIMIT, map(Rational::of, P.integers()))) {
+            System.out.println("intValueExact(" + r + ") = " + r.intValueExact());
+        }
+    }
+
+    public static void demoLongValueExact() {
+        initialize();
+        for (Rational r : take(LIMIT, map(l -> of(BigInteger.valueOf(l)), P.longs()))) {
+            System.out.println("longValueExact(" + r + ") = " + r.longValueExact());
+        }
+    }
+
     public static void demoNegate() {
         initialize();
         for (Rational r : take(LIMIT, P.rationals())) {
