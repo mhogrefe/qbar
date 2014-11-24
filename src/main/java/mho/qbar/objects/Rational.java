@@ -460,18 +460,62 @@ public final class Rational implements Comparable<Rational> {
         return bigIntegerValue(RoundingMode.UNNECESSARY);
     }
 
+    /**
+     * Converts {@code this} to a {@code byte}. Throws an {@link java.lang.ArithmeticException} if {@code this} is not
+     * integral or outside of a {@code byte}'s range.
+     *
+     * <ul>
+     *  <li>{@code this} must be an integer within a {@code byte}'s range.</li>
+     *  <li>The result can be any {@code byte}.</li>
+     * </ul>
+     *
+     * @return the {@code byte} value of {@code this}
+     */
     public byte byteValueExact() {
         return bigIntegerValueExact().byteValueExact();
     }
 
+    /**
+     * Converts {@code this} to a {@code short}. Throws an {@link java.lang.ArithmeticException} if {@code this} is not
+     * integral or outside of a {@code short}'s range.
+     *
+     * <ul>
+     *  <li>{@code this} must be an integer within a {@code short}'s range.</li>
+     *  <li>The result can be any {@code short}.</li>
+     * </ul>
+     *
+     * @return the {@code short} value of {@code this}
+     */
     public short shortValueExact() {
         return bigIntegerValueExact().shortValueExact();
     }
 
+    /**
+     * Converts {@code this} to an {@code int}. Throws an {@link java.lang.ArithmeticException} if {@code this} is not
+     * integral or outside of an {@code int}'s range.
+     *
+     * <ul>
+     *  <li>{@code this} must be an integer within an {@code int}'s range.</li>
+     *  <li>The result can be any {@code int}.</li>
+     * </ul>
+     *
+     * @return the {@code int} value of {@code this}
+     */
     public int intValueExact() {
         return bigIntegerValueExact().intValueExact();
     }
 
+    /**
+     * Converts {@code this} to a {@code long}. Throws an {@link java.lang.ArithmeticException} if {@code this} is not
+     * integral or outside of a {@code long}'s range.
+     *
+     * <ul>
+     *  <li>{@code this} must be an integer within a {@code long}'s range.</li>
+     *  <li>The result can be any {@code long}.</li>
+     * </ul>
+     *
+     * @return the {@code long} value of {@code this}
+     */
     public long longValueExact() {
         return bigIntegerValueExact().longValueExact();
     }
