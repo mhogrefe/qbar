@@ -57,6 +57,8 @@ public class RationalProperties {
             propertiesOf_int();
             propertiesOf_float();
             propertiesOf_double();
+            propertiesOfExact_float();
+            propertiesOfExact_double();
             propertiesOf_BigDecimal();
             propertiesNegate();
             propertiesInvert();
@@ -166,6 +168,46 @@ public class RationalProperties {
         initialize();
         System.out.println("testing of(float) properties...");
 
+        Iterable<Float> fs = filter(f -> Float.isFinite(f) && !Float.isNaN(f), P.floats());
+        for (float f : take(LIMIT, fs)) {
+            Rational r = of(f);
+            assert r != null;
+            validate(r);
+            assertTrue(Float.toString(f), r.hasTerminatingDecimalExpansion());
+        }
+
+        for (float f : take(LIMIT, P.ordinaryFloats())) {
+            Rational r = of(f);
+            assert r != null;
+            aeq(Float.toString(f), f, r.floatValue());
+            aeq(Float.toString(f), new BigDecimal(Float.toString(f)), r.bigDecimalValueExact());
+        }
+    }
+
+    private static void propertiesOf_double() {
+        initialize();
+        System.out.println("testing of(double) properties...");
+
+        Iterable<Double> ds = filter(d -> Double.isFinite(d) && !Double.isNaN(d), P.doubles());
+        for (double d : take(LIMIT, ds)) {
+            Rational r = of(d);
+            assert r != null;
+            validate(r);
+            assertTrue(Double.toString(d), r.hasTerminatingDecimalExpansion());
+        }
+
+        for (double d : take(LIMIT, P.ordinaryDoubles())) {
+            Rational r = of(d);
+            assert r != null;
+            aeq(Double.toString(d), d, r.doubleValue());
+            aeq(Double.toString(d), new BigDecimal(Double.toString(d)), r.bigDecimalValueExact());
+        }
+    }
+
+    private static void propertiesOfExact_float() {
+        initialize();
+        System.out.println("testing ofExact(float) properties...");
+
         BigInteger denominatorLimit = BigInteger.ONE.shiftLeft(149);
         BigInteger numeratorLimit = BigInteger.ONE.shiftLeft(128).subtract(BigInteger.ONE.shiftLeft(104));
         Iterable<Float> fs = filter(f -> Float.isFinite(f) && !Float.isNaN(f), P.floats());
@@ -173,9 +215,6 @@ public class RationalProperties {
             Rational r = ofExact(f);
             assert r != null;
             validate(r);
-            if (f != -0.0f) {
-                aeq(Float.toString(f), f, r.floatValue());
-            }
             assertTrue(Float.toString(f), MathUtils.isAPowerOfTwo(r.getDenominator()));
             assertTrue(Float.toString(f), le(r.getDenominator(), denominatorLimit));
             assertTrue(Float.toString(f), le(r.getNumerator(), numeratorLimit));
@@ -188,9 +227,9 @@ public class RationalProperties {
         }
     }
 
-    private static void propertiesOf_double() {
+    private static void propertiesOfExact_double() {
         initialize();
-        System.out.println("testing of(double) properties...");
+        System.out.println("testing ofExact(double) properties...");
 
         BigInteger denominatorLimit = BigInteger.ONE.shiftLeft(1074);
         BigInteger numeratorLimit = BigInteger.ONE.shiftLeft(1024).subtract(BigInteger.ONE.shiftLeft(971));
@@ -199,9 +238,6 @@ public class RationalProperties {
             Rational r = ofExact(d);
             assert r != null;
             validate(r);
-            if (d != -0.0) {
-                aeq(Double.toString(d), d, r.doubleValue());
-            }
             assertTrue(Double.toString(d), MathUtils.isAPowerOfTwo(r.getDenominator()));
             assertTrue(Double.toString(d), le(r.getDenominator(), denominatorLimit));
             assertTrue(Double.toString(d), le(r.getNumerator(), numeratorLimit));
@@ -221,7 +257,7 @@ public class RationalProperties {
         for (BigDecimal bd : take(LIMIT, P.bigDecimals())) {
             Rational r = of(bd);
             validate(r);
-            assertEquals(bd.toString(), bd.stripTrailingZeros(), r.bigDecimalValueExact().stripTrailingZeros());
+            aeq(bd.toString(), bd, r.bigDecimalValueExact());
             assertTrue(bd.toString(), r.hasTerminatingDecimalExpansion());
         }
     }
@@ -1345,11 +1381,15 @@ public class RationalProperties {
         assertTrue(message, equal(xs, ys));
     }
 
-    private static void aeq(String message, float f1, float f2) {
-        assertEquals(message, Float.toString(f1), Float.toString(f2));
+    private static void aeq(String message, float x, float y) {
+        assertEquals(message, Float.toString(x), Float.toString(y));
     }
 
-    private static void aeq(String message, double d1, double d2) {
-        assertEquals(message, Double.toString(d1), Double.toString(d2));
+    private static void aeq(String message, double x, double y) {
+        assertEquals(message, Double.toString(x), Double.toString(y));
+    }
+
+    private static void aeq(String message, BigDecimal x, BigDecimal y) {
+        assertEquals(message, x.stripTrailingZeros(), y.stripTrailingZeros());
     }
 }

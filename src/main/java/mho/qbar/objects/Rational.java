@@ -231,8 +231,8 @@ public final class Rational implements Comparable<Rational> {
      * <ul>
      *  <li>{@code f} may be any {@code float}.</li>
      *  <li>The result is null or a {@code Rational} whose decimal expansion is equal to the displayed decimal
-     *  expansion of some {@code float}. Some necessary but not sufficient conditions for this are that the denominator
-     *  is of the form 2<sup>m</sup>5<sup>n</sup>, with m,n≥0, and less than or equal to 2<sup>149</sup>.</li>
+     *  expansion of some {@code float}. A necessary but not sufficient condition for this is that the denominator is
+     *  of the form 2<sup>m</sup>5<sup>n</sup>, with m,n≥0.</li>
      * </ul>
      *
      * @param f the {@code float}
@@ -255,9 +255,8 @@ public final class Rational implements Comparable<Rational> {
      * <ul>
      *  <li>{@code d} may be any {@code double}.</li>
      *  <li>The result is null or a {@code Rational} whose decimal expansion is equal to the displayed decimal
-     *  expansion of some {@code double}. Some necessary but not sufficient conditions for this are that the
-     *  denominator is of the form 2<sup>m</sup>5<sup>n</sup>, with m,n≥0, and less than or equal to
-     *  2<sup>1074</sup>.</li>
+     *  expansion of some {@code double}. A necessary but not sufficient conditions for this is that the denominator is
+     *  of the form 2<sup>m</sup>5<sup>n</sup>, with m,n≥0.</li>
      * </ul>
      *
      * @param d the {@code double}
