@@ -364,19 +364,19 @@ public class RationalTest {
         aeq(ZERO.bigIntegerValue(RoundingMode.UNNECESSARY), 0);
         aeq(read("-1").get().bigIntegerValue(RoundingMode.UNNECESSARY), -1);
         try {
-            System.out.println(read("-11/10").get().bigIntegerValue(RoundingMode.UNNECESSARY));
+            read("-11/10").get().bigIntegerValue(RoundingMode.UNNECESSARY);
             fail();
         } catch (ArithmeticException ignored) {}
         try {
-            System.out.println(read("-8/5").get().bigIntegerValue(RoundingMode.UNNECESSARY));
+            read("-8/5").get().bigIntegerValue(RoundingMode.UNNECESSARY);
             fail();
         } catch (ArithmeticException ignored) {}
         try {
-            System.out.println(read("-5/2").get().bigIntegerValue(RoundingMode.UNNECESSARY));
+            read("-5/2").get().bigIntegerValue(RoundingMode.UNNECESSARY);
             fail();
         } catch (ArithmeticException ignored) {}
         try {
-            System.out.println(read("-11/2").get().bigIntegerValue(RoundingMode.UNNECESSARY));
+            read("-11/2").get().bigIntegerValue(RoundingMode.UNNECESSARY);
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -397,40 +397,102 @@ public class RationalTest {
     }
 
     @Test
-    public void testBigIntegerValueExact() {
+     public void testBigIntegerValueExact() {
+        aeq(ONE.bigIntegerValueExact(), 1);
+        aeq(ZERO.bigIntegerValueExact(), 0);
+        aeq(read("-1").get().bigIntegerValueExact(), -1);
+        aeq(read("23").get().bigIntegerValueExact(), 23);
+        aeq(read("-8").get().bigIntegerValueExact(), -8);
         try {
             read("11/2").get().bigIntegerValueExact();
             fail();
         } catch (ArithmeticException ignored) {}
         try {
-            read("5/2").get().bigIntegerValueExact();
+            read("-8/5").get().bigIntegerValueExact();
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testByteValueExact() {
+        aeq(ONE.byteValueExact(), 1);
+        aeq(ZERO.byteValueExact(), 0);
+        aeq(read("-1").get().byteValueExact(), -1);
+        aeq(read("23").get().byteValueExact(), 23);
+        aeq(read("-8").get().byteValueExact(), -8);
+        try {
+            read("11/2").get().byteValueExact();
             fail();
         } catch (ArithmeticException ignored) {}
         try {
-            read("8/5").get().bigIntegerValueExact();
+            read("-8/5").get().byteValueExact();
             fail();
         } catch (ArithmeticException ignored) {}
         try {
-            read("11/10").get().bigIntegerValueExact();
+            read("1000").get().byteValueExact();
             fail();
         } catch (ArithmeticException ignored) {}
-        aeq(ONE.bigIntegerValueExact(), 1);
-        aeq(ZERO.bigIntegerValueExact(), 0);
-        aeq(read("-1").get().bigIntegerValueExact(), -1);
+    }
+
+    @Test
+    public void testShortValueExact() {
+        aeq(ONE.shortValueExact(), 1);
+        aeq(ZERO.shortValueExact(), 0);
+        aeq(read("-1").get().shortValueExact(), -1);
+        aeq(read("23").get().shortValueExact(), 23);
+        aeq(read("-8").get().shortValueExact(), -8);
         try {
-            System.out.println(read("-11/10").get().bigIntegerValueExact());
-            fail();
-        } catch (ArithmeticException ignored) {}
-        try {
-            System.out.println(read("-8/5").get().bigIntegerValueExact());
-            fail();
-        } catch (ArithmeticException ignored) {}
-        try {
-            System.out.println(read("-5/2").get().bigIntegerValueExact());
+            read("11/2").get().shortValueExact();
             fail();
         } catch (ArithmeticException ignored) {}
         try {
-            System.out.println(read("-11/2").get().bigIntegerValueExact());
+            read("-8/5").get().shortValueExact();
+            fail();
+        } catch (ArithmeticException ignored) {}
+        try {
+            read("100000").get().shortValueExact();
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testIntValueExact() {
+        aeq(ONE.intValueExact(), 1);
+        aeq(ZERO.intValueExact(), 0);
+        aeq(read("-1").get().intValueExact(), -1);
+        aeq(read("23").get().intValueExact(), 23);
+        aeq(read("-8").get().intValueExact(), -8);
+        try {
+            read("11/2").get().intValueExact();
+            fail();
+        } catch (ArithmeticException ignored) {}
+        try {
+            read("-8/5").get().intValueExact();
+            fail();
+        } catch (ArithmeticException ignored) {}
+        try {
+            read("10000000000").get().intValueExact();
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testLongValueExact() {
+        aeq(ONE.longValueExact(), 1);
+        aeq(ZERO.longValueExact(), 0);
+        aeq(read("-1").get().longValueExact(), -1);
+        aeq(read("23").get().longValueExact(), 23);
+        aeq(read("-8").get().longValueExact(), -8);
+        try {
+            read("11/2").get().longValueExact();
+            fail();
+        } catch (ArithmeticException ignored) {}
+        try {
+            read("-8/5").get().longValueExact();
+            fail();
+        } catch (ArithmeticException ignored) {}
+        try {
+            read("10000000000000000000").get().longValueExact();
             fail();
         } catch (ArithmeticException ignored) {}
     }
