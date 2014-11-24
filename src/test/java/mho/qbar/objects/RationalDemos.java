@@ -112,6 +112,36 @@ public class RationalDemos {
         }
     }
 
+    public static void demoBigIntegerValue_RoundingMode() {
+        initialize();
+        Iterable<Pair<Rational, RoundingMode>> ps = filter(
+                p -> {
+                    assert p.a != null;
+                    return p.b != RoundingMode.UNNECESSARY || p.a.getDenominator().equals(BigInteger.ONE);
+                },
+                P.pairs(P.rationals(), P.roundingModes())
+        );
+        for (Pair<Rational, RoundingMode> p : take(LIMIT, ps)) {
+            assert p.a != null;
+            assert p.b != null;
+            System.out.println("bigIntegerValue(" + p.a + ", " + p.b + ") = " + p.a.bigIntegerValue(p.b));
+        }
+    }
+
+    public static void demoBigIntegerValue() {
+        initialize();
+        for (Rational r : take(LIMIT, P.rationals())) {
+            System.out.println("bigIntegerValue(" + r + ") = " + r.bigIntegerValue());
+        }
+    }
+
+    public static void demoBigIntegerValueExact() {
+        initialize();
+        for (Rational r : take(LIMIT, map(Rational::of, P.bigIntegers()))) {
+            System.out.println("bigIntegerValueExact(" + r + ") = " + r.bigIntegerValueExact());
+        }
+    }
+
     public static void demoNegate() {
         initialize();
         for (Rational r : take(LIMIT, P.rationals())) {
@@ -288,22 +318,6 @@ public class RationalDemos {
         initialize();
         for (Rational r : take(LIMIT, P.rationals())) {
             System.out.println("fractionalPart(" + r + ") = " + r.fractionalPart());
-        }
-    }
-
-    public static void demoRound() {
-        initialize();
-        Iterable<Pair<Rational, RoundingMode>> ps = filter(
-                p -> {
-                    assert p.a != null;
-                    return p.b != RoundingMode.UNNECESSARY || p.a.getDenominator().equals(BigInteger.ONE);
-                },
-                P.pairs(P.rationals(), P.roundingModes())
-        );
-        for (Pair<Rational, RoundingMode> p : take(LIMIT, ps)) {
-            assert p.a != null;
-            assert p.b != null;
-            System.out.println("round(" + p.a + ", " + p.b + ") = " + p.a.bigIntegerValue(p.b));
         }
     }
 
