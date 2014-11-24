@@ -60,6 +60,9 @@ public class RationalProperties {
             propertiesOfExact_float();
             propertiesOfExact_double();
             propertiesOf_BigDecimal();
+            propertiesBigIntegerValue_RoundingMode();
+            propertiesBigIntegerValue();
+            propertiesBigIntegerValueExact();
             propertiesNegate();
             propertiesInvert();
             propertiesAbs();
@@ -80,7 +83,6 @@ public class RationalProperties {
             propertiesFloor();
             propertiesCeiling();
             propertiesFractionalPart();
-            propertiesRound();
             propertiesRoundToDenominator();
             propertiesShiftLeft();
             propertiesShiftRight();
@@ -259,6 +261,98 @@ public class RationalProperties {
             validate(r);
             aeq(bd.toString(), bd, r.bigDecimalValueExact());
             assertTrue(bd.toString(), r.hasTerminatingDecimalExpansion());
+        }
+    }
+
+    private static void propertiesBigIntegerValue_RoundingMode() {
+        initialize();
+        System.out.println("testing bigIntegerValue(RoundingMode) properties...");
+
+        Iterable<Pair<Rational, RoundingMode>> ps = filter(
+                p -> {
+                    assert p.a != null;
+                    return p.b != RoundingMode.UNNECESSARY || p.a.getDenominator().equals(BigInteger.ONE);
+                },
+                P.pairs(P.rationals(), P.roundingModes())
+        );
+        for (Pair<Rational, RoundingMode> p : take(LIMIT, ps)) {
+            assert p.a != null;
+            assert p.b != null;
+            BigInteger rounded = p.a.bigIntegerValue(p.b);
+            assertTrue(p.toString(), rounded.equals(BigInteger.ZERO) || rounded.signum() == p.a.signum());
+            assertTrue(p.toString(), lt(subtract(p.a, of(rounded)).abs(), ONE));
+        }
+
+        for (BigInteger i : take(LIMIT, P.bigIntegers())) {
+            assertEquals(i.toString(), of(i).bigIntegerValue(RoundingMode.UNNECESSARY), i);
+        }
+
+        for (Rational r : take(LIMIT, P.rationals())) {
+            assertEquals(r.toString(), r.bigIntegerValue(RoundingMode.FLOOR), r.floor());
+            assertEquals(r.toString(), r.bigIntegerValue(RoundingMode.CEILING), r.ceiling());
+            assertTrue(r.toString(), le(of(r.bigIntegerValue(RoundingMode.DOWN)).abs(), r.abs()));
+            assertTrue(r.toString(), ge(of(r.bigIntegerValue(RoundingMode.UP)).abs(), r.abs()));
+            assertTrue(r.toString(), le(subtract(r, of(r.bigIntegerValue(RoundingMode.HALF_DOWN))).abs(), of(1, 2)));
+            assertTrue(r.toString(), le(subtract(r, of(r.bigIntegerValue(RoundingMode.HALF_UP))).abs(), of(1, 2)));
+            assertTrue(r.toString(), le(subtract(r, of(r.bigIntegerValue(RoundingMode.HALF_EVEN))).abs(), of(1, 2)));
+        }
+
+        Iterable<Rational> rs = filter(r -> lt(r.abs().fractionalPart(), of(1, 2)), P.rationals());
+        for (Rational r : take(LIMIT, rs)) {
+            assertEquals(r.toString(), r.bigIntegerValue(RoundingMode.HALF_DOWN), r.bigIntegerValue(RoundingMode.DOWN));
+            assertEquals(r.toString(), r.bigIntegerValue(RoundingMode.HALF_UP), r.bigIntegerValue(RoundingMode.DOWN));
+            assertEquals(r.toString(), r.bigIntegerValue(RoundingMode.HALF_EVEN), r.bigIntegerValue(RoundingMode.DOWN));
+        }
+
+        rs = filter(r -> gt(r.abs().fractionalPart(), of(1, 2)), P.rationals());
+        for (Rational r : take(LIMIT, rs)) {
+            assertEquals(r.toString(), r.bigIntegerValue(RoundingMode.HALF_DOWN), r.bigIntegerValue(RoundingMode.UP));
+            assertEquals(r.toString(), r.bigIntegerValue(RoundingMode.HALF_UP), r.bigIntegerValue(RoundingMode.UP));
+            assertEquals(r.toString(), r.bigIntegerValue(RoundingMode.HALF_EVEN), r.bigIntegerValue(RoundingMode.UP));
+        }
+
+        //odd multiples of 1/2
+        rs = map(i -> of(i.shiftLeft(1).add(BigInteger.ONE), BigInteger.valueOf(2)), P.bigIntegers());
+        for (Rational r : take(LIMIT, rs)) {
+            assertEquals(r.toString(), r.bigIntegerValue(RoundingMode.HALF_DOWN), r.bigIntegerValue(RoundingMode.DOWN));
+            assertEquals(r.toString(), r.bigIntegerValue(RoundingMode.HALF_UP), r.bigIntegerValue(RoundingMode.UP));
+            assertFalse(r.toString(), r.bigIntegerValue(RoundingMode.HALF_EVEN).testBit(0));
+        }
+    }
+
+    private static void propertiesBigIntegerValue() {
+        initialize();
+        System.out.println("testing bigIntegerValue() properties...");
+
+        for (Rational r : take(LIMIT, P.rationals())) {
+            BigInteger rounded = r.bigIntegerValue();
+            assertTrue(r.toString(), rounded.equals(BigInteger.ZERO) || rounded.signum() == r.signum());
+            assertTrue(r.toString(), le(subtract(r, of(r.bigIntegerValue())).abs(), of(1, 2)));
+        }
+
+        Iterable<Rational> rs = filter(r -> lt(r.abs().fractionalPart(), of(1, 2)), P.rationals());
+        for (Rational r : take(LIMIT, rs)) {
+            assertEquals(r.toString(), r.bigIntegerValue(), r.bigIntegerValue(RoundingMode.DOWN));
+        }
+
+        rs = filter(r -> gt(r.abs().fractionalPart(), of(1, 2)), P.rationals());
+        for (Rational r : take(LIMIT, rs)) {
+            assertEquals(r.toString(), r.bigIntegerValue(), r.bigIntegerValue(RoundingMode.UP));
+        }
+
+        //odd multiples of 1/2
+        rs = map(i -> of(i.shiftLeft(1).add(BigInteger.ONE), BigInteger.valueOf(2)), P.bigIntegers());
+        for (Rational r : take(LIMIT, rs)) {
+            assertFalse(r.toString(), r.bigIntegerValue().testBit(0));
+        }
+    }
+
+    private static void propertiesBigIntegerValueExact() {
+        initialize();
+        System.out.println("testing bigIntegerValueExact() properties...");
+
+        for (BigInteger i : take(LIMIT, P.bigIntegers())) {
+            assertEquals(i.toString(), of(i).bigIntegerValueExact(), i);
         }
     }
 
@@ -863,62 +957,6 @@ public class RationalProperties {
 
         for (BigInteger i : take(LIMIT, P.bigIntegers())) {
             assertEquals(i.toString(), of(i).fractionalPart(), ZERO);
-        }
-    }
-
-    private static void propertiesRound() {
-        initialize();
-        System.out.println("testing round(RoundingMode) properties...");
-
-        Iterable<Pair<Rational, RoundingMode>> ps = filter(
-                p -> {
-                    assert p.a != null;
-                    return p.b != RoundingMode.UNNECESSARY || p.a.getDenominator().equals(BigInteger.ONE);
-                },
-                P.pairs(P.rationals(), P.roundingModes())
-        );
-        for (Pair<Rational, RoundingMode> p : take(LIMIT, ps)) {
-            assert p.a != null;
-            assert p.b != null;
-            BigInteger rounded = p.a.bigIntegerValue(p.b);
-            assertTrue(p.toString(), rounded.equals(BigInteger.ZERO) || rounded.signum() == p.a.signum());
-            assertTrue(p.toString(), lt(subtract(p.a, of(rounded)).abs(), ONE));
-        }
-
-        for (BigInteger i : take(LIMIT, P.bigIntegers())) {
-            assertEquals(i.toString(), of(i).bigIntegerValue(RoundingMode.UNNECESSARY), i);
-        }
-
-        for (Rational r : take(LIMIT, P.rationals())) {
-            assertEquals(r.toString(), r.bigIntegerValue(RoundingMode.FLOOR), r.floor());
-            assertEquals(r.toString(), r.bigIntegerValue(RoundingMode.CEILING), r.ceiling());
-            assertTrue(r.toString(), le(of(r.bigIntegerValue(RoundingMode.DOWN)).abs(), r.abs()));
-            assertTrue(r.toString(), ge(of(r.bigIntegerValue(RoundingMode.UP)).abs(), r.abs()));
-            assertTrue(r.toString(), le(subtract(r, of(r.bigIntegerValue(RoundingMode.HALF_DOWN))).abs(), of(1, 2)));
-            assertTrue(r.toString(), le(subtract(r, of(r.bigIntegerValue(RoundingMode.HALF_UP))).abs(), of(1, 2)));
-            assertTrue(r.toString(), le(subtract(r, of(r.bigIntegerValue(RoundingMode.HALF_EVEN))).abs(), of(1, 2)));
-        }
-
-        Iterable<Rational> rs = filter(r -> lt(r.abs().fractionalPart(), of(1, 2)), P.rationals());
-        for (Rational r : take(LIMIT, rs)) {
-            assertEquals(r.toString(), r.bigIntegerValue(RoundingMode.HALF_DOWN), r.bigIntegerValue(RoundingMode.DOWN));
-            assertEquals(r.toString(), r.bigIntegerValue(RoundingMode.HALF_UP), r.bigIntegerValue(RoundingMode.DOWN));
-            assertEquals(r.toString(), r.bigIntegerValue(RoundingMode.HALF_EVEN), r.bigIntegerValue(RoundingMode.DOWN));
-        }
-
-        rs = filter(r -> gt(r.abs().fractionalPart(), of(1, 2)), P.rationals());
-        for (Rational r : take(LIMIT, rs)) {
-            assertEquals(r.toString(), r.bigIntegerValue(RoundingMode.HALF_DOWN), r.bigIntegerValue(RoundingMode.UP));
-            assertEquals(r.toString(), r.bigIntegerValue(RoundingMode.HALF_UP), r.bigIntegerValue(RoundingMode.UP));
-            assertEquals(r.toString(), r.bigIntegerValue(RoundingMode.HALF_EVEN), r.bigIntegerValue(RoundingMode.UP));
-        }
-
-        //odd multiples of 1/2
-        rs = map(i -> of(i.shiftLeft(1).add(BigInteger.ONE), BigInteger.valueOf(2)), P.bigIntegers());
-        for (Rational r : take(LIMIT, rs)) {
-            assertEquals(r.toString(), r.bigIntegerValue(RoundingMode.HALF_DOWN), r.bigIntegerValue(RoundingMode.DOWN));
-            assertEquals(r.toString(), r.bigIntegerValue(RoundingMode.HALF_UP), r.bigIntegerValue(RoundingMode.UP));
-            assertFalse(r.toString(), r.bigIntegerValue(RoundingMode.HALF_EVEN).testBit(0));
         }
     }
 
