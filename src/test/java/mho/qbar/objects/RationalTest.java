@@ -87,6 +87,21 @@ public class RationalTest {
     }
 
     @Test
+    public void testOf_long_long() {
+        aeq(of(2L, 3L), "2/3");
+        aeq(of(4L, 6L), "2/3");
+        aeq(of(-4L, -6L), "2/3");
+        aeq(of(4L, -6L), "-2/3");
+        assertTrue(of(4L, 4L) == ONE);
+        aeq(of(4L, 1L), "4");
+        assertTrue(of(0L, 1L) == ZERO);
+        try {
+            of(1L, 0L);
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
     public void testOf_int_int() {
         aeq(of(2, 3), "2/3");
         aeq(of(4, 6), "2/3");
@@ -107,6 +122,14 @@ public class RationalTest {
         aeq(of(BigInteger.valueOf(-23)), "-23");
         assertTrue(of(BigInteger.valueOf(0)) == ZERO);
         assertTrue(of(BigInteger.valueOf(1)) == ONE);
+    }
+
+    @Test
+    public void testOf_long() {
+        aeq(of(23L), "23");
+        aeq(of(-23L), "-23");
+        assertTrue(of(0L) == ZERO);
+        assertTrue(of(1L) == ONE);
     }
 
     @Test

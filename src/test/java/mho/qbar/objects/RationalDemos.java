@@ -21,7 +21,7 @@ import static mho.qbar.objects.Rational.*;
 
 public class RationalDemos {
     private static final boolean USE_RANDOM = false;
-    private static final String NECESSARY_CHARS = "-/0123456789";
+    private static final String RATIONAL_CHARS = "-/0123456789";
     private static final int SMALL_LIMIT = 1000;
     private static int LIMIT;
 
@@ -53,6 +53,16 @@ public class RationalDemos {
         }
     }
 
+    public static void demoOf_long_long() {
+        initialize();
+        Iterable<Pair<Long, Long>> ps = filter(p -> p.b != 0, P.pairs(P.longs()));
+        for (Pair<Long, Long> p : take(LIMIT, ps)) {
+            assert p.a != null;
+            assert p.b != null;
+            System.out.println("of(" + p.a + ", " + p.b + ") = " + of(p.a, p.b));
+        }
+    }
+
     public static void demoOf_int_int() {
         initialize();
         Iterable<Pair<Integer, Integer>> ps = filter(p -> p.b != 0, P.pairs(P.integers()));
@@ -67,6 +77,13 @@ public class RationalDemos {
         initialize();
         for (BigInteger i : take(LIMIT, P.bigIntegers())) {
             System.out.println("of(" + i + ") = " + of(i));
+        }
+    }
+
+    public static void demoOf_long() {
+        initialize();
+        for (long l : take(LIMIT, P.longs())) {
+            System.out.println("of(" + l + ") = " + of(l));
         }
     }
 
@@ -165,7 +182,7 @@ public class RationalDemos {
 
     public static void demoLongValueExact() {
         initialize();
-        for (Rational r : take(LIMIT, map(l -> of(BigInteger.valueOf(l)), P.longs()))) {
+        for (Rational r : take(LIMIT, map(Rational::of, P.longs()))) {
             System.out.println("longValueExact(" + r + ") = " + r.longValueExact());
         }
     }
@@ -639,9 +656,9 @@ public class RationalDemos {
         initialize();
         Iterable<Character> cs;
         if (P instanceof QBarExhaustiveProvider) {
-            cs = fromString(NECESSARY_CHARS);
+            cs = fromString(RATIONAL_CHARS);
         } else {
-            cs = ((QBarRandomProvider) P).uniformSample(NECESSARY_CHARS);
+            cs = ((QBarRandomProvider) P).uniformSample(RATIONAL_CHARS);
         }
         for (String s : take(LIMIT, P.strings(cs))) {
             System.out.println("read(" + s + ") = " + read(s));

@@ -163,6 +163,31 @@ public final class Rational implements Comparable<Rational> {
     }
 
     /**
+     * Creates a {@code Rational} from {@code longs}. Throws an exception if any args are null or {@code denominator}
+     * is zero. Reduces arguments and negates {@code denominator} if necessary.
+     *
+     * <ul>
+     *  <li>{@code numerator} can be any {@code long}.</li>
+     *  <li>{@code denominator} cannot be equal to 0.</li>
+     *  <li>The result is a {@code Rational} whose numerator and denominator both satisfy
+     *  –2<sup>63</sup>≤x{@literal <}2<sup>63</sup>.</li>
+     * </ul>
+     *
+     * @param numerator the numerator
+     * @param denominator the denominator
+     * @return the {@code Rational} corresponding to {@code numerator}/{@code denominator}
+     */
+    public static @NotNull Rational of(long numerator, long denominator) {
+        if (denominator == 0)
+            throw new ArithmeticException("division by zero");
+        if (numerator == 0) return ZERO;
+        if (numerator == denominator) return ONE;
+        long gcd = MathUtils.gcd(numerator, denominator);
+        if (denominator < 0) gcd = -gcd;
+        return new Rational(BigInteger.valueOf(numerator / gcd), BigInteger.valueOf(denominator / gcd));
+    }
+
+    /**
      * Creates a {@code Rational} from {@code ints}. Throws an exception if any args are null or {@code denominator} is
      * zero. Reduces arguments and negates {@code denominator} if necessary.
      *
@@ -202,6 +227,24 @@ public final class Rational implements Comparable<Rational> {
         if (n.equals(BigInteger.ZERO)) return ZERO;
         if (n.equals(BigInteger.ONE)) return ONE;
         return new Rational(n, BigInteger.ONE);
+    }
+
+    /**
+     * Creates a {@code Rational} from a {@code long}.
+     *
+     * <ul>
+     *  <li>{@code n} can be any {@code long}.</li>
+     *  <li>The result is an integral {@code Rational} satisfying
+     *  –2<sup>63</sup>≤x{@literal <}2<sup>63</sup>.</li>
+     * </ul>
+     *
+     * @param n the {@code long}
+     * @return the {@code Rational} corresponding to {@code n}
+     */
+    public static @NotNull Rational of(long n) {
+        if (n == 0) return ZERO;
+        if (n == 1) return ONE;
+        return new Rational(BigInteger.valueOf(n), BigInteger.ONE);
     }
 
     /**

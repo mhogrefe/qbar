@@ -29,7 +29,7 @@ import static org.junit.Assert.*;
 
 public class RationalProperties {
     private static boolean USE_RANDOM;
-    private static final String NECESSARY_CHARS = "-/0123456789";
+    private static final String RATIONAL_CHARS = "-/0123456789";
     private static final int SMALL_LIMIT = 1000;
     private static int LIMIT;
 
@@ -52,8 +52,10 @@ public class RationalProperties {
             USE_RANDOM = useRandom;
             
             propertiesOf_BigInteger_BigInteger();
+            propertiesOf_long_long();
             propertiesOf_int_int();
             propertiesOf_BigInteger();
+            propertiesOf_long();
             propertiesOf_int();
             propertiesOf_float();
             propertiesOf_double();
@@ -63,6 +65,10 @@ public class RationalProperties {
             propertiesBigIntegerValue_RoundingMode();
             propertiesBigIntegerValue();
             propertiesBigIntegerValueExact();
+            propertiesByteValueExact();
+            propertiesShortValueExact();
+            propertiesIntValueExact();
+            propertiesLongValueExact();
             propertiesNegate();
             propertiesInvert();
             propertiesAbs();
@@ -120,6 +126,26 @@ public class RationalProperties {
         }
     }
 
+    private static void propertiesOf_long_long() {
+        initialize();
+        System.out.println("testing of(long, long) properties...");
+
+        BigInteger minLong = BigInteger.valueOf(Long.MIN_VALUE);
+        BigInteger maxLong = BigInteger.valueOf(Long.MAX_VALUE);
+        Iterable<Pair<Long, Long>> ps = filter(p -> p.b != 0, P.pairs(P.longs()));
+        for (Pair<Long, Long> p : take(LIMIT, ps)) {
+            assert p.a != null;
+            assert p.b != null;
+            Rational r = of(p.a, p.b);
+            validate(r);
+            assertEquals(p.toString(), of(p.a).divide(BigInteger.valueOf(p.b)), r);
+            assertTrue(p.toString(), ge(r.getNumerator(), minLong));
+            assertTrue(p.toString(), le(r.getNumerator(), maxLong));
+            assertTrue(p.toString(), ge(r.getDenominator(), minLong));
+            assertTrue(p.toString(), le(r.getDenominator(), maxLong));
+        }
+    }
+
     private static void propertiesOf_int_int() {
         initialize();
         System.out.println("testing of(int, int) properties...");
@@ -148,6 +174,21 @@ public class RationalProperties {
             Rational r = of(i);
             validate(r);
             assertEquals(i.toString(), r.getDenominator(), BigInteger.ONE);
+        }
+    }
+
+    private static void propertiesOf_long() {
+        initialize();
+        System.out.println("testing of(long) properties...");
+
+        BigInteger minLong = BigInteger.valueOf(Long.MIN_VALUE);
+        BigInteger maxLong = BigInteger.valueOf(Long.MAX_VALUE);
+        for (long l : take(LIMIT, P.longs())) {
+            Rational r = of(l);
+            validate(r);
+            assertEquals(Long.toString(l), r.getDenominator(), BigInteger.ONE);
+            assertTrue(Long.toString(l), ge(r.getNumerator(), minLong));
+            assertTrue(Long.toString(l), le(r.getNumerator(), maxLong));
         }
     }
 
@@ -353,6 +394,42 @@ public class RationalProperties {
 
         for (BigInteger i : take(LIMIT, P.bigIntegers())) {
             assertEquals(i.toString(), of(i).bigIntegerValueExact(), i);
+        }
+    }
+
+    private static void propertiesByteValueExact() {
+        initialize();
+        System.out.println("testing byteValueExact() properties...");
+
+        for (byte b : take(LIMIT, P.bytes())) {
+            assertEquals(Byte.toString(b), of(b).byteValueExact(), b);
+        }
+    }
+
+    private static void propertiesShortValueExact() {
+        initialize();
+        System.out.println("testing shortValueExact() properties...");
+
+        for (short s : take(LIMIT, P.shorts())) {
+            assertEquals(Short.toString(s), of(s).shortValueExact(), s);
+        }
+    }
+
+    private static void propertiesIntValueExact() {
+        initialize();
+        System.out.println("testing intValueExact() properties...");
+
+        for (int i : take(LIMIT, P.integers())) {
+            assertEquals(Integer.toString(i), of(i).intValueExact(), i);
+        }
+    }
+
+    private static void propertiesLongValueExact() {
+        initialize();
+        System.out.println("testing longValueExact() properties...");
+
+        for (long l : take(LIMIT, P.longs())) {
+            assertEquals(Long.toString(l), of(l).longValueExact(), l);
         }
     }
 
@@ -1369,9 +1446,9 @@ public class RationalProperties {
 
         Iterable<Character> cs;
         if (P instanceof QBarExhaustiveProvider) {
-            cs = fromString(NECESSARY_CHARS);
+            cs = fromString(RATIONAL_CHARS);
         } else {
-            cs = ((QBarRandomProvider) P).uniformSample(NECESSARY_CHARS);
+            cs = ((QBarRandomProvider) P).uniformSample(RATIONAL_CHARS);
         }
         Iterable<String> ss = filter(s -> read(s).isPresent(), P.strings(cs));
         for (String s : take(LIMIT, ss)) {
@@ -1401,7 +1478,7 @@ public class RationalProperties {
 
         for (Rational r : take(LIMIT, P.rationals())) {
             String s = r.toString();
-            assertTrue(isSubsetOf(s, NECESSARY_CHARS));
+            assertTrue(isSubsetOf(s, RATIONAL_CHARS));
             Optional<Rational> readR = read(s);
             assertTrue(r.toString(), readR.isPresent());
             assertEquals(r.toString(), readR.get(), r);
