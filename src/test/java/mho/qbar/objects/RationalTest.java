@@ -535,7 +535,7 @@ public class RationalTest {
     }
 
     @Test
-    public void testBigDecimalValue_Precision_RoundingMode() {
+    public void testBigDecimalValue_int_RoundingMode() {
         aeq(ZERO.bigDecimalValue(0, RoundingMode.UNNECESSARY), "0");
         aeq(ZERO.bigDecimalValue(0, RoundingMode.FLOOR), "0");
         aeq(ZERO.bigDecimalValue(0, RoundingMode.CEILING), "0");
@@ -795,7 +795,7 @@ public class RationalTest {
     }
 
     @Test
-    public void testBigDecimalValue_Precision() {
+    public void testBigDecimalValue_int() {
         aeq(ZERO.bigDecimalValue(4), "0");
         aeq(ZERO.bigDecimalValue(0), "0");
         aeq(ONE.bigDecimalValue(4), "1");

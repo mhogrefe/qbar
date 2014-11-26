@@ -187,6 +187,75 @@ public class RationalDemos {
         }
     }
 
+    public static void hasTerminatingDecimalExpansionDemo() {
+        for (Rational r : take(LIMIT, P.rationals())) {
+            System.out.println("hasTerminatingDecimalExpansion(" + r + ") = " + r.hasTerminatingDecimalExpansion());
+        }
+    }
+
+    public static void demoBigDecimalValue_int_RoundingMode() {
+        initialize();
+        Iterable<Pair<Rational, Pair<Integer, RoundingMode>>> ps;
+        if (P instanceof ExhaustiveProvider) {
+            ps = P.pairs(
+                    P.rationals(),
+                    (Iterable<Pair<Integer, RoundingMode>>) P.pairs(P.naturalIntegers(), P.roundingModes())
+            );
+        } else {
+            ps = P.pairs(
+                    P.rationals(),
+                    (Iterable<Pair<Integer, RoundingMode>>) P.pairs(
+                            ((RandomProvider) P).naturalIntegersGeometric(20),
+                            P.roundingModes()
+                    )
+            );
+        }
+        ps = filter(
+                p -> {
+                    try {
+                        assert p.a != null;
+                        assert p.b != null;
+                        assert p.b.a != null;
+                        assert p.b.b != null;
+                        p.a.bigDecimalValue(p.b.a, p.b.b);
+                        return true;
+                    } catch (ArithmeticException e) {
+                        return false;
+                    }
+                },
+                ps
+        );
+        for (Pair<Rational, Pair<Integer, RoundingMode>> p : take(LIMIT, ps)) {
+            assert p.a != null;
+            assert p.b != null;
+            assert p.b.a != null;
+            assert p.b.b != null;
+            System.out.println("bigDecimalValue(" + p.a + ", " + p.b.a + ", " + p.b.b + ") = " +
+                    p.a.bigDecimalValue(p.b.a, p.b.b));
+        }
+    }
+
+//
+//    public static void toBigDecimalPrecisionDemo() {
+//        Iterable<Pair<Rational, Integer>> g = filter(
+//                new SubExponentialPairGenerator<>(
+//                        P.rationals(),
+//                        Generators.naturalIntegers()
+//                ),
+//                p -> p.b != 0 || p.a.hasTerminatingDecimalExpansion());
+//        for (Pair<Rational, Integer> p : g.iterate(limit)) {
+//            System.out.println("toBigDecimal(" + p.a + ", " + p.b + ") = " + p.a.toBigDecimal(p.b));
+//        }
+//    }
+
+    public static void demoBigDecimalValueExact() {
+        initialize();
+        Iterable<Rational> rs = filter(Rational::hasTerminatingDecimalExpansion, P.rationals());
+        for (Rational r : take(LIMIT, rs)) {
+            System.out.println("bigDecimalValueExact(" + r + ") = " + r.bigDecimalValueExact());
+        }
+    }
+
     public static void demoNegate() {
         initialize();
         for (Rational r : take(LIMIT, P.rationals())) {
@@ -461,49 +530,6 @@ public class RationalDemos {
             System.out.println("toDouble(" + p.a + ", " + p.b + ") = " + p.a.doubleValue(p.b));
         }
     }
-
-    public static void hasTerminatingDecimalExpansionDemo() {
-        for (Rational r : take(LIMIT, P.rationals())) {
-            System.out.println("hasTerminatingDecimalExpansion(" + r + ") = " + r.hasTerminatingDecimalExpansion());
-        }
-    }
-
-    public static void toBigDecimalDemo() {
-        Iterable<Rational> rs = filter(Rational::hasTerminatingDecimalExpansion, P.rationals());
-        for (Rational r : take(LIMIT, rs)) {
-            System.out.println("toBigDecimal(" + r + ") = " + r.bigDecimalValueExact());
-        }
-    }
-
-//    public static void toBigDecimalPrecisionDemo() {
-//        Iterable<Pair<Rational, Integer>> g = filter(
-//                new SubExponentialPairGenerator<>(
-//                        P.rationals(),
-//                        Generators.naturalIntegers()
-//                ),
-//                p -> p.b != 0 || p.a.hasTerminatingDecimalExpansion());
-//        for (Pair<Rational, Integer> p : g.iterate(limit)) {
-//            System.out.println("toBigDecimal(" + p.a + ", " + p.b + ") = " + p.a.toBigDecimal(p.b));
-//        }
-//    }
-
-//    public static void toBigDecimalPrecisionRoundingMode() {
-//        Generator<Pair<Rational, Integer>> pg = new FilteredGenerator<Pair<Rational, Integer>>(
-//                new SubExponentialPairGenerator<>(
-//                        P.rationals(),
-//                        Generators.naturalIntegers()
-//                ),
-//                p -> p.b != 0 || p.a.hasTerminatingDecimalExpansion());
-//        Generator<Pair<Pair<Rational, Integer>, RoundingMode>> g = new FilteredGenerator<Pair<Pair<Rational,Integer>, RoundingMode>>(
-//                pairs(pg, Generators.roundingModes()),
-//                p -> p.b != RoundingMode.UNNECESSARY ||
-//                        (p.a.a.hasTerminatingDecimalExpansion() &&
-//                                p.a.b >= p.a.a.numberOfDecimalDigits()));
-//        for (Pair<Pair<Rational, Integer>, RoundingMode> p : g.iterate(limit)) {
-//            System.out.println("toBigDecimal(" + p.a.a + ", " + p.a.b + ", " + p.b + ") = " +
-//                    p.a.a.toBigDecimal(p.a.b, p.b));
-//        }
-//    }
 
     public static void continuedFractionDemo() {
         for (Rational r : take(LIMIT, P.rationals())) {
