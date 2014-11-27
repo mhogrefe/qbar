@@ -807,7 +807,7 @@ public class RationalTest {
         aeq(read("1/64").get().bigDecimalValue(1), "0.02");
         aeq(read("1/64").get().bigDecimalValue(2), "0.016");
         aeq(read("1/64").get().bigDecimalValue(3), "0.0156");
-        aeq(read("1/64").get().bigDecimalValue(4), "0.01563");
+        aeq(read("1/64").get().bigDecimalValue(4), "0.01562");
         aeq(read("1/64").get().bigDecimalValue(5), "0.015625");
         aeq(read("1/64").get().bigDecimalValue(6), "0.015625");
         aeq(read("-1/3").get().bigDecimalValue(1), "-0.3");

@@ -611,7 +611,7 @@ public final class Rational implements Comparable<Rational> {
 
     /**
      * Rounds {@code this} to a {@code BigDecimal} with a specified precision (number of significant digits), or to
-     * full precision if {@code precision} is 0.
+     * full precision if {@code precision} is 0. {@code RoundingMode.HALF_EVEN} is used for rounding.
      *
      * <ul>
      *  <li>{@code this} may be any {@code Rational}.</li>
@@ -626,8 +626,7 @@ public final class Rational implements Comparable<Rational> {
      * @return {@code this}, in {@code BigDecimal} form
      */
     public @NotNull BigDecimal bigDecimalValue(int precision) {
-        MathContext context = new MathContext(precision);
-        return new BigDecimal(numerator).divide(new BigDecimal(denominator), context);
+        return bigDecimalValue(precision, RoundingMode.HALF_EVEN);
     }
 
     /**

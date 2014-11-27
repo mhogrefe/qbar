@@ -235,18 +235,33 @@ public class RationalDemos {
         }
     }
 
-//
-//    public static void toBigDecimalPrecisionDemo() {
-//        Iterable<Pair<Rational, Integer>> g = filter(
-//                new SubExponentialPairGenerator<>(
-//                        P.rationals(),
-//                        Generators.naturalIntegers()
-//                ),
-//                p -> p.b != 0 || p.a.hasTerminatingDecimalExpansion());
-//        for (Pair<Rational, Integer> p : g.iterate(limit)) {
-//            System.out.println("toBigDecimal(" + p.a + ", " + p.b + ") = " + p.a.toBigDecimal(p.b));
-//        }
-//    }
+    public static void demoBigDecimalValue_int() {
+        initialize();
+        Iterable<Pair<Rational, Integer>> ps;
+        if (P instanceof ExhaustiveProvider) {
+            ps = ((ExhaustiveProvider) P).pairsSquareRootOrder(P.rationals(), P.naturalIntegers());
+        } else {
+            ps = P.pairs(P.rationals(), ((RandomProvider) P).naturalIntegersGeometric(20));
+        }
+        ps = filter(
+                p -> {
+                    try {
+                        assert p.a != null;
+                        assert p.b != null;
+                        p.a.bigDecimalValue(p.b);
+                        return true;
+                    } catch (ArithmeticException e) {
+                        return false;
+                    }
+                },
+                ps
+        );
+        for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
+            assert p.a != null;
+            assert p.b != null;
+            System.out.println("bigDecimalValue(" + p.a + ", " + p.b + ") = " + p.a.bigDecimalValue(p.b));
+        }
+    }
 
     public static void demoBigDecimalValueExact() {
         initialize();
