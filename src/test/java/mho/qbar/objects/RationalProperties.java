@@ -69,6 +69,7 @@ public class RationalProperties {
             propertiesShortValueExact();
             propertiesIntValueExact();
             propertiesLongValueExact();
+            propertiesHasTerminatingDecimalExpansion();
             propertiesNegate();
             propertiesInvert();
             propertiesAbs();
@@ -430,6 +431,27 @@ public class RationalProperties {
 
         for (long l : take(LIMIT, P.longs())) {
             assertEquals(Long.toString(l), of(l).longValueExact(), l);
+        }
+    }
+
+    private static void propertiesHasTerminatingDecimalExpansion() {
+        initialize();
+
+        System.out.println("testing hasTerminatingDecimalExpansion() properties...");
+        for (Rational r : take(LIMIT, P.rationals())) {
+            r.hasTerminatingDecimalExpansion();
+        }
+
+        Iterable<Rational> rs = filter(Rational::hasTerminatingDecimalExpansion, P.rationals());
+        for (Rational r : take(LIMIT, rs)) {
+            r.bigDecimalValue(0);
+            List<BigInteger> dPrimeFactors = toList(
+                    nub(map(p -> p.a, MathUtils.compactPrimeFactors(r.getDenominator())))
+            );
+            assertTrue(
+                    r.toString(),
+                    isSubsetOf(dPrimeFactors, Arrays.asList(BigInteger.valueOf(2), BigInteger.valueOf(5)))
+            );
         }
     }
 
