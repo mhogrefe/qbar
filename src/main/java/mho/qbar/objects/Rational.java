@@ -596,8 +596,7 @@ public final class Rational implements Comparable<Rational> {
      *  terminating; that is, its denominator must only have 2 or 5 as prime factors.</li>
      *  <li>If {@code roundingMode} is {@code RoundingMode.UNNECESSARY}, then {@code precision} must be at least as
      *  large as the number of digits in {@code this}'s decimal expansion.</li>
-     *  <li>The result is a {@code BigDecimal} x such that x's scale is greater than or equal to zero and less than or
-     *  equal to n, where n is the smallest non-negative integer such x×10<sup>n</sup> is an integer.</li>
+     *  <li>The result is a non-null.</li>
      * </ul>
      *
      * @param precision the precision with which to round {@code this}. 0 indicates full precision.

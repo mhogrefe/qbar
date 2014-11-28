@@ -16,6 +16,7 @@ import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.Arrays;
 import java.util.List;
@@ -70,6 +71,7 @@ public class RationalProperties {
             propertiesIntValueExact();
             propertiesLongValueExact();
             propertiesHasTerminatingDecimalExpansion();
+            propertiesBigDecimalValue_int_RoundingMode();
             propertiesNegate();
             propertiesInvert();
             propertiesAbs();
@@ -452,6 +454,51 @@ public class RationalProperties {
                     r.toString(),
                     isSubsetOf(dPrimeFactors, Arrays.asList(BigInteger.valueOf(2), BigInteger.valueOf(5)))
             );
+        }
+    }
+
+    private static void propertiesBigDecimalValue_int_RoundingMode() {
+        initialize();
+        System.out.println("testing bigDecimalValue(int, RoundingMode)...");
+
+        Iterable<Pair<Rational, Pair<Integer, RoundingMode>>> ps;
+        if (P instanceof ExhaustiveProvider) {
+            ps = P.pairs(
+                    P.rationals(),
+                    (Iterable<Pair<Integer, RoundingMode>>) P.pairs(P.naturalIntegers(), P.roundingModes())
+            );
+        } else {
+            ps = P.pairs(
+                    P.rationals(),
+                    (Iterable<Pair<Integer, RoundingMode>>) P.pairs(
+                            ((RandomProvider) P).naturalIntegersGeometric(20),
+                            P.roundingModes()
+                    )
+            );
+        }
+        ps = filter(
+                p -> {
+                    try {
+                        assert p.a != null;
+                        assert p.b != null;
+                        assert p.b.a != null;
+                        assert p.b.b != null;
+                        p.a.bigDecimalValue(p.b.a, p.b.b);
+                        return true;
+                    } catch (ArithmeticException e) {
+                        return false;
+                    }
+                },
+                ps
+        );
+        for (Pair<Rational, Pair<Integer, RoundingMode>> p : take(LIMIT, ps)) {
+            assert p.a != null;
+            assert p.b != null;
+            assert p.b.a != null;
+            assert p.b.b != null;
+            RoundingMode rm = p.b.b;
+            BigDecimal bd = p.a.bigDecimalValue(p.b.a, rm);
+            assertEquals(p.toString(), bd.round(new MathContext(p.b.a)), bd);
         }
     }
 
