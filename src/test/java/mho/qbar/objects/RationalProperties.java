@@ -129,6 +129,13 @@ public class RationalProperties {
             validate(r);
             assertEquals(p.toString(), of(p.a).divide(p.b), r);
         }
+
+        for (BigInteger i : take(LIMIT, P.bigIntegers())) {
+            try {
+                of(i, BigInteger.ZERO);
+                fail();
+            } catch (ArithmeticException ignored) {}
+        }
     }
 
     private static void propertiesOf_long_long() {
@@ -149,6 +156,13 @@ public class RationalProperties {
             assertTrue(p.toString(), ge(r.getDenominator(), minLong));
             assertTrue(p.toString(), le(r.getDenominator(), maxLong));
         }
+
+        for (long l : take(LIMIT, P.longs())) {
+            try {
+                of(l, 0L);
+                fail();
+            } catch (ArithmeticException ignored) {}
+        }
     }
 
     private static void propertiesOf_int_int() {
@@ -168,6 +182,13 @@ public class RationalProperties {
             assertTrue(p.toString(), le(r.getNumerator(), maxInt));
             assertTrue(p.toString(), ge(r.getDenominator(), minInt));
             assertTrue(p.toString(), le(r.getDenominator(), maxInt));
+        }
+
+        for (int i : take(LIMIT, P.integers())) {
+            try {
+                of(i, 0);
+                fail();
+            } catch (ArithmeticException ignored) {}
         }
     }
 
@@ -360,9 +381,20 @@ public class RationalProperties {
         //odd multiples of 1/2
         rs = map(i -> of(i.shiftLeft(1).add(BigInteger.ONE), BigInteger.valueOf(2)), P.bigIntegers());
         for (Rational r : take(LIMIT, rs)) {
-            assertEquals(r.toString(), r.bigIntegerValue(RoundingMode.HALF_DOWN), r.bigIntegerValue(RoundingMode.DOWN));
+            assertEquals(
+                    r.toString(),
+                    r.bigIntegerValue(RoundingMode.HALF_DOWN),
+                    r.bigIntegerValue(RoundingMode.DOWN))
+            ;
             assertEquals(r.toString(), r.bigIntegerValue(RoundingMode.HALF_UP), r.bigIntegerValue(RoundingMode.UP));
             assertFalse(r.toString(), r.bigIntegerValue(RoundingMode.HALF_EVEN).testBit(0));
+        }
+
+        for (Rational r : take(LIMIT, filter(s -> !s.getDenominator().equals(BigInteger.ONE), P.rationals()))) {
+            try {
+                r.bigIntegerValue(RoundingMode.UNNECESSARY);
+                fail();
+            } catch (ArithmeticException ignored) {}
         }
     }
 
@@ -400,6 +432,13 @@ public class RationalProperties {
         for (BigInteger i : take(LIMIT, P.bigIntegers())) {
             assertEquals(i.toString(), of(i).bigIntegerValueExact(), i);
         }
+
+        for (Rational r : take(LIMIT, filter(s -> !s.getDenominator().equals(BigInteger.ONE), P.rationals()))) {
+            try {
+                r.bigIntegerValueExact();
+                fail();
+            } catch (ArithmeticException ignored) {}
+        }
     }
 
     private static void propertiesByteValueExact() {
@@ -408,6 +447,31 @@ public class RationalProperties {
 
         for (byte b : take(LIMIT, P.bytes())) {
             assertEquals(Byte.toString(b), of(b).byteValueExact(), b);
+        }
+
+        for (Rational r : take(LIMIT, filter(s -> !s.getDenominator().equals(BigInteger.ONE), P.rationals()))) {
+            try {
+                r.byteValueExact();
+                fail();
+            } catch (ArithmeticException ignored) {}
+        }
+
+        for (BigInteger i : take(LIMIT, range(BigInteger.valueOf(Byte.MAX_VALUE).add(BigInteger.ONE)))) {
+            try {
+                of(i).byteValueExact();
+                fail();
+            } catch (ArithmeticException ignored) {}
+        }
+
+        Iterable<BigInteger> below = rangeBy(
+                BigInteger.valueOf(Byte.MIN_VALUE).subtract(BigInteger.ONE),
+                BigInteger.valueOf(-1)
+        );
+        for (BigInteger i : take(LIMIT, below)) {
+            try {
+                of(i).byteValueExact();
+                fail();
+            } catch (ArithmeticException ignored) {}
         }
     }
 
@@ -418,6 +482,31 @@ public class RationalProperties {
         for (short s : take(LIMIT, P.shorts())) {
             assertEquals(Short.toString(s), of(s).shortValueExact(), s);
         }
+
+        for (Rational r : take(LIMIT, filter(s -> !s.getDenominator().equals(BigInteger.ONE), P.rationals()))) {
+            try {
+                r.shortValueExact();
+                fail();
+            } catch (ArithmeticException ignored) {}
+        }
+
+        for (BigInteger i : take(LIMIT, range(BigInteger.valueOf(Short.MAX_VALUE).add(BigInteger.ONE)))) {
+            try {
+                of(i).shortValueExact();
+                fail();
+            } catch (ArithmeticException ignored) {}
+        }
+
+        Iterable<BigInteger> below = rangeBy(
+                BigInteger.valueOf(Short.MIN_VALUE).subtract(BigInteger.ONE),
+                BigInteger.valueOf(-1)
+        );
+        for (BigInteger i : take(LIMIT, below)) {
+            try {
+                of(i).shortValueExact();
+                fail();
+            } catch (ArithmeticException ignored) {}
+        }
     }
 
     private static void propertiesIntValueExact() {
@@ -427,6 +516,31 @@ public class RationalProperties {
         for (int i : take(LIMIT, P.integers())) {
             assertEquals(Integer.toString(i), of(i).intValueExact(), i);
         }
+
+        for (Rational r : take(LIMIT, filter(s -> !s.getDenominator().equals(BigInteger.ONE), P.rationals()))) {
+            try {
+                r.intValueExact();
+                fail();
+            } catch (ArithmeticException ignored) {}
+        }
+
+        for (BigInteger i : take(LIMIT, range(BigInteger.valueOf(Integer.MAX_VALUE).add(BigInteger.ONE)))) {
+            try {
+                of(i).intValueExact();
+                fail();
+            } catch (ArithmeticException ignored) {}
+        }
+
+        Iterable<BigInteger> below = rangeBy(
+                BigInteger.valueOf(Integer.MIN_VALUE).subtract(BigInteger.ONE),
+                BigInteger.valueOf(-1)
+        );
+        for (BigInteger i : take(LIMIT, below)) {
+            try {
+                of(i).intValueExact();
+                fail();
+            } catch (ArithmeticException ignored) {}
+        }
     }
 
     private static void propertiesLongValueExact() {
@@ -435,6 +549,31 @@ public class RationalProperties {
 
         for (long l : take(LIMIT, P.longs())) {
             assertEquals(Long.toString(l), of(l).longValueExact(), l);
+        }
+
+        for (Rational r : take(LIMIT, filter(s -> !s.getDenominator().equals(BigInteger.ONE), P.rationals()))) {
+            try {
+                r.longValueExact();
+                fail();
+            } catch (ArithmeticException ignored) {}
+        }
+
+        for (BigInteger i : take(LIMIT, range(BigInteger.valueOf(Long.MAX_VALUE).add(BigInteger.ONE)))) {
+            try {
+                of(i).longValueExact();
+                fail();
+            } catch (ArithmeticException ignored) {}
+        }
+
+        Iterable<BigInteger> below = rangeBy(
+                BigInteger.valueOf(Long.MIN_VALUE).subtract(BigInteger.ONE),
+                BigInteger.valueOf(-1)
+        );
+        for (BigInteger i : take(LIMIT, below)) {
+            try {
+                of(i).longValueExact();
+                fail();
+            } catch (ArithmeticException ignored) {}
         }
     }
 
