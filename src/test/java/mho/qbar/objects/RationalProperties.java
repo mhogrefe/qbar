@@ -496,9 +496,16 @@ public class RationalProperties {
             assert p.b != null;
             assert p.b.a != null;
             assert p.b.b != null;
-            RoundingMode rm = p.b.b;
-            BigDecimal bd = p.a.bigDecimalValue(p.b.a, rm);
-            assertEquals(p.toString(), bd.round(new MathContext(p.b.a)), bd);
+            p.a.bigDecimalValue(p.b.a, p.b.b);
+        }
+
+        for (Pair<Rational, Pair<Integer, RoundingMode>> p : take(LIMIT, filter(q -> q.b.a != 0 && q.a != ZERO, ps))) {
+            assert p.a != null;
+            assert p.b != null;
+            assert p.b.a != null;
+            assert p.b.b != null;
+            BigDecimal bd = p.a.bigDecimalValue(p.b.a, p.b.b);
+            assertTrue(p.toString(), bd.precision() == p.b.a);
         }
     }
 

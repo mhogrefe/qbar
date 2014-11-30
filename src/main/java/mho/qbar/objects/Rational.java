@@ -1,6 +1,7 @@
 package mho.qbar.objects;
 
 import mho.wheels.math.MathUtils;
+import mho.wheels.misc.BigDecimalUtils;
 import mho.wheels.misc.FloatUtils;
 import mho.wheels.misc.Readers;
 import mho.wheels.ordering.Ordering;
@@ -605,7 +606,11 @@ public final class Rational implements Comparable<Rational> {
      */
     public @NotNull BigDecimal bigDecimalValue(int precision, @NotNull RoundingMode roundingMode) {
         MathContext context = new MathContext(precision, roundingMode);
-        return new BigDecimal(numerator).divide(new BigDecimal(denominator), context);
+        BigDecimal result = new BigDecimal(numerator).divide(new BigDecimal(denominator), context);
+        if (precision != 0) {
+            result = BigDecimalUtils.setPrecision(result, precision);
+        }
+        return result;
     }
 
     /**
