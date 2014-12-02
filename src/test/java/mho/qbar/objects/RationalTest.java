@@ -923,6 +923,18 @@ public class RationalTest {
         aeq(read("6789").get().bigDecimalValue(3), "6.79E+3");
         aeq(read("6789").get().bigDecimalValue(4), "6789");
         aeq(read("6789").get().bigDecimalValue(5), "6789.0");
+        aeq(read("19/20").get().bigDecimalValue(0), "0.95");
+        aeq(read("19/20").get().bigDecimalValue(1), "1");
+        aeq(read("19/20").get().bigDecimalValue(2), "0.95");
+        aeq(read("19/20").get().bigDecimalValue(3), "0.950");
+        aeq(read("19/20").get().bigDecimalValue(4), "0.9500");
+        aeq(read("19/20").get().bigDecimalValue(5), "0.95000");
+        aeq(read("199/200").get().bigDecimalValue(0), "0.995");
+        aeq(read("199/200").get().bigDecimalValue(1), "1");
+        aeq(read("199/200").get().bigDecimalValue(2), "1.0");
+        aeq(read("199/200").get().bigDecimalValue(3), "0.995");
+        aeq(read("199/200").get().bigDecimalValue(4), "0.9950");
+        aeq(read("199/200").get().bigDecimalValue(5), "0.99500");
         try {
             read("-1/3").get().bigDecimalValue(0);
             fail();
@@ -941,6 +953,8 @@ public class RationalTest {
         aeq(read("4/5").get().bigDecimalValueExact(), "0.8");
         aeq(read("1/64").get().bigDecimalValueExact(), "0.015625");
         aeq(read("1234").get().bigDecimalValueExact(), "1234");
+        aeq(read("19/20").get().bigDecimalValueExact(), "0.95");
+        aeq(read("199/200").get().bigDecimalValueExact(), "0.995");
         try {
             read("1/3").get().bigDecimalValueExact();
             fail();
