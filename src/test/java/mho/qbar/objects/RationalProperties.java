@@ -74,6 +74,7 @@ public class RationalProperties {
             propertiesLongValueExact();
             propertiesHasTerminatingDecimalExpansion();
             propertiesBigDecimalValue_int_RoundingMode();
+            propertiesBigDecimalValue_int();
             propertiesNegate();
             propertiesInvert();
             propertiesAbs();
@@ -766,6 +767,90 @@ public class RationalProperties {
             BigDecimal halfEven = r.bigDecimalValue(precision, RoundingMode.HALF_EVEN);
             assertEquals(bd.toString(), down, halfDown);
             assertEquals(bd.toString(), up, halfUp);
+            assertTrue(bd.toString(), bd.scale() != halfEven.scale() + 1 || !halfEven.unscaledValue().testBit(0));
+        }
+        //todo failure tests
+    }
+
+    private static void propertiesBigDecimalValue_int() {
+        initialize();
+        System.out.println("testing bigDecimalValue(int)...");
+
+        Iterable<Pair<Rational, Integer>> ps;
+        if (P instanceof ExhaustiveProvider) {
+            ps = ((ExhaustiveProvider) P).pairsSquareRootOrder(P.rationals(), P.naturalIntegers());
+        } else {
+            ps = P.pairs(P.rationals(), ((RandomProvider) P).naturalIntegersGeometric(20));
+        }
+        ps = filter(
+                p -> {
+                    try {
+                        assert p.a != null;
+                        assert p.b != null;
+                        p.a.bigDecimalValue(p.b);
+                        return true;
+                    } catch (ArithmeticException e) {
+                        return false;
+                    }
+                },
+                ps
+        );
+        for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
+            assert p.a != null;
+            assert p.b != null;
+            BigDecimal bd = p.a.bigDecimalValue(p.b);
+            assertEquals(p.toString(), bd, p.a.bigDecimalValue(p.b, RoundingMode.HALF_EVEN));
+            assertTrue(p.toString(), eq(bd, BigDecimal.ZERO) || bd.signum() == p.a.signum());
+        }
+
+        for (Pair<Rational, Integer> p : take(LIMIT, filter(q -> q.b != 0 && q.a != ZERO, ps))) {
+            assert p.a != null;
+            assert p.b != null;
+            BigDecimal bd = p.a.bigDecimalValue(p.b);
+            assertTrue(p.toString(), bd.precision() == p.b);
+        }
+
+        Iterable<Pair<BigDecimal, Integer>> notMidpoints;
+        if (P instanceof ExhaustiveProvider) {
+            notMidpoints = ((ExhaustiveProvider) P).pairsSquareRootOrder(P.bigDecimals(), P.naturalIntegers());
+        } else {
+            notMidpoints = P.pairs(P.bigDecimals(), ((RandomProvider) P).naturalIntegersGeometric(20));
+        }
+        notMidpoints = filter(
+                p -> {
+                    assert p.a != null;
+                    assert p.b != null;
+                    if (p.a.precision() <= 1) return false;
+                    if (p.b != p.a.precision() - 1) return false;
+                    return !p.a.abs().unscaledValue().mod(BigInteger.valueOf(10)).equals(BigInteger.valueOf(5));
+                },
+                notMidpoints
+        );
+        for (Pair<BigDecimal, Integer> p : take(LIMIT, notMidpoints)) {
+            assert p.a != null;
+            assert p.b != null;
+            Rational r = of(p.a);
+            BigDecimal down = r.bigDecimalValue(p.b, RoundingMode.DOWN);
+            BigDecimal up = r.bigDecimalValue(p.b, RoundingMode.UP);
+            BigDecimal halfEven = r.bigDecimalValue(p.b);
+            boolean closerToDown = lt(subtract(r, of(down)).abs(), subtract(r, of(up)).abs());
+            assertEquals(p.toString(), halfEven, closerToDown ? down : up);
+        }
+
+        Iterable<BigDecimal> midpoints = filter(
+                x -> x.precision() > 1,
+                map(
+                        x -> new BigDecimal(
+                                x.unscaledValue().multiply(BigInteger.TEN).add(BigInteger.valueOf(5)),
+                                x.scale()
+                        ),
+                        P.bigDecimals()
+                )
+        );
+        for (BigDecimal bd : take(LIMIT, midpoints)) {
+            Rational r = of(bd);
+            int precision = bd.precision() - 1;
+            BigDecimal halfEven = r.bigDecimalValue(precision);
             assertTrue(bd.toString(), bd.scale() != halfEven.scale() + 1 || !halfEven.unscaledValue().testBit(0));
         }
     }
