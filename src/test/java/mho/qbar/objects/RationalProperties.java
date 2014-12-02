@@ -1217,6 +1217,21 @@ public class RationalProperties {
             assert p.b != null;
             assertEquals(p.toString(), sum(Arrays.asList(p.a, p.b)), add(p.a, p.b));
         }
+
+        Iterable<List<Rational>> failRss = map(p -> {
+            assert p.a != null;
+            assert p.b != null;
+            return toList(insert(p.a, p.b, null));
+        }, (Iterable<Pair<List<Rational>, Integer>>) P.dependentPairsLogarithmic(
+                P.lists(P.rationals()),
+                rs -> range(0, rs.size())
+        ));
+        for (List<Rational> rs : take(LIMIT, failRss)) {
+            try {
+                sum(rs);
+                fail(rs.toString());
+            } catch (IllegalArgumentException ignored) {}
+        }
     }
 
     private static void propertiesProduct() {
@@ -1251,6 +1266,21 @@ public class RationalProperties {
             assert p.b != null;
             assertEquals(p.toString(), product(Arrays.asList(p.a, p.b)), multiply(p.a, p.b));
         }
+
+        Iterable<List<Rational>> failRss = map(p -> {
+            assert p.a != null;
+            assert p.b != null;
+            return toList(insert(p.a, p.b, null));
+        }, (Iterable<Pair<List<Rational>, Integer>>) P.dependentPairsLogarithmic(
+                P.lists(P.rationals()),
+                rs -> range(0, rs.size())
+        ));
+        for (List<Rational> rs : take(LIMIT, failRss)) {
+            try {
+                product(rs);
+                fail(rs.toString());
+            } catch (IllegalArgumentException ignored) {}
+        }
     }
 
     private static void propertiesDelta() {
@@ -1258,8 +1288,13 @@ public class RationalProperties {
         System.out.println("testing delta(Iterable<Rational>) properties...");
 
         for (List<Rational> rs : take(LIMIT, filter(ss -> !ss.isEmpty(), P.lists(P.rationals())))) {
+            Iterable<Rational> deltas = delta(rs);
+            aeq(rs.toString(), length(deltas), length(rs) - 1);
             Iterable<Rational> reversed = reverse(map(Rational::negate, delta(reverse(rs))));
-            aeq(rs.toString(), delta(rs), reversed);
+            aeq(rs.toString(), deltas, reversed);
+            try {
+                deltas.iterator().remove();
+            } catch (UnsupportedOperationException ignored) {}
         }
 
         for (Rational r : take(LIMIT, P.rationals())) {
@@ -1270,6 +1305,21 @@ public class RationalProperties {
             assert p.a != null;
             assert p.b != null;
             aeq(p.toString(), delta(Arrays.asList(p.a, p.b)), Arrays.asList(subtract(p.b, p.a)));
+        }
+
+        Iterable<List<Rational>> failRss = map(p -> {
+            assert p.a != null;
+            assert p.b != null;
+            return toList(insert(p.a, p.b, null));
+        }, (Iterable<Pair<List<Rational>, Integer>>) P.dependentPairsLogarithmic(
+                P.lists(P.rationals()),
+                rs -> range(0, rs.size())
+        ));
+        for (List<Rational> rs : take(LIMIT, failRss)) {
+            try {
+                toList(delta(rs));
+                fail(rs.toString());
+            } catch (IllegalArgumentException | NullPointerException ignored) {}
         }
     }
 
