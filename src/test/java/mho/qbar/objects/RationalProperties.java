@@ -1833,6 +1833,14 @@ public class RationalProperties {
         assertTrue(message, equal(xs, ys));
     }
 
+    private static void aeq(String message, int i, int j) {
+        assertEquals(message, i, j);
+    }
+
+    private static void aeq(String message, long i, long j) {
+        assertEquals(message, i, j);
+    }
+
     private static void aeq(String message, float x, float y) {
         assertEquals(message, Float.toString(x), Float.toString(y));
     }
