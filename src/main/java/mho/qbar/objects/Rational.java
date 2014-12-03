@@ -665,6 +665,8 @@ public final class Rational implements Comparable<Rational> {
      */
     public int binaryExponent() {
         if (this == ONE) return 0;
+        if (this == ZERO || this.signum() != 1)
+            throw new IllegalArgumentException("Rational must be positive");
         Rational adjusted = this;
         int exponent = 0;
         if (lt(numerator, denominator)) {

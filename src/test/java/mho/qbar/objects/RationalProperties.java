@@ -76,6 +76,7 @@ public class RationalProperties {
             propertiesBigDecimalValue_int_RoundingMode();
             propertiesBigDecimalValue_int();
             propertiesBigDecimalValueExact();
+            propertiesBinaryExponent();
             propertiesNegate();
             propertiesInvert();
             propertiesAbs();
@@ -99,7 +100,6 @@ public class RationalProperties {
             propertiesRoundToDenominator();
             propertiesShiftLeft();
             propertiesShiftRight();
-//        binaryExponentProperties();
 //        toFloatProperties();
 //        toFloatRoundingModeProperties();
             propertiesEquals();
@@ -135,7 +135,7 @@ public class RationalProperties {
         for (BigInteger i : take(LIMIT, P.bigIntegers())) {
             try {
                 of(i, BigInteger.ZERO);
-                fail();
+                fail(i.toString());
             } catch (ArithmeticException ignored) {}
         }
     }
@@ -162,7 +162,7 @@ public class RationalProperties {
         for (long l : take(LIMIT, P.longs())) {
             try {
                 of(l, 0L);
-                fail();
+                fail(Long.toString(l));
             } catch (ArithmeticException ignored) {}
         }
     }
@@ -189,7 +189,7 @@ public class RationalProperties {
         for (int i : take(LIMIT, P.integers())) {
             try {
                 of(i, 0);
-                fail();
+                fail(Integer.toString(i));
             } catch (ArithmeticException ignored) {}
         }
     }
@@ -395,7 +395,7 @@ public class RationalProperties {
         for (Rational r : take(LIMIT, filter(s -> !s.getDenominator().equals(BigInteger.ONE), P.rationals()))) {
             try {
                 r.bigIntegerValue(RoundingMode.UNNECESSARY);
-                fail();
+                fail(r.toString());
             } catch (ArithmeticException ignored) {}
         }
     }
@@ -438,7 +438,7 @@ public class RationalProperties {
         for (Rational r : take(LIMIT, filter(s -> !s.getDenominator().equals(BigInteger.ONE), P.rationals()))) {
             try {
                 r.bigIntegerValueExact();
-                fail();
+                fail(r.toString());
             } catch (ArithmeticException ignored) {}
         }
     }
@@ -454,14 +454,14 @@ public class RationalProperties {
         for (Rational r : take(LIMIT, filter(s -> !s.getDenominator().equals(BigInteger.ONE), P.rationals()))) {
             try {
                 r.byteValueExact();
-                fail();
+                fail(r.toString());
             } catch (ArithmeticException ignored) {}
         }
 
         for (BigInteger i : take(LIMIT, range(BigInteger.valueOf(Byte.MAX_VALUE).add(BigInteger.ONE)))) {
             try {
                 of(i).byteValueExact();
-                fail();
+                fail(i.toString());
             } catch (ArithmeticException ignored) {}
         }
 
@@ -472,7 +472,7 @@ public class RationalProperties {
         for (BigInteger i : take(LIMIT, below)) {
             try {
                 of(i).byteValueExact();
-                fail();
+                fail(i.toString());
             } catch (ArithmeticException ignored) {}
         }
     }
@@ -488,14 +488,14 @@ public class RationalProperties {
         for (Rational r : take(LIMIT, filter(s -> !s.getDenominator().equals(BigInteger.ONE), P.rationals()))) {
             try {
                 r.shortValueExact();
-                fail();
+                fail(r.toString());
             } catch (ArithmeticException ignored) {}
         }
 
         for (BigInteger i : take(LIMIT, range(BigInteger.valueOf(Short.MAX_VALUE).add(BigInteger.ONE)))) {
             try {
                 of(i).shortValueExact();
-                fail();
+                fail(i.toString());
             } catch (ArithmeticException ignored) {}
         }
 
@@ -506,7 +506,7 @@ public class RationalProperties {
         for (BigInteger i : take(LIMIT, below)) {
             try {
                 of(i).shortValueExact();
-                fail();
+                fail(i.toString());
             } catch (ArithmeticException ignored) {}
         }
     }
@@ -522,14 +522,14 @@ public class RationalProperties {
         for (Rational r : take(LIMIT, filter(s -> !s.getDenominator().equals(BigInteger.ONE), P.rationals()))) {
             try {
                 r.intValueExact();
-                fail();
+                fail(r.toString());
             } catch (ArithmeticException ignored) {}
         }
 
         for (BigInteger i : take(LIMIT, range(BigInteger.valueOf(Integer.MAX_VALUE).add(BigInteger.ONE)))) {
             try {
                 of(i).intValueExact();
-                fail();
+                fail(i.toString());
             } catch (ArithmeticException ignored) {}
         }
 
@@ -540,7 +540,7 @@ public class RationalProperties {
         for (BigInteger i : take(LIMIT, below)) {
             try {
                 of(i).intValueExact();
-                fail();
+                fail(i.toString());
             } catch (ArithmeticException ignored) {}
         }
     }
@@ -556,14 +556,14 @@ public class RationalProperties {
         for (Rational r : take(LIMIT, filter(s -> !s.getDenominator().equals(BigInteger.ONE), P.rationals()))) {
             try {
                 r.longValueExact();
-                fail();
+                fail(r.toString());
             } catch (ArithmeticException ignored) {}
         }
 
         for (BigInteger i : take(LIMIT, range(BigInteger.valueOf(Long.MAX_VALUE).add(BigInteger.ONE)))) {
             try {
                 of(i).longValueExact();
-                fail();
+                fail(i.toString());
             } catch (ArithmeticException ignored) {}
         }
 
@@ -574,7 +574,7 @@ public class RationalProperties {
         for (BigInteger i : take(LIMIT, below)) {
             try {
                 of(i).longValueExact();
-                fail();
+                fail(i.toString());
             } catch (ArithmeticException ignored) {}
         }
     }
@@ -793,7 +793,7 @@ public class RationalProperties {
             assert p.b.b != null;
             try {
                 p.a.bigDecimalValue(p.b.a, p.b.b);
-                fail();
+                fail(p.toString());
             } catch (IllegalArgumentException ignored) {}
         }
 
@@ -809,7 +809,7 @@ public class RationalProperties {
             assert p.b != null;
             try {
                 p.a.bigDecimalValue(p.b, RoundingMode.UNNECESSARY);
-                fail();
+                fail(p.toString());
             } catch (ArithmeticException ignored) {}
         }
     }
@@ -907,7 +907,7 @@ public class RationalProperties {
             assert p.b != null;
             try {
                 p.a.bigDecimalValue(p.b);
-                fail();
+                fail(p.toString());
             } catch (IllegalArgumentException ignored) {}
         }
     }
@@ -935,7 +935,7 @@ public class RationalProperties {
             assert p.b != null;
             try {
                 p.a.bigDecimalValue(p.b);
-                fail();
+                fail(p.toString());
             } catch (IllegalArgumentException ignored) {}
         }
 
@@ -943,8 +943,27 @@ public class RationalProperties {
         for (Rational r : take(LIMIT, rsFail)) {
             try {
                 r.bigDecimalValueExact();
-                fail();
+                fail(r.toString());
             } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private static void propertiesBinaryExponent() {
+        initialize();
+        System.out.println("testing binaryExponent() properties...");
+
+        for (Rational r : take(LIMIT, P.positiveRationals())) {
+            int exponent = r.binaryExponent();
+            Rational power = ONE.shiftLeft(exponent);
+            assertTrue(r.toString(), power.compareTo(r) <= 0);
+            assertTrue(r.toString(), r.compareTo(power.shiftLeft(1)) < 0);
+        }
+
+        for (Rational r : take(LIMIT, P.rationals(Interval.lessThanOrEqualTo(ZERO)))) {
+            try {
+                r.binaryExponent();
+                fail(r.toString());
+            } catch (IllegalArgumentException ignored) {}
         }
     }
 
@@ -1823,16 +1842,7 @@ public class RationalProperties {
             assertEquals(p.toString(), shifted, p.a.divide(BigInteger.ONE.shiftLeft(p.b)));
         }
     }
-//
-//    private static void binaryExponentProperties() {
-//        for (Rational r : positiveRationals().iterate(limit)) {
-//            int exponent = r.binaryExponent();
-//            Rational power = ONE.shiftLeft(exponent);
-//            assertTrue(r.toString(), power.compareTo(r) <= 0);
-//            assertTrue(r.toString(), r.compareTo(power.shiftLeft(1)) < 0);
-//        }
-//    }
-//
+
 //    private static void toFloatProperties() {
 //        for (Rational r : P.rationals().iterate(limit)) {
 //            float f = r.toFloat();

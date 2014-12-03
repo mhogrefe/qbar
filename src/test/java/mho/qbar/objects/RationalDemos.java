@@ -271,6 +271,13 @@ public class RationalDemos {
         }
     }
 
+    public static void demoBinaryExponent() {
+        initialize();
+        for (Rational r : take(LIMIT, P.positiveRationals())) {
+            System.out.println("binaryExponent(" + r + ") = " + r.binaryExponent());
+        }
+    }
+
     public static void demoNegate() {
         initialize();
         for (Rational r : take(LIMIT, P.rationals())) {
@@ -496,12 +503,6 @@ public class RationalDemos {
             assert p.a != null;
             assert p.b != null;
             System.out.println(p.a + " >> " + p.b + " = " + p.a.shiftRight(p.b));
-        }
-    }
-
-    public static void binaryExponentDemo() {
-        for (Rational r : take(LIMIT, P.positiveRationals())) {
-            System.out.println("binaryExponent(" + r + ") = " + r.binaryExponent());
         }
     }
 

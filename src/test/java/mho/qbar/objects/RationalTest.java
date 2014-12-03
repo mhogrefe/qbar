@@ -962,6 +962,27 @@ public class RationalTest {
     }
 
     @Test
+    public void testBinaryExponent() {
+        aeq(read("1/3").get().binaryExponent(), -2);
+        aeq(read("100").get().binaryExponent(), 6);
+        aeq(read("127").get().binaryExponent(), 6);
+        aeq(read("128").get().binaryExponent(), 7);
+        aeq(read("129").get().binaryExponent(), 7);
+        aeq(read("1/127").get().binaryExponent(), -7);
+        aeq(read("1/128").get().binaryExponent(), -7);
+        aeq(read("1/129").get().binaryExponent(), -8);
+        aeq(ONE.binaryExponent(), 0);
+        try {
+            ZERO.binaryExponent();
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            read("-2/3").get().binaryExponent();
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
     public void testNegate() {
         aeq(read("2/3").get().negate(), "-2/3");
         aeq(read("-2/3").get().negate(), "2/3");
@@ -1468,19 +1489,6 @@ public class RationalTest {
         aeq(read("-1").get().shiftRight(-2), "-4");
         aeq(read("-1").get().shiftRight(-3), "-8");
         aeq(read("-1").get().shiftRight(-4), "-16");
-    }
-
-    @Test
-    public void testBinaryExponent() {
-        aeq(read("1/3").get().binaryExponent(), -2);
-        aeq(read("100").get().binaryExponent(), 6);
-        aeq(read("127").get().binaryExponent(), 6);
-        aeq(read("128").get().binaryExponent(), 7);
-        aeq(read("129").get().binaryExponent(), 7);
-        aeq(read("1/127").get().binaryExponent(), -7);
-        aeq(read("1/128").get().binaryExponent(), -7);
-        aeq(read("1/129").get().binaryExponent(), -8);
-        aeq(ONE.binaryExponent(), 0);
     }
 
     @Test
