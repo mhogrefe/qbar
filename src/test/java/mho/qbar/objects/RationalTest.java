@@ -983,6 +983,1012 @@ public class RationalTest {
     }
 
     @Test
+    public void testFloatValue_RoundingMode() {
+        aeq(ZERO.floatValue(RoundingMode.FLOOR), 0.0);
+        aeq(ZERO.floatValue(RoundingMode.CEILING), 0.0);
+        aeq(ZERO.floatValue(RoundingMode.DOWN), 0.0);
+        aeq(ZERO.floatValue(RoundingMode.UP), 0.0);
+        aeq(ZERO.floatValue(RoundingMode.HALF_DOWN), 0.0);
+        aeq(ZERO.floatValue(RoundingMode.HALF_UP), 0.0);
+        aeq(ZERO.floatValue(RoundingMode.HALF_EVEN), 0.0);
+        aeq(ZERO.floatValue(RoundingMode.UNNECESSARY), 0.0);
+        aeq(ONE.floatValue(RoundingMode.FLOOR), 1.0);
+        aeq(ONE.floatValue(RoundingMode.CEILING), 1.0);
+        aeq(ONE.floatValue(RoundingMode.DOWN), 1.0);
+        aeq(ONE.floatValue(RoundingMode.UP), 1.0);
+        aeq(ONE.floatValue(RoundingMode.HALF_DOWN), 1.0);
+        aeq(ONE.floatValue(RoundingMode.HALF_UP), 1.0);
+        aeq(ONE.floatValue(RoundingMode.HALF_EVEN), 1.0);
+        aeq(ONE.floatValue(RoundingMode.UNNECESSARY), 1.0);
+        aeq(read("1/2").get().floatValue(RoundingMode.FLOOR), 0.5);
+        aeq(read("1/2").get().floatValue(RoundingMode.CEILING), 0.5);
+        aeq(read("1/2").get().floatValue(RoundingMode.DOWN), 0.5);
+        aeq(read("1/2").get().floatValue(RoundingMode.UP), 0.5);
+        aeq(read("1/2").get().floatValue(RoundingMode.HALF_DOWN), 0.5);
+        aeq(read("1/2").get().floatValue(RoundingMode.HALF_UP), 0.5);
+        aeq(read("1/2").get().floatValue(RoundingMode.HALF_EVEN), 0.5);
+        aeq(read("1/2").get().floatValue(RoundingMode.UNNECESSARY), 0.5);
+        aeq(read("1/3").get().floatValue(RoundingMode.FLOOR), 0.3333333);
+        aeq(read("1/3").get().floatValue(RoundingMode.CEILING), 0.33333334);
+        aeq(read("1/3").get().floatValue(RoundingMode.DOWN), 0.3333333);
+        aeq(read("1/3").get().floatValue(RoundingMode.UP), 0.33333334);
+        aeq(read("1/3").get().floatValue(RoundingMode.HALF_DOWN), 0.33333334);
+        aeq(read("1/3").get().floatValue(RoundingMode.HALF_UP), 0.33333334);
+        aeq(read("1/3").get().floatValue(RoundingMode.HALF_EVEN), 0.33333334);
+        try {
+            read("1/3").get().floatValue(RoundingMode.UNNECESSARY);
+            fail();
+        } catch (ArithmeticException ignored) {}
+        aeq(read("-1/3").get().floatValue(RoundingMode.FLOOR), -0.33333334);
+        aeq(read("-1/3").get().floatValue(RoundingMode.CEILING), -0.3333333);
+        aeq(read("-1/3").get().floatValue(RoundingMode.DOWN), -0.3333333);
+        aeq(read("-1/3").get().floatValue(RoundingMode.UP), -0.33333334);
+        aeq(read("-1/3").get().floatValue(RoundingMode.HALF_DOWN), -0.33333334);
+        aeq(read("-1/3").get().floatValue(RoundingMode.HALF_UP), -0.33333334);
+        aeq(read("-1/3").get().floatValue(RoundingMode.HALF_EVEN), -0.33333334);
+        try {
+            read("-1/3").get().floatValue(RoundingMode.UNNECESSARY);
+            fail();
+        } catch (ArithmeticException ignored) {}
+        Rational almostOne = of(BigInteger.TEN.pow(1000).subtract(BigInteger.ONE), BigInteger.TEN.pow(1000));
+        aeq(almostOne.floatValue(RoundingMode.FLOOR), 0.99999994);
+        aeq(almostOne.floatValue(RoundingMode.CEILING), 1.0);
+        aeq(almostOne.floatValue(RoundingMode.DOWN), 0.99999994);
+        aeq(almostOne.floatValue(RoundingMode.UP), 1.0);
+        aeq(almostOne.floatValue(RoundingMode.HALF_DOWN), 1.0);
+        aeq(almostOne.floatValue(RoundingMode.HALF_UP), 1.0);
+        aeq(almostOne.floatValue(RoundingMode.HALF_EVEN), 1.0);
+        try {
+            almostOne.floatValue(RoundingMode.UNNECESSARY);
+            fail();
+        } catch (ArithmeticException ignored) {}
+        Rational floatPi = ofExact((float) Math.PI);
+        if (floatPi == null) {
+            fail();
+        }
+        aeq(floatPi.floatValue(RoundingMode.FLOOR), 3.1415927);
+        aeq(floatPi.floatValue(RoundingMode.CEILING), 3.1415927);
+        aeq(floatPi.floatValue(RoundingMode.DOWN), 3.1415927);
+        aeq(floatPi.floatValue(RoundingMode.UP), 3.1415927);
+        aeq(floatPi.floatValue(RoundingMode.HALF_DOWN), 3.1415927);
+        aeq(floatPi.floatValue(RoundingMode.HALF_UP), 3.1415927);
+        aeq(floatPi.floatValue(RoundingMode.HALF_EVEN), 3.1415927);
+        aeq(floatPi.floatValue(RoundingMode.UNNECESSARY), 3.1415927);
+        Rational trillion = of(BigInteger.TEN.pow(12));
+        aeq(trillion.floatValue(RoundingMode.FLOOR), 1.0E12);
+        aeq(trillion.floatValue(RoundingMode.CEILING), 1.00000006E12);
+        aeq(trillion.floatValue(RoundingMode.DOWN), 1.0E12);
+        aeq(trillion.floatValue(RoundingMode.UP), 1.00000006E12);
+        aeq(trillion.floatValue(RoundingMode.HALF_DOWN), 1.0E12);
+        aeq(trillion.floatValue(RoundingMode.HALF_UP), 1.0E12);
+        aeq(trillion.floatValue(RoundingMode.HALF_EVEN), 1.0E12);
+        try {
+            trillion.floatValue(RoundingMode.UNNECESSARY);
+            fail();
+        } catch (ArithmeticException ignored) {}
+        Rational piSuccessor = ofExact(FloatUtils.successor((float) Math.PI));
+        if (piSuccessor == null) {
+            fail();
+        }
+        Rational piPredecessor = ofExact(FloatUtils.predecessor((float) Math.PI));
+        if (piPredecessor == null) {
+            fail();
+        }
+        Rational halfAbovePi = add(floatPi, piSuccessor).divide(2);
+        Rational halfBelowPi = add(floatPi, piPredecessor).divide(2);
+        Rational justAbovePi = add(floatPi.multiply(2), piSuccessor).divide(3);
+        Rational justBelowPi = add(floatPi.multiply(2), piPredecessor).divide(3);
+        aeq(halfAbovePi.floatValue(RoundingMode.FLOOR), 3.1415927);
+        aeq(halfAbovePi.floatValue(RoundingMode.CEILING), 3.141593);
+        aeq(halfAbovePi.floatValue(RoundingMode.DOWN), 3.1415927);
+        aeq(halfAbovePi.floatValue(RoundingMode.UP), 3.141593);
+        aeq(halfAbovePi.floatValue(RoundingMode.HALF_DOWN), 3.1415927);
+        aeq(halfAbovePi.floatValue(RoundingMode.HALF_UP), 3.141593);
+        aeq(halfAbovePi.floatValue(RoundingMode.HALF_EVEN), 3.141593);
+        try {
+            halfAbovePi.floatValue(RoundingMode.UNNECESSARY);
+            fail();
+        } catch (ArithmeticException ignored) {}
+        aeq(halfBelowPi.floatValue(RoundingMode.FLOOR), 3.1415925);
+        aeq(halfBelowPi.floatValue(RoundingMode.CEILING), 3.1415927);
+        aeq(halfBelowPi.floatValue(RoundingMode.DOWN), 3.1415925);
+        aeq(halfBelowPi.floatValue(RoundingMode.UP), 3.1415927);
+        aeq(halfBelowPi.floatValue(RoundingMode.HALF_DOWN), 3.1415925);
+        aeq(halfBelowPi.floatValue(RoundingMode.HALF_UP), 3.1415927);
+        aeq(halfBelowPi.floatValue(RoundingMode.HALF_EVEN), 3.1415925);
+        try {
+            halfBelowPi.floatValue(RoundingMode.UNNECESSARY);
+            fail();
+        } catch (ArithmeticException ignored) {}
+        aeq(justAbovePi.floatValue(RoundingMode.FLOOR), 3.1415927);
+        aeq(justAbovePi.floatValue(RoundingMode.CEILING), 3.141593);
+        aeq(justAbovePi.floatValue(RoundingMode.DOWN), 3.1415927);
+        aeq(justAbovePi.floatValue(RoundingMode.UP), 3.141593);
+        aeq(justAbovePi.floatValue(RoundingMode.HALF_DOWN), 3.1415927);
+        aeq(justAbovePi.floatValue(RoundingMode.HALF_UP), 3.1415927);
+        aeq(justAbovePi.floatValue(RoundingMode.HALF_EVEN), 3.1415927);
+        try {
+            justAbovePi.floatValue(RoundingMode.UNNECESSARY);
+            fail();
+        } catch (ArithmeticException ignored) {}
+        aeq(justBelowPi.floatValue(RoundingMode.FLOOR), 3.1415925);
+        aeq(justBelowPi.floatValue(RoundingMode.CEILING), 3.1415927);
+        aeq(justBelowPi.floatValue(RoundingMode.DOWN), 3.1415925);
+        aeq(justBelowPi.floatValue(RoundingMode.UP), 3.1415927);
+        aeq(justBelowPi.floatValue(RoundingMode.HALF_DOWN), 3.1415927);
+        aeq(justBelowPi.floatValue(RoundingMode.HALF_UP), 3.1415927);
+        aeq(justBelowPi.floatValue(RoundingMode.HALF_EVEN), 3.1415927);
+        try {
+            justBelowPi.floatValue(RoundingMode.UNNECESSARY);
+            fail();
+        } catch (ArithmeticException ignored) {}
+        Rational subnormal = ofExact(1e-40f);
+        if (subnormal == null) {
+            fail();
+        }
+        Rational subnormalSuccessor = ofExact(FloatUtils.successor(1e-40f));
+        if (subnormalSuccessor == null) {
+            fail();
+        }
+        Rational subnormalPredecessor = ofExact(FloatUtils.predecessor(1e-40f));
+        if (subnormalPredecessor == null) {
+            fail();
+        }
+        Rational halfAboveSubnormal = add(subnormal, subnormalSuccessor).divide(2);
+        Rational halfBelowSubnormal = add(subnormal, subnormalPredecessor).divide(2);
+        Rational justAboveSubnormal = add(subnormal.multiply(2), subnormalSuccessor).divide(3);
+        Rational justBelowSubnormal = add(subnormal.multiply(2), subnormalPredecessor).divide(3);
+        aeq(subnormal.floatValue(RoundingMode.FLOOR), 1.0E-40);
+        aeq(subnormal.floatValue(RoundingMode.CEILING), 1.0E-40);
+        aeq(subnormal.floatValue(RoundingMode.DOWN), 1.0E-40);
+        aeq(subnormal.floatValue(RoundingMode.UP), 1.0E-40);
+        aeq(subnormal.floatValue(RoundingMode.HALF_DOWN), 1.0E-40);
+        aeq(subnormal.floatValue(RoundingMode.HALF_UP), 1.0E-40);
+        aeq(subnormal.floatValue(RoundingMode.HALF_EVEN), 1.0E-40);
+        aeq(subnormal.floatValue(RoundingMode.UNNECESSARY), 1.0E-40);
+        aeq(halfAboveSubnormal.floatValue(RoundingMode.FLOOR), 1.0E-40);
+        aeq(halfAboveSubnormal.floatValue(RoundingMode.CEILING), 1.00001E-40);
+        aeq(halfAboveSubnormal.floatValue(RoundingMode.DOWN), 1.0E-40);
+        aeq(halfAboveSubnormal.floatValue(RoundingMode.UP), 1.00001E-40);
+        aeq(halfAboveSubnormal.floatValue(RoundingMode.HALF_DOWN), 1.0E-40);
+        aeq(halfAboveSubnormal.floatValue(RoundingMode.HALF_UP), 1.00001E-40);
+        aeq(halfAboveSubnormal.floatValue(RoundingMode.HALF_EVEN), 1.0E-40);
+        try {
+            halfAboveSubnormal.floatValue(RoundingMode.UNNECESSARY);
+            fail();
+        } catch (ArithmeticException ignored) {}
+        aeq(halfBelowSubnormal.floatValue(RoundingMode.FLOOR), 9.9998E-41);
+        aeq(halfBelowSubnormal.floatValue(RoundingMode.CEILING), 1.0E-40);
+        aeq(halfBelowSubnormal.floatValue(RoundingMode.DOWN), 9.9998E-41);
+        aeq(halfBelowSubnormal.floatValue(RoundingMode.UP), 1.0E-40);
+        aeq(halfBelowSubnormal.floatValue(RoundingMode.HALF_DOWN), 9.9998E-41);
+        aeq(halfBelowSubnormal.floatValue(RoundingMode.HALF_UP), 1.0E-40);
+        aeq(halfBelowSubnormal.floatValue(RoundingMode.HALF_EVEN), 1.0E-40);
+        try {
+            halfBelowSubnormal.floatValue(RoundingMode.UNNECESSARY);
+            fail();
+        } catch (ArithmeticException ignored) {}
+        aeq(justAboveSubnormal.floatValue(RoundingMode.FLOOR), 1.0E-40);
+        aeq(justAboveSubnormal.floatValue(RoundingMode.CEILING), 1.00001E-40);
+        aeq(justAboveSubnormal.floatValue(RoundingMode.DOWN), 1.0E-40);
+        aeq(justAboveSubnormal.floatValue(RoundingMode.UP), 1.00001E-40);
+        aeq(justAboveSubnormal.floatValue(RoundingMode.HALF_DOWN), 1.0E-40);
+        aeq(justAboveSubnormal.floatValue(RoundingMode.HALF_UP), 1.0E-40);
+        aeq(justAboveSubnormal.floatValue(RoundingMode.HALF_EVEN), 1.0E-40);
+        try {
+            justAboveSubnormal.floatValue(RoundingMode.UNNECESSARY);
+            fail();
+        } catch (ArithmeticException ignored) {}
+        aeq(justBelowSubnormal.floatValue(RoundingMode.FLOOR), 9.9998E-41);
+        aeq(justBelowSubnormal.floatValue(RoundingMode.CEILING), 1.0E-40);
+        aeq(justBelowSubnormal.floatValue(RoundingMode.DOWN), 9.9998E-41);
+        aeq(justBelowSubnormal.floatValue(RoundingMode.UP), 1.0E-40);
+        aeq(justBelowSubnormal.floatValue(RoundingMode.HALF_DOWN), 1.0E-40);
+        aeq(justBelowSubnormal.floatValue(RoundingMode.HALF_UP), 1.0E-40);
+        aeq(justBelowSubnormal.floatValue(RoundingMode.HALF_EVEN), 1.0E-40);
+        try {
+            justBelowSubnormal.floatValue(RoundingMode.UNNECESSARY);
+            fail();
+        } catch (ArithmeticException ignored) {}
+        Rational belowNegativeMax = subtract(LARGEST_FLOAT.negate(), ONE);
+        Rational negativeMaxSuccessor = ofExact(FloatUtils.successor(-Float.MAX_VALUE));
+        if (negativeMaxSuccessor == null) {
+            fail();
+        }
+        Rational halfAboveNegativeMax = add(LARGEST_FLOAT.negate(), negativeMaxSuccessor).divide(2);
+        Rational justAboveNegativeMax = add(
+                LARGEST_FLOAT.negate().multiply(2),
+                negativeMaxSuccessor
+        ).divide(3);
+        aeq(belowNegativeMax.floatValue(RoundingMode.FLOOR), Float.NEGATIVE_INFINITY);
+        aeq(belowNegativeMax.floatValue(RoundingMode.CEILING), -3.4028235E38);
+        aeq(belowNegativeMax.floatValue(RoundingMode.DOWN), -3.4028235E38);
+        aeq(belowNegativeMax.floatValue(RoundingMode.UP), Float.NEGATIVE_INFINITY);
+        aeq(belowNegativeMax.floatValue(RoundingMode.HALF_DOWN), -3.4028235E38);
+        aeq(belowNegativeMax.floatValue(RoundingMode.HALF_UP), Float.NEGATIVE_INFINITY);
+        aeq(belowNegativeMax.floatValue(RoundingMode.HALF_EVEN), Float.NEGATIVE_INFINITY);
+        try {
+            belowNegativeMax.floatValue(RoundingMode.UNNECESSARY);
+            fail();
+        } catch (ArithmeticException ignored) {}
+        aeq(halfAboveNegativeMax.floatValue(RoundingMode.FLOOR), -3.4028235E38);
+        aeq(halfAboveNegativeMax.floatValue(RoundingMode.CEILING), -3.4028233E38);
+        aeq(halfAboveNegativeMax.floatValue(RoundingMode.DOWN), -3.4028233E38);
+        aeq(halfAboveNegativeMax.floatValue(RoundingMode.UP), -3.4028235E38);
+        aeq(halfAboveNegativeMax.floatValue(RoundingMode.HALF_DOWN), -3.4028233E38);
+        aeq(halfAboveNegativeMax.floatValue(RoundingMode.HALF_UP), -3.4028235E38);
+        aeq(halfAboveNegativeMax.floatValue(RoundingMode.HALF_EVEN), -3.4028233E38);
+        try {
+            halfAboveNegativeMax.floatValue(RoundingMode.UNNECESSARY);
+            fail();
+        } catch (ArithmeticException ignored) {}
+        aeq(justAboveNegativeMax.floatValue(RoundingMode.FLOOR), -3.4028235E38);
+        aeq(justAboveNegativeMax.floatValue(RoundingMode.CEILING), -3.4028233E38);
+        aeq(justAboveNegativeMax.floatValue(RoundingMode.DOWN), -3.4028233E38);
+        aeq(justAboveNegativeMax.floatValue(RoundingMode.UP), -3.4028235E38);
+        aeq(justAboveNegativeMax.floatValue(RoundingMode.HALF_DOWN), -3.4028235E38);
+        aeq(justAboveNegativeMax.floatValue(RoundingMode.HALF_UP), -3.4028235E38);
+        aeq(justAboveNegativeMax.floatValue(RoundingMode.HALF_EVEN), -3.4028235E38);
+        try {
+            justAboveNegativeMax.floatValue(RoundingMode.UNNECESSARY);
+            fail();
+        } catch (ArithmeticException ignored) {}
+        Rational aboveMax = add(LARGEST_FLOAT, ONE);
+        Rational maxPredecessor = ofExact(FloatUtils.predecessor(Float.MAX_VALUE));
+        if (maxPredecessor == null) {
+            fail();
+        }
+        Rational halfBelowMax = add(LARGEST_FLOAT, maxPredecessor).divide(2);
+        Rational justBelowMax = add(LARGEST_FLOAT.multiply(2), maxPredecessor).divide(3);
+        aeq(aboveMax.floatValue(RoundingMode.FLOOR), 3.4028235E38);
+        aeq(aboveMax.floatValue(RoundingMode.CEILING), Float.POSITIVE_INFINITY);
+        aeq(aboveMax.floatValue(RoundingMode.DOWN), 3.4028235E38);
+        aeq(aboveMax.floatValue(RoundingMode.UP), Float.POSITIVE_INFINITY);
+        aeq(aboveMax.floatValue(RoundingMode.HALF_DOWN), 3.4028235E38);
+        aeq(aboveMax.floatValue(RoundingMode.HALF_UP), Float.POSITIVE_INFINITY);
+        aeq(aboveMax.floatValue(RoundingMode.HALF_EVEN), Float.POSITIVE_INFINITY);
+        try {
+            aboveMax.floatValue(RoundingMode.UNNECESSARY);
+            fail();
+        } catch (ArithmeticException ignored) {}
+        aeq(halfBelowMax.floatValue(RoundingMode.FLOOR), 3.4028233E38);
+        aeq(halfBelowMax.floatValue(RoundingMode.CEILING), 3.4028235E38);
+        aeq(halfBelowMax.floatValue(RoundingMode.DOWN), 3.4028233E38);
+        aeq(halfBelowMax.floatValue(RoundingMode.UP), 3.4028235E38);
+        aeq(halfBelowMax.floatValue(RoundingMode.HALF_DOWN), 3.4028233E38);
+        aeq(halfBelowMax.floatValue(RoundingMode.HALF_UP), 3.4028235E38);
+        aeq(halfBelowMax.floatValue(RoundingMode.HALF_EVEN), 3.4028233E38);
+        try {
+            halfBelowMax.floatValue(RoundingMode.UNNECESSARY);
+            fail();
+        } catch (ArithmeticException ignored) {}
+        aeq(justBelowMax.floatValue(RoundingMode.FLOOR), 3.4028233E38);
+        aeq(justBelowMax.floatValue(RoundingMode.CEILING), 3.4028235E38);
+        aeq(justBelowMax.floatValue(RoundingMode.DOWN), 3.4028233E38);
+        aeq(justBelowMax.floatValue(RoundingMode.UP), 3.4028235E38);
+        aeq(justBelowMax.floatValue(RoundingMode.HALF_DOWN), 3.4028235E38);
+        aeq(justBelowMax.floatValue(RoundingMode.HALF_UP), 3.4028235E38);
+        aeq(justBelowMax.floatValue(RoundingMode.HALF_EVEN), 3.4028235E38);
+        try {
+            justBelowMax.floatValue(RoundingMode.UNNECESSARY);
+            fail();
+        } catch (ArithmeticException ignored) {}
+        Rational halfAboveZero = SMALLEST_FLOAT.shiftRight(1);
+        Rational justAboveZero = SMALLEST_FLOAT.divide(3);
+        Rational halfBelowZero = halfAboveZero.negate();
+        Rational justBelowZero = justAboveZero.negate();
+        aeq(halfBelowZero.floatValue(RoundingMode.FLOOR), -1.4E-45);
+        aeq(halfBelowZero.floatValue(RoundingMode.CEILING), -0.0);
+        aeq(halfBelowZero.floatValue(RoundingMode.DOWN), -0.0);
+        aeq(halfBelowZero.floatValue(RoundingMode.UP), -1.4E-45);
+        aeq(halfBelowZero.floatValue(RoundingMode.HALF_DOWN), -0.0);
+        aeq(halfBelowZero.floatValue(RoundingMode.HALF_UP), -1.4E-45);
+        aeq(halfBelowZero.floatValue(RoundingMode.HALF_EVEN), -0.0);
+        try {
+            halfBelowZero.floatValue(RoundingMode.UNNECESSARY);
+            fail();
+        } catch (ArithmeticException ignored) {}
+        aeq(justBelowZero.floatValue(RoundingMode.FLOOR), -1.4E-45);
+        aeq(justBelowZero.floatValue(RoundingMode.CEILING), -0.0);
+        aeq(justBelowZero.floatValue(RoundingMode.DOWN), -0.0);
+        aeq(justBelowZero.floatValue(RoundingMode.UP), -1.4E-45);
+        aeq(justBelowZero.floatValue(RoundingMode.HALF_DOWN), -0.0);
+        aeq(justBelowZero.floatValue(RoundingMode.HALF_UP), -0.0);
+        aeq(justBelowZero.floatValue(RoundingMode.HALF_EVEN), -0.0);
+        try {
+            justBelowZero.floatValue(RoundingMode.UNNECESSARY);
+            fail();
+        } catch (ArithmeticException ignored) {}
+        aeq(halfAboveZero.floatValue(RoundingMode.FLOOR), 0.0);
+        aeq(halfAboveZero.floatValue(RoundingMode.CEILING), 1.4E-45);
+        aeq(halfAboveZero.floatValue(RoundingMode.DOWN), 0.0);
+        aeq(halfAboveZero.floatValue(RoundingMode.UP), 1.4E-45);
+        aeq(halfAboveZero.floatValue(RoundingMode.HALF_DOWN), 0.0);
+        aeq(halfAboveZero.floatValue(RoundingMode.HALF_UP), 1.4E-45);
+        aeq(halfAboveZero.floatValue(RoundingMode.HALF_EVEN), 0.0);
+        try {
+            halfAboveZero.floatValue(RoundingMode.UNNECESSARY);
+            fail();
+        } catch (ArithmeticException ignored) {}
+        aeq(justAboveZero.floatValue(RoundingMode.FLOOR), 0.0);
+        aeq(justAboveZero.floatValue(RoundingMode.CEILING), 1.4E-45);
+        aeq(justAboveZero.floatValue(RoundingMode.DOWN), 0.0);
+        aeq(justAboveZero.floatValue(RoundingMode.UP), 1.4E-45);
+        aeq(justAboveZero.floatValue(RoundingMode.HALF_DOWN), 0.0);
+        aeq(justAboveZero.floatValue(RoundingMode.HALF_UP), 0.0);
+        aeq(justAboveZero.floatValue(RoundingMode.HALF_EVEN), 0.0);
+        try {
+            justAboveZero.floatValue(RoundingMode.UNNECESSARY);
+            fail();
+        } catch (ArithmeticException ignored) {}
+        Rational boundary = add(
+                LARGEST_SUBNORMAL_FLOAT,
+                SMALLEST_NORMAL_FLOAT
+        ).shiftRight(1);
+        Rational halfBelowBoundary = add(LARGEST_SUBNORMAL_FLOAT, boundary).shiftRight(1);
+        Rational halfAboveBoundary = add(SMALLEST_NORMAL_FLOAT, boundary).shiftRight(1);
+        Rational justBelowBoundary = add(LARGEST_SUBNORMAL_FLOAT, boundary.shiftLeft(1)).divide(3);
+        Rational justAboveBoundary = add(SMALLEST_NORMAL_FLOAT, boundary.shiftLeft(1)).divide(3);
+        aeq(boundary.floatValue(RoundingMode.FLOOR), 1.1754942E-38);
+        aeq(boundary.floatValue(RoundingMode.CEILING), 1.17549435E-38);
+        aeq(boundary.floatValue(RoundingMode.DOWN), 1.1754942E-38);
+        aeq(boundary.floatValue(RoundingMode.UP), 1.17549435E-38);
+        aeq(boundary.floatValue(RoundingMode.HALF_DOWN), 1.1754942E-38);
+        aeq(boundary.floatValue(RoundingMode.HALF_UP), 1.17549435E-38);
+        aeq(boundary.floatValue(RoundingMode.HALF_EVEN), 1.17549435E-38);
+        try {
+            boundary.floatValue(RoundingMode.UNNECESSARY);
+            fail();
+        } catch (ArithmeticException ignored) {}
+        aeq(halfBelowBoundary.floatValue(RoundingMode.FLOOR), 1.1754942E-38);
+        aeq(halfBelowBoundary.floatValue(RoundingMode.CEILING), 1.17549435E-38);
+        aeq(halfBelowBoundary.floatValue(RoundingMode.DOWN), 1.1754942E-38);
+        aeq(halfBelowBoundary.floatValue(RoundingMode.UP), 1.17549435E-38);
+        aeq(halfBelowBoundary.floatValue(RoundingMode.HALF_DOWN), 1.1754942E-38);
+        aeq(halfBelowBoundary.floatValue(RoundingMode.HALF_UP), 1.1754942E-38);
+        aeq(halfBelowBoundary.floatValue(RoundingMode.HALF_EVEN), 1.1754942E-38);
+        try {
+            halfBelowBoundary.floatValue(RoundingMode.UNNECESSARY);
+            fail();
+        } catch (ArithmeticException ignored) {}
+        aeq(justBelowBoundary.floatValue(RoundingMode.FLOOR), 1.1754942E-38);
+        aeq(justBelowBoundary.floatValue(RoundingMode.CEILING), 1.17549435E-38);
+        aeq(justBelowBoundary.floatValue(RoundingMode.DOWN), 1.1754942E-38);
+        aeq(justBelowBoundary.floatValue(RoundingMode.UP), 1.17549435E-38);
+        aeq(justBelowBoundary.floatValue(RoundingMode.HALF_DOWN), 1.1754942E-38);
+        aeq(justBelowBoundary.floatValue(RoundingMode.HALF_UP), 1.1754942E-38);
+        aeq(justBelowBoundary.floatValue(RoundingMode.HALF_EVEN), 1.1754942E-38);
+        try {
+            justBelowBoundary.floatValue(RoundingMode.UNNECESSARY);
+            fail();
+        } catch (ArithmeticException ignored) {}
+        aeq(halfAboveBoundary.floatValue(RoundingMode.FLOOR), 1.1754942E-38);
+        aeq(halfAboveBoundary.floatValue(RoundingMode.CEILING), 1.17549435E-38);
+        aeq(halfAboveBoundary.floatValue(RoundingMode.DOWN), 1.1754942E-38);
+        aeq(halfAboveBoundary.floatValue(RoundingMode.UP), 1.17549435E-38);
+        aeq(halfAboveBoundary.floatValue(RoundingMode.HALF_DOWN), 1.17549435E-38);
+        aeq(halfAboveBoundary.floatValue(RoundingMode.HALF_UP), 1.17549435E-38);
+        aeq(halfAboveBoundary.floatValue(RoundingMode.HALF_EVEN), 1.17549435E-38);
+        try {
+            halfAboveBoundary.floatValue(RoundingMode.UNNECESSARY);
+            fail();
+        } catch (ArithmeticException ignored) {}
+        aeq(justAboveBoundary.floatValue(RoundingMode.FLOOR), 1.1754942E-38);
+        aeq(justAboveBoundary.floatValue(RoundingMode.CEILING), 1.17549435E-38);
+        aeq(justAboveBoundary.floatValue(RoundingMode.DOWN), 1.1754942E-38);
+        aeq(justAboveBoundary.floatValue(RoundingMode.UP), 1.17549435E-38);
+        aeq(justAboveBoundary.floatValue(RoundingMode.HALF_DOWN), 1.17549435E-38);
+        aeq(justAboveBoundary.floatValue(RoundingMode.HALF_UP), 1.17549435E-38);
+        aeq(justAboveBoundary.floatValue(RoundingMode.HALF_EVEN), 1.17549435E-38);
+        try {
+            justAboveBoundary.floatValue(RoundingMode.UNNECESSARY);
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testFloatValue() {
+        aeq(ZERO.floatValue(), 0.0);
+        aeq(ONE.floatValue(), 1.0);
+        aeq(read("1/2").get().floatValue(), 0.5);
+        aeq(read("1/3").get().floatValue(), 0.33333334);
+        aeq(read("-1/3").get().floatValue(), -0.33333334);
+        Rational almostOne = of(BigInteger.TEN.pow(1000).subtract(BigInteger.ONE), BigInteger.TEN.pow(1000));
+        aeq(almostOne.floatValue(), 1.0);
+        Rational floatPi = ofExact((float) Math.PI);
+        if (floatPi == null) {
+            fail();
+        }
+        aeq(floatPi.floatValue(), 3.1415927);
+        Rational trillion = of(BigInteger.TEN.pow(12));
+        aeq(trillion.floatValue(), 1.0E12);
+        Rational piSuccessor = ofExact(FloatUtils.successor((float) Math.PI));
+        if (piSuccessor == null) {
+            fail();
+        }
+        Rational piPredecessor = ofExact(FloatUtils.predecessor((float) Math.PI));
+        if (piPredecessor == null) {
+            fail();
+        }
+        Rational halfAbovePi = add(floatPi, piSuccessor).divide(2);
+        Rational halfBelowPi = add(floatPi, piPredecessor).divide(2);
+        Rational justAbovePi = add(floatPi.multiply(2), piSuccessor).divide(3);
+        Rational justBelowPi = add(floatPi.multiply(2), piPredecessor).divide(3);
+        aeq(halfAbovePi.floatValue(), 3.141593);
+        aeq(halfBelowPi.floatValue(), 3.1415925);
+        aeq(justAbovePi.floatValue(), 3.1415927);
+        aeq(justBelowPi.floatValue(), 3.1415927);
+        Rational subnormal = ofExact(1e-40f);
+        if (subnormal == null) {
+            fail();
+        }
+        Rational subnormalSuccessor = ofExact(FloatUtils.successor(1e-40f));
+        if (subnormalSuccessor == null) {
+            fail();
+        }
+        Rational subnormalPredecessor = ofExact(FloatUtils.predecessor(1e-40f));
+        if (subnormalPredecessor == null) {
+            fail();
+        }
+        Rational halfAboveSubnormal = add(subnormal, subnormalSuccessor).divide(2);
+        Rational halfBelowSubnormal = add(subnormal, subnormalPredecessor).divide(2);
+        Rational justAboveSubnormal = add(subnormal.multiply(2), subnormalSuccessor).divide(3);
+        Rational justBelowSubnormal = add(subnormal.multiply(2), subnormalPredecessor).divide(3);
+        aeq(subnormal.floatValue(), 1.0E-40);
+        aeq(halfAboveSubnormal.floatValue(), 1.0E-40);
+        aeq(halfBelowSubnormal.floatValue(), 1.0E-40);
+        aeq(justAboveSubnormal.floatValue(), 1.0E-40);
+        aeq(justBelowSubnormal.floatValue(), 1.0E-40);
+        Rational belowNegativeMax = subtract(LARGEST_FLOAT.negate(), ONE);
+        Rational negativeMaxSuccessor = ofExact(FloatUtils.successor(-Float.MAX_VALUE));
+        if (negativeMaxSuccessor == null) {
+            fail();
+        }
+        Rational halfAboveNegativeMax = add(LARGEST_FLOAT.negate(), negativeMaxSuccessor).divide(2);
+        Rational justAboveNegativeMax = add(
+                LARGEST_FLOAT.negate().multiply(2),
+                negativeMaxSuccessor
+        ).divide(3);
+        aeq(belowNegativeMax.floatValue(), Float.NEGATIVE_INFINITY);
+        aeq(halfAboveNegativeMax.floatValue(), -3.4028233E38);
+        aeq(justAboveNegativeMax.floatValue(), -3.4028235E38);
+        Rational aboveMax = add(LARGEST_FLOAT, ONE);
+        Rational maxPredecessor = ofExact(FloatUtils.predecessor(Float.MAX_VALUE));
+        if (maxPredecessor == null) {
+            fail();
+        }
+        Rational halfBelowMax = add(LARGEST_FLOAT, maxPredecessor).divide(2);
+        Rational justBelowMax = add(LARGEST_FLOAT.multiply(2), maxPredecessor).divide(3);
+        aeq(aboveMax.floatValue(), Float.POSITIVE_INFINITY);
+        aeq(halfBelowMax.floatValue(), 3.4028233E38);
+        aeq(justBelowMax.floatValue(), 3.4028235E38);
+        Rational halfAboveZero = SMALLEST_FLOAT.shiftRight(1);
+        Rational justAboveZero = SMALLEST_FLOAT.divide(3);
+        Rational halfBelowZero = halfAboveZero.negate();
+        Rational justBelowZero = justAboveZero.negate();
+        aeq(halfBelowZero.floatValue(), -0.0);
+        aeq(justBelowZero.floatValue(), -0.0);
+        aeq(halfAboveZero.floatValue(), 0.0);
+        aeq(justAboveZero.floatValue(), 0.0);
+        Rational boundary = add(
+                LARGEST_SUBNORMAL_FLOAT,
+                SMALLEST_NORMAL_FLOAT
+        ).shiftRight(1);
+        Rational halfBelowBoundary = add(LARGEST_SUBNORMAL_FLOAT, boundary).shiftRight(1);
+        Rational halfAboveBoundary = add(SMALLEST_NORMAL_FLOAT, boundary).shiftRight(1);
+        Rational justBelowBoundary = add(LARGEST_SUBNORMAL_FLOAT, boundary.shiftLeft(1)).divide(3);
+        Rational justAboveBoundary = add(SMALLEST_NORMAL_FLOAT, boundary.shiftLeft(1)).divide(3);
+        aeq(boundary.floatValue(), 1.17549435E-38);
+        aeq(halfBelowBoundary.floatValue(), 1.1754942E-38);
+        aeq(justBelowBoundary.floatValue(), 1.1754942E-38);
+        aeq(halfAboveBoundary.floatValue(), 1.17549435E-38);
+        aeq(justAboveBoundary.floatValue(), 1.17549435E-38);
+    }
+
+    @Test
+    public void testDoubleValue_RoundingMode() {
+        aeq(ZERO.doubleValue(RoundingMode.FLOOR), 0.0);
+        aeq(ZERO.doubleValue(RoundingMode.CEILING), 0.0);
+        aeq(ZERO.doubleValue(RoundingMode.DOWN), 0.0);
+        aeq(ZERO.doubleValue(RoundingMode.UP), 0.0);
+        aeq(ZERO.doubleValue(RoundingMode.HALF_DOWN), 0.0);
+        aeq(ZERO.doubleValue(RoundingMode.HALF_UP), 0.0);
+        aeq(ZERO.doubleValue(RoundingMode.HALF_EVEN), 0.0);
+        aeq(ZERO.doubleValue(RoundingMode.UNNECESSARY), 0.0);
+        aeq(ONE.doubleValue(RoundingMode.FLOOR), 1.0);
+        aeq(ONE.doubleValue(RoundingMode.CEILING), 1.0);
+        aeq(ONE.doubleValue(RoundingMode.DOWN), 1.0);
+        aeq(ONE.doubleValue(RoundingMode.UP), 1.0);
+        aeq(ONE.doubleValue(RoundingMode.HALF_DOWN), 1.0);
+        aeq(ONE.doubleValue(RoundingMode.HALF_UP), 1.0);
+        aeq(ONE.doubleValue(RoundingMode.HALF_EVEN), 1.0);
+        aeq(ONE.doubleValue(RoundingMode.UNNECESSARY), 1.0);
+        aeq(read("1/2").get().doubleValue(RoundingMode.FLOOR), 0.5);
+        aeq(read("1/2").get().doubleValue(RoundingMode.CEILING), 0.5);
+        aeq(read("1/2").get().doubleValue(RoundingMode.DOWN), 0.5);
+        aeq(read("1/2").get().doubleValue(RoundingMode.UP), 0.5);
+        aeq(read("1/2").get().doubleValue(RoundingMode.HALF_DOWN), 0.5);
+        aeq(read("1/2").get().doubleValue(RoundingMode.HALF_UP), 0.5);
+        aeq(read("1/2").get().doubleValue(RoundingMode.HALF_EVEN), 0.5);
+        aeq(read("1/2").get().doubleValue(RoundingMode.UNNECESSARY), 0.5);
+        aeq(read("1/3").get().doubleValue(RoundingMode.FLOOR), 0.3333333333333333);
+        aeq(read("1/3").get().doubleValue(RoundingMode.CEILING), 0.33333333333333337);
+        aeq(read("1/3").get().doubleValue(RoundingMode.DOWN), 0.3333333333333333);
+        aeq(read("1/3").get().doubleValue(RoundingMode.UP), 0.33333333333333337);
+        aeq(read("1/3").get().doubleValue(RoundingMode.HALF_DOWN), 0.3333333333333333);
+        aeq(read("1/3").get().doubleValue(RoundingMode.HALF_UP), 0.3333333333333333);
+        aeq(read("1/3").get().doubleValue(RoundingMode.HALF_EVEN), 0.3333333333333333);
+        try {
+            read("1/3").get().doubleValue(RoundingMode.UNNECESSARY);
+            fail();
+        } catch (ArithmeticException ignored) {}
+        aeq(read("-1/3").get().doubleValue(RoundingMode.FLOOR), -0.33333333333333337);
+        aeq(read("-1/3").get().doubleValue(RoundingMode.CEILING), -0.3333333333333333);
+        aeq(read("-1/3").get().doubleValue(RoundingMode.DOWN), -0.3333333333333333);
+        aeq(read("-1/3").get().doubleValue(RoundingMode.UP), -0.33333333333333337);
+        aeq(read("-1/3").get().doubleValue(RoundingMode.HALF_DOWN), -0.3333333333333333);
+        aeq(read("-1/3").get().doubleValue(RoundingMode.HALF_UP), -0.3333333333333333);
+        aeq(read("-1/3").get().doubleValue(RoundingMode.HALF_EVEN), -0.3333333333333333);
+        try {
+            read("-1/3").get().doubleValue(RoundingMode.UNNECESSARY);
+            fail();
+        } catch (ArithmeticException ignored) {}
+        Rational almostOne = of(BigInteger.TEN.pow(1000).subtract(BigInteger.ONE), BigInteger.TEN.pow(1000));
+        aeq(almostOne.doubleValue(RoundingMode.FLOOR), 0.9999999999999999);
+        aeq(almostOne.doubleValue(RoundingMode.CEILING), 1.0);
+        aeq(almostOne.doubleValue(RoundingMode.DOWN), 0.9999999999999999);
+        aeq(almostOne.doubleValue(RoundingMode.UP), 1.0);
+        aeq(almostOne.doubleValue(RoundingMode.HALF_DOWN), 1.0);
+        aeq(almostOne.doubleValue(RoundingMode.HALF_UP), 1.0);
+        aeq(almostOne.doubleValue(RoundingMode.HALF_EVEN), 1.0);
+        try {
+            almostOne.doubleValue(RoundingMode.UNNECESSARY);
+            fail();
+        } catch (ArithmeticException ignored) {}
+        Rational pi = ofExact(Math.PI);
+        if (pi == null) {
+            fail();
+        }
+        aeq(pi.doubleValue(RoundingMode.FLOOR), 3.141592653589793);
+        aeq(pi.doubleValue(RoundingMode.CEILING), 3.141592653589793);
+        aeq(pi.doubleValue(RoundingMode.DOWN), 3.141592653589793);
+        aeq(pi.doubleValue(RoundingMode.UP), 3.141592653589793);
+        aeq(pi.doubleValue(RoundingMode.HALF_DOWN), 3.141592653589793);
+        aeq(pi.doubleValue(RoundingMode.HALF_UP), 3.141592653589793);
+        aeq(pi.doubleValue(RoundingMode.HALF_EVEN), 3.141592653589793);
+        aeq(pi.doubleValue(RoundingMode.UNNECESSARY), 3.141592653589793);
+        Rational googol = of(BigInteger.TEN.pow(100));
+        aeq(googol.doubleValue(RoundingMode.FLOOR), 9.999999999999998E99);
+        aeq(googol.doubleValue(RoundingMode.CEILING), 1.0E100);
+        aeq(googol.doubleValue(RoundingMode.DOWN), 9.999999999999998E99);
+        aeq(googol.doubleValue(RoundingMode.UP), 1.0E100);
+        aeq(googol.doubleValue(RoundingMode.HALF_DOWN), 1.0E100);
+        aeq(googol.doubleValue(RoundingMode.HALF_UP), 1.0E100);
+        aeq(googol.doubleValue(RoundingMode.HALF_EVEN), 1.0E100);
+        try {
+            googol.doubleValue(RoundingMode.UNNECESSARY);
+            fail();
+        } catch (ArithmeticException ignored) {}
+        Rational piSuccessor = ofExact(FloatUtils.successor(Math.PI));
+        if (piSuccessor == null) {
+            fail();
+        }
+        Rational piPredecessor = ofExact(FloatUtils.predecessor(Math.PI));
+        if (piPredecessor == null) {
+            fail();
+        }
+        Rational halfAbovePi = add(pi, piSuccessor).divide(2);
+        Rational halfBelowPi = add(pi, piPredecessor).divide(2);
+        Rational justAbovePi = add(pi.multiply(2), piSuccessor).divide(3);
+        Rational justBelowPi = add(pi.multiply(2), piPredecessor).divide(3);
+        aeq(halfAbovePi.doubleValue(RoundingMode.FLOOR), 3.141592653589793);
+        aeq(halfAbovePi.doubleValue(RoundingMode.CEILING), 3.1415926535897936);
+        aeq(halfAbovePi.doubleValue(RoundingMode.DOWN), 3.141592653589793);
+        aeq(halfAbovePi.doubleValue(RoundingMode.UP), 3.1415926535897936);
+        aeq(halfAbovePi.doubleValue(RoundingMode.HALF_DOWN), 3.141592653589793);
+        aeq(halfAbovePi.doubleValue(RoundingMode.HALF_UP), 3.1415926535897936);
+        aeq(halfAbovePi.doubleValue(RoundingMode.HALF_EVEN), 3.141592653589793);
+        try {
+            halfAbovePi.doubleValue(RoundingMode.UNNECESSARY);
+            fail();
+        } catch (ArithmeticException ignored) {}
+        aeq(halfBelowPi.doubleValue(RoundingMode.FLOOR), 3.1415926535897927);
+        aeq(halfBelowPi.doubleValue(RoundingMode.CEILING), 3.141592653589793);
+        aeq(halfBelowPi.doubleValue(RoundingMode.DOWN), 3.1415926535897927);
+        aeq(halfBelowPi.doubleValue(RoundingMode.UP), 3.141592653589793);
+        aeq(halfBelowPi.doubleValue(RoundingMode.HALF_DOWN), 3.1415926535897927);
+        aeq(halfBelowPi.doubleValue(RoundingMode.HALF_UP), 3.141592653589793);
+        aeq(halfBelowPi.doubleValue(RoundingMode.HALF_EVEN), 3.141592653589793);
+        try {
+            halfBelowPi.doubleValue(RoundingMode.UNNECESSARY);
+            fail();
+        } catch (ArithmeticException ignored) {}
+        aeq(justAbovePi.doubleValue(RoundingMode.FLOOR), 3.141592653589793);
+        aeq(justAbovePi.doubleValue(RoundingMode.CEILING), 3.1415926535897936);
+        aeq(justAbovePi.doubleValue(RoundingMode.DOWN), 3.141592653589793);
+        aeq(justAbovePi.doubleValue(RoundingMode.UP), 3.1415926535897936);
+        aeq(justAbovePi.doubleValue(RoundingMode.HALF_DOWN), 3.141592653589793);
+        aeq(justAbovePi.doubleValue(RoundingMode.HALF_UP), 3.141592653589793);
+        aeq(justAbovePi.doubleValue(RoundingMode.HALF_EVEN), 3.141592653589793);
+        try {
+            justAbovePi.doubleValue(RoundingMode.UNNECESSARY);
+            fail();
+        } catch (ArithmeticException ignored) {}
+        aeq(justBelowPi.doubleValue(RoundingMode.FLOOR), 3.1415926535897927);
+        aeq(justBelowPi.doubleValue(RoundingMode.CEILING), 3.141592653589793);
+        aeq(justBelowPi.doubleValue(RoundingMode.DOWN), 3.1415926535897927);
+        aeq(justBelowPi.doubleValue(RoundingMode.UP), 3.141592653589793);
+        aeq(justBelowPi.doubleValue(RoundingMode.HALF_DOWN), 3.141592653589793);
+        aeq(justBelowPi.doubleValue(RoundingMode.HALF_UP), 3.141592653589793);
+        aeq(justBelowPi.doubleValue(RoundingMode.HALF_EVEN), 3.141592653589793);
+        try {
+            justBelowPi.doubleValue(RoundingMode.UNNECESSARY);
+            fail();
+        } catch (ArithmeticException ignored) {}
+        Rational subnormal = ofExact(1e-310);
+        if (subnormal == null) {
+            fail();
+        }
+        Rational subnormalSuccessor = ofExact(FloatUtils.successor(1e-310));
+        if (subnormalSuccessor == null) {
+            fail();
+        }
+        Rational subnormalPredecessor = ofExact(FloatUtils.predecessor(1e-310));
+        if (subnormalPredecessor == null) {
+            fail();
+        }
+        Rational halfAboveSubnormal = add(subnormal, subnormalSuccessor).divide(2);
+        Rational halfBelowSubnormal = add(subnormal, subnormalPredecessor).divide(2);
+        Rational justAboveSubnormal = add(subnormal.multiply(2), subnormalSuccessor).divide(3);
+        Rational justBelowSubnormal = add(subnormal.multiply(2), subnormalPredecessor).divide(3);
+        aeq(subnormal.doubleValue(RoundingMode.FLOOR), 1.0E-310);
+        aeq(subnormal.doubleValue(RoundingMode.CEILING), 1.0E-310);
+        aeq(subnormal.doubleValue(RoundingMode.DOWN), 1.0E-310);
+        aeq(subnormal.doubleValue(RoundingMode.UP), 1.0E-310);
+        aeq(subnormal.doubleValue(RoundingMode.HALF_DOWN), 1.0E-310);
+        aeq(subnormal.doubleValue(RoundingMode.HALF_UP), 1.0E-310);
+        aeq(subnormal.doubleValue(RoundingMode.HALF_EVEN), 1.0E-310);
+        aeq(subnormal.doubleValue(RoundingMode.UNNECESSARY), 1.0E-310);
+        aeq(halfAboveSubnormal.doubleValue(RoundingMode.FLOOR), 1.0E-310);
+        aeq(halfAboveSubnormal.doubleValue(RoundingMode.CEILING), 1.00000000000005E-310);
+        aeq(halfAboveSubnormal.doubleValue(RoundingMode.DOWN), 1.0E-310);
+        aeq(halfAboveSubnormal.doubleValue(RoundingMode.UP), 1.00000000000005E-310);
+        aeq(halfAboveSubnormal.doubleValue(RoundingMode.HALF_DOWN), 1.0E-310);
+        aeq(halfAboveSubnormal.doubleValue(RoundingMode.HALF_UP), 1.00000000000005E-310);
+        aeq(halfAboveSubnormal.doubleValue(RoundingMode.HALF_EVEN), 1.00000000000005E-310);
+        try {
+            halfAboveSubnormal.doubleValue(RoundingMode.UNNECESSARY);
+            fail();
+        } catch (ArithmeticException ignored) {}
+        aeq(halfBelowSubnormal.doubleValue(RoundingMode.FLOOR), 9.9999999999995E-311);
+        aeq(halfBelowSubnormal.doubleValue(RoundingMode.CEILING), 1.0E-310);
+        aeq(halfBelowSubnormal.doubleValue(RoundingMode.DOWN), 9.9999999999995E-311);
+        aeq(halfBelowSubnormal.doubleValue(RoundingMode.UP), 1.0E-310);
+        aeq(halfBelowSubnormal.doubleValue(RoundingMode.HALF_DOWN), 9.9999999999995E-311);
+        aeq(halfBelowSubnormal.doubleValue(RoundingMode.HALF_UP), 1.0E-310);
+        aeq(halfBelowSubnormal.doubleValue(RoundingMode.HALF_EVEN), 9.9999999999995E-311);
+        try {
+            halfBelowSubnormal.doubleValue(RoundingMode.UNNECESSARY);
+            fail();
+        } catch (ArithmeticException ignored) {}
+        aeq(justAboveSubnormal.doubleValue(RoundingMode.FLOOR), 1.0E-310);
+        aeq(justAboveSubnormal.doubleValue(RoundingMode.CEILING), 1.00000000000005E-310);
+        aeq(justAboveSubnormal.doubleValue(RoundingMode.DOWN), 1.0E-310);
+        aeq(justAboveSubnormal.doubleValue(RoundingMode.UP), 1.00000000000005E-310);
+        aeq(justAboveSubnormal.doubleValue(RoundingMode.HALF_DOWN), 1.0E-310);
+        aeq(justAboveSubnormal.doubleValue(RoundingMode.HALF_UP), 1.0E-310);
+        aeq(justAboveSubnormal.doubleValue(RoundingMode.HALF_EVEN), 1.0E-310);
+        try {
+            justAboveSubnormal.doubleValue(RoundingMode.UNNECESSARY);
+            fail();
+        } catch (ArithmeticException ignored) {}
+        aeq(justBelowSubnormal.doubleValue(RoundingMode.FLOOR), 9.9999999999995E-311);
+        aeq(justBelowSubnormal.doubleValue(RoundingMode.CEILING), 1.0E-310);
+        aeq(justBelowSubnormal.doubleValue(RoundingMode.DOWN), 9.9999999999995E-311);
+        aeq(justBelowSubnormal.doubleValue(RoundingMode.UP), 1.0E-310);
+        aeq(justBelowSubnormal.doubleValue(RoundingMode.HALF_DOWN), 1.0E-310);
+        aeq(justBelowSubnormal.doubleValue(RoundingMode.HALF_UP), 1.0E-310);
+        aeq(justBelowSubnormal.doubleValue(RoundingMode.HALF_EVEN), 1.0E-310);
+        try {
+            justBelowSubnormal.doubleValue(RoundingMode.UNNECESSARY);
+            fail();
+        } catch (ArithmeticException ignored) {}
+        Rational belowNegativeMax = subtract(LARGEST_DOUBLE.negate(), ONE);
+        Rational negativeMaxSuccessor = ofExact(FloatUtils.successor(-Double.MAX_VALUE));
+        if (negativeMaxSuccessor == null) {
+            fail();
+        }
+        Rational halfAboveNegativeMax = add(LARGEST_DOUBLE.negate(), negativeMaxSuccessor).divide(2);
+        Rational justAboveNegativeMax = add(
+                LARGEST_DOUBLE.negate().multiply(2),
+                negativeMaxSuccessor
+        ).divide(3);
+        aeq(belowNegativeMax.doubleValue(RoundingMode.FLOOR), Double.NEGATIVE_INFINITY);
+        aeq(belowNegativeMax.doubleValue(RoundingMode.CEILING), -1.7976931348623157E308);
+        aeq(belowNegativeMax.doubleValue(RoundingMode.DOWN), -1.7976931348623157E308);
+        aeq(belowNegativeMax.doubleValue(RoundingMode.UP), Double.NEGATIVE_INFINITY);
+        aeq(belowNegativeMax.doubleValue(RoundingMode.HALF_DOWN), -1.7976931348623157E308);
+        aeq(belowNegativeMax.doubleValue(RoundingMode.HALF_UP), Double.NEGATIVE_INFINITY);
+        aeq(belowNegativeMax.doubleValue(RoundingMode.HALF_EVEN), Double.NEGATIVE_INFINITY);
+        try {
+            belowNegativeMax.doubleValue(RoundingMode.UNNECESSARY);
+            fail();
+        } catch (ArithmeticException ignored) {}
+        aeq(halfAboveNegativeMax.doubleValue(RoundingMode.FLOOR), -1.7976931348623157E308);
+        aeq(halfAboveNegativeMax.doubleValue(RoundingMode.CEILING), -1.7976931348623155E308);
+        aeq(halfAboveNegativeMax.doubleValue(RoundingMode.DOWN), -1.7976931348623155E308);
+        aeq(halfAboveNegativeMax.doubleValue(RoundingMode.UP), -1.7976931348623157E308);
+        aeq(halfAboveNegativeMax.doubleValue(RoundingMode.HALF_DOWN), -1.7976931348623155E308);
+        aeq(halfAboveNegativeMax.doubleValue(RoundingMode.HALF_UP), -1.7976931348623157E308);
+        aeq(halfAboveNegativeMax.doubleValue(RoundingMode.HALF_EVEN), -1.7976931348623155E308);
+        try {
+            halfAboveNegativeMax.doubleValue(RoundingMode.UNNECESSARY);
+            fail();
+        } catch (ArithmeticException ignored) {}
+        aeq(justAboveNegativeMax.doubleValue(RoundingMode.FLOOR), -1.7976931348623157E308);
+        aeq(justAboveNegativeMax.doubleValue(RoundingMode.CEILING), -1.7976931348623155E308);
+        aeq(justAboveNegativeMax.doubleValue(RoundingMode.DOWN), -1.7976931348623155E308);
+        aeq(justAboveNegativeMax.doubleValue(RoundingMode.UP), -1.7976931348623157E308);
+        aeq(justAboveNegativeMax.doubleValue(RoundingMode.HALF_DOWN), -1.7976931348623157E308);
+        aeq(justAboveNegativeMax.doubleValue(RoundingMode.HALF_UP), -1.7976931348623157E308);
+        aeq(justAboveNegativeMax.doubleValue(RoundingMode.HALF_EVEN), -1.7976931348623157E308);
+        try {
+            justAboveNegativeMax.doubleValue(RoundingMode.UNNECESSARY);
+            fail();
+        } catch (ArithmeticException ignored) {}
+        Rational aboveMax = add(LARGEST_DOUBLE, ONE);
+        Rational maxPredecessor = ofExact(FloatUtils.predecessor(Double.MAX_VALUE));
+        if (maxPredecessor == null) {
+            fail();
+        }
+        Rational halfBelowMax = add(LARGEST_DOUBLE, maxPredecessor).divide(2);
+        Rational justBelowMax = add(LARGEST_DOUBLE.multiply(2), maxPredecessor).divide(3);
+        aeq(aboveMax.doubleValue(RoundingMode.FLOOR), 1.7976931348623157E308);
+        aeq(aboveMax.doubleValue(RoundingMode.CEILING), Double.POSITIVE_INFINITY);
+        aeq(aboveMax.doubleValue(RoundingMode.DOWN), 1.7976931348623157E308);
+        aeq(aboveMax.doubleValue(RoundingMode.UP), Double.POSITIVE_INFINITY);
+        aeq(aboveMax.doubleValue(RoundingMode.HALF_DOWN), 1.7976931348623157E308);
+        aeq(aboveMax.doubleValue(RoundingMode.HALF_UP), Double.POSITIVE_INFINITY);
+        aeq(aboveMax.doubleValue(RoundingMode.HALF_EVEN), Double.POSITIVE_INFINITY);
+        try {
+            aboveMax.doubleValue(RoundingMode.UNNECESSARY);
+            fail();
+        } catch (ArithmeticException ignored) {}
+        aeq(halfBelowMax.doubleValue(RoundingMode.FLOOR), 1.7976931348623155E308);
+        aeq(halfBelowMax.doubleValue(RoundingMode.CEILING), 1.7976931348623157E308);
+        aeq(halfBelowMax.doubleValue(RoundingMode.DOWN), 1.7976931348623155E308);
+        aeq(halfBelowMax.doubleValue(RoundingMode.UP), 1.7976931348623157E308);
+        aeq(halfBelowMax.doubleValue(RoundingMode.HALF_DOWN), 1.7976931348623155E308);
+        aeq(halfBelowMax.doubleValue(RoundingMode.HALF_UP), 1.7976931348623157E308);
+        aeq(halfBelowMax.doubleValue(RoundingMode.HALF_EVEN), 1.7976931348623155E308);
+        try {
+            halfBelowMax.doubleValue(RoundingMode.UNNECESSARY);
+            fail();
+        } catch (ArithmeticException ignored) {}
+        aeq(justBelowMax.doubleValue(RoundingMode.FLOOR), 1.7976931348623155E308);
+        aeq(justBelowMax.doubleValue(RoundingMode.CEILING), 1.7976931348623157E308);
+        aeq(justBelowMax.doubleValue(RoundingMode.DOWN), 1.7976931348623155E308);
+        aeq(justBelowMax.doubleValue(RoundingMode.UP), 1.7976931348623157E308);
+        aeq(justBelowMax.doubleValue(RoundingMode.HALF_DOWN), 1.7976931348623157E308);
+        aeq(justBelowMax.doubleValue(RoundingMode.HALF_UP), 1.7976931348623157E308);
+        aeq(justBelowMax.doubleValue(RoundingMode.HALF_EVEN), 1.7976931348623157E308);
+        try {
+            justBelowMax.doubleValue(RoundingMode.UNNECESSARY);
+            fail();
+        } catch (ArithmeticException ignored) {}
+        Rational halfAboveZero = SMALLEST_DOUBLE.shiftRight(1);
+        Rational justAboveZero = SMALLEST_DOUBLE.divide(3);
+        Rational halfBelowZero = halfAboveZero.negate();
+        Rational justBelowZero = justAboveZero.negate();
+        aeq(halfBelowZero.doubleValue(RoundingMode.FLOOR), -4.9E-324);
+        aeq(halfBelowZero.doubleValue(RoundingMode.CEILING), -0.0);
+        aeq(halfBelowZero.doubleValue(RoundingMode.DOWN), -0.0);
+        aeq(halfBelowZero.doubleValue(RoundingMode.UP), -4.9E-324);
+        aeq(halfBelowZero.doubleValue(RoundingMode.HALF_DOWN), -0.0);
+        aeq(halfBelowZero.doubleValue(RoundingMode.HALF_UP), -4.9E-324);
+        aeq(halfBelowZero.doubleValue(RoundingMode.HALF_EVEN), -0.0);
+        try {
+            halfBelowZero.doubleValue(RoundingMode.UNNECESSARY);
+            fail();
+        } catch (ArithmeticException ignored) {}
+        aeq(justBelowZero.doubleValue(RoundingMode.FLOOR), -4.9E-324);
+        aeq(justBelowZero.doubleValue(RoundingMode.CEILING), -0.0);
+        aeq(justBelowZero.doubleValue(RoundingMode.DOWN), -0.0);
+        aeq(justBelowZero.doubleValue(RoundingMode.UP), -4.9E-324);
+        aeq(justBelowZero.doubleValue(RoundingMode.HALF_DOWN), -0.0);
+        aeq(justBelowZero.doubleValue(RoundingMode.HALF_UP), -0.0);
+        aeq(justBelowZero.doubleValue(RoundingMode.HALF_EVEN), -0.0);
+        try {
+            justBelowZero.doubleValue(RoundingMode.UNNECESSARY);
+            fail();
+        } catch (ArithmeticException ignored) {}
+        aeq(halfAboveZero.doubleValue(RoundingMode.FLOOR), 0.0);
+        aeq(halfAboveZero.doubleValue(RoundingMode.CEILING), 4.9E-324);
+        aeq(halfAboveZero.doubleValue(RoundingMode.DOWN), 0.0);
+        aeq(halfAboveZero.doubleValue(RoundingMode.UP), 4.9E-324);
+        aeq(halfAboveZero.doubleValue(RoundingMode.HALF_DOWN), 0.0);
+        aeq(halfAboveZero.doubleValue(RoundingMode.HALF_UP), 4.9E-324);
+        aeq(halfAboveZero.doubleValue(RoundingMode.HALF_EVEN), 0.0);
+        try {
+            halfAboveZero.doubleValue(RoundingMode.UNNECESSARY);
+            fail();
+        } catch (ArithmeticException ignored) {}
+        aeq(justAboveZero.doubleValue(RoundingMode.FLOOR), 0.0);
+        aeq(justAboveZero.doubleValue(RoundingMode.CEILING), 4.9E-324);
+        aeq(justAboveZero.doubleValue(RoundingMode.DOWN), 0.0);
+        aeq(justAboveZero.doubleValue(RoundingMode.UP), 4.9E-324);
+        aeq(justAboveZero.doubleValue(RoundingMode.HALF_DOWN), 0.0);
+        aeq(justAboveZero.doubleValue(RoundingMode.HALF_UP), 0.0);
+        aeq(justAboveZero.doubleValue(RoundingMode.HALF_EVEN), 0.0);
+        try {
+            justAboveZero.doubleValue(RoundingMode.UNNECESSARY);
+            fail();
+        } catch (ArithmeticException ignored) {}
+        Rational boundary = add(
+                LARGEST_SUBNORMAL_DOUBLE,
+                SMALLEST_NORMAL_DOUBLE
+        ).shiftRight(1);
+        Rational halfBelowBoundary = add(LARGEST_SUBNORMAL_DOUBLE, boundary).shiftRight(1);
+        Rational halfAboveBoundary = add(SMALLEST_NORMAL_DOUBLE, boundary).shiftRight(1);
+        Rational justBelowBoundary = add(LARGEST_SUBNORMAL_DOUBLE, boundary.shiftLeft(1)).divide(3);
+        Rational justAboveBoundary = add(SMALLEST_NORMAL_DOUBLE, boundary.shiftLeft(1)).divide(3);
+        aeq(boundary.doubleValue(RoundingMode.FLOOR), 2.225073858507201E-308);
+        aeq(boundary.doubleValue(RoundingMode.CEILING), 2.2250738585072014E-308);
+        aeq(boundary.doubleValue(RoundingMode.DOWN), 2.225073858507201E-308);
+        aeq(boundary.doubleValue(RoundingMode.UP), 2.2250738585072014E-308);
+        aeq(boundary.doubleValue(RoundingMode.HALF_DOWN), 2.225073858507201E-308);
+        aeq(boundary.doubleValue(RoundingMode.HALF_UP), 2.2250738585072014E-308);
+        aeq(boundary.doubleValue(RoundingMode.HALF_EVEN), 2.2250738585072014E-308);
+        try {
+            boundary.doubleValue(RoundingMode.UNNECESSARY);
+            fail();
+        } catch (ArithmeticException ignored) {}
+        aeq(halfBelowBoundary.doubleValue(RoundingMode.FLOOR), 2.225073858507201E-308);
+        aeq(halfBelowBoundary.doubleValue(RoundingMode.CEILING), 2.2250738585072014E-308);
+        aeq(halfBelowBoundary.doubleValue(RoundingMode.DOWN), 2.225073858507201E-308);
+        aeq(halfBelowBoundary.doubleValue(RoundingMode.UP), 2.2250738585072014E-308);
+        aeq(halfBelowBoundary.doubleValue(RoundingMode.HALF_DOWN), 2.225073858507201E-308);
+        aeq(halfBelowBoundary.doubleValue(RoundingMode.HALF_UP), 2.225073858507201E-308);
+        aeq(halfBelowBoundary.doubleValue(RoundingMode.HALF_EVEN), 2.225073858507201E-308);
+        try {
+            halfBelowBoundary.doubleValue(RoundingMode.UNNECESSARY);
+            fail();
+        } catch (ArithmeticException ignored) {}
+        aeq(justBelowBoundary.doubleValue(RoundingMode.FLOOR), 2.225073858507201E-308);
+        aeq(justBelowBoundary.doubleValue(RoundingMode.CEILING), 2.2250738585072014E-308);
+        aeq(justBelowBoundary.doubleValue(RoundingMode.DOWN), 2.225073858507201E-308);
+        aeq(justBelowBoundary.doubleValue(RoundingMode.UP), 2.2250738585072014E-308);
+        aeq(justBelowBoundary.doubleValue(RoundingMode.HALF_DOWN), 2.225073858507201E-308);
+        aeq(justBelowBoundary.doubleValue(RoundingMode.HALF_UP), 2.225073858507201E-308);
+        aeq(justBelowBoundary.doubleValue(RoundingMode.HALF_EVEN), 2.225073858507201E-308);
+        try {
+            justBelowBoundary.doubleValue(RoundingMode.UNNECESSARY);
+            fail();
+        } catch (ArithmeticException ignored) {}
+        aeq(halfAboveBoundary.doubleValue(RoundingMode.FLOOR), 2.225073858507201E-308);
+        aeq(halfAboveBoundary.doubleValue(RoundingMode.CEILING), 2.2250738585072014E-308);
+        aeq(halfAboveBoundary.doubleValue(RoundingMode.DOWN), 2.225073858507201E-308);
+        aeq(halfAboveBoundary.doubleValue(RoundingMode.UP), 2.2250738585072014E-308);
+        aeq(halfAboveBoundary.doubleValue(RoundingMode.HALF_DOWN), 2.2250738585072014E-308);
+        aeq(halfAboveBoundary.doubleValue(RoundingMode.HALF_UP), 2.2250738585072014E-308);
+        aeq(halfAboveBoundary.doubleValue(RoundingMode.HALF_EVEN), 2.2250738585072014E-308);
+        try {
+            halfAboveBoundary.doubleValue(RoundingMode.UNNECESSARY);
+            fail();
+        } catch (ArithmeticException ignored) {}
+        aeq(justAboveBoundary.doubleValue(RoundingMode.FLOOR), 2.225073858507201E-308);
+        aeq(justAboveBoundary.doubleValue(RoundingMode.CEILING), 2.2250738585072014E-308);
+        aeq(justAboveBoundary.doubleValue(RoundingMode.DOWN), 2.225073858507201E-308);
+        aeq(justAboveBoundary.doubleValue(RoundingMode.UP), 2.2250738585072014E-308);
+        aeq(justAboveBoundary.doubleValue(RoundingMode.HALF_DOWN), 2.2250738585072014E-308);
+        aeq(justAboveBoundary.doubleValue(RoundingMode.HALF_UP), 2.2250738585072014E-308);
+        aeq(justAboveBoundary.doubleValue(RoundingMode.HALF_EVEN), 2.2250738585072014E-308);
+        try {
+            justAboveBoundary.doubleValue(RoundingMode.UNNECESSARY);
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testDoubleValue() {
+        aeq(ZERO.doubleValue(), 0.0);
+        aeq(ONE.doubleValue(), 1.0);
+        aeq(read("1/2").get().doubleValue(), 0.5);
+        aeq(read("1/3").get().doubleValue(), 0.3333333333333333);
+        aeq(read("-1/3").get().doubleValue(), -0.3333333333333333);
+        Rational almostOne = of(BigInteger.TEN.pow(1000).subtract(BigInteger.ONE), BigInteger.TEN.pow(1000));
+        aeq(almostOne.doubleValue(), 1.0);
+        Rational pi = ofExact(Math.PI);
+        if (pi == null) {
+            fail();
+        }
+        aeq(pi.doubleValue(), 3.141592653589793);
+        Rational googol = of(BigInteger.TEN.pow(100));
+        aeq(googol.doubleValue(), 1.0E100);
+        Rational piSuccessor = ofExact(FloatUtils.successor(Math.PI));
+        if (piSuccessor == null) {
+            fail();
+        }
+        Rational piPredecessor = ofExact(FloatUtils.predecessor(Math.PI));
+        if (piPredecessor == null) {
+            fail();
+        }
+        Rational halfAbovePi = add(pi, piSuccessor).divide(2);
+        Rational halfBelowPi = add(pi, piPredecessor).divide(2);
+        Rational justAbovePi = add(pi.multiply(2), piSuccessor).divide(3);
+        Rational justBelowPi = add(pi.multiply(2), piPredecessor).divide(3);
+        aeq(halfAbovePi.doubleValue(), 3.141592653589793);
+        aeq(halfBelowPi.doubleValue(), 3.141592653589793);
+        aeq(justAbovePi.doubleValue(), 3.141592653589793);
+        aeq(justBelowPi.doubleValue(), 3.141592653589793);
+        Rational subnormal = ofExact(1e-310);
+        if (subnormal == null) {
+            fail();
+        }
+        Rational subnormalSuccessor = ofExact(FloatUtils.successor(1e-310));
+        if (subnormalSuccessor == null) {
+            fail();
+        }
+        Rational subnormalPredecessor = ofExact(FloatUtils.predecessor(1e-310));
+        if (subnormalPredecessor == null) {
+            fail();
+        }
+        Rational halfAboveSubnormal = add(subnormal, subnormalSuccessor).divide(2);
+        Rational halfBelowSubnormal = add(subnormal, subnormalPredecessor).divide(2);
+        Rational justAboveSubnormal = add(subnormal.multiply(2), subnormalSuccessor).divide(3);
+        Rational justBelowSubnormal = add(subnormal.multiply(2), subnormalPredecessor).divide(3);
+        aeq(subnormal.doubleValue(), 1.0E-310);
+        aeq(halfAboveSubnormal.doubleValue(), 1.00000000000005E-310);
+        aeq(halfBelowSubnormal.doubleValue(), 9.9999999999995E-311);
+        aeq(justAboveSubnormal.doubleValue(), 1.0E-310);
+        aeq(justBelowSubnormal.doubleValue(), 1.0E-310);
+        Rational belowNegativeMax = subtract(LARGEST_DOUBLE.negate(), ONE);
+        Rational negativeMaxSuccessor = ofExact(FloatUtils.successor(-Double.MAX_VALUE));
+        if (negativeMaxSuccessor == null) {
+            fail();
+        }
+        Rational halfAboveNegativeMax = add(LARGEST_DOUBLE.negate(), negativeMaxSuccessor).divide(2);
+        Rational justAboveNegativeMax = add(
+                LARGEST_DOUBLE.negate().multiply(2),
+                negativeMaxSuccessor
+        ).divide(3);
+        aeq(belowNegativeMax.doubleValue(), Double.NEGATIVE_INFINITY);
+        aeq(halfAboveNegativeMax.doubleValue(), -1.7976931348623155E308);
+        aeq(justAboveNegativeMax.doubleValue(), -1.7976931348623157E308);
+        Rational aboveMax = add(LARGEST_DOUBLE, ONE);
+        Rational maxPredecessor = ofExact(FloatUtils.predecessor(Double.MAX_VALUE));
+        if (maxPredecessor == null) {
+            fail();
+        }
+        Rational halfBelowMax = add(LARGEST_DOUBLE, maxPredecessor).divide(2);
+        Rational justBelowMax = add(LARGEST_DOUBLE.multiply(2), maxPredecessor).divide(3);
+        aeq(aboveMax.doubleValue(), Double.POSITIVE_INFINITY);
+        aeq(halfBelowMax.doubleValue(), 1.7976931348623155E308);
+        aeq(justBelowMax.doubleValue(), 1.7976931348623157E308);
+        Rational halfAboveZero = SMALLEST_DOUBLE.shiftRight(1);
+        Rational justAboveZero = SMALLEST_DOUBLE.divide(3);
+        Rational halfBelowZero = halfAboveZero.negate();
+        Rational justBelowZero = justAboveZero.negate();
+        aeq(halfBelowZero.doubleValue(), -0.0);
+        aeq(justBelowZero.doubleValue(), -0.0);
+        aeq(halfAboveZero.doubleValue(), 0.0);
+        aeq(justAboveZero.doubleValue(), 0.0);
+        Rational boundary = add(
+                LARGEST_SUBNORMAL_DOUBLE,
+                SMALLEST_NORMAL_DOUBLE
+        ).shiftRight(1);
+        Rational halfBelowBoundary = add(LARGEST_SUBNORMAL_DOUBLE, boundary).shiftRight(1);
+        Rational halfAboveBoundary = add(SMALLEST_NORMAL_DOUBLE, boundary).shiftRight(1);
+        Rational justBelowBoundary = add(LARGEST_SUBNORMAL_DOUBLE, boundary.shiftLeft(1)).divide(3);
+        Rational justAboveBoundary = add(SMALLEST_NORMAL_DOUBLE, boundary.shiftLeft(1)).divide(3);
+        aeq(boundary.doubleValue(), 2.2250738585072014E-308);
+        aeq(halfBelowBoundary.doubleValue(), 2.225073858507201E-308);
+        aeq(justBelowBoundary.doubleValue(), 2.225073858507201E-308);
+        aeq(halfAboveBoundary.doubleValue(), 2.2250738585072014E-308);
+        aeq(justAboveBoundary.doubleValue(), 2.2250738585072014E-308);
+    }
+
+    @Test
     public void testNegate() {
         aeq(read("2/3").get().negate(), "-2/3");
         aeq(read("-2/3").get().negate(), "2/3");
@@ -1489,1012 +2495,6 @@ public class RationalTest {
         aeq(read("-1").get().shiftRight(-2), "-4");
         aeq(read("-1").get().shiftRight(-3), "-8");
         aeq(read("-1").get().shiftRight(-4), "-16");
-    }
-
-    @Test
-    public void testToFloat() {
-        aeq(ZERO.floatValue(), 0.0);
-        aeq(ONE.floatValue(), 1.0);
-        aeq(read("1/2").get().floatValue(), 0.5);
-        aeq(read("1/3").get().floatValue(), 0.33333334);
-        aeq(read("-1/3").get().floatValue(), -0.33333334);
-        Rational almostOne = of(BigInteger.TEN.pow(1000).subtract(BigInteger.ONE), BigInteger.TEN.pow(1000));
-        aeq(almostOne.floatValue(), 1.0);
-        Rational floatPi = ofExact((float) Math.PI);
-        if (floatPi == null) {
-            fail();
-        }
-        aeq(floatPi.floatValue(), 3.1415927);
-        Rational trillion = of(BigInteger.TEN.pow(12));
-        aeq(trillion.floatValue(), 1.0E12);
-        Rational piSuccessor = ofExact(FloatUtils.successor((float) Math.PI));
-        if (piSuccessor == null) {
-            fail();
-        }
-        Rational piPredecessor = ofExact(FloatUtils.predecessor((float) Math.PI));
-        if (piPredecessor == null) {
-            fail();
-        }
-        Rational halfAbovePi = add(floatPi, piSuccessor).divide(2);
-        Rational halfBelowPi = add(floatPi, piPredecessor).divide(2);
-        Rational justAbovePi = add(floatPi.multiply(2), piSuccessor).divide(3);
-        Rational justBelowPi = add(floatPi.multiply(2), piPredecessor).divide(3);
-        aeq(halfAbovePi.floatValue(), 3.141593);
-        aeq(halfBelowPi.floatValue(), 3.1415925);
-        aeq(justAbovePi.floatValue(), 3.1415927);
-        aeq(justBelowPi.floatValue(), 3.1415927);
-        Rational subnormal = ofExact(1e-40f);
-        if (subnormal == null) {
-            fail();
-        }
-        Rational subnormalSuccessor = ofExact(FloatUtils.successor(1e-40f));
-        if (subnormalSuccessor == null) {
-            fail();
-        }
-        Rational subnormalPredecessor = ofExact(FloatUtils.predecessor(1e-40f));
-        if (subnormalPredecessor == null) {
-            fail();
-        }
-        Rational halfAboveSubnormal = add(subnormal, subnormalSuccessor).divide(2);
-        Rational halfBelowSubnormal = add(subnormal, subnormalPredecessor).divide(2);
-        Rational justAboveSubnormal = add(subnormal.multiply(2), subnormalSuccessor).divide(3);
-        Rational justBelowSubnormal = add(subnormal.multiply(2), subnormalPredecessor).divide(3);
-        aeq(subnormal.floatValue(), 1.0E-40);
-        aeq(halfAboveSubnormal.floatValue(), 1.0E-40);
-        aeq(halfBelowSubnormal.floatValue(), 1.0E-40);
-        aeq(justAboveSubnormal.floatValue(), 1.0E-40);
-        aeq(justBelowSubnormal.floatValue(), 1.0E-40);
-        Rational belowNegativeMax = subtract(LARGEST_FLOAT.negate(), ONE);
-        Rational negativeMaxSuccessor = ofExact(FloatUtils.successor(-Float.MAX_VALUE));
-        if (negativeMaxSuccessor == null) {
-            fail();
-        }
-        Rational halfAboveNegativeMax = add(LARGEST_FLOAT.negate(), negativeMaxSuccessor).divide(2);
-        Rational justAboveNegativeMax = add(
-                LARGEST_FLOAT.negate().multiply(2),
-                negativeMaxSuccessor
-        ).divide(3);
-        aeq(belowNegativeMax.floatValue(), Float.NEGATIVE_INFINITY);
-        aeq(halfAboveNegativeMax.floatValue(), -3.4028233E38);
-        aeq(justAboveNegativeMax.floatValue(), -3.4028235E38);
-        Rational aboveMax = add(LARGEST_FLOAT, ONE);
-        Rational maxPredecessor = ofExact(FloatUtils.predecessor(Float.MAX_VALUE));
-        if (maxPredecessor == null) {
-            fail();
-        }
-        Rational halfBelowMax = add(LARGEST_FLOAT, maxPredecessor).divide(2);
-        Rational justBelowMax = add(LARGEST_FLOAT.multiply(2), maxPredecessor).divide(3);
-        aeq(aboveMax.floatValue(), Float.POSITIVE_INFINITY);
-        aeq(halfBelowMax.floatValue(), 3.4028233E38);
-        aeq(justBelowMax.floatValue(), 3.4028235E38);
-        Rational halfAboveZero = SMALLEST_FLOAT.shiftRight(1);
-        Rational justAboveZero = SMALLEST_FLOAT.divide(3);
-        Rational halfBelowZero = halfAboveZero.negate();
-        Rational justBelowZero = justAboveZero.negate();
-        aeq(halfBelowZero.floatValue(), -0.0);
-        aeq(justBelowZero.floatValue(), -0.0);
-        aeq(halfAboveZero.floatValue(), 0.0);
-        aeq(justAboveZero.floatValue(), 0.0);
-        Rational boundary = add(
-                LARGEST_SUBNORMAL_FLOAT,
-                SMALLEST_NORMAL_FLOAT
-        ).shiftRight(1);
-        Rational halfBelowBoundary = add(LARGEST_SUBNORMAL_FLOAT, boundary).shiftRight(1);
-        Rational halfAboveBoundary = add(SMALLEST_NORMAL_FLOAT, boundary).shiftRight(1);
-        Rational justBelowBoundary = add(LARGEST_SUBNORMAL_FLOAT, boundary.shiftLeft(1)).divide(3);
-        Rational justAboveBoundary = add(SMALLEST_NORMAL_FLOAT, boundary.shiftLeft(1)).divide(3);
-        aeq(boundary.floatValue(), 1.17549435E-38);
-        aeq(halfBelowBoundary.floatValue(), 1.1754942E-38);
-        aeq(justBelowBoundary.floatValue(), 1.1754942E-38);
-        aeq(halfAboveBoundary.floatValue(), 1.17549435E-38);
-        aeq(justAboveBoundary.floatValue(), 1.17549435E-38);
-    }
-
-    @Test
-    public void testToFloat_RoundingMode() {
-        aeq(ZERO.floatValue(RoundingMode.FLOOR), 0.0);
-        aeq(ZERO.floatValue(RoundingMode.CEILING), 0.0);
-        aeq(ZERO.floatValue(RoundingMode.DOWN), 0.0);
-        aeq(ZERO.floatValue(RoundingMode.UP), 0.0);
-        aeq(ZERO.floatValue(RoundingMode.HALF_DOWN), 0.0);
-        aeq(ZERO.floatValue(RoundingMode.HALF_UP), 0.0);
-        aeq(ZERO.floatValue(RoundingMode.HALF_EVEN), 0.0);
-        aeq(ZERO.floatValue(RoundingMode.UNNECESSARY), 0.0);
-        aeq(ONE.floatValue(RoundingMode.FLOOR), 1.0);
-        aeq(ONE.floatValue(RoundingMode.CEILING), 1.0);
-        aeq(ONE.floatValue(RoundingMode.DOWN), 1.0);
-        aeq(ONE.floatValue(RoundingMode.UP), 1.0);
-        aeq(ONE.floatValue(RoundingMode.HALF_DOWN), 1.0);
-        aeq(ONE.floatValue(RoundingMode.HALF_UP), 1.0);
-        aeq(ONE.floatValue(RoundingMode.HALF_EVEN), 1.0);
-        aeq(ONE.floatValue(RoundingMode.UNNECESSARY), 1.0);
-        aeq(read("1/2").get().floatValue(RoundingMode.FLOOR), 0.5);
-        aeq(read("1/2").get().floatValue(RoundingMode.CEILING), 0.5);
-        aeq(read("1/2").get().floatValue(RoundingMode.DOWN), 0.5);
-        aeq(read("1/2").get().floatValue(RoundingMode.UP), 0.5);
-        aeq(read("1/2").get().floatValue(RoundingMode.HALF_DOWN), 0.5);
-        aeq(read("1/2").get().floatValue(RoundingMode.HALF_UP), 0.5);
-        aeq(read("1/2").get().floatValue(RoundingMode.HALF_EVEN), 0.5);
-        aeq(read("1/2").get().floatValue(RoundingMode.UNNECESSARY), 0.5);
-        aeq(read("1/3").get().floatValue(RoundingMode.FLOOR), 0.3333333);
-        aeq(read("1/3").get().floatValue(RoundingMode.CEILING), 0.33333334);
-        aeq(read("1/3").get().floatValue(RoundingMode.DOWN), 0.3333333);
-        aeq(read("1/3").get().floatValue(RoundingMode.UP), 0.33333334);
-        aeq(read("1/3").get().floatValue(RoundingMode.HALF_DOWN), 0.33333334);
-        aeq(read("1/3").get().floatValue(RoundingMode.HALF_UP), 0.33333334);
-        aeq(read("1/3").get().floatValue(RoundingMode.HALF_EVEN), 0.33333334);
-        try {
-            read("1/3").get().floatValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(read("-1/3").get().floatValue(RoundingMode.FLOOR), -0.33333334);
-        aeq(read("-1/3").get().floatValue(RoundingMode.CEILING), -0.3333333);
-        aeq(read("-1/3").get().floatValue(RoundingMode.DOWN), -0.3333333);
-        aeq(read("-1/3").get().floatValue(RoundingMode.UP), -0.33333334);
-        aeq(read("-1/3").get().floatValue(RoundingMode.HALF_DOWN), -0.33333334);
-        aeq(read("-1/3").get().floatValue(RoundingMode.HALF_UP), -0.33333334);
-        aeq(read("-1/3").get().floatValue(RoundingMode.HALF_EVEN), -0.33333334);
-        try {
-            read("-1/3").get().floatValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        Rational almostOne = of(BigInteger.TEN.pow(1000).subtract(BigInteger.ONE), BigInteger.TEN.pow(1000));
-        aeq(almostOne.floatValue(RoundingMode.FLOOR), 0.99999994);
-        aeq(almostOne.floatValue(RoundingMode.CEILING), 1.0);
-        aeq(almostOne.floatValue(RoundingMode.DOWN), 0.99999994);
-        aeq(almostOne.floatValue(RoundingMode.UP), 1.0);
-        aeq(almostOne.floatValue(RoundingMode.HALF_DOWN), 1.0);
-        aeq(almostOne.floatValue(RoundingMode.HALF_UP), 1.0);
-        aeq(almostOne.floatValue(RoundingMode.HALF_EVEN), 1.0);
-        try {
-            almostOne.floatValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        Rational floatPi = ofExact((float) Math.PI);
-        if (floatPi == null) {
-            fail();
-        }
-        aeq(floatPi.floatValue(RoundingMode.FLOOR), 3.1415927);
-        aeq(floatPi.floatValue(RoundingMode.CEILING), 3.1415927);
-        aeq(floatPi.floatValue(RoundingMode.DOWN), 3.1415927);
-        aeq(floatPi.floatValue(RoundingMode.UP), 3.1415927);
-        aeq(floatPi.floatValue(RoundingMode.HALF_DOWN), 3.1415927);
-        aeq(floatPi.floatValue(RoundingMode.HALF_UP), 3.1415927);
-        aeq(floatPi.floatValue(RoundingMode.HALF_EVEN), 3.1415927);
-        aeq(floatPi.floatValue(RoundingMode.UNNECESSARY), 3.1415927);
-        Rational trillion = of(BigInteger.TEN.pow(12));
-        aeq(trillion.floatValue(RoundingMode.FLOOR), 1.0E12);
-        aeq(trillion.floatValue(RoundingMode.CEILING), 1.00000006E12);
-        aeq(trillion.floatValue(RoundingMode.DOWN), 1.0E12);
-        aeq(trillion.floatValue(RoundingMode.UP), 1.00000006E12);
-        aeq(trillion.floatValue(RoundingMode.HALF_DOWN), 1.0E12);
-        aeq(trillion.floatValue(RoundingMode.HALF_UP), 1.0E12);
-        aeq(trillion.floatValue(RoundingMode.HALF_EVEN), 1.0E12);
-        try {
-            trillion.floatValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        Rational piSuccessor = ofExact(FloatUtils.successor((float) Math.PI));
-        if (piSuccessor == null) {
-            fail();
-        }
-        Rational piPredecessor = ofExact(FloatUtils.predecessor((float) Math.PI));
-        if (piPredecessor == null) {
-            fail();
-        }
-        Rational halfAbovePi = add(floatPi, piSuccessor).divide(2);
-        Rational halfBelowPi = add(floatPi, piPredecessor).divide(2);
-        Rational justAbovePi = add(floatPi.multiply(2), piSuccessor).divide(3);
-        Rational justBelowPi = add(floatPi.multiply(2), piPredecessor).divide(3);
-        aeq(halfAbovePi.floatValue(RoundingMode.FLOOR), 3.1415927);
-        aeq(halfAbovePi.floatValue(RoundingMode.CEILING), 3.141593);
-        aeq(halfAbovePi.floatValue(RoundingMode.DOWN), 3.1415927);
-        aeq(halfAbovePi.floatValue(RoundingMode.UP), 3.141593);
-        aeq(halfAbovePi.floatValue(RoundingMode.HALF_DOWN), 3.1415927);
-        aeq(halfAbovePi.floatValue(RoundingMode.HALF_UP), 3.141593);
-        aeq(halfAbovePi.floatValue(RoundingMode.HALF_EVEN), 3.141593);
-        try {
-            halfAbovePi.floatValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(halfBelowPi.floatValue(RoundingMode.FLOOR), 3.1415925);
-        aeq(halfBelowPi.floatValue(RoundingMode.CEILING), 3.1415927);
-        aeq(halfBelowPi.floatValue(RoundingMode.DOWN), 3.1415925);
-        aeq(halfBelowPi.floatValue(RoundingMode.UP), 3.1415927);
-        aeq(halfBelowPi.floatValue(RoundingMode.HALF_DOWN), 3.1415925);
-        aeq(halfBelowPi.floatValue(RoundingMode.HALF_UP), 3.1415927);
-        aeq(halfBelowPi.floatValue(RoundingMode.HALF_EVEN), 3.1415925);
-        try {
-            halfBelowPi.floatValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(justAbovePi.floatValue(RoundingMode.FLOOR), 3.1415927);
-        aeq(justAbovePi.floatValue(RoundingMode.CEILING), 3.141593);
-        aeq(justAbovePi.floatValue(RoundingMode.DOWN), 3.1415927);
-        aeq(justAbovePi.floatValue(RoundingMode.UP), 3.141593);
-        aeq(justAbovePi.floatValue(RoundingMode.HALF_DOWN), 3.1415927);
-        aeq(justAbovePi.floatValue(RoundingMode.HALF_UP), 3.1415927);
-        aeq(justAbovePi.floatValue(RoundingMode.HALF_EVEN), 3.1415927);
-        try {
-            justAbovePi.floatValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(justBelowPi.floatValue(RoundingMode.FLOOR), 3.1415925);
-        aeq(justBelowPi.floatValue(RoundingMode.CEILING), 3.1415927);
-        aeq(justBelowPi.floatValue(RoundingMode.DOWN), 3.1415925);
-        aeq(justBelowPi.floatValue(RoundingMode.UP), 3.1415927);
-        aeq(justBelowPi.floatValue(RoundingMode.HALF_DOWN), 3.1415927);
-        aeq(justBelowPi.floatValue(RoundingMode.HALF_UP), 3.1415927);
-        aeq(justBelowPi.floatValue(RoundingMode.HALF_EVEN), 3.1415927);
-        try {
-            justBelowPi.floatValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        Rational subnormal = ofExact(1e-40f);
-        if (subnormal == null) {
-            fail();
-        }
-        Rational subnormalSuccessor = ofExact(FloatUtils.successor(1e-40f));
-        if (subnormalSuccessor == null) {
-            fail();
-        }
-        Rational subnormalPredecessor = ofExact(FloatUtils.predecessor(1e-40f));
-        if (subnormalPredecessor == null) {
-            fail();
-        }
-        Rational halfAboveSubnormal = add(subnormal, subnormalSuccessor).divide(2);
-        Rational halfBelowSubnormal = add(subnormal, subnormalPredecessor).divide(2);
-        Rational justAboveSubnormal = add(subnormal.multiply(2), subnormalSuccessor).divide(3);
-        Rational justBelowSubnormal = add(subnormal.multiply(2), subnormalPredecessor).divide(3);
-        aeq(subnormal.floatValue(RoundingMode.FLOOR), 1.0E-40);
-        aeq(subnormal.floatValue(RoundingMode.CEILING), 1.0E-40);
-        aeq(subnormal.floatValue(RoundingMode.DOWN), 1.0E-40);
-        aeq(subnormal.floatValue(RoundingMode.UP), 1.0E-40);
-        aeq(subnormal.floatValue(RoundingMode.HALF_DOWN), 1.0E-40);
-        aeq(subnormal.floatValue(RoundingMode.HALF_UP), 1.0E-40);
-        aeq(subnormal.floatValue(RoundingMode.HALF_EVEN), 1.0E-40);
-        aeq(subnormal.floatValue(RoundingMode.UNNECESSARY), 1.0E-40);
-        aeq(halfAboveSubnormal.floatValue(RoundingMode.FLOOR), 1.0E-40);
-        aeq(halfAboveSubnormal.floatValue(RoundingMode.CEILING), 1.00001E-40);
-        aeq(halfAboveSubnormal.floatValue(RoundingMode.DOWN), 1.0E-40);
-        aeq(halfAboveSubnormal.floatValue(RoundingMode.UP), 1.00001E-40);
-        aeq(halfAboveSubnormal.floatValue(RoundingMode.HALF_DOWN), 1.0E-40);
-        aeq(halfAboveSubnormal.floatValue(RoundingMode.HALF_UP), 1.00001E-40);
-        aeq(halfAboveSubnormal.floatValue(RoundingMode.HALF_EVEN), 1.0E-40);
-        try {
-            halfAboveSubnormal.floatValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(halfBelowSubnormal.floatValue(RoundingMode.FLOOR), 9.9998E-41);
-        aeq(halfBelowSubnormal.floatValue(RoundingMode.CEILING), 1.0E-40);
-        aeq(halfBelowSubnormal.floatValue(RoundingMode.DOWN), 9.9998E-41);
-        aeq(halfBelowSubnormal.floatValue(RoundingMode.UP), 1.0E-40);
-        aeq(halfBelowSubnormal.floatValue(RoundingMode.HALF_DOWN), 9.9998E-41);
-        aeq(halfBelowSubnormal.floatValue(RoundingMode.HALF_UP), 1.0E-40);
-        aeq(halfBelowSubnormal.floatValue(RoundingMode.HALF_EVEN), 1.0E-40);
-        try {
-            halfBelowSubnormal.floatValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(justAboveSubnormal.floatValue(RoundingMode.FLOOR), 1.0E-40);
-        aeq(justAboveSubnormal.floatValue(RoundingMode.CEILING), 1.00001E-40);
-        aeq(justAboveSubnormal.floatValue(RoundingMode.DOWN), 1.0E-40);
-        aeq(justAboveSubnormal.floatValue(RoundingMode.UP), 1.00001E-40);
-        aeq(justAboveSubnormal.floatValue(RoundingMode.HALF_DOWN), 1.0E-40);
-        aeq(justAboveSubnormal.floatValue(RoundingMode.HALF_UP), 1.0E-40);
-        aeq(justAboveSubnormal.floatValue(RoundingMode.HALF_EVEN), 1.0E-40);
-        try {
-            justAboveSubnormal.floatValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(justBelowSubnormal.floatValue(RoundingMode.FLOOR), 9.9998E-41);
-        aeq(justBelowSubnormal.floatValue(RoundingMode.CEILING), 1.0E-40);
-        aeq(justBelowSubnormal.floatValue(RoundingMode.DOWN), 9.9998E-41);
-        aeq(justBelowSubnormal.floatValue(RoundingMode.UP), 1.0E-40);
-        aeq(justBelowSubnormal.floatValue(RoundingMode.HALF_DOWN), 1.0E-40);
-        aeq(justBelowSubnormal.floatValue(RoundingMode.HALF_UP), 1.0E-40);
-        aeq(justBelowSubnormal.floatValue(RoundingMode.HALF_EVEN), 1.0E-40);
-        try {
-            justBelowSubnormal.floatValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        Rational belowNegativeMax = subtract(LARGEST_FLOAT.negate(), ONE);
-        Rational negativeMaxSuccessor = ofExact(FloatUtils.successor(-Float.MAX_VALUE));
-        if (negativeMaxSuccessor == null) {
-            fail();
-        }
-        Rational halfAboveNegativeMax = add(LARGEST_FLOAT.negate(), negativeMaxSuccessor).divide(2);
-        Rational justAboveNegativeMax = add(
-                LARGEST_FLOAT.negate().multiply(2),
-                negativeMaxSuccessor
-        ).divide(3);
-        aeq(belowNegativeMax.floatValue(RoundingMode.FLOOR), Float.NEGATIVE_INFINITY);
-        aeq(belowNegativeMax.floatValue(RoundingMode.CEILING), -3.4028235E38);
-        aeq(belowNegativeMax.floatValue(RoundingMode.DOWN), -3.4028235E38);
-        aeq(belowNegativeMax.floatValue(RoundingMode.UP), Float.NEGATIVE_INFINITY);
-        aeq(belowNegativeMax.floatValue(RoundingMode.HALF_DOWN), -3.4028235E38);
-        aeq(belowNegativeMax.floatValue(RoundingMode.HALF_UP), Float.NEGATIVE_INFINITY);
-        aeq(belowNegativeMax.floatValue(RoundingMode.HALF_EVEN), Float.NEGATIVE_INFINITY);
-        try {
-            belowNegativeMax.floatValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(halfAboveNegativeMax.floatValue(RoundingMode.FLOOR), -3.4028235E38);
-        aeq(halfAboveNegativeMax.floatValue(RoundingMode.CEILING), -3.4028233E38);
-        aeq(halfAboveNegativeMax.floatValue(RoundingMode.DOWN), -3.4028233E38);
-        aeq(halfAboveNegativeMax.floatValue(RoundingMode.UP), -3.4028235E38);
-        aeq(halfAboveNegativeMax.floatValue(RoundingMode.HALF_DOWN), -3.4028233E38);
-        aeq(halfAboveNegativeMax.floatValue(RoundingMode.HALF_UP), -3.4028235E38);
-        aeq(halfAboveNegativeMax.floatValue(RoundingMode.HALF_EVEN), -3.4028233E38);
-        try {
-            halfAboveNegativeMax.floatValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(justAboveNegativeMax.floatValue(RoundingMode.FLOOR), -3.4028235E38);
-        aeq(justAboveNegativeMax.floatValue(RoundingMode.CEILING), -3.4028233E38);
-        aeq(justAboveNegativeMax.floatValue(RoundingMode.DOWN), -3.4028233E38);
-        aeq(justAboveNegativeMax.floatValue(RoundingMode.UP), -3.4028235E38);
-        aeq(justAboveNegativeMax.floatValue(RoundingMode.HALF_DOWN), -3.4028235E38);
-        aeq(justAboveNegativeMax.floatValue(RoundingMode.HALF_UP), -3.4028235E38);
-        aeq(justAboveNegativeMax.floatValue(RoundingMode.HALF_EVEN), -3.4028235E38);
-        try {
-            justAboveNegativeMax.floatValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        Rational aboveMax = add(LARGEST_FLOAT, ONE);
-        Rational maxPredecessor = ofExact(FloatUtils.predecessor(Float.MAX_VALUE));
-        if (maxPredecessor == null) {
-            fail();
-        }
-        Rational halfBelowMax = add(LARGEST_FLOAT, maxPredecessor).divide(2);
-        Rational justBelowMax = add(LARGEST_FLOAT.multiply(2), maxPredecessor).divide(3);
-        aeq(aboveMax.floatValue(RoundingMode.FLOOR), 3.4028235E38);
-        aeq(aboveMax.floatValue(RoundingMode.CEILING), Float.POSITIVE_INFINITY);
-        aeq(aboveMax.floatValue(RoundingMode.DOWN), 3.4028235E38);
-        aeq(aboveMax.floatValue(RoundingMode.UP), Float.POSITIVE_INFINITY);
-        aeq(aboveMax.floatValue(RoundingMode.HALF_DOWN), 3.4028235E38);
-        aeq(aboveMax.floatValue(RoundingMode.HALF_UP), Float.POSITIVE_INFINITY);
-        aeq(aboveMax.floatValue(RoundingMode.HALF_EVEN), Float.POSITIVE_INFINITY);
-        try {
-            aboveMax.floatValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(halfBelowMax.floatValue(RoundingMode.FLOOR), 3.4028233E38);
-        aeq(halfBelowMax.floatValue(RoundingMode.CEILING), 3.4028235E38);
-        aeq(halfBelowMax.floatValue(RoundingMode.DOWN), 3.4028233E38);
-        aeq(halfBelowMax.floatValue(RoundingMode.UP), 3.4028235E38);
-        aeq(halfBelowMax.floatValue(RoundingMode.HALF_DOWN), 3.4028233E38);
-        aeq(halfBelowMax.floatValue(RoundingMode.HALF_UP), 3.4028235E38);
-        aeq(halfBelowMax.floatValue(RoundingMode.HALF_EVEN), 3.4028233E38);
-        try {
-            halfBelowMax.floatValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(justBelowMax.floatValue(RoundingMode.FLOOR), 3.4028233E38);
-        aeq(justBelowMax.floatValue(RoundingMode.CEILING), 3.4028235E38);
-        aeq(justBelowMax.floatValue(RoundingMode.DOWN), 3.4028233E38);
-        aeq(justBelowMax.floatValue(RoundingMode.UP), 3.4028235E38);
-        aeq(justBelowMax.floatValue(RoundingMode.HALF_DOWN), 3.4028235E38);
-        aeq(justBelowMax.floatValue(RoundingMode.HALF_UP), 3.4028235E38);
-        aeq(justBelowMax.floatValue(RoundingMode.HALF_EVEN), 3.4028235E38);
-        try {
-            justBelowMax.floatValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        Rational halfAboveZero = SMALLEST_FLOAT.shiftRight(1);
-        Rational justAboveZero = SMALLEST_FLOAT.divide(3);
-        Rational halfBelowZero = halfAboveZero.negate();
-        Rational justBelowZero = justAboveZero.negate();
-        aeq(halfBelowZero.floatValue(RoundingMode.FLOOR), -1.4E-45);
-        aeq(halfBelowZero.floatValue(RoundingMode.CEILING), -0.0);
-        aeq(halfBelowZero.floatValue(RoundingMode.DOWN), -0.0);
-        aeq(halfBelowZero.floatValue(RoundingMode.UP), -1.4E-45);
-        aeq(halfBelowZero.floatValue(RoundingMode.HALF_DOWN), -0.0);
-        aeq(halfBelowZero.floatValue(RoundingMode.HALF_UP), -1.4E-45);
-        aeq(halfBelowZero.floatValue(RoundingMode.HALF_EVEN), -0.0);
-        try {
-            halfBelowZero.floatValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(justBelowZero.floatValue(RoundingMode.FLOOR), -1.4E-45);
-        aeq(justBelowZero.floatValue(RoundingMode.CEILING), -0.0);
-        aeq(justBelowZero.floatValue(RoundingMode.DOWN), -0.0);
-        aeq(justBelowZero.floatValue(RoundingMode.UP), -1.4E-45);
-        aeq(justBelowZero.floatValue(RoundingMode.HALF_DOWN), -0.0);
-        aeq(justBelowZero.floatValue(RoundingMode.HALF_UP), -0.0);
-        aeq(justBelowZero.floatValue(RoundingMode.HALF_EVEN), -0.0);
-        try {
-            justBelowZero.floatValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(halfAboveZero.floatValue(RoundingMode.FLOOR), 0.0);
-        aeq(halfAboveZero.floatValue(RoundingMode.CEILING), 1.4E-45);
-        aeq(halfAboveZero.floatValue(RoundingMode.DOWN), 0.0);
-        aeq(halfAboveZero.floatValue(RoundingMode.UP), 1.4E-45);
-        aeq(halfAboveZero.floatValue(RoundingMode.HALF_DOWN), 0.0);
-        aeq(halfAboveZero.floatValue(RoundingMode.HALF_UP), 1.4E-45);
-        aeq(halfAboveZero.floatValue(RoundingMode.HALF_EVEN), 0.0);
-        try {
-            halfAboveZero.floatValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(justAboveZero.floatValue(RoundingMode.FLOOR), 0.0);
-        aeq(justAboveZero.floatValue(RoundingMode.CEILING), 1.4E-45);
-        aeq(justAboveZero.floatValue(RoundingMode.DOWN), 0.0);
-        aeq(justAboveZero.floatValue(RoundingMode.UP), 1.4E-45);
-        aeq(justAboveZero.floatValue(RoundingMode.HALF_DOWN), 0.0);
-        aeq(justAboveZero.floatValue(RoundingMode.HALF_UP), 0.0);
-        aeq(justAboveZero.floatValue(RoundingMode.HALF_EVEN), 0.0);
-        try {
-            justAboveZero.floatValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        Rational boundary = add(
-                LARGEST_SUBNORMAL_FLOAT,
-                SMALLEST_NORMAL_FLOAT
-        ).shiftRight(1);
-        Rational halfBelowBoundary = add(LARGEST_SUBNORMAL_FLOAT, boundary).shiftRight(1);
-        Rational halfAboveBoundary = add(SMALLEST_NORMAL_FLOAT, boundary).shiftRight(1);
-        Rational justBelowBoundary = add(LARGEST_SUBNORMAL_FLOAT, boundary.shiftLeft(1)).divide(3);
-        Rational justAboveBoundary = add(SMALLEST_NORMAL_FLOAT, boundary.shiftLeft(1)).divide(3);
-        aeq(boundary.floatValue(RoundingMode.FLOOR), 1.1754942E-38);
-        aeq(boundary.floatValue(RoundingMode.CEILING), 1.17549435E-38);
-        aeq(boundary.floatValue(RoundingMode.DOWN), 1.1754942E-38);
-        aeq(boundary.floatValue(RoundingMode.UP), 1.17549435E-38);
-        aeq(boundary.floatValue(RoundingMode.HALF_DOWN), 1.1754942E-38);
-        aeq(boundary.floatValue(RoundingMode.HALF_UP), 1.17549435E-38);
-        aeq(boundary.floatValue(RoundingMode.HALF_EVEN), 1.17549435E-38);
-        try {
-            boundary.floatValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(halfBelowBoundary.floatValue(RoundingMode.FLOOR), 1.1754942E-38);
-        aeq(halfBelowBoundary.floatValue(RoundingMode.CEILING), 1.17549435E-38);
-        aeq(halfBelowBoundary.floatValue(RoundingMode.DOWN), 1.1754942E-38);
-        aeq(halfBelowBoundary.floatValue(RoundingMode.UP), 1.17549435E-38);
-        aeq(halfBelowBoundary.floatValue(RoundingMode.HALF_DOWN), 1.1754942E-38);
-        aeq(halfBelowBoundary.floatValue(RoundingMode.HALF_UP), 1.1754942E-38);
-        aeq(halfBelowBoundary.floatValue(RoundingMode.HALF_EVEN), 1.1754942E-38);
-        try {
-            halfBelowBoundary.floatValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(justBelowBoundary.floatValue(RoundingMode.FLOOR), 1.1754942E-38);
-        aeq(justBelowBoundary.floatValue(RoundingMode.CEILING), 1.17549435E-38);
-        aeq(justBelowBoundary.floatValue(RoundingMode.DOWN), 1.1754942E-38);
-        aeq(justBelowBoundary.floatValue(RoundingMode.UP), 1.17549435E-38);
-        aeq(justBelowBoundary.floatValue(RoundingMode.HALF_DOWN), 1.1754942E-38);
-        aeq(justBelowBoundary.floatValue(RoundingMode.HALF_UP), 1.1754942E-38);
-        aeq(justBelowBoundary.floatValue(RoundingMode.HALF_EVEN), 1.1754942E-38);
-        try {
-            justBelowBoundary.floatValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(halfAboveBoundary.floatValue(RoundingMode.FLOOR), 1.1754942E-38);
-        aeq(halfAboveBoundary.floatValue(RoundingMode.CEILING), 1.17549435E-38);
-        aeq(halfAboveBoundary.floatValue(RoundingMode.DOWN), 1.1754942E-38);
-        aeq(halfAboveBoundary.floatValue(RoundingMode.UP), 1.17549435E-38);
-        aeq(halfAboveBoundary.floatValue(RoundingMode.HALF_DOWN), 1.17549435E-38);
-        aeq(halfAboveBoundary.floatValue(RoundingMode.HALF_UP), 1.17549435E-38);
-        aeq(halfAboveBoundary.floatValue(RoundingMode.HALF_EVEN), 1.17549435E-38);
-        try {
-            halfAboveBoundary.floatValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(justAboveBoundary.floatValue(RoundingMode.FLOOR), 1.1754942E-38);
-        aeq(justAboveBoundary.floatValue(RoundingMode.CEILING), 1.17549435E-38);
-        aeq(justAboveBoundary.floatValue(RoundingMode.DOWN), 1.1754942E-38);
-        aeq(justAboveBoundary.floatValue(RoundingMode.UP), 1.17549435E-38);
-        aeq(justAboveBoundary.floatValue(RoundingMode.HALF_DOWN), 1.17549435E-38);
-        aeq(justAboveBoundary.floatValue(RoundingMode.HALF_UP), 1.17549435E-38);
-        aeq(justAboveBoundary.floatValue(RoundingMode.HALF_EVEN), 1.17549435E-38);
-        try {
-            justAboveBoundary.floatValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-    }
-
-    @Test
-    public void testToDouble() {
-        aeq(ZERO.doubleValue(), 0.0);
-        aeq(ONE.doubleValue(), 1.0);
-        aeq(read("1/2").get().doubleValue(), 0.5);
-        aeq(read("1/3").get().doubleValue(), 0.3333333333333333);
-        aeq(read("-1/3").get().doubleValue(), -0.3333333333333333);
-        Rational almostOne = of(BigInteger.TEN.pow(1000).subtract(BigInteger.ONE), BigInteger.TEN.pow(1000));
-        aeq(almostOne.doubleValue(), 1.0);
-        Rational pi = ofExact(Math.PI);
-        if (pi == null) {
-            fail();
-        }
-        aeq(pi.doubleValue(), 3.141592653589793);
-        Rational googol = of(BigInteger.TEN.pow(100));
-        aeq(googol.doubleValue(), 1.0E100);
-        Rational piSuccessor = ofExact(FloatUtils.successor(Math.PI));
-        if (piSuccessor == null) {
-            fail();
-        }
-        Rational piPredecessor = ofExact(FloatUtils.predecessor(Math.PI));
-        if (piPredecessor == null) {
-            fail();
-        }
-        Rational halfAbovePi = add(pi, piSuccessor).divide(2);
-        Rational halfBelowPi = add(pi, piPredecessor).divide(2);
-        Rational justAbovePi = add(pi.multiply(2), piSuccessor).divide(3);
-        Rational justBelowPi = add(pi.multiply(2), piPredecessor).divide(3);
-        aeq(halfAbovePi.doubleValue(), 3.141592653589793);
-        aeq(halfBelowPi.doubleValue(), 3.141592653589793);
-        aeq(justAbovePi.doubleValue(), 3.141592653589793);
-        aeq(justBelowPi.doubleValue(), 3.141592653589793);
-        Rational subnormal = ofExact(1e-310);
-        if (subnormal == null) {
-            fail();
-        }
-        Rational subnormalSuccessor = ofExact(FloatUtils.successor(1e-310));
-        if (subnormalSuccessor == null) {
-            fail();
-        }
-        Rational subnormalPredecessor = ofExact(FloatUtils.predecessor(1e-310));
-        if (subnormalPredecessor == null) {
-            fail();
-        }
-        Rational halfAboveSubnormal = add(subnormal, subnormalSuccessor).divide(2);
-        Rational halfBelowSubnormal = add(subnormal, subnormalPredecessor).divide(2);
-        Rational justAboveSubnormal = add(subnormal.multiply(2), subnormalSuccessor).divide(3);
-        Rational justBelowSubnormal = add(subnormal.multiply(2), subnormalPredecessor).divide(3);
-        aeq(subnormal.doubleValue(), 1.0E-310);
-        aeq(halfAboveSubnormal.doubleValue(), 1.00000000000005E-310);
-        aeq(halfBelowSubnormal.doubleValue(), 9.9999999999995E-311);
-        aeq(justAboveSubnormal.doubleValue(), 1.0E-310);
-        aeq(justBelowSubnormal.doubleValue(), 1.0E-310);
-        Rational belowNegativeMax = subtract(LARGEST_DOUBLE.negate(), ONE);
-        Rational negativeMaxSuccessor = ofExact(FloatUtils.successor(-Double.MAX_VALUE));
-        if (negativeMaxSuccessor == null) {
-            fail();
-        }
-        Rational halfAboveNegativeMax = add(LARGEST_DOUBLE.negate(), negativeMaxSuccessor).divide(2);
-        Rational justAboveNegativeMax = add(
-                LARGEST_DOUBLE.negate().multiply(2),
-                negativeMaxSuccessor
-        ).divide(3);
-        aeq(belowNegativeMax.doubleValue(), Double.NEGATIVE_INFINITY);
-        aeq(halfAboveNegativeMax.doubleValue(), -1.7976931348623155E308);
-        aeq(justAboveNegativeMax.doubleValue(), -1.7976931348623157E308);
-        Rational aboveMax = add(LARGEST_DOUBLE, ONE);
-        Rational maxPredecessor = ofExact(FloatUtils.predecessor(Double.MAX_VALUE));
-        if (maxPredecessor == null) {
-            fail();
-        }
-        Rational halfBelowMax = add(LARGEST_DOUBLE, maxPredecessor).divide(2);
-        Rational justBelowMax = add(LARGEST_DOUBLE.multiply(2), maxPredecessor).divide(3);
-        aeq(aboveMax.doubleValue(), Double.POSITIVE_INFINITY);
-        aeq(halfBelowMax.doubleValue(), 1.7976931348623155E308);
-        aeq(justBelowMax.doubleValue(), 1.7976931348623157E308);
-        Rational halfAboveZero = SMALLEST_DOUBLE.shiftRight(1);
-        Rational justAboveZero = SMALLEST_DOUBLE.divide(3);
-        Rational halfBelowZero = halfAboveZero.negate();
-        Rational justBelowZero = justAboveZero.negate();
-        aeq(halfBelowZero.doubleValue(), -0.0);
-        aeq(justBelowZero.doubleValue(), -0.0);
-        aeq(halfAboveZero.doubleValue(), 0.0);
-        aeq(justAboveZero.doubleValue(), 0.0);
-        Rational boundary = add(
-                LARGEST_SUBNORMAL_DOUBLE,
-                SMALLEST_NORMAL_DOUBLE
-        ).shiftRight(1);
-        Rational halfBelowBoundary = add(LARGEST_SUBNORMAL_DOUBLE, boundary).shiftRight(1);
-        Rational halfAboveBoundary = add(SMALLEST_NORMAL_DOUBLE, boundary).shiftRight(1);
-        Rational justBelowBoundary = add(LARGEST_SUBNORMAL_DOUBLE, boundary.shiftLeft(1)).divide(3);
-        Rational justAboveBoundary = add(SMALLEST_NORMAL_DOUBLE, boundary.shiftLeft(1)).divide(3);
-        aeq(boundary.doubleValue(), 2.2250738585072014E-308);
-        aeq(halfBelowBoundary.doubleValue(), 2.225073858507201E-308);
-        aeq(justBelowBoundary.doubleValue(), 2.225073858507201E-308);
-        aeq(halfAboveBoundary.doubleValue(), 2.2250738585072014E-308);
-        aeq(justAboveBoundary.doubleValue(), 2.2250738585072014E-308);
-    }
-
-    @Test
-    public void testToDouble_RoundingMode() {
-        aeq(ZERO.doubleValue(RoundingMode.FLOOR), 0.0);
-        aeq(ZERO.doubleValue(RoundingMode.CEILING), 0.0);
-        aeq(ZERO.doubleValue(RoundingMode.DOWN), 0.0);
-        aeq(ZERO.doubleValue(RoundingMode.UP), 0.0);
-        aeq(ZERO.doubleValue(RoundingMode.HALF_DOWN), 0.0);
-        aeq(ZERO.doubleValue(RoundingMode.HALF_UP), 0.0);
-        aeq(ZERO.doubleValue(RoundingMode.HALF_EVEN), 0.0);
-        aeq(ZERO.doubleValue(RoundingMode.UNNECESSARY), 0.0);
-        aeq(ONE.doubleValue(RoundingMode.FLOOR), 1.0);
-        aeq(ONE.doubleValue(RoundingMode.CEILING), 1.0);
-        aeq(ONE.doubleValue(RoundingMode.DOWN), 1.0);
-        aeq(ONE.doubleValue(RoundingMode.UP), 1.0);
-        aeq(ONE.doubleValue(RoundingMode.HALF_DOWN), 1.0);
-        aeq(ONE.doubleValue(RoundingMode.HALF_UP), 1.0);
-        aeq(ONE.doubleValue(RoundingMode.HALF_EVEN), 1.0);
-        aeq(ONE.doubleValue(RoundingMode.UNNECESSARY), 1.0);
-        aeq(read("1/2").get().doubleValue(RoundingMode.FLOOR), 0.5);
-        aeq(read("1/2").get().doubleValue(RoundingMode.CEILING), 0.5);
-        aeq(read("1/2").get().doubleValue(RoundingMode.DOWN), 0.5);
-        aeq(read("1/2").get().doubleValue(RoundingMode.UP), 0.5);
-        aeq(read("1/2").get().doubleValue(RoundingMode.HALF_DOWN), 0.5);
-        aeq(read("1/2").get().doubleValue(RoundingMode.HALF_UP), 0.5);
-        aeq(read("1/2").get().doubleValue(RoundingMode.HALF_EVEN), 0.5);
-        aeq(read("1/2").get().doubleValue(RoundingMode.UNNECESSARY), 0.5);
-        aeq(read("1/3").get().doubleValue(RoundingMode.FLOOR), 0.3333333333333333);
-        aeq(read("1/3").get().doubleValue(RoundingMode.CEILING), 0.33333333333333337);
-        aeq(read("1/3").get().doubleValue(RoundingMode.DOWN), 0.3333333333333333);
-        aeq(read("1/3").get().doubleValue(RoundingMode.UP), 0.33333333333333337);
-        aeq(read("1/3").get().doubleValue(RoundingMode.HALF_DOWN), 0.3333333333333333);
-        aeq(read("1/3").get().doubleValue(RoundingMode.HALF_UP), 0.3333333333333333);
-        aeq(read("1/3").get().doubleValue(RoundingMode.HALF_EVEN), 0.3333333333333333);
-        try {
-            read("1/3").get().doubleValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(read("-1/3").get().doubleValue(RoundingMode.FLOOR), -0.33333333333333337);
-        aeq(read("-1/3").get().doubleValue(RoundingMode.CEILING), -0.3333333333333333);
-        aeq(read("-1/3").get().doubleValue(RoundingMode.DOWN), -0.3333333333333333);
-        aeq(read("-1/3").get().doubleValue(RoundingMode.UP), -0.33333333333333337);
-        aeq(read("-1/3").get().doubleValue(RoundingMode.HALF_DOWN), -0.3333333333333333);
-        aeq(read("-1/3").get().doubleValue(RoundingMode.HALF_UP), -0.3333333333333333);
-        aeq(read("-1/3").get().doubleValue(RoundingMode.HALF_EVEN), -0.3333333333333333);
-        try {
-            read("-1/3").get().doubleValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        Rational almostOne = of(BigInteger.TEN.pow(1000).subtract(BigInteger.ONE), BigInteger.TEN.pow(1000));
-        aeq(almostOne.doubleValue(RoundingMode.FLOOR), 0.9999999999999999);
-        aeq(almostOne.doubleValue(RoundingMode.CEILING), 1.0);
-        aeq(almostOne.doubleValue(RoundingMode.DOWN), 0.9999999999999999);
-        aeq(almostOne.doubleValue(RoundingMode.UP), 1.0);
-        aeq(almostOne.doubleValue(RoundingMode.HALF_DOWN), 1.0);
-        aeq(almostOne.doubleValue(RoundingMode.HALF_UP), 1.0);
-        aeq(almostOne.doubleValue(RoundingMode.HALF_EVEN), 1.0);
-        try {
-            almostOne.doubleValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        Rational pi = ofExact(Math.PI);
-        if (pi == null) {
-            fail();
-        }
-        aeq(pi.doubleValue(RoundingMode.FLOOR), 3.141592653589793);
-        aeq(pi.doubleValue(RoundingMode.CEILING), 3.141592653589793);
-        aeq(pi.doubleValue(RoundingMode.DOWN), 3.141592653589793);
-        aeq(pi.doubleValue(RoundingMode.UP), 3.141592653589793);
-        aeq(pi.doubleValue(RoundingMode.HALF_DOWN), 3.141592653589793);
-        aeq(pi.doubleValue(RoundingMode.HALF_UP), 3.141592653589793);
-        aeq(pi.doubleValue(RoundingMode.HALF_EVEN), 3.141592653589793);
-        aeq(pi.doubleValue(RoundingMode.UNNECESSARY), 3.141592653589793);
-        Rational googol = of(BigInteger.TEN.pow(100));
-        aeq(googol.doubleValue(RoundingMode.FLOOR), 9.999999999999998E99);
-        aeq(googol.doubleValue(RoundingMode.CEILING), 1.0E100);
-        aeq(googol.doubleValue(RoundingMode.DOWN), 9.999999999999998E99);
-        aeq(googol.doubleValue(RoundingMode.UP), 1.0E100);
-        aeq(googol.doubleValue(RoundingMode.HALF_DOWN), 1.0E100);
-        aeq(googol.doubleValue(RoundingMode.HALF_UP), 1.0E100);
-        aeq(googol.doubleValue(RoundingMode.HALF_EVEN), 1.0E100);
-        try {
-            googol.doubleValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        Rational piSuccessor = ofExact(FloatUtils.successor(Math.PI));
-        if (piSuccessor == null) {
-            fail();
-        }
-        Rational piPredecessor = ofExact(FloatUtils.predecessor(Math.PI));
-        if (piPredecessor == null) {
-            fail();
-        }
-        Rational halfAbovePi = add(pi, piSuccessor).divide(2);
-        Rational halfBelowPi = add(pi, piPredecessor).divide(2);
-        Rational justAbovePi = add(pi.multiply(2), piSuccessor).divide(3);
-        Rational justBelowPi = add(pi.multiply(2), piPredecessor).divide(3);
-        aeq(halfAbovePi.doubleValue(RoundingMode.FLOOR), 3.141592653589793);
-        aeq(halfAbovePi.doubleValue(RoundingMode.CEILING), 3.1415926535897936);
-        aeq(halfAbovePi.doubleValue(RoundingMode.DOWN), 3.141592653589793);
-        aeq(halfAbovePi.doubleValue(RoundingMode.UP), 3.1415926535897936);
-        aeq(halfAbovePi.doubleValue(RoundingMode.HALF_DOWN), 3.141592653589793);
-        aeq(halfAbovePi.doubleValue(RoundingMode.HALF_UP), 3.1415926535897936);
-        aeq(halfAbovePi.doubleValue(RoundingMode.HALF_EVEN), 3.141592653589793);
-        try {
-            halfAbovePi.doubleValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(halfBelowPi.doubleValue(RoundingMode.FLOOR), 3.1415926535897927);
-        aeq(halfBelowPi.doubleValue(RoundingMode.CEILING), 3.141592653589793);
-        aeq(halfBelowPi.doubleValue(RoundingMode.DOWN), 3.1415926535897927);
-        aeq(halfBelowPi.doubleValue(RoundingMode.UP), 3.141592653589793);
-        aeq(halfBelowPi.doubleValue(RoundingMode.HALF_DOWN), 3.1415926535897927);
-        aeq(halfBelowPi.doubleValue(RoundingMode.HALF_UP), 3.141592653589793);
-        aeq(halfBelowPi.doubleValue(RoundingMode.HALF_EVEN), 3.141592653589793);
-        try {
-            halfBelowPi.doubleValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(justAbovePi.doubleValue(RoundingMode.FLOOR), 3.141592653589793);
-        aeq(justAbovePi.doubleValue(RoundingMode.CEILING), 3.1415926535897936);
-        aeq(justAbovePi.doubleValue(RoundingMode.DOWN), 3.141592653589793);
-        aeq(justAbovePi.doubleValue(RoundingMode.UP), 3.1415926535897936);
-        aeq(justAbovePi.doubleValue(RoundingMode.HALF_DOWN), 3.141592653589793);
-        aeq(justAbovePi.doubleValue(RoundingMode.HALF_UP), 3.141592653589793);
-        aeq(justAbovePi.doubleValue(RoundingMode.HALF_EVEN), 3.141592653589793);
-        try {
-            justAbovePi.doubleValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(justBelowPi.doubleValue(RoundingMode.FLOOR), 3.1415926535897927);
-        aeq(justBelowPi.doubleValue(RoundingMode.CEILING), 3.141592653589793);
-        aeq(justBelowPi.doubleValue(RoundingMode.DOWN), 3.1415926535897927);
-        aeq(justBelowPi.doubleValue(RoundingMode.UP), 3.141592653589793);
-        aeq(justBelowPi.doubleValue(RoundingMode.HALF_DOWN), 3.141592653589793);
-        aeq(justBelowPi.doubleValue(RoundingMode.HALF_UP), 3.141592653589793);
-        aeq(justBelowPi.doubleValue(RoundingMode.HALF_EVEN), 3.141592653589793);
-        try {
-            justBelowPi.doubleValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        Rational subnormal = ofExact(1e-310);
-        if (subnormal == null) {
-            fail();
-        }
-        Rational subnormalSuccessor = ofExact(FloatUtils.successor(1e-310));
-        if (subnormalSuccessor == null) {
-            fail();
-        }
-        Rational subnormalPredecessor = ofExact(FloatUtils.predecessor(1e-310));
-        if (subnormalPredecessor == null) {
-            fail();
-        }
-        Rational halfAboveSubnormal = add(subnormal, subnormalSuccessor).divide(2);
-        Rational halfBelowSubnormal = add(subnormal, subnormalPredecessor).divide(2);
-        Rational justAboveSubnormal = add(subnormal.multiply(2), subnormalSuccessor).divide(3);
-        Rational justBelowSubnormal = add(subnormal.multiply(2), subnormalPredecessor).divide(3);
-        aeq(subnormal.doubleValue(RoundingMode.FLOOR), 1.0E-310);
-        aeq(subnormal.doubleValue(RoundingMode.CEILING), 1.0E-310);
-        aeq(subnormal.doubleValue(RoundingMode.DOWN), 1.0E-310);
-        aeq(subnormal.doubleValue(RoundingMode.UP), 1.0E-310);
-        aeq(subnormal.doubleValue(RoundingMode.HALF_DOWN), 1.0E-310);
-        aeq(subnormal.doubleValue(RoundingMode.HALF_UP), 1.0E-310);
-        aeq(subnormal.doubleValue(RoundingMode.HALF_EVEN), 1.0E-310);
-        aeq(subnormal.doubleValue(RoundingMode.UNNECESSARY), 1.0E-310);
-        aeq(halfAboveSubnormal.doubleValue(RoundingMode.FLOOR), 1.0E-310);
-        aeq(halfAboveSubnormal.doubleValue(RoundingMode.CEILING), 1.00000000000005E-310);
-        aeq(halfAboveSubnormal.doubleValue(RoundingMode.DOWN), 1.0E-310);
-        aeq(halfAboveSubnormal.doubleValue(RoundingMode.UP), 1.00000000000005E-310);
-        aeq(halfAboveSubnormal.doubleValue(RoundingMode.HALF_DOWN), 1.0E-310);
-        aeq(halfAboveSubnormal.doubleValue(RoundingMode.HALF_UP), 1.00000000000005E-310);
-        aeq(halfAboveSubnormal.doubleValue(RoundingMode.HALF_EVEN), 1.00000000000005E-310);
-        try {
-            halfAboveSubnormal.doubleValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(halfBelowSubnormal.doubleValue(RoundingMode.FLOOR), 9.9999999999995E-311);
-        aeq(halfBelowSubnormal.doubleValue(RoundingMode.CEILING), 1.0E-310);
-        aeq(halfBelowSubnormal.doubleValue(RoundingMode.DOWN), 9.9999999999995E-311);
-        aeq(halfBelowSubnormal.doubleValue(RoundingMode.UP), 1.0E-310);
-        aeq(halfBelowSubnormal.doubleValue(RoundingMode.HALF_DOWN), 9.9999999999995E-311);
-        aeq(halfBelowSubnormal.doubleValue(RoundingMode.HALF_UP), 1.0E-310);
-        aeq(halfBelowSubnormal.doubleValue(RoundingMode.HALF_EVEN), 9.9999999999995E-311);
-        try {
-            halfBelowSubnormal.doubleValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(justAboveSubnormal.doubleValue(RoundingMode.FLOOR), 1.0E-310);
-        aeq(justAboveSubnormal.doubleValue(RoundingMode.CEILING), 1.00000000000005E-310);
-        aeq(justAboveSubnormal.doubleValue(RoundingMode.DOWN), 1.0E-310);
-        aeq(justAboveSubnormal.doubleValue(RoundingMode.UP), 1.00000000000005E-310);
-        aeq(justAboveSubnormal.doubleValue(RoundingMode.HALF_DOWN), 1.0E-310);
-        aeq(justAboveSubnormal.doubleValue(RoundingMode.HALF_UP), 1.0E-310);
-        aeq(justAboveSubnormal.doubleValue(RoundingMode.HALF_EVEN), 1.0E-310);
-        try {
-            justAboveSubnormal.doubleValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(justBelowSubnormal.doubleValue(RoundingMode.FLOOR), 9.9999999999995E-311);
-        aeq(justBelowSubnormal.doubleValue(RoundingMode.CEILING), 1.0E-310);
-        aeq(justBelowSubnormal.doubleValue(RoundingMode.DOWN), 9.9999999999995E-311);
-        aeq(justBelowSubnormal.doubleValue(RoundingMode.UP), 1.0E-310);
-        aeq(justBelowSubnormal.doubleValue(RoundingMode.HALF_DOWN), 1.0E-310);
-        aeq(justBelowSubnormal.doubleValue(RoundingMode.HALF_UP), 1.0E-310);
-        aeq(justBelowSubnormal.doubleValue(RoundingMode.HALF_EVEN), 1.0E-310);
-        try {
-            justBelowSubnormal.doubleValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        Rational belowNegativeMax = subtract(LARGEST_DOUBLE.negate(), ONE);
-        Rational negativeMaxSuccessor = ofExact(FloatUtils.successor(-Double.MAX_VALUE));
-        if (negativeMaxSuccessor == null) {
-            fail();
-        }
-        Rational halfAboveNegativeMax = add(LARGEST_DOUBLE.negate(), negativeMaxSuccessor).divide(2);
-        Rational justAboveNegativeMax = add(
-                LARGEST_DOUBLE.negate().multiply(2),
-                negativeMaxSuccessor
-        ).divide(3);
-        aeq(belowNegativeMax.doubleValue(RoundingMode.FLOOR), Double.NEGATIVE_INFINITY);
-        aeq(belowNegativeMax.doubleValue(RoundingMode.CEILING), -1.7976931348623157E308);
-        aeq(belowNegativeMax.doubleValue(RoundingMode.DOWN), -1.7976931348623157E308);
-        aeq(belowNegativeMax.doubleValue(RoundingMode.UP), Double.NEGATIVE_INFINITY);
-        aeq(belowNegativeMax.doubleValue(RoundingMode.HALF_DOWN), -1.7976931348623157E308);
-        aeq(belowNegativeMax.doubleValue(RoundingMode.HALF_UP), Double.NEGATIVE_INFINITY);
-        aeq(belowNegativeMax.doubleValue(RoundingMode.HALF_EVEN), Double.NEGATIVE_INFINITY);
-        try {
-            belowNegativeMax.doubleValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(halfAboveNegativeMax.doubleValue(RoundingMode.FLOOR), -1.7976931348623157E308);
-        aeq(halfAboveNegativeMax.doubleValue(RoundingMode.CEILING), -1.7976931348623155E308);
-        aeq(halfAboveNegativeMax.doubleValue(RoundingMode.DOWN), -1.7976931348623155E308);
-        aeq(halfAboveNegativeMax.doubleValue(RoundingMode.UP), -1.7976931348623157E308);
-        aeq(halfAboveNegativeMax.doubleValue(RoundingMode.HALF_DOWN), -1.7976931348623155E308);
-        aeq(halfAboveNegativeMax.doubleValue(RoundingMode.HALF_UP), -1.7976931348623157E308);
-        aeq(halfAboveNegativeMax.doubleValue(RoundingMode.HALF_EVEN), -1.7976931348623155E308);
-        try {
-            halfAboveNegativeMax.doubleValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(justAboveNegativeMax.doubleValue(RoundingMode.FLOOR), -1.7976931348623157E308);
-        aeq(justAboveNegativeMax.doubleValue(RoundingMode.CEILING), -1.7976931348623155E308);
-        aeq(justAboveNegativeMax.doubleValue(RoundingMode.DOWN), -1.7976931348623155E308);
-        aeq(justAboveNegativeMax.doubleValue(RoundingMode.UP), -1.7976931348623157E308);
-        aeq(justAboveNegativeMax.doubleValue(RoundingMode.HALF_DOWN), -1.7976931348623157E308);
-        aeq(justAboveNegativeMax.doubleValue(RoundingMode.HALF_UP), -1.7976931348623157E308);
-        aeq(justAboveNegativeMax.doubleValue(RoundingMode.HALF_EVEN), -1.7976931348623157E308);
-        try {
-            justAboveNegativeMax.doubleValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        Rational aboveMax = add(LARGEST_DOUBLE, ONE);
-        Rational maxPredecessor = ofExact(FloatUtils.predecessor(Double.MAX_VALUE));
-        if (maxPredecessor == null) {
-            fail();
-        }
-        Rational halfBelowMax = add(LARGEST_DOUBLE, maxPredecessor).divide(2);
-        Rational justBelowMax = add(LARGEST_DOUBLE.multiply(2), maxPredecessor).divide(3);
-        aeq(aboveMax.doubleValue(RoundingMode.FLOOR), 1.7976931348623157E308);
-        aeq(aboveMax.doubleValue(RoundingMode.CEILING), Double.POSITIVE_INFINITY);
-        aeq(aboveMax.doubleValue(RoundingMode.DOWN), 1.7976931348623157E308);
-        aeq(aboveMax.doubleValue(RoundingMode.UP), Double.POSITIVE_INFINITY);
-        aeq(aboveMax.doubleValue(RoundingMode.HALF_DOWN), 1.7976931348623157E308);
-        aeq(aboveMax.doubleValue(RoundingMode.HALF_UP), Double.POSITIVE_INFINITY);
-        aeq(aboveMax.doubleValue(RoundingMode.HALF_EVEN), Double.POSITIVE_INFINITY);
-        try {
-            aboveMax.doubleValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(halfBelowMax.doubleValue(RoundingMode.FLOOR), 1.7976931348623155E308);
-        aeq(halfBelowMax.doubleValue(RoundingMode.CEILING), 1.7976931348623157E308);
-        aeq(halfBelowMax.doubleValue(RoundingMode.DOWN), 1.7976931348623155E308);
-        aeq(halfBelowMax.doubleValue(RoundingMode.UP), 1.7976931348623157E308);
-        aeq(halfBelowMax.doubleValue(RoundingMode.HALF_DOWN), 1.7976931348623155E308);
-        aeq(halfBelowMax.doubleValue(RoundingMode.HALF_UP), 1.7976931348623157E308);
-        aeq(halfBelowMax.doubleValue(RoundingMode.HALF_EVEN), 1.7976931348623155E308);
-        try {
-            halfBelowMax.doubleValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(justBelowMax.doubleValue(RoundingMode.FLOOR), 1.7976931348623155E308);
-        aeq(justBelowMax.doubleValue(RoundingMode.CEILING), 1.7976931348623157E308);
-        aeq(justBelowMax.doubleValue(RoundingMode.DOWN), 1.7976931348623155E308);
-        aeq(justBelowMax.doubleValue(RoundingMode.UP), 1.7976931348623157E308);
-        aeq(justBelowMax.doubleValue(RoundingMode.HALF_DOWN), 1.7976931348623157E308);
-        aeq(justBelowMax.doubleValue(RoundingMode.HALF_UP), 1.7976931348623157E308);
-        aeq(justBelowMax.doubleValue(RoundingMode.HALF_EVEN), 1.7976931348623157E308);
-        try {
-            justBelowMax.doubleValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        Rational halfAboveZero = SMALLEST_DOUBLE.shiftRight(1);
-        Rational justAboveZero = SMALLEST_DOUBLE.divide(3);
-        Rational halfBelowZero = halfAboveZero.negate();
-        Rational justBelowZero = justAboveZero.negate();
-        aeq(halfBelowZero.doubleValue(RoundingMode.FLOOR), -4.9E-324);
-        aeq(halfBelowZero.doubleValue(RoundingMode.CEILING), -0.0);
-        aeq(halfBelowZero.doubleValue(RoundingMode.DOWN), -0.0);
-        aeq(halfBelowZero.doubleValue(RoundingMode.UP), -4.9E-324);
-        aeq(halfBelowZero.doubleValue(RoundingMode.HALF_DOWN), -0.0);
-        aeq(halfBelowZero.doubleValue(RoundingMode.HALF_UP), -4.9E-324);
-        aeq(halfBelowZero.doubleValue(RoundingMode.HALF_EVEN), -0.0);
-        try {
-            halfBelowZero.doubleValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(justBelowZero.doubleValue(RoundingMode.FLOOR), -4.9E-324);
-        aeq(justBelowZero.doubleValue(RoundingMode.CEILING), -0.0);
-        aeq(justBelowZero.doubleValue(RoundingMode.DOWN), -0.0);
-        aeq(justBelowZero.doubleValue(RoundingMode.UP), -4.9E-324);
-        aeq(justBelowZero.doubleValue(RoundingMode.HALF_DOWN), -0.0);
-        aeq(justBelowZero.doubleValue(RoundingMode.HALF_UP), -0.0);
-        aeq(justBelowZero.doubleValue(RoundingMode.HALF_EVEN), -0.0);
-        try {
-            justBelowZero.doubleValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(halfAboveZero.doubleValue(RoundingMode.FLOOR), 0.0);
-        aeq(halfAboveZero.doubleValue(RoundingMode.CEILING), 4.9E-324);
-        aeq(halfAboveZero.doubleValue(RoundingMode.DOWN), 0.0);
-        aeq(halfAboveZero.doubleValue(RoundingMode.UP), 4.9E-324);
-        aeq(halfAboveZero.doubleValue(RoundingMode.HALF_DOWN), 0.0);
-        aeq(halfAboveZero.doubleValue(RoundingMode.HALF_UP), 4.9E-324);
-        aeq(halfAboveZero.doubleValue(RoundingMode.HALF_EVEN), 0.0);
-        try {
-            halfAboveZero.doubleValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(justAboveZero.doubleValue(RoundingMode.FLOOR), 0.0);
-        aeq(justAboveZero.doubleValue(RoundingMode.CEILING), 4.9E-324);
-        aeq(justAboveZero.doubleValue(RoundingMode.DOWN), 0.0);
-        aeq(justAboveZero.doubleValue(RoundingMode.UP), 4.9E-324);
-        aeq(justAboveZero.doubleValue(RoundingMode.HALF_DOWN), 0.0);
-        aeq(justAboveZero.doubleValue(RoundingMode.HALF_UP), 0.0);
-        aeq(justAboveZero.doubleValue(RoundingMode.HALF_EVEN), 0.0);
-        try {
-            justAboveZero.doubleValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        Rational boundary = add(
-                LARGEST_SUBNORMAL_DOUBLE,
-                SMALLEST_NORMAL_DOUBLE
-        ).shiftRight(1);
-        Rational halfBelowBoundary = add(LARGEST_SUBNORMAL_DOUBLE, boundary).shiftRight(1);
-        Rational halfAboveBoundary = add(SMALLEST_NORMAL_DOUBLE, boundary).shiftRight(1);
-        Rational justBelowBoundary = add(LARGEST_SUBNORMAL_DOUBLE, boundary.shiftLeft(1)).divide(3);
-        Rational justAboveBoundary = add(SMALLEST_NORMAL_DOUBLE, boundary.shiftLeft(1)).divide(3);
-        aeq(boundary.doubleValue(RoundingMode.FLOOR), 2.225073858507201E-308);
-        aeq(boundary.doubleValue(RoundingMode.CEILING), 2.2250738585072014E-308);
-        aeq(boundary.doubleValue(RoundingMode.DOWN), 2.225073858507201E-308);
-        aeq(boundary.doubleValue(RoundingMode.UP), 2.2250738585072014E-308);
-        aeq(boundary.doubleValue(RoundingMode.HALF_DOWN), 2.225073858507201E-308);
-        aeq(boundary.doubleValue(RoundingMode.HALF_UP), 2.2250738585072014E-308);
-        aeq(boundary.doubleValue(RoundingMode.HALF_EVEN), 2.2250738585072014E-308);
-        try {
-            boundary.doubleValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(halfBelowBoundary.doubleValue(RoundingMode.FLOOR), 2.225073858507201E-308);
-        aeq(halfBelowBoundary.doubleValue(RoundingMode.CEILING), 2.2250738585072014E-308);
-        aeq(halfBelowBoundary.doubleValue(RoundingMode.DOWN), 2.225073858507201E-308);
-        aeq(halfBelowBoundary.doubleValue(RoundingMode.UP), 2.2250738585072014E-308);
-        aeq(halfBelowBoundary.doubleValue(RoundingMode.HALF_DOWN), 2.225073858507201E-308);
-        aeq(halfBelowBoundary.doubleValue(RoundingMode.HALF_UP), 2.225073858507201E-308);
-        aeq(halfBelowBoundary.doubleValue(RoundingMode.HALF_EVEN), 2.225073858507201E-308);
-        try {
-            halfBelowBoundary.doubleValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(justBelowBoundary.doubleValue(RoundingMode.FLOOR), 2.225073858507201E-308);
-        aeq(justBelowBoundary.doubleValue(RoundingMode.CEILING), 2.2250738585072014E-308);
-        aeq(justBelowBoundary.doubleValue(RoundingMode.DOWN), 2.225073858507201E-308);
-        aeq(justBelowBoundary.doubleValue(RoundingMode.UP), 2.2250738585072014E-308);
-        aeq(justBelowBoundary.doubleValue(RoundingMode.HALF_DOWN), 2.225073858507201E-308);
-        aeq(justBelowBoundary.doubleValue(RoundingMode.HALF_UP), 2.225073858507201E-308);
-        aeq(justBelowBoundary.doubleValue(RoundingMode.HALF_EVEN), 2.225073858507201E-308);
-        try {
-            justBelowBoundary.doubleValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(halfAboveBoundary.doubleValue(RoundingMode.FLOOR), 2.225073858507201E-308);
-        aeq(halfAboveBoundary.doubleValue(RoundingMode.CEILING), 2.2250738585072014E-308);
-        aeq(halfAboveBoundary.doubleValue(RoundingMode.DOWN), 2.225073858507201E-308);
-        aeq(halfAboveBoundary.doubleValue(RoundingMode.UP), 2.2250738585072014E-308);
-        aeq(halfAboveBoundary.doubleValue(RoundingMode.HALF_DOWN), 2.2250738585072014E-308);
-        aeq(halfAboveBoundary.doubleValue(RoundingMode.HALF_UP), 2.2250738585072014E-308);
-        aeq(halfAboveBoundary.doubleValue(RoundingMode.HALF_EVEN), 2.2250738585072014E-308);
-        try {
-            halfAboveBoundary.doubleValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(justAboveBoundary.doubleValue(RoundingMode.FLOOR), 2.225073858507201E-308);
-        aeq(justAboveBoundary.doubleValue(RoundingMode.CEILING), 2.2250738585072014E-308);
-        aeq(justAboveBoundary.doubleValue(RoundingMode.DOWN), 2.225073858507201E-308);
-        aeq(justAboveBoundary.doubleValue(RoundingMode.UP), 2.2250738585072014E-308);
-        aeq(justAboveBoundary.doubleValue(RoundingMode.HALF_DOWN), 2.2250738585072014E-308);
-        aeq(justAboveBoundary.doubleValue(RoundingMode.HALF_UP), 2.2250738585072014E-308);
-        aeq(justAboveBoundary.doubleValue(RoundingMode.HALF_EVEN), 2.2250738585072014E-308);
-        try {
-            justAboveBoundary.doubleValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
     }
 
     @Test
