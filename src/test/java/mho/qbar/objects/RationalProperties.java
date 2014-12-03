@@ -75,6 +75,7 @@ public class RationalProperties {
             propertiesHasTerminatingDecimalExpansion();
             propertiesBigDecimalValue_int_RoundingMode();
             propertiesBigDecimalValue_int();
+            propertiesBigDecimalValueExact();
             propertiesNegate();
             propertiesInvert();
             propertiesAbs();
@@ -769,7 +770,48 @@ public class RationalProperties {
             assertEquals(bd.toString(), up, halfUp);
             assertTrue(bd.toString(), bd.scale() != halfEven.scale() + 1 || !halfEven.unscaledValue().testBit(0));
         }
-        //todo failure tests
+
+        Iterable<Pair<Rational, Pair<Integer, RoundingMode>>> psFail;
+        if (P instanceof ExhaustiveProvider) {
+            psFail = P.pairs(
+                    P.rationals(),
+                    (Iterable<Pair<Integer, RoundingMode>>) P.pairs(P.negativeIntegers(), P.roundingModes())
+            );
+        } else {
+            psFail = P.pairs(
+                    P.rationals(),
+                    (Iterable<Pair<Integer, RoundingMode>>) P.pairs(
+                            ((RandomProvider) P).negativeIntegersGeometric(20),
+                            P.roundingModes()
+                    )
+            );
+        }
+        for (Pair<Rational, Pair<Integer, RoundingMode>> p : take(LIMIT, psFail)) {
+            assert p.a != null;
+            assert p.b != null;
+            assert p.b.a != null;
+            assert p.b.b != null;
+            try {
+                p.a.bigDecimalValue(p.b.a, p.b.b);
+                fail();
+            } catch (IllegalArgumentException ignored) {}
+        }
+
+        Iterable<Rational> rs = filter(r -> !r.hasTerminatingDecimalExpansion(), P.rationals());
+        Iterable<Pair<Rational, Integer>> prisFail;
+        if (P instanceof ExhaustiveProvider) {
+            prisFail = ((ExhaustiveProvider) P).pairsSquareRootOrder(rs, P.naturalIntegers());
+        } else {
+            prisFail = P.pairs(rs, ((RandomProvider) P).naturalIntegersGeometric(20));
+        }
+        for (Pair<Rational, Integer> p : take(LIMIT, prisFail)) {
+            assert p.a != null;
+            assert p.b != null;
+            try {
+                p.a.bigDecimalValue(p.b, RoundingMode.UNNECESSARY);
+                fail();
+            } catch (ArithmeticException ignored) {}
+        }
     }
 
     private static void propertiesBigDecimalValue_int() {
@@ -852,6 +894,57 @@ public class RationalProperties {
             int precision = bd.precision() - 1;
             BigDecimal halfEven = r.bigDecimalValue(precision);
             assertTrue(bd.toString(), bd.scale() != halfEven.scale() + 1 || !halfEven.unscaledValue().testBit(0));
+        }
+
+        Iterable<Pair<Rational, Integer>> psFail;
+        if (P instanceof ExhaustiveProvider) {
+            psFail = ((ExhaustiveProvider) P).pairsSquareRootOrder(P.rationals(), P.negativeIntegers());
+        } else {
+            psFail = P.pairs(P.rationals(), ((RandomProvider) P).negativeIntegersGeometric(20));
+        }
+        for (Pair<Rational, Integer> p : take(LIMIT, psFail)) {
+            assert p.a != null;
+            assert p.b != null;
+            try {
+                p.a.bigDecimalValue(p.b);
+                fail();
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private static void propertiesBigDecimalValueExact() {
+        initialize();
+        System.out.println("testing bigDecimalValueExact()...");
+
+        Iterable<Rational> rs = filter(Rational::hasTerminatingDecimalExpansion, P.rationals());
+        for (Rational r : take(LIMIT, rs)) {
+            BigDecimal bd = r.bigDecimalValueExact();
+            assertEquals(r.toString(), bd, r.bigDecimalValue(0, RoundingMode.UNNECESSARY));
+            assertTrue(r.toString(), eq(bd, BigDecimal.ZERO) || bd.signum() == r.signum());
+            assertEquals(r.toString(), of(bd), r);
+        }
+
+        Iterable<Pair<Rational, Integer>> psFail;
+        if (P instanceof ExhaustiveProvider) {
+            psFail = ((ExhaustiveProvider) P).pairsSquareRootOrder(P.rationals(), P.negativeIntegers());
+        } else {
+            psFail = P.pairs(P.rationals(), ((RandomProvider) P).negativeIntegersGeometric(20));
+        }
+        for (Pair<Rational, Integer> p : take(LIMIT, psFail)) {
+            assert p.a != null;
+            assert p.b != null;
+            try {
+                p.a.bigDecimalValue(p.b);
+                fail();
+            } catch (IllegalArgumentException ignored) {}
+        }
+
+        Iterable<Rational> rsFail = filter(r -> !r.hasTerminatingDecimalExpansion(), P.rationals());
+        for (Rational r : take(LIMIT, rsFail)) {
+            try {
+                r.bigDecimalValueExact();
+                fail();
+            } catch (ArithmeticException ignored) {}
         }
     }
 
