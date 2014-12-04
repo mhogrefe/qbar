@@ -1486,6 +1486,185 @@ public class RationalTest {
     }
 
     @Test
+    public void testFloatValueExact() {
+        aeq(ZERO.floatValueExact(), 0.0);
+        aeq(ONE.floatValueExact(), 1.0);
+        aeq(read("1/2").get().floatValueExact(), 0.5);
+        try {
+            read("1/3").get().floatValueExact();
+            fail();
+        } catch (ArithmeticException ignored) {}
+        try {
+            read("-1/3").get().floatValueExact();
+            fail();
+        } catch (ArithmeticException ignored) {}
+        Rational almostOne = of(BigInteger.TEN.pow(1000).subtract(BigInteger.ONE), BigInteger.TEN.pow(1000));
+        try {
+            almostOne.floatValueExact();
+            fail();
+        } catch (ArithmeticException ignored) {}
+        Rational floatPi = ofExact((float) Math.PI);
+        if (floatPi == null) {
+            fail();
+        }
+        aeq(floatPi.floatValueExact(), 3.1415927);
+        Rational trillion = of(BigInteger.TEN.pow(12));
+        try {
+            trillion.floatValueExact();
+            fail();
+        } catch (ArithmeticException ignored) {}
+        Rational piSuccessor = ofExact(FloatUtils.successor((float) Math.PI));
+        if (piSuccessor == null) {
+            fail();
+        }
+        Rational piPredecessor = ofExact(FloatUtils.predecessor((float) Math.PI));
+        if (piPredecessor == null) {
+            fail();
+        }
+        Rational halfAbovePi = add(floatPi, piSuccessor).divide(2);
+        Rational halfBelowPi = add(floatPi, piPredecessor).divide(2);
+        Rational justAbovePi = add(floatPi.multiply(2), piSuccessor).divide(3);
+        Rational justBelowPi = add(floatPi.multiply(2), piPredecessor).divide(3);
+        try {
+            halfAbovePi.floatValueExact();
+            fail();
+        } catch (ArithmeticException ignored) {}
+        try {
+            halfBelowPi.floatValueExact();
+            fail();
+        } catch (ArithmeticException ignored) {}
+        try {
+            justAbovePi.floatValueExact();
+            fail();
+        } catch (ArithmeticException ignored) {}
+        try {
+            justBelowPi.floatValueExact();
+            fail();
+        } catch (ArithmeticException ignored) {}
+        Rational subnormal = ofExact(1e-40f);
+        if (subnormal == null) {
+            fail();
+        }
+        Rational subnormalSuccessor = ofExact(FloatUtils.successor(1e-40f));
+        if (subnormalSuccessor == null) {
+            fail();
+        }
+        Rational subnormalPredecessor = ofExact(FloatUtils.predecessor(1e-40f));
+        if (subnormalPredecessor == null) {
+            fail();
+        }
+        Rational halfAboveSubnormal = add(subnormal, subnormalSuccessor).divide(2);
+        Rational halfBelowSubnormal = add(subnormal, subnormalPredecessor).divide(2);
+        Rational justAboveSubnormal = add(subnormal.multiply(2), subnormalSuccessor).divide(3);
+        Rational justBelowSubnormal = add(subnormal.multiply(2), subnormalPredecessor).divide(3);
+        try {
+            halfAboveSubnormal.floatValueExact();
+            fail();
+        } catch (ArithmeticException ignored) {}
+        try {
+            halfBelowSubnormal.floatValueExact();
+            fail();
+        } catch (ArithmeticException ignored) {}
+        try {
+            justAboveSubnormal.floatValueExact();
+            fail();
+        } catch (ArithmeticException ignored) {}
+        try {
+            justBelowSubnormal.floatValueExact();
+            fail();
+        } catch (ArithmeticException ignored) {}
+        Rational belowNegativeMax = subtract(LARGEST_FLOAT.negate(), ONE);
+        Rational negativeMaxSuccessor = ofExact(FloatUtils.successor(-Float.MAX_VALUE));
+        if (negativeMaxSuccessor == null) {
+            fail();
+        }
+        Rational halfAboveNegativeMax = add(LARGEST_FLOAT.negate(), negativeMaxSuccessor).divide(2);
+        Rational justAboveNegativeMax = add(
+                LARGEST_FLOAT.negate().multiply(2),
+                negativeMaxSuccessor
+        ).divide(3);
+        try {
+            belowNegativeMax.floatValueExact();
+            fail();
+        } catch (ArithmeticException ignored) {}
+        try {
+            halfAboveNegativeMax.floatValueExact();
+            fail();
+        } catch (ArithmeticException ignored) {}
+        try {
+            justAboveNegativeMax.floatValueExact();
+            fail();
+        } catch (ArithmeticException ignored) {}
+        Rational aboveMax = add(LARGEST_FLOAT, ONE);
+        Rational maxPredecessor = ofExact(FloatUtils.predecessor(Float.MAX_VALUE));
+        if (maxPredecessor == null) {
+            fail();
+        }
+        Rational halfBelowMax = add(LARGEST_FLOAT, maxPredecessor).divide(2);
+        Rational justBelowMax = add(LARGEST_FLOAT.multiply(2), maxPredecessor).divide(3);
+        try {
+            aboveMax.floatValueExact();
+            fail();
+        } catch (ArithmeticException ignored) {}
+        try {
+            halfBelowMax.floatValueExact();
+            fail();
+        } catch (ArithmeticException ignored) {}
+        try {
+            justBelowMax.floatValueExact();
+            fail();
+        } catch (ArithmeticException ignored) {}
+        Rational halfAboveZero = SMALLEST_FLOAT.shiftRight(1);
+        Rational justAboveZero = SMALLEST_FLOAT.divide(3);
+        Rational halfBelowZero = halfAboveZero.negate();
+        Rational justBelowZero = justAboveZero.negate();
+        try {
+            halfBelowZero.floatValueExact();
+            fail();
+        } catch (ArithmeticException ignored) {}
+        try {
+            justBelowZero.floatValueExact();
+            fail();
+        } catch (ArithmeticException ignored) {}
+        try {
+            halfAboveZero.floatValueExact();
+            fail();
+        } catch (ArithmeticException ignored) {}
+        try {
+            justAboveZero.floatValueExact();
+            fail();
+        } catch (ArithmeticException ignored) {}
+        Rational boundary = add(
+                LARGEST_SUBNORMAL_FLOAT,
+                SMALLEST_NORMAL_FLOAT
+        ).shiftRight(1);
+        Rational halfBelowBoundary = add(LARGEST_SUBNORMAL_FLOAT, boundary).shiftRight(1);
+        Rational halfAboveBoundary = add(SMALLEST_NORMAL_FLOAT, boundary).shiftRight(1);
+        Rational justBelowBoundary = add(LARGEST_SUBNORMAL_FLOAT, boundary.shiftLeft(1)).divide(3);
+        Rational justAboveBoundary = add(SMALLEST_NORMAL_FLOAT, boundary.shiftLeft(1)).divide(3);
+        try {
+            boundary.floatValueExact();
+            fail();
+        } catch (ArithmeticException ignored) {}
+        try {
+            halfBelowBoundary.floatValueExact();
+            fail();
+        } catch (ArithmeticException ignored) {}
+        try {
+            justBelowBoundary.floatValueExact();
+            fail();
+        } catch (ArithmeticException ignored) {}
+        try {
+            halfAboveBoundary.floatValueExact();
+            fail();
+        } catch (ArithmeticException ignored) {}
+        try {
+            justAboveBoundary.floatValueExact();
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
     public void testDoubleValue_RoundingMode() {
         aeq(ZERO.doubleValue(RoundingMode.FLOOR), 0.0);
         aeq(ZERO.doubleValue(RoundingMode.CEILING), 0.0);
@@ -1986,6 +2165,186 @@ public class RationalTest {
         aeq(justBelowBoundary.doubleValue(), 2.225073858507201E-308);
         aeq(halfAboveBoundary.doubleValue(), 2.2250738585072014E-308);
         aeq(justAboveBoundary.doubleValue(), 2.2250738585072014E-308);
+    }
+
+    @Test
+    public void testDoubleValueExact() {
+        aeq(ZERO.doubleValueExact(), 0.0);
+        aeq(ONE.doubleValueExact(), 1.0);
+        aeq(read("1/2").get().doubleValueExact(), 0.5);
+        try {
+            read("1/3").get().doubleValueExact();
+            fail();
+        } catch (ArithmeticException ignored) {}
+        try {
+            read("-1/3").get().doubleValueExact();
+            fail();
+        } catch (ArithmeticException ignored) {}
+        Rational almostOne = of(BigInteger.TEN.pow(1000).subtract(BigInteger.ONE), BigInteger.TEN.pow(1000));
+        try {
+            almostOne.doubleValueExact();
+            fail();
+        } catch (ArithmeticException ignored) {}
+        Rational pi = ofExact(Math.PI);
+        if (pi == null) {
+            fail();
+        }
+        aeq(pi.doubleValueExact(), 3.141592653589793);
+        Rational googol = of(BigInteger.TEN.pow(100));
+        try {
+            googol.doubleValueExact();
+            fail();
+        } catch (ArithmeticException ignored) {}
+        Rational piSuccessor = ofExact(FloatUtils.successor(Math.PI));
+        if (piSuccessor == null) {
+            fail();
+        }
+        Rational piPredecessor = ofExact(FloatUtils.predecessor(Math.PI));
+        if (piPredecessor == null) {
+            fail();
+        }
+        Rational halfAbovePi = add(pi, piSuccessor).divide(2);
+        Rational halfBelowPi = add(pi, piPredecessor).divide(2);
+        Rational justAbovePi = add(pi.multiply(2), piSuccessor).divide(3);
+        Rational justBelowPi = add(pi.multiply(2), piPredecessor).divide(3);
+        try {
+            halfAbovePi.doubleValueExact();
+            fail();
+        } catch (ArithmeticException ignored) {}
+        try {
+            halfBelowPi.doubleValueExact();
+            fail();
+        } catch (ArithmeticException ignored) {}
+        try {
+            justAbovePi.doubleValueExact();
+            fail();
+        } catch (ArithmeticException ignored) {}
+        try {
+            justBelowPi.doubleValueExact();
+            fail();
+        } catch (ArithmeticException ignored) {}
+        Rational subnormal = ofExact(1e-310);
+        if (subnormal == null) {
+            fail();
+        }
+        Rational subnormalSuccessor = ofExact(FloatUtils.successor(1e-310));
+        if (subnormalSuccessor == null) {
+            fail();
+        }
+        Rational subnormalPredecessor = ofExact(FloatUtils.predecessor(1e-310));
+        if (subnormalPredecessor == null) {
+            fail();
+        }
+        Rational halfAboveSubnormal = add(subnormal, subnormalSuccessor).divide(2);
+        Rational halfBelowSubnormal = add(subnormal, subnormalPredecessor).divide(2);
+        Rational justAboveSubnormal = add(subnormal.multiply(2), subnormalSuccessor).divide(3);
+        Rational justBelowSubnormal = add(subnormal.multiply(2), subnormalPredecessor).divide(3);
+        aeq(subnormal.doubleValueExact(), 1.0E-310);
+        try {
+            halfAboveSubnormal.doubleValueExact();
+            fail();
+        } catch (ArithmeticException ignored) {}
+        try {
+            halfBelowSubnormal.doubleValueExact();
+            fail();
+        } catch (ArithmeticException ignored) {}
+        try {
+            justAboveSubnormal.doubleValueExact();
+            fail();
+        } catch (ArithmeticException ignored) {}
+        try {
+            justBelowSubnormal.doubleValueExact();
+            fail();
+        } catch (ArithmeticException ignored) {}
+        Rational belowNegativeMax = subtract(LARGEST_DOUBLE.negate(), ONE);
+        Rational negativeMaxSuccessor = ofExact(FloatUtils.successor(-Double.MAX_VALUE));
+        if (negativeMaxSuccessor == null) {
+            fail();
+        }
+        Rational halfAboveNegativeMax = add(LARGEST_DOUBLE.negate(), negativeMaxSuccessor).divide(2);
+        Rational justAboveNegativeMax = add(
+                LARGEST_DOUBLE.negate().multiply(2),
+                negativeMaxSuccessor
+        ).divide(3);
+        try {
+            belowNegativeMax.doubleValueExact();
+            fail();
+        } catch (ArithmeticException ignored) {}
+        try {
+            halfAboveNegativeMax.doubleValueExact();
+            fail();
+        } catch (ArithmeticException ignored) {}
+        try {
+            justAboveNegativeMax.doubleValueExact();
+            fail();
+        } catch (ArithmeticException ignored) {}
+        Rational aboveMax = add(LARGEST_DOUBLE, ONE);
+        Rational maxPredecessor = ofExact(FloatUtils.predecessor(Double.MAX_VALUE));
+        if (maxPredecessor == null) {
+            fail();
+        }
+        Rational halfBelowMax = add(LARGEST_DOUBLE, maxPredecessor).divide(2);
+        Rational justBelowMax = add(LARGEST_DOUBLE.multiply(2), maxPredecessor).divide(3);
+        try {
+            aboveMax.doubleValueExact();
+            fail();
+        } catch (ArithmeticException ignored) {}
+        try {
+            halfBelowMax.doubleValueExact();
+            fail();
+        } catch (ArithmeticException ignored) {}
+        try {
+            justBelowMax.doubleValueExact();
+            fail();
+        } catch (ArithmeticException ignored) {}
+        Rational halfAboveZero = SMALLEST_DOUBLE.shiftRight(1);
+        Rational justAboveZero = SMALLEST_DOUBLE.divide(3);
+        Rational halfBelowZero = halfAboveZero.negate();
+        Rational justBelowZero = justAboveZero.negate();
+        try {
+            halfBelowZero.doubleValueExact();
+            fail();
+        } catch (ArithmeticException ignored) {}
+        try {
+            justBelowZero.doubleValueExact();
+            fail();
+        } catch (ArithmeticException ignored) {}
+        try {
+            halfAboveZero.doubleValueExact();
+            fail();
+        } catch (ArithmeticException ignored) {}
+        try {
+            justAboveZero.doubleValueExact();
+            fail();
+        } catch (ArithmeticException ignored) {}
+        Rational boundary = add(
+                LARGEST_SUBNORMAL_DOUBLE,
+                SMALLEST_NORMAL_DOUBLE
+        ).shiftRight(1);
+        Rational halfBelowBoundary = add(LARGEST_SUBNORMAL_DOUBLE, boundary).shiftRight(1);
+        Rational halfAboveBoundary = add(SMALLEST_NORMAL_DOUBLE, boundary).shiftRight(1);
+        Rational justBelowBoundary = add(LARGEST_SUBNORMAL_DOUBLE, boundary.shiftLeft(1)).divide(3);
+        Rational justAboveBoundary = add(SMALLEST_NORMAL_DOUBLE, boundary.shiftLeft(1)).divide(3);
+        try {
+            boundary.doubleValueExact();
+            fail();
+        } catch (ArithmeticException ignored) {}
+        try {
+            halfBelowBoundary.doubleValueExact();
+            fail();
+        } catch (ArithmeticException ignored) {}
+        try {
+            justBelowBoundary.doubleValueExact();
+            fail();
+        } catch (ArithmeticException ignored) {}
+        try {
+            halfAboveBoundary.doubleValueExact();
+            fail();
+        } catch (ArithmeticException ignored) {}
+        try {
+            justAboveBoundary.doubleValueExact();
+            fail();
+        } catch (ArithmeticException ignored) {}
     }
 
     @Test
