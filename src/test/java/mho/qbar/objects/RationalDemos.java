@@ -278,6 +278,73 @@ public class RationalDemos {
         }
     }
 
+    public static void demoFloatValue_RoundingMode() {
+        initialize();
+        Iterable<Pair<Rational, RoundingMode>> ps = filter(
+                p -> {
+                    assert p.a != null;
+                    return p.b != RoundingMode.UNNECESSARY || ofExact(p.a.floatValue(RoundingMode.FLOOR)).equals(p.a);
+                },
+                P.pairs(P.rationals(), P.roundingModes())
+        );
+        for (Pair<Rational, RoundingMode> p : take(LIMIT, ps)) {
+            assert p.a != null;
+            assert p.b != null;
+            System.out.println("floatValue(" + p.a + ", " + p.b + ") = " + p.a.floatValue(p.b));
+        }
+    }
+
+    public static void demoFloatValue() {
+        initialize();
+        for (Rational r : take(LIMIT, P.rationals())) {
+            System.out.println("floatValue(" + r + ") = " + r.floatValue());
+        }
+    }
+
+    public static void demoFloatValueExact() {
+        initialize();
+        Iterable<Rational> rs = map(
+                Rational::ofExact,
+                filter(f -> !Float.isNaN(f) && Float.isFinite(f) && !f.equals(-0.0f), P.floats())
+        );
+        for (Rational r : take(LIMIT, rs)) {
+            System.out.println("floatValueExact(" + r + ") = " + r.floatValueExact());
+        }
+    }
+
+    public static void demoDoubleValue_RoundingMode() {
+        initialize();
+        Iterable<Pair<Rational, RoundingMode>> ps = filter(
+                p -> {
+                    assert p.a != null;
+                    return p.b != RoundingMode.UNNECESSARY || ofExact(p.a.floatValue(RoundingMode.FLOOR)).equals(p.a);
+                },
+                P.pairs(P.rationals(), P.roundingModes()));
+        for (Pair<Rational, RoundingMode> p : take(LIMIT, ps)) {
+            assert p.a != null;
+            assert p.b != null;
+            System.out.println("doubleValue(" + p.a + ", " + p.b + ") = " + p.a.doubleValue(p.b));
+        }
+    }
+
+    public static void demoDoubleValue() {
+        initialize();
+        for (Rational r : take(LIMIT, P.rationals())) {
+            System.out.println("doubleValue(" + r + ") = " + r.doubleValue());
+        }
+    }
+
+    public static void demoDoubleValueExact() {
+        initialize();
+        Iterable<Rational> rs = map(
+                Rational::ofExact,
+                filter(d -> !Double.isNaN(d) && Double.isFinite(d) && !d.equals(-0.0), P.doubles())
+        );
+        for (Rational r : take(LIMIT, rs)) {
+            System.out.println("doubleValueExact(" + r + ") = " + r.doubleValueExact());
+        }
+    }
+
     public static void demoNegate() {
         initialize();
         for (Rational r : take(LIMIT, P.rationals())) {
@@ -503,47 +570,6 @@ public class RationalDemos {
             assert p.a != null;
             assert p.b != null;
             System.out.println(p.a + " >> " + p.b + " = " + p.a.shiftRight(p.b));
-        }
-    }
-
-    public static void toFloatDemo() {
-        for (Rational r : take(LIMIT, P.rationals())) {
-            System.out.println("toFloat(" + r + ") = " + r.floatValue());
-        }
-    }
-
-    public static void toFloatRoundingModeDemo() {
-        Iterable<Pair<Rational, RoundingMode>> ps = filter(
-                p -> {
-                    assert p.a != null;
-                    return p.b != RoundingMode.UNNECESSARY || ofExact(p.a.floatValue(RoundingMode.FLOOR)).equals(p.a);
-                },
-                P.pairs(P.rationals(), P.roundingModes())
-        );
-        for (Pair<Rational, RoundingMode> p : take(LIMIT, ps)) {
-            assert p.a != null;
-            assert p.b != null;
-            System.out.println("toFloat(" + p.a + ", " + p.b + ") = " + p.a.floatValue(p.b));
-        }
-    }
-
-    public static void toDoubleDemo() {
-        for (Rational r : take(LIMIT, P.rationals())) {
-            System.out.println("toDouble(" + r + ") = " + r.doubleValue());
-        }
-    }
-
-    public static void toDoubleRoundingModeDemo() {
-        Iterable<Pair<Rational, RoundingMode>> ps = filter(
-                p -> {
-                    assert p.a != null;
-                    return p.b != RoundingMode.UNNECESSARY || ofExact(p.a.floatValue(RoundingMode.FLOOR)).equals(p.a);
-                },
-                P.pairs(P.rationals(), P.roundingModes()));
-        for (Pair<Rational, RoundingMode> p : take(LIMIT, ps)) {
-            assert p.a != null;
-            assert p.b != null;
-            System.out.println("toDouble(" + p.a + ", " + p.b + ") = " + p.a.doubleValue(p.b));
         }
     }
 
