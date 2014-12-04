@@ -5,6 +5,7 @@ import mho.wheels.iterables.RandomProvider;
 import mho.wheels.math.Combinatorics;
 import mho.wheels.math.MathUtils;
 import mho.wheels.misc.BigDecimalUtils;
+import mho.wheels.misc.FloatUtils;
 import mho.wheels.misc.Readers;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
@@ -77,6 +78,7 @@ public class RationalProperties {
             propertiesBigDecimalValue_int();
             propertiesBigDecimalValueExact();
             propertiesBinaryExponent();
+            propertiesFloatValue_RoundingMode();
             propertiesNegate();
             propertiesInvert();
             propertiesAbs();
@@ -101,7 +103,6 @@ public class RationalProperties {
             propertiesShiftLeft();
             propertiesShiftRight();
 //        toFloatProperties();
-//        toFloatRoundingModeProperties();
             propertiesEquals();
             propertiesHashCode();
             propertiesCompareTo();
@@ -965,6 +966,172 @@ public class RationalProperties {
                 fail(r.toString());
             } catch (IllegalArgumentException ignored) {}
         }
+    }
+
+    //    private static void toFloatProperties() {
+//        for (Rational r : P.rationals().iterate(limit)) {
+//            float f = r.toFloat();
+//            assertEquals(r.toString(), f, r.toFloat(RoundingMode.HALF_EVEN));
+//        }
+//    }
+//
+
+    private static boolean floatEquidistant(@NotNull Rational r) {
+        float below = r.floatValue(RoundingMode.FLOOR);
+        float above = r.floatValue(RoundingMode.CEILING);
+        if (below == above || Float.isInfinite(below) || Float.isInfinite(above)) return false;
+        Rational belowDistance = subtract(r, ofExact(below));
+        Rational aboveDistance = subtract(ofExact(above), r);
+        return belowDistance.equals(aboveDistance);
+    }
+
+    private static void propertiesFloatValue_RoundingMode() {
+        initialize();
+        System.out.println("testing floatValue(RoundingMode) properties...");
+
+        Iterable<Pair<Rational, RoundingMode>> ps = filter(
+                p -> p.b != RoundingMode.UNNECESSARY || ofExact(p.a.floatValue(RoundingMode.FLOOR)).equals(p.a),
+                P.pairs(P.rationals(), P.roundingModes())
+        );
+        for (Pair<Rational, RoundingMode> p : take(LIMIT, ps)) {
+            assert p.a != null;
+            assert p.b != null;
+            float rounded = p.a.floatValue(p.b);
+            assertTrue(p.toString(), !Float.isNaN(rounded));
+            assertTrue(p.toString(), rounded == 0.0 || Math.signum(rounded) == p.a.signum());
+        }
+
+        Iterable<Rational> rs = map(
+                Rational::ofExact,
+                filter(f -> !Float.isNaN(f) && Float.isFinite(f) && !f.equals(-0.0f), P.floats())
+        );
+        for (Rational r : take(LIMIT, rs)) {
+            float rounded = r.floatValue(RoundingMode.UNNECESSARY);
+            assertEquals(r.toString(), r, ofExact(rounded));
+            assertTrue(r.toString(), Float.isFinite(rounded));
+            assertTrue(r.toString(), !new Float(rounded).equals(-0.0f));
+        }
+
+        rs = filter(r -> !r.equals(LARGEST_FLOAT), P.rationals(Interval.of(LARGEST_FLOAT.negate(), LARGEST_FLOAT)));
+        for (Rational r : take(LIMIT, rs)) {
+            float rounded = r.floatValue(RoundingMode.FLOOR);
+            float successor = FloatUtils.successor(rounded);
+            assertTrue(r.toString(), le(ofExact(rounded), r));
+            assertTrue(r.toString(), gt(ofExact(successor), r));
+            assertTrue(r.toString(), rounded < 0 || Float.isFinite(rounded));
+            assertTrue(r.toString(), !new Float(rounded).equals(-0.0f));
+        }
+
+        rs = filter(
+                r -> !r.equals(LARGEST_FLOAT.negate()),
+                P.rationals(Interval.of(LARGEST_FLOAT.negate(), LARGEST_FLOAT))
+        );
+        for (Rational r : take(LIMIT, rs)) {
+            float rounded = r.floatValue(RoundingMode.CEILING);
+            float predecessor = FloatUtils.predecessor(rounded);
+            assertTrue(r.toString(), ge(ofExact(rounded), r));
+            assertTrue(r.toString(), lt(ofExact(predecessor), r));
+            assertTrue(r.toString(), rounded > 0 || Float.isFinite(rounded));
+        }
+
+        rs = P.rationals(Interval.of(LARGEST_FLOAT.negate(), LARGEST_FLOAT));
+        for (Rational r : take(LIMIT, rs)) {
+            float rounded = r.floatValue(RoundingMode.DOWN);
+            assertTrue(r.toString(), le(ofExact(rounded).abs(), r.abs()));
+            assertTrue(r.toString(), Float.isFinite(rounded));
+        }
+
+        rs = filter(r -> r != ZERO, P.rationals(Interval.of(LARGEST_FLOAT.negate(), LARGEST_FLOAT)));
+        for (Rational r : take(LIMIT, rs)) {
+            float rounded = r.floatValue(RoundingMode.DOWN);
+            float successor = FloatUtils.successor(rounded);
+            float predecessor = FloatUtils.predecessor(rounded);
+            float down = r.signum() == -1 ? successor : predecessor;
+            assertTrue(r.toString(), lt(ofExact(down).abs(), r.abs()));
+        }
+
+        rs = filter(
+                r -> !r.abs().equals(LARGEST_FLOAT),
+                P.rationals(Interval.of(LARGEST_FLOAT.negate(), LARGEST_FLOAT))
+        );
+        for (Rational r : take(LIMIT, rs)) {
+            assertTrue(r.toString(), !new Float(r.floatValue(RoundingMode.UP)).equals(-0.0f));
+        }
+
+        rs = filter(r -> !r.equals(SMALLEST_FLOAT), P.rationals(Interval.of(ZERO, SMALLEST_FLOAT)));
+        for (Rational r : take(LIMIT, rs)) {
+            aeq(r.toString(), r.floatValue(RoundingMode.FLOOR), 0.0f);
+            aeq(r.toString(), r.floatValue(RoundingMode.DOWN), 0.0f);
+
+            float rounded = r.floatValue(RoundingMode.UP);
+            float successor = FloatUtils.successor(rounded);
+            float predecessor = FloatUtils.predecessor(rounded);
+            float up = r.signum() == -1 ? predecessor : successor;
+            assertTrue(r.toString(), gt(ofExact(up).abs(), r.abs()));
+        }
+
+        rs = filter(
+                r -> !r.equals(LARGEST_FLOAT.negate()),
+                P.rationals(Interval.lessThanOrEqualTo(LARGEST_FLOAT.negate()))
+        );
+        for (Rational r : take(LIMIT, rs)) {
+            float rounded = r.floatValue(RoundingMode.FLOOR);
+            assertTrue(r.toString(), rounded < 0 && Float.isInfinite(rounded));
+
+            rounded = r.floatValue(RoundingMode.UP);
+            assertTrue(r.toString(), rounded < 0 && Float.isInfinite(rounded));
+        }
+
+        rs = P.rationals(Interval.greaterThanOrEqualTo(LARGEST_FLOAT));
+        for (Rational r : take(LIMIT, rs)) {
+            aeq(r.toString(), r.floatValue(RoundingMode.FLOOR), Float.MAX_VALUE);
+            aeq(r.toString(), r.floatValue(RoundingMode.DOWN), Float.MAX_VALUE);
+        }
+
+        rs = filter(
+                r -> r != ZERO && !r.equals(SMALLEST_FLOAT.negate()),
+                P.rationals(Interval.of(SMALLEST_FLOAT.negate(), ZERO))
+        );
+        for (Rational r : take(LIMIT, rs)) {
+            aeq(r.toString(), r.floatValue(RoundingMode.CEILING), -0.0f);
+            aeq(r.toString(), r.floatValue(RoundingMode.DOWN), -0.0f);
+        }
+
+        rs = filter(r -> !r.equals(LARGEST_FLOAT), P.rationals(Interval.greaterThanOrEqualTo(LARGEST_FLOAT)));
+        for (Rational r : take(LIMIT, rs)) {
+            float rounded = r.floatValue(RoundingMode.CEILING);
+            assertTrue(r.toString(), rounded > 0 && Float.isInfinite(rounded));
+
+            rounded = r.floatValue(RoundingMode.UP);
+            assertTrue(r.toString(), rounded > 0 && Float.isInfinite(rounded));
+        }
+
+        rs = P.rationals(Interval.lessThanOrEqualTo(LARGEST_FLOAT.negate()));
+        for (Rational r : take(LIMIT, rs)) {
+            aeq(r.toString(), r.floatValue(RoundingMode.CEILING), -Float.MAX_VALUE);
+            aeq(r.toString(), r.floatValue(RoundingMode.DOWN), -Float.MAX_VALUE);
+        }
+
+        Iterable<Rational> midpoints = map(
+                f -> {
+                    Rational lo = ofExact(f);
+                    Rational hi = ofExact(FloatUtils.successor(f));
+                    assert lo != null;
+                    assert hi != null;
+                    return add(lo, hi).shiftRight(1);
+                },
+                filter(f -> !f.equals(-0.0f) && f != Float.MAX_VALUE, P.ordinaryFloats())
+        );
+        for (Rational r : take(LIMIT, midpoints)) {
+            float down = r.floatValue(RoundingMode.DOWN);
+            float up = r.floatValue(RoundingMode.UP);
+            aeq(r.toString(), r.floatValue(RoundingMode.HALF_DOWN), down);
+            aeq(r.toString(), r.floatValue(RoundingMode.HALF_UP), up);
+            float halfEven = r.floatValue(RoundingMode.HALF_EVEN);
+            assertTrue(r.toString(), ((Float.floatToIntBits(down) & 1) == 0 ? down : up) == halfEven);
+        }
+
+        Iterable<Rational> notMidpoints = filter(r -> !floatEquidistant(r), P.rationals());
     }
 
     private static void propertiesNegate() {
@@ -1842,121 +2009,6 @@ public class RationalProperties {
             assertEquals(p.toString(), shifted, p.a.divide(BigInteger.ONE.shiftLeft(p.b)));
         }
     }
-
-//    private static void toFloatProperties() {
-//        for (Rational r : P.rationals().iterate(limit)) {
-//            float f = r.toFloat();
-//            assertEquals(r.toString(), f, r.toFloat(RoundingMode.HALF_EVEN));
-//        }
-//    }
-//
-//    private static void toFloatRoundingModeProperties() {
-//        Iterable<Pair<Rational, RoundingMode>> g = new FilteredIterable<Pair<Rational, RoundingMode>>(
-//                P.pairs(P.rationals(), Iterables.roundingModes()),
-//                p -> p.b != RoundingMode.UNNECESSARY
-//                        || of(p.a.toFloat(RoundingMode.FLOOR)).equals(p.a));
-//        for (Pair<Rational, RoundingMode> p : g.iterate(limit)) {
-//            float rounded = p.a.toFloat(p.b);
-//            assertTrue(p.toString(), !Float.isNaN(rounded));
-//            assertTrue(p.toString(), rounded == 0.0 || Math.signum(rounded) == p.a.signum());
-//            float successor = MathUtils.successor(rounded);
-//            float predecessor = MathUtils.predecessor(rounded);
-//            float up = p.a.signum() == -1 ? predecessor : successor;
-//            float down = p.a.signum() == -1 ? successor : predecessor;
-//            if (p.b == RoundingMode.UNNECESSARY) {
-//                assertEquals(p.toString(), p.a, of(rounded));
-//                assertTrue(p.toString(), Float.isFinite(rounded));
-//                assertTrue(p.toString(), !new Float(rounded).equals(-0.0f));
-//            }
-//            if (p.b == RoundingMode.FLOOR) {
-//                assertTrue(p.toString(), of(rounded).compareTo(p.a) <= 0);
-//                assertTrue(p.toString(), of(successor).compareTo(p.a) > 0);
-//                if (p.a.compareTo(ZERO) >= 0 && p.a.compareTo(SMALLEST_FLOAT) < 0) {
-//                    assertEquals(p.toString(), rounded, 0.0f);
-//                }
-//                if (p.a.compareTo(LARGEST_FLOAT.negate()) < 0) {
-//                    assertTrue(p.toString(), rounded < 0 && Float.isInfinite(rounded));
-//                }
-//                if (p.a.compareTo(LARGEST_FLOAT) >= 0) {
-//                    assertEquals(p.toString(), rounded, Float.MAX_VALUE);
-//                }
-//                assertTrue(p.toString(), rounded < 0 || Float.isFinite(rounded));
-//                assertTrue(p.toString(), !new Float(rounded).equals(-0.0f));
-//            }
-//            if (p.b == RoundingMode.CEILING) {
-//                assertTrue(p.toString(), of(rounded).compareTo(p.a) >= 0);
-//                assertTrue(p.toString(), of(predecessor).compareTo(p.a) < 0);
-//                if (p.a == ZERO) {
-//                    assertEquals(p.toString(), rounded, 0.0f);
-//                }
-//                if (p.a.compareTo(ZERO) < 0 && p.a.compareTo(SMALLEST_FLOAT.negate()) > 0) {
-//                    assertEquals(p.toString(), rounded, -0.0f);
-//                }
-//                if (p.a.compareTo(LARGEST_FLOAT) > 0) {
-//                    assertTrue(p.toString(), rounded > 0 && Float.isInfinite(rounded));
-//                }
-//                if (p.a.compareTo(LARGEST_FLOAT.negate()) <= 0) {
-//                    assertEquals(p.toString(), rounded, -Float.MAX_VALUE);
-//                }
-//                assertTrue(p.toString(), rounded > 0 || Float.isFinite(rounded));
-//            }
-//            if (p.b == RoundingMode.DOWN) {
-//                assertTrue(p.toString(), of(rounded).abs().compareTo(p.a.abs()) <= 0);
-//                assertTrue(p.toString(), of(up).abs().compareTo(p.a.abs()) > 0);
-//                if (p.a.compareTo(ZERO) >= 0 && p.a.compareTo(SMALLEST_FLOAT) < 0) {
-//                    assertEquals(p.toString(), rounded, 0.0f);
-//                }
-//                if (p.a.compareTo(ZERO) < 0 && p.a.compareTo(SMALLEST_FLOAT.negate()) > 0) {
-//                    assertEquals(p.toString(), rounded, -0.0f);
-//                }
-//                if (p.a.compareTo(LARGEST_FLOAT) >= 0) {
-//                    assertEquals(p.toString(), rounded, Float.MAX_VALUE);
-//                }
-//                if (p.a.compareTo(LARGEST_FLOAT.negate()) <= 0) {
-//                    assertEquals(p.toString(), rounded, -Float.MAX_VALUE);
-//                }
-//                assertTrue(p.toString(), Float.isFinite(rounded));
-//            }
-//            if (p.b == RoundingMode.UP) {
-//                assertTrue(p.toString(), of(rounded).abs().compareTo(p.a.abs()) >= 0);
-//                if (p.a != ZERO) {
-//                    assertTrue(p.toString(), of(down).abs().compareTo(p.a.abs()) < 0);
-//                }
-//                if (p.a == ZERO) {
-//                    assertEquals(p.toString(), rounded, 0.0f);
-//                }
-//                if (p.a.compareTo(LARGEST_FLOAT) > 0) {
-//                    assertTrue(p.toString(), rounded > 0 && Float.isInfinite(rounded));
-//                }
-//                if (p.a.compareTo(LARGEST_FLOAT.negate()) < 0) {
-//                    assertTrue(p.toString(), rounded < 0 && Float.isInfinite(rounded));
-//                }
-//                assertTrue(p.toString(), !new Float(rounded).equals(-0.0f));
-//            }
-//            if (p.b == RoundingMode.HALF_DOWN || p.b == RoundingMode.HALF_UP || p.b == RoundingMode.HALF_EVEN) {
-//                boolean equidistant = false;
-//                if (Float.isFinite(rounded) && rounded != Float.MAX_VALUE && rounded != -Float.MAX_VALUE) {
-//                    Rational distance = subtract(of(rounded), p.a).abs();
-//                    Rational predDistance = subtract(of(predecessor), p.a).abs();
-//                    Rational succDistance = subtract(of(successor), p.a).abs();
-//                    assertEquals(p.toString(), min(distance, predDistance, succDistance), distance);
-//                    if (distance.equals(predDistance) || distance.equals(succDistance)) {
-//                        equidistant = true;
-//                    }
-//                }
-//                //TODO
-//                if (p.b == RoundingMode.HALF_DOWN) {
-//                    if (equidistant) {
-//                        assertEquals(p.toString(), rounded, p.a.toFloat(RoundingMode.DOWN));
-//                    }
-//                } else if (p.b == RoundingMode.HALF_UP) {
-//                    if (equidistant) {
-//                        assertEquals(p.toString(), rounded, p.a.toFloat(RoundingMode.UP));
-//                    }
-//                }
-//            }
-//        }
-//    }
 
     private static void propertiesEquals() {
         initialize();
