@@ -634,8 +634,8 @@ public final class Rational implements Comparable<Rational> {
     }
 
     /**
-     * Returns a BigDecimal exactly equal to {@code this}. Throws an {@code ArithmeticException} if {@code this} cannot
-     * be represented as a terminating decimal.
+     * Returns a {@code BigDecimal} exactly equal to {@code this}. Throws an {@code ArithmeticException} if
+     * {@code this} cannot be represented as a terminating decimal.
      *
      * <ul>
      *  <li>{@code this} must be a {@code Rational} whose decimal expansion is terminating; that is, its denominator
@@ -909,7 +909,18 @@ public final class Rational implements Comparable<Rational> {
     public float floatValue() {
         return floatValue(RoundingMode.HALF_EVEN);
     }
-    
+
+    /**
+     * Returns a {@code float} exactly equal to {@code this}. Throws an {@code ArithmeticException} if {@code this} is
+     * not exactly equal to a {@code float}.
+     *
+     * <ul>
+     *  <li>{@code this} must be a {@code Rational} equal to a {@code float}.</li>
+     *  <li>The result is not {@code NaN}, infinite, or negative 0.</li>
+     * </ul>
+     *
+     * @return {@code this}, in {@code float} form
+     */
     public float floatValueExact() {
         return floatValue(RoundingMode.UNNECESSARY);
     }
@@ -1045,7 +1056,18 @@ public final class Rational implements Comparable<Rational> {
     public double doubleValue() {
         return doubleValue(RoundingMode.HALF_EVEN);
     }
-    
+
+    /**
+     * Returns a {@code double} exactly equal to {@code this}. Throws an {@code ArithmeticException} if {@code this} is
+     * not exactly equal to a {@code double}.
+     *
+     * <ul>
+     *  <li>{@code this} must be a {@code Rational} equal to a {@code double}.</li>
+     *  <li>The result is not {@code NaN}, infinite, or negative 0.</li>
+     * </ul>
+     *
+     * @return {@code this}, in {@code double} form
+     */
     public double doubleValueExact() {
         return doubleValue(RoundingMode.UNNECESSARY);
     }
