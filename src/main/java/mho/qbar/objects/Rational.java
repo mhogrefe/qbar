@@ -822,8 +822,7 @@ public final class Rational implements Comparable<Rational> {
      *  {@code this} is greater than or equal to zero and less than or equal to {@code Float.MIN_VALUE}/2, positive
      *  zero is returned. If {@code this} is greater than or equal to –{@code Float.MIN_VALUE}/2 and less than zero,
      *  negative zero is returned. If {@code this} is greater than {@code Float.MAX_VALUE}, {@code Infinity} is
-     *  returned. If
-     *  {@code this} is less than –{@code Float.MAX_VALUE}, {@code Infinity} is returned.</li>
+     *  returned. If {@code this} is less than –{@code Float.MAX_VALUE}, {@code -Infinity} is returned.</li>
      * </ul>
      *
      * <ul>
@@ -969,8 +968,8 @@ public final class Rational implements Comparable<Rational> {
      *  returned. If there are two closest {@code double}s, the one with the unset lowest-order bit is returned. If
      *  {@code this} is greater than or equal to zero and less than or equal to {@code Double.MIN_VALUE}/2, positive
      *  zero is returned. If {@code this} is greater than or equal to –{@code Double.MIN_VALUE}/2 and less than zero,
-     *  negative zero is returned. If {@code this} is greater than {@code Double.MAX_VALUE}, Infinity is returned.
-     *  If {@code this} is less than –{@code Double.MAX_VALUE}, {@code -Infinity} is returned.</li>
+     *  negative zero is returned. If {@code this} is greater than {@code Double.MAX_VALUE}, Infinity is returned. If
+     *  {@code this} is less than –{@code Double.MAX_VALUE}, {@code -Infinity} is returned.</li>
      * </ul>
      *
      * <ul>
