@@ -90,6 +90,7 @@ public class RationalProperties {
             propertiesAbs();
             propertiesSignum();
             propertiesAdd();
+            compareImplementationsAdd();
             propertiesSubtract();
             propertiesMultiply_Rational_Rational();
             propertiesMultiply_BigInteger();
@@ -1743,15 +1744,23 @@ public class RationalProperties {
         }
     }
 
+    private static @NotNull Rational add_simplest(@NotNull Rational a, @NotNull Rational b) {
+        return of(
+                a.getNumerator().multiply(b.getDenominator()).add(a.getDenominator().multiply(b.getNumerator())),
+                a.getDenominator().multiply(b.getDenominator())
+        );
+    }
+
     private static void propertiesAdd() {
         initialize();
-        System.out.println("testing add(Rational, Rational) properties...");
+        System.out.println("testing add(Rational) properties...");
 
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
             assert p.a != null;
             assert p.b != null;
             Rational sum = p.a.add(p.b);
             validate(sum);
+            assertEquals(p.toString(), sum, add_simplest(p.a, p.b));
             assertEquals(p.toString(), sum, p.b.add(p.a));
         }
 
@@ -1769,6 +1778,27 @@ public class RationalProperties {
             Rational sum2 = t.a.add(t.b.add(t.c));
             assertEquals(t.toString(), sum1, sum2);
         }
+    }
+
+    private static void compareImplementationsAdd() {
+        initialize();
+        System.out.println("comparing add(Rational) implementations...");
+
+        long totalTime = 0;
+        for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
+            long time = System.nanoTime();
+            add_simplest(p.a, p.b);
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\tsimplest: " + ((double) totalTime) / 1e9 + " s");
+
+        totalTime = 0;
+        for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
+            long time = System.nanoTime();
+            p.a.add(p.b);
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\tstandard: " + ((double) totalTime) / 1e9 + " s");
     }
 
     private static void propertiesSubtract() {
