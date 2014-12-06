@@ -1190,7 +1190,7 @@ public class RationalTest {
             justBelowSubnormal.floatValue(RoundingMode.UNNECESSARY);
             fail();
         } catch (ArithmeticException ignored) {}
-        Rational belowNegativeMax = subtract(LARGEST_FLOAT.negate(), ONE);
+        Rational belowNegativeMax = LARGEST_FLOAT.negate().subtract(ONE);
         Rational negativeMaxSuccessor = ofExact(FloatUtils.successor(-Float.MAX_VALUE));
         if (negativeMaxSuccessor == null) {
             fail();
@@ -1433,7 +1433,7 @@ public class RationalTest {
         aeq(halfBelowSubnormal.floatValue(), 1.0E-40);
         aeq(justAboveSubnormal.floatValue(), 1.0E-40);
         aeq(justBelowSubnormal.floatValue(), 1.0E-40);
-        Rational belowNegativeMax = subtract(LARGEST_FLOAT.negate(), ONE);
+        Rational belowNegativeMax = LARGEST_FLOAT.negate().subtract(ONE);
         Rational negativeMaxSuccessor = ofExact(FloatUtils.successor(-Float.MAX_VALUE));
         if (negativeMaxSuccessor == null) {
             fail();
@@ -1561,7 +1561,7 @@ public class RationalTest {
             justBelowSubnormal.floatValueExact();
             fail();
         } catch (ArithmeticException ignored) {}
-        Rational belowNegativeMax = subtract(LARGEST_FLOAT.negate(), ONE);
+        Rational belowNegativeMax = LARGEST_FLOAT.negate().subtract(ONE);
         Rational negativeMaxSuccessor = ofExact(FloatUtils.successor(-Float.MAX_VALUE));
         if (negativeMaxSuccessor == null) {
             fail();
@@ -1854,7 +1854,7 @@ public class RationalTest {
             justBelowSubnormal.doubleValue(RoundingMode.UNNECESSARY);
             fail();
         } catch (ArithmeticException ignored) {}
-        Rational belowNegativeMax = subtract(LARGEST_DOUBLE.negate(), ONE);
+        Rational belowNegativeMax = LARGEST_DOUBLE.negate().subtract(ONE);
         Rational negativeMaxSuccessor = ofExact(FloatUtils.successor(-Double.MAX_VALUE));
         if (negativeMaxSuccessor == null) {
             fail();
@@ -2097,7 +2097,7 @@ public class RationalTest {
         aeq(halfBelowSubnormal.doubleValue(), 9.9999999999995E-311);
         aeq(justAboveSubnormal.doubleValue(), 1.0E-310);
         aeq(justBelowSubnormal.doubleValue(), 1.0E-310);
-        Rational belowNegativeMax = subtract(LARGEST_DOUBLE.negate(), ONE);
+        Rational belowNegativeMax = LARGEST_DOUBLE.negate().subtract(ONE);
         Rational negativeMaxSuccessor = ofExact(FloatUtils.successor(-Double.MAX_VALUE));
         if (negativeMaxSuccessor == null) {
             fail();
@@ -2226,7 +2226,7 @@ public class RationalTest {
             justBelowSubnormal.doubleValueExact();
             fail();
         } catch (ArithmeticException ignored) {}
-        Rational belowNegativeMax = subtract(LARGEST_DOUBLE.negate(), ONE);
+        Rational belowNegativeMax = LARGEST_DOUBLE.negate().subtract(ONE);
         Rational negativeMaxSuccessor = ofExact(FloatUtils.successor(-Double.MAX_VALUE));
         if (negativeMaxSuccessor == null) {
             fail();
@@ -2383,28 +2383,28 @@ public class RationalTest {
 
     @Test
     public void testSubtract() {
-        aeq(subtract(read("1/2").get(), read("1/3").get()), "1/6");
-        aeq(subtract(read("1/2").get(), read("-1/3").get()), "5/6");
-        aeq(subtract(read("-1/2").get(), read("1/3").get()), "-5/6");
-        aeq(subtract(read("-1/2").get(), read("-1/3").get()), "-1/6");
-        aeq(subtract(read("2").get(), read("1/5").get()), "9/5");
-        aeq(subtract(read("2").get(), read("-1/5").get()), "11/5");
-        aeq(subtract(read("-2").get(), read("1/5").get()), "-11/5");
-        aeq(subtract(read("-2").get(), read("-1/5").get()), "-9/5");
-        aeq(subtract(read("2").get(), read("5").get()), "-3");
-        aeq(subtract(read("2").get(), read("-5").get()), "7");
-        aeq(subtract(read("-2").get(), read("5").get()), "-7");
-        aeq(subtract(read("-2").get(), read("-5").get()), "3");
-        assertTrue(subtract(read("8/7").get(), read("1/7").get()) == ONE);
-        assertTrue(subtract(read("6/7").get(), read("6/7").get()) == ZERO);
-        aeq(subtract(read("1/2").get(), ZERO), "1/2");
-        aeq(subtract(read("-1/2").get(), ZERO), "-1/2");
-        aeq(subtract(read("1/2").get(), ONE), "-1/2");
-        aeq(subtract(read("-1/2").get(), ONE), "-3/2");
-        assertTrue(subtract(ZERO, ZERO) == ZERO);
-        aeq(subtract(ZERO, ONE), "-1");
-        assertTrue(subtract(ONE, ZERO) == ONE);
-        assertTrue(subtract(ONE, ONE) == ZERO);
+        aeq(read("1/2").get().subtract(read("1/3").get()), "1/6");
+        aeq(read("1/2").get().subtract(read("-1/3").get()), "5/6");
+        aeq(read("-1/2").get().subtract(read("1/3").get()), "-5/6");
+        aeq(read("-1/2").get().subtract(read("-1/3").get()), "-1/6");
+        aeq(read("2").get().subtract(read("1/5").get()), "9/5");
+        aeq(read("2").get().subtract(read("-1/5").get()), "11/5");
+        aeq(read("-2").get().subtract(read("1/5").get()), "-11/5");
+        aeq(read("-2").get().subtract(read("-1/5").get()), "-9/5");
+        aeq(read("2").get().subtract(read("5").get()), "-3");
+        aeq(read("2").get().subtract(read("-5").get()), "7");
+        aeq(read("-2").get().subtract(read("5").get()), "-7");
+        aeq(read("-2").get().subtract(read("-5").get()), "3");
+        assertTrue(read("8/7").get().subtract(read("1/7").get()) == ONE);
+        assertTrue(read("6/7").get().subtract(read("6/7").get()) == ZERO);
+        aeq(read("1/2").get().subtract(ZERO), "1/2");
+        aeq(read("-1/2").get().subtract(ZERO), "-1/2");
+        aeq(read("1/2").get().subtract(ONE), "-1/2");
+        aeq(read("-1/2").get().subtract(ONE), "-3/2");
+        assertTrue(ZERO.subtract(ZERO) == ZERO);
+        aeq(ZERO.subtract(ONE), "-1");
+        assertTrue(ONE.subtract(ZERO) == ONE);
+        assertTrue(ONE.subtract(ONE) == ZERO);
     }
 
     @Test
@@ -2575,7 +2575,7 @@ public class RationalTest {
         try {
             toList(delta(readRationalListWithNulls("[10, null, 12]").get()));
             fail();
-        } catch (IllegalArgumentException ignored) {}
+        } catch (NullPointerException ignored) {}
     }
 
     @Test

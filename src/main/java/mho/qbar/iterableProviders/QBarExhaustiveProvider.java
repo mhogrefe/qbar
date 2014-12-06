@@ -330,7 +330,7 @@ public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIt
         if (!a.getLower().isPresent() && !a.getUpper().isPresent()) {
             return rationals();
         } else if (!a.getLower().isPresent()) {
-            return map(r -> Rational.subtract(a.getUpper().get(), r), nonNegativeRationals());
+            return map(r -> a.getUpper().get().subtract(r), nonNegativeRationals());
         } else if (!a.getUpper().isPresent()) {
             return map(r -> r.add(a.getLower().get()), nonNegativeRationals());
         } else {

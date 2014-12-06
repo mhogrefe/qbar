@@ -722,7 +722,7 @@ public final class Rational implements Comparable<Rational> {
             fraction = shiftLeft(149);
             adjustedExponent = 0;
         } else {
-            fraction = subtract(shiftRight(exponent), ONE).shiftLeft(23);
+            fraction = shiftRight(exponent).subtract(ONE).shiftLeft(23);
             adjustedExponent = exponent + 127;
         }
         float loFloat = Float.intBitsToFloat((adjustedExponent << 23) + fraction.floor().intValueExact());
@@ -769,7 +769,7 @@ public final class Rational implements Comparable<Rational> {
             fraction = shiftLeft(1074);
             adjustedExponent = 0;
         } else {
-            fraction = subtract(shiftRight(exponent), ONE).shiftLeft(52);
+            fraction = shiftRight(exponent).subtract(ONE).shiftLeft(52);
             adjustedExponent = exponent + 1023;
         }
         double loDouble = Double.longBitsToDouble(((long) adjustedExponent << 52) + fraction.floor().longValue());
@@ -1172,20 +1172,19 @@ public final class Rational implements Comparable<Rational> {
     }
 
     /**
-     * Returns the difference of {@code a} and {@code b}.
+     * Returns the difference of {@code this} and {@code that}.
      *
      * <ul>
-     *  <li>{@code a} cannot be null.</li>
-     *  <li>{@code b} cannot be null.</li>
+     *  <li>{@code this} may be any {@code Rational}.</li>
+     *  <li>{@code that} cannot be null.</li>
      *  <li>The result is not null.</li>
      * </ul>
      *
-     * @param a the first {@code Rational}
-     * @param b the second {@code Rational}
-     * @return {@code a}–{@code b}
+     * @param that the {@code Rational} subtracted from {@code this}
+     * @return {@code this}–{@code that}
      */
-    public static @NotNull Rational subtract(@NotNull Rational a, @NotNull Rational b) {
-        return a.add(b.negate());
+    public @NotNull Rational subtract(@NotNull Rational that) {
+        return add(that.negate());
     }
 
     /**
@@ -1359,7 +1358,7 @@ public final class Rational implements Comparable<Rational> {
             throw new IllegalArgumentException("cannot get delta of empty Iterable");
         if (head(xs) == null)
             throw new NullPointerException();
-        return adjacentPairsWith(p -> subtract(p.b, p.a), xs);
+        return adjacentPairsWith(p -> p.b.subtract(p.a), xs);
     }
 
     /**
@@ -1475,7 +1474,7 @@ public final class Rational implements Comparable<Rational> {
      */
     public @NotNull Rational fractionalPart() {
         if (denominator.equals(BigInteger.ONE)) return ZERO;
-        return subtract(this, of(floor()));
+        return subtract(of(floor()));
     }
 
     //todo finish fixing JavaDoc
@@ -1583,7 +1582,7 @@ public final class Rational implements Comparable<Rational> {
         while (true) {
             BigInteger floor = remainder.floor();
             continuedFraction.add(floor);
-            remainder = subtract(remainder, of(floor));
+            remainder = remainder.subtract(of(floor));
             if (remainder == ZERO) break;
             remainder = remainder.invert();
         }
@@ -1667,7 +1666,7 @@ public final class Rational implements Comparable<Rational> {
             throw new IllegalArgumentException("this cannot be negative");
         BigInteger floor = floor();
         List<BigInteger> beforeDecimal = toList(MathUtils.digits(base, floor));
-        Rational fractionalPart = subtract(this, of(floor));
+        Rational fractionalPart = subtract(of(floor));
         BigInteger numerator = fractionalPart.numerator;
         BigInteger denominator = fractionalPart.denominator;
         BigInteger remainder = numerator.multiply(base);

@@ -201,7 +201,7 @@ public final class Interval implements Comparable<Interval> {
      */
     public @NotNull Optional<Rational> diameter() {
         if (lower == null || upper == null) return Optional.empty();
-        return Optional.of(Rational.subtract(upper, lower));
+        return Optional.of(upper.subtract(lower));
     }
 
     /**
@@ -492,7 +492,7 @@ public final class Interval implements Comparable<Interval> {
     public static @NotNull Interval roundingPreimage(@NotNull BigDecimal bd) {
         Rational center = Rational.of(bd);
         Rational maxAbsoluteError = Rational.of(10).pow(-bd.scale()).shiftRight(1);
-        return new Interval(Rational.subtract(center, maxAbsoluteError), center.add(maxAbsoluteError));
+        return new Interval(center.subtract(maxAbsoluteError), center.add(maxAbsoluteError));
     }
 
     /**

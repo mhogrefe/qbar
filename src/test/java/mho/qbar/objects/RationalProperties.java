@@ -353,7 +353,7 @@ public class RationalProperties {
             assert p.b != null;
             BigInteger rounded = p.a.bigIntegerValue(p.b);
             assertTrue(p.toString(), rounded.equals(BigInteger.ZERO) || rounded.signum() == p.a.signum());
-            assertTrue(p.toString(), lt(subtract(p.a, of(rounded)).abs(), ONE));
+            assertTrue(p.toString(), lt(p.a.subtract(of(rounded)).abs(), ONE));
         }
 
         for (BigInteger i : take(LIMIT, P.bigIntegers())) {
@@ -365,9 +365,9 @@ public class RationalProperties {
             assertEquals(r.toString(), r.bigIntegerValue(RoundingMode.CEILING), r.ceiling());
             assertTrue(r.toString(), le(of(r.bigIntegerValue(RoundingMode.DOWN)).abs(), r.abs()));
             assertTrue(r.toString(), ge(of(r.bigIntegerValue(RoundingMode.UP)).abs(), r.abs()));
-            assertTrue(r.toString(), le(subtract(r, of(r.bigIntegerValue(RoundingMode.HALF_DOWN))).abs(), of(1, 2)));
-            assertTrue(r.toString(), le(subtract(r, of(r.bigIntegerValue(RoundingMode.HALF_UP))).abs(), of(1, 2)));
-            assertTrue(r.toString(), le(subtract(r, of(r.bigIntegerValue(RoundingMode.HALF_EVEN))).abs(), of(1, 2)));
+            assertTrue(r.toString(), le(r.subtract(of(r.bigIntegerValue(RoundingMode.HALF_DOWN))).abs(), of(1, 2)));
+            assertTrue(r.toString(), le(r.subtract(of(r.bigIntegerValue(RoundingMode.HALF_UP))).abs(), of(1, 2)));
+            assertTrue(r.toString(), le(r.subtract(of(r.bigIntegerValue(RoundingMode.HALF_EVEN))).abs(), of(1, 2)));
         }
 
         Iterable<Rational> rs = filter(r -> lt(r.abs().fractionalPart(), of(1, 2)), P.rationals());
@@ -411,7 +411,7 @@ public class RationalProperties {
         for (Rational r : take(LIMIT, P.rationals())) {
             BigInteger rounded = r.bigIntegerValue();
             assertTrue(r.toString(), rounded.equals(BigInteger.ZERO) || rounded.signum() == r.signum());
-            assertTrue(r.toString(), le(subtract(r, of(r.bigIntegerValue())).abs(), of(1, 2)));
+            assertTrue(r.toString(), le(r.subtract(of(r.bigIntegerValue())).abs(), of(1, 2)));
         }
 
         Iterable<Rational> rs = filter(r -> lt(r.abs().fractionalPart(), of(1, 2)), P.rationals());
@@ -746,7 +746,7 @@ public class RationalProperties {
             BigDecimal halfDown = r.bigDecimalValue(p.b, RoundingMode.HALF_DOWN);
             BigDecimal halfUp = r.bigDecimalValue(p.b, RoundingMode.HALF_UP);
             BigDecimal halfEven = r.bigDecimalValue(p.b, RoundingMode.HALF_EVEN);
-            boolean closerToDown = lt(subtract(r, of(down)).abs(), subtract(r, of(up)).abs());
+            boolean closerToDown = lt(r.subtract(of(down)).abs(), r.subtract(of(up)).abs());
             assertEquals(p.toString(), halfDown, closerToDown ? down : up);
             assertEquals(p.toString(), halfUp, closerToDown ? down : up);
             assertEquals(p.toString(), halfEven, closerToDown ? down : up);
@@ -879,7 +879,7 @@ public class RationalProperties {
             BigDecimal down = r.bigDecimalValue(p.b, RoundingMode.DOWN);
             BigDecimal up = r.bigDecimalValue(p.b, RoundingMode.UP);
             BigDecimal halfEven = r.bigDecimalValue(p.b);
-            boolean closerToDown = lt(subtract(r, of(down)).abs(), subtract(r, of(up)).abs());
+            boolean closerToDown = lt(r.subtract(of(down)).abs(), r.subtract(of(up)).abs());
             assertEquals(p.toString(), halfEven, closerToDown ? down : up);
         }
 
@@ -975,8 +975,8 @@ public class RationalProperties {
         float below = r.floatValue(RoundingMode.FLOOR);
         float above = r.floatValue(RoundingMode.CEILING);
         if (below == above || Float.isInfinite(below) || Float.isInfinite(above)) return false;
-        Rational belowDistance = subtract(r, ofExact(below));
-        Rational aboveDistance = subtract(ofExact(above), r);
+        Rational belowDistance = r.subtract(ofExact(below));
+        Rational aboveDistance = ofExact(above).subtract(r);
         return belowDistance.equals(aboveDistance);
     }
 
@@ -1147,8 +1147,8 @@ public class RationalProperties {
         for (Rational r : take(LIMIT, notMidpoints)) {
             float below = r.floatValue(RoundingMode.FLOOR);
             float above = r.floatValue(RoundingMode.CEILING);
-            Rational belowDistance = subtract(r, ofExact(below));
-            Rational aboveDistance = subtract(ofExact(above), r);
+            Rational belowDistance = r.subtract(ofExact(below));
+            Rational aboveDistance = ofExact(above).subtract(r);
             float closest = lt(belowDistance, aboveDistance) ? below : above;
             aeq(r.toString(), r.floatValue(RoundingMode.HALF_DOWN), closest);
             aeq(r.toString(), r.floatValue(RoundingMode.HALF_UP), closest);
@@ -1261,8 +1261,8 @@ public class RationalProperties {
         for (Rational r : take(LIMIT, notMidpoints)) {
             float below = r.floatValue(RoundingMode.FLOOR);
             float above = r.floatValue(RoundingMode.CEILING);
-            Rational belowDistance = subtract(r, ofExact(below));
-            Rational aboveDistance = subtract(ofExact(above), r);
+            Rational belowDistance = r.subtract(ofExact(below));
+            Rational aboveDistance = ofExact(above).subtract(r);
             float closest = lt(belowDistance, aboveDistance) ? below : above;
             aeq(r.toString(), r.floatValue(), closest);
         }
@@ -1316,8 +1316,8 @@ public class RationalProperties {
         double below = r.doubleValue(RoundingMode.FLOOR);
         double above = r.doubleValue(RoundingMode.CEILING);
         if (below == above || Double.isInfinite(below) || Double.isInfinite(above)) return false;
-        Rational belowDistance = subtract(r, ofExact(below));
-        Rational aboveDistance = subtract(ofExact(above), r);
+        Rational belowDistance = r.subtract(ofExact(below));
+        Rational aboveDistance = ofExact(above).subtract(r);
         return belowDistance.equals(aboveDistance);
     }
 
@@ -1488,8 +1488,8 @@ public class RationalProperties {
         for (Rational r : take(LIMIT, notMidpoints)) {
             double below = r.doubleValue(RoundingMode.FLOOR);
             double above = r.doubleValue(RoundingMode.CEILING);
-            Rational belowDistance = subtract(r, ofExact(below));
-            Rational aboveDistance = subtract(ofExact(above), r);
+            Rational belowDistance = r.subtract(ofExact(below));
+            Rational aboveDistance = ofExact(above).subtract(r);
             double closest = lt(belowDistance, aboveDistance) ? below : above;
             aeq(r.toString(), r.doubleValue(RoundingMode.HALF_DOWN), closest);
             aeq(r.toString(), r.doubleValue(RoundingMode.HALF_UP), closest);
@@ -1602,8 +1602,8 @@ public class RationalProperties {
         for (Rational r : take(LIMIT, notMidpoints)) {
             double below = r.doubleValue(RoundingMode.FLOOR);
             double above = r.doubleValue(RoundingMode.CEILING);
-            Rational belowDistance = subtract(r, ofExact(below));
-            Rational aboveDistance = subtract(ofExact(above), r);
+            Rational belowDistance = r.subtract(ofExact(below));
+            Rational aboveDistance = ofExact(above).subtract(r);
             double closest = lt(belowDistance, aboveDistance) ? below : above;
             aeq(r.toString(), r.doubleValue(), closest);
         }
@@ -1805,16 +1805,16 @@ public class RationalProperties {
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
             assert p.a != null;
             assert p.b != null;
-            Rational difference = subtract(p.a, p.b);
+            Rational difference = p.a.subtract(p.b);
             validate(difference);
-            assertEquals(p.toString(), difference, subtract(p.b, p.a).negate());
+            assertEquals(p.toString(), difference, p.b.subtract(p.a).negate());
             assertEquals(p.toString(), p.a, difference.add(p.b));
         }
 
         for (Rational r : take(LIMIT, P.rationals())) {
-            assertEquals(r.toString(), subtract(ZERO, r), r.negate());
-            assertEquals(r.toString(), subtract(r, ZERO), r);
-            assertTrue(r.toString(), subtract(r, r) == ZERO);
+            assertEquals(r.toString(), ZERO.subtract(r), r.negate());
+            assertEquals(r.toString(), r.subtract(ZERO), r);
+            assertTrue(r.toString(), r.subtract(r) == ZERO);
         }
     }
 
@@ -2158,7 +2158,7 @@ public class RationalProperties {
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
             assert p.a != null;
             assert p.b != null;
-            aeq(p.toString(), delta(Arrays.asList(p.a, p.b)), Arrays.asList(subtract(p.b, p.a)));
+            aeq(p.toString(), delta(Arrays.asList(p.a, p.b)), Arrays.asList(p.b.subtract(p.a)));
         }
 
         Iterable<List<Rational>> failRss = map(p -> {
@@ -2323,7 +2323,7 @@ public class RationalProperties {
         for (Rational r : take(LIMIT, P.rationals())) {
             BigInteger floor = r.floor();
             assertTrue(r.toString(), le(of(floor), r));
-            assertTrue(r.toString(), le(subtract(r, of(floor)), ONE));
+            assertTrue(r.toString(), le(r.subtract(of(floor)), ONE));
         }
 
         for (BigInteger i : take(LIMIT, P.bigIntegers())) {
@@ -2338,7 +2338,7 @@ public class RationalProperties {
         for (Rational r : take(LIMIT, P.rationals())) {
             BigInteger ceiling = r.ceiling();
             assertTrue(r.toString(), ge(of(ceiling), r));
-            assertTrue(r.toString(), le(subtract(of(ceiling), r), ONE));
+            assertTrue(r.toString(), le(of(ceiling).subtract(r), ONE));
         }
 
         for (BigInteger i : take(LIMIT, P.bigIntegers())) {
@@ -2383,7 +2383,7 @@ public class RationalProperties {
             validate(rounded);
             assertEquals(t.toString(), t.b.mod(rounded.getDenominator()), BigInteger.ZERO);
             assertTrue(t.toString(), rounded == ZERO || rounded.signum() == t.a.signum());
-            assertTrue(t.toString(), lt(subtract(t.a, rounded).abs(), of(BigInteger.ONE, t.b)));
+            assertTrue(t.toString(), lt(t.a.subtract(rounded).abs(), of(BigInteger.ONE, t.b)));
         }
 
         Iterable<Pair<Rational, RoundingMode>> ps1 = filter(
@@ -2426,21 +2426,21 @@ public class RationalProperties {
             assertTrue(
                     p.toString(),
                     le(
-                            subtract(p.a, p.a.roundToDenominator(p.b, RoundingMode.HALF_DOWN)).abs(),
+                            p.a.subtract(p.a.roundToDenominator(p.b, RoundingMode.HALF_DOWN)).abs(),
                             of(p.b).shiftLeft(1).invert()
                     )
             );
             assertTrue(
                     p.toString(),
                     le(
-                            subtract(p.a, p.a.roundToDenominator(p.b, RoundingMode.HALF_UP)).abs(),
+                            p.a.subtract(p.a.roundToDenominator(p.b, RoundingMode.HALF_UP)).abs(),
                             of(p.b).shiftLeft(1).invert()
                     )
             );
             assertTrue(
                     p.toString(),
                     le(
-                            subtract(p.a, p.a.roundToDenominator(p.b, RoundingMode.HALF_EVEN)).abs(),
+                            p.a.subtract(p.a.roundToDenominator(p.b, RoundingMode.HALF_EVEN)).abs(),
                             of(p.b).shiftLeft(1).invert()
                     )
             );
@@ -2616,7 +2616,7 @@ public class RationalProperties {
             int compare = p.a.compareTo(p.b);
             assertTrue(p.toString(), compare == -1 || compare == 0 || compare == 1);
             assertEquals(p.toString(), p.b.compareTo(p.a), -compare);
-            assertEquals(p.toString(), subtract(p.a, p.b).signum(), compare);
+            assertEquals(p.toString(), p.a.subtract(p.b).signum(), compare);
         }
 
         for (Rational r : take(LIMIT, P.rationals())) {
