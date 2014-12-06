@@ -1204,12 +1204,7 @@ public final class Rational implements Comparable<Rational> {
         if (this == ZERO || that == ZERO) return ZERO;
         if (this == ONE) return that;
         if (that == ONE) return this;
-        BigInteger g1 = numerator.gcd(that.denominator);
-        BigInteger g2 = that.numerator.gcd(denominator);
-        BigInteger mn = numerator.divide(g1).multiply(that.numerator.divide(g2));
-        BigInteger md = denominator.divide(g2).multiply(that.denominator.divide(g1));
-        if (mn.equals(md)) return ONE;
-        return new Rational(mn, md);
+        return of(numerator.multiply(that.getNumerator()), denominator.multiply(that.getDenominator()));
     }
 
     /**
