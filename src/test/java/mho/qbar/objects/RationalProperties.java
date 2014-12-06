@@ -86,6 +86,7 @@ public class RationalProperties {
             propertiesDoubleValueExact();
             propertiesNegate();
             propertiesInvert();
+            compareImplementationsInvert();
             propertiesAbs();
             propertiesSignum();
             propertiesAdd();
@@ -1672,6 +1673,10 @@ public class RationalProperties {
         }
     }
 
+    private static @NotNull Rational invert_simplest(@NotNull Rational r) {
+        return of(r.getDenominator(), r.getNumerator());
+    }
+
     private static void propertiesInvert() {
         initialize();
         System.out.println("testing invert() properties...");
@@ -1680,6 +1685,7 @@ public class RationalProperties {
         for (Rational r : take(LIMIT, rs)) {
             Rational inverseR = r.invert();
             validate(inverseR);
+            assertEquals(r.toString(), inverseR, invert_simplest(r));
             assertEquals(r.toString(), r, inverseR.invert());
             assertTrue(multiply(r, inverseR) == ONE);
             assertTrue(inverseR != ZERO);
@@ -1690,6 +1696,28 @@ public class RationalProperties {
             Rational inverseR = r.invert();
             assertTrue(r.toString(), !r.equals(inverseR));
         }
+    }
+
+    private static void compareImplementationsInvert() {
+        initialize();
+        System.out.println("comparing invert() implementations...");
+
+        long totalTime = 0;
+        Iterable<Rational> rs = filter(r -> r != ZERO, P.rationals());
+        for (Rational r : take(LIMIT, rs)) {
+            long time = System.nanoTime();
+            invert_simplest(r);
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\tsimplest: " + ((double) totalTime) / 1e9 + " s");
+
+        totalTime = 0;
+        for (Rational r : take(LIMIT, rs)) {
+            long time = System.nanoTime();
+            r.invert();
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\tstandard: " + ((double) totalTime) / 1e9 + " s");
     }
 
     private static void propertiesAbs() {
