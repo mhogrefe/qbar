@@ -81,6 +81,9 @@ public class RationalProperties {
             propertiesFloatValue_RoundingMode();
             propertiesFloatValue();
             propertiesFloatValueExact();
+            propertiesDoubleValue_RoundingMode();
+            propertiesDoubleValue();
+            propertiesDoubleValueExact();
             propertiesNegate();
             propertiesInvert();
             propertiesAbs();
@@ -1305,6 +1308,347 @@ public class RationalProperties {
         for (Rational r : take(LIMIT, rsFail)) {
             try {
                 r.floatValueExact();
+                fail(r.toString());
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private static boolean doubleEquidistant(@NotNull Rational r) {
+        double below = r.doubleValue(RoundingMode.FLOOR);
+        double above = r.doubleValue(RoundingMode.CEILING);
+        if (below == above || Double.isInfinite(below) || Double.isInfinite(above)) return false;
+        Rational belowDistance = subtract(r, ofExact(below));
+        Rational aboveDistance = subtract(ofExact(above), r);
+        return belowDistance.equals(aboveDistance);
+    }
+
+    private static void propertiesDoubleValue_RoundingMode() {
+        initialize();
+        System.out.println("testing doubleValue(RoundingMode) properties...");
+
+        Iterable<Pair<Rational, RoundingMode>> ps = filter(
+                p -> p.b != RoundingMode.UNNECESSARY || p.a.equals(ofExact(p.a.doubleValue(RoundingMode.FLOOR))),
+                P.pairs(P.rationals(), P.roundingModes())
+        );
+        for (Pair<Rational, RoundingMode> p : take(LIMIT, ps)) {
+            assert p.a != null;
+            assert p.b != null;
+            double rounded = p.a.doubleValue(p.b);
+            assertTrue(p.toString(), !Double.isNaN(rounded));
+            assertTrue(p.toString(), rounded == 0.0 || Math.signum(rounded) == p.a.signum());
+        }
+
+        Iterable<Rational> rs = map(
+                Rational::ofExact,
+                filter(f -> !Double.isNaN(f) && Double.isFinite(f) && !f.equals(-0.0f), P.doubles())
+        );
+        for (Rational r : take(LIMIT, rs)) {
+            double rounded = r.doubleValue(RoundingMode.UNNECESSARY);
+            assertEquals(r.toString(), r, ofExact(rounded));
+            assertTrue(r.toString(), Double.isFinite(rounded));
+            assertTrue(r.toString(), !new Double(rounded).equals(-0.0f));
+        }
+
+        rs = filter(r -> !r.equals(LARGEST_DOUBLE), P.rationals(Interval.of(LARGEST_DOUBLE.negate(), LARGEST_DOUBLE)));
+        for (Rational r : take(LIMIT, rs)) {
+            double rounded = r.doubleValue(RoundingMode.FLOOR);
+            double successor = FloatUtils.successor(rounded);
+            assertTrue(r.toString(), le(ofExact(rounded), r));
+            assertTrue(r.toString(), gt(ofExact(successor), r));
+            assertTrue(r.toString(), rounded < 0 || Double.isFinite(rounded));
+            assertTrue(r.toString(), !new Double(rounded).equals(-0.0f));
+        }
+
+        rs = filter(
+                r -> !r.equals(LARGEST_DOUBLE.negate()),
+                P.rationals(Interval.of(LARGEST_DOUBLE.negate(), LARGEST_DOUBLE))
+        );
+        for (Rational r : take(LIMIT, rs)) {
+            double rounded = r.doubleValue(RoundingMode.CEILING);
+            double predecessor = FloatUtils.predecessor(rounded);
+            assertTrue(r.toString(), ge(ofExact(rounded), r));
+            assertTrue(r.toString(), lt(ofExact(predecessor), r));
+            assertTrue(r.toString(), rounded > 0 || Double.isFinite(rounded));
+        }
+
+        rs = P.rationals(Interval.of(LARGEST_DOUBLE.negate(), LARGEST_DOUBLE));
+        for (Rational r : take(LIMIT, rs)) {
+            double rounded = r.doubleValue(RoundingMode.DOWN);
+            assertTrue(r.toString(), le(ofExact(rounded).abs(), r.abs()));
+            assertTrue(r.toString(), Double.isFinite(rounded));
+        }
+
+        rs = filter(r -> r != ZERO, P.rationals(Interval.of(LARGEST_DOUBLE.negate(), LARGEST_DOUBLE)));
+        for (Rational r : take(LIMIT, rs)) {
+            double rounded = r.doubleValue(RoundingMode.DOWN);
+            double successor = FloatUtils.successor(rounded);
+            double predecessor = FloatUtils.predecessor(rounded);
+            double down = r.signum() == -1 ? successor : predecessor;
+            assertTrue(r.toString(), lt(ofExact(down).abs(), r.abs()));
+        }
+
+        rs = filter(
+                r -> !r.abs().equals(LARGEST_DOUBLE),
+                P.rationals(Interval.of(LARGEST_DOUBLE.negate(), LARGEST_DOUBLE))
+        );
+        for (Rational r : take(LIMIT, rs)) {
+            assertTrue(r.toString(), !new Double(r.doubleValue(RoundingMode.UP)).equals(-0.0f));
+        }
+
+        rs = filter(r -> !r.equals(SMALLEST_DOUBLE), P.rationals(Interval.of(ZERO, SMALLEST_DOUBLE)));
+        for (Rational r : take(LIMIT, rs)) {
+            aeq(r.toString(), r.doubleValue(RoundingMode.FLOOR), 0.0f);
+            aeq(r.toString(), r.doubleValue(RoundingMode.DOWN), 0.0f);
+
+            double rounded = r.doubleValue(RoundingMode.UP);
+            double successor = FloatUtils.successor(rounded);
+            double predecessor = FloatUtils.predecessor(rounded);
+            double up = r.signum() == -1 ? predecessor : successor;
+            assertTrue(r.toString(), gt(ofExact(up).abs(), r.abs()));
+        }
+
+        rs = filter(
+                r -> !r.equals(LARGEST_DOUBLE.negate()),
+                P.rationals(Interval.lessThanOrEqualTo(LARGEST_DOUBLE.negate()))
+        );
+        for (Rational r : take(LIMIT, rs)) {
+            double floor = r.doubleValue(RoundingMode.FLOOR);
+            aeq(r.toString(), floor, Double.NEGATIVE_INFINITY);
+
+            double up = r.doubleValue(RoundingMode.UP);
+            aeq(r.toString(), up, Double.NEGATIVE_INFINITY);
+
+            double halfUp = r.doubleValue(RoundingMode.HALF_UP);
+            aeq(r.toString(), halfUp, Double.NEGATIVE_INFINITY);
+
+            double halfEven = r.doubleValue(RoundingMode.HALF_EVEN);
+            aeq(r.toString(), halfEven, Double.NEGATIVE_INFINITY);
+        }
+
+        rs = P.rationals(Interval.greaterThanOrEqualTo(LARGEST_DOUBLE));
+        for (Rational r : take(LIMIT, rs)) {
+            aeq(r.toString(), r.doubleValue(RoundingMode.FLOOR), Double.MAX_VALUE);
+            aeq(r.toString(), r.doubleValue(RoundingMode.DOWN), Double.MAX_VALUE);
+            aeq(r.toString(), r.doubleValue(RoundingMode.HALF_DOWN), Double.MAX_VALUE);
+        }
+
+        rs = filter(
+                r -> r != ZERO && !r.equals(SMALLEST_DOUBLE.negate()),
+                P.rationals(Interval.of(SMALLEST_DOUBLE.negate(), ZERO))
+        );
+        for (Rational r : take(LIMIT, rs)) {
+            aeq(r.toString(), r.doubleValue(RoundingMode.CEILING), -0.0f);
+            aeq(r.toString(), r.doubleValue(RoundingMode.DOWN), -0.0f);
+        }
+
+        rs = filter(r -> !r.equals(LARGEST_DOUBLE), P.rationals(Interval.greaterThanOrEqualTo(LARGEST_DOUBLE)));
+        for (Rational r : take(LIMIT, rs)) {
+            double ceiling = r.doubleValue(RoundingMode.CEILING);
+            aeq(r.toString(), ceiling, Double.POSITIVE_INFINITY);
+
+            double up = r.doubleValue(RoundingMode.UP);
+            aeq(r.toString(), up, Double.POSITIVE_INFINITY);
+
+            double halfUp = r.doubleValue(RoundingMode.HALF_UP);
+            aeq(r.toString(), halfUp, Double.POSITIVE_INFINITY);
+
+            double halfEven = r.doubleValue(RoundingMode.HALF_EVEN);
+            aeq(r.toString(), halfEven, Double.POSITIVE_INFINITY);
+        }
+
+        rs = P.rationals(Interval.lessThanOrEqualTo(LARGEST_DOUBLE.negate()));
+        for (Rational r : take(LIMIT, rs)) {
+            aeq(r.toString(), r.doubleValue(RoundingMode.CEILING), -Double.MAX_VALUE);
+            aeq(r.toString(), r.doubleValue(RoundingMode.DOWN), -Double.MAX_VALUE);
+            aeq(r.toString(), r.doubleValue(RoundingMode.HALF_DOWN), -Double.MAX_VALUE);
+        }
+
+        Iterable<Rational> midpoints = map(
+                f -> {
+                    Rational lo = ofExact(f);
+                    Rational hi = ofExact(FloatUtils.successor(f));
+                    assert lo != null;
+                    assert hi != null;
+                    return add(lo, hi).shiftRight(1);
+                },
+                filter(f -> !f.equals(-0.0f) && f != Double.MAX_VALUE, P.ordinaryDoubles())
+        );
+        for (Rational r : take(LIMIT, midpoints)) {
+            double down = r.doubleValue(RoundingMode.DOWN);
+            double up = r.doubleValue(RoundingMode.UP);
+            aeq(r.toString(), r.doubleValue(RoundingMode.HALF_DOWN), down);
+            aeq(r.toString(), r.doubleValue(RoundingMode.HALF_UP), up);
+            double halfEven = r.doubleValue(RoundingMode.HALF_EVEN);
+            assertTrue(r.toString(), ((Double.doubleToLongBits(down) & 1) == 0 ? down : up) == halfEven);
+        }
+
+        Iterable<Rational> notMidpoints = filter(
+                r -> ge(r, LARGEST_DOUBLE.negate()) && le(r, LARGEST_DOUBLE) && !doubleEquidistant(r),
+                P.rationals()
+        );
+        for (Rational r : take(LIMIT, notMidpoints)) {
+            double below = r.doubleValue(RoundingMode.FLOOR);
+            double above = r.doubleValue(RoundingMode.CEILING);
+            Rational belowDistance = subtract(r, ofExact(below));
+            Rational aboveDistance = subtract(ofExact(above), r);
+            double closest = lt(belowDistance, aboveDistance) ? below : above;
+            aeq(r.toString(), r.doubleValue(RoundingMode.HALF_DOWN), closest);
+            aeq(r.toString(), r.doubleValue(RoundingMode.HALF_UP), closest);
+            aeq(r.toString(), r.doubleValue(RoundingMode.HALF_EVEN), closest);
+        }
+
+        rs = P.rationals(Interval.of(ZERO, SMALLEST_DOUBLE.shiftRight(1)));
+        for (Rational r : take(LIMIT, rs)) {
+            aeq(r.toString(), r.doubleValue(RoundingMode.HALF_DOWN), 0.0f);
+            aeq(r.toString(), r.doubleValue(RoundingMode.HALF_EVEN), 0.0f);
+        }
+
+        rs = filter(r -> r != ZERO, P.rationals(Interval.of(SMALLEST_DOUBLE.shiftRight(1).negate(), ZERO)));
+        for (Rational r : take(LIMIT, rs)) {
+            aeq(r.toString(), r.doubleValue(RoundingMode.HALF_DOWN), -0.0f);
+            aeq(r.toString(), r.doubleValue(RoundingMode.HALF_EVEN), -0.0f);
+        }
+
+        rs = filter(
+                r -> !r.equals(SMALLEST_DOUBLE.shiftRight(1)),
+                P.rationals(Interval.of(ZERO, SMALLEST_DOUBLE.shiftRight(1)))
+        );
+        for (Rational r : take(LIMIT, rs)) {
+            aeq(r.toString(), r.doubleValue(RoundingMode.HALF_UP), 0.0f);
+        }
+
+        rs = filter(
+                r -> r != ZERO && !r.equals(SMALLEST_DOUBLE.shiftRight(1).negate()),
+                P.rationals(Interval.of(SMALLEST_DOUBLE.shiftRight(1).negate(), ZERO))
+        );
+        for (Rational r : take(LIMIT, rs)) {
+            aeq(r.toString(), r.doubleValue(RoundingMode.HALF_UP), -0.0f);
+        }
+
+        for (Rational r : take(LIMIT, P.rationals())) {
+            double floor = r.doubleValue(RoundingMode.FLOOR);
+            assertFalse(r.toString(), Double.valueOf(floor).equals(-0.0f));
+            assertFalse(r.toString(), floor == Double.POSITIVE_INFINITY);
+            double ceiling = r.doubleValue(RoundingMode.CEILING);
+            assertFalse(r.toString(), ceiling == Double.NEGATIVE_INFINITY);
+            double down = r.doubleValue(RoundingMode.DOWN);
+            assertFalse(r.toString(), down == Double.NEGATIVE_INFINITY);
+            assertFalse(r.toString(), down == Double.POSITIVE_INFINITY);
+            double up = r.doubleValue(RoundingMode.UP);
+            assertFalse(r.toString(), Double.valueOf(up).equals(-0.0f));
+            double halfDown = r.doubleValue(RoundingMode.HALF_DOWN);
+            assertFalse(r.toString(), halfDown == Double.NEGATIVE_INFINITY);
+            assertFalse(r.toString(), halfDown == Double.POSITIVE_INFINITY);
+        }
+
+        Iterable<Rational> rsFail = filter(
+                r -> !ofExact(r.doubleValue(RoundingMode.FLOOR)).equals(r),
+                P.rationals(Interval.of(LARGEST_DOUBLE.negate(), LARGEST_DOUBLE))
+        );
+        for (Rational r : take(LIMIT, rsFail)) {
+            try {
+                r.doubleValue(RoundingMode.UNNECESSARY);
+                fail(r.toString());
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private static void propertiesDoubleValue() {
+        initialize();
+        System.out.println("testing doubleValue() properties...");
+
+        for (Rational r : take(LIMIT, P.rationals())) {
+            double rounded = r.doubleValue();
+            aeq(r.toString(), rounded, r.doubleValue(RoundingMode.HALF_EVEN));
+            assertTrue(r.toString(), !Double.isNaN(rounded));
+            assertTrue(r.toString(), rounded == 0.0 || Math.signum(rounded) == r.signum());
+        }
+
+        Iterable<Rational> rs = filter(
+                r -> !r.equals(LARGEST_DOUBLE.negate()),
+                P.rationals(Interval.lessThanOrEqualTo(LARGEST_DOUBLE.negate()))
+        );
+        for (Rational r : take(LIMIT, rs)) {
+            double rounded = r.doubleValue();
+            aeq(r.toString(), rounded, Double.NEGATIVE_INFINITY);
+        }
+
+        rs = filter(r -> !r.equals(LARGEST_DOUBLE), P.rationals(Interval.greaterThanOrEqualTo(LARGEST_DOUBLE)));
+        for (Rational r : take(LIMIT, rs)) {
+            double rounded = r.doubleValue();
+            aeq(r.toString(), rounded, Double.POSITIVE_INFINITY);
+        }
+
+        Iterable<Rational> midpoints = map(
+                f -> {
+                    Rational lo = ofExact(f);
+                    Rational hi = ofExact(FloatUtils.successor(f));
+                    assert lo != null;
+                    assert hi != null;
+                    return add(lo, hi).shiftRight(1);
+                },
+                filter(f -> !f.equals(-0.0f) && f != Double.MAX_VALUE, P.ordinaryDoubles())
+        );
+        for (Rational r : take(LIMIT, midpoints)) {
+            double down = r.doubleValue(RoundingMode.DOWN);
+            double up = r.doubleValue(RoundingMode.UP);
+            double rounded = r.doubleValue();
+            assertTrue(r.toString(), ((Double.doubleToLongBits(down) & 1) == 0 ? down : up) == rounded);
+        }
+
+        Iterable<Rational> notMidpoints = filter(
+                r -> ge(r, LARGEST_DOUBLE.negate()) && le(r, LARGEST_DOUBLE) && !doubleEquidistant(r),
+                P.rationals()
+        );
+        for (Rational r : take(LIMIT, notMidpoints)) {
+            double below = r.doubleValue(RoundingMode.FLOOR);
+            double above = r.doubleValue(RoundingMode.CEILING);
+            Rational belowDistance = subtract(r, ofExact(below));
+            Rational aboveDistance = subtract(ofExact(above), r);
+            double closest = lt(belowDistance, aboveDistance) ? below : above;
+            aeq(r.toString(), r.doubleValue(), closest);
+        }
+
+        rs = P.rationals(Interval.of(ZERO, SMALLEST_DOUBLE.shiftRight(1)));
+        for (Rational r : take(LIMIT, rs)) {
+            aeq(r.toString(), r.doubleValue(), 0.0f);
+        }
+
+        rs = filter(r -> r != ZERO, P.rationals(Interval.of(SMALLEST_DOUBLE.shiftRight(1).negate(), ZERO)));
+        for (Rational r : take(LIMIT, rs)) {
+            aeq(r.toString(), r.doubleValue(), -0.0f);
+        }
+    }
+
+    private static void propertiesDoubleValueExact() {
+        initialize();
+        System.out.println("testing doubleValueExact() properties...");
+
+        Iterable<Rational> rs = filter(r -> r.equals(ofExact(r.doubleValue(RoundingMode.FLOOR))), P.rationals());
+        for (Rational r : take(LIMIT, rs)) {
+            double f = r.doubleValueExact();
+            assertTrue(r.toString(), !Double.isNaN(f));
+            assertTrue(r.toString(), f == 0.0 || Math.signum(f) == r.signum());
+        }
+
+        rs = map(
+                Rational::ofExact,
+                filter(f -> !Double.isNaN(f) && Double.isFinite(f) && !f.equals(-0.0f), P.doubles())
+        );
+        for (Rational r : take(LIMIT, rs)) {
+            double f = r.doubleValueExact();
+            assertEquals(r.toString(), r, ofExact(f));
+            assertTrue(r.toString(), Double.isFinite(f));
+            assertTrue(r.toString(), !new Double(f).equals(-0.0f));
+        }
+
+        Iterable<Rational> rsFail = filter(
+                r -> !ofExact(r.doubleValue(RoundingMode.FLOOR)).equals(r),
+                P.rationals(Interval.of(LARGEST_DOUBLE.negate(), LARGEST_DOUBLE))
+        );
+        for (Rational r : take(LIMIT, rsFail)) {
+            try {
+                r.doubleValueExact();
                 fail(r.toString());
             } catch (ArithmeticException ignored) {}
         }
