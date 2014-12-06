@@ -7,6 +7,7 @@ import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigInteger;
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.Random;
 
@@ -455,6 +456,24 @@ public class QBarRandomProvider extends RandomProvider implements QBarIterablePr
 
     @Override
     public @NotNull Iterable<Rational> rationals(@NotNull Interval a) {
-        return null;
+        if (!a.getLower().isPresent() && !a.getUpper().isPresent()) {
+            return rationals();
+        } else if (!a.getLower().isPresent()) {
+            return map(r -> Rational.subtract(a.getUpper().get(), r), nonNegativeRationals());
+        } else if (!a.getUpper().isPresent()) {
+            return map(r -> Rational.add(r, a.getLower().get()), nonNegativeRationals());
+        } else {
+            Rational diameter = a.diameter().get();
+            if (diameter == Rational.ZERO) return repeat(a.getLower().get());
+            return concat(
+                    Arrays.asList(a.getLower().get(), a.getUpper().get()),
+                    tail(
+                            map(
+                                    r -> Rational.add(Rational.multiply(r, diameter), a.getLower().get()),
+                                    nonNegativeRationalsLessThanOne()
+                            )
+                    )
+            );
+        }
     }
 }

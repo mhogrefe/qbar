@@ -420,15 +420,15 @@ public final class Interval implements Comparable<Interval> {
                 return new Interval(null, Rational.LARGEST_FLOAT.negate());
             }
         }
-        Rational r = Rational.of(f);
+        Rational r = Rational.ofExact(f);
         float predecessor = FloatUtils.predecessor(f);
         Rational lower = predecessor == Float.NEGATIVE_INFINITY ?
                 null :
-                Rational.add(r, Rational.of(predecessor)).shiftRight(1);
+                Rational.add(r, Rational.ofExact(predecessor)).shiftRight(1);
         float successor = FloatUtils.successor(f);
         Rational upper = successor == Float.POSITIVE_INFINITY ?
                 null :
-                Rational.add(r, Rational.of(successor)).shiftRight(1);
+                Rational.add(r, Rational.ofExact(successor)).shiftRight(1);
         return new Interval(lower, upper);
     }
 
@@ -464,15 +464,15 @@ public final class Interval implements Comparable<Interval> {
                 return new Interval(null, Rational.LARGEST_DOUBLE.negate());
             }
         }
-        Rational r = Rational.of(d);
+        Rational r = Rational.ofExact(d);
         double predecessor = FloatUtils.predecessor(d);
         Rational lower = predecessor == Double.NEGATIVE_INFINITY ?
                 null :
-                Rational.add(r, Rational.of(predecessor)).shiftRight(1);
+                Rational.add(r, Rational.ofExact(predecessor)).shiftRight(1);
         double successor = FloatUtils.successor(d);
         Rational upper = predecessor == Double.POSITIVE_INFINITY ?
                 null :
-                Rational.add(r, Rational.of(successor)).shiftRight(1);
+                Rational.add(r, Rational.ofExact(successor)).shiftRight(1);
         return new Interval(lower, upper);
     }
 
@@ -507,8 +507,8 @@ public final class Interval implements Comparable<Interval> {
      * @return the smallest {@code float} interval containing {@code this}.
      */
     public @NotNull Pair<Float, Float> floatRange() {
-        float fLower = lower == null ? Float.NEGATIVE_INFINITY : lower.toFloat(RoundingMode.FLOOR);
-        float fUpper = upper == null ? Float.POSITIVE_INFINITY : upper.toFloat(RoundingMode.CEILING);
+        float fLower = lower == null ? Float.NEGATIVE_INFINITY : lower.floatValue(RoundingMode.FLOOR);
+        float fUpper = upper == null ? Float.POSITIVE_INFINITY : upper.floatValue(RoundingMode.CEILING);
         return new Pair<>(fLower, fUpper);
     }
 
@@ -525,8 +525,8 @@ public final class Interval implements Comparable<Interval> {
      * @return the smallest {@code double} interval containing {@code this}.
      */
     public @NotNull Pair<Double, Double> doubleRange() {
-        double dLower = lower == null ? Double.NEGATIVE_INFINITY : lower.toDouble(RoundingMode.FLOOR);
-        double dUpper = upper == null ? Double.POSITIVE_INFINITY : upper.toDouble(RoundingMode.CEILING);
+        double dLower = lower == null ? Double.NEGATIVE_INFINITY : lower.doubleValue(RoundingMode.FLOOR);
+        double dUpper = upper == null ? Double.POSITIVE_INFINITY : upper.doubleValue(RoundingMode.CEILING);
         return new Pair<>(dLower, dUpper);
     }
 
@@ -552,8 +552,8 @@ public final class Interval implements Comparable<Interval> {
     public @NotNull Pair<BigDecimal, BigDecimal> bigDecimalRange(int precision) {
         if (lower == null || upper == null)
             throw new ArithmeticException("cannot represent infinities with BigDecimal");
-        BigDecimal bdLower = lower.toBigDecimal(precision, RoundingMode.FLOOR);
-        BigDecimal bdUpper = upper.toBigDecimal(precision, RoundingMode.CEILING);
+        BigDecimal bdLower = lower.bigDecimalValue(precision, RoundingMode.FLOOR);
+        BigDecimal bdUpper = upper.bigDecimalValue(precision, RoundingMode.CEILING);
         return new Pair<>(bdLower, bdUpper);
     }
 
