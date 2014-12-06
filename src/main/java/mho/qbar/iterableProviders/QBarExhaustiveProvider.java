@@ -340,7 +340,7 @@ public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIt
                     Arrays.asList(a.getLower().get(), a.getUpper().get()),
                     tail(
                             map(
-                                    r -> Rational.multiply(r, diameter).add(a.getLower().get()),
+                                    r -> r.multiply(diameter).add(a.getLower().get()),
                                     nonNegativeRationalsLessThanOne()
                             )
                     )

@@ -2408,29 +2408,29 @@ public class RationalTest {
     }
 
     @Test
-    public void testMultiply_Rational_Rational() {
-        aeq(multiply(read("2/3").get(), read("6/7").get()), "4/7");
-        aeq(multiply(read("2/3").get(), read("-6/7").get()), "-4/7");
-        aeq(multiply(read("-2/3").get(), read("6/7").get()), "-4/7");
-        aeq(multiply(read("-2/3").get(), read("-6/7").get()), "4/7");
-        aeq(multiply(read("2/3").get(), read("4").get()), "8/3");
-        aeq(multiply(read("2/3").get(), read("-4").get()), "-8/3");
-        aeq(multiply(read("-2/3").get(), read("4").get()), "-8/3");
-        aeq(multiply(read("-2/3").get(), read("-4").get()), "8/3");
-        aeq(multiply(read("3").get(), read("5").get()), "15");
-        aeq(multiply(read("3").get(), read("-5").get()), "-15");
-        aeq(multiply(read("-3").get(), read("5").get()), "-15");
-        aeq(multiply(read("-3").get(), read("-5").get()), "15");
-        assertTrue(multiply(read("1/4").get(), read("4").get()) == ONE);
-        assertTrue(multiply(read("-1/4").get(), read("-4").get()) == ONE);
-        assertTrue(multiply(read("2/3").get(), ZERO) == ZERO);
-        assertTrue(multiply(read("-2/3").get(), ZERO) == ZERO);
-        aeq(multiply(read("2/3").get(), ONE), "2/3");
-        aeq(multiply(read("-2/3").get(), ONE), "-2/3");
-        assertTrue(multiply(ZERO, ZERO) == ZERO);
-        assertTrue(multiply(ZERO, ONE) == ZERO);
-        assertTrue(multiply(ONE, ZERO) == ZERO);
-        assertTrue(multiply(ONE, ONE) == ONE);
+    public void testMultiply_Rational() {
+        aeq(read("2/3").get().multiply(read("6/7").get()), "4/7");
+        aeq(read("2/3").get().multiply(read("-6/7").get()), "-4/7");
+        aeq(read("-2/3").get().multiply(read("6/7").get()), "-4/7");
+        aeq(read("-2/3").get().multiply(read("-6/7").get()), "4/7");
+        aeq(read("2/3").get().multiply(read("4").get()), "8/3");
+        aeq(read("2/3").get().multiply(read("-4").get()), "-8/3");
+        aeq(read("-2/3").get().multiply(read("4").get()), "-8/3");
+        aeq(read("-2/3").get().multiply(read("-4").get()), "8/3");
+        aeq(read("3").get().multiply(read("5").get()), "15");
+        aeq(read("3").get().multiply(read("-5").get()), "-15");
+        aeq(read("-3").get().multiply(read("5").get()), "-15");
+        aeq(read("-3").get().multiply(read("-5").get()), "15");
+        assertTrue(read("1/4").get().multiply(read("4").get()) == ONE);
+        assertTrue(read("-1/4").get().multiply(read("-4").get()) == ONE);
+        assertTrue(read("2/3").get().multiply(ZERO) == ZERO);
+        assertTrue(read("-2/3").get().multiply(ZERO) == ZERO);
+        aeq(read("2/3").get().multiply(ONE), "2/3");
+        aeq(read("-2/3").get().multiply(ONE), "-2/3");
+        assertTrue(ZERO.multiply(ZERO) == ZERO);
+        assertTrue(ZERO.multiply(ONE) == ZERO);
+        assertTrue(ONE.multiply(ZERO) == ZERO);
+        assertTrue(ONE.multiply(ONE) == ONE);
     }
 
     @Test

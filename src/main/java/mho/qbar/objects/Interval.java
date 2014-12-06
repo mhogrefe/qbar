@@ -639,10 +639,10 @@ public final class Interval implements Comparable<Interval> {
                 || (xls == 2 && yls == -1) || (yls == 2 && xls == -1)
                 || (xus == 2 && yus == 1) || (yus == 2 && xus == 1);
         if (containsNegInf && containsInf) return ALL;
-        Rational xlyl = xls == 2 || yls == 2 ? null : Rational.multiply(x.lower, y.lower);
-        Rational xlyu = xls == 2 || yus == 2 ? null : Rational.multiply(x.lower, y.upper);
-        Rational xuyl = xus == 2 || yls == 2 ? null : Rational.multiply(x.upper, y.lower);
-        Rational xuyu = xus == 2 || yus == 2 ? null : Rational.multiply(x.upper, y.upper);
+        Rational xlyl = xls == 2 || yls == 2 ? null : x.lower.multiply(y.lower);
+        Rational xlyu = xls == 2 || yus == 2 ? null : x.lower.multiply(y.upper);
+        Rational xuyl = xus == 2 || yls == 2 ? null : x.upper.multiply(y.lower);
+        Rational xuyu = xus == 2 || yus == 2 ? null : x.upper.multiply(y.upper);
         Rational min = xlyl;
         Rational max = xlyl;
         if (xlyu != null) {

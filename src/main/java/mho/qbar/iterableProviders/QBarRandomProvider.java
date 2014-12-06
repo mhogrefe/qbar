@@ -469,7 +469,7 @@ public class QBarRandomProvider extends RandomProvider implements QBarIterablePr
                     Arrays.asList(a.getLower().get(), a.getUpper().get()),
                     tail(
                             map(
-                                    r -> Rational.multiply(r, diameter).add(a.getLower().get()),
+                                    r -> r.multiply(diameter).add(a.getLower().get()),
                                     nonNegativeRationalsLessThanOne()
                             )
                     )

@@ -1189,26 +1189,25 @@ public final class Rational implements Comparable<Rational> {
     }
 
     /**
-     * Returns the product of {@code a} and {@code b}.
+     * Returns the product of {@code this} and {@code that}.
      *
      * <ul>
-     *  <li>{@code a} cannot be null.</li>
-     *  <li>{@code b} cannot be null.</li>
+     *  <li>{@code this} can be any {@code Rational}</li>
+     *  <li>{@code that} cannot be null.</li>
      *  <li>The result is not null.</li>
      * </ul>
      *
-     * @param a the first {@code Rational}
-     * @param b the second {@code Rational}
-     * @return {@code a}×{@code b}
+     * @param that the {@code Rational} {@code this} is multiplied by
+     * @return {@code this}×{@code that}
      */
-    public static @NotNull Rational multiply(@NotNull Rational a, @NotNull Rational b) {
-        if (a == ZERO || b == ZERO) return ZERO;
-        if (a == ONE) return b;
-        if (b == ONE) return a;
-        BigInteger g1 = a.numerator.gcd(b.denominator);
-        BigInteger g2 = b.numerator.gcd(a.denominator);
-        BigInteger mn = a.numerator.divide(g1).multiply(b.numerator.divide(g2));
-        BigInteger md = a.denominator.divide(g2).multiply(b.denominator.divide(g1));
+    public @NotNull Rational multiply(@NotNull Rational that) {
+        if (this == ZERO || that == ZERO) return ZERO;
+        if (this == ONE) return that;
+        if (that == ONE) return this;
+        BigInteger g1 = numerator.gcd(that.denominator);
+        BigInteger g2 = that.numerator.gcd(denominator);
+        BigInteger mn = numerator.divide(g1).multiply(that.numerator.divide(g2));
+        BigInteger md = denominator.divide(g2).multiply(that.denominator.divide(g1));
         if (mn.equals(md)) return ONE;
         return new Rational(mn, md);
     }
@@ -1269,7 +1268,7 @@ public final class Rational implements Comparable<Rational> {
     public static @NotNull Rational divide(@NotNull Rational a, @NotNull Rational b) {
         if (b == ZERO)
             throw new ArithmeticException("division by zero");
-        return multiply(a, b.invert());
+        return a.multiply(b.invert());
     }
 
     /**
@@ -1343,7 +1342,7 @@ public final class Rational implements Comparable<Rational> {
      * @return Πxs
      */
     public static Rational product(@NotNull Iterable<Rational> xs) {
-        return foldl(p -> multiply(p.a, p.b), ONE, xs);
+        return foldl(p -> p.a.multiply(p.b), ONE, xs);
     }
 
     /**

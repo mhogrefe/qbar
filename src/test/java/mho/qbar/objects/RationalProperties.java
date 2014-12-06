@@ -4,7 +4,6 @@ import mho.wheels.iterables.ExhaustiveProvider;
 import mho.wheels.iterables.RandomProvider;
 import mho.wheels.math.Combinatorics;
 import mho.wheels.math.MathUtils;
-import mho.wheels.misc.BigDecimalUtils;
 import mho.wheels.misc.FloatUtils;
 import mho.wheels.misc.Readers;
 import mho.wheels.ordering.Ordering;
@@ -15,11 +14,9 @@ import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.iterableProviders.QBarRandomProvider;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
-import sun.jvm.hotspot.utilities.Assert;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.Arrays;
 import java.util.List;
@@ -92,7 +89,7 @@ public class RationalProperties {
             propertiesAdd();
             compareImplementationsAdd();
             propertiesSubtract();
-            propertiesMultiply_Rational_Rational();
+            propertiesMultiply_Rational();
             propertiesMultiply_BigInteger();
             propertiesMultiply_int();
             propertiesDivide_Rational_Rational();
@@ -1688,7 +1685,7 @@ public class RationalProperties {
             validate(inverseR);
             assertEquals(r.toString(), inverseR, invert_simplest(r));
             assertEquals(r.toString(), r, inverseR.invert());
-            assertTrue(multiply(r, inverseR) == ONE);
+            assertTrue(r.multiply(inverseR) == ONE);
             assertTrue(inverseR != ZERO);
         }
 
@@ -1821,36 +1818,36 @@ public class RationalProperties {
         }
     }
 
-    private static void propertiesMultiply_Rational_Rational() {
+    private static void propertiesMultiply_Rational() {
         initialize();
-        System.out.println("testing multiply(Rational, Rational) properties...");
+        System.out.println("testing multiply(Rational) properties...");
 
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
             assert p.a != null;
             assert p.b != null;
-            Rational product = multiply(p.a, p.b);
+            Rational product = p.a.multiply(p.b);
             validate(product);
-            assertEquals(p.toString(), product, multiply(p.b, p.a));
+            assertEquals(p.toString(), product, p.b.multiply(p.a));
         }
 
         for (Rational r : take(LIMIT, P.rationals())) {
-            assertEquals(r.toString(), multiply(ONE, r), r);
-            assertEquals(r.toString(), multiply(r, ONE), r);
-            assertTrue(r.toString(), multiply(ZERO, r) == ZERO);
-            assertTrue(r.toString(), multiply(r, ZERO) == ZERO);
+            assertEquals(r.toString(), ONE.multiply(r), r);
+            assertEquals(r.toString(), r.multiply(ONE), r);
+            assertTrue(r.toString(), ZERO.multiply(r) == ZERO);
+            assertTrue(r.toString(), r.multiply(ZERO) == ZERO);
         }
 
         Iterable<Rational> rs = filter(r -> r != ZERO, P.rationals());
         for (Rational r : take(LIMIT, rs)) {
-            assertTrue(r.toString(), multiply(r, r.invert()) == ONE);
+            assertTrue(r.toString(), r.multiply(r.invert()) == ONE);
         }
 
         for (Triple<Rational, Rational, Rational> t : take(LIMIT, P.triples(P.rationals()))) {
             assert t.a != null;
             assert t.b != null;
             assert t.c != null;
-            Rational product1 = multiply(multiply(t.a, t.b), t.c);
-            Rational product2 = multiply(t.a, multiply(t.b, t.c));
+            Rational product1 = t.a.multiply(t.b).multiply(t.c);
+            Rational product2 = t.a.multiply(t.b.multiply(t.c));
             assertEquals(t.toString(), product1, product2);
         }
 
@@ -1858,8 +1855,8 @@ public class RationalProperties {
             assert t.a != null;
             assert t.b != null;
             assert t.c != null;
-            Rational expression1 = multiply(t.a.add(t.b), t.c);
-            Rational expression2 = multiply(t.a, t.c).add(multiply(t.b, t.c));
+            Rational expression1 = t.a.add(t.b).multiply(t.c);
+            Rational expression2 = t.a.multiply(t.c).add(t.b.multiply(t.c));
             assertEquals(t.toString(), expression1, expression2);
         }
     }
@@ -1874,8 +1871,8 @@ public class RationalProperties {
             assert p.b != null;
             Rational product = p.a.multiply(p.b);
             validate(product);
-            assertEquals(p.toString(), product, multiply(p.a, of(p.b)));
-            assertEquals(p.toString(), product, multiply(of(p.b), p.a));
+            assertEquals(p.toString(), product, p.a.multiply(of(p.b)));
+            assertEquals(p.toString(), product, of(p.b).multiply(p.a));
         }
 
         for (BigInteger i : take(LIMIT, P.bigIntegers())) {
@@ -1913,8 +1910,8 @@ public class RationalProperties {
             assert p.b != null;
             Rational product = p.a.multiply(p.b);
             validate(product);
-            assertEquals(p.toString(), product, multiply(p.a, of(p.b)));
-            assertEquals(p.toString(), product, multiply(of(p.b), p.a));
+            assertEquals(p.toString(), product, p.a.multiply(of(p.b)));
+            assertEquals(p.toString(), product, of(p.b).multiply(p.a));
         }
 
         for (int i : take(LIMIT, P.integers())) {
@@ -1953,7 +1950,7 @@ public class RationalProperties {
             assert p.b != null;
             Rational quotient = divide(p.a, p.b);
             validate(quotient);
-            assertEquals(p.toString(), p.a, multiply(quotient, p.b));
+            assertEquals(p.toString(), p.a, quotient.multiply(p.b));
         }
 
         ps = filter(p -> p.a != ZERO && p.b != ZERO, P.pairs(P.rationals()));
@@ -2121,7 +2118,7 @@ public class RationalProperties {
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
             assert p.a != null;
             assert p.b != null;
-            assertEquals(p.toString(), product(Arrays.asList(p.a, p.b)), multiply(p.a, p.b));
+            assertEquals(p.toString(), product(Arrays.asList(p.a, p.b)), p.a.multiply(p.b));
         }
 
         Iterable<List<Rational>> failRss = map(p -> {
@@ -2245,7 +2242,7 @@ public class RationalProperties {
         for (Rational r : take(LIMIT, P.rationals())) {
             assertTrue(r.toString(), r.pow(0) == ONE);
             assertEquals(r.toString(), r.pow(1), r);
-            assertEquals(r.toString(), r.pow(2), multiply(r, r));
+            assertEquals(r.toString(), r.pow(2), r.multiply(r));
         }
 
         Iterable<Rational> rs = filter(r -> r != ZERO, P.rationals());
@@ -2261,7 +2258,7 @@ public class RationalProperties {
             assert t.a != null;
             assert t.b != null;
             assert t.c != null;
-            Rational expression1 = multiply(t.a.pow(t.b), t.a.pow(t.c));
+            Rational expression1 = t.a.pow(t.b).multiply(t.a.pow(t.c));
             Rational expression2 = t.a.pow(t.b + t.c);
             assertEquals(t.toString(), expression1, expression2);
         }
@@ -2300,8 +2297,8 @@ public class RationalProperties {
             assert t.a != null;
             assert t.b != null;
             assert t.c != null;
-            Rational expression1 = multiply(t.a, t.b).pow(t.c);
-            Rational expression2 = multiply(t.a.pow(t.c), t.b.pow(t.c));
+            Rational expression1 = t.a.multiply(t.b).pow(t.c);
+            Rational expression2 = t.a.pow(t.c).multiply(t.b.pow(t.c));
             assertEquals(t.toString(), expression1, expression2);
         }
 
