@@ -1129,7 +1129,7 @@ public class RationalProperties {
                     Rational hi = ofExact(FloatUtils.successor(f));
                     assert lo != null;
                     assert hi != null;
-                    return add(lo, hi).shiftRight(1);
+                    return lo.add(hi).shiftRight(1);
                 },
                 filter(f -> !f.equals(-0.0f) && f != Float.MAX_VALUE, P.ordinaryFloats())
         );
@@ -1245,7 +1245,7 @@ public class RationalProperties {
                     Rational hi = ofExact(FloatUtils.successor(f));
                     assert lo != null;
                     assert hi != null;
-                    return add(lo, hi).shiftRight(1);
+                    return lo.add(hi).shiftRight(1);
                 },
                 filter(f -> !f.equals(-0.0f) && f != Float.MAX_VALUE, P.ordinaryFloats())
         );
@@ -1470,7 +1470,7 @@ public class RationalProperties {
                     Rational hi = ofExact(FloatUtils.successor(f));
                     assert lo != null;
                     assert hi != null;
-                    return add(lo, hi).shiftRight(1);
+                    return lo.add(hi).shiftRight(1);
                 },
                 filter(f -> !f.equals(-0.0) && f != Double.MAX_VALUE, P.ordinaryDoubles())
         );
@@ -1586,7 +1586,7 @@ public class RationalProperties {
                     Rational hi = ofExact(FloatUtils.successor(f));
                     assert lo != null;
                     assert hi != null;
-                    return add(lo, hi).shiftRight(1);
+                    return lo.add(hi).shiftRight(1);
                 },
                 filter(f -> !f.equals(-0.0) && f != Double.MAX_VALUE, P.ordinaryDoubles())
         );
@@ -1663,7 +1663,7 @@ public class RationalProperties {
             Rational negativeR = r.negate();
             validate(negativeR);
             assertEquals(r.toString(), r, negativeR.negate());
-            assertTrue(add(r, negativeR) == ZERO);
+            assertTrue(r.add(negativeR) == ZERO);
         }
 
         Iterable<Rational> rs = filter(r -> r != ZERO, P.rationals());
@@ -1750,23 +1750,23 @@ public class RationalProperties {
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
             assert p.a != null;
             assert p.b != null;
-            Rational sum = add(p.a, p.b);
+            Rational sum = p.a.add(p.b);
             validate(sum);
-            assertEquals(p.toString(), sum, add(p.b, p.a));
+            assertEquals(p.toString(), sum, p.b.add(p.a));
         }
 
         for (Rational r : take(LIMIT, P.rationals())) {
-            assertEquals(r.toString(), add(ZERO, r), r);
-            assertEquals(r.toString(), add(r, ZERO), r);
-            assertTrue(r.toString(), add(r, r.negate()) == ZERO);
+            assertEquals(r.toString(), ZERO.add(r), r);
+            assertEquals(r.toString(), r.add(ZERO), r);
+            assertTrue(r.toString(), r.add(r.negate()) == ZERO);
         }
 
         for (Triple<Rational, Rational, Rational> t : take(LIMIT, P.triples(P.rationals()))) {
             assert t.a != null;
             assert t.b != null;
             assert t.c != null;
-            Rational sum1 = add(add(t.a, t.b), t.c);
-            Rational sum2 = add(t.a, add(t.b, t.c));
+            Rational sum1 = t.a.add(t.b).add(t.c);
+            Rational sum2 = t.a.add(t.b.add(t.c));
             assertEquals(t.toString(), sum1, sum2);
         }
     }
@@ -1781,7 +1781,7 @@ public class RationalProperties {
             Rational difference = subtract(p.a, p.b);
             validate(difference);
             assertEquals(p.toString(), difference, subtract(p.b, p.a).negate());
-            assertEquals(p.toString(), p.a, add(difference, p.b));
+            assertEquals(p.toString(), p.a, difference.add(p.b));
         }
 
         for (Rational r : take(LIMIT, P.rationals())) {
@@ -1828,8 +1828,8 @@ public class RationalProperties {
             assert t.a != null;
             assert t.b != null;
             assert t.c != null;
-            Rational expression1 = multiply(add(t.a, t.b), t.c);
-            Rational expression2 = add(multiply(t.a, t.c), multiply(t.b, t.c));
+            Rational expression1 = multiply(t.a.add(t.b), t.c);
+            Rational expression2 = multiply(t.a, t.c).add(multiply(t.b, t.c));
             assertEquals(t.toString(), expression1, expression2);
         }
     }
@@ -1868,8 +1868,8 @@ public class RationalProperties {
             assert t.a != null;
             assert t.b != null;
             assert t.c != null;
-            Rational expression1 = add(t.a, t.b).multiply(t.c);
-            Rational expression2 = add(t.a.multiply(t.c), t.b.multiply(t.c));
+            Rational expression1 = t.a.add(t.b).multiply(t.c);
+            Rational expression2 = t.a.multiply(t.c).add(t.b.multiply(t.c));
             assertEquals(t.toString(), expression1, expression2);
         }
     }
@@ -1907,8 +1907,8 @@ public class RationalProperties {
             assert t.a != null;
             assert t.b != null;
             assert t.c != null;
-            Rational expression1 = add(t.a, t.b).multiply(t.c);
-            Rational expression2 = add(t.a.multiply(t.c), t.b.multiply(t.c));
+            Rational expression1 = t.a.add(t.b).multiply(t.c);
+            Rational expression2 = t.a.multiply(t.c).add(t.b.multiply(t.c));
             assertEquals(t.toString(), expression1, expression2);
         }
     }
@@ -2042,7 +2042,7 @@ public class RationalProperties {
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
             assert p.a != null;
             assert p.b != null;
-            assertEquals(p.toString(), sum(Arrays.asList(p.a, p.b)), add(p.a, p.b));
+            assertEquals(p.toString(), sum(Arrays.asList(p.a, p.b)), p.a.add(p.b));
         }
 
         Iterable<List<Rational>> failRss = map(p -> {
@@ -2328,7 +2328,7 @@ public class RationalProperties {
             validate(fractionalPart);
             assertTrue(r.toString(), ge(fractionalPart, ZERO));
             assertTrue(r.toString(), lt(fractionalPart, ONE));
-            assertEquals(r.toString(), add(of(r.floor()), fractionalPart), r);
+            assertEquals(r.toString(), of(r.floor()).add(fractionalPart), r);
         }
 
         for (BigInteger i : take(LIMIT, P.bigIntegers())) {

@@ -349,7 +349,7 @@ public final class Interval implements Comparable<Interval> {
     public @NotNull Rational midpoint() {
         if (lower == null || upper == null)
             throw new ArithmeticException("an unbounded interval has no midpoint");
-        return Rational.add(lower, upper).shiftRight(1);
+        return lower.add(upper).shiftRight(1);
     }
 
     /**
@@ -424,11 +424,11 @@ public final class Interval implements Comparable<Interval> {
         float predecessor = FloatUtils.predecessor(f);
         Rational lower = predecessor == Float.NEGATIVE_INFINITY ?
                 null :
-                Rational.add(r, Rational.ofExact(predecessor)).shiftRight(1);
+                r.add(Rational.ofExact(predecessor)).shiftRight(1);
         float successor = FloatUtils.successor(f);
         Rational upper = successor == Float.POSITIVE_INFINITY ?
                 null :
-                Rational.add(r, Rational.ofExact(successor)).shiftRight(1);
+                r.add(Rational.ofExact(successor)).shiftRight(1);
         return new Interval(lower, upper);
     }
 
@@ -468,11 +468,11 @@ public final class Interval implements Comparable<Interval> {
         double predecessor = FloatUtils.predecessor(d);
         Rational lower = predecessor == Double.NEGATIVE_INFINITY ?
                 null :
-                Rational.add(r, Rational.ofExact(predecessor)).shiftRight(1);
+                r.add(Rational.ofExact(predecessor)).shiftRight(1);
         double successor = FloatUtils.successor(d);
         Rational upper = predecessor == Double.POSITIVE_INFINITY ?
                 null :
-                Rational.add(r, Rational.ofExact(successor)).shiftRight(1);
+                r.add(Rational.ofExact(successor)).shiftRight(1);
         return new Interval(lower, upper);
     }
 
@@ -492,7 +492,7 @@ public final class Interval implements Comparable<Interval> {
     public static @NotNull Interval roundingPreimage(@NotNull BigDecimal bd) {
         Rational center = Rational.of(bd);
         Rational maxAbsoluteError = Rational.of(10).pow(-bd.scale()).shiftRight(1);
-        return new Interval(Rational.subtract(center, maxAbsoluteError), Rational.add(center, maxAbsoluteError));
+        return new Interval(Rational.subtract(center, maxAbsoluteError), center.add(maxAbsoluteError));
     }
 
     /**
@@ -588,8 +588,8 @@ public final class Interval implements Comparable<Interval> {
      * @return {@code x}+{@code y}
      */
     public static @NotNull Interval add(@NotNull Interval x, @NotNull Interval y) {
-        Rational sLower = x.lower == null || y.lower == null ? null : Rational.add(x.lower, y.lower);
-        Rational sUpper = x.upper == null || y.upper == null ? null : Rational.add(x.upper, y.upper);
+        Rational sLower = x.lower == null || y.lower == null ? null : x.lower.add(y.lower);
+        Rational sUpper = x.upper == null || y.upper == null ? null : x.upper.add(y.upper);
         return new Interval(sLower, sUpper);
     }
 

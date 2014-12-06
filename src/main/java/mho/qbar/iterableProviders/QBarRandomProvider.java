@@ -461,7 +461,7 @@ public class QBarRandomProvider extends RandomProvider implements QBarIterablePr
         } else if (!a.getLower().isPresent()) {
             return map(r -> Rational.subtract(a.getUpper().get(), r), nonNegativeRationals());
         } else if (!a.getUpper().isPresent()) {
-            return map(r -> Rational.add(r, a.getLower().get()), nonNegativeRationals());
+            return map(r -> r.add(a.getLower().get()), nonNegativeRationals());
         } else {
             Rational diameter = a.diameter().get();
             if (diameter == Rational.ZERO) return repeat(a.getLower().get());
@@ -469,7 +469,7 @@ public class QBarRandomProvider extends RandomProvider implements QBarIterablePr
                     Arrays.asList(a.getLower().get(), a.getUpper().get()),
                     tail(
                             map(
-                                    r -> Rational.add(Rational.multiply(r, diameter), a.getLower().get()),
+                                    r -> Rational.multiply(r, diameter).add(a.getLower().get()),
                                     nonNegativeRationalsLessThanOne()
                             )
                     )

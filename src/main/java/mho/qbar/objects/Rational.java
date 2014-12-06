@@ -385,7 +385,7 @@ public final class Rational implements Comparable<Rational> {
             rational = of(BigInteger.valueOf(mantissa)).shiftRight(1074);
         } else {
             Rational significand = of(BigInteger.valueOf(mantissa)).shiftRight(52);
-            rational = add(significand, ONE).shiftLeft(exponent - 1023);
+            rational = significand.add(ONE).shiftLeft(exponent - 1023);
         }
         if (bits < 0) rational = rational.negate();
         return rational;
@@ -862,7 +862,7 @@ public final class Rational implements Comparable<Rational> {
                 return Float.MAX_VALUE;
             }
         }
-        Rational midway = add(loFloat, hiFloat).shiftRight(1);
+        Rational midway = loFloat.add(hiFloat).shiftRight(1);
         Ordering midwayCompare = compare(this, midway);
         switch (roundingMode) {
             case UNNECESSARY:
@@ -1009,7 +1009,7 @@ public final class Rational implements Comparable<Rational> {
                 return Double.MAX_VALUE;
             }
         }
-        Rational midway = add(loDouble, hiDouble).shiftRight(1);
+        Rational midway = loDouble.add(hiDouble).shiftRight(1);
         Ordering midwayCompare = compare(this, midway);
         switch (roundingMode) {
             case UNNECESSARY:
@@ -1138,35 +1138,34 @@ public final class Rational implements Comparable<Rational> {
     }
 
     /**
-     * Returns the sum of {@code a} and {@code b}.
+     * Returns the sum of {@code this} and {@code that}.
      *
      * <ul>
-     *  <li>{@code a} cannot be null.</li>
-     *  <li>{@code b} cannot be null.</li>
+     *  <li>{@code this} may be any {@code Rational}.</li>
+     *  <li>{@code that} cannot be null.</li>
      *  <li>The result is not null.</li>
      * </ul>
      *
-     * @param a the first {@code Rational}
-     * @param b the second {@code Rational}
-     * @return {@code a}+{@code b}
+     * @param that the {@code Rational} added to {@code this}
+     * @return {@code this}+{@code that}
      */
-    public static @NotNull Rational add(@NotNull Rational a, @NotNull Rational b) {
-        if (a == ZERO) return b;
-        if (b == ZERO) return a;
-        BigInteger d1 = a.denominator.gcd(b.denominator);
+    public @NotNull Rational add(@NotNull Rational that) {
+        if (this == ZERO) return that;
+        if (that == ZERO) return this;
+        BigInteger d1 = denominator.gcd(that.denominator);
         if (d1.equals(BigInteger.ONE)) {
-            BigInteger sn = a.numerator.multiply(b.denominator).add(a.denominator.multiply(b.numerator));
+            BigInteger sn = numerator.multiply(that.denominator).add(denominator.multiply(that.numerator));
             if (sn.equals(BigInteger.ZERO)) return ZERO;
-            BigInteger sd = a.denominator.multiply(b.denominator);
+            BigInteger sd = denominator.multiply(that.denominator);
             if (sn.equals(sd)) return ONE;
             return new Rational(sn, sd);
         } else {
-            BigInteger t = a.numerator.multiply(b.denominator.divide(d1))
-                    .add(b.numerator.multiply(a.denominator.divide(d1)));
+            BigInteger t = numerator.multiply(that.denominator.divide(d1))
+                    .add(that.numerator.multiply(denominator.divide(d1)));
             if (t.equals(BigInteger.ZERO)) return ZERO;
             BigInteger d2 = t.gcd(d1);
             BigInteger sn = t.divide(d2);
-            BigInteger sd = a.denominator.divide(d1).multiply(b.denominator.divide(d2));
+            BigInteger sd = denominator.divide(d1).multiply(that.denominator.divide(d2));
             if (sn.equals(sd)) return ONE;
             return new Rational(sn, sd);
         }
@@ -1186,7 +1185,7 @@ public final class Rational implements Comparable<Rational> {
      * @return {@code a}–{@code b}
      */
     public static @NotNull Rational subtract(@NotNull Rational a, @NotNull Rational b) {
-        return add(a, b.negate());
+        return a.add(b.negate());
     }
 
     /**
@@ -1329,7 +1328,7 @@ public final class Rational implements Comparable<Rational> {
      * @return Σxs
      */
     public static Rational sum(@NotNull Iterable<Rational> xs) {
-        return foldl(p -> add(p.a, p.b), ZERO, xs);
+        return foldl(p -> p.a.add(p.b), ZERO, xs);
     }
 
     /**
@@ -1395,7 +1394,7 @@ public final class Rational implements Comparable<Rational> {
         tail(scanl(p -> {
             assert p.a != null;
             assert p.b != null;
-            return add(p.a, p.b);
+            return p.a.add(p.b);
         }, ZERO, map(i -> of(i).invert(), range(1))));
 
     /**
@@ -1615,7 +1614,7 @@ public final class Rational implements Comparable<Rational> {
         for (int i = continuedFraction.size() - 2; i >= 0; i--) {
             if (i != 0 && continuedFraction.get(i).signum() != 1)
                 throw new IllegalArgumentException("all continued fraction elements but the first must be positive");
-            x = add(x.invert(), of(continuedFraction.get(i)));
+            x = x.invert().add(of(continuedFraction.get(i)));
         }
         return x;
     }
@@ -1733,7 +1732,7 @@ public final class Rational implements Comparable<Rational> {
         Rational nonRepeatingPart = of(nonRepeatingInteger, base.pow(nonRepeating.size()));
         Rational repeatingPart = of(repeatingInteger, base.pow(repeating.size()).subtract(BigInteger.ONE))
                 .divide(base.pow(nonRepeating.size()));
-        return add(add(of(floor), nonRepeatingPart), repeatingPart);
+        return of(floor).add(nonRepeatingPart).add(repeatingPart);
     }
 
     /**

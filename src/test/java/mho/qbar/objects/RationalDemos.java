@@ -378,7 +378,7 @@ public class RationalDemos {
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
             assert p.a != null;
             assert p.b != null;
-            System.out.println(p.a + " + " + p.b + " = " + add(p.a, p.b));
+            System.out.println(p.a + " + " + p.b + " = " + p.a.add(p.b));
         }
     }
 

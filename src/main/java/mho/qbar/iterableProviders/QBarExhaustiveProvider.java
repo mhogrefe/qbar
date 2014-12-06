@@ -24,7 +24,7 @@ public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIt
 
     @Override
     public @NotNull Iterable<Rational> range(@NotNull Rational a) {
-        return iterate(r -> Rational.add(r, Rational.ONE), a);
+        return iterate(r -> r.add(Rational.ONE), a);
     }
 
     @Override
@@ -43,7 +43,7 @@ public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIt
             public Rational next() {
                 reachedEnd = x.equals(b);
                 Rational oldX = x;
-                x = Rational.add(x, Rational.ONE);
+                x = x.add(Rational.ONE);
                 return oldX;
             }
 
@@ -68,7 +68,7 @@ public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIt
             @Override
             public Rational next() {
                 Rational oldX = x;
-                x = Rational.add(x, i);
+                x = x.add(i);
                 reachedEnd = i.signum() == 1 ? lt(x, a) : gt(x, a);
                 return oldX;
             }
@@ -95,7 +95,7 @@ public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIt
             @Override
             public Rational next() {
                 Rational oldX = x;
-                x = Rational.add(x, i);
+                x = x.add(i);
                 reachedEnd = i.signum() == 1 ? gt(x, b) : lt(x, b);
                 return oldX;
             }
@@ -332,7 +332,7 @@ public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIt
         } else if (!a.getLower().isPresent()) {
             return map(r -> Rational.subtract(a.getUpper().get(), r), nonNegativeRationals());
         } else if (!a.getUpper().isPresent()) {
-            return map(r -> Rational.add(r, a.getLower().get()), nonNegativeRationals());
+            return map(r -> r.add(a.getLower().get()), nonNegativeRationals());
         } else {
             Rational diameter = a.diameter().get();
             if (diameter == Rational.ZERO) return Arrays.asList(a.getLower().get());
@@ -340,7 +340,7 @@ public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIt
                     Arrays.asList(a.getLower().get(), a.getUpper().get()),
                     tail(
                             map(
-                                    r -> Rational.add(Rational.multiply(r, diameter), a.getLower().get()),
+                                    r -> Rational.multiply(r, diameter).add(a.getLower().get()),
                                     nonNegativeRationalsLessThanOne()
                             )
                     )
