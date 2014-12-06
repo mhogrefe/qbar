@@ -994,7 +994,7 @@ public class RationalProperties {
             assert p.b != null;
             float rounded = p.a.floatValue(p.b);
             assertTrue(p.toString(), !Float.isNaN(rounded));
-            assertTrue(p.toString(), rounded == 0.0 || Math.signum(rounded) == p.a.signum());
+            assertTrue(p.toString(), rounded == 0.0f || Math.signum(rounded) == p.a.signum());
         }
 
         Iterable<Rational> rs = map(
@@ -1220,7 +1220,7 @@ public class RationalProperties {
             float rounded = r.floatValue();
             aeq(r.toString(), rounded, r.floatValue(RoundingMode.HALF_EVEN));
             assertTrue(r.toString(), !Float.isNaN(rounded));
-            assertTrue(r.toString(), rounded == 0.0 || Math.signum(rounded) == r.signum());
+            assertTrue(r.toString(), rounded == 0.0f || Math.signum(rounded) == r.signum());
         }
 
         Iterable<Rational> rs = filter(
@@ -1287,7 +1287,7 @@ public class RationalProperties {
         for (Rational r : take(LIMIT, rs)) {
             float f = r.floatValueExact();
             assertTrue(r.toString(), !Float.isNaN(f));
-            assertTrue(r.toString(), f == 0.0 || Math.signum(f) == r.signum());
+            assertTrue(r.toString(), f == 0.0f || Math.signum(f) == r.signum());
         }
 
         rs = map(
@@ -1340,13 +1340,13 @@ public class RationalProperties {
 
         Iterable<Rational> rs = map(
                 Rational::ofExact,
-                filter(f -> !Double.isNaN(f) && Double.isFinite(f) && !f.equals(-0.0f), P.doubles())
+                filter(f -> !Double.isNaN(f) && Double.isFinite(f) && !f.equals(-0.0), P.doubles())
         );
         for (Rational r : take(LIMIT, rs)) {
             double rounded = r.doubleValue(RoundingMode.UNNECESSARY);
             assertEquals(r.toString(), r, ofExact(rounded));
             assertTrue(r.toString(), Double.isFinite(rounded));
-            assertTrue(r.toString(), !new Double(rounded).equals(-0.0f));
+            assertTrue(r.toString(), !new Double(rounded).equals(-0.0));
         }
 
         rs = filter(r -> !r.equals(LARGEST_DOUBLE), P.rationals(Interval.of(LARGEST_DOUBLE.negate(), LARGEST_DOUBLE)));
@@ -1356,7 +1356,7 @@ public class RationalProperties {
             assertTrue(r.toString(), le(ofExact(rounded), r));
             assertTrue(r.toString(), gt(ofExact(successor), r));
             assertTrue(r.toString(), rounded < 0 || Double.isFinite(rounded));
-            assertTrue(r.toString(), !new Double(rounded).equals(-0.0f));
+            assertTrue(r.toString(), !new Double(rounded).equals(-0.0));
         }
 
         rs = filter(
@@ -1392,13 +1392,13 @@ public class RationalProperties {
                 P.rationals(Interval.of(LARGEST_DOUBLE.negate(), LARGEST_DOUBLE))
         );
         for (Rational r : take(LIMIT, rs)) {
-            assertTrue(r.toString(), !new Double(r.doubleValue(RoundingMode.UP)).equals(-0.0f));
+            assertTrue(r.toString(), !new Double(r.doubleValue(RoundingMode.UP)).equals(-0.0));
         }
 
         rs = filter(r -> !r.equals(SMALLEST_DOUBLE), P.rationals(Interval.of(ZERO, SMALLEST_DOUBLE)));
         for (Rational r : take(LIMIT, rs)) {
-            aeq(r.toString(), r.doubleValue(RoundingMode.FLOOR), 0.0f);
-            aeq(r.toString(), r.doubleValue(RoundingMode.DOWN), 0.0f);
+            aeq(r.toString(), r.doubleValue(RoundingMode.FLOOR), 0.0);
+            aeq(r.toString(), r.doubleValue(RoundingMode.DOWN), 0.0);
 
             double rounded = r.doubleValue(RoundingMode.UP);
             double successor = FloatUtils.successor(rounded);
@@ -1437,8 +1437,8 @@ public class RationalProperties {
                 P.rationals(Interval.of(SMALLEST_DOUBLE.negate(), ZERO))
         );
         for (Rational r : take(LIMIT, rs)) {
-            aeq(r.toString(), r.doubleValue(RoundingMode.CEILING), -0.0f);
-            aeq(r.toString(), r.doubleValue(RoundingMode.DOWN), -0.0f);
+            aeq(r.toString(), r.doubleValue(RoundingMode.CEILING), -0.0);
+            aeq(r.toString(), r.doubleValue(RoundingMode.DOWN), -0.0);
         }
 
         rs = filter(r -> !r.equals(LARGEST_DOUBLE), P.rationals(Interval.greaterThanOrEqualTo(LARGEST_DOUBLE)));
@@ -1471,7 +1471,7 @@ public class RationalProperties {
                     assert hi != null;
                     return add(lo, hi).shiftRight(1);
                 },
-                filter(f -> !f.equals(-0.0f) && f != Double.MAX_VALUE, P.ordinaryDoubles())
+                filter(f -> !f.equals(-0.0) && f != Double.MAX_VALUE, P.ordinaryDoubles())
         );
         for (Rational r : take(LIMIT, midpoints)) {
             double down = r.doubleValue(RoundingMode.DOWN);
@@ -1499,14 +1499,14 @@ public class RationalProperties {
 
         rs = P.rationals(Interval.of(ZERO, SMALLEST_DOUBLE.shiftRight(1)));
         for (Rational r : take(LIMIT, rs)) {
-            aeq(r.toString(), r.doubleValue(RoundingMode.HALF_DOWN), 0.0f);
-            aeq(r.toString(), r.doubleValue(RoundingMode.HALF_EVEN), 0.0f);
+            aeq(r.toString(), r.doubleValue(RoundingMode.HALF_DOWN), 0.0);
+            aeq(r.toString(), r.doubleValue(RoundingMode.HALF_EVEN), 0.0);
         }
 
         rs = filter(r -> r != ZERO, P.rationals(Interval.of(SMALLEST_DOUBLE.shiftRight(1).negate(), ZERO)));
         for (Rational r : take(LIMIT, rs)) {
-            aeq(r.toString(), r.doubleValue(RoundingMode.HALF_DOWN), -0.0f);
-            aeq(r.toString(), r.doubleValue(RoundingMode.HALF_EVEN), -0.0f);
+            aeq(r.toString(), r.doubleValue(RoundingMode.HALF_DOWN), -0.0);
+            aeq(r.toString(), r.doubleValue(RoundingMode.HALF_EVEN), -0.0);
         }
 
         rs = filter(
@@ -1514,7 +1514,7 @@ public class RationalProperties {
                 P.rationals(Interval.of(ZERO, SMALLEST_DOUBLE.shiftRight(1)))
         );
         for (Rational r : take(LIMIT, rs)) {
-            aeq(r.toString(), r.doubleValue(RoundingMode.HALF_UP), 0.0f);
+            aeq(r.toString(), r.doubleValue(RoundingMode.HALF_UP), 0.0);
         }
 
         rs = filter(
@@ -1522,12 +1522,12 @@ public class RationalProperties {
                 P.rationals(Interval.of(SMALLEST_DOUBLE.shiftRight(1).negate(), ZERO))
         );
         for (Rational r : take(LIMIT, rs)) {
-            aeq(r.toString(), r.doubleValue(RoundingMode.HALF_UP), -0.0f);
+            aeq(r.toString(), r.doubleValue(RoundingMode.HALF_UP), -0.0);
         }
 
         for (Rational r : take(LIMIT, P.rationals())) {
             double floor = r.doubleValue(RoundingMode.FLOOR);
-            assertFalse(r.toString(), Double.valueOf(floor).equals(-0.0f));
+            assertFalse(r.toString(), Double.valueOf(floor).equals(-0.0));
             assertFalse(r.toString(), floor == Double.POSITIVE_INFINITY);
             double ceiling = r.doubleValue(RoundingMode.CEILING);
             assertFalse(r.toString(), ceiling == Double.NEGATIVE_INFINITY);
@@ -1535,7 +1535,7 @@ public class RationalProperties {
             assertFalse(r.toString(), down == Double.NEGATIVE_INFINITY);
             assertFalse(r.toString(), down == Double.POSITIVE_INFINITY);
             double up = r.doubleValue(RoundingMode.UP);
-            assertFalse(r.toString(), Double.valueOf(up).equals(-0.0f));
+            assertFalse(r.toString(), Double.valueOf(up).equals(-0.0));
             double halfDown = r.doubleValue(RoundingMode.HALF_DOWN);
             assertFalse(r.toString(), halfDown == Double.NEGATIVE_INFINITY);
             assertFalse(r.toString(), halfDown == Double.POSITIVE_INFINITY);
@@ -1587,7 +1587,7 @@ public class RationalProperties {
                     assert hi != null;
                     return add(lo, hi).shiftRight(1);
                 },
-                filter(f -> !f.equals(-0.0f) && f != Double.MAX_VALUE, P.ordinaryDoubles())
+                filter(f -> !f.equals(-0.0) && f != Double.MAX_VALUE, P.ordinaryDoubles())
         );
         for (Rational r : take(LIMIT, midpoints)) {
             double down = r.doubleValue(RoundingMode.DOWN);
@@ -1611,12 +1611,12 @@ public class RationalProperties {
 
         rs = P.rationals(Interval.of(ZERO, SMALLEST_DOUBLE.shiftRight(1)));
         for (Rational r : take(LIMIT, rs)) {
-            aeq(r.toString(), r.doubleValue(), 0.0f);
+            aeq(r.toString(), r.doubleValue(), 0.0);
         }
 
         rs = filter(r -> r != ZERO, P.rationals(Interval.of(SMALLEST_DOUBLE.shiftRight(1).negate(), ZERO)));
         for (Rational r : take(LIMIT, rs)) {
-            aeq(r.toString(), r.doubleValue(), -0.0f);
+            aeq(r.toString(), r.doubleValue(), -0.0);
         }
     }
 
@@ -1633,13 +1633,13 @@ public class RationalProperties {
 
         rs = map(
                 Rational::ofExact,
-                filter(f -> !Double.isNaN(f) && Double.isFinite(f) && !f.equals(-0.0f), P.doubles())
+                filter(f -> !Double.isNaN(f) && Double.isFinite(f) && !f.equals(-0.0), P.doubles())
         );
         for (Rational r : take(LIMIT, rs)) {
             double f = r.doubleValueExact();
             assertEquals(r.toString(), r, ofExact(f));
             assertTrue(r.toString(), Double.isFinite(f));
-            assertTrue(r.toString(), !new Double(f).equals(-0.0f));
+            assertTrue(r.toString(), !new Double(f).equals(-0.0));
         }
 
         Iterable<Rational> rsFail = filter(
