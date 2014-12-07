@@ -91,7 +91,9 @@ public class RationalProperties {
             propertiesSubtract();
             propertiesMultiply_Rational();
             propertiesMultiply_BigInteger();
+            compareImplementationsMultiply_BigInteger();
             propertiesMultiply_int();
+            compareImplementationsMultiply_int();
             propertiesDivide_Rational_Rational();
             propertiesDivide_BigInteger();
             propertiesDivide_int();
@@ -1784,6 +1786,8 @@ public class RationalProperties {
         long totalTime = 0;
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
             long time = System.nanoTime();
+            assert p.a != null;
+            assert p.b != null;
             add_simplest(p.a, p.b);
             totalTime += (System.nanoTime() - time);
         }
@@ -1792,6 +1796,8 @@ public class RationalProperties {
         totalTime = 0;
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
             long time = System.nanoTime();
+            assert p.a != null;
+            assert p.b != null;
             p.a.add(p.b);
             totalTime += (System.nanoTime() - time);
         }
@@ -1861,6 +1867,10 @@ public class RationalProperties {
         }
     }
 
+    private static @NotNull Rational multiply_BigInteger_simplest(@NotNull Rational a, @NotNull BigInteger b) {
+        return of(a.getNumerator().multiply(b), a.getDenominator());
+    }
+
     private static void propertiesMultiply_BigInteger() {
         initialize();
         System.out.println("testing multiply(BigInteger) properties...");
@@ -1871,6 +1881,7 @@ public class RationalProperties {
             assert p.b != null;
             Rational product = p.a.multiply(p.b);
             validate(product);
+            assertEquals(p.toString(), product, multiply_BigInteger_simplest(p.a, p.b));
             assertEquals(p.toString(), product, p.a.multiply(of(p.b)));
             assertEquals(p.toString(), product, of(p.b).multiply(p.a));
         }
@@ -1901,6 +1912,36 @@ public class RationalProperties {
         }
     }
 
+    private static void compareImplementationsMultiply_BigInteger() {
+        initialize();
+        System.out.println("comparing multiply(BigInteger) implementations...");
+
+        long totalTime = 0;
+        Iterable<Pair<Rational, BigInteger>> ps = P.pairs(P.rationals(), P.bigIntegers());
+        for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
+            long time = System.nanoTime();
+            assert p.a != null;
+            assert p.b != null;
+            multiply_BigInteger_simplest(p.a, p.b);
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\tsimplest: " + ((double) totalTime) / 1e9 + " s");
+
+        totalTime = 0;
+        for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
+            long time = System.nanoTime();
+            assert p.a != null;
+            assert p.b != null;
+            p.a.multiply(p.b);
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\tstandard: " + ((double) totalTime) / 1e9 + " s");
+    }
+
+    private static @NotNull Rational multiply_int_simplest(@NotNull Rational a, int b) {
+        return of(a.getNumerator().multiply(BigInteger.valueOf(b)), a.getDenominator());
+    }
+
     private static void propertiesMultiply_int() {
         initialize();
         System.out.println("testing multiply(int) properties...");
@@ -1910,6 +1951,7 @@ public class RationalProperties {
             assert p.b != null;
             Rational product = p.a.multiply(p.b);
             validate(product);
+            assertEquals(p.toString(), product, p.a.multiply(p.b));
             assertEquals(p.toString(), product, p.a.multiply(of(p.b)));
             assertEquals(p.toString(), product, of(p.b).multiply(p.a));
         }
@@ -1938,6 +1980,32 @@ public class RationalProperties {
             Rational expression2 = t.a.multiply(t.c).add(t.b.multiply(t.c));
             assertEquals(t.toString(), expression1, expression2);
         }
+    }
+
+    private static void compareImplementationsMultiply_int() {
+        initialize();
+        System.out.println("comparing multiply(int) implementations...");
+
+        long totalTime = 0;
+        Iterable<Pair<Rational, Integer>> ps = P.pairs(P.rationals(), P.integers());
+        for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
+            long time = System.nanoTime();
+            assert p.a != null;
+            assert p.b != null;
+            multiply_int_simplest(p.a, p.b);
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\tsimplest: " + ((double) totalTime) / 1e9 + " s");
+
+        totalTime = 0;
+        for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
+            long time = System.nanoTime();
+            assert p.a != null;
+            assert p.b != null;
+            p.a.multiply(p.b);
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\tstandard: " + ((double) totalTime) / 1e9 + " s");
     }
 
     private static void propertiesDivide_Rational_Rational() {

@@ -1215,7 +1215,7 @@ public final class Rational implements Comparable<Rational> {
      *  <li>The result is not null.</li>
      * </ul>
      *
-     * @param that the multiplier
+     * @param that the {@code BigInteger} {@code this} is multiplied by
      * @return {@code this}×{@code that}
      */
     public @NotNull Rational multiply(@NotNull BigInteger that) {
@@ -1231,10 +1231,11 @@ public final class Rational implements Comparable<Rational> {
      *
      * <ul>
      *  <li>{@code this} may be any {@code Rational}.</li>
+     *  <li>{@code that} may be any {@code int}.</li>
      *  <li>The result is not null.</li>
      * </ul>
      *
-     * @param that the multiplier
+     * @param that the {@code int} {@code this} is multiplied by
      * @return {@code this}×{@code that}
      */
     public @NotNull Rational multiply(int that) {
