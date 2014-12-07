@@ -2465,39 +2465,39 @@ public class RationalTest {
 
     @Test
     public void testDivide_Rational_Rational() {
-        aeq(divide(read("2/3").get(), read("6/7").get()), "7/9");
-        aeq(divide(read("2/3").get(), read("-6/7").get()), "-7/9");
-        aeq(divide(read("-2/3").get(), read("6/7").get()), "-7/9");
-        aeq(divide(read("-2/3").get(), read("-6/7").get()), "7/9");
-        aeq(divide(read("2/3").get(), read("4").get()), "1/6");
-        aeq(divide(read("2/3").get(), read("-4").get()), "-1/6");
-        aeq(divide(read("-2/3").get(), read("4").get()), "-1/6");
-        aeq(divide(read("-2/3").get(), read("-4").get()), "1/6");
-        aeq(divide(read("3").get(), read("5").get()), "3/5");
-        aeq(divide(read("3").get(), read("-5").get()), "-3/5");
-        aeq(divide(read("-3").get(), read("5").get()), "-3/5");
-        aeq(divide(read("-3").get(), read("-5").get()), "3/5");
-        aeq(divide(read("1/4").get(), read("4").get()), "1/16");
-        assertTrue(divide(read("2/3").get(), read("2/3").get()) == ONE);
-        assertTrue(divide(read("-2/3").get(), read("-2/3").get()) == ONE);
-        aeq(divide(read("2/3").get(), ONE), "2/3");
-        aeq(divide(read("-2/3").get(), ONE), "-2/3");
-        assertTrue(divide(ZERO, ONE) == ZERO);
-        assertTrue(divide(ONE, ONE) == ONE);
+        aeq(read("2/3").get().divide(read("6/7").get()), "7/9");
+        aeq(read("2/3").get().divide(read("-6/7").get()), "-7/9");
+        aeq(read("-2/3").get().divide(read("6/7").get()), "-7/9");
+        aeq(read("-2/3").get().divide(read("-6/7").get()), "7/9");
+        aeq(read("2/3").get().divide(read("4").get()), "1/6");
+        aeq(read("2/3").get().divide(read("-4").get()), "-1/6");
+        aeq(read("-2/3").get().divide(read("4").get()), "-1/6");
+        aeq(read("-2/3").get().divide(read("-4").get()), "1/6");
+        aeq(read("3").get().divide(read("5").get()), "3/5");
+        aeq(read("3").get().divide(read("-5").get()), "-3/5");
+        aeq(read("-3").get().divide(read("5").get()), "-3/5");
+        aeq(read("-3").get().divide(read("-5").get()), "3/5");
+        aeq(read("1/4").get().divide(read("4").get()), "1/16");
+        assertTrue(read("2/3").get().divide(read("2/3").get()) == ONE);
+        assertTrue(read("-2/3").get().divide(read("-2/3").get()) == ONE);
+        aeq(read("2/3").get().divide(ONE), "2/3");
+        aeq(read("-2/3").get().divide(ONE), "-2/3");
+        assertTrue(ZERO.divide(ONE) == ZERO);
+        assertTrue(ONE.divide(ONE) == ONE);
         try {
-            divide(read("2/3").get(), ZERO);
+            read("2/3").get().divide(ZERO);
             fail();
         } catch (ArithmeticException ignored) {}
         try {
-            divide(read("3").get(), ZERO);
+            read("3").get().divide(ZERO);
             fail();
         } catch (ArithmeticException ignored) {}
         try {
-            divide(ONE, ZERO);
+            ONE.divide(ZERO);
             fail();
         } catch (ArithmeticException ignored) {}
         try {
-            divide(ZERO, ZERO);
+            ZERO.divide(ZERO);
             fail();
         } catch (ArithmeticException ignored) {}
     }

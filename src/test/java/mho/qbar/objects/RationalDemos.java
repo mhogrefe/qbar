@@ -424,7 +424,7 @@ public class RationalDemos {
         for (Pair<Rational, Rational> p : take(LIMIT, ps)) {
             assert p.a != null;
             assert p.b != null;
-            System.out.println(p.a + " / " + p.b + " = " + divide(p.a, p.b));
+            System.out.println(p.a + " / " + p.b + " = " + p.a.divide(p.b));
         }
     }
 

@@ -404,7 +404,7 @@ public final class Rational implements Comparable<Rational> {
      * @return the {@code Rational} corresponding to {@code d}
      */
     public static @NotNull Rational of(@NotNull BigDecimal d) {
-        return divide(of(d.unscaledValue()), of(10).pow(d.scale()));
+        return of(d.unscaledValue()).divide(of(10).pow(d.scale()));
     }
 
     /**
@@ -1251,19 +1251,18 @@ public final class Rational implements Comparable<Rational> {
      * Returns the quotient of {@code a} and {@code b}.
      *
      * <ul>
-     *  <li>{@code a} cannot be null.</li>
-     *  <li>{@code b} cannot be null or zero.</li>
+     *  <li>{@code this} can be any {@code Rational}.</li>
+     *  <li>{@code that} cannot be null or zero.</li>
      *  <li>The result is not null.</li>
      * </ul>
      *
-     * @param a the first {@code Rational}
-     * @param b the second {@code Rational}
-     * @return {@code a}/{@code b}
+     * @param that {@code Rational} that {@code this} is divide by
+     * @return {@code this}/{@code that}
      */
-    public static @NotNull Rational divide(@NotNull Rational a, @NotNull Rational b) {
-        if (b == ZERO)
+    public @NotNull Rational divide(@NotNull Rational that) {
+        if (that == ZERO)
             throw new ArithmeticException("division by zero");
-        return a.multiply(b.invert());
+        return multiply(that.invert());
     }
 
     /**

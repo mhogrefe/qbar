@@ -2016,7 +2016,7 @@ public class RationalProperties {
         for (Pair<Rational, Rational> p : take(LIMIT, ps)) {
             assert p.a != null;
             assert p.b != null;
-            Rational quotient = divide(p.a, p.b);
+            Rational quotient = p.a.divide(p.b);
             validate(quotient);
             assertEquals(p.toString(), p.a, quotient.multiply(p.b));
         }
@@ -2025,17 +2025,17 @@ public class RationalProperties {
         for (Pair<Rational, Rational> p : take(LIMIT, ps)) {
             assert p.a != null;
             assert p.b != null;
-            assertEquals(p.toString(), divide(p.a, p.b), divide(p.b, p.a).invert());
+            assertEquals(p.toString(), p.a.divide(p.b), p.b.divide(p.a).invert());
         }
 
         for (Rational r : take(LIMIT, P.rationals())) {
-            assertEquals(r.toString(), divide(r, ONE), r);
+            assertEquals(r.toString(), r.divide(ONE), r);
         }
 
         Iterable<Rational> rs = filter(r -> r != ZERO, P.rationals());
         for (Rational r : take(LIMIT, rs)) {
-            assertEquals(r.toString(), divide(ONE, r), r.invert());
-            assertTrue(r.toString(), divide(r, r) == ONE);
+            assertEquals(r.toString(), ONE.divide(r), r.invert());
+            assertTrue(r.toString(), r.divide(r) == ONE);
         }
     }
 
@@ -2062,7 +2062,7 @@ public class RationalProperties {
         for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
             assert p.a != null;
             assert p.b != null;
-            assertEquals(p.toString(), p.a.divide(p.b), divide(of(p.b), p.a).invert());
+            assertEquals(p.toString(), p.a.divide(p.b), of(p.b).divide(p.a).invert());
         }
         
         Iterable<BigInteger> bis = filter(i -> !i.equals(BigInteger.ZERO), P.bigIntegers());
@@ -2093,7 +2093,7 @@ public class RationalProperties {
         for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
             assert p.a != null;
             assert p.b != null;
-            assertEquals(p.toString(), p.a.divide(p.b), divide(of(p.b), p.a).invert());
+            assertEquals(p.toString(), p.a.divide(p.b), of(p.b).divide(p.a).invert());
         }
 
         Iterable<Integer> is = filter(i -> i != 0, P.integers());
@@ -2339,7 +2339,7 @@ public class RationalProperties {
             assert t.a != null;
             assert t.b != null;
             assert t.c != null;
-            Rational expression1 = divide(t.a.pow(t.b), t.a.pow(t.c));
+            Rational expression1 = t.a.pow(t.b).divide(t.a.pow(t.c));
             Rational expression2 = t.a.pow(t.b - t.c);
             assertEquals(t.toString(), expression1, expression2);
         }
@@ -2378,8 +2378,8 @@ public class RationalProperties {
             assert t.a != null;
             assert t.b != null;
             assert t.c != null;
-            Rational expression1 = divide(t.a, t.b).pow(t.c);
-            Rational expression2 = divide(t.a.pow(t.c), t.b.pow(t.c));
+            Rational expression1 = t.a.divide(t.b).pow(t.c);
+            Rational expression2 = t.a.pow(t.c).divide(t.b.pow(t.c));
             assertEquals(t.toString(), expression1, expression2);
         }
     }
