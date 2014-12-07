@@ -2464,7 +2464,7 @@ public class RationalTest {
     }
 
     @Test
-    public void testDivide_Rational_Rational() {
+    public void testDivide_Rational() {
         aeq(read("2/3").get().divide(read("6/7").get()), "7/9");
         aeq(read("2/3").get().divide(read("-6/7").get()), "-7/9");
         aeq(read("-2/3").get().divide(read("6/7").get()), "-7/9");

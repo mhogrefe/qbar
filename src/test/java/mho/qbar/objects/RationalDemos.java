@@ -391,7 +391,7 @@ public class RationalDemos {
         }
     }
 
-    public static void demoMultiply_Rational_Rational() {
+    public static void demoMultiply_Rational() {
         initialize();
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
             assert p.a != null;
@@ -418,7 +418,7 @@ public class RationalDemos {
         }
     }
 
-    public static void demoDivide_Rational_Rational() {
+    public static void demoDivide_Rational() {
         initialize();
         Iterable<Pair<Rational, Rational>> ps = filter(p -> p.b != ZERO, P.pairs(P.rationals()));
         for (Pair<Rational, Rational> p : take(LIMIT, ps)) {

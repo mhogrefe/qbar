@@ -94,7 +94,8 @@ public class RationalProperties {
             compareImplementationsMultiply_BigInteger();
             propertiesMultiply_int();
             compareImplementationsMultiply_int();
-            propertiesDivide_Rational_Rational();
+            propertiesDivide_Rational();
+            compareImplementationsDivide_Rational();
             propertiesDivide_BigInteger();
             propertiesDivide_int();
             propertiesSum();
@@ -1806,7 +1807,7 @@ public class RationalProperties {
 
     private static void propertiesSubtract() {
         initialize();
-        System.out.println("testing subtract(Rational, Rational) properties...");
+        System.out.println("testing subtract(Rational) properties...");
 
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
             assert p.a != null;
@@ -1951,6 +1952,7 @@ public class RationalProperties {
             assert p.b != null;
             Rational product = p.a.multiply(p.b);
             validate(product);
+            assertEquals(p.toString(), product, multiply_int_simplest(p.a, p.b));
             assertEquals(p.toString(), product, p.a.multiply(p.b));
             assertEquals(p.toString(), product, p.a.multiply(of(p.b)));
             assertEquals(p.toString(), product, of(p.b).multiply(p.a));
@@ -2008,9 +2010,13 @@ public class RationalProperties {
         System.out.println("\tstandard: " + ((double) totalTime) / 1e9 + " s");
     }
 
-    private static void propertiesDivide_Rational_Rational() {
+    private static @NotNull Rational divide_Rational_simplest(@NotNull Rational a, @NotNull Rational b) {
+        return of(a.getNumerator().multiply(b.getDenominator()), a.getDenominator().multiply(b.getNumerator()));
+    }
+
+    private static void propertiesDivide_Rational() {
         initialize();
-        System.out.println("testing divide(Rational, Rational) properties...");
+        System.out.println("testing divide(Rational) properties...");
 
         Iterable<Pair<Rational, Rational>> ps = filter(p -> p.b != ZERO, P.pairs(P.rationals()));
         for (Pair<Rational, Rational> p : take(LIMIT, ps)) {
@@ -2018,6 +2024,7 @@ public class RationalProperties {
             assert p.b != null;
             Rational quotient = p.a.divide(p.b);
             validate(quotient);
+            assertEquals(p.toString(), quotient, divide_Rational_simplest(p.a, p.b));
             assertEquals(p.toString(), p.a, quotient.multiply(p.b));
         }
 
@@ -2037,6 +2044,39 @@ public class RationalProperties {
             assertEquals(r.toString(), ONE.divide(r), r.invert());
             assertTrue(r.toString(), r.divide(r) == ONE);
         }
+
+        for (Rational r : take(LIMIT, P.rationals())) {
+            try {
+                r.divide(ZERO);
+                fail(r.toString());
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private static void compareImplementationsDivide_Rational() {
+        initialize();
+        System.out.println("comparing divide(Rational) implementations...");
+
+        long totalTime = 0;
+        Iterable<Pair<Rational, Rational>> ps = filter(p -> p.b != ZERO, P.pairs(P.rationals()));
+        for (Pair<Rational, Rational> p : take(LIMIT, ps)) {
+            long time = System.nanoTime();
+            assert p.a != null;
+            assert p.b != null;
+            divide_Rational_simplest(p.a, p.b);
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\tsimplest: " + ((double) totalTime) / 1e9 + " s");
+
+        totalTime = 0;
+        for (Pair<Rational, Rational> p : take(LIMIT, ps)) {
+            long time = System.nanoTime();
+            assert p.a != null;
+            assert p.b != null;
+            p.a.divide(p.b);
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\tstandard: " + ((double) totalTime) / 1e9 + " s");
     }
 
     private static void propertiesDivide_BigInteger() {
