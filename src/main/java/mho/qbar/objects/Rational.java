@@ -86,6 +86,18 @@ public final class Rational implements Comparable<Rational> {
             new Rational(BigInteger.ONE.shiftLeft(1024).subtract(BigInteger.ONE.shiftLeft(971)), BigInteger.ONE);
 
     /**
+     * an {@code Iterable} that contains every harmonic number. Does not support removal.
+     *
+     * Length is infinite
+     */
+    public static final @NotNull Iterable<Rational> HARMONIC_NUMBERS =
+            tail(scanl(p -> {
+                assert p.a != null;
+                assert p.b != null;
+                return p.a.add(p.b);
+            }, ZERO, map(i -> of(i).invert(), range(1))));
+
+    /**
      * {@code this} times {@code denominator}
      */
     private final @NotNull BigInteger numerator;
@@ -1321,7 +1333,11 @@ public final class Rational implements Comparable<Rational> {
      * @return Σxs
      */
     public static Rational sum(@NotNull Iterable<Rational> xs) {
-        return foldl(p -> p.a.add(p.b), ZERO, xs);
+        return foldl(p -> {
+            assert p.a != null;
+            assert p.b != null;
+            return p.a.add(p.b);
+        }, ZERO, xs);
     }
 
     /**
@@ -1336,7 +1352,11 @@ public final class Rational implements Comparable<Rational> {
      * @return Πxs
      */
     public static Rational product(@NotNull Iterable<Rational> xs) {
-        return foldl(p -> p.a.multiply(p.b), ONE, xs);
+        return foldl(p -> {
+            assert p.a != null;
+            assert p.b != null;
+            return p.a.multiply(p.b);
+        }, ONE, xs);
     }
 
     /**
@@ -1358,7 +1378,11 @@ public final class Rational implements Comparable<Rational> {
             throw new IllegalArgumentException("cannot get delta of empty Iterable");
         if (head(xs) == null)
             throw new NullPointerException();
-        return adjacentPairsWith(p -> p.b.subtract(p.a), xs);
+        return adjacentPairsWith(p -> {
+            assert p.a != null;
+            assert p.b != null;
+            return p.b.subtract(p.a);
+        }, xs);
     }
 
     /**
@@ -1377,18 +1401,6 @@ public final class Rational implements Comparable<Rational> {
             throw new ArithmeticException("harmonic number must have positive index");
         return sum(map(i -> of(i).invert(), range(1, n)));
     }
-
-    /**
-     * an {@code Iterable} that contains every harmonic number. Does not support removal.
-     *
-     * Length is infinite
-     */
-    public static final @NotNull Iterable<Rational> HARMONIC_NUMBERS =
-        tail(scanl(p -> {
-            assert p.a != null;
-            assert p.b != null;
-            return p.a.add(p.b);
-        }, ZERO, map(i -> of(i).invert(), range(1))));
 
     /**
      * Returns {@code this} raised to the power of {@code p}. 0<sup>0</sup> yields 1.

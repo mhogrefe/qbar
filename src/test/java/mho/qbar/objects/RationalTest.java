@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import static mho.wheels.iterables.IterableUtils.take;
 import static mho.wheels.iterables.IterableUtils.toList;
 import static mho.wheels.ordering.Ordering.*;
 import static mho.qbar.objects.Rational.*;
@@ -49,6 +50,10 @@ public class RationalTest {
                 "171540458953514382464234321326889464182768467546703537516986049910576551282076245490090389328944075" +
                 "868508455133942304583236903222948165808559332123348274797826204144723168738177180919299881250404026" +
                 "184124858368");
+        aeq(take(20, HARMONIC_NUMBERS),
+                "[1, 3/2, 11/6, 25/12, 137/60, 49/20, 363/140, 761/280, 7129/2520, 7381/2520, 83711/27720," +
+                " 86021/27720, 1145993/360360, 1171733/360360, 1195757/360360, 2436559/720720, 42142223/12252240," +
+                " 14274301/4084080, 275295799/77597520, 55835135/15519504]");
     }
 
     @Test
@@ -2550,7 +2555,7 @@ public class RationalTest {
         try {
             sum(readRationalListWithNulls("[10, null, 11]").get());
             fail();
-        } catch (IllegalArgumentException ignored) {}
+        } catch (AssertionError ignored) {}
     }
 
     @Test
@@ -2561,7 +2566,7 @@ public class RationalTest {
         try {
             product(readRationalListWithNulls("[10, null, 11]").get());
             fail();
-        } catch (IllegalArgumentException ignored) {}
+        } catch (AssertionError ignored) {}
     }
 
     @Test
@@ -2575,7 +2580,7 @@ public class RationalTest {
         try {
             toList(delta(readRationalListWithNulls("[10, null, 12]").get()));
             fail();
-        } catch (NullPointerException ignored) {}
+        } catch (AssertionError ignored) {}
     }
 
     @Test
