@@ -97,7 +97,9 @@ public class RationalProperties {
             propertiesDivide_Rational();
             compareImplementationsDivide_Rational();
             propertiesDivide_BigInteger();
+            compareImplementationsDivide_BigInteger();
             propertiesDivide_int();
+            compareImplementationsDivide_int();
             propertiesSum();
             propertiesProduct();
             propertiesDelta();
@@ -2079,6 +2081,10 @@ public class RationalProperties {
         System.out.println("\tstandard: " + ((double) totalTime) / 1e9 + " s");
     }
 
+    private static @NotNull Rational divide_BigInteger_simplest(@NotNull Rational a, @NotNull BigInteger b) {
+        return of(a.getNumerator(), a.getDenominator().multiply(b));
+    }
+
     private static void propertiesDivide_BigInteger() {
         initialize();
         System.out.println("testing divide(BigInteger) properties...");
@@ -2114,6 +2120,46 @@ public class RationalProperties {
         for (Rational r : take(LIMIT, P.rationals())) {
             assertEquals(r.toString(), r.divide(BigInteger.ONE), r);      
         }
+
+        for (Rational r : take(LIMIT, P.rationals())) {
+            try {
+                r.divide(BigInteger.ZERO);
+                fail(r.toString());
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private static void compareImplementationsDivide_BigInteger() {
+        initialize();
+        System.out.println("comparing divide(BigInteger) implementations...");
+
+        long totalTime = 0;
+        Iterable<Pair<Rational, BigInteger>> ps = P.pairs(
+                P.rationals(),
+                filter(i -> !i.equals(BigInteger.ZERO), P.bigIntegers())
+        );
+        for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
+            long time = System.nanoTime();
+            assert p.a != null;
+            assert p.b != null;
+            divide_BigInteger_simplest(p.a, p.b);
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\tsimplest: " + ((double) totalTime) / 1e9 + " s");
+
+        totalTime = 0;
+        for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
+            long time = System.nanoTime();
+            assert p.a != null;
+            assert p.b != null;
+            p.a.divide(p.b);
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\tstandard: " + ((double) totalTime) / 1e9 + " s");
+    }
+
+    private static @NotNull Rational divide_int_simplest(@NotNull Rational a, int b) {
+        return of(a.getNumerator(), a.getDenominator().multiply(BigInteger.valueOf(b)));
     }
 
     private static void propertiesDivide_int() {
@@ -2145,6 +2191,39 @@ public class RationalProperties {
         for (Rational r : take(LIMIT, P.rationals())) {
             assertEquals(r.toString(), r.divide(1), r);
         }
+
+        for (Rational r : take(LIMIT, P.rationals())) {
+            try {
+                r.divide(0);
+                fail(r.toString());
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private static void compareImplementationsDivide_int() {
+        initialize();
+        System.out.println("comparing divide(int) implementations...");
+
+        long totalTime = 0;
+        Iterable<Pair<Rational, Integer>> ps = P.pairs(P.rationals(), filter(i -> i != 0, P.integers()));
+        for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
+            long time = System.nanoTime();
+            assert p.a != null;
+            assert p.b != null;
+            divide_int_simplest(p.a, p.b);
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\tsimplest: " + ((double) totalTime) / 1e9 + " s");
+
+        totalTime = 0;
+        for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
+            long time = System.nanoTime();
+            assert p.a != null;
+            assert p.b != null;
+            p.a.divide(p.b);
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\tstandard: " + ((double) totalTime) / 1e9 + " s");
     }
 
     private static void propertiesSum() {
