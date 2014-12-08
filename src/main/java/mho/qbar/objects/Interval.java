@@ -197,7 +197,7 @@ public final class Interval implements Comparable<Interval> {
      *  <li>The result may be null or an {@code Optional} containing a non-negative {@code Rational}.</li>
      * </ul>
      *
-     * @return the diameter of {@code this)
+     * @return the diameter of {@code this}
      */
     public @NotNull Optional<Rational> diameter() {
         if (lower == null || upper == null) return Optional.empty();

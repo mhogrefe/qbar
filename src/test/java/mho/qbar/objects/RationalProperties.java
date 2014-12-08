@@ -106,6 +106,7 @@ public class RationalProperties {
             propertiesDelta();
             propertiesHarmonicNumber();
             propertiesPow();
+            compareImplementationsPow();
             propertiesFloor();
             propertiesCeiling();
             propertiesFractionalPart();
@@ -2107,6 +2108,7 @@ public class RationalProperties {
             assert p.b != null;
             Rational quotient = p.a.divide(p.b);
             validate(quotient);
+            assertEquals(p.toString(), quotient, divide_BigInteger_simplest(p.a, p.b));
             assertEquals(p.toString(), p.a, quotient.multiply(p.b));
         }
 
@@ -2181,6 +2183,7 @@ public class RationalProperties {
             assert p.b != null;
             Rational quotient = p.a.divide(p.b);
             validate(quotient);
+            assertEquals(p.toString(), quotient, divide_int_simplest(p.a, p.b));
             assertEquals(p.toString(), p.a, quotient.multiply(p.b));
         }
 
@@ -2404,6 +2407,14 @@ public class RationalProperties {
         }
     }
 
+    private static @NotNull Rational pow_simplest(@NotNull Rational a, int p) {
+        Rational result = ONE;
+        for (int i = 0; i < Math.abs(p); i++) {
+            result = result.multiply(a);
+        }
+        return p < 0 ? result.invert() : result;
+    }
+
     private static void propertiesPow() {
         initialize();
         System.out.println("\t\ttesting pow(int) properties...");
@@ -2421,6 +2432,7 @@ public class RationalProperties {
             assert p.b != null;
             Rational r = p.a.pow(p.b);
             validate(r);
+            assertEquals(p.toString(), r, pow_simplest(p.a, p.b));
         }
 
         ps = P.pairs(filter(r -> r != ZERO, P.rationals()), exps);
@@ -2517,6 +2529,45 @@ public class RationalProperties {
             Rational expression2 = t.a.pow(t.c).divide(t.b.pow(t.c));
             assertEquals(t.toString(), expression1, expression2);
         }
+
+        for (int i : take(LIMIT, P.negativeIntegers())) {
+            try {
+                ZERO.pow(i);
+                fail(Integer.toString(i));
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private static void compareImplementationsPow() {
+        initialize();
+        System.out.println("\t\tcomparing pow(int) implementations...");
+
+        long totalTime = 0;
+        Iterable<Integer> exps;
+        if (P instanceof QBarExhaustiveProvider) {
+            exps = P.integers();
+        } else {
+            exps = ((RandomProvider) P).integersGeometric(20);
+        }
+        Iterable<Pair<Rational, Integer>> ps = filter(p -> p.b >= 0 || p.a != ZERO, P.pairs(P.rationals(), exps));
+        for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
+            long time = System.nanoTime();
+            assert p.a != null;
+            assert p.b != null;
+            pow_simplest(p.a, p.b);
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\t\t\tsimplest: " + ((double) totalTime) / 1e9 + " s");
+
+        totalTime = 0;
+        for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
+            long time = System.nanoTime();
+            assert p.a != null;
+            assert p.b != null;
+            p.a.pow(p.b);
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
     }
 
     private static void propertiesFloor() {
