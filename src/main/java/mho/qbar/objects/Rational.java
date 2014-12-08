@@ -1581,9 +1581,9 @@ public final class Rational implements Comparable<Rational> {
      *
      * <ul>
      *  <li>{@code this} may be any {@code Rational}.</li>
-     *  <li>The result is non-null and non-empty. The first element may be any {@code BigInteger}; the remaining
-     *  elements, if any, are all positive. If the result has more than one element, the last element is greater than
-     *  1.</li>
+     *  <li>The result is non-null and non-empty. None of its elements are null. The first element may be any
+     *  {@code BigInteger}; the remaining elements, if any, are all positive. If the result has more than one element,
+     *  the last element is greater than 1.</li>
      * </ul>
      *
      * @return the continued-fraction-representation of {@code this}

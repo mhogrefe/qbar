@@ -573,7 +573,8 @@ public class RationalDemos {
         }
     }
 
-    public static void continuedFractionDemo() {
+    public static void demoContinuedFraction() {
+        initialize();
         for (Rational r : take(LIMIT, P.rationals())) {
             System.out.println("continuedFraction(" + r + ") = " + r.continuedFraction());
         }

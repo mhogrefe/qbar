@@ -115,6 +115,7 @@ public class RationalProperties {
             compareImplementationsShiftLeft();
             propertiesShiftRight();
             compareImplementationsShiftRight();
+            propertiesContinuedFraction();
             propertiesEquals();
             propertiesHashCode();
             propertiesCompareTo();
@@ -2953,6 +2954,24 @@ public class RationalProperties {
             totalTime += (System.nanoTime() - time);
         }
         System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
+    }
+
+    private static void propertiesContinuedFraction() {
+        initialize();
+        System.out.println("\t\ttesting continuedFraction properties...");
+
+        for (Rational r : take(LIMIT, P.rationals())) {
+            List<BigInteger> continuedFraction = r.continuedFraction();
+            assertFalse(r.toString(), continuedFraction.isEmpty());
+            assertTrue(r.toString(), all(i -> i != null, continuedFraction));
+            assertTrue(r.toString(), all(i -> i.signum() == 1, tail(continuedFraction)));
+            assertEquals(r.toString(), r, fromContinuedFraction(continuedFraction));
+        }
+
+        for (Rational r : take(LIMIT, filter(s -> !s.getDenominator().equals(BigInteger.ONE), P.rationals()))) {
+            List<BigInteger> continuedFraction = r.continuedFraction();
+            assertTrue(r.toString(), gt(last(continuedFraction), BigInteger.ONE));
+        }
     }
 
     private static void propertiesEquals() {
