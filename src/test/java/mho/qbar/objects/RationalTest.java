@@ -2826,6 +2826,32 @@ public class RationalTest {
     }
 
     @Test
+    public void testContinuedFraction() {
+        aeq(ZERO.continuedFraction(), "[0]");
+        aeq(ONE.continuedFraction(), "[1]");
+        aeq(read("1/2").get().continuedFraction(), "[0, 2]");
+        aeq(read("-1/2").get().continuedFraction(), "[-1, 2]");
+        aeq(read("415/93").get().continuedFraction(), "[4, 2, 6, 7]");
+        aeq(read("-415/93").get().continuedFraction(), "[-5, 1, 1, 6, 7]");
+        aeq(ofExact(Math.sqrt(2)).continuedFraction(),
+                "[1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 2, 7, 1, 2, 33, 2, 7, 5," +
+                " 2, 1, 1, 16, 2]");
+        aeq(ofExact(-Math.sqrt(2)).continuedFraction(),
+                "[-2, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 2, 7, 1, 2, 33, 2, 7," +
+                " 5, 2, 1, 1, 16, 2]");
+        aeq(ofExact(Math.PI).continuedFraction(),
+                "[3, 7, 15, 1, 292, 1, 1, 1, 2, 1, 3, 1, 14, 3, 3, 2, 1, 3, 3, 7, 2, 1, 1, 3, 2, 42, 2]");
+        aeq(ofExact(-Math.PI).continuedFraction(),
+                "[-4, 1, 6, 15, 1, 292, 1, 1, 1, 2, 1, 3, 1, 14, 3, 3, 2, 1, 3, 3, 7, 2, 1, 1, 3, 2, 42, 2]");
+        aeq(ofExact(Math.E).continuedFraction(),
+                "[2, 1, 2, 1, 1, 4, 1, 1, 6, 1, 1, 8, 1, 1, 10, 1, 1, 12, 1, 1, 11, 1, 1, 1, 11, 5, 1, 1, 2, 1, 4," +
+                " 2, 1, 1, 9, 17, 3]");
+        aeq(ofExact(-Math.E).continuedFraction(),
+                "[-3, 3, 1, 1, 4, 1, 1, 6, 1, 1, 8, 1, 1, 10, 1, 1, 12, 1, 1, 11, 1, 1, 1, 11, 5, 1, 1, 2, 1, 4, 2," +
+                " 1, 1, 9, 17, 3]");
+    }
+
+    @Test
     public void testEquals() {
         assertTrue(ZERO.equals(ZERO));
         assertTrue(ONE.equals(ONE));
