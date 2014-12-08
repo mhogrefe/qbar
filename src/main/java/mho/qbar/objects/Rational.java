@@ -1489,23 +1489,23 @@ public final class Rational implements Comparable<Rational> {
         return subtract(of(floor()));
     }
 
-    //todo finish fixing JavaDoc
     /**
      * Rounds {@code this} a rational number that is an integer multiple of 1/{@code denominator} according to
-     * {@code roundingMode}; see documentation for {@code java.math.RoundingMode} for details.
+     * {@code roundingMode}; see documentation for {@link java.math.RoundingMode} for details.
      *
      * <ul>
      *  <li>{@code this} may be any {@code Rational}.</li>
      *  <li>{@code denominator} must be positive.</li>
-     *  <li>If {@code roundingMode} is {@code UNNECESSARY}, {@code this}'s denominator must divide
+     *  <li>If {@code roundingMode} is {@code RoundingMode.UNNECESSARY}, {@code this}'s denominator must divide
      *  {@code denominator}.</li>
      *  <li>The result is not null.</li>
      * </ul>
      *
      * @param denominator the denominator which represents the precision that {@code this} is rounded to.
-     * @param roundingMode determines the way in which {@code this} is rounded. Options are {@code UP},
-     *                     {@code DOWN}, {@code CEILING}, {@code FLOOR}, {@code HALF_UP}, {@code HALF_DOWN},
-     *                     {@code HALF_EVEN}, and {@code UNNECESSARY}.
+     * @param roundingMode determines the way in which {@code this} is rounded. Options are {@code RoundingMode.UP},
+     *                     {@code RoundingMode.DOWN}, {@code RoundingMode.CEILING}, {@code RoundingMode.FLOOR},
+     *                     {@code RoundingMode.HALF_UP}, {@code RoundingMode.HALF_DOWN},
+     *                     {@code RoundingMode.HALF_EVEN}, and {@code RoundingMode.UNNECESSARY}.
      * @return {@code this}, rounded to an integer multiple of 1/{@code denominator}
      */
     public @NotNull Rational roundToDenominator(@NotNull BigInteger denominator, @NotNull RoundingMode roundingMode) {
@@ -1515,8 +1515,8 @@ public final class Rational implements Comparable<Rational> {
     }
 
     /**
-     * Returns the left shift of {@code this} by {@code bits};
-     * {@code this}×2<sup>{@code bits}</sup>. Negative {@code bits} corresponds to a right shift.
+     * Returns the left shift of {@code this} by {@code bits}; {@code this}×2<sup>{@code bits}</sup>. Negative
+     * {@code bits} corresponds to a right shift.
      *
      * <ul>
      *  <li>{@code this} can be any {@code Rational}.</li>
@@ -1545,8 +1545,8 @@ public final class Rational implements Comparable<Rational> {
     }
 
     /**
-     * Returns the right shift of {@code this} by {@code bits};
-     * {@code this}×2<sup>–{@code bits}</sup>. Negative {@code bits} corresponds to a left shift.
+     * Returns the right shift of {@code this} by {@code bits}; {@code this}×2<sup>–{@code bits}</sup>. Negative
+     * {@code bits} corresponds to a left shift.
      *
      * <ul>
      *  <li>{@code this} can be any {@code Rational}.</li>
@@ -1576,7 +1576,7 @@ public final class Rational implements Comparable<Rational> {
 
     /**
      * Finds the continued fraction of {@code this}. If we pretend that the result is an array called a of length n,
-     * then {@code this}=a[0]+1/(a[1]+1/(a[2]+...+1/a[n-1]...)). Every rational number has two such representations;
+     * then {@code this}=a[0]+1/(a[1]+1/(a[2]+...+1/a[n-1])...). Every rational number has two such representations;
      * this method returns the shortest one.
      *
      * <ul>
@@ -1606,13 +1606,12 @@ public final class Rational implements Comparable<Rational> {
      * fraction representations; either is accepted.
      *
      * <ul>
-     *  <li>{@code continuedFraction} must be non-null and non-empty. All elements but the first must be
-     *  positive.</li>
+     *  <li>{@code continuedFraction} must be non-null and non-empty. All elements but the first must be positive.</li>
      *  <li>The result is not null.</li>
      * </ul>
      *
      * @param continuedFraction a continued fraction
-     * @return a[0]+1/(a[1]+1/(a[2]+...+1/a[n-1]...))
+     * @return a[0]+1/(a[1]+1/(a[2]+...+1/a[n-1])...)
      */
     public static @NotNull Rational fromContinuedFraction(@NotNull List<BigInteger> continuedFraction) {
         Rational x = of(continuedFraction.get(continuedFraction.size() - 1));
@@ -1637,16 +1636,7 @@ public final class Rational implements Comparable<Rational> {
      * @return the convergents of {@code this}.
      */
     public @NotNull List<Rational> convergents() {
-        List<Rational> approximations = new ArrayList<>();
-        List<BigInteger> continuedFraction = continuedFraction();
-        for (int i = 0; i < continuedFraction.size(); i++) {
-            List<BigInteger> truncatedContinuedFraction = new ArrayList<>();
-            for (int j = 0; j <= i; j++) {
-                truncatedContinuedFraction.add(continuedFraction.get(j));
-            }
-            approximations.add(fromContinuedFraction(truncatedContinuedFraction));
-        }
-        return approximations;
+        return reverse(map(cf -> fromContinuedFraction(toList(cf)), inits(continuedFraction())));
     }
 
     /**
@@ -1743,18 +1733,19 @@ public final class Rational implements Comparable<Rational> {
     /**
      * Returns the digits of (non-negative) {@code this} in a given base. The return value is a pair consisting of the
      * digits before the decimal point (in a list) and the digits after the decimal point (in a possibly-infinite
-     * iterable). Trailing zeroes are not included.
+     * {@code Iterable}). Trailing zeroes are not included.
      *
      * <ul>
      *  <li>{@code this} may be any {@code Rational}.</li>
      *  <li>{@code base} must be greater than 1.</li>
-     *  <li>the result </li>
+     *  <li>Both of the result's elements are non-null, and the second element is either finite or eventually
+     *  repeating.</li>
      * </ul>
      *
      * @param base the base of the digits
      * @return a pair consisting of the digits before the decimal point and the digits after
      */
-    public @NotNull Pair<List<BigInteger>, Iterable<BigInteger>> digits(BigInteger base) {
+    public @NotNull Pair<List<BigInteger>, Iterable<BigInteger>> digits(@NotNull BigInteger base) {
         Triple<List<BigInteger>, List<BigInteger>, List<BigInteger>> positionalNotation = positionalNotation(base);
         Iterable<BigInteger> afterDecimal;
         assert positionalNotation.c != null;
@@ -1804,8 +1795,8 @@ public final class Rational implements Comparable<Rational> {
     }
 
     /**
-     * Compares {@code this} to {@code that}, returning 1, –1, or 0 if the answer is "greater than", "less
-     * than", or "equal to", respectively.
+     * Compares {@code this} to {@code that}, returning 1, –1, or 0 if the answer is "greater than", "less than", or
+     * "equal to", respectively.
      *
      * <ul>
      *  <li>{@code this} may be any {@code Rational}.</li>
@@ -1856,8 +1847,8 @@ public final class Rational implements Comparable<Rational> {
      * <ul>
      *  <li>{@code this} may be any {@code Rational}.</li>
      *  <li>The result is a string in one of two forms: {@code a.toString()} or {@code a.toString() + "/" +
-     *  b.toString()}, where {@code a} and {@code b} are some {@code BigInteger}s such that {@code b} is
-     *  positive and {@code a} and {@code b} have no positive common factors greater than 1.</li>
+     *  b.toString()}, where {@code a} and {@code b} are some {@code BigInteger}s such that {@code b} is positive and
+     *  {@code a} and {@code b} have no positive common factors greater than 1.</li>
      * </ul>
      *
      * @return a string representation of {@code this}
