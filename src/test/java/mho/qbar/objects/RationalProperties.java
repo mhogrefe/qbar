@@ -112,7 +112,9 @@ public class RationalProperties {
             propertiesFractionalPart();
             propertiesRoundToDenominator();
             propertiesShiftLeft();
+            compareImplementationsShiftLeft();
             propertiesShiftRight();
+            compareImplementationsShiftRight();
             propertiesEquals();
             propertiesHashCode();
             propertiesCompareTo();
@@ -2769,6 +2771,46 @@ public class RationalProperties {
             Rational he = r.roundToDenominator(denominator, RoundingMode.HALF_EVEN);
             assertEquals(r.toString(), he.multiply(denominator).getNumerator().testBit(0), false);
         }
+
+        Iterable<Triple<Rational, BigInteger, RoundingMode>> failTs = P.triples(
+                P.rationals(),
+                map(i -> i.negate(), P.naturalBigIntegers()),
+                P.roundingModes()
+        );
+        for (Triple<Rational, BigInteger, RoundingMode> t : take(LIMIT, failTs)) {
+            assert t.a != null;
+            assert t.b != null;
+            assert t.c != null;
+            try {
+                t.a.roundToDenominator(t.b, t.c);
+                fail(t.toString());
+            } catch (ArithmeticException ignored) {}
+        }
+
+        Iterable<Pair<Rational, BigInteger>> failPs = filter(
+                p -> {
+                    assert p.a != null;
+                    assert p.b != null;
+                    return !p.b.mod(p.a.getDenominator()).equals(BigInteger.ZERO);
+                },
+                P.pairs(P.rationals(), P.positiveBigIntegers())
+        );
+        for (Pair<Rational, BigInteger> p : take(LIMIT, failPs)) {
+            assert p.a != null;
+            assert p.b != null;
+            try {
+                p.a.roundToDenominator(p.b, RoundingMode.UNNECESSARY);
+                fail(p.toString());
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private static @NotNull Rational shiftLeft_simplest(@NotNull Rational a, int bits) {
+        if (bits < 0) {
+            return a.divide(BigInteger.ONE.shiftLeft(-bits));
+        } else {
+            return a.multiply(BigInteger.ONE.shiftLeft(bits));
+        }
     }
 
     private static void propertiesShiftLeft() {
@@ -2787,6 +2829,7 @@ public class RationalProperties {
             assert p.b != null;
             Rational shifted = p.a.shiftLeft(p.b);
             validate(shifted);
+            assertEquals(p.toString(), shifted, shiftLeft_simplest(p.a, p.b));
             assertEquals(p.toString(), p.a.negate().shiftLeft(p.b), shifted.negate());
             assertEquals(p.toString(), shifted, p.a.shiftRight(-p.b));
         }
@@ -2802,6 +2845,46 @@ public class RationalProperties {
             assert p.b != null;
             Rational shifted = p.a.shiftLeft(p.b);
             assertEquals(p.toString(), shifted, p.a.multiply(BigInteger.ONE.shiftLeft(p.b)));
+        }
+    }
+
+    private static void compareImplementationsShiftLeft() {
+        initialize();
+        System.out.println("\t\tcomparing shiftLeft(bits) implementations...");
+
+        long totalTime = 0;
+        Iterable<Integer> is;
+        if (P instanceof QBarExhaustiveProvider) {
+            is = P.integers();
+        } else {
+            is  = ((QBarRandomProvider) P).integersGeometric(50);
+        }
+        Iterable<Pair<Rational, Integer>> ps = P.pairs(P.rationals(), is);
+        for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
+            long time = System.nanoTime();
+            assert p.a != null;
+            assert p.b != null;
+            shiftLeft_simplest(p.a, p.b);
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\t\t\tsimplest: " + ((double) totalTime) / 1e9 + " s");
+
+        totalTime = 0;
+        for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
+            long time = System.nanoTime();
+            assert p.a != null;
+            assert p.b != null;
+            p.a.shiftLeft(p.b);
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
+    }
+
+    private static @NotNull Rational shiftRight_simplest(@NotNull Rational a, int bits) {
+        if (bits < 0) {
+            return a.multiply(BigInteger.ONE.shiftLeft(-bits));
+        } else {
+            return a.divide(BigInteger.ONE.shiftLeft(bits));
         }
     }
 
@@ -2821,6 +2904,7 @@ public class RationalProperties {
             assert p.b != null;
             Rational shifted = p.a.shiftRight(p.b);
             validate(shifted);
+            assertEquals(p.toString(), shifted, shiftRight_simplest(p.a, p.b));
             assertEquals(p.toString(), p.a.negate().shiftRight(p.b), shifted.negate());
             assertEquals(p.toString(), shifted, p.a.shiftLeft(-p.b));
         }
@@ -2837,6 +2921,38 @@ public class RationalProperties {
             Rational shifted = p.a.shiftRight(p.b);
             assertEquals(p.toString(), shifted, p.a.divide(BigInteger.ONE.shiftLeft(p.b)));
         }
+    }
+
+    private static void compareImplementationsShiftRight() {
+        initialize();
+        System.out.println("\t\tcomparing shiftRight(bits) implementations...");
+
+        long totalTime = 0;
+        Iterable<Integer> is;
+        if (P instanceof QBarExhaustiveProvider) {
+            is = P.integers();
+        } else {
+            is  = ((QBarRandomProvider) P).integersGeometric(50);
+        }
+        Iterable<Pair<Rational, Integer>> ps = P.pairs(P.rationals(), is);
+        for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
+            long time = System.nanoTime();
+            assert p.a != null;
+            assert p.b != null;
+            shiftRight_simplest(p.a, p.b);
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\t\t\tsimplest: " + ((double) totalTime) / 1e9 + " s");
+
+        totalTime = 0;
+        for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
+            long time = System.nanoTime();
+            assert p.a != null;
+            assert p.b != null;
+            p.a.shiftRight(p.b);
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
     }
 
     private static void propertiesEquals() {
