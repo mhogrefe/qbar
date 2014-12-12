@@ -16,8 +16,6 @@ import java.util.Optional;
 
 import static mho.wheels.iterables.IterableUtils.take;
 import static mho.wheels.iterables.IterableUtils.toList;
-import static mho.wheels.misc.Readers.findBigIntegerIn;
-import static mho.wheels.misc.Readers.readBigInteger;
 import static mho.wheels.ordering.Ordering.*;
 import static mho.qbar.objects.Rational.*;
 import static org.junit.Assert.*;

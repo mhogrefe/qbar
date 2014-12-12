@@ -48,6 +48,19 @@ public class RationalVector implements Comparable<RationalVector> {
     }
 
     /**
+     * Returns a defensive copy of this {@code RationalVector}'s coordinates
+     *
+     * <ul>
+     *  <li>The result is non-null.</li>
+     * </ul>
+     *
+     * @return the numerator
+     */
+    public @NotNull List<Rational> getCoordinates() {
+        return toList(coordinates);
+    }
+
+    /**
      * Creates a {@code RationalVector} from a list of {@code Rational}s. Throws an exception if any element is null.
      * Makes a defensive copy of {@code coordinates}.
      *
@@ -79,19 +92,6 @@ public class RationalVector implements Comparable<RationalVector> {
      */
     public static @NotNull RationalVector of(@NotNull Rational a) {
         return new RationalVector(Arrays.asList(a));
-    }
-
-    /**
-     * Returns a defensive copy of this {@code RationalVector}'s coordinates
-     *
-     * <ul>
-     *  <li>The result is non-null.</li>
-     * </ul>
-     *
-     * @return the numerator
-     */
-    public @NotNull List<Rational> getCoordinates() {
-        return toList(coordinates);
     }
 
     /**
