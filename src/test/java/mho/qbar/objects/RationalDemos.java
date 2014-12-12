@@ -18,6 +18,7 @@ import java.util.Random;
 
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.qbar.objects.Rational.*;
+import static mho.wheels.misc.Readers.findBigDecimalIn;
 
 public class RationalDemos {
     private static final boolean USE_RANDOM = false;
@@ -731,6 +732,26 @@ public class RationalDemos {
         }
         for (String s : take(LIMIT, P.strings(cs))) {
             System.out.println("read(" + s + ") = " + read(s));
+        }
+    }
+
+    private static void demoFindIn() {
+        initialize();
+        for (String s : take(LIMIT, P.strings())) {
+            System.out.println("findIn(" + s + ") = " + findIn(s));
+        }
+    }
+
+    public static void demoFindIn_targeted() {
+        initialize();
+        Iterable<Character> cs;
+        if (P instanceof ExhaustiveProvider) {
+            cs = fromString(RATIONAL_CHARS);
+        } else {
+            cs = ((RandomProvider) P).uniformSample(RATIONAL_CHARS);
+        }
+        for (String s : take(LIMIT, P.strings(cs))) {
+            System.out.println("findIn(" + s + ") = " + findIn(s));
         }
     }
 

@@ -2,7 +2,7 @@ package mho.qbar.objects;
 
 import mho.wheels.math.MathUtils;
 import mho.wheels.misc.BigDecimalUtils;
-import mho.wheels.misc.FloatUtils;
+import mho.wheels.misc.FloatingPointUtils;
 import mho.wheels.misc.Readers;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
@@ -738,7 +738,7 @@ public final class Rational implements Comparable<Rational> {
             adjustedExponent = exponent + 127;
         }
         float loFloat = Float.intBitsToFloat((adjustedExponent << 23) + fraction.floor().intValueExact());
-        float hiFloat = fraction.denominator.equals(BigInteger.ONE) ? loFloat : FloatUtils.successor(loFloat);
+        float hiFloat = fraction.denominator.equals(BigInteger.ONE) ? loFloat : FloatingPointUtils.successor(loFloat);
         return new Pair<>(loFloat, hiFloat);
     }
 
@@ -785,7 +785,9 @@ public final class Rational implements Comparable<Rational> {
             adjustedExponent = exponent + 1023;
         }
         double loDouble = Double.longBitsToDouble(((long) adjustedExponent << 52) + fraction.floor().longValue());
-        double hiDouble = fraction.denominator.equals(BigInteger.ONE) ? loDouble : FloatUtils.successor(loDouble);
+        double hiDouble = fraction.denominator.equals(BigInteger.ONE) ?
+                loDouble :
+                FloatingPointUtils.successor(loDouble);
         return new Pair<>(loDouble, hiDouble);
     }
 
@@ -1814,9 +1816,9 @@ public final class Rational implements Comparable<Rational> {
 
     /**
      * Creates a {@code Rational} from a {@code String}. Valid strings are of the form {@code a.toString()} or
-     * {@code a.toString() + "/" + b.toString()}, where {@code a} and {@code b} are some {@code BigInteger}s and
-     * {@code b}≠0. If the {@code String} is invalid, the method returns Optional.empty() without throwing an
-     * exception; this aids composability.
+     * {@code a.toString() + "/" + b.toString()}, where {@code a} and {@code b} are some {@code BigInteger}s,
+     * {@code b}>0, and {@code a} and {@code b} are coprime. If the {@code String} is invalid, the method returns
+     * {@code }Optional.empty()} without throwing an exception; this aids composability.
      *
      * <ul>
      *  <li>{@code s} must be non-null.</li>
@@ -1837,8 +1839,28 @@ public final class Rational implements Comparable<Rational> {
             if (!numerator.isPresent()) return Optional.empty();
             Optional<BigInteger> denominator = Readers.readBigInteger(s.substring(slashIndex + 1));
             if (!denominator.isPresent() || denominator.get().equals(BigInteger.ZERO)) return Optional.empty();
-            return Optional.of(of(numerator.get(), denominator.get()));
+            Rational candidate = of(numerator.get(), denominator.get());
+            return candidate.toString().equals(s) ? Optional.of(candidate) : Optional.<Rational>empty();
         }
+    }
+
+    /**
+     * Finds the first occurrence of a {@code Rational} in a {@code String} and returns the {@code Rational} and the
+     * index at which it was found. Returns an empty {@code Optional} if no {@code Rational} is found. Only
+     * {@code String}s which could have been emitted by {@link Rational#toString} are recognized. The longest possible
+     * {@code Rational} is parsed.
+     *
+     * <ul>
+     *  <li>{@code s} must be non-null.</li>
+     *  <li>The result is non-null. If it is non-empty, then neither of the {@code Pair}'s components is null, and the
+     *  second component is non-negative.</li>
+     * </ul>
+     *
+     * @param s the input {@code String}
+     * @return the first {@code Rational} found in {@code s}, and the index at which it was found
+     */
+    public static @NotNull Optional<Pair<Rational, Integer>> findIn(@NotNull String s) {
+        return Readers.genericFindIn(Rational::read, "-/0123456789", s);
     }
 
     /**
