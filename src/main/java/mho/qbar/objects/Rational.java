@@ -20,13 +20,15 @@ import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.ordering.Ordering.*;
 
 /**
- * The {@code Rational} class uniquely represents rational numbers. {@code denominator} is the smallest positive
+ * <p>The {@code Rational} class uniquely represents rational numbers. {@code denominator} is the smallest positive
  * integer d such that {@code this}×d is an integer. {@code numerator} is the smallest integer n such that n/d equals
  * {@code this}. This means that n and d have no positive common factor greater than 1, and d is always positive.
  * Arithmetic algorithms taken from Knuth.
  *
- * There is only one instance of {@code ZERO} and one instance of {@code ONE}, so these may be compared with other
+ * <p>There is only one instance of {@code ZERO} and one instance of {@code ONE}, so these may be compared with other
  * {@code Rational}s using {@code ==}.
+ *
+ * <p>This class is immutable.
  */
 public final class Rational implements Comparable<Rational> {
     /**
@@ -1865,16 +1867,16 @@ public final class Rational implements Comparable<Rational> {
     }
 
     /**
-     * Creates a string representation of {@code this}.
+     * Creates a {@code String} representation of {@code this}.
      *
      * <ul>
      *  <li>{@code this} may be any {@code Rational}.</li>
-     *  <li>The result is a string in one of two forms: {@code a.toString()} or {@code a.toString() + "/" +
+     *  <li>The result is a {@code String} in one of two forms: {@code a.toString()} or {@code a.toString() + "/" +
      *  b.toString()}, where {@code a} and {@code b} are some {@code BigInteger}s such that {@code b} is positive and
      *  {@code a} and {@code b} have no positive common factors greater than 1.</li>
      * </ul>
      *
-     * @return a string representation of {@code this}
+     * @return a {@code String} representation of {@code this}
      */
     public @NotNull String toString() {
         if (denominator.equals(BigInteger.ONE)) {

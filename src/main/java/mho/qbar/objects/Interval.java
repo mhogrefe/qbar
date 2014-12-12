@@ -22,6 +22,8 @@ import static mho.wheels.ordering.Ordering.*;
  * not an {@code Interval} itself, in which case the function might return a set of {@code Interval}s, whose closed
  * union is the image, or it may just return the closure of the image's convex hull. Similar considerations apply for
  * functions of two {@code Interval}s, etc.
+ *
+ * <p>This class is immutable.
  */
 public final class Interval implements Comparable<Interval> {
     /**

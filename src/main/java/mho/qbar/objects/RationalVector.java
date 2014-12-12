@@ -1,24 +1,33 @@
 package mho.qbar.objects;
 
+import mho.wheels.ordering.comparators.ShortlexComparator;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 import static mho.wheels.iterables.IterableUtils.*;
 
 /**
- * A vector with {@link Rational} coordinates. May be zero-dimensional.
+ * <p>A vector with {@link Rational} coordinates. May be zero-dimensional.
  *
- * There is only one instance of {@code ZERO_DIMENSIONAL}, so it may be compared with other {@code RationalVector}s
+ * <p>There is only one instance of {@code ZERO_DIMENSIONAL}, so it may be compared with other {@code RationalVector}s
  * using {@code ==}.
+ *
+ * <p>This class is immutable.
  */
-public class RationalVector {
+public class RationalVector implements Comparable<RationalVector> {
     /**
      * []
      */
     public static final RationalVector ZERO_DIMENSIONAL = new RationalVector(new ArrayList<>());
+
+    /**
+     * Used by {@link mho.qbar.objects.RationalVector#compareTo}
+     */
+    private static Comparator<Iterable<Rational>> RATIONAL_ITERABLE_COMPARATOR = new ShortlexComparator<>();
 
     /**
      * The vector's coordinates
@@ -71,5 +80,53 @@ public class RationalVector {
      */
     public static @NotNull RationalVector of(@NotNull Rational a) {
         return new RationalVector(Arrays.asList(a));
+    }
+
+    /**
+     * Returns a defensive copy of this {@code RationalVector}'s coordinates
+     *
+     * <ul>
+     *  <li>The result is non-null.</li>
+     * </ul>
+     *
+     * @return the numerator
+     */
+    public @NotNull List<Rational> getCoordinates() {
+        return toList(coordinates);
+    }
+
+    /**
+     * Compares {@code this} to {@code that}, returning 1, –1, or 0 if the answer is "greater than", "less than", or
+     * "equal to", respectively. Shortlex ordering is used; shorter {@code RationalVector}s come before longer ones,
+     * and two {@code RationalVector}s of the same length are compared left-to-right, element by element.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalVector}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>The result may be –1, 0, or 1.</li>
+     * </ul>
+     *
+     * @param that The {@code RationalVector} to be compared with {@code this}
+     * @return {@code this} compared to {@code that}
+     */
+    @Override
+    public int compareTo(@NotNull RationalVector that) {
+        return RATIONAL_ITERABLE_COMPARATOR.compare(coordinates, that.coordinates);
+    }
+
+    /**
+     * Creates a {@code String} representation of {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalVector}.</li>
+     *  <li>The result is a {@code String} which begins with '[' and ends with ']', and the rest is a possibly-empty
+     *  list of comma-separated {@code String}s, each of which validly represents a {@code Rational} (see
+     *  {@link Rational#toString}.</li>
+     * </ul>
+     *
+     * @return a {@code String} representation of {@code this}
+     */
+    public @NotNull String toString() {
+        return coordinates.toString();
     }
 }
