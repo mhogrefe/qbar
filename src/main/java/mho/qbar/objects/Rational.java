@@ -1818,17 +1818,17 @@ public final class Rational implements Comparable<Rational> {
     }
 
     /**
-     * Creates a {@code Rational} from a {@code String}. Valid strings are of the form {@code a.toString()} or
+     * Creates a {@code Rational} from a {@code String}. Valid {@code String}s are of the form {@code a.toString()} or
      * {@code a.toString() + "/" + b.toString()}, where {@code a} and {@code b} are some {@code BigInteger}s,
      * {@code b}>0, and {@code a} and {@code b} are coprime. If the {@code String} is invalid, the method returns
-     * {@code }Optional.empty()} without throwing an exception; this aids composability.
+     * {@code Optional.empty()} without throwing an exception; this aids composability.
      *
      * <ul>
      *  <li>{@code s} must be non-null.</li>
      *  <li>The result may contain any {@code Rational}, or be empty.</li>
      * </ul>
      *
-     * @param s a string representation of a {@code Rational}
+     * @param s a {@code String} representation of a {@code Rational}
      * @return the {@code Rational} represented by {@code s}, or an empty {@code Optional} if {@code s} is invalid
      */
     public static @NotNull Optional<Rational> read(@NotNull String s) {

@@ -1,12 +1,11 @@
 package mho.qbar.objects;
 
+import mho.wheels.misc.Readers;
 import mho.wheels.ordering.comparators.ShortlexComparator;
+import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 import static mho.wheels.iterables.IterableUtils.*;
 
@@ -146,6 +145,51 @@ public class RationalVector implements Comparable<RationalVector> {
     @Override
     public int hashCode() {
         return coordinates.hashCode();
+    }
+
+    /**
+     * Creates a {@code RationalVector} from a {@code String}. A valid {@code String} begins with '[' and ends with
+     * ']', and the rest is a possibly-empty list of comma-separated {@code String}s, each of which validly represents
+     * a {@code Rational} (see {@link Rational#toString}).
+     *
+     * <ul>
+     *  <li>{@code s} must be non-null.</li>
+     *  <li>The result may contain any {@code RationalVector}, or be empty.</li>
+     * </ul>
+     *
+     * @param s a string representation of a {@code RationalVector}
+     * @return the {@code RationalVector} represented by {@code s}, or an empty {@code Optional} if {@code s} is
+     * invalid
+     */
+    public static @NotNull Optional<RationalVector> read(@NotNull String s) {
+        Optional<List<Rational>> ors = Readers.readList(Rational::findIn, s);
+        if (!ors.isPresent()) return Optional.empty();
+        if (ors.get().isEmpty()) return Optional.of(ZERO_DIMENSIONAL);
+        return Optional.of(new RationalVector(ors.get()));
+    }
+
+    /**
+     * Finds the first occurrence of a {@code RationalVector} in a {@code String} and returns the
+     * {@code RationalVector} and the index at which it was found. Returns an empty {@code Optional} if no
+     * {@code RationalVector} is found. Only {@code String}s which could have been emitted by
+     * {@link RationalVector#toString} are recognized. The longest possible {@code RationalVector} is parsed.
+     *
+     * <ul>
+     *  <li>{@code s} must be non-null.</li>
+     *  <li>The result is non-null. If it is non-empty, then neither of the {@code Pair}'s components is null, and the
+     *  second component is non-negative.</li>
+     * </ul>
+     *
+     * @param s the input {@code String}
+     * @return the first {@code RationalVector} found in {@code s}, and the index at which it was found
+     */
+    public static @NotNull Optional<Pair<RationalVector, Integer>> findIn(@NotNull String s) {
+        Optional<Pair<List<Rational>, Integer>> op = Readers.findListIn(Rational::findIn, s);
+        if (!op.isPresent()) return Optional.empty();
+        Pair<List<Rational>, Integer> p = op.get();
+        assert p.a != null;
+        if (p.a.isEmpty()) return Optional.of(new Pair<>(ZERO_DIMENSIONAL, p.b));
+        return Optional.of(new Pair<>(new RationalVector(p.a), p.b));
     }
 
     /**
