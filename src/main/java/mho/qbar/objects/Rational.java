@@ -1115,7 +1115,7 @@ public final class Rational implements Comparable<Rational> {
     public @NotNull Rational invert() {
         if (this == ZERO)
             throw new ArithmeticException("division by zero");
-        if (equals(ONE)) return ONE;
+        if (this == ONE) return ONE;
         if (numerator.signum() == -1) {
             return new Rational(denominator.negate(), numerator.negate());
         } else {
@@ -1134,7 +1134,9 @@ public final class Rational implements Comparable<Rational> {
      * @return |{@code this}|.
      */
     public @NotNull Rational abs() {
-        return numerator.signum() == -1 ? negate() : this;
+        if (this == ZERO || this == ONE) return this;
+        if (numerator.equals(BigInteger.valueOf(-1)) && denominator.equals(BigInteger.ONE)) return ONE;
+        return new Rational(numerator.abs(), denominator);
     }
 
     /**
@@ -1274,8 +1276,6 @@ public final class Rational implements Comparable<Rational> {
      * @return {@code this}/{@code that}
      */
     public @NotNull Rational divide(@NotNull Rational that) {
-        if (that == ZERO)
-            throw new ArithmeticException("division by zero");
         return multiply(that.invert());
     }
 
