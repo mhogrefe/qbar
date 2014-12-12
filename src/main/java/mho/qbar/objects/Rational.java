@@ -101,6 +101,7 @@ public final class Rational implements Comparable<Rational> {
      * {@code this} times {@code denominator}
      */
     private final @NotNull BigInteger numerator;
+
     /**
      * The smallest positive {@code BigInteger} d such that {@code this}×d is an integer
      */
