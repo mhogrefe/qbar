@@ -17,7 +17,7 @@ import static mho.wheels.iterables.IterableUtils.*;
  *
  * <p>This class is immutable.
  */
-public class RationalVector implements Comparable<RationalVector> {
+public class RationalVector implements Comparable<RationalVector>, Iterable<Rational> {
     /**
      * []
      */
@@ -48,16 +48,91 @@ public class RationalVector implements Comparable<RationalVector> {
     }
 
     /**
-     * Returns a defensive copy of this {@code RationalVector}'s coordinates
+     * Returns an {@code Iterator} over this {@code RationalVector}'s coordinates. This method makes a defensive copy
+     * of {@code coordinates}; Removing from the {@code Iterator} will not affect the {@code RationalVector}.
      *
      * <ul>
+     *  <li>The result is finite.</li>
+     * </ul>
+     *
+     * @return an {@code Iterator} over this {@code RationalVector}'s coordinates
+     */
+    @Override
+    public Iterator<Rational> iterator() {
+        return toList(coordinates).iterator();
+    }
+
+    /**
+     * Returns {@code this}'s x-coordinate.
+     *
+     * <ul>
+     *  <li>{@code this} must be non-empty.</li>
      *  <li>The result is non-null.</li>
      * </ul>
      *
-     * @return the numerator
+     * @return the x-coordinate of {@code this}
      */
-    public @NotNull List<Rational> getCoordinates() {
-        return toList(coordinates);
+    public @NotNull Rational x() {
+        return coordinates.get(0);
+    }
+
+    /**
+     * Returns {@code this}'s y-coordinate.
+     *
+     * <ul>
+     *  <li>{@code this} must have dimension at least 2.</li>
+     *  <li>The result is non-null.</li>
+     * </ul>
+     *
+     * @return the y-coordinate of {@code this}
+     */
+    public @NotNull Rational y() {
+        return coordinates.get(1);
+    }
+
+    /**
+     * Returns {@code this}'s z-coordinate.
+     *
+     * <ul>
+     *  <li>{@code this} must have dimension at least 3.</li>
+     *  <li>The result is non-null.</li>
+     * </ul>
+     *
+     * @return the z-coordinate of {@code this}
+     */
+    public @NotNull Rational z() {
+        return coordinates.get(2);
+    }
+
+    /**
+     * Returns {@code this}'s w-coordinate.
+     *
+     * <ul>
+     *  <li>{@code this} must have dimension at least 4.</li>
+     *  <li>The result is non-null.</li>
+     * </ul>
+     *
+     * @return the w-coordinate of {@code this}
+     */
+    public @NotNull Rational w() {
+        return coordinates.get(3);
+    }
+
+    /**
+     * Returns one of {@code this}'s coordinates. 0-indexed.
+     *
+     * <ul>
+     *  <li>{@code this} must be non-empty.</li>
+     *  <li>{@code i} must be non-negative.</li>
+     *  <li>{@code i} must be less than the dimension of {@code this}.</li>
+     *  <li>The result is non-null.</li>
+     * </ul>
+     *
+     * @param i the 0-based coordinate index
+     * @return the {@code i}th coordinate of {@code this}
+     */
+    public @NotNull Rational x(int i) {
+        return coordinates.get(i);
     }
 
     /**
