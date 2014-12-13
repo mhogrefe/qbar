@@ -1,5 +1,6 @@
 package mho.qbar.iterableProviders;
 
+import mho.qbar.objects.RationalVector;
 import mho.wheels.iterables.ExhaustiveProvider;
 import mho.qbar.objects.Interval;
 import mho.qbar.objects.Rational;
@@ -346,5 +347,15 @@ public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIt
                     )
             );
         }
+    }
+
+    @Override
+    public @NotNull Iterable<RationalVector> rationalVectors(int dimension) {
+        return map(RationalVector::of, lists(dimension, rationals()));
+    }
+
+    @Override
+    public @NotNull Iterable<RationalVector> rationalVectors() {
+        return map(RationalVector::of, lists(rationals()));
     }
 }

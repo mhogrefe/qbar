@@ -1,5 +1,6 @@
 package mho.qbar.iterableProviders;
 
+import mho.qbar.objects.RationalVector;
 import mho.wheels.iterables.RandomProvider;
 import mho.qbar.objects.Interval;
 import mho.qbar.objects.Rational;
@@ -475,5 +476,15 @@ public class QBarRandomProvider extends RandomProvider implements QBarIterablePr
                     )
             );
         }
+    }
+
+    @Override
+    public @NotNull Iterable<RationalVector> rationalVectors(int dimension) {
+        return null;
+    }
+
+    @Override
+    public @NotNull Iterable<RationalVector> rationalVectors() {
+        return null;
     }
 }

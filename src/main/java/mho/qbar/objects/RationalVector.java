@@ -170,6 +170,15 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
     }
 
     /**
+     * Returns this {@code RationalVector}'s dimension
+     *
+     * @return this {@code RationalVector}'s dimension
+     */
+    public int dimension() {
+        return coordinates.size();
+    }
+
+    /**
      * Compares {@code this} to {@code that}, returning 1, –1, or 0 if the answer is "greater than", "less than", or
      * "equal to", respectively. Shortlex ordering is used; shorter {@code RationalVector}s come before longer ones,
      * and two {@code RationalVector}s of the same length are compared left-to-right, element by element.
