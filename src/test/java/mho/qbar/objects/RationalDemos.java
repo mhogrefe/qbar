@@ -581,38 +581,23 @@ public class RationalDemos {
         }
     }
 
-//    public static void fromContinuedFractionDemo() {
-//        Iterable<List<BigInteger>> it = pairs(
-//                P.bigIntegers(),
-//                new ListGenerator<BigInteger>(POSITIVE_BIG_INTEGERS)
-//        ).map(
-//                p -> {
-//                    List<BigInteger> bis = new ArrayList<>();
-//                    bis.add(p.a);
-//                    bis.addAll(p.b);
-//                    return bis;
-//                },
-//                bis -> {
-//                    List<BigInteger> tail = new ArrayList<>();
-//                    for (int i = 1; i < bis.size(); i++) {
-//                        tail.add(bis.get(i));
-//                    }
-//                    return Pair.of(bis.get(0), tail);
-//                },
-//                bis -> {
-//                    if (bis.isEmpty()) return false;
-//                    for (int i = 1; i < bis.size(); i++) {
-//                        if (bis.get(i).signum() != 1) return false;
-//                    }
-//                    return true;
-//                }
-//        );
-//        for (List<BigInteger> bis : bisg.iterate(limit)) {
-//            String bisString = bis.toString();
-//            bisString = bisString.substring(1, bisString.length() - 1);
-//            System.out.println("fromContinuedFraction(" + bisString + ") = " + Rational.fromContinuedFraction(bis));
-//        }
-//    }
+    public static void demoFromContinuedFraction() {
+        initialize();
+        Iterable<List<BigInteger>> iss = map(
+                p -> {
+                    assert p.b != null;
+                    return toList(cons(p.a, p.b));
+                },
+                (Iterable<Pair<BigInteger, List<BigInteger>>>) P.pairs(
+                        P.bigIntegers(),
+                        P.lists(P.positiveBigIntegers())
+                )
+        );
+        for (List<BigInteger> is : take(LIMIT, iss)) {
+            String listString = tail(init(is.toString()));
+            System.out.println("fromContinuedFraction(" + listString + ") = " + fromContinuedFraction(is));
+        }
+    }
 
     public static void convergentsDemo() {
         for (Rational r : take(LIMIT, P.rationals())) {
