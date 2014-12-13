@@ -2853,16 +2853,19 @@ public class RationalTest {
                 " 1, 1, 9, 17, 3]");
     }
 
-//    @Test
-//    public void testFromContinuedFraction() {
-//        aeq(fromContinuedFraction(readBigIntegerList("[]").get()), "0");
-//        aeq(fromContinuedFraction(readBigIntegerList("[1]").get()), "1");
-//        aeq(fromContinuedFraction(readBigIntegerList("[0, 2]").get()), "1/2");
-//        aeq(fromContinuedFraction(readBigIntegerList("[-1, 2]").get()), "-1/2");
-//        aeq(fromContinuedFraction(readBigIntegerList("[4, 2, 6, 7]").get()), "415/93");
-//        aeq(fromContinuedFraction(readBigIntegerList("[-5, 1, 1, 6, 7]").get()), "-415/93");
-//        aeq(fromContinuedFraction(readBigIntegerList("[0, 1, 2, 3, 4, 5, 6, 7, 8]").get()).floatValue(), "-415/93");
-//    }
+    @Test
+    public void testFromContinuedFraction() {
+        aeq(fromContinuedFraction(readBigIntegerList("[1]").get()), "1");
+        aeq(fromContinuedFraction(readBigIntegerList("[0, 2]").get()), "1/2");
+        aeq(fromContinuedFraction(readBigIntegerList("[-1, 2]").get()), "-1/2");
+        aeq(fromContinuedFraction(readBigIntegerList("[4, 2, 6, 7]").get()), "415/93");
+        aeq(fromContinuedFraction(readBigIntegerList("[-5, 1, 1, 6, 7]").get()), "-415/93");
+        aeq(fromContinuedFraction(readBigIntegerList("[0, 1, 2, 3, 4, 5, 6, 7, 8]").get()).floatValue(), "0.69777465");
+        try {
+            fromContinuedFraction(readBigIntegerList("[]").get());
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
 
     @Test
     public void testEquals() {
