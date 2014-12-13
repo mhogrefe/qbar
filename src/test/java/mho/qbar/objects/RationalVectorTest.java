@@ -103,6 +103,10 @@ public class RationalVectorTest {
         assertTrue(of(readRationalList("[]").get()) == ZERO_DIMENSIONAL);
         aeq(of(readRationalList("[1/2]").get()), "[1/2]");
         aeq(of(readRationalList("[5/3, -1/4, 23]").get()), "[5/3, -1/4, 23]");
+        try {
+            of(readRationalListWithNulls("[5/3, null, 23]").get());
+            fail();
+        } catch (NullPointerException ignored) {}
     }
 
     private static void aeq(Object a, Object b) {
