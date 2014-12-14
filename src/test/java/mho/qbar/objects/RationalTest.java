@@ -3002,6 +3002,9 @@ public class RationalTest {
     public void testFindIn() {
         aeq(findIn("abcd1234xyz").get(), "(1234, 4)");
         aeq(findIn("0123").get(), "(0, 0)");
+        assertTrue(findIn("0123").get().a == ZERO);
+        aeq(findIn("1-23").get(), "(1, 0)");
+        assertTrue(findIn("1-23").get().a == ONE);
         aeq(findIn("a-23").get(), "(-23, 1)");
         aeq(findIn("---34--4").get(), "(-34, 2)");
         aeq(findIn(" 20.1 ").get(), "(20, 1)");

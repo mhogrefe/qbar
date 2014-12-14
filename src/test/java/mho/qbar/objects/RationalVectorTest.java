@@ -6,6 +6,7 @@ import mho.wheels.ordering.Ordering;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -172,6 +173,42 @@ public class RationalVectorTest {
         aeq(read("[1/2]").get().hashCode(), 64);
         aeq(read("[5/3, -1/4, 23]").get().hashCode(), 181506);
         aeq(read("[5/3, 1/4, 23]").get().hashCode(), 183428);
+    }
+
+    @Test
+    public void testRead() {
+        assertTrue(read("[]").get() == ZERO_DIMENSIONAL);
+        aeq(read("[1/2]").get(), "[1/2]");
+        aeq(read("[0, -23/4, 7/8]").get(), "[0, -23/4, 7/8]");
+        assertFalse(read("").isPresent());
+        assertFalse(read("[ 1/2]").isPresent());
+        assertFalse(read("[1/3, 2/4]").isPresent());
+        assertFalse(read("[1/3, 2/0]").isPresent());
+        assertFalse(read("hello").isPresent());
+        assertFalse(read("][").isPresent());
+        assertFalse(read("1/2, 2/3").isPresent());
+        assertFalse(read("vfbdb ds").isPresent());
+    }
+
+    @Test
+    public void testFindIn() {
+        aeq(findIn("fr24rev[]evfre").get(), "([], 7)");
+        assertTrue(findIn("fr24rev[]evfre").get().a == ZERO_DIMENSIONAL);
+        aeq(findIn("]]][[3/4, 45/7][]dsvdf").get(), "([3/4, 45/7], 4)");
+        aeq(findIn("]]][[3/4, 45/0][]dsvdf").get(), "([], 15)");
+        aeq(findIn("]]][[3/4, 45/3][]dsvdf").get(), "([], 15)");
+        assertFalse(findIn("").isPresent());
+        assertFalse(findIn("]]][[3/4, 45/0]dsvdf").isPresent());
+        assertFalse(findIn("]]][[3/4, 2/4]dsvdf").isPresent());
+        assertFalse(findIn("hello").isPresent());
+    }
+
+    @Test
+    public void testToString() {
+        aeq(ZERO_DIMENSIONAL, "[]");
+        aeq(of(Arrays.asList(Rational.of(1, 2))), "[1/2]");
+        aeq(of(Arrays.asList(Rational.of(5, 3), Rational.of(-1, 4), Rational.of(23))), "[5/3, -1/4, 23]");
+        aeq(of(Arrays.asList(Rational.of(5, 3), Rational.of(1, 4), Rational.of(23))), "[5/3, 1/4, 23]");
     }
 
     private static void aeq(Object a, Object b) {
