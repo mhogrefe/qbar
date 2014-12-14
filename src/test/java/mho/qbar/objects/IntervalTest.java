@@ -1,7 +1,5 @@
 package mho.qbar.objects;
 
-import mho.wheels.ordering.Ordering;
-import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.SortedSet;
@@ -17,6 +15,22 @@ public class IntervalTest {
         aeq(ZERO, "[0, 0]");
         aeq(ONE, "[1, 1]");
         aeq(ALL, "(-Infinity, Infinity)");
+    }
+
+    @Test
+    public void testGetLower() {
+        aeq(ZERO.getLower().get(), "0");
+        aeq(ONE.getLower().get(), "1");
+        aeq(read("[-2, 5/3]").get().getLower().get(), "-2");
+        assertFalse(ALL.getLower().isPresent());
+    }
+
+    @Test
+    public void testGetUpper() {
+        aeq(ZERO.getUpper().get(), "0");
+        aeq(ONE.getUpper().get(), "1");
+        aeq(read("[-2, 5/3]").get().getUpper().get(), "5/3");
+        assertFalse(ALL.getUpper().isPresent());
     }
 
     @Test
@@ -361,6 +375,21 @@ public class IntervalTest {
         assertFalse(read("[2.0, 4]").isPresent());
         assertFalse(read("[2,4]").isPresent());
         assertFalse(read("[5, 4]").isPresent());
+        assertFalse(read("[5, 4/0]").isPresent());
+    }
+
+    @Test
+    public void testFindIn() {
+        aeq(findIn("abcd[-5, 2/3]xyz").get(), "([-5, 2/3], 4)");
+        aeq(findIn("vdfvdf(-Infinity, 3]cds").get(), "((-Infinity, 3], 6)");
+        aeq(findIn("gvrgw49((-Infinity, Infinity)Infinity)").get(), "((-Infinity, Infinity), 8)");
+        assertFalse(findIn("").isPresent());
+        assertFalse(findIn("hello").isPresent());
+        assertFalse(findIn("vdfsvfbf").isPresent());
+        assertFalse(findIn("vdfvds[-Infinity, 2]vsd").isPresent());
+        assertFalse(findIn("vdfvds(Infinity, 2]vsd").isPresent());
+        assertFalse(findIn("abcd[5, 4]xyz").isPresent());
+        assertFalse(findIn("abcd[5, 4/0]xyz").isPresent());
     }
 
     @Test
