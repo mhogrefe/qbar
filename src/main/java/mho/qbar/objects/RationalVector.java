@@ -179,25 +179,6 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
     }
 
     /**
-     * Compares {@code this} to {@code that}, returning 1, –1, or 0 if the answer is "greater than", "less than", or
-     * "equal to", respectively. Shortlex ordering is used; shorter {@code RationalVector}s come before longer ones,
-     * and two {@code RationalVector}s of the same length are compared left-to-right, element by element.
-     *
-     * <ul>
-     *  <li>{@code this} may be any {@code RationalVector}.</li>
-     *  <li>{@code that} cannot be null.</li>
-     *  <li>The result may be –1, 0, or 1.</li>
-     * </ul>
-     *
-     * @param that The {@code RationalVector} to be compared with {@code this}
-     * @return {@code this} compared to {@code that}
-     */
-    @Override
-    public int compareTo(@NotNull RationalVector that) {
-        return RATIONAL_ITERABLE_COMPARATOR.compare(coordinates, that.coordinates);
-    }
-
-    /**
      * Determines whether {@code this} is equal to {@code that}.
      *
      * <ul>
@@ -229,6 +210,25 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
     @Override
     public int hashCode() {
         return coordinates.hashCode();
+    }
+
+    /**
+     * Compares {@code this} to {@code that}, returning 1, –1, or 0 if the answer is "greater than", "less than", or
+     * "equal to", respectively. Shortlex ordering is used; shorter {@code RationalVector}s come before longer ones,
+     * and two {@code RationalVector}s of the same length are compared left-to-right, element by element.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalVector}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>The result may be –1, 0, or 1.</li>
+     * </ul>
+     *
+     * @param that The {@code RationalVector} to be compared with {@code this}
+     * @return {@code this} compared to {@code that}
+     */
+    @Override
+    public int compareTo(@NotNull RationalVector that) {
+        return RATIONAL_ITERABLE_COMPARATOR.compare(coordinates, that.coordinates);
     }
 
     /**

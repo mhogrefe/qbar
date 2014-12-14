@@ -145,6 +145,35 @@ public class RationalVectorTest {
         assertTrue(eq(read("[5/3, 1/4, 23]").get(), read("[5/3, 1/4, 23]").get()));
     }
 
+    @Test
+    public void testEquals() {
+        //noinspection EqualsWithItself
+        assertTrue(ZERO_DIMENSIONAL.equals(ZERO_DIMENSIONAL));
+        assertFalse(ZERO_DIMENSIONAL.equals(read("[1/2]").get()));
+        assertFalse(ZERO_DIMENSIONAL.equals(read("[5/3, -1/4, 23]").get()));
+        assertFalse(ZERO_DIMENSIONAL.equals(read("[5/3, 1/4, 23]").get()));
+        assertFalse(read("[1/2]").get().equals(ZERO_DIMENSIONAL));
+        assertTrue(read("[1/2]").get().equals(read("[1/2]").get()));
+        assertFalse(read("[1/2]").get().equals(read("[5/3, -1/4, 23]").get()));
+        assertFalse(read("[1/2]").get().equals(read("[5/3, 1/4, 23]").get()));
+        assertFalse(read("[5/3, -1/4, 23]").get().equals(ZERO_DIMENSIONAL));
+        assertFalse(read("[5/3, -1/4, 23]").get().equals(read("[1/2]").get()));
+        assertTrue(read("[5/3, -1/4, 23]").get().equals(read("[5/3, -1/4, 23]").get()));
+        assertFalse(read("[5/3, -1/4, 23]").get().equals(read("[5/3, 1/4, 23]").get()));
+        assertFalse(read("[5/3, 1/4, 23]").get().equals(ZERO_DIMENSIONAL));
+        assertFalse(read("[5/3, 1/4, 23]").get().equals(read("[1/2]").get()));
+        assertFalse(read("[5/3, 1/4, 23]").get().equals(read("[5/3, -1/4, 23]").get()));
+        assertTrue(read("[5/3, 1/4, 23]").get().equals(read("[5/3, 1/4, 23]").get()));
+    }
+
+    @Test
+    public void testHashCode() {
+        aeq(ZERO_DIMENSIONAL.hashCode(), 1);
+        aeq(read("[1/2]").get().hashCode(), 64);
+        aeq(read("[5/3, -1/4, 23]").get().hashCode(), 181506);
+        aeq(read("[5/3, 1/4, 23]").get().hashCode(), 183428);
+    }
+
     private static void aeq(Object a, Object b) {
         assertEquals(a.toString(), b.toString());
     }
