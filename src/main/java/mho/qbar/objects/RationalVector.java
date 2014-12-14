@@ -58,7 +58,7 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
      * @return an {@code Iterator} over this {@code RationalVector}'s coordinates
      */
     @Override
-    public Iterator<Rational> iterator() {
+    public @NotNull Iterator<Rational> iterator() {
         return toList(coordinates).iterator();
     }
 

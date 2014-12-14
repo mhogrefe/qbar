@@ -14,7 +14,7 @@ import static mho.wheels.ordering.Ordering.*;
 
 public class IntervalDemos {
     private static final boolean USE_RANDOM = false;
-    private static final String INTERVAL_CHARS = " ()-/0123456789I[]finty";
+    private static final String INTERVAL_CHARS = " (),-/0123456789I[]finty";
     private static int LIMIT;
 
     private static QBarIterableProvider P;
