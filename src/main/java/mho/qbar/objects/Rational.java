@@ -1621,7 +1621,10 @@ public final class Rational implements Comparable<Rational> {
     public static @NotNull Rational fromContinuedFraction(@NotNull List<BigInteger> continuedFraction) {
         if (continuedFraction.isEmpty())
             throw new IllegalArgumentException("continued fraction may not be empty");
-        Rational x = of(continuedFraction.get(continuedFraction.size() - 1));
+        BigInteger lastElement = continuedFraction.get(continuedFraction.size() - 1);
+        if (continuedFraction.size() > 1 && lastElement.signum() != 1)
+            throw new IllegalArgumentException("all continued fraction elements but the first must be positive");
+        Rational x = of(lastElement);
         for (int i = continuedFraction.size() - 2; i >= 0; i--) {
             if (i != 0 && continuedFraction.get(i).signum() != 1)
                 throw new IllegalArgumentException("all continued fraction elements but the first must be positive");

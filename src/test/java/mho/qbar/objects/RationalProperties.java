@@ -116,6 +116,7 @@ public class RationalProperties {
             propertiesShiftRight();
             compareImplementationsShiftRight();
             propertiesContinuedFraction();
+            propertiesFromContinuedFraction();
             propertiesEquals();
             propertiesHashCode();
             propertiesCompareTo();
@@ -2971,6 +2972,42 @@ public class RationalProperties {
         for (Rational r : take(LIMIT, filter(s -> !s.getDenominator().equals(BigInteger.ONE), P.rationals()))) {
             List<BigInteger> continuedFraction = r.continuedFraction();
             assertTrue(r.toString(), gt(last(continuedFraction), BigInteger.ONE));
+        }
+    }
+
+    private static void propertiesFromContinuedFraction() {
+        initialize();
+        System.out.println("\t\ttesting fromContinuedFraction properties...");
+
+        Iterable<List<BigInteger>> iss = map(
+                p -> {
+                    assert p.b != null;
+                    return toList(cons(p.a, p.b));
+                },
+                (Iterable<Pair<BigInteger, List<BigInteger>>>) P.pairs(
+                        P.bigIntegers(),
+                        P.lists(P.positiveBigIntegers())
+                )
+        );
+        for (List<BigInteger> is : take(LIMIT, iss)) {
+            Rational r = fromContinuedFraction(is);
+            validate(r);
+        }
+
+        for (List<BigInteger> is : take(LIMIT, filter(js -> !last(js).equals(BigInteger.ONE), iss))) {
+            Rational r = fromContinuedFraction(is);
+            assertEquals(is.toString(), r.continuedFraction(), is);
+        }
+
+        Iterable<List<BigInteger>> failIss = filter(
+                is -> !is.isEmpty() && any(i -> i.signum() != 1, tail(is)),
+                P.lists(P.bigIntegers())
+        );
+        for (List<BigInteger> is : take(LIMIT, failIss)) {
+            try {
+                fromContinuedFraction(is);
+                fail(is.toString());
+            } catch (IllegalArgumentException ignored) {}
         }
     }
 
