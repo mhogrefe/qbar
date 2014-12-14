@@ -29,6 +29,20 @@ public class IntervalDemos {
         }
     }
 
+    public static void demoGetLower() {
+        initialize();
+        for (Interval a : take(LIMIT, P.intervals())) {
+            System.out.println("getLower(" + a + ") = " + a.getLower());
+        }
+    }
+
+    public static void demoGetUpper() {
+        initialize();
+        for (Interval a : take(LIMIT, P.intervals())) {
+            System.out.println("getUpper(" + a + ") = " + a.getUpper());
+        }
+    }
+
     public static void demoOf_Rational_Rational() {
         initialize();
         Iterable<Pair<Rational, Rational>> rs = filter(p -> {
@@ -259,6 +273,26 @@ public class IntervalDemos {
         }
         for (String s : take(LIMIT, P.strings(cs))) {
             System.out.println("read(" + s + ") = " + read(s));
+        }
+    }
+
+    public static void demoFindIn() {
+        initialize();
+        for (String s : take(LIMIT, P.strings())) {
+            System.out.println("findIn(" + s + ") = " + findIn(s));
+        }
+    }
+
+    public static void demoFindIn_targeted() {
+        initialize();
+        Iterable<Character> cs;
+        if (P instanceof QBarExhaustiveProvider) {
+            cs = fromString(INTERVAL_CHARS);
+        } else {
+            cs = ((QBarRandomProvider) P).uniformSample(INTERVAL_CHARS);
+        }
+        for (String s : take(LIMIT, P.strings(cs))) {
+            System.out.println("findIn(" + s + ") = " + findIn(s));
         }
     }
 
