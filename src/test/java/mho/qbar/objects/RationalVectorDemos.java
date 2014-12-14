@@ -3,6 +3,7 @@ package mho.qbar.objects;
 import mho.qbar.iterableProviders.QBarExhaustiveProvider;
 import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.iterableProviders.QBarRandomProvider;
+import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 
 import java.util.Random;
@@ -88,6 +89,93 @@ public class RationalVectorDemos {
             assert p.a != null;
             assert p.b != null;
             System.out.println("x(" + p.a + ", " + p.b + ") = " + p.a.x(p.b));
+        }
+    }
+
+    public static void demoOf_Rational() {
+        initialize();
+        for (Rational r : take(LIMIT, P.rationals())) {
+            System.out.println("of(" + r + ") = " + of(r));
+        }
+    }
+
+    public static void demoDimension() {
+        initialize();
+        for (RationalVector v : take(LIMIT, P.rationalVectors())) {
+            System.out.println("dim(" + v + ") = " + v.dimension());
+        }
+    }
+
+    public static void demoEquals_RationalVector() {
+        initialize();
+        for (Pair<RationalVector, RationalVector> p : take(LIMIT, P.pairs(P.rationalVectors()))) {
+            assert p.a != null;
+            assert p.b != null;
+            System.out.println("equals(" + p.a + ", " + p.b + ") = " + p.a.equals(p.b));
+        }
+    }
+
+    public static void demoEquals_null() {
+        initialize();
+        for (RationalVector v : take(LIMIT, P.rationalVectors())) {
+            //noinspection ObjectEqualsNull
+            System.out.println("equals(" + v + ", null) = " + v.equals(null));
+        }
+    }
+
+    public static void demoHashCode() {
+        initialize();
+        for (RationalVector v : take(LIMIT, P.rationalVectors())) {
+            System.out.println("hashCode(" + v + ") = " + v.hashCode());
+        }
+    }
+
+    public static void demoCompareTo() {
+        initialize();
+        for (Pair<RationalVector, RationalVector> p : take(LIMIT, P.pairs(P.rationalVectors()))) {
+            assert p.a != null;
+            assert p.b != null;
+            System.out.println(p.a + " " + Ordering.compare(p.a, p.b).toChar() + " " + p.b);
+        }
+    }
+
+    public static void demoRead() {
+        initialize();
+        for (String s : take(LIMIT, P.strings())) {
+            System.out.println("read(" + s + ") = " + read(s));
+        }
+    }
+
+    public static void demoRead_targeted() {
+        initialize();
+        Iterable<Character> cs;
+        if (P instanceof QBarExhaustiveProvider) {
+            cs = fromString(RATIONAL_VECTOR_CHARS);
+        } else {
+            cs = ((QBarRandomProvider) P).uniformSample(RATIONAL_VECTOR_CHARS);
+        }
+        for (String s : take(LIMIT, P.strings(cs))) {
+            System.out.println("read(" + s + ") = " + read(s));
+        }
+    }
+
+    public static void demoFindIn() {
+        initialize();
+        for (String s : take(LIMIT, P.strings())) {
+            System.out.println("findIn(" + s + ") = " + findIn(s));
+        }
+    }
+
+    public static void demoFindIn_targeted() {
+        initialize();
+        Iterable<Character> cs;
+        if (P instanceof QBarExhaustiveProvider) {
+            cs = fromString(RATIONAL_VECTOR_CHARS);
+        } else {
+            cs = ((QBarRandomProvider) P).uniformSample(RATIONAL_VECTOR_CHARS);
+        }
+        for (String s : take(LIMIT, P.strings(cs))) {
+            System.out.println("findIn(" + s + ") = " + findIn(s));
         }
     }
 
