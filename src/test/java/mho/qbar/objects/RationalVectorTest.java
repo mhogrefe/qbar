@@ -109,6 +109,20 @@ public class RationalVectorTest {
         } catch (NullPointerException ignored) {}
     }
 
+    @Test
+    public void test_Rational() {
+        aeq(of(Rational.read("1/2").get()), "[1/2]");
+        aeq(of(Rational.read("-5").get()), "[-5]");
+        aeq(of(Rational.read("0").get()), "[0]");
+    }
+
+    @Test
+    public void testDimension() {
+        aeq(read("[]").get().dimension(), 0);
+        aeq(read("[1/2]").get().dimension(), 1);
+        aeq(read("[5/3, -1/4, 23]").get().dimension(), 3);
+    }
+
     private static void aeq(Object a, Object b) {
         assertEquals(a.toString(), b.toString());
     }
