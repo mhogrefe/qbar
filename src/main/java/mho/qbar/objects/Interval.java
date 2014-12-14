@@ -1,6 +1,9 @@
 package mho.qbar.objects;
 
+import mho.wheels.iterables.IterableUtils;
 import mho.wheels.misc.FloatingPointUtils;
+import mho.wheels.misc.Readers;
+import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -772,20 +775,20 @@ public final class Interval implements Comparable<Interval> {
      */
     @Override
     public int compareTo(@NotNull Interval that) {
-        if (lower == null && that.lower != null) return -1;
-        if (lower != null && that.lower == null) return 1;
-        int lowerCompare = lower == null ? 0 : lower.compareTo(that.lower);
-        if (lowerCompare != 0) return lowerCompare;
-        if (upper == null && that.upper != null) return 1;
-        if (upper != null && that.upper == null) return -1;
-        return upper == null ? 0 : upper.compareTo(that.upper);
+        if (lower == null && that.lower != null) return LT.toInt();
+        if (lower != null && that.lower == null) return GT.toInt();
+        Ordering lowerOrdering = lower == null ? EQ : compare(lower, that.lower);
+        if (lowerOrdering != EQ) return lowerOrdering.toInt();
+        if (upper == null && that.upper != null) return GT.toInt();
+        if (upper != null && that.upper == null) return LT.toInt();
+        return (upper == null ? EQ : compare(upper, that.upper)).toInt();
     }
 
     /**
      * Creates an {@code Interval} from a {@code String}. Valid strings are in one of these four forms:
      * {@code "(-Infinity, Infinity)"}, {@code "(-Infinity, " + q + "]"},
      * {@code "[" + p + ", Infinity)"}, or {@code "[" + p + ", " + q + "]"}, where {@code p} and {@code q} are valid
-     * inputs to {@link mho.qbar.objects.Rational#read}.
+     * inputs to {@link mho.qbar.objects.Rational#read}, and {@code p}≤{@code q}
      *
      * <ul>
      *  <li>{@code s} cannot be null.</li>
@@ -824,7 +827,26 @@ public final class Interval implements Comparable<Interval> {
         if (lower == null && upper == null) return Optional.of(ALL);
         if (lower == null) return Optional.of(lessThanOrEqualTo(upper));
         if (upper == null) return Optional.of(greaterThanOrEqualTo(lower));
-        return Optional.of(of(lower, upper));
+        return le(lower, upper) ? Optional.of(of(lower, upper)) : Optional.<Interval>empty();
+    }
+
+    /**
+     * Finds the first occurrence of an {@code Interval} in a {@code String}. Returns the {@code Interval} and the
+     * index at which it was found. Returns an empty {@code Optional} if no {@code Interval} is found. Only
+     * {@code String}s which could have been emitted by {@link Interval#toString} are recognized. The longest possible
+     * {@code Interval} is parsed.
+     *
+     * <ul>
+     *  <li>{@code s} must be non-null.</li>
+     *  <li>The result is non-null. If it is non-empty, then neither of the {@code Pair}'s components is null, and the
+     *  second component is non-negative.</li>
+     * </ul>
+     *
+     * @param s the input {@code String}
+     * @return the first {@code Interval} found in {@code s}, and the index at which it was found
+     */
+    public static @NotNull Optional<Pair<Interval, Integer>> findIn(@NotNull String s) {
+        return Readers.genericFindIn(Interval::read, " (),-/0123456789I[]finty", s);
     }
 
     /**

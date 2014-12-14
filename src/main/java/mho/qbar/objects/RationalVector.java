@@ -253,10 +253,10 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
     }
 
     /**
-     * Finds the first occurrence of a {@code RationalVector} in a {@code String} and returns the
-     * {@code RationalVector} and the index at which it was found. Returns an empty {@code Optional} if no
-     * {@code RationalVector} is found. Only {@code String}s which could have been emitted by
-     * {@link RationalVector#toString} are recognized. The longest possible {@code RationalVector} is parsed.
+     * Finds the first occurrence of a {@code RationalVector} in a {@code String}. Returns the {@code RationalVector}
+     * and the index at which it was found. Returns an empty {@code Optional} if no {@code RationalVector} is found.
+     * Only {@code String}s which could have been emitted by {@link RationalVector#toString} are recognized. The
+     * longest possible {@code RationalVector} is parsed.
      *
      * <ul>
      *  <li>{@code s} must be non-null.</li>

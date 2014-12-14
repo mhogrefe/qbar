@@ -1853,10 +1853,10 @@ public final class Rational implements Comparable<Rational> {
     }
 
     /**
-     * Finds the first occurrence of a {@code Rational} in a {@code String} and returns the {@code Rational} and the
-     * index at which it was found. Returns an empty {@code Optional} if no {@code Rational} is found. Only
-     * {@code String}s which could have been emitted by {@link Rational#toString} are recognized. The longest possible
-     * {@code Rational} is parsed.
+     * Finds the first occurrence of a {@code Rational} in a {@code String}. Returns the {@code Rational} and the index
+     * at which it was found. Returns an empty {@code Optional} if no {@code Rational} is found. Only {@code String}s
+     * which could have been emitted by {@link Rational#toString} are recognized. The longest possible {@code Rational}
+     * is parsed.
      *
      * <ul>
      *  <li>{@code s} must be non-null.</li>

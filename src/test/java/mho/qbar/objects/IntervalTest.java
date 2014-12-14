@@ -342,10 +342,6 @@ public class IntervalTest {
         aeq(read("[4, 4]").get(), "[4, 4]");
         aeq(read("(-Infinity, 3/2]").get(), "(-Infinity, 3/2]");
         aeq(read("[-6, Infinity)").get(), "[-6, Infinity)");
-        try {
-            read("[5, 4]");
-            fail();
-        } catch (IllegalArgumentException ignored) {}
         assertFalse(read("").isPresent());
         assertFalse(read("[").isPresent());
         assertFalse(read("[]").isPresent());
@@ -364,6 +360,7 @@ public class IntervalTest {
         assertFalse(read("[2, 3-]").isPresent());
         assertFalse(read("[2.0, 4]").isPresent());
         assertFalse(read("[2,4]").isPresent());
+        assertFalse(read("[5, 4]").isPresent());
     }
 
     @Test
