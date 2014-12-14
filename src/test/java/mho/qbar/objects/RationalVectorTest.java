@@ -2,6 +2,7 @@ package mho.qbar.objects;
 
 import mho.wheels.iterables.IterableUtils;
 import mho.wheels.misc.Readers;
+import mho.wheels.ordering.Ordering;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
@@ -10,6 +11,7 @@ import java.util.Optional;
 
 import static mho.qbar.objects.RationalVector.*;
 import static mho.wheels.iterables.IterableUtils.*;
+import static mho.wheels.ordering.Ordering.*;
 import static org.junit.Assert.*;
 
 public class RationalVectorTest {
@@ -121,6 +123,26 @@ public class RationalVectorTest {
         aeq(read("[]").get().dimension(), 0);
         aeq(read("[1/2]").get().dimension(), 1);
         aeq(read("[5/3, -1/4, 23]").get().dimension(), 3);
+    }
+
+    @Test
+    public void testCompareTo() {
+        assertTrue(eq(ZERO_DIMENSIONAL, ZERO_DIMENSIONAL));
+        assertTrue(lt(ZERO_DIMENSIONAL, read("[1/2]").get()));
+        assertTrue(lt(ZERO_DIMENSIONAL, read("[5/3, -1/4, 23]").get()));
+        assertTrue(lt(ZERO_DIMENSIONAL, read("[5/3, 1/4, 23]").get()));
+        assertTrue(gt(read("[1/2]").get(), ZERO_DIMENSIONAL));
+        assertTrue(eq(read("[1/2]").get(), read("[1/2]").get()));
+        assertTrue(lt(read("[1/2]").get(), read("[5/3, -1/4, 23]").get()));
+        assertTrue(lt(read("[1/2]").get(), read("[5/3, 1/4, 23]").get()));
+        assertTrue(gt(read("[5/3, -1/4, 23]").get(), ZERO_DIMENSIONAL));
+        assertTrue(gt(read("[5/3, -1/4, 23]").get(), read("[1/2]").get()));
+        assertTrue(eq(read("[5/3, -1/4, 23]").get(), read("[5/3, -1/4, 23]").get()));
+        assertTrue(lt(read("[5/3, -1/4, 23]").get(), read("[5/3, 1/4, 23]").get()));
+        assertTrue(gt(read("[5/3, 1/4, 23]").get(), ZERO_DIMENSIONAL));
+        assertTrue(gt(read("[5/3, 1/4, 23]").get(), read("[1/2]").get()));
+        assertTrue(gt(read("[5/3, 1/4, 23]").get(), read("[5/3, -1/4, 23]").get()));
+        assertTrue(eq(read("[5/3, 1/4, 23]").get(), read("[5/3, 1/4, 23]").get()));
     }
 
     private static void aeq(Object a, Object b) {
