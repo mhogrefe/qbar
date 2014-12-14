@@ -38,6 +38,20 @@ public class RationalDemos {
         }
     }
 
+    public static void demoGetNumerator() {
+        initialize();
+        for (Rational r : take(LIMIT, P.rationals())) {
+            System.out.println("getNumerator(" + r + ") = " + r.getNumerator());
+        }
+    }
+
+    public static void demoGetDenominator() {
+        initialize();
+        for (Rational r : take(LIMIT, P.rationals())) {
+            System.out.println("getDenominator(" + r + ") = " + r.getDenominator());
+        }
+    }
+
     public static void demoOf_BigInteger_BigInteger() {
         initialize();
         Iterable<Pair<BigInteger, BigInteger>> ps = filter(
