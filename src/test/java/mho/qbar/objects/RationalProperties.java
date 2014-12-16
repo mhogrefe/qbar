@@ -24,6 +24,9 @@ import java.util.Optional;
 import java.util.Random;
 
 import static mho.wheels.iterables.IterableUtils.*;
+import static mho.wheels.misc.Readers.findOrderingIn;
+import static mho.wheels.misc.Readers.readBoolean;
+import static mho.wheels.misc.Readers.readOrdering;
 import static mho.wheels.ordering.Ordering.*;
 import static mho.qbar.objects.Rational.*;
 import static org.junit.Assert.*;
@@ -53,6 +56,8 @@ public class RationalProperties {
         for (boolean useRandom : Arrays.asList(false, true)) {
             System.out.println("\ttesting " + (useRandom ? "randomly" : "exhaustively"));
             USE_RANDOM = useRandom;
+            propertiesGetNumerator();
+            propertiesGetDenominator();
             propertiesOf_BigInteger_BigInteger();
             propertiesOf_long_long();
             propertiesOf_int_int();
@@ -134,6 +139,24 @@ public class RationalProperties {
         assertTrue(unique(sample));
         assertTrue(increasing(sample));
         assertTrue(all(r -> !r.getDenominator().equals(BigInteger.ONE), tail(sample)));
+    }
+
+    private static void propertiesGetNumerator() {
+        initialize();
+        System.out.println("\t\ttesting getNumerator() properties...");
+
+        for (Rational r : take(LIMIT, P.rationals())) {
+            assertEquals(r.toString(), of(r.getNumerator(), r.getDenominator()), r);
+        }
+    }
+
+    private static void propertiesGetDenominator() {
+        initialize();
+        System.out.println("\t\ttesting getDenominator() properties...");
+
+        for (Rational r : take(LIMIT, P.rationals())) {
+            assertEquals(r.toString(), r.getDenominator().signum(), 1);
+        }
     }
 
     private static void propertiesOf_BigInteger_BigInteger() {
@@ -3072,6 +3095,11 @@ public class RationalProperties {
             read(s);
         }
 
+        for (Rational r : take(LIMIT, P.rationals())) {
+            Optional<Rational> or = read(r.toString());
+            assertEquals(r.toString(), or.get(), r);
+        }
+
         Iterable<Character> cs;
         if (P instanceof QBarExhaustiveProvider) {
             cs = fromString(RATIONAL_CHARS);
@@ -3097,6 +3125,52 @@ public class RationalProperties {
 
         for (String s : take(LIMIT, slashPartition.b)) {
             assertTrue(s, Readers.readBigInteger(s).isPresent());
+        }
+    }
+
+    private static void propertiesFindIn() {
+        initialize();
+        System.out.println("\t\ttesting findIn(String) properties...");
+
+        for (String s : take(LIMIT, P.strings())) {
+            findIn(s);
+        }
+
+        Iterable<Pair<String, Integer>> ps = P.dependentPairsLogarithmic(P.strings(), s -> range(0, s.length()));
+        Iterable<String> ss;
+        if (P instanceof ExhaustiveProvider) {
+            ss = map(
+                    p -> {
+                        assert p.a != null;
+                        assert p.a.a != null;
+                        assert p.a.b != null;
+                        return take(p.a.b, p.a.a) + p.b + drop(p.a.b, p.a.a);
+                    },
+                    ((ExhaustiveProvider) P).pairsLogarithmicOrder(ps, P.orderings())
+            );
+        } else {
+            ss = map(
+                    p -> {
+                        assert p.a != null;
+                        assert p.a.a != null;
+                        assert p.a.b != null;
+                        return take(p.a.b, p.a.a) + p.b + drop(p.a.b, p.a.a);
+                    },
+                    P.pairs(ps, P.rationals())
+            );
+        }
+        for (String s : take(LIMIT, ss)) {
+            Optional<Pair<Rational, Integer>> op = findIn(s);
+            Pair<Rational, Integer> p = op.get();
+            assertNotNull(s, p.a);
+            assertNotNull(s, p.b);
+            assertTrue(s, p.b >= 0 && p.b < s.length());
+            String before = take(p.b, s);
+            assertFalse(s, findIn(before).isPresent());
+            String during = p.a.toString();
+            assertTrue(s, s.substring(p.b).startsWith(during));
+            String after = drop(p.b + during.length(), s);
+            assertTrue(s, after.isEmpty() || !read(during + head(after)).isPresent());
         }
     }
 
