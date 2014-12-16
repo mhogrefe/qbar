@@ -214,19 +214,18 @@ public final class Interval implements Comparable<Interval> {
      * superset of the two {@code Interval}s.
      *
      * <ul>
-     *  <li>{@code a} cannot be null.</li>
-     *  <li>{@code b} cannot be null.</li>
+     *  <li>{@code this} may be any {@code Interval}.</li>
+     *  <li>{@code that} cannot be null.</li>
      *  <li>The result is not null.</li>
      * </ul>
      *
-     * @param a the first {@code Interval}
-     * @param b the second {@code Interval}
-     * @return Conv({@code a}, {@code b})
+     * @param that the {@code Interval} to be hulled with {@code this}
+     * @return Conv({@code this}, {@code that})
      */
-    public static @NotNull Interval convexHull(@NotNull Interval a, @NotNull Interval b) {
+    public @NotNull Interval convexHull(@NotNull Interval that) {
         return new Interval(
-                a.lower == null || b.lower == null ? null : min(a.lower, b.lower),
-                a.upper == null || b.upper == null ? null : max(a.upper, b.upper)
+                lower == null || that.lower == null ? null : min(lower, that.lower),
+                upper == null || that.upper == null ? null : max(upper, that.upper)
         );
     }
 
@@ -261,55 +260,53 @@ public final class Interval implements Comparable<Interval> {
      * returned.
      *
      * <ul>
-     *  <li>{@code a} cannot be null.</li>
-     *  <li>{@code b} cannot be null.</li>
+     *  <li>{@code this} may be any {@code Interval}.</li>
+     *  <li>{@code that} cannot be null.</li>
      *  <li>The result is not null.</li>
      * </ul>
      *
-     * @param a the first {@code Interval}
-     * @param b the second {@code Interval}
-     * @return {@code a}∩{@code b}
+     * @param that the {@code Interval} to be intersected with {@code this}
+     * @return {@code this}∩{@code that}
      */
-    public static @NotNull Optional<Interval> intersection(@NotNull Interval a, @NotNull Interval b) {
-        Rational lower;
-        if (a.lower == null && b.lower == null) {
-            lower = null;
-        } else if (a.lower == null) {
-            lower = b.lower;
-        } else if (b.lower == null) {
-            lower = a.lower;
+    public @NotNull Optional<Interval> intersection(@NotNull Interval that) {
+        Rational iLower;
+        if (lower == null && that.lower == null) {
+            iLower = null;
+        } else if (lower == null) {
+            iLower = that.lower;
+        } else if (that.lower == null) {
+            iLower = lower;
         } else {
-            lower = max(a.lower, b.lower);
+            iLower = max(lower, that.lower);
         }
-        Rational upper;
-        if (a.upper == null && b.upper == null) {
-            upper = null;
-        } else if (a.upper == null) {
-            upper = b.upper;
-        } else if (b.upper == null) {
-            upper = a.upper;
+        Rational iUpper;
+        if (upper == null && that.upper == null) {
+            iUpper = null;
+        } else if (upper == null) {
+            iUpper = that.upper;
+        } else if (that.upper == null) {
+            iUpper = upper;
         } else {
-            upper = min(a.upper, b.upper);
+            iUpper = min(upper, that.upper);
         }
-        if (lower != null && upper != null && gt(lower, upper)) return Optional.empty();
-        return Optional.of(new Interval(lower, upper));
+        if (iLower != null && iUpper != null && gt(iLower, iUpper)) return Optional.empty();
+        return Optional.of(new Interval(iLower, iUpper));
     }
 
     /**
      * Determines whether two {@code Interval}s are disjoint (whether their intersections are empty).
      *
      * <ul>
-     *  <li>{@code a} cannot be null.</li>
-     *  <li>{@code b} cannot be null.</li>
+     *  <li>{@code this} may be any {@code Interval}.</li>
+     *  <li>{@code that} cannot be null.</li>
      *  <li>The result may be either {@code boolean}.</li>
      * </ul>
      *
-     * @param a the first {@code Interval}
-     * @param b the second {@code Interval}
-     * @return {@code a}∩{@code b}=∅
+     * @param that the {@code Interval} tested for disjointness with {@code this}
+     * @return {@code this}∩{@code that}=∅
      */
-    public static boolean disjoint(@NotNull Interval a, @NotNull Interval b) {
-        return intersection(a, b) == null;
+    public boolean disjoint(@NotNull Interval that) {
+        return intersection(that) == null;
     }
 
     /**
@@ -330,11 +327,11 @@ public final class Interval implements Comparable<Interval> {
         for (Interval a : as) {
             if (acc == null) {
                 acc = a;
-            } else if (disjoint(acc, a)) {
+            } else if (acc.disjoint(a)) {
                 simplified.add(acc);
                 acc = a;
             } else {
-                acc = convexHull(acc, a);
+                acc = acc.convexHull(a);
             }
         }
         if (acc != null) simplified.add(acc);
@@ -580,63 +577,60 @@ public final class Interval implements Comparable<Interval> {
     }
 
     /**
-     * Returns the smallest interval z such that if a∈{@code x} and b∈{@code y}, a+b∈z.
+     * Returns the smallest interval z such that if a∈{@code this} and b∈{@code that}, a+b∈z.
      *
      * <ul>
-     *  <li>{@code x} cannot be null.</li>
-     *  <li>{@code y} cannot be null.</li>
+     *  <li>{@code this} may be any {@code Interval}.</li>
+     *  <li>{@code that} cannot be null.</li>
      *  <li>The result is not null.</li>
      * </ul>
      *
-     * @param x the first {@code Interval}
-     * @param y the second {@code Interval}
-     * @return {@code x}+{@code y}
+     * @param that the {@code Interval} added to {@code this}
+     * @return {@code this}+{@code that}
      */
-    public static @NotNull Interval add(@NotNull Interval x, @NotNull Interval y) {
-        Rational sLower = x.lower == null || y.lower == null ? null : x.lower.add(y.lower);
-        Rational sUpper = x.upper == null || y.upper == null ? null : x.upper.add(y.upper);
+    public @NotNull Interval add(@NotNull Interval that) {
+        Rational sLower = lower == null || that.lower == null ? null : lower.add(that.lower);
+        Rational sUpper = upper == null || that.upper == null ? null : upper.add(that.upper);
         return new Interval(sLower, sUpper);
     }
 
     /**
-     * Returns the smallest interval z such that if a∈{@code x} and b∈{@code y}, a–b∈z.
+     * Returns the smallest interval z such that if a∈{@code this} and b∈{@code that}, a–b∈z.
      *
      * <ul>
-     *  <li>{@code x} cannot be null.</li>
-     *  <li>{@code y} cannot be null.</li>
+     *  <li>{@code this} may be any {@code Interval}.</li>
+     *  <li>{@code that} cannot be null.</li>
      *  <li>The result is not null.</li>
      * </ul>
      *
-     * @param x the first {@code Interval}
-     * @param y the second {@code Interval}
-     * @return {@code x}–{@code y}
+     * @param that the second {@code Interval} subtracted from {@code this}
+     * @return {@code this}–{@code that}
      */
-    public static @NotNull Interval subtract(@NotNull Interval x, @NotNull Interval y) {
-        return add(x, y.negate());
+    public @NotNull Interval subtract(@NotNull Interval that) {
+        return add(that.negate());
     }
 
     /**
-     * Returns the smallest interval z such that if a∈{@code x} and b∈{@code y}, a×b∈z.
+     * Returns the smallest interval z such that if a∈{@code this} and b∈{@code that}, a×b∈z.
      *
      * <ul>
-     *  <li>{@code x} cannot be null.</li>
-     *  <li>{@code y} cannot be null.</li>
+     *  <li>{@code this} may be any {@code Interval}.</li>
+     *  <li>{@code that} cannot be null.</li>
      *  <li>The result is not null.</li>
      * </ul>
      *
-     * @param x the first {@code Interval}
-     * @param y the second {@code Interval}
-     * @return {@code x}×{@code y}
+     * @param that the second {@code Interval} that {@code this} is multiplied by
+     * @return {@code this}×{@code that}
      */
-    public static @NotNull Interval multiply(@NotNull Interval x, @NotNull Interval y) {
-        if ((x.lower == Rational.ZERO && x.upper == Rational.ZERO)
-                || ((y.lower == Rational.ZERO) && y.upper == Rational.ZERO)) {
+    public @NotNull Interval multiply(@NotNull Interval that) {
+        if ((lower == Rational.ZERO && upper == Rational.ZERO)
+                || ((that.lower == Rational.ZERO) && that.upper == Rational.ZERO)) {
             return ZERO;
         }
-        int xls = x.lower == null ? 2 : x.lower.signum();
-        int xus = x.upper == null ? 2 : x.upper.signum();
-        int yls = y.lower == null ? 2 : y.lower.signum();
-        int yus = y.upper == null ? 2 : y.upper.signum();
+        int xls = lower == null ? 2 : lower.signum();
+        int xus = upper == null ? 2 : upper.signum();
+        int yls = that.lower == null ? 2 : that.lower.signum();
+        int yus = that.upper == null ? 2 : that.upper.signum();
         boolean containsNegInf = (xls == 2 && yls == 2)
                 || (xls == 2 && yus == 1) || (yls == 2 && xus == 1)
                 || (xus == 2 && yls == -1) || (yus == 2 && xls == -1);
@@ -644,10 +638,10 @@ public final class Interval implements Comparable<Interval> {
                 || (xls == 2 && yls == -1) || (yls == 2 && xls == -1)
                 || (xus == 2 && yus == 1) || (yus == 2 && xus == 1);
         if (containsNegInf && containsInf) return ALL;
-        Rational xlyl = xls == 2 || yls == 2 ? null : x.lower.multiply(y.lower);
-        Rational xlyu = xls == 2 || yus == 2 ? null : x.lower.multiply(y.upper);
-        Rational xuyl = xus == 2 || yls == 2 ? null : x.upper.multiply(y.lower);
-        Rational xuyu = xus == 2 || yus == 2 ? null : x.upper.multiply(y.upper);
+        Rational xlyl = xls == 2 || yls == 2 ? null : lower.multiply(that.lower);
+        Rational xlyu = xls == 2 || yus == 2 ? null : lower.multiply(that.upper);
+        Rational xuyl = xus == 2 || yls == 2 ? null : upper.multiply(that.lower);
+        Rational xuyu = xus == 2 || yus == 2 ? null : upper.multiply(that.upper);
         Rational min = xlyl;
         Rational max = xlyl;
         if (xlyu != null) {
@@ -695,8 +689,8 @@ public final class Interval implements Comparable<Interval> {
         return new Interval(upper.invert(), lower.invert());
     }
 
-    public static Interval divide(Interval x, Interval y) {
-        return multiply(x, y.invert());
+    public @NotNull Interval divide(@NotNull Interval that) {
+        return multiply(that.invert());
     }
 
     public Interval pow(int p) {
@@ -739,7 +733,7 @@ public final class Interval implements Comparable<Interval> {
         if (that == null || getClass() != that.getClass()) return false;
         Interval interval = (Interval) that;
         return (lower == null ? interval.lower == null : lower.equals(interval.lower)) &&
-                (upper == null ? interval.upper == null : upper.equals(interval.upper));
+               (upper == null ? interval.upper == null : upper.equals(interval.upper));
     }
 
     /**

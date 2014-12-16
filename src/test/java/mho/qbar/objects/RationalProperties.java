@@ -24,9 +24,6 @@ import java.util.Optional;
 import java.util.Random;
 
 import static mho.wheels.iterables.IterableUtils.*;
-import static mho.wheels.misc.Readers.findOrderingIn;
-import static mho.wheels.misc.Readers.readBoolean;
-import static mho.wheels.misc.Readers.readOrdering;
 import static mho.wheels.ordering.Ordering.*;
 import static mho.qbar.objects.Rational.*;
 import static org.junit.Assert.*;
@@ -3137,28 +3134,15 @@ public class RationalProperties {
         }
 
         Iterable<Pair<String, Integer>> ps = P.dependentPairsLogarithmic(P.strings(), s -> range(0, s.length()));
-        Iterable<String> ss;
-        if (P instanceof ExhaustiveProvider) {
-            ss = map(
-                    p -> {
-                        assert p.a != null;
-                        assert p.a.a != null;
-                        assert p.a.b != null;
-                        return take(p.a.b, p.a.a) + p.b + drop(p.a.b, p.a.a);
-                    },
-                    ((ExhaustiveProvider) P).pairsLogarithmicOrder(ps, P.orderings())
-            );
-        } else {
-            ss = map(
-                    p -> {
-                        assert p.a != null;
-                        assert p.a.a != null;
-                        assert p.a.b != null;
-                        return take(p.a.b, p.a.a) + p.b + drop(p.a.b, p.a.a);
-                    },
-                    P.pairs(ps, P.rationals())
-            );
-        }
+        Iterable<String> ss = map(
+                p -> {
+                    assert p.a != null;
+                    assert p.a.a != null;
+                    assert p.a.b != null;
+                    return take(p.a.b, p.a.a) + p.b + drop(p.a.b, p.a.a);
+                },
+                P.pairs(ps, P.rationals())
+        );
         for (String s : take(LIMIT, ss)) {
             Optional<Pair<Rational, Integer>> op = findIn(s);
             Pair<Rational, Integer> p = op.get();
