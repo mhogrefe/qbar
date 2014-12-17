@@ -283,7 +283,7 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
      *  <li>{@code this} may be any {@code RationalVector}.</li>
      *  <li>The result is a {@code String} which begins with '[' and ends with ']', and the rest is a possibly-empty
      *  list of comma-separated {@code String}s, each of which validly represents a {@code Rational} (see
-     *  {@link Rational#toString}.</li>
+     *  {@link Rational#toString}).</li>
      * </ul>
      *
      * @return a {@code String} representation of {@code this}

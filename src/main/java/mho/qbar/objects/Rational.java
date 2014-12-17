@@ -1825,8 +1825,8 @@ public final class Rational implements Comparable<Rational> {
     /**
      * Creates a {@code Rational} from a {@code String}. Valid {@code String}s are of the form {@code a.toString()} or
      * {@code a.toString() + "/" + b.toString()}, where {@code a} and {@code b} are some {@code BigInteger}s,
-     * {@code b}>0, and {@code a} and {@code b} are coprime. If the {@code String} is invalid, the method returns
-     * {@code Optional.empty()} without throwing an exception; this aids composability.
+     * {@code b}{@literal >}0, and {@code a} and {@code b} are coprime. If the {@code String} is invalid, the method
+     * returns {@code Optional.empty()} without throwing an exception; this aids composability.
      *
      * <ul>
      *  <li>{@code s} must be non-null.</li>
