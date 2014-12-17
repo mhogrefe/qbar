@@ -1,5 +1,6 @@
 package mho.qbar.iterableProviders;
 
+import mho.qbar.objects.RationalVector;
 import mho.wheels.iterables.RandomProvider;
 import mho.qbar.objects.Interval;
 import mho.qbar.objects.Rational;
@@ -459,9 +460,9 @@ public class QBarRandomProvider extends RandomProvider implements QBarIterablePr
         if (!a.getLower().isPresent() && !a.getUpper().isPresent()) {
             return rationals();
         } else if (!a.getLower().isPresent()) {
-            return map(r -> Rational.subtract(a.getUpper().get(), r), nonNegativeRationals());
+            return map(r -> a.getUpper().get().subtract(r), nonNegativeRationals());
         } else if (!a.getUpper().isPresent()) {
-            return map(r -> Rational.add(r, a.getLower().get()), nonNegativeRationals());
+            return map(r -> r.add(a.getLower().get()), nonNegativeRationals());
         } else {
             Rational diameter = a.diameter().get();
             if (diameter == Rational.ZERO) return repeat(a.getLower().get());
@@ -469,11 +470,29 @@ public class QBarRandomProvider extends RandomProvider implements QBarIterablePr
                     Arrays.asList(a.getLower().get(), a.getUpper().get()),
                     tail(
                             map(
-                                    r -> Rational.add(Rational.multiply(r, diameter), a.getLower().get()),
+                                    r -> r.multiply(diameter).add(a.getLower().get()),
                                     nonNegativeRationalsLessThanOne()
                             )
                     )
             );
         }
+    }
+
+    @Override
+    public @NotNull Iterable<RationalVector> rationalVectors(int dimension) {
+        return rationalVectorsBySize(BIG_INTEGER_MEAN_BIT_SIZE, dimension);
+    }
+
+    public @NotNull Iterable<RationalVector> rationalVectorsBySize(int elementMeanBitSize, int dimension) {
+        return map(RationalVector::of, lists(dimension, rationals(elementMeanBitSize)));
+    }
+
+    @Override
+    public @NotNull Iterable<RationalVector> rationalVectors() {
+        return rationalVectorsBySize(BIG_INTEGER_MEAN_BIT_SIZE);
+    }
+
+    public @NotNull Iterable<RationalVector> rationalVectorsBySize(int elementMeanBitSize) {
+        return map(RationalVector::of, lists(rationals(elementMeanBitSize)));
     }
 }

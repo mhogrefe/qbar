@@ -14,7 +14,7 @@ import static mho.wheels.ordering.Ordering.*;
 
 public class IntervalDemos {
     private static final boolean USE_RANDOM = false;
-    private static final String INTERVAL_CHARS = " ()-/0123456789I[]finty";
+    private static final String INTERVAL_CHARS = " (),-/0123456789I[]finty";
     private static int LIMIT;
 
     private static QBarIterableProvider P;
@@ -26,6 +26,20 @@ public class IntervalDemos {
         } else {
             P = QBarExhaustiveProvider.INSTANCE;
             LIMIT = 10000;
+        }
+    }
+
+    public static void demoGetLower() {
+        initialize();
+        for (Interval a : take(LIMIT, P.intervals())) {
+            System.out.println("getLower(" + a + ") = " + a.getLower());
+        }
+    }
+
+    public static void demoGetUpper() {
+        initialize();
+        for (Interval a : take(LIMIT, P.intervals())) {
+            System.out.println("getUpper(" + a + ") = " + a.getUpper());
         }
     }
 
@@ -259,6 +273,26 @@ public class IntervalDemos {
         }
         for (String s : take(LIMIT, P.strings(cs))) {
             System.out.println("read(" + s + ") = " + read(s));
+        }
+    }
+
+    public static void demoFindIn() {
+        initialize();
+        for (String s : take(LIMIT, P.strings())) {
+            System.out.println("findIn(" + s + ") = " + findIn(s));
+        }
+    }
+
+    public static void demoFindIn_targeted() {
+        initialize();
+        Iterable<Character> cs;
+        if (P instanceof QBarExhaustiveProvider) {
+            cs = fromString(INTERVAL_CHARS);
+        } else {
+            cs = ((QBarRandomProvider) P).uniformSample(INTERVAL_CHARS);
+        }
+        for (String s : take(LIMIT, P.strings(cs))) {
+            System.out.println("findIn(" + s + ") = " + findIn(s));
         }
     }
 

@@ -1,7 +1,7 @@
 package mho.qbar.objects;
 
 import mho.wheels.iterables.IterableUtils;
-import mho.wheels.misc.FloatUtils;
+import mho.wheels.misc.FloatingPointUtils;
 import mho.wheels.misc.Readers;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import static mho.wheels.iterables.IterableUtils.take;
 import static mho.wheels.iterables.IterableUtils.toList;
 import static mho.wheels.ordering.Ordering.*;
 import static mho.qbar.objects.Rational.*;
@@ -49,6 +50,10 @@ public class RationalTest {
                 "171540458953514382464234321326889464182768467546703537516986049910576551282076245490090389328944075" +
                 "868508455133942304583236903222948165808559332123348274797826204144723168738177180919299881250404026" +
                 "184124858368");
+        aeq(take(20, HARMONIC_NUMBERS),
+                "[1, 3/2, 11/6, 25/12, 137/60, 49/20, 363/140, 761/280, 7129/2520, 7381/2520, 83711/27720," +
+                " 86021/27720, 1145993/360360, 1171733/360360, 1195757/360360, 2436559/720720, 42142223/12252240," +
+                " 14274301/4084080, 275295799/77597520, 55835135/15519504]");
     }
 
     @Test
@@ -1066,18 +1071,18 @@ public class RationalTest {
             trillion.floatValue(RoundingMode.UNNECESSARY);
             fail();
         } catch (ArithmeticException ignored) {}
-        Rational piSuccessor = ofExact(FloatUtils.successor((float) Math.PI));
+        Rational piSuccessor = ofExact(FloatingPointUtils.successor((float) Math.PI));
         if (piSuccessor == null) {
             fail();
         }
-        Rational piPredecessor = ofExact(FloatUtils.predecessor((float) Math.PI));
+        Rational piPredecessor = ofExact(FloatingPointUtils.predecessor((float) Math.PI));
         if (piPredecessor == null) {
             fail();
         }
-        Rational halfAbovePi = add(floatPi, piSuccessor).divide(2);
-        Rational halfBelowPi = add(floatPi, piPredecessor).divide(2);
-        Rational justAbovePi = add(floatPi.multiply(2), piSuccessor).divide(3);
-        Rational justBelowPi = add(floatPi.multiply(2), piPredecessor).divide(3);
+        Rational halfAbovePi = floatPi.add(piSuccessor).divide(2);
+        Rational halfBelowPi = floatPi.add(piPredecessor).divide(2);
+        Rational justAbovePi = floatPi.multiply(2).add(piSuccessor).divide(3);
+        Rational justBelowPi = floatPi.multiply(2).add(piPredecessor).divide(3);
         aeq(halfAbovePi.floatValue(RoundingMode.FLOOR), 3.1415927);
         aeq(halfAbovePi.floatValue(RoundingMode.CEILING), 3.141593);
         aeq(halfAbovePi.floatValue(RoundingMode.DOWN), 3.1415927);
@@ -1126,18 +1131,18 @@ public class RationalTest {
         if (subnormal == null) {
             fail();
         }
-        Rational subnormalSuccessor = ofExact(FloatUtils.successor(1e-40f));
+        Rational subnormalSuccessor = ofExact(FloatingPointUtils.successor(1e-40f));
         if (subnormalSuccessor == null) {
             fail();
         }
-        Rational subnormalPredecessor = ofExact(FloatUtils.predecessor(1e-40f));
+        Rational subnormalPredecessor = ofExact(FloatingPointUtils.predecessor(1e-40f));
         if (subnormalPredecessor == null) {
             fail();
         }
-        Rational halfAboveSubnormal = add(subnormal, subnormalSuccessor).divide(2);
-        Rational halfBelowSubnormal = add(subnormal, subnormalPredecessor).divide(2);
-        Rational justAboveSubnormal = add(subnormal.multiply(2), subnormalSuccessor).divide(3);
-        Rational justBelowSubnormal = add(subnormal.multiply(2), subnormalPredecessor).divide(3);
+        Rational halfAboveSubnormal = subnormal.add(subnormalSuccessor).divide(2);
+        Rational halfBelowSubnormal = subnormal.add(subnormalPredecessor).divide(2);
+        Rational justAboveSubnormal = subnormal.multiply(2).add(subnormalSuccessor).divide(3);
+        Rational justBelowSubnormal = subnormal.multiply(2).add(subnormalPredecessor).divide(3);
         aeq(subnormal.floatValue(RoundingMode.FLOOR), 1.0E-40);
         aeq(subnormal.floatValue(RoundingMode.CEILING), 1.0E-40);
         aeq(subnormal.floatValue(RoundingMode.DOWN), 1.0E-40);
@@ -1190,16 +1195,13 @@ public class RationalTest {
             justBelowSubnormal.floatValue(RoundingMode.UNNECESSARY);
             fail();
         } catch (ArithmeticException ignored) {}
-        Rational belowNegativeMax = subtract(LARGEST_FLOAT.negate(), ONE);
-        Rational negativeMaxSuccessor = ofExact(FloatUtils.successor(-Float.MAX_VALUE));
+        Rational belowNegativeMax = LARGEST_FLOAT.negate().subtract(ONE);
+        Rational negativeMaxSuccessor = ofExact(FloatingPointUtils.successor(-Float.MAX_VALUE));
         if (negativeMaxSuccessor == null) {
             fail();
         }
-        Rational halfAboveNegativeMax = add(LARGEST_FLOAT.negate(), negativeMaxSuccessor).divide(2);
-        Rational justAboveNegativeMax = add(
-                LARGEST_FLOAT.negate().multiply(2),
-                negativeMaxSuccessor
-        ).divide(3);
+        Rational halfAboveNegativeMax = LARGEST_FLOAT.negate().add(negativeMaxSuccessor).divide(2);
+        Rational justAboveNegativeMax = LARGEST_FLOAT.negate().multiply(2).add(negativeMaxSuccessor).divide(3);
         aeq(belowNegativeMax.floatValue(RoundingMode.FLOOR), Float.NEGATIVE_INFINITY);
         aeq(belowNegativeMax.floatValue(RoundingMode.CEILING), -3.4028235E38);
         aeq(belowNegativeMax.floatValue(RoundingMode.DOWN), -3.4028235E38);
@@ -1233,13 +1235,13 @@ public class RationalTest {
             justAboveNegativeMax.floatValue(RoundingMode.UNNECESSARY);
             fail();
         } catch (ArithmeticException ignored) {}
-        Rational aboveMax = add(LARGEST_FLOAT, ONE);
-        Rational maxPredecessor = ofExact(FloatUtils.predecessor(Float.MAX_VALUE));
+        Rational aboveMax = LARGEST_FLOAT.add(ONE);
+        Rational maxPredecessor = ofExact(FloatingPointUtils.predecessor(Float.MAX_VALUE));
         if (maxPredecessor == null) {
             fail();
         }
-        Rational halfBelowMax = add(LARGEST_FLOAT, maxPredecessor).divide(2);
-        Rational justBelowMax = add(LARGEST_FLOAT.multiply(2), maxPredecessor).divide(3);
+        Rational halfBelowMax = LARGEST_FLOAT.add(maxPredecessor).divide(2);
+        Rational justBelowMax = LARGEST_FLOAT.multiply(2).add(maxPredecessor).divide(3);
         aeq(aboveMax.floatValue(RoundingMode.FLOOR), 3.4028235E38);
         aeq(aboveMax.floatValue(RoundingMode.CEILING), Float.POSITIVE_INFINITY);
         aeq(aboveMax.floatValue(RoundingMode.DOWN), 3.4028235E38);
@@ -1321,14 +1323,11 @@ public class RationalTest {
             justAboveZero.floatValue(RoundingMode.UNNECESSARY);
             fail();
         } catch (ArithmeticException ignored) {}
-        Rational boundary = add(
-                LARGEST_SUBNORMAL_FLOAT,
-                SMALLEST_NORMAL_FLOAT
-        ).shiftRight(1);
-        Rational halfBelowBoundary = add(LARGEST_SUBNORMAL_FLOAT, boundary).shiftRight(1);
-        Rational halfAboveBoundary = add(SMALLEST_NORMAL_FLOAT, boundary).shiftRight(1);
-        Rational justBelowBoundary = add(LARGEST_SUBNORMAL_FLOAT, boundary.shiftLeft(1)).divide(3);
-        Rational justAboveBoundary = add(SMALLEST_NORMAL_FLOAT, boundary.shiftLeft(1)).divide(3);
+        Rational boundary = LARGEST_SUBNORMAL_FLOAT.add(SMALLEST_NORMAL_FLOAT).shiftRight(1);
+        Rational halfBelowBoundary = LARGEST_SUBNORMAL_FLOAT.add(boundary).shiftRight(1);
+        Rational halfAboveBoundary = SMALLEST_NORMAL_FLOAT.add(boundary).shiftRight(1);
+        Rational justBelowBoundary = LARGEST_SUBNORMAL_FLOAT.add(boundary.shiftLeft(1)).divide(3);
+        Rational justAboveBoundary = SMALLEST_NORMAL_FLOAT.add(boundary.shiftLeft(1)).divide(3);
         aeq(boundary.floatValue(RoundingMode.FLOOR), 1.1754942E-38);
         aeq(boundary.floatValue(RoundingMode.CEILING), 1.17549435E-38);
         aeq(boundary.floatValue(RoundingMode.DOWN), 1.1754942E-38);
@@ -1402,18 +1401,18 @@ public class RationalTest {
         aeq(floatPi.floatValue(), 3.1415927);
         Rational trillion = of(BigInteger.TEN.pow(12));
         aeq(trillion.floatValue(), 1.0E12);
-        Rational piSuccessor = ofExact(FloatUtils.successor((float) Math.PI));
+        Rational piSuccessor = ofExact(FloatingPointUtils.successor((float) Math.PI));
         if (piSuccessor == null) {
             fail();
         }
-        Rational piPredecessor = ofExact(FloatUtils.predecessor((float) Math.PI));
+        Rational piPredecessor = ofExact(FloatingPointUtils.predecessor((float) Math.PI));
         if (piPredecessor == null) {
             fail();
         }
-        Rational halfAbovePi = add(floatPi, piSuccessor).divide(2);
-        Rational halfBelowPi = add(floatPi, piPredecessor).divide(2);
-        Rational justAbovePi = add(floatPi.multiply(2), piSuccessor).divide(3);
-        Rational justBelowPi = add(floatPi.multiply(2), piPredecessor).divide(3);
+        Rational halfAbovePi = floatPi.add(piSuccessor).divide(2);
+        Rational halfBelowPi = floatPi.add(piPredecessor).divide(2);
+        Rational justAbovePi = floatPi.multiply(2).add(piSuccessor).divide(3);
+        Rational justBelowPi = floatPi.multiply(2).add(piPredecessor).divide(3);
         aeq(halfAbovePi.floatValue(), 3.141593);
         aeq(halfBelowPi.floatValue(), 3.1415925);
         aeq(justAbovePi.floatValue(), 3.1415927);
@@ -1422,43 +1421,40 @@ public class RationalTest {
         if (subnormal == null) {
             fail();
         }
-        Rational subnormalSuccessor = ofExact(FloatUtils.successor(1e-40f));
+        Rational subnormalSuccessor = ofExact(FloatingPointUtils.successor(1e-40f));
         if (subnormalSuccessor == null) {
             fail();
         }
-        Rational subnormalPredecessor = ofExact(FloatUtils.predecessor(1e-40f));
+        Rational subnormalPredecessor = ofExact(FloatingPointUtils.predecessor(1e-40f));
         if (subnormalPredecessor == null) {
             fail();
         }
-        Rational halfAboveSubnormal = add(subnormal, subnormalSuccessor).divide(2);
-        Rational halfBelowSubnormal = add(subnormal, subnormalPredecessor).divide(2);
-        Rational justAboveSubnormal = add(subnormal.multiply(2), subnormalSuccessor).divide(3);
-        Rational justBelowSubnormal = add(subnormal.multiply(2), subnormalPredecessor).divide(3);
+        Rational halfAboveSubnormal = subnormal.add(subnormalSuccessor).divide(2);
+        Rational halfBelowSubnormal = subnormal.add(subnormalPredecessor).divide(2);
+        Rational justAboveSubnormal = subnormal.multiply(2).add(subnormalSuccessor).divide(3);
+        Rational justBelowSubnormal = subnormal.multiply(2).add(subnormalPredecessor).divide(3);
         aeq(subnormal.floatValue(), 1.0E-40);
         aeq(halfAboveSubnormal.floatValue(), 1.0E-40);
         aeq(halfBelowSubnormal.floatValue(), 1.0E-40);
         aeq(justAboveSubnormal.floatValue(), 1.0E-40);
         aeq(justBelowSubnormal.floatValue(), 1.0E-40);
-        Rational belowNegativeMax = subtract(LARGEST_FLOAT.negate(), ONE);
-        Rational negativeMaxSuccessor = ofExact(FloatUtils.successor(-Float.MAX_VALUE));
+        Rational belowNegativeMax = LARGEST_FLOAT.negate().subtract(ONE);
+        Rational negativeMaxSuccessor = ofExact(FloatingPointUtils.successor(-Float.MAX_VALUE));
         if (negativeMaxSuccessor == null) {
             fail();
         }
-        Rational halfAboveNegativeMax = add(LARGEST_FLOAT.negate(), negativeMaxSuccessor).divide(2);
-        Rational justAboveNegativeMax = add(
-                LARGEST_FLOAT.negate().multiply(2),
-                negativeMaxSuccessor
-        ).divide(3);
+        Rational halfAboveNegativeMax = LARGEST_FLOAT.negate().add(negativeMaxSuccessor).divide(2);
+        Rational justAboveNegativeMax = LARGEST_FLOAT.negate().multiply(2).add(negativeMaxSuccessor).divide(3);
         aeq(belowNegativeMax.floatValue(), Float.NEGATIVE_INFINITY);
         aeq(halfAboveNegativeMax.floatValue(), -3.4028233E38);
         aeq(justAboveNegativeMax.floatValue(), -3.4028235E38);
-        Rational aboveMax = add(LARGEST_FLOAT, ONE);
-        Rational maxPredecessor = ofExact(FloatUtils.predecessor(Float.MAX_VALUE));
+        Rational aboveMax = LARGEST_FLOAT.add(ONE);
+        Rational maxPredecessor = ofExact(FloatingPointUtils.predecessor(Float.MAX_VALUE));
         if (maxPredecessor == null) {
             fail();
         }
-        Rational halfBelowMax = add(LARGEST_FLOAT, maxPredecessor).divide(2);
-        Rational justBelowMax = add(LARGEST_FLOAT.multiply(2), maxPredecessor).divide(3);
+        Rational halfBelowMax = LARGEST_FLOAT.add(maxPredecessor).divide(2);
+        Rational justBelowMax = LARGEST_FLOAT.multiply(2).add(maxPredecessor).divide(3);
         aeq(aboveMax.floatValue(), Float.POSITIVE_INFINITY);
         aeq(halfBelowMax.floatValue(), 3.4028233E38);
         aeq(justBelowMax.floatValue(), 3.4028235E38);
@@ -1470,14 +1466,11 @@ public class RationalTest {
         aeq(justBelowZero.floatValue(), -0.0);
         aeq(halfAboveZero.floatValue(), 0.0);
         aeq(justAboveZero.floatValue(), 0.0);
-        Rational boundary = add(
-                LARGEST_SUBNORMAL_FLOAT,
-                SMALLEST_NORMAL_FLOAT
-        ).shiftRight(1);
-        Rational halfBelowBoundary = add(LARGEST_SUBNORMAL_FLOAT, boundary).shiftRight(1);
-        Rational halfAboveBoundary = add(SMALLEST_NORMAL_FLOAT, boundary).shiftRight(1);
-        Rational justBelowBoundary = add(LARGEST_SUBNORMAL_FLOAT, boundary.shiftLeft(1)).divide(3);
-        Rational justAboveBoundary = add(SMALLEST_NORMAL_FLOAT, boundary.shiftLeft(1)).divide(3);
+        Rational boundary = LARGEST_SUBNORMAL_FLOAT.add(SMALLEST_NORMAL_FLOAT).shiftRight(1);
+        Rational halfBelowBoundary = LARGEST_SUBNORMAL_FLOAT.add(boundary).shiftRight(1);
+        Rational halfAboveBoundary = SMALLEST_NORMAL_FLOAT.add(boundary).shiftRight(1);
+        Rational justBelowBoundary = LARGEST_SUBNORMAL_FLOAT.add(boundary.shiftLeft(1)).divide(3);
+        Rational justAboveBoundary = SMALLEST_NORMAL_FLOAT.add(boundary.shiftLeft(1)).divide(3);
         aeq(boundary.floatValue(), 1.17549435E-38);
         aeq(halfBelowBoundary.floatValue(), 1.1754942E-38);
         aeq(justBelowBoundary.floatValue(), 1.1754942E-38);
@@ -1513,18 +1506,18 @@ public class RationalTest {
             trillion.floatValueExact();
             fail();
         } catch (ArithmeticException ignored) {}
-        Rational piSuccessor = ofExact(FloatUtils.successor((float) Math.PI));
+        Rational piSuccessor = ofExact(FloatingPointUtils.successor((float) Math.PI));
         if (piSuccessor == null) {
             fail();
         }
-        Rational piPredecessor = ofExact(FloatUtils.predecessor((float) Math.PI));
+        Rational piPredecessor = ofExact(FloatingPointUtils.predecessor((float) Math.PI));
         if (piPredecessor == null) {
             fail();
         }
-        Rational halfAbovePi = add(floatPi, piSuccessor).divide(2);
-        Rational halfBelowPi = add(floatPi, piPredecessor).divide(2);
-        Rational justAbovePi = add(floatPi.multiply(2), piSuccessor).divide(3);
-        Rational justBelowPi = add(floatPi.multiply(2), piPredecessor).divide(3);
+        Rational halfAbovePi = floatPi.add(piSuccessor).divide(2);
+        Rational halfBelowPi = floatPi.add(piPredecessor).divide(2);
+        Rational justAbovePi = floatPi.multiply(2).add(piSuccessor).divide(3);
+        Rational justBelowPi = floatPi.multiply(2).add(piPredecessor).divide(3);
         try {
             halfAbovePi.floatValueExact();
             fail();
@@ -1545,18 +1538,18 @@ public class RationalTest {
         if (subnormal == null) {
             fail();
         }
-        Rational subnormalSuccessor = ofExact(FloatUtils.successor(1e-40f));
+        Rational subnormalSuccessor = ofExact(FloatingPointUtils.successor(1e-40f));
         if (subnormalSuccessor == null) {
             fail();
         }
-        Rational subnormalPredecessor = ofExact(FloatUtils.predecessor(1e-40f));
+        Rational subnormalPredecessor = ofExact(FloatingPointUtils.predecessor(1e-40f));
         if (subnormalPredecessor == null) {
             fail();
         }
-        Rational halfAboveSubnormal = add(subnormal, subnormalSuccessor).divide(2);
-        Rational halfBelowSubnormal = add(subnormal, subnormalPredecessor).divide(2);
-        Rational justAboveSubnormal = add(subnormal.multiply(2), subnormalSuccessor).divide(3);
-        Rational justBelowSubnormal = add(subnormal.multiply(2), subnormalPredecessor).divide(3);
+        Rational halfAboveSubnormal = subnormal.add(subnormalSuccessor).divide(2);
+        Rational halfBelowSubnormal = subnormal.add(subnormalPredecessor).divide(2);
+        Rational justAboveSubnormal = subnormal.multiply(2).add(subnormalSuccessor).divide(3);
+        Rational justBelowSubnormal = subnormal.multiply(2).add(subnormalPredecessor).divide(3);
         try {
             halfAboveSubnormal.floatValueExact();
             fail();
@@ -1573,16 +1566,13 @@ public class RationalTest {
             justBelowSubnormal.floatValueExact();
             fail();
         } catch (ArithmeticException ignored) {}
-        Rational belowNegativeMax = subtract(LARGEST_FLOAT.negate(), ONE);
-        Rational negativeMaxSuccessor = ofExact(FloatUtils.successor(-Float.MAX_VALUE));
+        Rational belowNegativeMax = LARGEST_FLOAT.negate().subtract(ONE);
+        Rational negativeMaxSuccessor = ofExact(FloatingPointUtils.successor(-Float.MAX_VALUE));
         if (negativeMaxSuccessor == null) {
             fail();
         }
-        Rational halfAboveNegativeMax = add(LARGEST_FLOAT.negate(), negativeMaxSuccessor).divide(2);
-        Rational justAboveNegativeMax = add(
-                LARGEST_FLOAT.negate().multiply(2),
-                negativeMaxSuccessor
-        ).divide(3);
+        Rational halfAboveNegativeMax = LARGEST_FLOAT.negate().add(negativeMaxSuccessor).divide(2);
+        Rational justAboveNegativeMax = LARGEST_FLOAT.negate().multiply(2).add(negativeMaxSuccessor).divide(3);
         try {
             belowNegativeMax.floatValueExact();
             fail();
@@ -1595,13 +1585,13 @@ public class RationalTest {
             justAboveNegativeMax.floatValueExact();
             fail();
         } catch (ArithmeticException ignored) {}
-        Rational aboveMax = add(LARGEST_FLOAT, ONE);
-        Rational maxPredecessor = ofExact(FloatUtils.predecessor(Float.MAX_VALUE));
+        Rational aboveMax = LARGEST_FLOAT.add(ONE);
+        Rational maxPredecessor = ofExact(FloatingPointUtils.predecessor(Float.MAX_VALUE));
         if (maxPredecessor == null) {
             fail();
         }
-        Rational halfBelowMax = add(LARGEST_FLOAT, maxPredecessor).divide(2);
-        Rational justBelowMax = add(LARGEST_FLOAT.multiply(2), maxPredecessor).divide(3);
+        Rational halfBelowMax = LARGEST_FLOAT.add(maxPredecessor).divide(2);
+        Rational justBelowMax = LARGEST_FLOAT.multiply(2).add(maxPredecessor).divide(3);
         try {
             aboveMax.floatValueExact();
             fail();
@@ -1634,14 +1624,11 @@ public class RationalTest {
             justAboveZero.floatValueExact();
             fail();
         } catch (ArithmeticException ignored) {}
-        Rational boundary = add(
-                LARGEST_SUBNORMAL_FLOAT,
-                SMALLEST_NORMAL_FLOAT
-        ).shiftRight(1);
-        Rational halfBelowBoundary = add(LARGEST_SUBNORMAL_FLOAT, boundary).shiftRight(1);
-        Rational halfAboveBoundary = add(SMALLEST_NORMAL_FLOAT, boundary).shiftRight(1);
-        Rational justBelowBoundary = add(LARGEST_SUBNORMAL_FLOAT, boundary.shiftLeft(1)).divide(3);
-        Rational justAboveBoundary = add(SMALLEST_NORMAL_FLOAT, boundary.shiftLeft(1)).divide(3);
+        Rational boundary = LARGEST_SUBNORMAL_FLOAT.add(SMALLEST_NORMAL_FLOAT).shiftRight(1);
+        Rational halfBelowBoundary = LARGEST_SUBNORMAL_FLOAT.add(boundary).shiftRight(1);
+        Rational halfAboveBoundary = SMALLEST_NORMAL_FLOAT.add(boundary).shiftRight(1);
+        Rational justBelowBoundary = LARGEST_SUBNORMAL_FLOAT.add(boundary.shiftLeft(1)).divide(3);
+        Rational justAboveBoundary = SMALLEST_NORMAL_FLOAT.add(boundary.shiftLeft(1)).divide(3);
         try {
             boundary.floatValueExact();
             fail();
@@ -1748,18 +1735,18 @@ public class RationalTest {
             googol.doubleValue(RoundingMode.UNNECESSARY);
             fail();
         } catch (ArithmeticException ignored) {}
-        Rational piSuccessor = ofExact(FloatUtils.successor(Math.PI));
+        Rational piSuccessor = ofExact(FloatingPointUtils.successor(Math.PI));
         if (piSuccessor == null) {
             fail();
         }
-        Rational piPredecessor = ofExact(FloatUtils.predecessor(Math.PI));
+        Rational piPredecessor = ofExact(FloatingPointUtils.predecessor(Math.PI));
         if (piPredecessor == null) {
             fail();
         }
-        Rational halfAbovePi = add(pi, piSuccessor).divide(2);
-        Rational halfBelowPi = add(pi, piPredecessor).divide(2);
-        Rational justAbovePi = add(pi.multiply(2), piSuccessor).divide(3);
-        Rational justBelowPi = add(pi.multiply(2), piPredecessor).divide(3);
+        Rational halfAbovePi = pi.add(piSuccessor).divide(2);
+        Rational halfBelowPi = pi.add(piPredecessor).divide(2);
+        Rational justAbovePi = pi.multiply(2).add(piSuccessor).divide(3);
+        Rational justBelowPi = pi.multiply(2).add(piPredecessor).divide(3);
         aeq(halfAbovePi.doubleValue(RoundingMode.FLOOR), 3.141592653589793);
         aeq(halfAbovePi.doubleValue(RoundingMode.CEILING), 3.1415926535897936);
         aeq(halfAbovePi.doubleValue(RoundingMode.DOWN), 3.141592653589793);
@@ -1808,18 +1795,18 @@ public class RationalTest {
         if (subnormal == null) {
             fail();
         }
-        Rational subnormalSuccessor = ofExact(FloatUtils.successor(1e-310));
+        Rational subnormalSuccessor = ofExact(FloatingPointUtils.successor(1e-310));
         if (subnormalSuccessor == null) {
             fail();
         }
-        Rational subnormalPredecessor = ofExact(FloatUtils.predecessor(1e-310));
+        Rational subnormalPredecessor = ofExact(FloatingPointUtils.predecessor(1e-310));
         if (subnormalPredecessor == null) {
             fail();
         }
-        Rational halfAboveSubnormal = add(subnormal, subnormalSuccessor).divide(2);
-        Rational halfBelowSubnormal = add(subnormal, subnormalPredecessor).divide(2);
-        Rational justAboveSubnormal = add(subnormal.multiply(2), subnormalSuccessor).divide(3);
-        Rational justBelowSubnormal = add(subnormal.multiply(2), subnormalPredecessor).divide(3);
+        Rational halfAboveSubnormal = subnormal.add(subnormalSuccessor).divide(2);
+        Rational halfBelowSubnormal = subnormal.add(subnormalPredecessor).divide(2);
+        Rational justAboveSubnormal = subnormal.multiply(2).add(subnormalSuccessor).divide(3);
+        Rational justBelowSubnormal = subnormal.multiply(2).add(subnormalPredecessor).divide(3);
         aeq(subnormal.doubleValue(RoundingMode.FLOOR), 1.0E-310);
         aeq(subnormal.doubleValue(RoundingMode.CEILING), 1.0E-310);
         aeq(subnormal.doubleValue(RoundingMode.DOWN), 1.0E-310);
@@ -1872,16 +1859,13 @@ public class RationalTest {
             justBelowSubnormal.doubleValue(RoundingMode.UNNECESSARY);
             fail();
         } catch (ArithmeticException ignored) {}
-        Rational belowNegativeMax = subtract(LARGEST_DOUBLE.negate(), ONE);
-        Rational negativeMaxSuccessor = ofExact(FloatUtils.successor(-Double.MAX_VALUE));
+        Rational belowNegativeMax = LARGEST_DOUBLE.negate().subtract(ONE);
+        Rational negativeMaxSuccessor = ofExact(FloatingPointUtils.successor(-Double.MAX_VALUE));
         if (negativeMaxSuccessor == null) {
             fail();
         }
-        Rational halfAboveNegativeMax = add(LARGEST_DOUBLE.negate(), negativeMaxSuccessor).divide(2);
-        Rational justAboveNegativeMax = add(
-                LARGEST_DOUBLE.negate().multiply(2),
-                negativeMaxSuccessor
-        ).divide(3);
+        Rational halfAboveNegativeMax = LARGEST_DOUBLE.negate().add(negativeMaxSuccessor).divide(2);
+        Rational justAboveNegativeMax = LARGEST_DOUBLE.negate().multiply(2).add(negativeMaxSuccessor).divide(3);
         aeq(belowNegativeMax.doubleValue(RoundingMode.FLOOR), Double.NEGATIVE_INFINITY);
         aeq(belowNegativeMax.doubleValue(RoundingMode.CEILING), -1.7976931348623157E308);
         aeq(belowNegativeMax.doubleValue(RoundingMode.DOWN), -1.7976931348623157E308);
@@ -1915,13 +1899,13 @@ public class RationalTest {
             justAboveNegativeMax.doubleValue(RoundingMode.UNNECESSARY);
             fail();
         } catch (ArithmeticException ignored) {}
-        Rational aboveMax = add(LARGEST_DOUBLE, ONE);
-        Rational maxPredecessor = ofExact(FloatUtils.predecessor(Double.MAX_VALUE));
+        Rational aboveMax = LARGEST_DOUBLE.add(ONE);
+        Rational maxPredecessor = ofExact(FloatingPointUtils.predecessor(Double.MAX_VALUE));
         if (maxPredecessor == null) {
             fail();
         }
-        Rational halfBelowMax = add(LARGEST_DOUBLE, maxPredecessor).divide(2);
-        Rational justBelowMax = add(LARGEST_DOUBLE.multiply(2), maxPredecessor).divide(3);
+        Rational halfBelowMax = LARGEST_DOUBLE.add(maxPredecessor).divide(2);
+        Rational justBelowMax = LARGEST_DOUBLE.multiply(2).add(maxPredecessor).divide(3);
         aeq(aboveMax.doubleValue(RoundingMode.FLOOR), 1.7976931348623157E308);
         aeq(aboveMax.doubleValue(RoundingMode.CEILING), Double.POSITIVE_INFINITY);
         aeq(aboveMax.doubleValue(RoundingMode.DOWN), 1.7976931348623157E308);
@@ -2003,14 +1987,11 @@ public class RationalTest {
             justAboveZero.doubleValue(RoundingMode.UNNECESSARY);
             fail();
         } catch (ArithmeticException ignored) {}
-        Rational boundary = add(
-                LARGEST_SUBNORMAL_DOUBLE,
-                SMALLEST_NORMAL_DOUBLE
-        ).shiftRight(1);
-        Rational halfBelowBoundary = add(LARGEST_SUBNORMAL_DOUBLE, boundary).shiftRight(1);
-        Rational halfAboveBoundary = add(SMALLEST_NORMAL_DOUBLE, boundary).shiftRight(1);
-        Rational justBelowBoundary = add(LARGEST_SUBNORMAL_DOUBLE, boundary.shiftLeft(1)).divide(3);
-        Rational justAboveBoundary = add(SMALLEST_NORMAL_DOUBLE, boundary.shiftLeft(1)).divide(3);
+        Rational boundary = LARGEST_SUBNORMAL_DOUBLE.add(SMALLEST_NORMAL_DOUBLE).shiftRight(1);
+        Rational halfBelowBoundary = LARGEST_SUBNORMAL_DOUBLE.add(boundary).shiftRight(1);
+        Rational halfAboveBoundary = SMALLEST_NORMAL_DOUBLE.add(boundary).shiftRight(1);
+        Rational justBelowBoundary = LARGEST_SUBNORMAL_DOUBLE.add(boundary.shiftLeft(1)).divide(3);
+        Rational justAboveBoundary = SMALLEST_NORMAL_DOUBLE.add(boundary.shiftLeft(1)).divide(3);
         aeq(boundary.doubleValue(RoundingMode.FLOOR), 2.225073858507201E-308);
         aeq(boundary.doubleValue(RoundingMode.CEILING), 2.2250738585072014E-308);
         aeq(boundary.doubleValue(RoundingMode.DOWN), 2.225073858507201E-308);
@@ -2084,18 +2065,18 @@ public class RationalTest {
         aeq(pi.doubleValue(), 3.141592653589793);
         Rational googol = of(BigInteger.TEN.pow(100));
         aeq(googol.doubleValue(), 1.0E100);
-        Rational piSuccessor = ofExact(FloatUtils.successor(Math.PI));
+        Rational piSuccessor = ofExact(FloatingPointUtils.successor(Math.PI));
         if (piSuccessor == null) {
             fail();
         }
-        Rational piPredecessor = ofExact(FloatUtils.predecessor(Math.PI));
+        Rational piPredecessor = ofExact(FloatingPointUtils.predecessor(Math.PI));
         if (piPredecessor == null) {
             fail();
         }
-        Rational halfAbovePi = add(pi, piSuccessor).divide(2);
-        Rational halfBelowPi = add(pi, piPredecessor).divide(2);
-        Rational justAbovePi = add(pi.multiply(2), piSuccessor).divide(3);
-        Rational justBelowPi = add(pi.multiply(2), piPredecessor).divide(3);
+        Rational halfAbovePi = pi.add(piSuccessor).divide(2);
+        Rational halfBelowPi = pi.add(piPredecessor).divide(2);
+        Rational justAbovePi = pi.multiply(2).add(piSuccessor).divide(3);
+        Rational justBelowPi = pi.multiply(2).add(piPredecessor).divide(3);
         aeq(halfAbovePi.doubleValue(), 3.141592653589793);
         aeq(halfBelowPi.doubleValue(), 3.141592653589793);
         aeq(justAbovePi.doubleValue(), 3.141592653589793);
@@ -2104,43 +2085,40 @@ public class RationalTest {
         if (subnormal == null) {
             fail();
         }
-        Rational subnormalSuccessor = ofExact(FloatUtils.successor(1e-310));
+        Rational subnormalSuccessor = ofExact(FloatingPointUtils.successor(1e-310));
         if (subnormalSuccessor == null) {
             fail();
         }
-        Rational subnormalPredecessor = ofExact(FloatUtils.predecessor(1e-310));
+        Rational subnormalPredecessor = ofExact(FloatingPointUtils.predecessor(1e-310));
         if (subnormalPredecessor == null) {
             fail();
         }
-        Rational halfAboveSubnormal = add(subnormal, subnormalSuccessor).divide(2);
-        Rational halfBelowSubnormal = add(subnormal, subnormalPredecessor).divide(2);
-        Rational justAboveSubnormal = add(subnormal.multiply(2), subnormalSuccessor).divide(3);
-        Rational justBelowSubnormal = add(subnormal.multiply(2), subnormalPredecessor).divide(3);
+        Rational halfAboveSubnormal = subnormal.add(subnormalSuccessor).divide(2);
+        Rational halfBelowSubnormal = subnormal.add(subnormalPredecessor).divide(2);
+        Rational justAboveSubnormal = subnormal.multiply(2).add(subnormalSuccessor).divide(3);
+        Rational justBelowSubnormal = subnormal.multiply(2).add(subnormalPredecessor).divide(3);
         aeq(subnormal.doubleValue(), 1.0E-310);
         aeq(halfAboveSubnormal.doubleValue(), 1.00000000000005E-310);
         aeq(halfBelowSubnormal.doubleValue(), 9.9999999999995E-311);
         aeq(justAboveSubnormal.doubleValue(), 1.0E-310);
         aeq(justBelowSubnormal.doubleValue(), 1.0E-310);
-        Rational belowNegativeMax = subtract(LARGEST_DOUBLE.negate(), ONE);
-        Rational negativeMaxSuccessor = ofExact(FloatUtils.successor(-Double.MAX_VALUE));
+        Rational belowNegativeMax = LARGEST_DOUBLE.negate().subtract(ONE);
+        Rational negativeMaxSuccessor = ofExact(FloatingPointUtils.successor(-Double.MAX_VALUE));
         if (negativeMaxSuccessor == null) {
             fail();
         }
-        Rational halfAboveNegativeMax = add(LARGEST_DOUBLE.negate(), negativeMaxSuccessor).divide(2);
-        Rational justAboveNegativeMax = add(
-                LARGEST_DOUBLE.negate().multiply(2),
-                negativeMaxSuccessor
-        ).divide(3);
+        Rational halfAboveNegativeMax = LARGEST_DOUBLE.negate().add(negativeMaxSuccessor).divide(2);
+        Rational justAboveNegativeMax = LARGEST_DOUBLE.negate().multiply(2).add(negativeMaxSuccessor).divide(3);
         aeq(belowNegativeMax.doubleValue(), Double.NEGATIVE_INFINITY);
         aeq(halfAboveNegativeMax.doubleValue(), -1.7976931348623155E308);
         aeq(justAboveNegativeMax.doubleValue(), -1.7976931348623157E308);
-        Rational aboveMax = add(LARGEST_DOUBLE, ONE);
-        Rational maxPredecessor = ofExact(FloatUtils.predecessor(Double.MAX_VALUE));
+        Rational aboveMax = LARGEST_DOUBLE.add(ONE);
+        Rational maxPredecessor = ofExact(FloatingPointUtils.predecessor(Double.MAX_VALUE));
         if (maxPredecessor == null) {
             fail();
         }
-        Rational halfBelowMax = add(LARGEST_DOUBLE, maxPredecessor).divide(2);
-        Rational justBelowMax = add(LARGEST_DOUBLE.multiply(2), maxPredecessor).divide(3);
+        Rational halfBelowMax = LARGEST_DOUBLE.add(maxPredecessor).divide(2);
+        Rational justBelowMax = LARGEST_DOUBLE.multiply(2).add(maxPredecessor).divide(3);
         aeq(aboveMax.doubleValue(), Double.POSITIVE_INFINITY);
         aeq(halfBelowMax.doubleValue(), 1.7976931348623155E308);
         aeq(justBelowMax.doubleValue(), 1.7976931348623157E308);
@@ -2152,14 +2130,11 @@ public class RationalTest {
         aeq(justBelowZero.doubleValue(), -0.0);
         aeq(halfAboveZero.doubleValue(), 0.0);
         aeq(justAboveZero.doubleValue(), 0.0);
-        Rational boundary = add(
-                LARGEST_SUBNORMAL_DOUBLE,
-                SMALLEST_NORMAL_DOUBLE
-        ).shiftRight(1);
-        Rational halfBelowBoundary = add(LARGEST_SUBNORMAL_DOUBLE, boundary).shiftRight(1);
-        Rational halfAboveBoundary = add(SMALLEST_NORMAL_DOUBLE, boundary).shiftRight(1);
-        Rational justBelowBoundary = add(LARGEST_SUBNORMAL_DOUBLE, boundary.shiftLeft(1)).divide(3);
-        Rational justAboveBoundary = add(SMALLEST_NORMAL_DOUBLE, boundary.shiftLeft(1)).divide(3);
+        Rational boundary = LARGEST_SUBNORMAL_DOUBLE.add(SMALLEST_NORMAL_DOUBLE).shiftRight(1);
+        Rational halfBelowBoundary = LARGEST_SUBNORMAL_DOUBLE.add(boundary).shiftRight(1);
+        Rational halfAboveBoundary = SMALLEST_NORMAL_DOUBLE.add(boundary).shiftRight(1);
+        Rational justBelowBoundary = LARGEST_SUBNORMAL_DOUBLE.add(boundary.shiftLeft(1)).divide(3);
+        Rational justAboveBoundary = SMALLEST_NORMAL_DOUBLE.add(boundary.shiftLeft(1)).divide(3);
         aeq(boundary.doubleValue(), 2.2250738585072014E-308);
         aeq(halfBelowBoundary.doubleValue(), 2.225073858507201E-308);
         aeq(justBelowBoundary.doubleValue(), 2.225073858507201E-308);
@@ -2195,18 +2170,18 @@ public class RationalTest {
             googol.doubleValueExact();
             fail();
         } catch (ArithmeticException ignored) {}
-        Rational piSuccessor = ofExact(FloatUtils.successor(Math.PI));
+        Rational piSuccessor = ofExact(FloatingPointUtils.successor(Math.PI));
         if (piSuccessor == null) {
             fail();
         }
-        Rational piPredecessor = ofExact(FloatUtils.predecessor(Math.PI));
+        Rational piPredecessor = ofExact(FloatingPointUtils.predecessor(Math.PI));
         if (piPredecessor == null) {
             fail();
         }
-        Rational halfAbovePi = add(pi, piSuccessor).divide(2);
-        Rational halfBelowPi = add(pi, piPredecessor).divide(2);
-        Rational justAbovePi = add(pi.multiply(2), piSuccessor).divide(3);
-        Rational justBelowPi = add(pi.multiply(2), piPredecessor).divide(3);
+        Rational halfAbovePi = pi.add(piSuccessor).divide(2);
+        Rational halfBelowPi = pi.add(piPredecessor).divide(2);
+        Rational justAbovePi = pi.multiply(2).add(piSuccessor).divide(3);
+        Rational justBelowPi = pi.multiply(2).add(piPredecessor).divide(3);
         try {
             halfAbovePi.doubleValueExact();
             fail();
@@ -2227,18 +2202,18 @@ public class RationalTest {
         if (subnormal == null) {
             fail();
         }
-        Rational subnormalSuccessor = ofExact(FloatUtils.successor(1e-310));
+        Rational subnormalSuccessor = ofExact(FloatingPointUtils.successor(1e-310));
         if (subnormalSuccessor == null) {
             fail();
         }
-        Rational subnormalPredecessor = ofExact(FloatUtils.predecessor(1e-310));
+        Rational subnormalPredecessor = ofExact(FloatingPointUtils.predecessor(1e-310));
         if (subnormalPredecessor == null) {
             fail();
         }
-        Rational halfAboveSubnormal = add(subnormal, subnormalSuccessor).divide(2);
-        Rational halfBelowSubnormal = add(subnormal, subnormalPredecessor).divide(2);
-        Rational justAboveSubnormal = add(subnormal.multiply(2), subnormalSuccessor).divide(3);
-        Rational justBelowSubnormal = add(subnormal.multiply(2), subnormalPredecessor).divide(3);
+        Rational halfAboveSubnormal = subnormal.add(subnormalSuccessor).divide(2);
+        Rational halfBelowSubnormal = subnormal.add(subnormalPredecessor).divide(2);
+        Rational justAboveSubnormal = subnormal.multiply(2).add(subnormalSuccessor).divide(3);
+        Rational justBelowSubnormal = subnormal.multiply(2).add(subnormalPredecessor).divide(3);
         aeq(subnormal.doubleValueExact(), 1.0E-310);
         try {
             halfAboveSubnormal.doubleValueExact();
@@ -2256,16 +2231,13 @@ public class RationalTest {
             justBelowSubnormal.doubleValueExact();
             fail();
         } catch (ArithmeticException ignored) {}
-        Rational belowNegativeMax = subtract(LARGEST_DOUBLE.negate(), ONE);
-        Rational negativeMaxSuccessor = ofExact(FloatUtils.successor(-Double.MAX_VALUE));
+        Rational belowNegativeMax = LARGEST_DOUBLE.negate().subtract(ONE);
+        Rational negativeMaxSuccessor = ofExact(FloatingPointUtils.successor(-Double.MAX_VALUE));
         if (negativeMaxSuccessor == null) {
             fail();
         }
-        Rational halfAboveNegativeMax = add(LARGEST_DOUBLE.negate(), negativeMaxSuccessor).divide(2);
-        Rational justAboveNegativeMax = add(
-                LARGEST_DOUBLE.negate().multiply(2),
-                negativeMaxSuccessor
-        ).divide(3);
+        Rational halfAboveNegativeMax = LARGEST_DOUBLE.negate().add(negativeMaxSuccessor).divide(2);
+        Rational justAboveNegativeMax = LARGEST_DOUBLE.negate().multiply(2).add(negativeMaxSuccessor).divide(3);
         try {
             belowNegativeMax.doubleValueExact();
             fail();
@@ -2278,13 +2250,13 @@ public class RationalTest {
             justAboveNegativeMax.doubleValueExact();
             fail();
         } catch (ArithmeticException ignored) {}
-        Rational aboveMax = add(LARGEST_DOUBLE, ONE);
-        Rational maxPredecessor = ofExact(FloatUtils.predecessor(Double.MAX_VALUE));
+        Rational aboveMax = LARGEST_DOUBLE.add(ONE);
+        Rational maxPredecessor = ofExact(FloatingPointUtils.predecessor(Double.MAX_VALUE));
         if (maxPredecessor == null) {
             fail();
         }
-        Rational halfBelowMax = add(LARGEST_DOUBLE, maxPredecessor).divide(2);
-        Rational justBelowMax = add(LARGEST_DOUBLE.multiply(2), maxPredecessor).divide(3);
+        Rational halfBelowMax = LARGEST_DOUBLE.add(maxPredecessor).divide(2);
+        Rational justBelowMax = LARGEST_DOUBLE.multiply(2).add(maxPredecessor).divide(3);
         try {
             aboveMax.doubleValueExact();
             fail();
@@ -2317,14 +2289,11 @@ public class RationalTest {
             justAboveZero.doubleValueExact();
             fail();
         } catch (ArithmeticException ignored) {}
-        Rational boundary = add(
-                LARGEST_SUBNORMAL_DOUBLE,
-                SMALLEST_NORMAL_DOUBLE
-        ).shiftRight(1);
-        Rational halfBelowBoundary = add(LARGEST_SUBNORMAL_DOUBLE, boundary).shiftRight(1);
-        Rational halfAboveBoundary = add(SMALLEST_NORMAL_DOUBLE, boundary).shiftRight(1);
-        Rational justBelowBoundary = add(LARGEST_SUBNORMAL_DOUBLE, boundary.shiftLeft(1)).divide(3);
-        Rational justAboveBoundary = add(SMALLEST_NORMAL_DOUBLE, boundary.shiftLeft(1)).divide(3);
+        Rational boundary = LARGEST_SUBNORMAL_DOUBLE.add(SMALLEST_NORMAL_DOUBLE).shiftRight(1);
+        Rational halfBelowBoundary = LARGEST_SUBNORMAL_DOUBLE.add(boundary).shiftRight(1);
+        Rational halfAboveBoundary = SMALLEST_NORMAL_DOUBLE.add(boundary).shiftRight(1);
+        Rational justBelowBoundary = LARGEST_SUBNORMAL_DOUBLE.add(boundary.shiftLeft(1)).divide(3);
+        Rational justAboveBoundary = SMALLEST_NORMAL_DOUBLE.add(boundary.shiftLeft(1)).divide(3);
         try {
             boundary.doubleValueExact();
             fail();
@@ -2393,80 +2362,80 @@ public class RationalTest {
 
     @Test
     public void testAdd() {
-        aeq(add(read("1/2").get(), read("1/3").get()), "5/6");
-        aeq(add(read("1/2").get(), read("-1/3").get()), "1/6");
-        aeq(add(read("-1/2").get(), read("1/3").get()), "-1/6");
-        aeq(add(read("-1/2").get(), read("-1/3").get()), "-5/6");
-        aeq(add(read("2").get(), read("1/5").get()), "11/5");
-        aeq(add(read("2").get(), read("-1/5").get()), "9/5");
-        aeq(add(read("-2").get(), read("1/5").get()), "-9/5");
-        aeq(add(read("-2").get(), read("-1/5").get()), "-11/5");
-        aeq(add(read("2").get(), read("5").get()), "7");
-        aeq(add(read("2").get(), read("-5").get()), "-3");
-        aeq(add(read("-2").get(), read("5").get()), "3");
-        aeq(add(read("-2").get(), read("-5").get()), "-7");
-        assertTrue(add(read("6/7").get(), read("1/7").get()) == ONE);
-        assertTrue(add(read("6/7").get(), read("-6/7").get()) == ZERO);
-        aeq(add(read("1/2").get(), ZERO), "1/2");
-        aeq(add(read("-1/2").get(), ZERO), "-1/2");
-        aeq(add(read("1/2").get(), ONE), "3/2");
-        aeq(add(read("-1/2").get(), ONE), "1/2");
-        assertTrue(add(ZERO, ZERO) == ZERO);
-        assertTrue(add(ZERO, ONE) == ONE);
-        assertTrue(add(ONE, ZERO) == ONE);
-        aeq(add(ONE, ONE), "2");
+        aeq(read("1/2").get().add(read("1/3").get()), "5/6");
+        aeq(read("1/2").get().add(read("-1/3").get()), "1/6");
+        aeq(read("-1/2").get().add(read("1/3").get()), "-1/6");
+        aeq(read("-1/2").get().add(read("-1/3").get()), "-5/6");
+        aeq(read("2").get().add(read("1/5").get()), "11/5");
+        aeq(read("2").get().add(read("-1/5").get()), "9/5");
+        aeq(read("-2").get().add(read("1/5").get()), "-9/5");
+        aeq(read("-2").get().add(read("-1/5").get()), "-11/5");
+        aeq(read("2").get().add(read("5").get()), "7");
+        aeq(read("2").get().add(read("-5").get()), "-3");
+        aeq(read("-2").get().add(read("5").get()), "3");
+        aeq(read("-2").get().add(read("-5").get()), "-7");
+        assertTrue(read("6/7").get().add(read("1/7").get()) == ONE);
+        assertTrue(read("6/7").get().add(read("-6/7").get()) == ZERO);
+        aeq(read("1/2").get().add(ZERO), "1/2");
+        aeq(read("-1/2").get().add(ZERO), "-1/2");
+        aeq(read("1/2").get().add(ONE), "3/2");
+        aeq(read("-1/2").get().add(ONE), "1/2");
+        assertTrue(ZERO.add(ZERO) == ZERO);
+        assertTrue(ZERO.add(ONE) == ONE);
+        assertTrue(ONE.add(ZERO) == ONE);
+        aeq(ONE.add(ONE), "2");
     }
 
     @Test
     public void testSubtract() {
-        aeq(subtract(read("1/2").get(), read("1/3").get()), "1/6");
-        aeq(subtract(read("1/2").get(), read("-1/3").get()), "5/6");
-        aeq(subtract(read("-1/2").get(), read("1/3").get()), "-5/6");
-        aeq(subtract(read("-1/2").get(), read("-1/3").get()), "-1/6");
-        aeq(subtract(read("2").get(), read("1/5").get()), "9/5");
-        aeq(subtract(read("2").get(), read("-1/5").get()), "11/5");
-        aeq(subtract(read("-2").get(), read("1/5").get()), "-11/5");
-        aeq(subtract(read("-2").get(), read("-1/5").get()), "-9/5");
-        aeq(subtract(read("2").get(), read("5").get()), "-3");
-        aeq(subtract(read("2").get(), read("-5").get()), "7");
-        aeq(subtract(read("-2").get(), read("5").get()), "-7");
-        aeq(subtract(read("-2").get(), read("-5").get()), "3");
-        assertTrue(subtract(read("8/7").get(), read("1/7").get()) == ONE);
-        assertTrue(subtract(read("6/7").get(), read("6/7").get()) == ZERO);
-        aeq(subtract(read("1/2").get(), ZERO), "1/2");
-        aeq(subtract(read("-1/2").get(), ZERO), "-1/2");
-        aeq(subtract(read("1/2").get(), ONE), "-1/2");
-        aeq(subtract(read("-1/2").get(), ONE), "-3/2");
-        assertTrue(subtract(ZERO, ZERO) == ZERO);
-        aeq(subtract(ZERO, ONE), "-1");
-        assertTrue(subtract(ONE, ZERO) == ONE);
-        assertTrue(subtract(ONE, ONE) == ZERO);
+        aeq(read("1/2").get().subtract(read("1/3").get()), "1/6");
+        aeq(read("1/2").get().subtract(read("-1/3").get()), "5/6");
+        aeq(read("-1/2").get().subtract(read("1/3").get()), "-5/6");
+        aeq(read("-1/2").get().subtract(read("-1/3").get()), "-1/6");
+        aeq(read("2").get().subtract(read("1/5").get()), "9/5");
+        aeq(read("2").get().subtract(read("-1/5").get()), "11/5");
+        aeq(read("-2").get().subtract(read("1/5").get()), "-11/5");
+        aeq(read("-2").get().subtract(read("-1/5").get()), "-9/5");
+        aeq(read("2").get().subtract(read("5").get()), "-3");
+        aeq(read("2").get().subtract(read("-5").get()), "7");
+        aeq(read("-2").get().subtract(read("5").get()), "-7");
+        aeq(read("-2").get().subtract(read("-5").get()), "3");
+        assertTrue(read("8/7").get().subtract(read("1/7").get()) == ONE);
+        assertTrue(read("6/7").get().subtract(read("6/7").get()) == ZERO);
+        aeq(read("1/2").get().subtract(ZERO), "1/2");
+        aeq(read("-1/2").get().subtract(ZERO), "-1/2");
+        aeq(read("1/2").get().subtract(ONE), "-1/2");
+        aeq(read("-1/2").get().subtract(ONE), "-3/2");
+        assertTrue(ZERO.subtract(ZERO) == ZERO);
+        aeq(ZERO.subtract(ONE), "-1");
+        assertTrue(ONE.subtract(ZERO) == ONE);
+        assertTrue(ONE.subtract(ONE) == ZERO);
     }
 
     @Test
-    public void testMultiply_Rational_Rational() {
-        aeq(multiply(read("2/3").get(), read("6/7").get()), "4/7");
-        aeq(multiply(read("2/3").get(), read("-6/7").get()), "-4/7");
-        aeq(multiply(read("-2/3").get(), read("6/7").get()), "-4/7");
-        aeq(multiply(read("-2/3").get(), read("-6/7").get()), "4/7");
-        aeq(multiply(read("2/3").get(), read("4").get()), "8/3");
-        aeq(multiply(read("2/3").get(), read("-4").get()), "-8/3");
-        aeq(multiply(read("-2/3").get(), read("4").get()), "-8/3");
-        aeq(multiply(read("-2/3").get(), read("-4").get()), "8/3");
-        aeq(multiply(read("3").get(), read("5").get()), "15");
-        aeq(multiply(read("3").get(), read("-5").get()), "-15");
-        aeq(multiply(read("-3").get(), read("5").get()), "-15");
-        aeq(multiply(read("-3").get(), read("-5").get()), "15");
-        assertTrue(multiply(read("1/4").get(), read("4").get()) == ONE);
-        assertTrue(multiply(read("-1/4").get(), read("-4").get()) == ONE);
-        assertTrue(multiply(read("2/3").get(), ZERO) == ZERO);
-        assertTrue(multiply(read("-2/3").get(), ZERO) == ZERO);
-        aeq(multiply(read("2/3").get(), ONE), "2/3");
-        aeq(multiply(read("-2/3").get(), ONE), "-2/3");
-        assertTrue(multiply(ZERO, ZERO) == ZERO);
-        assertTrue(multiply(ZERO, ONE) == ZERO);
-        assertTrue(multiply(ONE, ZERO) == ZERO);
-        assertTrue(multiply(ONE, ONE) == ONE);
+    public void testMultiply_Rational() {
+        aeq(read("2/3").get().multiply(read("6/7").get()), "4/7");
+        aeq(read("2/3").get().multiply(read("-6/7").get()), "-4/7");
+        aeq(read("-2/3").get().multiply(read("6/7").get()), "-4/7");
+        aeq(read("-2/3").get().multiply(read("-6/7").get()), "4/7");
+        aeq(read("2/3").get().multiply(read("4").get()), "8/3");
+        aeq(read("2/3").get().multiply(read("-4").get()), "-8/3");
+        aeq(read("-2/3").get().multiply(read("4").get()), "-8/3");
+        aeq(read("-2/3").get().multiply(read("-4").get()), "8/3");
+        aeq(read("3").get().multiply(read("5").get()), "15");
+        aeq(read("3").get().multiply(read("-5").get()), "-15");
+        aeq(read("-3").get().multiply(read("5").get()), "-15");
+        aeq(read("-3").get().multiply(read("-5").get()), "15");
+        assertTrue(read("1/4").get().multiply(read("4").get()) == ONE);
+        assertTrue(read("-1/4").get().multiply(read("-4").get()) == ONE);
+        assertTrue(read("2/3").get().multiply(ZERO) == ZERO);
+        assertTrue(read("-2/3").get().multiply(ZERO) == ZERO);
+        aeq(read("2/3").get().multiply(ONE), "2/3");
+        aeq(read("-2/3").get().multiply(ONE), "-2/3");
+        assertTrue(ZERO.multiply(ZERO) == ZERO);
+        assertTrue(ZERO.multiply(ONE) == ZERO);
+        assertTrue(ONE.multiply(ZERO) == ZERO);
+        assertTrue(ONE.multiply(ONE) == ONE);
     }
 
     @Test
@@ -2500,40 +2469,40 @@ public class RationalTest {
     }
 
     @Test
-    public void testDivide_Rational_Rational() {
-        aeq(divide(read("2/3").get(), read("6/7").get()), "7/9");
-        aeq(divide(read("2/3").get(), read("-6/7").get()), "-7/9");
-        aeq(divide(read("-2/3").get(), read("6/7").get()), "-7/9");
-        aeq(divide(read("-2/3").get(), read("-6/7").get()), "7/9");
-        aeq(divide(read("2/3").get(), read("4").get()), "1/6");
-        aeq(divide(read("2/3").get(), read("-4").get()), "-1/6");
-        aeq(divide(read("-2/3").get(), read("4").get()), "-1/6");
-        aeq(divide(read("-2/3").get(), read("-4").get()), "1/6");
-        aeq(divide(read("3").get(), read("5").get()), "3/5");
-        aeq(divide(read("3").get(), read("-5").get()), "-3/5");
-        aeq(divide(read("-3").get(), read("5").get()), "-3/5");
-        aeq(divide(read("-3").get(), read("-5").get()), "3/5");
-        aeq(divide(read("1/4").get(), read("4").get()), "1/16");
-        assertTrue(divide(read("2/3").get(), read("2/3").get()) == ONE);
-        assertTrue(divide(read("-2/3").get(), read("-2/3").get()) == ONE);
-        aeq(divide(read("2/3").get(), ONE), "2/3");
-        aeq(divide(read("-2/3").get(), ONE), "-2/3");
-        assertTrue(divide(ZERO, ONE) == ZERO);
-        assertTrue(divide(ONE, ONE) == ONE);
+    public void testDivide_Rational() {
+        aeq(read("2/3").get().divide(read("6/7").get()), "7/9");
+        aeq(read("2/3").get().divide(read("-6/7").get()), "-7/9");
+        aeq(read("-2/3").get().divide(read("6/7").get()), "-7/9");
+        aeq(read("-2/3").get().divide(read("-6/7").get()), "7/9");
+        aeq(read("2/3").get().divide(read("4").get()), "1/6");
+        aeq(read("2/3").get().divide(read("-4").get()), "-1/6");
+        aeq(read("-2/3").get().divide(read("4").get()), "-1/6");
+        aeq(read("-2/3").get().divide(read("-4").get()), "1/6");
+        aeq(read("3").get().divide(read("5").get()), "3/5");
+        aeq(read("3").get().divide(read("-5").get()), "-3/5");
+        aeq(read("-3").get().divide(read("5").get()), "-3/5");
+        aeq(read("-3").get().divide(read("-5").get()), "3/5");
+        aeq(read("1/4").get().divide(read("4").get()), "1/16");
+        assertTrue(read("2/3").get().divide(read("2/3").get()) == ONE);
+        assertTrue(read("-2/3").get().divide(read("-2/3").get()) == ONE);
+        aeq(read("2/3").get().divide(ONE), "2/3");
+        aeq(read("-2/3").get().divide(ONE), "-2/3");
+        assertTrue(ZERO.divide(ONE) == ZERO);
+        assertTrue(ONE.divide(ONE) == ONE);
         try {
-            divide(read("2/3").get(), ZERO);
+            read("2/3").get().divide(ZERO);
             fail();
         } catch (ArithmeticException ignored) {}
         try {
-            divide(read("3").get(), ZERO);
+            read("3").get().divide(ZERO);
             fail();
         } catch (ArithmeticException ignored) {}
         try {
-            divide(ONE, ZERO);
+            ONE.divide(ZERO);
             fail();
         } catch (ArithmeticException ignored) {}
         try {
-            divide(ZERO, ZERO);
+            ZERO.divide(ZERO);
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -2586,7 +2555,7 @@ public class RationalTest {
         try {
             sum(readRationalListWithNulls("[10, null, 11]").get());
             fail();
-        } catch (IllegalArgumentException ignored) {}
+        } catch (AssertionError ignored) {}
     }
 
     @Test
@@ -2597,7 +2566,7 @@ public class RationalTest {
         try {
             product(readRationalListWithNulls("[10, null, 11]").get());
             fail();
-        } catch (IllegalArgumentException ignored) {}
+        } catch (AssertionError ignored) {}
     }
 
     @Test
@@ -2611,7 +2580,7 @@ public class RationalTest {
         try {
             toList(delta(readRationalListWithNulls("[10, null, 12]").get()));
             fail();
-        } catch (IllegalArgumentException ignored) {}
+        } catch (AssertionError ignored) {}
     }
 
     @Test
@@ -2857,6 +2826,48 @@ public class RationalTest {
     }
 
     @Test
+    public void testContinuedFraction() {
+        aeq(ZERO.continuedFraction(), "[0]");
+        aeq(ONE.continuedFraction(), "[1]");
+        aeq(read("5").get().continuedFraction(), "[5]");
+        aeq(read("-5").get().continuedFraction(), "[-5]");
+        aeq(read("1/2").get().continuedFraction(), "[0, 2]");
+        aeq(read("-1/2").get().continuedFraction(), "[-1, 2]");
+        aeq(read("415/93").get().continuedFraction(), "[4, 2, 6, 7]");
+        aeq(read("-415/93").get().continuedFraction(), "[-5, 1, 1, 6, 7]");
+        aeq(ofExact(Math.sqrt(2)).continuedFraction(),
+                "[1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 2, 7, 1, 2, 33, 2, 7, 5," +
+                " 2, 1, 1, 16, 2]");
+        aeq(ofExact(-Math.sqrt(2)).continuedFraction(),
+                "[-2, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 2, 7, 1, 2, 33, 2, 7," +
+                " 5, 2, 1, 1, 16, 2]");
+        aeq(ofExact(Math.PI).continuedFraction(),
+                "[3, 7, 15, 1, 292, 1, 1, 1, 2, 1, 3, 1, 14, 3, 3, 2, 1, 3, 3, 7, 2, 1, 1, 3, 2, 42, 2]");
+        aeq(ofExact(-Math.PI).continuedFraction(),
+                "[-4, 1, 6, 15, 1, 292, 1, 1, 1, 2, 1, 3, 1, 14, 3, 3, 2, 1, 3, 3, 7, 2, 1, 1, 3, 2, 42, 2]");
+        aeq(ofExact(Math.E).continuedFraction(),
+                "[2, 1, 2, 1, 1, 4, 1, 1, 6, 1, 1, 8, 1, 1, 10, 1, 1, 12, 1, 1, 11, 1, 1, 1, 11, 5, 1, 1, 2, 1, 4," +
+                " 2, 1, 1, 9, 17, 3]");
+        aeq(ofExact(-Math.E).continuedFraction(),
+                "[-3, 3, 1, 1, 4, 1, 1, 6, 1, 1, 8, 1, 1, 10, 1, 1, 12, 1, 1, 11, 1, 1, 1, 11, 5, 1, 1, 2, 1, 4, 2," +
+                " 1, 1, 9, 17, 3]");
+    }
+
+    @Test
+    public void testFromContinuedFraction() {
+        aeq(fromContinuedFraction(readBigIntegerList("[1]").get()), "1");
+        aeq(fromContinuedFraction(readBigIntegerList("[0, 2]").get()), "1/2");
+        aeq(fromContinuedFraction(readBigIntegerList("[-1, 2]").get()), "-1/2");
+        aeq(fromContinuedFraction(readBigIntegerList("[4, 2, 6, 7]").get()), "415/93");
+        aeq(fromContinuedFraction(readBigIntegerList("[-5, 1, 1, 6, 7]").get()), "-415/93");
+        aeq(fromContinuedFraction(readBigIntegerList("[0, 1, 2, 3, 4, 5, 6, 7, 8]").get()).floatValue(), "0.69777465");
+        try {
+            fromContinuedFraction(readBigIntegerList("[]").get());
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
     public void testEquals() {
         assertTrue(ZERO.equals(ZERO));
         assertTrue(ONE.equals(ONE));
@@ -2961,10 +2972,6 @@ public class RationalTest {
         aeq(read("-3").get(), Rational.of(-3));
         aeq(read("5/12").get(), Rational.of(5, 12));
         aeq(read("-5/12").get(), Rational.of(-5, 12));
-        aeq(read("12/6").get(), Rational.of(2));
-        aeq(read("12/-6").get(), Rational.of(-2));
-        aeq(read("6/8").get(), Rational.of(3, 4));
-        aeq(read("-4/1").get(), Rational.of(-4));
         assertFalse(read("2/0").isPresent());
         assertFalse(read("").isPresent());
         assertFalse(read(" ").isPresent());
@@ -2985,6 +2992,28 @@ public class RationalTest {
         assertFalse(read("2-3").isPresent());
         assertFalse(read("0x12").isPresent());
         assertFalse(read("12/3a").isPresent());
+        assertFalse(read("12/6").isPresent());
+        assertFalse(read("12/-6").isPresent());
+        assertFalse(read("6/8").isPresent());
+        assertFalse(read("4/1").isPresent());
+    }
+
+    @Test
+    public void testFindIn() {
+        aeq(findIn("abcd1234xyz").get(), "(1234, 4)");
+        aeq(findIn("0123").get(), "(0, 0)");
+        assertTrue(findIn("0123").get().a == ZERO);
+        aeq(findIn("1-23").get(), "(1, 0)");
+        assertTrue(findIn("1-23").get().a == ONE);
+        aeq(findIn("a-23").get(), "(-23, 1)");
+        aeq(findIn("---34--4").get(), "(-34, 2)");
+        aeq(findIn(" 20.1 ").get(), "(20, 1)");
+        aeq(findIn("ads4/3d").get(), "(4/3, 3)");
+        aeq(findIn("101/101").get(), "(101/10, 0)");
+        aeq(findIn("5/0").get(), "(5, 0)");
+        assertFalse(findIn("").isPresent());
+        assertFalse(findIn("hello").isPresent());
+        assertFalse(findIn("vdfsvfbf").isPresent());
     }
 
     @Test
@@ -3005,11 +3034,15 @@ public class RationalTest {
         assertEquals(a.toString(), b.toString());
     }
 
+    private static @NotNull Optional<List<BigInteger>> readBigIntegerList(@NotNull String s) {
+        return Readers.readList(Readers::findBigIntegerIn, s);
+    }
+
     private static @NotNull Optional<List<Rational>> readRationalList(@NotNull String s) {
-        return Readers.readList(Rational::read, s);
+        return Readers.readList(Rational::findIn, s);
     }
 
     private static @NotNull Optional<List<Rational>> readRationalListWithNulls(@NotNull String s) {
-        return Readers.readListWithNulls(Rational::read, s);
+        return Readers.readList(t -> Readers.findInWithNulls(Rational::findIn, t), s);
     }
 }

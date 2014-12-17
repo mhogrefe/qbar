@@ -18,6 +18,7 @@ import java.util.Random;
 
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.qbar.objects.Rational.*;
+import static mho.wheels.misc.Readers.findBigDecimalIn;
 
 public class RationalDemos {
     private static final boolean USE_RANDOM = false;
@@ -34,6 +35,20 @@ public class RationalDemos {
         } else {
             P = QBarExhaustiveProvider.INSTANCE;
             LIMIT = 10000;
+        }
+    }
+
+    public static void demoGetNumerator() {
+        initialize();
+        for (Rational r : take(LIMIT, P.rationals())) {
+            System.out.println("getNumerator(" + r + ") = " + r.getNumerator());
+        }
+    }
+
+    public static void demoGetDenominator() {
+        initialize();
+        for (Rational r : take(LIMIT, P.rationals())) {
+            System.out.println("getDenominator(" + r + ") = " + r.getDenominator());
         }
     }
 
@@ -378,7 +393,7 @@ public class RationalDemos {
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
             assert p.a != null;
             assert p.b != null;
-            System.out.println(p.a + " + " + p.b + " = " + add(p.a, p.b));
+            System.out.println(p.a + " + " + p.b + " = " + p.a.add(p.b));
         }
     }
 
@@ -387,16 +402,16 @@ public class RationalDemos {
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
             assert p.a != null;
             assert p.b != null;
-            System.out.println(p.a + " - " + p.b + " = " + subtract(p.a, p.b));
+            System.out.println(p.a + " - " + p.b + " = " + p.a.subtract(p.b));
         }
     }
 
-    public static void demoMultiply_Rational_Rational() {
+    public static void demoMultiply_Rational() {
         initialize();
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
             assert p.a != null;
             assert p.b != null;
-            System.out.println(p.a + " * " + p.b + " = " + multiply(p.a, p.b));
+            System.out.println(p.a + " * " + p.b + " = " + p.a.multiply(p.b));
         }
     }
 
@@ -418,13 +433,13 @@ public class RationalDemos {
         }
     }
 
-    public static void demoDivide_Rational_Rational() {
+    public static void demoDivide_Rational() {
         initialize();
         Iterable<Pair<Rational, Rational>> ps = filter(p -> p.b != ZERO, P.pairs(P.rationals()));
         for (Pair<Rational, Rational> p : take(LIMIT, ps)) {
             assert p.a != null;
             assert p.b != null;
-            System.out.println(p.a + " / " + p.b + " = " + divide(p.a, p.b));
+            System.out.println(p.a + " / " + p.b + " = " + p.a.divide(p.b));
         }
     }
 
@@ -573,44 +588,30 @@ public class RationalDemos {
         }
     }
 
-    public static void continuedFractionDemo() {
+    public static void demoContinuedFraction() {
+        initialize();
         for (Rational r : take(LIMIT, P.rationals())) {
             System.out.println("continuedFraction(" + r + ") = " + r.continuedFraction());
         }
     }
 
-//    public static void fromContinuedFractionDemo() {
-//        Iterable<List<BigInteger>> it = pairs(
-//                P.bigIntegers(),
-//                new ListGenerator<BigInteger>(POSITIVE_BIG_INTEGERS)
-//        ).map(
-//                p -> {
-//                    List<BigInteger> bis = new ArrayList<>();
-//                    bis.add(p.a);
-//                    bis.addAll(p.b);
-//                    return bis;
-//                },
-//                bis -> {
-//                    List<BigInteger> tail = new ArrayList<>();
-//                    for (int i = 1; i < bis.size(); i++) {
-//                        tail.add(bis.get(i));
-//                    }
-//                    return Pair.of(bis.get(0), tail);
-//                },
-//                bis -> {
-//                    if (bis.isEmpty()) return false;
-//                    for (int i = 1; i < bis.size(); i++) {
-//                        if (bis.get(i).signum() != 1) return false;
-//                    }
-//                    return true;
-//                }
-//        );
-//        for (List<BigInteger> bis : bisg.iterate(limit)) {
-//            String bisString = bis.toString();
-//            bisString = bisString.substring(1, bisString.length() - 1);
-//            System.out.println("fromContinuedFraction(" + bisString + ") = " + Rational.fromContinuedFraction(bis));
-//        }
-//    }
+    public static void demoFromContinuedFraction() {
+        initialize();
+        Iterable<List<BigInteger>> iss = map(
+                p -> {
+                    assert p.b != null;
+                    return toList(cons(p.a, p.b));
+                },
+                (Iterable<Pair<BigInteger, List<BigInteger>>>) P.pairs(
+                        P.bigIntegers(),
+                        P.lists(P.positiveBigIntegers())
+                )
+        );
+        for (List<BigInteger> is : take(LIMIT, iss)) {
+            String listString = tail(init(is.toString()));
+            System.out.println("fromContinuedFraction(" + listString + ") = " + fromContinuedFraction(is));
+        }
+    }
 
     public static void convergentsDemo() {
         for (Rational r : take(LIMIT, P.rationals())) {
@@ -730,6 +731,26 @@ public class RationalDemos {
         }
         for (String s : take(LIMIT, P.strings(cs))) {
             System.out.println("read(" + s + ") = " + read(s));
+        }
+    }
+
+    private static void demoFindIn() {
+        initialize();
+        for (String s : take(LIMIT, P.strings())) {
+            System.out.println("findIn(" + s + ") = " + findIn(s));
+        }
+    }
+
+    public static void demoFindIn_targeted() {
+        initialize();
+        Iterable<Character> cs;
+        if (P instanceof ExhaustiveProvider) {
+            cs = fromString(RATIONAL_CHARS);
+        } else {
+            cs = ((RandomProvider) P).uniformSample(RATIONAL_CHARS);
+        }
+        for (String s : take(LIMIT, P.strings(cs))) {
+            System.out.println("findIn(" + s + ") = " + findIn(s));
         }
     }
 
