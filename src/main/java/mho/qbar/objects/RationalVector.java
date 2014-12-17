@@ -52,7 +52,7 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
      * of {@code coordinates}; Removing from the {@code Iterator} will not affect the {@code RationalVector}.
      *
      * <ul>
-     *  <li>The result is finite.</li>
+     *  <li>The result is finite and contains no nulls.</li>
      * </ul>
      *
      * @return an {@code Iterator} over this {@code RationalVector}'s coordinates
