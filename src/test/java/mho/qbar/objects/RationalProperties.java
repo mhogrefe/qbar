@@ -93,6 +93,7 @@ public class RationalProperties {
             compareImplementationsAdd();
             propertiesSubtract();
             propertiesMultiply_Rational();
+            compareImplementationsMultiply_Rational();
             propertiesMultiply_BigInteger();
             compareImplementationsMultiply_BigInteger();
             propertiesMultiply_int();
@@ -1861,6 +1862,18 @@ public class RationalProperties {
         }
     }
 
+    private static @NotNull Rational multiply_Rational_Knuth(@NotNull Rational a, @NotNull Rational b) {
+        if (a == ZERO || b == ZERO) return ZERO;
+        if (a == ONE) return b;
+        if (b == ONE) return a;
+        BigInteger g1 = a.getNumerator().gcd(b.getDenominator());
+        BigInteger g2 = b.getNumerator().gcd(a.getDenominator());
+        BigInteger mn = a.getNumerator().divide(g1).multiply(b.getNumerator().divide(g2));
+        BigInteger md = a.getDenominator().divide(g2).multiply(b.getDenominator().divide(g1));
+        if (mn.equals(md)) return ONE;
+        return of(mn, md);
+    }
+
     private static void propertiesMultiply_Rational() {
         initialize();
         System.out.println("\t\ttesting multiply(Rational) properties...");
@@ -1870,6 +1883,7 @@ public class RationalProperties {
             assert p.b != null;
             Rational product = p.a.multiply(p.b);
             validate(product);
+            assertEquals(p.toString(), product, multiply_Rational_Knuth(p.a, p.b));
             assertEquals(p.toString(), product, p.b.multiply(p.a));
         }
 
@@ -1902,6 +1916,31 @@ public class RationalProperties {
             Rational expression2 = t.a.multiply(t.c).add(t.b.multiply(t.c));
             assertEquals(t.toString(), expression1, expression2);
         }
+    }
+
+    private static void compareImplementationsMultiply_Rational() {
+        initialize();
+        System.out.println("\t\tcomparing multiply(Rational) implementations...");
+
+        long totalTime = 0;
+        for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
+            long time = System.nanoTime();
+            assert p.a != null;
+            assert p.b != null;
+            multiply_Rational_Knuth(p.a, p.b);
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\t\t\tKnuth: " + ((double) totalTime) / 1e9 + " s");
+
+        totalTime = 0;
+        for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
+            long time = System.nanoTime();
+            assert p.a != null;
+            assert p.b != null;
+            p.a.multiply(p.b);
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
     }
 
     private static @NotNull Rational multiply_BigInteger_simplest(@NotNull Rational a, @NotNull BigInteger b) {
