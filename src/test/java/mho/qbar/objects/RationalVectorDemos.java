@@ -6,6 +6,7 @@ import mho.qbar.iterableProviders.QBarRandomProvider;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 
+import java.util.List;
 import java.util.Random;
 
 import static mho.qbar.objects.RationalVector.*;
@@ -92,6 +93,14 @@ public class RationalVectorDemos {
             assert p.a != null;
             assert p.b != null;
             System.out.println("x(" + p.a + ", " + p.b + ") = " + p.a.x(p.b));
+        }
+    }
+
+    public static void demoOf_List_Rational() {
+        initialize();
+        for (List<Rational> rs : take(LIMIT, P.lists(P.rationals()))) {
+            String listString = tail(init(rs.toString()));
+            System.out.println("of(" + listString + ") = " + of(rs));
         }
     }
 

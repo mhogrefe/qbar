@@ -3,6 +3,7 @@ package mho.qbar.objects;
 import mho.qbar.iterableProviders.QBarExhaustiveProvider;
 import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.iterableProviders.QBarRandomProvider;
+import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
@@ -43,6 +44,9 @@ public class RationalVectorProperties {
             propertiesY();
             propertiesZ();
             propertiesW();
+            propertiesX_int();
+            propertiesOf_List_Rational();
+            propertiesOf_Rational();
         }
         System.out.println("Done");
     }
@@ -114,6 +118,38 @@ public class RationalVectorProperties {
         for (RationalVector v : take(LIMIT, vs)) {
             Rational w = v.w();
             assertEquals(v.toString(), w, toList(v).get(3));
+        }
+    }
+
+    private static void propertiesX_int() {
+        initialize();
+        System.out.println("\t\ttesting x(int) properties");
+
+        Iterable<Pair<RationalVector, Integer>> ps = P.dependentPairsLogarithmic(
+                P.rationalVectors(),
+                v -> range(0, v.dimension() - 1)
+        );
+        for (Pair<RationalVector, Integer> p : take(LIMIT, ps)) {
+            assert p.a != null;
+            assert p.b != null;
+            Rational x = p.a.x(p.b);
+            assertEquals(p.toString(), x, toList(p.a).get(p.b));
+        }
+    }
+
+    private static void propertiesOf_List_Rational() {
+        initialize();
+        System.out.println("\t\ttesting of(List<Rational>) properties");
+        for (List<Rational> rs : take(LIMIT, P.lists(P.rationals()))) {
+            assertEquals(rs.toString(), toList(of(rs)), rs);
+        }
+    }
+
+    private static void propertiesOf_Rational() {
+        initialize();
+        System.out.println("\t\ttesting of(Rational) properties");
+        for (Rational r : take(LIMIT, P.rationals())) {
+            assertEquals(r.toString(), of(r).dimension(), 1);
         }
     }
 
