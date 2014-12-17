@@ -39,6 +39,10 @@ public class RationalVectorProperties {
             System.out.println("\ttesting " + (useRandom ? "randomly" : "exhaustively"));
             USE_RANDOM = useRandom;
             propertiesIterator();
+            propertiesX();
+            propertiesY();
+            propertiesZ();
+            propertiesW();
         }
         System.out.println("Done");
     }
@@ -51,6 +55,65 @@ public class RationalVectorProperties {
             List<Rational> rs = toList(v);
             assertTrue(v.toString(), all(r -> r != null, rs));
             assertEquals(v.toString(), of(toList(v)), v);
+        }
+    }
+
+    private static void propertiesX() {
+        initialize();
+        System.out.println("\t\ttesting x() properties");
+
+        Iterable<RationalVector> vs = map(p -> {
+            assert p.b != null;
+            return RationalVector.of(toList(cons(p.a, p.b)));
+        }, P.pairs(P.rationals(), P.rationalVectors()));
+        for (RationalVector v : take(LIMIT, vs)) {
+            Rational x = v.x();
+            assertEquals(v.toString(), x, toList(v).get(0));
+        }
+    }
+
+    private static void propertiesY() {
+        initialize();
+        System.out.println("\t\ttesting y() properties");
+
+        Iterable<RationalVector> vs = map(p -> {
+            assert p.a != null;
+            assert p.b != null;
+            return RationalVector.of(toList(concat(p.a, p.b)));
+        }, P.pairs(P.rationalVectors(2), P.rationalVectors()));
+        for (RationalVector v : take(LIMIT, vs)) {
+            Rational y = v.y();
+            assertEquals(v.toString(), y, toList(v).get(1));
+        }
+    }
+
+    private static void propertiesZ() {
+        initialize();
+        System.out.println("\t\ttesting z() properties");
+
+        Iterable<RationalVector> vs = map(p -> {
+            assert p.a != null;
+            assert p.b != null;
+            return RationalVector.of(toList(concat(p.a, p.b)));
+        }, P.pairs(P.rationalVectors(3), P.rationalVectors()));
+        for (RationalVector v : take(LIMIT, vs)) {
+            Rational z = v.z();
+            assertEquals(v.toString(), z, toList(v).get(2));
+        }
+    }
+
+    private static void propertiesW() {
+        initialize();
+        System.out.println("\t\ttesting w() properties");
+
+        Iterable<RationalVector> vs = map(p -> {
+            assert p.a != null;
+            assert p.b != null;
+            return RationalVector.of(toList(concat(p.a, p.b)));
+        }, P.pairs(P.rationalVectors(4), P.rationalVectors()));
+        for (RationalVector v : take(LIMIT, vs)) {
+            Rational w = v.w();
+            assertEquals(v.toString(), w, toList(v).get(3));
         }
     }
 

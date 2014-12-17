@@ -49,6 +49,7 @@ public class RationalVectorDemos {
     public static void demoY() {
         initialize();
         Iterable<RationalVector> vs = map(p -> {
+            assert p.a != null;
             assert p.b != null;
             return RationalVector.of(toList(concat(p.a, p.b)));
         }, P.pairs(P.rationalVectors(2), P.rationalVectors()));
@@ -60,6 +61,7 @@ public class RationalVectorDemos {
     public static void demoZ() {
         initialize();
         Iterable<RationalVector> vs = map(p -> {
+            assert p.a != null;
             assert p.b != null;
             return RationalVector.of(toList(concat(p.a, p.b)));
         }, P.pairs(P.rationalVectors(3), P.rationalVectors()));
@@ -71,6 +73,7 @@ public class RationalVectorDemos {
     public static void demoW() {
         initialize();
         Iterable<RationalVector> vs = map(p -> {
+            assert p.a != null;
             assert p.b != null;
             return RationalVector.of(toList(concat(p.a, p.b)));
         }, P.pairs(P.rationalVectors(4), P.rationalVectors()));

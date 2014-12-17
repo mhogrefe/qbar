@@ -105,7 +105,7 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
     }
 
     /**
-     * Returns {@code this}'s w-coordinate.
+     * Returns {@code this}'s w-coordinate (the coordinate of the 4th dimension).
      *
      * <ul>
      *  <li>{@code this} must have dimension at least 4.</li>
