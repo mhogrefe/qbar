@@ -502,7 +502,7 @@ public class RationalProperties {
             } catch (ArithmeticException ignored) {}
         }
 
-        for (BigInteger i : take(LIMIT, range(BigInteger.valueOf(Byte.MAX_VALUE).add(BigInteger.ONE)))) {
+        for (BigInteger i : take(LIMIT, P.rangeUp(BigInteger.valueOf(Byte.MAX_VALUE).add(BigInteger.ONE)))) {
             try {
                 of(i).byteValueExact();
                 fail(i.toString());
@@ -536,7 +536,7 @@ public class RationalProperties {
             } catch (ArithmeticException ignored) {}
         }
 
-        for (BigInteger i : take(LIMIT, range(BigInteger.valueOf(Short.MAX_VALUE).add(BigInteger.ONE)))) {
+        for (BigInteger i : take(LIMIT, P.rangeUp(BigInteger.valueOf(Short.MAX_VALUE).add(BigInteger.ONE)))) {
             try {
                 of(i).shortValueExact();
                 fail(i.toString());
@@ -570,7 +570,7 @@ public class RationalProperties {
             } catch (ArithmeticException ignored) {}
         }
 
-        for (BigInteger i : take(LIMIT, range(BigInteger.valueOf(Integer.MAX_VALUE).add(BigInteger.ONE)))) {
+        for (BigInteger i : take(LIMIT, P.rangeUp(BigInteger.valueOf(Integer.MAX_VALUE).add(BigInteger.ONE)))) {
             try {
                 of(i).intValueExact();
                 fail(i.toString());
@@ -604,7 +604,7 @@ public class RationalProperties {
             } catch (ArithmeticException ignored) {}
         }
 
-        for (BigInteger i : take(LIMIT, range(BigInteger.valueOf(Long.MAX_VALUE).add(BigInteger.ONE)))) {
+        for (BigInteger i : take(LIMIT, P.rangeUp(BigInteger.valueOf(Long.MAX_VALUE).add(BigInteger.ONE)))) {
             try {
                 of(i).longValueExact();
                 fail(i.toString());

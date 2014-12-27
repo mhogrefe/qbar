@@ -24,8 +24,13 @@ public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIt
     }
 
     @Override
-    public @NotNull Iterable<Rational> range(@NotNull Rational a) {
+    public @NotNull Iterable<Rational> rangeUp(@NotNull Rational a) {
         return iterate(r -> r.add(Rational.ONE), a);
+    }
+
+    @Override
+    public @NotNull Iterable<Rational> rangeDown(@NotNull Rational a) {
+        return iterate(r -> r.subtract(Rational.ONE), a);
     }
 
     @Override
@@ -45,59 +50,6 @@ public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIt
                 reachedEnd = x.equals(b);
                 Rational oldX = x;
                 x = x.add(Rational.ONE);
-                return oldX;
-            }
-
-            @Override
-            public void remove() {
-                throw new UnsupportedOperationException("cannot remove from this iterator");
-            }
-        };
-    }
-
-    @Override
-    public @NotNull Iterable<Rational> rangeBy(@NotNull Rational a, @NotNull Rational i) {
-        return () -> new Iterator<Rational>() {
-            private Rational x = a;
-            private boolean reachedEnd;
-
-            @Override
-            public boolean hasNext() {
-                return !reachedEnd;
-            }
-
-            @Override
-            public Rational next() {
-                Rational oldX = x;
-                x = x.add(i);
-                reachedEnd = i.signum() == 1 ? lt(x, a) : gt(x, a);
-                return oldX;
-            }
-
-            @Override
-            public void remove() {
-                throw new UnsupportedOperationException("cannot remove from this iterator");
-            }
-        };
-    }
-
-    @Override
-    public @NotNull Iterable<Rational> rangeBy(@NotNull Rational a, @NotNull Rational i, @NotNull Rational b) {
-        if (i.signum() == 1 ? gt(a, b) : gt(b, a)) return new ArrayList<>();
-        return () -> new Iterator<Rational>() {
-            private Rational x = a;
-            private boolean reachedEnd;
-
-            @Override
-            public boolean hasNext() {
-                return !reachedEnd;
-            }
-
-            @Override
-            public Rational next() {
-                Rational oldX = x;
-                x = x.add(i);
-                reachedEnd = i.signum() == 1 ? gt(x, b) : lt(x, b);
                 return oldX;
             }
 
@@ -311,9 +263,9 @@ public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIt
         if (!a.getLower().isPresent() && !a.getUpper().isPresent()) {
             return bigIntegers();
         } else if (!a.getLower().isPresent()) {
-            return rangeBy(a.getUpper().get().floor(), BigInteger.valueOf(-1));
+            return rangeDown(a.getUpper().get().floor());
         } else if (!a.getUpper().isPresent()) {
-            return range(a.getLower().get().ceiling());
+            return rangeUp(a.getLower().get().ceiling());
         } else {
             return range(a.getLower().get().ceiling(), a.getUpper().get().floor());
         }
