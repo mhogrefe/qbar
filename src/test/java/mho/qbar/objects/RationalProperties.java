@@ -124,6 +124,7 @@ public class RationalProperties {
             propertiesHashCode();
             propertiesCompareTo();
             propertiesRead();
+            propertiesFindIn();
             propertiesToString();
         }
         System.out.println("Done");
