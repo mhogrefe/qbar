@@ -1640,13 +1640,14 @@ public final class Rational implements Comparable<Rational> {
      *
      * <ul>
      *  <li>{@code this} may be any {@code Rational}.</li>
-     *  <li>The result is a non-null, non-empty list that consists of the convergents of its last element.</li>
+     *  <li>The result is a non-null, finite, non-empty {@code Iterable} that consists of the convergents of its last
+     *  element.</li>
      * </ul>
      *
      * @return the convergents of {@code this}.
      */
-    public @NotNull List<Rational> convergents() {
-        return reverse(map(cf -> fromContinuedFraction(toList(cf)), inits(continuedFraction())));
+    public @NotNull Iterable<Rational> convergents() {
+        return map(cf -> fromContinuedFraction(toList(cf)), tail(inits(continuedFraction())));
     }
 
     /**
