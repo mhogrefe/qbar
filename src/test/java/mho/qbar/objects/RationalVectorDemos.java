@@ -123,7 +123,7 @@ public class RationalVectorDemos {
         for (Pair<RationalVector, RationalVector> p : take(LIMIT, P.pairs(P.rationalVectors()))) {
             assert p.a != null;
             assert p.b != null;
-            System.out.println("equals(" + p.a + ", " + p.b + ") = " + p.a.equals(p.b));
+            System.out.println(p.a + (p.a.equals(p.b) ? " = " : " ≠ ") + p.b);
         }
     }
 
@@ -131,7 +131,7 @@ public class RationalVectorDemos {
         initialize();
         for (RationalVector v : take(LIMIT, P.rationalVectors())) {
             //noinspection ObjectEqualsNull
-            System.out.println("equals(" + v + ", null) = " + v.equals(null));
+            System.out.println(v + (v.equals(null) ? " = " : " ≠ ") + null);
         }
     }
 

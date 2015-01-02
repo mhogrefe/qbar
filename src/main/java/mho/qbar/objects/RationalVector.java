@@ -192,9 +192,8 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
      */
     @Override
     public boolean equals(Object that) {
-        if (this == that) return true;
-        if (that == null || getClass() != that.getClass()) return false;
-        return coordinates.equals(((RationalVector) that).coordinates);
+        return this == that || that != null && getClass() == that.getClass() &&
+                coordinates.equals(((RationalVector) that).coordinates);
     }
 
     /**
