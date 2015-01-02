@@ -613,9 +613,10 @@ public class RationalDemos {
         }
     }
 
-    public static void convergentsDemo() {
+    public static void demoConvergents() {
+        initialize();
         for (Rational r : take(LIMIT, P.rationals())) {
-            System.out.println("convergents(" + r + ") = " + r.convergents());
+            System.out.println("convergents(" + r + ") = " + toList(r.convergents()));
         }
     }
 
