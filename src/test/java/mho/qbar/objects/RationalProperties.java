@@ -66,6 +66,7 @@ public class RationalProperties {
             propertiesOfExact_float();
             propertiesOfExact_double();
             propertiesOf_BigDecimal();
+            propertiesIsInteger();
             propertiesBigIntegerValue_RoundingMode();
             propertiesBigIntegerValue();
             propertiesBigIntegerValueExact();
@@ -376,6 +377,16 @@ public class RationalProperties {
             validate(r);
             aeq(bd.toString(), bd, r.bigDecimalValueExact());
             assertTrue(bd.toString(), r.hasTerminatingDecimalExpansion());
+        }
+    }
+
+    private static void propertiesIsInteger() {
+        initialize();
+        System.out.println("\t\ttesting isInteger() properties...");
+
+        for (Rational r : take(LIMIT, P.rationals())) {
+            boolean isInteger = r.isInteger();
+            assertEquals(r.toString(), isInteger, r.floor().equals(r));
         }
     }
 
