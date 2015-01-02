@@ -423,6 +423,20 @@ public final class Rational implements Comparable<Rational> {
     }
 
     /**
+     * Determines whether {@code this} is integral.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Rational}.</li>
+     *  <li>The result may be either {@code boolean}.</li>
+     * </ul>
+     *
+     * @return whether this is an integer
+     */
+    public boolean isInteger() {
+        return denominator.equals(BigInteger.ONE);
+    }
+
+    /**
      * Rounds {@code this} to an integer according to {@code roundingMode}; see {@link java.math.RoundingMode} for
      * details.
      *
