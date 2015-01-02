@@ -38,6 +38,10 @@ public class RationalDemos {
         }
     }
 
+    public static void main(String[] args) {
+        demoPositionalNotation();
+    }
+
     public static void demoGetNumerator() {
         initialize();
         for (Rational r : take(LIMIT, P.rationals())) {
@@ -629,17 +633,27 @@ public class RationalDemos {
         }
     }
 
-//    public static void positionalNotationDemo() {
-//        Generator<BigInteger> big = new FilteredGenerator<>(
-//                POSITIVE_BIG_INTEGERS,
-//                bi -> bi.compareTo(BigInteger.ONE) > 0
-//        );
-//        Generator<Pair<Rational, BigInteger>> g = new SubExponentialPairGenerator<>(Rational.nonnegativeRationals(), big);
-//        for (Pair<Rational, BigInteger> p : g.iterate(limit)) {
-//            System.out.println("positionalNotation(" + p.a + ", " + p.b + " = " + p.a.positionalNotation(p.b));
-//        }
-//    }
-//
+    public static void demoPositionalNotation() {
+        initialize();
+        Iterable<Pair<Rational, BigInteger>> ps;
+        if (P instanceof ExhaustiveProvider) {
+            ps = ((ExhaustiveProvider) P).pairsSquareRootOrder(
+                    cons(ZERO, P.positiveRationals()),
+                    P.rangeUp(BigInteger.valueOf(2))
+            );
+        } else {
+            ps = P.pairs(
+                    cons(ZERO, ((QBarRandomProvider) P).positiveRationals(8)),
+                    map(i -> BigInteger.valueOf(i + 2), ((RandomProvider) P).naturalIntegersGeometric(20))
+            );
+        }
+        for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
+            assert p.a != null;
+            assert p.b != null;
+            System.out.println("positionalNotation(" + p.a + ", " + p.b + ") = " + p.a.positionalNotation(p.b));
+        }
+    }
+
 //    public static void fromPositionalNotationDemo() {
 //        Generator<BigInteger> big = new FilteredGenerator<>(
 //                POSITIVE_BIG_INTEGERS,
