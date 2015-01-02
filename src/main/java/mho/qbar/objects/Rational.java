@@ -1674,7 +1674,7 @@ public final class Rational implements Comparable<Rational> {
      *
      * <ul>
      *  <li>{@code this} must be non-negative.</li>
-     *  <li>{@code base} must be greater than 1.</li>
+     *  <li>{@code base} must be at least 2.</li>
      *  <li>The elements of the result are all non-null. The elements of the elements are all non-negative. The first
      *  element does not begin with a zero. The last element is non-empty. The second and third lists are minimal; that
      *  is, the sequence (second)(third)(third)(third)... cannot be represented in a more compact way. The lists [1, 2]
@@ -1692,7 +1692,7 @@ public final class Rational implements Comparable<Rational> {
         if (signum() == -1)
             throw new IllegalArgumentException("this cannot be negative");
         BigInteger floor = floor();
-        List<BigInteger> beforeDecimal = toList(MathUtils.digits(base, floor));
+        List<BigInteger> beforeDecimal = MathUtils.bigEndianDigits(base, floor);
         Rational fractionalPart = subtract(of(floor));
         BigInteger numerator = fractionalPart.numerator;
         BigInteger denominator = fractionalPart.denominator;

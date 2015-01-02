@@ -2943,6 +2943,77 @@ public class RationalTest {
     }
 
     @Test
+    public void testPositionalNotation() {
+        aeq(ZERO.positionalNotation(BigInteger.valueOf(2)), "([], [], [0])");
+        aeq(ZERO.positionalNotation(BigInteger.valueOf(3)), "([], [], [0])");
+        aeq(ZERO.positionalNotation(BigInteger.valueOf(4)), "([], [], [0])");
+        aeq(ZERO.positionalNotation(BigInteger.valueOf(10)), "([], [], [0])");
+        aeq(ZERO.positionalNotation(BigInteger.valueOf(16)), "([], [], [0])");
+        aeq(ZERO.positionalNotation(BigInteger.valueOf(83)), "([], [], [0])");
+        aeq(ZERO.positionalNotation(BigInteger.valueOf(100)), "([], [], [0])");
+        aeq(ONE.positionalNotation(BigInteger.valueOf(2)), "([1], [], [0])");
+        aeq(ONE.positionalNotation(BigInteger.valueOf(3)), "([1], [], [0])");
+        aeq(ONE.positionalNotation(BigInteger.valueOf(4)), "([1], [], [0])");
+        aeq(ONE.positionalNotation(BigInteger.valueOf(10)), "([1], [], [0])");
+        aeq(ONE.positionalNotation(BigInteger.valueOf(16)), "([1], [], [0])");
+        aeq(ONE.positionalNotation(BigInteger.valueOf(83)), "([1], [], [0])");
+        aeq(ONE.positionalNotation(BigInteger.valueOf(100)), "([1], [], [0])");
+        aeq(read("1/2").get().positionalNotation(BigInteger.valueOf(2)), "([], [1], [0])");
+        aeq(read("1/2").get().positionalNotation(BigInteger.valueOf(3)), "([], [], [1])");
+        aeq(read("1/2").get().positionalNotation(BigInteger.valueOf(4)), "([], [2], [0])");
+        aeq(read("1/2").get().positionalNotation(BigInteger.valueOf(10)), "([], [5], [0])");
+        aeq(read("1/2").get().positionalNotation(BigInteger.valueOf(16)), "([], [8], [0])");
+        aeq(read("1/2").get().positionalNotation(BigInteger.valueOf(83)), "([], [], [41])");
+        aeq(read("1/2").get().positionalNotation(BigInteger.valueOf(100)), "([], [50], [0])");
+        aeq(read("1/3").get().positionalNotation(BigInteger.valueOf(2)), "([], [], [0, 1])");
+        aeq(read("1/3").get().positionalNotation(BigInteger.valueOf(3)), "([], [1], [0])");
+        aeq(read("1/3").get().positionalNotation(BigInteger.valueOf(4)), "([], [], [1])");
+        aeq(read("1/3").get().positionalNotation(BigInteger.valueOf(10)), "([], [], [3])");
+        aeq(read("1/3").get().positionalNotation(BigInteger.valueOf(16)), "([], [], [5])");
+        aeq(read("1/3").get().positionalNotation(BigInteger.valueOf(83)), "([], [], [27, 55])");
+        aeq(read("1/3").get().positionalNotation(BigInteger.valueOf(100)), "([], [], [33])");
+        aeq(read("1/7").get().positionalNotation(BigInteger.valueOf(2)), "([], [], [0, 0, 1])");
+        aeq(read("1/7").get().positionalNotation(BigInteger.valueOf(3)), "([], [], [0, 1, 0, 2, 1, 2])");
+        aeq(read("1/7").get().positionalNotation(BigInteger.valueOf(4)), "([], [], [0, 2, 1])");
+        aeq(read("1/7").get().positionalNotation(BigInteger.valueOf(10)), "([], [], [1, 4, 2, 8, 5, 7])");
+        aeq(read("1/7").get().positionalNotation(BigInteger.valueOf(16)), "([], [], [2, 4, 9])");
+        aeq(read("1/7").get().positionalNotation(BigInteger.valueOf(83)), "([], [], [11, 71])");
+        aeq(read("1/7").get().positionalNotation(BigInteger.valueOf(100)), "([], [], [14, 28, 57])");
+        aeq(read("415/93").get().positionalNotation(BigInteger.valueOf(2)),
+                "([1, 0, 0], [], [0, 1, 1, 1, 0, 1, 1, 0, 0, 1])");
+        aeq(read("415/93").get().positionalNotation(BigInteger.valueOf(3)),
+                "([1, 1], [1]," +
+                " [1, 0, 1, 1, 1, 0, 0, 1, 2, 0, 2, 0, 0, 0, 2, 1, 2, 1, 1, 1, 2, 2, 1, 0, 2, 0, 2, 2, 2, 0])");
+        aeq(read("415/93").get().positionalNotation(BigInteger.valueOf(4)), "([1, 0], [], [1, 3, 1, 2, 1])");
+        aeq(read("415/93").get().positionalNotation(BigInteger.valueOf(10)),
+                "([4], [], [4, 6, 2, 3, 6, 5, 5, 9, 1, 3, 9, 7, 8, 4, 9])");
+        aeq(read("415/93").get().positionalNotation(BigInteger.valueOf(16)), "([4], [], [7, 6, 5, 13, 9])");
+        aeq(read("415/93").get().positionalNotation(BigInteger.valueOf(83)),
+                "([4], []," +
+                " [38, 31, 19, 52, 54, 36, 49, 7, 11, 49, 81, 17, 70, 41, 78, 44, 51, 63, 30, 28, 46, 33, 75, 71," +
+                " 33, 1, 65, 12, 41, 4])");
+        aeq(read("415/93").get().positionalNotation(BigInteger.valueOf(100)),
+                "([4], [], [46, 23, 65, 59, 13, 97, 84, 94, 62, 36, 55, 91, 39, 78, 49])");
+        Rational approxPi = ofExact(Math.PI);
+        assert approxPi != null;
+        aeq(approxPi.positionalNotation(BigInteger.valueOf(2)),
+                "([1, 1]," +
+                " [0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0," +
+                " 1, 0, 0, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 0, 1, 1], [0])");
+        aeq(approxPi.positionalNotation(BigInteger.valueOf(4)),
+                "([3], [0, 2, 1, 0, 0, 3, 3, 3, 1, 2, 2, 2, 2, 0, 2, 0, 2, 0, 1, 1, 2, 2, 0, 3], [0])");
+        aeq(approxPi.positionalNotation(BigInteger.valueOf(10)),
+                "([3], [1, 4, 1, 5, 9, 2, 6, 5, 3, 5, 8, 9, 7, 9, 3, 1, 1, 5, 9, 9, 7, 9, 6, 3, 4, 6, 8, 5, 4, 4, 1," +
+                " 8, 5, 1, 6, 1, 5, 9, 0, 5, 7, 6, 1, 7, 1, 8, 7, 5], [0])");
+        aeq(approxPi.positionalNotation(BigInteger.valueOf(16)),
+                "([3], [2, 4, 3, 15, 6, 10, 8, 8, 8, 5, 10, 3], [0])");
+        aeq(approxPi.positionalNotation(BigInteger.valueOf(100)),
+                "([3]," +
+                " [14, 15, 92, 65, 35, 89, 79, 31, 15, 99, 79, 63, 46, 85, 44, 18, 51, 61, 59, 5, 76, 17, 18, 75]," +
+                " [0])");
+    }
+
+    @Test
     public void testEquals() {
         //noinspection EqualsWithItself
         assertTrue(ZERO.equals(ZERO));
