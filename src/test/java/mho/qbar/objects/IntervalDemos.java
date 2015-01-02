@@ -228,7 +228,7 @@ public class IntervalDemos {
         for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
             assert p.a != null;
             assert p.b != null;
-            System.out.println("equals(" + p.a + ", " + p.b + ") = " + p.a.equals(p.b));
+            System.out.println(p.a + (p.a.equals(p.b) ? " = " : " ≠ ") + p.b);
         }
     }
 
@@ -236,7 +236,7 @@ public class IntervalDemos {
         initialize();
         for (Interval a : take(LIMIT, P.intervals())) {
             //noinspection ObjectEqualsNull
-            System.out.println("equals(" + a + ", null) = " + a.equals(null));
+            System.out.println(a + (a.equals(null) ? " = " : " ≠ ") + null);
         }
     }
 
