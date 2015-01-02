@@ -287,6 +287,18 @@ public class RationalTest {
     }
 
     @Test
+    public void testIsInteger() {
+        assertTrue(ZERO.isInteger());
+        assertTrue(ONE.isInteger());
+        assertTrue(read("5").get().isInteger());
+        assertTrue(read("-5").get().isInteger());
+        assertFalse(read("1/2").get().isInteger());
+        assertFalse(read("-1/2").get().isInteger());
+        assertFalse(ofExact(Math.PI).isInteger());
+        assertFalse(ofExact(-Math.PI).isInteger());
+    }
+
+    @Test
     public void testBigIntegerValue_RoundingMode() {
         aeq(read("11/2").get().bigIntegerValue(RoundingMode.UP), 6);
         aeq(read("5/2").get().bigIntegerValue(RoundingMode.UP), 3);
