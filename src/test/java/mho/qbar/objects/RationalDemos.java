@@ -156,7 +156,7 @@ public class RationalDemos {
         Iterable<Pair<Rational, RoundingMode>> ps = filter(
                 p -> {
                     assert p.a != null;
-                    return p.b != RoundingMode.UNNECESSARY || p.a.getDenominator().equals(BigInteger.ONE);
+                    return p.b != RoundingMode.UNNECESSARY || p.a.isInteger();
                 },
                 P.pairs(P.rationals(), P.roundingModes())
         );

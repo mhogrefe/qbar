@@ -139,7 +139,7 @@ public class RationalProperties {
         List<Rational> sample = toList(take(SMALL_LIMIT, HARMONIC_NUMBERS));
         assertTrue(unique(sample));
         assertTrue(increasing(sample));
-        assertTrue(all(r -> !r.getDenominator().equals(BigInteger.ONE), tail(sample)));
+        assertTrue(all(r -> !r.isInteger(), tail(sample)));
     }
 
     private static void propertiesGetNumerator() {
@@ -400,7 +400,7 @@ public class RationalProperties {
         Iterable<Pair<Rational, RoundingMode>> ps = filter(
                 p -> {
                     assert p.a != null;
-                    return p.b != RoundingMode.UNNECESSARY || p.a.getDenominator().equals(BigInteger.ONE);
+                    return p.b != RoundingMode.UNNECESSARY || p.a.isInteger();
                 },
                 P.pairs(P.rationals(), P.roundingModes())
         );
@@ -452,7 +452,7 @@ public class RationalProperties {
             assertFalse(r.toString(), r.bigIntegerValue(RoundingMode.HALF_EVEN).testBit(0));
         }
 
-        for (Rational r : take(LIMIT, filter(s -> !s.getDenominator().equals(BigInteger.ONE), P.rationals()))) {
+        for (Rational r : take(LIMIT, filter(s -> !s.isInteger(), P.rationals()))) {
             try {
                 r.bigIntegerValue(RoundingMode.UNNECESSARY);
                 fail(r.toString());
@@ -495,7 +495,7 @@ public class RationalProperties {
             assertEquals(i.toString(), of(i).bigIntegerValueExact(), i);
         }
 
-        for (Rational r : take(LIMIT, filter(s -> !s.getDenominator().equals(BigInteger.ONE), P.rationals()))) {
+        for (Rational r : take(LIMIT, filter(s -> !s.isInteger(), P.rationals()))) {
             try {
                 r.bigIntegerValueExact();
                 fail(r.toString());
@@ -511,7 +511,7 @@ public class RationalProperties {
             assertEquals(Byte.toString(b), of(b).byteValueExact(), b);
         }
 
-        for (Rational r : take(LIMIT, filter(s -> !s.getDenominator().equals(BigInteger.ONE), P.rationals()))) {
+        for (Rational r : take(LIMIT, filter(s -> !s.isInteger(), P.rationals()))) {
             try {
                 r.byteValueExact();
                 fail(r.toString());
@@ -545,7 +545,7 @@ public class RationalProperties {
             assertEquals(Short.toString(s), of(s).shortValueExact(), s);
         }
 
-        for (Rational r : take(LIMIT, filter(s -> !s.getDenominator().equals(BigInteger.ONE), P.rationals()))) {
+        for (Rational r : take(LIMIT, filter(s -> !s.isInteger(), P.rationals()))) {
             try {
                 r.shortValueExact();
                 fail(r.toString());
@@ -579,7 +579,7 @@ public class RationalProperties {
             assertEquals(Integer.toString(i), of(i).intValueExact(), i);
         }
 
-        for (Rational r : take(LIMIT, filter(s -> !s.getDenominator().equals(BigInteger.ONE), P.rationals()))) {
+        for (Rational r : take(LIMIT, filter(s -> !s.isInteger(), P.rationals()))) {
             try {
                 r.intValueExact();
                 fail(r.toString());
@@ -613,7 +613,7 @@ public class RationalProperties {
             assertEquals(Long.toString(l), of(l).longValueExact(), l);
         }
 
-        for (Rational r : take(LIMIT, filter(s -> !s.getDenominator().equals(BigInteger.ONE), P.rationals()))) {
+        for (Rational r : take(LIMIT, filter(s -> !s.isInteger(), P.rationals()))) {
             try {
                 r.longValueExact();
                 fail(r.toString());
@@ -2475,7 +2475,7 @@ public class RationalProperties {
         for (int i : take(SMALL_LIMIT, is)) {
             Rational h = harmonicNumber(i);
             assertTrue(Integer.toString(i), gt(h, harmonicNumber(i - 1)));
-            assertFalse(Integer.toString(i), h.getDenominator().equals(BigInteger.ONE));
+            assertFalse(Integer.toString(i), h.isInteger());
         }
 
         for (int i : take(LIMIT, map(j -> -j, P.naturalIntegers()))) {
@@ -2722,7 +2722,7 @@ public class RationalProperties {
         Iterable<Pair<Rational, RoundingMode>> ps1 = filter(
                 p -> {
                     assert p.a != null;
-                    return p.b != RoundingMode.UNNECESSARY || p.a.getDenominator().equals(BigInteger.ONE);
+                    return p.b != RoundingMode.UNNECESSARY || p.a.isInteger();
                 },
                 P.pairs(P.rationals(), P.roundingModes())
         );
@@ -3044,7 +3044,7 @@ public class RationalProperties {
             assertEquals(r.toString(), r, fromContinuedFraction(continuedFraction));
         }
 
-        for (Rational r : take(LIMIT, filter(s -> !s.getDenominator().equals(BigInteger.ONE), P.rationals()))) {
+        for (Rational r : take(LIMIT, filter(s -> !s.isInteger(), P.rationals()))) {
             List<BigInteger> continuedFraction = r.continuedFraction();
             assertTrue(r.toString(), gt(last(continuedFraction), BigInteger.ONE));
         }
@@ -3099,7 +3099,7 @@ public class RationalProperties {
             assertTrue(r.toString(), zigzagging(convergents));
         }
 
-//        for (Rational r : take(LIMIT, filter(s -> !s.getDenominator().equals(BigInteger.ONE), P.positiveRationals()))) {
+//        for (Rational r : take(LIMIT, filter(s -> !s.isInteger(), P.positiveRationals()))) {
 //            List<Rational> convergents = toList(r.convergents());
 //            aeq(r.toString(), tail(r.negate().convergents()), map(Rational::negate, convergents));
 //        }
