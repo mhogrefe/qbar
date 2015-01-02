@@ -385,8 +385,11 @@ public class RationalProperties {
         System.out.println("\t\ttesting isInteger() properties...");
 
         for (Rational r : take(LIMIT, P.rationals())) {
-            boolean isInteger = r.isInteger();
-            assertEquals(r.toString(), isInteger, r.floor().equals(r));
+            assertEquals(r.toString(), r.isInteger(), of(r.floor()).equals(r));
+        }
+
+        for (BigInteger i : take(LIMIT, P.bigIntegers())) {
+            assertTrue(of(i).isInteger());
         }
     }
 
