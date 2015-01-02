@@ -3011,6 +3011,18 @@ public class RationalTest {
                 "([3]," +
                 " [14, 15, 92, 65, 35, 89, 79, 31, 15, 99, 79, 63, 46, 85, 44, 18, 51, 61, 59, 5, 76, 17, 18, 75]," +
                 " [0])");
+        try {
+            read("1/2").get().positionalNotation(BigInteger.ONE);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            read("1/2").get().positionalNotation(BigInteger.ZERO);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            read("-1/2").get().positionalNotation(BigInteger.valueOf(2));
+            fail();
+        } catch (IllegalArgumentException ignored) {}
     }
 
     @Test
