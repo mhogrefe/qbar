@@ -3092,17 +3092,13 @@ public class RationalProperties {
 
         for (Rational r : take(LIMIT, P.rationals())) {
             List<Rational> convergents = toList(r.convergents());
+            convergents.forEach(mho.qbar.objects.RationalProperties::validate);
             assertFalse(r.toString(), convergents.isEmpty());
             assertTrue(r.toString(), all(s -> s != null, convergents));
             assertEquals(r.toString(), head(convergents), of(r.floor()));
             assertEquals(r.toString(), last(convergents), r);
             assertTrue(r.toString(), zigzagging(convergents));
         }
-
-//        for (Rational r : take(LIMIT, filter(s -> !s.isInteger(), P.positiveRationals()))) {
-//            List<Rational> convergents = toList(r.convergents());
-//            aeq(r.toString(), tail(r.negate().convergents()), map(Rational::negate, convergents));
-//        }
     }
 
     private static void propertiesEquals() {
