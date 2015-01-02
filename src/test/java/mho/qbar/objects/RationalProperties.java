@@ -140,6 +140,10 @@ public class RationalProperties {
         assertTrue(unique(sample));
         assertTrue(increasing(sample));
         assertTrue(all(r -> !r.isInteger(), tail(sample)));
+        try {
+            HARMONIC_NUMBERS.iterator().remove();
+            fail();
+        } catch (UnsupportedOperationException ignored) {}
     }
 
     private static void propertiesGetNumerator() {
