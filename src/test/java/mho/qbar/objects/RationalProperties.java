@@ -120,6 +120,7 @@ public class RationalProperties {
             compareImplementationsShiftRight();
             propertiesContinuedFraction();
             propertiesFromContinuedFraction();
+            propertiesConvergents();
             propertiesEquals();
             propertiesHashCode();
             propertiesCompareTo();
@@ -2912,7 +2913,7 @@ public class RationalProperties {
 
     private static void compareImplementationsShiftLeft() {
         initialize();
-        System.out.println("\t\tcomparing shiftLeft(bits) implementations...");
+        System.out.println("\t\tcomparing shiftLeft(int) implementations...");
 
         long totalTime = 0;
         Iterable<Integer> is;
@@ -2987,7 +2988,7 @@ public class RationalProperties {
 
     private static void compareImplementationsShiftRight() {
         initialize();
-        System.out.println("\t\tcomparing shiftRight(bits) implementations...");
+        System.out.println("\t\tcomparing shiftRight(int) implementations...");
 
         long totalTime = 0;
         Iterable<Integer> is;
@@ -3019,7 +3020,7 @@ public class RationalProperties {
 
     private static void propertiesContinuedFraction() {
         initialize();
-        System.out.println("\t\ttesting continuedFraction properties...");
+        System.out.println("\t\ttesting continuedFraction() properties...");
 
         for (Rational r : take(LIMIT, P.rationals())) {
             List<BigInteger> continuedFraction = r.continuedFraction();
@@ -3037,7 +3038,7 @@ public class RationalProperties {
 
     private static void propertiesFromContinuedFraction() {
         initialize();
-        System.out.println("\t\ttesting fromContinuedFraction properties...");
+        System.out.println("\t\ttesting fromContinuedFraction(List<BigInteger>) properties...");
 
         Iterable<List<BigInteger>> iss = map(
                 p -> {
@@ -3069,6 +3070,25 @@ public class RationalProperties {
                 fail(is.toString());
             } catch (IllegalArgumentException ignored) {}
         }
+    }
+
+    private static void propertiesConvergents() {
+        initialize();
+        System.out.println("\t\ttesting convergents() properties...");
+
+        for (Rational r : take(LIMIT, P.rationals())) {
+            List<Rational> convergents = toList(r.convergents());
+            assertFalse(r.toString(), convergents.isEmpty());
+            assertTrue(r.toString(), all(s -> s != null, convergents));
+            assertEquals(r.toString(), head(convergents), of(r.floor()));
+            assertEquals(r.toString(), last(convergents), r);
+            assertTrue(r.toString(), zigzagging(convergents));
+        }
+
+//        for (Rational r : take(LIMIT, filter(s -> !s.getDenominator().equals(BigInteger.ONE), P.positiveRationals()))) {
+//            List<Rational> convergents = toList(r.convergents());
+//            aeq(r.toString(), tail(r.negate().convergents()), map(Rational::negate, convergents));
+//        }
     }
 
     private static void propertiesEquals() {
