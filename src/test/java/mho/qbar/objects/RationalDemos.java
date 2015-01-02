@@ -144,6 +144,13 @@ public class RationalDemos {
         }
     }
 
+    public static void demoIsInteger() {
+        initialize();
+        for (Rational r : take(LIMIT, P.rationals())) {
+            System.out.println(r + " is " + (r.isInteger() ? "" : "not ") + "an integer");
+        }
+    }
+
     public static void demoBigIntegerValue_RoundingMode() {
         initialize();
         Iterable<Pair<Rational, RoundingMode>> ps = filter(
@@ -202,9 +209,11 @@ public class RationalDemos {
         }
     }
 
-    public static void hasTerminatingDecimalExpansionDemo() {
+    public static void demoHasTerminatingDecimalExpansion() {
+        initialize();
         for (Rational r : take(LIMIT, P.rationals())) {
-            System.out.println("hasTerminatingDecimalExpansion(" + r + ") = " + r.hasTerminatingDecimalExpansion());
+            System.out.println(r + (r.hasTerminatingDecimalExpansion() ? " has " : " does not have ") +
+                    "a terminating decimal expansion");
         }
     }
 
@@ -687,7 +696,7 @@ public class RationalDemos {
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
             assert p.a != null;
             assert p.b != null;
-            System.out.println("equals(" + p.a + ", " + p.b + ") = " + p.a.equals(p.b));
+            System.out.println(p.a + (p.a.equals(p.b) ? " = " : " ≠ ") + p.b);
         }
     }
 
@@ -695,7 +704,7 @@ public class RationalDemos {
         initialize();
         for (Rational r : take(LIMIT, P.rationals())) {
             //noinspection ObjectEqualsNull
-            System.out.println("equals(" + r + ", null) = " + r.equals(null));
+            System.out.println(r + (r.equals(null) ? " = " : " ≠ ") + null);
         }
     }
 
