@@ -38,10 +38,6 @@ public class RationalDemos {
         }
     }
 
-    public static void main(String[] args) {
-        demoPositionalNotation();
-    }
-
     public static void demoGetNumerator() {
         initialize();
         for (Rational r : take(LIMIT, P.rationals())) {

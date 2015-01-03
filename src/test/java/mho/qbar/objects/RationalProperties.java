@@ -122,6 +122,7 @@ public class RationalProperties {
             propertiesContinuedFraction();
             propertiesFromContinuedFraction();
             propertiesConvergents();
+            propertiesPositionalNotation();
             propertiesEquals();
             propertiesHashCode();
             propertiesCompareTo();
@@ -3102,6 +3103,80 @@ public class RationalProperties {
             assertEquals(r.toString(), head(convergents), of(r.floor()));
             assertEquals(r.toString(), last(convergents), r);
             assertTrue(r.toString(), zigzagging(convergents));
+        }
+    }
+
+    private static void propertiesPositionalNotation() {
+        initialize();
+        System.out.println("\t\ttesting positionalNotation(BigInteger) properties...");
+
+        Iterable<Pair<Rational, BigInteger>> ps;
+        if (P instanceof ExhaustiveProvider) {
+            ps = ((ExhaustiveProvider) P).pairsSquareRootOrder(
+                    cons(ZERO, P.positiveRationals()),
+                    P.rangeUp(BigInteger.valueOf(2))
+            );
+        } else {
+            ps = P.pairs(
+                    cons(ZERO, ((QBarRandomProvider) P).positiveRationals(8)),
+                    map(i -> BigInteger.valueOf(i + 2), ((RandomProvider) P).naturalIntegersGeometric(20))
+            );
+        }
+        for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
+            assert p.a != null;
+            assert p.b != null;
+            Triple<List<BigInteger>, List<BigInteger>, List<BigInteger>> pn = p.a.positionalNotation(p.b);
+            assert pn.a != null;
+            assert pn.b != null;
+            assert pn.c != null;
+            for (List<BigInteger> is : Arrays.asList(pn.a, pn.b, pn.c)) {
+                assertTrue(p.toString(), all(i -> i != null && i.signum() != -1 && lt(i, p.b), is));
+            }
+            assertTrue(p.toString(), pn.a.isEmpty() || !head(pn.a).equals(BigInteger.ZERO));
+            assertFalse(p.toString(), pn.c.isEmpty());
+            //minimality not tested
+            assertEquals(p.toString(), fromPositionalNotation(p.b, pn.a, pn.b, pn.c), p.a);
+        }
+
+        Iterable<Pair<Rational, BigInteger>> psFail;
+        if (P instanceof ExhaustiveProvider) {
+            psFail = ((ExhaustiveProvider) P).pairsSquareRootOrder(
+                    P.negativeRationals(),
+                    P.rangeUp(BigInteger.valueOf(2))
+            );
+        } else {
+            psFail = P.pairs(
+                    ((QBarRandomProvider) P).negativeRationals(8),
+                    map(i -> BigInteger.valueOf(i + 2), ((RandomProvider) P).naturalIntegersGeometric(20))
+            );
+        }
+        for (Pair<Rational, BigInteger> p : take(LIMIT, psFail)) {
+            assert p.a != null;
+            assert p.b != null;
+            try {
+                p.a.positionalNotation(p.b);
+                fail(p.toString());
+            } catch (IllegalArgumentException ignored) {}
+        }
+
+        if (P instanceof ExhaustiveProvider) {
+            psFail = ((ExhaustiveProvider) P).pairsSquareRootOrder(
+                    cons(ZERO, P.positiveRationals()),
+                    P.rangeDown(BigInteger.ONE)
+            );
+        } else {
+            psFail = P.pairs(
+                    cons(ZERO, ((QBarRandomProvider) P).positiveRationals(8)),
+                    map(i -> BigInteger.valueOf(i + 2), ((RandomProvider) P).negativeIntegersGeometric(20))
+            );
+        }
+        for (Pair<Rational, BigInteger> p : take(LIMIT, psFail)) {
+            assert p.a != null;
+            assert p.b != null;
+            try {
+                p.a.positionalNotation(p.b);
+                fail(p.toString());
+            } catch (IllegalArgumentException ignored) {}
         }
     }
 

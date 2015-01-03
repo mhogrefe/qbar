@@ -1746,9 +1746,9 @@ public final class Rational implements Comparable<Rational> {
             @NotNull List<BigInteger> nonRepeating,
             @NotNull List<BigInteger> repeating
     ) {
-        BigInteger floor = MathUtils.fromDigits(base, beforeDecimalPoint);
-        BigInteger nonRepeatingInteger = MathUtils.fromDigits(base, nonRepeating);
-        BigInteger repeatingInteger = MathUtils.fromDigits(base, repeating);
+        BigInteger floor = MathUtils.fromBigEndianDigits(base, beforeDecimalPoint);
+        BigInteger nonRepeatingInteger = MathUtils.fromBigEndianDigits(base, nonRepeating);
+        BigInteger repeatingInteger = MathUtils.fromBigEndianDigits(base, repeating);
         Rational nonRepeatingPart = of(nonRepeatingInteger, base.pow(nonRepeating.size()));
         Rational repeatingPart = of(repeatingInteger, base.pow(repeating.size()).subtract(BigInteger.ONE))
                 .divide(base.pow(nonRepeating.size()));
