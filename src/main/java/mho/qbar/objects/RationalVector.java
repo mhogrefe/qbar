@@ -179,6 +179,20 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
     }
 
     /**
+     * Returns the negative of {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalVector}.</li>
+     *  <li>The result is non-null.</li>
+     * </ul>
+     *
+     * @return –{@code this}
+     */
+    public @NotNull RationalVector negate() {
+        return new RationalVector(toList(map(Rational::negate, coordinates)));
+    }
+
+    /**
      * Determines whether {@code this} is equal to {@code that}.
      *
      * <ul>

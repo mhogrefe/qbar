@@ -1110,7 +1110,7 @@ public final class Rational implements Comparable<Rational> {
      *  <li>The result is non-null.</li>
      * </ul>
      *
-     * @return –{@code this}.
+     * @return –{@code this}
      */
     public @NotNull Rational negate() {
         if (this == ZERO) return ZERO;
@@ -1127,7 +1127,7 @@ public final class Rational implements Comparable<Rational> {
      *  <li>The result is a non-zero {@code Rational}.</li>
      * </ul>
      *
-     * @return 1/{@code this}.
+     * @return 1/{@code this}
      */
     public @NotNull Rational invert() {
         if (this == ZERO)
@@ -1148,7 +1148,7 @@ public final class Rational implements Comparable<Rational> {
      *  <li>The result is a non-negative {@code Rational}.</li>
      * </ul>
      *
-     * @return |{@code this}|.
+     * @return |{@code this}|
      */
     public @NotNull Rational abs() {
         if (this == ZERO || this == ONE) return this;

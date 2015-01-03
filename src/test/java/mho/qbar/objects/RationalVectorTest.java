@@ -113,7 +113,7 @@ public class RationalVectorTest {
     }
 
     @Test
-    public void test_Rational() {
+    public void testOf_Rational() {
         aeq(of(Rational.read("1/2").get()), "[1/2]");
         aeq(of(Rational.read("-5").get()), "[-5]");
         aeq(of(Rational.read("0").get()), "[0]");
@@ -121,9 +121,16 @@ public class RationalVectorTest {
 
     @Test
     public void testDimension() {
-        aeq(read("[]").get().dimension(), 0);
+        aeq(ZERO_DIMENSIONAL.dimension(), 0);
         aeq(read("[1/2]").get().dimension(), 1);
         aeq(read("[5/3, -1/4, 23]").get().dimension(), 3);
+    }
+
+    @Test
+    public void testNegate() {
+        aeq(ZERO_DIMENSIONAL.negate(), "[]");
+        aeq(read("[1/2]").get().negate(), "[-1/2]");
+        aeq(read("[5/3, -1/4, 23]").get().negate(), "[-5/3, 1/4, -23]");
     }
 
     @Test
