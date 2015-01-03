@@ -127,6 +127,43 @@ public class RationalVectorTest {
     }
 
     @Test
+    public void testZero() {
+        assertTrue(zero(0) == ZERO_DIMENSIONAL);
+        aeq(zero(1), "[0]");
+        aeq(zero(3), "[0, 0, 0]");
+        aeq(zero(10), "[0, 0, 0, 0, 0, 0, 0, 0, 0, 0]");
+        try {
+            zero(-1);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testOne() {
+        aeq(identity(1, 0), "[1]");
+        aeq(identity(3, 0), "[1, 0, 0]");
+        aeq(identity(3, 1), "[0, 1, 0]");
+        aeq(identity(3, 2), "[0, 0, 1]");
+        aeq(identity(10, 6), "[0, 0, 0, 0, 0, 0, 1, 0, 0, 0]");
+        try {
+            identity(2, -4);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            identity(-3, -4);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            identity(2, 3);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            identity(0, 0);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
     public void testNegate() {
         aeq(ZERO_DIMENSIONAL.negate(), "[]");
         aeq(read("[1/2]").get().negate(), "[-1/2]");

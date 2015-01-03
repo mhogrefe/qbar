@@ -3,6 +3,8 @@ package mho.qbar.objects;
 import mho.qbar.iterableProviders.QBarExhaustiveProvider;
 import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.iterableProviders.QBarRandomProvider;
+import mho.wheels.iterables.ExhaustiveProvider;
+import mho.wheels.iterables.RandomProvider;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 
@@ -15,6 +17,7 @@ import static mho.wheels.iterables.IterableUtils.*;
 public class RationalVectorDemos {
     private static final boolean USE_RANDOM = false;
     private static final String RATIONAL_VECTOR_CHARS = " ,-/0123456789[]";
+    private static final int SMALL_LIMIT = 100;
     private static int LIMIT;
 
     private static QBarIterableProvider P;
@@ -115,6 +118,32 @@ public class RationalVectorDemos {
         initialize();
         for (RationalVector v : take(LIMIT, P.rationalVectors())) {
             System.out.println("dim(" + v + ") = " + v.dimension());
+        }
+    }
+
+    public static void demoZero() {
+        initialize();
+        Iterable<Integer> is;
+        if (P instanceof ExhaustiveProvider) {
+            is = P.naturalIntegers();
+        } else {
+            is = ((RandomProvider) P).naturalIntegersGeometric(20);
+        }
+        for (int i : take(SMALL_LIMIT, is)) {
+            System.out.println("zero(" + i + ") = " + zero(i));
+        }
+    }
+
+    public static void demoIdentity() {
+        initialize();
+        Iterable<Integer> is;
+        if (P instanceof ExhaustiveProvider) {
+            is = P.naturalIntegers();
+        } else {
+            is = ((RandomProvider) P).naturalIntegersGeometric(20);
+        }
+        for (Pair<Integer, Integer> p : take(SMALL_LIMIT, filter(q -> q.a > q.b, P.pairs(is)))) {
+            System.out.println("identity(" + p.a + ", " + p.b + ") = " + identity(p.a, p.b));
         }
     }
 

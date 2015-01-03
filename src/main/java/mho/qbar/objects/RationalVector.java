@@ -55,6 +55,8 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
      *  <li>The result is finite and contains no nulls.</li>
      * </ul>
      *
+     * Length is |{@code coordinates}|
+     *
      * @return an {@code Iterator} over this {@code RationalVector}'s coordinates
      */
     @Override
@@ -144,6 +146,8 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
      *  <li>The result is not null.</li>
      * </ul>
      *
+     * Length is |{@code coordinates}|
+     *
      * @param coordinates the vector's coordinates
      * @return the {@code RationalVector} with the specified coordinates
      */
@@ -162,6 +166,8 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
      *  <li>The result is a one-dimensional vector.</li>
      * </ul>
      *
+     * Length is 1
+     *
      * @param a the vector's coordinate
      * @return [a]
      */
@@ -172,10 +178,73 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
     /**
      * Returns this {@code RationalVector}'s dimension
      *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalVector}.</li>
+     *  <li>The result is non-negative.</li>
+     * </ul>
+     *
      * @return this {@code RationalVector}'s dimension
      */
     public int dimension() {
         return coordinates.size();
+    }
+
+    /**
+     * Creates the zero vector with a given dimension.
+     *
+     * <ul>
+     *  <li>{@code dimension} must be non-negative.</li>
+     *  <li>The result is a {@code RationalVector} all of whose coordinates are 0.</li>
+     * </ul>
+     *
+     * Length is {@code dimension}
+     *
+     * @param dimension the zero vector's dimension
+     * @return 0
+     */
+    public static @NotNull RationalVector zero(int dimension) {
+        if (dimension == 0) return ZERO_DIMENSIONAL;
+        if (dimension < 0)
+            throw new IllegalArgumentException("dimension must be non-negative");
+        return new RationalVector(toList(replicate(dimension, Rational.ZERO)));
+    }
+
+    /**
+     * Creates an identity vector; that is, a vector with a given dimension, all of whose coordinates are 0, except for
+     * a single coordinate which is 1. Identity matrices are made up of identity vectors. There is no identity vector
+     * of dimension 0.
+     *
+     * <ul>
+     *  <li>{@code dimension} must be positive.</li>
+     *  <li>{@code i} must be non-negative.</li>
+     *  <li>{@code i} must be less than {@code dimension}.</li>
+     *  <li>The result is a {@code RationalVector} with one coordinate equal to 1 and the others equal to 0.</li>
+     * </ul>
+     *
+     * Length is {@code dimension}
+     *
+     * @param dimension the vector's dimension
+     * @param i the index of the vector coordinate which is 1
+     * @return an identity vector
+     */
+    public static @NotNull RationalVector identity(int dimension, int i) {
+        if (dimension < 1)
+            throw new IllegalArgumentException("dimension must be positive");
+        if (i < 0)
+            throw new IllegalArgumentException("i must be non-negative");
+        if (i >= dimension)
+            throw new IllegalArgumentException("i must be less than dimension");
+        return new RationalVector(
+                toList(
+                        concat(
+                                Arrays.asList(
+                                        replicate(i, Rational.ZERO),
+                                        Arrays.asList(Rational.ONE),
+                                        replicate(dimension - i - 1, Rational.ZERO)
+                                )
+                        )
+                )
+        );
     }
 
     /**
@@ -186,9 +255,12 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
      *  <li>The result is non-null.</li>
      * </ul>
      *
+     * Length is |{@code coordinates}|
+     *
      * @return –{@code this}
      */
     public @NotNull RationalVector negate() {
+        if (this == ZERO_DIMENSIONAL) return ZERO_DIMENSIONAL;
         return new RationalVector(toList(map(Rational::negate, coordinates)));
     }
 

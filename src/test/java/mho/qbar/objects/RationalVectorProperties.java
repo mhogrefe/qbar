@@ -3,6 +3,8 @@ package mho.qbar.objects;
 import mho.qbar.iterableProviders.QBarExhaustiveProvider;
 import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.iterableProviders.QBarRandomProvider;
+import mho.wheels.iterables.ExhaustiveProvider;
+import mho.wheels.iterables.RandomProvider;
 import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
 import org.jetbrains.annotations.NotNull;
@@ -13,6 +15,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 
+import static mho.qbar.objects.Rational.ONE;
+import static mho.qbar.objects.Rational.ZERO;
 import static mho.qbar.objects.RationalVector.*;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.ordering.Ordering.*;
@@ -23,6 +27,7 @@ import static org.junit.Assert.assertNotNull;
 public class RationalVectorProperties {
     private static boolean USE_RANDOM;
     private static final String RATIONAL_VECTOR_CHARS = " ,-/0123456789[]";
+    private static final int SMALL_LIMIT = 100;
     private static int LIMIT;
 
     private static QBarIterableProvider P;
@@ -51,6 +56,10 @@ public class RationalVectorProperties {
             propertiesX_int();
             propertiesOf_List_Rational();
             propertiesOf_Rational();
+            propertiesDimension();
+            propertiesZero();
+            propertiesIdentity();
+            propertiesNegate();
             propertiesEquals();
             propertiesHashCode();
             propertiesCompareTo();
@@ -167,10 +176,12 @@ public class RationalVectorProperties {
     private static void propertiesOf_List_Rational() {
         initialize();
         System.out.println("\t\ttesting of(List<Rational>) properties");
+
         for (List<Rational> rs : take(LIMIT, P.lists(P.rationals()))) {
             RationalVector v = of(rs);
             validate(v);
             assertEquals(rs.toString(), toList(v), rs);
+            assertEquals(rs.toString(), v.dimension(), rs.size());
         }
 
         Iterable<List<Rational>> failRss = map(p -> {
@@ -192,10 +203,89 @@ public class RationalVectorProperties {
     private static void propertiesOf_Rational() {
         initialize();
         System.out.println("\t\ttesting of(Rational) properties");
+
         for (Rational r : take(LIMIT, P.rationals())) {
             RationalVector v = of(r);
             validate(v);
             assertEquals(r.toString(), v.dimension(), 1);
+        }
+    }
+
+    private static void propertiesDimension() {
+        initialize();
+        System.out.println("\t\ttesting dimension() properties");
+
+        for (RationalVector v : take(LIMIT, P.rationalVectors())) {
+            int dimension = v.dimension();
+            assertTrue(v.toString(), dimension >= 0);
+            assertEquals(v.toString(), length(v), dimension);
+        }
+    }
+
+    private static void propertiesZero() {
+        initialize();
+        System.out.println("\t\ttesting zero(int) properties");
+
+        Iterable<Integer> is;
+        if (P instanceof ExhaustiveProvider) {
+            is = P.naturalIntegers();
+        } else {
+            is = ((RandomProvider) P).naturalIntegersGeometric(20);
+        }
+        for (int i : take(SMALL_LIMIT, is)) {
+            RationalVector zero = zero(i);
+            validate(zero);
+            assertEquals(Integer.toString(i), zero.dimension(), i);
+            assertTrue(Integer.toString(i), all(x -> x == ZERO, zero));
+        }
+
+        for (int i : take(LIMIT, P.negativeIntegers())) {
+            try {
+                zero(i);
+                fail(Integer.toString(i));
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private static void propertiesIdentity() {
+        initialize();
+        System.out.println("\t\ttesting identity(int, int) properties");
+
+        Iterable<Integer> is;
+        if (P instanceof ExhaustiveProvider) {
+            is = P.naturalIntegers();
+        } else {
+            is = ((RandomProvider) P).naturalIntegersGeometric(20);
+        }
+        for (Pair<Integer, Integer> p : take(SMALL_LIMIT, filter(q -> q.a > q.b, P.pairs(is)))) {
+            assert p.a != null;
+            assert p.b != null;
+            RationalVector identity = identity(p.a, p.b);
+            validate(identity);
+            assertEquals(p.toString(), identity.dimension(), p.a.intValue());
+            List<Rational> sortedCoordinates = reverse(sort(identity));
+            assertTrue(p.toString(), head(sortedCoordinates) == ONE);
+            assertTrue(p.toString(), all(x -> x == ZERO, tail(sortedCoordinates)));
+        }
+
+        //todo failure
+    }
+
+    private static void propertiesNegate() {
+        initialize();
+        System.out.println("\t\ttesting negate() properties");
+
+        for (RationalVector v : take(LIMIT, P.rationalVectors())) {
+            RationalVector negativeV = v.negate();
+            validate(negativeV);
+            assertEquals(v.toString(), v.dimension(), negativeV.dimension());
+            assertEquals(v.toString(), v, negativeV.negate());
+            //todo addition
+        }
+
+        for (RationalVector v : take(LIMIT, filter(w -> any(x -> x != ZERO, w), P.rationalVectors()))) {
+            RationalVector negativeV = v.negate();
+            assertNotEquals(v.toString(), v, negativeV);
         }
     }
 
