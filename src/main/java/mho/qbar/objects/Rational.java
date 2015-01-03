@@ -1438,8 +1438,6 @@ public final class Rational implements Comparable<Rational> {
         if (p == 0) return ONE;
         if (p == 1) return this;
         if (p < 0) {
-            if (this == ZERO)
-                throw new ArithmeticException("division by zero");
             return invert().pow(-p);
         }
         if (this == ZERO || this == ONE) return this;
@@ -1605,6 +1603,8 @@ public final class Rational implements Comparable<Rational> {
      *  the last element is greater than 1.</li>
      * </ul>
      *
+     * Length is O(log({@code denominator}))
+     *
      * @return the continued-fraction-representation of {@code this}
      */
     public @NotNull List<BigInteger> continuedFraction() {
@@ -1657,6 +1657,8 @@ public final class Rational implements Comparable<Rational> {
      *  <li>The result is a non-null, finite, non-empty {@code Iterable} that consists of the convergents of its last
      *  element.</li>
      * </ul>
+     *
+     * Length is O(log({@code denominator}))
      *
      * @return the convergents of {@code this}.
      */
@@ -1725,7 +1727,7 @@ public final class Rational implements Comparable<Rational> {
      * Creates a {@code Rational} from a base expansion.
      *
      * <ul>
-     *  <li>{@code base} must be greater than 1.</li>
+     *  <li>{@code base} must be at least 2.</li>
      *  <li>{@code beforeDecimalPoint} must only contain elements greater than or equal to zero and less than
      *  {@code base}.</li>
      *  <li>{@code nonRepeating} must only contain elements greater than or equal to zero and less than
