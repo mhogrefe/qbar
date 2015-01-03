@@ -118,6 +118,13 @@ public class RationalVectorDemos {
         }
     }
 
+    public static void demoNegate() {
+        initialize();
+        for (RationalVector v : take(LIMIT, P.rationalVectors())) {
+            System.out.println("-" + v + " = " + v.negate());
+        }
+    }
+
     public static void demoEquals_RationalVector() {
         initialize();
         for (Pair<RationalVector, RationalVector> p : take(LIMIT, P.pairs(P.rationalVectors()))) {
