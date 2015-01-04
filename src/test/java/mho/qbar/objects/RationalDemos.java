@@ -24,7 +24,6 @@ public class RationalDemos {
     private static final boolean USE_RANDOM = false;
     private static final String RATIONAL_CHARS = "-/0123456789";
     private static final int SMALL_LIMIT = 1000;
-    private static final int TINY_LIMIT = 100;
     private static int LIMIT;
 
     private static QBarIterableProvider P;
@@ -653,15 +652,20 @@ public class RationalDemos {
 
     public static void demoFromPositionalNotation() {
         initialize();
+        Iterable<BigInteger> bases;
+        if (P instanceof ExhaustiveProvider) {
+            bases = P.rangeUp(BigInteger.valueOf(2));
+        } else {
+            bases = map(i -> BigInteger.valueOf(i + 2), ((RandomProvider) P).naturalIntegersGeometric(20));
+        }
         Iterable<Pair<BigInteger, Triple<List<BigInteger>, List<BigInteger>, List<BigInteger>>>> ps = P.dependentPairs(
-                P.rangeUp(BigInteger.valueOf(2)),
+                bases,
                 b -> filter(
                         t -> !t.c.isEmpty(),
                         P.triples(P.lists(P.range(BigInteger.ZERO, b.subtract(BigInteger.ONE))))
                 )
         );
-        int limit = P instanceof ExhaustiveProvider ? LIMIT : TINY_LIMIT;
-        for (Pair<BigInteger, Triple<List<BigInteger>, List<BigInteger>, List<BigInteger>>> p : take(limit, ps)) {
+        for (Pair<BigInteger, Triple<List<BigInteger>, List<BigInteger>, List<BigInteger>>> p : take(LIMIT, ps)) {
             assert p.a != null;
             assert p.b != null;
             assert p.b.a != null;
