@@ -1883,16 +1883,19 @@ public class RationalProperties {
         }
     }
 
-    private static @NotNull Rational multiply_Rational_Knuth(@NotNull Rational a, @NotNull Rational b) {
-        if (a == ZERO || b == ZERO) return ZERO;
-        if (a == ONE) return b;
-        if (b == ONE) return a;
+    private static @NotNull Pair<BigInteger, BigInteger> multiply_Rational_Knuth(
+            @NotNull Rational a,
+            @NotNull Rational b
+    ) {
+        if (a == ZERO || b == ZERO) return new Pair<>(BigInteger.ZERO, BigInteger.ONE);
+        if (a == ONE) return new Pair<>(b.getNumerator(), b.getDenominator());
+        if (b == ONE) return new Pair<>(a.getNumerator(), a.getDenominator());
         BigInteger g1 = a.getNumerator().gcd(b.getDenominator());
         BigInteger g2 = b.getNumerator().gcd(a.getDenominator());
         BigInteger mn = a.getNumerator().divide(g1).multiply(b.getNumerator().divide(g2));
         BigInteger md = a.getDenominator().divide(g2).multiply(b.getDenominator().divide(g1));
-        if (mn.equals(md)) return ONE;
-        return of(mn, md);
+        if (mn.equals(md)) return new Pair<>(BigInteger.ONE, BigInteger.ONE);
+        return new Pair<>(mn, md);
     }
 
     private static void propertiesMultiply_Rational() {
@@ -1904,7 +1907,11 @@ public class RationalProperties {
             assert p.b != null;
             Rational product = p.a.multiply(p.b);
             validate(product);
-            assertEquals(p.toString(), product, multiply_Rational_Knuth(p.a, p.b));
+            assertEquals(
+                    p.toString(),
+                    new Pair<>(product.getNumerator(), product.getDenominator()),
+                    multiply_Rational_Knuth(p.a, p.b)
+            );
             assertEquals(p.toString(), product, p.b.multiply(p.a));
         }
 
@@ -3134,7 +3141,7 @@ public class RationalProperties {
             }
             assertTrue(p.toString(), pn.a.isEmpty() || !head(pn.a).equals(BigInteger.ZERO));
             assertFalse(p.toString(), pn.c.isEmpty());
-            //minimality not tested
+            //todo minimality not tested
             assertEquals(p.toString(), fromPositionalNotation(p.b, pn.a, pn.b, pn.c), p.a);
         }
 
