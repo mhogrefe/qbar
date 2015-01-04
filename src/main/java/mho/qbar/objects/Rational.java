@@ -1748,6 +1748,8 @@ public final class Rational implements Comparable<Rational> {
             @NotNull List<BigInteger> nonRepeating,
             @NotNull List<BigInteger> repeating
     ) {
+        if (repeating.isEmpty())
+            throw new IllegalArgumentException("repeating must be nonempty");
         BigInteger floor = MathUtils.fromBigEndianDigits(base, beforeDecimalPoint);
         BigInteger nonRepeatingInteger = MathUtils.fromBigEndianDigits(base, nonRepeating);
         BigInteger repeatingInteger = MathUtils.fromBigEndianDigits(base, repeating);
