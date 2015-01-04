@@ -18,10 +18,7 @@ import org.junit.Test;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.ordering.Ordering.*;
@@ -3113,6 +3110,23 @@ public class RationalProperties {
         }
     }
 
+    private static @NotNull <T> Pair<List<T>, List<T>> minimize(@NotNull List<T> a, @NotNull List<T> b) {
+        List<T> oldA = new ArrayList<>();
+        List<T> oldB = new ArrayList<>();
+        while (!a.equals(oldA) || !b.equals(oldB)) {
+            int longestCommonSuffixLength = 0;
+            for (int i = 0; i < Math.min(a.size(), b.size()); i++) {
+                if (!a.get(a.size() - i - 1).equals(b.get(b.size() - i - 1))) break;
+                longestCommonSuffixLength++;
+            }
+            oldA = a;
+            oldB = b;
+            a = toList(take(a.size() - longestCommonSuffixLength, a));
+            b = unrepeat(rotateRight(longestCommonSuffixLength, b));
+        }
+        return new Pair<>(a, b);
+    }
+
     private static void propertiesPositionalNotation() {
         initialize();
         System.out.println("\t\ttesting positionalNotation(BigInteger) properties...");
@@ -3141,7 +3155,9 @@ public class RationalProperties {
             }
             assertTrue(p.toString(), pn.a.isEmpty() || !head(pn.a).equals(BigInteger.ZERO));
             assertFalse(p.toString(), pn.c.isEmpty());
-            //todo minimality not tested
+            Pair<List<BigInteger>, List<BigInteger>> minimized = minimize(pn.b, pn.c);
+            assertEquals(p.toString(), minimized.a, pn.b);
+            assertEquals(p.toString(), minimized.b, pn.c);
             assertEquals(p.toString(), fromPositionalNotation(p.b, pn.a, pn.b, pn.c), p.a);
         }
 
