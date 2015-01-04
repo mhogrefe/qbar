@@ -24,6 +24,7 @@ public class RationalDemos {
     private static final boolean USE_RANDOM = false;
     private static final String RATIONAL_CHARS = "-/0123456789";
     private static final int SMALL_LIMIT = 1000;
+    private static final int TINY_LIMIT = 100;
     private static int LIMIT;
 
     private static QBarIterableProvider P;
@@ -650,33 +651,27 @@ public class RationalDemos {
         }
     }
 
-//    public static void fromPositionalNotationDemo() {
-//        Generator<BigInteger> big = new FilteredGenerator<>(
-//                POSITIVE_BIG_INTEGERS,
-//                bi -> bi.compareTo(BigInteger.ONE) > 0
-//        );
-//        Generator<Triple<List<BigInteger>, List<BigInteger>, List<BigInteger>>> tg = new SameTripleGenerator<>(new ListGenerator<>(Generators.naturalBigIntegers()));
-//        Generator<Pair<Triple<List<BigInteger>, List<BigInteger>, List<BigInteger>>, BigInteger>> g = new FilteredGenerator<>(
-//                new SubExponentialPairGenerator<Triple<List<BigInteger>, List<BigInteger>, List<BigInteger>>, BigInteger>(tg, big),
-//                p -> {
-//                    if (p.a.c.isEmpty()) return false;
-//                    for (BigInteger digit : p.a.a) {
-//                        if (digit.compareTo(p.b) >= 0) return false;
-//                    }
-//                    for (BigInteger digit : p.a.b) {
-//                        if (digit.compareTo(p.b) >= 0) return false;
-//                    }
-//                    for (BigInteger digit : p.a.c) {
-//                        if (digit.compareTo(p.b) >= 0) return false;
-//                    }
-//                    return true;
-//                }
-//        );
-//        for (Pair<Triple<List<BigInteger>, List<BigInteger>, List<BigInteger>>, BigInteger> t : g.iterate(limit)) {
-//            System.out.println("fromPositionalNotation(" + t.b + ", " + t.a.a + ", " + t.a.b + ", " + t.a.c + ") = " + Rational.fromPositionalNotation(t.b, t.a.a, t.a.b, t.a.c));
-//        }
-//    }
-//
+    public static void demoFromPositionalNotation() {
+        initialize();
+        Iterable<Pair<BigInteger, Triple<List<BigInteger>, List<BigInteger>, List<BigInteger>>>> ps = P.dependentPairs(
+                P.rangeUp(BigInteger.valueOf(2)),
+                b -> filter(
+                        t -> !t.c.isEmpty(),
+                        P.triples(P.lists(P.range(BigInteger.ZERO, b.subtract(BigInteger.ONE))))
+                )
+        );
+        int limit = P instanceof ExhaustiveProvider ? LIMIT : TINY_LIMIT;
+        for (Pair<BigInteger, Triple<List<BigInteger>, List<BigInteger>, List<BigInteger>>> p : take(limit, ps)) {
+            assert p.a != null;
+            assert p.b != null;
+            assert p.b.a != null;
+            assert p.b.b != null;
+            assert p.b.c != null;
+            System.out.println("fromPositionalNotation(" + p.a + ", " + p.b.a + ", " + p.b.b + ", " + p.b.c + ") = " +
+                    fromPositionalNotation(p.a, p.b.a, p.b.b, p.b.c));
+        }
+    }
+
 //    public static void digitsDemo() {
 //        Generator<BigInteger> big = new FilteredGenerator<>(
 //                POSITIVE_BIG_INTEGERS,
