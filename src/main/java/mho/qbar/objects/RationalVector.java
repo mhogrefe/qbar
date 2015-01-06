@@ -234,17 +234,7 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
             throw new IllegalArgumentException("i must be non-negative");
         if (i >= dimension)
             throw new IllegalArgumentException("i must be less than dimension");
-        return new RationalVector(
-                toList(
-                        concat(
-                                Arrays.asList(
-                                        replicate(i, Rational.ZERO),
-                                        Arrays.asList(Rational.ONE),
-                                        replicate(dimension - i - 1, Rational.ZERO)
-                                )
-                        )
-                )
-        );
+        return new RationalVector(toList(insert(replicate(dimension - 1, Rational.ZERO), i, Rational.ONE)));
     }
 
     /**
