@@ -120,6 +120,7 @@ public class RationalProperties {
             propertiesFromContinuedFraction();
             propertiesConvergents();
             propertiesPositionalNotation();
+            propertiesFromPositionalNotation();
             propertiesEquals();
             propertiesHashCode();
             propertiesCompareTo();
@@ -3155,6 +3156,7 @@ public class RationalProperties {
             }
             assertTrue(p.toString(), pn.a.isEmpty() || !head(pn.a).equals(BigInteger.ZERO));
             assertFalse(p.toString(), pn.c.isEmpty());
+            assertNotEquals(p.toString(), pn.c, Arrays.asList(p.b.subtract(BigInteger.ONE)));
             Pair<List<BigInteger>, List<BigInteger>> minimized = minimize(pn.b, pn.c);
             assertEquals(p.toString(), minimized.a, pn.b);
             assertEquals(p.toString(), minimized.b, pn.c);
@@ -3198,6 +3200,154 @@ public class RationalProperties {
             assert p.b != null;
             try {
                 p.a.positionalNotation(p.b);
+                fail(p.toString());
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private static void propertiesFromPositionalNotation() {
+        initialize();
+        System.out.println(
+                "\t\ttesting fromPositionalNotation(BigInteger, List<BigInteger>, List<BigInteger>," +
+                " List<BigInteger>) properties...");
+
+        Iterable<BigInteger> bases;
+        if (P instanceof ExhaustiveProvider) {
+            bases = P.rangeUp(BigInteger.valueOf(2));
+        } else {
+            bases = map(i -> BigInteger.valueOf(i + 2), ((RandomProvider) P).naturalIntegersGeometric(20));
+        }
+        Iterable<Pair<BigInteger, Triple<List<BigInteger>, List<BigInteger>, List<BigInteger>>>> ps = P.dependentPairs(
+                bases,
+                b -> filter(
+                        t -> !t.c.isEmpty(),
+                        P.triples(P.lists(P.range(BigInteger.ZERO, b.subtract(BigInteger.ONE))))
+                )
+        );
+        for (Pair<BigInteger, Triple<List<BigInteger>, List<BigInteger>, List<BigInteger>>> p : take(LIMIT, ps)) {
+            assert p.a != null;
+            assert p.b != null;
+            assert p.b.a != null;
+            assert p.b.b != null;
+            assert p.b.c != null;
+            Rational r = fromPositionalNotation(p.a, p.b.a, p.b.b, p.b.c);
+            validate(r);
+            assertNotEquals(p.toString(), r.signum(), -1);
+        }
+
+        ps = filter(
+                p -> {
+                    assert p.a != null;
+                    assert p.b != null;
+                    assert p.b.a != null;
+                    assert p.b.b != null;
+                    assert p.b.c != null;
+                    if (!p.b.a.isEmpty() && head(p.b.a).equals(BigInteger.ZERO)) return false;
+                    Pair<List<BigInteger>, List<BigInteger>> minimized = minimize(p.b.b, p.b.c);
+                    assert minimized.a != null;
+                    assert minimized.b != null;
+                    if (!minimized.a.equals(p.b.b) || !minimized.b.equals(p.b.c)) return false;
+                    return !p.b.c.equals(Arrays.asList(p.a.subtract(BigInteger.ONE)));
+                },
+                ps
+        );
+        for (Pair<BigInteger, Triple<List<BigInteger>, List<BigInteger>, List<BigInteger>>> p : take(LIMIT, ps)) {
+            assert p.a != null;
+            assert p.b != null;
+            assert p.b.a != null;
+            assert p.b.b != null;
+            assert p.b.c != null;
+            Rational r = fromPositionalNotation(p.a, p.b.a, p.b.b, p.b.c);
+            assertEquals(p.toString(), r.positionalNotation(p.a), p.b);
+        }
+
+        Iterable<Pair<BigInteger, Triple<List<BigInteger>, List<BigInteger>, List<BigInteger>>>> psFail = P.pairs(
+                P.rangeDown(BigInteger.ONE),
+                filter(t -> {
+                    assert t.c != null;
+                    return !t.c.isEmpty();
+                }, P.triples(P.lists(P.bigIntegers())))
+        );
+        for (Pair<BigInteger, Triple<List<BigInteger>, List<BigInteger>, List<BigInteger>>> p : take(LIMIT, psFail)) {
+            assert p.a != null;
+            assert p.b != null;
+            assert p.b.a != null;
+            assert p.b.b != null;
+            assert p.b.c != null;
+            try {
+                fromPositionalNotation(p.a, p.b.a, p.b.b, p.b.c);
+                fail(p.toString());
+            } catch (IllegalArgumentException ignored) {}
+        }
+
+        psFail = P.dependentPairs(
+                P.rangeUp(BigInteger.valueOf(2)),
+                b -> filter(
+                        t -> !t.c.isEmpty() && any(x -> x.signum() == -1 || ge(x, b), t.a),
+                        P.triples(P.lists(P.bigIntegers()))
+                )
+        );
+        for (Pair<BigInteger, Triple<List<BigInteger>, List<BigInteger>, List<BigInteger>>> p : take(LIMIT, psFail)) {
+            assert p.a != null;
+            assert p.b != null;
+            assert p.b.a != null;
+            assert p.b.b != null;
+            assert p.b.c != null;
+            try {
+                fromPositionalNotation(p.a, p.b.a, p.b.b, p.b.c);
+                fail(p.toString());
+            } catch (IllegalArgumentException ignored) {}
+        }
+
+        psFail = P.dependentPairs(
+                P.rangeUp(BigInteger.valueOf(2)),
+                b -> filter(
+                        t -> !t.c.isEmpty() && any(x -> x.signum() == -1 || ge(x, b), t.b),
+                        P.triples(P.lists(P.bigIntegers()))
+                )
+        );
+        for (Pair<BigInteger, Triple<List<BigInteger>, List<BigInteger>, List<BigInteger>>> p : take(LIMIT, psFail)) {
+            assert p.a != null;
+            assert p.b != null;
+            assert p.b.a != null;
+            assert p.b.b != null;
+            assert p.b.c != null;
+            try {
+                fromPositionalNotation(p.a, p.b.a, p.b.b, p.b.c);
+                fail(p.toString());
+            } catch (IllegalArgumentException ignored) {}
+        }
+
+        psFail = P.dependentPairs(
+                P.rangeUp(BigInteger.valueOf(2)),
+                b -> filter(
+                        t -> !t.c.isEmpty() && any(x -> x.signum() == -1 || ge(x, b), t.c),
+                        P.triples(P.lists(P.bigIntegers()))
+                )
+        );
+        for (Pair<BigInteger, Triple<List<BigInteger>, List<BigInteger>, List<BigInteger>>> p : take(LIMIT, psFail)) {
+            assert p.a != null;
+            assert p.b != null;
+            assert p.b.a != null;
+            assert p.b.b != null;
+            assert p.b.c != null;
+            try {
+                fromPositionalNotation(p.a, p.b.a, p.b.b, p.b.c);
+                fail(p.toString());
+            } catch (IllegalArgumentException ignored) {}
+        }
+
+        Iterable<Pair<BigInteger, Pair<List<BigInteger>, List<BigInteger>>>> psFail2 = P.pairs(
+                P.rangeDown(BigInteger.ONE),
+                P.pairs(P.lists(P.bigIntegers()))
+        );
+        for (Pair<BigInteger, Pair<List<BigInteger>, List<BigInteger>>> p : take(LIMIT, psFail2)) {
+            assert p.a != null;
+            assert p.b != null;
+            assert p.b.a != null;
+            assert p.b.b != null;
+            try {
+                fromPositionalNotation(p.a, p.b.a, p.b.b, new ArrayList<>());
                 fail(p.toString());
             } catch (IllegalArgumentException ignored) {}
         }

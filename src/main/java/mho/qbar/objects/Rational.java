@@ -1678,7 +1678,8 @@ public final class Rational implements Comparable<Rational> {
      *  <li>{@code this} must be non-negative.</li>
      *  <li>{@code base} must be at least 2.</li>
      *  <li>The elements of the result are all non-null. The elements of the elements are all non-negative. The first
-     *  element does not begin with a zero. The last element is non-empty. The second and third lists are minimal; that
+     *  element does not begin with a zero. The last element is non-empty, and is not equal to [{@code base}–1] (i.e. a
+     *  decimal like 0.4999... is never returned; 0.5000... is preferred). The second and third lists are minimal; that
      *  is, the sequence (second)(third)(third)(third)... cannot be represented in a more compact way. The lists [1, 2]
      *  and [3, 1, 2] are not minimal, because the sequence [1, 2, 3, 1, 2, 3, 1, 2, ...] can be represented by [] and
      *  [1, 2, 3]. The lists [] and [1, 2, 1, 2] are not minimal either, because the sequence
@@ -1734,6 +1735,7 @@ public final class Rational implements Comparable<Rational> {
      *  {@code base}.</li>
      *  <li>{@code repeating} must only contain elements greater than or equal to zero and less than
      *  {@code base}. It must also be non-empty; to input a terminating expansion, use one (or more) zeros.</li>
+     *  <li>The result is non-negative.</li>
      * </ul>
      *
      * @param base the base of the positional expansion
