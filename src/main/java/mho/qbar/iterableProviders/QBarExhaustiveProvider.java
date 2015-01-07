@@ -300,6 +300,11 @@ public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIt
     }
 
     @Override
+    public @NotNull Iterable<RationalVector> rationalVectorsAtLeast(int minDimension) {
+        return map(RationalVector::of, listsAtLeast(minDimension, rationals()));
+    }
+
+    @Override
     public @NotNull Iterable<RationalVector> rationalVectors() {
         return map(RationalVector::of, lists(rationals()));
     }

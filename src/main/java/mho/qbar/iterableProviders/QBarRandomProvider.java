@@ -474,6 +474,15 @@ public class QBarRandomProvider extends RandomProvider implements QBarIterablePr
     }
 
     @Override
+    public @NotNull Iterable<RationalVector> rationalVectorsAtLeast(int minDimension) {
+        return rationalVectorsBySizeAtLeast(BIG_INTEGER_MEAN_BIT_SIZE, minDimension);
+    }
+
+    public @NotNull Iterable<RationalVector> rationalVectorsBySizeAtLeast(int elementMeanBitSize, int minDimension) {
+        return map(RationalVector::of, listsAtLeast(minDimension, rationals(elementMeanBitSize)));
+    }
+
+    @Override
     public @NotNull Iterable<RationalVector> rationalVectors() {
         return rationalVectorsBySize(BIG_INTEGER_MEAN_BIT_SIZE);
     }

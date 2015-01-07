@@ -43,5 +43,7 @@ public interface QBarIterableProvider extends IterableProvider {
 
     public @NotNull Iterable<RationalVector> rationalVectors(int dimension);
 
+    public @NotNull Iterable<RationalVector> rationalVectorsAtLeast(int minDimension);
+
     public @NotNull Iterable<RationalVector> rationalVectors();
 }
