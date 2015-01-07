@@ -2429,7 +2429,7 @@ public class RationalProperties {
         initialize();
         System.out.println("\t\ttesting delta(Iterable<Rational>) properties...");
 
-        for (List<Rational> rs : take(LIMIT, filter(ss -> !ss.isEmpty(), P.lists(P.rationals())))) {
+        for (List<Rational> rs : take(LIMIT, P.listsAtLeast(1, P.rationals()))) {
             Iterable<Rational> deltas = delta(rs);
             aeq(rs.toString(), length(deltas), length(rs) - 1);
             Iterable<Rational> reversed = reverse(map(Rational::negate, delta(reverse(rs))));
@@ -3085,8 +3085,8 @@ public class RationalProperties {
         }
 
         Iterable<List<BigInteger>> failIss = filter(
-                is -> !is.isEmpty() && any(i -> i.signum() != 1, tail(is)),
-                P.lists(P.bigIntegers())
+                is -> any(i -> i.signum() != 1, tail(is)),
+                P.listsAtLeast(1, P.bigIntegers())
         );
         for (List<BigInteger> is : take(LIMIT, failIss)) {
             try {

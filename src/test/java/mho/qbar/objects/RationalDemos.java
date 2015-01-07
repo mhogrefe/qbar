@@ -492,7 +492,7 @@ public class RationalDemos {
 
     public static void demoDelta() {
         initialize();
-        for (List<Rational> rs : take(LIMIT, filter(xs -> !xs.isEmpty(), P.lists(P.rationals())))) {
+        for (List<Rational> rs : take(LIMIT, P.listsAtLeast(1, P.rationals()))) {
             String listString = tail(init(rs.toString()));
             System.out.println("Δ(" + listString + ") = " + IterableUtils.toString(20, delta(rs)));
         }
