@@ -3,6 +3,7 @@ package mho.qbar.objects;
 import mho.wheels.iterables.IterableUtils;
 import mho.wheels.misc.FloatingPointUtils;
 import mho.wheels.misc.Readers;
+import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
@@ -16,6 +17,7 @@ import java.util.Optional;
 
 import static mho.wheels.iterables.IterableUtils.take;
 import static mho.wheels.iterables.IterableUtils.toList;
+import static mho.wheels.iterables.IterableUtils.toString;
 import static mho.wheels.ordering.Ordering.*;
 import static mho.qbar.objects.Rational.*;
 import static org.junit.Assert.*;
@@ -3625,6 +3627,66 @@ public class RationalTest {
             );
             fail();
         } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testDigits() {
+        Pair<List<BigInteger>, Iterable<BigInteger>> result;
+        aeq(ZERO.digits(BigInteger.valueOf(2)), "([], [])");
+        aeq(ZERO.digits(BigInteger.valueOf(3)), "([], [])");
+        aeq(ZERO.digits(BigInteger.valueOf(4)), "([], [])");
+        aeq(ZERO.digits(BigInteger.valueOf(10)), "([], [])");
+        aeq(ZERO.digits(BigInteger.valueOf(16)), "([], [])");
+        aeq(ZERO.digits(BigInteger.valueOf(83)), "([], [])");
+        aeq(ZERO.digits(BigInteger.valueOf(100)), "([], [])");
+        aeq(ONE.digits(BigInteger.valueOf(2)), "([1], [])");
+        aeq(ONE.digits(BigInteger.valueOf(3)), "([1], [])");
+        aeq(ONE.digits(BigInteger.valueOf(4)), "([1], [])");
+        aeq(ONE.digits(BigInteger.valueOf(10)), "([1], [])");
+        aeq(ONE.digits(BigInteger.valueOf(16)), "([1], [])");
+        aeq(ONE.digits(BigInteger.valueOf(83)), "([1], [])");
+        aeq(ONE.digits(BigInteger.valueOf(100)), "([1], [])");
+        aeq(read("1/2").get().digits(BigInteger.valueOf(2)), "([], [1])");
+        result = read("1/2").get().digits(BigInteger.valueOf(3));
+        aeq(result.a, "[]");
+        assert result.b != null;
+        aeq(IterableUtils.toString(20, result.b), "[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ...]");
+        aeq(read("1/2").get().digits(BigInteger.valueOf(4)), "([], [2])");
+        aeq(read("1/2").get().digits(BigInteger.valueOf(10)), "([], [5])");
+        aeq(read("1/2").get().digits(BigInteger.valueOf(16)), "([], [8])");
+        result = read("1/2").get().digits(BigInteger.valueOf(83));
+        aeq(result.a, "[]");
+        assert result.b != null;
+        aeq(IterableUtils.toString(20, result.b),
+                "[41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, ...]");
+        aeq(read("1/2").get().digits(BigInteger.valueOf(100)), "([], [50])");
+        result = read("1/3").get().digits(BigInteger.valueOf(2));
+        aeq(result.a, "[]");
+        assert result.b != null;
+        aeq(IterableUtils.toString(20, result.b), "[0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, ...]");
+        aeq(read("1/3").get().digits(BigInteger.valueOf(3)), "([], [1])");
+        result = read("1/3").get().digits(BigInteger.valueOf(4));
+        aeq(result.a, "[]");
+        assert result.b != null;
+        aeq(IterableUtils.toString(20, result.b), "[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ...]");
+        result = read("1/3").get().digits(BigInteger.valueOf(10));
+        aeq(result.a, "[]");
+        assert result.b != null;
+        aeq(IterableUtils.toString(20, result.b), "[3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, ...]");
+        result = read("1/3").get().digits(BigInteger.valueOf(16));
+        aeq(result.a, "[]");
+        assert result.b != null;
+        aeq(IterableUtils.toString(20, result.b), "[5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, ...]");
+        result = read("1/3").get().digits(BigInteger.valueOf(83));
+        aeq(result.a, "[]");
+        assert result.b != null;
+        aeq(IterableUtils.toString(20, result.b),
+                "[27, 55, 27, 55, 27, 55, 27, 55, 27, 55, 27, 55, 27, 55, 27, 55, 27, 55, 27, 55, ...]");
+        result = read("1/3").get().digits(BigInteger.valueOf(100));
+        aeq(result.a, "[]");
+        assert result.b != null;
+        aeq(IterableUtils.toString(20, result.b),
+                "[33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, ...]");
     }
 
     @Test
