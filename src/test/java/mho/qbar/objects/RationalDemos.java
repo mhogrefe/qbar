@@ -676,29 +676,30 @@ public class RationalDemos {
         }
     }
 
-//    public static void digitsDemo() {
-//        Generator<BigInteger> big = new FilteredGenerator<>(
-//                POSITIVE_BIG_INTEGERS,
-//                bi -> bi.compareTo(BigInteger.ONE) > 0
-//        );
-//        Generator<Pair<Rational, BigInteger>> g = new SubExponentialPairGenerator<>(Rational.nonnegativeRationals(), big);
-//        for (Pair<Rational, BigInteger> p : g.iterate(limit)) {
-//            Pair<List<BigInteger>, Iterable<BigInteger>> digits = p.a.digits(p.b);
-//            String beforeDecimalString = digits.a.toString();
-//            List<String> afterDecimalStrings = new ArrayList<>();
-//            int i = 0;
-//            for (BigInteger digit : digits.b) {
-//                if (i >= 20) {
-//                    afterDecimalStrings.add("...");
-//                    break;
-//                }
-//                afterDecimalStrings.add(digit.toString());
-//                i++;
-//            }
-//            String resultString = "(" + beforeDecimalString + ", " + afterDecimalStrings + ")";
-//            System.out.println("digits(" + p.a + ", " + p.b + ") = " + resultString);
-//        }
-//    }
+    public static void demoDigits() {
+        initialize();
+        Iterable<Pair<Rational, BigInteger>> ps;
+        if (P instanceof ExhaustiveProvider) {
+            ps = ((ExhaustiveProvider) P).pairsSquareRootOrder(
+                    cons(ZERO, P.positiveRationals()),
+                    P.rangeUp(BigInteger.valueOf(2))
+            );
+        } else {
+            ps = P.pairs(
+                    cons(ZERO, ((QBarRandomProvider) P).positiveRationals(8)),
+                    map(i -> BigInteger.valueOf(i + 2), ((RandomProvider) P).naturalIntegersGeometric(20))
+            );
+        }
+        for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
+            assert p.a != null;
+            assert p.b != null;
+            Pair<List<BigInteger>, Iterable<BigInteger>> digits = p.a.digits(p.b);
+            assert digits.a != null;
+            assert digits.b != null;
+            Pair<String, String> digitStrings = new Pair<>(digits.a.toString(), IterableUtils.toString(20, digits.b));
+            System.out.println("digits(" + p.a + ", " + p.b + ") = " + digitStrings);
+        }
+    }
 
     public static void demoEquals_Rational() {
         initialize();
