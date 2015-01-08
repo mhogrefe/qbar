@@ -1702,12 +1702,12 @@ public final class Rational implements Comparable<Rational> {
         BigInteger remainder = numerator.multiply(base);
         int index = 0;
         Integer repeatingIndex;
-        List<BigInteger> digits = new ArrayList<>();
+        List<BigInteger> afterDecimal = new ArrayList<>();
         Map<BigInteger, Integer> remainders = new HashMap<>();
         while (true) {
             remainders.put(remainder, index);
             BigInteger digit = remainder.divide(denominator);
-            digits.add(digit);
+            afterDecimal.add(digit);
             remainder = remainder.subtract(denominator.multiply(digit)).multiply(base);
             repeatingIndex = remainders.get(remainder);
             if (repeatingIndex != null) break;
@@ -1716,10 +1716,10 @@ public final class Rational implements Comparable<Rational> {
         List<BigInteger> nonrepeating = new ArrayList<>();
         List<BigInteger> repeating = new ArrayList<>();
         for (int i = 0; i < repeatingIndex; i++) {
-            nonrepeating.add(digits.get(i));
+            nonrepeating.add(afterDecimal.get(i));
         }
-        for (int i = repeatingIndex; i < digits.size(); i++) {
-            repeating.add(digits.get(i));
+        for (int i = repeatingIndex; i < afterDecimal.size(); i++) {
+            repeating.add(afterDecimal.get(i));
         }
         return new Triple<>(beforeDecimal, nonrepeating, repeating);
     }
@@ -1767,7 +1767,7 @@ public final class Rational implements Comparable<Rational> {
      * {@code Iterable}). Trailing zeroes are not included.
      *
      * <ul>
-     *  <li>{@code this} may be any {@code Rational}.</li>
+     *  <li>{@code this} must be non-negative.</li>
      *  <li>{@code base} must be greater than 1.</li>
      *  <li>Both of the result's elements are non-null, and the second element is either finite or eventually
      *  repeating.</li>
@@ -1777,16 +1777,68 @@ public final class Rational implements Comparable<Rational> {
      * @return a pair consisting of the digits before the decimal point and the digits after
      */
     public @NotNull Pair<List<BigInteger>, Iterable<BigInteger>> digits(@NotNull BigInteger base) {
-        Triple<List<BigInteger>, List<BigInteger>, List<BigInteger>> positionalNotation = positionalNotation(base);
-        Iterable<BigInteger> afterDecimal;
-        assert positionalNotation.c != null;
-        if (positionalNotation.c.equals(Arrays.asList(BigInteger.ZERO))) {
-            afterDecimal = positionalNotation.b;
-        } else {
-            assert positionalNotation.b != null;
-            afterDecimal = concat(positionalNotation.b, cycle(positionalNotation.c));
-        }
-        return new Pair<>(positionalNotation.a, afterDecimal);
+//        Triple<List<BigInteger>, List<BigInteger>, List<BigInteger>> positionalNotation = positionalNotation(base);
+//        Iterable<BigInteger> afterDecimal;
+//        assert positionalNotation.c != null;
+//        if (positionalNotation.c.equals(Arrays.asList(BigInteger.ZERO))) {
+//            afterDecimal = positionalNotation.b;
+//        } else {
+//            assert positionalNotation.b != null;
+//            afterDecimal = concat(positionalNotation.b, cycle(positionalNotation.c));
+//        }
+//        return new Pair<>(positionalNotation.a, afterDecimal);
+        if (signum() == -1)
+            throw new IllegalArgumentException("this cannot be negative");
+        BigInteger floor = floor();
+        List<BigInteger> beforeDecimal = MathUtils.bigEndianDigits(base, floor);
+        Rational fractionalPart = subtract(of(floor));
+        BigInteger numerator = fractionalPart.numerator;
+        BigInteger denominator = fractionalPart.denominator;
+        final BigInteger firstRemainder = numerator.multiply(base);
+        Iterable<BigInteger> afterDecimal = () -> new Iterator<BigInteger>() {
+            private boolean knownRepeating;
+            private int index;
+            private Integer repeatingIndex;
+            private BigInteger remainder;
+            private Map<BigInteger, Integer> remainders;
+            {
+                knownRepeating = false;
+                index = 0;
+                repeatingIndex = null;
+                remainder = firstRemainder;
+                remainders = new HashMap<>();
+            }
+
+            @Override
+            public boolean hasNext() {
+                return knownRepeating || repeatingIndex == null;
+            }
+
+            @Override
+            public BigInteger next() {
+                if (!knownRepeating) {
+                    remainders.put(remainder, index);
+                }
+                BigInteger digit = remainder.divide(denominator);
+                remainder = remainder.subtract(denominator.multiply(digit)).multiply(base);
+                if (!knownRepeating) {
+                    repeatingIndex = remainders.get(remainder);
+                    if (repeatingIndex != null && !remainder.equals(BigInteger.ZERO)) {
+                        knownRepeating = true;
+                        remainders = null;
+                    } else {
+                        index++;
+                    }
+                }
+                return digit;
+            }
+
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException("cannot remove from this iterator");
+            }
+        };
+        return new Pair<>(beforeDecimal, skipLastIf(i -> i.equals(BigInteger.ZERO), afterDecimal));
     }
 
 
