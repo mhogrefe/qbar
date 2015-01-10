@@ -537,19 +537,91 @@ public class RationalTest {
         } catch (ArithmeticException ignored) {}
     }
 
-//    @Test
-//    public void testHasTerminatingDecimalExpansion() {
-//        assertTrue(ZERO.hasTerminatingDecimalExpansion());
-//        assertTrue(ONE.hasTerminatingDecimalExpansion());
-//        assertTrue(read("60").get().hasTerminatingDecimalExpansion());
-//        assertTrue(read("1/2").get().hasTerminatingDecimalExpansion());
-//        assertTrue(read("1/5").get().hasTerminatingDecimalExpansion());
-//        assertTrue(read("-7/100").get().hasTerminatingDecimalExpansion());
-//        assertTrue(read("-3/640").get().hasTerminatingDecimalExpansion());
-//        assertFalse(read("1/3").get().hasTerminatingDecimalExpansion());
-//        assertFalse(read("-1/15").get().hasTerminatingDecimalExpansion());
-//        assertFalse(read("-2/9").get().hasTerminatingDecimalExpansion());
-//    }
+    @Test
+    public void testHasTerminatingBaseExpansion() {
+        assertTrue(ZERO.hasTerminatingBaseExpansion(BigInteger.valueOf(2)));
+        assertTrue(ONE.hasTerminatingBaseExpansion(BigInteger.valueOf(2)));
+        assertTrue(read("60").get().hasTerminatingBaseExpansion(BigInteger.valueOf(2)));
+        assertTrue(read("1/2").get().hasTerminatingBaseExpansion(BigInteger.valueOf(2)));
+        assertFalse(read("1/5").get().hasTerminatingBaseExpansion(BigInteger.valueOf(2)));
+        assertFalse(read("-7/100").get().hasTerminatingBaseExpansion(BigInteger.valueOf(2)));
+        assertFalse(read("-3/640").get().hasTerminatingBaseExpansion(BigInteger.valueOf(2)));
+        assertFalse(read("1/3").get().hasTerminatingBaseExpansion(BigInteger.valueOf(2)));
+        assertFalse(read("-1/15").get().hasTerminatingBaseExpansion(BigInteger.valueOf(2)));
+        assertFalse(read("-2/9").get().hasTerminatingBaseExpansion(BigInteger.valueOf(2)));
+        assertTrue(ZERO.hasTerminatingBaseExpansion(BigInteger.valueOf(3)));
+        assertTrue(ONE.hasTerminatingBaseExpansion(BigInteger.valueOf(3)));
+        assertTrue(read("60").get().hasTerminatingBaseExpansion(BigInteger.valueOf(3)));
+        assertFalse(read("1/2").get().hasTerminatingBaseExpansion(BigInteger.valueOf(3)));
+        assertFalse(read("1/5").get().hasTerminatingBaseExpansion(BigInteger.valueOf(3)));
+        assertFalse(read("-7/100").get().hasTerminatingBaseExpansion(BigInteger.valueOf(3)));
+        assertFalse(read("-3/640").get().hasTerminatingBaseExpansion(BigInteger.valueOf(3)));
+        assertTrue(read("1/3").get().hasTerminatingBaseExpansion(BigInteger.valueOf(3)));
+        assertFalse(read("-1/15").get().hasTerminatingBaseExpansion(BigInteger.valueOf(3)));
+        assertTrue(read("-2/9").get().hasTerminatingBaseExpansion(BigInteger.valueOf(3)));
+        assertTrue(ZERO.hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
+        assertTrue(ONE.hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
+        assertTrue(read("60").get().hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
+        assertTrue(read("1/2").get().hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
+        assertFalse(read("1/5").get().hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
+        assertFalse(read("-7/100").get().hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
+        assertFalse(read("-3/640").get().hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
+        assertFalse(read("1/3").get().hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
+        assertFalse(read("-1/15").get().hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
+        assertFalse(read("-2/9").get().hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
+        assertTrue(ZERO.hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
+        assertTrue(ONE.hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
+        assertTrue(read("60").get().hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
+        assertTrue(read("1/2").get().hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
+        assertFalse(read("1/5").get().hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
+        assertFalse(read("-7/100").get().hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
+        assertFalse(read("-3/640").get().hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
+        assertFalse(read("1/3").get().hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
+        assertFalse(read("-1/15").get().hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
+        assertFalse(read("-2/9").get().hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
+        assertTrue(ZERO.hasTerminatingBaseExpansion(BigInteger.valueOf(16)));
+        assertTrue(ONE.hasTerminatingBaseExpansion(BigInteger.valueOf(16)));
+        assertTrue(read("60").get().hasTerminatingBaseExpansion(BigInteger.valueOf(16)));
+        assertTrue(read("1/2").get().hasTerminatingBaseExpansion(BigInteger.valueOf(16)));
+        assertFalse(read("1/5").get().hasTerminatingBaseExpansion(BigInteger.valueOf(16)));
+        assertFalse(read("-7/100").get().hasTerminatingBaseExpansion(BigInteger.valueOf(16)));
+        assertFalse(read("-3/640").get().hasTerminatingBaseExpansion(BigInteger.valueOf(16)));
+        assertFalse(read("1/3").get().hasTerminatingBaseExpansion(BigInteger.valueOf(16)));
+        assertFalse(read("-1/15").get().hasTerminatingBaseExpansion(BigInteger.valueOf(16)));
+        assertFalse(read("-2/9").get().hasTerminatingBaseExpansion(BigInteger.valueOf(16)));
+        assertTrue(ZERO.hasTerminatingBaseExpansion(BigInteger.valueOf(83)));
+        assertTrue(ONE.hasTerminatingBaseExpansion(BigInteger.valueOf(83)));
+        assertTrue(read("60").get().hasTerminatingBaseExpansion(BigInteger.valueOf(83)));
+        assertFalse(read("1/2").get().hasTerminatingBaseExpansion(BigInteger.valueOf(83)));
+        assertFalse(read("1/5").get().hasTerminatingBaseExpansion(BigInteger.valueOf(83)));
+        assertFalse(read("-7/100").get().hasTerminatingBaseExpansion(BigInteger.valueOf(83)));
+        assertFalse(read("-3/640").get().hasTerminatingBaseExpansion(BigInteger.valueOf(83)));
+        assertFalse(read("1/3").get().hasTerminatingBaseExpansion(BigInteger.valueOf(83)));
+        assertFalse(read("-1/15").get().hasTerminatingBaseExpansion(BigInteger.valueOf(83)));
+        assertFalse(read("-2/9").get().hasTerminatingBaseExpansion(BigInteger.valueOf(83)));
+        assertTrue(ZERO.hasTerminatingBaseExpansion(BigInteger.valueOf(100)));
+        assertTrue(ONE.hasTerminatingBaseExpansion(BigInteger.valueOf(100)));
+        assertTrue(read("60").get().hasTerminatingBaseExpansion(BigInteger.valueOf(100)));
+        assertTrue(read("1/2").get().hasTerminatingBaseExpansion(BigInteger.valueOf(100)));
+        assertTrue(read("1/5").get().hasTerminatingBaseExpansion(BigInteger.valueOf(100)));
+        assertTrue(read("-7/100").get().hasTerminatingBaseExpansion(BigInteger.valueOf(100)));
+        assertTrue(read("-3/640").get().hasTerminatingBaseExpansion(BigInteger.valueOf(100)));
+        assertFalse(read("1/3").get().hasTerminatingBaseExpansion(BigInteger.valueOf(100)));
+        assertFalse(read("-1/15").get().hasTerminatingBaseExpansion(BigInteger.valueOf(100)));
+        assertFalse(read("-2/9").get().hasTerminatingBaseExpansion(BigInteger.valueOf(100)));
+        try {
+            read("1/2").get().hasTerminatingBaseExpansion(BigInteger.ONE);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            read("1/2").get().hasTerminatingBaseExpansion(BigInteger.ZERO);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            read("1/2").get().hasTerminatingBaseExpansion(BigInteger.valueOf(-1));
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
 
     @Test
     public void testBigDecimalValue_int_RoundingMode() {

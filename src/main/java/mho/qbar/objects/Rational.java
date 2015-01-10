@@ -605,6 +605,9 @@ public final class Rational implements Comparable<Rational> {
      * @return whether {@code this} has a terminating base expansion in base-{@code base}
      */
     public boolean hasTerminatingBaseExpansion(@NotNull BigInteger base) {
+        if (lt(base, BigInteger.valueOf(2)))
+            throw new IllegalArgumentException("base must be at least 2");
+        if (isInteger()) return true;
         BigInteger remainder = denominator;
         for (BigInteger baseFactor : nub(MathUtils.primeFactors(base))) {
             while (remainder.mod(baseFactor).equals(BigInteger.ZERO)) {
