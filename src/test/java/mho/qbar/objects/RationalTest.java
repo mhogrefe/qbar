@@ -537,19 +537,19 @@ public class RationalTest {
         } catch (ArithmeticException ignored) {}
     }
 
-    @Test
-    public void testHasTerminatingDecimalExpansion() {
-        assertTrue(ZERO.hasTerminatingDecimalExpansion());
-        assertTrue(ONE.hasTerminatingDecimalExpansion());
-        assertTrue(read("60").get().hasTerminatingDecimalExpansion());
-        assertTrue(read("1/2").get().hasTerminatingDecimalExpansion());
-        assertTrue(read("1/5").get().hasTerminatingDecimalExpansion());
-        assertTrue(read("-7/100").get().hasTerminatingDecimalExpansion());
-        assertTrue(read("-3/640").get().hasTerminatingDecimalExpansion());
-        assertFalse(read("1/3").get().hasTerminatingDecimalExpansion());
-        assertFalse(read("-1/15").get().hasTerminatingDecimalExpansion());
-        assertFalse(read("-2/9").get().hasTerminatingDecimalExpansion());
-    }
+//    @Test
+//    public void testHasTerminatingDecimalExpansion() {
+//        assertTrue(ZERO.hasTerminatingDecimalExpansion());
+//        assertTrue(ONE.hasTerminatingDecimalExpansion());
+//        assertTrue(read("60").get().hasTerminatingDecimalExpansion());
+//        assertTrue(read("1/2").get().hasTerminatingDecimalExpansion());
+//        assertTrue(read("1/5").get().hasTerminatingDecimalExpansion());
+//        assertTrue(read("-7/100").get().hasTerminatingDecimalExpansion());
+//        assertTrue(read("-3/640").get().hasTerminatingDecimalExpansion());
+//        assertFalse(read("1/3").get().hasTerminatingDecimalExpansion());
+//        assertFalse(read("-1/15").get().hasTerminatingDecimalExpansion());
+//        assertFalse(read("-2/9").get().hasTerminatingDecimalExpansion());
+//    }
 
     @Test
     public void testBigDecimalValue_int_RoundingMode() {

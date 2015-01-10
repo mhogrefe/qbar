@@ -209,13 +209,13 @@ public class RationalDemos {
         }
     }
 
-    public static void demoHasTerminatingDecimalExpansion() {
-        initialize();
-        for (Rational r : take(LIMIT, P.rationals())) {
-            System.out.println(r + (r.hasTerminatingDecimalExpansion() ? " has " : " does not have ") +
-                    "a terminating decimal expansion");
-        }
-    }
+//    public static void demoHasTerminatingDecimalExpansion() {
+//        initialize();
+//        for (Rational r : take(LIMIT, P.rationals())) {
+//            System.out.println(r + (r.hasTerminatingDecimalExpansion() ? " has " : " does not have ") +
+//                    "a terminating decimal expansion");
+//        }
+//    }
 
     public static void demoBigDecimalValue_int_RoundingMode() {
         initialize();
@@ -289,7 +289,7 @@ public class RationalDemos {
 
     public static void demoBigDecimalValueExact() {
         initialize();
-        Iterable<Rational> rs = filter(Rational::hasTerminatingDecimalExpansion, P.rationals());
+        Iterable<Rational> rs = filter(r -> r.hasTerminatingBaseExpansion(BigInteger.valueOf(10)), P.rationals());
         for (Rational r : take(LIMIT, rs)) {
             System.out.println("bigDecimalValueExact(" + r + ") = " + r.bigDecimalValueExact());
         }

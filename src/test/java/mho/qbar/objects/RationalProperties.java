@@ -71,7 +71,7 @@ public class RationalProperties {
             propertiesShortValueExact();
             propertiesIntValueExact();
             propertiesLongValueExact();
-            propertiesHasTerminatingDecimalExpansion();
+//            propertiesHasTerminatingDecimalExpansion();
             propertiesBigDecimalValue_int_RoundingMode();
             propertiesBigDecimalValue_int();
             propertiesBigDecimalValueExact();
@@ -121,6 +121,7 @@ public class RationalProperties {
             propertiesConvergents();
             propertiesPositionalNotation();
             propertiesFromPositionalNotation();
+            propertiesDigits();
             propertiesEquals();
             propertiesHashCode();
             propertiesCompareTo();
@@ -294,7 +295,7 @@ public class RationalProperties {
             Rational r = of(f);
             assert r != null;
             validate(r);
-            assertTrue(Float.toString(f), r.hasTerminatingDecimalExpansion());
+            assertTrue(Float.toString(f), r.hasTerminatingBaseExpansion(BigInteger.valueOf(10)));
         }
 
         for (float f : take(LIMIT, P.ordinaryFloats())) {
@@ -314,7 +315,7 @@ public class RationalProperties {
             Rational r = of(d);
             assert r != null;
             validate(r);
-            assertTrue(Double.toString(d), r.hasTerminatingDecimalExpansion());
+            assertTrue(Double.toString(d), r.hasTerminatingBaseExpansion(BigInteger.valueOf(10)));
         }
 
         for (double d : take(LIMIT, P.ordinaryDoubles())) {
@@ -379,7 +380,7 @@ public class RationalProperties {
             Rational r = of(bd);
             validate(r);
             aeq(bd.toString(), bd, r.bigDecimalValueExact());
-            assertTrue(bd.toString(), r.hasTerminatingDecimalExpansion());
+            assertTrue(bd.toString(), r.hasTerminatingBaseExpansion(BigInteger.valueOf(10)));
         }
     }
 
@@ -642,26 +643,26 @@ public class RationalProperties {
         }
     }
 
-    private static void propertiesHasTerminatingDecimalExpansion() {
-        initialize();
-
-        System.out.println("\t\ttesting hasTerminatingDecimalExpansion() properties...");
-        for (Rational r : take(LIMIT, P.rationals())) {
-            r.hasTerminatingDecimalExpansion();
-        }
-
-        Iterable<Rational> rs = filter(Rational::hasTerminatingDecimalExpansion, P.rationals());
-        for (Rational r : take(LIMIT, rs)) {
-            r.bigDecimalValue(0);
-            List<BigInteger> dPrimeFactors = toList(
-                    nub(map(p -> p.a, MathUtils.compactPrimeFactors(r.getDenominator())))
-            );
-            assertTrue(
-                    r.toString(),
-                    isSubsetOf(dPrimeFactors, Arrays.asList(BigInteger.valueOf(2), BigInteger.valueOf(5)))
-            );
-        }
-    }
+//    private static void propertiesHasTerminatingDecimalExpansion() {
+//        initialize();
+//
+//        System.out.println("\t\ttesting hasTerminatingDecimalExpansion() properties...");
+//        for (Rational r : take(LIMIT, P.rationals())) {
+//            r.hasTerminatingDecimalExpansion();
+//        }
+//
+//        Iterable<Rational> rs = filter(Rational::hasTerminatingDecimalExpansion, P.rationals());
+//        for (Rational r : take(LIMIT, rs)) {
+//            r.bigDecimalValue(0);
+//            List<BigInteger> dPrimeFactors = toList(
+//                    nub(map(p -> p.a, MathUtils.compactPrimeFactors(r.getDenominator())))
+//            );
+//            assertTrue(
+//                    r.toString(),
+//                    isSubsetOf(dPrimeFactors, Arrays.asList(BigInteger.valueOf(2), BigInteger.valueOf(5)))
+//            );
+//        }
+//    }
 
     private static void propertiesBigDecimalValue_int_RoundingMode() {
         initialize();
@@ -860,7 +861,7 @@ public class RationalProperties {
             } catch (IllegalArgumentException ignored) {}
         }
 
-        Iterable<Rational> rs = filter(r -> !r.hasTerminatingDecimalExpansion(), P.rationals());
+        Iterable<Rational> rs = filter(r -> !r.hasTerminatingBaseExpansion(BigInteger.valueOf(10)), P.rationals());
         Iterable<Pair<Rational, Integer>> prisFail;
         if (P instanceof ExhaustiveProvider) {
             prisFail = ((ExhaustiveProvider) P).pairsSquareRootOrder(rs, P.naturalIntegers());
@@ -979,7 +980,7 @@ public class RationalProperties {
         initialize();
         System.out.println("\t\ttesting bigDecimalValueExact()...");
 
-        Iterable<Rational> rs = filter(Rational::hasTerminatingDecimalExpansion, P.rationals());
+        Iterable<Rational> rs = filter(r -> r.hasTerminatingBaseExpansion(BigInteger.valueOf(10)), P.rationals());
         for (Rational r : take(LIMIT, rs)) {
             BigDecimal bd = r.bigDecimalValueExact();
             assertEquals(r.toString(), bd, r.bigDecimalValue(0, RoundingMode.UNNECESSARY));
@@ -1002,7 +1003,7 @@ public class RationalProperties {
             } catch (IllegalArgumentException ignored) {}
         }
 
-        Iterable<Rational> rsFail = filter(r -> !r.hasTerminatingDecimalExpansion(), P.rationals());
+        Iterable<Rational> rsFail = filter(r -> !r.hasTerminatingBaseExpansion(BigInteger.valueOf(10)), P.rationals());
         for (Rational r : take(LIMIT, rsFail)) {
             try {
                 r.bigDecimalValueExact();
@@ -3350,6 +3351,50 @@ public class RationalProperties {
                 fromPositionalNotation(p.a, p.b.a, p.b.b, new ArrayList<>());
                 fail(p.toString());
             } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private static @NotNull Pair<List<BigInteger>, Iterable<BigInteger>> digits_alt(
+            @NotNull Rational r,
+            @NotNull BigInteger base
+    ) {
+        Triple<List<BigInteger>, List<BigInteger>, List<BigInteger>> positionalNotation = r.positionalNotation(base);
+        Iterable<BigInteger> afterDecimal;
+        assert positionalNotation.c != null;
+        if (positionalNotation.c.equals(Arrays.asList(BigInteger.ZERO))) {
+            afterDecimal = positionalNotation.b;
+        } else {
+            assert positionalNotation.b != null;
+            afterDecimal = concat(positionalNotation.b, cycle(positionalNotation.c));
+        }
+        return new Pair<>(positionalNotation.a, afterDecimal);
+    }
+
+    private static void propertiesDigits() {
+        initialize();
+        System.out.println("\t\ttesting digits(BigInteger) properties...");
+
+        Iterable<Pair<Rational, BigInteger>> ps;
+        if (P instanceof ExhaustiveProvider) {
+            ps = ((ExhaustiveProvider) P).pairsSquareRootOrder(
+                    cons(ZERO, P.positiveRationals()),
+                    P.rangeUp(BigInteger.valueOf(2))
+            );
+        } else {
+            ps = P.pairs(
+                    cons(ZERO, ((QBarRandomProvider) P).positiveRationals(8)),
+                    map(i -> BigInteger.valueOf(i + 2), ((RandomProvider) P).naturalIntegersGeometric(20))
+            );
+        }
+        for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
+            assert p.a != null;
+            assert p.b != null;
+            Pair<List<BigInteger>, Iterable<BigInteger>> digits = p.a.digits(p.b);
+            assert digits.a != null;
+            assert digits.b != null;
+            assertTrue(p.toString(), digits.a.isEmpty() || !head(digits.a).equals(BigInteger.ZERO));
+            assertTrue(p.toString(), all(x -> x.signum() != -1 && lt(x, p.b), digits.a));
+            assertEquals(p.toString(), MathUtils.fromBigEndianDigits(p.b, digits.a), p.a.floor());
         }
     }
 

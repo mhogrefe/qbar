@@ -594,23 +594,24 @@ public final class Rational implements Comparable<Rational> {
     }
 
     /**
-     * Determines whether {@code this} has a terminating decimal expansion (that is, whether the denominator has no
-     * prime factors other than 2 or 5).
+     * Determines whether {@code this} has a terminating digit expansion in a particular base.
      *
      * <ul>
      *  <li>{@code this} may be any {@code Rational}.</li>
+     *  <li>{@code base} must be at least 2.</li>
      *  <li>The result may be either {@code boolean}.</li>
      * </ul>
      *
-     * @return whether {@code this} has a terminating decimal expansion
+     * @return whether {@code this} has a terminating base expansion in base-{@code base}
      */
-    public boolean hasTerminatingDecimalExpansion() {
-        BigInteger denominatorResidue = denominator.shiftRight(denominator.getLowestSetBit());
-        BigInteger five = BigInteger.valueOf(5);
-        while (denominatorResidue.mod(five).equals(BigInteger.ZERO)) {
-            denominatorResidue = denominatorResidue.divide(five);
+    public boolean hasTerminatingBaseExpansion(@NotNull BigInteger base) {
+        BigInteger remainder = denominator;
+        for (BigInteger baseFactor : nub(MathUtils.primeFactors(base))) {
+            while (remainder.mod(baseFactor).equals(BigInteger.ZERO)) {
+                remainder = remainder.divide(baseFactor);
+            }
         }
-        return denominatorResidue.equals(BigInteger.ONE);
+        return remainder.equals(BigInteger.ONE);
     }
 
     /**
@@ -1769,24 +1770,17 @@ public final class Rational implements Comparable<Rational> {
      * <ul>
      *  <li>{@code this} must be non-negative.</li>
      *  <li>{@code base} must be greater than 1.</li>
-     *  <li>Both of the result's elements are non-null, and the second element is either finite or eventually
-     *  repeating.</li>
+     *  <li>Both of the result's elements are non-null. The first element does not begin with a zero. The second
+     *  element is either finite or eventually repeating.</li>
+     *  <li>All the elements of both of the result's elements only contain non-negative {@code BigInteger}s less than
+     *  {@code base}. The second element does not contain an infinite sequence of zeros or an infinite sequence of
+     *  {@code base}–1.</li>
      * </ul>
      *
      * @param base the base of the digits
      * @return a pair consisting of the digits before the decimal point and the digits after
      */
     public @NotNull Pair<List<BigInteger>, Iterable<BigInteger>> digits(@NotNull BigInteger base) {
-//        Triple<List<BigInteger>, List<BigInteger>, List<BigInteger>> positionalNotation = positionalNotation(base);
-//        Iterable<BigInteger> afterDecimal;
-//        assert positionalNotation.c != null;
-//        if (positionalNotation.c.equals(Arrays.asList(BigInteger.ZERO))) {
-//            afterDecimal = positionalNotation.b;
-//        } else {
-//            assert positionalNotation.b != null;
-//            afterDecimal = concat(positionalNotation.b, cycle(positionalNotation.c));
-//        }
-//        return new Pair<>(positionalNotation.a, afterDecimal);
         if (signum() == -1)
             throw new IllegalArgumentException("this cannot be negative");
         BigInteger floor = floor();
