@@ -209,13 +209,27 @@ public class RationalDemos {
         }
     }
 
-//    public static void demoHasTerminatingDecimalExpansion() {
-//        initialize();
-//        for (Rational r : take(LIMIT, P.rationals())) {
-//            System.out.println(r + (r.hasTerminatingDecimalExpansion() ? " has " : " does not have ") +
-//                    "a terminating decimal expansion");
-//        }
-//    }
+    public static void demoHasTerminatingBaseExpansion() {
+        initialize();
+        Iterable<Pair<Rational, BigInteger>> ps;
+        if (P instanceof ExhaustiveProvider) {
+            ps = ((ExhaustiveProvider) P).pairsSquareRootOrder(
+                    cons(ZERO, P.positiveRationals()),
+                    P.rangeUp(BigInteger.valueOf(2))
+            );
+        } else {
+            ps = P.pairs(
+                    cons(ZERO, ((QBarRandomProvider) P).positiveRationals(20)),
+                    map(i -> BigInteger.valueOf(i + 2), ((RandomProvider) P).naturalIntegersGeometric(20))
+            );
+        }
+        for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
+            assert p.a != null;
+            assert p.b != null;
+            System.out.println(p.a + (p.a.hasTerminatingBaseExpansion(p.b) ? " has " : " doesn't have ") +
+                    "a terminating base-" + p.b + " expansion");
+        }
+    }
 
     public static void demoBigDecimalValue_int_RoundingMode() {
         initialize();
