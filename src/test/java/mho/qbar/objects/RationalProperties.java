@@ -689,7 +689,7 @@ public class RationalProperties {
             assert p.b != null;
             try {
                 p.a.hasTerminatingBaseExpansion(p.b);
-                fail();
+                fail(p.toString());
             } catch (IllegalArgumentException ignored) {}
         }
     }

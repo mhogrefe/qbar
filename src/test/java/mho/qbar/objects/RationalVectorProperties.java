@@ -268,7 +268,32 @@ public class RationalVectorProperties {
             assertTrue(p.toString(), all(x -> x == ZERO, tail(sortedCoordinates)));
         }
 
-        //todo failure
+        for (Pair<Integer, Integer> p : take(LIMIT, P.pairs(P.rangeDown(0), P.integers()))) {
+            assert p.a != null;
+            assert p.b != null;
+            try {
+                identity(p.a, p.b);
+                fail(p.toString());
+            } catch (IllegalArgumentException ignored) {}
+        }
+
+        for (Pair<Integer, Integer> p : take(LIMIT, P.pairs(P.negativeIntegers(), P.integers()))) {
+            assert p.a != null;
+            assert p.b != null;
+            try {
+                identity(p.a, p.b);
+                fail(p.toString());
+            } catch (IllegalArgumentException ignored) {}
+        }
+
+        for (Pair<Integer, Integer> p : take(LIMIT, filter(q -> q.a <= q.b, P.pairs(P.naturalIntegers())))) {
+            assert p.a != null;
+            assert p.b != null;
+            try {
+                identity(p.a, p.b);
+                fail(p.toString());
+            } catch (IllegalArgumentException ignored) {}
+        }
     }
 
     private static void propertiesNegate() {
