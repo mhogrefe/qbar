@@ -3372,7 +3372,7 @@ public class RationalProperties {
             );
         } else {
             ps = P.pairs(
-                    cons(ZERO, ((QBarRandomProvider) P).positiveRationals(8)),
+                    cons(ZERO, ((QBarRandomProvider) P).positiveRationals(20)),
                     map(i -> BigInteger.valueOf(i + 2), ((RandomProvider) P).naturalIntegersGeometric(20))
             );
         }
@@ -3385,6 +3385,56 @@ public class RationalProperties {
             assertTrue(p.toString(), digits.a.isEmpty() || !head(digits.a).equals(BigInteger.ZERO));
             assertTrue(p.toString(), all(x -> x.signum() != -1 && lt(x, p.b), digits.a));
             assertEquals(p.toString(), MathUtils.fromBigEndianDigits(p.b, digits.a), p.a.floor());
+        }
+
+        for (Pair<Rational, BigInteger> p : take(LIMIT, filter(q -> {
+            assert q.a != null;
+            assert q.b != null;
+            return q.a.hasTerminatingBaseExpansion(q.b);
+        }, ps))) {
+            assert p.a != null;
+            assert p.b != null;
+            Pair<List<BigInteger>, Iterable<BigInteger>> digits = p.a.digits(p.b);
+            assert digits.b != null;
+            toList(digits.b);
+        }
+
+        if (!(P instanceof ExhaustiveProvider)) {
+            ps = P.pairs(
+                    cons(ZERO, ((QBarRandomProvider) P).positiveRationals(8)),
+                    map(i -> BigInteger.valueOf(i + 2), ((RandomProvider) P).naturalIntegersGeometric(20))
+            );
+        }
+        for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
+            assert p.a != null;
+            assert p.b != null;
+            Pair<List<BigInteger>, Iterable<BigInteger>> digits = p.a.digits(p.b);
+            assert digits.a != null;
+            assert digits.b != null;
+            Pair<List<BigInteger>, Iterable<BigInteger>> alt = digits_alt(p.a, p.b);
+            assert alt.a != null;
+            assert alt.b != null;
+            assertEquals(p.toString(), digits.a, alt.a);
+            aeq(p.toString(), take(100, digits.b), take(100, alt.b));
+        }
+
+        Iterable<Pair<Rational, BigInteger>> psFail = P.pairs(P.negativeRationals(), P.rangeUp(BigInteger.valueOf(2)));
+        for (Pair<Rational, BigInteger> p : take(LIMIT, psFail)) {
+            assert p.a != null;
+            assert p.b != null;
+            try {
+                p.a.digits(p.b);
+                fail(p.toString());
+            } catch (IllegalArgumentException ignored) {}
+        }
+
+        for (Pair<Rational, BigInteger> p : take(LIMIT, P.pairs(P.rationals(), P.rangeDown(BigInteger.ONE)))) {
+            assert p.a != null;
+            assert p.b != null;
+            try {
+                p.a.digits(p.b);
+                fail(p.toString());
+            } catch (IllegalArgumentException ignored) {}
         }
     }
 

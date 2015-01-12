@@ -1680,7 +1680,7 @@ public final class Rational implements Comparable<Rational> {
      *
      * <ul>
      *  <li>{@code this} must be non-negative.</li>
-     *  <li>{@code base} must be at least 2.</li>
+     *  <li>{@code base} must be greater than 1.</li>
      *  <li>The elements of the result are all non-null. The elements of the elements are all non-negative. The first
      *  element does not begin with a zero. The last element is non-empty, and is not equal to [{@code base}–1] (i.e. a
      *  decimal like 0.4999... is never returned; 0.5000... is preferred). The second and third lists are minimal; that
