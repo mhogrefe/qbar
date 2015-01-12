@@ -3169,6 +3169,11 @@ public class RationalProperties {
             assertEquals(p.toString(), minimized.a, pn.b);
             assertEquals(p.toString(), minimized.b, pn.c);
             assertEquals(p.toString(), fromPositionalNotation(p.b, pn.a, pn.b, pn.c), p.a);
+            assertEquals(
+                    p.toString(),
+                    pn.c.equals(Arrays.asList(BigInteger.ZERO)),
+                    p.a.hasTerminatingBaseExpansion(p.b)
+            );
         }
 
         Iterable<Pair<Rational, BigInteger>> psFail = P.pairs(P.negativeRationals(), P.rangeUp(BigInteger.valueOf(2)));
