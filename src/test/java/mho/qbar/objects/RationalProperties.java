@@ -71,7 +71,7 @@ public class RationalProperties {
             propertiesShortValueExact();
             propertiesIntValueExact();
             propertiesLongValueExact();
-//            propertiesHasTerminatingDecimalExpansion();
+            propertiesHasTerminatingBaseExpansion();
             propertiesBigDecimalValue_int_RoundingMode();
             propertiesBigDecimalValue_int();
             propertiesBigDecimalValueExact();
@@ -643,26 +643,56 @@ public class RationalProperties {
         }
     }
 
-//    private static void propertiesHasTerminatingDecimalExpansion() {
-//        initialize();
-//
-//        System.out.println("\t\ttesting hasTerminatingDecimalExpansion() properties...");
-//        for (Rational r : take(LIMIT, P.rationals())) {
-//            r.hasTerminatingDecimalExpansion();
-//        }
-//
-//        Iterable<Rational> rs = filter(Rational::hasTerminatingDecimalExpansion, P.rationals());
-//        for (Rational r : take(LIMIT, rs)) {
-//            r.bigDecimalValue(0);
-//            List<BigInteger> dPrimeFactors = toList(
-//                    nub(map(p -> p.a, MathUtils.compactPrimeFactors(r.getDenominator())))
-//            );
-//            assertTrue(
-//                    r.toString(),
-//                    isSubsetOf(dPrimeFactors, Arrays.asList(BigInteger.valueOf(2), BigInteger.valueOf(5)))
-//            );
-//        }
-//    }
+    private static void propertiesHasTerminatingBaseExpansion() {
+        initialize();
+
+        System.out.println("\t\ttesting hasTerminatingBaseExpansion(BigInteger) properties...");
+
+        Iterable<Pair<Rational, BigInteger>> ps;
+        if (P instanceof ExhaustiveProvider) {
+            ps = ((ExhaustiveProvider) P).pairsSquareRootOrder(
+                    cons(ZERO, P.positiveRationals()),
+                    P.rangeUp(BigInteger.valueOf(2))
+            );
+        } else {
+            ps = P.pairs(
+                    cons(ZERO, ((QBarRandomProvider) P).positiveRationals(20)),
+                    map(i -> BigInteger.valueOf(i + 2), ((RandomProvider) P).naturalIntegersGeometric(20))
+            );
+        }
+        for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
+            assert p.a != null;
+            assert p.b != null;
+            boolean result = p.a.hasTerminatingBaseExpansion(p.b);
+            Iterable<BigInteger> dPrimeFactors = nub(MathUtils.primeFactors(p.a.getDenominator()));
+            Iterable<BigInteger> bPrimeFactors = nub(MathUtils.primeFactors(p.b));
+            assertEquals(p.toString(), result, isSubsetOf(dPrimeFactors, bPrimeFactors));
+        }
+
+        if (!(P instanceof ExhaustiveProvider)) {
+            ps = P.pairs(
+                    cons(ZERO, ((QBarRandomProvider) P).positiveRationals(8)),
+                    map(i -> BigInteger.valueOf(i + 2), ((RandomProvider) P).naturalIntegersGeometric(20))
+            );
+        }
+        for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
+            assert p.a != null;
+            assert p.b != null;
+            boolean result = p.a.hasTerminatingBaseExpansion(p.b);
+            Triple<List<BigInteger>, List<BigInteger>, List<BigInteger>> pn = p.a.positionalNotation(p.b);
+            assert pn.c != null;
+            assertEquals(p.toString(), result, pn.c.equals(Arrays.asList(BigInteger.ZERO)));
+        }
+
+        for (Pair<Rational, BigInteger> p : take(LIMIT, P.pairs(P.rationals(), P.rangeDown(BigInteger.ONE)))) {
+            assert p.a != null;
+            assert p.b != null;
+            try {
+                p.a.hasTerminatingBaseExpansion(p.b);
+                fail();
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
 
     private static void propertiesBigDecimalValue_int_RoundingMode() {
         initialize();
@@ -835,21 +865,10 @@ public class RationalProperties {
             assertTrue(bd.toString(), bd.scale() != halfEven.scale() + 1 || !halfEven.unscaledValue().testBit(0));
         }
 
-        Iterable<Pair<Rational, Pair<Integer, RoundingMode>>> psFail;
-        if (P instanceof ExhaustiveProvider) {
-            psFail = P.pairs(
-                    P.rationals(),
-                    (Iterable<Pair<Integer, RoundingMode>>) P.pairs(P.negativeIntegers(), P.roundingModes())
-            );
-        } else {
-            psFail = P.pairs(
-                    P.rationals(),
-                    (Iterable<Pair<Integer, RoundingMode>>) P.pairs(
-                            ((RandomProvider) P).negativeIntegersGeometric(20),
-                            P.roundingModes()
-                    )
-            );
-        }
+        Iterable<Pair<Rational, Pair<Integer, RoundingMode>>> psFail = P.pairs(
+                P.rationals(),
+                (Iterable<Pair<Integer, RoundingMode>>) P.pairs(P.negativeIntegers(), P.roundingModes())
+        );
         for (Pair<Rational, Pair<Integer, RoundingMode>> p : take(LIMIT, psFail)) {
             assert p.a != null;
             assert p.b != null;
@@ -960,13 +979,7 @@ public class RationalProperties {
             assertTrue(bd.toString(), bd.scale() != halfEven.scale() + 1 || !halfEven.unscaledValue().testBit(0));
         }
 
-        Iterable<Pair<Rational, Integer>> psFail;
-        if (P instanceof ExhaustiveProvider) {
-            psFail = ((ExhaustiveProvider) P).pairsSquareRootOrder(P.rationals(), P.negativeIntegers());
-        } else {
-            psFail = P.pairs(P.rationals(), ((RandomProvider) P).negativeIntegersGeometric(20));
-        }
-        for (Pair<Rational, Integer> p : take(LIMIT, psFail)) {
+        for (Pair<Rational, Integer> p : take(LIMIT, P.pairs(P.rationals(), P.negativeIntegers()))) {
             assert p.a != null;
             assert p.b != null;
             try {
@@ -988,13 +1001,7 @@ public class RationalProperties {
             assertEquals(r.toString(), of(bd), r);
         }
 
-        Iterable<Pair<Rational, Integer>> psFail;
-        if (P instanceof ExhaustiveProvider) {
-            psFail = ((ExhaustiveProvider) P).pairsSquareRootOrder(P.rationals(), P.negativeIntegers());
-        } else {
-            psFail = P.pairs(P.rationals(), ((RandomProvider) P).negativeIntegersGeometric(20));
-        }
-        for (Pair<Rational, Integer> p : take(LIMIT, psFail)) {
+        for (Pair<Rational, Integer> p : take(LIMIT, P.pairs(P.rationals(), P.negativeIntegers()))) {
             assert p.a != null;
             assert p.b != null;
             try {
@@ -3164,18 +3171,7 @@ public class RationalProperties {
             assertEquals(p.toString(), fromPositionalNotation(p.b, pn.a, pn.b, pn.c), p.a);
         }
 
-        Iterable<Pair<Rational, BigInteger>> psFail;
-        if (P instanceof ExhaustiveProvider) {
-            psFail = ((ExhaustiveProvider) P).pairsSquareRootOrder(
-                    P.negativeRationals(),
-                    P.rangeUp(BigInteger.valueOf(2))
-            );
-        } else {
-            psFail = P.pairs(
-                    ((QBarRandomProvider) P).negativeRationals(8),
-                    map(i -> BigInteger.valueOf(i + 2), ((RandomProvider) P).naturalIntegersGeometric(20))
-            );
-        }
+        Iterable<Pair<Rational, BigInteger>> psFail = P.pairs(P.negativeRationals(), P.rangeUp(BigInteger.valueOf(2)));
         for (Pair<Rational, BigInteger> p : take(LIMIT, psFail)) {
             assert p.a != null;
             assert p.b != null;
@@ -3185,18 +3181,7 @@ public class RationalProperties {
             } catch (IllegalArgumentException ignored) {}
         }
 
-        if (P instanceof ExhaustiveProvider) {
-            psFail = ((ExhaustiveProvider) P).pairsSquareRootOrder(
-                    cons(ZERO, P.positiveRationals()),
-                    P.rangeDown(BigInteger.ONE)
-            );
-        } else {
-            psFail = P.pairs(
-                    cons(ZERO, ((QBarRandomProvider) P).positiveRationals(8)),
-                    map(i -> BigInteger.valueOf(i + 2), ((RandomProvider) P).negativeIntegersGeometric(20))
-            );
-        }
-        for (Pair<Rational, BigInteger> p : take(LIMIT, psFail)) {
+        for (Pair<Rational, BigInteger> p : take(LIMIT, P.pairs(P.rationals(), P.rangeDown(BigInteger.ONE)))) {
             assert p.a != null;
             assert p.b != null;
             try {
