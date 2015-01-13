@@ -15,6 +15,7 @@ import java.math.BigInteger;
 import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.*;
+import java.util.function.Function;
 
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.ordering.Ordering.*;
@@ -1838,6 +1839,66 @@ public final class Rational implements Comparable<Rational> {
         return new Pair<>(beforeDecimal, skipLastIf(i -> i.equals(BigInteger.ZERO), afterDecimal));
     }
 
+    public @NotNull String toStringBase(@NotNull BigInteger base) {
+        boolean smallBase = le(base, BigInteger.valueOf(36));
+        Pair<List<BigInteger>, Iterable<BigInteger>> digits = abs().digits(base);
+        assert digits.a != null;
+        assert digits.b != null;
+        Function<BigInteger, String> digitFunction;
+        if (smallBase) {
+            digitFunction = i -> Character.toString(MathUtils.toDigit(i.intValueExact()));
+        } else {
+            digitFunction = i -> "(" + i + ")";
+        }
+        String beforeDecimal;
+        if (digits.a.isEmpty()) {
+            beforeDecimal = smallBase ? "0" : "(0)";
+        } else {
+            beforeDecimal = concatStrings(map(digitFunction, digits.a));
+        }
+        String result;
+        if (isEmpty(digits.b)) {
+            result = beforeDecimal;
+        } else {
+            String afterDecimal = concatStrings(map(digitFunction, digits.b));
+            result = beforeDecimal + "." + afterDecimal;
+        }
+        return signum() == -1 ? "-" + result : result;
+    }
+
+    public @NotNull String toStringBase(@NotNull BigInteger base, int scale) {
+        Rational rounded;
+        if (scale >= 0) {
+            BigInteger power = base.pow(scale);
+            rounded = of(multiply(power).bigIntegerValue(RoundingMode.HALF_UP)).divide(power);
+        } else {
+            BigInteger power = base.pow(-scale);
+            rounded = of(divide(power).bigIntegerValue(RoundingMode.HALF_UP)).multiply(power);
+        }
+        return rounded.toStringBase(base);
+    }
+
+    public static @NotNull Rational fromStringBase(@NotNull BigInteger base, @NotNull String s) {
+        boolean negative = head(s) == '-';
+        if (negative) s = tail(s);
+        boolean smallBase = le(base, BigInteger.valueOf(36));
+        Function<String, List<BigInteger>> undigitFunction;
+        if (smallBase) {
+            undigitFunction = t -> toList(map(c -> BigInteger.valueOf(MathUtils.fromDigit(c)), fromString(t)));
+        } else {
+            undigitFunction = t -> toList(map(BigInteger::new, Arrays.asList(tail(init(t)).split("\\)\\("))));
+        }
+        Rational result;
+        int dotIndex = s.indexOf(".");
+        if (dotIndex == -1) {
+            result = of(MathUtils.fromBigEndianDigits(base, undigitFunction.apply(s)));
+        } else {
+            List<BigInteger> beforeDecimal = undigitFunction.apply(take(dotIndex, s));
+            List<BigInteger> afterDecimal = undigitFunction.apply(drop(dotIndex + 1, s));
+            result = fromPositionalNotation(base, beforeDecimal, afterDecimal, new ArrayList<>());
+        }
+        return negative ? result.negate() : result;
+    }
 
     /**
      * Determines whether {@code this} is equal to {@code that}.
