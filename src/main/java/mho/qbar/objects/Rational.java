@@ -603,6 +603,7 @@ public final class Rational implements Comparable<Rational> {
      *  <li>The result may be either {@code boolean}.</li>
      * </ul>
      *
+     * @param base the base in which we are interesting in expanding {@code this}
      * @return whether {@code this} has a terminating base expansion in base-{@code base}
      */
     public boolean hasTerminatingBaseExpansion(@NotNull BigInteger base) {
