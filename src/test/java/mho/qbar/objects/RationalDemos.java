@@ -700,7 +700,7 @@ public class RationalDemos {
             );
         } else {
             ps = P.pairs(
-                    cons(ZERO, ((QBarRandomProvider) P).positiveRationals(8)),
+                    cons(ZERO, ((QBarRandomProvider) P).positiveRationals(20)),
                     map(i -> BigInteger.valueOf(i + 2), ((RandomProvider) P).naturalIntegersGeometric(20))
             );
         }

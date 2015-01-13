@@ -122,6 +122,7 @@ public class RationalProperties {
             propertiesPositionalNotation();
             propertiesFromPositionalNotation();
             propertiesDigits();
+            compareImplementationsDigits();
             propertiesEquals();
             propertiesHashCode();
             propertiesCompareTo();
@@ -1850,9 +1851,9 @@ public class RationalProperties {
 
         long totalTime = 0;
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
-            long time = System.nanoTime();
             assert p.a != null;
             assert p.b != null;
+            long time = System.nanoTime();
             add_simplest(p.a, p.b);
             totalTime += (System.nanoTime() - time);
         }
@@ -1860,9 +1861,9 @@ public class RationalProperties {
 
         totalTime = 0;
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
-            long time = System.nanoTime();
             assert p.a != null;
             assert p.b != null;
+            long time = System.nanoTime();
             p.a.add(p.b);
             totalTime += (System.nanoTime() - time);
         }
@@ -1958,9 +1959,9 @@ public class RationalProperties {
 
         long totalTime = 0;
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
-            long time = System.nanoTime();
             assert p.a != null;
             assert p.b != null;
+            long time = System.nanoTime();
             multiply_Rational_Knuth(p.a, p.b);
             totalTime += (System.nanoTime() - time);
         }
@@ -1968,9 +1969,9 @@ public class RationalProperties {
 
         totalTime = 0;
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
-            long time = System.nanoTime();
             assert p.a != null;
             assert p.b != null;
+            long time = System.nanoTime();
             p.a.multiply(p.b);
             totalTime += (System.nanoTime() - time);
         }
@@ -2029,9 +2030,9 @@ public class RationalProperties {
         long totalTime = 0;
         Iterable<Pair<Rational, BigInteger>> ps = P.pairs(P.rationals(), P.bigIntegers());
         for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
-            long time = System.nanoTime();
             assert p.a != null;
             assert p.b != null;
+            long time = System.nanoTime();
             multiply_BigInteger_simplest(p.a, p.b);
             totalTime += (System.nanoTime() - time);
         }
@@ -2039,9 +2040,9 @@ public class RationalProperties {
 
         totalTime = 0;
         for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
-            long time = System.nanoTime();
             assert p.a != null;
             assert p.b != null;
+            long time = System.nanoTime();
             p.a.multiply(p.b);
             totalTime += (System.nanoTime() - time);
         }
@@ -2100,9 +2101,9 @@ public class RationalProperties {
         long totalTime = 0;
         Iterable<Pair<Rational, Integer>> ps = P.pairs(P.rationals(), P.integers());
         for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
-            long time = System.nanoTime();
             assert p.a != null;
             assert p.b != null;
+            long time = System.nanoTime();
             multiply_int_simplest(p.a, p.b);
             totalTime += (System.nanoTime() - time);
         }
@@ -2110,9 +2111,9 @@ public class RationalProperties {
 
         totalTime = 0;
         for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
-            long time = System.nanoTime();
             assert p.a != null;
             assert p.b != null;
+            long time = System.nanoTime();
             p.a.multiply(p.b);
             totalTime += (System.nanoTime() - time);
         }
@@ -2169,9 +2170,9 @@ public class RationalProperties {
         long totalTime = 0;
         Iterable<Pair<Rational, Rational>> ps = filter(p -> p.b != ZERO, P.pairs(P.rationals()));
         for (Pair<Rational, Rational> p : take(LIMIT, ps)) {
-            long time = System.nanoTime();
             assert p.a != null;
             assert p.b != null;
+            long time = System.nanoTime();
             divide_Rational_simplest(p.a, p.b);
             totalTime += (System.nanoTime() - time);
         }
@@ -2179,9 +2180,9 @@ public class RationalProperties {
 
         totalTime = 0;
         for (Pair<Rational, Rational> p : take(LIMIT, ps)) {
-            long time = System.nanoTime();
             assert p.a != null;
             assert p.b != null;
+            long time = System.nanoTime();
             p.a.divide(p.b);
             totalTime += (System.nanoTime() - time);
         }
@@ -2247,9 +2248,9 @@ public class RationalProperties {
                 filter(i -> !i.equals(BigInteger.ZERO), P.bigIntegers())
         );
         for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
-            long time = System.nanoTime();
             assert p.a != null;
             assert p.b != null;
+            long time = System.nanoTime();
             divide_BigInteger_simplest(p.a, p.b);
             totalTime += (System.nanoTime() - time);
         }
@@ -2257,9 +2258,9 @@ public class RationalProperties {
 
         totalTime = 0;
         for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
-            long time = System.nanoTime();
             assert p.a != null;
             assert p.b != null;
+            long time = System.nanoTime();
             p.a.divide(p.b);
             totalTime += (System.nanoTime() - time);
         }
@@ -2316,9 +2317,9 @@ public class RationalProperties {
         long totalTime = 0;
         Iterable<Pair<Rational, Integer>> ps = P.pairs(P.rationals(), filter(i -> i != 0, P.integers()));
         for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
-            long time = System.nanoTime();
             assert p.a != null;
             assert p.b != null;
+            long time = System.nanoTime();
             divide_int_simplest(p.a, p.b);
             totalTime += (System.nanoTime() - time);
         }
@@ -2326,9 +2327,9 @@ public class RationalProperties {
 
         totalTime = 0;
         for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
-            long time = System.nanoTime();
             assert p.a != null;
             assert p.b != null;
+            long time = System.nanoTime();
             p.a.divide(p.b);
             totalTime += (System.nanoTime() - time);
         }
@@ -2648,9 +2649,9 @@ public class RationalProperties {
         }
         Iterable<Pair<Rational, Integer>> ps = filter(p -> p.b >= 0 || p.a != ZERO, P.pairs(P.rationals(), exps));
         for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
-            long time = System.nanoTime();
             assert p.a != null;
             assert p.b != null;
+            long time = System.nanoTime();
             pow_simplest(p.a, p.b);
             totalTime += (System.nanoTime() - time);
         }
@@ -2658,9 +2659,9 @@ public class RationalProperties {
 
         totalTime = 0;
         for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
-            long time = System.nanoTime();
             assert p.a != null;
             assert p.b != null;
+            long time = System.nanoTime();
             p.a.pow(p.b);
             totalTime += (System.nanoTime() - time);
         }
@@ -2956,9 +2957,9 @@ public class RationalProperties {
         }
         Iterable<Pair<Rational, Integer>> ps = P.pairs(P.rationals(), is);
         for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
-            long time = System.nanoTime();
             assert p.a != null;
             assert p.b != null;
+            long time = System.nanoTime();
             shiftLeft_simplest(p.a, p.b);
             totalTime += (System.nanoTime() - time);
         }
@@ -2966,9 +2967,9 @@ public class RationalProperties {
 
         totalTime = 0;
         for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
-            long time = System.nanoTime();
             assert p.a != null;
             assert p.b != null;
+            long time = System.nanoTime();
             p.a.shiftLeft(p.b);
             totalTime += (System.nanoTime() - time);
         }
@@ -3031,9 +3032,9 @@ public class RationalProperties {
         }
         Iterable<Pair<Rational, Integer>> ps = P.pairs(P.rationals(), is);
         for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
-            long time = System.nanoTime();
             assert p.a != null;
             assert p.b != null;
+            long time = System.nanoTime();
             shiftRight_simplest(p.a, p.b);
             totalTime += (System.nanoTime() - time);
         }
@@ -3041,9 +3042,9 @@ public class RationalProperties {
 
         totalTime = 0;
         for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
-            long time = System.nanoTime();
             assert p.a != null;
             assert p.b != null;
+            long time = System.nanoTime();
             p.a.shiftRight(p.b);
             totalTime += (System.nanoTime() - time);
         }
@@ -3436,6 +3437,43 @@ public class RationalProperties {
                 fail(p.toString());
             } catch (IllegalArgumentException ignored) {}
         }
+    }
+
+    private static void compareImplementationsDigits() {
+        initialize();
+        System.out.println("\t\tcomparing digits(BigInteger) implementations...");
+
+        long totalTime = 0;
+        Iterable<Pair<Rational, BigInteger>> ps;
+        if (P instanceof ExhaustiveProvider) {
+            ps = ((ExhaustiveProvider) P).pairsSquareRootOrder(
+                    cons(ZERO, P.positiveRationals()),
+                    P.rangeUp(BigInteger.valueOf(2))
+            );
+        } else {
+            ps = P.pairs(
+                    cons(ZERO, ((QBarRandomProvider) P).positiveRationals(8)),
+                    map(i -> BigInteger.valueOf(i + 2), ((RandomProvider) P).naturalIntegersGeometric(20))
+            );
+        }
+        for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
+            assert p.a != null;
+            assert p.b != null;
+            long time = System.nanoTime();
+            toList(take(20, digits_alt(p.a, p.b).b));
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\t\t\tsimplest: " + ((double) totalTime) / 1e9 + " s");
+
+        totalTime = 0;
+        for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
+            assert p.a != null;
+            assert p.b != null;
+            long time = System.nanoTime();
+            toList(take(20, p.a.digits(p.b).b));
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
     }
 
     private static void propertiesEquals() {
