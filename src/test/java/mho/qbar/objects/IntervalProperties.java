@@ -18,6 +18,7 @@ import static mho.wheels.ordering.Ordering.*;
 import static org.junit.Assert.*;
 import static org.junit.Assert.assertNotNull;
 
+@SuppressWarnings("ConstantConditions")
 public class IntervalProperties {
     private static boolean USE_RANDOM;
     private static final String INTERVAL_CHARS = " (),-/0123456789I[]finty";
@@ -83,13 +84,8 @@ public class IntervalProperties {
         initialize();
         System.out.println("\t\ttesting of(Rational, Rational) properties...");
 
-        Iterable<Pair<Rational, Rational>> ps = filter(q -> {
-            assert q.a != null;
-            return le(q.a, q.b);
-        }, P.pairs(P.rationals()));
+        Iterable<Pair<Rational, Rational>> ps = filter(q -> le(q.a, q.b), P.pairs(P.rationals()));
         for (Pair<Rational, Rational> p : take(LIMIT, ps)) {
-            assert p.a != null;
-            assert p.b != null;
             Interval a = of(p.a, p.b);
             validate(a);
             assertTrue(a.toString(), a.isFinitelyBounded());
@@ -158,8 +154,6 @@ public class IntervalProperties {
         System.out.println("\t\ttesting compareTo(Interval) properties...");
 
         for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
-            assert p.a != null;
-            assert p.b != null;
             int compare = p.a.compareTo(p.b);
             assertTrue(p.toString(), compare == -1 || compare == 0 || compare == 1);
             assertEquals(p.toString(), p.b.compareTo(p.a), -compare);
@@ -170,16 +164,10 @@ public class IntervalProperties {
         }
 
         Iterable<Triple<Interval, Interval, Interval>> ts = filter(
-                t -> {
-                    assert t.a != null;
-                    assert t.b != null;
-                    return lt(t.a, t.b) && lt(t.b, t.c);
-                },
+                t -> lt(t.a, t.b) && lt(t.b, t.c),
                 P.triples(P.intervals())
         );
         for (Triple<Interval, Interval, Interval> t : take(LIMIT, ts)) {
-            assert t.a != null;
-            assert t.c != null;
             assertEquals(t.toString(), t.a.compareTo(t.c), -1);
         }
     }
@@ -207,15 +195,7 @@ public class IntervalProperties {
         }
 
         Iterable<Pair<String, Integer>> ps = P.dependentPairsLogarithmic(P.strings(), s -> range(0, s.length()));
-        Iterable<String> ss = map(
-                p -> {
-                    assert p.a != null;
-                    assert p.a.a != null;
-                    assert p.a.b != null;
-                    return take(p.a.b, p.a.a) + p.b + drop(p.a.b, p.a.a);
-                },
-                P.pairs(ps, P.intervals())
-        );
+        Iterable<String> ss = map(p -> take(p.a.b, p.a.a) + p.b + drop(p.a.b, p.a.a), P.pairs(ps, P.intervals()));
         for (String s : take(LIMIT, ss)) {
             Optional<Pair<Interval, Integer>> op = findIn(s);
             Pair<Interval, Integer> p = op.get();

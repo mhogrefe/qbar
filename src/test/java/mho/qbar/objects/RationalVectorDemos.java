@@ -161,10 +161,7 @@ public class RationalVectorDemos {
         initialize();
         Iterable<Pair<RationalVector, RationalVector>> ps;
         if (P instanceof ExhaustiveProvider) {
-            ps = P.dependentPairs(
-                    P.rationalVectors(),
-                    v -> P.rationalVectors(v.dimension())
-            );
+            ps = P.dependentPairs(P.rationalVectors(), v -> P.rationalVectors(v.dimension()));
         } else {
             ps = P.dependentPairs(
                     ((QBarRandomProvider) P).rationalVectorsBySize(32),

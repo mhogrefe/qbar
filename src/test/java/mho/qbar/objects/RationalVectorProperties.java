@@ -24,6 +24,7 @@ import static org.junit.Assert.*;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 
+@SuppressWarnings("ConstantConditions")
 public class RationalVectorProperties {
     private static boolean USE_RANDOM;
     private static final String RATIONAL_VECTOR_CHARS = " ,-/0123456789[]";
@@ -59,7 +60,9 @@ public class RationalVectorProperties {
             propertiesDimension();
             propertiesZero();
             propertiesIdentity();
+            propertiesIsZero();
             propertiesNegate();
+            propertiesAdd();
             propertiesEquals();
             propertiesHashCode();
             propertiesCompareTo();
@@ -236,7 +239,7 @@ public class RationalVectorProperties {
             RationalVector zero = zero(i);
             validate(zero);
             assertEquals(Integer.toString(i), zero.dimension(), i);
-            assertTrue(Integer.toString(i), all(x -> x == ZERO, zero));
+            assertTrue(Integer.toString(i), zero.isZero());
         }
 
         for (int i : take(LIMIT, P.negativeIntegers())) {
@@ -296,6 +299,15 @@ public class RationalVectorProperties {
         }
     }
 
+    private static void propertiesIsZero() {
+        initialize();
+        System.out.println("\t\ttesting isZero properties");
+
+        for (RationalVector v : take(LIMIT, P.rationalVectors())) {
+            v.isZero();
+        }
+    }
+
     private static void propertiesNegate() {
         initialize();
         System.out.println("\t\ttesting negate() properties");
@@ -305,12 +317,57 @@ public class RationalVectorProperties {
             validate(negativeV);
             assertEquals(v.toString(), v.dimension(), negativeV.dimension());
             assertEquals(v.toString(), v, negativeV.negate());
-            //todo addition
+            assertTrue(v.add(negativeV).isZero());
         }
 
         for (RationalVector v : take(LIMIT, filter(w -> any(x -> x != ZERO, w), P.rationalVectors()))) {
             RationalVector negativeV = v.negate();
             assertNotEquals(v.toString(), v, negativeV);
+        }
+    }
+
+    private static void propertiesAdd() {
+        initialize();
+        System.out.println("\t\ttesting add(RationalVector) properties...");
+
+        Iterable<Pair<RationalVector, RationalVector>> ps;
+        if (P instanceof ExhaustiveProvider) {
+            ps = P.dependentPairs(P.rationalVectors(), v -> P.rationalVectors(v.dimension()));
+        } else {
+            ps = P.dependentPairs(
+                    ((QBarRandomProvider) P).rationalVectorsBySize(32),
+                    v -> ((QBarRandomProvider) P).rationalVectorsBySize(32, v.dimension())
+            );
+        }
+        for (Pair<RationalVector, RationalVector> p : take(LIMIT, ps)) {
+            RationalVector sum = p.a.add(p.b);
+            validate(sum);
+            assertEquals(p.toString(), sum, p.b.add(p.a));
+        }
+
+        for (RationalVector v : take(LIMIT, P.rationalVectors())) {
+            assertTrue(v.add(v.negate()).isZero());
+        }
+
+        Iterable<Triple<RationalVector, RationalVector, RationalVector>> ts;
+        if (P instanceof ExhaustiveProvider) {
+            ts = map(
+                    p -> new Triple<RationalVector, RationalVector, RationalVector>(p.a, p.b.a, p.b.b),
+                    P.dependentPairs(P.rationalVectors(), v -> P.pairs(P.rationalVectors(v.dimension())))
+            );
+        } else {
+            ts = map(
+                    p -> new Triple<RationalVector, RationalVector, RationalVector>(p.a, p.b.a, p.b.b),
+                    P.dependentPairs(
+                            ((QBarRandomProvider) P).rationalVectorsBySize(32),
+                            v -> P.pairs(((QBarRandomProvider) P).rationalVectorsBySize(32, v.dimension()))
+                    )
+            );
+        }
+        for (Triple<RationalVector, RationalVector, RationalVector> t : take(LIMIT, ts)) {
+            RationalVector sum1 = t.a.add(t.b).add(t.c);
+            RationalVector sum2 = t.a.add(t.b.add(t.c));
+            assertEquals(t.toString(), sum1, sum2);
         }
     }
 
