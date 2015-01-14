@@ -210,6 +210,20 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
     }
 
     /**
+     * Determines whether {@code this} is a zero vector
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalVector}.</li>
+     *  <li>The result may be either {@code boolean}.</li>
+     * </ul>
+     *
+     * @return whether {@code this}=0
+     */
+    public boolean isZero() {
+        return all(r -> r == Rational.ZERO, coordinates);
+    }
+
+    /**
      * Creates an identity vector; that is, a vector with a given dimension, all of whose coordinates are 0, except for
      * a single coordinate which is 1. Identity matrices are made up of identity vectors. There is no identity vector
      * of dimension 0.
@@ -252,6 +266,27 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
     public @NotNull RationalVector negate() {
         if (this == ZERO_DIMENSIONAL) return ZERO_DIMENSIONAL;
         return new RationalVector(toList(map(Rational::negate, coordinates)));
+    }
+
+    /**
+     * Returns the sum of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalVector}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>{@code this} and {@code that} must have the same dimension.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param that the {@code Rational} added to {@code this}
+     * @return {@code this}+{@code that}
+     */
+    public @NotNull RationalVector add(@NotNull RationalVector that) {
+        if (coordinates.size() != that.coordinates.size())
+            throw new ArithmeticException("vectors must have same dimension");
+        if (this == ZERO_DIMENSIONAL) return ZERO_DIMENSIONAL;
+        //noinspection ConstantConditions
+        return of(toList(zipWith(p -> p.a.add(p.b), coordinates, that.coordinates)));
     }
 
     /**
@@ -346,7 +381,7 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
         Optional<Pair<List<Rational>, Integer>> op = Readers.findListIn(Rational::findIn, s);
         if (!op.isPresent()) return Optional.empty();
         Pair<List<Rational>, Integer> p = op.get();
-        assert p.a != null;
+        //noinspection ConstantConditions
         if (p.a.isEmpty()) return Optional.of(new Pair<>(ZERO_DIMENSIONAL, p.b));
         return Optional.of(new Pair<>(new RationalVector(p.a), p.b));
     }
