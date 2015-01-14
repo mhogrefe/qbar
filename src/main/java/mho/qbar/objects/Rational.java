@@ -1842,9 +1842,9 @@ public final class Rational implements Comparable<Rational> {
      * expansion in the base. If the base is 36 or less, the digits are '0' through '9' followed by 'A' through 'Z'. If
      * the base is greater than 36, the digits are written in decimal and each digit is surrounded by parentheses. If
      * {@code this} has a fractional part, a decimal point is used. Zero is represented by "0" if the base is 36 or
-     * less, or "(0)" otherwise. In every other case there are no leading zeroes before the decimal point and no
-     * trailing zeroes after. Scientific notation is not used. If {@code this} is negative, the result will contain a
-     * leading '-'.
+     * less, or "(0)" otherwise. There are no leading zeroes before the decimal point (unless {@code this} is less than
+     * 1, in which case there is exactly one zero) and no trailing zeroes after. Scientific notation is not used. If
+     * {@code this} is negative, the result will contain a leading '-'.
      *
      * <ul>
      *  <li>{@code this} may be any {@code Rational}.</li>
@@ -1884,17 +1884,65 @@ public final class Rational implements Comparable<Rational> {
         return signum() == -1 ? "-" + result : result;
     }
 
+    /**
+     * Converts {@code this} to a {@code String} in any base greater than 1, rounding to {@code scale} digits after the
+     * decimal point. A scale of 0 indicates rounding to an integer, and a negative scale indicates rounding to a
+     * positive power of {@code base}. All rounding is done towards 0 (truncation), so that the displayed digits are
+     * unaltered. If the result is an approximation (that is, not all digits are displayed), an ellipsis ("...") is
+     * appended. If the base is 36 or less, the digits are '0' through '9' followed by 'A' through 'Z'. If the base is
+     * greater than 36, the digits are written in decimal and each digit is surrounded by parentheses. If
+     * {@code this} has a fractional part, a decimal point is used. Zero is represented by "0" if the base is 36 or
+     * less, or "(0)" otherwise. There are no leading zeroes before the decimal point (unless {@code this} is less than
+     * 1, in which case there is exactly one zero) and no trailing zeroes after. Scientific notation is not used. If
+     * {@code this} is negative, the result will contain a leading '-'.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Rational}.</li>
+     *  <li>{@code base} must be at least 2.</li>
+     *  <li>{@code scale} may be any {@code int}.</li>
+     *  <li>The result is a {@code String} representing a {@code Rational} in the manner previously described. See the
+     *  unit test and demo for further reference.</li>
+     * </ul>
+     *
+     * @param base the base of the output digits
+     * @return a {@code String} representation of {@code this} in base {@code base}
+     */
     public @NotNull String toStringBase(@NotNull BigInteger base, int scale) {
         BigInteger power = scale >= 0 ? base.pow(scale) : base.pow(-scale);
         Rational scaled = scale >= 0 ? multiply(power) : divide(power);
-        boolean approximation = scale >= 0 && !scaled.isInteger();
+        boolean ellipsis = scale >= 0 && !scaled.isInteger();
         Rational rounded = of(scaled.bigIntegerValue(RoundingMode.DOWN));
         rounded = scale >= 0 ? rounded.divide(power) : rounded.multiply(power);
         String result = rounded.toStringBase(base);
-        return approximation ? result + "..." : result;
+        return ellipsis ? result + "..." : result;
     }
 
+    /**
+     * Converts a {@code String} written in some base to a {@code Rational}. If the base is 36 or less, the digits are
+     * '0' through '9' followed by 'A' through 'Z'. If the base is greater than 36, the digits are written in decimal
+     * and each digit is surrounded by parentheses. The empty {@code String} represents 0. Leading zeroes are
+     * permitted. The {@code String} may end in an ellipsis ("..."), which is removed before conversion. If the
+     * {@code String} is invalid, an exception is thrown.
+     *
+     * <ul>
+     *  <li>{@code base} must be at least 2.</li>
+     *  <li>{@code s} must either be composed of the digits '0' through '9' and 'A' through 'Z', or a sequence of
+     *  non-negative decimal integers, each surrounded by parentheses. {@code s} may contain a single decimal point '.'
+     *  anywhere outside of parentheses. In any case there may be an optional leading '-'. {@code s} may also be empty,
+     *  but "-" is not permitted. Scientific notation is not accepted.</li>
+     *  <li>If {@code base} is between 2 and 36, {@code s} may only include the corresponding characters, the optional
+     *  '.', and the optional leading '-'. If {@code base} is greater than 36, {@code s} must be composed of decimal
+     *  integers surrounded by parentheses (with the optional leading '-'), each integer being non-negative and less
+     *  than {@code base}.</li>
+     *  <li>The result is non-null.</li>
+     * </ul>
+     *
+     * @param base the base that the {@code s} is written in
+     * @param s the input {@code String}
+     * @return the {@code Rational} represented by {@code s}
+     */
     public static @NotNull Rational fromStringBase(@NotNull BigInteger base, @NotNull String s) {
+        if (s.endsWith("...")) s = take(s.length() - 3, s);
         boolean negative = head(s) == '-';
         if (negative) s = tail(s);
         boolean smallBase = le(base, BigInteger.valueOf(36));
