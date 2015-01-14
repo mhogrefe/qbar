@@ -1840,6 +1840,26 @@ public final class Rational implements Comparable<Rational> {
         return new Pair<>(beforeDecimal, skipLastIf(i -> i.equals(BigInteger.ZERO), afterDecimal));
     }
 
+    /**
+     * Converts {@code this} to a {@code String} in any base greater than 1. {@code this} must have a terminating
+     * expansion in the base. If the base is 36 or less, the digits are '0' through '9' followed by 'A' through 'Z'. If
+     * the base is greater than 36, the digits are written in decimal and each digit is surrounded by parentheses. If
+     * {@code this} has a fractional part, a decimal point is used. Zero is represented by "0" if the base is 36 or
+     * less, or "(0)" otherwise. In every other case there are no leading zeroes before the decimal point and no
+     * trailing zeroes after. Scientific notation is not used. If {@code this} is negative, the result will contain a
+     * leading '-'.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Rational}.</li>
+     *  <li>{@code base} must be at least 2.</li>
+     *  <li>{@code this} must have a terminating base-{@code base} expansion.</li>
+     *  <li>The result is a {@code String} representing a {@code Rational} in the manner previously described. See the
+     *  unit test and demo for further reference.</li>
+     * </ul>
+     *
+     * @param base the base of the output digits
+     * @return a {@code String} representation of {@code this} in base {@code base}
+     */
     public @NotNull String toStringBase(@NotNull BigInteger base) {
         boolean smallBase = le(base, BigInteger.valueOf(36));
         Pair<List<BigInteger>, Iterable<BigInteger>> digits = abs().digits(base);
