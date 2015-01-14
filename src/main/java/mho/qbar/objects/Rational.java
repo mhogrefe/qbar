@@ -1885,15 +1885,13 @@ public final class Rational implements Comparable<Rational> {
     }
 
     public @NotNull String toStringBase(@NotNull BigInteger base, int scale) {
-        Rational rounded;
-        if (scale >= 0) {
-            BigInteger power = base.pow(scale);
-            rounded = of(multiply(power).bigIntegerValue(RoundingMode.HALF_UP)).divide(power);
-        } else {
-            BigInteger power = base.pow(-scale);
-            rounded = of(divide(power).bigIntegerValue(RoundingMode.HALF_UP)).multiply(power);
-        }
-        return rounded.toStringBase(base);
+        BigInteger power = scale >= 0 ? base.pow(scale) : base.pow(-scale);
+        Rational scaled = scale >= 0 ? multiply(power) : divide(power);
+        boolean approximation = scale >= 0 && !scaled.isInteger();
+        Rational rounded = of(scaled.bigIntegerValue(RoundingMode.DOWN));
+        rounded = scale >= 0 ? rounded.divide(power) : rounded.multiply(power);
+        String result = rounded.toStringBase(base);
+        return approximation ? result + "..." : result;
     }
 
     public static @NotNull Rational fromStringBase(@NotNull BigInteger base, @NotNull String s) {
