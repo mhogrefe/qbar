@@ -93,12 +93,9 @@ public final class Rational implements Comparable<Rational> {
      *
      * Length is infinite
      */
+    @SuppressWarnings("ConstantConditions")
     public static final @NotNull Iterable<Rational> HARMONIC_NUMBERS =
-            tail(scanl(p -> {
-                assert p.a != null;
-                assert p.b != null;
-                return p.a.add(p.b);
-            }, ZERO, map(i -> of(i).invert(), range(1))));
+            tail(scanl(p -> p.a.add(p.b), ZERO, map(i -> of(i).invert(), range(1))));
 
     /**
      * {@code this} times {@code denominator}
@@ -1863,8 +1860,6 @@ public final class Rational implements Comparable<Rational> {
     public @NotNull String toStringBase(@NotNull BigInteger base) {
         boolean smallBase = le(base, BigInteger.valueOf(36));
         Pair<List<BigInteger>, Iterable<BigInteger>> digits = abs().digits(base);
-        assert digits.a != null;
-        assert digits.b != null;
         Function<BigInteger, String> digitFunction;
         if (smallBase) {
             digitFunction = i -> Character.toString(MathUtils.toDigit(i.intValueExact()));
@@ -1872,12 +1867,14 @@ public final class Rational implements Comparable<Rational> {
             digitFunction = i -> "(" + i + ")";
         }
         String beforeDecimal;
+        //noinspection ConstantConditions
         if (digits.a.isEmpty()) {
             beforeDecimal = smallBase ? "0" : "(0)";
         } else {
             beforeDecimal = concatStrings(map(digitFunction, digits.a));
         }
         String result;
+        //noinspection ConstantConditions
         if (isEmpty(digits.b)) {
             result = beforeDecimal;
         } else {

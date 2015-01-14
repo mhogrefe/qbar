@@ -67,20 +67,10 @@ public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIt
      */
     @Override
     public @NotNull Iterable<Rational> rationals() {
+        //noinspection ConstantConditions
         return map(
-                p -> {
-                    assert p.a != null;
-                    assert p.b != null;
-                    return Rational.of(p.a, p.b);
-                },
-                filter(
-                        p -> {
-                            assert p.a != null;
-                            assert p.b != null;
-                            return p.a.gcd(p.b).equals(BigInteger.ONE);
-                        },
-                        pairs(bigIntegers(), positiveBigIntegers())
-                )
+                p -> Rational.of(p.a, p.b),
+                filter(p -> p.a.gcd(p.b).equals(BigInteger.ONE), pairs(bigIntegers(), positiveBigIntegers()))
         );
     }
 
@@ -91,20 +81,10 @@ public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIt
      */
     @Override
     public @NotNull Iterable<Rational> nonNegativeRationals() {
+        //noinspection ConstantConditions
         return map(
-                p -> {
-                    assert p.a != null;
-                    assert p.b != null;
-                    return Rational.of(p.a, p.b);
-                },
-                filter(
-                        p -> {
-                            assert p.a != null;
-                            assert p.b != null;
-                            return p.a.gcd(p.b).equals(BigInteger.ONE);
-                        },
-                        pairs(naturalBigIntegers(), positiveBigIntegers())
-                )
+                p -> Rational.of(p.a, p.b),
+                filter(p -> p.a.gcd(p.b).equals(BigInteger.ONE), pairs(naturalBigIntegers(), positiveBigIntegers()))
         );
     }
 
@@ -115,17 +95,10 @@ public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIt
      */
     @Override
     public @NotNull Iterable<Rational> positiveRationals() {
+        //noinspection ConstantConditions
         return map(
-                p -> {
-                    assert p.a != null;
-                    assert p.b != null;
-                    return Rational.of(p.a, p.b);
-                },
-                filter(p -> {
-                    assert p.a != null;
-                    assert p.b != null;
-                    return p.a.gcd(p.b).equals(BigInteger.ONE);
-                }, pairs(positiveBigIntegers()))
+                p -> Rational.of(p.a, p.b),
+                filter(p -> p.a.gcd(p.b).equals(BigInteger.ONE), pairs(positiveBigIntegers()))
         );
     }
 
