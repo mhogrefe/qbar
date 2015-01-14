@@ -139,7 +139,7 @@ public class RationalVectorTest {
     }
 
     @Test
-    public void testOne() {
+    public void testIdentity() {
         aeq(identity(1, 0), "[1]");
         aeq(identity(3, 0), "[1, 0, 0]");
         aeq(identity(3, 1), "[0, 1, 0]");
@@ -164,10 +164,38 @@ public class RationalVectorTest {
     }
 
     @Test
+    public void testIsZero() {
+        assertTrue(ZERO_DIMENSIONAL.isZero());
+        assertTrue(read("[0]").get().isZero());
+        assertFalse(read("[5]").get().isZero());
+        assertTrue(read("[0, 0, 0]").get().isZero());
+        assertFalse(read("[0, 0, 3]").get().isZero());
+    }
+
+    @Test
     public void testNegate() {
         aeq(ZERO_DIMENSIONAL.negate(), "[]");
         aeq(read("[1/2]").get().negate(), "[-1/2]");
         aeq(read("[5/3, -1/4, 23]").get().negate(), "[-5/3, 1/4, -23]");
+    }
+
+    @Test
+    public void testAdd() {
+        assertTrue(ZERO_DIMENSIONAL.add(ZERO_DIMENSIONAL) == ZERO_DIMENSIONAL);
+        aeq(read("[2]").get().add(read("[3]").get()), "[5]");
+        aeq(read("[5/3, 4, 0]").get().add(read("[-2, 1, 3]").get()), "[-1/3, 5, 3]");
+        try {
+            ZERO_DIMENSIONAL.add(read("[1/2]").get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+        try {
+            read("[1/2]").get().add(ZERO_DIMENSIONAL);
+            fail();
+        } catch (ArithmeticException ignored) {}
+        try {
+            read("[1/2, 4, -4]").get().add(read("[5/6, 2/3]").get());
+            fail();
+        } catch (ArithmeticException ignored) {}
     }
 
     @Test

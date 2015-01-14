@@ -210,20 +210,6 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
     }
 
     /**
-     * Determines whether {@code this} is a zero vector
-     *
-     * <ul>
-     *  <li>{@code this} may be any {@code RationalVector}.</li>
-     *  <li>The result may be either {@code boolean}.</li>
-     * </ul>
-     *
-     * @return whether {@code this}=0
-     */
-    public boolean isZero() {
-        return all(r -> r == Rational.ZERO, coordinates);
-    }
-
-    /**
      * Creates an identity vector; that is, a vector with a given dimension, all of whose coordinates are 0, except for
      * a single coordinate which is 1. Identity matrices are made up of identity vectors. There is no identity vector
      * of dimension 0.
@@ -249,6 +235,20 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
         if (i >= dimension)
             throw new IllegalArgumentException("i must be less than dimension");
         return new RationalVector(toList(insert(replicate(dimension - 1, Rational.ZERO), i, Rational.ONE)));
+    }
+
+    /**
+     * Determines whether {@code this} is a zero vector
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalVector}.</li>
+     *  <li>The result may be either {@code boolean}.</li>
+     * </ul>
+     *
+     * @return whether {@code this}=0
+     */
+    public boolean isZero() {
+        return all(r -> r == Rational.ZERO, coordinates);
     }
 
     /**
