@@ -348,6 +348,17 @@ public class RationalVectorProperties {
             RationalVector sum2 = t.a.add(t.b.add(t.c));
             assertEquals(t.toString(), sum1, sum2);
         }
+
+        Iterable<Pair<RationalVector, RationalVector>> psFail = filter(
+                p -> p.a.dimension() != p.b.dimension(),
+                P.pairs(P.rationalVectors())
+        );
+        for (Pair<RationalVector, RationalVector> p : take(LIMIT, psFail)) {
+            try {
+                p.a.add(p.b);
+                fail(p.toString());
+            } catch (ArithmeticException ignored) {}
+        }
     }
 
     private static void propertiesEquals() {
