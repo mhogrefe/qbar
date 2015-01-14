@@ -20,7 +20,7 @@ import static mho.wheels.iterables.IterableUtils.*;
 import static mho.qbar.objects.Rational.*;
 import static mho.wheels.misc.Readers.findBigDecimalIn;
 
-@SuppressWarnings("ConstantConditions")
+@SuppressWarnings({"ConstantConditions", "UnusedDeclaration"})
 public class RationalDemos {
     private static final boolean USE_RANDOM = false;
     private static final String RATIONAL_CHARS = "-/0123456789";

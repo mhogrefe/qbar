@@ -21,6 +21,7 @@ import static mho.qbar.objects.Rational.*;
 import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 
+@SuppressWarnings("ConstantConditions")
 public class RationalTest {
     @Test
     public void testConstants() {
@@ -3067,7 +3068,6 @@ public class RationalTest {
         aeq(read("415/93").get().positionalNotation(BigInteger.valueOf(100)),
                 "([4], [], [46, 23, 65, 59, 13, 97, 84, 94, 62, 36, 55, 91, 39, 78, 49])");
         Rational approxPi = ofExact(Math.PI);
-        assert approxPi != null;
         aeq(approxPi.positionalNotation(BigInteger.valueOf(2)),
                 "([1, 1]," +
                 " [0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0," +
@@ -3501,7 +3501,6 @@ public class RationalTest {
                 "415/93"
         );
         Rational approxPi = ofExact(Math.PI);
-        assert approxPi != null;
         aeq(
                 fromPositionalNotation(
                         BigInteger.valueOf(2),
@@ -3765,7 +3764,6 @@ public class RationalTest {
 
         result = read("1/2").get().digits(BigInteger.valueOf(3));
         aeq(result.a, "[]");
-        assert result.b != null;
         aeq(IterableUtils.toString(20, result.b), "[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ...]");
 
         result = read("1/2").get().digits(BigInteger.valueOf(4));
@@ -3782,18 +3780,15 @@ public class RationalTest {
 
         result = read("1/2").get().digits(BigInteger.valueOf(83));
         aeq(result.a, "[]");
-        assert result.b != null;
         aeq(IterableUtils.toString(20, result.b),
                 "[41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, ...]");
 
         result = read("1/2").get().digits(BigInteger.valueOf(100));
-        assert result.b != null;
         aeq(result.a, "[]");
         aeq(result.b, "[50]");
 
         result = read("1/3").get().digits(BigInteger.valueOf(2));
         aeq(result.a, "[]");
-        assert result.b != null;
         aeq(IterableUtils.toString(20, result.b), "[0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, ...]");
 
         result = read("1/3").get().digits(BigInteger.valueOf(3));
@@ -3802,107 +3797,87 @@ public class RationalTest {
 
         result = read("1/3").get().digits(BigInteger.valueOf(4));
         aeq(result.a, "[]");
-        assert result.b != null;
         aeq(IterableUtils.toString(20, result.b), "[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ...]");
 
         result = read("1/3").get().digits(BigInteger.valueOf(10));
         aeq(result.a, "[]");
-        assert result.b != null;
         aeq(IterableUtils.toString(20, result.b), "[3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, ...]");
         result = read("1/3").get().digits(BigInteger.valueOf(16));
         aeq(result.a, "[]");
-        assert result.b != null;
         aeq(IterableUtils.toString(20, result.b), "[5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, ...]");
 
         result = read("1/3").get().digits(BigInteger.valueOf(83));
         aeq(result.a, "[]");
-        assert result.b != null;
         aeq(IterableUtils.toString(20, result.b),
                 "[27, 55, 27, 55, 27, 55, 27, 55, 27, 55, 27, 55, 27, 55, 27, 55, 27, 55, 27, 55, ...]");
 
         result = read("1/3").get().digits(BigInteger.valueOf(100));
         aeq(result.a, "[]");
-        assert result.b != null;
         aeq(IterableUtils.toString(20, result.b),
                 "[33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, ...]");
 
         result = read("1/7").get().digits(BigInteger.valueOf(2));
         aeq(result.a, "[]");
-        assert result.b != null;
         aeq(IterableUtils.toString(20, result.b), "[0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, ...]");
 
         result = read("1/7").get().digits(BigInteger.valueOf(3));
         aeq(result.a, "[]");
-        assert result.b != null;
         aeq(IterableUtils.toString(20, result.b), "[0, 1, 0, 2, 1, 2, 0, 1, 0, 2, 1, 2, 0, 1, 0, 2, 1, 2, 0, 1, ...]");
 
         result = read("1/7").get().digits(BigInteger.valueOf(4));
         aeq(result.a, "[]");
-        assert result.b != null;
         aeq(IterableUtils.toString(20, result.b), "[0, 2, 1, 0, 2, 1, 0, 2, 1, 0, 2, 1, 0, 2, 1, 0, 2, 1, 0, 2, ...]");
 
         result = read("1/7").get().digits(BigInteger.valueOf(10));
         aeq(result.a, "[]");
-        assert result.b != null;
         aeq(IterableUtils.toString(20, result.b), "[1, 4, 2, 8, 5, 7, 1, 4, 2, 8, 5, 7, 1, 4, 2, 8, 5, 7, 1, 4, ...]");
 
         result = read("1/7").get().digits(BigInteger.valueOf(16));
         aeq(result.a, "[]");
-        assert result.b != null;
         aeq(IterableUtils.toString(20, result.b), "[2, 4, 9, 2, 4, 9, 2, 4, 9, 2, 4, 9, 2, 4, 9, 2, 4, 9, 2, 4, ...]");
 
         result = read("1/7").get().digits(BigInteger.valueOf(83));
         aeq(result.a, "[]");
-        assert result.b != null;
         aeq(IterableUtils.toString(20, result.b),
                 "[11, 71, 11, 71, 11, 71, 11, 71, 11, 71, 11, 71, 11, 71, 11, 71, 11, 71, 11, 71, ...]");
 
         result = read("1/7").get().digits(BigInteger.valueOf(100));
         aeq(result.a, "[]");
-        assert result.b != null;
         aeq(IterableUtils.toString(20, result.b),
                 "[14, 28, 57, 14, 28, 57, 14, 28, 57, 14, 28, 57, 14, 28, 57, 14, 28, 57, 14, 28, ...]");
 
         result = read("415/93").get().digits(BigInteger.valueOf(2));
         aeq(result.a, "[1, 0, 0]");
-        assert result.b != null;
         aeq(IterableUtils.toString(20, result.b), "[0, 1, 1, 1, 0, 1, 1, 0, 0, 1, 0, 1, 1, 1, 0, 1, 1, 0, 0, 1, ...]");
 
         result = read("415/93").get().digits(BigInteger.valueOf(3));
         aeq(result.a, "[1, 1]");
-        assert result.b != null;
         aeq(IterableUtils.toString(20, result.b), "[1, 1, 0, 1, 1, 1, 0, 0, 1, 2, 0, 2, 0, 0, 0, 2, 1, 2, 1, 1, ...]");
 
         result = read("415/93").get().digits(BigInteger.valueOf(4));
         aeq(result.a, "[1, 0]");
-        assert result.b != null;
         aeq(IterableUtils.toString(20, result.b), "[1, 3, 1, 2, 1, 1, 3, 1, 2, 1, 1, 3, 1, 2, 1, 1, 3, 1, 2, 1, ...]");
 
         result = read("415/93").get().digits(BigInteger.valueOf(10));
         aeq(result.a, "[4]");
-        assert result.b != null;
         aeq(IterableUtils.toString(20, result.b), "[4, 6, 2, 3, 6, 5, 5, 9, 1, 3, 9, 7, 8, 4, 9, 4, 6, 2, 3, 6, ...]");
 
         result = read("415/93").get().digits(BigInteger.valueOf(16));
         aeq(result.a, "[4]");
-        assert result.b != null;
         aeq(IterableUtils.toString(20, result.b),
                 "[7, 6, 5, 13, 9, 7, 6, 5, 13, 9, 7, 6, 5, 13, 9, 7, 6, 5, 13, 9, ...]");
 
         result = read("415/93").get().digits(BigInteger.valueOf(83));
         aeq(result.a, "[4]");
-        assert result.b != null;
         aeq(IterableUtils.toString(20, result.b),
                 "[38, 31, 19, 52, 54, 36, 49, 7, 11, 49, 81, 17, 70, 41, 78, 44, 51, 63, 30, 28, ...]");
 
         result = read("415/93").get().digits(BigInteger.valueOf(100));
         aeq(result.a, "[4]");
-        assert result.b != null;
         aeq(IterableUtils.toString(20, result.b),
                 "[46, 23, 65, 59, 13, 97, 84, 94, 62, 36, 55, 91, 39, 78, 49, 46, 23, 65, 59, 13, ...]");
 
         Rational approxPi = ofExact(Math.PI);
-        assert approxPi != null;
 
         result = approxPi.digits(BigInteger.valueOf(2));
         aeq(result.a, "[1, 1]");
@@ -3912,7 +3887,6 @@ public class RationalTest {
 
         result = approxPi.digits(BigInteger.valueOf(3));
         aeq(result.a, "[1, 0]");
-        assert result.b != null;
         aeq(IterableUtils.toString(20, result.b), "[0, 1, 0, 2, 1, 1, 0, 1, 2, 2, 2, 2, 0, 1, 0, 2, 1, 1, 0, 0, ...]");
 
         result = approxPi.digits(BigInteger.valueOf(4));
@@ -3932,7 +3906,6 @@ public class RationalTest {
 
         result = approxPi.digits(BigInteger.valueOf(83));
         aeq(result.a, "[3]");
-        assert result.b != null;
         aeq(IterableUtils.toString(20, result.b),
                 "[11, 62, 35, 69, 50, 19, 79, 18, 11, 8, 60, 35, 10, 62, 20, 58, 42, 14, 31, 34, ...]");
 
@@ -3943,37 +3916,30 @@ public class RationalTest {
 
         result = read("299/56").get().digits(BigInteger.valueOf(2));
         aeq(result.a, "[1, 0, 1]");
-        assert result.b != null;
         aeq(IterableUtils.toString(20, result.b), "[0, 1, 0, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, ...]");
 
         result = read("405/26").get().digits(BigInteger.valueOf(3));
         aeq(result.a, "[1, 2, 0]");
-        assert result.b != null;
         aeq(IterableUtils.toString(20, result.b), "[1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, ...]");
 
         result = read("15613/576").get().digits(BigInteger.valueOf(4));
         aeq(result.a, "[1, 2, 3]");
-        assert result.b != null;
         aeq(IterableUtils.toString(20, result.b), "[0, 1, 2, 3, 0, 1, 3, 0, 1, 3, 0, 1, 3, 0, 1, 3, 0, 1, 3, 0, ...]");
 
         result = read("41111111/333000").get().digits(BigInteger.valueOf(10));
         aeq(result.a, "[1, 2, 3]");
-        assert result.b != null;
         aeq(IterableUtils.toString(20, result.b), "[4, 5, 6, 7, 8, 9, 7, 8, 9, 7, 8, 9, 7, 8, 9, 7, 8, 9, 7, 8, ...]");
 
         result = read("1628508433/5591040").get().digits(BigInteger.valueOf(16));
         aeq(result.a, "[1, 2, 3]");
-        assert result.b != null;
         aeq(IterableUtils.toString(20, result.b), "[4, 5, 6, 7, 8, 9, 7, 8, 9, 7, 8, 9, 7, 8, 9, 7, 8, 9, 7, 8, ...]");
 
         result = read("1153778558235787/163469900791").get().digits(BigInteger.valueOf(83));
         aeq(result.a, "[1, 2, 3]");
-        assert result.b != null;
         aeq(IterableUtils.toString(20, result.b), "[4, 5, 6, 7, 8, 9, 7, 8, 9, 7, 8, 9, 7, 8, 9, 7, 8, 9, 7, 8, ...]");
 
         result = read("3401010101010101/333333000000").get().digits(BigInteger.valueOf(100));
         aeq(result.a, "[1, 2, 3]");
-        assert result.b != null;
         aeq(IterableUtils.toString(20, result.b), "[4, 5, 6, 7, 8, 9, 7, 8, 9, 7, 8, 9, 7, 8, 9, 7, 8, 9, 7, 8, ...]");
 
         try {

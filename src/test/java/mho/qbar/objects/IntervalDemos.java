@@ -12,7 +12,7 @@ import static mho.qbar.objects.Interval.*;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.ordering.Ordering.*;
 
-@SuppressWarnings("ConstantConditions")
+@SuppressWarnings({"ConstantConditions", "UnusedDeclaration"})
 public class IntervalDemos {
     private static final boolean USE_RANDOM = false;
     private static final String INTERVAL_CHARS = " (),-/0123456789I[]finty";

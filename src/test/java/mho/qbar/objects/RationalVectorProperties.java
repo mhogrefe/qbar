@@ -88,10 +88,10 @@ public class RationalVectorProperties {
         initialize();
         System.out.println("\t\ttesting x() properties");
 
-        Iterable<RationalVector> vs = map(p -> {
-            assert p.b != null;
-            return RationalVector.of(toList(cons(p.a, p.b)));
-        }, P.pairs(P.rationals(), P.rationalVectors()));
+        Iterable<RationalVector> vs = map(
+                p -> RationalVector.of(toList(cons(p.a, p.b))),
+                P.pairs(P.rationals(), P.rationalVectors())
+        );
         for (RationalVector v : take(LIMIT, vs)) {
             Rational x = v.x();
             assertEquals(v.toString(), x, toList(v).get(0));
@@ -103,8 +103,6 @@ public class RationalVectorProperties {
         System.out.println("\t\ttesting y() properties");
 
         Iterable<RationalVector> vs = map(p -> {
-            assert p.a != null;
-            assert p.b != null;
             return RationalVector.of(toList(concat(p.a, p.b)));
         }, P.pairs(P.rationalVectors(2), P.rationalVectors()));
         for (RationalVector v : take(LIMIT, vs)) {
@@ -117,11 +115,10 @@ public class RationalVectorProperties {
         initialize();
         System.out.println("\t\ttesting z() properties");
 
-        Iterable<RationalVector> vs = map(p -> {
-            assert p.a != null;
-            assert p.b != null;
-            return RationalVector.of(toList(concat(p.a, p.b)));
-        }, P.pairs(P.rationalVectors(3), P.rationalVectors()));
+        Iterable<RationalVector> vs = map(
+                p -> RationalVector.of(toList(concat(p.a, p.b))),
+                P.pairs(P.rationalVectors(3), P.rationalVectors())
+        );
         for (RationalVector v : take(LIMIT, vs)) {
             Rational z = v.z();
             assertEquals(v.toString(), z, toList(v).get(2));
@@ -132,11 +129,10 @@ public class RationalVectorProperties {
         initialize();
         System.out.println("\t\ttesting w() properties");
 
-        Iterable<RationalVector> vs = map(p -> {
-            assert p.a != null;
-            assert p.b != null;
-            return RationalVector.of(toList(concat(p.a, p.b)));
-        }, P.pairs(P.rationalVectors(4), P.rationalVectors()));
+        Iterable<RationalVector> vs = map(
+                p -> RationalVector.of(toList(concat(p.a, p.b))),
+                P.pairs(P.rationalVectors(4), P.rationalVectors())
+        );
         for (RationalVector v : take(LIMIT, vs)) {
             Rational w = v.w();
             assertEquals(v.toString(), w, toList(v).get(3));
@@ -152,23 +148,15 @@ public class RationalVectorProperties {
                 v -> range(0, v.dimension() - 1)
         );
         for (Pair<RationalVector, Integer> p : take(LIMIT, ps)) {
-            assert p.a != null;
-            assert p.b != null;
             Rational x = p.a.x(p.b);
             assertEquals(p.toString(), x, toList(p.a).get(p.b));
         }
 
         Iterable<Pair<RationalVector, Integer>> psFail = filter(
-                p -> {
-                    assert p.a != null;
-                    assert p.b != null;
-                    return p.b < 0 || p.b >= p.a.dimension();
-                },
+                p -> p.b < 0 || p.b >= p.a.dimension(),
                 P.pairs(P.rationalVectors(), P.integers())
         );
         for (Pair<RationalVector, Integer> p : take(LIMIT, psFail)) {
-            assert p.a != null;
-            assert p.b != null;
             try {
                 p.a.x(p.b);
                 fail(p.toString());
@@ -187,14 +175,13 @@ public class RationalVectorProperties {
             assertEquals(rs.toString(), v.dimension(), rs.size());
         }
 
-        Iterable<List<Rational>> failRss = map(p -> {
-            assert p.a != null;
-            assert p.b != null;
-            return toList(insert(p.a, p.b, null));
-        }, (Iterable<Pair<List<Rational>, Integer>>) P.dependentPairsLogarithmic(
-                P.lists(P.rationals()),
-                rs -> range(0, rs.size())
-        ));
+        Iterable<List<Rational>> failRss = map(
+                p -> toList(insert(p.a, p.b, null)),
+                (Iterable<Pair<List<Rational>, Integer>>) P.dependentPairsLogarithmic(
+                        P.lists(P.rationals()),
+                        rs -> range(0, rs.size())
+                )
+        );
         for (List<Rational> rs : take(LIMIT, failRss)) {
             try {
                 of(rs);
@@ -261,8 +248,6 @@ public class RationalVectorProperties {
             is = ((RandomProvider) P).naturalIntegersGeometric(20);
         }
         for (Pair<Integer, Integer> p : take(SMALL_LIMIT, filter(q -> q.a > q.b, P.pairs(is)))) {
-            assert p.a != null;
-            assert p.b != null;
             RationalVector identity = identity(p.a, p.b);
             validate(identity);
             assertEquals(p.toString(), identity.dimension(), p.a.intValue());
@@ -272,8 +257,6 @@ public class RationalVectorProperties {
         }
 
         for (Pair<Integer, Integer> p : take(LIMIT, P.pairs(P.rangeDown(0), P.integers()))) {
-            assert p.a != null;
-            assert p.b != null;
             try {
                 identity(p.a, p.b);
                 fail(p.toString());
@@ -281,8 +264,6 @@ public class RationalVectorProperties {
         }
 
         for (Pair<Integer, Integer> p : take(LIMIT, P.pairs(P.negativeIntegers(), P.integers()))) {
-            assert p.a != null;
-            assert p.b != null;
             try {
                 identity(p.a, p.b);
                 fail(p.toString());
@@ -290,8 +271,6 @@ public class RationalVectorProperties {
         }
 
         for (Pair<Integer, Integer> p : take(LIMIT, filter(q -> q.a <= q.b, P.pairs(P.naturalIntegers())))) {
-            assert p.a != null;
-            assert p.b != null;
             try {
                 identity(p.a, p.b);
                 fail(p.toString());
@@ -397,8 +376,6 @@ public class RationalVectorProperties {
         System.out.println("\t\ttesting compareTo(RationalVector) properties...");
 
         for (Pair<RationalVector, RationalVector> p : take(LIMIT, P.pairs(P.rationalVectors()))) {
-            assert p.a != null;
-            assert p.b != null;
             int compare = p.a.compareTo(p.b);
             assertTrue(p.toString(), compare == -1 || compare == 0 || compare == 1);
             assertEquals(p.toString(), p.b.compareTo(p.a), -compare);
@@ -409,30 +386,18 @@ public class RationalVectorProperties {
         }
 
         Iterable<Triple<RationalVector, RationalVector, RationalVector>> ts = filter(
-                t -> {
-                    assert t.a != null;
-                    assert t.b != null;
-                    return lt(t.a, t.b) && lt(t.b, t.c);
-                },
+                t -> lt(t.a, t.b) && lt(t.b, t.c),
                 P.triples(P.rationalVectors())
         );
         for (Triple<RationalVector, RationalVector, RationalVector> t : take(LIMIT, ts)) {
-            assert t.a != null;
-            assert t.c != null;
             assertEquals(t.toString(), t.a.compareTo(t.c), -1);
         }
 
         Iterable<Pair<RationalVector, RationalVector>> ps = filter(
-                p -> {
-                    assert p.a != null;
-                    assert p.b != null;
-                    return p.a.dimension() != p.b.dimension();
-                },
+                p -> p.a.dimension() != p.b.dimension(),
                 P.pairs(P.rationalVectors())
         );
         for (Pair<RationalVector, RationalVector> p : take(LIMIT, ps)) {
-            assert p.a != null;
-            assert p.b != null;
             assertEquals(p.toString(), compare(p.a, p.b), compare(p.a.dimension(), p.b.dimension()));
         }
     }
@@ -461,12 +426,7 @@ public class RationalVectorProperties {
 
         Iterable<Pair<String, Integer>> ps = P.dependentPairsLogarithmic(P.strings(), s -> range(0, s.length()));
         Iterable<String> ss = map(
-                p -> {
-                    assert p.a != null;
-                    assert p.a.a != null;
-                    assert p.a.b != null;
-                    return take(p.a.b, p.a.a) + p.b + drop(p.a.b, p.a.a);
-                },
+                p -> take(p.a.b, p.a.a) + p.b + drop(p.a.b, p.a.a),
                 P.pairs(ps, P.rationalVectors())
         );
         for (String s : take(LIMIT, ss)) {

@@ -15,6 +15,7 @@ import java.util.Random;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.ordering.Ordering.*;
 
+@SuppressWarnings("ConstantConditions")
 public class QBarRandomProvider extends RandomProvider implements QBarIterableProvider {
     public QBarRandomProvider() {
         super();
@@ -69,17 +70,9 @@ public class QBarRandomProvider extends RandomProvider implements QBarIterablePr
      */
     public @NotNull Iterable<Rational> rationals(int meanBitSize) {
         return map(
-                p -> {
-                    assert p.a != null;
-                    assert p.b != null;
-                    return Rational.of(p.a, p.b);
-                },
+                p -> Rational.of(p.a, p.b),
                 filter(
-                        q -> {
-                            assert q.a != null;
-                            assert q.b != null;
-                            return q.a.gcd(q.b).equals(BigInteger.ONE);
-                        },
+                        q -> q.a.gcd(q.b).equals(BigInteger.ONE),
                         pairs(bigIntegers(meanBitSize / 2), positiveBigIntegers(meanBitSize / 2))
                 )
         );
@@ -121,17 +114,9 @@ public class QBarRandomProvider extends RandomProvider implements QBarIterablePr
      */
     public @NotNull Iterable<Rational> nonNegativeRationals(int meanBitSize) {
         return map(
-                p -> {
-                    assert p.a != null;
-                    assert p.b != null;
-                    return Rational.of(p.a, p.b);
-                },
+                p -> Rational.of(p.a, p.b),
                 filter(
-                        q -> {
-                            assert q.a != null;
-                            assert q.b != null;
-                            return q.a.gcd(q.b).equals(BigInteger.ONE);
-                        },
+                        q -> q.a.gcd(q.b).equals(BigInteger.ONE),
                         pairs(naturalBigIntegers(meanBitSize / 2), positiveBigIntegers(meanBitSize / 2))
                 )
         );

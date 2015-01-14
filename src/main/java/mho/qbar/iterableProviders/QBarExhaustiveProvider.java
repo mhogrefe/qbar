@@ -16,6 +16,7 @@ import java.util.Optional;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.ordering.Ordering.*;
 
+@SuppressWarnings("ConstantConditions")
 public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIterableProvider {
     public static final @NotNull QBarExhaustiveProvider INSTANCE = new QBarExhaustiveProvider();
 
@@ -110,19 +111,8 @@ public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIt
     @Override
     public @NotNull Iterable<Rational> negativeRationals() {
         return map(
-                p -> {
-                    assert p.a != null;
-                    assert p.b != null;
-                    return Rational.of(p.a, p.b);
-                },
-                filter(
-                        p -> {
-                            assert p.a != null;
-                            assert p.b != null;
-                            return p.a.gcd(p.b).equals(BigInteger.ONE);
-                        },
-                        pairs(negativeBigIntegers(), positiveBigIntegers())
-                )
+                p -> Rational.of(p.a, p.b),
+                filter(p -> p.a.gcd(p.b).equals(BigInteger.ONE), pairs(negativeBigIntegers(), positiveBigIntegers()))
         );
     }
 
@@ -134,17 +124,9 @@ public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIt
     @Override
     public @NotNull Iterable<Rational> nonNegativeRationalsLessThanOne() {
         return map(
-                p -> {
-                    assert p.a != null;
-                    assert p.b != null;
-                    return Rational.of(p.a, p.b);
-                },
+                p -> Rational.of(p.a, p.b),
                 filter(
-                        p -> {
-                            assert p.a != null;
-                            assert p.b != null;
-                            return lt(p.a, p.b) && p.a.gcd(p.b).equals(BigInteger.ONE);
-                        },
+                        p -> lt(p.a, p.b) && p.a.gcd(p.b).equals(BigInteger.ONE),
                         pairs(naturalBigIntegers(), positiveBigIntegers())
                 )
         );
@@ -158,14 +140,7 @@ public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIt
      */
     @Override
     public @NotNull Iterable<Interval> finitelyBoundedIntervals() {
-        return map(p -> {
-            assert p.a != null;
-            assert p.b != null;
-            return Interval.of(p.a, p.b);
-        }, filter(p -> {
-            assert p.a != null;
-            return le(p.a, p.b);
-        }, pairs(rationals())));
+        return map(p -> Interval.of(p.a, p.b), filter(p -> le(p.a, p.b), pairs(rationals())));
     }
 
     /**
@@ -177,19 +152,13 @@ public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIt
     public @NotNull Iterable<Interval> intervals() {
         return map(
                 p -> {
-                    assert p.a != null;
-                    assert p.b != null;
                     if (!p.a.isPresent() && !p.b.isPresent()) return Interval.ALL;
                     if (!p.a.isPresent()) return Interval.lessThanOrEqualTo(p.b.get());
                     if (!p.b.isPresent()) return Interval.greaterThanOrEqualTo(p.a.get());
                     return Interval.of(p.a.get(), p.b.get());
                 },
                 filter(
-                        p -> {
-                            assert p.a != null;
-                            assert p.b != null;
-                            return !p.a.isPresent() || !p.b.isPresent() || le(p.a.get(), p.b.get());
-                        },
+                        p -> !p.a.isPresent() || !p.b.isPresent() || le(p.a.get(), p.b.get()),
                         (Iterable<Pair<Optional<Rational>, Optional<Rational>>>) pairs(optionals(rationals()))
                 )
         );
