@@ -396,13 +396,12 @@ public final class Rational implements Comparable<Rational> {
         long mantissa = bits & ((1L << 52) - 1);
         Rational rational;
         if (exponent == 0) {
-            rational = of(BigInteger.valueOf(mantissa)).shiftRight(1074);
+            rational = of(mantissa).shiftRight(1074);
         } else {
-            Rational significand = of(BigInteger.valueOf(mantissa)).shiftRight(52);
+            Rational significand = of(mantissa).shiftRight(52);
             rational = significand.add(ONE).shiftLeft(exponent - 1023);
         }
-        if (bits < 0) rational = rational.negate();
-        return rational;
+        return bits < 0 ? rational.negate() : rational;
     }
 
     /**
@@ -1535,12 +1534,12 @@ public final class Rational implements Comparable<Rational> {
         int denominatorTwos = denominator.getLowestSetBit();
         if (bits <= denominatorTwos) {
             BigInteger shifted = denominator.shiftRight(bits);
-            if (numerator.equals(BigInteger.ONE) && shifted.equals(BigInteger.ONE)) return ONE;
+            if (numerator.equals(shifted)) return ONE;
             return new Rational(numerator, shifted);
         } else {
             BigInteger shiftedNumerator = numerator.shiftLeft(bits - denominatorTwos);
             BigInteger shiftedDenominator = denominator.shiftRight(denominatorTwos);
-            if (shiftedNumerator.equals(BigInteger.ONE) && shiftedDenominator.equals(BigInteger.ONE)) return ONE;
+            if (shiftedNumerator.equals(shiftedDenominator)) return ONE;
             return new Rational(shiftedNumerator, shiftedDenominator);
         }
     }
@@ -1565,12 +1564,12 @@ public final class Rational implements Comparable<Rational> {
         int numeratorTwos = numerator.getLowestSetBit();
         if (bits <= numeratorTwos) {
             BigInteger shifted = numerator.shiftRight(bits);
-            if (shifted.equals(BigInteger.ONE) && denominator.equals(BigInteger.ONE)) return ONE;
+            if (shifted.equals(denominator)) return ONE;
             return new Rational(shifted, denominator);
         } else {
             BigInteger shiftedNumerator = numerator.shiftRight(numeratorTwos);
             BigInteger shiftedDenominator = denominator.shiftLeft(bits - numeratorTwos);
-            if (shiftedNumerator.equals(BigInteger.ONE) && shiftedDenominator.equals(BigInteger.ONE)) return ONE;
+            if (shiftedNumerator.equals(shiftedDenominator)) return ONE;
             return new Rational(shiftedNumerator, shiftedDenominator);
         }
     }
