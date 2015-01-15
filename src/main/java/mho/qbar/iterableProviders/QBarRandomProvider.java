@@ -157,17 +157,9 @@ public class QBarRandomProvider extends RandomProvider implements QBarIterablePr
      */
     public @NotNull Iterable<Rational> positiveRationals(int meanBitSize) {
         return map(
-                p -> {
-                    assert p.a != null;
-                    assert p.b != null;
-                    return Rational.of(p.a, p.b);
-                },
+                p -> Rational.of(p.a, p.b),
                 filter(
-                        q -> {
-                            assert q.a != null;
-                            assert q.b != null;
-                            return q.a.gcd(q.b).equals(BigInteger.ONE);
-                        },
+                        q -> q.a.gcd(q.b).equals(BigInteger.ONE),
                         pairs(positiveBigIntegers(meanBitSize / 2), positiveBigIntegers(meanBitSize / 2))
                 )
         );
@@ -208,17 +200,9 @@ public class QBarRandomProvider extends RandomProvider implements QBarIterablePr
      */
     public @NotNull Iterable<Rational> negativeRationals(int meanBitSize) {
         return map(
-                p -> {
-                    assert p.a != null;
-                    assert p.b != null;
-                    return Rational.of(p.a, p.b);
-                },
+                p -> Rational.of(p.a, p.b),
                 filter(
-                        q -> {
-                            assert q.a != null;
-                            assert q.b != null;
-                            return q.a.gcd(q.b).equals(BigInteger.ONE);
-                        },
+                        q -> q.a.gcd(q.b).equals(BigInteger.ONE),
                         pairs(negativeBigIntegers(meanBitSize / 2), positiveBigIntegers(meanBitSize / 2))
                 )
         );
@@ -259,17 +243,9 @@ public class QBarRandomProvider extends RandomProvider implements QBarIterablePr
      */
     public @NotNull Iterable<Rational> nonNegativeRationalsLessThanOne(int meanBitSize) {
         return map(
-                p -> {
-                    assert p.a != null;
-                    assert p.b != null;
-                    return Rational.of(p.a, p.b);
-                },
+                p -> Rational.of(p.a, p.b),
                 filter(
-                        q -> {
-                            assert q.a != null;
-                            assert q.b != null;
-                            return lt(q.a, q.b) && q.a.gcd(q.b).equals(BigInteger.ONE);
-                        },
+                        q -> lt(q.a, q.b) && q.a.gcd(q.b).equals(BigInteger.ONE),
                         pairs(naturalBigIntegers(meanBitSize / 2), positiveBigIntegers(meanBitSize / 2))
                 )
         );
@@ -310,21 +286,7 @@ public class QBarRandomProvider extends RandomProvider implements QBarIterablePr
      * @return the {@code Iterable} described above.
      */
     public @NotNull Iterable<Interval> finitelyBoundedIntervals(int meanBitSize) {
-        return map(
-                p -> {
-                    assert p.a != null;
-                    assert p.b != null;
-                    return Interval.of(p.a, p.b);
-                },
-                filter(
-                        p -> {
-                            assert p.a != null;
-                            assert p.b != null;
-                            return le(p.a, p.b);
-                        },
-                        pairs(rationals(meanBitSize / 2))
-                )
-        );   
+        return map(p -> Interval.of(p.a, p.b), filter(p -> le(p.a, p.b), pairs(rationals(meanBitSize / 2))));
     }
 
     /**
@@ -365,19 +327,13 @@ public class QBarRandomProvider extends RandomProvider implements QBarIterablePr
     public @NotNull Iterable<Interval> intervals(int meanBitSize) {
         return map(
                 p -> {
-                    assert p.a != null;
-                    assert p.b != null;
                     if (!p.a.isPresent() && !p.b.isPresent()) return Interval.ALL;
                     if (!p.a.isPresent()) return Interval.lessThanOrEqualTo(p.b.get());
                     if (!p.b.isPresent()) return Interval.greaterThanOrEqualTo(p.a.get());
                     return Interval.of(p.a.get(), p.b.get());
                 },
                 filter(
-                        p -> {
-                            assert p.a != null;
-                            assert p.b != null;
-                            return !p.a.isPresent() || !p.b.isPresent() || le(p.a.get(), p.b.get());
-                        },
+                        p -> !p.a.isPresent() || !p.b.isPresent() || le(p.a.get(), p.b.get()),
                         (Iterable<Pair<Optional<Rational>, Optional<Rational>>>)
                                 pairs(optionals(rationals(meanBitSize / 2)))
                 )

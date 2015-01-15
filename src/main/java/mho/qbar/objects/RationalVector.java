@@ -17,6 +17,7 @@ import static mho.wheels.iterables.IterableUtils.*;
  *
  * <p>This class is immutable.
  */
+@SuppressWarnings("ConstantConditions")
 public class RationalVector implements Comparable<RationalVector>, Iterable<Rational> {
     /**
      * []
@@ -285,7 +286,6 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
         if (coordinates.size() != that.coordinates.size())
             throw new ArithmeticException("vectors must have same dimension");
         if (this == ZERO_DIMENSIONAL) return ZERO_DIMENSIONAL;
-        //noinspection ConstantConditions
         return of(toList(zipWith(p -> p.a.add(p.b), coordinates, that.coordinates)));
     }
 
@@ -381,7 +381,6 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
         Optional<Pair<List<Rational>, Integer>> op = Readers.findListIn(Rational::findIn, s);
         if (!op.isPresent()) return Optional.empty();
         Pair<List<Rational>, Integer> p = op.get();
-        //noinspection ConstantConditions
         if (p.a.isEmpty()) return Optional.of(new Pair<>(ZERO_DIMENSIONAL, p.b));
         return Optional.of(new Pair<>(new RationalVector(p.a), p.b));
     }

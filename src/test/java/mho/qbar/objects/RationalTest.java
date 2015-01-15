@@ -2640,7 +2640,7 @@ public class RationalTest {
         try {
             sum(readRationalListWithNulls("[10, null, 11]").get());
             fail();
-        } catch (AssertionError ignored) {}
+        } catch (IllegalArgumentException ignored) {}
     }
 
     @Test
@@ -2651,7 +2651,7 @@ public class RationalTest {
         try {
             product(readRationalListWithNulls("[10, null, 11]").get());
             fail();
-        } catch (AssertionError ignored) {}
+        } catch (IllegalArgumentException ignored) {}
     }
 
     @Test
@@ -2665,7 +2665,7 @@ public class RationalTest {
         try {
             toList(delta(readRationalListWithNulls("[10, null, 12]").get()));
             fail();
-        } catch (AssertionError ignored) {}
+        } catch (NullPointerException ignored) {}
     }
 
     @Test

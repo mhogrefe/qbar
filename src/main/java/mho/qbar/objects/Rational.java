@@ -31,6 +31,7 @@ import static mho.wheels.ordering.Ordering.*;
  *
  * <p>This class is immutable.
  */
+@SuppressWarnings("ConstantConditions")
 public final class Rational implements Comparable<Rational> {
     /**
      * 0
@@ -740,8 +741,6 @@ public final class Rational implements Comparable<Rational> {
         if (this == ZERO) return new Pair<>(0f, 0f);
         if (numerator.signum() == -1) {
             Pair<Float, Float> negativeRange = negate().floatRange();
-            assert negativeRange.a != null;
-            assert negativeRange.b != null;
             return new Pair<>(-negativeRange.b, -negativeRange.a);
         }
         int exponent = binaryExponent();
@@ -787,8 +786,6 @@ public final class Rational implements Comparable<Rational> {
         if (this == ZERO) return new Pair<>(0.0, 0.0);
         if (numerator.signum() == -1) {
             Pair<Double, Double> negativeRange = negate().doubleRange();
-            assert negativeRange.a != null;
-            assert negativeRange.b != null;
             return new Pair<>(-negativeRange.b, -negativeRange.a);
         }
         int exponent = binaryExponent();
@@ -872,8 +869,6 @@ public final class Rational implements Comparable<Rational> {
      */
     public float floatValue(@NotNull RoundingMode roundingMode) {
         Pair<Float, Float> floatRange = floatRange();
-        assert floatRange.a != null;
-        assert floatRange.b != null;
         if (floatRange.a.equals(floatRange.b)) return floatRange.a;
         Rational loFloat = ofExact(floatRange.a);
         Rational hiFloat = ofExact(floatRange.b);
@@ -1019,8 +1014,6 @@ public final class Rational implements Comparable<Rational> {
      */
     public double doubleValue(@NotNull RoundingMode roundingMode) {
         Pair<Double, Double> doubleRange = doubleRange();
-        assert doubleRange.a != null;
-        assert doubleRange.b != null;
         if (doubleRange.a.equals(doubleRange.b)) return doubleRange.a;
         Rational loDouble = ofExact(doubleRange.a);
         Rational hiDouble = ofExact(doubleRange.b);
@@ -1355,11 +1348,7 @@ public final class Rational implements Comparable<Rational> {
      * @return Σxs
      */
     public static Rational sum(@NotNull Iterable<Rational> xs) {
-        return foldl(p -> {
-            assert p.a != null;
-            assert p.b != null;
-            return p.a.add(p.b);
-        }, ZERO, xs);
+        return foldl(p -> p.a.add(p.b), ZERO, xs);
     }
 
     /**
@@ -1374,11 +1363,7 @@ public final class Rational implements Comparable<Rational> {
      * @return Πxs
      */
     public static Rational product(@NotNull Iterable<Rational> xs) {
-        return foldl(p -> {
-            assert p.a != null;
-            assert p.b != null;
-            return p.a.multiply(p.b);
-        }, ONE, xs);
+        return foldl(p -> p.a.multiply(p.b), ONE, xs);
     }
 
     /**
@@ -1400,11 +1385,7 @@ public final class Rational implements Comparable<Rational> {
             throw new IllegalArgumentException("cannot get delta of empty Iterable");
         if (head(xs) == null)
             throw new NullPointerException();
-        return adjacentPairsWith(p -> {
-            assert p.a != null;
-            assert p.b != null;
-            return p.b.subtract(p.a);
-        }, xs);
+        return adjacentPairsWith(p -> p.b.subtract(p.a), xs);
     }
 
     /**
@@ -1867,14 +1848,12 @@ public final class Rational implements Comparable<Rational> {
             digitFunction = i -> "(" + i + ")";
         }
         String beforeDecimal;
-        //noinspection ConstantConditions
         if (digits.a.isEmpty()) {
             beforeDecimal = smallBase ? "0" : "(0)";
         } else {
             beforeDecimal = concatStrings(map(digitFunction, digits.a));
         }
         String result;
-        //noinspection ConstantConditions
         if (isEmpty(digits.b)) {
             result = beforeDecimal;
         } else {

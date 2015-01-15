@@ -2219,7 +2219,7 @@ public class RationalProperties {
             try {
                 sum(rs);
                 fail(rs.toString());
-            } catch (AssertionError ignored) {}
+            } catch (IllegalArgumentException ignored) {}
         }
     }
 
@@ -2259,7 +2259,7 @@ public class RationalProperties {
             try {
                 product(rs);
                 fail(rs.toString());
-            } catch (AssertionError ignored) {}
+            } catch (IllegalArgumentException ignored) {}
         }
     }
 
