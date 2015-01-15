@@ -4011,6 +4011,62 @@ public class RationalTest {
     }
 
     @Test
+    public void testToStringBase_BigInteger_int() {
+        aeq(ZERO.toStringBase(BigInteger.valueOf(10), 0), "0");
+        aeq(ZERO.toStringBase(BigInteger.valueOf(10), -1), "0");
+        aeq(ZERO.toStringBase(BigInteger.valueOf(10), 1), "0");
+        aeq(ZERO.toStringBase(BigInteger.valueOf(83), 0), "(0)");
+        aeq(ZERO.toStringBase(BigInteger.valueOf(83), -1), "(0)");
+        aeq(ZERO.toStringBase(BigInteger.valueOf(83), 1), "(0)");
+        aeq(ONE.toStringBase(BigInteger.valueOf(10), 0), "1");
+        aeq(ONE.toStringBase(BigInteger.valueOf(10), -1), "0");
+        aeq(ONE.toStringBase(BigInteger.valueOf(10), 1), "1");
+        aeq(ONE.toStringBase(BigInteger.valueOf(83), 0), "(1)");
+        aeq(ONE.toStringBase(BigInteger.valueOf(83), -1), "(0)");
+        aeq(ONE.toStringBase(BigInteger.valueOf(83), 1), "(1)");
+        aeq(read("198").get().toStringBase(BigInteger.valueOf(10), 0), "198");
+        aeq(read("198").get().toStringBase(BigInteger.valueOf(10), 1), "198");
+        aeq(read("198").get().toStringBase(BigInteger.valueOf(10), -1), "190");
+        aeq(read("198").get().toStringBase(BigInteger.valueOf(10), -2), "100");
+        aeq(read("198").get().toStringBase(BigInteger.valueOf(10), -3), "0");
+        aeq(read("198").get().toStringBase(BigInteger.valueOf(83), 0), "(2)(32)");
+        aeq(read("198").get().toStringBase(BigInteger.valueOf(83), 1), "(2)(32)");
+        aeq(read("198").get().toStringBase(BigInteger.valueOf(83), -1), "(2)(0)");
+        aeq(read("198").get().toStringBase(BigInteger.valueOf(83), -2), "(0)");
+        aeq(read("-1/7").get().toStringBase(BigInteger.valueOf(10), -1), "0");
+        aeq(read("-1/7").get().toStringBase(BigInteger.valueOf(10), 0), "0");
+        aeq(read("-1/7").get().toStringBase(BigInteger.valueOf(10), 5), "-0.14285...");
+        aeq(read("-1/7").get().toStringBase(BigInteger.valueOf(10), 20), "-0.14285714285714285714...");
+        aeq(read("-1/7").get().toStringBase(BigInteger.valueOf(83), -1), "(0)");
+        aeq(read("-1/7").get().toStringBase(BigInteger.valueOf(83), 0), "(0)");
+        aeq(read("-1/7").get().toStringBase(BigInteger.valueOf(83), 5), "-(0).(11)(71)(11)(71)(11)...");
+        aeq(read("-1/7").get().toStringBase(BigInteger.valueOf(83), 20),
+                "-(0).(11)(71)(11)(71)(11)(71)(11)(71)(11)(71)(11)(71)(11)(71)(11)(71)(11)(71)(11)(71)...");
+        Rational approxPi = ofExact(Math.PI);
+        aeq(approxPi.toStringBase(BigInteger.valueOf(10), -1), "0");
+        aeq(approxPi.toStringBase(BigInteger.valueOf(10), 0), "3");
+        aeq(approxPi.toStringBase(BigInteger.valueOf(10), 5), "3.14159...");
+        aeq(approxPi.toStringBase(BigInteger.valueOf(10), 20), "3.14159265358979311599...");
+        aeq(approxPi.toStringBase(BigInteger.valueOf(83), -1), "(0)");
+        aeq(approxPi.toStringBase(BigInteger.valueOf(83), 0), "(3)");
+        aeq(approxPi.toStringBase(BigInteger.valueOf(83), 5), "(3).(11)(62)(35)(69)(50)...");
+        aeq(approxPi.toStringBase(BigInteger.valueOf(83), 20),
+                "(3).(11)(62)(35)(69)(50)(19)(79)(18)(11)(8)(60)(35)(10)(62)(20)(58)(42)(14)(31)(34)...");
+        try {
+            read("-1/2").get().toStringBase(BigInteger.ONE, 5);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            read("-1/2").get().toStringBase(BigInteger.ZERO, 5);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            read("-1/2").get().toStringBase(BigInteger.valueOf(-1), 5);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
     public void testEquals() {
         //noinspection EqualsWithItself
         assertTrue(ZERO.equals(ZERO));

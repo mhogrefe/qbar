@@ -1868,13 +1868,13 @@ public final class Rational implements Comparable<Rational> {
      * Converts {@code this} to a {@code String} in any base greater than 1, rounding to {@code scale} digits after the
      * decimal point. A scale of 0 indicates rounding to an integer, and a negative scale indicates rounding to a
      * positive power of {@code base}. All rounding is done towards 0 (truncation), so that the displayed digits are
-     * unaltered. If the result is an approximation (that is, not all digits are displayed), an ellipsis ("...") is
-     * appended. If the base is 36 or less, the digits are '0' through '9' followed by 'A' through 'Z'. If the base is
-     * greater than 36, the digits are written in decimal and each digit is surrounded by parentheses. If
-     * {@code this} has a fractional part, a decimal point is used. Zero is represented by "0" if the base is 36 or
-     * less, or "(0)" otherwise. There are no leading zeroes before the decimal point (unless {@code this} is less than
-     * 1, in which case there is exactly one zero) and no trailing zeroes after. Scientific notation is not used. If
-     * {@code this} is negative, the result will contain a leading '-'.
+     * unaltered. If the result is an approximation (that is, not all digits are displayed) and the scale is positive,
+     * an ellipsis ("...") is appended. If the base is 36 or less, the digits are '0' through '9' followed by 'A'
+     * through 'Z'. If the base is greater than 36, the digits are written in decimal and each digit is surrounded by
+     * parentheses. If {@code this} has a fractional part, a decimal point is used. Zero is represented by "0" if the
+     * base is 36 or less, or "(0)" otherwise. There are no leading zeroes before the decimal point (unless
+     * {@code this} is less than 1, in which case there is exactly one zero) and no trailing zeroes after. Scientific
+     * notation is not used. If {@code this} is negative, the result will contain a leading '-'.
      *
      * <ul>
      *  <li>{@code this} may be any {@code Rational}.</li>
@@ -1888,9 +1888,11 @@ public final class Rational implements Comparable<Rational> {
      * @return a {@code String} representation of {@code this} in base {@code base}
      */
     public @NotNull String toStringBase(@NotNull BigInteger base, int scale) {
+        if (lt(base, BigInteger.valueOf(2)))
+            throw new IllegalArgumentException("base must be at least 2");
         BigInteger power = scale >= 0 ? base.pow(scale) : base.pow(-scale);
         Rational scaled = scale >= 0 ? multiply(power) : divide(power);
-        boolean ellipsis = scale >= 0 && !scaled.isInteger();
+        boolean ellipsis = scale > 0 && !scaled.isInteger();
         Rational rounded = of(scaled.bigIntegerValue(RoundingMode.DOWN));
         rounded = scale >= 0 ? rounded.divide(power) : rounded.multiply(power);
         String result = rounded.toStringBase(base);
