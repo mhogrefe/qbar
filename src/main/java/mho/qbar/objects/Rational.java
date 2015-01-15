@@ -1751,7 +1751,7 @@ public final class Rational implements Comparable<Rational> {
      *
      * <ul>
      *  <li>{@code this} must be non-negative.</li>
-     *  <li>{@code base} must be greater than 1.</li>
+     *  <li>{@code base} must be at least 2.</li>
      *  <li>Both of the result's elements are non-null. The first element does not begin with a zero. The second
      *  element is either finite or eventually repeating.</li>
      *  <li>All the elements of both of the result's elements only contain non-negative {@code BigInteger}s less than
