@@ -4067,6 +4067,111 @@ public class RationalTest {
     }
 
     @Test
+    public void testFromStringBase() {
+        aeq(fromStringBase(BigInteger.valueOf(2), "0"), "0");
+        aeq(fromStringBase(BigInteger.valueOf(3), "0"), "0");
+        aeq(fromStringBase(BigInteger.valueOf(4), "0"), "0");
+        aeq(fromStringBase(BigInteger.valueOf(10), "0"), "0");
+        aeq(fromStringBase(BigInteger.valueOf(16), "0"), "0");
+        aeq(fromStringBase(BigInteger.valueOf(83), "(0)"), "0");
+        aeq(fromStringBase(BigInteger.valueOf(100), "(0)"), "0");
+        aeq(fromStringBase(BigInteger.valueOf(2), "1"), "1");
+        aeq(fromStringBase(BigInteger.valueOf(3), "1"), "1");
+        aeq(fromStringBase(BigInteger.valueOf(4), "1"), "1");
+        aeq(fromStringBase(BigInteger.valueOf(10), "1"), "1");
+        aeq(fromStringBase(BigInteger.valueOf(16), "1"), "1");
+        aeq(fromStringBase(BigInteger.valueOf(83), "(1)"), "1");
+        aeq(fromStringBase(BigInteger.valueOf(100), "(1)"), "1");
+        aeq(fromStringBase(BigInteger.valueOf(2), "-0.1"), "-1/2");
+        aeq(fromStringBase(BigInteger.valueOf(4), "-0.2"), "-1/2");
+        aeq(fromStringBase(BigInteger.valueOf(10), "-0.5"), "-1/2");
+        aeq(fromStringBase(BigInteger.valueOf(16), "-0.8"), "-1/2");
+        aeq(fromStringBase(BigInteger.valueOf(100), "-(0).(50)"), "-1/2");
+        aeq(fromStringBase(BigInteger.valueOf(3), "-0.1"), "-1/3");
+        Rational approxPi = ofExact(Math.PI);
+        aeq(fromStringBase(BigInteger.valueOf(2), "11.001001000011111101101010100010001000010110100011"), approxPi);
+        aeq(fromStringBase(BigInteger.valueOf(4), "3.021003331222202020112203"), approxPi);
+        aeq(fromStringBase(BigInteger.valueOf(10), "3.141592653589793115997963468544185161590576171875"), approxPi);
+        aeq(fromStringBase(BigInteger.valueOf(16), "3.243F6A8885A3"), approxPi);
+        aeq(
+                fromStringBase(
+                        BigInteger.valueOf(100),
+                "(3).(14)(15)(92)(65)(35)(89)(79)(31)(15)(99)(79)(63)(46)(85)(44)(18)(51)(61)(59)(5)(76)(17)(18)(75)"),
+                approxPi
+        );
+        aeq(fromStringBase(BigInteger.valueOf(10), "00"), 0);
+        aeq(fromStringBase(BigInteger.valueOf(10), "0."), 0);
+        aeq(fromStringBase(BigInteger.valueOf(10), ".0"), 0);
+        aeq(fromStringBase(BigInteger.valueOf(10), "0.0"), 0);
+        aeq(fromStringBase(BigInteger.valueOf(100), "(0)(0)"), 0);
+        aeq(fromStringBase(BigInteger.valueOf(100), "(0)."), 0);
+        aeq(fromStringBase(BigInteger.valueOf(100), ".(0)"), 0);
+        aeq(fromStringBase(BigInteger.valueOf(100), "(0).(0)"), 0);
+        aeq(fromStringBase(BigInteger.valueOf(2), "-0.1..."), "-1/2");
+        aeq(fromStringBase(BigInteger.valueOf(10), "-5..."), "-5");
+        try {
+            fromStringBase(BigInteger.ONE, "0");
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            fromStringBase(BigInteger.ZERO, "0");
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            fromStringBase(BigInteger.valueOf(-1), "0");
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            fromStringBase(BigInteger.valueOf(10), "a");
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            fromStringBase(BigInteger.valueOf(100), "[10]");
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            fromStringBase(BigInteger.valueOf(100), "(.10)");
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            fromStringBase(BigInteger.valueOf(10), "5-");
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            fromStringBase(BigInteger.valueOf(10), "-");
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            fromStringBase(BigInteger.valueOf(100), "(5)-");
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            fromStringBase(BigInteger.valueOf(10), "2-3");
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            fromStringBase(BigInteger.valueOf(100), "(2)-(3)");
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            fromStringBase(BigInteger.valueOf(10), "1e5");
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            fromStringBase(BigInteger.valueOf(10), "1E5");
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            fromStringBase(BigInteger.valueOf(10), "(2)(3)");
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            fromStringBase(BigInteger.valueOf(100), "23");
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
     public void testEquals() {
         //noinspection EqualsWithItself
         assertTrue(ZERO.equals(ZERO));

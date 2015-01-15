@@ -1924,26 +1924,37 @@ public final class Rational implements Comparable<Rational> {
      * @return the {@code Rational} represented by {@code s}
      */
     public static @NotNull Rational fromStringBase(@NotNull BigInteger base, @NotNull String s) {
-        if (s.endsWith("...")) s = take(s.length() - 3, s);
-        boolean negative = head(s) == '-';
-        if (negative) s = tail(s);
-        boolean smallBase = le(base, BigInteger.valueOf(36));
-        Function<String, List<BigInteger>> undigitFunction;
-        if (smallBase) {
-            undigitFunction = t -> toList(map(c -> BigInteger.valueOf(MathUtils.fromDigit(c)), fromString(t)));
-        } else {
-            undigitFunction = t -> toList(map(BigInteger::new, Arrays.asList(tail(init(t)).split("\\)\\("))));
+        try {
+            if (s.endsWith("...")) s = take(s.length() - 3, s);
+            if (s.equals("-"))
+                throw new IllegalArgumentException("invalid String");
+            boolean negative = head(s) == '-';
+            if (negative) s = tail(s);
+            boolean smallBase = le(base, BigInteger.valueOf(36));
+            Function<String, List<BigInteger>> undigitFunction;
+            if (smallBase) {
+                undigitFunction = t -> toList(map(c -> BigInteger.valueOf(MathUtils.fromDigit(c)), fromString(t)));
+            } else {
+                undigitFunction = t -> {
+                    if (t.isEmpty()) return new ArrayList<>();
+                    if (head(t) != '(' || last(t) != ')')
+                        throw new IllegalArgumentException("invalid String");
+                    return toList(map(BigInteger::new, Arrays.asList(tail(init(t)).split("\\)\\("))));
+                };
+            }
+            Rational result;
+            int dotIndex = s.indexOf(".");
+            if (dotIndex == -1) {
+                result = of(MathUtils.fromBigEndianDigits(base, undigitFunction.apply(s)));
+            } else {
+                List<BigInteger> beforeDecimal = undigitFunction.apply(take(dotIndex, s));
+                List<BigInteger> afterDecimal = undigitFunction.apply(drop(dotIndex + 1, s));
+                result = fromPositionalNotation(base, beforeDecimal, afterDecimal, Arrays.asList(BigInteger.ZERO));
+            }
+            return negative ? result.negate() : result;
+        } catch (StringIndexOutOfBoundsException e) {
+            throw new IllegalArgumentException(e);
         }
-        Rational result;
-        int dotIndex = s.indexOf(".");
-        if (dotIndex == -1) {
-            result = of(MathUtils.fromBigEndianDigits(base, undigitFunction.apply(s)));
-        } else {
-            List<BigInteger> beforeDecimal = undigitFunction.apply(take(dotIndex, s));
-            List<BigInteger> afterDecimal = undigitFunction.apply(drop(dotIndex + 1, s));
-            result = fromPositionalNotation(base, beforeDecimal, afterDecimal, new ArrayList<>());
-        }
-        return negative ? result.negate() : result;
     }
 
     /**
