@@ -1839,6 +1839,8 @@ public final class Rational implements Comparable<Rational> {
      * @return a {@code String} representation of {@code this} in base {@code base}
      */
     public @NotNull String toStringBase(@NotNull BigInteger base) {
+        if (!hasTerminatingBaseExpansion(base))
+            throw new ArithmeticException(this + " has a non-terminating base-" + base + " expansion");
         boolean smallBase = le(base, BigInteger.valueOf(36));
         Pair<List<BigInteger>, Iterable<BigInteger>> digits = abs().digits(base);
         Function<BigInteger, String> digitFunction;

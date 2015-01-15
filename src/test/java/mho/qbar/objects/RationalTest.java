@@ -3964,6 +3964,53 @@ public class RationalTest {
     }
 
     @Test
+    public void testToStringBase_BigInteger() {
+        aeq(ZERO.toStringBase(BigInteger.valueOf(2)), "0");
+        aeq(ZERO.toStringBase(BigInteger.valueOf(3)), "0");
+        aeq(ZERO.toStringBase(BigInteger.valueOf(4)), "0");
+        aeq(ZERO.toStringBase(BigInteger.valueOf(10)), "0");
+        aeq(ZERO.toStringBase(BigInteger.valueOf(16)), "0");
+        aeq(ZERO.toStringBase(BigInteger.valueOf(83)), "(0)");
+        aeq(ZERO.toStringBase(BigInteger.valueOf(100)), "(0)");
+        aeq(ONE.toStringBase(BigInteger.valueOf(2)), "1");
+        aeq(ONE.toStringBase(BigInteger.valueOf(3)), "1");
+        aeq(ONE.toStringBase(BigInteger.valueOf(4)), "1");
+        aeq(ONE.toStringBase(BigInteger.valueOf(10)), "1");
+        aeq(ONE.toStringBase(BigInteger.valueOf(16)), "1");
+        aeq(ONE.toStringBase(BigInteger.valueOf(83)), "(1)");
+        aeq(ONE.toStringBase(BigInteger.valueOf(100)), "(1)");
+        aeq(read("-1/2").get().toStringBase(BigInteger.valueOf(2)), "-0.1");
+        aeq(read("-1/2").get().toStringBase(BigInteger.valueOf(4)), "-0.2");
+        aeq(read("-1/2").get().toStringBase(BigInteger.valueOf(10)), "-0.5");
+        aeq(read("-1/2").get().toStringBase(BigInteger.valueOf(16)), "-0.8");
+        aeq(read("-1/2").get().toStringBase(BigInteger.valueOf(100)), "-(0).(50)");
+        aeq(read("1/3").get().toStringBase(BigInteger.valueOf(3)), "0.1");
+        Rational approxPi = ofExact(Math.PI);
+        aeq(approxPi.toStringBase(BigInteger.valueOf(2)), "11.001001000011111101101010100010001000010110100011");
+        aeq(approxPi.toStringBase(BigInteger.valueOf(4)), "3.021003331222202020112203");
+        aeq(approxPi.toStringBase(BigInteger.valueOf(10)), "3.141592653589793115997963468544185161590576171875");
+        aeq(approxPi.toStringBase(BigInteger.valueOf(16)), "3.243F6A8885A3");
+        aeq(approxPi.toStringBase(BigInteger.valueOf(100)),
+                "(3).(14)(15)(92)(65)(35)(89)(79)(31)(15)(99)(79)(63)(46)(85)(44)(18)(51)(61)(59)(5)(76)(17)(18)(75)");
+        try {
+            read("-1/2").get().toStringBase(BigInteger.ONE);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            read("-1/2").get().toStringBase(BigInteger.ZERO);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            read("-1/2").get().toStringBase(BigInteger.valueOf(-1));
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            read("1/3").get().toStringBase(BigInteger.valueOf(10));
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
     public void testEquals() {
         //noinspection EqualsWithItself
         assertTrue(ZERO.equals(ZERO));

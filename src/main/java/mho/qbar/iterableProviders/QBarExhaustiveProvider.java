@@ -4,7 +4,6 @@ import mho.qbar.objects.RationalVector;
 import mho.wheels.iterables.ExhaustiveProvider;
 import mho.qbar.objects.Interval;
 import mho.qbar.objects.Rational;
-import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigInteger;
@@ -156,7 +155,7 @@ public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIt
                 },
                 filter(
                         p -> !p.a.isPresent() || !p.b.isPresent() || le(p.a.get(), p.b.get()),
-                        (Iterable<Pair<Optional<Rational>, Optional<Rational>>>) pairs(optionals(rationals()))
+                        pairs(optionals(rationals()))
                 )
         );
     }
