@@ -279,7 +279,7 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
      *  <li>The result is not null.</li>
      * </ul>
      *
-     * @param that the {@code Rational} added to {@code this}
+     * @param that the {@code RationalVector} added to {@code this}
      * @return {@code this}+{@code that}
      */
     public @NotNull RationalVector add(@NotNull RationalVector that) {
@@ -287,6 +287,23 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
             throw new ArithmeticException("vectors must have same dimension");
         if (this == ZERO_DIMENSIONAL) return ZERO_DIMENSIONAL;
         return of(toList(zipWith(p -> p.a.add(p.b), coordinates, that.coordinates)));
+    }
+
+    /**
+     * Returns the difference of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalVector}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>{@code this} and {@code that} must have the same dimension.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param that the {@code RationalVector} subtracted from {@code this}
+     * @return {@code this}–{@code that}
+     */
+    public @NotNull RationalVector subtract(@NotNull RationalVector that) {
+        return add(that.negate());
     }
 
     /**

@@ -184,6 +184,8 @@ public class RationalVectorTest {
         assertTrue(ZERO_DIMENSIONAL.add(ZERO_DIMENSIONAL) == ZERO_DIMENSIONAL);
         aeq(read("[2]").get().add(read("[3]").get()), "[5]");
         aeq(read("[5/3, 4, 0]").get().add(read("[-2, 1, 3]").get()), "[-1/3, 5, 3]");
+        aeq(read("[5/3, 4, 0]").get().add(read("[0, 0, 0]").get()), "[5/3, 4, 0]");
+        aeq(read("[5/3, 4, 0]").get().add(read("[-5/3, -4, 0]").get()), "[0, 0, 0]");
         try {
             ZERO_DIMENSIONAL.add(read("[1/2]").get());
             fail();
@@ -194,6 +196,28 @@ public class RationalVectorTest {
         } catch (ArithmeticException ignored) {}
         try {
             read("[1/2, 4, -4]").get().add(read("[5/6, 2/3]").get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testSubtract() {
+        assertTrue(ZERO_DIMENSIONAL.subtract(ZERO_DIMENSIONAL) == ZERO_DIMENSIONAL);
+        aeq(read("[2]").get().subtract(read("[3]").get()), "[-1]");
+        aeq(read("[5/3, 4, 0]").get().subtract(read("[-2, 1, 3]").get()), "[11/3, 3, -3]");
+        aeq(read("[5/3, 4, 0]").get().subtract(read("[0, 0, 0]").get()), "[5/3, 4, 0]");
+        aeq(read("[5/3, 4, 0]").get().subtract(read("[5/3, 4, 0]").get()), "[0, 0, 0]");
+        aeq(read("[0, 0, 0]").get().subtract(read("[5/3, 4, 0]").get()), "[-5/3, -4, 0]");
+        try {
+            ZERO_DIMENSIONAL.subtract(read("[1/2]").get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+        try {
+            read("[1/2]").get().subtract(ZERO_DIMENSIONAL);
+            fail();
+        } catch (ArithmeticException ignored) {}
+        try {
+            read("[1/2, 4, -4]").get().subtract(read("[5/6, 2/3]").get());
             fail();
         } catch (ArithmeticException ignored) {}
     }

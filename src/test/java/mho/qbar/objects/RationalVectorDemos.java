@@ -164,12 +164,28 @@ public class RationalVectorDemos {
             ps = P.dependentPairs(P.rationalVectors(), v -> P.rationalVectors(v.dimension()));
         } else {
             ps = P.dependentPairs(
-                    ((QBarRandomProvider) P).rationalVectorsBySize(32),
-                    v -> ((QBarRandomProvider) P).rationalVectorsBySize(32, v.dimension())
+                    ((QBarRandomProvider) P).rationalVectorsBySize(8),
+                    v -> ((QBarRandomProvider) P).rationalVectorsBySize(8, v.dimension())
             );
         }
         for (Pair<RationalVector, RationalVector> p : take(LIMIT, ps)) {
             System.out.println(p.a + " + " + p.b + " = " + p.a.add(p.b));
+        }
+    }
+
+    public static void demoSubtract() {
+        initialize();
+        Iterable<Pair<RationalVector, RationalVector>> ps;
+        if (P instanceof ExhaustiveProvider) {
+            ps = P.dependentPairs(P.rationalVectors(), v -> P.rationalVectors(v.dimension()));
+        } else {
+            ps = P.dependentPairs(
+                    ((QBarRandomProvider) P).rationalVectorsBySize(8),
+                    v -> ((QBarRandomProvider) P).rationalVectorsBySize(8, v.dimension())
+            );
+        }
+        for (Pair<RationalVector, RationalVector> p : take(LIMIT, ps)) {
+            System.out.println(p.a + " - " + p.b + " = " + p.a.subtract(p.b));
         }
     }
 

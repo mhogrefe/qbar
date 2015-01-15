@@ -63,6 +63,7 @@ public class RationalVectorProperties {
             propertiesIsZero();
             propertiesNegate();
             propertiesAdd();
+            propertiesSubtract();
             propertiesEquals();
             propertiesHashCode();
             propertiesCompareTo();
@@ -102,9 +103,10 @@ public class RationalVectorProperties {
         initialize();
         System.out.println("\t\ttesting y() properties");
 
-        Iterable<RationalVector> vs = map(p -> {
-            return RationalVector.of(toList(concat(p.a, p.b)));
-        }, P.pairs(P.rationalVectors(2), P.rationalVectors()));
+        Iterable<RationalVector> vs = map(
+                p -> RationalVector.of(toList(concat(p.a, p.b))),
+                P.pairs(P.rationalVectors(2), P.rationalVectors())
+        );
         for (RationalVector v : take(LIMIT, vs)) {
             Rational y = v.y();
             assertEquals(v.toString(), y, toList(v).get(1));
@@ -325,18 +327,20 @@ public class RationalVectorProperties {
         }
 
         for (RationalVector v : take(LIMIT, P.rationalVectors())) {
+            assertEquals(v.toString(), zero(v.dimension()).add(v), v);
+            assertEquals(v.toString(), v.add(zero(v.dimension())), v);
             assertTrue(v.add(v.negate()).isZero());
         }
 
         Iterable<Triple<RationalVector, RationalVector, RationalVector>> ts;
         if (P instanceof ExhaustiveProvider) {
             ts = map(
-                    p -> new Triple<RationalVector, RationalVector, RationalVector>(p.a, p.b.a, p.b.b),
+                    p -> new Triple<>(p.a, p.b.a, p.b.b),
                     P.dependentPairs(P.rationalVectors(), v -> P.pairs(P.rationalVectors(v.dimension())))
             );
         } else {
             ts = map(
-                    p -> new Triple<RationalVector, RationalVector, RationalVector>(p.a, p.b.a, p.b.b),
+                    p -> new Triple<>(p.a, p.b.a, p.b.b),
                     P.dependentPairs(
                             ((QBarRandomProvider) P).rationalVectorsBySize(32),
                             v -> P.pairs(((QBarRandomProvider) P).rationalVectorsBySize(32, v.dimension()))
@@ -358,6 +362,33 @@ public class RationalVectorProperties {
                 p.a.add(p.b);
                 fail(p.toString());
             } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private static void propertiesSubtract() {
+        initialize();
+        System.out.println("\t\ttesting subtract(RationalVector) properties...");
+
+        Iterable<Pair<RationalVector, RationalVector>> ps;
+        if (P instanceof ExhaustiveProvider) {
+            ps = P.dependentPairs(P.rationalVectors(), v -> P.rationalVectors(v.dimension()));
+        } else {
+            ps = P.dependentPairs(
+                    ((QBarRandomProvider) P).rationalVectorsBySize(32),
+                    v -> ((QBarRandomProvider) P).rationalVectorsBySize(32, v.dimension())
+            );
+        }
+        for (Pair<RationalVector, RationalVector> p : take(LIMIT, ps)) {
+            RationalVector difference = p.a.subtract(p.b);
+            validate(difference);
+            assertEquals(p.toString(), difference, p.b.subtract(p.a).negate());
+            assertEquals(p.toString(), p.a, difference.add(p.b));
+        }
+
+        for (RationalVector v : take(LIMIT, P.rationalVectors())) {
+            assertEquals(v.toString(), zero(v.dimension()).subtract(v), v.negate());
+            assertEquals(v.toString(), v.subtract(zero(v.dimension())), v);
+            assertTrue(v.toString(), v.subtract(v).isZero());
         }
     }
 
