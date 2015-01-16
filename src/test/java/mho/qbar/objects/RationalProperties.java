@@ -3134,7 +3134,7 @@ public class RationalProperties {
             );
         } else {
             ps = P.pairs(
-                    cons(ZERO, ((QBarRandomProvider) P).positiveRationals(20)),
+                    cons(ZERO, P.positiveRationals()),
                     map(i -> BigInteger.valueOf(i + 2), ((RandomProvider) P).naturalIntegersGeometric(20))
             );
         }

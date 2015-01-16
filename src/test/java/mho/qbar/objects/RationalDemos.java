@@ -18,8 +18,8 @@ import java.util.Random;
 
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.qbar.objects.Rational.*;
-import static mho.wheels.misc.Readers.findBigDecimalIn;
 
+//todo fix trailing zeroes in toStringBase(BigInteger, int)
 @SuppressWarnings({"ConstantConditions", "UnusedDeclaration"})
 public class RationalDemos {
     private static final boolean USE_RANDOM = false;
@@ -624,7 +624,7 @@ public class RationalDemos {
             );
         } else {
             ps = P.pairs(
-                    cons(ZERO, ((QBarRandomProvider) P).positiveRationals(20)),
+                    cons(ZERO, P.positiveRationals()),
                     map(i -> BigInteger.valueOf(i + 2), ((RandomProvider) P).naturalIntegersGeometric(20))
             );
         }
@@ -642,12 +642,35 @@ public class RationalDemos {
             ps = ((ExhaustiveProvider) P).pairsSquareRootOrder(P.rationals(), P.rangeUp(BigInteger.valueOf(2)));
         } else {
             ps = P.pairs(
-                    ((QBarRandomProvider) P).rationals(20),
+                    P.rationals(),
                     map(i -> BigInteger.valueOf(i + 2), ((RandomProvider) P).naturalIntegersGeometric(20))
             );
         }
         for (Pair<Rational, BigInteger> p : take(LIMIT, filter(q -> q.a.hasTerminatingBaseExpansion(q.b), ps))) {
             System.out.println("toStringBase(" + p.a + ", " + p.b + ") = " + p.a.toStringBase(p.b));
+        }
+    }
+
+    public static void demoToStringBase_BigInteger_int() {
+        initialize();
+        Iterable<Pair<Rational, Pair<BigInteger, Integer>>> ps;
+        if (P instanceof ExhaustiveProvider) {
+            ps = P.pairs(
+                    P.rationals(),
+                    (Iterable<Pair<BigInteger, Integer>>) P.pairs(P.rangeUp(BigInteger.valueOf(2)), P.integers())
+            );
+        } else {
+            ps = P.pairs(
+                    P.rationals(),
+                    (Iterable<Pair<BigInteger, Integer>>) P.pairs(
+                            map(i -> BigInteger.valueOf(i + 2), ((RandomProvider) P).naturalIntegersGeometric(20)),
+                            ((RandomProvider) P).integersGeometric(20)
+                    )
+            );
+        }
+        for (Pair<Rational, Pair<BigInteger, Integer>> p : take(LIMIT, ps)) {
+            System.out.println("toStringBase(" + p.a + ", " + p.b.a + ", " + p.b.b + ") = " +
+                    p.a.toStringBase(p.b.a, p.b.b));
         }
     }
 
