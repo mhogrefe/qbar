@@ -2651,7 +2651,7 @@ public class RationalTest {
         try {
             product(readRationalListWithNulls("[10, null, 11]").get());
             fail();
-        } catch (IllegalArgumentException ignored) {}
+        } catch (NullPointerException ignored) {}
     }
 
     @Test

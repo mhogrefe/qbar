@@ -94,7 +94,6 @@ public final class Rational implements Comparable<Rational> {
      *
      * Length is infinite
      */
-    @SuppressWarnings("ConstantConditions")
     public static final @NotNull Iterable<Rational> HARMONIC_NUMBERS =
             tail(scanl(p -> p.a.add(p.b), ZERO, map(i -> of(i).invert(), range(1))));
 
@@ -1362,7 +1361,20 @@ public final class Rational implements Comparable<Rational> {
      * @return Πxs
      */
     public static Rational product(@NotNull Iterable<Rational> xs) {
-        return foldl(p -> p.a.multiply(p.b), ONE, xs);
+        List<Rational> denominatorSorted = sort(
+                (x, y) -> {
+                    Ordering o = compare(x.getDenominator(), y.getDenominator());
+                    if (o == EQ) {
+                        o = compare(x.getNumerator().abs(), y.getNumerator().abs());
+                    }
+                    if (o == EQ) {
+                        o = compare(x.getNumerator().signum(), y.getNumerator().signum());
+                    }
+                    return o.toInt();
+                },
+                xs
+        );
+        return foldl(p -> p.a.multiply(p.b), ONE, denominatorSorted);
     }
 
     /**

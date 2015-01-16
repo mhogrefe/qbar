@@ -104,7 +104,9 @@ public class RationalProperties {
             propertiesDivide_int();
             compareImplementationsDivide_int();
             propertiesSum();
+            compareImplementationsSum();
             propertiesProduct();
+            compareImplementationsProduct();
             propertiesDelta();
             propertiesHarmonicNumber();
             propertiesPow();
@@ -1837,9 +1839,6 @@ public class RationalProperties {
             Rational product1 = t.a.multiply(t.b).multiply(t.c);
             Rational product2 = t.a.multiply(t.b.multiply(t.c));
             assertEquals(t.toString(), product1, product2);
-        }
-
-        for (Triple<Rational, Rational, Rational> t : take(LIMIT, P.triples(P.rationals()))) {
             Rational expression1 = t.a.add(t.b).multiply(t.c);
             Rational expression2 = t.a.multiply(t.c).add(t.b.multiply(t.c));
             assertEquals(t.toString(), expression1, expression2);
@@ -2183,12 +2182,40 @@ public class RationalProperties {
         System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
     }
 
+    private static @NotNull Rational sum_alt(@NotNull Iterable<Rational> xs) {
+        List<Rational> denominatorSorted = sort(
+                (x, y) -> {
+                    Ordering o = compare(x.getDenominator(), y.getDenominator());
+                    if (o == EQ) {
+                        o = compare(x.getNumerator().abs(), y.getNumerator().abs());
+                    }
+                    if (o == EQ) {
+                        o = compare(x.getNumerator().signum(), y.getNumerator().signum());
+                    }
+                    return o.toInt();
+                },
+                xs
+        );
+        Iterable<List<Rational>> denominatorGrouped = group(
+                p -> p.a.getDenominator().equals(p.b.getDenominator()),
+                denominatorSorted
+        );
+        Rational sum = ZERO;
+        for (List<Rational> group : denominatorGrouped) {
+            BigInteger numeratorSum = sumBigInteger(map(Rational::getNumerator, group));
+            sum = sum.add(of(numeratorSum, head(group).getDenominator()));
+        }
+        return sum;
+    }
+
     private static void propertiesSum() {
         initialize();
         System.out.println("\t\ttesting sum(Iterable<Rational>) properties...");
 
         for (List<Rational> rs : take(LIMIT, P.lists(P.rationals()))) {
-            validate(sum(rs));
+            Rational sum = sum(rs);
+            validate(sum);
+            assertEquals(rs.toString(), sum, sum_alt(rs));
         }
 
         Iterable<Pair<List<Rational>, List<Rational>>> ps = filter(
@@ -2223,12 +2250,39 @@ public class RationalProperties {
         }
     }
 
+    private static void compareImplementationsSum() {
+        initialize();
+        System.out.println("\t\tcomparing sum(Iterable<Rational>) implementations...");
+
+        long totalTime = 0;
+        for (List<Rational> rs : take(LIMIT, P.lists(P.rationals()))) {
+            long time = System.nanoTime();
+            sum_alt(rs);
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\t\t\talt: " + ((double) totalTime) / 1e9 + " s");
+
+        totalTime = 0;
+        for (List<Rational> rs : take(LIMIT, P.lists(P.rationals()))) {
+            long time = System.nanoTime();
+            sum(rs);
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
+    }
+
+    private static @NotNull Rational product_simplest(@NotNull Iterable<Rational> xs) {
+        return foldl(p -> p.a.multiply(p.b), ONE, xs);
+    }
+
     private static void propertiesProduct() {
         initialize();
         System.out.println("\t\ttesting product(Iterable<Rational>) properties...");
 
         for (List<Rational> rs : take(LIMIT, P.lists(P.rationals()))) {
-            validate(product(rs));
+            Rational product = product(rs);
+            validate(product);
+            assertEquals(rs.toString(), product, product_simplest(rs));
         }
 
         Iterable<Pair<List<Rational>, List<Rational>>> ps = filter(
@@ -2250,17 +2304,35 @@ public class RationalProperties {
 
         Iterable<List<Rational>> failRss = map(
                 p -> toList(insert(p.a, p.b, null)),
-                (Iterable<Pair<List<Rational>, Integer>>) P.dependentPairsLogarithmic(
-                        P.lists(P.rationals()),
-                        rs -> range(0, rs.size())
-                )
+                P.dependentPairsLogarithmic(P.lists(P.rationals()), rs -> range(0, rs.size()))
         );
         for (List<Rational> rs : take(LIMIT, failRss)) {
             try {
                 product(rs);
                 fail(rs.toString());
-            } catch (IllegalArgumentException ignored) {}
+            } catch (NullPointerException | IllegalArgumentException ignored) {}
         }
+    }
+
+    private static void compareImplementationsProduct() {
+        initialize();
+        System.out.println("\t\tcomparing product(Iterable<Rational>) implementations...");
+
+        long totalTime = 0;
+        for (List<Rational> rs : take(LIMIT, P.lists(P.rationals()))) {
+            long time = System.nanoTime();
+            product_simplest(rs);
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\t\t\tsimplest: " + ((double) totalTime) / 1e9 + " s");
+
+        totalTime = 0;
+        for (List<Rational> rs : take(LIMIT, P.lists(P.rationals()))) {
+            long time = System.nanoTime();
+            product(rs);
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
     }
 
     private static void propertiesDelta() {
