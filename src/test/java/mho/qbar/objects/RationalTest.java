@@ -3992,6 +3992,28 @@ public class RationalTest {
         aeq(approxPi.toStringBase(BigInteger.valueOf(16)), "3.243F6A8885A3");
         aeq(approxPi.toStringBase(BigInteger.valueOf(100)),
                 "(3).(14)(15)(92)(65)(35)(89)(79)(31)(15)(99)(79)(63)(46)(85)(44)(18)(51)(61)(59)(5)(76)(17)(18)(75)");
+        aeq(read("1/1000").get().toStringBase(BigInteger.valueOf(10), 0), "0");
+        aeq(read("1/1000").get().toStringBase(BigInteger.valueOf(10), 1), "0.0...");
+        aeq(read("1/1000").get().toStringBase(BigInteger.valueOf(10), 2), "0.00...");
+        aeq(read("1/1000").get().toStringBase(BigInteger.valueOf(10), 3), "0.001");
+        aeq(read("1/1000").get().toStringBase(BigInteger.valueOf(10), 4), "0.001");
+        aeq(read("1001/10000").get().toStringBase(BigInteger.valueOf(10), 0), "0");
+        aeq(read("1001/10000").get().toStringBase(BigInteger.valueOf(10), 1), "0.1...");
+        aeq(read("1001/10000").get().toStringBase(BigInteger.valueOf(10), 2), "0.10...");
+        aeq(read("1001/10000").get().toStringBase(BigInteger.valueOf(10), 3), "0.100...");
+        aeq(read("1001/10000").get().toStringBase(BigInteger.valueOf(10), 4), "0.1001");
+        aeq(read("1001/10000").get().toStringBase(BigInteger.valueOf(10), 5), "0.1001");
+        aeq(read("1/1000000").get().toStringBase(BigInteger.valueOf(100), 0), "(0)");
+        aeq(read("1/1000000").get().toStringBase(BigInteger.valueOf(100), 1), "(0).(0)...");
+        aeq(read("1/1000000").get().toStringBase(BigInteger.valueOf(100), 2), "(0).(0)(0)...");
+        aeq(read("1/1000000").get().toStringBase(BigInteger.valueOf(100), 3), "(0).(0)(0)(1)");
+        aeq(read("1/1000000").get().toStringBase(BigInteger.valueOf(100), 4), "(0).(0)(0)(1)");
+        aeq(read("1000001/10000000").get().toStringBase(BigInteger.valueOf(100), 0), "(0)");
+        aeq(read("1000001/10000000").get().toStringBase(BigInteger.valueOf(100), 1), "(0).(10)...");
+        aeq(read("1000001/10000000").get().toStringBase(BigInteger.valueOf(100), 2), "(0).(10)(0)...");
+        aeq(read("1000001/10000000").get().toStringBase(BigInteger.valueOf(100), 3), "(0).(10)(0)(0)...");
+        aeq(read("1000001/10000000").get().toStringBase(BigInteger.valueOf(100), 4), "(0).(10)(0)(0)(10)");
+        aeq(read("1000001/10000000").get().toStringBase(BigInteger.valueOf(100), 5), "(0).(10)(0)(0)(10)");
         try {
             read("-1/2").get().toStringBase(BigInteger.ONE);
             fail();

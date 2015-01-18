@@ -19,7 +19,6 @@ import java.util.Random;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.qbar.objects.Rational.*;
 
-//todo fix trailing zeroes in toStringBase(BigInteger, int)
 @SuppressWarnings({"ConstantConditions", "UnusedDeclaration"})
 public class RationalDemos {
     private static final boolean USE_RANDOM = false;

@@ -1885,8 +1885,9 @@ public final class Rational implements Comparable<Rational> {
      * through 'Z'. If the base is greater than 36, the digits are written in decimal and each digit is surrounded by
      * parentheses. If {@code this} has a fractional part, a decimal point is used. Zero is represented by "0" if the
      * base is 36 or less, or "(0)" otherwise. There are no leading zeroes before the decimal point (unless
-     * {@code this} is less than 1, in which case there is exactly one zero) and no trailing zeroes after. Scientific
-     * notation is not used. If {@code this} is negative, the result will contain a leading '-'.
+     * {@code this} is less than 1, in which case there is exactly one zero) and no trailing zeroes after (unless an
+     * ellipsis is present, in which case there may be any number of trailing zeroes). Scientific notation is not used.
+     * If {@code this} is negative, the result will contain a leading '-'.
      *
      * <ul>
      *  <li>{@code this} may be any {@code Rational}.</li>
@@ -1908,6 +1909,24 @@ public final class Rational implements Comparable<Rational> {
         Rational rounded = of(scaled.bigIntegerValue(RoundingMode.DOWN));
         rounded = scale >= 0 ? rounded.divide(power) : rounded.multiply(power);
         String result = rounded.toStringBase(base);
+        if (ellipsis) {
+            //pad with trailing zeroes if necessary
+            int dotIndex = result.indexOf('.');
+            if (dotIndex == -1) {
+                dotIndex = result.length();
+                result = result + ".";
+            }
+            if (le(base, BigInteger.valueOf(36))) {
+                int missingZeroes = scale - result.length() + dotIndex + 1;
+                result = result + replicate(missingZeroes, '0');
+            } else {
+                int missingZeroes = scale;
+                for (int i = dotIndex + 1; i < result.length(); i++) {
+                    if (result.charAt(i) == '(') missingZeroes--;
+                }
+                result = result + concatStrings(replicate(missingZeroes, "(0)"));
+            }
+        }
         return ellipsis ? result + "..." : result;
     }
 
