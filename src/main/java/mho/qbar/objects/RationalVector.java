@@ -5,6 +5,7 @@ import mho.wheels.ordering.comparators.ShortlexComparator;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;
 
@@ -371,8 +372,7 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
      * @return {@code this}/{@code that}
      */
     public @NotNull RationalVector divide(@NotNull Rational that) {
-        if (this == ZERO_DIMENSIONAL) return ZERO_DIMENSIONAL;
-        return new RationalVector(toList(map(r -> r.divide(that), coordinates)));
+        return multiply(that.invert());
     }
 
     /**
@@ -388,8 +388,7 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
      * @return {@code this}/{@code that}
      */
     public @NotNull RationalVector divide(@NotNull BigInteger that) {
-        if (this == ZERO_DIMENSIONAL) return ZERO_DIMENSIONAL;
-        return new RationalVector(toList(map(r -> r.divide(that), coordinates)));
+        return multiply(Rational.of(BigInteger.ONE, that));
     }
 
     /**
@@ -405,8 +404,7 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
      * @return {@code this}/{@code that}
      */
     public @NotNull RationalVector divide(int that) {
-        if (this == ZERO_DIMENSIONAL) return ZERO_DIMENSIONAL;
-        return new RationalVector(toList(map(r -> r.divide(that), coordinates)));
+        return multiply(Rational.of(1, that));
     }
 
     /**

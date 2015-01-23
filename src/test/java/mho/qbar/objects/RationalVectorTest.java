@@ -1,11 +1,10 @@
 package mho.qbar.objects;
 
-import mho.wheels.iterables.IterableUtils;
 import mho.wheels.misc.Readers;
-import mho.wheels.ordering.Ordering;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
+import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -218,6 +217,90 @@ public class RationalVectorTest {
         } catch (ArithmeticException ignored) {}
         try {
             read("[1/2, 4, -4]").get().subtract(read("[5/6, 2/3]").get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testMultiply_Rational() {
+        assertTrue(ZERO_DIMENSIONAL.multiply(Rational.ZERO) == ZERO_DIMENSIONAL);
+        assertTrue(ZERO_DIMENSIONAL.multiply(Rational.read("-3/2").get()) == ZERO_DIMENSIONAL);
+        aeq(read("[2]").get().multiply(Rational.ZERO), "[0]");
+        aeq(read("[2]").get().multiply(Rational.read("-3/2").get()), "[-3]");
+        aeq(read("[5/3, 4, 0]").get().multiply(Rational.ZERO), "[0, 0, 0]");
+        aeq(read("[5/3, 4, 0]").get().multiply(Rational.read("-3/2").get()), "[-5/2, -6, 0]");
+    }
+
+    @Test
+    public void testMultiply_BigInteger() {
+        assertTrue(ZERO_DIMENSIONAL.multiply(BigInteger.ZERO) == ZERO_DIMENSIONAL);
+        assertTrue(ZERO_DIMENSIONAL.multiply(BigInteger.valueOf(5)) == ZERO_DIMENSIONAL);
+        aeq(read("[2]").get().multiply(BigInteger.ZERO), "[0]");
+        aeq(read("[2]").get().multiply(BigInteger.valueOf(5)), "[10]");
+        aeq(read("[5/3, 4, 0]").get().multiply(BigInteger.ZERO), "[0, 0, 0]");
+        aeq(read("[5/3, 4, 0]").get().multiply(BigInteger.valueOf(5)), "[25/3, 20, 0]");
+    }
+
+    @Test
+    public void testMultiply_int() {
+        assertTrue(ZERO_DIMENSIONAL.multiply(0) == ZERO_DIMENSIONAL);
+        assertTrue(ZERO_DIMENSIONAL.multiply(5) == ZERO_DIMENSIONAL);
+        aeq(read("[2]").get().multiply(0), "[0]");
+        aeq(read("[2]").get().multiply(5), "[10]");
+        aeq(read("[5/3, 4, 0]").get().multiply(0), "[0, 0, 0]");
+        aeq(read("[5/3, 4, 0]").get().multiply(5), "[25/3, 20, 0]");
+    }
+
+    @Test
+    public void testDivide_Rational() {
+        assertTrue(ZERO_DIMENSIONAL.divide(Rational.ONE) == ZERO_DIMENSIONAL);
+        assertTrue(ZERO_DIMENSIONAL.divide(Rational.read("-3/2").get()) == ZERO_DIMENSIONAL);
+        aeq(read("[2]").get().divide(Rational.ONE), "[2]");
+        aeq(read("[2]").get().divide(Rational.read("-3/2").get()), "[-4/3]");
+        aeq(read("[5/3, 4, 0]").get().divide(Rational.ONE), "[5/3, 4, 0]");
+        aeq(read("[5/3, 4, 0]").get().divide(Rational.read("-3/2").get()), "[-10/9, -8/3, 0]");
+        try {
+            ZERO_DIMENSIONAL.divide(Rational.ZERO);
+            fail();
+        } catch (ArithmeticException ignored) {}
+        try {
+            aeq(read("[5/3, 4, 0]").get().divide(Rational.ZERO), "[-10/9, -8/3, 0]");
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testDivide_BigInteger() {
+        assertTrue(ZERO_DIMENSIONAL.divide(BigInteger.ONE) == ZERO_DIMENSIONAL);
+        assertTrue(ZERO_DIMENSIONAL.divide(BigInteger.valueOf(5)) == ZERO_DIMENSIONAL);
+        aeq(read("[2]").get().divide(BigInteger.ONE), "[2]");
+        aeq(read("[2]").get().divide(BigInteger.valueOf(5)), "[2/5]");
+        aeq(read("[5/3, 4, 0]").get().divide(BigInteger.ONE), "[5/3, 4, 0]");
+        aeq(read("[5/3, 4, 0]").get().divide(BigInteger.valueOf(5)), "[1/3, 4/5, 0]");
+        try {
+            ZERO_DIMENSIONAL.divide(BigInteger.ZERO);
+            fail();
+        } catch (ArithmeticException ignored) {}
+        try {
+            aeq(read("[5/3, 4, 0]").get().divide(BigInteger.ZERO), "[-10/9, -8/3, 0]");
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testDivide_int() {
+        assertTrue(ZERO_DIMENSIONAL.divide(1) == ZERO_DIMENSIONAL);
+        assertTrue(ZERO_DIMENSIONAL.divide(5) == ZERO_DIMENSIONAL);
+        aeq(read("[2]").get().divide(1), "[2]");
+        aeq(read("[2]").get().divide(5), "[2/5]");
+        aeq(read("[5/3, 4, 0]").get().divide(1), "[5/3, 4, 0]");
+        aeq(read("[5/3, 4, 0]").get().divide(5), "[1/3, 4/5, 0]");
+        try {
+            ZERO_DIMENSIONAL.divide(0);
+            fail();
+        } catch (ArithmeticException ignored) {}
+        try {
+            aeq(read("[5/3, 4, 0]").get().divide(0), "[-10/9, -8/3, 0]");
             fail();
         } catch (ArithmeticException ignored) {}
     }
