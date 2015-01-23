@@ -8,9 +8,11 @@ import mho.wheels.iterables.RandomProvider;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 
+import java.math.BigInteger;
 import java.util.List;
 import java.util.Random;
 
+import static mho.qbar.objects.Rational.ZERO;
 import static mho.qbar.objects.RationalVector.*;
 import static mho.wheels.iterables.IterableUtils.*;
 
@@ -186,6 +188,57 @@ public class RationalVectorDemos {
         }
         for (Pair<RationalVector, RationalVector> p : take(LIMIT, ps)) {
             System.out.println(p.a + " - " + p.b + " = " + p.a.subtract(p.b));
+        }
+    }
+
+    public static void demoMultiply_Rational() {
+        initialize();
+        for (Pair<RationalVector, Rational> p : take(LIMIT, P.pairs(P.rationalVectors(), P.rationals()))) {
+            System.out.println(p.a + " * " + p.b + " = " + p.a.multiply(p.b));
+        }
+    }
+
+    public static void demoMultiply_BigInteger() {
+        initialize();
+        for (Pair<RationalVector, BigInteger> p : take(LIMIT, P.pairs(P.rationalVectors(), P.bigIntegers()))) {
+            System.out.println(p.a + " * " + p.b + " = " + p.a.multiply(p.b));
+        }
+    }
+
+    public static void demoMultiply_int() {
+        initialize();
+        for (Pair<RationalVector, Integer> p : take(LIMIT, P.pairs(P.rationalVectors(), P.integers()))) {
+            System.out.println(p.a + " * " + p.b + " = " + p.a.multiply(p.b));
+        }
+    }
+
+    public static void demoDivide_Rational() {
+        initialize();
+        Iterable<Pair<RationalVector, Rational>> ps = filter(
+                p -> p.b != ZERO,
+                P.pairs(P.rationalVectors(), P.rationals())
+        );
+        for (Pair<RationalVector, Rational> p : take(LIMIT, ps)) {
+            System.out.println(p.a + " / " + p.b + " = " + p.a.divide(p.b));
+        }
+    }
+
+    public static void demoDivide_BigInteger() {
+        initialize();
+        Iterable<Pair<RationalVector, BigInteger>> ps = P.pairs(
+                P.rationalVectors(),
+                filter(bi -> !bi.equals(BigInteger.ZERO), P.bigIntegers())
+        );
+        for (Pair<RationalVector, BigInteger> p : take(LIMIT, ps)) {
+            System.out.println(p.a + " / " + p.b + " = " + p.a.divide(p.b));
+        }
+    }
+
+    public static void demoDivide_int() {
+        initialize();
+        Iterable<Pair<RationalVector, Integer>> ps = P.pairs(P.rationalVectors(), filter(i -> i != 0, P.integers()));
+        for (Pair<RationalVector, Integer> p : take(LIMIT, ps)) {
+            System.out.println(p.a + " / " + p.b + " = " + p.a.divide(p.b));
         }
     }
 
