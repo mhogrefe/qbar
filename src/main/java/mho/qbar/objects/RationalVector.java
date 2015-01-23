@@ -307,32 +307,104 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
         return add(that.negate());
     }
 
+    /**
+     * Returns the scalar product of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} can be any {@code RationalVector}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param that the {@code RationalVector} {@code this} is multiplied by
+     * @return {@code this}×{@code that}
+     */
     public @NotNull RationalVector multiply(@NotNull Rational that) {
         if (this == ZERO_DIMENSIONAL) return ZERO_DIMENSIONAL;
         return new RationalVector(toList(map(r -> r.multiply(that), coordinates)));
     }
 
+    /**
+     * Returns the scalar product of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} can be any {@code RationalVector}.</li>
+     *  <li>{@code that} may be any {@code int}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param that the {@code RationalVector} {@code this} is multiplied by
+     * @return {@code this}×{@code that}
+     */
     public @NotNull RationalVector multiply(@NotNull BigInteger that) {
         if (this == ZERO_DIMENSIONAL) return ZERO_DIMENSIONAL;
         return new RationalVector(toList(map(r -> r.multiply(that), coordinates)));
     }
 
-    public @NotNull RationalVector multiply(@NotNull int that) {
+    /**
+     * Returns the scalar product of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} can be any {@code RationalVector}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param that the {@code RationalVector} {@code this} is multiplied by
+     * @return {@code this}×{@code that}
+     */
+    public @NotNull RationalVector multiply(int that) {
         if (this == ZERO_DIMENSIONAL) return ZERO_DIMENSIONAL;
         return new RationalVector(toList(map(r -> r.multiply(that), coordinates)));
     }
 
+    /**
+     * Returns the scalar product of {@code this} and the inverse of {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} can be any {@code RationalVector}.</li>
+     *  <li>{@code that} cannot be null or zero.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param that the {@code RationalVector} {@code this} is multiplied by
+     * @return {@code this}/{@code that}
+     */
     public @NotNull RationalVector divide(@NotNull Rational that) {
         if (this == ZERO_DIMENSIONAL) return ZERO_DIMENSIONAL;
         return new RationalVector(toList(map(r -> r.divide(that), coordinates)));
     }
 
+    /**
+     * Returns the scalar product of {@code this} and the inverse of {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} can be any {@code RationalVector}.</li>
+     *  <li>{@code that} cannot be null or zero.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param that the {@code RationalVector} {@code this} is multiplied by
+     * @return {@code this}/{@code that}
+     */
     public @NotNull RationalVector divide(@NotNull BigInteger that) {
         if (this == ZERO_DIMENSIONAL) return ZERO_DIMENSIONAL;
         return new RationalVector(toList(map(r -> r.divide(that), coordinates)));
     }
 
-    public @NotNull RationalVector divide(@NotNull int that) {
+    /**
+     * Returns the scalar product of {@code this} and the inverse of {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} can be any {@code RationalVector}.</li>
+     *  <li>{@code that} cannot be zero.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param that the {@code RationalVector} {@code this} is multiplied by
+     * @return {@code this}/{@code that}
+     */
+    public @NotNull RationalVector divide(int that) {
         if (this == ZERO_DIMENSIONAL) return ZERO_DIMENSIONAL;
         return new RationalVector(toList(map(r -> r.divide(that), coordinates)));
     }
