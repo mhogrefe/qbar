@@ -5,6 +5,7 @@ import mho.wheels.ordering.comparators.ShortlexComparator;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 
+import java.math.BigInteger;
 import java.util.*;
 
 import static mho.wheels.iterables.IterableUtils.*;
@@ -286,7 +287,7 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
         if (coordinates.size() != that.coordinates.size())
             throw new ArithmeticException("vectors must have same dimension");
         if (this == ZERO_DIMENSIONAL) return ZERO_DIMENSIONAL;
-        return of(toList(zipWith(p -> p.a.add(p.b), coordinates, that.coordinates)));
+        return new RationalVector(toList(zipWith(p -> p.a.add(p.b), coordinates, that.coordinates)));
     }
 
     /**
@@ -304,6 +305,36 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
      */
     public @NotNull RationalVector subtract(@NotNull RationalVector that) {
         return add(that.negate());
+    }
+
+    public @NotNull RationalVector multiply(@NotNull Rational that) {
+        if (this == ZERO_DIMENSIONAL) return ZERO_DIMENSIONAL;
+        return new RationalVector(toList(map(r -> r.multiply(that), coordinates)));
+    }
+
+    public @NotNull RationalVector multiply(@NotNull BigInteger that) {
+        if (this == ZERO_DIMENSIONAL) return ZERO_DIMENSIONAL;
+        return new RationalVector(toList(map(r -> r.multiply(that), coordinates)));
+    }
+
+    public @NotNull RationalVector multiply(@NotNull int that) {
+        if (this == ZERO_DIMENSIONAL) return ZERO_DIMENSIONAL;
+        return new RationalVector(toList(map(r -> r.multiply(that), coordinates)));
+    }
+
+    public @NotNull RationalVector divide(@NotNull Rational that) {
+        if (this == ZERO_DIMENSIONAL) return ZERO_DIMENSIONAL;
+        return new RationalVector(toList(map(r -> r.divide(that), coordinates)));
+    }
+
+    public @NotNull RationalVector divide(@NotNull BigInteger that) {
+        if (this == ZERO_DIMENSIONAL) return ZERO_DIMENSIONAL;
+        return new RationalVector(toList(map(r -> r.divide(that), coordinates)));
+    }
+
+    public @NotNull RationalVector divide(@NotNull int that) {
+        if (this == ZERO_DIMENSIONAL) return ZERO_DIMENSIONAL;
+        return new RationalVector(toList(map(r -> r.divide(that), coordinates)));
     }
 
     /**
