@@ -1218,7 +1218,7 @@ public final class Rational implements Comparable<Rational> {
      * Returns the product of {@code this} and {@code that}.
      *
      * <ul>
-     *  <li>{@code this} can be any {@code Rational}</li>
+     *  <li>{@code this} can be any {@code Rational}.</li>
      *  <li>{@code that} cannot be null.</li>
      *  <li>The result is not null.</li>
      * </ul>
@@ -1918,24 +1918,24 @@ public final class Rational implements Comparable<Rational> {
             }
             if (le(base, BigInteger.valueOf(36))) {
                 int missingZeroes = scale - result.length() + dotIndex + 1;
-                result = result + replicate(missingZeroes, '0');
+                result += replicate(missingZeroes, '0');
             } else {
                 int missingZeroes = scale;
                 for (int i = dotIndex + 1; i < result.length(); i++) {
                     if (result.charAt(i) == '(') missingZeroes--;
                 }
-                result = result + concatStrings(replicate(missingZeroes, "(0)"));
+                result += concatStrings(replicate(missingZeroes, "(0)"));
             }
+            result += "...";
         }
-        return ellipsis ? result + "..." : result;
+        return result;
     }
 
     /**
      * Converts a {@code String} written in some base to a {@code Rational}. If the base is 36 or less, the digits are
      * '0' through '9' followed by 'A' through 'Z'. If the base is greater than 36, the digits are written in decimal
      * and each digit is surrounded by parentheses. The empty {@code String} represents 0. Leading zeroes are
-     * permitted. The {@code String} may end in an ellipsis ("..."), which is removed before conversion. If the
-     * {@code String} is invalid, an exception is thrown.
+     * permitted. If the {@code String} is invalid, an exception is thrown.
      *
      * <ul>
      *  <li>{@code base} must be at least 2.</li>
@@ -1956,8 +1956,7 @@ public final class Rational implements Comparable<Rational> {
      */
     public static @NotNull Rational fromStringBase(@NotNull BigInteger base, @NotNull String s) {
         try {
-            if (s.endsWith("...")) s = take(s.length() - 3, s);
-            if (s.equals("-"))
+            if (s.equals("-") || s.equals(".") || s.equals("-."))
                 throw new IllegalArgumentException("invalid String");
             boolean negative = head(s) == '-';
             if (negative) s = tail(s);
@@ -1968,9 +1967,20 @@ public final class Rational implements Comparable<Rational> {
             } else {
                 undigitFunction = t -> {
                     if (t.isEmpty()) return new ArrayList<>();
-                    if (head(t) != '(' || last(t) != ')')
+                    if (head(t) != '(' || last(t) != ')' || t.contains("()"))
                         throw new IllegalArgumentException("invalid String");
-                    return toList(map(BigInteger::new, Arrays.asList(tail(init(t)).split("\\)\\("))));
+                    t = tail(init(t));
+                    return toList(
+                            map(
+                                    u -> {
+                                        Optional<BigInteger> oi = Readers.readBigInteger(u);
+                                        if (!oi.isPresent())
+                                            throw new IllegalArgumentException("improperly-formatted digit");
+                                        return oi.get();
+                                    },
+                                    Arrays.asList(t.split("\\)\\("))
+                            )
+                    );
                 };
             }
             Rational result;

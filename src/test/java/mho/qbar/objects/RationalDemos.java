@@ -3,6 +3,7 @@ package mho.qbar.objects;
 import mho.wheels.iterables.ExhaustiveProvider;
 import mho.wheels.iterables.IterableUtils;
 import mho.wheels.iterables.RandomProvider;
+import mho.wheels.math.MathUtils;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
@@ -24,6 +25,7 @@ public class RationalDemos {
     private static final boolean USE_RANDOM = false;
     private static final String RATIONAL_CHARS = "-/0123456789";
     private static final int SMALL_LIMIT = 1000;
+    private static final int MEDIUM_LIMIT = 3000;
     private static int LIMIT;
 
     private static QBarIterableProvider P;
@@ -420,7 +422,7 @@ public class RationalDemos {
         initialize();
         Iterable<Pair<Rational, BigInteger>> ps = P.pairs(
                 P.rationals(),
-                filter(bi -> !bi.equals(BigInteger.ZERO), P.bigIntegers())
+                filter(i -> !i.equals(BigInteger.ZERO), P.bigIntegers())
         );
         for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
             System.out.println(p.a + " / " + p.b + " = " + p.a.divide(p.b));
@@ -670,6 +672,47 @@ public class RationalDemos {
         for (Pair<Rational, Pair<BigInteger, Integer>> p : take(LIMIT, ps)) {
             System.out.println("toStringBase(" + p.a + ", " + p.b.a + ", " + p.b.b + ") = " +
                     p.a.toStringBase(p.b.a, p.b.b));
+        }
+    }
+
+    public static void demoFromStringBase() {
+        initialize();
+        Iterable<BigInteger> bases;
+        if (P instanceof ExhaustiveProvider) {
+            bases = P.rangeUp(BigInteger.valueOf(2));
+        } else {
+            bases = map(i -> BigInteger.valueOf(i + 2), ((RandomProvider) P).naturalIntegersGeometric(20));
+        }
+        Iterable<Pair<BigInteger, String>> ps = P.dependentPairs(
+                bases,
+                b -> {
+                    String chars = ".-";
+                    if (Ordering.le(b, BigInteger.valueOf(36))) {
+                        chars += charsToString(range('0', MathUtils.toDigit(b.intValueExact() - 1)));
+                    } else {
+                        chars += "()0123456789";
+                    }
+                    Iterable<Character> unfiltered;
+                    if (P instanceof ExhaustiveProvider) {
+                        unfiltered = fromString(chars);
+                    } else {
+                        unfiltered = ((RandomProvider) P).uniformSample(chars);
+                    }
+                    return filter(
+                            s -> {
+                                try {
+                                    fromStringBase(b, s);
+                                    return true;
+                                } catch (IllegalArgumentException e) {
+                                    return false;
+                                }
+                            },
+                            P.strings(unfiltered)
+                    );
+                }
+        );
+        for (Pair<BigInteger, String> p : take(MEDIUM_LIMIT, ps)) {
+            System.out.println("fromStringBase(" + p.a + ", " + p.b + ") = " + fromStringBase(p.a, p.b));
         }
     }
 

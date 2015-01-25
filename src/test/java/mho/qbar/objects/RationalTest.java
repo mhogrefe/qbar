@@ -4129,8 +4129,6 @@ public class RationalTest {
         aeq(fromStringBase(BigInteger.valueOf(100), "(0)."), 0);
         aeq(fromStringBase(BigInteger.valueOf(100), ".(0)"), 0);
         aeq(fromStringBase(BigInteger.valueOf(100), "(0).(0)"), 0);
-        aeq(fromStringBase(BigInteger.valueOf(2), "-0.1..."), "-1/2");
-        aeq(fromStringBase(BigInteger.valueOf(10), "-5..."), "-5");
         try {
             fromStringBase(BigInteger.ONE, "0");
             fail();
@@ -4189,6 +4187,38 @@ public class RationalTest {
         } catch (IllegalArgumentException ignored) {}
         try {
             fromStringBase(BigInteger.valueOf(100), "23");
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            fromStringBase(BigInteger.valueOf(10), "-0.1...");
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            fromStringBase(BigInteger.valueOf(10), "-5...");
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            fromStringBase(BigInteger.valueOf(100), "()");
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            fromStringBase(BigInteger.valueOf(100), "()()");
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            fromStringBase(BigInteger.valueOf(100), "(00)");
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            fromStringBase(BigInteger.valueOf(100), "(02)");
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            fromStringBase(BigInteger.valueOf(10), ".");
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            fromStringBase(BigInteger.valueOf(10), "-.");
             fail();
         } catch (IllegalArgumentException ignored) {}
     }
