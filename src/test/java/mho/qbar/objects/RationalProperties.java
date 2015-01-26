@@ -126,6 +126,7 @@ public class RationalProperties {
             propertiesFromPositionalNotation();
             propertiesDigits();
             compareImplementationsDigits();
+            propertiesToStringBase_BigInteger();
             propertiesEquals();
             propertiesHashCode();
             propertiesCompareTo();
@@ -3210,6 +3211,76 @@ public class RationalProperties {
             totalTime += (System.nanoTime() - time);
         }
         System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
+    }
+
+    private static void propertiesToStringBase_BigInteger() {
+        initialize();
+        System.out.println("\t\ttesting toStringBase(BigInteger) properties...");
+
+        Iterable<Pair<Rational, BigInteger>> ps;
+        if (P instanceof ExhaustiveProvider) {
+            ps = ((ExhaustiveProvider) P).pairsSquareRootOrder(P.rationals(), P.rangeUp(BigInteger.valueOf(2)));
+        } else {
+            ps = P.pairs(
+                    P.rationals(),
+                    map(i -> BigInteger.valueOf(i + 2), ((RandomProvider) P).naturalIntegersGeometric(20))
+            );
+        }
+        for (Pair<Rational, BigInteger> p : take(LIMIT, filter(q -> q.a.hasTerminatingBaseExpansion(q.b), ps))) {
+            String s = p.a.toStringBase(p.b);
+            assertEquals(p.toString(), fromStringBase(p.b, s), p.a);
+        }
+
+        String chars = charsToString(concat(Arrays.asList(fromString("-."), range('0', '9'), range('A', 'Z'))));
+        if (P instanceof ExhaustiveProvider) {
+            ps = ((ExhaustiveProvider) P).pairsSquareRootOrder(
+                    P.rationals(),
+                    P.range(BigInteger.valueOf(2), BigInteger.valueOf(36))
+            );
+        } else {
+            ps = P.pairs(P.rationals(), P.range(BigInteger.valueOf(2), BigInteger.valueOf(36)));
+        }
+        for (Pair<Rational, BigInteger> p : take(LIMIT, filter(q -> q.a.hasTerminatingBaseExpansion(q.b), ps))) {
+            String s = p.a.toStringBase(p.b);
+            assertTrue(p.toString(), all(c -> elem(c, chars), s));
+        }
+
+        String chars2 = charsToString(concat(fromString("-.()"), range('0', '9')));
+        if (P instanceof ExhaustiveProvider) {
+            ps = ((ExhaustiveProvider) P).pairsSquareRootOrder(P.rationals(), P.rangeUp(BigInteger.valueOf(37)));
+        } else {
+            ps = P.pairs(
+                    P.rationals(),
+                    map(i -> BigInteger.valueOf(i + 37), ((RandomProvider) P).naturalIntegersGeometric(20))
+            );
+        }
+        for (Pair<Rational, BigInteger> p : take(LIMIT, filter(q -> q.a.hasTerminatingBaseExpansion(q.b), ps))) {
+            String s = p.a.toStringBase(p.b);
+            assertTrue(p.toString(), all(c -> elem(c, chars2), s));
+        }
+
+        for (Pair<Rational, BigInteger> p : take(LIMIT, P.pairs(P.rationals(), P.rangeDown(BigInteger.ONE)))) {
+            try {
+                p.a.toStringBase(p.b);
+                fail(p.toString());
+            } catch (IllegalArgumentException ignored) {}
+        }
+
+        Iterable<Pair<Rational, BigInteger>> psFail;
+        if (P instanceof ExhaustiveProvider) {
+            psFail = P.pairs(P.rationals(), P.rangeUp(BigInteger.valueOf(2)));
+        } else {
+            psFail = P.pairs(
+                    P.rationals(),
+                    map(i -> BigInteger.valueOf(i + 2), ((RandomProvider) P).naturalIntegersGeometric(20))
+            );
+        }
+        for (Pair<Rational, BigInteger> p : take(LIMIT, filter(q -> !q.a.hasTerminatingBaseExpansion(q.b), psFail))) {
+            try {
+                p.a.toStringBase(p.b);
+                fail(p.toString());
+            } catch (ArithmeticException ignored) {}
+        }
     }
 
     private static void propertiesEquals() {
