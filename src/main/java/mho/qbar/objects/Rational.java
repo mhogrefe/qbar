@@ -361,8 +361,7 @@ public final class Rational implements Comparable<Rational> {
         } else {
             rational = of(mantissa + (1 << 23), 1 << 23).shiftLeft(exponent - 127);
         }
-        if (bits < 0) rational = rational.negate();
-        return rational;
+        return bits < 0 ? rational.negate() : rational;
     }
 
     /**
@@ -716,7 +715,7 @@ public final class Rational implements Comparable<Rational> {
     }
 
     /**
-     * Every {@code Rational}has a <i>left-neighboring {@code float}</i>, or the largest {@code float} that is less
+     * Every {@code Rational} has a <i>left-neighboring {@code float}</i>, or the largest {@code float} that is less
      * than or equal to the {@code Rational}; this {@code float} may be -Infinity. Likewise, every {@code Rational}
      * has a <i>right-neighboring {@code float}</i>: the smallest {@code float} greater than or equal to the
      * {@code Rational}. This float may be Infinity. If {@code this} is exactly equal to some {@code float}, the

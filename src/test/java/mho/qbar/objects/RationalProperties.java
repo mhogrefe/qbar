@@ -127,6 +127,7 @@ public class RationalProperties {
             propertiesDigits();
             compareImplementationsDigits();
             propertiesToStringBase_BigInteger();
+            propertiesToStringBase_BigInteger_int();
             propertiesEquals();
             propertiesHashCode();
             propertiesCompareTo();
@@ -3280,6 +3281,92 @@ public class RationalProperties {
                 p.a.toStringBase(p.b);
                 fail(p.toString());
             } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private static void propertiesToStringBase_BigInteger_int() {
+        initialize();
+        System.out.println("\t\ttesting toStringBase(BigInteger, int) properties...");
+
+        Iterable<Pair<Rational, Pair<BigInteger, Integer>>> ps;
+        if (P instanceof ExhaustiveProvider) {
+            ps = P.pairs(
+                    P.rationals(),
+                    (Iterable<Pair<BigInteger, Integer>>) P.pairs(P.rangeUp(BigInteger.valueOf(2)), P.integers())
+            );
+        } else {
+            ps = P.pairs(
+                    P.rationals(),
+                    (Iterable<Pair<BigInteger, Integer>>) P.pairs(
+                            map(i -> BigInteger.valueOf(i + 2), ((RandomProvider) P).naturalIntegersGeometric(20)),
+                            ((RandomProvider) P).integersGeometric(20)
+                    )
+            );
+        }
+        for (Pair<Rational, Pair<BigInteger, Integer>> p : take(LIMIT, ps)) {
+            String s = p.a.toStringBase(p.b.a, p.b.b);
+            boolean ellipsis = s.endsWith("...");
+            if (ellipsis) s = take(s.length() - 3, s);
+            Rational error = fromStringBase(p.b.a, s).subtract(p.a).abs();
+            assertTrue(p.toString(), lt(error, of(p.b.a).pow(-p.b.b)));
+            if (ellipsis) {
+                assertTrue(p.toString(), error != ZERO);
+            }
+        }
+
+        String chars = charsToString(concat(Arrays.asList(fromString("-."), range('0', '9'), range('A', 'Z'))));
+        if (P instanceof ExhaustiveProvider) {
+            ps = P.pairs(
+                    P.rationals(),
+                    (Iterable<Pair<BigInteger, Integer>>) P.pairs(
+                            P.range(BigInteger.valueOf(2), BigInteger.valueOf(36)),
+                            P.integers()
+                    )
+            );
+        } else {
+            ps = P.pairs(
+                    P.rationals(),
+                    (Iterable<Pair<BigInteger, Integer>>) P.pairs(
+                            P.range(BigInteger.valueOf(2), BigInteger.valueOf(36)),
+                            ((RandomProvider) P).integersGeometric(20)
+                    )
+            );
+        }
+        for (Pair<Rational, Pair<BigInteger, Integer>> p : take(LIMIT, ps)) {
+            String s = p.a.toStringBase(p.b.a, p.b.b);
+            assertTrue(p.toString(), all(c -> elem(c, chars), s));
+        }
+
+        String chars2 = charsToString(concat(fromString("-.()"), range('0', '9')));
+        if (P instanceof ExhaustiveProvider) {
+            ps = P.pairs(
+                    P.rationals(),
+                    (Iterable<Pair<BigInteger, Integer>>) P.pairs(P.rangeUp(BigInteger.valueOf(37)), P.integers())
+            );
+        } else {
+            ps = P.pairs(
+                    P.rationals(),
+                    (Iterable<Pair<BigInteger, Integer>>) P.pairs(
+                            map(i -> BigInteger.valueOf(i + 37), ((RandomProvider) P).naturalIntegersGeometric(20)),
+                            ((RandomProvider) P).integersGeometric(20)
+                    )
+            );
+        }
+        for (Pair<Rational, Pair<BigInteger, Integer>> p : take(LIMIT, ps)) {
+            String s = p.a.toStringBase(p.b.a, p.b.b);
+            assertTrue(p.toString(), all(c -> elem(c, chars2), s));
+        }
+
+        Iterable<Triple<Rational, BigInteger, Integer>> tsFail = P.triples(
+                P.rationals(),
+                P.rangeDown(BigInteger.ONE),
+                P.integers()
+        );
+        for (Triple<Rational, BigInteger, Integer> t : take(LIMIT, tsFail)) {
+            try {
+                t.a.toStringBase(t.b, t.c);
+                fail(t.toString());
+            } catch (IllegalArgumentException ignored) {}
         }
     }
 
