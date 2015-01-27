@@ -225,8 +225,11 @@ public class IntervalTest {
 
     @Test
     public void testEquals() {
+        //noinspection EqualsWithItself
         assertTrue(ZERO.equals(ZERO));
+        //noinspection EqualsWithItself
         assertTrue(ONE.equals(ONE));
+        //noinspection EqualsWithItself
         assertTrue(ALL.equals(ALL));
         assertTrue(read("[-2, 5/3]").equals(read("[-2, 5/3]")));
         assertTrue(read("[4, 4]").equals(read("[4, 4]")));

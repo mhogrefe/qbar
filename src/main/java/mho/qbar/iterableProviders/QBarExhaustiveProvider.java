@@ -4,7 +4,6 @@ import mho.qbar.objects.RationalVector;
 import mho.wheels.iterables.ExhaustiveProvider;
 import mho.qbar.objects.Interval;
 import mho.qbar.objects.Rational;
-import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigInteger;
@@ -16,6 +15,7 @@ import java.util.Optional;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.ordering.Ordering.*;
 
+@SuppressWarnings("ConstantConditions")
 public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIterableProvider {
     public static final @NotNull QBarExhaustiveProvider INSTANCE = new QBarExhaustiveProvider();
 
@@ -24,8 +24,13 @@ public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIt
     }
 
     @Override
-    public @NotNull Iterable<Rational> range(@NotNull Rational a) {
+    public @NotNull Iterable<Rational> rangeUp(@NotNull Rational a) {
         return iterate(r -> r.add(Rational.ONE), a);
+    }
+
+    @Override
+    public @NotNull Iterable<Rational> rangeDown(@NotNull Rational a) {
+        return iterate(r -> r.subtract(Rational.ONE), a);
     }
 
     @Override
@@ -55,59 +60,6 @@ public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIt
         };
     }
 
-    @Override
-    public @NotNull Iterable<Rational> rangeBy(@NotNull Rational a, @NotNull Rational i) {
-        return () -> new Iterator<Rational>() {
-            private Rational x = a;
-            private boolean reachedEnd;
-
-            @Override
-            public boolean hasNext() {
-                return !reachedEnd;
-            }
-
-            @Override
-            public Rational next() {
-                Rational oldX = x;
-                x = x.add(i);
-                reachedEnd = i.signum() == 1 ? lt(x, a) : gt(x, a);
-                return oldX;
-            }
-
-            @Override
-            public void remove() {
-                throw new UnsupportedOperationException("cannot remove from this iterator");
-            }
-        };
-    }
-
-    @Override
-    public @NotNull Iterable<Rational> rangeBy(@NotNull Rational a, @NotNull Rational i, @NotNull Rational b) {
-        if (i.signum() == 1 ? gt(a, b) : gt(b, a)) return new ArrayList<>();
-        return () -> new Iterator<Rational>() {
-            private Rational x = a;
-            private boolean reachedEnd;
-
-            @Override
-            public boolean hasNext() {
-                return !reachedEnd;
-            }
-
-            @Override
-            public Rational next() {
-                Rational oldX = x;
-                x = x.add(i);
-                reachedEnd = i.signum() == 1 ? gt(x, b) : lt(x, b);
-                return oldX;
-            }
-
-            @Override
-            public void remove() {
-                throw new UnsupportedOperationException("cannot remove from this iterator");
-            }
-        };
-    }
-
     /**
      * @return an {@link Iterable} that contains every {@link mho.qbar.objects.Rational}. Does not support removal.
      *
@@ -116,19 +68,8 @@ public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIt
     @Override
     public @NotNull Iterable<Rational> rationals() {
         return map(
-                p -> {
-                    assert p.a != null;
-                    assert p.b != null;
-                    return Rational.of(p.a, p.b);
-                },
-                filter(
-                        p -> {
-                            assert p.a != null;
-                            assert p.b != null;
-                            return p.a.gcd(p.b).equals(BigInteger.ONE);
-                        },
-                        pairs(bigIntegers(), positiveBigIntegers())
-                )
+                p -> Rational.of(p.a, p.b),
+                filter(p -> p.a.gcd(p.b).equals(BigInteger.ONE), pairs(bigIntegers(), positiveBigIntegers()))
         );
     }
 
@@ -140,19 +81,8 @@ public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIt
     @Override
     public @NotNull Iterable<Rational> nonNegativeRationals() {
         return map(
-                p -> {
-                    assert p.a != null;
-                    assert p.b != null;
-                    return Rational.of(p.a, p.b);
-                },
-                filter(
-                        p -> {
-                            assert p.a != null;
-                            assert p.b != null;
-                            return p.a.gcd(p.b).equals(BigInteger.ONE);
-                        },
-                        pairs(naturalBigIntegers(), positiveBigIntegers())
-                )
+                p -> Rational.of(p.a, p.b),
+                filter(p -> p.a.gcd(p.b).equals(BigInteger.ONE), pairs(naturalBigIntegers(), positiveBigIntegers()))
         );
     }
 
@@ -164,16 +94,8 @@ public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIt
     @Override
     public @NotNull Iterable<Rational> positiveRationals() {
         return map(
-                p -> {
-                    assert p.a != null;
-                    assert p.b != null;
-                    return Rational.of(p.a, p.b);
-                },
-                filter(p -> {
-                    assert p.a != null;
-                    assert p.b != null;
-                    return p.a.gcd(p.b).equals(BigInteger.ONE);
-                }, pairs(positiveBigIntegers()))
+                p -> Rational.of(p.a, p.b),
+                filter(p -> p.a.gcd(p.b).equals(BigInteger.ONE), pairs(positiveBigIntegers()))
         );
     }
 
@@ -185,19 +107,8 @@ public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIt
     @Override
     public @NotNull Iterable<Rational> negativeRationals() {
         return map(
-                p -> {
-                    assert p.a != null;
-                    assert p.b != null;
-                    return Rational.of(p.a, p.b);
-                },
-                filter(
-                        p -> {
-                            assert p.a != null;
-                            assert p.b != null;
-                            return p.a.gcd(p.b).equals(BigInteger.ONE);
-                        },
-                        pairs(negativeBigIntegers(), positiveBigIntegers())
-                )
+                p -> Rational.of(p.a, p.b),
+                filter(p -> p.a.gcd(p.b).equals(BigInteger.ONE), pairs(negativeBigIntegers(), positiveBigIntegers()))
         );
     }
 
@@ -209,17 +120,9 @@ public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIt
     @Override
     public @NotNull Iterable<Rational> nonNegativeRationalsLessThanOne() {
         return map(
-                p -> {
-                    assert p.a != null;
-                    assert p.b != null;
-                    return Rational.of(p.a, p.b);
-                },
+                p -> Rational.of(p.a, p.b),
                 filter(
-                        p -> {
-                            assert p.a != null;
-                            assert p.b != null;
-                            return lt(p.a, p.b) && p.a.gcd(p.b).equals(BigInteger.ONE);
-                        },
+                        p -> lt(p.a, p.b) && p.a.gcd(p.b).equals(BigInteger.ONE),
                         pairs(naturalBigIntegers(), positiveBigIntegers())
                 )
         );
@@ -233,14 +136,7 @@ public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIt
      */
     @Override
     public @NotNull Iterable<Interval> finitelyBoundedIntervals() {
-        return map(p -> {
-            assert p.a != null;
-            assert p.b != null;
-            return Interval.of(p.a, p.b);
-        }, filter(p -> {
-            assert p.a != null;
-            return le(p.a, p.b);
-        }, pairs(rationals())));
+        return map(p -> Interval.of(p.a, p.b), filter(p -> le(p.a, p.b), pairs(rationals())));
     }
 
     /**
@@ -252,20 +148,14 @@ public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIt
     public @NotNull Iterable<Interval> intervals() {
         return map(
                 p -> {
-                    assert p.a != null;
-                    assert p.b != null;
                     if (!p.a.isPresent() && !p.b.isPresent()) return Interval.ALL;
                     if (!p.a.isPresent()) return Interval.lessThanOrEqualTo(p.b.get());
                     if (!p.b.isPresent()) return Interval.greaterThanOrEqualTo(p.a.get());
                     return Interval.of(p.a.get(), p.b.get());
                 },
                 filter(
-                        p -> {
-                            assert p.a != null;
-                            assert p.b != null;
-                            return !p.a.isPresent() || !p.b.isPresent() || le(p.a.get(), p.b.get());
-                        },
-                        (Iterable<Pair<Optional<Rational>, Optional<Rational>>>) pairs(optionals(rationals()))
+                        p -> !p.a.isPresent() || !p.b.isPresent() || le(p.a.get(), p.b.get()),
+                        pairs(optionals(rationals()))
                 )
         );
     }
@@ -311,9 +201,9 @@ public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIt
         if (!a.getLower().isPresent() && !a.getUpper().isPresent()) {
             return bigIntegers();
         } else if (!a.getLower().isPresent()) {
-            return rangeBy(a.getUpper().get().floor(), BigInteger.valueOf(-1));
+            return rangeDown(a.getUpper().get().floor());
         } else if (!a.getUpper().isPresent()) {
-            return range(a.getLower().get().ceiling());
+            return rangeUp(a.getLower().get().ceiling());
         } else {
             return range(a.getLower().get().ceiling(), a.getUpper().get().floor());
         }
@@ -345,6 +235,11 @@ public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIt
     @Override
     public @NotNull Iterable<RationalVector> rationalVectors(int dimension) {
         return map(RationalVector::of, lists(dimension, rationals()));
+    }
+
+    @Override
+    public @NotNull Iterable<RationalVector> rationalVectorsAtLeast(int minDimension) {
+        return map(RationalVector::of, listsAtLeast(minDimension, rationals()));
     }
 
     @Override

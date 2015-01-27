@@ -18,20 +18,19 @@ import org.junit.Test;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.ordering.Ordering.*;
 import static mho.qbar.objects.Rational.*;
 import static org.junit.Assert.*;
 
+@SuppressWarnings("ConstantConditions")
 public class RationalProperties {
     private static boolean USE_RANDOM;
     private static final String RATIONAL_CHARS = "-/0123456789";
     private static final int SMALL_LIMIT = 1000;
+    private static final int MEDIUM_LIMIT = 3000;
     private static int LIMIT;
 
     private static QBarIterableProvider P;
@@ -66,6 +65,7 @@ public class RationalProperties {
             propertiesOfExact_float();
             propertiesOfExact_double();
             propertiesOf_BigDecimal();
+            propertiesIsInteger();
             propertiesBigIntegerValue_RoundingMode();
             propertiesBigIntegerValue();
             propertiesBigIntegerValueExact();
@@ -73,7 +73,7 @@ public class RationalProperties {
             propertiesShortValueExact();
             propertiesIntValueExact();
             propertiesLongValueExact();
-            propertiesHasTerminatingDecimalExpansion();
+            propertiesHasTerminatingBaseExpansion();
             propertiesBigDecimalValue_int_RoundingMode();
             propertiesBigDecimalValue_int();
             propertiesBigDecimalValueExact();
@@ -93,6 +93,7 @@ public class RationalProperties {
             compareImplementationsAdd();
             propertiesSubtract();
             propertiesMultiply_Rational();
+            compareImplementationsMultiply_Rational();
             propertiesMultiply_BigInteger();
             compareImplementationsMultiply_BigInteger();
             propertiesMultiply_int();
@@ -104,7 +105,9 @@ public class RationalProperties {
             propertiesDivide_int();
             compareImplementationsDivide_int();
             propertiesSum();
+            compareImplementationsSum();
             propertiesProduct();
+            compareImplementationsProduct();
             propertiesDelta();
             propertiesHarmonicNumber();
             propertiesPow();
@@ -119,10 +122,19 @@ public class RationalProperties {
             compareImplementationsShiftRight();
             propertiesContinuedFraction();
             propertiesFromContinuedFraction();
+            propertiesConvergents();
+            propertiesPositionalNotation();
+            propertiesFromPositionalNotation();
+            propertiesDigits();
+            compareImplementationsDigits();
+            propertiesToStringBase_BigInteger();
+            propertiesToStringBase_BigInteger_int();
+            propertiesFromStringBase();
             propertiesEquals();
             propertiesHashCode();
             propertiesCompareTo();
             propertiesRead();
+            propertiesFindIn();
             propertiesToString();
         }
         System.out.println("Done");
@@ -135,7 +147,11 @@ public class RationalProperties {
         List<Rational> sample = toList(take(SMALL_LIMIT, HARMONIC_NUMBERS));
         assertTrue(unique(sample));
         assertTrue(increasing(sample));
-        assertTrue(all(r -> !r.getDenominator().equals(BigInteger.ONE), tail(sample)));
+        assertTrue(all(r -> !r.isInteger(), tail(sample)));
+        try {
+            HARMONIC_NUMBERS.iterator().remove();
+            fail();
+        } catch (UnsupportedOperationException ignored) {}
     }
 
     private static void propertiesGetNumerator() {
@@ -161,15 +177,10 @@ public class RationalProperties {
         System.out.println("\t\ttesting of(BigInteger, BigInteger) properties...");
 
         Iterable<Pair<BigInteger, BigInteger>> ps = filter(
-                p -> {
-                    assert p.b != null;
-                    return !p.b.equals(BigInteger.ZERO);
-                },
+                p -> !p.b.equals(BigInteger.ZERO),
                 P.pairs(P.bigIntegers())
         );
         for (Pair<BigInteger, BigInteger> p : take(LIMIT, ps)) {
-            assert p.a != null;
-            assert p.b != null;
             Rational r = of(p.a, p.b);
             validate(r);
             assertEquals(p.toString(), of(p.a).divide(p.b), r);
@@ -191,8 +202,6 @@ public class RationalProperties {
         BigInteger maxLong = BigInteger.valueOf(Long.MAX_VALUE);
         Iterable<Pair<Long, Long>> ps = filter(p -> p.b != 0, P.pairs(P.longs()));
         for (Pair<Long, Long> p : take(LIMIT, ps)) {
-            assert p.a != null;
-            assert p.b != null;
             Rational r = of(p.a, p.b);
             validate(r);
             assertEquals(p.toString(), of(p.a).divide(BigInteger.valueOf(p.b)), r);
@@ -218,8 +227,6 @@ public class RationalProperties {
         BigInteger maxInt = BigInteger.valueOf(Integer.MAX_VALUE);
         Iterable<Pair<Integer, Integer>> ps = filter(p -> p.b != 0, P.pairs(P.integers()));
         for (Pair<Integer, Integer> p : take(LIMIT, ps)) {
-            assert p.a != null;
-            assert p.b != null;
             Rational r = of(p.a, p.b);
             validate(r);
             assertEquals(p.toString(), of(p.a).divide(p.b), r);
@@ -285,14 +292,12 @@ public class RationalProperties {
         Iterable<Float> fs = filter(f -> Float.isFinite(f) && !Float.isNaN(f), P.floats());
         for (float f : take(LIMIT, fs)) {
             Rational r = of(f);
-            assert r != null;
             validate(r);
-            assertTrue(Float.toString(f), r.hasTerminatingDecimalExpansion());
+            assertTrue(Float.toString(f), r.hasTerminatingBaseExpansion(BigInteger.valueOf(10)));
         }
 
         for (float f : take(LIMIT, P.ordinaryFloats())) {
             Rational r = of(f);
-            assert r != null;
             aeq(Float.toString(f), f, r.floatValue());
             aeq(Float.toString(f), new BigDecimal(Float.toString(f)), r.bigDecimalValueExact());
         }
@@ -305,14 +310,12 @@ public class RationalProperties {
         Iterable<Double> ds = filter(d -> Double.isFinite(d) && !Double.isNaN(d), P.doubles());
         for (double d : take(LIMIT, ds)) {
             Rational r = of(d);
-            assert r != null;
             validate(r);
-            assertTrue(Double.toString(d), r.hasTerminatingDecimalExpansion());
+            assertTrue(Double.toString(d), r.hasTerminatingBaseExpansion(BigInteger.valueOf(10)));
         }
 
         for (double d : take(LIMIT, P.ordinaryDoubles())) {
             Rational r = of(d);
-            assert r != null;
             aeq(Double.toString(d), d, r.doubleValue());
             aeq(Double.toString(d), new BigDecimal(Double.toString(d)), r.bigDecimalValueExact());
         }
@@ -327,7 +330,6 @@ public class RationalProperties {
         Iterable<Float> fs = filter(f -> Float.isFinite(f) && !Float.isNaN(f), P.floats());
         for (float f : take(LIMIT, fs)) {
             Rational r = ofExact(f);
-            assert r != null;
             validate(r);
             assertTrue(Float.toString(f), MathUtils.isAPowerOfTwo(r.getDenominator()));
             assertTrue(Float.toString(f), le(r.getDenominator(), denominatorLimit));
@@ -336,7 +338,6 @@ public class RationalProperties {
 
         for (float f : take(LIMIT, P.ordinaryFloats())) {
             Rational r = ofExact(f);
-            assert r != null;
             aeq(Float.toString(f), f, r.floatValue());
         }
     }
@@ -350,7 +351,6 @@ public class RationalProperties {
         Iterable<Double> ds = filter(d -> Double.isFinite(d) && !Double.isNaN(d), P.doubles());
         for (double d : take(LIMIT, ds)) {
             Rational r = ofExact(d);
-            assert r != null;
             validate(r);
             assertTrue(Double.toString(d), MathUtils.isAPowerOfTwo(r.getDenominator()));
             assertTrue(Double.toString(d), le(r.getDenominator(), denominatorLimit));
@@ -359,7 +359,6 @@ public class RationalProperties {
 
         for (double d : take(LIMIT, P.ordinaryDoubles())) {
             Rational r = ofExact(d);
-            assert r != null;
             aeq(Double.toString(d), d, r.doubleValue());
         }
     }
@@ -372,7 +371,20 @@ public class RationalProperties {
             Rational r = of(bd);
             validate(r);
             aeq(bd.toString(), bd, r.bigDecimalValueExact());
-            assertTrue(bd.toString(), r.hasTerminatingDecimalExpansion());
+            assertTrue(bd.toString(), r.hasTerminatingBaseExpansion(BigInteger.valueOf(10)));
+        }
+    }
+
+    private static void propertiesIsInteger() {
+        initialize();
+        System.out.println("\t\ttesting isInteger() properties...");
+
+        for (Rational r : take(LIMIT, P.rationals())) {
+            assertEquals(r.toString(), r.isInteger(), of(r.floor()).equals(r));
+        }
+
+        for (BigInteger i : take(LIMIT, P.bigIntegers())) {
+            assertTrue(of(i).isInteger());
         }
     }
 
@@ -381,15 +393,10 @@ public class RationalProperties {
         System.out.println("\t\ttesting bigIntegerValue(RoundingMode) properties...");
 
         Iterable<Pair<Rational, RoundingMode>> ps = filter(
-                p -> {
-                    assert p.a != null;
-                    return p.b != RoundingMode.UNNECESSARY || p.a.getDenominator().equals(BigInteger.ONE);
-                },
+                p -> p.b != RoundingMode.UNNECESSARY || p.a.isInteger(),
                 P.pairs(P.rationals(), P.roundingModes())
         );
         for (Pair<Rational, RoundingMode> p : take(LIMIT, ps)) {
-            assert p.a != null;
-            assert p.b != null;
             BigInteger rounded = p.a.bigIntegerValue(p.b);
             assertTrue(p.toString(), rounded.equals(BigInteger.ZERO) || rounded.signum() == p.a.signum());
             assertTrue(p.toString(), lt(p.a.subtract(of(rounded)).abs(), ONE));
@@ -435,7 +442,7 @@ public class RationalProperties {
             assertFalse(r.toString(), r.bigIntegerValue(RoundingMode.HALF_EVEN).testBit(0));
         }
 
-        for (Rational r : take(LIMIT, filter(s -> !s.getDenominator().equals(BigInteger.ONE), P.rationals()))) {
+        for (Rational r : take(LIMIT, filter(s -> !s.isInteger(), P.rationals()))) {
             try {
                 r.bigIntegerValue(RoundingMode.UNNECESSARY);
                 fail(r.toString());
@@ -478,7 +485,7 @@ public class RationalProperties {
             assertEquals(i.toString(), of(i).bigIntegerValueExact(), i);
         }
 
-        for (Rational r : take(LIMIT, filter(s -> !s.getDenominator().equals(BigInteger.ONE), P.rationals()))) {
+        for (Rational r : take(LIMIT, filter(s -> !s.isInteger(), P.rationals()))) {
             try {
                 r.bigIntegerValueExact();
                 fail(r.toString());
@@ -494,14 +501,14 @@ public class RationalProperties {
             assertEquals(Byte.toString(b), of(b).byteValueExact(), b);
         }
 
-        for (Rational r : take(LIMIT, filter(s -> !s.getDenominator().equals(BigInteger.ONE), P.rationals()))) {
+        for (Rational r : take(LIMIT, filter(s -> !s.isInteger(), P.rationals()))) {
             try {
                 r.byteValueExact();
                 fail(r.toString());
             } catch (ArithmeticException ignored) {}
         }
 
-        for (BigInteger i : take(LIMIT, range(BigInteger.valueOf(Byte.MAX_VALUE).add(BigInteger.ONE)))) {
+        for (BigInteger i : take(LIMIT, P.rangeUp(BigInteger.valueOf(Byte.MAX_VALUE).add(BigInteger.ONE)))) {
             try {
                 of(i).byteValueExact();
                 fail(i.toString());
@@ -528,14 +535,14 @@ public class RationalProperties {
             assertEquals(Short.toString(s), of(s).shortValueExact(), s);
         }
 
-        for (Rational r : take(LIMIT, filter(s -> !s.getDenominator().equals(BigInteger.ONE), P.rationals()))) {
+        for (Rational r : take(LIMIT, filter(s -> !s.isInteger(), P.rationals()))) {
             try {
                 r.shortValueExact();
                 fail(r.toString());
             } catch (ArithmeticException ignored) {}
         }
 
-        for (BigInteger i : take(LIMIT, range(BigInteger.valueOf(Short.MAX_VALUE).add(BigInteger.ONE)))) {
+        for (BigInteger i : take(LIMIT, P.rangeUp(BigInteger.valueOf(Short.MAX_VALUE).add(BigInteger.ONE)))) {
             try {
                 of(i).shortValueExact();
                 fail(i.toString());
@@ -562,14 +569,14 @@ public class RationalProperties {
             assertEquals(Integer.toString(i), of(i).intValueExact(), i);
         }
 
-        for (Rational r : take(LIMIT, filter(s -> !s.getDenominator().equals(BigInteger.ONE), P.rationals()))) {
+        for (Rational r : take(LIMIT, filter(s -> !s.isInteger(), P.rationals()))) {
             try {
                 r.intValueExact();
                 fail(r.toString());
             } catch (ArithmeticException ignored) {}
         }
 
-        for (BigInteger i : take(LIMIT, range(BigInteger.valueOf(Integer.MAX_VALUE).add(BigInteger.ONE)))) {
+        for (BigInteger i : take(LIMIT, P.rangeUp(BigInteger.valueOf(Integer.MAX_VALUE).add(BigInteger.ONE)))) {
             try {
                 of(i).intValueExact();
                 fail(i.toString());
@@ -596,14 +603,14 @@ public class RationalProperties {
             assertEquals(Long.toString(l), of(l).longValueExact(), l);
         }
 
-        for (Rational r : take(LIMIT, filter(s -> !s.getDenominator().equals(BigInteger.ONE), P.rationals()))) {
+        for (Rational r : take(LIMIT, filter(s -> !s.isInteger(), P.rationals()))) {
             try {
                 r.longValueExact();
                 fail(r.toString());
             } catch (ArithmeticException ignored) {}
         }
 
-        for (BigInteger i : take(LIMIT, range(BigInteger.valueOf(Long.MAX_VALUE).add(BigInteger.ONE)))) {
+        for (BigInteger i : take(LIMIT, P.rangeUp(BigInteger.valueOf(Long.MAX_VALUE).add(BigInteger.ONE)))) {
             try {
                 of(i).longValueExact();
                 fail(i.toString());
@@ -622,24 +629,47 @@ public class RationalProperties {
         }
     }
 
-    private static void propertiesHasTerminatingDecimalExpansion() {
+    private static void propertiesHasTerminatingBaseExpansion() {
         initialize();
 
-        System.out.println("\t\ttesting hasTerminatingDecimalExpansion() properties...");
-        for (Rational r : take(LIMIT, P.rationals())) {
-            r.hasTerminatingDecimalExpansion();
+        System.out.println("\t\ttesting hasTerminatingBaseExpansion(BigInteger) properties...");
+
+        Iterable<Pair<Rational, BigInteger>> ps;
+        if (P instanceof ExhaustiveProvider) {
+            ps = ((ExhaustiveProvider) P).pairsSquareRootOrder(
+                    cons(ZERO, P.positiveRationals()),
+                    P.rangeUp(BigInteger.valueOf(2))
+            );
+        } else {
+            ps = P.pairs(
+                    cons(ZERO, ((QBarRandomProvider) P).positiveRationals(20)),
+                    map(i -> BigInteger.valueOf(i + 2), ((RandomProvider) P).naturalIntegersGeometric(20))
+            );
+        }
+        for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
+            boolean result = p.a.hasTerminatingBaseExpansion(p.b);
+            Iterable<BigInteger> dPrimeFactors = nub(MathUtils.primeFactors(p.a.getDenominator()));
+            Iterable<BigInteger> bPrimeFactors = nub(MathUtils.primeFactors(p.b));
+            assertEquals(p.toString(), result, isSubsetOf(dPrimeFactors, bPrimeFactors));
         }
 
-        Iterable<Rational> rs = filter(Rational::hasTerminatingDecimalExpansion, P.rationals());
-        for (Rational r : take(LIMIT, rs)) {
-            r.bigDecimalValue(0);
-            List<BigInteger> dPrimeFactors = toList(
-                    nub(map(p -> p.a, MathUtils.compactPrimeFactors(r.getDenominator())))
+        if (!(P instanceof ExhaustiveProvider)) {
+            ps = P.pairs(
+                    cons(ZERO, ((QBarRandomProvider) P).positiveRationals(8)),
+                    map(i -> BigInteger.valueOf(i + 2), ((RandomProvider) P).naturalIntegersGeometric(20))
             );
-            assertTrue(
-                    r.toString(),
-                    isSubsetOf(dPrimeFactors, Arrays.asList(BigInteger.valueOf(2), BigInteger.valueOf(5)))
-            );
+        }
+        for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
+            boolean result = p.a.hasTerminatingBaseExpansion(p.b);
+            Triple<List<BigInteger>, List<BigInteger>, List<BigInteger>> pn = p.a.positionalNotation(p.b);
+            assertEquals(p.toString(), result, pn.c.equals(Arrays.asList(BigInteger.ZERO)));
+        }
+
+        for (Pair<Rational, BigInteger> p : take(LIMIT, P.pairs(P.rationals(), P.rangeDown(BigInteger.ONE)))) {
+            try {
+                p.a.hasTerminatingBaseExpansion(p.b);
+                fail(p.toString());
+            } catch (IllegalArgumentException ignored) {}
         }
     }
 
@@ -665,10 +695,6 @@ public class RationalProperties {
         ps = filter(
                 p -> {
                     try {
-                        assert p.a != null;
-                        assert p.b != null;
-                        assert p.b.a != null;
-                        assert p.b.b != null;
                         p.a.bigDecimalValue(p.b.a, p.b.b);
                         return true;
                     } catch (ArithmeticException e) {
@@ -678,19 +704,11 @@ public class RationalProperties {
                 ps
         );
         for (Pair<Rational, Pair<Integer, RoundingMode>> p : take(LIMIT, ps)) {
-            assert p.a != null;
-            assert p.b != null;
-            assert p.b.a != null;
-            assert p.b.b != null;
             BigDecimal bd = p.a.bigDecimalValue(p.b.a, p.b.b);
             assertTrue(p.toString(), eq(bd, BigDecimal.ZERO) || bd.signum() == p.a.signum());
         }
 
         for (Pair<Rational, Pair<Integer, RoundingMode>> p : take(LIMIT, filter(q -> q.b.a != 0 && q.a != ZERO, ps))) {
-            assert p.a != null;
-            assert p.b != null;
-            assert p.b.a != null;
-            assert p.b.b != null;
             BigDecimal bd = p.a.bigDecimalValue(p.b.a, p.b.b);
             assertTrue(p.toString(), bd.precision() == p.b.a);
         }
@@ -704,8 +722,6 @@ public class RationalProperties {
         pris = filter(
                 p -> {
                     try {
-                        assert p.a != null;
-                        assert p.b != null;
                         p.a.bigDecimalValue(p.b);
                         return true;
                     } catch (ArithmeticException e) {
@@ -717,8 +733,6 @@ public class RationalProperties {
 
         Iterable<Pair<Rational, Integer>> priExact = filter(p -> of(p.a.bigDecimalValue(p.b)).equals(p.a), pris);
         for (Pair<Rational, Integer> pri : take(LIMIT, priExact)) {
-            assert pri.a != null;
-            assert pri.b != null;
             BigDecimal bd = pri.a.bigDecimalValue(pri.b, RoundingMode.UNNECESSARY);
             assertEquals(pri.toString(), bd, pri.a.bigDecimalValue(pri.b, RoundingMode.FLOOR));
             assertEquals(pri.toString(), bd, pri.a.bigDecimalValue(pri.b, RoundingMode.CEILING));
@@ -731,16 +745,12 @@ public class RationalProperties {
 
         Iterable<Pair<Rational, Integer>> priInexact = filter(p -> !of(p.a.bigDecimalValue(p.b)).equals(p.a), pris);
         for (Pair<Rational, Integer> pri : take(LIMIT, priInexact)) {
-            assert pri.a != null;
-            assert pri.b != null;
             BigDecimal low = pri.a.bigDecimalValue(pri.b, RoundingMode.FLOOR);
             BigDecimal high = pri.a.bigDecimalValue(pri.b, RoundingMode.CEILING);
             assertTrue(pri.toString(), lt(low, high));
         }
 
         for (Pair<Rational, Integer> pri : take(LIMIT, filter(p -> p.a.signum() == 1, priInexact))) {
-            assert pri.a != null;
-            assert pri.b != null;
             BigDecimal floor = pri.a.bigDecimalValue(pri.b, RoundingMode.FLOOR);
             BigDecimal down = pri.a.bigDecimalValue(pri.b, RoundingMode.DOWN);
             BigDecimal ceiling = pri.a.bigDecimalValue(pri.b, RoundingMode.CEILING);
@@ -750,8 +760,6 @@ public class RationalProperties {
         }
 
         for (Pair<Rational, Integer> pri : take(LIMIT, filter(p -> p.a.signum() == -1, priInexact))) {
-            assert pri.a != null;
-            assert pri.b != null;
             BigDecimal floor = pri.a.bigDecimalValue(pri.b, RoundingMode.FLOOR);
             BigDecimal down = pri.a.bigDecimalValue(pri.b, RoundingMode.DOWN);
             BigDecimal ceiling = pri.a.bigDecimalValue(pri.b, RoundingMode.CEILING);
@@ -768,17 +776,13 @@ public class RationalProperties {
         }
         notMidpoints = filter(
                 p -> {
-                    assert p.a != null;
-                    assert p.b != null;
-                    if (p.a.precision() <= 1) return false;
-                    if (p.b != p.a.precision() - 1) return false;
+                    //noinspection SimplifiableIfStatement
+                    if (p.a.precision() <= 1 || p.b != p.a.precision() - 1) return false;
                     return !p.a.abs().unscaledValue().mod(BigInteger.valueOf(10)).equals(BigInteger.valueOf(5));
                 },
                 notMidpoints
         );
         for (Pair<BigDecimal, Integer> p : take(LIMIT, notMidpoints)) {
-            assert p.a != null;
-            assert p.b != null;
             Rational r = of(p.a);
             BigDecimal down = r.bigDecimalValue(p.b, RoundingMode.DOWN);
             BigDecimal up = r.bigDecimalValue(p.b, RoundingMode.UP);
@@ -814,33 +818,18 @@ public class RationalProperties {
             assertTrue(bd.toString(), bd.scale() != halfEven.scale() + 1 || !halfEven.unscaledValue().testBit(0));
         }
 
-        Iterable<Pair<Rational, Pair<Integer, RoundingMode>>> psFail;
-        if (P instanceof ExhaustiveProvider) {
-            psFail = P.pairs(
-                    P.rationals(),
-                    (Iterable<Pair<Integer, RoundingMode>>) P.pairs(P.negativeIntegers(), P.roundingModes())
-            );
-        } else {
-            psFail = P.pairs(
-                    P.rationals(),
-                    (Iterable<Pair<Integer, RoundingMode>>) P.pairs(
-                            ((RandomProvider) P).negativeIntegersGeometric(20),
-                            P.roundingModes()
-                    )
-            );
-        }
+        Iterable<Pair<Rational, Pair<Integer, RoundingMode>>> psFail = P.pairs(
+                P.rationals(),
+                (Iterable<Pair<Integer, RoundingMode>>) P.pairs(P.negativeIntegers(), P.roundingModes())
+        );
         for (Pair<Rational, Pair<Integer, RoundingMode>> p : take(LIMIT, psFail)) {
-            assert p.a != null;
-            assert p.b != null;
-            assert p.b.a != null;
-            assert p.b.b != null;
             try {
                 p.a.bigDecimalValue(p.b.a, p.b.b);
                 fail(p.toString());
             } catch (IllegalArgumentException ignored) {}
         }
 
-        Iterable<Rational> rs = filter(r -> !r.hasTerminatingDecimalExpansion(), P.rationals());
+        Iterable<Rational> rs = filter(r -> !r.hasTerminatingBaseExpansion(BigInteger.valueOf(10)), P.rationals());
         Iterable<Pair<Rational, Integer>> prisFail;
         if (P instanceof ExhaustiveProvider) {
             prisFail = ((ExhaustiveProvider) P).pairsSquareRootOrder(rs, P.naturalIntegers());
@@ -848,8 +837,6 @@ public class RationalProperties {
             prisFail = P.pairs(rs, ((RandomProvider) P).naturalIntegersGeometric(20));
         }
         for (Pair<Rational, Integer> p : take(LIMIT, prisFail)) {
-            assert p.a != null;
-            assert p.b != null;
             try {
                 p.a.bigDecimalValue(p.b, RoundingMode.UNNECESSARY);
                 fail(p.toString());
@@ -870,8 +857,6 @@ public class RationalProperties {
         ps = filter(
                 p -> {
                     try {
-                        assert p.a != null;
-                        assert p.b != null;
                         p.a.bigDecimalValue(p.b);
                         return true;
                     } catch (ArithmeticException e) {
@@ -881,16 +866,12 @@ public class RationalProperties {
                 ps
         );
         for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
-            assert p.a != null;
-            assert p.b != null;
             BigDecimal bd = p.a.bigDecimalValue(p.b);
             assertEquals(p.toString(), bd, p.a.bigDecimalValue(p.b, RoundingMode.HALF_EVEN));
             assertTrue(p.toString(), eq(bd, BigDecimal.ZERO) || bd.signum() == p.a.signum());
         }
 
         for (Pair<Rational, Integer> p : take(LIMIT, filter(q -> q.b != 0 && q.a != ZERO, ps))) {
-            assert p.a != null;
-            assert p.b != null;
             BigDecimal bd = p.a.bigDecimalValue(p.b);
             assertTrue(p.toString(), bd.precision() == p.b);
         }
@@ -903,17 +884,13 @@ public class RationalProperties {
         }
         notMidpoints = filter(
                 p -> {
-                    assert p.a != null;
-                    assert p.b != null;
-                    if (p.a.precision() <= 1) return false;
-                    if (p.b != p.a.precision() - 1) return false;
+                    //noinspection SimplifiableIfStatement
+                    if (p.a.precision() <= 1 || p.b != p.a.precision() - 1) return false;
                     return !p.a.abs().unscaledValue().mod(BigInteger.valueOf(10)).equals(BigInteger.valueOf(5));
                 },
                 notMidpoints
         );
         for (Pair<BigDecimal, Integer> p : take(LIMIT, notMidpoints)) {
-            assert p.a != null;
-            assert p.b != null;
             Rational r = of(p.a);
             BigDecimal down = r.bigDecimalValue(p.b, RoundingMode.DOWN);
             BigDecimal up = r.bigDecimalValue(p.b, RoundingMode.UP);
@@ -939,15 +916,7 @@ public class RationalProperties {
             assertTrue(bd.toString(), bd.scale() != halfEven.scale() + 1 || !halfEven.unscaledValue().testBit(0));
         }
 
-        Iterable<Pair<Rational, Integer>> psFail;
-        if (P instanceof ExhaustiveProvider) {
-            psFail = ((ExhaustiveProvider) P).pairsSquareRootOrder(P.rationals(), P.negativeIntegers());
-        } else {
-            psFail = P.pairs(P.rationals(), ((RandomProvider) P).negativeIntegersGeometric(20));
-        }
-        for (Pair<Rational, Integer> p : take(LIMIT, psFail)) {
-            assert p.a != null;
-            assert p.b != null;
+        for (Pair<Rational, Integer> p : take(LIMIT, P.pairs(P.rationals(), P.negativeIntegers()))) {
             try {
                 p.a.bigDecimalValue(p.b);
                 fail(p.toString());
@@ -959,7 +928,7 @@ public class RationalProperties {
         initialize();
         System.out.println("\t\ttesting bigDecimalValueExact()...");
 
-        Iterable<Rational> rs = filter(Rational::hasTerminatingDecimalExpansion, P.rationals());
+        Iterable<Rational> rs = filter(r -> r.hasTerminatingBaseExpansion(BigInteger.valueOf(10)), P.rationals());
         for (Rational r : take(LIMIT, rs)) {
             BigDecimal bd = r.bigDecimalValueExact();
             assertEquals(r.toString(), bd, r.bigDecimalValue(0, RoundingMode.UNNECESSARY));
@@ -967,22 +936,14 @@ public class RationalProperties {
             assertEquals(r.toString(), of(bd), r);
         }
 
-        Iterable<Pair<Rational, Integer>> psFail;
-        if (P instanceof ExhaustiveProvider) {
-            psFail = ((ExhaustiveProvider) P).pairsSquareRootOrder(P.rationals(), P.negativeIntegers());
-        } else {
-            psFail = P.pairs(P.rationals(), ((RandomProvider) P).negativeIntegersGeometric(20));
-        }
-        for (Pair<Rational, Integer> p : take(LIMIT, psFail)) {
-            assert p.a != null;
-            assert p.b != null;
+        for (Pair<Rational, Integer> p : take(LIMIT, P.pairs(P.rationals(), P.negativeIntegers()))) {
             try {
                 p.a.bigDecimalValue(p.b);
                 fail(p.toString());
             } catch (IllegalArgumentException ignored) {}
         }
 
-        Iterable<Rational> rsFail = filter(r -> !r.hasTerminatingDecimalExpansion(), P.rationals());
+        Iterable<Rational> rsFail = filter(r -> !r.hasTerminatingBaseExpansion(BigInteger.valueOf(10)), P.rationals());
         for (Rational r : take(LIMIT, rsFail)) {
             try {
                 r.bigDecimalValueExact();
@@ -1028,8 +989,6 @@ public class RationalProperties {
                 P.pairs(P.rationals(), P.roundingModes())
         );
         for (Pair<Rational, RoundingMode> p : take(LIMIT, ps)) {
-            assert p.a != null;
-            assert p.b != null;
             float rounded = p.a.floatValue(p.b);
             assertTrue(p.toString(), !Float.isNaN(rounded));
             assertTrue(p.toString(), rounded == 0.0f || Math.signum(rounded) == p.a.signum());
@@ -1164,8 +1123,6 @@ public class RationalProperties {
                 f -> {
                     Rational lo = ofExact(f);
                     Rational hi = ofExact(FloatingPointUtils.successor(f));
-                    assert lo != null;
-                    assert hi != null;
                     return lo.add(hi).shiftRight(1);
                 },
                 filter(f -> !f.equals(-0.0f) && f != Float.MAX_VALUE, P.ordinaryFloats())
@@ -1280,8 +1237,6 @@ public class RationalProperties {
                 f -> {
                     Rational lo = ofExact(f);
                     Rational hi = ofExact(FloatingPointUtils.successor(f));
-                    assert lo != null;
-                    assert hi != null;
                     return lo.add(hi).shiftRight(1);
                 },
                 filter(f -> !f.equals(-0.0f) && f != Float.MAX_VALUE, P.ordinaryFloats())
@@ -1369,8 +1324,6 @@ public class RationalProperties {
                 P.pairs(P.rationals(), P.roundingModes())
         );
         for (Pair<Rational, RoundingMode> p : take(LIMIT, ps)) {
-            assert p.a != null;
-            assert p.b != null;
             double rounded = p.a.doubleValue(p.b);
             assertTrue(p.toString(), !Double.isNaN(rounded));
             assertTrue(p.toString(), rounded == 0.0 || Math.signum(rounded) == p.a.signum());
@@ -1505,8 +1458,6 @@ public class RationalProperties {
                 f -> {
                     Rational lo = ofExact(f);
                     Rational hi = ofExact(FloatingPointUtils.successor(f));
-                    assert lo != null;
-                    assert hi != null;
                     return lo.add(hi).shiftRight(1);
                 },
                 filter(f -> !f.equals(-0.0) && f != Double.MAX_VALUE, P.ordinaryDoubles())
@@ -1621,8 +1572,6 @@ public class RationalProperties {
                 f -> {
                     Rational lo = ofExact(f);
                     Rational hi = ofExact(FloatingPointUtils.successor(f));
-                    assert lo != null;
-                    assert hi != null;
                     return lo.add(hi).shiftRight(1);
                 },
                 filter(f -> !f.equals(-0.0) && f != Double.MAX_VALUE, P.ordinaryDoubles())
@@ -1706,7 +1655,7 @@ public class RationalProperties {
         Iterable<Rational> rs = filter(r -> r != ZERO, P.rationals());
         for (Rational r : take(LIMIT, rs)) {
             Rational negativeR = r.negate();
-            assertTrue(r.toString(), !r.equals(negativeR));
+            assertNotEquals(r.toString(), r, negativeR);
         }
     }
 
@@ -1792,8 +1741,6 @@ public class RationalProperties {
         System.out.println("\t\ttesting add(Rational) properties...");
 
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
-            assert p.a != null;
-            assert p.b != null;
             Rational sum = p.a.add(p.b);
             validate(sum);
             assertEquals(p.toString(), sum, add_simplest(p.a, p.b));
@@ -1807,9 +1754,6 @@ public class RationalProperties {
         }
 
         for (Triple<Rational, Rational, Rational> t : take(LIMIT, P.triples(P.rationals()))) {
-            assert t.a != null;
-            assert t.b != null;
-            assert t.c != null;
             Rational sum1 = t.a.add(t.b).add(t.c);
             Rational sum2 = t.a.add(t.b.add(t.c));
             assertEquals(t.toString(), sum1, sum2);
@@ -1823,8 +1767,6 @@ public class RationalProperties {
         long totalTime = 0;
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
             long time = System.nanoTime();
-            assert p.a != null;
-            assert p.b != null;
             add_simplest(p.a, p.b);
             totalTime += (System.nanoTime() - time);
         }
@@ -1833,8 +1775,6 @@ public class RationalProperties {
         totalTime = 0;
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
             long time = System.nanoTime();
-            assert p.a != null;
-            assert p.b != null;
             p.a.add(p.b);
             totalTime += (System.nanoTime() - time);
         }
@@ -1846,8 +1786,6 @@ public class RationalProperties {
         System.out.println("\t\ttesting subtract(Rational) properties...");
 
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
-            assert p.a != null;
-            assert p.b != null;
             Rational difference = p.a.subtract(p.b);
             validate(difference);
             assertEquals(p.toString(), difference, p.b.subtract(p.a).negate());
@@ -1861,15 +1799,33 @@ public class RationalProperties {
         }
     }
 
+    private static @NotNull Pair<BigInteger, BigInteger> multiply_Rational_Knuth(
+            @NotNull Rational a,
+            @NotNull Rational b
+    ) {
+        if (a == ZERO || b == ZERO) return new Pair<>(BigInteger.ZERO, BigInteger.ONE);
+        if (a == ONE) return new Pair<>(b.getNumerator(), b.getDenominator());
+        if (b == ONE) return new Pair<>(a.getNumerator(), a.getDenominator());
+        BigInteger g1 = a.getNumerator().gcd(b.getDenominator());
+        BigInteger g2 = b.getNumerator().gcd(a.getDenominator());
+        BigInteger mn = a.getNumerator().divide(g1).multiply(b.getNumerator().divide(g2));
+        BigInteger md = a.getDenominator().divide(g2).multiply(b.getDenominator().divide(g1));
+        if (mn.equals(md)) return new Pair<>(BigInteger.ONE, BigInteger.ONE);
+        return new Pair<>(mn, md);
+    }
+
     private static void propertiesMultiply_Rational() {
         initialize();
         System.out.println("\t\ttesting multiply(Rational) properties...");
 
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
-            assert p.a != null;
-            assert p.b != null;
             Rational product = p.a.multiply(p.b);
             validate(product);
+            assertEquals(
+                    p.toString(),
+                    new Pair<>(product.getNumerator(), product.getDenominator()),
+                    multiply_Rational_Knuth(p.a, p.b)
+            );
             assertEquals(p.toString(), product, p.b.multiply(p.a));
         }
 
@@ -1886,22 +1842,34 @@ public class RationalProperties {
         }
 
         for (Triple<Rational, Rational, Rational> t : take(LIMIT, P.triples(P.rationals()))) {
-            assert t.a != null;
-            assert t.b != null;
-            assert t.c != null;
             Rational product1 = t.a.multiply(t.b).multiply(t.c);
             Rational product2 = t.a.multiply(t.b.multiply(t.c));
             assertEquals(t.toString(), product1, product2);
-        }
-
-        for (Triple<Rational, Rational, Rational> t : take(LIMIT, P.triples(P.rationals()))) {
-            assert t.a != null;
-            assert t.b != null;
-            assert t.c != null;
             Rational expression1 = t.a.add(t.b).multiply(t.c);
             Rational expression2 = t.a.multiply(t.c).add(t.b.multiply(t.c));
             assertEquals(t.toString(), expression1, expression2);
         }
+    }
+
+    private static void compareImplementationsMultiply_Rational() {
+        initialize();
+        System.out.println("\t\tcomparing multiply(Rational) implementations...");
+
+        long totalTime = 0;
+        for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
+            long time = System.nanoTime();
+            multiply_Rational_Knuth(p.a, p.b);
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\t\t\tKnuth: " + ((double) totalTime) / 1e9 + " s");
+
+        totalTime = 0;
+        for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
+            long time = System.nanoTime();
+            p.a.multiply(p.b);
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
     }
 
     private static @NotNull Rational multiply_BigInteger_simplest(@NotNull Rational a, @NotNull BigInteger b) {
@@ -1914,8 +1882,6 @@ public class RationalProperties {
 
         Iterable<Pair<Rational, BigInteger>> ps = P.pairs(P.rationals(), P.bigIntegers());
         for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
-            assert p.a != null;
-            assert p.b != null;
             Rational product = p.a.multiply(p.b);
             validate(product);
             assertEquals(p.toString(), product, multiply_BigInteger_simplest(p.a, p.b));
@@ -1940,9 +1906,6 @@ public class RationalProperties {
 
         Iterable<Rational> rs = P.rationals();
         for (Triple<Rational, Rational, BigInteger> t : take(LIMIT, P.triples(rs, rs, P.bigIntegers()))) {
-            assert t.a != null;
-            assert t.b != null;
-            assert t.c != null;
             Rational expression1 = t.a.add(t.b).multiply(t.c);
             Rational expression2 = t.a.multiply(t.c).add(t.b.multiply(t.c));
             assertEquals(t.toString(), expression1, expression2);
@@ -1957,8 +1920,6 @@ public class RationalProperties {
         Iterable<Pair<Rational, BigInteger>> ps = P.pairs(P.rationals(), P.bigIntegers());
         for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
             long time = System.nanoTime();
-            assert p.a != null;
-            assert p.b != null;
             multiply_BigInteger_simplest(p.a, p.b);
             totalTime += (System.nanoTime() - time);
         }
@@ -1967,8 +1928,6 @@ public class RationalProperties {
         totalTime = 0;
         for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
             long time = System.nanoTime();
-            assert p.a != null;
-            assert p.b != null;
             p.a.multiply(p.b);
             totalTime += (System.nanoTime() - time);
         }
@@ -1984,8 +1943,6 @@ public class RationalProperties {
         System.out.println("\t\ttesting multiply(int) properties...");
 
         for (Pair<Rational, Integer> p :take(LIMIT, P.pairs(P.rationals(), P.integers()))) {
-            assert p.a != null;
-            assert p.b != null;
             Rational product = p.a.multiply(p.b);
             validate(product);
             assertEquals(p.toString(), product, multiply_int_simplest(p.a, p.b));
@@ -2011,9 +1968,6 @@ public class RationalProperties {
 
         Iterable<Rational> rs = P.rationals();
         for (Triple<Rational, Rational, Integer> t : take(LIMIT, P.triples(rs, rs, P.integers()))) {
-            assert t.a != null;
-            assert t.b != null;
-            assert t.c != null;
             Rational expression1 = t.a.add(t.b).multiply(t.c);
             Rational expression2 = t.a.multiply(t.c).add(t.b.multiply(t.c));
             assertEquals(t.toString(), expression1, expression2);
@@ -2028,8 +1982,6 @@ public class RationalProperties {
         Iterable<Pair<Rational, Integer>> ps = P.pairs(P.rationals(), P.integers());
         for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
             long time = System.nanoTime();
-            assert p.a != null;
-            assert p.b != null;
             multiply_int_simplest(p.a, p.b);
             totalTime += (System.nanoTime() - time);
         }
@@ -2038,8 +1990,6 @@ public class RationalProperties {
         totalTime = 0;
         for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
             long time = System.nanoTime();
-            assert p.a != null;
-            assert p.b != null;
             p.a.multiply(p.b);
             totalTime += (System.nanoTime() - time);
         }
@@ -2056,8 +2006,6 @@ public class RationalProperties {
 
         Iterable<Pair<Rational, Rational>> ps = filter(p -> p.b != ZERO, P.pairs(P.rationals()));
         for (Pair<Rational, Rational> p : take(LIMIT, ps)) {
-            assert p.a != null;
-            assert p.b != null;
             Rational quotient = p.a.divide(p.b);
             validate(quotient);
             assertEquals(p.toString(), quotient, divide_Rational_simplest(p.a, p.b));
@@ -2066,8 +2014,6 @@ public class RationalProperties {
 
         ps = filter(p -> p.a != ZERO && p.b != ZERO, P.pairs(P.rationals()));
         for (Pair<Rational, Rational> p : take(LIMIT, ps)) {
-            assert p.a != null;
-            assert p.b != null;
             assertEquals(p.toString(), p.a.divide(p.b), p.b.divide(p.a).invert());
         }
 
@@ -2097,8 +2043,6 @@ public class RationalProperties {
         Iterable<Pair<Rational, Rational>> ps = filter(p -> p.b != ZERO, P.pairs(P.rationals()));
         for (Pair<Rational, Rational> p : take(LIMIT, ps)) {
             long time = System.nanoTime();
-            assert p.a != null;
-            assert p.b != null;
             divide_Rational_simplest(p.a, p.b);
             totalTime += (System.nanoTime() - time);
         }
@@ -2107,8 +2051,6 @@ public class RationalProperties {
         totalTime = 0;
         for (Pair<Rational, Rational> p : take(LIMIT, ps)) {
             long time = System.nanoTime();
-            assert p.a != null;
-            assert p.b != null;
             p.a.divide(p.b);
             totalTime += (System.nanoTime() - time);
         }
@@ -2128,8 +2070,6 @@ public class RationalProperties {
                 filter(i -> !i.equals(BigInteger.ZERO), P.bigIntegers())
         );
         for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
-            assert p.a != null;
-            assert p.b != null;
             Rational quotient = p.a.divide(p.b);
             validate(quotient);
             assertEquals(p.toString(), quotient, divide_BigInteger_simplest(p.a, p.b));
@@ -2141,8 +2081,6 @@ public class RationalProperties {
                 filter(i -> !i.equals(BigInteger.ZERO), P.bigIntegers())
         );
         for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
-            assert p.a != null;
-            assert p.b != null;
             assertEquals(p.toString(), p.a.divide(p.b), of(p.b).divide(p.a).invert());
         }
         
@@ -2175,8 +2113,6 @@ public class RationalProperties {
         );
         for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
             long time = System.nanoTime();
-            assert p.a != null;
-            assert p.b != null;
             divide_BigInteger_simplest(p.a, p.b);
             totalTime += (System.nanoTime() - time);
         }
@@ -2185,8 +2121,6 @@ public class RationalProperties {
         totalTime = 0;
         for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
             long time = System.nanoTime();
-            assert p.a != null;
-            assert p.b != null;
             p.a.divide(p.b);
             totalTime += (System.nanoTime() - time);
         }
@@ -2203,18 +2137,14 @@ public class RationalProperties {
 
         Iterable<Pair<Rational, Integer>> ps = P.pairs(P.rationals(), filter(i -> i != 0, P.integers()));
         for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
-            assert p.a != null;
-            assert p.b != null;
             Rational quotient = p.a.divide(p.b);
             validate(quotient);
             assertEquals(p.toString(), quotient, divide_int_simplest(p.a, p.b));
             assertEquals(p.toString(), p.a, quotient.multiply(p.b));
         }
 
-        ps = P.pairs((Iterable<Rational>) filter(r -> r != ZERO, P.rationals()), filter(i -> i != 0, P.integers()));
+        ps = P.pairs(filter(r -> r != ZERO, P.rationals()), filter(i -> i != 0, P.integers()));
         for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
-            assert p.a != null;
-            assert p.b != null;
             assertEquals(p.toString(), p.a.divide(p.b), of(p.b).divide(p.a).invert());
         }
 
@@ -2244,8 +2174,6 @@ public class RationalProperties {
         Iterable<Pair<Rational, Integer>> ps = P.pairs(P.rationals(), filter(i -> i != 0, P.integers()));
         for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
             long time = System.nanoTime();
-            assert p.a != null;
-            assert p.b != null;
             divide_int_simplest(p.a, p.b);
             totalTime += (System.nanoTime() - time);
         }
@@ -2254,12 +2182,36 @@ public class RationalProperties {
         totalTime = 0;
         for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
             long time = System.nanoTime();
-            assert p.a != null;
-            assert p.b != null;
             p.a.divide(p.b);
             totalTime += (System.nanoTime() - time);
         }
         System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
+    }
+
+    private static @NotNull Rational sum_alt(@NotNull Iterable<Rational> xs) {
+        List<Rational> denominatorSorted = sort(
+                (x, y) -> {
+                    Ordering o = compare(x.getDenominator(), y.getDenominator());
+                    if (o == EQ) {
+                        o = compare(x.getNumerator().abs(), y.getNumerator().abs());
+                    }
+                    if (o == EQ) {
+                        o = compare(x.getNumerator().signum(), y.getNumerator().signum());
+                    }
+                    return o.toInt();
+                },
+                xs
+        );
+        Iterable<List<Rational>> denominatorGrouped = group(
+                p -> p.a.getDenominator().equals(p.b.getDenominator()),
+                denominatorSorted
+        );
+        Rational sum = ZERO;
+        for (List<Rational> group : denominatorGrouped) {
+            BigInteger numeratorSum = sumBigInteger(map(Rational::getNumerator, group));
+            sum = sum.add(of(numeratorSum, head(group).getDenominator()));
+        }
+        return sum;
     }
 
     private static void propertiesSum() {
@@ -2267,21 +2219,17 @@ public class RationalProperties {
         System.out.println("\t\ttesting sum(Iterable<Rational>) properties...");
 
         for (List<Rational> rs : take(LIMIT, P.lists(P.rationals()))) {
-            validate(sum(rs));
+            Rational sum = sum(rs);
+            validate(sum);
+            assertEquals(rs.toString(), sum, sum_alt(rs));
         }
 
         Iterable<Pair<List<Rational>, List<Rational>>> ps = filter(
-                q -> {
-                    assert q.a != null;
-                    assert q.b != null;
-                    return !q.a.equals(q.b);
-                },
+                q -> !q.a.equals(q.b),
                 P.dependentPairsLogarithmic(P.lists(P.rationals()), Combinatorics::permutationsIncreasing)
         );
 
         for (Pair<List<Rational>, List<Rational>> p : take(LIMIT, ps)) {
-            assert p.a != null;
-            assert p.b != null;
             assertEquals(p.toString(), sum(p.a), sum(p.b));
         }
 
@@ -2290,25 +2238,47 @@ public class RationalProperties {
         }
 
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
-            assert p.a != null;
-            assert p.b != null;
             assertEquals(p.toString(), sum(Arrays.asList(p.a, p.b)), p.a.add(p.b));
         }
 
-        Iterable<List<Rational>> failRss = map(p -> {
-            assert p.a != null;
-            assert p.b != null;
-            return toList(insert(p.a, p.b, null));
-        }, (Iterable<Pair<List<Rational>, Integer>>) P.dependentPairsLogarithmic(
-                P.lists(P.rationals()),
-                rs -> range(0, rs.size())
-        ));
+        Iterable<List<Rational>> failRss = map(
+                p -> toList(insert(p.a, p.b, null)),
+                (Iterable<Pair<List<Rational>, Integer>>) P.dependentPairsLogarithmic(
+                        P.lists(P.rationals()),
+                        rs -> range(0, rs.size())
+                )
+        );
         for (List<Rational> rs : take(LIMIT, failRss)) {
             try {
                 sum(rs);
                 fail(rs.toString());
-            } catch (AssertionError ignored) {}
+            } catch (IllegalArgumentException ignored) {}
         }
+    }
+
+    private static void compareImplementationsSum() {
+        initialize();
+        System.out.println("\t\tcomparing sum(Iterable<Rational>) implementations...");
+
+        long totalTime = 0;
+        for (List<Rational> rs : take(LIMIT, P.lists(P.rationals()))) {
+            long time = System.nanoTime();
+            sum_alt(rs);
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\t\t\talt: " + ((double) totalTime) / 1e9 + " s");
+
+        totalTime = 0;
+        for (List<Rational> rs : take(LIMIT, P.lists(P.rationals()))) {
+            long time = System.nanoTime();
+            sum(rs);
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
+    }
+
+    private static @NotNull Rational product_simplest(@NotNull Iterable<Rational> xs) {
+        return foldl(p -> p.a.multiply(p.b), ONE, xs);
     }
 
     private static void propertiesProduct() {
@@ -2316,21 +2286,17 @@ public class RationalProperties {
         System.out.println("\t\ttesting product(Iterable<Rational>) properties...");
 
         for (List<Rational> rs : take(LIMIT, P.lists(P.rationals()))) {
-            validate(product(rs));
+            Rational product = product(rs);
+            validate(product);
+            assertEquals(rs.toString(), product, product_simplest(rs));
         }
 
         Iterable<Pair<List<Rational>, List<Rational>>> ps = filter(
-                q -> {
-                    assert q.a != null;
-                    assert q.b != null;
-                    return !q.a.equals(q.b);
-                },
+                q -> !q.a.equals(q.b),
                 P.dependentPairsLogarithmic(P.lists(P.rationals()), Combinatorics::permutationsIncreasing)
         );
 
         for (Pair<List<Rational>, List<Rational>> p : take(LIMIT, ps)) {
-            assert p.a != null;
-            assert p.b != null;
             assertEquals(p.toString(), product(p.a), product(p.b));
         }
 
@@ -2339,32 +2305,47 @@ public class RationalProperties {
         }
 
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
-            assert p.a != null;
-            assert p.b != null;
             assertEquals(p.toString(), product(Arrays.asList(p.a, p.b)), p.a.multiply(p.b));
         }
 
-        Iterable<List<Rational>> failRss = map(p -> {
-            assert p.a != null;
-            assert p.b != null;
-            return toList(insert(p.a, p.b, null));
-        }, (Iterable<Pair<List<Rational>, Integer>>) P.dependentPairsLogarithmic(
-                P.lists(P.rationals()),
-                rs -> range(0, rs.size())
-        ));
+        Iterable<List<Rational>> failRss = map(
+                p -> toList(insert(p.a, p.b, null)),
+                P.dependentPairsLogarithmic(P.lists(P.rationals()), rs -> range(0, rs.size()))
+        );
         for (List<Rational> rs : take(LIMIT, failRss)) {
             try {
                 product(rs);
                 fail(rs.toString());
-            } catch (AssertionError ignored) {}
+            } catch (NullPointerException | IllegalArgumentException ignored) {}
         }
+    }
+
+    private static void compareImplementationsProduct() {
+        initialize();
+        System.out.println("\t\tcomparing product(Iterable<Rational>) implementations...");
+
+        long totalTime = 0;
+        for (List<Rational> rs : take(LIMIT, P.lists(P.rationals()))) {
+            long time = System.nanoTime();
+            product_simplest(rs);
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\t\t\tsimplest: " + ((double) totalTime) / 1e9 + " s");
+
+        totalTime = 0;
+        for (List<Rational> rs : take(LIMIT, P.lists(P.rationals()))) {
+            long time = System.nanoTime();
+            product(rs);
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
     }
 
     private static void propertiesDelta() {
         initialize();
         System.out.println("\t\ttesting delta(Iterable<Rational>) properties...");
 
-        for (List<Rational> rs : take(LIMIT, filter(ss -> !ss.isEmpty(), P.lists(P.rationals())))) {
+        for (List<Rational> rs : take(LIMIT, P.listsAtLeast(1, P.rationals()))) {
             Iterable<Rational> deltas = delta(rs);
             aeq(rs.toString(), length(deltas), length(rs) - 1);
             Iterable<Rational> reversed = reverse(map(Rational::negate, delta(reverse(rs))));
@@ -2379,19 +2360,16 @@ public class RationalProperties {
         }
 
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
-            assert p.a != null;
-            assert p.b != null;
             aeq(p.toString(), delta(Arrays.asList(p.a, p.b)), Arrays.asList(p.b.subtract(p.a)));
         }
 
-        Iterable<List<Rational>> failRss = map(p -> {
-            assert p.a != null;
-            assert p.b != null;
-            return toList(insert(p.a, p.b, null));
-        }, (Iterable<Pair<List<Rational>, Integer>>) P.dependentPairsLogarithmic(
-                P.lists(P.rationals()),
-                rs -> range(0, rs.size())
-        ));
+        Iterable<List<Rational>> failRss = map(
+                p -> toList(insert(p.a, p.b, null)),
+                (Iterable<Pair<List<Rational>, Integer>>) P.dependentPairsLogarithmic(
+                        P.lists(P.rationals()),
+                        rs -> range(0, rs.size())
+                )
+        );
         for (List<Rational> rs : take(LIMIT, failRss)) {
             try {
                 toList(delta(rs));
@@ -2420,10 +2398,10 @@ public class RationalProperties {
         for (int i : take(SMALL_LIMIT, is)) {
             Rational h = harmonicNumber(i);
             assertTrue(Integer.toString(i), gt(h, harmonicNumber(i - 1)));
-            assertFalse(Integer.toString(i), h.getDenominator().equals(BigInteger.ONE));
+            assertFalse(Integer.toString(i), h.isInteger());
         }
 
-        for (int i : take(LIMIT, map(j -> -j, P.naturalIntegers()))) {
+        for (int i : take(LIMIT, P.rangeDown(0))) {
             try {
                 harmonicNumber(i);
                 fail(Integer.toString(i));
@@ -2452,8 +2430,6 @@ public class RationalProperties {
 
         Iterable<Pair<Rational, Integer>> ps = filter(p -> p.b >= 0 || p.a != ZERO, P.pairs(P.rationals(), exps));
         for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
-            assert p.a != null;
-            assert p.b != null;
             Rational r = p.a.pow(p.b);
             validate(r);
             assertEquals(p.toString(), r, pow_simplest(p.a, p.b));
@@ -2461,9 +2437,8 @@ public class RationalProperties {
 
         ps = P.pairs(filter(r -> r != ZERO, P.rationals()), exps);
         for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
-            assert p.a != null;
-            assert p.b != null;
-            Rational r = p.a.pow(p.b);
+            Rational r
+                    = p.a.pow(p.b);
             assertEquals(p.toString(), r, p.a.pow(-p.b).invert());
             assertEquals(p.toString(), r, p.a.invert().pow(-p.b));
         }
@@ -2494,9 +2469,6 @@ public class RationalProperties {
                 P.triples(P.rationals(), exps, exps)
         );
         for (Triple<Rational, Integer, Integer> t : take(LIMIT, ts1)) {
-            assert t.a != null;
-            assert t.b != null;
-            assert t.c != null;
             Rational expression1 = t.a.pow(t.b).multiply(t.a.pow(t.c));
             Rational expression2 = t.a.pow(t.b + t.c);
             assertEquals(t.toString(), expression1, expression2);
@@ -2507,9 +2479,6 @@ public class RationalProperties {
                 P.triples(P.rationals(), exps, exps)
         );
         for (Triple<Rational, Integer, Integer> t : take(LIMIT, ts1)) {
-            assert t.a != null;
-            assert t.b != null;
-            assert t.c != null;
             Rational expression1 = t.a.pow(t.b).divide(t.a.pow(t.c));
             Rational expression2 = t.a.pow(t.b - t.c);
             assertEquals(t.toString(), expression1, expression2);
@@ -2520,9 +2489,6 @@ public class RationalProperties {
                 P.triples(P.rationals(), exps, exps)
         );
         for (Triple<Rational, Integer, Integer> t : take(LIMIT, ts1)) {
-            assert t.a != null;
-            assert t.b != null;
-            assert t.c != null;
             Rational expression5 = t.a.pow(t.b).pow(t.c);
             Rational expression6 = t.a.pow(t.b * t.c);
             assertEquals(t.toString(), expression5, expression6);
@@ -2533,9 +2499,6 @@ public class RationalProperties {
                 P.triples(P.rationals(), P.rationals(), exps)
         );
         for (Triple<Rational, Rational, Integer> t : take(LIMIT, ts2)) {
-            assert t.a != null;
-            assert t.b != null;
-            assert t.c != null;
             Rational expression1 = t.a.multiply(t.b).pow(t.c);
             Rational expression2 = t.a.pow(t.c).multiply(t.b.pow(t.c));
             assertEquals(t.toString(), expression1, expression2);
@@ -2546,9 +2509,6 @@ public class RationalProperties {
                 P.triples(P.rationals(), filter(r -> r != ZERO, P.rationals()), exps)
         );
         for (Triple<Rational, Rational, Integer> t : take(LIMIT, ts2)) {
-            assert t.a != null;
-            assert t.b != null;
-            assert t.c != null;
             Rational expression1 = t.a.divide(t.b).pow(t.c);
             Rational expression2 = t.a.pow(t.c).divide(t.b.pow(t.c));
             assertEquals(t.toString(), expression1, expression2);
@@ -2576,8 +2536,6 @@ public class RationalProperties {
         Iterable<Pair<Rational, Integer>> ps = filter(p -> p.b >= 0 || p.a != ZERO, P.pairs(P.rationals(), exps));
         for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
             long time = System.nanoTime();
-            assert p.a != null;
-            assert p.b != null;
             pow_simplest(p.a, p.b);
             totalTime += (System.nanoTime() - time);
         }
@@ -2586,8 +2544,6 @@ public class RationalProperties {
         totalTime = 0;
         for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
             long time = System.nanoTime();
-            assert p.a != null;
-            assert p.b != null;
             p.a.pow(p.b);
             totalTime += (System.nanoTime() - time);
         }
@@ -2646,17 +2602,10 @@ public class RationalProperties {
         System.out.println("\t\ttesting roundToDenominator(BigInteger, RoundingMode) properties...");
 
         Iterable<Triple<Rational, BigInteger, RoundingMode>> ts = filter(
-                p -> {
-                    assert p.a != null;
-                    assert p.b != null;
-                    return p.c != RoundingMode.UNNECESSARY || p.b.mod(p.a.getDenominator()).equals(BigInteger.ZERO);
-                },
+                p -> p.c != RoundingMode.UNNECESSARY || p.b.mod(p.a.getDenominator()).equals(BigInteger.ZERO),
                 P.triples(P.rationals(), P.positiveBigIntegers(), P.roundingModes())
         );
         for (Triple<Rational, BigInteger, RoundingMode> t : take(LIMIT, ts)) {
-            assert t.a != null;
-            assert t.b != null;
-            assert t.c != null;
             Rational rounded = t.a.roundToDenominator(t.b, t.c);
             validate(rounded);
             assertEquals(t.toString(), t.b.mod(rounded.getDenominator()), BigInteger.ZERO);
@@ -2665,38 +2614,25 @@ public class RationalProperties {
         }
 
         Iterable<Pair<Rational, RoundingMode>> ps1 = filter(
-                p -> {
-                    assert p.a != null;
-                    return p.b != RoundingMode.UNNECESSARY || p.a.getDenominator().equals(BigInteger.ONE);
-                },
+                p -> p.b != RoundingMode.UNNECESSARY || p.a.isInteger(),
                 P.pairs(P.rationals(), P.roundingModes())
         );
         for (Pair<Rational, RoundingMode> p : take(LIMIT, ps1)) {
-            assert p.a != null;
-            assert p.b != null;
             Rational rounded = p.a.roundToDenominator(BigInteger.ONE, p.b);
             assertEquals(p.toString(), rounded.getNumerator(), p.a.bigIntegerValue(p.b));
             assertEquals(p.toString(), rounded.getDenominator(), BigInteger.ONE);
         }
 
         Iterable<Pair<Rational, BigInteger>> ps2 = filter(
-                p -> {
-                    assert p.a != null;
-                    assert p.b != null;
-                    return p.b.mod(p.a.getDenominator()).equals(BigInteger.ZERO);
-                },
+                p -> p.b.mod(p.a.getDenominator()).equals(BigInteger.ZERO),
                 P.pairs(P.rationals(), P.positiveBigIntegers())
         );
         for (Pair<Rational, BigInteger> p : take(LIMIT, ps2)) {
-            assert p.a != null;
-            assert p.b != null;
             assertTrue(p.toString(), p.a.roundToDenominator(p.b, RoundingMode.UNNECESSARY).equals(p.a));
         }
 
         ps2 = P.pairs(P.rationals(), P.positiveBigIntegers());
         for (Pair<Rational, BigInteger> p : take(LIMIT, ps2)) {
-            assert p.a != null;
-            assert p.b != null;
             assertTrue(p.toString(), le(p.a.roundToDenominator(p.b, RoundingMode.FLOOR), p.a));
             assertTrue(p.toString(), ge(p.a.roundToDenominator(p.b, RoundingMode.CEILING), p.a));
             assertTrue(p.toString(), le(p.a.roundToDenominator(p.b, RoundingMode.DOWN).abs(), p.a.abs()));
@@ -2725,17 +2661,11 @@ public class RationalProperties {
         }
 
         ps2 = filter(
-                p -> {
-                    assert p.a != null;
-                    assert p.b != null;
-                    return lt((Rational) p.a.abs().multiply(p.b).fractionalPart(), of(1, 2));
-                },
+                p -> lt(p.a.abs().multiply(p.b).fractionalPart(), of(1, 2)),
                 P.pairs(P.rationals(), P.positiveBigIntegers())
         );
 
         for (Pair<Rational, BigInteger> p : take(LIMIT, ps2)) {
-            assert p.a != null;
-            assert p.b != null;
             assertEquals(
                     p.toString(),
                     p.a.roundToDenominator(p.b, RoundingMode.HALF_DOWN),
@@ -2754,17 +2684,11 @@ public class RationalProperties {
         }
 
         ps2 = filter(
-                p -> {
-                    assert p.a != null;
-                    assert p.b != null;
-                    return gt((Rational) p.a.abs().multiply(p.b).fractionalPart(), of(1, 2));
-                },
+                p -> gt(p.a.abs().multiply(p.b).fractionalPart(), of(1, 2)),
                 P.pairs(P.rationals(), P.positiveBigIntegers())
         );
 
         for (Pair<Rational, BigInteger> p : take(LIMIT, ps2)) {
-            assert p.a != null;
-            assert p.b != null;
             assertEquals(
                     p.toString(),
                     p.a.roundToDenominator(p.b, RoundingMode.HALF_DOWN),
@@ -2796,13 +2720,10 @@ public class RationalProperties {
 
         Iterable<Triple<Rational, BigInteger, RoundingMode>> failTs = P.triples(
                 P.rationals(),
-                map(i -> i.negate(), P.naturalBigIntegers()),
+                map(BigInteger::negate, P.naturalBigIntegers()),
                 P.roundingModes()
         );
         for (Triple<Rational, BigInteger, RoundingMode> t : take(LIMIT, failTs)) {
-            assert t.a != null;
-            assert t.b != null;
-            assert t.c != null;
             try {
                 t.a.roundToDenominator(t.b, t.c);
                 fail(t.toString());
@@ -2810,16 +2731,10 @@ public class RationalProperties {
         }
 
         Iterable<Pair<Rational, BigInteger>> failPs = filter(
-                p -> {
-                    assert p.a != null;
-                    assert p.b != null;
-                    return !p.b.mod(p.a.getDenominator()).equals(BigInteger.ZERO);
-                },
+                p -> !p.b.mod(p.a.getDenominator()).equals(BigInteger.ZERO),
                 P.pairs(P.rationals(), P.positiveBigIntegers())
         );
         for (Pair<Rational, BigInteger> p : take(LIMIT, failPs)) {
-            assert p.a != null;
-            assert p.b != null;
             try {
                 p.a.roundToDenominator(p.b, RoundingMode.UNNECESSARY);
                 fail(p.toString());
@@ -2847,8 +2762,6 @@ public class RationalProperties {
         }
         Iterable<Pair<Rational, Integer>> ps = P.pairs(P.rationals(), is);
         for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
-            assert p.a != null;
-            assert p.b != null;
             Rational shifted = p.a.shiftLeft(p.b);
             validate(shifted);
             assertEquals(p.toString(), shifted, shiftLeft_simplest(p.a, p.b));
@@ -2863,8 +2776,6 @@ public class RationalProperties {
         }
         ps = P.pairs(P.rationals(), is);
         for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
-            assert p.a != null;
-            assert p.b != null;
             Rational shifted = p.a.shiftLeft(p.b);
             assertEquals(p.toString(), shifted, p.a.multiply(BigInteger.ONE.shiftLeft(p.b)));
         }
@@ -2872,7 +2783,7 @@ public class RationalProperties {
 
     private static void compareImplementationsShiftLeft() {
         initialize();
-        System.out.println("\t\tcomparing shiftLeft(bits) implementations...");
+        System.out.println("\t\tcomparing shiftLeft(int) implementations...");
 
         long totalTime = 0;
         Iterable<Integer> is;
@@ -2884,8 +2795,6 @@ public class RationalProperties {
         Iterable<Pair<Rational, Integer>> ps = P.pairs(P.rationals(), is);
         for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
             long time = System.nanoTime();
-            assert p.a != null;
-            assert p.b != null;
             shiftLeft_simplest(p.a, p.b);
             totalTime += (System.nanoTime() - time);
         }
@@ -2894,8 +2803,6 @@ public class RationalProperties {
         totalTime = 0;
         for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
             long time = System.nanoTime();
-            assert p.a != null;
-            assert p.b != null;
             p.a.shiftLeft(p.b);
             totalTime += (System.nanoTime() - time);
         }
@@ -2922,8 +2829,6 @@ public class RationalProperties {
         }
         Iterable<Pair<Rational, Integer>> ps = P.pairs(P.rationals(), is);
         for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
-            assert p.a != null;
-            assert p.b != null;
             Rational shifted = p.a.shiftRight(p.b);
             validate(shifted);
             assertEquals(p.toString(), shifted, shiftRight_simplest(p.a, p.b));
@@ -2938,8 +2843,6 @@ public class RationalProperties {
         }
         ps = P.pairs(P.rationals(), is);
         for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
-            assert p.a != null;
-            assert p.b != null;
             Rational shifted = p.a.shiftRight(p.b);
             assertEquals(p.toString(), shifted, p.a.divide(BigInteger.ONE.shiftLeft(p.b)));
         }
@@ -2947,7 +2850,7 @@ public class RationalProperties {
 
     private static void compareImplementationsShiftRight() {
         initialize();
-        System.out.println("\t\tcomparing shiftRight(bits) implementations...");
+        System.out.println("\t\tcomparing shiftRight(int) implementations...");
 
         long totalTime = 0;
         Iterable<Integer> is;
@@ -2959,8 +2862,6 @@ public class RationalProperties {
         Iterable<Pair<Rational, Integer>> ps = P.pairs(P.rationals(), is);
         for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
             long time = System.nanoTime();
-            assert p.a != null;
-            assert p.b != null;
             shiftRight_simplest(p.a, p.b);
             totalTime += (System.nanoTime() - time);
         }
@@ -2969,8 +2870,6 @@ public class RationalProperties {
         totalTime = 0;
         for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
             long time = System.nanoTime();
-            assert p.a != null;
-            assert p.b != null;
             p.a.shiftRight(p.b);
             totalTime += (System.nanoTime() - time);
         }
@@ -2979,7 +2878,7 @@ public class RationalProperties {
 
     private static void propertiesContinuedFraction() {
         initialize();
-        System.out.println("\t\ttesting continuedFraction properties...");
+        System.out.println("\t\ttesting continuedFraction() properties...");
 
         for (Rational r : take(LIMIT, P.rationals())) {
             List<BigInteger> continuedFraction = r.continuedFraction();
@@ -2989,7 +2888,7 @@ public class RationalProperties {
             assertEquals(r.toString(), r, fromContinuedFraction(continuedFraction));
         }
 
-        for (Rational r : take(LIMIT, filter(s -> !s.getDenominator().equals(BigInteger.ONE), P.rationals()))) {
+        for (Rational r : take(LIMIT, filter(s -> !s.isInteger(), P.rationals()))) {
             List<BigInteger> continuedFraction = r.continuedFraction();
             assertTrue(r.toString(), gt(last(continuedFraction), BigInteger.ONE));
         }
@@ -2997,13 +2896,10 @@ public class RationalProperties {
 
     private static void propertiesFromContinuedFraction() {
         initialize();
-        System.out.println("\t\ttesting fromContinuedFraction properties...");
+        System.out.println("\t\ttesting fromContinuedFraction(List<BigInteger>) properties...");
 
         Iterable<List<BigInteger>> iss = map(
-                p -> {
-                    assert p.b != null;
-                    return toList(cons(p.a, p.b));
-                },
+                p -> toList(cons(p.a, p.b)),
                 (Iterable<Pair<BigInteger, List<BigInteger>>>) P.pairs(
                         P.bigIntegers(),
                         P.lists(P.positiveBigIntegers())
@@ -3020,8 +2916,8 @@ public class RationalProperties {
         }
 
         Iterable<List<BigInteger>> failIss = filter(
-                is -> !is.isEmpty() && any(i -> i.signum() != 1, tail(is)),
-                P.lists(P.bigIntegers())
+                is -> any(i -> i.signum() != 1, tail(is)),
+                P.listsAtLeast(1, P.bigIntegers())
         );
         for (List<BigInteger> is : take(LIMIT, failIss)) {
             try {
@@ -3029,6 +2925,533 @@ public class RationalProperties {
                 fail(is.toString());
             } catch (IllegalArgumentException ignored) {}
         }
+    }
+
+    private static void propertiesConvergents() {
+        initialize();
+        System.out.println("\t\ttesting convergents() properties...");
+
+        for (Rational r : take(LIMIT, P.rationals())) {
+            List<Rational> convergents = toList(r.convergents());
+            convergents.forEach(mho.qbar.objects.RationalProperties::validate);
+            assertFalse(r.toString(), convergents.isEmpty());
+            assertTrue(r.toString(), all(s -> s != null, convergents));
+            assertEquals(r.toString(), head(convergents), of(r.floor()));
+            assertEquals(r.toString(), last(convergents), r);
+            assertTrue(r.toString(), zigzagging(convergents));
+        }
+    }
+
+    private static @NotNull <T> Pair<List<T>, List<T>> minimize(@NotNull List<T> a, @NotNull List<T> b) {
+        List<T> oldA = new ArrayList<>();
+        List<T> oldB = new ArrayList<>();
+        while (!a.equals(oldA) || !b.equals(oldB)) {
+            int longestCommonSuffixLength = 0;
+            for (int i = 0; i < Math.min(a.size(), b.size()); i++) {
+                if (!a.get(a.size() - i - 1).equals(b.get(b.size() - i - 1))) break;
+                longestCommonSuffixLength++;
+            }
+            oldA = a;
+            oldB = b;
+            a = toList(take(a.size() - longestCommonSuffixLength, a));
+            b = unrepeat(rotateRight(longestCommonSuffixLength, b));
+        }
+        return new Pair<>(a, b);
+    }
+
+    private static void propertiesPositionalNotation() {
+        initialize();
+        System.out.println("\t\ttesting positionalNotation(BigInteger) properties...");
+
+        Iterable<Pair<Rational, BigInteger>> ps;
+        if (P instanceof ExhaustiveProvider) {
+            ps = ((ExhaustiveProvider) P).pairsSquareRootOrder(
+                    cons(ZERO, P.positiveRationals()),
+                    P.rangeUp(BigInteger.valueOf(2))
+            );
+        } else {
+            ps = P.pairs(
+                    cons(ZERO, ((QBarRandomProvider) P).positiveRationals(8)),
+                    map(i -> BigInteger.valueOf(i + 2), ((RandomProvider) P).naturalIntegersGeometric(20))
+            );
+        }
+        for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
+            Triple<List<BigInteger>, List<BigInteger>, List<BigInteger>> pn = p.a.positionalNotation(p.b);
+            for (List<BigInteger> is : Arrays.asList(pn.a, pn.b, pn.c)) {
+                assertTrue(p.toString(), all(i -> i != null && i.signum() != -1 && lt(i, p.b), is));
+            }
+            assertTrue(p.toString(), pn.a.isEmpty() || !head(pn.a).equals(BigInteger.ZERO));
+            assertFalse(p.toString(), pn.c.isEmpty());
+            assertNotEquals(p.toString(), pn.c, Arrays.asList(p.b.subtract(BigInteger.ONE)));
+            Pair<List<BigInteger>, List<BigInteger>> minimized = minimize(pn.b, pn.c);
+            assertEquals(p.toString(), minimized.a, pn.b);
+            assertEquals(p.toString(), minimized.b, pn.c);
+            assertEquals(p.toString(), fromPositionalNotation(p.b, pn.a, pn.b, pn.c), p.a);
+            assertEquals(
+                    p.toString(),
+                    pn.c.equals(Arrays.asList(BigInteger.ZERO)),
+                    p.a.hasTerminatingBaseExpansion(p.b)
+            );
+        }
+
+        Iterable<Pair<Rational, BigInteger>> psFail = P.pairs(P.negativeRationals(), P.rangeUp(BigInteger.valueOf(2)));
+        for (Pair<Rational, BigInteger> p : take(LIMIT, psFail)) {
+            try {
+                p.a.positionalNotation(p.b);
+                fail(p.toString());
+            } catch (IllegalArgumentException ignored) {}
+        }
+
+        for (Pair<Rational, BigInteger> p : take(LIMIT, P.pairs(P.rationals(), P.rangeDown(BigInteger.ONE)))) {
+            try {
+                p.a.positionalNotation(p.b);
+                fail(p.toString());
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private static void propertiesFromPositionalNotation() {
+        initialize();
+        System.out.println(
+                "\t\ttesting fromPositionalNotation(BigInteger, List<BigInteger>, List<BigInteger>," +
+                " List<BigInteger>) properties...");
+
+        Iterable<BigInteger> bases;
+        if (P instanceof ExhaustiveProvider) {
+            bases = P.rangeUp(BigInteger.valueOf(2));
+        } else {
+            bases = map(i -> BigInteger.valueOf(i + 2), ((RandomProvider) P).naturalIntegersGeometric(20));
+        }
+        Iterable<Pair<BigInteger, Triple<List<BigInteger>, List<BigInteger>, List<BigInteger>>>> ps = P.dependentPairs(
+                bases,
+                b -> filter(
+                        t -> !t.c.isEmpty(),
+                        P.triples(P.lists(P.range(BigInteger.ZERO, b.subtract(BigInteger.ONE))))
+                )
+        );
+        for (Pair<BigInteger, Triple<List<BigInteger>, List<BigInteger>, List<BigInteger>>> p : take(LIMIT, ps)) {
+            Rational r = fromPositionalNotation(p.a, p.b.a, p.b.b, p.b.c);
+            validate(r);
+            assertNotEquals(p.toString(), r.signum(), -1);
+        }
+
+        ps = filter(
+                p -> {
+                    if (!p.b.a.isEmpty() && head(p.b.a).equals(BigInteger.ZERO)) return false;
+                    Pair<List<BigInteger>, List<BigInteger>> minimized = minimize(p.b.b, p.b.c);
+                    //noinspection SimplifiableIfStatement
+                    if (!minimized.a.equals(p.b.b) || !minimized.b.equals(p.b.c)) return false;
+                    return !p.b.c.equals(Arrays.asList(p.a.subtract(BigInteger.ONE)));
+                },
+                ps
+        );
+        for (Pair<BigInteger, Triple<List<BigInteger>, List<BigInteger>, List<BigInteger>>> p : take(LIMIT, ps)) {
+            Rational r = fromPositionalNotation(p.a, p.b.a, p.b.b, p.b.c);
+            assertEquals(p.toString(), r.positionalNotation(p.a), p.b);
+        }
+
+        Iterable<Pair<BigInteger, Triple<List<BigInteger>, List<BigInteger>, List<BigInteger>>>> psFail = P.pairs(
+                P.rangeDown(BigInteger.ONE),
+                filter(t -> !t.c.isEmpty(), P.triples(P.lists(P.bigIntegers())))
+        );
+        for (Pair<BigInteger, Triple<List<BigInteger>, List<BigInteger>, List<BigInteger>>> p : take(LIMIT, psFail)) {
+            try {
+                fromPositionalNotation(p.a, p.b.a, p.b.b, p.b.c);
+                fail(p.toString());
+            } catch (IllegalArgumentException ignored) {}
+        }
+
+        psFail = P.dependentPairs(
+                P.rangeUp(BigInteger.valueOf(2)),
+                b -> filter(
+                        t -> !t.c.isEmpty() && any(x -> x.signum() == -1 || ge(x, b), t.a),
+                        P.triples(P.lists(P.bigIntegers()))
+                )
+        );
+        for (Pair<BigInteger, Triple<List<BigInteger>, List<BigInteger>, List<BigInteger>>> p : take(LIMIT, psFail)) {
+            try {
+                fromPositionalNotation(p.a, p.b.a, p.b.b, p.b.c);
+                fail(p.toString());
+            } catch (IllegalArgumentException ignored) {}
+        }
+
+        psFail = P.dependentPairs(
+                P.rangeUp(BigInteger.valueOf(2)),
+                b -> filter(
+                        t -> !t.c.isEmpty() && any(x -> x.signum() == -1 || ge(x, b), t.b),
+                        P.triples(P.lists(P.bigIntegers()))
+                )
+        );
+        for (Pair<BigInteger, Triple<List<BigInteger>, List<BigInteger>, List<BigInteger>>> p : take(LIMIT, psFail)) {
+            try {
+                fromPositionalNotation(p.a, p.b.a, p.b.b, p.b.c);
+                fail(p.toString());
+            } catch (IllegalArgumentException ignored) {}
+        }
+
+        psFail = P.dependentPairs(
+                P.rangeUp(BigInteger.valueOf(2)),
+                b -> filter(
+                        t -> !t.c.isEmpty() && any(x -> x.signum() == -1 || ge(x, b), t.c),
+                        P.triples(P.lists(P.bigIntegers()))
+                )
+        );
+        for (Pair<BigInteger, Triple<List<BigInteger>, List<BigInteger>, List<BigInteger>>> p : take(LIMIT, psFail)) {
+            try {
+                fromPositionalNotation(p.a, p.b.a, p.b.b, p.b.c);
+                fail(p.toString());
+            } catch (IllegalArgumentException ignored) {}
+        }
+
+        Iterable<Pair<BigInteger, Pair<List<BigInteger>, List<BigInteger>>>> psFail2 = P.pairs(
+                P.rangeDown(BigInteger.ONE),
+                P.pairs(P.lists(P.bigIntegers()))
+        );
+        for (Pair<BigInteger, Pair<List<BigInteger>, List<BigInteger>>> p : take(LIMIT, psFail2)) {
+            try {
+                fromPositionalNotation(p.a, p.b.a, p.b.b, new ArrayList<>());
+                fail(p.toString());
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private static @NotNull Pair<List<BigInteger>, Iterable<BigInteger>> digits_alt(
+            @NotNull Rational r,
+            @NotNull BigInteger base
+    ) {
+        Triple<List<BigInteger>, List<BigInteger>, List<BigInteger>> positionalNotation = r.positionalNotation(base);
+        Iterable<BigInteger> afterDecimal;
+        if (positionalNotation.c.equals(Arrays.asList(BigInteger.ZERO))) {
+            afterDecimal = positionalNotation.b;
+        } else {
+            afterDecimal = concat(positionalNotation.b, cycle(positionalNotation.c));
+        }
+        return new Pair<>(positionalNotation.a, afterDecimal);
+    }
+
+    private static void propertiesDigits() {
+        initialize();
+        System.out.println("\t\ttesting digits(BigInteger) properties...");
+
+        Iterable<Pair<Rational, BigInteger>> ps;
+        if (P instanceof ExhaustiveProvider) {
+            ps = ((ExhaustiveProvider) P).pairsSquareRootOrder(
+                    cons(ZERO, P.positiveRationals()),
+                    P.rangeUp(BigInteger.valueOf(2))
+            );
+        } else {
+            ps = P.pairs(
+                    cons(ZERO, P.positiveRationals()),
+                    map(i -> BigInteger.valueOf(i + 2), ((RandomProvider) P).naturalIntegersGeometric(20))
+            );
+        }
+        for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
+            Pair<List<BigInteger>, Iterable<BigInteger>> digits = p.a.digits(p.b);
+            assertTrue(p.toString(), digits.a.isEmpty() || !head(digits.a).equals(BigInteger.ZERO));
+            assertTrue(p.toString(), all(x -> x.signum() != -1 && lt(x, p.b), digits.a));
+            assertEquals(p.toString(), MathUtils.fromBigEndianDigits(p.b, digits.a), p.a.floor());
+        }
+
+        for (Pair<Rational, BigInteger> p : take(LIMIT, filter(q -> q.a.hasTerminatingBaseExpansion(q.b), ps))) {
+            Pair<List<BigInteger>, Iterable<BigInteger>> digits = p.a.digits(p.b);
+            toList(digits.b);
+        }
+
+        if (!(P instanceof ExhaustiveProvider)) {
+            ps = P.pairs(
+                    cons(ZERO, ((QBarRandomProvider) P).positiveRationals(8)),
+                    map(i -> BigInteger.valueOf(i + 2), ((RandomProvider) P).naturalIntegersGeometric(20))
+            );
+        }
+        for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
+            Pair<List<BigInteger>, Iterable<BigInteger>> digits = p.a.digits(p.b);
+            Pair<List<BigInteger>, Iterable<BigInteger>> alt = digits_alt(p.a, p.b);
+            assertEquals(p.toString(), digits.a, alt.a);
+            aeq(p.toString(), take(100, digits.b), take(100, alt.b));
+        }
+
+        Iterable<Pair<Rational, BigInteger>> psFail = P.pairs(P.negativeRationals(), P.rangeUp(BigInteger.valueOf(2)));
+        for (Pair<Rational, BigInteger> p : take(LIMIT, psFail)) {
+            try {
+                p.a.digits(p.b);
+                fail(p.toString());
+            } catch (IllegalArgumentException ignored) {}
+        }
+
+        for (Pair<Rational, BigInteger> p : take(LIMIT, P.pairs(P.rationals(), P.rangeDown(BigInteger.ONE)))) {
+            try {
+                p.a.digits(p.b);
+                fail(p.toString());
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private static void compareImplementationsDigits() {
+        initialize();
+        System.out.println("\t\tcomparing digits(BigInteger) implementations...");
+
+        long totalTime = 0;
+        Iterable<Pair<Rational, BigInteger>> ps;
+        if (P instanceof ExhaustiveProvider) {
+            ps = ((ExhaustiveProvider) P).pairsSquareRootOrder(
+                    cons(ZERO, P.positiveRationals()),
+                    P.rangeUp(BigInteger.valueOf(2))
+            );
+        } else {
+            ps = P.pairs(
+                    cons(ZERO, ((QBarRandomProvider) P).positiveRationals(8)),
+                    map(i -> BigInteger.valueOf(i + 2), ((RandomProvider) P).naturalIntegersGeometric(20))
+            );
+        }
+        for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
+            long time = System.nanoTime();
+            toList(take(20, digits_alt(p.a, p.b).b));
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\t\t\tsimplest: " + ((double) totalTime) / 1e9 + " s");
+
+        totalTime = 0;
+        for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
+            long time = System.nanoTime();
+            toList(take(20, p.a.digits(p.b).b));
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
+    }
+
+    private static void propertiesToStringBase_BigInteger() {
+        initialize();
+        System.out.println("\t\ttesting toStringBase(BigInteger) properties...");
+
+        Iterable<Pair<Rational, BigInteger>> ps;
+        if (P instanceof ExhaustiveProvider) {
+            ps = ((ExhaustiveProvider) P).pairsSquareRootOrder(P.rationals(), P.rangeUp(BigInteger.valueOf(2)));
+        } else {
+            ps = P.pairs(
+                    P.rationals(),
+                    map(i -> BigInteger.valueOf(i + 2), ((RandomProvider) P).naturalIntegersGeometric(20))
+            );
+        }
+        for (Pair<Rational, BigInteger> p : take(LIMIT, filter(q -> q.a.hasTerminatingBaseExpansion(q.b), ps))) {
+            String s = p.a.toStringBase(p.b);
+            assertEquals(p.toString(), fromStringBase(p.b, s), p.a);
+        }
+
+        String chars = charsToString(concat(Arrays.asList(fromString("-."), range('0', '9'), range('A', 'Z'))));
+        if (P instanceof ExhaustiveProvider) {
+            ps = ((ExhaustiveProvider) P).pairsSquareRootOrder(
+                    P.rationals(),
+                    P.range(BigInteger.valueOf(2), BigInteger.valueOf(36))
+            );
+        } else {
+            ps = P.pairs(P.rationals(), P.range(BigInteger.valueOf(2), BigInteger.valueOf(36)));
+        }
+        for (Pair<Rational, BigInteger> p : take(LIMIT, filter(q -> q.a.hasTerminatingBaseExpansion(q.b), ps))) {
+            String s = p.a.toStringBase(p.b);
+            assertTrue(p.toString(), all(c -> elem(c, chars), s));
+        }
+
+        String chars2 = charsToString(concat(fromString("-.()"), range('0', '9')));
+        if (P instanceof ExhaustiveProvider) {
+            ps = ((ExhaustiveProvider) P).pairsSquareRootOrder(P.rationals(), P.rangeUp(BigInteger.valueOf(37)));
+        } else {
+            ps = P.pairs(
+                    P.rationals(),
+                    map(i -> BigInteger.valueOf(i + 37), ((RandomProvider) P).naturalIntegersGeometric(20))
+            );
+        }
+        for (Pair<Rational, BigInteger> p : take(LIMIT, filter(q -> q.a.hasTerminatingBaseExpansion(q.b), ps))) {
+            String s = p.a.toStringBase(p.b);
+            assertTrue(p.toString(), all(c -> elem(c, chars2), s));
+        }
+
+        for (Pair<Rational, BigInteger> p : take(LIMIT, P.pairs(P.rationals(), P.rangeDown(BigInteger.ONE)))) {
+            try {
+                p.a.toStringBase(p.b);
+                fail(p.toString());
+            } catch (IllegalArgumentException ignored) {}
+        }
+
+        Iterable<Pair<Rational, BigInteger>> psFail;
+        if (P instanceof ExhaustiveProvider) {
+            psFail = P.pairs(P.rationals(), P.rangeUp(BigInteger.valueOf(2)));
+        } else {
+            psFail = P.pairs(
+                    P.rationals(),
+                    map(i -> BigInteger.valueOf(i + 2), ((RandomProvider) P).naturalIntegersGeometric(20))
+            );
+        }
+        for (Pair<Rational, BigInteger> p : take(LIMIT, filter(q -> !q.a.hasTerminatingBaseExpansion(q.b), psFail))) {
+            try {
+                p.a.toStringBase(p.b);
+                fail(p.toString());
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private static void propertiesToStringBase_BigInteger_int() {
+        initialize();
+        System.out.println("\t\ttesting toStringBase(BigInteger, int) properties...");
+
+        Iterable<Pair<Rational, Pair<BigInteger, Integer>>> ps;
+        if (P instanceof ExhaustiveProvider) {
+            ps = P.pairs(
+                    P.rationals(),
+                    (Iterable<Pair<BigInteger, Integer>>) P.pairs(P.rangeUp(BigInteger.valueOf(2)), P.integers())
+            );
+        } else {
+            ps = P.pairs(
+                    P.rationals(),
+                    (Iterable<Pair<BigInteger, Integer>>) P.pairs(
+                            map(i -> BigInteger.valueOf(i + 2), ((RandomProvider) P).naturalIntegersGeometric(20)),
+                            ((RandomProvider) P).integersGeometric(20)
+                    )
+            );
+        }
+        for (Pair<Rational, Pair<BigInteger, Integer>> p : take(LIMIT, ps)) {
+            String s = p.a.toStringBase(p.b.a, p.b.b);
+            boolean ellipsis = s.endsWith("...");
+            if (ellipsis) s = take(s.length() - 3, s);
+            Rational error = fromStringBase(p.b.a, s).subtract(p.a).abs();
+            assertTrue(p.toString(), lt(error, of(p.b.a).pow(-p.b.b)));
+            if (ellipsis) {
+                assertTrue(p.toString(), error != ZERO);
+            }
+        }
+
+        String chars = charsToString(concat(Arrays.asList(fromString("-."), range('0', '9'), range('A', 'Z'))));
+        if (P instanceof ExhaustiveProvider) {
+            ps = P.pairs(
+                    P.rationals(),
+                    (Iterable<Pair<BigInteger, Integer>>) P.pairs(
+                            P.range(BigInteger.valueOf(2), BigInteger.valueOf(36)),
+                            P.integers()
+                    )
+            );
+        } else {
+            ps = P.pairs(
+                    P.rationals(),
+                    (Iterable<Pair<BigInteger, Integer>>) P.pairs(
+                            P.range(BigInteger.valueOf(2), BigInteger.valueOf(36)),
+                            ((RandomProvider) P).integersGeometric(20)
+                    )
+            );
+        }
+        for (Pair<Rational, Pair<BigInteger, Integer>> p : take(LIMIT, ps)) {
+            String s = p.a.toStringBase(p.b.a, p.b.b);
+            assertTrue(p.toString(), all(c -> elem(c, chars), s));
+        }
+
+        String chars2 = charsToString(concat(fromString("-.()"), range('0', '9')));
+        if (P instanceof ExhaustiveProvider) {
+            ps = P.pairs(
+                    P.rationals(),
+                    (Iterable<Pair<BigInteger, Integer>>) P.pairs(P.rangeUp(BigInteger.valueOf(37)), P.integers())
+            );
+        } else {
+            ps = P.pairs(
+                    P.rationals(),
+                    (Iterable<Pair<BigInteger, Integer>>) P.pairs(
+                            map(i -> BigInteger.valueOf(i + 37), ((RandomProvider) P).naturalIntegersGeometric(20)),
+                            ((RandomProvider) P).integersGeometric(20)
+                    )
+            );
+        }
+        for (Pair<Rational, Pair<BigInteger, Integer>> p : take(LIMIT, ps)) {
+            String s = p.a.toStringBase(p.b.a, p.b.b);
+            assertTrue(p.toString(), all(c -> elem(c, chars2), s));
+        }
+
+        Iterable<Triple<Rational, BigInteger, Integer>> tsFail = P.triples(
+                P.rationals(),
+                P.rangeDown(BigInteger.ONE),
+                P.integers()
+        );
+        for (Triple<Rational, BigInteger, Integer> t : take(LIMIT, tsFail)) {
+            try {
+                t.a.toStringBase(t.b, t.c);
+                fail(t.toString());
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private static void propertiesFromStringBase() {
+        initialize();
+        System.out.println("\t\ttesting fromStringBase(BigInteger, String) properties...");
+
+        Iterable<BigInteger> bases;
+        if (P instanceof ExhaustiveProvider) {
+            bases = P.rangeUp(BigInteger.valueOf(2));
+        } else {
+            bases = map(i -> BigInteger.valueOf(i + 2), ((RandomProvider) P).naturalIntegersGeometric(20));
+        }
+        Iterable<Pair<BigInteger, String>> ps = P.dependentPairs(
+                bases,
+                b -> {
+                    String chars = ".-";
+                    if (Ordering.le(b, BigInteger.valueOf(36))) {
+                        chars += charsToString(range('0', MathUtils.toDigit(b.intValueExact() - 1)));
+                    } else {
+                        chars += "()0123456789";
+                    }
+                    Iterable<Character> unfiltered;
+                    if (P instanceof ExhaustiveProvider) {
+                        unfiltered = fromString(chars);
+                    } else {
+                        unfiltered = ((RandomProvider) P).uniformSample(chars);
+                    }
+                    return filter(
+                            s -> {
+                                try {
+                                    fromStringBase(b, s);
+                                    return true;
+                                } catch (IllegalArgumentException e) {
+                                    return false;
+                                }
+                            },
+                            P.strings(unfiltered)
+                    );
+                }
+        );
+        for (Pair<BigInteger, String> p : take(MEDIUM_LIMIT, ps)) {
+            Rational r = fromStringBase(p.a, p.b);
+            validate(r);
+        }
+
+        ps = filter(
+                p -> {
+                    if (p.b.isEmpty()) return false;
+                    if (head(p.b) == '.' || last(p.b) == '.') return false;
+                    if (p.b.startsWith("-.")) return false;
+                    if (p.b.equals("0") || p.b.equals("(0)")) return true;
+                    if (head(p.b) == '0' && !p.b.startsWith("0.")) return false;
+                    if (p.b.startsWith("(0)") && !p.b.startsWith("(0).")) return false;
+                    if (p.b.startsWith("-0") || p.b.startsWith("-(0)")) return false;
+                    int decimalIndex = p.b.indexOf('.');
+                    if (decimalIndex != -1) {
+                        if (last(p.b) == '0' || p.b.endsWith("(0)")) return false;
+                    }
+                    return true;
+                },
+                ps
+        );
+        for (Pair<BigInteger, String> p : take(MEDIUM_LIMIT, ps)) {
+            Rational r = fromStringBase(p.a, p.b);
+            assertEquals(p.toString(), r.toStringBase(p.a), p.b);
+        }
+
+        for (BigInteger i : take(LIMIT, P.rangeUp(BigInteger.valueOf(2)))) {
+            assertTrue(i.toString(), fromStringBase(i, "") == ZERO);
+        }
+
+        for (Pair<BigInteger, String> p : take(SMALL_LIMIT, P.pairs(P.rangeDown(BigInteger.ONE), P.strings()))) {
+            try {
+                fromStringBase(p.a, p.b);
+                fail(p.toString());
+            } catch (IllegalArgumentException ignored) {}
+        }
+
+        //improper String left untested
     }
 
     private static void propertiesEquals() {
@@ -3057,8 +3480,6 @@ public class RationalProperties {
         System.out.println("\t\ttesting compareTo(Rational) properties...");
 
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
-            assert p.a != null;
-            assert p.b != null;
             int compare = p.a.compareTo(p.b);
             assertTrue(p.toString(), compare == -1 || compare == 0 || compare == 1);
             assertEquals(p.toString(), p.b.compareTo(p.a), -compare);
@@ -3070,16 +3491,10 @@ public class RationalProperties {
         }
 
         Iterable<Triple<Rational, Rational, Rational>> ts = filter(
-                t -> {
-                    assert t.a != null;
-                    assert t.b != null;
-                    return lt(t.a, t.b) && lt(t.b, t.c);
-                },
+                t -> lt(t.a, t.b) && lt(t.b, t.c),
                 P.triples(P.rationals())
         );
         for (Triple<Rational, Rational, Rational> t : take(LIMIT, ts)) {
-            assert t.a != null;
-            assert t.c != null;
             assertEquals(t.toString(), t.a.compareTo(t.c), -1);
         }
     }
@@ -3110,8 +3525,6 @@ public class RationalProperties {
         }
 
         Pair<Iterable<String>, Iterable<String>> slashPartition = partition(s -> s.contains("/"), ss);
-        assert slashPartition.a != null;
-        assert slashPartition.b != null;
         for (String s : take(LIMIT, slashPartition.a)) {
             int slashIndex = s.indexOf('/');
             String left = s.substring(0, slashIndex);
@@ -3134,15 +3547,7 @@ public class RationalProperties {
         }
 
         Iterable<Pair<String, Integer>> ps = P.dependentPairsLogarithmic(P.strings(), s -> range(0, s.length()));
-        Iterable<String> ss = map(
-                p -> {
-                    assert p.a != null;
-                    assert p.a.a != null;
-                    assert p.a.b != null;
-                    return take(p.a.b, p.a.a) + p.b + drop(p.a.b, p.a.a);
-                },
-                P.pairs(ps, P.rationals())
-        );
+        Iterable<String> ss = map(p -> take(p.a.b, p.a.a) + p.b + drop(p.a.b, p.a.a), P.pairs(ps, P.rationals()));
         for (String s : take(LIMIT, ss)) {
             Optional<Pair<Rational, Integer>> op = findIn(s);
             Pair<Rational, Integer> p = op.get();

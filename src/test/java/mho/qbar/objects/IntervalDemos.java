@@ -12,6 +12,7 @@ import static mho.qbar.objects.Interval.*;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.ordering.Ordering.*;
 
+@SuppressWarnings({"ConstantConditions", "UnusedDeclaration"})
 public class IntervalDemos {
     private static final boolean USE_RANDOM = false;
     private static final String INTERVAL_CHARS = " (),-/0123456789I[]finty";
@@ -45,13 +46,8 @@ public class IntervalDemos {
 
     public static void demoOf_Rational_Rational() {
         initialize();
-        Iterable<Pair<Rational, Rational>> rs = filter(p -> {
-            assert p.a != null;
-            return le(p.a, p.b);
-        }, P.pairs(P.rationals()));
+        Iterable<Pair<Rational, Rational>> rs = filter(p -> le(p.a, p.b), P.pairs(P.rationals()));
         for (Pair<Rational, Rational> p : take(LIMIT, rs)) {
-            assert p.a != null;
-            assert p.b != null;
             System.out.println("of(" + p.a + ", " + p.b + ") = " + of(p.a, p.b));
         }
     }
@@ -226,9 +222,7 @@ public class IntervalDemos {
     public static void demoEquals_Interval() {
         initialize();
         for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
-            assert p.a != null;
-            assert p.b != null;
-            System.out.println("equals(" + p.a + ", " + p.b + ") = " + p.a.equals(p.b));
+            System.out.println(p.a + (p.a.equals(p.b) ? " = " : " ≠ ") + p.b);
         }
     }
 
@@ -236,7 +230,7 @@ public class IntervalDemos {
         initialize();
         for (Interval a : take(LIMIT, P.intervals())) {
             //noinspection ObjectEqualsNull
-            System.out.println("equals(" + a + ", null) = " + a.equals(null));
+            System.out.println(a + (a.equals(null) ? " = " : " ≠ ") + null);
         }
     }
 
@@ -250,8 +244,6 @@ public class IntervalDemos {
     public static void demoCompareTo() {
         initialize();
         for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
-            assert p.a != null;
-            assert p.b != null;
             System.out.println(p.a + " " + Ordering.compare(p.a, p.b).toChar() + " " + p.b);
         }
     }

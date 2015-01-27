@@ -675,7 +675,7 @@ public final class Interval implements Comparable<Interval> {
         );
     }
 
-    public Interval invert() {
+    public @NotNull Interval invert() {
         if ((lower == null && upper == null)
                 || (lower == null && upper.signum() == 1)
                 || (upper == null && lower.signum() == -1)) return ALL;
@@ -693,7 +693,7 @@ public final class Interval implements Comparable<Interval> {
         return multiply(that.invert());
     }
 
-    public Interval pow(int p) {
+    public @NotNull Interval pow(int p) {
         if (p == 0) return new Interval(Rational.ONE, Rational.ONE);
         if (p == 1) return this;
         if (p < 0) return pow(-p).invert();

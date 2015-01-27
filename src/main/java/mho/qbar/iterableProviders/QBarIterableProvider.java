@@ -9,17 +9,11 @@ import org.jetbrains.annotations.NotNull;
 import java.math.BigInteger;
 
 public interface QBarIterableProvider extends IterableProvider {
-    public @NotNull Iterable<Rational> range(@NotNull Rational a);
+    public @NotNull Iterable<Rational> rangeUp(@NotNull Rational a);
+
+    public @NotNull Iterable<Rational> rangeDown(@NotNull Rational a);
 
     public @NotNull Iterable<Rational> range(@NotNull Rational a, @NotNull Rational b);
-
-    public @NotNull Iterable<Rational> rangeBy(@NotNull Rational a, @NotNull Rational i);
-
-    public @NotNull Iterable<Rational> rangeBy(
-            @NotNull Rational a,
-            @NotNull Rational i,
-            @NotNull Rational b
-    );
 
     public @NotNull Iterable<Rational> rationals();
 
@@ -48,6 +42,8 @@ public interface QBarIterableProvider extends IterableProvider {
     public @NotNull Iterable<Rational> rationals(@NotNull Interval a);
 
     public @NotNull Iterable<RationalVector> rationalVectors(int dimension);
+
+    public @NotNull Iterable<RationalVector> rationalVectorsAtLeast(int minDimension);
 
     public @NotNull Iterable<RationalVector> rationalVectors();
 }

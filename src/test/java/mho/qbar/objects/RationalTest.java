@@ -3,6 +3,7 @@ package mho.qbar.objects;
 import mho.wheels.iterables.IterableUtils;
 import mho.wheels.misc.FloatingPointUtils;
 import mho.wheels.misc.Readers;
+import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
@@ -14,13 +15,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static mho.wheels.iterables.IterableUtils.take;
-import static mho.wheels.iterables.IterableUtils.toList;
+import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.ordering.Ordering.*;
 import static mho.qbar.objects.Rational.*;
 import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 
+@SuppressWarnings("ConstantConditions")
 public class RationalTest {
     @Test
     public void testConstants() {
@@ -287,6 +288,18 @@ public class RationalTest {
     }
 
     @Test
+    public void testIsInteger() {
+        assertTrue(ZERO.isInteger());
+        assertTrue(ONE.isInteger());
+        assertTrue(read("5").get().isInteger());
+        assertTrue(read("-5").get().isInteger());
+        assertFalse(read("1/2").get().isInteger());
+        assertFalse(read("-1/2").get().isInteger());
+        assertFalse(ofExact(Math.PI).isInteger());
+        assertFalse(ofExact(-Math.PI).isInteger());
+    }
+
+    @Test
     public void testBigIntegerValue_RoundingMode() {
         aeq(read("11/2").get().bigIntegerValue(RoundingMode.UP), 6);
         aeq(read("5/2").get().bigIntegerValue(RoundingMode.UP), 3);
@@ -526,17 +539,89 @@ public class RationalTest {
     }
 
     @Test
-    public void testHasTerminatingDecimalExpansion() {
-        assertTrue(ZERO.hasTerminatingDecimalExpansion());
-        assertTrue(ONE.hasTerminatingDecimalExpansion());
-        assertTrue(read("60").get().hasTerminatingDecimalExpansion());
-        assertTrue(read("1/2").get().hasTerminatingDecimalExpansion());
-        assertTrue(read("1/5").get().hasTerminatingDecimalExpansion());
-        assertTrue(read("-7/100").get().hasTerminatingDecimalExpansion());
-        assertTrue(read("-3/640").get().hasTerminatingDecimalExpansion());
-        assertFalse(read("1/3").get().hasTerminatingDecimalExpansion());
-        assertFalse(read("-1/15").get().hasTerminatingDecimalExpansion());
-        assertFalse(read("-2/9").get().hasTerminatingDecimalExpansion());
+    public void testHasTerminatingBaseExpansion() {
+        assertTrue(ZERO.hasTerminatingBaseExpansion(BigInteger.valueOf(2)));
+        assertTrue(ONE.hasTerminatingBaseExpansion(BigInteger.valueOf(2)));
+        assertTrue(read("60").get().hasTerminatingBaseExpansion(BigInteger.valueOf(2)));
+        assertTrue(read("1/2").get().hasTerminatingBaseExpansion(BigInteger.valueOf(2)));
+        assertFalse(read("1/5").get().hasTerminatingBaseExpansion(BigInteger.valueOf(2)));
+        assertFalse(read("-7/100").get().hasTerminatingBaseExpansion(BigInteger.valueOf(2)));
+        assertFalse(read("-3/640").get().hasTerminatingBaseExpansion(BigInteger.valueOf(2)));
+        assertFalse(read("1/3").get().hasTerminatingBaseExpansion(BigInteger.valueOf(2)));
+        assertFalse(read("-1/15").get().hasTerminatingBaseExpansion(BigInteger.valueOf(2)));
+        assertFalse(read("-2/9").get().hasTerminatingBaseExpansion(BigInteger.valueOf(2)));
+        assertTrue(ZERO.hasTerminatingBaseExpansion(BigInteger.valueOf(3)));
+        assertTrue(ONE.hasTerminatingBaseExpansion(BigInteger.valueOf(3)));
+        assertTrue(read("60").get().hasTerminatingBaseExpansion(BigInteger.valueOf(3)));
+        assertFalse(read("1/2").get().hasTerminatingBaseExpansion(BigInteger.valueOf(3)));
+        assertFalse(read("1/5").get().hasTerminatingBaseExpansion(BigInteger.valueOf(3)));
+        assertFalse(read("-7/100").get().hasTerminatingBaseExpansion(BigInteger.valueOf(3)));
+        assertFalse(read("-3/640").get().hasTerminatingBaseExpansion(BigInteger.valueOf(3)));
+        assertTrue(read("1/3").get().hasTerminatingBaseExpansion(BigInteger.valueOf(3)));
+        assertFalse(read("-1/15").get().hasTerminatingBaseExpansion(BigInteger.valueOf(3)));
+        assertTrue(read("-2/9").get().hasTerminatingBaseExpansion(BigInteger.valueOf(3)));
+        assertTrue(ZERO.hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
+        assertTrue(ONE.hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
+        assertTrue(read("60").get().hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
+        assertTrue(read("1/2").get().hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
+        assertFalse(read("1/5").get().hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
+        assertFalse(read("-7/100").get().hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
+        assertFalse(read("-3/640").get().hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
+        assertFalse(read("1/3").get().hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
+        assertFalse(read("-1/15").get().hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
+        assertFalse(read("-2/9").get().hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
+        assertTrue(ZERO.hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
+        assertTrue(ONE.hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
+        assertTrue(read("60").get().hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
+        assertTrue(read("1/2").get().hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
+        assertFalse(read("1/5").get().hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
+        assertFalse(read("-7/100").get().hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
+        assertFalse(read("-3/640").get().hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
+        assertFalse(read("1/3").get().hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
+        assertFalse(read("-1/15").get().hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
+        assertFalse(read("-2/9").get().hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
+        assertTrue(ZERO.hasTerminatingBaseExpansion(BigInteger.valueOf(16)));
+        assertTrue(ONE.hasTerminatingBaseExpansion(BigInteger.valueOf(16)));
+        assertTrue(read("60").get().hasTerminatingBaseExpansion(BigInteger.valueOf(16)));
+        assertTrue(read("1/2").get().hasTerminatingBaseExpansion(BigInteger.valueOf(16)));
+        assertFalse(read("1/5").get().hasTerminatingBaseExpansion(BigInteger.valueOf(16)));
+        assertFalse(read("-7/100").get().hasTerminatingBaseExpansion(BigInteger.valueOf(16)));
+        assertFalse(read("-3/640").get().hasTerminatingBaseExpansion(BigInteger.valueOf(16)));
+        assertFalse(read("1/3").get().hasTerminatingBaseExpansion(BigInteger.valueOf(16)));
+        assertFalse(read("-1/15").get().hasTerminatingBaseExpansion(BigInteger.valueOf(16)));
+        assertFalse(read("-2/9").get().hasTerminatingBaseExpansion(BigInteger.valueOf(16)));
+        assertTrue(ZERO.hasTerminatingBaseExpansion(BigInteger.valueOf(83)));
+        assertTrue(ONE.hasTerminatingBaseExpansion(BigInteger.valueOf(83)));
+        assertTrue(read("60").get().hasTerminatingBaseExpansion(BigInteger.valueOf(83)));
+        assertFalse(read("1/2").get().hasTerminatingBaseExpansion(BigInteger.valueOf(83)));
+        assertFalse(read("1/5").get().hasTerminatingBaseExpansion(BigInteger.valueOf(83)));
+        assertFalse(read("-7/100").get().hasTerminatingBaseExpansion(BigInteger.valueOf(83)));
+        assertFalse(read("-3/640").get().hasTerminatingBaseExpansion(BigInteger.valueOf(83)));
+        assertFalse(read("1/3").get().hasTerminatingBaseExpansion(BigInteger.valueOf(83)));
+        assertFalse(read("-1/15").get().hasTerminatingBaseExpansion(BigInteger.valueOf(83)));
+        assertFalse(read("-2/9").get().hasTerminatingBaseExpansion(BigInteger.valueOf(83)));
+        assertTrue(ZERO.hasTerminatingBaseExpansion(BigInteger.valueOf(100)));
+        assertTrue(ONE.hasTerminatingBaseExpansion(BigInteger.valueOf(100)));
+        assertTrue(read("60").get().hasTerminatingBaseExpansion(BigInteger.valueOf(100)));
+        assertTrue(read("1/2").get().hasTerminatingBaseExpansion(BigInteger.valueOf(100)));
+        assertTrue(read("1/5").get().hasTerminatingBaseExpansion(BigInteger.valueOf(100)));
+        assertTrue(read("-7/100").get().hasTerminatingBaseExpansion(BigInteger.valueOf(100)));
+        assertTrue(read("-3/640").get().hasTerminatingBaseExpansion(BigInteger.valueOf(100)));
+        assertFalse(read("1/3").get().hasTerminatingBaseExpansion(BigInteger.valueOf(100)));
+        assertFalse(read("-1/15").get().hasTerminatingBaseExpansion(BigInteger.valueOf(100)));
+        assertFalse(read("-2/9").get().hasTerminatingBaseExpansion(BigInteger.valueOf(100)));
+        try {
+            read("1/2").get().hasTerminatingBaseExpansion(BigInteger.ONE);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            read("1/2").get().hasTerminatingBaseExpansion(BigInteger.ZERO);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            read("1/2").get().hasTerminatingBaseExpansion(BigInteger.valueOf(-1));
+            fail();
+        } catch (IllegalArgumentException ignored) {}
     }
 
     @Test
@@ -2555,7 +2640,7 @@ public class RationalTest {
         try {
             sum(readRationalListWithNulls("[10, null, 11]").get());
             fail();
-        } catch (AssertionError ignored) {}
+        } catch (IllegalArgumentException ignored) {}
     }
 
     @Test
@@ -2566,7 +2651,7 @@ public class RationalTest {
         try {
             product(readRationalListWithNulls("[10, null, 11]").get());
             fail();
-        } catch (AssertionError ignored) {}
+        } catch (NullPointerException ignored) {}
     }
 
     @Test
@@ -2580,7 +2665,7 @@ public class RationalTest {
         try {
             toList(delta(readRationalListWithNulls("[10, null, 12]").get()));
             fail();
-        } catch (AssertionError ignored) {}
+        } catch (NullPointerException ignored) {}
     }
 
     @Test
@@ -2868,8 +2953,1288 @@ public class RationalTest {
     }
 
     @Test
+    public void testConvergents() {
+        aeq(ZERO.convergents(), "[0]");
+        aeq(ONE.convergents(), "[1]");
+        aeq(read("5").get().convergents(), "[5]");
+        aeq(read("-5").get().convergents(), "[-5]");
+        aeq(read("1/2").get().convergents(), "[0, 1/2]");
+        aeq(read("-1/2").get().convergents(), "[-1, -1/2]");
+        aeq(read("415/93").get().convergents(), "[4, 9/2, 58/13, 415/93]");
+        aeq(read("-415/93").get().convergents(), "[-5, -4, -9/2, -58/13, -415/93]");
+        aeq(ofExact(Math.sqrt(2)).convergents(),
+                "[1, 3/2, 7/5, 17/12, 41/29, 99/70, 239/169, 577/408, 1393/985, 3363/2378, 8119/5741, 19601/13860," +
+                " 47321/33461, 114243/80782, 275807/195025, 665857/470832, 1607521/1136689, 3880899/2744210," +
+                " 9369319/6625109, 22619537/15994428, 54608393/38613965, 77227930/54608393, 131836323/93222358," +
+                " 209064253/147830751, 549964829/388883860, 4058818056/2870017771, 4608782885/3258901631," +
+                " 13276383826/9387821033, 442729449143/313056995720, 898735282112/635501812473," +
+                " 6733876423927/4761569683031, 34568117401747/24443350227628, 75870111227421/53648270138287," +
+                " 110438228629168/78091620365915, 186308339856589/131739890504202," +
+                " 3091371666334592/2185929868433147, 6369051672525773/4503599627370496]");
+        aeq(ofExact(-Math.sqrt(2)).convergents(),
+                "[-2, -1, -3/2, -7/5, -17/12, -41/29, -99/70, -239/169, -577/408, -1393/985, -3363/2378, -8119/5741," +
+                " -19601/13860, -47321/33461, -114243/80782, -275807/195025, -665857/470832, -1607521/1136689," +
+                " -3880899/2744210, -9369319/6625109, -22619537/15994428, -54608393/38613965, -77227930/54608393," +
+                " -131836323/93222358, -209064253/147830751, -549964829/388883860, -4058818056/2870017771," +
+                " -4608782885/3258901631, -13276383826/9387821033, -442729449143/313056995720," +
+                " -898735282112/635501812473, -6733876423927/4761569683031, -34568117401747/24443350227628," +
+                " -75870111227421/53648270138287, -110438228629168/78091620365915, -186308339856589/131739890504202," +
+                " -3091371666334592/2185929868433147, -6369051672525773/4503599627370496]");
+        aeq(ofExact(Math.PI).convergents(),
+                "[3, 22/7, 333/106, 355/113, 103993/33102, 104348/33215, 208341/66317, 312689/99532, 833719/265381," +
+                " 1146408/364913, 4272943/1360120, 5419351/1725033, 80143857/25510582, 245850922/78256779," +
+                " 817696623/260280919, 1881244168/598818617, 2698940791/859099536, 9978066541/3176117225," +
+                " 32633140414/10387451211, 238410049439/75888275702, 509453239292/162164002615," +
+                " 747863288731/238052278317, 1257316528023/400216280932, 4519812872800/1438701121113," +
+                " 10296942273623/3277618523158, 436991388364966/139098679093749, 884279719003555/281474976710656]");
+        aeq(ofExact(-Math.PI).convergents(),
+                "[-4, -3, -22/7, -333/106, -355/113, -103993/33102, -104348/33215, -208341/66317, -312689/99532," +
+                " -833719/265381, -1146408/364913, -4272943/1360120, -5419351/1725033, -80143857/25510582," +
+                " -245850922/78256779, -817696623/260280919, -1881244168/598818617, -2698940791/859099536," +
+                " -9978066541/3176117225, -32633140414/10387451211, -238410049439/75888275702," +
+                " -509453239292/162164002615, -747863288731/238052278317, -1257316528023/400216280932," +
+                " -4519812872800/1438701121113, -10296942273623/3277618523158, -436991388364966/139098679093749," +
+                " -884279719003555/281474976710656]");
+        aeq(ofExact(Math.E).convergents(),
+                "[2, 3, 8/3, 11/4, 19/7, 87/32, 106/39, 193/71, 1264/465, 1457/536, 2721/1001, 23225/8544," +
+                " 25946/9545, 49171/18089, 517656/190435, 566827/208524, 1084483/398959, 13580623/4996032," +
+                " 14665106/5394991, 28245729/10391023, 325368125/119696244, 353613854/130087267," +
+                " 678981979/249783511, 1032595833/379870778, 12037536142/4428362069, 61220276543/22521681123," +
+                " 73257812685/26950043192, 134478089228/49471724315, 342213991141/125893491822," +
+                " 476692080369/175365216137, 2248982312617/827354356370, 4974656705603/1830073928877," +
+                " 7223639018220/2657428285247, 12198295723823/4487502214124, 117008300532627/43044948212363," +
+                " 2001339404778482/736251621824295, 6121026514868073/2251799813685248]");
+        aeq(ofExact(-Math.E).convergents(),
+                "[-3, -8/3, -11/4, -19/7, -87/32, -106/39, -193/71, -1264/465, -1457/536, -2721/1001, -23225/8544," +
+                " -25946/9545, -49171/18089, -517656/190435, -566827/208524, -1084483/398959, -13580623/4996032," +
+                " -14665106/5394991, -28245729/10391023, -325368125/119696244, -353613854/130087267," +
+                " -678981979/249783511, -1032595833/379870778, -12037536142/4428362069, -61220276543/22521681123," +
+                " -73257812685/26950043192, -134478089228/49471724315, -342213991141/125893491822," +
+                " -476692080369/175365216137, -2248982312617/827354356370, -4974656705603/1830073928877," +
+                " -7223639018220/2657428285247, -12198295723823/4487502214124, -117008300532627/43044948212363," +
+                " -2001339404778482/736251621824295, -6121026514868073/2251799813685248]");
+    }
+
+    @Test
+    public void testPositionalNotation() {
+        aeq(ZERO.positionalNotation(BigInteger.valueOf(2)), "([], [], [0])");
+        aeq(ZERO.positionalNotation(BigInteger.valueOf(3)), "([], [], [0])");
+        aeq(ZERO.positionalNotation(BigInteger.valueOf(4)), "([], [], [0])");
+        aeq(ZERO.positionalNotation(BigInteger.valueOf(10)), "([], [], [0])");
+        aeq(ZERO.positionalNotation(BigInteger.valueOf(16)), "([], [], [0])");
+        aeq(ZERO.positionalNotation(BigInteger.valueOf(83)), "([], [], [0])");
+        aeq(ZERO.positionalNotation(BigInteger.valueOf(100)), "([], [], [0])");
+        aeq(ONE.positionalNotation(BigInteger.valueOf(2)), "([1], [], [0])");
+        aeq(ONE.positionalNotation(BigInteger.valueOf(3)), "([1], [], [0])");
+        aeq(ONE.positionalNotation(BigInteger.valueOf(4)), "([1], [], [0])");
+        aeq(ONE.positionalNotation(BigInteger.valueOf(10)), "([1], [], [0])");
+        aeq(ONE.positionalNotation(BigInteger.valueOf(16)), "([1], [], [0])");
+        aeq(ONE.positionalNotation(BigInteger.valueOf(83)), "([1], [], [0])");
+        aeq(ONE.positionalNotation(BigInteger.valueOf(100)), "([1], [], [0])");
+        aeq(read("1/2").get().positionalNotation(BigInteger.valueOf(2)), "([], [1], [0])");
+        aeq(read("1/2").get().positionalNotation(BigInteger.valueOf(3)), "([], [], [1])");
+        aeq(read("1/2").get().positionalNotation(BigInteger.valueOf(4)), "([], [2], [0])");
+        aeq(read("1/2").get().positionalNotation(BigInteger.valueOf(10)), "([], [5], [0])");
+        aeq(read("1/2").get().positionalNotation(BigInteger.valueOf(16)), "([], [8], [0])");
+        aeq(read("1/2").get().positionalNotation(BigInteger.valueOf(83)), "([], [], [41])");
+        aeq(read("1/2").get().positionalNotation(BigInteger.valueOf(100)), "([], [50], [0])");
+        aeq(read("1/3").get().positionalNotation(BigInteger.valueOf(2)), "([], [], [0, 1])");
+        aeq(read("1/3").get().positionalNotation(BigInteger.valueOf(3)), "([], [1], [0])");
+        aeq(read("1/3").get().positionalNotation(BigInteger.valueOf(4)), "([], [], [1])");
+        aeq(read("1/3").get().positionalNotation(BigInteger.valueOf(10)), "([], [], [3])");
+        aeq(read("1/3").get().positionalNotation(BigInteger.valueOf(16)), "([], [], [5])");
+        aeq(read("1/3").get().positionalNotation(BigInteger.valueOf(83)), "([], [], [27, 55])");
+        aeq(read("1/3").get().positionalNotation(BigInteger.valueOf(100)), "([], [], [33])");
+        aeq(read("1/7").get().positionalNotation(BigInteger.valueOf(2)), "([], [], [0, 0, 1])");
+        aeq(read("1/7").get().positionalNotation(BigInteger.valueOf(3)), "([], [], [0, 1, 0, 2, 1, 2])");
+        aeq(read("1/7").get().positionalNotation(BigInteger.valueOf(4)), "([], [], [0, 2, 1])");
+        aeq(read("1/7").get().positionalNotation(BigInteger.valueOf(10)), "([], [], [1, 4, 2, 8, 5, 7])");
+        aeq(read("1/7").get().positionalNotation(BigInteger.valueOf(16)), "([], [], [2, 4, 9])");
+        aeq(read("1/7").get().positionalNotation(BigInteger.valueOf(83)), "([], [], [11, 71])");
+        aeq(read("1/7").get().positionalNotation(BigInteger.valueOf(100)), "([], [], [14, 28, 57])");
+        aeq(read("415/93").get().positionalNotation(BigInteger.valueOf(2)),
+                "([1, 0, 0], [], [0, 1, 1, 1, 0, 1, 1, 0, 0, 1])");
+        aeq(read("415/93").get().positionalNotation(BigInteger.valueOf(3)),
+                "([1, 1], [1]," +
+                " [1, 0, 1, 1, 1, 0, 0, 1, 2, 0, 2, 0, 0, 0, 2, 1, 2, 1, 1, 1, 2, 2, 1, 0, 2, 0, 2, 2, 2, 0])");
+        aeq(read("415/93").get().positionalNotation(BigInteger.valueOf(4)), "([1, 0], [], [1, 3, 1, 2, 1])");
+        aeq(read("415/93").get().positionalNotation(BigInteger.valueOf(10)),
+                "([4], [], [4, 6, 2, 3, 6, 5, 5, 9, 1, 3, 9, 7, 8, 4, 9])");
+        aeq(read("415/93").get().positionalNotation(BigInteger.valueOf(16)), "([4], [], [7, 6, 5, 13, 9])");
+        aeq(read("415/93").get().positionalNotation(BigInteger.valueOf(83)),
+                "([4], []," +
+                " [38, 31, 19, 52, 54, 36, 49, 7, 11, 49, 81, 17, 70, 41, 78, 44, 51, 63, 30, 28, 46, 33, 75, 71," +
+                " 33, 1, 65, 12, 41, 4])");
+        aeq(read("415/93").get().positionalNotation(BigInteger.valueOf(100)),
+                "([4], [], [46, 23, 65, 59, 13, 97, 84, 94, 62, 36, 55, 91, 39, 78, 49])");
+        Rational approxPi = ofExact(Math.PI);
+        aeq(approxPi.positionalNotation(BigInteger.valueOf(2)),
+                "([1, 1]," +
+                " [0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0," +
+                " 1, 0, 0, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 0, 1, 1], [0])");
+        aeq(approxPi.positionalNotation(BigInteger.valueOf(4)),
+                "([3], [0, 2, 1, 0, 0, 3, 3, 3, 1, 2, 2, 2, 2, 0, 2, 0, 2, 0, 1, 1, 2, 2, 0, 3], [0])");
+        aeq(approxPi.positionalNotation(BigInteger.valueOf(10)),
+                "([3], [1, 4, 1, 5, 9, 2, 6, 5, 3, 5, 8, 9, 7, 9, 3, 1, 1, 5, 9, 9, 7, 9, 6, 3, 4, 6, 8, 5, 4, 4, 1," +
+                " 8, 5, 1, 6, 1, 5, 9, 0, 5, 7, 6, 1, 7, 1, 8, 7, 5], [0])");
+        aeq(approxPi.positionalNotation(BigInteger.valueOf(16)),
+                "([3], [2, 4, 3, 15, 6, 10, 8, 8, 8, 5, 10, 3], [0])");
+        aeq(approxPi.positionalNotation(BigInteger.valueOf(100)),
+                "([3]," +
+                " [14, 15, 92, 65, 35, 89, 79, 31, 15, 99, 79, 63, 46, 85, 44, 18, 51, 61, 59, 5, 76, 17, 18, 75]," +
+                " [0])");
+        aeq(read("299/56").get().positionalNotation(BigInteger.valueOf(2)), "([1, 0, 1], [0, 1, 0], [1, 0, 1])");
+        aeq(read("405/26").get().positionalNotation(BigInteger.valueOf(3)), "([1, 2, 0], [], [1, 2, 0])");
+        aeq(read("15613/576").get().positionalNotation(BigInteger.valueOf(4)), "([1, 2, 3], [0, 1, 2], [3, 0, 1])");
+        aeq(
+                read("41111111/333000").get().positionalNotation(BigInteger.valueOf(10)),
+                "([1, 2, 3], [4, 5, 6], [7, 8, 9])"
+        );
+        aeq(
+                read("1628508433/5591040").get().positionalNotation(BigInteger.valueOf(16)),
+                "([1, 2, 3], [4, 5, 6], [7, 8, 9])"
+        );
+        aeq(
+                read("1153778558235787/163469900791").get().positionalNotation(BigInteger.valueOf(83)),
+                "([1, 2, 3], [4, 5, 6], [7, 8, 9])"
+        );
+        aeq(
+                read("3401010101010101/333333000000").get().positionalNotation(BigInteger.valueOf(100)),
+                "([1, 2, 3], [4, 5, 6], [7, 8, 9])"
+        );
+        try {
+            read("1/2").get().positionalNotation(BigInteger.ONE);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            read("1/2").get().positionalNotation(BigInteger.ZERO);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            read("-1/2").get().positionalNotation(BigInteger.valueOf(2));
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testFromPositionalNotation() {
+        aeq(
+                fromPositionalNotation(
+                        BigInteger.valueOf(2),
+                        new ArrayList<>(),
+                        new ArrayList<>(),
+                        readBigIntegerList("[0]").get()
+                ),
+                0
+        );
+        aeq(
+                fromPositionalNotation(
+                        BigInteger.valueOf(3),
+                        new ArrayList<>(),
+                        new ArrayList<>(),
+                        readBigIntegerList("[0]").get()
+                ),
+                0
+        );
+        aeq(
+                fromPositionalNotation(
+                        BigInteger.valueOf(4),
+                        new ArrayList<>(),
+                        new ArrayList<>(),
+                        readBigIntegerList("[0]").get()
+                ),
+                0
+        );
+        aeq(
+                fromPositionalNotation(
+                        BigInteger.valueOf(10),
+                        new ArrayList<>(),
+                        new ArrayList<>(),
+                        readBigIntegerList("[0]").get()
+                ),
+                0
+        );
+        aeq(
+                fromPositionalNotation(
+                        BigInteger.valueOf(16),
+                        new ArrayList<>(),
+                        new ArrayList<>(),
+                        readBigIntegerList("[0]").get()
+                ),
+                0
+        );
+        aeq(
+                fromPositionalNotation(
+                        BigInteger.valueOf(83),
+                        new ArrayList<>(),
+                        new ArrayList<>(),
+                        readBigIntegerList("[0]").get()
+                ),
+                0
+        );
+        aeq(
+                fromPositionalNotation(
+                        BigInteger.valueOf(100),
+                        new ArrayList<>(),
+                        new ArrayList<>(),
+                        readBigIntegerList("[0]").get()
+                ),
+                0
+        );
+        aeq(
+                fromPositionalNotation(
+                        BigInteger.valueOf(2),
+                        readBigIntegerList("[1]").get(),
+                        new ArrayList<>(),
+                        readBigIntegerList("[0]").get()
+                ),
+                1
+        );
+        aeq(
+                fromPositionalNotation(
+                        BigInteger.valueOf(3),
+                        readBigIntegerList("[1]").get(),
+                        new ArrayList<>(),
+                        readBigIntegerList("[0]").get()
+                ),
+                1
+        );
+        aeq(
+                fromPositionalNotation(
+                        BigInteger.valueOf(4),
+                        readBigIntegerList("[1]").get(),
+                        new ArrayList<>(),
+                        readBigIntegerList("[0]").get()
+                ),
+                1
+        );
+        aeq(
+                fromPositionalNotation(
+                        BigInteger.valueOf(10),
+                        readBigIntegerList("[1]").get(),
+                        new ArrayList<>(),
+                        readBigIntegerList("[0]").get()
+                ),
+                1
+        );
+        aeq(
+                fromPositionalNotation(
+                        BigInteger.valueOf(16),
+                        readBigIntegerList("[1]").get(),
+                        new ArrayList<>(),
+                        readBigIntegerList("[0]").get()
+                ),
+                1
+        );
+        aeq(
+                fromPositionalNotation(
+                        BigInteger.valueOf(83),
+                        readBigIntegerList("[1]").get(),
+                        new ArrayList<>(),
+                        readBigIntegerList("[0]").get()
+                ),
+                1
+        );
+        aeq(
+                fromPositionalNotation(
+                        BigInteger.valueOf(100),
+                        readBigIntegerList("[1]").get(),
+                        new ArrayList<>(),
+                        readBigIntegerList("[0]").get()
+                ),
+                1
+        );
+        aeq(
+                fromPositionalNotation(
+                        BigInteger.valueOf(2),
+                        new ArrayList<>(),
+                        readBigIntegerList("[1]").get(),
+                        readBigIntegerList("[0]").get()
+                ),
+                "1/2"
+        );
+        aeq(
+                fromPositionalNotation(
+                        BigInteger.valueOf(3),
+                        new ArrayList<>(),
+                        new ArrayList<>(),
+                        readBigIntegerList("[1]").get()
+                ),
+                "1/2"
+        );
+        aeq(
+                fromPositionalNotation(
+                        BigInteger.valueOf(4),
+                        new ArrayList<>(),
+                        readBigIntegerList("[2]").get(),
+                        readBigIntegerList("[0]").get()
+                ),
+                "1/2"
+        );
+        aeq(
+                fromPositionalNotation(
+                        BigInteger.valueOf(10),
+                        new ArrayList<>(),
+                        readBigIntegerList("[5]").get(),
+                        readBigIntegerList("[0]").get()
+                ),
+                "1/2"
+        );
+        aeq(
+                fromPositionalNotation(
+                        BigInteger.valueOf(16),
+                        new ArrayList<>(),
+                        readBigIntegerList("[8]").get(),
+                        readBigIntegerList("[0]").get()
+                ),
+                "1/2"
+        );
+        aeq(
+                fromPositionalNotation(
+                        BigInteger.valueOf(83),
+                        new ArrayList<>(),
+                        new ArrayList<>(),
+                        readBigIntegerList("[41]").get()
+                ),
+                "1/2"
+        );
+        aeq(
+                fromPositionalNotation(
+                        BigInteger.valueOf(100),
+                        new ArrayList<>(),
+                        readBigIntegerList("[50]").get(),
+                        readBigIntegerList("[0]").get()
+                ),
+                "1/2"
+        );
+        aeq(
+                fromPositionalNotation(
+                        BigInteger.valueOf(2),
+                        new ArrayList<>(),
+                        new ArrayList<>(),
+                        readBigIntegerList("[0, 1]").get()
+                ),
+                "1/3"
+        );
+        aeq(
+                fromPositionalNotation(
+                        BigInteger.valueOf(3),
+                        new ArrayList<>(),
+                        readBigIntegerList("[1]").get(),
+                        readBigIntegerList("[0]").get()
+                ),
+                "1/3"
+        );
+        aeq(
+                fromPositionalNotation(
+                        BigInteger.valueOf(4),
+                        new ArrayList<>(),
+                        new ArrayList<>(),
+                        readBigIntegerList("[1]").get()
+                ),
+                "1/3"
+        );
+        aeq(
+                fromPositionalNotation(
+                        BigInteger.valueOf(10),
+                        new ArrayList<>(),
+                        new ArrayList<>(),
+                        readBigIntegerList("[3]").get()
+                ),
+                "1/3"
+        );
+        aeq(
+                fromPositionalNotation(
+                        BigInteger.valueOf(16),
+                        new ArrayList<>(),
+                        new ArrayList<>(),
+                        readBigIntegerList("[5]").get()
+                ),
+                "1/3"
+        );
+        aeq(
+                fromPositionalNotation(
+                        BigInteger.valueOf(83),
+                        new ArrayList<>(),
+                        new ArrayList<>(),
+                        readBigIntegerList("[27, 55]").get()
+                ),
+                "1/3"
+        );
+        aeq(
+                fromPositionalNotation(
+                        BigInteger.valueOf(100),
+                        new ArrayList<>(),
+                        new ArrayList<>(),
+                        readBigIntegerList("[33]").get()
+                ),
+                "1/3"
+        );
+        aeq(
+                fromPositionalNotation(
+                        BigInteger.valueOf(2),
+                        new ArrayList<>(),
+                        new ArrayList<>(),
+                        readBigIntegerList("[0, 0, 1]").get()
+                ),
+                "1/7"
+        );
+        aeq(
+                fromPositionalNotation(
+                        BigInteger.valueOf(3),
+                        new ArrayList<>(),
+                        new ArrayList<>(),
+                        readBigIntegerList("[0, 1, 0, 2, 1, 2]").get()
+                ),
+                "1/7"
+        );
+        aeq(
+                fromPositionalNotation(
+                        BigInteger.valueOf(4),
+                        new ArrayList<>(),
+                        new ArrayList<>(),
+                        readBigIntegerList("[0, 2, 1]").get()
+                ),
+                "1/7"
+        );
+        aeq(
+                fromPositionalNotation(
+                        BigInteger.valueOf(10),
+                        new ArrayList<>(),
+                        new ArrayList<>(),
+                        readBigIntegerList("[1, 4, 2, 8, 5, 7]").get()
+                ),
+                "1/7"
+        );
+        aeq(
+                fromPositionalNotation(
+                        BigInteger.valueOf(16),
+                        new ArrayList<>(),
+                        new ArrayList<>(),
+                        readBigIntegerList("[2, 4, 9]").get()
+                ),
+                "1/7"
+        );
+        aeq(
+                fromPositionalNotation(
+                        BigInteger.valueOf(83),
+                        new ArrayList<>(),
+                        new ArrayList<>(),
+                        readBigIntegerList("[11, 71]").get()
+                ),
+                "1/7"
+        );
+        aeq(
+                fromPositionalNotation(
+                        BigInteger.valueOf(100),
+                        new ArrayList<>(),
+                        new ArrayList<>(),
+                        readBigIntegerList("[14, 28, 57]").get()
+                ),
+                "1/7"
+        );
+        aeq(
+                fromPositionalNotation(
+                        BigInteger.valueOf(2),
+                        readBigIntegerList("[1, 0, 0]").get(),
+                        new ArrayList<>(),
+                        readBigIntegerList("[0, 1, 1, 1, 0, 1, 1, 0, 0, 1]").get()
+                ),
+                "415/93"
+        );
+        aeq(
+                fromPositionalNotation(
+                        BigInteger.valueOf(3),
+                        readBigIntegerList("[1, 1]").get(),
+                        readBigIntegerList("[1]").get(),
+                        readBigIntegerList(
+                                "[1, 0, 1, 1, 1, 0, 0, 1, 2, 0, 2, 0, 0, 0, 2, 1, 2, 1, 1, 1, 2, 2, 1, 0, 2, 0, 2," +
+                                " 2, 2, 0]").get()
+                ),
+                "415/93"
+        );
+        aeq(
+                fromPositionalNotation(
+                        BigInteger.valueOf(4),
+                        readBigIntegerList("[1, 0]").get(),
+                        new ArrayList<>(),
+                        readBigIntegerList("[1, 3, 1, 2, 1]").get()
+                ),
+                "415/93"
+        );
+        aeq(
+                fromPositionalNotation(
+                        BigInteger.valueOf(10),
+                        readBigIntegerList("[4]").get(),
+                        new ArrayList<>(),
+                        readBigIntegerList("[4, 6, 2, 3, 6, 5, 5, 9, 1, 3, 9, 7, 8, 4, 9]").get()
+                ),
+                "415/93"
+        );
+        aeq(
+                fromPositionalNotation(
+                        BigInteger.valueOf(16),
+                        readBigIntegerList("[4]").get(),
+                        new ArrayList<>(),
+                        readBigIntegerList("[7, 6, 5, 13, 9]").get()
+                ),
+                "415/93"
+        );
+        aeq(
+                fromPositionalNotation(
+                        BigInteger.valueOf(83),
+                        readBigIntegerList("[4]").get(),
+                        new ArrayList<>(),
+                        readBigIntegerList(
+                                "[38, 31, 19, 52, 54, 36, 49, 7, 11, 49, 81, 17, 70, 41, 78, 44, 51, 63, 30, 28, 46," +
+                                " 33, 75, 71, 33, 1, 65, 12, 41, 4]").get()
+                ),
+                "415/93"
+        );
+        aeq(
+                fromPositionalNotation(
+                        BigInteger.valueOf(100),
+                        readBigIntegerList("[4]").get(),
+                        new ArrayList<>(),
+                        readBigIntegerList("[46, 23, 65, 59, 13, 97, 84, 94, 62, 36, 55, 91, 39, 78, 49]").get()
+                ),
+                "415/93"
+        );
+        Rational approxPi = ofExact(Math.PI);
+        aeq(
+                fromPositionalNotation(
+                        BigInteger.valueOf(2),
+                        readBigIntegerList("[1, 1]").get(),
+                        readBigIntegerList(
+                                "[0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0, 0," +
+                                " 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 0, 1, 1]").get(),
+                        readBigIntegerList("[0]").get()
+                ),
+                approxPi
+        );
+        aeq(
+                fromPositionalNotation(
+                        BigInteger.valueOf(4),
+                        readBigIntegerList("[3]").get(),
+                        readBigIntegerList(
+                                "[0, 2, 1, 0, 0, 3, 3, 3, 1, 2, 2, 2, 2, 0, 2, 0, 2, 0, 1, 1, 2, 2, 0, 3]").get(),
+                        readBigIntegerList("[0]").get()
+                ),
+                approxPi
+        );
+        aeq(
+                fromPositionalNotation(
+                        BigInteger.valueOf(10),
+                        readBigIntegerList("[3]").get(),
+                        readBigIntegerList(
+                                "[1, 4, 1, 5, 9, 2, 6, 5, 3, 5, 8, 9, 7, 9, 3, 1, 1, 5, 9, 9, 7, 9, 6, 3, 4, 6, 8," +
+                                " 5, 4, 4, 1, 8, 5, 1, 6, 1, 5, 9, 0, 5, 7, 6, 1, 7, 1, 8, 7, 5]").get(),
+                        readBigIntegerList("[0]").get()
+                ),
+                approxPi
+        );
+        aeq(
+                fromPositionalNotation(
+                        BigInteger.valueOf(16),
+                        readBigIntegerList("[3]").get(),
+                        readBigIntegerList("[2, 4, 3, 15, 6, 10, 8, 8, 8, 5, 10, 3]").get(),
+                        readBigIntegerList("[0]").get()
+                ),
+                approxPi
+        );
+        aeq(
+                fromPositionalNotation(
+                        BigInteger.valueOf(100),
+                        readBigIntegerList("[3]").get(),
+                        readBigIntegerList(
+                                "[14, 15, 92, 65, 35, 89, 79, 31, 15, 99, 79, 63, 46, 85, 44, 18, 51, 61, 59, 5, 76," +
+                                " 17, 18, 75]").get(),
+                        readBigIntegerList("[0]").get()
+                ),
+                approxPi
+        );
+        aeq(
+                fromPositionalNotation(
+                        BigInteger.valueOf(2),
+                        readBigIntegerList("[1, 0, 1]").get(),
+                        readBigIntegerList("[0, 1, 0]").get(),
+                        readBigIntegerList("[1, 0, 1]").get()
+                ),
+                "299/56"
+        );
+        aeq(
+                fromPositionalNotation(
+                        BigInteger.valueOf(3),
+                        readBigIntegerList("[1, 2, 0]").get(),
+                        readBigIntegerList("[1, 2, 0]").get(),
+                        readBigIntegerList("[1, 2, 0]").get()
+                ),
+                "405/26"
+        );
+        aeq(
+                fromPositionalNotation(
+                        BigInteger.valueOf(4),
+                        readBigIntegerList("[1, 2, 3]").get(),
+                        readBigIntegerList("[0, 1, 2]").get(),
+                        readBigIntegerList("[3, 0, 1]").get()
+                ),
+                "15613/576"
+        );
+        aeq(
+                fromPositionalNotation(
+                        BigInteger.valueOf(10),
+                        readBigIntegerList("[1, 2, 3]").get(),
+                        readBigIntegerList("[4, 5, 6]").get(),
+                        readBigIntegerList("[7, 8, 9]").get()
+                ),
+                "41111111/333000"
+        );
+        aeq(
+                fromPositionalNotation(
+                        BigInteger.valueOf(16),
+                        readBigIntegerList("[1, 2, 3]").get(),
+                        readBigIntegerList("[4, 5, 6]").get(),
+                        readBigIntegerList("[7, 8, 9]").get()
+                ),
+                "1628508433/5591040"
+        );
+        aeq(
+                fromPositionalNotation(
+                        BigInteger.valueOf(83),
+                        readBigIntegerList("[1, 2, 3]").get(),
+                        readBigIntegerList("[4, 5, 6]").get(),
+                        readBigIntegerList("[7, 8, 9]").get()
+                ),
+                "1153778558235787/163469900791"
+        );
+        aeq(
+                fromPositionalNotation(
+                        BigInteger.valueOf(100),
+                        readBigIntegerList("[1, 2, 3]").get(),
+                        readBigIntegerList("[4, 5, 6]").get(),
+                        readBigIntegerList("[7, 8, 9]").get()
+                ),
+                "3401010101010101/333333000000"
+        );
+        try {
+            fromPositionalNotation(BigInteger.valueOf(1),
+                    readBigIntegerList("[1, 0, 1]").get(),
+                    readBigIntegerList("[0, 1, 0]").get(),
+                    readBigIntegerList("[1, 0, 1]").get()
+            );
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            fromPositionalNotation(BigInteger.valueOf(0),
+                    readBigIntegerList("[1, 0, 1]").get(),
+                    readBigIntegerList("[0, 1, 0]").get(),
+                    readBigIntegerList("[1, 0, 1]").get()
+            );
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            fromPositionalNotation(BigInteger.valueOf(-1),
+                    readBigIntegerList("[1, 0, 1]").get(),
+                    readBigIntegerList("[0, 1, 0]").get(),
+                    readBigIntegerList("[1, 0, 1]").get()
+            );
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            fromPositionalNotation(BigInteger.valueOf(2),
+                    readBigIntegerList("[-1, 0, 1]").get(),
+                    readBigIntegerList("[0, 1, 0]").get(),
+                    readBigIntegerList("[1, 0, 1]").get()
+            );
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            fromPositionalNotation(BigInteger.valueOf(2),
+                    readBigIntegerList("[2, 0, 1]").get(),
+                    readBigIntegerList("[0, 1, 0]").get(),
+                    readBigIntegerList("[1, 0, 1]").get()
+            );
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            fromPositionalNotation(BigInteger.valueOf(2),
+                    readBigIntegerList("[1, 0, 1]").get(),
+                    readBigIntegerList("[0, -1, 0]").get(),
+                    readBigIntegerList("[1, 0, 1]").get()
+            );
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            fromPositionalNotation(BigInteger.valueOf(2),
+                    readBigIntegerList("[1, 0, 1]").get(),
+                    readBigIntegerList("[0, 2, 0]").get(),
+                    readBigIntegerList("[1, 0, 1]").get()
+            );
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            fromPositionalNotation(BigInteger.valueOf(2),
+                    readBigIntegerList("[1, 0, 1]").get(),
+                    readBigIntegerList("[0, 1, 0]").get(),
+                    readBigIntegerList("[-1, 0, 1]").get()
+            );
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            fromPositionalNotation(BigInteger.valueOf(2),
+                    readBigIntegerList("[1, 0, 1]").get(),
+                    readBigIntegerList("[0, 1, 0]").get(),
+                    readBigIntegerList("[2, 0, 1]").get()
+            );
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            fromPositionalNotation(BigInteger.valueOf(2),
+                    readBigIntegerList("[1, 0, 1]").get(),
+                    readBigIntegerList("[0, 1, 0]").get(),
+                    new ArrayList<>()
+            );
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testDigits() {
+        Pair<List<BigInteger>, Iterable<BigInteger>> result;
+
+        result = ZERO.digits(BigInteger.valueOf(2));
+        aeq(result.a, "[]");
+        aeq(result.b, "[]");
+
+        result = ZERO.digits(BigInteger.valueOf(3));
+        aeq(result.a, "[]");
+        aeq(result.b, "[]");
+
+        result = ZERO.digits(BigInteger.valueOf(4));
+        aeq(result.a, "[]");
+        aeq(result.b, "[]");
+
+        result = ZERO.digits(BigInteger.valueOf(10));
+        aeq(result.a, "[]");
+        aeq(result.b, "[]");
+
+        result = ZERO.digits(BigInteger.valueOf(16));
+        aeq(result.a, "[]");
+        aeq(result.b, "[]");
+
+        result = ZERO.digits(BigInteger.valueOf(83));
+        aeq(result.a, "[]");
+        aeq(result.b, "[]");
+
+        result = ZERO.digits(BigInteger.valueOf(100));
+        aeq(result.a, "[]");
+        aeq(result.b, "[]");
+
+        result = ONE.digits(BigInteger.valueOf(2));
+        aeq(result.a, "[1]");
+        aeq(result.b, "[]");
+
+        result = ONE.digits(BigInteger.valueOf(3));
+        aeq(result.a, "[1]");
+        aeq(result.b, "[]");
+
+        result = ONE.digits(BigInteger.valueOf(4));
+        aeq(result.a, "[1]");
+        aeq(result.b, "[]");
+
+        result = ONE.digits(BigInteger.valueOf(10));
+        aeq(result.a, "[1]");
+        aeq(result.b, "[]");
+
+        result = ONE.digits(BigInteger.valueOf(16));
+        aeq(result.a, "[1]");
+        aeq(result.b, "[]");
+
+        result = ONE.digits(BigInteger.valueOf(83));
+        aeq(result.a, "[1]");
+        aeq(result.b, "[]");
+
+        result = ONE.digits(BigInteger.valueOf(100));
+        aeq(result.a, "[1]");
+        aeq(result.b, "[]");
+
+        result = read("1/2").get().digits(BigInteger.valueOf(2));
+        aeq(result.a, "[]");
+        aeq(result.b, "[1]");
+
+        result = read("1/2").get().digits(BigInteger.valueOf(3));
+        aeq(result.a, "[]");
+        aeq(IterableUtils.toString(20, result.b), "[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ...]");
+
+        result = read("1/2").get().digits(BigInteger.valueOf(4));
+        aeq(result.a, "[]");
+        aeq(result.b, "[2]");
+
+        result = read("1/2").get().digits(BigInteger.valueOf(10));
+        aeq(result.a, "[]");
+        aeq(result.b, "[5]");
+
+        result = read("1/2").get().digits(BigInteger.valueOf(16));
+        aeq(result.a, "[]");
+        aeq(result.b, "[8]");
+
+        result = read("1/2").get().digits(BigInteger.valueOf(83));
+        aeq(result.a, "[]");
+        aeq(IterableUtils.toString(20, result.b),
+                "[41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, ...]");
+
+        result = read("1/2").get().digits(BigInteger.valueOf(100));
+        aeq(result.a, "[]");
+        aeq(result.b, "[50]");
+
+        result = read("1/3").get().digits(BigInteger.valueOf(2));
+        aeq(result.a, "[]");
+        aeq(IterableUtils.toString(20, result.b), "[0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, ...]");
+
+        result = read("1/3").get().digits(BigInteger.valueOf(3));
+        aeq(result.a, "[]");
+        aeq(result.b, "[1]");
+
+        result = read("1/3").get().digits(BigInteger.valueOf(4));
+        aeq(result.a, "[]");
+        aeq(IterableUtils.toString(20, result.b), "[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ...]");
+
+        result = read("1/3").get().digits(BigInteger.valueOf(10));
+        aeq(result.a, "[]");
+        aeq(IterableUtils.toString(20, result.b), "[3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, ...]");
+        result = read("1/3").get().digits(BigInteger.valueOf(16));
+        aeq(result.a, "[]");
+        aeq(IterableUtils.toString(20, result.b), "[5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, ...]");
+
+        result = read("1/3").get().digits(BigInteger.valueOf(83));
+        aeq(result.a, "[]");
+        aeq(IterableUtils.toString(20, result.b),
+                "[27, 55, 27, 55, 27, 55, 27, 55, 27, 55, 27, 55, 27, 55, 27, 55, 27, 55, 27, 55, ...]");
+
+        result = read("1/3").get().digits(BigInteger.valueOf(100));
+        aeq(result.a, "[]");
+        aeq(IterableUtils.toString(20, result.b),
+                "[33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, ...]");
+
+        result = read("1/7").get().digits(BigInteger.valueOf(2));
+        aeq(result.a, "[]");
+        aeq(IterableUtils.toString(20, result.b), "[0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, ...]");
+
+        result = read("1/7").get().digits(BigInteger.valueOf(3));
+        aeq(result.a, "[]");
+        aeq(IterableUtils.toString(20, result.b), "[0, 1, 0, 2, 1, 2, 0, 1, 0, 2, 1, 2, 0, 1, 0, 2, 1, 2, 0, 1, ...]");
+
+        result = read("1/7").get().digits(BigInteger.valueOf(4));
+        aeq(result.a, "[]");
+        aeq(IterableUtils.toString(20, result.b), "[0, 2, 1, 0, 2, 1, 0, 2, 1, 0, 2, 1, 0, 2, 1, 0, 2, 1, 0, 2, ...]");
+
+        result = read("1/7").get().digits(BigInteger.valueOf(10));
+        aeq(result.a, "[]");
+        aeq(IterableUtils.toString(20, result.b), "[1, 4, 2, 8, 5, 7, 1, 4, 2, 8, 5, 7, 1, 4, 2, 8, 5, 7, 1, 4, ...]");
+
+        result = read("1/7").get().digits(BigInteger.valueOf(16));
+        aeq(result.a, "[]");
+        aeq(IterableUtils.toString(20, result.b), "[2, 4, 9, 2, 4, 9, 2, 4, 9, 2, 4, 9, 2, 4, 9, 2, 4, 9, 2, 4, ...]");
+
+        result = read("1/7").get().digits(BigInteger.valueOf(83));
+        aeq(result.a, "[]");
+        aeq(IterableUtils.toString(20, result.b),
+                "[11, 71, 11, 71, 11, 71, 11, 71, 11, 71, 11, 71, 11, 71, 11, 71, 11, 71, 11, 71, ...]");
+
+        result = read("1/7").get().digits(BigInteger.valueOf(100));
+        aeq(result.a, "[]");
+        aeq(IterableUtils.toString(20, result.b),
+                "[14, 28, 57, 14, 28, 57, 14, 28, 57, 14, 28, 57, 14, 28, 57, 14, 28, 57, 14, 28, ...]");
+
+        result = read("415/93").get().digits(BigInteger.valueOf(2));
+        aeq(result.a, "[1, 0, 0]");
+        aeq(IterableUtils.toString(20, result.b), "[0, 1, 1, 1, 0, 1, 1, 0, 0, 1, 0, 1, 1, 1, 0, 1, 1, 0, 0, 1, ...]");
+
+        result = read("415/93").get().digits(BigInteger.valueOf(3));
+        aeq(result.a, "[1, 1]");
+        aeq(IterableUtils.toString(20, result.b), "[1, 1, 0, 1, 1, 1, 0, 0, 1, 2, 0, 2, 0, 0, 0, 2, 1, 2, 1, 1, ...]");
+
+        result = read("415/93").get().digits(BigInteger.valueOf(4));
+        aeq(result.a, "[1, 0]");
+        aeq(IterableUtils.toString(20, result.b), "[1, 3, 1, 2, 1, 1, 3, 1, 2, 1, 1, 3, 1, 2, 1, 1, 3, 1, 2, 1, ...]");
+
+        result = read("415/93").get().digits(BigInteger.valueOf(10));
+        aeq(result.a, "[4]");
+        aeq(IterableUtils.toString(20, result.b), "[4, 6, 2, 3, 6, 5, 5, 9, 1, 3, 9, 7, 8, 4, 9, 4, 6, 2, 3, 6, ...]");
+
+        result = read("415/93").get().digits(BigInteger.valueOf(16));
+        aeq(result.a, "[4]");
+        aeq(IterableUtils.toString(20, result.b),
+                "[7, 6, 5, 13, 9, 7, 6, 5, 13, 9, 7, 6, 5, 13, 9, 7, 6, 5, 13, 9, ...]");
+
+        result = read("415/93").get().digits(BigInteger.valueOf(83));
+        aeq(result.a, "[4]");
+        aeq(IterableUtils.toString(20, result.b),
+                "[38, 31, 19, 52, 54, 36, 49, 7, 11, 49, 81, 17, 70, 41, 78, 44, 51, 63, 30, 28, ...]");
+
+        result = read("415/93").get().digits(BigInteger.valueOf(100));
+        aeq(result.a, "[4]");
+        aeq(IterableUtils.toString(20, result.b),
+                "[46, 23, 65, 59, 13, 97, 84, 94, 62, 36, 55, 91, 39, 78, 49, 46, 23, 65, 59, 13, ...]");
+
+        Rational approxPi = ofExact(Math.PI);
+
+        result = approxPi.digits(BigInteger.valueOf(2));
+        aeq(result.a, "[1, 1]");
+        aeq(result.b,
+                "[0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1," +
+                " 0, 0, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 0, 1, 1]");
+
+        result = approxPi.digits(BigInteger.valueOf(3));
+        aeq(result.a, "[1, 0]");
+        aeq(IterableUtils.toString(20, result.b), "[0, 1, 0, 2, 1, 1, 0, 1, 2, 2, 2, 2, 0, 1, 0, 2, 1, 1, 0, 0, ...]");
+
+        result = approxPi.digits(BigInteger.valueOf(4));
+        aeq(result.a, "[3]");
+        aeq(result.b,
+                "[0, 2, 1, 0, 0, 3, 3, 3, 1, 2, 2, 2, 2, 0, 2, 0, 2, 0, 1, 1, 2, 2, 0, 3]");
+
+        result = approxPi.digits(BigInteger.valueOf(10));
+        aeq(result.a, "[3]");
+        aeq(result.b,
+                "[1, 4, 1, 5, 9, 2, 6, 5, 3, 5, 8, 9, 7, 9, 3, 1, 1, 5, 9, 9, 7, 9, 6, 3, 4, 6, 8, 5, 4, 4, 1, 8, 5," +
+                " 1, 6, 1, 5, 9, 0, 5, 7, 6, 1, 7, 1, 8, 7, 5]");
+
+        result = approxPi.digits(BigInteger.valueOf(16));
+        aeq(result.a, "[3]");
+        aeq(result.b, "[2, 4, 3, 15, 6, 10, 8, 8, 8, 5, 10, 3]");
+
+        result = approxPi.digits(BigInteger.valueOf(83));
+        aeq(result.a, "[3]");
+        aeq(IterableUtils.toString(20, result.b),
+                "[11, 62, 35, 69, 50, 19, 79, 18, 11, 8, 60, 35, 10, 62, 20, 58, 42, 14, 31, 34, ...]");
+
+        result = approxPi.digits(BigInteger.valueOf(100));
+        aeq(result.a, "[3]");
+        aeq(result.b,
+                "[14, 15, 92, 65, 35, 89, 79, 31, 15, 99, 79, 63, 46, 85, 44, 18, 51, 61, 59, 5, 76, 17, 18, 75]");
+
+        result = read("299/56").get().digits(BigInteger.valueOf(2));
+        aeq(result.a, "[1, 0, 1]");
+        aeq(IterableUtils.toString(20, result.b), "[0, 1, 0, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, ...]");
+
+        result = read("405/26").get().digits(BigInteger.valueOf(3));
+        aeq(result.a, "[1, 2, 0]");
+        aeq(IterableUtils.toString(20, result.b), "[1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, ...]");
+
+        result = read("15613/576").get().digits(BigInteger.valueOf(4));
+        aeq(result.a, "[1, 2, 3]");
+        aeq(IterableUtils.toString(20, result.b), "[0, 1, 2, 3, 0, 1, 3, 0, 1, 3, 0, 1, 3, 0, 1, 3, 0, 1, 3, 0, ...]");
+
+        result = read("41111111/333000").get().digits(BigInteger.valueOf(10));
+        aeq(result.a, "[1, 2, 3]");
+        aeq(IterableUtils.toString(20, result.b), "[4, 5, 6, 7, 8, 9, 7, 8, 9, 7, 8, 9, 7, 8, 9, 7, 8, 9, 7, 8, ...]");
+
+        result = read("1628508433/5591040").get().digits(BigInteger.valueOf(16));
+        aeq(result.a, "[1, 2, 3]");
+        aeq(IterableUtils.toString(20, result.b), "[4, 5, 6, 7, 8, 9, 7, 8, 9, 7, 8, 9, 7, 8, 9, 7, 8, 9, 7, 8, ...]");
+
+        result = read("1153778558235787/163469900791").get().digits(BigInteger.valueOf(83));
+        aeq(result.a, "[1, 2, 3]");
+        aeq(IterableUtils.toString(20, result.b), "[4, 5, 6, 7, 8, 9, 7, 8, 9, 7, 8, 9, 7, 8, 9, 7, 8, 9, 7, 8, ...]");
+
+        result = read("3401010101010101/333333000000").get().digits(BigInteger.valueOf(100));
+        aeq(result.a, "[1, 2, 3]");
+        aeq(IterableUtils.toString(20, result.b), "[4, 5, 6, 7, 8, 9, 7, 8, 9, 7, 8, 9, 7, 8, 9, 7, 8, 9, 7, 8, ...]");
+
+        try {
+            read("-1/2").get().digits(BigInteger.valueOf(2));
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+
+        try {
+            read("1/2").get().digits(BigInteger.valueOf(1));
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+
+        try {
+            read("1/2").get().digits(BigInteger.valueOf(0));
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+
+        try {
+            read("1/2").get().digits(BigInteger.valueOf(-1));
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testToStringBase_BigInteger() {
+        aeq(ZERO.toStringBase(BigInteger.valueOf(2)), "0");
+        aeq(ZERO.toStringBase(BigInteger.valueOf(3)), "0");
+        aeq(ZERO.toStringBase(BigInteger.valueOf(4)), "0");
+        aeq(ZERO.toStringBase(BigInteger.valueOf(10)), "0");
+        aeq(ZERO.toStringBase(BigInteger.valueOf(16)), "0");
+        aeq(ZERO.toStringBase(BigInteger.valueOf(83)), "(0)");
+        aeq(ZERO.toStringBase(BigInteger.valueOf(100)), "(0)");
+        aeq(ONE.toStringBase(BigInteger.valueOf(2)), "1");
+        aeq(ONE.toStringBase(BigInteger.valueOf(3)), "1");
+        aeq(ONE.toStringBase(BigInteger.valueOf(4)), "1");
+        aeq(ONE.toStringBase(BigInteger.valueOf(10)), "1");
+        aeq(ONE.toStringBase(BigInteger.valueOf(16)), "1");
+        aeq(ONE.toStringBase(BigInteger.valueOf(83)), "(1)");
+        aeq(ONE.toStringBase(BigInteger.valueOf(100)), "(1)");
+        aeq(read("-1/2").get().toStringBase(BigInteger.valueOf(2)), "-0.1");
+        aeq(read("-1/2").get().toStringBase(BigInteger.valueOf(4)), "-0.2");
+        aeq(read("-1/2").get().toStringBase(BigInteger.valueOf(10)), "-0.5");
+        aeq(read("-1/2").get().toStringBase(BigInteger.valueOf(16)), "-0.8");
+        aeq(read("-1/2").get().toStringBase(BigInteger.valueOf(100)), "-(0).(50)");
+        aeq(read("1/3").get().toStringBase(BigInteger.valueOf(3)), "0.1");
+        Rational approxPi = ofExact(Math.PI);
+        aeq(approxPi.toStringBase(BigInteger.valueOf(2)), "11.001001000011111101101010100010001000010110100011");
+        aeq(approxPi.toStringBase(BigInteger.valueOf(4)), "3.021003331222202020112203");
+        aeq(approxPi.toStringBase(BigInteger.valueOf(10)), "3.141592653589793115997963468544185161590576171875");
+        aeq(approxPi.toStringBase(BigInteger.valueOf(16)), "3.243F6A8885A3");
+        aeq(approxPi.toStringBase(BigInteger.valueOf(100)),
+                "(3).(14)(15)(92)(65)(35)(89)(79)(31)(15)(99)(79)(63)(46)(85)(44)(18)(51)(61)(59)(5)(76)(17)(18)(75)");
+        aeq(read("1/1000").get().toStringBase(BigInteger.valueOf(10), 0), "0");
+        aeq(read("1/1000").get().toStringBase(BigInteger.valueOf(10), 1), "0.0...");
+        aeq(read("1/1000").get().toStringBase(BigInteger.valueOf(10), 2), "0.00...");
+        aeq(read("1/1000").get().toStringBase(BigInteger.valueOf(10), 3), "0.001");
+        aeq(read("1/1000").get().toStringBase(BigInteger.valueOf(10), 4), "0.001");
+        aeq(read("1001/10000").get().toStringBase(BigInteger.valueOf(10), 0), "0");
+        aeq(read("1001/10000").get().toStringBase(BigInteger.valueOf(10), 1), "0.1...");
+        aeq(read("1001/10000").get().toStringBase(BigInteger.valueOf(10), 2), "0.10...");
+        aeq(read("1001/10000").get().toStringBase(BigInteger.valueOf(10), 3), "0.100...");
+        aeq(read("1001/10000").get().toStringBase(BigInteger.valueOf(10), 4), "0.1001");
+        aeq(read("1001/10000").get().toStringBase(BigInteger.valueOf(10), 5), "0.1001");
+        aeq(read("1/1000000").get().toStringBase(BigInteger.valueOf(100), 0), "(0)");
+        aeq(read("1/1000000").get().toStringBase(BigInteger.valueOf(100), 1), "(0).(0)...");
+        aeq(read("1/1000000").get().toStringBase(BigInteger.valueOf(100), 2), "(0).(0)(0)...");
+        aeq(read("1/1000000").get().toStringBase(BigInteger.valueOf(100), 3), "(0).(0)(0)(1)");
+        aeq(read("1/1000000").get().toStringBase(BigInteger.valueOf(100), 4), "(0).(0)(0)(1)");
+        aeq(read("1000001/10000000").get().toStringBase(BigInteger.valueOf(100), 0), "(0)");
+        aeq(read("1000001/10000000").get().toStringBase(BigInteger.valueOf(100), 1), "(0).(10)...");
+        aeq(read("1000001/10000000").get().toStringBase(BigInteger.valueOf(100), 2), "(0).(10)(0)...");
+        aeq(read("1000001/10000000").get().toStringBase(BigInteger.valueOf(100), 3), "(0).(10)(0)(0)...");
+        aeq(read("1000001/10000000").get().toStringBase(BigInteger.valueOf(100), 4), "(0).(10)(0)(0)(10)");
+        aeq(read("1000001/10000000").get().toStringBase(BigInteger.valueOf(100), 5), "(0).(10)(0)(0)(10)");
+        try {
+            read("-1/2").get().toStringBase(BigInteger.ONE);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            read("-1/2").get().toStringBase(BigInteger.ZERO);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            read("-1/2").get().toStringBase(BigInteger.valueOf(-1));
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            read("1/3").get().toStringBase(BigInteger.valueOf(10));
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testToStringBase_BigInteger_int() {
+        aeq(ZERO.toStringBase(BigInteger.valueOf(10), 0), "0");
+        aeq(ZERO.toStringBase(BigInteger.valueOf(10), -1), "0");
+        aeq(ZERO.toStringBase(BigInteger.valueOf(10), 1), "0");
+        aeq(ZERO.toStringBase(BigInteger.valueOf(83), 0), "(0)");
+        aeq(ZERO.toStringBase(BigInteger.valueOf(83), -1), "(0)");
+        aeq(ZERO.toStringBase(BigInteger.valueOf(83), 1), "(0)");
+        aeq(ONE.toStringBase(BigInteger.valueOf(10), 0), "1");
+        aeq(ONE.toStringBase(BigInteger.valueOf(10), -1), "0");
+        aeq(ONE.toStringBase(BigInteger.valueOf(10), 1), "1");
+        aeq(ONE.toStringBase(BigInteger.valueOf(83), 0), "(1)");
+        aeq(ONE.toStringBase(BigInteger.valueOf(83), -1), "(0)");
+        aeq(ONE.toStringBase(BigInteger.valueOf(83), 1), "(1)");
+        aeq(read("198").get().toStringBase(BigInteger.valueOf(10), 0), "198");
+        aeq(read("198").get().toStringBase(BigInteger.valueOf(10), 1), "198");
+        aeq(read("198").get().toStringBase(BigInteger.valueOf(10), -1), "190");
+        aeq(read("198").get().toStringBase(BigInteger.valueOf(10), -2), "100");
+        aeq(read("198").get().toStringBase(BigInteger.valueOf(10), -3), "0");
+        aeq(read("198").get().toStringBase(BigInteger.valueOf(83), 0), "(2)(32)");
+        aeq(read("198").get().toStringBase(BigInteger.valueOf(83), 1), "(2)(32)");
+        aeq(read("198").get().toStringBase(BigInteger.valueOf(83), -1), "(2)(0)");
+        aeq(read("198").get().toStringBase(BigInteger.valueOf(83), -2), "(0)");
+        aeq(read("-1/7").get().toStringBase(BigInteger.valueOf(10), -1), "0");
+        aeq(read("-1/7").get().toStringBase(BigInteger.valueOf(10), 0), "0");
+        aeq(read("-1/7").get().toStringBase(BigInteger.valueOf(10), 5), "-0.14285...");
+        aeq(read("-1/7").get().toStringBase(BigInteger.valueOf(10), 20), "-0.14285714285714285714...");
+        aeq(read("-1/7").get().toStringBase(BigInteger.valueOf(83), -1), "(0)");
+        aeq(read("-1/7").get().toStringBase(BigInteger.valueOf(83), 0), "(0)");
+        aeq(read("-1/7").get().toStringBase(BigInteger.valueOf(83), 5), "-(0).(11)(71)(11)(71)(11)...");
+        aeq(read("-1/7").get().toStringBase(BigInteger.valueOf(83), 20),
+                "-(0).(11)(71)(11)(71)(11)(71)(11)(71)(11)(71)(11)(71)(11)(71)(11)(71)(11)(71)(11)(71)...");
+        Rational approxPi = ofExact(Math.PI);
+        aeq(approxPi.toStringBase(BigInteger.valueOf(10), -1), "0");
+        aeq(approxPi.toStringBase(BigInteger.valueOf(10), 0), "3");
+        aeq(approxPi.toStringBase(BigInteger.valueOf(10), 5), "3.14159...");
+        aeq(approxPi.toStringBase(BigInteger.valueOf(10), 20), "3.14159265358979311599...");
+        aeq(approxPi.toStringBase(BigInteger.valueOf(83), -1), "(0)");
+        aeq(approxPi.toStringBase(BigInteger.valueOf(83), 0), "(3)");
+        aeq(approxPi.toStringBase(BigInteger.valueOf(83), 5), "(3).(11)(62)(35)(69)(50)...");
+        aeq(approxPi.toStringBase(BigInteger.valueOf(83), 20),
+                "(3).(11)(62)(35)(69)(50)(19)(79)(18)(11)(8)(60)(35)(10)(62)(20)(58)(42)(14)(31)(34)...");
+        try {
+            read("-1/2").get().toStringBase(BigInteger.ONE, 5);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            read("-1/2").get().toStringBase(BigInteger.ZERO, 5);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            read("-1/2").get().toStringBase(BigInteger.valueOf(-1), 5);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testFromStringBase() {
+        aeq(fromStringBase(BigInteger.valueOf(2), ""), "0");
+        aeq(fromStringBase(BigInteger.valueOf(3), ""), "0");
+        aeq(fromStringBase(BigInteger.valueOf(4), ""), "0");
+        aeq(fromStringBase(BigInteger.valueOf(10), ""), "0");
+        aeq(fromStringBase(BigInteger.valueOf(16), ""), "0");
+        aeq(fromStringBase(BigInteger.valueOf(83), ""), "0");
+        aeq(fromStringBase(BigInteger.valueOf(100), ""), "0");
+        aeq(fromStringBase(BigInteger.valueOf(2), "0"), "0");
+        aeq(fromStringBase(BigInteger.valueOf(3), "0"), "0");
+        aeq(fromStringBase(BigInteger.valueOf(4), "0"), "0");
+        aeq(fromStringBase(BigInteger.valueOf(10), "0"), "0");
+        aeq(fromStringBase(BigInteger.valueOf(16), "0"), "0");
+        aeq(fromStringBase(BigInteger.valueOf(83), "(0)"), "0");
+        aeq(fromStringBase(BigInteger.valueOf(100), "(0)"), "0");
+        aeq(fromStringBase(BigInteger.valueOf(2), "1"), "1");
+        aeq(fromStringBase(BigInteger.valueOf(3), "1"), "1");
+        aeq(fromStringBase(BigInteger.valueOf(4), "1"), "1");
+        aeq(fromStringBase(BigInteger.valueOf(10), "1"), "1");
+        aeq(fromStringBase(BigInteger.valueOf(16), "1"), "1");
+        aeq(fromStringBase(BigInteger.valueOf(83), "(1)"), "1");
+        aeq(fromStringBase(BigInteger.valueOf(100), "(1)"), "1");
+        aeq(fromStringBase(BigInteger.valueOf(2), "-0.1"), "-1/2");
+        aeq(fromStringBase(BigInteger.valueOf(4), "-0.2"), "-1/2");
+        aeq(fromStringBase(BigInteger.valueOf(10), "-0.5"), "-1/2");
+        aeq(fromStringBase(BigInteger.valueOf(16), "-0.8"), "-1/2");
+        aeq(fromStringBase(BigInteger.valueOf(100), "-(0).(50)"), "-1/2");
+        aeq(fromStringBase(BigInteger.valueOf(3), "-0.1"), "-1/3");
+        Rational approxPi = ofExact(Math.PI);
+        aeq(fromStringBase(BigInteger.valueOf(2), "11.001001000011111101101010100010001000010110100011"), approxPi);
+        aeq(fromStringBase(BigInteger.valueOf(4), "3.021003331222202020112203"), approxPi);
+        aeq(fromStringBase(BigInteger.valueOf(10), "3.141592653589793115997963468544185161590576171875"), approxPi);
+        aeq(fromStringBase(BigInteger.valueOf(16), "3.243F6A8885A3"), approxPi);
+        aeq(
+                fromStringBase(
+                        BigInteger.valueOf(100),
+                "(3).(14)(15)(92)(65)(35)(89)(79)(31)(15)(99)(79)(63)(46)(85)(44)(18)(51)(61)(59)(5)(76)(17)(18)(75)"),
+                approxPi
+        );
+        aeq(fromStringBase(BigInteger.valueOf(10), "00"), 0);
+        aeq(fromStringBase(BigInteger.valueOf(10), "0."), 0);
+        aeq(fromStringBase(BigInteger.valueOf(10), ".0"), 0);
+        aeq(fromStringBase(BigInteger.valueOf(10), "0.0"), 0);
+        aeq(fromStringBase(BigInteger.valueOf(100), "(0)(0)"), 0);
+        aeq(fromStringBase(BigInteger.valueOf(100), "(0)."), 0);
+        aeq(fromStringBase(BigInteger.valueOf(100), ".(0)"), 0);
+        aeq(fromStringBase(BigInteger.valueOf(100), "(0).(0)"), 0);
+        try {
+            fromStringBase(BigInteger.ONE, "0");
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            fromStringBase(BigInteger.ZERO, "0");
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            fromStringBase(BigInteger.valueOf(-1), "0");
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            fromStringBase(BigInteger.valueOf(10), "a");
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            fromStringBase(BigInteger.valueOf(100), "[10]");
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            fromStringBase(BigInteger.valueOf(100), "(.10)");
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            fromStringBase(BigInteger.valueOf(10), "5-");
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            fromStringBase(BigInteger.valueOf(10), "-");
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            fromStringBase(BigInteger.valueOf(100), "(5)-");
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            fromStringBase(BigInteger.valueOf(10), "2-3");
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            fromStringBase(BigInteger.valueOf(100), "(2)-(3)");
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            fromStringBase(BigInteger.valueOf(10), "1e5");
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            fromStringBase(BigInteger.valueOf(10), "1E5");
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            fromStringBase(BigInteger.valueOf(10), "(2)(3)");
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            fromStringBase(BigInteger.valueOf(100), "23");
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            fromStringBase(BigInteger.valueOf(10), "-0.1...");
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            fromStringBase(BigInteger.valueOf(10), "-5...");
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            fromStringBase(BigInteger.valueOf(100), "()");
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            fromStringBase(BigInteger.valueOf(100), "()()");
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            fromStringBase(BigInteger.valueOf(100), "(00)");
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            fromStringBase(BigInteger.valueOf(100), "(02)");
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            fromStringBase(BigInteger.valueOf(10), ".");
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            fromStringBase(BigInteger.valueOf(10), "-.");
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
     public void testEquals() {
+        //noinspection EqualsWithItself
         assertTrue(ZERO.equals(ZERO));
+        //noinspection EqualsWithItself
         assertTrue(ONE.equals(ONE));
         assertTrue(read("4").get().equals(read("4").get()));
         assertTrue(read("-4").get().equals(read("-4").get()));

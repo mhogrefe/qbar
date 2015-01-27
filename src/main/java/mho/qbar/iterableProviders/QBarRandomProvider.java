@@ -15,6 +15,7 @@ import java.util.Random;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.ordering.Ordering.*;
 
+@SuppressWarnings("ConstantConditions")
 public class QBarRandomProvider extends RandomProvider implements QBarIterableProvider {
     public QBarRandomProvider() {
         super();
@@ -24,13 +25,22 @@ public class QBarRandomProvider extends RandomProvider implements QBarIterablePr
         super(generator);
     }
 
-    public @NotNull Iterable<Rational> range(int meanBitSize, @NotNull Rational a) {
+    public @NotNull Iterable<Rational> rangeUp(int meanBitSize, @NotNull Rational a) {
         return null;
     }
 
     @Override
-    public @NotNull Iterable<Rational> range(@NotNull Rational a) {
-        return range(BIG_INTEGER_MEAN_BIT_SIZE, a);
+    public @NotNull Iterable<Rational> rangeUp(@NotNull Rational a) {
+        return rangeUp(BIG_INTEGER_MEAN_BIT_SIZE, a);
+    }
+
+    public @NotNull Iterable<Rational> rangeDown(int meanBitSize, @NotNull Rational a) {
+        return null;
+    }
+
+    @Override
+    public @NotNull Iterable<Rational> rangeDown(@NotNull Rational a) {
+        return rangeDown(BIG_INTEGER_MEAN_BIT_SIZE, a);
     }
 
     public @NotNull Iterable<Rational> range(int meanBitSize, @NotNull Rational a, @NotNull Rational b) {
@@ -40,29 +50,6 @@ public class QBarRandomProvider extends RandomProvider implements QBarIterablePr
     @Override
     public @NotNull Iterable<Rational> range(@NotNull Rational a, @NotNull Rational b) {
         return range(BIG_INTEGER_MEAN_BIT_SIZE, a, b);
-    }
-
-    public @NotNull Iterable<Rational> rangeBy(int meanBitSize, @NotNull Rational a, @NotNull Rational i) {
-        return null;
-    }
-
-    @Override
-    public @NotNull Iterable<Rational> rangeBy(@NotNull Rational a, @NotNull Rational i) {
-        return rangeBy(BIG_INTEGER_MEAN_BIT_SIZE, a, i);
-    }
-
-    public @NotNull Iterable<Rational> rangeBy(
-            int meanBitSize,
-            @NotNull Rational a,
-            @NotNull Rational i,
-            @NotNull Rational b
-    ) {
-        return null;
-    }
-
-    @Override
-    public @NotNull Iterable<Rational> rangeBy(@NotNull Rational a, @NotNull Rational i, @NotNull Rational b) {
-        return rangeBy(BIG_INTEGER_MEAN_BIT_SIZE, a, i, b);
     }
 
     /**
@@ -83,17 +70,9 @@ public class QBarRandomProvider extends RandomProvider implements QBarIterablePr
      */
     public @NotNull Iterable<Rational> rationals(int meanBitSize) {
         return map(
-                p -> {
-                    assert p.a != null;
-                    assert p.b != null;
-                    return Rational.of(p.a, p.b);
-                },
+                p -> Rational.of(p.a, p.b),
                 filter(
-                        q -> {
-                            assert q.a != null;
-                            assert q.b != null;
-                            return q.a.gcd(q.b).equals(BigInteger.ONE);
-                        },
+                        q -> q.a.gcd(q.b).equals(BigInteger.ONE),
                         pairs(bigIntegers(meanBitSize / 2), positiveBigIntegers(meanBitSize / 2))
                 )
         );
@@ -135,17 +114,9 @@ public class QBarRandomProvider extends RandomProvider implements QBarIterablePr
      */
     public @NotNull Iterable<Rational> nonNegativeRationals(int meanBitSize) {
         return map(
-                p -> {
-                    assert p.a != null;
-                    assert p.b != null;
-                    return Rational.of(p.a, p.b);
-                },
+                p -> Rational.of(p.a, p.b),
                 filter(
-                        q -> {
-                            assert q.a != null;
-                            assert q.b != null;
-                            return q.a.gcd(q.b).equals(BigInteger.ONE);
-                        },
+                        q -> q.a.gcd(q.b).equals(BigInteger.ONE),
                         pairs(naturalBigIntegers(meanBitSize / 2), positiveBigIntegers(meanBitSize / 2))
                 )
         );
@@ -186,17 +157,9 @@ public class QBarRandomProvider extends RandomProvider implements QBarIterablePr
      */
     public @NotNull Iterable<Rational> positiveRationals(int meanBitSize) {
         return map(
-                p -> {
-                    assert p.a != null;
-                    assert p.b != null;
-                    return Rational.of(p.a, p.b);
-                },
+                p -> Rational.of(p.a, p.b),
                 filter(
-                        q -> {
-                            assert q.a != null;
-                            assert q.b != null;
-                            return q.a.gcd(q.b).equals(BigInteger.ONE);
-                        },
+                        q -> q.a.gcd(q.b).equals(BigInteger.ONE),
                         pairs(positiveBigIntegers(meanBitSize / 2), positiveBigIntegers(meanBitSize / 2))
                 )
         );
@@ -237,17 +200,9 @@ public class QBarRandomProvider extends RandomProvider implements QBarIterablePr
      */
     public @NotNull Iterable<Rational> negativeRationals(int meanBitSize) {
         return map(
-                p -> {
-                    assert p.a != null;
-                    assert p.b != null;
-                    return Rational.of(p.a, p.b);
-                },
+                p -> Rational.of(p.a, p.b),
                 filter(
-                        q -> {
-                            assert q.a != null;
-                            assert q.b != null;
-                            return q.a.gcd(q.b).equals(BigInteger.ONE);
-                        },
+                        q -> q.a.gcd(q.b).equals(BigInteger.ONE),
                         pairs(negativeBigIntegers(meanBitSize / 2), positiveBigIntegers(meanBitSize / 2))
                 )
         );
@@ -288,17 +243,9 @@ public class QBarRandomProvider extends RandomProvider implements QBarIterablePr
      */
     public @NotNull Iterable<Rational> nonNegativeRationalsLessThanOne(int meanBitSize) {
         return map(
-                p -> {
-                    assert p.a != null;
-                    assert p.b != null;
-                    return Rational.of(p.a, p.b);
-                },
+                p -> Rational.of(p.a, p.b),
                 filter(
-                        q -> {
-                            assert q.a != null;
-                            assert q.b != null;
-                            return lt(q.a, q.b) && q.a.gcd(q.b).equals(BigInteger.ONE);
-                        },
+                        q -> lt(q.a, q.b) && q.a.gcd(q.b).equals(BigInteger.ONE),
                         pairs(naturalBigIntegers(meanBitSize / 2), positiveBigIntegers(meanBitSize / 2))
                 )
         );
@@ -339,21 +286,7 @@ public class QBarRandomProvider extends RandomProvider implements QBarIterablePr
      * @return the {@code Iterable} described above.
      */
     public @NotNull Iterable<Interval> finitelyBoundedIntervals(int meanBitSize) {
-        return map(
-                p -> {
-                    assert p.a != null;
-                    assert p.b != null;
-                    return Interval.of(p.a, p.b);
-                },
-                filter(
-                        p -> {
-                            assert p.a != null;
-                            assert p.b != null;
-                            return le(p.a, p.b);
-                        },
-                        pairs(rationals(meanBitSize / 2))
-                )
-        );   
+        return map(p -> Interval.of(p.a, p.b), filter(p -> le(p.a, p.b), pairs(rationals(meanBitSize / 2))));
     }
 
     /**
@@ -394,19 +327,13 @@ public class QBarRandomProvider extends RandomProvider implements QBarIterablePr
     public @NotNull Iterable<Interval> intervals(int meanBitSize) {
         return map(
                 p -> {
-                    assert p.a != null;
-                    assert p.b != null;
                     if (!p.a.isPresent() && !p.b.isPresent()) return Interval.ALL;
                     if (!p.a.isPresent()) return Interval.lessThanOrEqualTo(p.b.get());
                     if (!p.b.isPresent()) return Interval.greaterThanOrEqualTo(p.a.get());
                     return Interval.of(p.a.get(), p.b.get());
                 },
                 filter(
-                        p -> {
-                            assert p.a != null;
-                            assert p.b != null;
-                            return !p.a.isPresent() || !p.b.isPresent() || le(p.a.get(), p.b.get());
-                        },
+                        p -> !p.a.isPresent() || !p.b.isPresent() || le(p.a.get(), p.b.get()),
                         (Iterable<Pair<Optional<Rational>, Optional<Rational>>>)
                                 pairs(optionals(rationals(meanBitSize / 2)))
                 )
@@ -485,6 +412,15 @@ public class QBarRandomProvider extends RandomProvider implements QBarIterablePr
 
     public @NotNull Iterable<RationalVector> rationalVectorsBySize(int elementMeanBitSize, int dimension) {
         return map(RationalVector::of, lists(dimension, rationals(elementMeanBitSize)));
+    }
+
+    @Override
+    public @NotNull Iterable<RationalVector> rationalVectorsAtLeast(int minDimension) {
+        return rationalVectorsBySizeAtLeast(BIG_INTEGER_MEAN_BIT_SIZE, minDimension);
+    }
+
+    public @NotNull Iterable<RationalVector> rationalVectorsBySizeAtLeast(int elementMeanBitSize, int minDimension) {
+        return map(RationalVector::of, listsAtLeast(minDimension, rationals(elementMeanBitSize)));
     }
 
     @Override

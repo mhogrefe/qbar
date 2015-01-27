@@ -5,6 +5,8 @@ import mho.wheels.ordering.comparators.ShortlexComparator;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.*;
 
 import static mho.wheels.iterables.IterableUtils.*;
@@ -17,6 +19,7 @@ import static mho.wheels.iterables.IterableUtils.*;
  *
  * <p>This class is immutable.
  */
+@SuppressWarnings("ConstantConditions")
 public class RationalVector implements Comparable<RationalVector>, Iterable<Rational> {
     /**
      * []
@@ -54,6 +57,8 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
      * <ul>
      *  <li>The result is finite and contains no nulls.</li>
      * </ul>
+     *
+     * Length is |{@code coordinates}|
      *
      * @return an {@code Iterator} over this {@code RationalVector}'s coordinates
      */
@@ -144,6 +149,8 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
      *  <li>The result is not null.</li>
      * </ul>
      *
+     * Length is |{@code coordinates}|
+     *
      * @param coordinates the vector's coordinates
      * @return the {@code RationalVector} with the specified coordinates
      */
@@ -162,6 +169,8 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
      *  <li>The result is a one-dimensional vector.</li>
      * </ul>
      *
+     * Length is 1
+     *
      * @param a the vector's coordinate
      * @return [a]
      */
@@ -172,10 +181,230 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
     /**
      * Returns this {@code RationalVector}'s dimension
      *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalVector}.</li>
+     *  <li>The result is non-negative.</li>
+     * </ul>
+     *
      * @return this {@code RationalVector}'s dimension
      */
     public int dimension() {
         return coordinates.size();
+    }
+
+    /**
+     * Creates the zero vector with a given dimension.
+     *
+     * <ul>
+     *  <li>{@code dimension} must be non-negative.</li>
+     *  <li>The result is a {@code RationalVector} all of whose coordinates are 0.</li>
+     * </ul>
+     *
+     * Length is {@code dimension}
+     *
+     * @param dimension the zero vector's dimension
+     * @return 0
+     */
+    public static @NotNull RationalVector zero(int dimension) {
+        if (dimension == 0) return ZERO_DIMENSIONAL;
+        if (dimension < 0)
+            throw new IllegalArgumentException("dimension must be non-negative");
+        return new RationalVector(toList(replicate(dimension, Rational.ZERO)));
+    }
+
+    /**
+     * Creates an identity vector; that is, a vector with a given dimension, all of whose coordinates are 0, except for
+     * a single coordinate which is 1. Identity matrices are made up of identity vectors. There is no identity vector
+     * of dimension 0.
+     *
+     * <ul>
+     *  <li>{@code dimension} must be positive.</li>
+     *  <li>{@code i} must be non-negative.</li>
+     *  <li>{@code i} must be less than {@code dimension}.</li>
+     *  <li>The result is a {@code RationalVector} with one coordinate equal to 1 and the others equal to 0.</li>
+     * </ul>
+     *
+     * Length is {@code dimension}
+     *
+     * @param dimension the vector's dimension
+     * @param i the index of the vector coordinate which is 1
+     * @return an identity vector
+     */
+    public static @NotNull RationalVector identity(int dimension, int i) {
+        if (dimension < 1)
+            throw new IllegalArgumentException("dimension must be positive");
+        if (i < 0)
+            throw new IllegalArgumentException("i must be non-negative");
+        if (i >= dimension)
+            throw new IllegalArgumentException("i must be less than dimension");
+        return new RationalVector(toList(insert(replicate(dimension - 1, Rational.ZERO), i, Rational.ONE)));
+    }
+
+    /**
+     * Determines whether {@code this} is a zero vector
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalVector}.</li>
+     *  <li>The result may be either {@code boolean}.</li>
+     * </ul>
+     *
+     * @return whether {@code this}=0
+     */
+    public boolean isZero() {
+        return all(r -> r == Rational.ZERO, coordinates);
+    }
+
+    /**
+     * Returns the negative of {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalVector}.</li>
+     *  <li>The result is non-null.</li>
+     * </ul>
+     *
+     * Length is |{@code coordinates}|
+     *
+     * @return –{@code this}
+     */
+    public @NotNull RationalVector negate() {
+        if (this == ZERO_DIMENSIONAL) return ZERO_DIMENSIONAL;
+        return new RationalVector(toList(map(Rational::negate, coordinates)));
+    }
+
+    /**
+     * Returns the sum of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalVector}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>{@code this} and {@code that} must have the same dimension.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param that the {@code RationalVector} added to {@code this}
+     * @return {@code this}+{@code that}
+     */
+    public @NotNull RationalVector add(@NotNull RationalVector that) {
+        if (coordinates.size() != that.coordinates.size())
+            throw new ArithmeticException("vectors must have same dimension");
+        if (this == ZERO_DIMENSIONAL) return ZERO_DIMENSIONAL;
+        return new RationalVector(toList(zipWith(p -> p.a.add(p.b), coordinates, that.coordinates)));
+    }
+
+    /**
+     * Returns the difference of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalVector}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>{@code this} and {@code that} must have the same dimension.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param that the {@code RationalVector} subtracted from {@code this}
+     * @return {@code this}–{@code that}
+     */
+    public @NotNull RationalVector subtract(@NotNull RationalVector that) {
+        return add(that.negate());
+    }
+
+    /**
+     * Returns the scalar product of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} can be any {@code RationalVector}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param that the {@code RationalVector} {@code this} is multiplied by
+     * @return {@code this}×{@code that}
+     */
+    public @NotNull RationalVector multiply(@NotNull Rational that) {
+        if (this == ZERO_DIMENSIONAL) return ZERO_DIMENSIONAL;
+        return new RationalVector(toList(map(r -> r.multiply(that), coordinates)));
+    }
+
+    /**
+     * Returns the scalar product of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} can be any {@code RationalVector}.</li>
+     *  <li>{@code that} may be any {@code int}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param that the {@code RationalVector} {@code this} is multiplied by
+     * @return {@code this}×{@code that}
+     */
+    public @NotNull RationalVector multiply(@NotNull BigInteger that) {
+        if (this == ZERO_DIMENSIONAL) return ZERO_DIMENSIONAL;
+        return new RationalVector(toList(map(r -> r.multiply(that), coordinates)));
+    }
+
+    /**
+     * Returns the scalar product of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} can be any {@code RationalVector}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param that the {@code RationalVector} {@code this} is multiplied by
+     * @return {@code this}×{@code that}
+     */
+    public @NotNull RationalVector multiply(int that) {
+        if (this == ZERO_DIMENSIONAL) return ZERO_DIMENSIONAL;
+        return new RationalVector(toList(map(r -> r.multiply(that), coordinates)));
+    }
+
+    /**
+     * Returns the scalar product of {@code this} and the inverse of {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} can be any {@code RationalVector}.</li>
+     *  <li>{@code that} cannot be null or zero.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param that the {@code RationalVector} {@code this} is multiplied by
+     * @return {@code this}/{@code that}
+     */
+    public @NotNull RationalVector divide(@NotNull Rational that) {
+        return multiply(that.invert());
+    }
+
+    /**
+     * Returns the scalar product of {@code this} and the inverse of {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} can be any {@code RationalVector}.</li>
+     *  <li>{@code that} cannot be null or zero.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param that the {@code RationalVector} {@code this} is multiplied by
+     * @return {@code this}/{@code that}
+     */
+    public @NotNull RationalVector divide(@NotNull BigInteger that) {
+        return multiply(Rational.of(BigInteger.ONE, that));
+    }
+
+    /**
+     * Returns the scalar product of {@code this} and the inverse of {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} can be any {@code RationalVector}.</li>
+     *  <li>{@code that} cannot be zero.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param that the {@code RationalVector} {@code this} is multiplied by
+     * @return {@code this}/{@code that}
+     */
+    public @NotNull RationalVector divide(int that) {
+        return multiply(Rational.of(1, that));
     }
 
     /**
@@ -192,9 +421,8 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
      */
     @Override
     public boolean equals(Object that) {
-        if (this == that) return true;
-        if (that == null || getClass() != that.getClass()) return false;
-        return coordinates.equals(((RationalVector) that).coordinates);
+        return this == that || that != null && getClass() == that.getClass() &&
+                coordinates.equals(((RationalVector) that).coordinates);
     }
 
     /**
@@ -271,7 +499,6 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
         Optional<Pair<List<Rational>, Integer>> op = Readers.findListIn(Rational::findIn, s);
         if (!op.isPresent()) return Optional.empty();
         Pair<List<Rational>, Integer> p = op.get();
-        assert p.a != null;
         if (p.a.isEmpty()) return Optional.of(new Pair<>(ZERO_DIMENSIONAL, p.b));
         return Optional.of(new Pair<>(new RationalVector(p.a), p.b));
     }
@@ -283,7 +510,7 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
      *  <li>{@code this} may be any {@code RationalVector}.</li>
      *  <li>The result is a {@code String} which begins with '[' and ends with ']', and the rest is a possibly-empty
      *  list of comma-separated {@code String}s, each of which validly represents a {@code Rational} (see
-     *  {@link Rational#toString}.</li>
+     *  {@link Rational#toString}).</li>
      * </ul>
      *
      * @return a {@code String} representation of {@code this}
