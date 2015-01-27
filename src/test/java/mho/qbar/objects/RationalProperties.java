@@ -30,6 +30,7 @@ public class RationalProperties {
     private static boolean USE_RANDOM;
     private static final String RATIONAL_CHARS = "-/0123456789";
     private static final int SMALL_LIMIT = 1000;
+    private static final int MEDIUM_LIMIT = 3000;
     private static int LIMIT;
 
     private static QBarIterableProvider P;
@@ -128,6 +129,7 @@ public class RationalProperties {
             compareImplementationsDigits();
             propertiesToStringBase_BigInteger();
             propertiesToStringBase_BigInteger_int();
+            propertiesFromStringBase();
             propertiesEquals();
             propertiesHashCode();
             propertiesCompareTo();
@@ -774,6 +776,7 @@ public class RationalProperties {
         }
         notMidpoints = filter(
                 p -> {
+                    //noinspection SimplifiableIfStatement
                     if (p.a.precision() <= 1 || p.b != p.a.precision() - 1) return false;
                     return !p.a.abs().unscaledValue().mod(BigInteger.valueOf(10)).equals(BigInteger.valueOf(5));
                 },
@@ -881,6 +884,7 @@ public class RationalProperties {
         }
         notMidpoints = filter(
                 p -> {
+                    //noinspection SimplifiableIfStatement
                     if (p.a.precision() <= 1 || p.b != p.a.precision() - 1) return false;
                     return !p.a.abs().unscaledValue().mod(BigInteger.valueOf(10)).equals(BigInteger.valueOf(5));
                 },
@@ -3035,6 +3039,7 @@ public class RationalProperties {
                 p -> {
                     if (!p.b.a.isEmpty() && head(p.b.a).equals(BigInteger.ZERO)) return false;
                     Pair<List<BigInteger>, List<BigInteger>> minimized = minimize(p.b.b, p.b.c);
+                    //noinspection SimplifiableIfStatement
                     if (!minimized.a.equals(p.b.b) || !minimized.b.equals(p.b.c)) return false;
                     return !p.b.c.equals(Arrays.asList(p.a.subtract(BigInteger.ONE)));
                 },
@@ -3368,6 +3373,85 @@ public class RationalProperties {
                 fail(t.toString());
             } catch (IllegalArgumentException ignored) {}
         }
+    }
+
+    private static void propertiesFromStringBase() {
+        initialize();
+        System.out.println("\t\ttesting fromStringBase(BigInteger, String) properties...");
+
+        Iterable<BigInteger> bases;
+        if (P instanceof ExhaustiveProvider) {
+            bases = P.rangeUp(BigInteger.valueOf(2));
+        } else {
+            bases = map(i -> BigInteger.valueOf(i + 2), ((RandomProvider) P).naturalIntegersGeometric(20));
+        }
+        Iterable<Pair<BigInteger, String>> ps = P.dependentPairs(
+                bases,
+                b -> {
+                    String chars = ".-";
+                    if (Ordering.le(b, BigInteger.valueOf(36))) {
+                        chars += charsToString(range('0', MathUtils.toDigit(b.intValueExact() - 1)));
+                    } else {
+                        chars += "()0123456789";
+                    }
+                    Iterable<Character> unfiltered;
+                    if (P instanceof ExhaustiveProvider) {
+                        unfiltered = fromString(chars);
+                    } else {
+                        unfiltered = ((RandomProvider) P).uniformSample(chars);
+                    }
+                    return filter(
+                            s -> {
+                                try {
+                                    fromStringBase(b, s);
+                                    return true;
+                                } catch (IllegalArgumentException e) {
+                                    return false;
+                                }
+                            },
+                            P.strings(unfiltered)
+                    );
+                }
+        );
+        for (Pair<BigInteger, String> p : take(MEDIUM_LIMIT, ps)) {
+            Rational r = fromStringBase(p.a, p.b);
+            validate(r);
+        }
+
+        ps = filter(
+                p -> {
+                    if (p.b.isEmpty()) return false;
+                    if (head(p.b) == '.' || last(p.b) == '.') return false;
+                    if (p.b.startsWith("-.")) return false;
+                    if (p.b.equals("0") || p.b.equals("(0)")) return true;
+                    if (head(p.b) == '0' && !p.b.startsWith("0.")) return false;
+                    if (p.b.startsWith("(0)") && !p.b.startsWith("(0).")) return false;
+                    if (p.b.startsWith("-0") || p.b.startsWith("-(0)")) return false;
+                    int decimalIndex = p.b.indexOf('.');
+                    if (decimalIndex != -1) {
+                        if (last(p.b) == '0' || p.b.endsWith("(0)")) return false;
+                    }
+                    return true;
+                },
+                ps
+        );
+        for (Pair<BigInteger, String> p : take(MEDIUM_LIMIT, ps)) {
+            Rational r = fromStringBase(p.a, p.b);
+            assertEquals(p.toString(), r.toStringBase(p.a), p.b);
+        }
+
+        for (BigInteger i : take(LIMIT, P.rangeUp(BigInteger.valueOf(2)))) {
+            assertTrue(i.toString(), fromStringBase(i, "") == ZERO);
+        }
+
+        for (Pair<BigInteger, String> p : take(SMALL_LIMIT, P.pairs(P.rangeDown(BigInteger.ONE), P.strings()))) {
+            try {
+                fromStringBase(p.a, p.b);
+                fail(p.toString());
+            } catch (IllegalArgumentException ignored) {}
+        }
+
+        //improper String left untested
     }
 
     private static void propertiesEquals() {

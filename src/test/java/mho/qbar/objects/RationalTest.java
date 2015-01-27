@@ -4090,6 +4090,13 @@ public class RationalTest {
 
     @Test
     public void testFromStringBase() {
+        aeq(fromStringBase(BigInteger.valueOf(2), ""), "0");
+        aeq(fromStringBase(BigInteger.valueOf(3), ""), "0");
+        aeq(fromStringBase(BigInteger.valueOf(4), ""), "0");
+        aeq(fromStringBase(BigInteger.valueOf(10), ""), "0");
+        aeq(fromStringBase(BigInteger.valueOf(16), ""), "0");
+        aeq(fromStringBase(BigInteger.valueOf(83), ""), "0");
+        aeq(fromStringBase(BigInteger.valueOf(100), ""), "0");
         aeq(fromStringBase(BigInteger.valueOf(2), "0"), "0");
         aeq(fromStringBase(BigInteger.valueOf(3), "0"), "0");
         aeq(fromStringBase(BigInteger.valueOf(4), "0"), "0");

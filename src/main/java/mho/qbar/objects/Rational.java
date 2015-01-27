@@ -1954,6 +1954,9 @@ public final class Rational implements Comparable<Rational> {
      * @return the {@code Rational} represented by {@code s}
      */
     public static @NotNull Rational fromStringBase(@NotNull BigInteger base, @NotNull String s) {
+        if (lt(base, BigInteger.valueOf(2)))
+            throw new IllegalArgumentException("base must be at least 2");
+        if (s.isEmpty()) return ZERO;
         try {
             if (s.equals("-") || s.equals(".") || s.equals("-."))
                 throw new IllegalArgumentException("invalid String");
