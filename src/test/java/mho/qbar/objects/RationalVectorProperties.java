@@ -15,8 +15,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 
-import static mho.qbar.objects.Rational.ONE;
-import static mho.qbar.objects.Rational.ZERO;
 import static mho.qbar.objects.RationalVector.*;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.ordering.Ordering.*;
@@ -254,8 +252,8 @@ public class RationalVectorProperties {
             validate(identity);
             assertEquals(p.toString(), identity.dimension(), p.a.intValue());
             List<Rational> sortedCoordinates = reverse(sort(identity));
-            assertTrue(p.toString(), head(sortedCoordinates) == ONE);
-            assertTrue(p.toString(), all(x -> x == ZERO, tail(sortedCoordinates)));
+            assertTrue(p.toString(), head(sortedCoordinates) == Rational.ONE);
+            assertTrue(p.toString(), all(x -> x == Rational.ZERO, tail(sortedCoordinates)));
         }
 
         for (Pair<Integer, Integer> p : take(LIMIT, P.pairs(P.rangeDown(0), P.integers()))) {
@@ -301,7 +299,7 @@ public class RationalVectorProperties {
             assertTrue(v.add(negativeV).isZero());
         }
 
-        for (RationalVector v : take(LIMIT, filter(w -> any(x -> x != ZERO, w), P.rationalVectors()))) {
+        for (RationalVector v : take(LIMIT, filter(w -> any(x -> x != Rational.ZERO, w), P.rationalVectors()))) {
             RationalVector negativeV = v.negate();
             assertNotEquals(v.toString(), v, negativeV);
         }
@@ -390,6 +388,40 @@ public class RationalVectorProperties {
             assertEquals(v.toString(), v.subtract(zero(v.dimension())), v);
             assertTrue(v.toString(), v.subtract(v).isZero());
         }
+    }
+
+    private static void propertiesMultiply_Rational() {
+        initialize();
+        System.out.println("\t\ttesting multiply(Rational) properties...");
+
+        for (Pair<RationalVector, Rational> p : take(LIMIT, P.pairs(P.rationalVectors(), P.rationals()))) {
+            RationalVector v = p.a.multiply(p.b);
+            validate(v);
+            assertEquals(p.toString(), v, p.a.divide(p.b.invert()));
+        }
+
+        Iterable<Pair<RationalVector, Rational>> ps = P.pairs(
+                P.rationalVectors(),
+                filter(r -> r != Rational.ZERO, P.rationals())
+        );
+        for (Pair<RationalVector, Rational> p : take(LIMIT, ps)) {
+            assertEquals(p.toString(), p.a.multiply(p.b), p.a.divide(p.b.invert()));
+        }
+
+        for (RationalVector v : take(LIMIT, P.rationalVectors())) {
+            assertEquals(v.toString(), v, v.multiply(Rational.ONE));
+            assertTrue(v.toString(), v.multiply(Rational.ZERO).isZero());
+        }
+
+        for (Rational r : take(LIMIT, P.rationals())) {
+            assertTrue(ZERO_DIMENSIONAL.multiply(r) == ZERO_DIMENSIONAL);
+        }
+
+        for (Pair<RationalVector, Rational> p : take(LIMIT, P.pairs(P.rationalVectors(1), P.rationals()))) {
+            assertEquals(p.toString(), p.a.multiply(p.b), of(p.b).multiply(p.a.x()));
+        }
+
+        //todo zero and failure
     }
 
     private static void propertiesEquals() {
