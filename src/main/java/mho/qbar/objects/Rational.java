@@ -348,6 +348,7 @@ public final class Rational implements Comparable<Rational> {
      * @return the {@code Rational} corresponding to {@code f}, or null if {@code f} is {@code Infinity},
      * {@code -Infinity}, or {@code NaN}
      */
+    @SuppressWarnings("JavaDoc")
     public static @Nullable Rational ofExact(float f) {
         if (f == 0.0f) return ZERO;
         if (f == 1.0f) return ONE;
@@ -385,6 +386,7 @@ public final class Rational implements Comparable<Rational> {
      * @return the {@code Rational} corresponding to {@code d}, or null if {@code d} is {@code Infinity},
      * {@code -Infinity}, or {@code NaN}
      */
+    @SuppressWarnings("JavaDoc")
     public static @Nullable Rational ofExact(double d) {
         if (d == 0.0) return ZERO;
         if (d == 1.0) return ONE;
@@ -1159,6 +1161,7 @@ public final class Rational implements Comparable<Rational> {
      *
      * @return sgn({@code this})
      */
+    @SuppressWarnings("JavaDoc")
     public int signum() {
         return numerator.signum();
     }

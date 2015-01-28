@@ -72,19 +72,20 @@ public class IntervalDemos {
             System.out.println("of(" + r + ") = " + Interval.of(r));
         }
     }
-//
-//    public static void isFinitelyBoundedDemo() {
-//        for (Interval a : Interval.intervals().iterate(limit)) {
-//            System.out.println("isFinitelyBounded(" + a + ") = " + a.isFinitelyBounded());
-//        }
-//    }
-//
-//    public static void containsDemo() {
-//        Generator<Pair<Interval, Rational>> g = new PairGenerator<>(Interval.intervals(), Rational.rationals());
-//        for (Pair<Interval, Rational> p : g.iterate(limit)) {
-//            System.out.println("contains(" + p.fst + ", " + p.snd + ") = " + p.fst.contains(p.snd));
-//        }
-//    }
+
+    public static void demoIsFinitelyBounded() {
+        initialize();
+        for (Interval a : take(LIMIT, P.intervals())) {
+            System.out.println(a + " is " + (a.isFinitelyBounded() ? "" : "not ") + "finitely bounded");
+        }
+    }
+
+    public static void demoContains() {
+        initialize();
+        for (Pair<Interval, Rational> p : take(LIMIT, P.pairs(P.intervals(), P.rationals()))) {
+            System.out.println(p.a + (p.a.contains(p.b) ? " contains " : " does not contain ") + p.b);
+        }
+    }
 //
 //    public static void diameterDemo() {
 //        for (Interval a : Interval.intervals().iterate(limit)) {

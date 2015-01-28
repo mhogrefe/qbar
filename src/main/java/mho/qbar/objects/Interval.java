@@ -128,6 +128,7 @@ public final class Interval implements Comparable<Interval> {
      * @param upper the upper bound
      * @return (–∞, {@code upper}]
      */
+    @SuppressWarnings("JavaDoc")
     public static @NotNull Interval lessThanOrEqualTo(@NotNull Rational upper) {
         return new Interval(null, upper);
     }
@@ -222,6 +223,7 @@ public final class Interval implements Comparable<Interval> {
      * @param that the {@code Interval} to be hulled with {@code this}
      * @return Conv({@code this}, {@code that})
      */
+    @SuppressWarnings("JavaDoc")
     public @NotNull Interval convexHull(@NotNull Interval that) {
         return new Interval(
                 lower == null || that.lower == null ? null : min(lower, that.lower),
@@ -241,6 +243,7 @@ public final class Interval implements Comparable<Interval> {
      * @param as the {@code Interval}s.
      * @return Conv({@code as})
      */
+    @SuppressWarnings("JavaDoc")
     public static @NotNull Interval convexHull(@NotNull SortedSet<Interval> as) {
         if (as.isEmpty())
             throw new IllegalArgumentException("cannot take convex hull of empty set");
