@@ -200,7 +200,7 @@ public final class Interval implements Comparable<Interval> {
      *
      * <ul>
      *  <li>{@code this} may be any {@code Interval}.</li>
-     *  <li>The result may be null or an {@code Optional} containing a non-negative {@code Rational}.</li>
+     *  <li>The result may be empty, or it may contain a non-negative {@code Rational}.</li>
      * </ul>
      *
      * @return the diameter of {@code this}
@@ -309,7 +309,7 @@ public final class Interval implements Comparable<Interval> {
      * @return {@code this}∩{@code that}=∅
      */
     public boolean disjoint(@NotNull Interval that) {
-        return intersection(that) == null;
+        return !intersection(that).isPresent();
     }
 
     /**
@@ -324,7 +324,7 @@ public final class Interval implements Comparable<Interval> {
      * @param as a set of {@code Interval}s
      * @return a set of disjoint {@code Interval}s whose union is the same as the union of {@code as}
      */
-    public static SortedSet<Interval> makeDisjoint(SortedSet<Interval> as) {
+    public static @NotNull SortedSet<Interval> makeDisjoint(@NotNull SortedSet<Interval> as) {
         SortedSet<Interval> simplified = new TreeSet<>();
         Interval acc = null;
         for (Interval a : as) {
@@ -371,8 +371,7 @@ public final class Interval implements Comparable<Interval> {
      * @param x the point at which {@code this} is split.
      * @return the two pieces of {@code this}.
      */
-    public @NotNull
-    Pair<Interval, Interval> split(@NotNull Rational x) {
+    public @NotNull Pair<Interval, Interval> split(@NotNull Rational x) {
         if (!contains(x))
             throw new ArithmeticException("interval does not contain specified split point");
         return new Pair<>(new Interval(lower, x), new Interval(x, upper));

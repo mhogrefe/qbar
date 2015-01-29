@@ -48,6 +48,8 @@ public class IntervalProperties {
             propertiesLessThanOrEqualTo();
             propertiesGreaterThanOrEqualTo();
             propertiesOf_Rational();
+            propertiesIsFinitelyBounded();
+            propertiesContains();
             propertiesEquals();
             propertiesHashCode();
             propertiesCompareTo();
@@ -125,6 +127,38 @@ public class IntervalProperties {
             validate(a);
             assertTrue(a.toString(), a.isFinitelyBounded());
             assertEquals(a.toString(), a.diameter().get(), Rational.ZERO);
+        }
+    }
+
+    private static void propertiesIsFinitelyBounded() {
+        initialize();
+        System.out.println("\t\ttesting isFinitelyBounded() properties...");
+
+        for (Interval a : take(LIMIT, P.intervals())) {
+            a.isFinitelyBounded();
+        }
+
+        for (Interval a : take(LIMIT, P.finitelyBoundedIntervals())) {
+            assertTrue(a.toString(), a.isFinitelyBounded());
+        }
+
+        for (Rational r : take(LIMIT, P.rationals())) {
+            assertFalse(r.toString(), lessThanOrEqualTo(r).isFinitelyBounded());
+            assertFalse(r.toString(), greaterThanOrEqualTo(r).isFinitelyBounded());
+        }
+    }
+
+    private static void propertiesContains() {
+        initialize();
+        System.out.println("\t\ttesting contains(Rational) properties...");
+
+        for (Pair<Interval, Rational> p : take(LIMIT, P.pairs(P.intervals(), P.rationals()))) {
+            p.a.contains(p.b);
+        }
+
+        for (Rational r : take(LIMIT, P.rationals())) {
+            assertTrue(r.toString(), ALL.contains(r));
+            assertTrue(r.toString(), of(r).contains(r));
         }
     }
 
