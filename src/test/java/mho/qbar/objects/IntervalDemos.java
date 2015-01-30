@@ -80,19 +80,27 @@ public class IntervalDemos {
         }
     }
 
-    public static void demoContains() {
+    public static void demoContains_Rational() {
         initialize();
         for (Pair<Interval, Rational> p : take(LIMIT, P.pairs(P.intervals(), P.rationals()))) {
             System.out.println(p.a + (p.a.contains(p.b) ? " contains " : " does not contain ") + p.b);
         }
     }
-//
-//    public static void diameterDemo() {
-//        for (Interval a : Interval.intervals().iterate(limit)) {
-//            System.out.println("diameter(" + a + ") = " + a.diameter());
-//        }
-//    }
-//
+
+    public static void demoContains_Interval() {
+        initialize();
+        for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
+            System.out.println(p.a + (p.a.contains(p.b) ? " contains " : " does not contain ") + p.b);
+        }
+    }
+
+    public static void demoDiameter() {
+        initialize();
+        for (Interval a : take(LIMIT, P.intervals())) {
+            System.out.println("diameter(" + a + ") = " + a.diameter());
+        }
+    }
+
 //    public static void convexHullIntervalIntervalDemo() {
 //        Generator<Interval> ig = Interval.intervals();
 //        for (Pair<Interval, Interval> p : new SamePairGenerator<>(Interval.intervals()).iterate(limit)) {
