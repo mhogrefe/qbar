@@ -176,7 +176,7 @@ public final class Interval implements Comparable<Interval> {
     }
 
     /**
-     * Determines whether {@code this} contains {@code x}.
+     * Determines whether {@code this} contains a {@code Rational}.
      *
      * <ul>
      *  <li>{@code this} may be any {@code Interval}.</li>
@@ -192,6 +192,24 @@ public final class Interval implements Comparable<Interval> {
         if (lower == null) return le(x, upper);
         if (upper == null) return ge(x, lower);
         return ge(x, lower) && le(x, upper);
+    }
+
+    /**
+     * Determines whether {@code this} contains (is a superset of) an {@code Interval}. Every {@code Interval} contains
+     * itself.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Interval}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>The result may be either {@code boolean}.</li>
+     * </ul>
+     *
+     * @param that the test {@code Interval}
+     * @return {@code that}⊆{@code this}
+     */
+    public boolean contains(@NotNull Interval that) {
+        return (lower == null || (that.lower != null && ge(that.lower, lower))) &&
+               (upper == null || (that.upper != null && le(that.upper, upper)));
     }
 
     /**

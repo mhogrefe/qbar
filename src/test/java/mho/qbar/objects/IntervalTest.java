@@ -75,7 +75,7 @@ public class IntervalTest {
     }
 
     @Test
-    public void testContains() {
+    public void testContains_Rational() {
         assertTrue(ZERO.contains(Rational.ZERO));
         assertFalse(ZERO.contains(Rational.ONE));
         assertTrue(ONE.contains(Rational.ONE));
@@ -103,6 +103,29 @@ public class IntervalTest {
         assertTrue(read("[-6, Infinity)").get().contains(Rational.read("-4").get()));
         assertTrue(read("[-6, Infinity)").get().contains(Rational.read("5").get()));
         assertFalse(read("[-6, Infinity)").get().contains(Rational.read("-8").get()));
+    }
+
+    @Test
+    public void testContains_Interval() {
+        assertTrue(ZERO.contains(ZERO));
+        assertTrue(ONE.contains(ONE));
+        assertTrue(ALL.contains(ALL));
+        assertTrue(ALL.contains(ZERO));
+        assertTrue(ALL.contains(ONE));
+        assertFalse(ZERO.contains(ONE));
+        assertFalse(ZERO.contains(ALL));
+        assertFalse(ONE.contains(ZERO));
+        assertFalse(ONE.contains(ALL));
+        assertTrue(read("[1, 4]").get().contains(read("[2, 3]").get()));
+        assertTrue(read("[1, 4]").get().contains(read("[1, 4]").get()));
+        assertFalse(read("[1, 4]").get().contains(read("[0, 2]").get()));
+        assertTrue(read("(-Infinity, 1/2]").get().contains(read("(-Infinity, 0]").get()));
+        assertTrue(read("(-Infinity, 1/2]").get().contains(read("[0, 0]").get()));
+        assertFalse(read("(-Infinity, 1/2]").get().contains(read("(-Infinity, 1]").get()));
+        assertTrue(read("[1/2, Infinity)").get().contains(read("[1, Infinity)").get()));
+        assertTrue(read("[1/2, Infinity)").get().contains(read("[1, 1]").get()));
+        assertFalse(read("[1/2, Infinity)").get().contains(read("[0, Infinity)").get()));
+        assertFalse(read("[1/2, Infinity)").get().contains(read("(-Infinity, 1/2]").get()));
     }
 
     @Test
