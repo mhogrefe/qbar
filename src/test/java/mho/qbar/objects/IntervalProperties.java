@@ -49,7 +49,9 @@ public class IntervalProperties {
             propertiesGreaterThanOrEqualTo();
             propertiesOf_Rational();
             propertiesIsFinitelyBounded();
-            propertiesContains();
+            propertiesContains_Rational();
+            propertiesContains_Interval();
+            propertiesDiameter();
             propertiesEquals();
             propertiesHashCode();
             propertiesCompareTo();
@@ -148,7 +150,7 @@ public class IntervalProperties {
         }
     }
 
-    private static void propertiesContains() {
+    private static void propertiesContains_Rational() {
         initialize();
         System.out.println("\t\ttesting contains(Rational) properties...");
 
@@ -159,6 +161,56 @@ public class IntervalProperties {
         for (Rational r : take(LIMIT, P.rationals())) {
             assertTrue(r.toString(), ALL.contains(r));
             assertTrue(r.toString(), of(r).contains(r));
+        }
+
+        for (Pair<Rational, Rational> p : take(LIMIT, filter(q -> !q.a.equals(q.b), P.pairs(P.rationals())))) {
+            assertFalse(p.toString(), of(p.a).contains(p.b));
+        }
+    }
+
+    private static void propertiesContains_Interval() {
+        initialize();
+        System.out.println("\t\ttesting contains(Interval) properties...");
+
+        for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
+            p.a.contains(p.b);
+        }
+
+        for (Interval a : take(LIMIT, P.intervals())) {
+            assertTrue(a.toString(), ALL.contains(a));
+            assertTrue(a.toString(), a.contains(a));
+        }
+
+        for (Pair<Interval, Interval> p : take(LIMIT, filter(q -> q.a.contains(q.b), P.pairs(P.intervals())))) {
+            Optional<Rational> ad = p.a.diameter();
+            Optional<Rational> bd = p.b.diameter();
+            assertTrue(p.toString(), !ad.isPresent() || le(bd.get(), ad.get()));
+        }
+
+        Iterable<Pair<Rational, Interval>> ps = filter(
+                q -> !q.b.equals(of(q.a)),
+                P.pairs(P.rationals(), P.intervals())
+        );
+        for (Pair<Rational, Interval> p : take(LIMIT, ps)) {
+            assertFalse(p.toString(), of(p.a).contains(p.b));
+        }
+    }
+
+    private static void propertiesDiameter() {
+        initialize();
+        System.out.println("\t\ttesting diameter() properties...");
+
+        for (Interval a : take(LIMIT, P.intervals())) {
+            a.diameter();
+        }
+
+        for (Interval a : take(LIMIT, P.finitelyBoundedIntervals())) {
+            assertTrue(a.toString(), a.diameter().get().signum() != -1);
+        }
+
+        for (Rational r : take(LIMIT, P.rationals())) {
+            assertFalse(r.toString(), lessThanOrEqualTo(r).diameter().isPresent());
+            assertFalse(r.toString(), greaterThanOrEqualTo(r).diameter().isPresent());
         }
     }
 
