@@ -1936,8 +1936,9 @@ public final class Rational implements Comparable<Rational> {
     /**
      * Converts a {@code String} written in some base to a {@code Rational}. If the base is 36 or less, the digits are
      * '0' through '9' followed by 'A' through 'Z'. If the base is greater than 36, the digits are written in decimal
-     * and each digit is surrounded by parentheses. The empty {@code String} represents 0. Leading zeroes are
-     * permitted. If the {@code String} is invalid, an exception is thrown.
+     * and each digit is surrounded by parentheses (in this case, the {@code String} representing the digit cannot be
+     * empty and no leading zeroes are allowed unless the digit is 0). The empty {@code String} represents 0. Leading
+     * zeroes are permitted. If the {@code String} is invalid, an exception is thrown.
      *
      * <ul>
      *  <li>{@code base} must be at least 2.</li>
