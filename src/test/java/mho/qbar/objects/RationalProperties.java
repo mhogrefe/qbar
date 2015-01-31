@@ -2410,10 +2410,7 @@ public class RationalProperties {
     }
 
     private static @NotNull Rational pow_simplest(@NotNull Rational a, int p) {
-        Rational result = ONE;
-        for (int i = 0; i < Math.abs(p); i++) {
-            result = result.multiply(a);
-        }
+        Rational result = product(replicate(Math.abs(p), a));
         return p < 0 ? result.invert() : result;
     }
 

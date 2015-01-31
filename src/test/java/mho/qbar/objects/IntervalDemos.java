@@ -109,7 +109,7 @@ public class IntervalDemos {
         }
     }
 
-    public static void demoConvexHull_Iterable_Interval() {
+    public static void demoConvexHull_List_Interval() {
         initialize();
         for (List<Interval> as : take(LIMIT, P.listsAtLeast(1, P.intervals()))) {
             String listString = tail(init(as.toString()));

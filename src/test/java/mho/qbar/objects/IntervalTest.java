@@ -197,7 +197,7 @@ public class IntervalTest {
     }
 
     @Test
-    public void testConvexHull_Iterable_Interval() {
+    public void testConvexHull_List_Interval() {
         aeq(convexHull(readIntervalList("[[0, 0]]").get()), "[0, 0]");
         aeq(convexHull(readIntervalList("[[-1, 2]]").get()), "[-1, 2]");
         aeq(convexHull(readIntervalList("[[-1, Infinity)]").get()), "[-1, Infinity)");
@@ -213,7 +213,7 @@ public class IntervalTest {
         try {
             convexHull(readIntervalList("[]").get());
             fail();
-        } catch (IllegalArgumentException ignored) {}
+        } catch (IllegalStateException ignored) {}
         try {
             convexHull(readIntervalListWithNulls("[[1, 2], null]").get());
             fail();
