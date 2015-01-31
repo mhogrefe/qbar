@@ -51,8 +51,7 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
     }
 
     /**
-     * Returns an {@code Iterator} over this {@code RationalVector}'s coordinates. This method makes a defensive copy
-     * of {@code coordinates}; Removing from the {@code Iterator} will not affect the {@code RationalVector}.
+     * Returns an {@code Iterator} over this {@code RationalVector}'s coordinates. Does not support removal.
      *
      * <ul>
      *  <li>The result is finite and contains no nulls.</li>
@@ -64,7 +63,24 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
      */
     @Override
     public @NotNull Iterator<Rational> iterator() {
-        return toList(coordinates).iterator();
+        return new Iterator<Rational>() {
+            private int i = 0;
+
+            @Override
+            public boolean hasNext() {
+                return i < coordinates.size();
+            }
+
+            @Override
+            public Rational next() {
+                return coordinates.get(i++);
+            }
+
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException("cannot remove from this iterator");
+            }
+        };
     }
 
     /**

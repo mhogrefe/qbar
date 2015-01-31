@@ -80,6 +80,9 @@ public class RationalVectorProperties {
             List<Rational> rs = toList(v);
             assertTrue(v.toString(), all(r -> r != null, rs));
             assertEquals(v.toString(), of(toList(v)), v);
+            try {
+                v.iterator().remove();
+            } catch (UnsupportedOperationException ignored) {}
         }
     }
 
