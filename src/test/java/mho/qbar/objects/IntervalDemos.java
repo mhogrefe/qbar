@@ -117,18 +117,20 @@ public class IntervalDemos {
         }
     }
 
-//    public static void intersectionDemo() {
-//        for (Pair<Interval, Interval> p : new SamePairGenerator<>(Interval.intervals()).iterate(limit)) {
-//            System.out.println("intersection(" + p.fst + ", " + p.snd + ") = " + Interval.intersection(p.fst, p.snd));
-//        }
-//    }
-//
-//    public static void disjointDemo() {
-//        for (Pair<Interval, Interval> p : new SamePairGenerator<>(Interval.intervals()).iterate(limit)) {
-//            System.out.println("disjoint(" + p.fst + ", " + p.snd + ") = " + Interval.disjoint(p.fst, p.snd));
-//        }
-//    }
-//
+    public static void demoIntersection() {
+        initialize();
+        for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
+            System.out.println("intersection(" + p.a + ", " + p.b + ") = " + p.a.intersection(p.b));
+        }
+    }
+
+    public static void demoDisjoint() {
+        initialize();
+        for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
+            System.out.println(p.a + " and " + p.b + " are " + (p.a.disjoint(p.b) ? "" : "not ") + "disjoint");
+        }
+    }
+
 //    public static void makeDisjointDemo() {
 //        for (SortedSet<Interval> as : SetGenerator.sorted(Interval.intervals(), null).iterate(limit)) {
 //            String setString = as.toString();
