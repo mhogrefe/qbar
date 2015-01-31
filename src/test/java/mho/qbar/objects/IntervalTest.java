@@ -221,6 +221,44 @@ public class IntervalTest {
     }
 
     @Test
+    public void testIntersection() {
+        aeq(ZERO.intersection(ZERO).get(), "[0, 0]");
+        aeq(ONE.intersection(ONE).get(), "[1, 1]");
+        aeq(ALL.intersection(ALL).get(), "(-Infinity, Infinity)");
+        aeq(ALL.intersection(ZERO).get(), "[0, 0]");
+        aeq(ALL.intersection(ONE).get(), "[1, 1]");
+        assertFalse(ZERO.intersection(ONE).isPresent());
+        aeq(read("[1, 3]").get().intersection(read("[2, 4]").get()).get(), "[2, 3]");
+        aeq(read("[1, 2]").get().intersection(read("[2, 4]").get()).get(), "[2, 2]");
+        assertFalse(read("[1, 2]").get().intersection(read("[3, 4]").get()).isPresent());
+        aeq(ALL.intersection(read("[1, 2]").get()).get(), "[1, 2]");
+        aeq(read("(-Infinity, 2]").get().intersection(read("[1, 3]").get()).get(), "[1, 2]");
+        aeq(read("(-Infinity, 2]").get().intersection(read("(-Infinity, 3]").get()).get(), "(-Infinity, 2]");
+        aeq(read("[2, Infinity)").get().intersection(read("[1, 3]").get()).get(), "[2, 3]");
+        aeq(read("[2, Infinity)").get().intersection(read("[3, Infinity)").get()).get(), "[3, Infinity)");
+        aeq(read("[2, Infinity)").get().intersection(read("(-Infinity, 3]").get()).get(), "[2, 3]");
+        assertFalse(read("[2, Infinity)").get().intersection(read("(-Infinity, 1]").get()).isPresent());
+    }
+
+    @Test
+    public void testDisjoint() {
+        assertFalse(ZERO.disjoint(ZERO));
+        assertFalse(ONE.disjoint(ONE));
+        assertFalse(ALL.disjoint(ALL));
+        assertFalse(ALL.disjoint(ZERO));
+        assertFalse(ALL.disjoint(ONE));
+        assertTrue(ZERO.disjoint(ONE));
+        assertFalse(read("[1, 3]").get().disjoint(read("[2, 4]").get()));
+        assertTrue(read("[1, 2]").get().disjoint(read("[3, 4]").get()));
+        assertFalse(read("(-Infinity, 2]").get().disjoint(read("[1, 3]").get()));
+        assertTrue(read("(-Infinity, 2]").get().disjoint(read("[3, 4]").get()));
+        assertFalse(read("[2, Infinity)").get().disjoint(read("[1, 3]").get()));
+        assertTrue(read("[2, Infinity)").get().disjoint(read("[0, 1]").get()));
+        assertTrue(read("[2, Infinity)").get().disjoint(read("(-Infinity, 1]").get()));
+        assertFalse(read("[2, Infinity)").get().disjoint(read("(-Infinity, 3]").get()));
+    }
+
+    @Test
     public void testEquals() {
         //noinspection EqualsWithItself
         assertTrue(ZERO.equals(ZERO));

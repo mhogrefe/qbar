@@ -5,6 +5,7 @@ import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.iterableProviders.QBarRandomProvider;
 import mho.wheels.iterables.ExhaustiveProvider;
 import mho.wheels.iterables.RandomProvider;
+import mho.wheels.math.Combinatorics;
 import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
 import org.jetbrains.annotations.NotNull;
@@ -224,6 +225,7 @@ public class IntervalProperties {
 
         for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
             Interval c = p.a.convexHull(p.b);
+            assertEquals(p.toString(), c, p.b.convexHull(p.a));
             validate(c);
         }
 
@@ -295,6 +297,14 @@ public class IntervalProperties {
             validate(c);
         }
 
+        Iterable<Pair<List<Interval>, List<Interval>>> ps = P.dependentPairsLogarithmic(
+                P.listsAtLeast(1, P.intervals()),
+                Combinatorics::permutationsIncreasing
+        );
+        for (Pair<List<Interval>, List<Interval>> p : take(LIMIT, ps)) {
+            assertEquals(p.toString(), convexHull(p.a), convexHull(p.b));
+        }
+
         for (Interval a : take(LIMIT, P.intervals())) {
             assertEquals(a.toString(), convexHull(Arrays.asList(a)), a);
         }
@@ -303,26 +313,26 @@ public class IntervalProperties {
             assertEquals(p.toString(), convexHull(Arrays.asList(p.a, p.b)), p.a.convexHull(p.b));
         }
 
-        Iterable<Pair<Interval, Integer>> ps;
+        Iterable<Pair<Interval, Integer>> ps2;
         if (P instanceof ExhaustiveProvider) {
-            ps = ((QBarExhaustiveProvider) P).pairsLogarithmicOrder(P.intervals(), P.positiveIntegers());
+            ps2 = ((QBarExhaustiveProvider) P).pairsLogarithmicOrder(P.intervals(), P.positiveIntegers());
         } else {
-            ps = P.pairs(P.intervals(), ((RandomProvider) P).positiveIntegersGeometric(20));
+            ps2 = P.pairs(P.intervals(), ((RandomProvider) P).positiveIntegersGeometric(20));
         }
-        for (Pair<Interval, Integer> p : take(LIMIT, ps)) {
+        for (Pair<Interval, Integer> p : take(LIMIT, ps2)) {
             assertEquals(p.toString(), convexHull(toList(replicate(p.b, p.a))), p.a);
         }
 
-        Iterable<Pair<List<Interval>, Integer>> ps2 = P.dependentPairsLogarithmic(
+        Iterable<Pair<List<Interval>, Integer>> ps3 = P.dependentPairsLogarithmic(
                 P.lists(P.intervals()),
                 as -> P.range(0, as.size())
         );
-        for (Pair<List<Interval>, Integer> p : take(LIMIT, ps2)) {
+        for (Pair<List<Interval>, Integer> p : take(LIMIT, ps3)) {
             List<Interval> as = toList(insert(p.a, p.b, ALL));
             assertEquals(p.toString(), convexHull(as), ALL);
         }
 
-        for (Pair<List<Interval>, Integer> p : take(LIMIT, ps2)) {
+        for (Pair<List<Interval>, Integer> p : take(LIMIT, ps3)) {
             List<Interval> as = toList(insert(p.a, p.b, null));
             try {
                 convexHull(as);
