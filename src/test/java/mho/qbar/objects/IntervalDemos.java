@@ -6,6 +6,7 @@ import mho.qbar.iterableProviders.QBarRandomProvider;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 
+import java.util.List;
 import java.util.Random;
 
 import static mho.qbar.objects.Interval.*;
@@ -101,24 +102,21 @@ public class IntervalDemos {
         }
     }
 
-//    public static void convexHullIntervalIntervalDemo() {
-//        Generator<Interval> ig = Interval.intervals();
-//        for (Pair<Interval, Interval> p : new SamePairGenerator<>(Interval.intervals()).iterate(limit)) {
-//            System.out.println("Conv(" + p.fst + ", " + p.snd + ") = " + Interval.convexHull(p.fst, p.snd));
-//        }
-//    }
-//
-//    public static void convexHullIntervalSetDemo() {
-//        Generator<SortedSet<Interval>> g = new FilteredGenerator<SortedSet<Interval>>(
-//                SetGenerator.sorted(Interval.intervals(), null),
-//                as -> !as.isEmpty());
-//        for (SortedSet<Interval> as : g.iterate(limit)) {
-//            String setString = as.toString();
-//            setString = setString.substring(1, setString.length() - 1);
-//            System.out.println("Conv(" + setString + ") = " + Interval.convexHull(as));
-//        }
-//    }
-//
+    public static void demoConvexHull_Interval() {
+        initialize();
+        for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
+            System.out.println("convexHull(" + p.a + ", " + p.b + ") = " + p.a.convexHull(p.b));
+        }
+    }
+
+    public static void demoConvexHull_Iterable_Interval() {
+        initialize();
+        for (List<Interval> as : take(LIMIT, P.listsAtLeast(1, P.intervals()))) {
+            String listString = tail(init(as.toString()));
+            System.out.println("convexHull(" + listString + ") = " + convexHull(as));
+        }
+    }
+
 //    public static void intersectionDemo() {
 //        for (Pair<Interval, Interval> p : new SamePairGenerator<>(Interval.intervals()).iterate(limit)) {
 //            System.out.println("intersection(" + p.fst + ", " + p.snd + ") = " + Interval.intersection(p.fst, p.snd));

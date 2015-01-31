@@ -144,7 +144,7 @@ public class IntervalTest {
     }
 
     @Test
-    public void testConvexHull_Interval_Interval() {
+    public void testConvexHull_Interval() {
         aeq(ZERO.convexHull(ZERO), "[0, 0]");
         aeq(ZERO.convexHull(ONE), "[0, 1]");
         aeq(ZERO.convexHull(ALL), "(-Infinity, Infinity)");
@@ -197,7 +197,7 @@ public class IntervalTest {
     }
 
     @Test
-    public void testConvexHull_SortedSet() {
+    public void testConvexHull_Iterable_Interval() {
         aeq(convexHull(readIntervalList("[[0, 0]]").get()), "[0, 0]");
         aeq(convexHull(readIntervalList("[[-1, 2]]").get()), "[-1, 2]");
         aeq(convexHull(readIntervalList("[[-1, Infinity)]").get()), "[-1, Infinity)");
