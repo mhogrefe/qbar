@@ -436,10 +436,12 @@ public final class Interval implements Comparable<Interval> {
         }
         Rational r = Rational.ofExact(f);
         float predecessor = FloatingPointUtils.predecessor(f);
+        @SuppressWarnings("ConstantConditions")
         Rational lower = predecessor == Float.NEGATIVE_INFINITY ?
                 null :
                 r.add(Rational.ofExact(predecessor)).shiftRight(1);
         float successor = FloatingPointUtils.successor(f);
+        @SuppressWarnings("ConstantConditions")
         Rational upper = successor == Float.POSITIVE_INFINITY ?
                 null :
                 r.add(Rational.ofExact(successor)).shiftRight(1);
@@ -480,10 +482,12 @@ public final class Interval implements Comparable<Interval> {
         }
         Rational r = Rational.ofExact(d);
         double predecessor = FloatingPointUtils.predecessor(d);
+        @SuppressWarnings("ConstantConditions")
         Rational lower = predecessor == Double.NEGATIVE_INFINITY ?
                 null :
                 r.add(Rational.ofExact(predecessor)).shiftRight(1);
         double successor = FloatingPointUtils.successor(d);
+        @SuppressWarnings("ConstantConditions")
         Rational upper = predecessor == Double.POSITIVE_INFINITY ?
                 null :
                 r.add(Rational.ofExact(successor)).shiftRight(1);
