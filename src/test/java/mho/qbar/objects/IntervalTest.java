@@ -1,7 +1,11 @@
 package mho.qbar.objects;
 
+import mho.wheels.misc.Readers;
+import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
+import java.util.List;
+import java.util.Optional;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -194,56 +198,26 @@ public class IntervalTest {
 
     @Test
     public void testConvexHull_SortedSet() {
-        SortedSet<Interval> ss;
-        ss = new TreeSet<>();
-        ss.add(ZERO);
-        aeq(convexHull(ss), "[0, 0]");
-        ss = new TreeSet<>();
-        ss.add(read("[-1, 2]").get());
-        aeq(convexHull(ss), "[-1, 2]");
-        ss = new TreeSet<>();
-        ss.add(read("[-1, Infinity)").get());
-        aeq(convexHull(ss), "[-1, Infinity)");
-        ss = new TreeSet<>();
-        ss.add(read("(-Infinity, 4]").get());
-        aeq(convexHull(ss), "(-Infinity, 4]");
-        ss = new TreeSet<>();
-        ss.add(ALL);
-        aeq(convexHull(ss), "(-Infinity, Infinity)");
-        ss = new TreeSet<>();
-        ss.add(ZERO);
-        ss.add(ONE);
-        aeq(convexHull(ss), "[0, 1]");
-        ss = new TreeSet<>();
-        ss.add(read("[1, 2]").get());
-        ss.add(read("[3, 4]").get());
-        aeq(convexHull(ss), "[1, 4]");
-        ss = new TreeSet<>();
-        ss.add(read("[1, 3]").get());
-        ss.add(read("[2, 4]").get());
-        aeq(convexHull(ss), "[1, 4]");
-        ss = new TreeSet<>();
-        ss.add(ALL);
-        ss.add(read("[3, 4]").get());
-        aeq(convexHull(ss), "(-Infinity, Infinity)");
-        ss = new TreeSet<>();
-        ss.add(read("[-1, Infinity)").get());
-        ss.add(read("(-Infinity, 4]").get());
-        aeq(convexHull(ss), "(-Infinity, Infinity)");
-        ss = new TreeSet<>();
-        ss.add(read("[1, 2]").get());
-        ss.add(read("[3, 4]").get());
-        ss.add(read("[5, 6]").get());
-        aeq(convexHull(ss), "[1, 6]");
-        ss = new TreeSet<>();
-        ss.add(read("[1, 2]").get());
-        ss.add(read("[2, 2]").get());
-        ss.add(read("[3, Infinity)").get());
-        aeq(convexHull(ss), "[1, Infinity)");
+        aeq(convexHull(readIntervalList("[[0, 0]]").get()), "[0, 0]");
+        aeq(convexHull(readIntervalList("[[-1, 2]]").get()), "[-1, 2]");
+        aeq(convexHull(readIntervalList("[[-1, Infinity)]").get()), "[-1, Infinity)");
+        aeq(convexHull(readIntervalList("[(-Infinity, 4]]").get()), "(-Infinity, 4]");
+        aeq(convexHull(readIntervalList("[(-Infinity, Infinity)]").get()), "(-Infinity, Infinity)");
+        aeq(convexHull(readIntervalList("[[0, 0], [1, 1]]").get()), "[0, 1]");
+        aeq(convexHull(readIntervalList("[[1, 2], [3, 4]]").get()), "[1, 4]");
+        aeq(convexHull(readIntervalList("[[1, 3], [2, 4]]").get()), "[1, 4]");
+        aeq(convexHull(readIntervalList("[(-Infinity, Infinity), [3, 4]]").get()), "(-Infinity, Infinity)");
+        aeq(convexHull(readIntervalList("[[-1, Infinity), (-Infinity, 4]]").get()), "(-Infinity, Infinity)");
+        aeq(convexHull(readIntervalList("[[1, 2], [3, 4], [5, 6]]").get()), "[1, 6]");
+        aeq(convexHull(readIntervalList("[[1, 2], [2, 2], [3, Infinity)]").get()), "[1, Infinity)");
         try {
-            ss = new TreeSet<>();
-            convexHull(ss);
+            convexHull(readIntervalList("[]").get());
+            fail();
         } catch (IllegalArgumentException ignored) {}
+        try {
+            convexHull(readIntervalListWithNulls("[[1, 2], null]").get());
+            fail();
+        } catch (NullPointerException ignored) {}
     }
 
     @Test
@@ -300,8 +274,11 @@ public class IntervalTest {
         assertFalse(read("[-6, Infinity)").get().equals(read("[-2, 5/3]").get()));
         assertFalse(read("[-6, Infinity)").get().equals(read("[4, 4]").get()));
         assertFalse(read("[-6, Infinity)").get().equals(read("(-Infinity, 3/2]").get()));
+        //noinspection ObjectEqualsNull
         assertFalse(ZERO.equals(null));
+        //noinspection ObjectEqualsNull
         assertFalse(ONE.equals(null));
+        //noinspection ObjectEqualsNull
         assertFalse(ALL.equals(null));
         assertTrue(read("[-2, 5/3]").isPresent());
         assertTrue(read("[4, 4]").isPresent());
@@ -431,5 +408,13 @@ public class IntervalTest {
 
     private static void aeq(Object a, Object b) {
         assertEquals(a.toString(), b.toString());
+    }
+
+    private static @NotNull Optional<List<Interval>> readIntervalList(@NotNull String s) {
+        return Readers.readList(Interval::findIn, s);
+    }
+
+    private static @NotNull Optional<List<Interval>> readIntervalListWithNulls(@NotNull String s) {
+        return Readers.readList(t -> Readers.findInWithNulls(Interval::findIn, t), s);
     }
 }

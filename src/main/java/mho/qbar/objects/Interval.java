@@ -10,10 +10,12 @@ import org.jetbrains.annotations.Nullable;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.List;
 import java.util.Optional;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.ordering.Ordering.*;
 
 /**
@@ -262,12 +264,14 @@ public final class Interval implements Comparable<Interval> {
      * @return Conv({@code as})
      */
     @SuppressWarnings("JavaDoc")
-    public static @NotNull Interval convexHull(@NotNull SortedSet<Interval> as) {
-        if (as.isEmpty())
+    public static @NotNull Interval convexHull(@NotNull Iterable<Interval> as) {
+        if (isEmpty(as))
             throw new IllegalArgumentException("cannot take convex hull of empty set");
-        Rational lower = as.first().lower;
+        List<Interval> sorted = sort(as);
+        @SuppressWarnings("ConstantConditions")
+        Rational lower = head(sorted).lower;
         Rational upper = null;
-        for (Interval a : as) {
+        for (Interval a : sorted) {
             if (a.upper == null) return new Interval(lower, null);
             if (upper == null || gt(a.upper, upper)) {
                 upper = a.upper;
