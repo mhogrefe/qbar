@@ -256,7 +256,7 @@ public final class Interval implements Comparable<Interval> {
      * a superset of all of the {@code Interval}s.
      *
      * <ul>
-     *  <li>{@code as} cannot be null or empty and may not contain any null elements.</li>
+     *  <li>{@code as} cannot be empty and may not contain any null elements.</li>
      *  <li>The result is not null.</li>
      * </ul>
      *
@@ -264,19 +264,25 @@ public final class Interval implements Comparable<Interval> {
      * @return Conv({@code as})
      */
     @SuppressWarnings("JavaDoc")
-    public static @NotNull Interval convexHull(@NotNull Iterable<Interval> as) {
+    public static @NotNull Interval convexHull(@NotNull List<Interval> as) {
         if (isEmpty(as))
             throw new IllegalArgumentException("cannot take convex hull of empty set");
-        List<Interval> sorted = sort(as);
-        @SuppressWarnings("ConstantConditions")
-        Rational lower = head(sorted).lower;
-        Rational upper = null;
-        for (Interval a : sorted) {
-            if (a.upper == null) return new Interval(lower, null);
-            if (upper == null || gt(a.upper, upper)) {
-                upper = a.upper;
-            }
-        }
+        Rational lower = minimum(
+                (x, y) -> {
+                    if (x == null) return -1;
+                    if (y == null) return 1;
+                    return x.compareTo(y);
+                },
+                map(a -> a.lower, as)
+        );
+        Rational upper = maximum(
+                (x, y) -> {
+                    if (x == null) return 1;
+                    if (y == null) return -1;
+                    return x.compareTo(y);
+                },
+                map(a -> a.upper, as)
+        );
         return new Interval(lower, upper);
     }
 

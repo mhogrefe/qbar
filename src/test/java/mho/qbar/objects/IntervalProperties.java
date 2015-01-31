@@ -8,9 +8,7 @@ import mho.wheels.structures.Triple;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
-import java.util.Arrays;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 
 import static mho.qbar.objects.Interval.*;
 import static mho.wheels.iterables.IterableUtils.*;
@@ -51,6 +49,8 @@ public class IntervalProperties {
             propertiesIsFinitelyBounded();
             propertiesContains_Rational();
             propertiesContains_Interval();
+            propertiesConvexHull_Interval();
+            propertiesConvexHull_Iterable_Interval();
             propertiesDiameter();
             propertiesEquals();
             propertiesHashCode();
@@ -185,6 +185,7 @@ public class IntervalProperties {
             Optional<Rational> ad = p.a.diameter();
             Optional<Rational> bd = p.b.diameter();
             assertTrue(p.toString(), !ad.isPresent() || le(bd.get(), ad.get()));
+            assertTrue(p.toString(), p.a.convexHull(p.b).equals(p.a));
         }
 
         Iterable<Pair<Rational, Interval>> ps = filter(
@@ -212,6 +213,60 @@ public class IntervalProperties {
             assertFalse(r.toString(), lessThanOrEqualTo(r).diameter().isPresent());
             assertFalse(r.toString(), greaterThanOrEqualTo(r).diameter().isPresent());
         }
+    }
+
+    private static void propertiesConvexHull_Interval() {
+        initialize();
+        System.out.println("\t\ttesting convexHull(Interval) properties...");
+
+        for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
+            Interval c = p.a.convexHull(p.b);
+            validate(c);
+        }
+
+        for (Interval a : take(LIMIT, P.intervals())) {
+            assertTrue(a.toString(), a.convexHull(a).equals(a));
+            assertTrue(a.toString(), ALL.convexHull(a).equals(ALL));
+        }
+
+        //Given an interval c whose endpoints are in each of two intervals a and b, any Rational in c lies in the
+        //convex hull of a and b
+        Iterable<Triple<Interval, Interval, Rational>> ts = map(
+                s -> new Triple<>(s.a.a, s.a.b, s.b.b),
+                (Iterable<Pair<Pair<Interval, Interval>, Pair<Interval, Rational>>>) P.dependentPairs(
+                        P.pairs(P.intervals()),
+                        p -> P.dependentPairs(
+                                map(
+                                        q -> of(min(q.a, q.b), max(q.a, q.b)),
+                                        P.pairs(P.rationals(p.a), P.rationals(p.b))
+                                ),
+                                P::rationals
+                        )
+                )
+        );
+        for (Triple<Interval, Interval, Rational> t : take(LIMIT, ts)) {
+            assertTrue(t.toString(), t.a.convexHull(t.b).contains(t.c));
+        }
+    }
+
+    private static void propertiesConvexHull_Iterable_Interval() {
+        initialize();
+        System.out.println("\t\ttesting convexHull(Iterable<Interval>) properties...");
+
+        for (List<Interval> as : take(LIMIT, P.listsAtLeast(1, P.intervals()))) {
+            Interval c = convexHull(as);
+            validate(c);
+        }
+
+        for (Interval a : take(LIMIT, P.intervals())) {
+            assertEquals(a.toString(), convexHull(Arrays.asList(a)), a);
+        }
+
+        for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
+            assertEquals(p.toString(), convexHull(Arrays.asList(p.a, p.b)), p.a.convexHull(p.b));
+        }
+
+        //todo continue
     }
 
     private static void propertiesEquals() {
