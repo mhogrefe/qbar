@@ -52,10 +52,12 @@ public class IntervalProperties {
             propertiesIsFinitelyBounded();
             propertiesContains_Rational();
             propertiesContains_Interval();
+            propertiesDiameter();
             propertiesConvexHull_Interval();
             propertiesConvexHull_List_Interval();
             compareImplementationsConvexHull_List_Interval();
-            propertiesDiameter();
+            propertiesIntersection();
+            propertiesDisjoint();
             propertiesEquals();
             propertiesHashCode();
             propertiesCompareTo();
@@ -372,6 +374,48 @@ public class IntervalProperties {
             totalTime += (System.nanoTime() - time);
         }
         System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
+    }
+
+    private static void propertiesIntersection() {
+        initialize();
+        System.out.println("\t\ttesting intersection(Interval) properties...");
+
+        for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
+            Optional<Interval> oi = p.a.intersection(p.b);
+            if (oi.isPresent()) {
+                validate(oi.get());
+            }
+            assertEquals(p.toString(), oi, p.b.intersection(p.a));
+            assertEquals(p.toString(), oi.isPresent(), !p.a.disjoint(p.b));
+        }
+
+        for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.finitelyBoundedIntervals()))) {
+            Optional<Interval> oi = p.a.intersection(p.b);
+            if (oi.isPresent()) {
+                assertTrue(p.toString(), le(oi.get().diameter().get(), p.a.diameter().get()));
+                assertTrue(p.toString(), le(oi.get().diameter().get(), p.b.diameter().get()));
+            }
+        }
+
+        for (Interval a : take(LIMIT, P.intervals())) {
+            assertEquals(a.toString(), ALL.intersection(a).get(), a);
+            assertEquals(a.toString(), a.intersection(a).get(), a);
+        }
+    }
+
+    private static void propertiesDisjoint() {
+        initialize();
+        System.out.println("\t\ttesting disjoint(Interval) properties...");
+
+        for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
+            boolean disjoint = p.a.disjoint(p.b);
+            assertEquals(p.toString(), p.b.disjoint(p.a), disjoint);
+        }
+
+        for (Interval a : take(LIMIT, P.intervals())) {
+            assertFalse(ALL.disjoint(a));
+            assertFalse(a.disjoint(a));
+        }
     }
 
     private static void propertiesEquals() {
