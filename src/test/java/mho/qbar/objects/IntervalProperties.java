@@ -225,8 +225,14 @@ public class IntervalProperties {
 
         for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
             Interval c = p.a.convexHull(p.b);
-            assertEquals(p.toString(), c, p.b.convexHull(p.a));
             validate(c);
+            assertEquals(p.toString(), c, p.b.convexHull(p.a));
+        }
+
+        for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.finitelyBoundedIntervals()))) {
+            Interval c = p.a.convexHull(p.b);
+            assertTrue(p.toString(), ge(c.diameter().get(), p.a.diameter().get()));
+            assertTrue(p.toString(), ge(c.diameter().get(), p.b.diameter().get()));
         }
 
         for (Interval a : take(LIMIT, P.intervals())) {
@@ -295,6 +301,12 @@ public class IntervalProperties {
             }
             assertEquals(as.toString(), alt, c);
             validate(c);
+        }
+
+        for (List<Interval> as : take(LIMIT, P.listsAtLeast(1, P.finitelyBoundedIntervals()))) {
+            Interval c = convexHull(as);
+            Rational cd = c.diameter().get();
+            assertTrue(as.toString(), all(a -> ge(cd, a.diameter().get()), as));
         }
 
         Iterable<Pair<List<Interval>, List<Interval>>> ps = P.dependentPairsLogarithmic(
