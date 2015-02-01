@@ -323,21 +323,21 @@ public final class Interval implements Comparable<Interval> {
     }
 
     /**
-     * Transforms a set of {@code Interval}s into a set of disjoint {@code Interval}s with the same union as the
+     * Transforms a list of {@code Interval}s into a list of disjoint {@code Interval}s with the same union as the
      * original set.
      *
      * <ul>
      *  <li>{@code as} cannot be null and may not contain any null elements.</li>
-     *  <li>The result is a sorted set of pairwise disjoint {@code Interval}s.</li>
+     *  <li>The result is a sorted list of pairwise disjoint {@code Interval}s.</li>
      * </ul>
      *
-     * @param as a set of {@code Interval}s
-     * @return a set of disjoint {@code Interval}s whose union is the same as the union of {@code as}
+     * @param as a list of {@code Interval}s
+     * @return a list of disjoint {@code Interval}s whose union is the same as the union of {@code as}
      */
-    public static @NotNull SortedSet<Interval> makeDisjoint(@NotNull SortedSet<Interval> as) {
-        SortedSet<Interval> simplified = new TreeSet<>();
+    public static @NotNull List<Interval> makeDisjoint(@NotNull List<Interval> as) {
+        List<Interval> simplified = new ArrayList<>();
         Interval acc = null;
-        for (Interval a : as) {
+        for (Interval a : sort(as)) {
             if (acc == null) {
                 acc = a;
             } else if (acc.disjoint(a)) {
