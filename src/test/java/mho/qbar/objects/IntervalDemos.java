@@ -131,14 +131,14 @@ public class IntervalDemos {
         }
     }
 
-//    public static void makeDisjointDemo() {
-//        for (SortedSet<Interval> as : SetGenerator.sorted(Interval.intervals(), null).iterate(limit)) {
-//            String setString = as.toString();
-//            setString = setString.substring(1, setString.length() - 1);
-//            if (Interval.makeDisjoint(as).size() > 2) System.out.println("makeDisjoint(" + setString + ") = " + Interval.makeDisjoint(as));
-//        }
-//    }
-//
+    public static void demoMakeDisjoint() {
+        initialize();
+        for (List<Interval> as : take(LIMIT, P.lists(P.intervals()))) {
+            String listString = tail(init(as.toString()));
+            System.out.println("makeDisjoint(" + listString + ") = " + makeDisjoint(as));
+        }
+    }
+
 //    public static void midpointDemo() {
 //        for (Interval a : Interval.finitelyBoundedIntervals().iterate(limit)) {
 //            System.out.println("midpoint(" + a + ") = " + a.midpoint());
