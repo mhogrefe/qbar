@@ -1,7 +1,8 @@
 qbar
 ====
 
-Real algebraic numbers and algebraic angles
+Rational numbers, real numbers, real algebraic numbers, algebraic angles.
+Uses heavily-modified code from [JAS](http://krum.rz.uni-mannheim.de/jas/) for polynomial factorization.
 
 Progress
 ========
