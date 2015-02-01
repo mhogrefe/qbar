@@ -23,6 +23,7 @@ import static org.junit.Assert.assertNotNull;
 public class IntervalProperties {
     private static boolean USE_RANDOM;
     private static final String INTERVAL_CHARS = " (),-/0123456789I[]finty";
+    private static final int TINY_LIMIT = 10;
     private static int LIMIT;
 
     private static QBarIterableProvider P;
@@ -58,6 +59,7 @@ public class IntervalProperties {
             compareImplementationsConvexHull_List_Interval();
             propertiesIntersection();
             propertiesDisjoint();
+            propertiesMakeDisjoint();
             propertiesEquals();
             propertiesHashCode();
             propertiesCompareTo();
@@ -432,6 +434,58 @@ public class IntervalProperties {
         );
         for (Pair<Pair<Interval, Interval>, Rational> p : take(LIMIT, ps)) {
             assertTrue(p.toString(), !p.a.b.contains(p.b));
+        }
+    }
+
+    private static void propertiesMakeDisjoint() {
+        initialize();
+        System.out.println("\t\ttesting makeDisjoint(List<Interval>) properties...");
+
+        for (List<Interval> as : take(LIMIT, P.lists(P.intervals()))) {
+            List<Interval> disjoint = makeDisjoint(as);
+            disjoint.forEach(mho.qbar.objects.IntervalProperties::validate);
+            assertTrue(as.toString(), nondecreasing(disjoint));
+            assertTrue(as.toString(), and(map(p -> p.a.disjoint(p.b), Combinatorics.distinctPairs(disjoint))));
+            for (Rational r : take(TINY_LIMIT, mux(toList(map(P::rationals, as))))) {
+                assertTrue(as.toString(), or(map(a -> a.contains(r), disjoint)));
+            }
+        }
+
+        Iterable<Pair<List<Interval>, List<Interval>>> ps = P.dependentPairsLogarithmic(
+                P.lists(P.intervals()),
+                Combinatorics::permutationsIncreasing
+        );
+        for (Pair<List<Interval>, List<Interval>> p : take(LIMIT, ps)) {
+            assertEquals(p.toString(), makeDisjoint(p.a), makeDisjoint(p.b));
+        }
+
+        for (Interval a : take(LIMIT, P.intervals())) {
+            assertEquals(a.toString(), makeDisjoint(Arrays.asList(a)), Arrays.asList(a));
+        }
+
+        for (Pair<Interval, Interval> p : take(LIMIT, filter(q -> q.a.disjoint(q.b), P.pairs(P.intervals())))) {
+            assertEquals(p.toString(), makeDisjoint(Pair.toList(p)), sort(Pair.toList(p)));
+        }
+
+        for (Pair<Interval, Interval> p : take(LIMIT, filter(q -> !q.a.disjoint(q.b), P.pairs(P.intervals())))) {
+            assertEquals(p.toString(), makeDisjoint(Pair.toList(p)), Arrays.asList(convexHull(Pair.toList(p))));
+        }
+
+        Iterable<Pair<List<Interval>, Integer>> ps2 = P.dependentPairsLogarithmic(
+                P.lists(P.intervals()),
+                as -> P.range(0, as.size())
+        );
+        for (Pair<List<Interval>, Integer> p : take(LIMIT, ps2)) {
+            List<Interval> as = toList(insert(p.a, p.b, ALL));
+            assertEquals(p.toString(), makeDisjoint(as), Arrays.asList(ALL));
+        }
+
+        for (Pair<List<Interval>, Integer> p : take(LIMIT, ps2)) {
+            List<Interval> as = toList(insert(p.a, p.b, null));
+            try {
+                convexHull(as);
+                fail(p.toString());
+            } catch (NullPointerException ignored) {}
         }
     }
 
