@@ -259,6 +259,31 @@ public class IntervalTest {
     }
 
     @Test
+    public void testMakeDisjoint() {
+        aeq(makeDisjoint(readIntervalList("[]").get()), "[]");
+        aeq(makeDisjoint(readIntervalList("[[0, 0]]").get()), "[[0, 0]]");
+        aeq(makeDisjoint(readIntervalList("[[1, 1]]").get()), "[[1, 1]]");
+        aeq(makeDisjoint(readIntervalList("[(-Infinity, Infinity)]").get()), "[(-Infinity, Infinity)]");
+        aeq(makeDisjoint(readIntervalList("[(-Infinity, 3]]").get()), "[(-Infinity, 3]]");
+        aeq(makeDisjoint(readIntervalList("[[2, Infinity)]").get()), "[[2, Infinity)]");
+        aeq(makeDisjoint(readIntervalList("[[2, 3]]").get()), "[[2, 3]]");
+        aeq(
+                makeDisjoint(readIntervalList("[(-Infinity, 3], [4, 5], [6, 7]]").get()),
+                "[(-Infinity, 3], [4, 5], [6, 7]]"
+        );
+        aeq(makeDisjoint(readIntervalList("[(-Infinity, 3], [3, 5], [5, 7]]").get()), "[(-Infinity, 7]]");
+        aeq(makeDisjoint(readIntervalList("[(-Infinity, 3], [2, 5], [6, 7]]").get()), "[(-Infinity, 5], [6, 7]]");
+        aeq(
+                makeDisjoint(readIntervalList("[[1, 2], [4, 6], [10, Infinity), [3, 7], [5, 9]]").get()),
+                "[[1, 2], [3, 9], [10, Infinity)]"
+        );
+        try {
+            makeDisjoint(readIntervalListWithNulls("[[1, 3], null, [5, Infinity)]").get());
+            fail();
+        } catch (NullPointerException ignored) {}
+    }
+
+    @Test
     public void testEquals() {
         //noinspection EqualsWithItself
         assertTrue(ZERO.equals(ZERO));
