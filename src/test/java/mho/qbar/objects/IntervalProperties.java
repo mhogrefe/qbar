@@ -401,6 +401,15 @@ public class IntervalProperties {
             assertEquals(a.toString(), ALL.intersection(a).get(), a);
             assertEquals(a.toString(), a.intersection(a).get(), a);
         }
+
+        Iterable<Pair<Pair<Interval, Interval>, Rational>> ps = P.dependentPairs(
+                filter(p -> !p.a.disjoint(p.b), P.pairs(P.intervals())),
+                p -> P.rationals(p.a.intersection(p.b).get())
+        );
+        for (Pair<Pair<Interval, Interval>, Rational> p : take(LIMIT, ps)) {
+            assertTrue(p.toString(), p.a.a.contains(p.b));
+            assertTrue(p.toString(), p.a.b.contains(p.b));
+        }
     }
 
     private static void propertiesDisjoint() {
@@ -415,6 +424,14 @@ public class IntervalProperties {
         for (Interval a : take(LIMIT, P.intervals())) {
             assertFalse(ALL.disjoint(a));
             assertFalse(a.disjoint(a));
+        }
+
+        Iterable<Pair<Pair<Interval, Interval>, Rational>> ps = P.dependentPairs(
+                filter(p -> p.a.disjoint(p.b), P.pairs(P.intervals())),
+                p -> P.rationals(p.a)
+        );
+        for (Pair<Pair<Interval, Interval>, Rational> p : take(LIMIT, ps)) {
+            assertTrue(p.toString(), !p.a.b.contains(p.b));
         }
     }
 
