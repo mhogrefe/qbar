@@ -102,7 +102,7 @@ public class GenPolynomialRing<C extends RingElem<C>> implements RingFactory<Gen
      * @param cf factory for coefficients of type C.
      */
     public static <C extends RingElem<C>> GenPolynomialRing<C> make(RingFactory<C> cf) {
-        return new GenPolynomialRing<>(cf, 1, new TermOrder(), new String[] {"x"});
+        return new GenPolynomialRing<>(cf, 1, new TermOrder(), new String[]{"x"});
     }
 
     /**
