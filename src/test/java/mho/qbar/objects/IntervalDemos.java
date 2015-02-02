@@ -139,27 +139,28 @@ public class IntervalDemos {
         }
     }
 
-//    public static void midpointDemo() {
-//        for (Interval a : Interval.finitelyBoundedIntervals().iterate(limit)) {
-//            System.out.println("midpoint(" + a + ") = " + a.midpoint());
-//        }
-//    }
-//
-//    public static void splitDemo() {
-//        Generator<Pair<Interval, Rational>> g = new FilteredGenerator<Pair<Interval, Rational>>(
-//                new PairGenerator<>(Interval.intervals(), Rational.rationals()),
-//                p -> p.fst.contains(p.snd));
-//        for (Pair<Interval, Rational> p : g.iterate(limit)) {
-//            System.out.println("split(" + p.fst + ", " + p.snd + ") = " + p.fst.split(p.snd));
-//        }
-//    }
-//
-//    public static void bisectDemo() {
-//        for (Interval a : Interval.finitelyBoundedIntervals().iterate(limit)) {
-//            System.out.println("bisect(" + a + ") = " + a.bisect());
-//        }
-//    }
-//
+    public static void demoMidpoint() {
+        initialize();
+        for (Interval a : take(LIMIT, P.finitelyBoundedIntervals())) {
+            System.out.println("midpoint(" + a + ") = " + a.midpoint());
+        }
+    }
+
+    public static void demoSplit() {
+        initialize();
+        Iterable<Pair<Interval, Rational>> ps = filter(q -> q.a.contains(q.b), P.pairs(P.intervals(), P.rationals()));
+        for (Pair<Interval, Rational> p : take(LIMIT, ps)) {
+            System.out.println("split(" + p.a + ", " + p.b + ") = " + p.a.split(p.b));
+        }
+    }
+
+    public static void demoBisect() {
+        initialize();
+        for (Interval a : take(LIMIT, P.finitelyBoundedIntervals())) {
+            System.out.println("bisect(" + a + ") = " + a.bisect());
+        }
+    }
+
 //    public static void roundingPreimageFloatDemo() {
 //        Generator<Float> g = new FilteredGenerator<>(Generators.floats(), f -> !Float.isNaN(f));
 //        for (float f : g.iterate(limit)) {
