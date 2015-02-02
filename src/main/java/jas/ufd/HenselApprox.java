@@ -4,7 +4,7 @@ import jas.arith.JasBigInteger;
 import jas.arith.ModLong;
 import jas.poly.GenPolynomial;
 
-public class HenselApprox_ModLong {
+public class HenselApprox {
     public final GenPolynomial<JasBigInteger> A;
 
     public final GenPolynomial<JasBigInteger> B;
@@ -13,7 +13,7 @@ public class HenselApprox_ModLong {
 
     private final GenPolynomial<ModLong> Bm;
 
-    public HenselApprox_ModLong(GenPolynomial<JasBigInteger> A, GenPolynomial<JasBigInteger> B, GenPolynomial<ModLong> Am,
+    public HenselApprox(GenPolynomial<JasBigInteger> A, GenPolynomial<JasBigInteger> B, GenPolynomial<ModLong> Am,
                         GenPolynomial<ModLong> Bm) {
         this.A = A;
         this.B = B;
@@ -38,12 +38,12 @@ public class HenselApprox_ModLong {
     @Override
     @SuppressWarnings("unchecked")
     public boolean equals(Object B) {
-        if (!(B instanceof HenselApprox_ModLong)) {
+        if (!(B instanceof HenselApprox)) {
             return false;
         }
-        HenselApprox_ModLong a = null;
+        HenselApprox a = null;
         try {
-            a = (HenselApprox_ModLong) B;
+            a = (HenselApprox) B;
         } catch (ClassCastException ignored) {
         }
         return A.equals(a.A) && B.equals(a.B) && Am.equals(a.Am) && Bm.equals(a.Bm);
