@@ -247,7 +247,7 @@ public class FactorInteger extends FactorAbstract<JasBigInteger> {
             pi = pi.multiply(m);
         }
 
-        lift = HenselUtil.liftHenselMonic_Long(C, F, k);
+        lift = HenselUtil_ModLong.liftHenselMonic(C, F, k);
         GenPolynomialRing<ModLong> mpfac = lift.get(0).ring;
         int dl = (lift.size() + 1) / 2;
         GenPolynomial<JasBigInteger> u = C;
