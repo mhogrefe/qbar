@@ -322,7 +322,7 @@ public class FactorInteger extends FactorAbstract<JasBigInteger> {
         int dl = (mlist.size() + 1) / 2;
         GenPolynomial<JasBigInteger> u = PP;
         GenPolynomial<ModLong> um = Pm;
-        HenselApprox<ModLong> ilist;
+        HenselApprox_ModLong ilist;
         for (int j = 1; j <= dl; j++) {
             KsubSet<GenPolynomial<ModLong>> ps = new KsubSet<>(mlist, j);
             for (List<GenPolynomial<ModLong>> flist : ps) {
@@ -336,7 +336,7 @@ public class FactorInteger extends FactorAbstract<JasBigInteger> {
                 trial.degree(0);
                 GenPolynomial<ModLong> cofactor = um.divide(trial);
                 try {
-                    ilist = HenselUtil.liftHenselQuadratic(PP, M, trial, cofactor);
+                    ilist = HenselUtil_ModLong.liftHenselQuadratic(PP, M, trial, cofactor);
                 } catch (RuntimeException e) {
                     continue;
                 }

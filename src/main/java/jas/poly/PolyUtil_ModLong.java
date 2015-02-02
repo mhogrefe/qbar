@@ -1,9 +1,7 @@
 package jas.poly;
 
-import jas.arith.JasBigInteger;
-import jas.arith.ModInteger;
-import jas.arith.ModLong;
-import jas.arith.ModularRingFactory;
+import jas.arith.*;
+import jas.structure.RingElem;
 import jas.util.ListUtil;
 
 import java.util.List;
@@ -23,7 +21,7 @@ public class PolyUtil_ModLong {
      */
     public static GenPolynomial<JasBigInteger> integerFromModularCoefficients(
             GenPolynomialRing<JasBigInteger> fac, GenPolynomial<ModLong> A) {
-        return PolyUtil.map(fac, A, new ModSymToInt());
+        return PolyUtil.map(fac, A, new ModSymToInt<ModLong>());
     }
 
     /**
@@ -95,17 +93,5 @@ public class PolyUtil_ModLong {
             }
         }
         return S;
-    }
-
-    /**
-     * Conversion of symmetric ModInteger to JasBigInteger functor.
-     */
-    public static class ModSymToInt implements Function<ModLong, JasBigInteger> {
-        public JasBigInteger apply(ModLong c) {
-            if (c == null) {
-                return new JasBigInteger();
-            }
-            return c.getSymmetricInteger();
-        }
     }
 }

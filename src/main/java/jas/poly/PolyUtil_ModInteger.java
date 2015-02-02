@@ -24,7 +24,7 @@ public class PolyUtil_ModInteger {
      */
     public static GenPolynomial<JasBigInteger> integerFromModularCoefficients(
             GenPolynomialRing<JasBigInteger> fac, GenPolynomial<ModInteger> A) {
-        return PolyUtil.map(fac, A, new ModSymToInt());
+        return PolyUtil.map(fac, A, new ModSymToInt<ModInteger>());
     }
 
     /**
@@ -96,17 +96,5 @@ public class PolyUtil_ModInteger {
             }
         }
         return S;
-    }
-
-    /**
-     * Conversion of symmetric ModInteger to JasBigInteger functor.
-     */
-    public static class ModSymToInt implements Function<ModInteger, JasBigInteger> {
-        public JasBigInteger apply(ModInteger c) {
-            if (c == null) {
-                return new JasBigInteger();
-            }
-            return c.getSymmetricInteger();
-        }
     }
 }

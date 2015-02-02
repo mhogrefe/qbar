@@ -951,7 +951,6 @@ public class PolyUtil {
 /**
  * Conversion of symmetric ModInteger to JasBigInteger functor.
  */
-@Deprecated
 class ModSymToInt<C extends RingElem<C> & Modular> implements Function<C, JasBigInteger> {
 
 

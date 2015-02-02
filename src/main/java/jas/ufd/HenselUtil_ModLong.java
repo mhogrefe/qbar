@@ -417,4 +417,245 @@ public class HenselUtil_ModLong {
         }
         return sol;
     }
+
+    /**
+     * Modular quadratic Hensel lifting algorithm on coefficients. Let p =
+     * A.ring.coFac.modul() = B.ring.coFac.modul() and assume C == A*B mod p
+     * with gcd(A,B) == 1 mod p and S A + T B == 1 mod p. See algorithm 6.1. in
+     * Geddes et.al. and algorithms 3.5.{5,6} in Cohen. Quadratic version, as it
+     * also lifts S A + T B == 1 mod p^{e+1}.
+     *
+     * @param C GenPolynomial
+     * @param A GenPolynomial
+     * @param B other GenPolynomial
+     * @param S GenPolynomial
+     * @param T GenPolynomial
+     * @param M bound on the coefficients of A1 and B1 as factors of C.
+     * @return [A1, B1] = lift(C,A,B), with C = A1 * B1.
+     */
+    @SuppressWarnings("unchecked")
+    private static HenselApprox_ModLong liftHenselQuadratic(
+            GenPolynomial<JasBigInteger> C, JasBigInteger M, GenPolynomial<ModLong> A, GenPolynomial<ModLong> B,
+            GenPolynomial<ModLong> S, GenPolynomial<ModLong> T) {
+        if (C == null || C.isZERO()) {
+            return new HenselApprox_ModLong(C, C, A, B);
+        }
+        if (A == null || A.isZERO() || B == null || B.isZERO()) {
+            throw new IllegalArgumentException("A and B must be nonzero");
+        }
+        GenPolynomialRing<JasBigInteger> fac = C.ring;
+        if (fac.nvar != 1) { // todo assert
+            throw new IllegalArgumentException("polynomial ring not univariate");
+        }
+        // setup factories
+        GenPolynomialRing<ModLong> pfac = A.ring;
+        RingFactory<ModLong> p = pfac.coFac;
+        ModularRingFactory<ModLong> P = (ModularRingFactory<ModLong>) p;
+        ModularRingFactory<ModLong> Q = (ModularRingFactory<ModLong>) p;
+        JasBigInteger Qi = Q.getIntegerModul();
+        JasBigInteger M2 = M.multiply(M.fromInteger(2));
+        JasBigInteger Mq = Qi;
+        GenPolynomialRing<ModLong> qfac;
+        qfac = new GenPolynomialRing<>(Q, pfac);
+
+        // normalize c and a, b factors, assert p is prime
+        GenPolynomial<JasBigInteger> Ai;
+        GenPolynomial<JasBigInteger> Bi;
+        JasBigInteger c = C.leadingBaseCoefficient();
+        C = C.multiply(c); // sic
+        ModLong a = A.leadingBaseCoefficient();
+        if (!a.isONE()) { // A = A.monic();
+            A = A.divide(a);
+            S = S.multiply(a);
+        }
+        ModLong b = B.leadingBaseCoefficient();
+        if (!b.isONE()) { // B = B.monic();
+            B = B.divide(b);
+            T = T.multiply(b);
+        }
+        ModLong cm = P.fromInteger(c.getVal());
+        A = A.multiply(cm);
+        B = B.multiply(cm);
+        T = T.divide(cm);
+        S = S.divide(cm);
+        Ai = PolyUtil.integerFromModularCoefficients(fac, A);
+        Bi = PolyUtil.integerFromModularCoefficients(fac, B);
+        // replace leading base coefficients
+        ExpVector ea = Ai.leadingExpVector();
+        ExpVector eb = Bi.leadingExpVector();
+        Ai.doPutToMap(ea, c);
+        Bi.doPutToMap(eb, c);
+
+        // polynomials mod p
+        GenPolynomial<ModLong> Ap;
+        GenPolynomial<ModLong> Bp;
+        GenPolynomial<ModLong> A1p = A;
+        GenPolynomial<ModLong> B1p = B;
+        GenPolynomial<ModLong> Ep;
+        GenPolynomial<ModLong> Sp = S;
+        GenPolynomial<ModLong> Tp = T;
+
+        // polynomials mod q
+        GenPolynomial<ModLong> Aq;
+        GenPolynomial<ModLong> Bq;
+
+        // polynomials over the integers
+        GenPolynomial<JasBigInteger> E;
+        GenPolynomial<JasBigInteger> Ea;
+        GenPolynomial<JasBigInteger> Eb;
+        GenPolynomial<JasBigInteger> Ea1;
+        GenPolynomial<JasBigInteger> Eb1;
+        GenPolynomial<JasBigInteger> Si;
+        GenPolynomial<JasBigInteger> Ti;
+
+        Si = PolyUtil.integerFromModularCoefficients(fac, S);
+        Ti = PolyUtil.integerFromModularCoefficients(fac, T);
+
+        Aq = PolyUtil.fromIntegerCoefficients(qfac, Ai);
+        Bq = PolyUtil.fromIntegerCoefficients(qfac, Bi);
+
+        while (Mq.compareTo(M2) < 0) {
+            // compute E=(C-AB)/q over the integers
+            E = C.subtract(Ai.multiply(Bi));
+            if (E.isZERO()) {
+                break;
+            }
+            E = E.divide(Qi);
+            // E mod p
+            Ep = PolyUtil.fromIntegerCoefficients(qfac, E);
+            //
+            //if (Ep.isZERO()) {
+            //System.out.println("leaving on zero error");
+            //??
+            //??break;
+            //}
+
+            // construct approximation mod p
+            Ap = Sp.multiply(Ep); // S,T ++ T,S
+            Bp = Tp.multiply(Ep);
+            GenPolynomial<ModLong>[] QR;
+            //
+            QR = Ap.quotientRemainder(Bq);
+            GenPolynomial<ModLong> Qp;
+            GenPolynomial<ModLong> Rp;
+            Qp = QR[0];
+            Rp = QR[1];
+            //
+            A1p = Rp;
+            B1p = Bp.sum(Aq.multiply(Qp));
+
+            // construct q-adic approximation, convert to integer
+            Ea = PolyUtil_ModLong.integerFromModularCoefficients(fac, A1p);
+            Eb = PolyUtil_ModLong.integerFromModularCoefficients(fac, B1p);
+            Ea1 = Ea.multiply(Qi);
+            Eb1 = Eb.multiply(Qi);
+            Ea = Ai.sum(Eb1); // Eb1 and Ea1 are required
+            Eb = Bi.sum(Ea1); //--------------------------
+            assert (Ea.degree(0) + Eb.degree(0) <= C.degree(0));
+            //if ( Ea.degree(0)+Eb.degree(0) > C.degree(0) ) { // debug
+            //   throw new RuntimeException("deg(A)+deg(B) > deg(C)");
+            //}
+            Ai = Ea;
+            Bi = Eb;
+
+            // gcd representation factors error --------------------------------
+            // compute E=(1-SA-TB)/q over the integers
+            E = fac.getONE();
+            E = E.subtract(Si.multiply(Ai)).subtract(Ti.multiply(Bi));
+            E = E.divide(Qi);
+            // E mod q
+            Ep = PolyUtil.fromIntegerCoefficients(qfac, E);
+            //
+
+            // construct approximation mod q
+            Ap = Sp.multiply(Ep); // S,T ++ T,S
+            Bp = Tp.multiply(Ep);
+            QR = Bp.quotientRemainder(Aq); // Ai == A mod p ?
+            Qp = QR[0];
+            Rp = QR[1];
+            B1p = Rp;
+            A1p = Ap.sum(Bq.multiply(Qp));
+
+            // construct q-adic approximation, convert to integer
+            Ea = PolyUtil_ModLong.integerFromModularCoefficients(fac, A1p);
+            Eb = PolyUtil_ModLong.integerFromModularCoefficients(fac, B1p);
+            Ea1 = Ea.multiply(Qi);
+            Eb1 = Eb.multiply(Qi);
+            Ea = Si.sum(Ea1); // Eb1 and Ea1 are required
+            Eb = Ti.sum(Eb1); //--------------------------
+            Si = Ea;
+            Ti = Eb;
+
+            // prepare for next iteration
+            Mq = Qi;
+            Qi = Q.getIntegerModul().multiply(Q.getIntegerModul());
+            if (ModLongRing.MAX_LONG.compareTo(Qi.getVal()) > 0) {
+                Q = (ModularRingFactory) new ModLongRing(Qi.getVal());
+            } else {
+                Q = (ModularRingFactory) new ModIntegerRing(Qi.getVal());
+            }
+            //Q = new ModIntegerRing(Qi.getVal());
+            //System.out.println("Q = " + Q + ", from Q = " + Mq);
+
+            qfac = new GenPolynomialRing<>(Q, pfac);
+
+            Aq = PolyUtil.fromIntegerCoefficients(qfac, Ai);
+            Bq = PolyUtil.fromIntegerCoefficients(qfac, Bi);
+            Sp = PolyUtil.fromIntegerCoefficients(qfac, Si);
+            Tp = PolyUtil.fromIntegerCoefficients(qfac, Ti);
+        }
+        GreatestCommonDivisorAbstract<JasBigInteger> ufd = new GreatestCommonDivisorPrimitive<>();
+
+        // remove normalization if possible
+        JasBigInteger ai = ufd.baseContent(Ai);
+        Ai = Ai.divide(ai);
+        JasBigInteger bi;
+        try {
+            bi = c.divide(ai);
+            Bi = Bi.divide(bi); // divide( c/a )
+        } catch (RuntimeException e) {
+            throw new RuntimeException("no exact lifting possible " + e);
+        }
+        return new HenselApprox_ModLong(Ai, Bi, A1p, B1p);
+    }
+
+
+    /**
+     * Modular quadratic Hensel lifting algorithm on coefficients. Let p =
+     * A.ring.coFac.modul() = B.ring.coFac.modul() and assume C == A*B mod p
+     * with gcd(A,B) == 1 mod p. See algorithm 6.1. in Geddes et.al. and
+     * algorithms 3.5.{5,6} in Cohen. Quadratic version.
+     *
+     * @param C GenPolynomial
+     * @param A GenPolynomial
+     * @param B other GenPolynomial
+     * @param M bound on the coefficients of A1 and B1 as factors of C.
+     * @return [A1, B1] = lift(C,A,B), with C = A1 * B1.
+     */
+    @SuppressWarnings("unchecked")
+    public static HenselApprox_ModLong liftHenselQuadratic(
+            GenPolynomial<JasBigInteger> C, JasBigInteger M, GenPolynomial<ModLong> A, GenPolynomial<ModLong> B) {
+        if (C == null || C.isZERO()) {
+            return new HenselApprox_ModLong(C, C, A, B);
+        }
+        if (A == null || A.isZERO() || B == null || B.isZERO()) {
+            throw new IllegalArgumentException("A and B must be nonzero");
+        }
+        GenPolynomialRing<JasBigInteger> fac = C.ring;
+        if (fac.nvar != 1) { // todo assert
+            throw new IllegalArgumentException("polynomial ring not univariate");
+        }
+        // one Hensel step on part polynomials
+        try {
+            GenPolynomial<ModLong>[] gst = A.egcd(B);
+            if (!gst[0].isONE()) {
+                throw new RuntimeException("A and B not coprime, gcd = " + gst[0] + ", A = " + A + ", B = " + B);
+            }
+            GenPolynomial<ModLong> s = gst[1];
+            GenPolynomial<ModLong> t = gst[2];
+            return liftHenselQuadratic(C, M, A, B, s, t);
+        } catch (ArithmeticException e) {
+            throw new RuntimeException("coefficient error " + e);
+        }
+    }
 }
