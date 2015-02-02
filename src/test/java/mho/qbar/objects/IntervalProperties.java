@@ -231,6 +231,13 @@ public class IntervalProperties {
             Interval c = p.a.convexHull(p.b);
             validate(c);
             assertEquals(p.toString(), c, p.b.convexHull(p.a));
+            //Given an interval c whose endpoints are in each of two intervals a and b, any Rational in c lies in the
+            //convex hull of a and b
+            for (Pair<Rational, Rational> q : take(TINY_LIMIT, P.pairs(P.rationals(p.a), P.rationals(p.b)))) {
+                for (Rational r : take(TINY_LIMIT, P.rationals(of(min(q.a, q.b), max(q.a, q.b))))) {
+                    assertTrue(p.toString(), c.contains(r));
+                }
+            }
         }
 
         for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.finitelyBoundedIntervals()))) {
@@ -242,25 +249,6 @@ public class IntervalProperties {
         for (Interval a : take(LIMIT, P.intervals())) {
             assertTrue(a.toString(), a.convexHull(a).equals(a));
             assertTrue(a.toString(), ALL.convexHull(a).equals(ALL));
-        }
-
-        //Given an interval c whose endpoints are in each of two intervals a and b, any Rational in c lies in the
-        //convex hull of a and b
-        Iterable<Triple<Interval, Interval, Rational>> ts = map(
-                s -> new Triple<>(s.a.a, s.a.b, s.b.b),
-                (Iterable<Pair<Pair<Interval, Interval>, Pair<Interval, Rational>>>) P.dependentPairs(
-                        P.pairs(P.intervals()),
-                        p -> P.dependentPairs(
-                                map(
-                                        q -> of(min(q.a, q.b), max(q.a, q.b)),
-                                        P.pairs(P.rationals(p.a), P.rationals(p.b))
-                                ),
-                                P::rationals
-                        )
-                )
-        );
-        for (Triple<Interval, Interval, Rational> t : take(LIMIT, ts)) {
-            assertTrue(t.toString(), t.a.convexHull(t.b).contains(t.c));
         }
     }
 
@@ -404,13 +392,12 @@ public class IntervalProperties {
             assertEquals(a.toString(), a.intersection(a).get(), a);
         }
 
-        Iterable<Pair<Pair<Interval, Interval>, Rational>> ps = P.dependentPairs(
-                filter(p -> !p.a.disjoint(p.b), P.pairs(P.intervals())),
-                p -> P.rationals(p.a.intersection(p.b).get())
-        );
-        for (Pair<Pair<Interval, Interval>, Rational> p : take(LIMIT, ps)) {
-            assertTrue(p.toString(), p.a.a.contains(p.b));
-            assertTrue(p.toString(), p.a.b.contains(p.b));
+        for (Pair<Interval, Interval> p : take(LIMIT, filter(q -> !q.a.disjoint(q.b), P.pairs(P.intervals())))) {
+            Interval intersection = p.a.intersection(p.b).get();
+            for (Rational r : take(TINY_LIMIT, P.rationals(intersection))) {
+                assertTrue(p.toString(), p.a.contains(r));
+                assertTrue(p.toString(), p.b.contains(r));
+            }
         }
     }
 
@@ -428,12 +415,10 @@ public class IntervalProperties {
             assertFalse(a.disjoint(a));
         }
 
-        Iterable<Pair<Pair<Interval, Interval>, Rational>> ps = P.dependentPairs(
-                filter(p -> p.a.disjoint(p.b), P.pairs(P.intervals())),
-                p -> P.rationals(p.a)
-        );
-        for (Pair<Pair<Interval, Interval>, Rational> p : take(LIMIT, ps)) {
-            assertTrue(p.toString(), !p.a.b.contains(p.b));
+        for (Pair<Interval, Interval> p : take(LIMIT, filter(q -> q.a.disjoint(q.b), P.pairs(P.intervals())))) {
+            for (Rational r : take(TINY_LIMIT, P.rationals(p.a))) {
+                assertFalse(p.toString(), p.b.contains(r));
+            }
         }
     }
 
