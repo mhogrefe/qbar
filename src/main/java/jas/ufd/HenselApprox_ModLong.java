@@ -38,7 +38,7 @@ public class HenselApprox_ModLong {
     @Override
     @SuppressWarnings("unchecked")
     public boolean equals(Object B) {
-        if (!(B instanceof HenselApprox)) {
+        if (!(B instanceof HenselApprox_ModLong)) {
             return false;
         }
         HenselApprox_ModLong a = null;

@@ -1,7 +1,6 @@
 package jas.poly;
 
 import jas.structure.AbelianGroupElem;
-import jas.structure.AbelianGroupFactory;
 
 import java.util.Random;
 
@@ -22,10 +21,6 @@ public abstract class ExpVector implements AbelianGroupElem<ExpVector> {
 
     private static ExpVector create(long[] v) {
         return new ExpVectorLong(v);
-    }
-
-    public AbelianGroupFactory<ExpVector> factory() {
-        throw new UnsupportedOperationException("no factory implemented for ExpVector");
     }
 
     protected abstract ExpVector copy();
