@@ -570,15 +570,6 @@ public final class ExpVector implements AbelianGroupElem<ExpVector> {
         return s.toString();
     }
 
-    public int indexVar(String x, String... vars) {
-        for (int i = 0; i < length(); i++) {
-            if (x.equals(vars[i])) {
-                return length() - i - 1;
-            }
-        }
-        return -1;
-    }
-
     @Override
     public int hashCode() {
         if (hash == 0) {

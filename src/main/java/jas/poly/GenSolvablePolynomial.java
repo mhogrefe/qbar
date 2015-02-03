@@ -179,23 +179,6 @@ public class GenSolvablePolynomial<C extends RingElem<C>> extends GenPolynomial<
         return Cp;
     }
 
-
-    /**
-     * GenSolvablePolynomial multiplication. Product with exponent vector.
-     *
-     * @param e exponent.
-     * @return this * x<sup>e</sup>, where * denotes solvable multiplication.
-     */
-    @Override
-    public GenSolvablePolynomial<C> multiply(ExpVector e) {
-        if (e == null || e.isZERO()) {
-            return this;
-        }
-        C b = ring.getONECoefficient();
-        return multiply(b, e);
-    }
-
-
     /**
      * GenSolvablePolynomial multiplication. Product with ring element and
      * exponent vector.

@@ -776,35 +776,6 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
         return p;
     }
 
-
-    /**
-     * GenPolynomial multiplication. Product with exponent vector.
-     *
-     * @param e exponent (!= null).
-     * @return this * x<sup>e</sup>.
-     */
-    public GenPolynomial<C> multiply(ExpVector e) {
-        // assert e != null. This is never allowed.
-        if (this.isZERO()) {
-            return this;
-        }
-        if (this instanceof GenSolvablePolynomial) {
-            //throw new RuntimeException("wrong method dispatch in JRE ");
-            GenSolvablePolynomial<C> T = (GenSolvablePolynomial<C>) this;
-            return T.multiply(e);
-        }
-        GenPolynomial<C> p = ring.getZERO().copy();
-        SortedMap<ExpVector, C> pv = p.val;
-        for (Map.Entry<ExpVector, C> m1 : val.entrySet()) {
-            C c1 = m1.getValue();
-            ExpVector e1 = m1.getKey();
-            ExpVector e2 = e1.sum(e);
-            pv.put(e2, c1);
-        }
-        return p;
-    }
-
-
     /**
      * GenPolynomial division. Division by coefficient ring element. Fails, if
      * exact division is not possible.
