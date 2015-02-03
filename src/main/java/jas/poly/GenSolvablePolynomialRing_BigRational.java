@@ -121,25 +121,6 @@ public class GenSolvablePolynomialRing_BigRational extends GenSolvablePolynomial
     }
 
     @Override
-    public GenSolvablePolynomial<BigRational> parse(String s) {
-        //return getZERO();
-        return parse(new StringReader(s));
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    GenSolvablePolynomial<BigRational> parse(Reader r) {
-        GenPolynomialTokenizer pt = new GenPolynomialTokenizer(this, r);
-        GenSolvablePolynomial<BigRational> p;
-        try {
-            p = (GenSolvablePolynomial<BigRational>) pt.nextSolvablePolynomial();
-        } catch (IOException e) {
-            p = ZERO;
-        }
-        return p;
-    }
-
-    @Override
     public GenSolvablePolynomial<BigRational> univariate(int i) {
         return super.univariate(i);
     }

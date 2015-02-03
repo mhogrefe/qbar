@@ -123,25 +123,6 @@ public class GenSolvablePolynomialRing<C extends RingElem<C>> extends GenPolynom
     }
 
     @Override
-    public GenSolvablePolynomial<C> parse(String s) {
-        //return getZERO();
-        return parse(new StringReader(s));
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    GenSolvablePolynomial<C> parse(Reader r) {
-        GenPolynomialTokenizer pt = new GenPolynomialTokenizer(this, r);
-        GenSolvablePolynomial<C> p;
-        try {
-            p = (GenSolvablePolynomial<C>) pt.nextSolvablePolynomial();
-        } catch (IOException e) {
-            p = ZERO;
-        }
-        return p;
-    }
-
-    @Override
     public GenSolvablePolynomial<C> univariate(int i) {
         return (GenSolvablePolynomial<C>) super.univariate(i);
     }

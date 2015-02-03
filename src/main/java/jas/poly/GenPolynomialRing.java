@@ -400,40 +400,6 @@ public class GenPolynomialRing<C extends RingElem<C>> implements RingFactory<Gen
     }
 
     /**
-     * Parse a polynomial with the use of GenPolynomialTokenizer.
-     *
-     * @param s String.
-     * @return GenPolynomial from s.
-     */
-    public GenPolynomial<C> parse(String s) {
-        String val = s;
-        if (!s.contains("|")) {
-            val = val.replace("{", "").replace("}", "");
-        }
-        return parse(new StringReader(val));
-    }
-
-
-    /**
-     * Parse a polynomial with the use of GenPolynomialTokenizer.
-     *
-     * @param r Reader.
-     * @return next GenPolynomial from r.
-     */
-    @SuppressWarnings("unchecked")
-    GenPolynomial<C> parse(Reader r) {
-        GenPolynomialTokenizer pt = new GenPolynomialTokenizer(this, r);
-        GenPolynomial<C> p;
-        try {
-            p = (GenPolynomial<C>) pt.nextPolynomial();
-        } catch (IOException e) {
-            p = ZERO;
-        }
-        return p;
-    }
-
-
-    /**
      * Generate univariate polynomial in a given variable.
      *
      * @param i the index of the variable.

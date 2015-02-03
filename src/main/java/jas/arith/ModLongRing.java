@@ -249,17 +249,6 @@ public final class ModLongRing implements ModularRingFactory<ModLong> {
         return new ModLong(this, v); // rnd.nextLong() not ok
     }
 
-
-    /**
-     * Parse ModLong from String.
-     *
-     * @param s String.
-     * @return ModLong from s.
-     */
-    public ModLong parse(String s) {
-        return new ModLong(this, s);
-    }
-
     public ModLong chineseRemainder(ModLong c, ModLong ci, ModLong a) {
         if (c.ring.modul < a.ring.modul) {
             System.out.println("ModLong error " + c.ring + ", " + a.ring);

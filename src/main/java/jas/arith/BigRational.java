@@ -525,16 +525,6 @@ public final class BigRational implements RingElem<BigRational>, RingFactory<Big
     }
 
     /**
-     * Parse rational number from String.
-     *
-     * @param s String.
-     * @return BigRational from s.
-     */
-    public BigRational parse(String s) {
-        return new BigRational(s);
-    }
-
-    /**
      * Rational number greatest common divisor.
      *
      * @param S BigRational.

@@ -213,17 +213,6 @@ public final class ModIntegerRing implements ModularRingFactory<ModInteger> {
         return new ModInteger(this, v);
     }
 
-
-    /**
-     * Parse ModInteger from String.
-     *
-     * @param s String.
-     * @return ModInteger from s.
-     */
-    public ModInteger parse(String s) {
-        return new ModInteger(this, s);
-    }
-
     /**
      * ModInteger chinese remainder algorithm. This is a factory method. Assert
      * c.modul >= a.modul and c.modul * a.modul = this.modul.

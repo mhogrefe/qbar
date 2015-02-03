@@ -12,6 +12,4 @@ public interface ElemFactory<C> extends Serializable {
     public C fromInteger(BigInteger a);
 
     public C random(int n, Random random);
-
-    public C parse(String s);
 }

@@ -441,15 +441,4 @@ public final class JasBigInteger implements RingElem<JasBigInteger>, RingFactory
     public JasBigInteger sum(JasBigInteger S) {
         return new JasBigInteger(val.add(S.val));
     }
-
-    /**
-     * JasBigInteger parse from String.
-     *
-     * @param s String.
-     * @return Biginteger from s.
-     */
-    public JasBigInteger parse(String s) {
-        return new JasBigInteger(s);
-    }
-
 }
