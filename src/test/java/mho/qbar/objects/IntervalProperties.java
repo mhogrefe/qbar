@@ -61,6 +61,7 @@ public class IntervalProperties {
             propertiesDisjoint();
             propertiesMakeDisjoint();
             propertiesMidpoint();
+            propertiesSplit();
             propertiesEquals();
             propertiesHashCode();
             propertiesCompareTo();
@@ -496,6 +497,59 @@ public class IntervalProperties {
             try {
                 greaterThanOrEqualTo(r).midpoint();
                 fail(r.toString());
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private static void propertiesSplit() {
+        initialize();
+        System.out.println("\t\ttesting split(Rational) properties...");
+
+        Iterable<Pair<Interval, Rational>> ps = filter(q -> q.a.contains(q.b), P.pairs(P.intervals(), P.rationals()));
+        for (Pair<Interval, Rational> p : take(LIMIT, ps)) {
+            Pair<Interval, Interval> split = p.a.split(p.b);
+            assertEquals(p.toString(), split.a.getUpper().get(), p.b);
+            assertEquals(p.toString(), split.b.getLower().get(), p.b);
+            for (Rational r : take(TINY_LIMIT, P.rationals(p.a))) {
+                assertTrue(p.toString(), split.a.contains(r) || split.b.contains(r));
+            }
+        }
+
+        for (Rational r : take(LIMIT, P.rationals())) {
+            Interval a = of(r);
+            assertEquals(r.toString(), a.split(r), new Pair<>(a, a));
+
+            Pair<Interval, Interval> p = ALL.split(r);
+            assertFalse(r.toString(), p.a.getLower().isPresent());
+            assertTrue(r.toString(), p.a.getUpper().isPresent());
+            assertTrue(r.toString(), p.b.getLower().isPresent());
+            assertFalse(r.toString(), p.b.getUpper().isPresent());
+        }
+
+        for (Pair<Rational, Rational> p : take(LIMIT, filter(q -> le(q.a, q.b), P.pairs(P.rationals())))) {
+            Interval a = lessThanOrEqualTo(p.b);
+            Pair<Interval, Interval> q = a.split(p.a);
+            assertFalse(p.toString(), q.a.getLower().isPresent());
+            assertTrue(p.toString(), q.a.getUpper().isPresent());
+            assertTrue(p.toString(), q.b.isFinitelyBounded());
+        }
+
+        for (Pair<Rational, Rational> p : take(LIMIT, filter(q -> le(q.a, q.b), P.pairs(P.rationals())))) {
+            Interval a = greaterThanOrEqualTo(p.a);
+            Pair<Interval, Interval> q = a.split(p.b);
+            assertTrue(p.toString(), q.a.isFinitelyBounded());
+            assertTrue(p.toString(), q.b.getLower().isPresent());
+            assertFalse(p.toString(), q.b.getUpper().isPresent());
+        }
+
+        Iterable<Pair<Interval, Rational>> psFail = filter(
+                q -> !q.a.contains(q.b),
+                P.pairs(P.intervals(), P.rationals())
+        );
+        for (Pair<Interval, Rational> p : take(LIMIT, psFail)) {
+            try {
+                p.a.split(p.b);
+                fail(p.toString());
             } catch (ArithmeticException ignored) {}
         }
     }
