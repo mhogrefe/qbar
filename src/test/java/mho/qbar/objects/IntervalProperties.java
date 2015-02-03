@@ -60,6 +60,7 @@ public class IntervalProperties {
             propertiesIntersection();
             propertiesDisjoint();
             propertiesMakeDisjoint();
+            propertiesMidpoint();
             propertiesEquals();
             propertiesHashCode();
             propertiesCompareTo();
@@ -471,6 +472,31 @@ public class IntervalProperties {
                 convexHull(as);
                 fail(p.toString());
             } catch (NullPointerException ignored) {}
+        }
+    }
+
+    private static void propertiesMidpoint() {
+        initialize();
+        System.out.println("\t\ttesting midpoint() properties...");
+
+        for (Interval a : take(LIMIT, P.finitelyBoundedIntervals())) {
+            Rational midpoint = a.midpoint();
+            assertEquals(a.toString(), midpoint.subtract(a.getLower().get()), a.getUpper().get().subtract(midpoint));
+        }
+
+        for (Rational r : take(LIMIT, P.rationals())) {
+            assertEquals(r.toString(), of(r).midpoint(), r);
+        }
+
+        for (Rational r : take(LIMIT, P.rationals())) {
+            try {
+                lessThanOrEqualTo(r).midpoint();
+                fail(r.toString());
+            } catch (ArithmeticException ignored) {}
+            try {
+                greaterThanOrEqualTo(r).midpoint();
+                fail(r.toString());
+            } catch (ArithmeticException ignored) {}
         }
     }
 
