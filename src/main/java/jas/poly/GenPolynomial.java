@@ -79,7 +79,7 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
      * @param r polynomial ring factory.
      * @param v the SortedMap of some other polynomial.
      */
-    private GenPolynomial(GenPolynomialRing<C> r, SortedMap<ExpVector, C> v) {
+    public GenPolynomial(GenPolynomialRing<C> r, SortedMap<ExpVector, C> v) {
         this(r);
         val.putAll(v); // assume no zero coefficients
     }
