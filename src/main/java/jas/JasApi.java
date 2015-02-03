@@ -13,21 +13,6 @@ import java.util.*;
 import static mho.wheels.iterables.IterableUtils.*;
 
 public class JasApi {
-    public static List<List<BigInteger>> factorPolynomial(String polyString) {
-        GenPolynomialRing<JasBigInteger> ring = GenPolynomialRing.make(new JasBigInteger());
-        GenPolynomial<JasBigInteger> tmp = ring.parse(polyString);
-        FactorAbstract<JasBigInteger> engine = new FactorInteger();
-        SortedMap<GenPolynomial<JasBigInteger>, Long> factors = engine.baseFactors(tmp);
-        List<List<BigInteger>> fs = new ArrayList<>();
-        for (Map.Entry<GenPolynomial<JasBigInteger>, Long> entry : factors.entrySet()) {
-            List<BigInteger> cs = fromPolynomial(entry.getKey());
-            for (int j = 0; j < entry.getValue(); j++) {
-                fs.add(cs);
-            }
-        }
-        return fs;
-    }
-
     public static List<List<BigInteger>> factorPolynomial(List<BigInteger> xs) {
         GenPolynomial<JasBigInteger> tmp = toPolynomial(xs);
         FactorAbstract<JasBigInteger> engine = new FactorInteger();

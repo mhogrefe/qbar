@@ -37,6 +37,7 @@ class GenPolynomialTokenizer {
 
     public GenPolynomialTokenizer(GenPolynomialRing rf, Reader r) {
         this(r);
+        System.out.println("USED");
         if (rf == null) {
             return;
         }
@@ -63,6 +64,7 @@ class GenPolynomialTokenizer {
      */
     @SuppressWarnings("unchecked")
     private GenPolynomialTokenizer(Reader r) {
+        System.out.println("USED");
         //BasicConfigurator.configure();
         vars = null;
         tord = new TermOrder();
