@@ -959,8 +959,8 @@ public class RationalProperties {
         for (Rational r : take(LIMIT, P.positiveRationals())) {
             int exponent = r.binaryExponent();
             Rational power = ONE.shiftLeft(exponent);
-            assertTrue(r.toString(), power.compareTo(r) <= 0);
-            assertTrue(r.toString(), r.compareTo(power.shiftLeft(1)) < 0);
+            assertTrue(r.toString(), le(power, r));
+            assertTrue(r.toString(), le(r, power.shiftLeft(1)));
         }
 
         for (Rational r : take(LIMIT, P.rationals(Interval.lessThanOrEqualTo(ZERO)))) {

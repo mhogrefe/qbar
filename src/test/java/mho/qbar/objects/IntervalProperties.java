@@ -62,6 +62,7 @@ public class IntervalProperties {
             propertiesMakeDisjoint();
             propertiesMidpoint();
             propertiesSplit();
+            propertiesBisect();
             propertiesEquals();
             propertiesHashCode();
             propertiesCompareTo();
@@ -508,6 +509,8 @@ public class IntervalProperties {
         Iterable<Pair<Interval, Rational>> ps = filter(q -> q.a.contains(q.b), P.pairs(P.intervals(), P.rationals()));
         for (Pair<Interval, Rational> p : take(LIMIT, ps)) {
             Pair<Interval, Interval> split = p.a.split(p.b);
+            validate(split.a);
+            validate(split.b);
             assertEquals(p.toString(), split.a.getUpper().get(), p.b);
             assertEquals(p.toString(), split.b.getLower().get(), p.b);
             for (Rational r : take(TINY_LIMIT, P.rationals(p.a))) {
@@ -550,6 +553,40 @@ public class IntervalProperties {
             try {
                 p.a.split(p.b);
                 fail(p.toString());
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private static void propertiesBisect() {
+        initialize();
+        System.out.println("\t\ttesting bisect() properties...");
+
+        for (Interval a : take(LIMIT, P.finitelyBoundedIntervals())) {
+            Pair<Interval, Interval> bisection = a.bisect();
+            validate(bisection.a);
+            validate(bisection.b);
+            assertTrue(a.toString(), bisection.a.isFinitelyBounded());
+            assertTrue(a.toString(), bisection.b.isFinitelyBounded());
+            assertEquals(a.toString(), bisection.a.diameter().get(), bisection.b.diameter().get());
+            assertEquals(a.toString(), bisection.a.getUpper().get(), bisection.b.getLower().get());
+            for (Rational r : take(TINY_LIMIT, P.rationals(a))) {
+                assertTrue(a.toString(), bisection.a.contains(r) || bisection.b.contains(r));
+            }
+        }
+
+        for (Rational r : take(LIMIT, P.rationals())) {
+            Interval a = of(r);
+            assertEquals(r.toString(), a.bisect(), new Pair<>(a, a));
+        }
+
+        for (Rational r : take(LIMIT, P.rationals())) {
+            try {
+                lessThanOrEqualTo(r).bisect();
+                fail(r.toString());
+            } catch (ArithmeticException ignored) {}
+            try {
+                greaterThanOrEqualTo(r).bisect();
+                fail(r.toString());
             } catch (ArithmeticException ignored) {}
         }
     }
