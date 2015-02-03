@@ -1,7 +1,6 @@
 package jas.poly;
 
 import jas.arith.*;
-import jas.structure.RingElem;
 import jas.util.ListUtil;
 
 import java.util.List;
