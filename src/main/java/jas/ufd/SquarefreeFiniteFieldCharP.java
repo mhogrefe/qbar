@@ -21,14 +21,6 @@ import java.util.TreeMap;
 
 @SuppressWarnings("ConstantConditions")
 public class SquarefreeFiniteFieldCharP<C extends RingElem<C>> extends SquarefreeFieldCharP<C> {
-
-
-    //;
-
-
-    /**
-     * Constructor.
-     */
     public SquarefreeFiniteFieldCharP(RingFactory<C> fac) {
         super(fac);
         // isFinite() predicate now present
@@ -52,11 +44,6 @@ public class SquarefreeFiniteFieldCharP<C extends RingElem<C>> extends Squarefre
         if (p == null) {
             throw new IllegalArgumentException(this.getClass().getName() + " p == null");
         }
-        // already checked in constructor:
-        //java.math.JasBigInteger c = p.factory().characteristic();
-        //if ( c.signum() == 0 ) {
-        //    return null;
-        //}
         SortedMap<C, Long> root = new TreeMap<>();
         if (p.isZERO()) {
             return root;

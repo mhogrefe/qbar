@@ -380,12 +380,6 @@ public class FactorInteger extends FactorAbstract<JasBigInteger> {
         return s;
     }
 
-    /**
-     * BitSet for factor degree list.
-     *
-     * @param E exponent vector list.
-     * @return b_0, ..., b_k} a BitSet of possible factor degrees.
-     */
     public static BitSet factorDegrees(List<ExpVector> E, int deg) {
         BitSet D = new BitSet(deg + 1);
         D.set(0); // constant factor

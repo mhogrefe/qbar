@@ -23,10 +23,6 @@ public class SquarefreeRingChar0<C extends RingElem<C>> extends SquarefreeAbstra
      */
     private final RingFactory<C> coFac;
 
-
-    /**
-     * Constructor.
-     */
     public SquarefreeRingChar0(RingFactory<C> fac) {
         super(GCDFactory.<C>getProxy(fac));
         if (fac.isField()) {
@@ -49,13 +45,6 @@ public class SquarefreeRingChar0<C extends RingElem<C>> extends SquarefreeAbstra
         return getClass().getName() + " with " + engine + " over " + coFac;
     }
 
-    /**
-     * GenPolynomial polynomial squarefree factorization.
-     *
-     * @param A GenPolynomial.
-     * @return [p_1 -> e_1, ..., p_k -> e_k] with P = prod_{i=1,...,k} p_i^{e_i}
-     * and p_i squarefree.
-     */
     @Override
     public SortedMap<GenPolynomial<C>, Long> baseSquarefreeFactors(GenPolynomial<C> A) {
         SortedMap<GenPolynomial<C>, Long> sfactors = new TreeMap<>();
