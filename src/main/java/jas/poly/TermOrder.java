@@ -1266,43 +1266,6 @@ public final class TermOrder implements Serializable {
         return erg.toString();
     }
 
-
-    /**
-     * Extend variables. Used e.g. in module embedding. Extend TermOrder by k
-     * elements. <b>Note:</b> todo distinguish TOP and POT orders.
-     *
-     * @param r current number of variables.
-     * @param k number of variables to extend.
-     * @return extended TermOrder.
-     */
-    public TermOrder extend(int r, int k) {
-        if (weight != null) {
-            long[][] w = new long[weight.length][];
-            for (int i = 0; i < weight.length; i++) {
-                long[] wi = weight[i];
-                long max = 0;
-                // long min = Long.MAX_VALUE;
-                for (long aWi : wi) {
-                    if (aWi > max)
-                        max = aWi;
-                    //if ( wi[j] < min ) min = wi[j];
-                }
-                max++;
-                long[] wj = new long[wi.length + k];
-                for (int j = 0; j < i; j++) {
-                    wj[j] = max;
-                }
-                System.arraycopy(wi, 0, wj, i, wi.length);
-                w[i] = wj;
-            }
-            return new TermOrder(w);
-        }
-        if (evord2 != 0) {
-            return new TermOrder(evord, evord2, r + k, evend1 + k);
-        }
-        return new TermOrder(DEFAULT_EVORD/*evord*/, evord, r + k, k); // don't change to evord, cause REVITDG
-    }
-
     /**
      * Contract variables. Used e.g. in module embedding. Contract TermOrder to
      * non split status.

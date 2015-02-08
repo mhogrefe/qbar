@@ -229,28 +229,6 @@ public final class ExpVector implements AbelianGroupElem<ExpVector> {
         return new ExpVector(w);
     }
 
-    public int[] dependencyOnVariables() {
-        long[] u = val;
-        int l = 0;
-        for (long anU : u) {
-            if (anU > 0) {
-                l++;
-            }
-        }
-        int[] dep = new int[l];
-        if (l == 0) {
-            return dep;
-        }
-        int j = 0;
-        for (int i = 0; i < u.length; i++) {
-            if (u[i] > 0) {
-                dep[j] = i;
-                j++;
-            }
-        }
-        return dep;
-    }
-
     public boolean multipleOf(ExpVector V) {
         long[] u = val;
         long[] v = V.val;

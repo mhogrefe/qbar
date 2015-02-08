@@ -3,7 +3,6 @@ package jas.poly;
 import jas.structure.RingElem;
 
 import java.util.Map;
-import java.util.Set;
 import java.util.SortedMap;
 
 /**
@@ -144,36 +143,6 @@ public class GenSolvablePolynomial<C extends RingElem<C>> extends GenPolynomial<
             C c = a.multiply(b);
             if (!c.isZERO()) {
                 Cm.put(e, c);
-            }
-        }
-        return Cp;
-    }
-
-
-    /**
-     * GenSolvablePolynomial left and right multiplication. Product with
-     * coefficient ring element.
-     *
-     * @param b coefficient.
-     * @param c coefficient.
-     * @return b*this*c, where * is coefficient multiplication.
-     */
-    GenSolvablePolynomial<C> multiply(C b, C c) {
-        GenSolvablePolynomial<C> Cp = ring.getZERO().copy();
-        if (b == null || b.isZERO()) {
-            return Cp;
-        }
-        if (c == null || c.isZERO()) {
-            return Cp;
-        }
-        Map<ExpVector, C> Cm = Cp.val; //getMap();
-        Map<ExpVector, C> Am = val;
-        for (Map.Entry<ExpVector, C> y : Am.entrySet()) {
-            ExpVector e = y.getKey();
-            C a = y.getValue();
-            C d = b.multiply(a).multiply(c);
-            if (!d.isZERO()) {
-                Cm.put(e, d);
             }
         }
         return Cp;

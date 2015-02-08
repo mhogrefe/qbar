@@ -4,9 +4,6 @@ import jas.arith.ModIntegerRing;
 import jas.structure.RingElem;
 import jas.structure.RingFactory;
 
-import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
 import java.math.BigInteger;
 import java.util.*;
 
