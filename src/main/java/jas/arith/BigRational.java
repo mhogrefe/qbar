@@ -143,16 +143,6 @@ public final class BigRational implements RingElem<BigRational>, RingFactory<Big
     }
 
     /**
-     * Query if this ring is associative.
-     *
-     * @return true.
-     */
-    public boolean isAssociative() {
-        return true;
-    }
-
-
-    /**
      * Query if this ring is a field.
      *
      * @return true.

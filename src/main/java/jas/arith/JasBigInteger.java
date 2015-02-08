@@ -125,17 +125,6 @@ public final class JasBigInteger implements RingElem<JasBigInteger>, RingFactory
         return ONE;
     }
 
-
-    /**
-     * Query if this ring is associative.
-     *
-     * @return true.
-     */
-    public boolean isAssociative() {
-        return true;
-    }
-
-
     /**
      * Query if this ring is a field.
      *

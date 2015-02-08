@@ -138,16 +138,6 @@ public final class ModLongRing implements ModularRingFactory<ModLong> {
     }
 
     /**
-     * Query if this ring is associative.
-     *
-     * @return true.
-     */
-    public boolean isAssociative() {
-        return true;
-    }
-
-
-    /**
      * Query if this ring is a field.
      *
      * @return true if module is prime, else false.

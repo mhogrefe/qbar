@@ -282,17 +282,6 @@ public class GenPolynomialRing<C extends RingElem<C>> implements RingFactory<Gen
         return ONE;
     }
 
-
-    /**
-     * Query if this ring is associative.
-     *
-     * @return true if this ring is associative, else false.
-     */
-    public boolean isAssociative() {
-        return coFac.isAssociative();
-    }
-
-
     /**
      * Query if this ring is a field.
      *
