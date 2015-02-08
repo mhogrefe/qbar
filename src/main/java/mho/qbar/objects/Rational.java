@@ -37,6 +37,7 @@ public final class Rational implements Comparable<Rational> {
      * 0
      */
     public static final @NotNull Rational ZERO = new Rational(BigInteger.ZERO, BigInteger.ONE);
+
     /**
      * 1
      */
@@ -108,7 +109,7 @@ public final class Rational implements Comparable<Rational> {
     private final @NotNull BigInteger denominator;
 
     /**
-     * Private constructor from {@link BigInteger}s; assumes arguments are valid
+     * Private constructor from {@link BigInteger}s; assumes arguments are valid.
      *
      * <ul>
      *  <li>{@code numerator} cannot be null.</li>
@@ -126,7 +127,7 @@ public final class Rational implements Comparable<Rational> {
     }
 
     /**
-     * Returns this {@code Rational}'s numerator
+     * Returns this {@code Rational}'s numerator.
      *
      * <ul>
      *  <li>The result is non-null.</li>
@@ -139,7 +140,7 @@ public final class Rational implements Comparable<Rational> {
     }
 
     /**
-     * Returns this {@code Rational}'s denominator
+     * Returns this {@code Rational}'s denominator.
      *
      * <ul>
      *  <li>The result is positive.</li>
