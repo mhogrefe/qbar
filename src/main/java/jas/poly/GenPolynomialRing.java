@@ -457,20 +457,18 @@ public class GenPolynomialRing<C extends RingElem<C>> implements RingFactory<Gen
      */
     private static String[] newVars(int n) {
         String[] vars = new String[n];
-        synchronized (knownVars) {
-            int m = knownVars.size();
-            String name = "x" + m;
-            for (int i = 0; i < n; i++) {
-                while (knownVars.contains(name)) {
-                    m++;
-                    name = "x" + m;
-                }
-                vars[i] = name;
-                //System.out.println("new variable: " + name);
-                knownVars.add(name);
+        int m = knownVars.size();
+        String name = "x" + m;
+        for (int i = 0; i < n; i++) {
+            while (knownVars.contains(name)) {
                 m++;
                 name = "x" + m;
             }
+            vars[i] = name;
+            //System.out.println("new variable: " + name);
+            knownVars.add(name);
+            m++;
+            name = "x" + m;
         }
         return vars;
     }
@@ -484,8 +482,6 @@ public class GenPolynomialRing<C extends RingElem<C>> implements RingFactory<Gen
         if (vars == null) {
             return;
         }
-        synchronized (knownVars) {
-            Collections.addAll(knownVars, vars);
-        }
+        Collections.addAll(knownVars, vars);
     }
 }

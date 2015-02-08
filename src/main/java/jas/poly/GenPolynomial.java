@@ -43,9 +43,6 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
     private GenPolynomial(GenPolynomialRing<C> r, TreeMap<ExpVector, C> t) {
         ring = r;
         val = t;
-        if (Thread.currentThread().isInterrupted()) {
-            throw new RuntimeException();
-        }
     }
 
 
