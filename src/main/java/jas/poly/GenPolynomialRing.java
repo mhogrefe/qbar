@@ -444,24 +444,6 @@ public class GenPolynomialRing<C extends RingElem<C>> implements RingFactory<Gen
     }
 
     /**
-     * Contract variables. Used e.g. in module embedding. Contract number of
-     * variables by i.
-     *
-     * @param i number of variables to remove.
-     * @return contracted polynomial ring factory.
-     */
-    public GenPolynomialRing<C> contract(int i) {
-        String[] v = null;
-        if (vars != null) {
-            v = new String[vars.length - i];
-            System.arraycopy(vars, 0, v, 0, vars.length - i);
-        }
-        TermOrder to = tord.contract(i, nvar - i);
-        return new GenPolynomialRing<>(coFac, nvar - i, to, v);
-    }
-
-
-    /**
      * Recursive representation as polynomial with i main variables.
      *
      * @param i number of main variables.
@@ -471,7 +453,8 @@ public class GenPolynomialRing<C extends RingElem<C>> implements RingFactory<Gen
         if (i <= 0 || i >= nvar) {
             throw new IllegalArgumentException("wrong: 0 < " + i + " < " + nvar);
         }
-        GenPolynomialRing<C> cfac = contract(i);
+        System.exit(1);
+        GenPolynomialRing<C> cfac = null;
         String[] v = null;
         if (vars != null) {
             v = new String[i];

@@ -135,21 +135,4 @@ public class GenSolvablePolynomialRing<C extends RingElem<C>> extends GenPolynom
     public GenSolvablePolynomial<C> univariate(int modv, int i, long e) {
         return (GenSolvablePolynomial<C>) super.univariate(modv, i, e);
     }
-
-    /**
-     * Contract variables. Used e.g. in module embedding. Contract number of
-     * variables by i.
-     *
-     * @param i number of variables to remove.
-     * @return contracted solvable polynomial ring factory.
-     */
-    @Override
-    public GenSolvablePolynomialRing<C> contract(int i) {
-        GenPolynomialRing<C> pfac = super.contract(i);
-        GenSolvablePolynomialRing<C> spfac = new GenSolvablePolynomialRing<>(pfac.coFac, pfac.nvar,
-                pfac.tord, pfac.vars);
-        spfac.table.contract(this.table);
-        return spfac;
-    }
-
 }

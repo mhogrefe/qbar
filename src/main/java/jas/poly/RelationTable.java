@@ -90,20 +90,4 @@ class RelationTable<C extends RingElem<C>> implements Serializable {
         s.append("]");
         return s.toString();
     }
-
-    /**
-     * Contract variables. Used e.g. in module embedding. Contract all
-     * ExpVectors and polynomials of the given relation table by i elements and
-     * put the relations into this table, i.e. this should be empty.
-     *
-     * @param tab a relation table to be contracted and inserted into this.
-     */
-    @SuppressWarnings("unchecked")
-    public void contract(RelationTable<C> tab) {
-        if (tab.table.size() == 0) {
-            return;
-        }
-        if (!tab.table.isEmpty()) System.exit(1);
-    }
-
 }

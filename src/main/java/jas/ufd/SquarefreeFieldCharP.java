@@ -312,7 +312,8 @@ public abstract class SquarefreeFieldCharP<C extends RingElem<C>> extends Square
         if (P.isZERO()) {
             return sfactors;
         }
-        GenPolynomialRing<C> cfac = pfac.contract(1);
+        System.exit(1);
+        GenPolynomialRing<C> cfac = null;
         GenPolynomialRing<GenPolynomial<C>> rfac = new GenPolynomialRing<>(cfac);
 
         GenPolynomial<GenPolynomial<C>> Pr = PolyUtil.recursive(rfac, P);

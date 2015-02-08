@@ -202,7 +202,8 @@ public abstract class GreatestCommonDivisorAbstract<C extends RingElem<C>> {
         if (pfac.nvar <= 1) {
             return baseGcd(P, S);
         }
-        GenPolynomialRing<C> cfac = pfac.contract(1);
+        System.exit(1);
+        GenPolynomialRing<C> cfac = null;
         GenPolynomialRing<GenPolynomial<C>> rfac;
         if (pfac.getVars() != null && pfac.getVars().length > 0) {
             rfac = GenPolynomialRing.make(cfac);

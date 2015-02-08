@@ -133,20 +133,4 @@ public class GenSolvablePolynomialRing_BigRational extends GenSolvablePolynomial
     public GenSolvablePolynomial<BigRational> univariate(int modv, int i, long e) {
         return super.univariate(modv, i, e);
     }
-
-    /**
-     * Contract variables. Used e.g. in module embedding. Contract number of
-     * variables by i.
-     *
-     * @param i number of variables to remove.
-     * @return contracted solvable polynomial ring factory.
-     */
-    @Override
-    public GenSolvablePolynomialRing<BigRational> contract(int i) {
-        GenPolynomialRing<BigRational> pfac = super.contract(i);
-        GenSolvablePolynomialRing<BigRational> spfac = new GenSolvablePolynomialRing_BigRational(pfac.coFac, pfac.nvar,
-                pfac.tord, pfac.vars);
-        spfac.table.contract(this.table);
-        return spfac;
-    }
 }
