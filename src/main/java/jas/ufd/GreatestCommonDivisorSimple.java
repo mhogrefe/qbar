@@ -153,18 +153,4 @@ public class GreatestCommonDivisorSimple<C extends RingElem<C>> extends Greatest
         q = q.abs().multiply(c);
         return q;
     }
-
-    /**
-     * Univariate GenPolynomial recursive resultant.
-     *
-     * @param P univariate recursive GenPolynomial.
-     * @param S univariate recursive GenPolynomial.
-     * @return res(P, S).
-     */
-    @Override
-    public GenPolynomial<GenPolynomial<C>> recursiveUnivariateResultant(GenPolynomial<GenPolynomial<C>> P,
-                                                                        GenPolynomial<GenPolynomial<C>> S) {
-        return null;
-    }
-
 }

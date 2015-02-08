@@ -216,20 +216,4 @@ public abstract class GreatestCommonDivisorAbstract<C extends RingElem<C>> {
         return null;
 //        return PolyUtil.distribute(pfac, Dr);
     }
-
-    /**
-     * Univariate GenPolynomial recursive resultant.
-     *
-     * @param P univariate recursive GenPolynomial.
-     * @param S univariate recursive GenPolynomial.
-     * @return res(P, S).
-     * @throws UnsupportedOperationException if there is no implementation in
-     *                                       the sub-class.
-     */
-    @SuppressWarnings("unused")
-    public GenPolynomial<GenPolynomial<C>> recursiveUnivariateResultant(GenPolynomial<GenPolynomial<C>> P,
-                                                                        GenPolynomial<GenPolynomial<C>> S) {
-        // can not be abstract
-        throw new UnsupportedOperationException("not implemented");
-    }
 }
