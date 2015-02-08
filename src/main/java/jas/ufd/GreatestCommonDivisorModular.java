@@ -250,7 +250,8 @@ public class GreatestCommonDivisorModular<MOD extends RingElem<MOD> & Modular> e
     @Override
     public GenPolynomial<JasBigInteger> baseResultant(GenPolynomial<JasBigInteger> P, GenPolynomial<JasBigInteger> S) {
         // not a special case here
-        return resultant(P, S);
+        System.exit(1);
+        return null;
     }
 
 

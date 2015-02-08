@@ -71,11 +71,12 @@ public class GenSolvablePolynomialRing_BigRational extends GenSolvablePolynomial
                 Xj = univariate(j);
                 for (int k = j + 1; k < nvar; k++) {
                     Xk = univariate(k);
-                    p = Xk.multiply(Xj).multiply(Xi);
-                    q = Xk.multiply(Xj.multiply(Xi));
-                    if (!p.equals(q)) {
-                        return false;
-                    }
+                    System.exit(1);
+//                    p = Xk.multiply(Xj).multiply(Xi);
+//                    q = Xk.multiply(Xj.multiply(Xi));
+//                    if (!p.equals(q)) {
+//                        return false;
+//                    }
                 }
             }
         }

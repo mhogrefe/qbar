@@ -108,20 +108,6 @@ public final class ExpVector implements AbelianGroupElem<ExpVector> {
         return new ExpVector(w);
     }
 
-    public ExpVector combine(ExpVector V) {
-        if (V == null || V.length() == 0) {
-            return this;
-        }
-        ExpVector Vl = V;
-        if (val.length == 0) {
-            return Vl;
-        }
-        long[] w = new long[val.length + Vl.val.length];
-        System.arraycopy(val, 0, w, 0, val.length);
-        System.arraycopy(Vl.val, 0, w, val.length, Vl.val.length);
-        return new ExpVector(w);
-    }
-
     @Override
     public String toString() {
         StringBuilder s = new StringBuilder("(");

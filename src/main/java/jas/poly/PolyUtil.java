@@ -55,41 +55,6 @@ public class PolyUtil {
         return B;
     }
 
-
-    /**
-     * Distribute a recursive polynomial to a generic polynomial. Works for
-     * arbitrary term orders.
-     *
-     * @param <C>  coefficient type.
-     * @param dfac combined polynomial ring factory of coefficients and this.
-     * @param B    polynomial to be converted.
-     * @return distributed polynomial.
-     */
-    public static <C extends RingElem<C>> GenPolynomial<C> distribute(GenPolynomialRing<C> dfac,
-                                                                      GenPolynomial<GenPolynomial<C>> B) {
-        GenPolynomial<C> C = dfac.getZERO().copy();
-        if (B.isZERO()) {
-            return C;
-        }
-        Map<ExpVector, C> Cm = C.val; //getMap();
-        for (Map.Entry<ExpVector, GenPolynomial<C>> y : B.getMap().entrySet()) {
-            ExpVector e = y.getKey();
-            GenPolynomial<C> A = y.getValue();
-            for (Map.Entry<ExpVector, C> x : A.val.entrySet()) {
-                ExpVector f = x.getKey();
-                C b = x.getValue();
-                ExpVector g = e.combine(f);
-                assert (Cm.get(g) != null);
-                //if ( Cm.get(g) != null ) { // todo assert, done
-                //   throw new RuntimeException("PolyUtil debug error");
-                //}
-                Cm.put(g, b);
-            }
-        }
-        return C;
-    }
-
-
     /**
      * JasBigInteger from ModInteger coefficients, symmetric. Represent as
      * polynomial with JasBigInteger coefficients by removing the modules and

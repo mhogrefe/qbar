@@ -115,14 +115,12 @@ public class GreatestCommonDivisorModEval<MOD extends RingElem<MOD> & Modular>
         rr = PolyUtil.recursiveDivide(rr, a);
         qr = PolyUtil.recursiveDivide(qr, b);
         if (rr.isONE()) {
-            rr = rr.multiply(c);
-            r = PolyUtil.distribute(fac, rr);
-            return r;
+            System.exit(1);
+            return null;
         }
         if (qr.isONE()) {
-            qr = qr.multiply(c);
-            q = PolyUtil.distribute(fac, qr);
-            return q;
+            System.exit(1);
+            return null;
         }
         // compute normalization factor
         GenPolynomial<MOD> ac = rr.leadingBaseCoefficient();
@@ -232,10 +230,8 @@ public class GreatestCommonDivisorModEval<MOD extends RingElem<MOD> & Modular>
             //}
         }
         // remove normalization
-        cp = recursivePrimitivePart(cp).abs();
-        cp = cp.multiply(c);
-        q = PolyUtil.distribute(fac, cp);
-        return q;
+        System.exit(1);
+        return null;
     }
 
 
@@ -275,7 +271,6 @@ public class GreatestCommonDivisorModEval<MOD extends RingElem<MOD> & Modular>
      * @param S GenPolynomial.
      * @return res(P, S).
      */
-    @Override
     GenPolynomial<MOD> resultant(GenPolynomial<MOD> P, GenPolynomial<MOD> S) {
         if (S == null || S.isZERO()) {
             return S;
@@ -346,7 +341,8 @@ public class GreatestCommonDivisorModEval<MOD extends RingElem<MOD> & Modular>
         for (MOD d = cofac.getZERO(); d.compareTo(end) <= 0; d = d.sum(inc)) {
             if (++i >= en) {
 
-                return mufd.resultant(P, S);
+//                return mufd.resultant(P, S);
+                System.exit(1);
                 //throw new ArithmeticException("prime list exhausted");
             }
             // map polynomials
@@ -385,8 +381,8 @@ public class GreatestCommonDivisorModEval<MOD extends RingElem<MOD> & Modular>
             //
         }
         // distribute
-        q = PolyUtil.distribute(fac, cp);
-        return q;
+        System.exit(1);
+        return null;
     }
 
 }

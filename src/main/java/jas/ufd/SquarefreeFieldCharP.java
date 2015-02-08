@@ -321,8 +321,8 @@ public abstract class SquarefreeFieldCharP<C extends RingElem<C>> extends Square
         for (Map.Entry<GenPolynomial<GenPolynomial<C>>, Long> m : PP.entrySet()) {
             Long i = m.getValue();
             GenPolynomial<GenPolynomial<C>> Dr = m.getKey();
-            GenPolynomial<C> D = PolyUtil.distribute(pfac, Dr);
-            sfactors.put(D, i);
+//            GenPolynomial<C> D = PolyUtil.distribute(pfac, Dr);
+//            sfactors.put(D, i);
         }
         return sfactors;
     }

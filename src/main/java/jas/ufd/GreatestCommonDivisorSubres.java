@@ -282,9 +282,11 @@ public class GreatestCommonDivisorSubres<C extends RingElem<C>> extends Greatest
         if (f == 0 && e == 0 && g.ring.nvar > 0) {
             // if coeffs are multivariate (and non constant)
             // otherwise it would be 1
-            t = resultant(a, b);
-            x = P.ring.getONE().multiply(t);
-            return x;
+//            t = resultant(a, b);
+            System.exit(1);
+            return null;
+//            x = P.ring.getONE().multiply(t);
+//            return x;
         }
         t = power(cofac, a, e);
         t = t.multiply(power(cofac, b, f));
