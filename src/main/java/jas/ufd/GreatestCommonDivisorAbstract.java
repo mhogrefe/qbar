@@ -270,37 +270,7 @@ public abstract class GreatestCommonDivisorAbstract<C extends RingElem<C>> {
         }
         GenPolynomialRing<GenPolynomial<C>> rfac = P.ring;
         GenPolynomialRing<C> cfac = (GenPolynomialRing<C>) rfac.coFac;
-        GenPolynomialRing<C> dfac = cfac.extend(rfac.getVars());
         System.exit(1);
         return null;
     }
-
-//
-//    /**
-//     * GenPolynomial resultant. The input polynomials are considered as
-//     * univariate polynomials in the main variable.
-//     *
-//     * @param P GenPolynomial.
-//     * @param S GenPolynomial.
-//     * @return res(P, S).
-//     * @throws UnsupportedOperationException if there is no implementation in
-//     *                                       the sub-class.
-//     * @see jas.ufd.GreatestCommonDivisorSubres#recursiveResultant
-//     */
-//    GenPolynomial<C> resultant(GenPolynomial<C> P, GenPolynomial<C> S) {
-//        if (S == null || S.isZERO()) {
-//            return S;
-//        }
-//        if (P == null || P.isZERO()) {
-//            return P;
-//        }
-//        // no more hacked: GreatestCommonDivisorSubres<C> ufd_sr = new GreatestCommonDivisorSubres<C>();
-//        GenPolynomialRing<C> pfac = P.ring;
-//        if (pfac.nvar <= 1) {
-//            return baseResultant(P, S);
-//        }
-//        System.exit(1);
-//        return null;
-//    }
-
 }

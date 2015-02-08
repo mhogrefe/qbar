@@ -52,36 +52,6 @@ class RelationTable<C extends RingElem<C>> implements Serializable {
         }
     }
 
-
-    /**
-     * RelationTable equals. Tests same keySets only, not relations itself. Will
-     * be improved in the future.
-     *
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
-    @Override
-    @SuppressWarnings("unchecked")
-    public boolean equals(Object p) {
-        if (!(p instanceof RelationTable)) {
-            return false;
-        }
-        RelationTable<C> tab = null;
-        try {
-            tab = (RelationTable<C>) p;
-        } catch (ClassCastException ignored) {
-        }
-        // not possible because of infinite recursion:
-        //if (!ring.equals(tab.ring)) {
-        //
-        //    return false;
-        //}
-        if (!table.keySet().equals(tab.table.keySet())) {
-            return false;
-        }
-        System.exit(1);
-        return false;
-    }
-
     /**
      * Hash code for this relation table.
      *
@@ -120,22 +90,6 @@ class RelationTable<C extends RingElem<C>> implements Serializable {
         s.append("]");
         return s.toString();
     }
-
-    /**
-     * Extend variables. Used e.g. in module embedding. Extend all ExpVectors
-     * and polynomials of the given relation table by i elements and put the
-     * relations into this table, i.e. this should be empty.
-     *
-     * @param tab a relation table to be extended and inserted into this.
-     */
-    @SuppressWarnings("unchecked")
-    public void extend(RelationTable<C> tab) {
-        if (tab.table.size() == 0) {
-            return;
-        }
-        System.exit(1);
-    }
-
 
     /**
      * Contract variables. Used e.g. in module embedding. Contract all

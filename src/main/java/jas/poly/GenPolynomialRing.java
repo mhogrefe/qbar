@@ -444,26 +444,6 @@ public class GenPolynomialRing<C extends RingElem<C>> implements RingFactory<Gen
     }
 
     /**
-     * Extend variables. Used e.g. in module embedding. Extend number of
-     * variables by length(vn).
-     *
-     * @param vn names for extended variables.
-     * @return extended polynomial ring factory.
-     */
-    public GenPolynomialRing<C> extend(String[] vn) {
-        if (vn == null || vars == null) {
-            throw new IllegalArgumentException("vn and vars may not be null");
-        }
-        int i = vn.length;
-        String[] v = new String[vars.length + i];
-        System.arraycopy(vars, 0, v, 0, vars.length);
-        System.arraycopy(vn, 0, v, vars.length, vn.length);
-
-        TermOrder to = tord.extend(nvar, i);
-        return new GenPolynomialRing<>(coFac, nvar + i, to, v);
-    }
-
-    /**
      * Contract variables. Used e.g. in module embedding. Contract number of
      * variables by i.
      *

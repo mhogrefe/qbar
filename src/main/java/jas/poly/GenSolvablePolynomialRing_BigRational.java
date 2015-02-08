@@ -135,23 +135,6 @@ public class GenSolvablePolynomialRing_BigRational extends GenSolvablePolynomial
     }
 
     /**
-     * Extend variables. Used e.g. in module embedding. Extend number of
-     * variables by length(vn). New variables commute with the exiting variables.
-     *
-     * @param vn names for extended variables.
-     * @return extended polynomial ring factory.
-     */
-    @Override
-    public GenSolvablePolynomialRing<BigRational> extend(String[] vn) {
-        GenPolynomialRing<BigRational> pfac = super.extend(vn);
-        GenSolvablePolynomialRing<BigRational> spfac = new GenSolvablePolynomialRing_BigRational(pfac.coFac, pfac.nvar,
-                pfac.tord, pfac.vars);
-        spfac.table.extend(this.table);
-        return spfac;
-    }
-
-
-    /**
      * Contract variables. Used e.g. in module embedding. Contract number of
      * variables by i.
      *
