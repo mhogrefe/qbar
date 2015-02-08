@@ -423,7 +423,7 @@ public class GenPolynomialRing<C extends RingElem<C>> implements RingFactory<Gen
             C one = coFac.getONE();
             ExpVector f = ExpVector.create(r, i, e);
             if (modv > 0) {
-                f = f.extend(modv, 0l);
+                System.exit(1);
             }
             p = p.sum(one, f);
         }
@@ -439,31 +439,6 @@ public class GenPolynomialRing<C extends RingElem<C>> implements RingFactory<Gen
     public boolean isFinite() {
         return (nvar == 0) && coFac.isFinite();
     }
-
-    /**
-     * Recursive representation as polynomial with i main variables.
-     *
-     * @param i number of main variables.
-     * @return recursive polynomial ring factory.
-     */
-    public GenPolynomialRing<GenPolynomial<C>> recursive(int i) {
-        if (i <= 0 || i >= nvar) {
-            throw new IllegalArgumentException("wrong: 0 < " + i + " < " + nvar);
-        }
-        System.exit(1);
-        GenPolynomialRing<C> cfac = null;
-        String[] v = null;
-        if (vars != null) {
-            v = new String[i];
-            int k = 0;
-            for (int j = nvar - i; j < nvar; j++) {
-                v[k++] = vars[j];
-            }
-        }
-        TermOrder to = tord.contract(0, i); // ??
-        return new GenPolynomialRing<>(cfac, i, to, v);
-    }
-
 
     /**
      * Get PolynomialComparator.

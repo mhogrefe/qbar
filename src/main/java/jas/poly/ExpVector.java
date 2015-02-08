@@ -59,18 +59,6 @@ public final class ExpVector implements AbelianGroupElem<ExpVector> {
     }
 
     /**
-     * Clone this.
-     *
-     * @see java.lang.Object#clone()
-     */
-    protected ExpVector copy() {
-        long[] w = new long[val.length];
-        System.arraycopy(val, 0, w, 0, val.length);
-        return new ExpVector(w);
-    }
-
-
-    /**
      * Get the exponent at position i.
      *
      * @param i position.
@@ -80,45 +68,8 @@ public final class ExpVector implements AbelianGroupElem<ExpVector> {
         return val[i];
     }
 
-    protected void setVal(long e) {
-        val[0] = e;
-        hash = 0;
-    }
-
     public int length() {
         return val.length;
-    }
-
-    public ExpVector extend(int i, long e) {
-        long[] w = new long[val.length + i];
-        System.arraycopy(val, 0, w, i, val.length);
-        if (0 >= i) {
-            throw new IllegalArgumentException("i " + i + " <= j " + 0 + " invalid");
-        }
-        w[0] = e;
-        return new ExpVector(w);
-    }
-
-    public ExpVector contract(int i, int len) {
-        if (i + len > val.length) {
-            throw new IllegalArgumentException("len " + len + " > val.len " + val.length);
-        }
-        long[] w = new long[len];
-        System.arraycopy(val, i, w, 0, len);
-        return new ExpVector(w);
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder s = new StringBuilder("(");
-        for (int i = 0; i < length(); i++) {
-            s.append(getVal(i));
-            if (i < length() - 1) {
-                s.append(",");
-            }
-        }
-        s.append(")");
-        return s.toString() + ":long";
     }
 
     @Override
@@ -133,26 +84,12 @@ public final class ExpVector implements AbelianGroupElem<ExpVector> {
 
     @Override
     public ExpVector abs() {
-        long[] u = val;
-        long[] w = new long[u.length];
-        for (int i = 0; i < u.length; i++) {
-            if (u[i] >= 0L) {
-                w[i] = u[i];
-            } else {
-                w[i] = -u[i];
-            }
-        }
-        return new ExpVector(w);
+        return null;
     }
 
     @Override
     public ExpVector negate() {
-        long[] u = val;
-        long[] w = new long[u.length];
-        for (int i = 0; i < u.length; i++) {
-            w[i] = -u[i];
-        }
-        return new ExpVector(w);
+        return null;
     }
 
     @Override
@@ -175,12 +112,6 @@ public final class ExpVector implements AbelianGroupElem<ExpVector> {
             w[i] = u[i] - v[i];
         }
         return new ExpVector(w);
-    }
-
-    public ExpVector subst(long d) {
-        ExpVector V = this.copy();
-        V.setVal(d);
-        return V;
     }
 
     @Override
@@ -219,15 +150,7 @@ public final class ExpVector implements AbelianGroupElem<ExpVector> {
         return new ExpVector(w);
     }
 
-    public ExpVector gcd(ExpVector V) {
-        long[] u = val;
-        long[] v = V.val;
-        long[] w = new long[u.length];
-        for (int i = 0; i < u.length; i++) {
-            w[i] = (u[i] <= v[i] ? u[i] : v[i]);
-        }
-        return new ExpVector(w);
-    }
+    //todo continue usage investigation
 
     public boolean multipleOf(ExpVector V) {
         long[] u = val;

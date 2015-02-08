@@ -78,7 +78,8 @@ public class GreatestCommonDivisorModEval<MOD extends RingElem<MOD> & Modular>
         long e = P.degree(fac.nvar - 1);
         long f = S.degree(fac.nvar - 1);
         if (e == 0 && f == 0) {
-            GenPolynomialRing<GenPolynomial<MOD>> rfac = fac.recursive(1);
+            System.exit(1);
+            GenPolynomialRing<GenPolynomial<MOD>> rfac = null;
             GenPolynomial<MOD> Pc = PolyUtil.<MOD>recursive(rfac, P).leadingBaseCoefficient();
             GenPolynomial<MOD> Sc = PolyUtil.<MOD>recursive(rfac, S).leadingBaseCoefficient();
             GenPolynomial<MOD> r = gcd(Pc, Sc);
@@ -98,7 +99,8 @@ public class GreatestCommonDivisorModEval<MOD extends RingElem<MOD> & Modular>
         // setup factories
         ModularRingFactory<MOD> cofac = (ModularRingFactory<MOD>) P.ring.coFac;
         cofac.isField();
-        GenPolynomialRing<GenPolynomial<MOD>> rfac = fac.recursive(fac.nvar - 1);
+        System.exit(1);
+        GenPolynomialRing<GenPolynomial<MOD>> rfac = null;
         GenPolynomialRing<MOD> mfac = new GenPolynomialRing<>(cofac, rfac);
         GenPolynomialRing<MOD> ufac = (GenPolynomialRing<MOD>) rfac.coFac;
         // convert polynomials
@@ -135,7 +137,8 @@ public class GreatestCommonDivisorModEval<MOD extends RingElem<MOD> & Modular>
         long G = (rd0 >= qd0 ? rd0 : qd0) + cd0;
 
         // initialize element and degree vector
-        ExpVector wdegv = rdegv.subst(rdegv.getVal(0) + 1);
+        System.exit(1);
+        ExpVector wdegv = null;
         // +1 seems to be a hack for the unlucky prime test
         MOD inc = cofac.getONE();
         long i = 0;
@@ -210,7 +213,7 @@ public class GreatestCommonDivisorModEval<MOD extends RingElem<MOD> & Modular>
                 // initialize interpolation
                 M = ufac.getONE();
                 cp = rfac.getZERO();
-                wdegv = wdegv.gcd(mdegv); //EVGCD(wdegv,mdegv);
+                System.exit(1);
             }
             // interpolate
             mi = PolyUtil.evaluateMain(cofac, M, d);

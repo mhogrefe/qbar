@@ -43,8 +43,9 @@ public class PolyUtil {
         for (Map.Entry<ExpVector, C> y : A.getMap().entrySet()) {
             ExpVector e = y.getKey();
             C a = y.getValue();
-            ExpVector f = e.contract(0, i);
-            ExpVector g = e.contract(i, e.length() - i);
+            System.exit(1);
+            ExpVector f = null;
+            ExpVector g = null;
             GenPolynomial<C> p = Bv.get(f);
             if (p == null) {
                 p = zero;

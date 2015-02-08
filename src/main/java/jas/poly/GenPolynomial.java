@@ -1042,7 +1042,8 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
         for (Map.Entry<ExpVector, C> y : A.entrySet()) {
             ExpVector e = y.getKey();
             C a = y.getValue();
-            ExpVector f = e.extend(i, k);
+            System.exit(1);
+            ExpVector f = null;
             C.put(f, a);
         }
         return Cp;
