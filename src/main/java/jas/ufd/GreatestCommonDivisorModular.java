@@ -238,35 +238,4 @@ public class GreatestCommonDivisorModular<MOD extends RingElem<MOD> & Modular> e
         q = basePrimitivePart(q);
         return q.abs().multiply(c);
     }
-
-
-    /**
-     * Univariate GenPolynomial resultant.
-     *
-     * @param P univariate GenPolynomial.
-     * @param S univariate GenPolynomial.
-     * @return res(P, S).
-     */
-    @Override
-    public GenPolynomial<JasBigInteger> baseResultant(GenPolynomial<JasBigInteger> P, GenPolynomial<JasBigInteger> S) {
-        // not a special case here
-        System.exit(1);
-        return null;
-    }
-
-
-    /**
-     * Univariate GenPolynomial recursive resultant.
-     *
-     * @param P univariate recursive GenPolynomial.
-     * @param S univariate recursive GenPolynomial.
-     * @return res(P, S).
-     */
-    public GenPolynomial<GenPolynomial<JasBigInteger>> recursiveUnivariateResultant(GenPolynomial<GenPolynomial<JasBigInteger>> P,
-                                                                                    GenPolynomial<GenPolynomial<JasBigInteger>> S) {
-        // only in this class
-        return recursiveResultant(P, S);
-    }
-
-
 }

@@ -217,23 +217,6 @@ public abstract class GreatestCommonDivisorAbstract<C extends RingElem<C>> {
 //        return PolyUtil.distribute(pfac, Dr);
     }
 
-
-    /**
-     * Univariate GenPolynomial resultant.
-     *
-     * @param P univariate GenPolynomial.
-     * @param S univariate GenPolynomial.
-     * @return res(P, S).
-     * @throws UnsupportedOperationException if there is no implementation in
-     *                                       the sub-class.
-     */
-    @SuppressWarnings("unused")
-    public GenPolynomial<C> baseResultant(GenPolynomial<C> P, GenPolynomial<C> S) {
-        // can not be abstract
-        throw new UnsupportedOperationException("not implemented");
-    }
-
-
     /**
      * Univariate GenPolynomial recursive resultant.
      *
@@ -248,29 +231,5 @@ public abstract class GreatestCommonDivisorAbstract<C extends RingElem<C>> {
                                                                         GenPolynomial<GenPolynomial<C>> S) {
         // can not be abstract
         throw new UnsupportedOperationException("not implemented");
-    }
-
-
-    /**
-     * GenPolynomial recursive resultant.
-     *
-     * @param P univariate recursive GenPolynomial.
-     * @param S univariate recursive GenPolynomial.
-     * @return res(P, S).
-     * @throws UnsupportedOperationException if there is no implementation in
-     *                                       the sub-class.
-     */
-    GenPolynomial<GenPolynomial<C>> recursiveResultant(GenPolynomial<GenPolynomial<C>> P,
-                                                       GenPolynomial<GenPolynomial<C>> S) {
-        if (S == null || S.isZERO()) {
-            return S;
-        }
-        if (P == null || P.isZERO()) {
-            return P;
-        }
-        GenPolynomialRing<GenPolynomial<C>> rfac = P.ring;
-        GenPolynomialRing<C> cfac = (GenPolynomialRing<C>) rfac.coFac;
-        System.exit(1);
-        return null;
     }
 }

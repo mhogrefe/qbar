@@ -234,21 +234,6 @@ public class GreatestCommonDivisorModEval<MOD extends RingElem<MOD> & Modular>
         return null;
     }
 
-
-    /**
-     * Univariate GenPolynomial resultant.
-     *
-     * @param P univariate GenPolynomial.
-     * @param S univariate GenPolynomial.
-     * @return res(P, S).
-     */
-    @Override
-    public GenPolynomial<MOD> baseResultant(GenPolynomial<MOD> P, GenPolynomial<MOD> S) {
-        // required as recursion base
-        return mufd.baseResultant(P, S);
-    }
-
-
     /**
      * Univariate GenPolynomial recursive resultant.
      *
@@ -260,7 +245,8 @@ public class GreatestCommonDivisorModEval<MOD extends RingElem<MOD> & Modular>
     public GenPolynomial<GenPolynomial<MOD>> recursiveUnivariateResultant(GenPolynomial<GenPolynomial<MOD>> P,
                                                                           GenPolynomial<GenPolynomial<MOD>> S) {
         // only in this class
-        return recursiveResultant(P, S);
+        System.exit(1);
+        return null;
     }
 
 
@@ -281,7 +267,8 @@ public class GreatestCommonDivisorModEval<MOD extends RingElem<MOD> & Modular>
         GenPolynomialRing<MOD> fac = P.ring;
         // recusion base case for univariate polynomials
         if (fac.nvar <= 1) {
-            return mufd.baseResultant(P, S);
+            System.exit(1);
+            return null;
         }
         long e = P.degree(fac.nvar - 1);
         long f = S.degree(fac.nvar - 1);
