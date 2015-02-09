@@ -156,8 +156,8 @@ public class RationalTest {
         aeq(of(0.15625f), "5/32");
         aeq(of(0.1f), "1/10");
         aeq(of(1.0f / 3.0f), "16666667/50000000");
-        aeq(of(1e10f), "10000000000");
-        aeq(of(1e30f), "1000000000000000000000000000000");
+        aeq(of(1.0e10f), "10000000000");
+        aeq(of(1.0e30f), "1000000000000000000000000000000");
         aeq(of((float) Math.PI), "31415927/10000000");
         aeq(of((float) Math.E), "27182817/10000000");
         aeq(of((float) Math.sqrt(2)), "2828427/2000000");
@@ -182,8 +182,8 @@ public class RationalTest {
         aeq(of(0.15625), "5/32");
         aeq(of(0.1), "1/10");
         aeq(of(1.0 / 3.0), "3333333333333333/10000000000000000");
-        aeq(of(1e10), "10000000000");
-        aeq(of(1e30), "1000000000000000000000000000000");
+        aeq(of(1.0e10), "10000000000");
+        aeq(of(1.0e30), "1000000000000000000000000000000");
         aeq(of(Math.PI), "3141592653589793/1000000000000000");
         aeq(of(Math.E), "543656365691809/200000000000000");
         aeq(of(Math.sqrt(2)), "14142135623730951/10000000000000000");
@@ -232,8 +232,8 @@ public class RationalTest {
         aeq(ofExact(0.15625f), "5/32");
         aeq(ofExact(0.1f), "13421773/134217728");
         aeq(ofExact(1.0f / 3.0f), "11184811/33554432");
-        aeq(ofExact(1e10f), "10000000000");
-        aeq(ofExact(1e30f), "1000000015047466219876688855040");
+        aeq(ofExact(1.0e10f), "10000000000");
+        aeq(ofExact(1.0e30f), "1000000015047466219876688855040");
         aeq(ofExact((float) Math.PI), "13176795/4194304");
         aeq(ofExact((float) Math.E), "2850325/1048576");
         aeq(ofExact((float) Math.sqrt(2)), "11863283/8388608");
@@ -258,8 +258,8 @@ public class RationalTest {
         aeq(ofExact(0.15625), "5/32");
         aeq(ofExact(0.1), "3602879701896397/36028797018963968");
         aeq(ofExact(1.0 / 3.0), "6004799503160661/18014398509481984");
-        aeq(ofExact(1e10), "10000000000");
-        aeq(ofExact(1e30), "1000000000000000019884624838656");
+        aeq(ofExact(1.0e10), "10000000000");
+        aeq(ofExact(1.0e30), "1000000000000000019884624838656");
         aeq(ofExact(Math.PI), "884279719003555/281474976710656");
         aeq(ofExact(Math.E), "6121026514868073/2251799813685248");
         aeq(ofExact(Math.sqrt(2)), "6369051672525773/4503599627370496");
@@ -1212,15 +1212,15 @@ public class RationalTest {
             justBelowPi.floatValue(RoundingMode.UNNECESSARY);
             fail();
         } catch (ArithmeticException ignored) {}
-        Rational subnormal = ofExact(1e-40f);
+        Rational subnormal = ofExact(1.0e-40f);
         if (subnormal == null) {
             fail();
         }
-        Rational subnormalSuccessor = ofExact(FloatingPointUtils.successor(1e-40f));
+        Rational subnormalSuccessor = ofExact(FloatingPointUtils.successor(1.0e-40f));
         if (subnormalSuccessor == null) {
             fail();
         }
-        Rational subnormalPredecessor = ofExact(FloatingPointUtils.predecessor(1e-40f));
+        Rational subnormalPredecessor = ofExact(FloatingPointUtils.predecessor(1.0e-40f));
         if (subnormalPredecessor == null) {
             fail();
         }
@@ -1502,15 +1502,15 @@ public class RationalTest {
         aeq(halfBelowPi.floatValue(), 3.1415925);
         aeq(justAbovePi.floatValue(), 3.1415927);
         aeq(justBelowPi.floatValue(), 3.1415927);
-        Rational subnormal = ofExact(1e-40f);
+        Rational subnormal = ofExact(1.0e-40f);
         if (subnormal == null) {
             fail();
         }
-        Rational subnormalSuccessor = ofExact(FloatingPointUtils.successor(1e-40f));
+        Rational subnormalSuccessor = ofExact(FloatingPointUtils.successor(1.0e-40f));
         if (subnormalSuccessor == null) {
             fail();
         }
-        Rational subnormalPredecessor = ofExact(FloatingPointUtils.predecessor(1e-40f));
+        Rational subnormalPredecessor = ofExact(FloatingPointUtils.predecessor(1.0e-40f));
         if (subnormalPredecessor == null) {
             fail();
         }
@@ -1619,15 +1619,15 @@ public class RationalTest {
             justBelowPi.floatValueExact();
             fail();
         } catch (ArithmeticException ignored) {}
-        Rational subnormal = ofExact(1e-40f);
+        Rational subnormal = ofExact(1.0e-40f);
         if (subnormal == null) {
             fail();
         }
-        Rational subnormalSuccessor = ofExact(FloatingPointUtils.successor(1e-40f));
+        Rational subnormalSuccessor = ofExact(FloatingPointUtils.successor(1.0e-40f));
         if (subnormalSuccessor == null) {
             fail();
         }
-        Rational subnormalPredecessor = ofExact(FloatingPointUtils.predecessor(1e-40f));
+        Rational subnormalPredecessor = ofExact(FloatingPointUtils.predecessor(1.0e-40f));
         if (subnormalPredecessor == null) {
             fail();
         }
@@ -1876,15 +1876,15 @@ public class RationalTest {
             justBelowPi.doubleValue(RoundingMode.UNNECESSARY);
             fail();
         } catch (ArithmeticException ignored) {}
-        Rational subnormal = ofExact(1e-310);
+        Rational subnormal = ofExact(1.0e-310);
         if (subnormal == null) {
             fail();
         }
-        Rational subnormalSuccessor = ofExact(FloatingPointUtils.successor(1e-310));
+        Rational subnormalSuccessor = ofExact(FloatingPointUtils.successor(1.0e-310));
         if (subnormalSuccessor == null) {
             fail();
         }
-        Rational subnormalPredecessor = ofExact(FloatingPointUtils.predecessor(1e-310));
+        Rational subnormalPredecessor = ofExact(FloatingPointUtils.predecessor(1.0e-310));
         if (subnormalPredecessor == null) {
             fail();
         }
@@ -2166,15 +2166,15 @@ public class RationalTest {
         aeq(halfBelowPi.doubleValue(), 3.141592653589793);
         aeq(justAbovePi.doubleValue(), 3.141592653589793);
         aeq(justBelowPi.doubleValue(), 3.141592653589793);
-        Rational subnormal = ofExact(1e-310);
+        Rational subnormal = ofExact(1.0e-310);
         if (subnormal == null) {
             fail();
         }
-        Rational subnormalSuccessor = ofExact(FloatingPointUtils.successor(1e-310));
+        Rational subnormalSuccessor = ofExact(FloatingPointUtils.successor(1.0e-310));
         if (subnormalSuccessor == null) {
             fail();
         }
-        Rational subnormalPredecessor = ofExact(FloatingPointUtils.predecessor(1e-310));
+        Rational subnormalPredecessor = ofExact(FloatingPointUtils.predecessor(1.0e-310));
         if (subnormalPredecessor == null) {
             fail();
         }
@@ -2283,15 +2283,15 @@ public class RationalTest {
             justBelowPi.doubleValueExact();
             fail();
         } catch (ArithmeticException ignored) {}
-        Rational subnormal = ofExact(1e-310);
+        Rational subnormal = ofExact(1.0e-310);
         if (subnormal == null) {
             fail();
         }
-        Rational subnormalSuccessor = ofExact(FloatingPointUtils.successor(1e-310));
+        Rational subnormalSuccessor = ofExact(FloatingPointUtils.successor(1.0e-310));
         if (subnormalSuccessor == null) {
             fail();
         }
-        Rational subnormalPredecessor = ofExact(FloatingPointUtils.predecessor(1e-310));
+        Rational subnormalPredecessor = ofExact(FloatingPointUtils.predecessor(1.0e-310));
         if (subnormalPredecessor == null) {
             fail();
         }

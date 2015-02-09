@@ -404,9 +404,19 @@ public final class Interval implements Comparable<Interval> {
 
     /**
      * Returns the smallest {@code Interval} containing all reals that are closer to a given {@code float} than to
-     * any other {@code float}; or, if the {@code float} is positive infinity, all reals that are greater than
-     * {@code Float.MAX_VALUE}; or, if the {@code float} is negative infinity, all reals that are less than
-     * {@code –Float.MAX_VALUE}. Positive and negative 0 yield the same result.
+     * any other {@code float}. Some special cases must be taken into account:
+     * <ul>
+     *  <li>If the {@code float} is positive infinity, the result contains all reals that are greater than or equal to
+     *  {@code Float.MAX_VALUE}.</li>
+     *  <li>If the {@code float} is negative infinity, the result contains all reals that are less than or equal to
+     *  {@code -Float.MAX_VALUE}.</li>
+     *  <li>If the {@code float} is {@code Float.MAX_VALUE}, the result contains all reals that are less than or equal
+     *  to {@code Float.MAX_VALUE} and closer to it than to any other {@code float}.</li>
+     *  <li>If the {@code float} is {@code -Float.MAX_VALUE}, the result contains all reals that are greater than or
+     *  equal to {@code -Float.MAX_VALUE} and closer to it than to any other {@code float}.</li>
+     * </ul>
+     *
+     * Positive and negative 0 yield the same result.
      *
      * <ul>
      *  <li>{@code f} may be any {@code float} except NaN.</li>
@@ -434,6 +444,20 @@ public final class Interval implements Comparable<Interval> {
                 return new Interval(null, Rational.LARGEST_FLOAT.negate());
             }
         }
+        if (f == Float.MAX_VALUE) {
+            //noinspection ConstantConditions
+            return new Interval(
+                    Rational.ofExact(FloatingPointUtils.predecessor(f)).add(Rational.LARGEST_FLOAT).shiftRight(1),
+                    Rational.LARGEST_FLOAT
+            );
+        }
+        if (f == -Float.MAX_VALUE) {
+            //noinspection ConstantConditions
+            return new Interval(
+                    Rational.LARGEST_FLOAT.negate(),
+                    Rational.ofExact(FloatingPointUtils.successor(f)).subtract(Rational.LARGEST_FLOAT).shiftRight(1)
+            );
+        }
         Rational r = Rational.ofExact(f);
         float predecessor = FloatingPointUtils.predecessor(f);
         @SuppressWarnings("ConstantConditions")
@@ -450,9 +474,21 @@ public final class Interval implements Comparable<Interval> {
 
     /**
      * Returns the smallest {@code Interval} containing all reals that are closer to a given {@link double} than to any
-     * other {@code double}; or, if the {@code double} is positive infinity, all reals that are greater than
-     * {@code Double.MAX_VALUE}; or, if the {@code double} is negative infinity, all reals that are less than
-     * {@code –Double.MAX_VALUE}. Positive and negative 0 yield the same result.
+     * other {@code double}.
+     *
+     * Some special cases must be taken into account:
+     * <ul>
+     *  <li>If the {@code double} is positive infinity, the result contains all reals that are greater than or equal to
+     *  {@code Double.MAX_VALUE}.</li>
+     *  <li>If the {@code double} is negative infinity, the result contains all reals that are less than or equal to
+     *  {@code -Double.MAX_VALUE}.</li>
+     *  <li>If the {@code double} is {@code Double.MAX_VALUE}, the result contains all reals that are less than or
+     *  equal to {@code Double.MAX_VALUE} and closer to it than to any other {@code double}.</li>
+     *  <li>If the {@code double} is {@code -Double.MAX_VALUE}, the result contains all reals that are greater than or
+     *  equal to {@code -Double.MAX_VALUE} and closer to it than to any other {@code double}.</li>
+     * </ul>
+     *
+     * Positive and negative 0 yield the same result.
      *
      * <ul>
      *  <li>{@code d} may be any {@code double} except {@code NaN}.</li>
@@ -479,6 +515,20 @@ public final class Interval implements Comparable<Interval> {
             } else {
                 return new Interval(null, Rational.LARGEST_DOUBLE.negate());
             }
+        }
+        if (d == Double.MAX_VALUE) {
+            //noinspection ConstantConditions
+            return new Interval(
+                    Rational.ofExact(FloatingPointUtils.predecessor(d)).add(Rational.LARGEST_DOUBLE).shiftRight(1),
+                    Rational.LARGEST_DOUBLE
+            );
+        }
+        if (d == -Double.MAX_VALUE) {
+            //noinspection ConstantConditions
+            return new Interval(
+                    Rational.LARGEST_DOUBLE.negate(),
+                    Rational.ofExact(FloatingPointUtils.successor(d)).subtract(Rational.LARGEST_DOUBLE).shiftRight(1)
+            );
         }
         Rational r = Rational.ofExact(d);
         double predecessor = FloatingPointUtils.predecessor(d);
