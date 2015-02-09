@@ -17,6 +17,7 @@ import static mho.wheels.ordering.Ordering.*;
 public class IntervalDemos {
     private static final boolean USE_RANDOM = false;
     private static final String INTERVAL_CHARS = " (),-/0123456789I[]finty";
+    private static final int SMALL_LIMIT = 1000;
     private static int LIMIT;
 
     private static QBarIterableProvider P;
@@ -161,20 +162,20 @@ public class IntervalDemos {
         }
     }
 
-//    public static void roundingPreimageFloatDemo() {
-//        Generator<Float> g = new FilteredGenerator<>(Generators.floats(), f -> !Float.isNaN(f));
-//        for (float f : g.iterate(limit)) {
-//            System.out.println("roundingPreimage(" + f + ") = " + Interval.roundingPreimage(f));
-//        }
-//    }
-//
-//    public static void roundingPreimageDoubleDemo() {
-//        Generator<Double> g = new FilteredGenerator<>(Generators.doubles(), d -> !Double.isNaN(d));
-//        for (double d : g.iterate(limit)) {
-//            System.out.println("roundingPreimage(" + d + ") = " + Interval.roundingPreimage(d));
-//        }
-//    }
-//
+    public static void demoRoundingPreimage_float() {
+        initialize();
+        for (float f : take(LIMIT, filter(g -> !Float.isNaN(g), P.floats()))) {
+            System.out.println("roundingPreimage(" + f + ") = " + roundingPreimage(f));
+        }
+    }
+
+    public static void demoRoundingPreimage_double() {
+        initialize();
+        for (double d : take(SMALL_LIMIT, filter(e -> !Double.isNaN(e), P.doubles()))) {
+            System.out.println("roundingPreimage(" + d + ") = " + roundingPreimage(d));
+        }
+    }
+
 //    public static void roundingPreimageBigDecimalDemo() {
 //        for (BigDecimal bd : Generators.bigDecimals().iterate(limit)) {
 //            System.out.println("roundingPreimage(" + bd + ") = " + Interval.roundingPreimage(bd));
