@@ -285,6 +285,7 @@ public class RationalTest {
         aeq(of(new BigDecimal("-2.718281828459045")), "-543656365691809/200000000000000");
         aeq(of(new BigDecimal("0.00000000000001")), "1/100000000000000");
         aeq(of(new BigDecimal("1000000000000000")), "1000000000000000");
+        aeq(of(new BigDecimal("1E15")), "1000000000000000");
     }
 
     @Test

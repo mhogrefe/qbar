@@ -4,6 +4,7 @@ import mho.wheels.misc.Readers;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.SortedSet;
@@ -534,6 +535,23 @@ public class IntervalTest {
             roundingPreimage(Double.NaN);
             fail();
         } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testRoundingPreimage_BigDecimal() {
+        aeq(roundingPreimage(BigDecimal.ZERO), "[-1/2, 1/2]");
+        aeq(roundingPreimage(BigDecimal.ONE), "[1/2, 3/2]");
+        aeq(roundingPreimage(new BigDecimal("3")), "[5/2, 7/2]");
+        aeq(roundingPreimage(new BigDecimal("-5")), "[-11/2, -9/2]");
+        aeq(roundingPreimage(new BigDecimal("0.1")), "[1/20, 3/20]");
+        aeq(roundingPreimage(new BigDecimal("3.14159")), "[628317/200000, 628319/200000]");
+        aeq(
+                roundingPreimage(new BigDecimal("-2.718281828459045")),
+                "[-5436563656918091/2000000000000000, -5436563656918089/2000000000000000]"
+        );
+        aeq(roundingPreimage(new BigDecimal("0.00000000000001")), "[1/200000000000000, 3/200000000000000]");
+        aeq(roundingPreimage(new BigDecimal("1000000000000000")), "[1999999999999999/2, 2000000000000001/2]");
+        aeq(roundingPreimage(new BigDecimal("1E15")), "[500000000000000, 1500000000000000]");
     }
 
     @Test
