@@ -6,6 +6,7 @@ import mho.qbar.iterableProviders.QBarRandomProvider;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Random;
 
@@ -173,6 +174,13 @@ public class IntervalDemos {
         initialize();
         for (double d : take(SMALL_LIMIT, filter(e -> !Double.isNaN(e), P.doubles()))) {
             System.out.println("roundingPreimage(" + d + ") = " + roundingPreimage(d));
+        }
+    }
+
+    public static void demoRoundingPreimage_BigDecimal() {
+        initialize();
+        for (BigDecimal bd : take(LIMIT, P.bigDecimals())) {
+            System.out.println("roundingPreimage(" + bd + ") = " + roundingPreimage(bd));
         }
     }
 
