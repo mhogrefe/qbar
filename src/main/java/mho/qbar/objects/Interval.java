@@ -352,6 +352,33 @@ public final class Interval implements Comparable<Interval> {
     }
 
     /**
+     * The complement of an {@code Interval} generally involves open intervals, so it can't be represented as a union
+     * of {@code Interval}s. However, we can get close; we can represent the complement's closure. This is equal to the
+     * complement, except that it includes the endpoints of the original {@code Interval}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Interval}.</li>
+     *  <li>
+     *   The result is in one of these forms:
+     *   <ul>
+     *    <li>an empty list</li>
+     *    <li>a list containing one {@code Interval}, unbounded on one side</li>
+     *    <li>a list containing two disjoint {@code Intervals}, the first unbounded on the left and the second
+     *    unbounded on the right</li>
+     *   </ul>
+     *  </li>
+     * </ul>
+     *
+     * @return the closure of ℝ\{@code this}
+     */
+    public @NotNull List<Interval> complement() {
+        if (lower == null && upper == null) return new ArrayList<>();
+        if (lower == null) return Arrays.asList(new Interval(upper, null));
+        if (upper == null) return Arrays.asList(new Interval(null, lower));
+        return Arrays.asList(new Interval(null, lower), new Interval(upper, null));
+    }
+
+    /**
      * Returns the midpoint of {@code this}.
      *
      * <ul>
