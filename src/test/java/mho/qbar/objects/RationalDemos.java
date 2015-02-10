@@ -24,6 +24,7 @@ import static mho.qbar.objects.Rational.*;
 public class RationalDemos {
     private static final boolean USE_RANDOM = false;
     private static final String RATIONAL_CHARS = "-/0123456789";
+    private static final int SMALLER_LIMIT = 500;
     private static final int SMALL_LIMIT = 1000;
     private static final int MEDIUM_LIMIT = 3000;
     private static int LIMIT;
@@ -728,6 +729,15 @@ public class RationalDemos {
         for (Rational r : take(LIMIT, P.rationals())) {
             //noinspection ObjectEqualsNull
             System.out.println(r + (r.equals(null) ? " = " : " ≠ ") + null);
+        }
+    }
+
+    public static void demoCancelDenominators() {
+        initialize();
+        int limit = P instanceof ExhaustiveProvider ? LIMIT : SMALLER_LIMIT;
+        for (List<Rational> rs : take(limit, P.lists(P.rationals()))) {
+            String listString = tail(init(rs.toString()));
+            System.out.println("cancelDenominators(" + listString + ") = " + cancelDenominators(rs));
         }
     }
 

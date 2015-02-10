@@ -4234,6 +4234,8 @@ public class RationalTest {
     @Test
     public void testCancelDenominators() {
         aeq(cancelDenominators(readRationalList("[]").get()), "[]");
+        aeq(cancelDenominators(readRationalList("[0]").get()), "[0]");
+        aeq(cancelDenominators(readRationalList("[0, 0]").get()), "[0, 0]");
         aeq(cancelDenominators(readRationalList("[2/3]").get()), "[1]");
         aeq(cancelDenominators(readRationalList("[-2/3]").get()), "[-1]");
         aeq(cancelDenominators(readRationalList("[1, -2/3]").get()), "[3, -2]");

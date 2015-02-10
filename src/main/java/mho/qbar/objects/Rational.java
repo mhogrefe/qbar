@@ -2022,7 +2022,7 @@ public final class Rational implements Comparable<Rational> {
         BigInteger lcm = foldl(p -> MathUtils.lcm(p.a, p.b), BigInteger.ONE, map(Rational::getDenominator, xs));
         Iterable<BigInteger> canceled = map(x -> x.multiply(lcm).getNumerator(), xs);
         BigInteger gcd = foldl(p -> p.a.gcd(p.b), BigInteger.ZERO, canceled);
-        return toList(map(x -> x.divide(gcd), canceled));
+        return toList(gcd.equals(BigInteger.ZERO) ? canceled : map(x -> x.divide(gcd), canceled));
     }
 
     /**
