@@ -184,12 +184,6 @@ public class IntervalDemos {
         }
     }
 
-//    public static void roundingPreimageBigDecimalDemo() {
-//        for (BigDecimal bd : Generators.bigDecimals().iterate(limit)) {
-//            System.out.println("roundingPreimage(" + bd + ") = " + Interval.roundingPreimage(bd));
-//        }
-//    }
-//
 //    public static void floatRangeDemo() {
 //        for (Interval a : Interval.intervals().iterate(limit)) {
 //            System.out.println("floatRange(" + a + ") = " + a.floatRange());
