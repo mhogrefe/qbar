@@ -2012,7 +2012,7 @@ public final class Rational implements Comparable<Rational> {
      *
      * <ul>
      *  <li>{@code xs} cannot contain any nulls.</li>
-     *  <li>The result is a {@code List} of {@code BigInteger}s whose GCD is 1.</li>
+     *  <li>The result is a {@code List} of {@code BigInteger}s whose GCD is 0 or 1.</li>
      * </ul>
      *
      * @param xs the {@code List} of {@code Rational}s

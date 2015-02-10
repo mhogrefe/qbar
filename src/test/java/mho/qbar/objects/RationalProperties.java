@@ -130,6 +130,7 @@ public class RationalProperties {
             propertiesToStringBase_BigInteger();
             propertiesToStringBase_BigInteger_int();
             propertiesFromStringBase();
+            propertiesCancelDenominators();
             propertiesEquals();
             propertiesHashCode();
             propertiesCompareTo();
@@ -3449,6 +3450,47 @@ public class RationalProperties {
         }
 
         //improper String left untested
+    }
+
+    private static void propertiesCancelDenominators() {
+        initialize();
+        System.out.println("\t\ttesting cancelDenominators(List<Rational>) properties...");
+
+        for (List<Rational> rs : take(LIMIT, P.lists(P.rationals()))) {
+            List<BigInteger> canceled = cancelDenominators(rs);
+            BigInteger gcd = foldl(p -> p.a.gcd(p.b), BigInteger.ZERO, canceled);
+            assertTrue(rs.toString(), gcd.equals(BigInteger.ZERO) || gcd.equals(BigInteger.ONE));
+            assertTrue(rs.toString(), equal(map(Rational::signum, rs), map(BigInteger::signum, canceled)));
+            assertTrue(
+                    rs.toString(),
+                    same(
+                            zipWith(
+                                    p -> p.a.divide(p.b),
+                                    filter(r -> r != ZERO, rs),
+                                    filter(i -> !i.equals(BigInteger.ZERO), canceled)
+                            )
+                    )
+            );
+        }
+
+        for (Rational r : take(LIMIT, P.rationals())) {
+            BigInteger canceled = head(cancelDenominators(Arrays.asList(r)));
+            assertTrue(r.toString(), le(canceled.abs(), BigInteger.ONE));
+        }
+
+        Iterable<List<Rational>> failRss = map(
+                p -> toList(insert(p.a, p.b, null)),
+                (Iterable<Pair<List<Rational>, Integer>>) P.dependentPairsLogarithmic(
+                        P.lists(P.rationals()),
+                        rs -> range(0, rs.size())
+                )
+        );
+        for (List<Rational> rs : take(LIMIT, failRss)) {
+            try {
+                cancelDenominators(rs);
+                fail(rs.toString());
+            } catch (NullPointerException ignored) {}
+        }
     }
 
     private static void propertiesEquals() {
