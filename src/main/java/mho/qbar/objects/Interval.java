@@ -363,6 +363,7 @@ public final class Interval implements Comparable<Interval> {
      *   <ul>
      *    <li>an empty list</li>
      *    <li>a list containing one {@code Interval}, unbounded on one side</li>
+     *    <li>a list containing (–∞, ∞); this happens when {@code this} has diameter 0</li>
      *    <li>a list containing two disjoint {@code Intervals}, the first unbounded on the left and the second
      *    unbounded on the right</li>
      *   </ul>
@@ -375,6 +376,7 @@ public final class Interval implements Comparable<Interval> {
         if (lower == null && upper == null) return new ArrayList<>();
         if (lower == null) return Arrays.asList(new Interval(upper, null));
         if (upper == null) return Arrays.asList(new Interval(null, lower));
+        if (lower.equals(upper)) return Arrays.asList(ALL);
         return Arrays.asList(new Interval(null, lower), new Interval(upper, null));
     }
 

@@ -285,6 +285,17 @@ public class IntervalTest {
     }
 
     @Test
+    public void testComplement() {
+        aeq(ZERO.complement(), "[(-Infinity, Infinity)]");
+        aeq(ONE.complement(), "[(-Infinity, Infinity)]");
+        aeq(ALL.complement(), "[]");
+        aeq(read("[-2, 5/3]").get().complement(), "[(-Infinity, -2], [5/3, Infinity)]");
+        aeq(read("[4, 4]").get().complement(), "[(-Infinity, Infinity)]");
+        aeq(read("(-Infinity, 3/2]").get().complement(), "[[3/2, Infinity)]");
+        aeq(read("[-6, Infinity)").get().complement(), "[(-Infinity, -6]]");
+    }
+
+    @Test
     public void testMidpoint() {
         aeq(ZERO.midpoint(), "0");
         aeq(ONE.midpoint(), "1");
