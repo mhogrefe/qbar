@@ -2011,7 +2011,7 @@ public final class Rational implements Comparable<Rational> {
      * considered equivalent under multiplication.
      *
      * <ul>
-     *  <li>{@code xs} cannot be null.</li>
+     *  <li>{@code xs} cannot contain any nulls.</li>
      *  <li>The result is a {@code List} of {@code BigInteger}s whose GCD is 1.</li>
      * </ul>
      *

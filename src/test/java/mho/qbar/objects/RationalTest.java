@@ -4232,6 +4232,20 @@ public class RationalTest {
     }
 
     @Test
+    public void testCancelDenominators() {
+        aeq(cancelDenominators(readRationalList("[]").get()), "[]");
+        aeq(cancelDenominators(readRationalList("[2/3]").get()), "[1]");
+        aeq(cancelDenominators(readRationalList("[-2/3]").get()), "[-1]");
+        aeq(cancelDenominators(readRationalList("[1, -2/3]").get()), "[3, -2]");
+        aeq(cancelDenominators(readRationalList("[4, -4, 5/12, 0, 1]").get()), "[48, -48, 5, 0, 12]");
+        aeq(cancelDenominators(readRationalList("[1, 1/2, 1/3, 1/4, 1/5]").get()), "[60, 30, 20, 15, 12]");
+        try {
+            cancelDenominators(readRationalListWithNulls("[1, null, 0]").get());
+            fail();
+        } catch (NullPointerException ignored) {}
+    }
+
+    @Test
     public void testEquals() {
         //noinspection EqualsWithItself
         assertTrue(ZERO.equals(ZERO));
