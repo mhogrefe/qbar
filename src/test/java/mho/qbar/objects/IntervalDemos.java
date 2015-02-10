@@ -141,6 +141,13 @@ public class IntervalDemos {
         }
     }
 
+    public static void demoComplement() {
+        initialize();
+        for (Interval a : take(LIMIT, P.intervals())) {
+            System.out.println("complement(" + a + ") = " + a.complement());
+        }
+    }
+
     public static void demoMidpoint() {
         initialize();
         for (Interval a : take(LIMIT, P.finitelyBoundedIntervals())) {
