@@ -2006,6 +2006,26 @@ public final class Rational implements Comparable<Rational> {
     }
 
     /**
+     * Multiplies a {@code List} of {@code Rational}s by some positive constant to yield a {@code List} of
+     * {@code BigInteger}s with no common factor. This gives a canonical representation of {@code Rational} lists
+     * considered equivalent under multiplication.
+     *
+     * <ul>
+     *  <li>{@code xs} cannot be null.</li>
+     *  <li>The result is a {@code List} of {@code BigInteger}s whose GCD is 1.</li>
+     * </ul>
+     *
+     * @param xs the {@code List} of {@code Rational}s
+     * @return a canonical representation of {@code xs} as a {@code List} of {@code BigInteger}s
+     */
+    public static @NotNull List<BigInteger> cancelDenominators(@NotNull List<Rational> xs) {
+        BigInteger lcm = foldl(p -> MathUtils.lcm(p.a, p.b), BigInteger.ONE, map(Rational::getDenominator, xs));
+        Iterable<BigInteger> canceled = map(x -> x.multiply(lcm).getNumerator(), xs);
+        BigInteger gcd = foldl(p -> p.a.gcd(p.b), BigInteger.ZERO, canceled);
+        return toList(map(x -> x.divide(gcd), canceled));
+    }
+
+    /**
      * Determines whether {@code this} is equal to {@code that}.
      *
      * <ul>
