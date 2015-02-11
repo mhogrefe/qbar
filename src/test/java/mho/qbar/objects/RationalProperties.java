@@ -147,6 +147,7 @@ public class RationalProperties {
         System.out.println("\ttesting constant properties...");
 
         List<Rational> sample = toList(take(SMALL_LIMIT, HARMONIC_NUMBERS));
+        sample.forEach(mho.qbar.objects.RationalProperties::validate);
         assertTrue(unique(sample));
         assertTrue(increasing(sample));
         assertTrue(all(r -> !r.isInteger(), tail(sample)));

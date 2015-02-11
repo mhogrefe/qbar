@@ -96,7 +96,7 @@ public final class Rational implements Comparable<Rational> {
      * Length is infinite
      */
     public static final @NotNull Iterable<Rational> HARMONIC_NUMBERS =
-            tail(scanl(p -> p.a.add(p.b), ZERO, map(i -> of(i).invert(), range(1))));
+            scanl(p -> p.a.add(p.b), ONE, map(i -> new Rational(BigInteger.ONE, BigInteger.valueOf(i)), range(2)));
 
     /**
      * {@code this} times {@code denominator}
@@ -1416,7 +1416,7 @@ public final class Rational implements Comparable<Rational> {
     public static @NotNull Rational harmonicNumber(int n) {
         if (n < 1)
             throw new ArithmeticException("harmonic number must have positive index");
-        return sum(map(i -> of(i).invert(), range(1, n)));
+        return sum(map(i -> i == 1 ? ONE : new Rational(BigInteger.ONE, BigInteger.valueOf(i)), range(1, n)));
     }
 
     /**
