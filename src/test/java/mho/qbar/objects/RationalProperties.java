@@ -134,6 +134,7 @@ public class RationalProperties {
             propertiesEquals();
             propertiesHashCode();
             propertiesCompareTo();
+            compareImplementationsCompareTo();
             propertiesRead();
             propertiesFindIn();
             propertiesToString();
@@ -3514,12 +3515,17 @@ public class RationalProperties {
         }
     }
 
+    private static int compareTo_simplest(@NotNull Rational x, @NotNull Rational y) {
+        return x.getNumerator().multiply(y.getDenominator()).compareTo(y.getNumerator().multiply(x.getDenominator()));
+    }
+
     private static void propertiesCompareTo() {
         initialize();
         System.out.println("\t\ttesting compareTo(Rational) properties...");
 
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
             int compare = p.a.compareTo(p.b);
+            assertEquals(p.toString(), compare, compareTo_simplest(p.a, p.b));
             assertTrue(p.toString(), compare == -1 || compare == 0 || compare == 1);
             assertEquals(p.toString(), p.b.compareTo(p.a), -compare);
             assertEquals(p.toString(), p.a.subtract(p.b).signum(), compare);
@@ -3536,6 +3542,27 @@ public class RationalProperties {
         for (Triple<Rational, Rational, Rational> t : take(LIMIT, ts)) {
             assertEquals(t.toString(), t.a.compareTo(t.c), -1);
         }
+    }
+
+    private static void compareImplementationsCompareTo() {
+        initialize();
+        System.out.println("\t\tcomparing compareTo(Rational) implementations...");
+
+        long totalTime = 0;
+        for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
+            long time = System.nanoTime();
+            compareTo_simplest(p.a, p.b);
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\t\t\tsimplest: " + ((double) totalTime) / 1e9 + " s");
+
+        totalTime = 0;
+        for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
+            long time = System.nanoTime();
+            p.a.compareTo(p.b);
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
     }
 
     private static void propertiesRead() {

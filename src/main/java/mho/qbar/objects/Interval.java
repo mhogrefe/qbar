@@ -864,12 +864,13 @@ public final class Interval implements Comparable<Interval> {
      */
     @Override
     public int compareTo(@NotNull Interval that) {
-        if (lower == null && that.lower != null) return LT.toInt();
-        if (lower != null && that.lower == null) return GT.toInt();
+        if (this == that) return 0;
+        if (lower == null && that.lower != null) return -1;
+        if (lower != null && that.lower == null) return 1;
         Ordering lowerOrdering = lower == null ? EQ : compare(lower, that.lower);
         if (lowerOrdering != EQ) return lowerOrdering.toInt();
-        if (upper == null && that.upper != null) return GT.toInt();
-        if (upper != null && that.upper == null) return LT.toInt();
+        if (upper == null && that.upper != null) return 1;
+        if (upper != null && that.upper == null) return -1;
         return (upper == null ? EQ : compare(upper, that.upper)).toInt();
     }
 
