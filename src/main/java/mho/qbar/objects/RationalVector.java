@@ -424,6 +424,46 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
     }
 
     /**
+     * Returns the sum of all the {@code RationalVector}s in {@code xs}.
+     *
+     * <ul>
+     *  <li>{@code xs} must be finite and non-empty, and may not contain any nulls.</li>
+     *  <li>The result may be any {@code RationalVector}.</li>
+     * </ul>
+     *
+     * @param xs an {@code Iterable} of {@code RationalVector}s.
+     * @return Σxs
+     */
+    public static RationalVector sum(@NotNull Iterable<RationalVector> xs) {
+        if (isEmpty(xs))
+            throw new IllegalArgumentException("cannot take the sum of an empty list of RationalVectors");
+        return foldl1(p -> p.a.add(p.b), xs);
+    }
+
+    /**
+     * Returns the differences between successive {@code RationalVector}s in {@code xs}. If {@code xs} contains a
+     * single {@code RationalVector}, an empty {@code Iterable} is returned. {@code xs} cannot be empty. Does not
+     * support removal.
+     *
+     * <ul>
+     *  <li>{@code xs} must not be empty and may not contain any nulls.</li>
+     *  <li>The result is finite and does not contain any nulls.</li>
+     * </ul>
+     *
+     * Length is |{@code xs}|–1
+     *
+     * @param xs an {@code Iterable} of {@code RationalVector}s.
+     * @return Δxs
+     */
+    public static @NotNull Iterable<RationalVector> delta(@NotNull Iterable<RationalVector> xs) {
+        if (isEmpty(xs))
+            throw new IllegalArgumentException("cannot get delta of empty Iterable");
+        if (head(xs) == null)
+            throw new NullPointerException();
+        return adjacentPairsWith(p -> p.b.subtract(p.a), xs);
+    }
+
+    /**
      * Determines whether {@code this} is equal to {@code that}.
      *
      * <ul>
