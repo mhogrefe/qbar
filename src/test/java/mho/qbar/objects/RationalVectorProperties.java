@@ -10,6 +10,7 @@ import mho.wheels.structures.Triple;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
+import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -62,6 +63,9 @@ public class RationalVectorProperties {
             propertiesNegate();
             propertiesAdd();
             propertiesSubtract();
+            propertiesMultiply_Rational();
+            propertiesMultiply_BigInteger();
+            propertiesMultiply_int();
             propertiesEquals();
             propertiesHashCode();
             propertiesCompareTo();
@@ -400,7 +404,7 @@ public class RationalVectorProperties {
         for (Pair<RationalVector, Rational> p : take(LIMIT, P.pairs(P.rationalVectors(), P.rationals()))) {
             RationalVector v = p.a.multiply(p.b);
             validate(v);
-            assertEquals(p.toString(), v, p.a.divide(p.b.invert()));
+            assertEquals(p.toString(), v.dimension(), p.a.dimension());
         }
 
         Iterable<Pair<RationalVector, Rational>> ps = P.pairs(
@@ -424,7 +428,83 @@ public class RationalVectorProperties {
             assertEquals(p.toString(), p.a.multiply(p.b), of(p.b).multiply(p.a.x()));
         }
 
-        //todo zero and failure
+        Iterable<Pair<Rational, Integer>> ps2;
+        if (P instanceof ExhaustiveProvider) {
+            ps2 = ((ExhaustiveProvider) P).pairsLogarithmicOrder(P.rationals(), P.naturalIntegers());
+        } else {
+            ps2 = P.pairs(P.rationals(), ((RandomProvider) P).naturalIntegersGeometric(20));
+        }
+        for (Pair<Rational, Integer> p : take(LIMIT, ps2)) {
+            assertTrue(p.toString(), zero(p.b).multiply(p.a).isZero());
+        }
+    }
+
+    private static void propertiesMultiply_BigInteger() {
+        initialize();
+        System.out.println("\t\ttesting multiply(BigInteger) properties...");
+
+        for (Pair<RationalVector, BigInteger> p : take(LIMIT, P.pairs(P.rationalVectors(), P.bigIntegers()))) {
+            RationalVector v = p.a.multiply(p.b);
+            validate(v);
+            assertEquals(p.toString(), v.dimension(), p.a.dimension());
+        }
+
+        for (RationalVector v : take(LIMIT, P.rationalVectors())) {
+            assertEquals(v.toString(), v, v.multiply(BigInteger.ONE));
+            assertTrue(v.toString(), v.multiply(BigInteger.ZERO).isZero());
+        }
+
+        for (BigInteger i : take(LIMIT, P.bigIntegers())) {
+            assertTrue(ZERO_DIMENSIONAL.multiply(i) == ZERO_DIMENSIONAL);
+        }
+
+        for (Pair<RationalVector, BigInteger> p : take(LIMIT, P.pairs(P.rationalVectors(1), P.bigIntegers()))) {
+            assertEquals(p.toString(), p.a.multiply(p.b), of(Rational.of(p.b)).multiply(p.a.x()));
+        }
+
+        Iterable<Pair<BigInteger, Integer>> ps2;
+        if (P instanceof ExhaustiveProvider) {
+            ps2 = ((ExhaustiveProvider) P).pairsLogarithmicOrder(P.bigIntegers(), P.naturalIntegers());
+        } else {
+            ps2 = P.pairs(P.bigIntegers(), ((RandomProvider) P).naturalIntegersGeometric(20));
+        }
+        for (Pair<BigInteger, Integer> p : take(LIMIT, ps2)) {
+            assertTrue(p.toString(), zero(p.b).multiply(p.a).isZero());
+        }
+    }
+
+    private static void propertiesMultiply_int() {
+        initialize();
+        System.out.println("\t\ttesting multiply(int) properties...");
+
+        for (Pair<RationalVector, Integer> p : take(LIMIT, P.pairs(P.rationalVectors(), P.integers()))) {
+            RationalVector v = p.a.multiply(p.b);
+            validate(v);
+            assertEquals(p.toString(), v.dimension(), p.a.dimension());
+        }
+
+        for (RationalVector v : take(LIMIT, P.rationalVectors())) {
+            assertEquals(v.toString(), v, v.multiply(1));
+            assertTrue(v.toString(), v.multiply(0).isZero());
+        }
+
+        for (Integer i : take(LIMIT, P.integers())) {
+            assertTrue(ZERO_DIMENSIONAL.multiply(i) == ZERO_DIMENSIONAL);
+        }
+
+        for (Pair<RationalVector, Integer> p : take(LIMIT, P.pairs(P.rationalVectors(1), P.integers()))) {
+            assertEquals(p.toString(), p.a.multiply(p.b), of(Rational.of(p.b)).multiply(p.a.x()));
+        }
+
+        Iterable<Pair<Integer, Integer>> ps2;
+        if (P instanceof ExhaustiveProvider) {
+            ps2 = ((ExhaustiveProvider) P).pairsLogarithmicOrder(P.integers(), P.naturalIntegers());
+        } else {
+            ps2 = P.pairs(P.integers(), ((RandomProvider) P).naturalIntegersGeometric(20));
+        }
+        for (Pair<Integer, Integer> p : take(LIMIT, ps2)) {
+            assertTrue(p.toString(), zero(p.b).multiply(p.a).isZero());
+        }
     }
 
     private static void propertiesEquals() {
