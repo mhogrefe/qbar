@@ -66,6 +66,9 @@ public class RationalVectorProperties {
             propertiesMultiply_Rational();
             propertiesMultiply_BigInteger();
             propertiesMultiply_int();
+            propertiesDivide_Rational();
+            propertiesDivide_BigInteger();
+            propertiesDivide_int();
             propertiesEquals();
             propertiesHashCode();
             propertiesCompareTo();
@@ -329,6 +332,7 @@ public class RationalVectorProperties {
             RationalVector sum = p.a.add(p.b);
             validate(sum);
             assertEquals(p.toString(), sum, p.b.add(p.a));
+            assertEquals(p.toString(), sum.subtract(p.b), p.a);
         }
 
         for (RationalVector v : take(LIMIT, P.rationalVectors())) {
@@ -412,6 +416,11 @@ public class RationalVectorProperties {
                 filter(r -> r != Rational.ZERO, P.rationals())
         );
         for (Pair<RationalVector, Rational> p : take(LIMIT, ps)) {
+            assertEquals(p.toString(), p.a.multiply(p.b).divide(p.b), p.a);
+        }
+
+        ps = P.pairs(P.rationalVectors(), filter(r -> r != Rational.ZERO, P.rationals()));
+        for (Pair<RationalVector, Rational> p : take(LIMIT, ps)) {
             assertEquals(p.toString(), p.a.multiply(p.b), p.a.divide(p.b.invert()));
         }
 
@@ -449,6 +458,14 @@ public class RationalVectorProperties {
             assertEquals(p.toString(), v.dimension(), p.a.dimension());
         }
 
+        Iterable<Pair<RationalVector, BigInteger>> ps = P.pairs(
+                P.rationalVectors(),
+                filter(i -> !i.equals(BigInteger.ZERO), P.bigIntegers())
+        );
+        for (Pair<RationalVector, BigInteger> p : take(LIMIT, ps)) {
+            assertEquals(p.toString(), p.a.multiply(p.b).divide(p.b), p.a);
+        }
+
         for (RationalVector v : take(LIMIT, P.rationalVectors())) {
             assertEquals(v.toString(), v, v.multiply(BigInteger.ONE));
             assertTrue(v.toString(), v.multiply(BigInteger.ZERO).isZero());
@@ -483,12 +500,17 @@ public class RationalVectorProperties {
             assertEquals(p.toString(), v.dimension(), p.a.dimension());
         }
 
+        Iterable<Pair<RationalVector, Integer>> ps = P.pairs(P.rationalVectors(), filter(i -> i != 0, P.integers()));
+        for (Pair<RationalVector, Integer> p : take(LIMIT, ps)) {
+            assertEquals(p.toString(), p.a.multiply(p.b).divide(p.b), p.a);
+        }
+
         for (RationalVector v : take(LIMIT, P.rationalVectors())) {
             assertEquals(v.toString(), v, v.multiply(1));
             assertTrue(v.toString(), v.multiply(0).isZero());
         }
 
-        for (Integer i : take(LIMIT, P.integers())) {
+        for (int i : take(LIMIT, P.integers())) {
             assertTrue(ZERO_DIMENSIONAL.multiply(i) == ZERO_DIMENSIONAL);
         }
 
@@ -504,6 +526,169 @@ public class RationalVectorProperties {
         }
         for (Pair<Integer, Integer> p : take(LIMIT, ps2)) {
             assertTrue(p.toString(), zero(p.b).multiply(p.a).isZero());
+        }
+    }
+
+    private static void propertiesDivide_Rational() {
+        initialize();
+        System.out.println("\t\ttesting divide(Rational) properties...");
+
+        Iterable<Pair<RationalVector, Rational>> ps = filter(
+                p -> p.b != Rational.ZERO,
+                P.pairs(P.rationalVectors(), P.rationals())
+        );
+        for (Pair<RationalVector, Rational> p : take(LIMIT, ps)) {
+            RationalVector v = p.a.divide(p.b);
+            validate(v);
+            assertEquals(p.toString(), v.dimension(), p.a.dimension());
+            assertEquals(p.toString(), p.a, v.multiply(p.b));
+            assertEquals(p.toString(), v, p.a.multiply(p.b.invert()));
+        }
+
+        for (RationalVector v : take(LIMIT, P.rationalVectors())) {
+            assertEquals(v.toString(), v.divide(Rational.ONE), v);
+        }
+
+        for (Rational r : take(LIMIT, filter(s -> s != Rational.ZERO, P.rationals()))) {
+            assertTrue(ZERO_DIMENSIONAL.divide(r) == ZERO_DIMENSIONAL);
+        }
+
+        ps = P.pairs(
+                filter(v -> v.x() != Rational.ZERO, P.rationalVectors(1)),
+                filter(r -> r != Rational.ZERO, P.rationals())
+        );
+        for (Pair<RationalVector, Rational> p : take(LIMIT, ps)) {
+            assertEquals(p.toString(), p.a.divide(p.b).x(), of(p.b).divide(p.a.x()).x().invert());
+        }
+
+        Iterable<Pair<Rational, Integer>> ps2;
+        if (P instanceof ExhaustiveProvider) {
+            ps2 = ((ExhaustiveProvider) P).pairsLogarithmicOrder(
+                    filter(r -> r != Rational.ZERO, P.rationals()),
+                    P.naturalIntegers()
+            );
+        } else {
+            ps2 = P.pairs(
+                    filter(r -> r != Rational.ZERO, P.rationals()),
+                    ((RandomProvider) P).naturalIntegersGeometric(20)
+            );
+        }
+        for (Pair<Rational, Integer> p : take(LIMIT, ps2)) {
+            assertTrue(p.toString(), zero(p.b).divide(p.a).isZero());
+        }
+
+        for (RationalVector v : take(LIMIT, P.rationalVectors())) {
+            try {
+                v.divide(Rational.ZERO);
+                fail(v.toString());
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private static void propertiesDivide_BigInteger() {
+        initialize();
+        System.out.println("\t\ttesting divide(BigInteger) properties...");
+
+        Iterable<Pair<RationalVector, BigInteger>> ps = filter(
+                p -> !p.b.equals(BigInteger.ZERO),
+                P.pairs(P.rationalVectors(), P.bigIntegers())
+        );
+        for (Pair<RationalVector, BigInteger> p : take(LIMIT, ps)) {
+            RationalVector v = p.a.divide(p.b);
+            validate(v);
+            assertEquals(p.toString(), v.dimension(), p.a.dimension());
+            assertEquals(p.toString(), p.a, v.multiply(p.b));
+        }
+
+        for (RationalVector v : take(LIMIT, P.rationalVectors())) {
+            assertEquals(v.toString(), v.divide(BigInteger.ONE), v);
+        }
+
+        for (BigInteger i : take(LIMIT, filter(j -> !j.equals(BigInteger.ZERO), P.bigIntegers()))) {
+            assertTrue(ZERO_DIMENSIONAL.divide(i) == ZERO_DIMENSIONAL);
+        }
+
+        ps = P.pairs(
+                filter(v -> v.x() != Rational.ZERO, P.rationalVectors(1)),
+                filter(i -> !i.equals(BigInteger.ZERO), P.bigIntegers())
+        );
+        for (Pair<RationalVector, BigInteger> p : take(LIMIT, ps)) {
+            assertEquals(p.toString(), p.a.divide(p.b).x(), of(Rational.of(p.b)).divide(p.a.x()).x().invert());
+        }
+
+        Iterable<Pair<BigInteger, Integer>> ps2;
+        if (P instanceof ExhaustiveProvider) {
+            ps2 = ((ExhaustiveProvider) P).pairsLogarithmicOrder(
+                    filter(i -> !i.equals(BigInteger.ZERO), P.bigIntegers()),
+                    P.naturalIntegers()
+            );
+        } else {
+            ps2 = P.pairs(
+                    filter(i -> !i.equals(BigInteger.ZERO), P.bigIntegers()),
+                    ((RandomProvider) P).naturalIntegersGeometric(20)
+            );
+        }
+        for (Pair<BigInteger, Integer> p : take(LIMIT, ps2)) {
+            assertTrue(p.toString(), zero(p.b).divide(p.a).isZero());
+        }
+
+        for (RationalVector v : take(LIMIT, P.rationalVectors())) {
+            try {
+                v.divide(BigInteger.ZERO);
+                fail(v.toString());
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private static void propertiesDivide_int() {
+        initialize();
+        System.out.println("\t\ttesting divide(int) properties...");
+
+        Iterable<Pair<RationalVector, Integer>> ps = filter(
+                p -> !p.b.equals(0),
+                P.pairs(P.rationalVectors(), P.integers())
+        );
+        for (Pair<RationalVector, Integer> p : take(LIMIT, ps)) {
+            RationalVector v = p.a.divide(p.b);
+            validate(v);
+            assertEquals(p.toString(), v.dimension(), p.a.dimension());
+            assertEquals(p.toString(), p.a, v.multiply(p.b));
+        }
+
+        for (RationalVector v : take(LIMIT, P.rationalVectors())) {
+            assertEquals(v.toString(), v.divide(1), v);
+        }
+
+        for (int i : take(LIMIT, filter(j -> j != 0, P.integers()))) {
+            assertTrue(ZERO_DIMENSIONAL.divide(i) == ZERO_DIMENSIONAL);
+        }
+
+        ps = P.pairs(
+                filter(v -> v.x() != Rational.ZERO, P.rationalVectors(1)),
+                filter(i -> i != 0, P.integers())
+        );
+        for (Pair<RationalVector, Integer> p : take(LIMIT, ps)) {
+            assertEquals(p.toString(), p.a.divide(p.b).x(), of(Rational.of(p.b)).divide(p.a.x()).x().invert());
+        }
+
+        Iterable<Pair<Integer, Integer>> ps2;
+        if (P instanceof ExhaustiveProvider) {
+            ps2 = ((ExhaustiveProvider) P).pairsLogarithmicOrder(
+                    filter(i -> i != 0, P.integers()),
+                    P.naturalIntegers()
+            );
+        } else {
+            ps2 = P.pairs(filter(i -> i != 0, P.integers()), ((RandomProvider) P).naturalIntegersGeometric(20));
+        }
+        for (Pair<Integer, Integer> p : take(LIMIT, ps2)) {
+            assertTrue(p.toString(), zero(p.b).divide(p.a).isZero());
+        }
+
+        for (RationalVector v : take(LIMIT, P.rationalVectors())) {
+            try {
+                v.divide(0);
+                fail(v.toString());
+            } catch (ArithmeticException ignored) {}
         }
     }
 

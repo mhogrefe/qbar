@@ -1748,6 +1748,7 @@ public class RationalProperties {
             validate(sum);
             assertEquals(p.toString(), sum, add_simplest(p.a, p.b));
             assertEquals(p.toString(), sum, p.b.add(p.a));
+            assertEquals(p.toString(), sum.subtract(p.b), p.a);
         }
 
         for (Rational r : take(LIMIT, P.rationals())) {
@@ -1832,6 +1833,15 @@ public class RationalProperties {
             assertEquals(p.toString(), product, p.b.multiply(p.a));
         }
 
+        for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals(), filter(r -> r != ZERO, P.rationals())))) {
+            assertEquals(p.toString(), p.a.multiply(p.b).divide(p.b), p.a);
+        }
+
+        Iterable<Pair<Rational, Rational>> ps = P.pairs(P.rationals(), filter(r -> r != Rational.ZERO, P.rationals()));
+        for (Pair<Rational, Rational> p : take(LIMIT, ps)) {
+            assertEquals(p.toString(), p.a.multiply(p.b), p.a.divide(p.b.invert()));
+        }
+
         for (Rational r : take(LIMIT, P.rationals())) {
             assertEquals(r.toString(), ONE.multiply(r), r);
             assertEquals(r.toString(), r.multiply(ONE), r);
@@ -1890,6 +1900,11 @@ public class RationalProperties {
             assertEquals(p.toString(), product, multiply_BigInteger_simplest(p.a, p.b));
             assertEquals(p.toString(), product, p.a.multiply(of(p.b)));
             assertEquals(p.toString(), product, of(p.b).multiply(p.a));
+        }
+
+        ps = P.pairs(P.rationals(), filter(i -> !i.equals(BigInteger.ZERO), P.bigIntegers()));
+        for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
+            assertEquals(p.toString(), p.a.multiply(p.b).divide(p.b), p.a);
         }
 
         for (BigInteger i : take(LIMIT, P.bigIntegers())) {
@@ -1954,6 +1969,10 @@ public class RationalProperties {
             assertEquals(p.toString(), product, of(p.b).multiply(p.a));
         }
 
+        for (Pair<Rational, Integer> p : take(LIMIT, P.pairs(P.rationals(), filter(i -> i != 0, P.integers())))) {
+            assertEquals(p.toString(), p.a.multiply(p.b).divide(p.b), p.a);
+        }
+
         for (int i : take(LIMIT, P.integers())) {
             assertEquals(Integer.toString(i), ONE.multiply(i), of(i));
             assertTrue(Integer.toString(i), ZERO.multiply(i) == ZERO);
@@ -2013,6 +2032,7 @@ public class RationalProperties {
             validate(quotient);
             assertEquals(p.toString(), quotient, divide_Rational_simplest(p.a, p.b));
             assertEquals(p.toString(), p.a, quotient.multiply(p.b));
+            assertEquals(p.toString(), quotient, p.a.multiply(p.b.invert()));
         }
 
         ps = filter(p -> p.a != ZERO && p.b != ZERO, P.pairs(P.rationals()));

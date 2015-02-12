@@ -380,7 +380,7 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
      *
      * <ul>
      *  <li>{@code this} can be any {@code RationalVector}.</li>
-     *  <li>{@code that} cannot be null or zero.</li>
+     *  <li>{@code that} cannot be zero.</li>
      *  <li>The result is not null.</li>
      * </ul>
      *
@@ -396,7 +396,7 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
      *
      * <ul>
      *  <li>{@code this} can be any {@code RationalVector}.</li>
-     *  <li>{@code that} cannot be null or zero.</li>
+     *  <li>{@code that} cannot be zero.</li>
      *  <li>The result is not null.</li>
      * </ul>
      *
