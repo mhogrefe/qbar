@@ -435,9 +435,7 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
      * @return Σxs
      */
     public static RationalVector sum(@NotNull Iterable<RationalVector> xs) {
-        if (isEmpty(xs))
-            throw new IllegalArgumentException("cannot take the sum of an empty list of RationalVectors");
-        return foldl1(p -> p.a.add(p.b), xs);
+        return new RationalVector(toList(map(Rational::sum, transpose(map(v -> (Iterable<Rational>) v, xs)))));
     }
 
     /**
@@ -456,11 +454,10 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
      * @return Δxs
      */
     public static @NotNull Iterable<RationalVector> delta(@NotNull Iterable<RationalVector> xs) {
-        if (isEmpty(xs))
-            throw new IllegalArgumentException("cannot get delta of empty Iterable");
-        if (head(xs) == null)
-            throw new NullPointerException();
-        return adjacentPairsWith(p -> p.b.subtract(p.a), xs);
+        return map(
+                rs -> new RationalVector(toList(rs)),
+                transpose(map(Rational::delta, transpose(map(v -> (Iterable<Rational>) v, xs))))
+        );
     }
 
     /**
