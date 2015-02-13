@@ -1,5 +1,6 @@
 package mho.qbar.objects;
 
+import mho.wheels.iterables.IterableUtils;
 import mho.wheels.misc.Readers;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
@@ -306,6 +307,54 @@ public class RationalVectorTest {
     }
 
     @Test
+    public void testSum() {
+        aeq(sum(readRationalVectorList("[[]]").get()), "[]");
+        aeq(sum(readRationalVectorList("[[], [], []]").get()), "[]");
+        aeq(sum(readRationalVectorList("[[5/3, 1/4, 23]]").get()), "[5/3, 1/4, 23]");
+        aeq(
+                sum(readRationalVectorList("[[5/3, 1/4, 23], [0, 2/3, -1/8], [32, -45/2, 9]]").get()),
+                "[101/3, -259/12, 255/8]"
+        );
+        aeq(sum(readRationalVectorList("[[1/2], [2/3], [3/4]]").get()), "[23/12]");
+        try {
+            sum(readRationalVectorList("[]").get());
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            sum(readRationalVectorListWithNulls("[[1/2, 3], null]").get());
+            fail();
+        } catch (NullPointerException ignored) {}
+        try {
+            sum(readRationalVectorList("[[1/2], [3, 4]]").get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testDelta() {
+        aeq(delta(readRationalVectorList("[[]]").get()), "[]");
+        aeq(delta(readRationalVectorList("[[], [], []]").get()), "[[], []]");
+        aeq(delta(readRationalVectorList("[[5/3, 1/4, 23]]").get()), "[]");
+        aeq(
+                delta(readRationalVectorList("[[5/3, 1/4, 23], [0, 2/3, -1/8], [32, -45/2, 9]]").get()),
+                "[[-5/3, 5/12, -185/8], [32, -139/6, 73/8]]"
+        );
+        aeq(delta(readRationalVectorList("[[1/2], [2/3], [3/4]]").get()), "[[1/6], [1/12]]");
+        try {
+            delta(readRationalVectorList("[]").get());
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            toList(delta(readRationalVectorListWithNulls("[[1/2, 3], null]").get()));
+            fail();
+        } catch (NullPointerException ignored) {}
+        try {
+            toList(delta(readRationalVectorList("[[1/2], [3, 4]]").get()));
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
     public void testCompareTo() {
         assertTrue(eq(ZERO_DIMENSIONAL, ZERO_DIMENSIONAL));
         assertTrue(lt(ZERO_DIMENSIONAL, read("[1/2]").get()));
@@ -390,6 +439,10 @@ public class RationalVectorTest {
         aeq(of(Arrays.asList(Rational.of(5, 3), Rational.of(1, 4), Rational.of(23))), "[5/3, 1/4, 23]");
     }
 
+    private static void aeq(Iterable<?> a, Object b) {
+        assertEquals(IterableUtils.toString(a), b.toString());
+    }
+
     private static void aeq(Object a, Object b) {
         assertEquals(a.toString(), b.toString());
     }
@@ -400,5 +453,13 @@ public class RationalVectorTest {
 
     private static @NotNull Optional<List<Rational>> readRationalListWithNulls(@NotNull String s) {
         return Readers.readList(t -> Readers.findInWithNulls(Rational::findIn, t), s);
+    }
+
+    private static @NotNull Optional<List<RationalVector>> readRationalVectorList(@NotNull String s) {
+        return Readers.readList(RationalVector::findIn, s);
+    }
+
+    private static @NotNull Optional<List<RationalVector>> readRationalVectorListWithNulls(@NotNull String s) {
+        return Readers.readList(t -> Readers.findInWithNulls(RationalVector::findIn, t), s);
     }
 }

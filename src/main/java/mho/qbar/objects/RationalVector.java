@@ -427,7 +427,8 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
      * Returns the sum of all the {@code RationalVector}s in {@code xs}.
      *
      * <ul>
-     *  <li>{@code xs} must be finite and non-empty, and may not contain any nulls.</li>
+     *  <li>{@code xs} must be finite and non-empty, and may not contain any nulls. Every {@code RationalVector} in
+     *  {@code xs} must have the same dimension.</li>
      *  <li>The result may be any {@code RationalVector}.</li>
      * </ul>
      *
@@ -435,6 +436,10 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
      * @return Σxs
      */
     public static RationalVector sum(@NotNull Iterable<RationalVector> xs) {
+        if (isEmpty(xs))
+            throw new IllegalArgumentException("cannot take sum of empty RationalVector list");
+        if (!same(map(RationalVector::dimension, xs)))
+            throw new ArithmeticException("all elements must have the same dimension");
         return new RationalVector(toList(map(Rational::sum, transpose(map(v -> (Iterable<Rational>) v, xs)))));
     }
 
@@ -444,7 +449,8 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
      * support removal.
      *
      * <ul>
-     *  <li>{@code xs} must not be empty and may not contain any nulls.</li>
+     *  <li>{@code xs} must not be empty and may not contain any nulls. Every {@code RationalVector} in {@code xs} must
+     *  have the same dimension.</li>
      *  <li>The result is finite and does not contain any nulls.</li>
      * </ul>
      *
@@ -454,10 +460,11 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
      * @return Δxs
      */
     public static @NotNull Iterable<RationalVector> delta(@NotNull Iterable<RationalVector> xs) {
-        return map(
-                rs -> new RationalVector(toList(rs)),
-                transpose(map(Rational::delta, transpose(map(v -> (Iterable<Rational>) v, xs))))
-        );
+        if (isEmpty(xs))
+            throw new IllegalArgumentException("cannot get delta of empty Iterable");
+        if (head(xs) == null)
+            throw new NullPointerException();
+        return adjacentPairsWith(p -> p.b.subtract(p.a), xs);
     }
 
     /**
