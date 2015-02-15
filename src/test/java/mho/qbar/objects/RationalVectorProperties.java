@@ -5,6 +5,7 @@ import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.iterableProviders.QBarRandomProvider;
 import mho.wheels.iterables.ExhaustiveProvider;
 import mho.wheels.iterables.RandomProvider;
+import mho.wheels.math.Combinatorics;
 import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
 import org.jetbrains.annotations.NotNull;
@@ -69,6 +70,9 @@ public class RationalVectorProperties {
             propertiesDivide_Rational();
             propertiesDivide_BigInteger();
             propertiesDivide_int();
+            propertiesSum();
+            compareImplementationsSum();
+            propertiesDelta();
             propertiesEquals();
             propertiesHashCode();
             propertiesCompareTo();
@@ -692,6 +696,160 @@ public class RationalVectorProperties {
         }
     }
 
+    private static @NotNull RationalVector sum_simplest(@NotNull Iterable<RationalVector> xs) {
+        return foldl1(p -> p.a.add(p.b), xs);
+    }
+
+    private static void propertiesSum() {
+        initialize();
+        System.out.println("\t\ttesting sum(Iterable<RationalVector>) properties...");
+
+        Iterable<Pair<Integer, Integer>> ps0;
+        if (P instanceof ExhaustiveProvider) {
+            ps0 = P.pairs(P.positiveIntegers(), P.naturalIntegers());
+        } else {
+            ps0 = P.pairs(
+                    ((RandomProvider) P).positiveIntegersGeometric(5),
+                    ((RandomProvider) P).naturalIntegersGeometric(5)
+            );
+        }
+        Iterable<List<RationalVector>> vss = map(
+                q -> q.b,
+                P.dependentPairsSquare(ps0, p -> P.lists(p.a, P.rationalVectors(p.b)))
+        );
+        for (List<RationalVector> vs : take(LIMIT, vss)) {
+            RationalVector sum = sum(vs);
+            validate(sum);
+            assertEquals(vs.toString(), sum, sum_simplest(vs));
+            assertEquals(vs.toString(), sum.dimension(), head(vs).dimension());
+        }
+
+        Iterable<Pair<List<RationalVector>, List<RationalVector>>> ps = filter(
+                q -> !q.a.equals(q.b),
+                P.dependentPairsLogarithmic(vss, Combinatorics::permutationsIncreasing)
+        );
+
+        for (Pair<List<RationalVector>, List<RationalVector>> p : take(LIMIT, ps)) {
+            assertEquals(p.toString(), sum(p.a), sum(p.b));
+        }
+
+        for (RationalVector v : take(LIMIT, P.rationalVectors())) {
+            assertEquals(v.toString(), sum(Arrays.asList(v)), v);
+        }
+
+        Iterable<Pair<RationalVector, RationalVector>> ps2 = filter(
+                q -> q.a.dimension() == q.b.dimension(),
+                P.pairs(P.rationalVectors())
+        );
+        for (Pair<RationalVector, RationalVector> p : take(LIMIT, ps2)) {
+            assertEquals(p.toString(), sum(Arrays.asList(p.a, p.b)), p.a.add(p.b));
+        }
+
+        Iterable<List<RationalVector>> failVss = map(
+                p -> toList(insert(p.a, p.b, null)),
+                (Iterable<Pair<List<RationalVector>, Integer>>) P.dependentPairsLogarithmic(
+                        vss,
+                        rs -> range(0, rs.size())
+                )
+        );
+        for (List<RationalVector> vs : take(LIMIT, failVss)) {
+            try {
+                sum(vs);
+                fail(vs.toString());
+            } catch (NullPointerException ignored) {}
+        }
+    }
+
+    private static void compareImplementationsSum() {
+        initialize();
+        System.out.println("\t\tcomparing sum(Iterable<RationalVector>) implementations...");
+
+        long totalTime = 0;
+        Iterable<Pair<Integer, Integer>> ps;
+        if (P instanceof ExhaustiveProvider) {
+            ps = P.pairs(P.positiveIntegers(), P.naturalIntegers());
+        } else {
+            ps = P.pairs(
+                    ((RandomProvider) P).positiveIntegersGeometric(5),
+                    ((RandomProvider) P).naturalIntegersGeometric(5)
+            );
+        }
+        Iterable<List<RationalVector>> vss = map(
+                q -> q.b,
+                P.dependentPairsSquare(ps, p -> P.lists(p.a, P.rationalVectors(p.b)))
+        );
+        for (List<RationalVector> vs : take(LIMIT, vss)) {
+            long time = System.nanoTime();
+            sum_simplest(vs);
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\t\t\talt: " + ((double) totalTime) / 1e9 + " s");
+
+        totalTime = 0;
+        for (List<RationalVector> vs : take(LIMIT, vss)) {
+            long time = System.nanoTime();
+            sum(vs);
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
+    }
+
+    private static void propertiesDelta() {
+        initialize();
+        System.out.println("\t\ttesting delta(Iterable<RationalVector>) properties...");
+
+        Iterable<Pair<Integer, Integer>> ps0;
+        if (P instanceof ExhaustiveProvider) {
+            ps0 = P.pairs(P.positiveIntegers(), P.naturalIntegers());
+        } else {
+            ps0 = P.pairs(
+                    ((RandomProvider) P).positiveIntegersGeometric(5),
+                    ((RandomProvider) P).naturalIntegersGeometric(5)
+            );
+        }
+        Iterable<List<RationalVector>> vss = map(
+                q -> q.b,
+                P.dependentPairsSquare(ps0, p -> P.lists(p.a, P.rationalVectors(p.b)))
+        );
+        for (List<RationalVector> vs : take(LIMIT, vss)) {
+            Iterable<RationalVector> deltas = delta(vs);
+            deltas.forEach(mho.qbar.objects.RationalVectorProperties::validate);
+            assertTrue(vs.toString(), all(v -> v.dimension() == head(vs).dimension(), deltas));
+            assertEquals(vs.toString(), length(deltas), length(vs) - 1);
+            List<RationalVector> reversed = reverse(map(RationalVector::negate, delta(reverse(vs))));
+            aeq(vs.toString(), deltas, reversed);
+            try {
+                deltas.iterator().remove();
+            } catch (UnsupportedOperationException ignored) {}
+        }
+
+        for (RationalVector v : take(LIMIT, P.rationalVectors())) {
+            assertTrue(v.toString(), isEmpty(delta(Arrays.asList(v))));
+        }
+
+        Iterable<Pair<RationalVector, RationalVector>> ps = filter(
+                q -> q.a.dimension() == q.b.dimension(),
+                P.pairs(P.rationalVectors())
+        );
+        for (Pair<RationalVector, RationalVector> p : take(LIMIT, ps)) {
+            aeq(p.toString(), delta(Arrays.asList(p.a, p.b)), Arrays.asList(p.b.subtract(p.a)));
+        }
+
+        Iterable<List<RationalVector>> failVss = map(
+                p -> toList(insert(p.a, p.b, null)),
+                (Iterable<Pair<List<RationalVector>, Integer>>) P.dependentPairsLogarithmic(
+                        vss,
+                        rs -> range(0, rs.size())
+                )
+        );
+        for (List<RationalVector> vs : take(LIMIT, failVss)) {
+            try {
+                toList(delta(vs));
+                fail(vs.toString());
+            } catch (NullPointerException ignored) {}
+        }
+    }
+
     private static void propertiesEquals() {
         initialize();
         System.out.println("\t\ttesting equals(Object) properties...");
@@ -802,5 +960,9 @@ public class RationalVectorProperties {
     private static void validate(@NotNull RationalVector v) {
         assertTrue(v.toString(), all(r -> r != null, v));
         if (v.equals(ZERO_DIMENSIONAL)) assertTrue(v.toString(), v == ZERO_DIMENSIONAL);
+    }
+
+    private static <T> void aeq(String message, Iterable<T> xs, Iterable<T> ys) {
+        assertTrue(message, equal(xs, ys));
     }
 }

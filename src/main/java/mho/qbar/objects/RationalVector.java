@@ -440,7 +440,8 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
             throw new IllegalArgumentException("cannot take sum of empty RationalVector list");
         if (!same(map(RationalVector::dimension, xs)))
             throw new ArithmeticException("all elements must have the same dimension");
-        return new RationalVector(toList(map(Rational::sum, transpose(map(v -> (Iterable<Rational>) v, xs)))));
+        List<Rational> coordinates = toList(map(Rational::sum, transpose(map(v -> (Iterable<Rational>) v, xs))));
+        return coordinates.isEmpty() ? ZERO_DIMENSIONAL : new RationalVector(coordinates);
     }
 
     /**

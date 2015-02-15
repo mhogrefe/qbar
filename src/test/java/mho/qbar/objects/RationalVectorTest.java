@@ -308,8 +308,8 @@ public class RationalVectorTest {
 
     @Test
     public void testSum() {
-        aeq(sum(readRationalVectorList("[[]]").get()), "[]");
-        aeq(sum(readRationalVectorList("[[], [], []]").get()), "[]");
+        assertTrue(sum(readRationalVectorList("[[]]").get()) == ZERO_DIMENSIONAL);
+        assertTrue(sum(readRationalVectorList("[[], [], []]").get()) == ZERO_DIMENSIONAL);
         aeq(sum(readRationalVectorList("[[5/3, 1/4, 23]]").get()), "[5/3, 1/4, 23]");
         aeq(
                 sum(readRationalVectorList("[[5/3, 1/4, 23], [0, 2/3, -1/8], [32, -45/2, 9]]").get()),

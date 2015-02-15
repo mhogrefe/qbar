@@ -2370,8 +2370,9 @@ public class RationalProperties {
 
         for (List<Rational> rs : take(LIMIT, P.listsAtLeast(1, P.rationals()))) {
             Iterable<Rational> deltas = delta(rs);
-            aeq(rs.toString(), length(deltas), length(rs) - 1);
-            Iterable<Rational> reversed = reverse(map(Rational::negate, delta(reverse(rs))));
+            deltas.forEach(mho.qbar.objects.RationalProperties::validate);
+            assertEquals(rs.toString(), length(deltas), length(rs) - 1);
+            List<Rational> reversed = reverse(map(Rational::negate, delta(reverse(rs))));
             aeq(rs.toString(), deltas, reversed);
             try {
                 deltas.iterator().remove();
@@ -3672,14 +3673,6 @@ public class RationalProperties {
 
     private static <T> void aeq(String message, Iterable<T> xs, Iterable<T> ys) {
         assertTrue(message, equal(xs, ys));
-    }
-
-    private static void aeq(String message, int i, int j) {
-        assertEquals(message, i, j);
-    }
-
-    private static void aeq(String message, long i, long j) {
-        assertEquals(message, i, j);
     }
 
     private static void aeq(String message, float x, float y) {
