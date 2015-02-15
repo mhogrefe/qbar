@@ -4,6 +4,7 @@ import mho.qbar.iterableProviders.QBarExhaustiveProvider;
 import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.iterableProviders.QBarRandomProvider;
 import mho.wheels.iterables.ExhaustiveProvider;
+import mho.wheels.iterables.IterableUtils;
 import mho.wheels.iterables.RandomProvider;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
@@ -239,6 +240,48 @@ public class RationalVectorDemos {
         Iterable<Pair<RationalVector, Integer>> ps = P.pairs(P.rationalVectors(), filter(i -> i != 0, P.integers()));
         for (Pair<RationalVector, Integer> p : take(LIMIT, ps)) {
             System.out.println(p.a + " / " + p.b + " = " + p.a.divide(p.b));
+        }
+    }
+
+    public static void demoSum() {
+        initialize();
+        Iterable<Pair<Integer, Integer>> ps;
+        if (P instanceof ExhaustiveProvider) {
+            ps = P.pairs(P.positiveIntegers(), P.naturalIntegers());
+        } else {
+            ps = P.pairs(
+                    ((RandomProvider) P).positiveIntegersGeometric(5),
+                    ((RandomProvider) P).naturalIntegersGeometric(5)
+            );
+        }
+        Iterable<List<RationalVector>> vss = map(
+                q -> q.b,
+                P.dependentPairsSquare(ps, p -> P.lists(p.a, P.rationalVectors(p.b)))
+        );
+        for (List<RationalVector> vs : take(LIMIT, vss)) {
+            String listString = tail(init(vs.toString()));
+            System.out.println("sum(" + listString + ") = " + sum(vs));
+        }
+    }
+
+    public static void demoDelta() {
+        initialize();
+        Iterable<Pair<Integer, Integer>> ps;
+        if (P instanceof ExhaustiveProvider) {
+            ps = P.pairs(P.positiveIntegers(), P.naturalIntegers());
+        } else {
+            ps = P.pairs(
+                    ((RandomProvider) P).positiveIntegersGeometric(5),
+                    ((RandomProvider) P).naturalIntegersGeometric(5)
+            );
+        }
+        Iterable<List<RationalVector>> vss = map(
+                q -> q.b,
+                P.dependentPairsSquare(ps, p -> P.lists(p.a, P.rationalVectors(p.b)))
+        );
+        for (List<RationalVector> vs : take(LIMIT, vss)) {
+            String listString = tail(init(vs.toString()));
+            System.out.println("delta(" + listString + ") = " + IterableUtils.toString(delta(vs)));
         }
     }
 
