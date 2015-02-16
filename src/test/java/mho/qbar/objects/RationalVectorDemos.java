@@ -310,6 +310,22 @@ public class RationalVectorDemos {
         }
     }
 
+    public static void demoDot() {
+        initialize();
+        Iterable<Pair<RationalVector, RationalVector>> ps;
+        if (P instanceof ExhaustiveProvider) {
+            ps = P.dependentPairs(P.rationalVectors(), v -> P.rationalVectors(v.dimension()));
+        } else {
+            ps = P.dependentPairs(
+                    ((QBarRandomProvider) P).rationalVectorsBySize(8),
+                    v -> ((QBarRandomProvider) P).rationalVectorsBySize(8, v.dimension())
+            );
+        }
+        for (Pair<RationalVector, RationalVector> p : take(LIMIT, ps)) {
+            System.out.println("dot(" + p.a + ", " + p.b + ") = " + p.a.dot(p.b));
+        }
+    }
+
     public static void demoEquals_RationalVector() {
         initialize();
         for (Pair<RationalVector, RationalVector> p : take(LIMIT, P.pairs(P.rationalVectors()))) {
