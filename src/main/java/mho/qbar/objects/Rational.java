@@ -1338,6 +1338,66 @@ public final class Rational implements Comparable<Rational> {
     }
 
     /**
+     * Returns the left shift of {@code this} by {@code bits}; {@code this}×2<sup>{@code bits}</sup>. Negative
+     * {@code bits} corresponds to a right shift.
+     *
+     * <ul>
+     *  <li>{@code this} can be any {@code Rational}.</li>
+     *  <li>{@code bits} may be any {@code int}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param bits the number of bits to left-shift by
+     * @return {@code this}≪{@code bits}
+     */
+    public @NotNull Rational shiftLeft(int bits) {
+        if (this == ZERO) return ZERO;
+        if (bits == 0) return this;
+        if (bits < 0) return shiftRight(-bits);
+        int denominatorTwos = denominator.getLowestSetBit();
+        if (bits <= denominatorTwos) {
+            BigInteger shifted = denominator.shiftRight(bits);
+            if (numerator.equals(shifted)) return ONE;
+            return new Rational(numerator, shifted);
+        } else {
+            BigInteger shiftedNumerator = numerator.shiftLeft(bits - denominatorTwos);
+            BigInteger shiftedDenominator = denominator.shiftRight(denominatorTwos);
+            if (shiftedNumerator.equals(shiftedDenominator)) return ONE;
+            return new Rational(shiftedNumerator, shiftedDenominator);
+        }
+    }
+
+    /**
+     * Returns the right shift of {@code this} by {@code bits}; {@code this}×2<sup>–{@code bits}</sup>. Negative
+     * {@code bits} corresponds to a left shift.
+     *
+     * <ul>
+     *  <li>{@code this} can be any {@code Rational}.</li>
+     *  <li>{@code bits} may be any {@code int}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param bits the number of bits to right-shift by
+     * @return {@code this}≫{@code bits}
+     */
+    public @NotNull Rational shiftRight(int bits) {
+        if (this == ZERO) return ZERO;
+        if (bits == 0) return this;
+        if (bits < 0) return shiftLeft(-bits);
+        int numeratorTwos = numerator.getLowestSetBit();
+        if (bits <= numeratorTwos) {
+            BigInteger shifted = numerator.shiftRight(bits);
+            if (shifted.equals(denominator)) return ONE;
+            return new Rational(shifted, denominator);
+        } else {
+            BigInteger shiftedNumerator = numerator.shiftRight(numeratorTwos);
+            BigInteger shiftedDenominator = denominator.shiftLeft(bits - numeratorTwos);
+            if (shiftedNumerator.equals(shiftedDenominator)) return ONE;
+            return new Rational(shiftedNumerator, shiftedDenominator);
+        }
+    }
+
+    /**
      * Returns the sum of all the {@code Rational}s in {@code xs}. If {@code xs} is empty, 0 is returned.
      *
      * <ul>
@@ -1527,66 +1587,6 @@ public final class Rational implements Comparable<Rational> {
         if (denominator.signum() != 1)
             throw new ArithmeticException("must round to a positive denominator");
         return of(multiply(denominator).bigIntegerValue(roundingMode)).divide(denominator);
-    }
-
-    /**
-     * Returns the left shift of {@code this} by {@code bits}; {@code this}×2<sup>{@code bits}</sup>. Negative
-     * {@code bits} corresponds to a right shift.
-     *
-     * <ul>
-     *  <li>{@code this} can be any {@code Rational}.</li>
-     *  <li>{@code bits} may be any {@code int}.</li>
-     *  <li>The result is not null.</li>
-     * </ul>
-     *
-     * @param bits the number of bits to left-shift by
-     * @return {@code this}≪{@code bits}
-     */
-    public @NotNull Rational shiftLeft(int bits) {
-        if (this == ZERO) return ZERO;
-        if (bits == 0) return this;
-        if (bits < 0) return shiftRight(-bits);
-        int denominatorTwos = denominator.getLowestSetBit();
-        if (bits <= denominatorTwos) {
-            BigInteger shifted = denominator.shiftRight(bits);
-            if (numerator.equals(shifted)) return ONE;
-            return new Rational(numerator, shifted);
-        } else {
-            BigInteger shiftedNumerator = numerator.shiftLeft(bits - denominatorTwos);
-            BigInteger shiftedDenominator = denominator.shiftRight(denominatorTwos);
-            if (shiftedNumerator.equals(shiftedDenominator)) return ONE;
-            return new Rational(shiftedNumerator, shiftedDenominator);
-        }
-    }
-
-    /**
-     * Returns the right shift of {@code this} by {@code bits}; {@code this}×2<sup>–{@code bits}</sup>. Negative
-     * {@code bits} corresponds to a left shift.
-     *
-     * <ul>
-     *  <li>{@code this} can be any {@code Rational}.</li>
-     *  <li>{@code bits} may be any {@code int}.</li>
-     *  <li>The result is not null.</li>
-     * </ul>
-     *
-     * @param bits the number of bits to right-shift by
-     * @return {@code this}≫{@code bits}
-     */
-    public @NotNull Rational shiftRight(int bits) {
-        if (this == ZERO) return ZERO;
-        if (bits == 0) return this;
-        if (bits < 0) return shiftLeft(-bits);
-        int numeratorTwos = numerator.getLowestSetBit();
-        if (bits <= numeratorTwos) {
-            BigInteger shifted = numerator.shiftRight(bits);
-            if (shifted.equals(denominator)) return ONE;
-            return new Rational(shifted, denominator);
-        } else {
-            BigInteger shiftedNumerator = numerator.shiftRight(numeratorTwos);
-            BigInteger shiftedDenominator = denominator.shiftLeft(bits - numeratorTwos);
-            if (shiftedNumerator.equals(shiftedDenominator)) return ONE;
-            return new Rational(shiftedNumerator, shiftedDenominator);
-        }
     }
 
     /**

@@ -437,6 +437,32 @@ public class RationalDemos {
         }
     }
 
+    public static void demoShiftLeft() {
+        initialize();
+        Iterable<Integer> is;
+        if (P instanceof QBarExhaustiveProvider) {
+            is = P.integers();
+        } else {
+            is  = ((QBarRandomProvider) P).integersGeometric(50);
+        }
+        for (Pair<Rational, Integer> p : take(LIMIT, P.pairs(P.rationals(), is))) {
+            System.out.println(p.a + " << " + p.b + " = " + p.a.shiftLeft(p.b));
+        }
+    }
+
+    public static void demoShiftRight() {
+        initialize();
+        Iterable<Integer> is;
+        if (P instanceof QBarExhaustiveProvider) {
+            is = P.integers();
+        } else {
+            is  = ((QBarRandomProvider) P).integersGeometric(50);
+        }
+        for (Pair<Rational, Integer> p : take(LIMIT, P.pairs(P.rationals(), is))) {
+            System.out.println(p.a + " >> " + p.b + " = " + p.a.shiftRight(p.b));
+        }
+    }
+
     public static void demoSum() {
         initialize();
         for (List<Rational> rs : take(LIMIT, P.lists(P.rationals()))) {
@@ -518,32 +544,6 @@ public class RationalDemos {
         for (Triple<Rational, BigInteger, RoundingMode> t : take(LIMIT, ts)) {
             System.out.println("roundToDenominator(" + t.a + ", " + t.b + ", " + t.c + ") = " +
                     t.a.roundToDenominator(t.b, t.c));
-        }
-    }
-
-    public static void demoShiftLeft() {
-        initialize();
-        Iterable<Integer> is;
-        if (P instanceof QBarExhaustiveProvider) {
-            is = P.integers();
-        } else {
-            is  = ((QBarRandomProvider) P).integersGeometric(50);
-        }
-        for (Pair<Rational, Integer> p : take(LIMIT, P.pairs(P.rationals(), is))) {
-            System.out.println(p.a + " << " + p.b + " = " + p.a.shiftLeft(p.b));
-        }
-    }
-
-    public static void demoShiftRight() {
-        initialize();
-        Iterable<Integer> is;
-        if (P instanceof QBarExhaustiveProvider) {
-            is = P.integers();
-        } else {
-            is  = ((QBarRandomProvider) P).integersGeometric(50);
-        }
-        for (Pair<Rational, Integer> p : take(LIMIT, P.pairs(P.rationals(), is))) {
-            System.out.println(p.a + " >> " + p.b + " = " + p.a.shiftRight(p.b));
         }
     }
 

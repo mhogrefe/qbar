@@ -2211,6 +2211,140 @@ public class RationalProperties {
         System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
     }
 
+    private static @NotNull Rational shiftLeft_simplest(@NotNull Rational a, int bits) {
+        if (bits < 0) {
+            return a.divide(BigInteger.ONE.shiftLeft(-bits));
+        } else {
+            return a.multiply(BigInteger.ONE.shiftLeft(bits));
+        }
+    }
+
+    private static void propertiesShiftLeft() {
+        initialize();
+        System.out.println("\t\ttesting shiftLeft(int) properties...");
+
+        Iterable<Integer> is;
+        if (P instanceof QBarExhaustiveProvider) {
+            is = P.integers();
+        } else {
+            is  = ((QBarRandomProvider) P).integersGeometric(50);
+        }
+        Iterable<Pair<Rational, Integer>> ps = P.pairs(P.rationals(), is);
+        for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
+            Rational shifted = p.a.shiftLeft(p.b);
+            validate(shifted);
+            assertEquals(p.toString(), shifted, shiftLeft_simplest(p.a, p.b));
+            assertEquals(p.toString(), p.a.negate().shiftLeft(p.b), shifted.negate());
+            assertEquals(p.toString(), shifted, p.a.shiftRight(-p.b));
+        }
+
+        if (P instanceof QBarExhaustiveProvider) {
+            is = P.naturalIntegers();
+        } else {
+            is  = ((QBarRandomProvider) P).naturalIntegersGeometric(50);
+        }
+        ps = P.pairs(P.rationals(), is);
+        for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
+            Rational shifted = p.a.shiftLeft(p.b);
+            assertEquals(p.toString(), shifted, p.a.multiply(BigInteger.ONE.shiftLeft(p.b)));
+        }
+    }
+
+    private static void compareImplementationsShiftLeft() {
+        initialize();
+        System.out.println("\t\tcomparing shiftLeft(int) implementations...");
+
+        long totalTime = 0;
+        Iterable<Integer> is;
+        if (P instanceof QBarExhaustiveProvider) {
+            is = P.integers();
+        } else {
+            is  = ((QBarRandomProvider) P).integersGeometric(50);
+        }
+        Iterable<Pair<Rational, Integer>> ps = P.pairs(P.rationals(), is);
+        for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
+            long time = System.nanoTime();
+            shiftLeft_simplest(p.a, p.b);
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\t\t\tsimplest: " + ((double) totalTime) / 1e9 + " s");
+
+        totalTime = 0;
+        for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
+            long time = System.nanoTime();
+            p.a.shiftLeft(p.b);
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
+    }
+
+    private static @NotNull Rational shiftRight_simplest(@NotNull Rational a, int bits) {
+        if (bits < 0) {
+            return a.multiply(BigInteger.ONE.shiftLeft(-bits));
+        } else {
+            return a.divide(BigInteger.ONE.shiftLeft(bits));
+        }
+    }
+
+    private static void propertiesShiftRight() {
+        initialize();
+        System.out.println("\t\ttesting shiftRight(int) properties...");
+
+        Iterable<Integer> is;
+        if (P instanceof QBarExhaustiveProvider) {
+            is = P.integers();
+        } else {
+            is  = ((QBarRandomProvider) P).integersGeometric(50);
+        }
+        Iterable<Pair<Rational, Integer>> ps = P.pairs(P.rationals(), is);
+        for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
+            Rational shifted = p.a.shiftRight(p.b);
+            validate(shifted);
+            assertEquals(p.toString(), shifted, shiftRight_simplest(p.a, p.b));
+            assertEquals(p.toString(), p.a.negate().shiftRight(p.b), shifted.negate());
+            assertEquals(p.toString(), shifted, p.a.shiftLeft(-p.b));
+        }
+
+        if (P instanceof QBarExhaustiveProvider) {
+            is = P.naturalIntegers();
+        } else {
+            is  = ((QBarRandomProvider) P).naturalIntegersGeometric(50);
+        }
+        ps = P.pairs(P.rationals(), is);
+        for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
+            Rational shifted = p.a.shiftRight(p.b);
+            assertEquals(p.toString(), shifted, p.a.divide(BigInteger.ONE.shiftLeft(p.b)));
+        }
+    }
+
+    private static void compareImplementationsShiftRight() {
+        initialize();
+        System.out.println("\t\tcomparing shiftRight(int) implementations...");
+
+        long totalTime = 0;
+        Iterable<Integer> is;
+        if (P instanceof QBarExhaustiveProvider) {
+            is = P.integers();
+        } else {
+            is  = ((QBarRandomProvider) P).integersGeometric(50);
+        }
+        Iterable<Pair<Rational, Integer>> ps = P.pairs(P.rationals(), is);
+        for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
+            long time = System.nanoTime();
+            shiftRight_simplest(p.a, p.b);
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\t\t\tsimplest: " + ((double) totalTime) / 1e9 + " s");
+
+        totalTime = 0;
+        for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
+            long time = System.nanoTime();
+            p.a.shiftRight(p.b);
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
+    }
+
     private static @NotNull Rational sum_alt(@NotNull Iterable<Rational> xs) {
         List<Rational> denominatorSorted = sort(
                 (x, y) -> {
@@ -2761,140 +2895,6 @@ public class RationalProperties {
                 fail(p.toString());
             } catch (ArithmeticException ignored) {}
         }
-    }
-
-    private static @NotNull Rational shiftLeft_simplest(@NotNull Rational a, int bits) {
-        if (bits < 0) {
-            return a.divide(BigInteger.ONE.shiftLeft(-bits));
-        } else {
-            return a.multiply(BigInteger.ONE.shiftLeft(bits));
-        }
-    }
-
-    private static void propertiesShiftLeft() {
-        initialize();
-        System.out.println("\t\ttesting shiftLeft(int) properties...");
-
-        Iterable<Integer> is;
-        if (P instanceof QBarExhaustiveProvider) {
-            is = P.integers();
-        } else {
-            is  = ((QBarRandomProvider) P).integersGeometric(50);
-        }
-        Iterable<Pair<Rational, Integer>> ps = P.pairs(P.rationals(), is);
-        for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
-            Rational shifted = p.a.shiftLeft(p.b);
-            validate(shifted);
-            assertEquals(p.toString(), shifted, shiftLeft_simplest(p.a, p.b));
-            assertEquals(p.toString(), p.a.negate().shiftLeft(p.b), shifted.negate());
-            assertEquals(p.toString(), shifted, p.a.shiftRight(-p.b));
-        }
-
-        if (P instanceof QBarExhaustiveProvider) {
-            is = P.naturalIntegers();
-        } else {
-            is  = ((QBarRandomProvider) P).naturalIntegersGeometric(50);
-        }
-        ps = P.pairs(P.rationals(), is);
-        for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
-            Rational shifted = p.a.shiftLeft(p.b);
-            assertEquals(p.toString(), shifted, p.a.multiply(BigInteger.ONE.shiftLeft(p.b)));
-        }
-    }
-
-    private static void compareImplementationsShiftLeft() {
-        initialize();
-        System.out.println("\t\tcomparing shiftLeft(int) implementations...");
-
-        long totalTime = 0;
-        Iterable<Integer> is;
-        if (P instanceof QBarExhaustiveProvider) {
-            is = P.integers();
-        } else {
-            is  = ((QBarRandomProvider) P).integersGeometric(50);
-        }
-        Iterable<Pair<Rational, Integer>> ps = P.pairs(P.rationals(), is);
-        for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
-            long time = System.nanoTime();
-            shiftLeft_simplest(p.a, p.b);
-            totalTime += (System.nanoTime() - time);
-        }
-        System.out.println("\t\t\tsimplest: " + ((double) totalTime) / 1e9 + " s");
-
-        totalTime = 0;
-        for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
-            long time = System.nanoTime();
-            p.a.shiftLeft(p.b);
-            totalTime += (System.nanoTime() - time);
-        }
-        System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
-    }
-
-    private static @NotNull Rational shiftRight_simplest(@NotNull Rational a, int bits) {
-        if (bits < 0) {
-            return a.multiply(BigInteger.ONE.shiftLeft(-bits));
-        } else {
-            return a.divide(BigInteger.ONE.shiftLeft(bits));
-        }
-    }
-
-    private static void propertiesShiftRight() {
-        initialize();
-        System.out.println("\t\ttesting shiftRight(int) properties...");
-
-        Iterable<Integer> is;
-        if (P instanceof QBarExhaustiveProvider) {
-            is = P.integers();
-        } else {
-            is  = ((QBarRandomProvider) P).integersGeometric(50);
-        }
-        Iterable<Pair<Rational, Integer>> ps = P.pairs(P.rationals(), is);
-        for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
-            Rational shifted = p.a.shiftRight(p.b);
-            validate(shifted);
-            assertEquals(p.toString(), shifted, shiftRight_simplest(p.a, p.b));
-            assertEquals(p.toString(), p.a.negate().shiftRight(p.b), shifted.negate());
-            assertEquals(p.toString(), shifted, p.a.shiftLeft(-p.b));
-        }
-
-        if (P instanceof QBarExhaustiveProvider) {
-            is = P.naturalIntegers();
-        } else {
-            is  = ((QBarRandomProvider) P).naturalIntegersGeometric(50);
-        }
-        ps = P.pairs(P.rationals(), is);
-        for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
-            Rational shifted = p.a.shiftRight(p.b);
-            assertEquals(p.toString(), shifted, p.a.divide(BigInteger.ONE.shiftLeft(p.b)));
-        }
-    }
-
-    private static void compareImplementationsShiftRight() {
-        initialize();
-        System.out.println("\t\tcomparing shiftRight(int) implementations...");
-
-        long totalTime = 0;
-        Iterable<Integer> is;
-        if (P instanceof QBarExhaustiveProvider) {
-            is = P.integers();
-        } else {
-            is  = ((QBarRandomProvider) P).integersGeometric(50);
-        }
-        Iterable<Pair<Rational, Integer>> ps = P.pairs(P.rationals(), is);
-        for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
-            long time = System.nanoTime();
-            shiftRight_simplest(p.a, p.b);
-            totalTime += (System.nanoTime() - time);
-        }
-        System.out.println("\t\t\tsimplest: " + ((double) totalTime) / 1e9 + " s");
-
-        totalTime = 0;
-        for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
-            long time = System.nanoTime();
-            p.a.shiftRight(p.b);
-            totalTime += (System.nanoTime() - time);
-        }
-        System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
     }
 
     private static void propertiesContinuedFraction() {

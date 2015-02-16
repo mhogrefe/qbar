@@ -2634,6 +2634,106 @@ public class RationalTest {
     }
 
     @Test
+    public void testShiftLeft() {
+        aeq(read("7/12").get().shiftLeft(0), "7/12");
+        aeq(read("7/12").get().shiftLeft(1), "7/6");
+        aeq(read("7/12").get().shiftLeft(2), "7/3");
+        aeq(read("7/12").get().shiftLeft(3), "14/3");
+        aeq(read("7/12").get().shiftLeft(4), "28/3");
+        aeq(read("7/12").get().shiftLeft(-1), "7/24");
+        aeq(read("7/12").get().shiftLeft(-2), "7/48");
+        aeq(read("7/12").get().shiftLeft(-3), "7/96");
+        aeq(read("7/12").get().shiftLeft(-4), "7/192");
+        aeq(read("4/5").get().shiftLeft(0), "4/5");
+        aeq(read("4/5").get().shiftLeft(1), "8/5");
+        aeq(read("4/5").get().shiftLeft(2), "16/5");
+        aeq(read("4/5").get().shiftLeft(3), "32/5");
+        aeq(read("4/5").get().shiftLeft(4), "64/5");
+        aeq(read("4/5").get().shiftLeft(-1), "2/5");
+        aeq(read("4/5").get().shiftLeft(-2), "1/5");
+        aeq(read("4/5").get().shiftLeft(-3), "1/10");
+        aeq(read("4/5").get().shiftLeft(-4), "1/20");
+        assertTrue(ZERO.shiftLeft(4) == ZERO);
+        assertTrue(ONE.shiftLeft(0) == ONE);
+        aeq(ONE.shiftLeft(1), "2");
+        aeq(ONE.shiftLeft(2), "4");
+        aeq(ONE.shiftLeft(3), "8");
+        aeq(ONE.shiftLeft(4), "16");
+        aeq(ONE.shiftLeft(-1), "1/2");
+        aeq(ONE.shiftLeft(-2), "1/4");
+        aeq(ONE.shiftLeft(-3), "1/8");
+        aeq(ONE.shiftLeft(-4), "1/16");
+        aeq(read("-4/5").get().shiftLeft(0), "-4/5");
+        aeq(read("-4/5").get().shiftLeft(1), "-8/5");
+        aeq(read("-4/5").get().shiftLeft(2), "-16/5");
+        aeq(read("-4/5").get().shiftLeft(3), "-32/5");
+        aeq(read("-4/5").get().shiftLeft(4), "-64/5");
+        aeq(read("-4/5").get().shiftLeft(-1), "-2/5");
+        aeq(read("-4/5").get().shiftLeft(-2), "-1/5");
+        aeq(read("-4/5").get().shiftLeft(-3), "-1/10");
+        aeq(read("-4/5").get().shiftLeft(-4), "-1/20");
+        aeq(read("-1").get().shiftLeft(0), "-1");
+        aeq(read("-1").get().shiftLeft(1), "-2");
+        aeq(read("-1").get().shiftLeft(2), "-4");
+        aeq(read("-1").get().shiftLeft(3), "-8");
+        aeq(read("-1").get().shiftLeft(4), "-16");
+        aeq(read("-1").get().shiftLeft(-1), "-1/2");
+        aeq(read("-1").get().shiftLeft(-2), "-1/4");
+        aeq(read("-1").get().shiftLeft(-3), "-1/8");
+        aeq(read("-1").get().shiftLeft(-4), "-1/16");
+    }
+
+    @Test
+    public void testShiftRight() {
+        aeq(read("7/12").get().shiftRight(0), "7/12");
+        aeq(read("7/12").get().shiftRight(1), "7/24");
+        aeq(read("7/12").get().shiftRight(2), "7/48");
+        aeq(read("7/12").get().shiftRight(3), "7/96");
+        aeq(read("7/12").get().shiftRight(4), "7/192");
+        aeq(read("7/12").get().shiftRight(-1), "7/6");
+        aeq(read("7/12").get().shiftRight(-2), "7/3");
+        aeq(read("7/12").get().shiftRight(-3), "14/3");
+        aeq(read("7/12").get().shiftRight(-4), "28/3");
+        aeq(read("4/5").get().shiftRight(0), "4/5");
+        aeq(read("4/5").get().shiftRight(1), "2/5");
+        aeq(read("4/5").get().shiftRight(2), "1/5");
+        aeq(read("4/5").get().shiftRight(3), "1/10");
+        aeq(read("4/5").get().shiftRight(4), "1/20");
+        aeq(read("4/5").get().shiftRight(-1), "8/5");
+        aeq(read("4/5").get().shiftRight(-2), "16/5");
+        aeq(read("4/5").get().shiftRight(-3), "32/5");
+        aeq(read("4/5").get().shiftRight(-4), "64/5");
+        assertTrue(ZERO.shiftRight(4) == ZERO);
+        assertTrue(ONE.shiftRight(0) == ONE);
+        aeq(ONE.shiftRight(1), "1/2");
+        aeq(ONE.shiftRight(2), "1/4");
+        aeq(ONE.shiftRight(3), "1/8");
+        aeq(ONE.shiftRight(4), "1/16");
+        aeq(ONE.shiftRight(-1), "2");
+        aeq(ONE.shiftRight(-2), "4");
+        aeq(ONE.shiftRight(-3), "8");
+        aeq(ONE.shiftRight(-4), "16");
+        aeq(read("-4/5").get().shiftRight(0), "-4/5");
+        aeq(read("-4/5").get().shiftRight(1), "-2/5");
+        aeq(read("-4/5").get().shiftRight(2), "-1/5");
+        aeq(read("-4/5").get().shiftRight(3), "-1/10");
+        aeq(read("-4/5").get().shiftRight(4), "-1/20");
+        aeq(read("-4/5").get().shiftRight(-1), "-8/5");
+        aeq(read("-4/5").get().shiftRight(-2), "-16/5");
+        aeq(read("-4/5").get().shiftRight(-3), "-32/5");
+        aeq(read("-4/5").get().shiftRight(-4), "-64/5");
+        aeq(read("-1").get().shiftRight(0), "-1");
+        aeq(read("-1").get().shiftRight(1), "-1/2");
+        aeq(read("-1").get().shiftRight(2), "-1/4");
+        aeq(read("-1").get().shiftRight(3), "-1/8");
+        aeq(read("-1").get().shiftRight(4), "-1/16");
+        aeq(read("-1").get().shiftRight(-1), "-2");
+        aeq(read("-1").get().shiftRight(-2), "-4");
+        aeq(read("-1").get().shiftRight(-3), "-8");
+        aeq(read("-1").get().shiftRight(-4), "-16");
+    }
+
+    @Test
     public void testSum() {
         aeq(sum(readRationalList("[10, 21/2, 11]").get()), "63/2");
         aeq(sum(readRationalList("[-4, 6, -8]").get()), -6);
@@ -2809,106 +2909,6 @@ public class RationalTest {
             doublePi.roundToDenominator(BigInteger.valueOf(7), RoundingMode.UNNECESSARY);
             fail();
         } catch (ArithmeticException ignored) {}
-    }
-
-    @Test
-    public void testShiftLeft() {
-        aeq(read("7/12").get().shiftLeft(0), "7/12");
-        aeq(read("7/12").get().shiftLeft(1), "7/6");
-        aeq(read("7/12").get().shiftLeft(2), "7/3");
-        aeq(read("7/12").get().shiftLeft(3), "14/3");
-        aeq(read("7/12").get().shiftLeft(4), "28/3");
-        aeq(read("7/12").get().shiftLeft(-1), "7/24");
-        aeq(read("7/12").get().shiftLeft(-2), "7/48");
-        aeq(read("7/12").get().shiftLeft(-3), "7/96");
-        aeq(read("7/12").get().shiftLeft(-4), "7/192");
-        aeq(read("4/5").get().shiftLeft(0), "4/5");
-        aeq(read("4/5").get().shiftLeft(1), "8/5");
-        aeq(read("4/5").get().shiftLeft(2), "16/5");
-        aeq(read("4/5").get().shiftLeft(3), "32/5");
-        aeq(read("4/5").get().shiftLeft(4), "64/5");
-        aeq(read("4/5").get().shiftLeft(-1), "2/5");
-        aeq(read("4/5").get().shiftLeft(-2), "1/5");
-        aeq(read("4/5").get().shiftLeft(-3), "1/10");
-        aeq(read("4/5").get().shiftLeft(-4), "1/20");
-        assertTrue(ZERO.shiftLeft(4) == ZERO);
-        assertTrue(ONE.shiftLeft(0) == ONE);
-        aeq(ONE.shiftLeft(1), "2");
-        aeq(ONE.shiftLeft(2), "4");
-        aeq(ONE.shiftLeft(3), "8");
-        aeq(ONE.shiftLeft(4), "16");
-        aeq(ONE.shiftLeft(-1), "1/2");
-        aeq(ONE.shiftLeft(-2), "1/4");
-        aeq(ONE.shiftLeft(-3), "1/8");
-        aeq(ONE.shiftLeft(-4), "1/16");
-        aeq(read("-4/5").get().shiftLeft(0), "-4/5");
-        aeq(read("-4/5").get().shiftLeft(1), "-8/5");
-        aeq(read("-4/5").get().shiftLeft(2), "-16/5");
-        aeq(read("-4/5").get().shiftLeft(3), "-32/5");
-        aeq(read("-4/5").get().shiftLeft(4), "-64/5");
-        aeq(read("-4/5").get().shiftLeft(-1), "-2/5");
-        aeq(read("-4/5").get().shiftLeft(-2), "-1/5");
-        aeq(read("-4/5").get().shiftLeft(-3), "-1/10");
-        aeq(read("-4/5").get().shiftLeft(-4), "-1/20");
-        aeq(read("-1").get().shiftLeft(0), "-1");
-        aeq(read("-1").get().shiftLeft(1), "-2");
-        aeq(read("-1").get().shiftLeft(2), "-4");
-        aeq(read("-1").get().shiftLeft(3), "-8");
-        aeq(read("-1").get().shiftLeft(4), "-16");
-        aeq(read("-1").get().shiftLeft(-1), "-1/2");
-        aeq(read("-1").get().shiftLeft(-2), "-1/4");
-        aeq(read("-1").get().shiftLeft(-3), "-1/8");
-        aeq(read("-1").get().shiftLeft(-4), "-1/16");
-    }
-
-    @Test
-    public void testShiftRight() {
-        aeq(read("7/12").get().shiftRight(0), "7/12");
-        aeq(read("7/12").get().shiftRight(1), "7/24");
-        aeq(read("7/12").get().shiftRight(2), "7/48");
-        aeq(read("7/12").get().shiftRight(3), "7/96");
-        aeq(read("7/12").get().shiftRight(4), "7/192");
-        aeq(read("7/12").get().shiftRight(-1), "7/6");
-        aeq(read("7/12").get().shiftRight(-2), "7/3");
-        aeq(read("7/12").get().shiftRight(-3), "14/3");
-        aeq(read("7/12").get().shiftRight(-4), "28/3");
-        aeq(read("4/5").get().shiftRight(0), "4/5");
-        aeq(read("4/5").get().shiftRight(1), "2/5");
-        aeq(read("4/5").get().shiftRight(2), "1/5");
-        aeq(read("4/5").get().shiftRight(3), "1/10");
-        aeq(read("4/5").get().shiftRight(4), "1/20");
-        aeq(read("4/5").get().shiftRight(-1), "8/5");
-        aeq(read("4/5").get().shiftRight(-2), "16/5");
-        aeq(read("4/5").get().shiftRight(-3), "32/5");
-        aeq(read("4/5").get().shiftRight(-4), "64/5");
-        assertTrue(ZERO.shiftRight(4) == ZERO);
-        assertTrue(ONE.shiftRight(0) == ONE);
-        aeq(ONE.shiftRight(1), "1/2");
-        aeq(ONE.shiftRight(2), "1/4");
-        aeq(ONE.shiftRight(3), "1/8");
-        aeq(ONE.shiftRight(4), "1/16");
-        aeq(ONE.shiftRight(-1), "2");
-        aeq(ONE.shiftRight(-2), "4");
-        aeq(ONE.shiftRight(-3), "8");
-        aeq(ONE.shiftRight(-4), "16");
-        aeq(read("-4/5").get().shiftRight(0), "-4/5");
-        aeq(read("-4/5").get().shiftRight(1), "-2/5");
-        aeq(read("-4/5").get().shiftRight(2), "-1/5");
-        aeq(read("-4/5").get().shiftRight(3), "-1/10");
-        aeq(read("-4/5").get().shiftRight(4), "-1/20");
-        aeq(read("-4/5").get().shiftRight(-1), "-8/5");
-        aeq(read("-4/5").get().shiftRight(-2), "-16/5");
-        aeq(read("-4/5").get().shiftRight(-3), "-32/5");
-        aeq(read("-4/5").get().shiftRight(-4), "-64/5");
-        aeq(read("-1").get().shiftRight(0), "-1");
-        aeq(read("-1").get().shiftRight(1), "-1/2");
-        aeq(read("-1").get().shiftRight(2), "-1/4");
-        aeq(read("-1").get().shiftRight(3), "-1/8");
-        aeq(read("-1").get().shiftRight(4), "-1/16");
-        aeq(read("-1").get().shiftRight(-1), "-2");
-        aeq(read("-1").get().shiftRight(-2), "-4");
-        aeq(read("-1").get().shiftRight(-3), "-8");
-        aeq(read("-1").get().shiftRight(-4), "-16");
     }
 
     @Test
