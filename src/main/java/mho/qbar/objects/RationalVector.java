@@ -1,6 +1,7 @@
 package mho.qbar.objects;
 
 import mho.wheels.misc.Readers;
+import mho.wheels.ordering.Ordering;
 import mho.wheels.ordering.comparators.ShortlexComparator;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
@@ -524,6 +525,26 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
         if (coordinates.size() != that.coordinates.size())
             throw new ArithmeticException("vectors must have same dimension");
         return Rational.sum(zipWith(p -> p.a.multiply(p.b), coordinates, that.coordinates));
+    }
+
+    /**
+     * Determines whether the angle between {@code this} and {@code that} is less than, equal to, or greater than a
+     * right angle. For the purposes of this method, zero vectors are considered to be at a right angle to any other
+     * vector.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalVector}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>{@code this} and {@code that} must have the same dimension.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param that the {@code RationalVector} which, along with {@code this}, creates the angle under consideration
+     * @return whether the angle between {@code this} and {@code that} is acute ({@code LT}), right ({@code EQ}), or
+     * obtuse ({@code GT}).
+     */
+    public @NotNull Ordering rightAngleCompare(@NotNull RationalVector that) {
+        return Ordering.compare(dot(that), Rational.ZERO).invert();
     }
 
     /**
