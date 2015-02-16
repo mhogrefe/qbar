@@ -8,6 +8,7 @@ import mho.wheels.iterables.IterableUtils;
 import mho.wheels.iterables.RandomProvider;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
+import org.junit.Assert;
 
 import java.math.BigInteger;
 import java.util.List;
@@ -323,6 +324,44 @@ public class RationalVectorDemos {
         }
         for (Pair<RationalVector, RationalVector> p : take(LIMIT, ps)) {
             System.out.println("dot(" + p.a + ", " + p.b + ") = " + p.a.dot(p.b));
+        }
+    }
+
+    public static void demoRightAngleCompare() {
+        initialize();
+        Iterable<Pair<RationalVector, RationalVector>> ps;
+        if (P instanceof ExhaustiveProvider) {
+            ps = P.dependentPairs(P.rationalVectors(), v -> P.rationalVectors(v.dimension()));
+        } else {
+            ps = P.dependentPairs(
+                    ((QBarRandomProvider) P).rationalVectorsBySize(8),
+                    v -> ((QBarRandomProvider) P).rationalVectorsBySize(8, v.dimension())
+            );
+        }
+        for (Pair<RationalVector, RationalVector> p : take(LIMIT, ps)) {
+            String angleType;
+            switch (p.a.rightAngleCompare(p.b)) {
+                case LT:
+                    angleType = "an acute";
+                    break;
+                case EQ:
+                    angleType = "a right";
+                    break;
+                case GT:
+                    angleType = "an obtuse";
+                    break;
+                default:
+                    Assert.fail();
+                    return;
+            }
+            System.out.println(p.a + " and " + p.b + " make " + angleType + " angle");
+        }
+    }
+
+    public static void demoSquaredLength() {
+        initialize();
+        for (RationalVector v : take(LIMIT, P.rationalVectors())) {
+            System.out.println("squaredLength(" + v + ") = " + v.squaredLength());
         }
     }
 
