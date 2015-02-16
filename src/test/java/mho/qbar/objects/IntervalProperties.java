@@ -60,6 +60,7 @@ public class IntervalProperties {
             propertiesIntersection();
             propertiesDisjoint();
             propertiesMakeDisjoint();
+            propertiesComplement();
             propertiesMidpoint();
             propertiesSplit();
             propertiesBisect();
@@ -116,6 +117,9 @@ public class IntervalProperties {
             validate(a);
             assertFalse(a.toString(), a.getLower().isPresent());
             assertTrue(a.toString(), a.getUpper().isPresent());
+            for (Rational s : take(TINY_LIMIT, P.rationals(a))) {
+                assertTrue(r.toString(), le(s, r));
+            }
         }
     }
 
@@ -128,6 +132,9 @@ public class IntervalProperties {
             validate(a);
             assertTrue(a.toString(), a.getLower().isPresent());
             assertFalse(a.toString(), a.getUpper().isPresent());
+            for (Rational s : take(TINY_LIMIT, P.rationals(a))) {
+                assertTrue(r.toString(), ge(s, r));
+            }
         }
     }
 
@@ -474,6 +481,61 @@ public class IntervalProperties {
                 convexHull(as);
                 fail(p.toString());
             } catch (NullPointerException ignored) {}
+        }
+    }
+
+    private static void propertiesComplement() {
+        initialize();
+        System.out.println("\t\ttesting complement() properties...");
+
+        for (Interval a : take(LIMIT, P.intervals())) {
+            List<Interval> complement = a.complement();
+            complement.forEach(mho.qbar.objects.IntervalProperties::validate);
+            assertEquals(a.toString(), makeDisjoint(complement), complement);
+            List<Rational> endpoints = new ArrayList<>();
+            if (a.getLower().isPresent()) endpoints.add(a.getLower().get());
+            if (a.getUpper().isPresent()) endpoints.add(a.getUpper().get());
+            for (Rational endpoint : endpoints) {
+                any(b -> b.contains(endpoint), complement);
+            }
+            for (Rational r : take(TINY_LIMIT, filter(s -> !endpoints.contains(s), P.rationals(a)))) {
+                assertFalse(a.toString(), any(b -> b.contains(r), complement));
+            }
+            for (Rational r : take(TINY_LIMIT, P.rationalsNotIn(a))) {
+                assertTrue(a.toString(), any(b -> b.contains(r), complement));
+            }
+        }
+
+        for (Interval a : take(LIMIT, map(Interval::lessThanOrEqualTo, P.rationals()))) {
+            List<Interval> complement = a.complement();
+            assertEquals(a.toString(), complement.size(), 1);
+            Interval x = complement.get(0);
+            assertTrue(a.toString(), x.getLower().isPresent());
+            assertFalse(a.toString(), x.getUpper().isPresent());
+        }
+
+        for (Interval a : take(LIMIT, map(Interval::greaterThanOrEqualTo, P.rationals()))) {
+            List<Interval> complement = a.complement();
+            assertEquals(a.toString(), complement.size(), 1);
+            Interval x = complement.get(0);
+            assertFalse(a.toString(), x.getLower().isPresent());
+            assertTrue(a.toString(), x.getUpper().isPresent());
+        }
+
+        for (Interval a : take(LIMIT, map(Interval::of, P.rationals()))) {
+            assertEquals(a.toString(), a.complement(), Arrays.asList(ALL));
+        }
+
+        Iterable<Interval> as = filter(b -> b.diameter().get() != Rational.ZERO, P.finitelyBoundedIntervals());
+        for (Interval a : take(LIMIT, as)) {
+            List<Interval> complement = a.complement();
+            assertEquals(a.toString(), complement.size(), 2);
+            Interval x = complement.get(0);
+            Interval y = complement.get(1);
+            assertFalse(a.toString(), x.getLower().isPresent());
+            assertTrue(a.toString(), x.getUpper().isPresent());
+            assertTrue(a.toString(), y.getLower().isPresent());
+            assertFalse(a.toString(), y.getUpper().isPresent());
         }
     }
 
