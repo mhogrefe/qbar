@@ -548,6 +548,21 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
     }
 
     /**
+     * Returns the square of the length (a.k.a. magnitude, a.k.a. norm) of {@code this}. The actual length may be
+     * irrational. The length of the zero-dimensional vector is 0.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalVector}.</li>
+     *  <li>The result is non-negative.</li>
+     * </ul>
+     *
+     * @return ‖{@code this}‖²
+     */
+    public @NotNull Rational squaredLength() {
+        return Rational.sum(map(x -> x.pow(2), coordinates));
+    }
+
+    /**
      * Determines whether {@code this} is equal to {@code that}.
      *
      * <ul>
