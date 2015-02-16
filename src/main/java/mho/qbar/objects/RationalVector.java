@@ -507,6 +507,26 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
     }
 
     /**
+     * Returns the dot product of {@code this} and {@code that}. The dot product of the zero-dimensional vector with
+     * itself is 0.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalVector}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>{@code this} and {@code that} must have the same dimension.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param that the {@code RationalVector} {@code this} is being dotted with
+     * @return {@code this}⋅{@code that}
+     */
+    public @NotNull Rational dot(@NotNull RationalVector that) {
+        if (coordinates.size() != that.coordinates.size())
+            throw new ArithmeticException("vectors must have same dimension");
+        return Rational.sum(zipWith(p -> p.a.multiply(p.b), coordinates, that.coordinates));
+    }
+
+    /**
      * Determines whether {@code this} is equal to {@code that}.
      *
      * <ul>
