@@ -417,6 +417,27 @@ public class RationalVectorTest {
     }
 
     @Test
+    public void testDot() {
+        assertTrue(ZERO_DIMENSIONAL.dot(ZERO_DIMENSIONAL) == Rational.ZERO);
+        aeq(read("[2]").get().dot(read("[3]").get()), "6");
+        aeq(read("[5/3, 4, 0]").get().dot(read("[-2, 1, 3]").get()), "2/3");
+        aeq(read("[5/3, 4, 0]").get().dot(read("[0, 0, 0]").get()), "0");
+        aeq(read("[5/3, 4, 0]").get().dot(read("[-5/3, -4, 0]").get()), "-169/9");
+        try {
+            ZERO_DIMENSIONAL.dot(read("[1/2]").get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+        try {
+            read("[1/2]").get().dot(ZERO_DIMENSIONAL);
+            fail();
+        } catch (ArithmeticException ignored) {}
+        try {
+            read("[1/2, 4, -4]").get().dot(read("[5/6, 2/3]").get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
     public void testCompareTo() {
         assertTrue(eq(ZERO_DIMENSIONAL, ZERO_DIMENSIONAL));
         assertTrue(lt(ZERO_DIMENSIONAL, read("[1/2]").get()));
