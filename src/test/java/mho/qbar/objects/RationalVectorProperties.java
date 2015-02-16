@@ -988,6 +988,23 @@ public class RationalVectorProperties {
         }
     }
 
+    private static void propertiesDot() {
+        Iterable<Pair<RationalVector, RationalVector>> ps;
+        if (P instanceof ExhaustiveProvider) {
+            ps = P.dependentPairs(P.rationalVectors(), v -> P.rationalVectors(v.dimension()));
+        } else {
+            ps = P.dependentPairs(
+                    ((QBarRandomProvider) P).rationalVectorsBySize(8),
+                    v -> ((QBarRandomProvider) P).rationalVectorsBySize(8, v.dimension())
+            );
+        }
+        for (Pair<RationalVector, RationalVector> p : take(LIMIT, ps)) {
+            Rational dot = p.a.dot(p.b);
+            assertEquals(p.toString(), dot, p.b.dot(p.a));
+            assertEquals(p.toString(), p.a.negate().dot(p.b), dot.negate());
+        }
+    }
+
     private static void propertiesEquals() {
         initialize();
         System.out.println("\t\ttesting equals(Object) properties...");
