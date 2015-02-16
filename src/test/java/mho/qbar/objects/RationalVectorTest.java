@@ -307,6 +307,68 @@ public class RationalVectorTest {
     }
 
     @Test
+    public void testShiftLeft() {
+        assertTrue(ZERO_DIMENSIONAL.shiftLeft(0) == ZERO_DIMENSIONAL);
+        assertTrue(ZERO_DIMENSIONAL.shiftLeft(1) == ZERO_DIMENSIONAL);
+        assertTrue(ZERO_DIMENSIONAL.shiftLeft(2) == ZERO_DIMENSIONAL);
+        assertTrue(ZERO_DIMENSIONAL.shiftLeft(3) == ZERO_DIMENSIONAL);
+        assertTrue(ZERO_DIMENSIONAL.shiftLeft(4) == ZERO_DIMENSIONAL);
+        assertTrue(ZERO_DIMENSIONAL.shiftLeft(-1) == ZERO_DIMENSIONAL);
+        assertTrue(ZERO_DIMENSIONAL.shiftLeft(-2) == ZERO_DIMENSIONAL);
+        assertTrue(ZERO_DIMENSIONAL.shiftLeft(-3) == ZERO_DIMENSIONAL);
+        assertTrue(ZERO_DIMENSIONAL.shiftLeft(-4) == ZERO_DIMENSIONAL);
+        aeq(read("[1/2]").get().shiftLeft(0), "[1/2]");
+        aeq(read("[1/2]").get().shiftLeft(1), "[1]");
+        aeq(read("[1/2]").get().shiftLeft(2), "[2]");
+        aeq(read("[1/2]").get().shiftLeft(3), "[4]");
+        aeq(read("[1/2]").get().shiftLeft(4), "[8]");
+        aeq(read("[1/2]").get().shiftLeft(-1), "[1/4]");
+        aeq(read("[1/2]").get().shiftLeft(-2), "[1/8]");
+        aeq(read("[1/2]").get().shiftLeft(-3), "[1/16]");
+        aeq(read("[1/2]").get().shiftLeft(-4), "[1/32]");
+        aeq(read("[5/3, -1/4, 23]").get().shiftLeft(0), "[5/3, -1/4, 23]");
+        aeq(read("[5/3, -1/4, 23]").get().shiftLeft(1), "[10/3, -1/2, 46]");
+        aeq(read("[5/3, -1/4, 23]").get().shiftLeft(2), "[20/3, -1, 92]");
+        aeq(read("[5/3, -1/4, 23]").get().shiftLeft(3), "[40/3, -2, 184]");
+        aeq(read("[5/3, -1/4, 23]").get().shiftLeft(4), "[80/3, -4, 368]");
+        aeq(read("[5/3, -1/4, 23]").get().shiftLeft(-1), "[5/6, -1/8, 23/2]");
+        aeq(read("[5/3, -1/4, 23]").get().shiftLeft(-2), "[5/12, -1/16, 23/4]");
+        aeq(read("[5/3, -1/4, 23]").get().shiftLeft(-3), "[5/24, -1/32, 23/8]");
+        aeq(read("[5/3, -1/4, 23]").get().shiftLeft(-4), "[5/48, -1/64, 23/16]");
+    }
+
+    @Test
+    public void testShiftRight() {
+        assertTrue(ZERO_DIMENSIONAL.shiftRight(0) == ZERO_DIMENSIONAL);
+        assertTrue(ZERO_DIMENSIONAL.shiftRight(1) == ZERO_DIMENSIONAL);
+        assertTrue(ZERO_DIMENSIONAL.shiftRight(2) == ZERO_DIMENSIONAL);
+        assertTrue(ZERO_DIMENSIONAL.shiftRight(3) == ZERO_DIMENSIONAL);
+        assertTrue(ZERO_DIMENSIONAL.shiftRight(4) == ZERO_DIMENSIONAL);
+        assertTrue(ZERO_DIMENSIONAL.shiftRight(-1) == ZERO_DIMENSIONAL);
+        assertTrue(ZERO_DIMENSIONAL.shiftRight(-2) == ZERO_DIMENSIONAL);
+        assertTrue(ZERO_DIMENSIONAL.shiftRight(-3) == ZERO_DIMENSIONAL);
+        assertTrue(ZERO_DIMENSIONAL.shiftRight(-4) == ZERO_DIMENSIONAL);
+        aeq(read("[1/2]").get().shiftRight(0), "[1/2]");
+        aeq(read("[1/2]").get().shiftRight(1), "[1/4]");
+        aeq(read("[1/2]").get().shiftRight(2), "[1/8]");
+        aeq(read("[1/2]").get().shiftRight(3), "[1/16]");
+        aeq(read("[1/2]").get().shiftRight(4), "[1/32]");
+        aeq(read("[1/2]").get().shiftRight(-1), "[1]");
+        aeq(read("[1/2]").get().shiftRight(-2), "[2]");
+        aeq(read("[1/2]").get().shiftRight(-3), "[4]");
+        aeq(read("[1/2]").get().shiftRight(-4), "[8]");
+        aeq(read("[5/3, -1/4, 23]").get().shiftRight(0), "[5/3, -1/4, 23]");
+        aeq(read("[5/3, -1/4, 23]").get().shiftRight(1), "[5/6, -1/8, 23/2]");
+        aeq(read("[5/3, -1/4, 23]").get().shiftRight(2), "[5/12, -1/16, 23/4]");
+        aeq(read("[5/3, -1/4, 23]").get().shiftRight(3), "[5/24, -1/32, 23/8]");
+        aeq(read("[5/3, -1/4, 23]").get().shiftRight(4), "[5/48, -1/64, 23/16]");
+        aeq(read("[5/3, -1/4, 23]").get().shiftRight(-1), "[10/3, -1/2, 46]");
+        aeq(read("[5/3, -1/4, 23]").get().shiftRight(-2), "[20/3, -1, 92]");
+        aeq(read("[5/3, -1/4, 23]").get().shiftRight(-3), "[40/3, -2, 184]");
+        aeq(read("[5/3, -1/4, 23]").get().shiftRight(-4), "[80/3, -4, 368]");
+    }
+
+    @Test
     public void testSum() {
         assertTrue(sum(readRationalVectorList("[[]]").get()) == ZERO_DIMENSIONAL);
         assertTrue(sum(readRationalVectorList("[[], [], []]").get()) == ZERO_DIMENSIONAL);
