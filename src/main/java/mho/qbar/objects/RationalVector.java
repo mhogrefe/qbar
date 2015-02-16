@@ -424,6 +424,44 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
     }
 
     /**
+     * Returns the left shift of {@code this} by {@code bits}; {@code this}×2<sup>{@code bits}</sup>. Negative
+     * {@code bits} corresponds to a right shift.
+     *
+     * <ul>
+     *  <li>{@code this} can be any {@code RationalVector}.</li>
+     *  <li>{@code bits} may be any {@code int}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param bits the number of bits to left-shift by
+     * @return {@code this}≪{@code bits}
+     */
+    public @NotNull RationalVector shiftLeft(int bits) {
+        if (this == ZERO_DIMENSIONAL) return ZERO_DIMENSIONAL;
+        if (bits == 0) return this;
+        return new RationalVector(toList(map(r -> r.shiftLeft(bits), coordinates)));
+    }
+
+    /**
+     * Returns the right shift of {@code this} by {@code bits}; {@code this}×2<sup>–{@code bits}</sup>. Negative
+     * {@code bits} corresponds to a left shift.
+     *
+     * <ul>
+     *  <li>{@code this} can be any {@code RationalVector}.</li>
+     *  <li>{@code bits} may be any {@code int}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param bits the number of bits to right-shift by
+     * @return {@code this}≫{@code bits}
+     */
+    public @NotNull RationalVector shiftRight(int bits) {
+        if (this == ZERO_DIMENSIONAL) return ZERO_DIMENSIONAL;
+        if (bits == 0) return this;
+        return new RationalVector(toList(map(r -> r.shiftRight(bits), coordinates)));
+    }
+
+    /**
      * Returns the sum of all the {@code RationalVector}s in {@code xs}.
      *
      * <ul>
