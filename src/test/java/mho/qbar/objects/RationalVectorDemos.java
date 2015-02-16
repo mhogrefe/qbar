@@ -13,7 +13,6 @@ import java.math.BigInteger;
 import java.util.List;
 import java.util.Random;
 
-import static mho.qbar.objects.Rational.ZERO;
 import static mho.qbar.objects.RationalVector.*;
 import static mho.wheels.iterables.IterableUtils.*;
 
@@ -216,7 +215,7 @@ public class RationalVectorDemos {
     public static void demoDivide_Rational() {
         initialize();
         Iterable<Pair<RationalVector, Rational>> ps = filter(
-                p -> p.b != ZERO,
+                p -> p.b != Rational.ZERO,
                 P.pairs(P.rationalVectors(), P.rationals())
         );
         for (Pair<RationalVector, Rational> p : take(LIMIT, ps)) {
@@ -240,6 +239,32 @@ public class RationalVectorDemos {
         Iterable<Pair<RationalVector, Integer>> ps = P.pairs(P.rationalVectors(), filter(i -> i != 0, P.integers()));
         for (Pair<RationalVector, Integer> p : take(LIMIT, ps)) {
             System.out.println(p.a + " / " + p.b + " = " + p.a.divide(p.b));
+        }
+    }
+
+    public static void demoShiftLeft() {
+        initialize();
+        Iterable<Integer> is;
+        if (P instanceof QBarExhaustiveProvider) {
+            is = P.integers();
+        } else {
+            is  = ((QBarRandomProvider) P).integersGeometric(50);
+        }
+        for (Pair<RationalVector, Integer> p : take(LIMIT, P.pairs(P.rationalVectors(), is))) {
+            System.out.println(p.a + " << " + p.b + " = " + p.a.shiftLeft(p.b));
+        }
+    }
+
+    public static void demoShiftRight() {
+        initialize();
+        Iterable<Integer> is;
+        if (P instanceof QBarExhaustiveProvider) {
+            is = P.integers();
+        } else {
+            is  = ((QBarRandomProvider) P).integersGeometric(50);
+        }
+        for (Pair<RationalVector, Integer> p : take(LIMIT, P.pairs(P.rationalVectors(), is))) {
+            System.out.println(p.a + " >> " + p.b + " = " + p.a.shiftRight(p.b));
         }
     }
 

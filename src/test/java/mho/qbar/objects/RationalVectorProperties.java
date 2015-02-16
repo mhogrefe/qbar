@@ -70,6 +70,10 @@ public class RationalVectorProperties {
             propertiesDivide_Rational();
             propertiesDivide_BigInteger();
             propertiesDivide_int();
+            propertiesShiftLeft();
+            compareImplementationsShiftLeft();
+            propertiesShiftRight();
+            compareImplementationsShiftRight();
             propertiesSum();
             compareImplementationsSum();
             propertiesDelta();
@@ -694,6 +698,140 @@ public class RationalVectorProperties {
                 fail(v.toString());
             } catch (ArithmeticException ignored) {}
         }
+    }
+
+    private static @NotNull RationalVector shiftLeft_simplest(@NotNull RationalVector v, int bits) {
+        if (bits < 0) {
+            return v.divide(BigInteger.ONE.shiftLeft(-bits));
+        } else {
+            return v.multiply(BigInteger.ONE.shiftLeft(bits));
+        }
+    }
+
+    private static void propertiesShiftLeft() {
+        initialize();
+        System.out.println("\t\ttesting shiftLeft(int) properties...");
+
+        Iterable<Integer> is;
+        if (P instanceof QBarExhaustiveProvider) {
+            is = P.integers();
+        } else {
+            is  = ((QBarRandomProvider) P).integersGeometric(50);
+        }
+        for (Pair<RationalVector, Integer> p : take(LIMIT, P.pairs(P.rationalVectors(), is))) {
+            RationalVector shifted = p.a.shiftLeft(p.b);
+            validate(shifted);
+            assertEquals(p.toString(), shifted, shiftLeft_simplest(p.a, p.b));
+            aeq(p.toString(), map(Rational::signum, p.a), map(Rational::signum, shifted));
+            assertEquals(p.toString(), p.a.dimension(), shifted.dimension());
+            assertEquals(p.toString(), p.a.negate().shiftLeft(p.b), shifted.negate());
+            assertEquals(p.toString(), shifted, p.a.shiftRight(-p.b));
+        }
+
+        if (P instanceof QBarExhaustiveProvider) {
+            is = P.naturalIntegers();
+        } else {
+            is  = ((QBarRandomProvider) P).naturalIntegersGeometric(50);
+        }
+        for (Pair<RationalVector, Integer> p : take(LIMIT, P.pairs(P.rationalVectors(), is))) {
+            RationalVector shifted = p.a.shiftLeft(p.b);
+            assertEquals(p.toString(), shifted, p.a.multiply(BigInteger.ONE.shiftLeft(p.b)));
+        }
+    }
+
+    private static void compareImplementationsShiftLeft() {
+        initialize();
+        System.out.println("\t\tcomparing shiftLeft(int) implementations...");
+
+        long totalTime = 0;
+        Iterable<Integer> is;
+        if (P instanceof QBarExhaustiveProvider) {
+            is = P.integers();
+        } else {
+            is  = ((QBarRandomProvider) P).integersGeometric(50);
+        }
+        for (Pair<RationalVector, Integer> p : take(LIMIT, P.pairs(P.rationalVectors(), is))) {
+            long time = System.nanoTime();
+            shiftLeft_simplest(p.a, p.b);
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\t\t\tsimplest: " + ((double) totalTime) / 1e9 + " s");
+
+        totalTime = 0;
+        for (Pair<RationalVector, Integer> p : take(LIMIT, P.pairs(P.rationalVectors(), is))) {
+            long time = System.nanoTime();
+            p.a.shiftLeft(p.b);
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
+    }
+
+    private static @NotNull RationalVector shiftRight_simplest(@NotNull RationalVector v, int bits) {
+        if (bits < 0) {
+            return v.multiply(BigInteger.ONE.shiftLeft(-bits));
+        } else {
+            return v.divide(BigInteger.ONE.shiftLeft(bits));
+        }
+    }
+
+    private static void propertiesShiftRight() {
+        initialize();
+        System.out.println("\t\ttesting shiftRight(int) properties...");
+
+        Iterable<Integer> is;
+        if (P instanceof QBarExhaustiveProvider) {
+            is = P.integers();
+        } else {
+            is  = ((QBarRandomProvider) P).integersGeometric(50);
+        }
+        Iterable<Pair<RationalVector, Integer>> ps = P.pairs(P.rationalVectors(), is);
+        for (Pair<RationalVector, Integer> p : take(LIMIT, ps)) {
+            RationalVector shifted = p.a.shiftRight(p.b);
+            validate(shifted);
+            assertEquals(p.toString(), shifted, shiftRight_simplest(p.a, p.b));
+            aeq(p.toString(), map(Rational::signum, p.a), map(Rational::signum, shifted));
+            assertEquals(p.toString(), p.a.dimension(), shifted.dimension());
+            assertEquals(p.toString(), p.a.negate().shiftRight(p.b), shifted.negate());
+            assertEquals(p.toString(), shifted, p.a.shiftLeft(-p.b));
+        }
+
+        if (P instanceof QBarExhaustiveProvider) {
+            is = P.naturalIntegers();
+        } else {
+            is  = ((QBarRandomProvider) P).naturalIntegersGeometric(50);
+        }
+        ps = P.pairs(P.rationalVectors(), is);
+        for (Pair<RationalVector, Integer> p : take(LIMIT, ps)) {
+            RationalVector shifted = p.a.shiftRight(p.b);
+            assertEquals(p.toString(), shifted, p.a.divide(BigInteger.ONE.shiftLeft(p.b)));
+        }
+    }
+
+    private static void compareImplementationsShiftRight() {
+        initialize();
+        System.out.println("\t\tcomparing shiftRight(int) implementations...");
+
+        long totalTime = 0;
+        Iterable<Integer> is;
+        if (P instanceof QBarExhaustiveProvider) {
+            is = P.integers();
+        } else {
+            is  = ((QBarRandomProvider) P).integersGeometric(50);
+        }
+        for (Pair<RationalVector, Integer> p : take(LIMIT, P.pairs(P.rationalVectors(), is))) {
+            long time = System.nanoTime();
+            shiftRight_simplest(p.a, p.b);
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\t\t\tsimplest: " + ((double) totalTime) / 1e9 + " s");
+
+        totalTime = 0;
+        for (Pair<RationalVector, Integer> p : take(LIMIT, P.pairs(P.rationalVectors(), is))) {
+            long time = System.nanoTime();
+            p.a.shiftRight(p.b);
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
     }
 
     private static @NotNull RationalVector sum_simplest(@NotNull Iterable<RationalVector> xs) {
