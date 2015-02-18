@@ -12,12 +12,7 @@ import java.util.function.Function;
  */
 
 public class ListUtil {
-    /**
-     * Map a unary function to the list.
-     *
-     * @param f evaluation functor.
-     * @return new list elements f(list(i)).
-     */
+    //Map a unary function to the list.
     public static <C, D> List<D> map(List<C> list, Function<C, D> f) {
         if (list == null) {
             return null;

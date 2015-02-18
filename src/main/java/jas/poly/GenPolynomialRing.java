@@ -96,11 +96,11 @@ public class GenPolynomialRing<C extends RingElem<C>> implements RingFactory<Gen
         this(cf, 1, new TermOrder(), null);
     }
 
-    /**
-     * The constructor creates a polynomial factory object.
-     *
-     * @param cf factory for coefficients of type C.
-     */
+    //
+    //The constructor creates a polynomial factory object.
+    //
+    //@param cf factory for coefficients of type C.
+    //
     public static <C extends RingElem<C>> GenPolynomialRing<C> make(RingFactory<C> cf) {
         return new GenPolynomialRing<>(cf, 1, new TermOrder(), new String[]{"x"});
     }
@@ -263,21 +263,21 @@ public class GenPolynomialRing<C extends RingElem<C>> implements RingFactory<Gen
     }
 
 
-    /**
-     * Get the zero element.
-     *
-     * @return 0 as GenPolynomial<C>.
-     */
+    //*
+    // Get the zero element.
+    //
+    // @return 0 as GenPolynomial<C>.
+    ///
     public GenPolynomial<C> getZERO() {
         return ZERO;
     }
 
 
-    /**
-     * Get the one element.
-     *
-     * @return 1 as GenPolynomial<C>.
-     */
+    //
+    //Get the one element.
+    //
+    //@return 1 as GenPolynomial<C>.
+    //
     public GenPolynomial<C> getONE() {
         return ONE;
     }

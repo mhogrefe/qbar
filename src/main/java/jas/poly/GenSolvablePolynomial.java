@@ -282,17 +282,16 @@ public class GenSolvablePolynomial<C extends RingElem<C>> extends GenPolynomial<
     }
 
 
-    /**
-     * GenSolvablePolynomial left division with remainder. Fails, if exact division by
-     * leading base coefficient is not possible. Meaningful only for univariate
-     * polynomials over fields, but works in any case.
-     *
-     * @param S nonzero GenSolvablePolynomial with invertible leading coefficient.
-     * @return [ quotient , remainder ] with this = quotient * S + remainder and
-     * deg(remainder) &lt; deg(S) or remiander = 0.
-     * @see jas.poly.PolyUtil#baseSparsePseudoRemainder(jas.poly.GenPolynomial, jas.poly.GenPolynomial).
-     */
-    //@Override
+    //
+    //GenSolvablePolynomial left division with remainder. Fails, if exact division by
+    //leading base coefficient is not possible. Meaningful only for univariate
+    //polynomials over fields, but works in any case.
+    //
+    //@param S nonzero GenSolvablePolynomial with invertible leading coefficient.
+    //@return [ quotient , remainder ] with this = quotient * S + remainder and
+    //deg(remainder) &lt; deg(S) or remiander = 0.
+    //@see jas.poly.PolyUtil#baseSparsePseudoRemainder(jas.poly.GenPolynomial, jas.poly.GenPolynomial).
+    //
     @SuppressWarnings("unchecked")
     public GenSolvablePolynomial<C>[] quotientRemainder(GenSolvablePolynomial<C> S) {
         if (S == null || S.isZERO()) {

@@ -218,12 +218,12 @@ public final class JasBigInteger implements RingElem<JasBigInteger>, RingFactory
         return val.toString();
     }
 
-    /**
-     * Compare to JasBigInteger b.
-     *
-     * @param b JasBigInteger.
-     * @return 0 if this == b, 1 if this > b, -1 if this < b.
-     */
+    //
+    //Compare to JasBigInteger b.
+    //
+    //@param b JasBigInteger.
+    //@return 0 if this == b, 1 if this > b, -1 if this < b.
+    //
     @Override
     public int compareTo(JasBigInteger b) {
         return val.compareTo(b.val);

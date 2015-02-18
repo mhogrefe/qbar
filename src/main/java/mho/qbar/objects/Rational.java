@@ -1901,6 +1901,9 @@ public final class Rational implements Comparable<Rational> {
      * </ul>
      *
      * @param base the base of the output digits
+     * @param scale the maximum number of digits after the decimal point in the result. If {@code this} has a
+     *              terminating base-{@code base} expansion, the actual number of digits after the decimal point may be
+     *              less.
      * @return a {@code String} representation of {@code this} in base {@code base}
      */
     public @NotNull String toStringBase(@NotNull BigInteger base, int scale) {

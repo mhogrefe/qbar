@@ -95,11 +95,11 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
     }
 
 
-    /**
-     * Copy this GenPolynomial.
-     *
-     * @return copy of this.
-     */
+    //
+    //Copy this GenPolynomial.
+    //
+    //@return copy of this.
+    //
     public GenPolynomial<C> copy() {
         return new GenPolynomial<>(ring, this.val);
     }
@@ -387,11 +387,11 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
     }
 
 
-    /**
-     * Degree in variable i.
-     *
-     * @return maximal degree in the variable i.
-     */
+    //
+    //Degree in variable i.
+    //
+    //@return maximal degree in the variable i.
+    //
     public long degree(int i) {
         if (val.size() == 0) {
             return 0; // 0 or -1 ?;

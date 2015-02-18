@@ -23,13 +23,13 @@ public class Power<C extends RingElem<C>> {
     }
 
 
-    /**
-     * power of a to the n-th, n positive.
-     *
-     * @param a element.
-     * @param n integer exponent > 0.
-     * @return a^n.
-     */
+    //
+    //power of a to the n-th, n positive.
+    //
+    //@param a element.
+    //@param n integer exponent > 0.
+    //@return a^n.
+    //
     public static <C extends RingElem<C>> C positivePower(C a, long n) {
         if (n <= 0) {
             throw new IllegalArgumentException("only positive n allowed");
@@ -53,14 +53,14 @@ public class Power<C extends RingElem<C>> {
     }
 
 
-    /**
-     * power of a to the n-th.
-     *
-     * @param a   element.
-     * @param n   integer exponent.
-     * @param fac ring factory.
-     * @return a^n, with 0^0 = 0 and a^{-n} = {1/a}^n.
-     */
+    //
+    //power of a to the n-th.
+    //
+    //@param a   element.
+    //@param n   integer exponent.
+    //@param fac ring factory.
+    //@return a^n, with 0^0 = 0 and a^{-n} = {1/a}^n.
+    //
     @SuppressWarnings("unchecked")
     public static <C extends RingElem<C>> C power(RingFactory<C> fac, C a, long n) {
         if (a == null || a.isZERO()) {

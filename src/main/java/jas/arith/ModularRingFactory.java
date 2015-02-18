@@ -21,15 +21,15 @@ public interface ModularRingFactory<C extends RingElem<C> & Modular> extends Rin
     public JasBigInteger getIntegerModul();
 
 
-    /**
-     * Chinese remainder algorithm. Assert c.modul >= a.modul and c.modul *
-     * a.modul = this.modul.
-     *
-     * @param c  modular.
-     * @param ci inverse of c.modul in ring of a.
-     * @param a  other ModLong.
-     * @return S, with S mod c.modul == c and S mod a.modul == a.
-     */
+    //
+    //Chinese remainder algorithm. Assert c.modul >= a.modul and c.modul *
+    //a.modul = this.modul.
+    //
+    //@param c  modular.
+    //@param ci inverse of c.modul in ring of a.
+    //@param a  other ModLong.
+    //@return S, with S mod c.modul == c and S mod a.modul == a.
+    //
     public C chineseRemainder(C c, C ci, C a);
 
 }

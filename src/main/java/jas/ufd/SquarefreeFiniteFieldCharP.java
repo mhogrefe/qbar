@@ -21,14 +21,6 @@ import java.util.TreeMap;
 
 @SuppressWarnings("ConstantConditions")
 public class SquarefreeFiniteFieldCharP<C extends RingElem<C>> extends SquarefreeFieldCharP<C> {
-
-
-    //;
-
-
-    /**
-     * Constructor.
-     */
     public SquarefreeFiniteFieldCharP(RingFactory<C> fac) {
         super(fac);
         // isFinite() predicate now present
