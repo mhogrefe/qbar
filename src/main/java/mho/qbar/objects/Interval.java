@@ -453,6 +453,10 @@ public final class Interval implements Comparable<Interval> {
      *   <ul>
      *    <li>[{@code Float.MAX_VALUE}, ∞)</li>
      *    <li>(–∞, –{@code Float.MAX_VALUE}]</li>
+     *    <li>[({@code a}+{@code b})/2, {@code b}], where {@code b} is {@code Float.MAX_VALUE} and {@code a} is
+     *    {@code b}'s predecessor</li>
+     *    <li>[{@code a}, ({@code a}+{@code b})/2], where {@code a} is –{@code Float.MAX_VALUE} and {@code b} is
+     *    {@code a}'s successor</li>
      *    <li>[({@code a}+{@code b})/2, ({@code b}+{@code c})/2], where {@code a}, {@code b}, and {@code c} are
      *    equal to three consecutive finite {@code float}s (but + and / correspond to real operations, not
      *    {@code float} operations).</li>
@@ -525,6 +529,10 @@ public final class Interval implements Comparable<Interval> {
      *   <ul>
      *    <li>[{@code Double.MAX_VALUE}, ∞)</li>
      *    <li>(–∞, –{@code Double.MAX_VALUE}]</li>
+     *    <li>[({@code a}+{@code b})/2, {@code b}], where {@code b} is {@code Double.MAX_VALUE} and {@code a} is
+     *    {@code b}'s predecessor</li>
+     *    <li>[{@code a}, ({@code a}+{@code b})/2], where {@code a} is –{@code Double.MAX_VALUE} and {@code b} is
+     *    {@code a}'s successor</li>
      *    <li>[({@code a}+{@code b})/2, ({@code b}+{@code c})/2], where {@code a}, {@code b}, and {@code c} are equal
      *    to three consecutive finite {@code double}s (but + and / correspond to real operations, not {@code double}
      *    operations).</li>
