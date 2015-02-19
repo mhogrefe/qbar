@@ -138,16 +138,6 @@ public final class ModLongRing implements ModularRingFactory<ModLong> {
     }
 
     /**
-     * Query if this ring is associative.
-     *
-     * @return true.
-     */
-    public boolean isAssociative() {
-        return true;
-    }
-
-
-    /**
      * Query if this ring is a field.
      *
      * @return true if module is prime, else false.
@@ -247,17 +237,6 @@ public final class ModLongRing implements ModularRingFactory<ModLong> {
     public ModLong random(int n, Random rnd) {
         BigInteger v = new BigInteger(n, rnd);
         return new ModLong(this, v); // rnd.nextLong() not ok
-    }
-
-
-    /**
-     * Parse ModLong from String.
-     *
-     * @param s String.
-     * @return ModLong from s.
-     */
-    public ModLong parse(String s) {
-        return new ModLong(this, s);
     }
 
     public ModLong chineseRemainder(ModLong c, ModLong ci, ModLong a) {

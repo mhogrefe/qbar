@@ -63,26 +63,6 @@ public class GenSolvablePolynomialRing_BigRational extends GenSolvablePolynomial
     }
 
     @Override
-    public boolean isAssociative() {
-        GenSolvablePolynomial<BigRational> Xi, Xj, Xk, p, q;
-        for (int i = 0; i < nvar; i++) {
-            Xi = univariate(i);
-            for (int j = i + 1; j < nvar; j++) {
-                Xj = univariate(j);
-                for (int k = j + 1; k < nvar; k++) {
-                    Xk = univariate(k);
-                    p = Xk.multiply(Xj).multiply(Xi);
-                    q = Xk.multiply(Xj.multiply(Xi));
-                    if (!p.equals(q)) {
-                        return false;
-                    }
-                }
-            }
-        }
-        return coFac.isAssociative();
-    }
-
-    @Override
     public GenSolvablePolynomial<BigRational> fromInteger(long a) {
         return new GenSolvablePolynomial<>(this, coFac.fromInteger(a), evzero);
     }
@@ -121,25 +101,6 @@ public class GenSolvablePolynomialRing_BigRational extends GenSolvablePolynomial
     }
 
     @Override
-    public GenSolvablePolynomial<BigRational> parse(String s) {
-        //return getZERO();
-        return parse(new StringReader(s));
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    GenSolvablePolynomial<BigRational> parse(Reader r) {
-        GenPolynomialTokenizer pt = new GenPolynomialTokenizer(this, r);
-        GenSolvablePolynomial<BigRational> p;
-        try {
-            p = (GenSolvablePolynomial<BigRational>) pt.nextSolvablePolynomial();
-        } catch (IOException e) {
-            p = ZERO;
-        }
-        return p;
-    }
-
-    @Override
     public GenSolvablePolynomial<BigRational> univariate(int i) {
         return super.univariate(i);
     }
@@ -171,38 +132,5 @@ public class GenSolvablePolynomialRing_BigRational extends GenSolvablePolynomial
     @Override
     public GenSolvablePolynomial<BigRational> univariate(int modv, int i, long e) {
         return super.univariate(modv, i, e);
-    }
-
-    /**
-     * Extend variables. Used e.g. in module embedding. Extend number of
-     * variables by length(vn). New variables commute with the exiting variables.
-     *
-     * @param vn names for extended variables.
-     * @return extended polynomial ring factory.
-     */
-    @Override
-    public GenSolvablePolynomialRing<BigRational> extend(String[] vn) {
-        GenPolynomialRing<BigRational> pfac = super.extend(vn);
-        GenSolvablePolynomialRing<BigRational> spfac = new GenSolvablePolynomialRing_BigRational(pfac.coFac, pfac.nvar,
-                pfac.tord, pfac.vars);
-        spfac.table.extend(this.table);
-        return spfac;
-    }
-
-
-    /**
-     * Contract variables. Used e.g. in module embedding. Contract number of
-     * variables by i.
-     *
-     * @param i number of variables to remove.
-     * @return contracted solvable polynomial ring factory.
-     */
-    @Override
-    public GenSolvablePolynomialRing<BigRational> contract(int i) {
-        GenPolynomialRing<BigRational> pfac = super.contract(i);
-        GenSolvablePolynomialRing<BigRational> spfac = new GenSolvablePolynomialRing_BigRational(pfac.coFac, pfac.nvar,
-                pfac.tord, pfac.vars);
-        spfac.table.contract(this.table);
-        return spfac;
     }
 }

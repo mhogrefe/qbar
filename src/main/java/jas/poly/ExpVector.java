@@ -1,58 +1,406 @@
 package jas.poly;
 
 import jas.structure.AbelianGroupElem;
-import jas.structure.AbelianGroupFactory;
 
+import java.util.Arrays;
 import java.util.Random;
 
-public abstract class ExpVector implements AbelianGroupElem<ExpVector> {
+/**
+ * ExpVectorLong implements exponent vectors for polynomials using arrays of
+ * long as storage unit. This class is used by ExpVector internally, there is no
+ * need to use this class directly.
+ *
+ * @author Heinz Kredel
+ */
+
+public final class ExpVector implements AbelianGroupElem<ExpVector> {
     int hash = 0;
 
-    ExpVector() {
+    /**
+     * The data structure is an array of longs.
+     */
+    /*package*/private final long[] val;
+
+
+    /**
+     * Constructor for ExpVector.
+     *
+     * @param n length of exponent vector.
+     */
+    public ExpVector(int n) {
+        this(new long[n]);
+    }
+
+
+    /**
+     * Constructor for ExpVector. Sets exponent i to e.
+     *
+     * @param n length of exponent vector.
+     * @param i index of exponent to be set.
+     * @param e exponent to be set.
+     */
+    public ExpVector(int n, int i, long e) {
+        this(new long[n]);
+        val[i] = e;
+    }
+
+
+    /**
+     * Constructor for ExpVector. Sets val.
+     *
+     * @param v internal representation array.
+     */
+    public ExpVector(long[] v) {
         hash = 0;
+        if (v == null) {
+            throw new IllegalArgumentException("null val not allowed");
+        }
+        val = Arrays.copyOf(v, v.length); // > Java-5
+    }
+
+    /**
+     * Get the exponent at position i.
+     *
+     * @param i position.
+     * @return val[i].
+     */
+    public long getVal(int i) {
+        return val[i];
+    }
+
+    public int length() {
+        return val.length;
+    }
+
+    @Override
+    public boolean equals(Object B) {
+        if (!(B instanceof ExpVector)) {
+            return false;
+        }
+        ExpVector b = (ExpVector) B;
+        int t = this.invLexCompareTo(b);
+        return (0 == t);
+    }
+
+    @Override
+    public ExpVector abs() {
+        return null;
+    }
+
+    @Override
+    public ExpVector negate() {
+        return null;
+    }
+
+    @Override
+    public ExpVector sum(ExpVector V) {
+        long[] u = val;
+        long[] v = V.val;
+        long[] w = new long[u.length];
+        for (int i = 0; i < u.length; i++) {
+            w[i] = u[i] + v[i];
+        }
+        return new ExpVector(w);
+    }
+
+    @Override
+    public ExpVector subtract(ExpVector V) {
+        long[] u = val;
+        long[] v = V.val;
+        long[] w = new long[u.length];
+        for (int i = 0; i < u.length; i++) {
+            w[i] = u[i] - v[i];
+        }
+        return new ExpVector(w);
+    }
+
+    @Override
+    public int signum() {
+        int t = 0;
+        long[] u = val;
+        for (long anU : u) {
+            if (anU < 0) {
+                return -1;
+            }
+            if (anU > 0) {
+                t = 1;
+            }
+        }
+        return t;
+    }
+
+    public long maxDeg() {
+        long t = 0;
+        long[] u = val;
+        for (long anU : u) {
+            if (anU > t) {
+                t = anU;
+            }
+        }
+        return t;
+    }
+
+    public ExpVector lcm(ExpVector V) {
+        long[] u = val;
+        long[] v = V.val;
+        long[] w = new long[u.length];
+        for (int i = 0; i < u.length; i++) {
+            w[i] = (u[i] >= v[i] ? u[i] : v[i]);
+        }
+        return new ExpVector(w);
+    }
+
+    //todo continue usage investigation
+
+    public boolean multipleOf(ExpVector V) {
+        long[] u = val;
+        long[] v = V.val;
+        for (int i = 0; i < u.length; i++) {
+            if (u[i] < v[i]) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public int compareTo(ExpVector V) {
+        return this.invLexCompareTo(V);
+    }
+
+    protected int invLexCompareTo(ExpVector V) {
+        long[] u = val;
+        long[] v = V.val;
+        int t = 0;
+        for (int i = 0; i < u.length; i++) {
+            if (u[i] > v[i])
+                return 1;
+            if (u[i] < v[i])
+                return -1;
+        }
+        return t;
+    }
+
+    public int invLexCompareTo(ExpVector V, int begin, int end) {
+        long[] u = val;
+        long[] v = V.val;
+        int t = 0;
+        for (int i = begin; i < end; i++) {
+            if (u[i] > v[i])
+                return 1;
+            if (u[i] < v[i])
+                return -1;
+        }
+        return t;
+    }
+
+    public int invGradCompareTo(ExpVector V) {
+        long[] u = val;
+        long[] v = V.val;
+        int t = 0;
+        int i;
+        for (i = 0; i < u.length; i++) {
+            if (u[i] > v[i]) {
+                t = 1;
+                break;
+            }
+            if (u[i] < v[i]) {
+                t = -1;
+                break;
+            }
+        }
+        if (t == 0) {
+            return t;
+        }
+        long up = 0;
+        long vp = 0;
+        for (int j = i; j < u.length; j++) {
+            up += u[j];
+            vp += v[j];
+        }
+        if (up > vp) {
+            t = 1;
+        } else {
+            if (up < vp) {
+                t = -1;
+            }
+        }
+        return t;
+    }
+
+    public int invGradCompareTo(ExpVector V, int begin, int end) {
+        long[] u = val;
+        long[] v = V.val;
+        int t = 0;
+        int i;
+        for (i = begin; i < end; i++) {
+            if (u[i] > v[i]) {
+                t = 1;
+                break;
+            }
+            if (u[i] < v[i]) {
+                t = -1;
+                break;
+            }
+        }
+        if (t == 0) {
+            return t;
+        }
+        long up = 0;
+        long vp = 0;
+        for (int j = i; j < end; j++) {
+            up += u[j];
+            vp += v[j];
+        }
+        if (up > vp) {
+            t = 1;
+        } else {
+            if (up < vp) {
+                t = -1;
+            }
+        }
+        return t;
+    }
+
+    public int revInvLexCompareTo(ExpVector V) {
+        long[] u = val;
+        long[] v = V.val;
+        int t = 0;
+        for (int i = u.length - 1; i >= 0; i--) {
+            if (u[i] > v[i])
+                return 1;
+            if (u[i] < v[i])
+                return -1;
+        }
+        return t;
+        //return EVRILCP(this, V);
+    }
+
+    public int revInvLexCompareTo(ExpVector V, int begin, int end) {
+        long[] u = val;
+        long[] v = V.val;
+        int t = 0;
+        for (int i = end - 1; i >= begin; i--) {
+            if (u[i] > v[i])
+                return 1;
+            if (u[i] < v[i])
+                return -1;
+        }
+        return t;
+    }
+
+    public int revInvGradCompareTo(ExpVector V) {
+        long[] u = val;
+        long[] v = V.val;
+        int t = 0;
+        int i;
+        for (i = u.length - 1; i >= 0; i--) {
+            if (u[i] > v[i]) {
+                t = 1;
+                break;
+            }
+            if (u[i] < v[i]) {
+                t = -1;
+                break;
+            }
+        }
+        if (t == 0) {
+            return t;
+        }
+        long up = 0;
+        long vp = 0;
+        for (int j = i; j >= 0; j--) {
+            up += u[j];
+            vp += v[j];
+        }
+        if (up > vp) {
+            t = 1;
+        } else {
+            if (up < vp) {
+                t = -1;
+            }
+        }
+        return t;
+    }
+
+    public int revInvGradCompareTo(ExpVector V, int begin, int end) {
+        long[] u = val;
+        long[] v = V.val;
+        int t = 0;
+        int i;
+        for (i = end - 1; i >= begin; i--) {
+            if (u[i] > v[i]) {
+                t = 1;
+                break;
+            }
+            if (u[i] < v[i]) {
+                t = -1;
+                break;
+            }
+        }
+        if (t == 0) {
+            return t;
+        }
+        long up = 0;
+        long vp = 0;
+        for (int j = i; j >= begin; j--) {
+            up += u[j];
+            vp += v[j];
+        }
+        if (up > vp) {
+            t = 1;
+        } else {
+            if (up < vp) {
+                t = -1;
+            }
+        }
+        return t;
+    }
+
+    public int invWeightCompareTo(long[][] w, ExpVector V) {
+        long[] u = val;
+        long[] v = V.val;
+        int t = 0;
+        int i;
+        for (i = 0; i < u.length; i++) {
+            if (u[i] > v[i]) {
+                t = 1;
+                break;
+            }
+            if (u[i] < v[i]) {
+                t = -1;
+                break;
+            }
+        }
+        if (t == 0) {
+            return t;
+        }
+        for (long[] wk : w) {
+            long up = 0;
+            long vp = 0;
+            for (int j = i; j < u.length; j++) {
+                up += wk[j] * u[j];
+                vp += wk[j] * v[j];
+            }
+            if (up > vp) {
+                return 1;
+            } else if (up < vp) {
+                return -1;
+            }
+        }
+        return t;
     }
 
     public static ExpVector create(int n) {
-        return new ExpVectorLong(n);
+        return new ExpVector(n);
     }
 
     public static ExpVector create(int n, int i, long e) {
-        return new ExpVectorLong(n, i, e);
+        return new ExpVector(n, i, e);
     }
 
     private static ExpVector create(long[] v) {
-        return new ExpVectorLong(v);
-    }
-
-    public AbelianGroupFactory<ExpVector> factory() {
-        throw new UnsupportedOperationException("no factory implemented for ExpVector");
-    }
-
-    protected abstract ExpVector copy();
-
-    public abstract long getVal(int i);
-
-    protected abstract void setVal(long e);
-
-    public abstract int length();
-
-    public abstract ExpVector extend(int i, long e);
-
-    public abstract ExpVector contract(int i, int len);
-
-    public abstract ExpVector combine(ExpVector V);
-
-    @Override
-    public String toString() {
-        StringBuilder s = new StringBuilder("(");
-        for (int i = 0; i < length(); i++) {
-            s.append(getVal(i));
-            if (i < length() - 1) {
-                s.append(",");
-            }
-        }
-        s.append(")");
-        return s.toString();
+        return new ExpVector(v);
     }
 
     public String toString(String[] vars) {
@@ -109,25 +457,6 @@ public abstract class ExpVector implements AbelianGroupElem<ExpVector> {
         return s.toString();
     }
 
-    public int indexVar(String x, String... vars) {
-        for (int i = 0; i < length(); i++) {
-            if (x.equals(vars[i])) {
-                return length() - i - 1;
-            }
-        }
-        return -1;
-    }
-
-    @Override
-    public boolean equals(Object B) {
-        if (!(B instanceof ExpVector)) {
-            return false;
-        }
-        ExpVector b = (ExpVector) B;
-        int t = this.invLexCompareTo(b);
-        return (0 == t);
-    }
-
     @Override
     public int hashCode() {
         if (hash == 0) {
@@ -143,20 +472,6 @@ public abstract class ExpVector implements AbelianGroupElem<ExpVector> {
 
     public boolean isZERO() {
         return (0 == this.signum());
-    }
-
-    public abstract ExpVector abs();
-
-    public abstract ExpVector negate();
-
-    public abstract ExpVector sum(ExpVector V);
-
-    public abstract ExpVector subtract(ExpVector V);
-
-    public ExpVector subst(long d) {
-        ExpVector V = this.copy();
-        V.setVal(d);
-        return V;
     }
 
     public static ExpVector EVRAND(int r, long k, float q, Random rnd) {
@@ -179,74 +494,39 @@ public abstract class ExpVector implements AbelianGroupElem<ExpVector> {
         //return new ExpVector( w );
     }
 
-    public abstract int signum();
-
-    public abstract long maxDeg();
-
-    public abstract ExpVector lcm(ExpVector V);
-
-    public abstract ExpVector gcd(ExpVector V);
-
-    public abstract int[] dependencyOnVariables();
-
-    public abstract boolean multipleOf(ExpVector V);
-
-    @Override
-    public int compareTo(ExpVector V) {
-        return this.invLexCompareTo(V);
-    }
-
     public static int EVILCP(ExpVector U, ExpVector V) {
         return U.invLexCompareTo(V);
     }
-
-    protected abstract int invLexCompareTo(ExpVector V);
 
     public static int EVILCP(ExpVector U, ExpVector V, int begin, int end) {
         return U.invLexCompareTo(V, begin, end);
     }
 
-    protected abstract int invLexCompareTo(ExpVector V, int begin, int end);
-
     public static int EVIGLC(ExpVector U, ExpVector V) {
         return U.invGradCompareTo(V);
     }
-
-    protected abstract int invGradCompareTo(ExpVector V);
 
     public static int EVIGLC(ExpVector U, ExpVector V, int begin, int end) {
         return U.invGradCompareTo(V, begin, end);
     }
 
-    protected abstract int invGradCompareTo(ExpVector V, int begin, int end);
-
     public static int EVRILCP(ExpVector U, ExpVector V) {
         return U.revInvLexCompareTo(V);
     }
-
-    protected abstract int revInvLexCompareTo(ExpVector V);
 
     public static int EVRILCP(ExpVector U, ExpVector V, int begin, int end) {
         return U.revInvLexCompareTo(V, begin, end);
     }
 
-    protected abstract int revInvLexCompareTo(ExpVector V, int begin, int end);
-
     public static int EVRIGLC(ExpVector U, ExpVector V) {
         return U.revInvGradCompareTo(V);
     }
-
-    protected abstract int revInvGradCompareTo(ExpVector V);
 
     public static int EVRIGLC(ExpVector U, ExpVector V, int begin, int end) {
         return U.revInvGradCompareTo(V, begin, end);
     }
 
-    protected abstract int revInvGradCompareTo(ExpVector V, int begin, int end);
-
     public static int EVIWLC(long[][] w, ExpVector U, ExpVector V) {
         return U.invWeightCompareTo(w, V);
     }
-
-    protected abstract int invWeightCompareTo(long[][] w, ExpVector V);
 }

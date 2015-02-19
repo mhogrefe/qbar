@@ -43,8 +43,9 @@ public class PolyUtil {
         for (Map.Entry<ExpVector, C> y : A.getMap().entrySet()) {
             ExpVector e = y.getKey();
             C a = y.getValue();
-            ExpVector f = e.contract(0, i);
-            ExpVector g = e.contract(i, e.length() - i);
+            System.exit(1);
+            ExpVector f = null;
+            ExpVector g = null;
             GenPolynomial<C> p = Bv.get(f);
             if (p == null) {
                 p = zero;
@@ -55,6 +56,7 @@ public class PolyUtil {
         return B;
     }
 
+<<<<<<< HEAD
 
     /**
      * Distribute a recursive polynomial to a generic polynomial. Works for
@@ -99,6 +101,17 @@ public class PolyUtil {
     //@param A   polynomial with ModInteger coefficients to be converted.
     //@return polynomial with JasBigInteger coefficients.
     //
+=======
+    /**
+     * JasBigInteger from ModInteger coefficients, symmetric. Represent as
+     * polynomial with JasBigInteger coefficients by removing the modules and
+     * making coefficients symmetric to 0.
+     *
+     * @param fac result polynomial factory.
+     * @param A   polynomial with ModInteger coefficients to be converted.
+     * @return polynomial with JasBigInteger coefficients.
+     */
+>>>>>>> jas-simplify
     @Deprecated
     public static <C extends RingElem<C> & Modular> GenPolynomial<JasBigInteger> integerFromModularCoefficients(
             GenPolynomialRing<JasBigInteger> fac, GenPolynomial<C> A) {
@@ -111,6 +124,7 @@ public class PolyUtil {
      * making coefficients symmetric to 0.
      *
      * @param fac result polynomial factory.
+<<<<<<< HEAD
      * @param A   polynomial with ModInteger coefficients to be converted.
      * @return polynomial with JasBigInteger coefficients.
      */
@@ -144,6 +158,12 @@ public class PolyUtil {
     //           converted.
     //@return list of polynomials with JasBigInteger coefficients.
     //
+=======
+     * @param L   list of polynomials with ModInteger coefficients to be
+     *            converted.
+     * @return list of polynomials with JasBigInteger coefficients.
+     */
+>>>>>>> jas-simplify
     @Deprecated
     public static <C extends RingElem<C> & Modular> List<GenPolynomial<JasBigInteger>> integerFromModularCoefficients(
             final GenPolynomialRing<JasBigInteger> fac, List<GenPolynomial<C>> L) {
@@ -151,46 +171,6 @@ public class PolyUtil {
                 new Function<GenPolynomial<C>, GenPolynomial<JasBigInteger>>() {
                     public GenPolynomial<JasBigInteger> apply(GenPolynomial<C> c) {
                         return PolyUtil.integerFromModularCoefficients(fac, c);
-                    }
-                });
-    }
-
-    /**
-     * JasBigInteger from ModInteger coefficients, symmetric. Represent as
-     * polynomial with JasBigInteger coefficients by removing the modules and
-     * making coefficients symmetric to 0.
-     *
-     * @param fac result polynomial factory.
-     * @param L   list of polynomials with ModInteger coefficients to be
-     *            converted.
-     * @return list of polynomials with JasBigInteger coefficients.
-     */
-    public static List<GenPolynomial<JasBigInteger>> integerFromModularCoefficients_Integer(
-            final GenPolynomialRing<JasBigInteger> fac, List<GenPolynomial<ModInteger>> L) {
-        return ListUtil.map(L,
-                new Function<GenPolynomial<ModInteger>, GenPolynomial<JasBigInteger>>() {
-                    public GenPolynomial<JasBigInteger> apply(GenPolynomial<ModInteger> c) {
-                        return PolyUtil.integerFromModularCoefficients_Integer(fac, c);
-                    }
-                });
-    }
-
-    /**
-     * JasBigInteger from ModInteger coefficients, symmetric. Represent as
-     * polynomial with JasBigInteger coefficients by removing the modules and
-     * making coefficients symmetric to 0.
-     *
-     * @param fac result polynomial factory.
-     * @param L   list of polynomials with ModInteger coefficients to be
-     *            converted.
-     * @return list of polynomials with JasBigInteger coefficients.
-     */
-    public static List<GenPolynomial<JasBigInteger>> integerFromModularCoefficients_Long(
-            final GenPolynomialRing<JasBigInteger> fac, List<GenPolynomial<ModLong>> L) {
-        return ListUtil.map(L,
-                new Function<GenPolynomial<ModLong>, GenPolynomial<JasBigInteger>>() {
-                    public GenPolynomial<JasBigInteger> apply(GenPolynomial<ModLong> c) {
-                        return PolyUtil.integerFromModularCoefficients_Long(fac, c);
                     }
                 });
     }
@@ -278,6 +258,7 @@ public class PolyUtil {
     }
 
     /**
+<<<<<<< HEAD
      * ModInteger chinese remainder algorithm on coefficients.
      *
      * @param fac GenPolynomial&lt;ModInteger&gt; result factory with
@@ -387,6 +368,15 @@ public class PolyUtil {
     //@param p   recursive GenPolynomial<GenPolynomial<C>>.
     //@return monic(p).
     //
+=======
+     * GenPolynomial monic, i.e. leadingBaseCoefficient == 1. If
+     * leadingBaseCoefficient is not invertible returns this unmodified.
+     *
+     * @param <C> coefficient type.
+     * @param p   recursive GenPolynomial<GenPolynomial<C>>.
+     * @return monic(p).
+     */
+>>>>>>> jas-simplify
     public static <C extends RingElem<C>> GenPolynomial<GenPolynomial<C>> monic(
             GenPolynomial<GenPolynomial<C>> p) {
         if (p == null || p.isZERO()) {
@@ -740,6 +730,7 @@ public class PolyUtil {
         return r;
     }
 
+<<<<<<< HEAD
 
     //
     //GenPolynomial recursive pseudo divide. For recursive polynomials.
@@ -829,6 +820,8 @@ public class PolyUtil {
     }
 
 
+=======
+>>>>>>> jas-simplify
     /**
      * GenPolynomial polynomial derivative main variable.
      *
@@ -863,44 +856,6 @@ public class PolyUtil {
         }
         return d;
     }
-
-    /**
-     * GenPolynomial recursive polynomial derivative main variable.
-     *
-     * @param <C> coefficient type.
-     * @param P   recursive GenPolynomial.
-     * @return deriviative(P).
-     */
-    public static <C extends RingElem<C>> GenPolynomial<GenPolynomial<C>> recursiveDeriviative(
-            GenPolynomial<GenPolynomial<C>> P) {
-        if (P == null || P.isZERO()) {
-            return P;
-        }
-        GenPolynomialRing<GenPolynomial<C>> pfac = P.ring;
-        if (pfac.nvar > 1) {
-            // baseContent not possible by return type
-            throw new IllegalArgumentException(P.getClass().getName() + " only for univariate polynomials");
-        }
-        GenPolynomialRing<C> pr = (GenPolynomialRing<C>) pfac.coFac;
-        RingFactory<C> rf = pr.coFac;
-        GenPolynomial<GenPolynomial<C>> d = pfac.getZERO().copy();
-        Map<ExpVector, GenPolynomial<C>> dm = d.val; //getMap();
-        for (Map.Entry<ExpVector, GenPolynomial<C>> m : P.getMap().entrySet()) {
-            ExpVector f = m.getKey();
-            long fl = f.getVal(0);
-            if (fl > 0) {
-                C cf = rf.fromInteger(fl);
-                GenPolynomial<C> a = m.getValue();
-                GenPolynomial<C> x = a.multiply(cf);
-                if (x != null && !x.isZERO()) {
-                    ExpVector e = ExpVector.create(1, 0, fl - 1L);
-                    dm.put(e, x);
-                }
-            }
-        }
-        return d;
-    }
-
 
     /**
      * Factor coefficient bound. See SACIPOL.IPFCB: the product of all maxNorms
@@ -1122,7 +1077,6 @@ public class PolyUtil {
 /**
  * Conversion of symmetric ModInteger to JasBigInteger functor.
  */
-@Deprecated
 class ModSymToInt<C extends RingElem<C> & Modular> implements Function<C, JasBigInteger> {
 
 
@@ -1133,35 +1087,6 @@ class ModSymToInt<C extends RingElem<C> & Modular> implements Function<C, JasBig
         return c.getSymmetricInteger();
     }
 }
-
-/**
- * Conversion of symmetric ModInteger to JasBigInteger functor.
- */
-class ModSymToInt_Integer implements Function<ModInteger, JasBigInteger> {
-
-
-    public JasBigInteger apply(ModInteger c) {
-        if (c == null) {
-            return new JasBigInteger();
-        }
-        return c.getSymmetricInteger();
-    }
-}
-
-/**
- * Conversion of symmetric ModInteger to JasBigInteger functor.
- */
-class ModSymToInt_Long implements Function<ModLong, JasBigInteger> {
-
-
-    public JasBigInteger apply(ModLong c) {
-        if (c == null) {
-            return new JasBigInteger();
-        }
-        return c.getSymmetricInteger();
-    }
-}
-
 
 /**
  * Conversion from JasBigInteger functor.

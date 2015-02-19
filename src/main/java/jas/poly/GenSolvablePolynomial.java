@@ -3,7 +3,6 @@ package jas.poly;
 import jas.structure.RingElem;
 
 import java.util.Map;
-import java.util.Set;
 import java.util.SortedMap;
 
 /**
@@ -65,63 +64,63 @@ public class GenSolvablePolynomial<C extends RingElem<C>> extends GenPolynomial<
         return B instanceof GenSolvablePolynomial && super.equals(B);
     }
 
-
-    /**
-     * GenSolvablePolynomial multiplication.
-     *
-     * @param Bp GenSolvablePolynomial.
-     * @return this*Bp, where * denotes solvable multiplication.
-     */
-    // not @Override
-    public GenSolvablePolynomial<C> multiply(GenSolvablePolynomial<C> Bp) {
-        if (Bp == null || Bp.isZERO()) {
-            return ring.getZERO();
-        }
-        if (this.isZERO()) {
-            return this;
-        }
-        assert (ring.nvar == Bp.ring.nvar);
-        GenSolvablePolynomial<C> Cp = ring.getZERO().copy();
-        GenSolvablePolynomial<C> zero = ring.getZERO().copy();
-        C one = ring.getONECoefficient();
-        Map<ExpVector, C> A = val;
-        Map<ExpVector, C> B = Bp.val;
-        Set<Map.Entry<ExpVector, C>> Bk = B.entrySet();
-        for (Map.Entry<ExpVector, C> y : A.entrySet()) {
-            C a = y.getValue();
-            ExpVector e = y.getKey();
-            int[] ep = e.dependencyOnVariables();
-            int el1 = ring.nvar + 1;
-            if (ep.length > 0) {
-                el1 = ep[0];
-            }
-            int el1s = ring.nvar + 1 - el1;
-            for (Map.Entry<ExpVector, C> x : Bk) {
-                C b = x.getValue();
-                ExpVector f = x.getKey();
-                int[] fp = f.dependencyOnVariables();
-                int fl1 = 0;
-                if (fp.length > 0) {
-                    fl1 = fp[fp.length - 1];
-                }
-                int fl1s = ring.nvar + 1 - fl1;
-                GenSolvablePolynomial<C> Cs = null;
-                if (el1s <= fl1s) { // symmetric
-                    ExpVector g = e.sum(f);
-                    //if ( debug )
-                    Cs = (GenSolvablePolynomial<C>) zero.sum(one, g); // symmetric!
-                    //Cs = new GenSolvablePolynomial<C>(ring,one,g); // symmetric!
-                } else { // unsymmetric
-                    System.exit(1);
-                }
-                //C c = a.multiply(b);
-                Cs = Cs.multiply(a, b); // now non-symmetric // Cs.multiply(c); is symmetric!
-                //if ( debug )
-                Cp = (GenSolvablePolynomial<C>) Cp.sum(Cs);
-            }
-        }
-        return Cp;
-    }
+//
+//    /**
+//     * GenSolvablePolynomial multiplication.
+//     *
+//     * @param Bp GenSolvablePolynomial.
+//     * @return this*Bp, where * denotes solvable multiplication.
+//     */
+//    // not @Override
+//    public GenSolvablePolynomial<C> multiply(GenSolvablePolynomial<C> Bp) {
+//        if (Bp == null || Bp.isZERO()) {
+//            return ring.getZERO();
+//        }
+//        if (this.isZERO()) {
+//            return this;
+//        }
+//        assert (ring.nvar == Bp.ring.nvar);
+//        GenSolvablePolynomial<C> Cp = ring.getZERO().copy();
+//        GenSolvablePolynomial<C> zero = ring.getZERO().copy();
+//        C one = ring.getONECoefficient();
+//        Map<ExpVector, C> A = val;
+//        Map<ExpVector, C> B = Bp.val;
+//        Set<Map.Entry<ExpVector, C>> Bk = B.entrySet();
+//        for (Map.Entry<ExpVector, C> y : A.entrySet()) {
+//            C a = y.getValue();
+//            ExpVector e = y.getKey();
+//            int[] ep = e.dependencyOnVariables();
+//            int el1 = ring.nvar + 1;
+//            if (ep.length > 0) {
+//                el1 = ep[0];
+//            }
+//            int el1s = ring.nvar + 1 - el1;
+//            for (Map.Entry<ExpVector, C> x : Bk) {
+//                C b = x.getValue();
+//                ExpVector f = x.getKey();
+//                int[] fp = f.dependencyOnVariables();
+//                int fl1 = 0;
+//                if (fp.length > 0) {
+//                    fl1 = fp[fp.length - 1];
+//                }
+//                int fl1s = ring.nvar + 1 - fl1;
+//                GenSolvablePolynomial<C> Cs = null;
+//                if (el1s <= fl1s) { // symmetric
+//                    ExpVector g = e.sum(f);
+//                    //if ( debug )
+//                    Cs = (GenSolvablePolynomial<C>) zero.sum(one, g); // symmetric!
+//                    //Cs = new GenSolvablePolynomial<C>(ring,one,g); // symmetric!
+//                } else { // unsymmetric
+//                    System.exit(1);
+//                }
+//                //C c = a.multiply(b);
+//                Cs = Cs.multiply(a, b); // now non-symmetric // Cs.multiply(c); is symmetric!
+//                //if ( debug )
+//                Cp = (GenSolvablePolynomial<C>) Cp.sum(Cs);
+//            }
+//        }
+//        return Cp;
+//    }
 
     /**
      * GenSolvablePolynomial multiplication. Product with coefficient ring
@@ -148,87 +147,6 @@ public class GenSolvablePolynomial<C extends RingElem<C>> extends GenPolynomial<
         }
         return Cp;
     }
-
-
-    /**
-     * GenSolvablePolynomial left and right multiplication. Product with
-     * coefficient ring element.
-     *
-     * @param b coefficient.
-     * @param c coefficient.
-     * @return b*this*c, where * is coefficient multiplication.
-     */
-    GenSolvablePolynomial<C> multiply(C b, C c) {
-        GenSolvablePolynomial<C> Cp = ring.getZERO().copy();
-        if (b == null || b.isZERO()) {
-            return Cp;
-        }
-        if (c == null || c.isZERO()) {
-            return Cp;
-        }
-        Map<ExpVector, C> Cm = Cp.val; //getMap();
-        Map<ExpVector, C> Am = val;
-        for (Map.Entry<ExpVector, C> y : Am.entrySet()) {
-            ExpVector e = y.getKey();
-            C a = y.getValue();
-            C d = b.multiply(a).multiply(c);
-            if (!d.isZERO()) {
-                Cm.put(e, d);
-            }
-        }
-        return Cp;
-    }
-
-
-    /**
-     * GenSolvablePolynomial multiplication. Product with exponent vector.
-     *
-     * @param e exponent.
-     * @return this * x<sup>e</sup>, where * denotes solvable multiplication.
-     */
-    @Override
-    public GenSolvablePolynomial<C> multiply(ExpVector e) {
-        if (e == null || e.isZERO()) {
-            return this;
-        }
-        C b = ring.getONECoefficient();
-        return multiply(b, e);
-    }
-
-
-    /**
-     * GenSolvablePolynomial multiplication. Product with ring element and
-     * exponent vector.
-     *
-     * @param b coefficient.
-     * @param e exponent.
-     * @return this * b x<sup>e</sup>, where * denotes solvable multiplication.
-     */
-    @Override
-    public GenSolvablePolynomial<C> multiply(C b, ExpVector e) {
-        if (b == null || b.isZERO()) {
-            return ring.getZERO();
-        }
-        GenSolvablePolynomial<C> Cp = new GenSolvablePolynomial<>(ring, b, e);
-        return multiply(Cp);
-    }
-
-    /**
-     * GenSolvablePolynomial multiplication. Left product with ring element and
-     * exponent vector.
-     *
-     * @param b coefficient.
-     * @param e exponent.
-     * @return b x<sup>e</sup> * this, where * denotes solvable multiplication.
-     */
-    GenSolvablePolynomial<C> multiplyLeft(C b, ExpVector e) {
-        if (b == null || b.isZERO()) {
-            return ring.getZERO();
-        }
-        GenSolvablePolynomial<C> Cp = new GenSolvablePolynomial<>(ring, b, e);
-        return Cp.multiply(this);
-    }
-
 
     /**
      * GenSolvablePolynomial multiplication. Left product with coefficient ring
@@ -280,6 +198,7 @@ public class GenSolvablePolynomial<C extends RingElem<C>> extends GenPolynomial<
         }
         return this;
     }
+<<<<<<< HEAD
 
 
     //
@@ -332,3 +251,6 @@ public class GenSolvablePolynomial<C extends RingElem<C>> extends GenPolynomial<
     }
 
 }
+=======
+}
+>>>>>>> jas-simplify

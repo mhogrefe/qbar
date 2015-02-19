@@ -143,16 +143,6 @@ public final class BigRational implements RingElem<BigRational>, RingFactory<Big
     }
 
     /**
-     * Query if this ring is associative.
-     *
-     * @return true.
-     */
-    public boolean isAssociative() {
-        return true;
-    }
-
-
-    /**
      * Query if this ring is a field.
      *
      * @return true.
@@ -522,16 +512,6 @@ public final class BigRational implements RingElem<BigRational>, RingFactory<Big
         T2 = R2.multiply(SB2);
         T = new BigRational(T1, T2);
         return T;
-    }
-
-    /**
-     * Parse rational number from String.
-     *
-     * @param s String.
-     * @return BigRational from s.
-     */
-    public BigRational parse(String s) {
-        return new BigRational(s);
     }
 
     /**

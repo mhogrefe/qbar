@@ -43,9 +43,6 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
     private GenPolynomial(GenPolynomialRing<C> r, TreeMap<ExpVector, C> t) {
         ring = r;
         val = t;
-        if (Thread.currentThread().isInterrupted()) {
-            throw new RuntimeException();
-        }
     }
 
 
@@ -79,7 +76,7 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
      * @param r polynomial ring factory.
      * @param v the SortedMap of some other polynomial.
      */
-    private GenPolynomial(GenPolynomialRing<C> r, SortedMap<ExpVector, C> v) {
+    public GenPolynomial(GenPolynomialRing<C> r, SortedMap<ExpVector, C> v) {
         this(r);
         val.putAll(v); // assume no zero coefficients
     }
@@ -776,35 +773,6 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
         return p;
     }
 
-
-    /**
-     * GenPolynomial multiplication. Product with exponent vector.
-     *
-     * @param e exponent (!= null).
-     * @return this * x<sup>e</sup>.
-     */
-    public GenPolynomial<C> multiply(ExpVector e) {
-        // assert e != null. This is never allowed.
-        if (this.isZERO()) {
-            return this;
-        }
-        if (this instanceof GenSolvablePolynomial) {
-            //throw new RuntimeException("wrong method dispatch in JRE ");
-            GenSolvablePolynomial<C> T = (GenSolvablePolynomial<C>) this;
-            return T.multiply(e);
-        }
-        GenPolynomial<C> p = ring.getZERO().copy();
-        SortedMap<ExpVector, C> pv = p.val;
-        for (Map.Entry<ExpVector, C> m1 : val.entrySet()) {
-            C c1 = m1.getValue();
-            ExpVector e1 = m1.getKey();
-            ExpVector e2 = e1.sum(e);
-            pv.put(e2, c1);
-        }
-        return p;
-    }
-
-
     /**
      * GenPolynomial division. Division by coefficient ring element. Fails, if
      * exact division is not possible.
@@ -1071,7 +1039,8 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
         for (Map.Entry<ExpVector, C> y : A.entrySet()) {
             ExpVector e = y.getKey();
             C a = y.getValue();
-            ExpVector f = e.extend(i, k);
+            System.exit(1);
+            ExpVector f = null;
             C.put(f, a);
         }
         return Cp;

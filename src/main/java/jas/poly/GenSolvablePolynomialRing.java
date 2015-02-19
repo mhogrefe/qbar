@@ -63,26 +63,6 @@ public class GenSolvablePolynomialRing<C extends RingElem<C>> extends GenPolynom
     }
 
     @Override
-    public boolean isAssociative() {
-        GenSolvablePolynomial<C> Xi, Xj, Xk, p, q;
-        for (int i = 0; i < nvar; i++) {
-            Xi = univariate(i);
-            for (int j = i + 1; j < nvar; j++) {
-                Xj = univariate(j);
-                for (int k = j + 1; k < nvar; k++) {
-                    Xk = univariate(k);
-                    p = Xk.multiply(Xj).multiply(Xi);
-                    q = Xk.multiply(Xj.multiply(Xi));
-                    if (!p.equals(q)) {
-                        return false;
-                    }
-                }
-            }
-        }
-        return coFac.isAssociative();
-    }
-
-    @Override
     public GenSolvablePolynomial<C> fromInteger(long a) {
         return new GenSolvablePolynomial<>(this, coFac.fromInteger(a), evzero);
     }
@@ -123,25 +103,6 @@ public class GenSolvablePolynomialRing<C extends RingElem<C>> extends GenPolynom
     }
 
     @Override
-    public GenSolvablePolynomial<C> parse(String s) {
-        //return getZERO();
-        return parse(new StringReader(s));
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    GenSolvablePolynomial<C> parse(Reader r) {
-        GenPolynomialTokenizer pt = new GenPolynomialTokenizer(this, r);
-        GenSolvablePolynomial<C> p;
-        try {
-            p = (GenSolvablePolynomial<C>) pt.nextSolvablePolynomial();
-        } catch (IOException e) {
-            p = ZERO;
-        }
-        return p;
-    }
-
-    @Override
     public GenSolvablePolynomial<C> univariate(int i) {
         return (GenSolvablePolynomial<C>) super.univariate(i);
     }
@@ -174,39 +135,4 @@ public class GenSolvablePolynomialRing<C extends RingElem<C>> extends GenPolynom
     public GenSolvablePolynomial<C> univariate(int modv, int i, long e) {
         return (GenSolvablePolynomial<C>) super.univariate(modv, i, e);
     }
-
-    /**
-     * Extend variables. Used e.g. in module embedding. Extend number of
-     * variables by length(vn). New variables commute with the exiting variables.
-     *
-     * @param vn names for extended variables.
-     * @return extended polynomial ring factory.
-     */
-    @Override
-    public GenSolvablePolynomialRing<C> extend(String[] vn) {
-        GenPolynomialRing<C> pfac = super.extend(vn);
-        GenSolvablePolynomialRing<C> spfac = new GenSolvablePolynomialRing<>(pfac.coFac, pfac.nvar,
-                pfac.tord, pfac.vars);
-        //GenSolvablePolynomialRing<C> spfac = new GenSolvablePolynomialRing<C>(pfac.coFac, pfac);
-        spfac.table.extend(this.table);
-        return spfac;
-    }
-
-
-    /**
-     * Contract variables. Used e.g. in module embedding. Contract number of
-     * variables by i.
-     *
-     * @param i number of variables to remove.
-     * @return contracted solvable polynomial ring factory.
-     */
-    @Override
-    public GenSolvablePolynomialRing<C> contract(int i) {
-        GenPolynomialRing<C> pfac = super.contract(i);
-        GenSolvablePolynomialRing<C> spfac = new GenSolvablePolynomialRing<>(pfac.coFac, pfac.nvar,
-                pfac.tord, pfac.vars);
-        spfac.table.contract(this.table);
-        return spfac;
-    }
-
 }

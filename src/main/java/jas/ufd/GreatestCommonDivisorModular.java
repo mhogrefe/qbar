@@ -96,7 +96,8 @@ public class GreatestCommonDivisorModular<MOD extends RingElem<MOD> & Modular> e
         //initialize prime list and degree vector
         PrimeList primes = new PrimeList();
         int pn = 10; //primes.size();
-        ExpVector wdegv = rdegv.subst(rdegv.getVal(0) + 1);
+        System.exit(1);
+        ExpVector wdegv = null;
         // +1 seems to be a hack for the unlucky prime test
         ModularRingFactory<MOD> cofac;
         ModularRingFactory<MOD> cofacM;
@@ -177,7 +178,7 @@ public class GreatestCommonDivisorModular<MOD extends RingElem<MOD> & Modular> e
                 // initialize chinese remainder algorithm
                 M = new JasBigInteger(p);
                 cp = cm;
-                wdegv = wdegv.gcd(mdegv); //EVGCD(wdegv,mdegv);
+                System.exit(1);
                 cfe = cf;
                 for (int k = 0; k < wdegv.length(); k++) {
                     cfe = cfe.multiply(new JasBigInteger(wdegv.getVal(k) + 1));
@@ -238,34 +239,4 @@ public class GreatestCommonDivisorModular<MOD extends RingElem<MOD> & Modular> e
         q = basePrimitivePart(q);
         return q.abs().multiply(c);
     }
-
-
-    /**
-     * Univariate GenPolynomial resultant.
-     *
-     * @param P univariate GenPolynomial.
-     * @param S univariate GenPolynomial.
-     * @return res(P, S).
-     */
-    @Override
-    public GenPolynomial<JasBigInteger> baseResultant(GenPolynomial<JasBigInteger> P, GenPolynomial<JasBigInteger> S) {
-        // not a special case here
-        return resultant(P, S);
-    }
-
-
-    /**
-     * Univariate GenPolynomial recursive resultant.
-     *
-     * @param P univariate recursive GenPolynomial.
-     * @param S univariate recursive GenPolynomial.
-     * @return res(P, S).
-     */
-    public GenPolynomial<GenPolynomial<JasBigInteger>> recursiveUnivariateResultant(GenPolynomial<GenPolynomial<JasBigInteger>> P,
-                                                                                    GenPolynomial<GenPolynomial<JasBigInteger>> S) {
-        // only in this class
-        return recursiveResultant(P, S);
-    }
-
-
 }

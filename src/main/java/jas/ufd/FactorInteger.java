@@ -247,7 +247,7 @@ public class FactorInteger extends FactorAbstract<JasBigInteger> {
             pi = pi.multiply(m);
         }
 
-        lift = HenselUtil.liftHenselMonic_Long(C, F, k);
+        lift = HenselUtil.liftHenselMonic(C, F, k);
         GenPolynomialRing<ModLong> mpfac = lift.get(0).ring;
         int dl = (lift.size() + 1) / 2;
         GenPolynomial<JasBigInteger> u = C;
@@ -322,7 +322,7 @@ public class FactorInteger extends FactorAbstract<JasBigInteger> {
         int dl = (mlist.size() + 1) / 2;
         GenPolynomial<JasBigInteger> u = PP;
         GenPolynomial<ModLong> um = Pm;
-        HenselApprox<ModLong> ilist;
+        HenselApprox ilist;
         for (int j = 1; j <= dl; j++) {
             KsubSet<GenPolynomial<ModLong>> ps = new KsubSet<>(mlist, j);
             for (List<GenPolynomial<ModLong>> flist : ps) {
@@ -380,12 +380,15 @@ public class FactorInteger extends FactorAbstract<JasBigInteger> {
         return s;
     }
 
+<<<<<<< HEAD
     //*
     // BitSet for factor degree list.
     //
     // @param E exponent vector list.
     // @return b_0, ..., b_k} a BitSet of possible factor degrees.
     //
+=======
+>>>>>>> jas-simplify
     public static BitSet factorDegrees(List<ExpVector> E, int deg) {
         BitSet D = new BitSet(deg + 1);
         D.set(0); // constant factor
