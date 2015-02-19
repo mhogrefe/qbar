@@ -66,7 +66,8 @@ public class IntervalProperties {
             propertiesMidpoint();
             propertiesSplit();
             propertiesBisect();
-//            propertiesRoundingPreimage_float();
+            propertiesRoundingPreimage_float();
+            propertiesRoundingPreimage_double();
             propertiesEquals();
             propertiesHashCode();
             propertiesCompareTo();
@@ -670,16 +671,13 @@ public class IntervalProperties {
             Interval a = roundingPreimage(f);
             Rational central = Rational.ofExact(f);
             Rational pred = Rational.ofExact(FloatingPointUtils.predecessor(f));
-            Rational succ = Rational.ofExact(FloatingPointUtils.predecessor(f));
+            Rational succ = Rational.ofExact(FloatingPointUtils.successor(f));
             for (Rational r : take(TINY_LIMIT, P.rationals(a))) {
                 Rational centralDistance = central.subtract(r).abs();
                 Rational predDistance = pred.subtract(r).abs();
                 Rational succDistance = succ.subtract(r).abs();
                 assertTrue(Float.toString(f), le(centralDistance, predDistance));
                 assertTrue(Float.toString(f), le(centralDistance, succDistance));
-            }
-            if (Float.toString(f).equals("0.0")) {
-                int i = 0;
             }
             for (Rational r : take(TINY_LIMIT, P.rationalsNotIn(a))) {
                 Rational centralDistance = central.subtract(r).abs();
@@ -689,12 +687,62 @@ public class IntervalProperties {
             }
 
             Rational x = a.getLower().get();
-            Rational y = a.getLower().get();
+            Rational y = a.getUpper().get();
             for (Rational r : take(TINY_LIMIT, filter(s -> !s.equals(x) && !s.equals(y), P.rationals(a)))) {
-                aeq(Float.toString(f), r.floatValue(), f);
+                float g = r.floatValue();
+                float h = f;
+                //get rid of negative zero
+                if (g == 0.0f) g = Math.abs(g);
+                if (h == 0.0f) h = Math.abs(h);
+                aeq(Float.toString(f), g, h);
             }
             for (Rational r : take(TINY_LIMIT, filter(s -> !s.equals(x) && !s.equals(y), P.rationalsNotIn(a)))) {
                 aneq(Float.toString(f), r.floatValue(), f);
+            }
+        }
+    }
+
+    private static void propertiesRoundingPreimage_double() {
+        initialize();
+        System.out.println("\t\ttesting roundingPreimage(double) properties...");
+
+        for (double d : take(LIMIT, filter(e -> !Double.isNaN(e), P.doubles()))) {
+            Interval a = roundingPreimage(d);
+            validate(a);
+            assertEquals(Double.toString(d), roundingPreimage(-d), a.negate());
+        }
+
+        for (double d : take(LIMIT, filter(e -> !Double.isNaN(e) && Math.abs(e) < Double.MAX_VALUE, P.doubles()))) {
+            Interval a = roundingPreimage(d);
+            Rational central = Rational.ofExact(d);
+            Rational pred = Rational.ofExact(FloatingPointUtils.predecessor(d));
+            Rational succ = Rational.ofExact(FloatingPointUtils.successor(d));
+            for (Rational r : take(TINY_LIMIT, P.rationals(a))) {
+                Rational centralDistance = central.subtract(r).abs();
+                Rational predDistance = pred.subtract(r).abs();
+                Rational succDistance = succ.subtract(r).abs();
+                assertTrue(Double.toString(d), le(centralDistance, predDistance));
+                assertTrue(Double.toString(d), le(centralDistance, succDistance));
+            }
+            for (Rational r : take(TINY_LIMIT, P.rationalsNotIn(a))) {
+                Rational centralDistance = central.subtract(r).abs();
+                Rational predDistance = pred.subtract(r).abs();
+                Rational succDistance = succ.subtract(r).abs();
+                assertTrue(Double.toString(d), gt(centralDistance, predDistance) || gt(centralDistance, succDistance));
+            }
+
+            Rational x = a.getLower().get();
+            Rational y = a.getUpper().get();
+            for (Rational r : take(TINY_LIMIT, filter(s -> !s.equals(x) && !s.equals(y), P.rationals(a)))) {
+                double g = r.doubleValue();
+                double h = d;
+                //get rid of negative zero
+                if (g == 0.0) g = Math.abs(g);
+                if (h == 0.0) h = Math.abs(h);
+                aeq(Double.toString(d), g, h);
+            }
+            for (Rational r : take(TINY_LIMIT, filter(s -> !s.equals(x) && !s.equals(y), P.rationalsNotIn(a)))) {
+                aneq(Double.toString(d), r.doubleValue(), d);
             }
         }
     }
