@@ -6,11 +6,13 @@ import mho.qbar.iterableProviders.QBarRandomProvider;
 import mho.wheels.iterables.ExhaustiveProvider;
 import mho.wheels.iterables.RandomProvider;
 import mho.wheels.math.Combinatorics;
+import mho.wheels.misc.FloatingPointUtils;
 import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 import static mho.qbar.objects.Interval.*;
@@ -64,6 +66,7 @@ public class IntervalProperties {
             propertiesMidpoint();
             propertiesSplit();
             propertiesBisect();
+//            propertiesRoundingPreimage_float();
             propertiesEquals();
             propertiesHashCode();
             propertiesCompareTo();
@@ -653,6 +656,49 @@ public class IntervalProperties {
         }
     }
 
+    private static void propertiesRoundingPreimage_float() {
+        initialize();
+        System.out.println("\t\ttesting roundingPreimage(float) properties...");
+
+        for (float f : take(LIMIT, filter(g -> !Float.isNaN(g), P.floats()))) {
+            Interval a = roundingPreimage(f);
+            validate(a);
+            assertEquals(Float.toString(f), roundingPreimage(-f), a.negate());
+        }
+
+        for (float f : take(LIMIT, filter(g -> !Float.isNaN(g) && Math.abs(g) < Float.MAX_VALUE, P.floats()))) {
+            Interval a = roundingPreimage(f);
+            Rational central = Rational.ofExact(f);
+            Rational pred = Rational.ofExact(FloatingPointUtils.predecessor(f));
+            Rational succ = Rational.ofExact(FloatingPointUtils.predecessor(f));
+            for (Rational r : take(TINY_LIMIT, P.rationals(a))) {
+                Rational centralDistance = central.subtract(r).abs();
+                Rational predDistance = pred.subtract(r).abs();
+                Rational succDistance = succ.subtract(r).abs();
+                assertTrue(Float.toString(f), le(centralDistance, predDistance));
+                assertTrue(Float.toString(f), le(centralDistance, succDistance));
+            }
+            if (Float.toString(f).equals("0.0")) {
+                int i = 0;
+            }
+            for (Rational r : take(TINY_LIMIT, P.rationalsNotIn(a))) {
+                Rational centralDistance = central.subtract(r).abs();
+                Rational predDistance = pred.subtract(r).abs();
+                Rational succDistance = succ.subtract(r).abs();
+                assertTrue(Float.toString(f), gt(centralDistance, predDistance) || gt(centralDistance, succDistance));
+            }
+
+            Rational x = a.getLower().get();
+            Rational y = a.getLower().get();
+            for (Rational r : take(TINY_LIMIT, filter(s -> !s.equals(x) && !s.equals(y), P.rationals(a)))) {
+                aeq(Float.toString(f), r.floatValue(), f);
+            }
+            for (Rational r : take(TINY_LIMIT, filter(s -> !s.equals(x) && !s.equals(y), P.rationalsNotIn(a)))) {
+                aneq(Float.toString(f), r.floatValue(), f);
+            }
+        }
+    }
+
     private static void propertiesEquals() {
         initialize();
         System.out.println("\t\ttesting equals(Object) properties...");
@@ -753,5 +799,25 @@ public class IntervalProperties {
         if (a.getLower().isPresent() && a.getUpper().isPresent()) {
             assertTrue(a.toString(), le(a.getLower().get(), a.getUpper().get()));
         }
+    }
+
+    private static void aeq(String message, float x, float y) {
+        assertEquals(message, Float.toString(x), Float.toString(y));
+    }
+
+    private static void aeq(String message, double x, double y) {
+        assertEquals(message, Double.toString(x), Double.toString(y));
+    }
+
+    private static void aneq(String message, float x, float y) {
+        assertNotEquals(message, Float.toString(x), Float.toString(y));
+    }
+
+    private static void aneq(String message, double x, double y) {
+        assertNotEquals(message, Double.toString(x), Double.toString(y));
+    }
+
+    private static void aeq(String message, BigDecimal x, BigDecimal y) {
+        assertEquals(message, x.stripTrailingZeros(), y.stripTrailingZeros());
     }
 }
