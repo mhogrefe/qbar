@@ -56,42 +56,6 @@ public class PolyUtil {
         return B;
     }
 
-<<<<<<< HEAD
-
-    /**
-     * Distribute a recursive polynomial to a generic polynomial. Works for
-     * arbitrary term orders.
-     *
-     * @param <C>  coefficient type.
-     * @param dfac combined polynomial ring factory of coefficients and this.
-     * @param B    polynomial to be converted.
-     * @return distributed polynomial.
-     */
-    public static <C extends RingElem<C>> GenPolynomial<C> distribute(GenPolynomialRing<C> dfac,
-                                                                      GenPolynomial<GenPolynomial<C>> B) {
-        GenPolynomial<C> C = dfac.getZERO().copy();
-        if (B.isZERO()) {
-            return C;
-        }
-        Map<ExpVector, C> Cm = C.val; //getMap();
-        for (Map.Entry<ExpVector, GenPolynomial<C>> y : B.getMap().entrySet()) {
-            ExpVector e = y.getKey();
-            GenPolynomial<C> A = y.getValue();
-            for (Map.Entry<ExpVector, C> x : A.val.entrySet()) {
-                ExpVector f = x.getKey();
-                C b = x.getValue();
-                ExpVector g = e.combine(f);
-                assert (Cm.get(g) != null);
-                //if ( Cm.get(g) != null ) { // todo assert, done
-                //   throw new RuntimeException("PolyUtil debug error");
-                //}
-                Cm.put(g, b);
-            }
-        }
-        return C;
-    }
-
-
     //
     //JasBigInteger from ModInteger coefficients, symmetric. Represent as
     //polynomial with JasBigInteger coefficients by removing the modules and
@@ -101,52 +65,11 @@ public class PolyUtil {
     //@param A   polynomial with ModInteger coefficients to be converted.
     //@return polynomial with JasBigInteger coefficients.
     //
-=======
-    /**
-     * JasBigInteger from ModInteger coefficients, symmetric. Represent as
-     * polynomial with JasBigInteger coefficients by removing the modules and
-     * making coefficients symmetric to 0.
-     *
-     * @param fac result polynomial factory.
-     * @param A   polynomial with ModInteger coefficients to be converted.
-     * @return polynomial with JasBigInteger coefficients.
-     */
->>>>>>> jas-simplify
     @Deprecated
     public static <C extends RingElem<C> & Modular> GenPolynomial<JasBigInteger> integerFromModularCoefficients(
             GenPolynomialRing<JasBigInteger> fac, GenPolynomial<C> A) {
         return PolyUtil.map(fac, A, new ModSymToInt<>());
     }
-
-    /**
-     * JasBigInteger from ModInteger coefficients, symmetric. Represent as
-     * polynomial with JasBigInteger coefficients by removing the modules and
-     * making coefficients symmetric to 0.
-     *
-     * @param fac result polynomial factory.
-<<<<<<< HEAD
-     * @param A   polynomial with ModInteger coefficients to be converted.
-     * @return polynomial with JasBigInteger coefficients.
-     */
-    public static GenPolynomial<JasBigInteger> integerFromModularCoefficients_Integer(
-            GenPolynomialRing<JasBigInteger> fac, GenPolynomial<ModInteger> A) {
-        return PolyUtil.map(fac, A, new ModSymToInt_Integer());
-    }
-
-    //
-    //JasBigInteger from ModInteger coefficients, symmetric. Represent as
-    //polynomial with JasBigInteger coefficients by removing the modules and
-    //making coefficients symmetric to 0.
-    //
-    //@param fac result polynomial factory.
-    //@param A   polynomial with ModInteger coefficients to be converted.
-    //@return polynomial with JasBigInteger coefficients.
-    //
-    public static GenPolynomial<JasBigInteger> integerFromModularCoefficients_Long(
-            GenPolynomialRing<JasBigInteger> fac, GenPolynomial<ModLong> A) {
-        return PolyUtil.map(fac, A, new ModSymToInt_Long());
-    }
-
 
     //
     //JasBigInteger from ModInteger coefficients, symmetric. Represent as
@@ -157,13 +80,6 @@ public class PolyUtil {
     //@param L   list of polynomials with ModInteger coefficients to be
     //           converted.
     //@return list of polynomials with JasBigInteger coefficients.
-    //
-=======
-     * @param L   list of polynomials with ModInteger coefficients to be
-     *            converted.
-     * @return list of polynomials with JasBigInteger coefficients.
-     */
->>>>>>> jas-simplify
     @Deprecated
     public static <C extends RingElem<C> & Modular> List<GenPolynomial<JasBigInteger>> integerFromModularCoefficients(
             final GenPolynomialRing<JasBigInteger> fac, List<GenPolynomial<C>> L) {
@@ -257,110 +173,6 @@ public class PolyUtil {
         return S;
     }
 
-    /**
-<<<<<<< HEAD
-     * ModInteger chinese remainder algorithm on coefficients.
-     *
-     * @param fac GenPolynomial&lt;ModInteger&gt; result factory with
-     *            A.coFac.modul*B.coFac.modul = C.coFac.modul.
-     * @param A   GenPolynomial&lt;ModInteger&gt;.
-     * @param B   other GenPolynomial&lt;ModInteger&gt;.
-     * @param mi  inverse of A.coFac.modul in ring B.coFac.
-     * @return S = cra(A,B), with S mod A.coFac.modul == A and S mod
-     * B.coFac.modul == B.
-     */
-    public static GenPolynomial<ModInteger> chineseRemainder_Integer(
-            GenPolynomialRing<ModInteger> fac, GenPolynomial<ModInteger> A, ModInteger mi, GenPolynomial<ModInteger> B) {
-        ModularRingFactory<ModInteger> cfac = (ModularRingFactory<ModInteger>) fac.coFac; // get RingFactory
-        GenPolynomial<ModInteger> S = fac.getZERO().copy();
-        GenPolynomial<ModInteger> Ap = A.copy();
-        SortedMap<ExpVector, ModInteger> av = Ap.val; //getMap();
-        SortedMap<ExpVector, ModInteger> bv = B.getMap();
-        SortedMap<ExpVector, ModInteger> sv = S.val; //getMap();
-        ModInteger c;
-        for (Map.Entry<ExpVector, ModInteger> me : bv.entrySet()) {
-            ExpVector e = me.getKey();
-            ModInteger y = me.getValue(); //bv.get(e); // assert y != null
-            ModInteger x = av.get(e);
-            if (x != null) {
-                av.remove(e);
-                c = cfac.chineseRemainder(x, mi, y);
-                if (!c.isZERO()) { // 0 cannot happen
-                    sv.put(e, c);
-                }
-            } else {
-                //c = cfac.fromInteger( y.getVal() );
-                c = cfac.chineseRemainder(A.ring.coFac.getZERO(), mi, y);
-                if (!c.isZERO()) { // 0 cannot happen
-                    sv.put(e, c); // c != null
-                }
-            }
-        }
-        // assert bv is empty = done
-        for (Map.Entry<ExpVector, ModInteger> me : av.entrySet()) { // rest of av
-            ExpVector e = me.getKey();
-            ModInteger x = me.getValue(); // av.get(e); // assert x != null
-            //c = cfac.fromInteger( x.getVal() );
-            c = cfac.chineseRemainder(x, mi, B.ring.coFac.getZERO());
-            if (!c.isZERO()) { // 0 cannot happen
-                sv.put(e, c); // c != null
-            }
-        }
-        return S;
-    }
-
-    /**
-     * ModInteger chinese remainder algorithm on coefficients.
-     *
-     * @param fac GenPolynomial&lt;ModInteger&gt; result factory with
-     *            A.coFac.modul*B.coFac.modul = C.coFac.modul.
-     * @param A   GenPolynomial&lt;ModInteger&gt;.
-     * @param B   other GenPolynomial&lt;ModInteger&gt;.
-     * @param mi  inverse of A.coFac.modul in ring B.coFac.
-     * @return S = cra(A,B), with S mod A.coFac.modul == A and S mod
-     * B.coFac.modul == B.
-     */
-    public static GenPolynomial<ModLong> chineseRemainder_Long(
-            GenPolynomialRing<ModLong> fac, GenPolynomial<ModLong> A, ModLong mi, GenPolynomial<ModLong> B) {
-        ModularRingFactory<ModLong> cfac = (ModularRingFactory<ModLong>) fac.coFac; // get RingFactory
-        GenPolynomial<ModLong> S = fac.getZERO().copy();
-        GenPolynomial<ModLong> Ap = A.copy();
-        SortedMap<ExpVector, ModLong> av = Ap.val; //getMap();
-        SortedMap<ExpVector, ModLong> bv = B.getMap();
-        SortedMap<ExpVector, ModLong> sv = S.val; //getMap();
-        ModLong c;
-        for (Map.Entry<ExpVector, ModLong> me : bv.entrySet()) {
-            ExpVector e = me.getKey();
-            ModLong y = me.getValue(); //bv.get(e); // assert y != null
-            ModLong x = av.get(e);
-            if (x != null) {
-                av.remove(e);
-                c = cfac.chineseRemainder(x, mi, y);
-                if (!c.isZERO()) { // 0 cannot happen
-                    sv.put(e, c);
-                }
-            } else {
-                //c = cfac.fromInteger( y.getVal() );
-                c = cfac.chineseRemainder(A.ring.coFac.getZERO(), mi, y);
-                if (!c.isZERO()) { // 0 cannot happen
-                    sv.put(e, c); // c != null
-                }
-            }
-        }
-        // assert bv is empty = done
-        for (Map.Entry<ExpVector, ModLong> me : av.entrySet()) { // rest of av
-            ExpVector e = me.getKey();
-            ModLong x = me.getValue(); // av.get(e); // assert x != null
-            //c = cfac.fromInteger( x.getVal() );
-            c = cfac.chineseRemainder(x, mi, B.ring.coFac.getZERO());
-            if (!c.isZERO()) { // 0 cannot happen
-                sv.put(e, c); // c != null
-            }
-        }
-        return S;
-    }
-
-    //
     //GenPolynomial monic, i.e. leadingBaseCoefficient == 1. If
     //leadingBaseCoefficient is not invertible returns this unmodified.
     //
@@ -368,15 +180,6 @@ public class PolyUtil {
     //@param p   recursive GenPolynomial<GenPolynomial<C>>.
     //@return monic(p).
     //
-=======
-     * GenPolynomial monic, i.e. leadingBaseCoefficient == 1. If
-     * leadingBaseCoefficient is not invertible returns this unmodified.
-     *
-     * @param <C> coefficient type.
-     * @param p   recursive GenPolynomial<GenPolynomial<C>>.
-     * @return monic(p).
-     */
->>>>>>> jas-simplify
     public static <C extends RingElem<C>> GenPolynomial<GenPolynomial<C>> monic(
             GenPolynomial<GenPolynomial<C>> p) {
         if (p == null || p.isZERO()) {
@@ -730,98 +533,6 @@ public class PolyUtil {
         return r;
     }
 
-<<<<<<< HEAD
-
-    //
-    //GenPolynomial recursive pseudo divide. For recursive polynomials.
-    //
-    //@param <C> coefficient type.
-    //@param P   recursive GenPolynomial.
-    //@param S   nonzero recursive GenPolynomial.
-    //@return quotient with ldcf(S)<sup>m'</sup> P = quotient * S + remainder.
-    //@see jas.poly.GenPolynomial#remainder(jas.poly.GenPolynomial).
-    //
-    public static <C extends RingElem<C>> GenPolynomial<GenPolynomial<C>> recursivePseudoDivide(
-            GenPolynomial<GenPolynomial<C>> P, GenPolynomial<GenPolynomial<C>> S) {
-        if (S == null || S.isZERO()) {
-            throw new ArithmeticException(P + " division by zero " + S);
-        }
-        //if (S.ring.nvar != 1) {
-        // ok if exact division
-        // throw new RuntimeException(this.getClass().getName()
-        //                            + " univariate polynomials only");
-        //}
-        if (P == null || P.isZERO()) {
-            return P;
-        }
-        if (S.isONE()) {
-            return P;
-        }
-        GenPolynomial<C> c = S.leadingBaseCoefficient();
-        ExpVector e = S.leadingExpVector();
-        GenPolynomial<GenPolynomial<C>> h;
-        GenPolynomial<GenPolynomial<C>> r = P;
-        GenPolynomial<GenPolynomial<C>> q = S.ring.getZERO().copy();
-        while (!r.isZERO()) {
-            ExpVector f = r.leadingExpVector();
-            if (f.multipleOf(e)) {
-                GenPolynomial<C> a = r.leadingBaseCoefficient();
-                f = f.subtract(e);
-                GenPolynomial<C> x = PolyUtil.baseSparsePseudoRemainder(a, c);
-                if (x.isZERO() && !c.isConstant()) {
-                    GenPolynomial<C> y = PolyUtil.basePseudoDivide(a, c);
-                    q = q.sum(y, f);
-                    h = S.multiply(y, f); // coeff a
-                } else {
-                    q = q.multiply(c);
-                    q = q.sum(a, f);
-                    r = r.multiply(c); // coeff ac
-                    h = S.multiply(a, f); // coeff ac
-                }
-                r = r.subtract(h);
-            } else {
-                break;
-            }
-        }
-        return q;
-    }
-
-    //
-    //GenPolynomial pseudo divide. For recursive polynomials.
-    //
-    //@param <C> coefficient type.
-    //@param P   recursive GenPolynomial.
-    //@param s   nonzero GenPolynomial.
-    //@return quotient with ldcf(s)<sup>m</sup> P = quotient * s + remainder.
-    //@see jas.poly.GenPolynomial#remainder(jas.poly.GenPolynomial).
-    //
-    public static <C extends RingElem<C>> GenPolynomial<GenPolynomial<C>> coefficientPseudoDivide(
-            GenPolynomial<GenPolynomial<C>> P, GenPolynomial<C> s) {
-        if (s == null || s.isZERO()) {
-            throw new ArithmeticException(P + " division by zero " + s);
-        }
-        if (P.isZERO()) {
-            return P;
-        }
-        GenPolynomial<GenPolynomial<C>> p = P.ring.getZERO().copy();
-        SortedMap<ExpVector, GenPolynomial<C>> pv = p.val;
-        for (Map.Entry<ExpVector, GenPolynomial<C>> m : P.getMap().entrySet()) {
-            ExpVector e = m.getKey();
-            GenPolynomial<C> c1 = m.getValue();
-            GenPolynomial<C> c = basePseudoDivide(c1, s);
-            if (c.isZERO()) {
-                System.out.println(" no exact division: " + c1 + "/" + s);
-                //throw new ArithmeticException(" no exact division: " + c1 + "/" + s);
-            } else {
-                pv.put(e, c); // or m1.setValue( c )
-            }
-        }
-        return p;
-    }
-
-
-=======
->>>>>>> jas-simplify
     /**
      * GenPolynomial polynomial derivative main variable.
      *

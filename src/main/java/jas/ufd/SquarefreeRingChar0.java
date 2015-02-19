@@ -43,16 +43,6 @@ public class SquarefreeRingChar0<C extends RingElem<C>> extends SquarefreeAbstra
         return getClass().getName() + " with " + engine + " over " + coFac;
     }
 
-<<<<<<< HEAD
-    //
-    //GenPolynomial polynomial squarefree factorization.
-    //
-    //@param A GenPolynomial.
-    //@return [p_1 -> e_1, ..., p_k -> e_k] with P = prod_{i=1,...,k} p_i^{e_i}
-    //and p_i squarefree.
-    //
-=======
->>>>>>> jas-simplify
     @Override
     public SortedMap<GenPolynomial<C>, Long> baseSquarefreeFactors(GenPolynomial<C> A) {
         SortedMap<GenPolynomial<C>, Long> sfactors = new TreeMap<>();

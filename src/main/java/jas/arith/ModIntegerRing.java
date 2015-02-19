@@ -203,18 +203,6 @@ public final class ModIntegerRing implements ModularRingFactory<ModInteger> {
         return new ModInteger(this, v);
     }
 
-<<<<<<< HEAD
-
-    /**
-     * Parse ModInteger from String.
-     *
-     * @param s String.
-     * @return ModInteger from s.
-     */
-    public ModInteger parse(String s) {
-        return new ModInteger(this, s);
-    }
-
     //
     //ModInteger chinese remainder algorithm. This is a factory method. Assert
     //c.modul >= a.modul and c.modul * a.modul = this.modul.
@@ -224,17 +212,6 @@ public final class ModIntegerRing implements ModularRingFactory<ModInteger> {
     //@param a  other ModInteger.
     //@return S, with S mod c.modul == c and S mod a.modul == a.
     //
-=======
-    /**
-     * ModInteger chinese remainder algorithm. This is a factory method. Assert
-     * c.modul >= a.modul and c.modul * a.modul = this.modul.
-     *
-     * @param c  ModInteger.
-     * @param ci inverse of c.modul in ring of a.
-     * @param a  other ModInteger.
-     * @return S, with S mod c.modul == c and S mod a.modul == a.
-     */
->>>>>>> jas-simplify
     public ModInteger chineseRemainder(ModInteger c, ModInteger ci, ModInteger a) {
         ModInteger b = a.ring.fromInteger(c.val); // c mod a.modul
         ModInteger d = a.subtract(b); // a-c mod a.modul
