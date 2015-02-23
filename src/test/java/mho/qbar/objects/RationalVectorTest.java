@@ -473,6 +473,41 @@ public class RationalVectorTest {
     }
 
     @Test
+    public void testCancelDenominators() {
+        aeq(ZERO_DIMENSIONAL.cancelDenominators(), "[]");
+        aeq(read("[0]").get().cancelDenominators(), "[0]");
+        aeq(read("[0, 0]").get().cancelDenominators(), "[0, 0]");
+        aeq(read("[2/3]").get().cancelDenominators(), "[1]");
+        aeq(read("[-2/3]").get().cancelDenominators(), "[-1]");
+        aeq(read("[1, -2/3]").get().cancelDenominators(), "[3, -2]");
+        aeq(read("[4, -4, 5/12, 0, 1]").get().cancelDenominators(), "[48, -48, 5, 0, 12]");
+        aeq(read("[1, 1/2, 1/3, 1/4, 1/5]").get().cancelDenominators(), "[60, 30, 20, 15, 12]");
+    }
+
+    @Test
+    public void testPivot() {
+        assertFalse(ZERO_DIMENSIONAL.pivot().isPresent());
+        assertFalse(read("[0]").get().pivot().isPresent());
+        assertFalse(read("[0, 0, 0]").get().pivot().isPresent());
+        aeq(read("[2/3]").get().pivot().get(), "2/3");
+        aeq(read("[1, -2/3]").get().pivot().get(), "1");
+        aeq(read("[0, 1, -2/3]").get().pivot().get(), "1");
+        aeq(read("[0, 0, -2/3]").get().pivot().get(), "-2/3");
+    }
+
+    @Test
+    public void testReduce() {
+        aeq(ZERO_DIMENSIONAL.reduce(), "[]");
+        aeq(read("[0]").get().reduce(), "[0]");
+        aeq(read("[0, 0, 0]").get().reduce(), "[0, 0, 0]");
+        aeq(read("[2/3]").get().reduce(), "[1]");
+        aeq(read("[1, -2/3]").get().reduce(), "[1, -2/3]");
+        aeq(read("[-2/3, 1]").get().reduce(), "[1, -3/2]");
+        aeq(read("[0, 1, -2/3]").get().reduce(), "[0, 1, -2/3]");
+        aeq(read("[0, 0, -2/3]").get().reduce(), "[0, 0, 1]");
+    }
+
+    @Test
     public void testCompareTo() {
         assertTrue(eq(ZERO_DIMENSIONAL, ZERO_DIMENSIONAL));
         assertTrue(lt(ZERO_DIMENSIONAL, read("[1/2]").get()));
