@@ -133,7 +133,7 @@ public class RationalVectorDemos {
         }
     }
 
-    public static void demoIdentity() {
+    public static void demoStandard() {
         initialize();
         Iterable<Integer> is;
         if (P instanceof ExhaustiveProvider) {
@@ -142,7 +142,7 @@ public class RationalVectorDemos {
             is = ((RandomProvider) P).naturalIntegersGeometric(20);
         }
         for (Pair<Integer, Integer> p : take(SMALL_LIMIT, filter(q -> q.a > q.b, P.pairs(is)))) {
-            System.out.println("identity(" + p.a + ", " + p.b + ") = " + identity(p.a, p.b));
+            System.out.println("standard(" + p.a + ", " + p.b + ") = " + standard(p.a, p.b));
         }
     }
 

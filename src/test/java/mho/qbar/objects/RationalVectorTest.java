@@ -139,26 +139,26 @@ public class RationalVectorTest {
     }
 
     @Test
-    public void testIdentity() {
-        aeq(identity(1, 0), "[1]");
-        aeq(identity(3, 0), "[1, 0, 0]");
-        aeq(identity(3, 1), "[0, 1, 0]");
-        aeq(identity(3, 2), "[0, 0, 1]");
-        aeq(identity(10, 6), "[0, 0, 0, 0, 0, 0, 1, 0, 0, 0]");
+    public void testStandard() {
+        aeq(standard(1, 0), "[1]");
+        aeq(standard(3, 0), "[1, 0, 0]");
+        aeq(standard(3, 1), "[0, 1, 0]");
+        aeq(standard(3, 2), "[0, 0, 1]");
+        aeq(standard(10, 6), "[0, 0, 0, 0, 0, 0, 1, 0, 0, 0]");
         try {
-            identity(2, -4);
+            standard(2, -4);
             fail();
         } catch (IllegalArgumentException ignored) {}
         try {
-            identity(-3, -4);
+            standard(-3, -4);
             fail();
         } catch (IllegalArgumentException ignored) {}
         try {
-            identity(2, 3);
+            standard(2, 3);
             fail();
         } catch (IllegalArgumentException ignored) {}
         try {
-            identity(0, 0);
+            standard(0, 0);
             fail();
         } catch (IllegalArgumentException ignored) {}
     }

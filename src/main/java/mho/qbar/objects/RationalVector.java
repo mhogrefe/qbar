@@ -230,9 +230,9 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
     }
 
     /**
-     * Creates an identity vector; that is, a vector with a given dimension, all of whose coordinates are 0, except for
-     * a single coordinate which is 1. Identity matrices are made up of identity vectors. There is no identity vector
-     * of dimension 0.
+     * Creates an standard basis vector; that is, a vector with a given dimension, all of whose coordinates are 0,
+     * except for a single coordinate which is 1. Identity matrices are made up of standard basis vectors. There is no
+     * standard basis vector of dimension 0.
      *
      * <ul>
      *  <li>{@code dimension} must be positive.</li>
@@ -245,9 +245,9 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
      *
      * @param dimension the vector's dimension
      * @param i the index of the vector coordinate which is 1
-     * @return an identity vector
+     * @return a standard basis vector
      */
-    public static @NotNull RationalVector identity(int dimension, int i) {
+    public static @NotNull RationalVector standard(int dimension, int i) {
         if (dimension < 1)
             throw new IllegalArgumentException("dimension must be positive");
         if (i < 0)
