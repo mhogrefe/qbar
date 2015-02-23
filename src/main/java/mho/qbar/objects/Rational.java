@@ -2011,7 +2011,7 @@ public final class Rational implements Comparable<Rational> {
     /**
      * Multiplies a {@code List} of {@code Rational}s by some positive constant to yield a {@code List} of
      * {@code BigInteger}s with no common factor. This gives a canonical representation of {@code Rational} lists
-     * considered equivalent under multiplication.
+     * considered equivalent under multiplication by positive {@code Rational}s.
      *
      * <ul>
      *  <li>{@code xs} cannot contain any nulls.</li>

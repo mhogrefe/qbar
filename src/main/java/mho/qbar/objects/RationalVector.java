@@ -562,15 +562,53 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
         return Rational.sum(map(x -> x.pow(2), coordinates));
     }
 
+    /**
+     * Multiplies {@code this} by some positive constant to yield a {@code RationalVector} with integer coordinates
+     * having no common factor. This gives a canonical representation of {@code RationalVector}s considered equivalent
+     * under multiplication by positive {@code Rational}s. Another canonical representation is given by
+     * {@link mho.qbar.objects.RationalVector#reduce}; unlike this representation, it is invariant under negation.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalVector}.</li>
+     *  <li>The result is a {@code RationalVector} with integer coordinates whose GCD is 0 or 1.</li>
+     * </ul>
+     *
+     * @return a canonical representation of {@code this}
+     */
     public @NotNull RationalVector cancelDenominators() {
         return new RationalVector(toList(map(Rational::of, Rational.cancelDenominators(coordinates))));
     }
 
+    /**
+     * Returns the pivot of {@code this}, or the first nonzero coordinate. Since the pivot may not exist, this method
+     * returns an {@code Optional}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalVector}.</li>
+     *  <li>The result may be empty, or it may contain a nonzero {@code Rational}.</li>
+     * </ul>
+     *
+     * @return {@code this}'s pivot
+     */
     public @NotNull Optional<Rational> pivot() {
         return find(r -> r != Rational.ZERO, coordinates);
     }
 
-    public @NotNull RationalVector normalize() {
+    /**
+     * Multiplies {@code this} by some nonzero constant to yield a {@code RationalVector} whose pivot, if it exists, is
+     * 1. This gives a canonical representation of {@code RationalVector}s considered equivalent under multiplication
+     * by nonzero {@code Rational}s. Another canonical representation is given by
+     * {@link mho.qbar.objects.RationalVector#cancelDenominators}; unlike this representation, it is not invariant
+     * under negation. Reduction is used when row-reducing matrices.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalVector}.</li>
+     *  <li>The result is a {@code RationalVector} whose pivot, if it exists, is 1.</li>
+     * </ul>
+     *
+     * @return a canonical representation of {@code this}
+     */
+    public @NotNull RationalVector reduce() {
         Optional<Rational> pivot = pivot();
         if (!pivot.isPresent() || pivot.get() == Rational.ONE) return this;
         return divide(pivot.get());

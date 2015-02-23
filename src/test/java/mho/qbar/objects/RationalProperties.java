@@ -3492,6 +3492,14 @@ public class RationalProperties {
             );
         }
 
+        for (Pair<List<Rational>, Rational> p : take(LIMIT, P.pairs(P.lists(P.rationals()), P.positiveRationals()))) {
+            assertEquals(
+                    p.toString(),
+                    cancelDenominators(p.a),
+                    cancelDenominators(toList(map(r -> r.multiply(p.b), p.a)))
+            );
+        }
+
         for (Rational r : take(LIMIT, P.rationals())) {
             BigInteger canceled = head(cancelDenominators(Arrays.asList(r)));
             assertTrue(r.toString(), le(canceled.abs(), BigInteger.ONE));

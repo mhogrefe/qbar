@@ -1094,6 +1094,7 @@ public class RationalVectorProperties {
 
         for (RationalVector v : take(LIMIT, P.rationalVectors())) {
             Rational squaredLength = v.squaredLength();
+            assertEquals(v.toString(), squaredLength, v.dot(v));
             assertNotEquals(v.toString(), squaredLength.signum(), -1);
             assertEquals(v.toString(), v.negate().squaredLength(), squaredLength);
         }
