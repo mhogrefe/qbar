@@ -562,6 +562,20 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
         return Rational.sum(map(x -> x.pow(2), coordinates));
     }
 
+    public @NotNull RationalVector cancelDenominators() {
+        return new RationalVector(toList(map(Rational::of, Rational.cancelDenominators(coordinates))));
+    }
+
+    public @NotNull Optional<Rational> pivot() {
+        return find(r -> r != Rational.ZERO, coordinates);
+    }
+
+    public @NotNull RationalVector normalize() {
+        Optional<Rational> pivot = pivot();
+        if (!pivot.isPresent() || pivot.get() == Rational.ONE) return this;
+        return divide(pivot.get());
+    }
+
     /**
      * Determines whether {@code this} is equal to {@code that}.
      *
