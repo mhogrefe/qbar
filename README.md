@@ -14,4 +14,4 @@ Progress
 | QBarRandomProvider     | ✘       | ✘       | ✘     | ✘     | ✘          |
 | Interval               | ✘       | ✘       | ✘     | ✘     | ✘          |
 | Rational               | ✔       | ✔       | ✔     | ✔     | ✔          |
-| RationalVector         | ✔       | ✔       | ✔     | ✘     | ✘          |
+| RationalVector         | ✔       | ✔       | ✔     | ✔     | ✘          |

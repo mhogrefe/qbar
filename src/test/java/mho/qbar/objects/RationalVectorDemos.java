@@ -365,6 +365,27 @@ public class RationalVectorDemos {
         }
     }
 
+    public static void demoCancelDenominators() {
+        initialize();
+        for (RationalVector v : take(LIMIT, P.rationalVectors())) {
+            System.out.println("cancelDenominators(" + v + ") = " + v.cancelDenominators());
+        }
+    }
+
+    public static void demoPivot() {
+        initialize();
+        for (RationalVector v : take(LIMIT, P.rationalVectors())) {
+            System.out.println("pivot(" + v + ") = " + v.pivot());
+        }
+    }
+
+    public static void demoReduce() {
+        initialize();
+        for (RationalVector v : take(LIMIT, P.rationalVectors())) {
+            System.out.println("reduce(" + v + ") = " + v.reduce());
+        }
+    }
+
     public static void demoEquals_RationalVector() {
         initialize();
         for (Pair<RationalVector, RationalVector> p : take(LIMIT, P.pairs(P.rationalVectors()))) {
