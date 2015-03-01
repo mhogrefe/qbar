@@ -675,6 +675,41 @@ public final class Interval implements Comparable<Interval> {
     }
 
     /**
+     * Returns the smallest interval a such that if x∈{@code this}, |x|∈a.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Interval}.</li>
+     *  <li>The result is an interval whose lower bound is finite and non-negative.</li>
+     * </ul>
+     *
+     * @return |{@code this}|
+     */
+    public @NotNull Interval abs() {
+        if (lower == null && upper == null) return this;
+        if (lower == null) {
+            return greaterThanOrEqualTo(upper.signum() == -1 ? upper.negate() : Rational.ZERO);
+        }
+        if (upper == null) {
+            return lower.signum() == -1 ? greaterThanOrEqualTo(Rational.ZERO) : this;
+        }
+        if (lower.signum() == 1 && upper.signum() == 1) return this;
+        if (lower.signum() == -1 && upper.signum() == -1) return negate();
+        return of(Rational.ZERO, max(lower.negate(), upper));
+    }
+
+    /**
+     * If every real in {@code this} has the same signum, returns that signum; otherwise, returns an empty
+     * {@code Optional}.
+     *
+     * @return sgn(x) for all x∈{@code this}, if sgn(x) is unique
+     */
+    public @NotNull Optional<Integer> signum() {
+        int lowerSignum = lower == null ? -1 : lower.signum();
+        int upperSignum = upper == null ? 1 : upper.signum();
+        return lowerSignum == upperSignum ? Optional.of(lowerSignum) : Optional.<Integer>empty();
+    }
+
+    /**
      * Returns the smallest interval z such that if a∈{@code this} and b∈{@code that}, a–b∈z.
      *
      * <ul>
