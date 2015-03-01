@@ -607,6 +607,59 @@ public class IntervalTest {
     }
 
     @Test
+    public void testAdd() {
+        aeq(ZERO.add(ZERO), "[0, 0]");
+        aeq(ZERO.add(ONE), "[1, 1]");
+        aeq(ZERO.add(ALL), "(-Infinity, Infinity)");
+        aeq(ZERO.add(read("[-2, 5/3]").get()), "[-2, 5/3]");
+        aeq(ZERO.add(read("[4, 4]").get()), "[4, 4]");
+        aeq(ZERO.add(read("(-Infinity, 3/2]").get()), "(-Infinity, 3/2]");
+        aeq(ZERO.add(read("[-6, Infinity)").get()), "[-6, Infinity)");
+        aeq(ONE.add(ZERO), "[1, 1]");
+        aeq(ONE.add(ONE), "[2, 2]");
+        aeq(ONE.add(ALL), "(-Infinity, Infinity)");
+        aeq(ONE.add(read("[-2, 5/3]").get()), "[-1, 8/3]");
+        aeq(ONE.add(read("[4, 4]").get()), "[5, 5]");
+        aeq(ONE.add(read("(-Infinity, 3/2]").get()), "(-Infinity, 5/2]");
+        aeq(ONE.add(read("[-6, Infinity)").get()), "[-5, Infinity)");
+        aeq(ALL.add(ZERO), "(-Infinity, Infinity)");
+        aeq(ALL.add(ONE), "(-Infinity, Infinity)");
+        aeq(ALL.add(ALL), "(-Infinity, Infinity)");
+        aeq(ALL.add(read("[-2, 5/3]").get()), "(-Infinity, Infinity)");
+        aeq(ALL.add(read("[4, 4]").get()), "(-Infinity, Infinity)");
+        aeq(ALL.add(read("(-Infinity, 3/2]").get()), "(-Infinity, Infinity)");
+        aeq(ALL.add(read("[-6, Infinity)").get()), "(-Infinity, Infinity)");
+        aeq(read("[-2, 5/3]").get().add(ZERO), "[-2, 5/3]");
+        aeq(read("[-2, 5/3]").get().add(ONE), "[-1, 8/3]");
+        aeq(read("[-2, 5/3]").get().add(ALL), "(-Infinity, Infinity)");
+        aeq(read("[-2, 5/3]").get().add(read("[-2, 5/3]").get()), "[-4, 10/3]");
+        aeq(read("[-2, 5/3]").get().add(read("[4, 4]").get()), "[2, 17/3]");
+        aeq(read("[-2, 5/3]").get().add(read("(-Infinity, 3/2]").get()), "(-Infinity, 19/6]");
+        aeq(read("[-2, 5/3]").get().add(read("[-6, Infinity)").get()), "[-8, Infinity)");
+        aeq(read("[4, 4]").get().add(ZERO), "[4, 4]");
+        aeq(read("[4, 4]").get().add(ONE), "[5, 5]");
+        aeq(read("[4, 4]").get().add(ALL), "(-Infinity, Infinity)");
+        aeq(read("[4, 4]").get().add(read("[-2, 5/3]").get()), "[2, 17/3]");
+        aeq(read("[4, 4]").get().add(read("[4, 4]").get()), "[8, 8]");
+        aeq(read("[4, 4]").get().add(read("(-Infinity, 3/2]").get()), "(-Infinity, 11/2]");
+        aeq(read("[4, 4]").get().add(read("[-6, Infinity)").get()), "[-2, Infinity)");
+        aeq(read("(-Infinity, 3/2]").get().add(ZERO), "(-Infinity, 3/2]");
+        aeq(read("(-Infinity, 3/2]").get().add(ONE), "(-Infinity, 5/2]");
+        aeq(read("(-Infinity, 3/2]").get().add(ALL), "(-Infinity, Infinity)");
+        aeq(read("(-Infinity, 3/2]").get().add(read("[-2, 5/3]").get()), "(-Infinity, 19/6]");
+        aeq(read("(-Infinity, 3/2]").get().add(read("[4, 4]").get()), "(-Infinity, 11/2]");
+        aeq(read("(-Infinity, 3/2]").get().add(read("(-Infinity, 3/2]").get()), "(-Infinity, 3]");
+        aeq(read("(-Infinity, 3/2]").get().add(read("[-6, Infinity)").get()), "(-Infinity, Infinity)");
+        aeq(read("[-6, Infinity)").get().add(ZERO), "[-6, Infinity)");
+        aeq(read("[-6, Infinity)").get().add(ONE), "[-5, Infinity)");
+        aeq(read("[-6, Infinity)").get().add(ALL), "(-Infinity, Infinity)");
+        aeq(read("[-6, Infinity)").get().add(read("[-2, 5/3]").get()), "[-8, Infinity)");
+        aeq(read("[-6, Infinity)").get().add(read("[4, 4]").get()), "[-2, Infinity)");
+        aeq(read("[-6, Infinity)").get().add(read("(-Infinity, 3/2]").get()), "(-Infinity, Infinity)");
+        aeq(read("[-6, Infinity)").get().add(read("[-6, Infinity)").get()), "[-12, Infinity)");
+    }
+
+    @Test
     public void testEquals() {
         //noinspection EqualsWithItself
         assertTrue(ZERO.equals(ZERO));
