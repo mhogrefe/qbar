@@ -205,18 +205,6 @@ public class IntervalDemos {
         }
     }
 
-//    public static void bigDecimalRangeDemo() {
-//        Generator<Pair<Interval, Integer>> g = new FilteredGenerator<Pair<Interval, Integer>>(
-//                new SubExponentialPairGenerator<>(
-//                        Interval.finitelyBoundedIntervals(),
-//                        Generators.naturalIntegers()
-//                ), p -> p.snd != 0 ||
-//                p.fst.lower.hasTerminatingDecimalExpansion() && p.fst.upper.hasTerminatingDecimalExpansion());
-//        for (Pair<Interval, Integer> p : g.iterate(limit)) {
-//            System.out.println("bigDecimalRange(" + p.fst + ", " + p.snd + ") = " + p.fst.bigDecimalRange(p.snd));
-//        }
-//    }
-//
 //    public static void negateDemo() {
 //        for (Interval a : Interval.intervals().iterate(limit)) {
 //            System.out.println("-" + a + " = " + a.negate());

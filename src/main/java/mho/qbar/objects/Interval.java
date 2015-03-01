@@ -583,7 +583,7 @@ public final class Interval implements Comparable<Interval> {
 
     /**
      * Returns an {@code Interval} representing all real numbers that round to a specified {@link BigDecimal} (taking
-     * precision into account).
+     * scale into account).
      *
      * <ul>
      *  <li>{@code bd} cannot be null.</li>
@@ -637,33 +637,6 @@ public final class Interval implements Comparable<Interval> {
         double dLower = lower == null ? Double.NEGATIVE_INFINITY : lower.doubleValue(RoundingMode.FLOOR);
         double dUpper = upper == null ? Double.POSITIVE_INFINITY : upper.doubleValue(RoundingMode.CEILING);
         return new Pair<>(dLower, dUpper);
-    }
-
-    /**
-     * Returns a pair of {@code BigDecimal}s x, y such that [x, y] is the smallest interval with {@code BigDecimal}
-     * bounds (where the {@code BigDecimal}s have a number of significant figures at least as large as
-     * {@code precision}) which contains {@code this}.
-     *
-     * <ul>
-     *  <li>{@code this} must be a finitely-bounded {@code Interval}.</li>
-     *  <li>{@code precision} must be non-negative.</li>
-     *  <li>If {@code precision} is 0, both bounds of {@code this} must have a terminating decimal expansion.</li>
-     *  <li>The result is either a pair in which at least one {@code BigDecimal} x has minimal scale (that is, the
-     *  scale is the smallest non-negative n such that x×10<sup>n</sup> is an integer), or a pair in which each
-     *  {@code BigDecimal} has the same number of significant figures.</li>
-     * </ul>
-     *
-     * @param precision the maximum number of significant digits in the elements of the result; or 0, if both elements
-     *                  must have full precision
-     * @return the smallest {@code BigDecimal} interval containing {@code this}, such that the precision of the
-     * {@code BigDecimal}s is at least {@code precision}.
-     */
-    public @NotNull Pair<BigDecimal, BigDecimal> bigDecimalRange(int precision) {
-        if (lower == null || upper == null)
-            throw new ArithmeticException("cannot represent infinities with BigDecimal");
-        BigDecimal bdLower = lower.bigDecimalValue(precision, RoundingMode.FLOOR);
-        BigDecimal bdUpper = upper.bigDecimalValue(precision, RoundingMode.CEILING);
-        return new Pair<>(bdLower, bdUpper);
     }
 
     /**
