@@ -191,18 +191,20 @@ public class IntervalDemos {
         }
     }
 
-//    public static void floatRangeDemo() {
-//        for (Interval a : Interval.intervals().iterate(limit)) {
-//            System.out.println("floatRange(" + a + ") = " + a.floatRange());
-//        }
-//    }
-//
-//    public static void doubleRangeDemo() {
-//        for (Interval a : Interval.intervals().iterate(limit)) {
-//            System.out.println("doubleRange(" + a + ") = " + a.doubleRange());
-//        }
-//    }
-//
+    public static void demoFloatRange() {
+        initialize();
+        for (Interval a : take(LIMIT, P.intervals())) {
+            System.out.println("floatRange(" + a + ") = " + a.floatRange());
+        }
+    }
+
+    public static void demoDoubleRange() {
+        initialize();
+        for (Interval a : take(LIMIT, P.intervals())) {
+            System.out.println("doubleRange(" + a + ") = " + a.doubleRange());
+        }
+    }
+
 //    public static void bigDecimalRangeDemo() {
 //        Generator<Pair<Interval, Integer>> g = new FilteredGenerator<Pair<Interval, Integer>>(
 //                new SubExponentialPairGenerator<>(
