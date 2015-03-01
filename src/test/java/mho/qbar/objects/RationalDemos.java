@@ -348,17 +348,24 @@ public class RationalDemos {
         }
     }
 
-    public static void demoNegate() {
-        initialize();
-        for (Rational r : take(LIMIT, P.rationals())) {
-            System.out.println("-(" + r + ") = " + r.negate());
-        }
-    }
-
     public static void demoInvert() {
         initialize();
         for (Rational r : take(LIMIT, filter(s -> s != ZERO, P.rationals()))) {
             System.out.println("1/(" + r + ") = " + r.invert());
+        }
+    }
+
+    public static void demoAdd() {
+        initialize();
+        for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
+            System.out.println(p.a + " + " + p.b + " = " + p.a.add(p.b));
+        }
+    }
+
+    public static void demoNegate() {
+        initialize();
+        for (Rational r : take(LIMIT, P.rationals())) {
+            System.out.println("-(" + r + ") = " + r.negate());
         }
     }
 
@@ -373,13 +380,6 @@ public class RationalDemos {
         initialize();
         for (Rational r : take(LIMIT, P.rationals())) {
             System.out.println("sgn(" + r + ") = " + r.signum());
-        }
-    }
-
-    public static void demoAdd() {
-        initialize();
-        for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
-            System.out.println(p.a + " + " + p.b + " = " + p.a.add(p.b));
         }
     }
 

@@ -640,23 +640,6 @@ public final class Interval implements Comparable<Interval> {
     }
 
     /**
-     * Returns the smallest interval a such that if x∈{@code this}, –x∈a.
-     *
-     * <ul>
-     *  <li>{@code this} may be any {@code Interval}.</li>
-     *  <li>The result is not null.</li>
-     * </ul>
-     *
-     * @return –{@code this}
-     */
-    public @NotNull Interval negate() {
-        if (lower == null && upper == null) return this;
-        if (lower == null) return new Interval(upper.negate(), null);
-        if (upper == null) return new Interval(null, lower.negate());
-        return new Interval(upper.negate(), lower.negate());
-    }
-
-    /**
      * Returns the smallest interval z such that if a∈{@code this} and b∈{@code that}, a+b∈z.
      *
      * <ul>
@@ -672,6 +655,23 @@ public final class Interval implements Comparable<Interval> {
         Rational sLower = lower == null || that.lower == null ? null : lower.add(that.lower);
         Rational sUpper = upper == null || that.upper == null ? null : upper.add(that.upper);
         return new Interval(sLower, sUpper);
+    }
+
+    /**
+     * Returns the smallest interval a such that if x∈{@code this}, –x∈a.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Interval}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @return –{@code this}
+     */
+    public @NotNull Interval negate() {
+        if (lower == null && upper == null) return this;
+        if (lower == null) return new Interval(upper.negate(), null);
+        if (upper == null) return new Interval(null, lower.negate());
+        return new Interval(upper.negate(), lower.negate());
     }
 
     /**
@@ -741,20 +741,6 @@ public final class Interval implements Comparable<Interval> {
         return new Interval(min, max);
     }
 
-    public @NotNull Interval shiftLeft(int bits) {
-        return new Interval(
-                lower == null ? null : lower.shiftLeft(bits),
-                upper == null ? null : upper.shiftLeft(bits)
-        );
-    }
-
-    public @NotNull Interval shiftRight(int bits) {
-        return new Interval(
-                lower == null ? null : lower.shiftRight(bits),
-                upper == null ? null : upper.shiftRight(bits)
-        );
-    }
-
     public @NotNull Interval invert() {
         if ((lower == null && upper == null)
                 || (lower == null && upper.signum() == 1)
@@ -771,6 +757,20 @@ public final class Interval implements Comparable<Interval> {
 
     public @NotNull Interval divide(@NotNull Interval that) {
         return multiply(that.invert());
+    }
+
+    public @NotNull Interval shiftLeft(int bits) {
+        return new Interval(
+                lower == null ? null : lower.shiftLeft(bits),
+                upper == null ? null : upper.shiftLeft(bits)
+        );
+    }
+
+    public @NotNull Interval shiftRight(int bits) {
+        return new Interval(
+                lower == null ? null : lower.shiftRight(bits),
+                upper == null ? null : upper.shiftRight(bits)
+        );
     }
 
     public @NotNull Interval pow(int p) {

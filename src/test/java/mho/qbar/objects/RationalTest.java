@@ -2403,17 +2403,6 @@ public class RationalTest {
     }
 
     @Test
-    public void testNegate() {
-        aeq(read("2/3").get().negate(), "-2/3");
-        aeq(read("-2/3").get().negate(), "2/3");
-        aeq(read("4").get().negate(), "-4");
-        aeq(read("-4").get().negate(), "4");
-        assertTrue(ZERO.negate() == ZERO);
-        aeq(ONE.negate(), "-1");
-        assertTrue(read("-1").get().negate() == ONE);
-    }
-
-    @Test
     public void testInvert() {
         aeq(read("2/3").get().invert(), "3/2");
         aeq(read("-2/3").get().invert(), "-3/2");
@@ -2424,26 +2413,6 @@ public class RationalTest {
             ZERO.invert();
             fail();
         } catch (ArithmeticException ignored) {}
-    }
-
-    @Test
-    public void testAbs() {
-        aeq(read("2/3").get().abs(), "2/3");
-        aeq(read("-2/3").get().abs(), "2/3");
-        aeq(read("4").get().abs(), "4");
-        aeq(read("-4").get().abs(), "4");
-        aeq(ZERO.abs(), "0");
-        aeq(ONE.abs(), "1");
-    }
-
-    @Test
-    public void testSignum() {
-        aeq(read("2/3").get().signum(), 1);
-        aeq(read("-2/3").get().signum(), -1);
-        aeq(read("4").get().signum(), 1);
-        aeq(read("-4").get().signum(), -1);
-        aeq(ZERO.signum(), 0);
-        aeq(ONE.signum(), 1);
     }
 
     @Test
@@ -2470,6 +2439,37 @@ public class RationalTest {
         assertTrue(ZERO.add(ONE) == ONE);
         assertTrue(ONE.add(ZERO) == ONE);
         aeq(ONE.add(ONE), "2");
+    }
+
+    @Test
+    public void testNegate() {
+        aeq(read("2/3").get().negate(), "-2/3");
+        aeq(read("-2/3").get().negate(), "2/3");
+        aeq(read("4").get().negate(), "-4");
+        aeq(read("-4").get().negate(), "4");
+        assertTrue(ZERO.negate() == ZERO);
+        aeq(ONE.negate(), "-1");
+        assertTrue(read("-1").get().negate() == ONE);
+    }
+
+    @Test
+    public void testAbs() {
+        aeq(read("2/3").get().abs(), "2/3");
+        aeq(read("-2/3").get().abs(), "2/3");
+        aeq(read("4").get().abs(), "4");
+        aeq(read("-4").get().abs(), "4");
+        aeq(ZERO.abs(), "0");
+        aeq(ONE.abs(), "1");
+    }
+
+    @Test
+    public void testSignum() {
+        aeq(read("2/3").get().signum(), 1);
+        aeq(read("-2/3").get().signum(), -1);
+        aeq(read("4").get().signum(), 1);
+        aeq(read("-4").get().signum(), -1);
+        aeq(ZERO.signum(), 0);
+        aeq(ONE.signum(), 1);
     }
 
     @Test

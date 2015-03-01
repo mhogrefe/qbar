@@ -1099,23 +1099,6 @@ public final class Rational implements Comparable<Rational> {
     }
 
     /**
-     * Returns the negative of {@code this}.
-     *
-     * <ul>
-     *  <li>{@code this} may be any {@code Rational}.</li>
-     *  <li>The result is non-null.</li>
-     * </ul>
-     *
-     * @return –{@code this}
-     */
-    public @NotNull Rational negate() {
-        if (this == ZERO) return ZERO;
-        BigInteger negativeNumerator = numerator.negate();
-        if (negativeNumerator.equals(denominator)) return ONE;
-        return new Rational(negativeNumerator, denominator);
-    }
-
-    /**
      * Returns the multiplicative inverse of {@code this}.
      *
      * <ul>
@@ -1134,37 +1117,6 @@ public final class Rational implements Comparable<Rational> {
         } else {
             return new Rational(denominator, numerator);
         }
-    }
-
-    /**
-     * Returns the absolute value of {@code this}.
-     *
-     * <ul>
-     *  <li>{@code this} may be any {@code Rational.}</li>
-     *  <li>The result is a non-negative {@code Rational}.</li>
-     * </ul>
-     *
-     * @return |{@code this}|
-     */
-    public @NotNull Rational abs() {
-        if (this == ZERO || this == ONE) return this;
-        if (numerator.equals(BigInteger.valueOf(-1)) && denominator.equals(BigInteger.ONE)) return ONE;
-        return new Rational(numerator.abs(), denominator);
-    }
-
-    /**
-     * Returns the sign of {@code this}: 1 if positive, –1 if negative, 0 if equal to 0.
-     *
-     * <ul>
-     *  <li>{@code this} may be any {@code Rational}.</li>
-     *  <li>The result is –1, 0, or 1.</li>
-     * </ul>
-     *
-     * @return sgn({@code this})
-     */
-    @SuppressWarnings("JavaDoc")
-    public int signum() {
-        return numerator.signum();
     }
 
     /**
@@ -1199,6 +1151,54 @@ public final class Rational implements Comparable<Rational> {
             if (sn.equals(sd)) return ONE;
             return new Rational(sn, sd);
         }
+    }
+
+    /**
+     * Returns the negative of {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Rational}.</li>
+     *  <li>The result is non-null.</li>
+     * </ul>
+     *
+     * @return –{@code this}
+     */
+    public @NotNull Rational negate() {
+        if (this == ZERO) return ZERO;
+        BigInteger negativeNumerator = numerator.negate();
+        if (negativeNumerator.equals(denominator)) return ONE;
+        return new Rational(negativeNumerator, denominator);
+    }
+
+    /**
+     * Returns the absolute value of {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Rational.}</li>
+     *  <li>The result is a non-negative {@code Rational}.</li>
+     * </ul>
+     *
+     * @return |{@code this}|
+     */
+    public @NotNull Rational abs() {
+        if (this == ZERO || this == ONE) return this;
+        if (numerator.equals(BigInteger.valueOf(-1)) && denominator.equals(BigInteger.ONE)) return ONE;
+        return new Rational(numerator.abs(), denominator);
+    }
+
+    /**
+     * Returns the sign of {@code this}: 1 if positive, –1 if negative, 0 if equal to 0.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Rational}.</li>
+     *  <li>The result is –1, 0, or 1.</li>
+     * </ul>
+     *
+     * @return sgn({@code this})
+     */
+    @SuppressWarnings("JavaDoc")
+    public int signum() {
+        return numerator.signum();
     }
 
     /**

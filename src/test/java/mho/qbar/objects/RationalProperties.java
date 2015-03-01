@@ -84,12 +84,12 @@ public class RationalProperties {
             propertiesDoubleValue_RoundingMode();
             propertiesDoubleValue();
             propertiesDoubleValueExact();
-            propertiesNegate();
             propertiesInvert();
             compareImplementationsInvert();
+            propertiesAdd();
+            propertiesNegate();
             propertiesAbs();
             propertiesSignum();
-            propertiesAdd();
             compareImplementationsAdd();
             propertiesSubtract();
             propertiesMultiply_Rational();
@@ -1644,24 +1644,6 @@ public class RationalProperties {
         }
     }
 
-    private static void propertiesNegate() {
-        initialize();
-        System.out.println("\t\ttesting negate() properties...");
-
-        for (Rational r : take(LIMIT, P.rationals())) {
-            Rational negativeR = r.negate();
-            validate(negativeR);
-            assertEquals(r.toString(), r, negativeR.negate());
-            assertTrue(r.add(negativeR) == ZERO);
-        }
-
-        Iterable<Rational> rs = filter(r -> r != ZERO, P.rationals());
-        for (Rational r : take(LIMIT, rs)) {
-            Rational negativeR = r.negate();
-            assertNotEquals(r.toString(), r, negativeR);
-        }
-    }
-
     private static @NotNull Rational invert_simplest(@NotNull Rational r) {
         return of(r.getDenominator(), r.getNumerator());
     }
@@ -1707,29 +1689,6 @@ public class RationalProperties {
             totalTime += (System.nanoTime() - time);
         }
         System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
-    }
-
-    private static void propertiesAbs() {
-        initialize();
-        System.out.println("\t\ttesting abs() properties...");
-
-        for (Rational r : take(LIMIT, P.rationals())) {
-            Rational absR = r.abs();
-            validate(absR);
-            assertEquals(r.toString(), absR, absR.abs());
-            assertTrue(r.toString(), ge(absR, ZERO));
-        }
-    }
-
-    private static void propertiesSignum() {
-        initialize();
-        System.out.println("\t\ttesting signum() properties...");
-
-        for (Rational r : take(LIMIT, P.rationals())) {
-            int signumR = r.signum();
-            assertEquals(r.toString(), signumR, Ordering.compare(r, ZERO).toInt());
-            assertTrue(r.toString(), signumR == -1 || signumR == 0 || signumR == 1);
-        }
     }
 
     private static @NotNull Rational add_simplest(@NotNull Rational a, @NotNull Rational b) {
@@ -1783,6 +1742,47 @@ public class RationalProperties {
             totalTime += (System.nanoTime() - time);
         }
         System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
+    }
+
+    private static void propertiesNegate() {
+        initialize();
+        System.out.println("\t\ttesting negate() properties...");
+
+        for (Rational r : take(LIMIT, P.rationals())) {
+            Rational negativeR = r.negate();
+            validate(negativeR);
+            assertEquals(r.toString(), r, negativeR.negate());
+            assertTrue(r.add(negativeR) == ZERO);
+        }
+
+        Iterable<Rational> rs = filter(r -> r != ZERO, P.rationals());
+        for (Rational r : take(LIMIT, rs)) {
+            Rational negativeR = r.negate();
+            assertNotEquals(r.toString(), r, negativeR);
+        }
+    }
+
+    private static void propertiesAbs() {
+        initialize();
+        System.out.println("\t\ttesting abs() properties...");
+
+        for (Rational r : take(LIMIT, P.rationals())) {
+            Rational absR = r.abs();
+            validate(absR);
+            assertEquals(r.toString(), absR, absR.abs());
+            assertTrue(r.toString(), ge(absR, ZERO));
+        }
+    }
+
+    private static void propertiesSignum() {
+        initialize();
+        System.out.println("\t\ttesting signum() properties...");
+
+        for (Rational r : take(LIMIT, P.rationals())) {
+            int signumR = r.signum();
+            assertEquals(r.toString(), signumR, Ordering.compare(r, ZERO).toInt());
+            assertTrue(r.toString(), signumR == -1 || signumR == 0 || signumR == 1);
+        }
     }
 
     private static void propertiesSubtract() {
