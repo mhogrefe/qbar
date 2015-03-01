@@ -205,15 +205,16 @@ public class IntervalDemos {
         }
     }
 
+    public static void demoAdd() {
+        initialize();
+        for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
+            System.out.println(p.a + " + " + p.b + " = " + p.a.add(p.b));
+        }
+    }
+
 //    public static void negateDemo() {
 //        for (Interval a : Interval.intervals().iterate(limit)) {
 //            System.out.println("-" + a + " = " + a.negate());
-//        }
-//    }
-//
-//    public static void addDemo() {
-//        for (Pair<Interval, Interval> p : new SamePairGenerator<>(Interval.intervals()).iterate(limit)) {
-//            System.out.println(p.fst + " + " + p.snd + " = " + Interval.add(p.fst, p.snd));
 //        }
 //    }
 //

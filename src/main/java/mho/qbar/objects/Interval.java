@@ -652,9 +652,9 @@ public final class Interval implements Comparable<Interval> {
      * @return {@code this}+{@code that}
      */
     public @NotNull Interval add(@NotNull Interval that) {
-        Rational sLower = lower == null || that.lower == null ? null : lower.add(that.lower);
-        Rational sUpper = upper == null || that.upper == null ? null : upper.add(that.upper);
-        return new Interval(sLower, sUpper);
+        Rational lowerSum = lower == null || that.lower == null ? null : lower.add(that.lower);
+        Rational upperSum = upper == null || that.upper == null ? null : upper.add(that.upper);
+        return new Interval(lowerSum, upperSum);
     }
 
     /**
