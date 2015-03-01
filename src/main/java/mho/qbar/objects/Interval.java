@@ -606,7 +606,7 @@ public final class Interval implements Comparable<Interval> {
      *
      * <ul>
      *  <li>{@code this} may be any {@code Interval}.</li>
-     *  <li>The result cannot be null, and neither can either of its elements be null.</li>
+     *  <li>The result cannot be null, and neither can either of its elements.</li>
      * </ul>
      *
      * @return the smallest {@code float} interval containing {@code this}.
@@ -624,7 +624,7 @@ public final class Interval implements Comparable<Interval> {
      *
      * <ul>
      *  <li>{@code this} may be any {@code Interval}.</li>
-     *  <li>The result cannot be null, and neither can either of its elements be null.</li>
+     *  <li>The result cannot be null, and neither can either of its elements.</li>
      * </ul>
      *
      * @return the smallest {@code double} interval containing {@code this}.

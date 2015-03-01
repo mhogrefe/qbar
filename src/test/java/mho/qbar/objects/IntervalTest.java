@@ -566,6 +566,32 @@ public class IntervalTest {
     }
 
     @Test
+    public void testFloatRange() {
+        aeq(ZERO.floatRange(), "(0.0, 0.0)");
+        aeq(ONE.floatRange(), "(1.0, 1.0)");
+        aeq(ALL.floatRange(), "(-Infinity, Infinity)");
+        aeq(read("[-2, 5/3]").get().floatRange(), "(-2.0, 1.6666667)");
+        aeq(read("[5/3, 4]").get().floatRange(), "(1.6666666, 4.0)");
+        aeq(read("[4, 4]").get().floatRange(), "(4.0, 4.0)");
+        aeq(read("[1/3, 1/3]").get().floatRange(), "(0.3333333, 0.33333334)");
+        aeq(read("(-Infinity, 3/2]").get().floatRange(), "(-Infinity, 1.5)");
+        aeq(read("[-6, Infinity)").get().floatRange(), "(-6.0, Infinity)");
+    }
+
+    @Test
+    public void testDoubleRange() {
+        aeq(ZERO.doubleRange(), "(0.0, 0.0)");
+        aeq(ONE.doubleRange(), "(1.0, 1.0)");
+        aeq(ALL.doubleRange(), "(-Infinity, Infinity)");
+        aeq(read("[-2, 5/3]").get().doubleRange(), "(-2.0, 1.6666666666666667)");
+        aeq(read("[5/3, 4]").get().doubleRange(), "(1.6666666666666665, 4.0)");
+        aeq(read("[4, 4]").get().doubleRange(), "(4.0, 4.0)");
+        aeq(read("[1/3, 1/3]").get().doubleRange(), "(0.3333333333333333, 0.33333333333333337)");
+        aeq(read("(-Infinity, 3/2]").get().doubleRange(), "(-Infinity, 1.5)");
+        aeq(read("[-6, Infinity)").get().doubleRange(), "(-6.0, Infinity)");
+    }
+
+    @Test
     public void testEquals() {
         //noinspection EqualsWithItself
         assertTrue(ZERO.equals(ZERO));
