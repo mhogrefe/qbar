@@ -84,8 +84,6 @@ public class RationalProperties {
             propertiesDoubleValue_RoundingMode();
             propertiesDoubleValue();
             propertiesDoubleValueExact();
-            propertiesInvert();
-            compareImplementationsInvert();
             propertiesAdd();
             propertiesNegate();
             propertiesAbs();
@@ -98,6 +96,8 @@ public class RationalProperties {
             compareImplementationsMultiply_BigInteger();
             propertiesMultiply_int();
             compareImplementationsMultiply_int();
+            propertiesInvert();
+            compareImplementationsInvert();
             propertiesDivide_Rational();
             compareImplementationsDivide_Rational();
             propertiesDivide_BigInteger();
@@ -1644,53 +1644,6 @@ public class RationalProperties {
         }
     }
 
-    private static @NotNull Rational invert_simplest(@NotNull Rational r) {
-        return of(r.getDenominator(), r.getNumerator());
-    }
-
-    private static void propertiesInvert() {
-        initialize();
-        System.out.println("\t\ttesting invert() properties...");
-
-        Iterable<Rational> rs = filter(r -> r != ZERO, P.rationals());
-        for (Rational r : take(LIMIT, rs)) {
-            Rational inverseR = r.invert();
-            validate(inverseR);
-            assertEquals(r.toString(), inverseR, invert_simplest(r));
-            assertEquals(r.toString(), r, inverseR.invert());
-            assertTrue(r.multiply(inverseR) == ONE);
-            assertTrue(inverseR != ZERO);
-        }
-
-        rs = filter(r -> r != ZERO && r.abs() != ONE, P.rationals());
-        for (Rational r : take(LIMIT, rs)) {
-            Rational inverseR = r.invert();
-            assertTrue(r.toString(), !r.equals(inverseR));
-        }
-    }
-
-    private static void compareImplementationsInvert() {
-        initialize();
-        System.out.println("\t\tcomparing invert() implementations...");
-
-        long totalTime = 0;
-        Iterable<Rational> rs = filter(r -> r != ZERO, P.rationals());
-        for (Rational r : take(LIMIT, rs)) {
-            long time = System.nanoTime();
-            invert_simplest(r);
-            totalTime += (System.nanoTime() - time);
-        }
-        System.out.println("\t\t\tsimplest: " + ((double) totalTime) / 1e9 + " s");
-
-        totalTime = 0;
-        for (Rational r : take(LIMIT, rs)) {
-            long time = System.nanoTime();
-            r.invert();
-            totalTime += (System.nanoTime() - time);
-        }
-        System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
-    }
-
     private static @NotNull Rational add_simplest(@NotNull Rational a, @NotNull Rational b) {
         return of(
                 a.getNumerator().multiply(b.getDenominator()).add(a.getDenominator().multiply(b.getNumerator())),
@@ -2013,6 +1966,53 @@ public class RationalProperties {
         for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
             long time = System.nanoTime();
             p.a.multiply(p.b);
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
+    }
+
+    private static @NotNull Rational invert_simplest(@NotNull Rational r) {
+        return of(r.getDenominator(), r.getNumerator());
+    }
+
+    private static void propertiesInvert() {
+        initialize();
+        System.out.println("\t\ttesting invert() properties...");
+
+        Iterable<Rational> rs = filter(r -> r != ZERO, P.rationals());
+        for (Rational r : take(LIMIT, rs)) {
+            Rational inverseR = r.invert();
+            validate(inverseR);
+            assertEquals(r.toString(), inverseR, invert_simplest(r));
+            assertEquals(r.toString(), r, inverseR.invert());
+            assertTrue(r.multiply(inverseR) == ONE);
+            assertTrue(inverseR != ZERO);
+        }
+
+        rs = filter(r -> r != ZERO && r.abs() != ONE, P.rationals());
+        for (Rational r : take(LIMIT, rs)) {
+            Rational inverseR = r.invert();
+            assertTrue(r.toString(), !r.equals(inverseR));
+        }
+    }
+
+    private static void compareImplementationsInvert() {
+        initialize();
+        System.out.println("\t\tcomparing invert() implementations...");
+
+        long totalTime = 0;
+        Iterable<Rational> rs = filter(r -> r != ZERO, P.rationals());
+        for (Rational r : take(LIMIT, rs)) {
+            long time = System.nanoTime();
+            invert_simplest(r);
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\t\t\tsimplest: " + ((double) totalTime) / 1e9 + " s");
+
+        totalTime = 0;
+        for (Rational r : take(LIMIT, rs)) {
+            long time = System.nanoTime();
+            r.invert();
             totalTime += (System.nanoTime() - time);
         }
         System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");

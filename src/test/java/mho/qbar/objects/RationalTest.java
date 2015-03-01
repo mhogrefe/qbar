@@ -2403,19 +2403,6 @@ public class RationalTest {
     }
 
     @Test
-    public void testInvert() {
-        aeq(read("2/3").get().invert(), "3/2");
-        aeq(read("-2/3").get().invert(), "-3/2");
-        aeq(read("4").get().invert(), "1/4");
-        aeq(read("1/4").get().invert(), "4");
-        assertTrue(ONE.invert() == ONE);
-        try {
-            ZERO.invert();
-            fail();
-        } catch (ArithmeticException ignored) {}
-    }
-
-    @Test
     public void testAdd() {
         aeq(read("1/2").get().add(read("1/3").get()), "5/6");
         aeq(read("1/2").get().add(read("-1/3").get()), "1/6");
@@ -2552,6 +2539,19 @@ public class RationalTest {
         assertTrue(read("1/3").get().multiply(3) == ONE);
         assertTrue(read("-1/3").get().multiply(-3) == ONE);
         aeq(read("2/3").get().multiply(1), "2/3");
+    }
+
+    @Test
+    public void testInvert() {
+        aeq(read("2/3").get().invert(), "3/2");
+        aeq(read("-2/3").get().invert(), "-3/2");
+        aeq(read("4").get().invert(), "1/4");
+        aeq(read("1/4").get().invert(), "4");
+        assertTrue(ONE.invert() == ONE);
+        try {
+            ZERO.invert();
+            fail();
+        } catch (ArithmeticException ignored) {}
     }
 
     @Test

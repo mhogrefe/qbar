@@ -348,13 +348,6 @@ public class RationalDemos {
         }
     }
 
-    public static void demoInvert() {
-        initialize();
-        for (Rational r : take(LIMIT, filter(s -> s != ZERO, P.rationals()))) {
-            System.out.println("1/(" + r + ") = " + r.invert());
-        }
-    }
-
     public static void demoAdd() {
         initialize();
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
@@ -408,6 +401,13 @@ public class RationalDemos {
         initialize();
         for (Pair<Rational, Integer> p : take(LIMIT, P.pairs(P.rationals(), P.integers()))) {
             System.out.println(p.a + " * " + p.b + " = " + p.a.multiply(p.b));
+        }
+    }
+
+    public static void demoInvert() {
+        initialize();
+        for (Rational r : take(LIMIT, filter(s -> s != ZERO, P.rationals()))) {
+            System.out.println("1/(" + r + ") = " + r.invert());
         }
     }
 

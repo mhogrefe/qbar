@@ -1099,27 +1099,6 @@ public final class Rational implements Comparable<Rational> {
     }
 
     /**
-     * Returns the multiplicative inverse of {@code this}.
-     *
-     * <ul>
-     *  <li>{@code this} may be any non-zero {@code Rational}.</li>
-     *  <li>The result is a non-zero {@code Rational}.</li>
-     * </ul>
-     *
-     * @return 1/{@code this}
-     */
-    public @NotNull Rational invert() {
-        if (this == ZERO)
-            throw new ArithmeticException("division by zero");
-        if (this == ONE) return ONE;
-        if (numerator.signum() == -1) {
-            return new Rational(denominator.negate(), numerator.negate());
-        } else {
-            return new Rational(denominator, numerator);
-        }
-    }
-
-    /**
      * Returns the sum of {@code this} and {@code that}.
      *
      * <ul>
@@ -1275,6 +1254,27 @@ public final class Rational implements Comparable<Rational> {
             return ONE;
         BigInteger g = denominator.gcd(BigInteger.valueOf(that));
         return new Rational(numerator.multiply(BigInteger.valueOf(that).divide(g)), denominator.divide(g));
+    }
+
+    /**
+     * Returns the multiplicative inverse of {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any non-zero {@code Rational}.</li>
+     *  <li>The result is a non-zero {@code Rational}.</li>
+     * </ul>
+     *
+     * @return 1/{@code this}
+     */
+    public @NotNull Rational invert() {
+        if (this == ZERO)
+            throw new ArithmeticException("division by zero");
+        if (this == ONE) return ONE;
+        if (numerator.signum() == -1) {
+            return new Rational(denominator.negate(), numerator.negate());
+        } else {
+            return new Rational(denominator, numerator);
+        }
     }
 
     /**
