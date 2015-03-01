@@ -70,6 +70,8 @@ public class IntervalProperties {
             propertiesRoundingPreimage_float();
             propertiesRoundingPreimage_double();
             propertiesRoundingPreimage_BigDecimal();
+            propertiesFloatRange();
+            propertiesDoubleRange();
             propertiesEquals();
             propertiesHashCode();
             propertiesCompareTo();
@@ -773,6 +775,114 @@ public class IntervalProperties {
                 Rational succDistance = succ.subtract(r).abs();
                 assertTrue(bd.toString(), gt(centralDistance, predDistance) || gt(centralDistance, succDistance));
             }
+        }
+    }
+
+    private static void propertiesFloatRange() {
+        initialize();
+        System.out.println("\t\ttesting floatRange() properties...");
+
+        for (Interval a : take(LIMIT, P.intervals())) {
+            Pair<Float, Float> range = a.floatRange();
+            assertTrue(a.toString(), range.a != null);
+            assertTrue(a.toString(), range.b != null);
+            assertFalse(a.toString(), range.a.isNaN());
+            assertFalse(a.toString(), range.b.isNaN());
+            assertTrue(a.toString(), range.b >= range.a);
+            assertFalse(a.toString(), range.a > 0 && range.a.isInfinite());
+            assertFalse(a.toString(), range.a.equals(-0.0f));
+            assertFalse(a.toString(), range.b < 0 && range.b.isInfinite());
+            assertFalse(a.toString(), range.b.equals(-0.0f) && range.a.equals(0.0f));
+
+            Pair<Float, Float> negRange = a.negate().floatRange();
+            negRange = new Pair<>(-negRange.b, -negRange.a);
+            float x = range.a.equals(-0.0f) ? 0.0f : range.a;
+            float y = range.b.equals(-0.0f) ? 0.0f : range.b;
+            float xn = negRange.a.equals(-0.0f) ? 0.0f : negRange.a;
+            float yn = negRange.b.equals(-0.0f) ? 0.0f : negRange.b;
+            aeq(a.toString(), x, xn);
+            //noinspection SuspiciousNameCombination
+            aeq(a.toString(), y, yn);
+
+            Interval b;
+            if (range.a.isInfinite() && range.b.isInfinite()) {
+                b = ALL;
+            } else if (range.a.isInfinite()) {
+                b = lessThanOrEqualTo(Rational.ofExact(range.b));
+            } else if (range.b.isInfinite()) {
+                b = greaterThanOrEqualTo(Rational.ofExact(range.a));
+            } else {
+                b = of(Rational.ofExact(range.a), Rational.ofExact(range.b));
+            }
+            assertTrue(a.toString(), b.contains(a));
+        }
+
+        for (Interval a : take(LIMIT, P.finitelyBoundedIntervals())) {
+            Pair<Float, Float> range = a.floatRange();
+            assertNotEquals(
+                    a.toString(),
+                    compare(a.getLower().get(), Rational.ofExact(FloatingPointUtils.successor(range.a))),
+                    GT
+            );
+            assertNotEquals(
+                    a.toString(),
+                    compare(a.getUpper().get(), Rational.ofExact(FloatingPointUtils.predecessor(range.b))),
+                    LT
+            );
+        }
+    }
+
+    private static void propertiesDoubleRange() {
+        initialize();
+        System.out.println("\t\ttesting doubleRange() properties...");
+
+        for (Interval a : take(LIMIT, P.intervals())) {
+            Pair<Double, Double> range = a.doubleRange();
+            assertTrue(a.toString(), range.a != null);
+            assertTrue(a.toString(), range.b != null);
+            assertFalse(a.toString(), range.a.isNaN());
+            assertFalse(a.toString(), range.b.isNaN());
+            assertTrue(a.toString(), range.b >= range.a);
+            assertFalse(a.toString(), range.a > 0 && range.a.isInfinite());
+            assertFalse(a.toString(), range.a.equals(-0.0));
+            assertFalse(a.toString(), range.b < 0 && range.b.isInfinite());
+            assertFalse(a.toString(), range.b.equals(-0.0) && range.a.equals(0.0));
+
+            Pair<Double, Double> negRange = a.negate().doubleRange();
+            negRange = new Pair<>(-negRange.b, -negRange.a);
+            double x = range.a.equals(-0.0) ? 0.0 : range.a;
+            double y = range.b.equals(-0.0) ? 0.0 : range.b;
+            double xn = negRange.a.equals(-0.0) ? 0.0 : negRange.a;
+            double yn = negRange.b.equals(-0.0) ? 0.0 : negRange.b;
+            aeq(a.toString(), x, xn);
+            //noinspection SuspiciousNameCombination
+            aeq(a.toString(), y, yn);
+
+            Interval b;
+            if (range.a.isInfinite() && range.b.isInfinite()) {
+                b = ALL;
+            } else if (range.a.isInfinite()) {
+                b = lessThanOrEqualTo(Rational.ofExact(range.b));
+            } else if (range.b.isInfinite()) {
+                b = greaterThanOrEqualTo(Rational.ofExact(range.a));
+            } else {
+                b = of(Rational.ofExact(range.a), Rational.ofExact(range.b));
+            }
+            assertTrue(a.toString(), b.contains(a));
+        }
+
+        for (Interval a : take(LIMIT, P.finitelyBoundedIntervals())) {
+            Pair<Float, Float> range = a.floatRange();
+            assertNotEquals(
+                    a.toString(),
+                    compare(a.getLower().get(), Rational.ofExact(FloatingPointUtils.successor(range.a))),
+                    GT
+            );
+            assertNotEquals(
+                    a.toString(),
+                    compare(a.getUpper().get(), Rational.ofExact(FloatingPointUtils.predecessor(range.b))),
+                    LT
+            );
         }
     }
 
