@@ -606,7 +606,9 @@ public final class Interval implements Comparable<Interval> {
      *
      * <ul>
      *  <li>{@code this} may be any {@code Interval}.</li>
-     *  <li>The result cannot be null, and neither can either of its elements.</li>
+     *  <li>Neither of the result's elements are null or {@code NaN}. The second element is greater than or equal to
+     *  the first. The first element cannot be {@code Infinity} or negative zero. The second element cannot be
+     *  {@code -Infinity}. If the second element is negative zero, the first element cannot be positive zero.</li>
      * </ul>
      *
      * @return the smallest {@code float} interval containing {@code this}.
@@ -624,7 +626,9 @@ public final class Interval implements Comparable<Interval> {
      *
      * <ul>
      *  <li>{@code this} may be any {@code Interval}.</li>
-     *  <li>The result cannot be null, and neither can either of its elements.</li>
+     *  <li>Neither of the result's elements are null or {@code NaN}. The second element is greater than or equal to
+     *  the first. The first element cannot be {@code Infinity} or negative zero. The second element cannot be
+     *  {@code -Infinity}. If the second element is negative zero, the first element cannot be positive zero.</li>
      * </ul>
      *
      * @return the smallest {@code double} interval containing {@code this}.
