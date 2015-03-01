@@ -6,6 +6,7 @@ import mho.qbar.iterableProviders.QBarRandomProvider;
 import mho.wheels.iterables.ExhaustiveProvider;
 import mho.wheels.iterables.RandomProvider;
 import mho.wheels.math.Combinatorics;
+import mho.wheels.misc.BigDecimalUtils;
 import mho.wheels.misc.FloatingPointUtils;
 import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
@@ -68,6 +69,7 @@ public class IntervalProperties {
             propertiesBisect();
             propertiesRoundingPreimage_float();
             propertiesRoundingPreimage_double();
+            propertiesRoundingPreimage_BigDecimal();
             propertiesEquals();
             propertiesHashCode();
             propertiesCompareTo();
@@ -743,6 +745,33 @@ public class IntervalProperties {
             }
             for (Rational r : take(TINY_LIMIT, filter(s -> !s.equals(x) && !s.equals(y), P.rationalsNotIn(a)))) {
                 aneq(Double.toString(d), r.doubleValue(), d);
+            }
+        }
+    }
+
+    private static void propertiesRoundingPreimage_BigDecimal() {
+        initialize();
+        System.out.println("\t\ttesting roundingPreimage(BigDecimal) properties...");
+
+        for (BigDecimal bd : take(LIMIT, P.bigDecimals())) {
+            Interval a = roundingPreimage(bd);
+            validate(a);
+            assertEquals(bd.toString(), roundingPreimage(bd.negate()), a.negate());
+            Rational central = Rational.of(bd);
+            Rational pred = Rational.of(BigDecimalUtils.predecessor(bd));
+            Rational succ = Rational.of(BigDecimalUtils.successor(bd));
+            for (Rational r : take(TINY_LIMIT, P.rationals(a))) {
+                Rational centralDistance = central.subtract(r).abs();
+                Rational predDistance = pred.subtract(r).abs();
+                Rational succDistance = succ.subtract(r).abs();
+                assertTrue(bd.toString(), le(centralDistance, predDistance));
+                assertTrue(bd.toString(), le(centralDistance, succDistance));
+            }
+            for (Rational r : take(TINY_LIMIT, P.rationalsNotIn(a))) {
+                Rational centralDistance = central.subtract(r).abs();
+                Rational predDistance = pred.subtract(r).abs();
+                Rational succDistance = succ.subtract(r).abs();
+                assertTrue(bd.toString(), gt(centralDistance, predDistance) || gt(centralDistance, succDistance));
             }
         }
     }
