@@ -660,6 +660,43 @@ public class IntervalTest {
     }
 
     @Test
+    public void testNegate() {
+        aeq(ZERO.negate(), "[0, 0]");
+        aeq(ONE.negate(), "[-1, -1]");
+        aeq(ALL.negate(), "(-Infinity, Infinity)");
+        aeq(read("[-2, 5/3]").get().negate(), "[-5/3, 2]");
+        aeq(read("[4, 4]").get().negate(), "[-4, -4]");
+        aeq(read("(-Infinity, 3/2]").get().negate(), "[-3/2, Infinity)");
+        aeq(read("[-6, Infinity)").get().negate(), "(-Infinity, 6]");
+    }
+
+    @Test
+    public void testAbs() {
+        aeq(ZERO.abs(), "[0, 0]");
+        aeq(ONE.abs(), "[1, 1]");
+        aeq(ALL.abs(), "[0, Infinity)");
+        aeq(read("[-2, 5/3]").get().abs(), "[0, 2]");
+        aeq(read("[4, 4]").get().abs(), "[4, 4]");
+        aeq(read("(-Infinity, 3/2]").get().abs(), "[0, Infinity)");
+        aeq(read("(-Infinity, -3/2]").get().abs(), "[3/2, Infinity)");
+        aeq(read("[-6, Infinity)").get().abs(), "[0, Infinity)");
+        aeq(read("[6, Infinity)").get().abs(), "[6, Infinity)");
+    }
+
+    @Test
+    public void testSignum() {
+        aeq(ZERO.signum(), "Optional[0]");
+        aeq(ONE.signum(), "Optional[1]");
+        aeq(ALL.signum(), "Optional.empty");
+        aeq(read("[-2, 5/3]").get().signum(), "Optional.empty");
+        aeq(read("[4, 4]").get().signum(), "Optional[1]");
+        aeq(read("(-Infinity, 3/2]").get().signum(), "Optional.empty");
+        aeq(read("(-Infinity, -3/2]").get().signum(), "Optional[-1]");
+        aeq(read("[-6, Infinity)").get().signum(), "Optional.empty");
+        aeq(read("[6, Infinity)").get().signum(), "Optional[1]");
+    }
+
+    @Test
     public void testEquals() {
         //noinspection EqualsWithItself
         assertTrue(ZERO.equals(ZERO));

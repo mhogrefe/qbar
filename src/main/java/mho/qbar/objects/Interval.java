@@ -685,7 +685,7 @@ public final class Interval implements Comparable<Interval> {
      * @return |{@code this}|
      */
     public @NotNull Interval abs() {
-        if (lower == null && upper == null) return this;
+        if (lower == null && upper == null) return greaterThanOrEqualTo(Rational.ZERO);
         if (lower == null) {
             return greaterThanOrEqualTo(upper.signum() == -1 ? upper.negate() : Rational.ZERO);
         }
@@ -700,6 +700,11 @@ public final class Interval implements Comparable<Interval> {
     /**
      * If every real in {@code this} has the same signum, returns that signum; otherwise, returns an empty
      * {@code Optional}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Interval}.</li>
+     *  <li>The result is either empty, or contains -1, 0, or 1.</li>
+     * </ul>
      *
      * @return sgn(x) for all x∈{@code this}, if sgn(x) is unique
      */
