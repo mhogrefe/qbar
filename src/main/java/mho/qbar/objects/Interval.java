@@ -751,7 +751,7 @@ public final class Interval implements Comparable<Interval> {
         int xus = upper == null ? 2 : upper.signum();
         int yls = that.lower == null ? 2 : that.lower.signum();
         int yus = that.upper == null ? 2 : that.upper.signum();
-        boolean containsNegInf = (xls == 2 && yls == 2)
+        boolean containsNegInf = (xls == 2 && yus == 2) || (yls == 2 && xus == 2)
                 || (xls == 2 && yus == 1) || (yls == 2 && xus == 1)
                 || (xus == 2 && yls == -1) || (yus == 2 && xls == -1);
         boolean containsInf = (xus == 2 && yus == 2)
@@ -849,6 +849,7 @@ public final class Interval implements Comparable<Interval> {
      * @return compare(x, y) for all x∈{@code this} and y∈{@code that}, if compare(x, y) is unique
      */
     public @NotNull Optional<Ordering> elementCompare(@NotNull Interval that) {
+        if (lower != null && lower.equals(upper) && equals(that)) return Optional.of(EQ);
         if (!disjoint(that)) return Optional.empty();
         Rational thisSample = lower == null ? upper : lower;
         Rational thatSample = that.lower == null ? that.upper : that.lower;
