@@ -698,7 +698,7 @@ public final class Interval implements Comparable<Interval> {
     }
 
     /**
-     * If every real in {@code this} has the same signum, returns that signum; otherwise, returns an empty
+     * If every real in {@code this} has the same sign, returns that sign; otherwise, returns an empty
      * {@code Optional}.
      *
      * <ul>
@@ -723,7 +723,7 @@ public final class Interval implements Comparable<Interval> {
      *  <li>The result is not null.</li>
      * </ul>
      *
-     * @param that the second {@code Interval} subtracted from {@code this}
+     * @param that the {@code Interval} subtracted from {@code this}
      * @return {@code this}–{@code that}
      */
     public @NotNull Interval subtract(@NotNull Interval that) {
@@ -833,6 +833,28 @@ public final class Interval implements Comparable<Interval> {
         } else {
             return new Interval(lower == null ? null : lower.pow(p), upper == null ? null : upper.pow(p));
         }
+    }
+
+    /**
+     * If {@code this} and {@code that} are disjoint, returns the ordering between any element of {@code this} and any
+     * element of {@code that}; otherwise, returns an empty {@code Optional}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Interval}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>The result may be any {@code Optional<Ordering>}</li>
+     * </ul>
+     *
+     * @param that the interval whose elements we're comparing {@code this}'s elements to
+     * @return compare(x, y) for all x∈{@code this} and y∈{@code that}, if compare(x, y) is unique
+     */
+    public @NotNull Optional<Ordering> elementCompare(@NotNull Interval that) {
+        if (!disjoint(that)) return Optional.empty();
+        Rational thisSample = lower == null ? upper : lower;
+        Rational thatSample = that.lower == null ? that.upper : that.lower;
+        assert thisSample != null;
+        assert thatSample != null;
+        return Optional.of(compare(thisSample, thatSample));
     }
 
     /**
