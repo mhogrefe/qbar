@@ -233,17 +233,26 @@ public class IntervalDemos {
         }
     }
 
-//    public static void subtractDemo() {
-//        for (Pair<Interval, Interval> p : new SamePairGenerator<>(Interval.intervals()).iterate(limit)) {
-//            System.out.println(p.fst + " - " + p.snd + " = " + Interval.subtract(p.fst, p.snd));
-//        }
-//    }
-//
-//    public static void multiplyDemo() {
-//        for (Pair<Interval, Interval> p : new SamePairGenerator<>(Interval.intervals()).iterate(limit)) {
-//            System.out.println(p.fst + " * " + p.snd + " = " + Interval.multiply(p.fst, p.snd));
-//        }
-//    }
+    public static void demoSubtract() {
+        initialize();
+        for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
+            System.out.println(p.a + " - " + p.b + " = " + p.a.subtract(p.b));
+        }
+    }
+
+    public static void demoMultiply_Interval() {
+        initialize();
+        for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
+            System.out.println(p.a + " * " + p.b + " = " + p.a.multiply(p.b));
+        }
+    }
+
+    public static void demoElementCompare() {
+        initialize();
+        for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
+            System.out.println("elementCompare(" + p.a + ", " + p.b + ") = " + p.a.elementCompare(p.b));
+        }
+    }
 
     public static void demoEquals_Interval() {
         initialize();
