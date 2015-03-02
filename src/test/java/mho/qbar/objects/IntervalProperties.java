@@ -8,6 +8,7 @@ import mho.wheels.iterables.RandomProvider;
 import mho.wheels.math.Combinatorics;
 import mho.wheels.misc.BigDecimalUtils;
 import mho.wheels.misc.FloatingPointUtils;
+import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
 import org.jetbrains.annotations.NotNull;
@@ -73,6 +74,9 @@ public class IntervalProperties {
             propertiesFloatRange();
             propertiesDoubleRange();
             propertiesAdd();
+            propertiesNegate();
+            propertiesAbs();
+            propertiesSignum();
             propertiesEquals();
             propertiesHashCode();
             propertiesCompareTo();
@@ -918,6 +922,57 @@ public class IntervalProperties {
             Interval sum1 = t.a.add(t.b).add(t.c);
             Interval sum2 = t.a.add(t.b.add(t.c));
             assertEquals(t.toString(), sum1, sum2);
+        }
+    }
+
+    private static void propertiesNegate() {
+        initialize();
+        System.out.println("\t\ttesting negate() properties...");
+
+        for (Interval a : take(LIMIT, P.intervals())) {
+            Interval negativeA = a.negate();
+            validate(negativeA);
+            assertEquals(a.toString(), a, negativeA.negate());
+            assertTrue(a.add(negativeA).contains(ZERO));
+            for (Rational r : take(TINY_LIMIT, P.rationals(a))) {
+                assertTrue(a.toString(), negativeA.contains(r.negate()));
+            }
+        }
+    }
+
+    private static void propertiesAbs() {
+        initialize();
+        System.out.println("\t\ttesting abs() properties...");
+
+        for (Interval a : take(LIMIT, P.intervals())) {
+            Interval absA = a.abs();
+            validate(absA);
+            assertEquals(a.toString(), absA, absA.abs());
+            Optional<Interval> negativeIntersection = absA.intersection(lessThanOrEqualTo(Rational.ZERO));
+            assertTrue(a.toString(), !negativeIntersection.isPresent() || negativeIntersection.get().equals(ZERO));
+            for (Rational r : take(TINY_LIMIT, P.rationals(a))) {
+                assertTrue(a.toString(), absA.contains(r.abs()));
+            }
+        }
+    }
+
+    private static void propertiesSignum() {
+        initialize();
+        System.out.println("\t\ttesting signum() properties...");
+
+        for (Interval a : take(LIMIT, P.intervals())) {
+            Optional<Integer> signumA = a.signum();
+            //assertEquals(a.toString(), signumR, Ordering.compare(a, ZERO).toInt());
+            if (signumA.isPresent()) {
+                Integer s = signumA.get();
+                assertTrue(a.toString(), s == -1 || s == 0 || s == 1);
+                for (Rational r : take(TINY_LIMIT, P.rationals(a))) {
+                    assertTrue(a.toString(), r.signum() == s);
+                }
+            } else {
+                assertTrue(a.toString(), !a.equals(ZERO));
+                assertTrue(a.toString(), a.contains(ZERO));
+            }
         }
     }
 
