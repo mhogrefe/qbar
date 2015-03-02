@@ -72,6 +72,7 @@ public class IntervalProperties {
             propertiesRoundingPreimage_BigDecimal();
             propertiesFloatRange();
             propertiesDoubleRange();
+            propertiesAdd();
             propertiesEquals();
             propertiesHashCode();
             propertiesCompareTo();
@@ -883,6 +884,40 @@ public class IntervalProperties {
                     compare(a.getUpper().get(), Rational.ofExact(FloatingPointUtils.predecessor(range.b))),
                     LT
             );
+        }
+    }
+
+    private static void propertiesAdd() {
+        initialize();
+        System.out.println("\t\ttesting add(Interval) properties...");
+
+        for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
+            Interval sum = p.a.add(p.b);
+            validate(sum);
+            assertEquals(p.toString(), sum, p.b.add(p.a));
+            assertTrue(p.toString(), sum.subtract(p.b).contains(p.a));
+            if (sum.diameter().isPresent()) {
+                Rational diameter = sum.diameter().get();
+                assertTrue(p.toString(), ge(diameter, p.a.diameter().get()));
+                assertTrue(p.toString(), ge(diameter, p.b.diameter().get()));
+            }
+            for (Pair<Rational, Rational> q : take(TINY_LIMIT, P.pairs(P.rationals(p.a), P.rationals(p.b)))) {
+                assertTrue(p.toString(), sum.contains(q.a.add(q.b)));
+            }
+        }
+
+        for (Interval a : take(LIMIT, P.intervals())) {
+            assertEquals(a.toString(), ZERO.add(a), a);
+            assertEquals(a.toString(), a.add(ZERO), a);
+            assertTrue(a.toString(), a.subtract(a).contains(ZERO));
+            assertEquals(a.toString(), ALL.add(a), ALL);
+            assertEquals(a.toString(), a.add(ALL), ALL);
+        }
+
+        for (Triple<Interval, Interval, Interval> t : take(LIMIT, P.triples(P.intervals()))) {
+            Interval sum1 = t.a.add(t.b).add(t.c);
+            Interval sum2 = t.a.add(t.b.add(t.c));
+            assertEquals(t.toString(), sum1, sum2);
         }
     }
 
