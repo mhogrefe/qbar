@@ -212,12 +212,27 @@ public class IntervalDemos {
         }
     }
 
-//    public static void negateDemo() {
-//        for (Interval a : Interval.intervals().iterate(limit)) {
-//            System.out.println("-" + a + " = " + a.negate());
-//        }
-//    }
-//
+    public static void demoNegate() {
+        initialize();
+        for (Interval a : take(LIMIT, P.intervals())) {
+            System.out.println("-" + a + " = " + a.negate());
+        }
+    }
+
+    public static void demoAbs() {
+        initialize();
+        for (Interval a : take(LIMIT, P.intervals())) {
+            System.out.println("|" + a + "| = " + a.abs());
+        }
+    }
+
+    public static void demoSignum() {
+        initialize();
+        for (Interval a : take(LIMIT, P.intervals())) {
+            System.out.println("sgn(" + a + ") = " + a.signum());
+        }
+    }
+
 //    public static void subtractDemo() {
 //        for (Pair<Interval, Interval> p : new SamePairGenerator<>(Interval.intervals()).iterate(limit)) {
 //            System.out.println(p.fst + " - " + p.snd + " = " + Interval.subtract(p.fst, p.snd));
