@@ -824,15 +824,10 @@ public class IntervalProperties {
 
         for (Interval a : take(LIMIT, P.finitelyBoundedIntervals())) {
             Pair<Float, Float> range = a.floatRange();
-            assertNotEquals(
+            assertTrue(a.toString(), le(a.getLower().get(), Rational.ofExact(FloatingPointUtils.successor(range.a))));
+            assertTrue(
                     a.toString(),
-                    compare(a.getLower().get(), Rational.ofExact(FloatingPointUtils.successor(range.a))),
-                    GT
-            );
-            assertNotEquals(
-                    a.toString(),
-                    compare(a.getUpper().get(), Rational.ofExact(FloatingPointUtils.predecessor(range.b))),
-                    LT
+                    ge(a.getUpper().get(), Rational.ofExact(FloatingPointUtils.predecessor(range.b)))
             );
         }
     }
@@ -878,15 +873,10 @@ public class IntervalProperties {
 
         for (Interval a : take(LIMIT, P.finitelyBoundedIntervals())) {
             Pair<Float, Float> range = a.floatRange();
-            assertNotEquals(
+            assertTrue(a.toString(), le(a.getLower().get(), Rational.ofExact(FloatingPointUtils.successor(range.a))));
+            assertTrue(
                     a.toString(),
-                    compare(a.getLower().get(), Rational.ofExact(FloatingPointUtils.successor(range.a))),
-                    GT
-            );
-            assertNotEquals(
-                    a.toString(),
-                    compare(a.getUpper().get(), Rational.ofExact(FloatingPointUtils.predecessor(range.b))),
-                    LT
+                    ge(a.getUpper().get(), Rational.ofExact(FloatingPointUtils.predecessor(range.b)))
             );
         }
     }
@@ -900,14 +890,16 @@ public class IntervalProperties {
             validate(sum);
             assertEquals(p.toString(), sum, p.b.add(p.a));
             assertTrue(p.toString(), sum.subtract(p.b).contains(p.a));
-            if (sum.diameter().isPresent()) {
-                Rational diameter = sum.diameter().get();
-                assertTrue(p.toString(), ge(diameter, p.a.diameter().get()));
-                assertTrue(p.toString(), ge(diameter, p.b.diameter().get()));
-            }
             for (Pair<Rational, Rational> q : take(TINY_LIMIT, P.pairs(P.rationals(p.a), P.rationals(p.b)))) {
                 assertTrue(p.toString(), sum.contains(q.a.add(q.b)));
             }
+        }
+
+        for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.finitelyBoundedIntervals()))) {
+            Interval sum = p.a.add(p.b);
+            Rational diameter = sum.diameter().get();
+            assertTrue(p.toString(), ge(diameter, p.a.diameter().get()));
+            assertTrue(p.toString(), ge(diameter, p.b.diameter().get()));
         }
 
         for (Interval a : take(LIMIT, P.intervals())) {
@@ -923,6 +915,10 @@ public class IntervalProperties {
             Interval sum2 = t.a.add(t.b.add(t.c));
             assertEquals(t.toString(), sum1, sum2);
         }
+
+        for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
+            assertEquals(p.toString(), of(p.a).add(of(p.b)), of(p.a.add(p.b)));
+        }
     }
 
     private static void propertiesNegate() {
@@ -934,9 +930,14 @@ public class IntervalProperties {
             validate(negativeA);
             assertEquals(a.toString(), a, negativeA.negate());
             assertTrue(a.add(negativeA).contains(ZERO));
+            assertEquals(a.toString(), a.diameter(), negativeA.diameter());
             for (Rational r : take(TINY_LIMIT, P.rationals(a))) {
                 assertTrue(a.toString(), negativeA.contains(r.negate()));
             }
+        }
+
+        for (Rational r : take(LIMIT, P.rationals())) {
+            assertEquals(r.toString(), of(r).negate(), of(r.negate()));
         }
     }
 
@@ -954,6 +955,16 @@ public class IntervalProperties {
                 assertTrue(a.toString(), absA.contains(r.abs()));
             }
         }
+
+        for (Interval a : take(LIMIT, P.finitelyBoundedIntervals())) {
+            Rational diameter = a.diameter().get();
+            Rational absDiameter = a.abs().diameter().get();
+            assertTrue(a.toString(), le(absDiameter, diameter));
+        }
+
+        for (Rational r : take(LIMIT, P.rationals())) {
+            assertEquals(r.toString(), of(r).abs(), of(r.abs()));
+        }
     }
 
     private static void propertiesSignum() {
@@ -962,7 +973,7 @@ public class IntervalProperties {
 
         for (Interval a : take(LIMIT, P.intervals())) {
             Optional<Integer> signumA = a.signum();
-            //assertEquals(a.toString(), signumR, Ordering.compare(a, ZERO).toInt());
+            assertEquals(a.toString(), signumA, a.elementCompare(ZERO).map(Ordering::toInt));
             if (signumA.isPresent()) {
                 Integer s = signumA.get();
                 assertTrue(a.toString(), s == -1 || s == 0 || s == 1);
