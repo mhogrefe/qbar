@@ -9,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.util.*;
 
@@ -741,7 +742,7 @@ public final class Interval implements Comparable<Interval> {
      *  <li>The result is not null.</li>
      * </ul>
      *
-     * @param that the second {@code Interval} that {@code this} is multiplied by
+     * @param that the {@code Interval} that {@code this} is multiplied by
      * @return {@code this}×{@code that}
      */
     public @NotNull Interval multiply(@NotNull Interval that) {
@@ -773,6 +774,84 @@ public final class Interval implements Comparable<Interval> {
         if (minIsNegInf) return new Interval(null, maximum(extremes));
         if (maxIsPosInf) return new Interval(minimum(extremes), null);
         return new Interval(minimum(extremes), maximum(extremes));
+    }
+
+    /**
+     * Returns the smallest interval a such that if x∈{@code this}, x×{@code that}∈a.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Interval}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param that the {@code Rational} that {@code this} is multiplied by
+     * @return {@code this}×{@code that}
+     */
+    public @NotNull Interval multiply(@NotNull Rational that) {
+        if (that.signum() == -1) {
+            return new Interval(
+                    upper == null ? null : upper.multiply(that),
+                    lower == null ? null : lower.multiply(that)
+            );
+        } else {
+            return new Interval(
+                    lower == null ? null : lower.multiply(that),
+                    upper == null ? null : upper.multiply(that)
+            );
+        }
+    }
+
+    /**
+     * Returns the smallest interval a such that if x∈{@code this}, x×{@code that}∈a.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Interval}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param that the {@code BigInteger} that {@code this} is multiplied by
+     * @return {@code this}×{@code that}
+     */
+    public @NotNull Interval multiply(@NotNull BigInteger that) {
+        if (that.signum() == -1) {
+            return new Interval(
+                    upper == null ? null : upper.multiply(that),
+                    lower == null ? null : lower.multiply(that)
+            );
+        } else {
+            return new Interval(
+                    lower == null ? null : lower.multiply(that),
+                    upper == null ? null : upper.multiply(that)
+            );
+        }
+    }
+
+    /**
+     * Returns the smallest interval a such that if x∈{@code this}, x×{@code that}∈a.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Interval}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param that the {@code int} that {@code this} is multiplied by
+     * @return {@code this}×{@code that}
+     */
+    public @NotNull Interval multiply(int that) {
+        if (that < 0) {
+            return new Interval(
+                    upper == null ? null : upper.multiply(that),
+                    lower == null ? null : lower.multiply(that)
+            );
+        } else {
+            return new Interval(
+                    lower == null ? null : lower.multiply(that),
+                    upper == null ? null : upper.multiply(that)
+            );
+        }
     }
 
     public @NotNull Interval invert() {

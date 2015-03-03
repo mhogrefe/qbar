@@ -38,10 +38,10 @@ public class RationalProperties {
     private static void initialize() {
         if (USE_RANDOM) {
             P = new QBarRandomProvider(new Random(0x6af477d9a7e54fcaL));
-            LIMIT = 1000;
+            LIMIT = 10000;
         } else {
             P = QBarExhaustiveProvider.INSTANCE;
-            LIMIT = 10000;
+            LIMIT = 100000;
         }
     }
 
