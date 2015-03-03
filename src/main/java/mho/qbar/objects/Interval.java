@@ -731,7 +731,9 @@ public final class Interval implements Comparable<Interval> {
     }
 
     /**
-     * Returns the smallest interval z such that if a∈{@code this} and b∈{@code that}, a×b∈z.
+     * Returns the smallest interval z such that if a∈{@code this} and b∈{@code that}, a×b∈z. Interval addition does
+     * not distribute over interval multiplication: for example, ([0, 1] + (–∞, -1]) × [0, 1] = (–∞, 0], but
+     * [0, 1] × [0, 1] + (–∞, -1] × [0, 1] = (–∞, 1].
      *
      * <ul>
      *  <li>{@code this} may be any {@code Interval}.</li>
@@ -743,42 +745,34 @@ public final class Interval implements Comparable<Interval> {
      * @return {@code this}×{@code that}
      */
     public @NotNull Interval multiply(@NotNull Interval that) {
-        if ((lower == Rational.ZERO && upper == Rational.ZERO)
-                || ((that.lower == Rational.ZERO) && that.upper == Rational.ZERO)) {
-            return ZERO;
+        boolean thisHasPositive = upper == null || upper.signum() == 1;
+        boolean thatHasPositive = that.upper == null || that.upper.signum() == 1;
+        boolean thisHasNegative = lower == null || lower.signum() == -1;
+        boolean thatHasNegative = that.lower == null || that.lower.signum() == -1;
+        boolean minIsNegInf =
+                lower == null && thatHasPositive ||
+                upper == null && thatHasNegative ||
+                that.lower == null && thisHasPositive ||
+                that.upper == null && thisHasNegative;
+        boolean maxIsPosInf =
+                upper == null && thatHasPositive ||
+                lower == null && thatHasNegative ||
+                that.upper == null && thisHasPositive ||
+                that.lower == null && thisHasNegative;
+        if (minIsNegInf && maxIsPosInf) return ALL;
+        List<Rational> extremes = new ArrayList<>();
+        if (lower != null) {
+            if (that.lower != null) extremes.add(lower.multiply(that.lower));
+            if (that.upper != null) extremes.add(lower.multiply(that.upper));
         }
-        int xls = lower == null ? 2 : lower.signum();
-        int xus = upper == null ? 2 : upper.signum();
-        int yls = that.lower == null ? 2 : that.lower.signum();
-        int yus = that.upper == null ? 2 : that.upper.signum();
-        boolean containsNegInf = (xls == 2 && yus == 2) || (yls == 2 && xus == 2)
-                || (xls == 2 && yus == 1) || (yls == 2 && xus == 1)
-                || (xus == 2 && yls == -1) || (yus == 2 && xls == -1);
-        boolean containsInf = (xus == 2 && yus == 2)
-                || (xls == 2 && yls == -1) || (yls == 2 && xls == -1)
-                || (xus == 2 && yus == 1) || (yus == 2 && xus == 1);
-        if (containsNegInf && containsInf) return ALL;
-        Rational xlyl = xls == 2 || yls == 2 ? null : lower.multiply(that.lower);
-        Rational xlyu = xls == 2 || yus == 2 ? null : lower.multiply(that.upper);
-        Rational xuyl = xus == 2 || yls == 2 ? null : upper.multiply(that.lower);
-        Rational xuyu = xus == 2 || yus == 2 ? null : upper.multiply(that.upper);
-        Rational min = xlyl;
-        Rational max = xlyl;
-        if (xlyu != null) {
-            if (min == null || lt(xlyu, min)) min = xlyu;
-            if (max == null || gt(xlyu, max)) max = xlyu;
+        if (upper != null) {
+            if (that.lower != null) extremes.add(upper.multiply(that.lower));
+            if (that.upper != null) extremes.add(upper.multiply(that.upper));
         }
-        if (xuyl != null) {
-            if (min == null || lt(xuyl, min)) min = xuyl;
-            if (max == null || gt(xuyl, max)) max = xuyl;
-        }
-        if (xuyu != null) {
-            if (min == null || lt(xuyu, min)) min = xuyu;
-            if (max == null || gt(xuyu, max)) max = xuyu;
-        }
-        if (containsNegInf) return new Interval(null, max);
-        if (containsInf) return new Interval(min, null);
-        return new Interval(min, max);
+        if (extremes.isEmpty()) extremes.add(Rational.ZERO);
+        if (minIsNegInf) return new Interval(null, maximum(extremes));
+        if (maxIsPosInf) return new Interval(minimum(extremes), null);
+        return new Interval(minimum(extremes), maximum(extremes));
     }
 
     public @NotNull Interval invert() {

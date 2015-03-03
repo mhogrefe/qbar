@@ -77,6 +77,8 @@ public class IntervalProperties {
             propertiesNegate();
             propertiesAbs();
             propertiesSignum();
+            propertiesSubtract();
+            propertiesMultiply_Interval();
             propertiesEquals();
             propertiesHashCode();
             propertiesCompareTo();
@@ -984,6 +986,86 @@ public class IntervalProperties {
                 assertTrue(a.toString(), !a.equals(ZERO));
                 assertTrue(a.toString(), a.contains(ZERO));
             }
+        }
+    }
+
+    private static void propertiesSubtract() {
+        initialize();
+        System.out.println("\t\ttesting subtract(Interval) properties...");
+
+        for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
+            Interval difference = p.a.subtract(p.b);
+            validate(difference);
+            assertEquals(p.toString(), difference, p.b.subtract(p.a).negate());
+            assertTrue(p.toString(), difference.add(p.b).contains(p.a));
+            for (Pair<Rational, Rational> q : take(TINY_LIMIT, P.pairs(P.rationals(p.a), P.rationals(p.b)))) {
+                assertTrue(p.toString(), difference.contains(q.a.subtract(q.b)));
+            }
+        }
+
+        for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.finitelyBoundedIntervals()))) {
+            Interval difference = p.a.subtract(p.b);
+            Rational diameter = difference.diameter().get();
+            assertTrue(p.toString(), ge(diameter, p.a.diameter().get()));
+            assertTrue(p.toString(), ge(diameter, p.b.diameter().get()));
+        }
+
+        for (Interval a : take(LIMIT, P.intervals())) {
+            assertEquals(a.toString(), ZERO.subtract(a), a.negate());
+            assertEquals(a.toString(), a.subtract(ZERO), a);
+            assertTrue(a.toString(), a.subtract(a).contains(ZERO));
+            assertEquals(a.toString(), ALL.subtract(a), ALL);
+            assertEquals(a.toString(), a.subtract(ALL), ALL);
+        }
+
+        for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
+            assertEquals(p.toString(), of(p.a).subtract(of(p.b)), of(p.a.subtract(p.b)));
+        }
+    }
+
+    private static void propertiesMultiply_Interval() {
+        initialize();
+        System.out.println("\t\ttesting multiply(Interval) properties...");
+
+        for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
+            Interval product = p.a.multiply(p.b);
+            validate(product);
+            assertEquals(p.toString(), product, p.b.multiply(p.a));
+            for (Pair<Rational, Rational> q : take(TINY_LIMIT, P.pairs(P.rationals(p.a), P.rationals(p.b)))) {
+                assertTrue(p.toString(), product.contains(q.a.multiply(q.b)));
+            }
+        }
+
+//        for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals(), filter(r -> r != ZERO, P.rationals())))) {
+//            assertEquals(p.toString(), p.a.multiply(p.b).divide(p.b), p.a);
+//        }
+//
+//        Iterable<Pair<Rational, Rational>> ps = P.pairs(P.rationals(), filter(r -> r != Rational.ZERO, P.rationals()));
+//        for (Pair<Rational, Rational> p : take(LIMIT, ps)) {
+//            assertEquals(p.toString(), p.a.multiply(p.b), p.a.divide(p.b.invert()));
+//        }
+
+        for (Interval a : take(LIMIT, P.intervals())) {
+            assertEquals(a.toString(), ONE.multiply(a), a);
+            assertEquals(a.toString(), a.multiply(ONE), a);
+            assertTrue(a.toString(), ZERO.multiply(a).equals(ZERO));
+            assertTrue(a.toString(), a.multiply(ZERO).equals(ZERO));
+        }
+
+        for (Interval a : take(LIMIT, filter(b -> !b.equals(ZERO), P.intervals()))) {
+            assertEquals(a.toString(), ALL.multiply(a), ALL);
+            assertEquals(a.toString(), a.multiply(ALL), ALL);
+//            assertTrue(r.toString(), r.multiply(r.invert()) == ONE);
+        }
+
+        for (Triple<Interval, Interval, Interval> t : take(LIMIT, P.triples(P.intervals()))) {
+            Interval product1 = t.a.multiply(t.b).multiply(t.c);
+            Interval product2 = t.a.multiply(t.b.multiply(t.c));
+            assertEquals(t.toString(), product1, product2);
+        }
+
+        for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
+            assertEquals(p.toString(), of(p.a).multiply(of(p.b)), of(p.a.multiply(p.b)));
         }
     }
 

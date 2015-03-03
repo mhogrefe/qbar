@@ -660,6 +660,43 @@ public class IntervalTest {
     }
 
     @Test
+    public void testNegate() {
+        aeq(ZERO.negate(), "[0, 0]");
+        aeq(ONE.negate(), "[-1, -1]");
+        aeq(ALL.negate(), "(-Infinity, Infinity)");
+        aeq(read("[-2, 5/3]").get().negate(), "[-5/3, 2]");
+        aeq(read("[4, 4]").get().negate(), "[-4, -4]");
+        aeq(read("(-Infinity, 3/2]").get().negate(), "[-3/2, Infinity)");
+        aeq(read("[-6, Infinity)").get().negate(), "(-Infinity, 6]");
+    }
+
+    @Test
+    public void testAbs() {
+        aeq(ZERO.abs(), "[0, 0]");
+        aeq(ONE.abs(), "[1, 1]");
+        aeq(ALL.abs(), "[0, Infinity)");
+        aeq(read("[-2, 5/3]").get().abs(), "[0, 2]");
+        aeq(read("[4, 4]").get().abs(), "[4, 4]");
+        aeq(read("(-Infinity, 3/2]").get().abs(), "[0, Infinity)");
+        aeq(read("(-Infinity, -3/2]").get().abs(), "[3/2, Infinity)");
+        aeq(read("[-6, Infinity)").get().abs(), "[0, Infinity)");
+        aeq(read("[6, Infinity)").get().abs(), "[6, Infinity)");
+    }
+
+    @Test
+    public void testSignum() {
+        aeq(ZERO.signum(), "Optional[0]");
+        aeq(ONE.signum(), "Optional[1]");
+        aeq(ALL.signum(), "Optional.empty");
+        aeq(read("[-2, 5/3]").get().signum(), "Optional.empty");
+        aeq(read("[4, 4]").get().signum(), "Optional[1]");
+        aeq(read("(-Infinity, 3/2]").get().signum(), "Optional.empty");
+        aeq(read("(-Infinity, -3/2]").get().signum(), "Optional[-1]");
+        aeq(read("[-6, Infinity)").get().signum(), "Optional.empty");
+        aeq(read("[6, Infinity)").get().signum(), "Optional[1]");
+    }
+
+    @Test
     public void testSubtract() {
         aeq(ZERO.subtract(ZERO), "[0, 0]");
         aeq(ZERO.subtract(ONE), "[-1, -1]");
@@ -754,7 +791,7 @@ public class IntervalTest {
         aeq(read("(-Infinity, 3/2]").get().multiply(ALL), "(-Infinity, Infinity)");
         aeq(read("(-Infinity, 3/2]").get().multiply(read("[-2, 5/3]").get()), "(-Infinity, Infinity)");
         aeq(read("(-Infinity, 3/2]").get().multiply(read("[4, 4]").get()), "(-Infinity, 6]");
-        aeq(read("(-Infinity, 3/2]").get().multiply(read("(-Infinity, 3/2]").get()), "(-Infinity, 9/4]");
+        aeq(read("(-Infinity, 3/2]").get().multiply(read("(-Infinity, 3/2]").get()), "(-Infinity, Infinity)");
         aeq(read("(-Infinity, 3/2]").get().multiply(read("[-6, Infinity)").get()), "(-Infinity, Infinity)");
         aeq(read("[-6, Infinity)").get().multiply(ZERO), "[0, 0]");
         aeq(read("[-6, Infinity)").get().multiply(ONE), "[-6, Infinity)");
@@ -763,43 +800,7 @@ public class IntervalTest {
         aeq(read("[-6, Infinity)").get().multiply(read("[4, 4]").get()), "[-24, Infinity)");
         aeq(read("[-6, Infinity)").get().multiply(read("(-Infinity, 3/2]").get()), "(-Infinity, Infinity)");
         aeq(read("[-6, Infinity)").get().multiply(read("[-6, Infinity)").get()), "(-Infinity, Infinity)");
-    }
-
-    @Test
-    public void testNegate() {
-        aeq(ZERO.negate(), "[0, 0]");
-        aeq(ONE.negate(), "[-1, -1]");
-        aeq(ALL.negate(), "(-Infinity, Infinity)");
-        aeq(read("[-2, 5/3]").get().negate(), "[-5/3, 2]");
-        aeq(read("[4, 4]").get().negate(), "[-4, -4]");
-        aeq(read("(-Infinity, 3/2]").get().negate(), "[-3/2, Infinity)");
-        aeq(read("[-6, Infinity)").get().negate(), "(-Infinity, 6]");
-    }
-
-    @Test
-    public void testAbs() {
-        aeq(ZERO.abs(), "[0, 0]");
-        aeq(ONE.abs(), "[1, 1]");
-        aeq(ALL.abs(), "[0, Infinity)");
-        aeq(read("[-2, 5/3]").get().abs(), "[0, 2]");
-        aeq(read("[4, 4]").get().abs(), "[4, 4]");
-        aeq(read("(-Infinity, 3/2]").get().abs(), "[0, Infinity)");
-        aeq(read("(-Infinity, -3/2]").get().abs(), "[3/2, Infinity)");
-        aeq(read("[-6, Infinity)").get().abs(), "[0, Infinity)");
-        aeq(read("[6, Infinity)").get().abs(), "[6, Infinity)");
-    }
-
-    @Test
-    public void testSignum() {
-        aeq(ZERO.signum(), "Optional[0]");
-        aeq(ONE.signum(), "Optional[1]");
-        aeq(ALL.signum(), "Optional.empty");
-        aeq(read("[-2, 5/3]").get().signum(), "Optional.empty");
-        aeq(read("[4, 4]").get().signum(), "Optional[1]");
-        aeq(read("(-Infinity, 3/2]").get().signum(), "Optional.empty");
-        aeq(read("(-Infinity, -3/2]").get().signum(), "Optional[-1]");
-        aeq(read("[-6, Infinity)").get().signum(), "Optional.empty");
-        aeq(read("[6, Infinity)").get().signum(), "Optional[1]");
+        aeq(read("(-Infinity, 0]").get().multiply(read("(-Infinity, 0]").get()), "[0, Infinity)");
     }
 
     @Test
