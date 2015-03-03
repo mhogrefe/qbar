@@ -685,16 +685,16 @@ public final class Interval implements Comparable<Interval> {
      * @return |{@code this}|
      */
     public @NotNull Interval abs() {
-        if (lower == null && upper == null) return greaterThanOrEqualTo(Rational.ZERO);
+        if (lower == null && upper == null) return new Interval(Rational.ZERO, null);
         if (lower == null) {
-            return greaterThanOrEqualTo(upper.signum() == -1 ? upper.negate() : Rational.ZERO);
+            return new Interval(upper.signum() == -1 ? upper.negate() : Rational.ZERO, null);
         }
         if (upper == null) {
-            return lower.signum() == -1 ? greaterThanOrEqualTo(Rational.ZERO) : this;
+            return lower.signum() == -1 ? new Interval(Rational.ZERO, null) : this;
         }
         if (lower.signum() == 1 && upper.signum() == 1) return this;
         if (lower.signum() == -1 && upper.signum() == -1) return negate();
-        return of(Rational.ZERO, max(lower.negate(), upper));
+        return new Interval(Rational.ZERO, max(lower.negate(), upper));
     }
 
     /**
