@@ -915,7 +915,7 @@ public final class Interval implements Comparable<Interval> {
      * <ul>
      *  <li>{@code this} may be any {@code Interval}.</li>
      *  <li>{@code that} cannot be null.</li>
-     *  <li>The result may be any {@code Optional<Ordering>}</li>
+     *  <li>The result may be any {@code Optional<Ordering>}.</li>
      * </ul>
      *
      * @param that the interval whose elements we're comparing {@code this}'s elements to

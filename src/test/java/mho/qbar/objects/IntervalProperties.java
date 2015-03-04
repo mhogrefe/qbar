@@ -79,6 +79,7 @@ public class IntervalProperties {
             propertiesSignum();
             propertiesSubtract();
             propertiesMultiply_Interval();
+            propertiesElementCompare();
             propertiesEquals();
             propertiesHashCode();
             propertiesCompareTo();
@@ -1066,6 +1067,48 @@ public class IntervalProperties {
 
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
             assertEquals(p.toString(), of(p.a).multiply(of(p.b)), of(p.a.multiply(p.b)));
+        }
+    }
+
+    private static void propertiesElementCompare() {
+        initialize();
+        System.out.println("\t\ttesting elementCompare(Interval) properties...");
+
+        for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
+            @SuppressWarnings("UnusedDeclaration")
+            Optional<Ordering> compare = p.a.elementCompare(p.b);
+        }
+
+        Iterable<Pair<Interval, Interval>> ps = filter(
+                q -> q.a.elementCompare(q.b).isPresent(),
+                P.pairs(P.intervals())
+        );
+        for (Pair<Interval, Interval> p : take(LIMIT, ps)) {
+            Ordering compare = p.a.elementCompare(p.b).get();
+            assertEquals(p.toString(), p.b.elementCompare(p.a).get(), compare.invert());
+        }
+
+        ps = filter(
+                q -> !q.a.elementCompare(q.b).isPresent(),
+                P.pairs(P.intervals())
+        );
+        for (Pair<Interval, Interval> p : take(LIMIT, ps)) {
+            assertFalse(p.toString(), p.b.elementCompare(p.a).isPresent());
+        }
+
+        for (Interval a : take(LIMIT, P.intervals())) {
+            Optional<Ordering> compare = a.elementCompare(a);
+            assertTrue(a.toString(), !compare.isPresent() || compare.get() == EQ);
+            assertEquals(a.toString(), a.elementCompare(ZERO).map(Ordering::toInt), a.signum());
+        }
+
+        Iterable<Triple<Interval, Interval, Interval>> ts = filter(
+                t -> t.a.elementCompare(t.b).equals(Optional.of(LT)) &&
+                     t.b.elementCompare(t.c).equals(Optional.of(LT)),
+                P.triples(P.intervals())
+        );
+        for (Triple<Interval, Interval, Interval> t : take(LIMIT, ts)) {
+            assertEquals(t.toString(), t.a.elementCompare(t.c), Optional.of(LT));
         }
     }
 
