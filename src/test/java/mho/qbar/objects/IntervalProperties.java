@@ -454,7 +454,7 @@ public class IntervalProperties {
         for (List<Interval> as : take(LIMIT, P.lists(P.intervals()))) {
             List<Interval> disjoint = makeDisjoint(as);
             disjoint.forEach(mho.qbar.objects.IntervalProperties::validate);
-            assertTrue(as.toString(), nondecreasing(disjoint));
+            assertTrue(as.toString(), weaklyIncreasing(disjoint));
             assertTrue(as.toString(), and(map(p -> p.a.disjoint(p.b), Combinatorics.distinctPairs(disjoint))));
             for (Rational r : take(TINY_LIMIT, mux(toList(map(P::rationals, as))))) {
                 assertTrue(as.toString(), or(map(a -> a.contains(r), disjoint)));

@@ -96,7 +96,7 @@ public final class Rational implements Comparable<Rational> {
      * Length is infinite
      */
     public static final @NotNull Iterable<Rational> HARMONIC_NUMBERS =
-            scanl(p -> p.a.add(p.b), ONE, map(i -> new Rational(BigInteger.ONE, BigInteger.valueOf(i)), range(2)));
+            scanl(p -> p.a.add(p.b), ONE, map(i -> new Rational(BigInteger.ONE, BigInteger.valueOf(i)), rangeUp(2)));
 
     /**
      * {@code this} times {@code denominator}
