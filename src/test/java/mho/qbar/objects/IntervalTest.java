@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.List;
 import java.util.Optional;
 import java.util.SortedSet;
@@ -801,6 +802,102 @@ public class IntervalTest {
         aeq(read("[-6, Infinity)").get().multiply(read("(-Infinity, 3/2]").get()), "(-Infinity, Infinity)");
         aeq(read("[-6, Infinity)").get().multiply(read("[-6, Infinity)").get()), "(-Infinity, Infinity)");
         aeq(read("(-Infinity, 0]").get().multiply(read("(-Infinity, 0]").get()), "[0, Infinity)");
+    }
+
+    @Test
+    public void testMultiply_Rational() {
+        aeq(ZERO.multiply(Rational.ZERO), "[0, 0]");
+        aeq(ZERO.multiply(Rational.ONE), "[0, 0]");
+        aeq(ZERO.multiply(Rational.read("2/3").get()), "[0, 0]");
+        aeq(ZERO.multiply(Rational.read("-7").get()), "[0, 0]");
+        aeq(ONE.multiply(Rational.ZERO), "[0, 0]");
+        aeq(ONE.multiply(Rational.ONE), "[1, 1]");
+        aeq(ONE.multiply(Rational.read("2/3").get()), "[2/3, 2/3]");
+        aeq(ONE.multiply(Rational.read("-7").get()), "[-7, -7]");
+        aeq(ALL.multiply(Rational.ZERO), "[0, 0]");
+        aeq(ALL.multiply(Rational.ONE), "(-Infinity, Infinity)");
+        aeq(ALL.multiply(Rational.read("2/3").get()), "(-Infinity, Infinity)");
+        aeq(ALL.multiply(Rational.read("-7").get()), "(-Infinity, Infinity)");
+        aeq(read("[-2, 5/3]").get().multiply(Rational.ZERO), "[0, 0]");
+        aeq(read("[-2, 5/3]").get().multiply(Rational.ONE), "[-2, 5/3]");
+        aeq(read("[-2, 5/3]").get().multiply(Rational.read("2/3").get()), "[-4/3, 10/9]");
+        aeq(read("[-2, 5/3]").get().multiply(Rational.read("-7").get()), "[-35/3, 14]");
+        aeq(read("[4, 4]").get().multiply(Rational.ZERO), "[0, 0]");
+        aeq(read("[4, 4]").get().multiply(Rational.ONE), "[4, 4]");
+        aeq(read("[4, 4]").get().multiply(Rational.read("2/3").get()), "[8/3, 8/3]");
+        aeq(read("[4, 4]").get().multiply(Rational.read("-7").get()), "[-28, -28]");
+        aeq(read("(-Infinity, 3/2]").get().multiply(Rational.ZERO), "[0, 0]");
+        aeq(read("(-Infinity, 3/2]").get().multiply(Rational.ONE), "(-Infinity, 3/2]");
+        aeq(read("(-Infinity, 3/2]").get().multiply(Rational.read("2/3").get()), "(-Infinity, 1]");
+        aeq(read("(-Infinity, 3/2]").get().multiply(Rational.read("-7").get()), "[-21/2, Infinity)");
+        aeq(read("[-6, Infinity)").get().multiply(Rational.ZERO), "[0, 0]");
+        aeq(read("[-6, Infinity)").get().multiply(Rational.ONE), "[-6, Infinity)");
+        aeq(read("[-6, Infinity)").get().multiply(Rational.read("2/3").get()), "[-4, Infinity)");
+        aeq(read("[-6, Infinity)").get().multiply(Rational.read("-7").get()), "(-Infinity, 42]");
+    }
+
+    @Test
+    public void testMultiply_BigInteger() {
+        aeq(ZERO.multiply(BigInteger.ZERO), "[0, 0]");
+        aeq(ZERO.multiply(BigInteger.ONE), "[0, 0]");
+        aeq(ZERO.multiply(BigInteger.valueOf(5)), "[0, 0]");
+        aeq(ZERO.multiply(BigInteger.valueOf(-7)), "[0, 0]");
+        aeq(ONE.multiply(BigInteger.ZERO), "[0, 0]");
+        aeq(ONE.multiply(BigInteger.ONE), "[1, 1]");
+        aeq(ONE.multiply(BigInteger.valueOf(5)), "[5, 5]");
+        aeq(ONE.multiply(BigInteger.valueOf(-7)), "[-7, -7]");
+        aeq(ALL.multiply(BigInteger.ZERO), "[0, 0]");
+        aeq(ALL.multiply(BigInteger.ONE), "(-Infinity, Infinity)");
+        aeq(ALL.multiply(BigInteger.valueOf(5)), "(-Infinity, Infinity)");
+        aeq(ALL.multiply(BigInteger.valueOf(-7)), "(-Infinity, Infinity)");
+        aeq(read("[-2, 5/3]").get().multiply(BigInteger.ZERO), "[0, 0]");
+        aeq(read("[-2, 5/3]").get().multiply(BigInteger.ONE), "[-2, 5/3]");
+        aeq(read("[-2, 5/3]").get().multiply(BigInteger.valueOf(5)), "[-10, 25/3]");
+        aeq(read("[-2, 5/3]").get().multiply(BigInteger.valueOf(-7)), "[-35/3, 14]");
+        aeq(read("[4, 4]").get().multiply(BigInteger.ZERO), "[0, 0]");
+        aeq(read("[4, 4]").get().multiply(BigInteger.ONE), "[4, 4]");
+        aeq(read("[4, 4]").get().multiply(BigInteger.valueOf(5)), "[20, 20]");
+        aeq(read("[4, 4]").get().multiply(BigInteger.valueOf(-7)), "[-28, -28]");
+        aeq(read("(-Infinity, 3/2]").get().multiply(BigInteger.ZERO), "[0, 0]");
+        aeq(read("(-Infinity, 3/2]").get().multiply(BigInteger.ONE), "(-Infinity, 3/2]");
+        aeq(read("(-Infinity, 3/2]").get().multiply(BigInteger.valueOf(5)), "(-Infinity, 15/2]");
+        aeq(read("(-Infinity, 3/2]").get().multiply(BigInteger.valueOf(-7)), "[-21/2, Infinity)");
+        aeq(read("[-6, Infinity)").get().multiply(BigInteger.ZERO), "[0, 0]");
+        aeq(read("[-6, Infinity)").get().multiply(BigInteger.ONE), "[-6, Infinity)");
+        aeq(read("[-6, Infinity)").get().multiply(BigInteger.valueOf(5)), "[-30, Infinity)");
+        aeq(read("[-6, Infinity)").get().multiply(BigInteger.valueOf(-7)), "(-Infinity, 42]");
+    }
+
+    @Test
+    public void testMultiply_int() {
+        aeq(ZERO.multiply(0), "[0, 0]");
+        aeq(ZERO.multiply(1), "[0, 0]");
+        aeq(ZERO.multiply(5), "[0, 0]");
+        aeq(ZERO.multiply(-7), "[0, 0]");
+        aeq(ONE.multiply(0), "[0, 0]");
+        aeq(ONE.multiply(1), "[1, 1]");
+        aeq(ONE.multiply(5), "[5, 5]");
+        aeq(ONE.multiply(-7), "[-7, -7]");
+        aeq(ALL.multiply(0), "[0, 0]");
+        aeq(ALL.multiply(1), "(-Infinity, Infinity)");
+        aeq(ALL.multiply(5), "(-Infinity, Infinity)");
+        aeq(ALL.multiply(-7), "(-Infinity, Infinity)");
+        aeq(read("[-2, 5/3]").get().multiply(0), "[0, 0]");
+        aeq(read("[-2, 5/3]").get().multiply(1), "[-2, 5/3]");
+        aeq(read("[-2, 5/3]").get().multiply(5), "[-10, 25/3]");
+        aeq(read("[-2, 5/3]").get().multiply(-7), "[-35/3, 14]");
+        aeq(read("[4, 4]").get().multiply(0), "[0, 0]");
+        aeq(read("[4, 4]").get().multiply(1), "[4, 4]");
+        aeq(read("[4, 4]").get().multiply(5), "[20, 20]");
+        aeq(read("[4, 4]").get().multiply(-7), "[-28, -28]");
+        aeq(read("(-Infinity, 3/2]").get().multiply(0), "[0, 0]");
+        aeq(read("(-Infinity, 3/2]").get().multiply(1), "(-Infinity, 3/2]");
+        aeq(read("(-Infinity, 3/2]").get().multiply(5), "(-Infinity, 15/2]");
+        aeq(read("(-Infinity, 3/2]").get().multiply(-7), "[-21/2, Infinity)");
+        aeq(read("[-6, Infinity)").get().multiply(0), "[0, 0]");
+        aeq(read("[-6, Infinity)").get().multiply(1), "[-6, Infinity)");
+        aeq(read("[-6, Infinity)").get().multiply(5), "[-30, Infinity)");
+        aeq(read("[-6, Infinity)").get().multiply(-7), "(-Infinity, 42]");
     }
 
     @Test

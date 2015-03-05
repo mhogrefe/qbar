@@ -789,16 +789,18 @@ public final class Interval implements Comparable<Interval> {
      * @return {@code this}×{@code that}
      */
     public @NotNull Interval multiply(@NotNull Rational that) {
-        if (that.signum() == -1) {
-            return new Interval(
-                    upper == null ? null : upper.multiply(that),
-                    lower == null ? null : lower.multiply(that)
-            );
-        } else {
-            return new Interval(
+        switch (that.signum()) {
+            case 0: return ZERO;
+            case 1: return new Interval(
                     lower == null ? null : lower.multiply(that),
                     upper == null ? null : upper.multiply(that)
             );
+            case -1: return new Interval(
+                    upper == null ? null : upper.multiply(that),
+                    lower == null ? null : lower.multiply(that)
+            );
+            default:
+                throw new IllegalStateException("There's a problem with Rational#signum");
         }
     }
 
@@ -815,16 +817,18 @@ public final class Interval implements Comparable<Interval> {
      * @return {@code this}×{@code that}
      */
     public @NotNull Interval multiply(@NotNull BigInteger that) {
-        if (that.signum() == -1) {
-            return new Interval(
-                    upper == null ? null : upper.multiply(that),
-                    lower == null ? null : lower.multiply(that)
-            );
-        } else {
-            return new Interval(
+        switch (that.signum()) {
+            case 0: return ZERO;
+            case 1: return new Interval(
                     lower == null ? null : lower.multiply(that),
                     upper == null ? null : upper.multiply(that)
             );
+            case -1: return new Interval(
+                    upper == null ? null : upper.multiply(that),
+                    lower == null ? null : lower.multiply(that)
+            );
+            default:
+                throw new IllegalStateException("There's a problem with Rational#signum");
         }
     }
 
@@ -841,16 +845,18 @@ public final class Interval implements Comparable<Interval> {
      * @return {@code this}×{@code that}
      */
     public @NotNull Interval multiply(int that) {
-        if (that < 0) {
-            return new Interval(
-                    upper == null ? null : upper.multiply(that),
-                    lower == null ? null : lower.multiply(that)
-            );
-        } else {
-            return new Interval(
+        switch (Integer.signum(that)) {
+            case 0: return ZERO;
+            case 1: return new Interval(
                     lower == null ? null : lower.multiply(that),
                     upper == null ? null : upper.multiply(that)
             );
+            case -1: return new Interval(
+                    upper == null ? null : upper.multiply(that),
+                    lower == null ? null : lower.multiply(that)
+            );
+            default:
+                throw new IllegalStateException("There's a problem with Rational#signum");
         }
     }
 
@@ -887,7 +893,7 @@ public final class Interval implements Comparable<Interval> {
     }
 
     public @NotNull Interval pow(int p) {
-        if (p == 0) return new Interval(Rational.ONE, Rational.ONE);
+        if (p == 0) return ONE;
         if (p == 1) return this;
         if (p < 0) return pow(-p).invert();
         if (p % 2 == 0) {
