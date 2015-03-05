@@ -789,18 +789,18 @@ public final class Interval implements Comparable<Interval> {
      * @return {@code this}×{@code that}
      */
     public @NotNull Interval multiply(@NotNull Rational that) {
-        switch (that.signum()) {
-            case 0: return ZERO;
-            case 1: return new Interval(
+        if (that == Rational.ZERO) return ZERO;
+        if (that == Rational.ONE) return this;
+        if (that.signum() == 1) {
+            return new Interval(
                     lower == null ? null : lower.multiply(that),
                     upper == null ? null : upper.multiply(that)
             );
-            case -1: return new Interval(
+        } else {
+            return new Interval(
                     upper == null ? null : upper.multiply(that),
                     lower == null ? null : lower.multiply(that)
             );
-            default:
-                throw new IllegalStateException("There's a problem with Rational#signum");
         }
     }
 
@@ -817,18 +817,18 @@ public final class Interval implements Comparable<Interval> {
      * @return {@code this}×{@code that}
      */
     public @NotNull Interval multiply(@NotNull BigInteger that) {
-        switch (that.signum()) {
-            case 0: return ZERO;
-            case 1: return new Interval(
+        if (that.equals(BigInteger.ZERO)) return ZERO;
+        if (that.equals(BigInteger.ONE)) return this;
+        if (that.signum() == 1) {
+            return new Interval(
                     lower == null ? null : lower.multiply(that),
                     upper == null ? null : upper.multiply(that)
             );
-            case -1: return new Interval(
+        } else {
+            return new Interval(
                     upper == null ? null : upper.multiply(that),
                     lower == null ? null : lower.multiply(that)
             );
-            default:
-                throw new IllegalStateException("There's a problem with Rational#signum");
         }
     }
 
@@ -845,18 +845,18 @@ public final class Interval implements Comparable<Interval> {
      * @return {@code this}×{@code that}
      */
     public @NotNull Interval multiply(int that) {
-        switch (Integer.signum(that)) {
-            case 0: return ZERO;
-            case 1: return new Interval(
+        if (that == 0) return ZERO;
+        if (that == 1) return this;
+        if (that > 0) {
+            return new Interval(
                     lower == null ? null : lower.multiply(that),
                     upper == null ? null : upper.multiply(that)
             );
-            case -1: return new Interval(
+        } else {
+            return new Interval(
                     upper == null ? null : upper.multiply(that),
                     lower == null ? null : lower.multiply(that)
             );
-            default:
-                throw new IllegalStateException("There's a problem with Rational#signum");
         }
     }
 

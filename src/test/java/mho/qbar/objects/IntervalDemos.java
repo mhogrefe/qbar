@@ -7,6 +7,7 @@ import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.List;
 import java.util.Random;
 
@@ -243,6 +244,27 @@ public class IntervalDemos {
     public static void demoMultiply_Interval() {
         initialize();
         for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
+            System.out.println(p.a + " * " + p.b + " = " + p.a.multiply(p.b));
+        }
+    }
+
+    public static void demoMultiply_Rational() {
+        initialize();
+        for (Pair<Interval, Rational> p : take(LIMIT, P.pairs(P.intervals(), P.rationals()))) {
+            System.out.println(p.a + " * " + p.b + " = " + p.a.multiply(p.b));
+        }
+    }
+
+    public static void demoMultiply_BigInteger() {
+        initialize();
+        for (Pair<Interval, BigInteger> p : take(LIMIT, P.pairs(P.intervals(), P.bigIntegers()))) {
+            System.out.println(p.a + " * " + p.b + " = " + p.a.multiply(p.b));
+        }
+    }
+
+    public static void demoMultiply_int() {
+        initialize();
+        for (Pair<Interval, Integer> p : take(LIMIT, P.pairs(P.intervals(), P.integers()))) {
             System.out.println(p.a + " * " + p.b + " = " + p.a.multiply(p.b));
         }
     }
