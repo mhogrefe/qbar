@@ -4417,14 +4417,14 @@ public class RationalTest {
     }
 
     private static @NotNull Optional<List<BigInteger>> readBigIntegerList(@NotNull String s) {
-        return Readers.readList(Readers::findBigIntegerIn, s);
+        return Readers.readList(Readers::readBigInteger, s);
     }
 
     private static @NotNull Optional<List<Rational>> readRationalList(@NotNull String s) {
-        return Readers.readList(Rational::findIn, s);
+        return Readers.readList(Rational::read, s);
     }
 
     private static @NotNull Optional<List<Rational>> readRationalListWithNulls(@NotNull String s) {
-        return Readers.readList(t -> Readers.findInWithNulls(Rational::findIn, t), s);
+        return Readers.readListWithNulls(Rational::read, s);
     }
 }

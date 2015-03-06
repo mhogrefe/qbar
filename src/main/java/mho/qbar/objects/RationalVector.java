@@ -681,7 +681,7 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
      * invalid
      */
     public static @NotNull Optional<RationalVector> read(@NotNull String s) {
-        Optional<List<Rational>> ors = Readers.readList(Rational::findIn, s);
+        Optional<List<Rational>> ors = Readers.readList(Rational::read, s);
         if (!ors.isPresent()) return Optional.empty();
         if (ors.get().isEmpty()) return Optional.of(ZERO_DIMENSIONAL);
         return Optional.of(new RationalVector(ors.get()));
@@ -703,7 +703,7 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
      * @return the first {@code RationalVector} found in {@code s}, and the index at which it was found
      */
     public static @NotNull Optional<Pair<RationalVector, Integer>> findIn(@NotNull String s) {
-        Optional<Pair<List<Rational>, Integer>> op = Readers.findListIn(Rational::findIn, s);
+        Optional<Pair<List<Rational>, Integer>> op = Readers.findListIn(Rational::read, "-/0123456789", s);
         if (!op.isPresent()) return Optional.empty();
         Pair<List<Rational>, Integer> p = op.get();
         if (p.a.isEmpty()) return Optional.of(new Pair<>(ZERO_DIMENSIONAL, p.b));

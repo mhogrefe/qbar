@@ -1144,10 +1144,10 @@ public class IntervalTest {
     }
 
     private static @NotNull Optional<List<Interval>> readIntervalList(@NotNull String s) {
-        return Readers.readList(Interval::findIn, s);
+        return Readers.readList(Interval::read, s);
     }
 
     private static @NotNull Optional<List<Interval>> readIntervalListWithNulls(@NotNull String s) {
-        return Readers.readList(t -> Readers.findInWithNulls(Interval::findIn, t), s);
+        return Readers.readListWithNulls(Interval::read, s);
     }
 }

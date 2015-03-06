@@ -601,18 +601,18 @@ public class RationalVectorTest {
     }
 
     private static @NotNull Optional<List<Rational>> readRationalList(@NotNull String s) {
-        return Readers.readList(Rational::findIn, s);
+        return Readers.readList(Rational::read, s);
     }
 
     private static @NotNull Optional<List<Rational>> readRationalListWithNulls(@NotNull String s) {
-        return Readers.readList(t -> Readers.findInWithNulls(Rational::findIn, t), s);
+        return Readers.readListWithNulls(Rational::read, s);
     }
 
     private static @NotNull Optional<List<RationalVector>> readRationalVectorList(@NotNull String s) {
-        return Readers.readList(RationalVector::findIn, s);
+        return Readers.readList(RationalVector::read, s);
     }
 
     private static @NotNull Optional<List<RationalVector>> readRationalVectorListWithNulls(@NotNull String s) {
-        return Readers.readList(t -> Readers.findInWithNulls(RationalVector::findIn, t), s);
+        return Readers.readListWithNulls(RationalVector::read, s);
     }
 }
