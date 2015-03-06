@@ -1070,6 +1070,49 @@ public class IntervalProperties {
         }
     }
 
+    private static void propertiesMultiply_Rational() {
+        initialize();
+        System.out.println("\t\ttesting multiply(Rational) properties...");
+
+        for (Pair<Interval, Rational> p : take(LIMIT, P.pairs(P.intervals(), P.rationals()))) {
+            Interval a = p.a.multiply(p.b);
+            validate(a);
+        }
+
+//        Iterable<Pair<Interval, Rational>> ps = P.pairs(P.intervals(), filter(r -> r != Rational.ZERO, P.rationals()));
+//        for (Pair<Interval, Rational> p : take(LIMIT, ps)) {
+//            assertEquals(p.toString(), p.a.multiply(p.b).divide(p.b), p.a);
+//        }
+
+//        ps = P.pairs(P.rationalVectors(), filter(r -> r != Rational.ZERO, P.rationals()));
+//        for (Pair<RationalVector, Rational> p : take(LIMIT, ps)) {
+//            assertEquals(p.toString(), p.a.multiply(p.b), p.a.divide(p.b.invert()));
+//        }
+//
+//        for (RationalVector v : take(LIMIT, P.rationalVectors())) {
+//            assertEquals(v.toString(), v, v.multiply(Rational.ONE));
+//            assertTrue(v.toString(), v.multiply(Rational.ZERO).isZero());
+//        }
+//
+//        for (Rational r : take(LIMIT, P.rationals())) {
+//            assertTrue(ZERO_DIMENSIONAL.multiply(r) == ZERO_DIMENSIONAL);
+//        }
+//
+//        for (Pair<RationalVector, Rational> p : take(LIMIT, P.pairs(P.rationalVectors(1), P.rationals()))) {
+//            assertEquals(p.toString(), p.a.multiply(p.b), of(p.b).multiply(p.a.x()));
+//        }
+//
+//        Iterable<Pair<Rational, Integer>> ps2;
+//        if (P instanceof ExhaustiveProvider) {
+//            ps2 = ((ExhaustiveProvider) P).pairsLogarithmicOrder(P.rationals(), P.naturalIntegers());
+//        } else {
+//            ps2 = P.pairs(P.rationals(), ((RandomProvider) P).naturalIntegersGeometric(20));
+//        }
+//        for (Pair<Rational, Integer> p : take(LIMIT, ps2)) {
+//            assertTrue(p.toString(), zero(p.b).multiply(p.a).isZero());
+//        }
+    }
+
     private static void propertiesElementCompare() {
         initialize();
         System.out.println("\t\ttesting elementCompare(Interval) properties...");

@@ -860,22 +860,103 @@ public final class Interval implements Comparable<Interval> {
         }
     }
 
-    public @NotNull Interval invert() {
-        if ((lower == null && upper == null)
-                || (lower == null && upper.signum() == 1)
-                || (upper == null && lower.signum() == -1)) return ALL;
-        if (lower == null) return new Interval(upper.invert(), Rational.ZERO);
-        if (upper == null) return new Interval(Rational.ZERO, lower.invert());
-        if (lower.equals(Rational.ZERO) && upper.equals(Rational.ZERO))
-            throw new ArithmeticException("division by zero");
-        if (lower.equals(Rational.ZERO)) return new Interval(upper.invert(), null);
-        if (upper.equals(Rational.ZERO)) return new Interval(null, lower.invert());
-        if (lower.signum() != upper.signum()) return ALL;
-        return new Interval(upper.invert(), lower.invert());
+    public @NotNull List<Interval> invert() {
+        List<Interval> intervals = new ArrayList<>();
+        if (lower == null && upper == null) {
+            intervals.add(ALL);
+        } else if (lower == null) {
+            if (upper == Rational.ZERO) {
+                intervals.add(this);
+            } else if (upper.signum() == 1) {
+                intervals.add(new Interval(null, Rational.ZERO));
+                intervals.add(new Interval(upper.invert(), null));
+            } else {
+                intervals.add(new Interval(null, upper.invert()));
+            }
+            return intervals;
+        } else if (upper == null) {
+            if (lower == Rational.ZERO) {
+                intervals.add(this);
+            } else if (lower.signum() == 1) {
+                intervals.add(new Interval(lower.invert(), null));
+            } else {
+                intervals.add(new Interval(null, lower.invert()));
+                intervals.add(new Interval(Rational.ZERO, null));
+            }
+        } else if (lower == Rational.ZERO) {
+            if (upper != Rational.ZERO) {
+                intervals.add(new Interval(upper.invert(), Rational.ZERO));
+            }
+        } else if (lower.signum() == 1) {
+            intervals.add(new Interval(upper.invert(), lower.invert()));
+        } else {
+            if (upper == Rational.ZERO) {
+                intervals.add(new Interval(null, lower.invert()));
+            } else if (upper.signum() == -1) {
+                intervals.add(new Interval(upper.invert(), lower.invert()));
+            } else {
+                intervals.add(new Interval(null, lower.invert()));
+                intervals.add(new Interval(upper.invert(), null));
+            }
+        }
+        return intervals;
     }
 
-    public @NotNull Interval divide(@NotNull Interval that) {
-        return multiply(that.invert());
+    public @NotNull Interval invertHull() {
+        return convexHull(invert());
+    }
+
+    public @NotNull List<Interval> divide(@NotNull Interval that) {
+        return makeDisjoint(toList(map(this::multiply, that.invert())));
+    }
+
+    public @NotNull Interval divideHull(@NotNull Interval that) {
+        return convexHull(toList(map(this::multiply, that.invert())));
+    }
+
+    public @NotNull Interval divide(@NotNull Rational that) {
+        if (that == Rational.ONE) return this;
+        if (that.signum() == 1) {
+            return new Interval(
+                    lower == null ? null : lower.divide(that),
+                    upper == null ? null : upper.divide(that)
+            );
+        } else {
+            return new Interval(
+                    upper == null ? null : upper.divide(that),
+                    lower == null ? null : lower.divide(that)
+            );
+        }
+    }
+
+    public @NotNull Interval divide(@NotNull BigInteger that) {
+        if (that.equals(BigInteger.ONE)) return this;
+        if (that.signum() == 1) {
+            return new Interval(
+                    lower == null ? null : lower.divide(that),
+                    upper == null ? null : upper.divide(that)
+            );
+        } else {
+            return new Interval(
+                    upper == null ? null : upper.divide(that),
+                    lower == null ? null : lower.divide(that)
+            );
+        }
+    }
+
+    public @NotNull Interval divide(@NotNull int that) {
+        if (that == 1) return this;
+        if (that > 0) {
+            return new Interval(
+                    lower == null ? null : lower.divide(that),
+                    upper == null ? null : upper.divide(that)
+            );
+        } else {
+            return new Interval(
+                    upper == null ? null : upper.divide(that),
+                    lower == null ? null : lower.divide(that)
+            );
+        }
     }
 
     public @NotNull Interval shiftLeft(int bits) {
@@ -892,27 +973,27 @@ public final class Interval implements Comparable<Interval> {
         );
     }
 
-    public @NotNull Interval pow(int p) {
-        if (p == 0) return ONE;
-        if (p == 1) return this;
-        if (p < 0) return pow(-p).invert();
-        if (p % 2 == 0) {
-            int ls = lower == null ? -1 : lower.signum();
-            int us = upper == null ? 1 : upper.signum();
-            if (ls != -1 && us != -1) {
-                return new Interval(lower.pow(p), upper == null ? null : upper.pow(p));
-            }
-            if (ls != 1 && us != 1) {
-                return new Interval(upper.pow(p), lower == null ? null : lower.pow(p));
-            }
-            Rational a = lower == null ? null : lower.pow(p);
-            Rational b = upper == null ? null : upper.pow(p);
-            Rational max = a == null || b == null ? null : max(a, b);
-            return new Interval(Rational.ZERO, max);
-        } else {
-            return new Interval(lower == null ? null : lower.pow(p), upper == null ? null : upper.pow(p));
-        }
-    }
+//    public @NotNull Interval pow(int p) {
+//        if (p == 0) return ONE;
+//        if (p == 1) return this;
+//        if (p < 0) return pow(-p).invert();
+//        if (p % 2 == 0) {
+//            int ls = lower == null ? -1 : lower.signum();
+//            int us = upper == null ? 1 : upper.signum();
+//            if (ls != -1 && us != -1) {
+//                return new Interval(lower.pow(p), upper == null ? null : upper.pow(p));
+//            }
+//            if (ls != 1 && us != 1) {
+//                return new Interval(upper.pow(p), lower == null ? null : lower.pow(p));
+//            }
+//            Rational a = lower == null ? null : lower.pow(p);
+//            Rational b = upper == null ? null : upper.pow(p);
+//            Rational max = a == null || b == null ? null : max(a, b);
+//            return new Interval(Rational.ZERO, max);
+//        } else {
+//            return new Interval(lower == null ? null : lower.pow(p), upper == null ? null : upper.pow(p));
+//        }
+//    }
 
     /**
      * If {@code this} and {@code that} are disjoint, returns the ordering between any element of {@code this} and any
