@@ -901,6 +901,45 @@ public class IntervalTest {
     }
 
     @Test
+    public void testInvert() {
+        aeq(ZERO.invert(), "[]");
+        aeq(ONE.invert(), "[[1, 1]]");
+        aeq(ALL.invert(), "[(-Infinity, Infinity)]");
+        aeq(read("[-2, 5/3]").get().invert(), "[(-Infinity, -1/2], [3/5, Infinity)]");
+        aeq(read("[4, 4]").get().invert(), "[[1/4, 1/4]]");
+        aeq(read("[0, 4]").get().invert(), "[[1/4, Infinity)]");
+        aeq(read("[-4, 0]").get().invert(), "[(-Infinity, -1/4]]");
+        aeq(read("(-Infinity, -3/2]").get().invert(), "[(-Infinity, -2/3]]");
+        aeq(read("(-Infinity, 3/2]").get().invert(), "[(-Infinity, 0], [2/3, Infinity)]");
+        aeq(read("(-Infinity, 0]").get().invert(), "[(-Infinity, 0]]");
+        aeq(read("[-6, Infinity)").get().invert(), "[(-Infinity, -1/6], [0, Infinity)]");
+        aeq(read("[6, Infinity)").get().invert(), "[[1/6, Infinity)]");
+        aeq(read("[0, Infinity)").get().invert(), "[[0, Infinity)]");
+        aeq(read("(-Infinity, 0]").get().invert(), "[(-Infinity, 0]]");
+    }
+
+    @Test
+    public void testInvertHull() {
+        aeq(ONE.invertHull(), "[1, 1]");
+        aeq(ALL.invertHull(), "(-Infinity, Infinity)");
+        aeq(read("[-2, 5/3]").get().invertHull(), "(-Infinity, Infinity)");
+        aeq(read("[4, 4]").get().invertHull(), "[1/4, 1/4]");
+        aeq(read("[0, 4]").get().invertHull(), "[1/4, Infinity)");
+        aeq(read("[-4, 0]").get().invertHull(), "(-Infinity, -1/4]");
+        aeq(read("(-Infinity, -3/2]").get().invertHull(), "(-Infinity, -2/3]");
+        aeq(read("(-Infinity, 3/2]").get().invertHull(), "(-Infinity, Infinity)");
+        aeq(read("(-Infinity, 0]").get().invertHull(), "(-Infinity, 0]");
+        aeq(read("[-6, Infinity)").get().invertHull(), "(-Infinity, Infinity)");
+        aeq(read("[6, Infinity)").get().invertHull(), "[1/6, Infinity)");
+        aeq(read("[0, Infinity)").get().invertHull(), "[0, Infinity)");
+        aeq(read("(-Infinity, 0]").get().invertHull(), "(-Infinity, 0]");
+        try {
+            ZERO.invertHull();
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
     public void testElementCompare() {
         aeq(ZERO.elementCompare(ZERO), "Optional[EQ]");
         aeq(ZERO.elementCompare(ONE), "Optional[LT]");

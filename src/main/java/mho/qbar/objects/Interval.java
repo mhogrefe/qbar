@@ -950,7 +950,15 @@ public final class Interval implements Comparable<Interval> {
      * @return Conv(1/{@code this})
      */
     public @NotNull Interval invertHull() {
-        return convexHull(invert());
+        List<Interval> inverse = invert();
+        switch (inverse.size()) {
+            case 0:
+                throw new ArithmeticException("division by 0");
+            case 1:
+                return inverse.get(0);
+            default:
+                return ALL;
+        }
     }
 
     public @NotNull List<Interval> divide(@NotNull Interval that) {
