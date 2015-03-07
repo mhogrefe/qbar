@@ -269,6 +269,20 @@ public class IntervalDemos {
         }
     }
 
+    public static void demoInvert() {
+        initialize();
+        for (Interval a : take(LIMIT, P.intervals())) {
+            System.out.println("1/" + a + " = " + a.invert());
+        }
+    }
+
+    public static void demoInvertHull() {
+        initialize();
+        for (Interval a : take(LIMIT, filter(b -> !b.equals(ZERO), P.intervals()))) {
+            System.out.println("invertHull(" + a + ") = " + a.invertHull());
+        }
+    }
+
     public static void demoElementCompare() {
         initialize();
         for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
