@@ -860,6 +860,33 @@ public final class Interval implements Comparable<Interval> {
         }
     }
 
+    /**
+     * Returns the closure of the image of {@code this} under multiplicative inversion. In general this is not one
+     * {@code Interval}, so this method returns a list of disjoint {@code Interval}s whose union is the closure of the
+     * image.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Interval}.</li>
+     *  <li>
+     *   The result is one of the following:
+     *   <li>
+     *    <ul>[]</ul>
+     *    <ul>[(–∞, ∞)]</ul>
+     *    <ul>[(–∞, q]] where q≤0</ul>
+     *    <ul>[[p, ∞)] where p≥0</ul>
+     *    <ul>[[p, q]] where p≠q, p and q both positive</ul>
+     *    <ul>[[p, q]] where p≠q, p and q both negative</ul>
+     *    <ul>[[p, p]] where p≠0</ul>
+     *    <ul>[(–∞, q], [0, ∞)] where q<0</ul>
+     *    <ul>[(–∞, 0], [p, ∞)] where p>0</ul>
+     *    <ul>[(–∞, q], [p, ∞)] where q<0, p>0</ul>
+     *    <ul></ul>
+     *   </li>
+     *  </li>
+     * </ul>
+     *
+     * @return 1/{@code this}
+     */
     public @NotNull List<Interval> invert() {
         List<Interval> intervals = new ArrayList<>();
         if (lower == null && upper == null) {
@@ -885,7 +912,7 @@ public final class Interval implements Comparable<Interval> {
             }
         } else if (lower == Rational.ZERO) {
             if (upper != Rational.ZERO) {
-                intervals.add(new Interval(upper.invert(), Rational.ZERO));
+                intervals.add(new Interval(upper.invert(), null));
             }
         } else if (lower.signum() == 1) {
             intervals.add(new Interval(upper.invert(), lower.invert()));
@@ -902,6 +929,26 @@ public final class Interval implements Comparable<Interval> {
         return intervals;
     }
 
+    /**
+     * Returns the smallest interval a such that if x∈{@code this}, 1/x∈a.
+     *
+     * <ul>
+     *  <li>{@code this} cannot be [0, 0].</li>
+     *  <li>
+     *   The result is one of the following:
+     *   <li>
+     *    <ul>(–∞, ∞)</ul>
+     *    <ul>(–∞, q] where q≤0</ul>
+     *    <ul>[p, ∞) where p≥0</ul>
+     *    <ul>[p, q] where p≠q, p and q both positive</ul>
+     *    <ul>[p, q] where p≠q, p and q both negative</ul>
+     *    <ul>[p, p] where p≠0</ul>
+     *   </li>
+     *  </li>
+     * </ul>
+     *
+     * @return Conv(1/{@code this})
+     */
     public @NotNull Interval invertHull() {
         return convexHull(invert());
     }
@@ -944,7 +991,7 @@ public final class Interval implements Comparable<Interval> {
         }
     }
 
-    public @NotNull Interval divide(@NotNull int that) {
+    public @NotNull Interval divide(int that) {
         if (that == 1) return this;
         if (that > 0) {
             return new Interval(
