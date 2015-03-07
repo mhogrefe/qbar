@@ -1056,7 +1056,9 @@ public class IntervalProperties {
         for (Interval a : take(LIMIT, filter(b -> !b.equals(ZERO), P.intervals()))) {
             assertEquals(a.toString(), ALL.multiply(a), ALL);
             assertEquals(a.toString(), a.multiply(ALL), ALL);
-//            assertTrue(r.toString(), r.multiply(r.invert()) == ONE);
+            List<Interval> inverse = a.invert();
+            List<Interval> back = makeDisjoint(toList(map(a::multiply, inverse)));
+            assertTrue(a.toString(), any(b -> b.contains(ONE), back));
         }
 
         for (Triple<Interval, Interval, Interval> t : take(LIMIT, P.triples(P.intervals()))) {
