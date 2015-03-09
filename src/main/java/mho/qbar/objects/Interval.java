@@ -1013,6 +1013,18 @@ public final class Interval implements Comparable<Interval> {
         }
     }
 
+    /**
+     * Returns the smallest {@code Interval} a such that if x∈{@code this}, x/{@code that}∈a.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Interval}.</li>
+     *  <li>{@code that} cannot be zero.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param that the {@code Rational} that {@code this} is divided by
+     * @return {@code this}/{@code that}
+     */
     public @NotNull Interval divide(@NotNull Rational that) {
         if (that == Rational.ONE) return this;
         if (that.signum() == 1) {
@@ -1028,6 +1040,18 @@ public final class Interval implements Comparable<Interval> {
         }
     }
 
+    /**
+     * Returns the smallest {@code Interval} a such that if x∈{@code this}, x/{@code that}∈a.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Interval}.</li>
+     *  <li>{@code that} cannot be zero.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param that the {@code BigInteger} that {@code this} is divided by
+     * @return {@code this}/{@code that}
+     */
     public @NotNull Interval divide(@NotNull BigInteger that) {
         if (that.equals(BigInteger.ONE)) return this;
         if (that.signum() == 1) {
@@ -1043,6 +1067,18 @@ public final class Interval implements Comparable<Interval> {
         }
     }
 
+    /**
+     * Returns the smallest {@code Interval} a such that if x∈{@code this}, x/{@code that}∈a.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Interval}.</li>
+     *  <li>{@code that} cannot be zero.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param that the {@code int} that {@code this} is divided by
+     * @return {@code this}/{@code that}
+     */
     public @NotNull Interval divide(int that) {
         if (that == 1) return this;
         if (that > 0) {
