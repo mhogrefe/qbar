@@ -940,6 +940,107 @@ public class IntervalTest {
     }
 
     @Test
+    public void testDivide_Interval() {
+        aeq(ZERO.divide(ZERO), "[]");
+        aeq(ZERO.divide(ONE), "[[0, 0]]");
+        aeq(ZERO.divide(ALL), "[[0, 0]]");
+        aeq(ZERO.divide(read("[-2, 5/3]").get()), "[[0, 0]]");
+        aeq(ZERO.divide(read("[4, 4]").get()), "[[0, 0]]");
+        aeq(ZERO.divide(read("(-Infinity, 3/2]").get()), "[[0, 0]]");
+        aeq(ZERO.divide(read("[-6, Infinity)").get()), "[[0, 0]]");
+        aeq(ONE.divide(ZERO), "[]");
+        aeq(ONE.divide(ONE), "[[1, 1]]");
+        aeq(ONE.divide(ALL), "[(-Infinity, Infinity)]");
+        aeq(ONE.divide(read("[-2, 5/3]").get()), "[(-Infinity, -1/2], [3/5, Infinity)]");
+        aeq(ONE.divide(read("[4, 4]").get()), "[[1/4, 1/4]]");
+        aeq(ONE.divide(read("(-Infinity, 3/2]").get()), "[(-Infinity, 0], [2/3, Infinity)]");
+        aeq(ONE.divide(read("[-6, Infinity)").get()), "[(-Infinity, -1/6], [0, Infinity)]");
+        aeq(ALL.divide(ZERO), "[]");
+        aeq(ALL.divide(ONE), "[(-Infinity, Infinity)]");
+        aeq(ALL.divide(ALL), "[(-Infinity, Infinity)]");
+        aeq(ALL.divide(read("[-2, 5/3]").get()), "[(-Infinity, Infinity)]");
+        aeq(ALL.divide(read("[4, 4]").get()), "[(-Infinity, Infinity)]");
+        aeq(ALL.divide(read("(-Infinity, 3/2]").get()), "[(-Infinity, Infinity)]");
+        aeq(ALL.divide(read("[-6, Infinity)").get()), "[(-Infinity, Infinity)]");
+        aeq(read("[-2, 5/3]").get().divide(ZERO), "[]");
+        aeq(read("[-2, 5/3]").get().divide(ONE), "[[-2, 5/3]]");
+        aeq(read("[-2, 5/3]").get().divide(ALL), "[(-Infinity, Infinity)]");
+        aeq(read("[-2, 5/3]").get().divide(read("[-2, 5/3]").get()), "[(-Infinity, Infinity)]");
+        aeq(read("[-2, 5/3]").get().divide(read("[4, 4]").get()), "[[-1/2, 5/12]]");
+        aeq(read("[-2, 5/3]").get().divide(read("(-Infinity, 3/2]").get()), "[(-Infinity, Infinity)]");
+        aeq(read("[-2, 5/3]").get().divide(read("[-6, Infinity)").get()), "[(-Infinity, Infinity)]");
+        aeq(read("[4, 4]").get().divide(ZERO), "[]");
+        aeq(read("[4, 4]").get().divide(ONE), "[[4, 4]]");
+        aeq(read("[4, 4]").get().divide(ALL), "[(-Infinity, Infinity)]");
+        aeq(read("[4, 4]").get().divide(read("[-2, 5/3]").get()), "[(-Infinity, -2], [12/5, Infinity)]");
+        aeq(read("[4, 4]").get().divide(read("[4, 4]").get()), "[[1, 1]]");
+        aeq(read("[4, 4]").get().divide(read("(-Infinity, 3/2]").get()), "[(-Infinity, 0], [8/3, Infinity)]");
+        aeq(read("[4, 4]").get().divide(read("[-6, Infinity)").get()), "[(-Infinity, -2/3], [0, Infinity)]");
+        aeq(read("(-Infinity, 3/2]").get().divide(ZERO), "[]");
+        aeq(read("(-Infinity, 3/2]").get().divide(ONE), "[(-Infinity, 3/2]]");
+        aeq(read("(-Infinity, 3/2]").get().divide(ALL), "[(-Infinity, Infinity)]");
+        aeq(read("(-Infinity, 3/2]").get().divide(read("[-2, 5/3]").get()), "[(-Infinity, Infinity)]");
+        aeq(read("(-Infinity, 3/2]").get().divide(read("[4, 4]").get()), "[(-Infinity, 3/8]]");
+        aeq(read("(-Infinity, 3/2]").get().divide(read("(-Infinity, 3/2]").get()), "[(-Infinity, Infinity)]");
+        aeq(read("(-Infinity, 3/2]").get().divide(read("[-6, Infinity)").get()), "[(-Infinity, Infinity)]");
+        aeq(read("[-6, Infinity)").get().divide(ZERO), "[]");
+        aeq(read("[-6, Infinity)").get().divide(ONE), "[[-6, Infinity)]");
+        aeq(read("[-6, Infinity)").get().divide(ALL), "[(-Infinity, Infinity)]");
+        aeq(read("[-6, Infinity)").get().divide(read("[-2, 5/3]").get()), "[(-Infinity, Infinity)]");
+        aeq(read("[-6, Infinity)").get().divide(read("[4, 4]").get()), "[[-3/2, Infinity)]");
+        aeq(read("[-6, Infinity)").get().divide(read("(-Infinity, 3/2]").get()), "[(-Infinity, Infinity)]");
+        aeq(read("[-6, Infinity)").get().divide(read("[-6, Infinity)").get()), "[(-Infinity, Infinity)]");
+        aeq(read("(-Infinity, 0]").get().divide(read("(-Infinity, 0]").get()), "[[0, Infinity)]");
+    }
+
+    @Test
+    public void testDivideHull() {
+        aeq(ZERO.divideHull(ONE), "[0, 0]");
+        aeq(ZERO.divideHull(ALL), "[0, 0]");
+        aeq(ZERO.divideHull(read("[-2, 5/3]").get()), "[0, 0]");
+        aeq(ZERO.divideHull(read("[4, 4]").get()), "[0, 0]");
+        aeq(ZERO.divideHull(read("(-Infinity, 3/2]").get()), "[0, 0]");
+        aeq(ZERO.divideHull(read("[-6, Infinity)").get()), "[0, 0]");
+        aeq(ONE.divideHull(ONE), "[1, 1]");
+        aeq(ONE.divideHull(ALL), "(-Infinity, Infinity)");
+        aeq(ONE.divideHull(read("[-2, 5/3]").get()), "(-Infinity, Infinity)");
+        aeq(ONE.divideHull(read("[4, 4]").get()), "[1/4, 1/4]");
+        aeq(ONE.divideHull(read("(-Infinity, 3/2]").get()), "(-Infinity, Infinity)");
+        aeq(ONE.divideHull(read("[-6, Infinity)").get()), "(-Infinity, Infinity)");
+        aeq(ALL.divideHull(ONE), "(-Infinity, Infinity)");
+        aeq(ALL.divideHull(ALL), "(-Infinity, Infinity)");
+        aeq(ALL.divideHull(read("[-2, 5/3]").get()), "(-Infinity, Infinity)");
+        aeq(ALL.divideHull(read("[4, 4]").get()), "(-Infinity, Infinity)");
+        aeq(ALL.divideHull(read("(-Infinity, 3/2]").get()), "(-Infinity, Infinity)");
+        aeq(ALL.divideHull(read("[-6, Infinity)").get()), "(-Infinity, Infinity)");
+        aeq(read("[-2, 5/3]").get().divideHull(ONE), "[-2, 5/3]");
+        aeq(read("[-2, 5/3]").get().divideHull(ALL), "(-Infinity, Infinity)");
+        aeq(read("[-2, 5/3]").get().divideHull(read("[-2, 5/3]").get()), "(-Infinity, Infinity)");
+        aeq(read("[-2, 5/3]").get().divideHull(read("[4, 4]").get()), "[-1/2, 5/12]");
+        aeq(read("[-2, 5/3]").get().divideHull(read("(-Infinity, 3/2]").get()), "(-Infinity, Infinity)");
+        aeq(read("[-2, 5/3]").get().divideHull(read("[-6, Infinity)").get()), "(-Infinity, Infinity)");
+        aeq(read("[4, 4]").get().divideHull(ONE), "[4, 4]");
+        aeq(read("[4, 4]").get().divideHull(ALL), "(-Infinity, Infinity)");
+        aeq(read("[4, 4]").get().divideHull(read("[-2, 5/3]").get()), "(-Infinity, Infinity)");
+        aeq(read("[4, 4]").get().divideHull(read("[4, 4]").get()), "[1, 1]");
+        aeq(read("[4, 4]").get().divideHull(read("(-Infinity, 3/2]").get()), "(-Infinity, Infinity)");
+        aeq(read("[4, 4]").get().divideHull(read("[-6, Infinity)").get()), "(-Infinity, Infinity)");
+        aeq(read("(-Infinity, 3/2]").get().divideHull(ONE), "(-Infinity, 3/2]");
+        aeq(read("(-Infinity, 3/2]").get().divideHull(ALL), "(-Infinity, Infinity)");
+        aeq(read("(-Infinity, 3/2]").get().divideHull(read("[-2, 5/3]").get()), "(-Infinity, Infinity)");
+        aeq(read("(-Infinity, 3/2]").get().divideHull(read("[4, 4]").get()), "(-Infinity, 3/8]");
+        aeq(read("(-Infinity, 3/2]").get().divideHull(read("(-Infinity, 3/2]").get()), "(-Infinity, Infinity)");
+        aeq(read("(-Infinity, 3/2]").get().divideHull(read("[-6, Infinity)").get()), "(-Infinity, Infinity)");
+        aeq(read("[-6, Infinity)").get().divideHull(ONE), "[-6, Infinity)");
+        aeq(read("[-6, Infinity)").get().divideHull(ALL), "(-Infinity, Infinity)");
+        aeq(read("[-6, Infinity)").get().divideHull(read("[-2, 5/3]").get()), "(-Infinity, Infinity)");
+        aeq(read("[-6, Infinity)").get().divideHull(read("[4, 4]").get()), "[-3/2, Infinity)");
+        aeq(read("[-6, Infinity)").get().divideHull(read("(-Infinity, 3/2]").get()), "(-Infinity, Infinity)");
+        aeq(read("[-6, Infinity)").get().divideHull(read("[-6, Infinity)").get()), "(-Infinity, Infinity)");
+        aeq(read("(-Infinity, 0]").get().divideHull(read("(-Infinity, 0]").get()), "[0, Infinity)");
+    }
+
+    @Test
     public void testElementCompare() {
         aeq(ZERO.elementCompare(ZERO), "Optional[EQ]");
         aeq(ZERO.elementCompare(ONE), "Optional[LT]");
