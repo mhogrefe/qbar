@@ -31,7 +31,6 @@ import static mho.wheels.ordering.Ordering.*;
  *
  * <p>This class is immutable.
  */
-@SuppressWarnings("ConstantConditions")
 public final class Rational implements Comparable<Rational> {
     /**
      * 0
@@ -95,6 +94,7 @@ public final class Rational implements Comparable<Rational> {
      *
      * Length is infinite
      */
+    @SuppressWarnings("ConstantConditions")
     public static final @NotNull Iterable<Rational> HARMONIC_NUMBERS =
             scanl(p -> p.a.add(p.b), ONE, map(i -> new Rational(BigInteger.ONE, BigInteger.valueOf(i)), rangeUp(2)));
 
@@ -741,6 +741,7 @@ public final class Rational implements Comparable<Rational> {
         if (this == ZERO) return new Pair<>(0f, 0f);
         if (numerator.signum() == -1) {
             Pair<Float, Float> negativeRange = negate().floatRange();
+            //noinspection ConstantConditions
             return new Pair<>(-negativeRange.b, -negativeRange.a);
         }
         int exponent = binaryExponent();
@@ -786,6 +787,7 @@ public final class Rational implements Comparable<Rational> {
         if (this == ZERO) return new Pair<>(0.0, 0.0);
         if (numerator.signum() == -1) {
             Pair<Double, Double> negativeRange = negate().doubleRange();
+            //noinspection ConstantConditions
             return new Pair<>(-negativeRange.b, -negativeRange.a);
         }
         int exponent = binaryExponent();
@@ -867,6 +869,7 @@ public final class Rational implements Comparable<Rational> {
      * @param roundingMode specifies the details of how to round {@code this}.
      * @return {@code this}, rounded
      */
+    @SuppressWarnings("ConstantConditions")
     public float floatValue(@NotNull RoundingMode roundingMode) {
         Pair<Float, Float> floatRange = floatRange();
         if (floatRange.a.equals(floatRange.b)) return floatRange.a;
@@ -1012,6 +1015,7 @@ public final class Rational implements Comparable<Rational> {
      * @param roundingMode specifies the details of how to round {@code this}.
      * @return {@code this}, rounded
      */
+    @SuppressWarnings("ConstantConditions")
     public double doubleValue(@NotNull RoundingMode roundingMode) {
         Pair<Double, Double> doubleRange = doubleRange();
         if (doubleRange.a.equals(doubleRange.b)) return doubleRange.a;
@@ -1409,6 +1413,7 @@ public final class Rational implements Comparable<Rational> {
      * @return Σxs
      */
     public static Rational sum(@NotNull Iterable<Rational> xs) {
+        //noinspection ConstantConditions
         return foldl(p -> p.a.add(p.b), ZERO, xs);
     }
 
@@ -1437,6 +1442,7 @@ public final class Rational implements Comparable<Rational> {
                 },
                 xs
         );
+        //noinspection ConstantConditions
         return foldl(p -> p.a.multiply(p.b), ONE, denominatorSorted);
     }
 
@@ -1459,6 +1465,7 @@ public final class Rational implements Comparable<Rational> {
             throw new IllegalArgumentException("cannot get delta of empty Iterable");
         if (head(xs) == null)
             throw new NullPointerException();
+        //noinspection ConstantConditions
         return adjacentPairsWith(p -> p.b.subtract(p.a), xs);
     }
 
@@ -1852,6 +1859,7 @@ public final class Rational implements Comparable<Rational> {
      * @param base the base of the output digits
      * @return a {@code String} representation of {@code this} in base {@code base}
      */
+    @SuppressWarnings("ConstantConditions")
     public @NotNull String toStringBase(@NotNull BigInteger base) {
         if (!hasTerminatingBaseExpansion(base))
             throw new ArithmeticException(this + " has a non-terminating base-" + base + " expansion");
@@ -2021,6 +2029,7 @@ public final class Rational implements Comparable<Rational> {
      * @param xs the {@code List} of {@code Rational}s
      * @return a canonical representation of {@code xs} as a {@code List} of {@code BigInteger}s
      */
+    @SuppressWarnings("ConstantConditions")
     public static @NotNull List<BigInteger> cancelDenominators(@NotNull List<Rational> xs) {
         BigInteger lcm = foldl(p -> MathUtils.lcm(p.a, p.b), BigInteger.ONE, map(Rational::getDenominator, xs));
         Iterable<BigInteger> canceled = map(x -> x.multiply(lcm).getNumerator(), xs);
