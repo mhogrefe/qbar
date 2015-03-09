@@ -968,7 +968,20 @@ public final class Interval implements Comparable<Interval> {
      * <ul>
      *  <li>{@code this} may be any {@code Interval}.</li>
      *  <li>{@code that} cannot be null.</li>
-     *  <li>The result is not null.</li>
+     *  <li>
+     *   The result is one of the following:
+     *   <li>
+     *    <ul>[]</ul>
+     *    <ul>[(–∞, ∞)]</ul>
+     *    <ul>[(–∞, q]] where q≤0</ul>
+     *    <ul>[[p, ∞)] where p≥0</ul>
+     *    <ul>[[p, q]]</ul>
+     *    <ul>[(–∞, q], [0, ∞)] where q<0</ul>
+     *    <ul>[(–∞, 0], [p, ∞)] where p>0</ul>
+     *    <ul>[(–∞, q], [p, ∞)] where q<0, p>0</ul>
+     *    <ul></ul>
+     *   </li>
+     *  </li>
      * </ul>
      *
      * @return 1/{@code this}
