@@ -283,6 +283,20 @@ public class IntervalDemos {
         }
     }
 
+    public static void demoDivide_Interval() {
+        initialize();
+        for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
+            System.out.println(p.a + " / " + p.b + " = " + p.a.divide(p.b));
+        }
+    }
+
+    public static void demoDivideHull() {
+        initialize();
+        for (Pair<Interval, Interval> p : take(LIMIT, filter(q -> !q.b.equals(ZERO), P.pairs(P.intervals())))) {
+            System.out.println("divideHull(" + p.a + ", " + p.b + ") = " + p.a.divideHull(p.b));
+        }
+    }
+
     public static void demoElementCompare() {
         initialize();
         for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {

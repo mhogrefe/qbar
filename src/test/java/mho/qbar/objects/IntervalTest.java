@@ -1038,6 +1038,14 @@ public class IntervalTest {
         aeq(read("[-6, Infinity)").get().divideHull(read("(-Infinity, 3/2]").get()), "(-Infinity, Infinity)");
         aeq(read("[-6, Infinity)").get().divideHull(read("[-6, Infinity)").get()), "(-Infinity, Infinity)");
         aeq(read("(-Infinity, 0]").get().divideHull(read("(-Infinity, 0]").get()), "[0, Infinity)");
+        try {
+            ZERO.divideHull(ZERO);
+            fail();
+        } catch (ArithmeticException ignored) {}
+        try {
+            read("[-2, 5/3]").get().divideHull(ZERO);
+            fail();
+        } catch (ArithmeticException ignored) {}
     }
 
     @Test
