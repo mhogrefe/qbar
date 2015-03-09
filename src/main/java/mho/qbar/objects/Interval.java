@@ -398,7 +398,7 @@ public final class Interval implements Comparable<Interval> {
     }
 
     /**
-     * Splits {@code this} into two intervals at {@code x}.
+     * Splits {@code this} into two {@code Interval}s at {@code x}.
      *
      * <ul>
      *  <li>{@code this} may be any {@code Interval}.</li>
@@ -641,7 +641,7 @@ public final class Interval implements Comparable<Interval> {
     }
 
     /**
-     * Returns the smallest interval z such that if a∈{@code this} and b∈{@code that}, a+b∈z.
+     * Returns the smallest {@code Interval} z such that if a∈{@code this} and b∈{@code that}, a+b∈z.
      *
      * <ul>
      *  <li>{@code this} may be any {@code Interval}.</li>
@@ -659,7 +659,7 @@ public final class Interval implements Comparable<Interval> {
     }
 
     /**
-     * Returns the smallest interval a such that if x∈{@code this}, –x∈a.
+     * Returns the smallest {@code Interval} a such that if x∈{@code this}, –x∈a.
      *
      * <ul>
      *  <li>{@code this} may be any {@code Interval}.</li>
@@ -676,7 +676,7 @@ public final class Interval implements Comparable<Interval> {
     }
 
     /**
-     * Returns the smallest interval a such that if x∈{@code this}, |x|∈a.
+     * Returns the smallest {@code Interval} a such that if x∈{@code this}, |x|∈a.
      *
      * <ul>
      *  <li>{@code this} may be any {@code Interval}.</li>
@@ -716,7 +716,7 @@ public final class Interval implements Comparable<Interval> {
     }
 
     /**
-     * Returns the smallest interval z such that if a∈{@code this} and b∈{@code that}, a–b∈z.
+     * Returns the smallest {@code Interval} z such that if a∈{@code this} and b∈{@code that}, a–b∈z.
      *
      * <ul>
      *  <li>{@code this} may be any {@code Interval}.</li>
@@ -732,8 +732,8 @@ public final class Interval implements Comparable<Interval> {
     }
 
     /**
-     * Returns the smallest interval z such that if a∈{@code this} and b∈{@code that}, a×b∈z. Interval addition does
-     * not distribute over interval multiplication: for example, ([0, 1] + (–∞, -1]) × [0, 1] = (–∞, 0], but
+     * Returns the smallest {@code Interval} z such that if a∈{@code this} and b∈{@code that}, a×b∈z. Interval addition
+     * does not distribute over interval multiplication: for example, ([0, 1] + (–∞, -1]) × [0, 1] = (–∞, 0], but
      * [0, 1] × [0, 1] + (–∞, -1] × [0, 1] = (–∞, 1].
      *
      * <ul>
@@ -777,7 +777,7 @@ public final class Interval implements Comparable<Interval> {
     }
 
     /**
-     * Returns the smallest interval a such that if x∈{@code this}, x×{@code that}∈a.
+     * Returns the smallest {@code Interval} a such that if x∈{@code this}, x×{@code that}∈a.
      *
      * <ul>
      *  <li>{@code this} may be any {@code Interval}.</li>
@@ -805,7 +805,7 @@ public final class Interval implements Comparable<Interval> {
     }
 
     /**
-     * Returns the smallest interval a such that if x∈{@code this}, x×{@code that}∈a.
+     * Returns the smallest {@code Interval} a such that if x∈{@code this}, x×{@code that}∈a.
      *
      * <ul>
      *  <li>{@code this} may be any {@code Interval}.</li>
@@ -930,7 +930,7 @@ public final class Interval implements Comparable<Interval> {
     }
 
     /**
-     * Returns the smallest interval a such that if x∈{@code this}, 1/x∈a.
+     * Returns the smallest {@code Interval} a such that if x∈{@code this}, 1/x∈a.
      *
      * <ul>
      *  <li>{@code this} cannot be [0, 0].</li>
@@ -961,12 +961,43 @@ public final class Interval implements Comparable<Interval> {
         }
     }
 
+    /**
+     * Returns the closure of the set z such that if a∈{@code this} and b∈{@code that}, a/b∈z. z is represented as a
+     * union of a list of {@code Interval}s.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Interval}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @return 1/{@code this}
+     */
     public @NotNull List<Interval> divide(@NotNull Interval that) {
         return makeDisjoint(toList(map(this::multiply, that.invert())));
     }
 
+    /**
+     * Returns the smallest {@code Interval} z such that if a∈{@code this} and b∈{@code that}, a/b∈z.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Interval}.</li>
+     *  <li>{@code that} cannot be [0, 0].</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @return 1/{@code this}
+     */
     public @NotNull Interval divideHull(@NotNull Interval that) {
-        return convexHull(toList(map(this::multiply, that.invert())));
+        List<Interval> quotient = divide(that);
+        switch (quotient.size()) {
+            case 0:
+                throw new ArithmeticException("division by 0");
+            case 1:
+                return quotient.get(0);
+            default:
+                return ALL;
+        }
     }
 
     public @NotNull Interval divide(@NotNull Rational that) {
@@ -1199,7 +1230,7 @@ public final class Interval implements Comparable<Interval> {
      * @return the first {@code Interval} found in {@code s}, and the index at which it was found
      */
     public static @NotNull Optional<Pair<Interval, Integer>> findIn(@NotNull String s) {
-        return Readers.genericFindIn(Interval::read, " (),-/0123456789I[]finty", s);
+        return Readers.genericFindIn(Interval::read, " (),-/0123456789I[]finty").apply(s);
     }
 
     /**
