@@ -2132,7 +2132,7 @@ public final class Rational implements Comparable<Rational> {
      * @return the first {@code Rational} found in {@code s}, and the index at which it was found
      */
     public static @NotNull Optional<Pair<Rational, Integer>> findIn(@NotNull String s) {
-        return Readers.genericFindIn(Rational::read, "-/0123456789", s);
+        return Readers.genericFindIn(Rational::read, "-/0123456789").apply(s);
     }
 
     /**
