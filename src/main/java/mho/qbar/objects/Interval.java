@@ -1163,27 +1163,36 @@ public final class Interval implements Comparable<Interval> {
         return adjacentPairsWith(p -> p.b.subtract(p.a), xs);
     }
 
-//    public @NotNull Interval pow(int p) {
-//        if (p == 0) return ONE;
-//        if (p == 1) return this;
-//        if (p < 0) return pow(-p).invert();
-//        if (p % 2 == 0) {
-//            int ls = lower == null ? -1 : lower.signum();
-//            int us = upper == null ? 1 : upper.signum();
-//            if (ls != -1 && us != -1) {
-//                return new Interval(lower.pow(p), upper == null ? null : upper.pow(p));
-//            }
-//            if (ls != 1 && us != 1) {
-//                return new Interval(upper.pow(p), lower == null ? null : lower.pow(p));
-//            }
-//            Rational a = lower == null ? null : lower.pow(p);
-//            Rational b = upper == null ? null : upper.pow(p);
-//            Rational max = a == null || b == null ? null : max(a, b);
-//            return new Interval(Rational.ZERO, max);
-//        } else {
-//            return new Interval(lower == null ? null : lower.pow(p), upper == null ? null : upper.pow(p));
-//        }
-//    }
+    public @NotNull List<Interval> pow(int p) {
+        List<Interval> intervals = new ArrayList<>();
+        if (p == 0) {
+            intervals.add(ONE);
+        } else if (p == 1) {
+            intervals.add(this);
+        } else if (p < 0) {
+            intervals.addAll(pow(-p).get(0).invert());
+        } else if (p % 2 == 0) {
+            int lowerSign = lower == null ? -1 : lower.signum();
+            int upperSign = upper == null ? 1 : upper.signum();
+            if (lowerSign != -1 && upperSign != -1) {
+                intervals.add(new Interval(lower.pow(p), upper == null ? null : upper.pow(p)));
+            } else if (lowerSign != 1 && upperSign != 1) {
+                intervals.add(new Interval(upper.pow(p), lower == null ? null : lower.pow(p)));
+            } else {
+                Rational a = lower == null ? null : lower.pow(p);
+                Rational b = upper == null ? null : upper.pow(p);
+                Rational max = a == null || b == null ? null : max(a, b);
+                intervals.add(new Interval(Rational.ZERO, max));
+            }
+        } else {
+            intervals.add(new Interval(lower == null ? null : lower.pow(p), upper == null ? null : upper.pow(p)));
+        }
+        return intervals;
+    }
+
+    public @NotNull Interval powHull(int p) {
+        return convexHull(pow(p));
+    }
 
     /**
      * If {@code this} and {@code that} are disjoint, returns the ordering between any element of {@code this} and any
