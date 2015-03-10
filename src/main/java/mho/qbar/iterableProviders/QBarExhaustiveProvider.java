@@ -265,4 +265,76 @@ public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIt
     public @NotNull Iterable<RationalVector> rationalVectors() {
         return map(RationalVector::of, lists(rationals()));
     }
+
+    @Override
+    public @NotNull Iterable<RationalVector> reducedRationalVectors(int dimension) {
+        if (dimension == 1) {
+            return Arrays.asList(RationalVector.of(Rational.ZERO), RationalVector.of(Rational.ONE));
+        }
+        return map(
+                RationalVector::reduce,
+                filter(
+                        v -> {
+                            Optional<Rational> pivot = v.pivot();
+                            return !pivot.isPresent() || pivot.get().signum() == 1;
+                        },
+                        map(
+                                is -> RationalVector.of(toList(map(Rational::of, is))),
+                                filter(
+                                        js -> {
+                                            BigInteger gcd = foldl(p -> p.a.gcd(p.b), BigInteger.ZERO, js);
+                                            return gcd.equals(BigInteger.ZERO) || gcd.equals(BigInteger.ONE);
+                                        },
+                                        lists(dimension, bigIntegers())
+                                )
+                        )
+                )
+        );
+    }
+
+    @Override
+    public @NotNull Iterable<RationalVector> reducedRationalVectorsAtLeast(int minDimension) {
+        return map(
+                RationalVector::reduce,
+                filter(
+                        v -> {
+                            Optional<Rational> pivot = v.pivot();
+                            return !pivot.isPresent() || pivot.get().signum() == 1;
+                        },
+                        map(
+                                is -> RationalVector.of(toList(map(Rational::of, is))),
+                                filter(
+                                        js -> {
+                                            BigInteger gcd = foldl(p -> p.a.gcd(p.b), BigInteger.ZERO, js);
+                                            return gcd.equals(BigInteger.ZERO) || gcd.equals(BigInteger.ONE);
+                                        },
+                                        listsAtLeast(minDimension, bigIntegers())
+                                )
+                        )
+                )
+        );
+    }
+
+    @Override
+    public @NotNull Iterable<RationalVector> reducedRationalVectors() {
+        return map(
+                RationalVector::reduce,
+                filter(
+                        v -> {
+                            Optional<Rational> pivot = v.pivot();
+                            return !pivot.isPresent() || pivot.get().signum() == 1;
+                        },
+                        map(
+                                is -> RationalVector.of(toList(map(Rational::of, is))),
+                                filter(
+                                        js -> {
+                                            BigInteger gcd = foldl(p -> p.a.gcd(p.b), BigInteger.ZERO, js);
+                                            return gcd.equals(BigInteger.ZERO) || gcd.equals(BigInteger.ONE);
+                                        },
+                                        lists(bigIntegers())
+                                )
+                        )
+                )
+        );
+    }
 }
