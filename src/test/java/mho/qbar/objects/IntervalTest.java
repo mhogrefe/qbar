@@ -1049,6 +1049,90 @@ public class IntervalTest {
     }
 
     @Test
+    public void testDivide_Rational() {
+        aeq(ZERO.divide(Rational.ONE), "[0, 0]");
+        aeq(ZERO.divide(Rational.read("2/3").get()), "[0, 0]");
+        aeq(ZERO.divide(Rational.read("-7").get()), "[0, 0]");
+        aeq(ONE.divide(Rational.ONE), "[1, 1]");
+        aeq(ONE.divide(Rational.read("2/3").get()), "[3/2, 3/2]");
+        aeq(ONE.divide(Rational.read("-7").get()), "[-1/7, -1/7]");
+        aeq(ALL.divide(Rational.ONE), "(-Infinity, Infinity)");
+        aeq(ALL.divide(Rational.read("2/3").get()), "(-Infinity, Infinity)");
+        aeq(ALL.divide(Rational.read("-7").get()), "(-Infinity, Infinity)");
+        aeq(read("[-2, 5/3]").get().divide(Rational.ONE), "[-2, 5/3]");
+        aeq(read("[-2, 5/3]").get().divide(Rational.read("2/3").get()), "[-3, 5/2]");
+        aeq(read("[-2, 5/3]").get().divide(Rational.read("-7").get()), "[-5/21, 2/7]");
+        aeq(read("[4, 4]").get().divide(Rational.ONE), "[4, 4]");
+        aeq(read("[4, 4]").get().divide(Rational.read("2/3").get()), "[6, 6]");
+        aeq(read("[4, 4]").get().divide(Rational.read("-7").get()), "[-4/7, -4/7]");
+        aeq(read("(-Infinity, 3/2]").get().divide(Rational.ONE), "(-Infinity, 3/2]");
+        aeq(read("(-Infinity, 3/2]").get().divide(Rational.read("2/3").get()), "(-Infinity, 9/4]");
+        aeq(read("(-Infinity, 3/2]").get().divide(Rational.read("-7").get()), "[-3/14, Infinity)");
+        aeq(read("[-6, Infinity)").get().divide(Rational.ONE), "[-6, Infinity)");
+        aeq(read("[-6, Infinity)").get().divide(Rational.read("2/3").get()), "[-9, Infinity)");
+        aeq(read("[-6, Infinity)").get().divide(Rational.read("-7").get()), "(-Infinity, 6/7]");
+        try {
+            read("[-2, 5/3]").get().divide(Rational.ZERO);
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testDivide_BigInteger() {
+        aeq(ZERO.divide(BigInteger.ONE), "[0, 0]");
+        aeq(ZERO.divide(BigInteger.valueOf(5)), "[0, 0]");
+        aeq(ZERO.divide(BigInteger.valueOf(-7)), "[0, 0]");
+        aeq(ONE.divide(BigInteger.ONE), "[1, 1]");
+        aeq(ONE.divide(BigInteger.valueOf(5)), "[1/5, 1/5]");
+        aeq(ONE.divide(BigInteger.valueOf(-7)), "[-1/7, -1/7]");
+        aeq(ALL.divide(BigInteger.ONE), "(-Infinity, Infinity)");
+        aeq(ALL.divide(BigInteger.valueOf(5)), "(-Infinity, Infinity)");
+        aeq(ALL.divide(BigInteger.valueOf(-7)), "(-Infinity, Infinity)");
+        aeq(read("[-2, 5/3]").get().divide(BigInteger.ONE), "[-2, 5/3]");
+        aeq(read("[-2, 5/3]").get().divide(BigInteger.valueOf(5)), "[-2/5, 1/3]");
+        aeq(read("[-2, 5/3]").get().divide(BigInteger.valueOf(-7)), "[-5/21, 2/7]");
+        aeq(read("[4, 4]").get().divide(BigInteger.ONE), "[4, 4]");
+        aeq(read("[4, 4]").get().divide(BigInteger.valueOf(5)), "[4/5, 4/5]");
+        aeq(read("[4, 4]").get().divide(BigInteger.valueOf(-7)), "[-4/7, -4/7]");
+        aeq(read("(-Infinity, 3/2]").get().divide(BigInteger.ONE), "(-Infinity, 3/2]");
+        aeq(read("(-Infinity, 3/2]").get().divide(BigInteger.valueOf(5)), "(-Infinity, 3/10]");
+        aeq(read("(-Infinity, 3/2]").get().divide(BigInteger.valueOf(-7)), "[-3/14, Infinity)");
+        aeq(read("[-6, Infinity)").get().divide(BigInteger.ONE), "[-6, Infinity)");
+        aeq(read("[-6, Infinity)").get().divide(BigInteger.valueOf(5)), "[-6/5, Infinity)");
+        aeq(read("[-6, Infinity)").get().divide(BigInteger.valueOf(-7)), "(-Infinity, 6/7]");
+        try {
+            read("[-2, 5/3]").get().divide(BigInteger.ZERO);
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testDivide_int() {
+        aeq(ZERO.divide(1), "[0, 0]");
+        aeq(ZERO.divide(5), "[0, 0]");
+        aeq(ZERO.divide(-7), "[0, 0]");
+        aeq(ONE.divide(1), "[1, 1]");
+        aeq(ONE.divide(5), "[1/5, 1/5]");
+        aeq(ONE.divide(-7), "[-1/7, -1/7]");
+        aeq(ALL.divide(1), "(-Infinity, Infinity)");
+        aeq(ALL.divide(5), "(-Infinity, Infinity)");
+        aeq(ALL.divide(-7), "(-Infinity, Infinity)");
+        aeq(read("[-2, 5/3]").get().divide(1), "[-2, 5/3]");
+        aeq(read("[-2, 5/3]").get().divide(5), "[-2/5, 1/3]");
+        aeq(read("[-2, 5/3]").get().divide(-7), "[-5/21, 2/7]");
+        aeq(read("[4, 4]").get().divide(1), "[4, 4]");
+        aeq(read("[4, 4]").get().divide(5), "[4/5, 4/5]");
+        aeq(read("[4, 4]").get().divide(-7), "[-4/7, -4/7]");
+        aeq(read("(-Infinity, 3/2]").get().divide(1), "(-Infinity, 3/2]");
+        aeq(read("(-Infinity, 3/2]").get().divide(5), "(-Infinity, 3/10]");
+        aeq(read("(-Infinity, 3/2]").get().divide(-7), "[-3/14, Infinity)");
+        aeq(read("[-6, Infinity)").get().divide(1), "[-6, Infinity)");
+        aeq(read("[-6, Infinity)").get().divide(5), "[-6/5, Infinity)");
+        aeq(read("[-6, Infinity)").get().divide(-7), "(-Infinity, 6/7]");
+        try {
+            read("[-2, 5/3]").get().divide(0);
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
     public void testElementCompare() {
         aeq(ZERO.elementCompare(ZERO), "Optional[EQ]");
         aeq(ZERO.elementCompare(ONE), "Optional[LT]");
