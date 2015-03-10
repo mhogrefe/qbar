@@ -1108,6 +1108,61 @@ public final class Interval implements Comparable<Interval> {
         );
     }
 
+    /**
+     * Returns the sum of all the {@code Interval}s in {@code xs}. If {@code xs} is empty, [0, 0] is returned.
+     *
+     * <ul>
+     *  <li>{@code xs} must be finite and may not contain any nulls.</li>
+     *  <li>The result may be any {@code Interval}.</li>
+     * </ul>
+     *
+     * @param xs an {@code Iterable} of {@code Interval}s.
+     * @return Σxs
+     */
+    public static Interval sum(@NotNull Iterable<Interval> xs) {
+        //noinspection ConstantConditions
+        return foldl(p -> p.a.add(p.b), ZERO, xs);
+    }
+
+    /**
+     * Returns the product of all the {@code Interval}s in {@code xs}. If {@code xs} is empty, [1, 1] is returned.
+     *
+     * <ul>
+     *  <li>{@code xs} must be finite and may not contain any nulls.</li>
+     *  <li>The result may be any {@code Interval}.</li>
+     * </ul>
+     *
+     * @param xs an {@code Iterable} of {@code Interval}s.
+     * @return Πxs
+     */
+    public static Interval product(@NotNull Iterable<Interval> xs) {
+        //noinspection ConstantConditions
+        return foldl(p -> p.a.multiply(p.b), ONE, xs);
+    }
+
+    /**
+     * Returns the differences between successive {@code Interval}s in {@code xs}. If {@code xs} contains a single
+     * {@code Interval}, an empty {@code Iterable} is returned. {@code xs} cannot be empty. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code xs} must not be empty and may not contain any nulls.</li>
+     *  <li>The result is finite and does not contain any nulls.</li>
+     * </ul>
+     *
+     * Length is |{@code xs}|–1
+     *
+     * @param xs an {@code Iterable} of {@code Interval}s.
+     * @return Δxs
+     */
+    public static @NotNull Iterable<Interval> delta(@NotNull Iterable<Interval> xs) {
+        if (isEmpty(xs))
+            throw new IllegalArgumentException("cannot get delta of empty Iterable");
+        if (head(xs) == null)
+            throw new NullPointerException();
+        //noinspection ConstantConditions
+        return adjacentPairsWith(p -> p.b.subtract(p.a), xs);
+    }
+
 //    public @NotNull Interval pow(int p) {
 //        if (p == 0) return ONE;
 //        if (p == 1) return this;
