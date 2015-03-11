@@ -909,11 +909,11 @@ public class IntervalTest {
         aeq(read("[4, 4]").get().invert(), "[[1/4, 1/4]]");
         aeq(read("[0, 4]").get().invert(), "[[1/4, Infinity)]");
         aeq(read("[-4, 0]").get().invert(), "[(-Infinity, -1/4]]");
-        aeq(read("(-Infinity, -3/2]").get().invert(), "[(-Infinity, -2/3]]");
+        aeq(read("(-Infinity, -3/2]").get().invert(), "[[-2/3, 0]]");
         aeq(read("(-Infinity, 3/2]").get().invert(), "[(-Infinity, 0], [2/3, Infinity)]");
         aeq(read("(-Infinity, 0]").get().invert(), "[(-Infinity, 0]]");
         aeq(read("[-6, Infinity)").get().invert(), "[(-Infinity, -1/6], [0, Infinity)]");
-        aeq(read("[6, Infinity)").get().invert(), "[[1/6, Infinity)]");
+        aeq(read("[6, Infinity)").get().invert(), "[[0, 1/6]]");
         aeq(read("[0, Infinity)").get().invert(), "[[0, Infinity)]");
         aeq(read("(-Infinity, 0]").get().invert(), "[(-Infinity, 0]]");
     }
@@ -926,11 +926,11 @@ public class IntervalTest {
         aeq(read("[4, 4]").get().invertHull(), "[1/4, 1/4]");
         aeq(read("[0, 4]").get().invertHull(), "[1/4, Infinity)");
         aeq(read("[-4, 0]").get().invertHull(), "(-Infinity, -1/4]");
-        aeq(read("(-Infinity, -3/2]").get().invertHull(), "(-Infinity, -2/3]");
+        aeq(read("(-Infinity, -3/2]").get().invertHull(), "[-2/3, 0]");
         aeq(read("(-Infinity, 3/2]").get().invertHull(), "(-Infinity, Infinity)");
         aeq(read("(-Infinity, 0]").get().invertHull(), "(-Infinity, 0]");
         aeq(read("[-6, Infinity)").get().invertHull(), "(-Infinity, Infinity)");
-        aeq(read("[6, Infinity)").get().invertHull(), "[1/6, Infinity)");
+        aeq(read("[6, Infinity)").get().invertHull(), "[0, 1/6]");
         aeq(read("[0, Infinity)").get().invertHull(), "[0, Infinity)");
         aeq(read("(-Infinity, 0]").get().invertHull(), "(-Infinity, 0]");
         try {

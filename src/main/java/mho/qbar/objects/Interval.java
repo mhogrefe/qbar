@@ -898,14 +898,14 @@ public final class Interval implements Comparable<Interval> {
                 intervals.add(new Interval(null, Rational.ZERO));
                 intervals.add(new Interval(upper.invert(), null));
             } else {
-                intervals.add(new Interval(null, upper.invert()));
+                intervals.add(new Interval(upper.invert(), Rational.ZERO));
             }
             return intervals;
         } else if (upper == null) {
             if (lower == Rational.ZERO) {
                 intervals.add(this);
             } else if (lower.signum() == 1) {
-                intervals.add(new Interval(lower.invert(), null));
+                intervals.add(new Interval(Rational.ZERO, lower.invert()));
             } else {
                 intervals.add(new Interval(null, lower.invert()));
                 intervals.add(new Interval(Rational.ZERO, null));
