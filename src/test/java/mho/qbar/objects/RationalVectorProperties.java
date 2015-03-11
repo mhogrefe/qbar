@@ -442,7 +442,7 @@ public class RationalVectorProperties {
         }
 
         for (Rational r : take(LIMIT, P.rationals())) {
-            assertTrue(ZERO_DIMENSIONAL.multiply(r) == ZERO_DIMENSIONAL);
+            assertTrue(r.toString(), ZERO_DIMENSIONAL.multiply(r) == ZERO_DIMENSIONAL);
         }
 
         for (Pair<RationalVector, Rational> p : take(LIMIT, P.pairs(P.rationalVectors(1), P.rationals()))) {

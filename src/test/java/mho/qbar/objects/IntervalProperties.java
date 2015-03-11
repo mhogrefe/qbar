@@ -15,6 +15,7 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.*;
 
 import static mho.qbar.objects.Interval.*;
@@ -79,6 +80,9 @@ public class IntervalProperties {
             propertiesSignum();
             propertiesSubtract();
             propertiesMultiply_Interval();
+            propertiesMultiply_Rational();
+            propertiesMultiply_BigInteger();
+            propertiesMultiply_int();
             propertiesElementCompare();
             propertiesEquals();
             propertiesHashCode();
@@ -1039,10 +1043,11 @@ public class IntervalProperties {
 
         Iterable<Pair<Interval, Interval>> ps = P.pairs(P.intervals(), filter(a -> !a.equals(ZERO), P.intervals()));
         for (Pair<Interval, Interval> p : take(LIMIT, ps)) {
-            List<Interval> quotient = p.a.multiply(p.b).divide(p.b);
+            Interval product = p.a.multiply(p.b);
+            List<Interval> quotient = product.divide(p.b);
             assertTrue(p.toString(), any(a -> a.contains(p.a), quotient));
-            Interval quotient2 = convexHull(toList(concatMap(p.a::divide, p.b.invert())));
-            assertTrue(p.toString(), quotient2.contains(p.a.multiply(p.b)));
+            quotient = makeDisjoint(toList(concatMap(p.a::divide, p.b.invert())));
+            assertTrue(p.toString(), quotient.contains(product));
         }
 
         for (Interval a : take(LIMIT, P.intervals())) {
@@ -1078,40 +1083,100 @@ public class IntervalProperties {
         for (Pair<Interval, Rational> p : take(LIMIT, P.pairs(P.intervals(), P.rationals()))) {
             Interval a = p.a.multiply(p.b);
             validate(a);
+            assertEquals(p.toString(), a, p.a.multiply(of(p.b)));
+            for (Rational r : take(TINY_LIMIT, P.rationals(p.a))) {
+                assertTrue(p.toString(), a.contains(r.multiply(p.b)));
+            }
         }
 
-//        Iterable<Pair<Interval, Rational>> ps = P.pairs(P.intervals(), filter(r -> r != Rational.ZERO, P.rationals()));
-//        for (Pair<Interval, Rational> p : take(LIMIT, ps)) {
-//            assertEquals(p.toString(), p.a.multiply(p.b).divide(p.b), p.a);
-//        }
+        Iterable<Pair<Interval, Rational>> ps = P.pairs(P.intervals(), filter(r -> r != Rational.ZERO, P.rationals()));
+        for (Pair<Interval, Rational> p : take(LIMIT, ps)) {
+            assertEquals(p.toString(), p.a.multiply(p.b).divide(p.b), p.a);
+            assertEquals(p.toString(), p.a.multiply(p.b), p.a.divide(p.b.invert()));
+        }
 
-//        ps = P.pairs(P.rationalVectors(), filter(r -> r != Rational.ZERO, P.rationals()));
-//        for (Pair<RationalVector, Rational> p : take(LIMIT, ps)) {
-//            assertEquals(p.toString(), p.a.multiply(p.b), p.a.divide(p.b.invert()));
-//        }
-//
-//        for (RationalVector v : take(LIMIT, P.rationalVectors())) {
-//            assertEquals(v.toString(), v, v.multiply(Rational.ONE));
-//            assertTrue(v.toString(), v.multiply(Rational.ZERO).isZero());
-//        }
-//
-//        for (Rational r : take(LIMIT, P.rationals())) {
-//            assertTrue(ZERO_DIMENSIONAL.multiply(r) == ZERO_DIMENSIONAL);
-//        }
-//
-//        for (Pair<RationalVector, Rational> p : take(LIMIT, P.pairs(P.rationalVectors(1), P.rationals()))) {
-//            assertEquals(p.toString(), p.a.multiply(p.b), of(p.b).multiply(p.a.x()));
-//        }
-//
-//        Iterable<Pair<Rational, Integer>> ps2;
-//        if (P instanceof ExhaustiveProvider) {
-//            ps2 = ((ExhaustiveProvider) P).pairsLogarithmicOrder(P.rationals(), P.naturalIntegers());
-//        } else {
-//            ps2 = P.pairs(P.rationals(), ((RandomProvider) P).naturalIntegersGeometric(20));
-//        }
-//        for (Pair<Rational, Integer> p : take(LIMIT, ps2)) {
-//            assertTrue(p.toString(), zero(p.b).multiply(p.a).isZero());
-//        }
+        for (Interval a : take(LIMIT, P.intervals())) {
+            assertEquals(a.toString(), a, a.multiply(Rational.ONE));
+            assertEquals(a.toString(), a.multiply(Rational.ZERO), ZERO);
+        }
+
+        for (Rational r : take(LIMIT, P.rationals())) {
+            assertEquals(r.toString(), ZERO.multiply(r), ZERO);
+            assertEquals(r.toString(), ONE.multiply(r), of(r));
+        }
+
+        for (Rational r : take(LIMIT, filter(s -> s != Rational.ZERO, P.rationals()))) {
+            assertEquals(r.toString(), ALL.multiply(r), ALL);
+        }
+    }
+
+    private static void propertiesMultiply_BigInteger() {
+        initialize();
+        System.out.println("\t\ttesting multiply(BigInteger) properties...");
+
+        for (Pair<Interval, BigInteger> p : take(LIMIT, P.pairs(P.intervals(), P.bigIntegers()))) {
+            Interval a = p.a.multiply(p.b);
+            validate(a);
+            assertEquals(p.toString(), a, p.a.multiply(Rational.of(p.b)));
+            for (Rational r : take(TINY_LIMIT, P.rationals(p.a))) {
+                assertTrue(p.toString(), a.contains(r.multiply(p.b)));
+            }
+        }
+
+        Iterable<Pair<Interval, BigInteger>> ps = P.pairs(
+                P.intervals(),
+                filter(i -> !i.equals(BigInteger.ZERO), P.bigIntegers())
+        );
+        for (Pair<Interval, BigInteger> p : take(LIMIT, ps)) {
+            assertEquals(p.toString(), p.a.multiply(p.b).divide(p.b), p.a);
+        }
+
+        for (Interval a : take(LIMIT, P.intervals())) {
+            assertEquals(a.toString(), a, a.multiply(BigInteger.ONE));
+            assertEquals(a.toString(), a.multiply(BigInteger.ZERO), ZERO);
+        }
+
+        for (BigInteger i : take(LIMIT, P.bigIntegers())) {
+            assertEquals(i.toString(), ZERO.multiply(i), ZERO);
+            assertEquals(i.toString(), ONE.multiply(i), of(Rational.of(i)));
+        }
+
+        for (BigInteger i : take(LIMIT, filter(j -> !j.equals(BigInteger.ZERO), P.bigIntegers()))) {
+            assertEquals(i.toString(), ALL.multiply(i), ALL);
+        }
+    }
+
+    private static void propertiesMultiply_int() {
+        initialize();
+        System.out.println("\t\ttesting multiply(int) properties...");
+
+        for (Pair<Interval, Integer> p : take(LIMIT, P.pairs(P.intervals(), P.integers()))) {
+            Interval a = p.a.multiply(p.b);
+            validate(a);
+            assertEquals(p.toString(), a, p.a.multiply(Rational.of(p.b)));
+            for (Rational r : take(TINY_LIMIT, P.rationals(p.a))) {
+                assertTrue(p.toString(), a.contains(r.multiply(p.b)));
+            }
+        }
+
+        Iterable<Pair<Interval, Integer>> ps = P.pairs(P.intervals(), filter(i -> i != 0, P.integers()));
+        for (Pair<Interval, Integer> p : take(LIMIT, ps)) {
+            assertEquals(p.toString(), p.a.multiply(p.b).divide(p.b), p.a);
+        }
+
+        for (Interval a : take(LIMIT, P.intervals())) {
+            assertEquals(a.toString(), a, a.multiply(1));
+            assertEquals(a.toString(), a.multiply(0), ZERO);
+        }
+
+        for (int i : take(LIMIT, P.integers())) {
+            assertEquals(Integer.toString(i), ZERO.multiply(i), ZERO);
+            assertEquals(Integer.toString(i), ONE.multiply(i), of(Rational.of(i)));
+        }
+
+        for (int i : take(LIMIT, filter(j -> j != 0, P.integers()))) {
+            assertEquals(Integer.toString(i), ALL.multiply(i), ALL);
+        }
     }
 
     private static void propertiesElementCompare() {
