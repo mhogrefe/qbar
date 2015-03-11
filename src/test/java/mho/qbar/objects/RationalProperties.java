@@ -1788,10 +1788,6 @@ public class RationalProperties {
 
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals(), filter(r -> r != ZERO, P.rationals())))) {
             assertEquals(p.toString(), p.a.multiply(p.b).divide(p.b), p.a);
-        }
-
-        Iterable<Pair<Rational, Rational>> ps = P.pairs(P.rationals(), filter(r -> r != Rational.ZERO, P.rationals()));
-        for (Pair<Rational, Rational> p : take(LIMIT, ps)) {
             assertEquals(p.toString(), p.a.multiply(p.b), p.a.divide(p.b.invert()));
         }
 

@@ -1037,14 +1037,13 @@ public class IntervalProperties {
             }
         }
 
-//        for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals(), filter(r -> r != ZERO, P.rationals())))) {
-//            assertEquals(p.toString(), p.a.multiply(p.b).divide(p.b), p.a);
-//        }
-//
-//        Iterable<Pair<Rational, Rational>> ps = P.pairs(P.rationals(), filter(r -> r != Rational.ZERO, P.rationals()));
-//        for (Pair<Rational, Rational> p : take(LIMIT, ps)) {
-//            assertEquals(p.toString(), p.a.multiply(p.b), p.a.divide(p.b.invert()));
-//        }
+        Iterable<Pair<Interval, Interval>> ps = P.pairs(P.intervals(), filter(a -> !a.equals(ZERO), P.intervals()));
+        for (Pair<Interval, Interval> p : take(LIMIT, ps)) {
+            List<Interval> quotient = p.a.multiply(p.b).divide(p.b);
+            assertTrue(p.toString(), any(a -> a.contains(p.a), quotient));
+            Interval quotient2 = convexHull(toList(concatMap(p.a::divide, p.b.invert())));
+            assertTrue(p.toString(), quotient2.contains(p.a.multiply(p.b)));
+        }
 
         for (Interval a : take(LIMIT, P.intervals())) {
             assertEquals(a.toString(), ONE.multiply(a), a);
