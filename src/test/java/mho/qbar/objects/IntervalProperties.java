@@ -83,6 +83,7 @@ public class IntervalProperties {
             propertiesMultiply_Rational();
             propertiesMultiply_BigInteger();
             propertiesMultiply_int();
+            propertiesInvert();
             propertiesElementCompare();
             propertiesEquals();
             propertiesHashCode();
@@ -1182,6 +1183,65 @@ public class IntervalProperties {
         }
     }
 
+    private static void propertiesInvert() {
+        initialize();
+        System.out.println("\t\ttesting invert() properties...");
+
+        for (Interval a : take(LIMIT, P.intervals())) {
+            List<Interval> inverse = a.invert();
+            inverse.forEach(mho.qbar.objects.IntervalProperties::validate);
+
+            int size = inverse.size();
+            assertTrue(a.toString(), size == 0 || size == 1 || size == 2);
+            if (size == 1) {
+                Interval i1 = inverse.get(0);
+                Rational p = i1.getLower().isPresent() ? i1.getLower().get() : null;
+                Rational q = i1.getUpper().isPresent() ? i1.getUpper().get() : null;
+                if (p == null && q != null) {
+                    assertTrue(a.toString(), le(q, Rational.ZERO));
+                } else if (p != null && q == null) {
+                    assertTrue(a.toString(), ge(p, Rational.ZERO));
+                } else if (a.isFinitelyBounded()) {
+                    if (p.equals(q)) {
+                        assertNotEquals(a.toString(), p, Rational.ZERO);
+                    } else {
+                        int ps = p.signum();
+                        int qs = q.signum();
+                        assertTrue(a.toString(), ps == 1 && qs == 1 || ps == -1 && qs == -1);
+                    }
+                }
+            } else if (size == 2) {
+                Interval i1 = inverse.get(0);
+                Interval i2 = inverse.get(1);
+                Rational p1 = i1.getLower().isPresent() ? i1.getLower().get() : null;
+                Rational q1 = i1.getUpper().isPresent() ? i1.getUpper().get() : null;
+                Rational p2 = i2.getLower().isPresent() ? i2.getLower().get() : null;
+                Rational q2 = i2.getUpper().isPresent() ? i2.getUpper().get() : null;
+                assertTrue(a.toString(), p1 == null);
+                assertTrue(a.toString(), q2 == null);
+                if (p2 == Rational.ZERO) {
+                    assertTrue(a.toString(), q1.signum() == -1);
+                } else if (q1 == Rational.ZERO) {
+                    assertTrue(a.toString(), p2.signum() == 1);
+                } else {
+                    assertTrue(a.toString(), q1.signum() == -1);
+                    assertTrue(a.toString(), p2.signum() == 1);
+                }
+            }
+
+            for (Rational r : take(TINY_LIMIT, filter(s -> s != Rational.ZERO, P.rationals(a)))) {
+                assertTrue(a.toString(), any(b -> b.contains(r.invert()), inverse));
+            }
+        }
+
+        for (Interval a : take(LIMIT, filter(b -> !b.equals(ZERO), P.intervals()))) {
+            List<Interval> inverse = a.invert();
+            List<Interval> back = makeDisjoint(toList(concatMap(Interval::invert, inverse)));
+            assertTrue(a.toString(), convexHull(back).contains(a));
+            assertTrue(a.toString(), convexHull(toList(map(a::multiply, inverse))).contains(ONE));
+        }
+    }
+
     private static void propertiesElementCompare() {
         initialize();
         System.out.println("\t\ttesting elementCompare(Interval) properties...");
@@ -1340,9 +1400,5 @@ public class IntervalProperties {
 
     private static void aneq(String message, double x, double y) {
         assertNotEquals(message, Double.toString(x), Double.toString(y));
-    }
-
-    private static void aeq(String message, BigDecimal x, BigDecimal y) {
-        assertEquals(message, x.stripTrailingZeros(), y.stripTrailingZeros());
     }
 }

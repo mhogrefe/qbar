@@ -1975,18 +1975,16 @@ public class RationalProperties {
         initialize();
         System.out.println("\t\ttesting invert() properties...");
 
-        Iterable<Rational> rs = filter(r -> r != ZERO, P.rationals());
-        for (Rational r : take(LIMIT, rs)) {
-            Rational inverseR = r.invert();
-            validate(inverseR);
-            assertEquals(r.toString(), inverseR, invert_simplest(r));
-            assertEquals(r.toString(), r, inverseR.invert());
-            assertTrue(r.multiply(inverseR) == ONE);
-            assertTrue(inverseR != ZERO);
+        for (Rational r : take(LIMIT, filter(s -> s != ZERO, P.rationals()))) {
+            Rational inverse = r.invert();
+            validate(inverse);
+            assertEquals(r.toString(), inverse, invert_simplest(r));
+            assertEquals(r.toString(), r, inverse.invert());
+            assertTrue(r.multiply(inverse) == ONE);
+            assertTrue(inverse != ZERO);
         }
 
-        rs = filter(r -> r != ZERO && r.abs() != ONE, P.rationals());
-        for (Rational r : take(LIMIT, rs)) {
+        for (Rational r : take(LIMIT, filter(s -> s != ZERO && s.abs() != ONE, P.rationals()))) {
             Rational inverseR = r.invert();
             assertTrue(r.toString(), !r.equals(inverseR));
         }
