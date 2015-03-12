@@ -190,7 +190,7 @@ public class QBarExhaustiveProviderTest {
     @Test
     public void testReducedRationalVectors_int() {
         aeq(P.reducedRationalVectors(0), "[[]]");
-        aeq(take(50, P.reducedRationalVectors(1)), "[[0], [1]]");
+        aeq(P.reducedRationalVectors(1), "[[0], [1]]");
         aeq(take(50, P.reducedRationalVectors(2)),
                 "[[0, 0], [0, 1], [1, 0], [1, 1], [1, -1], [1, 2], [1, 1/2], [1, -1/2], [1, -2], [1, 3], [1, -3]," +
                 " [1, 4], [1, 3/2], [1, -3/2], [1, 1/3], [1, -1/3], [1, 2/3], [1, 1/4], [1, -1/4], [1, -2/3]," +
