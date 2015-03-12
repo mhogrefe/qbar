@@ -1069,6 +1069,9 @@ public class IntervalProperties {
             Interval product1 = t.a.multiply(t.b).multiply(t.c);
             Interval product2 = t.a.multiply(t.b.multiply(t.c));
             assertEquals(t.toString(), product1, product2);
+            Interval expression1 = t.a.add(t.b).multiply(t.c);
+            Interval expression2 = t.a.multiply(t.c).add(t.b.multiply(t.c));
+            assertTrue(t.toString(), expression2.contains(expression1));
         }
 
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
