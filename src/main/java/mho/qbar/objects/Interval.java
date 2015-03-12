@@ -1094,14 +1094,40 @@ public final class Interval implements Comparable<Interval> {
         }
     }
 
+    /**
+     * Returns the smallest {@code Interval} a such that if x∈{@code this}, x≪{@code bits}∈a.
+     *
+     * <ul>
+     *  <li>{@code this} can be any {@code Interval}.</li>
+     *  <li>{@code bits} may be any {@code int}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param bits the number of bits to left-shift by
+     * @return {@code this}≪{@code bits}
+     */
     public @NotNull Interval shiftLeft(int bits) {
+        if (bits == 0) return this;
         return new Interval(
                 lower == null ? null : lower.shiftLeft(bits),
                 upper == null ? null : upper.shiftLeft(bits)
         );
     }
 
+    /**
+     * Returns the smallest {@code Interval} a such that if x∈{@code this}, x≫{@code bits}∈a.
+     *
+     * <ul>
+     *  <li>{@code this} can be any {@code Interval}.</li>
+     *  <li>{@code bits} may be any {@code int}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param bits the number of bits to right-shift by
+     * @return {@code this}≫{@code bits}
+     */
     public @NotNull Interval shiftRight(int bits) {
+        if (bits == 0) return this;
         return new Interval(
                 lower == null ? null : lower.shiftRight(bits),
                 upper == null ? null : upper.shiftRight(bits)
