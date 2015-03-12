@@ -324,6 +324,32 @@ public class IntervalDemos {
         }
     }
 
+    public static void demoShiftLeft() {
+        initialize();
+        Iterable<Integer> is;
+        if (P instanceof QBarExhaustiveProvider) {
+            is = P.integers();
+        } else {
+            is  = ((QBarRandomProvider) P).integersGeometric(50);
+        }
+        for (Pair<Interval, Integer> p : take(LIMIT, P.pairs(P.intervals(), is))) {
+            System.out.println(p.a + " << " + p.b + " = " + p.a.shiftLeft(p.b));
+        }
+    }
+
+    public static void demoShiftRight() {
+        initialize();
+        Iterable<Integer> is;
+        if (P instanceof QBarExhaustiveProvider) {
+            is = P.integers();
+        } else {
+            is  = ((QBarRandomProvider) P).integersGeometric(50);
+        }
+        for (Pair<Interval, Integer> p : take(LIMIT, P.pairs(P.intervals(), is))) {
+            System.out.println(p.a + " << " + p.b + " = " + p.a.shiftRight(p.b));
+        }
+    }
+
     public static void demoElementCompare() {
         initialize();
         for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
