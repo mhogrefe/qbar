@@ -874,8 +874,8 @@ public final class Interval implements Comparable<Interval> {
      *    <ul>[(–∞, ∞)]</ul>
      *    <ul>[(–∞, q]] where q≤0</ul>
      *    <ul>[[p, ∞)] where p≥0</ul>
-     *    <ul>[[p, q]] where p≠q, p and q both positive</ul>
-     *    <ul>[[p, q]] where p≠q, p and q both negative</ul>
+     *    <ul>[[p, q]] where p≠q, p≥0, q>0</ul>
+     *    <ul>[[p, q]] where p≠q, p<0, q≤0</ul>
      *    <ul>[[p, p]] where p≠0</ul>
      *    <ul>[(–∞, q], [0, ∞)] where q<0</ul>
      *    <ul>[(–∞, 0], [p, ∞)] where p>0</ul>

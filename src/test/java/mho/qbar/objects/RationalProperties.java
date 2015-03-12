@@ -387,7 +387,7 @@ public class RationalProperties {
         }
 
         for (BigInteger i : take(LIMIT, P.bigIntegers())) {
-            assertTrue(of(i).isInteger());
+            assertTrue(i.toString(), of(i).isInteger());
         }
     }
 
@@ -1705,7 +1705,7 @@ public class RationalProperties {
             Rational negativeR = r.negate();
             validate(negativeR);
             assertEquals(r.toString(), r, negativeR.negate());
-            assertTrue(r.add(negativeR) == ZERO);
+            assertTrue(r.toString(), r.add(negativeR) == ZERO);
         }
 
         Iterable<Rational> rs = filter(r -> r != ZERO, P.rationals());
@@ -1980,8 +1980,8 @@ public class RationalProperties {
             validate(inverse);
             assertEquals(r.toString(), inverse, invert_simplest(r));
             assertEquals(r.toString(), r, inverse.invert());
-            assertTrue(r.multiply(inverse) == ONE);
-            assertTrue(inverse != ZERO);
+            assertTrue(r.toString(), r.multiply(inverse) == ONE);
+            assertTrue(r.toString(), inverse != ZERO);
         }
 
         for (Rational r : take(LIMIT, filter(s -> s != ZERO && s.abs() != ONE, P.rationals()))) {
@@ -3655,7 +3655,7 @@ public class RationalProperties {
 
         for (Rational r : take(LIMIT, P.rationals())) {
             String s = r.toString();
-            assertTrue(isSubsetOf(s, RATIONAL_CHARS));
+            assertTrue(r.toString(), isSubsetOf(s, RATIONAL_CHARS));
             Optional<Rational> readR = read(s);
             assertTrue(r.toString(), readR.isPresent());
             assertEquals(r.toString(), readR.get(), r);

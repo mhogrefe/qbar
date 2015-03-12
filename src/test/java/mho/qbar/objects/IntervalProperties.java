@@ -84,6 +84,7 @@ public class IntervalProperties {
             propertiesMultiply_BigInteger();
             propertiesMultiply_int();
             propertiesInvert();
+            propertiesInvertHull();
             propertiesElementCompare();
             propertiesEquals();
             propertiesHashCode();
@@ -442,8 +443,8 @@ public class IntervalProperties {
         }
 
         for (Interval a : take(LIMIT, P.intervals())) {
-            assertFalse(ALL.disjoint(a));
-            assertFalse(a.disjoint(a));
+            assertFalse(a.toString(), ALL.disjoint(a));
+            assertFalse(a.toString(), a.disjoint(a));
         }
 
         for (Pair<Interval, Interval> p : take(LIMIT, filter(q -> q.a.disjoint(q.b), P.pairs(P.intervals())))) {
@@ -937,7 +938,7 @@ public class IntervalProperties {
             Interval negativeA = a.negate();
             validate(negativeA);
             assertEquals(a.toString(), a, negativeA.negate());
-            assertTrue(a.add(negativeA).contains(ZERO));
+            assertTrue(a.toString(), a.add(negativeA).contains(ZERO));
             assertEquals(a.toString(), a.diameter(), negativeA.diameter());
             for (Rational r : take(TINY_LIMIT, P.rationals(a))) {
                 assertTrue(a.toString(), negativeA.contains(r.negate()));
@@ -1191,6 +1192,10 @@ public class IntervalProperties {
             List<Interval> inverse = a.invert();
             inverse.forEach(mho.qbar.objects.IntervalProperties::validate);
 
+            for (Rational r : take(TINY_LIMIT, filter(s -> s != Rational.ZERO, P.rationals(a)))) {
+                assertTrue(a.toString(), any(b -> b.contains(r.invert()), inverse));
+            }
+
             int size = inverse.size();
             assertTrue(a.toString(), size == 0 || size == 1 || size == 2);
             if (size == 1) {
@@ -1201,13 +1206,18 @@ public class IntervalProperties {
                     assertTrue(a.toString(), le(q, Rational.ZERO));
                 } else if (p != null && q == null) {
                     assertTrue(a.toString(), ge(p, Rational.ZERO));
-                } else if (a.isFinitelyBounded()) {
+                } else if (i1.isFinitelyBounded()) {
                     if (p.equals(q)) {
                         assertNotEquals(a.toString(), p, Rational.ZERO);
                     } else {
                         int ps = p.signum();
                         int qs = q.signum();
-                        assertTrue(a.toString(), ps == 1 && qs == 1 || ps == -1 && qs == -1);
+                        if (qs == 1) {
+                            assertTrue(a.toString(), ps != -1);
+                        }
+                        if (ps == -1) {
+                            assertTrue(a.toString(), qs != 1);
+                        }
                     }
                 }
             } else if (size == 2) {
@@ -1228,10 +1238,6 @@ public class IntervalProperties {
                     assertTrue(a.toString(), p2.signum() == 1);
                 }
             }
-
-            for (Rational r : take(TINY_LIMIT, filter(s -> s != Rational.ZERO, P.rationals(a)))) {
-                assertTrue(a.toString(), any(b -> b.contains(r.invert()), inverse));
-            }
         }
 
         for (Interval a : take(LIMIT, filter(b -> !b.equals(ZERO), P.intervals()))) {
@@ -1239,6 +1245,46 @@ public class IntervalProperties {
             List<Interval> back = makeDisjoint(toList(concatMap(Interval::invert, inverse)));
             assertTrue(a.toString(), convexHull(back).contains(a));
             assertTrue(a.toString(), convexHull(toList(map(a::multiply, inverse))).contains(ONE));
+        }
+    }
+
+    private static void propertiesInvertHull() {
+        initialize();
+        System.out.println("\t\ttesting invertHull() properties...");
+
+        for (Interval a : take(LIMIT, filter(b -> !b.equals(ZERO), P.intervals()))) {
+            Interval inverse = a.invertHull();
+            validate(inverse);
+
+            for (Rational r : take(TINY_LIMIT, filter(s -> s != Rational.ZERO, P.rationals(a)))) {
+                assertTrue(a.toString(), inverse.contains(r.invert()));
+            }
+
+            Rational p = inverse.getLower().isPresent() ? inverse.getLower().get() : null;
+            Rational q = inverse.getUpper().isPresent() ? inverse.getUpper().get() : null;
+            if (p == null && q != null) {
+                assertTrue(a.toString(), le(q, Rational.ZERO));
+            } else if (p != null && q == null) {
+                assertTrue(a.toString(), ge(p, Rational.ZERO));
+            } else if (inverse.isFinitelyBounded()) {
+                if (p.equals(q)) {
+                    assertNotEquals(a.toString(), p, ZERO);
+                } else {
+                    int ps = p.signum();
+                    int qs = q.signum();
+                    if (qs == 1) {
+                        assertTrue(a.toString(), ps != -1);
+                    }
+                    if (ps == -1) {
+                        assertTrue(a.toString(), qs != 1);
+                    }
+                }
+            }
+
+            assertTrue(a.toString(), all(inverse::contains, a.invert()));
+            Interval back = inverse.invertHull();
+            assertTrue(a.toString(), back.contains(a));
+            assertTrue(a.toString(), a.multiply(inverse).contains(ONE));
         }
     }
 
@@ -1373,7 +1419,7 @@ public class IntervalProperties {
 
         for (Interval a : take(LIMIT, P.intervals())) {
             String s = a.toString();
-            assertTrue(isSubsetOf(s, INTERVAL_CHARS));
+            assertTrue(a.toString(), isSubsetOf(s, INTERVAL_CHARS));
             Optional<Interval> readI = read(s);
             assertTrue(a.toString(), readI.isPresent());
             assertEquals(a.toString(), readI.get(), a);

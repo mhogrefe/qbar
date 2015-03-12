@@ -318,7 +318,7 @@ public class RationalVectorProperties {
             validate(negativeV);
             assertEquals(v.toString(), v.dimension(), negativeV.dimension());
             assertEquals(v.toString(), v, negativeV.negate());
-            assertTrue(v.add(negativeV).isZero());
+            assertTrue(v.toString(), v.add(negativeV).isZero());
         }
 
         for (RationalVector v : take(LIMIT, filter(w -> any(x -> x != Rational.ZERO, w), P.rationalVectors()))) {
@@ -350,7 +350,7 @@ public class RationalVectorProperties {
         for (RationalVector v : take(LIMIT, P.rationalVectors())) {
             assertEquals(v.toString(), zero(v.dimension()).add(v), v);
             assertEquals(v.toString(), v.add(zero(v.dimension())), v);
-            assertTrue(v.add(v.negate()).isZero());
+            assertTrue(v.toString(), v.add(v.negate()).isZero());
         }
 
         Iterable<Triple<RationalVector, RationalVector, RationalVector>> ts;
@@ -484,7 +484,7 @@ public class RationalVectorProperties {
         }
 
         for (BigInteger i : take(LIMIT, P.bigIntegers())) {
-            assertTrue(ZERO_DIMENSIONAL.multiply(i) == ZERO_DIMENSIONAL);
+            assertTrue(i.toString(), ZERO_DIMENSIONAL.multiply(i) == ZERO_DIMENSIONAL);
         }
 
         for (Pair<RationalVector, BigInteger> p : take(LIMIT, P.pairs(P.rationalVectors(1), P.bigIntegers()))) {
@@ -523,7 +523,7 @@ public class RationalVectorProperties {
         }
 
         for (int i : take(LIMIT, P.integers())) {
-            assertTrue(ZERO_DIMENSIONAL.multiply(i) == ZERO_DIMENSIONAL);
+            assertTrue(Integer.toString(i), ZERO_DIMENSIONAL.multiply(i) == ZERO_DIMENSIONAL);
         }
 
         for (Pair<RationalVector, Integer> p : take(LIMIT, P.pairs(P.rationalVectors(1), P.integers()))) {
@@ -562,7 +562,7 @@ public class RationalVectorProperties {
         }
 
         for (Rational r : take(LIMIT, filter(s -> s != Rational.ZERO, P.rationals()))) {
-            assertTrue(ZERO_DIMENSIONAL.divide(r) == ZERO_DIMENSIONAL);
+            assertTrue(r.toString(), ZERO_DIMENSIONAL.divide(r) == ZERO_DIMENSIONAL);
         }
 
         ps = P.pairs(
@@ -617,7 +617,7 @@ public class RationalVectorProperties {
         }
 
         for (BigInteger i : take(LIMIT, filter(j -> !j.equals(BigInteger.ZERO), P.bigIntegers()))) {
-            assertTrue(ZERO_DIMENSIONAL.divide(i) == ZERO_DIMENSIONAL);
+            assertTrue(i.toString(), ZERO_DIMENSIONAL.divide(i) == ZERO_DIMENSIONAL);
         }
 
         ps = P.pairs(
@@ -672,7 +672,7 @@ public class RationalVectorProperties {
         }
 
         for (int i : take(LIMIT, filter(j -> j != 0, P.integers()))) {
-            assertTrue(ZERO_DIMENSIONAL.divide(i) == ZERO_DIMENSIONAL);
+            assertTrue(Integer.toString(i), ZERO_DIMENSIONAL.divide(i) == ZERO_DIMENSIONAL);
         }
 
         ps = P.pairs(
@@ -1218,7 +1218,7 @@ public class RationalVectorProperties {
 
         for (RationalVector v : take(LIMIT, P.rationalVectors())) {
             String s = v.toString();
-            assertTrue(isSubsetOf(s, RATIONAL_VECTOR_CHARS));
+            assertTrue(v.toString(), isSubsetOf(s, RATIONAL_VECTOR_CHARS));
             Optional<RationalVector> readV = read(s);
             assertTrue(v.toString(), readV.isPresent());
             assertEquals(v.toString(), readV.get(), v);
