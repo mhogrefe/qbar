@@ -1242,6 +1242,18 @@ public final class Interval implements Comparable<Interval> {
         return intervals;
     }
 
+    /**
+     * Returns the smallest {@code Interval} a such that if x∈{@code this}, x<sup>{@code p}</sup>∈a.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Interval}.</li>
+     *  <li>{@code p} may be any {@code int}.</li>
+     *  <li>If {@code this} is [0, 0], {@code p} cannot be negative.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @return Conv(x<sup>{@code p}</sup>)
+     */
     public @NotNull Interval powHull(int p) {
         return convexHull(pow(p));
     }
