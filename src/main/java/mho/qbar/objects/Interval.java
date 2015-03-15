@@ -1195,7 +1195,7 @@ public final class Interval implements Comparable<Interval> {
     /**
      * Returns the closure of the image of {@code this} under integer exponentiation. In general this is not one
      * {@code Interval} (because raising to a negative power requires inversion), so this method returns a list of
-     * disjoint {@code Interval}s whose union is the closure of the image.
+     * disjoint {@code Interval}s whose union is the closure of the image. [0, 0]<sup>0</sup> yields [[1, 1]].
      *
      * <ul>
      *  <li>{@code this} may be any {@code Interval}.</li>
@@ -1244,6 +1244,7 @@ public final class Interval implements Comparable<Interval> {
 
     /**
      * Returns the smallest {@code Interval} a such that if x∈{@code this}, x<sup>{@code p}</sup>∈a.
+     * [0, 0]<sup>0</sup> yields [1, 1].
      *
      * <ul>
      *  <li>{@code this} may be any {@code Interval}.</li>

@@ -1301,6 +1301,106 @@ public class IntervalTest {
     }
 
     @Test
+    public void testPow() {
+        aeq(ZERO.pow(0), "[[1, 1]]");
+        aeq(ZERO.pow(1), "[[0, 0]]");
+        aeq(ZERO.pow(2), "[[0, 0]]");
+        aeq(ZERO.pow(3), "[[0, 0]]");
+        aeq(ONE.pow(0), "[[1, 1]]");
+        aeq(ONE.pow(1), "[[1, 1]]");
+        aeq(ONE.pow(2), "[[1, 1]]");
+        aeq(ONE.pow(3), "[[1, 1]]");
+        aeq(ONE.pow(-1), "[[1, 1]]");
+        aeq(ONE.pow(-2), "[[1, 1]]");
+        aeq(ONE.pow(-3), "[[1, 1]]");
+        aeq(ALL.pow(0), "[[1, 1]]");
+        aeq(ALL.pow(1), "[(-Infinity, Infinity)]");
+        aeq(ALL.pow(2), "[[0, Infinity)]");
+        aeq(ALL.pow(3), "[(-Infinity, Infinity)]");
+        aeq(ALL.pow(-1), "[(-Infinity, Infinity)]");
+        aeq(ALL.pow(-2), "[[0, Infinity)]");
+        aeq(ALL.pow(-3), "[(-Infinity, Infinity)]");
+        aeq(read("[-2, 5/3]").get().pow(0), "[[1, 1]]");
+        aeq(read("[-2, 5/3]").get().pow(1), "[[-2, 5/3]]");
+        aeq(read("[-2, 5/3]").get().pow(2), "[[0, 4]]");
+        aeq(read("[-2, 5/3]").get().pow(3), "[[-8, 125/27]]");
+        aeq(read("[-2, 5/3]").get().pow(-1), "[(-Infinity, -1/2], [3/5, Infinity)]");
+        aeq(read("[-2, 5/3]").get().pow(-2), "[[1/4, Infinity)]");
+        aeq(read("[-2, 5/3]").get().pow(-3), "[(-Infinity, -1/8], [27/125, Infinity)]");
+        aeq(read("[4, 4]").get().pow(0), "[[1, 1]]");
+        aeq(read("[4, 4]").get().pow(1), "[[4, 4]]");
+        aeq(read("[4, 4]").get().pow(2), "[[16, 16]]");
+        aeq(read("[4, 4]").get().pow(3), "[[64, 64]]");
+        aeq(read("[4, 4]").get().pow(-1), "[[1/4, 1/4]]");
+        aeq(read("[4, 4]").get().pow(-2), "[[1/16, 1/16]]");
+        aeq(read("[4, 4]").get().pow(-3), "[[1/64, 1/64]]");
+        aeq(read("(-Infinity, 3/2]").get().pow(0), "[[1, 1]]");
+        aeq(read("(-Infinity, 3/2]").get().pow(1), "[(-Infinity, 3/2]]");
+        aeq(read("(-Infinity, 3/2]").get().pow(2), "[[0, Infinity)]");
+        aeq(read("(-Infinity, 3/2]").get().pow(3), "[(-Infinity, 27/8]]");
+        aeq(read("(-Infinity, 3/2]").get().pow(-1), "[(-Infinity, 0], [2/3, Infinity)]");
+        aeq(read("(-Infinity, 3/2]").get().pow(-2), "[[0, Infinity)]");
+        aeq(read("(-Infinity, 3/2]").get().pow(-3), "[(-Infinity, 0], [8/27, Infinity)]");
+        aeq(read("[-6, Infinity)").get().pow(0), "[[1, 1]]");
+        aeq(read("[-6, Infinity)").get().pow(1), "[[-6, Infinity)]");
+        aeq(read("[-6, Infinity)").get().pow(2), "[[0, Infinity)]");
+        aeq(read("[-6, Infinity)").get().pow(3), "[[-216, Infinity)]");
+        aeq(read("[-6, Infinity)").get().pow(-1), "[(-Infinity, -1/6], [0, Infinity)]");
+        aeq(read("[-6, Infinity)").get().pow(-2), "[[0, Infinity)]");
+        aeq(read("[-6, Infinity)").get().pow(-3), "[(-Infinity, -1/216], [0, Infinity)]");
+    }
+
+    @Test
+    public void testPowHull() {
+        aeq(ZERO.powHull(0), "[1, 1]");
+        aeq(ZERO.powHull(1), "[0, 0]");
+        aeq(ZERO.powHull(2), "[0, 0]");
+        aeq(ZERO.powHull(3), "[0, 0]");
+        aeq(ONE.powHull(0), "[1, 1]");
+        aeq(ONE.powHull(1), "[1, 1]");
+        aeq(ONE.powHull(2), "[1, 1]");
+        aeq(ONE.powHull(3), "[1, 1]");
+        aeq(ONE.powHull(-1), "[1, 1]");
+        aeq(ONE.powHull(-2), "[1, 1]");
+        aeq(ONE.powHull(-3), "[1, 1]");
+        aeq(ALL.powHull(0), "[1, 1]");
+        aeq(ALL.powHull(1), "(-Infinity, Infinity)");
+        aeq(ALL.powHull(2), "[0, Infinity)");
+        aeq(ALL.powHull(3), "(-Infinity, Infinity)");
+        aeq(ALL.powHull(-1), "(-Infinity, Infinity)");
+        aeq(ALL.powHull(-2), "[0, Infinity)");
+        aeq(ALL.powHull(-3), "(-Infinity, Infinity)");
+        aeq(read("[-2, 5/3]").get().powHull(0), "[1, 1]");
+        aeq(read("[-2, 5/3]").get().powHull(1), "[-2, 5/3]");
+        aeq(read("[-2, 5/3]").get().powHull(2), "[0, 4]");
+        aeq(read("[-2, 5/3]").get().powHull(3), "[-8, 125/27]");
+        aeq(read("[-2, 5/3]").get().powHull(-1), "(-Infinity, Infinity)");
+        aeq(read("[-2, 5/3]").get().powHull(-2), "[1/4, Infinity)");
+        aeq(read("[-2, 5/3]").get().powHull(-3), "(-Infinity, Infinity)");
+        aeq(read("[4, 4]").get().powHull(0), "[1, 1]");
+        aeq(read("[4, 4]").get().powHull(1), "[4, 4]");
+        aeq(read("[4, 4]").get().powHull(2), "[16, 16]");
+        aeq(read("[4, 4]").get().powHull(3), "[64, 64]");
+        aeq(read("[4, 4]").get().powHull(-1), "[1/4, 1/4]");
+        aeq(read("[4, 4]").get().powHull(-2), "[1/16, 1/16]");
+        aeq(read("[4, 4]").get().powHull(-3), "[1/64, 1/64]");
+        aeq(read("(-Infinity, 3/2]").get().powHull(0), "[1, 1]");
+        aeq(read("(-Infinity, 3/2]").get().powHull(1), "(-Infinity, 3/2]");
+        aeq(read("(-Infinity, 3/2]").get().powHull(2), "[0, Infinity)");
+        aeq(read("(-Infinity, 3/2]").get().powHull(3), "(-Infinity, 27/8]");
+        aeq(read("(-Infinity, 3/2]").get().powHull(-1), "(-Infinity, Infinity)");
+        aeq(read("(-Infinity, 3/2]").get().powHull(-2), "[0, Infinity)");
+        aeq(read("(-Infinity, 3/2]").get().powHull(-3), "(-Infinity, Infinity)");
+        aeq(read("[-6, Infinity)").get().powHull(0), "[1, 1]");
+        aeq(read("[-6, Infinity)").get().powHull(1), "[-6, Infinity)");
+        aeq(read("[-6, Infinity)").get().powHull(2), "[0, Infinity)");
+        aeq(read("[-6, Infinity)").get().powHull(3), "[-216, Infinity)");
+        aeq(read("[-6, Infinity)").get().powHull(-1), "(-Infinity, Infinity)");
+        aeq(read("[-6, Infinity)").get().powHull(-2), "[0, Infinity)");
+        aeq(read("[-6, Infinity)").get().powHull(-3), "(-Infinity, Infinity)");
+    }
+
+    @Test
     public void testElementCompare() {
         aeq(ZERO.elementCompare(ZERO), "Optional[EQ]");
         aeq(ZERO.elementCompare(ONE), "Optional[LT]");
