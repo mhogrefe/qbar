@@ -94,6 +94,9 @@ public class IntervalProperties {
             compareImplementationsShiftLeft();
             propertiesShiftRight();
             compareImplementationsShiftRight();
+            propertiesSum();
+            propertiesProduct();
+            propertiesDelta();
             propertiesElementCompare();
             propertiesEquals();
             propertiesHashCode();
@@ -1639,6 +1642,128 @@ public class IntervalProperties {
         System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
     }
 
+    private static void propertiesSum() {
+        initialize();
+        System.out.println("\t\ttesting sum(Iterable<Interval>) properties...");
+
+        for (List<Interval> is : take(LIMIT, P.lists(P.intervals()))) {
+            Interval sum = sum(is);
+            validate(sum);
+            assertEquals(is.toString(), sum.isFinitelyBounded(), is.isEmpty() || all(Interval::isFinitelyBounded, is));
+        }
+
+        Iterable<Pair<List<Interval>, List<Interval>>> ps = filter(
+                q -> !q.a.equals(q.b),
+                P.dependentPairsLogarithmic(P.lists(P.intervals()), Combinatorics::permutationsIncreasing)
+        );
+        for (Pair<List<Interval>, List<Interval>> p : take(LIMIT, ps)) {
+            assertEquals(p.toString(), sum(p.a), sum(p.b));
+        }
+
+        for (Interval a : take(LIMIT, P.intervals())) {
+            assertEquals(a.toString(), sum(Arrays.asList(a)), a);
+        }
+
+        for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
+            assertEquals(p.toString(), sum(Arrays.asList(p.a, p.b)), p.a.add(p.b));
+        }
+
+        Iterable<List<Interval>> failIss = map(
+                p -> toList(insert(p.a, p.b, null)),
+                (Iterable<Pair<List<Interval>, Integer>>) P.dependentPairsLogarithmic(
+                        P.lists(P.intervals()),
+                        rs -> range(0, rs.size())
+                )
+        );
+        for (List<Interval> is : take(LIMIT, failIss)) {
+            try {
+                sum(is);
+                fail(is.toString());
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private static void propertiesProduct() {
+        initialize();
+        System.out.println("\t\ttesting product(Iterable<Interval>) properties...");
+
+        for (List<Interval> is : take(LIMIT, P.lists(P.intervals()))) {
+            Interval product = product(is);
+            validate(product);
+            assertEquals(
+                    is.toString(),
+                    product.isFinitelyBounded(),
+                    is.isEmpty() || is.contains(ZERO) || all(Interval::isFinitelyBounded, is)
+            );
+        }
+
+        Iterable<Pair<List<Interval>, List<Interval>>> ps = filter(
+                q -> !q.a.equals(q.b),
+                P.dependentPairsLogarithmic(P.lists(P.intervals()), Combinatorics::permutationsIncreasing)
+        );
+
+        for (Pair<List<Interval>, List<Interval>> p : take(LIMIT, ps)) {
+            assertEquals(p.toString(), product(p.a), product(p.b));
+        }
+
+        for (Interval a : take(LIMIT, P.intervals())) {
+            assertEquals(a.toString(), product(Arrays.asList(a)), a);
+        }
+
+        for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
+            assertEquals(p.toString(), product(Arrays.asList(p.a, p.b)), p.a.multiply(p.b));
+        }
+
+        Iterable<List<Interval>> failIss = map(
+                p -> toList(insert(p.a, p.b, null)),
+                P.dependentPairsLogarithmic(P.lists(P.intervals()), rs -> range(0, rs.size()))
+        );
+        for (List<Interval> is : take(LIMIT, failIss)) {
+            try {
+                product(is);
+                fail(is.toString());
+            } catch (NullPointerException | IllegalArgumentException ignored) {}
+        }
+    }
+
+    private static void propertiesDelta() {
+        initialize();
+        System.out.println("\t\ttesting delta(Iterable<Interval>) properties...");
+
+        for (List<Interval> is : take(LIMIT, P.listsAtLeast(1, P.intervals()))) {
+            Iterable<Interval> deltas = delta(is);
+            deltas.forEach(mho.qbar.objects.IntervalProperties::validate);
+            assertEquals(is.toString(), length(deltas), length(is) - 1);
+            List<Interval> reversed = reverse(map(Interval::negate, delta(reverse(is))));
+            aeq(is.toString(), deltas, reversed);
+            try {
+                deltas.iterator().remove();
+            } catch (UnsupportedOperationException ignored) {}
+        }
+
+        for (Interval a : take(LIMIT, P.intervals())) {
+            assertTrue(a.toString(), isEmpty(delta(Arrays.asList(a))));
+        }
+
+        for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
+            aeq(p.toString(), delta(Arrays.asList(p.a, p.b)), Arrays.asList(p.b.subtract(p.a)));
+        }
+
+        Iterable<List<Interval>> failIss = map(
+                p -> toList(insert(p.a, p.b, null)),
+                (Iterable<Pair<List<Interval>, Integer>>) P.dependentPairsLogarithmic(
+                        P.lists(P.intervals()),
+                        rs -> range(0, rs.size())
+                )
+        );
+        for (List<Interval> is : take(LIMIT, failIss)) {
+            try {
+                toList(delta(is));
+                fail(is.toString());
+            } catch (AssertionError | NullPointerException ignored) {}
+        }
+    }
+
     private static void propertiesElementCompare() {
         initialize();
         System.out.println("\t\ttesting elementCompare(Interval) properties...");
@@ -1781,6 +1906,10 @@ public class IntervalProperties {
         if (a.getLower().isPresent() && a.getUpper().isPresent()) {
             assertTrue(a.toString(), le(a.getLower().get(), a.getUpper().get()));
         }
+    }
+
+    private static <T> void aeq(String message, Iterable<T> xs, Iterable<T> ys) {
+        assertTrue(message, equal(xs, ys));
     }
 
     private static void aeq(String message, float x, float y) {
