@@ -86,6 +86,7 @@ public class IntervalProperties {
             propertiesInvert();
             propertiesInvertHull();
             propertiesDivide_Interval();
+            propertiesDivideHull();
             propertiesElementCompare();
             propertiesEquals();
             propertiesHashCode();
@@ -1353,6 +1354,48 @@ public class IntervalProperties {
         for (Interval a : take(LIMIT, filter(b -> !b.equals(ZERO), P.intervals()))) {
             assertEquals(a.toString(), ONE.divide(a), a.invert());
             assertTrue(a.toString(), any(b -> b.contains(ONE), a.divide(a)));
+        }
+    }
+
+    private static void propertiesDivideHull() {
+        initialize();
+        System.out.println("\t\ttesting divideHull(Interval) properties...");
+
+        Iterable<Pair<Interval, Interval>> ps = P.pairs(P.intervals(), filter(a -> !a.equals(ZERO), P.intervals()));
+        for (Pair<Interval, Interval> p : take(LIMIT, ps)) {
+            Interval quotient = p.a.divideHull(p.b);
+            validate(quotient);
+
+            Iterable<Pair<Rational, Rational>> qs = P.pairs(
+                    P.rationals(p.a),
+                    filter(r -> r != Rational.ZERO, P.rationals(p.b))
+            );
+            for (Pair<Rational, Rational> q : take(TINY_LIMIT, qs)) {
+                assertTrue(p.toString(), quotient.contains(q.a.divide(q.b)));
+            }
+
+            assertTrue(p.toString(), quotient.multiply(p.b).contains(p.a));
+            assertTrue(p.toString(), p.a.multiply(p.b.invertHull()).contains(quotient));
+        }
+
+        for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(filter(a -> !a.equals(ZERO), P.intervals())))) {
+            assertTrue(p.toString(), p.b.divideHull(p.a).invertHull().contains(p.a.divideHull(p.b)));
+        }
+
+        for (Interval a : take(LIMIT, P.intervals())) {
+            assertTrue(a.toString(), a.divideHull(ONE).contains(a));
+        }
+
+        for (Interval a : take(LIMIT, filter(b -> !b.equals(ZERO), P.intervals()))) {
+            assertEquals(a.toString(), ONE.divideHull(a), a.invertHull());
+            assertTrue(a.toString(), a.divideHull(a).contains(ONE));
+        }
+
+        for (Interval a : take(LIMIT, P.intervals())) {
+            try {
+                a.divideHull(ZERO);
+                fail(a.toString());
+            } catch (ArithmeticException ignored) {}
         }
     }
 
