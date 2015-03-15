@@ -97,6 +97,7 @@ public class IntervalProperties {
             propertiesSum();
             propertiesProduct();
             propertiesDelta();
+            propertiesPowHull();
             propertiesElementCompare();
             propertiesEquals();
             propertiesHashCode();
@@ -1786,6 +1787,121 @@ public class IntervalProperties {
                 toList(delta(is));
                 fail(is.toString());
             } catch (AssertionError | NullPointerException ignored) {}
+        }
+    }
+
+    private static void propertiesPowHull() {
+        initialize();
+        System.out.println("\t\ttesting powHull(int) properties...");
+
+        Iterable<Integer> exps;
+        if (P instanceof QBarExhaustiveProvider) {
+            exps = P.integers();
+        } else {
+            exps = ((RandomProvider) P).integersGeometric(20);
+        }
+
+        Iterable<Pair<Interval, Integer>> ps = filter(
+                p -> p.b >= 0 || !p.a.equals(ZERO),
+                P.pairs(P.intervals(), exps)
+        );
+        for (Pair<Interval, Integer> p : take(LIMIT, ps)) {
+            Interval pow = p.a.powHull(p.b);
+            validate(pow);
+
+            Iterable<Rational> rs = p.b < 0 ? filter(r -> r != Rational.ZERO, P.rationals(p.a)) : P.rationals(p.a);
+            for (Rational r : take(TINY_LIMIT, rs)) {
+                assertTrue(p.toString(), pow.contains(r.pow(p.b)));
+            }
+
+            Interval product = product(replicate(Math.abs(p.b), p.a));
+            if (p.b < 0) product = product.invertHull();
+            assertTrue(p.toString(), product.contains(pow));
+        }
+
+        ps = P.pairs(filter(a -> !a.equals(ZERO), P.intervals()), exps);
+        for (Pair<Interval, Integer> p : take(LIMIT, ps)) {
+            Interval a = p.a.powHull(p.b);
+            assertTrue(p.toString(), p.a.powHull(-p.b).invertHull().contains(a));
+            assertTrue(p.toString(), p.a.invertHull().powHull(-p.b).contains(a));
+        }
+
+        Iterable<Integer> pexps;
+        if (P instanceof QBarExhaustiveProvider) {
+            pexps = P.positiveIntegers();
+        } else {
+            pexps = ((RandomProvider) P).positiveIntegersGeometric(20);
+        }
+        for (int i : take(LIMIT, pexps)) {
+            assertTrue(Integer.toString(i), ZERO.powHull(i).equals(ZERO));
+        }
+
+        for (Interval a : take(LIMIT, P.intervals())) {
+            assertTrue(a.toString(), a.powHull(0).equals(ONE));
+            assertEquals(a.toString(), a.powHull(1), a);
+            assertTrue(a.toString(), a.multiply(a).contains(a.powHull(2)));
+        }
+
+        Iterable<Interval> rs = filter(a -> !a.equals(ZERO), P.intervals());
+        for (Interval a : take(LIMIT, rs)) {
+            assertEquals(a.toString(), a.powHull(-1), a.invertHull());
+        }
+
+        Iterable<Triple<Interval, Integer, Integer>> ts1 = filter(
+                p -> p.b >= 0 && p.c >= 0 || !p.a.equals(ZERO),
+                P.triples(P.intervals(), exps, exps)
+        );
+        for (Triple<Interval, Integer, Integer> t : take(LIMIT, ts1)) {
+            Interval expression1 = t.a.powHull(t.b).multiply(t.a.powHull(t.c));
+            Interval expression2 = t.a.powHull(t.b + t.c);
+            assertTrue(t.toString(), expression1.contains(expression2));
+        }
+
+        ts1 = filter(
+                t -> !t.a.equals(ZERO) || t.c == 0 && t.b >= 0,
+                P.triples(P.intervals(), exps, exps)
+        );
+        for (Triple<Interval, Integer, Integer> t : take(LIMIT, ts1)) {
+            Interval expression1 = t.a.powHull(t.b).divideHull(t.a.powHull(t.c));
+            Interval expression2 = t.a.powHull(t.b - t.c);
+            assertTrue(t.toString(), expression1.contains(expression2));
+        }
+
+        ts1 = filter(
+                t -> !t.a.equals(ZERO) || t.b >= 0 && t.c >= 0,
+                P.triples(P.intervals(), exps, exps)
+        );
+        for (Triple<Interval, Integer, Integer> t : take(LIMIT, ts1)) {
+            Interval expression5 = t.a.powHull(t.b).powHull(t.c);
+            Interval expression6 = t.a.powHull(t.b * t.c);
+            assertTrue(t.toString(), expression5.contains(expression6));
+        }
+
+        Iterable<Triple<Interval, Interval, Integer>> ts2 = filter(
+                t -> !t.a.equals(ZERO) && !t.b.equals(ZERO) || t.c >= 0,
+                P.triples(P.intervals(), P.intervals(), exps)
+        );
+        for (Triple<Interval, Interval, Integer> t : take(LIMIT, ts2)) {
+            Interval expression1 = t.a.multiply(t.b).powHull(t.c);
+            Interval expression2 = t.a.powHull(t.c).multiply(t.b.powHull(t.c));
+            assertEquals(t.toString(), expression1, expression2);
+        }
+
+        ts2 = filter(
+                t -> !t.a.equals(ZERO) || t.c >= 0,
+                P.triples(P.intervals(), filter(a -> !a.equals(ZERO), P.intervals()), exps)
+        );
+        for (Triple<Interval, Interval, Integer> t : take(LIMIT, ts2)) {
+            Interval expression1 = t.a.divideHull(t.b).powHull(t.c);
+            Interval expression2 = t.a.powHull(t.c).divideHull(t.b.powHull(t.c));
+            assertTrue(t.toString(), expression1.contains(expression2));
+        }
+
+        for (int i : take(LIMIT, P.negativeIntegers())) {
+            try {
+                ZERO.powHull(i);
+                fail(Integer.toString(i));
+            } catch (ArithmeticException ignored) {}
         }
     }
 

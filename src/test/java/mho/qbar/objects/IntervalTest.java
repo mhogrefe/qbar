@@ -1401,15 +1401,15 @@ public class IntervalTest {
         try {
             ZERO.powHull(-1);
             fail();
-        } catch (IllegalStateException ignored) {}
+        } catch (ArithmeticException ignored) {}
         try {
             ZERO.powHull(-2);
             fail();
-        } catch (IllegalStateException ignored) {}
+        } catch (ArithmeticException ignored) {}
         try {
             ZERO.powHull(-3);
             fail();
-        } catch (IllegalStateException ignored) {}
+        } catch (ArithmeticException ignored) {}
     }
 
     @Test

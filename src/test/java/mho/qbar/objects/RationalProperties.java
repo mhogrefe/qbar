@@ -2582,8 +2582,7 @@ public class RationalProperties {
 
         ps = P.pairs(filter(r -> r != ZERO, P.rationals()), exps);
         for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
-            Rational r
-                    = p.a.pow(p.b);
+            Rational r = p.a.pow(p.b);
             assertEquals(p.toString(), r, p.a.pow(-p.b).invert());
             assertEquals(p.toString(), r, p.a.invert().pow(-p.b));
         }

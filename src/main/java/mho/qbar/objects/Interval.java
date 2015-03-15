@@ -953,7 +953,7 @@ public final class Interval implements Comparable<Interval> {
         List<Interval> inverse = invert();
         switch (inverse.size()) {
             case 0:
-                throw new ArithmeticException("division by 0");
+                throw new ArithmeticException("division by zero");
             case 1:
                 return inverse.get(0);
             default:
@@ -1002,7 +1002,7 @@ public final class Interval implements Comparable<Interval> {
         List<Interval> quotient = divide(that);
         switch (quotient.size()) {
             case 0:
-                throw new ArithmeticException("division by 0");
+                throw new ArithmeticException("division by zero");
             case 1:
                 return quotient.get(0);
             default:
@@ -1256,6 +1256,8 @@ public final class Interval implements Comparable<Interval> {
      * @return Conv(x<sup>{@code p}</sup>)
      */
     public @NotNull Interval powHull(int p) {
+        if (p < 0 && this.equals(ZERO))
+            throw new ArithmeticException("division by zero");
         return convexHull(pow(p));
     }
 
