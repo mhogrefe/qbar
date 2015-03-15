@@ -1398,6 +1398,18 @@ public class IntervalTest {
         aeq(read("[-6, Infinity)").get().powHull(-1), "(-Infinity, Infinity)");
         aeq(read("[-6, Infinity)").get().powHull(-2), "[0, Infinity)");
         aeq(read("[-6, Infinity)").get().powHull(-3), "(-Infinity, Infinity)");
+        try {
+            ZERO.powHull(-1);
+            fail();
+        } catch (IllegalStateException ignored) {}
+        try {
+            ZERO.powHull(-2);
+            fail();
+        } catch (IllegalStateException ignored) {}
+        try {
+            ZERO.powHull(-3);
+            fail();
+        } catch (IllegalStateException ignored) {}
     }
 
     @Test
