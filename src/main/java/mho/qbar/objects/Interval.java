@@ -1192,6 +1192,18 @@ public final class Interval implements Comparable<Interval> {
         return adjacentPairsWith(p -> p.b.subtract(p.a), xs);
     }
 
+    /**
+     * Returns the closure of the image of {@code this} under integer exponentiation. In general this is not one
+     * {@code Interval} (because raising to a negative power requires inversion), so this method returns a list of
+     * disjoint {@code Interval}s whose union is the closure of the image.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Interval}.</li>
+     *  //todo
+     * </ul>
+     *
+     * @return {@code this}<sup>{@code p}</sup>
+     */
     public @NotNull List<Interval> pow(int p) {
         List<Interval> intervals = new ArrayList<>();
         if (p == 0) {
