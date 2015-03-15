@@ -972,10 +972,7 @@ public final class Interval implements Comparable<Interval> {
      *   The result is one of the following:
      *   <li>
      *    <ul>[]</ul>
-     *    <ul>[(–∞, ∞)]</ul>
-     *    <ul>[(–∞, q]] where q≤0</ul>
-     *    <ul>[[p, ∞)] where p≥0</ul>
-     *    <ul>[[p, q]]</ul>
+     *    <ul>A list containing a single, non-null {@code Interval}</ul>
      *    <ul>[(–∞, q], [0, ∞)] where q<0</ul>
      *    <ul>[(–∞, 0], [p, ∞)] where p>0</ul>
      *    <ul>[(–∞, q], [p, ∞)] where q<0, p>0</ul>
@@ -984,7 +981,7 @@ public final class Interval implements Comparable<Interval> {
      *  </li>
      * </ul>
      *
-     * @return 1/{@code this}
+     * @return {@code this}/{@code that}
      */
     public @NotNull List<Interval> divide(@NotNull Interval that) {
         return makeDisjoint(toList(map(this::multiply, that.invert())));
@@ -999,7 +996,7 @@ public final class Interval implements Comparable<Interval> {
      *  <li>The result is not null.</li>
      * </ul>
      *
-     * @return 1/{@code this}
+     * @return Conv({@code this}/{@code that})
      */
     public @NotNull Interval divideHull(@NotNull Interval that) {
         List<Interval> quotient = divide(that);

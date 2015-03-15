@@ -2020,8 +2020,7 @@ public class RationalProperties {
         initialize();
         System.out.println("\t\ttesting divide(Rational) properties...");
 
-        Iterable<Pair<Rational, Rational>> ps = filter(p -> p.b != ZERO, P.pairs(P.rationals()));
-        for (Pair<Rational, Rational> p : take(LIMIT, ps)) {
+        for (Pair<Rational, Rational> p : take(LIMIT, filter(q -> q.b != ZERO, P.pairs(P.rationals())))) {
             Rational quotient = p.a.divide(p.b);
             validate(quotient);
             assertEquals(p.toString(), quotient, divide_Rational_simplest(p.a, p.b));
@@ -2029,7 +2028,7 @@ public class RationalProperties {
             assertEquals(p.toString(), quotient, p.a.multiply(p.b.invert()));
         }
 
-        ps = filter(p -> p.a != ZERO && p.b != ZERO, P.pairs(P.rationals()));
+        Iterable<Pair<Rational, Rational>> ps = filter(p -> p.a != ZERO && p.b != ZERO, P.pairs(P.rationals()));
         for (Pair<Rational, Rational> p : take(LIMIT, ps)) {
             assertEquals(p.toString(), p.a.divide(p.b), p.b.divide(p.a).invert());
         }
@@ -2042,6 +2041,7 @@ public class RationalProperties {
         for (Rational r : take(LIMIT, rs)) {
             assertEquals(r.toString(), ONE.divide(r), r.invert());
             assertTrue(r.toString(), r.divide(r) == ONE);
+            assertEquals(r.toString(), ZERO.divide(r), ZERO);
         }
 
         for (Rational r : take(LIMIT, P.rationals())) {

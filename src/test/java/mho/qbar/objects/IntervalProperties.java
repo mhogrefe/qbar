@@ -85,6 +85,7 @@ public class IntervalProperties {
             propertiesMultiply_int();
             propertiesInvert();
             propertiesInvertHull();
+            propertiesDivide_Interval();
             propertiesElementCompare();
             propertiesEquals();
             propertiesHashCode();
@@ -1285,6 +1286,73 @@ public class IntervalProperties {
             Interval back = inverse.invertHull();
             assertTrue(a.toString(), back.contains(a));
             assertTrue(a.toString(), a.multiply(inverse).contains(ONE));
+        }
+    }
+
+    private static void propertiesDivide_Interval() {
+        initialize();
+        System.out.println("\t\ttesting divide(Interval) properties...");
+
+        for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
+            List<Interval> quotient = p.a.divide(p.b);
+            quotient.forEach(mho.qbar.objects.IntervalProperties::validate);
+
+            Iterable<Pair<Rational, Rational>> qs = P.pairs(
+                    P.rationals(p.a),
+                    filter(r -> r != Rational.ZERO, P.rationals(p.b))
+            );
+            for (Pair<Rational, Rational> q : take(TINY_LIMIT, qs)) {
+                assertTrue(p.toString(), any(b -> b.contains(q.a.divide(q.b)), quotient));
+            }
+
+            int size = quotient.size();
+            assertTrue(p.toString(), size == 0 || size == 1 || size == 2);
+            if (size == 2) {
+                Interval i1 = quotient.get(0);
+                Interval i2 = quotient.get(1);
+                Rational p1 = i1.getLower().isPresent() ? i1.getLower().get() : null;
+                Rational q1 = i1.getUpper().isPresent() ? i1.getUpper().get() : null;
+                Rational p2 = i2.getLower().isPresent() ? i2.getLower().get() : null;
+                Rational q2 = i2.getUpper().isPresent() ? i2.getUpper().get() : null;
+                assertTrue(p.toString(), p1 == null);
+                assertTrue(p.toString(), q2 == null);
+                if (p2 == Rational.ZERO) {
+                    assertTrue(p.toString(), q1.signum() == -1);
+                } else if (q1 == Rational.ZERO) {
+                    assertTrue(p.toString(), p2.signum() == 1);
+                } else {
+                    assertTrue(p.toString(), q1.signum() == -1);
+                    assertTrue(p.toString(), p2.signum() == 1);
+                }
+            }
+        }
+
+        Iterable<Pair<Interval, Interval>> ps = P.pairs(P.intervals(), filter(a -> !a.equals(ZERO), P.intervals()));
+        for (Pair<Interval, Interval> p : take(LIMIT, ps)) {
+            List<Interval> quotient = p.a.divide(p.b);
+
+            assertTrue(p.toString(), convexHull(toList(map(a -> a.multiply(p.b), quotient))).contains(p.a));
+            assertTrue(
+                    p.toString(),
+                    convexHull(toList(map(p.a::multiply, p.b.invert()))).contains(convexHull(quotient))
+            );
+        }
+
+        for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(filter(a -> !a.equals(ZERO), P.intervals())))) {
+            assertTrue(
+                    p.toString(),
+                    convexHull(toList(concatMap(Interval::invert, p.b.divide(p.a))))
+                            .contains(convexHull(p.a.divide(p.b)))
+            );
+        }
+
+        for (Interval a : take(LIMIT, P.intervals())) {
+            assertTrue(a.toString(), any(b -> b.contains(a), a.divide(ONE)));
+        }
+
+        for (Interval a : take(LIMIT, filter(b -> !b.equals(ZERO), P.intervals()))) {
+            assertEquals(a.toString(), ONE.divide(a), a.invert());
+            assertTrue(a.toString(), any(b -> b.contains(ONE), a.divide(a)));
         }
     }
 
