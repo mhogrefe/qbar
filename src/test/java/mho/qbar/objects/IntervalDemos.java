@@ -375,6 +375,36 @@ public class IntervalDemos {
         }
     }
 
+    public static void demoPow() {
+        initialize();
+        Iterable<Integer> exps;
+        if (P instanceof QBarExhaustiveProvider) {
+            exps = P.integers();
+        } else {
+            exps = ((QBarRandomProvider) P).integersGeometric(50);
+        }
+        for (Pair<Interval, Integer> p : take(LIMIT, P.pairs(P.intervals(), exps))) {
+            System.out.println(p.a + " ^ " + p.b + " = " + p.a.pow(p.b));
+        }
+    }
+
+    public static void demoPowHull() {
+        initialize();
+        Iterable<Integer> exps;
+        if (P instanceof QBarExhaustiveProvider) {
+            exps = P.integers();
+        } else {
+            exps = ((QBarRandomProvider) P).integersGeometric(50);
+        }
+        Iterable<Pair<Interval, Integer>> ps = filter(
+                p -> p.b >= 0 || !p.a.equals(ZERO),
+                P.pairs(P.intervals(), exps)
+        );
+        for (Pair<Interval, Integer> p : take(LIMIT, ps)) {
+            System.out.println(p.a + " ^ " + p.b + " = " + p.a.powHull(p.b));
+        }
+    }
+
     public static void demoElementCompare() {
         initialize();
         for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
