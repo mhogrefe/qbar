@@ -1023,6 +1023,8 @@ public final class Interval implements Comparable<Interval> {
      * @return {@code this}/{@code that}
      */
     public @NotNull Interval divide(@NotNull Rational that) {
+        if (that == Rational.ZERO)
+            throw new ArithmeticException("division by zero");
         if (that == Rational.ONE) return this;
         if (that.signum() == 1) {
             return new Interval(
@@ -1050,6 +1052,8 @@ public final class Interval implements Comparable<Interval> {
      * @return {@code this}/{@code that}
      */
     public @NotNull Interval divide(@NotNull BigInteger that) {
+        if (that.equals(BigInteger.ZERO))
+            throw new ArithmeticException("division by zero");
         if (that.equals(BigInteger.ONE)) return this;
         if (that.signum() == 1) {
             return new Interval(
@@ -1077,6 +1081,8 @@ public final class Interval implements Comparable<Interval> {
      * @return {@code this}/{@code that}
      */
     public @NotNull Interval divide(int that) {
+        if (that == 0)
+            throw new ArithmeticException("division by zero");
         if (that == 1) return this;
         if (that > 0) {
             return new Interval(

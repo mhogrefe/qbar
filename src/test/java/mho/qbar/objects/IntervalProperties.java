@@ -87,6 +87,9 @@ public class IntervalProperties {
             propertiesInvertHull();
             propertiesDivide_Interval();
             propertiesDivideHull();
+            propertiesDivide_Rational();
+            propertiesDivide_BigInteger();
+            propertiesDivide_int();
             propertiesElementCompare();
             propertiesEquals();
             propertiesHashCode();
@@ -1394,6 +1397,107 @@ public class IntervalProperties {
         for (Interval a : take(LIMIT, P.intervals())) {
             try {
                 a.divideHull(ZERO);
+                fail(a.toString());
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private static void propertiesDivide_Rational() {
+        initialize();
+        System.out.println("\t\ttesting divide(Rational) properties...");
+
+        Iterable<Pair<Interval, Rational>> ps = P.pairs(P.intervals(), filter(r -> r != Rational.ZERO, P.rationals()));
+        for (Pair<Interval, Rational> p : take(LIMIT, ps)) {
+            Interval quotient = p.a.divide(p.b);
+            validate(quotient);
+
+            for (Rational r : take(TINY_LIMIT, P.rationals(p.a))) {
+                assertTrue(p.toString(), quotient.contains(r.divide(p.b)));
+            }
+
+            assertTrue(p.toString(), quotient.multiply(p.b).contains(p.a));
+            assertTrue(p.toString(), p.a.multiply(p.b.invert()).contains(quotient));
+        }
+
+        for (Interval a : take(LIMIT, P.intervals())) {
+            assertTrue(a.toString(), a.divide(Rational.ONE).contains(a));
+        }
+
+        for (Rational r : take(LIMIT, filter(s -> s != Rational.ZERO, P.rationals()))) {
+            assertEquals(r.toString(), ONE.divide(r), of(r.invert()));
+        }
+
+        for (Interval a : take(LIMIT, P.intervals())) {
+            try {
+                a.divide(Rational.ZERO);
+                fail(a.toString());
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private static void propertiesDivide_BigInteger() {
+        initialize();
+        System.out.println("\t\ttesting divide(BigInteger) properties...");
+
+        Iterable<Pair<Interval, BigInteger>> ps = P.pairs(
+                P.intervals(),
+                filter(i -> !i.equals(BigInteger.ZERO), P.bigIntegers())
+        );
+        for (Pair<Interval, BigInteger> p : take(LIMIT, ps)) {
+            Interval quotient = p.a.divide(p.b);
+            validate(quotient);
+
+            for (Rational r : take(TINY_LIMIT, P.rationals(p.a))) {
+                assertTrue(p.toString(), quotient.contains(r.divide(p.b)));
+            }
+
+            assertTrue(p.toString(), quotient.multiply(p.b).contains(p.a));
+            assertTrue(p.toString(), p.a.multiply(Rational.of(p.b).invert()).contains(quotient));
+        }
+
+        for (Interval a : take(LIMIT, P.intervals())) {
+            assertTrue(a.toString(), a.divide(BigInteger.ONE).contains(a));
+        }
+
+        for (BigInteger i : take(LIMIT, filter(j -> !j.equals(BigInteger.ZERO), P.bigIntegers()))) {
+            assertEquals(i.toString(), ONE.divide(i), of(Rational.of(i).invert()));
+        }
+
+        for (Interval a : take(LIMIT, P.intervals())) {
+            try {
+                a.divide(BigInteger.ZERO);
+                fail(a.toString());
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private static void propertiesDivide_int() {
+        initialize();
+        System.out.println("\t\ttesting divide(int) properties...");
+
+        for (Pair<Interval, Integer> p : take(LIMIT, P.pairs(P.intervals(), filter(i -> i != 0, P.integers())))) {
+            Interval quotient = p.a.divide(p.b);
+            validate(quotient);
+
+            for (Rational r : take(TINY_LIMIT, P.rationals(p.a))) {
+                assertTrue(p.toString(), quotient.contains(r.divide(p.b)));
+            }
+
+            assertTrue(p.toString(), quotient.multiply(p.b).contains(p.a));
+            assertTrue(p.toString(), p.a.multiply(Rational.of(p.b).invert()).contains(quotient));
+        }
+
+        for (Interval a : take(LIMIT, P.intervals())) {
+            assertTrue(a.toString(), a.divide(1).contains(a));
+        }
+
+        for (int i : take(LIMIT, filter(j -> j != 0, P.integers()))) {
+            assertEquals(Integer.toString(i), ONE.divide(i), of(Rational.of(i).invert()));
+        }
+
+        for (Interval a : take(LIMIT, P.intervals())) {
+            try {
+                a.divide(0);
                 fail(a.toString());
             } catch (ArithmeticException ignored) {}
         }
