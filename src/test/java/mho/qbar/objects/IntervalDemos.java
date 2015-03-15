@@ -3,6 +3,7 @@ package mho.qbar.objects;
 import mho.qbar.iterableProviders.QBarExhaustiveProvider;
 import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.iterableProviders.QBarRandomProvider;
+import mho.wheels.iterables.IterableUtils;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 
@@ -347,6 +348,30 @@ public class IntervalDemos {
         }
         for (Pair<Interval, Integer> p : take(LIMIT, P.pairs(P.intervals(), is))) {
             System.out.println(p.a + " << " + p.b + " = " + p.a.shiftRight(p.b));
+        }
+    }
+
+    public static void demoSum() {
+        initialize();
+        for (List<Interval> rs : take(LIMIT, P.lists(P.intervals()))) {
+            String listString = tail(init(rs.toString()));
+            System.out.println("Σ(" + listString + ") = " + sum(rs));
+        }
+    }
+
+    public static void demoProduct() {
+        initialize();
+        for (List<Interval> rs : take(LIMIT, P.lists(P.intervals()))) {
+            String listString = tail(init(rs.toString()));
+            System.out.println("Π(" + listString + ") = " + product(rs));
+        }
+    }
+
+    public static void demoDelta() {
+        initialize();
+        for (List<Interval> rs : take(LIMIT, P.listsAtLeast(1, P.intervals()))) {
+            String listString = tail(init(rs.toString()));
+            System.out.println("Δ(" + listString + ") = " + IterableUtils.toString(delta(rs)));
         }
     }
 

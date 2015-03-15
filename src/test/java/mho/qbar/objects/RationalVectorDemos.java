@@ -286,7 +286,7 @@ public class RationalVectorDemos {
         );
         for (List<RationalVector> vs : take(LIMIT, vss)) {
             String listString = tail(init(vs.toString()));
-            System.out.println("sum(" + listString + ") = " + sum(vs));
+            System.out.println("Σ(" + listString + ") = " + sum(vs));
         }
     }
 
@@ -307,7 +307,7 @@ public class RationalVectorDemos {
         );
         for (List<RationalVector> vs : take(LIMIT, vss)) {
             String listString = tail(init(vs.toString()));
-            System.out.println("delta(" + listString + ") = " + IterableUtils.toString(delta(vs)));
+            System.out.println("Δ(" + listString + ") = " + IterableUtils.toString(delta(vs)));
         }
     }
 
