@@ -1,5 +1,6 @@
 package mho.qbar.objects;
 
+import mho.wheels.iterables.IterableUtils;
 import mho.wheels.misc.Readers;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
@@ -8,8 +9,6 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.List;
 import java.util.Optional;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 import static mho.qbar.objects.Interval.*;
 import static mho.wheels.ordering.Ordering.*;
@@ -1267,6 +1266,41 @@ public class IntervalTest {
     }
 
     @Test
+    public void testSum() {
+        aeq(sum(readIntervalList("[]").get()), "[0, 0]");
+        aeq(sum(readIntervalList("[[-2, 5/3], (-Infinity, 6], [4, 4]]").get()), "(-Infinity, 35/3]");
+        try {
+            sum(readIntervalListWithNulls("[[-2, 5/3], null, [4, 4]]").get());
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testProduct() {
+        aeq(product(readIntervalList("[]").get()), "[1, 1]");
+        aeq(product(readIntervalList("[[-2, 5/3], [0, 6], [4, 4]]").get()), "[-48, 40]");
+        aeq(product(readIntervalList("[[-2, 5/3], (-Infinity, 6], [4, 4]]").get()), "(-Infinity, Infinity)");
+        try {
+            product(readIntervalListWithNulls("[[-2, 5/3], null, [4, 4]]").get());
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testDelta() {
+        aeq(delta(readIntervalList("[[1/3, 2]]").get()), "[]");
+        aeq(delta(readIntervalList("[[-2, 5/3], (-Infinity, 6], [4, 4]]").get()), "[(-Infinity, 8], [-2, Infinity)]");
+        try {
+            delta(readIntervalListWithNulls("[]").get());
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            IterableUtils.toList(delta(readIntervalListWithNulls("[[-2, 5/3], null, [4, 4]]").get()));
+            fail();
+        } catch (NullPointerException ignored) {}
+    }
+
+    @Test
     public void testElementCompare() {
         aeq(ZERO.elementCompare(ZERO), "Optional[EQ]");
         aeq(ZERO.elementCompare(ONE), "Optional[LT]");
@@ -1503,6 +1537,10 @@ public class IntervalTest {
         aeq(read("[4, 4]").get(), "[4, 4]");
         aeq(read("(-Infinity, 3/2]").get(), "(-Infinity, 3/2]");
         aeq(read("[-6, Infinity)").get(), "[-6, Infinity)");
+    }
+
+    private static void aeq(Iterable<?> a, Object b) {
+        assertEquals(IterableUtils.toString(a), b.toString());
     }
 
     private static void aeq(Object a, Object b) {

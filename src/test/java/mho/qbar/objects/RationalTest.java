@@ -2737,7 +2737,6 @@ public class RationalTest {
     public void testSum() {
         aeq(sum(readRationalList("[10, 21/2, 11]").get()), "63/2");
         aeq(sum(readRationalList("[-4, 6, -8]").get()), -6);
-        aeq(sum(new ArrayList<>()), 0);
         try {
             sum(readRationalListWithNulls("[10, null, 11]").get());
             fail();
@@ -2746,9 +2745,9 @@ public class RationalTest {
 
     @Test
     public void testProduct() {
+        aeq(product(readRationalList("[]").get()), 1);
         aeq(product(readRationalList("[10, 21/2, 11]").get()), 1155);
         aeq(product(readRationalList("[-4, 6, -8]").get()), 192);
-        aeq(product(new ArrayList<>()), 1);
         try {
             product(readRationalListWithNulls("[10, null, 11]").get());
             fail();
@@ -2757,10 +2756,10 @@ public class RationalTest {
 
     @Test
     public void testDelta() {
+        aeq(delta(readRationalList("[3]").get()), "[]");
         aeq(delta(readRationalList("[31/10, 41/10, 59/10, 23/10]").get()), "[1, 9/5, -18/5]");
-        aeq(delta(Arrays.asList(Rational.of(3))), "[]");
         try {
-            delta(new ArrayList<>());
+            delta(readRationalList("[]").get());
             fail();
         } catch (IllegalArgumentException ignored) {}
         try {
