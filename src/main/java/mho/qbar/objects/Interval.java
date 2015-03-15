@@ -1199,7 +1199,18 @@ public final class Interval implements Comparable<Interval> {
      *
      * <ul>
      *  <li>{@code this} may be any {@code Interval}.</li>
-     *  //todo
+     *  <li>{@code p} may be any {@code int}.</li>
+     *  <li>
+     *   The result is one of the following:
+     *   <li>
+     *    <ul>[]</ul>
+     *    <ul>A list containing a single, non-null {@code Interval}</ul>
+     *    <ul>[(–∞, q], [0, ∞)] where q<0</ul>
+     *    <ul>[(–∞, 0], [p, ∞)] where p>0</ul>
+     *    <ul>[(–∞, q], [p, ∞)] where q<0, p>0</ul>
+     *    <ul></ul>
+     *   </li>
+     *  </li>
      * </ul>
      *
      * @return {@code this}<sup>{@code p}</sup>
