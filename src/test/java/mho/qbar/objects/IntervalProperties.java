@@ -1531,6 +1531,11 @@ public class IntervalProperties {
         for (Pair<Interval, Integer> p : take(LIMIT, P.pairs(P.intervals(), is))) {
             Interval shifted = p.a.shiftLeft(p.b);
             validate(shifted);
+
+            for (Rational r : take(TINY_LIMIT, P.rationals(p.a))) {
+                assertTrue(p.toString(), shifted.contains(r.shiftLeft(p.b)));
+            }
+
             assertEquals(p.toString(), shifted, shiftLeft_simplest(p.a, p.b));
             assertEquals(p.toString(), p.a.signum(), shifted.signum());
             assertEquals(p.toString(), p.a.isFinitelyBounded(), shifted.isFinitelyBounded());
@@ -1597,6 +1602,11 @@ public class IntervalProperties {
         for (Pair<Interval, Integer> p : take(LIMIT, P.pairs(P.intervals(), is))) {
             Interval shifted = p.a.shiftRight(p.b);
             validate(shifted);
+
+            for (Rational r : take(TINY_LIMIT, P.rationals(p.a))) {
+                assertTrue(p.toString(), shifted.contains(r.shiftRight(p.b)));
+            }
+
             assertEquals(p.toString(), shifted, shiftRight_simplest(p.a, p.b));
             assertEquals(p.toString(), p.a.signum(), shifted.signum());
             assertEquals(p.toString(), p.a.isFinitelyBounded(), shifted.isFinitelyBounded());
@@ -1649,6 +1659,11 @@ public class IntervalProperties {
         for (List<Interval> is : take(LIMIT, P.lists(P.intervals()))) {
             Interval sum = sum(is);
             validate(sum);
+
+            for (List<Rational> rs : take(TINY_LIMIT, transposeTruncating(map(P::rationals, is)))) {
+                assertTrue(is.toString(), sum.contains(Rational.sum(rs)));
+            }
+
             assertEquals(is.toString(), sum.isFinitelyBounded(), is.isEmpty() || all(Interval::isFinitelyBounded, is));
         }
 
@@ -1690,6 +1705,11 @@ public class IntervalProperties {
         for (List<Interval> is : take(LIMIT, P.lists(P.intervals()))) {
             Interval product = product(is);
             validate(product);
+
+            for (List<Rational> rs : take(TINY_LIMIT, transposeTruncating(map(P::rationals, is)))) {
+                assertTrue(is.toString(), product.contains(Rational.product(rs)));
+            }
+
             assertEquals(
                     is.toString(),
                     product.isFinitelyBounded(),
@@ -1733,6 +1753,11 @@ public class IntervalProperties {
         for (List<Interval> is : take(LIMIT, P.listsAtLeast(1, P.intervals()))) {
             Iterable<Interval> deltas = delta(is);
             deltas.forEach(mho.qbar.objects.IntervalProperties::validate);
+
+            for (List<Rational> rs : take(TINY_LIMIT, transposeTruncating(map(P::rationals, is)))) {
+                assertTrue(is.toString(), and(zipWith(p -> p.a.contains(p.b), deltas, Rational.delta(rs))));
+            }
+
             assertEquals(is.toString(), length(deltas), length(is) - 1);
             List<Interval> reversed = reverse(map(Interval::negate, delta(reverse(is))));
             aeq(is.toString(), deltas, reversed);
