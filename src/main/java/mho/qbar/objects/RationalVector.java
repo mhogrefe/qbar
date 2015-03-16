@@ -1,6 +1,7 @@
 package mho.qbar.objects;
 
 import mho.wheels.misc.Readers;
+import mho.wheels.ordering.Ordering;
 import mho.wheels.ordering.comparators.ShortlexComparator;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
@@ -51,8 +52,7 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
     }
 
     /**
-     * Returns an {@code Iterator} over this {@code RationalVector}'s coordinates. This method makes a defensive copy
-     * of {@code coordinates}; Removing from the {@code Iterator} will not affect the {@code RationalVector}.
+     * Returns an {@code Iterator} over this {@code RationalVector}'s coordinates. Does not support removal.
      *
      * <ul>
      *  <li>The result is finite and contains no nulls.</li>
@@ -64,7 +64,24 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
      */
     @Override
     public @NotNull Iterator<Rational> iterator() {
-        return toList(coordinates).iterator();
+        return new Iterator<Rational>() {
+            private int i = 0;
+
+            @Override
+            public boolean hasNext() {
+                return i < coordinates.size();
+            }
+
+            @Override
+            public Rational next() {
+                return coordinates.get(i++);
+            }
+
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException("cannot remove from this iterator");
+            }
+        };
     }
 
     /**
@@ -213,9 +230,9 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
     }
 
     /**
-     * Creates an identity vector; that is, a vector with a given dimension, all of whose coordinates are 0, except for
-     * a single coordinate which is 1. Identity matrices are made up of identity vectors. There is no identity vector
-     * of dimension 0.
+     * Creates an standard basis vector; that is, a vector with a given dimension, all of whose coordinates are 0,
+     * except for a single coordinate which is 1. Identity matrices are made up of standard basis vectors. There is no
+     * standard basis vector of dimension 0.
      *
      * <ul>
      *  <li>{@code dimension} must be positive.</li>
@@ -228,9 +245,9 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
      *
      * @param dimension the vector's dimension
      * @param i the index of the vector coordinate which is 1
-     * @return an identity vector
+     * @return a standard basis vector
      */
-    public static @NotNull RationalVector identity(int dimension, int i) {
+    public static @NotNull RationalVector standard(int dimension, int i) {
         if (dimension < 1)
             throw new IllegalArgumentException("dimension must be positive");
         if (i < 0)
@@ -364,7 +381,7 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
      *
      * <ul>
      *  <li>{@code this} can be any {@code RationalVector}.</li>
-     *  <li>{@code that} cannot be null or zero.</li>
+     *  <li>{@code that} cannot be zero.</li>
      *  <li>The result is not null.</li>
      * </ul>
      *
@@ -380,7 +397,7 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
      *
      * <ul>
      *  <li>{@code this} can be any {@code RationalVector}.</li>
-     *  <li>{@code that} cannot be null or zero.</li>
+     *  <li>{@code that} cannot be zero.</li>
      *  <li>The result is not null.</li>
      * </ul>
      *
@@ -405,6 +422,196 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
      */
     public @NotNull RationalVector divide(int that) {
         return multiply(Rational.of(1, that));
+    }
+
+    /**
+     * Returns the left shift of {@code this} by {@code bits}; {@code this}×2<sup>{@code bits}</sup>. Negative
+     * {@code bits} corresponds to a right shift.
+     *
+     * <ul>
+     *  <li>{@code this} can be any {@code RationalVector}.</li>
+     *  <li>{@code bits} may be any {@code int}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param bits the number of bits to left-shift by
+     * @return {@code this}≪{@code bits}
+     */
+    public @NotNull RationalVector shiftLeft(int bits) {
+        if (this == ZERO_DIMENSIONAL) return ZERO_DIMENSIONAL;
+        if (bits == 0) return this;
+        return new RationalVector(toList(map(r -> r.shiftLeft(bits), coordinates)));
+    }
+
+    /**
+     * Returns the right shift of {@code this} by {@code bits}; {@code this}×2<sup>–{@code bits}</sup>. Negative
+     * {@code bits} corresponds to a left shift.
+     *
+     * <ul>
+     *  <li>{@code this} can be any {@code RationalVector}.</li>
+     *  <li>{@code bits} may be any {@code int}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param bits the number of bits to right-shift by
+     * @return {@code this}≫{@code bits}
+     */
+    public @NotNull RationalVector shiftRight(int bits) {
+        if (this == ZERO_DIMENSIONAL) return ZERO_DIMENSIONAL;
+        if (bits == 0) return this;
+        return new RationalVector(toList(map(r -> r.shiftRight(bits), coordinates)));
+    }
+
+    /**
+     * Returns the sum of all the {@code RationalVector}s in {@code xs}.
+     *
+     * <ul>
+     *  <li>{@code xs} must be finite and non-empty, and may not contain any nulls. Every {@code RationalVector} in
+     *  {@code xs} must have the same dimension.</li>
+     *  <li>The result may be any {@code RationalVector}.</li>
+     * </ul>
+     *
+     * @param xs an {@code Iterable} of {@code RationalVector}s.
+     * @return Σxs
+     */
+    public static RationalVector sum(@NotNull Iterable<RationalVector> xs) {
+        if (isEmpty(xs))
+            throw new IllegalArgumentException("cannot take sum of empty RationalVector list");
+        if (!same(map(RationalVector::dimension, xs)))
+            throw new ArithmeticException("all elements must have the same dimension");
+        List<Rational> coordinates = toList(map(Rational::sum, transpose(map(v -> (Iterable<Rational>) v, xs))));
+        return coordinates.isEmpty() ? ZERO_DIMENSIONAL : new RationalVector(coordinates);
+    }
+
+    /**
+     * Returns the differences between successive {@code RationalVector}s in {@code xs}. If {@code xs} contains a
+     * single {@code RationalVector}, an empty {@code Iterable} is returned. {@code xs} cannot be empty. Does not
+     * support removal.
+     *
+     * <ul>
+     *  <li>{@code xs} must not be empty and may not contain any nulls. Every {@code RationalVector} in {@code xs} must
+     *  have the same dimension.</li>
+     *  <li>The result is finite and does not contain any nulls.</li>
+     * </ul>
+     *
+     * Length is |{@code xs}|–1
+     *
+     * @param xs an {@code Iterable} of {@code RationalVector}s.
+     * @return Δxs
+     */
+    public static @NotNull Iterable<RationalVector> delta(@NotNull Iterable<RationalVector> xs) {
+        if (isEmpty(xs))
+            throw new IllegalArgumentException("cannot get delta of empty Iterable");
+        if (head(xs) == null)
+            throw new NullPointerException();
+        return adjacentPairsWith(p -> p.b.subtract(p.a), xs);
+    }
+
+    /**
+     * Returns the dot product of {@code this} and {@code that}. The dot product of the zero-dimensional vector with
+     * itself is 0.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalVector}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>{@code this} and {@code that} must have the same dimension.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param that the {@code RationalVector} {@code this} is being dotted with
+     * @return {@code this}⋅{@code that}
+     */
+    public @NotNull Rational dot(@NotNull RationalVector that) {
+        if (coordinates.size() != that.coordinates.size())
+            throw new ArithmeticException("vectors must have same dimension");
+        return Rational.sum(zipWith(p -> p.a.multiply(p.b), coordinates, that.coordinates));
+    }
+
+    /**
+     * Determines whether the angle between {@code this} and {@code that} is less than, equal to, or greater than a
+     * right angle. For the purposes of this method, zero vectors are considered to be at a right angle to any other
+     * vector.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalVector}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>{@code this} and {@code that} must have the same dimension.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param that the {@code RationalVector} which, along with {@code this}, creates the angle under consideration
+     * @return whether the angle between {@code this} and {@code that} is acute ({@code LT}), right ({@code EQ}), or
+     * obtuse ({@code GT}).
+     */
+    public @NotNull Ordering rightAngleCompare(@NotNull RationalVector that) {
+        return Ordering.compare(dot(that), Rational.ZERO).invert();
+    }
+
+    /**
+     * Returns the square of the length (a.k.a. magnitude, a.k.a. norm) of {@code this}. The actual length may be
+     * irrational. The length of the zero-dimensional vector is 0.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalVector}.</li>
+     *  <li>The result is non-negative.</li>
+     * </ul>
+     *
+     * @return ‖{@code this}‖²
+     */
+    public @NotNull Rational squaredLength() {
+        return Rational.sum(map(x -> x.pow(2), coordinates));
+    }
+
+    /**
+     * Multiplies {@code this} by some positive constant to yield a {@code RationalVector} with integer coordinates
+     * having no common factor. This gives a canonical representation of {@code RationalVector}s considered equivalent
+     * under multiplication by positive {@code Rational}s. Another canonical representation is given by
+     * {@link mho.qbar.objects.RationalVector#reduce}; unlike this representation, it is invariant under negation.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalVector}.</li>
+     *  <li>The result is a {@code RationalVector} with integer coordinates whose GCD is 0 or 1.</li>
+     * </ul>
+     *
+     * @return a canonical representation of {@code this}
+     */
+    public @NotNull RationalVector cancelDenominators() {
+        return new RationalVector(toList(map(Rational::of, Rational.cancelDenominators(coordinates))));
+    }
+
+    /**
+     * Returns the pivot of {@code this}, or the first nonzero coordinate. Since the pivot may not exist, this method
+     * returns an {@code Optional}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalVector}.</li>
+     *  <li>The result may be empty, or it may contain a nonzero {@code Rational}.</li>
+     * </ul>
+     *
+     * @return {@code this}'s pivot
+     */
+    public @NotNull Optional<Rational> pivot() {
+        return find(r -> r != Rational.ZERO, coordinates);
+    }
+
+    /**
+     * Multiplies {@code this} by some nonzero constant to yield a {@code RationalVector} whose pivot, if it exists, is
+     * 1. This gives a canonical representation of {@code RationalVector}s considered equivalent under multiplication
+     * by nonzero {@code Rational}s. Another canonical representation is given by
+     * {@link mho.qbar.objects.RationalVector#cancelDenominators}; unlike this representation, it is not invariant
+     * under negation. Reduction is used when row-reducing matrices.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalVector}.</li>
+     *  <li>The result is a {@code RationalVector} whose pivot, if it exists, is 1.</li>
+     * </ul>
+     *
+     * @return a canonical representation of {@code this}
+     */
+    public @NotNull RationalVector reduce() {
+        Optional<Rational> pivot = pivot();
+        if (!pivot.isPresent() || pivot.get() == Rational.ONE) return this;
+        return divide(pivot.get());
     }
 
     /**
@@ -474,7 +681,7 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
      * invalid
      */
     public static @NotNull Optional<RationalVector> read(@NotNull String s) {
-        Optional<List<Rational>> ors = Readers.readList(Rational::findIn, s);
+        Optional<List<Rational>> ors = Readers.readList(Rational::read, s);
         if (!ors.isPresent()) return Optional.empty();
         if (ors.get().isEmpty()) return Optional.of(ZERO_DIMENSIONAL);
         return Optional.of(new RationalVector(ors.get()));
@@ -496,7 +703,7 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
      * @return the first {@code RationalVector} found in {@code s}, and the index at which it was found
      */
     public static @NotNull Optional<Pair<RationalVector, Integer>> findIn(@NotNull String s) {
-        Optional<Pair<List<Rational>, Integer>> op = Readers.findListIn(Rational::findIn, s);
+        Optional<Pair<List<Rational>, Integer>> op = Readers.findListIn(Rational::read, "-/0123456789", s);
         if (!op.isPresent()) return Optional.empty();
         Pair<List<Rational>, Integer> p = op.get();
         if (p.a.isEmpty()) return Optional.of(new Pair<>(ZERO_DIMENSIONAL, p.b));

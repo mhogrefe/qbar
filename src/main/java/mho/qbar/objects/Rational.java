@@ -31,12 +31,12 @@ import static mho.wheels.ordering.Ordering.*;
  *
  * <p>This class is immutable.
  */
-@SuppressWarnings("ConstantConditions")
 public final class Rational implements Comparable<Rational> {
     /**
      * 0
      */
     public static final @NotNull Rational ZERO = new Rational(BigInteger.ZERO, BigInteger.ONE);
+
     /**
      * 1
      */
@@ -94,8 +94,9 @@ public final class Rational implements Comparable<Rational> {
      *
      * Length is infinite
      */
+    @SuppressWarnings("ConstantConditions")
     public static final @NotNull Iterable<Rational> HARMONIC_NUMBERS =
-            tail(scanl(p -> p.a.add(p.b), ZERO, map(i -> of(i).invert(), range(1))));
+            scanl(p -> p.a.add(p.b), ONE, map(i -> new Rational(BigInteger.ONE, BigInteger.valueOf(i)), rangeUp(2)));
 
     /**
      * {@code this} times {@code denominator}
@@ -108,7 +109,7 @@ public final class Rational implements Comparable<Rational> {
     private final @NotNull BigInteger denominator;
 
     /**
-     * Private constructor from {@link BigInteger}s; assumes arguments are valid
+     * Private constructor from {@link BigInteger}s; assumes arguments are valid.
      *
      * <ul>
      *  <li>{@code numerator} cannot be null.</li>
@@ -126,7 +127,7 @@ public final class Rational implements Comparable<Rational> {
     }
 
     /**
-     * Returns this {@code Rational}'s numerator
+     * Returns this {@code Rational}'s numerator.
      *
      * <ul>
      *  <li>The result is non-null.</li>
@@ -139,7 +140,7 @@ public final class Rational implements Comparable<Rational> {
     }
 
     /**
-     * Returns this {@code Rational}'s denominator
+     * Returns this {@code Rational}'s denominator.
      *
      * <ul>
      *  <li>The result is positive.</li>
@@ -348,6 +349,7 @@ public final class Rational implements Comparable<Rational> {
      * @return the {@code Rational} corresponding to {@code f}, or null if {@code f} is {@code Infinity},
      * {@code -Infinity}, or {@code NaN}
      */
+    @SuppressWarnings("JavaDoc")
     public static @Nullable Rational ofExact(float f) {
         if (f == 0.0f) return ZERO;
         if (f == 1.0f) return ONE;
@@ -385,6 +387,7 @@ public final class Rational implements Comparable<Rational> {
      * @return the {@code Rational} corresponding to {@code d}, or null if {@code d} is {@code Infinity},
      * {@code -Infinity}, or {@code NaN}
      */
+    @SuppressWarnings("JavaDoc")
     public static @Nullable Rational ofExact(double d) {
         if (d == 0.0) return ZERO;
         if (d == 1.0) return ONE;
@@ -738,6 +741,7 @@ public final class Rational implements Comparable<Rational> {
         if (this == ZERO) return new Pair<>(0f, 0f);
         if (numerator.signum() == -1) {
             Pair<Float, Float> negativeRange = negate().floatRange();
+            //noinspection ConstantConditions
             return new Pair<>(-negativeRange.b, -negativeRange.a);
         }
         int exponent = binaryExponent();
@@ -783,6 +787,7 @@ public final class Rational implements Comparable<Rational> {
         if (this == ZERO) return new Pair<>(0.0, 0.0);
         if (numerator.signum() == -1) {
             Pair<Double, Double> negativeRange = negate().doubleRange();
+            //noinspection ConstantConditions
             return new Pair<>(-negativeRange.b, -negativeRange.a);
         }
         int exponent = binaryExponent();
@@ -864,6 +869,7 @@ public final class Rational implements Comparable<Rational> {
      * @param roundingMode specifies the details of how to round {@code this}.
      * @return {@code this}, rounded
      */
+    @SuppressWarnings("ConstantConditions")
     public float floatValue(@NotNull RoundingMode roundingMode) {
         Pair<Float, Float> floatRange = floatRange();
         if (floatRange.a.equals(floatRange.b)) return floatRange.a;
@@ -1009,6 +1015,7 @@ public final class Rational implements Comparable<Rational> {
      * @param roundingMode specifies the details of how to round {@code this}.
      * @return {@code this}, rounded
      */
+    @SuppressWarnings("ConstantConditions")
     public double doubleValue(@NotNull RoundingMode roundingMode) {
         Pair<Double, Double> doubleRange = doubleRange();
         if (doubleRange.a.equals(doubleRange.b)) return doubleRange.a;
@@ -1096,74 +1103,6 @@ public final class Rational implements Comparable<Rational> {
     }
 
     /**
-     * Returns the negative of {@code this}.
-     *
-     * <ul>
-     *  <li>{@code this} may be any {@code Rational}.</li>
-     *  <li>The result is non-null.</li>
-     * </ul>
-     *
-     * @return –{@code this}
-     */
-    public @NotNull Rational negate() {
-        if (this == ZERO) return ZERO;
-        BigInteger negativeNumerator = numerator.negate();
-        if (negativeNumerator.equals(denominator)) return ONE;
-        return new Rational(negativeNumerator, denominator);
-    }
-
-    /**
-     * Returns the multiplicative inverse of {@code this}.
-     *
-     * <ul>
-     *  <li>{@code this} may be any non-zero {@code Rational}.</li>
-     *  <li>The result is a non-zero {@code Rational}.</li>
-     * </ul>
-     *
-     * @return 1/{@code this}
-     */
-    public @NotNull Rational invert() {
-        if (this == ZERO)
-            throw new ArithmeticException("division by zero");
-        if (this == ONE) return ONE;
-        if (numerator.signum() == -1) {
-            return new Rational(denominator.negate(), numerator.negate());
-        } else {
-            return new Rational(denominator, numerator);
-        }
-    }
-
-    /**
-     * Returns the absolute value of {@code this}.
-     *
-     * <ul>
-     *  <li>{@code this} may be any {@code Rational.}</li>
-     *  <li>The result is a non-negative {@code Rational}.</li>
-     * </ul>
-     *
-     * @return |{@code this}|
-     */
-    public @NotNull Rational abs() {
-        if (this == ZERO || this == ONE) return this;
-        if (numerator.equals(BigInteger.valueOf(-1)) && denominator.equals(BigInteger.ONE)) return ONE;
-        return new Rational(numerator.abs(), denominator);
-    }
-
-    /**
-     * Returns the sign of {@code this}: 1 if positive, –1 if negative, 0 if equal to 0.
-     *
-     * <ul>
-     *  <li>{@code this} may be any {@code Rational}.</li>
-     *  <li>The result is –1, 0, or 1.</li>
-     * </ul>
-     *
-     * @return sgn({@code this})
-     */
-    public int signum() {
-        return numerator.signum();
-    }
-
-    /**
      * Returns the sum of {@code this} and {@code that}.
      *
      * <ul>
@@ -1195,6 +1134,54 @@ public final class Rational implements Comparable<Rational> {
             if (sn.equals(sd)) return ONE;
             return new Rational(sn, sd);
         }
+    }
+
+    /**
+     * Returns the negative of {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Rational}.</li>
+     *  <li>The result is non-null.</li>
+     * </ul>
+     *
+     * @return –{@code this}
+     */
+    public @NotNull Rational negate() {
+        if (this == ZERO) return ZERO;
+        BigInteger negativeNumerator = numerator.negate();
+        if (negativeNumerator.equals(denominator)) return ONE;
+        return new Rational(negativeNumerator, denominator);
+    }
+
+    /**
+     * Returns the absolute value of {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Rational.}</li>
+     *  <li>The result is a non-negative {@code Rational}.</li>
+     * </ul>
+     *
+     * @return |{@code this}|
+     */
+    public @NotNull Rational abs() {
+        if (this == ZERO || this == ONE) return this;
+        if (numerator.equals(BigInteger.valueOf(-1)) && denominator.equals(BigInteger.ONE)) return ONE;
+        return new Rational(numerator.abs(), denominator);
+    }
+
+    /**
+     * Returns the sign of {@code this}: 1 if positive, –1 if negative, 0 if equal to 0.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Rational}.</li>
+     *  <li>The result is –1, 0, or 1.</li>
+     * </ul>
+     *
+     * @return sgn({@code this})
+     */
+    @SuppressWarnings("JavaDoc")
+    public int signum() {
+        return numerator.signum();
     }
 
     /**
@@ -1274,6 +1261,27 @@ public final class Rational implements Comparable<Rational> {
     }
 
     /**
+     * Returns the multiplicative inverse of {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any non-zero {@code Rational}.</li>
+     *  <li>The result is a non-zero {@code Rational}.</li>
+     * </ul>
+     *
+     * @return 1/{@code this}
+     */
+    public @NotNull Rational invert() {
+        if (this == ZERO)
+            throw new ArithmeticException("division by zero");
+        if (this == ONE) return ONE;
+        if (numerator.signum() == -1) {
+            return new Rational(denominator.negate(), numerator.negate());
+        } else {
+            return new Rational(denominator, numerator);
+        }
+    }
+
+    /**
      * Returns the quotient of {@code a} and {@code b}.
      *
      * <ul>
@@ -1334,6 +1342,66 @@ public final class Rational implements Comparable<Rational> {
     }
 
     /**
+     * Returns the left shift of {@code this} by {@code bits}; {@code this}×2<sup>{@code bits}</sup>. Negative
+     * {@code bits} corresponds to a right shift.
+     *
+     * <ul>
+     *  <li>{@code this} can be any {@code Rational}.</li>
+     *  <li>{@code bits} may be any {@code int}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param bits the number of bits to left-shift by
+     * @return {@code this}≪{@code bits}
+     */
+    public @NotNull Rational shiftLeft(int bits) {
+        if (this == ZERO) return ZERO;
+        if (bits == 0) return this;
+        if (bits < 0) return shiftRight(-bits);
+        int denominatorTwos = denominator.getLowestSetBit();
+        if (bits <= denominatorTwos) {
+            BigInteger shifted = denominator.shiftRight(bits);
+            if (numerator.equals(shifted)) return ONE;
+            return new Rational(numerator, shifted);
+        } else {
+            BigInteger shiftedNumerator = numerator.shiftLeft(bits - denominatorTwos);
+            BigInteger shiftedDenominator = denominator.shiftRight(denominatorTwos);
+            if (shiftedNumerator.equals(shiftedDenominator)) return ONE;
+            return new Rational(shiftedNumerator, shiftedDenominator);
+        }
+    }
+
+    /**
+     * Returns the right shift of {@code this} by {@code bits}; {@code this}×2<sup>–{@code bits}</sup>. Negative
+     * {@code bits} corresponds to a left shift.
+     *
+     * <ul>
+     *  <li>{@code this} can be any {@code Rational}.</li>
+     *  <li>{@code bits} may be any {@code int}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param bits the number of bits to right-shift by
+     * @return {@code this}≫{@code bits}
+     */
+    public @NotNull Rational shiftRight(int bits) {
+        if (this == ZERO) return ZERO;
+        if (bits == 0) return this;
+        if (bits < 0) return shiftLeft(-bits);
+        int numeratorTwos = numerator.getLowestSetBit();
+        if (bits <= numeratorTwos) {
+            BigInteger shifted = numerator.shiftRight(bits);
+            if (shifted.equals(denominator)) return ONE;
+            return new Rational(shifted, denominator);
+        } else {
+            BigInteger shiftedNumerator = numerator.shiftRight(numeratorTwos);
+            BigInteger shiftedDenominator = denominator.shiftLeft(bits - numeratorTwos);
+            if (shiftedNumerator.equals(shiftedDenominator)) return ONE;
+            return new Rational(shiftedNumerator, shiftedDenominator);
+        }
+    }
+
+    /**
      * Returns the sum of all the {@code Rational}s in {@code xs}. If {@code xs} is empty, 0 is returned.
      *
      * <ul>
@@ -1345,6 +1413,7 @@ public final class Rational implements Comparable<Rational> {
      * @return Σxs
      */
     public static Rational sum(@NotNull Iterable<Rational> xs) {
+        //noinspection ConstantConditions
         return foldl(p -> p.a.add(p.b), ZERO, xs);
     }
 
@@ -1373,6 +1442,7 @@ public final class Rational implements Comparable<Rational> {
                 },
                 xs
         );
+        //noinspection ConstantConditions
         return foldl(p -> p.a.multiply(p.b), ONE, denominatorSorted);
     }
 
@@ -1395,6 +1465,7 @@ public final class Rational implements Comparable<Rational> {
             throw new IllegalArgumentException("cannot get delta of empty Iterable");
         if (head(xs) == null)
             throw new NullPointerException();
+        //noinspection ConstantConditions
         return adjacentPairsWith(p -> p.b.subtract(p.a), xs);
     }
 
@@ -1412,7 +1483,7 @@ public final class Rational implements Comparable<Rational> {
     public static @NotNull Rational harmonicNumber(int n) {
         if (n < 1)
             throw new ArithmeticException("harmonic number must have positive index");
-        return sum(map(i -> of(i).invert(), range(1, n)));
+        return sum(map(i -> i == 1 ? ONE : new Rational(BigInteger.ONE, BigInteger.valueOf(i)), range(1, n)));
     }
 
     /**
@@ -1523,66 +1594,6 @@ public final class Rational implements Comparable<Rational> {
         if (denominator.signum() != 1)
             throw new ArithmeticException("must round to a positive denominator");
         return of(multiply(denominator).bigIntegerValue(roundingMode)).divide(denominator);
-    }
-
-    /**
-     * Returns the left shift of {@code this} by {@code bits}; {@code this}×2<sup>{@code bits}</sup>. Negative
-     * {@code bits} corresponds to a right shift.
-     *
-     * <ul>
-     *  <li>{@code this} can be any {@code Rational}.</li>
-     *  <li>{@code bits} may be any {@code int}.</li>
-     *  <li>The result is not null.</li>
-     * </ul>
-     *
-     * @param bits the number of bits to left-shift by
-     * @return {@code this}≪{@code bits}
-     */
-    public @NotNull Rational shiftLeft(int bits) {
-        if (this == ZERO) return ZERO;
-        if (bits == 0) return this;
-        if (bits < 0) return shiftRight(-bits);
-        int denominatorTwos = denominator.getLowestSetBit();
-        if (bits <= denominatorTwos) {
-            BigInteger shifted = denominator.shiftRight(bits);
-            if (numerator.equals(shifted)) return ONE;
-            return new Rational(numerator, shifted);
-        } else {
-            BigInteger shiftedNumerator = numerator.shiftLeft(bits - denominatorTwos);
-            BigInteger shiftedDenominator = denominator.shiftRight(denominatorTwos);
-            if (shiftedNumerator.equals(shiftedDenominator)) return ONE;
-            return new Rational(shiftedNumerator, shiftedDenominator);
-        }
-    }
-
-    /**
-     * Returns the right shift of {@code this} by {@code bits}; {@code this}×2<sup>–{@code bits}</sup>. Negative
-     * {@code bits} corresponds to a left shift.
-     *
-     * <ul>
-     *  <li>{@code this} can be any {@code Rational}.</li>
-     *  <li>{@code bits} may be any {@code int}.</li>
-     *  <li>The result is not null.</li>
-     * </ul>
-     *
-     * @param bits the number of bits to right-shift by
-     * @return {@code this}≫{@code bits}
-     */
-    public @NotNull Rational shiftRight(int bits) {
-        if (this == ZERO) return ZERO;
-        if (bits == 0) return this;
-        if (bits < 0) return shiftLeft(-bits);
-        int numeratorTwos = numerator.getLowestSetBit();
-        if (bits <= numeratorTwos) {
-            BigInteger shifted = numerator.shiftRight(bits);
-            if (shifted.equals(denominator)) return ONE;
-            return new Rational(shifted, denominator);
-        } else {
-            BigInteger shiftedNumerator = numerator.shiftRight(numeratorTwos);
-            BigInteger shiftedDenominator = denominator.shiftLeft(bits - numeratorTwos);
-            if (shiftedNumerator.equals(shiftedDenominator)) return ONE;
-            return new Rational(shiftedNumerator, shiftedDenominator);
-        }
     }
 
     /**
@@ -1848,6 +1859,7 @@ public final class Rational implements Comparable<Rational> {
      * @param base the base of the output digits
      * @return a {@code String} representation of {@code this} in base {@code base}
      */
+    @SuppressWarnings("ConstantConditions")
     public @NotNull String toStringBase(@NotNull BigInteger base) {
         if (!hasTerminatingBaseExpansion(base))
             throw new ArithmeticException(this + " has a non-terminating base-" + base + " expansion");
@@ -1897,6 +1909,9 @@ public final class Rational implements Comparable<Rational> {
      * </ul>
      *
      * @param base the base of the output digits
+     * @param scale the maximum number of digits after the decimal point in the result. If {@code this} has a
+     *              terminating base-{@code base} expansion, the actual number of digits after the decimal point may be
+     *              less.
      * @return a {@code String} representation of {@code this} in base {@code base}
      */
     public @NotNull String toStringBase(@NotNull BigInteger base, int scale) {
@@ -1933,8 +1948,9 @@ public final class Rational implements Comparable<Rational> {
     /**
      * Converts a {@code String} written in some base to a {@code Rational}. If the base is 36 or less, the digits are
      * '0' through '9' followed by 'A' through 'Z'. If the base is greater than 36, the digits are written in decimal
-     * and each digit is surrounded by parentheses. The empty {@code String} represents 0. Leading zeroes are
-     * permitted. If the {@code String} is invalid, an exception is thrown.
+     * and each digit is surrounded by parentheses (in this case, the {@code String} representing the digit cannot be
+     * empty and no leading zeroes are allowed unless the digit is 0). The empty {@code String} represents 0. Leading
+     * zeroes are permitted. If the {@code String} is invalid, an exception is thrown.
      *
      * <ul>
      *  <li>{@code base} must be at least 2.</li>
@@ -2001,6 +2017,27 @@ public final class Rational implements Comparable<Rational> {
     }
 
     /**
+     * Multiplies a {@code List} of {@code Rational}s by some positive constant to yield a {@code List} of
+     * {@code BigInteger}s with no common factor. This gives a canonical representation of {@code Rational} lists
+     * considered equivalent under multiplication by positive {@code Rational}s.
+     *
+     * <ul>
+     *  <li>{@code xs} cannot contain any nulls.</li>
+     *  <li>The result is a {@code List} of {@code BigInteger}s whose GCD is 0 or 1.</li>
+     * </ul>
+     *
+     * @param xs the {@code List} of {@code Rational}s
+     * @return a canonical representation of {@code xs} as a {@code List} of {@code BigInteger}s
+     */
+    @SuppressWarnings("ConstantConditions")
+    public static @NotNull List<BigInteger> cancelDenominators(@NotNull List<Rational> xs) {
+        BigInteger lcm = foldl(p -> MathUtils.lcm(p.a, p.b), BigInteger.ONE, map(Rational::getDenominator, xs));
+        Iterable<BigInteger> canceled = map(x -> x.multiply(lcm).getNumerator(), xs);
+        BigInteger gcd = foldl(p -> p.a.gcd(p.b), BigInteger.ZERO, canceled);
+        return toList(gcd.equals(BigInteger.ZERO) ? canceled : map(x -> x.divide(gcd), canceled));
+    }
+
+    /**
      * Determines whether {@code this} is equal to {@code that}.
      *
      * <ul>
@@ -2050,6 +2087,11 @@ public final class Rational implements Comparable<Rational> {
      */
     @Override
     public int compareTo(@NotNull Rational that) {
+        if (this == that) return 0;
+        int thisSignum = signum();
+        int thatSignum = that.signum();
+        if (thisSignum > thatSignum) return 1;
+        if (thisSignum < thatSignum) return -1;
         return numerator.multiply(that.denominator).compareTo(that.numerator.multiply(denominator));
     }
 
@@ -2099,7 +2141,7 @@ public final class Rational implements Comparable<Rational> {
      * @return the first {@code Rational} found in {@code s}, and the index at which it was found
      */
     public static @NotNull Optional<Pair<Rational, Integer>> findIn(@NotNull String s) {
-        return Readers.genericFindIn(Rational::read, "-/0123456789", s);
+        return Readers.genericFindIn(Rational::read, "-/0123456789").apply(s);
     }
 
     /**

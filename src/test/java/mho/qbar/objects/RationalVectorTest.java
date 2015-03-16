@@ -1,5 +1,6 @@
 package mho.qbar.objects;
 
+import mho.wheels.iterables.IterableUtils;
 import mho.wheels.misc.Readers;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
@@ -138,26 +139,26 @@ public class RationalVectorTest {
     }
 
     @Test
-    public void testIdentity() {
-        aeq(identity(1, 0), "[1]");
-        aeq(identity(3, 0), "[1, 0, 0]");
-        aeq(identity(3, 1), "[0, 1, 0]");
-        aeq(identity(3, 2), "[0, 0, 1]");
-        aeq(identity(10, 6), "[0, 0, 0, 0, 0, 0, 1, 0, 0, 0]");
+    public void testStandard() {
+        aeq(standard(1, 0), "[1]");
+        aeq(standard(3, 0), "[1, 0, 0]");
+        aeq(standard(3, 1), "[0, 1, 0]");
+        aeq(standard(3, 2), "[0, 0, 1]");
+        aeq(standard(10, 6), "[0, 0, 0, 0, 0, 0, 1, 0, 0, 0]");
         try {
-            identity(2, -4);
+            standard(2, -4);
             fail();
         } catch (IllegalArgumentException ignored) {}
         try {
-            identity(-3, -4);
+            standard(-3, -4);
             fail();
         } catch (IllegalArgumentException ignored) {}
         try {
-            identity(2, 3);
+            standard(2, 3);
             fail();
         } catch (IllegalArgumentException ignored) {}
         try {
-            identity(0, 0);
+            standard(0, 0);
             fail();
         } catch (IllegalArgumentException ignored) {}
     }
@@ -306,6 +307,207 @@ public class RationalVectorTest {
     }
 
     @Test
+    public void testShiftLeft() {
+        assertTrue(ZERO_DIMENSIONAL.shiftLeft(0) == ZERO_DIMENSIONAL);
+        assertTrue(ZERO_DIMENSIONAL.shiftLeft(1) == ZERO_DIMENSIONAL);
+        assertTrue(ZERO_DIMENSIONAL.shiftLeft(2) == ZERO_DIMENSIONAL);
+        assertTrue(ZERO_DIMENSIONAL.shiftLeft(3) == ZERO_DIMENSIONAL);
+        assertTrue(ZERO_DIMENSIONAL.shiftLeft(4) == ZERO_DIMENSIONAL);
+        assertTrue(ZERO_DIMENSIONAL.shiftLeft(-1) == ZERO_DIMENSIONAL);
+        assertTrue(ZERO_DIMENSIONAL.shiftLeft(-2) == ZERO_DIMENSIONAL);
+        assertTrue(ZERO_DIMENSIONAL.shiftLeft(-3) == ZERO_DIMENSIONAL);
+        assertTrue(ZERO_DIMENSIONAL.shiftLeft(-4) == ZERO_DIMENSIONAL);
+        aeq(read("[1/2]").get().shiftLeft(0), "[1/2]");
+        aeq(read("[1/2]").get().shiftLeft(1), "[1]");
+        aeq(read("[1/2]").get().shiftLeft(2), "[2]");
+        aeq(read("[1/2]").get().shiftLeft(3), "[4]");
+        aeq(read("[1/2]").get().shiftLeft(4), "[8]");
+        aeq(read("[1/2]").get().shiftLeft(-1), "[1/4]");
+        aeq(read("[1/2]").get().shiftLeft(-2), "[1/8]");
+        aeq(read("[1/2]").get().shiftLeft(-3), "[1/16]");
+        aeq(read("[1/2]").get().shiftLeft(-4), "[1/32]");
+        aeq(read("[5/3, -1/4, 23]").get().shiftLeft(0), "[5/3, -1/4, 23]");
+        aeq(read("[5/3, -1/4, 23]").get().shiftLeft(1), "[10/3, -1/2, 46]");
+        aeq(read("[5/3, -1/4, 23]").get().shiftLeft(2), "[20/3, -1, 92]");
+        aeq(read("[5/3, -1/4, 23]").get().shiftLeft(3), "[40/3, -2, 184]");
+        aeq(read("[5/3, -1/4, 23]").get().shiftLeft(4), "[80/3, -4, 368]");
+        aeq(read("[5/3, -1/4, 23]").get().shiftLeft(-1), "[5/6, -1/8, 23/2]");
+        aeq(read("[5/3, -1/4, 23]").get().shiftLeft(-2), "[5/12, -1/16, 23/4]");
+        aeq(read("[5/3, -1/4, 23]").get().shiftLeft(-3), "[5/24, -1/32, 23/8]");
+        aeq(read("[5/3, -1/4, 23]").get().shiftLeft(-4), "[5/48, -1/64, 23/16]");
+    }
+
+    @Test
+    public void testShiftRight() {
+        assertTrue(ZERO_DIMENSIONAL.shiftRight(0) == ZERO_DIMENSIONAL);
+        assertTrue(ZERO_DIMENSIONAL.shiftRight(1) == ZERO_DIMENSIONAL);
+        assertTrue(ZERO_DIMENSIONAL.shiftRight(2) == ZERO_DIMENSIONAL);
+        assertTrue(ZERO_DIMENSIONAL.shiftRight(3) == ZERO_DIMENSIONAL);
+        assertTrue(ZERO_DIMENSIONAL.shiftRight(4) == ZERO_DIMENSIONAL);
+        assertTrue(ZERO_DIMENSIONAL.shiftRight(-1) == ZERO_DIMENSIONAL);
+        assertTrue(ZERO_DIMENSIONAL.shiftRight(-2) == ZERO_DIMENSIONAL);
+        assertTrue(ZERO_DIMENSIONAL.shiftRight(-3) == ZERO_DIMENSIONAL);
+        assertTrue(ZERO_DIMENSIONAL.shiftRight(-4) == ZERO_DIMENSIONAL);
+        aeq(read("[1/2]").get().shiftRight(0), "[1/2]");
+        aeq(read("[1/2]").get().shiftRight(1), "[1/4]");
+        aeq(read("[1/2]").get().shiftRight(2), "[1/8]");
+        aeq(read("[1/2]").get().shiftRight(3), "[1/16]");
+        aeq(read("[1/2]").get().shiftRight(4), "[1/32]");
+        aeq(read("[1/2]").get().shiftRight(-1), "[1]");
+        aeq(read("[1/2]").get().shiftRight(-2), "[2]");
+        aeq(read("[1/2]").get().shiftRight(-3), "[4]");
+        aeq(read("[1/2]").get().shiftRight(-4), "[8]");
+        aeq(read("[5/3, -1/4, 23]").get().shiftRight(0), "[5/3, -1/4, 23]");
+        aeq(read("[5/3, -1/4, 23]").get().shiftRight(1), "[5/6, -1/8, 23/2]");
+        aeq(read("[5/3, -1/4, 23]").get().shiftRight(2), "[5/12, -1/16, 23/4]");
+        aeq(read("[5/3, -1/4, 23]").get().shiftRight(3), "[5/24, -1/32, 23/8]");
+        aeq(read("[5/3, -1/4, 23]").get().shiftRight(4), "[5/48, -1/64, 23/16]");
+        aeq(read("[5/3, -1/4, 23]").get().shiftRight(-1), "[10/3, -1/2, 46]");
+        aeq(read("[5/3, -1/4, 23]").get().shiftRight(-2), "[20/3, -1, 92]");
+        aeq(read("[5/3, -1/4, 23]").get().shiftRight(-3), "[40/3, -2, 184]");
+        aeq(read("[5/3, -1/4, 23]").get().shiftRight(-4), "[80/3, -4, 368]");
+    }
+
+    @Test
+    public void testSum() {
+        assertTrue(sum(readRationalVectorList("[[]]").get()) == ZERO_DIMENSIONAL);
+        assertTrue(sum(readRationalVectorList("[[], [], []]").get()) == ZERO_DIMENSIONAL);
+        aeq(sum(readRationalVectorList("[[5/3, 1/4, 23]]").get()), "[5/3, 1/4, 23]");
+        aeq(
+                sum(readRationalVectorList("[[5/3, 1/4, 23], [0, 2/3, -1/8], [32, -45/2, 9]]").get()),
+                "[101/3, -259/12, 255/8]"
+        );
+        aeq(sum(readRationalVectorList("[[1/2], [2/3], [3/4]]").get()), "[23/12]");
+        try {
+            sum(readRationalVectorList("[]").get());
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            sum(readRationalVectorListWithNulls("[[1/2, 3], null]").get());
+            fail();
+        } catch (NullPointerException ignored) {}
+        try {
+            sum(readRationalVectorList("[[1/2], [3, 4]]").get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testDelta() {
+        aeq(delta(readRationalVectorList("[[]]").get()), "[]");
+        aeq(delta(readRationalVectorList("[[], [], []]").get()), "[[], []]");
+        aeq(delta(readRationalVectorList("[[5/3, 1/4, 23]]").get()), "[]");
+        aeq(
+                delta(readRationalVectorList("[[5/3, 1/4, 23], [0, 2/3, -1/8], [32, -45/2, 9]]").get()),
+                "[[-5/3, 5/12, -185/8], [32, -139/6, 73/8]]"
+        );
+        aeq(delta(readRationalVectorList("[[1/2], [2/3], [3/4]]").get()), "[[1/6], [1/12]]");
+        try {
+            delta(readRationalVectorList("[]").get());
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            toList(delta(readRationalVectorListWithNulls("[[1/2, 3], null]").get()));
+            fail();
+        } catch (NullPointerException ignored) {}
+        try {
+            toList(delta(readRationalVectorList("[[1/2], [3, 4]]").get()));
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testDot() {
+        assertTrue(ZERO_DIMENSIONAL.dot(ZERO_DIMENSIONAL) == Rational.ZERO);
+        aeq(read("[2]").get().dot(read("[3]").get()), "6");
+        aeq(read("[5/3, 4, 0]").get().dot(read("[-2, 1, 3]").get()), "2/3");
+        aeq(read("[5/3, 4, 0]").get().dot(read("[0, 0, 0]").get()), "0");
+        aeq(read("[5/3, 4, 0]").get().dot(read("[-5/3, -4, 0]").get()), "-169/9");
+        try {
+            ZERO_DIMENSIONAL.dot(read("[1/2]").get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+        try {
+            read("[1/2]").get().dot(ZERO_DIMENSIONAL);
+            fail();
+        } catch (ArithmeticException ignored) {}
+        try {
+            read("[1/2, 4, -4]").get().dot(read("[5/6, 2/3]").get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testRightAngleCompare() {
+        aeq(ZERO_DIMENSIONAL.rightAngleCompare(ZERO_DIMENSIONAL), "EQ");
+        aeq(read("[2]").get().rightAngleCompare(read("[3]").get()), "LT");
+        aeq(read("[2]").get().rightAngleCompare(read("[-3]").get()), "GT");
+        aeq(read("[1, 0]").get().rightAngleCompare(read("[1, 1]").get()), "LT");
+        aeq(read("[1, -1]").get().rightAngleCompare(read("[1, 1]").get()), "EQ");
+        aeq(read("[0, -1]").get().rightAngleCompare(read("[1, 1]").get()), "GT");
+        aeq(read("[5/3, 4, 0]").get().rightAngleCompare(read("[-2, 1, 3]").get()), "LT");
+        aeq(read("[5/3, 4, 0]").get().rightAngleCompare(read("[0, 0, 0]").get()), "EQ");
+        aeq(read("[5/3, 4, 0]").get().rightAngleCompare(read("[-5/3, -4, 0]").get()), "GT");
+        try {
+            ZERO_DIMENSIONAL.rightAngleCompare(read("[1/2]").get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+        try {
+            read("[1/2]").get().rightAngleCompare(ZERO_DIMENSIONAL);
+            fail();
+        } catch (ArithmeticException ignored) {}
+        try {
+            read("[1/2, 4, -4]").get().rightAngleCompare(read("[5/6, 2/3]").get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testSquaredLength() {
+        aeq(ZERO_DIMENSIONAL.squaredLength(), "0");
+        aeq(read("[2]").get().squaredLength(), "4");
+        aeq(read("[1, 0]").get().squaredLength(), "1");
+        aeq(read("[1, 1]").get().squaredLength(), "2");
+        aeq(read("[5/3, 4, 0]").get().squaredLength(), "169/9");
+        aeq(read("[1/2, 4, -4]").get().squaredLength(), "129/4");
+    }
+
+    @Test
+    public void testCancelDenominators() {
+        aeq(ZERO_DIMENSIONAL.cancelDenominators(), "[]");
+        aeq(read("[0]").get().cancelDenominators(), "[0]");
+        aeq(read("[0, 0]").get().cancelDenominators(), "[0, 0]");
+        aeq(read("[2/3]").get().cancelDenominators(), "[1]");
+        aeq(read("[-2/3]").get().cancelDenominators(), "[-1]");
+        aeq(read("[1, -2/3]").get().cancelDenominators(), "[3, -2]");
+        aeq(read("[4, -4, 5/12, 0, 1]").get().cancelDenominators(), "[48, -48, 5, 0, 12]");
+        aeq(read("[1, 1/2, 1/3, 1/4, 1/5]").get().cancelDenominators(), "[60, 30, 20, 15, 12]");
+    }
+
+    @Test
+    public void testPivot() {
+        assertFalse(ZERO_DIMENSIONAL.pivot().isPresent());
+        assertFalse(read("[0]").get().pivot().isPresent());
+        assertFalse(read("[0, 0, 0]").get().pivot().isPresent());
+        aeq(read("[2/3]").get().pivot().get(), "2/3");
+        aeq(read("[1, -2/3]").get().pivot().get(), "1");
+        aeq(read("[0, 1, -2/3]").get().pivot().get(), "1");
+        aeq(read("[0, 0, -2/3]").get().pivot().get(), "-2/3");
+    }
+
+    @Test
+    public void testReduce() {
+        aeq(ZERO_DIMENSIONAL.reduce(), "[]");
+        aeq(read("[0]").get().reduce(), "[0]");
+        aeq(read("[0, 0, 0]").get().reduce(), "[0, 0, 0]");
+        aeq(read("[2/3]").get().reduce(), "[1]");
+        aeq(read("[1, -2/3]").get().reduce(), "[1, -2/3]");
+        aeq(read("[-2/3, 1]").get().reduce(), "[1, -3/2]");
+        aeq(read("[0, 1, -2/3]").get().reduce(), "[0, 1, -2/3]");
+        aeq(read("[0, 0, -2/3]").get().reduce(), "[0, 0, 1]");
+    }
+
+    @Test
     public void testCompareTo() {
         assertTrue(eq(ZERO_DIMENSIONAL, ZERO_DIMENSIONAL));
         assertTrue(lt(ZERO_DIMENSIONAL, read("[1/2]").get()));
@@ -390,15 +592,27 @@ public class RationalVectorTest {
         aeq(of(Arrays.asList(Rational.of(5, 3), Rational.of(1, 4), Rational.of(23))), "[5/3, 1/4, 23]");
     }
 
+    private static void aeq(Iterable<?> a, Object b) {
+        assertEquals(IterableUtils.toString(a), b.toString());
+    }
+
     private static void aeq(Object a, Object b) {
         assertEquals(a.toString(), b.toString());
     }
 
     private static @NotNull Optional<List<Rational>> readRationalList(@NotNull String s) {
-        return Readers.readList(Rational::findIn, s);
+        return Readers.readList(Rational::read, s);
     }
 
     private static @NotNull Optional<List<Rational>> readRationalListWithNulls(@NotNull String s) {
-        return Readers.readList(t -> Readers.findInWithNulls(Rational::findIn, t), s);
+        return Readers.readListWithNulls(Rational::read, s);
+    }
+
+    private static @NotNull Optional<List<RationalVector>> readRationalVectorList(@NotNull String s) {
+        return Readers.readList(RationalVector::read, s);
+    }
+
+    private static @NotNull Optional<List<RationalVector>> readRationalVectorListWithNulls(@NotNull String s) {
+        return Readers.readListWithNulls(RationalVector::read, s);
     }
 }

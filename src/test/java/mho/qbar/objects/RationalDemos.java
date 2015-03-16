@@ -24,6 +24,7 @@ import static mho.qbar.objects.Rational.*;
 public class RationalDemos {
     private static final boolean USE_RANDOM = false;
     private static final String RATIONAL_CHARS = "-/0123456789";
+    private static final int SMALLER_LIMIT = 500;
     private static final int SMALL_LIMIT = 1000;
     private static final int MEDIUM_LIMIT = 3000;
     private static int LIMIT;
@@ -347,17 +348,17 @@ public class RationalDemos {
         }
     }
 
+    public static void demoAdd() {
+        initialize();
+        for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
+            System.out.println(p.a + " + " + p.b + " = " + p.a.add(p.b));
+        }
+    }
+
     public static void demoNegate() {
         initialize();
         for (Rational r : take(LIMIT, P.rationals())) {
             System.out.println("-(" + r + ") = " + r.negate());
-        }
-    }
-
-    public static void demoInvert() {
-        initialize();
-        for (Rational r : take(LIMIT, filter(s -> s != ZERO, P.rationals()))) {
-            System.out.println("1/(" + r + ") = " + r.invert());
         }
     }
 
@@ -372,13 +373,6 @@ public class RationalDemos {
         initialize();
         for (Rational r : take(LIMIT, P.rationals())) {
             System.out.println("sgn(" + r + ") = " + r.signum());
-        }
-    }
-
-    public static void demoAdd() {
-        initialize();
-        for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
-            System.out.println(p.a + " + " + p.b + " = " + p.a.add(p.b));
         }
     }
 
@@ -410,6 +404,13 @@ public class RationalDemos {
         }
     }
 
+    public static void demoInvert() {
+        initialize();
+        for (Rational r : take(LIMIT, filter(s -> s != ZERO, P.rationals()))) {
+            System.out.println("1/(" + r + ") = " + r.invert());
+        }
+    }
+
     public static void demoDivide_Rational() {
         initialize();
         Iterable<Pair<Rational, Rational>> ps = filter(p -> p.b != ZERO, P.pairs(P.rationals()));
@@ -436,6 +437,32 @@ public class RationalDemos {
         }
     }
 
+    public static void demoShiftLeft() {
+        initialize();
+        Iterable<Integer> is;
+        if (P instanceof QBarExhaustiveProvider) {
+            is = P.integers();
+        } else {
+            is  = ((QBarRandomProvider) P).integersGeometric(50);
+        }
+        for (Pair<Rational, Integer> p : take(LIMIT, P.pairs(P.rationals(), is))) {
+            System.out.println(p.a + " << " + p.b + " = " + p.a.shiftLeft(p.b));
+        }
+    }
+
+    public static void demoShiftRight() {
+        initialize();
+        Iterable<Integer> is;
+        if (P instanceof QBarExhaustiveProvider) {
+            is = P.integers();
+        } else {
+            is  = ((QBarRandomProvider) P).integersGeometric(50);
+        }
+        for (Pair<Rational, Integer> p : take(LIMIT, P.pairs(P.rationals(), is))) {
+            System.out.println(p.a + " >> " + p.b + " = " + p.a.shiftRight(p.b));
+        }
+    }
+
     public static void demoSum() {
         initialize();
         for (List<Rational> rs : take(LIMIT, P.lists(P.rationals()))) {
@@ -456,7 +483,7 @@ public class RationalDemos {
         initialize();
         for (List<Rational> rs : take(LIMIT, P.listsAtLeast(1, P.rationals()))) {
             String listString = tail(init(rs.toString()));
-            System.out.println("Δ(" + listString + ") = " + IterableUtils.toString(20, delta(rs)));
+            System.out.println("Δ(" + listString + ") = " + IterableUtils.toString(delta(rs)));
         }
     }
 
@@ -517,32 +544,6 @@ public class RationalDemos {
         for (Triple<Rational, BigInteger, RoundingMode> t : take(LIMIT, ts)) {
             System.out.println("roundToDenominator(" + t.a + ", " + t.b + ", " + t.c + ") = " +
                     t.a.roundToDenominator(t.b, t.c));
-        }
-    }
-
-    public static void demoShiftLeft() {
-        initialize();
-        Iterable<Integer> is;
-        if (P instanceof QBarExhaustiveProvider) {
-            is = P.integers();
-        } else {
-            is  = ((QBarRandomProvider) P).integersGeometric(50);
-        }
-        for (Pair<Rational, Integer> p : take(LIMIT, P.pairs(P.rationals(), is))) {
-            System.out.println(p.a + " << " + p.b + " = " + p.a.shiftLeft(p.b));
-        }
-    }
-
-    public static void demoShiftRight() {
-        initialize();
-        Iterable<Integer> is;
-        if (P instanceof QBarExhaustiveProvider) {
-            is = P.integers();
-        } else {
-            is  = ((QBarRandomProvider) P).integersGeometric(50);
-        }
-        for (Pair<Rational, Integer> p : take(LIMIT, P.pairs(P.rationals(), is))) {
-            System.out.println(p.a + " >> " + p.b + " = " + p.a.shiftRight(p.b));
         }
     }
 
@@ -728,6 +729,15 @@ public class RationalDemos {
         for (Rational r : take(LIMIT, P.rationals())) {
             //noinspection ObjectEqualsNull
             System.out.println(r + (r.equals(null) ? " = " : " ≠ ") + null);
+        }
+    }
+
+    public static void demoCancelDenominators() {
+        initialize();
+        int limit = P instanceof ExhaustiveProvider ? LIMIT : SMALLER_LIMIT;
+        for (List<Rational> rs : take(limit, P.lists(P.rationals()))) {
+            String listString = tail(init(rs.toString()));
+            System.out.println("cancelDenominators(" + listString + ") = " + cancelDenominators(rs));
         }
     }
 

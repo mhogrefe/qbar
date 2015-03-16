@@ -8,9 +8,7 @@ import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigInteger;
-import java.util.Arrays;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.ordering.Ordering.*;
@@ -405,6 +403,28 @@ public class QBarRandomProvider extends RandomProvider implements QBarIterablePr
         }
     }
 
+    public @NotNull Iterable<Rational> rationalsNotIn(@NotNull Interval a) {
+        List<Interval> complement = a.complement();
+        switch (complement.size()) {
+            case 0:
+                return new ArrayList<>();
+            case 1:
+                Interval x = complement.get(0);
+                Rational boundary = a.getLower().isPresent() ? a.getLower().get() : a.getUpper().get();
+                return filter(r -> !r.equals(boundary), rationals(x));
+            case 2:
+                Interval y = complement.get(0);
+                Interval z = complement.get(1);
+                return mux(
+                        (List<Iterable<Rational>>) Arrays.asList(
+                                filter(r -> !r.equals(y.getUpper().get()), rationals(y)),
+                                filter(r -> !r.equals(z.getLower().get()), rationals(z))
+                        )
+                );
+        }
+        return null; //never happens
+    }
+
     @Override
     public @NotNull Iterable<RationalVector> rationalVectors(int dimension) {
         return rationalVectorsBySize(BIG_INTEGER_MEAN_BIT_SIZE, dimension);
@@ -426,6 +446,24 @@ public class QBarRandomProvider extends RandomProvider implements QBarIterablePr
     @Override
     public @NotNull Iterable<RationalVector> rationalVectors() {
         return rationalVectorsBySize(BIG_INTEGER_MEAN_BIT_SIZE);
+    }
+
+    @NotNull
+    @Override
+    public Iterable<RationalVector> reducedRationalVectors(int dimension) {
+        return null;
+    }
+
+    @NotNull
+    @Override
+    public Iterable<RationalVector> reducedRationalVectorsAtLeast(int minDimension) {
+        return null;
+    }
+
+    @NotNull
+    @Override
+    public Iterable<RationalVector> reducedRationalVectors() {
+        return null;
     }
 
     public @NotNull Iterable<RationalVector> rationalVectorsBySize(int elementMeanBitSize) {

@@ -84,12 +84,10 @@ public class RationalProperties {
             propertiesDoubleValue_RoundingMode();
             propertiesDoubleValue();
             propertiesDoubleValueExact();
+            propertiesAdd();
             propertiesNegate();
-            propertiesInvert();
-            compareImplementationsInvert();
             propertiesAbs();
             propertiesSignum();
-            propertiesAdd();
             compareImplementationsAdd();
             propertiesSubtract();
             propertiesMultiply_Rational();
@@ -98,6 +96,8 @@ public class RationalProperties {
             compareImplementationsMultiply_BigInteger();
             propertiesMultiply_int();
             compareImplementationsMultiply_int();
+            propertiesInvert();
+            compareImplementationsInvert();
             propertiesDivide_Rational();
             compareImplementationsDivide_Rational();
             propertiesDivide_BigInteger();
@@ -130,9 +130,11 @@ public class RationalProperties {
             propertiesToStringBase_BigInteger();
             propertiesToStringBase_BigInteger_int();
             propertiesFromStringBase();
+            propertiesCancelDenominators();
             propertiesEquals();
             propertiesHashCode();
             propertiesCompareTo();
+            compareImplementationsCompareTo();
             propertiesRead();
             propertiesFindIn();
             propertiesToString();
@@ -145,6 +147,7 @@ public class RationalProperties {
         System.out.println("\ttesting constant properties...");
 
         List<Rational> sample = toList(take(SMALL_LIMIT, HARMONIC_NUMBERS));
+        sample.forEach(mho.qbar.objects.RationalProperties::validate);
         assertTrue(unique(sample));
         assertTrue(increasing(sample));
         assertTrue(all(r -> !r.isInteger(), tail(sample)));
@@ -384,7 +387,7 @@ public class RationalProperties {
         }
 
         for (BigInteger i : take(LIMIT, P.bigIntegers())) {
-            assertTrue(of(i).isInteger());
+            assertTrue(i.toString(), of(i).isInteger());
         }
     }
 
@@ -959,8 +962,8 @@ public class RationalProperties {
         for (Rational r : take(LIMIT, P.positiveRationals())) {
             int exponent = r.binaryExponent();
             Rational power = ONE.shiftLeft(exponent);
-            assertTrue(r.toString(), power.compareTo(r) <= 0);
-            assertTrue(r.toString(), r.compareTo(power.shiftLeft(1)) < 0);
+            assertTrue(r.toString(), le(power, r));
+            assertTrue(r.toString(), le(r, power.shiftLeft(1)));
         }
 
         for (Rational r : take(LIMIT, P.rationals(Interval.lessThanOrEqualTo(ZERO)))) {
@@ -1641,94 +1644,6 @@ public class RationalProperties {
         }
     }
 
-    private static void propertiesNegate() {
-        initialize();
-        System.out.println("\t\ttesting negate() properties...");
-
-        for (Rational r : take(LIMIT, P.rationals())) {
-            Rational negativeR = r.negate();
-            validate(negativeR);
-            assertEquals(r.toString(), r, negativeR.negate());
-            assertTrue(r.add(negativeR) == ZERO);
-        }
-
-        Iterable<Rational> rs = filter(r -> r != ZERO, P.rationals());
-        for (Rational r : take(LIMIT, rs)) {
-            Rational negativeR = r.negate();
-            assertNotEquals(r.toString(), r, negativeR);
-        }
-    }
-
-    private static @NotNull Rational invert_simplest(@NotNull Rational r) {
-        return of(r.getDenominator(), r.getNumerator());
-    }
-
-    private static void propertiesInvert() {
-        initialize();
-        System.out.println("\t\ttesting invert() properties...");
-
-        Iterable<Rational> rs = filter(r -> r != ZERO, P.rationals());
-        for (Rational r : take(LIMIT, rs)) {
-            Rational inverseR = r.invert();
-            validate(inverseR);
-            assertEquals(r.toString(), inverseR, invert_simplest(r));
-            assertEquals(r.toString(), r, inverseR.invert());
-            assertTrue(r.multiply(inverseR) == ONE);
-            assertTrue(inverseR != ZERO);
-        }
-
-        rs = filter(r -> r != ZERO && r.abs() != ONE, P.rationals());
-        for (Rational r : take(LIMIT, rs)) {
-            Rational inverseR = r.invert();
-            assertTrue(r.toString(), !r.equals(inverseR));
-        }
-    }
-
-    private static void compareImplementationsInvert() {
-        initialize();
-        System.out.println("\t\tcomparing invert() implementations...");
-
-        long totalTime = 0;
-        Iterable<Rational> rs = filter(r -> r != ZERO, P.rationals());
-        for (Rational r : take(LIMIT, rs)) {
-            long time = System.nanoTime();
-            invert_simplest(r);
-            totalTime += (System.nanoTime() - time);
-        }
-        System.out.println("\t\t\tsimplest: " + ((double) totalTime) / 1e9 + " s");
-
-        totalTime = 0;
-        for (Rational r : take(LIMIT, rs)) {
-            long time = System.nanoTime();
-            r.invert();
-            totalTime += (System.nanoTime() - time);
-        }
-        System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
-    }
-
-    private static void propertiesAbs() {
-        initialize();
-        System.out.println("\t\ttesting abs() properties...");
-
-        for (Rational r : take(LIMIT, P.rationals())) {
-            Rational absR = r.abs();
-            validate(absR);
-            assertEquals(r.toString(), absR, absR.abs());
-            assertTrue(r.toString(), ge(absR, ZERO));
-        }
-    }
-
-    private static void propertiesSignum() {
-        initialize();
-        System.out.println("\t\ttesting signum() properties...");
-
-        for (Rational r : take(LIMIT, P.rationals())) {
-            int signumR = r.signum();
-            assertEquals(r.toString(), signumR, Ordering.compare(r, ZERO).toInt());
-            assertTrue(r.toString(), signumR == -1 || signumR == 0 || signumR == 1);
-        }
-    }
-
     private static @NotNull Rational add_simplest(@NotNull Rational a, @NotNull Rational b) {
         return of(
                 a.getNumerator().multiply(b.getDenominator()).add(a.getDenominator().multiply(b.getNumerator())),
@@ -1745,6 +1660,7 @@ public class RationalProperties {
             validate(sum);
             assertEquals(p.toString(), sum, add_simplest(p.a, p.b));
             assertEquals(p.toString(), sum, p.b.add(p.a));
+            assertEquals(p.toString(), sum.subtract(p.b), p.a);
         }
 
         for (Rational r : take(LIMIT, P.rationals())) {
@@ -1779,6 +1695,47 @@ public class RationalProperties {
             totalTime += (System.nanoTime() - time);
         }
         System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
+    }
+
+    private static void propertiesNegate() {
+        initialize();
+        System.out.println("\t\ttesting negate() properties...");
+
+        for (Rational r : take(LIMIT, P.rationals())) {
+            Rational negativeR = r.negate();
+            validate(negativeR);
+            assertEquals(r.toString(), r, negativeR.negate());
+            assertTrue(r.toString(), r.add(negativeR) == ZERO);
+        }
+
+        Iterable<Rational> rs = filter(r -> r != ZERO, P.rationals());
+        for (Rational r : take(LIMIT, rs)) {
+            Rational negativeR = r.negate();
+            assertNotEquals(r.toString(), r, negativeR);
+        }
+    }
+
+    private static void propertiesAbs() {
+        initialize();
+        System.out.println("\t\ttesting abs() properties...");
+
+        for (Rational r : take(LIMIT, P.rationals())) {
+            Rational absR = r.abs();
+            validate(absR);
+            assertEquals(r.toString(), absR, absR.abs());
+            assertTrue(r.toString(), ge(absR, ZERO));
+        }
+    }
+
+    private static void propertiesSignum() {
+        initialize();
+        System.out.println("\t\ttesting signum() properties...");
+
+        for (Rational r : take(LIMIT, P.rationals())) {
+            int signumR = r.signum();
+            assertEquals(r.toString(), signumR, Ordering.compare(r, ZERO).toInt());
+            assertTrue(r.toString(), signumR == -1 || signumR == 0 || signumR == 1);
+        }
     }
 
     private static void propertiesSubtract() {
@@ -1827,6 +1784,11 @@ public class RationalProperties {
                     multiply_Rational_Knuth(p.a, p.b)
             );
             assertEquals(p.toString(), product, p.b.multiply(p.a));
+        }
+
+        for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals(), filter(r -> r != ZERO, P.rationals())))) {
+            assertEquals(p.toString(), p.a.multiply(p.b).divide(p.b), p.a);
+            assertEquals(p.toString(), p.a.multiply(p.b), p.a.divide(p.b.invert()));
         }
 
         for (Rational r : take(LIMIT, P.rationals())) {
@@ -1887,6 +1849,11 @@ public class RationalProperties {
             assertEquals(p.toString(), product, multiply_BigInteger_simplest(p.a, p.b));
             assertEquals(p.toString(), product, p.a.multiply(of(p.b)));
             assertEquals(p.toString(), product, of(p.b).multiply(p.a));
+        }
+
+        ps = P.pairs(P.rationals(), filter(i -> !i.equals(BigInteger.ZERO), P.bigIntegers()));
+        for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
+            assertEquals(p.toString(), p.a.multiply(p.b).divide(p.b), p.a);
         }
 
         for (BigInteger i : take(LIMIT, P.bigIntegers())) {
@@ -1951,6 +1918,10 @@ public class RationalProperties {
             assertEquals(p.toString(), product, of(p.b).multiply(p.a));
         }
 
+        for (Pair<Rational, Integer> p : take(LIMIT, P.pairs(P.rationals(), filter(i -> i != 0, P.integers())))) {
+            assertEquals(p.toString(), p.a.multiply(p.b).divide(p.b), p.a);
+        }
+
         for (int i : take(LIMIT, P.integers())) {
             assertEquals(Integer.toString(i), ONE.multiply(i), of(i));
             assertTrue(Integer.toString(i), ZERO.multiply(i) == ZERO);
@@ -1996,6 +1967,51 @@ public class RationalProperties {
         System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
     }
 
+    private static @NotNull Rational invert_simplest(@NotNull Rational r) {
+        return of(r.getDenominator(), r.getNumerator());
+    }
+
+    private static void propertiesInvert() {
+        initialize();
+        System.out.println("\t\ttesting invert() properties...");
+
+        for (Rational r : take(LIMIT, filter(s -> s != ZERO, P.rationals()))) {
+            Rational inverse = r.invert();
+            validate(inverse);
+            assertEquals(r.toString(), inverse, invert_simplest(r));
+            assertEquals(r.toString(), r, inverse.invert());
+            assertTrue(r.toString(), r.multiply(inverse) == ONE);
+            assertTrue(r.toString(), inverse != ZERO);
+        }
+
+        for (Rational r : take(LIMIT, filter(s -> s != ZERO && s.abs() != ONE, P.rationals()))) {
+            Rational inverseR = r.invert();
+            assertTrue(r.toString(), !r.equals(inverseR));
+        }
+    }
+
+    private static void compareImplementationsInvert() {
+        initialize();
+        System.out.println("\t\tcomparing invert() implementations...");
+
+        long totalTime = 0;
+        Iterable<Rational> rs = filter(r -> r != ZERO, P.rationals());
+        for (Rational r : take(LIMIT, rs)) {
+            long time = System.nanoTime();
+            invert_simplest(r);
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\t\t\tsimplest: " + ((double) totalTime) / 1e9 + " s");
+
+        totalTime = 0;
+        for (Rational r : take(LIMIT, rs)) {
+            long time = System.nanoTime();
+            r.invert();
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
+    }
+
     private static @NotNull Rational divide_Rational_simplest(@NotNull Rational a, @NotNull Rational b) {
         return of(a.getNumerator().multiply(b.getDenominator()), a.getDenominator().multiply(b.getNumerator()));
     }
@@ -2004,15 +2020,15 @@ public class RationalProperties {
         initialize();
         System.out.println("\t\ttesting divide(Rational) properties...");
 
-        Iterable<Pair<Rational, Rational>> ps = filter(p -> p.b != ZERO, P.pairs(P.rationals()));
-        for (Pair<Rational, Rational> p : take(LIMIT, ps)) {
+        for (Pair<Rational, Rational> p : take(LIMIT, filter(q -> q.b != ZERO, P.pairs(P.rationals())))) {
             Rational quotient = p.a.divide(p.b);
             validate(quotient);
             assertEquals(p.toString(), quotient, divide_Rational_simplest(p.a, p.b));
             assertEquals(p.toString(), p.a, quotient.multiply(p.b));
+            assertEquals(p.toString(), quotient, p.a.multiply(p.b.invert()));
         }
 
-        ps = filter(p -> p.a != ZERO && p.b != ZERO, P.pairs(P.rationals()));
+        Iterable<Pair<Rational, Rational>> ps = filter(p -> p.a != ZERO && p.b != ZERO, P.pairs(P.rationals()));
         for (Pair<Rational, Rational> p : take(LIMIT, ps)) {
             assertEquals(p.toString(), p.a.divide(p.b), p.b.divide(p.a).invert());
         }
@@ -2025,6 +2041,7 @@ public class RationalProperties {
         for (Rational r : take(LIMIT, rs)) {
             assertEquals(r.toString(), ONE.divide(r), r.invert());
             assertTrue(r.toString(), r.divide(r) == ONE);
+            assertEquals(r.toString(), ZERO.divide(r), ZERO);
         }
 
         for (Rational r : take(LIMIT, P.rationals())) {
@@ -2183,6 +2200,136 @@ public class RationalProperties {
         for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
             long time = System.nanoTime();
             p.a.divide(p.b);
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
+    }
+
+    private static @NotNull Rational shiftLeft_simplest(@NotNull Rational r, int bits) {
+        if (bits < 0) {
+            return r.divide(BigInteger.ONE.shiftLeft(-bits));
+        } else {
+            return r.multiply(BigInteger.ONE.shiftLeft(bits));
+        }
+    }
+
+    private static void propertiesShiftLeft() {
+        initialize();
+        System.out.println("\t\ttesting shiftLeft(int) properties...");
+
+        Iterable<Integer> is;
+        if (P instanceof QBarExhaustiveProvider) {
+            is = P.integers();
+        } else {
+            is  = ((QBarRandomProvider) P).integersGeometric(50);
+        }
+        for (Pair<Rational, Integer> p : take(LIMIT, P.pairs(P.rationals(), is))) {
+            Rational shifted = p.a.shiftLeft(p.b);
+            validate(shifted);
+            assertEquals(p.toString(), shifted, shiftLeft_simplest(p.a, p.b));
+            assertEquals(p.toString(), p.a.signum(), shifted.signum());
+            assertEquals(p.toString(), p.a.negate().shiftLeft(p.b), shifted.negate());
+            assertEquals(p.toString(), shifted, p.a.shiftRight(-p.b));
+        }
+
+        if (P instanceof QBarExhaustiveProvider) {
+            is = P.naturalIntegers();
+        } else {
+            is  = ((QBarRandomProvider) P).naturalIntegersGeometric(50);
+        }
+        for (Pair<Rational, Integer> p : take(LIMIT, P.pairs(P.rationals(), is))) {
+            Rational shifted = p.a.shiftLeft(p.b);
+            assertEquals(p.toString(), shifted, p.a.multiply(BigInteger.ONE.shiftLeft(p.b)));
+        }
+    }
+
+    private static void compareImplementationsShiftLeft() {
+        initialize();
+        System.out.println("\t\tcomparing shiftLeft(int) implementations...");
+
+        long totalTime = 0;
+        Iterable<Integer> is;
+        if (P instanceof QBarExhaustiveProvider) {
+            is = P.integers();
+        } else {
+            is  = ((QBarRandomProvider) P).integersGeometric(50);
+        }
+        for (Pair<Rational, Integer> p : take(LIMIT, P.pairs(P.rationals(), is))) {
+            long time = System.nanoTime();
+            shiftLeft_simplest(p.a, p.b);
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\t\t\tsimplest: " + ((double) totalTime) / 1e9 + " s");
+
+        totalTime = 0;
+        for (Pair<Rational, Integer> p : take(LIMIT, P.pairs(P.rationals(), is))) {
+            long time = System.nanoTime();
+            p.a.shiftLeft(p.b);
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
+    }
+
+    private static @NotNull Rational shiftRight_simplest(@NotNull Rational r, int bits) {
+        if (bits < 0) {
+            return r.multiply(BigInteger.ONE.shiftLeft(-bits));
+        } else {
+            return r.divide(BigInteger.ONE.shiftLeft(bits));
+        }
+    }
+
+    private static void propertiesShiftRight() {
+        initialize();
+        System.out.println("\t\ttesting shiftRight(int) properties...");
+
+        Iterable<Integer> is;
+        if (P instanceof QBarExhaustiveProvider) {
+            is = P.integers();
+        } else {
+            is  = ((QBarRandomProvider) P).integersGeometric(50);
+        }
+        for (Pair<Rational, Integer> p : take(LIMIT, P.pairs(P.rationals(), is))) {
+            Rational shifted = p.a.shiftRight(p.b);
+            validate(shifted);
+            assertEquals(p.toString(), shifted, shiftRight_simplest(p.a, p.b));
+            assertEquals(p.toString(), p.a.signum(), shifted.signum());
+            assertEquals(p.toString(), p.a.negate().shiftRight(p.b), shifted.negate());
+            assertEquals(p.toString(), shifted, p.a.shiftLeft(-p.b));
+        }
+
+        if (P instanceof QBarExhaustiveProvider) {
+            is = P.naturalIntegers();
+        } else {
+            is  = ((QBarRandomProvider) P).naturalIntegersGeometric(50);
+        }
+        for (Pair<Rational, Integer> p : take(LIMIT, P.pairs(P.rationals(), is))) {
+            Rational shifted = p.a.shiftRight(p.b);
+            assertEquals(p.toString(), shifted, p.a.divide(BigInteger.ONE.shiftLeft(p.b)));
+        }
+    }
+
+    private static void compareImplementationsShiftRight() {
+        initialize();
+        System.out.println("\t\tcomparing shiftRight(int) implementations...");
+
+        long totalTime = 0;
+        Iterable<Integer> is;
+        if (P instanceof QBarExhaustiveProvider) {
+            is = P.integers();
+        } else {
+            is  = ((QBarRandomProvider) P).integersGeometric(50);
+        }
+        for (Pair<Rational, Integer> p : take(LIMIT, P.pairs(P.rationals(), is))) {
+            long time = System.nanoTime();
+            shiftRight_simplest(p.a, p.b);
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\t\t\tsimplest: " + ((double) totalTime) / 1e9 + " s");
+
+        totalTime = 0;
+        for (Pair<Rational, Integer> p : take(LIMIT, P.pairs(P.rationals(), is))) {
+            long time = System.nanoTime();
+            p.a.shiftRight(p.b);
             totalTime += (System.nanoTime() - time);
         }
         System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
@@ -2347,8 +2494,9 @@ public class RationalProperties {
 
         for (List<Rational> rs : take(LIMIT, P.listsAtLeast(1, P.rationals()))) {
             Iterable<Rational> deltas = delta(rs);
-            aeq(rs.toString(), length(deltas), length(rs) - 1);
-            Iterable<Rational> reversed = reverse(map(Rational::negate, delta(reverse(rs))));
+            deltas.forEach(mho.qbar.objects.RationalProperties::validate);
+            assertEquals(rs.toString(), length(deltas), length(rs) - 1);
+            List<Rational> reversed = reverse(map(Rational::negate, delta(reverse(rs))));
             aeq(rs.toString(), deltas, reversed);
             try {
                 deltas.iterator().remove();
@@ -2410,10 +2558,7 @@ public class RationalProperties {
     }
 
     private static @NotNull Rational pow_simplest(@NotNull Rational a, int p) {
-        Rational result = ONE;
-        for (int i = 0; i < Math.abs(p); i++) {
-            result = result.multiply(a);
-        }
+        Rational result = product(replicate(Math.abs(p), a));
         return p < 0 ? result.invert() : result;
     }
 
@@ -2437,8 +2582,7 @@ public class RationalProperties {
 
         ps = P.pairs(filter(r -> r != ZERO, P.rationals()), exps);
         for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
-            Rational r
-                    = p.a.pow(p.b);
+            Rational r = p.a.pow(p.b);
             assertEquals(p.toString(), r, p.a.pow(-p.b).invert());
             assertEquals(p.toString(), r, p.a.invert().pow(-p.b));
         }
@@ -2740,140 +2884,6 @@ public class RationalProperties {
                 fail(p.toString());
             } catch (ArithmeticException ignored) {}
         }
-    }
-
-    private static @NotNull Rational shiftLeft_simplest(@NotNull Rational a, int bits) {
-        if (bits < 0) {
-            return a.divide(BigInteger.ONE.shiftLeft(-bits));
-        } else {
-            return a.multiply(BigInteger.ONE.shiftLeft(bits));
-        }
-    }
-
-    private static void propertiesShiftLeft() {
-        initialize();
-        System.out.println("\t\ttesting shiftLeft(int) properties...");
-
-        Iterable<Integer> is;
-        if (P instanceof QBarExhaustiveProvider) {
-            is = P.integers();
-        } else {
-            is  = ((QBarRandomProvider) P).integersGeometric(50);
-        }
-        Iterable<Pair<Rational, Integer>> ps = P.pairs(P.rationals(), is);
-        for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
-            Rational shifted = p.a.shiftLeft(p.b);
-            validate(shifted);
-            assertEquals(p.toString(), shifted, shiftLeft_simplest(p.a, p.b));
-            assertEquals(p.toString(), p.a.negate().shiftLeft(p.b), shifted.negate());
-            assertEquals(p.toString(), shifted, p.a.shiftRight(-p.b));
-        }
-
-        if (P instanceof QBarExhaustiveProvider) {
-            is = P.naturalIntegers();
-        } else {
-            is  = ((QBarRandomProvider) P).naturalIntegersGeometric(50);
-        }
-        ps = P.pairs(P.rationals(), is);
-        for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
-            Rational shifted = p.a.shiftLeft(p.b);
-            assertEquals(p.toString(), shifted, p.a.multiply(BigInteger.ONE.shiftLeft(p.b)));
-        }
-    }
-
-    private static void compareImplementationsShiftLeft() {
-        initialize();
-        System.out.println("\t\tcomparing shiftLeft(int) implementations...");
-
-        long totalTime = 0;
-        Iterable<Integer> is;
-        if (P instanceof QBarExhaustiveProvider) {
-            is = P.integers();
-        } else {
-            is  = ((QBarRandomProvider) P).integersGeometric(50);
-        }
-        Iterable<Pair<Rational, Integer>> ps = P.pairs(P.rationals(), is);
-        for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
-            long time = System.nanoTime();
-            shiftLeft_simplest(p.a, p.b);
-            totalTime += (System.nanoTime() - time);
-        }
-        System.out.println("\t\t\tsimplest: " + ((double) totalTime) / 1e9 + " s");
-
-        totalTime = 0;
-        for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
-            long time = System.nanoTime();
-            p.a.shiftLeft(p.b);
-            totalTime += (System.nanoTime() - time);
-        }
-        System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
-    }
-
-    private static @NotNull Rational shiftRight_simplest(@NotNull Rational a, int bits) {
-        if (bits < 0) {
-            return a.multiply(BigInteger.ONE.shiftLeft(-bits));
-        } else {
-            return a.divide(BigInteger.ONE.shiftLeft(bits));
-        }
-    }
-
-    private static void propertiesShiftRight() {
-        initialize();
-        System.out.println("\t\ttesting shiftRight(int) properties...");
-
-        Iterable<Integer> is;
-        if (P instanceof QBarExhaustiveProvider) {
-            is = P.integers();
-        } else {
-            is  = ((QBarRandomProvider) P).integersGeometric(50);
-        }
-        Iterable<Pair<Rational, Integer>> ps = P.pairs(P.rationals(), is);
-        for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
-            Rational shifted = p.a.shiftRight(p.b);
-            validate(shifted);
-            assertEquals(p.toString(), shifted, shiftRight_simplest(p.a, p.b));
-            assertEquals(p.toString(), p.a.negate().shiftRight(p.b), shifted.negate());
-            assertEquals(p.toString(), shifted, p.a.shiftLeft(-p.b));
-        }
-
-        if (P instanceof QBarExhaustiveProvider) {
-            is = P.naturalIntegers();
-        } else {
-            is  = ((QBarRandomProvider) P).naturalIntegersGeometric(50);
-        }
-        ps = P.pairs(P.rationals(), is);
-        for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
-            Rational shifted = p.a.shiftRight(p.b);
-            assertEquals(p.toString(), shifted, p.a.divide(BigInteger.ONE.shiftLeft(p.b)));
-        }
-    }
-
-    private static void compareImplementationsShiftRight() {
-        initialize();
-        System.out.println("\t\tcomparing shiftRight(int) implementations...");
-
-        long totalTime = 0;
-        Iterable<Integer> is;
-        if (P instanceof QBarExhaustiveProvider) {
-            is = P.integers();
-        } else {
-            is  = ((QBarRandomProvider) P).integersGeometric(50);
-        }
-        Iterable<Pair<Rational, Integer>> ps = P.pairs(P.rationals(), is);
-        for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
-            long time = System.nanoTime();
-            shiftRight_simplest(p.a, p.b);
-            totalTime += (System.nanoTime() - time);
-        }
-        System.out.println("\t\t\tsimplest: " + ((double) totalTime) / 1e9 + " s");
-
-        totalTime = 0;
-        for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
-            long time = System.nanoTime();
-            p.a.shiftRight(p.b);
-            totalTime += (System.nanoTime() - time);
-        }
-        System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
     }
 
     private static void propertiesContinuedFraction() {
@@ -3454,6 +3464,55 @@ public class RationalProperties {
         //improper String left untested
     }
 
+    private static void propertiesCancelDenominators() {
+        initialize();
+        System.out.println("\t\ttesting cancelDenominators(List<Rational>) properties...");
+
+        for (List<Rational> rs : take(LIMIT, P.lists(P.rationals()))) {
+            List<BigInteger> canceled = cancelDenominators(rs);
+            BigInteger gcd = foldl(p -> p.a.gcd(p.b), BigInteger.ZERO, canceled);
+            assertTrue(rs.toString(), gcd.equals(BigInteger.ZERO) || gcd.equals(BigInteger.ONE));
+            assertTrue(rs.toString(), equal(map(Rational::signum, rs), map(BigInteger::signum, canceled)));
+            assertTrue(
+                    rs.toString(),
+                    same(
+                            zipWith(
+                                    p -> p.a.divide(p.b),
+                                    filter(r -> r != ZERO, rs),
+                                    filter(i -> !i.equals(BigInteger.ZERO), canceled)
+                            )
+                    )
+            );
+        }
+
+        for (Pair<List<Rational>, Rational> p : take(LIMIT, P.pairs(P.lists(P.rationals()), P.positiveRationals()))) {
+            assertEquals(
+                    p.toString(),
+                    cancelDenominators(p.a),
+                    cancelDenominators(toList(map(r -> r.multiply(p.b), p.a)))
+            );
+        }
+
+        for (Rational r : take(LIMIT, P.rationals())) {
+            BigInteger canceled = head(cancelDenominators(Arrays.asList(r)));
+            assertTrue(r.toString(), le(canceled.abs(), BigInteger.ONE));
+        }
+
+        Iterable<List<Rational>> failRss = map(
+                p -> toList(insert(p.a, p.b, null)),
+                (Iterable<Pair<List<Rational>, Integer>>) P.dependentPairsLogarithmic(
+                        P.lists(P.rationals()),
+                        rs -> range(0, rs.size())
+                )
+        );
+        for (List<Rational> rs : take(LIMIT, failRss)) {
+            try {
+                cancelDenominators(rs);
+                fail(rs.toString());
+            } catch (NullPointerException ignored) {}
+        }
+    }
+
     private static void propertiesEquals() {
         initialize();
         System.out.println("\t\ttesting equals(Object) properties...");
@@ -3475,12 +3534,17 @@ public class RationalProperties {
         }
     }
 
+    private static int compareTo_simplest(@NotNull Rational x, @NotNull Rational y) {
+        return x.getNumerator().multiply(y.getDenominator()).compareTo(y.getNumerator().multiply(x.getDenominator()));
+    }
+
     private static void propertiesCompareTo() {
         initialize();
         System.out.println("\t\ttesting compareTo(Rational) properties...");
 
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
             int compare = p.a.compareTo(p.b);
+            assertEquals(p.toString(), compare, compareTo_simplest(p.a, p.b));
             assertTrue(p.toString(), compare == -1 || compare == 0 || compare == 1);
             assertEquals(p.toString(), p.b.compareTo(p.a), -compare);
             assertEquals(p.toString(), p.a.subtract(p.b).signum(), compare);
@@ -3497,6 +3561,27 @@ public class RationalProperties {
         for (Triple<Rational, Rational, Rational> t : take(LIMIT, ts)) {
             assertEquals(t.toString(), t.a.compareTo(t.c), -1);
         }
+    }
+
+    private static void compareImplementationsCompareTo() {
+        initialize();
+        System.out.println("\t\tcomparing compareTo(Rational) implementations...");
+
+        long totalTime = 0;
+        for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
+            long time = System.nanoTime();
+            compareTo_simplest(p.a, p.b);
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\t\t\tsimplest: " + ((double) totalTime) / 1e9 + " s");
+
+        totalTime = 0;
+        for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
+            long time = System.nanoTime();
+            p.a.compareTo(p.b);
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
     }
 
     private static void propertiesRead() {
@@ -3569,7 +3654,7 @@ public class RationalProperties {
 
         for (Rational r : take(LIMIT, P.rationals())) {
             String s = r.toString();
-            assertTrue(isSubsetOf(s, RATIONAL_CHARS));
+            assertTrue(r.toString(), isSubsetOf(s, RATIONAL_CHARS));
             Optional<Rational> readR = read(s);
             assertTrue(r.toString(), readR.isPresent());
             assertEquals(r.toString(), readR.get(), r);
@@ -3585,14 +3670,6 @@ public class RationalProperties {
 
     private static <T> void aeq(String message, Iterable<T> xs, Iterable<T> ys) {
         assertTrue(message, equal(xs, ys));
-    }
-
-    private static void aeq(String message, int i, int j) {
-        assertEquals(message, i, j);
-    }
-
-    private static void aeq(String message, long i, long j) {
-        assertEquals(message, i, j);
     }
 
     private static void aeq(String message, float x, float y) {

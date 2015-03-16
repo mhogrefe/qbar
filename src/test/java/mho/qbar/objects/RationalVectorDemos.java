@@ -4,15 +4,16 @@ import mho.qbar.iterableProviders.QBarExhaustiveProvider;
 import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.iterableProviders.QBarRandomProvider;
 import mho.wheels.iterables.ExhaustiveProvider;
+import mho.wheels.iterables.IterableUtils;
 import mho.wheels.iterables.RandomProvider;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
+import org.junit.Assert;
 
 import java.math.BigInteger;
 import java.util.List;
 import java.util.Random;
 
-import static mho.qbar.objects.Rational.ZERO;
 import static mho.qbar.objects.RationalVector.*;
 import static mho.wheels.iterables.IterableUtils.*;
 
@@ -132,7 +133,7 @@ public class RationalVectorDemos {
         }
     }
 
-    public static void demoIdentity() {
+    public static void demoStandard() {
         initialize();
         Iterable<Integer> is;
         if (P instanceof ExhaustiveProvider) {
@@ -141,7 +142,7 @@ public class RationalVectorDemos {
             is = ((RandomProvider) P).naturalIntegersGeometric(20);
         }
         for (Pair<Integer, Integer> p : take(SMALL_LIMIT, filter(q -> q.a > q.b, P.pairs(is)))) {
-            System.out.println("identity(" + p.a + ", " + p.b + ") = " + identity(p.a, p.b));
+            System.out.println("standard(" + p.a + ", " + p.b + ") = " + standard(p.a, p.b));
         }
     }
 
@@ -215,7 +216,7 @@ public class RationalVectorDemos {
     public static void demoDivide_Rational() {
         initialize();
         Iterable<Pair<RationalVector, Rational>> ps = filter(
-                p -> p.b != ZERO,
+                p -> p.b != Rational.ZERO,
                 P.pairs(P.rationalVectors(), P.rationals())
         );
         for (Pair<RationalVector, Rational> p : take(LIMIT, ps)) {
@@ -239,6 +240,149 @@ public class RationalVectorDemos {
         Iterable<Pair<RationalVector, Integer>> ps = P.pairs(P.rationalVectors(), filter(i -> i != 0, P.integers()));
         for (Pair<RationalVector, Integer> p : take(LIMIT, ps)) {
             System.out.println(p.a + " / " + p.b + " = " + p.a.divide(p.b));
+        }
+    }
+
+    public static void demoShiftLeft() {
+        initialize();
+        Iterable<Integer> is;
+        if (P instanceof QBarExhaustiveProvider) {
+            is = P.integers();
+        } else {
+            is  = ((QBarRandomProvider) P).integersGeometric(50);
+        }
+        for (Pair<RationalVector, Integer> p : take(LIMIT, P.pairs(P.rationalVectors(), is))) {
+            System.out.println(p.a + " << " + p.b + " = " + p.a.shiftLeft(p.b));
+        }
+    }
+
+    public static void demoShiftRight() {
+        initialize();
+        Iterable<Integer> is;
+        if (P instanceof QBarExhaustiveProvider) {
+            is = P.integers();
+        } else {
+            is  = ((QBarRandomProvider) P).integersGeometric(50);
+        }
+        for (Pair<RationalVector, Integer> p : take(LIMIT, P.pairs(P.rationalVectors(), is))) {
+            System.out.println(p.a + " >> " + p.b + " = " + p.a.shiftRight(p.b));
+        }
+    }
+
+    public static void demoSum() {
+        initialize();
+        Iterable<Pair<Integer, Integer>> ps;
+        if (P instanceof ExhaustiveProvider) {
+            ps = P.pairs(P.positiveIntegers(), P.naturalIntegers());
+        } else {
+            ps = P.pairs(
+                    ((RandomProvider) P).positiveIntegersGeometric(5),
+                    ((RandomProvider) P).naturalIntegersGeometric(5)
+            );
+        }
+        Iterable<List<RationalVector>> vss = map(
+                q -> q.b,
+                P.dependentPairsSquare(ps, p -> P.lists(p.a, P.rationalVectors(p.b)))
+        );
+        for (List<RationalVector> vs : take(LIMIT, vss)) {
+            String listString = tail(init(vs.toString()));
+            System.out.println("Σ(" + listString + ") = " + sum(vs));
+        }
+    }
+
+    public static void demoDelta() {
+        initialize();
+        Iterable<Pair<Integer, Integer>> ps;
+        if (P instanceof ExhaustiveProvider) {
+            ps = P.pairs(P.positiveIntegers(), P.naturalIntegers());
+        } else {
+            ps = P.pairs(
+                    ((RandomProvider) P).positiveIntegersGeometric(5),
+                    ((RandomProvider) P).naturalIntegersGeometric(5)
+            );
+        }
+        Iterable<List<RationalVector>> vss = map(
+                q -> q.b,
+                P.dependentPairsSquare(ps, p -> P.lists(p.a, P.rationalVectors(p.b)))
+        );
+        for (List<RationalVector> vs : take(LIMIT, vss)) {
+            String listString = tail(init(vs.toString()));
+            System.out.println("Δ(" + listString + ") = " + IterableUtils.toString(delta(vs)));
+        }
+    }
+
+    public static void demoDot() {
+        initialize();
+        Iterable<Pair<RationalVector, RationalVector>> ps;
+        if (P instanceof ExhaustiveProvider) {
+            ps = P.dependentPairs(P.rationalVectors(), v -> P.rationalVectors(v.dimension()));
+        } else {
+            ps = P.dependentPairs(
+                    ((QBarRandomProvider) P).rationalVectorsBySize(8),
+                    v -> ((QBarRandomProvider) P).rationalVectorsBySize(8, v.dimension())
+            );
+        }
+        for (Pair<RationalVector, RationalVector> p : take(LIMIT, ps)) {
+            System.out.println("dot(" + p.a + ", " + p.b + ") = " + p.a.dot(p.b));
+        }
+    }
+
+    public static void demoRightAngleCompare() {
+        initialize();
+        Iterable<Pair<RationalVector, RationalVector>> ps;
+        if (P instanceof ExhaustiveProvider) {
+            ps = P.dependentPairs(P.rationalVectors(), v -> P.rationalVectors(v.dimension()));
+        } else {
+            ps = P.dependentPairs(
+                    ((QBarRandomProvider) P).rationalVectorsBySize(8),
+                    v -> ((QBarRandomProvider) P).rationalVectorsBySize(8, v.dimension())
+            );
+        }
+        for (Pair<RationalVector, RationalVector> p : take(LIMIT, ps)) {
+            String angleType;
+            switch (p.a.rightAngleCompare(p.b)) {
+                case LT:
+                    angleType = "an acute";
+                    break;
+                case EQ:
+                    angleType = "a right";
+                    break;
+                case GT:
+                    angleType = "an obtuse";
+                    break;
+                default:
+                    Assert.fail();
+                    return;
+            }
+            System.out.println(p.a + " and " + p.b + " make " + angleType + " angle");
+        }
+    }
+
+    public static void demoSquaredLength() {
+        initialize();
+        for (RationalVector v : take(LIMIT, P.rationalVectors())) {
+            System.out.println("squaredLength(" + v + ") = " + v.squaredLength());
+        }
+    }
+
+    public static void demoCancelDenominators() {
+        initialize();
+        for (RationalVector v : take(LIMIT, P.rationalVectors())) {
+            System.out.println("cancelDenominators(" + v + ") = " + v.cancelDenominators());
+        }
+    }
+
+    public static void demoPivot() {
+        initialize();
+        for (RationalVector v : take(LIMIT, P.rationalVectors())) {
+            System.out.println("pivot(" + v + ") = " + v.pivot());
+        }
+    }
+
+    public static void demoReduce() {
+        initialize();
+        for (RationalVector v : take(LIMIT, P.rationalVectors())) {
+            System.out.println("reduce(" + v + ") = " + v.reduce());
         }
     }
 
