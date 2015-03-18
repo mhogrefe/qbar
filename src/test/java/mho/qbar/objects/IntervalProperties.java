@@ -97,6 +97,7 @@ public class IntervalProperties {
             propertiesSum();
             propertiesProduct();
             propertiesDelta();
+            propertiesPow();
             propertiesPowHull();
             propertiesElementCompare();
             propertiesEquals();
@@ -1790,62 +1791,69 @@ public class IntervalProperties {
         }
     }
 
-//    private static void propertiesPow() {
-//        initialize();
-//        System.out.println("\t\ttesting pow(int) properties...");
-//
-//        Iterable<Integer> exps;
-//        if (P instanceof QBarExhaustiveProvider) {
-//            exps = P.integers();
-//        } else {
-//            exps = ((RandomProvider) P).integersGeometric(20);
-//        }
-//        Iterable<Pair<Interval, Integer>> ps = filter(
-//                p -> p.b >= 0 || !p.a.equals(ZERO),
-//                P.pairs(P.intervals(), exps)
-//        );
-//        for (Pair<Interval, Integer> p : take(LIMIT, ps)) {
-//            List<Interval> pow = p.a.pow(p.b);
-//            pow.forEach(mho.qbar.objects.IntervalProperties::validate);
-//
-//            Iterable<Rational> rs = p.b < 0 ? filter(r -> r != Rational.ZERO, P.rationals(p.a)) : P.rationals(p.a);
-//            for (Rational r : take(TINY_LIMIT, rs)) {
-//                assertTrue(p.toString(), any(s -> s.contains(r.pow(p.b)), pow));
-//            }
-//
-//            Interval product = product(replicate(Math.abs(p.b), p.a));
-//            if (p.b < 0) product = product.invertHull();
-//            assertTrue(p.toString(), product.contains(pow));
-//        }
-//
-//        ps = P.pairs(filter(a -> !a.equals(ZERO), P.intervals()), exps);
-//        for (Pair<Interval, Integer> p : take(LIMIT, ps)) {
-//            Interval a = p.a.powHull(p.b);
-//            assertTrue(p.toString(), p.a.powHull(-p.b).invertHull().contains(a));
-//            assertTrue(p.toString(), p.a.invertHull().powHull(-p.b).contains(a));
-//        }
-//
-//        Iterable<Integer> pexps;
-//        if (P instanceof QBarExhaustiveProvider) {
-//            pexps = P.positiveIntegers();
-//        } else {
-//            pexps = ((RandomProvider) P).positiveIntegersGeometric(20);
-//        }
-//        for (int i : take(LIMIT, pexps)) {
-//            assertTrue(Integer.toString(i), ZERO.powHull(i).equals(ZERO));
-//        }
-//
-//        for (Interval a : take(LIMIT, P.intervals())) {
-//            assertTrue(a.toString(), a.powHull(0).equals(ONE));
-//            assertEquals(a.toString(), a.powHull(1), a);
-//            assertTrue(a.toString(), a.multiply(a).contains(a.powHull(2)));
-//        }
-//
-//        Iterable<Interval> rs = filter(a -> !a.equals(ZERO), P.intervals());
-//        for (Interval a : take(LIMIT, rs)) {
-//            assertEquals(a.toString(), a.powHull(-1), a.invertHull());
-//        }
-//
+    private static void propertiesPow() {
+        initialize();
+        System.out.println("\t\ttesting pow(int) properties...");
+
+        Iterable<Integer> exps;
+        if (P instanceof QBarExhaustiveProvider) {
+            exps = P.integers();
+        } else {
+            exps = ((RandomProvider) P).integersGeometric(20);
+        }
+        Iterable<Pair<Interval, Integer>> ps = P.pairs(P.intervals(), exps);
+        for (Pair<Interval, Integer> p : take(LIMIT, ps)) {
+            List<Interval> pow = p.a.pow(p.b);
+            pow.forEach(mho.qbar.objects.IntervalProperties::validate);
+
+            Iterable<Rational> rs = p.b < 0 ? filter(r -> r != Rational.ZERO, P.rationals(p.a)) : P.rationals(p.a);
+            for (Rational r : take(TINY_LIMIT, rs)) {
+                assertTrue(p.toString(), any(s -> s.contains(r.pow(p.b)), pow));
+            }
+        }
+
+        ps = filter(
+                p -> p.b >= 0 || !p.a.equals(ZERO),
+                P.pairs(P.intervals(), exps)
+        );
+        for (Pair<Interval, Integer> p : take(LIMIT, ps)) {
+            List<Interval> pow = p.a.pow(p.b);
+            Interval x = product(replicate(Math.abs(p.b), p.a));
+            Interval product = p.b < 0 ? x.invertHull() : x;
+            assertTrue(p.toString(), all(product::contains, pow));
+        }
+
+        ps = P.pairs(filter(a -> !a.equals(ZERO), P.intervals()), exps);
+        for (Pair<Interval, Integer> p : take(LIMIT, ps)) {
+            List<Interval> a = p.a.pow(p.b);
+            assertTrue(
+                    p.toString(),
+                    any(c -> convexHull(toList(concatMap(Interval::invert, p.a.pow(-p.b)))).contains(c), a)
+            );
+            assertTrue(
+                    p.toString(),
+                    any(c -> convexHull(toList(concatMap(b -> b.pow(-p.b), p.a.invert()))).contains(c), a)
+            );
+        }
+
+        Iterable<Integer> pexps;
+        if (P instanceof QBarExhaustiveProvider) {
+            pexps = P.positiveIntegers();
+        } else {
+            pexps = ((RandomProvider) P).positiveIntegersGeometric(20);
+        }
+        for (int i : take(LIMIT, pexps)) {
+            assertTrue(Integer.toString(i), ZERO.pow(i).equals(Arrays.asList(ZERO)));
+        }
+
+        for (Interval a : take(LIMIT, P.intervals())) {
+            assertTrue(a.toString(), a.pow(0).equals(Arrays.asList(ONE)));
+            assertEquals(a.toString(), a.pow(1), Arrays.asList(a));
+            Interval product = a.multiply(a);
+            assertTrue(a.toString(), all(product::contains, a.pow(2)));
+            assertEquals(a.toString(), a.pow(-1), a.invert());
+        }
+
 //        Iterable<Triple<Interval, Integer, Integer>> ts1 = filter(
 //                p -> p.b >= 0 && p.c >= 0 || !p.a.equals(ZERO),
 //                P.triples(P.intervals(), exps, exps)
@@ -1902,7 +1910,7 @@ public class IntervalProperties {
 //                fail(Integer.toString(i));
 //            } catch (ArithmeticException ignored) {}
 //        }
-//    }
+    }
 
     private static void propertiesPowHull() {
         initialize();
