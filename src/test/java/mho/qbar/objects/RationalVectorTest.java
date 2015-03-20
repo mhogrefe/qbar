@@ -601,7 +601,7 @@ public class RationalVectorTest {
     }
 
     private static @NotNull Optional<List<Rational>> readRationalList(@NotNull String s) {
-        return Readers.readList(Rational::read, s);
+        return Readers.readList(Rational::read).apply(s);
     }
 
     private static @NotNull Optional<List<Rational>> readRationalListWithNulls(@NotNull String s) {
@@ -609,7 +609,7 @@ public class RationalVectorTest {
     }
 
     private static @NotNull Optional<List<RationalVector>> readRationalVectorList(@NotNull String s) {
-        return Readers.readList(RationalVector::read, s);
+        return Readers.readList(RationalVector::read).apply(s);
     }
 
     private static @NotNull Optional<List<RationalVector>> readRationalVectorListWithNulls(@NotNull String s) {

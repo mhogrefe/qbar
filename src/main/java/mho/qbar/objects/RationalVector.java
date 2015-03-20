@@ -681,7 +681,7 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
      * invalid
      */
     public static @NotNull Optional<RationalVector> read(@NotNull String s) {
-        Optional<List<Rational>> ors = Readers.readList(Rational::read, s);
+        Optional<List<Rational>> ors = Readers.readList(Rational::read).apply(s);
         if (!ors.isPresent()) return Optional.empty();
         if (ors.get().isEmpty()) return Optional.of(ZERO_DIMENSIONAL);
         return Optional.of(new RationalVector(ors.get()));

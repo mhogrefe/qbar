@@ -1660,7 +1660,7 @@ public class IntervalTest {
     }
 
     private static @NotNull Optional<List<Interval>> readIntervalList(@NotNull String s) {
-        return Readers.readList(Interval::read, s);
+        return Readers.readList(Interval::read).apply(s);
     }
 
     private static @NotNull Optional<List<Interval>> readIntervalListWithNulls(@NotNull String s) {
