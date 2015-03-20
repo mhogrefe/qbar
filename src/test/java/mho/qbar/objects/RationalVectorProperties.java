@@ -29,7 +29,6 @@ import static org.junit.Assert.assertNotNull;
 public class RationalVectorProperties {
     private static boolean USE_RANDOM;
     private static final String RATIONAL_VECTOR_CHARS = " ,-/0123456789[]";
-    private static final int SMALL_LIMIT = 100;
     private static int LIMIT;
 
     private static QBarIterableProvider P;
@@ -1130,6 +1129,7 @@ public class RationalVectorProperties {
             assertTrue(v.toString(), all(r -> r.getDenominator().equals(BigInteger.ONE), canceled));
             BigInteger gcd = foldl(p -> p.a.gcd(p.b.getNumerator()), BigInteger.ZERO, canceled);
             assertTrue(v.toString(), gcd.equals(BigInteger.ZERO) || gcd.equals(BigInteger.ONE));
+            assertEquals(v.toString(), canceled.cancelDenominators(), canceled);
             assertEquals(v.toString(), canceled.dimension(), v.dimension());
             assertTrue(v.toString(), equal(map(Rational::signum, v), map(Rational::signum, canceled)));
             assertTrue(
@@ -1151,6 +1151,22 @@ public class RationalVectorProperties {
         for (Rational r : take(LIMIT, P.rationals())) {
             Rational canceled = head(of(r).cancelDenominators()).abs();
             assertTrue(r.toString(), canceled == Rational.ZERO || canceled == Rational.ONE);
+        }
+
+        Iterable<Integer> is;
+        if (P instanceof ExhaustiveProvider) {
+            is = P.naturalIntegers();
+        } else {
+            is = ((RandomProvider) P).naturalIntegersGeometric(20);
+        }
+        for (int i : take(LIMIT, is)) {
+            RationalVector zero = zero(i);
+            assertEquals(Integer.toString(i), zero.cancelDenominators(), zero);
+        }
+
+        for (Pair<Integer, Integer> p : take(LIMIT, filter(q -> q.a > q.b, P.pairs(is)))) {
+            RationalVector standard = standard(p.a, p.b);
+            assertEquals(p.toString(), standard.cancelDenominators(), standard);
         }
     }
 
