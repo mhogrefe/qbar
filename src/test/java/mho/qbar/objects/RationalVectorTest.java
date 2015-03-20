@@ -474,7 +474,7 @@ public class RationalVectorTest {
 
     @Test
     public void testCancelDenominators() {
-        aeq(ZERO_DIMENSIONAL.cancelDenominators(), "[]");
+        assertTrue(ZERO_DIMENSIONAL.cancelDenominators() == ZERO_DIMENSIONAL);
         aeq(read("[0]").get().cancelDenominators(), "[0]");
         aeq(read("[0, 0]").get().cancelDenominators(), "[0, 0]");
         aeq(read("[2/3]").get().cancelDenominators(), "[1]");

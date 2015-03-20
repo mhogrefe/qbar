@@ -81,6 +81,7 @@ public class RationalVectorProperties {
             propertiesDot();
             propertiesRightAngleCompare();
             propertiesSquaredLength();
+            propertiesCancelDenominators();
             propertiesEquals();
             propertiesHashCode();
             propertiesCompareTo();
@@ -1115,6 +1116,41 @@ public class RationalVectorProperties {
 
         for (Pair<Integer, Integer> p : take(LIMIT, filter(q -> q.a > q.b, P.pairs(is)))) {
             assertEquals(p.toString(), standard(p.a, p.b).squaredLength(), Rational.ONE);
+        }
+    }
+
+    private static void propertiesCancelDenominators() {
+        initialize();
+        System.out.println("\t\ttesting cancelDenominators() properties...");
+
+        for (RationalVector v : take(LIMIT, P.rationalVectors())) {
+            RationalVector canceled = v.cancelDenominators();
+            validate(canceled);
+
+            assertTrue(v.toString(), all(r -> r.getDenominator().equals(BigInteger.ONE), canceled));
+            BigInteger gcd = foldl(p -> p.a.gcd(p.b.getNumerator()), BigInteger.ZERO, canceled);
+            assertTrue(v.toString(), gcd.equals(BigInteger.ZERO) || gcd.equals(BigInteger.ONE));
+            assertEquals(v.toString(), canceled.dimension(), v.dimension());
+            assertTrue(v.toString(), equal(map(Rational::signum, v), map(Rational::signum, canceled)));
+            assertTrue(
+                    v.toString(),
+                    same(
+                            zipWith(
+                                    p -> p.a.divide(p.b),
+                                    filter(r -> r != Rational.ZERO, v),
+                                    filter(r -> r != Rational.ZERO, canceled)
+                            )
+                    )
+            );
+        }
+
+        for (Pair<RationalVector, Rational> p : take(LIMIT, P.pairs(P.rationalVectors(), P.positiveRationals()))) {
+            assertEquals(p.toString(), p.a.cancelDenominators(), p.a.multiply(p.b).cancelDenominators());
+        }
+
+        for (Rational r : take(LIMIT, P.rationals())) {
+            Rational canceled = head(of(r).cancelDenominators()).abs();
+            assertTrue(r.toString(), canceled == Rational.ZERO || canceled == Rational.ONE);
         }
     }
 

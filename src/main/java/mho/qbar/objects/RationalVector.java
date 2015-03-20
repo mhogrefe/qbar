@@ -6,7 +6,6 @@ import mho.wheels.ordering.comparators.ShortlexComparator;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 
-import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;
 
@@ -576,6 +575,7 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
      * @return a canonical representation of {@code this}
      */
     public @NotNull RationalVector cancelDenominators() {
+        if (this == ZERO_DIMENSIONAL) return ZERO_DIMENSIONAL;
         return new RationalVector(toList(map(Rational::of, Rational.cancelDenominators(coordinates))));
     }
 
