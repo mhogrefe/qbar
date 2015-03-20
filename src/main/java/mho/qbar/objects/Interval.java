@@ -1,6 +1,5 @@
 package mho.qbar.objects;
 
-import mho.wheels.iterables.IterableUtils;
 import mho.wheels.misc.FloatingPointUtils;
 import mho.wheels.misc.Readers;
 import mho.wheels.ordering.Ordering;
@@ -949,6 +948,7 @@ public final class Interval implements Comparable<Interval> {
      *
      * @return Conv(1/{@code this})
      */
+    @SuppressWarnings("JavaDoc")
     public @NotNull Interval invertHull() {
         List<Interval> inverse = invert();
         switch (inverse.size()) {
@@ -998,6 +998,7 @@ public final class Interval implements Comparable<Interval> {
      *
      * @return Conv({@code this}/{@code that})
      */
+    @SuppressWarnings("JavaDoc")
     public @NotNull Interval divideHull(@NotNull Interval that) {
         List<Interval> quotient = divide(that);
         switch (quotient.size()) {
@@ -1255,6 +1256,7 @@ public final class Interval implements Comparable<Interval> {
      *
      * @return Conv(x<sup>{@code p}</sup>)
      */
+    @SuppressWarnings("JavaDoc")
     public @NotNull Interval powHull(int p) {
         if (p < 0 && this.equals(ZERO))
             throw new ArithmeticException("division by zero");
