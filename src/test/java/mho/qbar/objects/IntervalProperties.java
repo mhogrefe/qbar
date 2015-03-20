@@ -1810,6 +1810,27 @@ public class IntervalProperties {
             for (Rational r : take(TINY_LIMIT, rs)) {
                 assertTrue(p.toString(), any(s -> s.contains(r.pow(p.b)), pow));
             }
+
+            int size = pow.size();
+            assertTrue(p.toString(), size == 0 || size == 1 || size == 2);
+            if (size == 2) {
+                Interval i1 = pow.get(0);
+                Interval i2 = pow.get(1);
+                Rational p1 = i1.getLower().isPresent() ? i1.getLower().get() : null;
+                Rational q1 = i1.getUpper().isPresent() ? i1.getUpper().get() : null;
+                Rational p2 = i2.getLower().isPresent() ? i2.getLower().get() : null;
+                Rational q2 = i2.getUpper().isPresent() ? i2.getUpper().get() : null;
+                assertTrue(p.toString(), p1 == null);
+                assertTrue(p.toString(), q2 == null);
+                if (p2 == Rational.ZERO) {
+                    assertTrue(p.toString(), q1.signum() == -1);
+                } else if (q1 == Rational.ZERO) {
+                    assertTrue(p.toString(), p2.signum() == 1);
+                } else {
+                    assertTrue(p.toString(), q1.signum() == -1);
+                    assertTrue(p.toString(), p2.signum() == 1);
+                }
+            }
         }
 
         ps = filter(
@@ -1854,62 +1875,59 @@ public class IntervalProperties {
             assertEquals(a.toString(), a.pow(-1), a.invert());
         }
 
-//        Iterable<Triple<Interval, Integer, Integer>> ts1 = filter(
-//                p -> p.b >= 0 && p.c >= 0 || !p.a.equals(ZERO),
-//                P.triples(P.intervals(), exps, exps)
-//        );
-//        for (Triple<Interval, Integer, Integer> t : take(LIMIT, ts1)) {
-//            Interval expression1 = t.a.powHull(t.b).multiply(t.a.powHull(t.c));
-//            Interval expression2 = t.a.powHull(t.b + t.c);
-//            assertTrue(t.toString(), expression1.contains(expression2));
-//        }
-//
-//        ts1 = filter(
-//                t -> !t.a.equals(ZERO) || t.c == 0 && t.b >= 0,
-//                P.triples(P.intervals(), exps, exps)
-//        );
-//        for (Triple<Interval, Integer, Integer> t : take(LIMIT, ts1)) {
-//            Interval expression1 = t.a.powHull(t.b).divideHull(t.a.powHull(t.c));
-//            Interval expression2 = t.a.powHull(t.b - t.c);
-//            assertTrue(t.toString(), expression1.contains(expression2));
-//        }
-//
-//        ts1 = filter(
-//                t -> !t.a.equals(ZERO) || t.b >= 0 && t.c >= 0,
-//                P.triples(P.intervals(), exps, exps)
-//        );
-//        for (Triple<Interval, Integer, Integer> t : take(LIMIT, ts1)) {
-//            Interval expression5 = t.a.powHull(t.b).powHull(t.c);
-//            Interval expression6 = t.a.powHull(t.b * t.c);
-//            assertTrue(t.toString(), expression5.contains(expression6));
-//        }
-//
-//        Iterable<Triple<Interval, Interval, Integer>> ts2 = filter(
-//                t -> !t.a.equals(ZERO) && !t.b.equals(ZERO) || t.c >= 0,
-//                P.triples(P.intervals(), P.intervals(), exps)
-//        );
-//        for (Triple<Interval, Interval, Integer> t : take(LIMIT, ts2)) {
-//            Interval expression1 = t.a.multiply(t.b).powHull(t.c);
-//            Interval expression2 = t.a.powHull(t.c).multiply(t.b.powHull(t.c));
-//            assertEquals(t.toString(), expression1, expression2);
-//        }
-//
-//        ts2 = filter(
-//                t -> !t.a.equals(ZERO) || t.c >= 0,
-//                P.triples(P.intervals(), filter(a -> !a.equals(ZERO), P.intervals()), exps)
-//        );
-//        for (Triple<Interval, Interval, Integer> t : take(LIMIT, ts2)) {
-//            Interval expression1 = t.a.divideHull(t.b).powHull(t.c);
-//            Interval expression2 = t.a.powHull(t.c).divideHull(t.b.powHull(t.c));
-//            assertTrue(t.toString(), expression1.contains(expression2));
-//        }
-//
-//        for (int i : take(LIMIT, P.negativeIntegers())) {
-//            try {
-//                ZERO.powHull(i);
-//                fail(Integer.toString(i));
-//            } catch (ArithmeticException ignored) {}
-//        }
+        Iterable<Triple<Interval, Integer, Integer>> ts1 = filter(
+                p -> p.b >= 0 && p.c >= 0 || !p.a.equals(ZERO),
+                P.triples(P.intervals(), exps, exps)
+        );
+        for (Triple<Interval, Integer, Integer> t : take(LIMIT, ts1)) {
+            Interval expression1 = convexHull(toList(concatMap(a -> map(a::multiply, t.a.pow(t.c)), t.a.pow(t.b))));
+            Interval expression2 = convexHull(t.a.pow(t.b + t.c));
+            assertTrue(t.toString(), expression1.contains(expression2));
+        }
+
+        ts1 = filter(
+                t -> !t.a.equals(ZERO) || t.c == 0 && t.b >= 0,
+                P.triples(P.intervals(), exps, exps)
+        );
+        for (Triple<Interval, Integer, Integer> t : take(LIMIT, ts1)) {
+            Interval expression1 = convexHull(
+                    toList(concatMap(a -> concatMap(a::divide, t.a.pow(t.c)), t.a.pow(t.b)))
+            );
+            Interval expression2 = convexHull(t.a.pow(t.b - t.c));
+            assertTrue(t.toString(), expression1.contains(expression2));
+        }
+
+        ts1 = filter(
+                t -> !t.a.equals(ZERO) || t.b >= 0 && t.c >= 0,
+                P.triples(P.intervals(), exps, exps)
+        );
+        for (Triple<Interval, Integer, Integer> t : take(LIMIT, ts1)) {
+            Interval expression5 = convexHull(toList(concatMap(a -> a.pow(t.c), t.a.pow(t.b))));
+            Interval expression6 = convexHull(t.a.pow(t.b * t.c));
+            assertTrue(t.toString(), expression5.contains(expression6));
+        }
+
+        Iterable<Triple<Interval, Interval, Integer>> ts2 = filter(
+                t -> !t.a.equals(ZERO) && !t.b.equals(ZERO) || t.c >= 0,
+                P.triples(P.intervals(), P.intervals(), exps)
+        );
+        for (Triple<Interval, Interval, Integer> t : take(LIMIT, ts2)) {
+            Interval expression1 = convexHull(t.a.multiply(t.b).pow(t.c));
+            Interval expression2 = convexHull(toList(concatMap(a -> map(a::multiply, t.b.pow(t.c)), t.a.pow(t.c))));
+            assertEquals(t.toString(), expression1, expression2);
+        }
+
+        ts2 = filter(
+                t -> !t.a.equals(ZERO) || t.c >= 0,
+                P.triples(P.intervals(), filter(a -> !a.equals(ZERO), P.intervals()), exps)
+        );
+        for (Triple<Interval, Interval, Integer> t : take(LIMIT, ts2)) {
+            Interval expression1 = convexHull(toList(concatMap(a -> a.pow(t.c), t.a.divide(t.b))));
+            Interval expression2 = convexHull(
+                    toList(concatMap(a -> concatMap(a::divide, t.b.pow(t.c)), t.a.pow(t.c)))
+            );
+            assertTrue(t.toString(), expression1.contains(expression2));
+        }
     }
 
     private static void propertiesPowHull() {
