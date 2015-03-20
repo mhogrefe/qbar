@@ -868,19 +868,18 @@ public final class Interval implements Comparable<Interval> {
      *  <li>{@code this} may be any {@code Interval}.</li>
      *  <li>
      *   The result is one of the following:
-     *   <li>
-     *    <ul>[]</ul>
-     *    <ul>[(–∞, ∞)]</ul>
-     *    <ul>[(–∞, q]] where q≤0</ul>
-     *    <ul>[[p, ∞)] where p≥0</ul>
-     *    <ul>[[p, q]] where p≠q, p≥0, q>0</ul>
-     *    <ul>[[p, q]] where p≠q, p<0, q≤0</ul>
-     *    <ul>[[p, p]] where p≠0</ul>
-     *    <ul>[(–∞, q], [0, ∞)] where q<0</ul>
-     *    <ul>[(–∞, 0], [p, ∞)] where p>0</ul>
-     *    <ul>[(–∞, q], [p, ∞)] where q<0, p>0</ul>
-     *    <ul></ul>
-     *   </li>
+     *   <ul>
+     *    <li>[]</li>
+     *    <li>[(–∞, ∞)]</li>
+     *    <li>[(–∞, q]] where q≤0</li>
+     *    <li>[[p, ∞)] where p≥0</li>
+     *    <li>[[p, q]] where p≠q, p≥0, q{@literal >}0</li>
+     *    <li>[[p, q]] where p≠q, p{@literal <}0, q≤0</li>
+     *    <li>[[p, p]] where p≠0</li>
+     *    <li>[(–∞, q], [0, ∞)] where q{@literal <}0</li>
+     *    <li>[(–∞, 0], [p, ∞)] where p{@literal >}0</li>
+     *    <li>[(–∞, q], [p, ∞)] where q{@literal <}0, p{@literal >}0</li>
+     *   </ul>
      *  </li>
      * </ul>
      *
@@ -935,14 +934,14 @@ public final class Interval implements Comparable<Interval> {
      *  <li>{@code this} cannot be [0, 0].</li>
      *  <li>
      *   The result is one of the following:
-     *   <li>
-     *    <ul>(–∞, ∞)</ul>
-     *    <ul>(–∞, q] where q≤0</ul>
-     *    <ul>[p, ∞) where p≥0</ul>
-     *    <ul>[p, q] where p≠q, p and q both positive</ul>
-     *    <ul>[p, q] where p≠q, p and q both negative</ul>
-     *    <ul>[p, p] where p≠0</ul>
-     *   </li>
+     *   <ul>
+     *    <li>(–∞, ∞)</li>
+     *    <li>(–∞, q] where q≤0</li>
+     *    <li>[p, ∞) where p≥0</li>
+     *    <li>[p, q] where p≠q, p and q both positive</li>
+     *    <li>[p, q] where p≠q, p and q both negative</li>
+     *    <li>[p, p] where p≠0</li>
+     *   </ul>
      *  </li>
      * </ul>
      *
@@ -970,17 +969,17 @@ public final class Interval implements Comparable<Interval> {
      *  <li>{@code that} cannot be null.</li>
      *  <li>
      *   The result is one of the following:
-     *   <li>
-     *    <ul>[]</ul>
-     *    <ul>A list containing a single, non-null {@code Interval}</ul>
-     *    <ul>[(–∞, q], [0, ∞)] where q<0</ul>
-     *    <ul>[(–∞, 0], [p, ∞)] where p>0</ul>
-     *    <ul>[(–∞, q], [p, ∞)] where q<0, p>0</ul>
-     *    <ul></ul>
-     *   </li>
+     *   <ul>
+     *    <li>[]</li>
+     *    <li>A list containing a single, non-null {@code Interval}</li>
+     *    <li>[(–∞, q], [0, ∞)] where q{@literal <}0</li>
+     *    <li>[(–∞, 0], [p, ∞)] where p{@literal >}0</li>
+     *    <li>[(–∞, q], [p, ∞)] where q{@literal <}0, p{@literal >}0</li>
+     *   </ul>
      *  </li>
      * </ul>
      *
+     * @param that the {@code Interval} that {@code this} is divided by
      * @return {@code this}/{@code that}
      */
     public @NotNull List<Interval> divide(@NotNull Interval that) {
@@ -996,6 +995,7 @@ public final class Interval implements Comparable<Interval> {
      *  <li>The result is not null.</li>
      * </ul>
      *
+     * @param that the {@code Interval} that {@code this} is divided by
      * @return Conv({@code this}/{@code that})
      */
     @SuppressWarnings("JavaDoc")
@@ -1203,17 +1203,17 @@ public final class Interval implements Comparable<Interval> {
      *  <li>{@code p} may be any {@code int}.</li>
      *  <li>
      *   The result is one of the following:
-     *   <li>
-     *    <ul>[]</ul>
-     *    <ul>A list containing a single, non-null {@code Interval}</ul>
-     *    <ul>[(–∞, q], [0, ∞)] where q<0</ul>
-     *    <ul>[(–∞, 0], [p, ∞)] where p>0</ul>
-     *    <ul>[(–∞, q], [p, ∞)] where q<0, p>0</ul>
-     *    <ul></ul>
-     *   </li>
+     *   <ul>
+     *    <li>[]</li>
+     *    <li>A list containing a single, non-null {@code Interval}</li>
+     *    <li>[(–∞, q], [0, ∞)] where q{@literal <}0</li>
+     *    <li>[(–∞, 0], [p, ∞)] where p{@literal >}0</li>
+     *    <li>[(–∞, q], [p, ∞)] where q{@literal <}0, p{@literal >}0</li>
+     *   </ul>
      *  </li>
      * </ul>
      *
+     * @param p the power that {@code this} is raised to
      * @return {@code this}<sup>{@code p}</sup>
      */
     public @NotNull List<Interval> pow(int p) {
@@ -1254,6 +1254,7 @@ public final class Interval implements Comparable<Interval> {
      *  <li>The result is not null.</li>
      * </ul>
      *
+     * @param p the power that {@code this} is raised to
      * @return Conv(x<sup>{@code p}</sup>)
      */
     @SuppressWarnings("JavaDoc")
