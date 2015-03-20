@@ -81,6 +81,7 @@ public class RationalVectorProperties {
             propertiesRightAngleCompare();
             propertiesSquaredLength();
             propertiesCancelDenominators();
+            propertiesPivot();
             propertiesEquals();
             propertiesHashCode();
             propertiesCompareTo();
@@ -1167,6 +1168,29 @@ public class RationalVectorProperties {
         for (Pair<Integer, Integer> p : take(LIMIT, filter(q -> q.a > q.b, P.pairs(is)))) {
             RationalVector standard = standard(p.a, p.b);
             assertEquals(p.toString(), standard.cancelDenominators(), standard);
+        }
+    }
+
+    private static void propertiesPivot() {
+        initialize();
+        System.out.println("\t\ttesting pivot() properties...");
+
+        for (RationalVector v : take(LIMIT, P.rationalVectors())) {
+            v.pivot();
+        }
+
+        for (RationalVector v : take(LIMIT, filter(w -> !w.isZero(), P.rationalVectors()))) {
+            Rational pivot = v.pivot().get();
+            assertTrue(v.toString(), pivot != Rational.ZERO);
+            assertTrue(v.toString(), elem(pivot, v));
+        }
+
+        Iterable<Pair<RationalVector, Rational>> ps = P.pairs(
+                P.rationalVectors(),
+                filter(r -> r != Rational.ZERO, P.rationals())
+        );
+        for (Pair<RationalVector, Rational> p : take(LIMIT, ps)) {
+            assertEquals(p.toString(), p.a.multiply(p.b).pivot(), p.a.pivot().map(r -> r.multiply(p.b)));
         }
     }
 
