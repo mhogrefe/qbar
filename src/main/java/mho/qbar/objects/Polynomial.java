@@ -87,6 +87,25 @@ public class Polynomial {
     }
 
     /**
+     * Creates a constant (possibly zero) {@code Polynomial}.
+     *
+     * <ul>
+     *  <li>{@code this} cannot be null.</li>
+     *  <li>The result has degree 0 or –1.</li>
+     * </ul>
+     *
+     * Length is 1
+     *
+     * @param c the constant
+     * @return a constant {@code Polynomial} equal to {@code c}
+     */
+    public static @NotNull Polynomial of(@NotNull BigInteger c) {
+        if (c.equals(BigInteger.ZERO)) return ZERO;
+        if (c.equals(BigInteger.ONE)) return ONE;
+        return new Polynomial(Arrays.asList(c));
+    }
+
+    /**
      * Returns this {@code Polynomial}'s degree. We consider 0 to have degree –1.
      *
      * <ul>

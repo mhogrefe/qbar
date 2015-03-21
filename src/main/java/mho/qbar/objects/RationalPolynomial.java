@@ -88,6 +88,25 @@ public class RationalPolynomial {
     }
 
     /**
+     * Creates a constant (possibly zero) {@code RationalPolynomial}.
+     *
+     * <ul>
+     *  <li>{@code this} cannot be null.</li>
+     *  <li>The result has degree 0 or –1.</li>
+     * </ul>
+     *
+     * Length is 1
+     *
+     * @param c the constant
+     * @return a constant {@code RationalPolynomial} equal to {@code c}
+     */
+    public static @NotNull RationalPolynomial of(@NotNull Rational c) {
+        if (c == Rational.ZERO) return ZERO;
+        if (c == Rational.ONE) return ONE;
+        return new RationalPolynomial(Arrays.asList(c));
+    }
+
+    /**
      * Returns this {@code RationalPolynomial}'s degree. We consider 0 to have degree –1.
      *
      * <ul>
