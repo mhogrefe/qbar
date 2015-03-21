@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static mho.wheels.iterables.IterableUtils.*;
-import static mho.wheels.ordering.Ordering.le;
 
 /**
  * <p>A univariate polynomial in x with {@code BigInteger} coefficients.
