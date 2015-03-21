@@ -96,7 +96,7 @@ public final class Rational implements Comparable<Rational> {
      */
     @SuppressWarnings("ConstantConditions")
     public static final @NotNull Iterable<Rational> HARMONIC_NUMBERS =
-            scanl(p -> p.a.add(p.b), ONE, map(i -> new Rational(BigInteger.ONE, BigInteger.valueOf(i)), rangeUp(2)));
+            scanl(Rational::add, ONE, map(i -> new Rational(BigInteger.ONE, BigInteger.valueOf(i)), rangeUp(2)));
 
     /**
      * {@code this} times {@code denominator}
@@ -1413,8 +1413,7 @@ public final class Rational implements Comparable<Rational> {
      * @return Σxs
      */
     public static Rational sum(@NotNull Iterable<Rational> xs) {
-        //noinspection ConstantConditions
-        return foldl(p -> p.a.add(p.b), ZERO, xs);
+        return foldl(Rational::add, ZERO, xs);
     }
 
     /**
@@ -1442,8 +1441,7 @@ public final class Rational implements Comparable<Rational> {
                 },
                 xs
         );
-        //noinspection ConstantConditions
-        return foldl(p -> p.a.multiply(p.b), ONE, denominatorSorted);
+        return foldl(Rational::multiply, ONE, denominatorSorted);
     }
 
     /**
@@ -1465,8 +1463,7 @@ public final class Rational implements Comparable<Rational> {
             throw new IllegalArgumentException("cannot get delta of empty Iterable");
         if (head(xs) == null)
             throw new NullPointerException();
-        //noinspection ConstantConditions
-        return adjacentPairsWith(p -> p.b.subtract(p.a), xs);
+        return adjacentPairsWith((x, y) -> y.subtract(x), xs);
     }
 
     /**
@@ -2031,9 +2028,9 @@ public final class Rational implements Comparable<Rational> {
      */
     @SuppressWarnings("ConstantConditions")
     public static @NotNull List<BigInteger> cancelDenominators(@NotNull List<Rational> xs) {
-        BigInteger lcm = foldl(p -> MathUtils.lcm(p.a, p.b), BigInteger.ONE, map(Rational::getDenominator, xs));
+        BigInteger lcm = foldl(MathUtils::lcm, BigInteger.ONE, map(Rational::getDenominator, xs));
         Iterable<BigInteger> canceled = map(x -> x.multiply(lcm).getNumerator(), xs);
-        BigInteger gcd = foldl(p -> p.a.gcd(p.b), BigInteger.ZERO, canceled);
+        BigInteger gcd = foldl(BigInteger::gcd, BigInteger.ZERO, canceled);
         return toList(gcd.equals(BigInteger.ZERO) ? canceled : map(x -> x.divide(gcd), canceled));
     }
 

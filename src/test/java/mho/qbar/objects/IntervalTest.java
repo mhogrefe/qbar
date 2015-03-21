@@ -1664,6 +1664,6 @@ public class IntervalTest {
     }
 
     private static @NotNull Optional<List<Interval>> readIntervalListWithNulls(@NotNull String s) {
-        return Readers.readListWithNulls(Interval::read, s);
+        return Readers.readListWithNulls(Interval::read).apply(s);
     }
 }

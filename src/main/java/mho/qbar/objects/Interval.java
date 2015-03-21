@@ -264,8 +264,7 @@ public final class Interval implements Comparable<Interval> {
     public static @NotNull Interval convexHull(@NotNull List<Interval> as) {
         if (any(a -> a == null, as))
             throw new NullPointerException();
-        //noinspection ConstantConditions
-        return foldl1(p -> p.a.convexHull(p.b), as);
+        return foldl1(Interval::convexHull, as);
     }
 
     /**
@@ -1150,8 +1149,7 @@ public final class Interval implements Comparable<Interval> {
      * @return Σxs
      */
     public static Interval sum(@NotNull Iterable<Interval> xs) {
-        //noinspection ConstantConditions
-        return foldl(p -> p.a.add(p.b), ZERO, xs);
+        return foldl(Interval::add, ZERO, xs);
     }
 
     /**
@@ -1166,8 +1164,7 @@ public final class Interval implements Comparable<Interval> {
      * @return Πxs
      */
     public static Interval product(@NotNull Iterable<Interval> xs) {
-        //noinspection ConstantConditions
-        return foldl(p -> p.a.multiply(p.b), ONE, xs);
+        return foldl(Interval::multiply, ONE, xs);
     }
 
     /**
@@ -1189,8 +1186,7 @@ public final class Interval implements Comparable<Interval> {
             throw new IllegalArgumentException("cannot get delta of empty Iterable");
         if (head(xs) == null)
             throw new NullPointerException();
-        //noinspection ConstantConditions
-        return adjacentPairsWith(p -> p.b.subtract(p.a), xs);
+        return adjacentPairsWith((x, y) -> y.subtract(x), xs);
     }
 
     /**

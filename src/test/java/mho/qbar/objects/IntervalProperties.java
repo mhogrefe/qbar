@@ -1757,7 +1757,7 @@ public class IntervalProperties {
             deltas.forEach(mho.qbar.objects.IntervalProperties::validate);
 
             for (List<Rational> rs : take(TINY_LIMIT, transposeTruncating(map(P::rationals, is)))) {
-                assertTrue(is.toString(), and(zipWith(p -> p.a.contains(p.b), deltas, Rational.delta(rs))));
+                assertTrue(is.toString(), and(zipWith(Interval::contains, deltas, Rational.delta(rs))));
             }
 
             assertEquals(is.toString(), length(deltas), length(is) - 1);

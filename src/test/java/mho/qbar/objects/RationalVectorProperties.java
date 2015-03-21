@@ -843,7 +843,7 @@ public class RationalVectorProperties {
     }
 
     private static @NotNull RationalVector sum_simplest(@NotNull Iterable<RationalVector> xs) {
-        return foldl1(p -> p.a.add(p.b), xs);
+        return foldl1(RationalVector::add, xs);
     }
 
     private static void propertiesSum() {
@@ -1131,7 +1131,7 @@ public class RationalVectorProperties {
             validate(canceled);
 
             assertTrue(v.toString(), all(r -> r.getDenominator().equals(BigInteger.ONE), canceled));
-            BigInteger gcd = foldl(p -> p.a.gcd(p.b.getNumerator()), BigInteger.ZERO, canceled);
+            BigInteger gcd = foldl((x, y) -> x.gcd(y.getNumerator()), BigInteger.ZERO, canceled);
             assertTrue(v.toString(), gcd.equals(BigInteger.ZERO) || gcd.equals(BigInteger.ONE));
             assertEquals(v.toString(), canceled.cancelDenominators(), canceled);
             assertEquals(v.toString(), canceled.dimension(), v.dimension());
@@ -1140,7 +1140,7 @@ public class RationalVectorProperties {
                     v.toString(),
                     same(
                             zipWith(
-                                    p -> p.a.divide(p.b),
+                                    Rational::divide,
                                     filter(r -> r != Rational.ZERO, v),
                                     filter(r -> r != Rational.ZERO, canceled)
                             )
@@ -1216,7 +1216,7 @@ public class RationalVectorProperties {
                     v.toString(),
                     same(
                             zipWith(
-                                    p -> p.a.divide(p.b),
+                                    Rational::divide,
                                     filter(r -> r != Rational.ZERO, v),
                                     filter(r -> r != Rational.ZERO, reduced)
                             )

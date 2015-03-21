@@ -4424,6 +4424,6 @@ public class RationalTest {
     }
 
     private static @NotNull Optional<List<Rational>> readRationalListWithNulls(@NotNull String s) {
-        return Readers.readListWithNulls(Rational::read, s);
+        return Readers.readListWithNulls(Rational::read).apply(s);
     }
 }

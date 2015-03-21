@@ -306,7 +306,7 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
         if (coordinates.size() != that.coordinates.size())
             throw new ArithmeticException("vectors must have same dimension");
         if (this == ZERO_DIMENSIONAL) return ZERO_DIMENSIONAL;
-        return new RationalVector(toList(zipWith(p -> p.a.add(p.b), coordinates, that.coordinates)));
+        return new RationalVector(toList(zipWith(Rational::add, coordinates, that.coordinates)));
     }
 
     /**
@@ -525,7 +525,7 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
             throw new IllegalArgumentException("cannot get delta of empty Iterable");
         if (head(xs) == null)
             throw new NullPointerException();
-        return adjacentPairsWith(p -> p.b.subtract(p.a), xs);
+        return adjacentPairsWith((x, y) -> y.subtract(x), xs);
     }
 
     /**
@@ -545,7 +545,7 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
     public @NotNull Rational dot(@NotNull RationalVector that) {
         if (coordinates.size() != that.coordinates.size())
             throw new ArithmeticException("vectors must have same dimension");
-        return Rational.sum(zipWith(p -> p.a.multiply(p.b), coordinates, that.coordinates));
+        return Rational.sum(zipWith(Rational::multiply, coordinates, that.coordinates));
     }
 
     /**

@@ -2425,7 +2425,7 @@ public class RationalProperties {
     }
 
     private static @NotNull Rational product_simplest(@NotNull Iterable<Rational> xs) {
-        return foldl(p -> p.a.multiply(p.b), ONE, xs);
+        return foldl(Rational::multiply, ONE, xs);
     }
 
     private static void propertiesProduct() {
@@ -3470,7 +3470,7 @@ public class RationalProperties {
 
         for (List<Rational> rs : take(LIMIT, P.lists(P.rationals()))) {
             List<BigInteger> canceled = cancelDenominators(rs);
-            BigInteger gcd = foldl(p -> p.a.gcd(p.b), BigInteger.ZERO, canceled);
+            BigInteger gcd = foldl(BigInteger::gcd, BigInteger.ZERO, canceled);
             assertTrue(rs.toString(), gcd.equals(BigInteger.ZERO) || gcd.equals(BigInteger.ONE));
             assertEquals(rs.toString(), cancelDenominators(toList(map(Rational::of, canceled))), canceled);
             assertTrue(rs.toString(), equal(map(Rational::signum, rs), map(BigInteger::signum, canceled)));
@@ -3478,7 +3478,7 @@ public class RationalProperties {
                     rs.toString(),
                     same(
                             zipWith(
-                                    p -> p.a.divide(p.b),
+                                    Rational::divide,
                                     filter(r -> r != ZERO, rs),
                                     filter(i -> !i.equals(BigInteger.ZERO), canceled)
                             )

@@ -470,7 +470,7 @@ public class QBarRandomProvider extends RandomProvider implements QBarIterablePr
                                 is -> RationalVector.of(toList(map(Rational::of, is))),
                                 filter(
                                         js -> {
-                                            BigInteger gcd = foldl(p -> p.a.gcd(p.b), BigInteger.ZERO, js);
+                                            BigInteger gcd = foldl(BigInteger::gcd, BigInteger.ZERO, js);
                                             return gcd.equals(BigInteger.ZERO) || gcd.equals(BigInteger.ONE);
                                         },
                                         lists(dimension, bigIntegers(elementMeanBitSize / 2))
@@ -500,7 +500,7 @@ public class QBarRandomProvider extends RandomProvider implements QBarIterablePr
                                 is -> RationalVector.of(toList(map(Rational::of, is))),
                                 filter(
                                         js -> {
-                                            BigInteger gcd = foldl(p -> p.a.gcd(p.b), BigInteger.ZERO, js);
+                                            BigInteger gcd = foldl(BigInteger::gcd, BigInteger.ZERO, js);
                                             return gcd.equals(BigInteger.ZERO) || gcd.equals(BigInteger.ONE);
                                         },
                                         listsAtLeast(minDimension, bigIntegers(elementMeanBitSize / 2))
@@ -527,7 +527,7 @@ public class QBarRandomProvider extends RandomProvider implements QBarIterablePr
                                 is -> RationalVector.of(toList(map(Rational::of, is))),
                                 filter(
                                         js -> {
-                                            BigInteger gcd = foldl(p -> p.a.gcd(p.b), BigInteger.ZERO, js);
+                                            BigInteger gcd = foldl(BigInteger::gcd, BigInteger.ZERO, js);
                                             return gcd.equals(BigInteger.ZERO) || gcd.equals(BigInteger.ONE);
                                         },
                                         lists(bigIntegers(elementMeanBitSize / 2))
