@@ -88,6 +88,20 @@ public class RationalPolynomial {
     }
 
     /**
+     * Returns this {@code RationalPolynomial}'s degree. We consider 0 to have degree –1.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalPolynomial}.</li>
+     *  <li>The result is at least –1.</li>
+     * </ul>
+     *
+     * @return this {@code RationalPolynomial}'s degree
+     */
+    public int degree() {
+        return coefficients.size() - 1;
+    }
+
+    /**
      * Determines whether {@code this} is equal to {@code that}.
      *
      * <ul>
