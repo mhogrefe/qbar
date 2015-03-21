@@ -126,7 +126,7 @@ public class RationalPolynomial implements Iterable<Rational> {
      * Creates a constant (possibly zero) {@code RationalPolynomial}.
      *
      * <ul>
-     *  <li>{@code this} cannot be null.</li>
+     *  <li>{@code c} cannot be null.</li>
      *  <li>The result has degree 0 or –1.</li>
      * </ul>
      *
@@ -139,6 +139,24 @@ public class RationalPolynomial implements Iterable<Rational> {
         if (c == Rational.ZERO) return ZERO;
         if (c == Rational.ONE) return ONE;
         return new RationalPolynomial(Arrays.asList(c));
+    }
+
+    /**
+     * Creates a monomial.
+     *
+     * <ul>
+     *  <li>{@code c} cannot be null.</li>
+     *  <li>{@code p} cannot be negative.</li>
+     * </ul>
+     *
+     * @param c the monomial's coefficient
+     * @param p the monomial's degree
+     * @return {@code c}x<sup>p</sup>
+     */
+    public static @NotNull RationalPolynomial of(@NotNull Rational c, int p) {
+        if (c == Rational.ZERO) return ZERO;
+        if (p == 0 && c == Rational.ONE) return ONE;
+        return new RationalPolynomial(toList(concat(replicate(p, Rational.ZERO), Arrays.asList(Rational.ONE))));
     }
 
     /**

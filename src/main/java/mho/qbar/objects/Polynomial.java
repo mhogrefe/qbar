@@ -124,7 +124,7 @@ public class Polynomial implements Iterable<BigInteger> {
      * Creates a constant (possibly zero) {@code Polynomial}.
      *
      * <ul>
-     *  <li>{@code this} cannot be null.</li>
+     *  <li>{@code c} cannot be null.</li>
      *  <li>The result has degree 0 or –1.</li>
      * </ul>
      *
@@ -137,6 +137,24 @@ public class Polynomial implements Iterable<BigInteger> {
         if (c.equals(BigInteger.ZERO)) return ZERO;
         if (c.equals(BigInteger.ONE)) return ONE;
         return new Polynomial(Arrays.asList(c));
+    }
+
+    /**
+     * Creates a monomial.
+     *
+     * <ul>
+     *  <li>{@code c} cannot be null.</li>
+     *  <li>{@code p} cannot be negative.</li>
+     * </ul>
+     *
+     * @param c the monomial's coefficient
+     * @param p the monomial's degree
+     * @return {@code c}x<sup>p</sup>
+     */
+    public static @NotNull Polynomial of(@NotNull BigInteger c, int p) {
+        if (c.equals(BigInteger.ZERO)) return ZERO;
+        if (p == 0 && c.equals(BigInteger.ONE)) return ONE;
+        return new Polynomial(toList(concat(replicate(p, BigInteger.ZERO), Arrays.asList(BigInteger.ONE))));
     }
 
     /**
