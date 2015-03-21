@@ -2,7 +2,6 @@ package mho.qbar.objects;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -86,5 +85,47 @@ public class RationalPolynomial {
         if (actualSize == 0) return ZERO;
         if (actualSize == 1 && coefficients.get(0) == Rational.ONE) return ONE;
         return new RationalPolynomial(toList(take(actualSize, coefficients)));
+    }
+
+    /**
+     * Creates a {@code String} representation of {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalPolynomial}.</li>
+     *  <li>See tests and demos for example results.</li>
+     * </ul>
+     *
+     * @return a {@code String} representation of {@code this}
+     */
+    public @NotNull String toString() {
+        if (this == ZERO) return "0";
+        StringBuilder sb = new StringBuilder();
+        for (int i = coefficients.size() - 1; i >= 0; i--) {
+            Rational coefficient = coefficients.get(i);
+            if (coefficient == Rational.ZERO) continue;
+            String power;
+            switch (i) {
+                case 0: power = ""; break;
+                case 1: power = "x"; break;
+                default: power = "x^" + i; break;
+            }
+            String monomialString;
+            if (i == 0) {
+                monomialString = coefficient.toString();
+            } else {
+                if (coefficient == Rational.ONE) {
+                    monomialString = power;
+                } else if (coefficient.equals(Rational.of(-1))) {
+                    monomialString = cons('-', power);
+                } else {
+                    monomialString = coefficient + "*" + power;
+                }
+            }
+            if (i != coefficients.size() - 1 && head(monomialString) != '-') {
+                sb.append('+');
+            }
+            sb.append(monomialString);
+        }
+        return sb.toString();
     }
 }

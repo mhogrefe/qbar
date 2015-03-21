@@ -85,4 +85,46 @@ public class Polynomial {
         if (actualSize == 1 && coefficients.get(0).equals(BigInteger.ONE)) return ONE;
         return new Polynomial(toList(take(actualSize, coefficients)));
     }
+
+    /**
+     * Creates a {@code String} representation of {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>See tests and demos for example results.</li>
+     * </ul>
+     *
+     * @return a {@code String} representation of {@code this}
+     */
+    public @NotNull String toString() {
+        if (this == ZERO) return "0";
+        StringBuilder sb = new StringBuilder();
+        for (int i = coefficients.size() - 1; i >= 0; i--) {
+            BigInteger coefficient = coefficients.get(i);
+            if (coefficient.equals(BigInteger.ZERO)) continue;
+            String power;
+            switch (i) {
+                case 0: power = ""; break;
+                case 1: power = "x"; break;
+                default: power = "x^" + i; break;
+            }
+            String monomialString;
+            if (i == 0) {
+                monomialString = coefficient.toString();
+            } else {
+                if (coefficient.equals(BigInteger.ONE)) {
+                    monomialString = power;
+                } else if (coefficient.equals(BigInteger.valueOf(-1))) {
+                    monomialString = cons('-', power);
+                } else {
+                    monomialString = coefficient + "*" + power;
+                }
+            }
+            if (i != coefficients.size() - 1 && head(monomialString) != '-') {
+                sb.append('+');
+            }
+            sb.append(monomialString);
+        }
+        return sb.toString();
+    }
 }
