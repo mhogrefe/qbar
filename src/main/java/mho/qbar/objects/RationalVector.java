@@ -20,7 +20,7 @@ import static mho.wheels.iterables.IterableUtils.*;
  * <p>This class is immutable.
  */
 @SuppressWarnings("ConstantConditions")
-public class RationalVector implements Comparable<RationalVector>, Iterable<Rational> {
+public final class RationalVector implements Comparable<RationalVector>, Iterable<Rational> {
     /**
      * []
      */
@@ -29,12 +29,12 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
     /**
      * Used by {@link mho.qbar.objects.RationalVector#compareTo}
      */
-    private static Comparator<Iterable<Rational>> RATIONAL_ITERABLE_COMPARATOR = new ShortlexComparator<>();
+    private static final Comparator<Iterable<Rational>> RATIONAL_ITERABLE_COMPARATOR = new ShortlexComparator<>();
 
     /**
      * The vector's coordinates
      */
-    private @NotNull List<Rational> coordinates;
+    private final @NotNull List<Rational> coordinates;
 
     /**
      * Private constructor for {@code RationalVector}; assumes arguments are valid
