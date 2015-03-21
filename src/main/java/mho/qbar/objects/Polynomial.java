@@ -7,6 +7,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * <p>A univariate polynomial in x with {@code BigInteger} coefficients.
+ *
+ * <p>There is only one instance of {@code ZERO}, and one instance of {@code ONE}, so these may be compared with other
+ * {@code Polynomial}s using {@code ==}. This is not true for {@code X}.
+ *
+ * <p>This class uses a little-endian dense representation; in other words, the coefficient of x<sup>i</sup> is located
+ * at the ith position of the coefficient list. The list contains no trailing zeros.
+ *
+ * <p>This class is immutable.
+ */
 public class Polynomial {
     /**
      * 0
