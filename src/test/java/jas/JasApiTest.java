@@ -55,7 +55,7 @@ public class JasApiTest {
     }
 
     private static @NotNull Optional<List<BigInteger>> readBigIntegerList(@NotNull String s) {
-        return Readers.readList(Readers::readBigInteger, s);
+        return Readers.readList(Readers::readBigInteger).apply(s);
     }
 
     private static List<List<BigInteger>> fp(String s) {

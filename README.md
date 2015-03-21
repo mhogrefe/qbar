@@ -12,6 +12,6 @@ Progress
 | QBarExhaustiveProvider | ✔       | ✘       | ✘     | ✘     | ✘          |
 | QBarIterableProvider   | ✔       | ✘       | ✘     | ✘     | ✘          |
 | QBarRandomProvider     | ✘       | ✘       | ✘     | ✘     | ✘          |
-| Interval               | ✔       | ✔       | ✔     | ✔     | ✘          |
+| Interval               | ✔       | ✔       | ✔     | ✔     | ✔          |
 | Rational               | ✔       | ✔       | ✔     | ✔     | ✔          |
-| RationalVector         | ✔       | ✔       | ✔     | ✔     | ✘          |
+| RationalVector         | ✔       | ✔       | ✔     | ✔     | ✔          |

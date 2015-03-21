@@ -3472,6 +3472,7 @@ public class RationalProperties {
             List<BigInteger> canceled = cancelDenominators(rs);
             BigInteger gcd = foldl(p -> p.a.gcd(p.b), BigInteger.ZERO, canceled);
             assertTrue(rs.toString(), gcd.equals(BigInteger.ZERO) || gcd.equals(BigInteger.ONE));
+            assertEquals(rs.toString(), cancelDenominators(toList(map(Rational::of, canceled))), canceled);
             assertTrue(rs.toString(), equal(map(Rational::signum, rs), map(BigInteger::signum, canceled)));
             assertTrue(
                     rs.toString(),

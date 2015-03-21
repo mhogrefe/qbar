@@ -1496,7 +1496,7 @@ public final class Rational implements Comparable<Rational> {
      *  <li>The result is not null.</li>
      * </ul>
      *
-     * @param p the power
+     * @param p the power that {@code this} is raised to
      * @return {@code this}<sup>{@code p}</sup>
      */
     public @NotNull Rational pow(int p) {

@@ -29,7 +29,6 @@ import static org.junit.Assert.assertNotNull;
 public class RationalVectorProperties {
     private static boolean USE_RANDOM;
     private static final String RATIONAL_VECTOR_CHARS = " ,-/0123456789[]";
-    private static final int SMALL_LIMIT = 100;
     private static int LIMIT;
 
     private static QBarIterableProvider P;
@@ -81,6 +80,9 @@ public class RationalVectorProperties {
             propertiesDot();
             propertiesRightAngleCompare();
             propertiesSquaredLength();
+            propertiesCancelDenominators();
+            propertiesPivot();
+            propertiesReduce();
             propertiesEquals();
             propertiesHashCode();
             propertiesCompareTo();
@@ -1115,6 +1117,138 @@ public class RationalVectorProperties {
 
         for (Pair<Integer, Integer> p : take(LIMIT, filter(q -> q.a > q.b, P.pairs(is)))) {
             assertEquals(p.toString(), standard(p.a, p.b).squaredLength(), Rational.ONE);
+        }
+    }
+
+    private static void propertiesCancelDenominators() {
+        initialize();
+        System.out.println("\t\ttesting cancelDenominators() properties...");
+
+        for (RationalVector v : take(LIMIT, P.rationalVectors())) {
+            RationalVector canceled = v.cancelDenominators();
+            validate(canceled);
+
+            assertTrue(v.toString(), all(r -> r.getDenominator().equals(BigInteger.ONE), canceled));
+            BigInteger gcd = foldl(p -> p.a.gcd(p.b.getNumerator()), BigInteger.ZERO, canceled);
+            assertTrue(v.toString(), gcd.equals(BigInteger.ZERO) || gcd.equals(BigInteger.ONE));
+            assertEquals(v.toString(), canceled.cancelDenominators(), canceled);
+            assertEquals(v.toString(), canceled.dimension(), v.dimension());
+            assertTrue(v.toString(), equal(map(Rational::signum, v), map(Rational::signum, canceled)));
+            assertTrue(
+                    v.toString(),
+                    same(
+                            zipWith(
+                                    p -> p.a.divide(p.b),
+                                    filter(r -> r != Rational.ZERO, v),
+                                    filter(r -> r != Rational.ZERO, canceled)
+                            )
+                    )
+            );
+        }
+
+        for (Pair<RationalVector, Rational> p : take(LIMIT, P.pairs(P.rationalVectors(), P.positiveRationals()))) {
+            assertEquals(p.toString(), p.a.cancelDenominators(), p.a.multiply(p.b).cancelDenominators());
+        }
+
+        for (Rational r : take(LIMIT, P.rationals())) {
+            Rational canceled = head(of(r).cancelDenominators()).abs();
+            assertTrue(r.toString(), canceled == Rational.ZERO || canceled == Rational.ONE);
+        }
+
+        Iterable<Integer> is;
+        if (P instanceof ExhaustiveProvider) {
+            is = P.naturalIntegers();
+        } else {
+            is = ((RandomProvider) P).naturalIntegersGeometric(20);
+        }
+        for (int i : take(LIMIT, is)) {
+            RationalVector zero = zero(i);
+            assertEquals(Integer.toString(i), zero.cancelDenominators(), zero);
+        }
+
+        for (Pair<Integer, Integer> p : take(LIMIT, filter(q -> q.a > q.b, P.pairs(is)))) {
+            RationalVector standard = standard(p.a, p.b);
+            assertEquals(p.toString(), standard.cancelDenominators(), standard);
+        }
+    }
+
+    private static void propertiesPivot() {
+        initialize();
+        System.out.println("\t\ttesting pivot() properties...");
+
+        for (RationalVector v : take(LIMIT, P.rationalVectors())) {
+            v.pivot();
+        }
+
+        for (RationalVector v : take(LIMIT, filter(w -> !w.isZero(), P.rationalVectors()))) {
+            Rational pivot = v.pivot().get();
+            assertTrue(v.toString(), pivot != Rational.ZERO);
+            assertTrue(v.toString(), elem(pivot, v));
+        }
+
+        Iterable<Pair<RationalVector, Rational>> ps = P.pairs(
+                P.rationalVectors(),
+                filter(r -> r != Rational.ZERO, P.rationals())
+        );
+        for (Pair<RationalVector, Rational> p : take(LIMIT, ps)) {
+            assertEquals(p.toString(), p.a.multiply(p.b).pivot(), p.a.pivot().map(r -> r.multiply(p.b)));
+        }
+    }
+
+    private static void propertiesReduce() {
+        initialize();
+        System.out.println("\t\ttesting reduce() properties...");
+
+        for (RationalVector v : take(LIMIT, P.rationalVectors())) {
+            RationalVector reduced = v.reduce();
+            validate(reduced);
+
+            Optional<Rational> pivot = reduced.pivot();
+            assertTrue(v.toString(), !pivot.isPresent() || pivot.get() == Rational.ONE);
+            assertEquals(v.toString(), reduced.reduce(), reduced);
+            assertEquals(v.toString(), reduced.dimension(), v.dimension());
+            pivot = v.pivot();
+            RationalVector abs = !pivot.isPresent() || pivot.get().signum() != -1 ? v : v.negate();
+            assertTrue(v.toString(), equal(map(Rational::signum, abs), map(Rational::signum, reduced)));
+            assertTrue(
+                    v.toString(),
+                    same(
+                            zipWith(
+                                    p -> p.a.divide(p.b),
+                                    filter(r -> r != Rational.ZERO, v),
+                                    filter(r -> r != Rational.ZERO, reduced)
+                            )
+                    )
+            );
+        }
+
+        Iterable<Pair<RationalVector, Rational>> ps = P.pairs(
+                P.rationalVectors(),
+                filter(r -> r != Rational.ZERO, P.rationals())
+        );
+        for (Pair<RationalVector, Rational> p : take(LIMIT, ps)) {
+            assertEquals(p.toString(), p.a.reduce(), p.a.multiply(p.b).reduce());
+        }
+
+        for (Rational r : take(LIMIT, P.rationals())) {
+            Rational reduced = head(of(r).reduce());
+            assertTrue(r.toString(), reduced == Rational.ZERO || reduced == Rational.ONE);
+        }
+
+        Iterable<Integer> is;
+        if (P instanceof ExhaustiveProvider) {
+            is = P.naturalIntegers();
+        } else {
+            is = ((RandomProvider) P).naturalIntegersGeometric(20);
+        }
+        for (int i : take(LIMIT, is)) {
+            RationalVector zero = zero(i);
+            assertEquals(Integer.toString(i), zero.reduce(), zero);
+        }
+
+        for (Pair<Integer, Integer> p : take(LIMIT, filter(q -> q.a > q.b, P.pairs(is)))) {
+            RationalVector standard = standard(p.a, p.b);
+            assertEquals(p.toString(), standard.reduce(), standard);
         }
     }
 

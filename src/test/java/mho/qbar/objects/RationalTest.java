@@ -4416,11 +4416,11 @@ public class RationalTest {
     }
 
     private static @NotNull Optional<List<BigInteger>> readBigIntegerList(@NotNull String s) {
-        return Readers.readList(Readers::readBigInteger, s);
+        return Readers.readList(Readers::readBigInteger).apply(s);
     }
 
     private static @NotNull Optional<List<Rational>> readRationalList(@NotNull String s) {
-        return Readers.readList(Rational::read, s);
+        return Readers.readList(Rational::read).apply(s);
     }
 
     private static @NotNull Optional<List<Rational>> readRationalListWithNulls(@NotNull String s) {
