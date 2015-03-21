@@ -54,6 +54,7 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
      * Returns an {@code Iterator} over this {@code RationalVector}'s coordinates. Does not support removal.
      *
      * <ul>
+     *  <li>{@code this} may be any {@code RationalVector}.</li>
      *  <li>The result is finite and contains no nulls.</li>
      * </ul>
      *

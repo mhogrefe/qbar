@@ -61,6 +61,7 @@ public class Polynomial implements Iterable<BigInteger> {
      * Does not support removal.
      *
      * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
      *  <li>The result is finite, contains no nulls, and does not end with 0.</li>
      * </ul>
      *
@@ -88,6 +89,23 @@ public class Polynomial implements Iterable<BigInteger> {
                 throw new UnsupportedOperationException("cannot remove from this iterator");
             }
         };
+    }
+
+    /**
+     * Gets the coefficient of this {@code Polynomial}'s x<sup>{@code i}</sup> term. If {@code i} is greater than this
+     * {@code Polynomial}'s degree, 0 is returned.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>{@code i} cannot be negative.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param i the power that the coefficient belongs to
+     * @return the coefficient of x<sup>{@code i}</sup>
+     */
+    public @NotNull BigInteger coefficient(int i) {
+        return i < coefficients.size() ? coefficients.get(i) : BigInteger.ZERO;
     }
 
     /**
