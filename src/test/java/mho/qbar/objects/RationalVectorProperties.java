@@ -345,6 +345,7 @@ public class RationalVectorProperties {
         for (Pair<RationalVector, RationalVector> p : take(LIMIT, ps)) {
             RationalVector sum = p.a.add(p.b);
             validate(sum);
+            assertEquals(p.toString(), sum.dimension(), p.a.dimension());
             assertEquals(p.toString(), sum, p.b.add(p.a));
             assertEquals(p.toString(), sum.subtract(p.b), p.a);
         }
@@ -404,6 +405,7 @@ public class RationalVectorProperties {
         for (Pair<RationalVector, RationalVector> p : take(LIMIT, ps)) {
             RationalVector difference = p.a.subtract(p.b);
             validate(difference);
+            assertEquals(p.toString(), difference.dimension(), p.a.dimension());
             assertEquals(p.toString(), difference, p.b.subtract(p.a).negate());
             assertEquals(p.toString(), p.a, difference.add(p.b));
         }

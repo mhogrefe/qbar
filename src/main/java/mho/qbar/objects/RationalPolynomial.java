@@ -2,9 +2,12 @@ package mho.qbar.objects;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import static mho.wheels.iterables.IterableUtils.*;
 
 /**
  * <p>A univariate polynomial in x with {@code Rational} coefficients.
@@ -46,12 +49,42 @@ public class RationalPolynomial {
      *
      * <ul>
      *  <li>{@code coefficients} cannot have any null elements and cannot end in a 0.</li>
-     *  <li>Any {@code Polynomial} may be constructed with this constructor.</li>
+     *  <li>Any {@code RationalPolynomial} may be constructed with this constructor.</li>
      * </ul>
      *
      * @param coefficients the polynomial's coefficients
      */
     private RationalPolynomial(@NotNull List<Rational> coefficients) {
         this.coefficients = coefficients;
+    }
+
+    /**
+     * Creates a {@code RationalPolynomial} from a list of {@code Rational} coefficients. Throws an exception if any
+     * coefficient is null. Makes a defensive copy of {@code coefficients}. Throws out any trailing zeros.
+     *
+     * <ul>
+     *  <li>{@code coefficients} cannot have any null elements.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * Length is at most |{@code coefficients}|
+     *
+     * @param coefficients the polynomial's coefficients, from least to most significant
+     * @return the {@code RationalPolynomial} with the specified coefficients
+     */
+    public static @NotNull RationalPolynomial of(@NotNull List<Rational> coefficients) {
+        if (any(i -> i == null, coefficients))
+            throw new NullPointerException();
+        int actualSize = coefficients.size();
+        for (int i = coefficients.size() - 1; i >= 0; i--) {
+            if (coefficients.get(i) == Rational.ZERO) {
+                actualSize--;
+            } else {
+                break;
+            }
+        }
+        if (actualSize == 0) return ZERO;
+        if (actualSize == 1 && coefficients.get(0) == Rational.ONE) return ONE;
+        return new RationalPolynomial(toList(take(actualSize, coefficients)));
     }
 }
