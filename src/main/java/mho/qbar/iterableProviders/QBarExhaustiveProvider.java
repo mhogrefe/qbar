@@ -367,7 +367,7 @@ public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIt
     public @NotNull Iterable<RationalPolynomial> rationalPolynomials(int degree) {
         return map(
                 js -> RationalPolynomial.of(toList(js)),
-                filter(is -> is.isEmpty() || !last(is).equals(BigInteger.ZERO), lists(degree + 1, rationals()))
+                filter(is -> is.isEmpty() || last(is) != Rational.ZERO, lists(degree + 1, rationals()))
         );
     }
 
@@ -376,7 +376,7 @@ public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIt
         return map(
                 js -> RationalPolynomial.of(toList(js)),
                 filter(
-                        is -> is.isEmpty() || !last(is).equals(BigInteger.ZERO),
+                        is -> is.isEmpty() || last(is) != Rational.ZERO,
                         listsAtLeast(minDegree + 1, rationals())
                 )
         );
@@ -386,7 +386,7 @@ public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIt
     public @NotNull Iterable<RationalPolynomial> rationalPolynomials() {
         return map(
                 js -> RationalPolynomial.of(toList(js)),
-                filter(is -> is.isEmpty() || !last(is).equals(BigInteger.ZERO), lists(rationals()))
+                filter(is -> is.isEmpty() || last(is) != Rational.ZERO, lists(rationals()))
         );
     }
 }
