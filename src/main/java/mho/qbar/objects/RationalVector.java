@@ -37,7 +37,7 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
     private final @NotNull List<Rational> coordinates;
 
     /**
-     * Private constructor for {@code RationalVector}; assumes arguments are valid
+     * Private constructor for {@code RationalVector}; assumes argument is valid
      *
      * <ul>
      *  <li>{@code coordinates} cannot have any null elements.</li>

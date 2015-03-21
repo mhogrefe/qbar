@@ -14,7 +14,8 @@ import java.util.List;
  * {@code Polynomial}s using {@code ==}. This is not true for {@code X}.
  *
  * <p>This class uses a little-endian dense representation; in other words, the coefficient of x<sup>i</sup> is located
- * at the ith position of the coefficient list. The list contains no trailing zeros.
+ * at the ith position of the coefficient list. The list contains no trailing zeros. Zero is represented by the empty
+ * list.
  *
  * <p>This class is immutable.
  */
@@ -34,8 +35,21 @@ public class Polynomial {
      */
     public static final @NotNull Polynomial X = new Polynomial(Arrays.asList(BigInteger.ZERO, BigInteger.ONE));
 
+    /**
+     * The polynomial's coefficients. The coefficient of x<sup>i</sup> is at the ith position.
+     */
     private final @NotNull List<BigInteger> coefficients;
 
+    /**
+     * Private constructor for {@code Polynomial}; assumes argument is valid
+     *
+     * <ul>
+     *  <li>{@code coefficients} cannot have any null elements and cannot end in a 0.</li>
+     *  <li>Any {@code Polynomial} may be constructed with this constructor.</li>
+     * </ul>
+     *
+     * @param coefficients the polynomial's coefficients
+     */
     private Polynomial(@NotNull List<BigInteger> coefficients) {
         this.coefficients = coefficients;
     }
