@@ -25,6 +25,13 @@ public class RationalPolynomialDemos {
         }
     }
 
+    public static void demoIterator() {
+        initialize();
+        for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
+            System.out.println("toList(" + p + ") = " + toList(p));
+        }
+    }
+
     public static void demoToString() {
         initialize();
         for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {

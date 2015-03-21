@@ -61,7 +61,7 @@ public class Polynomial implements Iterable<BigInteger> {
      * Does not support removal.
      *
      * <ul>
-     *  <li>The result is finite and contains no nulls.</li>
+     *  <li>The result is finite, contains no nulls, and does not end with 0.</li>
      * </ul>
      *
      * Length is deg({@code this})+1

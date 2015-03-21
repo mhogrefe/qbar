@@ -25,6 +25,13 @@ public class PolynomialDemos {
         }
     }
 
+    public static void demoIterator() {
+        initialize();
+        for (Polynomial p : take(LIMIT, P.polynomials())) {
+            System.out.println("toList(" + p + ") = " + toList(p));
+        }
+    }
+
     public static void demoToString() {
         initialize();
         for (Polynomial p : take(LIMIT, P.polynomials())) {
