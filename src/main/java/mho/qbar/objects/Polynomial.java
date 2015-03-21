@@ -5,10 +5,7 @@ import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static mho.wheels.iterables.IterableUtils.*;
 
@@ -24,7 +21,7 @@ import static mho.wheels.iterables.IterableUtils.*;
  *
  * <p>This class is immutable.
  */
-public class Polynomial {
+public class Polynomial implements Iterable<BigInteger> {
     /**
      * 0
      */
@@ -57,6 +54,40 @@ public class Polynomial {
      */
     private Polynomial(@NotNull List<BigInteger> coefficients) {
         this.coefficients = coefficients;
+    }
+
+    /**
+     * Returns an {@code Iterator} over this {@code Polynomial}'s coefficients, from lowest-degree to highest-degree.
+     * Does not support removal.
+     *
+     * <ul>
+     *  <li>The result is finite and contains no nulls.</li>
+     * </ul>
+     *
+     * Length is deg({@code this})+1
+     *
+     * @return an {@code Iterator} over this {@code Polynomial}'s coefficients
+     */
+    @Override
+    public @NotNull Iterator<BigInteger> iterator() {
+        return new Iterator<BigInteger>() {
+            private int i = 0;
+
+            @Override
+            public boolean hasNext() {
+                return i < coefficients.size();
+            }
+
+            @Override
+            public BigInteger next() {
+                return coefficients.get(i++);
+            }
+
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException("cannot remove from this iterator");
+            }
+        };
     }
 
     /**

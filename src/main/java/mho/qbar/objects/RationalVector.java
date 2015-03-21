@@ -57,7 +57,7 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
      *  <li>The result is finite and contains no nulls.</li>
      * </ul>
      *
-     * Length is |{@code coordinates}|
+     * Length is dim({@code this})
      *
      * @return an {@code Iterator} over this {@code RationalVector}'s coordinates
      */
@@ -165,7 +165,7 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
      *  <li>The result is not null.</li>
      * </ul>
      *
-     * Length is |{@code coordinates}|
+     * Length is dim({@code this})
      *
      * @param coordinates the vector's coordinates
      * @return the {@code RationalVector} with the specified coordinates
@@ -297,7 +297,7 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
      *  <li>The result is not null.</li>
      * </ul>
      *
-     * Length is |{@code this}|
+     * Length is dim({@code this})
      *
      * @param that the {@code RationalVector} added to {@code this}
      * @return {@code this}+{@code that}
@@ -337,7 +337,7 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
      *  <li>The result is not null.</li>
      * </ul>
      *
-     * Length is |{@code this}|
+     * Length is dim({@code this})
      *
      * @param that the {@code RationalVector} {@code this} is multiplied by
      * @return {@code this}×{@code that}
@@ -356,7 +356,7 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
      *  <li>The result is not null.</li>
      * </ul>
      *
-     * Length is |{@code this}|
+     * Length is dim({@code this})
      *
      * @param that the {@code RationalVector} {@code this} is multiplied by
      * @return {@code this}×{@code that}
@@ -375,7 +375,7 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
      *  <li>The result is not null.</li>
      * </ul>
      *
-     * Length is |{@code this}|
+     * Length is dim({@code this})
      *
      * @param that the {@code RationalVector} {@code this} is multiplied by
      * @return {@code this}×{@code that}
@@ -394,7 +394,7 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
      *  <li>The result is not null.</li>
      * </ul>
      *
-     * Length is |{@code this}|
+     * Length is dim({@code this})
      *
      * @param that the {@code RationalVector} {@code this} is multiplied by
      * @return {@code this}/{@code that}
@@ -412,7 +412,7 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
      *  <li>The result is not null.</li>
      * </ul>
      *
-     * Length is |{@code this}|
+     * Length is dim({@code this})
      *
      * @param that the {@code RationalVector} {@code this} is multiplied by
      * @return {@code this}/{@code that}
@@ -430,7 +430,7 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
      *  <li>The result is not null.</li>
      * </ul>
      *
-     * Length is |{@code this}|
+     * Length is dim({@code this})
      *
      * @param that the {@code RationalVector} {@code this} is multiplied by
      * @return {@code this}/{@code that}
@@ -449,7 +449,7 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
      *  <li>The result is not null.</li>
      * </ul>
      *
-     * Length is |{@code this}|
+     * Length is dim({@code this})
      *
      * @param bits the number of bits to left-shift by
      * @return {@code this}≪{@code bits}
@@ -470,7 +470,7 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
      *  <li>The result is not null.</li>
      * </ul>
      *
-     * Length is |{@code this}|
+     * Length is dim({@code this})
      *
      * @param bits the number of bits to right-shift by
      * @return {@code this}≫{@code bits}
@@ -490,7 +490,7 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
      *  <li>The result may be any {@code RationalVector}.</li>
      * </ul>
      *
-     * Length is |{@code this}|
+     * Length is dim({@code this})
      *
      * @param xs an {@code Iterable} of {@code RationalVector}s.
      * @return Σxs
@@ -594,7 +594,7 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
      *  <li>The result is a {@code RationalVector} with integer coordinates whose GCD is 0 or 1.</li>
      * </ul>
      *
-     * Length is |{@code this}|
+     * Length is dim({@code this})
      *
      * @return a canonical representation of {@code this}
      */
@@ -630,7 +630,7 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
      *  <li>The result is a {@code RationalVector} whose pivot, if it exists, is 1.</li>
      * </ul>
      *
-     * Length is |{@code this}|
+     * Length is dim({@code this})
      *
      * @return a canonical representation of {@code this}
      */
