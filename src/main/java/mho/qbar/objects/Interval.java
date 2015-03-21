@@ -1359,7 +1359,7 @@ public final class Interval implements Comparable<Interval> {
      *
      * <ul>
      *  <li>{@code s} cannot be null.</li>
-     *  <li>The result may be any {@code Optional<Interval>}, or null.</li>
+     *  <li>The result may be any {@code Optional<Interval>}.</li>
      * </ul>
      *
      * @param s a string representation of a {@code Rational}.
@@ -1400,8 +1400,8 @@ public final class Interval implements Comparable<Interval> {
     /**
      * Finds the first occurrence of an {@code Interval} in a {@code String}. Returns the {@code Interval} and the
      * index at which it was found. Returns an empty {@code Optional} if no {@code Interval} is found. Only
-     * {@code String}s which could have been emitted by {@link Interval#toString} are recognized. The longest possible
-     * {@code Interval} is parsed.
+     * {@code String}s which could have been emitted by {@link mho.qbar.objects.Interval#toString} are recognized. The
+     * longest possible {@code Interval} is parsed.
      *
      * <ul>
      *  <li>{@code s} must be non-null.</li>

@@ -1,10 +1,14 @@
 package mho.qbar.objects;
 
+import mho.wheels.misc.Readers;
+import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static mho.wheels.iterables.IterableUtils.*;
 
@@ -151,6 +155,130 @@ public class RationalPolynomial {
     @Override
     public int hashCode() {
         return coefficients.hashCode();
+    }
+
+    /**
+     * Creates a {@code RationalPolynomial} from a {@code String}. Valid input takes the form of a {@code String} that
+     * could have been returned by {@link mho.qbar.objects.RationalPolynomial#toString}. See that method's tests and
+     * demos for examples of valid input. Caution: It's easy to run out of time and memory reading something like
+     * {@code "x^1000000000"}.
+     *
+     * <ul>
+     *  <li>{@code s} cannot be null.</li>
+     *  <li>The result may be any {@code Optional<RationalPolynomial>}.</li>
+     * </ul>
+     *
+     * @param s a string representation of a {@code RationalPolynomial}.
+     * @return the wrapped {@code RationalPolynomial} represented by {@code s}, or {@code empty} if {@code s} is
+     * invalid.
+     */
+    public static @NotNull Optional<RationalPolynomial> read(@NotNull String s) {
+        if (s.equals("0")) return Optional.of(ZERO);
+        if (s.equals("1")) return Optional.of(ONE);
+        if (s.isEmpty() || head(s) == '+') return Optional.empty();
+
+        List<String> monomialStrings = new ArrayList<>();
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            if (c == '-' || c == '+') {
+                String monomialString = sb.toString();
+                if (!monomialString.isEmpty()) {
+                    if (head(monomialString) == '+') {
+                        monomialString = tail(monomialString);
+                    }
+                    monomialStrings.add(monomialString);
+                    sb = new StringBuilder();
+                }
+            }
+            sb.append(c);
+        }
+        String monomialString = sb.toString();
+        if (!monomialString.isEmpty()) {
+            if (head(monomialString) == '+') {
+                monomialString = tail(monomialString);
+            }
+            monomialStrings.add(monomialString);
+        }
+
+        List<Pair<Rational, Integer>> monomials = new ArrayList<>();
+        for (int i = monomialStrings.size() - 1; i >= 0; i--) {
+            monomialString = monomialStrings.get(i);
+            int xIndex = monomialString.indexOf('x');
+            if (xIndex == -1) {
+                Optional<Rational> constant = Rational.read(monomialString);
+                if (!constant.isPresent()) return Optional.empty();
+                monomials.add(new Pair<>(constant.get(), 0));
+            } else {
+                Rational coefficient;
+                switch (xIndex) {
+                    case 0:
+                        coefficient = Rational.ONE;
+                        break;
+                    case 1:
+                        if (head(monomialString) != '-') return Optional.empty();
+                        monomialString = tail(monomialString);
+                        coefficient = Rational.of(-1);
+                        break;
+                    default:
+                        if (monomialString.charAt(xIndex - 1) != '*') return Optional.empty();
+                        String coefficientString = monomialString.substring(0, xIndex - 1);
+                        Optional<Rational> oCoefficient = Rational.read(coefficientString);
+                        if (!oCoefficient.isPresent()) return Optional.empty();
+                        coefficient = oCoefficient.get();
+                        monomialString = monomialString.substring(xIndex);
+                        break;
+                }
+                int power;
+                int caretIndex = monomialString.indexOf('^');
+                switch (caretIndex) {
+                    case -1:
+                        if (!monomialString.equals("x")) return Optional.empty();
+                        power = 1;
+                        break;
+                    case 1:
+                        String powerString = monomialString.substring(caretIndex + 1);
+                        Optional<Integer> oPower = Readers.readInteger(powerString);
+                        if (!oPower.isPresent()) return Optional.empty();
+                        power = oPower.get();
+                        break;
+                    default:
+                        return Optional.empty();
+                }
+                monomials.add(new Pair<>(coefficient, power));
+            }
+        }
+        if (any(p -> p.a == Rational.ZERO, monomials)) return Optional.empty();
+        if (!increasing((Iterable<Integer>) map(p -> p.b, monomials))) return Optional.empty();
+        @SuppressWarnings("ConstantConditions")
+        int degree = last(monomials).b;
+        List<Rational> coefficients = toList(replicate(degree + 1, Rational.ZERO));
+        for (Pair<Rational, Integer> monomial : monomials) {
+            //noinspection ConstantConditions
+            coefficients.set(monomial.b, monomial.a);
+        }
+        return Optional.of(new RationalPolynomial(coefficients));
+    }
+
+    /**
+     * Finds the first occurrence of a {@code RationalPolynomial} in a {@code String}. Returns the
+     * {@code RationalPolynomial} and the index at which it was found. Returns an empty {@code Optional} if no
+     * {@code RationalPolynomial} is found. Only {@code String}s which could have been emitted by
+     * {@link mho.qbar.objects.RationalPolynomial#toString} are recognized. The longest possible
+     * {@code RationalPolynomial} is parsed. Caution: It's easy to run out of time and memory finding something like
+     * {@code "x^1000000000"}.
+     *
+     * <ul>
+     *  <li>{@code s} must be non-null.</li>
+     *  <li>The result is non-null. If it is non-empty, then neither of the {@code Pair}'s components is null, and the
+     *  second component is non-negative.</li>
+     * </ul>
+     *
+     * @param s the input {@code String}
+     * @return the first {@code RationalPolynomial} found in {@code s}, and the index at which it was found
+     */
+    public static @NotNull Optional<Pair<RationalPolynomial, Integer>> findIn(@NotNull String s) {
+        return Readers.genericFindIn(RationalPolynomial::read, "*+-/0123456789^x").apply(s);
     }
 
     /**
