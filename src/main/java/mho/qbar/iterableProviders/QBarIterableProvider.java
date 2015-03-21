@@ -1,9 +1,7 @@
 package mho.qbar.iterableProviders;
 
-import mho.qbar.objects.RationalVector;
+import mho.qbar.objects.*;
 import mho.wheels.iterables.IterableProvider;
-import mho.qbar.objects.Interval;
-import mho.qbar.objects.Rational;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigInteger;
@@ -54,4 +52,16 @@ public interface QBarIterableProvider extends IterableProvider {
     public @NotNull Iterable<RationalVector> reducedRationalVectorsAtLeast(int minDimension);
 
     public @NotNull Iterable<RationalVector> reducedRationalVectors();
+
+    public @NotNull Iterable<Polynomial> polynomials(int degree);
+
+    public @NotNull Iterable<Polynomial> polynomialsAtLeast(int minDegree);
+
+    public @NotNull Iterable<Polynomial> polynomials();
+
+    public @NotNull Iterable<RationalPolynomial> rationalPolynomials(int degree);
+
+    public @NotNull Iterable<RationalPolynomial> rationalPolynomialsAtLeast(int minDegree);
+
+    public @NotNull Iterable<RationalPolynomial> rationalPolynomials();
 }

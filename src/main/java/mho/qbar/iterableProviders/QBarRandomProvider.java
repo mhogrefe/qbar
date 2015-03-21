@@ -1,9 +1,7 @@
 package mho.qbar.iterableProviders;
 
-import mho.qbar.objects.RationalVector;
+import mho.qbar.objects.*;
 import mho.wheels.iterables.RandomProvider;
-import mho.qbar.objects.Interval;
-import mho.qbar.objects.Rational;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 
@@ -535,6 +533,99 @@ public class QBarRandomProvider extends RandomProvider implements QBarIterablePr
                                         lists(bigIntegers(elementMeanBitSize / 2))
                                 )
                         )
+                )
+        );
+    }
+
+    @Override
+    public @NotNull Iterable<Polynomial> polynomials(int degree) {
+        return polynomialsBySize(BIG_INTEGER_MEAN_BIT_SIZE, degree);
+    }
+
+    public @NotNull Iterable<Polynomial> polynomialsBySize(int coefficientMeanBitSize, int degree) {
+        return map(
+                js -> Polynomial.of(toList(js)),
+                filter(
+                        is -> is.isEmpty() || !last(is).equals(BigInteger.ZERO),
+                        lists(degree + 1, bigIntegers(coefficientMeanBitSize))
+                )
+        );
+    }
+
+    @Override
+    public @NotNull Iterable<Polynomial> polynomialsAtLeast(int minDegree) {
+        return polynomialsBySizeAtLeast(BIG_INTEGER_MEAN_BIT_SIZE, minDegree);
+    }
+
+    public @NotNull Iterable<Polynomial> polynomialsBySizeAtLeast(int coefficientMeanBitSize, int minDegree) {
+        return map(
+                js -> Polynomial.of(toList(js)),
+                filter(
+                        is -> is.isEmpty() || !last(is).equals(BigInteger.ZERO),
+                        listsAtLeast(minDegree + 1, bigIntegers(coefficientMeanBitSize))
+                )
+        );
+    }
+
+    @Override
+    public @NotNull Iterable<Polynomial> polynomials() {
+        return polynomialsBySize(BIG_INTEGER_MEAN_BIT_SIZE);
+    }
+
+    public @NotNull Iterable<Polynomial> polynomialsBySize(int coefficientMeanBitSize) {
+        return map(
+                js -> Polynomial.of(toList(js)),
+                filter(
+                        is -> is.isEmpty() || !last(is).equals(BigInteger.ZERO),
+                        lists(bigIntegers(coefficientMeanBitSize))
+                )
+        );
+    }
+
+    @Override
+    public @NotNull Iterable<RationalPolynomial> rationalPolynomials(int degree) {
+        return rationalPolynomialsBySize(BIG_INTEGER_MEAN_BIT_SIZE, degree);
+    }
+
+    public @NotNull Iterable<RationalPolynomial> rationalPolynomialsBySize(int coefficientMeanBitSize, int degree) {
+        return map(
+                js -> RationalPolynomial.of(toList(js)),
+                filter(
+                        is -> is.isEmpty() || last(is) != Rational.ZERO,
+                        lists(degree + 1, rationals(coefficientMeanBitSize))
+                )
+        );
+    }
+
+    @Override
+    public @NotNull Iterable<RationalPolynomial> rationalPolynomialsAtLeast(int minDegree) {
+        return rationalPolynomialsBySizeAtLeast(BIG_INTEGER_MEAN_BIT_SIZE, minDegree);
+    }
+
+    public @NotNull Iterable<RationalPolynomial> rationalPolynomialsBySizeAtLeast(
+            int coefficientMeanBitSize,
+            int minDegree
+    ) {
+        return map(
+                js -> RationalPolynomial.of(toList(js)),
+                filter(
+                        is -> is.isEmpty() || last(is) != Rational.ZERO,
+                        listsAtLeast(minDegree + 1, rationals(coefficientMeanBitSize))
+                )
+        );
+    }
+
+    @Override
+    public @NotNull Iterable<RationalPolynomial> rationalPolynomials() {
+        return rationalPolynomialsBySize(BIG_INTEGER_MEAN_BIT_SIZE);
+    }
+
+    public @NotNull Iterable<RationalPolynomial> rationalPolynomialsBySize(int coefficientMeanBitSize) {
+        return map(
+                js -> RationalPolynomial.of(toList(js)),
+                filter(
+                        is -> is.isEmpty() || last(is) != Rational.ZERO,
+                        lists(rationals(coefficientMeanBitSize))
                 )
         );
     }

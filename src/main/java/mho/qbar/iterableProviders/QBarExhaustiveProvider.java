@@ -1,9 +1,7 @@
 package mho.qbar.iterableProviders;
 
-import mho.qbar.objects.RationalVector;
+import mho.qbar.objects.*;
 import mho.wheels.iterables.ExhaustiveProvider;
-import mho.qbar.objects.Interval;
-import mho.qbar.objects.Rational;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigInteger;
@@ -335,6 +333,60 @@ public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIt
                                 )
                         )
                 )
+        );
+    }
+
+    @Override
+    public @NotNull Iterable<Polynomial> polynomials(int degree) {
+        return map(
+                js -> Polynomial.of(toList(js)),
+                filter(is -> is.isEmpty() || !last(is).equals(BigInteger.ZERO), lists(degree + 1, bigIntegers()))
+        );
+    }
+
+    @Override
+    public @NotNull Iterable<Polynomial> polynomialsAtLeast(int minDegree) {
+        return map(
+                js -> Polynomial.of(toList(js)),
+                filter(
+                        is -> is.isEmpty() || !last(is).equals(BigInteger.ZERO),
+                        listsAtLeast(minDegree + 1, bigIntegers())
+                )
+        );
+    }
+
+    @Override
+    public @NotNull Iterable<Polynomial> polynomials() {
+        return map(
+                js -> Polynomial.of(toList(js)),
+                filter(is -> is.isEmpty() || !last(is).equals(BigInteger.ZERO), lists(bigIntegers()))
+        );
+    }
+
+    @Override
+    public @NotNull Iterable<RationalPolynomial> rationalPolynomials(int degree) {
+        return map(
+                js -> RationalPolynomial.of(toList(js)),
+                filter(is -> is.isEmpty() || !last(is).equals(BigInteger.ZERO), lists(degree + 1, rationals()))
+        );
+    }
+
+    @Override
+    public @NotNull Iterable<RationalPolynomial> rationalPolynomialsAtLeast(int minDegree) {
+        return map(
+                js -> RationalPolynomial.of(toList(js)),
+                filter(
+                        is -> is.isEmpty() || !last(is).equals(BigInteger.ZERO),
+                        listsAtLeast(minDegree + 1, rationals())
+                )
+        );
+    }
+
+    @Override
+    public @NotNull Iterable<RationalPolynomial> rationalPolynomials() {
+        return map(
+                js -> RationalPolynomial.of(toList(js)),
+                filter(is -> is.isEmpty() || !last(is).equals(BigInteger.ZERO), lists(rationals()))
         );
     }
 }
