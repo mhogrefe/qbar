@@ -132,6 +132,17 @@ public class RationalPolynomialTest {
     }
 
     @Test
+    public void testNegate() {
+        assertTrue(ZERO.negate() == ZERO);
+        aeq(ONE.negate(), "-1");
+        aeq(X.negate(), "-x");
+        aeq(read("-4/3").get().negate(), "4/3");
+        aeq(read("x^2-7/4*x+1/3").get().negate(), "-x^2+7/4*x-1/3");
+        aeq(read("-x^3-1").get().negate(), "x^3+1");
+        aeq(read("1/2*x^10").get().negate(), "-1/2*x^10");
+    }
+
+    @Test
     public void testSignum() {
         aeq(ZERO.signum(), 0);
         aeq(ONE.signum(), 1);

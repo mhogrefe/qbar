@@ -133,6 +133,17 @@ public class PolynomialTest {
     }
 
     @Test
+    public void testNegate() {
+        assertTrue(ZERO.negate() == ZERO);
+        aeq(ONE.negate(), "-1");
+        aeq(X.negate(), "-x");
+        aeq(read("-17").get().negate(), "17");
+        aeq(read("x^2-4*x+7").get().negate(), "-x^2+4*x-7");
+        aeq(read("-x^3-1").get().negate(), "x^3+1");
+        aeq(read("3*x^10").get().negate(), "-3*x^10");
+    }
+
+    @Test
     public void testSignum() {
         aeq(ZERO.signum(), 0);
         aeq(ONE.signum(), 1);
