@@ -77,6 +77,13 @@ public class RationalPolynomialDemos {
         }
     }
 
+    public static void demoDegree() {
+        initialize();
+        for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
+            System.out.println("degree(" + p + ") = " + p.degree());
+        }
+    }
+
     public static void demoToString() {
         initialize();
         for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {

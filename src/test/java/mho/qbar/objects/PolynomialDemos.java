@@ -78,6 +78,13 @@ public class PolynomialDemos {
         }
     }
 
+    public static void demoDegree() {
+        initialize();
+        for (Polynomial p : take(LIMIT, P.polynomials())) {
+            System.out.println("degree(" + p + ") = " + p.degree());
+        }
+    }
+
     public static void demoToString() {
         initialize();
         for (Polynomial p : take(LIMIT, P.polynomials())) {
