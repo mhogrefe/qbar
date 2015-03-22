@@ -50,6 +50,8 @@ public class PolynomialProperties {
             propertiesDegree();
             propertiesLeading();
             propertiesSignum();
+            propertiesEquals();
+            propertiesHashCode();
         }
         System.out.println("Done");
     }
@@ -224,6 +226,27 @@ public class PolynomialProperties {
             int signum = p.signum();
             assertEquals(p.toString(), signum, Ordering.compare(p, ZERO).toInt());
             assertTrue(p.toString(), signum == -1 || signum == 0 || signum == 1);
+        }
+    }
+
+    private static void propertiesEquals() {
+        initialize();
+        System.out.println("\t\ttesting equals(Object) properties...");
+
+        for (Polynomial p : take(LIMIT, P.polynomials())) {
+            //noinspection EqualsWithItself
+            assertTrue(p.toString(), p.equals(p));
+            //noinspection ObjectEqualsNull
+            assertFalse(p.toString(), p.equals(null));
+        }
+    }
+
+    private static void propertiesHashCode() {
+        initialize();
+        System.out.println("\t\ttesting hashCode() properties...");
+
+        for (Polynomial p : take(LIMIT, P.polynomials())) {
+            assertEquals(p.toString(), p.hashCode(), p.hashCode());
         }
     }
 
