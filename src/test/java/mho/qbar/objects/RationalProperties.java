@@ -1702,16 +1702,16 @@ public class RationalProperties {
         System.out.println("\t\ttesting negate() properties...");
 
         for (Rational r : take(LIMIT, P.rationals())) {
-            Rational negativeR = r.negate();
-            validate(negativeR);
-            assertEquals(r.toString(), r, negativeR.negate());
-            assertTrue(r.toString(), r.add(negativeR) == ZERO);
+            Rational negative = r.negate();
+            validate(negative);
+            assertEquals(r.toString(), r, negative.negate());
+            assertTrue(r.toString(), r.add(negative) == ZERO);
         }
 
         Iterable<Rational> rs = filter(r -> r != ZERO, P.rationals());
         for (Rational r : take(LIMIT, rs)) {
-            Rational negativeR = r.negate();
-            assertNotEquals(r.toString(), r, negativeR);
+            Rational negative = r.negate();
+            assertNotEquals(r.toString(), r, negative);
         }
     }
 
@@ -1720,10 +1720,10 @@ public class RationalProperties {
         System.out.println("\t\ttesting abs() properties...");
 
         for (Rational r : take(LIMIT, P.rationals())) {
-            Rational absR = r.abs();
-            validate(absR);
-            assertEquals(r.toString(), absR, absR.abs());
-            assertTrue(r.toString(), ge(absR, ZERO));
+            Rational abs = r.abs();
+            validate(abs);
+            assertEquals(r.toString(), abs, abs.abs());
+            assertTrue(r.toString(), ge(abs, ZERO));
         }
     }
 
@@ -1732,9 +1732,9 @@ public class RationalProperties {
         System.out.println("\t\ttesting signum() properties...");
 
         for (Rational r : take(LIMIT, P.rationals())) {
-            int signumR = r.signum();
-            assertEquals(r.toString(), signumR, Ordering.compare(r, ZERO).toInt());
-            assertTrue(r.toString(), signumR == -1 || signumR == 0 || signumR == 1);
+            int signum = r.signum();
+            assertEquals(r.toString(), signum, Ordering.compare(r, ZERO).toInt());
+            assertTrue(r.toString(), signum == -1 || signum == 0 || signum == 1);
         }
     }
 

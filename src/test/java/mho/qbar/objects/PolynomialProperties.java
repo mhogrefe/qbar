@@ -4,6 +4,7 @@ import mho.qbar.iterableProviders.QBarExhaustiveProvider;
 import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.iterableProviders.QBarRandomProvider;
 import mho.wheels.iterables.RandomProvider;
+import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
@@ -48,6 +49,7 @@ public class PolynomialProperties {
             propertiesOf_BigInteger_int();
             propertiesDegree();
             propertiesLeading();
+            propertiesSignum();
         }
         System.out.println("Done");
     }
@@ -211,6 +213,17 @@ public class PolynomialProperties {
         for (BigInteger i : take(LIMIT, filter(j -> !j.equals(BigInteger.ZERO), P.bigIntegers()))) {
             Polynomial p = of(i);
             assertEquals(i.toString(), p.leading().get(), p.coefficient(0));
+        }
+    }
+
+    private static void propertiesSignum() {
+        initialize();
+        System.out.println("\t\ttesting signum() properties...");
+
+        for (Polynomial p : take(LIMIT, P.polynomials())) {
+            int signum = p.signum();
+            assertEquals(p.toString(), signum, Ordering.compare(p, ZERO).toInt());
+            assertTrue(p.toString(), signum == -1 || signum == 0 || signum == 1);
         }
     }
 
