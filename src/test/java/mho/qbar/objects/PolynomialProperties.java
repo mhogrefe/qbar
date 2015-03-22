@@ -15,9 +15,7 @@ import java.util.Random;
 
 import static mho.qbar.objects.Polynomial.*;
 import static mho.wheels.iterables.IterableUtils.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 @SuppressWarnings("ConstantConditions")
 public class PolynomialProperties {
@@ -49,6 +47,7 @@ public class PolynomialProperties {
             propertiesOf_BigInteger();
             propertiesOf_BigInteger_int();
             propertiesDegree();
+            propertiesLeading();
         }
         System.out.println("Done");
     }
@@ -193,6 +192,25 @@ public class PolynomialProperties {
         for (Polynomial p : take(LIMIT, P.polynomials())) {
             int degree = p.degree();
             assertTrue(p.toString(), degree >= -1);
+        }
+    }
+
+    private static void propertiesLeading() {
+        initialize();
+        System.out.println("\t\ttesting leading() properties");
+
+        for (Polynomial p : take(LIMIT, P.polynomials())) {
+            p.leading();
+        }
+
+        for (Polynomial p : take(LIMIT, P.polynomialsAtLeast(0))) {
+            BigInteger leading = p.leading().get();
+            assertNotEquals(p.toString(), leading, BigInteger.ZERO);
+        }
+
+        for (BigInteger i : take(LIMIT, filter(j -> !j.equals(BigInteger.ZERO), P.bigIntegers()))) {
+            Polynomial p = of(i);
+            assertEquals(i.toString(), p.leading().get(), p.coefficient(0));
         }
     }
 

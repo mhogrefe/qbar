@@ -14,9 +14,7 @@ import java.util.Random;
 
 import static mho.qbar.objects.RationalPolynomial.*;
 import static mho.wheels.iterables.IterableUtils.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 @SuppressWarnings("ConstantConditions")
 public class RationalPolynomialProperties {
@@ -48,6 +46,7 @@ public class RationalPolynomialProperties {
             propertiesOf_Rational();
             propertiesOf_Rational_int();
             propertiesDegree();
+            propertiesLeading();
         }
         System.out.println("Done");
     }
@@ -190,6 +189,25 @@ public class RationalPolynomialProperties {
         for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
             int degree = p.degree();
             assertTrue(p.toString(), degree >= -1);
+        }
+    }
+
+    private static void propertiesLeading() {
+        initialize();
+        System.out.println("\t\ttesting leading() properties");
+
+        for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
+            p.leading();
+        }
+
+        for (RationalPolynomial p : take(LIMIT, P.rationalPolynomialsAtLeast(0))) {
+            Rational leading = p.leading().get();
+            assertNotEquals(p.toString(), leading, Rational.ZERO);
+        }
+
+        for (Rational r : take(LIMIT, filter(j -> j != Rational.ZERO, P.rationals()))) {
+            RationalPolynomial p = of(r);
+            assertEquals(r.toString(), p.leading().get(), p.coefficient(0));
         }
     }
 
