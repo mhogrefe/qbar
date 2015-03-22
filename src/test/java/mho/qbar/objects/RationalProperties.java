@@ -1722,6 +1722,7 @@ public class RationalProperties {
             Rational abs = r.abs();
             validate(abs);
             assertEquals(r.toString(), abs, abs.abs());
+            assertNotEquals(r.toString(), abs.signum(), -1);
             assertTrue(r.toString(), ge(abs, ZERO));
         }
     }

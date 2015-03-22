@@ -50,6 +50,7 @@ public class PolynomialProperties {
             propertiesDegree();
             propertiesLeading();
             propertiesNegate();
+            propertiesAbs();
             propertiesSignum();
             propertiesEquals();
             propertiesHashCode();
@@ -233,6 +234,19 @@ public class PolynomialProperties {
         for (Polynomial p : take(LIMIT, filter(q -> q != ZERO, P.polynomials()))) {
             Polynomial negative = p.negate();
             assertNotEquals(p.toString(), p, negative);
+        }
+    }
+
+    private static void propertiesAbs() {
+        initialize();
+        System.out.println("\t\ttesting abs() properties...");
+
+        for (Polynomial p : take(LIMIT, P.polynomials())) {
+            Polynomial abs = p.abs();
+            validate(abs);
+            assertEquals(p.toString(), abs, abs.abs());
+            assertNotEquals(p.toString(), abs.signum(), -1);
+            //todo assertTrue(p.toString(), ge(abs, ZERO));
         }
     }
 

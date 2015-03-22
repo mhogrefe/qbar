@@ -49,6 +49,7 @@ public class RationalPolynomialProperties {
             propertiesDegree();
             propertiesLeading();
             propertiesNegate();
+            propertiesAbs();
             propertiesSignum();
             propertiesEquals();
             propertiesHashCode();
@@ -230,6 +231,19 @@ public class RationalPolynomialProperties {
         for (RationalPolynomial p : take(LIMIT, filter(q -> q != ZERO, P.rationalPolynomials()))) {
             RationalPolynomial negative = p.negate();
             assertNotEquals(p.toString(), p, negative);
+        }
+    }
+
+    private static void propertiesAbs() {
+        initialize();
+        System.out.println("\t\ttesting abs() properties...");
+
+        for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
+            RationalPolynomial abs = p.abs();
+            validate(abs);
+            assertEquals(p.toString(), abs, abs.abs());
+            assertNotEquals(p.toString(), abs.signum(), -1);
+            //todo assertTrue(p.toString(), ge(abs, ZERO));
         }
     }
 
