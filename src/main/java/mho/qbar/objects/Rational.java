@@ -2085,10 +2085,10 @@ public final class Rational implements Comparable<Rational> {
     @Override
     public int compareTo(@NotNull Rational that) {
         if (this == that) return 0;
-        int thisSignum = signum();
-        int thatSignum = that.signum();
-        if (thisSignum > thatSignum) return 1;
-        if (thisSignum < thatSignum) return -1;
+        int thisSign = signum();
+        int thatSign = that.signum();
+        if (thisSign > thatSign) return 1;
+        if (thisSign < thatSign) return -1;
         return numerator.multiply(that.denominator).compareTo(that.numerator.multiply(denominator));
     }
 

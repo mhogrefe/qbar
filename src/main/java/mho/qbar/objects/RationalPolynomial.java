@@ -1,6 +1,7 @@
 package mho.qbar.objects;
 
 import mho.wheels.misc.Readers;
+import mho.wheels.ordering.comparators.ShortlexComparator;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 
@@ -10,7 +11,7 @@ import java.util.*;
 import static mho.wheels.iterables.IterableUtils.*;
 
 /**
- * <p>A univariate polynomial in x with {@code Rational} coefficients.
+ * <p>A univariate polynomial in x with {@link mho.qbar.objects.Rational} coefficients.
  *
  * <p>There is only one instance of {@code ZERO}, and one instance of {@code ONE}, so these may be compared with other
  * {@code RationalPolynomial}s using {@code ==}. This is not true for {@code X}.
@@ -21,7 +22,7 @@ import static mho.wheels.iterables.IterableUtils.*;
  *
  * <p>This class is immutable.
  */
-public class RationalPolynomial implements Iterable<Rational> {
+public class RationalPolynomial implements Comparable<RationalPolynomial>, Iterable<Rational> {
     /**
      * 0
      */
@@ -38,6 +39,11 @@ public class RationalPolynomial implements Iterable<Rational> {
     public static final @NotNull RationalPolynomial X = new RationalPolynomial(
             Arrays.asList(Rational.ZERO, Rational.ONE)
     );
+
+    /**
+     * Used by {@link mho.qbar.objects.RationalPolynomial#compareTo}
+     */
+    private static final Comparator<Iterable<Rational>> RATIONAL_ITERABLE_COMPARATOR = new ShortlexComparator<>();
 
     /**
      * The polynomial's coefficients. The coefficient of x<sup>i</sup> is at the ith position.
@@ -194,6 +200,34 @@ public class RationalPolynomial implements Iterable<Rational> {
     }
 
     /**
+     * Returns the leading coefficient of {@code this}, or an empty {@code Optional} is {@code this} is 0.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>The result may be empty, or it may contain a nonzero {@code Rational}.</li>
+     * </ul>
+     *
+     * @return the leading coefficient
+     */
+    public @NotNull Optional<Rational> leading() {
+        return this == ZERO ? Optional.<Rational>empty() : Optional.of(coefficients.get(coefficients.size() - 1));
+    }
+
+    /**
+     * Returns the sign of {@code this}; 0 if {@code this} is 0, or the sign of the leading coefficient.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>The result may be –1, 0, or 1.</li>
+     * </ul>
+     *
+     * @return sgn(p(∞))
+     */
+    public int signum() {
+        return this == ZERO ? 0 : leading().get().signum();
+    }
+
+    /**
      * Determines whether {@code this} is equal to {@code that}.
      *
      * <ul>
@@ -224,6 +258,30 @@ public class RationalPolynomial implements Iterable<Rational> {
     @Override
     public int hashCode() {
         return coefficients.hashCode();
+    }
+
+    /**
+     * Compares {@code this} to {@code that}, returning 1, –1, or 0 if the answer is "greater than", "less than", or
+     * "equal to", respectively. Asymptotic ordering is used; the ordering of two {@code RationalPolynomial}s is the
+     * eventual ordering of their values at a sufficiently large, positive argument.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalPolynomial}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>The result may be –1, 0, or 1.</li>
+     * </ul>
+     *
+     * @param that The {@code RationalPolynomial} to be compared with {@code this}
+     * @return {@code this} compared to {@code that}
+     */
+    @Override
+    public int compareTo(@NotNull RationalPolynomial that) {
+        if (this == that) return 0;
+        int thisSign = signum();
+        int thatSign = that.signum();
+        if (thisSign > thatSign) return 1;
+        if (thisSign < thatSign) return -1;
+        return RATIONAL_ITERABLE_COMPARATOR.compare(reverse(coefficients), reverse(that.coefficients));
     }
 
     /**
