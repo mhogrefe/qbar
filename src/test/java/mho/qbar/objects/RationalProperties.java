@@ -1708,8 +1708,7 @@ public class RationalProperties {
             assertTrue(r.toString(), r.add(negative) == ZERO);
         }
 
-        Iterable<Rational> rs = filter(r -> r != ZERO, P.rationals());
-        for (Rational r : take(LIMIT, rs)) {
+        for (Rational r : take(LIMIT, filter(s -> s != ZERO, P.rationals()))) {
             Rational negative = r.negate();
             assertNotEquals(r.toString(), r, negative);
         }

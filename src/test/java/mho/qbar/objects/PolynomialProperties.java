@@ -49,6 +49,7 @@ public class PolynomialProperties {
             propertiesOf_BigInteger_int();
             propertiesDegree();
             propertiesLeading();
+            propertiesNegate();
             propertiesSignum();
             propertiesEquals();
             propertiesHashCode();
@@ -215,6 +216,23 @@ public class PolynomialProperties {
         for (BigInteger i : take(LIMIT, filter(j -> !j.equals(BigInteger.ZERO), P.bigIntegers()))) {
             Polynomial p = of(i);
             assertEquals(i.toString(), p.leading().get(), p.coefficient(0));
+        }
+    }
+
+    private static void propertiesNegate() {
+        initialize();
+        System.out.println("\t\ttesting negate() properties...");
+
+        for (Polynomial p : take(LIMIT, P.polynomials())) {
+            Polynomial negative = p.negate();
+            validate(negative);
+            assertEquals(p.toString(), p, negative.negate());
+            //todo assertTrue(p.toString(), p.add(negative) == ZERO);
+        }
+
+        for (Polynomial p : take(LIMIT, filter(q -> q != ZERO, P.polynomials()))) {
+            Polynomial negative = p.negate();
+            assertNotEquals(p.toString(), p, negative);
         }
     }
 
