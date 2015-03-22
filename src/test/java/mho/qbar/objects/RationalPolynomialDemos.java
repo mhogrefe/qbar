@@ -6,8 +6,10 @@ import mho.qbar.iterableProviders.QBarRandomProvider;
 import mho.wheels.iterables.RandomProvider;
 import mho.wheels.structures.Pair;
 
+import java.util.List;
 import java.util.Random;
 
+import static mho.qbar.objects.RationalPolynomial.*;
 import static mho.wheels.iterables.IterableUtils.*;
 
 @SuppressWarnings({"ConstantConditions", "UnusedDeclaration"})
@@ -44,6 +46,14 @@ public class RationalPolynomialDemos {
         }
         for (Pair<RationalPolynomial, Integer> p : take(LIMIT, ps)) {
             System.out.println("coefficient(" + p.a + ", " + p.b + ") = " + p.a.coefficient(p.b));
+        }
+    }
+
+    public static void demoOf_List_Rational() {
+        initialize();
+        for (List<Rational> rs : take(LIMIT, P.lists(P.rationals()))) {
+            String listString = tail(init(rs.toString()));
+            System.out.println("of(" + listString + ") = " + of(rs));
         }
     }
 

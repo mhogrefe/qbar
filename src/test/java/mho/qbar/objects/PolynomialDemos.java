@@ -6,8 +6,11 @@ import mho.qbar.iterableProviders.QBarRandomProvider;
 import mho.wheels.iterables.RandomProvider;
 import mho.wheels.structures.Pair;
 
+import java.math.BigInteger;
+import java.util.List;
 import java.util.Random;
 
+import static mho.qbar.objects.Polynomial.*;
 import static mho.wheels.iterables.IterableUtils.*;
 
 @SuppressWarnings({"ConstantConditions", "UnusedDeclaration"})
@@ -44,6 +47,14 @@ public class PolynomialDemos {
         }
         for (Pair<Polynomial, Integer> p : take(LIMIT, ps)) {
             System.out.println("coefficient(" + p.a + ", " + p.b + ") = " + p.a.coefficient(p.b));
+        }
+    }
+
+    public static void demoOf_List_BigInteger() {
+        initialize();
+        for (List<BigInteger> is : take(LIMIT, P.lists(P.bigIntegers()))) {
+            String listString = tail(init(is.toString()));
+            System.out.println("of(" + listString + ") = " + of(is));
         }
     }
 
