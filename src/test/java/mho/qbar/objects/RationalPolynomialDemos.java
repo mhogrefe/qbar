@@ -98,6 +98,13 @@ public class RationalPolynomialDemos {
         }
     }
 
+    public static void demoAbs() {
+        initialize();
+        for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
+            System.out.println("|" + p + "| = " + p.abs());
+        }
+    }
+
     public static void demoSignum() {
         initialize();
         for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {

@@ -100,6 +100,13 @@ public class PolynomialDemos {
         }
     }
 
+    public static void demoAbs() {
+        initialize();
+        for (Polynomial p : take(LIMIT, P.polynomials())) {
+            System.out.println("|" + p + "| = " + p.abs());
+        }
+    }
+
     public static void demoSignum() {
         initialize();
         for (Polynomial p : take(LIMIT, P.polynomials())) {
