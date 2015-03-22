@@ -10,9 +10,7 @@ import java.util.Optional;
 
 import static mho.qbar.objects.Polynomial.*;
 import static mho.wheels.iterables.IterableUtils.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 public class PolynomialTest {
     @Test
@@ -121,6 +119,17 @@ public class PolynomialTest {
         aeq(read("x^2-4*x+7").get().degree(), 2);
         aeq(read("x^3-1").get().degree(), 3);
         aeq(read("3*x^10").get().degree(), 10);
+    }
+
+    @Test
+    public void testLeading() {
+        assertFalse(ZERO.leading().isPresent());
+        aeq(ONE.leading().get(), 1);
+        aeq(X.leading().get(), 1);
+        aeq(read("-17").get().leading().get(), -17);
+        aeq(read("x^2-4*x+7").get().leading().get(), 1);
+        aeq(read("-x^3-1").get().leading().get(), -1);
+        aeq(read("3*x^10").get().leading().get(), 3);
     }
 
     private static void aeq(Object a, Object b) {

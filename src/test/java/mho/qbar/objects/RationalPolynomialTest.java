@@ -9,9 +9,7 @@ import java.util.Optional;
 
 import static mho.qbar.objects.RationalPolynomial.*;
 import static mho.wheels.iterables.IterableUtils.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 public class RationalPolynomialTest {
     @Test
@@ -120,6 +118,17 @@ public class RationalPolynomialTest {
         aeq(read("x^2-7/4*x+1/3").get().degree(), 2);
         aeq(read("x^3-1").get().degree(), 3);
         aeq(read("1/2*x^10").get().degree(), 10);
+    }
+
+    @Test
+    public void testLeading() {
+        assertFalse(ZERO.leading().isPresent());
+        aeq(ONE.leading().get(), 1);
+        aeq(X.leading().get(), 1);
+        aeq(read("-4/3").get().leading().get(), "-4/3");
+        aeq(read("x^2-7/4*x+1/3").get().leading().get(), 1);
+        aeq(read("-x^3-1").get().leading().get(), -1);
+        aeq(read("1/2*x^10").get().leading().get(), "1/2");
     }
 
     private static void aeq(Object a, Object b) {
