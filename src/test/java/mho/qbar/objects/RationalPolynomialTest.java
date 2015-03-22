@@ -143,6 +143,17 @@ public class RationalPolynomialTest {
     }
 
     @Test
+    public void testAbs() {
+        assertTrue(ZERO.abs() == ZERO);
+        assertTrue(ONE.abs() == ONE);
+        aeq(X.abs(), "x");
+        aeq(read("-4/3").get().abs(), "4/3");
+        aeq(read("x^2-7/4*x+1/3").get().abs(), "x^2-7/4*x+1/3");
+        aeq(read("-x^3-1").get().abs(), "x^3+1");
+        aeq(read("1/2*x^10").get().abs(), "1/2*x^10");
+    }
+
+    @Test
     public void testSignum() {
         aeq(ZERO.signum(), 0);
         aeq(ONE.signum(), 1);
