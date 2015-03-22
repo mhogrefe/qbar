@@ -143,6 +143,73 @@ public class PolynomialTest {
         aeq(read("3*x^10").get().signum(), 1);
     }
 
+    @Test
+    public void testEquals() {
+        //noinspection EqualsWithItself
+        assertTrue(ZERO.equals(ZERO));
+        //noinspection EqualsWithItself
+        assertTrue(ONE.equals(ONE));
+        //noinspection EqualsWithItself
+        assertTrue(X.equals(X));
+        assertTrue(read("-17").get().equals(read("-17").get()));
+        assertTrue(read("x^2-4*x+7").get().equals(read("x^2-4*x+7").get()));
+        assertTrue(read("-x^3-1").get().equals(read("-x^3-1").get()));
+        assertTrue(read("3*x^10").get().equals(read("3*x^10").get()));
+        assertFalse(ZERO.equals(ONE));
+        assertFalse(ZERO.equals(X));
+        assertFalse(ONE.equals(ZERO));
+        assertFalse(ONE.equals(X));
+        assertFalse(X.equals(ZERO));
+        assertFalse(X.equals(ONE));
+        assertFalse(ZERO.equals(read("-17").get()));
+        assertFalse(ZERO.equals(read("x^2-4*x+7").get()));
+        assertFalse(ZERO.equals(read("-x^3-1").get()));
+        assertFalse(ZERO.equals(read("3*x^10").get()));
+        assertFalse(ONE.equals(read("-17").get()));
+        assertFalse(ONE.equals(read("x^2-4*x+7").get()));
+        assertFalse(ONE.equals(read("-x^3-1").get()));
+        assertFalse(ONE.equals(read("3*x^10").get()));
+        assertFalse(X.equals(read("-17").get()));
+        assertFalse(X.equals(read("x^2-4*x+7").get()));
+        assertFalse(X.equals(read("-x^3-1").get()));
+        assertFalse(X.equals(read("3*x^10").get()));
+        assertFalse(read("-17").get().equals(ZERO));
+        assertFalse(read("x^2-4*x+7").get().equals(ZERO));
+        assertFalse(read("-x^3-1").get().equals(ZERO));
+        assertFalse(read("3*x^10").get().equals(ZERO));
+        assertFalse(read("-17").get().equals(ONE));
+        assertFalse(read("x^2-4*x+7").get().equals(ONE));
+        assertFalse(read("-x^3-1").get().equals(ONE));
+        assertFalse(read("3*x^10").get().equals(ONE));
+        assertFalse(read("-17").get().equals(X));
+        assertFalse(read("x^2-4*x+7").get().equals(X));
+        assertFalse(read("-x^3-1").get().equals(X));
+        assertFalse(read("3*x^10").get().equals(X));
+        assertFalse(read("-17").equals(read("x^2-4*x+7")));
+        assertFalse(read("-17").equals(read("-x^3-1")));
+        assertFalse(read("-17").equals(read("3*x^10")));
+        assertFalse(read("x^2-4*x+7").equals(read("-17")));
+        assertFalse(read("x^2-4*x+7").equals(read("-x^3-1")));
+        assertFalse(read("x^2-4*x+7").equals(read("3*x^10")));
+        assertFalse(read("-x^3-1").equals(read("-17")));
+        assertFalse(read("-x^3-1").equals(read("x^2-4*x+7")));
+        assertFalse(read("-x^3-1").equals(read("3*x^10")));
+        assertFalse(read("3*x^10").equals(read("-17")));
+        assertFalse(read("3*x^10").equals(read("x^2-4*x+7")));
+        assertFalse(read("3*x^10").equals(read("-x^3-1")));
+    }
+
+    @Test
+    public void testHashCode() {
+        aeq(ZERO.hashCode(), 1);
+        aeq(ONE.hashCode(), 32);
+        aeq(X.hashCode(), 962);
+        aeq(read("-17").get().hashCode(), 14);
+        aeq(read("x^2-4*x+7").get().hashCode(), 36395);
+        aeq(read("-x^3-1").get().hashCode(), 893729);
+        aeq(read("3*x^10").get().hashCode(), 129082722);
+    }
+
     private static void aeq(Object a, Object b) {
         assertEquals(a.toString(), b.toString());
     }

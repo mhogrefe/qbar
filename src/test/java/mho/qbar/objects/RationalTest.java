@@ -4286,13 +4286,6 @@ public class RationalTest {
         assertFalse(read("-5/12").equals(read("4")));
         assertFalse(read("-5/12").equals(read("-4")));
         assertFalse(read("-5/12").equals(read("5/12")));
-        assertTrue(read("4").isPresent());
-        assertTrue(read("-4").isPresent());
-        assertTrue(read("5/12").isPresent());
-        assertTrue(read("-5/12").isPresent());
-        assertTrue(read("-5/12").isPresent());
-        assertTrue(read("-5/12").isPresent());
-        assertTrue(read("-5/12").isPresent());
     }
 
     @Test
