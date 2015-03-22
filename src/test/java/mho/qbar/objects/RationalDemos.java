@@ -717,6 +717,15 @@ public class RationalDemos {
         }
     }
 
+    public static void demoCancelDenominators() {
+        initialize();
+        int limit = P instanceof ExhaustiveProvider ? LIMIT : SMALLER_LIMIT;
+        for (List<Rational> rs : take(limit, P.lists(P.rationals()))) {
+            String listString = tail(init(rs.toString()));
+            System.out.println("cancelDenominators(" + listString + ") = " + cancelDenominators(rs));
+        }
+    }
+
     public static void demoEquals_Rational() {
         initialize();
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
@@ -729,15 +738,6 @@ public class RationalDemos {
         for (Rational r : take(LIMIT, P.rationals())) {
             //noinspection ObjectEqualsNull
             System.out.println(r + (r.equals(null) ? " = " : " ≠ ") + null);
-        }
-    }
-
-    public static void demoCancelDenominators() {
-        initialize();
-        int limit = P instanceof ExhaustiveProvider ? LIMIT : SMALLER_LIMIT;
-        for (List<Rational> rs : take(limit, P.lists(P.rationals()))) {
-            String listString = tail(init(rs.toString()));
-            System.out.println("cancelDenominators(" + listString + ") = " + cancelDenominators(rs));
         }
     }
 

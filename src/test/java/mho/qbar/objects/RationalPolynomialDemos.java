@@ -98,6 +98,28 @@ public class RationalPolynomialDemos {
         }
     }
 
+    public static void demoEquals_RationalPolynomial() {
+        initialize();
+        for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, P.pairs(P.rationalPolynomials()))) {
+            System.out.println(p.a + (p.a.equals(p.b) ? " = " : " ≠ ") + p.b);
+        }
+    }
+
+    public static void demoEquals_null() {
+        initialize();
+        for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
+            //noinspection ObjectEqualsNull
+            System.out.println(p + (p.equals(null) ? " = " : " ≠ ") + null);
+        }
+    }
+
+    public static void demoHashCode() {
+        initialize();
+        for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
+            System.out.println("hashCode(" + p + ") = " + p.hashCode());
+        }
+    }
+
     public static void demoToString() {
         initialize();
         for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {

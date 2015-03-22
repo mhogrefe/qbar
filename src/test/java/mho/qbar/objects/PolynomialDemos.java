@@ -99,6 +99,28 @@ public class PolynomialDemos {
         }
     }
 
+    public static void demoEquals_Polynomial() {
+        initialize();
+        for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(P.polynomials()))) {
+            System.out.println(p.a + (p.a.equals(p.b) ? " = " : " ≠ ") + p.b);
+        }
+    }
+
+    public static void demoEquals_null() {
+        initialize();
+        for (Polynomial p : take(LIMIT, P.polynomials())) {
+            //noinspection ObjectEqualsNull
+            System.out.println(p + (p.equals(null) ? " = " : " ≠ ") + null);
+        }
+    }
+
+    public static void demoHashCode() {
+        initialize();
+        for (Polynomial p : take(LIMIT, P.polynomials())) {
+            System.out.println("hashCode(" + p + ") = " + p.hashCode());
+        }
+    }
+
     public static void demoToString() {
         initialize();
         for (Polynomial p : take(LIMIT, P.polynomials())) {
