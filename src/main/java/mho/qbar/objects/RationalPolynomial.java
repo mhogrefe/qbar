@@ -174,7 +174,7 @@ public class RationalPolynomial implements Comparable<RationalPolynomial>, Itera
      *  <li>The result has 0 or 1 nonzero terms.</li>
      * </ul>
      *
-     * Length is 0 if {@code c} is 0, {@code}+1 otherwise
+     * Length is 0 if {@code c} is 0, {@code c}+1 otherwise
      *
      * @param c the monomial's coefficient
      * @param p the monomial's degree if {@code c} is nonzero
@@ -214,6 +214,24 @@ public class RationalPolynomial implements Comparable<RationalPolynomial>, Itera
      */
     public @NotNull Optional<Rational> leading() {
         return this == ZERO ? Optional.<Rational>empty() : Optional.of(coefficients.get(coefficients.size() - 1));
+    }
+
+    /**
+     * Returns the negative of {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalPolynomial}.</li>
+     *  <li>The result is non-null.</li>
+     * </ul>
+     *
+     * Length is deg({@code this})+1
+     *
+     * @return –{@code this}
+     */
+    public @NotNull RationalPolynomial negate() {
+        if (this == ZERO) return ZERO;
+        if (coefficients.size() == 1 && coefficients.get(0).equals(Rational.of(-1))) return ONE;
+        return new RationalPolynomial(toList(map(Rational::negate, coefficients)));
     }
 
     /**
@@ -285,7 +303,7 @@ public class RationalPolynomial implements Comparable<RationalPolynomial>, Itera
         if (thisSign > thatSign) return 1;
         if (thisSign < thatSign) return -1;
         int c = RATIONAL_ITERABLE_COMPARATOR.compare(reverse(coefficients), reverse(that.coefficients));
-        if (thisSign == -1) c = -c;
+        //if (thisSign == -1) c = -c;
         return c;
     }
 

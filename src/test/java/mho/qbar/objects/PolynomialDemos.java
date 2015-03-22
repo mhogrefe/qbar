@@ -4,6 +4,7 @@ import mho.qbar.iterableProviders.QBarExhaustiveProvider;
 import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.iterableProviders.QBarRandomProvider;
 import mho.wheels.iterables.RandomProvider;
+import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 
 import java.math.BigInteger;
@@ -118,6 +119,13 @@ public class PolynomialDemos {
         initialize();
         for (Polynomial p : take(LIMIT, P.polynomials())) {
             System.out.println("hashCode(" + p + ") = " + p.hashCode());
+        }
+    }
+
+    public static void demoCompareTo() {
+        initialize();
+        for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(P.polynomials()))) {
+            System.out.println(p.a + " " + Ordering.compare(p.a, p.b).toChar() + " " + p.b);
         }
     }
 

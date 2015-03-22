@@ -172,7 +172,7 @@ public class Polynomial implements Comparable<Polynomial>, Iterable<BigInteger> 
      *  <li>The result has 0 or 1 nonzero terms.</li>
      * </ul>
      *
-     * Length is 0 if {@code c} is 0, {@code}+1 otherwise
+     * Length is 0 if {@code c} is 0, {@code p}+1 otherwise
      *
      * @param c the monomial's coefficient
      * @param p the monomial's degree if {@code c} is nonzero
@@ -212,6 +212,24 @@ public class Polynomial implements Comparable<Polynomial>, Iterable<BigInteger> 
      */
     public @NotNull Optional<BigInteger> leading() {
         return this == ZERO ? Optional.<BigInteger>empty() : Optional.of(coefficients.get(coefficients.size() - 1));
+    }
+
+    /**
+     * Returns the negative of {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>The result is non-null.</li>
+     * </ul>
+     *
+     * Length is deg({@code this})+1
+     *
+     * @return –{@code this}
+     */
+    public @NotNull Polynomial negate() {
+        if (this == ZERO) return ZERO;
+        if (coefficients.size() == 1 && coefficients.get(0).equals(BigInteger.valueOf(-1))) return ONE;
+        return new Polynomial(toList(map(BigInteger::negate, coefficients)));
     }
 
     /**
@@ -283,7 +301,7 @@ public class Polynomial implements Comparable<Polynomial>, Iterable<BigInteger> 
         if (thisSign > thatSign) return 1;
         if (thisSign < thatSign) return -1;
         int c = BIG_INTEGER_ITERABLE_COMPARATOR.compare(reverse(coefficients), reverse(that.coefficients));
-        if (thisSign == -1) c = -c;
+        //if (thisSign == -1) c = -c;
         return c;
     }
 
