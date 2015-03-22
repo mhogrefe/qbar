@@ -5,6 +5,7 @@ import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.iterableProviders.QBarRandomProvider;
 import mho.wheels.iterables.RandomProvider;
 import mho.wheels.structures.Pair;
+import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -43,6 +44,7 @@ public class RationalPolynomialProperties {
             USE_RANDOM = useRandom;
             propertiesIterator();
             propertiesCoefficient();
+            propertiesOf_List_Rational();
         }
         System.out.println("Done");
     }
@@ -95,5 +97,44 @@ public class RationalPolynomialProperties {
                 fail(p.toString());
             } catch (ArrayIndexOutOfBoundsException ignored) {}
         }
+    }
+
+    private static void propertiesOf_List_Rational() {
+        initialize();
+        System.out.println("\t\ttesting of(List<Rational>) properties");
+
+        for (List<Rational> rs : take(LIMIT, P.lists(P.rationals()))) {
+            RationalPolynomial p = of(rs);
+            validate(p);
+            assertTrue(rs.toString(), length(p) <= rs.size());
+        }
+
+        Iterable<List<Rational>> rss = filter(rs -> rs.isEmpty() || last(rs) != Rational.ZERO, P.lists(P.rationals()));
+        for (List<Rational> rs : take(LIMIT, rss)) {
+            assertEquals(rs.toString(), toList(of(rs)), rs);
+        }
+
+        Iterable<List<Rational>> failRss = map(
+                p -> toList(insert(p.a, p.b, null)),
+                (Iterable<Pair<List<Rational>, Integer>>) P.dependentPairsLogarithmic(
+                        P.lists(P.rationals()),
+                        rs -> range(0, rs.size())
+                )
+        );
+        for (List<Rational> rs : take(LIMIT, failRss)) {
+            try {
+                of(rs);
+                fail(rs.toString());
+            } catch (NullPointerException ignored) {}
+        }
+    }
+
+    private static void validate(@NotNull RationalPolynomial p) {
+        List<Rational> coefficients = toList(p);
+        if (!coefficients.isEmpty()) {
+            assertTrue(p.toString(), last(coefficients) != Rational.ZERO);
+        }
+        if (p.equals(ZERO)) assertTrue(p.toString(), p == ZERO);
+        if (p.equals(ONE)) assertTrue(p.toString(), p == ONE);
     }
 }

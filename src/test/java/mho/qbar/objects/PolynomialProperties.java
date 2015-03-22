@@ -5,6 +5,7 @@ import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.iterableProviders.QBarRandomProvider;
 import mho.wheels.iterables.RandomProvider;
 import mho.wheels.structures.Pair;
+import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
 import java.math.BigInteger;
@@ -44,6 +45,7 @@ public class PolynomialProperties {
             USE_RANDOM = useRandom;
             propertiesIterator();
             propertiesCoefficient();
+            propertiesOf_List_BigInteger();
         }
         System.out.println("Done");
     }
@@ -95,5 +97,47 @@ public class PolynomialProperties {
                 fail(p.toString());
             } catch (ArrayIndexOutOfBoundsException ignored) {}
         }
+    }
+
+    private static void propertiesOf_List_BigInteger() {
+        initialize();
+        System.out.println("\t\ttesting of(List<BigInteger>) properties");
+
+        for (List<BigInteger> is : take(LIMIT, P.lists(P.bigIntegers()))) {
+            Polynomial p = of(is);
+            validate(p);
+            assertTrue(is.toString(), length(p) <= is.size());
+        }
+
+        Iterable<List<BigInteger>> iss = filter(
+                is -> is.isEmpty() || !last(is).equals(BigInteger.ZERO),
+                P.lists(P.bigIntegers())
+        );
+        for (List<BigInteger> is : take(LIMIT, iss)) {
+            assertEquals(is.toString(), toList(of(is)), is);
+        }
+
+        Iterable<List<BigInteger>> failIss = map(
+                p -> toList(insert(p.a, p.b, null)),
+                (Iterable<Pair<List<BigInteger>, Integer>>) P.dependentPairsLogarithmic(
+                        P.lists(P.bigIntegers()),
+                        rs -> range(0, rs.size())
+                )
+        );
+        for (List<BigInteger> is : take(LIMIT, failIss)) {
+            try {
+                of(is);
+                fail(is.toString());
+            } catch (NullPointerException ignored) {}
+        }
+    }
+
+    private static void validate(@NotNull Polynomial p) {
+        List<BigInteger> coefficients = toList(p);
+        if (!coefficients.isEmpty()) {
+            assertTrue(p.toString(), !last(coefficients).equals(BigInteger.ZERO));
+        }
+        if (p.equals(ZERO)) assertTrue(p.toString(), p == ZERO);
+        if (p.equals(ONE)) assertTrue(p.toString(), p == ONE);
     }
 }
