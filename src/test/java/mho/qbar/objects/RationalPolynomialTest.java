@@ -105,6 +105,10 @@ public class RationalPolynomialTest {
         aeq(of(Rational.read("-5/7").get(), 1), "-5/7*x");
         aeq(of(Rational.read("-5/7").get(), 2), "-5/7*x^2");
         aeq(of(Rational.read("-5/7").get(), 3), "-5/7*x^3");
+        try {
+            of(Rational.read("-5/7").get(), -1);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
     }
 
     private static void aeq(Object a, Object b) {

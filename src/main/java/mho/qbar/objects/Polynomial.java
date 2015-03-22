@@ -164,11 +164,12 @@ public class Polynomial implements Comparable<Polynomial>, Iterable<BigInteger> 
     }
 
     /**
-     * Creates a monomial.
+     * Creates either a monomial or 0, i.e. a constant times a power of x.
      *
      * <ul>
      *  <li>{@code c} cannot be null.</li>
      *  <li>{@code p} cannot be negative.</li>
+     *  <li>The result has 0 or 1 nonzero terms.</li>
      * </ul>
      *
      * Length is 0 if {@code c} is 0, {@code}+1 otherwise
@@ -178,6 +179,8 @@ public class Polynomial implements Comparable<Polynomial>, Iterable<BigInteger> 
      * @return {@code c}x<sup>p</sup>
      */
     public static @NotNull Polynomial of(@NotNull BigInteger c, int p) {
+        if (p < 0)
+            throw new IllegalArgumentException("power cannot be negative");
         if (c.equals(BigInteger.ZERO)) return ZERO;
         if (p == 0 && c.equals(BigInteger.ONE)) return ONE;
         return new Polynomial(toList(concat(replicate(p, BigInteger.ZERO), Arrays.asList(c))));

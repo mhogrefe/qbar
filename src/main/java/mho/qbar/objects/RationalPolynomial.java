@@ -166,11 +166,12 @@ public class RationalPolynomial implements Comparable<RationalPolynomial>, Itera
     }
 
     /**
-     * Creates a monomial.
+     * Creates either a monomial or 0, i.e. a constant times a power of x.
      *
      * <ul>
      *  <li>{@code c} cannot be null.</li>
      *  <li>{@code p} cannot be negative.</li>
+     *  <li>The result has 0 or 1 nonzero terms.</li>
      * </ul>
      *
      * Length is 0 if {@code c} is 0, {@code}+1 otherwise
@@ -180,6 +181,8 @@ public class RationalPolynomial implements Comparable<RationalPolynomial>, Itera
      * @return {@code c}x<sup>p</sup>
      */
     public static @NotNull RationalPolynomial of(@NotNull Rational c, int p) {
+        if (p < 0)
+            throw new IllegalArgumentException("power cannot be negative");
         if (c == Rational.ZERO) return ZERO;
         if (p == 0 && c == Rational.ONE) return ONE;
         return new RationalPolynomial(toList(concat(replicate(p, Rational.ZERO), Arrays.asList(c))));

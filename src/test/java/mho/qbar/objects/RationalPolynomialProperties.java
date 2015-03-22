@@ -8,7 +8,6 @@ import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
-import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
@@ -47,6 +46,7 @@ public class RationalPolynomialProperties {
             propertiesCoefficient();
             propertiesOf_List_Rational();
             propertiesOf_Rational();
+            propertiesOf_Rational_int();
         }
         System.out.println("Done");
     }
@@ -144,6 +144,41 @@ public class RationalPolynomialProperties {
 
         for (Rational r : take(LIMIT, filter(j -> j != Rational.ZERO, P.rationals()))) {
             assertEquals(r.toString(), of(r).coefficient(0), r);
+        }
+    }
+
+    private static void propertiesOf_Rational_int() {
+        initialize();
+        System.out.println("\t\ttesting of(Rational, int) properties");
+
+        Iterable<Pair<Rational, Integer>> ps;
+        if (P instanceof QBarExhaustiveProvider) {
+            ps = ((QBarExhaustiveProvider) P).pairsLogarithmicOrder(P.rationals(), P.naturalIntegers());
+        } else {
+            ps = P.pairs(P.rationals(), ((RandomProvider) P).naturalIntegersGeometric(20));
+        }
+        for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
+            RationalPolynomial q = of(p.a, p.b);
+            validate(q);
+        }
+
+        for (Pair<Rational, Integer> p : take(LIMIT, filter(q -> q.a != Rational.ZERO, ps))) {
+            RationalPolynomial q = of(p.a, p.b);
+            List<Rational> coefficients = toList(q);
+            assertEquals(p.toString(), length(filter(i -> i != Rational.ZERO, coefficients)), 1);
+            assertEquals(p.toString(), q.degree(), p.b.intValue());
+            assertEquals(p.toString(), length(q), p.b + 1);
+        }
+
+        for (int i : take(LIMIT, P.naturalIntegers())) {
+            assertTrue(of(Rational.ZERO, i) == ZERO);
+        }
+
+        for (Pair<Rational, Integer> p : take(LIMIT, P.pairs(P.rationals(), P.negativeIntegers()))) {
+            try {
+                of(p.a, p.b);
+                fail(p.toString());
+            } catch (IllegalArgumentException ignored) {}
         }
     }
 

@@ -106,6 +106,10 @@ public class PolynomialTest {
         aeq(of(BigInteger.valueOf(-5), 1), "-5*x");
         aeq(of(BigInteger.valueOf(-5), 2), "-5*x^2");
         aeq(of(BigInteger.valueOf(-5), 3), "-5*x^3");
+        try {
+            of(BigInteger.valueOf(-5), -1);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
     }
 
     private static void aeq(Object a, Object b) {

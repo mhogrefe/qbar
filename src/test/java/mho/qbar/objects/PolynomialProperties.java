@@ -47,6 +47,7 @@ public class PolynomialProperties {
             propertiesCoefficient();
             propertiesOf_List_BigInteger();
             propertiesOf_BigInteger();
+            propertiesOf_BigInteger_int();
         }
         System.out.println("Done");
     }
@@ -146,6 +147,41 @@ public class PolynomialProperties {
 
         for (BigInteger i : take(LIMIT, filter(j -> !j.equals(BigInteger.ZERO), P.bigIntegers()))) {
             assertEquals(i.toString(), of(i).coefficient(0), i);
+        }
+    }
+
+    private static void propertiesOf_BigInteger_int() {
+        initialize();
+        System.out.println("\t\ttesting of(BigInteger, int) properties");
+
+        Iterable<Pair<BigInteger, Integer>> ps;
+        if (P instanceof QBarExhaustiveProvider) {
+            ps = ((QBarExhaustiveProvider) P).pairsLogarithmicOrder(P.bigIntegers(), P.naturalIntegers());
+        } else {
+            ps = P.pairs(P.bigIntegers(), ((RandomProvider) P).naturalIntegersGeometric(20));
+        }
+        for (Pair<BigInteger, Integer> p : take(LIMIT, ps)) {
+            Polynomial q = of(p.a, p.b);
+            validate(q);
+        }
+
+        for (Pair<BigInteger, Integer> p : take(LIMIT, filter(q -> !q.a.equals(BigInteger.ZERO), ps))) {
+            Polynomial q = of(p.a, p.b);
+            List<BigInteger> coefficients = toList(q);
+            assertEquals(p.toString(), length(filter(i -> !i.equals(BigInteger.ZERO), coefficients)), 1);
+            assertEquals(p.toString(), q.degree(), p.b.intValue());
+            assertEquals(p.toString(), length(q), p.b + 1);
+        }
+
+        for (int i : take(LIMIT, P.naturalIntegers())) {
+            assertTrue(of(BigInteger.ZERO, i) == ZERO);
+        }
+
+        for (Pair<BigInteger, Integer> p : take(LIMIT, P.pairs(P.bigIntegers(), P.negativeIntegers()))) {
+            try {
+                of(p.a, p.b);
+                fail(p.toString());
+            } catch (IllegalArgumentException ignored) {}
         }
     }
 
