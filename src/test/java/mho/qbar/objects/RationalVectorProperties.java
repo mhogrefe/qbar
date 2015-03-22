@@ -222,6 +222,7 @@ public class RationalVectorProperties {
             RationalVector v = of(r);
             validate(v);
             assertEquals(r.toString(), v.dimension(), 1);
+            assertEquals(r.toString(), v.x(), r);
         }
     }
 

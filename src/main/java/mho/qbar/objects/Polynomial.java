@@ -152,7 +152,7 @@ public class Polynomial implements Comparable<Polynomial>, Iterable<BigInteger> 
      *  <li>The result has degree 0 or –1.</li>
      * </ul>
      *
-     * Length is 1
+     * Length is 0 if c is 0, or 1 otherwise
      *
      * @param c the constant
      * @return a constant {@code Polynomial} equal to {@code c}

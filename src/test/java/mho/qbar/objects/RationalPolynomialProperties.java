@@ -8,6 +8,7 @@ import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
+import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
@@ -45,6 +46,7 @@ public class RationalPolynomialProperties {
             propertiesIterator();
             propertiesCoefficient();
             propertiesOf_List_Rational();
+            propertiesOf_Rational();
         }
         System.out.println("Done");
     }
@@ -126,6 +128,22 @@ public class RationalPolynomialProperties {
                 of(rs);
                 fail(rs.toString());
             } catch (NullPointerException ignored) {}
+        }
+    }
+
+    private static void propertiesOf_Rational() {
+        initialize();
+        System.out.println("\t\ttesting of(Rational) properties");
+
+        for (Rational r : take(LIMIT, P.rationals())) {
+            RationalPolynomial p = of(r);
+            validate(p);
+            assertTrue(r.toString(), p.degree() == 0 || p.degree() == -1);
+            assertTrue(r.toString(), length(p) == 1 || length(p) == 0);
+        }
+
+        for (Rational r : take(LIMIT, filter(j -> j != Rational.ZERO, P.rationals()))) {
+            assertEquals(r.toString(), of(r).coefficient(0), r);
         }
     }
 

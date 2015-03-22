@@ -46,6 +46,7 @@ public class PolynomialProperties {
             propertiesIterator();
             propertiesCoefficient();
             propertiesOf_List_BigInteger();
+            propertiesOf_BigInteger();
         }
         System.out.println("Done");
     }
@@ -129,6 +130,22 @@ public class PolynomialProperties {
                 of(is);
                 fail(is.toString());
             } catch (NullPointerException ignored) {}
+        }
+    }
+
+    private static void propertiesOf_BigInteger() {
+        initialize();
+        System.out.println("\t\ttesting of(BigInteger) properties");
+
+        for (BigInteger i : take(LIMIT, P.bigIntegers())) {
+            Polynomial p = of(i);
+            validate(p);
+            assertTrue(i.toString(), p.degree() == 0 || p.degree() == -1);
+            assertTrue(i.toString(), length(p) == 1 || length(p) == 0);
+        }
+
+        for (BigInteger i : take(LIMIT, filter(j -> !j.equals(BigInteger.ZERO), P.bigIntegers()))) {
+            assertEquals(i.toString(), of(i).coefficient(0), i);
         }
     }
 
