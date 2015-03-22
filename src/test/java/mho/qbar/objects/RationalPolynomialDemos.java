@@ -4,6 +4,7 @@ import mho.qbar.iterableProviders.QBarExhaustiveProvider;
 import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.iterableProviders.QBarRandomProvider;
 import mho.wheels.iterables.RandomProvider;
+import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 
 import java.util.List;
@@ -131,6 +132,13 @@ public class RationalPolynomialDemos {
         initialize();
         for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
             System.out.println("hashCode(" + p + ") = " + p.hashCode());
+        }
+    }
+
+    public static void demoCompareTo() {
+        initialize();
+        for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, P.pairs(P.rationalPolynomials()))) {
+            System.out.println(p.a + " " + Ordering.compare(p.a, p.b).toChar() + " " + p.b);
         }
     }
 
