@@ -3,6 +3,8 @@ package mho.qbar.objects;
 import mho.qbar.iterableProviders.QBarExhaustiveProvider;
 import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.iterableProviders.QBarRandomProvider;
+import mho.wheels.iterables.RandomProvider;
+import mho.wheels.structures.Pair;
 
 import java.util.Random;
 
@@ -29,6 +31,19 @@ public class PolynomialDemos {
         initialize();
         for (Polynomial p : take(LIMIT, P.polynomials())) {
             System.out.println("toList(" + p + ") = " + toList(p));
+        }
+    }
+
+    public static void demoCoefficient() {
+        initialize();
+        Iterable<Pair<Polynomial, Integer>> ps;
+        if (P instanceof QBarExhaustiveProvider) {
+            ps = ((QBarExhaustiveProvider) P).pairsLogarithmicOrder(P.polynomials(), P.naturalIntegers());
+        } else {
+            ps = P.pairs(P.polynomials(), ((RandomProvider) P).naturalIntegersGeometric(10));
+        }
+        for (Pair<Polynomial, Integer> p : take(LIMIT, ps)) {
+            System.out.println("coefficient(" + p.a + ", " + p.b + ") = " + p.a.coefficient(p.b));
         }
     }
 
