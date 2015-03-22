@@ -91,6 +91,13 @@ public class RationalPolynomialDemos {
         }
     }
 
+    public static void demoNegate() {
+        initialize();
+        for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
+            System.out.println("-(" + p + ") = " + p.negate());
+        }
+    }
+
     public static void demoSignum() {
         initialize();
         for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {

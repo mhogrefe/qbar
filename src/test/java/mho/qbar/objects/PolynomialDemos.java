@@ -93,6 +93,13 @@ public class PolynomialDemos {
         }
     }
 
+    public static void demoNegate() {
+        initialize();
+        for (Polynomial p : take(LIMIT, P.polynomials())) {
+            System.out.println("-(" + p + ") = " + p.negate());
+        }
+    }
+
     public static void demoSignum() {
         initialize();
         for (Polynomial p : take(LIMIT, P.polynomials())) {
