@@ -111,6 +111,17 @@ public class RationalPolynomialTest {
         } catch (IllegalArgumentException ignored) {}
     }
 
+    @Test
+    public void testDegree() {
+        aeq(ZERO.degree(), -1);
+        aeq(ONE.degree(), 0);
+        aeq(X.degree(), 1);
+        aeq(read("-4/3").get().degree(), 0);
+        aeq(read("x^2-7/4*x+1/3").get().degree(), 2);
+        aeq(read("x^3-1").get().degree(), 3);
+        aeq(read("1/2*x^10").get().degree(), 10);
+    }
+
     private static void aeq(Object a, Object b) {
         assertEquals(a.toString(), b.toString());
     }

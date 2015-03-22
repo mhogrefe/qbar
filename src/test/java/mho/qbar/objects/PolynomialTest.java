@@ -112,6 +112,17 @@ public class PolynomialTest {
         } catch (IllegalArgumentException ignored) {}
     }
 
+    @Test
+    public void testDegree() {
+        aeq(ZERO.degree(), -1);
+        aeq(ONE.degree(), 0);
+        aeq(X.degree(), 1);
+        aeq(read("-17").get().degree(), 0);
+        aeq(read("x^2-4*x+7").get().degree(), 2);
+        aeq(read("x^3-1").get().degree(), 3);
+        aeq(read("3*x^10").get().degree(), 10);
+    }
+
     private static void aeq(Object a, Object b) {
         assertEquals(a.toString(), b.toString());
     }
