@@ -182,7 +182,7 @@ public class RationalPolynomial implements Comparable<RationalPolynomial>, Itera
     public static @NotNull RationalPolynomial of(@NotNull Rational c, int p) {
         if (c == Rational.ZERO) return ZERO;
         if (p == 0 && c == Rational.ONE) return ONE;
-        return new RationalPolynomial(toList(concat(replicate(p, Rational.ZERO), Arrays.asList(Rational.ONE))));
+        return new RationalPolynomial(toList(concat(replicate(p, Rational.ZERO), Arrays.asList(c))));
     }
 
     /**

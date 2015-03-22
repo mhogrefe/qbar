@@ -83,6 +83,30 @@ public class RationalPolynomialTest {
         aeq(of(Rational.read("-1/7").get()), "-1/7");
     }
 
+    @Test
+    public void testOf_Rational_int() {
+        assertTrue(of(Rational.ZERO, 0) == ZERO);
+        assertTrue(of(Rational.ZERO, 1) == ZERO);
+        assertTrue(of(Rational.ZERO, 2) == ZERO);
+        assertTrue(of(Rational.ZERO, 3) == ZERO);
+        assertTrue(of(Rational.ONE, 0) == ONE);
+        aeq(of(Rational.ONE, 1), "x");
+        aeq(of(Rational.ONE, 2), "x^2");
+        aeq(of(Rational.ONE, 3), "x^3");
+        aeq(of(Rational.read("-1").get(), 0), "-1");
+        aeq(of(Rational.read("-1").get(), 1), "-x");
+        aeq(of(Rational.read("-1").get(), 2), "-x^2");
+        aeq(of(Rational.read("-1").get(), 3), "-x^3");
+        aeq(of(Rational.read("3/2").get(), 0), "3/2");
+        aeq(of(Rational.read("3/2").get(), 1), "3/2*x");
+        aeq(of(Rational.read("3/2").get(), 2), "3/2*x^2");
+        aeq(of(Rational.read("3/2").get(), 3), "3/2*x^3");
+        aeq(of(Rational.read("-5/7").get(), 0), "-5/7");
+        aeq(of(Rational.read("-5/7").get(), 1), "-5/7*x");
+        aeq(of(Rational.read("-5/7").get(), 2), "-5/7*x^2");
+        aeq(of(Rational.read("-5/7").get(), 3), "-5/7*x^3");
+    }
+
     private static void aeq(Object a, Object b) {
         assertEquals(a.toString(), b.toString());
     }

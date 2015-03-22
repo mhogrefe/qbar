@@ -180,7 +180,7 @@ public class Polynomial implements Comparable<Polynomial>, Iterable<BigInteger> 
     public static @NotNull Polynomial of(@NotNull BigInteger c, int p) {
         if (c.equals(BigInteger.ZERO)) return ZERO;
         if (p == 0 && c.equals(BigInteger.ONE)) return ONE;
-        return new Polynomial(toList(concat(replicate(p, BigInteger.ZERO), Arrays.asList(BigInteger.ONE))));
+        return new Polynomial(toList(concat(replicate(p, BigInteger.ZERO), Arrays.asList(c))));
     }
 
     /**

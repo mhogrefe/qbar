@@ -84,6 +84,30 @@ public class PolynomialTest {
         aeq(of(BigInteger.valueOf(-7)), -7);
     }
 
+    @Test
+    public void testOf_BigInteger_int() {
+        assertTrue(of(BigInteger.ZERO, 0) == ZERO);
+        assertTrue(of(BigInteger.ZERO, 1) == ZERO);
+        assertTrue(of(BigInteger.ZERO, 2) == ZERO);
+        assertTrue(of(BigInteger.ZERO, 3) == ZERO);
+        assertTrue(of(BigInteger.ONE, 0) == ONE);
+        aeq(of(BigInteger.ONE, 1), "x");
+        aeq(of(BigInteger.ONE, 2), "x^2");
+        aeq(of(BigInteger.ONE, 3), "x^3");
+        aeq(of(BigInteger.valueOf(-1), 0), "-1");
+        aeq(of(BigInteger.valueOf(-1), 1), "-x");
+        aeq(of(BigInteger.valueOf(-1), 2), "-x^2");
+        aeq(of(BigInteger.valueOf(-1), 3), "-x^3");
+        aeq(of(BigInteger.valueOf(3), 0), "3");
+        aeq(of(BigInteger.valueOf(3), 1), "3*x");
+        aeq(of(BigInteger.valueOf(3), 2), "3*x^2");
+        aeq(of(BigInteger.valueOf(3), 3), "3*x^3");
+        aeq(of(BigInteger.valueOf(-5), 0), "-5");
+        aeq(of(BigInteger.valueOf(-5), 1), "-5*x");
+        aeq(of(BigInteger.valueOf(-5), 2), "-5*x^2");
+        aeq(of(BigInteger.valueOf(-5), 3), "-5*x^3");
+    }
+
     private static void aeq(Object a, Object b) {
         assertEquals(a.toString(), b.toString());
     }
