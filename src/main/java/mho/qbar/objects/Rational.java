@@ -1157,7 +1157,7 @@ public final class Rational implements Comparable<Rational> {
      * Returns the absolute value of {@code this}.
      *
      * <ul>
-     *  <li>{@code this} may be any {@code Rational.}</li>
+     *  <li>{@code this} may be any {@code Rational}.</li>
      *  <li>The result is a non-negative {@code Rational}.</li>
      * </ul>
      *

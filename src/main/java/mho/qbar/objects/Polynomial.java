@@ -233,6 +233,22 @@ public class Polynomial implements Comparable<Polynomial>, Iterable<BigInteger> 
     }
 
     /**
+     * Returns the absolute value of {@code this}. In other words, if the leading coefficient of {@code this} is
+     * negative, {@code this} is negated.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>The result is either 0 or a {@code Polynomial} with a positive leading coefficient.</li>
+     * </ul>
+     *
+     * @return |{@code this}|
+     */
+    public @NotNull Polynomial abs() {
+        if (this == ZERO || this == ONE) return this;
+        return leading().get().signum() == 1 ? this : negate();
+    }
+
+    /**
      * Returns the sign of {@code this}; 0 if {@code this} is 0, or the sign of the leading coefficient.
      *
      * <ul>

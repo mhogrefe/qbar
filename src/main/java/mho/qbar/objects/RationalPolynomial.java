@@ -235,6 +235,22 @@ public class RationalPolynomial implements Comparable<RationalPolynomial>, Itera
     }
 
     /**
+     * Returns the absolute value of {@code this}. In other words, if the leading coefficient of {@code this} is
+     * negative, {@code this} is negated.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalPolynomial}.</li>
+     *  <li>The result is either 0 or a {@code RationalPolynomial} with a positive leading coefficient.</li>
+     * </ul>
+     *
+     * @return |{@code this}|
+     */
+    public @NotNull RationalPolynomial abs() {
+        if (this == ZERO || this == ONE) return this;
+        return leading().get().signum() == 1 ? this : negate();
+    }
+
+    /**
      * Returns the sign of {@code this}; 0 if {@code this} is 0, or the sign of the leading coefficient.
      *
      * <ul>
