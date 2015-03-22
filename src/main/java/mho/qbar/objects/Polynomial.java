@@ -165,8 +165,10 @@ public class Polynomial implements Iterable<BigInteger> {
      *  <li>{@code p} cannot be negative.</li>
      * </ul>
      *
+     * Length is 0 if {@code c} is 0, {@code}+1 otherwise
+     *
      * @param c the monomial's coefficient
-     * @param p the monomial's degree
+     * @param p the monomial's degree if {@code c} is nonzero
      * @return {@code c}x<sup>p</sup>
      */
     public static @NotNull Polynomial of(@NotNull BigInteger c, int p) {
