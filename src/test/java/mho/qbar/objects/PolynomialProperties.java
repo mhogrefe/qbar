@@ -48,6 +48,7 @@ public class PolynomialProperties {
             propertiesOf_List_BigInteger();
             propertiesOf_BigInteger();
             propertiesOf_BigInteger_int();
+            propertiesDegree();
         }
         System.out.println("Done");
     }
@@ -182,6 +183,16 @@ public class PolynomialProperties {
                 of(p.a, p.b);
                 fail(p.toString());
             } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private static void propertiesDegree() {
+        initialize();
+        System.out.println("\t\ttesting degree() properties");
+
+        for (Polynomial p : take(LIMIT, P.polynomials())) {
+            int degree = p.degree();
+            assertTrue(p.toString(), degree >= -1);
         }
     }
 

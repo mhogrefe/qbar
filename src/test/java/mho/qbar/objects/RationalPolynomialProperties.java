@@ -47,6 +47,7 @@ public class RationalPolynomialProperties {
             propertiesOf_List_Rational();
             propertiesOf_Rational();
             propertiesOf_Rational_int();
+            propertiesDegree();
         }
         System.out.println("Done");
     }
@@ -179,6 +180,16 @@ public class RationalPolynomialProperties {
                 of(p.a, p.b);
                 fail(p.toString());
             } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private static void propertiesDegree() {
+        initialize();
+        System.out.println("\t\ttesting degree() properties");
+
+        for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
+            int degree = p.degree();
+            assertTrue(p.toString(), degree >= -1);
         }
     }
 
