@@ -1,10 +1,16 @@
 package mho.qbar.objects;
 
+import mho.wheels.misc.Readers;
+import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
+
+import java.util.List;
+import java.util.Optional;
 
 import static mho.qbar.objects.RationalPolynomial.*;
 import static mho.wheels.iterables.IterableUtils.*;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class RationalPolynomialTest {
@@ -50,7 +56,34 @@ public class RationalPolynomialTest {
         } catch (ArrayIndexOutOfBoundsException ignored) {}
     }
 
+    @Test
+    public void testOf_List_Rational() {
+        assertTrue(of(readRationalList("[]").get()) == ZERO);
+        assertTrue(of(readRationalList("[0]").get()) == ZERO);
+        assertTrue(of(readRationalList("[0, 0, 0]").get()) == ZERO);
+        assertTrue(of(readRationalList("[1]").get()) == ONE);
+        assertTrue(of(readRationalList("[1, 0, 0]").get()) == ONE);
+        aeq(of(readRationalList("[0, 1]").get()), X);
+        aeq(of(readRationalList("[-4/3]").get()), "-4/3");
+        aeq(of(readRationalList("[1/3, -7/4, 1]").get()), "x^2-7/4*x+1/3");
+        aeq(of(readRationalList("[1/3, -7/4, 1, 0]").get()), "x^2-7/4*x+1/3");
+        aeq(of(readRationalList("[-1, 0, 0, 1]").get()), "x^3-1");
+        aeq(of(readRationalList("[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1/2]").get()), "1/2*x^10");
+        try {
+            of(readRationalListWithNulls("[1/3, null, 1]").get());
+            fail();
+        } catch (NullPointerException ignored) {}
+    }
+
     private static void aeq(Object a, Object b) {
         assertEquals(a.toString(), b.toString());
+    }
+
+    private static @NotNull Optional<List<Rational>> readRationalList(@NotNull String s) {
+        return Readers.readList(Rational::read).apply(s);
+    }
+
+    private static @NotNull Optional<List<Rational>> readRationalListWithNulls(@NotNull String s) {
+        return Readers.readListWithNulls(Rational::read).apply(s);
     }
 }
