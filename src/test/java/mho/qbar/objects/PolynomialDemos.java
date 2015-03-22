@@ -65,6 +65,19 @@ public class PolynomialDemos {
         }
     }
 
+    public static void demoOf_BigInteger_int() {
+        initialize();
+        Iterable<Pair<BigInteger, Integer>> ps;
+        if (P instanceof QBarExhaustiveProvider) {
+            ps = ((QBarExhaustiveProvider) P).pairsLogarithmicOrder(P.bigIntegers(), P.naturalIntegers());
+        } else {
+            ps = P.pairs(P.bigIntegers(), ((RandomProvider) P).naturalIntegersGeometric(20));
+        }
+        for (Pair<BigInteger, Integer> p : take(LIMIT, ps)) {
+            System.out.println("of(" + p.a + ", " + p.b + ") = " + of(p.a, p.b));
+        }
+    }
+
     public static void demoToString() {
         initialize();
         for (Polynomial p : take(LIMIT, P.polynomials())) {

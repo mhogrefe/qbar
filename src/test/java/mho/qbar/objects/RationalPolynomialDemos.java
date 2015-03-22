@@ -64,6 +64,19 @@ public class RationalPolynomialDemos {
         }
     }
 
+    public static void demoOf_Rational_int() {
+        initialize();
+        Iterable<Pair<Rational, Integer>> ps;
+        if (P instanceof QBarExhaustiveProvider) {
+            ps = ((QBarExhaustiveProvider) P).pairsLogarithmicOrder(P.rationals(), P.naturalIntegers());
+        } else {
+            ps = P.pairs(P.rationals(), ((RandomProvider) P).naturalIntegersGeometric(20));
+        }
+        for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
+            System.out.println("of(" + p.a + ", " + p.b + ") = " + of(p.a, p.b));
+        }
+    }
+
     public static void demoToString() {
         initialize();
         for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
