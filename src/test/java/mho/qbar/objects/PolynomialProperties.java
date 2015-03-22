@@ -3,6 +3,8 @@ package mho.qbar.objects;
 import mho.qbar.iterableProviders.QBarExhaustiveProvider;
 import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.iterableProviders.QBarRandomProvider;
+import mho.wheels.iterables.RandomProvider;
+import mho.wheels.structures.Pair;
 import org.junit.Test;
 
 import java.math.BigInteger;
@@ -14,6 +16,7 @@ import static mho.qbar.objects.Polynomial.*;
 import static mho.wheels.iterables.IterableUtils.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 @SuppressWarnings("ConstantConditions")
 public class PolynomialProperties {
@@ -40,6 +43,7 @@ public class PolynomialProperties {
             System.out.println("\ttesting " + (useRandom ? "randomly" : "exhaustively"));
             USE_RANDOM = useRandom;
             propertiesIterator();
+            propertiesCoefficient();
         }
         System.out.println("Done");
     }
@@ -60,6 +64,36 @@ public class PolynomialProperties {
         for (Polynomial p : take(LIMIT, P.polynomialsAtLeast(0))) {
             List<BigInteger> is = toList(p);
             assertTrue(p.toString(), !last(is).equals(BigInteger.ZERO));
+        }
+    }
+
+    private static void propertiesCoefficient() {
+        initialize();
+        System.out.println("\t\ttesting coefficient(int) properties...");
+
+        Iterable<Pair<Polynomial, Integer>> ps;
+        if (P instanceof QBarExhaustiveProvider) {
+            ps = ((QBarExhaustiveProvider) P).pairsLogarithmicOrder(P.polynomials(), P.naturalIntegers());
+        } else {
+            ps = P.pairs(P.polynomials(), ((RandomProvider) P).naturalIntegersGeometric(10));
+        }
+        for (Pair<Polynomial, Integer> p : take(LIMIT, ps)) {
+            p.a.coefficient(p.b);
+        }
+
+        for (Pair<Polynomial, Integer> p : take(LIMIT, filter(q -> q.b <= q.a.degree(), ps))) {
+            assertEquals(p.toString(), p.a.coefficient(p.b), toList(p.a).get(p.b));
+        }
+
+        for (Pair<Polynomial, Integer> p : take(LIMIT, filter(q -> q.b > q.a.degree(), ps))) {
+            assertEquals(p.toString(), p.a.coefficient(p.b), BigInteger.ZERO);
+        }
+
+        for (Pair<Polynomial, Integer> p : take(LIMIT, P.pairs(P.polynomials(), P.negativeIntegers()))) {
+            try {
+                p.a.coefficient(p.b);
+                fail(p.toString());
+            } catch (ArrayIndexOutOfBoundsException ignored) {}
         }
     }
 }

@@ -3,6 +3,8 @@ package mho.qbar.objects;
 import mho.qbar.iterableProviders.QBarExhaustiveProvider;
 import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.iterableProviders.QBarRandomProvider;
+import mho.wheels.iterables.RandomProvider;
+import mho.wheels.structures.Pair;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -13,6 +15,7 @@ import static mho.qbar.objects.RationalPolynomial.*;
 import static mho.wheels.iterables.IterableUtils.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 @SuppressWarnings("ConstantConditions")
 public class RationalPolynomialProperties {
@@ -39,6 +42,7 @@ public class RationalPolynomialProperties {
             System.out.println("\ttesting " + (useRandom ? "randomly" : "exhaustively"));
             USE_RANDOM = useRandom;
             propertiesIterator();
+            propertiesCoefficient();
         }
         System.out.println("Done");
     }
@@ -59,6 +63,37 @@ public class RationalPolynomialProperties {
         for (RationalPolynomial p : take(LIMIT, P.rationalPolynomialsAtLeast(0))) {
             List<Rational> rs = toList(p);
             assertTrue(p.toString(), last(rs) != Rational.ZERO);
+        }
+    }
+
+    private static void propertiesCoefficient() {
+        initialize();
+        System.out.println("\t\ttesting coefficient(int) properties...");
+
+        Iterable<Pair<RationalPolynomial, Integer>> ps;
+        if (P instanceof QBarExhaustiveProvider) {
+            ps = ((QBarExhaustiveProvider) P).pairsLogarithmicOrder(P.rationalPolynomials(), P.naturalIntegers());
+        } else {
+            ps = P.pairs(P.rationalPolynomials(), ((RandomProvider) P).naturalIntegersGeometric(10));
+        }
+        for (Pair<RationalPolynomial, Integer> p : take(LIMIT, ps)) {
+            p.a.coefficient(p.b);
+        }
+
+        for (Pair<RationalPolynomial, Integer> p : take(LIMIT, filter(q -> q.b <= q.a.degree(), ps))) {
+            assertEquals(p.toString(), p.a.coefficient(p.b), toList(p.a).get(p.b));
+        }
+
+        for (Pair<RationalPolynomial, Integer> p : take(LIMIT, filter(q -> q.b > q.a.degree(), ps))) {
+            assertEquals(p.toString(), p.a.coefficient(p.b), Rational.ZERO);
+        }
+
+        Iterable<Pair<RationalPolynomial, Integer>> psFail = P.pairs(P.rationalPolynomials(), P.negativeIntegers());
+        for (Pair<RationalPolynomial, Integer> p : take(LIMIT, psFail)) {
+            try {
+                p.a.coefficient(p.b);
+                fail(p.toString());
+            } catch (ArrayIndexOutOfBoundsException ignored) {}
         }
     }
 }
