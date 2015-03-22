@@ -57,6 +57,13 @@ public class RationalPolynomialDemos {
         }
     }
 
+    public static void demoOf_Rational() {
+        initialize();
+        for (Rational r : take(LIMIT, P.rationals())) {
+            System.out.println("of(" + r + ") = " + of(r));
+        }
+    }
+
     public static void demoToString() {
         initialize();
         for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {

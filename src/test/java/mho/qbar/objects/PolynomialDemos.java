@@ -58,6 +58,13 @@ public class PolynomialDemos {
         }
     }
 
+    public static void demoOf_BigInteger() {
+        initialize();
+        for (BigInteger i : take(LIMIT, P.bigIntegers())) {
+            System.out.println("of(" + i + ") = " + of(i));
+        }
+    }
+
     public static void demoToString() {
         initialize();
         for (Polynomial p : take(LIMIT, P.polynomials())) {
