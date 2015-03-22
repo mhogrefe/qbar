@@ -76,6 +76,14 @@ public class PolynomialTest {
         } catch (NullPointerException ignored) {}
     }
 
+    @Test
+    public void testOf_BigInteger() {
+        assertTrue(of(BigInteger.ZERO) == ZERO);
+        assertTrue(of(BigInteger.ONE) == ONE);
+        aeq(of(BigInteger.valueOf(5)), 5);
+        aeq(of(BigInteger.valueOf(-7)), -7);
+    }
+
     private static void aeq(Object a, Object b) {
         assertEquals(a.toString(), b.toString());
     }

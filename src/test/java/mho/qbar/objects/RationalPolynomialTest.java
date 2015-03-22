@@ -75,6 +75,14 @@ public class RationalPolynomialTest {
         } catch (NullPointerException ignored) {}
     }
 
+    @Test
+    public void testOf_Rational() {
+        assertTrue(of(Rational.ZERO) == ZERO);
+        assertTrue(of(Rational.ONE) == ONE);
+        aeq(of(Rational.read("5/3").get()), "5/3");
+        aeq(of(Rational.read("-1/7").get()), "-1/7");
+    }
+
     private static void aeq(Object a, Object b) {
         assertEquals(a.toString(), b.toString());
     }
