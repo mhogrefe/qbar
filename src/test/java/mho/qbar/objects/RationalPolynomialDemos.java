@@ -84,6 +84,13 @@ public class RationalPolynomialDemos {
         }
     }
 
+    public static void demoLeading() {
+        initialize();
+        for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
+            System.out.println("leading(" + p + ") = " + p.leading());
+        }
+    }
+
     public static void demoToString() {
         initialize();
         for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {

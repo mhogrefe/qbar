@@ -85,6 +85,13 @@ public class PolynomialDemos {
         }
     }
 
+    public static void demoLeading() {
+        initialize();
+        for (Polynomial p : take(LIMIT, P.polynomials())) {
+            System.out.println("leading(" + p + ") = " + p.leading());
+        }
+    }
+
     public static void demoToString() {
         initialize();
         for (Polynomial p : take(LIMIT, P.polynomials())) {
