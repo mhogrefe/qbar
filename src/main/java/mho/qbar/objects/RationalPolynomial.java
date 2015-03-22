@@ -284,7 +284,9 @@ public class RationalPolynomial implements Comparable<RationalPolynomial>, Itera
         int thatSign = that.signum();
         if (thisSign > thatSign) return 1;
         if (thisSign < thatSign) return -1;
-        return RATIONAL_ITERABLE_COMPARATOR.compare(reverse(coefficients), reverse(that.coefficients));
+        int c = RATIONAL_ITERABLE_COMPARATOR.compare(reverse(coefficients), reverse(that.coefficients));
+        if (thisSign == -1) c = -c;
+        return c;
     }
 
     /**

@@ -209,6 +209,59 @@ public class RationalPolynomialTest {
         aeq(read("1/2*x^10").get().hashCode(), -1011939104);
     }
 
+    @Test
+    public void testCompareTo() {
+        aeq(ZERO.compareTo(ZERO), 0);
+        aeq(ZERO.compareTo(ONE), -1);
+        aeq(ZERO.compareTo(X), -1);
+        aeq(ZERO.compareTo(read("-4/3").get()), 1);
+        aeq(ZERO.compareTo(read("x^2-7/4*x+1/3").get()), -1);
+        aeq(ZERO.compareTo(read("-x^3-1").get()), 1);
+        aeq(ZERO.compareTo(read("1/2*x^10").get()), -1);
+        aeq(ONE.compareTo(ZERO), 1);
+        aeq(ONE.compareTo(ONE), 0);
+        aeq(ONE.compareTo(X), -1);
+        aeq(ONE.compareTo(read("-4/3").get()), 1);
+        aeq(ONE.compareTo(read("x^2-7/4*x+1/3").get()), -1);
+        aeq(ONE.compareTo(read("-x^3-1").get()), 1);
+        aeq(ONE.compareTo(read("1/2*x^10").get()), -1);
+        aeq(X.compareTo(ZERO), 1);
+        aeq(X.compareTo(ONE), 1);
+        aeq(X.compareTo(X), 0);
+        aeq(X.compareTo(read("-4/3").get()), 1);
+        aeq(X.compareTo(read("x^2-7/4*x+1/3").get()), -1);
+        aeq(X.compareTo(read("-x^3-1").get()), 1);
+        aeq(X.compareTo(read("1/2*x^10").get()), -1);
+        aeq(read("-4/3").get().compareTo(ZERO), -1);
+        aeq(read("-4/3").get().compareTo(ONE), -1);
+        aeq(read("-4/3").get().compareTo(X), -1);
+        aeq(read("-4/3").get().compareTo(read("-4/3").get()), 0);
+        aeq(read("-4/3").get().compareTo(read("x^2-7/4*x+1/3").get()), -1);
+        aeq(read("-4/3").get().compareTo(read("-x^3-1").get()), 1);
+        aeq(read("-4/3").get().compareTo(read("1/2*x^10").get()), -1);
+        aeq(read("x^2-7/4*x+1/3").get().compareTo(ZERO), 1);
+        aeq(read("x^2-7/4*x+1/3").get().compareTo(ONE), 1);
+        aeq(read("x^2-7/4*x+1/3").get().compareTo(X), 1);
+        aeq(read("x^2-7/4*x+1/3").get().compareTo(read("-4/3").get()), 1);
+        aeq(read("x^2-7/4*x+1/3").get().compareTo(read("x^2-7/4*x+1/3").get()), 0);
+        aeq(read("x^2-7/4*x+1/3").get().compareTo(read("-x^3-1").get()), 1);
+        aeq(read("x^2-7/4*x+1/3").get().compareTo(read("1/2*x^10").get()), -1);
+        aeq(read("-x^3-1").get().compareTo(ZERO), -1);
+        aeq(read("-x^3-1").get().compareTo(ONE), -1);
+        aeq(read("-x^3-1").get().compareTo(X), -1);
+        aeq(read("-x^3-1").get().compareTo(read("-4/3").get()), -1);
+        aeq(read("-x^3-1").get().compareTo(read("x^2-7/4*x+1/3").get()), -1);
+        aeq(read("-x^3-1").get().compareTo(read("-x^3-1").get()), 0);
+        aeq(read("-x^3-1").get().compareTo(read("1/2*x^10").get()), -1);
+        aeq(read("1/2*x^10").get().compareTo(ZERO), 1);
+        aeq(read("1/2*x^10").get().compareTo(ONE), 1);
+        aeq(read("1/2*x^10").get().compareTo(X), 1);
+        aeq(read("1/2*x^10").get().compareTo(read("-4/3").get()), 1);
+        aeq(read("1/2*x^10").get().compareTo(read("x^2-7/4*x+1/3").get()), 1);
+        aeq(read("1/2*x^10").get().compareTo(read("-x^3-1").get()), 1);
+        aeq(read("1/2*x^10").get().compareTo(read("1/2*x^10").get()), 0);
+    }
+
     private static void aeq(Object a, Object b) {
         assertEquals(a.toString(), b.toString());
     }

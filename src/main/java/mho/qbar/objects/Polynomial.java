@@ -282,7 +282,9 @@ public class Polynomial implements Comparable<Polynomial>, Iterable<BigInteger> 
         int thatSign = that.signum();
         if (thisSign > thatSign) return 1;
         if (thisSign < thatSign) return -1;
-        return BIG_INTEGER_ITERABLE_COMPARATOR.compare(reverse(coefficients), reverse(that.coefficients));
+        int c = BIG_INTEGER_ITERABLE_COMPARATOR.compare(reverse(coefficients), reverse(that.coefficients));
+        if (thisSign == -1) c = -c;
+        return c;
     }
 
     /**
