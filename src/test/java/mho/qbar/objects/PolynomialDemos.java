@@ -92,6 +92,13 @@ public class PolynomialDemos {
         }
     }
 
+    public static void demoSignum() {
+        initialize();
+        for (Polynomial p : take(LIMIT, P.polynomials())) {
+            System.out.println("sgn(" + p + ") = " + p.signum());
+        }
+    }
+
     public static void demoToString() {
         initialize();
         for (Polynomial p : take(LIMIT, P.polynomials())) {
