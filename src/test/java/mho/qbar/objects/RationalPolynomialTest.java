@@ -131,6 +131,17 @@ public class RationalPolynomialTest {
         aeq(read("1/2*x^10").get().leading().get(), "1/2");
     }
 
+    @Test
+    public void testSignum() {
+        aeq(ZERO.signum(), 0);
+        aeq(ONE.signum(), 1);
+        aeq(X.signum(), 1);
+        aeq(read("-4/3").get().signum(), -1);
+        aeq(read("x^2-7/4*x+1/3").get().signum(), 1);
+        aeq(read("-x^3-1").get().signum(), -1);
+        aeq(read("1/2*x^10").get().signum(), 1);
+    }
+
     private static void aeq(Object a, Object b) {
         assertEquals(a.toString(), b.toString());
     }

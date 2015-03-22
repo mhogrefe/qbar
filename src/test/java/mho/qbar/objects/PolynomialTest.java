@@ -132,6 +132,17 @@ public class PolynomialTest {
         aeq(read("3*x^10").get().leading().get(), 3);
     }
 
+    @Test
+    public void testSignum() {
+        aeq(ZERO.signum(), 0);
+        aeq(ONE.signum(), 1);
+        aeq(X.signum(), 1);
+        aeq(read("-17").get().signum(), -1);
+        aeq(read("x^2-4*x+7").get().signum(), 1);
+        aeq(read("-x^3-1").get().signum(), -1);
+        aeq(read("3*x^10").get().signum(), 1);
+    }
+
     private static void aeq(Object a, Object b) {
         assertEquals(a.toString(), b.toString());
     }
