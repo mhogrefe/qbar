@@ -17,6 +17,7 @@ import static mho.wheels.iterables.IterableUtils.*;
 @SuppressWarnings({"ConstantConditions", "UnusedDeclaration"})
 public class PolynomialDemos {
     private static final boolean USE_RANDOM = false;
+    private static final String POLYNOMIAL_CHARS = "*+-0123456789^x";
     private static int LIMIT;
 
     private static QBarIterableProvider P;
@@ -140,6 +141,26 @@ public class PolynomialDemos {
         initialize();
         for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(P.polynomials()))) {
             System.out.println(p.a + " " + Ordering.compare(p.a, p.b).toChar() + " " + p.b);
+        }
+    }
+
+    public static void demoRead() {
+        initialize();
+        for (String s : take(LIMIT, P.strings())) {
+            System.out.println("read(" + s + ") = " + read(s));
+        }
+    }
+
+    public static void demoRead_targeted() {
+        initialize();
+        Iterable<Character> cs;
+        if (P instanceof QBarExhaustiveProvider) {
+            cs = fromString(POLYNOMIAL_CHARS);
+        } else {
+            cs = ((QBarRandomProvider) P).uniformSample(POLYNOMIAL_CHARS);
+        }
+        for (String s : take(LIMIT, P.strings(cs))) {
+            System.out.println("read(" + s + ") = " + read(s));
         }
     }
 

@@ -16,6 +16,7 @@ import static mho.wheels.iterables.IterableUtils.*;
 @SuppressWarnings({"ConstantConditions", "UnusedDeclaration"})
 public class RationalPolynomialDemos {
     private static final boolean USE_RANDOM = false;
+    private static final String RATIONAL_POLYNOMIAL_CHARS = "*+-/0123456789^x";
     private static int LIMIT;
 
     private static QBarIterableProvider P;
@@ -139,6 +140,26 @@ public class RationalPolynomialDemos {
         initialize();
         for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, P.pairs(P.rationalPolynomials()))) {
             System.out.println(p.a + " " + Ordering.compare(p.a, p.b).toChar() + " " + p.b);
+        }
+    }
+
+    public static void demoRead() {
+        initialize();
+        for (String s : take(LIMIT, P.strings())) {
+            System.out.println("read(" + s + ") = " + read(s));
+        }
+    }
+
+    public static void demoRead_targeted() {
+        initialize();
+        Iterable<Character> cs;
+        if (P instanceof QBarExhaustiveProvider) {
+            cs = fromString(RATIONAL_POLYNOMIAL_CHARS);
+        } else {
+            cs = ((QBarRandomProvider) P).uniformSample(RATIONAL_POLYNOMIAL_CHARS);
+        }
+        for (String s : take(LIMIT, P.strings(cs))) {
+            System.out.println("read(" + s + ") = " + read(s));
         }
     }
 
