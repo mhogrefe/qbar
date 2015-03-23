@@ -284,6 +284,60 @@ public class RationalPolynomialTest {
         aeq(read("1/2*x^10").get().compareTo(read("1/2*x^10").get()), 0);
     }
 
+    @Test
+    public void testRead() {
+        assertTrue(read("0").get() == ZERO);
+        assertTrue(read("1").get() == ONE);
+        aeq(read("x").get(), X);
+        aeq(read("2").get(), "2");
+        aeq(read("-2").get(), "-2");
+        aeq(read("4/3").get(), "4/3");
+        aeq(read("-4/3").get(), "-4/3");
+        aeq(read("-x").get(), "-x");
+        aeq(read("3*x").get(), "3*x");
+        aeq(read("-3*x").get(), "-3*x");
+        aeq(read("x^2").get(), "x^2");
+        aeq(read("-x^2").get(), "-x^2");
+        aeq(read("2*x^2").get(), "2*x^2");
+        aeq(read("-2*x^2").get(), "-2*x^2");
+        aeq(read("x-1").get(), "x-1");
+        aeq(read("-x-1").get(), "-x-1");
+        aeq(read("x^2-1").get(), "x^2-1");
+        aeq(read("x^2-7/4*x+1/3").get(), "x^2-7/4*x+1/3");
+        aeq(read("1/2*x^10").get(), "1/2*x^10");
+        assertFalse(read("").isPresent());
+        assertFalse(read("+").isPresent());
+        assertFalse(read("-").isPresent());
+        assertFalse(read("+1").isPresent());
+        assertFalse(read("+x").isPresent());
+        assertFalse(read("+x^2").isPresent());
+        assertFalse(read("+x^2-x").isPresent());
+        assertFalse(read(" x").isPresent());
+        assertFalse(read("x ").isPresent());
+        assertFalse(read("X").isPresent());
+        assertFalse(read("x + 1").isPresent());
+        assertFalse(read("x^0").isPresent());
+        assertFalse(read("x^-1").isPresent());
+        assertFalse(read("x^1").isPresent());
+        assertFalse(read("1-2").isPresent());
+        assertFalse(read("x+x").isPresent());
+        assertFalse(read("x+x^2").isPresent());
+        assertFalse(read("1+x").isPresent());
+        assertFalse(read("x+0").isPresent());
+        assertFalse(read("0*x").isPresent());
+        assertFalse(read("-0*x").isPresent());
+        assertFalse(read("+0*x").isPresent());
+        assertFalse(read("2x").isPresent());
+        assertFalse(read("1/2x").isPresent());
+        assertFalse(read("x^2+1+x").isPresent());
+        assertFalse(read("x^2+3*x^2").isPresent());
+        assertFalse(read("2^x").isPresent());
+        assertFalse(read("abc").isPresent());
+        assertFalse(read("x+y").isPresent());
+        assertFalse(read("y").isPresent());
+        assertFalse(read("x/2").isPresent());
+    }
+
     private static void aeq(Object a, Object b) {
         assertEquals(a.toString(), b.toString());
     }

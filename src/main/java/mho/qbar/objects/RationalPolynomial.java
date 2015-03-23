@@ -408,6 +408,7 @@ public class RationalPolynomial implements Comparable<RationalPolynomial>, Itera
                         Optional<Integer> oPower = Readers.readInteger(powerString);
                         if (!oPower.isPresent()) return Optional.empty();
                         power = oPower.get();
+                        if (power < 2) return Optional.empty(); // no x^1, x^0, x^-1, ... allowed
                         break;
                     default:
                         return Optional.empty();
