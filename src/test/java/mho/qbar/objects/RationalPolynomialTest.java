@@ -308,10 +308,14 @@ public class RationalPolynomialTest {
         assertFalse(read("").isPresent());
         assertFalse(read("+").isPresent());
         assertFalse(read("-").isPresent());
+        assertFalse(read("-0").isPresent());
+        assertFalse(read("+0").isPresent());
+        assertFalse(read("--").isPresent());
         assertFalse(read("+1").isPresent());
         assertFalse(read("+x").isPresent());
         assertFalse(read("+x^2").isPresent());
         assertFalse(read("+x^2-x").isPresent());
+        assertFalse(read("x^1000000000000").isPresent());
         assertFalse(read(" x").isPresent());
         assertFalse(read("x ").isPresent());
         assertFalse(read("X").isPresent());
