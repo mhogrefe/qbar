@@ -12,6 +12,7 @@ import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 
 import static mho.qbar.objects.RationalPolynomial.*;
@@ -56,6 +57,7 @@ public class RationalPolynomialProperties {
             propertiesEquals();
             propertiesHashCode();
             propertiesCompareTo();
+            propertiesRead();
         }
         System.out.println("Done");
     }
@@ -311,6 +313,32 @@ public class RationalPolynomialProperties {
         );
         for (Triple<RationalPolynomial, RationalPolynomial, RationalPolynomial> t : take(LIMIT, ts)) {
             assertEquals(t.toString(), t.a.compareTo(t.c), -1);
+        }
+    }
+
+    private static void propertiesRead() {
+        initialize();
+        System.out.println("\t\ttesting read(String) properties...");
+
+        for (String s : take(LIMIT, P.strings())) {
+            read(s);
+        }
+
+        for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
+            Optional<RationalPolynomial> op = read(p.toString());
+            assertEquals(p.toString(), op.get(), p);
+        }
+
+        Iterable<Character> cs;
+        if (P instanceof QBarExhaustiveProvider) {
+            cs = fromString(RATIONAL_POLYNOMIAL_CHARS);
+        } else {
+            cs = ((QBarRandomProvider) P).uniformSample(RATIONAL_POLYNOMIAL_CHARS);
+        }
+        Iterable<String> ss = filter(s -> read(s).isPresent(), P.strings(cs));
+        for (String s : take(LIMIT, ss)) {
+            Optional<RationalPolynomial> op = read(s);
+            validate(op.get());
         }
     }
 

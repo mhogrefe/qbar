@@ -12,6 +12,7 @@ import org.junit.Test;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 
 import static mho.qbar.objects.Polynomial.*;
@@ -57,6 +58,7 @@ public class PolynomialProperties {
             propertiesEquals();
             propertiesHashCode();
             propertiesCompareTo();
+            propertiesRead();
         }
         System.out.println("Done");
     }
@@ -314,6 +316,32 @@ public class PolynomialProperties {
         );
         for (Triple<Polynomial, Polynomial, Polynomial> t : take(LIMIT, ts)) {
             assertEquals(t.toString(), t.a.compareTo(t.c), -1);
+        }
+    }
+
+    private static void propertiesRead() {
+        initialize();
+        System.out.println("\t\ttesting read(String) properties...");
+
+        for (String s : take(LIMIT, P.strings())) {
+            read(s);
+        }
+
+        for (Polynomial p : take(LIMIT, P.polynomials())) {
+            Optional<Polynomial> op = read(p.toString());
+            assertEquals(p.toString(), op.get(), p);
+        }
+
+        Iterable<Character> cs;
+        if (P instanceof QBarExhaustiveProvider) {
+            cs = fromString(POLYNOMIAL_CHARS);
+        } else {
+            cs = ((QBarRandomProvider) P).uniformSample(POLYNOMIAL_CHARS);
+        }
+        Iterable<String> ss = filter(s -> read(s).isPresent(), P.strings(cs));
+        for (String s : take(LIMIT, ss)) {
+            Optional<Polynomial> op = read(s);
+            validate(op.get());
         }
     }
 
