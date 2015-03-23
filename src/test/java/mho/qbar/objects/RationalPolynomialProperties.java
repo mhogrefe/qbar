@@ -6,6 +6,7 @@ import mho.qbar.iterableProviders.QBarRandomProvider;
 import mho.wheels.iterables.RandomProvider;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
+import mho.wheels.structures.Triple;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
@@ -15,6 +16,7 @@ import java.util.Random;
 
 import static mho.qbar.objects.RationalPolynomial.*;
 import static mho.wheels.iterables.IterableUtils.*;
+import static mho.wheels.ordering.Ordering.*;
 import static org.junit.Assert.*;
 
 @SuppressWarnings("ConstantConditions")
@@ -53,6 +55,7 @@ public class RationalPolynomialProperties {
             propertiesSignum();
             propertiesEquals();
             propertiesHashCode();
+            propertiesCompareTo();
         }
         System.out.println("Done");
     }
@@ -243,7 +246,7 @@ public class RationalPolynomialProperties {
             validate(abs);
             assertEquals(p.toString(), abs, abs.abs());
             assertNotEquals(p.toString(), abs.signum(), -1);
-            //todo assertTrue(p.toString(), ge(abs, ZERO));
+            assertTrue(p.toString(), ge(abs, ZERO));
         }
     }
 
@@ -276,6 +279,38 @@ public class RationalPolynomialProperties {
 
         for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
             assertEquals(p.toString(), p.hashCode(), p.hashCode());
+        }
+    }
+
+    private static void propertiesCompareTo() {
+        initialize();
+        System.out.println("\t\ttesting compareTo(RationalPolynomial) properties...");
+
+        for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, P.pairs(P.rationalPolynomials()))) {
+            int compare = p.a.compareTo(p.b);
+            assertTrue(p.toString(), compare == -1 || compare == 0 || compare == 1);
+            assertEquals(p.toString(), p.b.compareTo(p.a), -compare);
+            //todo assertEquals(p.toString(), p.a.subtract(p.b).signum(), compare);
+        }
+
+        for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
+            assertEquals(p.toString(), p.compareTo(p), 0);
+        }
+
+        Iterable<Pair<RationalPolynomial, RationalPolynomial>> ps = filter(
+                r -> r.a.degree() != r.b.degree(),
+                P.pairs(filter(q -> q.signum() == 1, P.rationalPolynomials()))
+        );
+        for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, ps)) {
+            assertEquals(p.toString(), compare(p.a, p.b), compare(p.a.degree(), p.b.degree()));
+        }
+
+        Iterable<Triple<RationalPolynomial, RationalPolynomial, RationalPolynomial>> ts = filter(
+                t -> lt(t.a, t.b) && lt(t.b, t.c),
+                P.triples(P.rationalPolynomials())
+        );
+        for (Triple<RationalPolynomial, RationalPolynomial, RationalPolynomial> t : take(LIMIT, ts)) {
+            assertEquals(t.toString(), t.a.compareTo(t.c), -1);
         }
     }
 

@@ -4,8 +4,8 @@ import mho.qbar.iterableProviders.QBarExhaustiveProvider;
 import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.iterableProviders.QBarRandomProvider;
 import mho.wheels.iterables.RandomProvider;
-import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
+import mho.wheels.structures.Triple;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
@@ -16,6 +16,8 @@ import java.util.Random;
 
 import static mho.qbar.objects.Polynomial.*;
 import static mho.wheels.iterables.IterableUtils.*;
+import static mho.wheels.ordering.Ordering.*;
+import static mho.wheels.ordering.Ordering.lt;
 import static org.junit.Assert.*;
 
 @SuppressWarnings("ConstantConditions")
@@ -54,6 +56,7 @@ public class PolynomialProperties {
             propertiesSignum();
             propertiesEquals();
             propertiesHashCode();
+            propertiesCompareTo();
         }
         System.out.println("Done");
     }
@@ -246,7 +249,7 @@ public class PolynomialProperties {
             validate(abs);
             assertEquals(p.toString(), abs, abs.abs());
             assertNotEquals(p.toString(), abs.signum(), -1);
-            //todo assertTrue(p.toString(), ge(abs, ZERO));
+            assertTrue(p.toString(), ge(abs, ZERO));
         }
     }
 
@@ -256,7 +259,7 @@ public class PolynomialProperties {
 
         for (Polynomial p : take(LIMIT, P.polynomials())) {
             int signum = p.signum();
-            assertEquals(p.toString(), signum, Ordering.compare(p, ZERO).toInt());
+            assertEquals(p.toString(), signum, compare(p, ZERO).toInt());
             assertTrue(p.toString(), signum == -1 || signum == 0 || signum == 1);
         }
     }
@@ -279,6 +282,38 @@ public class PolynomialProperties {
 
         for (Polynomial p : take(LIMIT, P.polynomials())) {
             assertEquals(p.toString(), p.hashCode(), p.hashCode());
+        }
+    }
+
+    private static void propertiesCompareTo() {
+        initialize();
+        System.out.println("\t\ttesting compareTo(Polynomial) properties...");
+
+        for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(P.polynomials()))) {
+            int compare = p.a.compareTo(p.b);
+            assertTrue(p.toString(), compare == -1 || compare == 0 || compare == 1);
+            assertEquals(p.toString(), p.b.compareTo(p.a), -compare);
+            //todo assertEquals(p.toString(), p.a.subtract(p.b).signum(), compare);
+        }
+
+        for (Polynomial p : take(LIMIT, P.polynomials())) {
+            assertEquals(p.toString(), p.compareTo(p), 0);
+        }
+
+        Iterable<Pair<Polynomial, Polynomial>> ps = filter(
+                r -> r.a.degree() != r.b.degree(),
+                P.pairs(filter(q -> q.signum() == 1, P.polynomials()))
+        );
+        for (Pair<Polynomial, Polynomial> p : take(LIMIT, ps)) {
+            assertEquals(p.toString(), compare(p.a, p.b), compare(p.a.degree(), p.b.degree()));
+        }
+
+        Iterable<Triple<Polynomial, Polynomial, Polynomial>> ts = filter(
+                t -> lt(t.a, t.b) && lt(t.b, t.c),
+                P.triples(P.polynomials())
+        );
+        for (Triple<Polynomial, Polynomial, Polynomial> t : take(LIMIT, ts)) {
+            assertEquals(t.toString(), t.a.compareTo(t.c), -1);
         }
     }
 
