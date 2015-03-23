@@ -320,6 +320,10 @@ public class RationalPolynomialTest {
         assertFalse(read("x^-1").isPresent());
         assertFalse(read("x^1").isPresent());
         assertFalse(read("1-2").isPresent());
+        assertFalse(read("1*x").isPresent());
+        assertFalse(read("-1*x").isPresent());
+        assertFalse(read("1*x^2").isPresent());
+        assertFalse(read("-1*x^2").isPresent());
         assertFalse(read("x+x").isPresent());
         assertFalse(read("x+x^2").isPresent());
         assertFalse(read("1+x").isPresent());

@@ -390,6 +390,8 @@ public class Polynomial implements Comparable<Polynomial>, Iterable<BigInteger> 
                         Optional<BigInteger> oCoefficient = Readers.readBigInteger(coefficientString);
                         if (!oCoefficient.isPresent()) return Optional.empty();
                         coefficient = oCoefficient.get();
+                        // no 1*x, -1*x, 1*x^2, -1*x^2, ... allowed
+                        if (coefficient.abs().equals(BigInteger.ONE)) return Optional.empty();
                         monomialString = monomialString.substring(xIndex);
                         break;
                 }

@@ -393,6 +393,8 @@ public class RationalPolynomial implements Comparable<RationalPolynomial>, Itera
                         Optional<Rational> oCoefficient = Rational.read(coefficientString);
                         if (!oCoefficient.isPresent()) return Optional.empty();
                         coefficient = oCoefficient.get();
+                        // no 1*x, -1*x, 1*x^2, -1*x^2, ... allowed
+                        if (coefficient.abs() == Rational.ONE) return Optional.empty();
                         monomialString = monomialString.substring(xIndex);
                         break;
                 }
