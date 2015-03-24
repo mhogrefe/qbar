@@ -59,6 +59,7 @@ public class PolynomialProperties {
             propertiesHashCode();
             propertiesCompareTo();
             propertiesRead();
+            propertiesFindIn();
         }
         System.out.println("Done");
     }
@@ -342,6 +343,31 @@ public class PolynomialProperties {
         for (String s : take(LIMIT, ss)) {
             Optional<Polynomial> op = read(s);
             validate(op.get());
+        }
+    }
+
+    private static void propertiesFindIn() {
+        initialize();
+        System.out.println("\t\ttesting findIn(String) properties...");
+
+        for (String s : take(LIMIT, P.strings())) {
+            findIn(s);
+        }
+
+        Iterable<Pair<String, Integer>> ps = P.dependentPairsLogarithmic(P.strings(), s -> range(0, s.length()));
+        Iterable<String> ss = map(p -> take(p.a.b, p.a.a) + p.b + drop(p.a.b, p.a.a), P.pairs(ps, P.polynomials()));
+        for (String s : take(LIMIT, ss)) {
+            Optional<Pair<Polynomial, Integer>> op = findIn(s);
+            Pair<Polynomial, Integer> p = op.get();
+            assertNotNull(s, p.a);
+            assertNotNull(s, p.b);
+            assertTrue(s, p.b >= 0 && p.b < s.length());
+            String before = take(p.b, s);
+            assertFalse(s, findIn(before).isPresent());
+            String during = p.a.toString();
+            assertTrue(s, s.substring(p.b).startsWith(during));
+            String after = drop(p.b + during.length(), s);
+            assertTrue(s, after.isEmpty() || !read(during + head(after)).isPresent());
         }
     }
 
