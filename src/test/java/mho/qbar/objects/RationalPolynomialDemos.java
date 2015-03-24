@@ -86,6 +86,13 @@ public class RationalPolynomialDemos {
         }
     }
 
+    public static void demoTimesX() {
+        initialize();
+        for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
+            System.out.println("timesX(" + p + ") = " + p.timesX());
+        }
+    }
+
     public static void demoLeading() {
         initialize();
         for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
