@@ -164,6 +164,26 @@ public class PolynomialDemos {
         }
     }
 
+    private static void demoFindIn() {
+        initialize();
+        for (String s : take(LIMIT, P.strings())) {
+            System.out.println("findIn(" + s + ") = " + findIn(s));
+        }
+    }
+
+    public static void demoFindIn_targeted() {
+        initialize();
+        Iterable<Character> cs;
+        if (P instanceof QBarExhaustiveProvider) {
+            cs = fromString(POLYNOMIAL_CHARS);
+        } else {
+            cs = ((RandomProvider) P).uniformSample(POLYNOMIAL_CHARS);
+        }
+        for (String s : take(LIMIT, P.strings(cs))) {
+            System.out.println("findIn(" + s + ") = " + findIn(s));
+        }
+    }
+
     public static void demoToString() {
         initialize();
         for (Polynomial p : take(LIMIT, P.polynomials())) {

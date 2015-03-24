@@ -785,7 +785,7 @@ public class RationalDemos {
     public static void demoFindIn_targeted() {
         initialize();
         Iterable<Character> cs;
-        if (P instanceof ExhaustiveProvider) {
+        if (P instanceof QBarExhaustiveProvider) {
             cs = fromString(RATIONAL_CHARS);
         } else {
             cs = ((RandomProvider) P).uniformSample(RATIONAL_CHARS);
