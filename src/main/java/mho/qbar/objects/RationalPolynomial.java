@@ -213,7 +213,8 @@ public class RationalPolynomial implements Comparable<RationalPolynomial>, Itera
      * @return the leading coefficient
      */
     public @NotNull Optional<Rational> leading() {
-        return this == ZERO ? Optional.<Rational>empty() : Optional.of(coefficients.get(coefficients.size() - 1));
+        //noinspection ConstantConditions
+        return this == ZERO ? Optional.<Rational>empty() : Optional.of(last(coefficients));
     }
 
     /**
@@ -467,16 +468,11 @@ public class RationalPolynomial implements Comparable<RationalPolynomial>, Itera
         for (int i = coefficients.size() - 1; i >= 0; i--) {
             Rational coefficient = coefficients.get(i);
             if (coefficient == Rational.ZERO) continue;
-            String power;
-            switch (i) {
-                case 0: power = ""; break;
-                case 1: power = "x"; break;
-                default: power = "x^" + i; break;
-            }
             String monomialString;
             if (i == 0) {
                 monomialString = coefficient.toString();
             } else {
+                String power = i == 1 ? "x" : "x^" + i;
                 if (coefficient == Rational.ONE) {
                     monomialString = power;
                 } else if (coefficient.equals(Rational.of(-1))) {

@@ -211,7 +211,8 @@ public class Polynomial implements Comparable<Polynomial>, Iterable<BigInteger> 
      * @return the leading coefficient
      */
     public @NotNull Optional<BigInteger> leading() {
-        return this == ZERO ? Optional.<BigInteger>empty() : Optional.of(coefficients.get(coefficients.size() - 1));
+        //noinspection ConstantConditions
+        return this == ZERO ? Optional.<BigInteger>empty() : Optional.of(last(coefficients));
     }
 
     /**
@@ -463,16 +464,11 @@ public class Polynomial implements Comparable<Polynomial>, Iterable<BigInteger> 
         for (int i = coefficients.size() - 1; i >= 0; i--) {
             BigInteger coefficient = coefficients.get(i);
             if (coefficient.equals(BigInteger.ZERO)) continue;
-            String power;
-            switch (i) {
-                case 0: power = ""; break;
-                case 1: power = "x"; break;
-                default: power = "x^" + i; break;
-            }
             String monomialString;
             if (i == 0) {
                 monomialString = coefficient.toString();
             } else {
+                String power = i == 1 ? "x" : "x^" + i;
                 if (coefficient.equals(BigInteger.ONE)) {
                     monomialString = power;
                 } else if (coefficient.equals(BigInteger.valueOf(-1))) {
