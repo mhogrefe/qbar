@@ -346,6 +346,24 @@ public class RationalPolynomialTest {
         assertFalse(read("x/2").isPresent());
     }
 
+    @Test
+    public void testFindIn() {
+        aeq(findIn("0123").get(), "(0, 0)");
+        aeq(findIn("yxy").get(), "(x, 1)");
+        aeq(findIn("ax+12b").get(), "(x+12, 1)");
+        aeq(findIn("------x------").get(), "(-x, 5)");
+        aeq(findIn("3*x^2z").get(), "(3*x^2, 0)");
+        aeq(findIn("1+x+x^2").get(), "(1, 0)");
+        aeq(findIn("+1").get(), "(1, 1)");
+        aeq(findIn("y^12").get(), "(12, 2)");
+        aeq(findIn("52*x^-10").get(), "(52*x, 0)");
+        aeq(findIn("2/4*x").get(), "(2, 0)");
+        aeq(findIn("x/2").get(), "(x, 0)");
+        assertFalse(findIn("").isPresent());
+        assertFalse(findIn("o").isPresent());
+        assertFalse(findIn("hello").isPresent());
+    }
+
     private static void aeq(Object a, Object b) {
         assertEquals(a.toString(), b.toString());
     }
