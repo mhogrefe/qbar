@@ -59,6 +59,7 @@ public class RationalPolynomialProperties {
             propertiesCompareTo();
             propertiesRead();
             propertiesFindIn();
+            propertiesToString();
         }
         System.out.println("Done");
     }
@@ -368,6 +369,19 @@ public class RationalPolynomialProperties {
             assertTrue(s, s.substring(p.b).startsWith(during));
             String after = drop(p.b + during.length(), s);
             assertTrue(s, after.isEmpty() || !read(during + head(after)).isPresent());
+        }
+    }
+
+    private static void propertiesToString() {
+        initialize();
+        System.out.println("\t\ttesting toString() properties...");
+
+        for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
+            String s = p.toString();
+            assertTrue(p.toString(), isSubsetOf(s, RATIONAL_POLYNOMIAL_CHARS));
+            Optional<RationalPolynomial> readP = read(s);
+            assertTrue(p.toString(), readP.isPresent());
+            assertEquals(p.toString(), readP.get(), p);
         }
     }
 

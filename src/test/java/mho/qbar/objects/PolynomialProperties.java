@@ -60,6 +60,7 @@ public class PolynomialProperties {
             propertiesCompareTo();
             propertiesRead();
             propertiesFindIn();
+            propertiesToString();
         }
         System.out.println("Done");
     }
@@ -368,6 +369,19 @@ public class PolynomialProperties {
             assertTrue(s, s.substring(p.b).startsWith(during));
             String after = drop(p.b + during.length(), s);
             assertTrue(s, after.isEmpty() || !read(during + head(after)).isPresent());
+        }
+    }
+
+    private static void propertiesToString() {
+        initialize();
+        System.out.println("\t\ttesting toString() properties...");
+
+        for (Polynomial p : take(LIMIT, P.polynomials())) {
+            String s = p.toString();
+            assertTrue(p.toString(), isSubsetOf(s, POLYNOMIAL_CHARS));
+            Optional<Polynomial> readP = read(s);
+            assertTrue(p.toString(), readP.isPresent());
+            assertEquals(p.toString(), readP.get(), p);
         }
     }
 
