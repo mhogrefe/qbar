@@ -38,6 +38,13 @@ public class RationalPolynomialDemos {
         }
     }
 
+    public static void demoApply() {
+        initialize();
+        for (Pair<RationalPolynomial, Rational> p : take(LIMIT, P.pairs(P.rationalPolynomials(), P.rationals()))) {
+            System.out.println(p.a + " at " + p.b + " = " + p.a.apply(p.b));
+        }
+    }
+
     public static void demoCoefficient() {
         initialize();
         Iterable<Pair<RationalPolynomial, Integer>> ps;

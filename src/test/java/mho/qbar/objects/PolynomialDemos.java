@@ -31,11 +31,17 @@ public class PolynomialDemos {
             LIMIT = 10000;
         }
     }
-
     public static void demoIterator() {
         initialize();
         for (Polynomial p : take(LIMIT, P.polynomials())) {
             System.out.println("toList(" + p + ") = " + toList(p));
+        }
+    }
+
+    public static void demoApply() {
+        initialize();
+        for (Pair<Polynomial, BigInteger> p : take(LIMIT, P.pairs(P.polynomials(), P.bigIntegers()))) {
+            System.out.println(p.a + " at " + p.b + " = " + p.a.apply(p.b));
         }
     }
 
