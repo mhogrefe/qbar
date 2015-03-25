@@ -242,8 +242,7 @@ public class Polynomial implements Comparable<Polynomial>, Function<BigInteger, 
      *  <li>The result is not null.</li>
      * </ul>
      *
-     * Length is 0 if {@code this} and {@code that} are both 0, or max(deg({@code this}), deg({@code that}))+1
-     * otherwise
+     * Length is up to max(deg({@code this}), deg({@code that}))+1
      *
      * @param that the {@code Polynomial} added to {@code this}
      * @return {@code this}+{@code that}
@@ -308,8 +307,40 @@ public class Polynomial implements Comparable<Polynomial>, Function<BigInteger, 
      *
      * @return sgn(p(∞))
      */
+    @SuppressWarnings("JavaDoc")
     public int signum() {
         return this == ZERO ? 0 : leading().get().signum();
+    }
+
+    /**
+     * Returns the difference of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * Length is up to max(deg({@code this}), deg({@code that}))+1
+     *
+     * @param that the {@code Polynomial} subtracted from {@code this}
+     * @return {@code this}–{@code that}
+     */
+    public @NotNull Polynomial subtract(@NotNull Polynomial that) {
+        if (this == ZERO) return that.negate();
+        if (that == ZERO) return this;
+        if (this == that) return ZERO;
+        return of(
+                toList(
+                        zipWithPadded(
+                                BigInteger::subtract,
+                                BigInteger.ZERO,
+                                BigInteger.ZERO,
+                                coefficients,
+                                that.coefficients
+                        )
+                )
+        );
     }
 
     /**
