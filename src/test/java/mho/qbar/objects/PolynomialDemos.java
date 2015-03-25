@@ -100,6 +100,13 @@ public class PolynomialDemos {
         }
     }
 
+    public static void demoAdd() {
+        initialize();
+        for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(P.polynomials()))) {
+            System.out.println("(" + p.a + ") + (" + p.b + ") = " + p.a.add(p.b));
+        }
+    }
+
     public static void demoNegate() {
         initialize();
         for (Polynomial p : take(LIMIT, P.polynomials())) {

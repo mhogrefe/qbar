@@ -100,6 +100,13 @@ public class RationalPolynomialDemos {
         }
     }
 
+    public static void demoAdd() {
+        initialize();
+        for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, P.pairs(P.rationalPolynomials()))) {
+            System.out.println("(" + p.a + ") + (" + p.b + ") = " + p.a.add(p.b));
+        }
+    }
+
     public static void demoNegate() {
         initialize();
         for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
