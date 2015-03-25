@@ -1117,7 +1117,6 @@ public final class Rational implements Comparable<Rational> {
     public @NotNull Rational add(@NotNull Rational that) {
         if (this == ZERO) return that;
         if (that == ZERO) return this;
-        if (this == that) return shiftLeft(1);
         BigInteger d1 = denominator.gcd(that.denominator);
         if (d1.equals(BigInteger.ONE)) {
             BigInteger sn = numerator.multiply(that.denominator).add(denominator.multiply(that.numerator));

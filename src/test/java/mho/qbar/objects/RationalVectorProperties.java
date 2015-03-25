@@ -61,9 +61,10 @@ public class RationalVectorProperties {
             propertiesZero();
             propertiesStandard();
             propertiesIsZero();
-            propertiesNegate();
             propertiesAdd();
+            propertiesNegate();
             propertiesSubtract();
+            compareImplementationsSubtract();
             propertiesMultiply_Rational();
             propertiesMultiply_BigInteger();
             propertiesMultiply_int();
@@ -312,24 +313,6 @@ public class RationalVectorProperties {
         }
     }
 
-    private static void propertiesNegate() {
-        initialize();
-        System.out.println("\t\ttesting negate() properties");
-
-        for (RationalVector v : take(LIMIT, P.rationalVectors())) {
-            RationalVector negativeV = v.negate();
-            validate(negativeV);
-            assertEquals(v.toString(), v.dimension(), negativeV.dimension());
-            assertEquals(v.toString(), v, negativeV.negate());
-            assertTrue(v.toString(), v.add(negativeV).isZero());
-        }
-
-        for (RationalVector v : take(LIMIT, filter(w -> any(x -> x != Rational.ZERO, w), P.rationalVectors()))) {
-            RationalVector negativeV = v.negate();
-            assertNotEquals(v.toString(), v, negativeV);
-        }
-    }
-
     private static void propertiesAdd() {
         initialize();
         System.out.println("\t\ttesting add(RationalVector) properties...");
@@ -390,6 +373,28 @@ public class RationalVectorProperties {
         }
     }
 
+    private static void propertiesNegate() {
+        initialize();
+        System.out.println("\t\ttesting negate() properties");
+
+        for (RationalVector v : take(LIMIT, P.rationalVectors())) {
+            RationalVector negativeV = v.negate();
+            validate(negativeV);
+            assertEquals(v.toString(), v.dimension(), negativeV.dimension());
+            assertEquals(v.toString(), v, negativeV.negate());
+            assertTrue(v.toString(), v.add(negativeV).isZero());
+        }
+
+        for (RationalVector v : take(LIMIT, filter(w -> any(x -> x != Rational.ZERO, w), P.rationalVectors()))) {
+            RationalVector negativeV = v.negate();
+            assertNotEquals(v.toString(), v, negativeV);
+        }
+    }
+
+    private static @NotNull RationalVector subtract_simplest(@NotNull RationalVector a, @NotNull RationalVector b) {
+        return a.add(b.negate());
+    }
+
     private static void propertiesSubtract() {
         initialize();
         System.out.println("\t\ttesting subtract(RationalVector) properties...");
@@ -416,6 +421,36 @@ public class RationalVectorProperties {
             assertEquals(v.toString(), v.subtract(zero(v.dimension())), v);
             assertTrue(v.toString(), v.subtract(v).isZero());
         }
+    }
+
+    private static void compareImplementationsSubtract() {
+        initialize();
+        System.out.println("\t\tcomparing subtract(RationalVector) implementations...");
+
+        long totalTime = 0;
+        Iterable<Pair<RationalVector, RationalVector>> ps;
+        if (P instanceof ExhaustiveProvider) {
+            ps = P.dependentPairs(P.rationalVectors(), v -> P.rationalVectors(v.dimension()));
+        } else {
+            ps = P.dependentPairs(
+                    ((QBarRandomProvider) P).rationalVectorsBySize(32),
+                    v -> ((QBarRandomProvider) P).rationalVectorsBySize(32, v.dimension())
+            );
+        }
+        for (Pair<RationalVector, RationalVector> p : take(LIMIT, ps)) {
+            long time = System.nanoTime();
+            subtract_simplest(p.a, p.b);
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\t\t\tsimplest: " + ((double) totalTime) / 1e9 + " s");
+
+        totalTime = 0;
+        for (Pair<RationalVector, RationalVector> p : take(LIMIT, ps)) {
+            long time = System.nanoTime();
+            p.a.subtract(p.b);
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
     }
 
     private static void propertiesMultiply_Rational() {

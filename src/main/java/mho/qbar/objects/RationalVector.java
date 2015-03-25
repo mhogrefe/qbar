@@ -272,23 +272,6 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
     }
 
     /**
-     * Returns the negative of {@code this}.
-     *
-     * <ul>
-     *  <li>{@code this} may be any {@code RationalVector}.</li>
-     *  <li>The result is non-null.</li>
-     * </ul>
-     *
-     * Length is |{@code coordinates}|
-     *
-     * @return –{@code this}
-     */
-    public @NotNull RationalVector negate() {
-        if (this == ZERO_DIMENSIONAL) return ZERO_DIMENSIONAL;
-        return new RationalVector(toList(map(Rational::negate, coordinates)));
-    }
-
-    /**
      * Returns the sum of {@code this} and {@code that}.
      *
      * <ul>
@@ -308,6 +291,23 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
             throw new ArithmeticException("vectors must have same dimension");
         if (this == ZERO_DIMENSIONAL) return ZERO_DIMENSIONAL;
         return new RationalVector(toList(zipWith(Rational::add, coordinates, that.coordinates)));
+    }
+
+    /**
+     * Returns the negative of {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalVector}.</li>
+     *  <li>The result is non-null.</li>
+     * </ul>
+     *
+     * Length is |{@code coordinates}|
+     *
+     * @return –{@code this}
+     */
+    public @NotNull RationalVector negate() {
+        if (this == ZERO_DIMENSIONAL) return ZERO_DIMENSIONAL;
+        return new RationalVector(toList(map(Rational::negate, coordinates)));
     }
 
     /**

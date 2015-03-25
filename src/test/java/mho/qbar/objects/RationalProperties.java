@@ -90,6 +90,7 @@ public class RationalProperties {
             propertiesSignum();
             compareImplementationsAdd();
             propertiesSubtract();
+            compareImplementationsSubtract();
             propertiesMultiply_Rational();
             compareImplementationsMultiply_Rational();
             propertiesMultiply_BigInteger();
@@ -1738,6 +1739,10 @@ public class RationalProperties {
         }
     }
 
+    private static @NotNull Rational subtract_simplest(@NotNull Rational a, @NotNull Rational b) {
+        return a.add(b.negate());
+    }
+
     private static void propertiesSubtract() {
         initialize();
         System.out.println("\t\ttesting subtract(Rational) properties...");
@@ -1745,6 +1750,7 @@ public class RationalProperties {
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
             Rational difference = p.a.subtract(p.b);
             validate(difference);
+            assertEquals(p.toString(), difference, subtract_simplest(p.a, p.b));
             assertEquals(p.toString(), difference, p.b.subtract(p.a).negate());
             assertEquals(p.toString(), p.a, difference.add(p.b));
         }
@@ -1754,6 +1760,27 @@ public class RationalProperties {
             assertEquals(r.toString(), r.subtract(ZERO), r);
             assertTrue(r.toString(), r.subtract(r) == ZERO);
         }
+    }
+
+    private static void compareImplementationsSubtract() {
+        initialize();
+        System.out.println("\t\tcomparing subtract(Rational) implementations...");
+
+        long totalTime = 0;
+        for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
+            long time = System.nanoTime();
+            subtract_simplest(p.a, p.b);
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\t\t\tsimplest: " + ((double) totalTime) / 1e9 + " s");
+
+        totalTime = 0;
+        for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
+            long time = System.nanoTime();
+            p.a.subtract(p.b);
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
     }
 
     private static @NotNull Pair<BigInteger, BigInteger> multiply_Rational_Knuth(

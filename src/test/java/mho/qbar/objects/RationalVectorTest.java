@@ -173,13 +173,6 @@ public class RationalVectorTest {
     }
 
     @Test
-    public void testNegate() {
-        aeq(ZERO_DIMENSIONAL.negate(), "[]");
-        aeq(read("[1/2]").get().negate(), "[-1/2]");
-        aeq(read("[5/3, -1/4, 23]").get().negate(), "[-5/3, 1/4, -23]");
-    }
-
-    @Test
     public void testAdd() {
         assertTrue(ZERO_DIMENSIONAL.add(ZERO_DIMENSIONAL) == ZERO_DIMENSIONAL);
         aeq(read("[2]").get().add(read("[3]").get()), "[5]");
@@ -198,6 +191,13 @@ public class RationalVectorTest {
             read("[1/2, 4, -4]").get().add(read("[5/6, 2/3]").get());
             fail();
         } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testNegate() {
+        aeq(ZERO_DIMENSIONAL.negate(), "[]");
+        aeq(read("[1/2]").get().negate(), "[-1/2]");
+        aeq(read("[5/3, -1/4, 23]").get().negate(), "[-5/3, 1/4, -23]");
     }
 
     @Test

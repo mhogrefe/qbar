@@ -153,13 +153,6 @@ public class RationalVectorDemos {
         }
     }
 
-    public static void demoNegate() {
-        initialize();
-        for (RationalVector v : take(LIMIT, P.rationalVectors())) {
-            System.out.println("-" + v + " = " + v.negate());
-        }
-    }
-
     public static void demoAdd() {
         initialize();
         Iterable<Pair<RationalVector, RationalVector>> ps;
@@ -173,6 +166,13 @@ public class RationalVectorDemos {
         }
         for (Pair<RationalVector, RationalVector> p : take(LIMIT, ps)) {
             System.out.println(p.a + " + " + p.b + " = " + p.a.add(p.b));
+        }
+    }
+
+    public static void demoNegate() {
+        initialize();
+        for (RationalVector v : take(LIMIT, P.rationalVectors())) {
+            System.out.println("-" + v + " = " + v.negate());
         }
     }
 
