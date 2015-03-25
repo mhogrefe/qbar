@@ -112,24 +112,13 @@ public class RationalPolynomialTest {
 
     @Test
     public void testDegree() {
-        assertTrue(ZERO.timesX() == ZERO);
-        aeq(ONE.timesX(), "x");
-        aeq(X.timesX(), "x^2");
-        aeq(read("-4/3").get().timesX(), "-4/3*x");
-        aeq(read("x^2-7/4*x+1/3").get().timesX(), "x^3-7/4*x^2+1/3*x");
-        aeq(read("x^3-1").get().timesX(), "x^4-x");
-        aeq(read("1/2*x^10").get().timesX(), "1/2*x^11");
-    }
-
-    @Test
-    public void testTimesX() {
-        assertTrue(ZERO.timesX() == ZERO);
-        aeq(ONE.timesX(), "x");
-        aeq(X.timesX(), "x^2");
-        aeq(read("-17").get().timesX(), "-17*x");
-        aeq(read("x^2-4*x+7").get().timesX(), "x^3-4*x^2+7*x");
-        aeq(read("x^3-1").get().timesX(), "x^4-x");
-        aeq(read("3*x^10").get().timesX(), "3*x^11");
+        aeq(ZERO.degree(), -1);
+        aeq(ONE.degree(), 0);
+        aeq(X.degree(), 1);
+        aeq(read("-4/3").get().degree(), 0);
+        aeq(read("x^2-7/4*x+1/3").get().degree(), 2);
+        aeq(read("x^3-1").get().degree(), 3);
+        aeq(read("1/2*x^10").get().degree(), 10);
     }
 
     @Test

@@ -123,17 +123,6 @@ public class PolynomialTest {
     }
 
     @Test
-    public void testTimesX() {
-        assertTrue(ZERO.timesX() == ZERO);
-        aeq(ONE.timesX(), "x");
-        aeq(X.timesX(), "x^2");
-        aeq(read("-17").get().timesX(), "-17*x");
-        aeq(read("x^2-4*x+7").get().timesX(), "x^3-4*x^2+7*x");
-        aeq(read("x^3-1").get().timesX(), "x^4-x");
-        aeq(read("3*x^10").get().timesX(), "3*x^11");
-    }
-
-    @Test
     public void testLeading() {
         assertFalse(ZERO.leading().isPresent());
         aeq(ONE.leading().get(), 1);

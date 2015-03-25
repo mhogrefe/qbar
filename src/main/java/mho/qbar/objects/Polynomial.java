@@ -201,23 +201,6 @@ public class Polynomial implements Comparable<Polynomial>, Iterable<BigInteger> 
     }
 
     /**
-     * Multiplies {@code this} by x.
-     *
-     * <ul>
-     *  <li>{@code this} may be any {@code Polynomial}.</li>
-     *  <li>The result is 0 or not a constant.</li>
-     * </ul>
-     *
-     * Length is 0 if {@code this} is 0, deg({@code this})+2 otherwise
-     *
-     * @return x×{@code this}
-     */
-    public @NotNull Polynomial timesX() {
-        if (this == ZERO) return ZERO;
-        return new Polynomial(toList(cons(BigInteger.ZERO, coefficients)));
-    }
-
-    /**
      * Returns the leading coefficient of {@code this}, or an empty {@code Optional} is {@code this} is 0.
      *
      * <ul>

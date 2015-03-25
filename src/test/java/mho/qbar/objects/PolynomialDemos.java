@@ -87,13 +87,6 @@ public class PolynomialDemos {
         }
     }
 
-    public static void demoTimesX() {
-        initialize();
-        for (Polynomial p : take(LIMIT, P.polynomials())) {
-            System.out.println("timesX(" + p + ") = " + p.timesX());
-        }
-    }
-
     public static void demoLeading() {
         initialize();
         for (Polynomial p : take(LIMIT, P.polynomials())) {
