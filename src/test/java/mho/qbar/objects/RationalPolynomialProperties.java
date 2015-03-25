@@ -45,6 +45,8 @@ public class RationalPolynomialProperties {
             System.out.println("\ttesting " + (useRandom ? "randomly" : "exhaustively"));
             USE_RANDOM = useRandom;
             propertiesIterator();
+            propertiesApply();
+            compareImplementationsApply();
             propertiesCoefficient();
             propertiesOf_List_Rational();
             propertiesOf_Rational();
@@ -81,6 +83,72 @@ public class RationalPolynomialProperties {
             List<Rational> rs = toList(p);
             assertTrue(p.toString(), last(rs) != Rational.ZERO);
         }
+    }
+
+    private static @NotNull Rational apply_horner(@NotNull RationalPolynomial p, @NotNull Rational x) {
+        return foldr((c, y) -> y.multiply(x).add(c), Rational.ZERO, p);
+    }
+
+    private static void propertiesApply() {
+        initialize();
+        System.out.println("\t\ttesting apply(Rational) properties...");
+
+        for (Pair<RationalPolynomial, Rational> p : take(LIMIT, P.pairs(P.rationalPolynomials(), P.rationals()))) {
+            Rational y = p.a.apply(p.b);
+            assertEquals(p.toString(), y, apply_horner(p.a, p.b));
+        }
+
+        for (Rational i : take(LIMIT, P.rationals())) {
+            assertEquals(i.toString(), ZERO.apply(i), Rational.ZERO);
+            assertEquals(i.toString(), X.apply(i), i);
+            assertEquals(i.toString(), of(Rational.of(-1), 1).apply(i), i.negate());
+        }
+
+        for (RationalPolynomial p : take(LIMIT, P.rationalPolynomialsAtLeast(0))) {
+            assertEquals(p.toString(), p.apply(Rational.ZERO), p.coefficient(0));
+        }
+
+        for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
+            assertEquals(p.toString(), p.apply(Rational.ONE), Rational.sum(p));
+        }
+
+        for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
+            assertEquals(p.toString(), of(p.a).apply(p.b), p.a);
+            assertEquals(p.toString(), of(Arrays.asList(p.a, Rational.ONE)).apply(p.b), p.b.add(p.a));
+            assertEquals(p.toString(), of(Arrays.asList(p.a.negate(), Rational.ONE)).apply(p.b), p.b.subtract(p.a));
+            assertEquals(p.toString(), of(p.a, 1).apply(p.b), p.b.multiply(p.a));
+        }
+
+        Iterable<Integer> is;
+        if (P instanceof QBarExhaustiveProvider) {
+            is = P.naturalIntegers();
+        } else {
+            is = ((RandomProvider) P).naturalIntegersGeometric(20);
+        }
+        for (Pair<Integer, Rational> p : take(LIMIT, P.pairs(is, P.rationals()))) {
+            assertEquals(p.toString(), of(Rational.ONE, p.a).apply(p.b), p.b.pow(p.a));
+        }
+    }
+
+    private static void compareImplementationsApply() {
+        initialize();
+        System.out.println("\t\tcomparing apply(Rational) implementations...");
+
+        long totalTime = 0;
+        for (Pair<RationalPolynomial, Rational> p : take(LIMIT, P.pairs(P.rationalPolynomials(), P.rationals()))) {
+            long time = System.nanoTime();
+            apply_horner(p.a, p.b);
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\t\t\tHorner: " + ((double) totalTime) / 1e9 + " s");
+
+        totalTime = 0;
+        for (Pair<RationalPolynomial, Rational> p : take(LIMIT, P.pairs(P.rationalPolynomials(), P.rationals()))) {
+            long time = System.nanoTime();
+            p.a.apply(p.b);
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
     }
 
     private static void propertiesCoefficient() {
@@ -233,6 +301,10 @@ public class RationalPolynomialProperties {
             validate(negative);
             assertEquals(p.toString(), p, negative.negate());
             //todo assertTrue(p.toString(), p.add(negative) == ZERO);
+        }
+
+        for (Pair<RationalPolynomial, Rational> p : take(LIMIT, P.pairs(P.rationalPolynomials(), P.rationals()))) {
+            assertEquals(p.toString(), p.a.negate().apply(p.b), p.a.apply(p.b).negate());
         }
 
         for (RationalPolynomial p : take(LIMIT, filter(q -> q != ZERO, P.rationalPolynomials()))) {

@@ -46,6 +46,8 @@ public class PolynomialProperties {
             System.out.println("\ttesting " + (useRandom ? "randomly" : "exhaustively"));
             USE_RANDOM = useRandom;
             propertiesIterator();
+            propertiesApply();
+            compareImplementationsApply();
             propertiesCoefficient();
             propertiesOf_List_BigInteger();
             propertiesOf_BigInteger();
@@ -82,6 +84,74 @@ public class PolynomialProperties {
             List<BigInteger> is = toList(p);
             assertTrue(p.toString(), !last(is).equals(BigInteger.ZERO));
         }
+    }
+
+    private static @NotNull BigInteger apply_naive(@NotNull Polynomial p, @NotNull BigInteger x) {
+        return sumBigInteger(
+                zipWith((c, i) -> c.equals(BigInteger.ZERO) ? BigInteger.ZERO : x.pow(i).multiply(c), p, rangeUp(0))
+        );
+    }
+
+    private static void propertiesApply() {
+        initialize();
+        System.out.println("\t\ttesting apply(BigInteger) properties...");
+
+        for (Pair<Polynomial, BigInteger> p : take(LIMIT, P.pairs(P.polynomials(), P.bigIntegers()))) {
+            BigInteger y = p.a.apply(p.b);
+            assertEquals(p.toString(), y, apply_naive(p.a, p.b));
+        }
+
+        for (BigInteger i : take(LIMIT, P.bigIntegers())) {
+            assertEquals(i.toString(), ZERO.apply(i), BigInteger.ZERO);
+            assertEquals(i.toString(), X.apply(i), i);
+            assertEquals(i.toString(), of(BigInteger.valueOf(-1), 1).apply(i), i.negate());
+        }
+
+        for (Polynomial p : take(LIMIT, P.polynomialsAtLeast(0))) {
+            assertEquals(p.toString(), p.apply(BigInteger.ZERO), p.coefficient(0));
+        }
+
+        for (Polynomial p : take(LIMIT, P.polynomials())) {
+            assertEquals(p.toString(), p.apply(BigInteger.ONE), sumBigInteger(p));
+        }
+
+        for (Pair<BigInteger, BigInteger> p : take(LIMIT, P.pairs(P.bigIntegers()))) {
+            assertEquals(p.toString(), of(p.a).apply(p.b), p.a);
+            assertEquals(p.toString(), of(Arrays.asList(p.a, BigInteger.ONE)).apply(p.b), p.b.add(p.a));
+            assertEquals(p.toString(), of(Arrays.asList(p.a.negate(), BigInteger.ONE)).apply(p.b), p.b.subtract(p.a));
+            assertEquals(p.toString(), of(p.a, 1).apply(p.b), p.b.multiply(p.a));
+        }
+
+        Iterable<Integer> is;
+        if (P instanceof QBarExhaustiveProvider) {
+            is = P.naturalIntegers();
+        } else {
+            is = ((RandomProvider) P).naturalIntegersGeometric(20);
+        }
+        for (Pair<Integer, BigInteger> p : take(LIMIT, P.pairs(is, P.bigIntegers()))) {
+            assertEquals(p.toString(), of(BigInteger.ONE, p.a).apply(p.b), p.b.pow(p.a));
+        }
+    }
+
+    private static void compareImplementationsApply() {
+        initialize();
+        System.out.println("\t\tcomparing apply(BigInteger) implementations...");
+
+        long totalTime = 0;
+        for (Pair<Polynomial, BigInteger> p : take(LIMIT, P.pairs(P.polynomials(), P.bigIntegers()))) {
+            long time = System.nanoTime();
+            apply_naive(p.a, p.b);
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\t\t\tnaïve: " + ((double) totalTime) / 1e9 + " s");
+
+        totalTime = 0;
+        for (Pair<Polynomial, BigInteger> p : take(LIMIT, P.pairs(P.polynomials(), P.bigIntegers()))) {
+            long time = System.nanoTime();
+            p.a.apply(p.b);
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
     }
 
     private static void propertiesCoefficient() {
@@ -236,6 +306,10 @@ public class PolynomialProperties {
             validate(negative);
             assertEquals(p.toString(), p, negative.negate());
             //todo assertTrue(p.toString(), p.add(negative) == ZERO);
+        }
+
+        for (Pair<Polynomial, BigInteger> p : take(LIMIT, P.pairs(P.polynomials(), P.bigIntegers()))) {
+            assertEquals(p.toString(), p.a.negate().apply(p.b), p.a.apply(p.b).negate());
         }
 
         for (Polynomial p : take(LIMIT, filter(q -> q != ZERO, P.polynomials()))) {
