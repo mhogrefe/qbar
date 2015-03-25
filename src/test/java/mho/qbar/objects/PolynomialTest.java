@@ -33,6 +33,45 @@ public class PolynomialTest {
     }
 
     @Test
+    public void testApply() {
+        aeq(ZERO.apply(BigInteger.ZERO), 0);
+        aeq(ZERO.apply(BigInteger.ONE), 0);
+        aeq(ZERO.apply(BigInteger.valueOf(-1)), 0);
+        aeq(ZERO.apply(BigInteger.valueOf(5)), 0);
+        aeq(ZERO.apply(BigInteger.valueOf(100)), 0);
+        aeq(ONE.apply(BigInteger.ZERO), 1);
+        aeq(ONE.apply(BigInteger.ONE), 1);
+        aeq(ONE.apply(BigInteger.valueOf(-1)), 1);
+        aeq(ONE.apply(BigInteger.valueOf(5)), 1);
+        aeq(ONE.apply(BigInteger.valueOf(100)), 1);
+        aeq(X.apply(BigInteger.ZERO), 0);
+        aeq(X.apply(BigInteger.ONE), 1);
+        aeq(X.apply(BigInteger.valueOf(-1)), -1);
+        aeq(X.apply(BigInteger.valueOf(5)), 5);
+        aeq(X.apply(BigInteger.valueOf(100)), 100);
+        aeq(read("-17").get().apply(BigInteger.ZERO), -17);
+        aeq(read("-17").get().apply(BigInteger.ONE), -17);
+        aeq(read("-17").get().apply(BigInteger.valueOf(-1)), -17);
+        aeq(read("-17").get().apply(BigInteger.valueOf(5)), -17);
+        aeq(read("-17").get().apply(BigInteger.valueOf(100)), -17);
+        aeq(read("x^2-4*x+7").get().apply(BigInteger.ZERO), 7);
+        aeq(read("x^2-4*x+7").get().apply(BigInteger.ONE), 4);
+        aeq(read("x^2-4*x+7").get().apply(BigInteger.valueOf(-1)), 12);
+        aeq(read("x^2-4*x+7").get().apply(BigInteger.valueOf(5)), 12);
+        aeq(read("x^2-4*x+7").get().apply(BigInteger.valueOf(100)), 9607);
+        aeq(read("x^3-1").get().apply(BigInteger.ZERO), -1);
+        aeq(read("x^3-1").get().apply(BigInteger.ONE), 0);
+        aeq(read("x^3-1").get().apply(BigInteger.valueOf(-1)), -2);
+        aeq(read("x^3-1").get().apply(BigInteger.valueOf(5)), 124);
+        aeq(read("x^3-1").get().apply(BigInteger.valueOf(100)), 999999);
+        aeq(read("3*x^10").get().apply(BigInteger.ZERO), 0);
+        aeq(read("3*x^10").get().apply(BigInteger.ONE), 3);
+        aeq(read("3*x^10").get().apply(BigInteger.valueOf(-1)), 3);
+        aeq(read("3*x^10").get().apply(BigInteger.valueOf(5)), 29296875);
+        aeq(read("3*x^10").get().apply(BigInteger.valueOf(100)), "300000000000000000000");
+    }
+
+    @Test
     public void testCoefficient() {
         aeq(ZERO.coefficient(0), 0);
         aeq(ZERO.coefficient(5), 0);
