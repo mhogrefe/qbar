@@ -234,6 +234,34 @@ public class Polynomial implements Comparable<Polynomial>, Function<BigInteger, 
     }
 
     /**
+     * Returns the sum of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param that the {@code Polynomial} added to {@code this}
+     * @return {@code this}+{@code that}
+     */
+    public @NotNull Polynomial add(@NotNull Polynomial that) {
+        if (this == ZERO) return that;
+        if (that == ZERO) return this;
+        return of(
+                toList(
+                        zipWithPadded(
+                                BigInteger::add,
+                                BigInteger.ZERO,
+                                BigInteger.ZERO,
+                                coefficients,
+                                that.coefficients
+                        )
+                )
+        );
+    }
+
+    /**
      * Returns the negative of {@code this}.
      *
      * <ul>
