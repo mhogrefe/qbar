@@ -7,6 +7,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.math.BigInteger;
 import java.util.*;
+import java.util.function.Function;
 
 import static mho.wheels.iterables.IterableUtils.*;
 
@@ -22,7 +23,10 @@ import static mho.wheels.iterables.IterableUtils.*;
  *
  * <p>This class is immutable.
  */
-public class RationalPolynomial implements Comparable<RationalPolynomial>, Iterable<Rational> {
+public class RationalPolynomial implements
+        Comparable<RationalPolynomial>,
+        Function<Rational, Rational>,
+        Iterable<Rational> {
     /**
      * 0
      */
@@ -97,6 +101,23 @@ public class RationalPolynomial implements Comparable<RationalPolynomial>, Itera
                 throw new UnsupportedOperationException("cannot remove from this iterator");
             }
         };
+    }
+
+    /**
+     * Evaluates {@code this} at {@code x} using Horner's method.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalPolynomial}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param x the argument
+     * @return {@code this}({@code x})
+     */
+    @Override
+    public @NotNull Rational apply(@NotNull Rational x) {
+        //noinspection ConstantConditions
+        return foldr((c, y) -> y.multiply(x).add(c), Rational.ZERO, coefficients);
     }
 
     /**

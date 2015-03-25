@@ -7,6 +7,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.math.BigInteger;
 import java.util.*;
+import java.util.function.Function;
 
 import static mho.wheels.iterables.IterableUtils.*;
 
@@ -22,7 +23,7 @@ import static mho.wheels.iterables.IterableUtils.*;
  *
  * <p>This class is immutable.
  */
-public class Polynomial implements Comparable<Polynomial>, Iterable<BigInteger> {
+public class Polynomial implements Comparable<Polynomial>, Function<BigInteger, BigInteger>, Iterable<BigInteger> {
     /**
      * 0
      */
@@ -95,6 +96,23 @@ public class Polynomial implements Comparable<Polynomial>, Iterable<BigInteger> 
                 throw new UnsupportedOperationException("cannot remove from this iterator");
             }
         };
+    }
+
+    /**
+     * Evaluates {@code this} at {@code x} using Horner's method.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param x the argument
+     * @return {@code this}({@code x})
+     */
+    @Override
+    public @NotNull BigInteger apply(@NotNull BigInteger x) {
+        //noinspection ConstantConditions
+        return foldr((c, y) -> y.multiply(x).add(c), BigInteger.ZERO, coefficients);
     }
 
     /**
