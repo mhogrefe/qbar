@@ -53,6 +53,7 @@ public class RationalPolynomialProperties {
             propertiesOf_Rational_int();
             propertiesDegree();
             propertiesLeading();
+            propertiesAdd();
             propertiesNegate();
             propertiesAbs();
             propertiesSignum();
@@ -292,6 +293,41 @@ public class RationalPolynomialProperties {
         }
     }
 
+    private static void propertiesAdd() {
+        initialize();
+        System.out.println("\t\ttesting add(Polynomial) properties...");
+
+        for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, P.pairs(P.rationalPolynomials()))) {
+            RationalPolynomial sum = p.a.add(p.b);
+            validate(sum);
+            assertEquals(p.toString(), sum, p.b.add(p.a));
+            //todo assertEquals(p.toString(), sum.subtract(p.b), p.a);
+        }
+
+        Iterable<Triple<RationalPolynomial, RationalPolynomial, Rational>> ts = P.triples(
+                P.rationalPolynomials(),
+                P.rationalPolynomials(),
+                P.rationals()
+        );
+        for (Triple<RationalPolynomial, RationalPolynomial, Rational> t : take(LIMIT, ts)) {
+            assertEquals(t.toString(), t.a.add(t.b).apply(t.c), t.a.apply(t.c).add(t.b.apply(t.c)));
+        }
+
+        for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
+            assertEquals(p.toString(), ZERO.add(p), p);
+            assertEquals(p.toString(), p.add(ZERO), p);
+            assertTrue(p.toString(), p.add(p.negate()) == ZERO);
+        }
+
+        Iterable<Triple<RationalPolynomial, RationalPolynomial, RationalPolynomial>> ts2 =
+                P.triples(P.rationalPolynomials());
+        for (Triple<RationalPolynomial, RationalPolynomial, RationalPolynomial> t : take(LIMIT, ts2)) {
+            RationalPolynomial sum1 = t.a.add(t.b).add(t.c);
+            RationalPolynomial sum2 = t.a.add(t.b.add(t.c));
+            assertEquals(t.toString(), sum1, sum2);
+        }
+    }
+
     private static void propertiesNegate() {
         initialize();
         System.out.println("\t\ttesting negate() properties...");
@@ -300,7 +336,7 @@ public class RationalPolynomialProperties {
             RationalPolynomial negative = p.negate();
             validate(negative);
             assertEquals(p.toString(), p, negative.negate());
-            //todo assertTrue(p.toString(), p.add(negative) == ZERO);
+            assertTrue(p.toString(), p.add(negative) == ZERO);
         }
 
         for (Pair<RationalPolynomial, Rational> p : take(LIMIT, P.pairs(P.rationalPolynomials(), P.rationals()))) {

@@ -250,6 +250,9 @@ public class RationalPolynomial implements
      *  <li>The result is not null.</li>
      * </ul>
      *
+     * Length is 0 if {@code this} and {@code that} are both 0, or max(deg({@code this}), deg({@code that}))+1
+     * otherwise
+     *
      * @param that the {@code Polynomial} added to {@code this}
      * @return {@code this}+{@code that}
      */

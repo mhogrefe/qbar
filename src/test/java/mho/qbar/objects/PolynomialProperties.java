@@ -5,6 +5,7 @@ import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.iterableProviders.QBarRandomProvider;
 import mho.wheels.iterables.RandomProvider;
 import mho.wheels.structures.Pair;
+import mho.wheels.structures.Quadruple;
 import mho.wheels.structures.Triple;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
@@ -54,6 +55,7 @@ public class PolynomialProperties {
             propertiesOf_BigInteger_int();
             propertiesDegree();
             propertiesLeading();
+            propertiesAdd();
             propertiesNegate();
             propertiesAbs();
             propertiesSignum();
@@ -297,6 +299,39 @@ public class PolynomialProperties {
         }
     }
 
+    private static void propertiesAdd() {
+        initialize();
+        System.out.println("\t\ttesting add(Polynomial) properties...");
+
+        for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(P.polynomials()))) {
+            Polynomial sum = p.a.add(p.b);
+            validate(sum);
+            assertEquals(p.toString(), sum, p.b.add(p.a));
+            //todo assertEquals(p.toString(), sum.subtract(p.b), p.a);
+        }
+
+        Iterable<Triple<Polynomial, Polynomial, BigInteger>> ts = P.triples(
+                P.polynomials(),
+                P.polynomials(),
+                P.bigIntegers()
+        );
+        for (Triple<Polynomial, Polynomial, BigInteger> t : take(LIMIT, ts)) {
+            assertEquals(t.toString(), t.a.add(t.b).apply(t.c), t.a.apply(t.c).add(t.b.apply(t.c)));
+        }
+
+        for (Polynomial p : take(LIMIT, P.polynomials())) {
+            assertEquals(p.toString(), ZERO.add(p), p);
+            assertEquals(p.toString(), p.add(ZERO), p);
+            assertTrue(p.toString(), p.add(p.negate()) == ZERO);
+        }
+
+        for (Triple<Polynomial, Polynomial, Polynomial> t : take(LIMIT, P.triples(P.polynomials()))) {
+            Polynomial sum1 = t.a.add(t.b).add(t.c);
+            Polynomial sum2 = t.a.add(t.b.add(t.c));
+            assertEquals(t.toString(), sum1, sum2);
+        }
+    }
+
     private static void propertiesNegate() {
         initialize();
         System.out.println("\t\ttesting negate() properties...");
@@ -305,7 +340,7 @@ public class PolynomialProperties {
             Polynomial negative = p.negate();
             validate(negative);
             assertEquals(p.toString(), p, negative.negate());
-            //todo assertTrue(p.toString(), p.add(negative) == ZERO);
+            assertTrue(p.toString(), p.add(negative) == ZERO);
         }
 
         for (Pair<Polynomial, BigInteger> p : take(LIMIT, P.pairs(P.polynomials(), P.bigIntegers()))) {
