@@ -326,7 +326,10 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
      * @return {@code this}–{@code that}
      */
     public @NotNull RationalVector subtract(@NotNull RationalVector that) {
-        return add(that.negate());
+        if (coordinates.size() != that.coordinates.size())
+            throw new ArithmeticException("vectors must have same dimension");
+        if (this == ZERO_DIMENSIONAL) return ZERO_DIMENSIONAL;
+        return new RationalVector(toList(zipWith(Rational::subtract, coordinates, that.coordinates)));
     }
 
     /**

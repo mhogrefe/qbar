@@ -1117,6 +1117,7 @@ public final class Rational implements Comparable<Rational> {
     public @NotNull Rational add(@NotNull Rational that) {
         if (this == ZERO) return that;
         if (that == ZERO) return this;
+        if (this == that) return shiftLeft(1);
         BigInteger d1 = denominator.gcd(that.denominator);
         if (d1.equals(BigInteger.ONE)) {
             BigInteger sn = numerator.multiply(that.denominator).add(denominator.multiply(that.numerator));
@@ -1197,7 +1198,26 @@ public final class Rational implements Comparable<Rational> {
      * @return {@code this}–{@code that}
      */
     public @NotNull Rational subtract(@NotNull Rational that) {
-        return add(that.negate());
+        if (this == ZERO) return that.negate();
+        if (that == ZERO) return this;
+        if (this == that) return ZERO;
+        BigInteger d1 = denominator.gcd(that.denominator);
+        if (d1.equals(BigInteger.ONE)) {
+            BigInteger sn = numerator.multiply(that.denominator).subtract(denominator.multiply(that.numerator));
+            if (sn.equals(BigInteger.ZERO)) return ZERO;
+            BigInteger sd = denominator.multiply(that.denominator);
+            if (sn.equals(sd)) return ONE;
+            return new Rational(sn, sd);
+        } else {
+            BigInteger t = numerator.multiply(that.denominator.divide(d1))
+                    .subtract(that.numerator.multiply(denominator.divide(d1)));
+            if (t.equals(BigInteger.ZERO)) return ZERO;
+            BigInteger d2 = t.gcd(d1);
+            BigInteger sn = t.divide(d2);
+            BigInteger sd = denominator.divide(d1).multiply(that.denominator.divide(d2));
+            if (sn.equals(sd)) return ONE;
+            return new Rational(sn, sd);
+        }
     }
 
     /**
