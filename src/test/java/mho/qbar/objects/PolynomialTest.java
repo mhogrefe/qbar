@@ -173,6 +173,60 @@ public class PolynomialTest {
     }
 
     @Test
+    public void testAdd() {
+        assertTrue(ZERO.add(ZERO) == ZERO);
+        assertTrue(ZERO.add(ONE) == ONE);
+        aeq(ZERO.add(X), "x");
+        aeq(ZERO.add(read("-17").get()), "-17");
+        aeq(ZERO.add(read("x^2-4*x+7").get()), "x^2-4*x+7");
+        aeq(ZERO.add(read("-x^3-1").get()), "-x^3-1");
+        aeq(ZERO.add(read("3*x^10").get()), "3*x^10");
+        assertTrue(ONE.add(ZERO) == ONE);
+        aeq(ONE.add(ONE), "2");
+        aeq(ONE.add(X), "x+1");
+        aeq(ONE.add(read("-17").get()), "-16");
+        aeq(ONE.add(read("x^2-4*x+7").get()), "x^2-4*x+8");
+        aeq(ONE.add(read("-x^3-1").get()), "-x^3");
+        aeq(ONE.add(read("3*x^10").get()), "3*x^10+1");
+        aeq(X.add(ZERO), "x");
+        aeq(X.add(ONE), "x+1");
+        aeq(X.add(X), "2*x");
+        aeq(X.add(read("-17").get()), "x-17");
+        aeq(X.add(read("x^2-4*x+7").get()), "x^2-3*x+7");
+        aeq(X.add(read("-x^3-1").get()), "-x^3+x-1");
+        aeq(X.add(read("3*x^10").get()), "3*x^10+x");
+        aeq(read("-17").get().add(ZERO), "-17");
+        aeq(read("-17").get().add(ONE), "-16");
+        aeq(read("-17").get().add(X), "x-17");
+        aeq(read("-17").get().add(read("-17").get()), "-34");
+        aeq(read("-17").get().add(read("x^2-4*x+7").get()), "x^2-4*x-10");
+        aeq(read("-17").get().add(read("-x^3-1").get()), "-x^3-18");
+        aeq(read("-17").get().add(read("3*x^10").get()), "3*x^10-17");
+        aeq(read("x^2-4*x+7").get().add(ZERO), "x^2-4*x+7");
+        aeq(read("x^2-4*x+7").get().add(ONE), "x^2-4*x+8");
+        aeq(read("x^2-4*x+7").get().add(X), "x^2-3*x+7");
+        aeq(read("x^2-4*x+7").get().add(read("-17").get()), "x^2-4*x-10");
+        aeq(read("x^2-4*x+7").get().add(read("x^2-4*x+7").get()), "2*x^2-8*x+14");
+        aeq(read("x^2-4*x+7").get().add(read("-x^3-1").get()), "-x^3+x^2-4*x+6");
+        aeq(read("x^2-4*x+7").get().add(read("3*x^10").get()), "3*x^10+x^2-4*x+7");
+        aeq(read("-x^3-1").get().add(ZERO), "-x^3-1");
+        aeq(read("-x^3-1").get().add(ONE), "-x^3");
+        aeq(read("-x^3-1").get().add(X), "-x^3+x-1");
+        aeq(read("-x^3-1").get().add(read("-17").get()), "-x^3-18");
+        aeq(read("-x^3-1").get().add(read("x^2-4*x+7").get()), "-x^3+x^2-4*x+6");
+        aeq(read("-x^3-1").get().add(read("-x^3-1").get()), "-2*x^3-2");
+        aeq(read("-x^3-1").get().add(read("3*x^10").get()), "3*x^10-x^3-1");
+        aeq(read("3*x^10").get().add(ZERO), "3*x^10");
+        aeq(read("3*x^10").get().add(ONE), "3*x^10+1");
+        aeq(read("3*x^10").get().add(X), "3*x^10+x");
+        aeq(read("3*x^10").get().add(read("-17").get()), "3*x^10-17");
+        aeq(read("3*x^10").get().add(read("x^2-4*x+7").get()), "3*x^10+x^2-4*x+7");
+        aeq(read("3*x^10").get().add(read("-x^3-1").get()), "3*x^10-x^3-1");
+        aeq(read("3*x^10").get().add(read("3*x^10").get()), "6*x^10");
+        assertTrue(read("x^2-4*x+7").get().add(read("-x^2+4*x-7").get()) == ZERO);
+    }
+
+    @Test
     public void testNegate() {
         assertTrue(ZERO.negate() == ZERO);
         aeq(ONE.negate(), "-1");
