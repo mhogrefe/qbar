@@ -260,6 +260,59 @@ public class RationalPolynomialTest {
     }
 
     @Test
+    public void testSubtract() {
+        assertTrue(ZERO.subtract(ZERO) == ZERO);
+        aeq(ZERO.subtract(ONE), "-1");
+        aeq(ZERO.subtract(X), "-x");
+        aeq(ZERO.subtract(read("-4/3").get()), "4/3");
+        aeq(ZERO.subtract(read("x^2-7/4*x+1/3").get()), "-x^2+7/4*x-1/3");
+        aeq(ZERO.subtract(read("-x^3-1").get()), "x^3+1");
+        aeq(ZERO.subtract(read("1/2*x^10").get()), "-1/2*x^10");
+        assertTrue(ONE.subtract(ZERO) == ONE);
+        assertTrue(ONE.subtract(ONE) == ZERO);
+        aeq(ONE.subtract(X), "-x+1");
+        aeq(ONE.subtract(read("-4/3").get()), "7/3");
+        aeq(ONE.subtract(read("x^2-7/4*x+1/3").get()), "-x^2+7/4*x+2/3");
+        aeq(ONE.subtract(read("-x^3-1").get()), "x^3+2");
+        aeq(ONE.subtract(read("1/2*x^10").get()), "-1/2*x^10+1");
+        aeq(X.subtract(ZERO), "x");
+        aeq(X.subtract(ONE), "x-1");
+        assertTrue(X.subtract(X) == ZERO);
+        aeq(X.subtract(read("-4/3").get()), "x+4/3");
+        aeq(X.subtract(read("x^2-7/4*x+1/3").get()), "-x^2+11/4*x-1/3");
+        aeq(X.subtract(read("-x^3-1").get()), "x^3+x+1");
+        aeq(X.subtract(read("1/2*x^10").get()), "-1/2*x^10+x");
+        aeq(read("-4/3").get().subtract(ZERO), "-4/3");
+        aeq(read("-4/3").get().subtract(ONE), "-7/3");
+        aeq(read("-4/3").get().subtract(X), "-x-4/3");
+        assertTrue(read("-4/3").get().subtract(read("-4/3").get()) == ZERO);
+        aeq(read("-4/3").get().subtract(read("x^2-7/4*x+1/3").get()), "-x^2+7/4*x-5/3");
+        aeq(read("-4/3").get().subtract(read("-x^3-1").get()), "x^3-1/3");
+        aeq(read("-4/3").get().subtract(read("1/2*x^10").get()), "-1/2*x^10-4/3");
+        aeq(read("x^2-7/4*x+1/3").get().subtract(ZERO), "x^2-7/4*x+1/3");
+        aeq(read("x^2-7/4*x+1/3").get().subtract(ONE), "x^2-7/4*x-2/3");
+        aeq(read("x^2-7/4*x+1/3").get().subtract(X), "x^2-11/4*x+1/3");
+        aeq(read("x^2-7/4*x+1/3").get().subtract(read("-4/3").get()), "x^2-7/4*x+5/3");
+        assertTrue(read("x^2-7/4*x+1/3").get().subtract(read("x^2-7/4*x+1/3").get()) == ZERO);
+        aeq(read("x^2-7/4*x+1/3").get().subtract(read("-x^3-1").get()), "x^3+x^2-7/4*x+4/3");
+        aeq(read("x^2-7/4*x+1/3").get().subtract(read("1/2*x^10").get()), "-1/2*x^10+x^2-7/4*x+1/3");
+        aeq(read("-x^3-1").get().subtract(ZERO), "-x^3-1");
+        aeq(read("-x^3-1").get().subtract(ONE), "-x^3-2");
+        aeq(read("-x^3-1").get().subtract(X), "-x^3-x-1");
+        aeq(read("-x^3-1").get().subtract(read("-4/3").get()), "-x^3+1/3");
+        aeq(read("-x^3-1").get().subtract(read("x^2-7/4*x+1/3").get()), "-x^3-x^2+7/4*x-4/3");
+        assertTrue(read("-x^3-1").get().subtract(read("-x^3-1").get()) == ZERO);
+        aeq(read("-x^3-1").get().subtract(read("1/2*x^10").get()), "-1/2*x^10-x^3-1");
+        aeq(read("1/2*x^10").get().subtract(ZERO), "1/2*x^10");
+        aeq(read("1/2*x^10").get().subtract(ONE), "1/2*x^10-1");
+        aeq(read("1/2*x^10").get().subtract(X), "1/2*x^10-x");
+        aeq(read("1/2*x^10").get().subtract(read("-4/3").get()), "1/2*x^10+4/3");
+        aeq(read("1/2*x^10").get().subtract(read("x^2-7/4*x+1/3").get()), "1/2*x^10-x^2+7/4*x-1/3");
+        aeq(read("1/2*x^10").get().subtract(read("-x^3-1").get()), "1/2*x^10+x^3+1");
+        assertTrue(read("1/2*x^10").get().subtract(read("1/2*x^10").get()) == ZERO);
+    }
+
+    @Test
     public void testEquals() {
         //noinspection EqualsWithItself
         assertTrue(ZERO.equals(ZERO));
