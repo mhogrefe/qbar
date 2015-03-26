@@ -57,6 +57,8 @@ public class RationalPolynomialProperties {
             propertiesNegate();
             propertiesAbs();
             propertiesSignum();
+            propertiesSubtract();
+            compareImplementationsSubtract();
             propertiesEquals();
             propertiesHashCode();
             propertiesCompareTo();
@@ -301,7 +303,7 @@ public class RationalPolynomialProperties {
             RationalPolynomial sum = p.a.add(p.b);
             validate(sum);
             assertEquals(p.toString(), sum, p.b.add(p.a));
-            //todo assertEquals(p.toString(), sum.subtract(p.b), p.a);
+            assertEquals(p.toString(), sum.subtract(p.b), p.a);
         }
 
         Iterable<Triple<RationalPolynomial, RationalPolynomial, Rational>> ts = P.triples(
@@ -373,6 +375,53 @@ public class RationalPolynomialProperties {
         }
     }
 
+    private static @NotNull RationalPolynomial subtract_simplest(
+            @NotNull RationalPolynomial a,
+            @NotNull RationalPolynomial b
+    ) {
+        return a.add(b.negate());
+    }
+
+    private static void propertiesSubtract() {
+        initialize();
+        System.out.println("\t\ttesting subtract(RationalPolynomial) properties...");
+
+        for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, P.pairs(P.rationalPolynomials()))) {
+            RationalPolynomial difference = p.a.subtract(p.b);
+            validate(difference);
+            assertEquals(p.toString(), difference, subtract_simplest(p.a, p.b));
+            assertEquals(p.toString(), difference, p.b.subtract(p.a).negate());
+            assertEquals(p.toString(), p.a, difference.add(p.b));
+        }
+
+        for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
+            assertEquals(p.toString(), ZERO.subtract(p), p.negate());
+            assertEquals(p.toString(), p.subtract(ZERO), p);
+            assertTrue(p.toString(), p.subtract(p) == ZERO);
+        }
+    }
+
+    private static void compareImplementationsSubtract() {
+        initialize();
+        System.out.println("\t\tcomparing subtract(RationalPolynomial) implementations...");
+
+        long totalTime = 0;
+        for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, P.pairs(P.rationalPolynomials()))) {
+            long time = System.nanoTime();
+            subtract_simplest(p.a, p.b);
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\t\t\tsimplest: " + ((double) totalTime) / 1e9 + " s");
+
+        totalTime = 0;
+        for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, P.pairs(P.rationalPolynomials()))) {
+            long time = System.nanoTime();
+            p.a.subtract(p.b);
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
+    }
+
     private static void propertiesEquals() {
         initialize();
         System.out.println("\t\ttesting equals(Object) properties...");
@@ -402,7 +451,7 @@ public class RationalPolynomialProperties {
             int compare = p.a.compareTo(p.b);
             assertTrue(p.toString(), compare == -1 || compare == 0 || compare == 1);
             assertEquals(p.toString(), p.b.compareTo(p.a), -compare);
-            //todo assertEquals(p.toString(), p.a.subtract(p.b).signum(), compare);
+            assertEquals(p.toString(), p.a.subtract(p.b).signum(), compare);
         }
 
         for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
