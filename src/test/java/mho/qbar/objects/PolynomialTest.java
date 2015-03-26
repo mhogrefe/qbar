@@ -313,6 +313,60 @@ public class PolynomialTest {
     }
 
     @Test
+    public void testMultiply_Polynomial() {
+        assertTrue(ZERO.multiply(ZERO) == ZERO);
+        assertTrue(ZERO.multiply(ONE) == ZERO);
+        assertTrue(ZERO.multiply(X) == ZERO);
+        assertTrue(ZERO.multiply(read("-17").get()) == ZERO);
+        assertTrue(ZERO.multiply(read("x^2-4*x+7").get()) == ZERO);
+        assertTrue(ZERO.multiply(read("-x^3-1").get()) == ZERO);
+        assertTrue(ZERO.multiply(read("3*x^10").get()) == ZERO);
+        assertTrue(ONE.multiply(ZERO) == ZERO);
+        assertTrue(ONE.multiply(ONE) == ONE);
+        aeq(ONE.multiply(X), "x");
+        aeq(ONE.multiply(read("-17").get()), "-17");
+        aeq(ONE.multiply(read("x^2-4*x+7").get()), "x^2-4*x+7");
+        aeq(ONE.multiply(read("-x^3-1").get()), "-x^3-1");
+        aeq(ONE.multiply(read("3*x^10").get()), "3*x^10");
+        assertTrue(X.multiply(ZERO) == ZERO);
+        aeq(X.multiply(ONE), "x");
+        aeq(X.multiply(X), "x^2");
+        aeq(X.multiply(read("-17").get()), "-17*x");
+        aeq(X.multiply(read("x^2-4*x+7").get()), "x^3-4*x^2+7*x");
+        aeq(X.multiply(read("-x^3-1").get()), "-x^4-x");
+        aeq(X.multiply(read("3*x^10").get()), "3*x^11");
+        assertTrue(read("-17").get().multiply(ZERO) == ZERO);
+        aeq(read("-17").get().multiply(ONE), "-17");
+        aeq(read("-17").get().multiply(X), "-17*x");
+        aeq(read("-17").get().multiply(read("-17").get()), "289");
+        aeq(read("-17").get().multiply(read("x^2-4*x+7").get()), "-17*x^2+68*x-119");
+        aeq(read("-17").get().multiply(read("-x^3-1").get()), "17*x^3+17");
+        aeq(read("-17").get().multiply(read("3*x^10").get()), "-51*x^10");
+        assertTrue(read("x^2-4*x+7").get().multiply(ZERO) == ZERO);
+        aeq(read("x^2-4*x+7").get().multiply(ONE), "x^2-4*x+7");
+        aeq(read("x^2-4*x+7").get().multiply(X), "x^3-4*x^2+7*x");
+        aeq(read("x^2-4*x+7").get().multiply(read("-17").get()), "-17*x^2+68*x-119");
+        aeq(read("x^2-4*x+7").get().multiply(read("x^2-4*x+7").get()), "x^4-8*x^3+30*x^2-56*x+49");
+        aeq(read("x^2-4*x+7").get().multiply(read("-x^3-1").get()), "-x^5+4*x^4-7*x^3-x^2+4*x-7");
+        aeq(read("x^2-4*x+7").get().multiply(read("3*x^10").get()), "3*x^12-12*x^11+21*x^10");
+        assertTrue(read("-x^3-1").get().multiply(ZERO) == ZERO);
+        aeq(read("-x^3-1").get().multiply(ONE), "-x^3-1");
+        aeq(read("-x^3-1").get().multiply(X), "-x^4-x");
+        aeq(read("-x^3-1").get().multiply(read("-17").get()), "17*x^3+17");
+        aeq(read("-x^3-1").get().multiply(read("x^2-4*x+7").get()), "-x^5+4*x^4-7*x^3-x^2+4*x-7");
+        aeq(read("-x^3-1").get().multiply(read("-x^3-1").get()), "x^6+2*x^3+1");
+        aeq(read("-x^3-1").get().multiply(read("3*x^10").get()), "-3*x^13-3*x^10");
+        assertTrue(read("3*x^10").get().multiply(ZERO) == ZERO);
+        aeq(read("3*x^10").get().multiply(ONE), "3*x^10");
+        aeq(read("3*x^10").get().multiply(X), "3*x^11");
+        aeq(read("3*x^10").get().multiply(read("-17").get()), "-51*x^10");
+        aeq(read("3*x^10").get().multiply(read("x^2-4*x+7").get()), "3*x^12-12*x^11+21*x^10");
+        aeq(read("3*x^10").get().multiply(read("-x^3-1").get()), "-3*x^13-3*x^10");
+        aeq(read("3*x^10").get().multiply(read("3*x^10").get()), "9*x^20");
+        assertTrue(read("-1").get().multiply(read("-1").get()) == ONE);
+    }
+
+    @Test
     public void testEquals() {
         //noinspection EqualsWithItself
         assertTrue(ZERO.equals(ZERO));

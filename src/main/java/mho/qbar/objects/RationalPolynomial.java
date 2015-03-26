@@ -372,6 +372,7 @@ public class RationalPolynomial implements
                 productCoefficients.set(index, productCoefficients.get(index).add(a.multiply(b)));
             }
         }
+        if (productCoefficients.size() == 1 && productCoefficients.get(0) == Rational.ONE) return ONE;
         return new RationalPolynomial(productCoefficients);
     }
 

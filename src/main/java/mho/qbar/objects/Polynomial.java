@@ -374,6 +374,7 @@ public class Polynomial implements Comparable<Polynomial>, Function<BigInteger, 
                 productCoefficients.set(index, productCoefficients.get(index).add(a.multiply(b)));
             }
         }
+        if (productCoefficients.size() == 1 && productCoefficients.get(0).equals(BigInteger.ONE)) return ONE;
         return new Polynomial(productCoefficients);
     }
 
