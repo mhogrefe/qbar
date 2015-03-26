@@ -135,6 +135,13 @@ public class RationalPolynomialDemos {
         }
     }
 
+    public static void demoMultiply_RationalPolynomial() {
+        initialize();
+        for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, P.pairs(P.rationalPolynomials()))) {
+            System.out.println("(" + p.a + ") * (" + p.b + ") = " + p.a.multiply(p.b));
+        }
+    }
+
     public static void demoEquals_RationalPolynomial() {
         initialize();
         for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, P.pairs(P.rationalPolynomials()))) {

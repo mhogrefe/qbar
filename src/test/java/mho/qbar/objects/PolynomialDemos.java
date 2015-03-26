@@ -135,6 +135,13 @@ public class PolynomialDemos {
         }
     }
 
+    public static void demoMultiply_Polynomial() {
+        initialize();
+        for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(P.polynomials()))) {
+            System.out.println("(" + p.a + ") * (" + p.b + ") = " + p.a.multiply(p.b));
+        }
+    }
+
     public static void demoEquals_Polynomial() {
         initialize();
         for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(P.polynomials()))) {
