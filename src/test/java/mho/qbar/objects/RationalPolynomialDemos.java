@@ -128,6 +128,13 @@ public class RationalPolynomialDemos {
         }
     }
 
+    public static void demoSubtract() {
+        initialize();
+        for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, P.pairs(P.rationalPolynomials()))) {
+            System.out.println("(" + p.a + ") - (" + p.b + ") = " + p.a.subtract(p.b));
+        }
+    }
+
     public static void demoEquals_RationalPolynomial() {
         initialize();
         for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, P.pairs(P.rationalPolynomials()))) {

@@ -128,6 +128,13 @@ public class PolynomialDemos {
         }
     }
 
+    public static void demoSubtract() {
+        initialize();
+        for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(P.polynomials()))) {
+            System.out.println("(" + p.a + ") - (" + p.b + ") = " + p.a.subtract(p.b));
+        }
+    }
+
     public static void demoEquals_Polynomial() {
         initialize();
         for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(P.polynomials()))) {
