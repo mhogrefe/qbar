@@ -61,6 +61,7 @@ public class PolynomialProperties {
             propertiesSignum();
             propertiesSubtract();
             compareImplementationsSubtract();
+            propertiesMultiply_Polynomial();
             propertiesEquals();
             propertiesHashCode();
             propertiesCompareTo();
@@ -395,6 +396,15 @@ public class PolynomialProperties {
             assertEquals(p.toString(), p.a, difference.add(p.b));
         }
 
+        Iterable<Triple<Polynomial, Polynomial, BigInteger>> ts = P.triples(
+                P.polynomials(),
+                P.polynomials(),
+                P.bigIntegers()
+        );
+        for (Triple<Polynomial, Polynomial, BigInteger> t : take(LIMIT, ts)) {
+            assertEquals(t.toString(), t.a.subtract(t.b).apply(t.c), t.a.apply(t.c).subtract(t.b.apply(t.c)));
+        }
+
         for (Polynomial p : take(LIMIT, P.polynomials())) {
             assertEquals(p.toString(), ZERO.subtract(p), p.negate());
             assertEquals(p.toString(), p.subtract(ZERO), p);
@@ -421,6 +431,42 @@ public class PolynomialProperties {
             totalTime += (System.nanoTime() - time);
         }
         System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
+    }
+
+    private static void propertiesMultiply_Polynomial() {
+        initialize();
+        System.out.println("\t\ttesting multiply(Polynomial) properties...");
+
+        for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(P.polynomials()))) {
+            Polynomial product = p.a.multiply(p.b);
+            validate(product);
+            assertEquals(p.toString(), product, p.b.multiply(p.a));
+        }
+
+        Iterable<Triple<Polynomial, Polynomial, BigInteger>> ts = P.triples(
+                P.polynomials(),
+                P.polynomials(),
+                P.bigIntegers()
+        );
+        for (Triple<Polynomial, Polynomial, BigInteger> t : take(LIMIT, ts)) {
+            assertEquals(t.toString(), t.a.add(t.b).apply(t.c), t.a.apply(t.c).add(t.b.apply(t.c)));
+        }
+
+        for (Polynomial p : take(LIMIT, P.polynomials())) {
+            assertEquals(p.toString(), ONE.multiply(p), p);
+            assertEquals(p.toString(), p.multiply(ONE), p);
+            assertTrue(p.toString(), ZERO.multiply(p) == ZERO);
+            assertTrue(p.toString(), p.multiply(ZERO) == ZERO);
+        }
+
+        for (Triple<Polynomial, Polynomial, Polynomial> t : take(LIMIT, P.triples(P.polynomials()))) {
+            Polynomial product1 = t.a.multiply(t.b).multiply(t.c);
+            Polynomial product2 = t.a.multiply(t.b.multiply(t.c));
+            assertEquals(t.toString(), product1, product2);
+            Polynomial expression1 = t.a.add(t.b).multiply(t.c);
+            Polynomial expression2 = t.a.multiply(t.c).add(t.b.multiply(t.c));
+            assertEquals(t.toString(), expression1, expression2);
+        }
     }
 
     private static void propertiesEquals() {

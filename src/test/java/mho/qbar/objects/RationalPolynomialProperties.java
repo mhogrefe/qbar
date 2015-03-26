@@ -59,6 +59,7 @@ public class RationalPolynomialProperties {
             propertiesSignum();
             propertiesSubtract();
             compareImplementationsSubtract();
+            propertiesMultiply_RationalPolynomial();
             propertiesEquals();
             propertiesHashCode();
             propertiesCompareTo();
@@ -321,8 +322,9 @@ public class RationalPolynomialProperties {
             assertTrue(p.toString(), p.add(p.negate()) == ZERO);
         }
 
-        Iterable<Triple<RationalPolynomial, RationalPolynomial, RationalPolynomial>> ts2 =
-                P.triples(P.rationalPolynomials());
+        Iterable<Triple<RationalPolynomial, RationalPolynomial, RationalPolynomial>> ts2 = P.triples(
+                P.rationalPolynomials()
+        );
         for (Triple<RationalPolynomial, RationalPolynomial, RationalPolynomial> t : take(LIMIT, ts2)) {
             RationalPolynomial sum1 = t.a.add(t.b).add(t.c);
             RationalPolynomial sum2 = t.a.add(t.b.add(t.c));
@@ -394,10 +396,58 @@ public class RationalPolynomialProperties {
             assertEquals(p.toString(), p.a, difference.add(p.b));
         }
 
+        Iterable<Triple<RationalPolynomial, RationalPolynomial, Rational>> ts = P.triples(
+                P.rationalPolynomials(),
+                P.rationalPolynomials(),
+                P.rationals()
+        );
+        for (Triple<RationalPolynomial, RationalPolynomial, Rational> t : take(LIMIT, ts)) {
+            assertEquals(t.toString(), t.a.subtract(t.b).apply(t.c), t.a.apply(t.c).subtract(t.b.apply(t.c)));
+        }
+
         for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
             assertEquals(p.toString(), ZERO.subtract(p), p.negate());
             assertEquals(p.toString(), p.subtract(ZERO), p);
             assertTrue(p.toString(), p.subtract(p) == ZERO);
+        }
+    }
+
+    private static void propertiesMultiply_RationalPolynomial() {
+        initialize();
+        System.out.println("\t\ttesting multiply(RationalPolynomial) properties...");
+
+        for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, P.pairs(P.rationalPolynomials()))) {
+            RationalPolynomial product = p.a.multiply(p.b);
+            validate(product);
+            assertEquals(p.toString(), product, p.b.multiply(p.a));
+        }
+
+        Iterable<Triple<RationalPolynomial, RationalPolynomial, Rational>> ts = P.triples(
+                P.rationalPolynomials(),
+                P.rationalPolynomials(),
+                P.rationals()
+        );
+        for (Triple<RationalPolynomial, RationalPolynomial, Rational> t : take(LIMIT, ts)) {
+            assertEquals(t.toString(), t.a.add(t.b).apply(t.c), t.a.apply(t.c).add(t.b.apply(t.c)));
+        }
+
+        for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
+            assertEquals(p.toString(), ONE.multiply(p), p);
+            assertEquals(p.toString(), p.multiply(ONE), p);
+            assertTrue(p.toString(), ZERO.multiply(p) == ZERO);
+            assertTrue(p.toString(), p.multiply(ZERO) == ZERO);
+        }
+
+        Iterable<Triple<RationalPolynomial, RationalPolynomial, RationalPolynomial>> ts2 = P.triples(
+                P.rationalPolynomials()
+        );
+        for (Triple<RationalPolynomial, RationalPolynomial, RationalPolynomial> t : take(LIMIT, ts2)) {
+            RationalPolynomial product1 = t.a.multiply(t.b).multiply(t.c);
+            RationalPolynomial product2 = t.a.multiply(t.b.multiply(t.c));
+            assertEquals(t.toString(), product1, product2);
+            RationalPolynomial expression1 = t.a.add(t.b).multiply(t.c);
+            RationalPolynomial expression2 = t.a.multiply(t.c).add(t.b.multiply(t.c));
+            assertEquals(t.toString(), expression1, expression2);
         }
     }
 
