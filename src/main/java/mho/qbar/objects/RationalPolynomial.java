@@ -342,6 +342,40 @@ public class RationalPolynomial implements
     }
 
     /**
+     * Returns the product of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalPolynomial}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * Length is 0 if either {@code this} or {@code that} is 0, or deg({@code this})+deg({@code that})+1 otherwise
+     *
+     * @param that the {@code RationalPolynomial} {@code this} is multiplied by
+     * @return {@code this}×{@code that}
+     */
+    public @NotNull RationalPolynomial multiply(@NotNull RationalPolynomial that) {
+        if (this == ZERO || that == ZERO) return ZERO;
+        if (this == ONE) return that;
+        if (that == ONE) return this;
+        List<Rational> productCoefficients = toList(
+                replicate(coefficients.size() + that.coefficients.size() - 1, Rational.ZERO)
+        );
+        for (int i = 0; i < coefficients.size(); i++) {
+            for (int j = 0; j < that.coefficients.size(); j++) {
+                Rational a = coefficients.get(i);
+                if (a == Rational.ZERO) continue;
+                Rational b = that.coefficients.get(j);
+                if (b == Rational.ZERO) continue;
+                int index = i + j;
+                productCoefficients.set(index, productCoefficients.get(index).add(a.multiply(b)));
+            }
+        }
+        return new RationalPolynomial(productCoefficients);
+    }
+
+    /**
      * Determines whether {@code this} is equal to {@code that}.
      *
      * <ul>
