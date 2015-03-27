@@ -417,7 +417,7 @@ public class RationalPolynomialTest {
         assertTrue(read("-4/3").get().multiply(BigInteger.ZERO) == ZERO);
         aeq(read("-4/3").get().multiply(BigInteger.ONE), "-4/3");
         aeq(read("-4/3").get().multiply(BigInteger.valueOf(-3)), "4");
-        aeq(read("-4/3").get().multiply(BigInteger.valueOf(4)), "-16/15");
+        aeq(read("-4/3").get().multiply(BigInteger.valueOf(4)), "-16/3");
         assertTrue(read("x^2-7/4*x+1/3").get().multiply(BigInteger.ZERO) == ZERO);
         aeq(read("x^2-7/4*x+1/3").get().multiply(BigInteger.ONE), "x^2-7/4*x+1/3");
         aeq(read("x^2-7/4*x+1/3").get().multiply(BigInteger.valueOf(-3)), "-3*x^2+21/4*x-1");

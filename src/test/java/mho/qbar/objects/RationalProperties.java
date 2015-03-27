@@ -1869,8 +1869,7 @@ public class RationalProperties {
         initialize();
         System.out.println("\t\ttesting multiply(BigInteger) properties...");
 
-        Iterable<Pair<Rational, BigInteger>> ps = P.pairs(P.rationals(), P.bigIntegers());
-        for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
+        for (Pair<Rational, BigInteger> p : take(LIMIT, P.pairs(P.rationals(), P.bigIntegers()))) {
             Rational product = p.a.multiply(p.b);
             validate(product);
             assertEquals(p.toString(), product, multiply_BigInteger_simplest(p.a, p.b));
@@ -1878,7 +1877,10 @@ public class RationalProperties {
             assertEquals(p.toString(), product, of(p.b).multiply(p.a));
         }
 
-        ps = P.pairs(P.rationals(), filter(i -> !i.equals(BigInteger.ZERO), P.bigIntegers()));
+        Iterable<Pair<Rational, BigInteger>> ps = P.pairs(
+                P.rationals(),
+                filter(i -> !i.equals(BigInteger.ZERO), P.bigIntegers())
+        );
         for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
             assertEquals(p.toString(), p.a.multiply(p.b).divide(p.b), p.a);
         }
@@ -1893,13 +1895,12 @@ public class RationalProperties {
             assertTrue(r.toString(), r.multiply(BigInteger.ZERO) == ZERO);
         }
 
-        Iterable<BigInteger> bis = filter(i -> !i.equals(BigInteger.ZERO), P.bigIntegers());
-        for (BigInteger i : take(LIMIT, bis)) {
+        for (BigInteger i : take(LIMIT, filter(j -> !j.equals(BigInteger.ZERO), P.bigIntegers()))) {
             assertTrue(i.toString(), of(i).invert().multiply(i) == ONE);
         }
 
-        Iterable<Rational> rs = P.rationals();
-        for (Triple<Rational, Rational, BigInteger> t : take(LIMIT, P.triples(rs, rs, P.bigIntegers()))) {
+        Iterable<Triple<Rational, Rational, BigInteger>> ts = P.triples(P.rationals(), P.rationals(), P.bigIntegers());
+        for (Triple<Rational, Rational, BigInteger> t : take(LIMIT, ts)) {
             Rational expression1 = t.a.add(t.b).multiply(t.c);
             Rational expression2 = t.a.multiply(t.c).add(t.b.multiply(t.c));
             assertEquals(t.toString(), expression1, expression2);
@@ -1911,8 +1912,7 @@ public class RationalProperties {
         System.out.println("\t\tcomparing multiply(BigInteger) implementations...");
 
         long totalTime = 0;
-        Iterable<Pair<Rational, BigInteger>> ps = P.pairs(P.rationals(), P.bigIntegers());
-        for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
+        for (Pair<Rational, BigInteger> p : take(LIMIT, P.pairs(P.rationals(), P.bigIntegers()))) {
             long time = System.nanoTime();
             multiply_BigInteger_simplest(p.a, p.b);
             totalTime += (System.nanoTime() - time);
@@ -1920,7 +1920,7 @@ public class RationalProperties {
         System.out.println("\t\t\tsimplest: " + ((double) totalTime) / 1e9 + " s");
 
         totalTime = 0;
-        for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
+        for (Pair<Rational, BigInteger> p : take(LIMIT, P.pairs(P.rationals(), P.bigIntegers()))) {
             long time = System.nanoTime();
             p.a.multiply(p.b);
             totalTime += (System.nanoTime() - time);
@@ -1959,13 +1959,12 @@ public class RationalProperties {
             assertTrue(r.toString(), r.multiply(0) == ZERO);
         }
 
-        Iterable<Integer> is = filter(i -> i != 0, P.integers());
-        for (int i : take(LIMIT, is)) {
+        for (int i : take(LIMIT, filter(i -> i != 0, P.integers()))) {
             assertTrue(Integer.toString(i), of(i).invert().multiply(i) == ONE);
         }
 
-        Iterable<Rational> rs = P.rationals();
-        for (Triple<Rational, Rational, Integer> t : take(LIMIT, P.triples(rs, rs, P.integers()))) {
+        Iterable<Triple<Rational, Rational, Integer>> ts = P.triples(P.rationals(), P.rationals(), P.integers());
+        for (Triple<Rational, Rational, Integer> t : take(LIMIT, ts)) {
             Rational expression1 = t.a.add(t.b).multiply(t.c);
             Rational expression2 = t.a.multiply(t.c).add(t.b.multiply(t.c));
             assertEquals(t.toString(), expression1, expression2);
@@ -1977,8 +1976,7 @@ public class RationalProperties {
         System.out.println("\t\tcomparing multiply(int) implementations...");
 
         long totalTime = 0;
-        Iterable<Pair<Rational, Integer>> ps = P.pairs(P.rationals(), P.integers());
-        for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
+        for (Pair<Rational, Integer> p : take(LIMIT, P.pairs(P.rationals(), P.integers()))) {
             long time = System.nanoTime();
             multiply_int_simplest(p.a, p.b);
             totalTime += (System.nanoTime() - time);
@@ -1986,7 +1984,7 @@ public class RationalProperties {
         System.out.println("\t\t\tsimplest: " + ((double) totalTime) / 1e9 + " s");
 
         totalTime = 0;
-        for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
+        for (Pair<Rational, Integer> p : take(LIMIT, P.pairs(P.rationals(), P.integers()))) {
             long time = System.nanoTime();
             p.a.multiply(p.b);
             totalTime += (System.nanoTime() - time);

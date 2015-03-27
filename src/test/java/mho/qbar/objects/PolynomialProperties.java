@@ -62,6 +62,8 @@ public class PolynomialProperties {
             propertiesSubtract();
             compareImplementationsSubtract();
             propertiesMultiply_Polynomial();
+            propertiesMultiply_BigInteger();
+            propertiesMultiply_int();
             propertiesEquals();
             propertiesHashCode();
             propertiesCompareTo();
@@ -487,6 +489,98 @@ public class PolynomialProperties {
             Polynomial product1 = t.a.multiply(t.b).multiply(t.c);
             Polynomial product2 = t.a.multiply(t.b.multiply(t.c));
             assertEquals(t.toString(), product1, product2);
+            Polynomial expression1 = t.a.add(t.b).multiply(t.c);
+            Polynomial expression2 = t.a.multiply(t.c).add(t.b.multiply(t.c));
+            assertEquals(t.toString(), expression1, expression2);
+        }
+    }
+
+    private static void propertiesMultiply_BigInteger() {
+        initialize();
+        System.out.println("\t\ttesting multiply(BigInteger) properties...");
+
+        for (Pair<Polynomial, BigInteger> p : take(LIMIT, P.pairs(P.polynomials(), P.bigIntegers()))) {
+            Polynomial product = p.a.multiply(p.b);
+            validate(product);
+            assertEquals(p.toString(), product, p.a.multiply(of(p.b)));
+            assertEquals(p.toString(), product, of(p.b).multiply(p.a));
+        }
+
+        Iterable<Triple<Polynomial, BigInteger, BigInteger>> ts = P.triples(
+                P.polynomials(),
+                P.bigIntegers(),
+                P.bigIntegers()
+        );
+        for (Triple<Polynomial, BigInteger, BigInteger> t : take(LIMIT, ts)) {
+            assertEquals(t.toString(), t.a.multiply(t.b).apply(t.c), t.a.apply(t.c).multiply(t.b));
+        }
+
+        for (Pair<BigInteger, BigInteger> p : take(LIMIT, P.pairs(P.bigIntegers()))) {
+            assertEquals(p.toString(), of(p.a).multiply(p.b), of(p.a.multiply(p.b)));
+        }
+
+        for (BigInteger i : take(LIMIT, P.bigIntegers())) {
+            assertEquals(i.toString(), ONE.multiply(i), of(i));
+            assertTrue(i.toString(), ZERO.multiply(i) == ZERO);
+        }
+
+        for (Polynomial p : take(LIMIT, P.polynomials())) {
+            assertEquals(p.toString(), p.multiply(BigInteger.ONE), p);
+            assertTrue(p.toString(), p.multiply(BigInteger.ZERO) == ZERO);
+        }
+
+        Iterable<Triple<Polynomial, Polynomial, BigInteger>> ts2 = P.triples(
+                P.polynomials(),
+                P.polynomials(),
+                P.bigIntegers()
+        );
+        for (Triple<Polynomial, Polynomial, BigInteger> t : take(LIMIT, ts2)) {
+            Polynomial expression1 = t.a.add(t.b).multiply(t.c);
+            Polynomial expression2 = t.a.multiply(t.c).add(t.b.multiply(t.c));
+            assertEquals(t.toString(), expression1, expression2);
+        }
+    }
+
+    private static void propertiesMultiply_int() {
+        initialize();
+        System.out.println("\t\ttesting multiply(int) properties...");
+
+        for (Pair<Polynomial, Integer> p : take(LIMIT, P.pairs(P.polynomials(), P.integers()))) {
+            Polynomial product = p.a.multiply(p.b);
+            validate(product);
+            assertEquals(p.toString(), product, p.a.multiply(of(BigInteger.valueOf(p.b))));
+            assertEquals(p.toString(), product, of(BigInteger.valueOf(p.b)).multiply(p.a));
+        }
+
+        Iterable<Triple<Polynomial, Integer, BigInteger>> ts = P.triples(
+                P.polynomials(),
+                P.integers(),
+                P.bigIntegers()
+        );
+        for (Triple<Polynomial, Integer, BigInteger> t : take(LIMIT, ts)) {
+            assertEquals(t.toString(), t.a.multiply(t.b).apply(t.c), t.a.apply(t.c).multiply(BigInteger.valueOf(t.b)));
+        }
+
+        for (Pair<BigInteger, Integer> p : take(LIMIT, P.pairs(P.bigIntegers(), P.integers()))) {
+            assertEquals(p.toString(), of(p.a).multiply(p.b), of(p.a.multiply(BigInteger.valueOf(p.b))));
+        }
+
+        for (int i : take(LIMIT, P.integers())) {
+            assertEquals(Integer.toString(i), ONE.multiply(i), of(BigInteger.valueOf(i)));
+            assertTrue(Integer.toString(i), ZERO.multiply(i) == ZERO);
+        }
+
+        for (Polynomial p : take(LIMIT, P.polynomials())) {
+            assertEquals(p.toString(), p.multiply(1), p);
+            assertTrue(p.toString(), p.multiply(0) == ZERO);
+        }
+
+        Iterable<Triple<Polynomial, Polynomial, Integer>> ts2 = P.triples(
+                P.polynomials(),
+                P.polynomials(),
+                P.integers()
+        );
+        for (Triple<Polynomial, Polynomial, Integer> t : take(LIMIT, ts2)) {
             Polynomial expression1 = t.a.add(t.b).multiply(t.c);
             Polynomial expression2 = t.a.multiply(t.c).add(t.b.multiply(t.c));
             assertEquals(t.toString(), expression1, expression2);

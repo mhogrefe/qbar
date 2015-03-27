@@ -10,6 +10,7 @@ import mho.wheels.structures.Triple;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
+import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -60,6 +61,9 @@ public class RationalPolynomialProperties {
             propertiesSubtract();
             compareImplementationsSubtract();
             propertiesMultiply_RationalPolynomial();
+            propertiesMultiply_Rational();
+            propertiesMultiply_BigInteger();
+            propertiesMultiply_int();
             propertiesEquals();
             propertiesHashCode();
             propertiesCompareTo();
@@ -432,6 +436,27 @@ public class RationalPolynomialProperties {
         }
     }
 
+    private static void compareImplementationsSubtract() {
+        initialize();
+        System.out.println("\t\tcomparing subtract(RationalPolynomial) implementations...");
+
+        long totalTime = 0;
+        for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, P.pairs(P.rationalPolynomials()))) {
+            long time = System.nanoTime();
+            subtract_simplest(p.a, p.b);
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\t\t\tsimplest: " + ((double) totalTime) / 1e9 + " s");
+
+        totalTime = 0;
+        for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, P.pairs(P.rationalPolynomials()))) {
+            long time = System.nanoTime();
+            p.a.subtract(p.b);
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
+    }
+
     private static void propertiesMultiply_RationalPolynomial() {
         initialize();
         System.out.println("\t\ttesting multiply(RationalPolynomial) properties...");
@@ -475,25 +500,142 @@ public class RationalPolynomialProperties {
         }
     }
 
-    private static void compareImplementationsSubtract() {
+    private static void propertiesMultiply_Rational() {
         initialize();
-        System.out.println("\t\tcomparing subtract(RationalPolynomial) implementations...");
+        System.out.println("\t\ttesting multiply(Rational) properties...");
 
-        long totalTime = 0;
-        for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, P.pairs(P.rationalPolynomials()))) {
-            long time = System.nanoTime();
-            subtract_simplest(p.a, p.b);
-            totalTime += (System.nanoTime() - time);
+        for (Pair<RationalPolynomial, Rational> p : take(LIMIT, P.pairs(P.rationalPolynomials(), P.rationals()))) {
+            RationalPolynomial product = p.a.multiply(p.b);
+            validate(product);
+            assertEquals(p.toString(), product, p.a.multiply(of(p.b)));
+            assertEquals(p.toString(), product, of(p.b).multiply(p.a));
         }
-        System.out.println("\t\t\tsimplest: " + ((double) totalTime) / 1e9 + " s");
 
-        totalTime = 0;
-        for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, P.pairs(P.rationalPolynomials()))) {
-            long time = System.nanoTime();
-            p.a.subtract(p.b);
-            totalTime += (System.nanoTime() - time);
+        Iterable<Triple<RationalPolynomial, Rational, Rational>> ts = P.triples(
+                P.rationalPolynomials(),
+                P.rationals(),
+                P.rationals()
+        );
+        for (Triple<RationalPolynomial, Rational, Rational> t : take(LIMIT, ts)) {
+            assertEquals(t.toString(), t.a.multiply(t.b).apply(t.c), t.a.apply(t.c).multiply(t.b));
         }
-        System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
+
+        for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
+            assertEquals(p.toString(), of(p.a).multiply(p.b), of(p.a.multiply(p.b)));
+        }
+
+        for (Rational r : take(LIMIT, P.rationals())) {
+            assertEquals(r.toString(), ONE.multiply(r), of(r));
+            assertTrue(r.toString(), ZERO.multiply(r) == ZERO);
+        }
+
+        for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
+            assertEquals(p.toString(), p.multiply(Rational.ONE), p);
+            assertTrue(p.toString(), p.multiply(Rational.ZERO) == ZERO);
+        }
+
+        Iterable<Triple<RationalPolynomial, RationalPolynomial, Rational>> ts2 = P.triples(
+                P.rationalPolynomials(),
+                P.rationalPolynomials(),
+                P.rationals()
+        );
+        for (Triple<RationalPolynomial, RationalPolynomial, Rational> t : take(LIMIT, ts2)) {
+            RationalPolynomial expression1 = t.a.add(t.b).multiply(t.c);
+            RationalPolynomial expression2 = t.a.multiply(t.c).add(t.b.multiply(t.c));
+            assertEquals(t.toString(), expression1, expression2);
+        }
+    }
+
+    private static void propertiesMultiply_BigInteger() {
+        initialize();
+        System.out.println("\t\ttesting multiply(BigInteger) properties...");
+
+        for (Pair<RationalPolynomial, BigInteger> p : take(LIMIT, P.pairs(P.rationalPolynomials(), P.bigIntegers()))) {
+            RationalPolynomial product = p.a.multiply(p.b);
+            validate(product);
+            assertEquals(p.toString(), product, p.a.multiply(of(Rational.of(p.b))));
+            assertEquals(p.toString(), product, of(Rational.of(p.b)).multiply(p.a));
+        }
+
+        Iterable<Triple<RationalPolynomial, BigInteger, Rational>> ts = P.triples(
+                P.rationalPolynomials(),
+                P.bigIntegers(),
+                P.rationals()
+        );
+        for (Triple<RationalPolynomial, BigInteger, Rational> t : take(LIMIT, ts)) {
+            assertEquals(t.toString(), t.a.multiply(t.b).apply(t.c), t.a.apply(t.c).multiply(t.b));
+        }
+
+        for (Pair<Rational, BigInteger> p : take(LIMIT, P.pairs(P.rationals(), P.bigIntegers()))) {
+            assertEquals(p.toString(), of(p.a).multiply(p.b), of(p.a.multiply(p.b)));
+        }
+
+        for (BigInteger i : take(LIMIT, P.bigIntegers())) {
+            assertEquals(i.toString(), ONE.multiply(i), of(Rational.of(i)));
+            assertTrue(i.toString(), ZERO.multiply(i) == ZERO);
+        }
+
+        for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
+            assertEquals(p.toString(), p.multiply(BigInteger.ONE), p);
+            assertTrue(p.toString(), p.multiply(BigInteger.ZERO) == ZERO);
+        }
+
+        Iterable<Triple<RationalPolynomial, RationalPolynomial, BigInteger>> ts2 = P.triples(
+                P.rationalPolynomials(),
+                P.rationalPolynomials(),
+                P.bigIntegers()
+        );
+        for (Triple<RationalPolynomial, RationalPolynomial, BigInteger> t : take(LIMIT, ts2)) {
+            RationalPolynomial expression1 = t.a.add(t.b).multiply(t.c);
+            RationalPolynomial expression2 = t.a.multiply(t.c).add(t.b.multiply(t.c));
+            assertEquals(t.toString(), expression1, expression2);
+        }
+    }
+
+    private static void propertiesMultiply_int() {
+        initialize();
+        System.out.println("\t\ttesting multiply(int) properties...");
+
+        for (Pair<RationalPolynomial, Integer> p : take(LIMIT, P.pairs(P.rationalPolynomials(), P.integers()))) {
+            RationalPolynomial product = p.a.multiply(p.b);
+            validate(product);
+            assertEquals(p.toString(), product, p.a.multiply(Rational.of(p.b)));
+            assertEquals(p.toString(), product, of(Rational.of(p.b)).multiply(p.a));
+        }
+
+        Iterable<Triple<RationalPolynomial, Integer, Rational>> ts = P.triples(
+                P.rationalPolynomials(),
+                P.integers(),
+                P.rationals()
+        );
+        for (Triple<RationalPolynomial, Integer, Rational> t : take(LIMIT, ts)) {
+            assertEquals(t.toString(), t.a.multiply(t.b).apply(t.c), t.a.apply(t.c).multiply(BigInteger.valueOf(t.b)));
+        }
+
+        for (Pair<Rational, Integer> p : take(LIMIT, P.pairs(P.rationals(), P.integers()))) {
+            assertEquals(p.toString(), of(p.a).multiply(p.b), of(p.a.multiply(BigInteger.valueOf(p.b))));
+        }
+
+        for (int i : take(LIMIT, P.integers())) {
+            assertEquals(Integer.toString(i), ONE.multiply(i), of(Rational.of(i)));
+            assertTrue(Integer.toString(i), ZERO.multiply(i) == ZERO);
+        }
+
+        for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
+            assertEquals(p.toString(), p.multiply(1), p);
+            assertTrue(p.toString(), p.multiply(0) == ZERO);
+        }
+
+        Iterable<Triple<RationalPolynomial, RationalPolynomial, Integer>> ts2 = P.triples(
+                P.rationalPolynomials(),
+                P.rationalPolynomials(),
+                P.integers()
+        );
+        for (Triple<RationalPolynomial, RationalPolynomial, Integer> t : take(LIMIT, ts2)) {
+            RationalPolynomial expression1 = t.a.add(t.b).multiply(t.c);
+            RationalPolynomial expression2 = t.a.multiply(t.c).add(t.b.multiply(t.c));
+            assertEquals(t.toString(), expression1, expression2);
+        }
     }
 
     private static void propertiesEquals() {
