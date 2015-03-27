@@ -367,6 +367,72 @@ public class PolynomialTest {
     }
 
     @Test
+    public void testMultiply_BigInteger() {
+        assertTrue(ZERO.multiply(BigInteger.ZERO) == ZERO);
+        assertTrue(ZERO.multiply(BigInteger.ONE) == ZERO);
+        assertTrue(ZERO.multiply(BigInteger.valueOf(-3)) == ZERO);
+        assertTrue(ZERO.multiply(BigInteger.valueOf(4)) == ZERO);
+        assertTrue(ONE.multiply(BigInteger.ZERO) == ZERO);
+        assertTrue(ONE.multiply(BigInteger.ONE) == ONE);
+        aeq(ONE.multiply(BigInteger.valueOf(-3)), "-3");
+        aeq(ONE.multiply(BigInteger.valueOf(4)), "4");
+        assertTrue(X.multiply(BigInteger.ZERO) == ZERO);
+        aeq(X.multiply(BigInteger.ONE), "x");
+        aeq(X.multiply(BigInteger.valueOf(-3)), "-3*x");
+        aeq(X.multiply(BigInteger.valueOf(4)), "4*x");
+        assertTrue(read("-17").get().multiply(BigInteger.ZERO) == ZERO);
+        aeq(read("-17").get().multiply(BigInteger.ONE), "-17");
+        aeq(read("-17").get().multiply(BigInteger.valueOf(-3)), "51");
+        aeq(read("-17").get().multiply(BigInteger.valueOf(4)), "-68");
+        assertTrue(read("x^2-4*x+7").get().multiply(BigInteger.ZERO) == ZERO);
+        aeq(read("x^2-4*x+7").get().multiply(BigInteger.ONE), "x^2-4*x+7");
+        aeq(read("x^2-4*x+7").get().multiply(BigInteger.valueOf(-3)), "-3*x^2+12*x-21");
+        aeq(read("x^2-4*x+7").get().multiply(BigInteger.valueOf(4)), "4*x^2-16*x+28");
+        assertTrue(read("-x^3-1").get().multiply(BigInteger.ZERO) == ZERO);
+        aeq(read("-x^3-1").get().multiply(BigInteger.ONE), "-x^3-1");
+        aeq(read("-x^3-1").get().multiply(BigInteger.valueOf(-3)), "3*x^3+3");
+        aeq(read("-x^3-1").get().multiply(BigInteger.valueOf(4)), "-4*x^3-4");
+        assertTrue(read("3*x^10").get().multiply(BigInteger.ZERO) == ZERO);
+        aeq(read("3*x^10").get().multiply(BigInteger.ONE), "3*x^10");
+        aeq(read("3*x^10").get().multiply(BigInteger.valueOf(-3)), "-9*x^10");
+        aeq(read("3*x^10").get().multiply(BigInteger.valueOf(4)), "12*x^10");
+        assertTrue(read("-1").get().multiply(BigInteger.valueOf(-1)) == ONE);
+    }
+
+    @Test
+    public void testMultiply_int() {
+        assertTrue(ZERO.multiply(0) == ZERO);
+        assertTrue(ZERO.multiply(1) == ZERO);
+        assertTrue(ZERO.multiply(-3) == ZERO);
+        assertTrue(ZERO.multiply(4) == ZERO);
+        assertTrue(ONE.multiply(0) == ZERO);
+        assertTrue(ONE.multiply(1) == ONE);
+        aeq(ONE.multiply(-3), "-3");
+        aeq(ONE.multiply(4), "4");
+        assertTrue(X.multiply(0) == ZERO);
+        aeq(X.multiply(1), "x");
+        aeq(X.multiply(-3), "-3*x");
+        aeq(X.multiply(4), "4*x");
+        assertTrue(read("-17").get().multiply(0) == ZERO);
+        aeq(read("-17").get().multiply(1), "-17");
+        aeq(read("-17").get().multiply(-3), "51");
+        aeq(read("-17").get().multiply(4), "-68");
+        assertTrue(read("x^2-4*x+7").get().multiply(0) == ZERO);
+        aeq(read("x^2-4*x+7").get().multiply(1), "x^2-4*x+7");
+        aeq(read("x^2-4*x+7").get().multiply(-3), "-3*x^2+12*x-21");
+        aeq(read("x^2-4*x+7").get().multiply(4), "4*x^2-16*x+28");
+        assertTrue(read("-x^3-1").get().multiply(0) == ZERO);
+        aeq(read("-x^3-1").get().multiply(1), "-x^3-1");
+        aeq(read("-x^3-1").get().multiply(-3), "3*x^3+3");
+        aeq(read("-x^3-1").get().multiply(4), "-4*x^3-4");
+        assertTrue(read("3*x^10").get().multiply(0) == ZERO);
+        aeq(read("3*x^10").get().multiply(1), "3*x^10");
+        aeq(read("3*x^10").get().multiply(-3), "-9*x^10");
+        aeq(read("3*x^10").get().multiply(4), "12*x^10");
+        assertTrue(read("-1").get().multiply(-1) == ONE);
+    }
+
+    @Test
     public void testEquals() {
         //noinspection EqualsWithItself
         assertTrue(ZERO.equals(ZERO));
