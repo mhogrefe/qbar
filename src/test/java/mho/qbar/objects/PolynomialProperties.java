@@ -322,6 +322,10 @@ public class PolynomialProperties {
             assertEquals(t.toString(), t.a.add(t.b).apply(t.c), t.a.apply(t.c).add(t.b.apply(t.c)));
         }
 
+        for (Pair<BigInteger, BigInteger> p : take(LIMIT, P.pairs(P.bigIntegers()))) {
+            assertEquals(p.toString(), of(p.a).add(of(p.b)), of(p.a.add(p.b)));
+        }
+
         for (Polynomial p : take(LIMIT, P.polynomials())) {
             assertEquals(p.toString(), ZERO.add(p), p);
             assertEquals(p.toString(), p.add(ZERO), p);
@@ -350,6 +354,10 @@ public class PolynomialProperties {
             assertEquals(p.toString(), p.a.negate().apply(p.b), p.a.apply(p.b).negate());
         }
 
+        for (BigInteger i : take(LIMIT, P.bigIntegers())) {
+            assertEquals(i.toString(), of(i).negate(), of(i.negate()));
+        }
+
         for (Polynomial p : take(LIMIT, filter(q -> q != ZERO, P.polynomials()))) {
             Polynomial negative = p.negate();
             assertNotEquals(p.toString(), p, negative);
@@ -367,6 +375,10 @@ public class PolynomialProperties {
             assertNotEquals(p.toString(), abs.signum(), -1);
             assertTrue(p.toString(), ge(abs, ZERO));
         }
+
+        for (BigInteger i : take(LIMIT, P.bigIntegers())) {
+            assertEquals(i.toString(), of(i).abs(), of(i.abs()));
+        }
     }
 
     private static void propertiesSignum() {
@@ -377,6 +389,10 @@ public class PolynomialProperties {
             int signum = p.signum();
             assertEquals(p.toString(), signum, compare(p, ZERO).toInt());
             assertTrue(p.toString(), signum == -1 || signum == 0 || signum == 1);
+        }
+
+        for (BigInteger i : take(LIMIT, P.bigIntegers())) {
+            assertEquals(i.toString(), of(i).signum(), i.signum());
         }
     }
 
@@ -403,6 +419,10 @@ public class PolynomialProperties {
         );
         for (Triple<Polynomial, Polynomial, BigInteger> t : take(LIMIT, ts)) {
             assertEquals(t.toString(), t.a.subtract(t.b).apply(t.c), t.a.apply(t.c).subtract(t.b.apply(t.c)));
+        }
+
+        for (Pair<BigInteger, BigInteger> p : take(LIMIT, P.pairs(P.bigIntegers()))) {
+            assertEquals(p.toString(), of(p.a).subtract(of(p.b)), of(p.a.subtract(p.b)));
         }
 
         for (Polynomial p : take(LIMIT, P.polynomials())) {
@@ -452,6 +472,10 @@ public class PolynomialProperties {
             assertEquals(t.toString(), t.a.add(t.b).apply(t.c), t.a.apply(t.c).add(t.b.apply(t.c)));
         }
 
+        for (Pair<BigInteger, BigInteger> p : take(LIMIT, P.pairs(P.bigIntegers()))) {
+            assertEquals(p.toString(), of(p.a).multiply(of(p.b)), of(p.a.multiply(p.b)));
+        }
+
         for (Polynomial p : take(LIMIT, P.polynomials())) {
             assertEquals(p.toString(), ONE.multiply(p), p);
             assertEquals(p.toString(), p.multiply(ONE), p);
@@ -479,6 +503,10 @@ public class PolynomialProperties {
             //noinspection ObjectEqualsNull
             assertFalse(p.toString(), p.equals(null));
         }
+
+        for (Pair<BigInteger, BigInteger> p : take(LIMIT, P.pairs(P.bigIntegers()))) {
+            assertEquals(p.toString(), of(p.a).equals(of(p.b)), p.a.equals(p.b));
+        }
     }
 
     private static void propertiesHashCode() {
@@ -499,6 +527,10 @@ public class PolynomialProperties {
             assertTrue(p.toString(), compare == -1 || compare == 0 || compare == 1);
             assertEquals(p.toString(), p.b.compareTo(p.a), -compare);
             assertEquals(p.toString(), p.a.subtract(p.b).signum(), compare);
+        }
+
+        for (Pair<BigInteger, BigInteger> p : take(LIMIT, P.pairs(P.bigIntegers()))) {
+            assertEquals(p.toString(), of(p.a).compareTo(of(p.b)), p.a.compareTo(p.b));
         }
 
         for (Polynomial p : take(LIMIT, P.polynomials())) {
@@ -583,6 +615,10 @@ public class PolynomialProperties {
             Optional<Polynomial> readP = read(s);
             assertTrue(p.toString(), readP.isPresent());
             assertEquals(p.toString(), readP.get(), p);
+        }
+
+        for (BigInteger i : take(LIMIT, P.bigIntegers())) {
+            assertEquals(i.toString(), of(i).toString(), i.toString());
         }
     }
 

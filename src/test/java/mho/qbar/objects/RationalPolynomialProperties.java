@@ -316,6 +316,10 @@ public class RationalPolynomialProperties {
             assertEquals(t.toString(), t.a.add(t.b).apply(t.c), t.a.apply(t.c).add(t.b.apply(t.c)));
         }
 
+        for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
+            assertEquals(p.toString(), of(p.a).add(of(p.b)), of(p.a.add(p.b)));
+        }
+
         for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
             assertEquals(p.toString(), ZERO.add(p), p);
             assertEquals(p.toString(), p.add(ZERO), p);
@@ -347,6 +351,10 @@ public class RationalPolynomialProperties {
             assertEquals(p.toString(), p.a.negate().apply(p.b), p.a.apply(p.b).negate());
         }
 
+        for (Rational r : take(LIMIT, P.rationals())) {
+            assertEquals(r.toString(), of(r).negate(), of(r.negate()));
+        }
+
         for (RationalPolynomial p : take(LIMIT, filter(q -> q != ZERO, P.rationalPolynomials()))) {
             RationalPolynomial negative = p.negate();
             assertNotEquals(p.toString(), p, negative);
@@ -364,6 +372,10 @@ public class RationalPolynomialProperties {
             assertNotEquals(p.toString(), abs.signum(), -1);
             assertTrue(p.toString(), ge(abs, ZERO));
         }
+
+        for (Rational r : take(LIMIT, P.rationals())) {
+            assertEquals(r.toString(), of(r).abs(), of(r.abs()));
+        }
     }
 
     private static void propertiesSignum() {
@@ -374,6 +386,10 @@ public class RationalPolynomialProperties {
             int signum = p.signum();
             assertEquals(p.toString(), signum, Ordering.compare(p, ZERO).toInt());
             assertTrue(p.toString(), signum == -1 || signum == 0 || signum == 1);
+        }
+
+        for (Rational r : take(LIMIT, P.rationals())) {
+            assertEquals(r.toString(), of(r).signum(), r.signum());
         }
     }
 
@@ -405,6 +421,10 @@ public class RationalPolynomialProperties {
             assertEquals(t.toString(), t.a.subtract(t.b).apply(t.c), t.a.apply(t.c).subtract(t.b.apply(t.c)));
         }
 
+        for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
+            assertEquals(p.toString(), of(p.a).subtract(of(p.b)), of(p.a.subtract(p.b)));
+        }
+
         for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
             assertEquals(p.toString(), ZERO.subtract(p), p.negate());
             assertEquals(p.toString(), p.subtract(ZERO), p);
@@ -429,6 +449,10 @@ public class RationalPolynomialProperties {
         );
         for (Triple<RationalPolynomial, RationalPolynomial, Rational> t : take(LIMIT, ts)) {
             assertEquals(t.toString(), t.a.add(t.b).apply(t.c), t.a.apply(t.c).add(t.b.apply(t.c)));
+        }
+
+        for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
+            assertEquals(p.toString(), of(p.a).multiply(of(p.b)), of(p.a.multiply(p.b)));
         }
 
         for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
@@ -482,6 +506,10 @@ public class RationalPolynomialProperties {
             //noinspection ObjectEqualsNull
             assertFalse(p.toString(), p.equals(null));
         }
+
+        for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
+            assertEquals(p.toString(), of(p.a).equals(of(p.b)), p.a.equals(p.b));
+        }
     }
 
     private static void propertiesHashCode() {
@@ -502,6 +530,10 @@ public class RationalPolynomialProperties {
             assertTrue(p.toString(), compare == -1 || compare == 0 || compare == 1);
             assertEquals(p.toString(), p.b.compareTo(p.a), -compare);
             assertEquals(p.toString(), p.a.subtract(p.b).signum(), compare);
+        }
+
+        for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
+            assertEquals(p.toString(), of(p.a).compareTo(of(p.b)), p.a.compareTo(p.b));
         }
 
         for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
@@ -589,6 +621,10 @@ public class RationalPolynomialProperties {
             Optional<RationalPolynomial> readP = read(s);
             assertTrue(p.toString(), readP.isPresent());
             assertEquals(p.toString(), readP.get(), p);
+        }
+
+        for (Rational r : take(LIMIT, P.rationals())) {
+            assertEquals(r.toString(), of(r).toString(), r.toString());
         }
     }
 
