@@ -377,6 +377,75 @@ public class RationalPolynomial implements
     }
 
     /**
+     * Returns the product of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Rational}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * Length is 0 if either {@code this} or {@code that} is 0, or deg({@code this}))+1 otherwise
+     *
+     * @param that the {@code Rational} {@code this} is multiplied by
+     * @return {@code this}×{@code that}
+     */
+    public @NotNull RationalPolynomial multiply(@NotNull Rational that) {
+        if (this == ZERO || that == Rational.ZERO) return ZERO;
+        if (this == ONE) return of(that);
+        if (that == Rational.ONE) return this;
+        List<Rational> productCoefficients = toList(map(c -> c.multiply(that), coefficients));
+        if (productCoefficients.size() == 1 && productCoefficients.get(0) == Rational.ONE) return ONE;
+        return new RationalPolynomial(productCoefficients);
+    }
+
+    /**
+     * Returns the product of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalPolynomial}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * Length is 0 if either {@code this} or {@code that} is 0, or deg({@code this}))+1 otherwise
+     *
+     * @param that the {@code BigInteger} {@code this} is multiplied by
+     * @return {@code this}×{@code that}
+     */
+    public @NotNull RationalPolynomial multiply(@NotNull BigInteger that) {
+        if (this == ZERO || that.equals(BigInteger.ZERO)) return ZERO;
+        if (this == ONE) return of(Rational.of(that));
+        if (that.equals(BigInteger.ONE)) return this;
+        List<Rational> productCoefficients = toList(map(c -> c.multiply(that), coefficients));
+        if (productCoefficients.size() == 1 && productCoefficients.get(0) == Rational.ONE) return ONE;
+        return new RationalPolynomial(productCoefficients);
+    }
+
+    /**
+     * Returns the product of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalPolynomial}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * Length is 0 if either {@code this} or {@code that} is 0, or deg({@code this}))+1 otherwise
+     *
+     * @param that the {@code int} {@code this} is multiplied by
+     * @return {@code this}×{@code that}
+     */
+    public @NotNull RationalPolynomial multiply(int that) {
+        if (this == ZERO || that == 0) return ZERO;
+        if (this == ONE) return of(Rational.of(that));
+        if (that == 1) return this;
+        List<Rational> productCoefficients = toList(map(c -> c.multiply(that), coefficients));
+        if (productCoefficients.size() == 1 && productCoefficients.get(0) == Rational.ONE) return ONE;
+        return new RationalPolynomial(productCoefficients);
+    }
+
+    /**
      * Determines whether {@code this} is equal to {@code that}.
      *
      * <ul>

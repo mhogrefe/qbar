@@ -379,6 +379,52 @@ public class Polynomial implements Comparable<Polynomial>, Function<BigInteger, 
     }
 
     /**
+     * Returns the product of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * Length is 0 if either {@code this} or {@code that} is 0, or deg({@code this}))+1 otherwise
+     *
+     * @param that the {@code BigInteger} {@code this} is multiplied by
+     * @return {@code this}×{@code that}
+     */
+    public @NotNull Polynomial multiply(@NotNull BigInteger that) {
+        if (this == ZERO || that.equals(BigInteger.ZERO)) return ZERO;
+        if (this == ONE) return of(that);
+        if (that.equals(BigInteger.ONE)) return this;
+        List<BigInteger> productCoefficients = toList(map(c -> c.multiply(that), coefficients));
+        if (productCoefficients.size() == 1 && productCoefficients.get(0).equals(BigInteger.ONE)) return ONE;
+        return new Polynomial(productCoefficients);
+    }
+
+    /**
+     * Returns the product of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * Length is 0 if either {@code this} or {@code that} is 0, or deg({@code this}))+1 otherwise
+     *
+     * @param that the {@code int} {@code this} is multiplied by
+     * @return {@code this}×{@code that}
+     */
+    public @NotNull Polynomial multiply(int that) {
+        if (this == ZERO || that == 0) return ZERO;
+        if (this == ONE) return of(BigInteger.valueOf(that));
+        if (that == 1) return this;
+        List<BigInteger> productCoefficients = toList(map(c -> c.multiply(BigInteger.valueOf(that)), coefficients));
+        if (productCoefficients.size() == 1 && productCoefficients.get(0).equals(BigInteger.ONE)) return ONE;
+        return new Polynomial(productCoefficients);
+    }
+
+    /**
      * Determines whether {@code this} is equal to {@code that}.
      *
      * <ul>
