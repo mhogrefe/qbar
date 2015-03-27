@@ -31,6 +31,7 @@ public class PolynomialDemos {
             LIMIT = 10000;
         }
     }
+
     public static void demoIterator() {
         initialize();
         for (Polynomial p : take(LIMIT, P.polynomials())) {
@@ -139,6 +140,20 @@ public class PolynomialDemos {
         initialize();
         for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(P.polynomials()))) {
             System.out.println("(" + p.a + ") * (" + p.b + ") = " + p.a.multiply(p.b));
+        }
+    }
+
+    public static void demoMultiply_BigInteger() {
+        initialize();
+        for (Pair<Polynomial, BigInteger> p : take(LIMIT, P.pairs(P.polynomials(), P.bigIntegers()))) {
+            System.out.println("(" + p.a + ") * " + p.b + " = " + p.a.multiply(p.b));
+        }
+    }
+
+    public static void demoMultiply_int() {
+        initialize();
+        for (Pair<Polynomial, Integer> p : take(LIMIT, P.pairs(P.polynomials(), P.integers()))) {
+            System.out.println("(" + p.a + ") * " + p.b + " = " + p.a.multiply(p.b));
         }
     }
 

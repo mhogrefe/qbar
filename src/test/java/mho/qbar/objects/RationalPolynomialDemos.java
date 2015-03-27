@@ -7,6 +7,7 @@ import mho.wheels.iterables.RandomProvider;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 
+import java.math.BigInteger;
 import java.util.List;
 import java.util.Random;
 
@@ -139,6 +140,27 @@ public class RationalPolynomialDemos {
         initialize();
         for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, P.pairs(P.rationalPolynomials()))) {
             System.out.println("(" + p.a + ") * (" + p.b + ") = " + p.a.multiply(p.b));
+        }
+    }
+
+    public static void demoMultiply_Rational() {
+        initialize();
+        for (Pair<RationalPolynomial, Rational> p : take(LIMIT, P.pairs(P.rationalPolynomials(), P.rationals()))) {
+            System.out.println("(" + p.a + ") * " + p.b + " = " + p.a.multiply(p.b));
+        }
+    }
+
+    public static void demoMultiply_BigInteger() {
+        initialize();
+        for (Pair<RationalPolynomial, BigInteger> p : take(LIMIT, P.pairs(P.rationalPolynomials(), P.bigIntegers()))) {
+            System.out.println("(" + p.a + ") * " + p.b + " = " + p.a.multiply(p.b));
+        }
+    }
+
+    public static void demoMultiply_int() {
+        initialize();
+        for (Pair<RationalPolynomial, Integer> p : take(LIMIT, P.pairs(P.rationalPolynomials(), P.integers()))) {
+            System.out.println("(" + p.a + ") * " + p.b + " = " + p.a.multiply(p.b));
         }
     }
 
