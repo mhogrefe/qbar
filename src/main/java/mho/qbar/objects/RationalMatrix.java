@@ -101,7 +101,7 @@ public final class RationalMatrix {
      * Returns one of {@code this}'s row vectors. 0-indexed.
      *
      * <ul>
-     *  <li>{@code this} must be non-empty.</li>
+     *  <li>{@code this} must be have at least one row.</li>
      *  <li>{@code i} must be non-negative.</li>
      *  <li>{@code i} must be less than the height of {@code this}.</li>
      *  <li>The result is non-null.</li>
@@ -118,7 +118,7 @@ public final class RationalMatrix {
      * Returns one of {@code this}'s column vectors. 0-indexed.
      *
      * <ul>
-     *  <li>{@code this} must be non-empty.</li>
+     *  <li>{@code this} must have at least one column.</li>
      *  <li>{@code j} must be non-negative.</li>
      *  <li>{@code j} must be less than the width of {@code this}.</li>
      *  <li>The result is non-null.</li>
@@ -135,6 +135,26 @@ public final class RationalMatrix {
         } else {
             return RationalVector.of(toList(map(r -> r.x(j), rows)));
         }
+    }
+
+    /**
+     * Returns one of {@code this}'s elements. 0-indexed.
+     *
+     * <ul>
+     *  <li>{@code this} must have at least one row and at least one column.</li>
+     *  <li>{@code i} must be non-negative.</li>
+     *  <li>{@code j} must be non-negative.</li>
+     *  <li>{@code i} must be less than the height of {@code this}.</li>
+     *  <li>{@code j} must be less than the width of {@code this}.</li>
+     *  <li>The result is non-null.</li>
+     * </ul>
+     *
+     * @param i the 0-based row index
+     * @param j the 0-based column index
+     * @return the element of {@code this} in the {@code i}th row and {@code j}th column
+     */
+    public @NotNull Rational element(int i, int j) {
+        return rows.get(i).x(j);
     }
 
     /**
