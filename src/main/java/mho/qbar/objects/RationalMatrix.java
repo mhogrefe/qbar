@@ -1,6 +1,5 @@
 package mho.qbar.objects;
 
-import mho.wheels.iterables.IterableUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Iterator;
@@ -91,7 +90,51 @@ public final class RationalMatrix {
      * @return an {@code Iterable} over this {@code RationalMatrix}'s columns
      */
     public @NotNull Iterable<RationalVector> columnIterable() {
-        return map(RationalVector::of, transpose(map(r -> r, rows)));
+        if (rows.isEmpty()) {
+            return replicate(width, RationalVector.ZERO_DIMENSIONAL);
+        } else {
+            return map(RationalVector::of, transpose(map(r -> r, rows)));
+        }
+    }
+
+    /**
+     * Returns one of {@code this}'s row vectors. 0-indexed.
+     *
+     * <ul>
+     *  <li>{@code this} must be non-empty.</li>
+     *  <li>{@code i} must be non-negative.</li>
+     *  <li>{@code i} must be less than the height of {@code this}.</li>
+     *  <li>The result is non-null.</li>
+     * </ul>
+     *
+     * @param i the 0-based row index
+     * @return the {@code i}th row of {@code this}
+     */
+    public @NotNull RationalVector row(int i) {
+        return rows.get(i);
+    }
+
+    /**
+     * Returns one of {@code this}'s column vectors. 0-indexed.
+     *
+     * <ul>
+     *  <li>{@code this} must be non-empty.</li>
+     *  <li>{@code j} must be non-negative.</li>
+     *  <li>{@code j} must be less than the width of {@code this}.</li>
+     *  <li>The result is non-null.</li>
+     * </ul>
+     *
+     * @param j the 0-based column index
+     * @return the {@code j}th column of {@code this}
+     */
+    public @NotNull RationalVector column(int j) {
+        if (rows.isEmpty()) {
+            if (j >= width)
+                throw new ArrayIndexOutOfBoundsException();
+            return RationalVector.ZERO_DIMENSIONAL;
+        } else {
+            return RationalVector.of(toList(map(r -> r.x(j), rows)));
+        }
     }
 
     /**
