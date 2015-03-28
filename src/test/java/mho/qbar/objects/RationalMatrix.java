@@ -40,4 +40,18 @@ public final class RationalMatrix {
         this.rows = rows;
         this.width = width;
     }
+
+    /**
+     * Creates a {@code String} representation of {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalMatrix}.</li>
+     *  <li>See tests and demos for example results.</li>
+     * </ul>
+     *
+     * @return a {@code String} representation of {@code this}
+     */
+    public @NotNull String toString() {
+        return rows.isEmpty() ? "[]#" + width : rows.toString();
+    }
 }
