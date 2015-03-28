@@ -1,10 +1,9 @@
 package mho.qbar.objects;
 
+import mho.wheels.misc.Readers;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 import static mho.wheels.iterables.IterableUtils.*;
 
@@ -229,6 +228,35 @@ public final class RationalMatrix {
      */
     public int width() {
         return width;
+    }
+
+    /**
+     * Creates an {@code RationalMatrix} from a {@code String}. Valid input takes the form of a {@code String} that
+     * could have been returned by {@link mho.qbar.objects.RationalMatrix#toString}. See that method's tests and demos
+     * for examples of valid input. Note that {@code "[]"} is not a valid input; use {@code "[]#0"} instead.
+     *
+     * <ul>
+     *  <li>{@code s} cannot be null.</li>
+     *  <li>The result may be any {@code Optional<RationalMatrix>}.</li>
+     * </ul>
+     *
+     * @param s a string representation of a {@code RationalMatrix}.
+     * @return the wrapped {@code RationalMatrix} represented by {@code s}, or {@code empty} if {@code s} is invalid.
+     */
+    public @NotNull Optional<RationalMatrix> read(@NotNull String s) {
+        if (s.startsWith("[]#")) {
+            Optional<Integer> oWidth = Readers.readInteger(s.substring(3));
+            if (oWidth.isPresent()) return Optional.empty();
+            int width = oWidth.get();
+            if (width < 0) return Optional.empty();
+            return Optional.of(new RationalMatrix(Collections.emptyList(), width));
+        } else {
+            Optional<List<RationalVector>> ors = Readers.readList(RationalVector::read).apply(s);
+            if (!ors.isPresent()) return Optional.empty();
+            List<RationalVector> rs = ors.get();
+            if (rs.isEmpty() || !same(map(RationalVector::dimension, rs))) return Optional.empty();
+            return Optional.of(new RationalMatrix(rows, rs.get(0).dimension()));
+        }
     }
 
     /**
