@@ -2,6 +2,7 @@ package mho.qbar.objects;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -155,6 +156,53 @@ public final class RationalMatrix {
      */
     public @NotNull Rational element(int i, int j) {
         return rows.get(i).x(j);
+    }
+
+    /**
+     * Creates a {@code RationalMatrix} from its row vectors. If an empty list is given, the matrix with height 0 and
+     * width 0 is returned. This method cannot be used to create matrices with 0 height and nonzero width.
+     *
+     * <ul>
+     *  <li>{@code this} cannot be null, and every element must have the same dimension.</li>
+     *  <li>The result either has nonzero height, or 0 width and 0 height.</li>
+     * </ul>
+     *
+     * @param rows the matrix's rows
+     * @return a {@code RationalMatrix} with the given rows
+     */
+    public static @NotNull RationalMatrix fromRows(@NotNull List<RationalVector> rows) {
+        if (any(a -> a == null, rows))
+            throw new NullPointerException();
+        if (!same(map(RationalVector::dimension, rows)))
+            throw new IllegalArgumentException("rows must have same dimension");
+        return new RationalMatrix(toList(rows), rows.isEmpty() ? 0 : rows.get(0).dimension());
+    }
+
+    /**
+     * Creates a {@code RationalMatrix} from its column vectors. If an empty list is given, the matrix with height 0
+     * and width 0 is returned. This method cannot be used to create matrices with 0 width and nonzero height.
+     *
+     * <ul>
+     *  <li>{@code this} cannot be null, and every element must have the same dimension.</li>
+     *  <li>The result either has nonzero width, or 0 width and 0 height.</li>
+     * </ul>
+     *
+     * @param columns the matrix's columns
+     * @return a {@code RationalMatrix} with the given columns
+     */
+    public static @NotNull RationalMatrix fromColumns(@NotNull List<RationalVector> columns) {
+        if (any(a -> a == null, columns))
+            throw new NullPointerException();
+        if (!same(map(RationalVector::dimension, columns)))
+            throw new IllegalArgumentException("columns must have same dimension");
+        if (columns.isEmpty()) {
+            return new RationalMatrix(new ArrayList<>(), 0);
+        } else {
+            return new RationalMatrix(
+                    toList(map(RationalVector::of, transpose(map(c -> c, columns)))),
+                    columns.size()
+            );
+        }
     }
 
     /**
