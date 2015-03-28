@@ -1,8 +1,12 @@
 package mho.qbar.objects;
 
+import mho.wheels.iterables.IterableUtils;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Iterator;
 import java.util.List;
+
+import static mho.wheels.iterables.IterableUtils.*;
 
 /**
  * <p>A matrix with {@link Rational} elements. The number of rows is the height, and the number of rows is the width.
@@ -39,6 +43,55 @@ public final class RationalMatrix {
     private RationalMatrix(@NotNull List<RationalVector> rows, int width) {
         this.rows = rows;
         this.width = width;
+    }
+
+    /**
+     * Returns an {@code Iterable} over this {@code RationalMatrix}'s rows. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalMatrix}.</li>
+     *  <li>The result is finite, contains no nulls, and every element has the same dimension.</li>
+     * </ul>
+     *
+     * Length is height({@code this})
+     *
+     * @return an {@code Iterable} over this {@code RationalMatrix}'s rows
+     */
+    public @NotNull Iterable<RationalVector> rowIterable() {
+        return () -> new Iterator<RationalVector>() {
+            private int i = 0;
+
+            @Override
+            public boolean hasNext() {
+                return i < rows.size();
+            }
+
+            @Override
+            public RationalVector next() {
+                return rows.get(i++);
+            }
+
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException("cannot remove from this iterator");
+            }
+        };
+    }
+
+    /**
+     * Returns an {@code Iterable} over this {@code RationalMatrix}'s columns. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalMatrix}.</li>
+     *  <li>The result is finite, contains no nulls, and every element has the same dimension.</li>
+     * </ul>
+     *
+     * Length is width({@code this})
+     *
+     * @return an {@code Iterable} over this {@code RationalMatrix}'s columns
+     */
+    public @NotNull Iterable<RationalVector> columnIterable() {
+        return map(RationalVector::of, transpose(map(r -> r, rows)));
     }
 
     /**
