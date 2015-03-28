@@ -206,6 +206,32 @@ public final class RationalMatrix {
     }
 
     /**
+     * Returns this {@code RationalMatrix}'s height.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalMatrix}.</li>
+     * </ul>
+     *
+     * @return the number of rows in {@code this}
+     */
+    public int height() {
+        return rows.size();
+    }
+
+    /**
+     * Returns this {@code RationalMatrix}'s width.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalMatrix}.</li>
+     * </ul>
+     *
+     * @return the number of columns in {@code this}
+     */
+    public int width() {
+        return width;
+    }
+
+    /**
      * Creates a {@code String} representation of {@code this}.
      *
      * <ul>
