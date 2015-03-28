@@ -23,7 +23,10 @@ import static mho.wheels.iterables.IterableUtils.*;
  *
  * <p>This class is immutable.
  */
-public class Polynomial implements Comparable<Polynomial>, Function<BigInteger, BigInteger>, Iterable<BigInteger> {
+public final class Polynomial implements
+        Comparable<Polynomial>,
+        Function<BigInteger, BigInteger>,
+        Iterable<BigInteger> {
     /**
      * 0
      */

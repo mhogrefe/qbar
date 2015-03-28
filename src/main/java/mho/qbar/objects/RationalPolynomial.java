@@ -23,7 +23,7 @@ import static mho.wheels.iterables.IterableUtils.*;
  *
  * <p>This class is immutable.
  */
-public class RationalPolynomial implements
+public final class RationalPolynomial implements
         Comparable<RationalPolynomial>,
         Function<Rational, Rational>,
         Iterable<Rational> {
