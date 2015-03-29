@@ -157,6 +157,19 @@ public class PolynomialDemos {
         }
     }
 
+    public static void demoShiftLeft() {
+        initialize();
+        Iterable<Integer> is;
+        if (P instanceof QBarExhaustiveProvider) {
+            is = P.naturalIntegers();
+        } else {
+            is  = ((QBarRandomProvider) P).naturalIntegersGeometric(50);
+        }
+        for (Pair<Polynomial, Integer> p : take(LIMIT, P.pairs(P.polynomials(), is))) {
+            System.out.println(p.a + " << " + p.b + " = " + p.a.shiftLeft(p.b));
+        }
+    }
+
     public static void demoEquals_Polynomial() {
         initialize();
         for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(P.polynomials()))) {
