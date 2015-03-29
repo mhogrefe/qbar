@@ -632,7 +632,7 @@ public final class RationalPolynomial implements
     public @NotNull RationalPolynomial makeMonic() {
         Optional<Rational> leading = leading();
         if (!leading.isPresent())
-            throw new IllegalArgumentException("cannot make 0 monic");
+            throw new ArithmeticException("cannot make 0 monic");
         return leading.get() == Rational.ONE ? this : divide(leading.get());
     }
 

@@ -580,6 +580,17 @@ public class PolynomialTest {
     }
 
     @Test
+    public void testIsMonic() {
+        assertFalse(ZERO.isMonic());
+        assertTrue(ONE.isMonic());
+        assertTrue(X.isMonic());
+        assertFalse(read("-17").get().isMonic());
+        assertTrue(read("x^2-4*x+7").get().isMonic());
+        assertFalse(read("-x^3-1").get().isMonic());
+        assertFalse(read("3*x^10").get().isMonic());
+    }
+
+    @Test
     public void testEquals() {
         //noinspection EqualsWithItself
         assertTrue(ZERO.equals(ZERO));

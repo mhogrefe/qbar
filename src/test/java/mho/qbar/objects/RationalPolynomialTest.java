@@ -752,6 +752,32 @@ public class RationalPolynomialTest {
     }
 
     @Test
+    public void testIsMonic() {
+        assertFalse(ZERO.isMonic());
+        assertTrue(ONE.isMonic());
+        assertTrue(X.isMonic());
+        assertFalse(read("-4/3").get().isMonic());
+        assertTrue(read("x^2-7/4*x+1/3").get().isMonic());
+        assertFalse(read("-x^3-1").get().isMonic());
+        assertFalse(read("1/2*x^10").get().isMonic());
+    }
+
+    @Test
+    public void testMakeMonic() {
+        assertTrue(ONE.makeMonic() == ONE);
+        aeq(X.makeMonic(), "x");
+        assertTrue(read("-4/3").get().makeMonic() == ONE);
+        aeq(read("x^2-7/4*x+1/3").get().makeMonic(), "x^2-7/4*x+1/3");
+        aeq(read("3*x^2-7/4*x+1/3").get().makeMonic(), "x^2-7/12*x+1/9");
+        aeq(read("-x^3-1").get().makeMonic(), "x^3+1");
+        aeq(read("1/2*x^10").get().makeMonic(), "x^10");
+        try {
+            ZERO.makeMonic();
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
     public void testEquals() {
         //noinspection EqualsWithItself
         assertTrue(ZERO.equals(ZERO));
