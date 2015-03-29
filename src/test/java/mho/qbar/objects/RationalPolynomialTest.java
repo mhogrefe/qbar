@@ -467,6 +467,108 @@ public class RationalPolynomialTest {
     }
 
     @Test
+    public void testDivide_Rational() {
+        assertTrue(ZERO.divide(Rational.ONE) == ZERO);
+        assertTrue(ZERO.divide(Rational.read("-3").get()) == ZERO);
+        assertTrue(ZERO.divide(Rational.read("4/5").get()) == ZERO);
+        assertTrue(ONE.divide(Rational.ONE) == ONE);
+        aeq(ONE.divide(Rational.read("-3").get()), "-1/3");
+        aeq(ONE.divide(Rational.read("4/5").get()), "5/4");
+        aeq(X.divide(Rational.ONE), "x");
+        aeq(X.divide(Rational.read("-3").get()), "-1/3*x");
+        aeq(X.divide(Rational.read("4/5").get()), "5/4*x");
+        aeq(read("-4/3").get().divide(Rational.ONE), "-4/3");
+        aeq(read("-4/3").get().divide(Rational.read("-3").get()), "4/9");
+        aeq(read("-4/3").get().divide(Rational.read("4/5").get()), "-5/3");
+        aeq(read("x^2-7/4*x+1/3").get().divide(Rational.ONE), "x^2-7/4*x+1/3");
+        aeq(read("x^2-7/4*x+1/3").get().divide(Rational.read("-3").get()), "-1/3*x^2+7/12*x-1/9");
+        aeq(read("x^2-7/4*x+1/3").get().divide(Rational.read("4/5").get()), "5/4*x^2-35/16*x+5/12");
+        aeq(read("-x^3-1").get().divide(Rational.ONE), "-x^3-1");
+        aeq(read("-x^3-1").get().divide(Rational.read("-3").get()), "1/3*x^3+1/3");
+        aeq(read("-x^3-1").get().divide(Rational.read("4/5").get()), "-5/4*x^3-5/4");
+        aeq(read("1/2*x^10").get().divide(Rational.ONE), "1/2*x^10");
+        aeq(read("1/2*x^10").get().divide(Rational.read("-3").get()), "-1/6*x^10");
+        aeq(read("1/2*x^10").get().divide(Rational.read("4/5").get()), "5/8*x^10");
+        assertTrue(read("5/4").get().divide(Rational.read("5/4").get()) == ONE);
+        try {
+            ZERO.divide(Rational.ZERO);
+            fail();
+        } catch (ArithmeticException ignored) {}
+        try {
+            read("-4/3").get().divide(Rational.ZERO);
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testDivide_BigInteger() {
+        assertTrue(ZERO.divide(BigInteger.ONE) == ZERO);
+        assertTrue(ZERO.divide(BigInteger.valueOf(-3)) == ZERO);
+        assertTrue(ZERO.divide(BigInteger.valueOf(4)) == ZERO);
+        assertTrue(ONE.divide(BigInteger.ONE) == ONE);
+        aeq(ONE.divide(BigInteger.valueOf(-3)), "-1/3");
+        aeq(ONE.divide(BigInteger.valueOf(4)), "1/4");
+        aeq(X.divide(BigInteger.ONE), "x");
+        aeq(X.divide(BigInteger.valueOf(-3)), "-1/3*x");
+        aeq(X.divide(BigInteger.valueOf(4)), "1/4*x");
+        aeq(read("-4/3").get().divide(BigInteger.ONE), "-4/3");
+        aeq(read("-4/3").get().divide(BigInteger.valueOf(-3)), "4/9");
+        aeq(read("-4/3").get().divide(BigInteger.valueOf(4)), "-1/3");
+        aeq(read("x^2-7/4*x+1/3").get().divide(BigInteger.ONE), "x^2-7/4*x+1/3");
+        aeq(read("x^2-7/4*x+1/3").get().divide(BigInteger.valueOf(-3)), "-1/3*x^2+7/12*x-1/9");
+        aeq(read("x^2-7/4*x+1/3").get().divide(BigInteger.valueOf(4)), "1/4*x^2-7/16*x+1/12");
+        aeq(read("-x^3-1").get().divide(BigInteger.ONE), "-x^3-1");
+        aeq(read("-x^3-1").get().divide(BigInteger.valueOf(-3)), "1/3*x^3+1/3");
+        aeq(read("-x^3-1").get().divide(BigInteger.valueOf(4)), "-1/4*x^3-1/4");
+        aeq(read("1/2*x^10").get().divide(BigInteger.ONE), "1/2*x^10");
+        aeq(read("1/2*x^10").get().divide(BigInteger.valueOf(-3)), "-1/6*x^10");
+        aeq(read("1/2*x^10").get().divide(BigInteger.valueOf(4)), "1/8*x^10");
+        assertTrue(read("5").get().divide(BigInteger.valueOf(5)) == ONE);
+        try {
+            ZERO.divide(BigInteger.ZERO);
+            fail();
+        } catch (ArithmeticException ignored) {}
+        try {
+            ONE.divide(BigInteger.ZERO);
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testDivide_int() {
+        assertTrue(ZERO.divide(1) == ZERO);
+        assertTrue(ZERO.divide(-3) == ZERO);
+        assertTrue(ZERO.divide(4) == ZERO);
+        assertTrue(ONE.divide(1) == ONE);
+        aeq(ONE.divide(-3), "-1/3");
+        aeq(ONE.divide(4), "1/4");
+        aeq(X.divide(1), "x");
+        aeq(X.divide(-3), "-1/3*x");
+        aeq(X.divide(4), "1/4*x");
+        aeq(read("-4/3").get().divide(1), "-4/3");
+        aeq(read("-4/3").get().divide(-3), "4/9");
+        aeq(read("-4/3").get().divide(4), "-1/3");
+        aeq(read("x^2-7/4*x+1/3").get().divide(1), "x^2-7/4*x+1/3");
+        aeq(read("x^2-7/4*x+1/3").get().divide(-3), "-1/3*x^2+7/12*x-1/9");
+        aeq(read("x^2-7/4*x+1/3").get().divide(4), "1/4*x^2-7/16*x+1/12");
+        aeq(read("-x^3-1").get().divide(1), "-x^3-1");
+        aeq(read("-x^3-1").get().divide(-3), "1/3*x^3+1/3");
+        aeq(read("-x^3-1").get().divide(4), "-1/4*x^3-1/4");
+        aeq(read("1/2*x^10").get().divide(1), "1/2*x^10");
+        aeq(read("1/2*x^10").get().divide(-3), "-1/6*x^10");
+        aeq(read("1/2*x^10").get().divide(4), "1/8*x^10");
+        assertTrue(read("5").get().divide(5) == ONE);
+        try {
+            ZERO.divide(0);
+            fail();
+        } catch (ArithmeticException ignored) {}
+        try {
+            ONE.divide(0);
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
     public void testEquals() {
         //noinspection EqualsWithItself
         assertTrue(ZERO.equals(ZERO));
