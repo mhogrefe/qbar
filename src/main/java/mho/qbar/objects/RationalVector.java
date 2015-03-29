@@ -220,7 +220,7 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
      * Length is {@code dimension}
      *
      * @param dimension the zero vector's dimension
-     * @return 0
+     * @return 0<sub>{@code dimension}</sub>
      */
     public static @NotNull RationalVector zero(int dimension) {
         if (dimension == 0) return ZERO_DIMENSIONAL;
