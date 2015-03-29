@@ -119,6 +119,36 @@ public final class Polynomial implements
     }
 
     /**
+     * Evaluates {@code this} at {@code x} using Horner's method.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param x the argument
+     * @return {@code this}({@code x})
+     */
+    public @NotNull Rational apply(@NotNull Rational x) {
+        //noinspection ConstantConditions
+        return foldr((c, y) -> x.multiply(y).add(Rational.of(c)), Rational.ZERO, coefficients);
+    }
+
+    /**
+     * Converts this to a {@code RationalPolynomial}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>The result is a {@code RationalPolynomial} with integral coefficients.</li>
+     * </ul>
+     *
+     * @return a {@code RationalPolynomial} with the same value as {@code this}
+     */
+    public @NotNull RationalPolynomial toRationalPolynomial() {
+        return RationalPolynomial.of(toList(map(Rational::of, coefficients)));
+    }
+
+    /**
      * Gets the coefficient of this {@code Polynomial}'s x<sup>{@code i}</sup> term. If {@code i} is greater than this
      * {@code Polynomial}'s degree, 0 is returned.
      *
