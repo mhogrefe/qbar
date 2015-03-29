@@ -145,6 +145,8 @@ public final class Polynomial implements
      * @return a {@code RationalPolynomial} with the same value as {@code this}
      */
     public @NotNull RationalPolynomial toRationalPolynomial() {
+        if (this == ZERO) return RationalPolynomial.ZERO;
+        if (this == ONE) return RationalPolynomial.ONE;
         return RationalPolynomial.of(toList(map(Rational::of, coefficients)));
     }
 
