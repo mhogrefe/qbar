@@ -264,7 +264,7 @@ public final class RationalMatrix {
             if (!ors.isPresent()) return Optional.empty();
             List<RationalVector> rs = ors.get();
             if (rs.isEmpty() || !same(map(RationalVector::dimension, rs))) return Optional.empty();
-            return Optional.of(new RationalMatrix(rows, rs.get(0).dimension()));
+            return Optional.of(new RationalMatrix(rs, rs.get(0).dimension()));
         }
     }
 
