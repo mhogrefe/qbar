@@ -1,6 +1,7 @@
 package mho.qbar.objects;
 
 import mho.wheels.misc.Readers;
+import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -251,7 +252,7 @@ public final class RationalMatrix {
      * @param s a string representation of a {@code RationalMatrix}.
      * @return the wrapped {@code RationalMatrix} represented by {@code s}, or {@code empty} if {@code s} is invalid.
      */
-    public @NotNull Optional<RationalMatrix> read(@NotNull String s) {
+    public static @NotNull Optional<RationalMatrix> read(@NotNull String s) {
         if (s.startsWith("[]#")) {
             Optional<Integer> oWidth = Readers.readInteger(s.substring(3));
             if (oWidth.isPresent()) return Optional.empty();
@@ -265,6 +266,29 @@ public final class RationalMatrix {
             if (rs.isEmpty() || !same(map(RationalVector::dimension, rs))) return Optional.empty();
             return Optional.of(new RationalMatrix(rows, rs.get(0).dimension()));
         }
+    }
+
+    /**
+     * Finds the first occurrence of a {@code RationalMatrix} in a {@code String}. Returns the {@code RationalMatrix}
+     * and the index at which it was found. Returns an empty {@code Optional} if no {@code RationalMatrix} is found.
+     * Only {@code String}s which could have been emitted by {@link mho.qbar.objects.RationalMatrix#toString} are
+     * recognized. The longest possible {@code RationalMatrix} is parsed.
+     *
+     * <ul>
+     *  <li>{@code s} must be non-null.</li>
+     *  <li>The result is non-null. If it is non-empty, then neither of the {@code Pair}'s components is null, and the
+     *  second component is non-negative.</li>
+     * </ul>
+     *
+     * @param s the input {@code String}
+     * @return the first {@code RationalMatrix} found in {@code s}, and the index at which it was found
+     */
+    public static @NotNull Optional<Pair<RationalMatrix, Integer>> findIn(@NotNull String s) {
+        return Readers.genericFindIn(RationalMatrix::read, " #,-/0123456789[]").apply(s);
+    }
+
+    public static void main(String[] args) {
+        System.out.println(sort(nub("0123456789/-[], #")));
     }
 
     /**
