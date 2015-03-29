@@ -428,6 +428,31 @@ public final class Polynomial implements
     }
 
     /**
+     * Returns the left shift of {@code this} by {@code bits}; {@code this}×2<sup>{@code bits}</sup>. Negative
+     * {@code bits} are not allowed, even if {@code this} is divisible by a power of 2.
+     *
+     * <ul>
+     *  <li>{@code this} can be any {@code Polynomial}.</li>
+     *  <li>{@code bits} must be non-negative.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * Length is deg({@code this})+1
+     *
+     * @param bits the number of bits to left-shift by
+     * @return {@code this}≪{@code bits}
+     */
+    public @NotNull Polynomial shiftLeft(int bits) {
+        if (bits < 0)
+            throw new IllegalArgumentException("bits cannot be negative");
+        if (this == ZERO) return ZERO;
+        if (bits == 0) return this;
+        List<BigInteger> shiftedCoefficients = toList(map(r -> r.shiftLeft(bits), coefficients));
+        if (shiftedCoefficients.size() == 0 && shiftedCoefficients.get(0).equals(BigInteger.ONE)) return ONE;
+        return new Polynomial(shiftedCoefficients);
+    }
+
+    /**
      * Determines whether {@code this} is equal to {@code that}.
      *
      * <ul>
