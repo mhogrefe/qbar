@@ -1,5 +1,6 @@
 package mho.qbar.objects;
 
+import mho.wheels.iterables.IterableUtils;
 import mho.wheels.misc.Readers;
 import mho.wheels.ordering.comparators.ShortlexComparator;
 import mho.wheels.structures.Pair;
@@ -543,6 +544,64 @@ public final class RationalPolynomial implements
         List<Rational> shiftedCoefficients = toList(map(r -> r.shiftRight(bits), coefficients));
         if (shiftedCoefficients.size() == 1 && shiftedCoefficients.get(0) == Rational.ONE) return ONE;
         return new RationalPolynomial(shiftedCoefficients);
+    }
+
+    /**
+     * Returns the sum of all the {@code RationalPolynomial}s in {@code xs}. If {@code xs} is empty, 0 is returned.
+     *
+     * <ul>
+     *  <li>{@code xs} must be finite and may not contain any nulls.</li>
+     *  <li>The result may be any {@code RationalPolynomial}.</li>
+     * </ul>
+     *
+     * Length is at most max({deg(p)|p∈{@code xs}})+1
+     *
+     * @param xs an {@code Iterable} of {@code RationalPolynomial}s.
+     * @return Σxs
+     */
+    public static @NotNull RationalPolynomial sum(@NotNull Iterable<RationalPolynomial> xs) {
+        return of(toList(map(Rational::sum, transposePadded(Rational.ZERO, map(p -> p, xs)))));
+    }
+
+    /**
+     * Returns the product of all the {@code RationalPolynomial}s in {@code xs}. If {@code xs} is empty, 1 is returned.
+     *
+     * <ul>
+     *  <li>{@code xs} must be finite and may not contain any nulls.</li>
+     *  <li>The result may be any {@code RationalPolynomial}.</li>
+     * </ul>
+     *
+     * Length is at most sum({deg(p)|p∈{@code xs}})+1
+     *
+     * @param xs an {@code Iterable} of {@code RationalPolynomial}s.
+     * @return Πxs
+     */
+    public static @NotNull RationalPolynomial product(@NotNull Iterable<RationalPolynomial> xs) {
+        //noinspection ConstantConditions
+        return foldl(RationalPolynomial::multiply, ONE, xs);
+    }
+
+    /**
+     * Returns the differences between successive {@code RationalPolynomial}s in {@code xs}. If {@code xs} contains a
+     * single {@code RationalPolynomial}, an empty {@code Iterable} is returned. {@code xs} cannot be empty. Does not
+     * support removal.
+     *
+     * <ul>
+     *  <li>{@code xs} must not be empty and may not contain any nulls.</li>
+     *  <li>The result does not contain any nulls.</li>
+     * </ul>
+     *
+     * Length is |{@code xs}|–1
+     *
+     * @param xs an {@code Iterable} of {@code RationalPolynomial}s.
+     * @return Δxs
+     */
+    public static @NotNull Iterable<RationalPolynomial> delta(@NotNull Iterable<RationalPolynomial> xs) {
+        if (isEmpty(xs))
+            throw new IllegalArgumentException("cannot get delta of empty Iterable");
+        if (head(xs) == null)
+            throw new NullPointerException();
+        return adjacentPairsWith((x, y) -> y.subtract(x), xs);
     }
 
     /**

@@ -1148,7 +1148,8 @@ public final class Interval implements Comparable<Interval> {
      * @param xs an {@code Iterable} of {@code Interval}s.
      * @return Σxs
      */
-    public static Interval sum(@NotNull Iterable<Interval> xs) {
+    public static @NotNull Interval sum(@NotNull Iterable<Interval> xs) {
+        //noinspection ConstantConditions
         return foldl(Interval::add, ZERO, xs);
     }
 
@@ -1163,7 +1164,8 @@ public final class Interval implements Comparable<Interval> {
      * @param xs an {@code Iterable} of {@code Interval}s.
      * @return Πxs
      */
-    public static Interval product(@NotNull Iterable<Interval> xs) {
+    public static @NotNull Interval product(@NotNull Iterable<Interval> xs) {
+        //noinspection ConstantConditions
         return foldl(Interval::multiply, ONE, xs);
     }
 
@@ -1173,7 +1175,7 @@ public final class Interval implements Comparable<Interval> {
      *
      * <ul>
      *  <li>{@code xs} must not be empty and may not contain any nulls.</li>
-     *  <li>The result is finite and does not contain any nulls.</li>
+     *  <li>The result does not contain any nulls.</li>
      * </ul>
      *
      * Length is |{@code xs}|–1

@@ -1431,7 +1431,8 @@ public final class Rational implements Comparable<Rational> {
      * @param xs an {@code Iterable} of {@code Rational}s.
      * @return Σxs
      */
-    public static Rational sum(@NotNull Iterable<Rational> xs) {
+    public static @NotNull Rational sum(@NotNull Iterable<Rational> xs) {
+        //noinspection ConstantConditions
         return foldl(Rational::add, ZERO, xs);
     }
 
@@ -1446,7 +1447,7 @@ public final class Rational implements Comparable<Rational> {
      * @param xs an {@code Iterable} of {@code Rational}s.
      * @return Πxs
      */
-    public static Rational product(@NotNull Iterable<Rational> xs) {
+    public static @NotNull Rational product(@NotNull Iterable<Rational> xs) {
         List<Rational> denominatorSorted = sort(
                 (x, y) -> {
                     Ordering o = compare(x.getDenominator(), y.getDenominator());
@@ -1460,6 +1461,7 @@ public final class Rational implements Comparable<Rational> {
                 },
                 xs
         );
+        //noinspection ConstantConditions
         return foldl(Rational::multiply, ONE, denominatorSorted);
     }
 
@@ -1469,7 +1471,7 @@ public final class Rational implements Comparable<Rational> {
      *
      * <ul>
      *  <li>{@code xs} must not be empty and may not contain any nulls.</li>
-     *  <li>The result is finite and does not contain any nulls.</li>
+     *  <li>The result is does not contain any nulls.</li>
      * </ul>
      *
      * Length is |{@code xs}|–1

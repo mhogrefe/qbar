@@ -1,5 +1,6 @@
 package mho.qbar.objects;
 
+import mho.wheels.iterables.IterableUtils;
 import mho.wheels.misc.Readers;
 import mho.wheels.ordering.comparators.ShortlexComparator;
 import mho.wheels.structures.Pair;
@@ -482,6 +483,63 @@ public final class Polynomial implements
         List<BigInteger> shiftedCoefficients = toList(map(r -> r.shiftLeft(bits), coefficients));
         if (shiftedCoefficients.size() == 1 && shiftedCoefficients.get(0).equals(BigInteger.ONE)) return ONE;
         return new Polynomial(shiftedCoefficients);
+    }
+
+    /**
+     * Returns the sum of all the {@code Polynomial}s in {@code xs}. If {@code xs} is empty, 0 is returned.
+     *
+     * <ul>
+     *  <li>{@code xs} must be finite and may not contain any nulls.</li>
+     *  <li>The result may be any {@code Polynomial}.</li>
+     * </ul>
+     *
+     * Length is at most max({deg(p)|p∈{@code xs}})+1
+     *
+     * @param xs an {@code Iterable} of {@code Polynomial}s.
+     * @return Σxs
+     */
+    public static @NotNull Polynomial sum(@NotNull Iterable<Polynomial> xs) {
+        return of(toList(map(IterableUtils::sumBigInteger, transposePadded(BigInteger.ZERO, map(p -> p, xs)))));
+    }
+
+    /**
+     * Returns the product of all the {@code Polynomial}s in {@code xs}. If {@code xs} is empty, 1 is returned.
+     *
+     * <ul>
+     *  <li>{@code xs} must be finite and may not contain any nulls.</li>
+     *  <li>The result may be any {@code Polynomial}.</li>
+     * </ul>
+     *
+     * Length is at most sum({deg(p)|p∈{@code xs}})+1
+     *
+     * @param xs an {@code Iterable} of {@code Polynomial}s.
+     * @return Πxs
+     */
+    public static @NotNull Polynomial product(@NotNull Iterable<Polynomial> xs) {
+        //noinspection ConstantConditions
+        return foldl(Polynomial::multiply, ONE, xs);
+    }
+
+    /**
+     * Returns the differences between successive {@code Polynomial}s in {@code xs}. If {@code xs} contains a single
+     * {@code Polynomial}, an empty {@code Iterable} is returned. {@code xs} cannot be empty. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code xs} must not be empty and may not contain any nulls.</li>
+     *  <li>The result does not contain any nulls.</li>
+     * </ul>
+     *
+     * Length is |{@code xs}|–1
+     *
+     * @param xs an {@code Iterable} of {@code Polynomial}s.
+     * @return Δxs
+     */
+    public static @NotNull Iterable<Polynomial> delta(@NotNull Iterable<Polynomial> xs) {
+        if (isEmpty(xs))
+            throw new IllegalArgumentException("cannot get delta of empty Iterable");
+        if (head(xs) == null)
+            throw new NullPointerException();
+        return adjacentPairsWith((x, y) -> y.subtract(x), xs);
     }
 
     /**

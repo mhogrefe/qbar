@@ -494,17 +494,17 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
      *  <li>The result may be any {@code RationalVector}.</li>
      * </ul>
      *
-     * Length is dim({@code this})
+     * Length is dim(head({@code xs}))
      *
      * @param xs an {@code Iterable} of {@code RationalVector}s.
      * @return Σxs
      */
-    public static RationalVector sum(@NotNull Iterable<RationalVector> xs) {
+    public static @NotNull RationalVector sum(@NotNull Iterable<RationalVector> xs) {
         if (isEmpty(xs))
             throw new IllegalArgumentException("cannot take sum of empty RationalVector list");
         if (!same(map(RationalVector::dimension, xs)))
             throw new ArithmeticException("all elements must have the same dimension");
-        List<Rational> coordinates = toList(map(Rational::sum, transpose(map(v -> (Iterable<Rational>) v, xs))));
+        List<Rational> coordinates = toList(map(Rational::sum, transpose(map(v -> v, xs))));
         return coordinates.isEmpty() ? ZERO_DIMENSIONAL : new RationalVector(coordinates);
     }
 
@@ -516,7 +516,7 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
      * <ul>
      *  <li>{@code xs} must not be empty and may not contain any nulls. Every {@code RationalVector} in {@code xs} must
      *  have the same dimension.</li>
-     *  <li>The result is finite and does not contain any nulls.</li>
+     *  <li>The result does not contain any nulls.</li>
      * </ul>
      *
      * Length is |{@code xs}|–1
