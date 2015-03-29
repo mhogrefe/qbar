@@ -2126,8 +2126,7 @@ public class RationalProperties {
             assertEquals(p.toString(), p.a.divide(p.b), of(p.b).divide(p.a).invert());
         }
         
-        Iterable<BigInteger> bis = filter(i -> !i.equals(BigInteger.ZERO), P.bigIntegers());
-        for (BigInteger i : take(LIMIT, bis)) {
+        for (BigInteger i : take(LIMIT, filter(i -> !i.equals(BigInteger.ZERO), P.bigIntegers()))) {
             assertEquals(i.toString(), ONE.divide(i), of(i).invert());
             assertEquals(i.toString(), of(i).divide(i), ONE);
         }
@@ -2190,8 +2189,7 @@ public class RationalProperties {
             assertEquals(p.toString(), p.a.divide(p.b), of(p.b).divide(p.a).invert());
         }
 
-        Iterable<Integer> is = filter(i -> i != 0, P.integers());
-        for (int i : take(LIMIT, is)) {
+        for (int i : take(LIMIT, filter(i -> i != 0, P.integers()))) {
             assertEquals(Integer.toString(i), ONE.divide(i), of(i).invert());
             assertEquals(Integer.toString(i), of(i).divide(i), ONE);
         }

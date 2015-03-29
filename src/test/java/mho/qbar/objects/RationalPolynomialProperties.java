@@ -64,6 +64,9 @@ public class RationalPolynomialProperties {
             propertiesMultiply_Rational();
             propertiesMultiply_BigInteger();
             propertiesMultiply_int();
+            propertiesDivide_Rational();
+            propertiesDivide_BigInteger();
+            propertiesDivide_int();
             propertiesEquals();
             propertiesHashCode();
             propertiesCompareTo();
@@ -635,6 +638,146 @@ public class RationalPolynomialProperties {
             RationalPolynomial expression1 = t.a.add(t.b).multiply(t.c);
             RationalPolynomial expression2 = t.a.multiply(t.c).add(t.b.multiply(t.c));
             assertEquals(t.toString(), expression1, expression2);
+        }
+    }
+
+    private static void propertiesDivide_Rational() {
+        initialize();
+        System.out.println("\t\ttesting divide(Rational) properties...");
+
+        Iterable<Pair<RationalPolynomial, Rational>> ps = filter(
+                p -> p.b != Rational.ZERO,
+                P.pairs(P.rationalPolynomials(), P.rationals())
+        );
+        for (Pair<RationalPolynomial, Rational> p : take(LIMIT, ps)) {
+            RationalPolynomial quotient = p.a.divide(p.b);
+            validate(quotient);
+            assertEquals(p.toString(), p.a, quotient.multiply(p.b));
+            assertEquals(p.toString(), quotient, p.a.multiply(p.b.invert()));
+        }
+
+        Iterable<Triple<RationalPolynomial, Rational, Rational>> ts = P.triples(
+                P.rationalPolynomials(),
+                filter(r -> r != Rational.ZERO, P.rationals()),
+                P.rationals()
+        );
+        for (Triple<RationalPolynomial, Rational, Rational> t : take(LIMIT, ts)) {
+            assertEquals(t.toString(), t.a.divide(t.b).apply(t.c), t.a.apply(t.c).divide(t.b));
+        }
+
+        Iterable<Pair<Rational, Rational>> ps2 = P.pairs(
+                P.rationals(),
+                filter(r -> r != Rational.ZERO, P.rationals())
+        );
+        for (Pair<Rational, Rational> p : take(LIMIT, ps2)) {
+            assertEquals(p.toString(), of(p.a).divide(p.b), of(p.a.divide(p.b)));
+        }
+
+        for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
+            assertEquals(p.toString(), p.divide(Rational.ONE), p);
+        }
+
+        Iterable<Rational> rs = filter(r -> r != Rational.ZERO, P.rationals());
+        for (Rational r : take(LIMIT, rs)) {
+            assertEquals(r.toString(), ZERO.divide(r), ZERO);
+        }
+
+        for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
+            try {
+                p.divide(Rational.ZERO);
+                fail(p.toString());
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private static void propertiesDivide_BigInteger() {
+        initialize();
+        System.out.println("\t\ttesting divide(BigInteger) properties...");
+
+        Iterable<Pair<RationalPolynomial, BigInteger>> ps = P.pairs(
+                P.rationalPolynomials(),
+                filter(i -> !i.equals(BigInteger.ZERO), P.bigIntegers())
+        );
+        for (Pair<RationalPolynomial, BigInteger> p : take(LIMIT, ps)) {
+            RationalPolynomial quotient = p.a.divide(p.b);
+            validate(quotient);
+            assertEquals(p.toString(), p.a, quotient.multiply(p.b));
+        }
+
+        Iterable<Triple<RationalPolynomial, BigInteger, Rational>> ts = P.triples(
+                P.rationalPolynomials(),
+                filter(i -> !i.equals(BigInteger.ZERO), P.bigIntegers()),
+                P.rationals()
+        );
+        for (Triple<RationalPolynomial, BigInteger, Rational> t : take(LIMIT, ts)) {
+            assertEquals(t.toString(), t.a.divide(t.b).apply(t.c), t.a.apply(t.c).divide(t.b));
+        }
+
+        Iterable<Pair<Rational, BigInteger>> ps2 = P.pairs(
+                P.rationals(),
+                filter(i -> !i.equals(BigInteger.ZERO), P.bigIntegers())
+        );
+        for (Pair<Rational, BigInteger> p : take(LIMIT, ps2)) {
+            assertEquals(p.toString(), of(p.a).divide(p.b), of(p.a.divide(p.b)));
+        }
+
+        for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
+            assertEquals(p.toString(), p.divide(BigInteger.ONE), p);
+        }
+
+        for (BigInteger i : take(LIMIT, filter(j -> !j.equals(BigInteger.ZERO), P.bigIntegers()))) {
+            assertEquals(i.toString(), ZERO.divide(i), ZERO);
+        }
+
+        for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
+            try {
+                p.divide(BigInteger.ZERO);
+                fail(p.toString());
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private static void propertiesDivide_int() {
+        initialize();
+        System.out.println("\t\ttesting divide(int) properties...");
+
+        Iterable<Pair<RationalPolynomial, Integer>> ps = P.pairs(
+                P.rationalPolynomials(),
+                filter(i -> i != 0, P.integers())
+        );
+        for (Pair<RationalPolynomial, Integer> p : take(LIMIT, ps)) {
+            RationalPolynomial quotient = p.a.divide(p.b);
+            validate(quotient);
+            assertEquals(p.toString(), p.a, quotient.multiply(p.b));
+        }
+
+        Iterable<Triple<RationalPolynomial, Integer, Rational>> ts = P.triples(
+                P.rationalPolynomials(),
+                filter(i -> i != 0, P.integers()),
+                P.rationals()
+        );
+        for (Triple<RationalPolynomial, Integer, Rational> t : take(LIMIT, ts)) {
+            assertEquals(t.toString(), t.a.divide(t.b).apply(t.c), t.a.apply(t.c).divide(t.b));
+        }
+
+        Iterable<Pair<Rational, Integer>> ps2 = P.pairs(P.rationals(), filter(i -> i != 0, P.integers()));
+        for (Pair<Rational, Integer> p : take(LIMIT, ps2)) {
+            assertEquals(p.toString(), of(p.a).divide(p.b), of(p.a.divide(BigInteger.valueOf(p.b))));
+        }
+
+        for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
+            assertEquals(p.toString(), p.divide(1), p);
+        }
+
+        for (int i : take(LIMIT, filter(j -> j != 0, P.integers()))) {
+            assertEquals(Integer.toString(i), ZERO.divide(i), ZERO);
+        }
+
+        for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
+            try {
+                p.divide(0);
+                fail(p.toString());
+            } catch (ArithmeticException ignored) {}
         }
     }
 
