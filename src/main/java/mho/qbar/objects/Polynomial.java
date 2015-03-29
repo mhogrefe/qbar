@@ -30,7 +30,7 @@ public final class Polynomial implements
     /**
      * 0
      */
-    public static final @NotNull Polynomial ZERO = new Polynomial(new ArrayList<>());
+    public static final @NotNull Polynomial ZERO = new Polynomial(Collections.emptyList());
 
     /**
      * 1

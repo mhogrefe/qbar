@@ -93,7 +93,10 @@ public final class RationalMatrix {
         if (rows.isEmpty()) {
             return replicate(width, RationalVector.ZERO_DIMENSIONAL);
         } else {
-            return map(RationalVector::of, transpose(map(r -> r, rows)));
+            return map(
+                    RationalVector::of,
+                    transpose((Iterable<Iterable<Rational>>) map(r -> (Iterable<Rational>) r, rows))
+            );
         }
     }
 
@@ -195,10 +198,15 @@ public final class RationalMatrix {
         if (!same(map(RationalVector::dimension, columns)))
             throw new IllegalArgumentException("columns must have same dimension");
         if (columns.isEmpty()) {
-            return new RationalMatrix(new ArrayList<>(), 0);
+            return new RationalMatrix(Collections.emptyList(), 0);
         } else {
             return new RationalMatrix(
-                    toList(map(RationalVector::of, transpose(map(c -> c, columns)))),
+                    toList(
+                            map(
+                                    RationalVector::of,
+                                    transpose((Iterable<Iterable<Rational>>) map(c -> (Iterable<Rational>) c, columns))
+                            )
+                    ),
                     columns.size()
             );
         }

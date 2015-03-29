@@ -30,7 +30,7 @@ public final class RationalPolynomial implements
     /**
      * 0
      */
-    public static final @NotNull RationalPolynomial ZERO = new RationalPolynomial(new ArrayList<>());
+    public static final @NotNull RationalPolynomial ZERO = new RationalPolynomial(Collections.emptyList());
 
     /**
      * 1

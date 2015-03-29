@@ -24,7 +24,7 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
     /**
      * []
      */
-    public static final RationalVector ZERO_DIMENSIONAL = new RationalVector(new ArrayList<>());
+    public static final RationalVector ZERO_DIMENSIONAL = new RationalVector(Collections.emptyList());
 
     /**
      * Used by {@link mho.qbar.objects.RationalVector#compareTo}

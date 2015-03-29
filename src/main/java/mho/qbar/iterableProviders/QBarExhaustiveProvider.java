@@ -30,7 +30,7 @@ public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIt
 
     @Override
     public @NotNull Iterable<Rational> range(@NotNull Rational a, @NotNull Rational b) {
-        if (gt(a, b)) return new ArrayList<>();
+        if (gt(a, b)) return Collections.emptyList();
         return () -> new Iterator<Rational>() {
             private Rational x = a;
             private boolean reachedEnd;
@@ -159,7 +159,7 @@ public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIt
     public @NotNull Iterable<Byte> bytes(@NotNull Interval a) {
         Optional<Interval> intersection =
                 a.intersection(Interval.of(Rational.of(Byte.MIN_VALUE), Rational.of(Byte.MAX_VALUE)));
-        if (!intersection.isPresent()) return new ArrayList<>();
+        if (!intersection.isPresent()) return Collections.emptyList();
         return map(BigInteger::byteValueExact, bigIntegers(intersection.get()));
     }
 
@@ -167,7 +167,7 @@ public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIt
     public @NotNull Iterable<Short> shorts(@NotNull Interval a) {
         Optional<Interval> intersection =
                 a.intersection(Interval.of(Rational.of(Short.MIN_VALUE), Rational.of(Short.MAX_VALUE)));
-        if (!intersection.isPresent()) return new ArrayList<>();
+        if (!intersection.isPresent()) return Collections.emptyList();
         return map(BigInteger::shortValueExact, bigIntegers(intersection.get()));
     }
 
@@ -175,7 +175,7 @@ public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIt
     public @NotNull Iterable<Integer> integers(@NotNull Interval a) {
         Optional<Interval> intersection =
                 a.intersection(Interval.of(Rational.of(Integer.MIN_VALUE), Rational.of(Integer.MAX_VALUE)));
-        if (!intersection.isPresent()) return new ArrayList<>();
+        if (!intersection.isPresent()) return Collections.emptyList();
         return map(BigInteger::intValueExact, bigIntegers(intersection.get()));
     }
 
@@ -187,7 +187,7 @@ public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIt
                         Rational.of(BigInteger.valueOf(Long.MAX_VALUE))
                 )
         );
-        if (!intersection.isPresent()) return new ArrayList<>();
+        if (!intersection.isPresent()) return Collections.emptyList();
         return map(BigInteger::longValueExact, bigIntegers(intersection.get()));
     }
 
@@ -231,7 +231,7 @@ public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIt
         List<Interval> complement = a.complement();
         switch (complement.size()) {
             case 0:
-                return new ArrayList<>();
+                return Collections.emptyList();
             case 1:
                 Interval x = complement.get(0);
                 Rational boundary = a.getLower().isPresent() ? a.getLower().get() : a.getUpper().get();

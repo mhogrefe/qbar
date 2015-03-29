@@ -2000,7 +2000,7 @@ public final class Rational implements Comparable<Rational> {
                 undigitFunction = t -> toList(map(c -> BigInteger.valueOf(MathUtils.fromDigit(c)), fromString(t)));
             } else {
                 undigitFunction = t -> {
-                    if (t.isEmpty()) return new ArrayList<>();
+                    if (t.isEmpty()) return Collections.emptyList();
                     if (head(t) != '(' || last(t) != ')' || t.contains("()"))
                         throw new IllegalArgumentException("invalid String");
                     t = tail(init(t));

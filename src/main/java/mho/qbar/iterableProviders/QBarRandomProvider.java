@@ -405,7 +405,7 @@ public class QBarRandomProvider extends RandomProvider implements QBarIterablePr
         List<Interval> complement = a.complement();
         switch (complement.size()) {
             case 0:
-                return new ArrayList<>();
+                return Collections.emptyList();
             case 1:
                 Interval x = complement.get(0);
                 Rational boundary = a.getLower().isPresent() ? a.getLower().get() : a.getUpper().get();

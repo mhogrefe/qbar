@@ -186,7 +186,7 @@ public class RationalPolynomialProperties {
             try {
                 p.a.coefficient(p.b);
                 fail(p.toString());
-            } catch (ArrayIndexOutOfBoundsException ignored) {}
+            } catch (IndexOutOfBoundsException ignored) {}
         }
     }
 
