@@ -3,6 +3,7 @@ package mho.qbar.objects;
 import mho.qbar.iterableProviders.QBarExhaustiveProvider;
 import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.iterableProviders.QBarRandomProvider;
+import mho.wheels.iterables.IterableUtils;
 import mho.wheels.iterables.RandomProvider;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
@@ -181,6 +182,30 @@ public class PolynomialDemos {
         }
         for (Pair<Polynomial, Integer> p : take(LIMIT, P.pairs(P.polynomials(), is))) {
             System.out.println(p.a + " << " + p.b + " = " + p.a.shiftLeft(p.b));
+        }
+    }
+
+    public static void demoSum() {
+        initialize();
+        for (List<Polynomial> ps : take(LIMIT, P.lists(P.polynomials()))) {
+            String listString = tail(init(ps.toString()));
+            System.out.println("Σ(" + listString + ") = " + sum(ps));
+        }
+    }
+
+    public static void demoProduct() {
+        initialize();
+        for (List<Polynomial> ps : take(LIMIT, P.lists(P.polynomials()))) {
+            String listString = tail(init(ps.toString()));
+            System.out.println("Π(" + listString + ") = " + product(ps));
+        }
+    }
+
+    public static void demoDelta() {
+        initialize();
+        for (List<Polynomial> ps : take(LIMIT, P.listsAtLeast(1, P.polynomials()))) {
+            String listString = tail(init(ps.toString()));
+            System.out.println("Δ(" + listString + ") = " + IterableUtils.toString(delta(ps)));
         }
     }
 

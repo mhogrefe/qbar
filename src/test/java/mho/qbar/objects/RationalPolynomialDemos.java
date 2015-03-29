@@ -3,6 +3,7 @@ package mho.qbar.objects;
 import mho.qbar.iterableProviders.QBarExhaustiveProvider;
 import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.iterableProviders.QBarRandomProvider;
+import mho.wheels.iterables.IterableUtils;
 import mho.wheels.iterables.RandomProvider;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
@@ -220,6 +221,36 @@ public class RationalPolynomialDemos {
         }
         for (Pair<RationalPolynomial, Integer> p : take(LIMIT, P.pairs(P.rationalPolynomials(), is))) {
             System.out.println(p.a + " >> " + p.b + " = " + p.a.shiftRight(p.b));
+        }
+    }
+
+    public static void demoSum() {
+        initialize();
+        for (List<RationalPolynomial> ps : take(LIMIT, P.lists(P.rationalPolynomials()))) {
+            String listString = tail(init(ps.toString()));
+            System.out.println("Σ(" + listString + ") = " + sum(ps));
+        }
+    }
+
+    public static void demoProduct() {
+        initialize();
+        Iterable<List<RationalPolynomial>> pss;
+        if (P instanceof QBarExhaustiveProvider) {
+            pss = P.lists(P.rationalPolynomials());
+        } else {
+            pss = P.lists(((QBarRandomProvider) P).rationalPolynomialsBySize(10));
+        }
+        for (List<RationalPolynomial> ps : take(LIMIT, pss)) {
+            String listString = tail(init(ps.toString()));
+            System.out.println("Π(" + listString + ") = " + product(ps));
+        }
+    }
+
+    public static void demoDelta() {
+        initialize();
+        for (List<RationalPolynomial> ps : take(LIMIT, P.listsAtLeast(1, P.rationalPolynomials()))) {
+            String listString = tail(init(ps.toString()));
+            System.out.println("Δ(" + listString + ") = " + IterableUtils.toString(delta(ps)));
         }
     }
 
