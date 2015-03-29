@@ -33,7 +33,7 @@ public class PolynomialTest {
     }
 
     @Test
-    public void testApply() {
+    public void testApply_BigInteger() {
         aeq(ZERO.apply(BigInteger.ZERO), 0);
         aeq(ZERO.apply(BigInteger.ONE), 0);
         aeq(ZERO.apply(BigInteger.valueOf(-1)), 0);
@@ -69,6 +69,56 @@ public class PolynomialTest {
         aeq(read("3*x^10").get().apply(BigInteger.valueOf(-1)), 3);
         aeq(read("3*x^10").get().apply(BigInteger.valueOf(5)), 29296875);
         aeq(read("3*x^10").get().apply(BigInteger.valueOf(100)), "300000000000000000000");
+    }
+
+    @Test
+    public void testApply_Rational() {
+        aeq(ZERO.apply(Rational.ZERO), 0);
+        aeq(ZERO.apply(Rational.ONE), 0);
+        aeq(ZERO.apply(Rational.of(-1)), 0);
+        aeq(ZERO.apply(Rational.of(4, 5)), 0);
+        aeq(ZERO.apply(Rational.of(100)), 0);
+        aeq(ONE.apply(Rational.ZERO), 1);
+        aeq(ONE.apply(Rational.ONE), 1);
+        aeq(ONE.apply(Rational.of(-1)), 1);
+        aeq(ONE.apply(Rational.of(4, 5)), 1);
+        aeq(ONE.apply(Rational.of(100)), 1);
+        aeq(X.apply(Rational.ZERO), 0);
+        aeq(X.apply(Rational.ONE), 1);
+        aeq(X.apply(Rational.of(-1)), -1);
+        aeq(X.apply(Rational.of(4, 5)), "4/5");
+        aeq(X.apply(Rational.of(100)), 100);
+        aeq(read("-17").get().apply(Rational.ZERO), "-17");
+        aeq(read("-17").get().apply(Rational.ONE), "-17");
+        aeq(read("-17").get().apply(Rational.of(-1)), "-17");
+        aeq(read("-17").get().apply(Rational.of(4, 5)), "-17");
+        aeq(read("-17").get().apply(Rational.of(100)), "-17");
+        aeq(read("x^2-4*x+7").get().apply(Rational.ZERO), "7");
+        aeq(read("x^2-4*x+7").get().apply(Rational.ONE), "4");
+        aeq(read("x^2-4*x+7").get().apply(Rational.of(-1)), "12");
+        aeq(read("x^2-4*x+7").get().apply(Rational.of(4, 5)), "111/25");
+        aeq(read("x^2-4*x+7").get().apply(Rational.of(100)), "9607");
+        aeq(read("x^3-1").get().apply(Rational.ZERO), -1);
+        aeq(read("x^3-1").get().apply(Rational.ONE), 0);
+        aeq(read("x^3-1").get().apply(Rational.of(-1)), -2);
+        aeq(read("x^3-1").get().apply(Rational.of(4, 5)), "-61/125");
+        aeq(read("x^3-1").get().apply(Rational.of(100)), 999999);
+        aeq(read("3*x^10").get().apply(Rational.ZERO), 0);
+        aeq(read("3*x^10").get().apply(Rational.ONE), 3);
+        aeq(read("3*x^10").get().apply(Rational.of(-1)), 3);
+        aeq(read("3*x^10").get().apply(Rational.of(4, 5)), "3145728/9765625");
+        aeq(read("3*x^10").get().apply(Rational.of(100)), "300000000000000000000");
+    }
+
+    @Test
+    public void testToRationalPolynomial() {
+        assertTrue(ZERO.toRationalPolynomial() == RationalPolynomial.ZERO);
+        assertTrue(ONE.toRationalPolynomial() == RationalPolynomial.ONE);
+        aeq(X.toRationalPolynomial(), RationalPolynomial.X);
+        aeq(read("-17").get().toRationalPolynomial(), "-17");
+        aeq(read("x^2-4*x+7").get().toRationalPolynomial(), "x^2-4*x+7");
+        aeq(read("x^3-1").get().toRationalPolynomial(), "x^3-1");
+        aeq(read("3*x^10").get().toRationalPolynomial(), "3*x^10");
     }
 
     @Test
