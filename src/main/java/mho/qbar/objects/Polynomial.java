@@ -543,6 +543,21 @@ public final class Polynomial implements
     }
 
     /**
+     * Determines whether {@code this} is monic–whether its leading coefficient is 1.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>The result may be either {@code boolean}.</li>
+     * </ul>
+     *
+     * @return whether {@code this} is monic
+     */
+    public boolean isMonic() {
+        Optional<BigInteger> leading = leading();
+        return leading.isPresent() && leading.get().equals(BigInteger.ONE);
+    }
+
+    /**
      * Determines whether {@code this} is equal to {@code that}.
      *
      * <ul>

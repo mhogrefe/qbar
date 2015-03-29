@@ -605,6 +605,38 @@ public final class RationalPolynomial implements
     }
 
     /**
+     * Determines whether {@code this} is monic–whether its leading coefficient is 1.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalPolynomial}.</li>
+     *  <li>The result may be either {@code boolean}.</li>
+     * </ul>
+     *
+     * @return whether {@code this} is monic
+     */
+    public boolean isMonic() {
+        Optional<Rational> leading = leading();
+        return leading.isPresent() && leading.get() == Rational.ONE;
+    }
+
+    /**
+     * Divides {@code this} by a constant to make it monic. {@code this} cannot be 0.
+     *
+     * <ul>
+     *  <li>{@code this} must be nonzero.</li>
+     *  <li>The result is a monic {@code RationalPolynomial}.</li>
+     * </ul>
+     *
+     * @return The constant multiple of {@code this} whose leading coefficient is 1.
+     */
+    public @NotNull RationalPolynomial makeMonic() {
+        Optional<Rational> leading = leading();
+        if (!leading.isPresent())
+            throw new IllegalArgumentException("cannot make 0 monic");
+        return leading.get() == Rational.ONE ? this : divide(leading.get());
+    }
+
+    /**
      * Determines whether {@code this} is equal to {@code that}.
      *
      * <ul>
