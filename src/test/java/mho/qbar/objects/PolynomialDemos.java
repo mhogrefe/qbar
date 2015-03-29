@@ -39,10 +39,24 @@ public class PolynomialDemos {
         }
     }
 
-    public static void demoApply() {
+    public static void demoApply_BigInteger() {
         initialize();
         for (Pair<Polynomial, BigInteger> p : take(LIMIT, P.pairs(P.polynomials(), P.bigIntegers()))) {
             System.out.println(p.a + " at " + p.b + " = " + p.a.apply(p.b));
+        }
+    }
+
+    public static void demoApply_Rational() {
+        initialize();
+        for (Pair<Polynomial, Rational> p : take(LIMIT, P.pairs(P.polynomials(), P.rationals()))) {
+            System.out.println(p.a + " at " + p.b + " = " + p.a.apply(p.b));
+        }
+    }
+
+    public static void demoToRationalPolynomial() {
+        initialize();
+        for (Polynomial p : take(LIMIT, P.polynomials())) {
+            System.out.println("toRationalPolynomial(" + p + ") = " + p.toRationalPolynomial());
         }
     }
 
