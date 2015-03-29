@@ -338,13 +338,13 @@ public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIt
 
     @Override
     public @NotNull Iterable<RationalMatrix> rationalMatrices(int height, int width) {
-        return null;
+        if (height == 0 || width == 0) return Collections.singletonList(RationalMatrix.zero(height, width));
+        return map(RationalMatrix::fromColumns, lists(width, rationalVectors(height)));
     }
 
     @Override
     public @NotNull Iterable<RationalMatrix> rationalMatrices() {
-//        return map(q -> RationalMatrix.fromRows(q.b), dependentPairsSquare(pairs(positiveIntegers(), naturalIntegers()), p -> lists(p.a, rationalVectors(p.b))));
-        return null;
+        return map(q -> q.b, dependentPairsSquare(pairs(naturalIntegers()), p -> rationalMatrices(p.a, p.b)));
     }
 
     @Override
