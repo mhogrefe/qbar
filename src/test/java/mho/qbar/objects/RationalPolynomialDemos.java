@@ -164,6 +164,39 @@ public class RationalPolynomialDemos {
         }
     }
 
+    public static void demoDivide_Rational() {
+        initialize();
+        Iterable<Pair<RationalPolynomial, Rational>> ps = P.pairs(
+                P.rationalPolynomials(),
+                filter(r -> r != Rational.ZERO, P.rationals())
+        );
+        for (Pair<RationalPolynomial, Rational> p : take(LIMIT, ps)) {
+            System.out.println("(" + p.a + ") / " + p.b + " = " + p.a.divide(p.b));
+        }
+    }
+
+    public static void demoDivide_BigInteger() {
+        initialize();
+        Iterable<Pair<RationalPolynomial, BigInteger>> ps = P.pairs(
+                P.rationalPolynomials(),
+                filter(i -> !i.equals(BigInteger.ZERO), P.bigIntegers())
+        );
+        for (Pair<RationalPolynomial, BigInteger> p : take(LIMIT, ps)) {
+            System.out.println("(" + p.a + ") / " + p.b + " = " + p.a.divide(p.b));
+        }
+    }
+
+    public static void demoDivide_int() {
+        initialize();
+        Iterable<Pair<RationalPolynomial, Integer>> ps = P.pairs(
+                P.rationalPolynomials(),
+                filter(i -> i != 0, P.integers())
+        );
+        for (Pair<RationalPolynomial, Integer> p : take(LIMIT, ps)) {
+            System.out.println("(" + p.a + ") / " + p.b + " = " + p.a.divide(p.b));
+        }
+    }
+
     public static void demoEquals_RationalPolynomial() {
         initialize();
         for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, P.pairs(P.rationalPolynomials()))) {
