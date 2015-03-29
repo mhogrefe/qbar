@@ -1,5 +1,6 @@
 package mho.qbar.objects;
 
+import mho.wheels.iterables.IterableUtils;
 import mho.wheels.misc.Readers;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
@@ -534,6 +535,51 @@ public class PolynomialTest {
     }
 
     @Test
+    public void testSum() {
+        assertTrue(sum(readPolynomialList("[]").get()) == ZERO);
+        assertTrue(sum(readPolynomialList("[1]").get()) == ONE);
+        aeq(sum(readPolynomialList("[-17]").get()), "-17");
+        aeq(sum(readPolynomialList("[-17, x^2-4*x+7, -x^3-1, 3*x^10]").get()), "3*x^10-x^3+x^2-4*x-11");
+        try {
+            sum(readPolynomialListWithNulls("[-17, null, -x^3-1, 3*x^10]").get());
+            fail();
+        } catch (NullPointerException ignored) {}
+    }
+
+    @Test
+    public void testProduct() {
+        assertTrue(product(readPolynomialList("[]").get()) == ONE);
+        assertTrue(product(readPolynomialList("[0]").get()) == ZERO);
+        aeq(product(readPolynomialList("[-17]").get()), "-17");
+        aeq(
+                product(readPolynomialList("[-17, x^2-4*x+7, -x^3-1, 3*x^10]").get()),
+                "51*x^15-204*x^14+357*x^13+51*x^12-204*x^11+357*x^10"
+        );
+        try {
+            product(readPolynomialListWithNulls("[-17, null, -x^3-1, 3*x^10]").get());
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testDelta() {
+        aeqit(delta(readPolynomialList("[-17]").get()), "[]");
+        aeqit(delta(readPolynomialList("[-17, x^2-4*x+7]").get()), "[x^2-4*x+24]");
+        aeqit(
+                delta(readPolynomialList("[-17, x^2-4*x+7, -x^3-1, 3*x^10]").get()),
+                "[x^2-4*x+24, -x^3-x^2+4*x-8, 3*x^10+x^3+1]"
+        );
+        try {
+            delta(readPolynomialList("[]").get());
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            toList(delta(readPolynomialListWithNulls("[-17, null, -x^3-1, 3*x^10]").get()));
+            fail();
+        } catch (NullPointerException ignored) {}
+    }
+
+    @Test
     public void testEquals() {
         //noinspection EqualsWithItself
         assertTrue(ZERO.equals(ZERO));
@@ -746,6 +792,10 @@ public class PolynomialTest {
         aeq(of(Arrays.asList(BigInteger.valueOf(7), BigInteger.valueOf(-4), BigInteger.ONE)), "x^2-4*x+7");
     }
 
+    private static void aeqit(Iterable<?> a, Object b) {
+        assertEquals(IterableUtils.toString(a), b.toString());
+    }
+
     private static void aeq(Object a, Object b) {
         assertEquals(a.toString(), b.toString());
     }
@@ -756,5 +806,13 @@ public class PolynomialTest {
 
     private static @NotNull Optional<List<BigInteger>> readBigIntegerListWithNulls(@NotNull String s) {
         return Readers.readListWithNulls(Readers::readBigInteger).apply(s);
+    }
+
+    private static @NotNull Optional<List<Polynomial>> readPolynomialList(@NotNull String s) {
+        return Readers.readList(Polynomial::read).apply(s);
+    }
+
+    private static @NotNull Optional<List<Polynomial>> readPolynomialListWithNulls(@NotNull String s) {
+        return Readers.readListWithNulls(Polynomial::read).apply(s);
     }
 }

@@ -1,5 +1,6 @@
 package mho.qbar.objects;
 
+import mho.wheels.iterables.IterableUtils;
 import mho.wheels.misc.Readers;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
@@ -703,6 +704,54 @@ public class RationalPolynomialTest {
     }
 
     @Test
+    public void testSum() {
+        assertTrue(sum(readRationalPolynomialList("[]").get()) == ZERO);
+        assertTrue(sum(readRationalPolynomialList("[1]").get()) == ONE);
+        aeq(sum(readRationalPolynomialList("[-4/3]").get()), "-4/3");
+        aeq(
+                sum(readRationalPolynomialList("[-4/3, x^2-7/4*x+1/3, -x^3-1, 1/2*x^10]").get()),
+                "1/2*x^10-x^3+x^2-7/4*x-2"
+        );
+        try {
+            sum(readRationalPolynomialListWithNulls("[-4/3, null, -x^3-1, 1/2*x^10]").get());
+            fail();
+        } catch (NullPointerException ignored) {}
+    }
+
+    @Test
+    public void testProduct() {
+        assertTrue(product(readRationalPolynomialList("[]").get()) == ONE);
+        assertTrue(product(readRationalPolynomialList("[0]").get()) == ZERO);
+        aeq(product(readRationalPolynomialList("[-4/3]").get()), "-4/3");
+        aeq(
+                product(readRationalPolynomialList("[-4/3, x^2-7/4*x+1/3, -x^3-1, 1/2*x^10]").get()),
+                "2/3*x^15-7/6*x^14+2/9*x^13+2/3*x^12-7/6*x^11+2/9*x^10"
+        );
+        try {
+            product(readRationalPolynomialListWithNulls("[-4/3, null, -x^3-1, 1/2*x^10]").get());
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testDelta() {
+        aeqit(delta(readRationalPolynomialList("[-4/3]").get()), "[]");
+        aeqit(delta(readRationalPolynomialList("[-4/3, x^2-7/4*x+1/3]").get()), "[x^2-7/4*x+5/3]");
+        aeqit(
+                delta(readRationalPolynomialList("[-4/3, x^2-7/4*x+1/3, -x^3-1, 1/2*x^10]").get()),
+                "[x^2-7/4*x+5/3, -x^3-x^2+7/4*x-4/3, 1/2*x^10+x^3+1]"
+        );
+        try {
+            delta(readRationalPolynomialList("[]").get());
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            toList(delta(readRationalPolynomialListWithNulls("[-4/3, null, -x^3-1, 1/2*x^10]").get()));
+            fail();
+        } catch (NullPointerException ignored) {}
+    }
+
+    @Test
     public void testEquals() {
         //noinspection EqualsWithItself
         assertTrue(ZERO.equals(ZERO));
@@ -919,6 +968,10 @@ public class RationalPolynomialTest {
         aeq(of(Arrays.asList(Rational.of(1, 3), Rational.of(-7, 4), Rational.ONE)), "x^2-7/4*x+1/3");
     }
 
+    private static void aeqit(Iterable<?> a, Object b) {
+        assertEquals(IterableUtils.toString(a), b.toString());
+    }
+
     private static void aeq(Object a, Object b) {
         assertEquals(a.toString(), b.toString());
     }
@@ -929,5 +982,13 @@ public class RationalPolynomialTest {
 
     private static @NotNull Optional<List<Rational>> readRationalListWithNulls(@NotNull String s) {
         return Readers.readListWithNulls(Rational::read).apply(s);
+    }
+
+    private static @NotNull Optional<List<RationalPolynomial>> readRationalPolynomialList(@NotNull String s) {
+        return Readers.readList(RationalPolynomial::read).apply(s);
+    }
+
+    private static @NotNull Optional<List<RationalPolynomial>> readRationalPolynomialListWithNulls(@NotNull String s) {
+        return Readers.readListWithNulls(RationalPolynomial::read).apply(s);
     }
 }

@@ -2732,6 +2732,9 @@ public class RationalTest {
 
     @Test
     public void testSum() {
+        assertTrue(sum(readRationalList("[]").get()) == ZERO);
+        assertTrue(sum(readRationalList("[1]").get()) == ONE);
+        aeq(sum(readRationalList("[-4/5]").get()), "-4/5");
         aeq(sum(readRationalList("[10, 21/2, 11]").get()), "63/2");
         aeq(sum(readRationalList("[-4, 6, -8]").get()), -6);
         try {
@@ -2742,7 +2745,9 @@ public class RationalTest {
 
     @Test
     public void testProduct() {
-        aeq(product(readRationalList("[]").get()), 1);
+        assertTrue(product(readRationalList("[]").get()) == ONE);
+        assertTrue(product(readRationalList("[0]").get()) == ZERO);
+        aeq(product(readRationalList("[-4/5]").get()), "-4/5");
         aeq(product(readRationalList("[10, 21/2, 11]").get()), 1155);
         aeq(product(readRationalList("[-4, 6, -8]").get()), 192);
         try {
