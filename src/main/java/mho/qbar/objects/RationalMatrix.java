@@ -1,6 +1,8 @@
 package mho.qbar.objects;
 
 import mho.wheels.misc.Readers;
+import mho.wheels.ordering.comparators.LexComparator;
+import mho.wheels.ordering.comparators.ShortlexComparator;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 
@@ -15,7 +17,13 @@ import static mho.wheels.iterables.IterableUtils.*;
  *
  * <p>This class is immutable.
  */
-public final class RationalMatrix {
+public final class RationalMatrix implements Comparable<RationalMatrix> {
+    /**
+     * Used by {@link mho.qbar.objects.RationalMatrix#compareTo}
+     */
+    private static final Comparator<Iterable<RationalVector>> RATIONAL_VECTOR_ITERABLE_COMPARATOR =
+            new LexComparator<>();
+
     /**
      * The matrix's rows
      */
@@ -272,6 +280,30 @@ public final class RationalMatrix {
     @Override
     public int hashCode() {
         return 31 * rows.hashCode() + width;
+    }
+
+    /**
+     * Compares {@code this} to {@code that}, returning 1, –1, or 0 if the answer is "greater than", "less than", or
+     * "equal to", respectively. Shortlex ordering is used; {@code RationalMatrix}es are compared first by height, then
+     * by width, and then left-to-right, top-to-bottom, element by element.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalMatrix}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>The result may be –1, 0, or 1.</li>
+     * </ul>
+     *
+     * @param that The {@code RationalMatrix} to be compared with {@code this}
+     * @return {@code this} compared to {@code that}
+     */
+    @Override
+    public int compareTo(@NotNull RationalMatrix that) {
+        if (this == that) return 0;
+        if (rows.size() > that.rows.size()) return 1;
+        if (rows.size() < that.rows.size()) return -1;
+        if (width > that.width) return 1;
+        if (width < that.width) return -1;
+        return RATIONAL_VECTOR_ITERABLE_COMPARATOR.compare(rows, that.rows);
     }
 
     /**
