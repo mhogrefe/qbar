@@ -247,6 +247,26 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
     }
 
     /**
+     * Creates the zero matrix with a given height and width.
+     *
+     * <ul>
+     *  <li>{@code height} must be non-negative.</li>
+     *  <li>{@code width} must be non-negative.</li>
+     *  <li>The result is a {@code RationalMatrix} all of whose coordinates are 0.</li>
+     * </ul>
+     *
+     *
+     * @param height the zero matrix's height
+     * @param width the zero matrix's width
+     * @return 0
+     */
+    public static @NotNull RationalMatrix zero(int height, int width) {
+        if (height < 0 || width < 0)
+            throw new IllegalArgumentException("height and width must be non-negative");
+        return new RationalMatrix(toList(replicate(height, RationalVector.zero(width))), width);
+    }
+
+    /**
      * Determines whether {@code this} is equal to {@code that}.
      *
      * <ul>
