@@ -433,6 +433,57 @@ public class PolynomialTest {
     }
 
     @Test
+    public void testShiftLeft() {
+        assertTrue(ZERO.shiftLeft(0) == ZERO);
+        assertTrue(ZERO.shiftLeft(1) == ZERO);
+        assertTrue(ZERO.shiftLeft(2) == ZERO);
+        assertTrue(ZERO.shiftLeft(3) == ZERO);
+        assertTrue(ZERO.shiftLeft(4) == ZERO);
+        assertTrue(ONE.shiftLeft(0) == ONE);
+        aeq(ONE.shiftLeft(1), "2");
+        aeq(ONE.shiftLeft(2), "4");
+        aeq(ONE.shiftLeft(3), "8");
+        aeq(ONE.shiftLeft(4), "16");
+        aeq(X.shiftLeft(0), X);
+        aeq(X.shiftLeft(1), "2*x");
+        aeq(X.shiftLeft(2), "4*x");
+        aeq(X.shiftLeft(3), "8*x");
+        aeq(X.shiftLeft(4), "16*x");
+        aeq(read("-17").get().shiftLeft(0), "-17");
+        aeq(read("-17").get().shiftLeft(1), "-34");
+        aeq(read("-17").get().shiftLeft(2), "-68");
+        aeq(read("-17").get().shiftLeft(3), "-136");
+        aeq(read("-17").get().shiftLeft(4), "-272");
+        aeq(read("x^2-4*x+7").get().shiftLeft(0), "x^2-4*x+7");
+        aeq(read("x^2-4*x+7").get().shiftLeft(1), "2*x^2-8*x+14");
+        aeq(read("x^2-4*x+7").get().shiftLeft(2), "4*x^2-16*x+28");
+        aeq(read("x^2-4*x+7").get().shiftLeft(3), "8*x^2-32*x+56");
+        aeq(read("x^2-4*x+7").get().shiftLeft(4), "16*x^2-64*x+112");
+        aeq(read("-x^3-1").get().shiftLeft(0), "-x^3-1");
+        aeq(read("-x^3-1").get().shiftLeft(1), "-2*x^3-2");
+        aeq(read("-x^3-1").get().shiftLeft(2), "-4*x^3-4");
+        aeq(read("-x^3-1").get().shiftLeft(3), "-8*x^3-8");
+        aeq(read("-x^3-1").get().shiftLeft(4), "-16*x^3-16");
+        aeq(read("3*x^10").get().shiftLeft(0), "3*x^10");
+        aeq(read("3*x^10").get().shiftLeft(1), "6*x^10");
+        aeq(read("3*x^10").get().shiftLeft(2), "12*x^10");
+        aeq(read("3*x^10").get().shiftLeft(3), "24*x^10");
+        aeq(read("3*x^10").get().shiftLeft(4), "48*x^10");
+        try {
+            ZERO.shiftLeft(-1);
+            fail();
+        } catch (ArithmeticException ignored) {}
+        try {
+            ONE.shiftLeft(-1);
+            fail();
+        } catch (ArithmeticException ignored) {}
+        try {
+            read("-17").get().shiftLeft(-1);
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
     public void testEquals() {
         //noinspection EqualsWithItself
         assertTrue(ZERO.equals(ZERO));

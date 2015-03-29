@@ -569,6 +569,140 @@ public class RationalPolynomialTest {
     }
 
     @Test
+    public void testShiftLeft() {
+        assertTrue(ZERO.shiftLeft(0) == ZERO);
+        assertTrue(ZERO.shiftLeft(1) == ZERO);
+        assertTrue(ZERO.shiftLeft(2) == ZERO);
+        assertTrue(ZERO.shiftLeft(3) == ZERO);
+        assertTrue(ZERO.shiftLeft(4) == ZERO);
+        assertTrue(ZERO.shiftLeft(-1) == ZERO);
+        assertTrue(ZERO.shiftLeft(-2) == ZERO);
+        assertTrue(ZERO.shiftLeft(-3) == ZERO);
+        assertTrue(ZERO.shiftLeft(-4) == ZERO);
+        assertTrue(ONE.shiftLeft(0) == ONE);
+        aeq(ONE.shiftLeft(1), "2");
+        aeq(ONE.shiftLeft(2), "4");
+        aeq(ONE.shiftLeft(3), "8");
+        aeq(ONE.shiftLeft(4), "16");
+        aeq(ONE.shiftLeft(-1), "1/2");
+        aeq(ONE.shiftLeft(-2), "1/4");
+        aeq(ONE.shiftLeft(-3), "1/8");
+        aeq(ONE.shiftLeft(-4), "1/16");
+        aeq(X.shiftLeft(0), X);
+        aeq(X.shiftLeft(1), "2*x");
+        aeq(X.shiftLeft(2), "4*x");
+        aeq(X.shiftLeft(3), "8*x");
+        aeq(X.shiftLeft(4), "16*x");
+        aeq(X.shiftLeft(-1), "1/2*x");
+        aeq(X.shiftLeft(-2), "1/4*x");
+        aeq(X.shiftLeft(-3), "1/8*x");
+        aeq(X.shiftLeft(-4), "1/16*x");
+        aeq(read("-4/3").get().shiftLeft(0), "-4/3");
+        aeq(read("-4/3").get().shiftLeft(1), "-8/3");
+        aeq(read("-4/3").get().shiftLeft(2), "-16/3");
+        aeq(read("-4/3").get().shiftLeft(3), "-32/3");
+        aeq(read("-4/3").get().shiftLeft(4), "-64/3");
+        aeq(read("-4/3").get().shiftLeft(-1), "-2/3");
+        aeq(read("-4/3").get().shiftLeft(-2), "-1/3");
+        aeq(read("-4/3").get().shiftLeft(-3), "-1/6");
+        aeq(read("-4/3").get().shiftLeft(-4), "-1/12");
+        aeq(read("x^2-7/4*x+1/3").get().shiftLeft(0), "x^2-7/4*x+1/3");
+        aeq(read("x^2-7/4*x+1/3").get().shiftLeft(1), "2*x^2-7/2*x+2/3");
+        aeq(read("x^2-7/4*x+1/3").get().shiftLeft(2), "4*x^2-7*x+4/3");
+        aeq(read("x^2-7/4*x+1/3").get().shiftLeft(3), "8*x^2-14*x+8/3");
+        aeq(read("x^2-7/4*x+1/3").get().shiftLeft(4), "16*x^2-28*x+16/3");
+        aeq(read("x^2-7/4*x+1/3").get().shiftLeft(-1), "1/2*x^2-7/8*x+1/6");
+        aeq(read("x^2-7/4*x+1/3").get().shiftLeft(-2), "1/4*x^2-7/16*x+1/12");
+        aeq(read("x^2-7/4*x+1/3").get().shiftLeft(-3), "1/8*x^2-7/32*x+1/24");
+        aeq(read("x^2-7/4*x+1/3").get().shiftLeft(-4), "1/16*x^2-7/64*x+1/48");
+        aeq(read("-x^3-1").get().shiftLeft(0), "-x^3-1");
+        aeq(read("-x^3-1").get().shiftLeft(1), "-2*x^3-2");
+        aeq(read("-x^3-1").get().shiftLeft(2), "-4*x^3-4");
+        aeq(read("-x^3-1").get().shiftLeft(3), "-8*x^3-8");
+        aeq(read("-x^3-1").get().shiftLeft(4), "-16*x^3-16");
+        aeq(read("-x^3-1").get().shiftLeft(-1), "-1/2*x^3-1/2");
+        aeq(read("-x^3-1").get().shiftLeft(-2), "-1/4*x^3-1/4");
+        aeq(read("-x^3-1").get().shiftLeft(-3), "-1/8*x^3-1/8");
+        aeq(read("-x^3-1").get().shiftLeft(-4), "-1/16*x^3-1/16");
+        aeq(read("1/2*x^10").get().shiftLeft(0), "1/2*x^10");
+        aeq(read("1/2*x^10").get().shiftLeft(1), "x^10");
+        aeq(read("1/2*x^10").get().shiftLeft(2), "2*x^10");
+        aeq(read("1/2*x^10").get().shiftLeft(3), "4*x^10");
+        aeq(read("1/2*x^10").get().shiftLeft(4), "8*x^10");
+        aeq(read("1/2*x^10").get().shiftLeft(-1), "1/4*x^10");
+        aeq(read("1/2*x^10").get().shiftLeft(-2), "1/8*x^10");
+        aeq(read("1/2*x^10").get().shiftLeft(-3), "1/16*x^10");
+        aeq(read("1/2*x^10").get().shiftLeft(-4), "1/32*x^10");
+    }
+
+    @Test
+    public void testShiftRight() {
+        assertTrue(ZERO.shiftRight(0) == ZERO);
+        assertTrue(ZERO.shiftRight(1) == ZERO);
+        assertTrue(ZERO.shiftRight(2) == ZERO);
+        assertTrue(ZERO.shiftRight(3) == ZERO);
+        assertTrue(ZERO.shiftRight(4) == ZERO);
+        assertTrue(ZERO.shiftRight(-1) == ZERO);
+        assertTrue(ZERO.shiftRight(-2) == ZERO);
+        assertTrue(ZERO.shiftRight(-3) == ZERO);
+        assertTrue(ZERO.shiftRight(-4) == ZERO);
+        assertTrue(ONE.shiftRight(0) == ONE);
+        aeq(ONE.shiftRight(1), "1/2");
+        aeq(ONE.shiftRight(2), "1/4");
+        aeq(ONE.shiftRight(3), "1/8");
+        aeq(ONE.shiftRight(4), "1/16");
+        aeq(ONE.shiftRight(-1), "2");
+        aeq(ONE.shiftRight(-2), "4");
+        aeq(ONE.shiftRight(-3), "8");
+        aeq(ONE.shiftRight(-4), "16");
+        aeq(X.shiftRight(0), X);
+        aeq(X.shiftRight(1), "1/2*x");
+        aeq(X.shiftRight(2), "1/4*x");
+        aeq(X.shiftRight(3), "1/8*x");
+        aeq(X.shiftRight(4), "1/16*x");
+        aeq(X.shiftRight(-1), "2*x");
+        aeq(X.shiftRight(-2), "4*x");
+        aeq(X.shiftRight(-3), "8*x");
+        aeq(X.shiftRight(-4), "16*x");
+        aeq(read("-4/3").get().shiftRight(0), "-4/3");
+        aeq(read("-4/3").get().shiftRight(1), "-2/3");
+        aeq(read("-4/3").get().shiftRight(2), "-1/3");
+        aeq(read("-4/3").get().shiftRight(3), "-1/6");
+        aeq(read("-4/3").get().shiftRight(4), "-1/12");
+        aeq(read("-4/3").get().shiftRight(-1), "-8/3");
+        aeq(read("-4/3").get().shiftRight(-2), "-16/3");
+        aeq(read("-4/3").get().shiftRight(-3), "-32/3");
+        aeq(read("-4/3").get().shiftRight(-4), "-64/3");
+        aeq(read("x^2-7/4*x+1/3").get().shiftRight(0), "x^2-7/4*x+1/3");
+        aeq(read("x^2-7/4*x+1/3").get().shiftRight(1), "1/2*x^2-7/8*x+1/6");
+        aeq(read("x^2-7/4*x+1/3").get().shiftRight(2), "1/4*x^2-7/16*x+1/12");
+        aeq(read("x^2-7/4*x+1/3").get().shiftRight(3), "1/8*x^2-7/32*x+1/24");
+        aeq(read("x^2-7/4*x+1/3").get().shiftRight(4), "1/16*x^2-7/64*x+1/48");
+        aeq(read("x^2-7/4*x+1/3").get().shiftRight(-1), "2*x^2-7/2*x+2/3");
+        aeq(read("x^2-7/4*x+1/3").get().shiftRight(-2), "4*x^2-7*x+4/3");
+        aeq(read("x^2-7/4*x+1/3").get().shiftRight(-3), "8*x^2-14*x+8/3");
+        aeq(read("x^2-7/4*x+1/3").get().shiftRight(-4), "16*x^2-28*x+16/3");
+        aeq(read("-x^3-1").get().shiftRight(0), "-x^3-1");
+        aeq(read("-x^3-1").get().shiftRight(1), "-1/2*x^3-1/2");
+        aeq(read("-x^3-1").get().shiftRight(2), "-1/4*x^3-1/4");
+        aeq(read("-x^3-1").get().shiftRight(3), "-1/8*x^3-1/8");
+        aeq(read("-x^3-1").get().shiftRight(4), "-1/16*x^3-1/16");
+        aeq(read("-x^3-1").get().shiftRight(-1), "-2*x^3-2");
+        aeq(read("-x^3-1").get().shiftRight(-2), "-4*x^3-4");
+        aeq(read("-x^3-1").get().shiftRight(-3), "-8*x^3-8");
+        aeq(read("-x^3-1").get().shiftRight(-4), "-16*x^3-16");
+        aeq(read("1/2*x^10").get().shiftRight(0), "1/2*x^10");
+        aeq(read("1/2*x^10").get().shiftRight(1), "1/4*x^10");
+        aeq(read("1/2*x^10").get().shiftRight(2), "1/8*x^10");
+        aeq(read("1/2*x^10").get().shiftRight(3), "1/16*x^10");
+        aeq(read("1/2*x^10").get().shiftRight(4), "1/32*x^10");
+        aeq(read("1/2*x^10").get().shiftRight(-1), "x^10");
+        aeq(read("1/2*x^10").get().shiftRight(-2), "2*x^10");
+        aeq(read("1/2*x^10").get().shiftRight(-3), "4*x^10");
+        aeq(read("1/2*x^10").get().shiftRight(-4), "8*x^10");
+    }
+
+    @Test
     public void testEquals() {
         //noinspection EqualsWithItself
         assertTrue(ZERO.equals(ZERO));

@@ -444,7 +444,7 @@ public final class Polynomial implements
      */
     public @NotNull Polynomial shiftLeft(int bits) {
         if (bits < 0)
-            throw new IllegalArgumentException("bits cannot be negative");
+            throw new ArithmeticException("bits cannot be negative");
         if (this == ZERO) return ZERO;
         if (bits == 0) return this;
         List<BigInteger> shiftedCoefficients = toList(map(r -> r.shiftLeft(bits), coefficients));
