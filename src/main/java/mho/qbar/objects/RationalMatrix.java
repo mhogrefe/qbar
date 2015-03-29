@@ -287,10 +287,6 @@ public final class RationalMatrix {
         return Readers.genericFindIn(RationalMatrix::read, " #,-/0123456789[]").apply(s);
     }
 
-    public static void main(String[] args) {
-        System.out.println(sort(nub("0123456789/-[], #")));
-    }
-
     /**
      * Creates a {@code String} representation of {@code this}.
      *
