@@ -337,6 +337,17 @@ public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIt
     }
 
     @Override
+    public @NotNull Iterable<RationalMatrix> rationalMatrices(int height, int width) {
+        return null;
+    }
+
+    @Override
+    public @NotNull Iterable<RationalMatrix> rationalMatrices() {
+//        return map(q -> RationalMatrix.fromRows(q.b), dependentPairsSquare(pairs(positiveIntegers(), naturalIntegers()), p -> lists(p.a, rationalVectors(p.b))));
+        return null;
+    }
+
+    @Override
     public @NotNull Iterable<Polynomial> polynomials(int degree) {
         return map(
                 js -> Polynomial.of(toList(js)),

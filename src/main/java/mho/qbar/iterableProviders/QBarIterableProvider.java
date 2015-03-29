@@ -53,6 +53,10 @@ public interface QBarIterableProvider extends IterableProvider {
 
     public @NotNull Iterable<RationalVector> reducedRationalVectors();
 
+    public @NotNull Iterable<RationalMatrix> rationalMatrices(int height, int width);
+
+    public @NotNull Iterable<RationalMatrix> rationalMatrices();
+
     public @NotNull Iterable<Polynomial> polynomials(int degree);
 
     public @NotNull Iterable<Polynomial> polynomialsAtLeast(int minDegree);

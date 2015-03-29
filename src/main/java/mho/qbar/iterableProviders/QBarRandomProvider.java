@@ -515,6 +515,16 @@ public class QBarRandomProvider extends RandomProvider implements QBarIterablePr
         return reducedRationalVectorsBySize(BIG_INTEGER_MEAN_BIT_SIZE);
     }
 
+    @Override
+    public @NotNull Iterable<RationalMatrix> rationalMatrices(int height, int width) {
+        return null;
+    }
+
+    @Override
+    public @NotNull Iterable<RationalMatrix> rationalMatrices() {
+        return null;
+    }
+
     public @NotNull Iterable<RationalVector> reducedRationalVectorsBySize(int elementMeanBitSize) {
         return map(
                 RationalVector::reduce,

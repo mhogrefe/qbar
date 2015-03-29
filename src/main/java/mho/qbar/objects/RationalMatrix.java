@@ -2,7 +2,6 @@ package mho.qbar.objects;
 
 import mho.wheels.misc.Readers;
 import mho.wheels.ordering.comparators.LexComparator;
-import mho.wheels.ordering.comparators.ShortlexComparator;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 
