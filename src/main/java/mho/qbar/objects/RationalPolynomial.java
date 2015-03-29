@@ -500,6 +500,52 @@ public final class RationalPolynomial implements
     }
 
     /**
+     * Returns the left shift of {@code this} by {@code bits}; {@code this}×2<sup>{@code bits}</sup>. Negative
+     * {@code bits} corresponds to a right shift.
+     *
+     * <ul>
+     *  <li>{@code this} can be any {@code RationalPolynomial}.</li>
+     *  <li>{@code bits} may be any {@code int}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * Length is deg({@code this})+1
+     *
+     * @param bits the number of bits to left-shift by
+     * @return {@code this}≪{@code bits}
+     */
+    public @NotNull RationalPolynomial shiftLeft(int bits) {
+        if (this == ZERO) return ZERO;
+        if (bits == 0) return this;
+        List<Rational> shiftedCoefficients = toList(map(r -> r.shiftLeft(bits), coefficients));
+        if (shiftedCoefficients.size() == 0 && shiftedCoefficients.get(0) == Rational.ONE) return ONE;
+        return new RationalPolynomial(shiftedCoefficients);
+    }
+
+    /**
+     * Returns the right shift of {@code this} by {@code bits}; {@code this}×2<sup>–{@code bits}</sup>. Negative
+     * {@code bits} corresponds to a left shift.
+     *
+     * <ul>
+     *  <li>{@code this} can be any {@code RationalPolynomial}.</li>
+     *  <li>{@code bits} may be any {@code int}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * Length is deg({@code this})+1
+     *
+     * @param bits the number of bits to right-shift by
+     * @return {@code this}≫{@code bits}
+     */
+    public @NotNull RationalPolynomial shiftRight(int bits) {
+        if (this == ZERO) return ZERO;
+        if (bits == 0) return this;
+        List<Rational> shiftedCoefficients = toList(map(r -> r.shiftRight(bits), coefficients));
+        if (shiftedCoefficients.size() == 0 && shiftedCoefficients.get(0) == Rational.ONE) return ONE;
+        return new RationalPolynomial(shiftedCoefficients);
+    }
+
+    /**
      * Determines whether {@code this} is equal to {@code that}.
      *
      * <ul>
