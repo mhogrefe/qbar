@@ -240,6 +240,41 @@ public final class RationalMatrix {
     }
 
     /**
+     * Determines whether {@code this} is equal to {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalMatrix}.</li>
+     *  <li>{@code that} may be any {@code Object}.</li>
+     *  <li>The result may be either {@code boolean}.</li>
+     * </ul>
+     *
+     * @param that The {@code RationalMatrix} to be compared with {@code this}
+     * @return {@code this}={@code that}
+     */
+    @Override
+    public boolean equals(Object that) {
+        if (this == that) return true;
+        if (that == null || getClass() != that.getClass()) return false;
+        RationalMatrix matrix = (RationalMatrix) that;
+        return width == matrix.width && rows.equals(matrix.rows);
+    }
+
+    /**
+     * Calculates the hash code of {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalMatrix}.</li>
+     *  <li>(conjecture) The result may be any {@code int}.</li>
+     * </ul>
+     *
+     * @return {@code this}'s hash code.
+     */
+    @Override
+    public int hashCode() {
+        return 31 * rows.hashCode() + width;
+    }
+
+    /**
      * Creates an {@code RationalMatrix} from a {@code String}. Valid input takes the form of a {@code String} that
      * could have been returned by {@link mho.qbar.objects.RationalMatrix#toString}. See that method's tests and demos
      * for examples of valid input. Note that {@code "[]"} is not a valid input; use {@code "[]#0"} instead.
