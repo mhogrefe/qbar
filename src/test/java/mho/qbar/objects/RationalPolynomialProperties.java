@@ -4,6 +4,7 @@ import mho.qbar.iterableProviders.QBarExhaustiveProvider;
 import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.iterableProviders.QBarRandomProvider;
 import mho.wheels.iterables.RandomProvider;
+import mho.wheels.math.Combinatorics;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
@@ -71,6 +72,10 @@ public class RationalPolynomialProperties {
             compareImplementationsShiftLeft();
             propertiesShiftRight();
             compareImplementationsShiftRight();
+            propertiesSum();
+            compareImplementationsSum();
+            propertiesProduct();
+            propertiesDelta();
             propertiesEquals();
             propertiesHashCode();
             propertiesCompareTo();
@@ -943,6 +948,189 @@ public class RationalPolynomialProperties {
             totalTime += (System.nanoTime() - time);
         }
         System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
+    }
+
+    private static @NotNull RationalPolynomial sum_simplest(@NotNull Iterable<RationalPolynomial> xs) {
+        return foldl(RationalPolynomial::add, ZERO, xs);
+    }
+
+    private static void propertiesSum() {
+        initialize();
+        System.out.println("\t\ttesting sum(Iterable<RationalPolynomial>) properties...");
+
+        for (List<RationalPolynomial> ps : take(LIMIT, P.lists(P.rationalPolynomials()))) {
+            RationalPolynomial sum = sum(ps);
+            validate(sum);
+            assertEquals(ps.toString(), sum, sum_simplest(ps));
+        }
+
+        Iterable<Pair<List<RationalPolynomial>, Rational>> ps = P.pairs(
+                P.lists(P.rationalPolynomials()),
+                P.rationals()
+        );
+        for (Pair<List<RationalPolynomial>, Rational> p : take(LIMIT, ps)) {
+            assertEquals(p.toString(), sum(p.a).apply(p.b), Rational.sum(map(q -> q.apply(p.b), p.a)));
+        }
+
+        for (List<Rational> rs : take(LIMIT, P.lists(P.rationals()))) {
+            assertEquals(rs.toString(), sum(map(RationalPolynomial::of, rs)), of(Rational.sum(rs)));
+        }
+
+        Iterable<Pair<List<RationalPolynomial>, List<RationalPolynomial>>> ps2 = filter(
+                q -> !q.a.equals(q.b),
+                P.dependentPairsLogarithmic(P.lists(P.rationalPolynomials()), Combinatorics::permutationsIncreasing)
+        );
+        for (Pair<List<RationalPolynomial>, List<RationalPolynomial>> p : take(LIMIT, ps2)) {
+            assertEquals(p.toString(), sum(p.a), sum(p.b));
+        }
+
+        for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
+            assertEquals(p.toString(), sum(Arrays.asList(p)), p);
+        }
+
+        for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, P.pairs(P.rationalPolynomials()))) {
+            assertEquals(p.toString(), sum(Arrays.asList(p.a, p.b)), p.a.add(p.b));
+        }
+
+        Iterable<List<RationalPolynomial>> failPss = map(
+                p -> toList(insert(p.a, p.b, null)),
+                (Iterable<Pair<List<RationalPolynomial>, Integer>>) P.dependentPairsLogarithmic(
+                        P.lists(P.rationalPolynomials()),
+                        rs -> range(0, rs.size())
+                )
+        );
+        for (List<RationalPolynomial> ps3 : take(LIMIT, failPss)) {
+            try {
+                sum(ps3);
+                fail(ps3.toString());
+            } catch (NullPointerException ignored) {}
+        }
+    }
+
+    private static void compareImplementationsSum() {
+        initialize();
+        System.out.println("\t\tcomparing sum(Iterable<RationalPolynomial) implementations...");
+
+        long totalTime = 0;
+        for (List<RationalPolynomial> ps : take(LIMIT, P.lists(P.rationalPolynomials()))) {
+            long time = System.nanoTime();
+            sum_simplest(ps);
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\t\t\tsimplest: " + ((double) totalTime) / 1e9 + " s");
+
+        totalTime = 0;
+        for (List<RationalPolynomial> ps : take(LIMIT, P.lists(P.rationalPolynomials()))) {
+            long time = System.nanoTime();
+            sum(ps);
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
+    }
+
+    private static void propertiesProduct() {
+        initialize();
+        System.out.println("\t\ttesting product(Iterable<RationalPolynomial>) properties...");
+
+        Iterable<List<RationalPolynomial>> pss;
+        if (P instanceof QBarExhaustiveProvider) {
+            pss = P.lists(P.rationalPolynomials());
+        } else {
+            pss = P.lists(((QBarRandomProvider) P).rationalPolynomialsBySize(10));
+        }
+        for (List<RationalPolynomial> ps : take(LIMIT, pss)) {
+            RationalPolynomial product = product(ps);
+            validate(product);
+        }
+
+        for (Pair<List<RationalPolynomial>, Rational> p : take(LIMIT, P.pairs(pss, P.rationals()))) {
+            assertEquals(p.toString(), product(p.a).apply(p.b), Rational.product(map(q -> q.apply(p.b), p.a)));
+        }
+
+        for (List<Rational> rs : take(LIMIT, P.lists(P.rationals()))) {
+            assertEquals(rs.toString(), product(map(RationalPolynomial::of, rs)), of(Rational.product(rs)));
+        }
+
+        Iterable<Pair<List<RationalPolynomial>, List<RationalPolynomial>>> ps = filter(
+                q -> !q.a.equals(q.b),
+                P.dependentPairsLogarithmic(pss, Combinatorics::permutationsIncreasing)
+        );
+        for (Pair<List<RationalPolynomial>, List<RationalPolynomial>> p : take(LIMIT, ps)) {
+            assertEquals(p.toString(), product(p.a), product(p.b));
+        }
+
+        for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
+            assertEquals(p.toString(), product(Arrays.asList(p)), p);
+        }
+
+        for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, P.pairs(P.rationalPolynomials()))) {
+            assertEquals(p.toString(), product(Arrays.asList(p.a, p.b)), p.a.multiply(p.b));
+        }
+
+        Iterable<List<RationalPolynomial>> failPss = map(
+                p -> toList(insert(p.a, p.b, null)),
+                P.dependentPairsLogarithmic(pss, rs -> range(0, rs.size()))
+        );
+        for (List<RationalPolynomial> ps2 : take(LIMIT, failPss)) {
+            try {
+                product(ps2);
+                fail(ps2.toString());
+            } catch (NullPointerException | IllegalArgumentException ignored) {}
+        }
+    }
+
+    private static void propertiesDelta() {
+        initialize();
+        System.out.println("\t\ttesting delta(Iterable<RationalPolynomial>) properties...");
+
+        for (List<RationalPolynomial> ps : take(LIMIT, P.listsAtLeast(1, P.rationalPolynomials()))) {
+            Iterable<RationalPolynomial> deltas = delta(ps);
+            deltas.forEach(mho.qbar.objects.RationalPolynomialProperties::validate);
+            assertEquals(ps.toString(), length(deltas), length(ps) - 1);
+            List<RationalPolynomial> reversed = reverse(map(RationalPolynomial::negate, delta(reverse(ps))));
+            aeq(ps.toString(), deltas, reversed);
+            try {
+                deltas.iterator().remove();
+            } catch (UnsupportedOperationException ignored) {}
+        }
+
+        Iterable<Pair<List<RationalPolynomial>, Rational>> ps = P.pairs(
+                P.listsAtLeast(1, P.rationalPolynomials()),
+                P.rationals()
+        );
+        for (Pair<List<RationalPolynomial>, Rational> p : take(LIMIT, ps)) {
+            aeq(p.toString(), map(q -> q.apply(p.b), delta(p.a)), Rational.delta(map(q -> q.apply(p.b), p.a)));
+        }
+
+        for (List<Rational> rs : take(LIMIT, P.listsAtLeast(1, P.rationals()))) {
+            aeq(
+                    rs.toString(),
+                    delta(map(RationalPolynomial::of, rs)),
+                    map(RationalPolynomial::of, Rational.delta(rs))
+            );
+        }
+
+        for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
+            assertTrue(p.toString(), isEmpty(delta(Arrays.asList(p))));
+        }
+
+        for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, P.pairs(P.rationalPolynomials()))) {
+            aeq(p.toString(), delta(Arrays.asList(p.a, p.b)), Arrays.asList(p.b.subtract(p.a)));
+        }
+
+        Iterable<List<RationalPolynomial>> failPss = map(
+                p -> toList(insert(p.a, p.b, null)),
+                (Iterable<Pair<List<RationalPolynomial>, Integer>>) P.dependentPairsLogarithmic(
+                        P.lists(P.rationalPolynomials()),
+                        rs -> range(0, rs.size())
+                )
+        );
+        for (List<RationalPolynomial> ps2 : take(LIMIT, failPss)) {
+            try {
+                toList(delta(ps2));
+                fail(ps2.toString());
+            } catch (AssertionError | NullPointerException ignored) {}
+        }
     }
 
     private static void propertiesEquals() {

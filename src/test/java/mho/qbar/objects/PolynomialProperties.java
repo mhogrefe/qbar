@@ -4,6 +4,7 @@ import mho.qbar.iterableProviders.QBarExhaustiveProvider;
 import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.iterableProviders.QBarRandomProvider;
 import mho.wheels.iterables.RandomProvider;
+import mho.wheels.math.Combinatorics;
 import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
 import org.jetbrains.annotations.NotNull;
@@ -68,6 +69,10 @@ public class PolynomialProperties {
             propertiesMultiply_int();
             propertiesShiftLeft();
             compareImplementationsShiftLeft();
+            propertiesSum();
+            compareImplementationsSum();
+            propertiesProduct();
+            propertiesDelta();
             propertiesEquals();
             propertiesHashCode();
             propertiesCompareTo();
@@ -766,6 +771,173 @@ public class PolynomialProperties {
             totalTime += (System.nanoTime() - time);
         }
         System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
+    }
+
+    private static @NotNull Polynomial sum_simplest(@NotNull Iterable<Polynomial> xs) {
+        return foldl(Polynomial::add, ZERO, xs);
+    }
+
+    private static void propertiesSum() {
+        initialize();
+        System.out.println("\t\ttesting sum(Iterable<Polynomial>) properties...");
+
+        for (List<Polynomial> ps : take(LIMIT, P.lists(P.polynomials()))) {
+            Polynomial sum = sum(ps);
+            validate(sum);
+            assertEquals(ps.toString(), sum, sum_simplest(ps));
+        }
+
+        Iterable<Pair<List<Polynomial>, BigInteger>> ps = P.pairs(P.lists(P.polynomials()), P.bigIntegers());
+        for (Pair<List<Polynomial>, BigInteger> p : take(LIMIT, ps)) {
+            assertEquals(p.toString(), sum(p.a).apply(p.b), sumBigInteger(map(q -> q.apply(p.b), p.a)));
+        }
+
+        for (List<BigInteger> is : take(LIMIT, P.lists(P.bigIntegers()))) {
+            assertEquals(is.toString(), sum(map(Polynomial::of, is)), of(sumBigInteger(is)));
+        }
+
+        Iterable<Pair<List<Polynomial>, List<Polynomial>>> ps2 = filter(
+                q -> !q.a.equals(q.b),
+                P.dependentPairsLogarithmic(P.lists(P.polynomials()), Combinatorics::permutationsIncreasing)
+        );
+        for (Pair<List<Polynomial>, List<Polynomial>> p : take(LIMIT, ps2)) {
+            assertEquals(p.toString(), sum(p.a), sum(p.b));
+        }
+
+        for (Polynomial p : take(LIMIT, P.polynomials())) {
+            assertEquals(p.toString(), sum(Arrays.asList(p)), p);
+        }
+
+        for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(P.polynomials()))) {
+            assertEquals(p.toString(), sum(Arrays.asList(p.a, p.b)), p.a.add(p.b));
+        }
+
+        Iterable<List<Polynomial>> failPss = map(
+                p -> toList(insert(p.a, p.b, null)),
+                (Iterable<Pair<List<Polynomial>, Integer>>) P.dependentPairsLogarithmic(
+                        P.lists(P.polynomials()),
+                        rs -> range(0, rs.size())
+                )
+        );
+        for (List<Polynomial> ps3 : take(LIMIT, failPss)) {
+            try {
+                sum(ps3);
+                fail(ps3.toString());
+            } catch (NullPointerException ignored) {}
+        }
+    }
+
+    private static void compareImplementationsSum() {
+        initialize();
+        System.out.println("\t\tcomparing sum(Iterable<Polynomial) implementations...");
+
+        long totalTime = 0;
+        for (List<Polynomial> ps : take(LIMIT, P.lists(P.polynomials()))) {
+            long time = System.nanoTime();
+            sum_simplest(ps);
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\t\t\tsimplest: " + ((double) totalTime) / 1e9 + " s");
+
+        totalTime = 0;
+        for (List<Polynomial> ps : take(LIMIT, P.lists(P.polynomials()))) {
+            long time = System.nanoTime();
+            sum(ps);
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
+    }
+
+    private static void propertiesProduct() {
+        initialize();
+        System.out.println("\t\ttesting product(Iterable<Polynomial>) properties...");
+
+        for (List<Polynomial> ps : take(LIMIT, P.lists(P.polynomials()))) {
+            Polynomial product = product(ps);
+            validate(product);
+        }
+
+        for (Pair<List<Polynomial>, BigInteger> p : take(LIMIT, P.pairs(P.lists(P.polynomials()), P.bigIntegers()))) {
+            assertEquals(p.toString(), product(p.a).apply(p.b), productBigInteger(map(q -> q.apply(p.b), p.a)));
+        }
+
+        for (List<BigInteger> rs : take(LIMIT, P.lists(P.bigIntegers()))) {
+            assertEquals(rs.toString(), product(map(Polynomial::of, rs)), of(productBigInteger(rs)));
+        }
+
+        Iterable<Pair<List<Polynomial>, List<Polynomial>>> ps = filter(
+                q -> !q.a.equals(q.b),
+                P.dependentPairsLogarithmic(P.lists(P.polynomials()), Combinatorics::permutationsIncreasing)
+        );
+        for (Pair<List<Polynomial>, List<Polynomial>> p : take(LIMIT, ps)) {
+            assertEquals(p.toString(), product(p.a), product(p.b));
+        }
+
+        for (Polynomial p : take(LIMIT, P.polynomials())) {
+            assertEquals(p.toString(), product(Arrays.asList(p)), p);
+        }
+
+        for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(P.polynomials()))) {
+            assertEquals(p.toString(), product(Arrays.asList(p.a, p.b)), p.a.multiply(p.b));
+        }
+
+        Iterable<List<Polynomial>> failPss = map(
+                p -> toList(insert(p.a, p.b, null)),
+                P.dependentPairsLogarithmic(P.lists(P.polynomials()), rs -> range(0, rs.size()))
+        );
+        for (List<Polynomial> ps2 : take(LIMIT, failPss)) {
+            try {
+                product(ps2);
+                fail(ps2.toString());
+            } catch (NullPointerException | IllegalArgumentException ignored) {}
+        }
+    }
+
+    private static void propertiesDelta() {
+        initialize();
+        System.out.println("\t\ttesting delta(Iterable<Polynomial>) properties...");
+
+        for (List<Polynomial> ps : take(LIMIT, P.listsAtLeast(1, P.polynomials()))) {
+            Iterable<Polynomial> deltas = delta(ps);
+            deltas.forEach(mho.qbar.objects.PolynomialProperties::validate);
+            assertEquals(ps.toString(), length(deltas), length(ps) - 1);
+            List<Polynomial> reversed = reverse(map(Polynomial::negate, delta(reverse(ps))));
+            aeq(ps.toString(), deltas, reversed);
+            try {
+                deltas.iterator().remove();
+            } catch (UnsupportedOperationException ignored) {}
+        }
+
+        Iterable<Pair<List<Polynomial>, BigInteger>> ps = P.pairs(P.listsAtLeast(1, P.polynomials()), P.bigIntegers());
+        for (Pair<List<Polynomial>, BigInteger> p : take(LIMIT, ps)) {
+            aeq(p.toString(), map(q -> q.apply(p.b), delta(p.a)), deltaBigInteger(map(q -> q.apply(p.b), p.a)));
+        }
+
+        for (List<BigInteger> is : take(LIMIT, P.listsAtLeast(1, P.bigIntegers()))) {
+            aeq(is.toString(), delta(map(Polynomial::of, is)), map(Polynomial::of, deltaBigInteger(is)));
+        }
+
+        for (Polynomial p : take(LIMIT, P.polynomials())) {
+            assertTrue(p.toString(), isEmpty(delta(Arrays.asList(p))));
+        }
+
+        for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(P.polynomials()))) {
+            aeq(p.toString(), delta(Arrays.asList(p.a, p.b)), Arrays.asList(p.b.subtract(p.a)));
+        }
+
+        Iterable<List<Polynomial>> failPss = map(
+                p -> toList(insert(p.a, p.b, null)),
+                (Iterable<Pair<List<Polynomial>, Integer>>) P.dependentPairsLogarithmic(
+                        P.lists(P.polynomials()),
+                        rs -> range(0, rs.size())
+                )
+        );
+        for (List<Polynomial> ps2 : take(LIMIT, failPss)) {
+            try {
+                toList(delta(ps2));
+                fail(ps2.toString());
+            } catch (AssertionError | NullPointerException ignored) {}
+        }
     }
 
     private static void propertiesEquals() {

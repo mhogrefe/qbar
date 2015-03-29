@@ -2398,7 +2398,6 @@ public class RationalProperties {
                 q -> !q.a.equals(q.b),
                 P.dependentPairsLogarithmic(P.lists(P.rationals()), Combinatorics::permutationsIncreasing)
         );
-
         for (Pair<List<Rational>, List<Rational>> p : take(LIMIT, ps)) {
             assertEquals(p.toString(), sum(p.a), sum(p.b));
         }
