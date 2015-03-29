@@ -448,7 +448,7 @@ public final class Polynomial implements
         if (this == ZERO) return ZERO;
         if (bits == 0) return this;
         List<BigInteger> shiftedCoefficients = toList(map(r -> r.shiftLeft(bits), coefficients));
-        if (shiftedCoefficients.size() == 0 && shiftedCoefficients.get(0).equals(BigInteger.ONE)) return ONE;
+        if (shiftedCoefficients.size() == 1 && shiftedCoefficients.get(0).equals(BigInteger.ONE)) return ONE;
         return new Polynomial(shiftedCoefficients);
     }
 

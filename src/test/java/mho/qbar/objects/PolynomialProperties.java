@@ -64,6 +64,8 @@ public class PolynomialProperties {
             propertiesMultiply_Polynomial();
             propertiesMultiply_BigInteger();
             propertiesMultiply_int();
+            propertiesShiftLeft();
+            compareImplementationsShiftLeft();
             propertiesEquals();
             propertiesHashCode();
             propertiesCompareTo();
@@ -587,6 +589,78 @@ public class PolynomialProperties {
         }
     }
 
+    private static @NotNull Polynomial shiftLeft_simplest(@NotNull Polynomial p, int bits) {
+        return p.multiply(BigInteger.ONE.shiftLeft(bits));
+    }
+
+    private static void propertiesShiftLeft() {
+        initialize();
+        System.out.println("\t\ttesting shiftLeft(int) properties...");
+
+        Iterable<Integer> is;
+        if (P instanceof QBarExhaustiveProvider) {
+            is = P.naturalIntegers();
+        } else {
+            is  = ((QBarRandomProvider) P).naturalIntegersGeometric(50);
+        }
+        for (Pair<Polynomial, Integer> p : take(LIMIT, P.pairs(P.polynomials(), is))) {
+            Polynomial shifted = p.a.shiftLeft(p.b);
+            validate(shifted);
+            assertEquals(p.toString(), shifted, shiftLeft_simplest(p.a, p.b));
+            aeq(p.toString(), map(BigInteger::signum, p.a), map(BigInteger::signum, shifted));
+            assertEquals(p.toString(), p.a.degree(), shifted.degree());
+            assertEquals(p.toString(), p.a.negate().shiftLeft(p.b), shifted.negate());
+        }
+
+        Iterable<Triple<Polynomial, Integer, BigInteger>> ts = P.triples(P.polynomials(), is, P.bigIntegers());
+        for (Triple<Polynomial, Integer, BigInteger> t : take(LIMIT, ts)) {
+            assertEquals(t.toString(), t.a.shiftLeft(t.b).apply(t.c), t.a.apply(t.c).shiftLeft(t.b));
+        }
+
+        for (Pair<BigInteger, Integer> p : take(LIMIT, P.pairs(P.bigIntegers(), is))) {
+            assertEquals(p.toString(), of(p.a).shiftLeft(p.b), of(p.a.shiftLeft(p.b)));
+        }
+
+        for (Pair<Polynomial, Integer> p : take(LIMIT, P.pairs(P.polynomials(), is))) {
+            Polynomial shifted = p.a.shiftLeft(p.b);
+            assertEquals(p.toString(), shifted, p.a.multiply(BigInteger.ONE.shiftLeft(p.b)));
+        }
+
+        for (Pair<Polynomial, Integer> p : take(LIMIT, P.pairs(P.polynomials(), P.negativeIntegers()))) {
+            try {
+                p.a.shiftLeft(p.b);
+                fail(p.toString());
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private static void compareImplementationsShiftLeft() {
+        initialize();
+        System.out.println("\t\tcomparing shiftLeft(int) implementations...");
+
+        long totalTime = 0;
+        Iterable<Integer> is;
+        if (P instanceof QBarExhaustiveProvider) {
+            is = P.naturalIntegers();
+        } else {
+            is  = ((QBarRandomProvider) P).naturalIntegersGeometric(50);
+        }
+        for (Pair<Polynomial, Integer> p : take(LIMIT, P.pairs(P.polynomials(), is))) {
+            long time = System.nanoTime();
+            shiftLeft_simplest(p.a, p.b);
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\t\t\tsimplest: " + ((double) totalTime) / 1e9 + " s");
+
+        totalTime = 0;
+        for (Pair<Polynomial, Integer> p : take(LIMIT, P.pairs(P.polynomials(), is))) {
+            long time = System.nanoTime();
+            p.a.shiftLeft(p.b);
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
+    }
+
     private static void propertiesEquals() {
         initialize();
         System.out.println("\t\ttesting equals(Object) properties...");
@@ -723,5 +797,9 @@ public class PolynomialProperties {
         }
         if (p.equals(ZERO)) assertTrue(p.toString(), p == ZERO);
         if (p.equals(ONE)) assertTrue(p.toString(), p == ONE);
+    }
+
+    private static <T> void aeq(String message, Iterable<T> xs, Iterable<T> ys) {
+        assertTrue(message, equal(xs, ys));
     }
 }

@@ -518,7 +518,7 @@ public final class RationalPolynomial implements
         if (this == ZERO) return ZERO;
         if (bits == 0) return this;
         List<Rational> shiftedCoefficients = toList(map(r -> r.shiftLeft(bits), coefficients));
-        if (shiftedCoefficients.size() == 0 && shiftedCoefficients.get(0) == Rational.ONE) return ONE;
+        if (shiftedCoefficients.size() == 1 && shiftedCoefficients.get(0) == Rational.ONE) return ONE;
         return new RationalPolynomial(shiftedCoefficients);
     }
 
@@ -541,7 +541,7 @@ public final class RationalPolynomial implements
         if (this == ZERO) return ZERO;
         if (bits == 0) return this;
         List<Rational> shiftedCoefficients = toList(map(r -> r.shiftRight(bits), coefficients));
-        if (shiftedCoefficients.size() == 0 && shiftedCoefficients.get(0) == Rational.ONE) return ONE;
+        if (shiftedCoefficients.size() == 1 && shiftedCoefficients.get(0) == Rational.ONE) return ONE;
         return new RationalPolynomial(shiftedCoefficients);
     }
 

@@ -67,6 +67,10 @@ public class RationalPolynomialProperties {
             propertiesDivide_Rational();
             propertiesDivide_BigInteger();
             propertiesDivide_int();
+            propertiesShiftLeft();
+            compareImplementationsShiftLeft();
+            propertiesShiftRight();
+            compareImplementationsShiftRight();
             propertiesEquals();
             propertiesHashCode();
             propertiesCompareTo();
@@ -781,6 +785,166 @@ public class RationalPolynomialProperties {
         }
     }
 
+    private static @NotNull RationalPolynomial shiftLeft_simplest(@NotNull RationalPolynomial p, int bits) {
+        if (bits < 0) {
+            return p.divide(BigInteger.ONE.shiftLeft(-bits));
+        } else {
+            return p.multiply(BigInteger.ONE.shiftLeft(bits));
+        }
+    }
+
+    private static void propertiesShiftLeft() {
+        initialize();
+        System.out.println("\t\ttesting shiftLeft(int) properties...");
+
+        Iterable<Integer> is;
+        if (P instanceof QBarExhaustiveProvider) {
+            is = P.integers();
+        } else {
+            is  = ((QBarRandomProvider) P).integersGeometric(50);
+        }
+        for (Pair<RationalPolynomial, Integer> p : take(LIMIT, P.pairs(P.rationalPolynomials(), is))) {
+            RationalPolynomial shifted = p.a.shiftLeft(p.b);
+            validate(shifted);
+            assertEquals(p.toString(), shifted, shiftLeft_simplest(p.a, p.b));
+            aeq(p.toString(), map(Rational::signum, p.a), map(Rational::signum, shifted));
+            assertEquals(p.toString(), p.a.degree(), shifted.degree());
+            assertEquals(p.toString(), p.a.negate().shiftLeft(p.b), shifted.negate());
+            assertEquals(p.toString(), shifted, p.a.shiftRight(-p.b));
+        }
+
+        Iterable<Triple<RationalPolynomial, Integer, Rational>> ts = P.triples(
+                P.rationalPolynomials(),
+                is,
+                P.rationals()
+        );
+        for (Triple<RationalPolynomial, Integer, Rational> t : take(LIMIT, ts)) {
+            assertEquals(t.toString(), t.a.shiftLeft(t.b).apply(t.c), t.a.apply(t.c).shiftLeft(t.b));
+        }
+
+        for (Pair<Rational, Integer> p : take(LIMIT, P.pairs(P.rationals(), is))) {
+            assertEquals(p.toString(), of(p.a).shiftLeft(p.b), of(p.a.shiftLeft(p.b)));
+        }
+
+        if (P instanceof QBarExhaustiveProvider) {
+            is = P.naturalIntegers();
+        } else {
+            is  = ((QBarRandomProvider) P).naturalIntegersGeometric(50);
+        }
+        for (Pair<RationalPolynomial, Integer> p : take(LIMIT, P.pairs(P.rationalPolynomials(), is))) {
+            RationalPolynomial shifted = p.a.shiftLeft(p.b);
+            assertEquals(p.toString(), shifted, p.a.multiply(BigInteger.ONE.shiftLeft(p.b)));
+        }
+    }
+
+    private static void compareImplementationsShiftLeft() {
+        initialize();
+        System.out.println("\t\tcomparing shiftLeft(int) implementations...");
+
+        long totalTime = 0;
+        Iterable<Integer> is;
+        if (P instanceof QBarExhaustiveProvider) {
+            is = P.integers();
+        } else {
+            is  = ((QBarRandomProvider) P).integersGeometric(50);
+        }
+        for (Pair<RationalPolynomial, Integer> p : take(LIMIT, P.pairs(P.rationalPolynomials(), is))) {
+            long time = System.nanoTime();
+            shiftLeft_simplest(p.a, p.b);
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\t\t\tsimplest: " + ((double) totalTime) / 1e9 + " s");
+
+        totalTime = 0;
+        for (Pair<RationalPolynomial, Integer> p : take(LIMIT, P.pairs(P.rationalPolynomials(), is))) {
+            long time = System.nanoTime();
+            p.a.shiftLeft(p.b);
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
+    }
+
+    private static @NotNull RationalPolynomial shiftRight_simplest(@NotNull RationalPolynomial p, int bits) {
+        if (bits < 0) {
+            return p.multiply(BigInteger.ONE.shiftLeft(-bits));
+        } else {
+            return p.divide(BigInteger.ONE.shiftLeft(bits));
+        }
+    }
+
+    private static void propertiesShiftRight() {
+        initialize();
+        System.out.println("\t\ttesting shiftRight(int) properties...");
+
+        Iterable<Integer> is;
+        if (P instanceof QBarExhaustiveProvider) {
+            is = P.integers();
+        } else {
+            is  = ((QBarRandomProvider) P).integersGeometric(50);
+        }
+        Iterable<Pair<RationalPolynomial, Integer>> ps = P.pairs(P.rationalPolynomials(), is);
+        for (Pair<RationalPolynomial, Integer> p : take(LIMIT, ps)) {
+            RationalPolynomial shifted = p.a.shiftRight(p.b);
+            validate(shifted);
+            assertEquals(p.toString(), shifted, shiftRight_simplest(p.a, p.b));
+            aeq(p.toString(), map(Rational::signum, p.a), map(Rational::signum, shifted));
+            assertEquals(p.toString(), p.a.degree(), shifted.degree());
+            assertEquals(p.toString(), p.a.negate().shiftRight(p.b), shifted.negate());
+            assertEquals(p.toString(), shifted, p.a.shiftLeft(-p.b));
+        }
+
+        Iterable<Triple<RationalPolynomial, Integer, Rational>> ts = P.triples(
+                P.rationalPolynomials(),
+                is,
+                P.rationals()
+        );
+        for (Triple<RationalPolynomial, Integer, Rational> t : take(LIMIT, ts)) {
+            assertEquals(t.toString(), t.a.shiftRight(t.b).apply(t.c), t.a.apply(t.c).shiftRight(t.b));
+        }
+
+        for (Pair<Rational, Integer> p : take(LIMIT, P.pairs(P.rationals(), is))) {
+            assertEquals(p.toString(), of(p.a).shiftRight(p.b), of(p.a.shiftRight(p.b)));
+        }
+
+        if (P instanceof QBarExhaustiveProvider) {
+            is = P.naturalIntegers();
+        } else {
+            is  = ((QBarRandomProvider) P).naturalIntegersGeometric(50);
+        }
+        ps = P.pairs(P.rationalPolynomials(), is);
+        for (Pair<RationalPolynomial, Integer> p : take(LIMIT, ps)) {
+            RationalPolynomial shifted = p.a.shiftRight(p.b);
+            assertEquals(p.toString(), shifted, p.a.divide(BigInteger.ONE.shiftLeft(p.b)));
+        }
+    }
+
+    private static void compareImplementationsShiftRight() {
+        initialize();
+        System.out.println("\t\tcomparing shiftRight(int) implementations...");
+
+        long totalTime = 0;
+        Iterable<Integer> is;
+        if (P instanceof QBarExhaustiveProvider) {
+            is = P.integers();
+        } else {
+            is  = ((QBarRandomProvider) P).integersGeometric(50);
+        }
+        for (Pair<RationalPolynomial, Integer> p : take(LIMIT, P.pairs(P.rationalPolynomials(), is))) {
+            long time = System.nanoTime();
+            shiftRight_simplest(p.a, p.b);
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\t\t\tsimplest: " + ((double) totalTime) / 1e9 + " s");
+
+        totalTime = 0;
+        for (Pair<RationalPolynomial, Integer> p : take(LIMIT, P.pairs(P.rationalPolynomials(), is))) {
+            long time = System.nanoTime();
+            p.a.shiftRight(p.b);
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
+    }
+
     private static void propertiesEquals() {
         initialize();
         System.out.println("\t\ttesting equals(Object) properties...");
@@ -920,5 +1084,9 @@ public class RationalPolynomialProperties {
         }
         if (p.equals(ZERO)) assertTrue(p.toString(), p == ZERO);
         if (p.equals(ONE)) assertTrue(p.toString(), p == ONE);
+    }
+
+    private static <T> void aeq(String message, Iterable<T> xs, Iterable<T> ys) {
+        assertTrue(message, equal(xs, ys));
     }
 }
