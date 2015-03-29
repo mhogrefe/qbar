@@ -627,6 +627,8 @@ public final class RationalPolynomial implements
      *  <li>The result is a monic {@code RationalPolynomial}.</li>
      * </ul>
      *
+     * Length is deg({@code this})+1
+     *
      * @return The constant multiple of {@code this} whose leading coefficient is 1.
      */
     public @NotNull RationalPolynomial makeMonic() {

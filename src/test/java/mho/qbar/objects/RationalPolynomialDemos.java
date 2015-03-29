@@ -254,6 +254,20 @@ public class RationalPolynomialDemos {
         }
     }
 
+    public static void demoIsMonic() {
+        initialize();
+        for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
+            System.out.println(p + " is " + (p.isMonic() ? "" : "not ") + "monic");
+        }
+    }
+
+    public static void demoMakeMonic() {
+        initialize();
+        for (RationalPolynomial p : take(LIMIT, filter(q -> q != ZERO, P.rationalPolynomials()))) {
+            System.out.println("makeMonic(" + p + ") = " + p.makeMonic());
+        }
+    }
+
     public static void demoEquals_RationalPolynomial() {
         initialize();
         for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, P.pairs(P.rationalPolynomials()))) {

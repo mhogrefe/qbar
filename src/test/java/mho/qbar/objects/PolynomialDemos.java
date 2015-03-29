@@ -209,6 +209,13 @@ public class PolynomialDemos {
         }
     }
 
+    public static void demoIsMonic() {
+        initialize();
+        for (Polynomial p : take(LIMIT, P.polynomials())) {
+            System.out.println(p + " is " + (p.isMonic() ? "" : "not ") + "monic");
+        }
+    }
+
     public static void demoEquals_Polynomial() {
         initialize();
         for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(P.polynomials()))) {
