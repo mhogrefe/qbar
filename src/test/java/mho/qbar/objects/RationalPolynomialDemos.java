@@ -275,6 +275,17 @@ public class RationalPolynomialDemos {
         }
     }
 
+    public static void demoDivide_RationalPolynomial() {
+        initialize();
+        Iterable<Pair<RationalPolynomial, RationalPolynomial>> ps = P.pairs(
+                P.rationalPolynomials(),
+                filter(q -> q != ZERO, P.rationalPolynomials())
+        );
+        for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, ps)) {
+            System.out.println("(" + p.a + ") / (" + p.b + ") = " + p.a.divide(p.b));
+        }
+    }
+
     public static void demoEquals_RationalPolynomial() {
         initialize();
         for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, P.pairs(P.rationalPolynomials()))) {
