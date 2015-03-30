@@ -661,6 +661,33 @@ public final class RationalPolynomial implements
     }
 
     /**
+     * Returns the quotient and remainder when {@code this} is divided by {@code that}. To be more precise, the result
+     * is (q, r) such that {@code this}={@code that}×q+r and deg(r)<deg({@code that}).
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalPolynomial}.</li>
+     *  <li>{@code that} cannot be 0.</li>
+     *  <li>Neither element of the result is null.</li>
+     * </ul>
+     *
+     * @param that the {@code RationalPolynomial} {@code this} is divided by
+     * @return ({@code this}/{@code that}, {@code this}%{code that})
+     */
+    public @NotNull Pair<RationalPolynomial, RationalPolynomial> divide(@NotNull RationalPolynomial that) {
+        RationalPolynomial quotient = ZERO;
+        RationalPolynomial remainder = this;
+        while (remainder != ZERO && remainder.degree() >= that.degree()) {
+            RationalPolynomial t = of(
+                    remainder.leading().get().divide(that.leading().get()),
+                    remainder.degree() - that.degree()
+            );
+            quotient = quotient.add(t);
+            remainder = remainder.subtract(t.multiply(that));
+        }
+        return new Pair<>(quotient, remainder);
+    }
+
+    /**
      * Determines whether {@code this} is equal to {@code that}.
      *
      * <ul>
