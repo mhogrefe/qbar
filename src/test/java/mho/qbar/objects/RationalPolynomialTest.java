@@ -778,6 +778,35 @@ public class RationalPolynomialTest {
     }
 
     @Test
+    public void testIsPrimitive() {
+        assertFalse(ZERO.isPrimitive());
+        assertTrue(ONE.isPrimitive());
+        assertTrue(X.isPrimitive());
+        assertFalse(read("-4/3").get().isPrimitive());
+        assertTrue(read("x^2-4*x+7").get().isPrimitive());
+        assertFalse(read("6*x^2-4*x+8").get().isPrimitive());
+        assertFalse(read("x^2-7/4*x+1/3").get().isPrimitive());
+        assertFalse(read("-x^3-1").get().isPrimitive());
+        assertFalse(read("1/2*x^10").get().isPrimitive());
+    }
+
+    @Test
+    public void testContentAndPrimitive() {
+        aeq(ONE.contentAndPrimitive(), "(1, 1)");
+        aeq(X.contentAndPrimitive(), "(1, x)");
+        aeq(read("-4/3").get().contentAndPrimitive(), "(-4/3, 1)");
+        aeq(read("x^2-4*x+7").get().contentAndPrimitive(), "(1, x^2-4*x+7)");
+        aeq(read("6*x^2-4*x+8").get().contentAndPrimitive(), "(2, 3*x^2-2*x+4)");
+        aeq(read("x^2-7/4*x+1/3").get().contentAndPrimitive(), "(1/12, 12*x^2-21*x+4)");
+        aeq(read("-x^3-1").get().contentAndPrimitive(), "(-1, x^3+1)");
+        aeq(read("1/2*x^10").get().contentAndPrimitive(), "(1/2, x^10)");
+        try {
+            ZERO.contentAndPrimitive();
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
     public void testEquals() {
         //noinspection EqualsWithItself
         assertTrue(ZERO.equals(ZERO));

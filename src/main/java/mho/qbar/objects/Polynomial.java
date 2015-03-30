@@ -586,14 +586,13 @@ public final class Polynomial implements
      *
      * @return (content({@code this}), primitive({@code this}))
      */
-    @SuppressWarnings("JavaDoc")
+    @SuppressWarnings({"JavaDoc", "ConstantConditions"})
     public @NotNull Pair<BigInteger, Polynomial> contentAndPrimitive() {
         if (this == ZERO)
             throw new ArithmeticException("cannot find content and primitive part of 0");
         BigInteger gcd = foldl(BigInteger::gcd, BigInteger.ZERO, coefficients);
-        @SuppressWarnings("ConstantConditions")
-        BigInteger divisor = gcd.signum() == -1 ? gcd : gcd.negate();
-        if (gcd.equals(BigInteger.ONE)) {
+        BigInteger divisor = signum() == -1 ? gcd.negate() : gcd;
+        if (divisor.equals(BigInteger.ONE)) {
             return new Pair<>(BigInteger.ONE, this);
         } else {
             return new Pair<>(divisor, new Polynomial(toList(map(c -> c.divide(divisor), coefficients))));
