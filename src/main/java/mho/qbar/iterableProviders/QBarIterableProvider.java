@@ -63,9 +63,21 @@ public interface QBarIterableProvider extends IterableProvider {
 
     public @NotNull Iterable<Polynomial> polynomials();
 
+    public @NotNull Iterable<Polynomial> primitivePolynomials(int degree);
+
+    public @NotNull Iterable<Polynomial> primitivePolynomialsAtLeast(int minDegree);
+
+    public @NotNull Iterable<Polynomial> primitivePolynomials();
+
     public @NotNull Iterable<RationalPolynomial> rationalPolynomials(int degree);
 
     public @NotNull Iterable<RationalPolynomial> rationalPolynomialsAtLeast(int minDegree);
 
     public @NotNull Iterable<RationalPolynomial> rationalPolynomials();
+
+    public @NotNull Iterable<RationalPolynomial> monicRationalPolynomials(int degree);
+
+    public @NotNull Iterable<RationalPolynomial> monicRationalPolynomialsAtLeast(int minDegree);
+
+    public @NotNull Iterable<RationalPolynomial> monicRationalPolynomials();
 }

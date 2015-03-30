@@ -582,6 +582,24 @@ public class QBarRandomProvider extends RandomProvider implements QBarIterablePr
         return polynomialsBySize(BIG_INTEGER_MEAN_BIT_SIZE);
     }
 
+    @NotNull
+    @Override
+    public Iterable<Polynomial> primitivePolynomials(int degree) {
+        return null;
+    }
+
+    @NotNull
+    @Override
+    public Iterable<Polynomial> primitivePolynomialsAtLeast(int minDegree) {
+        return null;
+    }
+
+    @NotNull
+    @Override
+    public Iterable<Polynomial> primitivePolynomials() {
+        return null;
+    }
+
     public @NotNull Iterable<Polynomial> polynomialsBySize(int coefficientMeanBitSize) {
         return map(
                 js -> Polynomial.of(toList(js)),
@@ -628,6 +646,24 @@ public class QBarRandomProvider extends RandomProvider implements QBarIterablePr
     @Override
     public @NotNull Iterable<RationalPolynomial> rationalPolynomials() {
         return rationalPolynomialsBySize(BIG_INTEGER_MEAN_BIT_SIZE);
+    }
+
+    @NotNull
+    @Override
+    public Iterable<RationalPolynomial> monicRationalPolynomials(int degree) {
+        return null;
+    }
+
+    @NotNull
+    @Override
+    public Iterable<RationalPolynomial> monicRationalPolynomialsAtLeast(int minDegree) {
+        return null;
+    }
+
+    @NotNull
+    @Override
+    public Iterable<RationalPolynomial> monicRationalPolynomials() {
+        return null;
     }
 
     public @NotNull Iterable<RationalPolynomial> rationalPolynomialsBySize(int coefficientMeanBitSize) {

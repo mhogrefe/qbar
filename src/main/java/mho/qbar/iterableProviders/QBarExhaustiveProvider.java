@@ -375,6 +375,21 @@ public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIt
     }
 
     @Override
+    public @NotNull Iterable<Polynomial> primitivePolynomials(int degree) {
+        return null;
+    }
+
+    @Override
+    public @NotNull Iterable<Polynomial> primitivePolynomialsAtLeast(int minDegree) {
+        return null;
+    }
+
+    @Override
+    public @NotNull Iterable<Polynomial> primitivePolynomials() {
+        return null;
+    }
+
+    @Override
     public @NotNull Iterable<RationalPolynomial> rationalPolynomials(int degree) {
         return map(
                 js -> RationalPolynomial.of(toList(js)),
@@ -399,5 +414,20 @@ public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIt
                 js -> RationalPolynomial.of(toList(js)),
                 filter(is -> is.isEmpty() || last(is) != Rational.ZERO, lists(rationals()))
         );
+    }
+
+    @Override
+    public @NotNull Iterable<RationalPolynomial> monicRationalPolynomials(int degree) {
+        return null;
+    }
+
+    @Override
+    public @NotNull Iterable<RationalPolynomial> monicRationalPolynomialsAtLeast(int minDegree) {
+        return null;
+    }
+
+    @Override
+    public @NotNull Iterable<RationalPolynomial> monicRationalPolynomials() {
+        return null;
     }
 }
