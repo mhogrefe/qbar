@@ -662,7 +662,7 @@ public final class RationalPolynomial implements
 
     /**
      * Returns the quotient and remainder when {@code this} is divided by {@code that}. To be more precise, the result
-     * is (q, r) such that {@code this}={@code that}×q+r and deg(r)<deg({@code that}).
+     * is (q, r) such that {@code this}={@code that}×q+r and r=0 or deg(r)<deg({@code that}).
      *
      * <ul>
      *  <li>{@code this} may be any {@code RationalPolynomial}.</li>
@@ -674,6 +674,8 @@ public final class RationalPolynomial implements
      * @return ({@code this}/{@code that}, {@code this}%{code that})
      */
     public @NotNull Pair<RationalPolynomial, RationalPolynomial> divide(@NotNull RationalPolynomial that) {
+        if (that == ZERO)
+            throw new ArithmeticException("division by zero");
         RationalPolynomial quotient = ZERO;
         RationalPolynomial remainder = this;
         while (remainder != ZERO && remainder.degree() >= that.degree()) {
