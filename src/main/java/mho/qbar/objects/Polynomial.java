@@ -590,6 +590,7 @@ public final class Polynomial implements
     public @NotNull Pair<BigInteger, Polynomial> contentAndPrimitive() {
         if (this == ZERO)
             throw new ArithmeticException("cannot find content and primitive part of 0");
+        if (coefficients.size() == 1) return new Pair<>(coefficients.get(0), ONE);
         BigInteger gcd = foldl(BigInteger::gcd, BigInteger.ZERO, coefficients);
         BigInteger divisor = signum() == -1 ? gcd.negate() : gcd;
         if (divisor.equals(BigInteger.ONE)) {

@@ -74,6 +74,8 @@ public class PolynomialProperties {
             propertiesProduct();
             propertiesDelta();
             propertiesIsMonic();
+            propertiesIsPrimitive();
+            propertiesContentAndPrimitive();
             propertiesEquals();
             propertiesHashCode();
             propertiesCompareTo();
@@ -947,6 +949,45 @@ public class PolynomialProperties {
 
         for (Polynomial p : take(LIMIT, P.polynomials())) {
             p.isMonic();
+        }
+
+        for (Polynomial p : take(LIMIT, filter(Polynomial::isMonic, P.polynomials()))) {
+            assertEquals(p.toString(), p.leading().get(), BigInteger.ONE);
+        }
+    }
+
+    private static void propertiesIsPrimitive() {
+        initialize();
+        System.out.println("\t\ttesting isPrimitive() properties...");
+
+        for (Polynomial p : take(LIMIT, P.polynomials())) {
+            p.isPrimitive();
+        }
+
+        for (Polynomial p : take(LIMIT, filter(Polynomial::isPrimitive, P.polynomials()))) {
+            assertEquals(p.toString(), p.signum(), 1);
+            assertEquals(p.toString(), foldl(BigInteger::gcd, BigInteger.ZERO, p), BigInteger.ONE);
+        }
+    }
+
+    private static void propertiesContentAndPrimitive() {
+        initialize();
+        System.out.println("\t\ttesting contentAndPrimitive() properties...");
+
+        for (Polynomial p : take(LIMIT, filter(q -> q != ZERO, P.polynomials()))) {
+            Pair<BigInteger, Polynomial> contentAndPrimitive = p.contentAndPrimitive();
+            BigInteger content = contentAndPrimitive.a;
+            assertNotNull(p.toString(), content);
+            Polynomial primitive = contentAndPrimitive.b;
+            assertNotNull(p.toString(), primitive);
+            validate(primitive);
+            assertNotEquals(p.toString(), content, BigInteger.ZERO);
+            assertTrue(p.toString(), primitive.isPrimitive());
+            assertEquals(p.toString(), primitive.multiply(content), p);
+
+            Pair<BigInteger, Polynomial> primitiveCP = primitive.contentAndPrimitive();
+            assertEquals(p.toString(), primitiveCP.a, BigInteger.ONE);
+            assertEquals(p.toString(), primitive, primitiveCP.b);
         }
     }
 

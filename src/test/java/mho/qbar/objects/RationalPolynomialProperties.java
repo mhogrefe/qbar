@@ -78,6 +78,7 @@ public class RationalPolynomialProperties {
             propertiesDelta();
             propertiesIsMonic();
             propertiesMakeMonic();
+            propertiesContentAndPrimitive();
             propertiesEquals();
             propertiesHashCode();
             propertiesCompareTo();
@@ -1173,6 +1174,26 @@ public class RationalPolynomialProperties {
         for (Pair<RationalPolynomial, Rational> p : take(LIMIT, ps)) {
             RationalPolynomial monic = p.a.makeMonic();
             assertEquals(p.toString(), p.a.multiply(p.b).makeMonic(), monic);
+        }
+    }
+
+    private static void propertiesContentAndPrimitive() {
+        initialize();
+        System.out.println("\t\ttesting contentAndPrimitive() properties...");
+
+        for (RationalPolynomial p : take(LIMIT, filter(q -> q != ZERO, P.rationalPolynomials()))) {
+            Pair<Rational, Polynomial> contentAndPrimitive = p.contentAndPrimitive();
+            Rational content = contentAndPrimitive.a;
+            assertNotNull(p.toString(), content);
+            Polynomial primitive = contentAndPrimitive.b;
+            assertNotNull(p.toString(), primitive);
+            assertNotEquals(p.toString(), content, BigInteger.ZERO);
+            assertTrue(p.toString(), primitive.isPrimitive());
+            assertEquals(p.toString(), primitive.toRationalPolynomial().multiply(content), p);
+
+            Pair<BigInteger, Polynomial> primitiveCP = primitive.contentAndPrimitive();
+            assertEquals(p.toString(), primitiveCP.a, BigInteger.ONE);
+            assertEquals(p.toString(), primitive, primitiveCP.b);
         }
     }
 
