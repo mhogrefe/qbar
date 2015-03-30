@@ -558,6 +558,49 @@ public final class Polynomial implements
     }
 
     /**
+     * Determines whether {@code this} is primitive–whether its leading coefficient is positive and the GCD of its
+     * coefficients is 1. 0 is not primitive.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>The result may be either {@code boolean}.</li>
+     * </ul>
+     *
+     * @return whether {@code this} is primitive
+     */
+    public boolean isPrimitive() {
+        //noinspection ConstantConditions
+        return signum() == 1 && foldl(BigInteger::gcd, BigInteger.ZERO, coefficients).equals(BigInteger.ONE);
+    }
+
+    /**
+     * Returns a {@code Pair} containing {@code this}'s content and primitive part. The primitive part is a constant
+     * multiple of {@code this} whose coefficients have a GCD of 1 and whose leading coefficient is positive, and the
+     * content is {@code this} divided by the primitive part.
+     *
+     * <ul>
+     *  <li>{@code this} must be nonzero.</li>
+     *  <li>The result is a {@code Pair} both of whose elements are not null, whose first element is nonzero, and whose
+     *  last element is primitive.</li>
+     * </ul>
+     *
+     * @return (content({@code this}), primitive({@code this}))
+     */
+    @SuppressWarnings("JavaDoc")
+    public @NotNull Pair<BigInteger, Polynomial> contentAndPrimitive() {
+        if (this == ZERO)
+            throw new ArithmeticException("cannot find content and primitive part of 0");
+        BigInteger gcd = foldl(BigInteger::gcd, BigInteger.ZERO, coefficients);
+        @SuppressWarnings("ConstantConditions")
+        BigInteger divisor = gcd.signum() == -1 ? gcd : gcd.negate();
+        if (gcd.equals(BigInteger.ONE)) {
+            return new Pair<>(BigInteger.ONE, this);
+        } else {
+            return new Pair<>(divisor, new Polynomial(toList(map(c -> c.divide(divisor), coefficients))));
+        }
+    }
+
+    /**
      * Determines whether {@code this} is equal to {@code that}.
      *
      * <ul>
