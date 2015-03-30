@@ -216,6 +216,20 @@ public class PolynomialDemos {
         }
     }
 
+    public static void demoIsPrimitive() {
+        initialize();
+        for (Polynomial p : take(LIMIT, P.polynomials())) {
+            System.out.println(p + " is " + (p.isPrimitive() ? "" : "not ") + "primitive");
+        }
+    }
+
+    public static void demoContentAndPrimitive() {
+        initialize();
+        for (Polynomial p : take(LIMIT, filter(q -> q != ZERO, P.polynomials()))) {
+            System.out.println("contentAndPrimitive(" + p + ") = " + p.contentAndPrimitive());
+        }
+    }
+
     public static void demoEquals_Polynomial() {
         initialize();
         for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(P.polynomials()))) {

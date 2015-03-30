@@ -268,6 +268,13 @@ public class RationalPolynomialDemos {
         }
     }
 
+    public static void demoContentAndPrimitive() {
+        initialize();
+        for (RationalPolynomial p : take(LIMIT, filter(q -> q != ZERO, P.rationalPolynomials()))) {
+            System.out.println("contentAndPrimitive(" + p + ") = " + p.contentAndPrimitive());
+        }
+    }
+
     public static void demoEquals_RationalPolynomial() {
         initialize();
         for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, P.pairs(P.rationalPolynomials()))) {

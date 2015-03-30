@@ -778,19 +778,6 @@ public class RationalPolynomialTest {
     }
 
     @Test
-    public void testIsPrimitive() {
-        assertFalse(ZERO.isPrimitive());
-        assertTrue(ONE.isPrimitive());
-        assertTrue(X.isPrimitive());
-        assertFalse(read("-4/3").get().isPrimitive());
-        assertTrue(read("x^2-4*x+7").get().isPrimitive());
-        assertFalse(read("6*x^2-4*x+8").get().isPrimitive());
-        assertFalse(read("x^2-7/4*x+1/3").get().isPrimitive());
-        assertFalse(read("-x^3-1").get().isPrimitive());
-        assertFalse(read("1/2*x^10").get().isPrimitive());
-    }
-
-    @Test
     public void testContentAndPrimitive() {
         aeq(ONE.contentAndPrimitive(), "(1, 1)");
         aeq(X.contentAndPrimitive(), "(1, x)");

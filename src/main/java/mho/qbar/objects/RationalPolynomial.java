@@ -639,24 +639,6 @@ public final class RationalPolynomial implements
     }
 
     /**
-     * Determines whether {@code this} is primitive–whether its leading coefficient is positive, all of its
-     * coefficients are integers, and their GCD is 1. 0 is not primitive.
-     *
-     * <ul>
-     *  <li>{@code this} may be any {@code RationalPolynomial}.</li>
-     *  <li>The result may be either {@code boolean}.</li>
-     * </ul>
-     *
-     * @return whether {@code this} is primitive
-     */
-    public boolean isPrimitive() {
-        if (signum() != 1 || !all(Rational::isInteger, coefficients)) return false;
-        BigInteger gcd = foldl(BigInteger::gcd, BigInteger.ZERO, map(Rational::bigIntegerValueExact, coefficients));
-        //noinspection ConstantConditions
-        return gcd.equals(BigInteger.ONE);
-    }
-
-    /**
      * Returns a {@code Pair} containing {@code this}'s content and primitive part. The primitive part is a constant
      * multiple of {@code this} whose coefficients are integers with a GCD of 1 and whose leading coefficient is
      * positive, and the content is {@code this} divided by the primitive part.
@@ -670,10 +652,10 @@ public final class RationalPolynomial implements
      * @return (content({@code this}), primitive({@code this}))
      */
     @SuppressWarnings("JavaDoc")
-    public @NotNull Pair<Rational, RationalPolynomial> contentAndPrimitive() {
+    public @NotNull Pair<Rational, Polynomial> contentAndPrimitive() {
         if (this == ZERO)
             throw new ArithmeticException("cannot find content and primitive part of 0");
-        RationalPolynomial primitive = of(toList(map(Rational::of, Rational.cancelDenominators(coefficients))));
+        Polynomial primitive = Polynomial.of(Rational.cancelDenominators(coefficients));
         if (primitive.signum() == -1) primitive = primitive.negate();
         return new Pair<>(leading().get().divide(primitive.leading().get()), primitive);
     }
