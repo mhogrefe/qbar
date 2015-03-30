@@ -76,6 +76,8 @@ public class RationalPolynomialProperties {
             compareImplementationsSum();
             propertiesProduct();
             propertiesDelta();
+            propertiesIsMonic();
+            propertiesMakeMonic();
             propertiesEquals();
             propertiesHashCode();
             propertiesCompareTo();
@@ -1130,6 +1132,47 @@ public class RationalPolynomialProperties {
                 toList(delta(ps2));
                 fail(ps2.toString());
             } catch (AssertionError | NullPointerException ignored) {}
+        }
+    }
+
+    private static void propertiesIsMonic() {
+        initialize();
+        System.out.println("\t\ttesting isMonic() properties...");
+
+        for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
+            p.isMonic();
+        }
+    }
+
+    private static void propertiesMakeMonic() {
+        initialize();
+        System.out.println("\t\ttesting makeMonic() properties...");
+
+        for (RationalPolynomial p : take(LIMIT, filter(q -> q != ZERO, P.rationalPolynomials()))) {
+            RationalPolynomial monic = p.makeMonic();
+            validate(monic);
+            assertTrue(p.toString(), monic.isMonic());
+            assertEquals(p.toString(), monic.makeMonic(), monic);
+            assertEquals(p.toString(), p.negate().makeMonic(), monic);
+            assertTrue(
+                    p.toString(),
+                    same(
+                            zipWith(
+                                    Rational::divide,
+                                    filter(r -> r != Rational.ZERO, p),
+                                    filter(r -> r != Rational.ZERO, monic)
+                            )
+                    )
+            );
+        }
+
+        Iterable<Pair<RationalPolynomial, Rational>> ps = P.pairs(
+                filter(q -> q != ZERO, P.rationalPolynomials()),
+                filter(r -> r != Rational.ZERO, P.rationals())
+        );
+        for (Pair<RationalPolynomial, Rational> p : take(LIMIT, ps)) {
+            RationalPolynomial monic = p.a.makeMonic();
+            assertEquals(p.toString(), p.a.multiply(p.b).makeMonic(), monic);
         }
     }
 

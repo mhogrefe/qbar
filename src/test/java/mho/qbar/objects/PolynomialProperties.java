@@ -73,6 +73,7 @@ public class PolynomialProperties {
             compareImplementationsSum();
             propertiesProduct();
             propertiesDelta();
+            propertiesIsMonic();
             propertiesEquals();
             propertiesHashCode();
             propertiesCompareTo();
@@ -937,6 +938,15 @@ public class PolynomialProperties {
                 toList(delta(ps2));
                 fail(ps2.toString());
             } catch (AssertionError | NullPointerException ignored) {}
+        }
+    }
+
+    private static void propertiesIsMonic() {
+        initialize();
+        System.out.println("\t\ttesting isMonic() properties...");
+
+        for (Polynomial p : take(LIMIT, P.polynomials())) {
+            p.isMonic();
         }
     }
 
