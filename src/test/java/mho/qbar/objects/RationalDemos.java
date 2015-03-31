@@ -1,8 +1,6 @@
 package mho.qbar.objects;
 
-import mho.wheels.iterables.ExhaustiveProvider;
 import mho.wheels.iterables.IterableUtils;
-import mho.wheels.iterables.RandomProvider;
 import mho.wheels.math.MathUtils;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
@@ -201,15 +199,15 @@ public class RationalDemos {
     public static void demoHasTerminatingBaseExpansion() {
         initialize();
         Iterable<Pair<Rational, BigInteger>> ps;
-        if (P instanceof ExhaustiveProvider) {
-            ps = ((ExhaustiveProvider) P).pairsSquareRootOrder(
+        if (P instanceof QBarExhaustiveProvider) {
+            ps = ((QBarExhaustiveProvider) P).pairsSquareRootOrder(
                     cons(ZERO, P.positiveRationals()),
                     P.rangeUp(BigInteger.valueOf(2))
             );
         } else {
             ps = P.pairs(
                     cons(ZERO, ((QBarRandomProvider) P).positiveRationals(20)),
-                    map(i -> BigInteger.valueOf(i + 2), ((RandomProvider) P).naturalIntegersGeometric(20))
+                    map(i -> BigInteger.valueOf(i + 2), ((QBarRandomProvider) P).naturalIntegersGeometric(20))
             );
         }
         for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
@@ -221,7 +219,7 @@ public class RationalDemos {
     public static void demoBigDecimalValue_int_RoundingMode() {
         initialize();
         Iterable<Pair<Rational, Pair<Integer, RoundingMode>>> ps;
-        if (P instanceof ExhaustiveProvider) {
+        if (P instanceof QBarExhaustiveProvider) {
             ps = P.pairs(
                     P.rationals(),
                     (Iterable<Pair<Integer, RoundingMode>>) P.pairs(P.naturalIntegers(), P.roundingModes())
@@ -230,7 +228,7 @@ public class RationalDemos {
             ps = P.pairs(
                     P.rationals(),
                     (Iterable<Pair<Integer, RoundingMode>>) P.pairs(
-                            ((RandomProvider) P).naturalIntegersGeometric(20),
+                            ((QBarRandomProvider) P).naturalIntegersGeometric(20),
                             P.roundingModes()
                     )
             );
@@ -255,10 +253,10 @@ public class RationalDemos {
     public static void demoBigDecimalValue_int() {
         initialize();
         Iterable<Pair<Rational, Integer>> ps;
-        if (P instanceof ExhaustiveProvider) {
-            ps = ((ExhaustiveProvider) P).pairsSquareRootOrder(P.rationals(), P.naturalIntegers());
+        if (P instanceof QBarExhaustiveProvider) {
+            ps = ((QBarExhaustiveProvider) P).pairsSquareRootOrder(P.rationals(), P.naturalIntegers());
         } else {
-            ps = P.pairs(P.rationals(), ((RandomProvider) P).naturalIntegersGeometric(20));
+            ps = P.pairs(P.rationals(), ((QBarRandomProvider) P).naturalIntegersGeometric(20));
         }
         ps = filter(
                 p -> {
@@ -490,10 +488,10 @@ public class RationalDemos {
     public static void demoHarmonicNumber() {
         initialize();
         Iterable<Integer> is;
-        if (P instanceof ExhaustiveProvider) {
+        if (P instanceof QBarExhaustiveProvider) {
             is = P.positiveIntegers();
         } else {
-            is = ((RandomProvider) P).positiveIntegersGeometric(100);
+            is = ((QBarRandomProvider) P).positiveIntegersGeometric(100);
         }
         for (int i : take(SMALL_LIMIT, is)) {
             System.out.println("H_" + i + " = " + harmonicNumber(i));
@@ -503,10 +501,10 @@ public class RationalDemos {
     public static void demoPow() {
         initialize();
         Iterable<Integer> exps;
-        if (P instanceof ExhaustiveProvider) {
+        if (P instanceof QBarExhaustiveProvider) {
             exps = P.integers();
         } else {
-            exps = ((RandomProvider) P).integersGeometric(50);
+            exps = ((QBarRandomProvider) P).integersGeometric(50);
         }
         Iterable<Pair<Rational, Integer>> ps = filter(p -> p.b >= 0 || p.a != ZERO, P.pairs(P.rationals(), exps));
         for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
@@ -579,15 +577,15 @@ public class RationalDemos {
     public static void demoPositionalNotation() {
         initialize();
         Iterable<Pair<Rational, BigInteger>> ps;
-        if (P instanceof ExhaustiveProvider) {
-            ps = ((ExhaustiveProvider) P).pairsSquareRootOrder(
+        if (P instanceof QBarExhaustiveProvider) {
+            ps = ((QBarExhaustiveProvider) P).pairsSquareRootOrder(
                     cons(ZERO, P.positiveRationals()),
                     P.rangeUp(BigInteger.valueOf(2))
             );
         } else {
             ps = P.pairs(
                     cons(ZERO, ((QBarRandomProvider) P).positiveRationals(8)),
-                    map(i -> BigInteger.valueOf(i + 2), ((RandomProvider) P).naturalIntegersGeometric(20))
+                    map(i -> BigInteger.valueOf(i + 2), ((QBarRandomProvider) P).naturalIntegersGeometric(20))
             );
         }
         for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
@@ -598,10 +596,10 @@ public class RationalDemos {
     public static void demoFromPositionalNotation() {
         initialize();
         Iterable<BigInteger> bases;
-        if (P instanceof ExhaustiveProvider) {
+        if (P instanceof QBarExhaustiveProvider) {
             bases = P.rangeUp(BigInteger.valueOf(2));
         } else {
-            bases = map(i -> BigInteger.valueOf(i + 2), ((RandomProvider) P).naturalIntegersGeometric(20));
+            bases = map(i -> BigInteger.valueOf(i + 2), ((QBarRandomProvider) P).naturalIntegersGeometric(20));
         }
         Iterable<Pair<BigInteger, Triple<List<BigInteger>, List<BigInteger>, List<BigInteger>>>> ps = P.dependentPairs(
                 bases,
@@ -619,15 +617,15 @@ public class RationalDemos {
     public static void demoDigits() {
         initialize();
         Iterable<Pair<Rational, BigInteger>> ps;
-        if (P instanceof ExhaustiveProvider) {
-            ps = ((ExhaustiveProvider) P).pairsSquareRootOrder(
+        if (P instanceof QBarExhaustiveProvider) {
+            ps = ((QBarExhaustiveProvider) P).pairsSquareRootOrder(
                     cons(ZERO, P.positiveRationals()),
                     P.rangeUp(BigInteger.valueOf(2))
             );
         } else {
             ps = P.pairs(
                     cons(ZERO, P.positiveRationals()),
-                    map(i -> BigInteger.valueOf(i + 2), ((RandomProvider) P).naturalIntegersGeometric(20))
+                    map(i -> BigInteger.valueOf(i + 2), ((QBarRandomProvider) P).naturalIntegersGeometric(20))
             );
         }
         for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
@@ -640,12 +638,12 @@ public class RationalDemos {
     public static void demoToStringBase_BigInteger() {
         initialize();
         Iterable<Pair<Rational, BigInteger>> ps;
-        if (P instanceof ExhaustiveProvider) {
-            ps = ((ExhaustiveProvider) P).pairsSquareRootOrder(P.rationals(), P.rangeUp(BigInteger.valueOf(2)));
+        if (P instanceof QBarExhaustiveProvider) {
+            ps = ((QBarExhaustiveProvider) P).pairsSquareRootOrder(P.rationals(), P.rangeUp(BigInteger.valueOf(2)));
         } else {
             ps = P.pairs(
                     P.rationals(),
-                    map(i -> BigInteger.valueOf(i + 2), ((RandomProvider) P).naturalIntegersGeometric(20))
+                    map(i -> BigInteger.valueOf(i + 2), ((QBarRandomProvider) P).naturalIntegersGeometric(20))
             );
         }
         for (Pair<Rational, BigInteger> p : take(LIMIT, filter(q -> q.a.hasTerminatingBaseExpansion(q.b), ps))) {
@@ -656,7 +654,7 @@ public class RationalDemos {
     public static void demoToStringBase_BigInteger_int() {
         initialize();
         Iterable<Pair<Rational, Pair<BigInteger, Integer>>> ps;
-        if (P instanceof ExhaustiveProvider) {
+        if (P instanceof QBarExhaustiveProvider) {
             ps = P.pairs(
                     P.rationals(),
                     (Iterable<Pair<BigInteger, Integer>>) P.pairs(P.rangeUp(BigInteger.valueOf(2)), P.integers())
@@ -665,8 +663,8 @@ public class RationalDemos {
             ps = P.pairs(
                     P.rationals(),
                     (Iterable<Pair<BigInteger, Integer>>) P.pairs(
-                            map(i -> BigInteger.valueOf(i + 2), ((RandomProvider) P).naturalIntegersGeometric(20)),
-                            ((RandomProvider) P).integersGeometric(20)
+                            map(i -> BigInteger.valueOf(i + 2), ((QBarRandomProvider) P).naturalIntegersGeometric(20)),
+                            ((QBarRandomProvider) P).integersGeometric(20)
                     )
             );
         }
@@ -679,10 +677,10 @@ public class RationalDemos {
     public static void demoFromStringBase() {
         initialize();
         Iterable<BigInteger> bases;
-        if (P instanceof ExhaustiveProvider) {
+        if (P instanceof QBarExhaustiveProvider) {
             bases = P.rangeUp(BigInteger.valueOf(2));
         } else {
-            bases = map(i -> BigInteger.valueOf(i + 2), ((RandomProvider) P).naturalIntegersGeometric(20));
+            bases = map(i -> BigInteger.valueOf(i + 2), ((QBarRandomProvider) P).naturalIntegersGeometric(20));
         }
         Iterable<Pair<BigInteger, String>> ps = P.dependentPairs(
                 bases,
@@ -694,10 +692,10 @@ public class RationalDemos {
                         chars += "()0123456789";
                     }
                     Iterable<Character> unfiltered;
-                    if (P instanceof ExhaustiveProvider) {
+                    if (P instanceof QBarExhaustiveProvider) {
                         unfiltered = fromString(chars);
                     } else {
-                        unfiltered = ((RandomProvider) P).uniformSample(chars);
+                        unfiltered = ((QBarRandomProvider) P).uniformSample(chars);
                     }
                     return filter(
                             s -> {
@@ -719,7 +717,7 @@ public class RationalDemos {
 
     public static void demoCancelDenominators() {
         initialize();
-        int limit = P instanceof ExhaustiveProvider ? LIMIT : SMALLER_LIMIT;
+        int limit = P instanceof QBarExhaustiveProvider ? LIMIT : SMALLER_LIMIT;
         for (List<Rational> rs : take(limit, P.lists(P.rationals()))) {
             String listString = tail(init(rs.toString()));
             System.out.println("cancelDenominators(" + listString + ") = " + cancelDenominators(rs));
@@ -788,7 +786,7 @@ public class RationalDemos {
         if (P instanceof QBarExhaustiveProvider) {
             cs = fromString(RATIONAL_CHARS);
         } else {
-            cs = ((RandomProvider) P).uniformSample(RATIONAL_CHARS);
+            cs = ((QBarRandomProvider) P).uniformSample(RATIONAL_CHARS);
         }
         for (String s : take(LIMIT, P.strings(cs))) {
             System.out.println("findIn(" + s + ") = " + findIn(s));

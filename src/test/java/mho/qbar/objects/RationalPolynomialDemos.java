@@ -286,6 +286,22 @@ public class RationalPolynomialDemos {
         }
     }
 
+    public static void demoPow() {
+        initialize();
+        Iterable<Pair<RationalPolynomial, Integer>> ps;
+        if (P instanceof QBarExhaustiveProvider) {
+            ps = ((QBarExhaustiveProvider) P).pairsLogarithmicOrder(P.rationalPolynomials(), P.naturalIntegers());
+        } else {
+            ps = P.pairs(
+                    ((QBarRandomProvider) P).rationalPolynomialsBySize(10),
+                    ((QBarRandomProvider) P).naturalIntegersGeometric(5)
+            );
+        }
+        for (Pair<RationalPolynomial, Integer> p : take(LIMIT, ps)) {
+            System.out.println("(" + p.a + ") ^ " + p.b + " = " + p.a.pow(p.b));
+        }
+    }
+
     public static void demoEquals_RationalPolynomial() {
         initialize();
         for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, P.pairs(P.rationalPolynomials()))) {

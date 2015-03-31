@@ -4,7 +4,6 @@ import mho.qbar.iterableProviders.QBarExhaustiveProvider;
 import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.iterableProviders.QBarRandomProvider;
 import mho.wheels.iterables.IterableUtils;
-import mho.wheels.iterables.RandomProvider;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 
@@ -67,7 +66,7 @@ public class PolynomialDemos {
         if (P instanceof QBarExhaustiveProvider) {
             ps = ((QBarExhaustiveProvider) P).pairsLogarithmicOrder(P.polynomials(), P.naturalIntegers());
         } else {
-            ps = P.pairs(P.polynomials(), ((RandomProvider) P).naturalIntegersGeometric(10));
+            ps = P.pairs(P.polynomials(), ((QBarRandomProvider) P).naturalIntegersGeometric(10));
         }
         for (Pair<Polynomial, Integer> p : take(LIMIT, ps)) {
             System.out.println("coefficient(" + p.a + ", " + p.b + ") = " + p.a.coefficient(p.b));
@@ -95,7 +94,7 @@ public class PolynomialDemos {
         if (P instanceof QBarExhaustiveProvider) {
             ps = ((QBarExhaustiveProvider) P).pairsLogarithmicOrder(P.bigIntegers(), P.naturalIntegers());
         } else {
-            ps = P.pairs(P.bigIntegers(), ((RandomProvider) P).naturalIntegersGeometric(20));
+            ps = P.pairs(P.bigIntegers(), ((QBarRandomProvider) P).naturalIntegersGeometric(20));
         }
         for (Pair<BigInteger, Integer> p : take(LIMIT, ps)) {
             System.out.println("of(" + p.a + ", " + p.b + ") = " + of(p.a, p.b));
@@ -209,6 +208,19 @@ public class PolynomialDemos {
         }
     }
 
+    public static void demoPow() {
+        initialize();
+        Iterable<Pair<Polynomial, Integer>> ps;
+        if (P instanceof QBarExhaustiveProvider) {
+            ps = ((QBarExhaustiveProvider) P).pairsLogarithmicOrder(P.polynomials(), P.naturalIntegers());
+        } else {
+            ps = P.pairs(P.polynomials(), ((QBarRandomProvider) P).naturalIntegersGeometric(5));
+        }
+        for (Pair<Polynomial, Integer> p : take(LIMIT, ps)) {
+            System.out.println("(" + p.a + ") ^ " + p.b + " = " + p.a.pow(p.b));
+        }
+    }
+
     public static void demoIsMonic() {
         initialize();
         for (Polynomial p : take(LIMIT, P.polynomials())) {
@@ -292,7 +304,7 @@ public class PolynomialDemos {
         if (P instanceof QBarExhaustiveProvider) {
             cs = fromString(POLYNOMIAL_CHARS);
         } else {
-            cs = ((RandomProvider) P).uniformSample(POLYNOMIAL_CHARS);
+            cs = ((QBarRandomProvider) P).uniformSample(POLYNOMIAL_CHARS);
         }
         for (String s : take(LIMIT, P.strings(cs))) {
             System.out.println("findIn(" + s + ") = " + findIn(s));
