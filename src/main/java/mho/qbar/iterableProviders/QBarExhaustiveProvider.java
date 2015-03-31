@@ -376,17 +376,53 @@ public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIt
 
     @Override
     public @NotNull Iterable<Polynomial> primitivePolynomials(int degree) {
-        return null;
+        return filter(
+                p -> p.signum() == 1,
+                map(
+                        Polynomial::of,
+                        filter(
+                                js -> {
+                                    BigInteger gcd = foldl(BigInteger::gcd, BigInteger.ZERO, js);
+                                    return gcd.equals(BigInteger.ZERO) || gcd.equals(BigInteger.ONE);
+                                },
+                                lists(degree + 1, bigIntegers())
+                        )
+                )
+        );
     }
 
     @Override
     public @NotNull Iterable<Polynomial> primitivePolynomialsAtLeast(int minDegree) {
-        return null;
+        return filter(
+                p -> p.signum() == 1,
+                map(
+                        Polynomial::of,
+                        filter(
+                                js -> {
+                                    BigInteger gcd = foldl(BigInteger::gcd, BigInteger.ZERO, js);
+                                    return gcd.equals(BigInteger.ZERO) || gcd.equals(BigInteger.ONE);
+                                },
+                                listsAtLeast(minDegree + 1, bigIntegers())
+                        )
+                )
+        );
     }
 
     @Override
     public @NotNull Iterable<Polynomial> primitivePolynomials() {
-        return null;
+        return filter(
+                p -> p.signum() == 1,
+                map(
+                        Polynomial::of,
+                        filter(
+                                js -> {
+                                    BigInteger gcd = foldl(BigInteger::gcd, BigInteger.ZERO, js);
+                                    return gcd.equals(BigInteger.ZERO) || gcd.equals(BigInteger.ONE);
+                                },
+                                lists(bigIntegers())
+                        )
+                )
+        );
     }
 
     @Override
