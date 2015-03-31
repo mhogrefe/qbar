@@ -1,6 +1,7 @@
 package mho.qbar.objects;
 
 import mho.wheels.iterables.IterableUtils;
+import mho.wheels.math.MathUtils;
 import mho.wheels.misc.Readers;
 import mho.wheels.ordering.comparators.ShortlexComparator;
 import mho.wheels.structures.Pair;
@@ -540,6 +541,32 @@ public final class Polynomial implements
         if (head(xs) == null)
             throw new NullPointerException();
         return adjacentPairsWith((x, y) -> y.subtract(x), xs);
+    }
+
+    /**
+     * Returns {@code this} raised to the power of {@code p}. 0<sup>0</sup> yields 1.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>{@code p} cannot be negative.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param p the power that {@code this} is raised to
+     * @return {@code this}<sup>{@code p}</sup>
+     */
+    public @NotNull Polynomial pow(int p) {
+        if (p < 0)
+            throw new ArithmeticException("cannot raise to a negative power");
+        if (p == 0) return ONE;
+        if (p == 1) return this;
+        Polynomial result = ZERO;
+        Polynomial powerPower = null; // p^2^i
+        for (boolean bit : MathUtils.bits(p)) {
+            powerPower = powerPower == null ? this : powerPower.multiply(powerPower);
+            if (bit) result = result.add(powerPower);
+        }
+        return result;
     }
 
     /**
