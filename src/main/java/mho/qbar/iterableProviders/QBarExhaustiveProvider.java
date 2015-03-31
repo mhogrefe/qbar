@@ -458,16 +458,16 @@ public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIt
 
     @Override
     public @NotNull Iterable<RationalPolynomial> monicRationalPolynomials(int degree) {
-        return null;
+        return map(p -> p.toRationalPolynomial().makeMonic(), primitivePolynomials(degree));
     }
 
     @Override
     public @NotNull Iterable<RationalPolynomial> monicRationalPolynomialsAtLeast(int minDegree) {
-        return null;
+        return map(p -> p.toRationalPolynomial().makeMonic(), primitivePolynomialsAtLeast(minDegree));
     }
 
     @Override
     public @NotNull Iterable<RationalPolynomial> monicRationalPolynomials() {
-        return null;
+        return map(p -> p.toRationalPolynomial().makeMonic(), primitivePolynomials());
     }
 }
