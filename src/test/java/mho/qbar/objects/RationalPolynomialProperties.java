@@ -12,10 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
 import java.math.BigInteger;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 
 import static mho.qbar.objects.RationalPolynomial.*;
 import static mho.wheels.iterables.IterableUtils.*;
@@ -79,6 +76,8 @@ public class RationalPolynomialProperties {
             propertiesIsMonic();
             propertiesMakeMonic();
             propertiesContentAndPrimitive();
+            propertiesDivide_RationalPolynomial();
+            compareImplementationsDivide_RationalPolynomial();
             propertiesEquals();
             propertiesHashCode();
             propertiesCompareTo();
@@ -1195,6 +1194,94 @@ public class RationalPolynomialProperties {
             assertEquals(p.toString(), primitiveCP.a, BigInteger.ONE);
             assertEquals(p.toString(), primitive, primitiveCP.b);
         }
+    }
+
+    private static @NotNull Pair<RationalPolynomial, RationalPolynomial> divide_RationalPolynomial_simplest(
+            @NotNull RationalPolynomial a,
+            @NotNull RationalPolynomial b
+    ) {
+        RationalPolynomial quotient = ZERO;
+        RationalPolynomial remainder = a;
+        while (remainder != ZERO && remainder.degree() >= b.degree()) {
+            RationalPolynomial t = of(
+                    remainder.leading().get().divide(b.leading().get()),
+                    remainder.degree() - b.degree()
+            );
+            quotient = quotient.add(t);
+            remainder = remainder.subtract(t.multiply(b));
+        }
+        return new Pair<>(quotient, remainder);
+    }
+
+    private static void propertiesDivide_RationalPolynomial() {
+        initialize();
+        System.out.println("\t\ttesting divide(RationalPolynomial) properties...");
+
+        Iterable<Pair<RationalPolynomial, RationalPolynomial>> ps = P.pairs(
+                P.rationalPolynomials(),
+                filter(q -> q != ZERO, P.rationalPolynomials())
+        );
+        for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, ps)) {
+            Pair<RationalPolynomial, RationalPolynomial> quotRem = p.a.divide(p.b);
+            assertEquals(p.toString(), quotRem, divide_RationalPolynomial_simplest(p.a, p.b));
+            RationalPolynomial quotient = quotRem.a;
+            assertNotNull(p.toString(), quotient);
+            RationalPolynomial remainder = quotRem.b;
+            assertNotNull(p.toString(), remainder);
+            validate(quotient);
+            validate(remainder);
+            assertEquals(p.toString(), quotient.multiply(p.b).add(remainder), p.a);
+            assertTrue(p.toString(), p.b == ZERO || remainder.degree() < p.b.degree());
+        }
+
+        Iterable<Pair<Rational, Rational>> ps2 = P.pairs(
+                P.rationals(),
+                filter(r -> r != Rational.ZERO, P.rationals())
+        );
+        for (Pair<Rational, Rational> p : take(LIMIT, ps2)) {
+            Pair<RationalPolynomial, RationalPolynomial> quotRem = of(p.a).divide(of(p.b));
+            assertEquals(p.toString(), quotRem.a, of(p.a.divide(p.b)));
+            assertTrue(p.toString(), quotRem.b == ZERO);
+        }
+
+        ps = filter(q -> q.a.degree() < q.b.degree(), ps);
+        for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, ps)) {
+            Pair<RationalPolynomial, RationalPolynomial> quotRem = p.a.divide(p.b);
+            assertTrue(p.toString(), quotRem.a == ZERO);
+            assertEquals(p.toString(), quotRem.b, p.a);
+        }
+
+        for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
+            try {
+                p.divide(ZERO);
+                fail(p.toString());
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private static void compareImplementationsDivide_RationalPolynomial() {
+        initialize();
+        System.out.println("\t\tcomparing divide(RationalPolynomial) implementations...");
+
+        long totalTime = 0;
+        Iterable<Pair<RationalPolynomial, RationalPolynomial>> ps = P.pairs(
+                P.rationalPolynomials(),
+                filter(q -> q != ZERO, P.rationalPolynomials())
+        );
+        for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, ps)) {
+            long time = System.nanoTime();
+            divide_RationalPolynomial_simplest(p.a, p.b);
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\t\t\tsimplest: " + ((double) totalTime) / 1e9 + " s");
+
+        totalTime = 0;
+        for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, ps)) {
+            long time = System.nanoTime();
+            p.a.divide(p.b);
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
     }
 
     private static void propertiesEquals() {

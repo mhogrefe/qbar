@@ -676,17 +676,18 @@ public final class RationalPolynomial implements
     public @NotNull Pair<RationalPolynomial, RationalPolynomial> divide(@NotNull RationalPolynomial that) {
         if (that == ZERO)
             throw new ArithmeticException("division by zero");
-        RationalPolynomial quotient = ZERO;
-        RationalPolynomial remainder = this;
-        while (remainder != ZERO && remainder.degree() >= that.degree()) {
-            RationalPolynomial t = of(
-                    remainder.leading().get().divide(that.leading().get()),
-                    remainder.degree() - that.degree()
-            );
-            quotient = quotient.add(t);
-            remainder = remainder.subtract(t.multiply(that));
+        int m = degree();
+        int n = that.degree();
+        if (m < n) return new Pair<>(ZERO, this);
+        List<Rational> q = toList(replicate(m - n + 1, Rational.ZERO));
+        List<Rational> r = toList(coefficients);
+        for (int k = m - n; k >= 0; k--) {
+            q.set(k, r.get(n + k).divide(that.coefficient(n)));
+            for (int j = n + k - 1; j >= k; j--) {
+                r.set(j, r.get(j).subtract(q.get(k).multiply(that.coefficient(j - k))));
+            }
         }
-        return new Pair<>(quotient, remainder);
+        return new Pair<>(of(q), of(toList(take(n, r))));
     }
 
     /**
