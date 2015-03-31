@@ -376,12 +376,14 @@ public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIt
 
     @Override
     public @NotNull Iterable<Polynomial> primitivePolynomials(int degree) {
+        if (degree == 0) return Collections.singletonList(Polynomial.ONE);
         return filter(
                 p -> p.signum() == 1,
                 map(
                         Polynomial::of,
                         filter(
                                 js -> {
+                                    if (!js.isEmpty() && last(js).equals(BigInteger.ZERO)) return false;
                                     BigInteger gcd = foldl(BigInteger::gcd, BigInteger.ZERO, js);
                                     return gcd.equals(BigInteger.ZERO) || gcd.equals(BigInteger.ONE);
                                 },
@@ -399,6 +401,7 @@ public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIt
                         Polynomial::of,
                         filter(
                                 js -> {
+                                    if (!js.isEmpty() && last(js).equals(BigInteger.ZERO)) return false;
                                     BigInteger gcd = foldl(BigInteger::gcd, BigInteger.ZERO, js);
                                     return gcd.equals(BigInteger.ZERO) || gcd.equals(BigInteger.ONE);
                                 },
@@ -416,6 +419,7 @@ public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIt
                         Polynomial::of,
                         filter(
                                 js -> {
+                                    if (!js.isEmpty() && last(js).equals(BigInteger.ZERO)) return false;
                                     BigInteger gcd = foldl(BigInteger::gcd, BigInteger.ZERO, js);
                                     return gcd.equals(BigInteger.ZERO) || gcd.equals(BigInteger.ONE);
                                 },
