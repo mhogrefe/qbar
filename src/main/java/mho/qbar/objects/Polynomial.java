@@ -560,11 +560,11 @@ public final class Polynomial implements
             throw new ArithmeticException("cannot raise to a negative power");
         if (p == 0) return ONE;
         if (p == 1) return this;
-        Polynomial result = ZERO;
+        Polynomial result = ONE;
         Polynomial powerPower = null; // p^2^i
         for (boolean bit : MathUtils.bits(p)) {
             powerPower = powerPower == null ? this : powerPower.multiply(powerPower);
-            if (bit) result = result.add(powerPower);
+            if (bit) result = result.multiply(powerPower);
         }
         return result;
     }
