@@ -73,6 +73,8 @@ public class PolynomialProperties {
             compareImplementationsSum();
             propertiesProduct();
             propertiesDelta();
+            propertiesPow();
+            compareImplementationsPow();
             propertiesIsMonic();
             propertiesIsPrimitive();
             propertiesContentAndPrimitive();
@@ -941,6 +943,104 @@ public class PolynomialProperties {
                 fail(ps2.toString());
             } catch (AssertionError | NullPointerException ignored) {}
         }
+    }
+
+    private static @NotNull Polynomial pow_simplest(@NotNull Polynomial a, int p) {
+        return product(replicate(p, a));
+    }
+
+    private static void propertiesPow() {
+        initialize();
+        System.out.println("\t\ttesting pow(int) properties...");
+
+        Iterable<Integer> exps;
+        Iterable<Pair<Polynomial, Integer>> ps;
+        if (P instanceof QBarExhaustiveProvider) {
+            exps = P.naturalIntegers();
+            ps = ((QBarExhaustiveProvider) P).pairsLogarithmicOrder(P.polynomials(), exps);
+        } else {
+            exps = ((QBarRandomProvider) P).naturalIntegersGeometric(5);
+            ps = P.pairs(P.polynomials(), exps);
+        }
+        for (Pair<Polynomial, Integer> p : take(LIMIT, ps)) {
+            Polynomial q = p.a.pow(p.b);
+            validate(q);
+            assertEquals(p.toString(), q, pow_simplest(p.a, p.b));
+        }
+
+        Iterable<Triple<Polynomial, Integer, BigInteger>> ts1 = P.triples(P.polynomials(), exps, P.bigIntegers());
+        for (Triple<Polynomial, Integer, BigInteger> t : take(LIMIT, ts1)) {
+            assertEquals(t.toString(), t.a.pow(t.b).apply(t.c), t.a.apply(t.c).pow(t.b));
+        }
+
+        for (Pair<BigInteger, Integer> p : take(LIMIT, P.pairs(P.bigIntegers(), exps))) {
+            assertEquals(p.toString(), of(p.a).pow(p.b), of(p.a.pow(p.b)));
+        }
+
+        Iterable<Integer> pexps;
+        if (P instanceof QBarExhaustiveProvider) {
+            pexps = P.positiveIntegers();
+        } else {
+            pexps = ((RandomProvider) P).positiveIntegersGeometric(20);
+        }
+        for (int i : take(LIMIT, pexps)) {
+            assertTrue(Integer.toString(i), ZERO.pow(i) == ZERO);
+        }
+
+        for (Polynomial p : take(LIMIT, P.polynomials())) {
+            assertTrue(p.toString(), p.pow(0) == ONE);
+            assertEquals(p.toString(), p.pow(1), p);
+            assertEquals(p.toString(), p.pow(2), p.multiply(p));
+        }
+
+        if (P instanceof QBarRandomProvider) {
+            exps = ((QBarRandomProvider) P).naturalIntegersGeometric(2);
+        }
+        for (Triple<Polynomial, Integer, Integer> t : take(LIMIT, P.triples(P.polynomials(), exps, exps))) {
+            Polynomial expression1 = t.a.pow(t.b).multiply(t.a.pow(t.c));
+            Polynomial expression2 = t.a.pow(t.b + t.c);
+            assertEquals(t.toString(), expression1, expression2);
+            Polynomial expression5 = t.a.pow(t.b).pow(t.c);
+            Polynomial expression6 = t.a.pow(t.b * t.c);
+            assertEquals(t.toString(), expression5, expression6);
+        }
+
+        Iterable<Triple<Polynomial, Polynomial, Integer>> ts2 = P.triples(P.polynomials(), P.polynomials(), exps);
+        for (Triple<Polynomial, Polynomial, Integer> t : take(LIMIT, ts2)) {
+            Polynomial expression1 = t.a.multiply(t.b).pow(t.c);
+            Polynomial expression2 = t.a.pow(t.c).multiply(t.b.pow(t.c));
+            assertEquals(t.toString(), expression1, expression2);
+        }
+    }
+
+    private static void compareImplementationsPow() {
+        initialize();
+        System.out.println("\t\tcomparing pow(int) implementations...");
+
+        long totalTime = 0;
+        Iterable<Integer> exps;
+        Iterable<Pair<Polynomial, Integer>> ps;
+        if (P instanceof QBarExhaustiveProvider) {
+            exps = P.naturalIntegers();
+            ps = ((QBarExhaustiveProvider) P).pairsLogarithmicOrder(P.polynomials(), exps);
+        } else {
+            exps = ((QBarRandomProvider) P).naturalIntegersGeometric(5);
+            ps = P.pairs(P.polynomials(), exps);
+        }
+        for (Pair<Polynomial, Integer> p : take(LIMIT, ps)) {
+            long time = System.nanoTime();
+            pow_simplest(p.a, p.b);
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\t\t\tsimplest: " + ((double) totalTime) / 1e9 + " s");
+
+        totalTime = 0;
+        for (Pair<Polynomial, Integer> p : take(LIMIT, ps)) {
+            long time = System.nanoTime();
+            p.a.pow(p.b);
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
     }
 
     private static void propertiesIsMonic() {

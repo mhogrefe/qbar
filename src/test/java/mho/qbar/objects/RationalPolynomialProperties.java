@@ -73,6 +73,8 @@ public class RationalPolynomialProperties {
             compareImplementationsSum();
             propertiesProduct();
             propertiesDelta();
+            propertiesPow();
+            compareImplementationsPow();
             propertiesIsMonic();
             propertiesMakeMonic();
             propertiesContentAndPrimitive();
@@ -1133,6 +1135,107 @@ public class RationalPolynomialProperties {
                 fail(ps2.toString());
             } catch (AssertionError | NullPointerException ignored) {}
         }
+    }
+
+    private static @NotNull RationalPolynomial pow_simplest(@NotNull RationalPolynomial a, int p) {
+        return product(replicate(p, a));
+    }
+
+    private static void propertiesPow() {
+        initialize();
+        System.out.println("\t\ttesting pow(int) properties...");
+
+        Iterable<Integer> exps;
+        Iterable<RationalPolynomial> rps;
+        Iterable<Pair<RationalPolynomial, Integer>> ps;
+        if (P instanceof QBarExhaustiveProvider) {
+            rps = P.rationalPolynomials();
+            exps = P.naturalIntegers();
+            ps = ((QBarExhaustiveProvider) P).pairsLogarithmicOrder(rps, exps);
+        } else {
+            rps = ((QBarRandomProvider) P).rationalPolynomialsBySize(10);
+            exps = ((QBarRandomProvider) P).naturalIntegersGeometric(5);
+            ps = P.pairs(rps, exps);
+        }
+        for (Pair<RationalPolynomial, Integer> p : take(LIMIT, ps)) {
+            RationalPolynomial q = p.a.pow(p.b);
+            validate(q);
+            assertEquals(p.toString(), q, pow_simplest(p.a, p.b));
+        }
+
+        Iterable<Triple<RationalPolynomial, Integer, Rational>> ts1 = P.triples(rps, exps, P.rationals());
+        for (Triple<RationalPolynomial, Integer, Rational> t : take(LIMIT, ts1)) {
+            assertEquals(t.toString(), t.a.pow(t.b).apply(t.c), t.a.apply(t.c).pow(t.b));
+        }
+
+        for (Pair<Rational, Integer> p : take(LIMIT, P.pairs(P.rationals(), exps))) {
+            assertEquals(p.toString(), of(p.a).pow(p.b), of(p.a.pow(p.b)));
+        }
+
+        Iterable<Integer> pexps;
+        if (P instanceof QBarExhaustiveProvider) {
+            pexps = P.positiveIntegers();
+        } else {
+            pexps = ((RandomProvider) P).positiveIntegersGeometric(20);
+        }
+        for (int i : take(LIMIT, pexps)) {
+            assertTrue(Integer.toString(i), ZERO.pow(i) == ZERO);
+        }
+
+        for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
+            assertTrue(p.toString(), p.pow(0) == ONE);
+            assertEquals(p.toString(), p.pow(1), p);
+            assertEquals(p.toString(), p.pow(2), p.multiply(p));
+        }
+
+        if (P instanceof QBarRandomProvider) {
+            exps = ((QBarRandomProvider) P).naturalIntegersGeometric(2);
+        }
+        Iterable<Triple<RationalPolynomial, Integer, Integer>> ts2 = P.triples(rps, exps, exps);
+        for (Triple<RationalPolynomial, Integer, Integer> t : take(LIMIT, ts2)) {
+            RationalPolynomial expression1 = t.a.pow(t.b).multiply(t.a.pow(t.c));
+            RationalPolynomial expression2 = t.a.pow(t.b + t.c);
+            assertEquals(t.toString(), expression1, expression2);
+            RationalPolynomial expression5 = t.a.pow(t.b).pow(t.c);
+            RationalPolynomial expression6 = t.a.pow(t.b * t.c);
+            assertEquals(t.toString(), expression5, expression6);
+        }
+
+        for (Triple<RationalPolynomial, RationalPolynomial, Integer> t : take(LIMIT, P.triples(rps, rps, exps))) {
+            RationalPolynomial expression1 = t.a.multiply(t.b).pow(t.c);
+            RationalPolynomial expression2 = t.a.pow(t.c).multiply(t.b.pow(t.c));
+            assertEquals(t.toString(), expression1, expression2);
+        }
+    }
+
+    private static void compareImplementationsPow() {
+        initialize();
+        System.out.println("\t\tcomparing pow(int) implementations...");
+
+        long totalTime = 0;
+        Iterable<Integer> exps;
+        Iterable<Pair<RationalPolynomial, Integer>> ps;
+        if (P instanceof QBarExhaustiveProvider) {
+            exps = P.naturalIntegers();
+            ps = ((QBarExhaustiveProvider) P).pairsLogarithmicOrder(P.rationalPolynomials(), exps);
+        } else {
+            exps = ((QBarRandomProvider) P).naturalIntegersGeometric(5);
+            ps = P.pairs(((QBarRandomProvider) P).rationalPolynomialsBySize(10), exps);
+        }
+        for (Pair<RationalPolynomial, Integer> p : take(LIMIT, ps)) {
+            long time = System.nanoTime();
+            pow_simplest(p.a, p.b);
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\t\t\tsimplest: " + ((double) totalTime) / 1e9 + " s");
+
+        totalTime = 0;
+        for (Pair<RationalPolynomial, Integer> p : take(LIMIT, ps)) {
+            long time = System.nanoTime();
+            p.a.pow(p.b);
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
     }
 
     private static void propertiesIsMonic() {
