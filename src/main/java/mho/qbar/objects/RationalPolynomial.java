@@ -614,6 +614,8 @@ public final class RationalPolynomial implements
      *  <li>The result is not null.</li>
      * </ul>
      *
+     * Length is 1 if p=0, deg({@code this})×p+1 otherwise
+     *
      * @param p the power that {@code this} is raised to
      * @return {@code this}<sup>{@code p}</sup>
      */
@@ -629,6 +631,23 @@ public final class RationalPolynomial implements
             if (bit) result = result.multiply(powerPower);
         }
         return result;
+    }
+
+    /**
+     * Substitutes x with {@code that} in {@code this}; if {@code this} is p and {@code that} is q, returns p(q).
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalPolynomial}.</li>
+     *  <li>{@code that} may be any {@code RationalPolynomial}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param that the {@code RationalPolynomial} substituted into {@code this}
+     * @return {@code this}∘{@code that}
+     */
+    public @NotNull RationalPolynomial substitute(@NotNull RationalPolynomial that) {
+        //noinspection ConstantConditions
+        return foldr((c, y) -> y.multiply(that).add(of(c)), ZERO, coefficients);
     }
 
     /**
