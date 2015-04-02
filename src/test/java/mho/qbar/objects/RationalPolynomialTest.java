@@ -889,6 +889,65 @@ public class RationalPolynomialTest {
     }
 
     @Test
+    public void testSubstitute() {
+        assertTrue(ZERO.substitute(ZERO) == ZERO);
+        assertTrue(ZERO.substitute(ONE) == ZERO);
+        assertTrue(ZERO.substitute(X) == ZERO);
+        assertTrue(ZERO.substitute(read("-4/3").get()) == ZERO);
+        assertTrue(ZERO.substitute(read("x^2-7/4*x+1/3").get()) == ZERO);
+        assertTrue(ZERO.substitute(read("-x^3-1").get()) == ZERO);
+        assertTrue(ZERO.substitute(read("1/2*x^10").get()) == ZERO);
+        assertTrue(ONE.substitute(ZERO) == ONE);
+        assertTrue(ONE.substitute(ONE) == ONE);
+        assertTrue(ONE.substitute(X) == ONE);
+        assertTrue(ONE.substitute(read("-4/3").get()) == ONE);
+        assertTrue(ONE.substitute(read("x^2-7/4*x+1/3").get()) == ONE);
+        assertTrue(ONE.substitute(read("-x^3-1").get()) == ONE);
+        assertTrue(ONE.substitute(read("1/2*x^10").get()) == ONE);
+        assertTrue(X.substitute(ZERO) == ZERO);
+        assertTrue(X.substitute(ONE) == ONE);
+        aeq(X.substitute(X), "x");
+        aeq(X.substitute(read("-4/3").get()), "-4/3");
+        aeq(X.substitute(read("x^2-7/4*x+1/3").get()), "x^2-7/4*x+1/3");
+        aeq(X.substitute(read("-x^3-1").get()), "-x^3-1");
+        aeq(X.substitute(read("1/2*x^10").get()), "1/2*x^10");
+        aeq(read("-4/3").get().substitute(ZERO), "-4/3");
+        aeq(read("-4/3").get().substitute(ONE), "-4/3");
+        aeq(read("-4/3").get().substitute(X), "-4/3");
+        aeq(read("-4/3").get().substitute(read("-4/3").get()), "-4/3");
+        aeq(read("-4/3").get().substitute(read("x^2-4*x+7").get()), "-4/3");
+        aeq(read("-4/3").get().substitute(read("-x^3-1").get()), "-4/3");
+        aeq(read("-4/3").get().substitute(read("1/2*x^10").get()), "-4/3");
+        aeq(read("x^2-7/4*x+1/3").get().substitute(ZERO), "1/3");
+        aeq(read("x^2-7/4*x+1/3").get().substitute(ONE), "-5/12");
+        aeq(read("x^2-7/4*x+1/3").get().substitute(X), "x^2-7/4*x+1/3");
+        aeq(read("x^2-7/4*x+1/3").get().substitute(read("-4/3").get()), "40/9");
+        aeq(read("x^2-7/4*x+1/3").get().substitute(read("x^2-7/4*x+1/3").get()), "x^4-7/2*x^3+95/48*x^2+91/48*x-5/36");
+        aeq(read("x^2-7/4*x+1/3").get().substitute(read("-x^3-1").get()), "x^6+15/4*x^3+37/12");
+        aeq(read("x^2-7/4*x+1/3").get().substitute(read("1/2*x^10").get()), "1/4*x^20-7/8*x^10+1/3");
+        aeq(read("-x^3-1").get().substitute(ZERO), "-1");
+        aeq(read("-x^3-1").get().substitute(ONE), "-2");
+        aeq(read("-x^3-1").get().substitute(X), "-x^3-1");
+        aeq(read("-x^3-1").get().substitute(read("-4/3").get()), "37/27");
+        aeq(read("-x^3-1").get().substitute(read("x^2-7/4*x+1/3").get()),
+                "-x^6+21/4*x^5-163/16*x^4+567/64*x^3-163/48*x^2+7/12*x-28/27");
+        aeq(read("-x^3-1").get().substitute(read("-x^3-1").get()), "x^9+3*x^6+3*x^3");
+        aeq(read("-x^3-1").get().substitute(read("1/2*x^10").get()), "-1/8*x^30-1");
+        assertTrue(read("1/2*x^10").get().substitute(ZERO) == ZERO);
+        aeq(read("1/2*x^10").get().substitute(ONE), "1/2");
+        aeq(read("1/2*x^10").get().substitute(X), "1/2*x^10");
+        aeq(read("1/2*x^10").get().substitute(read("-4/3").get()), "524288/59049");
+        aeq(read("1/2*x^10").get().substitute(read("x^2-4*x+7").get()),
+                "1/2*x^20-20*x^19+395*x^18-5100*x^17+96285/2*x^16-352464*x^15+2073540*x^14-10026480*x^13" +
+                "+40440585*x^12-137326040*x^11+394631330*x^10-961282280*x^9+1981588665*x^8-3439082640*x^7" +
+                "+4978569540*x^6-5923862448*x^5+11327833965/2*x^4-4200069300*x^3+2277096395*x^2-807072140*x" +
+                "+282475249/2");
+        aeq(read("1/2*x^10").get().substitute(read("-x^3-1").get()),
+                "1/2*x^30+5*x^27+45/2*x^24+60*x^21+105*x^18+126*x^15+105*x^12+60*x^9+45/2*x^6+5*x^3+1/2");
+        aeq(read("1/2*x^10").get().substitute(read("1/2*x^10").get()), "1/2048*x^100");
+    }
+
+    @Test
     public void testEquals() {
         //noinspection EqualsWithItself
         assertTrue(ZERO.equals(ZERO));
