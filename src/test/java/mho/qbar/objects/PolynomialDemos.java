@@ -221,6 +221,19 @@ public class PolynomialDemos {
         }
     }
 
+    public static void demoSubstitute() {
+        initialize();
+        Iterable<Polynomial> ps;
+        if (P instanceof QBarExhaustiveProvider) {
+            ps = P.polynomials();
+        } else {
+            ps = ((QBarRandomProvider) P).polynomialsBySize(16);
+        }
+        for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(ps))) {
+            System.out.println("substitute(" + p.a + ", " + p.b + ") = " + p.a.substitute(p.b));
+        }
+    }
+
     public static void demoIsMonic() {
         initialize();
         for (Polynomial p : take(LIMIT, P.polynomials())) {

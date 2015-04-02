@@ -302,6 +302,19 @@ public class RationalPolynomialDemos {
         }
     }
 
+    public static void demoSubstitute() {
+        initialize();
+        Iterable<RationalPolynomial> ps;
+        if (P instanceof QBarExhaustiveProvider) {
+            ps = P.rationalPolynomials();
+        } else {
+            ps = ((QBarRandomProvider) P).rationalPolynomialsBySize(6);
+        }
+        for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, P.pairs(ps))) {
+            System.out.println("substitute(" + p.a + ", " + p.b + ") = " + p.a.substitute(p.b));
+        }
+    }
+
     public static void demoEquals_RationalPolynomial() {
         initialize();
         for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, P.pairs(P.rationalPolynomials()))) {
