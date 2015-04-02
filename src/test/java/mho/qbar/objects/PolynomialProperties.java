@@ -3,6 +3,7 @@ package mho.qbar.objects;
 import mho.qbar.iterableProviders.QBarExhaustiveProvider;
 import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.iterableProviders.QBarRandomProvider;
+import mho.wheels.iterables.IterableUtils;
 import mho.wheels.iterables.RandomProvider;
 import mho.wheels.math.Combinatorics;
 import mho.wheels.structures.Pair;
@@ -317,7 +318,7 @@ public class PolynomialProperties {
         for (List<BigInteger> is : take(LIMIT, P.lists(P.bigIntegers()))) {
             Polynomial p = of(is);
             validate(p);
-            assertTrue(is.toString(), length(p) <= is.size());
+            assertTrue(is.toString(), p.degree() < is.size());
         }
 
         Iterable<List<BigInteger>> iss = filter(
@@ -351,7 +352,6 @@ public class PolynomialProperties {
             Polynomial p = of(i);
             validate(p);
             assertTrue(i.toString(), p.degree() == 0 || p.degree() == -1);
-            assertTrue(i.toString(), length(p) == 1 || length(p) == 0);
         }
 
         for (BigInteger i : take(LIMIT, filter(j -> !j.equals(BigInteger.ZERO), P.bigIntegers()))) {
@@ -379,7 +379,6 @@ public class PolynomialProperties {
             List<BigInteger> coefficients = toList(q);
             assertEquals(p.toString(), length(filter(i -> !i.equals(BigInteger.ZERO), coefficients)), 1);
             assertEquals(p.toString(), q.degree(), p.b.intValue());
-            assertEquals(p.toString(), length(q), p.b + 1);
         }
 
         for (int i : take(LIMIT, P.naturalIntegers())) {
@@ -430,6 +429,7 @@ public class PolynomialProperties {
         for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(P.polynomials()))) {
             Polynomial sum = p.a.add(p.b);
             validate(sum);
+            assertTrue(p.toString(), sum.degree() <= max(p.a.degree(), p.b.degree()));
             assertEquals(p.toString(), sum, p.b.add(p.a));
             assertEquals(p.toString(), sum.subtract(p.b), p.a);
         }
@@ -467,6 +467,7 @@ public class PolynomialProperties {
         for (Polynomial p : take(LIMIT, P.polynomials())) {
             Polynomial negative = p.negate();
             validate(negative);
+            assertEquals(p.toString(), negative.degree(), p.degree());
             assertEquals(p.toString(), p, negative.negate());
             assertTrue(p.toString(), p.add(negative) == ZERO);
         }
@@ -492,6 +493,7 @@ public class PolynomialProperties {
         for (Polynomial p : take(LIMIT, P.polynomials())) {
             Polynomial abs = p.abs();
             validate(abs);
+            assertEquals(p.toString(), abs.degree(), p.degree());
             assertEquals(p.toString(), abs, abs.abs());
             assertNotEquals(p.toString(), abs.signum(), -1);
             assertTrue(p.toString(), ge(abs, ZERO));
@@ -528,6 +530,7 @@ public class PolynomialProperties {
         for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(P.polynomials()))) {
             Polynomial difference = p.a.subtract(p.b);
             validate(difference);
+            assertTrue(p.toString(), difference.degree() <= max(p.a.degree(), p.b.degree()));
             assertEquals(p.toString(), difference, subtract_simplest(p.a, p.b));
             assertEquals(p.toString(), difference, p.b.subtract(p.a).negate());
             assertEquals(p.toString(), p.a, difference.add(p.b));
@@ -581,6 +584,7 @@ public class PolynomialProperties {
         for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(P.polynomials()))) {
             Polynomial product = p.a.multiply(p.b);
             validate(product);
+            assertTrue(p.toString(), p.a == ZERO || p.b == ZERO || product.degree() == p.a.degree() + p.b.degree());
             assertEquals(p.toString(), product, p.b.multiply(p.a));
         }
 
@@ -621,6 +625,7 @@ public class PolynomialProperties {
         for (Pair<Polynomial, BigInteger> p : take(LIMIT, P.pairs(P.polynomials(), P.bigIntegers()))) {
             Polynomial product = p.a.multiply(p.b);
             validate(product);
+            assertTrue(p.toString(), p.b.equals(BigInteger.ZERO) || product.degree() == p.a.degree());
             assertEquals(p.toString(), product, p.a.multiply(of(p.b)));
             assertEquals(p.toString(), product, of(p.b).multiply(p.a));
         }
@@ -667,6 +672,7 @@ public class PolynomialProperties {
         for (Pair<Polynomial, Integer> p : take(LIMIT, P.pairs(P.polynomials(), P.integers()))) {
             Polynomial product = p.a.multiply(p.b);
             validate(product);
+            assertTrue(p.toString(), p.b == 0 || product.degree() == p.a.degree());
             assertEquals(p.toString(), product, p.a.multiply(of(BigInteger.valueOf(p.b))));
             assertEquals(p.toString(), product, of(BigInteger.valueOf(p.b)).multiply(p.a));
         }
@@ -723,6 +729,7 @@ public class PolynomialProperties {
         for (Pair<Polynomial, Integer> p : take(LIMIT, P.pairs(P.polynomials(), is))) {
             Polynomial shifted = p.a.shiftLeft(p.b);
             validate(shifted);
+            assertEquals(p.toString(), shifted.degree(), p.a.degree());
             assertEquals(p.toString(), shifted, shiftLeft_simplest(p.a, p.b));
             aeq(p.toString(), map(BigInteger::signum, p.a), map(BigInteger::signum, shifted));
             assertEquals(p.toString(), p.a.degree(), shifted.degree());
@@ -789,6 +796,7 @@ public class PolynomialProperties {
         for (List<Polynomial> ps : take(LIMIT, P.lists(P.polynomials()))) {
             Polynomial sum = sum(ps);
             validate(sum);
+            assertTrue(ps.toString(), ps.isEmpty() || sum.degree() <= maximum(map(Polynomial::degree, ps)));
             assertEquals(ps.toString(), sum, sum_simplest(ps));
         }
 
@@ -860,6 +868,11 @@ public class PolynomialProperties {
         for (List<Polynomial> ps : take(LIMIT, P.lists(P.polynomials()))) {
             Polynomial product = product(ps);
             validate(product);
+            assertTrue(
+                    ps.toString(),
+                    any(p -> p == ZERO, ps) ||
+                            product.degree() == IterableUtils.sumInteger(map(Polynomial::degree, ps))
+            );
         }
 
         for (Pair<List<Polynomial>, BigInteger> p : take(LIMIT, P.pairs(P.lists(P.polynomials()), P.bigIntegers()))) {
@@ -965,6 +978,7 @@ public class PolynomialProperties {
         for (Pair<Polynomial, Integer> p : take(LIMIT, ps)) {
             Polynomial q = p.a.pow(p.b);
             validate(q);
+            assertTrue(p.toString(), p.a == ZERO || q.degree() == p.a.degree() * p.b);
             assertEquals(p.toString(), q, pow_simplest(p.a, p.b));
         }
 
@@ -1081,6 +1095,7 @@ public class PolynomialProperties {
             Polynomial primitive = contentAndPrimitive.b;
             assertNotNull(p.toString(), primitive);
             validate(primitive);
+            assertEquals(p.toString(), primitive.degree(), p.degree());
             assertNotEquals(p.toString(), content, BigInteger.ZERO);
             assertTrue(p.toString(), primitive.isPrimitive());
             assertEquals(p.toString(), primitive.multiply(content), p);

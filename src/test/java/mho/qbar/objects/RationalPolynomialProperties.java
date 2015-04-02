@@ -3,6 +3,7 @@ package mho.qbar.objects;
 import mho.qbar.iterableProviders.QBarExhaustiveProvider;
 import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.iterableProviders.QBarRandomProvider;
+import mho.wheels.iterables.IterableUtils;
 import mho.wheels.iterables.RandomProvider;
 import mho.wheels.math.Combinatorics;
 import mho.wheels.ordering.Ordering;
@@ -213,7 +214,7 @@ public class RationalPolynomialProperties {
         for (List<Rational> rs : take(LIMIT, P.lists(P.rationals()))) {
             RationalPolynomial p = of(rs);
             validate(p);
-            assertTrue(rs.toString(), length(p) <= rs.size());
+            assertTrue(rs.toString(), p.degree() < rs.size());
         }
 
         Iterable<List<Rational>> rss = filter(rs -> rs.isEmpty() || last(rs) != Rational.ZERO, P.lists(P.rationals()));
@@ -244,7 +245,6 @@ public class RationalPolynomialProperties {
             RationalPolynomial p = of(r);
             validate(p);
             assertTrue(r.toString(), p.degree() == 0 || p.degree() == -1);
-            assertTrue(r.toString(), length(p) == 1 || length(p) == 0);
         }
 
         for (Rational r : take(LIMIT, filter(j -> j != Rational.ZERO, P.rationals()))) {
@@ -270,9 +270,8 @@ public class RationalPolynomialProperties {
         for (Pair<Rational, Integer> p : take(LIMIT, filter(q -> q.a != Rational.ZERO, ps))) {
             RationalPolynomial q = of(p.a, p.b);
             List<Rational> coefficients = toList(q);
-            assertEquals(p.toString(), length(filter(i -> i != Rational.ZERO, coefficients)), 1);
+            assertEquals(p.toString(), length(filter(r -> r != Rational.ZERO, coefficients)), 1);
             assertEquals(p.toString(), q.degree(), p.b.intValue());
-            assertEquals(p.toString(), length(q), p.b + 1);
         }
 
         for (int i : take(LIMIT, P.naturalIntegers())) {
@@ -323,6 +322,7 @@ public class RationalPolynomialProperties {
         for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, P.pairs(P.rationalPolynomials()))) {
             RationalPolynomial sum = p.a.add(p.b);
             validate(sum);
+            assertTrue(p.toString(), sum.degree() <= max(p.a.degree(), p.b.degree()));
             assertEquals(p.toString(), sum, p.b.add(p.a));
             assertEquals(p.toString(), sum.subtract(p.b), p.a);
         }
@@ -363,6 +363,7 @@ public class RationalPolynomialProperties {
         for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
             RationalPolynomial negative = p.negate();
             validate(negative);
+            assertEquals(p.toString(), negative.degree(), p.degree());
             assertEquals(p.toString(), p, negative.negate());
             assertTrue(p.toString(), p.add(negative) == ZERO);
         }
@@ -388,6 +389,7 @@ public class RationalPolynomialProperties {
         for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
             RationalPolynomial abs = p.abs();
             validate(abs);
+            assertEquals(p.toString(), abs.degree(), p.degree());
             assertEquals(p.toString(), abs, abs.abs());
             assertNotEquals(p.toString(), abs.signum(), -1);
             assertTrue(p.toString(), ge(abs, ZERO));
@@ -427,6 +429,7 @@ public class RationalPolynomialProperties {
         for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, P.pairs(P.rationalPolynomials()))) {
             RationalPolynomial difference = p.a.subtract(p.b);
             validate(difference);
+            assertTrue(p.toString(), difference.degree() <= max(p.a.degree(), p.b.degree()));
             assertEquals(p.toString(), difference, subtract_simplest(p.a, p.b));
             assertEquals(p.toString(), difference, p.b.subtract(p.a).negate());
             assertEquals(p.toString(), p.a, difference.add(p.b));
@@ -480,6 +483,7 @@ public class RationalPolynomialProperties {
         for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, P.pairs(P.rationalPolynomials()))) {
             RationalPolynomial product = p.a.multiply(p.b);
             validate(product);
+            assertTrue(p.toString(), p.a == ZERO || p.b == ZERO || product.degree() == p.a.degree() + p.b.degree());
             assertEquals(p.toString(), product, p.b.multiply(p.a));
         }
 
@@ -523,6 +527,7 @@ public class RationalPolynomialProperties {
         for (Pair<RationalPolynomial, Rational> p : take(LIMIT, P.pairs(P.rationalPolynomials(), P.rationals()))) {
             RationalPolynomial product = p.a.multiply(p.b);
             validate(product);
+            assertTrue(p.toString(), p.b == Rational.ZERO || product.degree() == p.a.degree());
             assertEquals(p.toString(), product, p.a.multiply(of(p.b)));
             assertEquals(p.toString(), product, of(p.b).multiply(p.a));
         }
@@ -569,6 +574,7 @@ public class RationalPolynomialProperties {
         for (Pair<RationalPolynomial, BigInteger> p : take(LIMIT, P.pairs(P.rationalPolynomials(), P.bigIntegers()))) {
             RationalPolynomial product = p.a.multiply(p.b);
             validate(product);
+            assertTrue(p.toString(), p.b.equals(BigInteger.ZERO) || product.degree() == p.a.degree());
             assertEquals(p.toString(), product, p.a.multiply(of(Rational.of(p.b))));
             assertEquals(p.toString(), product, of(Rational.of(p.b)).multiply(p.a));
         }
@@ -615,6 +621,7 @@ public class RationalPolynomialProperties {
         for (Pair<RationalPolynomial, Integer> p : take(LIMIT, P.pairs(P.rationalPolynomials(), P.integers()))) {
             RationalPolynomial product = p.a.multiply(p.b);
             validate(product);
+            assertTrue(p.toString(), p.b == 0 || product.degree() == p.a.degree());
             assertEquals(p.toString(), product, p.a.multiply(Rational.of(p.b)));
             assertEquals(p.toString(), product, of(Rational.of(p.b)).multiply(p.a));
         }
@@ -665,6 +672,7 @@ public class RationalPolynomialProperties {
         for (Pair<RationalPolynomial, Rational> p : take(LIMIT, ps)) {
             RationalPolynomial quotient = p.a.divide(p.b);
             validate(quotient);
+            assertTrue(p.toString(), quotient.degree() == p.a.degree());
             assertEquals(p.toString(), p.a, quotient.multiply(p.b));
             assertEquals(p.toString(), quotient, p.a.multiply(p.b.invert()));
         }
@@ -714,6 +722,7 @@ public class RationalPolynomialProperties {
         for (Pair<RationalPolynomial, BigInteger> p : take(LIMIT, ps)) {
             RationalPolynomial quotient = p.a.divide(p.b);
             validate(quotient);
+            assertTrue(p.toString(), quotient.degree() == p.a.degree());
             assertEquals(p.toString(), p.a, quotient.multiply(p.b));
         }
 
@@ -761,6 +770,7 @@ public class RationalPolynomialProperties {
         for (Pair<RationalPolynomial, Integer> p : take(LIMIT, ps)) {
             RationalPolynomial quotient = p.a.divide(p.b);
             validate(quotient);
+            assertTrue(p.toString(), quotient.degree() == p.a.degree());
             assertEquals(p.toString(), p.a, quotient.multiply(p.b));
         }
 
@@ -815,6 +825,7 @@ public class RationalPolynomialProperties {
         for (Pair<RationalPolynomial, Integer> p : take(LIMIT, P.pairs(P.rationalPolynomials(), is))) {
             RationalPolynomial shifted = p.a.shiftLeft(p.b);
             validate(shifted);
+            assertEquals(p.toString(), shifted.degree(), p.a.degree());
             assertEquals(p.toString(), shifted, shiftLeft_simplest(p.a, p.b));
             aeq(p.toString(), map(Rational::signum, p.a), map(Rational::signum, shifted));
             assertEquals(p.toString(), p.a.degree(), shifted.degree());
@@ -895,6 +906,7 @@ public class RationalPolynomialProperties {
         for (Pair<RationalPolynomial, Integer> p : take(LIMIT, ps)) {
             RationalPolynomial shifted = p.a.shiftRight(p.b);
             validate(shifted);
+            assertEquals(p.toString(), shifted.degree(), p.a.degree());
             assertEquals(p.toString(), shifted, shiftRight_simplest(p.a, p.b));
             aeq(p.toString(), map(Rational::signum, p.a), map(Rational::signum, shifted));
             assertEquals(p.toString(), p.a.degree(), shifted.degree());
@@ -965,6 +977,7 @@ public class RationalPolynomialProperties {
         for (List<RationalPolynomial> ps : take(LIMIT, P.lists(P.rationalPolynomials()))) {
             RationalPolynomial sum = sum(ps);
             validate(sum);
+            assertTrue(ps.toString(), ps.isEmpty() || sum.degree() <= maximum(map(RationalPolynomial::degree, ps)));
             assertEquals(ps.toString(), sum, sum_simplest(ps));
         }
 
@@ -1045,6 +1058,11 @@ public class RationalPolynomialProperties {
         for (List<RationalPolynomial> ps : take(LIMIT, pss)) {
             RationalPolynomial product = product(ps);
             validate(product);
+            assertTrue(
+                    ps.toString(),
+                    any(p -> p == ZERO, ps) ||
+                            product.degree() == IterableUtils.sumInteger(map(RationalPolynomial::degree, ps))
+            );
         }
 
         for (Pair<List<RationalPolynomial>, Rational> p : take(LIMIT, P.pairs(pss, P.rationals()))) {
@@ -1160,6 +1178,7 @@ public class RationalPolynomialProperties {
         for (Pair<RationalPolynomial, Integer> p : take(LIMIT, ps)) {
             RationalPolynomial q = p.a.pow(p.b);
             validate(q);
+            assertTrue(p.toString(), p.a == ZERO || q.degree() == p.a.degree() * p.b);
             assertEquals(p.toString(), q, pow_simplest(p.a, p.b));
         }
 
@@ -1254,6 +1273,7 @@ public class RationalPolynomialProperties {
         for (RationalPolynomial p : take(LIMIT, filter(q -> q != ZERO, P.rationalPolynomials()))) {
             RationalPolynomial monic = p.makeMonic();
             validate(monic);
+            assertEquals(p.toString(), monic.degree(), p.degree());
             assertTrue(p.toString(), monic.isMonic());
             assertEquals(p.toString(), monic.makeMonic(), monic);
             assertEquals(p.toString(), p.negate().makeMonic(), monic);
@@ -1288,6 +1308,7 @@ public class RationalPolynomialProperties {
             Rational content = contentAndPrimitive.a;
             assertNotNull(p.toString(), content);
             Polynomial primitive = contentAndPrimitive.b;
+            assertEquals(p.toString(), primitive.degree(), p.degree());
             assertNotNull(p.toString(), primitive);
             assertNotEquals(p.toString(), content, BigInteger.ZERO);
             assertTrue(p.toString(), primitive.isPrimitive());
