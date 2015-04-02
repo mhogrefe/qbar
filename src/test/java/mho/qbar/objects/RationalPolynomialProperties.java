@@ -75,6 +75,8 @@ public class RationalPolynomialProperties {
             propertiesProduct();
             propertiesDelta();
             propertiesPow();
+            propertiesSubstitute();
+            compareImplementationsSubstitute();
             compareImplementationsPow();
             propertiesIsMonic();
             propertiesMakeMonic();
@@ -1252,6 +1254,79 @@ public class RationalPolynomialProperties {
         for (Pair<RationalPolynomial, Integer> p : take(LIMIT, ps)) {
             long time = System.nanoTime();
             p.a.pow(p.b);
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
+    }
+
+    private static @NotNull RationalPolynomial substitute_naive(
+            @NotNull RationalPolynomial a,
+            @NotNull RationalPolynomial b
+    ) {
+        return sum(zipWith((c, i) -> c == Rational.ZERO ? ZERO : b.pow(i).multiply(c), a, rangeUp(0)));
+    }
+
+    private static void propertiesSubstitute() {
+        initialize();
+        System.out.println("\t\ttesting substitute(RationalPolynomial) properties...");
+
+        Iterable<RationalPolynomial> ps;
+        if (P instanceof QBarExhaustiveProvider) {
+            ps = P.rationalPolynomials();
+        } else {
+            ps = ((QBarRandomProvider) P).rationalPolynomialsBySize(6);
+        }
+        for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, P.pairs(ps))) {
+            RationalPolynomial substituted = p.a.substitute(p.b);
+            validate(substituted);
+            assertTrue(
+                    p.toString(),
+                    p.b == ZERO || substituted == ZERO || substituted.degree() == p.a.degree() * p.b.degree()
+            );
+        }
+
+        Iterable<Triple<RationalPolynomial, RationalPolynomial, Rational>> ts = P.triples(ps, ps, P.rationals());
+        for (Triple<RationalPolynomial, RationalPolynomial, Rational> t : take(LIMIT, ts)) {
+            assertEquals(t.toString(), t.a.substitute(t.b).apply(t.c), t.a.apply(t.b.apply(t.c)));
+        }
+
+        for (Pair<Rational, RationalPolynomial> p : take(LIMIT, P.pairs(P.rationals(), P.rationalPolynomials()))) {
+            assertEquals(p.toString(), of(p.a).substitute(p.b), of(p.a));
+        }
+
+        for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
+            assertEquals(p.toString(), p.substitute(ZERO), p == ZERO ? ZERO : of(p.coefficient(0)));
+            assertEquals(p.toString(), p.substitute(ONE), of(Rational.sum(p)));
+            assertEquals(p.toString(), p.substitute(X), p);
+        }
+    }
+
+    private static void compareImplementationsSubstitute() {
+        initialize();
+        System.out.println("\t\tcomparing substitute(RationalPolynomial) implementations...");
+
+        long totalTime = 0;
+        Iterable<RationalPolynomial> ps;
+        if (P instanceof QBarExhaustiveProvider) {
+            ps = P.rationalPolynomials();
+        } else {
+            ps = ((QBarRandomProvider) P).rationalPolynomialsBySize(6);
+        }
+        if (P instanceof QBarExhaustiveProvider) {
+            for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, P.pairs(ps))) {
+                long time = System.nanoTime();
+                substitute_naive(p.a, p.b);
+                totalTime += (System.nanoTime() - time);
+            }
+            System.out.println("\t\t\tnaïve: " + ((double) totalTime) / 1e9 + " s");
+        } else {
+            System.out.println("\t\t\tnaïve: too long");
+        }
+
+        totalTime = 0;
+        for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, P.pairs(ps))) {
+            long time = System.nanoTime();
+            p.a.substitute(p.b);
             totalTime += (System.nanoTime() - time);
         }
         System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");

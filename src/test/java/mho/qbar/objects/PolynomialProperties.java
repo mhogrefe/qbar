@@ -76,6 +76,8 @@ public class PolynomialProperties {
             propertiesDelta();
             propertiesPow();
             compareImplementationsPow();
+            propertiesSubstitute();
+            compareImplementationsSubstitute();
             propertiesIsMonic();
             propertiesIsPrimitive();
             propertiesContentAndPrimitive();
@@ -1052,6 +1054,71 @@ public class PolynomialProperties {
         for (Pair<Polynomial, Integer> p : take(LIMIT, ps)) {
             long time = System.nanoTime();
             p.a.pow(p.b);
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
+    }
+
+    private static @NotNull Polynomial substitute_naive(@NotNull Polynomial a, @NotNull Polynomial b) {
+        return sum(zipWith((c, i) -> c.equals(BigInteger.ZERO) ? ZERO : b.pow(i).multiply(c), a, rangeUp(0)));
+    }
+
+    private static void propertiesSubstitute() {
+        initialize();
+        System.out.println("\t\ttesting substitute(Polynomial) properties...");
+
+        Iterable<Polynomial> ps;
+        if (P instanceof QBarExhaustiveProvider) {
+            ps = P.polynomials();
+        } else {
+            ps = ((QBarRandomProvider) P).polynomialsBySize(16);
+        }
+        for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(ps))) {
+            Polynomial substituted = p.a.substitute(p.b);
+            validate(substituted);
+            assertTrue(
+                    p.toString(),
+                    p.b == ZERO || substituted == ZERO || substituted.degree() == p.a.degree() * p.b.degree()
+            );
+        }
+
+        for (Triple<Polynomial, Polynomial, BigInteger> t : take(LIMIT, P.triples(ps, ps, P.bigIntegers()))) {
+            assertEquals(t.toString(), t.a.substitute(t.b).apply(t.c), t.a.apply(t.b.apply(t.c)));
+        }
+
+        for (Pair<BigInteger, Polynomial> p : take(LIMIT, P.pairs(P.bigIntegers(), P.polynomials()))) {
+            assertEquals(p.toString(), of(p.a).substitute(p.b), of(p.a));
+        }
+
+        for (Polynomial p : take(LIMIT, P.polynomials())) {
+            assertEquals(p.toString(), p.substitute(ZERO), p == ZERO ? ZERO : of(p.coefficient(0)));
+            assertEquals(p.toString(), p.substitute(ONE), of(IterableUtils.sumBigInteger(p)));
+            assertEquals(p.toString(), p.substitute(X), p);
+        }
+    }
+
+    private static void compareImplementationsSubstitute() {
+        initialize();
+        System.out.println("\t\tcomparing substitute(Polynomial) implementations...");
+
+        long totalTime = 0;
+        Iterable<Polynomial> ps;
+        if (P instanceof QBarExhaustiveProvider) {
+            ps = P.polynomials();
+        } else {
+            ps = ((QBarRandomProvider) P).polynomialsBySize(16);
+        }
+        for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(ps))) {
+            long time = System.nanoTime();
+            substitute_naive(p.a, p.b);
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\t\t\tnaïve: " + ((double) totalTime) / 1e9 + " s");
+
+        totalTime = 0;
+        for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(ps))) {
+            long time = System.nanoTime();
+            p.a.substitute(p.b);
             totalTime += (System.nanoTime() - time);
         }
         System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");

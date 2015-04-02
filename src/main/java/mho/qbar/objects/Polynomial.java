@@ -580,6 +580,8 @@ public final class Polynomial implements
      *  <li>The result is not null.</li>
      * </ul>
      *
+     * Length is 1 if {@code this}=0 or {@code that}=0, deg({@code this})×deg({@code that})+1 otherwise
+     *
      * @param that the {@code Polynomial} substituted into {@code this}
      * @return {@code this}∘{@code that}
      */
