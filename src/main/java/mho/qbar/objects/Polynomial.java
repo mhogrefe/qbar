@@ -591,6 +591,24 @@ public final class Polynomial implements
     }
 
     /**
+     * Returns the derivative of {@code this} with respect to x.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @return d{@code this}/dx
+     */
+    public @NotNull Polynomial differentiate() {
+        if (coefficients.size() < 2) return ZERO;
+        if (equals(X)) return ONE;
+        return new Polynomial(
+                toList(zipWith((c, i) -> c.multiply(BigInteger.valueOf(i)), tail(coefficients), rangeUp(1)))
+        );
+    }
+
+    /**
      * Determines whether {@code this} is monic–whether its leading coefficient is 1.
      *
      * <ul>
