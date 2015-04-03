@@ -1,6 +1,5 @@
 package mho.qbar.objects;
 
-import mho.wheels.iterables.IterableUtils;
 import mho.wheels.math.MathUtils;
 import mho.wheels.misc.Readers;
 import mho.wheels.ordering.comparators.ShortlexComparator;

@@ -19,10 +19,11 @@ import java.math.BigInteger;
 import java.util.*;
 
 import static mho.qbar.objects.Interval.*;
+import static mho.qbar.objects.Interval.greaterThanOrEqualTo;
+import static mho.qbar.objects.Interval.lessThanOrEqualTo;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.ordering.Ordering.*;
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertNotNull;
 
 @SuppressWarnings("ConstantConditions")
 public class IntervalProperties {

@@ -9,7 +9,8 @@ import java.math.BigInteger;
 import java.util.*;
 
 import static mho.wheels.iterables.IterableUtils.*;
-import static mho.wheels.ordering.Ordering.*;
+import static mho.wheels.ordering.Ordering.le;
+import static mho.wheels.ordering.Ordering.lt;
 
 @SuppressWarnings("ConstantConditions")
 public class QBarRandomProvider extends RandomProvider implements QBarIterableProvider {

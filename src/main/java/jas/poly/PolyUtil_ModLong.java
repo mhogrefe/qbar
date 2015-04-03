@@ -1,6 +1,8 @@
 package jas.poly;
 
-import jas.arith.*;
+import jas.arith.JasBigInteger;
+import jas.arith.ModLong;
+import jas.arith.ModularRingFactory;
 import jas.util.ListUtil;
 
 import java.util.List;

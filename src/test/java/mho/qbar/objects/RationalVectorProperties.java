@@ -20,10 +20,9 @@ import java.util.Random;
 
 import static mho.qbar.objects.RationalVector.*;
 import static mho.wheels.iterables.IterableUtils.*;
-import static mho.wheels.ordering.Ordering.*;
+import static mho.wheels.ordering.Ordering.compare;
+import static mho.wheels.ordering.Ordering.lt;
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 
 @SuppressWarnings("ConstantConditions")
 public class RationalVectorProperties {

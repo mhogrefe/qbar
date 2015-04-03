@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static mho.qbar.objects.RationalVector.*;
-import static mho.wheels.iterables.IterableUtils.*;
+import static mho.wheels.iterables.IterableUtils.toList;
 import static mho.wheels.ordering.Ordering.*;
 import static org.junit.Assert.*;
 

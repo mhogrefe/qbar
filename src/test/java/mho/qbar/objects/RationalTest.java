@@ -10,12 +10,16 @@ import org.junit.Test;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
-import static mho.wheels.iterables.IterableUtils.*;
-import static mho.wheels.ordering.Ordering.*;
 import static mho.qbar.objects.Rational.*;
-import static mho.wheels.testing.Testing.*;
+import static mho.wheels.iterables.IterableUtils.take;
+import static mho.wheels.iterables.IterableUtils.toList;
+import static mho.wheels.ordering.Ordering.*;
+import static mho.wheels.testing.Testing.aeq;
+import static mho.wheels.testing.Testing.aeqit;
 import static org.junit.Assert.*;
 
 @SuppressWarnings("ConstantConditions")

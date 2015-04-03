@@ -1,13 +1,13 @@
 package mho.qbar.objects;
 
+import mho.qbar.iterableProviders.QBarExhaustiveProvider;
+import mho.qbar.iterableProviders.QBarIterableProvider;
+import mho.qbar.iterableProviders.QBarRandomProvider;
 import mho.wheels.iterables.IterableUtils;
 import mho.wheels.math.MathUtils;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
-import mho.qbar.iterableProviders.QBarExhaustiveProvider;
-import mho.qbar.iterableProviders.QBarIterableProvider;
-import mho.qbar.iterableProviders.QBarRandomProvider;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -15,8 +15,8 @@ import java.math.RoundingMode;
 import java.util.List;
 import java.util.Random;
 
-import static mho.wheels.iterables.IterableUtils.*;
 import static mho.qbar.objects.Rational.*;
+import static mho.wheels.iterables.IterableUtils.*;
 
 @SuppressWarnings({"ConstantConditions", "UnusedDeclaration"})
 public class RationalDemos {

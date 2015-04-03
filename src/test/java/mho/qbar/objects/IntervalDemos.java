@@ -14,7 +14,7 @@ import java.util.Random;
 
 import static mho.qbar.objects.Interval.*;
 import static mho.wheels.iterables.IterableUtils.*;
-import static mho.wheels.ordering.Ordering.*;
+import static mho.wheels.ordering.Ordering.le;
 
 @SuppressWarnings({"ConstantConditions", "UnusedDeclaration"})
 public class IntervalDemos {

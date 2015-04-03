@@ -1,6 +1,5 @@
 package mho.qbar.objects;
 
-import mho.wheels.iterables.IterableUtils;
 import mho.wheels.misc.Readers;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
@@ -11,7 +10,9 @@ import java.util.List;
 import java.util.Optional;
 
 import static mho.qbar.objects.Polynomial.*;
-import static mho.wheels.iterables.IterableUtils.*;
+import static mho.wheels.iterables.IterableUtils.toList;
+import static mho.wheels.testing.Testing.aeq;
+import static mho.wheels.testing.Testing.aeqit;
 import static org.junit.Assert.*;
 
 public class PolynomialTest {
@@ -920,14 +921,6 @@ public class PolynomialTest {
         aeq(of(Arrays.asList(BigInteger.ZERO, BigInteger.ZERO, BigInteger.valueOf(2))), "2*x^2");
         aeq(of(Arrays.asList(BigInteger.ZERO, BigInteger.ZERO, BigInteger.valueOf(-2))), "-2*x^2");
         aeq(of(Arrays.asList(BigInteger.valueOf(7), BigInteger.valueOf(-4), BigInteger.ONE)), "x^2-4*x+7");
-    }
-
-    private static void aeqit(Iterable<?> a, Object b) {
-        assertEquals(IterableUtils.toString(a), b.toString());
-    }
-
-    private static void aeq(Object a, Object b) {
-        assertEquals(a.toString(), b.toString());
     }
 
     private static @NotNull Optional<List<BigInteger>> readBigIntegerList(@NotNull String s) {

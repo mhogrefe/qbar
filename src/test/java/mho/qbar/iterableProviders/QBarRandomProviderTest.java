@@ -6,9 +6,9 @@ import org.junit.Test;
 
 import java.util.Random;
 
-import static mho.wheels.iterables.IterableUtils.*;
-import static org.junit.Assert.*;
+import static mho.wheels.iterables.IterableUtils.take;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 public class QBarRandomProviderTest {
     private static QBarRandomProvider P;

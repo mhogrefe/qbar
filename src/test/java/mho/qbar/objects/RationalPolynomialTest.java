@@ -1,6 +1,5 @@
 package mho.qbar.objects;
 
-import mho.wheels.iterables.IterableUtils;
 import mho.wheels.misc.Readers;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
@@ -11,7 +10,9 @@ import java.util.List;
 import java.util.Optional;
 
 import static mho.qbar.objects.RationalPolynomial.*;
-import static mho.wheels.iterables.IterableUtils.*;
+import static mho.wheels.iterables.IterableUtils.toList;
+import static mho.wheels.testing.Testing.aeq;
+import static mho.wheels.testing.Testing.aeqit;
 import static org.junit.Assert.*;
 
 public class RationalPolynomialTest {
@@ -1162,14 +1163,6 @@ public class RationalPolynomialTest {
         aeq(of(Arrays.asList(Rational.ZERO, Rational.ZERO, Rational.of(2))), "2*x^2");
         aeq(of(Arrays.asList(Rational.ZERO, Rational.ZERO, Rational.of(-2))), "-2*x^2");
         aeq(of(Arrays.asList(Rational.of(1, 3), Rational.of(-7, 4), Rational.ONE)), "x^2-7/4*x+1/3");
-    }
-
-    private static void aeqit(Iterable<?> a, Object b) {
-        assertEquals(IterableUtils.toString(a), b.toString());
-    }
-
-    private static void aeq(Object a, Object b) {
-        assertEquals(a.toString(), b.toString());
     }
 
     private static @NotNull Optional<List<Rational>> readRationalList(@NotNull String s) {

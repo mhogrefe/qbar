@@ -8,7 +8,6 @@ import mho.wheels.iterables.RandomProvider;
 import mho.wheels.math.Combinatorics;
 import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
-import mho.wheels.testing.Testing;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
@@ -21,8 +20,7 @@ import java.util.Random;
 import static mho.qbar.objects.Polynomial.*;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.ordering.Ordering.*;
-import static mho.wheels.ordering.Ordering.lt;
-import static mho.wheels.testing.Testing.*;
+import static mho.wheels.testing.Testing.aeqit;
 import static org.junit.Assert.*;
 
 @SuppressWarnings("ConstantConditions")

@@ -2,9 +2,7 @@ package jas.ufd;
 
 import jas.poly.GenPolynomial;
 import jas.poly.PolyUtil;
-import jas.structure.Power;
 import jas.structure.RingElem;
-import jas.structure.RingFactory;
 
 /**
  * Greatest common divisor algorithms with monic polynomial remainder sequence.

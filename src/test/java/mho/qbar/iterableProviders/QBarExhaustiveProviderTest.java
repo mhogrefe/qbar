@@ -4,7 +4,7 @@ import mho.wheels.iterables.IterableUtils;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
-import static mho.wheels.iterables.IterableUtils.*;
+import static mho.wheels.iterables.IterableUtils.take;
 import static org.junit.Assert.assertEquals;
 
 public class QBarExhaustiveProviderTest {

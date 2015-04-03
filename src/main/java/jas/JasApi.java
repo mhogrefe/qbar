@@ -10,7 +10,8 @@ import jas.ufd.FactorInteger;
 import java.math.BigInteger;
 import java.util.*;
 
-import static mho.wheels.iterables.IterableUtils.*;
+import static mho.wheels.iterables.IterableUtils.replicate;
+import static mho.wheels.iterables.IterableUtils.toList;
 
 public class JasApi {
     public static List<List<BigInteger>> factorPolynomial(List<BigInteger> xs) {
