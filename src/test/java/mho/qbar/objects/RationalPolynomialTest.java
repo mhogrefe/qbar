@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static mho.qbar.objects.RationalPolynomial.*;
+import static mho.wheels.iterables.IterableUtils.rotateLeft;
 import static mho.wheels.iterables.IterableUtils.toList;
 import static mho.wheels.testing.Testing.aeq;
 import static mho.wheels.testing.Testing.aeqit;
@@ -23,15 +24,19 @@ public class RationalPolynomialTest {
         aeq(X, "x");
     }
 
+    private static void iteratorHelper(@NotNull String x, @NotNull String output) {
+        aeq(toList(read(x).get()), output);
+    }
+
     @Test
     public void testIterator() {
-        aeq(toList(ZERO), "[]");
-        aeq(toList(ONE), "[1]");
-        aeq(toList(X), "[0, 1]");
-        aeq(toList(read("-4/3").get()), "[-4/3]");
-        aeq(toList(read("x^2-7/4*x+1/3").get()), "[1/3, -7/4, 1]");
-        aeq(toList(read("x^3-1").get()), "[-1, 0, 0, 1]");
-        aeq(toList(read("1/2*x^10").get()), "[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1/2]");
+        iteratorHelper("0", "[]");
+        iteratorHelper("1", "[1]");
+        iteratorHelper("x", "[0, 1]");
+        iteratorHelper("-4/3", "[-4/3]");
+        iteratorHelper("x^2-7/4*x+1/3", "[1/3, -7/4, 1]");
+        iteratorHelper("x^3-1", "[-1, 0, 0, 1]");
+        iteratorHelper("1/2*x^10", "[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1/2]");
     }
 
     @Test
@@ -946,6 +951,22 @@ public class RationalPolynomialTest {
         aeq(read("1/2*x^10").get().substitute(read("-x^3-1").get()),
                 "1/2*x^30+5*x^27+45/2*x^24+60*x^21+105*x^18+126*x^15+105*x^12+60*x^9+45/2*x^6+5*x^3+1/2");
         aeq(read("1/2*x^10").get().substitute(read("1/2*x^10").get()), "1/2048*x^100");
+    }
+
+    private static void differentiateHelper(@NotNull String x, @NotNull String output) {
+        RationalPolynomial derivative = read(x).get().differentiate();
+        derivative.validate();
+        aeq(derivative, output);
+    }
+
+    @Test
+    public void testDifferentiate() {
+        differentiateHelper("0", "0");
+        differentiateHelper("1", "0");
+        differentiateHelper("x", "1");
+        differentiateHelper("-4/3", "0");
+        differentiateHelper("x^2-7/4*x+1/3", "2*x-7/4");
+        differentiateHelper("1/2*x^10", "5*x^9");
     }
 
     @Test

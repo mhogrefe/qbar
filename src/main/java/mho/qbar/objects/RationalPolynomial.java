@@ -11,6 +11,7 @@ import java.util.*;
 import java.util.function.Function;
 
 import static mho.wheels.iterables.IterableUtils.*;
+import static org.junit.Assert.assertTrue;
 
 /**
  * <p>A univariate polynomial in x with {@link mho.qbar.objects.Rational} coefficients.
@@ -977,5 +978,16 @@ public final class RationalPolynomial implements
             sb.append(monomialString);
         }
         return sb.toString();
+    }
+
+    /**
+     * Ensures that {@code this} is valid. Must return true for any {@code Polynomial} used outside this class.
+     */
+    public void validate() {
+        if (!coefficients.isEmpty()) {
+            assertTrue(toString(), !last(coefficients).equals(BigInteger.ZERO));
+        }
+        if (equals(ZERO)) assertTrue(toString(), this == ZERO);
+        if (equals(ONE)) assertTrue(toString(), this == ONE);
     }
 }

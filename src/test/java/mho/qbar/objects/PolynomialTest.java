@@ -23,15 +23,19 @@ public class PolynomialTest {
         aeq(X, "x");
     }
 
+    private static void iteratorHelper(@NotNull String x, @NotNull String output) {
+        aeq(toList(read(x).get()), output);
+    }
+
     @Test
     public void testIterator() {
-        aeq(toList(ZERO), "[]");
-        aeq(toList(ONE), "[1]");
-        aeq(toList(X), "[0, 1]");
-        aeq(toList(read("-17").get()), "[-17]");
-        aeq(toList(read("x^2-4*x+7").get()), "[7, -4, 1]");
-        aeq(toList(read("x^3-1").get()), "[-1, 0, 0, 1]");
-        aeq(toList(read("3*x^10").get()), "[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3]");
+        iteratorHelper("0", "[]");
+        iteratorHelper("1", "[1]");
+        iteratorHelper("x", "[0, 1]");
+        iteratorHelper("-17", "[-17]");
+        iteratorHelper("x^2-4*x+7", "[7, -4, 1]");
+        iteratorHelper("x^3-1", "[-1, 0, 0, 1]");
+        iteratorHelper("3*x^10", "[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3]");
     }
 
     @Test
@@ -670,6 +674,22 @@ public class PolynomialTest {
         aeq(read("3*x^10").get().substitute(read("-x^3-1").get()),
                 "3*x^30+30*x^27+135*x^24+360*x^21+630*x^18+756*x^15+630*x^12+360*x^9+135*x^6+30*x^3+3");
         aeq(read("3*x^10").get().substitute(read("3*x^10").get()), "177147*x^100");
+    }
+
+    private static void differentiateHelper(@NotNull String x, @NotNull String output) {
+        Polynomial derivative = read(x).get().differentiate();
+        derivative.validate();
+        aeq(derivative, output);
+    }
+
+    @Test
+    public void testDifferentiate() {
+        differentiateHelper("0", "0");
+        differentiateHelper("1", "0");
+        differentiateHelper("-17", "0");
+        differentiateHelper("x", "1");
+        differentiateHelper("x^2-4*x+7", "2*x-4");
+        differentiateHelper("3*x^10", "30*x^9");
     }
 
     @Test

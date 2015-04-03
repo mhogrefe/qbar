@@ -15,5 +15,6 @@ Progress
 | Interval               | ✔       | ✔       | ✔     | ✔     | ✔          |
 | Polynomial             | ✘       | ✘       | ✘     | ✘     | ✘          |
 | Rational               | ✔       | ✔       | ✔     | ✔     | ✔          |
+| RationalMatrix         | ✘       | ✘       | ✘     | ✘     | ✘          |
 | RationalPolynomial     | ✘       | ✘       | ✘     | ✘     | ✘          |
 | RationalVector         | ✔       | ✔       | ✔     | ✔     | ✔          |

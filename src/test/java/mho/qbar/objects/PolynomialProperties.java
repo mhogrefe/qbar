@@ -319,7 +319,7 @@ public class PolynomialProperties {
 
         for (List<BigInteger> is : take(LIMIT, P.lists(P.bigIntegers()))) {
             Polynomial p = of(is);
-            validate(p);
+            p.validate();
             assertTrue(is.toString(), p.degree() < is.size());
         }
 
@@ -352,7 +352,7 @@ public class PolynomialProperties {
 
         for (BigInteger i : take(LIMIT, P.bigIntegers())) {
             Polynomial p = of(i);
-            validate(p);
+            p.validate();
             assertTrue(i.toString(), p.degree() == 0 || p.degree() == -1);
         }
 
@@ -373,7 +373,7 @@ public class PolynomialProperties {
         }
         for (Pair<BigInteger, Integer> p : take(LIMIT, ps)) {
             Polynomial q = of(p.a, p.b);
-            validate(q);
+            q.validate();
         }
 
         for (Pair<BigInteger, Integer> p : take(LIMIT, filter(q -> !q.a.equals(BigInteger.ZERO), ps))) {
@@ -430,7 +430,7 @@ public class PolynomialProperties {
 
         for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(P.polynomials()))) {
             Polynomial sum = p.a.add(p.b);
-            validate(sum);
+            sum.validate();
             assertTrue(p.toString(), sum.degree() <= max(p.a.degree(), p.b.degree()));
             assertEquals(p.toString(), sum, p.b.add(p.a));
             assertEquals(p.toString(), sum.subtract(p.b), p.a);
@@ -468,7 +468,7 @@ public class PolynomialProperties {
 
         for (Polynomial p : take(LIMIT, P.polynomials())) {
             Polynomial negative = p.negate();
-            validate(negative);
+            negative.validate();
             assertEquals(p.toString(), negative.degree(), p.degree());
             assertEquals(p.toString(), p, negative.negate());
             assertTrue(p.toString(), p.add(negative) == ZERO);
@@ -494,7 +494,7 @@ public class PolynomialProperties {
 
         for (Polynomial p : take(LIMIT, P.polynomials())) {
             Polynomial abs = p.abs();
-            validate(abs);
+            abs.validate();
             assertEquals(p.toString(), abs.degree(), p.degree());
             assertEquals(p.toString(), abs, abs.abs());
             assertNotEquals(p.toString(), abs.signum(), -1);
@@ -531,7 +531,7 @@ public class PolynomialProperties {
 
         for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(P.polynomials()))) {
             Polynomial difference = p.a.subtract(p.b);
-            validate(difference);
+            difference.validate();
             assertTrue(p.toString(), difference.degree() <= max(p.a.degree(), p.b.degree()));
             assertEquals(p.toString(), difference, subtract_simplest(p.a, p.b));
             assertEquals(p.toString(), difference, p.b.subtract(p.a).negate());
@@ -585,7 +585,7 @@ public class PolynomialProperties {
 
         for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(P.polynomials()))) {
             Polynomial product = p.a.multiply(p.b);
-            validate(product);
+            product.validate();
             assertTrue(p.toString(), p.a == ZERO || p.b == ZERO || product.degree() == p.a.degree() + p.b.degree());
             assertEquals(p.toString(), product, p.b.multiply(p.a));
         }
@@ -626,7 +626,7 @@ public class PolynomialProperties {
 
         for (Pair<Polynomial, BigInteger> p : take(LIMIT, P.pairs(P.polynomials(), P.bigIntegers()))) {
             Polynomial product = p.a.multiply(p.b);
-            validate(product);
+            product.validate();
             assertTrue(p.toString(), p.b.equals(BigInteger.ZERO) || product.degree() == p.a.degree());
             assertEquals(p.toString(), product, p.a.multiply(of(p.b)));
             assertEquals(p.toString(), product, of(p.b).multiply(p.a));
@@ -673,7 +673,7 @@ public class PolynomialProperties {
 
         for (Pair<Polynomial, Integer> p : take(LIMIT, P.pairs(P.polynomials(), P.integers()))) {
             Polynomial product = p.a.multiply(p.b);
-            validate(product);
+            product.validate();
             assertTrue(p.toString(), p.b == 0 || product.degree() == p.a.degree());
             assertEquals(p.toString(), product, p.a.multiply(of(BigInteger.valueOf(p.b))));
             assertEquals(p.toString(), product, of(BigInteger.valueOf(p.b)).multiply(p.a));
@@ -730,7 +730,7 @@ public class PolynomialProperties {
         }
         for (Pair<Polynomial, Integer> p : take(LIMIT, P.pairs(P.polynomials(), is))) {
             Polynomial shifted = p.a.shiftLeft(p.b);
-            validate(shifted);
+            shifted.validate();
             assertEquals(p.toString(), shifted.degree(), p.a.degree());
             assertEquals(p.toString(), shifted, shiftLeft_simplest(p.a, p.b));
             aeqit(p.toString(), map(BigInteger::signum, p.a), map(BigInteger::signum, shifted));
@@ -797,7 +797,7 @@ public class PolynomialProperties {
 
         for (List<Polynomial> ps : take(LIMIT, P.lists(P.polynomials()))) {
             Polynomial sum = sum(ps);
-            validate(sum);
+            sum.validate();
             assertTrue(ps.toString(), ps.isEmpty() || sum.degree() <= maximum(map(Polynomial::degree, ps)));
             assertEquals(ps.toString(), sum, sum_simplest(ps));
         }
@@ -869,7 +869,7 @@ public class PolynomialProperties {
 
         for (List<Polynomial> ps : take(LIMIT, P.lists(P.polynomials()))) {
             Polynomial product = product(ps);
-            validate(product);
+            product.validate();
             assertTrue(
                     ps.toString(),
                     any(p -> p == ZERO, ps) ||
@@ -919,7 +919,7 @@ public class PolynomialProperties {
 
         for (List<Polynomial> ps : take(LIMIT, P.listsAtLeast(1, P.polynomials()))) {
             Iterable<Polynomial> deltas = delta(ps);
-            deltas.forEach(mho.qbar.objects.PolynomialProperties::validate);
+            deltas.forEach(Polynomial::validate);
             assertEquals(ps.toString(), length(deltas), length(ps) - 1);
             List<Polynomial> reversed = reverse(map(Polynomial::negate, delta(reverse(ps))));
             aeqit(ps.toString(), deltas, reversed);
@@ -979,7 +979,7 @@ public class PolynomialProperties {
         }
         for (Pair<Polynomial, Integer> p : take(LIMIT, ps)) {
             Polynomial q = p.a.pow(p.b);
-            validate(q);
+            q.validate();
             assertTrue(p.toString(), p.a == ZERO || q.degree() == p.a.degree() * p.b);
             assertEquals(p.toString(), q, pow_simplest(p.a, p.b));
         }
@@ -1075,7 +1075,7 @@ public class PolynomialProperties {
         }
         for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(ps))) {
             Polynomial substituted = p.a.substitute(p.b);
-            validate(substituted);
+            substituted.validate();
             assertTrue(
                     p.toString(),
                     p.b == ZERO || substituted == ZERO || substituted.degree() == p.a.degree() * p.b.degree()
@@ -1161,7 +1161,7 @@ public class PolynomialProperties {
             assertNotNull(p.toString(), content);
             Polynomial primitive = contentAndPrimitive.b;
             assertNotNull(p.toString(), primitive);
-            validate(primitive);
+            primitive.validate();
             assertEquals(p.toString(), primitive.degree(), p.degree());
             assertNotEquals(p.toString(), content, BigInteger.ZERO);
             assertTrue(p.toString(), primitive.isPrimitive());
@@ -1256,7 +1256,7 @@ public class PolynomialProperties {
         Iterable<String> ss = filter(s -> read(s).isPresent(), P.strings(cs));
         for (String s : take(LIMIT, ss)) {
             Optional<Polynomial> op = read(s);
-            validate(op.get());
+            op.get().validate();
         }
     }
 
@@ -1300,14 +1300,5 @@ public class PolynomialProperties {
         for (BigInteger i : take(LIMIT, P.bigIntegers())) {
             assertEquals(i.toString(), of(i).toString(), i.toString());
         }
-    }
-
-    private static void validate(@NotNull Polynomial p) {
-        List<BigInteger> coefficients = toList(p);
-        if (!coefficients.isEmpty()) {
-            assertTrue(p.toString(), !last(coefficients).equals(BigInteger.ZERO));
-        }
-        if (p.equals(ZERO)) assertTrue(p.toString(), p == ZERO);
-        if (p.equals(ONE)) assertTrue(p.toString(), p == ONE);
     }
 }
