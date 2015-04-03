@@ -653,6 +653,24 @@ public final class RationalPolynomial implements
     }
 
     /**
+     * Returns the derivative of {@code this} with respect to x.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalPolynomial}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @return d{@code this}/dx
+     */
+    public @NotNull RationalPolynomial differentiate() {
+        if (coefficients.size() < 2) return ZERO;
+        if (equals(X)) return ONE;
+        return new RationalPolynomial(
+                toList(zipWith((c, i) -> c.multiply(BigInteger.valueOf(i)), tail(coefficients), rangeUp(1)))
+        );
+    }
+
+    /**
      * Determines whether {@code this} is monic–whether its leading coefficient is 1.
      *
      * <ul>
