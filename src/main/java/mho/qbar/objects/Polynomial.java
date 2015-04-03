@@ -894,6 +894,7 @@ public final class Polynomial implements
      */
     public void validate() {
         if (!coefficients.isEmpty()) {
+            //noinspection ConstantConditions
             assertTrue(toString(), !last(coefficients).equals(BigInteger.ZERO));
         }
         if (equals(ZERO)) assertTrue(toString(), this == ZERO);

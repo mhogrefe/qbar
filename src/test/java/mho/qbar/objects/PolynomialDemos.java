@@ -234,6 +234,13 @@ public class PolynomialDemos {
         }
     }
 
+    public static void demoDifferentiate() {
+        initialize();
+        for (Polynomial p : take(LIMIT, P.polynomials())) {
+            System.out.println("differentiate(" + p + ") = " + p.differentiate());
+        }
+    }
+
     public static void demoIsMonic() {
         initialize();
         for (Polynomial p : take(LIMIT, P.polynomials())) {

@@ -315,6 +315,13 @@ public class RationalPolynomialDemos {
         }
     }
 
+    public static void demoDifferentiate() {
+        initialize();
+        for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
+            System.out.println("differentiate(" + p + ") = " + p.differentiate());
+        }
+    }
+
     public static void demoEquals_RationalPolynomial() {
         initialize();
         for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, P.pairs(P.rationalPolynomials()))) {
