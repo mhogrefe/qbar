@@ -9,6 +9,7 @@ import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import static org.junit.Assert.*;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -2180,5 +2181,15 @@ public final class Rational implements Comparable<Rational> {
         } else {
             return numerator.toString() + "/" + denominator.toString();
         }
+    }
+
+    /**
+     * Ensures that {@code this} is valid. Must return true for any {@code Rational} used outside this class.
+     */
+    public void validate() {
+        assertEquals(toString(), numerator.gcd(denominator), BigInteger.ONE);
+        assertEquals(toString(), denominator.signum(), 1);
+        if (equals(ZERO)) assertTrue(toString(), this == ZERO);
+        if (equals(ONE)) assertTrue(toString(), this == ONE);
     }
 }

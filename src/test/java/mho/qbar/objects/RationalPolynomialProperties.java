@@ -9,6 +9,7 @@ import mho.wheels.math.Combinatorics;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
+import mho.wheels.testing.Testing;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
@@ -18,6 +19,7 @@ import java.util.*;
 import static mho.qbar.objects.RationalPolynomial.*;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.ordering.Ordering.*;
+import static mho.wheels.testing.Testing.*;
 import static org.junit.Assert.*;
 
 @SuppressWarnings("ConstantConditions")
@@ -829,7 +831,7 @@ public class RationalPolynomialProperties {
             validate(shifted);
             assertEquals(p.toString(), shifted.degree(), p.a.degree());
             assertEquals(p.toString(), shifted, shiftLeft_simplest(p.a, p.b));
-            aeq(p.toString(), map(Rational::signum, p.a), map(Rational::signum, shifted));
+            aeqit(p.toString(), map(Rational::signum, p.a), map(Rational::signum, shifted));
             assertEquals(p.toString(), p.a.degree(), shifted.degree());
             assertEquals(p.toString(), p.a.negate().shiftLeft(p.b), shifted.negate());
             assertEquals(p.toString(), shifted, p.a.shiftRight(-p.b));
@@ -910,7 +912,7 @@ public class RationalPolynomialProperties {
             validate(shifted);
             assertEquals(p.toString(), shifted.degree(), p.a.degree());
             assertEquals(p.toString(), shifted, shiftRight_simplest(p.a, p.b));
-            aeq(p.toString(), map(Rational::signum, p.a), map(Rational::signum, shifted));
+            aeqit(p.toString(), map(Rational::signum, p.a), map(Rational::signum, shifted));
             assertEquals(p.toString(), p.a.degree(), shifted.degree());
             assertEquals(p.toString(), p.a.negate().shiftRight(p.b), shifted.negate());
             assertEquals(p.toString(), shifted, p.a.shiftLeft(-p.b));
@@ -1112,7 +1114,7 @@ public class RationalPolynomialProperties {
             deltas.forEach(mho.qbar.objects.RationalPolynomialProperties::validate);
             assertEquals(ps.toString(), length(deltas), length(ps) - 1);
             List<RationalPolynomial> reversed = reverse(map(RationalPolynomial::negate, delta(reverse(ps))));
-            aeq(ps.toString(), deltas, reversed);
+            aeqit(ps.toString(), deltas, reversed);
             try {
                 deltas.iterator().remove();
             } catch (UnsupportedOperationException ignored) {}
@@ -1123,11 +1125,11 @@ public class RationalPolynomialProperties {
                 P.rationals()
         );
         for (Pair<List<RationalPolynomial>, Rational> p : take(LIMIT, ps)) {
-            aeq(p.toString(), map(q -> q.apply(p.b), delta(p.a)), Rational.delta(map(q -> q.apply(p.b), p.a)));
+            aeqit(p.toString(), map(q -> q.apply(p.b), delta(p.a)), Rational.delta(map(q -> q.apply(p.b), p.a)));
         }
 
         for (List<Rational> rs : take(LIMIT, P.listsAtLeast(1, P.rationals()))) {
-            aeq(
+            aeqit(
                     rs.toString(),
                     delta(map(RationalPolynomial::of, rs)),
                     map(RationalPolynomial::of, Rational.delta(rs))
@@ -1139,7 +1141,7 @@ public class RationalPolynomialProperties {
         }
 
         for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, P.pairs(P.rationalPolynomials()))) {
-            aeq(p.toString(), delta(Arrays.asList(p.a, p.b)), Arrays.asList(p.b.subtract(p.a)));
+            aeqit(p.toString(), delta(Arrays.asList(p.a, p.b)), Arrays.asList(p.b.subtract(p.a)));
         }
 
         Iterable<List<RationalPolynomial>> failPss = map(
@@ -1622,9 +1624,5 @@ public class RationalPolynomialProperties {
         }
         if (p.equals(ZERO)) assertTrue(p.toString(), p == ZERO);
         if (p.equals(ONE)) assertTrue(p.toString(), p == ONE);
-    }
-
-    private static <T> void aeq(String message, Iterable<T> xs, Iterable<T> ys) {
-        assertTrue(message, equal(xs, ys));
     }
 }

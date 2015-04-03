@@ -8,6 +8,7 @@ import mho.wheels.iterables.RandomProvider;
 import mho.wheels.math.Combinatorics;
 import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
+import mho.wheels.testing.Testing;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
@@ -21,6 +22,7 @@ import static mho.qbar.objects.Polynomial.*;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.ordering.Ordering.*;
 import static mho.wheels.ordering.Ordering.lt;
+import static mho.wheels.testing.Testing.*;
 import static org.junit.Assert.*;
 
 @SuppressWarnings("ConstantConditions")
@@ -733,7 +735,7 @@ public class PolynomialProperties {
             validate(shifted);
             assertEquals(p.toString(), shifted.degree(), p.a.degree());
             assertEquals(p.toString(), shifted, shiftLeft_simplest(p.a, p.b));
-            aeq(p.toString(), map(BigInteger::signum, p.a), map(BigInteger::signum, shifted));
+            aeqit(p.toString(), map(BigInteger::signum, p.a), map(BigInteger::signum, shifted));
             assertEquals(p.toString(), p.a.degree(), shifted.degree());
             assertEquals(p.toString(), p.a.negate().shiftLeft(p.b), shifted.negate());
         }
@@ -922,7 +924,7 @@ public class PolynomialProperties {
             deltas.forEach(mho.qbar.objects.PolynomialProperties::validate);
             assertEquals(ps.toString(), length(deltas), length(ps) - 1);
             List<Polynomial> reversed = reverse(map(Polynomial::negate, delta(reverse(ps))));
-            aeq(ps.toString(), deltas, reversed);
+            aeqit(ps.toString(), deltas, reversed);
             try {
                 deltas.iterator().remove();
             } catch (UnsupportedOperationException ignored) {}
@@ -930,11 +932,11 @@ public class PolynomialProperties {
 
         Iterable<Pair<List<Polynomial>, BigInteger>> ps = P.pairs(P.listsAtLeast(1, P.polynomials()), P.bigIntegers());
         for (Pair<List<Polynomial>, BigInteger> p : take(LIMIT, ps)) {
-            aeq(p.toString(), map(q -> q.apply(p.b), delta(p.a)), deltaBigInteger(map(q -> q.apply(p.b), p.a)));
+            aeqit(p.toString(), map(q -> q.apply(p.b), delta(p.a)), deltaBigInteger(map(q -> q.apply(p.b), p.a)));
         }
 
         for (List<BigInteger> is : take(LIMIT, P.listsAtLeast(1, P.bigIntegers()))) {
-            aeq(is.toString(), delta(map(Polynomial::of, is)), map(Polynomial::of, deltaBigInteger(is)));
+            aeqit(is.toString(), delta(map(Polynomial::of, is)), map(Polynomial::of, deltaBigInteger(is)));
         }
 
         for (Polynomial p : take(LIMIT, P.polynomials())) {
@@ -942,7 +944,7 @@ public class PolynomialProperties {
         }
 
         for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(P.polynomials()))) {
-            aeq(p.toString(), delta(Arrays.asList(p.a, p.b)), Arrays.asList(p.b.subtract(p.a)));
+            aeqit(p.toString(), delta(Arrays.asList(p.a, p.b)), Arrays.asList(p.b.subtract(p.a)));
         }
 
         Iterable<List<Polynomial>> failPss = map(
@@ -1309,9 +1311,5 @@ public class PolynomialProperties {
         }
         if (p.equals(ZERO)) assertTrue(p.toString(), p == ZERO);
         if (p.equals(ONE)) assertTrue(p.toString(), p == ONE);
-    }
-
-    private static <T> void aeq(String message, Iterable<T> xs, Iterable<T> ys) {
-        assertTrue(message, equal(xs, ys));
     }
 }
