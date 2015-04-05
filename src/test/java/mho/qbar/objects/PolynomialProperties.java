@@ -150,7 +150,7 @@ public class PolynomialProperties {
         if (P instanceof QBarExhaustiveProvider) {
             is = P.naturalIntegers();
         } else {
-            is = ((RandomProvider) P).naturalIntegersGeometric(20);
+            is = P.naturalIntegersGeometric(20);
         }
         for (Pair<Integer, BigInteger> p : take(LIMIT, P.pairs(is, P.bigIntegers()))) {
             assertEquals(p.toString(), of(BigInteger.ONE, p.a).apply(p.b), p.b.pow(p.a));
@@ -223,7 +223,7 @@ public class PolynomialProperties {
         if (P instanceof QBarExhaustiveProvider) {
             is = P.naturalIntegers();
         } else {
-            is = ((RandomProvider) P).naturalIntegersGeometric(20);
+            is = P.naturalIntegersGeometric(20);
         }
         for (Pair<Integer, Rational> p : take(LIMIT, P.pairs(is, P.rationals()))) {
             assertEquals(p.toString(), of(BigInteger.ONE, p.a).apply(p.b), p.b.pow(p.a));
@@ -291,7 +291,7 @@ public class PolynomialProperties {
         if (P instanceof QBarExhaustiveProvider) {
             ps = ((QBarExhaustiveProvider) P).pairsLogarithmicOrder(P.polynomials(), P.naturalIntegers());
         } else {
-            ps = P.pairs(P.polynomials(), ((RandomProvider) P).naturalIntegersGeometric(10));
+            ps = P.pairs(P.polynomials(), P.naturalIntegersGeometric(10));
         }
         for (Pair<Polynomial, Integer> p : take(LIMIT, ps)) {
             p.a.coefficient(p.b);
@@ -369,7 +369,7 @@ public class PolynomialProperties {
         if (P instanceof QBarExhaustiveProvider) {
             ps = ((QBarExhaustiveProvider) P).pairsLogarithmicOrder(P.bigIntegers(), P.naturalIntegers());
         } else {
-            ps = P.pairs(P.bigIntegers(), ((RandomProvider) P).naturalIntegersGeometric(20));
+            ps = P.pairs(P.bigIntegers(), P.naturalIntegersGeometric(20));
         }
         for (Pair<BigInteger, Integer> p : take(LIMIT, ps)) {
             Polynomial q = of(p.a, p.b);
@@ -726,7 +726,7 @@ public class PolynomialProperties {
         if (P instanceof QBarExhaustiveProvider) {
             is = P.naturalIntegers();
         } else {
-            is  = ((QBarRandomProvider) P).naturalIntegersGeometric(50);
+            is  = P.naturalIntegersGeometric(50);
         }
         for (Pair<Polynomial, Integer> p : take(LIMIT, P.pairs(P.polynomials(), is))) {
             Polynomial shifted = p.a.shiftLeft(p.b);
@@ -769,7 +769,7 @@ public class PolynomialProperties {
         if (P instanceof QBarExhaustiveProvider) {
             is = P.naturalIntegers();
         } else {
-            is  = ((QBarRandomProvider) P).naturalIntegersGeometric(50);
+            is  = P.naturalIntegersGeometric(50);
         }
         for (Pair<Polynomial, Integer> p : take(LIMIT, P.pairs(P.polynomials(), is))) {
             long time = System.nanoTime();
@@ -974,7 +974,7 @@ public class PolynomialProperties {
             exps = P.naturalIntegers();
             ps = ((QBarExhaustiveProvider) P).pairsLogarithmicOrder(P.polynomials(), exps);
         } else {
-            exps = ((QBarRandomProvider) P).naturalIntegersGeometric(5);
+            exps = P.naturalIntegersGeometric(5);
             ps = P.pairs(P.polynomials(), exps);
         }
         for (Pair<Polynomial, Integer> p : take(LIMIT, ps)) {
@@ -997,7 +997,7 @@ public class PolynomialProperties {
         if (P instanceof QBarExhaustiveProvider) {
             pexps = P.positiveIntegers();
         } else {
-            pexps = ((RandomProvider) P).positiveIntegersGeometric(20);
+            pexps = P.positiveIntegersGeometric(20);
         }
         for (int i : take(LIMIT, pexps)) {
             assertTrue(Integer.toString(i), ZERO.pow(i) == ZERO);
@@ -1010,7 +1010,7 @@ public class PolynomialProperties {
         }
 
         if (P instanceof QBarRandomProvider) {
-            exps = ((QBarRandomProvider) P).naturalIntegersGeometric(2);
+            exps = P.naturalIntegersGeometric(2);
         }
         for (Triple<Polynomial, Integer, Integer> t : take(LIMIT, P.triples(P.polynomials(), exps, exps))) {
             Polynomial expression1 = t.a.pow(t.b).multiply(t.a.pow(t.c));
@@ -1040,7 +1040,7 @@ public class PolynomialProperties {
             exps = P.naturalIntegers();
             ps = ((QBarExhaustiveProvider) P).pairsLogarithmicOrder(P.polynomials(), exps);
         } else {
-            exps = ((QBarRandomProvider) P).naturalIntegersGeometric(5);
+            exps = P.naturalIntegersGeometric(5);
             ps = P.pairs(P.polynomials(), exps);
         }
         for (Pair<Polynomial, Integer> p : take(LIMIT, ps)) {
@@ -1071,7 +1071,7 @@ public class PolynomialProperties {
         if (P instanceof QBarExhaustiveProvider) {
             ps = P.polynomials();
         } else {
-            ps = ((QBarRandomProvider) P).polynomialsBySize(16);
+            ps = P.withRationalMeanBitSize(16).polynomials();
         }
         for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(ps))) {
             Polynomial substituted = p.a.substitute(p.b);
@@ -1106,7 +1106,7 @@ public class PolynomialProperties {
         if (P instanceof QBarExhaustiveProvider) {
             ps = P.polynomials();
         } else {
-            ps = ((QBarRandomProvider) P).polynomialsBySize(16);
+            ps = P.withRationalMeanBitSize(16).polynomials();
         }
         for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(ps))) {
             long time = System.nanoTime();
@@ -1251,7 +1251,7 @@ public class PolynomialProperties {
         if (P instanceof QBarExhaustiveProvider) {
             cs = fromString(POLYNOMIAL_CHARS);
         } else {
-            cs = ((QBarRandomProvider) P).uniformSample(POLYNOMIAL_CHARS);
+            cs = P.uniformSample(POLYNOMIAL_CHARS);
         }
         Iterable<String> ss = filter(s -> read(s).isPresent(), P.strings(cs));
         for (String s : take(LIMIT, ss)) {

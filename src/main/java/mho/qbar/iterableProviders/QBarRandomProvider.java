@@ -2,51 +2,614 @@ package mho.qbar.iterableProviders;
 
 import mho.qbar.objects.*;
 import mho.wheels.iterables.RandomProvider;
-import mho.wheels.structures.Pair;
+import mho.wheels.ordering.Ordering;
+import mho.wheels.structures.*;
 import org.jetbrains.annotations.NotNull;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.RoundingMode;
 import java.util.*;
+import java.util.function.Function;
 
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.ordering.Ordering.le;
 import static mho.wheels.ordering.Ordering.lt;
 
 @SuppressWarnings("ConstantConditions")
-public class QBarRandomProvider extends RandomProvider implements QBarIterableProvider {
+public class QBarRandomProvider extends QBarIterableProvider {
+    private static final int DEFAULT_RATIONAL_MEAN_BIT_SIZE = 64;
+    private static final int DEFAULT_INTERVAL_MEAN_BIT_SIZE = 64;
+    private @NotNull RandomProvider RP;
+
+    protected final @NotNull Random generator;
+
+    private int rationalMeanBitSize = DEFAULT_RATIONAL_MEAN_BIT_SIZE;
+    private int intervalMeanBitSize = DEFAULT_INTERVAL_MEAN_BIT_SIZE;
+
     public QBarRandomProvider() {
-        super();
+        RP = new RandomProvider();
+        generator = new Random();
     }
 
     public QBarRandomProvider(@NotNull Random generator) {
-        super(generator);
+        RP = new RandomProvider(generator);
+        this.generator = generator;
     }
 
-    public @NotNull Iterable<Rational> rangeUp(int meanBitSize, @NotNull Rational a) {
-        return null;
+    public QBarRandomProvider copy() {
+        QBarRandomProvider copy = new QBarRandomProvider(generator);
+        copy.RP = RP;
+        return copy;
+    }
+
+    public QBarRandomProvider withBigIntegerMeanBitSize(int bigIntegerMeanBitSize) {
+        QBarRandomProvider newRandomProvider = copy();
+        newRandomProvider.RP = RP.withBigIntegerMeanBitSize(bigIntegerMeanBitSize);
+        return newRandomProvider;
+    }
+
+    public QBarRandomProvider withBigDecimalMeanScale(int bigDecimalMeanScale) {
+        QBarRandomProvider newRandomProvider = copy();
+        newRandomProvider.RP = RP.withBigDecimalMeanScale(bigDecimalMeanScale);
+        return newRandomProvider;
+    }
+
+    public QBarRandomProvider withMeanListSize(int meanListSize) {
+        QBarRandomProvider newRandomProvider = copy();
+        newRandomProvider.RP = RP.withMeanListSize(meanListSize);
+        return newRandomProvider;
+    }
+
+    public QBarRandomProvider withSpecialElementRatio(int specialElementRatio) {
+        QBarRandomProvider newRandomProvider = copy();
+        newRandomProvider.RP = RP.withSpecialElementRatio(specialElementRatio);
+        return newRandomProvider;
+    }
+
+    public QBarRandomProvider withRationalMeanBitSize(int bigIntegerMeanBitSize) {
+        QBarRandomProvider newRandomProvider = copy();
+        newRandomProvider.rationalMeanBitSize = bigIntegerMeanBitSize;
+        return newRandomProvider;
+    }
+
+    public QBarRandomProvider withIntervalMeanBitSize(int intervalMeanBitSize) {
+        QBarRandomProvider newRandomProvider = copy();
+        newRandomProvider.intervalMeanBitSize = intervalMeanBitSize;
+        return newRandomProvider;
+    }
+
+    @Override
+    public @NotNull Iterable<Boolean> booleans() {
+        return RP.booleans();
+    }
+
+    @Override
+    public @NotNull Iterable<Ordering> orderings() {
+        return RP.orderings();
+    }
+
+    @Override
+    public @NotNull Iterable<RoundingMode> roundingModes() {
+        return RP.roundingModes();
+    }
+
+    @Override
+    public @NotNull Iterable<Byte> rangeUp(byte a) {
+        return RP.rangeUp(a);
+    }
+
+    @Override
+    public @NotNull Iterable<Short> rangeUp(short a) {
+        return RP.rangeUp(a);
+    }
+
+    @Override
+    public @NotNull Iterable<Integer> rangeUp(int a) {
+        return RP.rangeUp(a);
+    }
+
+    @Override
+    public @NotNull Iterable<Long> rangeUp(long a) {
+        return RP.rangeUp(a);
+    }
+
+    @Override
+    public @NotNull Iterable<BigInteger> rangeUp(@NotNull BigInteger a) {
+        return RP.rangeUp(a);
+    }
+
+    @Override
+    public @NotNull Iterable<Character> rangeUp(char a) {
+        return RP.rangeUp(a);
+    }
+
+    @Override
+    public @NotNull Iterable<Byte> rangeDown(byte a) {
+        return RP.rangeDown(a);
+    }
+
+    @Override
+    public @NotNull Iterable<Short> rangeDown(short a) {
+        return RP.rangeDown(a);
+    }
+
+    @Override
+    public @NotNull Iterable<Integer> rangeDown(int a) {
+        return RP.rangeDown(a);
+    }
+
+    @Override
+    public @NotNull Iterable<Long> rangeDown(long a) {
+        return RP.rangeDown(a);
+    }
+
+    @Override
+    public @NotNull Iterable<BigInteger> rangeDown(@NotNull BigInteger a) {
+        return RP.rangeDown(a);
+    }
+
+    @Override
+    public @NotNull Iterable<Character> rangeDown(char a) {
+        return RP.rangeDown(a);
+    }
+
+    @Override
+    public @NotNull Iterable<Byte> range(byte a, byte b) {
+        return RP.range(a, b);
+    }
+
+    @Override
+    public @NotNull Iterable<Short> range(short a, short b) {
+        return RP.range(a, b);
+    }
+
+    @Override
+    public @NotNull Iterable<Integer> range(int a, int b) {
+        return RP.range(a, b);
+    }
+
+    @Override
+    public @NotNull Iterable<Long> range(long a, long b) {
+        return RP.range(a, b);
+    }
+
+    @Override
+    public @NotNull Iterable<BigInteger> range(@NotNull BigInteger a, @NotNull BigInteger b) {
+        return RP.range(a, b);
+    }
+
+    @Override
+    public @NotNull Iterable<Character> range(char a, char b) {
+        return RP.range(a, b);
+    }
+
+    @Override
+    public @NotNull <T> Iterable<T> uniformSample(@NotNull List<T> xs) {
+        return RP.uniformSample(xs);
+    }
+
+    @Override
+    public @NotNull Iterable<Character> uniformSample(@NotNull String s) {
+        return RP.uniformSample(s);
+    }
+
+    @Override
+    public @NotNull Iterable<Byte> positiveBytes() {
+        return RP.positiveBytes();
+    }
+
+    @Override
+    public @NotNull Iterable<Short> positiveShorts() {
+        return RP.positiveShorts();
+    }
+
+    @Override
+    public @NotNull Iterable<Integer> positiveIntegers() {
+        return RP.positiveIntegers();
+    }
+
+    @Override
+    public @NotNull Iterable<Long> positiveLongs() {
+        return RP.positiveLongs();
+    }
+
+    @Override
+    public @NotNull Iterable<BigInteger> positiveBigIntegers() {
+        return RP.positiveBigIntegers();
+    }
+
+    @Override
+    public @NotNull Iterable<Byte> negativeBytes() {
+        return RP.negativeBytes();
+    }
+
+    @Override
+    public @NotNull Iterable<Short> negativeShorts() {
+        return RP.negativeShorts();
+    }
+
+    @Override
+    public @NotNull Iterable<Integer> negativeIntegers() {
+        return RP.negativeIntegers();
+    }
+
+    @Override
+    public @NotNull Iterable<Long> negativeLongs() {
+        return RP.negativeLongs();
+    }
+
+    @Override
+    public @NotNull Iterable<BigInteger> negativeBigIntegers() {
+        return RP.negativeBigIntegers();
+    }
+
+    @Override
+    public @NotNull Iterable<Byte> naturalBytes() {
+        return RP.naturalBytes();
+    }
+
+    @Override
+    public @NotNull Iterable<Short> naturalShorts() {
+        return RP.naturalShorts();
+    }
+
+    @Override
+    public @NotNull Iterable<Integer> naturalIntegers() {
+        return RP.naturalIntegers();
+    }
+
+    @Override
+    public @NotNull Iterable<Long> naturalLongs() {
+        return RP.naturalLongs();
+    }
+
+    @Override
+    public @NotNull Iterable<BigInteger> naturalBigIntegers() {
+        return RP.naturalBigIntegers();
+    }
+
+    @Override
+    public @NotNull Iterable<Byte> bytes() {
+        return RP.bytes();
+    }
+
+    @Override
+    public @NotNull Iterable<Short> shorts() {
+        return RP.shorts();
+    }
+
+    @Override
+    public @NotNull Iterable<Integer> integers() {
+        return RP.integers();
+    }
+
+    @Override
+    public @NotNull Iterable<Long> longs() {
+        return RP.longs();
+    }
+
+    @Override
+    public @NotNull Iterable<BigInteger> bigIntegers() {
+        return RP.bigIntegers();
+    }
+
+    /**
+     * @return An <tt>Iterable</tt> that generates all natural <tt>Integer</tt>s chosen from a geometric distribution
+     * with mean approximately <tt>meanSize</tt> (The ratio between the actual mean and <tt>meanSize</tt> decreases as
+     * <tt>meanSize</tt> increases). Does not support removal.
+     *
+     * <ul>
+     *  <li><tt>meanSize</tt> must be greater than 1.</li>
+     *  <li>The result is an infinite pseudorandom sequence of all natural <tt>Integers</tt>.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param meanSize the approximate mean bit size of the <tt>Integer</tt>s generated
+     */
+    public @NotNull Iterable<Integer> naturalIntegersGeometric(int meanSize) {
+        if (meanSize <= 1)
+            throw new IllegalArgumentException("meanSize must be greater than 1.");
+        return () -> new Iterator<Integer>() {
+            @Override
+            public boolean hasNext() {
+                return true;
+            }
+
+            @Override
+            public Integer next() {
+                int i = 0;
+                while (generator.nextDouble() >= 1.0 / meanSize) {
+                    i++;
+                }
+                return i;
+            }
+
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException("cannot remove from this iterator");
+            }
+        };
+    }
+
+    public @NotNull Iterable<Integer> positiveIntegersGeometric(int meanSize) {
+        return RP.positiveIntegersGeometric(meanSize);
+    }
+
+    public @NotNull Iterable<Integer> negativeIntegersGeometric(int meanSize) {
+        return RP.negativeIntegersGeometric(meanSize);
+    }
+
+    public @NotNull Iterable<Integer> integersGeometric(int meanSize) {
+        return RP.integersGeometric(meanSize);
+    }
+
+    @Override
+    public @NotNull Iterable<Character> asciiCharacters() {
+        return RP.asciiCharacters();
+    }
+
+    @Override
+    public @NotNull Iterable<Character> characters() {
+        return RP.characters();
+    }
+
+    @Override
+    public @NotNull Iterable<Float> positiveOrdinaryFloats() {
+        return RP.positiveOrdinaryFloats();
+    }
+
+    @Override
+    public @NotNull Iterable<Float> negativeOrdinaryFloats() {
+        return RP.negativeOrdinaryFloats();
+    }
+
+    @Override
+    public @NotNull Iterable<Float> ordinaryFloats() {
+        return RP.ordinaryFloats();
+    }
+
+    @Override
+    public @NotNull Iterable<Float> floats() {
+        return RP.floats();
+    }
+
+    @Override
+    public @NotNull Iterable<Double> positiveOrdinaryDoubles() {
+        return RP.positiveOrdinaryDoubles();
+    }
+
+    @Override
+    public @NotNull Iterable<Double> negativeOrdinaryDoubles() {
+        return RP.negativeOrdinaryDoubles();
+    }
+
+    @Override
+    public @NotNull Iterable<Double> ordinaryDoubles() {
+        return RP.ordinaryDoubles();
+    }
+
+    @Override
+    public @NotNull Iterable<Double> doubles() {
+        return RP.doubles();
+    }
+
+    @Override
+    public @NotNull Iterable<BigDecimal> positiveBigDecimals() {
+        return RP.positiveBigDecimals();
+    }
+
+    @Override
+    public @NotNull Iterable<BigDecimal> negativeBigDecimals() {
+        return RP.negativeBigDecimals();
+    }
+
+    @Override
+    public @NotNull Iterable<BigDecimal> bigDecimals() {
+        return RP.bigDecimals();
+    }
+
+    @Override
+    public @NotNull <T> Iterable<T> withNull(@NotNull Iterable<T> xs) {
+        return RP.withNull(xs);
+    }
+
+    @Override
+    public @NotNull <T> Iterable<Optional<T>> optionals(@NotNull Iterable<T> xs) {
+        return RP.optionals(xs);
+    }
+
+    @Override
+    public @NotNull <T> Iterable<NullableOptional<T>> nullableOptionals(@NotNull Iterable<T> xs) {
+        return RP.nullableOptionals(xs);
+    }
+
+    @Override
+    public @NotNull <A, B> Iterable<Pair<A, B>> dependentPairs(
+            @NotNull Iterable<A> xs,
+            @NotNull Function<A, Iterable<B>> f
+    ) {
+        return RP.dependentPairs(xs, f);
+    }
+
+    @Override
+    public @NotNull <A, B> Iterable<Pair<A, B>> dependentPairsLogarithmic(
+            @NotNull Iterable<A> xs,
+            @NotNull Function<A, Iterable<B>> f
+    ) {
+        return RP.dependentPairsLogarithmic(xs, f);
+    }
+
+    @Override
+    public @NotNull <A, B> Iterable<Pair<A, B>> dependentPairsSquareRoot(@NotNull Iterable<A> xs, @NotNull Function<A, Iterable<B>> f) {
+        return RP.dependentPairsSquareRoot(
+                xs,
+                f
+        );
+    }
+
+    @Override
+    public @NotNull <A, B> Iterable<Pair<A, B>> dependentPairsExponential(
+            @NotNull Iterable<A> xs,
+            @NotNull Function<A, Iterable<B>> f
+    ) {
+        return RP.dependentPairsExponential(xs, f);
+    }
+
+    @Override
+    public @NotNull <A, B> Iterable<Pair<A, B>> dependentPairsSquare(@NotNull Iterable<A> xs, @NotNull Function<A, Iterable<B>> f) {
+        return RP.dependentPairsSquare(xs, f);
+    }
+
+    @Override
+    public @NotNull <A, B> Iterable<Pair<A, B>> pairs(@NotNull Iterable<A> as, @NotNull Iterable<B> bs) {
+        return RP.pairs(as, bs);
+    }
+
+    @Override
+    public @NotNull <A, B, C> Iterable<Triple<A, B, C>> triples(
+            @NotNull Iterable<A> as,
+            @NotNull Iterable<B> bs,
+            @NotNull Iterable<C> cs
+    ) {
+        return RP.triples(as, bs, cs);
+    }
+
+    @Override
+    public @NotNull <A, B, C, D> Iterable<Quadruple<A, B, C, D>> quadruples(
+            @NotNull Iterable<A> as,
+            @NotNull Iterable<B> bs,
+            @NotNull Iterable<C> cs,
+            @NotNull Iterable<D> ds
+    ) {
+        return RP.quadruples(as, bs, cs, ds);
+    }
+
+    @Override
+    public @NotNull <A, B, C, D, E> Iterable<Quintuple<A, B, C, D, E>> quintuples(
+            @NotNull Iterable<A> as,
+            @NotNull Iterable<B> bs,
+            @NotNull Iterable<C> cs,
+            @NotNull Iterable<D> ds,
+            @NotNull Iterable<E> es
+    ) {
+        return RP.quintuples(as, bs, cs, ds, es);
+    }
+
+    @Override
+    public @NotNull <A, B, C, D, E, F> Iterable<Sextuple<A, B, C, D, E, F>> sextuples(
+            @NotNull Iterable<A> as,
+            @NotNull Iterable<B> bs,
+            @NotNull Iterable<C> cs,
+            @NotNull Iterable<D> ds,
+            @NotNull Iterable<E> es,
+            @NotNull Iterable<F> fs
+    ) {
+        return RP.sextuples(as, bs, cs, ds, es, fs);
+    }
+
+    @Override
+    public @NotNull <A, B, C, D, E, F, G> Iterable<Septuple<A, B, C, D, E, F, G>> septuples(
+            @NotNull Iterable<A> as,
+            @NotNull Iterable<B> bs,
+            @NotNull Iterable<C> cs,
+            @NotNull Iterable<D> ds,
+            @NotNull Iterable<E> es,
+            @NotNull Iterable<F> fs,
+            @NotNull Iterable<G> gs
+    ) {
+        return RP.septuples(as, bs, cs, ds, es, fs, gs);
+    }
+
+    @Override
+    public @NotNull <T> Iterable<Pair<T, T>> pairs(@NotNull Iterable<T> xs) {
+        return RP.pairs(xs);
+    }
+
+    @Override
+    public @NotNull <T> Iterable<Triple<T, T, T>> triples(@NotNull Iterable<T> xs) {
+        return RP.triples(xs);
+    }
+
+    @Override
+    public @NotNull <T> Iterable<Quadruple<T, T, T, T>> quadruples(@NotNull Iterable<T> xs) {
+        return RP.quadruples(xs);
+    }
+
+    @Override
+    public @NotNull <T> Iterable<Quintuple<T, T, T, T, T>> quintuples(@NotNull Iterable<T> xs) {
+        return RP.quintuples(xs);
+    }
+
+    @Override
+    public @NotNull <T> Iterable<Sextuple<T, T, T, T, T, T>> sextuples(@NotNull Iterable<T> xs) {
+        return RP.sextuples(xs);
+    }
+
+    @Override
+    public @NotNull <T> Iterable<Septuple<T, T, T, T, T, T, T>> septuples(@NotNull Iterable<T> xs) {
+        return RP.septuples(xs);
+    }
+
+    @Override
+    public @NotNull <T> Iterable<List<T>> lists(int size, @NotNull Iterable<T> xs) {
+        return RP.lists(size, xs);
+    }
+
+    @Override
+    public @NotNull <T> Iterable<List<T>> listsAtLeast(int minSize, @NotNull Iterable<T> xs) {
+        return RP.listsAtLeast(minSize, xs);
+    }
+
+    @Override
+    public @NotNull <T> Iterable<List<T>> lists(@NotNull Iterable<T> xs) {
+        return RP.lists(xs);
+    }
+
+    @Override
+    public @NotNull Iterable<String> strings(int size, @NotNull Iterable<Character> cs) {
+        return RP.strings(size, cs);
+    }
+
+    @Override
+    public @NotNull Iterable<String> stringsAtLeast(int minSize, @NotNull Iterable<Character> cs) {
+        return RP.stringsAtLeast(minSize, cs);
+    }
+
+    @Override
+    public @NotNull Iterable<String> strings(int size) {
+        return RP.strings(size);
+    }
+
+    @Override
+    public @NotNull Iterable<String> stringsAtLeast(int size) {
+        return RP.stringsAtLeast(size);
+    }
+
+    @Override
+    public @NotNull Iterable<String> strings(@NotNull Iterable<Character> cs) {
+        return RP.strings(cs);
+    }
+
+    @Override
+    public @NotNull Iterable<String> strings() {
+        return RP.strings();
     }
 
     @Override
     public @NotNull Iterable<Rational> rangeUp(@NotNull Rational a) {
-        return rangeUp(BIG_INTEGER_MEAN_BIT_SIZE, a);
-    }
-
-    public @NotNull Iterable<Rational> rangeDown(int meanBitSize, @NotNull Rational a) {
         return null;
     }
 
     @Override
     public @NotNull Iterable<Rational> rangeDown(@NotNull Rational a) {
-        return rangeDown(BIG_INTEGER_MEAN_BIT_SIZE, a);
-    }
-
-    public @NotNull Iterable<Rational> range(int meanBitSize, @NotNull Rational a, @NotNull Rational b) {
         return null;
     }
 
     @Override
     public @NotNull Iterable<Rational> range(@NotNull Rational a, @NotNull Rational b) {
-        return range(BIG_INTEGER_MEAN_BIT_SIZE, a, b);
+        return null;
     }
 
     /**
@@ -62,35 +625,16 @@ public class QBarRandomProvider extends RandomProvider implements QBarIterablePr
      *
      * Length is infinite
      *
-     * @param meanBitSize the approximate mean bit size of the {@code Rational}s' numerators and denominators
-     * @return the {@code Iterable} described above.
-     */
-    public @NotNull Iterable<Rational> rationals(int meanBitSize) {
-        return map(
-                p -> Rational.of(p.a, p.b),
-                filter(
-                        q -> q.a.gcd(q.b).equals(BigInteger.ONE),
-                        pairs(bigIntegers(meanBitSize / 2), positiveBigIntegers(meanBitSize / 2))
-                )
-        );
-    }
-
-    /**
-     * a pseudorandom {@code Iterable} that generates every {@code Rational}. Each {@code Rational}'s bit size (defined
-     * as the sum of the numerator's and denominator's bit sizes) is chosen from a geometric distribution with mean
-     * approximately 64. Does not support removal.
-     *
-     * <ul>
-     *  <li>The result is an infinite pseudorandom sequence of all {@code Rational}s.</li>
-     * </ul>
-     *
-     * Length is infinite
-     *
      * @return the {@code Iterable} described above.
      */
     @Override
     public @NotNull Iterable<Rational> rationals() {
-        return rationals(BIG_INTEGER_MEAN_BIT_SIZE);
+        Iterable<BigInteger> numerators = withBigIntegerMeanBitSize(rationalMeanBitSize / 2).bigIntegers();
+        Iterable<BigInteger> denominators = withBigIntegerMeanBitSize(rationalMeanBitSize / 2).positiveBigIntegers();
+        return map(
+                p -> Rational.of(p.a, p.b),
+                filter(q -> q.a.gcd(q.b).equals(BigInteger.ONE), pairs(numerators, denominators))
+        );
     }
 
     /**
@@ -106,34 +650,16 @@ public class QBarRandomProvider extends RandomProvider implements QBarIterablePr
      *
      * Length is infinite
      *
-     * @param meanBitSize the approximate mean bit size of the {@code Rational}s' numerators and denominators
      * @return the {@code Iterable} described above.
      */
-    public @NotNull Iterable<Rational> nonNegativeRationals(int meanBitSize) {
+    @Override
+    public @NotNull Iterable<Rational> nonNegativeRationals() {
+        Iterable<BigInteger> numerators = withBigIntegerMeanBitSize(rationalMeanBitSize / 2).naturalBigIntegers();
+        Iterable<BigInteger> denominators = withBigIntegerMeanBitSize(rationalMeanBitSize / 2).positiveBigIntegers();
         return map(
                 p -> Rational.of(p.a, p.b),
-                filter(
-                        q -> q.a.gcd(q.b).equals(BigInteger.ONE),
-                        pairs(naturalBigIntegers(meanBitSize / 2), positiveBigIntegers(meanBitSize / 2))
-                )
+                filter(q -> q.a.gcd(q.b).equals(BigInteger.ONE), pairs(numerators, denominators))
         );
-    }
-
-    /**
-     * a pseudorandom {@code Iterable} that generates every non-negative {@code Rational}. Each {@code Rational}'s bit
-     * size (defined as the sum of the numerator's and denominator's bit sizes) is chosen from a geometric distribution
-     * with mean approximately 64. Does not support removal.
-     *
-     * <ul>
-     *  <li>The result is an infinite pseudorandom sequence of all non-negative {@code Rational}s.</li>
-     * </ul>
-     *
-     * Length is infinite
-     *
-     * @return the {@code Iterable} described above.
-     */
-    public @NotNull Iterable<Rational> nonNegativeRationals() {
-        return nonNegativeRationals(BIG_INTEGER_MEAN_BIT_SIZE);
     }
 
     /**
@@ -149,34 +675,15 @@ public class QBarRandomProvider extends RandomProvider implements QBarIterablePr
      *
      * Length is infinite
      *
-     * @param meanBitSize the approximate mean bit size of the {@code Rational}s' numerators and denominators
      * @return the {@code Iterable} described above.
      */
-    public @NotNull Iterable<Rational> positiveRationals(int meanBitSize) {
+    @Override
+    public @NotNull Iterable<Rational> positiveRationals() {
+        Iterable<BigInteger> components = withBigIntegerMeanBitSize(rationalMeanBitSize / 2).positiveBigIntegers();
         return map(
                 p -> Rational.of(p.a, p.b),
-                filter(
-                        q -> q.a.gcd(q.b).equals(BigInteger.ONE),
-                        pairs(positiveBigIntegers(meanBitSize / 2), positiveBigIntegers(meanBitSize / 2))
-                )
+                filter(q -> q.a.gcd(q.b).equals(BigInteger.ONE), pairs(components))
         );
-    }
-
-    /**
-     * a pseudorandom {@code Iterable} that generates every positive {@code Rational}. Each {@code Rational}'s bit size
-     * (defined as the sum of the numerator's and denominator's bit sizes) is chosen from a geometric distribution with
-     * mean approximately 64. Does not support removal.
-     *
-     * <ul>
-     *  <li>The result is an infinite pseudorandom sequence of all positive {@code Rational}s.</li>
-     * </ul>
-     *
-     * Length is infinite
-     *
-     * @return the {@code Iterable} described above.
-     */
-    public @NotNull Iterable<Rational> positiveRationals() {
-        return positiveRationals(BIG_INTEGER_MEAN_BIT_SIZE);
     }
 
     /**
@@ -192,34 +699,16 @@ public class QBarRandomProvider extends RandomProvider implements QBarIterablePr
      *
      * Length is infinite
      *
-     * @param meanBitSize the approximate mean bit size of the {@code Rational}s' numerators and denominators
      * @return the {@code Iterable} described above.
      */
-    public @NotNull Iterable<Rational> negativeRationals(int meanBitSize) {
+    @Override
+    public @NotNull Iterable<Rational> negativeRationals() {
+        Iterable<BigInteger> numerators = withBigIntegerMeanBitSize(rationalMeanBitSize / 2).negativeBigIntegers();
+        Iterable<BigInteger> denominators = withBigIntegerMeanBitSize(rationalMeanBitSize / 2).positiveBigIntegers();
         return map(
                 p -> Rational.of(p.a, p.b),
-                filter(
-                        q -> q.a.gcd(q.b).equals(BigInteger.ONE),
-                        pairs(negativeBigIntegers(meanBitSize / 2), positiveBigIntegers(meanBitSize / 2))
-                )
+                filter(q -> q.a.gcd(q.b).equals(BigInteger.ONE), pairs(numerators, denominators))
         );
-    }
-
-    /**
-     * a pseudorandom {@code Iterable} that generates every negative {@code Rational}. Each {@code Rational}'s bit size
-     * (defined as the sum of the numerator's and denominator's bit sizes) is chosen from a geometric distribution with
-     * mean approximately 64. Does not support removal.
-     *
-     * <ul>
-     *  <li>The result is an infinite pseudorandom sequence of all negative {@code Rational}s.</li>
-     * </ul>
-     *
-     * Length is infinite
-     *
-     * @return the {@code Iterable} described above.
-     */
-    public @NotNull Iterable<Rational> negativeRationals() {
-        return negativeRationals(BIG_INTEGER_MEAN_BIT_SIZE);
     }
 
     /**
@@ -235,34 +724,16 @@ public class QBarRandomProvider extends RandomProvider implements QBarIterablePr
      *
      * Length is infinite
      *
-     * @param meanBitSize the approximate mean bit size of the {@code Rational}s' numerators and denominators
      * @return the {@code Iterable} described above.
      */
-    public @NotNull Iterable<Rational> nonNegativeRationalsLessThanOne(int meanBitSize) {
+    @Override
+    public @NotNull Iterable<Rational> nonNegativeRationalsLessThanOne() {
+        Iterable<BigInteger> numerators = withBigIntegerMeanBitSize(rationalMeanBitSize / 2).naturalBigIntegers();
+        Iterable<BigInteger> denominators = withBigIntegerMeanBitSize(rationalMeanBitSize / 2).positiveBigIntegers();
         return map(
                 p -> Rational.of(p.a, p.b),
-                filter(
-                        q -> lt(q.a, q.b) && q.a.gcd(q.b).equals(BigInteger.ONE),
-                        pairs(naturalBigIntegers(meanBitSize / 2), positiveBigIntegers(meanBitSize / 2))
-                )
+                filter(q -> lt(q.a, q.b) && q.a.gcd(q.b).equals(BigInteger.ONE), pairs(numerators, denominators))
         );
-    }
-
-    /**
-     * a pseudorandom {@code Iterable} that generates every {@code Rational} in the interval [0, 1). Each
-     * {@code Rational}'s bit size (defined as the sum of the numerator's and denominator's bit sizes) is chosen from a
-     * geometric distribution with mean approximately 64. Does not support removal.
-     *
-     * <ul>
-     *  <li>The result is an infinite pseudorandom sequence of {@code Rational}s in the interval [0, 1).</li>
-     * </ul>
-     *
-     * Length is infinite
-     *
-     * @return the {@code Iterable} described above.
-     */
-    public @NotNull Iterable<Rational> nonNegativeRationalsLessThanOne() {
-        return nonNegativeRationalsLessThanOne(BIG_INTEGER_MEAN_BIT_SIZE);
     }
 
     /**
@@ -278,30 +749,12 @@ public class QBarRandomProvider extends RandomProvider implements QBarIterablePr
      *
      * Length is infinite
      *
-     * @param meanBitSize the approximate mean bit size of the {@code Interval}s' lower and upper bounds' numerators
-     *                    and denominators
-     * @return the {@code Iterable} described above.
-     */
-    public @NotNull Iterable<Interval> finitelyBoundedIntervals(int meanBitSize) {
-        return map(p -> Interval.of(p.a, p.b), filter(p -> le(p.a, p.b), pairs(rationals(meanBitSize / 2))));
-    }
-
-    /**
-     * a pseudorandom {@code Iterable} that generates every {@code Interval} with finite bounds. Each
-     * {@code Interval}'s bit sizes (defined as the sum of the lower bound's and upper bound's bit sizes) is chosen
-     * from a geometric distribution with mean approximately 64. Does not support removal.
-     *
-     * <ul>
-     *  <li>The result is an infinite pseudorandom sequence of all {@code Interval}s with finite bounds.</li>
-     * </ul>
-     *
-     * Length is infinite
-     *
      * @return the {@code Iterable} described above.
      */
     @Override
     public @NotNull Iterable<Interval> finitelyBoundedIntervals() {
-        return finitelyBoundedIntervals(BIG_INTEGER_MEAN_BIT_SIZE);
+        Iterable<Rational> bounds = withRationalMeanBitSize(intervalMeanBitSize / 2).rationals();
+        return map(p -> Interval.of(p.a, p.b), filter(p -> le(p.a, p.b), pairs(bounds)));
     }
 
     /**
@@ -317,11 +770,11 @@ public class QBarRandomProvider extends RandomProvider implements QBarIterablePr
      *
      * Length is infinite
      *
-     * @param meanBitSize the approximate mean bit size of the {@code Interval}s' lower and upper bounds' numerators
-     *                    and denominators
      * @return the {@code Iterable} described above.
      */
-    public @NotNull Iterable<Interval> intervals(int meanBitSize) {
+    @Override
+    public @NotNull Iterable<Interval> intervals() {
+        Iterable<Rational> bounds = withRationalMeanBitSize(intervalMeanBitSize / 2).rationals();
         return map(
                 p -> {
                     if (!p.a.isPresent() && !p.b.isPresent()) return Interval.ALL;
@@ -329,30 +782,8 @@ public class QBarRandomProvider extends RandomProvider implements QBarIterablePr
                     if (!p.b.isPresent()) return Interval.greaterThanOrEqualTo(p.a.get());
                     return Interval.of(p.a.get(), p.b.get());
                 },
-                filter(
-                        p -> !p.a.isPresent() || !p.b.isPresent() || le(p.a.get(), p.b.get()),
-                        (Iterable<Pair<Optional<Rational>, Optional<Rational>>>)
-                                pairs(optionals(rationals(meanBitSize / 2)))
-                )
+                filter(p -> !p.a.isPresent() || !p.b.isPresent() || le(p.a.get(), p.b.get()), pairs(optionals(bounds)))
         );  
-    }
-
-    /**
-     * a pseudorandom {@code Iterable} that generates every {@code Interval}. Each {@code Interval}'s bit size (defined
-     * as the sum of the lower bound's and upper bound's bit sizes) is chosen from a geometric distribution with mean
-     * approximately 64. Does not support removal.
-     *
-     * <ul>
-     *  <li>The result is an infinite pseudorandom sequence of all {@code Interval}s.</li>
-     * </ul>
-     *
-     * Length is infinite
-     *
-     * @return the {@code Iterable} described above.
-     */
-    @Override
-    public @NotNull Iterable<Interval> intervals() {
-        return intervals(BIG_INTEGER_MEAN_BIT_SIZE);
     }
 
     @Override
@@ -426,37 +857,21 @@ public class QBarRandomProvider extends RandomProvider implements QBarIterablePr
 
     @Override
     public @NotNull Iterable<RationalVector> rationalVectors(int dimension) {
-        return rationalVectorsBySize(BIG_INTEGER_MEAN_BIT_SIZE, dimension);
-    }
-
-    public @NotNull Iterable<RationalVector> rationalVectorsBySize(int elementMeanBitSize, int dimension) {
-        return map(RationalVector::of, lists(dimension, rationals(elementMeanBitSize)));
+        return map(RationalVector::of, lists(dimension, rationals()));
     }
 
     @Override
     public @NotNull Iterable<RationalVector> rationalVectorsAtLeast(int minDimension) {
-        return rationalVectorsBySizeAtLeast(BIG_INTEGER_MEAN_BIT_SIZE, minDimension);
-    }
-
-    public @NotNull Iterable<RationalVector> rationalVectorsBySizeAtLeast(int elementMeanBitSize, int minDimension) {
-        return map(RationalVector::of, listsAtLeast(minDimension, rationals(elementMeanBitSize)));
+        return map(RationalVector::of, listsAtLeast(minDimension, rationals()));
     }
 
     @Override
     public @NotNull Iterable<RationalVector> rationalVectors() {
-        return rationalVectorsBySize(BIG_INTEGER_MEAN_BIT_SIZE);
-    }
-
-    public @NotNull Iterable<RationalVector> rationalVectorsBySize(int elementMeanBitSize) {
-        return map(RationalVector::of, lists(rationals(elementMeanBitSize)));
+        return map(RationalVector::of, lists(rationals()));
     }
 
     @Override
     public @NotNull Iterable<RationalVector> reducedRationalVectors(int dimension) {
-        return reducedRationalVectorsBySize(BIG_INTEGER_MEAN_BIT_SIZE, dimension);
-    }
-
-    public @NotNull Iterable<RationalVector> reducedRationalVectorsBySize(int elementMeanBitSize, int dimension) {
         if (dimension == 1) {
             return Arrays.asList(RationalVector.of(Rational.ZERO), RationalVector.of(Rational.ONE));
         }
@@ -474,7 +889,7 @@ public class QBarRandomProvider extends RandomProvider implements QBarIterablePr
                                             BigInteger gcd = foldl(BigInteger::gcd, BigInteger.ZERO, js);
                                             return gcd.equals(BigInteger.ZERO) || gcd.equals(BigInteger.ONE);
                                         },
-                                        lists(dimension, bigIntegers(elementMeanBitSize / 2))
+                                        lists(dimension, bigIntegers())
                                 )
                         )
                 )
@@ -483,13 +898,6 @@ public class QBarRandomProvider extends RandomProvider implements QBarIterablePr
 
     @Override
     public @NotNull Iterable<RationalVector> reducedRationalVectorsAtLeast(int minDimension) {
-        return reducedRationalVectorsBySizeAtLeast(BIG_INTEGER_MEAN_BIT_SIZE, minDimension);
-    }
-
-    public @NotNull Iterable<RationalVector> reducedRationalVectorsBySizeAtLeast(
-            int elementMeanBitSize,
-            int minDimension
-    ) {
         return map(
                 RationalVector::reduce,
                 filter(
@@ -504,7 +912,7 @@ public class QBarRandomProvider extends RandomProvider implements QBarIterablePr
                                             BigInteger gcd = foldl(BigInteger::gcd, BigInteger.ZERO, js);
                                             return gcd.equals(BigInteger.ZERO) || gcd.equals(BigInteger.ONE);
                                         },
-                                        listsAtLeast(minDimension, bigIntegers(elementMeanBitSize / 2))
+                                        listsAtLeast(minDimension, bigIntegers())
                                 )
                         )
                 )
@@ -513,29 +921,6 @@ public class QBarRandomProvider extends RandomProvider implements QBarIterablePr
 
     @Override
     public @NotNull Iterable<RationalVector> reducedRationalVectors() {
-        return reducedRationalVectorsBySize(BIG_INTEGER_MEAN_BIT_SIZE);
-    }
-
-    @Override
-    public @NotNull Iterable<RationalMatrix> rationalMatrices(int height, int width) {
-        return rationalMatricesBySize(BIG_INTEGER_MEAN_BIT_SIZE, height, width);
-    }
-
-    public @NotNull Iterable<RationalMatrix> rationalMatricesBySize(int elementMeanBitSize, int height, int width) {
-        if (height == 0 || width == 0) return repeat(RationalMatrix.zero(height, width));
-        return map(RationalMatrix::fromRows, lists(height, rationalVectorsBySize(elementMeanBitSize, width)));
-    }
-
-    @Override
-    public @NotNull Iterable<RationalMatrix> rationalMatrices() {
-        return rationalMatricesBySize(BIG_INTEGER_MEAN_BIT_SIZE / 4);
-    }
-
-    public @NotNull Iterable<RationalMatrix> rationalMatricesBySize(int elementMeanBitSize) {
-        return map(q -> q.b, dependentPairsSquare(pairs(naturalIntegersGeometric(5)), p -> rationalMatricesBySize(elementMeanBitSize, p.a, p.b)));
-    }
-
-    public @NotNull Iterable<RationalVector> reducedRationalVectorsBySize(int elementMeanBitSize) {
         return map(
                 RationalVector::reduce,
                 filter(
@@ -550,7 +935,7 @@ public class QBarRandomProvider extends RandomProvider implements QBarIterablePr
                                             BigInteger gcd = foldl(BigInteger::gcd, BigInteger.ZERO, js);
                                             return gcd.equals(BigInteger.ZERO) || gcd.equals(BigInteger.ONE);
                                         },
-                                        lists(bigIntegers(elementMeanBitSize / 2))
+                                        lists(bigIntegers())
                                 )
                         )
                 )
@@ -558,38 +943,50 @@ public class QBarRandomProvider extends RandomProvider implements QBarIterablePr
     }
 
     @Override
-    public @NotNull Iterable<Polynomial> polynomials(int degree) {
-        return polynomialsBySize(BIG_INTEGER_MEAN_BIT_SIZE, degree);
+    public @NotNull Iterable<RationalMatrix> rationalMatrices(int height, int width) {
+        if (height == 0 || width == 0) return repeat(RationalMatrix.zero(height, width));
+        return map(RationalMatrix::fromRows, lists(height, rationalVectors(width)));
     }
 
-    public @NotNull Iterable<Polynomial> polynomialsBySize(int coefficientMeanBitSize, int degree) {
+    @Override
+    public @NotNull Iterable<RationalMatrix> rationalMatrices() {
         return map(
-                js -> Polynomial.of(toList(js)),
-                filter(
-                        is -> is.isEmpty() || !last(is).equals(BigInteger.ZERO),
-                        lists(degree + 1, bigIntegers(coefficientMeanBitSize))
+                q -> q.b,
+                dependentPairsSquare(
+                        pairs(naturalIntegersGeometric(5)),
+                        p -> rationalMatrices(p.a, p.b)
                 )
         );
     }
 
     @Override
-    public @NotNull Iterable<Polynomial> polynomialsAtLeast(int minDegree) {
-        return polynomialsBySizeAtLeast(BIG_INTEGER_MEAN_BIT_SIZE, minDegree);
+    public @NotNull Iterable<Polynomial> polynomials(int degree) {
+        return map(
+                js -> Polynomial.of(toList(js)),
+                filter(is -> is.isEmpty() || !last(is).equals(BigInteger.ZERO), lists(degree + 1, bigIntegers()))
+        );
     }
 
-    public @NotNull Iterable<Polynomial> polynomialsBySizeAtLeast(int coefficientMeanBitSize, int minDegree) {
+    @Override
+    public @NotNull Iterable<Polynomial> polynomialsAtLeast(int minDegree) {
         return map(
                 js -> Polynomial.of(toList(js)),
                 filter(
                         is -> is.isEmpty() || !last(is).equals(BigInteger.ZERO),
-                        listsAtLeast(minDegree + 1, bigIntegers(coefficientMeanBitSize))
+                        listsAtLeast(minDegree + 1, bigIntegers())
                 )
         );
     }
 
     @Override
     public @NotNull Iterable<Polynomial> polynomials() {
-        return polynomialsBySize(BIG_INTEGER_MEAN_BIT_SIZE);
+        return map(
+                js -> Polynomial.of(toList(js)),
+                filter(
+                        is -> is.isEmpty() || !last(is).equals(BigInteger.ZERO),
+                        lists(bigIntegers())
+                )
+        );
     }
 
     @NotNull
@@ -610,52 +1007,31 @@ public class QBarRandomProvider extends RandomProvider implements QBarIterablePr
         return null;
     }
 
-    public @NotNull Iterable<Polynomial> polynomialsBySize(int coefficientMeanBitSize) {
-        return map(
-                js -> Polynomial.of(toList(js)),
-                filter(
-                        is -> is.isEmpty() || !last(is).equals(BigInteger.ZERO),
-                        lists(bigIntegers(coefficientMeanBitSize))
-                )
-        );
-    }
-
     @Override
     public @NotNull Iterable<RationalPolynomial> rationalPolynomials(int degree) {
-        return rationalPolynomialsBySize(BIG_INTEGER_MEAN_BIT_SIZE, degree);
-    }
-
-    public @NotNull Iterable<RationalPolynomial> rationalPolynomialsBySize(int coefficientMeanBitSize, int degree) {
         return map(
                 js -> RationalPolynomial.of(toList(js)),
-                filter(
-                        is -> is.isEmpty() || last(is) != Rational.ZERO,
-                        lists(degree + 1, rationals(coefficientMeanBitSize))
-                )
+                filter(is -> is.isEmpty() || last(is) != Rational.ZERO, lists(degree + 1, rationals()))
         );
     }
 
     @Override
     public @NotNull Iterable<RationalPolynomial> rationalPolynomialsAtLeast(int minDegree) {
-        return rationalPolynomialsBySizeAtLeast(BIG_INTEGER_MEAN_BIT_SIZE, minDegree);
-    }
-
-    public @NotNull Iterable<RationalPolynomial> rationalPolynomialsBySizeAtLeast(
-            int coefficientMeanBitSize,
-            int minDegree
-    ) {
         return map(
                 js -> RationalPolynomial.of(toList(js)),
-                filter(
-                        is -> is.isEmpty() || last(is) != Rational.ZERO,
-                        listsAtLeast(minDegree + 1, rationals(coefficientMeanBitSize))
-                )
+                filter(is -> is.isEmpty() || last(is) != Rational.ZERO, listsAtLeast(minDegree + 1, rationals()))
         );
     }
 
     @Override
     public @NotNull Iterable<RationalPolynomial> rationalPolynomials() {
-        return rationalPolynomialsBySize(BIG_INTEGER_MEAN_BIT_SIZE);
+        return map(
+                js -> RationalPolynomial.of(toList(js)),
+                filter(
+                        is -> is.isEmpty() || last(is) != Rational.ZERO,
+                        lists(rationals())
+                )
+        );
     }
 
     @NotNull
@@ -674,15 +1050,5 @@ public class QBarRandomProvider extends RandomProvider implements QBarIterablePr
     @Override
     public Iterable<RationalPolynomial> monicRationalPolynomials() {
         return null;
-    }
-
-    public @NotNull Iterable<RationalPolynomial> rationalPolynomialsBySize(int coefficientMeanBitSize) {
-        return map(
-                js -> RationalPolynomial.of(toList(js)),
-                filter(
-                        is -> is.isEmpty() || last(is) != Rational.ZERO,
-                        lists(rationals(coefficientMeanBitSize))
-                )
-        );
     }
 }

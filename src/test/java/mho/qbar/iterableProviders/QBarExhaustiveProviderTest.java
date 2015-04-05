@@ -8,7 +8,7 @@ import static mho.wheels.iterables.IterableUtils.take;
 import static org.junit.Assert.assertEquals;
 
 public class QBarExhaustiveProviderTest {
-    private static final @NotNull QBarExhaustiveProvider P = new QBarExhaustiveProvider();
+    private static final @NotNull QBarExhaustiveProvider P = QBarExhaustiveProvider.INSTANCE;
 
     @Test
     public void testRationals() {

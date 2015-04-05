@@ -6,78 +6,50 @@ import org.jetbrains.annotations.NotNull;
 
 import java.math.BigInteger;
 
-public interface QBarIterableProvider extends IterableProvider {
-    public @NotNull Iterable<Rational> rangeUp(@NotNull Rational a);
+public abstract class QBarIterableProvider extends IterableProvider {
+    public QBarIterableProvider withRationalMeanBitSize(int rationalMeanBitSize) {
+        return this;
+    }
 
-    public @NotNull Iterable<Rational> rangeDown(@NotNull Rational a);
+    public QBarIterableProvider withIntervalMeanBitSize(int intervalMeanBitSize) {
+        return this;
+    }
 
-    public @NotNull Iterable<Rational> range(@NotNull Rational a, @NotNull Rational b);
-
-    public @NotNull Iterable<Rational> rationals();
-
-    public @NotNull Iterable<Rational> nonNegativeRationals();
-
-    public @NotNull Iterable<Rational> positiveRationals();
-
-    public @NotNull Iterable<Rational> negativeRationals();
-
-    public @NotNull Iterable<Rational> nonNegativeRationalsLessThanOne();
-
-    public @NotNull Iterable<Interval> finitelyBoundedIntervals();
-
-    public @NotNull Iterable<Interval> intervals();
-
-    public @NotNull Iterable<Byte> bytes(@NotNull Interval a);
-
-    public @NotNull Iterable<Short> shorts(@NotNull Interval a);
-
-    public @NotNull Iterable<Integer> integers(@NotNull Interval a);
-
-    public @NotNull Iterable<Long> longs(@NotNull Interval a);
-
-    public @NotNull Iterable<BigInteger> bigIntegers(@NotNull Interval a);
-
-    public @NotNull Iterable<Rational> rationals(@NotNull Interval a);
-
-    public @NotNull Iterable<Rational> rationalsNotIn(@NotNull Interval a);
-
-    public @NotNull Iterable<RationalVector> rationalVectors(int dimension);
-
-    public @NotNull Iterable<RationalVector> rationalVectorsAtLeast(int minDimension);
-
-    public @NotNull Iterable<RationalVector> rationalVectors();
-
-    public @NotNull Iterable<RationalVector> reducedRationalVectors(int dimension);
-
-    public @NotNull Iterable<RationalVector> reducedRationalVectorsAtLeast(int minDimension);
-
-    public @NotNull Iterable<RationalVector> reducedRationalVectors();
-
-    public @NotNull Iterable<RationalMatrix> rationalMatrices(int height, int width);
-
-    public @NotNull Iterable<RationalMatrix> rationalMatrices();
-
-    public @NotNull Iterable<Polynomial> polynomials(int degree);
-
-    public @NotNull Iterable<Polynomial> polynomialsAtLeast(int minDegree);
-
-    public @NotNull Iterable<Polynomial> polynomials();
-
-    public @NotNull Iterable<Polynomial> primitivePolynomials(int degree);
-
-    public @NotNull Iterable<Polynomial> primitivePolynomialsAtLeast(int minDegree);
-
-    public @NotNull Iterable<Polynomial> primitivePolynomials();
-
-    public @NotNull Iterable<RationalPolynomial> rationalPolynomials(int degree);
-
-    public @NotNull Iterable<RationalPolynomial> rationalPolynomialsAtLeast(int minDegree);
-
-    public @NotNull Iterable<RationalPolynomial> rationalPolynomials();
-
-    public @NotNull Iterable<RationalPolynomial> monicRationalPolynomials(int degree);
-
-    public @NotNull Iterable<RationalPolynomial> monicRationalPolynomialsAtLeast(int minDegree);
-
-    public @NotNull Iterable<RationalPolynomial> monicRationalPolynomials();
+    public abstract @NotNull Iterable<Rational> rangeUp(@NotNull Rational a);
+    public abstract @NotNull Iterable<Rational> rangeDown(@NotNull Rational a);
+    public abstract @NotNull Iterable<Rational> range(@NotNull Rational a, @NotNull Rational b);
+    public abstract @NotNull Iterable<Rational> rationals();
+    public abstract @NotNull Iterable<Rational> nonNegativeRationals();
+    public abstract @NotNull Iterable<Rational> positiveRationals();
+    public abstract @NotNull Iterable<Rational> negativeRationals();
+    public abstract @NotNull Iterable<Rational> nonNegativeRationalsLessThanOne();
+    public abstract @NotNull Iterable<Interval> finitelyBoundedIntervals();
+    public abstract @NotNull Iterable<Interval> intervals();
+    public abstract @NotNull Iterable<Byte> bytes(@NotNull Interval a);
+    public abstract @NotNull Iterable<Short> shorts(@NotNull Interval a);
+    public abstract @NotNull Iterable<Integer> integers(@NotNull Interval a);
+    public abstract @NotNull Iterable<Long> longs(@NotNull Interval a);
+    public abstract @NotNull Iterable<BigInteger> bigIntegers(@NotNull Interval a);
+    public abstract @NotNull Iterable<Rational> rationals(@NotNull Interval a);
+    public abstract @NotNull Iterable<Rational> rationalsNotIn(@NotNull Interval a);
+    public abstract @NotNull Iterable<RationalVector> rationalVectors(int dimension);
+    public abstract @NotNull Iterable<RationalVector> rationalVectorsAtLeast(int minDimension);
+    public abstract @NotNull Iterable<RationalVector> rationalVectors();
+    public abstract @NotNull Iterable<RationalVector> reducedRationalVectors(int dimension);
+    public abstract @NotNull Iterable<RationalVector> reducedRationalVectorsAtLeast(int minDimension);
+    public abstract @NotNull Iterable<RationalVector> reducedRationalVectors();
+    public abstract @NotNull Iterable<RationalMatrix> rationalMatrices(int height, int width);
+    public abstract @NotNull Iterable<RationalMatrix> rationalMatrices();
+    public abstract @NotNull Iterable<Polynomial> polynomials(int degree);
+    public abstract @NotNull Iterable<Polynomial> polynomialsAtLeast(int minDegree);
+    public abstract @NotNull Iterable<Polynomial> polynomials();
+    public abstract @NotNull Iterable<Polynomial> primitivePolynomials(int degree);
+    public abstract @NotNull Iterable<Polynomial> primitivePolynomialsAtLeast(int minDegree);
+    public abstract @NotNull Iterable<Polynomial> primitivePolynomials();
+    public abstract @NotNull Iterable<RationalPolynomial> rationalPolynomials(int degree);
+    public abstract @NotNull Iterable<RationalPolynomial> rationalPolynomialsAtLeast(int minDegree);
+    public abstract @NotNull Iterable<RationalPolynomial> rationalPolynomials();
+    public abstract @NotNull Iterable<RationalPolynomial> monicRationalPolynomials(int degree);
+    public abstract @NotNull Iterable<RationalPolynomial> monicRationalPolynomialsAtLeast(int minDegree);
+    public abstract @NotNull Iterable<RationalPolynomial> monicRationalPolynomials();
 }

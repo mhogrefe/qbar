@@ -198,18 +198,10 @@ public class RationalDemos {
 
     public static void demoHasTerminatingBaseExpansion() {
         initialize();
-        Iterable<Pair<Rational, BigInteger>> ps;
-        if (P instanceof QBarExhaustiveProvider) {
-            ps = ((QBarExhaustiveProvider) P).pairsSquareRootOrder(
-                    cons(ZERO, P.positiveRationals()),
-                    P.rangeUp(BigInteger.valueOf(2))
-            );
-        } else {
-            ps = P.pairs(
-                    cons(ZERO, ((QBarRandomProvider) P).positiveRationals(20)),
-                    map(i -> BigInteger.valueOf(i + 2), ((QBarRandomProvider) P).naturalIntegersGeometric(20))
-            );
-        }
+        Iterable<Pair<Rational, BigInteger>> ps = P.pairsSquareRootOrder(
+                cons(ZERO, P.withRationalMeanBitSize(20).positiveRationals()),
+                map(i -> BigInteger.valueOf(i + 2), P.naturalIntegersGeometric(20))
+        );
         for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
             System.out.println(p.a + (p.a.hasTerminatingBaseExpansion(p.b) ? " has " : " doesn't have ") +
                     "a terminating base-" + p.b + " expansion");
@@ -576,18 +568,10 @@ public class RationalDemos {
 
     public static void demoPositionalNotation() {
         initialize();
-        Iterable<Pair<Rational, BigInteger>> ps;
-        if (P instanceof QBarExhaustiveProvider) {
-            ps = ((QBarExhaustiveProvider) P).pairsSquareRootOrder(
-                    cons(ZERO, P.positiveRationals()),
-                    P.rangeUp(BigInteger.valueOf(2))
-            );
-        } else {
-            ps = P.pairs(
-                    cons(ZERO, ((QBarRandomProvider) P).positiveRationals(8)),
-                    map(i -> BigInteger.valueOf(i + 2), ((QBarRandomProvider) P).naturalIntegersGeometric(20))
-            );
-        }
+        Iterable<Pair<Rational, BigInteger>> ps = P.pairsSquareRootOrder(
+                cons(ZERO, P.withRationalMeanBitSize(8).positiveRationals()),
+                map(i -> BigInteger.valueOf(i + 2), P.naturalIntegersGeometric(20))
+        );
         for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
             System.out.println("positionalNotation(" + p.a + ", " + p.b + ") = " + p.a.positionalNotation(p.b));
         }

@@ -640,18 +640,10 @@ public class RationalProperties {
 
         System.out.println("\t\ttesting hasTerminatingBaseExpansion(BigInteger) properties...");
 
-        Iterable<Pair<Rational, BigInteger>> ps;
-        if (P instanceof ExhaustiveProvider) {
-            ps = ((ExhaustiveProvider) P).pairsSquareRootOrder(
-                    cons(ZERO, P.positiveRationals()),
-                    P.rangeUp(BigInteger.valueOf(2))
-            );
-        } else {
-            ps = P.pairs(
-                    cons(ZERO, ((QBarRandomProvider) P).positiveRationals(20)),
-                    map(i -> BigInteger.valueOf(i + 2), ((RandomProvider) P).naturalIntegersGeometric(20))
-            );
-        }
+        Iterable<Pair<Rational, BigInteger>> ps = P.pairsSquareRootOrder(
+                cons(ZERO, P.withRationalMeanBitSize(20).positiveRationals()),
+                map(i -> BigInteger.valueOf(i + 2), P.naturalIntegersGeometric(20))
+        );
         for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
             boolean result = p.a.hasTerminatingBaseExpansion(p.b);
             Iterable<BigInteger> dPrimeFactors = nub(MathUtils.primeFactors(p.a.getDenominator()));
@@ -659,10 +651,10 @@ public class RationalProperties {
             assertEquals(p.toString(), result, isSubsetOf(dPrimeFactors, bPrimeFactors));
         }
 
-        if (!(P instanceof ExhaustiveProvider)) {
+        if (!(P instanceof QBarExhaustiveProvider)) {
             ps = P.pairs(
-                    cons(ZERO, ((QBarRandomProvider) P).positiveRationals(8)),
-                    map(i -> BigInteger.valueOf(i + 2), ((RandomProvider) P).naturalIntegersGeometric(20))
+                    cons(ZERO, P.withRationalMeanBitSize(8).positiveRationals()),
+                    map(i -> BigInteger.valueOf(i + 2), P.naturalIntegersGeometric(20))
             );
         }
         for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
@@ -684,7 +676,7 @@ public class RationalProperties {
         System.out.println("\t\ttesting bigDecimalValue(int, RoundingMode)...");
 
         Iterable<Pair<Rational, Pair<Integer, RoundingMode>>> ps;
-        if (P instanceof ExhaustiveProvider) {
+        if (P instanceof QBarExhaustiveProvider) {
             ps = P.pairs(
                     P.rationals(),
                     (Iterable<Pair<Integer, RoundingMode>>) P.pairs(P.naturalIntegers(), P.roundingModes())
@@ -693,7 +685,7 @@ public class RationalProperties {
             ps = P.pairs(
                     P.rationals(),
                     (Iterable<Pair<Integer, RoundingMode>>) P.pairs(
-                            ((RandomProvider) P).naturalIntegersGeometric(20),
+                            P.naturalIntegersGeometric(20),
                             P.roundingModes()
                     )
             );
@@ -720,10 +712,10 @@ public class RationalProperties {
         }
 
         Iterable<Pair<Rational, Integer>> pris;
-        if (P instanceof ExhaustiveProvider) {
-            pris = ((ExhaustiveProvider) P).pairsSquareRootOrder(P.rationals(), P.naturalIntegers());
+        if (P instanceof QBarExhaustiveProvider) {
+            pris = P.pairsSquareRootOrder(P.rationals(), P.naturalIntegers());
         } else {
-            pris = P.pairs(P.rationals(), ((RandomProvider) P).naturalIntegersGeometric(20));
+            pris = P.pairs(P.rationals(), P.naturalIntegersGeometric(20));
         }
         pris = filter(
                 p -> {
@@ -775,10 +767,10 @@ public class RationalProperties {
         }
 
         Iterable<Pair<BigDecimal, Integer>> notMidpoints;
-        if (P instanceof ExhaustiveProvider) {
-            notMidpoints = ((ExhaustiveProvider) P).pairsSquareRootOrder(P.bigDecimals(), P.naturalIntegers());
+        if (P instanceof QBarExhaustiveProvider) {
+            notMidpoints = P.pairsSquareRootOrder(P.bigDecimals(), P.naturalIntegers());
         } else {
-            notMidpoints = P.pairs(P.bigDecimals(), ((RandomProvider) P).naturalIntegersGeometric(20));
+            notMidpoints = P.pairs(P.bigDecimals(), P.naturalIntegersGeometric(20));
         }
         notMidpoints = filter(
                 p -> {
@@ -837,10 +829,10 @@ public class RationalProperties {
 
         Iterable<Rational> rs = filter(r -> !r.hasTerminatingBaseExpansion(BigInteger.valueOf(10)), P.rationals());
         Iterable<Pair<Rational, Integer>> prisFail;
-        if (P instanceof ExhaustiveProvider) {
-            prisFail = ((ExhaustiveProvider) P).pairsSquareRootOrder(rs, P.naturalIntegers());
+        if (P instanceof QBarExhaustiveProvider) {
+            prisFail = P.pairsSquareRootOrder(rs, P.naturalIntegers());
         } else {
-            prisFail = P.pairs(rs, ((RandomProvider) P).naturalIntegersGeometric(20));
+            prisFail = P.pairs(rs, P.naturalIntegersGeometric(20));
         }
         for (Pair<Rational, Integer> p : take(LIMIT, prisFail)) {
             try {
@@ -855,10 +847,10 @@ public class RationalProperties {
         System.out.println("\t\ttesting bigDecimalValue(int)...");
 
         Iterable<Pair<Rational, Integer>> ps;
-        if (P instanceof ExhaustiveProvider) {
-            ps = ((ExhaustiveProvider) P).pairsSquareRootOrder(P.rationals(), P.naturalIntegers());
+        if (P instanceof QBarExhaustiveProvider) {
+            ps = P.pairsSquareRootOrder(P.rationals(), P.naturalIntegers());
         } else {
-            ps = P.pairs(P.rationals(), ((RandomProvider) P).naturalIntegersGeometric(20));
+            ps = P.pairs(P.rationals(), P.naturalIntegersGeometric(20));
         }
         ps = filter(
                 p -> {
@@ -883,10 +875,10 @@ public class RationalProperties {
         }
 
         Iterable<Pair<BigDecimal, Integer>> notMidpoints;
-        if (P instanceof ExhaustiveProvider) {
-            notMidpoints = ((ExhaustiveProvider) P).pairsSquareRootOrder(P.bigDecimals(), P.naturalIntegers());
+        if (P instanceof QBarExhaustiveProvider) {
+            notMidpoints = P.pairsSquareRootOrder(P.bigDecimals(), P.naturalIntegers());
         } else {
-            notMidpoints = P.pairs(P.bigDecimals(), ((RandomProvider) P).naturalIntegersGeometric(20));
+            notMidpoints = P.pairs(P.bigDecimals(), P.naturalIntegersGeometric(20));
         }
         notMidpoints = filter(
                 p -> {
@@ -1961,7 +1953,7 @@ public class RationalProperties {
             assertTrue(r.toString(), r.multiply(0) == ZERO);
         }
 
-        for (int i : take(LIMIT, filter(i -> i != 0, P.integers()))) {
+        for (int i : take(LIMIT, filter(j -> j != 0, P.integers()))) {
             assertTrue(Integer.toString(i), of(i).invert().multiply(i) == ONE);
         }
 
@@ -2128,7 +2120,7 @@ public class RationalProperties {
             assertEquals(p.toString(), p.a.divide(p.b), of(p.b).divide(p.a).invert());
         }
         
-        for (BigInteger i : take(LIMIT, filter(i -> !i.equals(BigInteger.ZERO), P.bigIntegers()))) {
+        for (BigInteger i : take(LIMIT, filter(j -> !j.equals(BigInteger.ZERO), P.bigIntegers()))) {
             assertEquals(i.toString(), ONE.divide(i), of(i).invert());
             assertEquals(i.toString(), of(i).divide(i), ONE);
         }
@@ -2191,7 +2183,7 @@ public class RationalProperties {
             assertEquals(p.toString(), p.a.divide(p.b), of(p.b).divide(p.a).invert());
         }
 
-        for (int i : take(LIMIT, filter(i -> i != 0, P.integers()))) {
+        for (int i : take(LIMIT, filter(j -> j != 0, P.integers()))) {
             assertEquals(Integer.toString(i), ONE.divide(i), of(i).invert());
             assertEquals(Integer.toString(i), of(i).divide(i), ONE);
         }
@@ -2555,10 +2547,10 @@ public class RationalProperties {
         System.out.println("\t\ttesting harmonicNumber(int) properties...");
 
         Iterable<Integer> is;
-        if (P instanceof ExhaustiveProvider) {
+        if (P instanceof QBarExhaustiveProvider) {
             is = P.positiveIntegers();
         } else {
-            is = ((RandomProvider) P).positiveIntegersGeometric(100);
+            is = P.positiveIntegersGeometric(100);
         }
         for (int i : take(SMALL_LIMIT, is)) {
             Rational h = harmonicNumber(i);
@@ -2594,7 +2586,7 @@ public class RationalProperties {
         if (P instanceof QBarExhaustiveProvider) {
             exps = P.integers();
         } else {
-            exps = ((RandomProvider) P).integersGeometric(20);
+            exps = P.integersGeometric(20);
         }
 
         Iterable<Pair<Rational, Integer>> ps = filter(p -> p.b >= 0 || p.a != ZERO, P.pairs(P.rationals(), exps));
@@ -2615,7 +2607,7 @@ public class RationalProperties {
         if (P instanceof QBarExhaustiveProvider) {
             pexps = P.positiveIntegers();
         } else {
-            pexps = ((RandomProvider) P).positiveIntegersGeometric(20);
+            pexps = P.positiveIntegersGeometric(20);
         }
         for (int i : take(LIMIT, pexps)) {
             assertTrue(Integer.toString(i), ZERO.pow(i) == ZERO);
@@ -2699,7 +2691,7 @@ public class RationalProperties {
         if (P instanceof QBarExhaustiveProvider) {
             exps = P.integers();
         } else {
-            exps = ((RandomProvider) P).integersGeometric(20);
+            exps = P.integersGeometric(20);
         }
         Iterable<Pair<Rational, Integer>> ps = filter(p -> p.b >= 0 || p.a != ZERO, P.pairs(P.rationals(), exps));
         for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
@@ -2998,15 +2990,15 @@ public class RationalProperties {
         System.out.println("\t\ttesting positionalNotation(BigInteger) properties...");
 
         Iterable<Pair<Rational, BigInteger>> ps;
-        if (P instanceof ExhaustiveProvider) {
-            ps = ((ExhaustiveProvider) P).pairsSquareRootOrder(
+        if (P instanceof QBarExhaustiveProvider) {
+            ps = P.pairsSquareRootOrder(
                     cons(ZERO, P.positiveRationals()),
                     P.rangeUp(BigInteger.valueOf(2))
             );
         } else {
             ps = P.pairs(
-                    cons(ZERO, ((QBarRandomProvider) P).positiveRationals(8)),
-                    map(i -> BigInteger.valueOf(i + 2), ((RandomProvider) P).naturalIntegersGeometric(20))
+                    cons(ZERO, ((QBarRandomProvider) P).withRationalMeanBitSize(8).positiveRationals()),
+                    map(i -> BigInteger.valueOf(i + 2), P.naturalIntegersGeometric(20))
             );
         }
         for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
@@ -3051,10 +3043,10 @@ public class RationalProperties {
                 " List<BigInteger>) properties...");
 
         Iterable<BigInteger> bases;
-        if (P instanceof ExhaustiveProvider) {
+        if (P instanceof QBarExhaustiveProvider) {
             bases = P.rangeUp(BigInteger.valueOf(2));
         } else {
-            bases = map(i -> BigInteger.valueOf(i + 2), ((RandomProvider) P).naturalIntegersGeometric(20));
+            bases = map(i -> BigInteger.valueOf(i + 2), P.naturalIntegersGeometric(20));
         }
         Iterable<Pair<BigInteger, Triple<List<BigInteger>, List<BigInteger>, List<BigInteger>>>> ps = P.dependentPairs(
                 bases,
@@ -3168,15 +3160,15 @@ public class RationalProperties {
         System.out.println("\t\ttesting digits(BigInteger) properties...");
 
         Iterable<Pair<Rational, BigInteger>> ps;
-        if (P instanceof ExhaustiveProvider) {
-            ps = ((ExhaustiveProvider) P).pairsSquareRootOrder(
+        if (P instanceof QBarExhaustiveProvider) {
+            ps = P.pairsSquareRootOrder(
                     cons(ZERO, P.positiveRationals()),
                     P.rangeUp(BigInteger.valueOf(2))
             );
         } else {
             ps = P.pairs(
                     cons(ZERO, P.positiveRationals()),
-                    map(i -> BigInteger.valueOf(i + 2), ((RandomProvider) P).naturalIntegersGeometric(20))
+                    map(i -> BigInteger.valueOf(i + 2), P.naturalIntegersGeometric(20))
             );
         }
         for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
@@ -3191,10 +3183,10 @@ public class RationalProperties {
             toList(digits.b);
         }
 
-        if (!(P instanceof ExhaustiveProvider)) {
+        if (!(P instanceof QBarExhaustiveProvider)) {
             ps = P.pairs(
-                    cons(ZERO, ((QBarRandomProvider) P).positiveRationals(8)),
-                    map(i -> BigInteger.valueOf(i + 2), ((RandomProvider) P).naturalIntegersGeometric(20))
+                    cons(ZERO, ((QBarRandomProvider) P).withRationalMeanBitSize(8).positiveRationals()),
+                    map(i -> BigInteger.valueOf(i + 2), P.naturalIntegersGeometric(20))
             );
         }
         for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
@@ -3226,15 +3218,15 @@ public class RationalProperties {
 
         long totalTime = 0;
         Iterable<Pair<Rational, BigInteger>> ps;
-        if (P instanceof ExhaustiveProvider) {
-            ps = ((ExhaustiveProvider) P).pairsSquareRootOrder(
+        if (P instanceof QBarExhaustiveProvider) {
+            ps = P.pairsSquareRootOrder(
                     cons(ZERO, P.positiveRationals()),
                     P.rangeUp(BigInteger.valueOf(2))
             );
         } else {
             ps = P.pairs(
-                    cons(ZERO, ((QBarRandomProvider) P).positiveRationals(8)),
-                    map(i -> BigInteger.valueOf(i + 2), ((RandomProvider) P).naturalIntegersGeometric(20))
+                    cons(ZERO, ((QBarRandomProvider) P).withRationalMeanBitSize(8).positiveRationals()),
+                    map(i -> BigInteger.valueOf(i + 2), P.naturalIntegersGeometric(20))
             );
         }
         for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
@@ -3258,12 +3250,12 @@ public class RationalProperties {
         System.out.println("\t\ttesting toStringBase(BigInteger) properties...");
 
         Iterable<Pair<Rational, BigInteger>> ps;
-        if (P instanceof ExhaustiveProvider) {
-            ps = ((ExhaustiveProvider) P).pairsSquareRootOrder(P.rationals(), P.rangeUp(BigInteger.valueOf(2)));
+        if (P instanceof QBarExhaustiveProvider) {
+            ps = P.pairsSquareRootOrder(P.rationals(), P.rangeUp(BigInteger.valueOf(2)));
         } else {
             ps = P.pairs(
                     P.rationals(),
-                    map(i -> BigInteger.valueOf(i + 2), ((RandomProvider) P).naturalIntegersGeometric(20))
+                    map(i -> BigInteger.valueOf(i + 2), P.naturalIntegersGeometric(20))
             );
         }
         for (Pair<Rational, BigInteger> p : take(LIMIT, filter(q -> q.a.hasTerminatingBaseExpansion(q.b), ps))) {
@@ -3272,8 +3264,8 @@ public class RationalProperties {
         }
 
         String chars = charsToString(concat(Arrays.asList(fromString("-."), range('0', '9'), range('A', 'Z'))));
-        if (P instanceof ExhaustiveProvider) {
-            ps = ((ExhaustiveProvider) P).pairsSquareRootOrder(
+        if (P instanceof QBarExhaustiveProvider) {
+            ps = P.pairsSquareRootOrder(
                     P.rationals(),
                     P.range(BigInteger.valueOf(2), BigInteger.valueOf(36))
             );
@@ -3286,12 +3278,12 @@ public class RationalProperties {
         }
 
         String chars2 = charsToString(concat(fromString("-.()"), range('0', '9')));
-        if (P instanceof ExhaustiveProvider) {
-            ps = ((ExhaustiveProvider) P).pairsSquareRootOrder(P.rationals(), P.rangeUp(BigInteger.valueOf(37)));
+        if (P instanceof QBarExhaustiveProvider) {
+            ps = P.pairsSquareRootOrder(P.rationals(), P.rangeUp(BigInteger.valueOf(37)));
         } else {
             ps = P.pairs(
                     P.rationals(),
-                    map(i -> BigInteger.valueOf(i + 37), ((RandomProvider) P).naturalIntegersGeometric(20))
+                    map(i -> BigInteger.valueOf(i + 37), P.naturalIntegersGeometric(20))
             );
         }
         for (Pair<Rational, BigInteger> p : take(LIMIT, filter(q -> q.a.hasTerminatingBaseExpansion(q.b), ps))) {
@@ -3307,12 +3299,12 @@ public class RationalProperties {
         }
 
         Iterable<Pair<Rational, BigInteger>> psFail;
-        if (P instanceof ExhaustiveProvider) {
+        if (P instanceof QBarExhaustiveProvider) {
             psFail = P.pairs(P.rationals(), P.rangeUp(BigInteger.valueOf(2)));
         } else {
             psFail = P.pairs(
                     P.rationals(),
-                    map(i -> BigInteger.valueOf(i + 2), ((RandomProvider) P).naturalIntegersGeometric(20))
+                    map(i -> BigInteger.valueOf(i + 2), P.naturalIntegersGeometric(20))
             );
         }
         for (Pair<Rational, BigInteger> p : take(LIMIT, filter(q -> !q.a.hasTerminatingBaseExpansion(q.b), psFail))) {
@@ -3328,7 +3320,7 @@ public class RationalProperties {
         System.out.println("\t\ttesting toStringBase(BigInteger, int) properties...");
 
         Iterable<Pair<Rational, Pair<BigInteger, Integer>>> ps;
-        if (P instanceof ExhaustiveProvider) {
+        if (P instanceof QBarExhaustiveProvider) {
             ps = P.pairs(
                     P.rationals(),
                     (Iterable<Pair<BigInteger, Integer>>) P.pairs(P.rangeUp(BigInteger.valueOf(2)), P.integers())
@@ -3337,8 +3329,8 @@ public class RationalProperties {
             ps = P.pairs(
                     P.rationals(),
                     (Iterable<Pair<BigInteger, Integer>>) P.pairs(
-                            map(i -> BigInteger.valueOf(i + 2), ((RandomProvider) P).naturalIntegersGeometric(20)),
-                            ((RandomProvider) P).integersGeometric(20)
+                            map(i -> BigInteger.valueOf(i + 2), P.naturalIntegersGeometric(20)),
+                            P.integersGeometric(20)
                     )
             );
         }
@@ -3354,7 +3346,7 @@ public class RationalProperties {
         }
 
         String chars = charsToString(concat(Arrays.asList(fromString("-."), range('0', '9'), range('A', 'Z'))));
-        if (P instanceof ExhaustiveProvider) {
+        if (P instanceof QBarExhaustiveProvider) {
             ps = P.pairs(
                     P.rationals(),
                     (Iterable<Pair<BigInteger, Integer>>) P.pairs(
@@ -3367,7 +3359,7 @@ public class RationalProperties {
                     P.rationals(),
                     (Iterable<Pair<BigInteger, Integer>>) P.pairs(
                             P.range(BigInteger.valueOf(2), BigInteger.valueOf(36)),
-                            ((RandomProvider) P).integersGeometric(20)
+                            P.integersGeometric(20)
                     )
             );
         }
@@ -3377,7 +3369,7 @@ public class RationalProperties {
         }
 
         String chars2 = charsToString(concat(fromString("-.()"), range('0', '9')));
-        if (P instanceof ExhaustiveProvider) {
+        if (P instanceof QBarExhaustiveProvider) {
             ps = P.pairs(
                     P.rationals(),
                     (Iterable<Pair<BigInteger, Integer>>) P.pairs(P.rangeUp(BigInteger.valueOf(37)), P.integers())
@@ -3386,8 +3378,8 @@ public class RationalProperties {
             ps = P.pairs(
                     P.rationals(),
                     (Iterable<Pair<BigInteger, Integer>>) P.pairs(
-                            map(i -> BigInteger.valueOf(i + 37), ((RandomProvider) P).naturalIntegersGeometric(20)),
-                            ((RandomProvider) P).integersGeometric(20)
+                            map(i -> BigInteger.valueOf(i + 37), P.naturalIntegersGeometric(20)),
+                            P.integersGeometric(20)
                     )
             );
         }
@@ -3414,10 +3406,10 @@ public class RationalProperties {
         System.out.println("\t\ttesting fromStringBase(BigInteger, String) properties...");
 
         Iterable<BigInteger> bases;
-        if (P instanceof ExhaustiveProvider) {
+        if (P instanceof QBarExhaustiveProvider) {
             bases = P.rangeUp(BigInteger.valueOf(2));
         } else {
-            bases = map(i -> BigInteger.valueOf(i + 2), ((RandomProvider) P).naturalIntegersGeometric(20));
+            bases = map(i -> BigInteger.valueOf(i + 2), P.naturalIntegersGeometric(20));
         }
         Iterable<Pair<BigInteger, String>> ps = P.dependentPairs(
                 bases,
@@ -3429,10 +3421,10 @@ public class RationalProperties {
                         chars += "()0123456789";
                     }
                     Iterable<Character> unfiltered;
-                    if (P instanceof ExhaustiveProvider) {
+                    if (P instanceof QBarExhaustiveProvider) {
                         unfiltered = fromString(chars);
                     } else {
-                        unfiltered = ((RandomProvider) P).uniformSample(chars);
+                        unfiltered = P.uniformSample(chars);
                     }
                     return filter(
                             s -> {

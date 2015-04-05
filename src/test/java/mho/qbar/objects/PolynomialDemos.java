@@ -210,12 +210,10 @@ public class PolynomialDemos {
 
     public static void demoPow() {
         initialize();
-        Iterable<Pair<Polynomial, Integer>> ps;
-        if (P instanceof QBarExhaustiveProvider) {
-            ps = ((QBarExhaustiveProvider) P).pairsLogarithmicOrder(P.polynomials(), P.naturalIntegers());
-        } else {
-            ps = P.pairs(P.polynomials(), ((QBarRandomProvider) P).naturalIntegersGeometric(5));
-        }
+        Iterable<Pair<Polynomial, Integer>> ps = P.pairsLogarithmicOrder(
+                P.polynomials(),
+                P.naturalIntegersGeometric(5)
+        );
         for (Pair<Polynomial, Integer> p : take(LIMIT, ps)) {
             System.out.println("(" + p.a + ") ^ " + p.b + " = " + p.a.pow(p.b));
         }
@@ -223,13 +221,7 @@ public class PolynomialDemos {
 
     public static void demoSubstitute() {
         initialize();
-        Iterable<Polynomial> ps;
-        if (P instanceof QBarExhaustiveProvider) {
-            ps = P.polynomials();
-        } else {
-            ps = ((QBarRandomProvider) P).polynomialsBySize(16);
-        }
-        for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(ps))) {
+        for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(P.withRationalMeanBitSize(16).polynomials()))) {
             System.out.println("substitute(" + p.a + ", " + p.b + ") = " + p.a.substitute(p.b));
         }
     }
