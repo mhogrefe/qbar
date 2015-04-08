@@ -24,7 +24,7 @@ public class PolynomialDemos {
 
     private static void initialize() {
         if (USE_RANDOM) {
-            P = new QBarRandomProvider(new Random(0x6af477d9a7e54fcaL));
+            P = new QBarRandomProvider(0x6af477d9a7e54fcaL);
             LIMIT = 1000;
         } else {
             P = QBarExhaustiveProvider.INSTANCE;

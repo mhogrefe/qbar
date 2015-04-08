@@ -22,24 +22,43 @@ public class QBarRandomProvider extends QBarIterableProvider {
     private static final int DEFAULT_INTERVAL_MEAN_BIT_SIZE = 64;
     private @NotNull RandomProvider RP;
 
-    protected final @NotNull Random generator;
+    protected final long seed;
 
     private int rationalMeanBitSize = DEFAULT_RATIONAL_MEAN_BIT_SIZE;
     private int intervalMeanBitSize = DEFAULT_INTERVAL_MEAN_BIT_SIZE;
 
     public QBarRandomProvider() {
-        RP = new RandomProvider();
-        generator = new Random();
+        seed = new Random().nextLong();
+        RP = new RandomProvider(seed);
     }
 
-    public QBarRandomProvider(@NotNull Random generator) {
-        RP = new RandomProvider(generator);
-        this.generator = generator;
+    public QBarRandomProvider(long seed) {
+        RP = new RandomProvider(seed);
+        this.seed = seed;
+    }
+
+    public int getRationalMeanBitSize() {
+        return rationalMeanBitSize;
+    }
+
+    public int getIntervalMeanBitSize() {
+        return intervalMeanBitSize;
     }
 
     public QBarRandomProvider copy() {
-        QBarRandomProvider copy = new QBarRandomProvider(generator);
+        QBarRandomProvider copy = new QBarRandomProvider(seed);
         copy.RP = RP;
+        copy.rationalMeanBitSize = rationalMeanBitSize;
+        copy.intervalMeanBitSize = intervalMeanBitSize;
+        return copy;
+    }
+
+    public QBarRandomProvider alt() {
+        long newSeed = new Random(seed).nextLong();
+        QBarRandomProvider copy = new QBarRandomProvider(newSeed);
+        copy.RP = RP;
+        copy.rationalMeanBitSize = rationalMeanBitSize;
+        copy.intervalMeanBitSize = intervalMeanBitSize;
         return copy;
     }
 
@@ -294,55 +313,24 @@ public class QBarRandomProvider extends QBarIterableProvider {
         return RP.bigIntegers();
     }
 
-    /**
-     * @return An <tt>Iterable</tt> that generates all natural <tt>Integer</tt>s chosen from a geometric distribution
-     * with mean approximately <tt>meanSize</tt> (The ratio between the actual mean and <tt>meanSize</tt> decreases as
-     * <tt>meanSize</tt> increases). Does not support removal.
-     *
-     * <ul>
-     *  <li><tt>meanSize</tt> must be greater than 1.</li>
-     *  <li>The result is an infinite pseudorandom sequence of all natural <tt>Integers</tt>.</li>
-     * </ul>
-     *
-     * Length is infinite
-     *
-     * @param meanSize the approximate mean bit size of the <tt>Integer</tt>s generated
-     */
-    public @NotNull Iterable<Integer> naturalIntegersGeometric(int meanSize) {
-        if (meanSize <= 1)
-            throw new IllegalArgumentException("meanSize must be greater than 1.");
-        return () -> new Iterator<Integer>() {
-            @Override
-            public boolean hasNext() {
-                return true;
-            }
-
-            @Override
-            public Integer next() {
-                int i = 0;
-                while (generator.nextDouble() >= 1.0 / meanSize) {
-                    i++;
-                }
-                return i;
-            }
-
-            @Override
-            public void remove() {
-                throw new UnsupportedOperationException("cannot remove from this iterator");
-            }
-        };
+    public @NotNull Iterable<Integer> naturalIntegersGeometric(int mean) {
+        return RP.naturalIntegersGeometric(mean);
     }
 
-    public @NotNull Iterable<Integer> positiveIntegersGeometric(int meanSize) {
-        return RP.positiveIntegersGeometric(meanSize);
+    public @NotNull Iterable<Integer> positiveIntegersGeometric(int mean) {
+        return RP.positiveIntegersGeometric(mean);
     }
 
-    public @NotNull Iterable<Integer> negativeIntegersGeometric(int meanSize) {
-        return RP.negativeIntegersGeometric(meanSize);
+    public @NotNull Iterable<Integer> negativeIntegersGeometric(int mean) {
+        return RP.negativeIntegersGeometric(mean);
     }
 
-    public @NotNull Iterable<Integer> integersGeometric(int meanSize) {
-        return RP.integersGeometric(meanSize);
+    public @NotNull Iterable<Integer> nonzeroIntegersGeometric(int mean) {
+        return RP.nonzeroIntegersGeometric(mean);
+    }
+
+    public @NotNull Iterable<Integer> integersGeometric(int mean) {
+        return RP.integersGeometric(mean);
     }
 
     @Override

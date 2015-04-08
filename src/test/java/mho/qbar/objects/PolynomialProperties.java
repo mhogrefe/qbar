@@ -3,6 +3,7 @@ package mho.qbar.objects;
 import mho.qbar.iterableProviders.QBarExhaustiveProvider;
 import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.iterableProviders.QBarRandomProvider;
+import mho.wheels.iterables.IterableProvider;
 import mho.wheels.iterables.IterableUtils;
 import mho.wheels.iterables.RandomProvider;
 import mho.wheels.math.Combinatorics;
@@ -33,7 +34,7 @@ public class PolynomialProperties {
 
     private static void initialize() {
         if (USE_RANDOM) {
-            P = new QBarRandomProvider(new Random(0x6af477d9a7e54fcaL));
+            P = new QBarRandomProvider(0x6af477d9a7e54fcaL);
             LIMIT = 1000;
         } else {
             P = QBarExhaustiveProvider.INSTANCE;
@@ -47,46 +48,46 @@ public class PolynomialProperties {
         for (boolean useRandom : Arrays.asList(false, true)) {
             System.out.println("\ttesting " + (useRandom ? "randomly" : "exhaustively"));
             USE_RANDOM = useRandom;
-            propertiesIterator();
-            propertiesApply_BigInteger();
-            compareImplementationsApply_BigInteger();
-            propertiesApply_Rational();
-            compareImplementationsApply_Rational();
-            propertiesToRationalPolynomial();
-            propertiesCoefficient();
-            propertiesOf_List_BigInteger();
-            propertiesOf_BigInteger();
-            propertiesOf_BigInteger_int();
-            propertiesDegree();
-            propertiesLeading();
-            propertiesAdd();
-            propertiesNegate();
-            propertiesAbs();
-            propertiesSignum();
-            propertiesSubtract();
-            compareImplementationsSubtract();
-            propertiesMultiply_Polynomial();
-            propertiesMultiply_BigInteger();
-            propertiesMultiply_int();
-            propertiesShiftLeft();
-            compareImplementationsShiftLeft();
-            propertiesSum();
-            compareImplementationsSum();
-            propertiesProduct();
-            propertiesDelta();
-            propertiesPow();
-            compareImplementationsPow();
+//            propertiesIterator();
+//            propertiesApply_BigInteger();
+//            compareImplementationsApply_BigInteger();
+//            propertiesApply_Rational();
+//            compareImplementationsApply_Rational();
+//            propertiesToRationalPolynomial();
+//            propertiesCoefficient();
+//            propertiesOf_List_BigInteger();
+//            propertiesOf_BigInteger();
+//            propertiesOf_BigInteger_int();
+//            propertiesDegree();
+//            propertiesLeading();
+//            propertiesAdd();
+//            propertiesNegate();
+//            propertiesAbs();
+//            propertiesSignum();
+//            propertiesSubtract();
+//            compareImplementationsSubtract();
+//            propertiesMultiply_Polynomial();
+//            propertiesMultiply_BigInteger();
+//            propertiesMultiply_int();
+//            propertiesShiftLeft();
+//            compareImplementationsShiftLeft();
+//            propertiesSum();
+//            compareImplementationsSum();
+//            propertiesProduct();
+//            propertiesDelta();
+//            propertiesPow();
+//            compareImplementationsPow();
             propertiesSubstitute();
-            compareImplementationsSubstitute();
-            propertiesIsMonic();
-            propertiesIsPrimitive();
-            propertiesContentAndPrimitive();
-            propertiesEquals();
-            propertiesHashCode();
-            propertiesCompareTo();
-            propertiesRead();
-            propertiesFindIn();
-            propertiesToString();
+//            compareImplementationsSubstitute();
+//            propertiesIsMonic();
+//            propertiesIsPrimitive();
+//            propertiesContentAndPrimitive();
+//            propertiesEquals();
+//            propertiesHashCode();
+//            propertiesCompareTo();
+//            propertiesRead();
+//            propertiesFindIn();
+//            propertiesToString();
         }
         System.out.println("Done");
     }
@@ -964,19 +965,15 @@ public class PolynomialProperties {
         return product(replicate(p, a));
     }
 
+    //todo clean
     private static void propertiesPow() {
         initialize();
         System.out.println("\t\ttesting pow(int) properties...");
 
-        Iterable<Integer> exps;
-        Iterable<Pair<Polynomial, Integer>> ps;
-        if (P instanceof QBarExhaustiveProvider) {
-            exps = P.naturalIntegers();
-            ps = ((QBarExhaustiveProvider) P).pairsLogarithmicOrder(P.polynomials(), exps);
-        } else {
-            exps = P.naturalIntegersGeometric(5);
-            ps = P.pairs(P.polynomials(), exps);
-        }
+        Iterable<Pair<Polynomial, Integer>> ps = P.pairsLogarithmicOrder(
+                P.polynomials(),
+                P.naturalIntegersGeometric(5)
+        );
         for (Pair<Polynomial, Integer> p : take(LIMIT, ps)) {
             Polynomial q = p.a.pow(p.b);
             q.validate();
@@ -984,22 +981,16 @@ public class PolynomialProperties {
             assertEquals(p.toString(), q, pow_simplest(p.a, p.b));
         }
 
-        Iterable<Triple<Polynomial, Integer, BigInteger>> ts1 = P.triples(P.polynomials(), exps, P.bigIntegers());
+        Iterable<Triple<Polynomial, Integer, BigInteger>> ts1 = P.triples(P.polynomials(), P.naturalIntegersGeometric(5), P.bigIntegers());
         for (Triple<Polynomial, Integer, BigInteger> t : take(LIMIT, ts1)) {
             assertEquals(t.toString(), t.a.pow(t.b).apply(t.c), t.a.apply(t.c).pow(t.b));
         }
 
-        for (Pair<BigInteger, Integer> p : take(LIMIT, P.pairs(P.bigIntegers(), exps))) {
+        for (Pair<BigInteger, Integer> p : take(LIMIT, P.pairs(P.bigIntegers(), P.naturalIntegersGeometric(5)))) {
             assertEquals(p.toString(), of(p.a).pow(p.b), of(p.a.pow(p.b)));
         }
 
-        Iterable<Integer> pexps;
-        if (P instanceof QBarExhaustiveProvider) {
-            pexps = P.positiveIntegers();
-        } else {
-            pexps = P.positiveIntegersGeometric(20);
-        }
-        for (int i : take(LIMIT, pexps)) {
+        for (int i : take(LIMIT, P.positiveIntegersGeometric(20))) {
             assertTrue(Integer.toString(i), ZERO.pow(i) == ZERO);
         }
 
@@ -1009,10 +1000,7 @@ public class PolynomialProperties {
             assertEquals(p.toString(), p.pow(2), p.multiply(p));
         }
 
-        if (P instanceof QBarRandomProvider) {
-            exps = P.naturalIntegersGeometric(2);
-        }
-        for (Triple<Polynomial, Integer, Integer> t : take(LIMIT, P.triples(P.polynomials(), exps, exps))) {
+        for (Triple<Polynomial, Integer, Integer> t : take(LIMIT, P.triples(((QBarIterableProvider) P.withBigIntegerMeanBitSize(5)).polynomials(), P.naturalIntegersGeometric(2), P.naturalIntegersGeometric(2)))) {
             Polynomial expression1 = t.a.pow(t.b).multiply(t.a.pow(t.c));
             Polynomial expression2 = t.a.pow(t.b + t.c);
             assertEquals(t.toString(), expression1, expression2);
@@ -1021,7 +1009,7 @@ public class PolynomialProperties {
             assertEquals(t.toString(), expression5, expression6);
         }
 
-        Iterable<Triple<Polynomial, Polynomial, Integer>> ts2 = P.triples(P.polynomials(), P.polynomials(), exps);
+        Iterable<Triple<Polynomial, Polynomial, Integer>> ts2 = P.triples(P.polynomials(), P.polynomials(), P.naturalIntegersGeometric(2));
         for (Triple<Polynomial, Polynomial, Integer> t : take(LIMIT, ts2)) {
             Polynomial expression1 = t.a.multiply(t.b).pow(t.c);
             Polynomial expression2 = t.a.pow(t.c).multiply(t.b.pow(t.c));
@@ -1067,12 +1055,7 @@ public class PolynomialProperties {
         initialize();
         System.out.println("\t\ttesting substitute(Polynomial) properties...");
 
-        Iterable<Polynomial> ps;
-        if (P instanceof QBarExhaustiveProvider) {
-            ps = P.polynomials();
-        } else {
-            ps = P.withRationalMeanBitSize(16).polynomials();
-        }
+        Iterable<Polynomial> ps = P.withRationalMeanBitSize(10).polynomials();
         for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(ps))) {
             Polynomial substituted = p.a.substitute(p.b);
             substituted.validate();
