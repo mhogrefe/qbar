@@ -78,10 +78,10 @@ public class RationalPolynomialProperties {
             compareImplementationsSum();
             propertiesProduct();
             propertiesDelta();
-            propertiesPow();
-            propertiesSubstitute();
-            compareImplementationsSubstitute();
-            compareImplementationsPow();
+//            propertiesPow();
+//            compareImplementationsPow();
+//            propertiesSubstitute();
+//            compareImplementationsSubstitute();
             propertiesIsMonic();
             propertiesMakeMonic();
             propertiesContentAndPrimitive();

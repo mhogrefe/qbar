@@ -48,46 +48,46 @@ public class PolynomialProperties {
         for (boolean useRandom : Arrays.asList(false, true)) {
             System.out.println("\ttesting " + (useRandom ? "randomly" : "exhaustively"));
             USE_RANDOM = useRandom;
-//            propertiesIterator();
-//            propertiesApply_BigInteger();
-//            compareImplementationsApply_BigInteger();
-//            propertiesApply_Rational();
-//            compareImplementationsApply_Rational();
-//            propertiesToRationalPolynomial();
-//            propertiesCoefficient();
-//            propertiesOf_List_BigInteger();
-//            propertiesOf_BigInteger();
-//            propertiesOf_BigInteger_int();
-//            propertiesDegree();
-//            propertiesLeading();
-//            propertiesAdd();
-//            propertiesNegate();
-//            propertiesAbs();
-//            propertiesSignum();
-//            propertiesSubtract();
-//            compareImplementationsSubtract();
-//            propertiesMultiply_Polynomial();
-//            propertiesMultiply_BigInteger();
-//            propertiesMultiply_int();
-//            propertiesShiftLeft();
-//            compareImplementationsShiftLeft();
-//            propertiesSum();
-//            compareImplementationsSum();
-//            propertiesProduct();
-//            propertiesDelta();
+            propertiesIterator();
+            propertiesApply_BigInteger();
+            compareImplementationsApply_BigInteger();
+            propertiesApply_Rational();
+            compareImplementationsApply_Rational();
+            propertiesToRationalPolynomial();
+            propertiesCoefficient();
+            propertiesOf_List_BigInteger();
+            propertiesOf_BigInteger();
+            propertiesOf_BigInteger_int();
+            propertiesDegree();
+            propertiesLeading();
+            propertiesAdd();
+            propertiesNegate();
+            propertiesAbs();
+            propertiesSignum();
+            propertiesSubtract();
+            compareImplementationsSubtract();
+            propertiesMultiply_Polynomial();
+            propertiesMultiply_BigInteger();
+            propertiesMultiply_int();
+            propertiesShiftLeft();
+            compareImplementationsShiftLeft();
+            propertiesSum();
+            compareImplementationsSum();
+            propertiesProduct();
+            propertiesDelta();
 //            propertiesPow();
 //            compareImplementationsPow();
-            propertiesSubstitute();
+//            propertiesSubstitute();
 //            compareImplementationsSubstitute();
-//            propertiesIsMonic();
-//            propertiesIsPrimitive();
-//            propertiesContentAndPrimitive();
-//            propertiesEquals();
-//            propertiesHashCode();
-//            propertiesCompareTo();
-//            propertiesRead();
-//            propertiesFindIn();
-//            propertiesToString();
+            propertiesIsMonic();
+            propertiesIsPrimitive();
+            propertiesContentAndPrimitive();
+            propertiesEquals();
+            propertiesHashCode();
+            propertiesCompareTo();
+            propertiesRead();
+            propertiesFindIn();
+            propertiesToString();
         }
         System.out.println("Done");
     }
@@ -1000,7 +1000,7 @@ public class PolynomialProperties {
             assertEquals(p.toString(), p.pow(2), p.multiply(p));
         }
 
-        for (Triple<Polynomial, Integer, Integer> t : take(LIMIT, P.triples(((QBarIterableProvider) P.withBigIntegerMeanBitSize(5)).polynomials(), P.naturalIntegersGeometric(2), P.naturalIntegersGeometric(2)))) {
+        for (Triple<Polynomial, Integer, Integer> t : take(LIMIT, P.triples(((QBarIterableProvider) P.withScale(5)).polynomials(), P.naturalIntegersGeometric(2), P.naturalIntegersGeometric(2)))) {
             Polynomial expression1 = t.a.pow(t.b).multiply(t.a.pow(t.c));
             Polynomial expression2 = t.a.pow(t.b + t.c);
             assertEquals(t.toString(), expression1, expression2);

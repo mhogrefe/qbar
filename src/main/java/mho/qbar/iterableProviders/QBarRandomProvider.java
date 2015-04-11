@@ -18,84 +18,50 @@ import static mho.wheels.ordering.Ordering.lt;
 
 @SuppressWarnings("ConstantConditions")
 public class QBarRandomProvider extends QBarIterableProvider {
-    private static final int DEFAULT_RATIONAL_MEAN_BIT_SIZE = 64;
-    private static final int DEFAULT_INTERVAL_MEAN_BIT_SIZE = 64;
     private @NotNull RandomProvider RP;
 
-    protected final long seed;
-
-    private int rationalMeanBitSize = DEFAULT_RATIONAL_MEAN_BIT_SIZE;
-    private int intervalMeanBitSize = DEFAULT_INTERVAL_MEAN_BIT_SIZE;
-
     public QBarRandomProvider() {
-        seed = new Random().nextLong();
-        RP = new RandomProvider(seed);
+        RP = new RandomProvider();
     }
 
     public QBarRandomProvider(long seed) {
         RP = new RandomProvider(seed);
-        this.seed = seed;
     }
 
-    public int getRationalMeanBitSize() {
-        return rationalMeanBitSize;
+    public int getScale() {
+        return RP.getScale();
     }
 
-    public int getIntervalMeanBitSize() {
-        return intervalMeanBitSize;
+    public int getSecondaryScale() {
+        return RP.getSecondaryScale();
     }
 
-    public QBarRandomProvider copy() {
-        QBarRandomProvider copy = new QBarRandomProvider(seed);
+    public long getSeed() {
+        return RP.getSeed();
+    }
+
+    public @NotNull QBarRandomProvider copy() {
+        QBarRandomProvider copy = new QBarRandomProvider();
         copy.RP = RP;
-        copy.rationalMeanBitSize = rationalMeanBitSize;
-        copy.intervalMeanBitSize = intervalMeanBitSize;
         return copy;
     }
 
-    public QBarRandomProvider alt() {
-        long newSeed = new Random(seed).nextLong();
-        QBarRandomProvider copy = new QBarRandomProvider(newSeed);
-        copy.RP = RP;
-        copy.rationalMeanBitSize = rationalMeanBitSize;
-        copy.intervalMeanBitSize = intervalMeanBitSize;
+    public @NotNull QBarRandomProvider alt() {
+        QBarRandomProvider copy = new QBarRandomProvider();
+        copy.RP = RP.alt();
         return copy;
     }
 
-    public QBarRandomProvider withBigIntegerMeanBitSize(int bigIntegerMeanBitSize) {
-        QBarRandomProvider newRandomProvider = copy();
-        newRandomProvider.RP = RP.withBigIntegerMeanBitSize(bigIntegerMeanBitSize);
-        return newRandomProvider;
+    public @NotNull QBarRandomProvider withScale(int scale) {
+        QBarRandomProvider copy = new QBarRandomProvider();
+        copy.RP = RP.withScale(RP.getScale());
+        return copy;
     }
 
-    public QBarRandomProvider withBigDecimalMeanScale(int bigDecimalMeanScale) {
-        QBarRandomProvider newRandomProvider = copy();
-        newRandomProvider.RP = RP.withBigDecimalMeanScale(bigDecimalMeanScale);
-        return newRandomProvider;
-    }
-
-    public QBarRandomProvider withMeanListSize(int meanListSize) {
-        QBarRandomProvider newRandomProvider = copy();
-        newRandomProvider.RP = RP.withMeanListSize(meanListSize);
-        return newRandomProvider;
-    }
-
-    public QBarRandomProvider withSpecialElementRatio(int specialElementRatio) {
-        QBarRandomProvider newRandomProvider = copy();
-        newRandomProvider.RP = RP.withSpecialElementRatio(specialElementRatio);
-        return newRandomProvider;
-    }
-
-    public QBarRandomProvider withRationalMeanBitSize(int bigIntegerMeanBitSize) {
-        QBarRandomProvider newRandomProvider = copy();
-        newRandomProvider.rationalMeanBitSize = bigIntegerMeanBitSize;
-        return newRandomProvider;
-    }
-
-    public QBarRandomProvider withIntervalMeanBitSize(int intervalMeanBitSize) {
-        QBarRandomProvider newRandomProvider = copy();
-        newRandomProvider.intervalMeanBitSize = intervalMeanBitSize;
-        return newRandomProvider;
+    public @NotNull QBarRandomProvider withSecondaryScale(int secondaryScale) {
+        QBarRandomProvider copy = new QBarRandomProvider();
+        copy.RP = RP.withSecondaryScale(secondaryScale);
+        return copy;
     }
 
     @Override
@@ -617,8 +583,8 @@ public class QBarRandomProvider extends QBarIterableProvider {
      */
     @Override
     public @NotNull Iterable<Rational> rationals() {
-        Iterable<BigInteger> numerators = withBigIntegerMeanBitSize(rationalMeanBitSize / 2).bigIntegers();
-        Iterable<BigInteger> denominators = withBigIntegerMeanBitSize(rationalMeanBitSize / 2).positiveBigIntegers();
+        Iterable<BigInteger> numerators = withScale(RP.getScale() / 2).bigIntegers();
+        Iterable<BigInteger> denominators = withScale(RP.getScale() / 2).positiveBigIntegers();
         return map(
                 p -> Rational.of(p.a, p.b),
                 filter(q -> q.a.gcd(q.b).equals(BigInteger.ONE), pairs(numerators, denominators))
@@ -642,8 +608,8 @@ public class QBarRandomProvider extends QBarIterableProvider {
      */
     @Override
     public @NotNull Iterable<Rational> nonNegativeRationals() {
-        Iterable<BigInteger> numerators = withBigIntegerMeanBitSize(rationalMeanBitSize / 2).naturalBigIntegers();
-        Iterable<BigInteger> denominators = withBigIntegerMeanBitSize(rationalMeanBitSize / 2).positiveBigIntegers();
+        Iterable<BigInteger> numerators = withScale(RP.getScale() / 2).naturalBigIntegers();
+        Iterable<BigInteger> denominators = withScale(RP.getScale() / 2).positiveBigIntegers();
         return map(
                 p -> Rational.of(p.a, p.b),
                 filter(q -> q.a.gcd(q.b).equals(BigInteger.ONE), pairs(numerators, denominators))
@@ -667,7 +633,7 @@ public class QBarRandomProvider extends QBarIterableProvider {
      */
     @Override
     public @NotNull Iterable<Rational> positiveRationals() {
-        Iterable<BigInteger> components = withBigIntegerMeanBitSize(rationalMeanBitSize / 2).positiveBigIntegers();
+        Iterable<BigInteger> components = withScale(RP.getScale() / 2).positiveBigIntegers();
         return map(
                 p -> Rational.of(p.a, p.b),
                 filter(q -> q.a.gcd(q.b).equals(BigInteger.ONE), pairs(components))
@@ -691,8 +657,8 @@ public class QBarRandomProvider extends QBarIterableProvider {
      */
     @Override
     public @NotNull Iterable<Rational> negativeRationals() {
-        Iterable<BigInteger> numerators = withBigIntegerMeanBitSize(rationalMeanBitSize / 2).negativeBigIntegers();
-        Iterable<BigInteger> denominators = withBigIntegerMeanBitSize(rationalMeanBitSize / 2).positiveBigIntegers();
+        Iterable<BigInteger> numerators = withScale(RP.getScale() / 2).negativeBigIntegers();
+        Iterable<BigInteger> denominators = withScale(RP.getScale() / 2).positiveBigIntegers();
         return map(
                 p -> Rational.of(p.a, p.b),
                 filter(q -> q.a.gcd(q.b).equals(BigInteger.ONE), pairs(numerators, denominators))
@@ -716,8 +682,8 @@ public class QBarRandomProvider extends QBarIterableProvider {
      */
     @Override
     public @NotNull Iterable<Rational> nonNegativeRationalsLessThanOne() {
-        Iterable<BigInteger> numerators = withBigIntegerMeanBitSize(rationalMeanBitSize / 2).naturalBigIntegers();
-        Iterable<BigInteger> denominators = withBigIntegerMeanBitSize(rationalMeanBitSize / 2).positiveBigIntegers();
+        Iterable<BigInteger> numerators = withScale(RP.getScale() / 2).naturalBigIntegers();
+        Iterable<BigInteger> denominators = withScale(RP.getScale() / 2).positiveBigIntegers();
         return map(
                 p -> Rational.of(p.a, p.b),
                 filter(q -> lt(q.a, q.b) && q.a.gcd(q.b).equals(BigInteger.ONE), pairs(numerators, denominators))
@@ -741,7 +707,7 @@ public class QBarRandomProvider extends QBarIterableProvider {
      */
     @Override
     public @NotNull Iterable<Interval> finitelyBoundedIntervals() {
-        Iterable<Rational> bounds = withRationalMeanBitSize(intervalMeanBitSize / 2).rationals();
+        Iterable<Rational> bounds = withScale(RP.getScale() / 2).rationals();
         return map(p -> Interval.of(p.a, p.b), filter(p -> le(p.a, p.b), pairs(bounds)));
     }
 
@@ -762,7 +728,7 @@ public class QBarRandomProvider extends QBarIterableProvider {
      */
     @Override
     public @NotNull Iterable<Interval> intervals() {
-        Iterable<Rational> bounds = withRationalMeanBitSize(intervalMeanBitSize / 2).rationals();
+        Iterable<Rational> bounds = withScale(RP.getScale() / 2).rationals();
         return map(
                 p -> {
                     if (!p.a.isPresent() && !p.b.isPresent()) return Interval.ALL;
