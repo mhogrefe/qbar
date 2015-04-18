@@ -33,21 +33,21 @@ public class RationalPolynomialDemos {
         }
     }
 
-    public static void demoIterator() {
+    private static void demoIterator() {
         initialize();
         for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
             System.out.println("toList(" + p + ") = " + toList(p));
         }
     }
 
-    public static void demoApply() {
+    private static void demoApply() {
         initialize();
         for (Pair<RationalPolynomial, Rational> p : take(LIMIT, P.pairs(P.rationalPolynomials(), P.rationals()))) {
             System.out.println(p.a + " at " + p.b + " = " + p.a.apply(p.b));
         }
     }
 
-    public static void demoCoefficient() {
+    private static void demoCoefficient() {
         initialize();
         Iterable<Pair<RationalPolynomial, Integer>> ps;
         if (P instanceof QBarExhaustiveProvider) {
@@ -60,7 +60,7 @@ public class RationalPolynomialDemos {
         }
     }
 
-    public static void demoOf_List_Rational() {
+    private static void demoOf_List_Rational() {
         initialize();
         for (List<Rational> rs : take(LIMIT, P.lists(P.rationals()))) {
             String listString = tail(init(rs.toString()));
@@ -68,14 +68,14 @@ public class RationalPolynomialDemos {
         }
     }
 
-    public static void demoOf_Rational() {
+    private static void demoOf_Rational() {
         initialize();
         for (Rational r : take(LIMIT, P.rationals())) {
             System.out.println("of(" + r + ") = " + of(r));
         }
     }
 
-    public static void demoOf_Rational_int() {
+    private static void demoOf_Rational_int() {
         initialize();
         Iterable<Pair<Rational, Integer>> ps;
         if (P instanceof QBarExhaustiveProvider) {
@@ -88,84 +88,84 @@ public class RationalPolynomialDemos {
         }
     }
 
-    public static void demoDegree() {
+    private static void demoDegree() {
         initialize();
         for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
             System.out.println("degree(" + p + ") = " + p.degree());
         }
     }
 
-    public static void demoLeading() {
+    private static void demoLeading() {
         initialize();
         for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
             System.out.println("leading(" + p + ") = " + p.leading());
         }
     }
 
-    public static void demoAdd() {
+    private static void demoAdd() {
         initialize();
         for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, P.pairs(P.rationalPolynomials()))) {
             System.out.println("(" + p.a + ") + (" + p.b + ") = " + p.a.add(p.b));
         }
     }
 
-    public static void demoNegate() {
+    private static void demoNegate() {
         initialize();
         for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
             System.out.println("-(" + p + ") = " + p.negate());
         }
     }
 
-    public static void demoAbs() {
+    private static void demoAbs() {
         initialize();
         for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
             System.out.println("|" + p + "| = " + p.abs());
         }
     }
 
-    public static void demoSignum() {
+    private static void demoSignum() {
         initialize();
         for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
             System.out.println("sgn(" + p + ") = " + p.signum());
         }
     }
 
-    public static void demoSubtract() {
+    private static void demoSubtract() {
         initialize();
         for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, P.pairs(P.rationalPolynomials()))) {
             System.out.println("(" + p.a + ") - (" + p.b + ") = " + p.a.subtract(p.b));
         }
     }
 
-    public static void demoMultiply_RationalPolynomial() {
+    private static void demoMultiply_RationalPolynomial() {
         initialize();
         for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, P.pairs(P.rationalPolynomials()))) {
             System.out.println("(" + p.a + ") * (" + p.b + ") = " + p.a.multiply(p.b));
         }
     }
 
-    public static void demoMultiply_Rational() {
+    private static void demoMultiply_Rational() {
         initialize();
         for (Pair<RationalPolynomial, Rational> p : take(LIMIT, P.pairs(P.rationalPolynomials(), P.rationals()))) {
             System.out.println("(" + p.a + ") * " + p.b + " = " + p.a.multiply(p.b));
         }
     }
 
-    public static void demoMultiply_BigInteger() {
+    private static void demoMultiply_BigInteger() {
         initialize();
         for (Pair<RationalPolynomial, BigInteger> p : take(LIMIT, P.pairs(P.rationalPolynomials(), P.bigIntegers()))) {
             System.out.println("(" + p.a + ") * " + p.b + " = " + p.a.multiply(p.b));
         }
     }
 
-    public static void demoMultiply_int() {
+    private static void demoMultiply_int() {
         initialize();
         for (Pair<RationalPolynomial, Integer> p : take(LIMIT, P.pairs(P.rationalPolynomials(), P.integers()))) {
             System.out.println("(" + p.a + ") * " + p.b + " = " + p.a.multiply(p.b));
         }
     }
 
-    public static void demoDivide_Rational() {
+    private static void demoDivide_Rational() {
         initialize();
         Iterable<Pair<RationalPolynomial, Rational>> ps = P.pairs(
                 P.rationalPolynomials(),
@@ -176,7 +176,7 @@ public class RationalPolynomialDemos {
         }
     }
 
-    public static void demoDivide_BigInteger() {
+    private static void demoDivide_BigInteger() {
         initialize();
         Iterable<Pair<RationalPolynomial, BigInteger>> ps = P.pairs(
                 P.rationalPolynomials(),
@@ -187,7 +187,7 @@ public class RationalPolynomialDemos {
         }
     }
 
-    public static void demoDivide_int() {
+    private static void demoDivide_int() {
         initialize();
         Iterable<Pair<RationalPolynomial, Integer>> ps = P.pairs(
                 P.rationalPolynomials(),
@@ -198,7 +198,7 @@ public class RationalPolynomialDemos {
         }
     }
 
-    public static void demoShiftLeft() {
+    private static void demoShiftLeft() {
         initialize();
         Iterable<Integer> is;
         if (P instanceof QBarExhaustiveProvider) {
@@ -211,7 +211,7 @@ public class RationalPolynomialDemos {
         }
     }
 
-    public static void demoShiftRight() {
+    private static void demoShiftRight() {
         initialize();
         Iterable<Integer> is;
         if (P instanceof QBarExhaustiveProvider) {
@@ -224,7 +224,7 @@ public class RationalPolynomialDemos {
         }
     }
 
-    public static void demoSum() {
+    private static void demoSum() {
         initialize();
         for (List<RationalPolynomial> ps : take(LIMIT, P.lists(P.rationalPolynomials()))) {
             String listString = tail(init(ps.toString()));
@@ -232,7 +232,7 @@ public class RationalPolynomialDemos {
         }
     }
 
-    public static void demoProduct() {
+    private static void demoProduct() {
         initialize();
         Iterable<List<RationalPolynomial>> pss;
         if (P instanceof QBarExhaustiveProvider) {
@@ -246,7 +246,7 @@ public class RationalPolynomialDemos {
         }
     }
 
-    public static void demoDelta() {
+    private static void demoDelta() {
         initialize();
         for (List<RationalPolynomial> ps : take(LIMIT, P.listsAtLeast(1, P.rationalPolynomials()))) {
             String listString = tail(init(ps.toString()));
@@ -254,28 +254,28 @@ public class RationalPolynomialDemos {
         }
     }
 
-    public static void demoIsMonic() {
+    private static void demoIsMonic() {
         initialize();
         for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
             System.out.println(p + " is " + (p.isMonic() ? "" : "not ") + "monic");
         }
     }
 
-    public static void demoMakeMonic() {
+    private static void demoMakeMonic() {
         initialize();
         for (RationalPolynomial p : take(LIMIT, filter(q -> q != ZERO, P.rationalPolynomials()))) {
             System.out.println("makeMonic(" + p + ") = " + p.makeMonic());
         }
     }
 
-    public static void demoContentAndPrimitive() {
+    private static void demoContentAndPrimitive() {
         initialize();
         for (RationalPolynomial p : take(LIMIT, filter(q -> q != ZERO, P.rationalPolynomials()))) {
             System.out.println("contentAndPrimitive(" + p + ") = " + p.contentAndPrimitive());
         }
     }
 
-    public static void demoDivide_RationalPolynomial() {
+    private static void demoDivide_RationalPolynomial() {
         initialize();
         Iterable<Pair<RationalPolynomial, RationalPolynomial>> ps = P.pairs(
                 P.rationalPolynomials(),
@@ -286,7 +286,7 @@ public class RationalPolynomialDemos {
         }
     }
 
-    public static void demoPow() {
+    private static void demoPow() {
         initialize();
         Iterable<Pair<RationalPolynomial, Integer>> ps;
         if (P instanceof QBarExhaustiveProvider) {
@@ -302,7 +302,7 @@ public class RationalPolynomialDemos {
         }
     }
 
-    public static void demoSubstitute() {
+    private static void demoSubstitute() {
         initialize();
         Iterable<RationalPolynomial> ps;
         if (P instanceof QBarExhaustiveProvider) {
@@ -315,21 +315,21 @@ public class RationalPolynomialDemos {
         }
     }
 
-    public static void demoDifferentiate() {
+    private static void demoDifferentiate() {
         initialize();
         for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
             System.out.println("differentiate(" + p + ") = " + p.differentiate());
         }
     }
 
-    public static void demoEquals_RationalPolynomial() {
+    private static void demoEquals_RationalPolynomial() {
         initialize();
         for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, P.pairs(P.rationalPolynomials()))) {
             System.out.println(p.a + (p.a.equals(p.b) ? " = " : " ≠ ") + p.b);
         }
     }
 
-    public static void demoEquals_null() {
+    private static void demoEquals_null() {
         initialize();
         for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
             //noinspection ObjectEqualsNull
@@ -337,28 +337,28 @@ public class RationalPolynomialDemos {
         }
     }
 
-    public static void demoHashCode() {
+    private static void demoHashCode() {
         initialize();
         for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
             System.out.println("hashCode(" + p + ") = " + p.hashCode());
         }
     }
 
-    public static void demoCompareTo() {
+    private static void demoCompareTo() {
         initialize();
         for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, P.pairs(P.rationalPolynomials()))) {
             System.out.println(p.a + " " + Ordering.compare(p.a, p.b).toChar() + " " + p.b);
         }
     }
 
-    public static void demoRead() {
+    private static void demoRead() {
         initialize();
         for (String s : take(LIMIT, P.strings())) {
             System.out.println("read(" + s + ") = " + read(s));
         }
     }
 
-    public static void demoRead_targeted() {
+    private static void demoRead_targeted() {
         initialize();
         Iterable<Character> cs;
         if (P instanceof QBarExhaustiveProvider) {
@@ -378,7 +378,7 @@ public class RationalPolynomialDemos {
         }
     }
 
-    public static void demoFindIn_targeted() {
+    private static void demoFindIn_targeted() {
         initialize();
         Iterable<Character> cs;
         if (P instanceof QBarExhaustiveProvider) {
@@ -391,7 +391,7 @@ public class RationalPolynomialDemos {
         }
     }
 
-    public static void demoToString() {
+    private static void demoToString() {
         initialize();
         for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
             System.out.println(p);
