@@ -145,7 +145,7 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
      *
      * <ul>
      *  <li>{@code this} must be non-empty.</li>
-     *  <li>{@code i} must be non-negative.</li>
+     *  <li>{@code i} cannot be negative.</li>
      *  <li>{@code i} must be less than the dimension of {@code this}.</li>
      *  <li>The result is non-null.</li>
      * </ul>
@@ -213,7 +213,7 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
      * Creates the zero vector with a given dimension.
      *
      * <ul>
-     *  <li>{@code dimension} must be non-negative.</li>
+     *  <li>{@code dimension} cannot be negative.</li>
      *  <li>The result is a {@code RationalVector} all of whose coordinates are 0.</li>
      * </ul>
      *
@@ -225,7 +225,7 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
     public static @NotNull RationalVector zero(int dimension) {
         if (dimension == 0) return ZERO_DIMENSIONAL;
         if (dimension < 0)
-            throw new IllegalArgumentException("dimension must be non-negative");
+            throw new IllegalArgumentException("dimension cannot be negative");
         return new RationalVector(toList(replicate(dimension, Rational.ZERO)));
     }
 
@@ -236,7 +236,7 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
      *
      * <ul>
      *  <li>{@code dimension} must be positive.</li>
-     *  <li>{@code i} must be non-negative.</li>
+     *  <li>{@code i} cannot be negative.</li>
      *  <li>{@code i} must be less than {@code dimension}.</li>
      *  <li>The result is a {@code RationalVector} with one coordinate equal to 1 and the others equal to 0.</li>
      * </ul>
@@ -251,7 +251,7 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
         if (dimension < 1)
             throw new IllegalArgumentException("dimension must be positive");
         if (i < 0)
-            throw new IllegalArgumentException("i must be non-negative");
+            throw new IllegalArgumentException("i cannot be negative");
         if (i >= dimension)
             throw new IllegalArgumentException("i must be less than dimension");
         return new RationalVector(toList(insert(replicate(dimension - 1, Rational.ZERO), i, Rational.ONE)));

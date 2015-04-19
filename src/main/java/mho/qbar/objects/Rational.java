@@ -626,7 +626,7 @@ public final class Rational implements Comparable<Rational> {
      *
      * <ul>
      *  <li>{@code this} may be any {@code Rational}.</li>
-     *  <li>{@code precision} must be non-negative.</li>
+     *  <li>{@code precision} cannot be negative.</li>
      *  <li>{@code roundingMode} may be any {@code RoundingMode}.</li>
      *  <li>If {@code precision} is 0, then {@code this} must be a {@code Rational} whose decimal expansion is
      *  terminating; that is, its denominator must only have 2 or 5 as prime factors.</li>
@@ -654,7 +654,7 @@ public final class Rational implements Comparable<Rational> {
      *
      * <ul>
      *  <li>{@code this} may be any {@code Rational}.</li>
-     *  <li>{@code precision} must be non-negative.</li>
+     *  <li>{@code precision} cannot be negative.</li>
      *  <li>If {@code precision} is 0, then {@code this} must be a {@code Rational} whose decimal expansion is
      *  terminating; that is, its denominator must only have 2 or 5 as prime factors.</li>
      *  <li>The result is a {@code BigDecimal} x such that x's scale is greater than or equal to zero and less than or
@@ -1700,7 +1700,7 @@ public final class Rational implements Comparable<Rational> {
      * is ignored.
      *
      * <ul>
-     *  <li>{@code this} must be non-negative.</li>
+     *  <li>{@code this} cannot be negative.</li>
      *  <li>{@code base} must be greater than 1.</li>
      *  <li>The elements of the result are all non-null. The elements of the elements are all non-negative. The first
      *  element does not begin with a zero. The last element is non-empty, and is not equal to [{@code base}–1] (i.e. a
@@ -1792,7 +1792,7 @@ public final class Rational implements Comparable<Rational> {
      * {@code Iterable}). Trailing zeroes are not included.
      *
      * <ul>
-     *  <li>{@code this} must be non-negative.</li>
+     *  <li>{@code this} cannot be negative.</li>
      *  <li>{@code base} must be at least 2.</li>
      *  <li>Both of the result's elements are non-null. The first element does not begin with a zero. The second
      *  element is either finite or eventually repeating.</li>

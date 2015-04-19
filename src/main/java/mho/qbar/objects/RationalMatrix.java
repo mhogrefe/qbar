@@ -113,7 +113,7 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
      *
      * <ul>
      *  <li>{@code this} must be have at least one row.</li>
-     *  <li>{@code i} must be non-negative.</li>
+     *  <li>{@code i} cannot be negative.</li>
      *  <li>{@code i} must be less than the height of {@code this}.</li>
      *  <li>The result is non-null.</li>
      * </ul>
@@ -130,7 +130,7 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
      *
      * <ul>
      *  <li>{@code this} must have at least one column.</li>
-     *  <li>{@code j} must be non-negative.</li>
+     *  <li>{@code j} cannot be negative.</li>
      *  <li>{@code j} must be less than the width of {@code this}.</li>
      *  <li>The result is non-null.</li>
      * </ul>
@@ -153,8 +153,8 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
      *
      * <ul>
      *  <li>{@code this} must have at least one row and at least one column.</li>
-     *  <li>{@code i} must be non-negative.</li>
-     *  <li>{@code j} must be non-negative.</li>
+     *  <li>{@code i} cannot be negative.</li>
+     *  <li>{@code j} cannot be negative.</li>
      *  <li>{@code i} must be less than the height of {@code this}.</li>
      *  <li>{@code j} must be less than the width of {@code this}.</li>
      *  <li>The result is non-null.</li>
@@ -250,8 +250,8 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
      * Creates the zero matrix with a given height and width.
      *
      * <ul>
-     *  <li>{@code height} must be non-negative.</li>
-     *  <li>{@code width} must be non-negative.</li>
+     *  <li>{@code height} cannot be negative.</li>
+     *  <li>{@code width} cannot be negative.</li>
      *  <li>The result is a {@code RationalMatrix} all of whose coordinates are 0.</li>
      * </ul>
      *
@@ -262,7 +262,7 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
      */
     public static @NotNull RationalMatrix zero(int height, int width) {
         if (height < 0 || width < 0)
-            throw new IllegalArgumentException("height and width must be non-negative");
+            throw new IllegalArgumentException("height and width cannot be negative");
         return new RationalMatrix(toList(replicate(height, RationalVector.zero(width))), width);
     }
 

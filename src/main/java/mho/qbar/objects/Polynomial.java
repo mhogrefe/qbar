@@ -468,7 +468,7 @@ public final class Polynomial implements
      *
      * <ul>
      *  <li>{@code this} can be any {@code Polynomial}.</li>
-     *  <li>{@code bits} must be non-negative.</li>
+     *  <li>{@code bits} cannot be negative.</li>
      *  <li>The result is not null.</li>
      * </ul>
      *
