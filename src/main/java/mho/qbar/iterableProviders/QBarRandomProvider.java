@@ -578,8 +578,6 @@ public class QBarRandomProvider extends QBarIterableProvider {
      * </ul>
      *
      * Length is infinite
-     *
-     * @return the {@code Iterable} described above.
      */
     @Override
     public @NotNull Iterable<Rational> rationals() {
@@ -603,8 +601,6 @@ public class QBarRandomProvider extends QBarIterableProvider {
      * </ul>
      *
      * Length is infinite
-     *
-     * @return the {@code Iterable} described above.
      */
     @Override
     public @NotNull Iterable<Rational> nonNegativeRationals() {
@@ -628,8 +624,6 @@ public class QBarRandomProvider extends QBarIterableProvider {
      * </ul>
      *
      * Length is infinite
-     *
-     * @return the {@code Iterable} described above.
      */
     @Override
     public @NotNull Iterable<Rational> positiveRationals() {
@@ -652,8 +646,6 @@ public class QBarRandomProvider extends QBarIterableProvider {
      * </ul>
      *
      * Length is infinite
-     *
-     * @return the {@code Iterable} described above.
      */
     @Override
     public @NotNull Iterable<Rational> negativeRationals() {
@@ -677,8 +669,6 @@ public class QBarRandomProvider extends QBarIterableProvider {
      * </ul>
      *
      * Length is infinite
-     *
-     * @return the {@code Iterable} described above.
      */
     @Override
     public @NotNull Iterable<Rational> nonNegativeRationalsLessThanOne() {
@@ -702,8 +692,6 @@ public class QBarRandomProvider extends QBarIterableProvider {
      * </ul>
      *
      * Length is infinite
-     *
-     * @return the {@code Iterable} described above.
      */
     @Override
     public @NotNull Iterable<Interval> finitelyBoundedIntervals() {
@@ -723,8 +711,6 @@ public class QBarRandomProvider extends QBarIterableProvider {
      * </ul>
      *
      * Length is infinite
-     *
-     * @return the {@code Iterable} described above.
      */
     @Override
     public @NotNull Iterable<Interval> intervals() {
