@@ -153,19 +153,19 @@ public class PolynomialTest {
 
     @Test
     public void testOf_List_BigInteger() {
-        assertTrue(of(readBigIntegerList("[]").get()) == ZERO);
-        assertTrue(of(readBigIntegerList("[0]").get()) == ZERO);
-        assertTrue(of(readBigIntegerList("[0, 0, 0]").get()) == ZERO);
-        assertTrue(of(readBigIntegerList("[1]").get()) == ONE);
-        assertTrue(of(readBigIntegerList("[1, 0, 0]").get()) == ONE);
-        aeq(of(readBigIntegerList("[0, 1]").get()), X);
-        aeq(of(readBigIntegerList("[-17]").get()), "-17");
-        aeq(of(readBigIntegerList("[7, -4, 1]").get()), "x^2-4*x+7");
-        aeq(of(readBigIntegerList("[7, -4, 1, 0, 0]").get()), "x^2-4*x+7");
-        aeq(of(readBigIntegerList("[-1, 0, 0, 1]").get()), "x^3-1");
-        aeq(of(readBigIntegerList("[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3]").get()), "3*x^10");
+        assertTrue(of(readBigIntegerList("[]")) == ZERO);
+        assertTrue(of(readBigIntegerList("[0]")) == ZERO);
+        assertTrue(of(readBigIntegerList("[0, 0, 0]")) == ZERO);
+        assertTrue(of(readBigIntegerList("[1]")) == ONE);
+        assertTrue(of(readBigIntegerList("[1, 0, 0]")) == ONE);
+        aeq(of(readBigIntegerList("[0, 1]")), X);
+        aeq(of(readBigIntegerList("[-17]")), "-17");
+        aeq(of(readBigIntegerList("[7, -4, 1]")), "x^2-4*x+7");
+        aeq(of(readBigIntegerList("[7, -4, 1, 0, 0]")), "x^2-4*x+7");
+        aeq(of(readBigIntegerList("[-1, 0, 0, 1]")), "x^3-1");
+        aeq(of(readBigIntegerList("[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3]")), "3*x^10");
         try {
-            of(readBigIntegerListWithNulls("[7, null, 1]").get());
+            of(readBigIntegerListWithNulls("[7, null, 1]"));
             fail();
         } catch (NullPointerException ignored) {}
     }
@@ -541,45 +541,45 @@ public class PolynomialTest {
 
     @Test
     public void testSum() {
-        assertTrue(sum(readPolynomialList("[]").get()) == ZERO);
-        assertTrue(sum(readPolynomialList("[1]").get()) == ONE);
-        aeq(sum(readPolynomialList("[-17]").get()), "-17");
-        aeq(sum(readPolynomialList("[-17, x^2-4*x+7, -x^3-1, 3*x^10]").get()), "3*x^10-x^3+x^2-4*x-11");
+        assertTrue(sum(readPolynomialList("[]")) == ZERO);
+        assertTrue(sum(readPolynomialList("[1]")) == ONE);
+        aeq(sum(readPolynomialList("[-17]")), "-17");
+        aeq(sum(readPolynomialList("[-17, x^2-4*x+7, -x^3-1, 3*x^10]")), "3*x^10-x^3+x^2-4*x-11");
         try {
-            sum(readPolynomialListWithNulls("[-17, null, -x^3-1, 3*x^10]").get());
+            sum(readPolynomialListWithNulls("[-17, null, -x^3-1, 3*x^10]"));
             fail();
         } catch (NullPointerException ignored) {}
     }
 
     @Test
     public void testProduct() {
-        assertTrue(product(readPolynomialList("[]").get()) == ONE);
-        assertTrue(product(readPolynomialList("[0]").get()) == ZERO);
-        aeq(product(readPolynomialList("[-17]").get()), "-17");
+        assertTrue(product(readPolynomialList("[]")) == ONE);
+        assertTrue(product(readPolynomialList("[0]")) == ZERO);
+        aeq(product(readPolynomialList("[-17]")), "-17");
         aeq(
-                product(readPolynomialList("[-17, x^2-4*x+7, -x^3-1, 3*x^10]").get()),
+                product(readPolynomialList("[-17, x^2-4*x+7, -x^3-1, 3*x^10]")),
                 "51*x^15-204*x^14+357*x^13+51*x^12-204*x^11+357*x^10"
         );
         try {
-            product(readPolynomialListWithNulls("[-17, null, -x^3-1, 3*x^10]").get());
+            product(readPolynomialListWithNulls("[-17, null, -x^3-1, 3*x^10]"));
             fail();
         } catch (IllegalArgumentException ignored) {}
     }
 
     @Test
     public void testDelta() {
-        aeqit(delta(readPolynomialList("[-17]").get()), "[]");
-        aeqit(delta(readPolynomialList("[-17, x^2-4*x+7]").get()), "[x^2-4*x+24]");
+        aeqit(delta(readPolynomialList("[-17]")), "[]");
+        aeqit(delta(readPolynomialList("[-17, x^2-4*x+7]")), "[x^2-4*x+24]");
         aeqit(
-                delta(readPolynomialList("[-17, x^2-4*x+7, -x^3-1, 3*x^10]").get()),
+                delta(readPolynomialList("[-17, x^2-4*x+7, -x^3-1, 3*x^10]")),
                 "[x^2-4*x+24, -x^3-x^2+4*x-8, 3*x^10+x^3+1]"
         );
         try {
-            delta(readPolynomialList("[]").get());
+            delta(readPolynomialList("[]"));
             fail();
         } catch (IllegalArgumentException ignored) {}
         try {
-            toList(delta(readPolynomialListWithNulls("[-17, null, -x^3-1, 3*x^10]").get()));
+            toList(delta(readPolynomialListWithNulls("[-17, null, -x^3-1, 3*x^10]")));
             fail();
         } catch (NullPointerException ignored) {}
     }
@@ -943,19 +943,19 @@ public class PolynomialTest {
         aeq(of(Arrays.asList(BigInteger.valueOf(7), BigInteger.valueOf(-4), BigInteger.ONE)), "x^2-4*x+7");
     }
 
-    private static @NotNull Optional<List<BigInteger>> readBigIntegerList(@NotNull String s) {
-        return Readers.readList(Readers::readBigInteger).apply(s);
+    private static @NotNull List<BigInteger> readBigIntegerList(@NotNull String s) {
+        return Readers.readList(Readers::readBigInteger).apply(s).get();
     }
 
-    private static @NotNull Optional<List<BigInteger>> readBigIntegerListWithNulls(@NotNull String s) {
-        return Readers.readListWithNulls(Readers::readBigInteger).apply(s);
+    private static @NotNull List<BigInteger> readBigIntegerListWithNulls(@NotNull String s) {
+        return Readers.readListWithNulls(Readers::readBigInteger).apply(s).get();
     }
 
-    private static @NotNull Optional<List<Polynomial>> readPolynomialList(@NotNull String s) {
-        return Readers.readList(Polynomial::read).apply(s);
+    private static @NotNull List<Polynomial> readPolynomialList(@NotNull String s) {
+        return Readers.readList(Polynomial::read).apply(s).get();
     }
 
-    private static @NotNull Optional<List<Polynomial>> readPolynomialListWithNulls(@NotNull String s) {
-        return Readers.readListWithNulls(Polynomial::read).apply(s);
+    private static @NotNull List<Polynomial> readPolynomialListWithNulls(@NotNull String s) {
+        return Readers.readListWithNulls(Polynomial::read).apply(s).get();
     }
 }

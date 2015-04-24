@@ -104,19 +104,19 @@ public class RationalPolynomialTest {
 
     @Test
     public void testOf_List_Rational() {
-        assertTrue(of(readRationalList("[]").get()) == ZERO);
-        assertTrue(of(readRationalList("[0]").get()) == ZERO);
-        assertTrue(of(readRationalList("[0, 0, 0]").get()) == ZERO);
-        assertTrue(of(readRationalList("[1]").get()) == ONE);
-        assertTrue(of(readRationalList("[1, 0, 0]").get()) == ONE);
-        aeq(of(readRationalList("[0, 1]").get()), X);
-        aeq(of(readRationalList("[-4/3]").get()), "-4/3");
-        aeq(of(readRationalList("[1/3, -7/4, 1]").get()), "x^2-7/4*x+1/3");
-        aeq(of(readRationalList("[1/3, -7/4, 1, 0]").get()), "x^2-7/4*x+1/3");
-        aeq(of(readRationalList("[-1, 0, 0, 1]").get()), "x^3-1");
-        aeq(of(readRationalList("[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1/2]").get()), "1/2*x^10");
+        assertTrue(of(readRationalList("[]")) == ZERO);
+        assertTrue(of(readRationalList("[0]")) == ZERO);
+        assertTrue(of(readRationalList("[0, 0, 0]")) == ZERO);
+        assertTrue(of(readRationalList("[1]")) == ONE);
+        assertTrue(of(readRationalList("[1, 0, 0]")) == ONE);
+        aeq(of(readRationalList("[0, 1]")), X);
+        aeq(of(readRationalList("[-4/3]")), "-4/3");
+        aeq(of(readRationalList("[1/3, -7/4, 1]")), "x^2-7/4*x+1/3");
+        aeq(of(readRationalList("[1/3, -7/4, 1, 0]")), "x^2-7/4*x+1/3");
+        aeq(of(readRationalList("[-1, 0, 0, 1]")), "x^3-1");
+        aeq(of(readRationalList("[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1/2]")), "1/2*x^10");
         try {
-            of(readRationalListWithNulls("[1/3, null, 1]").get());
+            of(readRationalListWithNulls("[1/3, null, 1]"));
             fail();
         } catch (NullPointerException ignored) {}
     }
@@ -711,48 +711,48 @@ public class RationalPolynomialTest {
 
     @Test
     public void testSum() {
-        assertTrue(sum(readRationalPolynomialList("[]").get()) == ZERO);
-        assertTrue(sum(readRationalPolynomialList("[1]").get()) == ONE);
-        aeq(sum(readRationalPolynomialList("[-4/3]").get()), "-4/3");
+        assertTrue(sum(readRationalPolynomialList("[]")) == ZERO);
+        assertTrue(sum(readRationalPolynomialList("[1]")) == ONE);
+        aeq(sum(readRationalPolynomialList("[-4/3]")), "-4/3");
         aeq(
-                sum(readRationalPolynomialList("[-4/3, x^2-7/4*x+1/3, -x^3-1, 1/2*x^10]").get()),
+                sum(readRationalPolynomialList("[-4/3, x^2-7/4*x+1/3, -x^3-1, 1/2*x^10]")),
                 "1/2*x^10-x^3+x^2-7/4*x-2"
         );
         try {
-            sum(readRationalPolynomialListWithNulls("[-4/3, null, -x^3-1, 1/2*x^10]").get());
+            sum(readRationalPolynomialListWithNulls("[-4/3, null, -x^3-1, 1/2*x^10]"));
             fail();
         } catch (NullPointerException ignored) {}
     }
 
     @Test
     public void testProduct() {
-        assertTrue(product(readRationalPolynomialList("[]").get()) == ONE);
-        assertTrue(product(readRationalPolynomialList("[0]").get()) == ZERO);
-        aeq(product(readRationalPolynomialList("[-4/3]").get()), "-4/3");
+        assertTrue(product(readRationalPolynomialList("[]")) == ONE);
+        assertTrue(product(readRationalPolynomialList("[0]")) == ZERO);
+        aeq(product(readRationalPolynomialList("[-4/3]")), "-4/3");
         aeq(
-                product(readRationalPolynomialList("[-4/3, x^2-7/4*x+1/3, -x^3-1, 1/2*x^10]").get()),
+                product(readRationalPolynomialList("[-4/3, x^2-7/4*x+1/3, -x^3-1, 1/2*x^10]")),
                 "2/3*x^15-7/6*x^14+2/9*x^13+2/3*x^12-7/6*x^11+2/9*x^10"
         );
         try {
-            product(readRationalPolynomialListWithNulls("[-4/3, null, -x^3-1, 1/2*x^10]").get());
+            product(readRationalPolynomialListWithNulls("[-4/3, null, -x^3-1, 1/2*x^10]"));
             fail();
         } catch (IllegalArgumentException ignored) {}
     }
 
     @Test
     public void testDelta() {
-        aeqit(delta(readRationalPolynomialList("[-4/3]").get()), "[]");
-        aeqit(delta(readRationalPolynomialList("[-4/3, x^2-7/4*x+1/3]").get()), "[x^2-7/4*x+5/3]");
+        aeqit(delta(readRationalPolynomialList("[-4/3]")), "[]");
+        aeqit(delta(readRationalPolynomialList("[-4/3, x^2-7/4*x+1/3]")), "[x^2-7/4*x+5/3]");
         aeqit(
-                delta(readRationalPolynomialList("[-4/3, x^2-7/4*x+1/3, -x^3-1, 1/2*x^10]").get()),
+                delta(readRationalPolynomialList("[-4/3, x^2-7/4*x+1/3, -x^3-1, 1/2*x^10]")),
                 "[x^2-7/4*x+5/3, -x^3-x^2+7/4*x-4/3, 1/2*x^10+x^3+1]"
         );
         try {
-            delta(readRationalPolynomialList("[]").get());
+            delta(readRationalPolynomialList("[]"));
             fail();
         } catch (IllegalArgumentException ignored) {}
         try {
-            toList(delta(readRationalPolynomialListWithNulls("[-4/3, null, -x^3-1, 1/2*x^10]").get()));
+            toList(delta(readRationalPolynomialListWithNulls("[-4/3, null, -x^3-1, 1/2*x^10]")));
             fail();
         } catch (NullPointerException ignored) {}
     }
@@ -1186,19 +1186,19 @@ public class RationalPolynomialTest {
         aeq(of(Arrays.asList(Rational.of(1, 3), Rational.of(-7, 4), Rational.ONE)), "x^2-7/4*x+1/3");
     }
 
-    private static @NotNull Optional<List<Rational>> readRationalList(@NotNull String s) {
-        return Readers.readList(Rational::read).apply(s);
+    private static @NotNull List<Rational> readRationalList(@NotNull String s) {
+        return Readers.readList(Rational::read).apply(s).get();
     }
 
-    private static @NotNull Optional<List<Rational>> readRationalListWithNulls(@NotNull String s) {
-        return Readers.readListWithNulls(Rational::read).apply(s);
+    private static @NotNull List<Rational> readRationalListWithNulls(@NotNull String s) {
+        return Readers.readListWithNulls(Rational::read).apply(s).get();
     }
 
-    private static @NotNull Optional<List<RationalPolynomial>> readRationalPolynomialList(@NotNull String s) {
-        return Readers.readList(RationalPolynomial::read).apply(s);
+    private static @NotNull List<RationalPolynomial> readRationalPolynomialList(@NotNull String s) {
+        return Readers.readList(RationalPolynomial::read).apply(s).get();
     }
 
-    private static @NotNull Optional<List<RationalPolynomial>> readRationalPolynomialListWithNulls(@NotNull String s) {
-        return Readers.readListWithNulls(RationalPolynomial::read).apply(s);
+    private static @NotNull List<RationalPolynomial> readRationalPolynomialListWithNulls(@NotNull String s) {
+        return Readers.readListWithNulls(RationalPolynomial::read).apply(s).get();
     }
 }

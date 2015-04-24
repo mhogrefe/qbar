@@ -103,11 +103,11 @@ public class RationalVectorTest {
 
     @Test
     public void testOf_List_Rational() {
-        assertTrue(of(readRationalList("[]").get()) == ZERO_DIMENSIONAL);
-        aeq(of(readRationalList("[1/2]").get()), "[1/2]");
-        aeq(of(readRationalList("[5/3, -1/4, 23]").get()), "[5/3, -1/4, 23]");
+        assertTrue(of(readRationalList("[]")) == ZERO_DIMENSIONAL);
+        aeq(of(readRationalList("[1/2]")), "[1/2]");
+        aeq(of(readRationalList("[5/3, -1/4, 23]")), "[5/3, -1/4, 23]");
         try {
-            of(readRationalListWithNulls("[5/3, null, 23]").get());
+            of(readRationalListWithNulls("[5/3, null, 23]"));
             fail();
         } catch (NullPointerException ignored) {}
     }
@@ -370,48 +370,48 @@ public class RationalVectorTest {
 
     @Test
     public void testSum() {
-        assertTrue(sum(readRationalVectorList("[[]]").get()) == ZERO_DIMENSIONAL);
-        assertTrue(sum(readRationalVectorList("[[], [], []]").get()) == ZERO_DIMENSIONAL);
-        aeq(sum(readRationalVectorList("[[5/3, 1/4, 23]]").get()), "[5/3, 1/4, 23]");
+        assertTrue(sum(readRationalVectorList("[[]]")) == ZERO_DIMENSIONAL);
+        assertTrue(sum(readRationalVectorList("[[], [], []]")) == ZERO_DIMENSIONAL);
+        aeq(sum(readRationalVectorList("[[5/3, 1/4, 23]]")), "[5/3, 1/4, 23]");
         aeq(
-                sum(readRationalVectorList("[[5/3, 1/4, 23], [0, 2/3, -1/8], [32, -45/2, 9]]").get()),
+                sum(readRationalVectorList("[[5/3, 1/4, 23], [0, 2/3, -1/8], [32, -45/2, 9]]")),
                 "[101/3, -259/12, 255/8]"
         );
-        aeq(sum(readRationalVectorList("[[1/2], [2/3], [3/4]]").get()), "[23/12]");
+        aeq(sum(readRationalVectorList("[[1/2], [2/3], [3/4]]")), "[23/12]");
         try {
-            sum(readRationalVectorList("[]").get());
+            sum(readRationalVectorList("[]"));
             fail();
         } catch (IllegalArgumentException ignored) {}
         try {
-            sum(readRationalVectorListWithNulls("[[1/2, 3], null]").get());
+            sum(readRationalVectorListWithNulls("[[1/2, 3], null]"));
             fail();
         } catch (NullPointerException ignored) {}
         try {
-            sum(readRationalVectorList("[[1/2], [3, 4]]").get());
+            sum(readRationalVectorList("[[1/2], [3, 4]]"));
             fail();
         } catch (ArithmeticException ignored) {}
     }
 
     @Test
     public void testDelta() {
-        aeq(delta(readRationalVectorList("[[]]").get()), "[]");
-        aeq(delta(readRationalVectorList("[[], [], []]").get()), "[[], []]");
-        aeq(delta(readRationalVectorList("[[5/3, 1/4, 23]]").get()), "[]");
+        aeq(delta(readRationalVectorList("[[]]")), "[]");
+        aeq(delta(readRationalVectorList("[[], [], []]")), "[[], []]");
+        aeq(delta(readRationalVectorList("[[5/3, 1/4, 23]]")), "[]");
         aeq(
-                delta(readRationalVectorList("[[5/3, 1/4, 23], [0, 2/3, -1/8], [32, -45/2, 9]]").get()),
+                delta(readRationalVectorList("[[5/3, 1/4, 23], [0, 2/3, -1/8], [32, -45/2, 9]]")),
                 "[[-5/3, 5/12, -185/8], [32, -139/6, 73/8]]"
         );
-        aeq(delta(readRationalVectorList("[[1/2], [2/3], [3/4]]").get()), "[[1/6], [1/12]]");
+        aeq(delta(readRationalVectorList("[[1/2], [2/3], [3/4]]")), "[[1/6], [1/12]]");
         try {
-            delta(readRationalVectorList("[]").get());
+            delta(readRationalVectorList("[]"));
             fail();
         } catch (IllegalArgumentException ignored) {}
         try {
-            toList(delta(readRationalVectorListWithNulls("[[1/2, 3], null]").get()));
+            toList(delta(readRationalVectorListWithNulls("[[1/2, 3], null]")));
             fail();
         } catch (NullPointerException ignored) {}
         try {
-            toList(delta(readRationalVectorList("[[1/2], [3, 4]]").get()));
+            toList(delta(readRationalVectorList("[[1/2], [3, 4]]")));
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -600,19 +600,19 @@ public class RationalVectorTest {
         assertEquals(a.toString(), b.toString());
     }
 
-    private static @NotNull Optional<List<Rational>> readRationalList(@NotNull String s) {
-        return Readers.readList(Rational::read).apply(s);
+    private static @NotNull List<Rational> readRationalList(@NotNull String s) {
+        return Readers.readList(Rational::read).apply(s).get();
     }
 
-    private static @NotNull Optional<List<Rational>> readRationalListWithNulls(@NotNull String s) {
-        return Readers.readListWithNulls(Rational::read).apply(s);
+    private static @NotNull List<Rational> readRationalListWithNulls(@NotNull String s) {
+        return Readers.readListWithNulls(Rational::read).apply(s).get();
     }
 
-    private static @NotNull Optional<List<RationalVector>> readRationalVectorList(@NotNull String s) {
-        return Readers.readList(RationalVector::read).apply(s);
+    private static @NotNull List<RationalVector> readRationalVectorList(@NotNull String s) {
+        return Readers.readList(RationalVector::read).apply(s).get();
     }
 
-    private static @NotNull Optional<List<RationalVector>> readRationalVectorListWithNulls(@NotNull String s) {
-        return Readers.readListWithNulls(RationalVector::read).apply(s);
+    private static @NotNull List<RationalVector> readRationalVectorListWithNulls(@NotNull String s) {
+        return Readers.readListWithNulls(RationalVector::read).apply(s).get();
     }
 }

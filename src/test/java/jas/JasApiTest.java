@@ -54,11 +54,11 @@ public class JasApiTest {
         assertEquals(a.toString(), b.toString());
     }
 
-    private static @NotNull Optional<List<BigInteger>> readBigIntegerList(@NotNull String s) {
-        return Readers.readList(Readers::readBigInteger).apply(s);
+    private static @NotNull List<BigInteger> readBigIntegerList(@NotNull String s) {
+        return Readers.readList(Readers::readBigInteger).apply(s).get();
     }
 
     private static List<List<BigInteger>> fp(String s) {
-        return JasApi.factorPolynomial(readBigIntegerList(s).get());
+        return JasApi.factorPolynomial(readBigIntegerList(s));
     }
 }
