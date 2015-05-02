@@ -2,9 +2,7 @@ package mho.qbar.iterableProviders;
 
 import mho.qbar.objects.*;
 import mho.wheels.iterables.IterableProvider;
-import mho.wheels.iterables.RandomProvider;
 import mho.wheels.ordering.Ordering;
-import mho.wheels.random.IsaacPRNG;
 import mho.wheels.structures.*;
 import org.jetbrains.annotations.NotNull;
 
@@ -367,7 +365,7 @@ public abstract class QBarIterableProvider {
             @NotNull Iterable<A> xs,
             @NotNull Function<A, Iterable<B>> f
     ) {
-        return wheelsProvider.dependentPairsExponential(xs);
+        return wheelsProvider.dependentPairsExponential(xs, f);
     }
 
     public @NotNull <A, B> Iterable<Pair<A, B>> dependentPairsSquare(
