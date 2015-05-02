@@ -34,7 +34,7 @@ public class RationalPolynomialProperties {
 
     private static void initialize() {
         if (USE_RANDOM) {
-            P = new QBarRandomProvider(0x6af477d9a7e54fcaL);
+            P = QBarRandomProvider.EXAMPLE;
             LIMIT = 1000;
         } else {
             P = QBarExhaustiveProvider.INSTANCE;
@@ -154,7 +154,7 @@ public class RationalPolynomialProperties {
         if (P instanceof QBarExhaustiveProvider) {
             is = P.naturalIntegers();
         } else {
-            is = P.naturalIntegersGeometric(20);
+            is = P.withScale(20).naturalIntegersGeometric();
         }
         for (Pair<Integer, Rational> p : take(LIMIT, P.pairs(is, P.rationals()))) {
             assertEquals(p.toString(), of(Rational.ONE, p.a).apply(p.b), p.b.pow(p.a));
@@ -190,7 +190,7 @@ public class RationalPolynomialProperties {
         if (P instanceof QBarExhaustiveProvider) {
             ps = P.pairsLogarithmicOrder(P.rationalPolynomials(), P.naturalIntegers());
         } else {
-            ps = P.pairs(P.rationalPolynomials(), P.naturalIntegersGeometric(10));
+            ps = P.pairs(P.rationalPolynomials(), P.withScale(10).naturalIntegersGeometric());
         }
         for (Pair<RationalPolynomial, Integer> p : take(LIMIT, ps)) {
             p.a.coefficient(p.b);
@@ -266,7 +266,7 @@ public class RationalPolynomialProperties {
         if (P instanceof QBarExhaustiveProvider) {
             ps = P.pairsLogarithmicOrder(P.rationals(), P.naturalIntegers());
         } else {
-            ps = P.pairs(P.rationals(), P.naturalIntegersGeometric(20));
+            ps = P.pairs(P.rationals(), P.withScale(20).naturalIntegersGeometric());
         }
         for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
             RationalPolynomial q = of(p.a, p.b);
@@ -826,7 +826,7 @@ public class RationalPolynomialProperties {
         if (P instanceof QBarExhaustiveProvider) {
             is = P.integers();
         } else {
-            is  = P.integersGeometric(50);
+            is  = P.withScale(50).integersGeometric();
         }
         for (Pair<RationalPolynomial, Integer> p : take(LIMIT, P.pairs(P.rationalPolynomials(), is))) {
             RationalPolynomial shifted = p.a.shiftLeft(p.b);
@@ -855,7 +855,7 @@ public class RationalPolynomialProperties {
         if (P instanceof QBarExhaustiveProvider) {
             is = P.naturalIntegers();
         } else {
-            is  = P.naturalIntegersGeometric(50);
+            is  = P.withScale(50).naturalIntegersGeometric();
         }
         for (Pair<RationalPolynomial, Integer> p : take(LIMIT, P.pairs(P.rationalPolynomials(), is))) {
             RationalPolynomial shifted = p.a.shiftLeft(p.b);
@@ -872,7 +872,7 @@ public class RationalPolynomialProperties {
         if (P instanceof QBarExhaustiveProvider) {
             is = P.integers();
         } else {
-            is  = P.integersGeometric(50);
+            is  = P.withScale(50).integersGeometric();
         }
         for (Pair<RationalPolynomial, Integer> p : take(LIMIT, P.pairs(P.rationalPolynomials(), is))) {
             long time = System.nanoTime();
@@ -906,7 +906,7 @@ public class RationalPolynomialProperties {
         if (P instanceof QBarExhaustiveProvider) {
             is = P.integers();
         } else {
-            is  = P.integersGeometric(50);
+            is  = P.withScale(50).integersGeometric();
         }
         Iterable<Pair<RationalPolynomial, Integer>> ps = P.pairs(P.rationalPolynomials(), is);
         for (Pair<RationalPolynomial, Integer> p : take(LIMIT, ps)) {
@@ -936,7 +936,7 @@ public class RationalPolynomialProperties {
         if (P instanceof QBarExhaustiveProvider) {
             is = P.naturalIntegers();
         } else {
-            is  = P.naturalIntegersGeometric(50);
+            is  = P.withScale(50).naturalIntegersGeometric();
         }
         ps = P.pairs(P.rationalPolynomials(), is);
         for (Pair<RationalPolynomial, Integer> p : take(LIMIT, ps)) {
@@ -954,7 +954,7 @@ public class RationalPolynomialProperties {
         if (P instanceof QBarExhaustiveProvider) {
             is = P.integers();
         } else {
-            is  = P.integersGeometric(50);
+            is  = P.withScale(50).integersGeometric();
         }
         for (Pair<RationalPolynomial, Integer> p : take(LIMIT, P.pairs(P.rationalPolynomials(), is))) {
             long time = System.nanoTime();
@@ -1059,7 +1059,7 @@ public class RationalPolynomialProperties {
         if (P instanceof QBarExhaustiveProvider) {
             pss = P.lists(P.rationalPolynomials());
         } else {
-            pss = P.lists(P.withRationalMeanBitSize(10).rationalPolynomials());
+            pss = P.lists(P.withScale(10).rationalPolynomials());
         }
         for (List<RationalPolynomial> ps : take(LIMIT, pss)) {
             RationalPolynomial product = product(ps);
@@ -1177,8 +1177,8 @@ public class RationalPolynomialProperties {
             exps = P.naturalIntegers();
             ps = P.pairsLogarithmicOrder(rps, exps);
         } else {
-            rps = P.withRationalMeanBitSize(10).rationalPolynomials();
-            exps = P.naturalIntegersGeometric(5);
+            rps = P.withScale(10).rationalPolynomials();
+            exps = P.withScale(5).naturalIntegersGeometric();
             ps = P.pairs(rps, exps);
         }
         for (Pair<RationalPolynomial, Integer> p : take(LIMIT, ps)) {
@@ -1201,7 +1201,7 @@ public class RationalPolynomialProperties {
         if (P instanceof QBarExhaustiveProvider) {
             pexps = P.positiveIntegers();
         } else {
-            pexps = P.positiveIntegersGeometric(20);
+            pexps = P.withScale(20).positiveIntegersGeometric();
         }
         for (int i : take(LIMIT, pexps)) {
             assertTrue(Integer.toString(i), ZERO.pow(i) == ZERO);
@@ -1214,7 +1214,7 @@ public class RationalPolynomialProperties {
         }
 
         if (P instanceof QBarRandomProvider) {
-            exps = P.naturalIntegersGeometric(2);
+            exps = P.withScale(2).naturalIntegersGeometric();
         }
         Iterable<Triple<RationalPolynomial, Integer, Integer>> ts2 = P.triples(rps, exps, exps);
         for (Triple<RationalPolynomial, Integer, Integer> t : take(LIMIT, ts2)) {
@@ -1244,8 +1244,8 @@ public class RationalPolynomialProperties {
             exps = P.naturalIntegers();
             ps = P.pairsLogarithmicOrder(P.rationalPolynomials(), exps);
         } else {
-            exps = P.naturalIntegersGeometric(5);
-            ps = P.pairs(P.withRationalMeanBitSize(10).rationalPolynomials(), exps);
+            exps = P.withScale(5).naturalIntegersGeometric();
+            ps = P.pairs(P.withScale(10).rationalPolynomials(), exps);
         }
         for (Pair<RationalPolynomial, Integer> p : take(LIMIT, ps)) {
             long time = System.nanoTime();
@@ -1278,7 +1278,7 @@ public class RationalPolynomialProperties {
         if (P instanceof QBarExhaustiveProvider) {
             ps = P.rationalPolynomials();
         } else {
-            ps = P.withRationalMeanBitSize(6).rationalPolynomials();
+            ps = P.withScale(6).rationalPolynomials();
         }
         for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, P.pairs(ps))) {
             RationalPolynomial substituted = p.a.substitute(p.b);
@@ -1314,7 +1314,7 @@ public class RationalPolynomialProperties {
         if (P instanceof QBarExhaustiveProvider) {
             ps = P.rationalPolynomials();
         } else {
-            ps = P.withRationalMeanBitSize(6).rationalPolynomials();
+            ps = P.withScale(6).rationalPolynomials();
         }
         if (P instanceof QBarExhaustiveProvider) {
             for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, P.pairs(ps))) {

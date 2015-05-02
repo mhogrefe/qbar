@@ -24,7 +24,7 @@ public class PolynomialDemos {
 
     private static void initialize() {
         if (USE_RANDOM) {
-            P = new QBarRandomProvider(0x6af477d9a7e54fcaL);
+            P = QBarRandomProvider.EXAMPLE;
             LIMIT = 1000;
         } else {
             P = QBarExhaustiveProvider.INSTANCE;
@@ -66,7 +66,7 @@ public class PolynomialDemos {
         if (P instanceof QBarExhaustiveProvider) {
             ps = ((QBarExhaustiveProvider) P).pairsLogarithmicOrder(P.polynomials(), P.naturalIntegers());
         } else {
-            ps = P.pairs(P.polynomials(), ((QBarRandomProvider) P).naturalIntegersGeometric(10));
+            ps = P.pairs(P.polynomials(), P.withScale(10).naturalIntegersGeometric());
         }
         for (Pair<Polynomial, Integer> p : take(LIMIT, ps)) {
             System.out.println("coefficient(" + p.a + ", " + p.b + ") = " + p.a.coefficient(p.b));
@@ -94,7 +94,7 @@ public class PolynomialDemos {
         if (P instanceof QBarExhaustiveProvider) {
             ps = ((QBarExhaustiveProvider) P).pairsLogarithmicOrder(P.bigIntegers(), P.naturalIntegers());
         } else {
-            ps = P.pairs(P.bigIntegers(), ((QBarRandomProvider) P).naturalIntegersGeometric(20));
+            ps = P.pairs(P.bigIntegers(), P.withScale(20).naturalIntegersGeometric());
         }
         for (Pair<BigInteger, Integer> p : take(LIMIT, ps)) {
             System.out.println("of(" + p.a + ", " + p.b + ") = " + of(p.a, p.b));
@@ -177,7 +177,7 @@ public class PolynomialDemos {
         if (P instanceof QBarExhaustiveProvider) {
             is = P.naturalIntegers();
         } else {
-            is  = ((QBarRandomProvider) P).naturalIntegersGeometric(50);
+            is  = P.withScale(50).naturalIntegersGeometric();
         }
         for (Pair<Polynomial, Integer> p : take(LIMIT, P.pairs(P.polynomials(), is))) {
             System.out.println(p.a + " << " + p.b + " = " + p.a.shiftLeft(p.b));
@@ -212,7 +212,7 @@ public class PolynomialDemos {
         initialize();
         Iterable<Pair<Polynomial, Integer>> ps = P.pairsLogarithmicOrder(
                 P.polynomials(),
-                P.naturalIntegersGeometric(5)
+                P.withScale(5).naturalIntegersGeometric()
         );
         for (Pair<Polynomial, Integer> p : take(LIMIT, ps)) {
             System.out.println("(" + p.a + ") ^ " + p.b + " = " + p.a.pow(p.b));
@@ -221,7 +221,7 @@ public class PolynomialDemos {
 
     private static void demoSubstitute() {
         initialize();
-        for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(P.withRationalMeanBitSize(16).polynomials()))) {
+        for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(P.withScale(16).polynomials()))) {
             System.out.println("substitute(" + p.a + ", " + p.b + ") = " + p.a.substitute(p.b));
         }
     }

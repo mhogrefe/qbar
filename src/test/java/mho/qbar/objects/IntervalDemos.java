@@ -27,7 +27,7 @@ public class IntervalDemos {
 
     private static void initialize() {
         if (USE_RANDOM) {
-            P = new QBarRandomProvider(0x6af477d9a7e54fcaL);
+            P = QBarRandomProvider.EXAMPLE;
             LIMIT = 1000;
         } else {
             P = QBarExhaustiveProvider.INSTANCE;
@@ -331,7 +331,7 @@ public class IntervalDemos {
         if (P instanceof QBarExhaustiveProvider) {
             is = P.integers();
         } else {
-            is  = ((QBarRandomProvider) P).integersGeometric(50);
+            is  = ((QBarRandomProvider) P).integersGeometric();
         }
         for (Pair<Interval, Integer> p : take(LIMIT, P.pairs(P.intervals(), is))) {
             System.out.println(p.a + " << " + p.b + " = " + p.a.shiftLeft(p.b));
@@ -344,7 +344,7 @@ public class IntervalDemos {
         if (P instanceof QBarExhaustiveProvider) {
             is = P.integers();
         } else {
-            is  = ((QBarRandomProvider) P).integersGeometric(50);
+            is  = ((QBarRandomProvider) P).integersGeometric();
         }
         for (Pair<Interval, Integer> p : take(LIMIT, P.pairs(P.intervals(), is))) {
             System.out.println(p.a + " << " + p.b + " = " + p.a.shiftRight(p.b));
@@ -381,7 +381,7 @@ public class IntervalDemos {
         if (P instanceof QBarExhaustiveProvider) {
             exps = P.integers();
         } else {
-            exps = ((QBarRandomProvider) P).integersGeometric(50);
+            exps = ((QBarRandomProvider) P).integersGeometric();
         }
         for (Pair<Interval, Integer> p : take(LIMIT, P.pairs(P.intervals(), exps))) {
             System.out.println(p.a + " ^ " + p.b + " = " + p.a.pow(p.b));
@@ -394,7 +394,7 @@ public class IntervalDemos {
         if (P instanceof QBarExhaustiveProvider) {
             exps = P.integers();
         } else {
-            exps = ((QBarRandomProvider) P).integersGeometric(50);
+            exps = ((QBarRandomProvider) P).integersGeometric();
         }
         Iterable<Pair<Interval, Integer>> ps = filter(
                 p -> p.b >= 0 || !p.a.equals(ZERO),

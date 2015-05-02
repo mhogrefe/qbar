@@ -14,24 +14,24 @@ public class QBarRandomProviderTest {
 
     @Before
     public void initialize() {
-        P = new QBarRandomProvider(0x6af477d9a7e54fcaL);
+        P = QBarRandomProvider.EXAMPLE;
     }
 
     @Test
     @Ignore
     public void testRationals_Int() {
-        aeq(take(20, P.withRationalMeanBitSize(6).rationals()),
+        aeq(take(20, P.withScale(6).rationals()),
                 "[7, 1, 0, -1/8, -1, -2/3, -1, -5, 0, 1/3, 1, -2/3, -1/29, 4, -1/2, -12, -1, 0, -8/13, -2/7]");
-        aeq(take(20, P.withRationalMeanBitSize(8).rationals()),
+        aeq(take(20, P.withScale(8).rationals()),
                 "[0, 13, 12/37, -1/14, 30, -2, 1/5, -887/21, 120/43, -1," +
                 " -1, -1, -1/2, -1/8, 17/3, -1/14, 2/3, 0, -2, -1/3]");
-        aeq(take(20, P.withRationalMeanBitSize(10).rationals()),
+        aeq(take(20, P.withScale(10).rationals()),
                 "[-1/6, -1/7, 27, 0, 23/3, -42, 58/9, -1, -1/100, -1/7," +
                 " -1/36, -18/479, -1/2, -1, -1/7, 1/71, 0, -3029/228, 12/5, -1/2]");
-        aeq(take(20, P.withRationalMeanBitSize(20).rationals()),
+        aeq(take(20, P.withScale(20).rationals()),
                 "[20/1327, -1/4964, -89/3, 11/12896222, -37/3257784, 1042026, -1/55, 1192/255, -5/16," +
                 " -165510/454753, -1/4, -3752/3, 5/141, 36991, -27338/1397, 47/17546, -2727, -3/5987, 3, 1/7827]");
-        aeq(take(20, P.withRationalMeanBitSize(200).rationals()),
+        aeq(take(20, P.withScale(200).rationals()),
                 "[7794647805636643454127718981794986731065179168717528319/804103074140120138245329048569086589871948" +
                 "685327066372930328248598," +
                 " 221570096366670650938512248490/21354527, -15110369239612982353183412694720788925915864165626940238" +
@@ -53,15 +53,15 @@ public class QBarRandomProviderTest {
                 " -97572928275367678961/581577743664668876842, 24544331/580844203," +
                 " -15110091853/4049564061150907586767959329048598]");
         try {
-            P.withRationalMeanBitSize(5).rationals();
+            P.withScale(5).rationals();
             fail();
         } catch (IllegalArgumentException ignored) {}
         try {
-            P.withRationalMeanBitSize(0).rationals();
+            P.withScale(0).rationals();
             fail();
         } catch (IllegalArgumentException ignored) {}
         try {
-            P.withRationalMeanBitSize(-4).rationals();
+            P.withScale(-4).rationals();
             fail();
         } catch (IllegalArgumentException ignored) {}
     }
@@ -80,16 +80,16 @@ public class QBarRandomProviderTest {
     @Test
     @Ignore
     public void testNonNegativeRationals_Int() {
-        aeq(take(20, P.withRationalMeanBitSize(6).nonNegativeRationals()),
+        aeq(take(20, P.withScale(6).nonNegativeRationals()),
                 "[7, 0, 0, 0, 0, 1, 0, 0, 1, 1/10, 0, 1/6, 0, 0, 1/3, 1, 19, 1/3, 0, 0]");
-        aeq(take(20, P.withRationalMeanBitSize(8).nonNegativeRationals()),
+        aeq(take(20, P.withScale(8).nonNegativeRationals()),
                 "[1, 5, 1, 0, 2/3, 1, 1/15, 6/5, 3, 7, 3, 1/4, 2/7, 1/16, 3, 9, 0, 0, 0, 120]");
-        aeq(take(20, P.withRationalMeanBitSize(10).nonNegativeRationals()),
+        aeq(take(20, P.withScale(10).nonNegativeRationals()),
                 "[3, 378, 2, 27, 1/137, 1/10, 23, 16, 3, 4, 1, 0, 0, 2/1275, 22/21, 1, 3/2, 12, 1/1690, 23/4]");
-        aeq(take(20, P.withRationalMeanBitSize(20).nonNegativeRationals()),
+        aeq(take(20, P.withScale(20).nonNegativeRationals()),
                 "[4/3, 28/7691, 32/127, 5/63789, 6391/13858742509, 38/749, 5/723, 47/3, 12847/1341, 3/5," +
                         " 1/102527, 8, 2726/5, 39/3659, 13/2, 377/2, 2, 0, 163/438702, 4895/2]");
-        aeq(take(20, P.withRationalMeanBitSize(200).nonNegativeRationals()),
+        aeq(take(20, P.withScale(200).nonNegativeRationals()),
                 "[130930763182270660228663614013295761916501829255314527169021191457514666359558387588238964808959/7" +
                 "517586777550828054626795662503, 216821/101419744017795180979313623318," +
                 " 8432222209/3472916303802927696667141042973436153514," +
@@ -111,15 +111,15 @@ public class QBarRandomProviderTest {
                 "6152191886001886094311131611639562713878468940952365683622402882942520413/3618233608561748395950355" +
                 "85967598041032]");
         try {
-            P.withRationalMeanBitSize(5).nonNegativeRationals();
+            P.withScale(5).nonNegativeRationals();
             fail();
         } catch (IllegalArgumentException ignored) {}
         try {
-            P.withRationalMeanBitSize(0).nonNegativeRationals();
+            P.withScale(0).nonNegativeRationals();
             fail();
         } catch (IllegalArgumentException ignored) {}
         try {
-            P.withRationalMeanBitSize(-4).nonNegativeRationals();
+            P.withScale(-4).nonNegativeRationals();
             fail();
         } catch (IllegalArgumentException ignored) {}
     }
@@ -138,17 +138,17 @@ public class QBarRandomProviderTest {
     @Test
     @Ignore
     public void testPositiveRationals_Int() {
-        aeq(take(20, P.withRationalMeanBitSize(6).positiveRationals()),
+        aeq(take(20, P.withScale(6).positiveRationals()),
                 "[15/7, 1/8, 13/20, 1, 1/3, 1, 1/3, 5/14, 1, 1/3, 1/2, 1, 1/3, 5, 1, 1, 3, 3/13, 1/12, 1]");
-        aeq(take(20, P.withRationalMeanBitSize(8).positiveRationals()),
+        aeq(take(20, P.withScale(8).positiveRationals()),
                 "[101238, 1/4, 7/16, 1/2, 1/8, 1/10, 1, 3, 1/6, 2, 1/5, 59/3, 1, 202, 15/2, 1, 4, 20/3, 1, 4]");
-        aeq(take(20, P.withRationalMeanBitSize(10).positiveRationals()),
+        aeq(take(20, P.withScale(10).positiveRationals()),
                 "[1/2, 86, 3/15316, 7/44, 9, 151/57, 1, 61/6, 4/9, 100, 1, 7/292, 3/2, 1/212, 1, 27, 7/1437, 100/11," +
                 " 16/3, 3717/29]");
-        aeq(take(20, P.withRationalMeanBitSize(20).positiveRationals()),
+        aeq(take(20, P.withScale(20).positiveRationals()),
                 "[13/102527, 1/109498956, 5258/5, 326/3659, 1, 11987/3, 550, 1/25088720, 1/1212, 8/3, 5480445/8," +
                 " 107/1095, 1, 1/97, 4/1056300287, 5/3, 40, 40/1581839, 59120946/5, 3/3053]");
-        aeq(take(20, P.withRationalMeanBitSize(200).positiveRationals()),
+        aeq(take(20, P.withScale(200).positiveRationals()),
                 "[141502/335231867706868192600337349063996732925210220322146235185200480379729109693," +
                 " 82779859525093798968142719774830639518/312671, 43831224199/648874484541," +
                 " 17974645478209623401038919939020913285141047338/259, 477347200/101993939639883," +
@@ -167,15 +167,15 @@ public class QBarRandomProviderTest {
                 " 8391847397286266028663628628121949/4460786916521119836043153499810635802022499595724107621041," +
                 " 4954521818195046/12856828686736625]");
         try {
-            P.withRationalMeanBitSize(5).positiveRationals();
+            P.withScale(5).positiveRationals();
             fail();
         } catch (IllegalArgumentException ignored) {}
         try {
-            P.withRationalMeanBitSize(0).positiveRationals();
+            P.withScale(0).positiveRationals();
             fail();
         } catch (IllegalArgumentException ignored) {}
         try {
-            P.withRationalMeanBitSize(-4).positiveRationals();
+            P.withScale(-4).positiveRationals();
             fail();
         } catch (IllegalArgumentException ignored) {}
     }
@@ -196,19 +196,19 @@ public class QBarRandomProviderTest {
     @Test
     @Ignore
     public void testNegativeRationals_Int() {
-        aeq(take(20, P.withRationalMeanBitSize(6).negativeRationals()),
+        aeq(take(20, P.withScale(6).negativeRationals()),
                 "[-15, -7/3, -1/2, -8, -13/5, -1, -1, -1, -3, -1, -1/3, -1, -3, -1/4, -1, -1/2, -1/3, -2/3, -1, -1]");
-        aeq(take(20, P.withRationalMeanBitSize(8).negativeRationals()),
+        aeq(take(20, P.withScale(8).negativeRationals()),
                 "[-7, -703/393, -12, -1, -1/3, -12, -13/3, -1/13, -1/17, -1," +
                 " -1/6, -1/3, -15/2, -5/7, -1, -3, -1, -248, -2/11, -1/3]");
-        aeq(take(20, P.withRationalMeanBitSize(10).negativeRationals()),
+        aeq(take(20, P.withScale(10).negativeRationals()),
                 "[-16, -4, -4/3, -1/890, -1/6, -1, -4/283, -1/3, -137/3, -10/87," +
                         " -1/2, -62, -186, -6, -1, -2/19, -1, -1/3, -1, -264]");
-        aeq(take(20, P.withRationalMeanBitSize(20).negativeRationals()),
+        aeq(take(20, P.withScale(20).negativeRationals()),
                 "[-879/69217, -10/7, -11/795956, -13/7, -31/2, -57/21520, -39, -19979421/3998054, -7691/96," +
                 " -127/2014, -292/21, -63789/2, -2468/14583, -13858742509/294, -749/79, -411/13, -723/175, -3/2," +
                 " -48807/29231, -1341/11]");
-        aeq(take(20, P.withRationalMeanBitSize(200).negativeRationals()),
+        aeq(take(20, P.withScale(200).negativeRationals()),
                 "[-102527/17312403, -316463874199/6, -447122575/1176," +
                 " -704610823827/314303311930083419864406931013330887951732950353459512916006550760406098384467212407" +
                 "2322565195350251261283498014102904063, -7517586777550828054626795662503/741109," +
@@ -230,15 +230,15 @@ public class QBarRandomProviderTest {
                 "1090197119525574855690013789," +
                 " -8470734525663105536958803543893487063052840666166897116597224/326811157579]");
         try {
-            P.withRationalMeanBitSize(5).negativeRationals();
+            P.withScale(5).negativeRationals();
             fail();
         } catch (IllegalArgumentException ignored) {}
         try {
-            P.withRationalMeanBitSize(0).negativeRationals();
+            P.withScale(0).negativeRationals();
             fail();
         } catch (IllegalArgumentException ignored) {}
         try {
-            P.withRationalMeanBitSize(-4).negativeRationals();
+            P.withScale(-4).negativeRationals();
             fail();
         } catch (IllegalArgumentException ignored) {}
     }
@@ -257,17 +257,17 @@ public class QBarRandomProviderTest {
     @Test
     @Ignore
     public void testNonNegativeRationalsLessThanOne_Int() {
-        aeq(take(20, P.withRationalMeanBitSize(6).nonNegativeRationalsLessThanOne()),
+        aeq(take(20, P.withScale(6).nonNegativeRationalsLessThanOne()),
                 "[0, 0, 0, 0, 0, 0, 1/10, 0, 1/6, 0, 0, 1/3, 1/3, 0, 0, 1/12, 0, 1/3, 0, 0]");
-        aeq(take(20, P.withRationalMeanBitSize(8).nonNegativeRationalsLessThanOne()),
+        aeq(take(20, P.withScale(8).nonNegativeRationalsLessThanOne()),
                 "[0, 0, 0, 0, 1/248, 0, 2/55, 0, 0, 1/3, 74/87, 0, 0, 4/5, 1/21, 0, 0, 1/151, 8/13, 1/8]");
-        aeq(take(20, P.withRationalMeanBitSize(10).nonNegativeRationalsLessThanOne()),
+        aeq(take(20, P.withScale(10).nonNegativeRationalsLessThanOne()),
                 "[0, 1/181, 84/1769, 3/61, 1/7, 13/97, 2/7, 0, 3/8, 1/25," +
                 " 1/22, 7/264, 1/7, 0, 2/3, 1/52, 1/3, 1/4, 3/125, 0]");
-        aeq(take(20, P.withRationalMeanBitSize(20).nonNegativeRationalsLessThanOne()),
+        aeq(take(20, P.withScale(20).nonNegativeRationalsLessThanOne()),
                 "[1/3, 1/22935, 43/318, 0, 1/6, 1/288537, 8/209, 1/581, 1/14, 0," +
                 " 12/8843, 715/16519, 1/52, 7/74, 19/15165, 5/264, 4/389547, 62/77, 1/4, 1/824896]");
-        aeq(take(20, P.withRationalMeanBitSize(200).nonNegativeRationalsLessThanOne()),
+        aeq(take(20, P.withScale(200).nonNegativeRationalsLessThanOne()),
                 "[8/19115413234586613922071872429018658253005645," +
                 " 85670910849758892570342055611481509357008599360251517919/43368919404338580948728100858673375441939" +
                 "0170232945797696, 6569084480/648874484541, 2706903/176694600747696211068473992298355492424," +
@@ -287,15 +287,15 @@ public class QBarRandomProviderTest {
                 " 682593906260878534705/151290350198800408473876763059169102633462652," +
                 " 86984647404509122/160285187112559912264544581772315655]");
         try {
-            P.withRationalMeanBitSize(5).nonNegativeRationalsLessThanOne();
+            P.withScale(5).nonNegativeRationalsLessThanOne();
             fail();
         } catch (IllegalArgumentException ignored) {}
         try {
-            P.withRationalMeanBitSize(0).nonNegativeRationalsLessThanOne();
+            P.withScale(0).nonNegativeRationalsLessThanOne();
             fail();
         } catch (IllegalArgumentException ignored) {}
         try {
-            P.withRationalMeanBitSize(-4).nonNegativeRationalsLessThanOne();
+            P.withScale(-4).nonNegativeRationalsLessThanOne();
             fail();
         } catch (IllegalArgumentException ignored) {}
     }
@@ -315,25 +315,25 @@ public class QBarRandomProviderTest {
     @Test
     @Ignore
     public void testFinitelyBoundedIntervals_int() {
-        aeq(take(20, P.withIntervalMeanBitSize(12).finitelyBoundedIntervals()),
+        aeq(take(20, P.withScale(12).finitelyBoundedIntervals()),
                 "[[0, 0], [-1/3, 12], [-1/7, 0], [-1/9, -1/21], [-1, -1], [-1, -1/4], [-1/9, 0], [-3, -1]," +
                 " [-1/3, 0], [-1/20, 1], [-1, 0], [0, 1], [-1, 0], [-1/10, -1/11], [-1, -1], [-1/5, -1/228]," +
                 " [-1/77, 0], [-3, 0], [-2/29, 0], [-7, 1]]");
-        aeq(take(20, P.withIntervalMeanBitSize(16).finitelyBoundedIntervals()),
+        aeq(take(20, P.withScale(16).finitelyBoundedIntervals()),
                 "[[-1/9, 0], [-1/3, 4], [0, 2], [-2/9, 3/4], [1/41, 94/3], [-1/3, 2/3], [-1/6, 2], [-3, -1/4]," +
                 " [-1, -1/3], [1/2, 1/2], [1/2, 2/3], [-2, 0], [-101, -1], [-5, 0], [0, 1/3], [-1, -1/3]," +
                 " [-2, -1/7], [-2, 0], [-5/2, 2], [-1/5, 1/182]]");
-        aeq(take(20, P.withIntervalMeanBitSize(20).finitelyBoundedIntervals()),
+        aeq(take(20, P.withScale(20).finitelyBoundedIntervals()),
                 "[[-1/3, -5/97], [-1, 7/3], [-26958, -1/3], [-2/39, 0], [-1/6, -1/432], [-1/7, 0], [-1/6, 5/3]," +
                 " [-1, 1], [-16/5, 21], [-2/15, -22/455], [-5/4, -1/3], [-16/287, 1/26], [-2/7, 1/70], [4, 661]," +
                 " [3/76, 1/10], [-1/7, 1/2], [2/123, 91], [-14/3, -3], [-4/13, 0], [-2/9, 77/103]]");
-        aeq(take(20, P.withIntervalMeanBitSize(40).finitelyBoundedIntervals()),
+        aeq(take(20, P.withScale(40).finitelyBoundedIntervals()),
                 "[[-4/131, 219189/2], [-1/13, 1/5], [-4/53, -1/33216], [-17/3, -1/110], [-1/17, 4]," +
                 " [-330424, 1632123/64], [-1/10, 59/26], [-13918733/216, -11/26], [55/2, 632803/54]," +
                 " [67201/3, 15974091158/7], [-13/140, 1/82], [-627/7, 1/10], [-11/2875, 25/75636], [-1, -1/2]," +
                 " [-5544/25, 13/80], [-395/234155341, 27706/1633], [3/11, 215/13], [-1308013/12, -15/29846]," +
                 " [-9/40540, 27/1490842], [-67040/259, 674/973991]]");
-        aeq(take(20, P.withIntervalMeanBitSize(400).finitelyBoundedIntervals()),
+        aeq(take(20, P.withScale(400).finitelyBoundedIntervals()),
                 "[[-926215/16431664650073854891536325743737743, 1269647057469196732113434901261539491465837215270833" +
                 "853659409114076315223036062528482350010495831261832116227541734767/16715446852915054025415698125679" +
                 "35]," +
@@ -371,15 +371,15 @@ public class QBarRandomProviderTest {
                 " [-10459079250757188425618579918272044405689712944/59390854069, -3087873860208388074855143839208628" +
                 "26/5], [-3071566/125081370382930696447279, 25/126314299223530276037472719461577496440437473573]]");
         try {
-            P.withIntervalMeanBitSize(11).finitelyBoundedIntervals();
+            P.withScale(11).finitelyBoundedIntervals();
             fail();
         } catch (IllegalArgumentException ignored) {}
         try {
-            P.withIntervalMeanBitSize(0).finitelyBoundedIntervals();
+            P.withScale(0).finitelyBoundedIntervals();
             fail();
         } catch (IllegalArgumentException ignored) {}
         try {
-            P.withIntervalMeanBitSize(-4).finitelyBoundedIntervals();
+            P.withScale(-4).finitelyBoundedIntervals();
             fail();
         } catch (IllegalArgumentException ignored) {}
     }
@@ -400,26 +400,26 @@ public class QBarRandomProviderTest {
     @Test
     @Ignore
     public void testIntervals_int() {
-        aeq(take(20, P.withIntervalMeanBitSize(12).intervals()),
+        aeq(take(20, P.withScale(12).intervals()),
                 "[[0, 1], [-1/3, -1/3], [0, 0], [-1, -2/3], [0, 0], [0, 3], [-1, -1/2], [-1, 0], [1, 23/3], [0, 1]," +
                 " [-2, 0], [-1, 0], [-1/4, 3/17], [-3/2, -1/3], [0, 3/13], [-1/10, 0], [-1/25, 0], [-1/7, 0]," +
                 " [-1/23, 1], [-7, 106]]");
-        aeq(take(20, P.withIntervalMeanBitSize(16).intervals()),
+        aeq(take(20, P.withScale(16).intervals()),
                 "[[-1, -1], [-2, 2/3], [-1/2, -2/9], (-Infinity, -2/13], (-Infinity, -2/7], [-2, -1/21], [-2, 0]," +
                 " [-1/42, -1/101], [-1/2, -1/4], [-22, -1/138], [-2, -2/3], [0, 3/5], [-1, 1], [1, 29/3]," +
                 " (-Infinity, -1/2], [1/2, 1/2], [1/3, 124/59], [-1, -13/89], [-2, 1/18], [13/1357, Infinity)]");
-        aeq(take(20, P.withIntervalMeanBitSize(20).intervals()),
+        aeq(take(20, P.withScale(20).intervals()),
                 "[[-1/3, -1/3], [-1/4, 5/498], [-1/30, 1/3], [-1, -1], (-Infinity, -2/993], [-73/12783, 0]," +
                 " [-3, 2/71], [-1, 1/88654], [-8/3, -1/152199], [-1, -1/59], [-5/2404, 1], [-1/28, 1/33], [-1, 0]," +
                 " [-1/10, -1/55], (-Infinity, -57/31], [-3, 3/7], [25/2, 1157/2], [-1/12, 1/1172], [-1, -1]," +
                 " [-3, -1]]");
-        aeq(take(20, P.withIntervalMeanBitSize(40).intervals()),
+        aeq(take(20, P.withScale(40).intervals()),
                 "[[-1/9215, 936077171636/103], [3/336217, 264], [-83/10, -1/146640], [-13918733/216, 1/16248]," +
                 " [-2027/26, -26], [-1, 1694/7093], [-1/4, -2/9775], [-1/161, 1/61], [-1/216564772, 84374/7]," +
                 " [2/229, 1/82], [25/75636, 1/7], [-5/6, 7069], [-254884793/3, -1], [-1/27727, 2206/9]," +
                 " [-2/13857749, 45/1169], [-1797992175/29, -395/234155341], [-1/229, 3906/11], [-1/251272, 8]," +
                 " [-30553462/61, -51/14474], [-1/46, -9/40540]]");
-        aeq(take(20, P.withIntervalMeanBitSize(400).intervals()),
+        aeq(take(20, P.withScale(400).intervals()),
                 "[[-2932300622767992843722981339082551986476444745085930464/2658384113574453715843608302278670216568" +
                 "049, 3694/477901135205056207263719374685047]," +
                 " [39715934792773646/6384149652812409395183654221803368013262677, 5772199270980022726104656973113175" +
@@ -452,15 +452,15 @@ public class QBarRandomProviderTest {
                 "338865527214404161314331306816571297498773/3632638456768172]," +
                 " [-30507538/589984077663450662457305, 252629269838496/3654927805]]");
         try {
-            P.withIntervalMeanBitSize(11).intervals();
+            P.withScale(11).intervals();
             fail();
         } catch (IllegalArgumentException ignored) {}
         try {
-            P.withIntervalMeanBitSize(0).intervals();
+            P.withScale(0).intervals();
             fail();
         } catch (IllegalArgumentException ignored) {}
         try {
-            P.withIntervalMeanBitSize(-4).intervals();
+            P.withScale(-4).intervals();
             fail();
         } catch (IllegalArgumentException ignored) {}
     }

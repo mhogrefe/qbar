@@ -1,9 +1,7 @@
 package mho.qbar.iterableProviders;
 
 import mho.qbar.objects.*;
-import mho.wheels.iterables.IterableProvider;
 import mho.wheels.iterables.RandomProvider;
-import mho.wheels.random.IsaacPRNG;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigInteger;
@@ -12,10 +10,11 @@ import java.util.*;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.ordering.Ordering.le;
 import static mho.wheels.ordering.Ordering.lt;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class QBarRandomProvider extends QBarIterableProvider {
+    public static final @NotNull QBarRandomProvider EXAMPLE = new QBarRandomProvider(RandomProvider.EXAMPLE);
+
     private QBarRandomProvider(@NotNull RandomProvider randomProvider) {
         super(randomProvider);
     }
@@ -424,7 +423,7 @@ public class QBarRandomProvider extends QBarIterableProvider {
         return map(
                 q -> q.b,
                 dependentPairsSquare(
-                        pairs(naturalIntegersGeometric(5)),
+                        pairs(withScale(5).naturalIntegersGeometric()),
                         p -> rationalMatrices(p.a, p.b)
                 )
         );

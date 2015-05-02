@@ -28,7 +28,7 @@ public class RationalVectorDemos {
 
     private static void initialize() {
         if (USE_RANDOM) {
-            P = new QBarRandomProvider(0x6af477d9a7e54fcaL);
+            P = QBarRandomProvider.EXAMPLE;
             LIMIT = 1000;
         } else {
             P = QBarExhaustiveProvider.INSTANCE;
@@ -126,7 +126,7 @@ public class RationalVectorDemos {
         if (P instanceof QBarExhaustiveProvider) {
             is = P.naturalIntegers();
         } else {
-            is = P.naturalIntegersGeometric(20);
+            is = P.withScale(20).naturalIntegersGeometric();
         }
         for (int i : take(SMALL_LIMIT, is)) {
             System.out.println("zero(" + i + ") = " + zero(i));
@@ -139,7 +139,7 @@ public class RationalVectorDemos {
         if (P instanceof QBarExhaustiveProvider) {
             is = P.naturalIntegers();
         } else {
-            is = P.naturalIntegersGeometric(20);
+            is = P.withScale(20).naturalIntegersGeometric();
         }
         for (Pair<Integer, Integer> p : take(SMALL_LIMIT, filter(q -> q.a > q.b, P.pairs(is)))) {
             System.out.println("standard(" + p.a + ", " + p.b + ") = " + standard(p.a, p.b));
@@ -160,8 +160,8 @@ public class RationalVectorDemos {
             ps = P.dependentPairs(P.rationalVectors(), v -> P.rationalVectors(v.dimension()));
         } else {
             ps = P.dependentPairs(
-                    P.withRationalMeanBitSize(8).rationalVectors(),
-                    v -> P.withRationalMeanBitSize(8).rationalVectors(v.dimension())
+                    P.withScale(8).rationalVectors(),
+                    v -> P.withScale(8).rationalVectors(v.dimension())
             );
         }
         for (Pair<RationalVector, RationalVector> p : take(LIMIT, ps)) {
@@ -183,8 +183,8 @@ public class RationalVectorDemos {
             ps = P.dependentPairs(P.rationalVectors(), v -> P.rationalVectors(v.dimension()));
         } else {
             ps = P.dependentPairs(
-                    P.withRationalMeanBitSize(8).rationalVectors(),
-                    v -> P.withRationalMeanBitSize(8).rationalVectors(v.dimension())
+                    P.withScale(8).rationalVectors(),
+                    v -> P.withScale(8).rationalVectors(v.dimension())
             );
         }
         for (Pair<RationalVector, RationalVector> p : take(LIMIT, ps)) {
@@ -249,7 +249,7 @@ public class RationalVectorDemos {
         if (P instanceof QBarExhaustiveProvider) {
             is = P.integers();
         } else {
-            is  = P.integersGeometric(50);
+            is  = P.integersGeometric();
         }
         for (Pair<RationalVector, Integer> p : take(LIMIT, P.pairs(P.rationalVectors(), is))) {
             System.out.println(p.a + " << " + p.b + " = " + p.a.shiftLeft(p.b));
@@ -262,7 +262,7 @@ public class RationalVectorDemos {
         if (P instanceof QBarExhaustiveProvider) {
             is = P.integers();
         } else {
-            is  = P.integersGeometric(50);
+            is  = P.integersGeometric();
         }
         for (Pair<RationalVector, Integer> p : take(LIMIT, P.pairs(P.rationalVectors(), is))) {
             System.out.println(p.a + " >> " + p.b + " = " + p.a.shiftRight(p.b));
@@ -276,8 +276,8 @@ public class RationalVectorDemos {
             ps = P.pairs(P.positiveIntegers(), P.naturalIntegers());
         } else {
             ps = P.pairs(
-                    P.positiveIntegersGeometric(5),
-                    P.naturalIntegersGeometric(5)
+                    P.withScale(5).positiveIntegersGeometric(),
+                    P.withScale(5).naturalIntegersGeometric()
             );
         }
         Iterable<List<RationalVector>> vss = map(
@@ -297,8 +297,8 @@ public class RationalVectorDemos {
             ps = P.pairs(P.positiveIntegers(), P.naturalIntegers());
         } else {
             ps = P.pairs(
-                    P.positiveIntegersGeometric(5),
-                    P.naturalIntegersGeometric(5)
+                    P.withScale(5).positiveIntegersGeometric(),
+                    P.withScale(5).naturalIntegersGeometric()
             );
         }
         Iterable<List<RationalVector>> vss = map(
@@ -318,8 +318,8 @@ public class RationalVectorDemos {
             ps = P.dependentPairs(P.rationalVectors(), v -> P.rationalVectors(v.dimension()));
         } else {
             ps = P.dependentPairs(
-                    P.withRationalMeanBitSize(8).rationalVectors(),
-                    v -> P.withRationalMeanBitSize(8).rationalVectors(v.dimension())
+                    P.withScale(8).rationalVectors(),
+                    v -> P.withScale(8).rationalVectors(v.dimension())
             );
         }
         for (Pair<RationalVector, RationalVector> p : take(LIMIT, ps)) {
@@ -334,8 +334,8 @@ public class RationalVectorDemos {
             ps = P.dependentPairs(P.rationalVectors(), v -> P.rationalVectors(v.dimension()));
         } else {
             ps = P.dependentPairs(
-                    P.withRationalMeanBitSize(8).rationalVectors(),
-                    v -> P.withRationalMeanBitSize(8).rationalVectors(v.dimension())
+                    P.withScale(8).rationalVectors(),
+                    v -> P.withScale(8).rationalVectors(v.dimension())
             );
         }
         for (Pair<RationalVector, RationalVector> p : take(LIMIT, ps)) {
