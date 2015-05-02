@@ -3,6 +3,7 @@ package mho.qbar.iterableProviders;
 import mho.qbar.objects.*;
 import mho.wheels.iterables.IterableProvider;
 import mho.wheels.iterables.RandomProvider;
+import mho.wheels.random.IsaacPRNG;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigInteger;
@@ -11,6 +12,8 @@ import java.util.*;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.ordering.Ordering.le;
 import static mho.wheels.ordering.Ordering.lt;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class QBarRandomProvider extends QBarIterableProvider {
     private QBarRandomProvider(@NotNull RandomProvider randomProvider) {
@@ -518,5 +521,60 @@ public class QBarRandomProvider extends QBarIterableProvider {
     @Override
     public Iterable<RationalPolynomial> monicRationalPolynomials() {
         return null;
+    }
+
+    /**
+     * Determines whether {@code this} is equal to {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code QBarRandomProvider}.</li>
+     *  <li>{@code that} may be any {@code Object}.</li>
+     *  <li>The result may be either {@code boolean}.</li>
+     * </ul>
+     *
+     * @param that The {@code QBarRandomProvider} to be compared with {@code this}
+     * @return {@code this}={@code that}
+     */
+    @Override
+    public boolean equals(Object that) {
+        if (this == that) return true;
+        if (that == null || getClass() != that.getClass()) return false;
+        return wheelsProvider.equals(((QBarRandomProvider) that).wheelsProvider);
+    }
+
+    /**
+     * Calculates the hash code of {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code QBarRandomProvider}.</li>
+     *  <li>(conjecture) The result may be any {@code int}.</li>
+     * </ul>
+     *
+     * @return {@code this}'s hash code.
+     */
+    @Override
+    public int hashCode() {
+        return wheelsProvider.hashCode();
+    }
+
+    /**
+     * Creates a {@code String} representation of {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code QBarRandomProvider}.</li>
+     *  <li>See tests and demos for example results.</li>
+     * </ul>
+     *
+     * @return a {@code String} representation of {@code this}
+     */
+    public String toString() {
+        return "QBar" + wheelsProvider;
+    }
+
+    /**
+     * Ensures that {@code this} is valid. Must return true for any {@code QBarRandomProvider} used outside this class.
+     */
+    public void validate() {
+        assertTrue(wheelsProvider instanceof RandomProvider);
     }
 }

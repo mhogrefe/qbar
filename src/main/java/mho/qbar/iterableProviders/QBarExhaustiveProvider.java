@@ -476,4 +476,52 @@ public class QBarExhaustiveProvider extends QBarIterableProvider {
     public @NotNull Iterable<RationalPolynomial> monicRationalPolynomials() {
         return map(p -> p.toRationalPolynomial().makeMonic(), primitivePolynomials());
     }
+
+    /**
+     * Determines whether {@code this} is equal to {@code that}. This implementation is the same as in
+     * {@link java.lang.Object#equals}, but repeated here for clarity.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code QBarExhaustiveProvider}.</li>
+     *  <li>{@code that} may be any {@code Object}.</li>
+     *  <li>The result may be either {@code boolean}.</li>
+     * </ul>
+     *
+     * @param that The {@code QBarExhaustiveProvider} to be compared with {@code this}
+     * @return {@code this}={@code that}
+     */
+    @Override
+    public boolean equals(Object that) {
+        return this == that;
+    }
+
+    /**
+     * Calculates the hash code of {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code QBarExhaustiveProvider}.</li>
+     *  <li>The result is 0.</li>
+     * </ul>
+     *
+     * @return {@code this}'s hash code.
+     */
+    @Override
+    public int hashCode() {
+        return 0;
+    }
+
+    /**
+     * Creates a {@code String} representation of {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code QBarExhaustiveProvider}.</li>
+     *  <li>The result is {@code "QBarExhaustiveProvider"}.</li>
+     * </ul>
+     *
+     * @return a {@code String} representation of {@code this}
+     */
+    @Override
+    public String toString() {
+        return "QBarExhaustiveProvider";
+    }
 }
