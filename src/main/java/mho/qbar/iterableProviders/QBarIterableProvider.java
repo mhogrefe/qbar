@@ -16,22 +16,22 @@ import java.util.function.Function;
 import static mho.wheels.iterables.IterableUtils.map;
 
 public abstract class QBarIterableProvider {
-    private @NotNull IterableProvider wheelsProvider;
+    protected @NotNull IterableProvider wheelsProvider;
 
     protected QBarIterableProvider(@NotNull IterableProvider wheelsProvider) {
         this.wheelsProvider = wheelsProvider;
     }
 
-    public @NotNull IterableProvider alt() {
-        return wheelsProvider.alt();
+    public @NotNull QBarIterableProvider alt() {
+        return this;
     }
 
-    public @NotNull IterableProvider withScale(int scale) {
-        return wheelsProvider.withScale(scale);
+    public @NotNull QBarIterableProvider withScale(int scale) {
+        return this;
     }
 
-    public @NotNull IterableProvider withSecondaryScale(int secondaryScale) {
-        return wheelsProvider.withSecondaryScale(secondaryScale);
+    public @NotNull QBarIterableProvider withSecondaryScale(int secondaryScale) {
+        return this;
     }
 
     public @NotNull Iterable<Boolean> booleans() {
@@ -489,14 +489,14 @@ public abstract class QBarIterableProvider {
         return wheelsProvider.strings();
     }
 
-    public abstract @NotNull Iterable<Rational> rangeUp(@NotNull Rational a);
-    public abstract @NotNull Iterable<Rational> rangeDown(@NotNull Rational a);
-    public abstract @NotNull Iterable<Rational> range(@NotNull Rational a, @NotNull Rational b);
     public abstract @NotNull Iterable<Rational> rationals();
     public abstract @NotNull Iterable<Rational> nonNegativeRationals();
     public abstract @NotNull Iterable<Rational> positiveRationals();
     public abstract @NotNull Iterable<Rational> negativeRationals();
     public abstract @NotNull Iterable<Rational> nonNegativeRationalsLessThanOne();
+    public abstract @NotNull Iterable<Rational> rangeUp(@NotNull Rational a);
+    public abstract @NotNull Iterable<Rational> rangeDown(@NotNull Rational a);
+    public abstract @NotNull Iterable<Rational> range(@NotNull Rational a, @NotNull Rational b);
     public abstract @NotNull Iterable<Interval> finitelyBoundedIntervals();
     public abstract @NotNull Iterable<Interval> intervals();
     public abstract @NotNull Iterable<Byte> bytes(@NotNull Interval a);

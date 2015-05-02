@@ -1,29 +1,79 @@
 package mho.qbar.iterableProviders;
 
 import mho.qbar.objects.*;
+import mho.wheels.iterables.IterableProvider;
 import mho.wheels.iterables.RandomProvider;
-import mho.wheels.ordering.Ordering;
-import mho.wheels.structures.*;
 import org.jetbrains.annotations.NotNull;
 
-import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.math.RoundingMode;
 import java.util.*;
-import java.util.function.Function;
 
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.ordering.Ordering.le;
 import static mho.wheels.ordering.Ordering.lt;
 
-@SuppressWarnings("ConstantConditions")
 public class QBarRandomProvider extends QBarIterableProvider {
+    private QBarRandomProvider(@NotNull RandomProvider randomProvider) {
+        super(randomProvider);
+    }
+
     public QBarRandomProvider() {
         super(new RandomProvider());
     }
 
     public QBarRandomProvider(List<Integer> seed) {
         super(new RandomProvider(seed));
+    }
+
+    public @NotNull QBarIterableProvider alt() {
+        return new QBarRandomProvider(((RandomProvider) wheelsProvider.alt()));
+    }
+
+    public @NotNull QBarIterableProvider withScale(int scale) {
+        return new QBarRandomProvider((RandomProvider) wheelsProvider.withScale(scale));
+    }
+
+    public @NotNull QBarIterableProvider withSecondaryScale(int secondaryScale) {
+        return new QBarRandomProvider((RandomProvider) wheelsProvider.withScale(secondaryScale));
+    }
+
+    /**
+     * Returns {@code this}'s scale parameter.
+     *
+     * <ul>
+     *  <li>The result may be any {@code int}.</li>
+     * </ul>
+     *
+     * @return the scale parameter of {@code this}
+     */
+    public int getScale() {
+        return ((RandomProvider) wheelsProvider).getScale();
+    }
+
+    /**
+     * Returns {@code this}'s other scale parameter.
+     *
+     * <ul>
+     *  <li>The result may be any {@code int}.</li>
+     * </ul>
+     *
+     * @return the other scale parameter of {@code this}
+     */
+    public int getSecondaryScale() {
+        return ((RandomProvider) wheelsProvider).getSecondaryScale();
+    }
+
+    /**
+     * Returns {@code this}'s seed. Makes a defensive copy.
+     *
+     * <ul>
+     *  <li>The result is an array of {@link mho.wheels.random.IsaacPRNG#SIZE} {@code int}s.</li>
+     * </ul>
+     *
+     * @return the seed of {@code this}
+     */
+    public @NotNull List<Integer> getSeed() {
+        return ((RandomProvider) wheelsProvider).getSeed();
     }
 
     /**
@@ -41,8 +91,8 @@ public class QBarRandomProvider extends QBarIterableProvider {
      */
     @Override
     public @NotNull Iterable<Rational> rationals() {
-        Iterable<BigInteger> numerators = withScale(RP.getScale() / 2).bigIntegers();
-        Iterable<BigInteger> denominators = withScale(RP.getScale() / 2).positiveBigIntegers();
+        Iterable<BigInteger> numerators = withScale(getScale() / 2).bigIntegers();
+        Iterable<BigInteger> denominators = withScale(getScale() / 2).positiveBigIntegers();
         return map(
                 p -> Rational.of(p.a, p.b),
                 filter(q -> q.a.gcd(q.b).equals(BigInteger.ONE), pairs(numerators, denominators))
@@ -64,8 +114,8 @@ public class QBarRandomProvider extends QBarIterableProvider {
      */
     @Override
     public @NotNull Iterable<Rational> nonNegativeRationals() {
-        Iterable<BigInteger> numerators = withScale(RP.getScale() / 2).naturalBigIntegers();
-        Iterable<BigInteger> denominators = withScale(RP.getScale() / 2).positiveBigIntegers();
+        Iterable<BigInteger> numerators = withScale(getScale() / 2).naturalBigIntegers();
+        Iterable<BigInteger> denominators = withScale(getScale() / 2).positiveBigIntegers();
         return map(
                 p -> Rational.of(p.a, p.b),
                 filter(q -> q.a.gcd(q.b).equals(BigInteger.ONE), pairs(numerators, denominators))
@@ -87,7 +137,7 @@ public class QBarRandomProvider extends QBarIterableProvider {
      */
     @Override
     public @NotNull Iterable<Rational> positiveRationals() {
-        Iterable<BigInteger> components = withScale(RP.getScale() / 2).positiveBigIntegers();
+        Iterable<BigInteger> components = withScale(getScale() / 2).positiveBigIntegers();
         return map(
                 p -> Rational.of(p.a, p.b),
                 filter(q -> q.a.gcd(q.b).equals(BigInteger.ONE), pairs(components))
@@ -109,8 +159,8 @@ public class QBarRandomProvider extends QBarIterableProvider {
      */
     @Override
     public @NotNull Iterable<Rational> negativeRationals() {
-        Iterable<BigInteger> numerators = withScale(RP.getScale() / 2).negativeBigIntegers();
-        Iterable<BigInteger> denominators = withScale(RP.getScale() / 2).positiveBigIntegers();
+        Iterable<BigInteger> numerators = withScale(getScale() / 2).negativeBigIntegers();
+        Iterable<BigInteger> denominators = withScale(getScale() / 2).positiveBigIntegers();
         return map(
                 p -> Rational.of(p.a, p.b),
                 filter(q -> q.a.gcd(q.b).equals(BigInteger.ONE), pairs(numerators, denominators))
@@ -132,12 +182,30 @@ public class QBarRandomProvider extends QBarIterableProvider {
      */
     @Override
     public @NotNull Iterable<Rational> nonNegativeRationalsLessThanOne() {
-        Iterable<BigInteger> numerators = withScale(RP.getScale() / 2).naturalBigIntegers();
-        Iterable<BigInteger> denominators = withScale(RP.getScale() / 2).positiveBigIntegers();
+        Iterable<BigInteger> numerators = withScale(getScale() / 2).naturalBigIntegers();
+        Iterable<BigInteger> denominators = withScale(getScale() / 2).positiveBigIntegers();
         return map(
                 p -> Rational.of(p.a, p.b),
                 filter(q -> lt(q.a, q.b) && q.a.gcd(q.b).equals(BigInteger.ONE), pairs(numerators, denominators))
         );
+    }
+
+    @NotNull
+    @Override
+    public Iterable<Rational> rangeUp(@NotNull Rational a) {
+        return null;
+    }
+
+    @NotNull
+    @Override
+    public Iterable<Rational> rangeDown(@NotNull Rational a) {
+        return null;
+    }
+
+    @NotNull
+    @Override
+    public Iterable<Rational> range(@NotNull Rational a, @NotNull Rational b) {
+        return null;
     }
 
     /**
@@ -155,7 +223,7 @@ public class QBarRandomProvider extends QBarIterableProvider {
      */
     @Override
     public @NotNull Iterable<Interval> finitelyBoundedIntervals() {
-        Iterable<Rational> bounds = withScale(RP.getScale() / 2).rationals();
+        Iterable<Rational> bounds = withScale(getScale() / 2).rationals();
         return map(p -> Interval.of(p.a, p.b), filter(p -> le(p.a, p.b), pairs(bounds)));
     }
 
@@ -174,7 +242,7 @@ public class QBarRandomProvider extends QBarIterableProvider {
      */
     @Override
     public @NotNull Iterable<Interval> intervals() {
-        Iterable<Rational> bounds = withScale(RP.getScale() / 2).rationals();
+        Iterable<Rational> bounds = withScale(getScale() / 2).rationals();
         return map(
                 p -> {
                     if (!p.a.isPresent() && !p.b.isPresent()) return Interval.ALL;
