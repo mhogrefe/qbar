@@ -66,7 +66,7 @@ public class IntervalProperties {
             propertiesIntersection();
             propertiesDisjoint();
             propertiesMakeDisjoint();
-            propertiesComplement();
+//            propertiesComplement();
             propertiesMidpoint();
             propertiesSplit();
             propertiesBisect();
@@ -86,7 +86,7 @@ public class IntervalProperties {
             propertiesMultiply_int();
             propertiesInvert();
             propertiesInvertHull();
-            propertiesDivide_Interval();
+//            propertiesDivide_Interval();
             propertiesDivideHull();
             propertiesDivide_Rational();
             propertiesDivide_BigInteger();
