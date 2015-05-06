@@ -12,5 +12,5 @@ public interface Modular {
      *
      * @return a symmetric JasBigInteger of this.
      */
-    public JasBigInteger getSymmetricInteger();
+    JasBigInteger getSymmetricInteger();
 }

@@ -28,7 +28,7 @@ public class QBarRandomProvider extends QBarIterableProvider {
     }
 
     public @NotNull QBarIterableProvider alt() {
-        return new QBarRandomProvider(((RandomProvider) wheelsProvider.alt()));
+        return new QBarRandomProvider(((RandomProvider) wheelsProvider));
     }
 
     public @NotNull QBarIterableProvider withScale(int scale) {

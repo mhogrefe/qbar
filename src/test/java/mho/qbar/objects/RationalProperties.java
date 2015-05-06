@@ -73,9 +73,9 @@ public class RationalProperties {
             propertiesBigIntegerValueExact();
             propertiesByteValueExact();
             propertiesShortValueExact();
-            propertiesIntValueExact();
-            propertiesLongValueExact();
-            propertiesHasTerminatingBaseExpansion();
+//            propertiesIntValueExact();
+//            propertiesLongValueExact();
+//            propertiesHasTerminatingBaseExpansion();
             propertiesBigDecimalValue_int_RoundingMode();
             propertiesBigDecimalValue_int();
             propertiesBigDecimalValueExact();
@@ -126,10 +126,10 @@ public class RationalProperties {
             propertiesContinuedFraction();
             propertiesFromContinuedFraction();
             propertiesConvergents();
-            propertiesPositionalNotation();
+//            propertiesPositionalNotation();
             propertiesFromPositionalNotation();
-            propertiesDigits();
-            compareImplementationsDigits();
+//            propertiesDigits();
+//            compareImplementationsDigits();
             propertiesToStringBase_BigInteger();
             propertiesToStringBase_BigInteger_int();
             propertiesFromStringBase();
@@ -337,7 +337,7 @@ public class RationalProperties {
         for (float f : take(LIMIT, fs)) {
             Rational r = ofExact(f);
             r.validate();
-            assertTrue(Float.toString(f), MathUtils.isAPowerOfTwo(r.getDenominator()));
+            assertTrue(Float.toString(f), MathUtils.isPowerOfTwo(r.getDenominator()));
             assertTrue(Float.toString(f), le(r.getDenominator(), denominatorLimit));
             assertTrue(Float.toString(f), le(r.getNumerator(), numeratorLimit));
         }
@@ -358,7 +358,7 @@ public class RationalProperties {
         for (double d : take(LIMIT, ds)) {
             Rational r = ofExact(d);
             r.validate();
-            assertTrue(Double.toString(d), MathUtils.isAPowerOfTwo(r.getDenominator()));
+            assertTrue(Double.toString(d), MathUtils.isPowerOfTwo(r.getDenominator()));
             assertTrue(Double.toString(d), le(r.getDenominator(), denominatorLimit));
             assertTrue(Double.toString(d), le(r.getNumerator(), numeratorLimit));
         }

@@ -220,7 +220,7 @@ public class QBarExhaustiveProvider extends QBarIterableProvider {
             return map(r -> r.add(a.getLower().get()), nonNegativeRationals());
         } else {
             Rational diameter = a.diameter().get();
-            if (diameter == Rational.ZERO) return Arrays.asList(a.getLower().get());
+            if (diameter == Rational.ZERO) return Collections.singletonList(a.getLower().get());
             return concat(
                     Arrays.asList(a.getLower().get(), a.getUpper().get()),
                     tail(

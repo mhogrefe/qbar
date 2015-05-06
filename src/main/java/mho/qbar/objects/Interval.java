@@ -10,10 +10,7 @@ import org.jetbrains.annotations.Nullable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.ordering.Ordering.*;
@@ -376,9 +373,9 @@ public final class Interval implements Comparable<Interval> {
      */
     public @NotNull List<Interval> complement() {
         if (lower == null && upper == null) return new ArrayList<>();
-        if (lower == null) return Arrays.asList(new Interval(upper, null));
-        if (upper == null) return Arrays.asList(new Interval(null, lower));
-        if (lower.equals(upper)) return Arrays.asList(ALL);
+        if (lower == null) return Collections.singletonList(new Interval(upper, null));
+        if (upper == null) return Collections.singletonList(new Interval(null, lower));
+        if (lower.equals(upper)) return Collections.singletonList(ALL);
         return Arrays.asList(new Interval(null, lower), new Interval(upper, null));
     }
 

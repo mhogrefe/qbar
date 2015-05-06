@@ -13,5 +13,5 @@ public interface MonoidFactory<C extends MonoidElem<C>> extends ElemFactory<C> {
      *
      * @return 1.
      */
-    public C getONE();
+    C getONE();
 }

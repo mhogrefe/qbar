@@ -2028,7 +2028,7 @@ public final class Rational implements Comparable<Rational> {
             } else {
                 List<BigInteger> beforeDecimal = undigitFunction.apply(take(dotIndex, s));
                 List<BigInteger> afterDecimal = undigitFunction.apply(drop(dotIndex + 1, s));
-                result = fromPositionalNotation(base, beforeDecimal, afterDecimal, Arrays.asList(BigInteger.ZERO));
+                result = fromPositionalNotation(base, beforeDecimal, afterDecimal, Collections.singletonList(BigInteger.ZERO));
             }
             return negative ? result.negate() : result;
         } catch (StringIndexOutOfBoundsException e) {

@@ -192,7 +192,7 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
      * @return [a]
      */
     public static @NotNull RationalVector of(@NotNull Rational a) {
-        return new RationalVector(Arrays.asList(a));
+        return new RationalVector(Collections.singletonList(a));
     }
 
     /**

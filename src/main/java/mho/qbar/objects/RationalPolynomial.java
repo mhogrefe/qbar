@@ -37,7 +37,7 @@ public final class RationalPolynomial implements
     /**
      * 1
      */
-    public static final @NotNull RationalPolynomial ONE = new RationalPolynomial(Arrays.asList(Rational.ONE));
+    public static final @NotNull RationalPolynomial ONE = new RationalPolynomial(Collections.singletonList(Rational.ONE));
 
     /**
      * x
@@ -188,7 +188,7 @@ public final class RationalPolynomial implements
     public static @NotNull RationalPolynomial of(@NotNull Rational c) {
         if (c == Rational.ZERO) return ZERO;
         if (c == Rational.ONE) return ONE;
-        return new RationalPolynomial(Arrays.asList(c));
+        return new RationalPolynomial(Collections.singletonList(c));
     }
 
     /**
@@ -211,7 +211,7 @@ public final class RationalPolynomial implements
             throw new IllegalArgumentException("power cannot be negative");
         if (c == Rational.ZERO) return ZERO;
         if (p == 0 && c == Rational.ONE) return ONE;
-        return new RationalPolynomial(toList(concat(replicate(p, Rational.ZERO), Arrays.asList(c))));
+        return new RationalPolynomial(toList(concat(replicate(p, Rational.ZERO), Collections.singletonList(c))));
     }
 
     /**

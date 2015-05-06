@@ -38,7 +38,7 @@ public final class Polynomial implements
     /**
      * 1
      */
-    public static final @NotNull Polynomial ONE = new Polynomial(Arrays.asList(BigInteger.ONE));
+    public static final @NotNull Polynomial ONE = new Polynomial(Collections.singletonList(BigInteger.ONE));
 
     /**
      * x
@@ -216,7 +216,7 @@ public final class Polynomial implements
     public static @NotNull Polynomial of(@NotNull BigInteger c) {
         if (c.equals(BigInteger.ZERO)) return ZERO;
         if (c.equals(BigInteger.ONE)) return ONE;
-        return new Polynomial(Arrays.asList(c));
+        return new Polynomial(Collections.singletonList(c));
     }
 
     /**
@@ -239,7 +239,7 @@ public final class Polynomial implements
             throw new IllegalArgumentException("power cannot be negative");
         if (c.equals(BigInteger.ZERO)) return ZERO;
         if (p == 0 && c.equals(BigInteger.ONE)) return ONE;
-        return new Polynomial(toList(concat(replicate(p, BigInteger.ZERO), Arrays.asList(c))));
+        return new Polynomial(toList(concat(replicate(p, BigInteger.ZERO), Collections.singletonList(c))));
     }
 
     /**

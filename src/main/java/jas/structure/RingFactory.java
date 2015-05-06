@@ -17,7 +17,7 @@ public interface RingFactory<C extends RingElem<C>> extends MonoidFactory<C>, Ab
      *
      * @return true if it is known that this ring is a field, else false.
      */
-    public boolean isField();
+    boolean isField();
 
 
     /**
@@ -25,6 +25,6 @@ public interface RingFactory<C extends RingElem<C>> extends MonoidFactory<C>, Ab
      *
      * @return characteristic of this ring.
      */
-    public BigInteger characteristic();
+    BigInteger characteristic();
 
 }
