@@ -13,8 +13,6 @@ import static mho.wheels.ordering.Ordering.lt;
 import static org.junit.Assert.assertTrue;
 
 public class QBarRandomProvider extends QBarIterableProvider {
-    public static final @NotNull QBarRandomProvider EXAMPLE = new QBarRandomProvider(RandomProvider.EXAMPLE);
-
     private QBarRandomProvider(@NotNull RandomProvider randomProvider) {
         super(randomProvider);
     }
@@ -27,16 +25,8 @@ public class QBarRandomProvider extends QBarIterableProvider {
         super(new RandomProvider(seed));
     }
 
-    public @NotNull QBarIterableProvider alt() {
-        return new QBarRandomProvider(((RandomProvider) wheelsProvider));
-    }
-
-    public @NotNull QBarIterableProvider withScale(int scale) {
-        return new QBarRandomProvider((RandomProvider) wheelsProvider.withScale(scale));
-    }
-
-    public @NotNull QBarIterableProvider withSecondaryScale(int secondaryScale) {
-        return new QBarRandomProvider((RandomProvider) wheelsProvider.withScale(secondaryScale));
+    public static @NotNull QBarRandomProvider example() {
+        return new QBarRandomProvider(RandomProvider.example());
     }
 
     /**
@@ -76,6 +66,28 @@ public class QBarRandomProvider extends QBarIterableProvider {
      */
     public @NotNull List<Integer> getSeed() {
         return ((RandomProvider) wheelsProvider).getSeed();
+    }
+
+    public @NotNull QBarRandomProvider copy() {
+        return new QBarRandomProvider(((RandomProvider) wheelsProvider).copy());
+    }
+
+    public @NotNull QBarRandomProvider deepCopy() {
+        return new QBarRandomProvider(((RandomProvider) wheelsProvider).deepCopy());
+    }
+
+    @Override
+    public @NotNull QBarIterableProvider withScale(int scale) {
+        return new QBarRandomProvider((RandomProvider) wheelsProvider.withScale(scale));
+    }
+
+    @Override
+    public @NotNull QBarIterableProvider withSecondaryScale(int secondaryScale) {
+        return new QBarRandomProvider((RandomProvider) wheelsProvider.withScale(secondaryScale));
+    }
+
+    public long getId() {
+        return ((RandomProvider) wheelsProvider).getId();
     }
 
     /**
@@ -536,9 +548,8 @@ public class QBarRandomProvider extends QBarIterableProvider {
      */
     @Override
     public boolean equals(Object that) {
-        if (this == that) return true;
-        if (that == null || getClass() != that.getClass()) return false;
-        return wheelsProvider.equals(((QBarRandomProvider) that).wheelsProvider);
+        return this == that || that != null && getClass() == that.getClass() &&
+                wheelsProvider.equals(((QBarRandomProvider) that).wheelsProvider);
     }
 
     /**

@@ -25,7 +25,7 @@ public class RationalPolynomialDemos {
 
     private static void initialize() {
         if (USE_RANDOM) {
-            P = QBarRandomProvider.EXAMPLE;
+            P = QBarRandomProvider.example();
             LIMIT = 1000;
         } else {
             P = QBarExhaustiveProvider.INSTANCE;

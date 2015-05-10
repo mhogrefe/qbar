@@ -22,8 +22,8 @@ public abstract class QBarIterableProvider {
         this.wheelsProvider = wheelsProvider;
     }
 
-    public @NotNull QBarIterableProvider alt() {
-        return this;
+    public void reset() {
+        wheelsProvider.reset();
     }
 
     public @NotNull QBarIterableProvider withScale(int scale) {

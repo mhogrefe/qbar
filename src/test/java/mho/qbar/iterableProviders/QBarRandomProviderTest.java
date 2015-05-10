@@ -14,7 +14,7 @@ public class QBarRandomProviderTest {
 
     @Before
     public void initialize() {
-        P = QBarRandomProvider.EXAMPLE;
+        P = QBarRandomProvider.example();
     }
 
     @Test
