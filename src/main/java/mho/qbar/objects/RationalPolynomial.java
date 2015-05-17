@@ -365,9 +365,9 @@ public final class RationalPolynomial implements
                 replicate(coefficients.size() + that.coefficients.size() - 1, Rational.ZERO)
         );
         for (int i = 0; i < coefficients.size(); i++) {
+            Rational a = coefficients.get(i);
+            if (a == Rational.ZERO) continue;
             for (int j = 0; j < that.coefficients.size(); j++) {
-                Rational a = coefficients.get(i);
-                if (a == Rational.ZERO) continue;
                 Rational b = that.coefficients.get(j);
                 if (b == Rational.ZERO) continue;
                 int index = i + j;
@@ -800,7 +800,7 @@ public final class RationalPolynomial implements
      *  <li>The result may be –1, 0, or 1.</li>
      * </ul>
      *
-     * @param that The {@code RationalPolynomial} to be compared with {@code this}
+     * @param that the {@code RationalPolynomial} to be compared with {@code this}
      * @return {@code this} compared to {@code that}
      */
     @Override

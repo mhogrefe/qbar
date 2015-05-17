@@ -84,7 +84,7 @@ public class IntervalProperties {
             propertiesMultiply_Rational();
             propertiesMultiply_BigInteger();
             propertiesMultiply_int();
-            propertiesInvert();
+//            propertiesInvert();
             propertiesInvertHull();
 //            propertiesDivide_Interval();
             propertiesDivideHull();

@@ -403,9 +403,9 @@ public final class Polynomial implements
                 replicate(coefficients.size() + that.coefficients.size() - 1, BigInteger.ZERO)
         );
         for (int i = 0; i < coefficients.size(); i++) {
+            BigInteger a = coefficients.get(i);
+            if (a.equals(BigInteger.ZERO)) continue;
             for (int j = 0; j < that.coefficients.size(); j++) {
-                BigInteger a = coefficients.get(i);
-                if (a.equals(BigInteger.ZERO)) continue;
                 BigInteger b = that.coefficients.get(j);
                 if (b.equals(BigInteger.ZERO)) continue;
                 int index = i + j;
@@ -711,7 +711,7 @@ public final class Polynomial implements
      *  <li>The result may be –1, 0, or 1.</li>
      * </ul>
      *
-     * @param that The {@code Polynomial} to be compared with {@code this}
+     * @param that the {@code Polynomial} to be compared with {@code this}
      * @return {@code this} compared to {@code that}
      */
     @Override
