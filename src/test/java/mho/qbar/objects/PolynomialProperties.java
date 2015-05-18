@@ -75,10 +75,10 @@ public class PolynomialProperties {
             compareImplementationsSum();
             propertiesProduct();
             propertiesDelta();
-//            propertiesPow();
-//            compareImplementationsPow();
-//            propertiesSubstitute();
-//            compareImplementationsSubstitute();
+            propertiesPow();
+            compareImplementationsPow();
+            propertiesSubstitute();
+            compareImplementationsSubstitute();
             propertiesIsMonic();
             propertiesIsPrimitive();
             propertiesContentAndPrimitive();

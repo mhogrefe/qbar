@@ -2,3 +2,5 @@
 documentation/*
 *.iml
 *.class
+
+target/*
