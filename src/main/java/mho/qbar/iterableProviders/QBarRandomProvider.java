@@ -339,17 +339,17 @@ public class QBarRandomProvider extends QBarIterableProvider {
 
     @Override
     public @NotNull Iterable<RationalVector> rationalVectors(int dimension) {
-        return map(RationalVector::of, lists(dimension, rationals()));
+        return map(RationalVector::of, withScale(getSecondaryScale()).lists(dimension, rationals()));
     }
 
     @Override
     public @NotNull Iterable<RationalVector> rationalVectorsAtLeast(int minDimension) {
-        return map(RationalVector::of, listsAtLeast(minDimension, rationals()));
+        return map(RationalVector::of, withScale(getSecondaryScale()).listsAtLeast(minDimension, rationals()));
     }
 
     @Override
     public @NotNull Iterable<RationalVector> rationalVectors() {
-        return map(RationalVector::of, lists(rationals()));
+        return map(RationalVector::of, withScale(getSecondaryScale()).lists(rationals()));
     }
 
     @Override
@@ -371,7 +371,7 @@ public class QBarRandomProvider extends QBarIterableProvider {
                                             BigInteger gcd = foldl(BigInteger::gcd, BigInteger.ZERO, js);
                                             return gcd.equals(BigInteger.ZERO) || gcd.equals(BigInteger.ONE);
                                         },
-                                        lists(dimension, bigIntegers())
+                                        withScale(getSecondaryScale()).lists(dimension, bigIntegers())
                                 )
                         )
                 )
@@ -394,7 +394,7 @@ public class QBarRandomProvider extends QBarIterableProvider {
                                             BigInteger gcd = foldl(BigInteger::gcd, BigInteger.ZERO, js);
                                             return gcd.equals(BigInteger.ZERO) || gcd.equals(BigInteger.ONE);
                                         },
-                                        listsAtLeast(minDimension, bigIntegers())
+                                        withScale(getSecondaryScale()).listsAtLeast(minDimension, bigIntegers())
                                 )
                         )
                 )
@@ -417,7 +417,7 @@ public class QBarRandomProvider extends QBarIterableProvider {
                                             BigInteger gcd = foldl(BigInteger::gcd, BigInteger.ZERO, js);
                                             return gcd.equals(BigInteger.ZERO) || gcd.equals(BigInteger.ONE);
                                         },
-                                        lists(bigIntegers())
+                                        withScale(getSecondaryScale()).lists(bigIntegers())
                                 )
                         )
                 )
@@ -445,7 +445,7 @@ public class QBarRandomProvider extends QBarIterableProvider {
     public @NotNull Iterable<Polynomial> polynomials(int degree) {
         return map(
                 js -> Polynomial.of(toList(js)),
-                filter(is -> is.isEmpty() || !last(is).equals(BigInteger.ZERO), lists(degree + 1, bigIntegers()))
+                filter(is -> is.isEmpty() || !last(is).equals(BigInteger.ZERO), withScale(getSecondaryScale()).lists(degree + 1, bigIntegers()))
         );
     }
 
@@ -455,7 +455,7 @@ public class QBarRandomProvider extends QBarIterableProvider {
                 js -> Polynomial.of(toList(js)),
                 filter(
                         is -> is.isEmpty() || !last(is).equals(BigInteger.ZERO),
-                        listsAtLeast(minDegree + 1, bigIntegers())
+                        withScale(getSecondaryScale()).listsAtLeast(minDegree + 1, bigIntegers())
                 )
         );
     }
@@ -466,7 +466,7 @@ public class QBarRandomProvider extends QBarIterableProvider {
                 js -> Polynomial.of(toList(js)),
                 filter(
                         is -> is.isEmpty() || !last(is).equals(BigInteger.ZERO),
-                        lists(bigIntegers())
+                        withScale(getSecondaryScale()).lists(bigIntegers())
                 )
         );
     }
@@ -493,7 +493,7 @@ public class QBarRandomProvider extends QBarIterableProvider {
     public @NotNull Iterable<RationalPolynomial> rationalPolynomials(int degree) {
         return map(
                 js -> RationalPolynomial.of(toList(js)),
-                filter(is -> is.isEmpty() || last(is) != Rational.ZERO, lists(degree + 1, rationals()))
+                filter(is -> is.isEmpty() || last(is) != Rational.ZERO, withScale(getSecondaryScale()).lists(degree + 1, rationals()))
         );
     }
 
@@ -501,7 +501,7 @@ public class QBarRandomProvider extends QBarIterableProvider {
     public @NotNull Iterable<RationalPolynomial> rationalPolynomialsAtLeast(int minDegree) {
         return map(
                 js -> RationalPolynomial.of(toList(js)),
-                filter(is -> is.isEmpty() || last(is) != Rational.ZERO, listsAtLeast(minDegree + 1, rationals()))
+                filter(is -> is.isEmpty() || last(is) != Rational.ZERO, withScale(getSecondaryScale()).listsAtLeast(minDegree + 1, rationals()))
         );
     }
 
@@ -511,7 +511,7 @@ public class QBarRandomProvider extends QBarIterableProvider {
                 js -> RationalPolynomial.of(toList(js)),
                 filter(
                         is -> is.isEmpty() || last(is) != Rational.ZERO,
-                        lists(rationals())
+                        withScale(getSecondaryScale()).lists(rationals())
                 )
         );
     }
