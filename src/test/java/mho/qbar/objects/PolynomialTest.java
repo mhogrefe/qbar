@@ -563,7 +563,7 @@ public class PolynomialTest {
         try {
             product(readPolynomialListWithNulls("[-17, null, -x^3-1, 3*x^10]"));
             fail();
-        } catch (IllegalArgumentException ignored) {}
+        } catch (NullPointerException ignored) {}
     }
 
     @Test

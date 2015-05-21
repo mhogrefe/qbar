@@ -2758,7 +2758,7 @@ public class RationalTest {
         try {
             sum(readRationalListWithNulls("[10, null, 11]"));
             fail();
-        } catch (IllegalArgumentException ignored) {}
+        } catch (NullPointerException ignored) {}
     }
 
     @Test

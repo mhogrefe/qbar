@@ -910,7 +910,7 @@ public class PolynomialProperties {
             try {
                 product(ps2);
                 fail(ps2.toString());
-            } catch (NullPointerException | IllegalArgumentException ignored) {}
+            } catch (NullPointerException ignored) {}
         }
     }
 
@@ -957,7 +957,7 @@ public class PolynomialProperties {
             try {
                 toList(delta(ps2));
                 fail(ps2.toString());
-            } catch (AssertionError | NullPointerException ignored) {}
+            } catch (NullPointerException ignored) {}
         }
     }
 

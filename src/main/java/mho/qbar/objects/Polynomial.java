@@ -518,6 +518,8 @@ public final class Polynomial implements
      * @return Πxs
      */
     public static @NotNull Polynomial product(@NotNull Iterable<Polynomial> xs) {
+        if (any(x -> x == null, xs))
+            throw new NullPointerException();
         //noinspection ConstantConditions
         return foldl(Polynomial::multiply, ONE, xs);
     }

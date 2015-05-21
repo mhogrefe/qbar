@@ -264,6 +264,9 @@ public final class Interval implements Comparable<Interval> {
     public static @NotNull Interval convexHull(@NotNull List<Interval> as) {
         if (any(a -> a == null, as))
             throw new NullPointerException();
+        if (as.isEmpty())
+            throw new IllegalArgumentException();
+        //noinspection ConstantConditions
         return foldl1(Interval::convexHull, as);
     }
 
@@ -1149,6 +1152,7 @@ public final class Interval implements Comparable<Interval> {
      * @return Σxs
      */
     public static @NotNull Interval sum(@NotNull Iterable<Interval> xs) {
+        if (any(x -> x == null, xs)) throw new NullPointerException();
         //noinspection ConstantConditions
         return foldl(Interval::add, ZERO, xs);
     }

@@ -1434,6 +1434,8 @@ public final class Rational implements Comparable<Rational> {
      * @return Σxs
      */
     public static @NotNull Rational sum(@NotNull Iterable<Rational> xs) {
+        if (any(x -> x == null, xs))
+            throw new NullPointerException();
         //noinspection ConstantConditions
         return foldl(Rational::add, ZERO, xs);
     }
@@ -1450,6 +1452,8 @@ public final class Rational implements Comparable<Rational> {
      * @return Πxs
      */
     public static @NotNull Rational product(@NotNull Iterable<Rational> xs) {
+        if (any(x -> x == null, xs))
+            throw new NullPointerException();
         List<Rational> denominatorSorted = sort(
                 (x, y) -> {
                     Ordering o = compare(x.getDenominator(), y.getDenominator());

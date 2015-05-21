@@ -1700,7 +1700,7 @@ public class IntervalProperties {
             try {
                 sum(is);
                 fail(is.toString());
-            } catch (IllegalArgumentException ignored) {}
+            } catch (NullPointerException ignored) {}
         }
     }
 
@@ -1791,7 +1791,7 @@ public class IntervalProperties {
             try {
                 toList(delta(is));
                 fail(is.toString());
-            } catch (AssertionError | NullPointerException ignored) {}
+            } catch (NullPointerException ignored) {}
         }
     }
 

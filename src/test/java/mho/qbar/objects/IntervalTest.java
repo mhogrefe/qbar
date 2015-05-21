@@ -216,7 +216,7 @@ public class IntervalTest {
         try {
             convexHull(readIntervalList("[]"));
             fail();
-        } catch (IllegalStateException ignored) {}
+        } catch (IllegalArgumentException ignored) {}
         try {
             convexHull(readIntervalListWithNulls("[[1, 2], null]"));
             fail();
@@ -1274,7 +1274,7 @@ public class IntervalTest {
         try {
             sum(readIntervalListWithNulls("[[-2, 5/3], null, [4, 4]]"));
             fail();
-        } catch (IllegalArgumentException ignored) {}
+        } catch (NullPointerException ignored) {}
     }
 
     @Test
@@ -1285,7 +1285,7 @@ public class IntervalTest {
         try {
             product(readIntervalListWithNulls("[[-2, 5/3], null, [4, 4]]"));
             fail();
-        } catch (IllegalArgumentException ignored) {}
+        } catch (NullPointerException ignored) {}
     }
 
     @Test
