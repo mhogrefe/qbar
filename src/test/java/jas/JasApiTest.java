@@ -8,7 +8,7 @@ import java.math.BigInteger;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class JasApiTest {
     @Test
@@ -54,11 +54,11 @@ public class JasApiTest {
         assertEquals(a.toString(), b.toString());
     }
 
-    private static @NotNull Optional<List<BigInteger>> readBigIntegerList(@NotNull String s) {
-        return Readers.readList(Readers::readBigInteger).apply(s);
+    private static @NotNull List<BigInteger> readBigIntegerList(@NotNull String s) {
+        return Readers.readList(Readers::readBigInteger).apply(s).get();
     }
 
     private static List<List<BigInteger>> fp(String s) {
-        return JasApi.factorPolynomial(readBigIntegerList(s).get());
+        return JasApi.factorPolynomial(readBigIntegerList(s));
     }
 }

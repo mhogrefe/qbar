@@ -1,8 +1,0 @@
-//        demoRead_targeted();
-//        for (String s : filter(RationalDemos::goodReadArgument, Combinatorics.stringsShortlex(NECESSARY_CHARS))) {
-//            Optional<Rational> or = read(s);
-//            if (or.isPresent()) {
-//                Rational r = or.get();
-//                if (r.toString().equals(s)) System.out.println(r);
-//            }
-//        }

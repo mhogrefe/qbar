@@ -4,12 +4,9 @@ import jas.poly.ExpVector;
 import jas.poly.GenPolynomial;
 import jas.poly.GenPolynomialRing;
 import jas.poly.Monomial;
-import jas.structure.Power;
 import jas.structure.RingElem;
 import jas.structure.RingFactory;
 
-import java.math.BigInteger;
-import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 

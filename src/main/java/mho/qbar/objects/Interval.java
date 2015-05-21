@@ -264,8 +264,10 @@ public final class Interval implements Comparable<Interval> {
     public static @NotNull Interval convexHull(@NotNull List<Interval> as) {
         if (any(a -> a == null, as))
             throw new NullPointerException();
+        if (as.isEmpty())
+            throw new IllegalArgumentException();
         //noinspection ConstantConditions
-        return foldl1(p -> p.a.convexHull(p.b), as);
+        return foldl1(Interval::convexHull, as);
     }
 
     /**
@@ -374,9 +376,9 @@ public final class Interval implements Comparable<Interval> {
      */
     public @NotNull List<Interval> complement() {
         if (lower == null && upper == null) return new ArrayList<>();
-        if (lower == null) return Arrays.asList(new Interval(upper, null));
-        if (upper == null) return Arrays.asList(new Interval(null, lower));
-        if (lower.equals(upper)) return Arrays.asList(ALL);
+        if (lower == null) return Collections.singletonList(new Interval(upper, null));
+        if (upper == null) return Collections.singletonList(new Interval(null, lower));
+        if (lower.equals(upper)) return Collections.singletonList(ALL);
         return Arrays.asList(new Interval(null, lower), new Interval(upper, null));
     }
 
@@ -1149,9 +1151,10 @@ public final class Interval implements Comparable<Interval> {
      * @param xs an {@code Iterable} of {@code Interval}s.
      * @return Σxs
      */
-    public static Interval sum(@NotNull Iterable<Interval> xs) {
+    public static @NotNull Interval sum(@NotNull Iterable<Interval> xs) {
+        if (any(x -> x == null, xs)) throw new NullPointerException();
         //noinspection ConstantConditions
-        return foldl(p -> p.a.add(p.b), ZERO, xs);
+        return foldl(Interval::add, ZERO, xs);
     }
 
     /**
@@ -1165,9 +1168,9 @@ public final class Interval implements Comparable<Interval> {
      * @param xs an {@code Iterable} of {@code Interval}s.
      * @return Πxs
      */
-    public static Interval product(@NotNull Iterable<Interval> xs) {
+    public static @NotNull Interval product(@NotNull Iterable<Interval> xs) {
         //noinspection ConstantConditions
-        return foldl(p -> p.a.multiply(p.b), ONE, xs);
+        return foldl(Interval::multiply, ONE, xs);
     }
 
     /**
@@ -1176,7 +1179,7 @@ public final class Interval implements Comparable<Interval> {
      *
      * <ul>
      *  <li>{@code xs} must not be empty and may not contain any nulls.</li>
-     *  <li>The result is finite and does not contain any nulls.</li>
+     *  <li>The result does not contain any nulls.</li>
      * </ul>
      *
      * Length is |{@code xs}|–1
@@ -1189,8 +1192,7 @@ public final class Interval implements Comparable<Interval> {
             throw new IllegalArgumentException("cannot get delta of empty Iterable");
         if (head(xs) == null)
             throw new NullPointerException();
-        //noinspection ConstantConditions
-        return adjacentPairsWith(p -> p.b.subtract(p.a), xs);
+        return adjacentPairsWith((x, y) -> y.subtract(x), xs);
     }
 
     /**
@@ -1359,7 +1361,7 @@ public final class Interval implements Comparable<Interval> {
      *
      * <ul>
      *  <li>{@code s} cannot be null.</li>
-     *  <li>The result may be any {@code Optional<Interval>}, or null.</li>
+     *  <li>The result may be any {@code Optional<Interval>}.</li>
      * </ul>
      *
      * @param s a string representation of a {@code Rational}.
@@ -1400,8 +1402,8 @@ public final class Interval implements Comparable<Interval> {
     /**
      * Finds the first occurrence of an {@code Interval} in a {@code String}. Returns the {@code Interval} and the
      * index at which it was found. Returns an empty {@code Optional} if no {@code Interval} is found. Only
-     * {@code String}s which could have been emitted by {@link Interval#toString} are recognized. The longest possible
-     * {@code Interval} is parsed.
+     * {@code String}s which could have been emitted by {@link mho.qbar.objects.Interval#toString} are recognized. The
+     * longest possible {@code Interval} is parsed.
      *
      * <ul>
      *  <li>{@code s} must be non-null.</li>

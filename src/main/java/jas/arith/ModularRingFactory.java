@@ -18,7 +18,7 @@ public interface ModularRingFactory<C extends RingElem<C> & Modular> extends Rin
      *
      * @return a JasBigInteger of this.modul.
      */
-    public JasBigInteger getIntegerModul();
+    JasBigInteger getIntegerModul();
 
 
     //
@@ -30,6 +30,6 @@ public interface ModularRingFactory<C extends RingElem<C> & Modular> extends Rin
     //@param a  other ModLong.
     //@return S, with S mod c.modul == c and S mod a.modul == a.
     //
-    public C chineseRemainder(C c, C ci, C a);
+    C chineseRemainder(C c, C ci, C a);
 
 }

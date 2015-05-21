@@ -1,23 +1,27 @@
 package mho.qbar.iterableProviders;
 
-import mho.qbar.objects.RationalVector;
+import mho.qbar.objects.*;
 import mho.wheels.iterables.ExhaustiveProvider;
-import mho.qbar.objects.Interval;
-import mho.qbar.objects.Rational;
+import mho.wheels.math.Combinatorics;
+import mho.wheels.ordering.Ordering;
+import mho.wheels.structures.*;
 import org.jetbrains.annotations.NotNull;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.RoundingMode;
 import java.util.*;
+import java.util.function.Function;
 
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.ordering.Ordering.*;
 
 @SuppressWarnings("ConstantConditions")
-public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIterableProvider {
+public class QBarExhaustiveProvider extends QBarIterableProvider {
     public static final @NotNull QBarExhaustiveProvider INSTANCE = new QBarExhaustiveProvider();
 
-    protected QBarExhaustiveProvider() {
-        super();
+    private QBarExhaustiveProvider() {
+        super(ExhaustiveProvider.INSTANCE);
     }
 
     @Override
@@ -32,7 +36,7 @@ public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIt
 
     @Override
     public @NotNull Iterable<Rational> range(@NotNull Rational a, @NotNull Rational b) {
-        if (gt(a, b)) return new ArrayList<>();
+        if (gt(a, b)) return Collections.emptyList();
         return () -> new Iterator<Rational>() {
             private Rational x = a;
             private boolean reachedEnd;
@@ -161,7 +165,7 @@ public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIt
     public @NotNull Iterable<Byte> bytes(@NotNull Interval a) {
         Optional<Interval> intersection =
                 a.intersection(Interval.of(Rational.of(Byte.MIN_VALUE), Rational.of(Byte.MAX_VALUE)));
-        if (!intersection.isPresent()) return new ArrayList<>();
+        if (!intersection.isPresent()) return Collections.emptyList();
         return map(BigInteger::byteValueExact, bigIntegers(intersection.get()));
     }
 
@@ -169,7 +173,7 @@ public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIt
     public @NotNull Iterable<Short> shorts(@NotNull Interval a) {
         Optional<Interval> intersection =
                 a.intersection(Interval.of(Rational.of(Short.MIN_VALUE), Rational.of(Short.MAX_VALUE)));
-        if (!intersection.isPresent()) return new ArrayList<>();
+        if (!intersection.isPresent()) return Collections.emptyList();
         return map(BigInteger::shortValueExact, bigIntegers(intersection.get()));
     }
 
@@ -177,7 +181,7 @@ public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIt
     public @NotNull Iterable<Integer> integers(@NotNull Interval a) {
         Optional<Interval> intersection =
                 a.intersection(Interval.of(Rational.of(Integer.MIN_VALUE), Rational.of(Integer.MAX_VALUE)));
-        if (!intersection.isPresent()) return new ArrayList<>();
+        if (!intersection.isPresent()) return Collections.emptyList();
         return map(BigInteger::intValueExact, bigIntegers(intersection.get()));
     }
 
@@ -189,7 +193,7 @@ public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIt
                         Rational.of(BigInteger.valueOf(Long.MAX_VALUE))
                 )
         );
-        if (!intersection.isPresent()) return new ArrayList<>();
+        if (!intersection.isPresent()) return Collections.emptyList();
         return map(BigInteger::longValueExact, bigIntegers(intersection.get()));
     }
 
@@ -216,7 +220,7 @@ public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIt
             return map(r -> r.add(a.getLower().get()), nonNegativeRationals());
         } else {
             Rational diameter = a.diameter().get();
-            if (diameter == Rational.ZERO) return Arrays.asList(a.getLower().get());
+            if (diameter == Rational.ZERO) return Collections.singletonList(a.getLower().get());
             return concat(
                     Arrays.asList(a.getLower().get(), a.getUpper().get()),
                     tail(
@@ -233,7 +237,7 @@ public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIt
         List<Interval> complement = a.complement();
         switch (complement.size()) {
             case 0:
-                return new ArrayList<>();
+                return Collections.emptyList();
             case 1:
                 Interval x = complement.get(0);
                 Rational boundary = a.getLower().isPresent() ? a.getLower().get() : a.getUpper().get();
@@ -282,7 +286,7 @@ public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIt
                                 is -> RationalVector.of(toList(map(Rational::of, is))),
                                 filter(
                                         js -> {
-                                            BigInteger gcd = foldl(p -> p.a.gcd(p.b), BigInteger.ZERO, js);
+                                            BigInteger gcd = foldl(BigInteger::gcd, BigInteger.ZERO, js);
                                             return gcd.equals(BigInteger.ZERO) || gcd.equals(BigInteger.ONE);
                                         },
                                         lists(dimension, bigIntegers())
@@ -305,7 +309,7 @@ public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIt
                                 is -> RationalVector.of(toList(map(Rational::of, is))),
                                 filter(
                                         js -> {
-                                            BigInteger gcd = foldl(p -> p.a.gcd(p.b), BigInteger.ZERO, js);
+                                            BigInteger gcd = foldl(BigInteger::gcd, BigInteger.ZERO, js);
                                             return gcd.equals(BigInteger.ZERO) || gcd.equals(BigInteger.ONE);
                                         },
                                         listsAtLeast(minDimension, bigIntegers())
@@ -328,7 +332,7 @@ public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIt
                                 is -> RationalVector.of(toList(map(Rational::of, is))),
                                 filter(
                                         js -> {
-                                            BigInteger gcd = foldl(p -> p.a.gcd(p.b), BigInteger.ZERO, js);
+                                            BigInteger gcd = foldl(BigInteger::gcd, BigInteger.ZERO, js);
                                             return gcd.equals(BigInteger.ZERO) || gcd.equals(BigInteger.ONE);
                                         },
                                         lists(bigIntegers())
@@ -336,5 +340,188 @@ public class QBarExhaustiveProvider extends ExhaustiveProvider implements QBarIt
                         )
                 )
         );
+    }
+
+    @Override
+    public @NotNull Iterable<RationalMatrix> rationalMatrices(int height, int width) {
+        if (height == 0 || width == 0) return Collections.singletonList(RationalMatrix.zero(height, width));
+        return map(RationalMatrix::fromColumns, lists(width, rationalVectors(height)));
+    }
+
+    @Override
+    public @NotNull Iterable<RationalMatrix> rationalMatrices() {
+        return map(q -> q.b, dependentPairsSquare(pairs(naturalIntegers()), p -> rationalMatrices(p.a, p.b)));
+    }
+
+    @Override
+    public @NotNull Iterable<Polynomial> polynomials(int degree) {
+        return map(
+                js -> Polynomial.of(toList(js)),
+                filter(is -> is.isEmpty() || !last(is).equals(BigInteger.ZERO), lists(degree + 1, bigIntegers()))
+        );
+    }
+
+    @Override
+    public @NotNull Iterable<Polynomial> polynomialsAtLeast(int minDegree) {
+        return map(
+                js -> Polynomial.of(toList(js)),
+                filter(
+                        is -> is.isEmpty() || !last(is).equals(BigInteger.ZERO),
+                        listsAtLeast(minDegree + 1, bigIntegers())
+                )
+        );
+    }
+
+    @Override
+    public @NotNull Iterable<Polynomial> polynomials() {
+        return map(
+                js -> Polynomial.of(toList(js)),
+                filter(is -> is.isEmpty() || !last(is).equals(BigInteger.ZERO), lists(bigIntegers()))
+        );
+    }
+
+    @Override
+    public @NotNull Iterable<Polynomial> primitivePolynomials(int degree) {
+        if (degree == 0) return Collections.singletonList(Polynomial.ONE);
+        return filter(
+                p -> p.signum() == 1,
+                map(
+                        Polynomial::of,
+                        filter(
+                                js -> {
+                                    if (!js.isEmpty() && last(js).equals(BigInteger.ZERO)) return false;
+                                    BigInteger gcd = foldl(BigInteger::gcd, BigInteger.ZERO, js);
+                                    return gcd.equals(BigInteger.ZERO) || gcd.equals(BigInteger.ONE);
+                                },
+                                lists(degree + 1, bigIntegers())
+                        )
+                )
+        );
+    }
+
+    @Override
+    public @NotNull Iterable<Polynomial> primitivePolynomialsAtLeast(int minDegree) {
+        return filter(
+                p -> p.signum() == 1,
+                map(
+                        Polynomial::of,
+                        filter(
+                                js -> {
+                                    if (!js.isEmpty() && last(js).equals(BigInteger.ZERO)) return false;
+                                    BigInteger gcd = foldl(BigInteger::gcd, BigInteger.ZERO, js);
+                                    return gcd.equals(BigInteger.ZERO) || gcd.equals(BigInteger.ONE);
+                                },
+                                listsAtLeast(minDegree + 1, bigIntegers())
+                        )
+                )
+        );
+    }
+
+    @Override
+    public @NotNull Iterable<Polynomial> primitivePolynomials() {
+        return filter(
+                p -> p.signum() == 1,
+                map(
+                        Polynomial::of,
+                        filter(
+                                js -> {
+                                    if (!js.isEmpty() && last(js).equals(BigInteger.ZERO)) return false;
+                                    BigInteger gcd = foldl(BigInteger::gcd, BigInteger.ZERO, js);
+                                    return gcd.equals(BigInteger.ZERO) || gcd.equals(BigInteger.ONE);
+                                },
+                                lists(bigIntegers())
+                        )
+                )
+        );
+    }
+
+    @Override
+    public @NotNull Iterable<RationalPolynomial> rationalPolynomials(int degree) {
+        return map(
+                js -> RationalPolynomial.of(toList(js)),
+                filter(is -> is.isEmpty() || last(is) != Rational.ZERO, lists(degree + 1, rationals()))
+        );
+    }
+
+    @Override
+    public @NotNull Iterable<RationalPolynomial> rationalPolynomialsAtLeast(int minDegree) {
+        return map(
+                js -> RationalPolynomial.of(toList(js)),
+                filter(
+                        is -> is.isEmpty() || last(is) != Rational.ZERO,
+                        listsAtLeast(minDegree + 1, rationals())
+                )
+        );
+    }
+
+    @Override
+    public @NotNull Iterable<RationalPolynomial> rationalPolynomials() {
+        return map(
+                js -> RationalPolynomial.of(toList(js)),
+                filter(is -> is.isEmpty() || last(is) != Rational.ZERO, lists(rationals()))
+        );
+    }
+
+    @Override
+    public @NotNull Iterable<RationalPolynomial> monicRationalPolynomials(int degree) {
+        return map(p -> p.toRationalPolynomial().makeMonic(), primitivePolynomials(degree));
+    }
+
+    @Override
+    public @NotNull Iterable<RationalPolynomial> monicRationalPolynomialsAtLeast(int minDegree) {
+        return map(p -> p.toRationalPolynomial().makeMonic(), primitivePolynomialsAtLeast(minDegree));
+    }
+
+    @Override
+    public @NotNull Iterable<RationalPolynomial> monicRationalPolynomials() {
+        return map(p -> p.toRationalPolynomial().makeMonic(), primitivePolynomials());
+    }
+
+    /**
+     * Determines whether {@code this} is equal to {@code that}. This implementation is the same as in
+     * {@link java.lang.Object#equals}, but repeated here for clarity.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code QBarExhaustiveProvider}.</li>
+     *  <li>{@code that} may be any {@code Object}.</li>
+     *  <li>The result may be either {@code boolean}.</li>
+     * </ul>
+     *
+     * @param that The {@code QBarExhaustiveProvider} to be compared with {@code this}
+     * @return {@code this}={@code that}
+     */
+    @Override
+    public boolean equals(Object that) {
+        return this == that;
+    }
+
+    /**
+     * Calculates the hash code of {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code QBarExhaustiveProvider}.</li>
+     *  <li>The result is 0.</li>
+     * </ul>
+     *
+     * @return {@code this}'s hash code.
+     */
+    @Override
+    public int hashCode() {
+        return 0;
+    }
+
+    /**
+     * Creates a {@code String} representation of {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code QBarExhaustiveProvider}.</li>
+     *  <li>The result is {@code "QBarExhaustiveProvider"}.</li>
+     * </ul>
+     *
+     * @return a {@code String} representation of {@code this}
+     */
+    @Override
+    public String toString() {
+        return "QBarExhaustiveProvider";
     }
 }

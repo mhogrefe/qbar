@@ -3,9 +3,6 @@ package jas.poly;
 import jas.arith.BigRational;
 import jas.structure.RingFactory;
 
-import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
 import java.math.BigInteger;
 import java.util.Random;
 

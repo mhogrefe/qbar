@@ -20,24 +20,24 @@ import static mho.wheels.iterables.IterableUtils.*;
  * <p>This class is immutable.
  */
 @SuppressWarnings("ConstantConditions")
-public class RationalVector implements Comparable<RationalVector>, Iterable<Rational> {
+public final class RationalVector implements Comparable<RationalVector>, Iterable<Rational> {
     /**
      * []
      */
-    public static final RationalVector ZERO_DIMENSIONAL = new RationalVector(new ArrayList<>());
+    public static final RationalVector ZERO_DIMENSIONAL = new RationalVector(Collections.emptyList());
 
     /**
      * Used by {@link mho.qbar.objects.RationalVector#compareTo}
      */
-    private static Comparator<Iterable<Rational>> RATIONAL_ITERABLE_COMPARATOR = new ShortlexComparator<>();
+    private static final Comparator<Iterable<Rational>> RATIONAL_ITERABLE_COMPARATOR = new ShortlexComparator<>();
 
     /**
      * The vector's coordinates
      */
-    private @NotNull List<Rational> coordinates;
+    private final @NotNull List<Rational> coordinates;
 
     /**
-     * Private constructor for {@code RationalVector}; assumes arguments are valid
+     * Private constructor for {@code RationalVector}; assumes argument is valid
      *
      * <ul>
      *  <li>{@code coordinates} cannot have any null elements.</li>
@@ -54,10 +54,11 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
      * Returns an {@code Iterator} over this {@code RationalVector}'s coordinates. Does not support removal.
      *
      * <ul>
+     *  <li>{@code this} may be any {@code RationalVector}.</li>
      *  <li>The result is finite and contains no nulls.</li>
      * </ul>
      *
-     * Length is |{@code coordinates}|
+     * Length is dim({@code this})
      *
      * @return an {@code Iterator} over this {@code RationalVector}'s coordinates
      */
@@ -144,7 +145,7 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
      *
      * <ul>
      *  <li>{@code this} must be non-empty.</li>
-     *  <li>{@code i} must be non-negative.</li>
+     *  <li>{@code i} cannot be negative.</li>
      *  <li>{@code i} must be less than the dimension of {@code this}.</li>
      *  <li>The result is non-null.</li>
      * </ul>
@@ -165,7 +166,7 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
      *  <li>The result is not null.</li>
      * </ul>
      *
-     * Length is |{@code coordinates}|
+     * Length is dim({@code this})
      *
      * @param coordinates the vector's coordinates
      * @return the {@code RationalVector} with the specified coordinates
@@ -191,7 +192,7 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
      * @return [a]
      */
     public static @NotNull RationalVector of(@NotNull Rational a) {
-        return new RationalVector(Arrays.asList(a));
+        return new RationalVector(Collections.singletonList(a));
     }
 
     /**
@@ -212,19 +213,19 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
      * Creates the zero vector with a given dimension.
      *
      * <ul>
-     *  <li>{@code dimension} must be non-negative.</li>
+     *  <li>{@code dimension} cannot be negative.</li>
      *  <li>The result is a {@code RationalVector} all of whose coordinates are 0.</li>
      * </ul>
      *
      * Length is {@code dimension}
      *
      * @param dimension the zero vector's dimension
-     * @return 0
+     * @return 0<sub>{@code dimension}</sub>
      */
     public static @NotNull RationalVector zero(int dimension) {
         if (dimension == 0) return ZERO_DIMENSIONAL;
         if (dimension < 0)
-            throw new IllegalArgumentException("dimension must be non-negative");
+            throw new IllegalArgumentException("dimension cannot be negative");
         return new RationalVector(toList(replicate(dimension, Rational.ZERO)));
     }
 
@@ -235,7 +236,7 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
      *
      * <ul>
      *  <li>{@code dimension} must be positive.</li>
-     *  <li>{@code i} must be non-negative.</li>
+     *  <li>{@code i} cannot be negative.</li>
      *  <li>{@code i} must be less than {@code dimension}.</li>
      *  <li>The result is a {@code RationalVector} with one coordinate equal to 1 and the others equal to 0.</li>
      * </ul>
@@ -250,7 +251,7 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
         if (dimension < 1)
             throw new IllegalArgumentException("dimension must be positive");
         if (i < 0)
-            throw new IllegalArgumentException("i must be non-negative");
+            throw new IllegalArgumentException("i cannot be negative");
         if (i >= dimension)
             throw new IllegalArgumentException("i must be less than dimension");
         return new RationalVector(toList(insert(replicate(dimension - 1, Rational.ZERO), i, Rational.ONE)));
@@ -271,6 +272,28 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
     }
 
     /**
+     * Returns the sum of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalVector}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>{@code this} and {@code that} must have the same dimension.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * Length is dim({@code this})
+     *
+     * @param that the {@code RationalVector} added to {@code this}
+     * @return {@code this}+{@code that}
+     */
+    public @NotNull RationalVector add(@NotNull RationalVector that) {
+        if (coordinates.size() != that.coordinates.size())
+            throw new ArithmeticException("vectors must have same dimension");
+        if (this == ZERO_DIMENSIONAL) return ZERO_DIMENSIONAL;
+        return new RationalVector(toList(zipWith(Rational::add, coordinates, that.coordinates)));
+    }
+
+    /**
      * Returns the negative of {@code this}.
      *
      * <ul>
@@ -288,26 +311,6 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
     }
 
     /**
-     * Returns the sum of {@code this} and {@code that}.
-     *
-     * <ul>
-     *  <li>{@code this} may be any {@code RationalVector}.</li>
-     *  <li>{@code that} cannot be null.</li>
-     *  <li>{@code this} and {@code that} must have the same dimension.</li>
-     *  <li>The result is not null.</li>
-     * </ul>
-     *
-     * @param that the {@code RationalVector} added to {@code this}
-     * @return {@code this}+{@code that}
-     */
-    public @NotNull RationalVector add(@NotNull RationalVector that) {
-        if (coordinates.size() != that.coordinates.size())
-            throw new ArithmeticException("vectors must have same dimension");
-        if (this == ZERO_DIMENSIONAL) return ZERO_DIMENSIONAL;
-        return new RationalVector(toList(zipWith(p -> p.a.add(p.b), coordinates, that.coordinates)));
-    }
-
-    /**
      * Returns the difference of {@code this} and {@code that}.
      *
      * <ul>
@@ -317,11 +320,16 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
      *  <li>The result is not null.</li>
      * </ul>
      *
+     * Length is |{@code this}|
+     *
      * @param that the {@code RationalVector} subtracted from {@code this}
      * @return {@code this}–{@code that}
      */
     public @NotNull RationalVector subtract(@NotNull RationalVector that) {
-        return add(that.negate());
+        if (coordinates.size() != that.coordinates.size())
+            throw new ArithmeticException("vectors must have same dimension");
+        if (this == ZERO_DIMENSIONAL) return ZERO_DIMENSIONAL;
+        return new RationalVector(toList(zipWith(Rational::subtract, coordinates, that.coordinates)));
     }
 
     /**
@@ -332,6 +340,8 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
      *  <li>{@code that} cannot be null.</li>
      *  <li>The result is not null.</li>
      * </ul>
+     *
+     * Length is dim({@code this})
      *
      * @param that the {@code RationalVector} {@code this} is multiplied by
      * @return {@code this}×{@code that}
@@ -350,6 +360,8 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
      *  <li>The result is not null.</li>
      * </ul>
      *
+     * Length is dim({@code this})
+     *
      * @param that the {@code RationalVector} {@code this} is multiplied by
      * @return {@code this}×{@code that}
      */
@@ -366,6 +378,8 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
      *  <li>{@code that} cannot be null.</li>
      *  <li>The result is not null.</li>
      * </ul>
+     *
+     * Length is dim({@code this})
      *
      * @param that the {@code RationalVector} {@code this} is multiplied by
      * @return {@code this}×{@code that}
@@ -384,6 +398,8 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
      *  <li>The result is not null.</li>
      * </ul>
      *
+     * Length is dim({@code this})
+     *
      * @param that the {@code RationalVector} {@code this} is multiplied by
      * @return {@code this}/{@code that}
      */
@@ -399,6 +415,8 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
      *  <li>{@code that} cannot be zero.</li>
      *  <li>The result is not null.</li>
      * </ul>
+     *
+     * Length is dim({@code this})
      *
      * @param that the {@code RationalVector} {@code this} is multiplied by
      * @return {@code this}/{@code that}
@@ -416,6 +434,8 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
      *  <li>The result is not null.</li>
      * </ul>
      *
+     * Length is dim({@code this})
+     *
      * @param that the {@code RationalVector} {@code this} is multiplied by
      * @return {@code this}/{@code that}
      */
@@ -432,6 +452,8 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
      *  <li>{@code bits} may be any {@code int}.</li>
      *  <li>The result is not null.</li>
      * </ul>
+     *
+     * Length is dim({@code this})
      *
      * @param bits the number of bits to left-shift by
      * @return {@code this}≪{@code bits}
@@ -452,6 +474,8 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
      *  <li>The result is not null.</li>
      * </ul>
      *
+     * Length is dim({@code this})
+     *
      * @param bits the number of bits to right-shift by
      * @return {@code this}≫{@code bits}
      */
@@ -470,15 +494,17 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
      *  <li>The result may be any {@code RationalVector}.</li>
      * </ul>
      *
+     * Length is dim(head({@code xs}))
+     *
      * @param xs an {@code Iterable} of {@code RationalVector}s.
      * @return Σxs
      */
-    public static RationalVector sum(@NotNull Iterable<RationalVector> xs) {
+    public static @NotNull RationalVector sum(@NotNull Iterable<RationalVector> xs) {
         if (isEmpty(xs))
             throw new IllegalArgumentException("cannot take sum of empty RationalVector list");
         if (!same(map(RationalVector::dimension, xs)))
             throw new ArithmeticException("all elements must have the same dimension");
-        List<Rational> coordinates = toList(map(Rational::sum, transpose(map(v -> (Iterable<Rational>) v, xs))));
+        List<Rational> coordinates = toList(map(Rational::sum, transpose(map(v -> v, xs))));
         return coordinates.isEmpty() ? ZERO_DIMENSIONAL : new RationalVector(coordinates);
     }
 
@@ -490,7 +516,7 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
      * <ul>
      *  <li>{@code xs} must not be empty and may not contain any nulls. Every {@code RationalVector} in {@code xs} must
      *  have the same dimension.</li>
-     *  <li>The result is finite and does not contain any nulls.</li>
+     *  <li>The result does not contain any nulls.</li>
      * </ul>
      *
      * Length is |{@code xs}|–1
@@ -503,7 +529,7 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
             throw new IllegalArgumentException("cannot get delta of empty Iterable");
         if (head(xs) == null)
             throw new NullPointerException();
-        return adjacentPairsWith(p -> p.b.subtract(p.a), xs);
+        return adjacentPairsWith((x, y) -> y.subtract(x), xs);
     }
 
     /**
@@ -523,7 +549,7 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
     public @NotNull Rational dot(@NotNull RationalVector that) {
         if (coordinates.size() != that.coordinates.size())
             throw new ArithmeticException("vectors must have same dimension");
-        return Rational.sum(zipWith(p -> p.a.multiply(p.b), coordinates, that.coordinates));
+        return Rational.sum(zipWith(Rational::multiply, coordinates, that.coordinates));
     }
 
     /**
@@ -572,6 +598,8 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
      *  <li>The result is a {@code RationalVector} with integer coordinates whose GCD is 0 or 1.</li>
      * </ul>
      *
+     * Length is dim({@code this})
+     *
      * @return a canonical representation of {@code this}
      */
     public @NotNull RationalVector cancelDenominators() {
@@ -605,6 +633,8 @@ public class RationalVector implements Comparable<RationalVector>, Iterable<Rati
      *  <li>{@code this} may be any {@code RationalVector}.</li>
      *  <li>The result is a {@code RationalVector} whose pivot, if it exists, is 1.</li>
      * </ul>
+     *
+     * Length is dim({@code this})
      *
      * @return a canonical representation of {@code this}
      */

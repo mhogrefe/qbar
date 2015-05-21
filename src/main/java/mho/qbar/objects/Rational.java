@@ -19,6 +19,8 @@ import java.util.function.Function;
 
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.ordering.Ordering.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * <p>The {@code Rational} class uniquely represents rational numbers. {@code denominator} is the smallest positive
@@ -96,7 +98,7 @@ public final class Rational implements Comparable<Rational> {
      */
     @SuppressWarnings("ConstantConditions")
     public static final @NotNull Iterable<Rational> HARMONIC_NUMBERS =
-            scanl(p -> p.a.add(p.b), ONE, map(i -> new Rational(BigInteger.ONE, BigInteger.valueOf(i)), rangeUp(2)));
+            scanl(Rational::add, ONE, map(i -> new Rational(BigInteger.ONE, BigInteger.valueOf(i)), rangeUp(2)));
 
     /**
      * {@code this} times {@code denominator}
@@ -624,7 +626,7 @@ public final class Rational implements Comparable<Rational> {
      *
      * <ul>
      *  <li>{@code this} may be any {@code Rational}.</li>
-     *  <li>{@code precision} must be non-negative.</li>
+     *  <li>{@code precision} cannot be negative.</li>
      *  <li>{@code roundingMode} may be any {@code RoundingMode}.</li>
      *  <li>If {@code precision} is 0, then {@code this} must be a {@code Rational} whose decimal expansion is
      *  terminating; that is, its denominator must only have 2 or 5 as prime factors.</li>
@@ -652,7 +654,7 @@ public final class Rational implements Comparable<Rational> {
      *
      * <ul>
      *  <li>{@code this} may be any {@code Rational}.</li>
-     *  <li>{@code precision} must be non-negative.</li>
+     *  <li>{@code precision} cannot be negative.</li>
      *  <li>If {@code precision} is 0, then {@code this} must be a {@code Rational} whose decimal expansion is
      *  terminating; that is, its denominator must only have 2 or 5 as prime factors.</li>
      *  <li>The result is a {@code BigDecimal} x such that x's scale is greater than or equal to zero and less than or
@@ -1157,7 +1159,7 @@ public final class Rational implements Comparable<Rational> {
      * Returns the absolute value of {@code this}.
      *
      * <ul>
-     *  <li>{@code this} may be any {@code Rational.}</li>
+     *  <li>{@code this} may be any {@code Rational}.</li>
      *  <li>The result is a non-negative {@code Rational}.</li>
      * </ul>
      *
@@ -1197,7 +1199,26 @@ public final class Rational implements Comparable<Rational> {
      * @return {@code this}–{@code that}
      */
     public @NotNull Rational subtract(@NotNull Rational that) {
-        return add(that.negate());
+        if (this == ZERO) return that.negate();
+        if (that == ZERO) return this;
+        if (this == that) return ZERO;
+        BigInteger d1 = denominator.gcd(that.denominator);
+        if (d1.equals(BigInteger.ONE)) {
+            BigInteger sn = numerator.multiply(that.denominator).subtract(denominator.multiply(that.numerator));
+            if (sn.equals(BigInteger.ZERO)) return ZERO;
+            BigInteger sd = denominator.multiply(that.denominator);
+            if (sn.equals(sd)) return ONE;
+            return new Rational(sn, sd);
+        } else {
+            BigInteger t = numerator.multiply(that.denominator.divide(d1))
+                    .subtract(that.numerator.multiply(denominator.divide(d1)));
+            if (t.equals(BigInteger.ZERO)) return ZERO;
+            BigInteger d2 = t.gcd(d1);
+            BigInteger sn = t.divide(d2);
+            BigInteger sd = denominator.divide(d1).multiply(that.denominator.divide(d2));
+            if (sn.equals(sd)) return ONE;
+            return new Rational(sn, sd);
+        }
     }
 
     /**
@@ -1412,9 +1433,11 @@ public final class Rational implements Comparable<Rational> {
      * @param xs an {@code Iterable} of {@code Rational}s.
      * @return Σxs
      */
-    public static Rational sum(@NotNull Iterable<Rational> xs) {
+    public static @NotNull Rational sum(@NotNull Iterable<Rational> xs) {
+        if (any(x -> x == null, xs))
+            throw new NullPointerException();
         //noinspection ConstantConditions
-        return foldl(p -> p.a.add(p.b), ZERO, xs);
+        return foldl(Rational::add, ZERO, xs);
     }
 
     /**
@@ -1428,7 +1451,9 @@ public final class Rational implements Comparable<Rational> {
      * @param xs an {@code Iterable} of {@code Rational}s.
      * @return Πxs
      */
-    public static Rational product(@NotNull Iterable<Rational> xs) {
+    public static @NotNull Rational product(@NotNull Iterable<Rational> xs) {
+        if (any(x -> x == null, xs))
+            throw new NullPointerException();
         List<Rational> denominatorSorted = sort(
                 (x, y) -> {
                     Ordering o = compare(x.getDenominator(), y.getDenominator());
@@ -1443,7 +1468,7 @@ public final class Rational implements Comparable<Rational> {
                 xs
         );
         //noinspection ConstantConditions
-        return foldl(p -> p.a.multiply(p.b), ONE, denominatorSorted);
+        return foldl(Rational::multiply, ONE, denominatorSorted);
     }
 
     /**
@@ -1452,7 +1477,7 @@ public final class Rational implements Comparable<Rational> {
      *
      * <ul>
      *  <li>{@code xs} must not be empty and may not contain any nulls.</li>
-     *  <li>The result is finite and does not contain any nulls.</li>
+     *  <li>The result is does not contain any nulls.</li>
      * </ul>
      *
      * Length is |{@code xs}|–1
@@ -1465,8 +1490,7 @@ public final class Rational implements Comparable<Rational> {
             throw new IllegalArgumentException("cannot get delta of empty Iterable");
         if (head(xs) == null)
             throw new NullPointerException();
-        //noinspection ConstantConditions
-        return adjacentPairsWith(p -> p.b.subtract(p.a), xs);
+        return adjacentPairsWith((x, y) -> y.subtract(x), xs);
     }
 
     /**
@@ -1680,7 +1704,7 @@ public final class Rational implements Comparable<Rational> {
      * is ignored.
      *
      * <ul>
-     *  <li>{@code this} must be non-negative.</li>
+     *  <li>{@code this} cannot be negative.</li>
      *  <li>{@code base} must be greater than 1.</li>
      *  <li>The elements of the result are all non-null. The elements of the elements are all non-negative. The first
      *  element does not begin with a zero. The last element is non-empty, and is not equal to [{@code base}–1] (i.e. a
@@ -1772,7 +1796,7 @@ public final class Rational implements Comparable<Rational> {
      * {@code Iterable}). Trailing zeroes are not included.
      *
      * <ul>
-     *  <li>{@code this} must be non-negative.</li>
+     *  <li>{@code this} cannot be negative.</li>
      *  <li>{@code base} must be at least 2.</li>
      *  <li>Both of the result's elements are non-null. The first element does not begin with a zero. The second
      *  element is either finite or eventually repeating.</li>
@@ -1984,7 +2008,7 @@ public final class Rational implements Comparable<Rational> {
                 undigitFunction = t -> toList(map(c -> BigInteger.valueOf(MathUtils.fromDigit(c)), fromString(t)));
             } else {
                 undigitFunction = t -> {
-                    if (t.isEmpty()) return new ArrayList<>();
+                    if (t.isEmpty()) return Collections.emptyList();
                     if (head(t) != '(' || last(t) != ')' || t.contains("()"))
                         throw new IllegalArgumentException("invalid String");
                     t = tail(init(t));
@@ -2008,7 +2032,7 @@ public final class Rational implements Comparable<Rational> {
             } else {
                 List<BigInteger> beforeDecimal = undigitFunction.apply(take(dotIndex, s));
                 List<BigInteger> afterDecimal = undigitFunction.apply(drop(dotIndex + 1, s));
-                result = fromPositionalNotation(base, beforeDecimal, afterDecimal, Arrays.asList(BigInteger.ZERO));
+                result = fromPositionalNotation(base, beforeDecimal, afterDecimal, Collections.singletonList(BigInteger.ZERO));
             }
             return negative ? result.negate() : result;
         } catch (StringIndexOutOfBoundsException e) {
@@ -2031,9 +2055,9 @@ public final class Rational implements Comparable<Rational> {
      */
     @SuppressWarnings("ConstantConditions")
     public static @NotNull List<BigInteger> cancelDenominators(@NotNull List<Rational> xs) {
-        BigInteger lcm = foldl(p -> MathUtils.lcm(p.a, p.b), BigInteger.ONE, map(Rational::getDenominator, xs));
+        BigInteger lcm = foldl(MathUtils::lcm, BigInteger.ONE, map(Rational::getDenominator, xs));
         Iterable<BigInteger> canceled = map(x -> x.multiply(lcm).getNumerator(), xs);
-        BigInteger gcd = foldl(p -> p.a.gcd(p.b), BigInteger.ZERO, canceled);
+        BigInteger gcd = foldl(BigInteger::gcd, BigInteger.ZERO, canceled);
         return toList(gcd.equals(BigInteger.ZERO) ? canceled : map(x -> x.divide(gcd), canceled));
     }
 
@@ -2088,10 +2112,10 @@ public final class Rational implements Comparable<Rational> {
     @Override
     public int compareTo(@NotNull Rational that) {
         if (this == that) return 0;
-        int thisSignum = signum();
-        int thatSignum = that.signum();
-        if (thisSignum > thatSignum) return 1;
-        if (thisSignum < thatSignum) return -1;
+        int thisSign = signum();
+        int thatSign = that.signum();
+        if (thisSign > thatSign) return 1;
+        if (thisSign < thatSign) return -1;
         return numerator.multiply(that.denominator).compareTo(that.numerator.multiply(denominator));
     }
 
@@ -2162,5 +2186,15 @@ public final class Rational implements Comparable<Rational> {
         } else {
             return numerator.toString() + "/" + denominator.toString();
         }
+    }
+
+    /**
+     * Ensures that {@code this} is valid. Must return true for any {@code Rational} used outside this class.
+     */
+    public void validate() {
+        assertEquals(toString(), numerator.gcd(denominator), BigInteger.ONE);
+        assertEquals(toString(), denominator.signum(), 1);
+        if (equals(ZERO)) assertTrue(toString(), this == ZERO);
+        if (equals(ONE)) assertTrue(toString(), this == ONE);
     }
 }

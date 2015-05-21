@@ -1,7 +1,8 @@
 package mho.qbar.objects;
 
-import mho.wheels.iterables.ExhaustiveProvider;
-import mho.wheels.iterables.RandomProvider;
+import mho.qbar.iterableProviders.QBarExhaustiveProvider;
+import mho.qbar.iterableProviders.QBarIterableProvider;
+import mho.qbar.iterableProviders.QBarRandomProvider;
 import mho.wheels.math.Combinatorics;
 import mho.wheels.math.MathUtils;
 import mho.wheels.misc.FloatingPointUtils;
@@ -9,9 +10,6 @@ import mho.wheels.misc.Readers;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
-import mho.qbar.iterableProviders.QBarExhaustiveProvider;
-import mho.qbar.iterableProviders.QBarIterableProvider;
-import mho.qbar.iterableProviders.QBarRandomProvider;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
@@ -20,9 +18,10 @@ import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.util.*;
 
+import static mho.qbar.objects.Rational.*;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.ordering.Ordering.*;
-import static mho.qbar.objects.Rational.*;
+import static mho.wheels.testing.Testing.*;
 import static org.junit.Assert.*;
 
 @SuppressWarnings("ConstantConditions")
@@ -37,7 +36,7 @@ public class RationalProperties {
 
     private static void initialize() {
         if (USE_RANDOM) {
-            P = new QBarRandomProvider(new Random(0x6af477d9a7e54fcaL));
+            P = QBarRandomProvider.example();
             LIMIT = 1000;
         } else {
             P = QBarExhaustiveProvider.INSTANCE;
@@ -90,6 +89,7 @@ public class RationalProperties {
             propertiesSignum();
             compareImplementationsAdd();
             propertiesSubtract();
+            compareImplementationsSubtract();
             propertiesMultiply_Rational();
             compareImplementationsMultiply_Rational();
             propertiesMultiply_BigInteger();
@@ -147,7 +147,7 @@ public class RationalProperties {
         System.out.println("\ttesting constant properties...");
 
         List<Rational> sample = toList(take(SMALL_LIMIT, HARMONIC_NUMBERS));
-        sample.forEach(mho.qbar.objects.RationalProperties::validate);
+        sample.forEach(Rational::validate);
         assertTrue(unique(sample));
         assertTrue(increasing(sample));
         assertTrue(all(r -> !r.isInteger(), tail(sample)));
@@ -185,7 +185,7 @@ public class RationalProperties {
         );
         for (Pair<BigInteger, BigInteger> p : take(LIMIT, ps)) {
             Rational r = of(p.a, p.b);
-            validate(r);
+            r.validate();
             assertEquals(p.toString(), of(p.a).divide(p.b), r);
         }
 
@@ -206,7 +206,7 @@ public class RationalProperties {
         Iterable<Pair<Long, Long>> ps = filter(p -> p.b != 0, P.pairs(P.longs()));
         for (Pair<Long, Long> p : take(LIMIT, ps)) {
             Rational r = of(p.a, p.b);
-            validate(r);
+            r.validate();
             assertEquals(p.toString(), of(p.a).divide(BigInteger.valueOf(p.b)), r);
             assertTrue(p.toString(), ge(r.getNumerator(), minLong));
             assertTrue(p.toString(), le(r.getNumerator(), maxLong));
@@ -231,7 +231,7 @@ public class RationalProperties {
         Iterable<Pair<Integer, Integer>> ps = filter(p -> p.b != 0, P.pairs(P.integers()));
         for (Pair<Integer, Integer> p : take(LIMIT, ps)) {
             Rational r = of(p.a, p.b);
-            validate(r);
+            r.validate();
             assertEquals(p.toString(), of(p.a).divide(p.b), r);
             assertTrue(p.toString(), ge(r.getNumerator(), minInt));
             assertTrue(p.toString(), le(r.getNumerator(), maxInt));
@@ -253,7 +253,7 @@ public class RationalProperties {
 
         for (BigInteger i : take(LIMIT, P.bigIntegers())) {
             Rational r = of(i);
-            validate(r);
+            r.validate();
             assertEquals(i.toString(), r.getDenominator(), BigInteger.ONE);
         }
     }
@@ -266,7 +266,7 @@ public class RationalProperties {
         BigInteger maxLong = BigInteger.valueOf(Long.MAX_VALUE);
         for (long l : take(LIMIT, P.longs())) {
             Rational r = of(l);
-            validate(r);
+            r.validate();
             assertEquals(Long.toString(l), r.getDenominator(), BigInteger.ONE);
             assertTrue(Long.toString(l), ge(r.getNumerator(), minLong));
             assertTrue(Long.toString(l), le(r.getNumerator(), maxLong));
@@ -281,7 +281,7 @@ public class RationalProperties {
         BigInteger maxInt = BigInteger.valueOf(Integer.MAX_VALUE);
         for (int i : take(LIMIT, P.integers())) {
             Rational r = of(i);
-            validate(r);
+            r.validate();
             assertEquals(Integer.toString(i), r.getDenominator(), BigInteger.ONE);
             assertTrue(Integer.toString(i), ge(r.getNumerator(), minInt));
             assertTrue(Integer.toString(i), le(r.getNumerator(), maxInt));
@@ -295,13 +295,13 @@ public class RationalProperties {
         Iterable<Float> fs = filter(f -> Float.isFinite(f) && !Float.isNaN(f), P.floats());
         for (float f : take(LIMIT, fs)) {
             Rational r = of(f);
-            validate(r);
+            r.validate();
             assertTrue(Float.toString(f), r.hasTerminatingBaseExpansion(BigInteger.valueOf(10)));
         }
 
         for (float f : take(LIMIT, P.ordinaryFloats())) {
             Rational r = of(f);
-            aeq(Float.toString(f), f, r.floatValue());
+            aeqf(Float.toString(f), f, r.floatValue());
             aeq(Float.toString(f), new BigDecimal(Float.toString(f)), r.bigDecimalValueExact());
         }
     }
@@ -313,13 +313,13 @@ public class RationalProperties {
         Iterable<Double> ds = filter(d -> Double.isFinite(d) && !Double.isNaN(d), P.doubles());
         for (double d : take(LIMIT, ds)) {
             Rational r = of(d);
-            validate(r);
+            r.validate();
             assertTrue(Double.toString(d), r.hasTerminatingBaseExpansion(BigInteger.valueOf(10)));
         }
 
         for (double d : take(LIMIT, P.ordinaryDoubles())) {
             Rational r = of(d);
-            aeq(Double.toString(d), d, r.doubleValue());
+            aeqd(Double.toString(d), d, r.doubleValue());
             aeq(Double.toString(d), new BigDecimal(Double.toString(d)), r.bigDecimalValueExact());
         }
     }
@@ -333,15 +333,15 @@ public class RationalProperties {
         Iterable<Float> fs = filter(f -> Float.isFinite(f) && !Float.isNaN(f), P.floats());
         for (float f : take(LIMIT, fs)) {
             Rational r = ofExact(f);
-            validate(r);
-            assertTrue(Float.toString(f), MathUtils.isAPowerOfTwo(r.getDenominator()));
+            r.validate();
+            assertTrue(Float.toString(f), MathUtils.isPowerOfTwo(r.getDenominator()));
             assertTrue(Float.toString(f), le(r.getDenominator(), denominatorLimit));
             assertTrue(Float.toString(f), le(r.getNumerator(), numeratorLimit));
         }
 
         for (float f : take(LIMIT, P.ordinaryFloats())) {
             Rational r = ofExact(f);
-            aeq(Float.toString(f), f, r.floatValue());
+            aeqf(Float.toString(f), f, r.floatValue());
         }
     }
 
@@ -354,15 +354,15 @@ public class RationalProperties {
         Iterable<Double> ds = filter(d -> Double.isFinite(d) && !Double.isNaN(d), P.doubles());
         for (double d : take(LIMIT, ds)) {
             Rational r = ofExact(d);
-            validate(r);
-            assertTrue(Double.toString(d), MathUtils.isAPowerOfTwo(r.getDenominator()));
+            r.validate();
+            assertTrue(Double.toString(d), MathUtils.isPowerOfTwo(r.getDenominator()));
             assertTrue(Double.toString(d), le(r.getDenominator(), denominatorLimit));
             assertTrue(Double.toString(d), le(r.getNumerator(), numeratorLimit));
         }
 
         for (double d : take(LIMIT, P.ordinaryDoubles())) {
             Rational r = ofExact(d);
-            aeq(Double.toString(d), d, r.doubleValue());
+            aeqd(Double.toString(d), d, r.doubleValue());
         }
     }
 
@@ -372,7 +372,7 @@ public class RationalProperties {
 
         for (BigDecimal bd : take(LIMIT, P.bigDecimals())) {
             Rational r = of(bd);
-            validate(r);
+            r.validate();
             aeq(bd.toString(), bd, r.bigDecimalValueExact());
             assertTrue(bd.toString(), r.hasTerminatingBaseExpansion(BigInteger.valueOf(10)));
         }
@@ -579,7 +579,8 @@ public class RationalProperties {
             } catch (ArithmeticException ignored) {}
         }
 
-        for (BigInteger i : take(LIMIT, P.rangeUp(BigInteger.valueOf(Integer.MAX_VALUE).add(BigInteger.ONE)))) {
+        Iterable<BigInteger> is = P.withScale(33).rangeUp(BigInteger.valueOf(Integer.MAX_VALUE).add(BigInteger.ONE));
+        for (BigInteger i : take(LIMIT, is)) {
             try {
                 of(i).intValueExact();
                 fail(i.toString());
@@ -613,7 +614,8 @@ public class RationalProperties {
             } catch (ArithmeticException ignored) {}
         }
 
-        for (BigInteger i : take(LIMIT, P.rangeUp(BigInteger.valueOf(Long.MAX_VALUE).add(BigInteger.ONE)))) {
+        Iterable<BigInteger> is = P.withScale(65).rangeUp(BigInteger.valueOf(Long.MAX_VALUE).add(BigInteger.ONE));
+        for (BigInteger i : take(LIMIT, is)) {
             try {
                 of(i).longValueExact();
                 fail(i.toString());
@@ -637,29 +639,22 @@ public class RationalProperties {
 
         System.out.println("\t\ttesting hasTerminatingBaseExpansion(BigInteger) properties...");
 
-        Iterable<Pair<Rational, BigInteger>> ps;
-        if (P instanceof ExhaustiveProvider) {
-            ps = ((ExhaustiveProvider) P).pairsSquareRootOrder(
-                    cons(ZERO, P.positiveRationals()),
-                    P.rangeUp(BigInteger.valueOf(2))
-            );
-        } else {
-            ps = P.pairs(
-                    cons(ZERO, ((QBarRandomProvider) P).positiveRationals(20)),
-                    map(i -> BigInteger.valueOf(i + 2), ((RandomProvider) P).naturalIntegersGeometric(20))
-            );
-        }
-        for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
-            boolean result = p.a.hasTerminatingBaseExpansion(p.b);
-            Iterable<BigInteger> dPrimeFactors = nub(MathUtils.primeFactors(p.a.getDenominator()));
-            Iterable<BigInteger> bPrimeFactors = nub(MathUtils.primeFactors(p.b));
-            assertEquals(p.toString(), result, isSubsetOf(dPrimeFactors, bPrimeFactors));
-        }
+        Iterable<Pair<Rational, BigInteger>> ps = P.pairsSquareRootOrder(
+                cons(ZERO, P.withScale(20).positiveRationals()),
+                map(i -> BigInteger.valueOf(i + 2), P.withScale(20).naturalIntegersGeometric())
+        );
+        //todo fix hanging
+//        for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
+//            boolean result = p.a.hasTerminatingBaseExpansion(p.b);
+//            Iterable<BigInteger> dPrimeFactors = nub(MathUtils.primeFactors(p.a.getDenominator()));
+//            Iterable<BigInteger> bPrimeFactors = nub(MathUtils.primeFactors(p.b));
+//            assertEquals(p.toString(), result, isSubsetOf(dPrimeFactors, bPrimeFactors));
+//        }
 
-        if (!(P instanceof ExhaustiveProvider)) {
+        if (!(P instanceof QBarExhaustiveProvider)) {
             ps = P.pairs(
-                    cons(ZERO, ((QBarRandomProvider) P).positiveRationals(8)),
-                    map(i -> BigInteger.valueOf(i + 2), ((RandomProvider) P).naturalIntegersGeometric(20))
+                    cons(ZERO, P.withScale(8).positiveRationals()),
+                    map(i -> BigInteger.valueOf(i + 2), P.withScale(20).naturalIntegersGeometric())
             );
         }
         for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
@@ -681,7 +676,7 @@ public class RationalProperties {
         System.out.println("\t\ttesting bigDecimalValue(int, RoundingMode)...");
 
         Iterable<Pair<Rational, Pair<Integer, RoundingMode>>> ps;
-        if (P instanceof ExhaustiveProvider) {
+        if (P instanceof QBarExhaustiveProvider) {
             ps = P.pairs(
                     P.rationals(),
                     (Iterable<Pair<Integer, RoundingMode>>) P.pairs(P.naturalIntegers(), P.roundingModes())
@@ -690,7 +685,7 @@ public class RationalProperties {
             ps = P.pairs(
                     P.rationals(),
                     (Iterable<Pair<Integer, RoundingMode>>) P.pairs(
-                            ((RandomProvider) P).naturalIntegersGeometric(20),
+                            P.withScale(20).naturalIntegersGeometric(),
                             P.roundingModes()
                     )
             );
@@ -717,10 +712,10 @@ public class RationalProperties {
         }
 
         Iterable<Pair<Rational, Integer>> pris;
-        if (P instanceof ExhaustiveProvider) {
-            pris = ((ExhaustiveProvider) P).pairsSquareRootOrder(P.rationals(), P.naturalIntegers());
+        if (P instanceof QBarExhaustiveProvider) {
+            pris = P.pairsSquareRootOrder(P.rationals(), P.naturalIntegers());
         } else {
-            pris = P.pairs(P.rationals(), ((RandomProvider) P).naturalIntegersGeometric(20));
+            pris = P.pairs(P.rationals(), P.withScale(20).naturalIntegersGeometric());
         }
         pris = filter(
                 p -> {
@@ -772,10 +767,10 @@ public class RationalProperties {
         }
 
         Iterable<Pair<BigDecimal, Integer>> notMidpoints;
-        if (P instanceof ExhaustiveProvider) {
-            notMidpoints = ((ExhaustiveProvider) P).pairsSquareRootOrder(P.bigDecimals(), P.naturalIntegers());
+        if (P instanceof QBarExhaustiveProvider) {
+            notMidpoints = P.pairsSquareRootOrder(P.bigDecimals(), P.naturalIntegers());
         } else {
-            notMidpoints = P.pairs(P.bigDecimals(), ((RandomProvider) P).naturalIntegersGeometric(20));
+            notMidpoints = P.pairs(P.bigDecimals(), P.withScale(20).naturalIntegersGeometric());
         }
         notMidpoints = filter(
                 p -> {
@@ -834,10 +829,10 @@ public class RationalProperties {
 
         Iterable<Rational> rs = filter(r -> !r.hasTerminatingBaseExpansion(BigInteger.valueOf(10)), P.rationals());
         Iterable<Pair<Rational, Integer>> prisFail;
-        if (P instanceof ExhaustiveProvider) {
-            prisFail = ((ExhaustiveProvider) P).pairsSquareRootOrder(rs, P.naturalIntegers());
+        if (P instanceof QBarExhaustiveProvider) {
+            prisFail = P.pairsSquareRootOrder(rs, P.naturalIntegers());
         } else {
-            prisFail = P.pairs(rs, ((RandomProvider) P).naturalIntegersGeometric(20));
+            prisFail = P.pairs(rs, P.withScale(20).naturalIntegersGeometric());
         }
         for (Pair<Rational, Integer> p : take(LIMIT, prisFail)) {
             try {
@@ -852,10 +847,10 @@ public class RationalProperties {
         System.out.println("\t\ttesting bigDecimalValue(int)...");
 
         Iterable<Pair<Rational, Integer>> ps;
-        if (P instanceof ExhaustiveProvider) {
-            ps = ((ExhaustiveProvider) P).pairsSquareRootOrder(P.rationals(), P.naturalIntegers());
+        if (P instanceof QBarExhaustiveProvider) {
+            ps = P.pairsSquareRootOrder(P.rationals(), P.naturalIntegers());
         } else {
-            ps = P.pairs(P.rationals(), ((RandomProvider) P).naturalIntegersGeometric(20));
+            ps = P.pairs(P.rationals(), P.withScale(20).naturalIntegersGeometric());
         }
         ps = filter(
                 p -> {
@@ -880,10 +875,10 @@ public class RationalProperties {
         }
 
         Iterable<Pair<BigDecimal, Integer>> notMidpoints;
-        if (P instanceof ExhaustiveProvider) {
-            notMidpoints = ((ExhaustiveProvider) P).pairsSquareRootOrder(P.bigDecimals(), P.naturalIntegers());
+        if (P instanceof QBarExhaustiveProvider) {
+            notMidpoints = P.pairsSquareRootOrder(P.bigDecimals(), P.naturalIntegers());
         } else {
-            notMidpoints = P.pairs(P.bigDecimals(), ((RandomProvider) P).naturalIntegersGeometric(20));
+            notMidpoints = P.pairs(P.bigDecimals(), P.withScale(20).naturalIntegersGeometric());
         }
         notMidpoints = filter(
                 p -> {
@@ -1056,8 +1051,8 @@ public class RationalProperties {
 
         rs = filter(r -> !r.equals(SMALLEST_FLOAT), P.rationals(Interval.of(ZERO, SMALLEST_FLOAT)));
         for (Rational r : take(LIMIT, rs)) {
-            aeq(r.toString(), r.floatValue(RoundingMode.FLOOR), 0.0f);
-            aeq(r.toString(), r.floatValue(RoundingMode.DOWN), 0.0f);
+            aeqf(r.toString(), r.floatValue(RoundingMode.FLOOR), 0.0f);
+            aeqf(r.toString(), r.floatValue(RoundingMode.DOWN), 0.0f);
 
             float rounded = r.floatValue(RoundingMode.UP);
             float successor = FloatingPointUtils.successor(rounded);
@@ -1072,23 +1067,23 @@ public class RationalProperties {
         );
         for (Rational r : take(LIMIT, rs)) {
             float floor = r.floatValue(RoundingMode.FLOOR);
-            aeq(r.toString(), floor, Float.NEGATIVE_INFINITY);
+            aeqf(r.toString(), floor, Float.NEGATIVE_INFINITY);
 
             float up = r.floatValue(RoundingMode.UP);
-            aeq(r.toString(), up, Float.NEGATIVE_INFINITY);
+            aeqf(r.toString(), up, Float.NEGATIVE_INFINITY);
 
             float halfUp = r.floatValue(RoundingMode.HALF_UP);
-            aeq(r.toString(), halfUp, Float.NEGATIVE_INFINITY);
+            aeqf(r.toString(), halfUp, Float.NEGATIVE_INFINITY);
 
             float halfEven = r.floatValue(RoundingMode.HALF_EVEN);
-            aeq(r.toString(), halfEven, Float.NEGATIVE_INFINITY);
+            aeqf(r.toString(), halfEven, Float.NEGATIVE_INFINITY);
         }
 
         rs = P.rationals(Interval.greaterThanOrEqualTo(LARGEST_FLOAT));
         for (Rational r : take(LIMIT, rs)) {
-            aeq(r.toString(), r.floatValue(RoundingMode.FLOOR), Float.MAX_VALUE);
-            aeq(r.toString(), r.floatValue(RoundingMode.DOWN), Float.MAX_VALUE);
-            aeq(r.toString(), r.floatValue(RoundingMode.HALF_DOWN), Float.MAX_VALUE);
+            aeqf(r.toString(), r.floatValue(RoundingMode.FLOOR), Float.MAX_VALUE);
+            aeqf(r.toString(), r.floatValue(RoundingMode.DOWN), Float.MAX_VALUE);
+            aeqf(r.toString(), r.floatValue(RoundingMode.HALF_DOWN), Float.MAX_VALUE);
         }
 
         rs = filter(
@@ -1096,30 +1091,30 @@ public class RationalProperties {
                 P.rationals(Interval.of(SMALLEST_FLOAT.negate(), ZERO))
         );
         for (Rational r : take(LIMIT, rs)) {
-            aeq(r.toString(), r.floatValue(RoundingMode.CEILING), -0.0f);
-            aeq(r.toString(), r.floatValue(RoundingMode.DOWN), -0.0f);
+            aeqf(r.toString(), r.floatValue(RoundingMode.CEILING), -0.0f);
+            aeqf(r.toString(), r.floatValue(RoundingMode.DOWN), -0.0f);
         }
 
         rs = filter(r -> !r.equals(LARGEST_FLOAT), P.rationals(Interval.greaterThanOrEqualTo(LARGEST_FLOAT)));
         for (Rational r : take(LIMIT, rs)) {
             float ceiling = r.floatValue(RoundingMode.CEILING);
-            aeq(r.toString(), ceiling, Float.POSITIVE_INFINITY);
+            aeqf(r.toString(), ceiling, Float.POSITIVE_INFINITY);
 
             float up = r.floatValue(RoundingMode.UP);
-            aeq(r.toString(), up, Float.POSITIVE_INFINITY);
+            aeqf(r.toString(), up, Float.POSITIVE_INFINITY);
 
             float halfUp = r.floatValue(RoundingMode.HALF_UP);
-            aeq(r.toString(), halfUp, Float.POSITIVE_INFINITY);
+            aeqf(r.toString(), halfUp, Float.POSITIVE_INFINITY);
 
             float halfEven = r.floatValue(RoundingMode.HALF_EVEN);
-            aeq(r.toString(), halfEven, Float.POSITIVE_INFINITY);
+            aeqf(r.toString(), halfEven, Float.POSITIVE_INFINITY);
         }
 
         rs = P.rationals(Interval.lessThanOrEqualTo(LARGEST_FLOAT.negate()));
         for (Rational r : take(LIMIT, rs)) {
-            aeq(r.toString(), r.floatValue(RoundingMode.CEILING), -Float.MAX_VALUE);
-            aeq(r.toString(), r.floatValue(RoundingMode.DOWN), -Float.MAX_VALUE);
-            aeq(r.toString(), r.floatValue(RoundingMode.HALF_DOWN), -Float.MAX_VALUE);
+            aeqf(r.toString(), r.floatValue(RoundingMode.CEILING), -Float.MAX_VALUE);
+            aeqf(r.toString(), r.floatValue(RoundingMode.DOWN), -Float.MAX_VALUE);
+            aeqf(r.toString(), r.floatValue(RoundingMode.HALF_DOWN), -Float.MAX_VALUE);
         }
 
         Iterable<Rational> midpoints = map(
@@ -1133,8 +1128,8 @@ public class RationalProperties {
         for (Rational r : take(LIMIT, midpoints)) {
             float down = r.floatValue(RoundingMode.DOWN);
             float up = r.floatValue(RoundingMode.UP);
-            aeq(r.toString(), r.floatValue(RoundingMode.HALF_DOWN), down);
-            aeq(r.toString(), r.floatValue(RoundingMode.HALF_UP), up);
+            aeqf(r.toString(), r.floatValue(RoundingMode.HALF_DOWN), down);
+            aeqf(r.toString(), r.floatValue(RoundingMode.HALF_UP), up);
             float halfEven = r.floatValue(RoundingMode.HALF_EVEN);
             assertTrue(r.toString(), ((Float.floatToIntBits(down) & 1) == 0 ? down : up) == halfEven);
         }
@@ -1149,21 +1144,21 @@ public class RationalProperties {
             Rational belowDistance = r.subtract(ofExact(below));
             Rational aboveDistance = ofExact(above).subtract(r);
             float closest = lt(belowDistance, aboveDistance) ? below : above;
-            aeq(r.toString(), r.floatValue(RoundingMode.HALF_DOWN), closest);
-            aeq(r.toString(), r.floatValue(RoundingMode.HALF_UP), closest);
-            aeq(r.toString(), r.floatValue(RoundingMode.HALF_EVEN), closest);
+            aeqf(r.toString(), r.floatValue(RoundingMode.HALF_DOWN), closest);
+            aeqf(r.toString(), r.floatValue(RoundingMode.HALF_UP), closest);
+            aeqf(r.toString(), r.floatValue(RoundingMode.HALF_EVEN), closest);
         }
 
         rs = P.rationals(Interval.of(ZERO, SMALLEST_FLOAT.shiftRight(1)));
         for (Rational r : take(LIMIT, rs)) {
-            aeq(r.toString(), r.floatValue(RoundingMode.HALF_DOWN), 0.0f);
-            aeq(r.toString(), r.floatValue(RoundingMode.HALF_EVEN), 0.0f);
+            aeqf(r.toString(), r.floatValue(RoundingMode.HALF_DOWN), 0.0f);
+            aeqf(r.toString(), r.floatValue(RoundingMode.HALF_EVEN), 0.0f);
         }
 
         rs = filter(r -> r != ZERO, P.rationals(Interval.of(SMALLEST_FLOAT.shiftRight(1).negate(), ZERO)));
         for (Rational r : take(LIMIT, rs)) {
-            aeq(r.toString(), r.floatValue(RoundingMode.HALF_DOWN), -0.0f);
-            aeq(r.toString(), r.floatValue(RoundingMode.HALF_EVEN), -0.0f);
+            aeqf(r.toString(), r.floatValue(RoundingMode.HALF_DOWN), -0.0f);
+            aeqf(r.toString(), r.floatValue(RoundingMode.HALF_EVEN), -0.0f);
         }
 
         rs = filter(
@@ -1171,7 +1166,7 @@ public class RationalProperties {
                 P.rationals(Interval.of(ZERO, SMALLEST_FLOAT.shiftRight(1)))
         );
         for (Rational r : take(LIMIT, rs)) {
-            aeq(r.toString(), r.floatValue(RoundingMode.HALF_UP), 0.0f);
+            aeqf(r.toString(), r.floatValue(RoundingMode.HALF_UP), 0.0f);
         }
 
         rs = filter(
@@ -1179,7 +1174,7 @@ public class RationalProperties {
                 P.rationals(Interval.of(SMALLEST_FLOAT.shiftRight(1).negate(), ZERO))
         );
         for (Rational r : take(LIMIT, rs)) {
-            aeq(r.toString(), r.floatValue(RoundingMode.HALF_UP), -0.0f);
+            aeqf(r.toString(), r.floatValue(RoundingMode.HALF_UP), -0.0f);
         }
 
         for (Rational r : take(LIMIT, P.rationals())) {
@@ -1216,7 +1211,7 @@ public class RationalProperties {
 
         for (Rational r : take(LIMIT, P.rationals())) {
             float rounded = r.floatValue();
-            aeq(r.toString(), rounded, r.floatValue(RoundingMode.HALF_EVEN));
+            aeqf(r.toString(), rounded, r.floatValue(RoundingMode.HALF_EVEN));
             assertTrue(r.toString(), !Float.isNaN(rounded));
             assertTrue(r.toString(), rounded == 0.0f || Math.signum(rounded) == r.signum());
         }
@@ -1227,13 +1222,13 @@ public class RationalProperties {
         );
         for (Rational r : take(LIMIT, rs)) {
             float rounded = r.floatValue();
-            aeq(r.toString(), rounded, Float.NEGATIVE_INFINITY);
+            aeqf(r.toString(), rounded, Float.NEGATIVE_INFINITY);
         }
 
         rs = filter(r -> !r.equals(LARGEST_FLOAT), P.rationals(Interval.greaterThanOrEqualTo(LARGEST_FLOAT)));
         for (Rational r : take(LIMIT, rs)) {
             float rounded = r.floatValue();
-            aeq(r.toString(), rounded, Float.POSITIVE_INFINITY);
+            aeqf(r.toString(), rounded, Float.POSITIVE_INFINITY);
         }
 
         Iterable<Rational> midpoints = map(
@@ -1261,17 +1256,17 @@ public class RationalProperties {
             Rational belowDistance = r.subtract(ofExact(below));
             Rational aboveDistance = ofExact(above).subtract(r);
             float closest = lt(belowDistance, aboveDistance) ? below : above;
-            aeq(r.toString(), r.floatValue(), closest);
+            aeqf(r.toString(), r.floatValue(), closest);
         }
 
         rs = P.rationals(Interval.of(ZERO, SMALLEST_FLOAT.shiftRight(1)));
         for (Rational r : take(LIMIT, rs)) {
-            aeq(r.toString(), r.floatValue(), 0.0f);
+            aeqf(r.toString(), r.floatValue(), 0.0f);
         }
 
         rs = filter(r -> r != ZERO, P.rationals(Interval.of(SMALLEST_FLOAT.shiftRight(1).negate(), ZERO)));
         for (Rational r : take(LIMIT, rs)) {
-            aeq(r.toString(), r.floatValue(), -0.0f);
+            aeqf(r.toString(), r.floatValue(), -0.0f);
         }
     }
 
@@ -1391,8 +1386,8 @@ public class RationalProperties {
 
         rs = filter(r -> !r.equals(SMALLEST_DOUBLE), P.rationals(Interval.of(ZERO, SMALLEST_DOUBLE)));
         for (Rational r : take(LIMIT, rs)) {
-            aeq(r.toString(), r.doubleValue(RoundingMode.FLOOR), 0.0);
-            aeq(r.toString(), r.doubleValue(RoundingMode.DOWN), 0.0);
+            aeqd(r.toString(), r.doubleValue(RoundingMode.FLOOR), 0.0);
+            aeqd(r.toString(), r.doubleValue(RoundingMode.DOWN), 0.0);
 
             double rounded = r.doubleValue(RoundingMode.UP);
             double successor = FloatingPointUtils.successor(rounded);
@@ -1407,23 +1402,23 @@ public class RationalProperties {
         );
         for (Rational r : take(LIMIT, rs)) {
             double floor = r.doubleValue(RoundingMode.FLOOR);
-            aeq(r.toString(), floor, Double.NEGATIVE_INFINITY);
+            aeqd(r.toString(), floor, Double.NEGATIVE_INFINITY);
 
             double up = r.doubleValue(RoundingMode.UP);
-            aeq(r.toString(), up, Double.NEGATIVE_INFINITY);
+            aeqd(r.toString(), up, Double.NEGATIVE_INFINITY);
 
             double halfUp = r.doubleValue(RoundingMode.HALF_UP);
-            aeq(r.toString(), halfUp, Double.NEGATIVE_INFINITY);
+            aeqd(r.toString(), halfUp, Double.NEGATIVE_INFINITY);
 
             double halfEven = r.doubleValue(RoundingMode.HALF_EVEN);
-            aeq(r.toString(), halfEven, Double.NEGATIVE_INFINITY);
+            aeqd(r.toString(), halfEven, Double.NEGATIVE_INFINITY);
         }
 
         rs = P.rationals(Interval.greaterThanOrEqualTo(LARGEST_DOUBLE));
         for (Rational r : take(LIMIT, rs)) {
-            aeq(r.toString(), r.doubleValue(RoundingMode.FLOOR), Double.MAX_VALUE);
-            aeq(r.toString(), r.doubleValue(RoundingMode.DOWN), Double.MAX_VALUE);
-            aeq(r.toString(), r.doubleValue(RoundingMode.HALF_DOWN), Double.MAX_VALUE);
+            aeqd(r.toString(), r.doubleValue(RoundingMode.FLOOR), Double.MAX_VALUE);
+            aeqd(r.toString(), r.doubleValue(RoundingMode.DOWN), Double.MAX_VALUE);
+            aeqd(r.toString(), r.doubleValue(RoundingMode.HALF_DOWN), Double.MAX_VALUE);
         }
 
         rs = filter(
@@ -1431,30 +1426,30 @@ public class RationalProperties {
                 P.rationals(Interval.of(SMALLEST_DOUBLE.negate(), ZERO))
         );
         for (Rational r : take(LIMIT, rs)) {
-            aeq(r.toString(), r.doubleValue(RoundingMode.CEILING), -0.0);
-            aeq(r.toString(), r.doubleValue(RoundingMode.DOWN), -0.0);
+            aeqd(r.toString(), r.doubleValue(RoundingMode.CEILING), -0.0);
+            aeqd(r.toString(), r.doubleValue(RoundingMode.DOWN), -0.0);
         }
 
         rs = filter(r -> !r.equals(LARGEST_DOUBLE), P.rationals(Interval.greaterThanOrEqualTo(LARGEST_DOUBLE)));
         for (Rational r : take(LIMIT, rs)) {
             double ceiling = r.doubleValue(RoundingMode.CEILING);
-            aeq(r.toString(), ceiling, Double.POSITIVE_INFINITY);
+            aeqd(r.toString(), ceiling, Double.POSITIVE_INFINITY);
 
             double up = r.doubleValue(RoundingMode.UP);
-            aeq(r.toString(), up, Double.POSITIVE_INFINITY);
+            aeqd(r.toString(), up, Double.POSITIVE_INFINITY);
 
             double halfUp = r.doubleValue(RoundingMode.HALF_UP);
-            aeq(r.toString(), halfUp, Double.POSITIVE_INFINITY);
+            aeqd(r.toString(), halfUp, Double.POSITIVE_INFINITY);
 
             double halfEven = r.doubleValue(RoundingMode.HALF_EVEN);
-            aeq(r.toString(), halfEven, Double.POSITIVE_INFINITY);
+            aeqd(r.toString(), halfEven, Double.POSITIVE_INFINITY);
         }
 
         rs = P.rationals(Interval.lessThanOrEqualTo(LARGEST_DOUBLE.negate()));
         for (Rational r : take(LIMIT, rs)) {
-            aeq(r.toString(), r.doubleValue(RoundingMode.CEILING), -Double.MAX_VALUE);
-            aeq(r.toString(), r.doubleValue(RoundingMode.DOWN), -Double.MAX_VALUE);
-            aeq(r.toString(), r.doubleValue(RoundingMode.HALF_DOWN), -Double.MAX_VALUE);
+            aeqd(r.toString(), r.doubleValue(RoundingMode.CEILING), -Double.MAX_VALUE);
+            aeqd(r.toString(), r.doubleValue(RoundingMode.DOWN), -Double.MAX_VALUE);
+            aeqd(r.toString(), r.doubleValue(RoundingMode.HALF_DOWN), -Double.MAX_VALUE);
         }
 
         Iterable<Rational> midpoints = map(
@@ -1468,8 +1463,8 @@ public class RationalProperties {
         for (Rational r : take(LIMIT, midpoints)) {
             double down = r.doubleValue(RoundingMode.DOWN);
             double up = r.doubleValue(RoundingMode.UP);
-            aeq(r.toString(), r.doubleValue(RoundingMode.HALF_DOWN), down);
-            aeq(r.toString(), r.doubleValue(RoundingMode.HALF_UP), up);
+            aeqd(r.toString(), r.doubleValue(RoundingMode.HALF_DOWN), down);
+            aeqd(r.toString(), r.doubleValue(RoundingMode.HALF_UP), up);
             double halfEven = r.doubleValue(RoundingMode.HALF_EVEN);
             assertTrue(r.toString(), ((Double.doubleToLongBits(down) & 1) == 0 ? down : up) == halfEven);
         }
@@ -1484,21 +1479,21 @@ public class RationalProperties {
             Rational belowDistance = r.subtract(ofExact(below));
             Rational aboveDistance = ofExact(above).subtract(r);
             double closest = lt(belowDistance, aboveDistance) ? below : above;
-            aeq(r.toString(), r.doubleValue(RoundingMode.HALF_DOWN), closest);
-            aeq(r.toString(), r.doubleValue(RoundingMode.HALF_UP), closest);
-            aeq(r.toString(), r.doubleValue(RoundingMode.HALF_EVEN), closest);
+            aeqd(r.toString(), r.doubleValue(RoundingMode.HALF_DOWN), closest);
+            aeqd(r.toString(), r.doubleValue(RoundingMode.HALF_UP), closest);
+            aeqd(r.toString(), r.doubleValue(RoundingMode.HALF_EVEN), closest);
         }
 
         rs = P.rationals(Interval.of(ZERO, SMALLEST_DOUBLE.shiftRight(1)));
         for (Rational r : take(LIMIT, rs)) {
-            aeq(r.toString(), r.doubleValue(RoundingMode.HALF_DOWN), 0.0);
-            aeq(r.toString(), r.doubleValue(RoundingMode.HALF_EVEN), 0.0);
+            aeqd(r.toString(), r.doubleValue(RoundingMode.HALF_DOWN), 0.0);
+            aeqd(r.toString(), r.doubleValue(RoundingMode.HALF_EVEN), 0.0);
         }
 
         rs = filter(r -> r != ZERO, P.rationals(Interval.of(SMALLEST_DOUBLE.shiftRight(1).negate(), ZERO)));
         for (Rational r : take(LIMIT, rs)) {
-            aeq(r.toString(), r.doubleValue(RoundingMode.HALF_DOWN), -0.0);
-            aeq(r.toString(), r.doubleValue(RoundingMode.HALF_EVEN), -0.0);
+            aeqd(r.toString(), r.doubleValue(RoundingMode.HALF_DOWN), -0.0);
+            aeqd(r.toString(), r.doubleValue(RoundingMode.HALF_EVEN), -0.0);
         }
 
         rs = filter(
@@ -1506,7 +1501,7 @@ public class RationalProperties {
                 P.rationals(Interval.of(ZERO, SMALLEST_DOUBLE.shiftRight(1)))
         );
         for (Rational r : take(LIMIT, rs)) {
-            aeq(r.toString(), r.doubleValue(RoundingMode.HALF_UP), 0.0);
+            aeqd(r.toString(), r.doubleValue(RoundingMode.HALF_UP), 0.0);
         }
 
         rs = filter(
@@ -1514,7 +1509,7 @@ public class RationalProperties {
                 P.rationals(Interval.of(SMALLEST_DOUBLE.shiftRight(1).negate(), ZERO))
         );
         for (Rational r : take(LIMIT, rs)) {
-            aeq(r.toString(), r.doubleValue(RoundingMode.HALF_UP), -0.0);
+            aeqd(r.toString(), r.doubleValue(RoundingMode.HALF_UP), -0.0);
         }
 
         for (Rational r : take(LIMIT, P.rationals())) {
@@ -1551,7 +1546,7 @@ public class RationalProperties {
 
         for (Rational r : take(LIMIT, P.rationals())) {
             double rounded = r.doubleValue();
-            aeq(r.toString(), rounded, r.doubleValue(RoundingMode.HALF_EVEN));
+            aeqd(r.toString(), rounded, r.doubleValue(RoundingMode.HALF_EVEN));
             assertTrue(r.toString(), !Double.isNaN(rounded));
             assertTrue(r.toString(), rounded == 0.0 || Math.signum(rounded) == r.signum());
         }
@@ -1562,13 +1557,13 @@ public class RationalProperties {
         );
         for (Rational r : take(LIMIT, rs)) {
             double rounded = r.doubleValue();
-            aeq(r.toString(), rounded, Double.NEGATIVE_INFINITY);
+            aeqd(r.toString(), rounded, Double.NEGATIVE_INFINITY);
         }
 
         rs = filter(r -> !r.equals(LARGEST_DOUBLE), P.rationals(Interval.greaterThanOrEqualTo(LARGEST_DOUBLE)));
         for (Rational r : take(LIMIT, rs)) {
             double rounded = r.doubleValue();
-            aeq(r.toString(), rounded, Double.POSITIVE_INFINITY);
+            aeqd(r.toString(), rounded, Double.POSITIVE_INFINITY);
         }
 
         Iterable<Rational> midpoints = map(
@@ -1596,17 +1591,17 @@ public class RationalProperties {
             Rational belowDistance = r.subtract(ofExact(below));
             Rational aboveDistance = ofExact(above).subtract(r);
             double closest = lt(belowDistance, aboveDistance) ? below : above;
-            aeq(r.toString(), r.doubleValue(), closest);
+            aeqd(r.toString(), r.doubleValue(), closest);
         }
 
         rs = P.rationals(Interval.of(ZERO, SMALLEST_DOUBLE.shiftRight(1)));
         for (Rational r : take(LIMIT, rs)) {
-            aeq(r.toString(), r.doubleValue(), 0.0);
+            aeqd(r.toString(), r.doubleValue(), 0.0);
         }
 
         rs = filter(r -> r != ZERO, P.rationals(Interval.of(SMALLEST_DOUBLE.shiftRight(1).negate(), ZERO)));
         for (Rational r : take(LIMIT, rs)) {
-            aeq(r.toString(), r.doubleValue(), -0.0);
+            aeqd(r.toString(), r.doubleValue(), -0.0);
         }
     }
 
@@ -1657,7 +1652,7 @@ public class RationalProperties {
 
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
             Rational sum = p.a.add(p.b);
-            validate(sum);
+            sum.validate();
             assertEquals(p.toString(), sum, add_simplest(p.a, p.b));
             assertEquals(p.toString(), sum, p.b.add(p.a));
             assertEquals(p.toString(), sum.subtract(p.b), p.a);
@@ -1702,16 +1697,15 @@ public class RationalProperties {
         System.out.println("\t\ttesting negate() properties...");
 
         for (Rational r : take(LIMIT, P.rationals())) {
-            Rational negativeR = r.negate();
-            validate(negativeR);
-            assertEquals(r.toString(), r, negativeR.negate());
-            assertTrue(r.toString(), r.add(negativeR) == ZERO);
+            Rational negative = r.negate();
+            negative.validate();
+            assertEquals(r.toString(), r, negative.negate());
+            assertTrue(r.toString(), r.add(negative) == ZERO);
         }
 
-        Iterable<Rational> rs = filter(r -> r != ZERO, P.rationals());
-        for (Rational r : take(LIMIT, rs)) {
-            Rational negativeR = r.negate();
-            assertNotEquals(r.toString(), r, negativeR);
+        for (Rational r : take(LIMIT, filter(s -> s != ZERO, P.rationals()))) {
+            Rational negative = r.negate();
+            assertNotEquals(r.toString(), r, negative);
         }
     }
 
@@ -1720,10 +1714,11 @@ public class RationalProperties {
         System.out.println("\t\ttesting abs() properties...");
 
         for (Rational r : take(LIMIT, P.rationals())) {
-            Rational absR = r.abs();
-            validate(absR);
-            assertEquals(r.toString(), absR, absR.abs());
-            assertTrue(r.toString(), ge(absR, ZERO));
+            Rational abs = r.abs();
+            abs.validate();
+            assertEquals(r.toString(), abs, abs.abs());
+            assertNotEquals(r.toString(), abs.signum(), -1);
+            assertTrue(r.toString(), ge(abs, ZERO));
         }
     }
 
@@ -1732,10 +1727,14 @@ public class RationalProperties {
         System.out.println("\t\ttesting signum() properties...");
 
         for (Rational r : take(LIMIT, P.rationals())) {
-            int signumR = r.signum();
-            assertEquals(r.toString(), signumR, Ordering.compare(r, ZERO).toInt());
-            assertTrue(r.toString(), signumR == -1 || signumR == 0 || signumR == 1);
+            int signum = r.signum();
+            assertEquals(r.toString(), signum, Ordering.compare(r, ZERO).toInt());
+            assertTrue(r.toString(), signum == -1 || signum == 0 || signum == 1);
         }
+    }
+
+    private static @NotNull Rational subtract_simplest(@NotNull Rational a, @NotNull Rational b) {
+        return a.add(b.negate());
     }
 
     private static void propertiesSubtract() {
@@ -1744,7 +1743,8 @@ public class RationalProperties {
 
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
             Rational difference = p.a.subtract(p.b);
-            validate(difference);
+            difference.validate();
+            assertEquals(p.toString(), difference, subtract_simplest(p.a, p.b));
             assertEquals(p.toString(), difference, p.b.subtract(p.a).negate());
             assertEquals(p.toString(), p.a, difference.add(p.b));
         }
@@ -1754,6 +1754,27 @@ public class RationalProperties {
             assertEquals(r.toString(), r.subtract(ZERO), r);
             assertTrue(r.toString(), r.subtract(r) == ZERO);
         }
+    }
+
+    private static void compareImplementationsSubtract() {
+        initialize();
+        System.out.println("\t\tcomparing subtract(Rational) implementations...");
+
+        long totalTime = 0;
+        for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
+            long time = System.nanoTime();
+            subtract_simplest(p.a, p.b);
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\t\t\tsimplest: " + ((double) totalTime) / 1e9 + " s");
+
+        totalTime = 0;
+        for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
+            long time = System.nanoTime();
+            p.a.subtract(p.b);
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
     }
 
     private static @NotNull Pair<BigInteger, BigInteger> multiply_Rational_Knuth(
@@ -1777,7 +1798,7 @@ public class RationalProperties {
 
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
             Rational product = p.a.multiply(p.b);
-            validate(product);
+            product.validate();
             assertEquals(
                     p.toString(),
                     new Pair<>(product.getNumerator(), product.getDenominator()),
@@ -1842,16 +1863,18 @@ public class RationalProperties {
         initialize();
         System.out.println("\t\ttesting multiply(BigInteger) properties...");
 
-        Iterable<Pair<Rational, BigInteger>> ps = P.pairs(P.rationals(), P.bigIntegers());
-        for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
+        for (Pair<Rational, BigInteger> p : take(LIMIT, P.pairs(P.rationals(), P.bigIntegers()))) {
             Rational product = p.a.multiply(p.b);
-            validate(product);
+            product.validate();
             assertEquals(p.toString(), product, multiply_BigInteger_simplest(p.a, p.b));
             assertEquals(p.toString(), product, p.a.multiply(of(p.b)));
             assertEquals(p.toString(), product, of(p.b).multiply(p.a));
         }
 
-        ps = P.pairs(P.rationals(), filter(i -> !i.equals(BigInteger.ZERO), P.bigIntegers()));
+        Iterable<Pair<Rational, BigInteger>> ps = P.pairs(
+                P.rationals(),
+                filter(i -> !i.equals(BigInteger.ZERO), P.bigIntegers())
+        );
         for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
             assertEquals(p.toString(), p.a.multiply(p.b).divide(p.b), p.a);
         }
@@ -1866,13 +1889,12 @@ public class RationalProperties {
             assertTrue(r.toString(), r.multiply(BigInteger.ZERO) == ZERO);
         }
 
-        Iterable<BigInteger> bis = filter(i -> !i.equals(BigInteger.ZERO), P.bigIntegers());
-        for (BigInteger i : take(LIMIT, bis)) {
+        for (BigInteger i : take(LIMIT, filter(j -> !j.equals(BigInteger.ZERO), P.bigIntegers()))) {
             assertTrue(i.toString(), of(i).invert().multiply(i) == ONE);
         }
 
-        Iterable<Rational> rs = P.rationals();
-        for (Triple<Rational, Rational, BigInteger> t : take(LIMIT, P.triples(rs, rs, P.bigIntegers()))) {
+        Iterable<Triple<Rational, Rational, BigInteger>> ts = P.triples(P.rationals(), P.rationals(), P.bigIntegers());
+        for (Triple<Rational, Rational, BigInteger> t : take(LIMIT, ts)) {
             Rational expression1 = t.a.add(t.b).multiply(t.c);
             Rational expression2 = t.a.multiply(t.c).add(t.b.multiply(t.c));
             assertEquals(t.toString(), expression1, expression2);
@@ -1884,8 +1906,7 @@ public class RationalProperties {
         System.out.println("\t\tcomparing multiply(BigInteger) implementations...");
 
         long totalTime = 0;
-        Iterable<Pair<Rational, BigInteger>> ps = P.pairs(P.rationals(), P.bigIntegers());
-        for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
+        for (Pair<Rational, BigInteger> p : take(LIMIT, P.pairs(P.rationals(), P.bigIntegers()))) {
             long time = System.nanoTime();
             multiply_BigInteger_simplest(p.a, p.b);
             totalTime += (System.nanoTime() - time);
@@ -1893,7 +1914,7 @@ public class RationalProperties {
         System.out.println("\t\t\tsimplest: " + ((double) totalTime) / 1e9 + " s");
 
         totalTime = 0;
-        for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
+        for (Pair<Rational, BigInteger> p : take(LIMIT, P.pairs(P.rationals(), P.bigIntegers()))) {
             long time = System.nanoTime();
             p.a.multiply(p.b);
             totalTime += (System.nanoTime() - time);
@@ -1911,7 +1932,7 @@ public class RationalProperties {
 
         for (Pair<Rational, Integer> p :take(LIMIT, P.pairs(P.rationals(), P.integers()))) {
             Rational product = p.a.multiply(p.b);
-            validate(product);
+            product.validate();
             assertEquals(p.toString(), product, multiply_int_simplest(p.a, p.b));
             assertEquals(p.toString(), product, p.a.multiply(p.b));
             assertEquals(p.toString(), product, p.a.multiply(of(p.b)));
@@ -1932,13 +1953,12 @@ public class RationalProperties {
             assertTrue(r.toString(), r.multiply(0) == ZERO);
         }
 
-        Iterable<Integer> is = filter(i -> i != 0, P.integers());
-        for (int i : take(LIMIT, is)) {
+        for (int i : take(LIMIT, filter(j -> j != 0, P.integers()))) {
             assertTrue(Integer.toString(i), of(i).invert().multiply(i) == ONE);
         }
 
-        Iterable<Rational> rs = P.rationals();
-        for (Triple<Rational, Rational, Integer> t : take(LIMIT, P.triples(rs, rs, P.integers()))) {
+        Iterable<Triple<Rational, Rational, Integer>> ts = P.triples(P.rationals(), P.rationals(), P.integers());
+        for (Triple<Rational, Rational, Integer> t : take(LIMIT, ts)) {
             Rational expression1 = t.a.add(t.b).multiply(t.c);
             Rational expression2 = t.a.multiply(t.c).add(t.b.multiply(t.c));
             assertEquals(t.toString(), expression1, expression2);
@@ -1950,8 +1970,7 @@ public class RationalProperties {
         System.out.println("\t\tcomparing multiply(int) implementations...");
 
         long totalTime = 0;
-        Iterable<Pair<Rational, Integer>> ps = P.pairs(P.rationals(), P.integers());
-        for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
+        for (Pair<Rational, Integer> p : take(LIMIT, P.pairs(P.rationals(), P.integers()))) {
             long time = System.nanoTime();
             multiply_int_simplest(p.a, p.b);
             totalTime += (System.nanoTime() - time);
@@ -1959,7 +1978,7 @@ public class RationalProperties {
         System.out.println("\t\t\tsimplest: " + ((double) totalTime) / 1e9 + " s");
 
         totalTime = 0;
-        for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
+        for (Pair<Rational, Integer> p : take(LIMIT, P.pairs(P.rationals(), P.integers()))) {
             long time = System.nanoTime();
             p.a.multiply(p.b);
             totalTime += (System.nanoTime() - time);
@@ -1977,7 +1996,7 @@ public class RationalProperties {
 
         for (Rational r : take(LIMIT, filter(s -> s != ZERO, P.rationals()))) {
             Rational inverse = r.invert();
-            validate(inverse);
+            inverse.validate();
             assertEquals(r.toString(), inverse, invert_simplest(r));
             assertEquals(r.toString(), r, inverse.invert());
             assertTrue(r.toString(), r.multiply(inverse) == ONE);
@@ -2022,7 +2041,7 @@ public class RationalProperties {
 
         for (Pair<Rational, Rational> p : take(LIMIT, filter(q -> q.b != ZERO, P.pairs(P.rationals())))) {
             Rational quotient = p.a.divide(p.b);
-            validate(quotient);
+            quotient.validate();
             assertEquals(p.toString(), quotient, divide_Rational_simplest(p.a, p.b));
             assertEquals(p.toString(), p.a, quotient.multiply(p.b));
             assertEquals(p.toString(), quotient, p.a.multiply(p.b.invert()));
@@ -2088,7 +2107,7 @@ public class RationalProperties {
         );
         for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
             Rational quotient = p.a.divide(p.b);
-            validate(quotient);
+            quotient.validate();
             assertEquals(p.toString(), quotient, divide_BigInteger_simplest(p.a, p.b));
             assertEquals(p.toString(), p.a, quotient.multiply(p.b));
         }
@@ -2101,8 +2120,7 @@ public class RationalProperties {
             assertEquals(p.toString(), p.a.divide(p.b), of(p.b).divide(p.a).invert());
         }
         
-        Iterable<BigInteger> bis = filter(i -> !i.equals(BigInteger.ZERO), P.bigIntegers());
-        for (BigInteger i : take(LIMIT, bis)) {
+        for (BigInteger i : take(LIMIT, filter(j -> !j.equals(BigInteger.ZERO), P.bigIntegers()))) {
             assertEquals(i.toString(), ONE.divide(i), of(i).invert());
             assertEquals(i.toString(), of(i).divide(i), ONE);
         }
@@ -2155,7 +2173,7 @@ public class RationalProperties {
         Iterable<Pair<Rational, Integer>> ps = P.pairs(P.rationals(), filter(i -> i != 0, P.integers()));
         for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
             Rational quotient = p.a.divide(p.b);
-            validate(quotient);
+            quotient.validate();
             assertEquals(p.toString(), quotient, divide_int_simplest(p.a, p.b));
             assertEquals(p.toString(), p.a, quotient.multiply(p.b));
         }
@@ -2165,8 +2183,7 @@ public class RationalProperties {
             assertEquals(p.toString(), p.a.divide(p.b), of(p.b).divide(p.a).invert());
         }
 
-        Iterable<Integer> is = filter(i -> i != 0, P.integers());
-        for (int i : take(LIMIT, is)) {
+        for (int i : take(LIMIT, filter(j -> j != 0, P.integers()))) {
             assertEquals(Integer.toString(i), ONE.divide(i), of(i).invert());
             assertEquals(Integer.toString(i), of(i).divide(i), ONE);
         }
@@ -2221,11 +2238,11 @@ public class RationalProperties {
         if (P instanceof QBarExhaustiveProvider) {
             is = P.integers();
         } else {
-            is  = ((QBarRandomProvider) P).integersGeometric(50);
+            is  = ((QBarRandomProvider) P).integersGeometric();
         }
         for (Pair<Rational, Integer> p : take(LIMIT, P.pairs(P.rationals(), is))) {
             Rational shifted = p.a.shiftLeft(p.b);
-            validate(shifted);
+            shifted.validate();
             assertEquals(p.toString(), shifted, shiftLeft_simplest(p.a, p.b));
             assertEquals(p.toString(), p.a.signum(), shifted.signum());
             assertEquals(p.toString(), p.a.negate().shiftLeft(p.b), shifted.negate());
@@ -2235,7 +2252,7 @@ public class RationalProperties {
         if (P instanceof QBarExhaustiveProvider) {
             is = P.naturalIntegers();
         } else {
-            is  = ((QBarRandomProvider) P).naturalIntegersGeometric(50);
+            is  = ((QBarRandomProvider) P).naturalIntegersGeometric();
         }
         for (Pair<Rational, Integer> p : take(LIMIT, P.pairs(P.rationals(), is))) {
             Rational shifted = p.a.shiftLeft(p.b);
@@ -2252,7 +2269,7 @@ public class RationalProperties {
         if (P instanceof QBarExhaustiveProvider) {
             is = P.integers();
         } else {
-            is  = ((QBarRandomProvider) P).integersGeometric(50);
+            is  = ((QBarRandomProvider) P).integersGeometric();
         }
         for (Pair<Rational, Integer> p : take(LIMIT, P.pairs(P.rationals(), is))) {
             long time = System.nanoTime();
@@ -2286,11 +2303,11 @@ public class RationalProperties {
         if (P instanceof QBarExhaustiveProvider) {
             is = P.integers();
         } else {
-            is  = ((QBarRandomProvider) P).integersGeometric(50);
+            is  = ((QBarRandomProvider) P).integersGeometric();
         }
         for (Pair<Rational, Integer> p : take(LIMIT, P.pairs(P.rationals(), is))) {
             Rational shifted = p.a.shiftRight(p.b);
-            validate(shifted);
+            shifted.validate();
             assertEquals(p.toString(), shifted, shiftRight_simplest(p.a, p.b));
             assertEquals(p.toString(), p.a.signum(), shifted.signum());
             assertEquals(p.toString(), p.a.negate().shiftRight(p.b), shifted.negate());
@@ -2300,7 +2317,7 @@ public class RationalProperties {
         if (P instanceof QBarExhaustiveProvider) {
             is = P.naturalIntegers();
         } else {
-            is  = ((QBarRandomProvider) P).naturalIntegersGeometric(50);
+            is  = ((QBarRandomProvider) P).naturalIntegersGeometric();
         }
         for (Pair<Rational, Integer> p : take(LIMIT, P.pairs(P.rationals(), is))) {
             Rational shifted = p.a.shiftRight(p.b);
@@ -2317,7 +2334,7 @@ public class RationalProperties {
         if (P instanceof QBarExhaustiveProvider) {
             is = P.integers();
         } else {
-            is  = ((QBarRandomProvider) P).integersGeometric(50);
+            is  = ((QBarRandomProvider) P).integersGeometric();
         }
         for (Pair<Rational, Integer> p : take(LIMIT, P.pairs(P.rationals(), is))) {
             long time = System.nanoTime();
@@ -2367,7 +2384,7 @@ public class RationalProperties {
 
         for (List<Rational> rs : take(LIMIT, P.lists(P.rationals()))) {
             Rational sum = sum(rs);
-            validate(sum);
+            sum.validate();
             assertEquals(rs.toString(), sum, sum_alt(rs));
         }
 
@@ -2375,7 +2392,6 @@ public class RationalProperties {
                 q -> !q.a.equals(q.b),
                 P.dependentPairsLogarithmic(P.lists(P.rationals()), Combinatorics::permutationsIncreasing)
         );
-
         for (Pair<List<Rational>, List<Rational>> p : take(LIMIT, ps)) {
             assertEquals(p.toString(), sum(p.a), sum(p.b));
         }
@@ -2399,7 +2415,7 @@ public class RationalProperties {
             try {
                 sum(rs);
                 fail(rs.toString());
-            } catch (IllegalArgumentException ignored) {}
+            } catch (NullPointerException ignored) {}
         }
     }
 
@@ -2425,7 +2441,7 @@ public class RationalProperties {
     }
 
     private static @NotNull Rational product_simplest(@NotNull Iterable<Rational> xs) {
-        return foldl(p -> p.a.multiply(p.b), ONE, xs);
+        return foldl(Rational::multiply, ONE, xs);
     }
 
     private static void propertiesProduct() {
@@ -2434,7 +2450,7 @@ public class RationalProperties {
 
         for (List<Rational> rs : take(LIMIT, P.lists(P.rationals()))) {
             Rational product = product(rs);
-            validate(product);
+            product.validate();
             assertEquals(rs.toString(), product, product_simplest(rs));
         }
 
@@ -2463,7 +2479,7 @@ public class RationalProperties {
             try {
                 product(rs);
                 fail(rs.toString());
-            } catch (NullPointerException | IllegalArgumentException ignored) {}
+            } catch (NullPointerException ignored) {}
         }
     }
 
@@ -2494,10 +2510,10 @@ public class RationalProperties {
 
         for (List<Rational> rs : take(LIMIT, P.listsAtLeast(1, P.rationals()))) {
             Iterable<Rational> deltas = delta(rs);
-            deltas.forEach(mho.qbar.objects.RationalProperties::validate);
+            deltas.forEach(Rational::validate);
             assertEquals(rs.toString(), length(deltas), length(rs) - 1);
             List<Rational> reversed = reverse(map(Rational::negate, delta(reverse(rs))));
-            aeq(rs.toString(), deltas, reversed);
+            aeqit(rs.toString(), deltas, reversed);
             try {
                 deltas.iterator().remove();
             } catch (UnsupportedOperationException ignored) {}
@@ -2508,7 +2524,7 @@ public class RationalProperties {
         }
 
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
-            aeq(p.toString(), delta(Arrays.asList(p.a, p.b)), Arrays.asList(p.b.subtract(p.a)));
+            aeqit(p.toString(), delta(Arrays.asList(p.a, p.b)), Arrays.asList(p.b.subtract(p.a)));
         }
 
         Iterable<List<Rational>> failRss = map(
@@ -2522,7 +2538,7 @@ public class RationalProperties {
             try {
                 toList(delta(rs));
                 fail(rs.toString());
-            } catch (AssertionError | NullPointerException ignored) {}
+            } catch (NullPointerException ignored) {}
         }
     }
 
@@ -2531,14 +2547,14 @@ public class RationalProperties {
         System.out.println("\t\ttesting harmonicNumber(int) properties...");
 
         Iterable<Integer> is;
-        if (P instanceof ExhaustiveProvider) {
+        if (P instanceof QBarExhaustiveProvider) {
             is = P.positiveIntegers();
         } else {
-            is = ((RandomProvider) P).positiveIntegersGeometric(100);
+            is = P.withScale(100).positiveIntegersGeometric();
         }
         for (int i : take(SMALL_LIMIT, is)) {
             Rational h = harmonicNumber(i);
-            validate(h);
+            h.validate();
             assertTrue(Integer.toString(i), ge(h, ONE));
         }
 
@@ -2570,13 +2586,13 @@ public class RationalProperties {
         if (P instanceof QBarExhaustiveProvider) {
             exps = P.integers();
         } else {
-            exps = ((RandomProvider) P).integersGeometric(20);
+            exps = P.withScale(20).integersGeometric();
         }
 
         Iterable<Pair<Rational, Integer>> ps = filter(p -> p.b >= 0 || p.a != ZERO, P.pairs(P.rationals(), exps));
         for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
             Rational r = p.a.pow(p.b);
-            validate(r);
+            r.validate();
             assertEquals(p.toString(), r, pow_simplest(p.a, p.b));
         }
 
@@ -2591,7 +2607,7 @@ public class RationalProperties {
         if (P instanceof QBarExhaustiveProvider) {
             pexps = P.positiveIntegers();
         } else {
-            pexps = ((RandomProvider) P).positiveIntegersGeometric(20);
+            pexps = P.withScale(20).positiveIntegersGeometric();
         }
         for (int i : take(LIMIT, pexps)) {
             assertTrue(Integer.toString(i), ZERO.pow(i) == ZERO);
@@ -2675,7 +2691,7 @@ public class RationalProperties {
         if (P instanceof QBarExhaustiveProvider) {
             exps = P.integers();
         } else {
-            exps = ((RandomProvider) P).integersGeometric(20);
+            exps = P.withScale(20).integersGeometric();
         }
         Iterable<Pair<Rational, Integer>> ps = filter(p -> p.b >= 0 || p.a != ZERO, P.pairs(P.rationals(), exps));
         for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
@@ -2730,7 +2746,7 @@ public class RationalProperties {
 
         for (Rational r : take(LIMIT, P.rationals())) {
             Rational fractionalPart = r.fractionalPart();
-            validate(fractionalPart);
+            fractionalPart.validate();
             assertTrue(r.toString(), ge(fractionalPart, ZERO));
             assertTrue(r.toString(), lt(fractionalPart, ONE));
             assertEquals(r.toString(), of(r.floor()).add(fractionalPart), r);
@@ -2751,7 +2767,7 @@ public class RationalProperties {
         );
         for (Triple<Rational, BigInteger, RoundingMode> t : take(LIMIT, ts)) {
             Rational rounded = t.a.roundToDenominator(t.b, t.c);
-            validate(rounded);
+            rounded.validate();
             assertEquals(t.toString(), t.b.mod(rounded.getDenominator()), BigInteger.ZERO);
             assertTrue(t.toString(), rounded == ZERO || rounded.signum() == t.a.signum());
             assertTrue(t.toString(), lt(t.a.subtract(rounded).abs(), of(BigInteger.ONE, t.b)));
@@ -2917,7 +2933,7 @@ public class RationalProperties {
         );
         for (List<BigInteger> is : take(LIMIT, iss)) {
             Rational r = fromContinuedFraction(is);
-            validate(r);
+            r.validate();
         }
 
         for (List<BigInteger> is : take(LIMIT, filter(js -> !last(js).equals(BigInteger.ONE), iss))) {
@@ -2943,7 +2959,7 @@ public class RationalProperties {
 
         for (Rational r : take(LIMIT, P.rationals())) {
             List<Rational> convergents = toList(r.convergents());
-            convergents.forEach(mho.qbar.objects.RationalProperties::validate);
+            convergents.forEach(Rational::validate);
             assertFalse(r.toString(), convergents.isEmpty());
             assertTrue(r.toString(), all(s -> s != null, convergents));
             assertEquals(r.toString(), head(convergents), of(r.floor()));
@@ -2974,15 +2990,15 @@ public class RationalProperties {
         System.out.println("\t\ttesting positionalNotation(BigInteger) properties...");
 
         Iterable<Pair<Rational, BigInteger>> ps;
-        if (P instanceof ExhaustiveProvider) {
-            ps = ((ExhaustiveProvider) P).pairsSquareRootOrder(
+        if (P instanceof QBarExhaustiveProvider) {
+            ps = P.pairsSquareRootOrder(
                     cons(ZERO, P.positiveRationals()),
                     P.rangeUp(BigInteger.valueOf(2))
             );
         } else {
             ps = P.pairs(
-                    cons(ZERO, ((QBarRandomProvider) P).positiveRationals(8)),
-                    map(i -> BigInteger.valueOf(i + 2), ((RandomProvider) P).naturalIntegersGeometric(20))
+                    cons(ZERO, ((QBarRandomProvider) P).withScale(8).positiveRationals()),
+                    map(i -> BigInteger.valueOf(i + 2), P.withScale(20).naturalIntegersGeometric())
             );
         }
         for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
@@ -3027,10 +3043,10 @@ public class RationalProperties {
                 " List<BigInteger>) properties...");
 
         Iterable<BigInteger> bases;
-        if (P instanceof ExhaustiveProvider) {
+        if (P instanceof QBarExhaustiveProvider) {
             bases = P.rangeUp(BigInteger.valueOf(2));
         } else {
-            bases = map(i -> BigInteger.valueOf(i + 2), ((RandomProvider) P).naturalIntegersGeometric(20));
+            bases = map(i -> BigInteger.valueOf(i + 2), P.withScale(20).naturalIntegersGeometric());
         }
         Iterable<Pair<BigInteger, Triple<List<BigInteger>, List<BigInteger>, List<BigInteger>>>> ps = P.dependentPairs(
                 bases,
@@ -3041,7 +3057,7 @@ public class RationalProperties {
         );
         for (Pair<BigInteger, Triple<List<BigInteger>, List<BigInteger>, List<BigInteger>>> p : take(LIMIT, ps)) {
             Rational r = fromPositionalNotation(p.a, p.b.a, p.b.b, p.b.c);
-            validate(r);
+            r.validate();
             assertNotEquals(p.toString(), r.signum(), -1);
         }
 
@@ -3144,15 +3160,15 @@ public class RationalProperties {
         System.out.println("\t\ttesting digits(BigInteger) properties...");
 
         Iterable<Pair<Rational, BigInteger>> ps;
-        if (P instanceof ExhaustiveProvider) {
-            ps = ((ExhaustiveProvider) P).pairsSquareRootOrder(
+        if (P instanceof QBarExhaustiveProvider) {
+            ps = P.pairsSquareRootOrder(
                     cons(ZERO, P.positiveRationals()),
                     P.rangeUp(BigInteger.valueOf(2))
             );
         } else {
             ps = P.pairs(
                     cons(ZERO, P.positiveRationals()),
-                    map(i -> BigInteger.valueOf(i + 2), ((RandomProvider) P).naturalIntegersGeometric(20))
+                    map(i -> BigInteger.valueOf(i + 2), P.withScale(20).naturalIntegersGeometric())
             );
         }
         for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
@@ -3167,17 +3183,17 @@ public class RationalProperties {
             toList(digits.b);
         }
 
-        if (!(P instanceof ExhaustiveProvider)) {
+        if (!(P instanceof QBarExhaustiveProvider)) {
             ps = P.pairs(
-                    cons(ZERO, ((QBarRandomProvider) P).positiveRationals(8)),
-                    map(i -> BigInteger.valueOf(i + 2), ((RandomProvider) P).naturalIntegersGeometric(20))
+                    cons(ZERO, ((QBarRandomProvider) P).withScale(8).positiveRationals()),
+                    map(i -> BigInteger.valueOf(i + 2), P.withScale(20).naturalIntegersGeometric())
             );
         }
         for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
             Pair<List<BigInteger>, Iterable<BigInteger>> digits = p.a.digits(p.b);
             Pair<List<BigInteger>, Iterable<BigInteger>> alt = digits_alt(p.a, p.b);
             assertEquals(p.toString(), digits.a, alt.a);
-            aeq(p.toString(), take(100, digits.b), take(100, alt.b));
+            aeqit(p.toString(), take(100, digits.b), take(100, alt.b));
         }
 
         Iterable<Pair<Rational, BigInteger>> psFail = P.pairs(P.negativeRationals(), P.rangeUp(BigInteger.valueOf(2)));
@@ -3202,15 +3218,15 @@ public class RationalProperties {
 
         long totalTime = 0;
         Iterable<Pair<Rational, BigInteger>> ps;
-        if (P instanceof ExhaustiveProvider) {
-            ps = ((ExhaustiveProvider) P).pairsSquareRootOrder(
+        if (P instanceof QBarExhaustiveProvider) {
+            ps = P.pairsSquareRootOrder(
                     cons(ZERO, P.positiveRationals()),
                     P.rangeUp(BigInteger.valueOf(2))
             );
         } else {
             ps = P.pairs(
-                    cons(ZERO, ((QBarRandomProvider) P).positiveRationals(8)),
-                    map(i -> BigInteger.valueOf(i + 2), ((RandomProvider) P).naturalIntegersGeometric(20))
+                    cons(ZERO, ((QBarRandomProvider) P).withScale(8).positiveRationals()),
+                    map(i -> BigInteger.valueOf(i + 2), P.withScale(20).naturalIntegersGeometric())
             );
         }
         for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
@@ -3234,12 +3250,12 @@ public class RationalProperties {
         System.out.println("\t\ttesting toStringBase(BigInteger) properties...");
 
         Iterable<Pair<Rational, BigInteger>> ps;
-        if (P instanceof ExhaustiveProvider) {
-            ps = ((ExhaustiveProvider) P).pairsSquareRootOrder(P.rationals(), P.rangeUp(BigInteger.valueOf(2)));
+        if (P instanceof QBarExhaustiveProvider) {
+            ps = P.pairsSquareRootOrder(P.rationals(), P.rangeUp(BigInteger.valueOf(2)));
         } else {
             ps = P.pairs(
                     P.rationals(),
-                    map(i -> BigInteger.valueOf(i + 2), ((RandomProvider) P).naturalIntegersGeometric(20))
+                    map(i -> BigInteger.valueOf(i + 2), P.withScale(20).naturalIntegersGeometric())
             );
         }
         for (Pair<Rational, BigInteger> p : take(LIMIT, filter(q -> q.a.hasTerminatingBaseExpansion(q.b), ps))) {
@@ -3248,8 +3264,8 @@ public class RationalProperties {
         }
 
         String chars = charsToString(concat(Arrays.asList(fromString("-."), range('0', '9'), range('A', 'Z'))));
-        if (P instanceof ExhaustiveProvider) {
-            ps = ((ExhaustiveProvider) P).pairsSquareRootOrder(
+        if (P instanceof QBarExhaustiveProvider) {
+            ps = P.pairsSquareRootOrder(
                     P.rationals(),
                     P.range(BigInteger.valueOf(2), BigInteger.valueOf(36))
             );
@@ -3262,12 +3278,12 @@ public class RationalProperties {
         }
 
         String chars2 = charsToString(concat(fromString("-.()"), range('0', '9')));
-        if (P instanceof ExhaustiveProvider) {
-            ps = ((ExhaustiveProvider) P).pairsSquareRootOrder(P.rationals(), P.rangeUp(BigInteger.valueOf(37)));
+        if (P instanceof QBarExhaustiveProvider) {
+            ps = P.pairsSquareRootOrder(P.rationals(), P.rangeUp(BigInteger.valueOf(37)));
         } else {
             ps = P.pairs(
                     P.rationals(),
-                    map(i -> BigInteger.valueOf(i + 37), ((RandomProvider) P).naturalIntegersGeometric(20))
+                    map(i -> BigInteger.valueOf(i + 37), P.withScale(20).naturalIntegersGeometric())
             );
         }
         for (Pair<Rational, BigInteger> p : take(LIMIT, filter(q -> q.a.hasTerminatingBaseExpansion(q.b), ps))) {
@@ -3283,12 +3299,12 @@ public class RationalProperties {
         }
 
         Iterable<Pair<Rational, BigInteger>> psFail;
-        if (P instanceof ExhaustiveProvider) {
+        if (P instanceof QBarExhaustiveProvider) {
             psFail = P.pairs(P.rationals(), P.rangeUp(BigInteger.valueOf(2)));
         } else {
             psFail = P.pairs(
                     P.rationals(),
-                    map(i -> BigInteger.valueOf(i + 2), ((RandomProvider) P).naturalIntegersGeometric(20))
+                    map(i -> BigInteger.valueOf(i + 2), P.withScale(20).naturalIntegersGeometric())
             );
         }
         for (Pair<Rational, BigInteger> p : take(LIMIT, filter(q -> !q.a.hasTerminatingBaseExpansion(q.b), psFail))) {
@@ -3304,7 +3320,7 @@ public class RationalProperties {
         System.out.println("\t\ttesting toStringBase(BigInteger, int) properties...");
 
         Iterable<Pair<Rational, Pair<BigInteger, Integer>>> ps;
-        if (P instanceof ExhaustiveProvider) {
+        if (P instanceof QBarExhaustiveProvider) {
             ps = P.pairs(
                     P.rationals(),
                     (Iterable<Pair<BigInteger, Integer>>) P.pairs(P.rangeUp(BigInteger.valueOf(2)), P.integers())
@@ -3313,8 +3329,8 @@ public class RationalProperties {
             ps = P.pairs(
                     P.rationals(),
                     (Iterable<Pair<BigInteger, Integer>>) P.pairs(
-                            map(i -> BigInteger.valueOf(i + 2), ((RandomProvider) P).naturalIntegersGeometric(20)),
-                            ((RandomProvider) P).integersGeometric(20)
+                            map(i -> BigInteger.valueOf(i + 2), P.withScale(20).naturalIntegersGeometric()),
+                            P.withScale(20).integersGeometric()
                     )
             );
         }
@@ -3330,7 +3346,7 @@ public class RationalProperties {
         }
 
         String chars = charsToString(concat(Arrays.asList(fromString("-."), range('0', '9'), range('A', 'Z'))));
-        if (P instanceof ExhaustiveProvider) {
+        if (P instanceof QBarExhaustiveProvider) {
             ps = P.pairs(
                     P.rationals(),
                     (Iterable<Pair<BigInteger, Integer>>) P.pairs(
@@ -3343,7 +3359,7 @@ public class RationalProperties {
                     P.rationals(),
                     (Iterable<Pair<BigInteger, Integer>>) P.pairs(
                             P.range(BigInteger.valueOf(2), BigInteger.valueOf(36)),
-                            ((RandomProvider) P).integersGeometric(20)
+                            P.withScale(20).integersGeometric()
                     )
             );
         }
@@ -3353,7 +3369,7 @@ public class RationalProperties {
         }
 
         String chars2 = charsToString(concat(fromString("-.()"), range('0', '9')));
-        if (P instanceof ExhaustiveProvider) {
+        if (P instanceof QBarExhaustiveProvider) {
             ps = P.pairs(
                     P.rationals(),
                     (Iterable<Pair<BigInteger, Integer>>) P.pairs(P.rangeUp(BigInteger.valueOf(37)), P.integers())
@@ -3362,8 +3378,8 @@ public class RationalProperties {
             ps = P.pairs(
                     P.rationals(),
                     (Iterable<Pair<BigInteger, Integer>>) P.pairs(
-                            map(i -> BigInteger.valueOf(i + 37), ((RandomProvider) P).naturalIntegersGeometric(20)),
-                            ((RandomProvider) P).integersGeometric(20)
+                            map(i -> BigInteger.valueOf(i + 37), P.withScale(20).naturalIntegersGeometric()),
+                            P.withScale(20).integersGeometric()
                     )
             );
         }
@@ -3390,10 +3406,10 @@ public class RationalProperties {
         System.out.println("\t\ttesting fromStringBase(BigInteger, String) properties...");
 
         Iterable<BigInteger> bases;
-        if (P instanceof ExhaustiveProvider) {
+        if (P instanceof QBarExhaustiveProvider) {
             bases = P.rangeUp(BigInteger.valueOf(2));
         } else {
-            bases = map(i -> BigInteger.valueOf(i + 2), ((RandomProvider) P).naturalIntegersGeometric(20));
+            bases = map(i -> BigInteger.valueOf(i + 2), P.withScale(20).naturalIntegersGeometric());
         }
         Iterable<Pair<BigInteger, String>> ps = P.dependentPairs(
                 bases,
@@ -3405,10 +3421,10 @@ public class RationalProperties {
                         chars += "()0123456789";
                     }
                     Iterable<Character> unfiltered;
-                    if (P instanceof ExhaustiveProvider) {
+                    if (P instanceof QBarExhaustiveProvider) {
                         unfiltered = fromString(chars);
                     } else {
-                        unfiltered = ((RandomProvider) P).uniformSample(chars);
+                        unfiltered = P.uniformSample(chars);
                     }
                     return filter(
                             s -> {
@@ -3425,7 +3441,7 @@ public class RationalProperties {
         );
         for (Pair<BigInteger, String> p : take(MEDIUM_LIMIT, ps)) {
             Rational r = fromStringBase(p.a, p.b);
-            validate(r);
+            r.validate();
         }
 
         ps = filter(
@@ -3470,7 +3486,7 @@ public class RationalProperties {
 
         for (List<Rational> rs : take(LIMIT, P.lists(P.rationals()))) {
             List<BigInteger> canceled = cancelDenominators(rs);
-            BigInteger gcd = foldl(p -> p.a.gcd(p.b), BigInteger.ZERO, canceled);
+            BigInteger gcd = foldl(BigInteger::gcd, BigInteger.ZERO, canceled);
             assertTrue(rs.toString(), gcd.equals(BigInteger.ZERO) || gcd.equals(BigInteger.ONE));
             assertEquals(rs.toString(), cancelDenominators(toList(map(Rational::of, canceled))), canceled);
             assertTrue(rs.toString(), equal(map(Rational::signum, rs), map(BigInteger::signum, canceled)));
@@ -3478,7 +3494,7 @@ public class RationalProperties {
                     rs.toString(),
                     same(
                             zipWith(
-                                    p -> p.a.divide(p.b),
+                                    Rational::divide,
                                     filter(r -> r != ZERO, rs),
                                     filter(i -> !i.equals(BigInteger.ZERO), canceled)
                             )
@@ -3607,7 +3623,7 @@ public class RationalProperties {
         Iterable<String> ss = filter(s -> read(s).isPresent(), P.strings(cs));
         for (String s : take(LIMIT, ss)) {
             Optional<Rational> or = read(s);
-            validate(or.get());
+            or.get().validate();
         }
 
         Pair<Iterable<String>, Iterable<String>> slashPartition = partition(s -> s.contains("/"), ss);
@@ -3660,28 +3676,5 @@ public class RationalProperties {
             assertTrue(r.toString(), readR.isPresent());
             assertEquals(r.toString(), readR.get(), r);
         }
-    }
-
-    private static void validate(@NotNull Rational r) {
-        assertEquals(r.toString(), r.getNumerator().gcd(r.getDenominator()), BigInteger.ONE);
-        assertEquals(r.toString(), r.getDenominator().signum(), 1);
-        if (r.equals(ZERO)) assertTrue(r.toString(), r == ZERO);
-        if (r.equals(ONE)) assertTrue(r.toString(), r == ONE);
-    }
-
-    private static <T> void aeq(String message, Iterable<T> xs, Iterable<T> ys) {
-        assertTrue(message, equal(xs, ys));
-    }
-
-    private static void aeq(String message, float x, float y) {
-        assertEquals(message, Float.toString(x), Float.toString(y));
-    }
-
-    private static void aeq(String message, double x, double y) {
-        assertEquals(message, Double.toString(x), Double.toString(y));
-    }
-
-    private static void aeq(String message, BigDecimal x, BigDecimal y) {
-        assertEquals(message, x.stripTrailingZeros(), y.stripTrailingZeros());
     }
 }

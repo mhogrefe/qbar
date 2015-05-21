@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static mho.qbar.objects.Interval.*;
+import static mho.qbar.objects.Interval.greaterThanOrEqualTo;
+import static mho.qbar.objects.Interval.lessThanOrEqualTo;
 import static mho.wheels.ordering.Ordering.*;
 import static org.junit.Assert.*;
 
@@ -199,24 +201,24 @@ public class IntervalTest {
 
     @Test
     public void testConvexHull_List_Interval() {
-        aeq(convexHull(readIntervalList("[[0, 0]]").get()), "[0, 0]");
-        aeq(convexHull(readIntervalList("[[-1, 2]]").get()), "[-1, 2]");
-        aeq(convexHull(readIntervalList("[[-1, Infinity)]").get()), "[-1, Infinity)");
-        aeq(convexHull(readIntervalList("[(-Infinity, 4]]").get()), "(-Infinity, 4]");
-        aeq(convexHull(readIntervalList("[(-Infinity, Infinity)]").get()), "(-Infinity, Infinity)");
-        aeq(convexHull(readIntervalList("[[0, 0], [1, 1]]").get()), "[0, 1]");
-        aeq(convexHull(readIntervalList("[[1, 2], [3, 4]]").get()), "[1, 4]");
-        aeq(convexHull(readIntervalList("[[1, 3], [2, 4]]").get()), "[1, 4]");
-        aeq(convexHull(readIntervalList("[(-Infinity, Infinity), [3, 4]]").get()), "(-Infinity, Infinity)");
-        aeq(convexHull(readIntervalList("[[-1, Infinity), (-Infinity, 4]]").get()), "(-Infinity, Infinity)");
-        aeq(convexHull(readIntervalList("[[1, 2], [3, 4], [5, 6]]").get()), "[1, 6]");
-        aeq(convexHull(readIntervalList("[[1, 2], [2, 2], [3, Infinity)]").get()), "[1, Infinity)");
+        aeq(convexHull(readIntervalList("[[0, 0]]")), "[0, 0]");
+        aeq(convexHull(readIntervalList("[[-1, 2]]")), "[-1, 2]");
+        aeq(convexHull(readIntervalList("[[-1, Infinity)]")), "[-1, Infinity)");
+        aeq(convexHull(readIntervalList("[(-Infinity, 4]]")), "(-Infinity, 4]");
+        aeq(convexHull(readIntervalList("[(-Infinity, Infinity)]")), "(-Infinity, Infinity)");
+        aeq(convexHull(readIntervalList("[[0, 0], [1, 1]]")), "[0, 1]");
+        aeq(convexHull(readIntervalList("[[1, 2], [3, 4]]")), "[1, 4]");
+        aeq(convexHull(readIntervalList("[[1, 3], [2, 4]]")), "[1, 4]");
+        aeq(convexHull(readIntervalList("[(-Infinity, Infinity), [3, 4]]")), "(-Infinity, Infinity)");
+        aeq(convexHull(readIntervalList("[[-1, Infinity), (-Infinity, 4]]")), "(-Infinity, Infinity)");
+        aeq(convexHull(readIntervalList("[[1, 2], [3, 4], [5, 6]]")), "[1, 6]");
+        aeq(convexHull(readIntervalList("[[1, 2], [2, 2], [3, Infinity)]")), "[1, Infinity)");
         try {
-            convexHull(readIntervalList("[]").get());
+            convexHull(readIntervalList("[]"));
             fail();
-        } catch (IllegalStateException ignored) {}
+        } catch (IllegalArgumentException ignored) {}
         try {
-            convexHull(readIntervalListWithNulls("[[1, 2], null]").get());
+            convexHull(readIntervalListWithNulls("[[1, 2], null]"));
             fail();
         } catch (NullPointerException ignored) {}
     }
@@ -261,25 +263,25 @@ public class IntervalTest {
 
     @Test
     public void testMakeDisjoint() {
-        aeq(makeDisjoint(readIntervalList("[]").get()), "[]");
-        aeq(makeDisjoint(readIntervalList("[[0, 0]]").get()), "[[0, 0]]");
-        aeq(makeDisjoint(readIntervalList("[[1, 1]]").get()), "[[1, 1]]");
-        aeq(makeDisjoint(readIntervalList("[(-Infinity, Infinity)]").get()), "[(-Infinity, Infinity)]");
-        aeq(makeDisjoint(readIntervalList("[(-Infinity, 3]]").get()), "[(-Infinity, 3]]");
-        aeq(makeDisjoint(readIntervalList("[[2, Infinity)]").get()), "[[2, Infinity)]");
-        aeq(makeDisjoint(readIntervalList("[[2, 3]]").get()), "[[2, 3]]");
+        aeq(makeDisjoint(readIntervalList("[]")), "[]");
+        aeq(makeDisjoint(readIntervalList("[[0, 0]]")), "[[0, 0]]");
+        aeq(makeDisjoint(readIntervalList("[[1, 1]]")), "[[1, 1]]");
+        aeq(makeDisjoint(readIntervalList("[(-Infinity, Infinity)]")), "[(-Infinity, Infinity)]");
+        aeq(makeDisjoint(readIntervalList("[(-Infinity, 3]]")), "[(-Infinity, 3]]");
+        aeq(makeDisjoint(readIntervalList("[[2, Infinity)]")), "[[2, Infinity)]");
+        aeq(makeDisjoint(readIntervalList("[[2, 3]]")), "[[2, 3]]");
         aeq(
-                makeDisjoint(readIntervalList("[(-Infinity, 3], [4, 5], [6, 7]]").get()),
+                makeDisjoint(readIntervalList("[(-Infinity, 3], [4, 5], [6, 7]]")),
                 "[(-Infinity, 3], [4, 5], [6, 7]]"
         );
-        aeq(makeDisjoint(readIntervalList("[(-Infinity, 3], [3, 5], [5, 7]]").get()), "[(-Infinity, 7]]");
-        aeq(makeDisjoint(readIntervalList("[(-Infinity, 3], [2, 5], [6, 7]]").get()), "[(-Infinity, 5], [6, 7]]");
+        aeq(makeDisjoint(readIntervalList("[(-Infinity, 3], [3, 5], [5, 7]]")), "[(-Infinity, 7]]");
+        aeq(makeDisjoint(readIntervalList("[(-Infinity, 3], [2, 5], [6, 7]]")), "[(-Infinity, 5], [6, 7]]");
         aeq(
-                makeDisjoint(readIntervalList("[[1, 2], [4, 6], [10, Infinity), [3, 7], [5, 9]]").get()),
+                makeDisjoint(readIntervalList("[[1, 2], [4, 6], [10, Infinity), [3, 7], [5, 9]]")),
                 "[[1, 2], [3, 9], [10, Infinity)]"
         );
         try {
-            makeDisjoint(readIntervalListWithNulls("[[1, 3], null, [5, Infinity)]").get());
+            makeDisjoint(readIntervalListWithNulls("[[1, 3], null, [5, Infinity)]"));
             fail();
         } catch (NullPointerException ignored) {}
     }
@@ -1267,35 +1269,35 @@ public class IntervalTest {
 
     @Test
     public void testSum() {
-        aeq(sum(readIntervalList("[]").get()), "[0, 0]");
-        aeq(sum(readIntervalList("[[-2, 5/3], (-Infinity, 6], [4, 4]]").get()), "(-Infinity, 35/3]");
+        aeq(sum(readIntervalList("[]")), "[0, 0]");
+        aeq(sum(readIntervalList("[[-2, 5/3], (-Infinity, 6], [4, 4]]")), "(-Infinity, 35/3]");
         try {
-            sum(readIntervalListWithNulls("[[-2, 5/3], null, [4, 4]]").get());
+            sum(readIntervalListWithNulls("[[-2, 5/3], null, [4, 4]]"));
             fail();
-        } catch (IllegalArgumentException ignored) {}
+        } catch (NullPointerException ignored) {}
     }
 
     @Test
     public void testProduct() {
-        aeq(product(readIntervalList("[]").get()), "[1, 1]");
-        aeq(product(readIntervalList("[[-2, 5/3], [0, 6], [4, 4]]").get()), "[-48, 40]");
-        aeq(product(readIntervalList("[[-2, 5/3], (-Infinity, 6], [4, 4]]").get()), "(-Infinity, Infinity)");
+        aeq(product(readIntervalList("[]")), "[1, 1]");
+        aeq(product(readIntervalList("[[-2, 5/3], [0, 6], [4, 4]]")), "[-48, 40]");
+        aeq(product(readIntervalList("[[-2, 5/3], (-Infinity, 6], [4, 4]]")), "(-Infinity, Infinity)");
         try {
-            product(readIntervalListWithNulls("[[-2, 5/3], null, [4, 4]]").get());
+            product(readIntervalListWithNulls("[[-2, 5/3], null, [4, 4]]"));
             fail();
-        } catch (IllegalArgumentException ignored) {}
+        } catch (NullPointerException ignored) {}
     }
 
     @Test
     public void testDelta() {
-        aeq(delta(readIntervalList("[[1/3, 2]]").get()), "[]");
-        aeq(delta(readIntervalList("[[-2, 5/3], (-Infinity, 6], [4, 4]]").get()), "[(-Infinity, 8], [-2, Infinity)]");
+        aeq(delta(readIntervalList("[[1/3, 2]]")), "[]");
+        aeq(delta(readIntervalList("[[-2, 5/3], (-Infinity, 6], [4, 4]]")), "[(-Infinity, 8], [-2, Infinity)]");
         try {
-            delta(readIntervalListWithNulls("[]").get());
+            delta(readIntervalListWithNulls("[]"));
             fail();
         } catch (IllegalArgumentException ignored) {}
         try {
-            IterableUtils.toList(delta(readIntervalListWithNulls("[[-2, 5/3], null, [4, 4]]").get()));
+            IterableUtils.toList(delta(readIntervalListWithNulls("[[-2, 5/3], null, [4, 4]]")));
             fail();
         } catch (NullPointerException ignored) {}
     }
@@ -1659,11 +1661,11 @@ public class IntervalTest {
         assertEquals(a.toString(), b.toString());
     }
 
-    private static @NotNull Optional<List<Interval>> readIntervalList(@NotNull String s) {
-        return Readers.readList(Interval::read).apply(s);
+    private static @NotNull List<Interval> readIntervalList(@NotNull String s) {
+        return Readers.readList(Interval::read).apply(s).get();
     }
 
-    private static @NotNull Optional<List<Interval>> readIntervalListWithNulls(@NotNull String s) {
-        return Readers.readListWithNulls(Interval::read, s);
+    private static @NotNull List<Interval> readIntervalListWithNulls(@NotNull String s) {
+        return Readers.readListWithNulls(Interval::read).apply(s).get();
     }
 }

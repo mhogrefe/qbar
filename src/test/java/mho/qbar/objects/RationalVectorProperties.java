@@ -20,10 +20,9 @@ import java.util.Random;
 
 import static mho.qbar.objects.RationalVector.*;
 import static mho.wheels.iterables.IterableUtils.*;
-import static mho.wheels.ordering.Ordering.*;
+import static mho.wheels.ordering.Ordering.compare;
+import static mho.wheels.ordering.Ordering.lt;
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 
 @SuppressWarnings("ConstantConditions")
 public class RationalVectorProperties {
@@ -35,7 +34,7 @@ public class RationalVectorProperties {
 
     private static void initialize() {
         if (USE_RANDOM) {
-            P = new QBarRandomProvider(new Random(0x6af477d9a7e54fcaL));
+            P = QBarRandomProvider.example();
             LIMIT = 1000;
         } else {
             P = QBarExhaustiveProvider.INSTANCE;
@@ -61,9 +60,10 @@ public class RationalVectorProperties {
             propertiesZero();
             propertiesStandard();
             propertiesIsZero();
-            propertiesNegate();
             propertiesAdd();
+            propertiesNegate();
             propertiesSubtract();
+            compareImplementationsSubtract();
             propertiesMultiply_Rational();
             propertiesMultiply_BigInteger();
             propertiesMultiply_int();
@@ -222,6 +222,7 @@ public class RationalVectorProperties {
             RationalVector v = of(r);
             validate(v);
             assertEquals(r.toString(), v.dimension(), 1);
+            assertEquals(r.toString(), v.x(), r);
         }
     }
 
@@ -240,13 +241,7 @@ public class RationalVectorProperties {
         initialize();
         System.out.println("\t\ttesting zero(int) properties");
 
-        Iterable<Integer> is;
-        if (P instanceof ExhaustiveProvider) {
-            is = P.naturalIntegers();
-        } else {
-            is = ((RandomProvider) P).naturalIntegersGeometric(20);
-        }
-        for (int i : take(LIMIT, is)) {
+        for (int i : take(LIMIT, P.withScale(20).naturalIntegersGeometric())) {
             RationalVector zero = zero(i);
             validate(zero);
             assertEquals(Integer.toString(i), zero.dimension(), i);
@@ -265,13 +260,7 @@ public class RationalVectorProperties {
         initialize();
         System.out.println("\t\ttesting standard(int, int) properties");
 
-        Iterable<Integer> is;
-        if (P instanceof ExhaustiveProvider) {
-            is = P.naturalIntegers();
-        } else {
-            is = ((RandomProvider) P).naturalIntegersGeometric(20);
-        }
-        for (Pair<Integer, Integer> p : take(LIMIT, filter(q -> q.a > q.b, P.pairs(is)))) {
+        for (Pair<Integer, Integer> p : take(LIMIT, filter(q -> q.a > q.b, P.pairs(P.withScale(20).naturalIntegersGeometric())))) {
             RationalVector standard = standard(p.a, p.b);
             validate(standard);
             assertEquals(p.toString(), standard.dimension(), p.a.intValue());
@@ -311,40 +300,18 @@ public class RationalVectorProperties {
         }
     }
 
-    private static void propertiesNegate() {
-        initialize();
-        System.out.println("\t\ttesting negate() properties");
-
-        for (RationalVector v : take(LIMIT, P.rationalVectors())) {
-            RationalVector negativeV = v.negate();
-            validate(negativeV);
-            assertEquals(v.toString(), v.dimension(), negativeV.dimension());
-            assertEquals(v.toString(), v, negativeV.negate());
-            assertTrue(v.toString(), v.add(negativeV).isZero());
-        }
-
-        for (RationalVector v : take(LIMIT, filter(w -> any(x -> x != Rational.ZERO, w), P.rationalVectors()))) {
-            RationalVector negativeV = v.negate();
-            assertNotEquals(v.toString(), v, negativeV);
-        }
-    }
-
     private static void propertiesAdd() {
         initialize();
         System.out.println("\t\ttesting add(RationalVector) properties...");
 
-        Iterable<Pair<RationalVector, RationalVector>> ps;
-        if (P instanceof ExhaustiveProvider) {
-            ps = P.dependentPairs(P.rationalVectors(), v -> P.rationalVectors(v.dimension()));
-        } else {
-            ps = P.dependentPairs(
-                    ((QBarRandomProvider) P).rationalVectorsBySize(32),
-                    v -> ((QBarRandomProvider) P).rationalVectorsBySize(32, v.dimension())
-            );
-        }
+        Iterable<Pair<RationalVector, RationalVector>> ps = P.dependentPairs(
+                P.rationalVectors(),
+                v -> P.rationalVectors(v.dimension())
+        );
         for (Pair<RationalVector, RationalVector> p : take(LIMIT, ps)) {
             RationalVector sum = p.a.add(p.b);
             validate(sum);
+            assertEquals(p.toString(), sum.dimension(), p.a.dimension());
             assertEquals(p.toString(), sum, p.b.add(p.a));
             assertEquals(p.toString(), sum.subtract(p.b), p.a);
         }
@@ -355,21 +322,13 @@ public class RationalVectorProperties {
             assertTrue(v.toString(), v.add(v.negate()).isZero());
         }
 
-        Iterable<Triple<RationalVector, RationalVector, RationalVector>> ts;
-        if (P instanceof ExhaustiveProvider) {
-            ts = map(
-                    p -> new Triple<>(p.a, p.b.a, p.b.b),
-                    P.dependentPairs(P.rationalVectors(), v -> P.pairs(P.rationalVectors(v.dimension())))
-            );
-        } else {
-            ts = map(
-                    p -> new Triple<>(p.a, p.b.a, p.b.b),
-                    P.dependentPairs(
-                            ((QBarRandomProvider) P).rationalVectorsBySize(32),
-                            v -> P.pairs(((QBarRandomProvider) P).rationalVectorsBySize(32, v.dimension()))
-                    )
-            );
-        }
+        Iterable<Triple<RationalVector, RationalVector, RationalVector>> ts = map(
+                p -> new Triple<>(p.a, p.b.a, p.b.b),
+                P.dependentPairs(
+                        P.rationalVectors(),
+                        v -> P.pairs(P.rationalVectors(v.dimension()))
+                )
+        );
         for (Triple<RationalVector, RationalVector, RationalVector> t : take(LIMIT, ts)) {
             RationalVector sum1 = t.a.add(t.b).add(t.c);
             RationalVector sum2 = t.a.add(t.b.add(t.c));
@@ -388,22 +347,40 @@ public class RationalVectorProperties {
         }
     }
 
+    private static void propertiesNegate() {
+        initialize();
+        System.out.println("\t\ttesting negate() properties");
+
+        for (RationalVector v : take(LIMIT, P.rationalVectors())) {
+            RationalVector negativeV = v.negate();
+            validate(negativeV);
+            assertEquals(v.toString(), v.dimension(), negativeV.dimension());
+            assertEquals(v.toString(), v, negativeV.negate());
+            assertTrue(v.toString(), v.add(negativeV).isZero());
+        }
+
+        for (RationalVector v : take(LIMIT, filter(w -> any(x -> x != Rational.ZERO, w), P.rationalVectors()))) {
+            RationalVector negativeV = v.negate();
+            assertNotEquals(v.toString(), v, negativeV);
+        }
+    }
+
+    private static @NotNull RationalVector subtract_simplest(@NotNull RationalVector a, @NotNull RationalVector b) {
+        return a.add(b.negate());
+    }
+
     private static void propertiesSubtract() {
         initialize();
         System.out.println("\t\ttesting subtract(RationalVector) properties...");
 
-        Iterable<Pair<RationalVector, RationalVector>> ps;
-        if (P instanceof ExhaustiveProvider) {
-            ps = P.dependentPairs(P.rationalVectors(), v -> P.rationalVectors(v.dimension()));
-        } else {
-            ps = P.dependentPairs(
-                    ((QBarRandomProvider) P).rationalVectorsBySize(32),
-                    v -> ((QBarRandomProvider) P).rationalVectorsBySize(32, v.dimension())
-            );
-        }
+        Iterable<Pair<RationalVector, RationalVector>> ps = P.dependentPairs(
+                P.rationalVectors(),
+                v -> P.rationalVectors(v.dimension())
+        );
         for (Pair<RationalVector, RationalVector> p : take(LIMIT, ps)) {
             RationalVector difference = p.a.subtract(p.b);
             validate(difference);
+            assertEquals(p.toString(), difference.dimension(), p.a.dimension());
             assertEquals(p.toString(), difference, p.b.subtract(p.a).negate());
             assertEquals(p.toString(), p.a, difference.add(p.b));
         }
@@ -413,6 +390,31 @@ public class RationalVectorProperties {
             assertEquals(v.toString(), v.subtract(zero(v.dimension())), v);
             assertTrue(v.toString(), v.subtract(v).isZero());
         }
+    }
+
+    private static void compareImplementationsSubtract() {
+        initialize();
+        System.out.println("\t\tcomparing subtract(RationalVector) implementations...");
+
+        long totalTime = 0;
+        Iterable<Pair<RationalVector, RationalVector>> ps = P.dependentPairs(
+                P.rationalVectors(),
+                v -> P.rationalVectors(v.dimension())
+        );
+        for (Pair<RationalVector, RationalVector> p : take(LIMIT, ps)) {
+            long time = System.nanoTime();
+            subtract_simplest(p.a, p.b);
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\t\t\tsimplest: " + ((double) totalTime) / 1e9 + " s");
+
+        totalTime = 0;
+        for (Pair<RationalVector, RationalVector> p : take(LIMIT, ps)) {
+            long time = System.nanoTime();
+            p.a.subtract(p.b);
+            totalTime += (System.nanoTime() - time);
+        }
+        System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
     }
 
     private static void propertiesMultiply_Rational() {
@@ -452,10 +454,10 @@ public class RationalVectorProperties {
         }
 
         Iterable<Pair<Rational, Integer>> ps2;
-        if (P instanceof ExhaustiveProvider) {
-            ps2 = ((ExhaustiveProvider) P).pairsLogarithmicOrder(P.rationals(), P.naturalIntegers());
+        if (P instanceof QBarExhaustiveProvider) {
+            ps2 = P.pairsLogarithmicOrder(P.rationals(), P.naturalIntegers());
         } else {
-            ps2 = P.pairs(P.rationals(), ((RandomProvider) P).naturalIntegersGeometric(20));
+            ps2 = P.pairs(P.rationals(), P.withScale(20).naturalIntegersGeometric());
         }
         for (Pair<Rational, Integer> p : take(LIMIT, ps2)) {
             assertTrue(p.toString(), zero(p.b).multiply(p.a).isZero());
@@ -494,10 +496,10 @@ public class RationalVectorProperties {
         }
 
         Iterable<Pair<BigInteger, Integer>> ps2;
-        if (P instanceof ExhaustiveProvider) {
-            ps2 = ((ExhaustiveProvider) P).pairsLogarithmicOrder(P.bigIntegers(), P.naturalIntegers());
+        if (P instanceof QBarExhaustiveProvider) {
+            ps2 = P.pairsLogarithmicOrder(P.bigIntegers(), P.naturalIntegers());
         } else {
-            ps2 = P.pairs(P.bigIntegers(), ((RandomProvider) P).naturalIntegersGeometric(20));
+            ps2 = P.pairs(P.bigIntegers(), P.withScale(20).naturalIntegersGeometric());
         }
         for (Pair<BigInteger, Integer> p : take(LIMIT, ps2)) {
             assertTrue(p.toString(), zero(p.b).multiply(p.a).isZero());
@@ -533,10 +535,10 @@ public class RationalVectorProperties {
         }
 
         Iterable<Pair<Integer, Integer>> ps2;
-        if (P instanceof ExhaustiveProvider) {
-            ps2 = ((ExhaustiveProvider) P).pairsLogarithmicOrder(P.integers(), P.naturalIntegers());
+        if (P instanceof QBarExhaustiveProvider) {
+            ps2 = P.pairsLogarithmicOrder(P.integers(), P.naturalIntegers());
         } else {
-            ps2 = P.pairs(P.integers(), ((RandomProvider) P).naturalIntegersGeometric(20));
+            ps2 = P.pairs(P.integers(), P.withScale(20).naturalIntegersGeometric());
         }
         for (Pair<Integer, Integer> p : take(LIMIT, ps2)) {
             assertTrue(p.toString(), zero(p.b).multiply(p.a).isZero());
@@ -576,15 +578,15 @@ public class RationalVectorProperties {
         }
 
         Iterable<Pair<Rational, Integer>> ps2;
-        if (P instanceof ExhaustiveProvider) {
-            ps2 = ((ExhaustiveProvider) P).pairsLogarithmicOrder(
+        if (P instanceof QBarExhaustiveProvider) {
+            ps2 = P.pairsLogarithmicOrder(
                     filter(r -> r != Rational.ZERO, P.rationals()),
                     P.naturalIntegers()
             );
         } else {
             ps2 = P.pairs(
                     filter(r -> r != Rational.ZERO, P.rationals()),
-                    ((RandomProvider) P).naturalIntegersGeometric(20)
+                    P.withScale(20).naturalIntegersGeometric()
             );
         }
         for (Pair<Rational, Integer> p : take(LIMIT, ps2)) {
@@ -631,15 +633,15 @@ public class RationalVectorProperties {
         }
 
         Iterable<Pair<BigInteger, Integer>> ps2;
-        if (P instanceof ExhaustiveProvider) {
-            ps2 = ((ExhaustiveProvider) P).pairsLogarithmicOrder(
+        if (P instanceof QBarExhaustiveProvider) {
+            ps2 = P.pairsLogarithmicOrder(
                     filter(i -> !i.equals(BigInteger.ZERO), P.bigIntegers()),
                     P.naturalIntegers()
             );
         } else {
             ps2 = P.pairs(
                     filter(i -> !i.equals(BigInteger.ZERO), P.bigIntegers()),
-                    ((RandomProvider) P).naturalIntegersGeometric(20)
+                    P.withScale(20).naturalIntegersGeometric()
             );
         }
         for (Pair<BigInteger, Integer> p : take(LIMIT, ps2)) {
@@ -686,13 +688,13 @@ public class RationalVectorProperties {
         }
 
         Iterable<Pair<Integer, Integer>> ps2;
-        if (P instanceof ExhaustiveProvider) {
-            ps2 = ((ExhaustiveProvider) P).pairsLogarithmicOrder(
+        if (P instanceof QBarExhaustiveProvider) {
+            ps2 = P.pairsLogarithmicOrder(
                     filter(i -> i != 0, P.integers()),
                     P.naturalIntegers()
             );
         } else {
-            ps2 = P.pairs(filter(i -> i != 0, P.integers()), ((RandomProvider) P).naturalIntegersGeometric(20));
+            ps2 = P.pairs(filter(i -> i != 0, P.integers()), P.withScale(20).naturalIntegersGeometric());
         }
         for (Pair<Integer, Integer> p : take(LIMIT, ps2)) {
             assertTrue(p.toString(), zero(p.b).divide(p.a).isZero());
@@ -722,7 +724,7 @@ public class RationalVectorProperties {
         if (P instanceof QBarExhaustiveProvider) {
             is = P.integers();
         } else {
-            is  = ((QBarRandomProvider) P).integersGeometric(50);
+            is = P.integersGeometric();
         }
         for (Pair<RationalVector, Integer> p : take(LIMIT, P.pairs(P.rationalVectors(), is))) {
             RationalVector shifted = p.a.shiftLeft(p.b);
@@ -737,7 +739,7 @@ public class RationalVectorProperties {
         if (P instanceof QBarExhaustiveProvider) {
             is = P.naturalIntegers();
         } else {
-            is  = ((QBarRandomProvider) P).naturalIntegersGeometric(50);
+            is = P.naturalIntegersGeometric();
         }
         for (Pair<RationalVector, Integer> p : take(LIMIT, P.pairs(P.rationalVectors(), is))) {
             RationalVector shifted = p.a.shiftLeft(p.b);
@@ -754,7 +756,7 @@ public class RationalVectorProperties {
         if (P instanceof QBarExhaustiveProvider) {
             is = P.integers();
         } else {
-            is  = ((QBarRandomProvider) P).integersGeometric(50);
+            is  = P.integersGeometric();
         }
         for (Pair<RationalVector, Integer> p : take(LIMIT, P.pairs(P.rationalVectors(), is))) {
             long time = System.nanoTime();
@@ -788,7 +790,7 @@ public class RationalVectorProperties {
         if (P instanceof QBarExhaustiveProvider) {
             is = P.integers();
         } else {
-            is  = ((QBarRandomProvider) P).integersGeometric(50);
+            is  = P.integersGeometric();
         }
         Iterable<Pair<RationalVector, Integer>> ps = P.pairs(P.rationalVectors(), is);
         for (Pair<RationalVector, Integer> p : take(LIMIT, ps)) {
@@ -804,7 +806,7 @@ public class RationalVectorProperties {
         if (P instanceof QBarExhaustiveProvider) {
             is = P.naturalIntegers();
         } else {
-            is  = ((QBarRandomProvider) P).naturalIntegersGeometric(50);
+            is  = P.naturalIntegersGeometric();
         }
         ps = P.pairs(P.rationalVectors(), is);
         for (Pair<RationalVector, Integer> p : take(LIMIT, ps)) {
@@ -822,7 +824,7 @@ public class RationalVectorProperties {
         if (P instanceof QBarExhaustiveProvider) {
             is = P.integers();
         } else {
-            is  = ((QBarRandomProvider) P).integersGeometric(50);
+            is  = P.integersGeometric();
         }
         for (Pair<RationalVector, Integer> p : take(LIMIT, P.pairs(P.rationalVectors(), is))) {
             long time = System.nanoTime();
@@ -841,7 +843,7 @@ public class RationalVectorProperties {
     }
 
     private static @NotNull RationalVector sum_simplest(@NotNull Iterable<RationalVector> xs) {
-        return foldl1(p -> p.a.add(p.b), xs);
+        return foldl1(RationalVector::add, xs);
     }
 
     private static void propertiesSum() {
@@ -849,12 +851,12 @@ public class RationalVectorProperties {
         System.out.println("\t\ttesting sum(Iterable<RationalVector>) properties...");
 
         Iterable<Pair<Integer, Integer>> ps0;
-        if (P instanceof ExhaustiveProvider) {
+        if (P instanceof QBarExhaustiveProvider) {
             ps0 = P.pairs(P.positiveIntegers(), P.naturalIntegers());
         } else {
             ps0 = P.pairs(
-                    ((RandomProvider) P).positiveIntegersGeometric(5),
-                    ((RandomProvider) P).naturalIntegersGeometric(5)
+                    P.withScale(5).positiveIntegersGeometric(),
+                    P.withScale(3).naturalIntegersGeometric()
             );
         }
         Iterable<List<RationalVector>> vss = map(
@@ -910,12 +912,12 @@ public class RationalVectorProperties {
 
         long totalTime = 0;
         Iterable<Pair<Integer, Integer>> ps;
-        if (P instanceof ExhaustiveProvider) {
+        if (P instanceof QBarExhaustiveProvider) {
             ps = P.pairs(P.positiveIntegers(), P.naturalIntegers());
         } else {
             ps = P.pairs(
-                    ((RandomProvider) P).positiveIntegersGeometric(5),
-                    ((RandomProvider) P).naturalIntegersGeometric(5)
+                    P.withScale(5).positiveIntegersGeometric(),
+                    P.withScale(3).naturalIntegersGeometric()
             );
         }
         Iterable<List<RationalVector>> vss = map(
@@ -943,12 +945,12 @@ public class RationalVectorProperties {
         System.out.println("\t\ttesting delta(Iterable<RationalVector>) properties...");
 
         Iterable<Pair<Integer, Integer>> ps0;
-        if (P instanceof ExhaustiveProvider) {
+        if (P instanceof QBarExhaustiveProvider) {
             ps0 = P.pairs(P.positiveIntegers(), P.naturalIntegers());
         } else {
             ps0 = P.pairs(
-                    ((RandomProvider) P).positiveIntegersGeometric(5),
-                    ((RandomProvider) P).naturalIntegersGeometric(5)
+                    P.withScale(5).positiveIntegersGeometric(),
+                    P.withScale(3).naturalIntegersGeometric()
             );
         }
         Iterable<List<RationalVector>> vss = map(
@@ -999,12 +1001,12 @@ public class RationalVectorProperties {
         System.out.println("\t\ttesting dot(Rational) properties...");
 
         Iterable<Pair<RationalVector, RationalVector>> ps;
-        if (P instanceof ExhaustiveProvider) {
+        if (P instanceof QBarExhaustiveProvider) {
             ps = P.dependentPairs(P.rationalVectors(), v -> P.rationalVectors(v.dimension()));
         } else {
             ps = P.dependentPairs(
-                    ((QBarRandomProvider) P).rationalVectorsBySize(8),
-                    v -> ((QBarRandomProvider) P).rationalVectorsBySize(8, v.dimension())
+                    P.withScale(8).rationalVectors(),
+                    v -> P.withScale(8).rationalVectors(v.dimension())
             );
         }
         for (Pair<RationalVector, RationalVector> p : take(LIMIT, ps)) {
@@ -1045,12 +1047,12 @@ public class RationalVectorProperties {
         System.out.println("\t\ttesting rightAngleCompare(RationalVector) properties...");
 
         Iterable<Pair<RationalVector, RationalVector>> ps;
-        if (P instanceof ExhaustiveProvider) {
+        if (P instanceof QBarExhaustiveProvider) {
             ps = P.dependentPairs(P.rationalVectors(), v -> P.rationalVectors(v.dimension()));
         } else {
             ps = P.dependentPairs(
-                    ((QBarRandomProvider) P).rationalVectorsBySize(8),
-                    v -> ((QBarRandomProvider) P).rationalVectorsBySize(8, v.dimension())
+                    P.withScale(8).rationalVectors(),
+                    v -> P.withScale(8).rationalVectors(v.dimension())
             );
         }
         for (Pair<RationalVector, RationalVector> p : take(LIMIT, ps)) {
@@ -1106,10 +1108,10 @@ public class RationalVectorProperties {
         }
 
         Iterable<Integer> is;
-        if (P instanceof ExhaustiveProvider) {
+        if (P instanceof QBarExhaustiveProvider) {
             is = P.naturalIntegers();
         } else {
-            is = ((RandomProvider) P).naturalIntegersGeometric(20);
+            is = P.withScale(20).naturalIntegersGeometric();
         }
         for (int i : take(LIMIT, is)) {
             assertEquals(Integer.toString(i), zero(i).squaredLength(), Rational.ZERO);
@@ -1129,7 +1131,7 @@ public class RationalVectorProperties {
             validate(canceled);
 
             assertTrue(v.toString(), all(r -> r.getDenominator().equals(BigInteger.ONE), canceled));
-            BigInteger gcd = foldl(p -> p.a.gcd(p.b.getNumerator()), BigInteger.ZERO, canceled);
+            BigInteger gcd = foldl((x, y) -> x.gcd(y.getNumerator()), BigInteger.ZERO, canceled);
             assertTrue(v.toString(), gcd.equals(BigInteger.ZERO) || gcd.equals(BigInteger.ONE));
             assertEquals(v.toString(), canceled.cancelDenominators(), canceled);
             assertEquals(v.toString(), canceled.dimension(), v.dimension());
@@ -1138,7 +1140,7 @@ public class RationalVectorProperties {
                     v.toString(),
                     same(
                             zipWith(
-                                    p -> p.a.divide(p.b),
+                                    Rational::divide,
                                     filter(r -> r != Rational.ZERO, v),
                                     filter(r -> r != Rational.ZERO, canceled)
                             )
@@ -1156,10 +1158,10 @@ public class RationalVectorProperties {
         }
 
         Iterable<Integer> is;
-        if (P instanceof ExhaustiveProvider) {
+        if (P instanceof QBarExhaustiveProvider) {
             is = P.naturalIntegers();
         } else {
-            is = ((RandomProvider) P).naturalIntegersGeometric(20);
+            is = P.withScale(20).naturalIntegersGeometric();
         }
         for (int i : take(LIMIT, is)) {
             RationalVector zero = zero(i);
@@ -1214,7 +1216,7 @@ public class RationalVectorProperties {
                     v.toString(),
                     same(
                             zipWith(
-                                    p -> p.a.divide(p.b),
+                                    Rational::divide,
                                     filter(r -> r != Rational.ZERO, v),
                                     filter(r -> r != Rational.ZERO, reduced)
                             )
@@ -1236,10 +1238,10 @@ public class RationalVectorProperties {
         }
 
         Iterable<Integer> is;
-        if (P instanceof ExhaustiveProvider) {
+        if (P instanceof QBarExhaustiveProvider) {
             is = P.naturalIntegers();
         } else {
-            is = ((RandomProvider) P).naturalIntegersGeometric(20);
+            is = P.withScale(20).naturalIntegersGeometric();
         }
         for (int i : take(LIMIT, is)) {
             RationalVector zero = zero(i);

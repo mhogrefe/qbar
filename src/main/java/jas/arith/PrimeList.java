@@ -21,7 +21,7 @@ public final class PrimeList implements Iterable<BigInteger> {
     /**
      * Range of probable primes.
      */
-    public static enum Range {
+    public enum Range {
         small, low, medium, large, mersenne
     }
 

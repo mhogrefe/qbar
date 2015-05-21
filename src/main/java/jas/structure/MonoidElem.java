@@ -1,15 +1,15 @@
 package jas.structure;
 
 public interface MonoidElem<C extends MonoidElem<C>> {
-    public boolean isONE();
+    boolean isONE();
 
-    public boolean isUnit();
+    boolean isUnit();
 
-    public C multiply(C S);
+    C multiply(C S);
 
-    public C divide(C S);
+    C divide(C S);
 
-    public C remainder(C S);
+    C remainder(C S);
 
-    public C inverse();
+    C inverse();
 }

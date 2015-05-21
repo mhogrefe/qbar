@@ -1,15 +1,15 @@
 package jas.structure;
 
 public interface AbelianGroupElem<C extends AbelianGroupElem<C>> extends Comparable<C> {
-    public boolean isZERO();
+    boolean isZERO();
 
-    public int signum();
+    int signum();
 
-    public C sum(C S);
+    C sum(C S);
 
-    public C subtract(C S);
+    C subtract(C S);
 
-    public C negate();
+    C negate();
 
-    public C abs();
+    C abs();
 }

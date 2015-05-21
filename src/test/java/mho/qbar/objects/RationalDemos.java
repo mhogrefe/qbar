@@ -1,15 +1,13 @@
 package mho.qbar.objects;
 
-import mho.wheels.iterables.ExhaustiveProvider;
+import mho.qbar.iterableProviders.QBarExhaustiveProvider;
+import mho.qbar.iterableProviders.QBarIterableProvider;
+import mho.qbar.iterableProviders.QBarRandomProvider;
 import mho.wheels.iterables.IterableUtils;
-import mho.wheels.iterables.RandomProvider;
 import mho.wheels.math.MathUtils;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
-import mho.qbar.iterableProviders.QBarExhaustiveProvider;
-import mho.qbar.iterableProviders.QBarIterableProvider;
-import mho.qbar.iterableProviders.QBarRandomProvider;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -17,8 +15,8 @@ import java.math.RoundingMode;
 import java.util.List;
 import java.util.Random;
 
-import static mho.wheels.iterables.IterableUtils.*;
 import static mho.qbar.objects.Rational.*;
+import static mho.wheels.iterables.IterableUtils.*;
 
 @SuppressWarnings({"ConstantConditions", "UnusedDeclaration"})
 public class RationalDemos {
@@ -33,7 +31,7 @@ public class RationalDemos {
 
     private static void initialize() {
         if (USE_RANDOM) {
-            P = new QBarRandomProvider(new Random(0x6af477d9a7e54fcaL));
+            P = QBarRandomProvider.example();
             LIMIT = 1000;
         } else {
             P = QBarExhaustiveProvider.INSTANCE;
@@ -41,21 +39,21 @@ public class RationalDemos {
         }
     }
 
-    public static void demoGetNumerator() {
+    private static void demoGetNumerator() {
         initialize();
         for (Rational r : take(LIMIT, P.rationals())) {
             System.out.println("getNumerator(" + r + ") = " + r.getNumerator());
         }
     }
 
-    public static void demoGetDenominator() {
+    private static void demoGetDenominator() {
         initialize();
         for (Rational r : take(LIMIT, P.rationals())) {
             System.out.println("getDenominator(" + r + ") = " + r.getDenominator());
         }
     }
 
-    public static void demoOf_BigInteger_BigInteger() {
+    private static void demoOf_BigInteger_BigInteger() {
         initialize();
         Iterable<Pair<BigInteger, BigInteger>> ps = filter(
                 p -> !p.b.equals(BigInteger.ZERO),
@@ -66,7 +64,7 @@ public class RationalDemos {
         }
     }
 
-    public static void demoOf_long_long() {
+    private static void demoOf_long_long() {
         initialize();
         Iterable<Pair<Long, Long>> ps = filter(p -> p.b != 0, P.pairs(P.longs()));
         for (Pair<Long, Long> p : take(LIMIT, ps)) {
@@ -74,7 +72,7 @@ public class RationalDemos {
         }
     }
 
-    public static void demoOf_int_int() {
+    private static void demoOf_int_int() {
         initialize();
         Iterable<Pair<Integer, Integer>> ps = filter(p -> p.b != 0, P.pairs(P.integers()));
         for (Pair<Integer, Integer> p : take(LIMIT, ps)) {
@@ -82,70 +80,70 @@ public class RationalDemos {
         }
     }
 
-    public static void demoOf_BigInteger() {
+    private static void demoOf_BigInteger() {
         initialize();
         for (BigInteger i : take(LIMIT, P.bigIntegers())) {
             System.out.println("of(" + i + ") = " + of(i));
         }
     }
 
-    public static void demoOf_long() {
+    private static void demoOf_long() {
         initialize();
         for (long l : take(LIMIT, P.longs())) {
             System.out.println("of(" + l + ") = " + of(l));
         }
     }
 
-    public static void demoOf_int() {
+    private static void demoOf_int() {
         initialize();
         for (int i : take(LIMIT, P.integers())) {
             System.out.println("of(" + i + ") = " + of(i));
         }
     }
 
-    public static void demoOf_float() {
+    private static void demoOf_float() {
         initialize();
         for (float f : take(LIMIT, P.floats())) {
             System.out.println("of(" + f + ") = " + of(f));
         }
     }
 
-    public static void demoOf_double() {
+    private static void demoOf_double() {
         initialize();
         for (double d : take(LIMIT, P.doubles())) {
             System.out.println("of(" + d + ") = " + of(d));
         }
     }
 
-    public static void demoOfExact_float() {
+    private static void demoOfExact_float() {
         initialize();
         for (float f : take(LIMIT, P.floats())) {
             System.out.println("ofExact(" + f + ") = " + ofExact(f));
         }
     }
 
-    public static void demoOfExact_double() {
+    private static void demoOfExact_double() {
         initialize();
         for (double d : take(LIMIT, P.doubles())) {
             System.out.println("ofExact(" + d + ") = " + ofExact(d));
         }
     }
 
-    public static void demoOf_BigDecimal() {
+    private static void demoOf_BigDecimal() {
         initialize();
         for (BigDecimal bd : take(LIMIT, P.bigDecimals())) {
             System.out.println("of(" + bd + ") = " + of(bd));
         }
     }
 
-    public static void demoIsInteger() {
+    private static void demoIsInteger() {
         initialize();
         for (Rational r : take(LIMIT, P.rationals())) {
             System.out.println(r + " is " + (r.isInteger() ? "" : "not ") + "an integer");
         }
     }
 
-    public static void demoBigIntegerValue_RoundingMode() {
+    private static void demoBigIntegerValue_RoundingMode() {
         initialize();
         Iterable<Pair<Rational, RoundingMode>> ps = filter(
                 p -> p.b != RoundingMode.UNNECESSARY || p.a.isInteger(),
@@ -156,72 +154,64 @@ public class RationalDemos {
         }
     }
 
-    public static void demoBigIntegerValue() {
+    private static void demoBigIntegerValue() {
         initialize();
         for (Rational r : take(LIMIT, P.rationals())) {
             System.out.println("bigIntegerValue(" + r + ") = " + r.bigIntegerValue());
         }
     }
 
-    public static void demoBigIntegerValueExact() {
+    private static void demoBigIntegerValueExact() {
         initialize();
         for (Rational r : take(LIMIT, map(Rational::of, P.bigIntegers()))) {
             System.out.println("bigIntegerValueExact(" + r + ") = " + r.bigIntegerValueExact());
         }
     }
 
-    public static void demoByteValueExact() {
+    private static void demoByteValueExact() {
         initialize();
         for (Rational r : take(LIMIT, map(Rational::of, P.bytes()))) {
             System.out.println("byteValueExact(" + r + ") = " + r.byteValueExact());
         }
     }
 
-    public static void demoShortValueExact() {
+    private static void demoShortValueExact() {
         initialize();
         for (Rational r : take(LIMIT, map(Rational::of, P.shorts()))) {
             System.out.println("shortValueExact(" + r + ") = " + r.shortValueExact());
         }
     }
 
-    public static void demoIntValueExact() {
+    private static void demoIntValueExact() {
         initialize();
         for (Rational r : take(LIMIT, map(Rational::of, P.integers()))) {
             System.out.println("intValueExact(" + r + ") = " + r.intValueExact());
         }
     }
 
-    public static void demoLongValueExact() {
+    private static void demoLongValueExact() {
         initialize();
         for (Rational r : take(LIMIT, map(Rational::of, P.longs()))) {
             System.out.println("longValueExact(" + r + ") = " + r.longValueExact());
         }
     }
 
-    public static void demoHasTerminatingBaseExpansion() {
+    private static void demoHasTerminatingBaseExpansion() {
         initialize();
-        Iterable<Pair<Rational, BigInteger>> ps;
-        if (P instanceof ExhaustiveProvider) {
-            ps = ((ExhaustiveProvider) P).pairsSquareRootOrder(
-                    cons(ZERO, P.positiveRationals()),
-                    P.rangeUp(BigInteger.valueOf(2))
-            );
-        } else {
-            ps = P.pairs(
-                    cons(ZERO, ((QBarRandomProvider) P).positiveRationals(20)),
-                    map(i -> BigInteger.valueOf(i + 2), ((RandomProvider) P).naturalIntegersGeometric(20))
-            );
-        }
+        Iterable<Pair<Rational, BigInteger>> ps = P.pairsSquareRootOrder(
+                cons(ZERO, P.withScale(20).positiveRationals()),
+                map(i -> BigInteger.valueOf(i + 2), P.withScale(20).naturalIntegersGeometric())
+        );
         for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
             System.out.println(p.a + (p.a.hasTerminatingBaseExpansion(p.b) ? " has " : " doesn't have ") +
                     "a terminating base-" + p.b + " expansion");
         }
     }
 
-    public static void demoBigDecimalValue_int_RoundingMode() {
+    private static void demoBigDecimalValue_int_RoundingMode() {
         initialize();
         Iterable<Pair<Rational, Pair<Integer, RoundingMode>>> ps;
-        if (P instanceof ExhaustiveProvider) {
+        if (P instanceof QBarExhaustiveProvider) {
             ps = P.pairs(
                     P.rationals(),
                     (Iterable<Pair<Integer, RoundingMode>>) P.pairs(P.naturalIntegers(), P.roundingModes())
@@ -230,7 +220,7 @@ public class RationalDemos {
             ps = P.pairs(
                     P.rationals(),
                     (Iterable<Pair<Integer, RoundingMode>>) P.pairs(
-                            ((RandomProvider) P).naturalIntegersGeometric(20),
+                            P.withScale(20).naturalIntegersGeometric(),
                             P.roundingModes()
                     )
             );
@@ -252,13 +242,13 @@ public class RationalDemos {
         }
     }
 
-    public static void demoBigDecimalValue_int() {
+    private static void demoBigDecimalValue_int() {
         initialize();
         Iterable<Pair<Rational, Integer>> ps;
-        if (P instanceof ExhaustiveProvider) {
-            ps = ((ExhaustiveProvider) P).pairsSquareRootOrder(P.rationals(), P.naturalIntegers());
+        if (P instanceof QBarExhaustiveProvider) {
+            ps = ((QBarExhaustiveProvider) P).pairsSquareRootOrder(P.rationals(), P.naturalIntegers());
         } else {
-            ps = P.pairs(P.rationals(), ((RandomProvider) P).naturalIntegersGeometric(20));
+            ps = P.pairs(P.rationals(), P.withScale(20).naturalIntegersGeometric());
         }
         ps = filter(
                 p -> {
@@ -276,7 +266,7 @@ public class RationalDemos {
         }
     }
 
-    public static void demoBigDecimalValueExact() {
+    private static void demoBigDecimalValueExact() {
         initialize();
         Iterable<Rational> rs = filter(r -> r.hasTerminatingBaseExpansion(BigInteger.valueOf(10)), P.rationals());
         for (Rational r : take(LIMIT, rs)) {
@@ -284,14 +274,14 @@ public class RationalDemos {
         }
     }
 
-    public static void demoBinaryExponent() {
+    private static void demoBinaryExponent() {
         initialize();
         for (Rational r : take(LIMIT, P.positiveRationals())) {
             System.out.println("binaryExponent(" + r + ") = " + r.binaryExponent());
         }
     }
 
-    public static void demoFloatValue_RoundingMode() {
+    private static void demoFloatValue_RoundingMode() {
         initialize();
         Iterable<Pair<Rational, RoundingMode>> ps = filter(
                 p -> p.b != RoundingMode.UNNECESSARY || ofExact(p.a.floatValue(RoundingMode.FLOOR)).equals(p.a),
@@ -302,14 +292,14 @@ public class RationalDemos {
         }
     }
 
-    public static void demoFloatValue() {
+    private static void demoFloatValue() {
         initialize();
         for (Rational r : take(LIMIT, P.rationals())) {
             System.out.println("floatValue(" + r + ") = " + r.floatValue());
         }
     }
 
-    public static void demoFloatValueExact() {
+    private static void demoFloatValueExact() {
         initialize();
         Iterable<Rational> rs = map(
                 Rational::ofExact,
@@ -320,7 +310,7 @@ public class RationalDemos {
         }
     }
 
-    public static void demoDoubleValue_RoundingMode() {
+    private static void demoDoubleValue_RoundingMode() {
         initialize();
         Iterable<Pair<Rational, RoundingMode>> ps = filter(
                 p -> p.b != RoundingMode.UNNECESSARY || ofExact(p.a.floatValue(RoundingMode.FLOOR)).equals(p.a),
@@ -330,14 +320,14 @@ public class RationalDemos {
         }
     }
 
-    public static void demoDoubleValue() {
+    private static void demoDoubleValue() {
         initialize();
         for (Rational r : take(LIMIT, P.rationals())) {
             System.out.println("doubleValue(" + r + ") = " + r.doubleValue());
         }
     }
 
-    public static void demoDoubleValueExact() {
+    private static void demoDoubleValueExact() {
         initialize();
         Iterable<Rational> rs = map(
                 Rational::ofExact,
@@ -348,70 +338,70 @@ public class RationalDemos {
         }
     }
 
-    public static void demoAdd() {
+    private static void demoAdd() {
         initialize();
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
             System.out.println(p.a + " + " + p.b + " = " + p.a.add(p.b));
         }
     }
 
-    public static void demoNegate() {
+    private static void demoNegate() {
         initialize();
         for (Rational r : take(LIMIT, P.rationals())) {
             System.out.println("-(" + r + ") = " + r.negate());
         }
     }
 
-    public static void demoAbs() {
+    private static void demoAbs() {
         initialize();
         for (Rational r : take(LIMIT, P.rationals())) {
             System.out.println("|" + r + "| = " + r.abs());
         }
     }
 
-    public static void demoSignum() {
+    private static void demoSignum() {
         initialize();
         for (Rational r : take(LIMIT, P.rationals())) {
             System.out.println("sgn(" + r + ") = " + r.signum());
         }
     }
 
-    public static void demoSubtract() {
+    private static void demoSubtract() {
         initialize();
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
             System.out.println(p.a + " - " + p.b + " = " + p.a.subtract(p.b));
         }
     }
 
-    public static void demoMultiply_Rational() {
+    private static void demoMultiply_Rational() {
         initialize();
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
             System.out.println(p.a + " * " + p.b + " = " + p.a.multiply(p.b));
         }
     }
 
-    public static void demoMultiply_BigInteger() {
+    private static void demoMultiply_BigInteger() {
         initialize();
         for (Pair<Rational, BigInteger> p : take(LIMIT, P.pairs(P.rationals(), P.bigIntegers()))) {
             System.out.println(p.a + " * " + p.b + " = " + p.a.multiply(p.b));
         }
     }
 
-    public static void demoMultiply_int() {
+    private static void demoMultiply_int() {
         initialize();
         for (Pair<Rational, Integer> p : take(LIMIT, P.pairs(P.rationals(), P.integers()))) {
             System.out.println(p.a + " * " + p.b + " = " + p.a.multiply(p.b));
         }
     }
 
-    public static void demoInvert() {
+    private static void demoInvert() {
         initialize();
         for (Rational r : take(LIMIT, filter(s -> s != ZERO, P.rationals()))) {
             System.out.println("1/(" + r + ") = " + r.invert());
         }
     }
 
-    public static void demoDivide_Rational() {
+    private static void demoDivide_Rational() {
         initialize();
         Iterable<Pair<Rational, Rational>> ps = filter(p -> p.b != ZERO, P.pairs(P.rationals()));
         for (Pair<Rational, Rational> p : take(LIMIT, ps)) {
@@ -419,7 +409,7 @@ public class RationalDemos {
         }
     }
 
-    public static void demoDivide_BigInteger() {
+    private static void demoDivide_BigInteger() {
         initialize();
         Iterable<Pair<Rational, BigInteger>> ps = P.pairs(
                 P.rationals(),
@@ -430,40 +420,40 @@ public class RationalDemos {
         }
     }
 
-    public static void demoDivide_int() {
+    private static void demoDivide_int() {
         initialize();
         for (Pair<Rational, Integer> p : take(LIMIT, P.pairs(P.rationals(), filter(i -> i != 0, P.integers())))) {
             System.out.println(p.a + " / " + p.b + " = " + p.a.divide(p.b));
         }
     }
 
-    public static void demoShiftLeft() {
+    private static void demoShiftLeft() {
         initialize();
         Iterable<Integer> is;
         if (P instanceof QBarExhaustiveProvider) {
             is = P.integers();
         } else {
-            is  = ((QBarRandomProvider) P).integersGeometric(50);
+            is  = P.withScale(50).integersGeometric();
         }
         for (Pair<Rational, Integer> p : take(LIMIT, P.pairs(P.rationals(), is))) {
             System.out.println(p.a + " << " + p.b + " = " + p.a.shiftLeft(p.b));
         }
     }
 
-    public static void demoShiftRight() {
+    private static void demoShiftRight() {
         initialize();
         Iterable<Integer> is;
         if (P instanceof QBarExhaustiveProvider) {
             is = P.integers();
         } else {
-            is  = ((QBarRandomProvider) P).integersGeometric(50);
+            is  = P.withScale(50).integersGeometric();
         }
         for (Pair<Rational, Integer> p : take(LIMIT, P.pairs(P.rationals(), is))) {
             System.out.println(p.a + " >> " + p.b + " = " + p.a.shiftRight(p.b));
         }
     }
 
-    public static void demoSum() {
+    private static void demoSum() {
         initialize();
         for (List<Rational> rs : take(LIMIT, P.lists(P.rationals()))) {
             String listString = tail(init(rs.toString()));
@@ -471,7 +461,7 @@ public class RationalDemos {
         }
     }
 
-    public static void demoProduct() {
+    private static void demoProduct() {
         initialize();
         for (List<Rational> rs : take(LIMIT, P.lists(P.rationals()))) {
             String listString = tail(init(rs.toString()));
@@ -479,7 +469,7 @@ public class RationalDemos {
         }
     }
 
-    public static void demoDelta() {
+    private static void demoDelta() {
         initialize();
         for (List<Rational> rs : take(LIMIT, P.listsAtLeast(1, P.rationals()))) {
             String listString = tail(init(rs.toString()));
@@ -487,26 +477,26 @@ public class RationalDemos {
         }
     }
 
-    public static void demoHarmonicNumber() {
+    private static void demoHarmonicNumber() {
         initialize();
         Iterable<Integer> is;
-        if (P instanceof ExhaustiveProvider) {
+        if (P instanceof QBarExhaustiveProvider) {
             is = P.positiveIntegers();
         } else {
-            is = ((RandomProvider) P).positiveIntegersGeometric(100);
+            is = P.withScale(100).positiveIntegersGeometric();
         }
         for (int i : take(SMALL_LIMIT, is)) {
             System.out.println("H_" + i + " = " + harmonicNumber(i));
         }
     }
 
-    public static void demoPow() {
+    private static void demoPow() {
         initialize();
         Iterable<Integer> exps;
-        if (P instanceof ExhaustiveProvider) {
+        if (P instanceof QBarExhaustiveProvider) {
             exps = P.integers();
         } else {
-            exps = ((RandomProvider) P).integersGeometric(50);
+            exps = P.withScale(50).integersGeometric();
         }
         Iterable<Pair<Rational, Integer>> ps = filter(p -> p.b >= 0 || p.a != ZERO, P.pairs(P.rationals(), exps));
         for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
@@ -514,28 +504,28 @@ public class RationalDemos {
         }
     }
 
-    public static void demoFloor() {
+    private static void demoFloor() {
         initialize();
         for (Rational r : take(LIMIT, P.rationals())) {
             System.out.println("floor(" + r + ") = " + r.floor());
         }
     }
 
-    public static void demoCeiling() {
+    private static void demoCeiling() {
         initialize();
         for (Rational r : take(LIMIT, P.rationals())) {
             System.out.println("ceil(" + r + ") = " + r.ceiling());
         }
     }
 
-    public static void demoFractionalPart() {
+    private static void demoFractionalPart() {
         initialize();
         for (Rational r : take(LIMIT, P.rationals())) {
             System.out.println("fractionalPart(" + r + ") = " + r.fractionalPart());
         }
     }
 
-    public static void demoRoundToDenominator() {
+    private static void demoRoundToDenominator() {
         initialize();
         Iterable<Triple<Rational, BigInteger, RoundingMode>> ts = filter(
                 p -> p.c != RoundingMode.UNNECESSARY || p.b.mod(p.a.getDenominator()).equals(BigInteger.ZERO),
@@ -547,14 +537,14 @@ public class RationalDemos {
         }
     }
 
-    public static void demoContinuedFraction() {
+    private static void demoContinuedFraction() {
         initialize();
         for (Rational r : take(LIMIT, P.rationals())) {
             System.out.println("continuedFraction(" + r + ") = " + r.continuedFraction());
         }
     }
 
-    public static void demoFromContinuedFraction() {
+    private static void demoFromContinuedFraction() {
         initialize();
         Iterable<List<BigInteger>> iss = map(
                 p -> toList(cons(p.a, p.b)),
@@ -569,39 +559,31 @@ public class RationalDemos {
         }
     }
 
-    public static void demoConvergents() {
+    private static void demoConvergents() {
         initialize();
         for (Rational r : take(LIMIT, P.rationals())) {
             System.out.println("convergents(" + r + ") = " + toList(r.convergents()));
         }
     }
 
-    public static void demoPositionalNotation() {
+    private static void demoPositionalNotation() {
         initialize();
-        Iterable<Pair<Rational, BigInteger>> ps;
-        if (P instanceof ExhaustiveProvider) {
-            ps = ((ExhaustiveProvider) P).pairsSquareRootOrder(
-                    cons(ZERO, P.positiveRationals()),
-                    P.rangeUp(BigInteger.valueOf(2))
-            );
-        } else {
-            ps = P.pairs(
-                    cons(ZERO, ((QBarRandomProvider) P).positiveRationals(8)),
-                    map(i -> BigInteger.valueOf(i + 2), ((RandomProvider) P).naturalIntegersGeometric(20))
-            );
-        }
+        Iterable<Pair<Rational, BigInteger>> ps = P.pairsSquareRootOrder(
+                cons(ZERO, P.withScale(8).positiveRationals()),
+                map(i -> BigInteger.valueOf(i + 2), P.withScale(20).naturalIntegersGeometric())
+        );
         for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
             System.out.println("positionalNotation(" + p.a + ", " + p.b + ") = " + p.a.positionalNotation(p.b));
         }
     }
 
-    public static void demoFromPositionalNotation() {
+    private static void demoFromPositionalNotation() {
         initialize();
         Iterable<BigInteger> bases;
-        if (P instanceof ExhaustiveProvider) {
+        if (P instanceof QBarExhaustiveProvider) {
             bases = P.rangeUp(BigInteger.valueOf(2));
         } else {
-            bases = map(i -> BigInteger.valueOf(i + 2), ((RandomProvider) P).naturalIntegersGeometric(20));
+            bases = map(i -> BigInteger.valueOf(i + 2), P.withScale(20).naturalIntegersGeometric());
         }
         Iterable<Pair<BigInteger, Triple<List<BigInteger>, List<BigInteger>, List<BigInteger>>>> ps = P.dependentPairs(
                 bases,
@@ -616,18 +598,18 @@ public class RationalDemos {
         }
     }
 
-    public static void demoDigits() {
+    private static void demoDigits() {
         initialize();
         Iterable<Pair<Rational, BigInteger>> ps;
-        if (P instanceof ExhaustiveProvider) {
-            ps = ((ExhaustiveProvider) P).pairsSquareRootOrder(
+        if (P instanceof QBarExhaustiveProvider) {
+            ps = ((QBarExhaustiveProvider) P).pairsSquareRootOrder(
                     cons(ZERO, P.positiveRationals()),
                     P.rangeUp(BigInteger.valueOf(2))
             );
         } else {
             ps = P.pairs(
                     cons(ZERO, P.positiveRationals()),
-                    map(i -> BigInteger.valueOf(i + 2), ((RandomProvider) P).naturalIntegersGeometric(20))
+                    map(i -> BigInteger.valueOf(i + 2), P.withScale(20).naturalIntegersGeometric())
             );
         }
         for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
@@ -637,15 +619,15 @@ public class RationalDemos {
         }
     }
 
-    public static void demoToStringBase_BigInteger() {
+    private static void demoToStringBase_BigInteger() {
         initialize();
         Iterable<Pair<Rational, BigInteger>> ps;
-        if (P instanceof ExhaustiveProvider) {
-            ps = ((ExhaustiveProvider) P).pairsSquareRootOrder(P.rationals(), P.rangeUp(BigInteger.valueOf(2)));
+        if (P instanceof QBarExhaustiveProvider) {
+            ps = ((QBarExhaustiveProvider) P).pairsSquareRootOrder(P.rationals(), P.rangeUp(BigInteger.valueOf(2)));
         } else {
             ps = P.pairs(
                     P.rationals(),
-                    map(i -> BigInteger.valueOf(i + 2), ((RandomProvider) P).naturalIntegersGeometric(20))
+                    map(i -> BigInteger.valueOf(i + 2), P.withScale(20).naturalIntegersGeometric())
             );
         }
         for (Pair<Rational, BigInteger> p : take(LIMIT, filter(q -> q.a.hasTerminatingBaseExpansion(q.b), ps))) {
@@ -653,10 +635,10 @@ public class RationalDemos {
         }
     }
 
-    public static void demoToStringBase_BigInteger_int() {
+    private static void demoToStringBase_BigInteger_int() {
         initialize();
         Iterable<Pair<Rational, Pair<BigInteger, Integer>>> ps;
-        if (P instanceof ExhaustiveProvider) {
+        if (P instanceof QBarExhaustiveProvider) {
             ps = P.pairs(
                     P.rationals(),
                     (Iterable<Pair<BigInteger, Integer>>) P.pairs(P.rangeUp(BigInteger.valueOf(2)), P.integers())
@@ -665,8 +647,8 @@ public class RationalDemos {
             ps = P.pairs(
                     P.rationals(),
                     (Iterable<Pair<BigInteger, Integer>>) P.pairs(
-                            map(i -> BigInteger.valueOf(i + 2), ((RandomProvider) P).naturalIntegersGeometric(20)),
-                            ((RandomProvider) P).integersGeometric(20)
+                            map(i -> BigInteger.valueOf(i + 2), P.withScale(20).naturalIntegersGeometric()),
+                            ((QBarRandomProvider) P).withScale(20).integersGeometric()
                     )
             );
         }
@@ -676,13 +658,13 @@ public class RationalDemos {
         }
     }
 
-    public static void demoFromStringBase() {
+    private static void demoFromStringBase() {
         initialize();
         Iterable<BigInteger> bases;
-        if (P instanceof ExhaustiveProvider) {
+        if (P instanceof QBarExhaustiveProvider) {
             bases = P.rangeUp(BigInteger.valueOf(2));
         } else {
-            bases = map(i -> BigInteger.valueOf(i + 2), ((RandomProvider) P).naturalIntegersGeometric(20));
+            bases = map(i -> BigInteger.valueOf(i + 2), P.withScale(20).naturalIntegersGeometric());
         }
         Iterable<Pair<BigInteger, String>> ps = P.dependentPairs(
                 bases,
@@ -694,10 +676,10 @@ public class RationalDemos {
                         chars += "()0123456789";
                     }
                     Iterable<Character> unfiltered;
-                    if (P instanceof ExhaustiveProvider) {
+                    if (P instanceof QBarExhaustiveProvider) {
                         unfiltered = fromString(chars);
                     } else {
-                        unfiltered = ((RandomProvider) P).uniformSample(chars);
+                        unfiltered = ((QBarRandomProvider) P).uniformSample(chars);
                     }
                     return filter(
                             s -> {
@@ -717,14 +699,23 @@ public class RationalDemos {
         }
     }
 
-    public static void demoEquals_Rational() {
+    private static void demoCancelDenominators() {
+        initialize();
+        int limit = P instanceof QBarExhaustiveProvider ? LIMIT : SMALLER_LIMIT;
+        for (List<Rational> rs : take(limit, P.lists(P.rationals()))) {
+            String listString = tail(init(rs.toString()));
+            System.out.println("cancelDenominators(" + listString + ") = " + cancelDenominators(rs));
+        }
+    }
+
+    private static void demoEquals_Rational() {
         initialize();
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
             System.out.println(p.a + (p.a.equals(p.b) ? " = " : " ≠ ") + p.b);
         }
     }
 
-    public static void demoEquals_null() {
+    private static void demoEquals_null() {
         initialize();
         for (Rational r : take(LIMIT, P.rationals())) {
             //noinspection ObjectEqualsNull
@@ -732,37 +723,28 @@ public class RationalDemos {
         }
     }
 
-    public static void demoCancelDenominators() {
-        initialize();
-        int limit = P instanceof ExhaustiveProvider ? LIMIT : SMALLER_LIMIT;
-        for (List<Rational> rs : take(limit, P.lists(P.rationals()))) {
-            String listString = tail(init(rs.toString()));
-            System.out.println("cancelDenominators(" + listString + ") = " + cancelDenominators(rs));
-        }
-    }
-
-    public static void demoHashCode() {
+    private static void demoHashCode() {
         initialize();
         for (Rational r : take(LIMIT, P.rationals())) {
             System.out.println("hashCode(" + r + ") = " + r.hashCode());
         }
     }
 
-    public static void demoCompareTo() {
+    private static void demoCompareTo() {
         initialize();
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
             System.out.println(p.a + " " + Ordering.compare(p.a, p.b).toChar() + " " + p.b);
         }
     }
 
-    public static void demoRead() {
+    private static void demoRead() {
         initialize();
         for (String s : take(LIMIT, P.strings())) {
             System.out.println("read(" + s + ") = " + read(s));
         }
     }
 
-    public static void demoRead_targeted() {
+    private static void demoRead_targeted() {
         initialize();
         Iterable<Character> cs;
         if (P instanceof QBarExhaustiveProvider) {
@@ -782,20 +764,20 @@ public class RationalDemos {
         }
     }
 
-    public static void demoFindIn_targeted() {
+    private static void demoFindIn_targeted() {
         initialize();
         Iterable<Character> cs;
-        if (P instanceof ExhaustiveProvider) {
+        if (P instanceof QBarExhaustiveProvider) {
             cs = fromString(RATIONAL_CHARS);
         } else {
-            cs = ((RandomProvider) P).uniformSample(RATIONAL_CHARS);
+            cs = ((QBarRandomProvider) P).uniformSample(RATIONAL_CHARS);
         }
         for (String s : take(LIMIT, P.strings(cs))) {
             System.out.println("findIn(" + s + ") = " + findIn(s));
         }
     }
 
-    public static void demoToString() {
+    private static void demoToString() {
         initialize();
         for (Rational r : take(LIMIT, P.rationals())) {
             System.out.println(r);
