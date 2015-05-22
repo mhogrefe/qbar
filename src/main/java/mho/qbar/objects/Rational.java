@@ -47,49 +47,42 @@ public final class Rational implements Comparable<Rational> {
     /**
      * The smallest positive float value, or 2<sup>–149</sup>
      */
-    public static final @NotNull Rational SMALLEST_FLOAT = new Rational(BigInteger.ONE, BigInteger.ONE.shiftLeft(149));
+    public static final @NotNull Rational SMALLEST_FLOAT = ONE.shiftRight(149);
 
     /**
      * The largest subnormal float value, or (2<sup>23</sup>–1)/2<sup>149</sup>
      */
-    public static final @NotNull Rational LARGEST_SUBNORMAL_FLOAT =
-            new Rational(BigInteger.ONE.shiftLeft(23).subtract(BigInteger.ONE), BigInteger.ONE.shiftLeft(149));
+    public static final @NotNull Rational LARGEST_SUBNORMAL_FLOAT = ONE.shiftLeft(23).subtract(ONE).shiftRight(149);
 
     /**
      * The smallest positive normal float value, or 2<sup>–126</sup>
      */
-    public static final @NotNull Rational SMALLEST_NORMAL_FLOAT =
-            new Rational(BigInteger.ONE, BigInteger.ONE.shiftLeft(126));
+    public static final @NotNull Rational SMALLEST_NORMAL_FLOAT = ONE.shiftRight(126);
 
     /**
      * The largest finite float value, or 2<sup>128</sup>–2<sup>104</sup>
      */
-    public static final @NotNull Rational LARGEST_FLOAT =
-            new Rational(BigInteger.ONE.shiftLeft(128).subtract(BigInteger.ONE.shiftLeft(104)), BigInteger.ONE);
+    public static final @NotNull Rational LARGEST_FLOAT = ONE.shiftLeft(128).subtract(ONE.shiftLeft(104));
 
     /**
      * The smallest positive double value, or 2<sup>–1074</sup>
      */
-    public static final @NotNull Rational SMALLEST_DOUBLE =
-            new Rational(BigInteger.ONE, BigInteger.ONE.shiftLeft(1074));
+    public static final @NotNull Rational SMALLEST_DOUBLE = ONE.shiftRight(1074);
 
     /**
      * The largest subnormal double value, or (2<sup>52</sup>–1)/2<sup>1074</sup>
      */
-    public static final @NotNull Rational LARGEST_SUBNORMAL_DOUBLE =
-            new Rational(BigInteger.ONE.shiftLeft(52).subtract(BigInteger.ONE), BigInteger.ONE.shiftLeft(1074));
+    public static final @NotNull Rational LARGEST_SUBNORMAL_DOUBLE = ONE.shiftLeft(52).subtract(ONE).shiftRight(1074);
 
     /**
      * The smallest positive normal double value, or 2<sup>–1022</sup>
      */
-    public static final @NotNull Rational SMALLEST_NORMAL_DOUBLE =
-            new Rational(BigInteger.ONE, BigInteger.ONE.shiftLeft(1022));
+    public static final @NotNull Rational SMALLEST_NORMAL_DOUBLE = ONE.shiftRight(1022);
 
     /**
      * The largest finite double value, or 2<sup>1024</sup>–2<sup>971</sup>
      */
-    public static final @NotNull Rational LARGEST_DOUBLE =
-            new Rational(BigInteger.ONE.shiftLeft(1024).subtract(BigInteger.ONE.shiftLeft(971)), BigInteger.ONE);
+    public static final @NotNull Rational LARGEST_DOUBLE = ONE.shiftLeft(1024).subtract(ONE.shiftLeft(971));
 
     /**
      * an {@code Iterable} that contains every harmonic number. Does not support removal.
