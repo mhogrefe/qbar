@@ -8,7 +8,6 @@ import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -47,42 +46,44 @@ public final class Rational implements Comparable<Rational> {
     /**
      * The smallest positive float value, or 2<sup>–149</sup>
      */
-    public static final @NotNull Rational SMALLEST_FLOAT = ONE.shiftRight(149);
+    public static final @NotNull Rational SMALLEST_FLOAT = ofExact(Float.MIN_VALUE).get();
 
     /**
      * The largest subnormal float value, or (2<sup>23</sup>–1)/2<sup>149</sup>
      */
-    public static final @NotNull Rational LARGEST_SUBNORMAL_FLOAT = ONE.shiftLeft(23).subtract(ONE).shiftRight(149);
+    public static final @NotNull Rational LARGEST_SUBNORMAL_FLOAT =
+            ofExact(FloatingPointUtils.predecessor(Float.MIN_NORMAL)).get();
 
     /**
      * The smallest positive normal float value, or 2<sup>–126</sup>
      */
-    public static final @NotNull Rational SMALLEST_NORMAL_FLOAT = ONE.shiftRight(126);
+    public static final @NotNull Rational SMALLEST_NORMAL_FLOAT = ofExact(Float.MIN_NORMAL).get();
 
     /**
      * The largest finite float value, or 2<sup>128</sup>–2<sup>104</sup>
      */
-    public static final @NotNull Rational LARGEST_FLOAT = ONE.shiftLeft(128).subtract(ONE.shiftLeft(104));
+    public static final @NotNull Rational LARGEST_FLOAT = ofExact(Float.MAX_VALUE).get();
 
     /**
      * The smallest positive double value, or 2<sup>–1074</sup>
      */
-    public static final @NotNull Rational SMALLEST_DOUBLE = ONE.shiftRight(1074);
+    public static final @NotNull Rational SMALLEST_DOUBLE = ofExact(Double.MIN_VALUE).get();
 
     /**
      * The largest subnormal double value, or (2<sup>52</sup>–1)/2<sup>1074</sup>
      */
-    public static final @NotNull Rational LARGEST_SUBNORMAL_DOUBLE = ONE.shiftLeft(52).subtract(ONE).shiftRight(1074);
+    public static final @NotNull Rational LARGEST_SUBNORMAL_DOUBLE =
+            ofExact(FloatingPointUtils.predecessor(Double.MIN_NORMAL)).get();
 
     /**
      * The smallest positive normal double value, or 2<sup>–1022</sup>
      */
-    public static final @NotNull Rational SMALLEST_NORMAL_DOUBLE = ONE.shiftRight(1022);
+    public static final @NotNull Rational SMALLEST_NORMAL_DOUBLE = ofExact(Double.MIN_NORMAL).get();
 
     /**
      * The largest finite double value, or 2<sup>1024</sup>–2<sup>971</sup>
      */
-    public static final @NotNull Rational LARGEST_DOUBLE = ONE.shiftLeft(1024).subtract(ONE.shiftLeft(971));
+    public static final @NotNull Rational LARGEST_DOUBLE = ofExact(Double.MAX_VALUE).get();
 
     /**
      * an {@code Iterable} that contains every harmonic number. Does not support removal.
@@ -278,60 +279,60 @@ public final class Rational implements Comparable<Rational> {
     /**
      * Creates a {@code Rational} from a {@link float}. This method uses the {@code float}'s {@code String}
      * representation, so that 0.1f becomes 1/10 as might be expected. To get {@code float}'s exact,
-     * sometimes-counterintuitive value, use {@link Rational#ofExact} instead. Returns null if the {@code float} is
+     * sometimes-counterintuitive value, use {@link Rational#ofExact} instead. Returns empty if the {@code float} is
      * {@code Infinity}, {@code -Infinity}, or {@code NaN}.
      *
      * <ul>
      *  <li>{@code f} may be any {@code float}.</li>
-     *  <li>The result is null or a {@code Rational} whose decimal expansion is equal to the displayed decimal
+     *  <li>The result is empty or a {@code Rational} whose decimal expansion is equal to the displayed decimal
      *  expansion of some {@code float}. A necessary but not sufficient condition for this is that the denominator is
      *  of the form 2<sup>m</sup>5<sup>n</sup>, with m,n≥0.</li>
      * </ul>
      *
      * @param f the {@code float}
-     * @return the {@code Rational} corresponding to {@code f}, or null if {@code f} is {@code Infinity},
+     * @return the {@code Rational} corresponding to {@code f}, or empty if {@code f} is {@code Infinity},
      * {@code -Infinity}, or {@code NaN}
      */
-    public static @Nullable Rational of(float f) {
-        if (f == 0.0) return ZERO;
-        if (f == 1.0) return ONE;
-        if (Float.isInfinite(f) || Float.isNaN(f)) return null;
-        return of(new BigDecimal(Float.toString(f)));
+    public static @NotNull Optional<Rational> of(float f) {
+        if (f == 0.0) return Optional.of(ZERO);
+        if (f == 1.0) return Optional.of(ONE);
+        if (Float.isInfinite(f) || Float.isNaN(f)) return Optional.empty();
+        return Optional.of(of(new BigDecimal(Float.toString(f))));
     }
 
     /**
      * Creates a {@code Rational} from a {@link double}. This method uses the {@code double}'s {@code String}
      * representation, so that 0.1 becomes 1/10 as might be expected. To get {@code double}'s exact,
-     * sometimes-counterintuitive value, use {@link Rational#ofExact} instead. Returns null if the {@code double} is
+     * sometimes-counterintuitive value, use {@link Rational#ofExact} instead. Returns empty if the {@code double} is
      * {@code Infinity}, {@code -Infinity}, or {@code NaN}.
      *
      * <ul>
      *  <li>{@code d} may be any {@code double}.</li>
-     *  <li>The result is null or a {@code Rational} whose decimal expansion is equal to the displayed decimal
+     *  <li>The result is empty or a {@code Rational} whose decimal expansion is equal to the displayed decimal
      *  expansion of some {@code double}. A necessary but not sufficient conditions for this is that the denominator is
      *  of the form 2<sup>m</sup>5<sup>n</sup>, with m,n≥0.</li>
      * </ul>
      *
      * @param d the {@code double}
-     * @return the {@code Rational} corresponding to {@code d}, or null if {@code d} is {@code Infinity},
+     * @return the {@code Rational} corresponding to {@code d}, or empty if {@code d} is {@code Infinity},
      * {@code -Infinity}, or {@code NaN}
      */
-    public static @Nullable Rational of(double d) {
-        if (d == 0.0) return ZERO;
-        if (d == 1.0) return ONE;
-        if (Double.isInfinite(d) || Double.isNaN(d)) return null;
-        return of(BigDecimal.valueOf(d));
+    public static @NotNull Optional<Rational> of(double d) {
+        if (d == 0.0) return Optional.of(ZERO);
+        if (d == 1.0) return Optional.of(ONE);
+        if (Double.isInfinite(d) || Double.isNaN(d)) return Optional.empty();
+        return Optional.of(of(BigDecimal.valueOf(d)));
     }
 
     /**
      * Creates a {@code Rational} from a {@code float}. No rounding occurs; the {@code Rational} has exactly the same
-     * value as the {@code float}. For example, {@code of(1.0f/3.0f)} yields 11184811/33554432, not 1/3. Returns null
+     * value as the {@code float}. For example, {@code of(1.0f/3.0f)} yields 11184811/33554432, not 1/3. Returns empty
      * if the {@code float} is {@code Infinity}, {@code -Infinity}, or {@code NaN}.
      *
      * <ul>
      *  <li>{@code f} may be any {@code float}.</li>
      *  <li>
-     *   The result is null or a {@code Rational} that may be exactly represented as a {@code float}. Here are some,
+     *   The result is empty or a {@code Rational} that may be exactly represented as a {@code float}. Here are some,
      *   but not all, of the conditions on the result:
      *   <ul>
      *    <li>The denominator is a power of 2 less than or equal to 2<sup>149</sup>.</li>
@@ -341,30 +342,23 @@ public final class Rational implements Comparable<Rational> {
      * </ul>
      *
      * @param f the {@code float}
-     * @return the {@code Rational} corresponding to {@code f}, or null if {@code f} is {@code Infinity},
+     * @return the {@code Rational} corresponding to {@code f}, or empty if {@code f} is {@code Infinity},
      * {@code -Infinity}, or {@code NaN}
      */
     @SuppressWarnings("JavaDoc")
-    public static @Nullable Rational ofExact(float f) {
-        if (f == 0.0f) return ZERO;
-        if (f == 1.0f) return ONE;
-        if (Float.isInfinite(f) || Float.isNaN(f)) return null;
-        int bits = Float.floatToIntBits(f);
-        int exponent = bits >> 23 & ((1 << 8) - 1);
-        int mantissa = bits & ((1 << 23) - 1);
-        Rational rational;
-        if (exponent == 0) {
-            rational = of(mantissa).shiftRight(149);
-        } else {
-            rational = of(mantissa + (1 << 23), 1 << 23).shiftLeft(exponent - 127);
-        }
-        return bits < 0 ? rational.negate() : rational;
+    public static @NotNull Optional<Rational> ofExact(float f) {
+        if (f == 0.0f) return Optional.of(ZERO);
+        if (f == 1.0f) return Optional.of(ONE);
+        Optional<Pair<Integer, Integer>> mantissaAndExponent = FloatingPointUtils.toMantissaAndExponent(f);
+        if (!mantissaAndExponent.isPresent()) return Optional.empty();
+        //noinspection ConstantConditions
+        return Optional.of(of(mantissaAndExponent.get().a).shiftLeft(mantissaAndExponent.get().b));
     }
 
     /**
      * Creates a {@code Rational} from a {@link double}. No rounding occurs; the {@code Rational} has exactly the same
      * value as the {@code double}. For example, {@code of(1.0/3.0)} yields 6004799503160661/18014398509481984, not
-     * 1/3. Returns null if the {@code double} is {@code Infinity}, {@code -Infinity}, or {@code NaN}.
+     * 1/3. Returns empty if the {@code double} is {@code Infinity}, {@code -Infinity}, or {@code NaN}.
      *
      * <ul>
      *  <li>{@code f} may be any {@code double}.</li>
@@ -379,25 +373,17 @@ public final class Rational implements Comparable<Rational> {
      * </ul>
      *
      * @param d the {@code double}
-     * @return the {@code Rational} corresponding to {@code d}, or null if {@code d} is {@code Infinity},
+     * @return the {@code Rational} corresponding to {@code d}, or empty if {@code d} is {@code Infinity},
      * {@code -Infinity}, or {@code NaN}
      */
     @SuppressWarnings("JavaDoc")
-    public static @Nullable Rational ofExact(double d) {
-        if (d == 0.0) return ZERO;
-        if (d == 1.0) return ONE;
-        if (Double.isInfinite(d) || Double.isNaN(d)) return null;
-        long bits = Double.doubleToLongBits(d);
-        int exponent = (int) (bits >> 52) & ((1 << 11) - 1);
-        long mantissa = bits & ((1L << 52) - 1);
-        Rational rational;
-        if (exponent == 0) {
-            rational = of(mantissa).shiftRight(1074);
-        } else {
-            Rational significand = of(mantissa).shiftRight(52);
-            rational = significand.add(ONE).shiftLeft(exponent - 1023);
-        }
-        return bits < 0 ? rational.negate() : rational;
+    public static @NotNull Optional<Rational> ofExact(double d) {
+        if (d == 0.0) return Optional.of(ZERO);
+        if (d == 1.0) return Optional.of(ONE);
+        Optional<Pair<Long, Integer>> mantissaAndExponent = FloatingPointUtils.toMantissaAndExponent(d);
+        if (!mantissaAndExponent.isPresent()) return Optional.empty();
+        //noinspection ConstantConditions
+        return Optional.of(of(mantissaAndExponent.get().a).shiftLeft(mantissaAndExponent.get().b));
     }
 
     /**
@@ -868,12 +854,12 @@ public final class Rational implements Comparable<Rational> {
     public float floatValue(@NotNull RoundingMode roundingMode) {
         Pair<Float, Float> floatRange = floatRange();
         if (floatRange.a.equals(floatRange.b)) return floatRange.a;
-        Rational loFloat = ofExact(floatRange.a);
-        Rational hiFloat = ofExact(floatRange.b);
-        if ((loFloat == null || hiFloat == null) && roundingMode == RoundingMode.UNNECESSARY) {
+        Optional<Rational> loFloat = ofExact(floatRange.a);
+        Optional<Rational> hiFloat = ofExact(floatRange.b);
+        if (!(loFloat.isPresent() && hiFloat.isPresent()) && roundingMode == RoundingMode.UNNECESSARY) {
             throw new ArithmeticException("Rational not exactly equal to a float. Use a different rounding mode");
         }
-        if (loFloat == null) {
+        if (!loFloat.isPresent()) {
             if (roundingMode == RoundingMode.FLOOR || roundingMode == RoundingMode.UP ||
                     roundingMode == RoundingMode.HALF_UP || roundingMode == RoundingMode.HALF_EVEN) {
                 return Float.NEGATIVE_INFINITY;
@@ -881,7 +867,7 @@ public final class Rational implements Comparable<Rational> {
                 return -Float.MAX_VALUE;
             }
         }
-        if (hiFloat == null) {
+        if (!hiFloat.isPresent()) {
             if (roundingMode == RoundingMode.CEILING || roundingMode == RoundingMode.UP ||
                     roundingMode == RoundingMode.HALF_UP || roundingMode == RoundingMode.HALF_EVEN) {
                 return Float.POSITIVE_INFINITY;
@@ -889,7 +875,7 @@ public final class Rational implements Comparable<Rational> {
                 return Float.MAX_VALUE;
             }
         }
-        Rational midway = loFloat.add(hiFloat).shiftRight(1);
+        Rational midway = loFloat.get().add(hiFloat.get()).shiftRight(1);
         Ordering midwayCompare = compare(this, midway);
         switch (roundingMode) {
             case UNNECESSARY:
@@ -1014,12 +1000,12 @@ public final class Rational implements Comparable<Rational> {
     public double doubleValue(@NotNull RoundingMode roundingMode) {
         Pair<Double, Double> doubleRange = doubleRange();
         if (doubleRange.a.equals(doubleRange.b)) return doubleRange.a;
-        Rational loDouble = ofExact(doubleRange.a);
-        Rational hiDouble = ofExact(doubleRange.b);
-        if ((loDouble == null || hiDouble == null) && roundingMode == RoundingMode.UNNECESSARY) {
+        Optional<Rational> loDouble = ofExact(doubleRange.a);
+        Optional<Rational> hiDouble = ofExact(doubleRange.b);
+        if (!(loDouble.isPresent() && hiDouble.isPresent()) && roundingMode == RoundingMode.UNNECESSARY) {
             throw new ArithmeticException("Rational not exactly equal to a double. Use a different rounding mode");
         }
-        if (loDouble == null) {
+        if (!loDouble.isPresent()) {
             if (roundingMode == RoundingMode.FLOOR || roundingMode == RoundingMode.UP ||
                     roundingMode == RoundingMode.HALF_UP || roundingMode == RoundingMode.HALF_EVEN) {
                 return Double.NEGATIVE_INFINITY;
@@ -1027,7 +1013,7 @@ public final class Rational implements Comparable<Rational> {
                 return -Double.MAX_VALUE;
             }
         }
-        if (hiDouble == null) {
+        if (!hiDouble.isPresent()) {
             if (roundingMode == RoundingMode.CEILING || roundingMode == RoundingMode.UP ||
                     roundingMode == RoundingMode.HALF_UP || roundingMode == RoundingMode.HALF_EVEN) {
                 return Double.POSITIVE_INFINITY;
@@ -1035,7 +1021,7 @@ public final class Rational implements Comparable<Rational> {
                 return Double.MAX_VALUE;
             }
         }
-        Rational midway = loDouble.add(hiDouble).shiftRight(1);
+        Rational midway = loDouble.get().add(hiDouble.get()).shiftRight(1);
         Ordering midwayCompare = compare(this, midway);
         switch (roundingMode) {
             case UNNECESSARY:

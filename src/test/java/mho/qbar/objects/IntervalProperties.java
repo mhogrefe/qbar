@@ -703,9 +703,9 @@ public class IntervalProperties {
 
         for (float f : take(LIMIT, filter(g -> !Float.isNaN(g) && Math.abs(g) < Float.MAX_VALUE, P.floats()))) {
             Interval a = roundingPreimage(f);
-            Rational central = Rational.ofExact(f);
-            Rational pred = Rational.ofExact(FloatingPointUtils.predecessor(f));
-            Rational succ = Rational.ofExact(FloatingPointUtils.successor(f));
+            Rational central = Rational.ofExact(f).get();
+            Rational pred = Rational.ofExact(FloatingPointUtils.predecessor(f)).get();
+            Rational succ = Rational.ofExact(FloatingPointUtils.successor(f)).get();
             for (Rational r : take(TINY_LIMIT, P.rationals(a))) {
                 Rational centralDistance = central.subtract(r).abs();
                 Rational predDistance = pred.subtract(r).abs();
@@ -748,9 +748,9 @@ public class IntervalProperties {
 
         for (double d : take(LIMIT, filter(e -> !Double.isNaN(e) && Math.abs(e) < Double.MAX_VALUE, P.doubles()))) {
             Interval a = roundingPreimage(d);
-            Rational central = Rational.ofExact(d);
-            Rational pred = Rational.ofExact(FloatingPointUtils.predecessor(d));
-            Rational succ = Rational.ofExact(FloatingPointUtils.successor(d));
+            Rational central = Rational.ofExact(d).get();
+            Rational pred = Rational.ofExact(FloatingPointUtils.predecessor(d)).get();
+            Rational succ = Rational.ofExact(FloatingPointUtils.successor(d)).get();
             for (Rational r : take(TINY_LIMIT, P.rationals(a))) {
                 Rational centralDistance = central.subtract(r).abs();
                 Rational predDistance = pred.subtract(r).abs();
@@ -838,21 +838,25 @@ public class IntervalProperties {
             if (range.a.isInfinite() && range.b.isInfinite()) {
                 b = ALL;
             } else if (range.a.isInfinite()) {
-                b = lessThanOrEqualTo(Rational.ofExact(range.b));
+                b = lessThanOrEqualTo(Rational.ofExact(range.b).get());
             } else if (range.b.isInfinite()) {
-                b = greaterThanOrEqualTo(Rational.ofExact(range.a));
+                b = greaterThanOrEqualTo(Rational.ofExact(range.a).get());
             } else {
-                b = of(Rational.ofExact(range.a), Rational.ofExact(range.b));
+                b = of(Rational.ofExact(range.a).get(), Rational.ofExact(range.b).get());
             }
             assertTrue(a.toString(), b.contains(a));
         }
 
         for (Interval a : take(LIMIT, P.finitelyBoundedIntervals())) {
             Pair<Float, Float> range = a.floatRange();
-            assertTrue(a.toString(), le(a.getLower().get(), Rational.ofExact(FloatingPointUtils.successor(range.a))));
             assertTrue(
                     a.toString(),
-                    ge(a.getUpper().get(), Rational.ofExact(FloatingPointUtils.predecessor(range.b)))
+                    le(a.getLower().get(),
+                    Rational.ofExact(FloatingPointUtils.successor(range.a)).get())
+                    );
+            assertTrue(
+                    a.toString(),
+                    ge(a.getUpper().get(), Rational.ofExact(FloatingPointUtils.predecessor(range.b)).get())
             );
         }
     }
@@ -887,21 +891,25 @@ public class IntervalProperties {
             if (range.a.isInfinite() && range.b.isInfinite()) {
                 b = ALL;
             } else if (range.a.isInfinite()) {
-                b = lessThanOrEqualTo(Rational.ofExact(range.b));
+                b = lessThanOrEqualTo(Rational.ofExact(range.b).get());
             } else if (range.b.isInfinite()) {
-                b = greaterThanOrEqualTo(Rational.ofExact(range.a));
+                b = greaterThanOrEqualTo(Rational.ofExact(range.a).get());
             } else {
-                b = of(Rational.ofExact(range.a), Rational.ofExact(range.b));
+                b = of(Rational.ofExact(range.a).get(), Rational.ofExact(range.b).get());
             }
             assertTrue(a.toString(), b.contains(a));
         }
 
         for (Interval a : take(LIMIT, P.finitelyBoundedIntervals())) {
             Pair<Float, Float> range = a.floatRange();
-            assertTrue(a.toString(), le(a.getLower().get(), Rational.ofExact(FloatingPointUtils.successor(range.a))));
             assertTrue(
                     a.toString(),
-                    ge(a.getUpper().get(), Rational.ofExact(FloatingPointUtils.predecessor(range.b)))
+                    le(a.getLower().get(),
+                    Rational.ofExact(FloatingPointUtils.successor(range.a)).get())
+            );
+            assertTrue(
+                    a.toString(),
+                    ge(a.getUpper().get(), Rational.ofExact(FloatingPointUtils.predecessor(range.b)).get())
             );
         }
     }

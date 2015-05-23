@@ -294,13 +294,13 @@ public class RationalProperties {
 
         Iterable<Float> fs = filter(f -> Float.isFinite(f) && !Float.isNaN(f), P.floats());
         for (float f : take(LIMIT, fs)) {
-            Rational r = of(f);
+            Rational r = of(f).get();
             r.validate();
             assertTrue(Float.toString(f), r.hasTerminatingBaseExpansion(BigInteger.valueOf(10)));
         }
 
         for (float f : take(LIMIT, P.ordinaryFloats())) {
-            Rational r = of(f);
+            Rational r = of(f).get();
             aeqf(Float.toString(f), f, r.floatValue());
             aeq(Float.toString(f), new BigDecimal(Float.toString(f)), r.bigDecimalValueExact());
         }
@@ -312,13 +312,13 @@ public class RationalProperties {
 
         Iterable<Double> ds = filter(d -> Double.isFinite(d) && !Double.isNaN(d), P.doubles());
         for (double d : take(LIMIT, ds)) {
-            Rational r = of(d);
+            Rational r = of(d).get();
             r.validate();
             assertTrue(Double.toString(d), r.hasTerminatingBaseExpansion(BigInteger.valueOf(10)));
         }
 
         for (double d : take(LIMIT, P.ordinaryDoubles())) {
-            Rational r = of(d);
+            Rational r = of(d).get();
             aeqd(Double.toString(d), d, r.doubleValue());
             aeq(Double.toString(d), new BigDecimal(Double.toString(d)), r.bigDecimalValueExact());
         }
@@ -332,7 +332,7 @@ public class RationalProperties {
         BigInteger numeratorLimit = BigInteger.ONE.shiftLeft(128).subtract(BigInteger.ONE.shiftLeft(104));
         Iterable<Float> fs = filter(f -> Float.isFinite(f) && !Float.isNaN(f), P.floats());
         for (float f : take(LIMIT, fs)) {
-            Rational r = ofExact(f);
+            Rational r = ofExact(f).get();
             r.validate();
             assertTrue(Float.toString(f), MathUtils.isPowerOfTwo(r.getDenominator()));
             assertTrue(Float.toString(f), le(r.getDenominator(), denominatorLimit));
@@ -340,7 +340,7 @@ public class RationalProperties {
         }
 
         for (float f : take(LIMIT, P.ordinaryFloats())) {
-            Rational r = ofExact(f);
+            Rational r = ofExact(f).get();
             aeqf(Float.toString(f), f, r.floatValue());
         }
     }
@@ -353,7 +353,7 @@ public class RationalProperties {
         BigInteger numeratorLimit = BigInteger.ONE.shiftLeft(1024).subtract(BigInteger.ONE.shiftLeft(971));
         Iterable<Double> ds = filter(d -> Double.isFinite(d) && !Double.isNaN(d), P.doubles());
         for (double d : take(LIMIT, ds)) {
-            Rational r = ofExact(d);
+            Rational r = ofExact(d).get();
             r.validate();
             assertTrue(Double.toString(d), MathUtils.isPowerOfTwo(r.getDenominator()));
             assertTrue(Double.toString(d), le(r.getDenominator(), denominatorLimit));
@@ -361,7 +361,7 @@ public class RationalProperties {
         }
 
         for (double d : take(LIMIT, P.ordinaryDoubles())) {
-            Rational r = ofExact(d);
+            Rational r = ofExact(d).get();
             aeqd(Double.toString(d), d, r.doubleValue());
         }
     }
@@ -973,8 +973,8 @@ public class RationalProperties {
         float below = r.floatValue(RoundingMode.FLOOR);
         float above = r.floatValue(RoundingMode.CEILING);
         if (below == above || Float.isInfinite(below) || Float.isInfinite(above)) return false;
-        Rational belowDistance = r.subtract(ofExact(below));
-        Rational aboveDistance = ofExact(above).subtract(r);
+        Rational belowDistance = r.subtract(ofExact(below).get());
+        Rational aboveDistance = ofExact(above).get().subtract(r);
         return belowDistance.equals(aboveDistance);
     }
 
@@ -993,12 +993,12 @@ public class RationalProperties {
         }
 
         Iterable<Rational> rs = map(
-                Rational::ofExact,
+                f -> ofExact(f).get(),
                 filter(f -> !Float.isNaN(f) && Float.isFinite(f) && !f.equals(-0.0f), P.floats())
         );
         for (Rational r : take(LIMIT, rs)) {
             float rounded = r.floatValue(RoundingMode.UNNECESSARY);
-            assertEquals(r.toString(), r, ofExact(rounded));
+            assertEquals(r.toString(), r, ofExact(rounded).get());
             assertTrue(r.toString(), Float.isFinite(rounded));
             assertTrue(r.toString(), !new Float(rounded).equals(-0.0f));
         }
@@ -1007,8 +1007,8 @@ public class RationalProperties {
         for (Rational r : take(LIMIT, rs)) {
             float rounded = r.floatValue(RoundingMode.FLOOR);
             float successor = FloatingPointUtils.successor(rounded);
-            assertTrue(r.toString(), le(ofExact(rounded), r));
-            assertTrue(r.toString(), gt(ofExact(successor), r));
+            assertTrue(r.toString(), le(ofExact(rounded).get(), r));
+            assertTrue(r.toString(), gt(ofExact(successor).get(), r));
             assertTrue(r.toString(), rounded < 0 || Float.isFinite(rounded));
             assertTrue(r.toString(), !new Float(rounded).equals(-0.0f));
         }
@@ -1020,15 +1020,15 @@ public class RationalProperties {
         for (Rational r : take(LIMIT, rs)) {
             float rounded = r.floatValue(RoundingMode.CEILING);
             float predecessor = FloatingPointUtils.predecessor(rounded);
-            assertTrue(r.toString(), ge(ofExact(rounded), r));
-            assertTrue(r.toString(), lt(ofExact(predecessor), r));
+            assertTrue(r.toString(), ge(ofExact(rounded).get(), r));
+            assertTrue(r.toString(), lt(ofExact(predecessor).get(), r));
             assertTrue(r.toString(), rounded > 0 || Float.isFinite(rounded));
         }
 
         rs = P.rationals(Interval.of(LARGEST_FLOAT.negate(), LARGEST_FLOAT));
         for (Rational r : take(LIMIT, rs)) {
             float rounded = r.floatValue(RoundingMode.DOWN);
-            assertTrue(r.toString(), le(ofExact(rounded).abs(), r.abs()));
+            assertTrue(r.toString(), le(ofExact(rounded).get().abs(), r.abs()));
             assertTrue(r.toString(), Float.isFinite(rounded));
         }
 
@@ -1038,7 +1038,7 @@ public class RationalProperties {
             float successor = FloatingPointUtils.successor(rounded);
             float predecessor = FloatingPointUtils.predecessor(rounded);
             float down = r.signum() == -1 ? successor : predecessor;
-            assertTrue(r.toString(), lt(ofExact(down).abs(), r.abs()));
+            assertTrue(r.toString(), lt(ofExact(down).get().abs(), r.abs()));
         }
 
         rs = filter(
@@ -1058,7 +1058,7 @@ public class RationalProperties {
             float successor = FloatingPointUtils.successor(rounded);
             float predecessor = FloatingPointUtils.predecessor(rounded);
             float up = r.signum() == -1 ? predecessor : successor;
-            assertTrue(r.toString(), gt(ofExact(up).abs(), r.abs()));
+            assertTrue(r.toString(), gt(ofExact(up).get().abs(), r.abs()));
         }
 
         rs = filter(
@@ -1119,8 +1119,8 @@ public class RationalProperties {
 
         Iterable<Rational> midpoints = map(
                 f -> {
-                    Rational lo = ofExact(f);
-                    Rational hi = ofExact(FloatingPointUtils.successor(f));
+                    Rational lo = ofExact(f).get();
+                    Rational hi = ofExact(FloatingPointUtils.successor(f)).get();
                     return lo.add(hi).shiftRight(1);
                 },
                 filter(f -> !f.equals(-0.0f) && f != Float.MAX_VALUE, P.ordinaryFloats())
@@ -1141,8 +1141,8 @@ public class RationalProperties {
         for (Rational r : take(LIMIT, notMidpoints)) {
             float below = r.floatValue(RoundingMode.FLOOR);
             float above = r.floatValue(RoundingMode.CEILING);
-            Rational belowDistance = r.subtract(ofExact(below));
-            Rational aboveDistance = ofExact(above).subtract(r);
+            Rational belowDistance = r.subtract(ofExact(below).get());
+            Rational aboveDistance = ofExact(above).get().subtract(r);
             float closest = lt(belowDistance, aboveDistance) ? below : above;
             aeqf(r.toString(), r.floatValue(RoundingMode.HALF_DOWN), closest);
             aeqf(r.toString(), r.floatValue(RoundingMode.HALF_UP), closest);
@@ -1194,7 +1194,7 @@ public class RationalProperties {
         }
 
         Iterable<Rational> rsFail = filter(
-                r -> !ofExact(r.floatValue(RoundingMode.FLOOR)).equals(r),
+                r -> !ofExact(r.floatValue(RoundingMode.FLOOR)).get().equals(r),
                 P.rationals(Interval.of(LARGEST_FLOAT.negate(), LARGEST_FLOAT))
         );
         for (Rational r : take(LIMIT, rsFail)) {
@@ -1233,8 +1233,8 @@ public class RationalProperties {
 
         Iterable<Rational> midpoints = map(
                 f -> {
-                    Rational lo = ofExact(f);
-                    Rational hi = ofExact(FloatingPointUtils.successor(f));
+                    Rational lo = ofExact(f).get();
+                    Rational hi = ofExact(FloatingPointUtils.successor(f)).get();
                     return lo.add(hi).shiftRight(1);
                 },
                 filter(f -> !f.equals(-0.0f) && f != Float.MAX_VALUE, P.ordinaryFloats())
@@ -1253,8 +1253,8 @@ public class RationalProperties {
         for (Rational r : take(LIMIT, notMidpoints)) {
             float below = r.floatValue(RoundingMode.FLOOR);
             float above = r.floatValue(RoundingMode.CEILING);
-            Rational belowDistance = r.subtract(ofExact(below));
-            Rational aboveDistance = ofExact(above).subtract(r);
+            Rational belowDistance = r.subtract(ofExact(below).get());
+            Rational aboveDistance = ofExact(above).get().subtract(r);
             float closest = lt(belowDistance, aboveDistance) ? below : above;
             aeqf(r.toString(), r.floatValue(), closest);
         }
@@ -1274,7 +1274,13 @@ public class RationalProperties {
         initialize();
         System.out.println("\t\ttesting floatValueExact() properties...");
 
-        Iterable<Rational> rs = filter(r -> r.equals(ofExact(r.floatValue(RoundingMode.FLOOR))), P.rationals());
+        Iterable<Rational> rs = filter(
+                r -> {
+                    Optional<Rational> fr = ofExact(r.floatValue(RoundingMode.FLOOR));
+                    return fr.isPresent() && fr.get().equals(r);
+                },
+                P.rationals()
+        );
         for (Rational r : take(LIMIT, rs)) {
             float f = r.floatValueExact();
             assertTrue(r.toString(), !Float.isNaN(f));
@@ -1282,18 +1288,18 @@ public class RationalProperties {
         }
 
         rs = map(
-                Rational::ofExact,
+                f -> ofExact(f).get(),
                 filter(f -> !Float.isNaN(f) && Float.isFinite(f) && !f.equals(-0.0f), P.floats())
         );
         for (Rational r : take(LIMIT, rs)) {
             float f = r.floatValueExact();
-            assertEquals(r.toString(), r, ofExact(f));
+            assertEquals(r.toString(), r, ofExact(f).get());
             assertTrue(r.toString(), Float.isFinite(f));
             assertTrue(r.toString(), !new Float(f).equals(-0.0f));
         }
 
         Iterable<Rational> rsFail = filter(
-                r -> !ofExact(r.floatValue(RoundingMode.FLOOR)).equals(r),
+                r -> !ofExact(r.floatValue(RoundingMode.FLOOR)).get().equals(r),
                 P.rationals(Interval.of(LARGEST_FLOAT.negate(), LARGEST_FLOAT))
         );
         for (Rational r : take(LIMIT, rsFail)) {
@@ -1308,8 +1314,8 @@ public class RationalProperties {
         double below = r.doubleValue(RoundingMode.FLOOR);
         double above = r.doubleValue(RoundingMode.CEILING);
         if (below == above || Double.isInfinite(below) || Double.isInfinite(above)) return false;
-        Rational belowDistance = r.subtract(ofExact(below));
-        Rational aboveDistance = ofExact(above).subtract(r);
+        Rational belowDistance = r.subtract(ofExact(below).get());
+        Rational aboveDistance = ofExact(above).get().subtract(r);
         return belowDistance.equals(aboveDistance);
     }
 
@@ -1318,7 +1324,7 @@ public class RationalProperties {
         System.out.println("\t\ttesting doubleValue(RoundingMode) properties...");
 
         Iterable<Pair<Rational, RoundingMode>> ps = filter(
-                p -> p.b != RoundingMode.UNNECESSARY || p.a.equals(ofExact(p.a.doubleValue(RoundingMode.FLOOR))),
+                p -> p.b != RoundingMode.UNNECESSARY || p.a.equals(ofExact(p.a.doubleValue(RoundingMode.FLOOR)).get()),
                 P.pairs(P.rationals(), P.roundingModes())
         );
         for (Pair<Rational, RoundingMode> p : take(LIMIT, ps)) {
@@ -1328,12 +1334,12 @@ public class RationalProperties {
         }
 
         Iterable<Rational> rs = map(
-                Rational::ofExact,
+                f -> ofExact(f).get(),
                 filter(f -> !Double.isNaN(f) && Double.isFinite(f) && !f.equals(-0.0), P.doubles())
         );
         for (Rational r : take(LIMIT, rs)) {
             double rounded = r.doubleValue(RoundingMode.UNNECESSARY);
-            assertEquals(r.toString(), r, ofExact(rounded));
+            assertEquals(r.toString(), r, ofExact(rounded).get());
             assertTrue(r.toString(), Double.isFinite(rounded));
             assertTrue(r.toString(), !new Double(rounded).equals(-0.0));
         }
@@ -1342,8 +1348,8 @@ public class RationalProperties {
         for (Rational r : take(LIMIT, rs)) {
             double rounded = r.doubleValue(RoundingMode.FLOOR);
             double successor = FloatingPointUtils.successor(rounded);
-            assertTrue(r.toString(), le(ofExact(rounded), r));
-            assertTrue(r.toString(), gt(ofExact(successor), r));
+            assertTrue(r.toString(), le(ofExact(rounded).get(), r));
+            assertTrue(r.toString(), gt(ofExact(successor).get(), r));
             assertTrue(r.toString(), rounded < 0 || Double.isFinite(rounded));
             assertTrue(r.toString(), !new Double(rounded).equals(-0.0));
         }
@@ -1355,15 +1361,15 @@ public class RationalProperties {
         for (Rational r : take(LIMIT, rs)) {
             double rounded = r.doubleValue(RoundingMode.CEILING);
             double predecessor = FloatingPointUtils.predecessor(rounded);
-            assertTrue(r.toString(), ge(ofExact(rounded), r));
-            assertTrue(r.toString(), lt(ofExact(predecessor), r));
+            assertTrue(r.toString(), ge(ofExact(rounded).get(), r));
+            assertTrue(r.toString(), lt(ofExact(predecessor).get(), r));
             assertTrue(r.toString(), rounded > 0 || Double.isFinite(rounded));
         }
 
         rs = P.rationals(Interval.of(LARGEST_DOUBLE.negate(), LARGEST_DOUBLE));
         for (Rational r : take(LIMIT, rs)) {
             double rounded = r.doubleValue(RoundingMode.DOWN);
-            assertTrue(r.toString(), le(ofExact(rounded).abs(), r.abs()));
+            assertTrue(r.toString(), le(ofExact(rounded).get().abs(), r.abs()));
             assertTrue(r.toString(), Double.isFinite(rounded));
         }
 
@@ -1373,7 +1379,7 @@ public class RationalProperties {
             double successor = FloatingPointUtils.successor(rounded);
             double predecessor = FloatingPointUtils.predecessor(rounded);
             double down = r.signum() == -1 ? successor : predecessor;
-            assertTrue(r.toString(), lt(ofExact(down).abs(), r.abs()));
+            assertTrue(r.toString(), lt(ofExact(down).get().abs(), r.abs()));
         }
 
         rs = filter(
@@ -1393,7 +1399,7 @@ public class RationalProperties {
             double successor = FloatingPointUtils.successor(rounded);
             double predecessor = FloatingPointUtils.predecessor(rounded);
             double up = r.signum() == -1 ? predecessor : successor;
-            assertTrue(r.toString(), gt(ofExact(up).abs(), r.abs()));
+            assertTrue(r.toString(), gt(ofExact(up).get().abs(), r.abs()));
         }
 
         rs = filter(
@@ -1454,8 +1460,8 @@ public class RationalProperties {
 
         Iterable<Rational> midpoints = map(
                 f -> {
-                    Rational lo = ofExact(f);
-                    Rational hi = ofExact(FloatingPointUtils.successor(f));
+                    Rational lo = ofExact(f).get();
+                    Rational hi = ofExact(FloatingPointUtils.successor(f)).get();
                     return lo.add(hi).shiftRight(1);
                 },
                 filter(f -> !f.equals(-0.0) && f != Double.MAX_VALUE, P.ordinaryDoubles())
@@ -1476,8 +1482,8 @@ public class RationalProperties {
         for (Rational r : take(LIMIT, notMidpoints)) {
             double below = r.doubleValue(RoundingMode.FLOOR);
             double above = r.doubleValue(RoundingMode.CEILING);
-            Rational belowDistance = r.subtract(ofExact(below));
-            Rational aboveDistance = ofExact(above).subtract(r);
+            Rational belowDistance = r.subtract(ofExact(below).get());
+            Rational aboveDistance = ofExact(above).get().subtract(r);
             double closest = lt(belowDistance, aboveDistance) ? below : above;
             aeqd(r.toString(), r.doubleValue(RoundingMode.HALF_DOWN), closest);
             aeqd(r.toString(), r.doubleValue(RoundingMode.HALF_UP), closest);
@@ -1529,7 +1535,7 @@ public class RationalProperties {
         }
 
         Iterable<Rational> rsFail = filter(
-                r -> !ofExact(r.doubleValue(RoundingMode.FLOOR)).equals(r),
+                r -> !ofExact(r.doubleValue(RoundingMode.FLOOR)).get().equals(r),
                 P.rationals(Interval.of(LARGEST_DOUBLE.negate(), LARGEST_DOUBLE))
         );
         for (Rational r : take(LIMIT, rsFail)) {
@@ -1568,8 +1574,8 @@ public class RationalProperties {
 
         Iterable<Rational> midpoints = map(
                 f -> {
-                    Rational lo = ofExact(f);
-                    Rational hi = ofExact(FloatingPointUtils.successor(f));
+                    Rational lo = ofExact(f).get();
+                    Rational hi = ofExact(FloatingPointUtils.successor(f)).get();
                     return lo.add(hi).shiftRight(1);
                 },
                 filter(f -> !f.equals(-0.0) && f != Double.MAX_VALUE, P.ordinaryDoubles())
@@ -1588,8 +1594,8 @@ public class RationalProperties {
         for (Rational r : take(LIMIT, notMidpoints)) {
             double below = r.doubleValue(RoundingMode.FLOOR);
             double above = r.doubleValue(RoundingMode.CEILING);
-            Rational belowDistance = r.subtract(ofExact(below));
-            Rational aboveDistance = ofExact(above).subtract(r);
+            Rational belowDistance = r.subtract(ofExact(below).get());
+            Rational aboveDistance = ofExact(above).get().subtract(r);
             double closest = lt(belowDistance, aboveDistance) ? below : above;
             aeqd(r.toString(), r.doubleValue(), closest);
         }
@@ -1609,7 +1615,13 @@ public class RationalProperties {
         initialize();
         System.out.println("\t\ttesting doubleValueExact() properties...");
 
-        Iterable<Rational> rs = filter(r -> r.equals(ofExact(r.doubleValue(RoundingMode.FLOOR))), P.rationals());
+        Iterable<Rational> rs = filter(
+                r -> {
+                    Optional<Rational> dr = ofExact(r.doubleValue(RoundingMode.FLOOR));
+                    return dr.isPresent() && dr.get().equals(r);
+                },
+                P.rationals()
+        );
         for (Rational r : take(LIMIT, rs)) {
             double f = r.doubleValueExact();
             assertTrue(r.toString(), !Double.isNaN(f));
@@ -1617,18 +1629,18 @@ public class RationalProperties {
         }
 
         rs = map(
-                Rational::ofExact,
+                f -> ofExact(f).get(),
                 filter(f -> !Double.isNaN(f) && Double.isFinite(f) && !f.equals(-0.0), P.doubles())
         );
         for (Rational r : take(LIMIT, rs)) {
             double f = r.doubleValueExact();
-            assertEquals(r.toString(), r, ofExact(f));
+            assertEquals(r.toString(), r, ofExact(f).get());
             assertTrue(r.toString(), Double.isFinite(f));
             assertTrue(r.toString(), !new Double(f).equals(-0.0));
         }
 
         Iterable<Rational> rsFail = filter(
-                r -> !ofExact(r.doubleValue(RoundingMode.FLOOR)).equals(r),
+                r -> !ofExact(r.doubleValue(RoundingMode.FLOOR)).get().equals(r),
                 P.rationals(Interval.of(LARGEST_DOUBLE.negate(), LARGEST_DOUBLE))
         );
         for (Rational r : take(LIMIT, rsFail)) {
