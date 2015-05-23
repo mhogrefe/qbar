@@ -13,10 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
 import java.math.BigInteger;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 
 import static mho.qbar.objects.Polynomial.*;
 import static mho.wheels.iterables.IterableUtils.*;
@@ -821,7 +818,7 @@ public class PolynomialProperties {
         }
 
         for (Polynomial p : take(LIMIT, P.polynomials())) {
-            assertEquals(p.toString(), sum(Arrays.asList(p)), p);
+            assertEquals(p.toString(), sum(Collections.singletonList(p)), p);
         }
 
         for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(P.polynomials()))) {
@@ -895,7 +892,7 @@ public class PolynomialProperties {
         }
 
         for (Polynomial p : take(LIMIT, P.polynomials())) {
-            assertEquals(p.toString(), product(Arrays.asList(p)), p);
+            assertEquals(p.toString(), product(Collections.singletonList(p)), p);
         }
 
         for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(P.polynomials()))) {
@@ -939,11 +936,11 @@ public class PolynomialProperties {
         }
 
         for (Polynomial p : take(LIMIT, P.polynomials())) {
-            assertTrue(p.toString(), isEmpty(delta(Arrays.asList(p))));
+            assertTrue(p.toString(), isEmpty(delta(Collections.singletonList(p))));
         }
 
         for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(P.polynomials()))) {
-            aeqit(p.toString(), delta(Arrays.asList(p.a, p.b)), Arrays.asList(p.b.subtract(p.a)));
+            aeqit(p.toString(), delta(Arrays.asList(p.a, p.b)), Collections.singletonList(p.b.subtract(p.a)));
         }
 
         Iterable<List<Polynomial>> failPss = map(

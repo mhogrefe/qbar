@@ -357,7 +357,7 @@ public class IntervalProperties {
         }
 
         for (Interval a : take(LIMIT, P.intervals())) {
-            assertEquals(a.toString(), convexHull(Arrays.asList(a)), a);
+            assertEquals(a.toString(), convexHull(Collections.singletonList(a)), a);
         }
 
         for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
@@ -492,7 +492,7 @@ public class IntervalProperties {
         }
 
         for (Interval a : take(LIMIT, P.intervals())) {
-            assertEquals(a.toString(), makeDisjoint(Arrays.asList(a)), Arrays.asList(a));
+            assertEquals(a.toString(), makeDisjoint(Collections.singletonList(a)), Collections.singletonList(a));
         }
 
         for (Pair<Interval, Interval> p : take(LIMIT, filter(q -> q.a.disjoint(q.b), P.pairs(P.intervals())))) {
@@ -500,7 +500,11 @@ public class IntervalProperties {
         }
 
         for (Pair<Interval, Interval> p : take(LIMIT, filter(q -> !q.a.disjoint(q.b), P.pairs(P.intervals())))) {
-            assertEquals(p.toString(), makeDisjoint(Pair.toList(p)), Arrays.asList(convexHull(Pair.toList(p))));
+            assertEquals(
+                    p.toString(),
+                    makeDisjoint(Pair.toList(p)),
+                    Collections.singletonList(convexHull(Pair.toList(p)))
+            );
         }
 
         Iterable<Pair<List<Interval>, Integer>> ps2 = P.dependentPairsLogarithmic(
@@ -509,7 +513,7 @@ public class IntervalProperties {
         );
         for (Pair<List<Interval>, Integer> p : take(LIMIT, ps2)) {
             List<Interval> as = toList(insert(p.a, p.b, ALL));
-            assertEquals(p.toString(), makeDisjoint(as), Arrays.asList(ALL));
+            assertEquals(p.toString(), makeDisjoint(as), Collections.singletonList(ALL));
         }
 
         for (Pair<List<Interval>, Integer> p : take(LIMIT, ps2)) {
@@ -561,7 +565,7 @@ public class IntervalProperties {
         }
 
         for (Interval a : take(LIMIT, map(Interval::of, P.rationals()))) {
-            assertEquals(a.toString(), a.complement(), Arrays.asList(ALL));
+            assertEquals(a.toString(), a.complement(), Collections.singletonList(ALL));
         }
 
         Iterable<Interval> as = filter(b -> b.diameter().get() != Rational.ZERO, P.finitelyBoundedIntervals());
@@ -1690,7 +1694,7 @@ public class IntervalProperties {
         }
 
         for (Interval a : take(LIMIT, P.intervals())) {
-            assertEquals(a.toString(), sum(Arrays.asList(a)), a);
+            assertEquals(a.toString(), sum(Collections.singletonList(a)), a);
         }
 
         for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
@@ -1741,7 +1745,7 @@ public class IntervalProperties {
         }
 
         for (Interval a : take(LIMIT, P.intervals())) {
-            assertEquals(a.toString(), product(Arrays.asList(a)), a);
+            assertEquals(a.toString(), product(Collections.singletonList(a)), a);
         }
 
         for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
@@ -1781,11 +1785,11 @@ public class IntervalProperties {
         }
 
         for (Interval a : take(LIMIT, P.intervals())) {
-            assertTrue(a.toString(), isEmpty(delta(Arrays.asList(a))));
+            assertTrue(a.toString(), isEmpty(delta(Collections.singletonList(a))));
         }
 
         for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
-            aeq(p.toString(), delta(Arrays.asList(p.a, p.b)), Arrays.asList(p.b.subtract(p.a)));
+            aeq(p.toString(), delta(Arrays.asList(p.a, p.b)), Collections.singletonList(p.b.subtract(p.a)));
         }
 
         Iterable<List<Interval>> failIss = map(
@@ -1865,12 +1869,12 @@ public class IntervalProperties {
         }
 
         for (int i : take(LIMIT, P.withScale(20).positiveIntegersGeometric())) {
-            assertTrue(Integer.toString(i), ZERO.pow(i).equals(Arrays.asList(ZERO)));
+            assertTrue(Integer.toString(i), ZERO.pow(i).equals(Collections.singletonList(ZERO)));
         }
 
         for (Interval a : take(LIMIT, P.intervals())) {
-            assertTrue(a.toString(), a.pow(0).equals(Arrays.asList(ONE)));
-            assertEquals(a.toString(), a.pow(1), Arrays.asList(a));
+            assertTrue(a.toString(), a.pow(0).equals(Collections.singletonList(ONE)));
+            assertEquals(a.toString(), a.pow(1), Collections.singletonList(a));
             Interval product = a.multiply(a);
             assertTrue(a.toString(), all(product::contains, a.pow(2)));
             assertEquals(a.toString(), a.pow(-1), a.invert());
@@ -1920,7 +1924,11 @@ public class IntervalProperties {
 
         ts2 = filter(
                 t -> !t.a.equals(ZERO) || t.c >= 0,
-                P.triples(P.intervals(), filter(a -> !a.equals(ZERO), P.intervals()), P.withScale(20).integersGeometric())
+                P.triples(
+                        P.intervals(),
+                        filter(a -> !a.equals(ZERO), P.intervals()),
+                        P.withScale(20).integersGeometric()
+                )
         );
         for (Triple<Interval, Interval, Integer> t : take(LIMIT, ts2)) {
             Interval expression1 = convexHull(toList(concatMap(a -> a.pow(t.c), t.a.divide(t.b))));
@@ -2018,7 +2026,11 @@ public class IntervalProperties {
 
         ts2 = filter(
                 t -> !t.a.equals(ZERO) || t.c >= 0,
-                P.triples(P.intervals(), filter(a -> !a.equals(ZERO), P.intervals()), P.withScale(20).integersGeometric())
+                P.triples(
+                        P.intervals(),
+                        filter(a -> !a.equals(ZERO), P.intervals()),
+                        P.withScale(20).integersGeometric()
+                )
         );
         for (Triple<Interval, Interval, Integer> t : take(LIMIT, ts2)) {
             Interval expression1 = t.a.divideHull(t.b).powHull(t.c);

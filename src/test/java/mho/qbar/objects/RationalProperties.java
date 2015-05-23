@@ -660,7 +660,7 @@ public class RationalProperties {
         for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
             boolean result = p.a.hasTerminatingBaseExpansion(p.b);
             Triple<List<BigInteger>, List<BigInteger>, List<BigInteger>> pn = p.a.positionalNotation(p.b);
-            assertEquals(p.toString(), result, pn.c.equals(Arrays.asList(BigInteger.ZERO)));
+            assertEquals(p.toString(), result, pn.c.equals(Collections.singletonList(BigInteger.ZERO)));
         }
 
         for (Pair<Rational, BigInteger> p : take(LIMIT, P.pairs(P.rationals(), P.rangeDown(BigInteger.ONE)))) {
@@ -2409,7 +2409,7 @@ public class RationalProperties {
         }
 
         for (Rational r : take(LIMIT, P.rationals())) {
-            assertEquals(r.toString(), sum(Arrays.asList(r)), r);
+            assertEquals(r.toString(), sum(Collections.singletonList(r)), r);
         }
 
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
@@ -2476,7 +2476,7 @@ public class RationalProperties {
         }
 
         for (Rational r : take(LIMIT, P.rationals())) {
-            assertEquals(r.toString(), product(Arrays.asList(r)), r);
+            assertEquals(r.toString(), product(Collections.singletonList(r)), r);
         }
 
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
@@ -2532,11 +2532,11 @@ public class RationalProperties {
         }
 
         for (Rational r : take(LIMIT, P.rationals())) {
-            assertTrue(r.toString(), isEmpty(delta(Arrays.asList(r))));
+            assertTrue(r.toString(), isEmpty(delta(Collections.singletonList(r))));
         }
 
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
-            aeqit(p.toString(), delta(Arrays.asList(p.a, p.b)), Arrays.asList(p.b.subtract(p.a)));
+            aeqit(p.toString(), delta(Arrays.asList(p.a, p.b)), Collections.singletonList(p.b.subtract(p.a)));
         }
 
         Iterable<List<Rational>> failRss = map(
@@ -3020,14 +3020,14 @@ public class RationalProperties {
             }
             assertTrue(p.toString(), pn.a.isEmpty() || !head(pn.a).equals(BigInteger.ZERO));
             assertFalse(p.toString(), pn.c.isEmpty());
-            assertNotEquals(p.toString(), pn.c, Arrays.asList(p.b.subtract(BigInteger.ONE)));
+            assertNotEquals(p.toString(), pn.c, Collections.singletonList(p.b.subtract(BigInteger.ONE)));
             Pair<List<BigInteger>, List<BigInteger>> minimized = minimize(pn.b, pn.c);
             assertEquals(p.toString(), minimized.a, pn.b);
             assertEquals(p.toString(), minimized.b, pn.c);
             assertEquals(p.toString(), fromPositionalNotation(p.b, pn.a, pn.b, pn.c), p.a);
             assertEquals(
                     p.toString(),
-                    pn.c.equals(Arrays.asList(BigInteger.ZERO)),
+                    pn.c.equals(Collections.singletonList(BigInteger.ZERO)),
                     p.a.hasTerminatingBaseExpansion(p.b)
             );
         }
@@ -3079,7 +3079,7 @@ public class RationalProperties {
                     Pair<List<BigInteger>, List<BigInteger>> minimized = minimize(p.b.b, p.b.c);
                     //noinspection SimplifiableIfStatement
                     if (!minimized.a.equals(p.b.b) || !minimized.b.equals(p.b.c)) return false;
-                    return !p.b.c.equals(Arrays.asList(p.a.subtract(BigInteger.ONE)));
+                    return !p.b.c.equals(Collections.singletonList(p.a.subtract(BigInteger.ONE)));
                 },
                 ps
         );
@@ -3147,7 +3147,7 @@ public class RationalProperties {
         );
         for (Pair<BigInteger, Pair<List<BigInteger>, List<BigInteger>>> p : take(LIMIT, psFail2)) {
             try {
-                fromPositionalNotation(p.a, p.b.a, p.b.b, new ArrayList<>());
+                fromPositionalNotation(p.a, p.b.a, p.b.b, Collections.emptyList());
                 fail(p.toString());
             } catch (IllegalArgumentException ignored) {}
         }
@@ -3159,7 +3159,7 @@ public class RationalProperties {
     ) {
         Triple<List<BigInteger>, List<BigInteger>, List<BigInteger>> positionalNotation = r.positionalNotation(base);
         Iterable<BigInteger> afterDecimal;
-        if (positionalNotation.c.equals(Arrays.asList(BigInteger.ZERO))) {
+        if (positionalNotation.c.equals(Collections.singletonList(BigInteger.ZERO))) {
             afterDecimal = positionalNotation.b;
         } else {
             afterDecimal = concat(positionalNotation.b, cycle(positionalNotation.c));
@@ -3523,7 +3523,7 @@ public class RationalProperties {
         }
 
         for (Rational r : take(LIMIT, P.rationals())) {
-            BigInteger canceled = head(cancelDenominators(Arrays.asList(r)));
+            BigInteger canceled = head(cancelDenominators(Collections.singletonList(r)));
             assertTrue(r.toString(), le(canceled.abs(), BigInteger.ONE));
         }
 

@@ -13,10 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
 import java.math.BigInteger;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 
 import static mho.qbar.objects.RationalVector.*;
 import static mho.wheels.iterables.IterableUtils.*;
@@ -880,7 +877,7 @@ public class RationalVectorProperties {
         }
 
         for (RationalVector v : take(LIMIT, P.rationalVectors())) {
-            assertEquals(v.toString(), sum(Arrays.asList(v)), v);
+            assertEquals(v.toString(), sum(Collections.singletonList(v)), v);
         }
 
         Iterable<Pair<RationalVector, RationalVector>> ps2 = filter(
@@ -970,7 +967,7 @@ public class RationalVectorProperties {
         }
 
         for (RationalVector v : take(LIMIT, P.rationalVectors())) {
-            assertTrue(v.toString(), isEmpty(delta(Arrays.asList(v))));
+            assertTrue(v.toString(), isEmpty(delta(Collections.singletonList(v))));
         }
 
         Iterable<Pair<RationalVector, RationalVector>> ps = filter(
@@ -978,7 +975,7 @@ public class RationalVectorProperties {
                 P.pairs(P.rationalVectors())
         );
         for (Pair<RationalVector, RationalVector> p : take(LIMIT, ps)) {
-            aeq(p.toString(), delta(Arrays.asList(p.a, p.b)), Arrays.asList(p.b.subtract(p.a)));
+            aeq(p.toString(), delta(Arrays.asList(p.a, p.b)), Collections.singletonList(p.b.subtract(p.a)));
         }
 
         Iterable<List<RationalVector>> failVss = map(

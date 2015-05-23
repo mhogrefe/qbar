@@ -375,7 +375,7 @@ public final class Interval implements Comparable<Interval> {
      * @return the closure of ℝ\{@code this}
      */
     public @NotNull List<Interval> complement() {
-        if (lower == null && upper == null) return new ArrayList<>();
+        if (lower == null && upper == null) return Collections.emptyList();
         if (lower == null) return Collections.singletonList(new Interval(upper, null));
         if (upper == null) return Collections.singletonList(new Interval(null, lower));
         if (lower.equals(upper)) return Collections.singletonList(ALL);

@@ -13,6 +13,7 @@ import org.junit.Test;
 
 import java.math.BigInteger;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -1006,7 +1007,7 @@ public class RationalPolynomialProperties {
         }
 
         for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
-            assertEquals(p.toString(), sum(Arrays.asList(p)), p);
+            assertEquals(p.toString(), sum(Collections.singletonList(p)), p);
         }
 
         for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, P.pairs(P.rationalPolynomials()))) {
@@ -1086,7 +1087,7 @@ public class RationalPolynomialProperties {
         }
 
         for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
-            assertEquals(p.toString(), product(Arrays.asList(p)), p);
+            assertEquals(p.toString(), product(Collections.singletonList(p)), p);
         }
 
         for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, P.pairs(P.rationalPolynomials()))) {
@@ -1137,11 +1138,11 @@ public class RationalPolynomialProperties {
         }
 
         for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
-            assertTrue(p.toString(), isEmpty(delta(Arrays.asList(p))));
+            assertTrue(p.toString(), isEmpty(delta(Collections.singletonList(p))));
         }
 
         for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, P.pairs(P.rationalPolynomials()))) {
-            aeqit(p.toString(), delta(Arrays.asList(p.a, p.b)), Arrays.asList(p.b.subtract(p.a)));
+            aeqit(p.toString(), delta(Arrays.asList(p.a, p.b)), Collections.singletonList(p.b.subtract(p.a)));
         }
 
         Iterable<List<RationalPolynomial>> failPss = map(

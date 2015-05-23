@@ -6,6 +6,7 @@ import org.junit.Test;
 
 import java.math.BigInteger;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -931,7 +932,7 @@ public class PolynomialTest {
         aeq(ZERO, "0");
         aeq(ONE, "1");
         aeq(X, "x");
-        aeq(of(Arrays.asList(BigInteger.valueOf(-17))), "-17");
+        aeq(of(Collections.singletonList(BigInteger.valueOf(-17))), "-17");
         aeq(of(Arrays.asList(BigInteger.ZERO, BigInteger.ONE)), "x");
         aeq(of(Arrays.asList(BigInteger.ZERO, BigInteger.valueOf(-1))), "-x");
         aeq(of(Arrays.asList(BigInteger.ZERO, BigInteger.valueOf(2))), "2*x");

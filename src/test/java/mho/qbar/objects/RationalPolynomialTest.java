@@ -6,6 +6,7 @@ import org.junit.Test;
 
 import java.math.BigInteger;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -1174,7 +1175,7 @@ public class RationalPolynomialTest {
         aeq(ZERO, "0");
         aeq(ONE, "1");
         aeq(X, "x");
-        aeq(of(Arrays.asList(Rational.of(-4, 3))), "-4/3");
+        aeq(of(Collections.singletonList(Rational.of(-4, 3))), "-4/3");
         aeq(of(Arrays.asList(Rational.ZERO, Rational.ONE)), "x");
         aeq(of(Arrays.asList(Rational.ZERO, Rational.of(-1))), "-x");
         aeq(of(Arrays.asList(Rational.ZERO, Rational.of(2))), "2*x");

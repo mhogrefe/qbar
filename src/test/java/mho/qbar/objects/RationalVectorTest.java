@@ -7,6 +7,7 @@ import org.junit.Test;
 
 import java.math.BigInteger;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -587,7 +588,7 @@ public class RationalVectorTest {
     @Test
     public void testToString() {
         aeq(ZERO_DIMENSIONAL, "[]");
-        aeq(of(Arrays.asList(Rational.of(1, 2))), "[1/2]");
+        aeq(of(Collections.singletonList(Rational.of(1, 2))), "[1/2]");
         aeq(of(Arrays.asList(Rational.of(5, 3), Rational.of(-1, 4), Rational.of(23))), "[5/3, -1/4, 23]");
         aeq(of(Arrays.asList(Rational.of(5, 3), Rational.of(1, 4), Rational.of(23))), "[5/3, 1/4, 23]");
     }
