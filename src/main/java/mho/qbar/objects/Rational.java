@@ -161,7 +161,6 @@ public final class Rational implements Comparable<Rational> {
      * @param numerator the numerator
      * @param denominator the denominator
      * @return the {@code Rational} corresponding to {@code numerator}/{@code denominator}
-     * @throws java.lang.ArithmeticException if denominator is zero
      */
     public static @NotNull Rational of(@NotNull BigInteger numerator, @NotNull BigInteger denominator) {
         if (denominator.equals(BigInteger.ZERO))
