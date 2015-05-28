@@ -231,7 +231,7 @@ public final class Rational implements Comparable<Rational> {
      * </ul>
      *
      * @param n the {@code BigInteger}
-     * @return the {@code Rational} corresponding to {@code n}
+     * @return the {@code Rational} equal to {@code n}
      */
     public static @NotNull Rational of(@NotNull BigInteger n) {
         if (n.equals(BigInteger.ZERO)) return ZERO;
@@ -249,7 +249,7 @@ public final class Rational implements Comparable<Rational> {
      * </ul>
      *
      * @param n the {@code long}
-     * @return the {@code Rational} corresponding to {@code n}
+     * @return the {@code Rational} equal to {@code n}
      */
     public static @NotNull Rational of(long n) {
         if (n == 0) return ZERO;
