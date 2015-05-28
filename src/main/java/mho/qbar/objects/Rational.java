@@ -244,8 +244,7 @@ public final class Rational implements Comparable<Rational> {
      *
      * <ul>
      *  <li>{@code n} can be any {@code long}.</li>
-     *  <li>The result is an integral {@code Rational} satisfying
-     *  –2<sup>63</sup>≤x{@literal <}2<sup>63</sup>.</li>
+     *  <li>The result is an integral {@code Rational} x satisfying –2<sup>63</sup>≤x{@literal <}2<sup>63</sup>.</li>
      * </ul>
      *
      * @param n the {@code long}
