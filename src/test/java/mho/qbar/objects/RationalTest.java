@@ -88,35 +88,35 @@ public class RationalTest {
                         " 14274301/4084080, 275295799/77597520, 55835135/15519504]");
     }
 
-    private static void getNumeratorHelper(@NotNull String x, @NotNull String output) {
+    private static void getNumerator_helper(@NotNull String x, @NotNull String output) {
         aeq(read(x).get().getNumerator(), output);
     }
 
     @Test
     public void testGetNumerator() {
-        getNumeratorHelper("0", "0");
-        getNumeratorHelper("1", "1");
-        getNumeratorHelper("2", "2");
-        getNumeratorHelper("-2", "-2");
-        getNumeratorHelper("5/3", "5");
-        getNumeratorHelper("-5/3", "-5");
+        getNumerator_helper("0", "0");
+        getNumerator_helper("1", "1");
+        getNumerator_helper("2", "2");
+        getNumerator_helper("-2", "-2");
+        getNumerator_helper("5/3", "5");
+        getNumerator_helper("-5/3", "-5");
     }
 
-    private static void getDenominatorHelper(@NotNull String x, @NotNull String output) {
+    private static void getDenominator_helper(@NotNull String x, @NotNull String output) {
         aeq(read(x).get().getDenominator(), output);
     }
 
     @Test
     public void testGetDenominator() {
-        getDenominatorHelper("0", "1");
-        getDenominatorHelper("1", "1");
-        getDenominatorHelper("2", "1");
-        getDenominatorHelper("-2", "1");
-        getDenominatorHelper("5/3", "3");
-        getDenominatorHelper("-5/3", "3");
+        getDenominator_helper("0", "1");
+        getDenominator_helper("1", "1");
+        getDenominator_helper("2", "1");
+        getDenominator_helper("-2", "1");
+        getDenominator_helper("5/3", "3");
+        getDenominator_helper("-5/3", "3");
     }
 
-    private static void of_BigInteger_BigIntegerHelper(int x, int y, @NotNull String output) {
+    private static void of_BigInteger_BigInteger_helper(int x, int y, @NotNull String output) {
         Rational r = of(BigInteger.valueOf(x), BigInteger.valueOf(y));
         r.validate();
         aeq(r, output);
@@ -124,13 +124,13 @@ public class RationalTest {
 
     @Test
     public void testOf_BigInteger_BigInteger() {
-        of_BigInteger_BigIntegerHelper(2, 3, "2/3");
-        of_BigInteger_BigIntegerHelper(4, 6, "2/3");
-        of_BigInteger_BigIntegerHelper(-4, -6, "2/3");
-        of_BigInteger_BigIntegerHelper(4, -6, "-2/3");
-        of_BigInteger_BigIntegerHelper(4, 4, "1");
-        of_BigInteger_BigIntegerHelper(4, 1, "4");
-        of_BigInteger_BigIntegerHelper(0, 1, "0");
+        of_BigInteger_BigInteger_helper(2, 3, "2/3");
+        of_BigInteger_BigInteger_helper(4, 6, "2/3");
+        of_BigInteger_BigInteger_helper(-4, -6, "2/3");
+        of_BigInteger_BigInteger_helper(4, -6, "-2/3");
+        of_BigInteger_BigInteger_helper(4, 4, "1");
+        of_BigInteger_BigInteger_helper(4, 1, "4");
+        of_BigInteger_BigInteger_helper(0, 1, "0");
         try {
             of(BigInteger.ONE, BigInteger.ZERO);
             fail();
