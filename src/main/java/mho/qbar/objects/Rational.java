@@ -359,9 +359,9 @@ public final class Rational implements Comparable<Rational> {
      * 1/3. Returns empty if the {@code double} is {@code Infinity}, {@code -Infinity}, or {@code NaN}.
      *
      * <ul>
-     *  <li>{@code f} may be any {@code double}.</li>
+     *  <li>{@code d} may be any {@code double}.</li>
      *  <li>
-     *   The result is a null or a {@code Rational} that may be exactly represented as a {@code double}. Here are some,
+     *   The result is empty or a {@code Rational} that may be exactly represented as a {@code double}. Here are some,
      *   but not all, of the conditions on the result:
      *   <ul>
      *    <li>The denominator is a power of 2 less than or equal to 2<sup>1074</sup>.</li>
