@@ -350,7 +350,7 @@ public class QBarExhaustiveProvider extends QBarIterableProvider {
 
     @Override
     public @NotNull Iterable<RationalMatrix> rationalMatrices() {
-        return map(q -> q.b, dependentPairsSquare(pairs(naturalIntegers()), p -> rationalMatrices(p.a, p.b)));
+        return null;
     }
 
     @Override

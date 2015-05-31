@@ -2,9 +2,11 @@ package mho.qbar.iterableProviders;
 
 import mho.qbar.objects.*;
 import mho.wheels.iterables.IterableProvider;
+import mho.wheels.iterables.IterableUtils;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.*;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -13,13 +15,17 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
-import static mho.wheels.iterables.IterableUtils.map;
+import static mho.wheels.iterables.IterableUtils.*;
 
 public abstract class QBarIterableProvider {
     protected @NotNull IterableProvider wheelsProvider;
 
     protected QBarIterableProvider(@NotNull IterableProvider wheelsProvider) {
         this.wheelsProvider = wheelsProvider;
+    }
+
+    public @NotNull IterableProvider getWheelsProvider() {
+        return wheelsProvider;
     }
 
     public void reset() {
@@ -347,34 +353,6 @@ public abstract class QBarIterableProvider {
         return wheelsProvider.dependentPairs(xs, f);
     }
 
-    public @NotNull <A, B> Iterable<Pair<A, B>> dependentPairsLogarithmic(
-            @NotNull Iterable<A> xs,
-            @NotNull Function<A, Iterable<B>> f
-    ) {
-        return wheelsProvider.dependentPairsLogarithmic(xs, f);
-    }
-
-    public @NotNull <A, B> Iterable<Pair<A, B>> dependentPairsSquareRoot(
-            @NotNull Iterable<A> xs,
-            @NotNull Function<A, Iterable<B>> f
-    ) {
-        return wheelsProvider.dependentPairsSquareRoot(xs, f);
-    }
-
-    public @NotNull <A, B> Iterable<Pair<A, B>> dependentPairsExponential(
-            @NotNull Iterable<A> xs,
-            @NotNull Function<A, Iterable<B>> f
-    ) {
-        return wheelsProvider.dependentPairsExponential(xs, f);
-    }
-
-    public @NotNull <A, B> Iterable<Pair<A, B>> dependentPairsSquare(
-            @NotNull Iterable<A> xs,
-            @NotNull Function<A, Iterable<B>> f
-    ) {
-        return wheelsProvider.dependentPairsSquare(xs, f);
-    }
-
     public @NotNull <A, B> Iterable<Pair<A, B>> pairs(@NotNull Iterable<A> as, @NotNull Iterable<B> bs) {
         return wheelsProvider.pairs(as, bs);
     }
@@ -465,6 +443,16 @@ public abstract class QBarIterableProvider {
         return wheelsProvider.lists(xs);
     }
 
+    public @NotNull <T> Iterable<List<T>> listsWithElement(@Nullable T element, Iterable<T> xs) {
+        return wheelsProvider.listsWithElement(element, xs);
+    }
+    public @NotNull <T> Iterable<List<T>> listsWithSubsequence(
+            @NotNull Iterable<Iterable<T>> subsequences,
+            @NotNull Iterable<T> xs
+    ) {
+        return wheelsProvider.listsWithSubsequence(subsequences, xs);
+    }
+
     public @NotNull Iterable<String> strings(int size, @NotNull Iterable<Character> cs) {
         return wheelsProvider.strings(size, cs);
     }
@@ -487,6 +475,33 @@ public abstract class QBarIterableProvider {
 
     public @NotNull Iterable<String> strings() {
         return wheelsProvider.strings();
+    }
+
+    public @NotNull Iterable<String> stringsWithChar(char c, Iterable<Character> cs) {
+        return wheelsProvider.stringsWithChar(c, cs);
+    }
+
+    public @NotNull Iterable<String> stringsWithChar(char c) {
+        return wheelsProvider.stringsWithChar(c);
+    }
+
+    public @NotNull Iterable<String> stringsWithSubstrings(
+            @NotNull Iterable<String> substrings,
+            @NotNull Iterable<Character> cs
+    ) {
+        return wheelsProvider.stringsWithSubstrings(substrings, cs);
+    }
+
+    public @NotNull Iterable<String> stringsWithSubstrings(@NotNull Iterable<String> substrings) {
+        return wheelsProvider.stringsWithSubstrings(substrings);
+    }
+
+    public @NotNull <T> Iterable<List<T>> permutations(@NotNull List<T> xs) {
+        return wheelsProvider.permutations(xs);
+    }
+
+    public @NotNull Iterable<String> permutations(@NotNull String s) {
+        return wheelsProvider.permutations(s);
     }
 
     public abstract @NotNull Iterable<Rational> rationals();

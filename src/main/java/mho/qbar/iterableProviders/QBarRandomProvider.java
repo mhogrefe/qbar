@@ -432,13 +432,7 @@ public class QBarRandomProvider extends QBarIterableProvider {
 
     @Override
     public @NotNull Iterable<RationalMatrix> rationalMatrices() {
-        return map(
-                q -> q.b,
-                dependentPairsSquare(
-                        pairs(withScale(5).naturalIntegersGeometric()),
-                        p -> rationalMatrices(p.a, p.b)
-                )
-        );
+        return null;
     }
 
     @Override

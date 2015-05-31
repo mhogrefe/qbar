@@ -29,7 +29,6 @@ public class RationalProperties {
     private static boolean USE_RANDOM;
     private static final String RATIONAL_CHARS = "-/0123456789";
     private static final int SMALL_LIMIT = 1000;
-    private static final int MEDIUM_LIMIT = 3000;
     private static int LIMIT;
 
     private static QBarIterableProvider P;
@@ -2399,36 +2398,9 @@ public class RationalProperties {
             sum.validate();
             assertEquals(rs.toString(), sum, sum_alt(rs));
         }
+        P.reset();
 
-        Iterable<Pair<List<Rational>, List<Rational>>> ps = filter(
-                q -> !q.a.equals(q.b),
-                P.dependentPairsLogarithmic(P.lists(P.rationals()), Combinatorics::permutationsIncreasing)
-        );
-        for (Pair<List<Rational>, List<Rational>> p : take(LIMIT, ps)) {
-            assertEquals(p.toString(), sum(p.a), sum(p.b));
-        }
-
-        for (Rational r : take(LIMIT, P.rationals())) {
-            assertEquals(r.toString(), sum(Collections.singletonList(r)), r);
-        }
-
-        for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
-            assertEquals(p.toString(), sum(Arrays.asList(p.a, p.b)), p.a.add(p.b));
-        }
-
-        Iterable<List<Rational>> failRss = map(
-                p -> toList(insert(p.a, p.b, null)),
-                (Iterable<Pair<List<Rational>, Integer>>) P.dependentPairsLogarithmic(
-                        P.lists(P.rationals()),
-                        rs -> range(0, rs.size())
-                )
-        );
-        for (List<Rational> rs : take(LIMIT, failRss)) {
-            try {
-                sum(rs);
-                fail(rs.toString());
-            } catch (NullPointerException ignored) {}
-        }
+        foldProperties(LIMIT, P.getWheelsProvider(), P.rationals(), Rational::add, Rational::sum, true);
     }
 
     private static void compareImplementationsSum() {
@@ -2465,34 +2437,9 @@ public class RationalProperties {
             product.validate();
             assertEquals(rs.toString(), product, product_simplest(rs));
         }
+        P.reset();
 
-        Iterable<Pair<List<Rational>, List<Rational>>> ps = filter(
-                q -> !q.a.equals(q.b),
-                P.dependentPairsLogarithmic(P.lists(P.rationals()), Combinatorics::permutationsIncreasing)
-        );
-
-        for (Pair<List<Rational>, List<Rational>> p : take(LIMIT, ps)) {
-            assertEquals(p.toString(), product(p.a), product(p.b));
-        }
-
-        for (Rational r : take(LIMIT, P.rationals())) {
-            assertEquals(r.toString(), product(Collections.singletonList(r)), r);
-        }
-
-        for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
-            assertEquals(p.toString(), product(Arrays.asList(p.a, p.b)), p.a.multiply(p.b));
-        }
-
-        Iterable<List<Rational>> failRss = map(
-                p -> toList(insert(p.a, p.b, null)),
-                P.dependentPairsLogarithmic(P.lists(P.rationals()), rs -> range(0, rs.size()))
-        );
-        for (List<Rational> rs : take(LIMIT, failRss)) {
-            try {
-                product(rs);
-                fail(rs.toString());
-            } catch (NullPointerException ignored) {}
-        }
+        foldProperties(LIMIT, P.getWheelsProvider(), P.rationals(), Rational::multiply, Rational::product, true);
     }
 
     private static void compareImplementationsProduct() {
@@ -2523,35 +2470,17 @@ public class RationalProperties {
         for (List<Rational> rs : take(LIMIT, P.listsAtLeast(1, P.rationals()))) {
             Iterable<Rational> deltas = delta(rs);
             deltas.forEach(Rational::validate);
-            assertEquals(rs.toString(), length(deltas), length(rs) - 1);
-            List<Rational> reversed = reverse(map(Rational::negate, delta(reverse(rs))));
-            aeqit(rs.toString(), deltas, reversed);
-            try {
-                deltas.iterator().remove();
-            } catch (UnsupportedOperationException ignored) {}
         }
+        P.reset();
 
-        for (Rational r : take(LIMIT, P.rationals())) {
-            assertTrue(r.toString(), isEmpty(delta(Collections.singletonList(r))));
-        }
-
-        for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
-            aeqit(p.toString(), delta(Arrays.asList(p.a, p.b)), Collections.singletonList(p.b.subtract(p.a)));
-        }
-
-        Iterable<List<Rational>> failRss = map(
-                p -> toList(insert(p.a, p.b, null)),
-                (Iterable<Pair<List<Rational>, Integer>>) P.dependentPairsLogarithmic(
-                        P.lists(P.rationals()),
-                        rs -> range(0, rs.size())
-                )
+        deltaProperties(
+                LIMIT,
+                P.getWheelsProvider(),
+                P.rationals(),
+                Rational::negate,
+                Rational::subtract,
+                Rational::delta
         );
-        for (List<Rational> rs : take(LIMIT, failRss)) {
-            try {
-                toList(delta(rs));
-                fail(rs.toString());
-            } catch (NullPointerException ignored) {}
-        }
     }
 
     private static void propertiesHarmonicNumber() {
@@ -3417,64 +3346,24 @@ public class RationalProperties {
         initialize();
         System.out.println("\t\ttesting fromStringBase(BigInteger, String) properties...");
 
-        Iterable<BigInteger> bases;
-        if (P instanceof QBarExhaustiveProvider) {
-            bases = P.rangeUp(BigInteger.valueOf(2));
-        } else {
-            bases = map(i -> BigInteger.valueOf(i + 2), P.withScale(20).naturalIntegersGeometric());
-        }
-        Iterable<Pair<BigInteger, String>> ps = P.dependentPairs(
-                bases,
-                b -> {
-                    String chars = ".-";
-                    if (Ordering.le(b, BigInteger.valueOf(36))) {
-                        chars += charsToString(range('0', MathUtils.toDigit(b.intValueExact() - 1)));
-                    } else {
-                        chars += "()0123456789";
-                    }
-                    Iterable<Character> unfiltered;
-                    if (P instanceof QBarExhaustiveProvider) {
-                        unfiltered = fromString(chars);
-                    } else {
-                        unfiltered = P.uniformSample(chars);
-                    }
-                    return filter(
-                            s -> {
-                                try {
-                                    fromStringBase(b, s);
-                                    return true;
-                                } catch (IllegalArgumentException e) {
-                                    return false;
-                                }
-                            },
-                            P.strings(unfiltered)
-                    );
-                }
+        Iterable<Pair<BigInteger, String>> ps = map(
+                p -> new Pair<>(BigInteger.valueOf(p.a), p.b.toStringBase(BigInteger.valueOf(p.a))),
+                filter(
+                        q -> {
+                            BigInteger b = BigInteger.valueOf(q.a);
+                            try {
+                                q.b.toStringBase(b);
+                                return true;
+                            } catch (ArithmeticException e) {
+                                return false;
+                            }
+                        },
+                        P.pairs(P.rangeUpGeometric(2), P.rationals())
+                )
         );
-        for (Pair<BigInteger, String> p : take(MEDIUM_LIMIT, ps)) {
+        for (Pair<BigInteger, String> p : take(LIMIT, ps)) {
             Rational r = fromStringBase(p.a, p.b);
             r.validate();
-        }
-
-        ps = filter(
-                p -> {
-                    if (p.b.isEmpty()) return false;
-                    if (head(p.b) == '.' || last(p.b) == '.') return false;
-                    if (p.b.startsWith("-.")) return false;
-                    if (p.b.equals("0") || p.b.equals("(0)")) return true;
-                    if (head(p.b) == '0' && !p.b.startsWith("0.")) return false;
-                    if (p.b.startsWith("(0)") && !p.b.startsWith("(0).")) return false;
-                    if (p.b.startsWith("-0") || p.b.startsWith("-(0)")) return false;
-                    int decimalIndex = p.b.indexOf('.');
-                    if (decimalIndex != -1) {
-                        if (last(p.b) == '0' || p.b.endsWith("(0)")) return false;
-                    }
-                    return true;
-                },
-                ps
-        );
-        for (Pair<BigInteger, String> p : take(MEDIUM_LIMIT, ps)) {
-            Rational r = fromStringBase(p.a, p.b);
             assertEquals(p.toString(), r.toStringBase(p.a), p.b);
         }
 
@@ -3482,7 +3371,7 @@ public class RationalProperties {
             assertTrue(i.toString(), fromStringBase(i, "") == ZERO);
         }
 
-        for (Pair<BigInteger, String> p : take(SMALL_LIMIT, P.pairs(P.rangeDown(BigInteger.ONE), P.strings()))) {
+        for (Pair<BigInteger, String> p : take(LIMIT, P.pairs(P.rangeDown(BigInteger.ONE), P.strings()))) {
             try {
                 fromStringBase(p.a, p.b);
                 fail(p.toString());
@@ -3527,14 +3416,7 @@ public class RationalProperties {
             assertTrue(r.toString(), le(canceled.abs(), BigInteger.ONE));
         }
 
-        Iterable<List<Rational>> failRss = map(
-                p -> toList(insert(p.a, p.b, null)),
-                (Iterable<Pair<List<Rational>, Integer>>) P.dependentPairsLogarithmic(
-                        P.lists(P.rationals()),
-                        rs -> range(0, rs.size())
-                )
-        );
-        for (List<Rational> rs : take(LIMIT, failRss)) {
+        for (List<Rational> rs : take(LIMIT, P.listsWithElement(null, P.rationals()))) {
             try {
                 cancelDenominators(rs);
                 fail(rs.toString());
@@ -3656,25 +3538,7 @@ public class RationalProperties {
         initialize();
         System.out.println("\t\ttesting findIn(String) properties...");
 
-        for (String s : take(LIMIT, P.strings())) {
-            findIn(s);
-        }
-
-        Iterable<Pair<String, Integer>> ps = P.dependentPairsLogarithmic(P.strings(), s -> range(0, s.length()));
-        Iterable<String> ss = map(p -> take(p.a.b, p.a.a) + p.b + drop(p.a.b, p.a.a), P.pairs(ps, P.rationals()));
-        for (String s : take(LIMIT, ss)) {
-            Optional<Pair<Rational, Integer>> op = findIn(s);
-            Pair<Rational, Integer> p = op.get();
-            assertNotNull(s, p.a);
-            assertNotNull(s, p.b);
-            assertTrue(s, p.b >= 0 && p.b < s.length());
-            String before = take(p.b, s);
-            assertFalse(s, findIn(before).isPresent());
-            String during = p.a.toString();
-            assertTrue(s, s.substring(p.b).startsWith(during));
-            String after = drop(p.b + during.length(), s);
-            assertTrue(s, after.isEmpty() || !read(during + head(after)).isPresent());
-        }
+        findInProperties(LIMIT, P.getWheelsProvider(), P.rationals(), Rational::read, Rational::findIn);
     }
 
     private static void propertiesToString() {

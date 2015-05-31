@@ -23,6 +23,9 @@ import static mho.qbar.objects.Interval.greaterThanOrEqualTo;
 import static mho.qbar.objects.Interval.lessThanOrEqualTo;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.ordering.Ordering.*;
+import static mho.wheels.testing.Testing.deltaProperties;
+import static mho.wheels.testing.Testing.findInProperties;
+import static mho.wheels.testing.Testing.foldProperties;
 import static org.junit.Assert.*;
 
 @SuppressWarnings("ConstantConditions")
@@ -348,9 +351,9 @@ public class IntervalProperties {
             assertTrue(as.toString(), all(a -> ge(cd, a.diameter().get()), as));
         }
 
-        Iterable<Pair<List<Interval>, List<Interval>>> ps = P.dependentPairsLogarithmic(
+        Iterable<Pair<List<Interval>, List<Interval>>> ps = P.dependentPairs(
                 P.listsAtLeast(1, P.intervals()),
-                Combinatorics::permutationsIncreasing
+                P::permutations
         );
         for (Pair<List<Interval>, List<Interval>> p : take(LIMIT, ps)) {
             assertEquals(p.toString(), convexHull(p.a), convexHull(p.b));
@@ -374,20 +377,14 @@ public class IntervalProperties {
             assertEquals(p.toString(), convexHull(toList(replicate(p.b, p.a))), p.a);
         }
 
-        Iterable<Pair<List<Interval>, Integer>> ps3 = P.dependentPairsLogarithmic(
-                P.lists(P.intervals()),
-                as -> P.range(0, as.size())
-        );
-        for (Pair<List<Interval>, Integer> p : take(LIMIT, ps3)) {
-            List<Interval> as = toList(insert(p.a, p.b, ALL));
-            assertEquals(p.toString(), convexHull(as), ALL);
+        for (List<Interval> as : take(LIMIT, P.listsWithElement(ALL, P.intervals()))) {
+            assertEquals(as.toString(), convexHull(as), ALL);
         }
 
-        for (Pair<List<Interval>, Integer> p : take(LIMIT, ps3)) {
-            List<Interval> as = toList(insert(p.a, p.b, null));
+        for (List<Interval> as : take(LIMIT, P.listsWithElement(null, P.intervals()))) {
             try {
                 convexHull(as);
-                fail(p.toString());
+                fail(as.toString());
             } catch (NullPointerException ignored) {}
         }
     }
@@ -483,10 +480,7 @@ public class IntervalProperties {
             }
         }
 
-        Iterable<Pair<List<Interval>, List<Interval>>> ps = P.dependentPairsLogarithmic(
-                P.lists(P.intervals()),
-                Combinatorics::permutationsIncreasing
-        );
+        Iterable<Pair<List<Interval>, List<Interval>>> ps = P.dependentPairs(P.lists(P.intervals()), P::permutations);
         for (Pair<List<Interval>, List<Interval>> p : take(LIMIT, ps)) {
             assertEquals(p.toString(), makeDisjoint(p.a), makeDisjoint(p.b));
         }
@@ -507,20 +501,14 @@ public class IntervalProperties {
             );
         }
 
-        Iterable<Pair<List<Interval>, Integer>> ps2 = P.dependentPairsLogarithmic(
-                P.lists(P.intervals()),
-                as -> P.range(0, as.size())
-        );
-        for (Pair<List<Interval>, Integer> p : take(LIMIT, ps2)) {
-            List<Interval> as = toList(insert(p.a, p.b, ALL));
-            assertEquals(p.toString(), makeDisjoint(as), Collections.singletonList(ALL));
+        for (List<Interval> as : take(LIMIT, P.listsWithElement(ALL, P.intervals()))) {
+            assertEquals(as.toString(), makeDisjoint(as), Collections.singletonList(ALL));
         }
 
-        for (Pair<List<Interval>, Integer> p : take(LIMIT, ps2)) {
-            List<Interval> as = toList(insert(p.a, p.b, null));
+        for (List<Interval> as : take(LIMIT, P.listsWithElement(null, P.intervals()))) {
             try {
                 convexHull(as);
-                fail(p.toString());
+                fail(as.toString());
             } catch (NullPointerException ignored) {}
         }
     }
@@ -1685,35 +1673,7 @@ public class IntervalProperties {
             assertEquals(is.toString(), sum.isFinitelyBounded(), is.isEmpty() || all(Interval::isFinitelyBounded, is));
         }
 
-        Iterable<Pair<List<Interval>, List<Interval>>> ps = filter(
-                q -> !q.a.equals(q.b),
-                P.dependentPairsLogarithmic(P.lists(P.intervals()), Combinatorics::permutationsIncreasing)
-        );
-        for (Pair<List<Interval>, List<Interval>> p : take(LIMIT, ps)) {
-            assertEquals(p.toString(), sum(p.a), sum(p.b));
-        }
-
-        for (Interval a : take(LIMIT, P.intervals())) {
-            assertEquals(a.toString(), sum(Collections.singletonList(a)), a);
-        }
-
-        for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
-            assertEquals(p.toString(), sum(Arrays.asList(p.a, p.b)), p.a.add(p.b));
-        }
-
-        Iterable<List<Interval>> failIss = map(
-                p -> toList(insert(p.a, p.b, null)),
-                (Iterable<Pair<List<Interval>, Integer>>) P.dependentPairsLogarithmic(
-                        P.lists(P.intervals()),
-                        rs -> range(0, rs.size())
-                )
-        );
-        for (List<Interval> is : take(LIMIT, failIss)) {
-            try {
-                sum(is);
-                fail(is.toString());
-            } catch (NullPointerException ignored) {}
-        }
+        foldProperties(LIMIT, P.getWheelsProvider(), P.intervals(), Interval::add, Interval::sum, true);
     }
 
     private static void propertiesProduct() {
@@ -1735,33 +1695,7 @@ public class IntervalProperties {
             );
         }
 
-        Iterable<Pair<List<Interval>, List<Interval>>> ps = filter(
-                q -> !q.a.equals(q.b),
-                P.dependentPairsLogarithmic(P.lists(P.intervals()), Combinatorics::permutationsIncreasing)
-        );
-
-        for (Pair<List<Interval>, List<Interval>> p : take(LIMIT, ps)) {
-            assertEquals(p.toString(), product(p.a), product(p.b));
-        }
-
-        for (Interval a : take(LIMIT, P.intervals())) {
-            assertEquals(a.toString(), product(Collections.singletonList(a)), a);
-        }
-
-        for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
-            assertEquals(p.toString(), product(Arrays.asList(p.a, p.b)), p.a.multiply(p.b));
-        }
-
-        Iterable<List<Interval>> failIss = map(
-                p -> toList(insert(p.a, p.b, null)),
-                P.dependentPairsLogarithmic(P.lists(P.intervals()), rs -> range(0, rs.size()))
-        );
-        for (List<Interval> is : take(LIMIT, failIss)) {
-            try {
-                product(is);
-                fail(is.toString());
-            } catch (NullPointerException | IllegalArgumentException ignored) {}
-        }
+        foldProperties(LIMIT, P.getWheelsProvider(), P.intervals(), Interval::multiply, Interval::product, true);
     }
 
     private static void propertiesDelta() {
@@ -1775,36 +1709,16 @@ public class IntervalProperties {
             for (List<Rational> rs : take(TINY_LIMIT, transposeTruncating(map(P::rationals, is)))) {
                 assertTrue(is.toString(), and(zipWith(Interval::contains, deltas, Rational.delta(rs))));
             }
-
-            assertEquals(is.toString(), length(deltas), length(is) - 1);
-            List<Interval> reversed = reverse(map(Interval::negate, delta(reverse(is))));
-            aeq(is.toString(), deltas, reversed);
-            try {
-                deltas.iterator().remove();
-            } catch (UnsupportedOperationException ignored) {}
         }
 
-        for (Interval a : take(LIMIT, P.intervals())) {
-            assertTrue(a.toString(), isEmpty(delta(Collections.singletonList(a))));
-        }
-
-        for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
-            aeq(p.toString(), delta(Arrays.asList(p.a, p.b)), Collections.singletonList(p.b.subtract(p.a)));
-        }
-
-        Iterable<List<Interval>> failIss = map(
-                p -> toList(insert(p.a, p.b, null)),
-                (Iterable<Pair<List<Interval>, Integer>>) P.dependentPairsLogarithmic(
-                        P.lists(P.intervals()),
-                        rs -> range(0, rs.size())
-                )
+        deltaProperties(
+                LIMIT,
+                P.getWheelsProvider(),
+                P.intervals(),
+                Interval::negate,
+                Interval::subtract,
+                Interval::delta
         );
-        for (List<Interval> is : take(LIMIT, failIss)) {
-            try {
-                toList(delta(is));
-                fail(is.toString());
-            } catch (NullPointerException ignored) {}
-        }
     }
 
     private static void propertiesPow() {
@@ -2150,25 +2064,7 @@ public class IntervalProperties {
         initialize();
         System.out.println("\t\ttesting findIn(String) properties...");
 
-        for (String s : take(LIMIT, P.strings())) {
-            findIn(s);
-        }
-
-        Iterable<Pair<String, Integer>> ps = P.dependentPairsLogarithmic(P.strings(), s -> range(0, s.length()));
-        Iterable<String> ss = map(p -> take(p.a.b, p.a.a) + p.b + drop(p.a.b, p.a.a), P.pairs(ps, P.intervals()));
-        for (String s : take(LIMIT, ss)) {
-            Optional<Pair<Interval, Integer>> op = findIn(s);
-            Pair<Interval, Integer> p = op.get();
-            assertNotNull(s, p.a);
-            assertNotNull(s, p.b);
-            assertTrue(s, p.b >= 0 && p.b < s.length());
-            String before = take(p.b, s);
-            assertFalse(s, findIn(before).isPresent());
-            String during = p.a.toString();
-            assertTrue(s, s.substring(p.b).startsWith(during));
-            String after = drop(p.b + during.length(), s);
-            assertTrue(s, after.isEmpty() || !read(during + head(after)).isPresent());
-        }
+        findInProperties(LIMIT, P.getWheelsProvider(), P.intervals(), Interval::read, Interval::findIn);
     }
 
     private static void propertiesToString() {

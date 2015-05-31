@@ -20,7 +20,7 @@ import java.util.Optional;
 import static mho.qbar.objects.RationalPolynomial.*;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.ordering.Ordering.*;
-import static mho.wheels.testing.Testing.aeqit;
+import static mho.wheels.testing.Testing.*;
 import static org.junit.Assert.*;
 
 @SuppressWarnings("ConstantConditions")
@@ -227,14 +227,7 @@ public class RationalPolynomialProperties {
             assertEquals(rs.toString(), toList(of(rs)), rs);
         }
 
-        Iterable<List<Rational>> failRss = map(
-                p -> toList(insert(p.a, p.b, null)),
-                (Iterable<Pair<List<Rational>, Integer>>) P.dependentPairsLogarithmic(
-                        P.lists(P.rationals()),
-                        rs -> range(0, rs.size())
-                )
-        );
-        for (List<Rational> rs : take(LIMIT, failRss)) {
+        for (List<Rational> rs : take(LIMIT, P.listsWithElement(null, P.rationals()))) {
             try {
                 of(rs);
                 fail(rs.toString());
@@ -998,35 +991,14 @@ public class RationalPolynomialProperties {
             assertEquals(rs.toString(), sum(map(RationalPolynomial::of, rs)), of(Rational.sum(rs)));
         }
 
-        Iterable<Pair<List<RationalPolynomial>, List<RationalPolynomial>>> ps2 = filter(
-                q -> !q.a.equals(q.b),
-                P.dependentPairsLogarithmic(P.lists(P.rationalPolynomials()), Combinatorics::permutationsIncreasing)
+        foldProperties(
+                LIMIT,
+                P.getWheelsProvider(),
+                P.rationalPolynomials(),
+                RationalPolynomial::add,
+                RationalPolynomial::sum,
+                true
         );
-        for (Pair<List<RationalPolynomial>, List<RationalPolynomial>> p : take(LIMIT, ps2)) {
-            assertEquals(p.toString(), sum(p.a), sum(p.b));
-        }
-
-        for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
-            assertEquals(p.toString(), sum(Collections.singletonList(p)), p);
-        }
-
-        for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, P.pairs(P.rationalPolynomials()))) {
-            assertEquals(p.toString(), sum(Arrays.asList(p.a, p.b)), p.a.add(p.b));
-        }
-
-        Iterable<List<RationalPolynomial>> failPss = map(
-                p -> toList(insert(p.a, p.b, null)),
-                (Iterable<Pair<List<RationalPolynomial>, Integer>>) P.dependentPairsLogarithmic(
-                        P.lists(P.rationalPolynomials()),
-                        rs -> range(0, rs.size())
-                )
-        );
-        for (List<RationalPolynomial> ps3 : take(LIMIT, failPss)) {
-            try {
-                sum(ps3);
-                fail(ps3.toString());
-            } catch (NullPointerException ignored) {}
-        }
     }
 
     private static void compareImplementationsSum() {
@@ -1078,32 +1050,14 @@ public class RationalPolynomialProperties {
             assertEquals(rs.toString(), product(map(RationalPolynomial::of, rs)), of(Rational.product(rs)));
         }
 
-        Iterable<Pair<List<RationalPolynomial>, List<RationalPolynomial>>> ps = filter(
-                q -> !q.a.equals(q.b),
-                P.dependentPairsLogarithmic(pss, Combinatorics::permutationsIncreasing)
+        foldProperties(
+                LIMIT,
+                P.getWheelsProvider(),
+                P.withScale(10).rationalPolynomials(),
+                RationalPolynomial::multiply,
+                RationalPolynomial::product,
+                true
         );
-        for (Pair<List<RationalPolynomial>, List<RationalPolynomial>> p : take(LIMIT, ps)) {
-            assertEquals(p.toString(), product(p.a), product(p.b));
-        }
-
-        for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
-            assertEquals(p.toString(), product(Collections.singletonList(p)), p);
-        }
-
-        for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, P.pairs(P.rationalPolynomials()))) {
-            assertEquals(p.toString(), product(Arrays.asList(p.a, p.b)), p.a.multiply(p.b));
-        }
-
-        Iterable<List<RationalPolynomial>> failPss = map(
-                p -> toList(insert(p.a, p.b, null)),
-                P.dependentPairsLogarithmic(pss, rs -> range(0, rs.size()))
-        );
-        for (List<RationalPolynomial> ps2 : take(LIMIT, failPss)) {
-            try {
-                product(ps2);
-                fail(ps2.toString());
-            } catch (NullPointerException ignored) {}
-        }
     }
 
     private static void propertiesDelta() {
@@ -1113,12 +1067,6 @@ public class RationalPolynomialProperties {
         for (List<RationalPolynomial> ps : take(LIMIT, P.listsAtLeast(1, P.rationalPolynomials()))) {
             Iterable<RationalPolynomial> deltas = delta(ps);
             deltas.forEach(RationalPolynomial::validate);
-            assertEquals(ps.toString(), length(deltas), length(ps) - 1);
-            List<RationalPolynomial> reversed = reverse(map(RationalPolynomial::negate, delta(reverse(ps))));
-            aeqit(ps.toString(), deltas, reversed);
-            try {
-                deltas.iterator().remove();
-            } catch (UnsupportedOperationException ignored) {}
         }
 
         Iterable<Pair<List<RationalPolynomial>, Rational>> ps = P.pairs(
@@ -1137,27 +1085,14 @@ public class RationalPolynomialProperties {
             );
         }
 
-        for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
-            assertTrue(p.toString(), isEmpty(delta(Collections.singletonList(p))));
-        }
-
-        for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, P.pairs(P.rationalPolynomials()))) {
-            aeqit(p.toString(), delta(Arrays.asList(p.a, p.b)), Collections.singletonList(p.b.subtract(p.a)));
-        }
-
-        Iterable<List<RationalPolynomial>> failPss = map(
-                p -> toList(insert(p.a, p.b, null)),
-                (Iterable<Pair<List<RationalPolynomial>, Integer>>) P.dependentPairsLogarithmic(
-                        P.lists(P.rationalPolynomials()),
-                        rs -> range(0, rs.size())
-                )
+        deltaProperties(
+                LIMIT,
+                P.getWheelsProvider(),
+                P.rationalPolynomials(),
+                RationalPolynomial::negate,
+                RationalPolynomial::subtract,
+                RationalPolynomial::delta
         );
-        for (List<RationalPolynomial> ps2 : take(LIMIT, failPss)) {
-            try {
-                toList(delta(ps2));
-                fail(ps2.toString());
-            } catch (NullPointerException ignored) {}
-        }
     }
 
     private static @NotNull RationalPolynomial pow_simplest(@NotNull RationalPolynomial a, int p) {
@@ -1579,28 +1514,12 @@ public class RationalPolynomialProperties {
         initialize();
         System.out.println("\t\ttesting findIn(String) properties...");
 
-        for (String s : take(LIMIT, P.strings())) {
-            findIn(s);
-        }
-
-        Iterable<Pair<String, Integer>> ps = P.dependentPairsLogarithmic(P.strings(), s -> range(0, s.length()));
-        Iterable<String> ss = map(
-                p -> take(p.a.b, p.a.a) + p.b + drop(p.a.b, p.a.a),
-                P.pairs(ps, P.rationalPolynomials())
+        findInProperties(
+                LIMIT, P.getWheelsProvider(),
+                P.rationalPolynomials(),
+                RationalPolynomial::read,
+                RationalPolynomial::findIn
         );
-        for (String s : take(LIMIT, ss)) {
-            Optional<Pair<RationalPolynomial, Integer>> op = findIn(s);
-            Pair<RationalPolynomial, Integer> p = op.get();
-            assertNotNull(s, p.a);
-            assertNotNull(s, p.b);
-            assertTrue(s, p.b >= 0 && p.b < s.length());
-            String before = take(p.b, s);
-            assertFalse(s, findIn(before).isPresent());
-            String during = p.a.toString();
-            assertTrue(s, s.substring(p.b).startsWith(during));
-            String after = drop(p.b + during.length(), s);
-            assertTrue(s, after.isEmpty() || !read(during + head(after)).isPresent());
-        }
     }
 
     private static void propertiesToString() {
