@@ -1,5 +1,6 @@
 package mho.qbar.objects;
 
+import mho.wheels.math.BinaryFraction;
 import mho.wheels.math.MathUtils;
 import mho.wheels.misc.BigDecimalUtils;
 import mho.wheels.misc.FloatingPointUtils;
@@ -347,10 +348,10 @@ public final class Rational implements Comparable<Rational> {
     public static @NotNull Optional<Rational> ofExact(float f) {
         if (f == 0.0f) return Optional.of(ZERO);
         if (f == 1.0f) return Optional.of(ONE);
-        Optional<Pair<Integer, Integer>> mantissaAndExponent = FloatingPointUtils.toMantissaAndExponent(f);
-        if (!mantissaAndExponent.isPresent()) return Optional.empty();
-        //noinspection ConstantConditions
-        return Optional.of(of(mantissaAndExponent.get().a).shiftLeft(mantissaAndExponent.get().b));
+        Optional<BinaryFraction> obf = BinaryFraction.of(f);
+        if (!obf.isPresent()) return Optional.empty();
+        BinaryFraction bf = obf.get();
+        return Optional.of(of(bf.getMantissa()).shiftLeft(bf.getExponent()));
     }
 
     /**
@@ -378,10 +379,10 @@ public final class Rational implements Comparable<Rational> {
     public static @NotNull Optional<Rational> ofExact(double d) {
         if (d == 0.0) return Optional.of(ZERO);
         if (d == 1.0) return Optional.of(ONE);
-        Optional<Pair<Long, Integer>> mantissaAndExponent = FloatingPointUtils.toMantissaAndExponent(d);
-        if (!mantissaAndExponent.isPresent()) return Optional.empty();
-        //noinspection ConstantConditions
-        return Optional.of(of(mantissaAndExponent.get().a).shiftLeft(mantissaAndExponent.get().b));
+        Optional<BinaryFraction> obf = BinaryFraction.of(d);
+        if (!obf.isPresent()) return Optional.empty();
+        BinaryFraction bf = obf.get();
+        return Optional.of(of(bf.getMantissa()).shiftLeft(bf.getExponent()));
     }
 
     /**

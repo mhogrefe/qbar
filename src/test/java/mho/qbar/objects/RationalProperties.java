@@ -327,15 +327,21 @@ public class RationalProperties {
         initialize();
         System.out.println("\t\ttesting ofExact(float) properties...");
 
-        BigInteger denominatorLimit = BigInteger.ONE.shiftLeft(149);
-        BigInteger numeratorLimit = BigInteger.ONE.shiftLeft(128).subtract(BigInteger.ONE.shiftLeft(104));
-        Iterable<Float> fs = filter(f -> Float.isFinite(f) && !Float.isNaN(f), P.floats());
-        for (float f : take(LIMIT, fs)) {
+        for (float f : take(LIMIT, P.floats())) {
+            Optional<Rational> or = ofExact(f);
+            assertEquals(f, Float.isFinite(f) && !Float.isNaN(f), or.isPresent());
+        }
+
+        for (float f : take(LIMIT, filter(g -> Float.isFinite(g) && !Float.isNaN(g), P.floats()))) {
             Rational r = ofExact(f).get();
             r.validate();
             assertTrue(Float.toString(f), MathUtils.isPowerOfTwo(r.getDenominator()));
-            assertTrue(Float.toString(f), le(r.getDenominator(), denominatorLimit));
-            assertTrue(Float.toString(f), le(r.getNumerator(), numeratorLimit));
+            assertTrue(Float.toString(f), le(r.getDenominator(), BigInteger.ONE.shiftLeft(149)));
+            assertTrue(
+                    Float.toString(f),
+                    le(r.getNumerator(),
+                    BigInteger.ONE.shiftLeft(128).subtract(BigInteger.ONE.shiftLeft(104)))
+            );
         }
 
         for (float f : take(LIMIT, P.ordinaryFloats())) {
@@ -348,15 +354,21 @@ public class RationalProperties {
         initialize();
         System.out.println("\t\ttesting ofExact(double) properties...");
 
-        BigInteger denominatorLimit = BigInteger.ONE.shiftLeft(1074);
-        BigInteger numeratorLimit = BigInteger.ONE.shiftLeft(1024).subtract(BigInteger.ONE.shiftLeft(971));
-        Iterable<Double> ds = filter(d -> Double.isFinite(d) && !Double.isNaN(d), P.doubles());
-        for (double d : take(LIMIT, ds)) {
+        for (double d : take(LIMIT, P.doubles())) {
+            Optional<Rational> or = ofExact(d);
+            assertEquals(d, Double.isFinite(d) && !Double.isNaN(d), or.isPresent());
+        }
+
+        for (double d : take(LIMIT, filter(e -> Double.isFinite(e) && !Double.isNaN(e), P.doubles()))) {
             Rational r = ofExact(d).get();
             r.validate();
             assertTrue(Double.toString(d), MathUtils.isPowerOfTwo(r.getDenominator()));
-            assertTrue(Double.toString(d), le(r.getDenominator(), denominatorLimit));
-            assertTrue(Double.toString(d), le(r.getNumerator(), numeratorLimit));
+            assertTrue(Double.toString(d), le(r.getDenominator(), BigInteger.ONE.shiftLeft(1074)));
+            assertTrue(
+                    Double.toString(d),
+                    le(r.getNumerator(),
+                    BigInteger.ONE.shiftLeft(1024).subtract(BigInteger.ONE.shiftLeft(971)))
+            );
         }
 
         for (double d : take(LIMIT, P.ordinaryDoubles())) {
