@@ -19,7 +19,7 @@ import static mho.qbar.objects.RationalVector.*;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.ordering.Ordering.compare;
 import static mho.wheels.ordering.Ordering.lt;
-import static mho.wheels.testing.Testing.findInProperties;
+import static mho.wheels.testing.Testing.propertiesFindInHelper;
 import static org.junit.Assert.*;
 
 @SuppressWarnings("ConstantConditions")
@@ -1318,7 +1318,7 @@ public class RationalVectorProperties {
         initialize();
         System.out.println("\t\ttesting findIn(String) properties...");
 
-        findInProperties(
+        propertiesFindInHelper(
                 LIMIT,
                 P.getWheelsProvider(),
                 P.rationalVectors(),

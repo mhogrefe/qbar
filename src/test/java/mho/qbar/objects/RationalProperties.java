@@ -2412,7 +2412,7 @@ public class RationalProperties {
         }
         P.reset();
 
-        foldProperties(LIMIT, P.getWheelsProvider(), P.rationals(), Rational::add, Rational::sum, true);
+        propertiesFoldHelper(LIMIT, P.getWheelsProvider(), P.rationals(), Rational::add, Rational::sum, true);
     }
 
     private static void compareImplementationsSum() {
@@ -2451,7 +2451,7 @@ public class RationalProperties {
         }
         P.reset();
 
-        foldProperties(LIMIT, P.getWheelsProvider(), P.rationals(), Rational::multiply, Rational::product, true);
+        propertiesFoldHelper(LIMIT, P.getWheelsProvider(), P.rationals(), Rational::multiply, Rational::product, true);
     }
 
     private static void compareImplementationsProduct() {
@@ -2485,7 +2485,7 @@ public class RationalProperties {
         }
         P.reset();
 
-        deltaProperties(
+        propertiesDeltaHelper(
                 LIMIT,
                 P.getWheelsProvider(),
                 P.rationals(),
@@ -3550,7 +3550,7 @@ public class RationalProperties {
         initialize();
         System.out.println("\t\ttesting findIn(String) properties...");
 
-        findInProperties(LIMIT, P.getWheelsProvider(), P.rationals(), Rational::read, Rational::findIn);
+        propertiesFindInHelper(LIMIT, P.getWheelsProvider(), P.rationals(), Rational::read, Rational::findIn);
     }
 
     private static void propertiesToString() {

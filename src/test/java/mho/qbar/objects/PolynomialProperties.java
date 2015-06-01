@@ -805,7 +805,7 @@ public class PolynomialProperties {
         }
         P.reset();
 
-        foldProperties(LIMIT, P.getWheelsProvider(), P.polynomials(), Polynomial::add, Polynomial::sum, true);
+        propertiesFoldHelper(LIMIT, P.getWheelsProvider(), P.polynomials(), Polynomial::add, Polynomial::sum, true);
     }
 
     private static void compareImplementationsSum() {
@@ -854,7 +854,7 @@ public class PolynomialProperties {
         }
         P.reset();
 
-        foldProperties(LIMIT, P.getWheelsProvider(), P.polynomials(), Polynomial::multiply, Polynomial::product, true);
+        propertiesFoldHelper(LIMIT, P.getWheelsProvider(), P.polynomials(), Polynomial::multiply, Polynomial::product, true);
     }
 
     private static void propertiesDelta() {
@@ -875,7 +875,7 @@ public class PolynomialProperties {
             aeqit(is.toString(), delta(map(Polynomial::of, is)), map(Polynomial::of, deltaBigInteger(is)));
         }
 
-        deltaProperties(
+        propertiesDeltaHelper(
                 LIMIT,
                 P.getWheelsProvider(),
                 P.polynomials(),
@@ -1171,7 +1171,7 @@ public class PolynomialProperties {
         initialize();
         System.out.println("\t\ttesting findIn(String) properties...");
 
-        findInProperties(LIMIT, P.getWheelsProvider(), P.polynomials(), Polynomial::read, Polynomial::findIn);
+        propertiesFindInHelper(LIMIT, P.getWheelsProvider(), P.polynomials(), Polynomial::read, Polynomial::findIn);
     }
 
     private static void propertiesToString() {

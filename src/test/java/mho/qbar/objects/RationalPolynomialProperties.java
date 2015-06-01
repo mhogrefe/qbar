@@ -991,7 +991,7 @@ public class RationalPolynomialProperties {
             assertEquals(rs.toString(), sum(map(RationalPolynomial::of, rs)), of(Rational.sum(rs)));
         }
 
-        foldProperties(
+        propertiesFoldHelper(
                 LIMIT,
                 P.getWheelsProvider(),
                 P.rationalPolynomials(),
@@ -1050,7 +1050,7 @@ public class RationalPolynomialProperties {
             assertEquals(rs.toString(), product(map(RationalPolynomial::of, rs)), of(Rational.product(rs)));
         }
 
-        foldProperties(
+        propertiesFoldHelper(
                 LIMIT,
                 P.getWheelsProvider(),
                 P.withScale(10).rationalPolynomials(),
@@ -1085,7 +1085,7 @@ public class RationalPolynomialProperties {
             );
         }
 
-        deltaProperties(
+        propertiesDeltaHelper(
                 LIMIT,
                 P.getWheelsProvider(),
                 P.rationalPolynomials(),
@@ -1514,7 +1514,7 @@ public class RationalPolynomialProperties {
         initialize();
         System.out.println("\t\ttesting findIn(String) properties...");
 
-        findInProperties(
+        propertiesFindInHelper(
                 LIMIT, P.getWheelsProvider(),
                 P.rationalPolynomials(),
                 RationalPolynomial::read,

@@ -23,9 +23,9 @@ import static mho.qbar.objects.Interval.greaterThanOrEqualTo;
 import static mho.qbar.objects.Interval.lessThanOrEqualTo;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.ordering.Ordering.*;
-import static mho.wheels.testing.Testing.deltaProperties;
-import static mho.wheels.testing.Testing.findInProperties;
-import static mho.wheels.testing.Testing.foldProperties;
+import static mho.wheels.testing.Testing.propertiesDeltaHelper;
+import static mho.wheels.testing.Testing.propertiesFindInHelper;
+import static mho.wheels.testing.Testing.propertiesFoldHelper;
 import static org.junit.Assert.*;
 
 @SuppressWarnings("ConstantConditions")
@@ -1673,7 +1673,7 @@ public class IntervalProperties {
             assertEquals(is.toString(), sum.isFinitelyBounded(), is.isEmpty() || all(Interval::isFinitelyBounded, is));
         }
 
-        foldProperties(LIMIT, P.getWheelsProvider(), P.intervals(), Interval::add, Interval::sum, true);
+        propertiesFoldHelper(LIMIT, P.getWheelsProvider(), P.intervals(), Interval::add, Interval::sum, true);
     }
 
     private static void propertiesProduct() {
@@ -1695,7 +1695,7 @@ public class IntervalProperties {
             );
         }
 
-        foldProperties(LIMIT, P.getWheelsProvider(), P.intervals(), Interval::multiply, Interval::product, true);
+        propertiesFoldHelper(LIMIT, P.getWheelsProvider(), P.intervals(), Interval::multiply, Interval::product, true);
     }
 
     private static void propertiesDelta() {
@@ -1711,7 +1711,7 @@ public class IntervalProperties {
             }
         }
 
-        deltaProperties(
+        propertiesDeltaHelper(
                 LIMIT,
                 P.getWheelsProvider(),
                 P.intervals(),
@@ -2064,7 +2064,7 @@ public class IntervalProperties {
         initialize();
         System.out.println("\t\ttesting findIn(String) properties...");
 
-        findInProperties(LIMIT, P.getWheelsProvider(), P.intervals(), Interval::read, Interval::findIn);
+        propertiesFindInHelper(LIMIT, P.getWheelsProvider(), P.intervals(), Interval::read, Interval::findIn);
     }
 
     private static void propertiesToString() {
