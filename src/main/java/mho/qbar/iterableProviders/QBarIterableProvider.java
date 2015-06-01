@@ -2,6 +2,7 @@ package mho.qbar.iterableProviders;
 
 import mho.qbar.objects.*;
 import mho.wheels.iterables.IterableProvider;
+import mho.wheels.math.BinaryFraction;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.*;
 import org.jetbrains.annotations.NotNull;
@@ -309,6 +310,10 @@ public abstract class QBarIterableProvider {
 
     public @NotNull Iterable<BigDecimal> bigDecimals() {
         return wheelsProvider.bigDecimals();
+    }
+
+    public @NotNull Iterable<BinaryFraction> binaryFractions() {
+        return wheelsProvider.binaryFractions();
     }
 
     public @NotNull <T> Iterable<T> withNull(@NotNull Iterable<T> xs) {
