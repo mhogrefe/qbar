@@ -19,6 +19,7 @@ import static mho.wheels.iterables.IterableUtils.toList;
 import static mho.wheels.ordering.Ordering.*;
 import static mho.wheels.testing.Testing.aeq;
 import static mho.wheels.testing.Testing.aeqit;
+import static mho.wheels.testing.Testing.testEqualsHelper;
 import static org.junit.Assert.*;
 
 @SuppressWarnings("ConstantConditions")
@@ -3989,44 +3990,10 @@ public class RationalTest {
 
     @Test
     public void testEquals() {
-        //noinspection EqualsWithItself
-        assertTrue(ZERO.equals(ZERO));
-        //noinspection EqualsWithItself
-        assertTrue(ONE.equals(ONE));
-        assertTrue(read("4").get().equals(read("4").get()));
-        assertTrue(read("-4").get().equals(read("-4").get()));
-        assertTrue(read("5/12").get().equals(read("5/12").get()));
-        assertTrue(read("-5/12").get().equals(read("-5/12").get()));
-        assertFalse(ZERO.equals(ONE));
-        assertFalse(ONE.equals(ZERO));
-        assertFalse(ZERO.equals(read("4").get()));
-        assertFalse(ZERO.equals(read("-4").get()));
-        assertFalse(ZERO.equals(read("5/12").get()));
-        assertFalse(ZERO.equals(read("-5/12").get()));
-        assertFalse(ONE.equals(read("4").get()));
-        assertFalse(ONE.equals(read("-4").get()));
-        assertFalse(ONE.equals(read("5/12").get()));
-        assertFalse(ONE.equals(read("-5/12").get()));
-        assertFalse(read("4").get().equals(ZERO));
-        assertFalse(read("-4").get().equals(ZERO));
-        assertFalse(read("5/12").get().equals(ZERO));
-        assertFalse(read("-5/12").get().equals(ZERO));
-        assertFalse(read("4").get().equals(ONE));
-        assertFalse(read("-4").get().equals(ONE));
-        assertFalse(read("5/12").get().equals(ONE));
-        assertFalse(read("-5/12").get().equals(ONE));
-        assertFalse(read("4").equals(read("-4")));
-        assertFalse(read("4").equals(read("5/12")));
-        assertFalse(read("4").equals(read("-5/12")));
-        assertFalse(read("-4").equals(read("4")));
-        assertFalse(read("-4").equals(read("5/12")));
-        assertFalse(read("-4").equals(read("-5/12")));
-        assertFalse(read("5/12").equals(read("4")));
-        assertFalse(read("5/12").equals(read("-4")));
-        assertFalse(read("5/12").equals(read("-5/12")));
-        assertFalse(read("-5/12").equals(read("4")));
-        assertFalse(read("-5/12").equals(read("-4")));
-        assertFalse(read("-5/12").equals(read("5/12")));
+        testEqualsHelper(
+                readRationalList("[0, 1, 4, -4, 5/12, -5/12]"),
+                readRationalList("[0, 1, 4, -4, 5/12, -5/12]")
+        );
     }
 
     @Test

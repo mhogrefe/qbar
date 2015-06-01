@@ -14,6 +14,7 @@ import java.util.Optional;
 import static mho.qbar.objects.RationalVector.*;
 import static mho.wheels.iterables.IterableUtils.toList;
 import static mho.wheels.ordering.Ordering.*;
+import static mho.wheels.testing.Testing.testEqualsHelper;
 import static org.junit.Assert.*;
 
 public class RationalVectorTest {
@@ -530,23 +531,10 @@ public class RationalVectorTest {
 
     @Test
     public void testEquals() {
-        //noinspection EqualsWithItself
-        assertTrue(ZERO_DIMENSIONAL.equals(ZERO_DIMENSIONAL));
-        assertFalse(ZERO_DIMENSIONAL.equals(read("[1/2]").get()));
-        assertFalse(ZERO_DIMENSIONAL.equals(read("[5/3, -1/4, 23]").get()));
-        assertFalse(ZERO_DIMENSIONAL.equals(read("[5/3, 1/4, 23]").get()));
-        assertFalse(read("[1/2]").get().equals(ZERO_DIMENSIONAL));
-        assertTrue(read("[1/2]").get().equals(read("[1/2]").get()));
-        assertFalse(read("[1/2]").get().equals(read("[5/3, -1/4, 23]").get()));
-        assertFalse(read("[1/2]").get().equals(read("[5/3, 1/4, 23]").get()));
-        assertFalse(read("[5/3, -1/4, 23]").get().equals(ZERO_DIMENSIONAL));
-        assertFalse(read("[5/3, -1/4, 23]").get().equals(read("[1/2]").get()));
-        assertTrue(read("[5/3, -1/4, 23]").get().equals(read("[5/3, -1/4, 23]").get()));
-        assertFalse(read("[5/3, -1/4, 23]").get().equals(read("[5/3, 1/4, 23]").get()));
-        assertFalse(read("[5/3, 1/4, 23]").get().equals(ZERO_DIMENSIONAL));
-        assertFalse(read("[5/3, 1/4, 23]").get().equals(read("[1/2]").get()));
-        assertFalse(read("[5/3, 1/4, 23]").get().equals(read("[5/3, -1/4, 23]").get()));
-        assertTrue(read("[5/3, 1/4, 23]").get().equals(read("[5/3, 1/4, 23]").get()));
+        testEqualsHelper(
+                readRationalVectorList("[[], [1/2], [5/3, -1/4, 23], [5/3, 1/4, 23]]"),
+                readRationalVectorList("[[], [1/2], [5/3, -1/4, 23], [5/3, 1/4, 23]]")
+        );
     }
 
     @Test

@@ -14,6 +14,7 @@ import static mho.qbar.objects.Interval.*;
 import static mho.qbar.objects.Interval.greaterThanOrEqualTo;
 import static mho.qbar.objects.Interval.lessThanOrEqualTo;
 import static mho.wheels.ordering.Ordering.*;
+import static mho.wheels.testing.Testing.testEqualsHelper;
 import static org.junit.Assert.*;
 
 public class IntervalTest {
@@ -1469,132 +1470,14 @@ public class IntervalTest {
 
     @Test
     public void testEquals() {
-        //noinspection EqualsWithItself
-        assertTrue(ZERO.equals(ZERO));
-        //noinspection EqualsWithItself
-        assertTrue(ONE.equals(ONE));
-        //noinspection EqualsWithItself
-        assertTrue(ALL.equals(ALL));
-        assertTrue(read("[-2, 5/3]").equals(read("[-2, 5/3]")));
-        assertTrue(read("[4, 4]").equals(read("[4, 4]")));
-        assertTrue(read("(-Infinity, 3/2]").equals(read("(-Infinity, 3/2]")));
-        assertTrue(read("[-6, Infinity)").equals(read("[-6, Infinity)")));
-        assertFalse(ZERO.equals(ONE));
-        assertFalse(ZERO.equals(ALL));
-        assertFalse(ZERO.equals(read("[-2, 5/3]").get()));
-        assertFalse(ZERO.equals(read("[4, 4]").get()));
-        assertFalse(ZERO.equals(read("(-Infinity, 3/2]").get()));
-        assertFalse(ZERO.equals(read("[-6, Infinity)").get()));
-        assertFalse(ONE.equals(ZERO));
-        assertFalse(ONE.equals(ALL));
-        assertFalse(ONE.equals(read("[-2, 5/3]").get()));
-        assertFalse(ONE.equals(read("[4, 4]").get()));
-        assertFalse(ONE.equals(read("(-Infinity, 3/2]").get()));
-        assertFalse(ONE.equals(read("[-6, Infinity)").get()));
-        assertFalse(ALL.equals(ZERO));
-        assertFalse(ALL.equals(ONE));
-        assertFalse(ALL.equals(read("[-2, 5/3]").get()));
-        assertFalse(ALL.equals(read("[4, 4]").get()));
-        assertFalse(ALL.equals(read("(-Infinity, 3/2]").get()));
-        assertFalse(ALL.equals(read("[-6, Infinity)").get()));
-        assertFalse(read("[-2, 5/3]").get().equals(ZERO));
-        assertFalse(read("[-2, 5/3]").get().equals(ONE));
-        assertFalse(read("[-2, 5/3]").get().equals(ALL));
-        assertFalse(read("[-2, 5/3]").get().equals(read("[4, 4]").get()));
-        assertFalse(read("[-2, 5/3]").get().equals(read("(-Infinity, 3/2]").get()));
-        assertFalse(read("[-2, 5/3]").get().equals(read("[-6, Infinity)").get()));
-        assertFalse(read("[4, 4]").get().equals(ZERO));
-        assertFalse(read("[4, 4]").get().equals(ONE));
-        assertFalse(read("[4, 4]").get().equals(ALL));
-        assertFalse(read("[4, 4]").get().equals(read("[-2, 5/3]").get()));
-        assertFalse(read("[4, 4]").get().equals(read("(-Infinity, 3/2]").get()));
-        assertFalse(read("[4, 4]").get().equals(read("[-6, Infinity)").get()));
-        assertFalse(read("(-Infinity, 3/2]").get().equals(ZERO));
-        assertFalse(read("(-Infinity, 3/2]").get().equals(ONE));
-        assertFalse(read("(-Infinity, 3/2]").get().equals(ALL));
-        assertFalse(read("(-Infinity, 3/2]").get().equals(read("[-2, 5/3]").get()));
-        assertFalse(read("(-Infinity, 3/2]").get().equals(read("[4, 4]").get()));
-        assertFalse(read("(-Infinity, 3/2]").get().equals(read("[-6, Infinity)").get()));
-        assertFalse(read("[-6, Infinity)").get().equals(ZERO));
-        assertFalse(read("[-6, Infinity)").get().equals(ONE));
-        assertFalse(read("[-6, Infinity)").get().equals(ALL));
-        assertFalse(read("[-6, Infinity)").get().equals(read("[-2, 5/3]").get()));
-        assertFalse(read("[-6, Infinity)").get().equals(read("[4, 4]").get()));
-        assertFalse(read("[-6, Infinity)").get().equals(read("(-Infinity, 3/2]").get()));
-        //noinspection ObjectEqualsNull
-        assertFalse(ZERO.equals(null));
-        //noinspection ObjectEqualsNull
-        assertFalse(ONE.equals(null));
-        //noinspection ObjectEqualsNull
-        assertFalse(ALL.equals(null));
-        assertTrue(read("[-2, 5/3]").isPresent());
-        assertTrue(read("[4, 4]").isPresent());
-        assertTrue(read("(-Infinity, 3/2]").isPresent());
-        assertTrue(read("[-6, Infinity)").isPresent());
-    }
-
-    @Test
-    public void testHashCode() {
-        aeq(ZERO.hashCode(), 32);
-        aeq(ONE.hashCode(), 1024);
-        aeq(ALL.hashCode(), 0);
-        aeq(read("[-2, 5/3]").hashCode(), -1733);
-        aeq(read("[4, 4]").hashCode(), 4000);
-        aeq(read("(-Infinity, 3/2]").hashCode(), 95);
-        aeq(read("[-6, Infinity)").hashCode(), -5735);
-    }
-
-    @Test
-    public void testCompareTo() {
-        assertTrue(eq(ZERO, ZERO));
-        assertTrue(eq(ONE, ONE));
-        assertTrue(eq(ALL, ALL));
-        assertTrue(eq(read("[-2, 5/3]").get(), read("[-2, 5/3]").get()));
-        assertTrue(eq(read("[4, 4]").get(), read("[4, 4]").get()));
-        assertTrue(eq(read("(-Infinity, 3/2]").get(), read("(-Infinity, 3/2]").get()));
-        assertTrue(eq(read("[-6, Infinity)").get(), read("[-6, Infinity)").get()));
-        assertTrue(lt(ZERO, ONE));
-        assertTrue(gt(ZERO, ALL));
-        assertTrue(gt(ZERO, read("[-2, 5/3]").get()));
-        assertTrue(lt(ZERO, read("[4, 4]").get()));
-        assertTrue(gt(ZERO, read("(-Infinity, 3/2]").get()));
-        assertTrue(gt(ZERO, read("[-6, Infinity)").get()));
-        assertTrue(gt(ONE, ZERO));
-        assertTrue(gt(ONE, ALL));
-        assertTrue(gt(ONE, read("[-2, 5/3]").get()));
-        assertTrue(lt(ONE, read("[4, 4]").get()));
-        assertTrue(gt(ONE, read("(-Infinity, 3/2]").get()));
-        assertTrue(gt(ONE, read("[-6, Infinity)").get()));
-        assertTrue(lt(ALL, ZERO));
-        assertTrue(lt(ALL, ONE));
-        assertTrue(lt(ALL, read("[-2, 5/3]").get()));
-        assertTrue(lt(ALL, read("[4, 4]").get()));
-        assertTrue(gt(ALL, read("(-Infinity, 3/2]").get()));
-        assertTrue(lt(ALL, read("[-6, Infinity)").get()));
-        assertTrue(lt(read("[-2, 5/3]").get(), ZERO));
-        assertTrue(lt(read("[-2, 5/3]").get(), ONE));
-        assertTrue(gt(read("[-2, 5/3]").get(), ALL));
-        assertTrue(lt(read("[-2, 5/3]").get(), read("[4, 4]").get()));
-        assertTrue(gt(read("[-2, 5/3]").get(), read("(-Infinity, 3/2]").get()));
-        assertTrue(gt(read("[-2, 5/3]").get(), read("[-6, Infinity)").get()));
-        assertTrue(gt(read("[4, 4]").get(), ZERO));
-        assertTrue(gt(read("[4, 4]").get(), ONE));
-        assertTrue(gt(read("[4, 4]").get(), ALL));
-        assertTrue(gt(read("[4, 4]").get(), read("[-2, 5/3]").get()));
-        assertTrue(gt(read("[4, 4]").get(), read("(-Infinity, 3/2]").get()));
-        assertTrue(gt(read("[4, 4]").get(), read("[-6, Infinity)").get()));
-        assertTrue(lt(read("(-Infinity, 3/2]").get(), ZERO));
-        assertTrue(lt(read("(-Infinity, 3/2]").get(), ONE));
-        assertTrue(lt(read("(-Infinity, 3/2]").get(), ALL));
-        assertTrue(lt(read("(-Infinity, 3/2]").get(), read("[-2, 5/3]").get()));
-        assertTrue(lt(read("(-Infinity, 3/2]").get(), read("[4, 4]").get()));
-        assertTrue(lt(read("(-Infinity, 3/2]").get(), read("[-6, Infinity)").get()));
-        assertTrue(lt(read("[-6, Infinity)").get(), ZERO));
-        assertTrue(lt(read("[-6, Infinity)").get(), ONE));
-        assertTrue(gt(read("[-6, Infinity)").get(), ALL));
-        assertTrue(lt(read("[-6, Infinity)").get(), read("[-2, 5/3]").get()));
-        assertTrue(lt(read("[-6, Infinity)").get(), read("[4, 4]").get()));
-        assertTrue(gt(read("[-6, Infinity)").get(), read("(-Infinity, 3/2]").get()));
+        testEqualsHelper(
+                readIntervalList(
+                        "[[0, 0], [1, 1], (-Infinity, Infinity), [-2, 5/3], [4, 4], (-Infinity, 3/2], [-6, Infinity)]"
+                ),
+                readIntervalList(
+                        "[[0, 0], [1, 1], (-Infinity, Infinity), [-2, 5/3], [4, 4], (-Infinity, 3/2], [-6, Infinity)]"
+                )
+        );
     }
 
     @Test
