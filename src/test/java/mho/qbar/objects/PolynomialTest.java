@@ -8,14 +8,13 @@ import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 import static mho.qbar.objects.Polynomial.*;
 import static mho.wheels.iterables.IterableUtils.toList;
-import static mho.wheels.testing.Testing.aeq;
-import static mho.wheels.testing.Testing.aeqit;
-import static mho.wheels.testing.Testing.testEqualsHelper;
-import static org.junit.Assert.*;
+import static mho.wheels.testing.Testing.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class PolynomialTest {
     @Test

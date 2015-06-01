@@ -1,6 +1,5 @@
 package mho.qbar.iterableProviders;
 
-import jdk.nashorn.internal.ir.annotations.Ignore;
 import mho.wheels.iterables.IterableUtils;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;

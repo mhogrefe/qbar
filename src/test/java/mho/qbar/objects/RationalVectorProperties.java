@@ -3,9 +3,6 @@ package mho.qbar.objects;
 import mho.qbar.iterableProviders.QBarExhaustiveProvider;
 import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.iterableProviders.QBarRandomProvider;
-import mho.wheels.iterables.ExhaustiveProvider;
-import mho.wheels.iterables.RandomProvider;
-import mho.wheels.math.Combinatorics;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
@@ -13,7 +10,9 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
 import java.math.BigInteger;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 
 import static mho.qbar.objects.RationalVector.*;
 import static mho.wheels.iterables.IterableUtils.*;

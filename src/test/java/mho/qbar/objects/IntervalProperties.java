@@ -3,8 +3,6 @@ package mho.qbar.objects;
 import mho.qbar.iterableProviders.QBarExhaustiveProvider;
 import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.iterableProviders.QBarRandomProvider;
-import mho.wheels.iterables.ExhaustiveProvider;
-import mho.wheels.iterables.RandomProvider;
 import mho.wheels.math.Combinatorics;
 import mho.wheels.misc.BigDecimalUtils;
 import mho.wheels.misc.FloatingPointUtils;
@@ -23,10 +21,12 @@ import static mho.qbar.objects.Interval.greaterThanOrEqualTo;
 import static mho.qbar.objects.Interval.lessThanOrEqualTo;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.ordering.Ordering.*;
-import static mho.wheels.testing.Testing.propertiesDeltaHelper;
-import static mho.wheels.testing.Testing.propertiesFindInHelper;
-import static mho.wheels.testing.Testing.propertiesFoldHelper;
-import static org.junit.Assert.*;
+import static mho.wheels.testing.Testing.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 @SuppressWarnings("ConstantConditions")
 public class IntervalProperties {

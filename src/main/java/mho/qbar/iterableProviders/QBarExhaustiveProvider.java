@@ -2,16 +2,10 @@ package mho.qbar.iterableProviders;
 
 import mho.qbar.objects.*;
 import mho.wheels.iterables.ExhaustiveProvider;
-import mho.wheels.math.Combinatorics;
-import mho.wheels.ordering.Ordering;
-import mho.wheels.structures.*;
 import org.jetbrains.annotations.NotNull;
 
-import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.math.RoundingMode;
 import java.util.*;
-import java.util.function.Function;
 
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.ordering.Ordering.*;

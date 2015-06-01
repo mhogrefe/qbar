@@ -2,7 +2,6 @@ package mho.qbar.iterableProviders;
 
 import mho.qbar.objects.*;
 import mho.wheels.iterables.IterableProvider;
-import mho.wheels.iterables.IterableUtils;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.*;
 import org.jetbrains.annotations.NotNull;
@@ -15,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
-import static mho.wheels.iterables.IterableUtils.*;
+import static mho.wheels.iterables.IterableUtils.map;
 
 public abstract class QBarIterableProvider {
     protected @NotNull IterableProvider wheelsProvider;

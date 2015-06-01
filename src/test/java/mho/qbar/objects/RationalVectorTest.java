@@ -9,7 +9,6 @@ import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 import static mho.qbar.objects.RationalVector.*;
 import static mho.wheels.iterables.IterableUtils.toList;

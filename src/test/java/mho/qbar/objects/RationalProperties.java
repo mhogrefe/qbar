@@ -3,7 +3,6 @@ package mho.qbar.objects;
 import mho.qbar.iterableProviders.QBarExhaustiveProvider;
 import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.iterableProviders.QBarRandomProvider;
-import mho.wheels.math.Combinatorics;
 import mho.wheels.math.MathUtils;
 import mho.wheels.misc.FloatingPointUtils;
 import mho.wheels.misc.Readers;
@@ -22,7 +21,12 @@ import static mho.qbar.objects.Rational.*;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.ordering.Ordering.*;
 import static mho.wheels.testing.Testing.*;
-import static org.junit.Assert.*;
+import static mho.wheels.testing.Testing.assertEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 @SuppressWarnings("ConstantConditions")
 public class RationalProperties {

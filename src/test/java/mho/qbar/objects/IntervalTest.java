@@ -10,9 +10,6 @@ import java.math.BigInteger;
 import java.util.List;
 
 import static mho.qbar.objects.Interval.*;
-import static mho.qbar.objects.Interval.greaterThanOrEqualTo;
-import static mho.qbar.objects.Interval.lessThanOrEqualTo;
-import static mho.wheels.testing.Testing.aeq;
 import static mho.wheels.testing.Testing.testEqualsHelper;
 import static org.junit.Assert.*;
 
