@@ -13,6 +13,7 @@ import java.util.List;
 import static mho.qbar.objects.RationalVector.*;
 import static mho.wheels.iterables.IterableUtils.toList;
 import static mho.wheels.ordering.Ordering.*;
+import static mho.wheels.testing.Testing.testCompareToHelper;
 import static mho.wheels.testing.Testing.testEqualsHelper;
 import static org.junit.Assert.*;
 
@@ -509,26 +510,6 @@ public class RationalVectorTest {
     }
 
     @Test
-    public void testCompareTo() {
-        assertTrue(eq(ZERO_DIMENSIONAL, ZERO_DIMENSIONAL));
-        assertTrue(lt(ZERO_DIMENSIONAL, read("[1/2]").get()));
-        assertTrue(lt(ZERO_DIMENSIONAL, read("[5/3, -1/4, 23]").get()));
-        assertTrue(lt(ZERO_DIMENSIONAL, read("[5/3, 1/4, 23]").get()));
-        assertTrue(gt(read("[1/2]").get(), ZERO_DIMENSIONAL));
-        assertTrue(eq(read("[1/2]").get(), read("[1/2]").get()));
-        assertTrue(lt(read("[1/2]").get(), read("[5/3, -1/4, 23]").get()));
-        assertTrue(lt(read("[1/2]").get(), read("[5/3, 1/4, 23]").get()));
-        assertTrue(gt(read("[5/3, -1/4, 23]").get(), ZERO_DIMENSIONAL));
-        assertTrue(gt(read("[5/3, -1/4, 23]").get(), read("[1/2]").get()));
-        assertTrue(eq(read("[5/3, -1/4, 23]").get(), read("[5/3, -1/4, 23]").get()));
-        assertTrue(lt(read("[5/3, -1/4, 23]").get(), read("[5/3, 1/4, 23]").get()));
-        assertTrue(gt(read("[5/3, 1/4, 23]").get(), ZERO_DIMENSIONAL));
-        assertTrue(gt(read("[5/3, 1/4, 23]").get(), read("[1/2]").get()));
-        assertTrue(gt(read("[5/3, 1/4, 23]").get(), read("[5/3, -1/4, 23]").get()));
-        assertTrue(eq(read("[5/3, 1/4, 23]").get(), read("[5/3, 1/4, 23]").get()));
-    }
-
-    @Test
     public void testEquals() {
         testEqualsHelper(
                 readRationalVectorList("[[], [1/2], [5/3, -1/4, 23], [5/3, 1/4, 23]]"),
@@ -546,6 +527,11 @@ public class RationalVectorTest {
         hashCode_helper("[1/2]", 64);
         hashCode_helper("[5/3, -1/4, 23]", 181506);
         hashCode_helper("[5/3, 1/4, 23]", 183428);
+    }
+
+    @Test
+    public void testCompareTo() {
+        testCompareToHelper(readRationalVectorList("[[], [1/2], [5/3, -1/4, 23], [5/3, 1/4, 23]]"));
     }
 
     @Test

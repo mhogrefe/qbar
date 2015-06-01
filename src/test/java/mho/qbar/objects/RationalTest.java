@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static mho.qbar.objects.Rational.*;
+import static mho.wheels.iterables.IterableUtils.sort;
 import static mho.wheels.iterables.IterableUtils.take;
 import static mho.wheels.iterables.IterableUtils.toList;
 import static mho.wheels.ordering.Ordering.*;
@@ -4012,42 +4013,7 @@ public class RationalTest {
 
     @Test
     public void testCompareTo() {
-        assertTrue(eq(ZERO, ZERO));
-        assertTrue(eq(ONE, ONE));
-        assertTrue(eq(read("4").get(), read("4").get()));
-        assertTrue(eq(read("-4").get(), read("-4").get()));
-        assertTrue(eq(read("5/12").get(), read("5/12").get()));
-        assertTrue(eq(read("-5/12").get(), read("-5/12").get()));
-        assertTrue(lt(ZERO, ONE));
-        assertTrue(gt(ONE, ZERO));
-        assertTrue(lt(ZERO, read("4").get()));
-        assertTrue(gt(ZERO, read("-4").get()));
-        assertTrue(lt(ZERO, read("5/12").get()));
-        assertTrue(gt(ZERO, read("-5/12").get()));
-        assertTrue(lt(ONE, read("4").get()));
-        assertTrue(gt(ONE, read("-4").get()));
-        assertTrue(gt(ONE, read("5/12").get()));
-        assertTrue(gt(ONE, read("-5/12").get()));
-        assertTrue(gt(read("4").get(), ZERO));
-        assertTrue(lt(read("-4").get(), ZERO));
-        assertTrue(gt(read("5/12").get(), ZERO));
-        assertTrue(lt(read("-5/12").get(), ZERO));
-        assertTrue(gt(read("4").get(), ONE));
-        assertTrue(lt(read("-4").get(), ONE));
-        assertTrue(lt(read("5/12").get(), ONE));
-        assertTrue(lt(read("-5/12").get(), ONE));
-        assertTrue(gt(read("4").get(), read("-4").get()));
-        assertTrue(gt(read("4").get(), read("5/12").get()));
-        assertTrue(gt(read("4").get(), read("-5/12").get()));
-        assertTrue(lt(read("-4").get(), read("4").get()));
-        assertTrue(lt(read("-4").get(), read("5/12").get()));
-        assertTrue(lt(read("-4").get(), read("-5/12").get()));
-        assertTrue(lt(read("5/12").get(), read("4").get()));
-        assertTrue(gt(read("5/12").get(), read("-4").get()));
-        assertTrue(gt(read("5/12").get(), read("-5/12").get()));
-        assertTrue(lt(read("-5/12").get(), read("4").get()));
-        assertTrue(gt(read("-5/12").get(), read("-4").get()));
-        assertTrue(lt(read("-5/12").get(), read("5/12").get()));
+        testCompareToHelper(readRationalList("[-4, -5/12, 0, 5/12, 1, 4]"));
     }
 
     @Test

@@ -756,55 +756,7 @@ public class PolynomialTest {
 
     @Test
     public void testCompareTo() {
-        aeq(ZERO.compareTo(ZERO), 0);
-        aeq(ZERO.compareTo(ONE), -1);
-        aeq(ZERO.compareTo(X), -1);
-        aeq(ZERO.compareTo(read("-17").get()), 1);
-        aeq(ZERO.compareTo(read("x^2-4*x+7").get()), -1);
-        aeq(ZERO.compareTo(read("-x^3-1").get()), 1);
-        aeq(ZERO.compareTo(read("3*x^10").get()), -1);
-        aeq(ONE.compareTo(ZERO), 1);
-        aeq(ONE.compareTo(ONE), 0);
-        aeq(ONE.compareTo(X), -1);
-        aeq(ONE.compareTo(read("-17").get()), 1);
-        aeq(ONE.compareTo(read("x^2-4*x+7").get()), -1);
-        aeq(ONE.compareTo(read("-x^3-1").get()), 1);
-        aeq(ONE.compareTo(read("3*x^10").get()), -1);
-        aeq(X.compareTo(ZERO), 1);
-        aeq(X.compareTo(ONE), 1);
-        aeq(X.compareTo(X), 0);
-        aeq(X.compareTo(read("-17").get()), 1);
-        aeq(X.compareTo(read("x^2-4*x+7").get()), -1);
-        aeq(X.compareTo(read("-x^3-1").get()), 1);
-        aeq(X.compareTo(read("3*x^10").get()), -1);
-        aeq(read("-17").get().compareTo(ZERO), -1);
-        aeq(read("-17").get().compareTo(ONE), -1);
-        aeq(read("-17").get().compareTo(X), -1);
-        aeq(read("-17").get().compareTo(read("-17").get()), 0);
-        aeq(read("-17").get().compareTo(read("x^2-4*x+7").get()), -1);
-        aeq(read("-17").get().compareTo(read("-x^3-1").get()), 1);
-        aeq(read("-17").get().compareTo(read("3*x^10").get()), -1);
-        aeq(read("x^2-4*x+7").get().compareTo(ZERO), 1);
-        aeq(read("x^2-4*x+7").get().compareTo(ONE), 1);
-        aeq(read("x^2-4*x+7").get().compareTo(X), 1);
-        aeq(read("x^2-4*x+7").get().compareTo(read("-17").get()), 1);
-        aeq(read("x^2-4*x+7").get().compareTo(read("x^2-4*x+7").get()), 0);
-        aeq(read("x^2-4*x+7").get().compareTo(read("-x^3-1").get()), 1);
-        aeq(read("x^2-4*x+7").get().compareTo(read("3*x^10").get()), -1);
-        aeq(read("-x^3-1").get().compareTo(ZERO), -1);
-        aeq(read("-x^3-1").get().compareTo(ONE), -1);
-        aeq(read("-x^3-1").get().compareTo(X), -1);
-        aeq(read("-x^3-1").get().compareTo(read("-17").get()), -1);
-        aeq(read("-x^3-1").get().compareTo(read("x^2-4*x+7").get()), -1);
-        aeq(read("-x^3-1").get().compareTo(read("-x^3-1").get()), 0);
-        aeq(read("-x^3-1").get().compareTo(read("3*x^10").get()), -1);
-        aeq(read("3*x^10").get().compareTo(ZERO), 1);
-        aeq(read("3*x^10").get().compareTo(ONE), 1);
-        aeq(read("3*x^10").get().compareTo(X), 1);
-        aeq(read("3*x^10").get().compareTo(read("-17").get()), 1);
-        aeq(read("3*x^10").get().compareTo(read("x^2-4*x+7").get()), 1);
-        aeq(read("3*x^10").get().compareTo(read("-x^3-1").get()), 1);
-        aeq(read("3*x^10").get().compareTo(read("3*x^10").get()), 0);
+        testCompareToHelper(readPolynomialList("[-x^3-1, -17, 0, 1, x, x^2-4*x+7, 3*x^10]"));
     }
 
     @Test

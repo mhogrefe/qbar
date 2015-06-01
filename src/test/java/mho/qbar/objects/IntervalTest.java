@@ -10,6 +10,7 @@ import java.math.BigInteger;
 import java.util.List;
 
 import static mho.qbar.objects.Interval.*;
+import static mho.wheels.testing.Testing.testCompareToHelper;
 import static mho.wheels.testing.Testing.testEqualsHelper;
 import static org.junit.Assert.*;
 
@@ -1489,6 +1490,15 @@ public class IntervalTest {
         hashCode_helper("[4, 4]", 4000);
         hashCode_helper("(-Infinity, 3/2]", 95);
         hashCode_helper("[-6, Infinity)", -5735);
+    }
+
+    @Test
+    public void testCompareTo() {
+        testCompareToHelper(
+                readIntervalList(
+                        "[(-Infinity, 3/2], (-Infinity, Infinity), [-6, Infinity), [-2, 5/3], [0, 0], [1, 1], [4, 4]]"
+                )
+        );
     }
 
     @Test
