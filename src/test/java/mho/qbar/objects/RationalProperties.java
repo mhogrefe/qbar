@@ -941,7 +941,7 @@ public class RationalProperties {
         for (Rational r : take(LIMIT, rs)) {
             BigDecimal bd = r.bigDecimalValueExact();
             assertEquals(r.toString(), bd, r.bigDecimalValue(0, RoundingMode.UNNECESSARY));
-            assertTrue(r.toString(), eq(bd, BigDecimal.ZERO) || bd.signum() == r.signum());
+            assertTrue(r.toString(), bd.signum() == r.signum());
             assertEquals(r.toString(), of(bd), r);
         }
 
