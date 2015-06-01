@@ -537,12 +537,16 @@ public class RationalVectorTest {
         );
     }
 
+    private static void hashCode_helper(@NotNull String input, int hashCode) {
+        aeq(read(input).get().hashCode(), hashCode);
+    }
+
     @Test
     public void testHashCode() {
-        aeq(ZERO_DIMENSIONAL.hashCode(), 1);
-        aeq(read("[1/2]").get().hashCode(), 64);
-        aeq(read("[5/3, -1/4, 23]").get().hashCode(), 181506);
-        aeq(read("[5/3, 1/4, 23]").get().hashCode(), 183428);
+        hashCode_helper("[]", 1);
+        hashCode_helper("[1/2]", 64);
+        hashCode_helper("[5/3, -1/4, 23]", 181506);
+        hashCode_helper("[5/3, 1/4, 23]", 183428);
     }
 
     @Test

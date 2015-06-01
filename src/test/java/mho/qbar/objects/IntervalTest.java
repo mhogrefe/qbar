@@ -8,12 +8,11 @@ import org.junit.Test;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.List;
-import java.util.Optional;
 
 import static mho.qbar.objects.Interval.*;
 import static mho.qbar.objects.Interval.greaterThanOrEqualTo;
 import static mho.qbar.objects.Interval.lessThanOrEqualTo;
-import static mho.wheels.ordering.Ordering.*;
+import static mho.wheels.testing.Testing.aeq;
 import static mho.wheels.testing.Testing.testEqualsHelper;
 import static org.junit.Assert.*;
 
@@ -1478,6 +1477,21 @@ public class IntervalTest {
                         "[[0, 0], [1, 1], (-Infinity, Infinity), [-2, 5/3], [4, 4], (-Infinity, 3/2], [-6, Infinity)]"
                 )
         );
+    }
+
+    private static void hashCode_helper(@NotNull String input, int hashCode) {
+        aeq(read(input).get().hashCode(), hashCode);
+    }
+
+    @Test
+    public void testHashCode() {
+        hashCode_helper("[0, 0]", 32);
+        hashCode_helper("[1, 1]", 1024);
+        hashCode_helper("(-Infinity, Infinity)", 0);
+        hashCode_helper("[-2, 5/3]", -1733);
+        hashCode_helper("[4, 4]", 4000);
+        hashCode_helper("(-Infinity, 3/2]", 95);
+        hashCode_helper("[-6, Infinity)", -5735);
     }
 
     @Test

@@ -3996,14 +3996,18 @@ public class RationalTest {
         );
     }
 
+    private static void hashCode_helper(@NotNull String input, int hashCode) {
+        aeq(read(input).get().hashCode(), hashCode);
+    }
+
     @Test
     public void testHashCode() {
-        aeq(ZERO.hashCode(), 1);
-        aeq(ONE.hashCode(), 32);
-        aeq(read("4").hashCode(), 125);
-        aeq(read("-4").hashCode(), -123);
-        aeq(read("5/12").hashCode(), 167);
-        aeq(read("-5/12").hashCode(), -143);
+        hashCode_helper("0", 1);
+        hashCode_helper("1", 32);
+        hashCode_helper("4", 125);
+        hashCode_helper("-4", -123);
+        hashCode_helper("5/12", 167);
+        hashCode_helper("-5/12", -143);
     }
 
     @Test

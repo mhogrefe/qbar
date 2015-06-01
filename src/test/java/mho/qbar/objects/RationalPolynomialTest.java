@@ -979,15 +979,19 @@ public class RationalPolynomialTest {
         );
     }
 
+    private static void hashCode_helper(@NotNull String input, int hashCode) {
+        aeq(read(input).get().hashCode(), hashCode);
+    }
+
     @Test
     public void testHashCode() {
-        aeq(ZERO.hashCode(), 1);
-        aeq(ONE.hashCode(), 63);
-        aeq(X.hashCode(), 1024);
-        aeq(read("-4/3").get().hashCode(), -90);
-        aeq(read("x^2-7/4*x+1/3").get().hashCode(), 55894);
-        aeq(read("-x^3-1").get().hashCode(), 30753);
-        aeq(read("1/2*x^10").get().hashCode(), -1011939104);
+        hashCode_helper("0", 1);
+        hashCode_helper("1", 63);
+        hashCode_helper("x", 1024);
+        hashCode_helper("-4/3", -90);
+        hashCode_helper("x^2-7/4*x+1/3", 55894);
+        hashCode_helper("-x^3-1", 30753);
+        hashCode_helper("1/2*x^10", -1011939104);
     }
 
     @Test

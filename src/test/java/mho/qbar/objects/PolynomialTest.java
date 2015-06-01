@@ -740,15 +740,19 @@ public class PolynomialTest {
         );
     }
 
+    private static void hashCode_helper(@NotNull String input, int hashCode) {
+        aeq(read(input).get().hashCode(), hashCode);
+    }
+
     @Test
     public void testHashCode() {
-        aeq(ZERO.hashCode(), 1);
-        aeq(ONE.hashCode(), 32);
-        aeq(X.hashCode(), 962);
-        aeq(read("-17").get().hashCode(), 14);
-        aeq(read("x^2-4*x+7").get().hashCode(), 36395);
-        aeq(read("-x^3-1").get().hashCode(), 893729);
-        aeq(read("3*x^10").get().hashCode(), 129082722);
+        hashCode_helper("0", 1);
+        hashCode_helper("1", 32);
+        hashCode_helper("x", 962);
+        hashCode_helper("-17", 14);
+        hashCode_helper("x^2-4*x+7", 36395);
+        hashCode_helper("-x^3-1", 893729);
+        hashCode_helper("3*x^10", 129082722);
     }
 
     @Test
