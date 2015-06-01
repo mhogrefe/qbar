@@ -653,7 +653,7 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
      *  <li>The result may be either {@code boolean}.</li>
      * </ul>
      *
-     * @param that The {@code RationalVector} to be compared with {@code this}
+     * @param that The {@code Object} to be compared with {@code this}
      * @return {@code this}={@code that}
      */
     @Override

@@ -293,7 +293,7 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
      *  <li>The result may be either {@code boolean}.</li>
      * </ul>
      *
-     * @param that The {@code RationalMatrix} to be compared with {@code this}
+     * @param that The {@code Object} to be compared with {@code this}
      * @return {@code this}={@code that}
      */
     @Override
