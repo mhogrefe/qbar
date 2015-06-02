@@ -71,10 +71,12 @@ public class QBarRandomProvider extends QBarIterableProvider {
         return ((RandomProvider) wheelsProvider).getSeed();
     }
 
+    @Override
     public @NotNull QBarRandomProvider copy() {
         return new QBarRandomProvider(((RandomProvider) wheelsProvider).copy());
     }
 
+    @Override
     public @NotNull QBarRandomProvider deepCopy() {
         return new QBarRandomProvider(((RandomProvider) wheelsProvider).deepCopy());
     }

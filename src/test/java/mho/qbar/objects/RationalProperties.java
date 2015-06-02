@@ -3,6 +3,7 @@ package mho.qbar.objects;
 import mho.qbar.iterableProviders.QBarExhaustiveProvider;
 import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.iterableProviders.QBarRandomProvider;
+import mho.qbar.testing.QBarTesting;
 import mho.wheels.math.MathUtils;
 import mho.wheels.misc.FloatingPointUtils;
 import mho.wheels.misc.Readers;
@@ -3441,21 +3442,14 @@ public class RationalProperties {
         initialize();
         System.out.println("\t\ttesting equals(Object) properties...");
 
-        for (Rational r : take(LIMIT, P.rationals())) {
-            //noinspection EqualsWithItself
-            assertTrue(r.toString(), r.equals(r));
-            //noinspection ObjectEqualsNull
-            assertFalse(r.toString(), r.equals(null));
-        }
+        QBarTesting.propertiesEqualsHelper(LIMIT, P, QBarIterableProvider::rationals);
     }
 
     private static void propertiesHashCode() {
         initialize();
         System.out.println("\t\ttesting hashCode() properties...");
 
-        for (Rational r : take(LIMIT, P.rationals())) {
-            assertEquals(r.toString(), r.hashCode(), r.hashCode());
-        }
+        QBarTesting.propertiesHashCodeHelper(LIMIT, P, QBarIterableProvider::rationals);
     }
 
     private static int compareTo_simplest(@NotNull Rational x, @NotNull Rational y) {
@@ -3469,22 +3463,10 @@ public class RationalProperties {
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
             int compare = p.a.compareTo(p.b);
             assertEquals(p.toString(), compare, compareTo_simplest(p.a, p.b));
-            assertTrue(p.toString(), compare == -1 || compare == 0 || compare == 1);
-            assertEquals(p.toString(), p.b.compareTo(p.a), -compare);
             assertEquals(p.toString(), p.a.subtract(p.b).signum(), compare);
         }
 
-        for (Rational r : take(LIMIT, P.rationals())) {
-            assertEquals(r.toString(), r.compareTo(r), 0);
-        }
-
-        Iterable<Triple<Rational, Rational, Rational>> ts = filter(
-                t -> lt(t.a, t.b) && lt(t.b, t.c),
-                P.triples(P.rationals())
-        );
-        for (Triple<Rational, Rational, Rational> t : take(LIMIT, ts)) {
-            assertEquals(t.toString(), t.a.compareTo(t.c), -1);
-        }
+        QBarTesting.propertiesCompareToHelper(LIMIT, P, QBarIterableProvider::rationals);
     }
 
     private static void compareImplementationsCompareTo() {

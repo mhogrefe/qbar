@@ -3,6 +3,7 @@ package mho.qbar.objects;
 import mho.qbar.iterableProviders.QBarExhaustiveProvider;
 import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.iterableProviders.QBarRandomProvider;
+import mho.qbar.testing.QBarTesting;
 import mho.wheels.iterables.IterableUtils;
 import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
@@ -1082,12 +1083,7 @@ public class PolynomialProperties {
         initialize();
         System.out.println("\t\ttesting equals(Object) properties...");
 
-        for (Polynomial p : take(LIMIT, P.polynomials())) {
-            //noinspection EqualsWithItself
-            assertTrue(p.toString(), p.equals(p));
-            //noinspection ObjectEqualsNull
-            assertFalse(p.toString(), p.equals(null));
-        }
+        QBarTesting.propertiesEqualsHelper(LIMIT, P, QBarIterableProvider::polynomials);
 
         for (Pair<BigInteger, BigInteger> p : take(LIMIT, P.pairs(P.bigIntegers()))) {
             assertEquals(p.toString(), of(p.a).equals(of(p.b)), p.a.equals(p.b));
@@ -1098,28 +1094,21 @@ public class PolynomialProperties {
         initialize();
         System.out.println("\t\ttesting hashCode() properties...");
 
-        for (Polynomial p : take(LIMIT, P.polynomials())) {
-            assertEquals(p.toString(), p.hashCode(), p.hashCode());
-        }
+        QBarTesting.propertiesHashCodeHelper(LIMIT, P, QBarIterableProvider::polynomials);
     }
 
     private static void propertiesCompareTo() {
         initialize();
         System.out.println("\t\ttesting compareTo(Polynomial) properties...");
 
+        QBarTesting.propertiesCompareToHelper(LIMIT, P, QBarIterableProvider::polynomials);
+
         for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(P.polynomials()))) {
-            int compare = p.a.compareTo(p.b);
-            assertTrue(p.toString(), compare == -1 || compare == 0 || compare == 1);
-            assertEquals(p.toString(), p.b.compareTo(p.a), -compare);
-            assertEquals(p.toString(), p.a.subtract(p.b).signum(), compare);
+            assertEquals(p.toString(), p.a.compareTo(p.b), p.a.subtract(p.b).signum());
         }
 
         for (Pair<BigInteger, BigInteger> p : take(LIMIT, P.pairs(P.bigIntegers()))) {
             assertEquals(p.toString(), of(p.a).compareTo(of(p.b)), p.a.compareTo(p.b));
-        }
-
-        for (Polynomial p : take(LIMIT, P.polynomials())) {
-            assertEquals(p.toString(), p.compareTo(p), 0);
         }
 
         Iterable<Pair<Polynomial, Polynomial>> ps = filter(
@@ -1128,14 +1117,6 @@ public class PolynomialProperties {
         );
         for (Pair<Polynomial, Polynomial> p : take(LIMIT, ps)) {
             assertEquals(p.toString(), compare(p.a, p.b), compare(p.a.degree(), p.b.degree()));
-        }
-
-        Iterable<Triple<Polynomial, Polynomial, Polynomial>> ts = filter(
-                t -> lt(t.a, t.b) && lt(t.b, t.c),
-                P.triples(P.polynomials())
-        );
-        for (Triple<Polynomial, Polynomial, Polynomial> t : take(LIMIT, ts)) {
-            assertEquals(t.toString(), t.a.compareTo(t.c), -1);
         }
     }
 

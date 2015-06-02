@@ -3,6 +3,7 @@ package mho.qbar.objects;
 import mho.qbar.iterableProviders.QBarExhaustiveProvider;
 import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.iterableProviders.QBarRandomProvider;
+import mho.qbar.testing.QBarTesting;
 import mho.wheels.math.Combinatorics;
 import mho.wheels.misc.BigDecimalUtils;
 import mho.wheels.misc.FloatingPointUtils;
@@ -2006,44 +2007,21 @@ public class IntervalProperties {
         initialize();
         System.out.println("\t\ttesting equals(Object) properties...");
 
-        for (Interval a : take(LIMIT, P.intervals())) {
-            //noinspection EqualsWithItself
-            assertTrue(a.toString(), a.equals(a));
-            //noinspection ObjectEqualsNull
-            assertFalse(a.toString(), a.equals(null));
-        }
+        QBarTesting.propertiesEqualsHelper(LIMIT, P, QBarIterableProvider::intervals);
     }
 
     private static void propertiesHashCode() {
         initialize();
         System.out.println("\t\ttesting hashCode() properties...");
 
-        for (Interval a : take(LIMIT, P.intervals())) {
-            assertEquals(a.toString(), a.hashCode(), a.hashCode());
-        }
+        QBarTesting.propertiesHashCodeHelper(LIMIT, P, QBarIterableProvider::intervals);
     }
 
     private static void propertiesCompareTo() {
         initialize();
         System.out.println("\t\ttesting compareTo(Interval) properties...");
 
-        for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
-            int compare = p.a.compareTo(p.b);
-            assertTrue(p.toString(), compare == -1 || compare == 0 || compare == 1);
-            assertEquals(p.toString(), p.b.compareTo(p.a), -compare);
-        }
-
-        for (Interval a : take(LIMIT, P.intervals())) {
-            assertEquals(a.toString(), a.compareTo(a), 0);
-        }
-
-        Iterable<Triple<Interval, Interval, Interval>> ts = filter(
-                t -> lt(t.a, t.b) && lt(t.b, t.c),
-                P.triples(P.intervals())
-        );
-        for (Triple<Interval, Interval, Interval> t : take(LIMIT, ts)) {
-            assertEquals(t.toString(), t.a.compareTo(t.c), -1);
-        }
+        QBarTesting.propertiesCompareToHelper(LIMIT, P, QBarIterableProvider::intervals);
     }
 
     private static void propertiesRead() {

@@ -3,6 +3,7 @@ package mho.qbar.objects;
 import mho.qbar.iterableProviders.QBarExhaustiveProvider;
 import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.iterableProviders.QBarRandomProvider;
+import mho.qbar.testing.QBarTesting;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
@@ -1251,44 +1252,21 @@ public class RationalVectorProperties {
         initialize();
         System.out.println("\t\ttesting equals(Object) properties...");
 
-        for (RationalVector v : take(LIMIT, P.rationalVectors())) {
-            //noinspection EqualsWithItself
-            assertTrue(v.toString(), v.equals(v));
-            //noinspection ObjectEqualsNull
-            assertFalse(v.toString(), v.equals(null));
-        }
+        QBarTesting.propertiesEqualsHelper(LIMIT, P, QBarIterableProvider::rationalVectors);
     }
 
     private static void propertiesHashCode() {
         initialize();
         System.out.println("\t\ttesting hashCode() properties...");
 
-        for (RationalVector v : take(LIMIT, P.rationalVectors())) {
-            assertEquals(v.toString(), v.hashCode(), v.hashCode());
-        }
+        QBarTesting.propertiesHashCodeHelper(LIMIT, P, QBarIterableProvider::rationalVectors);
     }
 
     private static void propertiesCompareTo() {
         initialize();
         System.out.println("\t\ttesting compareTo(RationalVector) properties...");
 
-        for (Pair<RationalVector, RationalVector> p : take(LIMIT, P.pairs(P.rationalVectors()))) {
-            int compare = p.a.compareTo(p.b);
-            assertTrue(p.toString(), compare == -1 || compare == 0 || compare == 1);
-            assertEquals(p.toString(), p.b.compareTo(p.a), -compare);
-        }
-
-        for (RationalVector v : take(LIMIT, P.rationalVectors())) {
-            assertEquals(v.toString(), v.compareTo(v), 0);
-        }
-
-        Iterable<Triple<RationalVector, RationalVector, RationalVector>> ts = filter(
-                t -> lt(t.a, t.b) && lt(t.b, t.c),
-                P.triples(P.rationalVectors())
-        );
-        for (Triple<RationalVector, RationalVector, RationalVector> t : take(LIMIT, ts)) {
-            assertEquals(t.toString(), t.a.compareTo(t.c), -1);
-        }
+        QBarTesting.propertiesCompareToHelper(LIMIT, P, QBarIterableProvider::rationalVectors);
 
         Iterable<Pair<RationalVector, RationalVector>> ps = filter(
                 p -> p.a.dimension() != p.b.dimension(),

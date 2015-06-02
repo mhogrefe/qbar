@@ -28,6 +28,14 @@ public abstract class QBarIterableProvider {
         return wheelsProvider;
     }
 
+    public @NotNull QBarIterableProvider copy() {
+        return this;
+    }
+
+    public @NotNull QBarIterableProvider deepCopy() {
+        return this;
+    }
+
     public void reset() {
         wheelsProvider.reset();
     }
