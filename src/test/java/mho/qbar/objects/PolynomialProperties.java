@@ -796,18 +796,15 @@ public class PolynomialProperties {
             assertTrue(ps.toString(), ps.isEmpty() || sum.degree() <= maximum(map(Polynomial::degree, ps)));
             assertEquals(ps.toString(), sum, sum_simplest(ps));
         }
-        P.reset();
 
         Iterable<Pair<List<Polynomial>, BigInteger>> ps = P.pairs(P.lists(P.polynomials()), P.bigIntegers());
         for (Pair<List<Polynomial>, BigInteger> p : take(LIMIT, ps)) {
             assertEquals(p.toString(), sum(p.a).apply(p.b), sumBigInteger(map(q -> q.apply(p.b), p.a)));
         }
-        P.reset();
 
         for (List<BigInteger> is : take(LIMIT, P.lists(P.bigIntegers()))) {
             assertEquals(is.toString(), sum(map(Polynomial::of, is)), of(sumBigInteger(is)));
         }
-        P.reset();
 
         propertiesFoldHelper(LIMIT, P.getWheelsProvider(), P.polynomials(), Polynomial::add, Polynomial::sum, true);
     }
@@ -846,17 +843,14 @@ public class PolynomialProperties {
                             product.degree() == IterableUtils.sumInteger(map(Polynomial::degree, ps))
             );
         }
-        P.reset();
 
         for (Pair<List<Polynomial>, BigInteger> p : take(LIMIT, P.pairs(P.lists(P.polynomials()), P.bigIntegers()))) {
             assertEquals(p.toString(), product(p.a).apply(p.b), productBigInteger(map(q -> q.apply(p.b), p.a)));
         }
-        P.reset();
 
         for (List<BigInteger> rs : take(LIMIT, P.lists(P.bigIntegers()))) {
             assertEquals(rs.toString(), product(map(Polynomial::of, rs)), of(productBigInteger(rs)));
         }
-        P.reset();
 
         propertiesFoldHelper(LIMIT, P.getWheelsProvider(), P.polynomials(), Polynomial::multiply, Polynomial::product, true);
     }

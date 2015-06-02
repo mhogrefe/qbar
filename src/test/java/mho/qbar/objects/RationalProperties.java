@@ -2414,7 +2414,6 @@ public class RationalProperties {
             sum.validate();
             assertEquals(rs.toString(), sum, sum_alt(rs));
         }
-        P.reset();
 
         propertiesFoldHelper(LIMIT, P.getWheelsProvider(), P.rationals(), Rational::add, Rational::sum, true);
     }
@@ -2453,7 +2452,6 @@ public class RationalProperties {
             product.validate();
             assertEquals(rs.toString(), product, product_simplest(rs));
         }
-        P.reset();
 
         propertiesFoldHelper(LIMIT, P.getWheelsProvider(), P.rationals(), Rational::multiply, Rational::product, true);
     }
@@ -2487,7 +2485,6 @@ public class RationalProperties {
             Iterable<Rational> deltas = delta(rs);
             deltas.forEach(Rational::validate);
         }
-        P.reset();
 
         propertiesDeltaHelper(
                 LIMIT,
