@@ -32,7 +32,7 @@ import static org.junit.Assert.fail;
 @SuppressWarnings("ConstantConditions")
 public class IntervalProperties {
     private static boolean USE_RANDOM;
-    private static final String INTERVAL_CHARS = " (),-/0123456789I[]finty";
+    private static final @NotNull String INTERVAL_CHARS = " (),-/0123456789I[]finty";
     private static final int TINY_LIMIT = 10;
     private static int LIMIT;
 
@@ -1663,28 +1663,33 @@ public class IntervalProperties {
         initialize();
         System.out.println("\t\ttesting sum(Iterable<Interval>) properties...");
 
+        propertiesFoldHelper(LIMIT, P.getWheelsProvider(), P.intervals(), Interval::add, Interval::sum, a -> {}, true);
+
         for (List<Interval> is : take(LIMIT, P.lists(P.intervals()))) {
             Interval sum = sum(is);
-            validate(sum);
-
             for (List<Rational> rs : take(TINY_LIMIT, transposeTruncating(map(P::rationals, is)))) {
                 assertTrue(is.toString(), sum.contains(Rational.sum(rs)));
             }
-
             assertEquals(is.toString(), sum.isFinitelyBounded(), is.isEmpty() || all(Interval::isFinitelyBounded, is));
         }
-
-        propertiesFoldHelper(LIMIT, P.getWheelsProvider(), P.intervals(), Interval::add, Interval::sum, true);
     }
 
     private static void propertiesProduct() {
         initialize();
         System.out.println("\t\ttesting product(Iterable<Interval>) properties...");
 
+        propertiesFoldHelper(
+                LIMIT,
+                P.getWheelsProvider(),
+                P.intervals(),
+                Interval::multiply,
+                Interval::product,
+                a -> {},
+                true
+        );
+
         for (List<Interval> is : take(LIMIT, P.lists(P.intervals()))) {
             Interval product = product(is);
-            validate(product);
-
             for (List<Rational> rs : take(TINY_LIMIT, transposeTruncating(map(P::rationals, is)))) {
                 assertTrue(is.toString(), product.contains(Rational.product(rs)));
             }
@@ -1695,22 +1700,11 @@ public class IntervalProperties {
                     is.isEmpty() || is.contains(ZERO) || all(Interval::isFinitelyBounded, is)
             );
         }
-
-        propertiesFoldHelper(LIMIT, P.getWheelsProvider(), P.intervals(), Interval::multiply, Interval::product, true);
     }
 
     private static void propertiesDelta() {
         initialize();
         System.out.println("\t\ttesting delta(Iterable<Interval>) properties...");
-
-        for (List<Interval> is : take(LIMIT, P.listsAtLeast(1, P.intervals()))) {
-            Iterable<Interval> deltas = delta(is);
-            deltas.forEach(mho.qbar.objects.IntervalProperties::validate);
-
-            for (List<Rational> rs : take(TINY_LIMIT, transposeTruncating(map(P::rationals, is)))) {
-                assertTrue(is.toString(), and(zipWith(Interval::contains, deltas, Rational.delta(rs))));
-            }
-        }
 
         propertiesDeltaHelper(
                 LIMIT,
@@ -1718,8 +1712,16 @@ public class IntervalProperties {
                 P.intervals(),
                 Interval::negate,
                 Interval::subtract,
-                Interval::delta
+                Interval::delta,
+                a -> {}
         );
+
+        for (List<Interval> is : take(LIMIT, P.listsAtLeast(1, P.intervals()))) {
+            Iterable<Interval> deltas = delta(is);
+            for (List<Rational> rs : take(TINY_LIMIT, transposeTruncating(map(P::rationals, is)))) {
+                assertTrue(is.toString(), and(zipWith(Interval::contains, deltas, Rational.delta(rs))));
+            }
+        }
     }
 
     private static void propertiesPow() {
@@ -2042,7 +2044,7 @@ public class IntervalProperties {
         initialize();
         System.out.println("\t\ttesting findIn(String) properties...");
 
-        propertiesFindInHelper(LIMIT, P.getWheelsProvider(), P.intervals(), Interval::read, Interval::findIn);
+        propertiesFindInHelper(LIMIT, P.getWheelsProvider(), P.intervals(), Interval::read, Interval::findIn, a -> {});
     }
 
     private static void propertiesToString() {

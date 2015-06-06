@@ -32,7 +32,7 @@ import static org.junit.Assert.fail;
 @SuppressWarnings("ConstantConditions")
 public class RationalProperties {
     private static boolean USE_RANDOM;
-    private static final String RATIONAL_CHARS = "-/0123456789";
+    private static final @NotNull String RATIONAL_CHARS = "-/0123456789";
     private static final int SMALL_LIMIT = 1000;
     private static int LIMIT;
 
@@ -2410,13 +2410,11 @@ public class RationalProperties {
         initialize();
         System.out.println("\t\ttesting sum(Iterable<Rational>) properties...");
 
-        for (List<Rational> rs : take(LIMIT, P.lists(P.rationals()))) {
-            Rational sum = sum(rs);
-            sum.validate();
-            assertEquals(rs.toString(), sum, sum_alt(rs));
-        }
+        propertiesFoldHelper(LIMIT, P.getWheelsProvider(), P.rationals(), Rational::add, Rational::sum, r -> {}, true);
 
-        propertiesFoldHelper(LIMIT, P.getWheelsProvider(), P.rationals(), Rational::add, Rational::sum, true);
+        for (List<Rational> rs : take(LIMIT, P.lists(P.rationals()))) {
+            assertEquals(rs.toString(), sum(rs), sum_alt(rs));
+        }
     }
 
     private static void compareImplementationsSum() {
@@ -2448,13 +2446,11 @@ public class RationalProperties {
         initialize();
         System.out.println("\t\ttesting product(Iterable<Rational>) properties...");
 
-        for (List<Rational> rs : take(LIMIT, P.lists(P.rationals()))) {
-            Rational product = product(rs);
-            product.validate();
-            assertEquals(rs.toString(), product, product_simplest(rs));
-        }
+        propertiesFoldHelper(LIMIT, P.getWheelsProvider(), P.rationals(), Rational::multiply, Rational::product, r -> {}, true);
 
-        propertiesFoldHelper(LIMIT, P.getWheelsProvider(), P.rationals(), Rational::multiply, Rational::product, true);
+        for (List<Rational> rs : take(LIMIT, P.lists(P.rationals()))) {
+            assertEquals(rs.toString(), product(rs), product_simplest(rs));
+        }
     }
 
     private static void compareImplementationsProduct() {
@@ -2482,18 +2478,14 @@ public class RationalProperties {
         initialize();
         System.out.println("\t\ttesting delta(Iterable<Rational>) properties...");
 
-        for (List<Rational> rs : take(LIMIT, P.listsAtLeast(1, P.rationals()))) {
-            Iterable<Rational> deltas = delta(rs);
-            deltas.forEach(Rational::validate);
-        }
-
         propertiesDeltaHelper(
                 LIMIT,
                 P.getWheelsProvider(),
                 P.rationals(),
                 Rational::negate,
                 Rational::subtract,
-                Rational::delta
+                Rational::delta,
+                r -> {}
         );
     }
 
@@ -3533,7 +3525,7 @@ public class RationalProperties {
         initialize();
         System.out.println("\t\ttesting findIn(String) properties...");
 
-        propertiesFindInHelper(LIMIT, P.getWheelsProvider(), P.rationals(), Rational::read, Rational::findIn);
+        propertiesFindInHelper(LIMIT, P.getWheelsProvider(), P.rationals(), Rational::read, Rational::findIn, r -> {});
     }
 
     private static void propertiesToString() {

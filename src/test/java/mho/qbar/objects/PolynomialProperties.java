@@ -29,7 +29,7 @@ import static org.junit.Assert.fail;
 @SuppressWarnings("ConstantConditions")
 public class PolynomialProperties {
     private static boolean USE_RANDOM;
-    private static final String POLYNOMIAL_CHARS = "*+-0123456789^x";
+    private static final @NotNull String POLYNOMIAL_CHARS = "*+-0123456789^x";
     private static int LIMIT;
 
     private static QBarIterableProvider P;
@@ -791,9 +791,18 @@ public class PolynomialProperties {
         initialize();
         System.out.println("\t\ttesting sum(Iterable<Polynomial>) properties...");
 
+        propertiesFoldHelper(
+                LIMIT,
+                P.getWheelsProvider(),
+                P.polynomials(),
+                Polynomial::add,
+                Polynomial::sum,
+                p -> {},
+                true
+        );
+
         for (List<Polynomial> ps : take(LIMIT, P.lists(P.polynomials()))) {
             Polynomial sum = sum(ps);
-            sum.validate();
             assertTrue(ps.toString(), ps.isEmpty() || sum.degree() <= maximum(map(Polynomial::degree, ps)));
             assertEquals(ps.toString(), sum, sum_simplest(ps));
         }
@@ -806,8 +815,6 @@ public class PolynomialProperties {
         for (List<BigInteger> is : take(LIMIT, P.lists(P.bigIntegers()))) {
             assertEquals(is.toString(), sum(map(Polynomial::of, is)), of(sumBigInteger(is)));
         }
-
-        propertiesFoldHelper(LIMIT, P.getWheelsProvider(), P.polynomials(), Polynomial::add, Polynomial::sum, true);
     }
 
     private static void compareImplementationsSum() {
@@ -835,9 +842,18 @@ public class PolynomialProperties {
         initialize();
         System.out.println("\t\ttesting product(Iterable<Polynomial>) properties...");
 
+        propertiesFoldHelper(
+                LIMIT,
+                P.getWheelsProvider(),
+                P.polynomials(),
+                Polynomial::multiply,
+                Polynomial::product,
+                p -> {},
+                true
+        );
+
         for (List<Polynomial> ps : take(LIMIT, P.lists(P.polynomials()))) {
             Polynomial product = product(ps);
-            product.validate();
             assertTrue(
                     ps.toString(),
                     any(p -> p == ZERO, ps) ||
@@ -852,18 +868,21 @@ public class PolynomialProperties {
         for (List<BigInteger> rs : take(LIMIT, P.lists(P.bigIntegers()))) {
             assertEquals(rs.toString(), product(map(Polynomial::of, rs)), of(productBigInteger(rs)));
         }
-
-        propertiesFoldHelper(LIMIT, P.getWheelsProvider(), P.polynomials(), Polynomial::multiply, Polynomial::product, true);
     }
 
     private static void propertiesDelta() {
         initialize();
         System.out.println("\t\ttesting delta(Iterable<Polynomial>) properties...");
 
-        for (List<Polynomial> ps : take(LIMIT, P.listsAtLeast(1, P.polynomials()))) {
-            Iterable<Polynomial> deltas = delta(ps);
-            deltas.forEach(Polynomial::validate);
-        }
+        propertiesDeltaHelper(
+                LIMIT,
+                P.getWheelsProvider(),
+                P.polynomials(),
+                Polynomial::negate,
+                Polynomial::subtract,
+                Polynomial::delta,
+                p -> {}
+        );
 
         Iterable<Pair<List<Polynomial>, BigInteger>> ps = P.pairs(P.listsAtLeast(1, P.polynomials()), P.bigIntegers());
         for (Pair<List<Polynomial>, BigInteger> p : take(LIMIT, ps)) {
@@ -873,15 +892,6 @@ public class PolynomialProperties {
         for (List<BigInteger> is : take(LIMIT, P.listsAtLeast(1, P.bigIntegers()))) {
             aeqit(is.toString(), delta(map(Polynomial::of, is)), map(Polynomial::of, deltaBigInteger(is)));
         }
-
-        propertiesDeltaHelper(
-                LIMIT,
-                P.getWheelsProvider(),
-                P.polynomials(),
-                Polynomial::negate,
-                Polynomial::subtract,
-                Polynomial::delta
-        );
     }
 
     private static @NotNull Polynomial pow_simplest(@NotNull Polynomial a, int p) {
@@ -1150,7 +1160,14 @@ public class PolynomialProperties {
         initialize();
         System.out.println("\t\ttesting findIn(String) properties...");
 
-        propertiesFindInHelper(LIMIT, P.getWheelsProvider(), P.polynomials(), Polynomial::read, Polynomial::findIn);
+        propertiesFindInHelper(
+                LIMIT,
+                P.getWheelsProvider(),
+                P.polynomials(),
+                Polynomial::read,
+                Polynomial::findIn,
+                p -> {}
+        );
     }
 
     private static void propertiesToString() {

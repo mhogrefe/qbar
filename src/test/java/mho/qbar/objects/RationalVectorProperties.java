@@ -25,7 +25,7 @@ import static org.junit.Assert.*;
 @SuppressWarnings("ConstantConditions")
 public class RationalVectorProperties {
     private static boolean USE_RANDOM;
-    private static final String RATIONAL_VECTOR_CHARS = " ,-/0123456789[]";
+    private static final @NotNull String RATIONAL_VECTOR_CHARS = " ,-/0123456789[]";
     private static int LIMIT;
 
     private static QBarIterableProvider P;
@@ -1300,7 +1300,8 @@ public class RationalVectorProperties {
                 P.getWheelsProvider(),
                 P.rationalVectors(),
                 RationalVector::read,
-                RationalVector::findIn
+                RationalVector::findIn,
+                rp -> {}
         );
     }
 

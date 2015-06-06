@@ -30,7 +30,7 @@ import static org.junit.Assert.fail;
 @SuppressWarnings("ConstantConditions")
 public class RationalPolynomialProperties {
     private static boolean USE_RANDOM;
-    private static final String RATIONAL_POLYNOMIAL_CHARS = "*+-/0123456789^x";
+    private static final @NotNull String RATIONAL_POLYNOMIAL_CHARS = "*+-/0123456789^x";
     private static int LIMIT;
 
     private static QBarIterableProvider P;
@@ -976,9 +976,18 @@ public class RationalPolynomialProperties {
         initialize();
         System.out.println("\t\ttesting sum(Iterable<RationalPolynomial>) properties...");
 
+        propertiesFoldHelper(
+                LIMIT,
+                P.getWheelsProvider(),
+                P.rationalPolynomials(),
+                RationalPolynomial::add,
+                RationalPolynomial::sum,
+                rp -> {},
+                true
+        );
+
         for (List<RationalPolynomial> ps : take(LIMIT, P.lists(P.rationalPolynomials()))) {
             RationalPolynomial sum = sum(ps);
-            sum.validate();
             assertTrue(ps.toString(), ps.isEmpty() || sum.degree() <= maximum(map(RationalPolynomial::degree, ps)));
             assertEquals(ps.toString(), sum, sum_simplest(ps));
         }
@@ -994,15 +1003,6 @@ public class RationalPolynomialProperties {
         for (List<Rational> rs : take(LIMIT, P.lists(P.rationals()))) {
             assertEquals(rs.toString(), sum(map(RationalPolynomial::of, rs)), of(Rational.sum(rs)));
         }
-
-        propertiesFoldHelper(
-                LIMIT,
-                P.getWheelsProvider(),
-                P.rationalPolynomials(),
-                RationalPolynomial::add,
-                RationalPolynomial::sum,
-                true
-        );
     }
 
     private static void compareImplementationsSum() {
@@ -1030,6 +1030,16 @@ public class RationalPolynomialProperties {
         initialize();
         System.out.println("\t\ttesting product(Iterable<RationalPolynomial>) properties...");
 
+        propertiesFoldHelper(
+                LIMIT,
+                P.getWheelsProvider(),
+                P.withScale(10).rationalPolynomials(),
+                RationalPolynomial::multiply,
+                RationalPolynomial::product,
+                rp -> {},
+                true
+        );
+
         Iterable<List<RationalPolynomial>> pss;
         if (P instanceof QBarExhaustiveProvider) {
             pss = P.lists(P.rationalPolynomials());
@@ -1038,7 +1048,6 @@ public class RationalPolynomialProperties {
         }
         for (List<RationalPolynomial> ps : take(LIMIT, pss)) {
             RationalPolynomial product = product(ps);
-            product.validate();
             assertTrue(
                     ps.toString(),
                     any(p -> p == ZERO, ps) ||
@@ -1053,25 +1062,21 @@ public class RationalPolynomialProperties {
         for (List<Rational> rs : take(LIMIT, P.lists(P.rationals()))) {
             assertEquals(rs.toString(), product(map(RationalPolynomial::of, rs)), of(Rational.product(rs)));
         }
-
-        propertiesFoldHelper(
-                LIMIT,
-                P.getWheelsProvider(),
-                P.withScale(10).rationalPolynomials(),
-                RationalPolynomial::multiply,
-                RationalPolynomial::product,
-                true
-        );
     }
 
     private static void propertiesDelta() {
         initialize();
         System.out.println("\t\ttesting delta(Iterable<RationalPolynomial>) properties...");
 
-        for (List<RationalPolynomial> ps : take(LIMIT, P.listsAtLeast(1, P.rationalPolynomials()))) {
-            Iterable<RationalPolynomial> deltas = delta(ps);
-            deltas.forEach(RationalPolynomial::validate);
-        }
+        propertiesDeltaHelper(
+                LIMIT,
+                P.getWheelsProvider(),
+                P.rationalPolynomials(),
+                RationalPolynomial::negate,
+                RationalPolynomial::subtract,
+                RationalPolynomial::delta,
+                rp -> {}
+        );
 
         Iterable<Pair<List<RationalPolynomial>, Rational>> ps = P.pairs(
                 P.listsAtLeast(1, P.rationalPolynomials()),
@@ -1088,15 +1093,6 @@ public class RationalPolynomialProperties {
                     map(RationalPolynomial::of, Rational.delta(rs))
             );
         }
-
-        propertiesDeltaHelper(
-                LIMIT,
-                P.getWheelsProvider(),
-                P.rationalPolynomials(),
-                RationalPolynomial::negate,
-                RationalPolynomial::subtract,
-                RationalPolynomial::delta
-        );
     }
 
     private static @NotNull RationalPolynomial pow_simplest(@NotNull RationalPolynomial a, int p) {
@@ -1503,7 +1499,8 @@ public class RationalPolynomialProperties {
                 LIMIT, P.getWheelsProvider(),
                 P.rationalPolynomials(),
                 RationalPolynomial::read,
-                RationalPolynomial::findIn
+                RationalPolynomial::findIn,
+                rp -> {}
         );
     }
 
