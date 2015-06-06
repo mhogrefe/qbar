@@ -1077,23 +1077,6 @@ public class RationalPolynomialTest {
         assertFalse(findIn("hello").isPresent());
     }
 
-    @Test
-    public void testToString() {
-        aeq(ZERO, "0");
-        aeq(ONE, "1");
-        aeq(X, "x");
-        aeq(of(Collections.singletonList(Rational.of(-4, 3))), "-4/3");
-        aeq(of(Arrays.asList(Rational.ZERO, Rational.ONE)), "x");
-        aeq(of(Arrays.asList(Rational.ZERO, Rational.of(-1))), "-x");
-        aeq(of(Arrays.asList(Rational.ZERO, Rational.of(2))), "2*x");
-        aeq(of(Arrays.asList(Rational.ZERO, Rational.of(-2))), "-2*x");
-        aeq(of(Arrays.asList(Rational.ZERO, Rational.ZERO, Rational.ONE)), "x^2");
-        aeq(of(Arrays.asList(Rational.ZERO, Rational.ZERO, Rational.of(-1))), "-x^2");
-        aeq(of(Arrays.asList(Rational.ZERO, Rational.ZERO, Rational.of(2))), "2*x^2");
-        aeq(of(Arrays.asList(Rational.ZERO, Rational.ZERO, Rational.of(-2))), "-2*x^2");
-        aeq(of(Arrays.asList(Rational.of(1, 3), Rational.of(-7, 4), Rational.ONE)), "x^2-7/4*x+1/3");
-    }
-
     private static @NotNull List<Rational> readRationalList(@NotNull String s) {
         return Readers.readList(Rational::read).apply(s).get();
     }

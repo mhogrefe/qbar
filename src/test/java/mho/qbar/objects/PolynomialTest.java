@@ -835,23 +835,6 @@ public class PolynomialTest {
         assertFalse(findIn("hello").isPresent());
     }
 
-    @Test
-    public void testToString() {
-        aeq(ZERO, "0");
-        aeq(ONE, "1");
-        aeq(X, "x");
-        aeq(of(Collections.singletonList(BigInteger.valueOf(-17))), "-17");
-        aeq(of(Arrays.asList(BigInteger.ZERO, BigInteger.ONE)), "x");
-        aeq(of(Arrays.asList(BigInteger.ZERO, BigInteger.valueOf(-1))), "-x");
-        aeq(of(Arrays.asList(BigInteger.ZERO, BigInteger.valueOf(2))), "2*x");
-        aeq(of(Arrays.asList(BigInteger.ZERO, BigInteger.valueOf(-2))), "-2*x");
-        aeq(of(Arrays.asList(BigInteger.ZERO, BigInteger.ZERO, BigInteger.ONE)), "x^2");
-        aeq(of(Arrays.asList(BigInteger.ZERO, BigInteger.ZERO, BigInteger.valueOf(-1))), "-x^2");
-        aeq(of(Arrays.asList(BigInteger.ZERO, BigInteger.ZERO, BigInteger.valueOf(2))), "2*x^2");
-        aeq(of(Arrays.asList(BigInteger.ZERO, BigInteger.ZERO, BigInteger.valueOf(-2))), "-2*x^2");
-        aeq(of(Arrays.asList(BigInteger.valueOf(7), BigInteger.valueOf(-4), BigInteger.ONE)), "x^2-4*x+7");
-    }
-
     private static @NotNull List<BigInteger> readBigIntegerList(@NotNull String s) {
         return Readers.readList(Readers::readBigInteger).apply(s).get();
     }

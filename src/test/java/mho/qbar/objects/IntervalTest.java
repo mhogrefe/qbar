@@ -1546,17 +1546,6 @@ public class IntervalTest {
         assertFalse(findIn("abcd[5, 4/0]xyz").isPresent());
     }
 
-    @Test
-    public void testToString() {
-        aeq(ZERO, "[0, 0]");
-        aeq(ONE, "[1, 1]");
-        aeq(ALL, "(-Infinity, Infinity)");
-        aeq(read("[-2, 5/3]").get(), "[-2, 5/3]");
-        aeq(read("[4, 4]").get(), "[4, 4]");
-        aeq(read("(-Infinity, 3/2]").get(), "(-Infinity, 3/2]");
-        aeq(read("[-6, Infinity)").get(), "[-6, Infinity)");
-    }
-
     private static void aeq(Iterable<?> a, Object b) {
         assertEquals(IterableUtils.toString(a), b.toString());
     }

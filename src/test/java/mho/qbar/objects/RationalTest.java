@@ -4068,16 +4068,6 @@ public class RationalTest {
         assertFalse(findIn("vdfsvfbf").isPresent());
     }
 
-    @Test
-    public void testToString() {
-        aeq(ZERO, "0");
-        aeq(ONE, "1");
-        aeq(Rational.of(4), "4");
-        aeq(Rational.of(-4), "-4");
-        aeq(Rational.of(2, 5), "2/5");
-        aeq(Rational.of(-2, 5), "-2/5");
-    }
-
     private static @NotNull List<BigInteger> readBigIntegerList(@NotNull String s) {
         return Readers.readList(Readers::readBigInteger).apply(s).get();
     }

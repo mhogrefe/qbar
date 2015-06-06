@@ -562,14 +562,6 @@ public class RationalVectorTest {
         assertFalse(findIn("hello").isPresent());
     }
 
-    @Test
-    public void testToString() {
-        aeq(ZERO_DIMENSIONAL, "[]");
-        aeq(of(Collections.singletonList(Rational.of(1, 2))), "[1/2]");
-        aeq(of(Arrays.asList(Rational.of(5, 3), Rational.of(-1, 4), Rational.of(23))), "[5/3, -1/4, 23]");
-        aeq(of(Arrays.asList(Rational.of(5, 3), Rational.of(1, 4), Rational.of(23))), "[5/3, 1/4, 23]");
-    }
-
     private static void aeq(Iterable<?> a, Object b) {
         assertEquals(IterableUtils.toString(a), b.toString());
     }
