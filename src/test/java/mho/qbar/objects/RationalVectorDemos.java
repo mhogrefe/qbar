@@ -5,6 +5,7 @@ import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.iterableProviders.QBarRandomProvider;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
+import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 
 import java.math.BigInteger;
@@ -16,7 +17,7 @@ import static mho.wheels.iterables.IterableUtils.*;
 @SuppressWarnings({"ConstantConditions", "UnusedDeclaration"})
 public class RationalVectorDemos {
     private static final boolean USE_RANDOM = false;
-    private static final String RATIONAL_VECTOR_CHARS = " ,-/0123456789[]";
+    private static final @NotNull String RATIONAL_VECTOR_CHARS = " ,-/0123456789[]";
     private static final int SMALL_LIMIT = 100;
     private static int LIMIT;
 

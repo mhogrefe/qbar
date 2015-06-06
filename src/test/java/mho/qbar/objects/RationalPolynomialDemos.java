@@ -6,6 +6,7 @@ import mho.qbar.iterableProviders.QBarRandomProvider;
 import mho.wheels.iterables.IterableUtils;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
+import org.jetbrains.annotations.NotNull;
 
 import java.math.BigInteger;
 import java.util.List;
@@ -16,7 +17,7 @@ import static mho.wheels.iterables.IterableUtils.*;
 @SuppressWarnings({"ConstantConditions", "UnusedDeclaration"})
 public class RationalPolynomialDemos {
     private static final boolean USE_RANDOM = false;
-    private static final String RATIONAL_POLYNOMIAL_CHARS = "*+-/0123456789^x";
+    private static final @NotNull String RATIONAL_POLYNOMIAL_CHARS = "*+-/0123456789^x";
     private static int LIMIT;
 
     private static QBarIterableProvider P;

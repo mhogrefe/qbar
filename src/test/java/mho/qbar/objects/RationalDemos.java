@@ -8,6 +8,7 @@ import mho.wheels.math.MathUtils;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
+import org.jetbrains.annotations.NotNull;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -20,7 +21,7 @@ import static mho.wheels.iterables.IterableUtils.*;
 @SuppressWarnings({"ConstantConditions", "UnusedDeclaration"})
 public class RationalDemos {
     private static final boolean USE_RANDOM = false;
-    private static final String RATIONAL_CHARS = "-/0123456789";
+    private static final @NotNull String RATIONAL_CHARS = "-/0123456789";
     private static final int SMALLER_LIMIT = 500;
     private static final int SMALL_LIMIT = 1000;
     private static final int MEDIUM_LIMIT = 3000;
