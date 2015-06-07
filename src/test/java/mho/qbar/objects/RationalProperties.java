@@ -22,7 +22,6 @@ import static mho.qbar.objects.Rational.*;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.ordering.Ordering.*;
 import static mho.wheels.testing.Testing.*;
-import static mho.wheels.testing.Testing.assertEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
@@ -334,7 +333,7 @@ public class RationalProperties {
 
         for (float f : take(LIMIT, P.floats())) {
             Optional<Rational> or = ofExact(f);
-            assertEquals(f, Float.isFinite(f) && !Float.isNaN(f), or.isPresent());
+            assertEquals(Float.toString(f), Float.isFinite(f) && !Float.isNaN(f), or.isPresent());
         }
 
         for (float f : take(LIMIT, filter(g -> Float.isFinite(g) && !Float.isNaN(g), P.floats()))) {
@@ -361,7 +360,7 @@ public class RationalProperties {
 
         for (double d : take(LIMIT, P.doubles())) {
             Optional<Rational> or = ofExact(d);
-            assertEquals(d, Double.isFinite(d) && !Double.isNaN(d), or.isPresent());
+            assertEquals(Double.toString(d), Double.isFinite(d) && !Double.isNaN(d), or.isPresent());
         }
 
         for (double d : take(LIMIT, filter(e -> Double.isFinite(e) && !Double.isNaN(e), P.doubles()))) {
@@ -2277,6 +2276,10 @@ public class RationalProperties {
             assertEquals(p.toString(), shifted, p.a.shiftRight(-p.b));
         }
 
+        for (Rational r : take(LIMIT, P.rationals())) {
+            assertEquals(r.toString(), r.shiftLeft(0), r);
+        }
+
         if (P instanceof QBarExhaustiveProvider) {
             is = P.naturalIntegers();
         } else {
@@ -2340,6 +2343,10 @@ public class RationalProperties {
             assertEquals(p.toString(), p.a.signum(), shifted.signum());
             assertEquals(p.toString(), p.a.negate().shiftRight(p.b), shifted.negate());
             assertEquals(p.toString(), shifted, p.a.shiftLeft(-p.b));
+        }
+
+        for (Rational r : take(LIMIT, P.rationals())) {
+            assertEquals(r.toString(), r.shiftRight(0), r);
         }
 
         if (P instanceof QBarExhaustiveProvider) {

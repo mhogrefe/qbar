@@ -731,6 +731,10 @@ public class RationalVectorProperties {
             assertEquals(p.toString(), shifted, p.a.shiftRight(-p.b));
         }
 
+        for (RationalVector v : take(LIMIT, P.rationalVectors())) {
+            assertEquals(v.toString(), v.shiftLeft(0), v);
+        }
+
         if (P instanceof QBarExhaustiveProvider) {
             is = P.naturalIntegers();
         } else {
@@ -796,6 +800,10 @@ public class RationalVectorProperties {
             assertEquals(p.toString(), p.a.dimension(), shifted.dimension());
             assertEquals(p.toString(), p.a.negate().shiftRight(p.b), shifted.negate());
             assertEquals(p.toString(), shifted, p.a.shiftLeft(-p.b));
+        }
+
+        for (RationalVector v : take(LIMIT, P.rationalVectors())) {
+            assertEquals(v.toString(), v.shiftRight(0), v);
         }
 
         if (P instanceof QBarExhaustiveProvider) {

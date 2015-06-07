@@ -734,6 +734,10 @@ public class PolynomialProperties {
             assertEquals(p.toString(), p.a.negate().shiftLeft(p.b), shifted.negate());
         }
 
+        for (Polynomial p : take(LIMIT, P.polynomials())) {
+            assertEquals(p.toString(), p.shiftLeft(0), p);
+        }
+
         Iterable<Triple<Polynomial, Integer, BigInteger>> ts = P.triples(P.polynomials(), is, P.bigIntegers());
         for (Triple<Polynomial, Integer, BigInteger> t : take(LIMIT, ts)) {
             assertEquals(t.toString(), t.a.shiftLeft(t.b).apply(t.c), t.a.apply(t.c).shiftLeft(t.b));

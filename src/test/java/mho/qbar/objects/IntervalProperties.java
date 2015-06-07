@@ -1550,6 +1550,10 @@ public class IntervalProperties {
             assertEquals(p.toString(), shifted, p.a.shiftRight(-p.b));
         }
 
+        for (Interval a : take(LIMIT, P.intervals())) {
+            assertEquals(a.toString(), a.shiftLeft(0), a);
+        }
+
         if (P instanceof QBarExhaustiveProvider) {
             is = P.naturalIntegers();
         } else {
@@ -1619,6 +1623,10 @@ public class IntervalProperties {
             assertEquals(p.toString(), p.a.isFinitelyBounded(), shifted.isFinitelyBounded());
             assertEquals(p.toString(), p.a.negate().shiftRight(p.b), shifted.negate());
             assertEquals(p.toString(), shifted, p.a.shiftLeft(-p.b));
+        }
+
+        for (Interval a : take(LIMIT, P.intervals())) {
+            assertEquals(a.toString(), a.shiftRight(0), a);
         }
 
         if (P instanceof QBarExhaustiveProvider) {

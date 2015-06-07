@@ -835,6 +835,10 @@ public class RationalPolynomialProperties {
             assertEquals(p.toString(), shifted, p.a.shiftRight(-p.b));
         }
 
+        for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
+            assertEquals(p.toString(), p.shiftLeft(0), p);
+        }
+
         Iterable<Triple<RationalPolynomial, Integer, Rational>> ts = P.triples(
                 P.rationalPolynomials(),
                 is,
@@ -914,6 +918,10 @@ public class RationalPolynomialProperties {
             assertEquals(p.toString(), p.a.degree(), shifted.degree());
             assertEquals(p.toString(), p.a.negate().shiftRight(p.b), shifted.negate());
             assertEquals(p.toString(), shifted, p.a.shiftLeft(-p.b));
+        }
+
+        for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
+            assertEquals(p.toString(), p.shiftRight(0), p);
         }
 
         Iterable<Triple<RationalPolynomial, Integer, Rational>> ts = P.triples(
