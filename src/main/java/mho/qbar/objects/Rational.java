@@ -509,7 +509,11 @@ public final class Rational implements Comparable<Rational> {
      * @return the {@code BigInteger} value of {@code this}
      */
     public @NotNull BigInteger bigIntegerValueExact() {
-        return bigIntegerValue(RoundingMode.UNNECESSARY);
+        if (denominator.equals(BigInteger.ONE)) {
+            return numerator;
+        } else {
+            throw new ArithmeticException("Rational not an integer. Use a different rounding mode");
+        }
     }
 
     /**
@@ -1530,7 +1534,7 @@ public final class Rational implements Comparable<Rational> {
      */
     public @NotNull BigInteger floor() {
         if (numerator.signum() < 0) {
-            return negate().ceiling().negate();
+            return isInteger() ? bigIntegerValueExact() : numerator.divide(denominator).subtract(BigInteger.ONE);
         } else {
             return numerator.divide(denominator);
         }
@@ -1547,15 +1551,7 @@ public final class Rational implements Comparable<Rational> {
      * @return ⌈{@code this}⌉
      */
     public @NotNull BigInteger ceiling() {
-        if (numerator.signum() < 0) {
-            return negate().floor().negate();
-        } else {
-            if (numerator.mod(denominator).equals(BigInteger.ZERO)) {
-                return numerator.divide(denominator);
-            } else {
-                return numerator.divide(denominator).add(BigInteger.ONE);
-            }
-        }
+        return isInteger() ? bigIntegerValueExact() : floor().add(BigInteger.ONE);
     }
 
     /**
