@@ -705,8 +705,8 @@ public final class Rational implements Comparable<Rational> {
      * Every {@code Rational} has a <i>left-neighboring {@code float}</i>, or the largest {@code float} that is less
      * than or equal to the {@code Rational}; this {@code float} may be -Infinity. Likewise, every {@code Rational}
      * has a <i>right-neighboring {@code float}</i>: the smallest {@code float} greater than or equal to the
-     * {@code Rational}. This float may be Infinity. If {@code this} is exactly equal to some {@code float}, the
-     * left- and right-neighboring {@code float}s will both be equal to that {@code float} and to each other. This
+     * {@code Rational}. This {@code float} may be Infinity. If {@code this} is exactly equal to some {@code float},
+     * the left- and right-neighboring {@code float}s will both be equal to that {@code float} and to each other. This
      * method returns the pair made up of the left- and right-neighboring {@code float}s. If the left-neighboring
      * {@code float} is a zero, it is a positive zero; if the right-neighboring {@code float} is a zero, it is a
      * negative zero. The exception is when {@code this} is equal to zero; then both neighbors are positive zeroes.
@@ -722,7 +722,7 @@ public final class Rational implements Comparable<Rational> {
      * @return The pair of left- and right-neighboring {@code float}s.
      */
     private @NotNull Pair<Float, Float> floatRange() {
-        if (this == ZERO) return new Pair<>(0f, 0f);
+        if (this == ZERO) return new Pair<>(0.0f, 0.0f);
         if (numerator.signum() == -1) {
             Pair<Float, Float> negativeRange = negate().floatRange();
             //noinspection ConstantConditions
@@ -750,11 +750,11 @@ public final class Rational implements Comparable<Rational> {
      * Every {@code Rational} has a <i>left-neighboring {@code double}</i>, or the largest {@code double} that is less
      * than or equal to the {@code Rational}; this {@code double} may be {@code -Infinity}. Likewise, every
      * {@code Rational} has a <i>right-neighboring {@code double}</i>: the smallest {@code double} greater than or
-     * equal to the {@code Rational}. This double may be {@code Infinity}. If {@code this} is exactly equal to some
-     * {@code double}, the left- and right-neighboring {@code double}s will both be equal to that {@code double} and
-     * to each other. This method returns the pair made up of the left- and right-neighboring {@code double}s. If the
-     * left-neighboring {@code double} is a zero, it is a positive zero; if the right-neighboring {@code double} is a
-     * zero, it is a negative zero. The exception is when {@code this} is equal to zero; then both neighbors are
+     * equal to the {@code Rational}. This {@code double} may be {@code Infinity}. If {@code this} is exactly equal to
+     * some {@code double}, the left- and right-neighboring {@code double}s will both be equal to that {@code double}
+     * and to each other. This method returns the pair made up of the left- and right-neighboring {@code double}s. If
+     * the left-neighboring {@code double} is a zero, it is a positive zero; if the right-neighboring {@code double} is
+     * a zero, it is a negative zero. The exception is when {@code this} is equal to zero; then both neighbors are
      * positive zeroes.
      *
      * <ul>
@@ -787,7 +787,7 @@ public final class Rational implements Comparable<Rational> {
             fraction = shiftRight(exponent).subtract(ONE).shiftLeft(52);
             adjustedExponent = exponent + 1023;
         }
-        double loDouble = Double.longBitsToDouble(((long) adjustedExponent << 52) + fraction.floor().longValue());
+        double loDouble = Double.longBitsToDouble(((long) adjustedExponent << 52) + fraction.floor().longValueExact());
         double hiDouble = fraction.denominator.equals(BigInteger.ONE) ?
                 loDouble :
                 FloatingPointUtils.successor(loDouble);
