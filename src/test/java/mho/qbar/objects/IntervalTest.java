@@ -10,11 +10,15 @@ import java.math.BigInteger;
 import java.util.List;
 
 import static mho.qbar.objects.Interval.*;
+import static mho.wheels.iterables.IterableUtils.*;
+import static mho.wheels.testing.Testing.*;
 import static mho.wheels.testing.Testing.testCompareToHelper;
 import static mho.wheels.testing.Testing.testEqualsHelper;
 import static org.junit.Assert.*;
 
 public class IntervalTest {
+    private static final int TINY_LIMIT = 20;
+
     @Test
     public void testConstants() {
         aeq(ZERO, "[0, 0]");
@@ -1290,12 +1294,25 @@ public class IntervalTest {
     public void testDelta() {
         aeq(delta(readIntervalList("[[1/3, 2]]")), "[]");
         aeq(delta(readIntervalList("[[-2, 5/3], (-Infinity, 6], [4, 4]]")), "[(-Infinity, 8], [-2, Infinity)]");
+        Interval seed = read("[1/3, 1/2]").get();
+        aeqitLimit(TINY_LIMIT, delta(iterate(seed::multiply, seed)),
+                "[[-7/18, -1/12], [-23/108, 1/72], [-73/648, 11/432], [-227/3888, 49/2592], [-697/23328, 179/15552]," +
+                " [-2123/139968, 601/93312], [-6433/839808, 1931/559872], [-19427/5038848, 6049/3359232]," +
+                " [-58537/30233088, 18659/20155392], [-176123/181398528, 57001/120932352]," +
+                " [-529393/1088391168, 173051/725594112], [-1590227/6530347008, 523249/4353564672]," +
+                " [-4774777/39182082048, 1577939/26121388032], [-14332523/235092492288, 4750201/156728328192]," +
+                " [-43013953/1410554953728, 14283371/940369969152]," +
+                " [-129074627/8463329722368, 42915649/5642219814912]," +
+                " [-387289417/50779978334208, 128878019/33853318889472]," +
+                " [-1161999323/304679870005248, 386896201/203119913336832]," +
+                " [-3486260113/1828079220031488, 1161212891/1218719480020992]," +
+                " [-10459304627/10968475320188928, 3484687249/7312316880125952], ...]");
         try {
             delta(readIntervalListWithNulls("[]"));
             fail();
         } catch (IllegalArgumentException ignored) {}
         try {
-            IterableUtils.toList(delta(readIntervalListWithNulls("[[-2, 5/3], null, [4, 4]]")));
+            toList(delta(readIntervalListWithNulls("[[-2, 5/3], null, [4, 4]]")));
             fail();
         } catch (NullPointerException ignored) {}
     }

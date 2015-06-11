@@ -11,13 +11,14 @@ import java.util.Collections;
 import java.util.List;
 
 import static mho.qbar.objects.RationalVector.*;
-import static mho.wheels.iterables.IterableUtils.toList;
+import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.ordering.Ordering.*;
-import static mho.wheels.testing.Testing.testCompareToHelper;
-import static mho.wheels.testing.Testing.testEqualsHelper;
+import static mho.wheels.testing.Testing.*;
 import static org.junit.Assert.*;
 
 public class RationalVectorTest {
+    private static final int TINY_LIMIT = 20;
+
     @Test
     public void testConstants() {
         aeq(ZERO_DIMENSIONAL, "[]");
@@ -404,6 +405,22 @@ public class RationalVectorTest {
                 "[[-5/3, 5/12, -185/8], [32, -139/6, 73/8]]"
         );
         aeq(delta(readRationalVectorList("[[1/2], [2/3], [3/4]]")), "[[1/6], [1/12]]");
+        aeqitLimit(
+                TINY_LIMIT,
+                delta(
+                        map(
+                                i -> {
+                                    Rational r = Rational.of(i);
+                                    return of(Arrays.asList(r, r.pow(2), r.pow(3)));
+                                },
+                                rangeUp(1)
+                        )
+                ),
+                "[[1, 3, 7], [1, 5, 19], [1, 7, 37], [1, 9, 61], [1, 11, 91], [1, 13, 127], [1, 15, 169]," +
+                " [1, 17, 217], [1, 19, 271], [1, 21, 331], [1, 23, 397], [1, 25, 469], [1, 27, 547]," +
+                " [1, 29, 631], [1, 31, 721], [1, 33, 817], [1, 35, 919], [1, 37, 1027], [1, 39, 1141]," +
+                " [1, 41, 1261], ...]"
+        );
         try {
             delta(readRationalVectorList("[]"));
             fail();

@@ -14,9 +14,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static mho.qbar.objects.Rational.*;
-import static mho.wheels.iterables.IterableUtils.sort;
-import static mho.wheels.iterables.IterableUtils.take;
-import static mho.wheels.iterables.IterableUtils.toList;
+import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.ordering.Ordering.*;
 import static mho.wheels.testing.Testing.*;
 import static org.junit.Assert.assertFalse;
@@ -25,6 +23,7 @@ import static org.junit.Assert.fail;
 
 @SuppressWarnings("ConstantConditions")
 public class RationalTest {
+    private static final int TINY_LIMIT = 20;
     private static final @NotNull Rational PI_FLOAT = ofExact((float) Math.PI).get();
     private static final @NotNull Rational PI_DOUBLE = ofExact(Math.PI).get();
     private static final @NotNull Rational PI_SUCCESSOR_FLOAT = ofExact(
@@ -2669,6 +2668,9 @@ public class RationalTest {
     public void testDelta() {
         aeqit(delta(readRationalList("[3]")), "[]");
         aeqit(delta(readRationalList("[31/10, 41/10, 59/10, 23/10]")), "[1, 9/5, -18/5]");
+        aeqitLimit(TINY_LIMIT, delta(map(i -> of(i).invert(), rangeUp(1))),
+                "[-1/2, -1/6, -1/12, -1/20, -1/30, -1/42, -1/56, -1/72, -1/90, -1/110, -1/132, -1/156, -1/182," +
+                " -1/210, -1/240, -1/272, -1/306, -1/342, -1/380, -1/420, ...]");
         try {
             delta(readRationalList("[]"));
             fail();

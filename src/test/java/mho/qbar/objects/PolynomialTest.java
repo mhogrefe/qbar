@@ -1,5 +1,6 @@
 package mho.qbar.objects;
 
+import mho.wheels.iterables.IterableUtils;
 import mho.wheels.misc.Readers;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
@@ -10,6 +11,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static mho.qbar.objects.Polynomial.*;
+import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.iterables.IterableUtils.toList;
 import static mho.wheels.testing.Testing.*;
 import static org.junit.Assert.assertFalse;
@@ -17,6 +19,8 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class PolynomialTest {
+    private static final int TINY_LIMIT = 20;
+
     @Test
     public void testConstants() {
         aeq(ZERO, "0");
@@ -575,6 +579,30 @@ public class PolynomialTest {
                 delta(readPolynomialList("[-17, x^2-4*x+7, -x^3-1, 3*x^10]")),
                 "[x^2-4*x+24, -x^3-x^2+4*x-8, 3*x^10+x^3+1]"
         );
+        Polynomial seed = read("x+1").get();
+        aeqitLimit(TINY_LIMIT, delta(map(seed::pow, rangeUp(0))),
+                "[x, x^2+x, x^3+2*x^2+x, x^4+3*x^3+3*x^2+x, x^5+4*x^4+6*x^3+4*x^2+x," +
+                " x^6+5*x^5+10*x^4+10*x^3+5*x^2+x, x^7+6*x^6+15*x^5+20*x^4+15*x^3+6*x^2+x," +
+                " x^8+7*x^7+21*x^6+35*x^5+35*x^4+21*x^3+7*x^2+x," +
+                " x^9+8*x^8+28*x^7+56*x^6+70*x^5+56*x^4+28*x^3+8*x^2+x," +
+                " x^10+9*x^9+36*x^8+84*x^7+126*x^6+126*x^5+84*x^4+36*x^3+9*x^2+x," +
+                " x^11+10*x^10+45*x^9+120*x^8+210*x^7+252*x^6+210*x^5+120*x^4+45*x^3+10*x^2+x," +
+                " x^12+11*x^11+55*x^10+165*x^9+330*x^8+462*x^7+462*x^6+330*x^5+165*x^4+55*x^3+11*x^2+x," +
+                " x^13+12*x^12+66*x^11+220*x^10+495*x^9+792*x^8+924*x^7+792*x^6+495*x^5+220*x^4+66*x^3+12*x^2+x," +
+                " x^14+13*x^13+78*x^12+286*x^11+715*x^10+1287*x^9+1716*x^8+1716*x^7+1287*x^6+715*x^5+286*x^4+78*x^3+" +
+                "13*x^2+x, " +
+                "x^15+14*x^14+91*x^13+364*x^12+1001*x^11+2002*x^10+3003*x^9+3432*x^8+3003*x^7+2002*x^6+1001*x^5+" +
+                "364*x^4+91*x^3+14*x^2+x," +
+                " x^16+15*x^15+105*x^14+455*x^13+1365*x^12+3003*x^11+5005*x^10+6435*x^9+6435*x^8+5005*x^7+3003*x^6+" +
+                "1365*x^5+455*x^4+105*x^3+15*x^2+x," +
+                " x^17+16*x^16+120*x^15+560*x^14+1820*x^13+4368*x^12+8008*x^11+11440*x^10+12870*x^9+11440*x^8+" +
+                "8008*x^7+4368*x^6+1820*x^5+560*x^4+120*x^3+16*x^2+x," +
+                " x^18+17*x^17+136*x^16+680*x^15+2380*x^14+6188*x^13+12376*x^12+19448*x^11+24310*x^10+24310*x^9+" +
+                "19448*x^8+12376*x^7+6188*x^6+2380*x^5+680*x^4+136*x^3+17*x^2+x," +
+                " x^19+18*x^18+153*x^17+816*x^16+3060*x^15+8568*x^14+18564*x^13+31824*x^12+43758*x^11+48620*x^10+" +
+                "43758*x^9+31824*x^8+18564*x^7+8568*x^6+3060*x^5+816*x^4+153*x^3+18*x^2+x," +
+                " x^20+19*x^19+171*x^18+969*x^17+3876*x^16+11628*x^15+27132*x^14+50388*x^13+75582*x^12+92378*x^11+" +
+                "92378*x^10+75582*x^9+50388*x^8+27132*x^7+11628*x^6+3876*x^5+969*x^4+171*x^3+19*x^2+x, ...]");
         try {
             delta(readPolynomialList("[]"));
             fail();
