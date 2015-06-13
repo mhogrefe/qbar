@@ -276,6 +276,26 @@ public abstract class QBarIterableProvider {
         return wheelsProvider.range(a, b);
     }
 
+    public @NotNull Iterable<BinaryFraction> positiveBinaryFractions() {
+        return wheelsProvider.positiveBinaryFractions();
+    }
+
+    public @NotNull Iterable<BinaryFraction> negativeBinaryFractions() {
+        return wheelsProvider.negativeBinaryFractions();
+    }
+
+    public @NotNull Iterable<BinaryFraction> nonzeroBinaryFractions() {
+        return wheelsProvider.nonzeroBinaryFractions();
+    }
+
+    public @NotNull Iterable<BinaryFraction> naturalBinaryFractions() {
+        return wheelsProvider.naturalBinaryFractions();
+    }
+
+    public @NotNull Iterable<BinaryFraction> binaryFractions() {
+        return wheelsProvider.binaryFractions();
+    }
+
     public @NotNull Iterable<Float> positiveOrdinaryFloats() {
         return wheelsProvider.positiveOrdinaryFloats();
     }
@@ -318,10 +338,6 @@ public abstract class QBarIterableProvider {
 
     public @NotNull Iterable<BigDecimal> bigDecimals() {
         return wheelsProvider.bigDecimals();
-    }
-
-    public @NotNull Iterable<BinaryFraction> binaryFractions() {
-        return wheelsProvider.binaryFractions();
     }
 
     public @NotNull <T> Iterable<T> withNull(@NotNull Iterable<T> xs) {
