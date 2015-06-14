@@ -288,8 +288,8 @@ public abstract class QBarIterableProvider {
         return wheelsProvider.nonzeroBinaryFractions();
     }
 
-    public @NotNull Iterable<BinaryFraction> naturalBinaryFractions() {
-        return wheelsProvider.naturalBinaryFractions();
+    public @NotNull Iterable<BinaryFraction> nonnegativeBinaryFractions() {
+        return wheelsProvider.nonNegativeBinaryFractions();
     }
 
     public @NotNull Iterable<BinaryFraction> binaryFractions() {
