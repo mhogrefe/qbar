@@ -2,9 +2,11 @@ package mho.qbar.iterableProviders;
 
 import mho.qbar.objects.*;
 import mho.wheels.iterables.RandomProvider;
+import mho.wheels.ordering.Ordering;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigInteger;
+import java.math.RoundingMode;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -93,6 +95,114 @@ public class QBarRandomProvider extends QBarIterableProvider {
 
     public long getId() {
         return ((RandomProvider) wheelsProvider).getId();
+    }
+
+    public int nextInt() {
+        return ((RandomProvider) wheelsProvider).nextInt();
+    }
+
+    public long nextLong() {
+        return ((RandomProvider) wheelsProvider).nextLong();
+    }
+
+    public boolean nextBoolean() {
+        return ((RandomProvider) wheelsProvider).nextBoolean();
+    }
+
+    public <T> T nextUniformSample(@NotNull List<T> xs) {
+        return ((RandomProvider) wheelsProvider).nextUniformSample(xs);
+    }
+
+    public char nextUniformSample(@NotNull String s) {
+        return ((RandomProvider) wheelsProvider).nextUniformSample(s);
+    }
+
+    public @NotNull Ordering nextOrdering() {
+        return ((RandomProvider) wheelsProvider).nextOrdering();
+    }
+
+    public @NotNull RoundingMode nextRoundingMode() {
+        return ((RandomProvider) wheelsProvider).nextRoundingMode();
+    }
+
+    public byte nextPositiveByte() {
+        return ((RandomProvider) wheelsProvider).nextPositiveByte();
+    }
+
+    public short nextPositiveShort() {
+        return ((RandomProvider) wheelsProvider).nextPositiveShort();
+    }
+
+    public int nextPositiveInt() {
+        return ((RandomProvider) wheelsProvider).nextPositiveInt();
+    }
+
+    public long nextPositiveLong() {
+        return ((RandomProvider) wheelsProvider).nextPositiveLong();
+    }
+
+    public byte nextNegativeByte() {
+        return ((RandomProvider) wheelsProvider).nextNegativeByte();
+    }
+
+    public short nextNegativeShort() {
+        return ((RandomProvider) wheelsProvider).nextNegativeShort();
+    }
+
+    public int nextNegativeInt() {
+        return ((RandomProvider) wheelsProvider).nextNegativeInt();
+    }
+
+    public long nextNegativeLong() {
+        return ((RandomProvider) wheelsProvider).nextNegativeLong();
+    }
+
+    public byte nextNonzeroByte() {
+        return ((RandomProvider) wheelsProvider).nextNonzeroByte();
+    }
+
+    public short nextNonzeroShort() {
+        return ((RandomProvider) wheelsProvider).nextNonzeroShort();
+    }
+
+    public int nextNonzeroInt() {
+        return ((RandomProvider) wheelsProvider).nextNonzeroInt();
+    }
+
+    public long nextNonzeroLong() {
+        return ((RandomProvider) wheelsProvider).nextNonzeroLong();
+    }
+
+    public byte nextNaturalByte() {
+        return ((RandomProvider) wheelsProvider).nextNaturalByte();
+    }
+
+    public short nextNaturalShort() {
+        return ((RandomProvider) wheelsProvider).nextNaturalShort();
+    }
+
+    public int nextNaturalInt() {
+        return ((RandomProvider) wheelsProvider).nextNaturalInt();
+    }
+
+    public long nextNaturalLong() {
+        return ((RandomProvider) wheelsProvider).nextNaturalLong();
+    }
+
+    public byte nextByte() {
+        return ((RandomProvider) wheelsProvider).nextByte();
+    }
+
+    public short nextShort() {
+        return ((RandomProvider) wheelsProvider).nextShort();
+    }
+
+    public char nextAsciiChar() {
+        return ((RandomProvider) wheelsProvider).nextAsciiChar();
+    }
+
+    public char nextChar() {
+        return ((RandomProvider) wheelsProvider).nextChar();
     }
 
     /**
