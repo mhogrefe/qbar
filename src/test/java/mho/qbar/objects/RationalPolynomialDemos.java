@@ -14,7 +14,7 @@ import java.util.List;
 import static mho.qbar.objects.RationalPolynomial.*;
 import static mho.wheels.iterables.IterableUtils.*;
 
-@SuppressWarnings({"ConstantConditions", "UnusedDeclaration"})
+@SuppressWarnings("UnusedDeclaration")
 public class RationalPolynomialDemos {
     private static final boolean USE_RANDOM = false;
     private static final @NotNull String RATIONAL_POLYNOMIAL_CHARS = "*+-/0123456789^x";

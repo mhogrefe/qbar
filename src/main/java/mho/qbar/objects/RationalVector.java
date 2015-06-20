@@ -19,7 +19,6 @@ import static mho.wheels.iterables.IterableUtils.*;
  *
  * <p>This class is immutable.
  */
-@SuppressWarnings("ConstantConditions")
 public final class RationalVector implements Comparable<RationalVector>, Iterable<Rational> {
     /**
      * []

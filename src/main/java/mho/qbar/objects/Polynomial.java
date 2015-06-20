@@ -117,7 +117,6 @@ public final class Polynomial implements
      */
     @Override
     public @NotNull BigInteger apply(@NotNull BigInteger x) {
-        //noinspection ConstantConditions
         return foldr((c, y) -> y.multiply(x).add(c), BigInteger.ZERO, coefficients);
     }
 
@@ -133,7 +132,6 @@ public final class Polynomial implements
      * @return {@code this}({@code x})
      */
     public @NotNull Rational apply(@NotNull Rational x) {
-        //noinspection ConstantConditions
         return foldr((c, y) -> x.multiply(y).add(Rational.of(c)), Rational.ZERO, coefficients);
     }
 
@@ -267,7 +265,6 @@ public final class Polynomial implements
      * @return the leading coefficient
      */
     public @NotNull Optional<BigInteger> leading() {
-        //noinspection ConstantConditions
         return this == ZERO ? Optional.<BigInteger>empty() : Optional.of(last(coefficients));
     }
 
@@ -520,7 +517,6 @@ public final class Polynomial implements
     public static @NotNull Polynomial product(@NotNull Iterable<Polynomial> xs) {
         if (any(x -> x == null, xs))
             throw new NullPointerException();
-        //noinspection ConstantConditions
         return foldl(Polynomial::multiply, ONE, xs);
     }
 
@@ -589,7 +585,6 @@ public final class Polynomial implements
      * @return {@code this}∘{@code that}
      */
     public @NotNull Polynomial substitute(@NotNull Polynomial that) {
-        //noinspection ConstantConditions
         return foldr((c, y) -> y.multiply(that).add(of(c)), ZERO, coefficients);
     }
 
@@ -638,7 +633,6 @@ public final class Polynomial implements
      * @return whether {@code this} is primitive
      */
     public boolean isPrimitive() {
-        //noinspection ConstantConditions
         return signum() == 1 && foldl(BigInteger::gcd, BigInteger.ZERO, coefficients).equals(BigInteger.ONE);
     }
 
@@ -655,7 +649,7 @@ public final class Polynomial implements
      *
      * @return (content({@code this}), primitive({@code this}))
      */
-    @SuppressWarnings({"JavaDoc", "ConstantConditions"})
+    @SuppressWarnings("JavaDoc")
     public @NotNull Pair<BigInteger, Polynomial> contentAndPrimitive() {
         if (this == ZERO)
             throw new ArithmeticException("cannot find content and primitive part of 0");
@@ -824,11 +818,9 @@ public final class Polynomial implements
         }
         if (any(p -> BigInteger.ZERO.equals(p.a), monomials)) return Optional.empty();
         if (!increasing((Iterable<Integer>) map(p -> p.b, monomials))) return Optional.empty();
-        @SuppressWarnings("ConstantConditions")
         int degree = last(monomials).b;
         List<BigInteger> coefficients = toList(replicate(degree + 1, BigInteger.ZERO));
         for (Pair<BigInteger, Integer> monomial : monomials) {
-            //noinspection ConstantConditions
             coefficients.set(monomial.b, monomial.a);
         }
         return Optional.of(new Polynomial(coefficients));
@@ -896,7 +888,6 @@ public final class Polynomial implements
      */
     public void validate() {
         if (!coefficients.isEmpty()) {
-            //noinspection ConstantConditions
             assertTrue(toString(), !last(coefficients).equals(BigInteger.ZERO));
         }
         if (equals(ZERO)) assertTrue(toString(), this == ZERO);

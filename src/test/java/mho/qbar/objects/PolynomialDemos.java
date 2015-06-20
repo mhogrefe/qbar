@@ -14,7 +14,7 @@ import java.util.List;
 import static mho.qbar.objects.Polynomial.*;
 import static mho.wheels.iterables.IterableUtils.*;
 
-@SuppressWarnings({"ConstantConditions", "UnusedDeclaration"})
+@SuppressWarnings("UnusedDeclaration")
 public class PolynomialDemos {
     private static final boolean USE_RANDOM = false;
     private static final @NotNull String POLYNOMIAL_CHARS = "*+-0123456789^x";

@@ -14,7 +14,7 @@ import java.util.List;
 import static mho.qbar.objects.RationalVector.*;
 import static mho.wheels.iterables.IterableUtils.*;
 
-@SuppressWarnings({"ConstantConditions", "UnusedDeclaration"})
+@SuppressWarnings("UnusedDeclaration")
 public class RationalVectorDemos {
     private static final boolean USE_RANDOM = false;
     private static final @NotNull String RATIONAL_VECTOR_CHARS = " ,-/0123456789[]";

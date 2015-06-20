@@ -16,7 +16,7 @@ import static mho.qbar.objects.Interval.*;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.ordering.Ordering.le;
 
-@SuppressWarnings({"ConstantConditions", "UnusedDeclaration"})
+@SuppressWarnings("UnusedDeclaration")
 public class IntervalDemos {
     private static final boolean USE_RANDOM = false;
     private static final @NotNull String INTERVAL_CHARS = " (),-/0123456789I[]finty";

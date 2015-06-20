@@ -239,7 +239,6 @@ public final class RationalPolynomial implements
      * @return the leading coefficient
      */
     public @NotNull Optional<Rational> leading() {
-        //noinspection ConstantConditions
         return this == ZERO ? Optional.<Rational>empty() : Optional.of(last(coefficients));
     }
 
@@ -580,7 +579,6 @@ public final class RationalPolynomial implements
     public static @NotNull RationalPolynomial product(@NotNull Iterable<RationalPolynomial> xs) {
         if (any(x -> x == null, xs))
             throw new NullPointerException();
-        //noinspection ConstantConditions
         return foldl(RationalPolynomial::multiply, ONE, xs);
     }
 
@@ -650,7 +648,6 @@ public final class RationalPolynomial implements
      * @return {@code this}∘{@code that}
      */
     public @NotNull RationalPolynomial substitute(@NotNull RationalPolynomial that) {
-        //noinspection ConstantConditions
         return foldr((c, y) -> y.multiply(that).add(of(c)), ZERO, coefficients);
     }
 
@@ -914,11 +911,9 @@ public final class RationalPolynomial implements
         }
         if (any(p -> p.a == Rational.ZERO, monomials)) return Optional.empty();
         if (!increasing((Iterable<Integer>) map(p -> p.b, monomials))) return Optional.empty();
-        @SuppressWarnings("ConstantConditions")
         int degree = last(monomials).b;
         List<Rational> coefficients = toList(replicate(degree + 1, Rational.ZERO));
         for (Pair<Rational, Integer> monomial : monomials) {
-            //noinspection ConstantConditions
             coefficients.set(monomial.b, monomial.a);
         }
         return Optional.of(new RationalPolynomial(coefficients));
@@ -987,7 +982,6 @@ public final class RationalPolynomial implements
      */
     public void validate() {
         if (!coefficients.isEmpty()) {
-            //noinspection ConstantConditions
             assertTrue(toString(), !last(coefficients).equals(BigInteger.ZERO));
         }
         if (equals(ZERO)) assertTrue(toString(), this == ZERO);

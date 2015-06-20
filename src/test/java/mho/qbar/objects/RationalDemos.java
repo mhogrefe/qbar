@@ -18,7 +18,7 @@ import java.util.List;
 import static mho.qbar.objects.Rational.*;
 import static mho.wheels.iterables.IterableUtils.*;
 
-@SuppressWarnings({"ConstantConditions", "UnusedDeclaration"})
+@SuppressWarnings("ConstantConditions")
 public class RationalDemos {
     private static final boolean USE_RANDOM = false;
     private static final @NotNull String RATIONAL_CHARS = "-/0123456789";

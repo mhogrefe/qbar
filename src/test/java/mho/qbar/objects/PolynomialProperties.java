@@ -26,7 +26,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-@SuppressWarnings("ConstantConditions")
 public class PolynomialProperties {
     private static boolean USE_RANDOM;
     private static final @NotNull String POLYNOMIAL_CHARS = "*+-0123456789^x";

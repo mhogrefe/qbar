@@ -265,7 +265,6 @@ public final class Interval implements Comparable<Interval> {
             throw new NullPointerException();
         if (as.isEmpty())
             throw new IllegalArgumentException();
-        //noinspection ConstantConditions
         return foldl1(Interval::convexHull, as);
     }
 
@@ -479,7 +478,6 @@ public final class Interval implements Comparable<Interval> {
             }
         }
         if (f == Float.MAX_VALUE) {
-            //noinspection ConstantConditions
             return new Interval(
                     Rational.ofExact(FloatingPointUtils.predecessor(f)).get()
                             .add(Rational.LARGEST_FLOAT).shiftRight(1),
@@ -487,7 +485,6 @@ public final class Interval implements Comparable<Interval> {
             );
         }
         if (f == -Float.MAX_VALUE) {
-            //noinspection ConstantConditions
             return new Interval(
                     Rational.LARGEST_FLOAT.negate(),
                     Rational.ofExact(FloatingPointUtils.successor(f)).get()
@@ -496,12 +493,10 @@ public final class Interval implements Comparable<Interval> {
         }
         Rational r = Rational.ofExact(f).get();
         float predecessor = FloatingPointUtils.predecessor(f);
-        @SuppressWarnings("ConstantConditions")
         Rational lower = predecessor == Float.NEGATIVE_INFINITY ?
                 null :
                 r.add(Rational.ofExact(predecessor).get()).shiftRight(1);
         float successor = FloatingPointUtils.successor(f);
-        @SuppressWarnings("ConstantConditions")
         Rational upper = successor == Float.POSITIVE_INFINITY ?
                 null :
                 r.add(Rational.ofExact(successor).get()).shiftRight(1);
@@ -557,7 +552,6 @@ public final class Interval implements Comparable<Interval> {
             }
         }
         if (d == Double.MAX_VALUE) {
-            //noinspection ConstantConditions
             return new Interval(
                     Rational.ofExact(FloatingPointUtils.predecessor(d)).get()
                             .add(Rational.LARGEST_DOUBLE).shiftRight(1),
@@ -565,7 +559,6 @@ public final class Interval implements Comparable<Interval> {
             );
         }
         if (d == -Double.MAX_VALUE) {
-            //noinspection ConstantConditions
             return new Interval(
                     Rational.LARGEST_DOUBLE.negate(),
                     Rational.ofExact(FloatingPointUtils.successor(d)).get()
@@ -574,12 +567,10 @@ public final class Interval implements Comparable<Interval> {
         }
         Rational r = Rational.ofExact(d).get();
         double predecessor = FloatingPointUtils.predecessor(d);
-        @SuppressWarnings("ConstantConditions")
         Rational lower = predecessor == Double.NEGATIVE_INFINITY ?
                 null :
                 r.add(Rational.ofExact(predecessor).get()).shiftRight(1);
         double successor = FloatingPointUtils.successor(d);
-        @SuppressWarnings("ConstantConditions")
         Rational upper = predecessor == Double.POSITIVE_INFINITY ?
                 null :
                 r.add(Rational.ofExact(successor).get()).shiftRight(1);
@@ -1156,7 +1147,6 @@ public final class Interval implements Comparable<Interval> {
      */
     public static @NotNull Interval sum(@NotNull Iterable<Interval> xs) {
         if (any(x -> x == null, xs)) throw new NullPointerException();
-        //noinspection ConstantConditions
         return foldl(Interval::add, ZERO, xs);
     }
 
@@ -1172,7 +1162,6 @@ public final class Interval implements Comparable<Interval> {
      * @return Πxs
      */
     public static @NotNull Interval product(@NotNull Iterable<Interval> xs) {
-        //noinspection ConstantConditions
         return foldl(Interval::multiply, ONE, xs);
     }
 

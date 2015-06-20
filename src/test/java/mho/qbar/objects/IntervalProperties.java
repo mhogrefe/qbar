@@ -29,7 +29,6 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-@SuppressWarnings("ConstantConditions")
 public class IntervalProperties {
     private static boolean USE_RANDOM;
     private static final @NotNull String INTERVAL_CHARS = " (),-/0123456789I[]finty";

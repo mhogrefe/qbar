@@ -22,7 +22,6 @@ import static mho.wheels.ordering.Ordering.lt;
 import static mho.wheels.testing.Testing.propertiesFindInHelper;
 import static org.junit.Assert.*;
 
-@SuppressWarnings("ConstantConditions")
 public class RationalVectorProperties {
     private static boolean USE_RANDOM;
     private static final @NotNull String RATIONAL_VECTOR_CHARS = " ,-/0123456789[]";

@@ -28,7 +28,6 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-@SuppressWarnings("ConstantConditions")
 public class RationalProperties {
     private static boolean USE_RANDOM;
     private static final @NotNull String RATIONAL_CHARS = "-/0123456789";

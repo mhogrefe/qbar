@@ -21,7 +21,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-@SuppressWarnings("ConstantConditions")
 public class RationalTest {
     private static final int TINY_LIMIT = 20;
     private static final @NotNull Rational PI_FLOAT = ofExact((float) Math.PI).get();

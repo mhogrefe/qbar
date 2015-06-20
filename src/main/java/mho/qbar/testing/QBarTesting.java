@@ -26,10 +26,9 @@ public class QBarTesting {
         QBarIterableProvider iq = ip.deepCopy();
         QBarIterableProvider ir = ip.deepCopy();
         for (Triple<T, T, T> t : take(limit, zip3(fxs.apply(ip), fxs.apply(iq), fxs.apply(ir)))) {
-            //noinspection ConstantConditions,ObjectEqualsNull
+            //noinspection ObjectEqualsNull
             assertFalse(t, t.a.equals(null));
             assertTrue(t, t.a.equals(t.b));
-            //noinspection ConstantConditions
             assertTrue(t, t.b.equals(t.c));
         }
 
@@ -59,9 +58,7 @@ public class QBarTesting {
     ) {
         QBarIterableProvider iq = ip.deepCopy();
         for (Pair<T, T> p : take(limit, zip(fxs.apply(ip), fxs.apply(iq)))) {
-            //noinspection ConstantConditions
             assertTrue(p, p.a.equals(p.b));
-            //noinspection ConstantConditions
             assertEquals(p, p.a.hashCode(), p.b.hashCode());
         }
     }
@@ -74,14 +71,12 @@ public class QBarTesting {
         QBarIterableProvider iq = ip.deepCopy();
         QBarIterableProvider ir = ip.deepCopy();
         for (Pair<T, T> p : take(limit, zip(fxs.apply(ip), fxs.apply(iq)))) {
-            //noinspection ConstantConditions
             assertTrue(p, eq(p.a, p.b));
         }
 
         ip.reset();
         iq.reset();
         for (Pair<T, T> p : take(limit, ExhaustiveProvider.INSTANCE.pairs(fxs.apply(ip), fxs.apply(iq)))) {
-            @SuppressWarnings("ConstantConditions")
             int compare = p.a.compareTo(p.b);
             assertTrue(p, compare == 0 || compare == 1 || compare == -1);
             antiSymmetric(Ordering::le, p);
