@@ -5,7 +5,6 @@ import mho.wheels.misc.Readers;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -46,12 +45,12 @@ public final class Interval implements Comparable<Interval> {
     /**
      * The lower bound of this interval if the lower bound is finite, or null if the lower bound is –∞
      */
-    private final @Nullable Rational lower;
+    private final Rational lower;
 
     /**
      * The upper bound of this interval if the upper bound is finite, or null if the upper bound is ∞
      */
-    private final @Nullable Rational upper;
+    private final Rational upper;
 
     /**
      * Private constructor from {@link Rational}s; assumes arguments are valid. If lower is null, the
@@ -67,7 +66,7 @@ public final class Interval implements Comparable<Interval> {
      * @param lower the lower bound
      * @param upper the upper bound
      */
-    private Interval(@Nullable Rational lower, @Nullable Rational upper) {
+    private Interval(Rational lower, Rational upper) {
         this.lower = lower;
         this.upper = upper;
     }
