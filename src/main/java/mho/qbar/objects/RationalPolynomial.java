@@ -14,16 +14,16 @@ import static mho.wheels.iterables.IterableUtils.*;
 import static org.junit.Assert.assertTrue;
 
 /**
- * <p>A univariate polynomial in x with {@link mho.qbar.objects.Rational} coefficients.
+ * <p>A univariate polynomial in x with {@link mho.qbar.objects.Rational} coefficients.</p>
  *
  * <p>There is only one instance of {@code ZERO}, and one instance of {@code ONE}, so these may be compared with other
- * {@code RationalPolynomial}s using {@code ==}. This is not true for {@code X}.
+ * {@code RationalPolynomial}s using {@code ==}. This is not true for {@code X}.</p>
  *
  * <p>This class uses a little-endian dense representation; in other words, the coefficient of x<sup>i</sup> is located
  * at the ith position of the coefficient list. The list contains no trailing zeros. Zero is represented by the empty
- * list.
+ * list.</p>
  *
- * <p>This class is immutable.
+ * <p>This class is immutable.</p>
  */
 public final class RationalPolynomial implements
         Comparable<RationalPolynomial>,
@@ -727,7 +727,7 @@ public final class RationalPolynomial implements
 
     /**
      * Returns the quotient and remainder when {@code this} is divided by {@code that}. To be more precise, the result
-     * is (q, r) such that {@code this}={@code that}×q+r and r=0 or deg(r)<deg({@code that}).
+     * is (q, r) such that {@code this}={@code that}×q+r and r=0 or deg(r){@literal <}deg({@code that}).
      *
      * <ul>
      *  <li>{@code this} may be any {@code RationalPolynomial}.</li>

@@ -17,14 +17,14 @@ import static mho.wheels.ordering.Ordering.*;
 /**
  * <p>The {@code Interval} class represents an interval of real numbers. If we let p and q be rationals, p≤q, the
  * representable intervals are (–∞, ∞), (–∞, q], [p, ∞), and [p, q]. If p = q, the {@code Interval} represents a single
- * number. The empty interval cannot be represented.
+ * number. The empty interval cannot be represented.</p>
  *
  * <p>In general, f(I), where I is an {@code Interval}, is taken to mean the image of I under f. Often this image is
  * not an {@code Interval} itself, in which case the function might return a set of {@code Interval}s, whose closed
  * union is the image, or it may just return the closure of the image's convex hull. Similar considerations apply for
- * functions of two {@code Interval}s, etc.
+ * functions of two {@code Interval}s, <i>etc.</i></p>
  *
- * <p>This class is immutable.
+ * <p>This class is immutable.</p>
  */
 public final class Interval implements Comparable<Interval> {
     /**

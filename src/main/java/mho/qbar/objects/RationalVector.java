@@ -12,12 +12,12 @@ import java.util.*;
 import static mho.wheels.iterables.IterableUtils.*;
 
 /**
- * <p>A vector with {@link Rational} coordinates. May be zero-dimensional.
+ * <p>A vector with {@link Rational} coordinates. May be zero-dimensional.</p>
  *
  * <p>There is only one instance of {@code ZERO_DIMENSIONAL}, so it may be compared with other {@code RationalVector}s
- * using {@code ==}.
+ * using {@code ==}.</p>
  *
- * <p>This class is immutable.
+ * <p>This class is immutable.</p>
  */
 public final class RationalVector implements Comparable<RationalVector>, Iterable<Rational> {
     /**

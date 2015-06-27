@@ -15,16 +15,16 @@ import static mho.wheels.iterables.IterableUtils.*;
 import static org.junit.Assert.assertTrue;
 
 /**
- * <p>A univariate polynomial in x with {@link BigInteger} coefficients.
+ * <p>A univariate polynomial in x with {@link BigInteger} coefficients.</p>
  *
  * <p>There is only one instance of {@code ZERO}, and one instance of {@code ONE}, so these may be compared with other
- * {@code Polynomial}s using {@code ==}. This is not true for {@code X}.
+ * {@code Polynomial}s using {@code ==}. This is not true for {@code X}.</p>
  *
  * <p>This class uses a little-endian dense representation; in other words, the coefficient of x<sup>i</sup> is located
  * at the ith position of the coefficient list. The list contains no trailing zeros. Zero is represented by the empty
- * list.
+ * list.</p>
  *
- * <p>This class is immutable.
+ * <p>This class is immutable.</p>
  */
 public final class Polynomial implements
         Comparable<Polynomial>,

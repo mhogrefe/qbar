@@ -26,12 +26,12 @@ import static org.junit.Assert.assertTrue;
  * <p>The {@code Rational} class uniquely represents rational numbers. {@code denominator} is the smallest positive
  * integer d such that {@code this}×d is an integer. {@code numerator} is the smallest integer n such that n/d equals
  * {@code this}. This means that n and d have no positive common factor greater than 1, and d is always positive.
- * Arithmetic algorithms taken from Knuth.
+ * Arithmetic algorithms taken from Knuth.</p>
  *
  * <p>There is only one instance of {@code ZERO} and one instance of {@code ONE}, so these may be compared with other
- * {@code Rational}s using {@code ==}.
+ * {@code Rational}s using {@code ==}.</p>
  *
- * <p>This class is immutable.
+ * <p>This class is immutable.</p>
  */
 public final class Rational implements Comparable<Rational> {
     /**
