@@ -312,8 +312,24 @@ public abstract class QBarIterableProvider {
         return wheelsProvider.negativeOrdinaryFloats();
     }
 
+    public @NotNull Iterable<Float> nonzeroOrdinaryFloats() {
+        return wheelsProvider.nonzeroOrdinaryFloats();
+    }
+
     public @NotNull Iterable<Float> ordinaryFloats() {
         return wheelsProvider.ordinaryFloats();
+    }
+
+    public @NotNull Iterable<Float> positiveFloats() {
+        return wheelsProvider.positiveFloats();
+    }
+
+    public @NotNull Iterable<Float> negativeFloats() {
+        return wheelsProvider.negativeOrdinaryFloats();
+    }
+
+    public @NotNull Iterable<Float> nonzeroFloats() {
+        return wheelsProvider.nonzeroOrdinaryFloats();
     }
 
     public @NotNull Iterable<Float> floats() {
@@ -328,8 +344,24 @@ public abstract class QBarIterableProvider {
         return wheelsProvider.negativeOrdinaryDoubles();
     }
 
+    public @NotNull Iterable<Double> nonzeroOrdinaryDoubles() {
+        return wheelsProvider.nonzeroOrdinaryDoubles();
+    }
+
     public @NotNull Iterable<Double> ordinaryDoubles() {
         return wheelsProvider.ordinaryDoubles();
+    }
+
+    public @NotNull Iterable<Double> positiveDoubles() {
+        return wheelsProvider.positiveDoubles();
+    }
+
+    public @NotNull Iterable<Double> negativeDoubles() {
+        return wheelsProvider.negativeDoubles();
+    }
+
+    public @NotNull Iterable<Double> nonzeroDoubles() {
+        return wheelsProvider.nonzeroDoubles();
     }
 
     public @NotNull Iterable<Double> doubles() {
