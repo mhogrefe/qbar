@@ -812,16 +812,19 @@ public class IntervalProperties {
             assertFalse(a.toString(), range.b.isNaN());
             assertTrue(a.toString(), range.b >= range.a);
             assertFalse(a.toString(), range.a > 0 && range.a.isInfinite());
-            assertFalse(a.toString(), range.a.equals(-0.0f));
+            assertFalse(a.toString(), FloatingPointUtils.isNegativeZero(range.a));
             assertFalse(a.toString(), range.b < 0 && range.b.isInfinite());
-            assertFalse(a.toString(), range.b.equals(-0.0f) && range.a.equals(0.0f));
+            assertFalse(
+                    a.toString(),
+                    FloatingPointUtils.isNegativeZero(range.b) && FloatingPointUtils.isPositiveZero(range.a)
+            );
 
             Pair<Float, Float> negRange = a.negate().floatRange();
             negRange = new Pair<>(-negRange.b, -negRange.a);
-            float x = range.a.equals(-0.0f) ? 0.0f : range.a;
-            float y = range.b.equals(-0.0f) ? 0.0f : range.b;
-            float xn = negRange.a.equals(-0.0f) ? 0.0f : negRange.a;
-            float yn = negRange.b.equals(-0.0f) ? 0.0f : negRange.b;
+            float x = FloatingPointUtils.isNegativeZero(range.a) ? 0.0f : range.a;
+            float y = FloatingPointUtils.isNegativeZero(range.b) ? 0.0f : range.b;
+            float xn = FloatingPointUtils.isNegativeZero(negRange.a) ? 0.0f : negRange.a;
+            float yn = FloatingPointUtils.isNegativeZero(negRange.b) ? 0.0f : negRange.b;
             aeq(a.toString(), x, xn);
             //noinspection SuspiciousNameCombination
             aeq(a.toString(), y, yn);
@@ -865,16 +868,19 @@ public class IntervalProperties {
             assertFalse(a.toString(), range.b.isNaN());
             assertTrue(a.toString(), range.b >= range.a);
             assertFalse(a.toString(), range.a > 0 && range.a.isInfinite());
-            assertFalse(a.toString(), range.a.equals(-0.0));
+            assertFalse(a.toString(), FloatingPointUtils.isNegativeZero(range.a));
             assertFalse(a.toString(), range.b < 0 && range.b.isInfinite());
-            assertFalse(a.toString(), range.b.equals(-0.0) && range.a.equals(0.0));
+            assertFalse(
+                    a.toString(),
+                    FloatingPointUtils.isNegativeZero(range.b) && FloatingPointUtils.isPositiveZero(range.a)
+            );
 
             Pair<Double, Double> negRange = a.negate().doubleRange();
             negRange = new Pair<>(-negRange.b, -negRange.a);
-            double x = range.a.equals(-0.0) ? 0.0 : range.a;
-            double y = range.b.equals(-0.0) ? 0.0 : range.b;
-            double xn = negRange.a.equals(-0.0) ? 0.0 : negRange.a;
-            double yn = negRange.b.equals(-0.0) ? 0.0 : negRange.b;
+            double x = FloatingPointUtils.isNegativeZero(range.a) ? 0.0 : range.a;
+            double y = FloatingPointUtils.isNegativeZero(range.b) ? 0.0 : range.b;
+            double xn = FloatingPointUtils.isNegativeZero(-0.0) ? 0.0 : negRange.a;
+            double yn = FloatingPointUtils.isNegativeZero(-0.0) ? 0.0 : negRange.b;
             aeq(a.toString(), x, xn);
             //noinspection SuspiciousNameCombination
             aeq(a.toString(), y, yn);

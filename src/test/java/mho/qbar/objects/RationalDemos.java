@@ -5,6 +5,7 @@ import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.iterableProviders.QBarRandomProvider;
 import mho.wheels.iterables.IterableUtils;
 import mho.wheels.math.MathUtils;
+import mho.wheels.misc.FloatingPointUtils;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
@@ -303,7 +304,7 @@ public class RationalDemos {
         initialize();
         Iterable<Rational> rs = map(
                 f -> ofExact(f).get(),
-                filter(f -> !Float.isNaN(f) && Float.isFinite(f) && !f.equals(-0.0f), P.floats())
+                filter(f -> Float.isFinite(f) && !FloatingPointUtils.isNegativeZero(f), P.floats())
         );
         for (Rational r : take(LIMIT, rs)) {
             System.out.println("floatValueExact(" + r + ") = " + r.floatValueExact());
@@ -331,7 +332,7 @@ public class RationalDemos {
         initialize();
         Iterable<Rational> rs = map(
                 d -> ofExact(d).get(),
-                filter(d -> !Double.isNaN(d) && Double.isFinite(d) && !d.equals(-0.0), P.doubles())
+                filter(d -> Double.isFinite(d) && !FloatingPointUtils.isNegativeZero(d), P.doubles())
         );
         for (Rational r : take(LIMIT, rs)) {
             System.out.println("doubleValueExact(" + r + ") = " + r.doubleValueExact());
