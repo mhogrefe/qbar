@@ -304,52 +304,20 @@ public abstract class QBarIterableProvider {
         return wheelsProvider.binaryFractions();
     }
 
-    public @NotNull Iterable<Float> positiveOrdinaryFloats() {
-        return wheelsProvider.positiveOrdinaryFloats();
-    }
-
-    public @NotNull Iterable<Float> negativeOrdinaryFloats() {
-        return wheelsProvider.negativeOrdinaryFloats();
-    }
-
-    public @NotNull Iterable<Float> nonzeroOrdinaryFloats() {
-        return wheelsProvider.nonzeroOrdinaryFloats();
-    }
-
-    public @NotNull Iterable<Float> ordinaryFloats() {
-        return wheelsProvider.ordinaryFloats();
-    }
-
     public @NotNull Iterable<Float> positiveFloats() {
         return wheelsProvider.positiveFloats();
     }
 
     public @NotNull Iterable<Float> negativeFloats() {
-        return wheelsProvider.negativeOrdinaryFloats();
+        return wheelsProvider.negativeFloats();
     }
 
     public @NotNull Iterable<Float> nonzeroFloats() {
-        return wheelsProvider.nonzeroOrdinaryFloats();
+        return wheelsProvider.nonzeroFloats();
     }
 
     public @NotNull Iterable<Float> floats() {
         return wheelsProvider.floats();
-    }
-
-    public @NotNull Iterable<Double> positiveOrdinaryDoubles() {
-        return wheelsProvider.positiveOrdinaryDoubles();
-    }
-
-    public @NotNull Iterable<Double> negativeOrdinaryDoubles() {
-        return wheelsProvider.negativeOrdinaryDoubles();
-    }
-
-    public @NotNull Iterable<Double> nonzeroOrdinaryDoubles() {
-        return wheelsProvider.nonzeroOrdinaryDoubles();
-    }
-
-    public @NotNull Iterable<Double> ordinaryDoubles() {
-        return wheelsProvider.ordinaryDoubles();
     }
 
     public @NotNull Iterable<Double> positiveDoubles() {

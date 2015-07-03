@@ -294,14 +294,15 @@ public class RationalProperties {
         initialize();
         System.out.println("\t\ttesting of(float) properties...");
 
-        Iterable<Float> fs = filter(f -> Float.isFinite(f), P.floats());
+        Iterable<Float> fs = filter(Float::isFinite, P.floats());
         for (float f : take(LIMIT, fs)) {
             Rational r = of(f).get();
             r.validate();
             assertTrue(Float.toString(f), r.hasTerminatingBaseExpansion(BigInteger.valueOf(10)));
         }
 
-        for (float f : take(LIMIT, P.ordinaryFloats())) {
+        fs = filter(g -> Float.isFinite(g) && !FloatingPointUtils.isNegativeZero(g), P.floats());
+        for (float f : take(LIMIT, fs)) {
             Rational r = of(f).get();
             aeqf(Float.toString(f), f, r.floatValue());
             aeq(Float.toString(f), new BigDecimal(Float.toString(f)), r.bigDecimalValueExact());
@@ -312,14 +313,15 @@ public class RationalProperties {
         initialize();
         System.out.println("\t\ttesting of(double) properties...");
 
-        Iterable<Double> ds = filter(d -> Double.isFinite(d), P.doubles());
+        Iterable<Double> ds = filter(Double::isFinite, P.doubles());
         for (double d : take(LIMIT, ds)) {
             Rational r = of(d).get();
             r.validate();
             assertTrue(Double.toString(d), r.hasTerminatingBaseExpansion(BigInteger.valueOf(10)));
         }
 
-        for (double d : take(LIMIT, P.ordinaryDoubles())) {
+        ds = filter(e -> Double.isFinite(e) && !FloatingPointUtils.isNegativeZero(e), P.doubles());
+        for (double d : take(LIMIT, ds)) {
             Rational r = of(d).get();
             aeqd(Double.toString(d), d, r.doubleValue());
             aeq(Double.toString(d), new BigDecimal(Double.toString(d)), r.bigDecimalValueExact());
@@ -347,7 +349,8 @@ public class RationalProperties {
             );
         }
 
-        for (float f : take(LIMIT, P.ordinaryFloats())) {
+        Iterable<Float> fs = filter(g -> Float.isFinite(g) && !FloatingPointUtils.isNegativeZero(g), P.floats());
+        for (float f : take(LIMIT, fs)) {
             Rational r = ofExact(f).get();
             aeqf(Float.toString(f), f, r.floatValue());
         }
@@ -374,7 +377,8 @@ public class RationalProperties {
             );
         }
 
-        for (double d : take(LIMIT, P.ordinaryDoubles())) {
+        Iterable<Double> ds = filter(e -> Double.isFinite(e) && !FloatingPointUtils.isNegativeZero(e), P.doubles());
+        for (double d : take(LIMIT, ds)) {
             Rational r = ofExact(d).get();
             aeqd(Double.toString(d), d, r.doubleValue());
         }
@@ -1137,7 +1141,10 @@ public class RationalProperties {
                     Rational hi = ofExact(FloatingPointUtils.successor(f)).get();
                     return lo.add(hi).shiftRight(1);
                 },
-                filter(f -> !FloatingPointUtils.isNegativeZero(f) && f != Float.MAX_VALUE, P.ordinaryFloats())
+                filter(
+                        f -> Float.isFinite(f) && !FloatingPointUtils.isNegativeZero(f) && f != Float.MAX_VALUE,
+                        P.floats()
+                )
         );
         for (Rational r : take(LIMIT, midpoints)) {
             float down = r.floatValue(RoundingMode.DOWN);
@@ -1251,7 +1258,7 @@ public class RationalProperties {
                     Rational hi = ofExact(FloatingPointUtils.successor(f)).get();
                     return lo.add(hi).shiftRight(1);
                 },
-                filter(f -> !FloatingPointUtils.isNegativeZero(f) && f != Float.MAX_VALUE, P.ordinaryFloats())
+                filter(f -> Float.isFinite(f) && f != Float.MAX_VALUE, P.floats())
         );
         for (Rational r : take(LIMIT, midpoints)) {
             float down = r.floatValue(RoundingMode.DOWN);
@@ -1473,12 +1480,12 @@ public class RationalProperties {
         }
 
         Iterable<Rational> midpoints = map(
-                f -> {
-                    Rational lo = ofExact(f).get();
-                    Rational hi = ofExact(FloatingPointUtils.successor(f)).get();
+                d -> {
+                    Rational lo = ofExact(d).get();
+                    Rational hi = ofExact(FloatingPointUtils.successor(d)).get();
                     return lo.add(hi).shiftRight(1);
                 },
-                filter(f -> !FloatingPointUtils.isNegativeZero(f) && f != Double.MAX_VALUE, P.ordinaryDoubles())
+                filter(d -> Double.isFinite(d) && d != Double.MAX_VALUE, P.doubles())
         );
         for (Rational r : take(LIMIT, midpoints)) {
             double down = r.doubleValue(RoundingMode.DOWN);
@@ -1587,12 +1594,12 @@ public class RationalProperties {
         }
 
         Iterable<Rational> midpoints = map(
-                f -> {
-                    Rational lo = ofExact(f).get();
-                    Rational hi = ofExact(FloatingPointUtils.successor(f)).get();
+                d -> {
+                    Rational lo = ofExact(d).get();
+                    Rational hi = ofExact(FloatingPointUtils.successor(d)).get();
                     return lo.add(hi).shiftRight(1);
                 },
-                filter(f -> !FloatingPointUtils.isNegativeZero(f) && f != Double.MAX_VALUE, P.ordinaryDoubles())
+                filter(d -> Double.isFinite(d) && d != Double.MAX_VALUE, P.doubles())
         );
         for (Rational r : take(LIMIT, midpoints)) {
             double down = r.doubleValue(RoundingMode.DOWN);

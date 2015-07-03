@@ -821,10 +821,10 @@ public class IntervalProperties {
 
             Pair<Float, Float> negRange = a.negate().floatRange();
             negRange = new Pair<>(-negRange.b, -negRange.a);
-            float x = FloatingPointUtils.isNegativeZero(range.a) ? 0.0f : range.a;
-            float y = FloatingPointUtils.isNegativeZero(range.b) ? 0.0f : range.b;
-            float xn = FloatingPointUtils.isNegativeZero(negRange.a) ? 0.0f : negRange.a;
-            float yn = FloatingPointUtils.isNegativeZero(negRange.b) ? 0.0f : negRange.b;
+            float x = FloatingPointUtils.absNegativeZeros(range.a);
+            float y = FloatingPointUtils.absNegativeZeros(range.b);
+            float xn = FloatingPointUtils.absNegativeZeros(negRange.a);
+            float yn = FloatingPointUtils.absNegativeZeros(negRange.b);
             aeq(a.toString(), x, xn);
             //noinspection SuspiciousNameCombination
             aeq(a.toString(), y, yn);
@@ -877,10 +877,10 @@ public class IntervalProperties {
 
             Pair<Double, Double> negRange = a.negate().doubleRange();
             negRange = new Pair<>(-negRange.b, -negRange.a);
-            double x = FloatingPointUtils.isNegativeZero(range.a) ? 0.0 : range.a;
-            double y = FloatingPointUtils.isNegativeZero(range.b) ? 0.0 : range.b;
-            double xn = FloatingPointUtils.isNegativeZero(-0.0) ? 0.0 : negRange.a;
-            double yn = FloatingPointUtils.isNegativeZero(-0.0) ? 0.0 : negRange.b;
+            double x = FloatingPointUtils.absNegativeZeros(range.a);
+            double y = FloatingPointUtils.absNegativeZeros(range.b);
+            double xn = FloatingPointUtils.absNegativeZeros(negRange.a);
+            double yn = FloatingPointUtils.absNegativeZeros(negRange.b);
             aeq(a.toString(), x, xn);
             //noinspection SuspiciousNameCombination
             aeq(a.toString(), y, yn);
