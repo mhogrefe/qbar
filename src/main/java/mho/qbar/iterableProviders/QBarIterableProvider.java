@@ -17,6 +17,7 @@ import java.util.function.Function;
 
 import static mho.wheels.iterables.IterableUtils.map;
 
+@SuppressWarnings("unused")
 public abstract class QBarIterableProvider {
     protected @NotNull IterableProvider wheelsProvider;
 
@@ -28,110 +29,150 @@ public abstract class QBarIterableProvider {
         return wheelsProvider;
     }
 
+    /**
+     * Returns a shallow copy of {@code this}.
+     */
     public @NotNull QBarIterableProvider copy() {
         return this;
     }
 
+    /**
+     * Returns a deep copy of {@code this}.
+     */
     public @NotNull QBarIterableProvider deepCopy() {
         return this;
     }
 
+    /**
+     * Resets {@code this} to its original state (if {@code this} has any state).
+     */
     public void reset() {
         wheelsProvider.reset();
     }
 
+    /**
+     * Returns a shallow copy of {@code this} with a given primary scale.
+     *
+     * @param scale the primary scale.
+     */
     public @NotNull QBarIterableProvider withScale(int scale) {
         return this;
     }
 
+    /**
+     * Returns a shallow copy of {@code this} with a given secondary scale.
+     *
+     * @param secondaryScale the secondary scale.
+     */
     public @NotNull QBarIterableProvider withSecondaryScale(int secondaryScale) {
         return this;
     }
 
+    /**
+     * Generates {@code Boolean}s.
+     */
     public @NotNull Iterable<Boolean> booleans() {
         return wheelsProvider.booleans();
     }
 
+    /**
+     * Generates {@link Ordering}s.
+     */
     public @NotNull Iterable<Ordering> orderings() {
         return wheelsProvider.orderings();
     }
 
+    /**
+     * Generates {@code RoundingMode}s.
+     */
     public @NotNull Iterable<RoundingMode> roundingModes() {
         return wheelsProvider.roundingModes();
     }
 
+    /**
+     * Generates values from a list, sampled uniformly if applicable.
+     *
+     * @param xs the source list
+     */
     public @NotNull <T> Iterable<T> uniformSample(@NotNull List<T> xs) {
         return wheelsProvider.uniformSample(xs);
     }
 
+    /**
+     * Generates {@code Character}s from a {@code String}, sampled uniformly if applicable.
+     *
+     * @param s the source {@code String}
+     */
     public @NotNull Iterable<Character> uniformSample(@NotNull String s) {
         return wheelsProvider.uniformSample(s);
     }
 
-    public @NotNull Iterable<Integer> naturalIntegersGeometric() {
-        return wheelsProvider.naturalIntegersGeometric();
-    }
-
-    public @NotNull Iterable<Integer> positiveIntegersGeometric() {
-        return wheelsProvider.positiveIntegersGeometric();
-    }
-
-    public @NotNull Iterable<Integer> negativeIntegersGeometric() {
-        return wheelsProvider.negativeIntegersGeometric();
-    }
-
-    public @NotNull Iterable<Integer> nonzeroIntegersGeometric() {
-        return wheelsProvider.nonzeroIntegersGeometric();
-    }
-
-    public @NotNull Iterable<Integer> integersGeometric() {
-        return wheelsProvider.integersGeometric();
-    }
-
-    public @NotNull Iterable<Integer> rangeUpGeometric(int a) {
-        return wheelsProvider.rangeUpGeometric(a);
-    }
-
-    public @NotNull Iterable<Integer> rangeDownGeometric(int a) {
-        return wheelsProvider.rangeDownGeometric(a);
-    }
-
+    /**
+     * Generates positive {@code Byte}s.
+     */
     public @NotNull Iterable<Byte> positiveBytes() {
         return wheelsProvider.positiveBytes();
     }
 
+    /**
+     * Generates positive {@code Short}s.
+     */
     public @NotNull Iterable<Short> positiveShorts() {
         return wheelsProvider.positiveShorts();
     }
 
+    /**
+     * Generates positive {@code Integer}s.
+     */
     public @NotNull Iterable<Integer> positiveIntegers() {
         return wheelsProvider.positiveIntegers();
     }
 
+    /**
+     * Generates positive {@code Long}s.
+     */
     public @NotNull Iterable<Long> positiveLongs() {
         return wheelsProvider.positiveLongs();
     }
 
+    /**
+     * Generates positive {@code BigInteger}s.
+     */
     public @NotNull Iterable<BigInteger> positiveBigIntegers() {
         return wheelsProvider.positiveBigIntegers();
     }
 
+    /**
+     * Generates negative {@code Byte}s.
+     */
     public @NotNull Iterable<Byte> negativeBytes() {
         return wheelsProvider.negativeBytes();
     }
 
+    /**
+     * Generates negative {@code Short}s.
+     */
     public @NotNull Iterable<Short> negativeShorts() {
         return wheelsProvider.negativeShorts();
     }
 
+    /**
+     * Generates negative {@code Integer}s.
+     */
     public @NotNull Iterable<Integer> negativeIntegers() {
         return wheelsProvider.negativeIntegers();
     }
 
+    /**
+     * Generates negative {@code Long}s.
+     */
     public @NotNull Iterable<Long> negativeLongs() {
         return wheelsProvider.negativeLongs();
     }
 
+    /**
+     * Generates negative {@code BigInteger}s.
+     */
     public @NotNull Iterable<BigInteger> negativeBigIntegers() {
         return wheelsProvider.negativeBigIntegers();
     }
@@ -202,6 +243,34 @@ public abstract class QBarIterableProvider {
 
     public @NotNull Iterable<Character> characters() {
         return wheelsProvider.characters();
+    }
+
+    public @NotNull Iterable<Integer> naturalIntegersGeometric() {
+        return wheelsProvider.naturalIntegersGeometric();
+    }
+
+    public @NotNull Iterable<Integer> positiveIntegersGeometric() {
+        return wheelsProvider.positiveIntegersGeometric();
+    }
+
+    public @NotNull Iterable<Integer> negativeIntegersGeometric() {
+        return wheelsProvider.negativeIntegersGeometric();
+    }
+
+    public @NotNull Iterable<Integer> nonzeroIntegersGeometric() {
+        return wheelsProvider.nonzeroIntegersGeometric();
+    }
+
+    public @NotNull Iterable<Integer> integersGeometric() {
+        return wheelsProvider.integersGeometric();
+    }
+
+    public @NotNull Iterable<Integer> rangeUpGeometric(int a) {
+        return wheelsProvider.rangeUpGeometric(a);
+    }
+
+    public @NotNull Iterable<Integer> rangeDownGeometric(int a) {
+        return wheelsProvider.rangeDownGeometric(a);
     }
 
     public @NotNull Iterable<Byte> rangeUp(byte a) {
