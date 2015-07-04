@@ -17,6 +17,7 @@ import static mho.wheels.ordering.Ordering.le;
 import static mho.wheels.ordering.Ordering.lt;
 import static org.junit.Assert.assertTrue;
 
+@SuppressWarnings("unused")
 public class QBarRandomProvider extends QBarIterableProvider {
     private QBarRandomProvider(@NotNull RandomProvider randomProvider) {
         super(randomProvider);
