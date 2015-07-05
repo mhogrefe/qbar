@@ -726,17 +726,17 @@ public final class Rational implements Comparable<Rational> {
             return new Pair<>(-negativeRange.b, -negativeRange.a);
         }
         int exponent = binaryExponent();
-        if (exponent > 127 || exponent == 127 && gt(this, LARGEST_FLOAT)) {
+        if (exponent > Float.MAX_EXPONENT || exponent == Float.MAX_EXPONENT && gt(this, LARGEST_FLOAT)) {
             return new Pair<>(Float.MAX_VALUE, Float.POSITIVE_INFINITY);
         }
         Rational fraction;
         int adjustedExponent;
-        if (exponent < -126) {
+        if (exponent < Float.MIN_EXPONENT) {
             fraction = shiftLeft(149);
             adjustedExponent = 0;
         } else {
             fraction = shiftRight(exponent).subtract(ONE).shiftLeft(23);
-            adjustedExponent = exponent + 127;
+            adjustedExponent = exponent + Float.MAX_EXPONENT;
         }
         float loFloat = Float.intBitsToFloat((adjustedExponent << 23) + fraction.floor().intValueExact());
         float hiFloat = fraction.denominator.equals(BigInteger.ONE) ? loFloat : FloatingPointUtils.successor(loFloat);
@@ -771,17 +771,17 @@ public final class Rational implements Comparable<Rational> {
             return new Pair<>(-negativeRange.b, -negativeRange.a);
         }
         int exponent = binaryExponent();
-        if (exponent > 1023 || exponent == 1023 && gt(this, LARGEST_DOUBLE)) {
+        if (exponent > Double.MAX_EXPONENT || exponent == Double.MAX_EXPONENT && gt(this, LARGEST_DOUBLE)) {
             return new Pair<>(Double.MAX_VALUE, Double.POSITIVE_INFINITY);
         }
         Rational fraction;
         int adjustedExponent;
-        if (exponent < -1022) {
+        if (exponent < Double.MIN_EXPONENT) {
             fraction = shiftLeft(1074);
             adjustedExponent = 0;
         } else {
             fraction = shiftRight(exponent).subtract(ONE).shiftLeft(52);
-            adjustedExponent = exponent + 1023;
+            adjustedExponent = exponent + Double.MAX_EXPONENT;
         }
         double loDouble = Double.longBitsToDouble(((long) adjustedExponent << 52) + fraction.floor().longValueExact());
         double hiDouble = fraction.denominator.equals(BigInteger.ONE) ?
