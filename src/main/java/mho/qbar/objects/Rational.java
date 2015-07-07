@@ -17,6 +17,7 @@ import java.util.*;
 import java.util.function.Function;
 
 import static mho.wheels.iterables.IterableUtils.*;
+import static mho.wheels.misc.FloatingPointUtils.*;
 import static mho.wheels.ordering.Ordering.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -52,7 +53,7 @@ public final class Rational implements Comparable<Rational> {
      * The largest subnormal float value, or (2<sup>23</sup>–1)/2<sup>149</sup>
      */
     public static final @NotNull Rational LARGEST_SUBNORMAL_FLOAT =
-            ofExact(FloatingPointUtils.predecessor(Float.MIN_NORMAL)).get();
+            ofExact(predecessor(Float.MIN_NORMAL)).get();
 
     /**
      * The smallest positive normal float value, or 2<sup>–126</sup>
@@ -73,7 +74,7 @@ public final class Rational implements Comparable<Rational> {
      * The largest subnormal double value, or (2<sup>52</sup>–1)/2<sup>1074</sup>
      */
     public static final @NotNull Rational LARGEST_SUBNORMAL_DOUBLE =
-            ofExact(FloatingPointUtils.predecessor(Double.MIN_NORMAL)).get();
+            ofExact(predecessor(Double.MIN_NORMAL)).get();
 
     /**
      * The smallest positive normal double value, or 2<sup>–1022</sup>
@@ -346,7 +347,7 @@ public final class Rational implements Comparable<Rational> {
     public static @NotNull Optional<Rational> ofExact(float f) {
         if (f == 0.0f) return Optional.of(ZERO);
         if (f == 1.0f) return Optional.of(ONE);
-        Optional<Pair<Integer, Integer>> ome = FloatingPointUtils.toMantissaAndExponent(f);
+        Optional<Pair<Integer, Integer>> ome = toMantissaAndExponent(f);
         if (!ome.isPresent()) return Optional.empty();
         Pair<Integer, Integer> me = ome.get();
         return Optional.of(of(me.a).shiftLeft(me.b));
@@ -377,7 +378,7 @@ public final class Rational implements Comparable<Rational> {
     public static @NotNull Optional<Rational> ofExact(double d) {
         if (d == 0.0) return Optional.of(ZERO);
         if (d == 1.0) return Optional.of(ONE);
-        Optional<Pair<Long, Integer>> ome = FloatingPointUtils.toMantissaAndExponent(d);
+        Optional<Pair<Long, Integer>> ome = toMantissaAndExponent(d);
         if (!ome.isPresent()) return Optional.empty();
         Pair<Long, Integer> me = ome.get();
         return Optional.of(of(me.a).shiftLeft(me.b));
@@ -732,14 +733,15 @@ public final class Rational implements Comparable<Rational> {
         Rational fraction;
         int adjustedExponent;
         if (exponent < Float.MIN_EXPONENT) {
-            fraction = shiftLeft(149);
+            fraction = shiftRight(MIN_SUBNORMAL_FLOAT_EXPONENT);
             adjustedExponent = 0;
         } else {
-            fraction = shiftRight(exponent).subtract(ONE).shiftLeft(23);
+            fraction = shiftRight(exponent).subtract(ONE).shiftLeft(FLOAT_FRACTION_WIDTH);
             adjustedExponent = exponent + Float.MAX_EXPONENT;
         }
-        float loFloat = Float.intBitsToFloat((adjustedExponent << 23) + fraction.floor().intValueExact());
-        float hiFloat = fraction.denominator.equals(BigInteger.ONE) ? loFloat : FloatingPointUtils.successor(loFloat);
+        float loFloat = Float.intBitsToFloat((adjustedExponent << FLOAT_FRACTION_WIDTH) +
+                fraction.floor().intValueExact());
+        float hiFloat = fraction.denominator.equals(BigInteger.ONE) ? loFloat : successor(loFloat);
         return new Pair<>(loFloat, hiFloat);
     }
 
@@ -777,16 +779,17 @@ public final class Rational implements Comparable<Rational> {
         Rational fraction;
         int adjustedExponent;
         if (exponent < Double.MIN_EXPONENT) {
-            fraction = shiftLeft(1074);
+            fraction = shiftRight(MIN_SUBNORMAL_DOUBLE_EXPONENT);
             adjustedExponent = 0;
         } else {
-            fraction = shiftRight(exponent).subtract(ONE).shiftLeft(52);
+            fraction = shiftRight(exponent).subtract(ONE).shiftLeft(DOUBLE_FRACTION_WIDTH);
             adjustedExponent = exponent + Double.MAX_EXPONENT;
         }
-        double loDouble = Double.longBitsToDouble(((long) adjustedExponent << 52) + fraction.floor().longValueExact());
+        double loDouble = Double.longBitsToDouble(((long) adjustedExponent << DOUBLE_FRACTION_WIDTH) +
+                fraction.floor().longValueExact());
         double hiDouble = fraction.denominator.equals(BigInteger.ONE) ?
                 loDouble :
-                FloatingPointUtils.successor(loDouble);
+                successor(loDouble);
         return new Pair<>(loDouble, hiDouble);
     }
 
