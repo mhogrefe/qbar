@@ -75,26 +75,80 @@ public class QBarRandomProvider extends QBarIterableProvider {
         return ((RandomProvider) wheelsProvider).getSeed();
     }
 
+    /**
+     * A {@code QBarRandomProvider} with the same fields as {@code this}. The copy shares its PRNG with the original.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code QBarRandomProvider}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @return A copy of {@code this}.
+     */
     @Override
     public @NotNull QBarRandomProvider copy() {
         return new QBarRandomProvider(((RandomProvider) wheelsProvider).copy());
     }
 
+    /**
+     * A {@code QBarRandomProvider} with the same fields as {@code this}. The copy receives a new copy of the PRNG, so
+     * generating values from the copy will not affect the state of the original's PRNG.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code QBarRandomProvider}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @return A copy of {@code this}.
+     */
     @Override
     public @NotNull QBarRandomProvider deepCopy() {
         return new QBarRandomProvider(((RandomProvider) wheelsProvider).deepCopy());
     }
 
+    /**
+     * A {@code QBarRandomProvider} with the same fields as {@code this} except for a new scale.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code QBarRandomProvider}.</li>
+     *  <li>{@code scale} may be any {@code int}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param scale the new scale
+     * @return A copy of {@code this} with a new scale
+     */
     @Override
     public @NotNull QBarIterableProvider withScale(int scale) {
         return new QBarRandomProvider((RandomProvider) wheelsProvider.withScale(scale));
     }
 
+    /**
+     * A {@code QBarRandomProvider} with the same fields as {@code this} except for a new secondary scale.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code QBarRandomProvider}.</li>
+     *  <li>{@code secondaryScale} mat be any {@code int}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param secondaryScale the new secondary scale
+     * @return A copy of {@code this} with a new secondary scale
+     */
     @Override
     public @NotNull QBarIterableProvider withSecondaryScale(int secondaryScale) {
         return new QBarRandomProvider((RandomProvider) wheelsProvider.withScale(secondaryScale));
     }
 
+    /**
+     * Returns an id which has a good chance of being different in two instances with unequal {@code prng}s. It's used
+     * in {@link QBarRandomProvider#toString()} to distinguish between different {@code QBarRandomProvider} instances.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code QBarRandomProvider}.</li>
+     *  <li>{@code this} may be any {@code long}.</li>
+     * </ul>
+     */
     public long getId() {
         return ((RandomProvider) wheelsProvider).getId();
     }
