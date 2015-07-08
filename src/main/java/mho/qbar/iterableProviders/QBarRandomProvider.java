@@ -153,30 +153,105 @@ public class QBarRandomProvider extends QBarIterableProvider {
         return ((RandomProvider) wheelsProvider).getId();
     }
 
+    /**
+     * Returns a randomly-generated {@code int} from a uniform distribution.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code QBarRandomProvider}.</li>
+     *  <li>The result may be any {@code int}.</li>
+     * </ul>
+     *
+     * @return an {@code int}
+     */
     public int nextInt() {
         return ((RandomProvider) wheelsProvider).nextInt();
     }
 
+    /**
+     * Returns a randomly-generated {@code long} from a uniform distribution.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code QBarRandomProvider}.</li>
+     *  <li>The result may be any {@code long}.</li>
+     * </ul>
+     *
+     * @return a {@code long}
+     */
     public long nextLong() {
         return ((RandomProvider) wheelsProvider).nextLong();
     }
 
+    /**
+     * Returns a randomly-generated {@code boolean} from a uniform distribution.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code QBarRandomProvider}.</li>
+     *  <li>The result may be either {@code boolean}.</li>
+     * </ul>
+     *
+     * @return a {@code boolean}
+     */
     public boolean nextBoolean() {
         return ((RandomProvider) wheelsProvider).nextBoolean();
     }
 
+    /**
+     * Returns a randomly-generated value taken from a given list.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code QBarRandomProvider}.</li>
+     *  <li>{@code xs} cannot be empty.</li>
+     *  <li>The result may be any value of type {@code T}, or null.</li>
+     * </ul>
+     *
+     * @param xs the source list
+     * @param <T> the type of {@code xs}'s elements
+     * @return a value from {@code xs}
+     */
     public <T> T nextUniformSample(@NotNull List<T> xs) {
         return ((RandomProvider) wheelsProvider).nextUniformSample(xs);
     }
 
+    /**
+     * Returns a randomly-generated character taken from a given {@code String}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code QBarRandomProvider}.</li>
+     *  <li>{@code s} cannot be empty.</li>
+     *  <li>The result may be any {@code char}.</li>
+     * </ul>
+     *
+     * @param s the source {@code String}
+     * @return a {@code char} from {@code s}
+     */
     public char nextUniformSample(@NotNull String s) {
         return ((RandomProvider) wheelsProvider).nextUniformSample(s);
     }
 
+    /**
+     * Returns a randomly-generated {@code Ordering} from a uniform distribution.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code QBarRandomProvider}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @return an {@code Ordering}
+     */
     public @NotNull Ordering nextOrdering() {
         return ((RandomProvider) wheelsProvider).nextOrdering();
     }
 
+    /**
+     * Returns a randomly-generated {@code RoundingMode} from a uniform distribution.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code QBarRandomProvider}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @return a {@code RoundingMode}
+     */
     public @NotNull RoundingMode nextRoundingMode() {
         return ((RandomProvider) wheelsProvider).nextRoundingMode();
     }
