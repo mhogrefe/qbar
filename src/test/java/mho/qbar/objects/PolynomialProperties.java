@@ -29,6 +29,7 @@ import static org.junit.Assert.fail;
 public class PolynomialProperties {
     private static boolean USE_RANDOM;
     private static final @NotNull String POLYNOMIAL_CHARS = "*+-0123456789^x";
+    private static final int EXPONENT_CUTOFF = 1000;
     private static int LIMIT;
 
     private static QBarIterableProvider P;
@@ -1152,7 +1153,7 @@ public class PolynomialProperties {
         } else {
             cs = P.uniformSample(POLYNOMIAL_CHARS);
         }
-        Iterable<String> ss = filter(s -> read(s).isPresent(), P.strings(cs));
+        Iterable<String> ss = filter(s -> read(EXPONENT_CUTOFF, s).isPresent(), P.strings(cs));
         for (String s : take(LIMIT, ss)) {
             Optional<Polynomial> op = read(s);
             op.get().validate();
@@ -1167,8 +1168,8 @@ public class PolynomialProperties {
                 LIMIT,
                 P.getWheelsProvider(),
                 P.polynomials(),
-                Polynomial::read,
-                Polynomial::findIn,
+                s -> read(EXPONENT_CUTOFF, s),
+                s -> findIn(EXPONENT_CUTOFF, s),
                 p -> {}
         );
     }

@@ -1,13 +1,10 @@
 package mho.qbar.objects;
 
-import mho.wheels.iterables.IterableUtils;
 import mho.wheels.misc.Readers;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
 import java.math.BigInteger;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import static mho.qbar.objects.RationalPolynomial.*;

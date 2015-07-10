@@ -30,6 +30,7 @@ import static org.junit.Assert.fail;
 public class RationalPolynomialProperties {
     private static boolean USE_RANDOM;
     private static final @NotNull String RATIONAL_POLYNOMIAL_CHARS = "*+-/0123456789^x";
+    private static final int EXPONENT_CUTOFF = 1000;
     private static int LIMIT;
 
     private static QBarIterableProvider P;
@@ -1491,7 +1492,7 @@ public class RationalPolynomialProperties {
         } else {
             cs = P.uniformSample(RATIONAL_POLYNOMIAL_CHARS);
         }
-        Iterable<String> ss = filter(s -> read(s).isPresent(), P.strings(cs));
+        Iterable<String> ss = filter(s -> read(EXPONENT_CUTOFF, s).isPresent(), P.strings(cs));
         for (String s : take(LIMIT, ss)) {
             Optional<RationalPolynomial> op = read(s);
             op.get().validate();
@@ -1505,8 +1506,8 @@ public class RationalPolynomialProperties {
         propertiesFindInHelper(
                 LIMIT, P.getWheelsProvider(),
                 P.rationalPolynomials(),
-                RationalPolynomial::read,
-                RationalPolynomial::findIn,
+                s -> read(EXPONENT_CUTOFF, s),
+                s -> findIn(EXPONENT_CUTOFF, s),
                 rp -> {}
         );
     }

@@ -830,7 +830,10 @@ public final class RationalPolynomial implements
      * @return the wrapped {@code RationalPolynomial} represented by {@code s}, or {@code empty} if {@code s} is
      * invalid.
      */
-    public static @NotNull Optional<RationalPolynomial> read(@NotNull String s) {
+    private static @NotNull Optional<RationalPolynomial> genericRead(
+            @NotNull String s,
+            @NotNull Function<String, Optional<Integer>> exponentHandler
+    ) {
         if (s.equals("0")) return Optional.of(ZERO);
         if (s.equals("1")) return Optional.of(ONE);
         if (s.isEmpty() || head(s) == '+') return Optional.empty();
@@ -898,7 +901,7 @@ public final class RationalPolynomial implements
                         break;
                     case 1:
                         String powerString = monomialString.substring(caretIndex + 1);
-                        Optional<Integer> oPower = Readers.readInteger(powerString);
+                        Optional<Integer> oPower = exponentHandler.apply(powerString);
                         if (!oPower.isPresent()) return Optional.empty();
                         power = oPower.get();
                         if (power < 2) return Optional.empty(); // no x^1, x^0, x^-1, ... allowed
@@ -917,6 +920,20 @@ public final class RationalPolynomial implements
             coefficients.set(monomial.b, monomial.a);
         }
         return Optional.of(new RationalPolynomial(coefficients));
+    }
+
+    public static @NotNull Optional<RationalPolynomial> read(@NotNull String s) {
+        return genericRead(s, Readers::readInteger);
+    }
+
+    public static @NotNull Optional<RationalPolynomial> read(int exponentCutoff, @NotNull String s) {
+        return genericRead(
+                s,
+                powerString -> {
+                    Optional<Integer> oPower = Readers.readInteger(powerString);
+                    return !oPower.isPresent() || oPower.get() > exponentCutoff ? Optional.<Integer>empty() : oPower;
+                }
+        );
     }
 
     /**
@@ -938,6 +955,10 @@ public final class RationalPolynomial implements
      */
     public static @NotNull Optional<Pair<RationalPolynomial, Integer>> findIn(@NotNull String s) {
         return Readers.genericFindIn(RationalPolynomial::read, "*+-/0123456789^x").apply(s);
+    }
+
+    public static @NotNull Optional<Pair<RationalPolynomial, Integer>> findIn(int exponentCutoff, @NotNull String s) {
+        return Readers.genericFindIn(t -> read(exponentCutoff, t), "*+-/0123456789^x").apply(s);
     }
 
     /**
@@ -982,7 +1003,7 @@ public final class RationalPolynomial implements
      */
     public void validate() {
         if (!coefficients.isEmpty()) {
-            assertTrue(toString(), !last(coefficients).equals(BigInteger.ZERO));
+            assertTrue(toString(), last(coefficients) != Rational.ZERO);
         }
         if (equals(ZERO)) assertTrue(toString(), this == ZERO);
         if (equals(ONE)) assertTrue(toString(), this == ONE);

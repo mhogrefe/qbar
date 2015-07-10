@@ -18,11 +18,13 @@ import java.util.List;
 
 import static mho.qbar.objects.Rational.*;
 import static mho.wheels.iterables.IterableUtils.*;
+import static mho.wheels.ordering.Ordering.le;
 
 @SuppressWarnings("ConstantConditions")
 public class RationalDemos {
     private static final boolean USE_RANDOM = false;
     private static final @NotNull String RATIONAL_CHARS = "-/0123456789";
+    private static final int DENOMINATOR_CUTOFF = 1000000;
     private static final int SMALLER_LIMIT = 500;
     private static final int SMALL_LIMIT = 1000;
     private static final int MEDIUM_LIMIT = 3000;
@@ -199,9 +201,15 @@ public class RationalDemos {
 
     private static void demoHasTerminatingBaseExpansion() {
         initialize();
-        Iterable<Pair<Rational, BigInteger>> ps = P.pairsSquareRootOrder(
-                cons(ZERO, P.withScale(20).positiveRationals()),
-                map(i -> BigInteger.valueOf(i + 2), P.withScale(20).naturalIntegersGeometric())
+        Iterable<Pair<Rational, BigInteger>> ps = P.pairs(
+                P.withSpecialElement(
+                        ZERO,
+                        filterInfinite(
+                                r -> le(r.getDenominator(), BigInteger.valueOf(DENOMINATOR_CUTOFF)),
+                                P.withScale(8).positiveRationals()
+                        )
+                ),
+                P.withScale(8).rangeUp(BigInteger.valueOf(2))
         );
         for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
             System.out.println(p.a + (p.a.hasTerminatingBaseExpansion(p.b) ? " has " : " doesn't have ") +
@@ -569,9 +577,15 @@ public class RationalDemos {
 
     private static void demoPositionalNotation() {
         initialize();
-        Iterable<Pair<Rational, BigInteger>> ps = P.pairsSquareRootOrder(
-                cons(ZERO, P.withScale(8).positiveRationals()),
-                map(i -> BigInteger.valueOf(i + 2), P.withScale(20).naturalIntegersGeometric())
+        Iterable<Pair<Rational, BigInteger>> ps = P.pairs(
+                P.withSpecialElement(
+                        ZERO,
+                        filterInfinite(
+                                r -> le(r.getDenominator(), BigInteger.valueOf(DENOMINATOR_CUTOFF)),
+                                P.withScale(8).positiveRationals()
+                        )
+                ),
+                P.withScale(8).rangeUp(BigInteger.valueOf(2))
         );
         for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
             System.out.println("positionalNotation(" + p.a + ", " + p.b + ") = " + p.a.positionalNotation(p.b));

@@ -31,6 +31,7 @@ import static org.junit.Assert.fail;
 public class RationalProperties {
     private static boolean USE_RANDOM;
     private static final @NotNull String RATIONAL_CHARS = "-/0123456789";
+    private static final int DENOMINATOR_CUTOFF = 1000000;
     private static final int SMALL_LIMIT = 1000;
     private static int LIMIT;
 
@@ -657,26 +658,21 @@ public class RationalProperties {
 
         System.out.println("\t\ttesting hasTerminatingBaseExpansion(BigInteger) properties...");
 
-        Iterable<Pair<Rational, BigInteger>> ps = P.pairsSquareRootOrder(
-                cons(ZERO, P.withScale(20).positiveRationals()),
-                map(i -> BigInteger.valueOf(i + 2), P.withScale(20).naturalIntegersGeometric())
+        Iterable<Pair<Rational, BigInteger>> ps = P.pairs(
+                P.withSpecialElement(
+                        ZERO,
+                        filterInfinite(
+                                r -> le(r.getDenominator(), BigInteger.valueOf(DENOMINATOR_CUTOFF)),
+                                P.withScale(8).positiveRationals()
+                        )
+                ),
+                P.withScale(8).rangeUp(BigInteger.valueOf(2))
         );
-        //todo fix hanging
-//        for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
-//            boolean result = p.a.hasTerminatingBaseExpansion(p.b);
-//            Iterable<BigInteger> dPrimeFactors = nub(MathUtils.primeFactors(p.a.getDenominator()));
-//            Iterable<BigInteger> bPrimeFactors = nub(MathUtils.primeFactors(p.b));
-//            assertEquals(p.toString(), result, isSubsetOf(dPrimeFactors, bPrimeFactors));
-//        }
-
-        if (!(P instanceof QBarExhaustiveProvider)) {
-            ps = P.pairs(
-                    cons(ZERO, P.withScale(8).positiveRationals()),
-                    map(i -> BigInteger.valueOf(i + 2), P.withScale(20).naturalIntegersGeometric())
-            );
-        }
         for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
             boolean result = p.a.hasTerminatingBaseExpansion(p.b);
+            Iterable<BigInteger> dPrimeFactors = nub(MathUtils.primeFactors(p.a.getDenominator()));
+            Iterable<BigInteger> bPrimeFactors = nub(MathUtils.primeFactors(p.b));
+            assertEquals(p.toString(), result, isSubsetOf(dPrimeFactors, bPrimeFactors));
             Triple<List<BigInteger>, List<BigInteger>, List<BigInteger>> pn = p.a.positionalNotation(p.b);
             assertEquals(p.toString(), result, pn.c.equals(Collections.singletonList(BigInteger.ZERO)));
         }
@@ -2949,18 +2945,16 @@ public class RationalProperties {
         initialize();
         System.out.println("\t\ttesting positionalNotation(BigInteger) properties...");
 
-        Iterable<Pair<Rational, BigInteger>> ps;
-        if (P instanceof QBarExhaustiveProvider) {
-            ps = P.pairsSquareRootOrder(
-                    cons(ZERO, P.positiveRationals()),
-                    P.rangeUp(BigInteger.valueOf(2))
-            );
-        } else {
-            ps = P.pairs(
-                    cons(ZERO, ((QBarRandomProvider) P).withScale(8).positiveRationals()),
-                    map(i -> BigInteger.valueOf(i + 2), P.withScale(20).naturalIntegersGeometric())
-            );
-        }
+        Iterable<Pair<Rational, BigInteger>> ps = P.pairs(
+                P.withSpecialElement(
+                        ZERO,
+                        filterInfinite(
+                                r -> le(r.getDenominator(), BigInteger.valueOf(DENOMINATOR_CUTOFF)),
+                                P.withScale(8).positiveRationals()
+                        )
+                ),
+                P.withScale(8).rangeUp(BigInteger.valueOf(2))
+        );
         for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
             Triple<List<BigInteger>, List<BigInteger>, List<BigInteger>> pn = p.a.positionalNotation(p.b);
             for (List<BigInteger> is : Arrays.asList(pn.a, pn.b, pn.c)) {
@@ -3177,18 +3171,16 @@ public class RationalProperties {
         System.out.println("\t\tcomparing digits(BigInteger) implementations...");
 
         long totalTime = 0;
-        Iterable<Pair<Rational, BigInteger>> ps;
-        if (P instanceof QBarExhaustiveProvider) {
-            ps = P.pairsSquareRootOrder(
-                    cons(ZERO, P.positiveRationals()),
-                    P.rangeUp(BigInteger.valueOf(2))
-            );
-        } else {
-            ps = P.pairs(
-                    cons(ZERO, ((QBarRandomProvider) P).withScale(8).positiveRationals()),
-                    map(i -> BigInteger.valueOf(i + 2), P.withScale(20).naturalIntegersGeometric())
-            );
-        }
+        Iterable<Pair<Rational, BigInteger>> ps = P.pairs(
+                P.withSpecialElement(
+                        ZERO,
+                        filterInfinite(
+                                r -> le(r.getDenominator(), BigInteger.valueOf(DENOMINATOR_CUTOFF)),
+                                P.withScale(8).positiveRationals()
+                        )
+                ),
+                P.withScale(8).rangeUp(BigInteger.valueOf(2))
+        );
         for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
             long time = System.nanoTime();
             toList(take(20, digits_alt(p.a, p.b).b));

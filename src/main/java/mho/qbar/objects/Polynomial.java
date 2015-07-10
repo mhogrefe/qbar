@@ -737,7 +737,10 @@ public final class Polynomial implements
      * @param s a string representation of a {@code Polynomial}.
      * @return the wrapped {@code Polynomial} represented by {@code s}, or {@code empty} if {@code s} is invalid.
      */
-    public static @NotNull Optional<Polynomial> read(@NotNull String s) {
+    private static @NotNull Optional<Polynomial> genericRead(
+            @NotNull String s,
+            @NotNull Function<String, Optional<Integer>> exponentHandler
+    ) {
         if (s.equals("0")) return Optional.of(ZERO);
         if (s.equals("1")) return Optional.of(ONE);
         if (s.isEmpty() || head(s) == '+') return Optional.empty();
@@ -805,7 +808,7 @@ public final class Polynomial implements
                         break;
                     case 1:
                         String powerString = monomialString.substring(caretIndex + 1);
-                        Optional<Integer> oPower = Readers.readInteger(powerString);
+                        Optional<Integer> oPower = exponentHandler.apply(powerString);
                         if (!oPower.isPresent()) return Optional.empty();
                         power = oPower.get();
                         if (power < 2) return Optional.empty(); // no x^1, x^0, x^-1, ... allowed
@@ -826,6 +829,20 @@ public final class Polynomial implements
         return Optional.of(new Polynomial(coefficients));
     }
 
+    public static @NotNull Optional<Polynomial> read(@NotNull String s) {
+        return genericRead(s, Readers::readInteger);
+    }
+
+    public static @NotNull Optional<Polynomial> read(int exponentCutoff, @NotNull String s) {
+        return genericRead(
+                s,
+                powerString -> {
+                    Optional<Integer> oPower = Readers.readInteger(powerString);
+                    return !oPower.isPresent() || oPower.get() > exponentCutoff ? Optional.<Integer>empty() : oPower;
+                }
+        );
+    }
+
     /**
      * Finds the first occurrence of an {@code Polynomial} in a {@code String}. Returns the {@code Polynomial} and the
      * index at which it was found. Returns an empty {@code Optional} if no {@code Polynomial} is found. Only
@@ -844,6 +861,10 @@ public final class Polynomial implements
      */
     public static @NotNull Optional<Pair<Polynomial, Integer>> findIn(@NotNull String s) {
         return Readers.genericFindIn(Polynomial::read, "*+-0123456789^x").apply(s);
+    }
+
+    public static @NotNull Optional<Pair<Polynomial, Integer>> findIn(int exponentCutoff, @NotNull String s) {
+        return Readers.genericFindIn(t -> read(exponentCutoff, t), "*+-0123456789^x").apply(s);
     }
 
     /**

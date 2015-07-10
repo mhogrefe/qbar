@@ -710,6 +710,10 @@ public abstract class QBarIterableProvider {
         return wheelsProvider.bigDecimals();
     }
 
+    public @NotNull <T> Iterable<T> withSpecialElement(@Nullable T x, @NotNull Iterable<T> xs) {
+        return wheelsProvider.withSpecialElement(x, xs);
+    }
+
     public @NotNull <T> Iterable<T> withNull(@NotNull Iterable<T> xs) {
         return wheelsProvider.withNull(xs);
     }
