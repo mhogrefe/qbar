@@ -2030,9 +2030,11 @@ public final class Rational implements Comparable<Rational> {
     @SuppressWarnings("ConstantConditions")
     public static @NotNull List<BigInteger> cancelDenominators(@NotNull List<Rational> xs) {
         BigInteger lcm = foldl(MathUtils::lcm, BigInteger.ONE, map(Rational::getDenominator, xs));
-        Iterable<BigInteger> canceled = map(x -> x.multiply(lcm).getNumerator(), xs);
+        List<BigInteger> canceled = toList(map(x -> x.multiply(lcm).getNumerator(), xs));
         BigInteger gcd = foldl(BigInteger::gcd, BigInteger.ZERO, canceled);
-        return toList(gcd.equals(BigInteger.ZERO) ? canceled : map(x -> x.divide(gcd), canceled));
+        return gcd.equals(BigInteger.ZERO) || gcd.equals(BigInteger.ONE) ?
+                canceled :
+                toList(map(x -> x.divide(gcd), canceled));
     }
 
     /**
