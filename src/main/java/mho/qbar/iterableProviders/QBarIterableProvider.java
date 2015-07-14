@@ -18,7 +18,7 @@ import java.util.function.Function;
 import static mho.wheels.iterables.IterableUtils.map;
 
 @SuppressWarnings("unused")
-public abstract class QBarIterableProvider {
+public strictfp abstract class QBarIterableProvider {
     protected @NotNull IterableProvider wheelsProvider;
 
     protected QBarIterableProvider(@NotNull IterableProvider wheelsProvider) {

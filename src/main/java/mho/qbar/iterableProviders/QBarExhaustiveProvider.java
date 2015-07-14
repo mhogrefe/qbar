@@ -11,7 +11,8 @@ import java.util.*;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.ordering.Ordering.*;
 
-public class QBarExhaustiveProvider extends QBarIterableProvider {
+@SuppressWarnings("unused")
+public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider {
     public static final @NotNull QBarExhaustiveProvider INSTANCE = new QBarExhaustiveProvider();
 
     private QBarExhaustiveProvider() {
