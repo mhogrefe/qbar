@@ -1,9 +1,9 @@
 package mho.qbar.objects;
 
+import mho.wheels.io.Readers;
 import mho.wheels.math.MathUtils;
-import mho.wheels.misc.BigDecimalUtils;
-import mho.wheels.misc.FloatingPointUtils;
-import mho.wheels.misc.Readers;
+import mho.wheels.numberUtils.BigDecimalUtils;
+import mho.wheels.numberUtils.IntegerUtils;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
@@ -17,7 +17,7 @@ import java.util.*;
 import java.util.function.Function;
 
 import static mho.wheels.iterables.IterableUtils.*;
-import static mho.wheels.misc.FloatingPointUtils.*;
+import static mho.wheels.numberUtils.FloatingPointUtils.*;
 import static mho.wheels.ordering.Ordering.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -1694,7 +1694,7 @@ public final class Rational implements Comparable<Rational> {
         if (signum() == -1)
             throw new IllegalArgumentException("this cannot be negative");
         BigInteger floor = floor();
-        List<BigInteger> beforeDecimal = MathUtils.bigEndianDigits(base, floor);
+        List<BigInteger> beforeDecimal = IntegerUtils.bigEndianDigits(base, floor);
         Rational fractionalPart = subtract(of(floor));
         BigInteger numerator = fractionalPart.numerator;
         BigInteger denominator = fractionalPart.denominator;
@@ -1751,9 +1751,9 @@ public final class Rational implements Comparable<Rational> {
     ) {
         if (repeating.isEmpty())
             throw new IllegalArgumentException("repeating must be nonempty");
-        BigInteger floor = MathUtils.fromBigEndianDigits(base, beforeDecimalPoint);
-        BigInteger nonRepeatingInteger = MathUtils.fromBigEndianDigits(base, nonRepeating);
-        BigInteger repeatingInteger = MathUtils.fromBigEndianDigits(base, repeating);
+        BigInteger floor = IntegerUtils.fromBigEndianDigits(base, beforeDecimalPoint);
+        BigInteger nonRepeatingInteger = IntegerUtils.fromBigEndianDigits(base, nonRepeating);
+        BigInteger repeatingInteger = IntegerUtils.fromBigEndianDigits(base, repeating);
         Rational nonRepeatingPart = of(nonRepeatingInteger, base.pow(nonRepeating.size()));
         Rational repeatingPart = of(repeatingInteger, base.pow(repeating.size()).subtract(BigInteger.ONE))
                 .divide(base.pow(nonRepeating.size()));
@@ -1782,7 +1782,7 @@ public final class Rational implements Comparable<Rational> {
         if (signum() == -1)
             throw new IllegalArgumentException("this cannot be negative");
         BigInteger floor = floor();
-        List<BigInteger> beforeDecimal = MathUtils.bigEndianDigits(base, floor);
+        List<BigInteger> beforeDecimal = IntegerUtils.bigEndianDigits(base, floor);
         Rational fractionalPart = subtract(of(floor));
         BigInteger numerator = fractionalPart.numerator;
         BigInteger denominator = fractionalPart.denominator;
@@ -1860,7 +1860,7 @@ public final class Rational implements Comparable<Rational> {
         Pair<List<BigInteger>, Iterable<BigInteger>> digits = abs().digits(base);
         Function<BigInteger, String> digitFunction;
         if (smallBase) {
-            digitFunction = i -> Character.toString(MathUtils.toDigit(i.intValueExact()));
+            digitFunction = i -> Character.toString(IntegerUtils.toDigit(i.intValueExact()));
         } else {
             digitFunction = i -> "(" + i + ")";
         }
@@ -1974,7 +1974,7 @@ public final class Rational implements Comparable<Rational> {
             boolean smallBase = le(base, BigInteger.valueOf(36));
             Function<String, List<BigInteger>> undigitFunction;
             if (smallBase) {
-                undigitFunction = t -> toList(map(c -> BigInteger.valueOf(MathUtils.fromDigit(c)), fromString(t)));
+                undigitFunction = t -> toList(map(c -> BigInteger.valueOf(IntegerUtils.fromDigit(c)), fromString(t)));
             } else {
                 undigitFunction = t -> {
                     if (t.isEmpty()) return Collections.emptyList();
@@ -1997,7 +1997,7 @@ public final class Rational implements Comparable<Rational> {
             Rational result;
             int dotIndex = s.indexOf(".");
             if (dotIndex == -1) {
-                result = of(MathUtils.fromBigEndianDigits(base, undigitFunction.apply(s)));
+                result = of(IntegerUtils.fromBigEndianDigits(base, undigitFunction.apply(s)));
             } else {
                 List<BigInteger> beforeDecimal = undigitFunction.apply(take(dotIndex, s));
                 List<BigInteger> afterDecimal = undigitFunction.apply(drop(dotIndex + 1, s));

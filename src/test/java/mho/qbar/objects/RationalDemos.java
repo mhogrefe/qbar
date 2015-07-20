@@ -5,7 +5,8 @@ import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.iterableProviders.QBarRandomProvider;
 import mho.wheels.iterables.IterableUtils;
 import mho.wheels.math.MathUtils;
-import mho.wheels.misc.FloatingPointUtils;
+import mho.wheels.numberUtils.FloatingPointUtils;
+import mho.wheels.numberUtils.IntegerUtils;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
@@ -20,7 +21,7 @@ import static mho.qbar.objects.Rational.*;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.ordering.Ordering.le;
 
-@SuppressWarnings("ConstantConditions")
+@SuppressWarnings("UnusedDeclaration")
 public class RationalDemos {
     private static final boolean USE_RANDOM = false;
     private static final @NotNull String RATIONAL_CHARS = "-/0123456789";
@@ -686,7 +687,7 @@ public class RationalDemos {
                 b -> {
                     String chars = ".-";
                     if (Ordering.le(b, BigInteger.valueOf(36))) {
-                        chars += charsToString(range('0', MathUtils.toDigit(b.intValueExact() - 1)));
+                        chars += charsToString(range('0', IntegerUtils.toDigit(b.intValueExact() - 1)));
                     } else {
                         chars += "()0123456789";
                     }

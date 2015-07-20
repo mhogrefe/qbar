@@ -1,7 +1,7 @@
 package mho.qbar.objects;
 
+import mho.wheels.io.Readers;
 import mho.wheels.iterables.IterableUtils;
-import mho.wheels.misc.Readers;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 

@@ -1,8 +1,8 @@
 package mho.qbar.objects;
 
+import mho.wheels.io.Readers;
 import mho.wheels.iterables.IterableUtils;
-import mho.wheels.misc.FloatingPointUtils;
-import mho.wheels.misc.Readers;
+import mho.wheels.numberUtils.FloatingPointUtils;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;

@@ -1,6 +1,6 @@
 package jas;
 
-import mho.wheels.misc.Readers;
+import mho.wheels.io.Readers;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 

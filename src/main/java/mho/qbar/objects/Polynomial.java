@@ -1,8 +1,9 @@
 package mho.qbar.objects;
 
+import mho.wheels.io.Readers;
 import mho.wheels.iterables.IterableUtils;
 import mho.wheels.math.MathUtils;
-import mho.wheels.misc.Readers;
+import mho.wheels.numberUtils.IntegerUtils;
 import mho.wheels.ordering.comparators.ShortlexComparator;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
@@ -563,7 +564,7 @@ public final class Polynomial implements
         if (p == 1) return this;
         Polynomial result = ONE;
         Polynomial powerPower = null; // p^2^i
-        for (boolean bit : MathUtils.bits(p)) {
+        for (boolean bit : IntegerUtils.bits(p)) {
             powerPower = powerPower == null ? this : powerPower.multiply(powerPower);
             if (bit) result = result.multiply(powerPower);
         }

@@ -4,9 +4,10 @@ import mho.qbar.iterableProviders.QBarExhaustiveProvider;
 import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.iterableProviders.QBarRandomProvider;
 import mho.qbar.testing.QBarTesting;
+import mho.wheels.io.Readers;
 import mho.wheels.math.MathUtils;
-import mho.wheels.misc.FloatingPointUtils;
-import mho.wheels.misc.Readers;
+import mho.wheels.numberUtils.FloatingPointUtils;
+import mho.wheels.numberUtils.IntegerUtils;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
@@ -341,7 +342,7 @@ public class RationalProperties {
         for (float f : take(LIMIT, filter(Float::isFinite, P.floats()))) {
             Rational r = ofExact(f).get();
             r.validate();
-            assertTrue(Float.toString(f), MathUtils.isPowerOfTwo(r.getDenominator()));
+            assertTrue(Float.toString(f), IntegerUtils.isPowerOfTwo(r.getDenominator()));
             assertTrue(Float.toString(f), le(r.getDenominator(), BigInteger.ONE.shiftLeft(149)));
             assertTrue(
                     Float.toString(f),
@@ -369,7 +370,7 @@ public class RationalProperties {
         for (double d : take(LIMIT, filter(Double::isFinite, P.doubles()))) {
             Rational r = ofExact(d).get();
             r.validate();
-            assertTrue(Double.toString(d), MathUtils.isPowerOfTwo(r.getDenominator()));
+            assertTrue(Double.toString(d), IntegerUtils.isPowerOfTwo(r.getDenominator()));
             assertTrue(Double.toString(d), le(r.getDenominator(), BigInteger.ONE.shiftLeft(1074)));
             assertTrue(
                     Double.toString(d),
@@ -3129,7 +3130,7 @@ public class RationalProperties {
             Pair<List<BigInteger>, Iterable<BigInteger>> digits = p.a.digits(p.b);
             assertTrue(p.toString(), digits.a.isEmpty() || !head(digits.a).equals(BigInteger.ZERO));
             assertTrue(p.toString(), all(x -> x.signum() != -1 && lt(x, p.b), digits.a));
-            assertEquals(p.toString(), MathUtils.fromBigEndianDigits(p.b, digits.a), p.a.floor());
+            assertEquals(p.toString(), IntegerUtils.fromBigEndianDigits(p.b, digits.a), p.a.floor());
         }
 
         for (Pair<Rational, BigInteger> p : take(LIMIT, filter(q -> q.a.hasTerminatingBaseExpansion(q.b), ps))) {

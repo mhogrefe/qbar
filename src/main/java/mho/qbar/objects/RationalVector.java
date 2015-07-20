@@ -1,6 +1,6 @@
 package mho.qbar.objects;
 
-import mho.wheels.misc.Readers;
+import mho.wheels.io.Readers;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.ordering.comparators.ShortlexComparator;
 import mho.wheels.structures.Pair;
