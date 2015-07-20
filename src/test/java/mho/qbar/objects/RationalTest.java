@@ -3,6 +3,7 @@ package mho.qbar.objects;
 import mho.wheels.io.Readers;
 import mho.wheels.iterables.IterableUtils;
 import mho.wheels.numberUtils.FloatingPointUtils;
+import mho.wheels.numberUtils.IntegerUtils;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
@@ -618,16 +619,16 @@ public class RationalTest {
 
     @Test
     public void testHasTerminatingBaseExpansion() {
-        assertTrue(ZERO.hasTerminatingBaseExpansion(BigInteger.valueOf(2)));
-        assertTrue(ONE.hasTerminatingBaseExpansion(BigInteger.valueOf(2)));
-        assertTrue(read("60").get().hasTerminatingBaseExpansion(BigInteger.valueOf(2)));
-        assertTrue(read("1/2").get().hasTerminatingBaseExpansion(BigInteger.valueOf(2)));
-        assertFalse(read("1/5").get().hasTerminatingBaseExpansion(BigInteger.valueOf(2)));
-        assertFalse(read("-7/100").get().hasTerminatingBaseExpansion(BigInteger.valueOf(2)));
-        assertFalse(read("-3/640").get().hasTerminatingBaseExpansion(BigInteger.valueOf(2)));
-        assertFalse(read("1/3").get().hasTerminatingBaseExpansion(BigInteger.valueOf(2)));
-        assertFalse(read("-1/15").get().hasTerminatingBaseExpansion(BigInteger.valueOf(2)));
-        assertFalse(read("-2/9").get().hasTerminatingBaseExpansion(BigInteger.valueOf(2)));
+        assertTrue(ZERO.hasTerminatingBaseExpansion(IntegerUtils.TWO));
+        assertTrue(ONE.hasTerminatingBaseExpansion(IntegerUtils.TWO));
+        assertTrue(read("60").get().hasTerminatingBaseExpansion(IntegerUtils.TWO));
+        assertTrue(read("1/2").get().hasTerminatingBaseExpansion(IntegerUtils.TWO));
+        assertFalse(read("1/5").get().hasTerminatingBaseExpansion(IntegerUtils.TWO));
+        assertFalse(read("-7/100").get().hasTerminatingBaseExpansion(IntegerUtils.TWO));
+        assertFalse(read("-3/640").get().hasTerminatingBaseExpansion(IntegerUtils.TWO));
+        assertFalse(read("1/3").get().hasTerminatingBaseExpansion(IntegerUtils.TWO));
+        assertFalse(read("-1/15").get().hasTerminatingBaseExpansion(IntegerUtils.TWO));
+        assertFalse(read("-2/9").get().hasTerminatingBaseExpansion(IntegerUtils.TWO));
         assertTrue(ZERO.hasTerminatingBaseExpansion(BigInteger.valueOf(3)));
         assertTrue(ONE.hasTerminatingBaseExpansion(BigInteger.valueOf(3)));
         assertTrue(read("60").get().hasTerminatingBaseExpansion(BigInteger.valueOf(3)));
@@ -697,7 +698,7 @@ public class RationalTest {
             fail();
         } catch (IllegalArgumentException ignored) {}
         try {
-            read("1/2").get().hasTerminatingBaseExpansion(BigInteger.valueOf(-1));
+            read("1/2").get().hasTerminatingBaseExpansion(IntegerUtils.NEGATIVE_ONE);
             fail();
         } catch (IllegalArgumentException ignored) {}
     }
@@ -2792,7 +2793,7 @@ public class RationalTest {
     @Test
     public void testRoundToDenominator() {
         aeq(PI_DOUBLE.roundToDenominator(BigInteger.ONE, RoundingMode.HALF_EVEN), "3");
-        aeq(PI_DOUBLE.roundToDenominator(BigInteger.valueOf(2), RoundingMode.HALF_EVEN), "3");
+        aeq(PI_DOUBLE.roundToDenominator(IntegerUtils.TWO, RoundingMode.HALF_EVEN), "3");
         aeq(PI_DOUBLE.roundToDenominator(BigInteger.valueOf(3), RoundingMode.HALF_EVEN), "3");
         aeq(PI_DOUBLE.roundToDenominator(BigInteger.valueOf(4), RoundingMode.HALF_EVEN), "13/4");
         aeq(PI_DOUBLE.roundToDenominator(BigInteger.valueOf(5), RoundingMode.HALF_EVEN), "16/5");
@@ -2809,7 +2810,7 @@ public class RationalTest {
             fail();
         } catch (ArithmeticException ignored) {}
         try {
-            PI_DOUBLE.roundToDenominator(BigInteger.valueOf(-1), RoundingMode.HALF_EVEN);
+            PI_DOUBLE.roundToDenominator(IntegerUtils.NEGATIVE_ONE, RoundingMode.HALF_EVEN);
             fail();
         } catch (ArithmeticException ignored) {}
         try {
@@ -2937,42 +2938,42 @@ public class RationalTest {
 
     @Test
     public void testPositionalNotation() {
-        aeq(ZERO.positionalNotation(BigInteger.valueOf(2)), "([], [], [0])");
+        aeq(ZERO.positionalNotation(IntegerUtils.TWO), "([], [], [0])");
         aeq(ZERO.positionalNotation(BigInteger.valueOf(3)), "([], [], [0])");
         aeq(ZERO.positionalNotation(BigInteger.valueOf(4)), "([], [], [0])");
         aeq(ZERO.positionalNotation(BigInteger.valueOf(10)), "([], [], [0])");
         aeq(ZERO.positionalNotation(BigInteger.valueOf(16)), "([], [], [0])");
         aeq(ZERO.positionalNotation(BigInteger.valueOf(83)), "([], [], [0])");
         aeq(ZERO.positionalNotation(BigInteger.valueOf(100)), "([], [], [0])");
-        aeq(ONE.positionalNotation(BigInteger.valueOf(2)), "([1], [], [0])");
+        aeq(ONE.positionalNotation(IntegerUtils.TWO), "([1], [], [0])");
         aeq(ONE.positionalNotation(BigInteger.valueOf(3)), "([1], [], [0])");
         aeq(ONE.positionalNotation(BigInteger.valueOf(4)), "([1], [], [0])");
         aeq(ONE.positionalNotation(BigInteger.valueOf(10)), "([1], [], [0])");
         aeq(ONE.positionalNotation(BigInteger.valueOf(16)), "([1], [], [0])");
         aeq(ONE.positionalNotation(BigInteger.valueOf(83)), "([1], [], [0])");
         aeq(ONE.positionalNotation(BigInteger.valueOf(100)), "([1], [], [0])");
-        aeq(read("1/2").get().positionalNotation(BigInteger.valueOf(2)), "([], [1], [0])");
+        aeq(read("1/2").get().positionalNotation(IntegerUtils.TWO), "([], [1], [0])");
         aeq(read("1/2").get().positionalNotation(BigInteger.valueOf(3)), "([], [], [1])");
         aeq(read("1/2").get().positionalNotation(BigInteger.valueOf(4)), "([], [2], [0])");
         aeq(read("1/2").get().positionalNotation(BigInteger.valueOf(10)), "([], [5], [0])");
         aeq(read("1/2").get().positionalNotation(BigInteger.valueOf(16)), "([], [8], [0])");
         aeq(read("1/2").get().positionalNotation(BigInteger.valueOf(83)), "([], [], [41])");
         aeq(read("1/2").get().positionalNotation(BigInteger.valueOf(100)), "([], [50], [0])");
-        aeq(read("1/3").get().positionalNotation(BigInteger.valueOf(2)), "([], [], [0, 1])");
+        aeq(read("1/3").get().positionalNotation(IntegerUtils.TWO), "([], [], [0, 1])");
         aeq(read("1/3").get().positionalNotation(BigInteger.valueOf(3)), "([], [1], [0])");
         aeq(read("1/3").get().positionalNotation(BigInteger.valueOf(4)), "([], [], [1])");
         aeq(read("1/3").get().positionalNotation(BigInteger.valueOf(10)), "([], [], [3])");
         aeq(read("1/3").get().positionalNotation(BigInteger.valueOf(16)), "([], [], [5])");
         aeq(read("1/3").get().positionalNotation(BigInteger.valueOf(83)), "([], [], [27, 55])");
         aeq(read("1/3").get().positionalNotation(BigInteger.valueOf(100)), "([], [], [33])");
-        aeq(read("1/7").get().positionalNotation(BigInteger.valueOf(2)), "([], [], [0, 0, 1])");
+        aeq(read("1/7").get().positionalNotation(IntegerUtils.TWO), "([], [], [0, 0, 1])");
         aeq(read("1/7").get().positionalNotation(BigInteger.valueOf(3)), "([], [], [0, 1, 0, 2, 1, 2])");
         aeq(read("1/7").get().positionalNotation(BigInteger.valueOf(4)), "([], [], [0, 2, 1])");
         aeq(read("1/7").get().positionalNotation(BigInteger.valueOf(10)), "([], [], [1, 4, 2, 8, 5, 7])");
         aeq(read("1/7").get().positionalNotation(BigInteger.valueOf(16)), "([], [], [2, 4, 9])");
         aeq(read("1/7").get().positionalNotation(BigInteger.valueOf(83)), "([], [], [11, 71])");
         aeq(read("1/7").get().positionalNotation(BigInteger.valueOf(100)), "([], [], [14, 28, 57])");
-        aeq(read("415/93").get().positionalNotation(BigInteger.valueOf(2)),
+        aeq(read("415/93").get().positionalNotation(IntegerUtils.TWO),
                 "([1, 0, 0], [], [0, 1, 1, 1, 0, 1, 1, 0, 0, 1])");
         aeq(read("415/93").get().positionalNotation(BigInteger.valueOf(3)),
                 "([1, 1], [1]," +
@@ -2987,7 +2988,7 @@ public class RationalTest {
                 " 33, 1, 65, 12, 41, 4])");
         aeq(read("415/93").get().positionalNotation(BigInteger.valueOf(100)),
                 "([4], [], [46, 23, 65, 59, 13, 97, 84, 94, 62, 36, 55, 91, 39, 78, 49])");
-        aeq(PI_DOUBLE.positionalNotation(BigInteger.valueOf(2)),
+        aeq(PI_DOUBLE.positionalNotation(IntegerUtils.TWO),
                 "([1, 1]," +
                 " [0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0," +
                 " 1, 0, 0, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 0, 1, 1], [0])");
@@ -3002,7 +3003,7 @@ public class RationalTest {
                 "([3]," +
                 " [14, 15, 92, 65, 35, 89, 79, 31, 15, 99, 79, 63, 46, 85, 44, 18, 51, 61, 59, 5, 76, 17, 18, 75]," +
                 " [0])");
-        aeq(read("299/56").get().positionalNotation(BigInteger.valueOf(2)), "([1, 0, 1], [0, 1, 0], [1, 0, 1])");
+        aeq(read("299/56").get().positionalNotation(IntegerUtils.TWO), "([1, 0, 1], [0, 1, 0], [1, 0, 1])");
         aeq(read("405/26").get().positionalNotation(BigInteger.valueOf(3)), "([1, 2, 0], [], [1, 2, 0])");
         aeq(read("15613/576").get().positionalNotation(BigInteger.valueOf(4)), "([1, 2, 3], [0, 1, 2], [3, 0, 1])");
         aeq(
@@ -3030,7 +3031,7 @@ public class RationalTest {
             fail();
         } catch (IllegalArgumentException ignored) {}
         try {
-            read("-1/2").get().positionalNotation(BigInteger.valueOf(2));
+            read("-1/2").get().positionalNotation(IntegerUtils.TWO);
             fail();
         } catch (IllegalArgumentException ignored) {}
     }
@@ -3039,7 +3040,7 @@ public class RationalTest {
     public void testFromPositionalNotation() {
         aeq(
                 fromPositionalNotation(
-                        BigInteger.valueOf(2),
+                        IntegerUtils.TWO,
                         Collections.emptyList(),
                         Collections.emptyList(),
                         readBigIntegerList("[0]")
@@ -3102,7 +3103,7 @@ public class RationalTest {
         );
         aeq(
                 fromPositionalNotation(
-                        BigInteger.valueOf(2),
+                        IntegerUtils.TWO,
                         readBigIntegerList("[1]"),
                         Collections.emptyList(),
                         readBigIntegerList("[0]")
@@ -3165,7 +3166,7 @@ public class RationalTest {
         );
         aeq(
                 fromPositionalNotation(
-                        BigInteger.valueOf(2),
+                        IntegerUtils.TWO,
                         Collections.emptyList(),
                         readBigIntegerList("[1]"),
                         readBigIntegerList("[0]")
@@ -3228,7 +3229,7 @@ public class RationalTest {
         );
         aeq(
                 fromPositionalNotation(
-                        BigInteger.valueOf(2),
+                        IntegerUtils.TWO,
                         Collections.emptyList(),
                         Collections.emptyList(),
                         readBigIntegerList("[0, 1]")
@@ -3291,7 +3292,7 @@ public class RationalTest {
         );
         aeq(
                 fromPositionalNotation(
-                        BigInteger.valueOf(2),
+                        IntegerUtils.TWO,
                         Collections.emptyList(),
                         Collections.emptyList(),
                         readBigIntegerList("[0, 0, 1]")
@@ -3354,7 +3355,7 @@ public class RationalTest {
         );
         aeq(
                 fromPositionalNotation(
-                        BigInteger.valueOf(2),
+                        IntegerUtils.TWO,
                         readBigIntegerList("[1, 0, 0]"),
                         Collections.emptyList(),
                         readBigIntegerList("[0, 1, 1, 1, 0, 1, 1, 0, 0, 1]")
@@ -3421,7 +3422,7 @@ public class RationalTest {
         );
         aeq(
                 fromPositionalNotation(
-                        BigInteger.valueOf(2),
+                        IntegerUtils.TWO,
                         readBigIntegerList("[1, 1]"),
                         readBigIntegerList(
                                 "[0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0, 0," +
@@ -3473,7 +3474,7 @@ public class RationalTest {
         );
         aeq(
                 fromPositionalNotation(
-                        BigInteger.valueOf(2),
+                        IntegerUtils.TWO,
                         readBigIntegerList("[1, 0, 1]"),
                         readBigIntegerList("[0, 1, 0]"),
                         readBigIntegerList("[1, 0, 1]")
@@ -3551,7 +3552,7 @@ public class RationalTest {
             fail();
         } catch (IllegalArgumentException ignored) {}
         try {
-            fromPositionalNotation(BigInteger.valueOf(-1),
+            fromPositionalNotation(IntegerUtils.NEGATIVE_ONE,
                     readBigIntegerList("[1, 0, 1]"),
                     readBigIntegerList("[0, 1, 0]"),
                     readBigIntegerList("[1, 0, 1]")
@@ -3559,7 +3560,7 @@ public class RationalTest {
             fail();
         } catch (IllegalArgumentException ignored) {}
         try {
-            fromPositionalNotation(BigInteger.valueOf(2),
+            fromPositionalNotation(IntegerUtils.TWO,
                     readBigIntegerList("[-1, 0, 1]"),
                     readBigIntegerList("[0, 1, 0]"),
                     readBigIntegerList("[1, 0, 1]")
@@ -3567,7 +3568,7 @@ public class RationalTest {
             fail();
         } catch (IllegalArgumentException ignored) {}
         try {
-            fromPositionalNotation(BigInteger.valueOf(2),
+            fromPositionalNotation(IntegerUtils.TWO,
                     readBigIntegerList("[2, 0, 1]"),
                     readBigIntegerList("[0, 1, 0]"),
                     readBigIntegerList("[1, 0, 1]")
@@ -3575,7 +3576,7 @@ public class RationalTest {
             fail();
         } catch (IllegalArgumentException ignored) {}
         try {
-            fromPositionalNotation(BigInteger.valueOf(2),
+            fromPositionalNotation(IntegerUtils.TWO,
                     readBigIntegerList("[1, 0, 1]"),
                     readBigIntegerList("[0, -1, 0]"),
                     readBigIntegerList("[1, 0, 1]")
@@ -3583,7 +3584,7 @@ public class RationalTest {
             fail();
         } catch (IllegalArgumentException ignored) {}
         try {
-            fromPositionalNotation(BigInteger.valueOf(2),
+            fromPositionalNotation(IntegerUtils.TWO,
                     readBigIntegerList("[1, 0, 1]"),
                     readBigIntegerList("[0, 2, 0]"),
                     readBigIntegerList("[1, 0, 1]")
@@ -3591,7 +3592,7 @@ public class RationalTest {
             fail();
         } catch (IllegalArgumentException ignored) {}
         try {
-            fromPositionalNotation(BigInteger.valueOf(2),
+            fromPositionalNotation(IntegerUtils.TWO,
                     readBigIntegerList("[1, 0, 1]"),
                     readBigIntegerList("[0, 1, 0]"),
                     readBigIntegerList("[-1, 0, 1]")
@@ -3599,7 +3600,7 @@ public class RationalTest {
             fail();
         } catch (IllegalArgumentException ignored) {}
         try {
-            fromPositionalNotation(BigInteger.valueOf(2),
+            fromPositionalNotation(IntegerUtils.TWO,
                     readBigIntegerList("[1, 0, 1]"),
                     readBigIntegerList("[0, 1, 0]"),
                     readBigIntegerList("[2, 0, 1]")
@@ -3607,7 +3608,7 @@ public class RationalTest {
             fail();
         } catch (IllegalArgumentException ignored) {}
         try {
-            fromPositionalNotation(BigInteger.valueOf(2),
+            fromPositionalNotation(IntegerUtils.TWO,
                     readBigIntegerList("[1, 0, 1]"),
                     readBigIntegerList("[0, 1, 0]"),
                     Collections.emptyList()
@@ -3712,27 +3713,27 @@ public class RationalTest {
 
     @Test
     public void testToStringBase_BigInteger() {
-        aeq(ZERO.toStringBase(BigInteger.valueOf(2)), "0");
+        aeq(ZERO.toStringBase(IntegerUtils.TWO), "0");
         aeq(ZERO.toStringBase(BigInteger.valueOf(3)), "0");
         aeq(ZERO.toStringBase(BigInteger.valueOf(4)), "0");
         aeq(ZERO.toStringBase(BigInteger.valueOf(10)), "0");
         aeq(ZERO.toStringBase(BigInteger.valueOf(16)), "0");
         aeq(ZERO.toStringBase(BigInteger.valueOf(83)), "(0)");
         aeq(ZERO.toStringBase(BigInteger.valueOf(100)), "(0)");
-        aeq(ONE.toStringBase(BigInteger.valueOf(2)), "1");
+        aeq(ONE.toStringBase(IntegerUtils.TWO), "1");
         aeq(ONE.toStringBase(BigInteger.valueOf(3)), "1");
         aeq(ONE.toStringBase(BigInteger.valueOf(4)), "1");
         aeq(ONE.toStringBase(BigInteger.valueOf(10)), "1");
         aeq(ONE.toStringBase(BigInteger.valueOf(16)), "1");
         aeq(ONE.toStringBase(BigInteger.valueOf(83)), "(1)");
         aeq(ONE.toStringBase(BigInteger.valueOf(100)), "(1)");
-        aeq(read("-1/2").get().toStringBase(BigInteger.valueOf(2)), "-0.1");
+        aeq(read("-1/2").get().toStringBase(IntegerUtils.TWO), "-0.1");
         aeq(read("-1/2").get().toStringBase(BigInteger.valueOf(4)), "-0.2");
         aeq(read("-1/2").get().toStringBase(BigInteger.valueOf(10)), "-0.5");
         aeq(read("-1/2").get().toStringBase(BigInteger.valueOf(16)), "-0.8");
         aeq(read("-1/2").get().toStringBase(BigInteger.valueOf(100)), "-(0).(50)");
         aeq(read("1/3").get().toStringBase(BigInteger.valueOf(3)), "0.1");
-        aeq(PI_DOUBLE.toStringBase(BigInteger.valueOf(2)), "11.001001000011111101101010100010001000010110100011");
+        aeq(PI_DOUBLE.toStringBase(IntegerUtils.TWO), "11.001001000011111101101010100010001000010110100011");
         aeq(PI_DOUBLE.toStringBase(BigInteger.valueOf(4)), "3.021003331222202020112203");
         aeq(PI_DOUBLE.toStringBase(BigInteger.valueOf(10)), "3.141592653589793115997963468544185161590576171875");
         aeq(PI_DOUBLE.toStringBase(BigInteger.valueOf(16)), "3.243F6A8885A3");
@@ -3769,7 +3770,7 @@ public class RationalTest {
             fail();
         } catch (IllegalArgumentException ignored) {}
         try {
-            read("-1/2").get().toStringBase(BigInteger.valueOf(-1));
+            read("-1/2").get().toStringBase(IntegerUtils.NEGATIVE_ONE);
             fail();
         } catch (IllegalArgumentException ignored) {}
         try {
@@ -3828,41 +3829,41 @@ public class RationalTest {
             fail();
         } catch (IllegalArgumentException ignored) {}
         try {
-            read("-1/2").get().toStringBase(BigInteger.valueOf(-1), 5);
+            read("-1/2").get().toStringBase(IntegerUtils.NEGATIVE_ONE, 5);
             fail();
         } catch (IllegalArgumentException ignored) {}
     }
 
     @Test
     public void testFromStringBase() {
-        aeq(fromStringBase(BigInteger.valueOf(2), ""), "0");
+        aeq(fromStringBase(IntegerUtils.TWO, ""), "0");
         aeq(fromStringBase(BigInteger.valueOf(3), ""), "0");
         aeq(fromStringBase(BigInteger.valueOf(4), ""), "0");
         aeq(fromStringBase(BigInteger.valueOf(10), ""), "0");
         aeq(fromStringBase(BigInteger.valueOf(16), ""), "0");
         aeq(fromStringBase(BigInteger.valueOf(83), ""), "0");
         aeq(fromStringBase(BigInteger.valueOf(100), ""), "0");
-        aeq(fromStringBase(BigInteger.valueOf(2), "0"), "0");
+        aeq(fromStringBase(IntegerUtils.TWO, "0"), "0");
         aeq(fromStringBase(BigInteger.valueOf(3), "0"), "0");
         aeq(fromStringBase(BigInteger.valueOf(4), "0"), "0");
         aeq(fromStringBase(BigInteger.valueOf(10), "0"), "0");
         aeq(fromStringBase(BigInteger.valueOf(16), "0"), "0");
         aeq(fromStringBase(BigInteger.valueOf(83), "(0)"), "0");
         aeq(fromStringBase(BigInteger.valueOf(100), "(0)"), "0");
-        aeq(fromStringBase(BigInteger.valueOf(2), "1"), "1");
+        aeq(fromStringBase(IntegerUtils.TWO, "1"), "1");
         aeq(fromStringBase(BigInteger.valueOf(3), "1"), "1");
         aeq(fromStringBase(BigInteger.valueOf(4), "1"), "1");
         aeq(fromStringBase(BigInteger.valueOf(10), "1"), "1");
         aeq(fromStringBase(BigInteger.valueOf(16), "1"), "1");
         aeq(fromStringBase(BigInteger.valueOf(83), "(1)"), "1");
         aeq(fromStringBase(BigInteger.valueOf(100), "(1)"), "1");
-        aeq(fromStringBase(BigInteger.valueOf(2), "-0.1"), "-1/2");
+        aeq(fromStringBase(IntegerUtils.TWO, "-0.1"), "-1/2");
         aeq(fromStringBase(BigInteger.valueOf(4), "-0.2"), "-1/2");
         aeq(fromStringBase(BigInteger.valueOf(10), "-0.5"), "-1/2");
         aeq(fromStringBase(BigInteger.valueOf(16), "-0.8"), "-1/2");
         aeq(fromStringBase(BigInteger.valueOf(100), "-(0).(50)"), "-1/2");
         aeq(fromStringBase(BigInteger.valueOf(3), "-0.1"), "-1/3");
-        aeq(fromStringBase(BigInteger.valueOf(2), "11.001001000011111101101010100010001000010110100011"), PI_DOUBLE);
+        aeq(fromStringBase(IntegerUtils.TWO, "11.001001000011111101101010100010001000010110100011"), PI_DOUBLE);
         aeq(fromStringBase(BigInteger.valueOf(4), "3.021003331222202020112203"), PI_DOUBLE);
         aeq(fromStringBase(BigInteger.valueOf(10), "3.141592653589793115997963468544185161590576171875"), PI_DOUBLE);
         aeq(fromStringBase(BigInteger.valueOf(16), "3.243F6A8885A3"), PI_DOUBLE);
@@ -3889,7 +3890,7 @@ public class RationalTest {
             fail();
         } catch (IllegalArgumentException ignored) {}
         try {
-            fromStringBase(BigInteger.valueOf(-1), "0");
+            fromStringBase(IntegerUtils.NEGATIVE_ONE, "0");
             fail();
         } catch (IllegalArgumentException ignored) {}
         try {

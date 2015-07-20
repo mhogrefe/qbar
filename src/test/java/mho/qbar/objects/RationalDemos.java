@@ -210,7 +210,7 @@ public class RationalDemos {
                                 P.withScale(8).positiveRationals()
                         )
                 ),
-                P.withScale(8).rangeUp(BigInteger.valueOf(2))
+                P.withScale(8).rangeUp(IntegerUtils.TWO)
         );
         for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
             System.out.println(p.a + (p.a.hasTerminatingBaseExpansion(p.b) ? " has " : " doesn't have ") +
@@ -586,7 +586,7 @@ public class RationalDemos {
                                 P.withScale(8).positiveRationals()
                         )
                 ),
-                P.withScale(8).rangeUp(BigInteger.valueOf(2))
+                P.withScale(8).rangeUp(IntegerUtils.TWO)
         );
         for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
             System.out.println("positionalNotation(" + p.a + ", " + p.b + ") = " + p.a.positionalNotation(p.b));
@@ -597,7 +597,7 @@ public class RationalDemos {
         initialize();
         Iterable<BigInteger> bases;
         if (P instanceof QBarExhaustiveProvider) {
-            bases = P.rangeUp(BigInteger.valueOf(2));
+            bases = P.rangeUp(IntegerUtils.TWO);
         } else {
             bases = map(i -> BigInteger.valueOf(i + 2), P.withScale(20).naturalIntegersGeometric());
         }
@@ -620,7 +620,7 @@ public class RationalDemos {
         if (P instanceof QBarExhaustiveProvider) {
             ps = ((QBarExhaustiveProvider) P).pairsSquareRootOrder(
                     cons(ZERO, P.positiveRationals()),
-                    P.rangeUp(BigInteger.valueOf(2))
+                    P.rangeUp(IntegerUtils.TWO)
             );
         } else {
             ps = P.pairs(
@@ -639,7 +639,7 @@ public class RationalDemos {
         initialize();
         Iterable<Pair<Rational, BigInteger>> ps;
         if (P instanceof QBarExhaustiveProvider) {
-            ps = ((QBarExhaustiveProvider) P).pairsSquareRootOrder(P.rationals(), P.rangeUp(BigInteger.valueOf(2)));
+            ps = ((QBarExhaustiveProvider) P).pairsSquareRootOrder(P.rationals(), P.rangeUp(IntegerUtils.TWO));
         } else {
             ps = P.pairs(
                     P.rationals(),
@@ -657,7 +657,7 @@ public class RationalDemos {
         if (P instanceof QBarExhaustiveProvider) {
             ps = P.pairs(
                     P.rationals(),
-                    (Iterable<Pair<BigInteger, Integer>>) P.pairs(P.rangeUp(BigInteger.valueOf(2)), P.integers())
+                    (Iterable<Pair<BigInteger, Integer>>) P.pairs(P.rangeUp(IntegerUtils.TWO), P.integers())
             );
         } else {
             ps = P.pairs(
@@ -678,7 +678,7 @@ public class RationalDemos {
         initialize();
         Iterable<BigInteger> bases;
         if (P instanceof QBarExhaustiveProvider) {
-            bases = P.rangeUp(BigInteger.valueOf(2));
+            bases = P.rangeUp(IntegerUtils.TWO);
         } else {
             bases = map(i -> BigInteger.valueOf(i + 2), P.withScale(20).naturalIntegersGeometric());
         }

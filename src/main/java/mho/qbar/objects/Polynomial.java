@@ -313,7 +313,7 @@ public final class Polynomial implements
      */
     public @NotNull Polynomial negate() {
         if (this == ZERO) return ZERO;
-        if (coefficients.size() == 1 && coefficients.get(0).equals(BigInteger.valueOf(-1))) return ONE;
+        if (coefficients.size() == 1 && coefficients.get(0).equals(IntegerUtils.NEGATIVE_ONE)) return ONE;
         return new Polynomial(toList(map(BigInteger::negate, coefficients)));
     }
 
@@ -787,7 +787,7 @@ public final class Polynomial implements
                     case 1:
                         if (head(monomialString) != '-') return Optional.empty();
                         monomialString = tail(monomialString);
-                        coefficient = BigInteger.valueOf(-1);
+                        coefficient = IntegerUtils.NEGATIVE_ONE;
                         break;
                     default:
                         if (monomialString.charAt(xIndex - 1) != '*') return Optional.empty();
@@ -891,7 +891,7 @@ public final class Polynomial implements
                 String power = i == 1 ? "x" : "x^" + i;
                 if (coefficient.equals(BigInteger.ONE)) {
                     monomialString = power;
-                } else if (coefficient.equals(BigInteger.valueOf(-1))) {
+                } else if (coefficient.equals(IntegerUtils.NEGATIVE_ONE)) {
                     monomialString = cons('-', power);
                 } else {
                     monomialString = coefficient + "*" + power;

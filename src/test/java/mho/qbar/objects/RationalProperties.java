@@ -454,7 +454,7 @@ public class RationalProperties {
         }
 
         //odd multiples of 1/2
-        rs = map(i -> of(i.shiftLeft(1).add(BigInteger.ONE), BigInteger.valueOf(2)), P.bigIntegers());
+        rs = map(i -> of(i.shiftLeft(1).add(BigInteger.ONE), IntegerUtils.TWO), P.bigIntegers());
         for (Rational r : take(LIMIT, rs)) {
             assertEquals(
                     r.toString(),
@@ -494,7 +494,7 @@ public class RationalProperties {
         }
 
         //odd multiples of 1/2
-        rs = map(i -> of(i.shiftLeft(1).add(BigInteger.ONE), BigInteger.valueOf(2)), P.bigIntegers());
+        rs = map(i -> of(i.shiftLeft(1).add(BigInteger.ONE), IntegerUtils.TWO), P.bigIntegers());
         for (Rational r : take(LIMIT, rs)) {
             assertFalse(r.toString(), r.bigIntegerValue().testBit(0));
         }
@@ -540,7 +540,7 @@ public class RationalProperties {
 
         Iterable<BigInteger> below = rangeBy(
                 BigInteger.valueOf(Byte.MIN_VALUE).subtract(BigInteger.ONE),
-                BigInteger.valueOf(-1)
+                IntegerUtils.NEGATIVE_ONE
         );
         for (BigInteger i : take(LIMIT, below)) {
             try {
@@ -574,7 +574,7 @@ public class RationalProperties {
 
         Iterable<BigInteger> below = rangeBy(
                 BigInteger.valueOf(Short.MIN_VALUE).subtract(BigInteger.ONE),
-                BigInteger.valueOf(-1)
+                IntegerUtils.NEGATIVE_ONE
         );
         for (BigInteger i : take(LIMIT, below)) {
             try {
@@ -609,7 +609,7 @@ public class RationalProperties {
 
         Iterable<BigInteger> below = rangeBy(
                 BigInteger.valueOf(Integer.MIN_VALUE).subtract(BigInteger.ONE),
-                BigInteger.valueOf(-1)
+                IntegerUtils.NEGATIVE_ONE
         );
         for (BigInteger i : take(LIMIT, below)) {
             try {
@@ -644,7 +644,7 @@ public class RationalProperties {
 
         Iterable<BigInteger> below = rangeBy(
                 BigInteger.valueOf(Long.MIN_VALUE).subtract(BigInteger.ONE),
-                BigInteger.valueOf(-1)
+                IntegerUtils.NEGATIVE_ONE
         );
         for (BigInteger i : take(LIMIT, below)) {
             try {
@@ -667,7 +667,7 @@ public class RationalProperties {
                                 P.withScale(8).positiveRationals()
                         )
                 ),
-                P.withScale(8).rangeUp(BigInteger.valueOf(2))
+                P.withScale(8).rangeUp(IntegerUtils.TWO)
         );
         for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
             boolean result = p.a.hasTerminatingBaseExpansion(p.b);
@@ -2954,7 +2954,7 @@ public class RationalProperties {
                                 P.withScale(8).positiveRationals()
                         )
                 ),
-                P.withScale(8).rangeUp(BigInteger.valueOf(2))
+                P.withScale(8).rangeUp(IntegerUtils.TWO)
         );
         for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
             Triple<List<BigInteger>, List<BigInteger>, List<BigInteger>> pn = p.a.positionalNotation(p.b);
@@ -2975,7 +2975,7 @@ public class RationalProperties {
             );
         }
 
-        Iterable<Pair<Rational, BigInteger>> psFail = P.pairs(P.negativeRationals(), P.rangeUp(BigInteger.valueOf(2)));
+        Iterable<Pair<Rational, BigInteger>> psFail = P.pairs(P.negativeRationals(), P.rangeUp(IntegerUtils.TWO));
         for (Pair<Rational, BigInteger> p : take(LIMIT, psFail)) {
             try {
                 p.a.positionalNotation(p.b);
@@ -2999,7 +2999,7 @@ public class RationalProperties {
 
         Iterable<BigInteger> bases;
         if (P instanceof QBarExhaustiveProvider) {
-            bases = P.rangeUp(BigInteger.valueOf(2));
+            bases = P.rangeUp(IntegerUtils.TWO);
         } else {
             bases = map(i -> BigInteger.valueOf(i + 2), P.withScale(20).naturalIntegersGeometric());
         }
@@ -3043,7 +3043,7 @@ public class RationalProperties {
         }
 
         psFail = P.dependentPairs(
-                P.rangeUp(BigInteger.valueOf(2)),
+                P.rangeUp(IntegerUtils.TWO),
                 b -> filter(
                         t -> !t.c.isEmpty() && any(x -> x.signum() == -1 || ge(x, b), t.a),
                         P.triples(P.lists(P.bigIntegers()))
@@ -3057,7 +3057,7 @@ public class RationalProperties {
         }
 
         psFail = P.dependentPairs(
-                P.rangeUp(BigInteger.valueOf(2)),
+                P.rangeUp(IntegerUtils.TWO),
                 b -> filter(
                         t -> !t.c.isEmpty() && any(x -> x.signum() == -1 || ge(x, b), t.b),
                         P.triples(P.lists(P.bigIntegers()))
@@ -3071,7 +3071,7 @@ public class RationalProperties {
         }
 
         psFail = P.dependentPairs(
-                P.rangeUp(BigInteger.valueOf(2)),
+                P.rangeUp(IntegerUtils.TWO),
                 b -> filter(
                         t -> !t.c.isEmpty() && any(x -> x.signum() == -1 || ge(x, b), t.c),
                         P.triples(P.lists(P.bigIntegers()))
@@ -3118,7 +3118,7 @@ public class RationalProperties {
         if (P instanceof QBarExhaustiveProvider) {
             ps = P.pairsSquareRootOrder(
                     cons(ZERO, P.positiveRationals()),
-                    P.rangeUp(BigInteger.valueOf(2))
+                    P.rangeUp(IntegerUtils.TWO)
             );
         } else {
             ps = P.pairs(
@@ -3151,7 +3151,7 @@ public class RationalProperties {
             aeqit(p.toString(), take(100, digits.b), take(100, alt.b));
         }
 
-        Iterable<Pair<Rational, BigInteger>> psFail = P.pairs(P.negativeRationals(), P.rangeUp(BigInteger.valueOf(2)));
+        Iterable<Pair<Rational, BigInteger>> psFail = P.pairs(P.negativeRationals(), P.rangeUp(IntegerUtils.TWO));
         for (Pair<Rational, BigInteger> p : take(LIMIT, psFail)) {
             try {
                 p.a.digits(p.b);
@@ -3180,7 +3180,7 @@ public class RationalProperties {
                                 P.withScale(8).positiveRationals()
                         )
                 ),
-                P.withScale(8).rangeUp(BigInteger.valueOf(2))
+                P.withScale(8).rangeUp(IntegerUtils.TWO)
         );
         for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
             long time = System.nanoTime();
@@ -3204,7 +3204,7 @@ public class RationalProperties {
 
         Iterable<Pair<Rational, BigInteger>> ps;
         if (P instanceof QBarExhaustiveProvider) {
-            ps = P.pairsSquareRootOrder(P.rationals(), P.rangeUp(BigInteger.valueOf(2)));
+            ps = P.pairsSquareRootOrder(P.rationals(), P.rangeUp(IntegerUtils.TWO));
         } else {
             ps = P.pairs(
                     P.rationals(),
@@ -3220,10 +3220,10 @@ public class RationalProperties {
         if (P instanceof QBarExhaustiveProvider) {
             ps = P.pairsSquareRootOrder(
                     P.rationals(),
-                    P.range(BigInteger.valueOf(2), BigInteger.valueOf(36))
+                    P.range(IntegerUtils.TWO, BigInteger.valueOf(36))
             );
         } else {
-            ps = P.pairs(P.rationals(), P.range(BigInteger.valueOf(2), BigInteger.valueOf(36)));
+            ps = P.pairs(P.rationals(), P.range(IntegerUtils.TWO, BigInteger.valueOf(36)));
         }
         for (Pair<Rational, BigInteger> p : take(LIMIT, filter(q -> q.a.hasTerminatingBaseExpansion(q.b), ps))) {
             String s = p.a.toStringBase(p.b);
@@ -3253,7 +3253,7 @@ public class RationalProperties {
 
         Iterable<Pair<Rational, BigInteger>> psFail;
         if (P instanceof QBarExhaustiveProvider) {
-            psFail = P.pairs(P.rationals(), P.rangeUp(BigInteger.valueOf(2)));
+            psFail = P.pairs(P.rationals(), P.rangeUp(IntegerUtils.TWO));
         } else {
             psFail = P.pairs(
                     P.rationals(),
@@ -3276,7 +3276,7 @@ public class RationalProperties {
         if (P instanceof QBarExhaustiveProvider) {
             ps = P.pairs(
                     P.rationals(),
-                    (Iterable<Pair<BigInteger, Integer>>) P.pairs(P.rangeUp(BigInteger.valueOf(2)), P.integers())
+                    (Iterable<Pair<BigInteger, Integer>>) P.pairs(P.rangeUp(IntegerUtils.TWO), P.integers())
             );
         } else {
             ps = P.pairs(
@@ -3303,7 +3303,7 @@ public class RationalProperties {
             ps = P.pairs(
                     P.rationals(),
                     (Iterable<Pair<BigInteger, Integer>>) P.pairs(
-                            P.range(BigInteger.valueOf(2), BigInteger.valueOf(36)),
+                            P.range(IntegerUtils.TWO, BigInteger.valueOf(36)),
                             P.integers()
                     )
             );
@@ -3311,7 +3311,7 @@ public class RationalProperties {
             ps = P.pairs(
                     P.rationals(),
                     (Iterable<Pair<BigInteger, Integer>>) P.pairs(
-                            P.range(BigInteger.valueOf(2), BigInteger.valueOf(36)),
+                            P.range(IntegerUtils.TWO, BigInteger.valueOf(36)),
                             P.withScale(20).integersGeometric()
                     )
             );
@@ -3379,7 +3379,7 @@ public class RationalProperties {
             assertEquals(p.toString(), r.toStringBase(p.a), p.b);
         }
 
-        for (BigInteger i : take(LIMIT, P.rangeUp(BigInteger.valueOf(2)))) {
+        for (BigInteger i : take(LIMIT, P.rangeUp(IntegerUtils.TWO))) {
             assertTrue(i.toString(), fromStringBase(i, "") == ZERO);
         }
 

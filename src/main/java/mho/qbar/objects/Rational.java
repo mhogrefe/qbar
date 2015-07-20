@@ -588,7 +588,7 @@ public final class Rational implements Comparable<Rational> {
      * @return whether {@code this} has a terminating base expansion in base-{@code base}
      */
     public boolean hasTerminatingBaseExpansion(@NotNull BigInteger base) {
-        if (lt(base, BigInteger.valueOf(2)))
+        if (lt(base, IntegerUtils.TWO))
             throw new IllegalArgumentException("base must be at least 2");
         if (isInteger()) return true;
         BigInteger remainder = denominator;
@@ -1146,7 +1146,7 @@ public final class Rational implements Comparable<Rational> {
      */
     public @NotNull Rational abs() {
         if (this == ZERO || this == ONE) return this;
-        if (numerator.equals(BigInteger.valueOf(-1)) && denominator.equals(BigInteger.ONE)) return ONE;
+        if (numerator.equals(IntegerUtils.NEGATIVE_ONE) && denominator.equals(BigInteger.ONE)) return ONE;
         return new Rational(numerator.abs(), denominator);
     }
 
@@ -1234,7 +1234,7 @@ public final class Rational implements Comparable<Rational> {
     public @NotNull Rational multiply(@NotNull BigInteger that) {
         if (this == ZERO || that.equals(BigInteger.ZERO)) return ZERO;
         if (numerator.equals(BigInteger.ONE) && denominator.equals(that) ||
-                numerator.equals(BigInteger.valueOf(-1)) && denominator.equals(that.negate())) return ONE;
+                numerator.equals(IntegerUtils.NEGATIVE_ONE) && denominator.equals(that.negate())) return ONE;
         BigInteger g = denominator.gcd(that);
         return new Rational(numerator.multiply(that.divide(g)), denominator.divide(g));
     }
@@ -1254,7 +1254,7 @@ public final class Rational implements Comparable<Rational> {
     public @NotNull Rational multiply(int that) {
         if (this == ZERO || that == 0) return ZERO;
         if (numerator.equals(BigInteger.ONE) && denominator.equals(BigInteger.valueOf(that))) return ONE;
-        if (numerator.equals(BigInteger.valueOf(-1)) && denominator.equals(BigInteger.valueOf(that).negate()))
+        if (numerator.equals(IntegerUtils.NEGATIVE_ONE) && denominator.equals(BigInteger.valueOf(that).negate()))
             return ONE;
         BigInteger g = denominator.gcd(BigInteger.valueOf(that));
         return new Rational(numerator.multiply(BigInteger.valueOf(that).divide(g)), denominator.divide(g));
@@ -1908,7 +1908,7 @@ public final class Rational implements Comparable<Rational> {
      * @return a {@code String} representation of {@code this} in base {@code base}
      */
     public @NotNull String toStringBase(@NotNull BigInteger base, int scale) {
-        if (lt(base, BigInteger.valueOf(2)))
+        if (lt(base, IntegerUtils.TWO))
             throw new IllegalArgumentException("base must be at least 2");
         BigInteger power = scale >= 0 ? base.pow(scale) : base.pow(-scale);
         Rational scaled = scale >= 0 ? multiply(power) : divide(power);
@@ -1963,7 +1963,7 @@ public final class Rational implements Comparable<Rational> {
      * @return the {@code Rational} represented by {@code s}
      */
     public static @NotNull Rational fromStringBase(@NotNull BigInteger base, @NotNull String s) {
-        if (lt(base, BigInteger.valueOf(2)))
+        if (lt(base, IntegerUtils.TWO))
             throw new IllegalArgumentException("base must be at least 2");
         if (s.isEmpty()) return ZERO;
         try {

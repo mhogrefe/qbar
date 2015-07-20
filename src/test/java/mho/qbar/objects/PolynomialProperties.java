@@ -5,6 +5,7 @@ import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.iterableProviders.QBarRandomProvider;
 import mho.qbar.testing.QBarTesting;
 import mho.wheels.iterables.IterableUtils;
+import mho.wheels.numberUtils.IntegerUtils;
 import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
 import org.jetbrains.annotations.NotNull;
@@ -131,7 +132,7 @@ public class PolynomialProperties {
         for (BigInteger i : take(LIMIT, P.bigIntegers())) {
             assertEquals(i.toString(), ZERO.apply(i), BigInteger.ZERO);
             assertEquals(i.toString(), X.apply(i), i);
-            assertEquals(i.toString(), of(BigInteger.valueOf(-1), 1).apply(i), i.negate());
+            assertEquals(i.toString(), of(IntegerUtils.NEGATIVE_ONE, 1).apply(i), i.negate());
         }
 
         for (Polynomial p : take(LIMIT, P.polynomialsAtLeast(0))) {
@@ -200,7 +201,7 @@ public class PolynomialProperties {
         for (Rational r : take(LIMIT, P.rationals())) {
             assertEquals(r.toString(), ZERO.apply(r), Rational.ZERO);
             assertEquals(r.toString(), X.apply(r), r);
-            assertEquals(r.toString(), of(BigInteger.valueOf(-1), 1).apply(r), r.negate());
+            assertEquals(r.toString(), of(IntegerUtils.NEGATIVE_ONE, 1).apply(r), r.negate());
         }
 
         for (Polynomial p : take(LIMIT, P.polynomialsAtLeast(0))) {
