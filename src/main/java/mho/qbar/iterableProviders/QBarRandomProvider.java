@@ -6,6 +6,7 @@ import mho.wheels.math.BinaryFraction;
 import mho.wheels.ordering.Ordering;
 import org.jetbrains.annotations.NotNull;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.util.Arrays;
@@ -546,6 +547,38 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
 
     public double nextDoubleUniform() {
         return ((RandomProvider) wheelsProvider).nextDoubleUniform();
+    }
+
+    public @NotNull BigDecimal nextPositiveBigDecimal() {
+        return ((RandomProvider) wheelsProvider).nextPositiveBigDecimal();
+    }
+
+    public @NotNull BigDecimal nextNegativeBigDecimal() {
+        return ((RandomProvider) wheelsProvider).nextNegativeBigDecimal();
+    }
+
+    public @NotNull BigDecimal nextNonzeroBigDecimal() {
+        return ((RandomProvider) wheelsProvider).nextNonzeroBigDecimal();
+    }
+
+    public @NotNull BigDecimal nextBigDecimal() {
+        return ((RandomProvider) wheelsProvider).nextBigDecimal();
+    }
+
+    public @NotNull BigDecimal nextCanonicalPositiveBigDecimal() {
+        return ((RandomProvider) wheelsProvider).nextPositiveCanonicalBigDecimal();
+    }
+
+    public @NotNull BigDecimal nextCanonicalNegativeBigDecimal() {
+        return ((RandomProvider) wheelsProvider).nextNegativeCanonicalBigDecimal();
+    }
+
+    public @NotNull BigDecimal nextCanonicalNonzeroBigDecimal() {
+        return ((RandomProvider) wheelsProvider).nextNonzeroCanonicalBigDecimal();
+    }
+
+    public @NotNull BigDecimal nextCanonicalBigDecimal() {
+        return ((RandomProvider) wheelsProvider).nextCanonicalBigDecimal();
     }
 
     /**

@@ -698,16 +698,64 @@ public strictfp abstract class QBarIterableProvider {
         return wheelsProvider.doublesUniform();
     }
 
+    /**
+     * Generates positive {@code BigDecimal}s.
+     */
     public @NotNull Iterable<BigDecimal> positiveBigDecimals() {
         return wheelsProvider.positiveBigDecimals();
     }
 
+    /**
+     * Generates negative {@code BigDecimal}s.
+     */
     public @NotNull Iterable<BigDecimal> negativeBigDecimals() {
         return wheelsProvider.negativeBigDecimals();
     }
 
+    /**
+     * Generates nonzero {@code BigDecimal}s.
+     */
+    public @NotNull Iterable<BigDecimal> nonzeroBigDecimals() {
+        return wheelsProvider.nonzeroBigDecimals();
+    }
+
+    /**
+     * Generates {@code BigDecimal}s.
+     */
     public @NotNull Iterable<BigDecimal> bigDecimals() {
         return wheelsProvider.bigDecimals();
+    }
+
+    /**
+     * Generates positive {@code BigDecimal}s in canonical form (see
+     * {@link mho.wheels.numberUtils.BigDecimalUtils#canonicalize(BigDecimal)}).
+     */
+    public @NotNull Iterable<BigDecimal> positiveCanonicalBigDecimals() {
+        return wheelsProvider.positiveCanonicalBigDecimals();
+    }
+
+    /**
+     * Generates negative {@code BigDecimal}s in canonical form (see
+     * {@link mho.wheels.numberUtils.BigDecimalUtils#canonicalize(BigDecimal)}).
+     */
+    public @NotNull Iterable<BigDecimal> negativeCanonicalBigDecimals() {
+        return wheelsProvider.negativeCanonicalBigDecimals();
+    }
+
+    /**
+     * Generates nonzero {@code BigDecimal}s in canonical form (see
+     * {@link mho.wheels.numberUtils.BigDecimalUtils#canonicalize(BigDecimal)}).
+     */
+    public @NotNull Iterable<BigDecimal> nonzeroCanonicalBigDecimals() {
+        return wheelsProvider.nonzeroCanonicalBigDecimals();
+    }
+
+    /**
+     * Generates {@code BigDecimal}s in canonical form (see
+     * {@link mho.wheels.numberUtils.BigDecimalUtils#canonicalize(BigDecimal)}).
+     */
+    public @NotNull Iterable<BigDecimal> canonicalBigDecimals() {
+        return wheelsProvider.canonicalBigDecimals();
     }
 
     public @NotNull <T> Iterable<T> withSpecialElement(@Nullable T x, @NotNull Iterable<T> xs) {
