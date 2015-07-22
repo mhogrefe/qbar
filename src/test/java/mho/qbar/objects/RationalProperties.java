@@ -6,6 +6,7 @@ import mho.qbar.iterableProviders.QBarRandomProvider;
 import mho.qbar.testing.QBarTesting;
 import mho.wheels.io.Readers;
 import mho.wheels.math.MathUtils;
+import mho.wheels.numberUtils.BigDecimalUtils;
 import mho.wheels.numberUtils.FloatingPointUtils;
 import mho.wheels.numberUtils.IntegerUtils;
 import mho.wheels.ordering.Ordering;
@@ -307,7 +308,7 @@ public class RationalProperties {
         for (float f : take(LIMIT, fs)) {
             Rational r = of(f).get();
             aeqf(Float.toString(f), f, r.floatValue());
-            aeq(Float.toString(f), new BigDecimal(Float.toString(f)), r.bigDecimalValueExact());
+            assertTrue(Float.toString(f), eq(new BigDecimal(Float.toString(f)), r.bigDecimalValueExact()));
         }
     }
 
@@ -326,7 +327,7 @@ public class RationalProperties {
         for (double d : take(LIMIT, ds)) {
             Rational r = of(d).get();
             aeqd(Double.toString(d), d, r.doubleValue());
-            aeq(Double.toString(d), new BigDecimal(Double.toString(d)), r.bigDecimalValueExact());
+            assertTrue(Double.toString(d), eq(new BigDecimal(Double.toString(d)), r.bigDecimalValueExact()));
         }
     }
 
@@ -393,7 +394,7 @@ public class RationalProperties {
         for (BigDecimal bd : take(LIMIT, P.bigDecimals())) {
             Rational r = of(bd);
             r.validate();
-            aeq(bd.toString(), bd, r.bigDecimalValueExact());
+            assertTrue(bd.toString(), eq(bd, r.bigDecimalValueExact()));
             assertTrue(bd.toString(), r.hasTerminatingBaseExpansion(BigInteger.valueOf(10)));
         }
     }
