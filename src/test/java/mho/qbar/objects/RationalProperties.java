@@ -301,7 +301,7 @@ public class RationalProperties {
         for (float f : take(LIMIT, fs)) {
             Rational r = of(f).get();
             r.validate();
-            assertTrue(Float.toString(f), r.hasTerminatingBaseExpansion(BigInteger.valueOf(10)));
+            assertTrue(Float.toString(f), r.hasTerminatingBaseExpansion(BigInteger.TEN));
         }
 
         fs = filter(g -> Float.isFinite(g) && !FloatingPointUtils.isNegativeZero(g), P.floats());
@@ -320,7 +320,7 @@ public class RationalProperties {
         for (double d : take(LIMIT, ds)) {
             Rational r = of(d).get();
             r.validate();
-            assertTrue(Double.toString(d), r.hasTerminatingBaseExpansion(BigInteger.valueOf(10)));
+            assertTrue(Double.toString(d), r.hasTerminatingBaseExpansion(BigInteger.TEN));
         }
 
         ds = filter(e -> Double.isFinite(e) && !FloatingPointUtils.isNegativeZero(e), P.doubles());
@@ -395,7 +395,7 @@ public class RationalProperties {
             Rational r = of(bd);
             r.validate();
             assertTrue(bd.toString(), eq(bd, r.bigDecimalValueExact()));
-            assertTrue(bd.toString(), r.hasTerminatingBaseExpansion(BigInteger.valueOf(10)));
+            assertTrue(bd.toString(), r.hasTerminatingBaseExpansion(BigInteger.TEN));
         }
     }
 
@@ -792,7 +792,7 @@ public class RationalProperties {
                 p -> {
                     //noinspection SimplifiableIfStatement
                     if (p.a.precision() <= 1 || p.b != p.a.precision() - 1) return false;
-                    return !p.a.abs().unscaledValue().mod(BigInteger.valueOf(10)).equals(BigInteger.valueOf(5));
+                    return !p.a.abs().unscaledValue().mod(BigInteger.TEN).equals(BigInteger.valueOf(5));
                 },
                 notMidpoints
         );
@@ -843,7 +843,7 @@ public class RationalProperties {
             } catch (IllegalArgumentException ignored) {}
         }
 
-        Iterable<Rational> rs = filter(r -> !r.hasTerminatingBaseExpansion(BigInteger.valueOf(10)), P.rationals());
+        Iterable<Rational> rs = filter(r -> !r.hasTerminatingBaseExpansion(BigInteger.TEN), P.rationals());
         Iterable<Pair<Rational, Integer>> prisFail;
         if (P instanceof QBarExhaustiveProvider) {
             prisFail = P.pairsSquareRootOrder(rs, P.naturalIntegers());
@@ -900,7 +900,7 @@ public class RationalProperties {
                 p -> {
                     //noinspection SimplifiableIfStatement
                     if (p.a.precision() <= 1 || p.b != p.a.precision() - 1) return false;
-                    return !p.a.abs().unscaledValue().mod(BigInteger.valueOf(10)).equals(BigInteger.valueOf(5));
+                    return !p.a.abs().unscaledValue().mod(BigInteger.TEN).equals(BigInteger.valueOf(5));
                 },
                 notMidpoints
         );
@@ -942,7 +942,7 @@ public class RationalProperties {
         initialize();
         System.out.println("\t\ttesting bigDecimalValueExact()...");
 
-        Iterable<Rational> rs = filter(r -> r.hasTerminatingBaseExpansion(BigInteger.valueOf(10)), P.rationals());
+        Iterable<Rational> rs = filter(r -> r.hasTerminatingBaseExpansion(BigInteger.TEN), P.rationals());
         for (Rational r : take(LIMIT, rs)) {
             BigDecimal bd = r.bigDecimalValueExact();
             assertEquals(r.toString(), bd, r.bigDecimalValue(0, RoundingMode.UNNECESSARY));
@@ -957,7 +957,7 @@ public class RationalProperties {
             } catch (IllegalArgumentException ignored) {}
         }
 
-        Iterable<Rational> rsFail = filter(r -> !r.hasTerminatingBaseExpansion(BigInteger.valueOf(10)), P.rationals());
+        Iterable<Rational> rsFail = filter(r -> !r.hasTerminatingBaseExpansion(BigInteger.TEN), P.rationals());
         for (Rational r : take(LIMIT, rsFail)) {
             try {
                 r.bigDecimalValueExact();

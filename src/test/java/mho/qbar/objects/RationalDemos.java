@@ -278,7 +278,7 @@ public class RationalDemos {
 
     private static void demoBigDecimalValueExact() {
         initialize();
-        Iterable<Rational> rs = filter(r -> r.hasTerminatingBaseExpansion(BigInteger.valueOf(10)), P.rationals());
+        Iterable<Rational> rs = filter(r -> r.hasTerminatingBaseExpansion(BigInteger.TEN), P.rationals());
         for (Rational r : take(LIMIT, rs)) {
             System.out.println("bigDecimalValueExact(" + r + ") = " + r.bigDecimalValueExact());
         }
