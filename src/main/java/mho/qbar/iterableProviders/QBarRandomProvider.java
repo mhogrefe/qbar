@@ -581,6 +581,30 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
         return ((RandomProvider) wheelsProvider).nextCanonicalBigDecimal();
     }
 
+    public @NotNull BigDecimal nextFromRangeUp(@NotNull BigDecimal a) {
+        return ((RandomProvider) wheelsProvider).nextFromRangeUp(a);
+    }
+
+    public @NotNull BigDecimal nextFromRangeDown(@NotNull BigDecimal a) {
+        return ((RandomProvider) wheelsProvider).nextFromRangeDown(a);
+    }
+
+    public @NotNull BigDecimal nextFromRange(@NotNull BigDecimal a, @NotNull BigDecimal b) {
+        return ((RandomProvider) wheelsProvider).nextFromRange(a, b);
+    }
+
+    public @NotNull BigDecimal nextFromRangeUpCanonical(@NotNull BigDecimal a) {
+        return ((RandomProvider) wheelsProvider).nextFromRangeUpCanonical(a);
+    }
+
+    public @NotNull BigDecimal nextFromRangeDownCanonical(@NotNull BigDecimal a) {
+        return ((RandomProvider) wheelsProvider).nextFromRangeDownCanonical(a);
+    }
+
+    public @NotNull BigDecimal nextFromRangeCanonical(@NotNull BigDecimal a, @NotNull BigDecimal b) {
+        return ((RandomProvider) wheelsProvider).nextFromRangeCanonical(a, b);
+    }
+
     /**
      * a pseudorandom {@link Iterable} that generates every {@link Rational}. Each {@code Rational}'s bit size (defined
      * as the sum of the numerator's and denominator's bit sizes) is chosen from a geometric distribution with mean

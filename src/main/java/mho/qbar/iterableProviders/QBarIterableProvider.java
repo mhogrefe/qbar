@@ -758,6 +758,65 @@ public strictfp abstract class QBarIterableProvider {
         return wheelsProvider.canonicalBigDecimals();
     }
 
+    /**
+     * Generates {@code BigDecimal}s greater than or equal to a given value.
+     *
+     * @param a the inclusive lower bound of the generated {@code BigDecimal}s
+     */
+    public @NotNull Iterable<BigDecimal> rangeUp(@NotNull BigDecimal a) {
+        return wheelsProvider.rangeUp(a);
+    }
+
+    /**
+     * Generates {@code BigDecimal}s less than or equal to a given value.
+     *
+     * @param a the inclusive upper bound of the generated {@code BigDecimal}s
+     */
+    public @NotNull Iterable<BigDecimal> rangeDown(@NotNull BigDecimal a) {
+        return wheelsProvider.rangeDown(a);
+    }
+
+    /**
+     * Generates {@code BigDecimal}s between {@code a} and {@code b}, inclusive.
+     *
+     * @param a the inclusive lower bound of the generated {@code BigDecimal}s
+     * @param b the inclusive upper bound of the generated {@code BigDecimal}s
+     */
+    public @NotNull Iterable<BigDecimal> range(@NotNull BigDecimal a, @NotNull BigDecimal b) {
+        return wheelsProvider.range(a, b);
+    }
+
+    /**
+     * Generates {@code BigDecimal}s greater than or equal to a given value, in canonical form (see
+     * {@link mho.wheels.numberUtils.BigDecimalUtils#canonicalize(BigDecimal)}).
+     *
+     * @param a the inclusive lower bound of the generated {@code BigDecimal}s
+     */
+    public @NotNull Iterable<BigDecimal> rangeUpCanonical(@NotNull BigDecimal a) {
+        return wheelsProvider.rangeUpCanonical(a);
+    }
+
+    /**
+     * Generates {@code BigDecimal}s less than or equal to a given value, in canonical form (see
+     * {@link mho.wheels.numberUtils.BigDecimalUtils#canonicalize(BigDecimal)}).
+     *
+     * @param a the inclusive upper bound of the generated {@code BigDecimal}s
+     */
+    public @NotNull Iterable<BigDecimal> rangeDownCanonical(@NotNull BigDecimal a) {
+        return wheelsProvider.rangeDownCanonical(a);
+    }
+
+    /**
+     * Generates {@code BigDecimal}s between {@code a} and {@code b}, inclusive, in canonical form (see
+     * {@link mho.wheels.numberUtils.BigDecimalUtils#canonicalize(BigDecimal)}).
+     *
+     * @param a the inclusive lower bound of the generated {@code BigDecimal}s
+     * @param b the inclusive upper bound of the generated {@code BigDecimal}s
+     */
+    public @NotNull Iterable<BigDecimal> rangeCanonical(@NotNull BigDecimal a, @NotNull BigDecimal b) {
+        return wheelsProvider.rangeCanonical(a, b);
+    }
+
     public @NotNull <T> Iterable<T> withSpecialElement(@Nullable T x, @NotNull Iterable<T> xs) {
         return wheelsProvider.withSpecialElement(x, xs);
     }
