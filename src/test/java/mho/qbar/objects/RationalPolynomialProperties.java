@@ -135,7 +135,7 @@ public class RationalPolynomialProperties {
         for (Rational i : take(LIMIT, P.rationals())) {
             assertEquals(i.toString(), ZERO.apply(i), Rational.ZERO);
             assertEquals(i.toString(), X.apply(i), i);
-            assertEquals(i.toString(), of(Rational.of(-1), 1).apply(i), i.negate());
+            assertEquals(i.toString(), of(Rational.NEGATIVE_ONE, 1).apply(i), i.negate());
         }
 
         for (RationalPolynomial p : take(LIMIT, P.rationalPolynomialsAtLeast(0))) {

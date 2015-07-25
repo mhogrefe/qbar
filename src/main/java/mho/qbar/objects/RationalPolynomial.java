@@ -277,7 +277,7 @@ public final class RationalPolynomial implements
      */
     public @NotNull RationalPolynomial negate() {
         if (this == ZERO) return ZERO;
-        if (coefficients.size() == 1 && coefficients.get(0).equals(Rational.of(-1))) return ONE;
+        if (coefficients.size() == 1 && coefficients.get(0).equals(Rational.NEGATIVE_ONE)) return ONE;
         return new RationalPolynomial(toList(map(Rational::negate, coefficients)));
     }
 
@@ -880,7 +880,7 @@ public final class RationalPolynomial implements
                     case 1:
                         if (head(monomialString) != '-') return Optional.empty();
                         monomialString = tail(monomialString);
-                        coefficient = Rational.of(-1);
+                        coefficient = Rational.NEGATIVE_ONE;
                         break;
                     default:
                         if (monomialString.charAt(xIndex - 1) != '*') return Optional.empty();
@@ -985,7 +985,7 @@ public final class RationalPolynomial implements
                 String power = i == 1 ? "x" : "x^" + i;
                 if (coefficient == Rational.ONE) {
                     monomialString = power;
-                } else if (coefficient.equals(Rational.of(-1))) {
+                } else if (coefficient.equals(Rational.NEGATIVE_ONE)) {
                     monomialString = cons('-', power);
                 } else {
                     monomialString = coefficient + "*" + power;

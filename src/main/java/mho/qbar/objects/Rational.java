@@ -45,6 +45,21 @@ public final class Rational implements Comparable<Rational> {
     public static final @NotNull Rational ONE = new Rational(BigInteger.ONE, BigInteger.ONE);
 
     /**
+     * 10
+     */
+    public static final @NotNull Rational TEN = new Rational(BigInteger.TEN, BigInteger.ONE);
+
+    /**
+     * 2
+     */
+    public static final @NotNull Rational TWO = new Rational(IntegerUtils.TWO, BigInteger.ONE);
+
+    /**
+     * -1
+     */
+    public static final @NotNull Rational NEGATIVE_ONE = new Rational(IntegerUtils.NEGATIVE_ONE, BigInteger.ONE);
+
+    /**
      * The smallest positive float value, or 2<sup>–149</sup>
      */
     public static final @NotNull Rational SMALLEST_FLOAT = ofExact(Float.MIN_VALUE).get();
@@ -397,7 +412,7 @@ public final class Rational implements Comparable<Rational> {
      * @return the {@code Rational} corresponding to {@code d}
      */
     public static @NotNull Rational of(@NotNull BigDecimal d) {
-        return of(d.unscaledValue()).divide(of(10).pow(d.scale()));
+        return of(d.unscaledValue()).divide(TEN.pow(d.scale()));
     }
 
     /**

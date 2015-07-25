@@ -580,12 +580,12 @@ public class IntervalTest {
         aeq(read("[1/3, 1/3]").get().floatRange(), "(0.3333333, 0.33333334)");
         aeq(read("(-Infinity, 3/2]").get().floatRange(), "(-Infinity, 1.5)");
         aeq(read("[-6, Infinity)").get().floatRange(), "(-6.0, Infinity)");
-        aeq(of(Rational.of(10).pow(-100)).floatRange(), "(0.0, 1.4E-45)");
-        aeq(of(Rational.of(10).pow(-100).negate()).floatRange(), "(-1.4E-45, -0.0)");
-        aeq(of(Rational.of(10).pow(-100).negate(), Rational.of(10).pow(-100)).floatRange(), "(-1.4E-45, 1.4E-45)");
-        aeq(of(Rational.of(10).pow(100)).floatRange(), "(3.4028235E38, Infinity)");
-        aeq(of(Rational.of(10).pow(100).negate()).floatRange(), "(-Infinity, -3.4028235E38)");
-        aeq(of(Rational.of(10).pow(100).negate(), Rational.of(10).pow(100)).floatRange(), "(-Infinity, Infinity)");
+        aeq(of(Rational.TEN.pow(-100)).floatRange(), "(0.0, 1.4E-45)");
+        aeq(of(Rational.TEN.pow(-100).negate()).floatRange(), "(-1.4E-45, -0.0)");
+        aeq(of(Rational.TEN.pow(-100).negate(), Rational.TEN.pow(-100)).floatRange(), "(-1.4E-45, 1.4E-45)");
+        aeq(of(Rational.TEN.pow(100)).floatRange(), "(3.4028235E38, Infinity)");
+        aeq(of(Rational.TEN.pow(100).negate()).floatRange(), "(-Infinity, -3.4028235E38)");
+        aeq(of(Rational.TEN.pow(100).negate(), Rational.TEN.pow(100)).floatRange(), "(-Infinity, Infinity)");
     }
 
     @Test
@@ -599,15 +599,15 @@ public class IntervalTest {
         aeq(read("[1/3, 1/3]").get().doubleRange(), "(0.3333333333333333, 0.33333333333333337)");
         aeq(read("(-Infinity, 3/2]").get().doubleRange(), "(-Infinity, 1.5)");
         aeq(read("[-6, Infinity)").get().doubleRange(), "(-6.0, Infinity)");
-        aeq(of(Rational.of(10).pow(-1000)).doubleRange(), "(0.0, 4.9E-324)");
-        aeq(of(Rational.of(10).pow(-1000).negate()).doubleRange(), "(-4.9E-324, -0.0)");
+        aeq(of(Rational.TEN.pow(-1000)).doubleRange(), "(0.0, 4.9E-324)");
+        aeq(of(Rational.TEN.pow(-1000).negate()).doubleRange(), "(-4.9E-324, -0.0)");
         aeq(
-                of(Rational.of(10).pow(-1000).negate(), Rational.of(10).pow(-1000)).doubleRange(),
+                of(Rational.TEN.pow(-1000).negate(), Rational.TEN.pow(-1000)).doubleRange(),
                 "(-4.9E-324, 4.9E-324)"
         );
-        aeq(of(Rational.of(10).pow(1000)).doubleRange(), "(1.7976931348623157E308, Infinity)");
-        aeq(of(Rational.of(10).pow(1000).negate()).doubleRange(), "(-Infinity, -1.7976931348623157E308)");
-        aeq(of(Rational.of(10).pow(1000).negate(), Rational.of(10).pow(1000)).doubleRange(), "(-Infinity, Infinity)");
+        aeq(of(Rational.TEN.pow(1000)).doubleRange(), "(1.7976931348623157E308, Infinity)");
+        aeq(of(Rational.TEN.pow(1000).negate()).doubleRange(), "(-Infinity, -1.7976931348623157E308)");
+        aeq(of(Rational.TEN.pow(1000).negate(), Rational.TEN.pow(1000)).doubleRange(), "(-Infinity, Infinity)");
     }
 
     @Test

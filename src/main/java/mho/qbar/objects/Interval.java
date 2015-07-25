@@ -592,7 +592,7 @@ public final class Interval implements Comparable<Interval> {
      */
     public static @NotNull Interval roundingPreimage(@NotNull BigDecimal bd) {
         Rational center = Rational.of(bd);
-        Rational maxAbsoluteError = Rational.of(10).pow(-bd.scale()).shiftRight(1);
+        Rational maxAbsoluteError = Rational.TEN.pow(-bd.scale()).shiftRight(1);
         return new Interval(center.subtract(maxAbsoluteError), center.add(maxAbsoluteError));
     }
 
