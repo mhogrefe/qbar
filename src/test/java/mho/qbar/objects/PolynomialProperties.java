@@ -3,10 +3,9 @@ package mho.qbar.objects;
 import mho.qbar.iterableProviders.QBarExhaustiveProvider;
 import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.iterableProviders.QBarRandomProvider;
-import mho.wheels.iterables.IterableProvider;
+import mho.qbar.testing.QBarTesting;
 import mho.wheels.iterables.IterableUtils;
-import mho.wheels.iterables.RandomProvider;
-import mho.wheels.math.Combinatorics;
+import mho.wheels.numberUtils.IntegerUtils;
 import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
 import org.jetbrains.annotations.NotNull;
@@ -16,18 +15,22 @@ import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 
 import static mho.qbar.objects.Polynomial.*;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.ordering.Ordering.*;
-import static mho.wheels.testing.Testing.aeqit;
-import static org.junit.Assert.*;
+import static mho.wheels.testing.Testing.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
-@SuppressWarnings("ConstantConditions")
 public class PolynomialProperties {
     private static boolean USE_RANDOM;
-    private static final String POLYNOMIAL_CHARS = "*+-0123456789^x";
+    private static final @NotNull String POLYNOMIAL_CHARS = "*+-0123456789^x";
+    private static final int EXPONENT_CUTOFF = 1000;
     private static int LIMIT;
 
     private static QBarIterableProvider P;
@@ -129,7 +132,7 @@ public class PolynomialProperties {
         for (BigInteger i : take(LIMIT, P.bigIntegers())) {
             assertEquals(i.toString(), ZERO.apply(i), BigInteger.ZERO);
             assertEquals(i.toString(), X.apply(i), i);
-            assertEquals(i.toString(), of(BigInteger.valueOf(-1), 1).apply(i), i.negate());
+            assertEquals(i.toString(), of(IntegerUtils.NEGATIVE_ONE, 1).apply(i), i.negate());
         }
 
         for (Polynomial p : take(LIMIT, P.polynomialsAtLeast(0))) {
@@ -198,7 +201,7 @@ public class PolynomialProperties {
         for (Rational r : take(LIMIT, P.rationals())) {
             assertEquals(r.toString(), ZERO.apply(r), Rational.ZERO);
             assertEquals(r.toString(), X.apply(r), r);
-            assertEquals(r.toString(), of(BigInteger.valueOf(-1), 1).apply(r), r.negate());
+            assertEquals(r.toString(), of(IntegerUtils.NEGATIVE_ONE, 1).apply(r), r.negate());
         }
 
         for (Polynomial p : take(LIMIT, P.polynomialsAtLeast(0))) {
@@ -332,14 +335,7 @@ public class PolynomialProperties {
             assertEquals(is.toString(), toList(of(is)), is);
         }
 
-        Iterable<List<BigInteger>> failIss = map(
-                p -> toList(insert(p.a, p.b, null)),
-                (Iterable<Pair<List<BigInteger>, Integer>>) P.dependentPairsLogarithmic(
-                        P.lists(P.bigIntegers()),
-                        rs -> range(0, rs.size())
-                )
-        );
-        for (List<BigInteger> is : take(LIMIT, failIss)) {
+        for (List<BigInteger> is : take(LIMIT, P.listsWithElement(null, P.bigIntegers()))) {
             try {
                 of(is);
                 fail(is.toString());
@@ -739,6 +735,10 @@ public class PolynomialProperties {
             assertEquals(p.toString(), p.a.negate().shiftLeft(p.b), shifted.negate());
         }
 
+        for (Polynomial p : take(LIMIT, P.polynomials())) {
+            assertEquals(p.toString(), p.shiftLeft(0), p);
+        }
+
         Iterable<Triple<Polynomial, Integer, BigInteger>> ts = P.triples(P.polynomials(), is, P.bigIntegers());
         for (Triple<Polynomial, Integer, BigInteger> t : take(LIMIT, ts)) {
             assertEquals(t.toString(), t.a.shiftLeft(t.b).apply(t.c), t.a.apply(t.c).shiftLeft(t.b));
@@ -796,9 +796,18 @@ public class PolynomialProperties {
         initialize();
         System.out.println("\t\ttesting sum(Iterable<Polynomial>) properties...");
 
+        propertiesFoldHelper(
+                LIMIT,
+                P.getWheelsProvider(),
+                P.polynomials(),
+                Polynomial::add,
+                Polynomial::sum,
+                p -> {},
+                true
+        );
+
         for (List<Polynomial> ps : take(LIMIT, P.lists(P.polynomials()))) {
             Polynomial sum = sum(ps);
-            sum.validate();
             assertTrue(ps.toString(), ps.isEmpty() || sum.degree() <= maximum(map(Polynomial::degree, ps)));
             assertEquals(ps.toString(), sum, sum_simplest(ps));
         }
@@ -810,36 +819,6 @@ public class PolynomialProperties {
 
         for (List<BigInteger> is : take(LIMIT, P.lists(P.bigIntegers()))) {
             assertEquals(is.toString(), sum(map(Polynomial::of, is)), of(sumBigInteger(is)));
-        }
-
-        Iterable<Pair<List<Polynomial>, List<Polynomial>>> ps2 = filter(
-                q -> !q.a.equals(q.b),
-                P.dependentPairsLogarithmic(P.lists(P.polynomials()), Combinatorics::permutationsIncreasing)
-        );
-        for (Pair<List<Polynomial>, List<Polynomial>> p : take(LIMIT, ps2)) {
-            assertEquals(p.toString(), sum(p.a), sum(p.b));
-        }
-
-        for (Polynomial p : take(LIMIT, P.polynomials())) {
-            assertEquals(p.toString(), sum(Arrays.asList(p)), p);
-        }
-
-        for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(P.polynomials()))) {
-            assertEquals(p.toString(), sum(Arrays.asList(p.a, p.b)), p.a.add(p.b));
-        }
-
-        Iterable<List<Polynomial>> failPss = map(
-                p -> toList(insert(p.a, p.b, null)),
-                (Iterable<Pair<List<Polynomial>, Integer>>) P.dependentPairsLogarithmic(
-                        P.lists(P.polynomials()),
-                        rs -> range(0, rs.size())
-                )
-        );
-        for (List<Polynomial> ps3 : take(LIMIT, failPss)) {
-            try {
-                sum(ps3);
-                fail(ps3.toString());
-            } catch (NullPointerException ignored) {}
         }
     }
 
@@ -868,9 +847,18 @@ public class PolynomialProperties {
         initialize();
         System.out.println("\t\ttesting product(Iterable<Polynomial>) properties...");
 
+        propertiesFoldHelper(
+                LIMIT,
+                P.getWheelsProvider(),
+                P.polynomials(),
+                Polynomial::multiply,
+                Polynomial::product,
+                p -> {},
+                true
+        );
+
         for (List<Polynomial> ps : take(LIMIT, P.lists(P.polynomials()))) {
             Polynomial product = product(ps);
-            product.validate();
             assertTrue(
                     ps.toString(),
                     any(p -> p == ZERO, ps) ||
@@ -885,49 +873,21 @@ public class PolynomialProperties {
         for (List<BigInteger> rs : take(LIMIT, P.lists(P.bigIntegers()))) {
             assertEquals(rs.toString(), product(map(Polynomial::of, rs)), of(productBigInteger(rs)));
         }
-
-        Iterable<Pair<List<Polynomial>, List<Polynomial>>> ps = filter(
-                q -> !q.a.equals(q.b),
-                P.dependentPairsLogarithmic(P.lists(P.polynomials()), Combinatorics::permutationsIncreasing)
-        );
-        for (Pair<List<Polynomial>, List<Polynomial>> p : take(LIMIT, ps)) {
-            assertEquals(p.toString(), product(p.a), product(p.b));
-        }
-
-        for (Polynomial p : take(LIMIT, P.polynomials())) {
-            assertEquals(p.toString(), product(Arrays.asList(p)), p);
-        }
-
-        for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(P.polynomials()))) {
-            assertEquals(p.toString(), product(Arrays.asList(p.a, p.b)), p.a.multiply(p.b));
-        }
-
-        Iterable<List<Polynomial>> failPss = map(
-                p -> toList(insert(p.a, p.b, null)),
-                P.dependentPairsLogarithmic(P.lists(P.polynomials()), rs -> range(0, rs.size()))
-        );
-        for (List<Polynomial> ps2 : take(LIMIT, failPss)) {
-            try {
-                product(ps2);
-                fail(ps2.toString());
-            } catch (NullPointerException ignored) {}
-        }
     }
 
     private static void propertiesDelta() {
         initialize();
         System.out.println("\t\ttesting delta(Iterable<Polynomial>) properties...");
 
-        for (List<Polynomial> ps : take(LIMIT, P.listsAtLeast(1, P.polynomials()))) {
-            Iterable<Polynomial> deltas = delta(ps);
-            deltas.forEach(Polynomial::validate);
-            assertEquals(ps.toString(), length(deltas), length(ps) - 1);
-            List<Polynomial> reversed = reverse(map(Polynomial::negate, delta(reverse(ps))));
-            aeqit(ps.toString(), deltas, reversed);
-            try {
-                deltas.iterator().remove();
-            } catch (UnsupportedOperationException ignored) {}
-        }
+        propertiesDeltaHelper(
+                LIMIT,
+                P.getWheelsProvider(),
+                P.polynomials(),
+                Polynomial::negate,
+                Polynomial::subtract,
+                Polynomial::delta,
+                p -> {}
+        );
 
         Iterable<Pair<List<Polynomial>, BigInteger>> ps = P.pairs(P.listsAtLeast(1, P.polynomials()), P.bigIntegers());
         for (Pair<List<Polynomial>, BigInteger> p : take(LIMIT, ps)) {
@@ -936,28 +896,6 @@ public class PolynomialProperties {
 
         for (List<BigInteger> is : take(LIMIT, P.listsAtLeast(1, P.bigIntegers()))) {
             aeqit(is.toString(), delta(map(Polynomial::of, is)), map(Polynomial::of, deltaBigInteger(is)));
-        }
-
-        for (Polynomial p : take(LIMIT, P.polynomials())) {
-            assertTrue(p.toString(), isEmpty(delta(Arrays.asList(p))));
-        }
-
-        for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(P.polynomials()))) {
-            aeqit(p.toString(), delta(Arrays.asList(p.a, p.b)), Arrays.asList(p.b.subtract(p.a)));
-        }
-
-        Iterable<List<Polynomial>> failPss = map(
-                p -> toList(insert(p.a, p.b, null)),
-                (Iterable<Pair<List<Polynomial>, Integer>>) P.dependentPairsLogarithmic(
-                        P.lists(P.polynomials()),
-                        rs -> range(0, rs.size())
-                )
-        );
-        for (List<Polynomial> ps2 : take(LIMIT, failPss)) {
-            try {
-                toList(delta(ps2));
-                fail(ps2.toString());
-            } catch (NullPointerException ignored) {}
         }
     }
 
@@ -1160,12 +1098,7 @@ public class PolynomialProperties {
         initialize();
         System.out.println("\t\ttesting equals(Object) properties...");
 
-        for (Polynomial p : take(LIMIT, P.polynomials())) {
-            //noinspection EqualsWithItself
-            assertTrue(p.toString(), p.equals(p));
-            //noinspection ObjectEqualsNull
-            assertFalse(p.toString(), p.equals(null));
-        }
+        QBarTesting.propertiesEqualsHelper(LIMIT, P, QBarIterableProvider::polynomials);
 
         for (Pair<BigInteger, BigInteger> p : take(LIMIT, P.pairs(P.bigIntegers()))) {
             assertEquals(p.toString(), of(p.a).equals(of(p.b)), p.a.equals(p.b));
@@ -1176,28 +1109,21 @@ public class PolynomialProperties {
         initialize();
         System.out.println("\t\ttesting hashCode() properties...");
 
-        for (Polynomial p : take(LIMIT, P.polynomials())) {
-            assertEquals(p.toString(), p.hashCode(), p.hashCode());
-        }
+        QBarTesting.propertiesHashCodeHelper(LIMIT, P, QBarIterableProvider::polynomials);
     }
 
     private static void propertiesCompareTo() {
         initialize();
         System.out.println("\t\ttesting compareTo(Polynomial) properties...");
 
+        QBarTesting.propertiesCompareToHelper(LIMIT, P, QBarIterableProvider::polynomials);
+
         for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(P.polynomials()))) {
-            int compare = p.a.compareTo(p.b);
-            assertTrue(p.toString(), compare == -1 || compare == 0 || compare == 1);
-            assertEquals(p.toString(), p.b.compareTo(p.a), -compare);
-            assertEquals(p.toString(), p.a.subtract(p.b).signum(), compare);
+            assertEquals(p.toString(), p.a.compareTo(p.b), p.a.subtract(p.b).signum());
         }
 
         for (Pair<BigInteger, BigInteger> p : take(LIMIT, P.pairs(P.bigIntegers()))) {
             assertEquals(p.toString(), of(p.a).compareTo(of(p.b)), p.a.compareTo(p.b));
-        }
-
-        for (Polynomial p : take(LIMIT, P.polynomials())) {
-            assertEquals(p.toString(), p.compareTo(p), 0);
         }
 
         Iterable<Pair<Polynomial, Polynomial>> ps = filter(
@@ -1206,14 +1132,6 @@ public class PolynomialProperties {
         );
         for (Pair<Polynomial, Polynomial> p : take(LIMIT, ps)) {
             assertEquals(p.toString(), compare(p.a, p.b), compare(p.a.degree(), p.b.degree()));
-        }
-
-        Iterable<Triple<Polynomial, Polynomial, Polynomial>> ts = filter(
-                t -> lt(t.a, t.b) && lt(t.b, t.c),
-                P.triples(P.polynomials())
-        );
-        for (Triple<Polynomial, Polynomial, Polynomial> t : take(LIMIT, ts)) {
-            assertEquals(t.toString(), t.a.compareTo(t.c), -1);
         }
     }
 
@@ -1236,7 +1154,7 @@ public class PolynomialProperties {
         } else {
             cs = P.uniformSample(POLYNOMIAL_CHARS);
         }
-        Iterable<String> ss = filter(s -> read(s).isPresent(), P.strings(cs));
+        Iterable<String> ss = filter(s -> read(EXPONENT_CUTOFF, s).isPresent(), P.strings(cs));
         for (String s : take(LIMIT, ss)) {
             Optional<Polynomial> op = read(s);
             op.get().validate();
@@ -1247,25 +1165,14 @@ public class PolynomialProperties {
         initialize();
         System.out.println("\t\ttesting findIn(String) properties...");
 
-        for (String s : take(LIMIT, P.strings())) {
-            findIn(s);
-        }
-
-        Iterable<Pair<String, Integer>> ps = P.dependentPairsLogarithmic(P.strings(), s -> range(0, s.length()));
-        Iterable<String> ss = map(p -> take(p.a.b, p.a.a) + p.b + drop(p.a.b, p.a.a), P.pairs(ps, P.polynomials()));
-        for (String s : take(LIMIT, ss)) {
-            Optional<Pair<Polynomial, Integer>> op = findIn(s);
-            Pair<Polynomial, Integer> p = op.get();
-            assertNotNull(s, p.a);
-            assertNotNull(s, p.b);
-            assertTrue(s, p.b >= 0 && p.b < s.length());
-            String before = take(p.b, s);
-            assertFalse(s, findIn(before).isPresent());
-            String during = p.a.toString();
-            assertTrue(s, s.substring(p.b).startsWith(during));
-            String after = drop(p.b + during.length(), s);
-            assertTrue(s, after.isEmpty() || !read(during + head(after)).isPresent());
-        }
+        propertiesFindInHelper(
+                LIMIT,
+                P.getWheelsProvider(),
+                P.polynomials(),
+                s -> read(EXPONENT_CUTOFF, s),
+                s -> findIn(EXPONENT_CUTOFF, s),
+                p -> {}
+        );
     }
 
     private static void propertiesToString() {

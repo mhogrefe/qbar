@@ -1,6 +1,6 @@
 package mho.qbar.objects;
 
-import mho.wheels.misc.Readers;
+import mho.wheels.io.Readers;
 import mho.wheels.ordering.comparators.LexComparator;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
@@ -12,9 +12,10 @@ import static mho.wheels.iterables.IterableUtils.*;
 /**
  * <p>A matrix with {@link Rational} elements. The number of rows is the height, and the number of rows is the width.
  * Either the height or the width, or both, may be 0; 0-height matrices are written {@code "[]#w"}, where {@code w} is
- * the width. When referring to elements, the (i, j)th element is the element in row i and column j.
+ * the width. When referring to elements, the (<i>i</i>, <i>j</i>)th element is the element in row <i>i</i> and column
+ * <i>j</i>.</p>
  *
- * <p>This class is immutable.
+ * <p>This class is immutable.</p>
  */
 public final class RationalMatrix implements Comparable<RationalMatrix> {
     /**
@@ -293,7 +294,7 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
      *  <li>The result may be either {@code boolean}.</li>
      * </ul>
      *
-     * @param that The {@code RationalMatrix} to be compared with {@code this}
+     * @param that The {@code Object} to be compared with {@code this}
      * @return {@code this}={@code that}
      */
     @Override

@@ -1,8 +1,9 @@
 package mho.qbar.objects;
 
+import mho.wheels.io.Readers;
 import mho.wheels.iterables.IterableUtils;
 import mho.wheels.math.MathUtils;
-import mho.wheels.misc.Readers;
+import mho.wheels.numberUtils.IntegerUtils;
 import mho.wheels.ordering.comparators.ShortlexComparator;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
@@ -15,16 +16,16 @@ import static mho.wheels.iterables.IterableUtils.*;
 import static org.junit.Assert.assertTrue;
 
 /**
- * <p>A univariate polynomial in x with {@link BigInteger} coefficients.
+ * <p>A univariate polynomial in x with {@link BigInteger} coefficients.</p>
  *
  * <p>There is only one instance of {@code ZERO}, and one instance of {@code ONE}, so these may be compared with other
- * {@code Polynomial}s using {@code ==}. This is not true for {@code X}.
+ * {@code Polynomial}s using {@code ==}. This is not true for {@code X}.</p>
  *
  * <p>This class uses a little-endian dense representation; in other words, the coefficient of x<sup>i</sup> is located
  * at the ith position of the coefficient list. The list contains no trailing zeros. Zero is represented by the empty
- * list.
+ * list.</p>
  *
- * <p>This class is immutable.
+ * <p>This class is immutable.</p>
  */
 public final class Polynomial implements
         Comparable<Polynomial>,
@@ -117,7 +118,6 @@ public final class Polynomial implements
      */
     @Override
     public @NotNull BigInteger apply(@NotNull BigInteger x) {
-        //noinspection ConstantConditions
         return foldr((c, y) -> y.multiply(x).add(c), BigInteger.ZERO, coefficients);
     }
 
@@ -133,7 +133,6 @@ public final class Polynomial implements
      * @return {@code this}({@code x})
      */
     public @NotNull Rational apply(@NotNull Rational x) {
-        //noinspection ConstantConditions
         return foldr((c, y) -> x.multiply(y).add(Rational.of(c)), Rational.ZERO, coefficients);
     }
 
@@ -267,7 +266,6 @@ public final class Polynomial implements
      * @return the leading coefficient
      */
     public @NotNull Optional<BigInteger> leading() {
-        //noinspection ConstantConditions
         return this == ZERO ? Optional.<BigInteger>empty() : Optional.of(last(coefficients));
     }
 
@@ -315,7 +313,7 @@ public final class Polynomial implements
      */
     public @NotNull Polynomial negate() {
         if (this == ZERO) return ZERO;
-        if (coefficients.size() == 1 && coefficients.get(0).equals(BigInteger.valueOf(-1))) return ONE;
+        if (coefficients.size() == 1 && coefficients.get(0).equals(IntegerUtils.NEGATIVE_ONE)) return ONE;
         return new Polynomial(toList(map(BigInteger::negate, coefficients)));
     }
 
@@ -520,7 +518,6 @@ public final class Polynomial implements
     public static @NotNull Polynomial product(@NotNull Iterable<Polynomial> xs) {
         if (any(x -> x == null, xs))
             throw new NullPointerException();
-        //noinspection ConstantConditions
         return foldl(Polynomial::multiply, ONE, xs);
     }
 
@@ -567,7 +564,7 @@ public final class Polynomial implements
         if (p == 1) return this;
         Polynomial result = ONE;
         Polynomial powerPower = null; // p^2^i
-        for (boolean bit : MathUtils.bits(p)) {
+        for (boolean bit : IntegerUtils.bits(p)) {
             powerPower = powerPower == null ? this : powerPower.multiply(powerPower);
             if (bit) result = result.multiply(powerPower);
         }
@@ -589,7 +586,6 @@ public final class Polynomial implements
      * @return {@code this}∘{@code that}
      */
     public @NotNull Polynomial substitute(@NotNull Polynomial that) {
-        //noinspection ConstantConditions
         return foldr((c, y) -> y.multiply(that).add(of(c)), ZERO, coefficients);
     }
 
@@ -638,7 +634,6 @@ public final class Polynomial implements
      * @return whether {@code this} is primitive
      */
     public boolean isPrimitive() {
-        //noinspection ConstantConditions
         return signum() == 1 && foldl(BigInteger::gcd, BigInteger.ZERO, coefficients).equals(BigInteger.ONE);
     }
 
@@ -655,7 +650,7 @@ public final class Polynomial implements
      *
      * @return (content({@code this}), primitive({@code this}))
      */
-    @SuppressWarnings({"JavaDoc", "ConstantConditions"})
+    @SuppressWarnings("JavaDoc")
     public @NotNull Pair<BigInteger, Polynomial> contentAndPrimitive() {
         if (this == ZERO)
             throw new ArithmeticException("cannot find content and primitive part of 0");
@@ -678,7 +673,7 @@ public final class Polynomial implements
      *  <li>The result may be either {@code boolean}.</li>
      * </ul>
      *
-     * @param that The {@code Polynomial} to be compared with {@code this}
+     * @param that The {@code Object} to be compared with {@code this}
      * @return {@code this}={@code that}
      */
     @Override
@@ -743,7 +738,10 @@ public final class Polynomial implements
      * @param s a string representation of a {@code Polynomial}.
      * @return the wrapped {@code Polynomial} represented by {@code s}, or {@code empty} if {@code s} is invalid.
      */
-    public static @NotNull Optional<Polynomial> read(@NotNull String s) {
+    private static @NotNull Optional<Polynomial> genericRead(
+            @NotNull String s,
+            @NotNull Function<String, Optional<Integer>> exponentHandler
+    ) {
         if (s.equals("0")) return Optional.of(ZERO);
         if (s.equals("1")) return Optional.of(ONE);
         if (s.isEmpty() || head(s) == '+') return Optional.empty();
@@ -789,7 +787,7 @@ public final class Polynomial implements
                     case 1:
                         if (head(monomialString) != '-') return Optional.empty();
                         monomialString = tail(monomialString);
-                        coefficient = BigInteger.valueOf(-1);
+                        coefficient = IntegerUtils.NEGATIVE_ONE;
                         break;
                     default:
                         if (monomialString.charAt(xIndex - 1) != '*') return Optional.empty();
@@ -811,7 +809,7 @@ public final class Polynomial implements
                         break;
                     case 1:
                         String powerString = monomialString.substring(caretIndex + 1);
-                        Optional<Integer> oPower = Readers.readInteger(powerString);
+                        Optional<Integer> oPower = exponentHandler.apply(powerString);
                         if (!oPower.isPresent()) return Optional.empty();
                         power = oPower.get();
                         if (power < 2) return Optional.empty(); // no x^1, x^0, x^-1, ... allowed
@@ -824,14 +822,26 @@ public final class Polynomial implements
         }
         if (any(p -> BigInteger.ZERO.equals(p.a), monomials)) return Optional.empty();
         if (!increasing((Iterable<Integer>) map(p -> p.b, monomials))) return Optional.empty();
-        @SuppressWarnings("ConstantConditions")
         int degree = last(monomials).b;
         List<BigInteger> coefficients = toList(replicate(degree + 1, BigInteger.ZERO));
         for (Pair<BigInteger, Integer> monomial : monomials) {
-            //noinspection ConstantConditions
             coefficients.set(monomial.b, monomial.a);
         }
         return Optional.of(new Polynomial(coefficients));
+    }
+
+    public static @NotNull Optional<Polynomial> read(@NotNull String s) {
+        return genericRead(s, Readers::readInteger);
+    }
+
+    public static @NotNull Optional<Polynomial> read(int exponentCutoff, @NotNull String s) {
+        return genericRead(
+                s,
+                powerString -> {
+                    Optional<Integer> oPower = Readers.readInteger(powerString);
+                    return !oPower.isPresent() || oPower.get() > exponentCutoff ? Optional.<Integer>empty() : oPower;
+                }
+        );
     }
 
     /**
@@ -852,6 +862,10 @@ public final class Polynomial implements
      */
     public static @NotNull Optional<Pair<Polynomial, Integer>> findIn(@NotNull String s) {
         return Readers.genericFindIn(Polynomial::read, "*+-0123456789^x").apply(s);
+    }
+
+    public static @NotNull Optional<Pair<Polynomial, Integer>> findIn(int exponentCutoff, @NotNull String s) {
+        return Readers.genericFindIn(t -> read(exponentCutoff, t), "*+-0123456789^x").apply(s);
     }
 
     /**
@@ -877,7 +891,7 @@ public final class Polynomial implements
                 String power = i == 1 ? "x" : "x^" + i;
                 if (coefficient.equals(BigInteger.ONE)) {
                     monomialString = power;
-                } else if (coefficient.equals(BigInteger.valueOf(-1))) {
+                } else if (coefficient.equals(IntegerUtils.NEGATIVE_ONE)) {
                     monomialString = cons('-', power);
                 } else {
                     monomialString = coefficient + "*" + power;
@@ -896,7 +910,6 @@ public final class Polynomial implements
      */
     public void validate() {
         if (!coefficients.isEmpty()) {
-            //noinspection ConstantConditions
             assertTrue(toString(), !last(coefficients).equals(BigInteger.ZERO));
         }
         if (equals(ZERO)) assertTrue(toString(), this == ZERO);

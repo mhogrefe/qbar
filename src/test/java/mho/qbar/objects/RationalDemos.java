@@ -5,23 +5,27 @@ import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.iterableProviders.QBarRandomProvider;
 import mho.wheels.iterables.IterableUtils;
 import mho.wheels.math.MathUtils;
+import mho.wheels.numberUtils.FloatingPointUtils;
+import mho.wheels.numberUtils.IntegerUtils;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
+import org.jetbrains.annotations.NotNull;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.util.List;
-import java.util.Random;
 
 import static mho.qbar.objects.Rational.*;
 import static mho.wheels.iterables.IterableUtils.*;
+import static mho.wheels.ordering.Ordering.le;
 
-@SuppressWarnings({"ConstantConditions", "UnusedDeclaration"})
+@SuppressWarnings("UnusedDeclaration")
 public class RationalDemos {
     private static final boolean USE_RANDOM = false;
-    private static final String RATIONAL_CHARS = "-/0123456789";
+    private static final @NotNull String RATIONAL_CHARS = "-/0123456789";
+    private static final int DENOMINATOR_CUTOFF = 1000000;
     private static final int SMALLER_LIMIT = 500;
     private static final int SMALL_LIMIT = 1000;
     private static final int MEDIUM_LIMIT = 3000;
@@ -198,9 +202,15 @@ public class RationalDemos {
 
     private static void demoHasTerminatingBaseExpansion() {
         initialize();
-        Iterable<Pair<Rational, BigInteger>> ps = P.pairsSquareRootOrder(
-                cons(ZERO, P.withScale(20).positiveRationals()),
-                map(i -> BigInteger.valueOf(i + 2), P.withScale(20).naturalIntegersGeometric())
+        Iterable<Pair<Rational, BigInteger>> ps = P.pairs(
+                P.withSpecialElement(
+                        ZERO,
+                        filterInfinite(
+                                r -> le(r.getDenominator(), BigInteger.valueOf(DENOMINATOR_CUTOFF)),
+                                P.withScale(8).positiveRationals()
+                        )
+                ),
+                P.withScale(8).rangeUp(IntegerUtils.TWO)
         );
         for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
             System.out.println(p.a + (p.a.hasTerminatingBaseExpansion(p.b) ? " has " : " doesn't have ") +
@@ -268,7 +278,7 @@ public class RationalDemos {
 
     private static void demoBigDecimalValueExact() {
         initialize();
-        Iterable<Rational> rs = filter(r -> r.hasTerminatingBaseExpansion(BigInteger.valueOf(10)), P.rationals());
+        Iterable<Rational> rs = filter(r -> r.hasTerminatingBaseExpansion(BigInteger.TEN), P.rationals());
         for (Rational r : take(LIMIT, rs)) {
             System.out.println("bigDecimalValueExact(" + r + ") = " + r.bigDecimalValueExact());
         }
@@ -284,7 +294,7 @@ public class RationalDemos {
     private static void demoFloatValue_RoundingMode() {
         initialize();
         Iterable<Pair<Rational, RoundingMode>> ps = filter(
-                p -> p.b != RoundingMode.UNNECESSARY || ofExact(p.a.floatValue(RoundingMode.FLOOR)).equals(p.a),
+                p -> p.b != RoundingMode.UNNECESSARY || ofExact(p.a.floatValue(RoundingMode.FLOOR)).get().equals(p.a),
                 P.pairs(P.rationals(), P.roundingModes())
         );
         for (Pair<Rational, RoundingMode> p : take(LIMIT, ps)) {
@@ -302,8 +312,8 @@ public class RationalDemos {
     private static void demoFloatValueExact() {
         initialize();
         Iterable<Rational> rs = map(
-                Rational::ofExact,
-                filter(f -> !Float.isNaN(f) && Float.isFinite(f) && !f.equals(-0.0f), P.floats())
+                f -> ofExact(f).get(),
+                filter(f -> Float.isFinite(f) && !FloatingPointUtils.isNegativeZero(f), P.floats())
         );
         for (Rational r : take(LIMIT, rs)) {
             System.out.println("floatValueExact(" + r + ") = " + r.floatValueExact());
@@ -313,7 +323,7 @@ public class RationalDemos {
     private static void demoDoubleValue_RoundingMode() {
         initialize();
         Iterable<Pair<Rational, RoundingMode>> ps = filter(
-                p -> p.b != RoundingMode.UNNECESSARY || ofExact(p.a.floatValue(RoundingMode.FLOOR)).equals(p.a),
+                p -> p.b != RoundingMode.UNNECESSARY || ofExact(p.a.floatValue(RoundingMode.FLOOR)).get().equals(p.a),
                 P.pairs(P.rationals(), P.roundingModes()));
         for (Pair<Rational, RoundingMode> p : take(LIMIT, ps)) {
             System.out.println("doubleValue(" + p.a + ", " + p.b + ") = " + p.a.doubleValue(p.b));
@@ -330,8 +340,8 @@ public class RationalDemos {
     private static void demoDoubleValueExact() {
         initialize();
         Iterable<Rational> rs = map(
-                Rational::ofExact,
-                filter(d -> !Double.isNaN(d) && Double.isFinite(d) && !d.equals(-0.0), P.doubles())
+                d -> ofExact(d).get(),
+                filter(d -> Double.isFinite(d) && !FloatingPointUtils.isNegativeZero(d), P.doubles())
         );
         for (Rational r : take(LIMIT, rs)) {
             System.out.println("doubleValueExact(" + r + ") = " + r.doubleValueExact());
@@ -568,9 +578,15 @@ public class RationalDemos {
 
     private static void demoPositionalNotation() {
         initialize();
-        Iterable<Pair<Rational, BigInteger>> ps = P.pairsSquareRootOrder(
-                cons(ZERO, P.withScale(8).positiveRationals()),
-                map(i -> BigInteger.valueOf(i + 2), P.withScale(20).naturalIntegersGeometric())
+        Iterable<Pair<Rational, BigInteger>> ps = P.pairs(
+                P.withSpecialElement(
+                        ZERO,
+                        filterInfinite(
+                                r -> le(r.getDenominator(), BigInteger.valueOf(DENOMINATOR_CUTOFF)),
+                                P.withScale(8).positiveRationals()
+                        )
+                ),
+                P.withScale(8).rangeUp(IntegerUtils.TWO)
         );
         for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
             System.out.println("positionalNotation(" + p.a + ", " + p.b + ") = " + p.a.positionalNotation(p.b));
@@ -581,7 +597,7 @@ public class RationalDemos {
         initialize();
         Iterable<BigInteger> bases;
         if (P instanceof QBarExhaustiveProvider) {
-            bases = P.rangeUp(BigInteger.valueOf(2));
+            bases = P.rangeUp(IntegerUtils.TWO);
         } else {
             bases = map(i -> BigInteger.valueOf(i + 2), P.withScale(20).naturalIntegersGeometric());
         }
@@ -604,7 +620,7 @@ public class RationalDemos {
         if (P instanceof QBarExhaustiveProvider) {
             ps = ((QBarExhaustiveProvider) P).pairsSquareRootOrder(
                     cons(ZERO, P.positiveRationals()),
-                    P.rangeUp(BigInteger.valueOf(2))
+                    P.rangeUp(IntegerUtils.TWO)
             );
         } else {
             ps = P.pairs(
@@ -623,7 +639,7 @@ public class RationalDemos {
         initialize();
         Iterable<Pair<Rational, BigInteger>> ps;
         if (P instanceof QBarExhaustiveProvider) {
-            ps = ((QBarExhaustiveProvider) P).pairsSquareRootOrder(P.rationals(), P.rangeUp(BigInteger.valueOf(2)));
+            ps = ((QBarExhaustiveProvider) P).pairsSquareRootOrder(P.rationals(), P.rangeUp(IntegerUtils.TWO));
         } else {
             ps = P.pairs(
                     P.rationals(),
@@ -641,7 +657,7 @@ public class RationalDemos {
         if (P instanceof QBarExhaustiveProvider) {
             ps = P.pairs(
                     P.rationals(),
-                    (Iterable<Pair<BigInteger, Integer>>) P.pairs(P.rangeUp(BigInteger.valueOf(2)), P.integers())
+                    (Iterable<Pair<BigInteger, Integer>>) P.pairs(P.rangeUp(IntegerUtils.TWO), P.integers())
             );
         } else {
             ps = P.pairs(
@@ -662,7 +678,7 @@ public class RationalDemos {
         initialize();
         Iterable<BigInteger> bases;
         if (P instanceof QBarExhaustiveProvider) {
-            bases = P.rangeUp(BigInteger.valueOf(2));
+            bases = P.rangeUp(IntegerUtils.TWO);
         } else {
             bases = map(i -> BigInteger.valueOf(i + 2), P.withScale(20).naturalIntegersGeometric());
         }
@@ -671,7 +687,7 @@ public class RationalDemos {
                 b -> {
                     String chars = ".-";
                     if (Ordering.le(b, BigInteger.valueOf(36))) {
-                        chars += charsToString(range('0', MathUtils.toDigit(b.intValueExact() - 1)));
+                        chars += charsToString(range('0', IntegerUtils.toDigit(b.intValueExact() - 1)));
                     } else {
                         chars += "()0123456789";
                     }

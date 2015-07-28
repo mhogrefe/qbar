@@ -1,11 +1,10 @@
 package mho.qbar.objects;
 
-import mho.wheels.misc.FloatingPointUtils;
-import mho.wheels.misc.Readers;
+import mho.wheels.io.Readers;
+import mho.wheels.numberUtils.FloatingPointUtils;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -18,14 +17,14 @@ import static mho.wheels.ordering.Ordering.*;
 /**
  * <p>The {@code Interval} class represents an interval of real numbers. If we let p and q be rationals, p≤q, the
  * representable intervals are (–∞, ∞), (–∞, q], [p, ∞), and [p, q]. If p = q, the {@code Interval} represents a single
- * number. The empty interval cannot be represented.
+ * number. The empty interval cannot be represented.</p>
  *
  * <p>In general, f(I), where I is an {@code Interval}, is taken to mean the image of I under f. Often this image is
  * not an {@code Interval} itself, in which case the function might return a set of {@code Interval}s, whose closed
  * union is the image, or it may just return the closure of the image's convex hull. Similar considerations apply for
- * functions of two {@code Interval}s, etc.
+ * functions of two {@code Interval}s, <i>etc.</i></p>
  *
- * <p>This class is immutable.
+ * <p>This class is immutable.</p>
  */
 public final class Interval implements Comparable<Interval> {
     /**
@@ -46,12 +45,12 @@ public final class Interval implements Comparable<Interval> {
     /**
      * The lower bound of this interval if the lower bound is finite, or null if the lower bound is –∞
      */
-    private final @Nullable Rational lower;
+    private final Rational lower;
 
     /**
      * The upper bound of this interval if the upper bound is finite, or null if the upper bound is ∞
      */
-    private final @Nullable Rational upper;
+    private final Rational upper;
 
     /**
      * Private constructor from {@link Rational}s; assumes arguments are valid. If lower is null, the
@@ -67,7 +66,7 @@ public final class Interval implements Comparable<Interval> {
      * @param lower the lower bound
      * @param upper the upper bound
      */
-    private Interval(@Nullable Rational lower, @Nullable Rational upper) {
+    private Interval(Rational lower, Rational upper) {
         this.lower = lower;
         this.upper = upper;
     }
@@ -266,7 +265,6 @@ public final class Interval implements Comparable<Interval> {
             throw new NullPointerException();
         if (as.isEmpty())
             throw new IllegalArgumentException();
-        //noinspection ConstantConditions
         return foldl1(Interval::convexHull, as);
     }
 
@@ -375,7 +373,7 @@ public final class Interval implements Comparable<Interval> {
      * @return the closure of ℝ\{@code this}
      */
     public @NotNull List<Interval> complement() {
-        if (lower == null && upper == null) return new ArrayList<>();
+        if (lower == null && upper == null) return Collections.emptyList();
         if (lower == null) return Collections.singletonList(new Interval(upper, null));
         if (upper == null) return Collections.singletonList(new Interval(null, lower));
         if (lower.equals(upper)) return Collections.singletonList(ALL);
@@ -480,30 +478,28 @@ public final class Interval implements Comparable<Interval> {
             }
         }
         if (f == Float.MAX_VALUE) {
-            //noinspection ConstantConditions
             return new Interval(
-                    Rational.ofExact(FloatingPointUtils.predecessor(f)).add(Rational.LARGEST_FLOAT).shiftRight(1),
+                    Rational.ofExact(FloatingPointUtils.predecessor(f)).get()
+                            .add(Rational.LARGEST_FLOAT).shiftRight(1),
                     Rational.LARGEST_FLOAT
             );
         }
         if (f == -Float.MAX_VALUE) {
-            //noinspection ConstantConditions
             return new Interval(
                     Rational.LARGEST_FLOAT.negate(),
-                    Rational.ofExact(FloatingPointUtils.successor(f)).subtract(Rational.LARGEST_FLOAT).shiftRight(1)
+                    Rational.ofExact(FloatingPointUtils.successor(f)).get()
+                            .subtract(Rational.LARGEST_FLOAT).shiftRight(1)
             );
         }
-        Rational r = Rational.ofExact(f);
+        Rational r = Rational.ofExact(f).get();
         float predecessor = FloatingPointUtils.predecessor(f);
-        @SuppressWarnings("ConstantConditions")
         Rational lower = predecessor == Float.NEGATIVE_INFINITY ?
                 null :
-                r.add(Rational.ofExact(predecessor)).shiftRight(1);
+                r.add(Rational.ofExact(predecessor).get()).shiftRight(1);
         float successor = FloatingPointUtils.successor(f);
-        @SuppressWarnings("ConstantConditions")
         Rational upper = successor == Float.POSITIVE_INFINITY ?
                 null :
-                r.add(Rational.ofExact(successor)).shiftRight(1);
+                r.add(Rational.ofExact(successor).get()).shiftRight(1);
         return new Interval(lower, upper);
     }
 
@@ -556,30 +552,28 @@ public final class Interval implements Comparable<Interval> {
             }
         }
         if (d == Double.MAX_VALUE) {
-            //noinspection ConstantConditions
             return new Interval(
-                    Rational.ofExact(FloatingPointUtils.predecessor(d)).add(Rational.LARGEST_DOUBLE).shiftRight(1),
+                    Rational.ofExact(FloatingPointUtils.predecessor(d)).get()
+                            .add(Rational.LARGEST_DOUBLE).shiftRight(1),
                     Rational.LARGEST_DOUBLE
             );
         }
         if (d == -Double.MAX_VALUE) {
-            //noinspection ConstantConditions
             return new Interval(
                     Rational.LARGEST_DOUBLE.negate(),
-                    Rational.ofExact(FloatingPointUtils.successor(d)).subtract(Rational.LARGEST_DOUBLE).shiftRight(1)
+                    Rational.ofExact(FloatingPointUtils.successor(d)).get()
+                            .subtract(Rational.LARGEST_DOUBLE).shiftRight(1)
             );
         }
-        Rational r = Rational.ofExact(d);
+        Rational r = Rational.ofExact(d).get();
         double predecessor = FloatingPointUtils.predecessor(d);
-        @SuppressWarnings("ConstantConditions")
         Rational lower = predecessor == Double.NEGATIVE_INFINITY ?
                 null :
-                r.add(Rational.ofExact(predecessor)).shiftRight(1);
+                r.add(Rational.ofExact(predecessor).get()).shiftRight(1);
         double successor = FloatingPointUtils.successor(d);
-        @SuppressWarnings("ConstantConditions")
         Rational upper = predecessor == Double.POSITIVE_INFINITY ?
                 null :
-                r.add(Rational.ofExact(successor)).shiftRight(1);
+                r.add(Rational.ofExact(successor).get()).shiftRight(1);
         return new Interval(lower, upper);
     }
 
@@ -598,7 +592,7 @@ public final class Interval implements Comparable<Interval> {
      */
     public static @NotNull Interval roundingPreimage(@NotNull BigDecimal bd) {
         Rational center = Rational.of(bd);
-        Rational maxAbsoluteError = Rational.of(10).pow(-bd.scale()).shiftRight(1);
+        Rational maxAbsoluteError = Rational.TEN.pow(-bd.scale()).shiftRight(1);
         return new Interval(center.subtract(maxAbsoluteError), center.add(maxAbsoluteError));
     }
 
@@ -1153,7 +1147,6 @@ public final class Interval implements Comparable<Interval> {
      */
     public static @NotNull Interval sum(@NotNull Iterable<Interval> xs) {
         if (any(x -> x == null, xs)) throw new NullPointerException();
-        //noinspection ConstantConditions
         return foldl(Interval::add, ZERO, xs);
     }
 
@@ -1169,7 +1162,6 @@ public final class Interval implements Comparable<Interval> {
      * @return Πxs
      */
     public static @NotNull Interval product(@NotNull Iterable<Interval> xs) {
-        //noinspection ConstantConditions
         return foldl(Interval::multiply, ONE, xs);
     }
 
@@ -1298,7 +1290,7 @@ public final class Interval implements Comparable<Interval> {
      *  <li>The result may be either {@code boolean}.</li>
      * </ul>
      *
-     * @param that The {@code Interval} to be compared with {@code this}
+     * @param that The {@code Object} to be compared with {@code this}
      * @return {@code this}={@code that}
      */
     @Override

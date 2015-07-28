@@ -1,22 +1,23 @@
 package mho.qbar.objects;
 
-import mho.wheels.misc.Readers;
+import mho.wheels.io.Readers;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
 import java.math.BigInteger;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 import static mho.qbar.objects.RationalPolynomial.*;
-import static mho.wheels.iterables.IterableUtils.rotateLeft;
+import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.iterables.IterableUtils.toList;
-import static mho.wheels.testing.Testing.aeq;
-import static mho.wheels.testing.Testing.aeqit;
-import static org.junit.Assert.*;
+import static mho.wheels.testing.Testing.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class RationalPolynomialTest {
+    private static final int TINY_LIMIT = 20;
+
     @Test
     public void testConstants() {
         aeq(ZERO, "0");
@@ -43,37 +44,37 @@ public class RationalPolynomialTest {
     public void testApply() {
         aeq(ZERO.apply(Rational.ZERO), 0);
         aeq(ZERO.apply(Rational.ONE), 0);
-        aeq(ZERO.apply(Rational.of(-1)), 0);
+        aeq(ZERO.apply(Rational.NEGATIVE_ONE), 0);
         aeq(ZERO.apply(Rational.of(4, 5)), 0);
         aeq(ZERO.apply(Rational.of(100)), 0);
         aeq(ONE.apply(Rational.ZERO), 1);
         aeq(ONE.apply(Rational.ONE), 1);
-        aeq(ONE.apply(Rational.of(-1)), 1);
+        aeq(ONE.apply(Rational.NEGATIVE_ONE), 1);
         aeq(ONE.apply(Rational.of(4, 5)), 1);
         aeq(ONE.apply(Rational.of(100)), 1);
         aeq(X.apply(Rational.ZERO), 0);
         aeq(X.apply(Rational.ONE), 1);
-        aeq(X.apply(Rational.of(-1)), -1);
+        aeq(X.apply(Rational.NEGATIVE_ONE), -1);
         aeq(X.apply(Rational.of(4, 5)), "4/5");
         aeq(X.apply(Rational.of(100)), 100);
         aeq(read("-4/3").get().apply(Rational.ZERO), "-4/3");
         aeq(read("-4/3").get().apply(Rational.ONE), "-4/3");
-        aeq(read("-4/3").get().apply(Rational.of(-1)), "-4/3");
+        aeq(read("-4/3").get().apply(Rational.NEGATIVE_ONE), "-4/3");
         aeq(read("-4/3").get().apply(Rational.of(4, 5)), "-4/3");
         aeq(read("-4/3").get().apply(Rational.of(100)), "-4/3");
         aeq(read("x^2-7/4*x+1/3").get().apply(Rational.ZERO), "1/3");
         aeq(read("x^2-7/4*x+1/3").get().apply(Rational.ONE), "-5/12");
-        aeq(read("x^2-7/4*x+1/3").get().apply(Rational.of(-1)), "37/12");
+        aeq(read("x^2-7/4*x+1/3").get().apply(Rational.NEGATIVE_ONE), "37/12");
         aeq(read("x^2-7/4*x+1/3").get().apply(Rational.of(4, 5)), "-32/75");
         aeq(read("x^2-7/4*x+1/3").get().apply(Rational.of(100)), "29476/3");
         aeq(read("x^3-1").get().apply(Rational.ZERO), -1);
         aeq(read("x^3-1").get().apply(Rational.ONE), 0);
-        aeq(read("x^3-1").get().apply(Rational.of(-1)), -2);
+        aeq(read("x^3-1").get().apply(Rational.NEGATIVE_ONE), -2);
         aeq(read("x^3-1").get().apply(Rational.of(4, 5)), "-61/125");
         aeq(read("x^3-1").get().apply(Rational.of(100)), 999999);
         aeq(read("1/2*x^10").get().apply(Rational.ZERO), 0);
         aeq(read("1/2*x^10").get().apply(Rational.ONE), "1/2");
-        aeq(read("1/2*x^10").get().apply(Rational.of(-1)), "1/2");
+        aeq(read("1/2*x^10").get().apply(Rational.NEGATIVE_ONE), "1/2");
         aeq(read("1/2*x^10").get().apply(Rational.of(4, 5)), "524288/9765625");
         aeq(read("1/2*x^10").get().apply(Rational.of(100)), "50000000000000000000");
     }
@@ -747,6 +748,38 @@ public class RationalPolynomialTest {
                 delta(readRationalPolynomialList("[-4/3, x^2-7/4*x+1/3, -x^3-1, 1/2*x^10]")),
                 "[x^2-7/4*x+5/3, -x^3-x^2+7/4*x-4/3, 1/2*x^10+x^3+1]"
         );
+        RationalPolynomial seed = read("x+1/2").get();
+        aeqitLimit(TINY_LIMIT, delta(map(seed::pow, rangeUp(0))),
+                "[x-1/2, x^2-1/4, x^3+1/2*x^2-1/4*x-1/8, x^4+x^3-1/4*x-1/16," +
+                " x^5+3/2*x^4+1/2*x^3-1/4*x^2-3/16*x-1/32, x^6+2*x^5+5/4*x^4-5/16*x^2-1/8*x-1/64," +
+                " x^7+5/2*x^6+9/4*x^5+5/8*x^4-5/16*x^3-9/32*x^2-5/64*x-1/128," +
+                " x^8+3*x^7+7/2*x^6+7/4*x^5-7/16*x^3-7/32*x^2-3/64*x-1/256," +
+                " x^9+7/2*x^8+5*x^7+7/2*x^6+7/8*x^5-7/16*x^4-7/16*x^3-5/32*x^2-7/256*x-1/512," +
+                " x^10+4*x^9+27/4*x^8+6*x^7+21/8*x^6-21/32*x^4-3/8*x^3-27/256*x^2-1/64*x-1/1024," +
+                " x^11+9/2*x^10+35/4*x^9+75/8*x^8+45/8*x^7+21/16*x^6-21/32*x^5-45/64*x^4-75/256*x^3-35/512*x^2-" +
+                "9/1024*x-1/2048," +
+                " x^12+5*x^11+11*x^10+55/4*x^9+165/16*x^8+33/8*x^7-33/32*x^5-165/256*x^4-55/256*x^3-11/256*x^2-" +
+                "5/1024*x-1/4096," +
+                " x^13+11/2*x^12+27/2*x^11+77/4*x^10+275/16*x^9+297/32*x^8+33/16*x^7-33/32*x^6-297/256*x^5-" +
+                "275/512*x^4-77/512*x^3-27/1024*x^2-11/4096*x-1/8192," +
+                " x^14+6*x^13+65/4*x^12+26*x^11+429/16*x^10+143/8*x^9+429/64*x^8-429/256*x^6-143/128*x^5-" +
+                "429/1024*x^4-13/128*x^3-65/4096*x^2-3/2048*x-1/16384," +
+                " x^15+13/2*x^14+77/4*x^13+273/8*x^12+637/16*x^11+1001/32*x^10+1001/64*x^9+429/128*x^8-429/256*x^7-" +
+                "1001/512*x^6-1001/1024*x^5-637/2048*x^4-273/4096*x^3-77/8192*x^2-13/16384*x-1/32768," +
+                " x^16+7*x^15+45/2*x^14+175/4*x^13+455/8*x^12+819/16*x^11+1001/32*x^10+715/64*x^9-715/256*x^7-" +
+                "1001/512*x^6-819/1024*x^5-455/2048*x^4-175/4096*x^3-45/8192*x^2-7/16384*x-1/65536," +
+                " x^17+15/2*x^16+26*x^15+55*x^14+315/4*x^13+637/8*x^12+455/8*x^11+429/16*x^10+715/128*x^9-" +
+                "715/256*x^8-429/128*x^7-455/256*x^6-637/1024*x^5-315/2048*x^4-55/2048*x^3-13/4096*x^2-15/65536*x-" +
+                "1/131072," +
+                " x^18+8*x^17+119/4*x^16+68*x^15+425/4*x^14+119*x^13+1547/16*x^12+221/4*x^11+2431/128*x^10-" +
+                "2431/512*x^8-221/64*x^7-1547/1024*x^6-119/256*x^5-425/4096*x^4-17/1024*x^3-119/65536*x^2-1/8192*x-" +
+                "1/262144," +
+                " x^19+17/2*x^18+135/4*x^17+663/8*x^16+561/4*x^15+1377/8*x^14+2499/16*x^13+3315/32*x^12+" +
+                "5967/128*x^11+2431/256*x^10-2431/512*x^9-5967/1024*x^8-3315/1024*x^7-2499/2048*x^6-1377/4096*x^5-" +
+                "561/8192*x^4-663/65536*x^3-135/131072*x^2-17/262144*x-1/524288, x^20+9*x^19+38*x^18+399/4*x^17+" +
+                "2907/16*x^16+969/4*x^15+969/4*x^14+2907/16*x^13+12597/128*x^12+4199/128*x^11-4199/512*x^9-" +
+                "12597/2048*x^8-2907/1024*x^7-969/1024*x^6-969/4096*x^5-2907/65536*x^4-399/65536*x^3-19/32768*x^2-" +
+                "9/262144*x-1/1048576, ...]");
         try {
             delta(readRationalPolynomialList("[]"));
             fail();
@@ -971,122 +1004,30 @@ public class RationalPolynomialTest {
 
     @Test
     public void testEquals() {
-        //noinspection EqualsWithItself
-        assertTrue(ZERO.equals(ZERO));
-        //noinspection EqualsWithItself
-        assertTrue(ONE.equals(ONE));
-        //noinspection EqualsWithItself
-        assertTrue(X.equals(X));
-        assertTrue(read("-4/3").get().equals(read("-4/3").get()));
-        assertTrue(read("x^2-7/4*x+1/3").get().equals(read("x^2-7/4*x+1/3").get()));
-        assertTrue(read("-x^3-1").get().equals(read("-x^3-1").get()));
-        assertTrue(read("1/2*x^10").get().equals(read("1/2*x^10").get()));
-        assertFalse(ZERO.equals(ONE));
-        assertFalse(ZERO.equals(X));
-        assertFalse(ONE.equals(ZERO));
-        assertFalse(ONE.equals(X));
-        assertFalse(X.equals(ZERO));
-        assertFalse(X.equals(ONE));
-        assertFalse(ZERO.equals(read("-4/3").get()));
-        assertFalse(ZERO.equals(read("x^2-7/4*x+1/3").get()));
-        assertFalse(ZERO.equals(read("-x^3-1").get()));
-        assertFalse(ZERO.equals(read("1/2*x^10").get()));
-        assertFalse(ONE.equals(read("-4/3").get()));
-        assertFalse(ONE.equals(read("x^2-7/4*x+1/3").get()));
-        assertFalse(ONE.equals(read("-x^3-1").get()));
-        assertFalse(ONE.equals(read("1/2*x^10").get()));
-        assertFalse(X.equals(read("-4/3").get()));
-        assertFalse(X.equals(read("x^2-7/4*x+1/3").get()));
-        assertFalse(X.equals(read("-x^3-1").get()));
-        assertFalse(X.equals(read("1/2*x^10").get()));
-        assertFalse(read("-4/3").get().equals(ZERO));
-        assertFalse(read("x^2-7/4*x+1/3").get().equals(ZERO));
-        assertFalse(read("-x^3-1").get().equals(ZERO));
-        assertFalse(read("1/2*x^10").get().equals(ZERO));
-        assertFalse(read("-4/3").get().equals(ONE));
-        assertFalse(read("x^2-7/4*x+1/3").get().equals(ONE));
-        assertFalse(read("-x^3-1").get().equals(ONE));
-        assertFalse(read("1/2*x^10").get().equals(ONE));
-        assertFalse(read("-4/3").get().equals(X));
-        assertFalse(read("x^2-7/4*x+1/3").get().equals(X));
-        assertFalse(read("-x^3-1").get().equals(X));
-        assertFalse(read("1/2*x^10").get().equals(X));
-        assertFalse(read("-4/3").equals(read("x^2-7/4*x+1/3")));
-        assertFalse(read("-4/3").equals(read("-x^3-1")));
-        assertFalse(read("-4/3").equals(read("1/2*x^10")));
-        assertFalse(read("x^2-7/4*x+1/3").equals(read("-4/3")));
-        assertFalse(read("x^2-7/4*x+1/3").equals(read("-x^3-1")));
-        assertFalse(read("x^2-7/4*x+1/3").equals(read("1/2*x^10")));
-        assertFalse(read("-x^3-1").equals(read("-4/3")));
-        assertFalse(read("-x^3-1").equals(read("x^2-7/4*x+1/3")));
-        assertFalse(read("-x^3-1").equals(read("1/2*x^10")));
-        assertFalse(read("1/2*x^10").equals(read("-4/3")));
-        assertFalse(read("1/2*x^10").equals(read("x^2-7/4*x+1/3")));
-        assertFalse(read("1/2*x^10").equals(read("-x^3-1")));
+        testEqualsHelper(
+                readRationalPolynomialList("[0, 1, x, -4/3, x^2-7/4*x+1/3, -x^3-1, 1/2*x^10]"),
+                readRationalPolynomialList("[0, 1, x, -4/3, x^2-7/4*x+1/3, -x^3-1, 1/2*x^10]")
+        );
+    }
+
+    private static void hashCode_helper(@NotNull String input, int hashCode) {
+        aeq(read(input).get().hashCode(), hashCode);
     }
 
     @Test
     public void testHashCode() {
-        aeq(ZERO.hashCode(), 1);
-        aeq(ONE.hashCode(), 63);
-        aeq(X.hashCode(), 1024);
-        aeq(read("-4/3").get().hashCode(), -90);
-        aeq(read("x^2-7/4*x+1/3").get().hashCode(), 55894);
-        aeq(read("-x^3-1").get().hashCode(), 30753);
-        aeq(read("1/2*x^10").get().hashCode(), -1011939104);
+        hashCode_helper("0", 1);
+        hashCode_helper("1", 63);
+        hashCode_helper("x", 1024);
+        hashCode_helper("-4/3", -90);
+        hashCode_helper("x^2-7/4*x+1/3", 55894);
+        hashCode_helper("-x^3-1", 30753);
+        hashCode_helper("1/2*x^10", -1011939104);
     }
 
     @Test
     public void testCompareTo() {
-        aeq(ZERO.compareTo(ZERO), 0);
-        aeq(ZERO.compareTo(ONE), -1);
-        aeq(ZERO.compareTo(X), -1);
-        aeq(ZERO.compareTo(read("-4/3").get()), 1);
-        aeq(ZERO.compareTo(read("x^2-7/4*x+1/3").get()), -1);
-        aeq(ZERO.compareTo(read("-x^3-1").get()), 1);
-        aeq(ZERO.compareTo(read("1/2*x^10").get()), -1);
-        aeq(ONE.compareTo(ZERO), 1);
-        aeq(ONE.compareTo(ONE), 0);
-        aeq(ONE.compareTo(X), -1);
-        aeq(ONE.compareTo(read("-4/3").get()), 1);
-        aeq(ONE.compareTo(read("x^2-7/4*x+1/3").get()), -1);
-        aeq(ONE.compareTo(read("-x^3-1").get()), 1);
-        aeq(ONE.compareTo(read("1/2*x^10").get()), -1);
-        aeq(X.compareTo(ZERO), 1);
-        aeq(X.compareTo(ONE), 1);
-        aeq(X.compareTo(X), 0);
-        aeq(X.compareTo(read("-4/3").get()), 1);
-        aeq(X.compareTo(read("x^2-7/4*x+1/3").get()), -1);
-        aeq(X.compareTo(read("-x^3-1").get()), 1);
-        aeq(X.compareTo(read("1/2*x^10").get()), -1);
-        aeq(read("-4/3").get().compareTo(ZERO), -1);
-        aeq(read("-4/3").get().compareTo(ONE), -1);
-        aeq(read("-4/3").get().compareTo(X), -1);
-        aeq(read("-4/3").get().compareTo(read("-4/3").get()), 0);
-        aeq(read("-4/3").get().compareTo(read("x^2-7/4*x+1/3").get()), -1);
-        aeq(read("-4/3").get().compareTo(read("-x^3-1").get()), 1);
-        aeq(read("-4/3").get().compareTo(read("1/2*x^10").get()), -1);
-        aeq(read("x^2-7/4*x+1/3").get().compareTo(ZERO), 1);
-        aeq(read("x^2-7/4*x+1/3").get().compareTo(ONE), 1);
-        aeq(read("x^2-7/4*x+1/3").get().compareTo(X), 1);
-        aeq(read("x^2-7/4*x+1/3").get().compareTo(read("-4/3").get()), 1);
-        aeq(read("x^2-7/4*x+1/3").get().compareTo(read("x^2-7/4*x+1/3").get()), 0);
-        aeq(read("x^2-7/4*x+1/3").get().compareTo(read("-x^3-1").get()), 1);
-        aeq(read("x^2-7/4*x+1/3").get().compareTo(read("1/2*x^10").get()), -1);
-        aeq(read("-x^3-1").get().compareTo(ZERO), -1);
-        aeq(read("-x^3-1").get().compareTo(ONE), -1);
-        aeq(read("-x^3-1").get().compareTo(X), -1);
-        aeq(read("-x^3-1").get().compareTo(read("-4/3").get()), -1);
-        aeq(read("-x^3-1").get().compareTo(read("x^2-7/4*x+1/3").get()), -1);
-        aeq(read("-x^3-1").get().compareTo(read("-x^3-1").get()), 0);
-        aeq(read("-x^3-1").get().compareTo(read("1/2*x^10").get()), -1);
-        aeq(read("1/2*x^10").get().compareTo(ZERO), 1);
-        aeq(read("1/2*x^10").get().compareTo(ONE), 1);
-        aeq(read("1/2*x^10").get().compareTo(X), 1);
-        aeq(read("1/2*x^10").get().compareTo(read("-4/3").get()), 1);
-        aeq(read("1/2*x^10").get().compareTo(read("x^2-7/4*x+1/3").get()), 1);
-        aeq(read("1/2*x^10").get().compareTo(read("-x^3-1").get()), 1);
-        aeq(read("1/2*x^10").get().compareTo(read("1/2*x^10").get()), 0);
+        testCompareToHelper(readRationalPolynomialList("[-x^3-1, -4/3, 0, 1, x, x^2-7/4*x+1/3, 1/2*x^10]"));
     }
 
     @Test
@@ -1167,23 +1108,6 @@ public class RationalPolynomialTest {
         assertFalse(findIn("").isPresent());
         assertFalse(findIn("o").isPresent());
         assertFalse(findIn("hello").isPresent());
-    }
-
-    @Test
-    public void testToString() {
-        aeq(ZERO, "0");
-        aeq(ONE, "1");
-        aeq(X, "x");
-        aeq(of(Arrays.asList(Rational.of(-4, 3))), "-4/3");
-        aeq(of(Arrays.asList(Rational.ZERO, Rational.ONE)), "x");
-        aeq(of(Arrays.asList(Rational.ZERO, Rational.of(-1))), "-x");
-        aeq(of(Arrays.asList(Rational.ZERO, Rational.of(2))), "2*x");
-        aeq(of(Arrays.asList(Rational.ZERO, Rational.of(-2))), "-2*x");
-        aeq(of(Arrays.asList(Rational.ZERO, Rational.ZERO, Rational.ONE)), "x^2");
-        aeq(of(Arrays.asList(Rational.ZERO, Rational.ZERO, Rational.of(-1))), "-x^2");
-        aeq(of(Arrays.asList(Rational.ZERO, Rational.ZERO, Rational.of(2))), "2*x^2");
-        aeq(of(Arrays.asList(Rational.ZERO, Rational.ZERO, Rational.of(-2))), "-2*x^2");
-        aeq(of(Arrays.asList(Rational.of(1, 3), Rational.of(-7, 4), Rational.ONE)), "x^2-7/4*x+1/3");
     }
 
     private static @NotNull List<Rational> readRationalList(@NotNull String s) {

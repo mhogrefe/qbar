@@ -1,7 +1,8 @@
 package mho.qbar.objects;
 
+import mho.wheels.io.Readers;
 import mho.wheels.math.MathUtils;
-import mho.wheels.misc.Readers;
+import mho.wheels.numberUtils.IntegerUtils;
 import mho.wheels.ordering.comparators.ShortlexComparator;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
@@ -14,16 +15,16 @@ import static mho.wheels.iterables.IterableUtils.*;
 import static org.junit.Assert.assertTrue;
 
 /**
- * <p>A univariate polynomial in x with {@link mho.qbar.objects.Rational} coefficients.
+ * <p>A univariate polynomial in x with {@link mho.qbar.objects.Rational} coefficients.</p>
  *
  * <p>There is only one instance of {@code ZERO}, and one instance of {@code ONE}, so these may be compared with other
- * {@code RationalPolynomial}s using {@code ==}. This is not true for {@code X}.
+ * {@code RationalPolynomial}s using {@code ==}. This is not true for {@code X}.</p>
  *
  * <p>This class uses a little-endian dense representation; in other words, the coefficient of x<sup>i</sup> is located
  * at the ith position of the coefficient list. The list contains no trailing zeros. Zero is represented by the empty
- * list.
+ * list.</p>
  *
- * <p>This class is immutable.
+ * <p>This class is immutable.</p>
  */
 public final class RationalPolynomial implements
         Comparable<RationalPolynomial>,
@@ -239,7 +240,6 @@ public final class RationalPolynomial implements
      * @return the leading coefficient
      */
     public @NotNull Optional<Rational> leading() {
-        //noinspection ConstantConditions
         return this == ZERO ? Optional.<Rational>empty() : Optional.of(last(coefficients));
     }
 
@@ -277,7 +277,7 @@ public final class RationalPolynomial implements
      */
     public @NotNull RationalPolynomial negate() {
         if (this == ZERO) return ZERO;
-        if (coefficients.size() == 1 && coefficients.get(0).equals(Rational.of(-1))) return ONE;
+        if (coefficients.size() == 1 && coefficients.get(0).equals(Rational.NEGATIVE_ONE)) return ONE;
         return new RationalPolynomial(toList(map(Rational::negate, coefficients)));
     }
 
@@ -580,7 +580,6 @@ public final class RationalPolynomial implements
     public static @NotNull RationalPolynomial product(@NotNull Iterable<RationalPolynomial> xs) {
         if (any(x -> x == null, xs))
             throw new NullPointerException();
-        //noinspection ConstantConditions
         return foldl(RationalPolynomial::multiply, ONE, xs);
     }
 
@@ -628,7 +627,7 @@ public final class RationalPolynomial implements
         if (p == 1) return this;
         RationalPolynomial result = ONE;
         RationalPolynomial powerPower = null; // p^2^i
-        for (boolean bit : MathUtils.bits(p)) {
+        for (boolean bit : IntegerUtils.bits(p)) {
             powerPower = powerPower == null ? this : powerPower.multiply(powerPower);
             if (bit) result = result.multiply(powerPower);
         }
@@ -650,7 +649,6 @@ public final class RationalPolynomial implements
      * @return {@code this}∘{@code that}
      */
     public @NotNull RationalPolynomial substitute(@NotNull RationalPolynomial that) {
-        //noinspection ConstantConditions
         return foldr((c, y) -> y.multiply(that).add(of(c)), ZERO, coefficients);
     }
 
@@ -730,7 +728,7 @@ public final class RationalPolynomial implements
 
     /**
      * Returns the quotient and remainder when {@code this} is divided by {@code that}. To be more precise, the result
-     * is (q, r) such that {@code this}={@code that}×q+r and r=0 or deg(r)<deg({@code that}).
+     * is (q, r) such that {@code this}={@code that}×q+r and r=0 or deg(r){@literal <}deg({@code that}).
      *
      * <ul>
      *  <li>{@code this} may be any {@code RationalPolynomial}.</li>
@@ -767,7 +765,7 @@ public final class RationalPolynomial implements
      *  <li>The result may be either {@code boolean}.</li>
      * </ul>
      *
-     * @param that The {@code RationalPolynomial} to be compared with {@code this}
+     * @param that The {@code Object} to be compared with {@code this}
      * @return {@code this}={@code that}
      */
     @Override
@@ -833,7 +831,10 @@ public final class RationalPolynomial implements
      * @return the wrapped {@code RationalPolynomial} represented by {@code s}, or {@code empty} if {@code s} is
      * invalid.
      */
-    public static @NotNull Optional<RationalPolynomial> read(@NotNull String s) {
+    private static @NotNull Optional<RationalPolynomial> genericRead(
+            @NotNull String s,
+            @NotNull Function<String, Optional<Integer>> exponentHandler
+    ) {
         if (s.equals("0")) return Optional.of(ZERO);
         if (s.equals("1")) return Optional.of(ONE);
         if (s.isEmpty() || head(s) == '+') return Optional.empty();
@@ -879,7 +880,7 @@ public final class RationalPolynomial implements
                     case 1:
                         if (head(monomialString) != '-') return Optional.empty();
                         monomialString = tail(monomialString);
-                        coefficient = Rational.of(-1);
+                        coefficient = Rational.NEGATIVE_ONE;
                         break;
                     default:
                         if (monomialString.charAt(xIndex - 1) != '*') return Optional.empty();
@@ -901,7 +902,7 @@ public final class RationalPolynomial implements
                         break;
                     case 1:
                         String powerString = monomialString.substring(caretIndex + 1);
-                        Optional<Integer> oPower = Readers.readInteger(powerString);
+                        Optional<Integer> oPower = exponentHandler.apply(powerString);
                         if (!oPower.isPresent()) return Optional.empty();
                         power = oPower.get();
                         if (power < 2) return Optional.empty(); // no x^1, x^0, x^-1, ... allowed
@@ -914,14 +915,26 @@ public final class RationalPolynomial implements
         }
         if (any(p -> p.a == Rational.ZERO, monomials)) return Optional.empty();
         if (!increasing((Iterable<Integer>) map(p -> p.b, monomials))) return Optional.empty();
-        @SuppressWarnings("ConstantConditions")
         int degree = last(monomials).b;
         List<Rational> coefficients = toList(replicate(degree + 1, Rational.ZERO));
         for (Pair<Rational, Integer> monomial : monomials) {
-            //noinspection ConstantConditions
             coefficients.set(monomial.b, monomial.a);
         }
         return Optional.of(new RationalPolynomial(coefficients));
+    }
+
+    public static @NotNull Optional<RationalPolynomial> read(@NotNull String s) {
+        return genericRead(s, Readers::readInteger);
+    }
+
+    public static @NotNull Optional<RationalPolynomial> read(int exponentCutoff, @NotNull String s) {
+        return genericRead(
+                s,
+                powerString -> {
+                    Optional<Integer> oPower = Readers.readInteger(powerString);
+                    return !oPower.isPresent() || oPower.get() > exponentCutoff ? Optional.<Integer>empty() : oPower;
+                }
+        );
     }
 
     /**
@@ -943,6 +956,10 @@ public final class RationalPolynomial implements
      */
     public static @NotNull Optional<Pair<RationalPolynomial, Integer>> findIn(@NotNull String s) {
         return Readers.genericFindIn(RationalPolynomial::read, "*+-/0123456789^x").apply(s);
+    }
+
+    public static @NotNull Optional<Pair<RationalPolynomial, Integer>> findIn(int exponentCutoff, @NotNull String s) {
+        return Readers.genericFindIn(t -> read(exponentCutoff, t), "*+-/0123456789^x").apply(s);
     }
 
     /**
@@ -968,7 +985,7 @@ public final class RationalPolynomial implements
                 String power = i == 1 ? "x" : "x^" + i;
                 if (coefficient == Rational.ONE) {
                     monomialString = power;
-                } else if (coefficient.equals(Rational.of(-1))) {
+                } else if (coefficient.equals(Rational.NEGATIVE_ONE)) {
                     monomialString = cons('-', power);
                 } else {
                     monomialString = coefficient + "*" + power;
@@ -987,8 +1004,7 @@ public final class RationalPolynomial implements
      */
     public void validate() {
         if (!coefficients.isEmpty()) {
-            //noinspection ConstantConditions
-            assertTrue(toString(), !last(coefficients).equals(BigInteger.ZERO));
+            assertTrue(toString(), last(coefficients) != Rational.ZERO);
         }
         if (equals(ZERO)) assertTrue(toString(), this == ZERO);
         if (equals(ONE)) assertTrue(toString(), this == ONE);

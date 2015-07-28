@@ -1,8 +1,9 @@
 package mho.qbar.objects;
 
+import mho.wheels.io.Readers;
 import mho.wheels.iterables.IterableUtils;
-import mho.wheels.misc.FloatingPointUtils;
-import mho.wheels.misc.Readers;
+import mho.wheels.numberUtils.FloatingPointUtils;
+import mho.wheels.numberUtils.IntegerUtils;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
@@ -12,22 +13,55 @@ import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 import static mho.qbar.objects.Rational.*;
-import static mho.wheels.iterables.IterableUtils.take;
-import static mho.wheels.iterables.IterableUtils.toList;
+import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.ordering.Ordering.*;
-import static mho.wheels.testing.Testing.aeq;
-import static mho.wheels.testing.Testing.aeqit;
-import static org.junit.Assert.*;
+import static mho.wheels.testing.Testing.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
-@SuppressWarnings("ConstantConditions")
 public class RationalTest {
+    private static final int TINY_LIMIT = 20;
+    private static final @NotNull Rational PI_FLOAT = ofExact((float) Math.PI).get();
+    private static final @NotNull Rational PI_DOUBLE = ofExact(Math.PI).get();
+    private static final @NotNull Rational PI_SUCCESSOR_FLOAT = ofExact(
+            FloatingPointUtils.successor((float) Math.PI)
+    ).get();
+    private static final @NotNull Rational PI_PREDECESSOR_FLOAT = ofExact(
+            FloatingPointUtils.predecessor((float) Math.PI)
+    ).get();
+    private static final @NotNull Rational PI_SUCCESSOR_DOUBLE = ofExact(FloatingPointUtils.successor(Math.PI)).get();
+    private static final @NotNull Rational PI_PREDECESSOR_DOUBLE = ofExact(
+            FloatingPointUtils.predecessor(Math.PI)
+    ).get();
+    private static final @NotNull Rational SUBNORMAL_FLOAT = ofExact(1.0e-40f).get();
+    private static final @NotNull Rational SUBNORMAL_SUCCESSOR_FLOAT = ofExact(
+            FloatingPointUtils.successor(1.0e-40f)
+    ).get();
+    private static final @NotNull Rational SUBNORMAL_PREDECESSOR_FLOAT = ofExact(
+            FloatingPointUtils.predecessor(1.0e-40f)
+    ).get();
+    private static final @NotNull Rational SUBNORMAL_DOUBLE = ofExact(1.0e-310).get();
+    private static final @NotNull Rational SUBNORMAL_SUCCESSOR_DOUBLE = ofExact(
+            FloatingPointUtils.successor(1.0e-310)
+    ).get();
+    private static final @NotNull Rational SUBNORMAL_PREDECESSOR_DOUBLE = ofExact(
+            FloatingPointUtils.predecessor(1.0e-310)
+    ).get();
+    private static final @NotNull Rational ALMOST_MAX_FLOAT =
+            ofExact(FloatingPointUtils.predecessor(Float.MAX_VALUE)).get();
+    private static final @NotNull Rational ALMOST_MAX_DOUBLE =
+            ofExact(FloatingPointUtils.predecessor(Double.MAX_VALUE)).get();
+
     @Test
     public void testConstants() {
         aeq(ZERO, "0");
         aeq(ONE, "1");
+        aeq(TEN, "10");
+        aeq(TWO, "2");
+        aeq(NEGATIVE_ONE, "-1");
         aeq(SMALLEST_FLOAT, "1/713623846352979940529142984724747568191373312");
         aeq(LARGEST_SUBNORMAL_FLOAT, "8388607/713623846352979940529142984724747568191373312");
         aeq(SMALLEST_NORMAL_FLOAT, "1/85070591730234615865843651857942052864");
@@ -58,35 +92,35 @@ public class RationalTest {
                         " 14274301/4084080, 275295799/77597520, 55835135/15519504]");
     }
 
-    private static void getNumeratorHelper(@NotNull String x, @NotNull String output) {
+    private static void getNumerator_helper(@NotNull String x, @NotNull String output) {
         aeq(read(x).get().getNumerator(), output);
     }
 
     @Test
     public void testGetNumerator() {
-        getNumeratorHelper("0", "0");
-        getNumeratorHelper("1", "1");
-        getNumeratorHelper("2", "2");
-        getNumeratorHelper("-2", "-2");
-        getNumeratorHelper("5/3", "5");
-        getNumeratorHelper("-5/3", "-5");
+        getNumerator_helper("0", "0");
+        getNumerator_helper("1", "1");
+        getNumerator_helper("2", "2");
+        getNumerator_helper("-2", "-2");
+        getNumerator_helper("5/3", "5");
+        getNumerator_helper("-5/3", "-5");
     }
 
-    private static void getDenominatorHelper(@NotNull String x, @NotNull String output) {
+    private static void getDenominator_helper(@NotNull String x, @NotNull String output) {
         aeq(read(x).get().getDenominator(), output);
     }
 
     @Test
     public void testGetDenominator() {
-        getDenominatorHelper("0", "1");
-        getDenominatorHelper("1", "1");
-        getDenominatorHelper("2", "1");
-        getDenominatorHelper("-2", "1");
-        getDenominatorHelper("5/3", "3");
-        getDenominatorHelper("-5/3", "3");
+        getDenominator_helper("0", "1");
+        getDenominator_helper("1", "1");
+        getDenominator_helper("2", "1");
+        getDenominator_helper("-2", "1");
+        getDenominator_helper("5/3", "3");
+        getDenominator_helper("-5/3", "3");
     }
 
-    private static void of_BigInteger_BigIntegerHelper(int x, int y, @NotNull String output) {
+    private static void of_BigInteger_BigInteger_helper(int x, int y, @NotNull String output) {
         Rational r = of(BigInteger.valueOf(x), BigInteger.valueOf(y));
         r.validate();
         aeq(r, output);
@@ -94,13 +128,13 @@ public class RationalTest {
 
     @Test
     public void testOf_BigInteger_BigInteger() {
-        of_BigInteger_BigIntegerHelper(2, 3, "2/3");
-        of_BigInteger_BigIntegerHelper(4, 6, "2/3");
-        of_BigInteger_BigIntegerHelper(-4, -6, "2/3");
-        of_BigInteger_BigIntegerHelper(4, -6, "-2/3");
-        of_BigInteger_BigIntegerHelper(4, 4, "1");
-        of_BigInteger_BigIntegerHelper(4, 1, "4");
-        of_BigInteger_BigIntegerHelper(0, 1, "0");
+        of_BigInteger_BigInteger_helper(2, 3, "2/3");
+        of_BigInteger_BigInteger_helper(4, 6, "2/3");
+        of_BigInteger_BigInteger_helper(-4, -6, "2/3");
+        of_BigInteger_BigInteger_helper(4, -6, "-2/3");
+        of_BigInteger_BigInteger_helper(4, 4, "1");
+        of_BigInteger_BigInteger_helper(4, 1, "4");
+        of_BigInteger_BigInteger_helper(0, 1, "0");
         try {
             of(BigInteger.ONE, BigInteger.ZERO);
             fail();
@@ -161,132 +195,164 @@ public class RationalTest {
         assertTrue(of(1) == ONE);
     }
 
+    private static void of_float_helper(float f, @NotNull String output) {
+        aeq(of(f).get(), output);
+    }
+
+    private static void of_float_empty_helper(float f) {
+        assertFalse(of(f).isPresent());
+    }
+
     @Test
     public void testOf_float() {
-        assertTrue(of(0.0f) == ZERO);
-        assertTrue(of(1.0f) == ONE);
-        aeq(of(13.0f), "13");
-        aeq(of(-5.0f), "-5");
-        aeq(of(1.5f), "3/2");
-        aeq(of(0.15625f), "5/32");
-        aeq(of(0.1f), "1/10");
-        aeq(of(1.0f / 3.0f), "16666667/50000000");
-        aeq(of(1.0e10f), "10000000000");
-        aeq(of(1.0e30f), "1000000000000000000000000000000");
-        aeq(of((float) Math.PI), "31415927/10000000");
-        aeq(of((float) Math.E), "27182817/10000000");
-        aeq(of((float) Math.sqrt(2)), "2828427/2000000");
-        aeq(of(Float.MIN_VALUE), "7/5000000000000000000000000000000000000000000000");
-        aeq(of(-Float.MIN_VALUE), "-7/5000000000000000000000000000000000000000000000");
-        aeq(of(Float.MIN_NORMAL), "23509887/2000000000000000000000000000000000000000000000");
-        aeq(of(-Float.MIN_NORMAL), "-23509887/2000000000000000000000000000000000000000000000");
-        aeq(of(Float.MAX_VALUE), "340282350000000000000000000000000000000");
-        aeq(of(-Float.MAX_VALUE), "-340282350000000000000000000000000000000");
-        assertNull(of(Float.POSITIVE_INFINITY));
-        assertNull(of(Float.NEGATIVE_INFINITY));
-        assertNull(of(Float.NaN));
+        of_float_helper(0.0f, "0");
+        of_float_helper(1.0f, "1");
+        of_float_helper(13.0f, "13");
+        of_float_helper(-5.0f, "-5");
+        of_float_helper(1.5f, "3/2");
+        of_float_helper(0.15625f, "5/32");
+        of_float_helper(0.1f, "1/10");
+        of_float_helper(1.0f / 3.0f, "16666667/50000000");
+        of_float_helper(1.0e10f, "10000000000");
+        of_float_helper(1.0e30f, "1000000000000000000000000000000");
+        of_float_helper((float) Math.PI, "31415927/10000000");
+        of_float_helper((float) Math.E, "27182817/10000000");
+        of_float_helper((float) Math.sqrt(2), "2828427/2000000");
+        of_float_helper(Float.MIN_VALUE, "7/5000000000000000000000000000000000000000000000");
+        of_float_helper(-Float.MIN_VALUE, "-7/5000000000000000000000000000000000000000000000");
+        of_float_helper(Float.MIN_NORMAL, "23509887/2000000000000000000000000000000000000000000000");
+        of_float_helper(-Float.MIN_NORMAL, "-23509887/2000000000000000000000000000000000000000000000");
+        of_float_helper(Float.MAX_VALUE, "340282350000000000000000000000000000000");
+        of_float_helper(-Float.MAX_VALUE, "-340282350000000000000000000000000000000");
+        of_float_empty_helper(Float.POSITIVE_INFINITY);
+        of_float_empty_helper(Float.NEGATIVE_INFINITY);
+        of_float_empty_helper(Float.NaN);
+    }
+
+    private static void of_double_helper(double d, @NotNull String output) {
+        aeq(of(d).get(), output);
+    }
+
+    private static void of_double_empty_helper(double d) {
+        assertFalse(of(d).isPresent());
     }
 
     @Test
     public void testOf_double() {
-        assertTrue(of(0.0) == ZERO);
-        assertTrue(of(1.0) == ONE);
-        aeq(of(13.0), "13");
-        aeq(of(-5.0), "-5");
-        aeq(of(1.5), "3/2");
-        aeq(of(0.15625), "5/32");
-        aeq(of(0.1), "1/10");
-        aeq(of(1.0 / 3.0), "3333333333333333/10000000000000000");
-        aeq(of(1.0e10), "10000000000");
-        aeq(of(1.0e30), "1000000000000000000000000000000");
-        aeq(of(Math.PI), "3141592653589793/1000000000000000");
-        aeq(of(Math.E), "543656365691809/200000000000000");
-        aeq(of(Math.sqrt(2)), "14142135623730951/10000000000000000");
-        aeq(of(Double.MIN_VALUE),
+        of_double_helper(0.0, "0");
+        of_double_helper(1.0, "1");
+        of_double_helper(13.0, "13");
+        of_double_helper(-5.0, "-5");
+        of_double_helper(1.5, "3/2");
+        of_double_helper(0.15625, "5/32");
+        of_double_helper(0.1, "1/10");
+        of_double_helper(1.0 / 3.0, "3333333333333333/10000000000000000");
+        of_double_helper(1.0e10, "10000000000");
+        of_double_helper(1.0e30, "1000000000000000000000000000000");
+        of_double_helper(Math.PI, "3141592653589793/1000000000000000");
+        of_double_helper(Math.E, "543656365691809/200000000000000");
+        of_double_helper(Math.sqrt(2), "14142135623730951/10000000000000000");
+        of_double_helper(Double.MIN_VALUE,
                 "49/100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" +
                 "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" +
                 "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" +
                 "00000000000000000000000000000000");
-        aeq(of(-Double.MIN_VALUE),
+        of_double_helper(-Double.MIN_VALUE,
                 "-49/10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" +
                 "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" +
                 "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" +
                 "000000000000000000000000000000000");
-        aeq(of(Double.MIN_NORMAL),
+        of_double_helper(Double.MIN_NORMAL,
                 "11125369292536007/500000000000000000000000000000000000000000000000000000000000000000000000000000000" +
                 "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" +
                 "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" +
                 "000000000000000000000000000000000000000000000");
-        aeq(of(-Double.MIN_NORMAL),
+        of_double_helper(-Double.MIN_NORMAL,
                 "-11125369292536007/50000000000000000000000000000000000000000000000000000000000000000000000000000000" +
                 "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" +
                 "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" +
                 "0000000000000000000000000000000000000000000000");
-        aeq(of(Double.MAX_VALUE),
+        of_double_helper(Double.MAX_VALUE,
                 "179769313486231570000000000000000000000000000000000000000000000000000000000000000000000000000000000" +
                 "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" +
                 "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" +
                 "000000000000");
-        aeq(of(-Double.MAX_VALUE),
+        of_double_helper(-Double.MAX_VALUE,
                 "-17976931348623157000000000000000000000000000000000000000000000000000000000000000000000000000000000" +
                 "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" +
                 "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" +
                 "0000000000000");
-        assertNull(of(Double.POSITIVE_INFINITY));
-        assertNull(of(Double.NEGATIVE_INFINITY));
-        assertNull(of(Double.NaN));
+        of_double_empty_helper(Double.POSITIVE_INFINITY);
+        of_double_empty_helper(Double.NEGATIVE_INFINITY);
+        of_double_empty_helper(Double.NaN);
+    }
+
+    private static void ofExact_float_helper(float f, @NotNull Object output) {
+        aeq(ofExact(f).get(), output);
+    }
+
+    private static void ofExact_float_empty_helper(float f) {
+        assertFalse(ofExact(f).isPresent());
     }
 
     @Test
     public void testOfExact_float() {
-        assertTrue(ofExact(0.0f) == ZERO);
-        assertTrue(ofExact(1.0f) == ONE);
-        aeq(ofExact(13.0f), "13");
-        aeq(ofExact(-5.0f), "-5");
-        aeq(ofExact(1.5f), "3/2");
-        aeq(ofExact(0.15625f), "5/32");
-        aeq(ofExact(0.1f), "13421773/134217728");
-        aeq(ofExact(1.0f / 3.0f), "11184811/33554432");
-        aeq(ofExact(1.0e10f), "10000000000");
-        aeq(ofExact(1.0e30f), "1000000015047466219876688855040");
-        aeq(ofExact((float) Math.PI), "13176795/4194304");
-        aeq(ofExact((float) Math.E), "2850325/1048576");
-        aeq(ofExact((float) Math.sqrt(2)), "11863283/8388608");
-        aeq(ofExact(Float.MIN_VALUE), SMALLEST_FLOAT);
-        aeq(ofExact(-Float.MIN_VALUE), SMALLEST_FLOAT.negate());
-        aeq(ofExact(Float.MIN_NORMAL), SMALLEST_NORMAL_FLOAT);
-        aeq(ofExact(-Float.MIN_NORMAL), SMALLEST_NORMAL_FLOAT.negate());
-        aeq(ofExact(Float.MAX_VALUE), LARGEST_FLOAT);
-        aeq(ofExact(-Float.MAX_VALUE), LARGEST_FLOAT.negate());
-        assertNull(ofExact(Float.POSITIVE_INFINITY));
-        assertNull(ofExact(Float.NEGATIVE_INFINITY));
-        assertNull(ofExact(Float.NaN));
+        ofExact_float_helper(0.0f, "0");
+        ofExact_float_helper(1.0f, "1");
+        ofExact_float_helper(13.0f, "13");
+        ofExact_float_helper(-5.0f, "-5");
+        ofExact_float_helper(1.5f, "3/2");
+        ofExact_float_helper(0.15625f, "5/32");
+        ofExact_float_helper(0.1f, "13421773/134217728");
+        ofExact_float_helper(1.0f / 3.0f, "11184811/33554432");
+        ofExact_float_helper(1.0e10f, "10000000000");
+        ofExact_float_helper(1.0e30f, "1000000015047466219876688855040");
+        ofExact_float_helper((float) Math.PI, "13176795/4194304");
+        ofExact_float_helper((float) Math.E, "2850325/1048576");
+        ofExact_float_helper((float) Math.sqrt(2), "11863283/8388608");
+        ofExact_float_helper(Float.MIN_VALUE, SMALLEST_FLOAT);
+        ofExact_float_helper(-Float.MIN_VALUE, SMALLEST_FLOAT.negate());
+        ofExact_float_helper(Float.MIN_NORMAL, SMALLEST_NORMAL_FLOAT);
+        ofExact_float_helper(-Float.MIN_NORMAL, SMALLEST_NORMAL_FLOAT.negate());
+        ofExact_float_helper(Float.MAX_VALUE, LARGEST_FLOAT);
+        ofExact_float_helper(-Float.MAX_VALUE, LARGEST_FLOAT.negate());
+        ofExact_float_empty_helper(Float.POSITIVE_INFINITY);
+        ofExact_float_empty_helper(Float.NEGATIVE_INFINITY);
+        ofExact_float_empty_helper(Float.NaN);
+    }
+
+    private static void ofExact_double_helper(double d, @NotNull Object output) {
+        aeq(ofExact(d).get(), output);
+    }
+
+    private static void ofExact_double_empty_helper(double d) {
+        assertFalse(ofExact(d).isPresent());
     }
 
     @Test
     public void testOfExact_double() {
-        assertTrue(ofExact(0.0) == ZERO);
-        assertTrue(ofExact(1.0) == ONE);
-        aeq(ofExact(13.0), "13");
-        aeq(ofExact(-5.0), "-5");
-        aeq(ofExact(1.5), "3/2");
-        aeq(ofExact(0.15625), "5/32");
-        aeq(ofExact(0.1), "3602879701896397/36028797018963968");
-        aeq(ofExact(1.0 / 3.0), "6004799503160661/18014398509481984");
-        aeq(ofExact(1.0e10), "10000000000");
-        aeq(ofExact(1.0e30), "1000000000000000019884624838656");
-        aeq(ofExact(Math.PI), "884279719003555/281474976710656");
-        aeq(ofExact(Math.E), "6121026514868073/2251799813685248");
-        aeq(ofExact(Math.sqrt(2)), "6369051672525773/4503599627370496");
-        aeq(ofExact(Double.MIN_VALUE), SMALLEST_DOUBLE);
-        aeq(ofExact(-Double.MIN_VALUE), SMALLEST_DOUBLE.negate());
-        aeq(ofExact(Double.MIN_NORMAL), SMALLEST_NORMAL_DOUBLE);
-        aeq(ofExact(-Double.MIN_NORMAL), SMALLEST_NORMAL_DOUBLE.negate());
-        aeq(ofExact(Double.MAX_VALUE), LARGEST_DOUBLE);
-        aeq(ofExact(-Double.MAX_VALUE), LARGEST_DOUBLE.negate());
-        assertNull(ofExact(Double.POSITIVE_INFINITY));
-        assertNull(ofExact(Double.NEGATIVE_INFINITY));
-        assertNull(ofExact(Double.NaN));
+        ofExact_double_helper(0.0, "0");
+        ofExact_double_helper(1.0, "1");
+        ofExact_double_helper(13.0, "13");
+        ofExact_double_helper(-5.0, "-5");
+        ofExact_double_helper(1.5, "3/2");
+        ofExact_double_helper(0.15625, "5/32");
+        ofExact_double_helper(0.1, "3602879701896397/36028797018963968");
+        ofExact_double_helper(1.0 / 3.0, "6004799503160661/18014398509481984");
+        ofExact_double_helper(1.0e10, "10000000000");
+        ofExact_double_helper(1.0e30, "1000000000000000019884624838656");
+        ofExact_double_helper(Math.PI, "884279719003555/281474976710656");
+        ofExact_double_helper(Math.E, "6121026514868073/2251799813685248");
+        ofExact_double_helper(Math.sqrt(2), "6369051672525773/4503599627370496");
+        ofExact_double_helper(Double.MIN_VALUE, SMALLEST_DOUBLE);
+        ofExact_double_helper(-Double.MIN_VALUE, SMALLEST_DOUBLE.negate());
+        ofExact_double_helper(Double.MIN_NORMAL, SMALLEST_NORMAL_DOUBLE);
+        ofExact_double_helper(-Double.MIN_NORMAL, SMALLEST_NORMAL_DOUBLE.negate());
+        ofExact_double_helper(Double.MAX_VALUE, LARGEST_DOUBLE);
+        ofExact_double_helper(-Double.MAX_VALUE, LARGEST_DOUBLE.negate());
+        ofExact_double_empty_helper(Double.POSITIVE_INFINITY);
+        ofExact_double_empty_helper(Double.NEGATIVE_INFINITY);
+        ofExact_double_empty_helper(Double.NaN);
     }
 
     @Test
@@ -311,8 +377,8 @@ public class RationalTest {
         assertTrue(read("-5").get().isInteger());
         assertFalse(read("1/2").get().isInteger());
         assertFalse(read("-1/2").get().isInteger());
-        assertFalse(ofExact(Math.PI).isInteger());
-        assertFalse(ofExact(-Math.PI).isInteger());
+        assertFalse(ofExact(Math.PI).get().isInteger());
+        assertFalse(ofExact(-Math.PI).get().isInteger());
     }
 
     @Test
@@ -556,16 +622,16 @@ public class RationalTest {
 
     @Test
     public void testHasTerminatingBaseExpansion() {
-        assertTrue(ZERO.hasTerminatingBaseExpansion(BigInteger.valueOf(2)));
-        assertTrue(ONE.hasTerminatingBaseExpansion(BigInteger.valueOf(2)));
-        assertTrue(read("60").get().hasTerminatingBaseExpansion(BigInteger.valueOf(2)));
-        assertTrue(read("1/2").get().hasTerminatingBaseExpansion(BigInteger.valueOf(2)));
-        assertFalse(read("1/5").get().hasTerminatingBaseExpansion(BigInteger.valueOf(2)));
-        assertFalse(read("-7/100").get().hasTerminatingBaseExpansion(BigInteger.valueOf(2)));
-        assertFalse(read("-3/640").get().hasTerminatingBaseExpansion(BigInteger.valueOf(2)));
-        assertFalse(read("1/3").get().hasTerminatingBaseExpansion(BigInteger.valueOf(2)));
-        assertFalse(read("-1/15").get().hasTerminatingBaseExpansion(BigInteger.valueOf(2)));
-        assertFalse(read("-2/9").get().hasTerminatingBaseExpansion(BigInteger.valueOf(2)));
+        assertTrue(ZERO.hasTerminatingBaseExpansion(IntegerUtils.TWO));
+        assertTrue(ONE.hasTerminatingBaseExpansion(IntegerUtils.TWO));
+        assertTrue(read("60").get().hasTerminatingBaseExpansion(IntegerUtils.TWO));
+        assertTrue(read("1/2").get().hasTerminatingBaseExpansion(IntegerUtils.TWO));
+        assertFalse(read("1/5").get().hasTerminatingBaseExpansion(IntegerUtils.TWO));
+        assertFalse(read("-7/100").get().hasTerminatingBaseExpansion(IntegerUtils.TWO));
+        assertFalse(read("-3/640").get().hasTerminatingBaseExpansion(IntegerUtils.TWO));
+        assertFalse(read("1/3").get().hasTerminatingBaseExpansion(IntegerUtils.TWO));
+        assertFalse(read("-1/15").get().hasTerminatingBaseExpansion(IntegerUtils.TWO));
+        assertFalse(read("-2/9").get().hasTerminatingBaseExpansion(IntegerUtils.TWO));
         assertTrue(ZERO.hasTerminatingBaseExpansion(BigInteger.valueOf(3)));
         assertTrue(ONE.hasTerminatingBaseExpansion(BigInteger.valueOf(3)));
         assertTrue(read("60").get().hasTerminatingBaseExpansion(BigInteger.valueOf(3)));
@@ -635,7 +701,7 @@ public class RationalTest {
             fail();
         } catch (IllegalArgumentException ignored) {}
         try {
-            read("1/2").get().hasTerminatingBaseExpansion(BigInteger.valueOf(-1));
+            read("1/2").get().hasTerminatingBaseExpansion(IntegerUtils.NEGATIVE_ONE);
             fail();
         } catch (IllegalArgumentException ignored) {}
     }
@@ -1061,6 +1127,25 @@ public class RationalTest {
         aeq(read("1234").get().bigDecimalValueExact(), "1234");
         aeq(read("19/20").get().bigDecimalValueExact(), "0.95");
         aeq(read("199/200").get().bigDecimalValueExact(), "0.995");
+        aeq(SMALLEST_FLOAT.bigDecimalValueExact(),
+                "1.4012984643248170709237295832899161312802619418765157717570682838897910826858606014866381883621215" +
+                "8203125E-45");
+        aeq(LARGEST_FLOAT.bigDecimalValueExact(), "340282346638528859811704183484516925440");
+        aeq(SMALLEST_DOUBLE.bigDecimalValueExact(),
+                "4.9406564584124654417656879286822137236505980261432476442558568250067550727020875186529983636163599" +
+                "237979656469544571773092665671035593979639877479601078187812630071319031140452784581716784898210368" +
+                "871863605699873072305000638740915356498438731247339727316961514003171538539807412623856559117102665" +
+                "855668676818703956031062493194527159149245532930545654440112748012970999954193198940908041656332452" +
+                "475714786901472678015935523861155013480352649347201937902681071074917033322268447533357208324319360" +
+                "923828934583680601060115061698097530783422773183292479049825247307763759272478746560847782037344696" +
+                "995336470179726777175851256605511991315048911014510378627381672509558373897335989936648099411642057" +
+                "02637090279242767544565229087538682506419718265533447265625E-324");
+        aeq(
+                LARGEST_DOUBLE.bigDecimalValueExact(),
+                "179769313486231570814527423731704356798070567525844996598917476803157260780028538760589558632766878" +
+                "171540458953514382464234321326889464182768467546703537516986049910576551282076245490090389328944075" +
+                "868508455133942304583236903222948165808559332123348274797826204144723168738177180919299881250404026" +
+                "184124858368");
         try {
             read("1/3").get().bigDecimalValueExact();
             fail();
@@ -1148,18 +1233,14 @@ public class RationalTest {
             almostOne.floatValue(RoundingMode.UNNECESSARY);
             fail();
         } catch (ArithmeticException ignored) {}
-        Rational floatPi = ofExact((float) Math.PI);
-        if (floatPi == null) {
-            fail();
-        }
-        aeq(floatPi.floatValue(RoundingMode.FLOOR), 3.1415927);
-        aeq(floatPi.floatValue(RoundingMode.CEILING), 3.1415927);
-        aeq(floatPi.floatValue(RoundingMode.DOWN), 3.1415927);
-        aeq(floatPi.floatValue(RoundingMode.UP), 3.1415927);
-        aeq(floatPi.floatValue(RoundingMode.HALF_DOWN), 3.1415927);
-        aeq(floatPi.floatValue(RoundingMode.HALF_UP), 3.1415927);
-        aeq(floatPi.floatValue(RoundingMode.HALF_EVEN), 3.1415927);
-        aeq(floatPi.floatValue(RoundingMode.UNNECESSARY), 3.1415927);
+        aeq(PI_FLOAT.floatValue(RoundingMode.FLOOR), 3.1415927);
+        aeq(PI_FLOAT.floatValue(RoundingMode.CEILING), 3.1415927);
+        aeq(PI_FLOAT.floatValue(RoundingMode.DOWN), 3.1415927);
+        aeq(PI_FLOAT.floatValue(RoundingMode.UP), 3.1415927);
+        aeq(PI_FLOAT.floatValue(RoundingMode.HALF_DOWN), 3.1415927);
+        aeq(PI_FLOAT.floatValue(RoundingMode.HALF_UP), 3.1415927);
+        aeq(PI_FLOAT.floatValue(RoundingMode.HALF_EVEN), 3.1415927);
+        aeq(PI_FLOAT.floatValue(RoundingMode.UNNECESSARY), 3.1415927);
         Rational trillion = of(BigInteger.TEN.pow(12));
         aeq(trillion.floatValue(RoundingMode.FLOOR), 1.0E12);
         aeq(trillion.floatValue(RoundingMode.CEILING), 1.00000006E12);
@@ -1172,18 +1253,10 @@ public class RationalTest {
             trillion.floatValue(RoundingMode.UNNECESSARY);
             fail();
         } catch (ArithmeticException ignored) {}
-        Rational piSuccessor = ofExact(FloatingPointUtils.successor((float) Math.PI));
-        if (piSuccessor == null) {
-            fail();
-        }
-        Rational piPredecessor = ofExact(FloatingPointUtils.predecessor((float) Math.PI));
-        if (piPredecessor == null) {
-            fail();
-        }
-        Rational halfAbovePi = floatPi.add(piSuccessor).divide(2);
-        Rational halfBelowPi = floatPi.add(piPredecessor).divide(2);
-        Rational justAbovePi = floatPi.multiply(2).add(piSuccessor).divide(3);
-        Rational justBelowPi = floatPi.multiply(2).add(piPredecessor).divide(3);
+        Rational halfAbovePi = PI_FLOAT.add(PI_SUCCESSOR_FLOAT).divide(2);
+        Rational halfBelowPi = PI_FLOAT.add(PI_PREDECESSOR_FLOAT).divide(2);
+        Rational justAbovePi = PI_FLOAT.multiply(2).add(PI_SUCCESSOR_FLOAT).divide(3);
+        Rational justBelowPi = PI_FLOAT.multiply(2).add(PI_PREDECESSOR_FLOAT).divide(3);
         aeq(halfAbovePi.floatValue(RoundingMode.FLOOR), 3.1415927);
         aeq(halfAbovePi.floatValue(RoundingMode.CEILING), 3.141593);
         aeq(halfAbovePi.floatValue(RoundingMode.DOWN), 3.1415927);
@@ -1228,30 +1301,18 @@ public class RationalTest {
             justBelowPi.floatValue(RoundingMode.UNNECESSARY);
             fail();
         } catch (ArithmeticException ignored) {}
-        Rational subnormal = ofExact(1.0e-40f);
-        if (subnormal == null) {
-            fail();
-        }
-        Rational subnormalSuccessor = ofExact(FloatingPointUtils.successor(1.0e-40f));
-        if (subnormalSuccessor == null) {
-            fail();
-        }
-        Rational subnormalPredecessor = ofExact(FloatingPointUtils.predecessor(1.0e-40f));
-        if (subnormalPredecessor == null) {
-            fail();
-        }
-        Rational halfAboveSubnormal = subnormal.add(subnormalSuccessor).divide(2);
-        Rational halfBelowSubnormal = subnormal.add(subnormalPredecessor).divide(2);
-        Rational justAboveSubnormal = subnormal.multiply(2).add(subnormalSuccessor).divide(3);
-        Rational justBelowSubnormal = subnormal.multiply(2).add(subnormalPredecessor).divide(3);
-        aeq(subnormal.floatValue(RoundingMode.FLOOR), 1.0E-40);
-        aeq(subnormal.floatValue(RoundingMode.CEILING), 1.0E-40);
-        aeq(subnormal.floatValue(RoundingMode.DOWN), 1.0E-40);
-        aeq(subnormal.floatValue(RoundingMode.UP), 1.0E-40);
-        aeq(subnormal.floatValue(RoundingMode.HALF_DOWN), 1.0E-40);
-        aeq(subnormal.floatValue(RoundingMode.HALF_UP), 1.0E-40);
-        aeq(subnormal.floatValue(RoundingMode.HALF_EVEN), 1.0E-40);
-        aeq(subnormal.floatValue(RoundingMode.UNNECESSARY), 1.0E-40);
+        Rational halfAboveSubnormal = SUBNORMAL_FLOAT.add(SUBNORMAL_SUCCESSOR_FLOAT).divide(2);
+        Rational halfBelowSubnormal = SUBNORMAL_FLOAT.add(SUBNORMAL_PREDECESSOR_FLOAT).divide(2);
+        Rational justAboveSubnormal = SUBNORMAL_FLOAT.multiply(2).add(SUBNORMAL_SUCCESSOR_FLOAT).divide(3);
+        Rational justBelowSubnormal = SUBNORMAL_FLOAT.multiply(2).add(SUBNORMAL_PREDECESSOR_FLOAT).divide(3);
+        aeq(SUBNORMAL_FLOAT.floatValue(RoundingMode.FLOOR), 1.0E-40);
+        aeq(SUBNORMAL_FLOAT.floatValue(RoundingMode.CEILING), 1.0E-40);
+        aeq(SUBNORMAL_FLOAT.floatValue(RoundingMode.DOWN), 1.0E-40);
+        aeq(SUBNORMAL_FLOAT.floatValue(RoundingMode.UP), 1.0E-40);
+        aeq(SUBNORMAL_FLOAT.floatValue(RoundingMode.HALF_DOWN), 1.0E-40);
+        aeq(SUBNORMAL_FLOAT.floatValue(RoundingMode.HALF_UP), 1.0E-40);
+        aeq(SUBNORMAL_FLOAT.floatValue(RoundingMode.HALF_EVEN), 1.0E-40);
+        aeq(SUBNORMAL_FLOAT.floatValue(RoundingMode.UNNECESSARY), 1.0E-40);
         aeq(halfAboveSubnormal.floatValue(RoundingMode.FLOOR), 1.0E-40);
         aeq(halfAboveSubnormal.floatValue(RoundingMode.CEILING), 1.00001E-40);
         aeq(halfAboveSubnormal.floatValue(RoundingMode.DOWN), 1.0E-40);
@@ -1297,12 +1358,8 @@ public class RationalTest {
             fail();
         } catch (ArithmeticException ignored) {}
         Rational belowNegativeMax = LARGEST_FLOAT.negate().subtract(ONE);
-        Rational negativeMaxSuccessor = ofExact(FloatingPointUtils.successor(-Float.MAX_VALUE));
-        if (negativeMaxSuccessor == null) {
-            fail();
-        }
-        Rational halfAboveNegativeMax = LARGEST_FLOAT.negate().add(negativeMaxSuccessor).divide(2);
-        Rational justAboveNegativeMax = LARGEST_FLOAT.negate().multiply(2).add(negativeMaxSuccessor).divide(3);
+        Rational halfAboveNegativeMax = LARGEST_FLOAT.negate().add(ALMOST_MAX_FLOAT.negate()).divide(2);
+        Rational justAboveNegativeMax = LARGEST_FLOAT.negate().multiply(2).add(ALMOST_MAX_FLOAT.negate()).divide(3);
         aeq(belowNegativeMax.floatValue(RoundingMode.FLOOR), Float.NEGATIVE_INFINITY);
         aeq(belowNegativeMax.floatValue(RoundingMode.CEILING), -3.4028235E38);
         aeq(belowNegativeMax.floatValue(RoundingMode.DOWN), -3.4028235E38);
@@ -1337,12 +1394,8 @@ public class RationalTest {
             fail();
         } catch (ArithmeticException ignored) {}
         Rational aboveMax = LARGEST_FLOAT.add(ONE);
-        Rational maxPredecessor = ofExact(FloatingPointUtils.predecessor(Float.MAX_VALUE));
-        if (maxPredecessor == null) {
-            fail();
-        }
-        Rational halfBelowMax = LARGEST_FLOAT.add(maxPredecessor).divide(2);
-        Rational justBelowMax = LARGEST_FLOAT.multiply(2).add(maxPredecessor).divide(3);
+        Rational halfBelowMax = LARGEST_FLOAT.add(ALMOST_MAX_FLOAT).divide(2);
+        Rational justBelowMax = LARGEST_FLOAT.multiply(2).add(ALMOST_MAX_FLOAT).divide(3);
         aeq(aboveMax.floatValue(RoundingMode.FLOOR), 3.4028235E38);
         aeq(aboveMax.floatValue(RoundingMode.CEILING), Float.POSITIVE_INFINITY);
         aeq(aboveMax.floatValue(RoundingMode.DOWN), 3.4028235E38);
@@ -1495,67 +1548,35 @@ public class RationalTest {
         aeq(read("-1/3").get().floatValue(), -0.33333334);
         Rational almostOne = of(BigInteger.TEN.pow(1000).subtract(BigInteger.ONE), BigInteger.TEN.pow(1000));
         aeq(almostOne.floatValue(), 1.0);
-        Rational floatPi = ofExact((float) Math.PI);
-        if (floatPi == null) {
-            fail();
-        }
-        aeq(floatPi.floatValue(), 3.1415927);
+        aeq(PI_FLOAT.floatValue(), 3.1415927);
         Rational trillion = of(BigInteger.TEN.pow(12));
         aeq(trillion.floatValue(), 1.0E12);
-        Rational piSuccessor = ofExact(FloatingPointUtils.successor((float) Math.PI));
-        if (piSuccessor == null) {
-            fail();
-        }
-        Rational piPredecessor = ofExact(FloatingPointUtils.predecessor((float) Math.PI));
-        if (piPredecessor == null) {
-            fail();
-        }
-        Rational halfAbovePi = floatPi.add(piSuccessor).divide(2);
-        Rational halfBelowPi = floatPi.add(piPredecessor).divide(2);
-        Rational justAbovePi = floatPi.multiply(2).add(piSuccessor).divide(3);
-        Rational justBelowPi = floatPi.multiply(2).add(piPredecessor).divide(3);
+        Rational halfAbovePi = PI_FLOAT.add(PI_SUCCESSOR_FLOAT).divide(2);
+        Rational halfBelowPi = PI_FLOAT.add(PI_PREDECESSOR_FLOAT).divide(2);
+        Rational justAbovePi = PI_FLOAT.multiply(2).add(PI_SUCCESSOR_FLOAT).divide(3);
+        Rational justBelowPi = PI_FLOAT.multiply(2).add(PI_PREDECESSOR_FLOAT).divide(3);
         aeq(halfAbovePi.floatValue(), 3.141593);
         aeq(halfBelowPi.floatValue(), 3.1415925);
         aeq(justAbovePi.floatValue(), 3.1415927);
         aeq(justBelowPi.floatValue(), 3.1415927);
-        Rational subnormal = ofExact(1.0e-40f);
-        if (subnormal == null) {
-            fail();
-        }
-        Rational subnormalSuccessor = ofExact(FloatingPointUtils.successor(1.0e-40f));
-        if (subnormalSuccessor == null) {
-            fail();
-        }
-        Rational subnormalPredecessor = ofExact(FloatingPointUtils.predecessor(1.0e-40f));
-        if (subnormalPredecessor == null) {
-            fail();
-        }
-        Rational halfAboveSubnormal = subnormal.add(subnormalSuccessor).divide(2);
-        Rational halfBelowSubnormal = subnormal.add(subnormalPredecessor).divide(2);
-        Rational justAboveSubnormal = subnormal.multiply(2).add(subnormalSuccessor).divide(3);
-        Rational justBelowSubnormal = subnormal.multiply(2).add(subnormalPredecessor).divide(3);
-        aeq(subnormal.floatValue(), 1.0E-40);
+        Rational halfAboveSubnormal = SUBNORMAL_FLOAT.add(SUBNORMAL_SUCCESSOR_FLOAT).divide(2);
+        Rational halfBelowSubnormal = SUBNORMAL_FLOAT.add(SUBNORMAL_PREDECESSOR_FLOAT).divide(2);
+        Rational justAboveSubnormal = SUBNORMAL_FLOAT.multiply(2).add(SUBNORMAL_SUCCESSOR_FLOAT).divide(3);
+        Rational justBelowSubnormal = SUBNORMAL_FLOAT.multiply(2).add(SUBNORMAL_PREDECESSOR_FLOAT).divide(3);
+        aeq(SUBNORMAL_FLOAT.floatValue(), 1.0E-40);
         aeq(halfAboveSubnormal.floatValue(), 1.0E-40);
         aeq(halfBelowSubnormal.floatValue(), 1.0E-40);
         aeq(justAboveSubnormal.floatValue(), 1.0E-40);
         aeq(justBelowSubnormal.floatValue(), 1.0E-40);
         Rational belowNegativeMax = LARGEST_FLOAT.negate().subtract(ONE);
-        Rational negativeMaxSuccessor = ofExact(FloatingPointUtils.successor(-Float.MAX_VALUE));
-        if (negativeMaxSuccessor == null) {
-            fail();
-        }
-        Rational halfAboveNegativeMax = LARGEST_FLOAT.negate().add(negativeMaxSuccessor).divide(2);
-        Rational justAboveNegativeMax = LARGEST_FLOAT.negate().multiply(2).add(negativeMaxSuccessor).divide(3);
+        Rational halfAboveNegativeMax = LARGEST_FLOAT.negate().add(ALMOST_MAX_FLOAT.negate()).divide(2);
+        Rational justAboveNegativeMax = LARGEST_FLOAT.negate().multiply(2).add(ALMOST_MAX_FLOAT.negate()).divide(3);
         aeq(belowNegativeMax.floatValue(), Float.NEGATIVE_INFINITY);
         aeq(halfAboveNegativeMax.floatValue(), -3.4028233E38);
         aeq(justAboveNegativeMax.floatValue(), -3.4028235E38);
         Rational aboveMax = LARGEST_FLOAT.add(ONE);
-        Rational maxPredecessor = ofExact(FloatingPointUtils.predecessor(Float.MAX_VALUE));
-        if (maxPredecessor == null) {
-            fail();
-        }
-        Rational halfBelowMax = LARGEST_FLOAT.add(maxPredecessor).divide(2);
-        Rational justBelowMax = LARGEST_FLOAT.multiply(2).add(maxPredecessor).divide(3);
+        Rational halfBelowMax = LARGEST_FLOAT.add(ALMOST_MAX_FLOAT).divide(2);
+        Rational justBelowMax = LARGEST_FLOAT.multiply(2).add(ALMOST_MAX_FLOAT).divide(3);
         aeq(aboveMax.floatValue(), Float.POSITIVE_INFINITY);
         aeq(halfBelowMax.floatValue(), 3.4028233E38);
         aeq(justBelowMax.floatValue(), 3.4028235E38);
@@ -1597,28 +1618,16 @@ public class RationalTest {
             almostOne.floatValueExact();
             fail();
         } catch (ArithmeticException ignored) {}
-        Rational floatPi = ofExact((float) Math.PI);
-        if (floatPi == null) {
-            fail();
-        }
-        aeq(floatPi.floatValueExact(), 3.1415927);
+        aeq(PI_FLOAT.floatValueExact(), 3.1415927);
         Rational trillion = of(BigInteger.TEN.pow(12));
         try {
             trillion.floatValueExact();
             fail();
         } catch (ArithmeticException ignored) {}
-        Rational piSuccessor = ofExact(FloatingPointUtils.successor((float) Math.PI));
-        if (piSuccessor == null) {
-            fail();
-        }
-        Rational piPredecessor = ofExact(FloatingPointUtils.predecessor((float) Math.PI));
-        if (piPredecessor == null) {
-            fail();
-        }
-        Rational halfAbovePi = floatPi.add(piSuccessor).divide(2);
-        Rational halfBelowPi = floatPi.add(piPredecessor).divide(2);
-        Rational justAbovePi = floatPi.multiply(2).add(piSuccessor).divide(3);
-        Rational justBelowPi = floatPi.multiply(2).add(piPredecessor).divide(3);
+        Rational halfAbovePi = PI_FLOAT.add(PI_PREDECESSOR_FLOAT).divide(2);
+        Rational halfBelowPi = PI_FLOAT.add(PI_PREDECESSOR_FLOAT).divide(2);
+        Rational justAbovePi = PI_FLOAT.multiply(2).add(PI_SUCCESSOR_FLOAT).divide(3);
+        Rational justBelowPi = PI_FLOAT.multiply(2).add(PI_SUCCESSOR_FLOAT).divide(3);
         try {
             halfAbovePi.floatValueExact();
             fail();
@@ -1635,22 +1644,10 @@ public class RationalTest {
             justBelowPi.floatValueExact();
             fail();
         } catch (ArithmeticException ignored) {}
-        Rational subnormal = ofExact(1.0e-40f);
-        if (subnormal == null) {
-            fail();
-        }
-        Rational subnormalSuccessor = ofExact(FloatingPointUtils.successor(1.0e-40f));
-        if (subnormalSuccessor == null) {
-            fail();
-        }
-        Rational subnormalPredecessor = ofExact(FloatingPointUtils.predecessor(1.0e-40f));
-        if (subnormalPredecessor == null) {
-            fail();
-        }
-        Rational halfAboveSubnormal = subnormal.add(subnormalSuccessor).divide(2);
-        Rational halfBelowSubnormal = subnormal.add(subnormalPredecessor).divide(2);
-        Rational justAboveSubnormal = subnormal.multiply(2).add(subnormalSuccessor).divide(3);
-        Rational justBelowSubnormal = subnormal.multiply(2).add(subnormalPredecessor).divide(3);
+        Rational halfAboveSubnormal = SUBNORMAL_FLOAT.add(SUBNORMAL_SUCCESSOR_FLOAT).divide(2);
+        Rational halfBelowSubnormal = SUBNORMAL_FLOAT.add(SUBNORMAL_PREDECESSOR_FLOAT).divide(2);
+        Rational justAboveSubnormal = SUBNORMAL_FLOAT.multiply(2).add(SUBNORMAL_SUCCESSOR_FLOAT).divide(3);
+        Rational justBelowSubnormal = SUBNORMAL_FLOAT.multiply(2).add(SUBNORMAL_PREDECESSOR_FLOAT).divide(3);
         try {
             halfAboveSubnormal.floatValueExact();
             fail();
@@ -1668,12 +1665,8 @@ public class RationalTest {
             fail();
         } catch (ArithmeticException ignored) {}
         Rational belowNegativeMax = LARGEST_FLOAT.negate().subtract(ONE);
-        Rational negativeMaxSuccessor = ofExact(FloatingPointUtils.successor(-Float.MAX_VALUE));
-        if (negativeMaxSuccessor == null) {
-            fail();
-        }
-        Rational halfAboveNegativeMax = LARGEST_FLOAT.negate().add(negativeMaxSuccessor).divide(2);
-        Rational justAboveNegativeMax = LARGEST_FLOAT.negate().multiply(2).add(negativeMaxSuccessor).divide(3);
+        Rational halfAboveNegativeMax = LARGEST_FLOAT.negate().add(ALMOST_MAX_FLOAT.negate()).divide(2);
+        Rational justAboveNegativeMax = LARGEST_FLOAT.negate().multiply(2).add(ALMOST_MAX_FLOAT.negate()).divide(3);
         try {
             belowNegativeMax.floatValueExact();
             fail();
@@ -1687,12 +1680,8 @@ public class RationalTest {
             fail();
         } catch (ArithmeticException ignored) {}
         Rational aboveMax = LARGEST_FLOAT.add(ONE);
-        Rational maxPredecessor = ofExact(FloatingPointUtils.predecessor(Float.MAX_VALUE));
-        if (maxPredecessor == null) {
-            fail();
-        }
-        Rational halfBelowMax = LARGEST_FLOAT.add(maxPredecessor).divide(2);
-        Rational justBelowMax = LARGEST_FLOAT.multiply(2).add(maxPredecessor).divide(3);
+        Rational halfBelowMax = LARGEST_FLOAT.add(ALMOST_MAX_FLOAT).divide(2);
+        Rational justBelowMax = LARGEST_FLOAT.multiply(2).add(ALMOST_MAX_FLOAT).divide(3);
         try {
             aboveMax.floatValueExact();
             fail();
@@ -1812,18 +1801,14 @@ public class RationalTest {
             almostOne.doubleValue(RoundingMode.UNNECESSARY);
             fail();
         } catch (ArithmeticException ignored) {}
-        Rational pi = ofExact(Math.PI);
-        if (pi == null) {
-            fail();
-        }
-        aeq(pi.doubleValue(RoundingMode.FLOOR), 3.141592653589793);
-        aeq(pi.doubleValue(RoundingMode.CEILING), 3.141592653589793);
-        aeq(pi.doubleValue(RoundingMode.DOWN), 3.141592653589793);
-        aeq(pi.doubleValue(RoundingMode.UP), 3.141592653589793);
-        aeq(pi.doubleValue(RoundingMode.HALF_DOWN), 3.141592653589793);
-        aeq(pi.doubleValue(RoundingMode.HALF_UP), 3.141592653589793);
-        aeq(pi.doubleValue(RoundingMode.HALF_EVEN), 3.141592653589793);
-        aeq(pi.doubleValue(RoundingMode.UNNECESSARY), 3.141592653589793);
+        aeq(PI_DOUBLE.doubleValue(RoundingMode.FLOOR), 3.141592653589793);
+        aeq(PI_DOUBLE.doubleValue(RoundingMode.CEILING), 3.141592653589793);
+        aeq(PI_DOUBLE.doubleValue(RoundingMode.DOWN), 3.141592653589793);
+        aeq(PI_DOUBLE.doubleValue(RoundingMode.UP), 3.141592653589793);
+        aeq(PI_DOUBLE.doubleValue(RoundingMode.HALF_DOWN), 3.141592653589793);
+        aeq(PI_DOUBLE.doubleValue(RoundingMode.HALF_UP), 3.141592653589793);
+        aeq(PI_DOUBLE.doubleValue(RoundingMode.HALF_EVEN), 3.141592653589793);
+        aeq(PI_DOUBLE.doubleValue(RoundingMode.UNNECESSARY), 3.141592653589793);
         Rational googol = of(BigInteger.TEN.pow(100));
         aeq(googol.doubleValue(RoundingMode.FLOOR), 9.999999999999998E99);
         aeq(googol.doubleValue(RoundingMode.CEILING), 1.0E100);
@@ -1836,18 +1821,10 @@ public class RationalTest {
             googol.doubleValue(RoundingMode.UNNECESSARY);
             fail();
         } catch (ArithmeticException ignored) {}
-        Rational piSuccessor = ofExact(FloatingPointUtils.successor(Math.PI));
-        if (piSuccessor == null) {
-            fail();
-        }
-        Rational piPredecessor = ofExact(FloatingPointUtils.predecessor(Math.PI));
-        if (piPredecessor == null) {
-            fail();
-        }
-        Rational halfAbovePi = pi.add(piSuccessor).divide(2);
-        Rational halfBelowPi = pi.add(piPredecessor).divide(2);
-        Rational justAbovePi = pi.multiply(2).add(piSuccessor).divide(3);
-        Rational justBelowPi = pi.multiply(2).add(piPredecessor).divide(3);
+        Rational halfAbovePi = PI_DOUBLE.add(PI_SUCCESSOR_DOUBLE).divide(2);
+        Rational halfBelowPi = PI_DOUBLE.add(PI_PREDECESSOR_DOUBLE).divide(2);
+        Rational justAbovePi = PI_DOUBLE.multiply(2).add(PI_SUCCESSOR_DOUBLE).divide(3);
+        Rational justBelowPi = PI_DOUBLE.multiply(2).add(PI_PREDECESSOR_DOUBLE).divide(3);
         aeq(halfAbovePi.doubleValue(RoundingMode.FLOOR), 3.141592653589793);
         aeq(halfAbovePi.doubleValue(RoundingMode.CEILING), 3.1415926535897936);
         aeq(halfAbovePi.doubleValue(RoundingMode.DOWN), 3.141592653589793);
@@ -1892,30 +1869,18 @@ public class RationalTest {
             justBelowPi.doubleValue(RoundingMode.UNNECESSARY);
             fail();
         } catch (ArithmeticException ignored) {}
-        Rational subnormal = ofExact(1.0e-310);
-        if (subnormal == null) {
-            fail();
-        }
-        Rational subnormalSuccessor = ofExact(FloatingPointUtils.successor(1.0e-310));
-        if (subnormalSuccessor == null) {
-            fail();
-        }
-        Rational subnormalPredecessor = ofExact(FloatingPointUtils.predecessor(1.0e-310));
-        if (subnormalPredecessor == null) {
-            fail();
-        }
-        Rational halfAboveSubnormal = subnormal.add(subnormalSuccessor).divide(2);
-        Rational halfBelowSubnormal = subnormal.add(subnormalPredecessor).divide(2);
-        Rational justAboveSubnormal = subnormal.multiply(2).add(subnormalSuccessor).divide(3);
-        Rational justBelowSubnormal = subnormal.multiply(2).add(subnormalPredecessor).divide(3);
-        aeq(subnormal.doubleValue(RoundingMode.FLOOR), 1.0E-310);
-        aeq(subnormal.doubleValue(RoundingMode.CEILING), 1.0E-310);
-        aeq(subnormal.doubleValue(RoundingMode.DOWN), 1.0E-310);
-        aeq(subnormal.doubleValue(RoundingMode.UP), 1.0E-310);
-        aeq(subnormal.doubleValue(RoundingMode.HALF_DOWN), 1.0E-310);
-        aeq(subnormal.doubleValue(RoundingMode.HALF_UP), 1.0E-310);
-        aeq(subnormal.doubleValue(RoundingMode.HALF_EVEN), 1.0E-310);
-        aeq(subnormal.doubleValue(RoundingMode.UNNECESSARY), 1.0E-310);
+        Rational halfAboveSubnormal = SUBNORMAL_DOUBLE.add(SUBNORMAL_SUCCESSOR_DOUBLE).divide(2);
+        Rational halfBelowSubnormal = SUBNORMAL_DOUBLE.add(SUBNORMAL_PREDECESSOR_DOUBLE).divide(2);
+        Rational justAboveSubnormal = SUBNORMAL_DOUBLE.multiply(2).add(SUBNORMAL_SUCCESSOR_DOUBLE).divide(3);
+        Rational justBelowSubnormal = SUBNORMAL_DOUBLE.multiply(2).add(SUBNORMAL_PREDECESSOR_DOUBLE).divide(3);
+        aeq(SUBNORMAL_DOUBLE.doubleValue(RoundingMode.FLOOR), 1.0E-310);
+        aeq(SUBNORMAL_DOUBLE.doubleValue(RoundingMode.CEILING), 1.0E-310);
+        aeq(SUBNORMAL_DOUBLE.doubleValue(RoundingMode.DOWN), 1.0E-310);
+        aeq(SUBNORMAL_DOUBLE.doubleValue(RoundingMode.UP), 1.0E-310);
+        aeq(SUBNORMAL_DOUBLE.doubleValue(RoundingMode.HALF_DOWN), 1.0E-310);
+        aeq(SUBNORMAL_DOUBLE.doubleValue(RoundingMode.HALF_UP), 1.0E-310);
+        aeq(SUBNORMAL_DOUBLE.doubleValue(RoundingMode.HALF_EVEN), 1.0E-310);
+        aeq(SUBNORMAL_DOUBLE.doubleValue(RoundingMode.UNNECESSARY), 1.0E-310);
         aeq(halfAboveSubnormal.doubleValue(RoundingMode.FLOOR), 1.0E-310);
         aeq(halfAboveSubnormal.doubleValue(RoundingMode.CEILING), 1.00000000000005E-310);
         aeq(halfAboveSubnormal.doubleValue(RoundingMode.DOWN), 1.0E-310);
@@ -1961,12 +1926,8 @@ public class RationalTest {
             fail();
         } catch (ArithmeticException ignored) {}
         Rational belowNegativeMax = LARGEST_DOUBLE.negate().subtract(ONE);
-        Rational negativeMaxSuccessor = ofExact(FloatingPointUtils.successor(-Double.MAX_VALUE));
-        if (negativeMaxSuccessor == null) {
-            fail();
-        }
-        Rational halfAboveNegativeMax = LARGEST_DOUBLE.negate().add(negativeMaxSuccessor).divide(2);
-        Rational justAboveNegativeMax = LARGEST_DOUBLE.negate().multiply(2).add(negativeMaxSuccessor).divide(3);
+        Rational halfAboveNegativeMax = LARGEST_DOUBLE.negate().add(ALMOST_MAX_DOUBLE.negate()).divide(2);
+        Rational justAboveNegativeMax = LARGEST_DOUBLE.negate().multiply(2).add(ALMOST_MAX_DOUBLE.negate()).divide(3);
         aeq(belowNegativeMax.doubleValue(RoundingMode.FLOOR), Double.NEGATIVE_INFINITY);
         aeq(belowNegativeMax.doubleValue(RoundingMode.CEILING), -1.7976931348623157E308);
         aeq(belowNegativeMax.doubleValue(RoundingMode.DOWN), -1.7976931348623157E308);
@@ -2001,12 +1962,8 @@ public class RationalTest {
             fail();
         } catch (ArithmeticException ignored) {}
         Rational aboveMax = LARGEST_DOUBLE.add(ONE);
-        Rational maxPredecessor = ofExact(FloatingPointUtils.predecessor(Double.MAX_VALUE));
-        if (maxPredecessor == null) {
-            fail();
-        }
-        Rational halfBelowMax = LARGEST_DOUBLE.add(maxPredecessor).divide(2);
-        Rational justBelowMax = LARGEST_DOUBLE.multiply(2).add(maxPredecessor).divide(3);
+        Rational halfBelowMax = LARGEST_DOUBLE.add(ALMOST_MAX_DOUBLE).divide(2);
+        Rational justBelowMax = LARGEST_DOUBLE.multiply(2).add(ALMOST_MAX_DOUBLE).divide(3);
         aeq(aboveMax.doubleValue(RoundingMode.FLOOR), 1.7976931348623157E308);
         aeq(aboveMax.doubleValue(RoundingMode.CEILING), Double.POSITIVE_INFINITY);
         aeq(aboveMax.doubleValue(RoundingMode.DOWN), 1.7976931348623157E308);
@@ -2159,67 +2116,35 @@ public class RationalTest {
         aeq(read("-1/3").get().doubleValue(), -0.3333333333333333);
         Rational almostOne = of(BigInteger.TEN.pow(1000).subtract(BigInteger.ONE), BigInteger.TEN.pow(1000));
         aeq(almostOne.doubleValue(), 1.0);
-        Rational pi = ofExact(Math.PI);
-        if (pi == null) {
-            fail();
-        }
-        aeq(pi.doubleValue(), 3.141592653589793);
+        aeq(PI_DOUBLE.doubleValue(), 3.141592653589793);
         Rational googol = of(BigInteger.TEN.pow(100));
         aeq(googol.doubleValue(), 1.0E100);
-        Rational piSuccessor = ofExact(FloatingPointUtils.successor(Math.PI));
-        if (piSuccessor == null) {
-            fail();
-        }
-        Rational piPredecessor = ofExact(FloatingPointUtils.predecessor(Math.PI));
-        if (piPredecessor == null) {
-            fail();
-        }
-        Rational halfAbovePi = pi.add(piSuccessor).divide(2);
-        Rational halfBelowPi = pi.add(piPredecessor).divide(2);
-        Rational justAbovePi = pi.multiply(2).add(piSuccessor).divide(3);
-        Rational justBelowPi = pi.multiply(2).add(piPredecessor).divide(3);
+        Rational halfAbovePi = PI_DOUBLE.add(PI_SUCCESSOR_DOUBLE).divide(2);
+        Rational halfBelowPi = PI_DOUBLE.add(PI_PREDECESSOR_DOUBLE).divide(2);
+        Rational justAbovePi = PI_DOUBLE.multiply(2).add(PI_SUCCESSOR_DOUBLE).divide(3);
+        Rational justBelowPi = PI_DOUBLE.multiply(2).add(PI_PREDECESSOR_DOUBLE).divide(3);
         aeq(halfAbovePi.doubleValue(), 3.141592653589793);
         aeq(halfBelowPi.doubleValue(), 3.141592653589793);
         aeq(justAbovePi.doubleValue(), 3.141592653589793);
         aeq(justBelowPi.doubleValue(), 3.141592653589793);
-        Rational subnormal = ofExact(1.0e-310);
-        if (subnormal == null) {
-            fail();
-        }
-        Rational subnormalSuccessor = ofExact(FloatingPointUtils.successor(1.0e-310));
-        if (subnormalSuccessor == null) {
-            fail();
-        }
-        Rational subnormalPredecessor = ofExact(FloatingPointUtils.predecessor(1.0e-310));
-        if (subnormalPredecessor == null) {
-            fail();
-        }
-        Rational halfAboveSubnormal = subnormal.add(subnormalSuccessor).divide(2);
-        Rational halfBelowSubnormal = subnormal.add(subnormalPredecessor).divide(2);
-        Rational justAboveSubnormal = subnormal.multiply(2).add(subnormalSuccessor).divide(3);
-        Rational justBelowSubnormal = subnormal.multiply(2).add(subnormalPredecessor).divide(3);
-        aeq(subnormal.doubleValue(), 1.0E-310);
+        Rational halfAboveSubnormal = SUBNORMAL_DOUBLE.add(SUBNORMAL_SUCCESSOR_DOUBLE).divide(2);
+        Rational halfBelowSubnormal = SUBNORMAL_DOUBLE.add(SUBNORMAL_PREDECESSOR_DOUBLE).divide(2);
+        Rational justAboveSubnormal = SUBNORMAL_DOUBLE.multiply(2).add(SUBNORMAL_SUCCESSOR_DOUBLE).divide(3);
+        Rational justBelowSubnormal = SUBNORMAL_DOUBLE.multiply(2).add(SUBNORMAL_PREDECESSOR_DOUBLE).divide(3);
+        aeq(SUBNORMAL_DOUBLE.doubleValue(), 1.0E-310);
         aeq(halfAboveSubnormal.doubleValue(), 1.00000000000005E-310);
         aeq(halfBelowSubnormal.doubleValue(), 9.9999999999995E-311);
         aeq(justAboveSubnormal.doubleValue(), 1.0E-310);
         aeq(justBelowSubnormal.doubleValue(), 1.0E-310);
         Rational belowNegativeMax = LARGEST_DOUBLE.negate().subtract(ONE);
-        Rational negativeMaxSuccessor = ofExact(FloatingPointUtils.successor(-Double.MAX_VALUE));
-        if (negativeMaxSuccessor == null) {
-            fail();
-        }
-        Rational halfAboveNegativeMax = LARGEST_DOUBLE.negate().add(negativeMaxSuccessor).divide(2);
-        Rational justAboveNegativeMax = LARGEST_DOUBLE.negate().multiply(2).add(negativeMaxSuccessor).divide(3);
+        Rational halfAboveNegativeMax = LARGEST_DOUBLE.negate().add(ALMOST_MAX_DOUBLE.negate()).divide(2);
+        Rational justAboveNegativeMax = LARGEST_DOUBLE.negate().multiply(2).add(ALMOST_MAX_DOUBLE.negate()).divide(3);
         aeq(belowNegativeMax.doubleValue(), Double.NEGATIVE_INFINITY);
         aeq(halfAboveNegativeMax.doubleValue(), -1.7976931348623155E308);
         aeq(justAboveNegativeMax.doubleValue(), -1.7976931348623157E308);
         Rational aboveMax = LARGEST_DOUBLE.add(ONE);
-        Rational maxPredecessor = ofExact(FloatingPointUtils.predecessor(Double.MAX_VALUE));
-        if (maxPredecessor == null) {
-            fail();
-        }
-        Rational halfBelowMax = LARGEST_DOUBLE.add(maxPredecessor).divide(2);
-        Rational justBelowMax = LARGEST_DOUBLE.multiply(2).add(maxPredecessor).divide(3);
+        Rational halfBelowMax = LARGEST_DOUBLE.add(ALMOST_MAX_DOUBLE).divide(2);
+        Rational justBelowMax = LARGEST_DOUBLE.multiply(2).add(ALMOST_MAX_DOUBLE).divide(3);
         aeq(aboveMax.doubleValue(), Double.POSITIVE_INFINITY);
         aeq(halfBelowMax.doubleValue(), 1.7976931348623155E308);
         aeq(justBelowMax.doubleValue(), 1.7976931348623157E308);
@@ -2261,28 +2186,16 @@ public class RationalTest {
             almostOne.doubleValueExact();
             fail();
         } catch (ArithmeticException ignored) {}
-        Rational pi = ofExact(Math.PI);
-        if (pi == null) {
-            fail();
-        }
-        aeq(pi.doubleValueExact(), 3.141592653589793);
+        aeq(PI_DOUBLE.doubleValueExact(), 3.141592653589793);
         Rational googol = of(BigInteger.TEN.pow(100));
         try {
             googol.doubleValueExact();
             fail();
         } catch (ArithmeticException ignored) {}
-        Rational piSuccessor = ofExact(FloatingPointUtils.successor(Math.PI));
-        if (piSuccessor == null) {
-            fail();
-        }
-        Rational piPredecessor = ofExact(FloatingPointUtils.predecessor(Math.PI));
-        if (piPredecessor == null) {
-            fail();
-        }
-        Rational halfAbovePi = pi.add(piSuccessor).divide(2);
-        Rational halfBelowPi = pi.add(piPredecessor).divide(2);
-        Rational justAbovePi = pi.multiply(2).add(piSuccessor).divide(3);
-        Rational justBelowPi = pi.multiply(2).add(piPredecessor).divide(3);
+        Rational halfAbovePi = PI_DOUBLE.add(PI_SUCCESSOR_DOUBLE).divide(2);
+        Rational halfBelowPi = PI_DOUBLE.add(PI_PREDECESSOR_DOUBLE).divide(2);
+        Rational justAbovePi = PI_DOUBLE.multiply(2).add(PI_SUCCESSOR_DOUBLE).divide(3);
+        Rational justBelowPi = PI_DOUBLE.multiply(2).add(PI_PREDECESSOR_DOUBLE).divide(3);
         try {
             halfAbovePi.doubleValueExact();
             fail();
@@ -2299,23 +2212,11 @@ public class RationalTest {
             justBelowPi.doubleValueExact();
             fail();
         } catch (ArithmeticException ignored) {}
-        Rational subnormal = ofExact(1.0e-310);
-        if (subnormal == null) {
-            fail();
-        }
-        Rational subnormalSuccessor = ofExact(FloatingPointUtils.successor(1.0e-310));
-        if (subnormalSuccessor == null) {
-            fail();
-        }
-        Rational subnormalPredecessor = ofExact(FloatingPointUtils.predecessor(1.0e-310));
-        if (subnormalPredecessor == null) {
-            fail();
-        }
-        Rational halfAboveSubnormal = subnormal.add(subnormalSuccessor).divide(2);
-        Rational halfBelowSubnormal = subnormal.add(subnormalPredecessor).divide(2);
-        Rational justAboveSubnormal = subnormal.multiply(2).add(subnormalSuccessor).divide(3);
-        Rational justBelowSubnormal = subnormal.multiply(2).add(subnormalPredecessor).divide(3);
-        aeq(subnormal.doubleValueExact(), 1.0E-310);
+        Rational halfAboveSubnormal = SUBNORMAL_DOUBLE.add(SUBNORMAL_SUCCESSOR_DOUBLE).divide(2);
+        Rational halfBelowSubnormal = SUBNORMAL_DOUBLE.add(SUBNORMAL_PREDECESSOR_DOUBLE).divide(2);
+        Rational justAboveSubnormal = SUBNORMAL_DOUBLE.multiply(2).add(SUBNORMAL_SUCCESSOR_DOUBLE).divide(3);
+        Rational justBelowSubnormal = SUBNORMAL_DOUBLE.multiply(2).add(SUBNORMAL_PREDECESSOR_DOUBLE).divide(3);
+        aeq(SUBNORMAL_DOUBLE.doubleValueExact(), 1.0E-310);
         try {
             halfAboveSubnormal.doubleValueExact();
             fail();
@@ -2333,12 +2234,8 @@ public class RationalTest {
             fail();
         } catch (ArithmeticException ignored) {}
         Rational belowNegativeMax = LARGEST_DOUBLE.negate().subtract(ONE);
-        Rational negativeMaxSuccessor = ofExact(FloatingPointUtils.successor(-Double.MAX_VALUE));
-        if (negativeMaxSuccessor == null) {
-            fail();
-        }
-        Rational halfAboveNegativeMax = LARGEST_DOUBLE.negate().add(negativeMaxSuccessor).divide(2);
-        Rational justAboveNegativeMax = LARGEST_DOUBLE.negate().multiply(2).add(negativeMaxSuccessor).divide(3);
+        Rational halfAboveNegativeMax = LARGEST_DOUBLE.negate().add(ALMOST_MAX_DOUBLE.negate()).divide(2);
+        Rational justAboveNegativeMax = LARGEST_DOUBLE.negate().multiply(2).add(ALMOST_MAX_DOUBLE.negate()).divide(3);
         try {
             belowNegativeMax.doubleValueExact();
             fail();
@@ -2352,12 +2249,8 @@ public class RationalTest {
             fail();
         } catch (ArithmeticException ignored) {}
         Rational aboveMax = LARGEST_DOUBLE.add(ONE);
-        Rational maxPredecessor = ofExact(FloatingPointUtils.predecessor(Double.MAX_VALUE));
-        if (maxPredecessor == null) {
-            fail();
-        }
-        Rational halfBelowMax = LARGEST_DOUBLE.add(maxPredecessor).divide(2);
-        Rational justBelowMax = LARGEST_DOUBLE.multiply(2).add(maxPredecessor).divide(3);
+        Rational halfBelowMax = LARGEST_DOUBLE.add(ALMOST_MAX_DOUBLE).divide(2);
+        Rational justBelowMax = LARGEST_DOUBLE.multiply(2).add(ALMOST_MAX_DOUBLE).divide(3);
         try {
             aboveMax.doubleValueExact();
             fail();
@@ -2778,6 +2671,9 @@ public class RationalTest {
     public void testDelta() {
         aeqit(delta(readRationalList("[3]")), "[]");
         aeqit(delta(readRationalList("[31/10, 41/10, 59/10, 23/10]")), "[1, 9/5, -18/5]");
+        aeqitLimit(TINY_LIMIT, delta(map(i -> of(i).invert(), rangeUp(1))),
+                "[-1/2, -1/6, -1/12, -1/20, -1/30, -1/42, -1/56, -1/72, -1/90, -1/110, -1/132, -1/156, -1/182," +
+                " -1/210, -1/240, -1/272, -1/306, -1/342, -1/380, -1/420, ...]");
         try {
             delta(readRationalList("[]"));
             fail();
@@ -2899,33 +2795,29 @@ public class RationalTest {
 
     @Test
     public void testRoundToDenominator() {
-        Rational doublePi = ofExact(Math.PI);
-        if (doublePi == null) {
-            fail();
-        }
-        aeq(doublePi.roundToDenominator(BigInteger.ONE, RoundingMode.HALF_EVEN), "3");
-        aeq(doublePi.roundToDenominator(BigInteger.valueOf(2), RoundingMode.HALF_EVEN), "3");
-        aeq(doublePi.roundToDenominator(BigInteger.valueOf(3), RoundingMode.HALF_EVEN), "3");
-        aeq(doublePi.roundToDenominator(BigInteger.valueOf(4), RoundingMode.HALF_EVEN), "13/4");
-        aeq(doublePi.roundToDenominator(BigInteger.valueOf(5), RoundingMode.HALF_EVEN), "16/5");
-        aeq(doublePi.roundToDenominator(BigInteger.valueOf(6), RoundingMode.HALF_EVEN), "19/6");
-        aeq(doublePi.roundToDenominator(BigInteger.valueOf(7), RoundingMode.HALF_EVEN), "22/7");
-        aeq(doublePi.roundToDenominator(BigInteger.valueOf(8), RoundingMode.HALF_EVEN), "25/8");
-        aeq(doublePi.roundToDenominator(BigInteger.valueOf(9), RoundingMode.HALF_EVEN), "28/9");
-        aeq(doublePi.roundToDenominator(BigInteger.valueOf(10), RoundingMode.HALF_EVEN), "31/10");
-        aeq(doublePi.roundToDenominator(BigInteger.valueOf(100), RoundingMode.HALF_EVEN), "157/50");
-        aeq(doublePi.roundToDenominator(BigInteger.valueOf(1000), RoundingMode.HALF_EVEN), "1571/500");
+        aeq(PI_DOUBLE.roundToDenominator(BigInteger.ONE, RoundingMode.HALF_EVEN), "3");
+        aeq(PI_DOUBLE.roundToDenominator(IntegerUtils.TWO, RoundingMode.HALF_EVEN), "3");
+        aeq(PI_DOUBLE.roundToDenominator(BigInteger.valueOf(3), RoundingMode.HALF_EVEN), "3");
+        aeq(PI_DOUBLE.roundToDenominator(BigInteger.valueOf(4), RoundingMode.HALF_EVEN), "13/4");
+        aeq(PI_DOUBLE.roundToDenominator(BigInteger.valueOf(5), RoundingMode.HALF_EVEN), "16/5");
+        aeq(PI_DOUBLE.roundToDenominator(BigInteger.valueOf(6), RoundingMode.HALF_EVEN), "19/6");
+        aeq(PI_DOUBLE.roundToDenominator(BigInteger.valueOf(7), RoundingMode.HALF_EVEN), "22/7");
+        aeq(PI_DOUBLE.roundToDenominator(BigInteger.valueOf(8), RoundingMode.HALF_EVEN), "25/8");
+        aeq(PI_DOUBLE.roundToDenominator(BigInteger.valueOf(9), RoundingMode.HALF_EVEN), "28/9");
+        aeq(PI_DOUBLE.roundToDenominator(BigInteger.TEN, RoundingMode.HALF_EVEN), "31/10");
+        aeq(PI_DOUBLE.roundToDenominator(BigInteger.valueOf(100), RoundingMode.HALF_EVEN), "157/50");
+        aeq(PI_DOUBLE.roundToDenominator(BigInteger.valueOf(1000), RoundingMode.HALF_EVEN), "1571/500");
         aeq(read("3/10").get().roundToDenominator(BigInteger.valueOf(30), RoundingMode.UNNECESSARY), "3/10");
         try {
-            doublePi.roundToDenominator(BigInteger.ZERO, RoundingMode.HALF_EVEN);
+            PI_DOUBLE.roundToDenominator(BigInteger.ZERO, RoundingMode.HALF_EVEN);
             fail();
         } catch (ArithmeticException ignored) {}
         try {
-            doublePi.roundToDenominator(BigInteger.valueOf(-1), RoundingMode.HALF_EVEN);
+            PI_DOUBLE.roundToDenominator(IntegerUtils.NEGATIVE_ONE, RoundingMode.HALF_EVEN);
             fail();
         } catch (ArithmeticException ignored) {}
         try {
-            doublePi.roundToDenominator(BigInteger.valueOf(7), RoundingMode.UNNECESSARY);
+            PI_DOUBLE.roundToDenominator(BigInteger.valueOf(7), RoundingMode.UNNECESSARY);
             fail();
         } catch (ArithmeticException ignored) {}
     }
@@ -2940,20 +2832,20 @@ public class RationalTest {
         aeq(read("-1/2").get().continuedFraction(), "[-1, 2]");
         aeq(read("415/93").get().continuedFraction(), "[4, 2, 6, 7]");
         aeq(read("-415/93").get().continuedFraction(), "[-5, 1, 1, 6, 7]");
-        aeq(ofExact(Math.sqrt(2)).continuedFraction(),
+        aeq(ofExact(Math.sqrt(2)).get().continuedFraction(),
                 "[1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 2, 7, 1, 2, 33, 2, 7, 5," +
                 " 2, 1, 1, 16, 2]");
-        aeq(ofExact(-Math.sqrt(2)).continuedFraction(),
+        aeq(ofExact(-Math.sqrt(2)).get().continuedFraction(),
                 "[-2, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 2, 7, 1, 2, 33, 2, 7," +
                 " 5, 2, 1, 1, 16, 2]");
-        aeq(ofExact(Math.PI).continuedFraction(),
+        aeq(PI_DOUBLE.continuedFraction(),
                 "[3, 7, 15, 1, 292, 1, 1, 1, 2, 1, 3, 1, 14, 3, 3, 2, 1, 3, 3, 7, 2, 1, 1, 3, 2, 42, 2]");
-        aeq(ofExact(-Math.PI).continuedFraction(),
+        aeq(PI_DOUBLE.negate().continuedFraction(),
                 "[-4, 1, 6, 15, 1, 292, 1, 1, 1, 2, 1, 3, 1, 14, 3, 3, 2, 1, 3, 3, 7, 2, 1, 1, 3, 2, 42, 2]");
-        aeq(ofExact(Math.E).continuedFraction(),
+        aeq(ofExact(Math.E).get().continuedFraction(),
                 "[2, 1, 2, 1, 1, 4, 1, 1, 6, 1, 1, 8, 1, 1, 10, 1, 1, 12, 1, 1, 11, 1, 1, 1, 11, 5, 1, 1, 2, 1, 4," +
                 " 2, 1, 1, 9, 17, 3]");
-        aeq(ofExact(-Math.E).continuedFraction(),
+        aeq(ofExact(-Math.E).get().continuedFraction(),
                 "[-3, 3, 1, 1, 4, 1, 1, 6, 1, 1, 8, 1, 1, 10, 1, 1, 12, 1, 1, 11, 1, 1, 1, 11, 5, 1, 1, 2, 1, 4, 2," +
                 " 1, 1, 9, 17, 3]");
     }
@@ -2979,7 +2871,7 @@ public class RationalTest {
     }
 
     private static void convergentsHelper(double x, @NotNull String output) {
-        Iterable<Rational> convergents = ofExact(x).convergents();
+        Iterable<Rational> convergents = ofExact(x).get().convergents();
         convergents.forEach(Rational::validate);
         aeqit(convergents, output);
     }
@@ -3049,48 +2941,48 @@ public class RationalTest {
 
     @Test
     public void testPositionalNotation() {
-        aeq(ZERO.positionalNotation(BigInteger.valueOf(2)), "([], [], [0])");
+        aeq(ZERO.positionalNotation(IntegerUtils.TWO), "([], [], [0])");
         aeq(ZERO.positionalNotation(BigInteger.valueOf(3)), "([], [], [0])");
         aeq(ZERO.positionalNotation(BigInteger.valueOf(4)), "([], [], [0])");
-        aeq(ZERO.positionalNotation(BigInteger.valueOf(10)), "([], [], [0])");
+        aeq(ZERO.positionalNotation(BigInteger.TEN), "([], [], [0])");
         aeq(ZERO.positionalNotation(BigInteger.valueOf(16)), "([], [], [0])");
         aeq(ZERO.positionalNotation(BigInteger.valueOf(83)), "([], [], [0])");
         aeq(ZERO.positionalNotation(BigInteger.valueOf(100)), "([], [], [0])");
-        aeq(ONE.positionalNotation(BigInteger.valueOf(2)), "([1], [], [0])");
+        aeq(ONE.positionalNotation(IntegerUtils.TWO), "([1], [], [0])");
         aeq(ONE.positionalNotation(BigInteger.valueOf(3)), "([1], [], [0])");
         aeq(ONE.positionalNotation(BigInteger.valueOf(4)), "([1], [], [0])");
-        aeq(ONE.positionalNotation(BigInteger.valueOf(10)), "([1], [], [0])");
+        aeq(ONE.positionalNotation(BigInteger.TEN), "([1], [], [0])");
         aeq(ONE.positionalNotation(BigInteger.valueOf(16)), "([1], [], [0])");
         aeq(ONE.positionalNotation(BigInteger.valueOf(83)), "([1], [], [0])");
         aeq(ONE.positionalNotation(BigInteger.valueOf(100)), "([1], [], [0])");
-        aeq(read("1/2").get().positionalNotation(BigInteger.valueOf(2)), "([], [1], [0])");
+        aeq(read("1/2").get().positionalNotation(IntegerUtils.TWO), "([], [1], [0])");
         aeq(read("1/2").get().positionalNotation(BigInteger.valueOf(3)), "([], [], [1])");
         aeq(read("1/2").get().positionalNotation(BigInteger.valueOf(4)), "([], [2], [0])");
-        aeq(read("1/2").get().positionalNotation(BigInteger.valueOf(10)), "([], [5], [0])");
+        aeq(read("1/2").get().positionalNotation(BigInteger.TEN), "([], [5], [0])");
         aeq(read("1/2").get().positionalNotation(BigInteger.valueOf(16)), "([], [8], [0])");
         aeq(read("1/2").get().positionalNotation(BigInteger.valueOf(83)), "([], [], [41])");
         aeq(read("1/2").get().positionalNotation(BigInteger.valueOf(100)), "([], [50], [0])");
-        aeq(read("1/3").get().positionalNotation(BigInteger.valueOf(2)), "([], [], [0, 1])");
+        aeq(read("1/3").get().positionalNotation(IntegerUtils.TWO), "([], [], [0, 1])");
         aeq(read("1/3").get().positionalNotation(BigInteger.valueOf(3)), "([], [1], [0])");
         aeq(read("1/3").get().positionalNotation(BigInteger.valueOf(4)), "([], [], [1])");
-        aeq(read("1/3").get().positionalNotation(BigInteger.valueOf(10)), "([], [], [3])");
+        aeq(read("1/3").get().positionalNotation(BigInteger.TEN), "([], [], [3])");
         aeq(read("1/3").get().positionalNotation(BigInteger.valueOf(16)), "([], [], [5])");
         aeq(read("1/3").get().positionalNotation(BigInteger.valueOf(83)), "([], [], [27, 55])");
         aeq(read("1/3").get().positionalNotation(BigInteger.valueOf(100)), "([], [], [33])");
-        aeq(read("1/7").get().positionalNotation(BigInteger.valueOf(2)), "([], [], [0, 0, 1])");
+        aeq(read("1/7").get().positionalNotation(IntegerUtils.TWO), "([], [], [0, 0, 1])");
         aeq(read("1/7").get().positionalNotation(BigInteger.valueOf(3)), "([], [], [0, 1, 0, 2, 1, 2])");
         aeq(read("1/7").get().positionalNotation(BigInteger.valueOf(4)), "([], [], [0, 2, 1])");
-        aeq(read("1/7").get().positionalNotation(BigInteger.valueOf(10)), "([], [], [1, 4, 2, 8, 5, 7])");
+        aeq(read("1/7").get().positionalNotation(BigInteger.TEN), "([], [], [1, 4, 2, 8, 5, 7])");
         aeq(read("1/7").get().positionalNotation(BigInteger.valueOf(16)), "([], [], [2, 4, 9])");
         aeq(read("1/7").get().positionalNotation(BigInteger.valueOf(83)), "([], [], [11, 71])");
         aeq(read("1/7").get().positionalNotation(BigInteger.valueOf(100)), "([], [], [14, 28, 57])");
-        aeq(read("415/93").get().positionalNotation(BigInteger.valueOf(2)),
+        aeq(read("415/93").get().positionalNotation(IntegerUtils.TWO),
                 "([1, 0, 0], [], [0, 1, 1, 1, 0, 1, 1, 0, 0, 1])");
         aeq(read("415/93").get().positionalNotation(BigInteger.valueOf(3)),
                 "([1, 1], [1]," +
                 " [1, 0, 1, 1, 1, 0, 0, 1, 2, 0, 2, 0, 0, 0, 2, 1, 2, 1, 1, 1, 2, 2, 1, 0, 2, 0, 2, 2, 2, 0])");
         aeq(read("415/93").get().positionalNotation(BigInteger.valueOf(4)), "([1, 0], [], [1, 3, 1, 2, 1])");
-        aeq(read("415/93").get().positionalNotation(BigInteger.valueOf(10)),
+        aeq(read("415/93").get().positionalNotation(BigInteger.TEN),
                 "([4], [], [4, 6, 2, 3, 6, 5, 5, 9, 1, 3, 9, 7, 8, 4, 9])");
         aeq(read("415/93").get().positionalNotation(BigInteger.valueOf(16)), "([4], [], [7, 6, 5, 13, 9])");
         aeq(read("415/93").get().positionalNotation(BigInteger.valueOf(83)),
@@ -3099,27 +2991,26 @@ public class RationalTest {
                 " 33, 1, 65, 12, 41, 4])");
         aeq(read("415/93").get().positionalNotation(BigInteger.valueOf(100)),
                 "([4], [], [46, 23, 65, 59, 13, 97, 84, 94, 62, 36, 55, 91, 39, 78, 49])");
-        Rational approxPi = ofExact(Math.PI);
-        aeq(approxPi.positionalNotation(BigInteger.valueOf(2)),
+        aeq(PI_DOUBLE.positionalNotation(IntegerUtils.TWO),
                 "([1, 1]," +
                 " [0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0," +
                 " 1, 0, 0, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 0, 1, 1], [0])");
-        aeq(approxPi.positionalNotation(BigInteger.valueOf(4)),
+        aeq(PI_DOUBLE.positionalNotation(BigInteger.valueOf(4)),
                 "([3], [0, 2, 1, 0, 0, 3, 3, 3, 1, 2, 2, 2, 2, 0, 2, 0, 2, 0, 1, 1, 2, 2, 0, 3], [0])");
-        aeq(approxPi.positionalNotation(BigInteger.valueOf(10)),
+        aeq(PI_DOUBLE.positionalNotation(BigInteger.TEN),
                 "([3], [1, 4, 1, 5, 9, 2, 6, 5, 3, 5, 8, 9, 7, 9, 3, 1, 1, 5, 9, 9, 7, 9, 6, 3, 4, 6, 8, 5, 4, 4, 1," +
                 " 8, 5, 1, 6, 1, 5, 9, 0, 5, 7, 6, 1, 7, 1, 8, 7, 5], [0])");
-        aeq(approxPi.positionalNotation(BigInteger.valueOf(16)),
+        aeq(PI_DOUBLE.positionalNotation(BigInteger.valueOf(16)),
                 "([3], [2, 4, 3, 15, 6, 10, 8, 8, 8, 5, 10, 3], [0])");
-        aeq(approxPi.positionalNotation(BigInteger.valueOf(100)),
+        aeq(PI_DOUBLE.positionalNotation(BigInteger.valueOf(100)),
                 "([3]," +
                 " [14, 15, 92, 65, 35, 89, 79, 31, 15, 99, 79, 63, 46, 85, 44, 18, 51, 61, 59, 5, 76, 17, 18, 75]," +
                 " [0])");
-        aeq(read("299/56").get().positionalNotation(BigInteger.valueOf(2)), "([1, 0, 1], [0, 1, 0], [1, 0, 1])");
+        aeq(read("299/56").get().positionalNotation(IntegerUtils.TWO), "([1, 0, 1], [0, 1, 0], [1, 0, 1])");
         aeq(read("405/26").get().positionalNotation(BigInteger.valueOf(3)), "([1, 2, 0], [], [1, 2, 0])");
         aeq(read("15613/576").get().positionalNotation(BigInteger.valueOf(4)), "([1, 2, 3], [0, 1, 2], [3, 0, 1])");
         aeq(
-                read("41111111/333000").get().positionalNotation(BigInteger.valueOf(10)),
+                read("41111111/333000").get().positionalNotation(BigInteger.TEN),
                 "([1, 2, 3], [4, 5, 6], [7, 8, 9])"
         );
         aeq(
@@ -3143,7 +3034,7 @@ public class RationalTest {
             fail();
         } catch (IllegalArgumentException ignored) {}
         try {
-            read("-1/2").get().positionalNotation(BigInteger.valueOf(2));
+            read("-1/2").get().positionalNotation(IntegerUtils.TWO);
             fail();
         } catch (IllegalArgumentException ignored) {}
     }
@@ -3152,7 +3043,7 @@ public class RationalTest {
     public void testFromPositionalNotation() {
         aeq(
                 fromPositionalNotation(
-                        BigInteger.valueOf(2),
+                        IntegerUtils.TWO,
                         Collections.emptyList(),
                         Collections.emptyList(),
                         readBigIntegerList("[0]")
@@ -3179,7 +3070,7 @@ public class RationalTest {
         );
         aeq(
                 fromPositionalNotation(
-                        BigInteger.valueOf(10),
+                        BigInteger.TEN,
                         Collections.emptyList(),
                         Collections.emptyList(),
                         readBigIntegerList("[0]")
@@ -3215,7 +3106,7 @@ public class RationalTest {
         );
         aeq(
                 fromPositionalNotation(
-                        BigInteger.valueOf(2),
+                        IntegerUtils.TWO,
                         readBigIntegerList("[1]"),
                         Collections.emptyList(),
                         readBigIntegerList("[0]")
@@ -3242,7 +3133,7 @@ public class RationalTest {
         );
         aeq(
                 fromPositionalNotation(
-                        BigInteger.valueOf(10),
+                        BigInteger.TEN,
                         readBigIntegerList("[1]"),
                         Collections.emptyList(),
                         readBigIntegerList("[0]")
@@ -3278,7 +3169,7 @@ public class RationalTest {
         );
         aeq(
                 fromPositionalNotation(
-                        BigInteger.valueOf(2),
+                        IntegerUtils.TWO,
                         Collections.emptyList(),
                         readBigIntegerList("[1]"),
                         readBigIntegerList("[0]")
@@ -3305,7 +3196,7 @@ public class RationalTest {
         );
         aeq(
                 fromPositionalNotation(
-                        BigInteger.valueOf(10),
+                        BigInteger.TEN,
                         Collections.emptyList(),
                         readBigIntegerList("[5]"),
                         readBigIntegerList("[0]")
@@ -3341,7 +3232,7 @@ public class RationalTest {
         );
         aeq(
                 fromPositionalNotation(
-                        BigInteger.valueOf(2),
+                        IntegerUtils.TWO,
                         Collections.emptyList(),
                         Collections.emptyList(),
                         readBigIntegerList("[0, 1]")
@@ -3368,7 +3259,7 @@ public class RationalTest {
         );
         aeq(
                 fromPositionalNotation(
-                        BigInteger.valueOf(10),
+                        BigInteger.TEN,
                         Collections.emptyList(),
                         Collections.emptyList(),
                         readBigIntegerList("[3]")
@@ -3404,7 +3295,7 @@ public class RationalTest {
         );
         aeq(
                 fromPositionalNotation(
-                        BigInteger.valueOf(2),
+                        IntegerUtils.TWO,
                         Collections.emptyList(),
                         Collections.emptyList(),
                         readBigIntegerList("[0, 0, 1]")
@@ -3431,7 +3322,7 @@ public class RationalTest {
         );
         aeq(
                 fromPositionalNotation(
-                        BigInteger.valueOf(10),
+                        BigInteger.TEN,
                         Collections.emptyList(),
                         Collections.emptyList(),
                         readBigIntegerList("[1, 4, 2, 8, 5, 7]")
@@ -3467,7 +3358,7 @@ public class RationalTest {
         );
         aeq(
                 fromPositionalNotation(
-                        BigInteger.valueOf(2),
+                        IntegerUtils.TWO,
                         readBigIntegerList("[1, 0, 0]"),
                         Collections.emptyList(),
                         readBigIntegerList("[0, 1, 1, 1, 0, 1, 1, 0, 0, 1]")
@@ -3496,7 +3387,7 @@ public class RationalTest {
         );
         aeq(
                 fromPositionalNotation(
-                        BigInteger.valueOf(10),
+                        BigInteger.TEN,
                         readBigIntegerList("[4]"),
                         Collections.emptyList(),
                         readBigIntegerList("[4, 6, 2, 3, 6, 5, 5, 9, 1, 3, 9, 7, 8, 4, 9]")
@@ -3532,17 +3423,16 @@ public class RationalTest {
                 ),
                 "415/93"
         );
-        Rational approxPi = ofExact(Math.PI);
         aeq(
                 fromPositionalNotation(
-                        BigInteger.valueOf(2),
+                        IntegerUtils.TWO,
                         readBigIntegerList("[1, 1]"),
                         readBigIntegerList(
                                 "[0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0, 0," +
                                 " 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 0, 1, 1]"),
                         readBigIntegerList("[0]")
                 ),
-                approxPi
+                PI_DOUBLE
         );
         aeq(
                 fromPositionalNotation(
@@ -3552,18 +3442,18 @@ public class RationalTest {
                                 "[0, 2, 1, 0, 0, 3, 3, 3, 1, 2, 2, 2, 2, 0, 2, 0, 2, 0, 1, 1, 2, 2, 0, 3]"),
                         readBigIntegerList("[0]")
                 ),
-                approxPi
+                PI_DOUBLE
         );
         aeq(
                 fromPositionalNotation(
-                        BigInteger.valueOf(10),
+                        BigInteger.TEN,
                         readBigIntegerList("[3]"),
                         readBigIntegerList(
                                 "[1, 4, 1, 5, 9, 2, 6, 5, 3, 5, 8, 9, 7, 9, 3, 1, 1, 5, 9, 9, 7, 9, 6, 3, 4, 6, 8," +
                                 " 5, 4, 4, 1, 8, 5, 1, 6, 1, 5, 9, 0, 5, 7, 6, 1, 7, 1, 8, 7, 5]"),
                         readBigIntegerList("[0]")
                 ),
-                approxPi
+                PI_DOUBLE
         );
         aeq(
                 fromPositionalNotation(
@@ -3572,7 +3462,7 @@ public class RationalTest {
                         readBigIntegerList("[2, 4, 3, 15, 6, 10, 8, 8, 8, 5, 10, 3]"),
                         readBigIntegerList("[0]")
                 ),
-                approxPi
+                PI_DOUBLE
         );
         aeq(
                 fromPositionalNotation(
@@ -3583,11 +3473,11 @@ public class RationalTest {
                                 " 17, 18, 75]"),
                         readBigIntegerList("[0]")
                 ),
-                approxPi
+                PI_DOUBLE
         );
         aeq(
                 fromPositionalNotation(
-                        BigInteger.valueOf(2),
+                        IntegerUtils.TWO,
                         readBigIntegerList("[1, 0, 1]"),
                         readBigIntegerList("[0, 1, 0]"),
                         readBigIntegerList("[1, 0, 1]")
@@ -3614,7 +3504,7 @@ public class RationalTest {
         );
         aeq(
                 fromPositionalNotation(
-                        BigInteger.valueOf(10),
+                        BigInteger.TEN,
                         readBigIntegerList("[1, 2, 3]"),
                         readBigIntegerList("[4, 5, 6]"),
                         readBigIntegerList("[7, 8, 9]")
@@ -3665,7 +3555,7 @@ public class RationalTest {
             fail();
         } catch (IllegalArgumentException ignored) {}
         try {
-            fromPositionalNotation(BigInteger.valueOf(-1),
+            fromPositionalNotation(IntegerUtils.NEGATIVE_ONE,
                     readBigIntegerList("[1, 0, 1]"),
                     readBigIntegerList("[0, 1, 0]"),
                     readBigIntegerList("[1, 0, 1]")
@@ -3673,7 +3563,7 @@ public class RationalTest {
             fail();
         } catch (IllegalArgumentException ignored) {}
         try {
-            fromPositionalNotation(BigInteger.valueOf(2),
+            fromPositionalNotation(IntegerUtils.TWO,
                     readBigIntegerList("[-1, 0, 1]"),
                     readBigIntegerList("[0, 1, 0]"),
                     readBigIntegerList("[1, 0, 1]")
@@ -3681,7 +3571,7 @@ public class RationalTest {
             fail();
         } catch (IllegalArgumentException ignored) {}
         try {
-            fromPositionalNotation(BigInteger.valueOf(2),
+            fromPositionalNotation(IntegerUtils.TWO,
                     readBigIntegerList("[2, 0, 1]"),
                     readBigIntegerList("[0, 1, 0]"),
                     readBigIntegerList("[1, 0, 1]")
@@ -3689,7 +3579,7 @@ public class RationalTest {
             fail();
         } catch (IllegalArgumentException ignored) {}
         try {
-            fromPositionalNotation(BigInteger.valueOf(2),
+            fromPositionalNotation(IntegerUtils.TWO,
                     readBigIntegerList("[1, 0, 1]"),
                     readBigIntegerList("[0, -1, 0]"),
                     readBigIntegerList("[1, 0, 1]")
@@ -3697,7 +3587,7 @@ public class RationalTest {
             fail();
         } catch (IllegalArgumentException ignored) {}
         try {
-            fromPositionalNotation(BigInteger.valueOf(2),
+            fromPositionalNotation(IntegerUtils.TWO,
                     readBigIntegerList("[1, 0, 1]"),
                     readBigIntegerList("[0, 2, 0]"),
                     readBigIntegerList("[1, 0, 1]")
@@ -3705,7 +3595,7 @@ public class RationalTest {
             fail();
         } catch (IllegalArgumentException ignored) {}
         try {
-            fromPositionalNotation(BigInteger.valueOf(2),
+            fromPositionalNotation(IntegerUtils.TWO,
                     readBigIntegerList("[1, 0, 1]"),
                     readBigIntegerList("[0, 1, 0]"),
                     readBigIntegerList("[-1, 0, 1]")
@@ -3713,7 +3603,7 @@ public class RationalTest {
             fail();
         } catch (IllegalArgumentException ignored) {}
         try {
-            fromPositionalNotation(BigInteger.valueOf(2),
+            fromPositionalNotation(IntegerUtils.TWO,
                     readBigIntegerList("[1, 0, 1]"),
                     readBigIntegerList("[0, 1, 0]"),
                     readBigIntegerList("[2, 0, 1]")
@@ -3721,7 +3611,7 @@ public class RationalTest {
             fail();
         } catch (IllegalArgumentException ignored) {}
         try {
-            fromPositionalNotation(BigInteger.valueOf(2),
+            fromPositionalNotation(IntegerUtils.TWO,
                     readBigIntegerList("[1, 0, 1]"),
                     readBigIntegerList("[0, 1, 0]"),
                     Collections.emptyList()
@@ -3736,7 +3626,7 @@ public class RationalTest {
     }
 
     private static void digitsHelper(double x, int y, @NotNull String output) {
-        Pair<List<BigInteger>, Iterable<BigInteger>> digits = ofExact(x).digits(BigInteger.valueOf(y));
+        Pair<List<BigInteger>, Iterable<BigInteger>> digits = ofExact(x).get().digits(BigInteger.valueOf(y));
         aeq(new Pair<>(digits.a, IterableUtils.toString(20, digits.b)), output);
     }
 
@@ -3826,44 +3716,43 @@ public class RationalTest {
 
     @Test
     public void testToStringBase_BigInteger() {
-        aeq(ZERO.toStringBase(BigInteger.valueOf(2)), "0");
+        aeq(ZERO.toStringBase(IntegerUtils.TWO), "0");
         aeq(ZERO.toStringBase(BigInteger.valueOf(3)), "0");
         aeq(ZERO.toStringBase(BigInteger.valueOf(4)), "0");
-        aeq(ZERO.toStringBase(BigInteger.valueOf(10)), "0");
+        aeq(ZERO.toStringBase(BigInteger.TEN), "0");
         aeq(ZERO.toStringBase(BigInteger.valueOf(16)), "0");
         aeq(ZERO.toStringBase(BigInteger.valueOf(83)), "(0)");
         aeq(ZERO.toStringBase(BigInteger.valueOf(100)), "(0)");
-        aeq(ONE.toStringBase(BigInteger.valueOf(2)), "1");
+        aeq(ONE.toStringBase(IntegerUtils.TWO), "1");
         aeq(ONE.toStringBase(BigInteger.valueOf(3)), "1");
         aeq(ONE.toStringBase(BigInteger.valueOf(4)), "1");
-        aeq(ONE.toStringBase(BigInteger.valueOf(10)), "1");
+        aeq(ONE.toStringBase(BigInteger.TEN), "1");
         aeq(ONE.toStringBase(BigInteger.valueOf(16)), "1");
         aeq(ONE.toStringBase(BigInteger.valueOf(83)), "(1)");
         aeq(ONE.toStringBase(BigInteger.valueOf(100)), "(1)");
-        aeq(read("-1/2").get().toStringBase(BigInteger.valueOf(2)), "-0.1");
+        aeq(read("-1/2").get().toStringBase(IntegerUtils.TWO), "-0.1");
         aeq(read("-1/2").get().toStringBase(BigInteger.valueOf(4)), "-0.2");
-        aeq(read("-1/2").get().toStringBase(BigInteger.valueOf(10)), "-0.5");
+        aeq(read("-1/2").get().toStringBase(BigInteger.TEN), "-0.5");
         aeq(read("-1/2").get().toStringBase(BigInteger.valueOf(16)), "-0.8");
         aeq(read("-1/2").get().toStringBase(BigInteger.valueOf(100)), "-(0).(50)");
         aeq(read("1/3").get().toStringBase(BigInteger.valueOf(3)), "0.1");
-        Rational approxPi = ofExact(Math.PI);
-        aeq(approxPi.toStringBase(BigInteger.valueOf(2)), "11.001001000011111101101010100010001000010110100011");
-        aeq(approxPi.toStringBase(BigInteger.valueOf(4)), "3.021003331222202020112203");
-        aeq(approxPi.toStringBase(BigInteger.valueOf(10)), "3.141592653589793115997963468544185161590576171875");
-        aeq(approxPi.toStringBase(BigInteger.valueOf(16)), "3.243F6A8885A3");
-        aeq(approxPi.toStringBase(BigInteger.valueOf(100)),
+        aeq(PI_DOUBLE.toStringBase(IntegerUtils.TWO), "11.001001000011111101101010100010001000010110100011");
+        aeq(PI_DOUBLE.toStringBase(BigInteger.valueOf(4)), "3.021003331222202020112203");
+        aeq(PI_DOUBLE.toStringBase(BigInteger.TEN), "3.141592653589793115997963468544185161590576171875");
+        aeq(PI_DOUBLE.toStringBase(BigInteger.valueOf(16)), "3.243F6A8885A3");
+        aeq(PI_DOUBLE.toStringBase(BigInteger.valueOf(100)),
                 "(3).(14)(15)(92)(65)(35)(89)(79)(31)(15)(99)(79)(63)(46)(85)(44)(18)(51)(61)(59)(5)(76)(17)(18)(75)");
-        aeq(read("1/1000").get().toStringBase(BigInteger.valueOf(10), 0), "0");
-        aeq(read("1/1000").get().toStringBase(BigInteger.valueOf(10), 1), "0.0...");
-        aeq(read("1/1000").get().toStringBase(BigInteger.valueOf(10), 2), "0.00...");
-        aeq(read("1/1000").get().toStringBase(BigInteger.valueOf(10), 3), "0.001");
-        aeq(read("1/1000").get().toStringBase(BigInteger.valueOf(10), 4), "0.001");
-        aeq(read("1001/10000").get().toStringBase(BigInteger.valueOf(10), 0), "0");
-        aeq(read("1001/10000").get().toStringBase(BigInteger.valueOf(10), 1), "0.1...");
-        aeq(read("1001/10000").get().toStringBase(BigInteger.valueOf(10), 2), "0.10...");
-        aeq(read("1001/10000").get().toStringBase(BigInteger.valueOf(10), 3), "0.100...");
-        aeq(read("1001/10000").get().toStringBase(BigInteger.valueOf(10), 4), "0.1001");
-        aeq(read("1001/10000").get().toStringBase(BigInteger.valueOf(10), 5), "0.1001");
+        aeq(read("1/1000").get().toStringBase(BigInteger.TEN, 0), "0");
+        aeq(read("1/1000").get().toStringBase(BigInteger.TEN, 1), "0.0...");
+        aeq(read("1/1000").get().toStringBase(BigInteger.TEN, 2), "0.00...");
+        aeq(read("1/1000").get().toStringBase(BigInteger.TEN, 3), "0.001");
+        aeq(read("1/1000").get().toStringBase(BigInteger.TEN, 4), "0.001");
+        aeq(read("1001/10000").get().toStringBase(BigInteger.TEN, 0), "0");
+        aeq(read("1001/10000").get().toStringBase(BigInteger.TEN, 1), "0.1...");
+        aeq(read("1001/10000").get().toStringBase(BigInteger.TEN, 2), "0.10...");
+        aeq(read("1001/10000").get().toStringBase(BigInteger.TEN, 3), "0.100...");
+        aeq(read("1001/10000").get().toStringBase(BigInteger.TEN, 4), "0.1001");
+        aeq(read("1001/10000").get().toStringBase(BigInteger.TEN, 5), "0.1001");
         aeq(read("1/1000000").get().toStringBase(BigInteger.valueOf(100), 0), "(0)");
         aeq(read("1/1000000").get().toStringBase(BigInteger.valueOf(100), 1), "(0).(0)...");
         aeq(read("1/1000000").get().toStringBase(BigInteger.valueOf(100), 2), "(0).(0)(0)...");
@@ -3884,56 +3773,55 @@ public class RationalTest {
             fail();
         } catch (IllegalArgumentException ignored) {}
         try {
-            read("-1/2").get().toStringBase(BigInteger.valueOf(-1));
+            read("-1/2").get().toStringBase(IntegerUtils.NEGATIVE_ONE);
             fail();
         } catch (IllegalArgumentException ignored) {}
         try {
-            read("1/3").get().toStringBase(BigInteger.valueOf(10));
+            read("1/3").get().toStringBase(BigInteger.TEN);
             fail();
         } catch (ArithmeticException ignored) {}
     }
 
     @Test
     public void testToStringBase_BigInteger_int() {
-        aeq(ZERO.toStringBase(BigInteger.valueOf(10), 0), "0");
-        aeq(ZERO.toStringBase(BigInteger.valueOf(10), -1), "0");
-        aeq(ZERO.toStringBase(BigInteger.valueOf(10), 1), "0");
+        aeq(ZERO.toStringBase(BigInteger.TEN, 0), "0");
+        aeq(ZERO.toStringBase(BigInteger.TEN, -1), "0");
+        aeq(ZERO.toStringBase(BigInteger.TEN, 1), "0");
         aeq(ZERO.toStringBase(BigInteger.valueOf(83), 0), "(0)");
         aeq(ZERO.toStringBase(BigInteger.valueOf(83), -1), "(0)");
         aeq(ZERO.toStringBase(BigInteger.valueOf(83), 1), "(0)");
-        aeq(ONE.toStringBase(BigInteger.valueOf(10), 0), "1");
-        aeq(ONE.toStringBase(BigInteger.valueOf(10), -1), "0");
-        aeq(ONE.toStringBase(BigInteger.valueOf(10), 1), "1");
+        aeq(ONE.toStringBase(BigInteger.TEN, 0), "1");
+        aeq(ONE.toStringBase(BigInteger.TEN, -1), "0");
+        aeq(ONE.toStringBase(BigInteger.TEN, 1), "1");
         aeq(ONE.toStringBase(BigInteger.valueOf(83), 0), "(1)");
         aeq(ONE.toStringBase(BigInteger.valueOf(83), -1), "(0)");
         aeq(ONE.toStringBase(BigInteger.valueOf(83), 1), "(1)");
-        aeq(read("198").get().toStringBase(BigInteger.valueOf(10), 0), "198");
-        aeq(read("198").get().toStringBase(BigInteger.valueOf(10), 1), "198");
-        aeq(read("198").get().toStringBase(BigInteger.valueOf(10), -1), "190");
-        aeq(read("198").get().toStringBase(BigInteger.valueOf(10), -2), "100");
-        aeq(read("198").get().toStringBase(BigInteger.valueOf(10), -3), "0");
+        aeq(read("198").get().toStringBase(BigInteger.TEN, 0), "198");
+        aeq(read("198").get().toStringBase(BigInteger.TEN, 1), "198");
+        aeq(read("198").get().toStringBase(BigInteger.TEN, -1), "190");
+        aeq(read("198").get().toStringBase(BigInteger.TEN, -2), "100");
+        aeq(read("198").get().toStringBase(BigInteger.TEN, -3), "0");
         aeq(read("198").get().toStringBase(BigInteger.valueOf(83), 0), "(2)(32)");
         aeq(read("198").get().toStringBase(BigInteger.valueOf(83), 1), "(2)(32)");
         aeq(read("198").get().toStringBase(BigInteger.valueOf(83), -1), "(2)(0)");
         aeq(read("198").get().toStringBase(BigInteger.valueOf(83), -2), "(0)");
-        aeq(read("-1/7").get().toStringBase(BigInteger.valueOf(10), -1), "0");
-        aeq(read("-1/7").get().toStringBase(BigInteger.valueOf(10), 0), "0");
-        aeq(read("-1/7").get().toStringBase(BigInteger.valueOf(10), 5), "-0.14285...");
-        aeq(read("-1/7").get().toStringBase(BigInteger.valueOf(10), 20), "-0.14285714285714285714...");
+        aeq(read("-1/7").get().toStringBase(BigInteger.TEN, -1), "0");
+        aeq(read("-1/7").get().toStringBase(BigInteger.TEN, 0), "0");
+        aeq(read("-1/7").get().toStringBase(BigInteger.TEN, 5), "-0.14285...");
+        aeq(read("-1/7").get().toStringBase(BigInteger.TEN, 20), "-0.14285714285714285714...");
         aeq(read("-1/7").get().toStringBase(BigInteger.valueOf(83), -1), "(0)");
         aeq(read("-1/7").get().toStringBase(BigInteger.valueOf(83), 0), "(0)");
         aeq(read("-1/7").get().toStringBase(BigInteger.valueOf(83), 5), "-(0).(11)(71)(11)(71)(11)...");
         aeq(read("-1/7").get().toStringBase(BigInteger.valueOf(83), 20),
                 "-(0).(11)(71)(11)(71)(11)(71)(11)(71)(11)(71)(11)(71)(11)(71)(11)(71)(11)(71)(11)(71)...");
-        Rational approxPi = ofExact(Math.PI);
-        aeq(approxPi.toStringBase(BigInteger.valueOf(10), -1), "0");
-        aeq(approxPi.toStringBase(BigInteger.valueOf(10), 0), "3");
-        aeq(approxPi.toStringBase(BigInteger.valueOf(10), 5), "3.14159...");
-        aeq(approxPi.toStringBase(BigInteger.valueOf(10), 20), "3.14159265358979311599...");
-        aeq(approxPi.toStringBase(BigInteger.valueOf(83), -1), "(0)");
-        aeq(approxPi.toStringBase(BigInteger.valueOf(83), 0), "(3)");
-        aeq(approxPi.toStringBase(BigInteger.valueOf(83), 5), "(3).(11)(62)(35)(69)(50)...");
-        aeq(approxPi.toStringBase(BigInteger.valueOf(83), 20),
+        aeq(PI_DOUBLE.toStringBase(BigInteger.TEN, -1), "0");
+        aeq(PI_DOUBLE.toStringBase(BigInteger.TEN, 0), "3");
+        aeq(PI_DOUBLE.toStringBase(BigInteger.TEN, 5), "3.14159...");
+        aeq(PI_DOUBLE.toStringBase(BigInteger.TEN, 20), "3.14159265358979311599...");
+        aeq(PI_DOUBLE.toStringBase(BigInteger.valueOf(83), -1), "(0)");
+        aeq(PI_DOUBLE.toStringBase(BigInteger.valueOf(83), 0), "(3)");
+        aeq(PI_DOUBLE.toStringBase(BigInteger.valueOf(83), 5), "(3).(11)(62)(35)(69)(50)...");
+        aeq(PI_DOUBLE.toStringBase(BigInteger.valueOf(83), 20),
                 "(3).(11)(62)(35)(69)(50)(19)(79)(18)(11)(8)(60)(35)(10)(62)(20)(58)(42)(14)(31)(34)...");
         try {
             read("-1/2").get().toStringBase(BigInteger.ONE, 5);
@@ -3944,55 +3832,54 @@ public class RationalTest {
             fail();
         } catch (IllegalArgumentException ignored) {}
         try {
-            read("-1/2").get().toStringBase(BigInteger.valueOf(-1), 5);
+            read("-1/2").get().toStringBase(IntegerUtils.NEGATIVE_ONE, 5);
             fail();
         } catch (IllegalArgumentException ignored) {}
     }
 
     @Test
     public void testFromStringBase() {
-        aeq(fromStringBase(BigInteger.valueOf(2), ""), "0");
+        aeq(fromStringBase(IntegerUtils.TWO, ""), "0");
         aeq(fromStringBase(BigInteger.valueOf(3), ""), "0");
         aeq(fromStringBase(BigInteger.valueOf(4), ""), "0");
-        aeq(fromStringBase(BigInteger.valueOf(10), ""), "0");
+        aeq(fromStringBase(BigInteger.TEN, ""), "0");
         aeq(fromStringBase(BigInteger.valueOf(16), ""), "0");
         aeq(fromStringBase(BigInteger.valueOf(83), ""), "0");
         aeq(fromStringBase(BigInteger.valueOf(100), ""), "0");
-        aeq(fromStringBase(BigInteger.valueOf(2), "0"), "0");
+        aeq(fromStringBase(IntegerUtils.TWO, "0"), "0");
         aeq(fromStringBase(BigInteger.valueOf(3), "0"), "0");
         aeq(fromStringBase(BigInteger.valueOf(4), "0"), "0");
-        aeq(fromStringBase(BigInteger.valueOf(10), "0"), "0");
+        aeq(fromStringBase(BigInteger.TEN, "0"), "0");
         aeq(fromStringBase(BigInteger.valueOf(16), "0"), "0");
         aeq(fromStringBase(BigInteger.valueOf(83), "(0)"), "0");
         aeq(fromStringBase(BigInteger.valueOf(100), "(0)"), "0");
-        aeq(fromStringBase(BigInteger.valueOf(2), "1"), "1");
+        aeq(fromStringBase(IntegerUtils.TWO, "1"), "1");
         aeq(fromStringBase(BigInteger.valueOf(3), "1"), "1");
         aeq(fromStringBase(BigInteger.valueOf(4), "1"), "1");
-        aeq(fromStringBase(BigInteger.valueOf(10), "1"), "1");
+        aeq(fromStringBase(BigInteger.TEN, "1"), "1");
         aeq(fromStringBase(BigInteger.valueOf(16), "1"), "1");
         aeq(fromStringBase(BigInteger.valueOf(83), "(1)"), "1");
         aeq(fromStringBase(BigInteger.valueOf(100), "(1)"), "1");
-        aeq(fromStringBase(BigInteger.valueOf(2), "-0.1"), "-1/2");
+        aeq(fromStringBase(IntegerUtils.TWO, "-0.1"), "-1/2");
         aeq(fromStringBase(BigInteger.valueOf(4), "-0.2"), "-1/2");
-        aeq(fromStringBase(BigInteger.valueOf(10), "-0.5"), "-1/2");
+        aeq(fromStringBase(BigInteger.TEN, "-0.5"), "-1/2");
         aeq(fromStringBase(BigInteger.valueOf(16), "-0.8"), "-1/2");
         aeq(fromStringBase(BigInteger.valueOf(100), "-(0).(50)"), "-1/2");
         aeq(fromStringBase(BigInteger.valueOf(3), "-0.1"), "-1/3");
-        Rational approxPi = ofExact(Math.PI);
-        aeq(fromStringBase(BigInteger.valueOf(2), "11.001001000011111101101010100010001000010110100011"), approxPi);
-        aeq(fromStringBase(BigInteger.valueOf(4), "3.021003331222202020112203"), approxPi);
-        aeq(fromStringBase(BigInteger.valueOf(10), "3.141592653589793115997963468544185161590576171875"), approxPi);
-        aeq(fromStringBase(BigInteger.valueOf(16), "3.243F6A8885A3"), approxPi);
+        aeq(fromStringBase(IntegerUtils.TWO, "11.001001000011111101101010100010001000010110100011"), PI_DOUBLE);
+        aeq(fromStringBase(BigInteger.valueOf(4), "3.021003331222202020112203"), PI_DOUBLE);
+        aeq(fromStringBase(BigInteger.TEN, "3.141592653589793115997963468544185161590576171875"), PI_DOUBLE);
+        aeq(fromStringBase(BigInteger.valueOf(16), "3.243F6A8885A3"), PI_DOUBLE);
         aeq(
                 fromStringBase(
                         BigInteger.valueOf(100),
                 "(3).(14)(15)(92)(65)(35)(89)(79)(31)(15)(99)(79)(63)(46)(85)(44)(18)(51)(61)(59)(5)(76)(17)(18)(75)"),
-                approxPi
+                PI_DOUBLE
         );
-        aeq(fromStringBase(BigInteger.valueOf(10), "00"), 0);
-        aeq(fromStringBase(BigInteger.valueOf(10), "0."), 0);
-        aeq(fromStringBase(BigInteger.valueOf(10), ".0"), 0);
-        aeq(fromStringBase(BigInteger.valueOf(10), "0.0"), 0);
+        aeq(fromStringBase(BigInteger.TEN, "00"), 0);
+        aeq(fromStringBase(BigInteger.TEN, "0."), 0);
+        aeq(fromStringBase(BigInteger.TEN, ".0"), 0);
+        aeq(fromStringBase(BigInteger.TEN, "0.0"), 0);
         aeq(fromStringBase(BigInteger.valueOf(100), "(0)(0)"), 0);
         aeq(fromStringBase(BigInteger.valueOf(100), "(0)."), 0);
         aeq(fromStringBase(BigInteger.valueOf(100), ".(0)"), 0);
@@ -4006,11 +3893,11 @@ public class RationalTest {
             fail();
         } catch (IllegalArgumentException ignored) {}
         try {
-            fromStringBase(BigInteger.valueOf(-1), "0");
+            fromStringBase(IntegerUtils.NEGATIVE_ONE, "0");
             fail();
         } catch (IllegalArgumentException ignored) {}
         try {
-            fromStringBase(BigInteger.valueOf(10), "a");
+            fromStringBase(BigInteger.TEN, "a");
             fail();
         } catch (IllegalArgumentException ignored) {}
         try {
@@ -4022,11 +3909,11 @@ public class RationalTest {
             fail();
         } catch (IllegalArgumentException ignored) {}
         try {
-            fromStringBase(BigInteger.valueOf(10), "5-");
+            fromStringBase(BigInteger.TEN, "5-");
             fail();
         } catch (IllegalArgumentException ignored) {}
         try {
-            fromStringBase(BigInteger.valueOf(10), "-");
+            fromStringBase(BigInteger.TEN, "-");
             fail();
         } catch (IllegalArgumentException ignored) {}
         try {
@@ -4034,7 +3921,7 @@ public class RationalTest {
             fail();
         } catch (IllegalArgumentException ignored) {}
         try {
-            fromStringBase(BigInteger.valueOf(10), "2-3");
+            fromStringBase(BigInteger.TEN, "2-3");
             fail();
         } catch (IllegalArgumentException ignored) {}
         try {
@@ -4042,15 +3929,15 @@ public class RationalTest {
             fail();
         } catch (IllegalArgumentException ignored) {}
         try {
-            fromStringBase(BigInteger.valueOf(10), "1e5");
+            fromStringBase(BigInteger.TEN, "1e5");
             fail();
         } catch (IllegalArgumentException ignored) {}
         try {
-            fromStringBase(BigInteger.valueOf(10), "1E5");
+            fromStringBase(BigInteger.TEN, "1E5");
             fail();
         } catch (IllegalArgumentException ignored) {}
         try {
-            fromStringBase(BigInteger.valueOf(10), "(2)(3)");
+            fromStringBase(BigInteger.TEN, "(2)(3)");
             fail();
         } catch (IllegalArgumentException ignored) {}
         try {
@@ -4058,11 +3945,11 @@ public class RationalTest {
             fail();
         } catch (IllegalArgumentException ignored) {}
         try {
-            fromStringBase(BigInteger.valueOf(10), "-0.1...");
+            fromStringBase(BigInteger.TEN, "-0.1...");
             fail();
         } catch (IllegalArgumentException ignored) {}
         try {
-            fromStringBase(BigInteger.valueOf(10), "-5...");
+            fromStringBase(BigInteger.TEN, "-5...");
             fail();
         } catch (IllegalArgumentException ignored) {}
         try {
@@ -4082,11 +3969,11 @@ public class RationalTest {
             fail();
         } catch (IllegalArgumentException ignored) {}
         try {
-            fromStringBase(BigInteger.valueOf(10), ".");
+            fromStringBase(BigInteger.TEN, ".");
             fail();
         } catch (IllegalArgumentException ignored) {}
         try {
-            fromStringBase(BigInteger.valueOf(10), "-.");
+            fromStringBase(BigInteger.TEN, "-.");
             fail();
         } catch (IllegalArgumentException ignored) {}
     }
@@ -4109,94 +3996,29 @@ public class RationalTest {
 
     @Test
     public void testEquals() {
-        //noinspection EqualsWithItself
-        assertTrue(ZERO.equals(ZERO));
-        //noinspection EqualsWithItself
-        assertTrue(ONE.equals(ONE));
-        assertTrue(read("4").get().equals(read("4").get()));
-        assertTrue(read("-4").get().equals(read("-4").get()));
-        assertTrue(read("5/12").get().equals(read("5/12").get()));
-        assertTrue(read("-5/12").get().equals(read("-5/12").get()));
-        assertFalse(ZERO.equals(ONE));
-        assertFalse(ONE.equals(ZERO));
-        assertFalse(ZERO.equals(read("4").get()));
-        assertFalse(ZERO.equals(read("-4").get()));
-        assertFalse(ZERO.equals(read("5/12").get()));
-        assertFalse(ZERO.equals(read("-5/12").get()));
-        assertFalse(ONE.equals(read("4").get()));
-        assertFalse(ONE.equals(read("-4").get()));
-        assertFalse(ONE.equals(read("5/12").get()));
-        assertFalse(ONE.equals(read("-5/12").get()));
-        assertFalse(read("4").get().equals(ZERO));
-        assertFalse(read("-4").get().equals(ZERO));
-        assertFalse(read("5/12").get().equals(ZERO));
-        assertFalse(read("-5/12").get().equals(ZERO));
-        assertFalse(read("4").get().equals(ONE));
-        assertFalse(read("-4").get().equals(ONE));
-        assertFalse(read("5/12").get().equals(ONE));
-        assertFalse(read("-5/12").get().equals(ONE));
-        assertFalse(read("4").equals(read("-4")));
-        assertFalse(read("4").equals(read("5/12")));
-        assertFalse(read("4").equals(read("-5/12")));
-        assertFalse(read("-4").equals(read("4")));
-        assertFalse(read("-4").equals(read("5/12")));
-        assertFalse(read("-4").equals(read("-5/12")));
-        assertFalse(read("5/12").equals(read("4")));
-        assertFalse(read("5/12").equals(read("-4")));
-        assertFalse(read("5/12").equals(read("-5/12")));
-        assertFalse(read("-5/12").equals(read("4")));
-        assertFalse(read("-5/12").equals(read("-4")));
-        assertFalse(read("-5/12").equals(read("5/12")));
+        testEqualsHelper(
+                readRationalList("[0, 1, 4, -4, 5/12, -5/12]"),
+                readRationalList("[0, 1, 4, -4, 5/12, -5/12]")
+        );
+    }
+
+    private static void hashCode_helper(@NotNull String input, int hashCode) {
+        aeq(read(input).get().hashCode(), hashCode);
     }
 
     @Test
     public void testHashCode() {
-        aeq(ZERO.hashCode(), 1);
-        aeq(ONE.hashCode(), 32);
-        aeq(read("4").hashCode(), 125);
-        aeq(read("-4").hashCode(), -123);
-        aeq(read("5/12").hashCode(), 167);
-        aeq(read("-5/12").hashCode(), -143);
+        hashCode_helper("0", 1);
+        hashCode_helper("1", 32);
+        hashCode_helper("4", 125);
+        hashCode_helper("-4", -123);
+        hashCode_helper("5/12", 167);
+        hashCode_helper("-5/12", -143);
     }
 
     @Test
     public void testCompareTo() {
-        assertTrue(eq(ZERO, ZERO));
-        assertTrue(eq(ONE, ONE));
-        assertTrue(eq(read("4").get(), read("4").get()));
-        assertTrue(eq(read("-4").get(), read("-4").get()));
-        assertTrue(eq(read("5/12").get(), read("5/12").get()));
-        assertTrue(eq(read("-5/12").get(), read("-5/12").get()));
-        assertTrue(lt(ZERO, ONE));
-        assertTrue(gt(ONE, ZERO));
-        assertTrue(lt(ZERO, read("4").get()));
-        assertTrue(gt(ZERO, read("-4").get()));
-        assertTrue(lt(ZERO, read("5/12").get()));
-        assertTrue(gt(ZERO, read("-5/12").get()));
-        assertTrue(lt(ONE, read("4").get()));
-        assertTrue(gt(ONE, read("-4").get()));
-        assertTrue(gt(ONE, read("5/12").get()));
-        assertTrue(gt(ONE, read("-5/12").get()));
-        assertTrue(gt(read("4").get(), ZERO));
-        assertTrue(lt(read("-4").get(), ZERO));
-        assertTrue(gt(read("5/12").get(), ZERO));
-        assertTrue(lt(read("-5/12").get(), ZERO));
-        assertTrue(gt(read("4").get(), ONE));
-        assertTrue(lt(read("-4").get(), ONE));
-        assertTrue(lt(read("5/12").get(), ONE));
-        assertTrue(lt(read("-5/12").get(), ONE));
-        assertTrue(gt(read("4").get(), read("-4").get()));
-        assertTrue(gt(read("4").get(), read("5/12").get()));
-        assertTrue(gt(read("4").get(), read("-5/12").get()));
-        assertTrue(lt(read("-4").get(), read("4").get()));
-        assertTrue(lt(read("-4").get(), read("5/12").get()));
-        assertTrue(lt(read("-4").get(), read("-5/12").get()));
-        assertTrue(lt(read("5/12").get(), read("4").get()));
-        assertTrue(gt(read("5/12").get(), read("-4").get()));
-        assertTrue(gt(read("5/12").get(), read("-5/12").get()));
-        assertTrue(lt(read("-5/12").get(), read("4").get()));
-        assertTrue(gt(read("-5/12").get(), read("-4").get()));
-        assertTrue(lt(read("-5/12").get(), read("5/12").get()));
+        testCompareToHelper(readRationalList("[-4, -5/12, 0, 5/12, 1, 4]"));
     }
 
     @Test
@@ -4249,16 +4071,6 @@ public class RationalTest {
         assertFalse(findIn("").isPresent());
         assertFalse(findIn("hello").isPresent());
         assertFalse(findIn("vdfsvfbf").isPresent());
-    }
-
-    @Test
-    public void testToString() {
-        aeq(ZERO, "0");
-        aeq(ONE, "1");
-        aeq(Rational.of(4), "4");
-        aeq(Rational.of(-4), "-4");
-        aeq(Rational.of(2, 5), "2/5");
-        aeq(Rational.of(-2, 5), "-2/5");
     }
 
     private static @NotNull List<BigInteger> readBigIntegerList(@NotNull String s) {

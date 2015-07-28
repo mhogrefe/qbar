@@ -1,21 +1,24 @@
 package mho.qbar.objects;
 
-import mho.wheels.misc.Readers;
+import mho.wheels.io.Readers;
+import mho.wheels.numberUtils.IntegerUtils;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
 import java.math.BigInteger;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 import static mho.qbar.objects.Polynomial.*;
+import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.iterables.IterableUtils.toList;
-import static mho.wheels.testing.Testing.aeq;
-import static mho.wheels.testing.Testing.aeqit;
-import static org.junit.Assert.*;
+import static mho.wheels.testing.Testing.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class PolynomialTest {
+    private static final int TINY_LIMIT = 20;
+
     @Test
     public void testConstants() {
         aeq(ZERO, "0");
@@ -42,37 +45,37 @@ public class PolynomialTest {
     public void testApply_BigInteger() {
         aeq(ZERO.apply(BigInteger.ZERO), 0);
         aeq(ZERO.apply(BigInteger.ONE), 0);
-        aeq(ZERO.apply(BigInteger.valueOf(-1)), 0);
+        aeq(ZERO.apply(IntegerUtils.NEGATIVE_ONE), 0);
         aeq(ZERO.apply(BigInteger.valueOf(5)), 0);
         aeq(ZERO.apply(BigInteger.valueOf(100)), 0);
         aeq(ONE.apply(BigInteger.ZERO), 1);
         aeq(ONE.apply(BigInteger.ONE), 1);
-        aeq(ONE.apply(BigInteger.valueOf(-1)), 1);
+        aeq(ONE.apply(IntegerUtils.NEGATIVE_ONE), 1);
         aeq(ONE.apply(BigInteger.valueOf(5)), 1);
         aeq(ONE.apply(BigInteger.valueOf(100)), 1);
         aeq(X.apply(BigInteger.ZERO), 0);
         aeq(X.apply(BigInteger.ONE), 1);
-        aeq(X.apply(BigInteger.valueOf(-1)), -1);
+        aeq(X.apply(IntegerUtils.NEGATIVE_ONE), -1);
         aeq(X.apply(BigInteger.valueOf(5)), 5);
         aeq(X.apply(BigInteger.valueOf(100)), 100);
         aeq(read("-17").get().apply(BigInteger.ZERO), -17);
         aeq(read("-17").get().apply(BigInteger.ONE), -17);
-        aeq(read("-17").get().apply(BigInteger.valueOf(-1)), -17);
+        aeq(read("-17").get().apply(IntegerUtils.NEGATIVE_ONE), -17);
         aeq(read("-17").get().apply(BigInteger.valueOf(5)), -17);
         aeq(read("-17").get().apply(BigInteger.valueOf(100)), -17);
         aeq(read("x^2-4*x+7").get().apply(BigInteger.ZERO), 7);
         aeq(read("x^2-4*x+7").get().apply(BigInteger.ONE), 4);
-        aeq(read("x^2-4*x+7").get().apply(BigInteger.valueOf(-1)), 12);
+        aeq(read("x^2-4*x+7").get().apply(IntegerUtils.NEGATIVE_ONE), 12);
         aeq(read("x^2-4*x+7").get().apply(BigInteger.valueOf(5)), 12);
         aeq(read("x^2-4*x+7").get().apply(BigInteger.valueOf(100)), 9607);
         aeq(read("x^3-1").get().apply(BigInteger.ZERO), -1);
         aeq(read("x^3-1").get().apply(BigInteger.ONE), 0);
-        aeq(read("x^3-1").get().apply(BigInteger.valueOf(-1)), -2);
+        aeq(read("x^3-1").get().apply(IntegerUtils.NEGATIVE_ONE), -2);
         aeq(read("x^3-1").get().apply(BigInteger.valueOf(5)), 124);
         aeq(read("x^3-1").get().apply(BigInteger.valueOf(100)), 999999);
         aeq(read("3*x^10").get().apply(BigInteger.ZERO), 0);
         aeq(read("3*x^10").get().apply(BigInteger.ONE), 3);
-        aeq(read("3*x^10").get().apply(BigInteger.valueOf(-1)), 3);
+        aeq(read("3*x^10").get().apply(IntegerUtils.NEGATIVE_ONE), 3);
         aeq(read("3*x^10").get().apply(BigInteger.valueOf(5)), 29296875);
         aeq(read("3*x^10").get().apply(BigInteger.valueOf(100)), "300000000000000000000");
     }
@@ -81,37 +84,37 @@ public class PolynomialTest {
     public void testApply_Rational() {
         aeq(ZERO.apply(Rational.ZERO), 0);
         aeq(ZERO.apply(Rational.ONE), 0);
-        aeq(ZERO.apply(Rational.of(-1)), 0);
+        aeq(ZERO.apply(Rational.NEGATIVE_ONE), 0);
         aeq(ZERO.apply(Rational.of(4, 5)), 0);
         aeq(ZERO.apply(Rational.of(100)), 0);
         aeq(ONE.apply(Rational.ZERO), 1);
         aeq(ONE.apply(Rational.ONE), 1);
-        aeq(ONE.apply(Rational.of(-1)), 1);
+        aeq(ONE.apply(Rational.NEGATIVE_ONE), 1);
         aeq(ONE.apply(Rational.of(4, 5)), 1);
         aeq(ONE.apply(Rational.of(100)), 1);
         aeq(X.apply(Rational.ZERO), 0);
         aeq(X.apply(Rational.ONE), 1);
-        aeq(X.apply(Rational.of(-1)), -1);
+        aeq(X.apply(Rational.NEGATIVE_ONE), -1);
         aeq(X.apply(Rational.of(4, 5)), "4/5");
         aeq(X.apply(Rational.of(100)), 100);
         aeq(read("-17").get().apply(Rational.ZERO), "-17");
         aeq(read("-17").get().apply(Rational.ONE), "-17");
-        aeq(read("-17").get().apply(Rational.of(-1)), "-17");
+        aeq(read("-17").get().apply(Rational.NEGATIVE_ONE), "-17");
         aeq(read("-17").get().apply(Rational.of(4, 5)), "-17");
         aeq(read("-17").get().apply(Rational.of(100)), "-17");
         aeq(read("x^2-4*x+7").get().apply(Rational.ZERO), "7");
         aeq(read("x^2-4*x+7").get().apply(Rational.ONE), "4");
-        aeq(read("x^2-4*x+7").get().apply(Rational.of(-1)), "12");
+        aeq(read("x^2-4*x+7").get().apply(Rational.NEGATIVE_ONE), "12");
         aeq(read("x^2-4*x+7").get().apply(Rational.of(4, 5)), "111/25");
         aeq(read("x^2-4*x+7").get().apply(Rational.of(100)), "9607");
         aeq(read("x^3-1").get().apply(Rational.ZERO), -1);
         aeq(read("x^3-1").get().apply(Rational.ONE), 0);
-        aeq(read("x^3-1").get().apply(Rational.of(-1)), -2);
+        aeq(read("x^3-1").get().apply(Rational.NEGATIVE_ONE), -2);
         aeq(read("x^3-1").get().apply(Rational.of(4, 5)), "-61/125");
         aeq(read("x^3-1").get().apply(Rational.of(100)), 999999);
         aeq(read("3*x^10").get().apply(Rational.ZERO), 0);
         aeq(read("3*x^10").get().apply(Rational.ONE), 3);
-        aeq(read("3*x^10").get().apply(Rational.of(-1)), 3);
+        aeq(read("3*x^10").get().apply(Rational.NEGATIVE_ONE), 3);
         aeq(read("3*x^10").get().apply(Rational.of(4, 5)), "3145728/9765625");
         aeq(read("3*x^10").get().apply(Rational.of(100)), "300000000000000000000");
     }
@@ -188,10 +191,10 @@ public class PolynomialTest {
         aeq(of(BigInteger.ONE, 1), "x");
         aeq(of(BigInteger.ONE, 2), "x^2");
         aeq(of(BigInteger.ONE, 3), "x^3");
-        aeq(of(BigInteger.valueOf(-1), 0), "-1");
-        aeq(of(BigInteger.valueOf(-1), 1), "-x");
-        aeq(of(BigInteger.valueOf(-1), 2), "-x^2");
-        aeq(of(BigInteger.valueOf(-1), 3), "-x^3");
+        aeq(of(IntegerUtils.NEGATIVE_ONE, 0), "-1");
+        aeq(of(IntegerUtils.NEGATIVE_ONE, 1), "-x");
+        aeq(of(IntegerUtils.NEGATIVE_ONE, 2), "-x^2");
+        aeq(of(IntegerUtils.NEGATIVE_ONE, 3), "-x^3");
         aeq(of(BigInteger.valueOf(3), 0), "3");
         aeq(of(BigInteger.valueOf(3), 1), "3*x");
         aeq(of(BigInteger.valueOf(3), 2), "3*x^2");
@@ -452,7 +455,7 @@ public class PolynomialTest {
         aeq(read("3*x^10").get().multiply(BigInteger.ONE), "3*x^10");
         aeq(read("3*x^10").get().multiply(BigInteger.valueOf(-3)), "-9*x^10");
         aeq(read("3*x^10").get().multiply(BigInteger.valueOf(4)), "12*x^10");
-        assertTrue(read("-1").get().multiply(BigInteger.valueOf(-1)) == ONE);
+        assertTrue(read("-1").get().multiply(IntegerUtils.NEGATIVE_ONE) == ONE);
     }
 
     @Test
@@ -574,6 +577,30 @@ public class PolynomialTest {
                 delta(readPolynomialList("[-17, x^2-4*x+7, -x^3-1, 3*x^10]")),
                 "[x^2-4*x+24, -x^3-x^2+4*x-8, 3*x^10+x^3+1]"
         );
+        Polynomial seed = read("x+1").get();
+        aeqitLimit(TINY_LIMIT, delta(map(seed::pow, rangeUp(0))),
+                "[x, x^2+x, x^3+2*x^2+x, x^4+3*x^3+3*x^2+x, x^5+4*x^4+6*x^3+4*x^2+x," +
+                " x^6+5*x^5+10*x^4+10*x^3+5*x^2+x, x^7+6*x^6+15*x^5+20*x^4+15*x^3+6*x^2+x," +
+                " x^8+7*x^7+21*x^6+35*x^5+35*x^4+21*x^3+7*x^2+x," +
+                " x^9+8*x^8+28*x^7+56*x^6+70*x^5+56*x^4+28*x^3+8*x^2+x," +
+                " x^10+9*x^9+36*x^8+84*x^7+126*x^6+126*x^5+84*x^4+36*x^3+9*x^2+x," +
+                " x^11+10*x^10+45*x^9+120*x^8+210*x^7+252*x^6+210*x^5+120*x^4+45*x^3+10*x^2+x," +
+                " x^12+11*x^11+55*x^10+165*x^9+330*x^8+462*x^7+462*x^6+330*x^5+165*x^4+55*x^3+11*x^2+x," +
+                " x^13+12*x^12+66*x^11+220*x^10+495*x^9+792*x^8+924*x^7+792*x^6+495*x^5+220*x^4+66*x^3+12*x^2+x," +
+                " x^14+13*x^13+78*x^12+286*x^11+715*x^10+1287*x^9+1716*x^8+1716*x^7+1287*x^6+715*x^5+286*x^4+78*x^3+" +
+                "13*x^2+x, " +
+                "x^15+14*x^14+91*x^13+364*x^12+1001*x^11+2002*x^10+3003*x^9+3432*x^8+3003*x^7+2002*x^6+1001*x^5+" +
+                "364*x^4+91*x^3+14*x^2+x," +
+                " x^16+15*x^15+105*x^14+455*x^13+1365*x^12+3003*x^11+5005*x^10+6435*x^9+6435*x^8+5005*x^7+3003*x^6+" +
+                "1365*x^5+455*x^4+105*x^3+15*x^2+x," +
+                " x^17+16*x^16+120*x^15+560*x^14+1820*x^13+4368*x^12+8008*x^11+11440*x^10+12870*x^9+11440*x^8+" +
+                "8008*x^7+4368*x^6+1820*x^5+560*x^4+120*x^3+16*x^2+x," +
+                " x^18+17*x^17+136*x^16+680*x^15+2380*x^14+6188*x^13+12376*x^12+19448*x^11+24310*x^10+24310*x^9+" +
+                "19448*x^8+12376*x^7+6188*x^6+2380*x^5+680*x^4+136*x^3+17*x^2+x," +
+                " x^19+18*x^18+153*x^17+816*x^16+3060*x^15+8568*x^14+18564*x^13+31824*x^12+43758*x^11+48620*x^10+" +
+                "43758*x^9+31824*x^8+18564*x^7+8568*x^6+3060*x^5+816*x^4+153*x^3+18*x^2+x," +
+                " x^20+19*x^19+171*x^18+969*x^17+3876*x^16+11628*x^15+27132*x^14+50388*x^13+75582*x^12+92378*x^11+" +
+                "92378*x^10+75582*x^9+50388*x^8+27132*x^7+11628*x^6+3876*x^5+969*x^4+171*x^3+19*x^2+x, ...]");
         try {
             delta(readPolynomialList("[]"));
             fail();
@@ -732,122 +759,30 @@ public class PolynomialTest {
 
     @Test
     public void testEquals() {
-        //noinspection EqualsWithItself
-        assertTrue(ZERO.equals(ZERO));
-        //noinspection EqualsWithItself
-        assertTrue(ONE.equals(ONE));
-        //noinspection EqualsWithItself
-        assertTrue(X.equals(X));
-        assertTrue(read("-17").get().equals(read("-17").get()));
-        assertTrue(read("x^2-4*x+7").get().equals(read("x^2-4*x+7").get()));
-        assertTrue(read("-x^3-1").get().equals(read("-x^3-1").get()));
-        assertTrue(read("3*x^10").get().equals(read("3*x^10").get()));
-        assertFalse(ZERO.equals(ONE));
-        assertFalse(ZERO.equals(X));
-        assertFalse(ONE.equals(ZERO));
-        assertFalse(ONE.equals(X));
-        assertFalse(X.equals(ZERO));
-        assertFalse(X.equals(ONE));
-        assertFalse(ZERO.equals(read("-17").get()));
-        assertFalse(ZERO.equals(read("x^2-4*x+7").get()));
-        assertFalse(ZERO.equals(read("-x^3-1").get()));
-        assertFalse(ZERO.equals(read("3*x^10").get()));
-        assertFalse(ONE.equals(read("-17").get()));
-        assertFalse(ONE.equals(read("x^2-4*x+7").get()));
-        assertFalse(ONE.equals(read("-x^3-1").get()));
-        assertFalse(ONE.equals(read("3*x^10").get()));
-        assertFalse(X.equals(read("-17").get()));
-        assertFalse(X.equals(read("x^2-4*x+7").get()));
-        assertFalse(X.equals(read("-x^3-1").get()));
-        assertFalse(X.equals(read("3*x^10").get()));
-        assertFalse(read("-17").get().equals(ZERO));
-        assertFalse(read("x^2-4*x+7").get().equals(ZERO));
-        assertFalse(read("-x^3-1").get().equals(ZERO));
-        assertFalse(read("3*x^10").get().equals(ZERO));
-        assertFalse(read("-17").get().equals(ONE));
-        assertFalse(read("x^2-4*x+7").get().equals(ONE));
-        assertFalse(read("-x^3-1").get().equals(ONE));
-        assertFalse(read("3*x^10").get().equals(ONE));
-        assertFalse(read("-17").get().equals(X));
-        assertFalse(read("x^2-4*x+7").get().equals(X));
-        assertFalse(read("-x^3-1").get().equals(X));
-        assertFalse(read("3*x^10").get().equals(X));
-        assertFalse(read("-17").equals(read("x^2-4*x+7")));
-        assertFalse(read("-17").equals(read("-x^3-1")));
-        assertFalse(read("-17").equals(read("3*x^10")));
-        assertFalse(read("x^2-4*x+7").equals(read("-17")));
-        assertFalse(read("x^2-4*x+7").equals(read("-x^3-1")));
-        assertFalse(read("x^2-4*x+7").equals(read("3*x^10")));
-        assertFalse(read("-x^3-1").equals(read("-17")));
-        assertFalse(read("-x^3-1").equals(read("x^2-4*x+7")));
-        assertFalse(read("-x^3-1").equals(read("3*x^10")));
-        assertFalse(read("3*x^10").equals(read("-17")));
-        assertFalse(read("3*x^10").equals(read("x^2-4*x+7")));
-        assertFalse(read("3*x^10").equals(read("-x^3-1")));
+        testEqualsHelper(
+                readPolynomialList("[0, 1, x, -17, x^2-4*x+7, -x^3-1, 3*x^10]"),
+                readPolynomialList("[0, 1, x, -17, x^2-4*x+7, -x^3-1, 3*x^10]")
+        );
+    }
+
+    private static void hashCode_helper(@NotNull String input, int hashCode) {
+        aeq(read(input).get().hashCode(), hashCode);
     }
 
     @Test
     public void testHashCode() {
-        aeq(ZERO.hashCode(), 1);
-        aeq(ONE.hashCode(), 32);
-        aeq(X.hashCode(), 962);
-        aeq(read("-17").get().hashCode(), 14);
-        aeq(read("x^2-4*x+7").get().hashCode(), 36395);
-        aeq(read("-x^3-1").get().hashCode(), 893729);
-        aeq(read("3*x^10").get().hashCode(), 129082722);
+        hashCode_helper("0", 1);
+        hashCode_helper("1", 32);
+        hashCode_helper("x", 962);
+        hashCode_helper("-17", 14);
+        hashCode_helper("x^2-4*x+7", 36395);
+        hashCode_helper("-x^3-1", 893729);
+        hashCode_helper("3*x^10", 129082722);
     }
 
     @Test
     public void testCompareTo() {
-        aeq(ZERO.compareTo(ZERO), 0);
-        aeq(ZERO.compareTo(ONE), -1);
-        aeq(ZERO.compareTo(X), -1);
-        aeq(ZERO.compareTo(read("-17").get()), 1);
-        aeq(ZERO.compareTo(read("x^2-4*x+7").get()), -1);
-        aeq(ZERO.compareTo(read("-x^3-1").get()), 1);
-        aeq(ZERO.compareTo(read("3*x^10").get()), -1);
-        aeq(ONE.compareTo(ZERO), 1);
-        aeq(ONE.compareTo(ONE), 0);
-        aeq(ONE.compareTo(X), -1);
-        aeq(ONE.compareTo(read("-17").get()), 1);
-        aeq(ONE.compareTo(read("x^2-4*x+7").get()), -1);
-        aeq(ONE.compareTo(read("-x^3-1").get()), 1);
-        aeq(ONE.compareTo(read("3*x^10").get()), -1);
-        aeq(X.compareTo(ZERO), 1);
-        aeq(X.compareTo(ONE), 1);
-        aeq(X.compareTo(X), 0);
-        aeq(X.compareTo(read("-17").get()), 1);
-        aeq(X.compareTo(read("x^2-4*x+7").get()), -1);
-        aeq(X.compareTo(read("-x^3-1").get()), 1);
-        aeq(X.compareTo(read("3*x^10").get()), -1);
-        aeq(read("-17").get().compareTo(ZERO), -1);
-        aeq(read("-17").get().compareTo(ONE), -1);
-        aeq(read("-17").get().compareTo(X), -1);
-        aeq(read("-17").get().compareTo(read("-17").get()), 0);
-        aeq(read("-17").get().compareTo(read("x^2-4*x+7").get()), -1);
-        aeq(read("-17").get().compareTo(read("-x^3-1").get()), 1);
-        aeq(read("-17").get().compareTo(read("3*x^10").get()), -1);
-        aeq(read("x^2-4*x+7").get().compareTo(ZERO), 1);
-        aeq(read("x^2-4*x+7").get().compareTo(ONE), 1);
-        aeq(read("x^2-4*x+7").get().compareTo(X), 1);
-        aeq(read("x^2-4*x+7").get().compareTo(read("-17").get()), 1);
-        aeq(read("x^2-4*x+7").get().compareTo(read("x^2-4*x+7").get()), 0);
-        aeq(read("x^2-4*x+7").get().compareTo(read("-x^3-1").get()), 1);
-        aeq(read("x^2-4*x+7").get().compareTo(read("3*x^10").get()), -1);
-        aeq(read("-x^3-1").get().compareTo(ZERO), -1);
-        aeq(read("-x^3-1").get().compareTo(ONE), -1);
-        aeq(read("-x^3-1").get().compareTo(X), -1);
-        aeq(read("-x^3-1").get().compareTo(read("-17").get()), -1);
-        aeq(read("-x^3-1").get().compareTo(read("x^2-4*x+7").get()), -1);
-        aeq(read("-x^3-1").get().compareTo(read("-x^3-1").get()), 0);
-        aeq(read("-x^3-1").get().compareTo(read("3*x^10").get()), -1);
-        aeq(read("3*x^10").get().compareTo(ZERO), 1);
-        aeq(read("3*x^10").get().compareTo(ONE), 1);
-        aeq(read("3*x^10").get().compareTo(X), 1);
-        aeq(read("3*x^10").get().compareTo(read("-17").get()), 1);
-        aeq(read("3*x^10").get().compareTo(read("x^2-4*x+7").get()), 1);
-        aeq(read("3*x^10").get().compareTo(read("-x^3-1").get()), 1);
-        aeq(read("3*x^10").get().compareTo(read("3*x^10").get()), 0);
+        testCompareToHelper(readPolynomialList("[-x^3-1, -17, 0, 1, x, x^2-4*x+7, 3*x^10]"));
     }
 
     @Test
@@ -924,23 +859,6 @@ public class PolynomialTest {
         assertFalse(findIn("").isPresent());
         assertFalse(findIn("o").isPresent());
         assertFalse(findIn("hello").isPresent());
-    }
-
-    @Test
-    public void testToString() {
-        aeq(ZERO, "0");
-        aeq(ONE, "1");
-        aeq(X, "x");
-        aeq(of(Arrays.asList(BigInteger.valueOf(-17))), "-17");
-        aeq(of(Arrays.asList(BigInteger.ZERO, BigInteger.ONE)), "x");
-        aeq(of(Arrays.asList(BigInteger.ZERO, BigInteger.valueOf(-1))), "-x");
-        aeq(of(Arrays.asList(BigInteger.ZERO, BigInteger.valueOf(2))), "2*x");
-        aeq(of(Arrays.asList(BigInteger.ZERO, BigInteger.valueOf(-2))), "-2*x");
-        aeq(of(Arrays.asList(BigInteger.ZERO, BigInteger.ZERO, BigInteger.ONE)), "x^2");
-        aeq(of(Arrays.asList(BigInteger.ZERO, BigInteger.ZERO, BigInteger.valueOf(-1))), "-x^2");
-        aeq(of(Arrays.asList(BigInteger.ZERO, BigInteger.ZERO, BigInteger.valueOf(2))), "2*x^2");
-        aeq(of(Arrays.asList(BigInteger.ZERO, BigInteger.ZERO, BigInteger.valueOf(-2))), "-2*x^2");
-        aeq(of(Arrays.asList(BigInteger.valueOf(7), BigInteger.valueOf(-4), BigInteger.ONE)), "x^2-4*x+7");
     }
 
     private static @NotNull List<BigInteger> readBigIntegerList(@NotNull String s) {

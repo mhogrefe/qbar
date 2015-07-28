@@ -6,20 +6,20 @@ import mho.qbar.iterableProviders.QBarRandomProvider;
 import mho.wheels.iterables.IterableUtils;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
+import org.jetbrains.annotations.NotNull;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.List;
-import java.util.Random;
 
 import static mho.qbar.objects.Interval.*;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.ordering.Ordering.le;
 
-@SuppressWarnings({"ConstantConditions", "UnusedDeclaration"})
+@SuppressWarnings("UnusedDeclaration")
 public class IntervalDemos {
     private static final boolean USE_RANDOM = false;
-    private static final String INTERVAL_CHARS = " (),-/0123456789I[]finty";
+    private static final @NotNull String INTERVAL_CHARS = " (),-/0123456789I[]finty";
     private static final int SMALL_LIMIT = 1000;
     private static int LIMIT;
 

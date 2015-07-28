@@ -1,21 +1,24 @@
 package mho.qbar.objects;
 
+import mho.wheels.io.Readers;
 import mho.wheels.iterables.IterableUtils;
-import mho.wheels.misc.Readers;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
 import java.math.BigInteger;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 import static mho.qbar.objects.RationalVector.*;
-import static mho.wheels.iterables.IterableUtils.toList;
+import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.ordering.Ordering.*;
+import static mho.wheels.testing.Testing.*;
 import static org.junit.Assert.*;
 
 public class RationalVectorTest {
+    private static final int TINY_LIMIT = 20;
+
     @Test
     public void testConstants() {
         aeq(ZERO_DIMENSIONAL, "[]");
@@ -402,6 +405,22 @@ public class RationalVectorTest {
                 "[[-5/3, 5/12, -185/8], [32, -139/6, 73/8]]"
         );
         aeq(delta(readRationalVectorList("[[1/2], [2/3], [3/4]]")), "[[1/6], [1/12]]");
+        aeqitLimit(
+                TINY_LIMIT,
+                delta(
+                        map(
+                                i -> {
+                                    Rational r = Rational.of(i);
+                                    return of(Arrays.asList(r, r.pow(2), r.pow(3)));
+                                },
+                                rangeUp(1)
+                        )
+                ),
+                "[[1, 3, 7], [1, 5, 19], [1, 7, 37], [1, 9, 61], [1, 11, 91], [1, 13, 127], [1, 15, 169]," +
+                " [1, 17, 217], [1, 19, 271], [1, 21, 331], [1, 23, 397], [1, 25, 469], [1, 27, 547]," +
+                " [1, 29, 631], [1, 31, 721], [1, 33, 817], [1, 35, 919], [1, 37, 1027], [1, 39, 1141]," +
+                " [1, 41, 1261], ...]"
+        );
         try {
             delta(readRationalVectorList("[]"));
             fail();
@@ -508,52 +527,28 @@ public class RationalVectorTest {
     }
 
     @Test
-    public void testCompareTo() {
-        assertTrue(eq(ZERO_DIMENSIONAL, ZERO_DIMENSIONAL));
-        assertTrue(lt(ZERO_DIMENSIONAL, read("[1/2]").get()));
-        assertTrue(lt(ZERO_DIMENSIONAL, read("[5/3, -1/4, 23]").get()));
-        assertTrue(lt(ZERO_DIMENSIONAL, read("[5/3, 1/4, 23]").get()));
-        assertTrue(gt(read("[1/2]").get(), ZERO_DIMENSIONAL));
-        assertTrue(eq(read("[1/2]").get(), read("[1/2]").get()));
-        assertTrue(lt(read("[1/2]").get(), read("[5/3, -1/4, 23]").get()));
-        assertTrue(lt(read("[1/2]").get(), read("[5/3, 1/4, 23]").get()));
-        assertTrue(gt(read("[5/3, -1/4, 23]").get(), ZERO_DIMENSIONAL));
-        assertTrue(gt(read("[5/3, -1/4, 23]").get(), read("[1/2]").get()));
-        assertTrue(eq(read("[5/3, -1/4, 23]").get(), read("[5/3, -1/4, 23]").get()));
-        assertTrue(lt(read("[5/3, -1/4, 23]").get(), read("[5/3, 1/4, 23]").get()));
-        assertTrue(gt(read("[5/3, 1/4, 23]").get(), ZERO_DIMENSIONAL));
-        assertTrue(gt(read("[5/3, 1/4, 23]").get(), read("[1/2]").get()));
-        assertTrue(gt(read("[5/3, 1/4, 23]").get(), read("[5/3, -1/4, 23]").get()));
-        assertTrue(eq(read("[5/3, 1/4, 23]").get(), read("[5/3, 1/4, 23]").get()));
+    public void testEquals() {
+        testEqualsHelper(
+                readRationalVectorList("[[], [1/2], [5/3, -1/4, 23], [5/3, 1/4, 23]]"),
+                readRationalVectorList("[[], [1/2], [5/3, -1/4, 23], [5/3, 1/4, 23]]")
+        );
     }
 
-    @Test
-    public void testEquals() {
-        //noinspection EqualsWithItself
-        assertTrue(ZERO_DIMENSIONAL.equals(ZERO_DIMENSIONAL));
-        assertFalse(ZERO_DIMENSIONAL.equals(read("[1/2]").get()));
-        assertFalse(ZERO_DIMENSIONAL.equals(read("[5/3, -1/4, 23]").get()));
-        assertFalse(ZERO_DIMENSIONAL.equals(read("[5/3, 1/4, 23]").get()));
-        assertFalse(read("[1/2]").get().equals(ZERO_DIMENSIONAL));
-        assertTrue(read("[1/2]").get().equals(read("[1/2]").get()));
-        assertFalse(read("[1/2]").get().equals(read("[5/3, -1/4, 23]").get()));
-        assertFalse(read("[1/2]").get().equals(read("[5/3, 1/4, 23]").get()));
-        assertFalse(read("[5/3, -1/4, 23]").get().equals(ZERO_DIMENSIONAL));
-        assertFalse(read("[5/3, -1/4, 23]").get().equals(read("[1/2]").get()));
-        assertTrue(read("[5/3, -1/4, 23]").get().equals(read("[5/3, -1/4, 23]").get()));
-        assertFalse(read("[5/3, -1/4, 23]").get().equals(read("[5/3, 1/4, 23]").get()));
-        assertFalse(read("[5/3, 1/4, 23]").get().equals(ZERO_DIMENSIONAL));
-        assertFalse(read("[5/3, 1/4, 23]").get().equals(read("[1/2]").get()));
-        assertFalse(read("[5/3, 1/4, 23]").get().equals(read("[5/3, -1/4, 23]").get()));
-        assertTrue(read("[5/3, 1/4, 23]").get().equals(read("[5/3, 1/4, 23]").get()));
+    private static void hashCode_helper(@NotNull String input, int hashCode) {
+        aeq(read(input).get().hashCode(), hashCode);
     }
 
     @Test
     public void testHashCode() {
-        aeq(ZERO_DIMENSIONAL.hashCode(), 1);
-        aeq(read("[1/2]").get().hashCode(), 64);
-        aeq(read("[5/3, -1/4, 23]").get().hashCode(), 181506);
-        aeq(read("[5/3, 1/4, 23]").get().hashCode(), 183428);
+        hashCode_helper("[]", 1);
+        hashCode_helper("[1/2]", 64);
+        hashCode_helper("[5/3, -1/4, 23]", 181506);
+        hashCode_helper("[5/3, 1/4, 23]", 183428);
+    }
+
+    @Test
+    public void testCompareTo() {
+        testCompareToHelper(readRationalVectorList("[[], [1/2], [5/3, -1/4, 23], [5/3, 1/4, 23]]"));
     }
 
     @Test
@@ -582,14 +577,6 @@ public class RationalVectorTest {
         assertFalse(findIn("]]][[3/4, 45/0]dsvdf").isPresent());
         assertFalse(findIn("]]][[3/4, 2/4]dsvdf").isPresent());
         assertFalse(findIn("hello").isPresent());
-    }
-
-    @Test
-    public void testToString() {
-        aeq(ZERO_DIMENSIONAL, "[]");
-        aeq(of(Arrays.asList(Rational.of(1, 2))), "[1/2]");
-        aeq(of(Arrays.asList(Rational.of(5, 3), Rational.of(-1, 4), Rational.of(23))), "[5/3, -1/4, 23]");
-        aeq(of(Arrays.asList(Rational.of(5, 3), Rational.of(1, 4), Rational.of(23))), "[5/3, 1/4, 23]");
     }
 
     private static void aeq(Iterable<?> a, Object b) {

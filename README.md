@@ -18,3 +18,4 @@ Progress
 | RationalMatrix         | ✘       | ✘       | ✘     | ✘     | ✘          |
 | RationalPolynomial     | ✘       | ✘       | ✘     | ✘     | ✘          |
 | RationalVector         | ✔       | ✔       | ✔     | ✔     | ✔          |
+| QBarTesting            | ✘       | ✘       | ✘     | ✘     | ✘          |

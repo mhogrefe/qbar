@@ -2,9 +2,11 @@ package mho.qbar.iterableProviders;
 
 import mho.qbar.objects.*;
 import mho.wheels.iterables.IterableProvider;
+import mho.wheels.math.BinaryFraction;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.*;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -15,295 +17,808 @@ import java.util.function.Function;
 
 import static mho.wheels.iterables.IterableUtils.map;
 
-public abstract class QBarIterableProvider {
+@SuppressWarnings("unused")
+public strictfp abstract class QBarIterableProvider {
     protected @NotNull IterableProvider wheelsProvider;
 
     protected QBarIterableProvider(@NotNull IterableProvider wheelsProvider) {
         this.wheelsProvider = wheelsProvider;
     }
 
+    public @NotNull IterableProvider getWheelsProvider() {
+        return wheelsProvider;
+    }
+
+    /**
+     * Returns a shallow copy of {@code this}.
+     */
+    public @NotNull QBarIterableProvider copy() {
+        return this;
+    }
+
+    /**
+     * Returns a deep copy of {@code this}.
+     */
+    public @NotNull QBarIterableProvider deepCopy() {
+        return this;
+    }
+
+    /**
+     * Resets {@code this} to its original state (if {@code this} has any state).
+     */
     public void reset() {
         wheelsProvider.reset();
     }
 
+    /**
+     * Returns a shallow copy of {@code this} with a given primary scale.
+     *
+     * @param scale the primary scale.
+     */
     public @NotNull QBarIterableProvider withScale(int scale) {
         return this;
     }
 
+    /**
+     * Returns a shallow copy of {@code this} with a given secondary scale.
+     *
+     * @param secondaryScale the secondary scale.
+     */
     public @NotNull QBarIterableProvider withSecondaryScale(int secondaryScale) {
         return this;
     }
 
+    /**
+     * Generates {@code Boolean}s.
+     */
     public @NotNull Iterable<Boolean> booleans() {
         return wheelsProvider.booleans();
     }
 
+    /**
+     * Generates {@link Ordering}s.
+     */
     public @NotNull Iterable<Ordering> orderings() {
         return wheelsProvider.orderings();
     }
 
+    /**
+     * Generates {@code RoundingMode}s.
+     */
     public @NotNull Iterable<RoundingMode> roundingModes() {
         return wheelsProvider.roundingModes();
     }
 
+    /**
+     * Generates values from a list, sampled uniformly if applicable.
+     *
+     * @param xs the source list
+     */
     public @NotNull <T> Iterable<T> uniformSample(@NotNull List<T> xs) {
         return wheelsProvider.uniformSample(xs);
     }
 
+    /**
+     * Generates {@code Character}s from a {@code String}, sampled uniformly if applicable.
+     *
+     * @param s the source {@code String}
+     */
     public @NotNull Iterable<Character> uniformSample(@NotNull String s) {
         return wheelsProvider.uniformSample(s);
     }
 
-    public @NotNull Iterable<Integer> naturalIntegersGeometric() {
-        return wheelsProvider.naturalIntegersGeometric();
-    }
-
-    public @NotNull Iterable<Integer> positiveIntegersGeometric() {
-        return wheelsProvider.positiveIntegersGeometric();
-    }
-
-    public @NotNull Iterable<Integer> negativeIntegersGeometric() {
-        return wheelsProvider.negativeIntegersGeometric();
-    }
-
-    public @NotNull Iterable<Integer> nonzeroIntegersGeometric() {
-        return wheelsProvider.nonzeroIntegersGeometric();
-    }
-
-    public @NotNull Iterable<Integer> integersGeometric() {
-        return wheelsProvider.integersGeometric();
-    }
-
-    public @NotNull Iterable<Integer> rangeUpGeometric(int a) {
-        return wheelsProvider.rangeUpGeometric(a);
-    }
-
-    public @NotNull Iterable<Integer> rangeDownGeometric(int a) {
-        return wheelsProvider.rangeDownGeometric(a);
-    }
-
+    /**
+     * Generates positive {@code Byte}s.
+     */
     public @NotNull Iterable<Byte> positiveBytes() {
         return wheelsProvider.positiveBytes();
     }
 
+    /**
+     * Generates positive {@code Short}s.
+     */
     public @NotNull Iterable<Short> positiveShorts() {
         return wheelsProvider.positiveShorts();
     }
 
+    /**
+     * Generates positive {@code Integer}s.
+     */
     public @NotNull Iterable<Integer> positiveIntegers() {
         return wheelsProvider.positiveIntegers();
     }
 
+    /**
+     * Generates positive {@code Long}s.
+     */
     public @NotNull Iterable<Long> positiveLongs() {
         return wheelsProvider.positiveLongs();
     }
 
+    /**
+     * Generates positive {@code BigInteger}s.
+     */
     public @NotNull Iterable<BigInteger> positiveBigIntegers() {
         return wheelsProvider.positiveBigIntegers();
     }
 
+    /**
+     * Generates negative {@code Byte}s.
+     */
     public @NotNull Iterable<Byte> negativeBytes() {
         return wheelsProvider.negativeBytes();
     }
 
+    /**
+     * Generates negative {@code Short}s.
+     */
     public @NotNull Iterable<Short> negativeShorts() {
         return wheelsProvider.negativeShorts();
     }
 
+    /**
+     * Generates negative {@code Integer}s.
+     */
     public @NotNull Iterable<Integer> negativeIntegers() {
         return wheelsProvider.negativeIntegers();
     }
 
+    /**
+     * Generates negative {@code Long}s.
+     */
     public @NotNull Iterable<Long> negativeLongs() {
         return wheelsProvider.negativeLongs();
     }
 
+    /**
+     * Generates negative {@code BigInteger}s.
+     */
     public @NotNull Iterable<BigInteger> negativeBigIntegers() {
         return wheelsProvider.negativeBigIntegers();
     }
 
+    /**
+     * Generates nonzero {@code Byte}s.
+     */
     public @NotNull Iterable<Byte> nonzeroBytes() {
         return wheelsProvider.nonzeroBytes();
     }
 
+    /**
+     * Generates nonzero {@code Short}s.
+     */
     public @NotNull Iterable<Short> nonzeroShorts() {
         return wheelsProvider.nonzeroShorts();
     }
 
+    /**
+     * Generates nonzero {@code Integer}s.
+     */
     public @NotNull Iterable<Integer> nonzeroIntegers() {
         return wheelsProvider.nonzeroIntegers();
     }
 
+    /**
+     * Generates nonzero {@code Long}s.
+     */
     public @NotNull Iterable<Long> nonzeroLongs() {
         return wheelsProvider.nonzeroLongs();
     }
 
+    /**
+     * Generates nonzero {@code BigInteger}s.
+     */
     public @NotNull Iterable<BigInteger> nonzeroBigIntegers() {
         return wheelsProvider.nonzeroBigIntegers();
     }
 
+    /**
+     * Generates natural {@code Byte}s (including 0).
+     */
     public @NotNull Iterable<Byte> naturalBytes() {
         return wheelsProvider.naturalBytes();
     }
 
+    /**
+     * Generates natural {@code Short}s (including 0).
+     */
     public @NotNull Iterable<Short> naturalShorts() {
         return wheelsProvider.naturalShorts();
     }
 
+    /**
+     * Generates natural {@code Integer}s (including 0).
+     */
     public @NotNull Iterable<Integer> naturalIntegers() {
         return wheelsProvider.naturalIntegers();
     }
 
+    /**
+     * Generates natural {@code Long}s (including 0).
+     */
     public @NotNull Iterable<Long> naturalLongs() {
         return wheelsProvider.naturalLongs();
     }
 
+    /**
+     * Generates natural {@code BigInteger}s (including 0).
+     */
     public @NotNull Iterable<BigInteger> naturalBigIntegers() {
         return wheelsProvider.naturalBigIntegers();
     }
 
+    /**
+     * Generates {@code Byte}s.
+     */
     public @NotNull Iterable<Byte> bytes() {
         return wheelsProvider.bytes();
     }
 
+    /**
+     * Generates {@code Short}s.
+     */
     public @NotNull Iterable<Short> shorts() {
         return wheelsProvider.shorts();
     }
 
+    /**
+     * Generates {@code Integer}s.
+     */
     public @NotNull Iterable<Integer> integers() {
         return wheelsProvider.integers();
     }
 
+    /**
+     * Generates {@code Long}s.
+     */
     public @NotNull Iterable<Long> longs() {
         return wheelsProvider.longs();
     }
 
+    /**
+     * Generates {@code BigInteger}s.
+     */
     public @NotNull Iterable<BigInteger> bigIntegers() {
         return wheelsProvider.bigIntegers();
     }
 
+    /**
+     * Generates ASCII {@code Character}s.
+     */
     public @NotNull Iterable<Character> asciiCharacters() {
         return wheelsProvider.asciiCharacters();
     }
 
+    /**
+     * Generates {@code Character}s.
+     */
     public @NotNull Iterable<Character> characters() {
         return wheelsProvider.characters();
     }
 
+    /**
+     * Generates positive {@code Integer}s from a geometric distribution (if applicable).
+     */
+    public @NotNull Iterable<Integer> positiveIntegersGeometric() {
+        return wheelsProvider.positiveIntegersGeometric();
+    }
+
+    /**
+     * Generates negative {@code Integer}s from a geometric distribution (if applicable).
+     */
+    public @NotNull Iterable<Integer> negativeIntegersGeometric() {
+        return wheelsProvider.negativeIntegersGeometric();
+    }
+
+    /**
+     * Generates nonzero {@code Integer}s from a geometric distribution (if applicable).
+     */
+    public @NotNull Iterable<Integer> nonzeroIntegersGeometric() {
+        return wheelsProvider.nonzeroIntegersGeometric();
+    }
+
+    /**
+     * Generates natural {@code Integer}s (including 0) from a geometric distribution (if applicable).
+     */
+    public @NotNull Iterable<Integer> naturalIntegersGeometric() {
+        return wheelsProvider.naturalIntegersGeometric();
+    }
+
+    /**
+     * Generates {@code Integer}s from a geometric distribution (if applicable).
+     */
+    public @NotNull Iterable<Integer> integersGeometric() {
+        return wheelsProvider.integersGeometric();
+    }
+
+    /**
+     * Generates positive {@code Integer}s greater than or equal to a given value from a geometric distribution (if
+     * applicable).
+     *
+     * @param a the inclusive lower bound of the generated {@code Integer}s
+     */
+    public @NotNull Iterable<Integer> rangeUpGeometric(int a) {
+        return wheelsProvider.rangeUpGeometric(a);
+    }
+
+    /**
+     * Generates positive {@code Integer}s less than or equal to a given value from a geometric distribution (if
+     * applicable).
+     *
+     * @param a the inclusive upper bound of the generated {@code Integer}s
+     */
+    public @NotNull Iterable<Integer> rangeDownGeometric(int a) {
+        return wheelsProvider.rangeDownGeometric(a);
+    }
+
+    /**
+     * Generates {@code Byte}s greater than or equal to a given value.
+     *
+     * @param a the inclusive lower bound of the generated {@code Byte}s
+     */
     public @NotNull Iterable<Byte> rangeUp(byte a) {
         return wheelsProvider.rangeUp(a);
     }
 
+    /**
+     * Generates {@code Short}s greater than or equal to a given value.
+     *
+     * @param a the inclusive lower bound of the generated {@code Short}s
+     */
     public @NotNull Iterable<Short> rangeUp(short a) {
         return wheelsProvider.rangeUp(a);
     }
 
+    /**
+     * Generates {@code Integer}s greater than or equal to a given value.
+     *
+     * @param a the inclusive lower bound of the generated {@code Integer}s
+     */
     public @NotNull Iterable<Integer> rangeUp(int a) {
         return wheelsProvider.rangeUp(a);
     }
 
+    /**
+     * Generates {@code Long}s greater than or equal to a given value.
+     *
+     * @param a the inclusive lower bound of the generated {@code Long}s
+     */
     public @NotNull Iterable<Long> rangeUp(long a) {
         return wheelsProvider.rangeUp(a);
     }
 
+    /**
+     * Generates {@code BigInteger}s greater than or equal to a given value.
+     *
+     * @param a the inclusive lower bound of the generated {@code BigInteger}s
+     */
     public @NotNull Iterable<BigInteger> rangeUp(@NotNull BigInteger a) {
         return wheelsProvider.rangeUp(a);
     }
 
+    /**
+     * Generates {@code Character}s greater than or equal to a given value.
+     *
+     * @param a the inclusive lower bound of the generated {@code Character}s
+     */
     public @NotNull Iterable<Character> rangeUp(char a) {
         return wheelsProvider.rangeUp(a);
     }
 
+    /**
+     * Generates {@code Byte}s less than or equal to a given value.
+     *
+     * @param a the inclusive upper bound of the generated {@code Byte}s
+     */
     public @NotNull Iterable<Byte> rangeDown(byte a) {
         return wheelsProvider.rangeDown(a);
     }
 
+    /**
+     * Generates {@code Short}s less than or equal to a given value.
+     *
+     * @param a the inclusive upper bound of the generated {@code Short}s
+     */
     public @NotNull Iterable<Short> rangeDown(short a) {
         return wheelsProvider.rangeDown(a);
     }
 
+    /**
+     * Generates {@code Integer}s less than or equal to a given value.
+     *
+     * @param a the inclusive upper bound of the generated {@code Integer}s
+     */
     public @NotNull Iterable<Integer> rangeDown(int a) {
         return wheelsProvider.rangeDown(a);
     }
 
+    /**
+     * Generates {@code Long}s less than or equal to a given value.
+     *
+     * @param a the inclusive upper bound of the generated {@code Long}s
+     */
     public @NotNull Iterable<Long> rangeDown(long a) {
         return wheelsProvider.rangeDown(a);
     }
 
+    /**
+     * Generates {@code BigInteger}s less than or equal to a given value.
+     *
+     * @param a the inclusive upper bound of the generated {@code BigInteger}s
+     */
     public @NotNull Iterable<BigInteger> rangeDown(@NotNull BigInteger a) {
         return wheelsProvider.rangeDown(a);
     }
 
+    /**
+     * Generates {@code Character}s less than or equal to a given value.
+     *
+     * @param a the inclusive upper bound of the generated {@code Character}s
+     */
     public @NotNull Iterable<Character> rangeDown(char a) {
         return wheelsProvider.rangeDown(a);
     }
 
+    /**
+     * Generates {@code Byte}s between {@code a} and {@code b}, inclusive.
+     *
+     * @param a the inclusive lower bound of the generated {@code Byte}s
+     * @param b the inclusive upper bound of the generated {@code Byte}s
+     */
     public @NotNull Iterable<Byte> range(byte a, byte b) {
         return wheelsProvider.range(a, b);
     }
 
+    /**
+     * Generates {@code Short}s between {@code a} and {@code b}, inclusive.
+     *
+     * @param a the inclusive lower bound of the generated {@code Short}s
+     * @param b the inclusive upper bound of the generated {@code Short}s
+     */
     public @NotNull Iterable<Short> range(short a, short b) {
         return wheelsProvider.range(a, b);
     }
 
+    /**
+     * Generates {@code Integer}s between {@code a} and {@code b}, inclusive.
+     *
+     * @param a the inclusive lower bound of the generated {@code Integer}s
+     * @param b the inclusive upper bound of the generated {@code Integer}s
+     */
     public @NotNull Iterable<Integer> range(int a, int b) {
         return wheelsProvider.range(a, b);
     }
 
+    /**
+     * Generates {@code Long}s between {@code a} and {@code b}, inclusive.
+     *
+     * @param a the inclusive lower bound of the generated {@code Long}s
+     * @param b the inclusive upper bound of the generated {@code Long}s
+     */
     public @NotNull Iterable<Long> range(long a, long b) {
         return wheelsProvider.range(a, b);
     }
 
+    /**
+     * Generates {@code BigInteger}s between {@code a} and {@code b}, inclusive.
+     *
+     * @param a the inclusive lower bound of the generated {@code BigInteger}s
+     * @param b the inclusive upper bound of the generated {@code BigInteger}s
+     */
     public @NotNull Iterable<BigInteger> range(@NotNull BigInteger a, @NotNull BigInteger b) {
         return wheelsProvider.range(a, b);
     }
 
+    /**
+     * Generates {@code Character}s between {@code a} and {@code b}, inclusive.
+     *
+     * @param a the inclusive lower bound of the generated {@code Character}s
+     * @param b the inclusive upper bound of the generated {@code Character}s
+     */
     public @NotNull Iterable<Character> range(char a, char b) {
         return wheelsProvider.range(a, b);
     }
 
-    public @NotNull Iterable<Float> positiveOrdinaryFloats() {
-        return wheelsProvider.positiveOrdinaryFloats();
+    /**
+     * Generates positive {@link BinaryFraction}s.
+     */
+    public @NotNull Iterable<BinaryFraction> positiveBinaryFractions() {
+        return wheelsProvider.positiveBinaryFractions();
     }
 
-    public @NotNull Iterable<Float> negativeOrdinaryFloats() {
-        return wheelsProvider.negativeOrdinaryFloats();
+    /**
+     * Generates negative {@link BinaryFraction}s.
+     */
+    public @NotNull Iterable<BinaryFraction> negativeBinaryFractions() {
+        return wheelsProvider.negativeBinaryFractions();
     }
 
-    public @NotNull Iterable<Float> ordinaryFloats() {
-        return wheelsProvider.ordinaryFloats();
+    /**
+     * Generates nonzero {@link BinaryFraction}s.
+     */
+    public @NotNull Iterable<BinaryFraction> nonzeroBinaryFractions() {
+        return wheelsProvider.nonzeroBinaryFractions();
     }
 
+    /**
+     * Generates {@link BinaryFraction}s.
+     */
+    public @NotNull Iterable<BinaryFraction> binaryFractions() {
+        return wheelsProvider.binaryFractions();
+    }
+
+    /**
+     * Generates {@code BinaryFraction}s greater than or equal to a given value.
+     *
+     * @param a the inclusive lower bound of the generated {@code BinaryFraction}s
+     */
+    public @NotNull Iterable<BinaryFraction> rangeUp(@NotNull BinaryFraction a) {
+        return wheelsProvider.rangeUp(a);
+    }
+
+    /**
+     * Generates {@code BinaryFraction}s less than or equal to a given value.
+     *
+     * @param a the inclusive upper bound of the generated {@code BinaryFraction}s
+     */
+    public @NotNull Iterable<BinaryFraction> rangeDown(@NotNull BinaryFraction a) {
+        return wheelsProvider.rangeDown(a);
+    }
+
+    /**
+     * Generates {@link BinaryFraction}s between {@code a} and {@code b}, inclusive.
+     *
+     * @param a the inclusive lower bound of the generated {@code BinaryFraction}s
+     * @param b the inclusive upper bound of the generated {@code BinaryFraction}s
+     */
+    public @NotNull Iterable<BinaryFraction> range(@NotNull BinaryFraction a, @NotNull BinaryFraction b) {
+        return wheelsProvider.range(a, b);
+    }
+
+    /**
+     * Generates positive {@code Float}s, including {@code Infinity} but not positive zero.
+     */
+    public @NotNull Iterable<Float> positiveFloats() {
+        return wheelsProvider.positiveFloats();
+    }
+
+    /**
+     * Generates negative {@code Float}s, including {@code -Infinity} but not negative zero.
+     */
+    public @NotNull Iterable<Float> negativeFloats() {
+        return wheelsProvider.negativeFloats();
+    }
+
+    /**
+     * Generates nonzero {@code Float}s, including {@code NaN}, positive and negative zeros, {@code Infinity}, and
+     * {@code -Infinity}.
+     */
+    public @NotNull Iterable<Float> nonzeroFloats() {
+        return wheelsProvider.nonzeroFloats();
+    }
+
+    /**
+     * Generates {@code Float}s.
+     */
     public @NotNull Iterable<Float> floats() {
         return wheelsProvider.floats();
     }
 
-    public @NotNull Iterable<Double> positiveOrdinaryDoubles() {
-        return wheelsProvider.positiveOrdinaryDoubles();
+    /**
+     * Generates positive {@code Double}s, including {@code Infinity} but not positive zero.
+     */
+    public @NotNull Iterable<Double> positiveDoubles() {
+        return wheelsProvider.positiveDoubles();
     }
 
-    public @NotNull Iterable<Double> negativeOrdinaryDoubles() {
-        return wheelsProvider.negativeOrdinaryDoubles();
+    /**
+     * Generates negative {@code Double}s, including {@code -Infinity} but not negative zero.
+     */
+    public @NotNull Iterable<Double> negativeDoubles() {
+        return wheelsProvider.negativeDoubles();
     }
 
-    public @NotNull Iterable<Double> ordinaryDoubles() {
-        return wheelsProvider.ordinaryDoubles();
+    /**
+     * Generates nonzero {@code Double}s, including {@code NaN}, positive and negative zeros, {@code Infinity}, and
+     * {@code -Infinity}.
+     */
+    public @NotNull Iterable<Double> nonzeroDoubles() {
+        return wheelsProvider.nonzeroDoubles();
     }
 
+    /**
+     * Generates {@code Double}s, including {@code NaN}, positive and negative zeros, {@code Infinity}, and
+     * {@code -Infinity}.
+     */
     public @NotNull Iterable<Double> doubles() {
         return wheelsProvider.doubles();
     }
 
+    /**
+     * Generates positive {@code Float}s selected from a distribution which approximates a uniform distribution over
+     * the reals (if applicable).
+     */
+    public @NotNull Iterable<Float> positiveFloatsUniform() {
+        return wheelsProvider.positiveFloatsUniform();
+    }
+
+    /**
+     * Generates negative {@code Float}s selected from a distribution which approximates a uniform distribution over
+     * the reals (if applicable).
+     */
+    public @NotNull Iterable<Float> negativeFloatsUniform() {
+        return wheelsProvider.negativeFloatsUniform();
+    }
+
+    /**
+     * Generates nonzero {@code Float}s selected from a distribution which approximates a uniform distribution over
+     * the reals (if applicable).
+     */
+    public @NotNull Iterable<Float> nonzeroFloatsUniform() {
+        return wheelsProvider.nonzeroFloatsUniform();
+    }
+
+    /**
+     * Generates {@code Float}s selected from a distribution which approximates a uniform distribution over the reals
+     * (if applicable).
+     */
+    public @NotNull Iterable<Float> floatsUniform() {
+        return wheelsProvider.floatsUniform();
+    }
+
+    /**
+     * Generates positive {@code Double}s selected from a distribution which approximates a uniform distribution over
+     * the reals (if applicable).
+     */
+    public @NotNull Iterable<Double> positiveDoublesUniform() {
+        return wheelsProvider.positiveDoublesUniform();
+    }
+
+    /**
+     * Generates negative {@code Double}s selected from a distribution which approximates a uniform distribution over
+     * the reals (if applicable).
+     */
+    public @NotNull Iterable<Double> negativeDoublesUniform() {
+        return wheelsProvider.negativeDoublesUniform();
+    }
+
+    /**
+     * Generates nonzero {@code Double}s selected from a distribution which approximates a uniform distribution over
+     * the reals (if applicable).
+     */
+    public @NotNull Iterable<Double> nonzeroDoublesUniform() {
+        return wheelsProvider.nonzeroDoublesUniform();
+    }
+
+    /**
+     * Generates {@code Double}s selected from a distribution which approximates a uniform distribution over the reals
+     * (if applicable).
+     */
+    public @NotNull Iterable<Double> doublesUniform() {
+        return wheelsProvider.doublesUniform();
+    }
+
+    /**
+     * Generates positive {@code BigDecimal}s.
+     */
     public @NotNull Iterable<BigDecimal> positiveBigDecimals() {
         return wheelsProvider.positiveBigDecimals();
     }
 
+    /**
+     * Generates negative {@code BigDecimal}s.
+     */
     public @NotNull Iterable<BigDecimal> negativeBigDecimals() {
         return wheelsProvider.negativeBigDecimals();
     }
 
+    /**
+     * Generates nonzero {@code BigDecimal}s.
+     */
+    public @NotNull Iterable<BigDecimal> nonzeroBigDecimals() {
+        return wheelsProvider.nonzeroBigDecimals();
+    }
+
+    /**
+     * Generates {@code BigDecimal}s.
+     */
     public @NotNull Iterable<BigDecimal> bigDecimals() {
         return wheelsProvider.bigDecimals();
+    }
+
+    /**
+     * Generates positive {@code BigDecimal}s in canonical form (see
+     * {@link mho.wheels.numberUtils.BigDecimalUtils#canonicalize(BigDecimal)}).
+     */
+    public @NotNull Iterable<BigDecimal> positiveCanonicalBigDecimals() {
+        return wheelsProvider.positiveCanonicalBigDecimals();
+    }
+
+    /**
+     * Generates negative {@code BigDecimal}s in canonical form (see
+     * {@link mho.wheels.numberUtils.BigDecimalUtils#canonicalize(BigDecimal)}).
+     */
+    public @NotNull Iterable<BigDecimal> negativeCanonicalBigDecimals() {
+        return wheelsProvider.negativeCanonicalBigDecimals();
+    }
+
+    /**
+     * Generates nonzero {@code BigDecimal}s in canonical form (see
+     * {@link mho.wheels.numberUtils.BigDecimalUtils#canonicalize(BigDecimal)}).
+     */
+    public @NotNull Iterable<BigDecimal> nonzeroCanonicalBigDecimals() {
+        return wheelsProvider.nonzeroCanonicalBigDecimals();
+    }
+
+    /**
+     * Generates {@code BigDecimal}s in canonical form (see
+     * {@link mho.wheels.numberUtils.BigDecimalUtils#canonicalize(BigDecimal)}).
+     */
+    public @NotNull Iterable<BigDecimal> canonicalBigDecimals() {
+        return wheelsProvider.canonicalBigDecimals();
+    }
+
+    /**
+     * Generates {@code BigDecimal}s greater than or equal to a given value.
+     *
+     * @param a the inclusive lower bound of the generated {@code BigDecimal}s
+     */
+    public @NotNull Iterable<BigDecimal> rangeUp(@NotNull BigDecimal a) {
+        return wheelsProvider.rangeUp(a);
+    }
+
+    /**
+     * Generates {@code BigDecimal}s less than or equal to a given value.
+     *
+     * @param a the inclusive upper bound of the generated {@code BigDecimal}s
+     */
+    public @NotNull Iterable<BigDecimal> rangeDown(@NotNull BigDecimal a) {
+        return wheelsProvider.rangeDown(a);
+    }
+
+    /**
+     * Generates {@code BigDecimal}s between {@code a} and {@code b}, inclusive.
+     *
+     * @param a the inclusive lower bound of the generated {@code BigDecimal}s
+     * @param b the inclusive upper bound of the generated {@code BigDecimal}s
+     */
+    public @NotNull Iterable<BigDecimal> range(@NotNull BigDecimal a, @NotNull BigDecimal b) {
+        return wheelsProvider.range(a, b);
+    }
+
+    /**
+     * Generates {@code BigDecimal}s greater than or equal to a given value, in canonical form (see
+     * {@link mho.wheels.numberUtils.BigDecimalUtils#canonicalize(BigDecimal)}).
+     *
+     * @param a the inclusive lower bound of the generated {@code BigDecimal}s
+     */
+    public @NotNull Iterable<BigDecimal> rangeUpCanonical(@NotNull BigDecimal a) {
+        return wheelsProvider.rangeUpCanonical(a);
+    }
+
+    /**
+     * Generates {@code BigDecimal}s less than or equal to a given value, in canonical form (see
+     * {@link mho.wheels.numberUtils.BigDecimalUtils#canonicalize(BigDecimal)}).
+     *
+     * @param a the inclusive upper bound of the generated {@code BigDecimal}s
+     */
+    public @NotNull Iterable<BigDecimal> rangeDownCanonical(@NotNull BigDecimal a) {
+        return wheelsProvider.rangeDownCanonical(a);
+    }
+
+    /**
+     * Generates {@code BigDecimal}s between {@code a} and {@code b}, inclusive, in canonical form (see
+     * {@link mho.wheels.numberUtils.BigDecimalUtils#canonicalize(BigDecimal)}).
+     *
+     * @param a the inclusive lower bound of the generated {@code BigDecimal}s
+     * @param b the inclusive upper bound of the generated {@code BigDecimal}s
+     */
+    public @NotNull Iterable<BigDecimal> rangeCanonical(@NotNull BigDecimal a, @NotNull BigDecimal b) {
+        return wheelsProvider.rangeCanonical(a, b);
+    }
+
+    public @NotNull <T> Iterable<T> withSpecialElement(@Nullable T x, @NotNull Iterable<T> xs) {
+        return wheelsProvider.withSpecialElement(x, xs);
     }
 
     public @NotNull <T> Iterable<T> withNull(@NotNull Iterable<T> xs) {
@@ -345,34 +860,6 @@ public abstract class QBarIterableProvider {
             @NotNull Function<A, Iterable<B>> f
     ) {
         return wheelsProvider.dependentPairs(xs, f);
-    }
-
-    public @NotNull <A, B> Iterable<Pair<A, B>> dependentPairsLogarithmic(
-            @NotNull Iterable<A> xs,
-            @NotNull Function<A, Iterable<B>> f
-    ) {
-        return wheelsProvider.dependentPairsLogarithmic(xs, f);
-    }
-
-    public @NotNull <A, B> Iterable<Pair<A, B>> dependentPairsSquareRoot(
-            @NotNull Iterable<A> xs,
-            @NotNull Function<A, Iterable<B>> f
-    ) {
-        return wheelsProvider.dependentPairsSquareRoot(xs, f);
-    }
-
-    public @NotNull <A, B> Iterable<Pair<A, B>> dependentPairsExponential(
-            @NotNull Iterable<A> xs,
-            @NotNull Function<A, Iterable<B>> f
-    ) {
-        return wheelsProvider.dependentPairsExponential(xs, f);
-    }
-
-    public @NotNull <A, B> Iterable<Pair<A, B>> dependentPairsSquare(
-            @NotNull Iterable<A> xs,
-            @NotNull Function<A, Iterable<B>> f
-    ) {
-        return wheelsProvider.dependentPairsSquare(xs, f);
     }
 
     public @NotNull <A, B> Iterable<Pair<A, B>> pairs(@NotNull Iterable<A> as, @NotNull Iterable<B> bs) {
@@ -465,6 +952,16 @@ public abstract class QBarIterableProvider {
         return wheelsProvider.lists(xs);
     }
 
+    public @NotNull <T> Iterable<List<T>> listsWithElement(@Nullable T element, Iterable<T> xs) {
+        return wheelsProvider.listsWithElement(element, xs);
+    }
+    public @NotNull <T> Iterable<List<T>> listsWithSubsequence(
+            @NotNull Iterable<Iterable<T>> subsequences,
+            @NotNull Iterable<T> xs
+    ) {
+        return wheelsProvider.listsWithSubsequence(subsequences, xs);
+    }
+
     public @NotNull Iterable<String> strings(int size, @NotNull Iterable<Character> cs) {
         return wheelsProvider.strings(size, cs);
     }
@@ -487,6 +984,33 @@ public abstract class QBarIterableProvider {
 
     public @NotNull Iterable<String> strings() {
         return wheelsProvider.strings();
+    }
+
+    public @NotNull Iterable<String> stringsWithChar(char c, Iterable<Character> cs) {
+        return wheelsProvider.stringsWithChar(c, cs);
+    }
+
+    public @NotNull Iterable<String> stringsWithChar(char c) {
+        return wheelsProvider.stringsWithChar(c);
+    }
+
+    public @NotNull Iterable<String> stringsWithSubstrings(
+            @NotNull Iterable<String> substrings,
+            @NotNull Iterable<Character> cs
+    ) {
+        return wheelsProvider.stringsWithSubstrings(substrings, cs);
+    }
+
+    public @NotNull Iterable<String> stringsWithSubstrings(@NotNull Iterable<String> substrings) {
+        return wheelsProvider.stringsWithSubstrings(substrings);
+    }
+
+    public @NotNull <T> Iterable<List<T>> permutations(@NotNull List<T> xs) {
+        return wheelsProvider.permutations(xs);
+    }
+
+    public @NotNull Iterable<String> permutations(@NotNull String s) {
+        return wheelsProvider.permutations(s);
     }
 
     public abstract @NotNull Iterable<Rational> rationals();

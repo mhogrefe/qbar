@@ -2,26 +2,49 @@ package mho.qbar.iterableProviders;
 
 import mho.qbar.objects.*;
 import mho.wheels.iterables.ExhaustiveProvider;
-import mho.wheels.math.Combinatorics;
 import mho.wheels.ordering.Ordering;
-import mho.wheels.structures.*;
 import org.jetbrains.annotations.NotNull;
 
-import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.math.RoundingMode;
 import java.util.*;
-import java.util.function.Function;
 
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.ordering.Ordering.*;
 
-@SuppressWarnings("ConstantConditions")
-public class QBarExhaustiveProvider extends QBarIterableProvider {
+@SuppressWarnings("unused")
+public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider {
     public static final @NotNull QBarExhaustiveProvider INSTANCE = new QBarExhaustiveProvider();
 
     private QBarExhaustiveProvider() {
         super(ExhaustiveProvider.INSTANCE);
+    }
+
+    public @NotNull Iterable<Ordering> orderingsIncreasing() {
+        return ExhaustiveProvider.INSTANCE.orderingsIncreasing();
+    }
+
+    public @NotNull Iterable<Byte> bytesIncreasing() {
+        return ExhaustiveProvider.INSTANCE.bytesIncreasing();
+    }
+
+    public @NotNull Iterable<Short> shortsIncreasing() {
+        return ExhaustiveProvider.INSTANCE.shortsIncreasing();
+    }
+
+    public @NotNull Iterable<Integer> integersIncreasing() {
+        return ExhaustiveProvider.INSTANCE.integersIncreasing();
+    }
+
+    public @NotNull Iterable<Long> longsIncreasing() {
+        return ExhaustiveProvider.INSTANCE.longsIncreasing();
+    }
+
+    public @NotNull Iterable<Character> asciiCharactersIncreasing() {
+        return ExhaustiveProvider.INSTANCE.asciiCharactersIncreasing();
+    }
+
+    public @NotNull Iterable<Character> charactersIncreasing() {
+        return ExhaustiveProvider.INSTANCE.charactersIncreasing();
     }
 
     @Override
@@ -350,7 +373,7 @@ public class QBarExhaustiveProvider extends QBarIterableProvider {
 
     @Override
     public @NotNull Iterable<RationalMatrix> rationalMatrices() {
-        return map(q -> q.b, dependentPairsSquare(pairs(naturalIntegers()), p -> rationalMatrices(p.a, p.b)));
+        return null;
     }
 
     @Override

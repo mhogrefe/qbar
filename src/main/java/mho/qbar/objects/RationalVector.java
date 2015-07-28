@@ -1,6 +1,6 @@
 package mho.qbar.objects;
 
-import mho.wheels.misc.Readers;
+import mho.wheels.io.Readers;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.ordering.comparators.ShortlexComparator;
 import mho.wheels.structures.Pair;
@@ -12,14 +12,13 @@ import java.util.*;
 import static mho.wheels.iterables.IterableUtils.*;
 
 /**
- * <p>A vector with {@link Rational} coordinates. May be zero-dimensional.
+ * <p>A vector with {@link Rational} coordinates. May be zero-dimensional.</p>
  *
  * <p>There is only one instance of {@code ZERO_DIMENSIONAL}, so it may be compared with other {@code RationalVector}s
- * using {@code ==}.
+ * using {@code ==}.</p>
  *
- * <p>This class is immutable.
+ * <p>This class is immutable.</p>
  */
-@SuppressWarnings("ConstantConditions")
 public final class RationalVector implements Comparable<RationalVector>, Iterable<Rational> {
     /**
      * []
@@ -653,7 +652,7 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
      *  <li>The result may be either {@code boolean}.</li>
      * </ul>
      *
-     * @param that The {@code RationalVector} to be compared with {@code this}
+     * @param that The {@code Object} to be compared with {@code this}
      * @return {@code this}={@code that}
      */
     @Override
