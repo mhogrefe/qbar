@@ -4,7 +4,9 @@ import mho.qbar.objects.*;
 import mho.wheels.iterables.RandomProvider;
 import mho.wheels.math.BinaryFraction;
 import mho.wheels.ordering.Ordering;
+import mho.wheels.structures.NullableOptional;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -13,6 +15,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.ordering.Ordering.le;
@@ -603,6 +606,22 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
 
     public @NotNull BigDecimal nextFromRangeCanonical(@NotNull BigDecimal a, @NotNull BigDecimal b) {
         return ((RandomProvider) wheelsProvider).nextFromRangeCanonical(a, b);
+    }
+
+    public <T> T nextWithElement(@Nullable T x, @NotNull Supplier<T> sx) {
+        return ((RandomProvider) wheelsProvider).nextWithElement(x, sx);
+    }
+
+    public <T> T nextWithNull(@NotNull Supplier<T> sx) {
+        return ((RandomProvider) wheelsProvider).nextWithNull(sx);
+    }
+
+    public @NotNull <T> Optional<T> nextOptional(@NotNull Supplier<T> sx) {
+        return ((RandomProvider) wheelsProvider).nextOptional(sx);
+    }
+
+    public @NotNull <T> NullableOptional<T> nextNullableOptional(@NotNull Supplier<T> sx) {
+        return ((RandomProvider) wheelsProvider).nextNullableOptional(sx);
     }
 
     /**

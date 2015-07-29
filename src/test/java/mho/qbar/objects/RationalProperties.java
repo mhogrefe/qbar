@@ -661,7 +661,7 @@ public class RationalProperties {
         System.out.println("\t\ttesting hasTerminatingBaseExpansion(BigInteger) properties...");
 
         Iterable<Pair<Rational, BigInteger>> ps = P.pairs(
-                P.withSpecialElement(
+                P.withElement(
                         ZERO,
                         filterInfinite(
                                 r -> le(r.getDenominator(), BigInteger.valueOf(DENOMINATOR_CUTOFF)),
@@ -2948,7 +2948,7 @@ public class RationalProperties {
         System.out.println("\t\ttesting positionalNotation(BigInteger) properties...");
 
         Iterable<Pair<Rational, BigInteger>> ps = P.pairs(
-                P.withSpecialElement(
+                P.withElement(
                         ZERO,
                         filterInfinite(
                                 r -> le(r.getDenominator(), BigInteger.valueOf(DENOMINATOR_CUTOFF)),
@@ -3174,7 +3174,7 @@ public class RationalProperties {
 
         long totalTime = 0;
         Iterable<Pair<Rational, BigInteger>> ps = P.pairs(
-                P.withSpecialElement(
+                P.withElement(
                         ZERO,
                         filterInfinite(
                                 r -> le(r.getDenominator(), BigInteger.valueOf(DENOMINATOR_CUTOFF)),

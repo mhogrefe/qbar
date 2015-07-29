@@ -203,7 +203,7 @@ public class RationalDemos {
     private static void demoHasTerminatingBaseExpansion() {
         initialize();
         Iterable<Pair<Rational, BigInteger>> ps = P.pairs(
-                P.withSpecialElement(
+                P.withElement(
                         ZERO,
                         filterInfinite(
                                 r -> le(r.getDenominator(), BigInteger.valueOf(DENOMINATOR_CUTOFF)),
@@ -579,7 +579,7 @@ public class RationalDemos {
     private static void demoPositionalNotation() {
         initialize();
         Iterable<Pair<Rational, BigInteger>> ps = P.pairs(
-                P.withSpecialElement(
+                P.withElement(
                         ZERO,
                         filterInfinite(
                                 r -> le(r.getDenominator(), BigInteger.valueOf(DENOMINATOR_CUTOFF)),

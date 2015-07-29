@@ -817,8 +817,8 @@ public strictfp abstract class QBarIterableProvider {
         return wheelsProvider.rangeCanonical(a, b);
     }
 
-    public @NotNull <T> Iterable<T> withSpecialElement(@Nullable T x, @NotNull Iterable<T> xs) {
-        return wheelsProvider.withSpecialElement(x, xs);
+    public @NotNull <T> Iterable<T> withElement(@Nullable T x, @NotNull Iterable<T> xs) {
+        return wheelsProvider.withElement(x, xs);
     }
 
     public @NotNull <T> Iterable<T> withNull(@NotNull Iterable<T> xs) {
