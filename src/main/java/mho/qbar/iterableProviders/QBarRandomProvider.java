@@ -616,8 +616,16 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
         return ((RandomProvider) wheelsProvider).nextWithNull(sx);
     }
 
+    public @NotNull <T> Optional<T> nextNonEmptyOptional(@NotNull Supplier<T> sx) {
+        return Optional.of(sx.get());
+    }
+
     public @NotNull <T> Optional<T> nextOptional(@NotNull Supplier<T> sx) {
         return ((RandomProvider) wheelsProvider).nextOptional(sx);
+    }
+
+    public @NotNull <T> NullableOptional<T> nextNonEmptyNullableOptional(@NotNull Supplier<T> sx) {
+        return NullableOptional.of(sx.get());
     }
 
     public @NotNull <T> NullableOptional<T> nextNullableOptional(@NotNull Supplier<T> sx) {

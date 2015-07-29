@@ -825,8 +825,16 @@ public strictfp abstract class QBarIterableProvider {
         return wheelsProvider.withNull(xs);
     }
 
+    public @NotNull <T> Iterable<Optional<T>> nonEmptyOptionals(@NotNull Iterable<T> xs) {
+        return wheelsProvider.nonEmptyOptionals(xs);
+    }
+
     public @NotNull <T> Iterable<Optional<T>> optionals(@NotNull Iterable<T> xs) {
         return wheelsProvider.optionals(xs);
+    }
+
+    public @NotNull <T> Iterable<NullableOptional<T>> nonEmptyNullableOptionals(@NotNull Iterable<T> xs) {
+        return wheelsProvider.nonEmptyNullableOptionals(xs);
     }
 
     public @NotNull <T> Iterable<NullableOptional<T>> nullableOptionals(@NotNull Iterable<T> xs) {
