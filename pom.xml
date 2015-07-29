@@ -33,15 +33,16 @@
                         <include>**/JasApiTest.java</include>
                         <include>**/QBarExhaustiveProviderTest.java</include>
                         <include>**/QBarRandomProviderTest.java</include>
-                        <include>**/IntervalProperties.java</include>
                         <include>**/IntervalTest.java</include>
-                        <include>**/PolynomialProperties.java</include>
+                        <include>**/IntervalProperties.java</include>
                         <include>**/PolynomialTest.java</include>
-                        <include>**/RationalPolynomialProperties.java</include>
+                        <include>**/PolynomialProperties.java</include>
                         <include>**/RationalPolynomialTest.java</include>
-                        <include>**/RationalProperties.java</include>
+                        <include>**/RationalPolynomialProperties.java</include>
                         <include>**/RationalTest.java</include>
+                        <include>**/RationalProperties.java</include>
                         <include>**/RationalVectorTest.java</include>
+                        <include>**/RationalVectorProperties.java</include>
                     </includes>
                 </configuration>
             </plugin>
