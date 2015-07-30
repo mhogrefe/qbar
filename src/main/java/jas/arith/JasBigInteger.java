@@ -7,25 +7,20 @@ import java.math.BigInteger;
 import java.util.Random;
 
 public final class JasBigInteger implements RingElem<JasBigInteger>, RingFactory<JasBigInteger> {
-
-
     /**
      * The data structure.
      */
     public final BigInteger val;
-
 
     /**
      * The constant 0.
      */
     public final static JasBigInteger ZERO = new JasBigInteger(BigInteger.ZERO);
 
-
     /**
      * The constant 1.
      */
     public final static JasBigInteger ONE = new JasBigInteger(BigInteger.ONE);
-
 
     /**
      * Constructor for JasBigInteger from math.JasBigInteger.
@@ -36,7 +31,6 @@ public final class JasBigInteger implements RingElem<JasBigInteger>, RingFactory
         val = a;
     }
 
-
     /**
      * Constructor for JasBigInteger from long.
      *
@@ -45,7 +39,6 @@ public final class JasBigInteger implements RingElem<JasBigInteger>, RingFactory
     public JasBigInteger(long a) {
         val = new BigInteger(String.valueOf(a));
     }
-
 
     /**
      * Constructor for JasBigInteger from String.
@@ -56,14 +49,12 @@ public final class JasBigInteger implements RingElem<JasBigInteger>, RingFactory
         val = new BigInteger(s.trim());
     }
 
-
     /**
      * Constructor for JasBigInteger without parameters.
      */
     public JasBigInteger() {
         val = BigInteger.ZERO;
     }
-
 
     /**
      * Get the value.
@@ -74,7 +65,6 @@ public final class JasBigInteger implements RingElem<JasBigInteger>, RingFactory
         return val;
     }
 
-
     /**
      * Get the value as long.
      *
@@ -84,7 +74,6 @@ public final class JasBigInteger implements RingElem<JasBigInteger>, RingFactory
         return val.longValue();
     }
 
-
     /**
      * Get the corresponding element factory.
      *
@@ -93,7 +82,6 @@ public final class JasBigInteger implements RingElem<JasBigInteger>, RingFactory
     public JasBigInteger factory() {
         return this;
     }
-
 
     /**
      * Is this structure finite or infinite.
@@ -105,7 +93,6 @@ public final class JasBigInteger implements RingElem<JasBigInteger>, RingFactory
         return false;
     }
 
-
     /**
      * Get the zero element.
      *
@@ -114,7 +101,6 @@ public final class JasBigInteger implements RingElem<JasBigInteger>, RingFactory
     public JasBigInteger getZERO() {
         return ZERO;
     }
-
 
     /**
      * Get the one element.
@@ -134,7 +120,6 @@ public final class JasBigInteger implements RingElem<JasBigInteger>, RingFactory
         return false;
     }
 
-
     /**
      * Characteristic of this ring.
      *
@@ -143,7 +128,6 @@ public final class JasBigInteger implements RingElem<JasBigInteger>, RingFactory
     public BigInteger characteristic() {
         return BigInteger.ZERO;
     }
-
 
     /**
      * Get a JasBigInteger element from a math.JasBigInteger.
@@ -165,7 +149,6 @@ public final class JasBigInteger implements RingElem<JasBigInteger>, RingFactory
         return new JasBigInteger(a);
     }
 
-
     /**
      * Is JasBigInteger number zero.
      *
@@ -176,7 +159,6 @@ public final class JasBigInteger implements RingElem<JasBigInteger>, RingFactory
         return val.equals(BigInteger.ZERO);
     }
 
-
     /**
      * Is JasBigInteger number one.
      *
@@ -186,7 +168,6 @@ public final class JasBigInteger implements RingElem<JasBigInteger>, RingFactory
         return val.equals(BigInteger.ONE);
     }
 
-
     /**
      * Is JasBigInteger number unit.
      *
@@ -195,7 +176,6 @@ public final class JasBigInteger implements RingElem<JasBigInteger>, RingFactory
     public boolean isUnit() {
         return (this.isONE() || this.negate().isONE());
     }
-
 
     /**
      * Get the String representation.
@@ -232,7 +212,6 @@ public final class JasBigInteger implements RingElem<JasBigInteger>, RingFactory
         return val.equals(bi.val);
     }
 
-
     /**
      * Hash code for this JasBigInteger.
      *
@@ -242,7 +221,6 @@ public final class JasBigInteger implements RingElem<JasBigInteger>, RingFactory
     public int hashCode() {
         return val.hashCode();
     }
-
 
     /**
      * Absolute value of this.
@@ -303,7 +281,6 @@ public final class JasBigInteger implements RingElem<JasBigInteger>, RingFactory
         throw new ArithmeticException("element not invertible " + this + " :: JasBigInteger");
     }
 
-
     /**
      * JasBigInteger remainder.
      *
@@ -313,7 +290,6 @@ public final class JasBigInteger implements RingElem<JasBigInteger>, RingFactory
     public JasBigInteger remainder(JasBigInteger S) {
         return new JasBigInteger(val.remainder(S.val));
     }
-
 
     /**
      * JasBigInteger compute quotient and remainder. Throws an exception, if S ==
@@ -331,7 +307,6 @@ public final class JasBigInteger implements RingElem<JasBigInteger>, RingFactory
         return qr;
     }
 
-
     /**
      * JasBigInteger greatest common divisor.
      *
@@ -341,7 +316,6 @@ public final class JasBigInteger implements RingElem<JasBigInteger>, RingFactory
     public JasBigInteger gcd(JasBigInteger S) {
         return new JasBigInteger(val.gcd(S.val));
     }
-
 
     /**
      * JasBigInteger extended greatest common divisor.

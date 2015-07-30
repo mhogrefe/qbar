@@ -44,7 +44,6 @@ public final class ModInteger implements RingElem<ModInteger>, Modular {
         return val.equals(BigInteger.ZERO);
     }
 
-
     /**
      * Is ModInteger number one.
      *
@@ -54,7 +53,6 @@ public final class ModInteger implements RingElem<ModInteger>, Modular {
     public boolean isONE() {
         return val.equals(BigInteger.ONE);
     }
-
 
     /**
      * Is ModInteger number a unit.
@@ -72,7 +70,6 @@ public final class ModInteger implements RingElem<ModInteger>, Modular {
         BigInteger g = ring.modul.gcd(val).abs();
         return (g.equals(BigInteger.ONE));
     }
-
 
     /**
      * Get the String representation.
@@ -98,7 +95,6 @@ public final class ModInteger implements RingElem<ModInteger>, Modular {
         return b instanceof ModInteger && (0 == compareTo((ModInteger) b));
     }
 
-
     /**
      * Hash code for this ModInteger.
      *
@@ -109,7 +105,6 @@ public final class ModInteger implements RingElem<ModInteger>, Modular {
         //return 37 * val.hashCode();
         return val.hashCode();
     }
-
 
     /**
      * ModInteger absolute value.
@@ -308,5 +303,4 @@ public final class ModInteger implements RingElem<ModInteger>, Modular {
         ret[2] = new ModInteger(ring, c2);
         return ret;
     }
-
 }

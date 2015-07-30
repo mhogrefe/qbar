@@ -15,18 +15,15 @@ public final class ModIntegerRing implements ModularRingFactory<ModInteger> {
      */
     public final BigInteger modul;
 
-
     /**
      * Indicator if this ring is a field.
      */
     private int isField = -1; // initially unknown
 
-
     /*
      * Certainty if module is probable prime.
      */
     //private int certainty = 10;
-
 
     /**
      * The constructor creates a ModIntegerRing object from a JasBigInteger object
@@ -37,7 +34,6 @@ public final class ModIntegerRing implements ModularRingFactory<ModInteger> {
     public ModIntegerRing(BigInteger m) {
         modul = m;
     }
-
 
     /**
      * The constructor creates a ModIntegerRing object from a JasBigInteger object
@@ -60,7 +56,6 @@ public final class ModIntegerRing implements ModularRingFactory<ModInteger> {
         return modul;
     }
 
-
     /**
      * Get the module part as JasBigInteger.
      *
@@ -69,7 +64,6 @@ public final class ModIntegerRing implements ModularRingFactory<ModInteger> {
     public JasBigInteger getIntegerModul() {
         return new JasBigInteger(modul);
     }
-
 
     /**
      * Get the zero element.
@@ -80,7 +74,6 @@ public final class ModIntegerRing implements ModularRingFactory<ModInteger> {
         return new ModInteger(this, BigInteger.ZERO);
     }
 
-
     /**
      * Get the one element.
      *
@@ -89,7 +82,6 @@ public final class ModIntegerRing implements ModularRingFactory<ModInteger> {
     public ModInteger getONE() {
         return new ModInteger(this, BigInteger.ONE);
     }
-
 
     /**
      * Is this structure finite or infinite.
@@ -123,7 +115,6 @@ public final class ModIntegerRing implements ModularRingFactory<ModInteger> {
         return false;
     }
 
-
     /**
      * Characteristic of this ring.
      *
@@ -132,7 +123,6 @@ public final class ModIntegerRing implements ModularRingFactory<ModInteger> {
     public BigInteger characteristic() {
         return modul;
     }
-
 
     /**
      * Get a ModInteger element from a JasBigInteger value.
@@ -144,7 +134,6 @@ public final class ModIntegerRing implements ModularRingFactory<ModInteger> {
         return new ModInteger(this, a);
     }
 
-
     /**
      * Get a ModInteger element from a long value.
      *
@@ -154,7 +143,6 @@ public final class ModIntegerRing implements ModularRingFactory<ModInteger> {
     public ModInteger fromInteger(long a) {
         return new ModInteger(this, a);
     }
-
 
     /**
      * Get the String representation.
@@ -179,7 +167,6 @@ public final class ModIntegerRing implements ModularRingFactory<ModInteger> {
         ModIntegerRing m = (ModIntegerRing) b;
         return (0 == modul.compareTo(m.modul));
     }
-
 
     /**
      * Hash code for this ModIntegerRing.
