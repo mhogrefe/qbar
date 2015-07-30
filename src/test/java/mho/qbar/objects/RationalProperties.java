@@ -2150,14 +2150,14 @@ public class RationalProperties {
         for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
             assertEquals(p.toString(), p.a.divide(p.b), of(p.b).divide(p.a).invert());
         }
-        
+
         for (BigInteger i : take(LIMIT, filter(j -> !j.equals(BigInteger.ZERO), P.bigIntegers()))) {
             assertEquals(i.toString(), ONE.divide(i), of(i).invert());
             assertEquals(i.toString(), of(i).divide(i), ONE);
         }
-        
+
         for (Rational r : take(LIMIT, P.rationals())) {
-            assertEquals(r.toString(), r.divide(BigInteger.ONE), r);      
+            assertEquals(r.toString(), r.divide(BigInteger.ONE), r);
         }
 
         for (Rational r : take(LIMIT, P.rationals())) {

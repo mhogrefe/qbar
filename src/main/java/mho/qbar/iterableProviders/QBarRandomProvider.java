@@ -1007,7 +1007,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
                     return Interval.of(p.a.get(), p.b.get());
                 },
                 filter(p -> !p.a.isPresent() || !p.b.isPresent() || le(p.a.get(), p.b.get()), pairs(optionals(bounds)))
-        );  
+        );
     }
 
     @Override
