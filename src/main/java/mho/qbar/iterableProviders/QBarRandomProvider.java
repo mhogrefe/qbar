@@ -260,82 +260,282 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
         return ((RandomProvider) wheelsProvider).nextRoundingMode();
     }
 
+    /**
+     * Returns a randomly-generated positive {@code byte} from a uniform distribution.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RandomProvider}.</li>
+     *  <li>The result is positive.</li>
+     * </ul>
+     *
+     * @return a positive {@code byte}
+     */
     public byte nextPositiveByte() {
         return ((RandomProvider) wheelsProvider).nextPositiveByte();
     }
 
+    /**
+     * Returns a randomly-generated positive {@code short} from a uniform distribution.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RandomProvider}.</li>
+     *  <li>The result is positive.</li>
+     * </ul>
+     *
+     * @return a positive {@code short}
+     */
     public short nextPositiveShort() {
         return ((RandomProvider) wheelsProvider).nextPositiveShort();
     }
 
+    /**
+     * Returns a randomly-generated positive {@code int} from a uniform distribution.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RandomProvider}.</li>
+     *  <li>The result is positive.</li>
+     * </ul>
+     *
+     * @return a positive {@code int}
+     */
     public int nextPositiveInt() {
         return ((RandomProvider) wheelsProvider).nextPositiveInt();
     }
 
+    /**
+     * Returns a randomly-generated positive {@code long} from a uniform distribution.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RandomProvider}.</li>
+     *  <li>The result is positive.</li>
+     * </ul>
+     *
+     * @return a positive {@code long}
+     */
     public long nextPositiveLong() {
         return ((RandomProvider) wheelsProvider).nextPositiveLong();
     }
 
+    /**
+     * Returns a randomly-generated negative {@code byte} from a uniform distribution.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RandomProvider}.</li>
+     *  <li>The result is negative.</li>
+     * </ul>
+     *
+     * @return a negative {@code byte}
+     */
     public byte nextNegativeByte() {
         return ((RandomProvider) wheelsProvider).nextNegativeByte();
     }
 
+    /**
+     * Returns a randomly-generated negative {@code short} from a uniform distribution.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RandomProvider}.</li>
+     *  <li>The result is negative.</li>
+     * </ul>
+     *
+     * @return a negative {@code short}
+     */
     public short nextNegativeShort() {
         return ((RandomProvider) wheelsProvider).nextNegativeShort();
     }
 
+    /**
+     * Returns a randomly-generated negative {@code int} from a uniform distribution.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RandomProvider}.</li>
+     *  <li>The result is negative.</li>
+     * </ul>
+     *
+     * @return a negative {@code int}
+     */
     public int nextNegativeInt() {
         return ((RandomProvider) wheelsProvider).nextNegativeInt();
     }
 
+    /**
+     * Returns a randomly-generated negative {@code long} from a uniform distribution.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RandomProvider}.</li>
+     *  <li>The result is negative.</li>
+     * </ul>
+     *
+     * @return a negative {@code long}
+     */
     public long nextNegativeLong() {
         return ((RandomProvider) wheelsProvider).nextNegativeLong();
     }
 
+    /**
+     * Returns a randomly-generated nonzero {@code byte} from a uniform distribution.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RandomProvider}.</li>
+     *  <li>The result is not zero.</li>
+     * </ul>
+     *
+     * @return a nonzero {@code byte}
+     */
     public byte nextNonzeroByte() {
         return ((RandomProvider) wheelsProvider).nextNonzeroByte();
     }
 
+    /**
+     * Returns a randomly-generated nonzero {@code short} from a uniform distribution.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RandomProvider}.</li>
+     *  <li>The result is not zero.</li>
+     * </ul>
+     *
+     * @return a nonzero {@code short}
+     */
     public short nextNonzeroShort() {
         return ((RandomProvider) wheelsProvider).nextNonzeroShort();
     }
 
+    /**
+     * Returns a randomly-generated nonzero {@code int} from a uniform distribution.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RandomProvider}.</li>
+     *  <li>The result is not zero.</li>
+     * </ul>
+     *
+     * @return a nonzero {@code int}
+     */
     public int nextNonzeroInt() {
         return ((RandomProvider) wheelsProvider).nextNonzeroInt();
     }
 
+    /**
+     * Returns a randomly-generated nonzero {@code long} from a uniform distribution.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RandomProvider}.</li>
+     *  <li>The result is not zero.</li>
+     * </ul>
+     *
+     * @return a nonzero {@code long}
+     */
     public long nextNonzeroLong() {
         return ((RandomProvider) wheelsProvider).nextNonzeroLong();
     }
 
+    /**
+     * Returns a randomly-generated natural (non-negative) {@code byte} from a uniform distribution.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RandomProvider}.</li>
+     *  <li>The result is not negative.</li>
+     * </ul>
+     *
+     * @return a natural {@code byte}
+     */
     public byte nextNaturalByte() {
         return ((RandomProvider) wheelsProvider).nextNaturalByte();
     }
 
+    /**
+     * Returns a randomly-generated natural (non-negative) {@code short} from a uniform distribution.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RandomProvider}.</li>
+     *  <li>The result is not negative.</li>
+     * </ul>
+     *
+     * @return a natural {@code short}
+     */
     public short nextNaturalShort() {
         return ((RandomProvider) wheelsProvider).nextNaturalShort();
     }
 
+    /**
+     * Returns a randomly-generated natural (non-negative) {@code int} from a uniform distribution.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RandomProvider}.</li>
+     *  <li>The result is not negative.</li>
+     * </ul>
+     *
+     * @return a natural {@code int}
+     */
     public int nextNaturalInt() {
         return ((RandomProvider) wheelsProvider).nextNaturalInt();
     }
 
+    /**
+     * Returns a randomly-generated natural (non-negative) {@code long} from a uniform distribution.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RandomProvider}.</li>
+     *  <li>The result is not negative.</li>
+     * </ul>
+     *
+     * @return a natural {@code long}
+     */
     public long nextNaturalLong() {
         return ((RandomProvider) wheelsProvider).nextNaturalLong();
     }
 
+    /**
+     * Returns a randomly-generated {@code byte} from a uniform distribution.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RandomProvider}.</li>
+     *  <li>The result may be any {@code byte}.</li>
+     * </ul>
+     *
+     * @return a {@code byte}
+     */
     public byte nextByte() {
         return ((RandomProvider) wheelsProvider).nextByte();
     }
 
+    /**
+     * Returns a randomly-generated {@code short} from a uniform distribution.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RandomProvider}.</li>
+     *  <li>The result may be any {@code short}.</li>
+     * </ul>
+     *
+     * @return a {@code short}
+     */
     public short nextShort() {
         return ((RandomProvider) wheelsProvider).nextShort();
     }
 
+    /**
+     * Returns a randomly-generated ASCII {@code char} from a uniform distribution.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RandomProvider}.</li>
+     *  <li>The result is an ASCII {@code char}.</li>
+     * </ul>
+     *
+     * @return an ASCII {@code char}
+     */
     public char nextAsciiChar() {
         return ((RandomProvider) wheelsProvider).nextAsciiChar();
     }
 
+    /**
+     * Returns a randomly-generated {@code char} from a uniform distribution.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RandomProvider}.</li>
+     *  <li>The result may be any {@code char}.</li>
+     * </ul>
+     *
+     * @return a {@code char}
+     */
     public char nextChar() {
         return ((RandomProvider) wheelsProvider).nextChar();
     }
