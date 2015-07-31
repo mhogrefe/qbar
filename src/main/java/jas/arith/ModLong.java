@@ -180,7 +180,6 @@ public final class ModLong implements RingElem<ModLong>, Modular {
         return new ModLong(ring, -val);
     }
 
-
     /**
      * ModLong signum.
      *

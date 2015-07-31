@@ -11,15 +11,12 @@ import jas.structure.RingFactory;
  */
 
 public interface ModularRingFactory<C extends RingElem<C> & Modular> extends RingFactory<C> {
-
-
     /**
      * Return the JasBigInteger modul for the factory.
      *
      * @return a JasBigInteger of this.modul.
      */
     JasBigInteger getIntegerModul();
-
 
     //
     //Chinese remainder algorithm. Assert c.modul >= a.modul and c.modul *
@@ -31,5 +28,4 @@ public interface ModularRingFactory<C extends RingElem<C> & Modular> extends Rin
     //@return S, with S mod c.modul == c and S mod a.modul == a.
     //
     C chineseRemainder(C c, C ci, C a);
-
 }

@@ -21,18 +21,15 @@ import java.util.*;
 public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynomial<C>>, /* not yet Polynomial<C> */
         Iterable<Monomial<C>> {
 
-
     /**
      * The factory for the polynomial ring.
      */
     public final GenPolynomialRing<C> ring;
 
-
     /**
      * The data structure for polynomials.
      */
     public final SortedMap<ExpVector, C> val; // do not change to TreeMap
-
 
     /**
      * Private constructor for GenPolynomial.
@@ -45,7 +42,6 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
         val = t;
     }
 
-
     /**
      * Constructor for zero GenPolynomial.
      *
@@ -54,7 +50,6 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
     public GenPolynomial(GenPolynomialRing<C> r) {
         this(r, new TreeMap<>(r.tord.getDescendComparator()));
     }
-
 
     /**
      * Constructor for GenPolynomial c * x<sup>e</sup>.
@@ -81,7 +76,6 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
         val.putAll(v); // assume no zero coefficients
     }
 
-
     /**
      * Get the corresponding element factory.
      *
@@ -90,7 +84,6 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
     public GenPolynomialRing<C> factory() {
         return ring;
     }
-
 
     //
     //Copy this GenPolynomial.
@@ -101,7 +94,6 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
         return new GenPolynomial<>(ring, this.val);
     }
 
-
     /**
      * ExpVector to coefficient map of GenPolynomial.
      *
@@ -111,7 +103,6 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
         // return val;
         return Collections.unmodifiableSortedMap(val);
     }
-
 
     /**
      * Put an ExpVector to coefficient entry into the internal map of this
@@ -159,7 +150,6 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
         s.append(" ] "); // no not use: ring.toString() );
         return s.toString();
     }
-
 
     /**
      * String representation of GenPolynomial.
@@ -220,7 +210,6 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
         return (val.size() == 0);
     }
 
-
     /**
      * Is GenPolynomial&lt;C&gt; one.
      *
@@ -234,7 +223,6 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
         C c = val.get(ring.evzero);
         return c != null && c.isONE();
     }
-
 
     /**
      * Is GenPolynomial&lt;C&gt; a unit.
@@ -250,7 +238,6 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
         return c != null && c.isUnit();
     }
 
-
     /**
      * Is GenPolynomial&lt;C&gt; a constant.
      *
@@ -264,7 +251,6 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
         C c = val.get(ring.evzero);
         return c != null;
     }
-
 
     /**
      * Comparison with any other object.
@@ -284,7 +270,6 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
         }
         return this.compareTo(a) == 0;
     }
-
 
     /**
      * Hash code for this polynomial.
@@ -343,7 +328,6 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
         return c.signum();
     }
 
-
     /**
      * Leading exponent vector.
      *
@@ -355,7 +339,6 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
         }
         return val.firstKey();
     }
-
 
     /**
      * Leading base coefficient.
@@ -369,7 +352,6 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
         return val.get(val.firstKey());
     }
 
-
     /**
      * Trailing base coefficient.
      *
@@ -382,7 +364,6 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
         }
         return c;
     }
-
 
     //
     //Degree in variable i.
@@ -409,7 +390,6 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
         return deg;
     }
 
-
     /**
      * Maximal degree.
      *
@@ -429,7 +409,6 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
         return deg;
     }
 
-
     /**
      * Maximal degree vector.
      *
@@ -445,7 +424,6 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
         }
         return deg;
     }
-
 
     /**
      * GenPolynomial maximum norm.
@@ -463,7 +441,6 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
         return n;
     }
 
-
     /**
      * GenPolynomial sum norm.
      *
@@ -477,7 +454,6 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
         }
         return n;
     }
-
 
     /**
      * GenPolynomial summation.
@@ -518,7 +494,6 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
         return n;
     }
 
-
     /**
      * GenPolynomial addition. This method is not very efficient, since this is
      * copied.
@@ -551,7 +526,6 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
         return n;
     }
 
-
     /**
      * GenPolynomial addition. This method is not very efficient, since this is
      * copied.
@@ -562,7 +536,6 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
     GenPolynomial<C> sum(C a) {
         return sum(a, ring.evzero);
     }
-
 
     /**
      * GenPolynomial subtraction.
@@ -602,7 +575,6 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
         return n;
     }
 
-
     /**
      * GenPolynomial negation.
      *
@@ -620,7 +592,6 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
         return n;
     }
 
-
     /**
      * GenPolynomial absolute value, i.e. leadingCoefficient &gt; 0.
      *
@@ -632,7 +603,6 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
         }
         return this;
     }
-
 
     /**
      * GenPolynomial multiplication.
@@ -685,7 +655,6 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
         return p;
     }
 
-
     /**
      * GenPolynomial multiplication. Product with coefficient ring element.
      *
@@ -715,7 +684,6 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
         return p;
     }
 
-
     /**
      * GenPolynomial monic, i.e. leadingCoefficient == 1. If leadingCoefficient
      * is not invertible returns this unmodified.
@@ -734,7 +702,6 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
         C lm = lc.inverse();
         return multiply(lm);
     }
-
 
     /**
      * GenPolynomial multiplication. Product with ring element and exponent
@@ -858,7 +825,6 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
         return quotientRemainder(S)[0];
     }
 
-
     /**
      * GenPolynomial remainder. Fails, if exact division by leading base
      * coefficient is not possible. Meaningful only for univariate polynomials
@@ -904,7 +870,6 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
         }
         return r;
     }
-
 
     /**
      * GenPolynomial greatest common divisor. Only for univariate polynomials
@@ -1003,7 +968,6 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
         return ret;
     }
 
-
     /**
      * GenPolynomial inverse. Required by RingElem. Throws not invertible
      * exception.
@@ -1015,7 +979,6 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
         }
         throw new ArithmeticException("element not invertible " + this + " :: " + ring);
     }
-
 
     /**
      * Extend variables. Used e.g. in module embedding. Extend all ExpVectors by
@@ -1054,6 +1017,4 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
     public Iterator<Monomial<C>> iterator() {
         return new PolyIterator<>(val);
     }
-
-
 }
