@@ -520,7 +520,7 @@ public class RationalTest {
     }
 
     @Test
-     public void testBigIntegerValueExact() {
+    public void testBigIntegerValueExact() {
         aeq(ONE.bigIntegerValueExact(), 1);
         aeq(ZERO.bigIntegerValueExact(), 0);
         aeq(read("-1").get().bigIntegerValueExact(), -1);

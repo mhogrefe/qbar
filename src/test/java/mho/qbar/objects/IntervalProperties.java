@@ -2010,7 +2010,7 @@ public class IntervalProperties {
 
         Iterable<Triple<Interval, Interval, Interval>> ts = filter(
                 t -> t.a.elementCompare(t.b).equals(Optional.of(LT)) &&
-                     t.b.elementCompare(t.c).equals(Optional.of(LT)),
+                     t.b.elementCompare(t.c).equals(Optional.of(LT)), ///
                 P.triples(P.intervals())
         );
         for (Triple<Interval, Interval, Interval> t : take(LIMIT, ts)) {

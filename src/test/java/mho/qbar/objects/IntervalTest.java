@@ -372,7 +372,7 @@ public class IntervalTest {
     }
 
     @Test
-     public void testRoundingPreimage_float() {
+    public void testRoundingPreimage_float() {
         aeq(
                 roundingPreimage(0.0f),
                 "[-1/1427247692705959881058285969449495136382746624, 1/1427247692705959881058285969449495136382746624]"

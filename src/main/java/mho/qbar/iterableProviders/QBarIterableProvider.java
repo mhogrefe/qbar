@@ -1037,7 +1037,6 @@ public strictfp abstract class QBarIterableProvider {
     public abstract @NotNull Iterable<Long> longs(@NotNull Interval a);
     public abstract @NotNull Iterable<BigInteger> bigIntegers(@NotNull Interval a);
 
-
     public abstract @NotNull Iterable<Rational> rationals(@NotNull Interval a);
     public abstract @NotNull Iterable<Rational> rationalsNotIn(@NotNull Interval a);
     public abstract @NotNull Iterable<RationalVector> rationalVectors(int dimension);

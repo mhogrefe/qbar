@@ -207,7 +207,7 @@ public final class Interval implements Comparable<Interval> {
      */
     public boolean contains(@NotNull Interval that) {
         return (lower == null || (that.lower != null && ge(that.lower, lower))) &&
-               (upper == null || (that.upper != null && le(that.upper, upper)));
+               (upper == null || (that.upper != null && le(that.upper, upper))); ///
     }
 
     /**
@@ -1299,7 +1299,7 @@ public final class Interval implements Comparable<Interval> {
         if (that == null || getClass() != that.getClass()) return false;
         Interval interval = (Interval) that;
         return (lower == null ? interval.lower == null : lower.equals(interval.lower)) &&
-               (upper == null ? interval.upper == null : upper.equals(interval.upper));
+               (upper == null ? interval.upper == null : upper.equals(interval.upper)); ///
     }
 
     /**
