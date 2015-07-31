@@ -192,7 +192,8 @@ public abstract class SquarefreeFieldCharP<C extends RingElem<C>> extends Square
         SortedMap<C, Long> factors = new TreeMap<>();
         RingFactory<C> cfac = (RingFactory<C>) coeff.factory();
         if (cfac.isFinite()) {
-            SquarefreeFiniteFieldCharP<C> reng = (SquarefreeFiniteFieldCharP) SquarefreeFactory.getImplementation(cfac);
+            SquarefreeFiniteFieldCharP<C> reng =
+                    (SquarefreeFiniteFieldCharP) SquarefreeFactory.getImplementation(cfac);
             SortedMap<C, Long> rfactors = reng.rootCharacteristic(coeff); // ??
             factors.putAll(rfactors);
         }

@@ -97,7 +97,9 @@ public final class ModLong implements RingElem<ModLong>, Modular {
      * @return If this is 0 then true is returned, else false.
      * @see jas.structure.RingElem#isZERO()
      */
-
+    public boolean isZERO() {
+        return val == 0L;
+    }
 
     /**
      * Is ModLong number one.

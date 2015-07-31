@@ -908,23 +908,28 @@ public class PolynomialProperties {
         initialize();
         System.out.println("\t\ttesting pow(int) properties...");
 
-        Iterable<Pair<Polynomial, Integer>> ps = P.pairsLogarithmicOrder(
+        Iterable<Pair<Polynomial, Integer>> ps1 = P.pairsLogarithmicOrder(
                 P.polynomials(),
                 P.withScale(5).naturalIntegersGeometric()
         );
-        for (Pair<Polynomial, Integer> p : take(LIMIT, ps)) {
+        for (Pair<Polynomial, Integer> p : take(LIMIT, ps1)) {
             Polynomial q = p.a.pow(p.b);
             q.validate();
             assertTrue(p.toString(), p.a == ZERO || q.degree() == p.a.degree() * p.b);
             assertEquals(p.toString(), q, pow_simplest(p.a, p.b));
         }
 
-        Iterable<Triple<Polynomial, Integer, BigInteger>> ts1 = P.triples(P.polynomials(), P.withScale(5).naturalIntegersGeometric(), P.bigIntegers());
+        Iterable<Triple<Polynomial, Integer, BigInteger>> ts1 = P.triples(
+                P.polynomials(),
+                P.withScale(5).naturalIntegersGeometric(),
+                P.bigIntegers()
+        );
         for (Triple<Polynomial, Integer, BigInteger> t : take(LIMIT, ts1)) {
             assertEquals(t.toString(), t.a.pow(t.b).apply(t.c), t.a.apply(t.c).pow(t.b));
         }
 
-        for (Pair<BigInteger, Integer> p : take(LIMIT, P.pairs(P.bigIntegers(), P.withScale(5).naturalIntegersGeometric()))) {
+        Iterable<Pair<BigInteger, Integer>> ps2 = P.pairs(P.bigIntegers(), P.withScale(5).naturalIntegersGeometric());
+        for (Pair<BigInteger, Integer> p : take(LIMIT, ps2)) {
             assertEquals(p.toString(), of(p.a).pow(p.b), of(p.a.pow(p.b)));
         }
 
@@ -938,7 +943,12 @@ public class PolynomialProperties {
             assertEquals(p.toString(), p.pow(2), p.multiply(p));
         }
 
-        for (Triple<Polynomial, Integer, Integer> t : take(LIMIT, P.triples(((QBarIterableProvider) P.withScale(5)).polynomials(), P.withScale(2).naturalIntegersGeometric(), P.withScale(2).naturalIntegersGeometric()))) {
+        Iterable<Triple<Polynomial, Integer, Integer>> ts2 = P.triples(
+                P.withScale(5).polynomials(),
+                P.withScale(2).naturalIntegersGeometric(),
+                P.withScale(2).naturalIntegersGeometric()
+        );
+        for (Triple<Polynomial, Integer, Integer> t : take(LIMIT, ts2)) {
             Polynomial expression1 = t.a.pow(t.b).multiply(t.a.pow(t.c));
             Polynomial expression2 = t.a.pow(t.b + t.c);
             assertEquals(t.toString(), expression1, expression2);
@@ -947,8 +957,12 @@ public class PolynomialProperties {
             assertEquals(t.toString(), expression5, expression6);
         }
 
-        Iterable<Triple<Polynomial, Polynomial, Integer>> ts2 = P.triples(P.polynomials(), P.polynomials(), P.withScale(2).naturalIntegersGeometric());
-        for (Triple<Polynomial, Polynomial, Integer> t : take(LIMIT, ts2)) {
+        Iterable<Triple<Polynomial, Polynomial, Integer>> ts3 = P.triples(
+                P.polynomials(),
+                P.polynomials(),
+                P.withScale(2).naturalIntegersGeometric()
+        );
+        for (Triple<Polynomial, Polynomial, Integer> t : take(LIMIT, ts3)) {
             Polynomial expression1 = t.a.multiply(t.b).pow(t.c);
             Polynomial expression2 = t.a.pow(t.c).multiply(t.b.pow(t.c));
             assertEquals(t.toString(), expression1, expression2);

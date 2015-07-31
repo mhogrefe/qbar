@@ -1181,7 +1181,10 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
     public @NotNull Iterable<Polynomial> polynomials(int degree) {
         return map(
                 js -> Polynomial.of(toList(js)),
-                filter(is -> is.isEmpty() || !last(is).equals(BigInteger.ZERO), withScale(getSecondaryScale()).lists(degree + 1, bigIntegers()))
+                filter(
+                        is -> is.isEmpty() || !last(is).equals(BigInteger.ZERO),
+                        withScale(getSecondaryScale()).lists(degree + 1, bigIntegers())
+                )
         );
     }
 
@@ -1229,7 +1232,10 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
     public @NotNull Iterable<RationalPolynomial> rationalPolynomials(int degree) {
         return map(
                 js -> RationalPolynomial.of(toList(js)),
-                filter(is -> is.isEmpty() || last(is) != Rational.ZERO, withScale(getSecondaryScale()).lists(degree + 1, rationals()))
+                filter(
+                        is -> is.isEmpty() || last(is) != Rational.ZERO,
+                        withScale(getSecondaryScale()).lists(degree + 1, rationals())
+                )
         );
     }
 
@@ -1237,7 +1243,10 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
     public @NotNull Iterable<RationalPolynomial> rationalPolynomialsAtLeast(int minDegree) {
         return map(
                 js -> RationalPolynomial.of(toList(js)),
-                filter(is -> is.isEmpty() || last(is) != Rational.ZERO, withScale(getSecondaryScale()).listsAtLeast(minDegree + 1, rationals()))
+                filter(
+                        is -> is.isEmpty() || last(is) != Rational.ZERO,
+                        withScale(getSecondaryScale()).listsAtLeast(minDegree + 1, rationals())
+                )
         );
     }
 

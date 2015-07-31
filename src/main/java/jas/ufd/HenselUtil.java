@@ -20,7 +20,11 @@ public class HenselUtil {
      * @return [g_0, ..., g_{n-1}] with C = prod_{0,...,n-1} g_i mod p^k.
      */
     @SuppressWarnings("unchecked")
-    public static List<GenPolynomial<ModLong>> liftHenselMonic(GenPolynomial<JasBigInteger> C, List<GenPolynomial<ModLong>> F, long k) {
+    public static List<GenPolynomial<ModLong>> liftHenselMonic(
+            GenPolynomial<JasBigInteger> C,
+            List<GenPolynomial<ModLong>> F,
+            long k
+    ) {
         if (C == null || C.isZERO() || F == null || F.size() == 0) {
             throw new IllegalArgumentException("C must be nonzero and F must be nonempty");
         }
@@ -185,7 +189,8 @@ public class HenselUtil {
         }
         //System.out.println("liftb = " + lift);
         lift.set(r - 1, b);
-        //System.out.println("B("+(r-1)+") = " + B.get(r-1) + " : " +  B.get(r-1).ring.coFac + ", b = " +  b + " : " +  b.ring.coFac);
+        //System.out.println("B("+(r-1)+") = " + B.get(r-1) + " : " +  B.get(r-1).ring.coFac + ", b = " +  b + " : " +
+        // b.ring.coFac);
         //System.out.println("B = " + B);
         //System.out.println("liftb = " + lift);
         return lift;
@@ -273,7 +278,8 @@ public class HenselUtil {
             //System.out.println("Si = " + Si);
             //System.out.println("Ti = " + Ti);
             modul = modul.multiply(p);
-            //System.out.println("modul = " + modul + ", " + p + "^" + k + ", p^k = " + Power.power(new JasBigInteger(),p,k));
+            //System.out.println("modul = " + modul + ", " + p + "^" + k + ", p^k = " +
+            // Power.power(new JasBigInteger(),p,k));
         }
         //System.out.println("Si = " + Si + ", Ti = " + Ti);
         // setup ring mod p^i

@@ -19,10 +19,7 @@ import java.util.function.Function;
  *
  * @author Heinz Kredel
  */
-
 public class PolyUtil {
-
-
     /**
      * Recursive representation. Represent as polynomial in i variables with
      * coefficients in n-i variables. Works for arbitrary term orders.
@@ -34,7 +31,6 @@ public class PolyUtil {
      */
     public static <C extends RingElem<C>> GenPolynomial<GenPolynomial<C>> recursive(
             GenPolynomialRing<GenPolynomial<C>> rfac, GenPolynomial<C> A) {
-
         GenPolynomial<GenPolynomial<C>> B = rfac.getZERO().copy();
         if (A.isZERO()) {
             return B;
@@ -654,8 +650,12 @@ public class PolyUtil {
      * @param a    value to evaluate at.
      * @return A(a, x_2, ..., x_n).
      */
-    public static <C extends RingElem<C>> GenPolynomial<C> evaluateFirstRec(GenPolynomialRing<C> cfac,
-                                                                            GenPolynomialRing<C> dfac, GenPolynomial<GenPolynomial<C>> A, C a) {
+    public static <C extends RingElem<C>> GenPolynomial<C> evaluateFirstRec(
+            GenPolynomialRing<C> cfac,
+            GenPolynomialRing<C> dfac,
+            GenPolynomial<GenPolynomial<C>> A,
+            C a
+    ) {
         if (A == null || A.isZERO()) {
             return dfac.getZERO();
         }
@@ -726,8 +726,14 @@ public class PolyUtil {
         return S;
     }
 
-    private static <C extends RingElem<C>> GenPolynomial<C> interpolate(GenPolynomialRing<C> fac,
-                                                                        GenPolynomial<C> A, GenPolynomial<C> M, C mi, C a, C am) {
+    private static <C extends RingElem<C>> GenPolynomial<C> interpolate(
+            GenPolynomialRing<C> fac,
+            GenPolynomial<C> A,
+            GenPolynomial<C> M,
+            C mi,
+            C a,
+            C am
+    ) {
         GenPolynomial<C> s;
         C b = PolyUtil.evaluateMain(fac.coFac, A, am);
         C d = a.subtract(b); // a-A mod a.modul

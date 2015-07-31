@@ -38,7 +38,9 @@ public final class RationalPolynomial implements
     /**
      * 1
      */
-    public static final @NotNull RationalPolynomial ONE = new RationalPolynomial(Collections.singletonList(Rational.ONE));
+    public static final @NotNull RationalPolynomial ONE = new RationalPolynomial(
+            Collections.singletonList(Rational.ONE)
+    );
 
     /**
      * x

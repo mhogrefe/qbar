@@ -57,7 +57,11 @@ public class PolyUtil_ModInteger {
      * B.coFac.modul == B.
      */
     public static GenPolynomial<ModInteger> chineseRemainder(
-            GenPolynomialRing<ModInteger> fac, GenPolynomial<ModInteger> A, ModInteger mi, GenPolynomial<ModInteger> B) {
+            GenPolynomialRing<ModInteger> fac,
+            GenPolynomial<ModInteger> A,
+            ModInteger mi,
+            GenPolynomial<ModInteger> B
+    ) {
         ModularRingFactory<ModInteger> cfac = (ModularRingFactory<ModInteger>) fac.coFac; // get RingFactory
         GenPolynomial<ModInteger> S = fac.getZERO().copy();
         GenPolynomial<ModInteger> Ap = A.copy();

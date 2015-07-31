@@ -442,9 +442,17 @@ public class RationalProperties {
 
         Iterable<Rational> rs = filter(r -> lt(r.abs().fractionalPart(), of(1, 2)), P.rationals());
         for (Rational r : take(LIMIT, rs)) {
-            assertEquals(r.toString(), r.bigIntegerValue(RoundingMode.HALF_DOWN), r.bigIntegerValue(RoundingMode.DOWN));
+            assertEquals(
+                    r.toString(),
+                    r.bigIntegerValue(RoundingMode.HALF_DOWN),
+                    r.bigIntegerValue(RoundingMode.DOWN)
+            );
             assertEquals(r.toString(), r.bigIntegerValue(RoundingMode.HALF_UP), r.bigIntegerValue(RoundingMode.DOWN));
-            assertEquals(r.toString(), r.bigIntegerValue(RoundingMode.HALF_EVEN), r.bigIntegerValue(RoundingMode.DOWN));
+            assertEquals(
+                    r.toString(),
+                    r.bigIntegerValue(RoundingMode.HALF_EVEN),
+                    r.bigIntegerValue(RoundingMode.DOWN)
+            );
         }
 
         rs = filter(r -> gt(r.abs().fractionalPart(), of(1, 2)), P.rationals());
@@ -2457,7 +2465,15 @@ public class RationalProperties {
         initialize();
         System.out.println("\t\ttesting product(Iterable<Rational>) properties...");
 
-        propertiesFoldHelper(LIMIT, P.getWheelsProvider(), P.rationals(), Rational::multiply, Rational::product, r -> {}, true);
+        propertiesFoldHelper(
+                LIMIT,
+                P.getWheelsProvider(),
+                P.rationals(),
+                Rational::multiply,
+                Rational::product,
+                r -> {},
+                true
+        );
 
         for (List<Rational> rs : take(LIMIT, P.lists(P.rationals()))) {
             assertEquals(rs.toString(), product(rs), product_simplest(rs));
