@@ -61,8 +61,6 @@ public final class TermOrder implements Serializable {
         switch (evord) {
             case TermOrder.LEX: {
                 horder = new EVComparator() {
-
-
                     @Override
                     public int compare(ExpVector e1, ExpVector e2) {
                         return ExpVector.EVILCP(e1, e2);
@@ -72,8 +70,6 @@ public final class TermOrder implements Serializable {
             }
             case TermOrder.INVLEX: {
                 horder = new EVComparator() {
-
-
                     @Override
                     public int compare(ExpVector e1, ExpVector e2) {
                         return -ExpVector.EVILCP(e1, e2);
@@ -83,8 +79,6 @@ public final class TermOrder implements Serializable {
             }
             case TermOrder.GRLEX: {
                 horder = new EVComparator() {
-
-
                     @Override
                     public int compare(ExpVector e1, ExpVector e2) {
                         return ExpVector.EVIGLC(e1, e2);
@@ -94,8 +88,6 @@ public final class TermOrder implements Serializable {
             }
             case TermOrder.IGRLEX: {
                 horder = new EVComparator() {
-
-
                     @Override
                     public int compare(ExpVector e1, ExpVector e2) {
                         return -ExpVector.EVIGLC(e1, e2);
@@ -105,8 +97,6 @@ public final class TermOrder implements Serializable {
             }
             case TermOrder.REVLEX: {
                 horder = new EVComparator() {
-
-
                     @Override
                     public int compare(ExpVector e1, ExpVector e2) {
                         return ExpVector.EVRILCP(e1, e2);
@@ -116,8 +106,6 @@ public final class TermOrder implements Serializable {
             }
             case TermOrder.REVILEX: {
                 horder = new EVComparator() {
-
-
                     @Override
                     public int compare(ExpVector e1, ExpVector e2) {
                         return -ExpVector.EVRILCP(e1, e2);
@@ -127,8 +115,6 @@ public final class TermOrder implements Serializable {
             }
             case TermOrder.REVTDEG: {
                 horder = new EVComparator() {
-
-
                     @Override
                     public int compare(ExpVector e1, ExpVector e2) {
                         return ExpVector.EVRIGLC(e1, e2);
@@ -138,8 +124,6 @@ public final class TermOrder implements Serializable {
             }
             case TermOrder.REVITDG: {
                 horder = new EVComparator() {
-
-
                     @Override
                     public int compare(ExpVector e1, ExpVector e2) {
                         return -ExpVector.EVRIGLC(e1, e2);
@@ -169,8 +153,6 @@ public final class TermOrder implements Serializable {
         evend2 = evend1;
 
         horder = new EVComparator() {
-
-
             @Override
             public int compare(ExpVector e1, ExpVector e2) {
                 return -ExpVector.EVIWLC(weight, e1, e2);
@@ -200,8 +182,6 @@ public final class TermOrder implements Serializable {
                 switch (evord2) {
                     case TermOrder.LEX: {
                         horder = new EVComparator() {
-
-
                             @Override
                             public int compare(ExpVector e1, ExpVector e2) {
                                 int t = ExpVector.EVILCP(e1, e2, evbeg1, evend1);
@@ -215,8 +195,6 @@ public final class TermOrder implements Serializable {
                     }
                     case TermOrder.INVLEX: {
                         horder = new EVComparator() {
-
-
                             @Override
                             public int compare(ExpVector e1, ExpVector e2) {
                                 int t = ExpVector.EVILCP(e1, e2, evbeg1, evend1);
@@ -230,8 +208,6 @@ public final class TermOrder implements Serializable {
                     }
                     case TermOrder.GRLEX: {
                         horder = new EVComparator() {
-
-
                             @Override
                             public int compare(ExpVector e1, ExpVector e2) {
                                 int t = ExpVector.EVILCP(e1, e2, evbeg1, evend1);
@@ -245,8 +221,6 @@ public final class TermOrder implements Serializable {
                     }
                     case TermOrder.IGRLEX: {
                         horder = new EVComparator() {
-
-
                             @Override
                             public int compare(ExpVector e1, ExpVector e2) {
                                 int t = ExpVector.EVILCP(e1, e2, evbeg1, evend1);
@@ -268,8 +242,6 @@ public final class TermOrder implements Serializable {
                 switch (evord2) {
                     case TermOrder.LEX: {
                         horder = new EVComparator() {
-
-
                             @Override
                             public int compare(ExpVector e1, ExpVector e2) {
                                 int t = -ExpVector.EVILCP(e1, e2, evbeg1, evend1);
@@ -283,8 +255,6 @@ public final class TermOrder implements Serializable {
                     }
                     case TermOrder.INVLEX: {
                         horder = new EVComparator() {
-
-
                             @Override
                             public int compare(ExpVector e1, ExpVector e2) {
                                 int t = -ExpVector.EVILCP(e1, e2, evbeg1, evend1);
@@ -298,8 +268,6 @@ public final class TermOrder implements Serializable {
                     }
                     case TermOrder.GRLEX: {
                         horder = new EVComparator() {
-
-
                             @Override
                             public int compare(ExpVector e1, ExpVector e2) {
                                 int t = -ExpVector.EVILCP(e1, e2, evbeg1, evend1);
@@ -313,8 +281,6 @@ public final class TermOrder implements Serializable {
                     }
                     case TermOrder.IGRLEX: {
                         horder = new EVComparator() {
-
-
                             @Override
                             public int compare(ExpVector e1, ExpVector e2) {
                                 int t = -ExpVector.EVILCP(e1, e2, evbeg1, evend1);
@@ -328,8 +294,6 @@ public final class TermOrder implements Serializable {
                     }
                     case TermOrder.REVLEX: {
                         horder = new EVComparator() {
-
-
                             @Override
                             public int compare(ExpVector e1, ExpVector e2) {
                                 int t = -ExpVector.EVILCP(e1, e2, evbeg1, evend1);
@@ -343,8 +307,6 @@ public final class TermOrder implements Serializable {
                     }
                     case TermOrder.REVILEX: {
                         horder = new EVComparator() {
-
-
                             @Override
                             public int compare(ExpVector e1, ExpVector e2) {
                                 int t = -ExpVector.EVILCP(e1, e2, evbeg1, evend1);
@@ -358,8 +320,6 @@ public final class TermOrder implements Serializable {
                     }
                     case TermOrder.REVTDEG: {
                         horder = new EVComparator() {
-
-
                             @Override
                             public int compare(ExpVector e1, ExpVector e2) {
                                 int t = -ExpVector.EVILCP(e1, e2, evbeg1, evend1);
@@ -373,8 +333,6 @@ public final class TermOrder implements Serializable {
                     }
                     case TermOrder.REVITDG: {
                         horder = new EVComparator() {
-
-
                             @Override
                             public int compare(ExpVector e1, ExpVector e2) {
                                 int t = -ExpVector.EVILCP(e1, e2, evbeg1, evend1);
@@ -396,8 +354,6 @@ public final class TermOrder implements Serializable {
                 switch (evord2) {
                     case TermOrder.LEX: {
                         horder = new EVComparator() {
-
-
                             @Override
                             public int compare(ExpVector e1, ExpVector e2) {
                                 int t = ExpVector.EVIGLC(e1, e2, evbeg1, evend1);
@@ -411,8 +367,6 @@ public final class TermOrder implements Serializable {
                     }
                     case TermOrder.INVLEX: {
                         horder = new EVComparator() {
-
-
                             @Override
                             public int compare(ExpVector e1, ExpVector e2) {
                                 int t = ExpVector.EVIGLC(e1, e2, evbeg1, evend1);
@@ -426,8 +380,6 @@ public final class TermOrder implements Serializable {
                     }
                     case TermOrder.GRLEX: {
                         horder = new EVComparator() {
-
-
                             @Override
                             public int compare(ExpVector e1, ExpVector e2) {
                                 int t = ExpVector.EVIGLC(e1, e2, evbeg1, evend1);
@@ -441,8 +393,6 @@ public final class TermOrder implements Serializable {
                     }
                     case TermOrder.IGRLEX: {
                         horder = new EVComparator() {
-
-
                             @Override
                             public int compare(ExpVector e1, ExpVector e2) {
                                 int t = ExpVector.EVIGLC(e1, e2, evbeg1, evend1);

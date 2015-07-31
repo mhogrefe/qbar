@@ -11,15 +11,10 @@ import java.util.Comparator;
  * @param <C> coefficient type
  * @author Heinz Kredel.
  */
-public class PolynomialComparator<C extends RingElem<C>> implements Serializable,
-        Comparator<GenPolynomial<C>> {
-
-
+public class PolynomialComparator<C extends RingElem<C>> implements Serializable, Comparator<GenPolynomial<C>> {
     private final TermOrder tord;
 
-
     private final boolean reverse;
-
 
     /**
      * Constructor.
@@ -30,7 +25,6 @@ public class PolynomialComparator<C extends RingElem<C>> implements Serializable
         tord = t;
         this.reverse = false;
     }
-
 
     //
     //Compare polynomials.
@@ -49,7 +43,6 @@ public class PolynomialComparator<C extends RingElem<C>> implements Serializable
         return s;
     }
 
-
     /**
      * Equals test of comparator.
      *
@@ -67,7 +60,6 @@ public class PolynomialComparator<C extends RingElem<C>> implements Serializable
         return pc != null && tord.equals(pc.tord);
     }
 
-
     /**
      * Hash code for this PolynomialComparator.
      *
@@ -78,7 +70,6 @@ public class PolynomialComparator<C extends RingElem<C>> implements Serializable
         return tord.hashCode();
     }
 
-
     /**
      * toString.
      */
@@ -86,5 +77,4 @@ public class PolynomialComparator<C extends RingElem<C>> implements Serializable
     public String toString() {
         return "PolynomialComparator(" + tord + ")";
     }
-
 }

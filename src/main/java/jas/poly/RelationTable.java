@@ -22,19 +22,15 @@ import java.util.Map;
  */
 
 class RelationTable<C extends RingElem<C>> implements Serializable {
-
-
     /**
      * The data structure for the relations.
      */
     private final Map<List<Integer>, List> table;
 
-
     /**
      * The factory for the solvable polynomial ring.
      */
     private final GenSolvablePolynomialRing<C> ring;
-
 
     /**
      * Constructor for RelationTable requires ring factory. Note: This
@@ -64,7 +60,6 @@ class RelationTable<C extends RingElem<C>> implements Serializable {
         h = 31 * h + table.hashCode();
         return h;
     }
-
 
     /**
      * Get the String representation.

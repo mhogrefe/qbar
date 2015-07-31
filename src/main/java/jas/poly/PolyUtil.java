@@ -103,7 +103,6 @@ public class PolyUtil {
         return PolyUtil.map(fac, A, new FromInteger<>(fac.coFac));
     }
 
-
     /**
      * From JasBigInteger coefficients. Represent as list of polynomials with type
      * C coefficients, e.g. ModInteger or BigRational.
@@ -193,7 +192,6 @@ public class PolyUtil {
         return p.multiply(L);
     }
 
-
     /**
      * Polynomial list monic.
      *
@@ -204,8 +202,6 @@ public class PolyUtil {
     public static <C extends RingElem<C>> List<GenPolynomial<C>> monic(List<GenPolynomial<C>> L) {
         return ListUtil.map(L,
                 new Function<GenPolynomial<C>, GenPolynomial<C>>() {
-
-
                     public GenPolynomial<C> apply(GenPolynomial<C> c) {
                         if (c == null) {
                             return null;
@@ -224,8 +220,6 @@ public class PolyUtil {
      */
     public static <C extends RingElem<C>> List<ExpVector> leadingExpVector(List<GenPolynomial<C>> L) {
         return ListUtil.map(L, new Function<GenPolynomial<C>, ExpVector>() {
-
-
             public ExpVector apply(GenPolynomial<C> c) {
                 if (c == null) {
                     return null;
@@ -234,7 +228,6 @@ public class PolyUtil {
             }
         });
     }
-
 
     //
     //GenPolynomial sparse pseudo remainder. For univariate polynomials.
@@ -246,8 +239,10 @@ public class PolyUtil {
     //m' &le; deg(P)-deg(S)
     //@see jas.poly.GenPolynomial#remainder(jas.poly.GenPolynomial).
     //
-    public static <C extends RingElem<C>> GenPolynomial<C> baseSparsePseudoRemainder(GenPolynomial<C> P,
-                                                                                     GenPolynomial<C> S) {
+    public static <C extends RingElem<C>> GenPolynomial<C> baseSparsePseudoRemainder(
+            GenPolynomial<C> P,
+            GenPolynomial<C> S
+    ) {
         if (S == null || S.isZERO()) {
             throw new ArithmeticException(P.toString() + " division by zero " + S);
         }
@@ -281,7 +276,6 @@ public class PolyUtil {
         }
         return r;
     }
-
 
     //
     //GenPolynomial dense pseudo remainder. For univariate polynomials.
@@ -440,7 +434,6 @@ public class PolyUtil {
         return recursiveSparsePseudoRemainder(P, S);
     }
 
-
     //
     //GenPolynomial sparse pseudo remainder. For recursive polynomials.
     //
@@ -484,7 +477,6 @@ public class PolyUtil {
         }
         return r;
     }
-
 
     //
     //GenPolynomial dense pseudo remainder. For recursive polynomials.
@@ -595,7 +587,6 @@ public class PolyUtil {
         return new JasBigInteger(v);
     }
 
-
     /**
      * Evaluate at main variable.
      *
@@ -673,7 +664,6 @@ public class PolyUtil {
         return B;
     }
 
-
     //
     //ModInteger interpolate on first variable.
     //
@@ -746,7 +736,6 @@ public class PolyUtil {
         return s;
     }
 
-
     //
     //Maximal degree in the coefficient polynomials.
     //
@@ -766,7 +755,6 @@ public class PolyUtil {
         }
         return deg;
     }
-
 
     //
     //Map a unary function to the coefficients.
@@ -788,17 +776,12 @@ public class PolyUtil {
         }
         return n;
     }
-
-
 }
-
 
 /**
  * Conversion of symmetric ModInteger to JasBigInteger functor.
  */
 class ModSymToInt<C extends RingElem<C> & Modular> implements Function<C, JasBigInteger> {
-
-
     public JasBigInteger apply(C c) {
         if (c == null) {
             return new JasBigInteger();
@@ -811,15 +794,11 @@ class ModSymToInt<C extends RingElem<C> & Modular> implements Function<C, JasBig
  * Conversion from JasBigInteger functor.
  */
 class FromInteger<D extends RingElem<D>> implements Function<JasBigInteger, D> {
-
-
     private final RingFactory<D> ring;
-
 
     public FromInteger(RingFactory<D> ring) {
         this.ring = ring;
     }
-
 
     public D apply(JasBigInteger c) {
         if (c == null) {
@@ -829,19 +808,14 @@ class FromInteger<D extends RingElem<D>> implements Function<JasBigInteger, D> {
     }
 }
 
-
 /**
  * Conversion from GenPolynomial<JasBigInteger> functor.
  */
 class FromIntegerPoly<D extends RingElem<D>> implements
         Function<GenPolynomial<JasBigInteger>, GenPolynomial<D>> {
-
-
     private GenPolynomialRing<D> ring;
 
-
     private FromInteger<D> fi;
-
 
     public FromIntegerPoly(GenPolynomialRing<D> ring) {
         if (ring == null) {
@@ -850,7 +824,6 @@ class FromIntegerPoly<D extends RingElem<D>> implements
         this.ring = ring;
         fi = new FromInteger<>(ring.coFac);
     }
-
 
     public GenPolynomial<D> apply(GenPolynomial<JasBigInteger> c) {
         if (c == null) {

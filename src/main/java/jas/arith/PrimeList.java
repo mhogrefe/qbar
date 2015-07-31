@@ -316,7 +316,6 @@ public final class PrimeList implements Iterable<BigInteger> {
      */
     public Iterator<BigInteger> iterator() {
         return new Iterator<BigInteger>() {
-
             int index = -1;
 
             public boolean hasNext() {

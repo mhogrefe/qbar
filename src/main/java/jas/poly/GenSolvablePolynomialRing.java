@@ -104,7 +104,6 @@ public class GenSolvablePolynomialRing<C extends RingElem<C>> extends GenPolynom
         return (GenSolvablePolynomial<C>) super.univariate(i);
     }
 
-
     /**
      * Generate univariate solvable polynomial in a given variable with given
      * exponent.
@@ -117,7 +116,6 @@ public class GenSolvablePolynomialRing<C extends RingElem<C>> extends GenPolynom
     public GenSolvablePolynomial<C> univariate(int i, long e) {
         return (GenSolvablePolynomial<C>) super.univariate(i, e);
     }
-
 
     /**
      * Generate univariate solvable polynomial in a given variable with given

@@ -13,18 +13,15 @@ import java.util.Map;
  */
 
 public final class Monomial<C extends RingElem<C>> {
-
     /**
      * Exponent of monomial.
      */
     public final ExpVector e;
 
-
     /**
      * Coefficient of monomial.
      */
     public final C c;
-
 
     /**
      * Constructor of monomial.
@@ -34,7 +31,6 @@ public final class Monomial<C extends RingElem<C>> {
     public Monomial(Map.Entry<ExpVector, C> me) {
         this(me.getKey(), me.getValue());
     }
-
 
     /**
      * Constructor of monomial.
@@ -56,5 +52,4 @@ public final class Monomial<C extends RingElem<C>> {
     public String toString() {
         return c.toString() + " " + e.toString();
     }
-
 }

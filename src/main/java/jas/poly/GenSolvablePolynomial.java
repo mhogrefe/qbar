@@ -42,7 +42,6 @@ public class GenSolvablePolynomial<C extends RingElem<C>> extends GenPolynomial<
         return ring;
     }
 
-
     /**
      * Clone this GenSolvablePolynomial.
      *
@@ -52,7 +51,6 @@ public class GenSolvablePolynomial<C extends RingElem<C>> extends GenPolynomial<
     public GenSolvablePolynomial<C> copy() {
         return new GenSolvablePolynomial<>(ring, this.val);
     }
-
 
     /**
      * Comparison with any other object.

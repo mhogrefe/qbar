@@ -20,7 +20,6 @@ import java.util.*;
  */
 public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynomial<C>>, /* not yet Polynomial<C> */
         Iterable<Monomial<C>> {
-
     /**
      * The factory for the polynomial ring.
      */
