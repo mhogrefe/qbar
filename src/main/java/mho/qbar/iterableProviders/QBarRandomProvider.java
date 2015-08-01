@@ -540,150 +540,631 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
         return ((RandomProvider) wheelsProvider).nextChar();
     }
 
+    /**
+     * Returns a randomly-generated {@code byte} greater than or equal to {@code a}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RandomProvider}.</li>
+     *  <li>{@code a} may be any {@code byte}.</li>
+     *  <li>The result may be any {@code byte}.</li>
+     * </ul>
+     *
+     * @param a the inclusive lower bound of the generated {@code byte}
+     * @return a {@code byte} greater than or equal to {@code a}
+     */
     public byte nextFromRangeUp(byte a) {
         return ((RandomProvider) wheelsProvider).nextFromRangeUp(a);
     }
 
+    /**
+     * Returns a randomly-generated {@code short} greater than or equal to {@code a}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RandomProvider}.</li>
+     *  <li>{@code a} may be any {@code short}.</li>
+     *  <li>The result may be any {@code short}.</li>
+     * </ul>
+     *
+     * @param a the inclusive lower bound of the generated {@code short}
+     * @return a {@code short} greater than or equal to {@code a}
+     */
     public short nextFromRangeUp(short a) {
         return ((RandomProvider) wheelsProvider).nextFromRangeUp(a);
     }
 
+    /**
+     * Returns a randomly-generated {@code int} greater than or equal to {@code a}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RandomProvider}.</li>
+     *  <li>{@code a} may be any {@code int}.</li>
+     *  <li>The result may be any {@code int}.</li>
+     * </ul>
+     *
+     * @param a the inclusive lower bound of the generated {@code int}
+     * @return an {@code int} greater than or equal to {@code a}
+     */
     public int nextFromRangeUp(int a) {
         return ((RandomProvider) wheelsProvider).nextFromRangeUp(a);
     }
 
+    /**
+     * Returns a randomly-generated {@code long} greater than or equal to {@code a}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RandomProvider}.</li>
+     *  <li>{@code a} may be any {@code long}.</li>
+     *  <li>The result may be any {@code long}.</li>
+     * </ul>
+     *
+     * @param a the inclusive lower bound of the generated {@code long}
+     * @return a {@code long} greater than or equal to {@code a}
+     */
     public long nextFromRangeUp(long a) {
         return ((RandomProvider) wheelsProvider).nextFromRangeUp(a);
     }
 
+    /**
+     * Returns a randomly-generated {@code char} greater than or equal to {@code a}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RandomProvider}.</li>
+     *  <li>{@code a} may be any {@code char}.</li>
+     *  <li>The result may be any {@code char}.</li>
+     * </ul>
+     *
+     * @param a the inclusive lower bound of the generated {@code char}
+     * @return a {@code char} greater than or equal to {@code a}
+     */
     public char nextFromRangeUp(char a) {
         return ((RandomProvider) wheelsProvider).nextFromRangeUp(a);
     }
 
+    /**
+     * Returns a randomly-generated {@code byte} less than or equal to {@code a}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RandomProvider}.</li>
+     *  <li>{@code a} may be any {@code byte}.</li>
+     *  <li>The result may be any {@code byte}.</li>
+     * </ul>
+     *
+     * @param a the inclusive upper bound of the generated {@code byte}
+     * @return a {@code byte} less than or equal to {@code a}
+     */
     public byte nextFromRangeDown(byte a) {
         return ((RandomProvider) wheelsProvider).nextFromRangeDown(a);
     }
 
+    /**
+     * Returns a randomly-generated {@code short} less than or equal to {@code a}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RandomProvider}.</li>
+     *  <li>{@code a} may be any {@code short}.</li>
+     *  <li>The result may be any {@code short}.</li>
+     * </ul>
+     *
+     * @param a the inclusive upper bound of the generated {@code short}
+     * @return a {@code short} less than or equal to {@code a}
+     */
     public short nextFromRangeDown(short a) {
         return ((RandomProvider) wheelsProvider).nextFromRangeDown(a);
     }
 
+    /**
+     * Returns a randomly-generated {@code int} less than or equal to {@code a}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RandomProvider}.</li>
+     *  <li>{@code a} may be any {@code int}.</li>
+     *  <li>The result may be any {@code int}.</li>
+     * </ul>
+     *
+     * @param a the inclusive upper bound of the generated {@code int}
+     * @return an {@code int} less than or equal to {@code a}
+     */
     public int nextFromRangeDown(int a) {
         return ((RandomProvider) wheelsProvider).nextFromRangeDown(a);
     }
 
+    /**
+     * Returns a randomly-generated {@code long} less than or equal to {@code a}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RandomProvider}.</li>
+     *  <li>{@code a} may be any {@code long}.</li>
+     *  <li>The result may be any {@code long}.</li>
+     * </ul>
+     *
+     * @param a the inclusive upper bound of the generated {@code long}
+     * @return a {@code long} less than or equal to {@code a}
+     */
     public long nextFromRangeDown(long a) {
         return ((RandomProvider) wheelsProvider).nextFromRangeDown(a);
     }
 
+    /**
+     * Returns a randomly-generated {@code char} less than or equal to {@code a}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RandomProvider}.</li>
+     *  <li>{@code a} may be any {@code char}.</li>
+     *  <li>The result may be any {@code char}.</li>
+     * </ul>
+     *
+     * @param a the inclusive upper bound of the generated {@code char}
+     * @return a {@code char} less than or equal to {@code a}
+     */
     public char nextFromRangeDown(char a) {
         return ((RandomProvider) wheelsProvider).nextFromRangeDown(a);
     }
 
+    /**
+     * Returns a randomly-generated {@code byte} between {@code a} and {@code b}, inclusive.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RandomProvider}.</li>
+     *  <li>{@code a} may be any {@code byte}.</li>
+     *  <li>{@code b} may be any {@code byte}.</li>
+     *  <li>{@code a} must be less than or equal to {@code b}.</li>
+     *  <li>The result may be any {@code byte}.</li>
+     * </ul>
+     *
+     * @param a the inclusive lower bound of the generated {@code byte}
+     * @param b the inclusive upper bound of the generated {@code byte}
+     * @return a {@code byte} between {@code a} and {@code b}, inclusive
+     */
     public byte nextFromRange(byte a, byte b) {
         return ((RandomProvider) wheelsProvider).nextFromRange(a, b);
     }
 
+    /**
+     * Returns a randomly-generated {@code short} between {@code a} and {@code b}, inclusive.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RandomProvider}.</li>
+     *  <li>{@code a} may be any {@code short}.</li>
+     *  <li>{@code b} may be any {@code short}.</li>
+     *  <li>{@code a} must be less than or equal to {@code b}.</li>
+     *  <li>The result may be any {@code short}.</li>
+     * </ul>
+     *
+     * @param a the inclusive lower bound of the generated {@code short}
+     * @param b the inclusive upper bound of the generated {@code short}
+     * @return a {@code short} between {@code a} and {@code b}, inclusive
+     */
     public short nextFromRange(short a, short b) {
         return ((RandomProvider) wheelsProvider).nextFromRange(a, b);
     }
 
+    /**
+     * Returns a randomly-generated {@code int} between {@code a} and {@code b}, inclusive.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RandomProvider}.</li>
+     *  <li>{@code a} may be any {@code int}.</li>
+     *  <li>{@code b} may be any {@code int}.</li>
+     *  <li>{@code a} must be less than or equal to {@code b}.</li>
+     *  <li>The result may be any {@code int}.</li>
+     * </ul>
+     *
+     * @param a the inclusive lower bound of the generated {@code int}
+     * @param b the inclusive upper bound of the generated {@code int}
+     * @return an {@code int} between {@code a} and {@code b}, inclusive
+     */
     public int nextFromRange(int a, int b) {
         return ((RandomProvider) wheelsProvider).nextFromRange(a, b);
     }
 
+    /**
+     * Returns a randomly-generated {@code long} between {@code a} and {@code b}, inclusive.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RandomProvider}.</li>
+     *  <li>{@code a} may be any {@code long}.</li>
+     *  <li>{@code b} may be any {@code long}.</li>
+     *  <li>{@code a} must be less than or equal to {@code b}.</li>
+     *  <li>The result may be any {@code long}.</li>
+     * </ul>
+     *
+     * @param a the inclusive lower bound of the generated {@code long}
+     * @param b the inclusive upper bound of the generated {@code long}
+     * @return a {@code long} between {@code a} and {@code b}, inclusive
+     */
     public long nextFromRange(long a, long b) {
         return ((RandomProvider) wheelsProvider).nextFromRange(a, b);
     }
 
+    /**
+     * Returns a randomly-generated {@code BigInteger} between {@code a} and {@code b}, inclusive.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RandomProvider}.</li>
+     *  <li>{@code a} may be any {@code BigInteger}.</li>
+     *  <li>{@code b} may be any {@code BigInteger}.</li>
+     *  <li>{@code a} must be less than or equal to {@code b}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param a the inclusive lower bound of the generated {@code BigInteger}
+     * @param b the inclusive upper bound of the generated {@code BigInteger}
+     * @return a {@code BigInteger} between {@code a} and {@code b}, inclusive
+     */
     public @NotNull BigInteger nextFromRange(@NotNull BigInteger a, @NotNull BigInteger b) {
         return ((RandomProvider) wheelsProvider).nextFromRange(a, b);
     }
 
+    /**
+     * Returns a randomly-generated {@code char} between {@code a} and {@code b}, inclusive.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RandomProvider}.</li>
+     *  <li>{@code a} may be any {@code char}.</li>
+     *  <li>{@code b} may be any {@code char}.</li>
+     *  <li>{@code a} must be less than or equal to {@code b}.</li>
+     *  <li>The result may be any {@code char}.</li>
+     * </ul>
+     *
+     * @param a the inclusive lower bound of the generated {@code char}
+     * @param b the inclusive upper bound of the generated {@code char}
+     * @return a {@code char} between {@code a} and {@code b}, inclusive
+     */
     public char nextFromRange(char a, char b) {
         return ((RandomProvider) wheelsProvider).nextFromRange(a, b);
     }
 
+    /**
+     * Returns a randomly-generated positive {@code int} from a geometric distribution with mean {@code scale}.
+     *
+     * <ul>
+     *  <li>{@code this} must have a scale of at least 2.</li>
+     *  <li>The result is positive.</li>
+     * </ul>
+     *
+     * @return a positive {@code int}
+     */
     public int nextPositiveIntGeometric() {
         return ((RandomProvider) wheelsProvider).nextPositiveIntGeometric();
     }
 
+    /**
+     * Returns a randomly-generated negative {@code int} from a geometric distribution with mean {@code scale}.
+     *
+     * <ul>
+     *  <li>{@code this} must have a scale of at least 2.</li>
+     *  <li>The result is negative.</li>
+     * </ul>
+     *
+     * @return a negative {@code int}
+     */
     public int nextNegativeIntGeometric() {
         return ((RandomProvider) wheelsProvider).nextNegativeIntGeometric();
     }
 
+    /**
+     * Returns a randomly-generated natural {@code int} from a geometric distribution with mean {@code scale}.
+     *
+     * <ul>
+     *  <li>{@code this} must have a positive scale. The scale cannot be {@code Integer.MAX_VALUE}.</li>
+     *  <li>The result is non-negative.</li>
+     * </ul>
+     *
+     * @return a natural {@code int}
+     */
     public int nextNaturalIntGeometric() {
         return ((RandomProvider) wheelsProvider).nextNaturalIntGeometric();
     }
 
+    /**
+     * Returns a randomly-generated nonzero {@code int} from a geometric distribution with mean {@code scale}.
+     *
+     * <ul>
+     *  <li>{@code this} must have a scale of at least 2.</li>
+     *  <li>The result is nonzero.</li>
+     * </ul>
+     *
+     * @return a nonzero {@code int}
+     */
     public int nextNonzeroIntGeometric() {
         return ((RandomProvider) wheelsProvider).nextNonzeroIntGeometric();
     }
 
+    /**
+     * Returns a randomly-generated {@code int} from a geometric distribution with mean {@code scale}.
+     *
+     * <ul>
+     *  <li>{@code this} must have a positive scale. The scale cannot be {@code Integer.MAX_VALUE}.</li>
+     *  <li>The result may be any {@code int}.</li>
+     * </ul>
+     *
+     * @return a negative {@code int}
+     */
     public int nextIntGeometric() {
         return ((RandomProvider) wheelsProvider).nextIntGeometric();
     }
 
+    /**
+     * Returns a randomly-generated {@code int} greater than or equal to {@code a}, chosen from a geometric
+     * distribution with mean {@code scale}.
+     *
+     * <ul>
+     *  <li>{@code this} must have a scale greater than {@code a} and less than {@code Integer.MAX_VALUE}+a.</li>
+     *  <li>{@code a} may be any {@code int}.</li>
+     *  <li>The result may be any {@code int}.</li>
+     * </ul>
+     *
+     * @return an {@code int} greater than or equal to {@code a}
+     */
     public int nextIntGeometricFromRangeUp(int a) {
         return ((RandomProvider) wheelsProvider).nextIntGeometricFromRangeUp(a);
     }
 
+    /**
+     * Returns a randomly-generated {@code int} less than or equal to {@code a}, chosen from a geometric distribution
+     * with mean {@code scale}.
+     *
+     * <ul>
+     *  <li>{@code this} must have a scale less than {@code a} and greater than
+     *  {@code a}–{@code Integer.MAX_VALUE}.</li>
+     *  <li>{@code a} may be any {@code int}.</li>
+     *  <li>The result may be any {@code int}.</li>
+     * </ul>
+     *
+     * @return an {@code int} less than or equal to {@code a}
+     */
     public int nextIntGeometricFromRangeDown(int a) {
         return ((RandomProvider) wheelsProvider).nextIntGeometricFromRangeDown(a);
     }
 
+    /**
+     * Returns a randomly-generated positive {@code BigInteger}. The bit size is chosen from a geometric distribution
+     * with mean {@code scale}, and then the {@code BigInteger} is chosen uniformly from all {@code BigInteger}s with
+     * that bit size.
+     *
+     * <ul>
+     *  <li>{@code this} must have a scale of at least 2.</li>
+     *  <li>The result is positive.</li>
+     * </ul>
+     *
+     * @return a positive {@code BigInteger}
+     */
     public @NotNull BigInteger nextPositiveBigInteger() {
         return ((RandomProvider) wheelsProvider).nextPositiveBigInteger();
     }
 
+    /**
+     * Returns a randomly-generated negative {@code BigInteger}. The bit size is chosen from a geometric distribution
+     * with mean {@code scale}, and then the {@code BigInteger} is chosen uniformly from all {@code BigInteger}s with
+     * that bit size.
+     *
+     * <ul>
+     *  <li>{@code this} must have a scale of at least 2.</li>
+     *  <li>The result is negative.</li>
+     * </ul>
+     *
+     * @return a negative {@code BigInteger}
+     */
     public @NotNull BigInteger nextNegativeBigInteger() {
         return ((RandomProvider) wheelsProvider).nextNegativeBigInteger();
     }
 
+    /**
+     * Returns a randomly-generated natural {@code BigInteger}. The bit size is chosen from a geometric distribution
+     * with mean {@code scale}, and then the {@code BigInteger} is chosen uniformly from all {@code BigInteger}s with
+     * that bit size.
+     *
+     * <ul>
+     *  <li>{@code this} must have a positive scale. The scale cannot be {@code Integer.MAX_VALUE}.</li>
+     *  <li>The result is non-negative.</li>
+     * </ul>
+     *
+     * @return a natural {@code BigInteger}
+     */
     public @NotNull BigInteger nextNaturalBigInteger() {
         return ((RandomProvider) wheelsProvider).nextNaturalBigInteger();
     }
 
+    /**
+     * Returns a randomly-generated nonzero {@code BigInteger}. The bit size is chosen from a geometric distribution
+     * with mean {@code scale}, and then the {@code BigInteger} is chosen uniformly from all {@code BigInteger}s with
+     * that bit size.
+     *
+     * <ul>
+     *  <li>{@code this} must have a scale of at least 2.</li>
+     *  <li>The result is not zero.</li>
+     * </ul>
+     *
+     * @return a nonzero {@code BigInteger}
+     */
     public @NotNull BigInteger nextNonzeroBigInteger() {
         return ((RandomProvider) wheelsProvider).nextNonzeroBigInteger();
     }
 
+    /**
+     * Returns a randomly-generated {@code BigInteger}. The bit size is chosen from a geometric distribution with mean
+     * {@code scale}, and then the {@code BigInteger} is chosen uniformly from all {@code BigInteger}s with that bit
+     * size.
+     *
+     * <ul>
+     *  <li>{@code this} must have a positive scale. The scale cannot be {@code Integer.MAX_VALUE}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @return a {@code BigInteger}
+     */
     public @NotNull BigInteger nextBigInteger() {
         return ((RandomProvider) wheelsProvider).nextBigInteger();
     }
 
+    /**
+     * Returns a randomly-generated {@code BigInteger} greater than or equal to {@code a}. The bit size is chosen from
+     * a geometric distribution with mean {@code scale}, and then the {@code BigInteger} is chosen uniformly from all
+     * {@code BigInteger}s greater than or equal to {@code a} with that bit size.
+     *
+     * <ul>
+     *  <li>Let {@code minBitLength} be 0 if {@code a} is negative, and ⌊log<sub>2</sub>({@code a})⌋ otherwise.
+     *  {@code this} must have a scale greater than {@code minBitLength}. If {@code minBitLength} is 0, {@code scale}
+     *  cannot be {@code Integer.MAX_VALUE}.</li>
+     *  <li>{@code a} may be any {@code int}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @return a {@code BigInteger} greater than or equal to {@code a}
+     */
     public @NotNull BigInteger nextFromRangeUp(@NotNull BigInteger a) {
         return ((RandomProvider) wheelsProvider).nextFromRangeUp(a);
     }
 
+    /**
+     * Returns a randomly-generated {@code BigInteger} less than or equal to {@code a}. The bit size is chosen from a
+     * geometric distribution with mean {@code scale}, and then the {@code BigInteger} is chosen uniformly from all
+     * {@code BigInteger}s less than or equal to {@code a} with that bit size.
+     *
+     * <ul>
+     *  <li>Let {@code minBitLength} be 0 if {@code a} is positive, and ⌊log<sub>2</sub>(–{@code a})⌋ otherwise.
+     *  {@code this} must have a scale greater than {@code minBitLength}. If {@code minBitLength} is 0, {@code scale}
+     *  cannot be {@code Integer.MAX_VALUE}.</li>
+     *  <li>{@code a} may be any {@code BigInteger}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @return a {@code BigInteger} less than or equal to {@code a}
+     */
     public @NotNull BigInteger nextFromRangeDown(@NotNull BigInteger a) {
         return ((RandomProvider) wheelsProvider).nextFromRangeDown(a);
     }
 
+    /**
+     * Returns a randomly-generated positive {@code BinaryFraction}. The mantissa bit size is chosen from a geometric
+     * distribution with mean {@code scale}, and then the mantissa is chosen uniformly from all odd positive
+     * {@code BigInteger}s with that bit size. The absolute value of the exponent is chosen from a geometric
+     * distribution with mean {@code secondaryScale}, and its sign is chosen uniformly.
+     *
+     * <ul>
+     *  <li>{@code this} must have a scale of at least 2 and a positive secondary scale.</li>
+     *  <li>The result is positive.</li>
+     * </ul>
+     *
+     * @return a positive {@code BinaryFraction}
+     */
     public @NotNull BinaryFraction nextPositiveBinaryFraction() {
         return ((RandomProvider) wheelsProvider).nextPositiveBinaryFraction();
     }
 
+    /**
+     * Returns a randomly-generated negative {@code BinaryFraction}. The mantissa bit size is chosen from a geometric
+     * distribution with mean {@code scale}, and then the mantissa is chosen uniformly from all odd negative
+     * {@code BigInteger}s with that bit size. The absolute value of the exponent is chosen from a geometric
+     * distribution with mean {@code secondaryScale}, and its sign is chosen uniformly.
+     *
+     * <ul>
+     *  <li>{@code this} must have a scale of at least 2 and a positive secondary scale.</li>
+     *  <li>The result is negative.</li>
+     * </ul>
+     *
+     * @return a negative {@code BinaryFraction}
+     */
     public @NotNull BinaryFraction nextNegativeBinaryFraction() {
         return ((RandomProvider) wheelsProvider).nextNegativeBinaryFraction();
     }
 
+    /**
+     * Returns a randomly-generated nonzero {@code BinaryFraction}. The mantissa bit size is chosen from a geometric
+     * distribution with mean {@code scale}, and then the mantissa is chosen uniformly from all odd {@code BigInteger}s
+     * with that bit size. The absolute value of the exponent is chosen from a geometric distribution with mean
+     * {@code secondaryScale}, and its sign is chosen uniformly. Finally, the sign of the {@code BinaryFraction} itself
+     * is chosen uniformly.
+     *
+     * <ul>
+     *  <li>{@code this} must have a scale of at least 2 and a positive secondary scale.</li>
+     *  <li>The result is not zero.</li>
+     * </ul>
+     *
+     * @return a nonzero {@code BinaryFraction}
+     */
     public @NotNull BinaryFraction nextNonzeroBinaryFraction() {
         return ((RandomProvider) wheelsProvider).nextNonzeroBinaryFraction();
     }
 
+    /**
+     * Returns a randomly-generated {@code BinaryFraction}. The mantissa bit size is chosen from a geometric
+     * distribution with mean {@code scale}. If the bit size is zero, the {@code BinaryFraction} is zero; otherwise,
+     * the mantissa is chosen uniformly from all odd {@code BigInteger}s with that bit size, thhe absolute value of the
+     * exponent is chosen from a geometric distribution with mean {@code secondaryScale}, the exponent's sign is chosen
+     * uniformly, and, finally, the sign of the {@code BinaryFraction} itself is chosen uniformly.
+     *
+     * <ul>
+     *  <li>{@code this} must have a positive scale and a positive secondary scale.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @return a {@code BinaryFraction}
+     */
     public @NotNull BinaryFraction nextBinaryFraction() {
         return ((RandomProvider) wheelsProvider).nextBinaryFraction();
     }
 
+    /**
+     * Returns a randomly-generated {@code BinaryFraction} greater than or equal to {@code a}. A higher {@code scale}
+     * corresponds to a higher mantissa bit size and a higher {@code secondaryScale} corresponds to a higher exponent
+     * bit size, but the exact relationship is not simple to describe.
+     *
+     * <ul>
+     *  <li>{@code this} must have a positive scale and a positive secondary scale.</li>
+     *  <li>{@code a} cannot be null.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @return a {@code BinaryFraction} greater than or equal to {@code a}
+     */
     public @NotNull BinaryFraction nextFromRangeUp(@NotNull BinaryFraction a) {
         return ((RandomProvider) wheelsProvider).nextFromRangeUp(a);
     }
 
+    /**
+     * Returns a randomly-generated {@code BinaryFraction} less than or equal to {@code a}. A higher {@code scale}
+     * corresponds to a higher mantissa bit size and a higher {@code secondaryScale} corresponds to a higher exponent
+     * bit size, but the exact relationship is not simple to describe.
+     *
+     * <ul>
+     *  <li>{@code this} must have a positive scale and a positive secondary scale.</li>
+     *  <li>{@code a} cannot be null.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @return a {@code BinaryFraction} less than or equal to {@code a}
+     */
     public @NotNull BinaryFraction nextFromRangeDown(@NotNull BinaryFraction a) {
         return ((RandomProvider) wheelsProvider).nextFromRangeDown(a);
     }
 
+    /**
+     * <p>Returns a {@code BinaryFraction} between {@code a} and {@code b}, inclusive.</p>
+     *
+     * <p>Every interval with {@code BinaryFraction} bounds may be broken up into equal blocks whose length is a power
+     * of 2. Consider the subdivision with the largest possible block size. We can call points that lie on the
+     * boundaries between blocks, along with the lower and upper bounds of the interval, <i>division-0</i> points.
+     * Let points within the interval that are halfway between division-0 points be called <i>division-1</i> points;
+     * points halfway between division-0 or division-1 points <i>division-2</i> points; and so on. The
+     * {@code BinaryFraction}s returned by this method have divisions chosen from a geometric distribution with mean
+     * {@code scale}. The distribution of {@code BinaryFraction}s is approximately uniform.</p>
+     *
+     * <ul>
+     *  <li>{@code this} must have a positive scale. The scale cannot be {@code Integer.MAX_VALUE}.</li>
+     *  <li>{@code a} may be any {@code BinaryFraction}.</li>
+     *  <li>{@code b} may be any {@code BinaryFraction}.</li>
+     *  <li>{@code a} must be less than or equal to {@code b}.</li>
+     *  <li>The result is empty, or an infinite, non-removable {@code Iterable} containing
+     *  {@code BinaryFraction}s.</li>
+     * </ul>
+     *
+     * Length is infinite if a≤b, 0 otherwise
+     *
+     * @param a the inclusive lower bound of the generated elements
+     * @param b the inclusive upper bound of the generated elements
+     * @return approximately uniformly-distributed {@code BinaryFraction}s between {@code a} and {@code b}, inclusive
+     */
     public @NotNull BinaryFraction nextFromRange(@NotNull BinaryFraction a, @NotNull BinaryFraction b) {
         return ((RandomProvider) wheelsProvider).nextFromRange(a, b);
     }
