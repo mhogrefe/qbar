@@ -1013,6 +1013,10 @@ public strictfp abstract class QBarIterableProvider {
         return wheelsProvider.stringsWithSubstrings(substrings);
     }
 
+    public @NotNull <T> Iterable<Iterable<T>> repeatingIterables(@NotNull Iterable<T> xs) {
+        return wheelsProvider.repeatingIterables(xs);
+    }
+
     public @NotNull <T> Iterable<List<T>> permutations(@NotNull List<T> xs) {
         return wheelsProvider.permutations(xs);
     }
