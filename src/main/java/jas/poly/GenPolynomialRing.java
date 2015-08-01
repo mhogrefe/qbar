@@ -67,10 +67,6 @@ public class GenPolynomialRing<C extends RingElem<C>> implements RingFactory<Gen
     private int isField = -1; // initially unknown
 
     /**
-     * Log4j logger object.
-     */
-
-    /**
      * The constructor creates a polynomial factory object with the default term
      * order.
      *

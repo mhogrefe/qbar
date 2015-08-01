@@ -9,7 +9,6 @@ import jas.structure.RingFactory;
  *
  * @author Heinz Kredel
  */
-
 public interface ModularRingFactory<C extends RingElem<C> & Modular> extends RingFactory<C> {
     /**
      * Return the JasBigInteger modul for the factory.

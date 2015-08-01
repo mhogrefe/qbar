@@ -8,23 +8,19 @@ import jas.structure.RingFactory;
 import java.util.*;
 
 public abstract class FactorAbstract<C extends RingElem<C>> {
-
-
     /**
      * Gcd engine for base coefficients.
      */
     final GreatestCommonDivisorAbstract<C> engine;
 
     private final SquarefreeAbstract<C> sengine;
-
-
     /**
+     *
      * No argument constructor.
      */
     FactorAbstract() {
         throw new IllegalArgumentException("don't use this constructor");
     }
-
 
     /**
      * Constructor.
@@ -37,7 +33,6 @@ public abstract class FactorAbstract<C extends RingElem<C>> {
         sengine = SquarefreeFactory.getImplementation(cfac);
     }
 
-
     /**
      * Get the String representation.
      *
@@ -47,7 +42,6 @@ public abstract class FactorAbstract<C extends RingElem<C>> {
     public String toString() {
         return getClass().getName();
     }
-
 
     /**
      * Remove one occurrence of elements.
@@ -63,7 +57,6 @@ public abstract class FactorAbstract<C extends RingElem<C>> {
         b.forEach(res::remove);
         return res;
     }
-
 
     /**
      * Univariate GenPolynomial factorization.
@@ -137,7 +130,6 @@ public abstract class FactorAbstract<C extends RingElem<C>> {
         return factors;
     }
 
-
     /**
      * Univariate GenPolynomial factorization of a squarefree polynomial.
      *
@@ -145,7 +137,6 @@ public abstract class FactorAbstract<C extends RingElem<C>> {
      * @return [p_1, ..., p_k] with P = prod_{i=1,...,k} p_i.
      */
     protected abstract List<GenPolynomial<C>> baseFactorsSquarefree(GenPolynomial<C> P);
-
 
     /**
      * Normalize factorization. p'_i &gt; 0 for i &gt; 1 and p'_1 != 1 if k &gt;

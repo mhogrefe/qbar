@@ -8,7 +8,6 @@ import java.util.Random;
  *
  * @author Heinz Kredel
  */
-
 public final class ModIntegerRing implements ModularRingFactory<ModInteger> {
     /**
      * Module part of the factory data structure.

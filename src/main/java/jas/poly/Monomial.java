@@ -11,7 +11,6 @@ import java.util.Map;
  *
  * @author Heinz Kredel
  */
-
 public final class Monomial<C extends RingElem<C>> {
     /**
      * Exponent of monomial.

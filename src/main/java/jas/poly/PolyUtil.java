@@ -98,8 +98,10 @@ public class PolyUtil {
      * @param A   polynomial with JasBigInteger coefficients to be converted.
      * @return polynomial with type C coefficients.
      */
-    public static <C extends RingElem<C>> GenPolynomial<C> fromIntegerCoefficients(GenPolynomialRing<C> fac,
-                                                                                   GenPolynomial<JasBigInteger> A) {
+    public static <C extends RingElem<C>> GenPolynomial<C> fromIntegerCoefficients(
+            GenPolynomialRing<C> fac,
+            GenPolynomial<JasBigInteger> A
+    ) {
         return PolyUtil.map(fac, A, new FromInteger<>(fac.coFac));
     }
 

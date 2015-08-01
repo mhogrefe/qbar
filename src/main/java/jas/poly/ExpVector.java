@@ -12,7 +12,6 @@ import java.util.Random;
  *
  * @author Heinz Kredel
  */
-
 public final class ExpVector implements AbelianGroupElem<ExpVector> {
     int hash = 0;
 

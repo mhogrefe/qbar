@@ -20,7 +20,6 @@ import java.util.Map;
  *
  * @author Heinz Kredel
  */
-
 class RelationTable<C extends RingElem<C>> implements Serializable {
     /**
      * The data structure for the relations.

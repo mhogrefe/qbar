@@ -10,7 +10,6 @@ import java.math.BigInteger;
  * @author Heinz Kredel
  * @see ModInteger
  */
-
 public final class ModLong implements RingElem<ModLong>, Modular {
     /**
      * ModLongRing reference.

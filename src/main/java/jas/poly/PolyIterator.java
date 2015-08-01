@@ -12,7 +12,6 @@ import java.util.SortedMap;
  *
  * @author Heinz Kredel
  */
-
 class PolyIterator<C extends RingElem<C>> implements Iterator<Monomial<C>> {
     /**
      * Internal iterator over polynomial map.
