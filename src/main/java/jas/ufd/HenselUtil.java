@@ -367,7 +367,6 @@ public class HenselUtil {
         return sol;
     }
 
-
     /**
      * Modular diophantine equation solution and lifting algorithm. Let p =
      * A_i.ring.coFac.modul() and assume gcd(A,B) == 1 mod p.
@@ -623,7 +622,6 @@ public class HenselUtil {
         }
         return new HenselApprox(Ai, Bi, A1p, B1p);
     }
-
 
     /**
      * Modular quadratic Hensel lifting algorithm on coefficients. Let p =

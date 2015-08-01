@@ -27,5 +27,4 @@ class GCDFactory {
     public static <C extends RingElem<C>> GreatestCommonDivisorAbstract<C> getProxy(RingFactory<C> fac) {
         return GCDFactory.getImplementation(fac);
     }
-
 }

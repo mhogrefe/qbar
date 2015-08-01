@@ -15,7 +15,6 @@ import java.util.TreeMap;
  *
  * @author Heinz Kredel
  */
-
 @SuppressWarnings("ConstantConditions")
 public class SquarefreeFiniteFieldCharP<C extends RingElem<C>> extends SquarefreeFieldCharP<C> {
     public SquarefreeFiniteFieldCharP(RingFactory<C> fac) {
@@ -25,7 +24,6 @@ public class SquarefreeFiniteFieldCharP<C extends RingElem<C>> extends Squarefre
             throw new IllegalArgumentException("fac must be finite");
         }
     }
-
 
     /* --------- char-th roots --------------------- */
 

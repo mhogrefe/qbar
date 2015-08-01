@@ -252,7 +252,6 @@ public class FactorInteger extends FactorAbstract<JasBigInteger> {
             KsubSet<GenPolynomial<ModLong>> ps = new KsubSet<>(lift, j);
             for (List<GenPolynomial<ModLong>> flist : ps) {
                 if (!D.get((int) degreeSum(flist))) {
-
                     continue;
                 }
                 GenPolynomial<ModLong> mtrial = Power.multiply(mpfac, flist);

@@ -14,11 +14,8 @@ import jas.structure.RingElem;
  *
  * @author Heinz Kredel
  */
-
 public class GreatestCommonDivisorModEval<MOD extends RingElem<MOD> & Modular>
         extends GreatestCommonDivisorAbstract<MOD> {
-
-
     /**
      * Modular gcd algorithm to use.
      */
@@ -26,7 +23,6 @@ public class GreatestCommonDivisorModEval<MOD extends RingElem<MOD> & Modular>
             = new GreatestCommonDivisorSimple<>();
     // = new GreatestCommonDivisorPrimitive<MOD>();
     // not okay: = new GreatestCommonDivisorSubres<MOD>();
-
 
     /**
      * Univariate GenPolynomial greatest common divisor.
@@ -41,7 +37,6 @@ public class GreatestCommonDivisorModEval<MOD extends RingElem<MOD> & Modular>
         return mufd.baseGcd(P, S);
     }
 
-
     /**
      * Recursive univariate GenPolynomial greatest common divisor.
      *
@@ -51,10 +46,11 @@ public class GreatestCommonDivisorModEval<MOD extends RingElem<MOD> & Modular>
      */
     @Override
     public GenPolynomial<GenPolynomial<MOD>> recursiveUnivariateGcd(
-            GenPolynomial<GenPolynomial<MOD>> P, GenPolynomial<GenPolynomial<MOD>> S) {
+            GenPolynomial<GenPolynomial<MOD>> P,
+            GenPolynomial<GenPolynomial<MOD>> S
+    ) {
         return mufd.recursiveUnivariateGcd(P, S);
     }
-
 
     /**
      * GenPolynomial greatest common divisor, modular evaluation algorithm.
@@ -154,7 +150,6 @@ public class GreatestCommonDivisorModEval<MOD extends RingElem<MOD> & Modular>
 
         for (MOD d = cofac.getZERO(); d.compareTo(end) <= 0; d = d.sum(inc)) {
             if (++i >= en) {
-
                 return mufd.gcd(P, S);
                 //throw new ArithmeticException("prime list exhausted");
             }
@@ -177,13 +172,11 @@ public class GreatestCommonDivisorModEval<MOD extends RingElem<MOD> & Modular>
             //System.out.println("cm = " + cm);
             // test for constant g.c.d
             if (cm.isConstant()) {
-
                 if (c.ring.nvar < cm.ring.nvar) {
                     c = c.extend(mfac, 0);
                 }
                 cm = cm.abs().multiply(c);
                 q = cm.extend(fac, 0);
-
                 return q;
             }
             // test for unlucky prime

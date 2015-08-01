@@ -10,10 +10,7 @@ import jas.structure.RingElem;
  *
  * @author Heinz Kredel
  */
-
 public abstract class GreatestCommonDivisorAbstract<C extends RingElem<C>> {
-
-
     /**
      * Get the String representation.
      *
@@ -23,7 +20,6 @@ public abstract class GreatestCommonDivisorAbstract<C extends RingElem<C>> {
     public String toString() {
         return getClass().getName();
     }
-
 
     /**
      * GenPolynomial base coefficient content.
@@ -55,7 +51,6 @@ public abstract class GreatestCommonDivisorAbstract<C extends RingElem<C>> {
         return d;
     }
 
-
     /**
      * GenPolynomial base coefficient primitive part.
      *
@@ -76,7 +71,6 @@ public abstract class GreatestCommonDivisorAbstract<C extends RingElem<C>> {
         return P.divide(d);
     }
 
-
     /**
      * Univariate GenPolynomial greatest common divisor. Uses sparse
      * pseudoRemainder for remainder.
@@ -86,7 +80,6 @@ public abstract class GreatestCommonDivisorAbstract<C extends RingElem<C>> {
      * @return gcd(P, S).
      */
     public abstract GenPolynomial<C> baseGcd(GenPolynomial<C> P, GenPolynomial<C> S);
-
 
     /**
      * GenPolynomial recursive content.
@@ -114,7 +107,6 @@ public abstract class GreatestCommonDivisorAbstract<C extends RingElem<C>> {
         }
         return d.abs();
     }
-
 
     /**
      * GenPolynomial recursive primitive part.
@@ -144,8 +136,10 @@ public abstract class GreatestCommonDivisorAbstract<C extends RingElem<C>> {
      * @param S univariate recursive GenPolynomial.
      * @return gcd(P, S).
      */
-    public abstract GenPolynomial<GenPolynomial<C>> recursiveUnivariateGcd(GenPolynomial<GenPolynomial<C>> P,
-                                                                           GenPolynomial<GenPolynomial<C>> S);
+    public abstract GenPolynomial<GenPolynomial<C>> recursiveUnivariateGcd(
+            GenPolynomial<GenPolynomial<C>> P,
+            GenPolynomial<GenPolynomial<C>> S
+    );
 
     /**
      * GenPolynomial division. Indirection to GenPolynomial method.
@@ -157,14 +151,12 @@ public abstract class GreatestCommonDivisorAbstract<C extends RingElem<C>> {
     GenPolynomial<C> divide(GenPolynomial<C> a, C b) {
         if (b == null || b.isZERO()) {
             throw new IllegalArgumentException("division by zero");
-
         }
         if (a == null || a.isZERO()) {
             return a;
         }
         return a.divide(b);
     }
-
 
     /**
      * Coefficient greatest common divisor. Indirection to coefficient method.
@@ -182,7 +174,6 @@ public abstract class GreatestCommonDivisorAbstract<C extends RingElem<C>> {
         }
         return a.gcd(b);
     }
-
 
     /**
      * GenPolynomial greatest common divisor.

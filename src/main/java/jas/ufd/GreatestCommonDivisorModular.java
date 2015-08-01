@@ -15,7 +15,6 @@ import java.math.BigInteger;
  *
  * @author Heinz Kredel
  */
-
 public class GreatestCommonDivisorModular<MOD extends RingElem<MOD> & Modular> extends
         GreatestCommonDivisorAbstract<JasBigInteger> {
     private final GreatestCommonDivisorAbstract<MOD> mufd;
@@ -116,7 +115,6 @@ public class GreatestCommonDivisorModular<MOD extends RingElem<MOD> & Modular> e
                 continue;
             }
             if (++i >= pn) {
-
                 return iufd.gcd(P, S);
             }
             // initialize coefficient factory and map normalization factor
@@ -143,7 +141,6 @@ public class GreatestCommonDivisorModular<MOD extends RingElem<MOD> & Modular> e
             cm = mufd.gcd(rm, qm);
             // test for constant g.c.d
             if (cm.isConstant()) {
-
                 return fac.getONE().multiply(c);
                 //return cm.abs().multiply( c );
             }

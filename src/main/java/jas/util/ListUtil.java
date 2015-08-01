@@ -10,7 +10,6 @@ import java.util.function.Function;
  *
  * @author Heinz Kredel
  */
-
 public class ListUtil {
     //Map a unary function to the list.
     public static <C, D> List<D> map(List<C> list, Function<C, D> f) {

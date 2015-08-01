@@ -14,7 +14,6 @@ import java.util.TreeMap;
  *
  * @author Heinz Kredel
  */
-
 public class SquarefreeRingChar0<C extends RingElem<C>> extends SquarefreeAbstract<C> /*implements Squarefree<C>*/ {
     /**
      * Factory for ring of characteristic 0 coefficients.
@@ -31,7 +30,6 @@ public class SquarefreeRingChar0<C extends RingElem<C>> extends SquarefreeAbstra
         }
         coFac = fac;
     }
-
 
     /**
      * Get the String representation.
