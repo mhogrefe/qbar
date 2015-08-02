@@ -3,13 +3,11 @@ package jas.poly;
 import jas.arith.JasBigInteger;
 import jas.arith.ModInteger;
 import jas.arith.ModularRingFactory;
-import jas.util.ListUtil;
 import mho.wheels.iterables.IterableUtils;
 
 import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
-import java.util.function.Function;
 
 public class PolyUtil_ModInteger {
     /**
