@@ -4,6 +4,7 @@ import jas.arith.JasBigInteger;
 import jas.arith.ModInteger;
 import jas.arith.ModularRingFactory;
 import jas.util.ListUtil;
+import mho.wheels.iterables.IterableUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -36,13 +37,10 @@ public class PolyUtil_ModInteger {
      * @return list of polynomials with JasBigInteger coefficients.
      */
     public static List<GenPolynomial<JasBigInteger>> integerFromModularCoefficients(
-            final GenPolynomialRing<JasBigInteger> fac, List<GenPolynomial<ModInteger>> L) {
-        return ListUtil.map(L,
-                new Function<GenPolynomial<ModInteger>, GenPolynomial<JasBigInteger>>() {
-                    public GenPolynomial<JasBigInteger> apply(GenPolynomial<ModInteger> c) {
-                        return integerFromModularCoefficients(fac, c);
-                    }
-                });
+            final GenPolynomialRing<JasBigInteger> fac,
+            List<GenPolynomial<ModInteger>> L
+    ) {
+        return IterableUtils.toList(IterableUtils.map(c -> integerFromModularCoefficients(fac, c), L));
     }
 
     /**

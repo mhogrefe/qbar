@@ -6,6 +6,7 @@ import jas.arith.ModularRingFactory;
 import jas.structure.RingElem;
 import jas.structure.RingFactory;
 import jas.util.ListUtil;
+import mho.wheels.iterables.IterableUtils;
 
 import java.math.BigInteger;
 import java.util.List;
@@ -81,12 +82,7 @@ public class PolyUtil {
     @Deprecated
     public static <C extends RingElem<C> & Modular> List<GenPolynomial<JasBigInteger>> integerFromModularCoefficients(
             final GenPolynomialRing<JasBigInteger> fac, List<GenPolynomial<C>> L) {
-        return ListUtil.map(L,
-                new Function<GenPolynomial<C>, GenPolynomial<JasBigInteger>>() {
-                    public GenPolynomial<JasBigInteger> apply(GenPolynomial<C> c) {
-                        return PolyUtil.integerFromModularCoefficients(fac, c);
-                    }
-                });
+        return IterableUtils.toList(IterableUtils.map(c -> PolyUtil.integerFromModularCoefficients(fac, c), L));
     }
 
     /**
@@ -116,8 +112,10 @@ public class PolyUtil {
      * @return list of polynomials with type C coefficients.
      */
     public static <C extends RingElem<C>> List<GenPolynomial<C>> fromIntegerCoefficients(
-            GenPolynomialRing<C> fac, List<GenPolynomial<JasBigInteger>> L) {
-        return ListUtil.map(L, new FromIntegerPoly<>(fac));
+            GenPolynomialRing<C> fac,
+            List<GenPolynomial<JasBigInteger>> L
+    ) {
+        return IterableUtils.toList(IterableUtils.map(new FromIntegerPoly<>(fac), L));
     }
 
     //
@@ -202,15 +200,7 @@ public class PolyUtil {
      * @return list of polynomials with leading coefficient 1.
      */
     public static <C extends RingElem<C>> List<GenPolynomial<C>> monic(List<GenPolynomial<C>> L) {
-        return ListUtil.map(L,
-                new Function<GenPolynomial<C>, GenPolynomial<C>>() {
-                    public GenPolynomial<C> apply(GenPolynomial<C> c) {
-                        if (c == null) {
-                            return null;
-                        }
-                        return c.monic();
-                    }
-                });
+        return IterableUtils.toList(IterableUtils.map(c -> c == null ? null : c.monic(), L));
     }
 
     /**
@@ -221,14 +211,7 @@ public class PolyUtil {
      * @return list of leading exponent vectors.
      */
     public static <C extends RingElem<C>> List<ExpVector> leadingExpVector(List<GenPolynomial<C>> L) {
-        return ListUtil.map(L, new Function<GenPolynomial<C>, ExpVector>() {
-            public ExpVector apply(GenPolynomial<C> c) {
-                if (c == null) {
-                    return null;
-                }
-                return c.leadingExpVector();
-            }
-        });
+        return IterableUtils.toList(IterableUtils.map(c -> c == null ? null : c.leadingExpVector(), L));
     }
 
     //
