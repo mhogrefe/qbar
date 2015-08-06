@@ -271,21 +271,18 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
         );
     }
 
-    @NotNull
     @Override
-    public Iterable<Rational> rangeUp(@NotNull Rational a) {
+    public @NotNull Iterable<Rational> rangeUp(@NotNull Rational a) {
         return null;
     }
 
-    @NotNull
     @Override
-    public Iterable<Rational> rangeDown(@NotNull Rational a) {
+    public @NotNull Iterable<Rational> rangeDown(@NotNull Rational a) {
         return null;
     }
 
-    @NotNull
     @Override
-    public Iterable<Rational> range(@NotNull Rational a, @NotNull Rational b) {
+    public @NotNull Iterable<Rational> range(@NotNull Rational a, @NotNull Rational b) {
         return null;
     }
 
@@ -535,21 +532,18 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
         );
     }
 
-    @NotNull
     @Override
-    public Iterable<Polynomial> primitivePolynomials(int degree) {
+    public @NotNull Iterable<Polynomial> primitivePolynomials(int degree) {
         return null;
     }
 
-    @NotNull
     @Override
-    public Iterable<Polynomial> primitivePolynomialsAtLeast(int minDegree) {
+    public @NotNull Iterable<Polynomial> primitivePolynomialsAtLeast(int minDegree) {
         return null;
     }
 
-    @NotNull
     @Override
-    public Iterable<Polynomial> primitivePolynomials() {
+    public @NotNull Iterable<Polynomial> primitivePolynomials() {
         return null;
     }
 
@@ -586,21 +580,18 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
         );
     }
 
-    @NotNull
     @Override
-    public Iterable<RationalPolynomial> monicRationalPolynomials(int degree) {
+    public @NotNull Iterable<RationalPolynomial> monicRationalPolynomials(int degree) {
         return null;
     }
 
-    @NotNull
     @Override
-    public Iterable<RationalPolynomial> monicRationalPolynomialsAtLeast(int minDegree) {
+    public @NotNull Iterable<RationalPolynomial> monicRationalPolynomialsAtLeast(int minDegree) {
         return null;
     }
 
-    @NotNull
     @Override
-    public Iterable<RationalPolynomial> monicRationalPolynomials() {
+    public @NotNull Iterable<RationalPolynomial> monicRationalPolynomials() {
         return null;
     }
 
