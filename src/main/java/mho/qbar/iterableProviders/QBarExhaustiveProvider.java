@@ -2,6 +2,7 @@ package mho.qbar.iterableProviders;
 
 import mho.qbar.objects.*;
 import mho.wheels.iterables.ExhaustiveProvider;
+import mho.wheels.iterables.NoRemoveIterator;
 import mho.wheels.ordering.Ordering;
 import org.jetbrains.annotations.NotNull;
 
@@ -60,8 +61,8 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
     @Override
     public @NotNull Iterable<Rational> range(@NotNull Rational a, @NotNull Rational b) {
         if (gt(a, b)) return Collections.emptyList();
-        return () -> new Iterator<Rational>() {
-            private Rational x = a;
+        return () -> new NoRemoveIterator<Rational>() {
+            private @NotNull Rational x = a;
             private boolean reachedEnd;
 
             @Override
@@ -75,11 +76,6 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
                 Rational oldX = x;
                 x = x.add(Rational.ONE);
                 return oldX;
-            }
-
-            @Override
-            public void remove() {
-                throw new UnsupportedOperationException("cannot remove from this iterator");
             }
         };
     }

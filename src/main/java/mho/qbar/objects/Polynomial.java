@@ -2,6 +2,7 @@ package mho.qbar.objects;
 
 import mho.wheels.io.Readers;
 import mho.wheels.iterables.IterableUtils;
+import mho.wheels.iterables.NoRemoveIterable;
 import mho.wheels.math.MathUtils;
 import mho.wheels.numberUtils.IntegerUtils;
 import mho.wheels.ordering.comparators.ShortlexComparator;
@@ -85,24 +86,7 @@ public final class Polynomial implements
      */
     @Override
     public @NotNull Iterator<BigInteger> iterator() {
-        return new Iterator<BigInteger>() {
-            private int i = 0;
-
-            @Override
-            public boolean hasNext() {
-                return i < coefficients.size();
-            }
-
-            @Override
-            public BigInteger next() {
-                return coefficients.get(i++);
-            }
-
-            @Override
-            public void remove() {
-                throw new UnsupportedOperationException("cannot remove from this iterator");
-            }
-        };
+        return new NoRemoveIterable<>(coefficients).iterator();
     }
 
     /**

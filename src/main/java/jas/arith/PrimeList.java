@@ -1,6 +1,7 @@
 package jas.arith;
 
 import jas.structure.Power;
+import mho.wheels.iterables.NoRemoveIterator;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -315,15 +316,11 @@ public final class PrimeList implements Iterable<BigInteger> {
      * Iterator.
      */
     public Iterator<BigInteger> iterator() {
-        return new Iterator<BigInteger>() {
+        return new NoRemoveIterator<BigInteger>() {
             int index = -1;
 
             public boolean hasNext() {
                 return true;
-            }
-
-            public void remove() {
-                throw new UnsupportedOperationException("remove not implemented");
             }
 
             public BigInteger next() {

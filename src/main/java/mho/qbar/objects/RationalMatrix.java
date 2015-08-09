@@ -1,6 +1,7 @@
 package mho.qbar.objects;
 
 import mho.wheels.io.Readers;
+import mho.wheels.iterables.NoRemoveIterable;
 import mho.wheels.ordering.comparators.LexComparator;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
@@ -66,24 +67,7 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
      * @return an {@code Iterable} over this {@code RationalMatrix}'s rows
      */
     public @NotNull Iterable<RationalVector> rowIterable() {
-        return () -> new Iterator<RationalVector>() {
-            private int i = 0;
-
-            @Override
-            public boolean hasNext() {
-                return i < rows.size();
-            }
-
-            @Override
-            public RationalVector next() {
-                return rows.get(i++);
-            }
-
-            @Override
-            public void remove() {
-                throw new UnsupportedOperationException("cannot remove from this iterator");
-            }
-        };
+        return new NoRemoveIterable<>(rows);
     }
 
     /**

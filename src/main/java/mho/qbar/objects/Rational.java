@@ -1,6 +1,7 @@
 package mho.qbar.objects;
 
 import mho.wheels.io.Readers;
+import mho.wheels.iterables.NoRemoveIterator;
 import mho.wheels.math.MathUtils;
 import mho.wheels.numberUtils.BigDecimalUtils;
 import mho.wheels.numberUtils.IntegerUtils;
@@ -1802,12 +1803,12 @@ public final class Rational implements Comparable<Rational> {
         BigInteger numerator = fractionalPart.numerator;
         BigInteger denominator = fractionalPart.denominator;
         final BigInteger firstRemainder = numerator.multiply(base);
-        Iterable<BigInteger> afterDecimal = () -> new Iterator<BigInteger>() {
+        Iterable<BigInteger> afterDecimal = () -> new NoRemoveIterator<BigInteger>() {
             private boolean knownRepeating;
             private int index;
-            private Integer repeatingIndex;
-            private BigInteger remainder;
-            private Map<BigInteger, Integer> remainders;
+            private @NotNull Integer repeatingIndex;
+            private @NotNull BigInteger remainder;
+            private @NotNull Map<BigInteger, Integer> remainders;
             {
                 knownRepeating = false;
                 index = 0;
@@ -1838,11 +1839,6 @@ public final class Rational implements Comparable<Rational> {
                     }
                 }
                 return digit;
-            }
-
-            @Override
-            public void remove() {
-                throw new UnsupportedOperationException("cannot remove from this iterator");
             }
         };
         return new Pair<>(beforeDecimal, skipLastIf(i -> i.equals(BigInteger.ZERO), afterDecimal));
