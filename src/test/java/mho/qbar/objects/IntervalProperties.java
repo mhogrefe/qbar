@@ -4,7 +4,7 @@ import mho.qbar.iterableProviders.QBarExhaustiveProvider;
 import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.iterableProviders.QBarRandomProvider;
 import mho.qbar.testing.QBarTesting;
-import mho.wheels.math.Combinatorics;
+import mho.wheels.iterables.ExhaustiveProvider;
 import mho.wheels.numberUtils.BigDecimalUtils;
 import mho.wheels.numberUtils.FloatingPointUtils;
 import mho.wheels.ordering.Ordering;
@@ -474,7 +474,10 @@ public class IntervalProperties {
             List<Interval> disjoint = makeDisjoint(as);
             disjoint.forEach(mho.qbar.objects.IntervalProperties::validate);
             assertTrue(as.toString(), weaklyIncreasing(disjoint));
-            assertTrue(as.toString(), and(map(p -> p.a.disjoint(p.b), Combinatorics.distinctPairs(disjoint))));
+            assertTrue(
+                    as.toString(),
+                    and(map(p -> p.a.disjoint(p.b), ExhaustiveProvider.INSTANCE.distinctPairs(disjoint)))
+            );
             for (Rational r : take(TINY_LIMIT, mux(toList(map(P::rationals, as))))) {
                 assertTrue(as.toString(), or(map(a -> a.contains(r), disjoint)));
             }
