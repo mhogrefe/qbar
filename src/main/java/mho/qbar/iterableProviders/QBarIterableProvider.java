@@ -2,6 +2,7 @@ package mho.qbar.iterableProviders;
 
 import mho.qbar.objects.*;
 import mho.wheels.iterables.IterableProvider;
+import mho.wheels.iterables.RandomProvider;
 import mho.wheels.math.BinaryFraction;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.*;
@@ -15,7 +16,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
-import static mho.wheels.iterables.IterableUtils.map;
+import static mho.wheels.iterables.IterableUtils.*;
 
 @SuppressWarnings("unused")
 public strictfp abstract class QBarIterableProvider {
@@ -841,8 +842,11 @@ public strictfp abstract class QBarIterableProvider {
         return wheelsProvider.nullableOptionals(xs);
     }
 
-    public @NotNull <T> Iterable<Pair<T, T>> pairsLogarithmicOrder(@NotNull Iterable<T> xs) {
-        return wheelsProvider.pairsLogarithmicOrder(xs);
+    public @NotNull <A, B> Iterable<Pair<A, B>> dependentPairs(
+            @NotNull Iterable<A> xs,
+            @NotNull Function<A, Iterable<B>> f
+    ) {
+        return wheelsProvider.dependentPairs(xs, f);
     }
 
     public @NotNull <A, B> Iterable<Pair<A, B>> pairsLogarithmicOrder(
@@ -852,8 +856,8 @@ public strictfp abstract class QBarIterableProvider {
         return wheelsProvider.pairsLogarithmicOrder(as, bs);
     }
 
-    public @NotNull <T> Iterable<Pair<T, T>> pairsSquareRootOrder(@NotNull Iterable<T> xs) {
-        return wheelsProvider.pairsSquareRootOrder(xs);
+    public @NotNull <T> Iterable<Pair<T, T>> pairsLogarithmicOrder(@NotNull Iterable<T> xs) {
+        return wheelsProvider.pairsLogarithmicOrder(xs);
     }
 
     public @NotNull <A, B> Iterable<Pair<A, B>> pairsSquareRootOrder(
@@ -863,15 +867,28 @@ public strictfp abstract class QBarIterableProvider {
         return wheelsProvider.pairsSquareRootOrder(as, bs);
     }
 
-    public @NotNull <A, B> Iterable<Pair<A, B>> dependentPairs(
-            @NotNull Iterable<A> xs,
-            @NotNull Function<A, Iterable<B>> f
-    ) {
-        return wheelsProvider.dependentPairs(xs, f);
+    public @NotNull <T> Iterable<Pair<T, T>> pairsSquareRootOrder(@NotNull Iterable<T> xs) {
+        return wheelsProvider.pairsSquareRootOrder(xs);
+    }
+
+    public @NotNull <T> Iterable<List<T>> permutations(@NotNull List<T> xs) {
+        return wheelsProvider.permutations(xs);
+    }
+
+    public @NotNull Iterable<String> stringPermutations(@NotNull String s) {
+        return wheelsProvider.stringPermutations(s);
+    }
+
+    public @NotNull <T> Iterable<List<T>> lists(int size, @NotNull Iterable<T> xs) {
+        return wheelsProvider.lists(size, xs);
     }
 
     public @NotNull <A, B> Iterable<Pair<A, B>> pairs(@NotNull Iterable<A> as, @NotNull Iterable<B> bs) {
         return wheelsProvider.pairs(as, bs);
+    }
+
+    public @NotNull <T> Iterable<Pair<T, T>> pairs(@NotNull Iterable<T> xs) {
+        return wheelsProvider.pairs(xs);
     }
 
     public @NotNull <A, B, C> Iterable<Triple<A, B, C>> triples(
@@ -882,6 +899,10 @@ public strictfp abstract class QBarIterableProvider {
         return wheelsProvider.triples(as, bs, cs);
     }
 
+    public @NotNull <T> Iterable<Triple<T, T, T>> triples(@NotNull Iterable<T> xs) {
+        return wheelsProvider.triples(xs);
+    }
+
     public @NotNull <A, B, C, D> Iterable<Quadruple<A, B, C, D>> quadruples(
             @NotNull Iterable<A> as,
             @NotNull Iterable<B> bs,
@@ -889,6 +910,10 @@ public strictfp abstract class QBarIterableProvider {
             @NotNull Iterable<D> ds
     ) {
         return wheelsProvider.quadruples(as, bs, cs, ds);
+    }
+
+    public @NotNull <T> Iterable<Quadruple<T, T, T, T>> quadruples(@NotNull Iterable<T> xs) {
+        return wheelsProvider.quadruples(xs);
     }
 
     public @NotNull <A, B, C, D, E> Iterable<Quintuple<A, B, C, D, E>> quintuples(
@@ -901,6 +926,10 @@ public strictfp abstract class QBarIterableProvider {
         return wheelsProvider.quintuples(as, bs, cs, ds, es);
     }
 
+    public @NotNull <T> Iterable<Quintuple<T, T, T, T, T>> quintuples(@NotNull Iterable<T> xs) {
+        return wheelsProvider.quintuples(xs);
+    }
+
     public @NotNull <A, B, C, D, E, F> Iterable<Sextuple<A, B, C, D, E, F>> sextuples(
             @NotNull Iterable<A> as,
             @NotNull Iterable<B> bs,
@@ -910,6 +939,10 @@ public strictfp abstract class QBarIterableProvider {
             @NotNull Iterable<F> fs
     ) {
         return wheelsProvider.sextuples(as, bs, cs, ds, es, fs);
+    }
+
+    public @NotNull <T> Iterable<Sextuple<T, T, T, T, T, T>> sextuples(@NotNull Iterable<T> xs) {
+        return wheelsProvider.sextuples(xs);
     }
 
     public @NotNull <A, B, C, D, E, F, G> Iterable<Septuple<A, B, C, D, E, F, G>> septuples(
@@ -924,40 +957,192 @@ public strictfp abstract class QBarIterableProvider {
         return wheelsProvider.septuples(as, bs, cs, ds, es, fs, gs);
     }
 
-    public @NotNull <T> Iterable<Pair<T, T>> pairs(@NotNull Iterable<T> xs) {
-        return wheelsProvider.pairs(xs);
-    }
-
-    public @NotNull <T> Iterable<Triple<T, T, T>> triples(@NotNull Iterable<T> xs) {
-        return wheelsProvider.triples(xs);
-    }
-
-    public @NotNull <T> Iterable<Quadruple<T, T, T, T>> quadruples(@NotNull Iterable<T> xs) {
-        return wheelsProvider.quadruples(xs);
-    }
-
-    public @NotNull <T> Iterable<Quintuple<T, T, T, T, T>> quintuples(@NotNull Iterable<T> xs) {
-        return wheelsProvider.quintuples(xs);
-    }
-
-    public @NotNull <T> Iterable<Sextuple<T, T, T, T, T, T>> sextuples(@NotNull Iterable<T> xs) {
-        return wheelsProvider.sextuples(xs);
-    }
-
     public @NotNull <T> Iterable<Septuple<T, T, T, T, T, T, T>> septuples(@NotNull Iterable<T> xs) {
         return wheelsProvider.septuples(xs);
     }
 
-    public @NotNull <T> Iterable<List<T>> lists(int size, @NotNull Iterable<T> xs) {
-        return wheelsProvider.lists(size, xs);
+    public @NotNull Iterable<String> strings(int size, @NotNull String s) {
+        return wheelsProvider.strings(size, s);
+    }
+
+    public @NotNull Iterable<String> strings(int size) {
+        return wheelsProvider.strings(size);
+    }
+
+    public @NotNull <T> Iterable<List<T>> lists(@NotNull Iterable<T> xs) {
+        return wheelsProvider.lists(xs);
+    }
+
+    public @NotNull Iterable<String> strings(@NotNull String s) {
+        return wheelsProvider.strings(s);
+    }
+
+    public @NotNull Iterable<String> strings() {
+        return wheelsProvider.strings();
     }
 
     public @NotNull <T> Iterable<List<T>> listsAtLeast(int minSize, @NotNull Iterable<T> xs) {
         return wheelsProvider.listsAtLeast(minSize, xs);
     }
 
-    public @NotNull <T> Iterable<List<T>> lists(@NotNull Iterable<T> xs) {
-        return wheelsProvider.lists(xs);
+    public @NotNull Iterable<String> stringsAtLeast(int minSize, @NotNull String s) {
+        return wheelsProvider.stringsAtLeast(minSize, s);
+    }
+
+    public @NotNull Iterable<String> stringsAtLeast(int size) {
+        return wheelsProvider.stringsAtLeast(size);
+    }
+
+    public @NotNull <T> Iterable<List<T>> distinctLists(int size, @NotNull Iterable<T> xs) {
+        return wheelsProvider.distinctLists(size, xs);
+    }
+
+    public @NotNull <T> Iterable<Pair<T, T>> distinctPairs(@NotNull Iterable<T> xs) {
+        return wheelsProvider.distinctPairs(xs);
+    }
+
+    public @NotNull <T> Iterable<Triple<T, T, T>> distinctTriples(@NotNull Iterable<T> xs) {
+        return wheelsProvider.distinctTriples(xs);
+    }
+
+    public @NotNull <T> Iterable<Quadruple<T, T, T, T>> distinctQuadruples(@NotNull Iterable<T> xs) {
+        return wheelsProvider.distinctQuadruples(xs);
+    }
+
+    public @NotNull <T> Iterable<Quintuple<T, T, T, T, T>> distinctQuintuples(@NotNull Iterable<T> xs) {
+        return wheelsProvider.distinctQuintuples(xs);
+    }
+
+    public @NotNull <T> Iterable<Sextuple<T, T, T, T, T, T>> distinctSextuples(@NotNull Iterable<T> xs) {
+        return wheelsProvider.distinctSextuples(xs);
+    }
+
+    public @NotNull <T> Iterable<Septuple<T, T, T, T, T, T, T>> distinctSeptuples(@NotNull Iterable<T> xs) {
+        return wheelsProvider.distinctSeptuples(xs);
+    }
+
+    public @NotNull Iterable<String> distinctStrings(int size, @NotNull String s) {
+        return wheelsProvider.distinctStrings(size, s);
+    }
+
+    public @NotNull Iterable<String> distinctStrings(int size) {
+        return wheelsProvider.distinctStrings(size);
+    }
+
+    public @NotNull <T> Iterable<List<T>> distinctLists(@NotNull Iterable<T> xs) {
+        return wheelsProvider.distinctLists(xs);
+    }
+
+    public @NotNull Iterable<String> distinctStrings(@NotNull String s) {
+        return wheelsProvider.distinctStrings(s);
+    }
+
+    public @NotNull Iterable<String> distinctStrings() {
+        return wheelsProvider.distinctStrings();
+    }
+
+    public @NotNull <T> Iterable<List<T>> distinctListsAtLeast(int minSize, @NotNull Iterable<T> xs) {
+        return wheelsProvider.distinctListsAtLeast(minSize, xs);
+    }
+
+    public @NotNull Iterable<String> distinctStringsAtLeast(int minSize, @NotNull String s) {
+        return wheelsProvider.distinctStringsAtLeast(minSize, s);
+    }
+
+    public @NotNull Iterable<String> distinctStringsAtLeast(int minSize) {
+        return wheelsProvider.distinctStringsAtLeast(minSize);
+    }
+
+    public @NotNull <T> Iterable<List<T>> bags(int size, @NotNull Iterable<T> xs) {
+        return wheelsProvider.bags(size, xs);
+    }
+
+    public @NotNull Iterable<String> stringBags(int size, @NotNull String s) {
+        return wheelsProvider.stringBags(size, s);
+    }
+
+    public @NotNull Iterable<String> stringBags(int size) {
+        return wheelsProvider.stringBags(size);
+    }
+
+    public @NotNull <T> Iterable<List<T>> bags(@NotNull Iterable<T> xs) {
+        return wheelsProvider.bags(xs);
+    }
+
+    public @NotNull Iterable<String> stringBags(@NotNull String s) {
+        return wheelsProvider.stringBags(s);
+    }
+
+    public @NotNull Iterable<String> stringBags() {
+        return wheelsProvider.stringBags();
+    }
+
+    public @NotNull <T> Iterable<List<T>> bagsAtLeast(int minSize, @NotNull Iterable<T> xs) {
+        return wheelsProvider.bagsAtLeast(minSize, xs);
+    }
+
+    public @NotNull Iterable<String> stringBagsAtLeast(int minSize, @NotNull String s) {
+        return wheelsProvider.stringBagsAtLeast(minSize, s);
+    }
+
+    public @NotNull Iterable<String> stringBagsAtLeast(int minSize) {
+        return wheelsProvider.stringBagsAtLeast(minSize);
+    }
+
+    public @NotNull <T> Iterable<List<T>> subsets(int size, @NotNull Iterable<T> xs) {
+        return wheelsProvider.subsets(size, xs);
+    }
+
+    public @NotNull Iterable<String> stringSubsets(int size, @NotNull String s) {
+        return wheelsProvider.stringSubsets(size, s);
+    }
+
+    public @NotNull Iterable<String> stringSubsets(int size) {
+        return wheelsProvider.stringSubsets(size);
+    }
+
+    public @NotNull <T> Iterable<List<T>> subsets(@NotNull Iterable<T> xs) {
+        return wheelsProvider.subsets(xs);
+    }
+
+    public @NotNull Iterable<String> stringSubsets(@NotNull String s) {
+        return wheelsProvider.stringSubsets(s);
+    }
+
+    public @NotNull Iterable<String> stringSubsets() {
+        return wheelsProvider.stringSubsets();
+    }
+
+    public @NotNull <T> Iterable<List<T>> subsetsAtLeast(int minSize, @NotNull Iterable<T> xs) {
+        return wheelsProvider.subsetsAtLeast(minSize, xs);
+    }
+
+    public @NotNull Iterable<String> stringSubsetsAtLeast(int minSize, @NotNull String s) {
+        return wheelsProvider.stringSubsetsAtLeast(minSize, s);
+    }
+
+    public @NotNull Iterable<String> stringSubsetsAtLeast(int minSize) {
+        return wheelsProvider.stringSubsetsAtLeast(minSize);
+    }
+
+    public @NotNull Iterable<String> stringsWithChar(char c, @NotNull String s) {
+        return wheelsProvider.stringsWithChar(c, s);
+    }
+
+    public @NotNull Iterable<String> stringsWithChar(char c) {
+        return wheelsProvider.stringsWithChar(c);
+    }
+
+    public @NotNull Iterable<String> stringsWithSubstrings(@NotNull Iterable<String> substrings, @NotNull String s) {
+        return wheelsProvider.stringsWithSubstrings(substrings, s);
+    }
+
+    public @NotNull Iterable<String> stringsWithSubstrings(@NotNull Iterable<String> substrings) {
+        return wheelsProvider.stringsWithSubstrings(substrings);
+    }
+
+    public @NotNull <T> Iterable<Iterable<T>> repeatingIterables(@NotNull Iterable<T> xs) {
+        return wheelsProvider.repeatingIterables(xs);
     }
 
     public @NotNull <T> Iterable<List<T>> listsWithElement(@Nullable T element, Iterable<T> xs) {
@@ -970,59 +1155,20 @@ public strictfp abstract class QBarIterableProvider {
         return wheelsProvider.listsWithSubsequence(subsequences, xs);
     }
 
-    public @NotNull Iterable<String> strings(int size, @NotNull Iterable<Character> cs) {
-        return wheelsProvider.strings(size, cs);
+    public @NotNull Iterable<RandomProvider> randomProvidersFixedScales(int scale, int secondaryScale) {
+        return wheelsProvider.randomProvidersFixedScales(scale, secondaryScale);
     }
 
-    public @NotNull Iterable<String> stringsAtLeast(int minSize, @NotNull Iterable<Character> cs) {
-        return wheelsProvider.stringsAtLeast(minSize, cs);
+    public @NotNull Iterable<RandomProvider> randomProviders() {
+        return wheelsProvider.randomProviders();
     }
 
-    public @NotNull Iterable<String> strings(int size) {
-        return wheelsProvider.strings(size);
+    public @NotNull Iterable<RandomProvider> randomProvidersDefault() {
+        return wheelsProvider.randomProvidersDefault();
     }
 
-    public @NotNull Iterable<String> stringsAtLeast(int size) {
-        return wheelsProvider.stringsAtLeast(size);
-    }
-
-    public @NotNull Iterable<String> strings(@NotNull Iterable<Character> cs) {
-        return wheelsProvider.strings(cs);
-    }
-
-    public @NotNull Iterable<String> strings() {
-        return wheelsProvider.strings();
-    }
-
-    public @NotNull Iterable<String> stringsWithChar(char c, Iterable<Character> cs) {
-        return wheelsProvider.stringsWithChar(c, cs);
-    }
-
-    public @NotNull Iterable<String> stringsWithChar(char c) {
-        return wheelsProvider.stringsWithChar(c);
-    }
-
-    public @NotNull Iterable<String> stringsWithSubstrings(
-            @NotNull Iterable<String> substrings,
-            @NotNull Iterable<Character> cs
-    ) {
-        return wheelsProvider.stringsWithSubstrings(substrings, cs);
-    }
-
-    public @NotNull Iterable<String> stringsWithSubstrings(@NotNull Iterable<String> substrings) {
-        return wheelsProvider.stringsWithSubstrings(substrings);
-    }
-
-    public @NotNull <T> Iterable<Iterable<T>> repeatingIterables(@NotNull Iterable<T> xs) {
-        return wheelsProvider.repeatingIterables(xs);
-    }
-
-    public @NotNull <T> Iterable<List<T>> permutations(@NotNull List<T> xs) {
-        return wheelsProvider.permutations(xs);
-    }
-
-    public @NotNull Iterable<String> permutations(@NotNull String s) {
-        return wheelsProvider.permutations(s);
+    public @NotNull Iterable<RandomProvider> randomProvidersDefaultSecondaryScale() {
+        return wheelsProvider.randomProvidersDefaultSecondaryScale();
     }
 
     public abstract @NotNull Iterable<Rational> rationals();

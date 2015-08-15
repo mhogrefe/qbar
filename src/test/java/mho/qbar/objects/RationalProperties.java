@@ -3518,13 +3518,7 @@ public class RationalProperties {
             assertEquals(r.toString(), or.get(), r);
         }
 
-        Iterable<Character> cs;
-        if (P instanceof QBarExhaustiveProvider) {
-            cs = fromString(RATIONAL_CHARS);
-        } else {
-            cs = ((QBarRandomProvider) P).uniformSample(RATIONAL_CHARS);
-        }
-        Iterable<String> ss = filter(s -> read(s).isPresent(), P.strings(cs));
+        Iterable<String> ss = filter(s -> read(s).isPresent(), P.strings(RATIONAL_CHARS));
         for (String s : take(LIMIT, ss)) {
             Optional<Rational> or = read(s);
             or.get().validate();

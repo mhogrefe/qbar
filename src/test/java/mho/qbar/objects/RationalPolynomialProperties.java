@@ -1486,13 +1486,7 @@ public class RationalPolynomialProperties {
             assertEquals(p.toString(), op.get(), p);
         }
 
-        Iterable<Character> cs;
-        if (P instanceof QBarExhaustiveProvider) {
-            cs = fromString(RATIONAL_POLYNOMIAL_CHARS);
-        } else {
-            cs = P.uniformSample(RATIONAL_POLYNOMIAL_CHARS);
-        }
-        Iterable<String> ss = filter(s -> read(EXPONENT_CUTOFF, s).isPresent(), P.strings(cs));
+        Iterable<String> ss = filter(s -> read(EXPONENT_CUTOFF, s).isPresent(), P.strings(RATIONAL_POLYNOMIAL_CHARS));
         for (String s : take(LIMIT, ss)) {
             Optional<RationalPolynomial> op = read(s);
             op.get().validate();

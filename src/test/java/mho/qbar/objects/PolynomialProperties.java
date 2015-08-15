@@ -1162,14 +1162,7 @@ public class PolynomialProperties {
             assertEquals(p.toString(), op.get(), p);
         }
 
-        Iterable<Character> cs;
-        if (P instanceof QBarExhaustiveProvider) {
-            cs = fromString(POLYNOMIAL_CHARS);
-        } else {
-            cs = P.uniformSample(POLYNOMIAL_CHARS);
-        }
-        Iterable<String> ss = filter(s -> read(EXPONENT_CUTOFF, s).isPresent(), P.strings(cs));
-        for (String s : take(LIMIT, ss)) {
+        for (String s : take(LIMIT, filter(s -> read(EXPONENT_CUTOFF, s).isPresent(), P.strings(POLYNOMIAL_CHARS)))) {
             Optional<Polynomial> op = read(s);
             op.get().validate();
         }

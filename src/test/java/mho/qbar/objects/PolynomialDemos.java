@@ -292,13 +292,7 @@ public class PolynomialDemos {
 
     private static void demoRead_targeted() {
         initialize();
-        Iterable<Character> cs;
-        if (P instanceof QBarExhaustiveProvider) {
-            cs = fromString(POLYNOMIAL_CHARS);
-        } else {
-            cs = ((QBarRandomProvider) P).uniformSample(POLYNOMIAL_CHARS);
-        }
-        for (String s : take(LIMIT, P.strings(cs))) {
+        for (String s : take(LIMIT, P.strings(POLYNOMIAL_CHARS))) {
             System.out.println("read(" + s + ") = " + read(s));
         }
     }
@@ -312,13 +306,7 @@ public class PolynomialDemos {
 
     private static void demoFindIn_targeted() {
         initialize();
-        Iterable<Character> cs;
-        if (P instanceof QBarExhaustiveProvider) {
-            cs = fromString(POLYNOMIAL_CHARS);
-        } else {
-            cs = ((QBarRandomProvider) P).uniformSample(POLYNOMIAL_CHARS);
-        }
-        for (String s : take(LIMIT, P.strings(cs))) {
+        for (String s : take(LIMIT, P.strings(POLYNOMIAL_CHARS))) {
             System.out.println("findIn(" + s + ") = " + findIn(s));
         }
     }
