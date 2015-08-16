@@ -898,6 +898,13 @@ public strictfp abstract class QBarIterableProvider {
         return wheelsProvider.dependentPairs(xs, f);
     }
 
+    public @NotNull <A, B> Iterable<Pair<A, B>> dependentPairsInfinite(
+            @NotNull Iterable<A> xs,
+            @NotNull Function<A, Iterable<B>> f
+    ) {
+        return wheelsProvider.dependentPairsInfinite(xs, f);
+    }
+
     public @NotNull <A, B> Iterable<Pair<A, B>> pairsLogarithmicOrder(
             @NotNull Iterable<A> as,
             @NotNull Iterable<B> bs
