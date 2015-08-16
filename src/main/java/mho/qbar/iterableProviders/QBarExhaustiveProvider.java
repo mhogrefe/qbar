@@ -26,34 +26,6 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
         super(ExhaustiveProvider.INSTANCE);
     }
 
-    public @NotNull Iterable<Ordering> orderingsIncreasing() {
-        return ExhaustiveProvider.INSTANCE.orderingsIncreasing();
-    }
-
-    public @NotNull Iterable<Byte> bytesIncreasing() {
-        return ExhaustiveProvider.INSTANCE.bytesIncreasing();
-    }
-
-    public @NotNull Iterable<Short> shortsIncreasing() {
-        return ExhaustiveProvider.INSTANCE.shortsIncreasing();
-    }
-
-    public @NotNull Iterable<Integer> integersIncreasing() {
-        return ExhaustiveProvider.INSTANCE.integersIncreasing();
-    }
-
-    public @NotNull Iterable<Long> longsIncreasing() {
-        return ExhaustiveProvider.INSTANCE.longsIncreasing();
-    }
-
-    public @NotNull Iterable<Character> asciiCharactersIncreasing() {
-        return ExhaustiveProvider.INSTANCE.asciiCharactersIncreasing();
-    }
-
-    public @NotNull Iterable<Character> charactersIncreasing() {
-        return ExhaustiveProvider.INSTANCE.charactersIncreasing();
-    }
-
     public @NotNull <T> Iterable<List<T>> listsLex(int length, @NotNull Iterable<T> xs) {
         return ExhaustiveProvider.INSTANCE.listsLex(length, xs);
     }
