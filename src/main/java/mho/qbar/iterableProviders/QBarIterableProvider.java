@@ -868,30 +868,78 @@ public strictfp abstract class QBarIterableProvider {
         return wheelsProvider.rangeCanonical(a, b);
     }
 
+    /**
+     * Generates all the elements in a given {@code Iterable}, along with an extra element.
+     *
+     * @param x an extra element
+     * @param xs an {@code Iterable}
+     * @param <T> the type of element contained in {@code xs}
+     */
     public @NotNull <T> Iterable<T> withElement(@Nullable T x, @NotNull Iterable<T> xs) {
         return wheelsProvider.withElement(x, xs);
     }
 
+    /**
+     * Generates all the elements in a given {@code Iterable}, along with null.
+     *
+     * @param xs an {@code Iterable}
+     * @param <T> the type of element contained in {@code xs}
+     * @return an {@code Iterable} including null and every element in {@code xs}
+     */
     public @NotNull <T> Iterable<T> withNull(@NotNull Iterable<T> xs) {
         return wheelsProvider.withNull(xs);
     }
 
+    /**
+     * Generates nonempty {@link Optional}s; the result contains wrapped values of {@code xs}.
+     *
+     * @param xs an {@code Iterable}.
+     * @param <T> the type of element contained in {@code xs}
+     */
     public @NotNull <T> Iterable<Optional<T>> nonEmptyOptionals(@NotNull Iterable<T> xs) {
         return wheelsProvider.nonEmptyOptionals(xs);
     }
 
+    /**
+     * Generates {@link Optional}s; the result contains wrapped values of {@code xs}, along with the empty
+     * {@code Optional}.
+     *
+     * @param xs an {@code Iterable}.
+     * @param <T> the type of element contained in {@code xs}
+     */
     public @NotNull <T> Iterable<Optional<T>> optionals(@NotNull Iterable<T> xs) {
         return wheelsProvider.optionals(xs);
     }
 
+    /**
+     * Generates nonempty {@link NullableOptional}s; the result contains wrapped values of {@code xs}.
+     *
+     * @param xs an {@code Iterable}.
+     * @param <T> the type of element contained in {@code xs}
+     */
     public @NotNull <T> Iterable<NullableOptional<T>> nonEmptyNullableOptionals(@NotNull Iterable<T> xs) {
         return wheelsProvider.nonEmptyNullableOptionals(xs);
     }
 
+    /**
+     * Generates {@link NullableOptional}s; the result contains wrapped values of {@code xs}, along with the empty
+     * {@code NullableOptional}.
+     *
+     * @param xs an {@code Iterable}.
+     * @param <T> the type of element contained in {@code xs}
+     */
     public @NotNull <T> Iterable<NullableOptional<T>> nullableOptionals(@NotNull Iterable<T> xs) {
         return wheelsProvider.nullableOptionals(xs);
     }
 
+    /**
+     * Generates pairs of values where the second value depends on the first.
+     *
+     * @param xs an {@code Iterable} of values
+     * @param f a function from a value of type {@code a} to an {@code Iterable} of type-{@code B} values
+     * @param <A> the type of values in the first slot
+     * @param <B> the type of values in the first slot
+     */
     public @NotNull <A, B> Iterable<Pair<A, B>> dependentPairs(
             @NotNull Iterable<A> xs,
             @NotNull Function<A, Iterable<B>> f
@@ -899,6 +947,15 @@ public strictfp abstract class QBarIterableProvider {
         return wheelsProvider.dependentPairs(xs, f);
     }
 
+    /**
+     * Generates pairs of values where the second value depends on the first. Every first value must be associated with
+     * an infinite number of possible second values.
+     *
+     * @param xs an {@code Iterable} of values
+     * @param f a function from a value of type {@code a} to an infinite {@code Iterable} of type-{@code B} values
+     * @param <A> the type of values in the first slot
+     * @param <B> the type of values in the first slot
+     */
     public @NotNull <A, B> Iterable<Pair<A, B>> dependentPairsInfinite(
             @NotNull Iterable<A> xs,
             @NotNull Function<A, Iterable<B>> f
