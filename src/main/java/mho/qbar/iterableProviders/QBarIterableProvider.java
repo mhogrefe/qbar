@@ -13,6 +13,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -1217,6 +1218,14 @@ public strictfp abstract class QBarIterableProvider {
             @NotNull Iterable<T> xs
     ) {
         return wheelsProvider.listsWithSubsequence(subsequences, xs);
+    }
+
+    public @NotNull <K, V> Iterable<Map<K, V>> maps(@NotNull List<K> ks, Iterable<V> vs) {
+        return wheelsProvider.maps(ks, vs);
+    }
+
+    public @NotNull Iterable<String> substrings(@NotNull String s) {
+        return wheelsProvider.substrings(s);
     }
 
     public @NotNull Iterable<RandomProvider> randomProvidersFixedScales(int scale, int secondaryScale) {
