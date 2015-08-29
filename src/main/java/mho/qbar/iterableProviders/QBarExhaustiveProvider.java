@@ -1,19 +1,13 @@
 package mho.qbar.iterableProviders;
 
 import mho.qbar.objects.*;
-import mho.wheels.iterables.CachedIterable;
 import mho.wheels.iterables.ExhaustiveProvider;
-import mho.wheels.iterables.IterableUtils;
 import mho.wheels.iterables.NoRemoveIterator;
-import mho.wheels.numberUtils.IntegerUtils;
-import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigInteger;
 import java.util.*;
-import java.util.function.Function;
-import java.util.function.Predicate;
 
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.ordering.Ordering.*;
