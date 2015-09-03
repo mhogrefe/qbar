@@ -9,6 +9,7 @@ import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -1806,9 +1807,9 @@ public final class Rational implements Comparable<Rational> {
         Iterable<BigInteger> afterDecimal = () -> new NoRemoveIterator<BigInteger>() {
             private boolean knownRepeating;
             private int index;
-            private @NotNull Integer repeatingIndex;
+            private @Nullable Integer repeatingIndex;
             private @NotNull BigInteger remainder;
-            private @NotNull Map<BigInteger, Integer> remainders;
+            private @Nullable Map<BigInteger, Integer> remainders;
             {
                 knownRepeating = false;
                 index = 0;

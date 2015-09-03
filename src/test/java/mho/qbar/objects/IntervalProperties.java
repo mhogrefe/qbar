@@ -353,7 +353,7 @@ public class IntervalProperties {
 
         Iterable<Pair<List<Interval>, List<Interval>>> ps = P.dependentPairs(
                 P.listsAtLeast(1, P.intervals()),
-                P::permutations
+                P::permutationsFinite
         );
         for (Pair<List<Interval>, List<Interval>> p : take(LIMIT, ps)) {
             assertEquals(p.toString(), convexHull(p.a), convexHull(p.b));
@@ -483,7 +483,10 @@ public class IntervalProperties {
             }
         }
 
-        Iterable<Pair<List<Interval>, List<Interval>>> ps = P.dependentPairs(P.lists(P.intervals()), P::permutations);
+        Iterable<Pair<List<Interval>, List<Interval>>> ps = P.dependentPairs(
+                P.lists(P.intervals()),
+                P::permutationsFinite
+        );
         for (Pair<List<Interval>, List<Interval>> p : take(LIMIT, ps)) {
             assertEquals(p.toString(), makeDisjoint(p.a), makeDisjoint(p.b));
         }
