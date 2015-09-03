@@ -1024,8 +1024,8 @@ public strictfp abstract class QBarIterableProvider {
      * @param xs a list of elements
      * @param <T> the type of values in the permutations
      */
-    public @NotNull <T> Iterable<List<T>> permutations(@NotNull List<T> xs) {
-        return wheelsProvider.permutations(xs);
+    public @NotNull <T> Iterable<List<T>> permutationsFinite(@NotNull List<T> xs) {
+        return wheelsProvider.permutationsFinite(xs);
     }
 
     /**
