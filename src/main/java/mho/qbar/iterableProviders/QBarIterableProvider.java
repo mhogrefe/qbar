@@ -1039,14 +1039,14 @@ public strictfp abstract class QBarIterableProvider {
 
     /**
      * Generates permutations of an {@code Iterable}. If the {@code Iterable} is finite, all permutations are
-     * generated; if it is infinite, the only permutations that are generated are those that can generated from the
-     * identity with a finite number of swaps.
+     * generated; if it is infinite, then only permutations that are equal to the identity except in a finite prefix
+     * are generated.
      *
      * @param xs an {@code Iterable} of elements
      * @param <T> the type of values in the permutations
      */
-    public @NotNull <T> Iterable<Iterable<T>> permutations(@NotNull Iterable<T> xs) {
-        return wheelsProvider.permutations(xs);
+    public @NotNull <T> Iterable<Iterable<T>> prefixPermutations(@NotNull Iterable<T> xs) {
+        return wheelsProvider.prefixPermutations(xs);
     }
 
     public @NotNull <T> Iterable<List<T>> lists(int size, @NotNull Iterable<T> xs) {

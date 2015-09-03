@@ -158,6 +158,22 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
     }
 
     /**
+     * Shuffles a {@code List} in place using the Fisher-Yates algorithm. If the list's elements are unique, every
+     * permutation is an equally likely outcome.
+     *
+     * <ul>
+     *  <li>{@code xs} cannot be null.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param xs the {@code List} to be shuffled
+     * @param <T> the type of the {@code List}'s elements
+     */
+    public <T> void shuffle(@NotNull List<T> xs) {
+        ((RandomProvider) wheelsProvider).shuffle(xs);
+    }
+
+    /**
      * a pseudorandom {@link Iterable} that generates every {@link Rational}. Each {@code Rational}'s bit size (defined
      * as the sum of the numerator's and denominator's bit sizes) is chosen from a geometric distribution with mean
      * approximately {@code meanBitSize} (The ratio between the actual mean bit size and {@code meanBitSize} decreases
