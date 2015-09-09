@@ -32,6 +32,7 @@ import static org.junit.Assert.fail;
 
 public class RationalProperties {
     private static boolean USE_RANDOM;
+    private static final @NotNull QBarExhaustiveProvider EP = QBarExhaustiveProvider.INSTANCE;
     private static final @NotNull String RATIONAL_CHARS = "-/0123456789";
     private static final int DENOMINATOR_CUTOFF = 1000000;
     private static final int SMALL_LIMIT = 1000;
@@ -2508,6 +2509,7 @@ public class RationalProperties {
         propertiesDeltaHelper(
                 LIMIT,
                 P.getWheelsProvider(),
+                EP.rationals(),
                 P.rationals(),
                 Rational::negate,
                 Rational::subtract,

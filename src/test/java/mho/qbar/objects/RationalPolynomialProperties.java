@@ -29,6 +29,7 @@ import static org.junit.Assert.fail;
 
 public class RationalPolynomialProperties {
     private static boolean USE_RANDOM;
+    private static final @NotNull QBarExhaustiveProvider EP = QBarExhaustiveProvider.INSTANCE;
     private static final @NotNull String RATIONAL_POLYNOMIAL_CHARS = "*+-/0123456789^x";
     private static final int EXPONENT_CUTOFF = 1000;
     private static int LIMIT;
@@ -1079,6 +1080,7 @@ public class RationalPolynomialProperties {
         propertiesDeltaHelper(
                 LIMIT,
                 P.getWheelsProvider(),
+                EP.rationalPolynomials(),
                 P.rationalPolynomials(),
                 RationalPolynomial::negate,
                 RationalPolynomial::subtract,

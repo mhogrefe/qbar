@@ -21,7 +21,6 @@ import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.ordering.Ordering.*;
 import static mho.wheels.testing.Testing.*;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -29,6 +28,7 @@ import static org.junit.Assert.fail;
 
 public class PolynomialProperties {
     private static boolean USE_RANDOM;
+    private static final @NotNull QBarExhaustiveProvider EP = QBarExhaustiveProvider.INSTANCE;
     private static final @NotNull String POLYNOMIAL_CHARS = "*+-0123456789^x";
     private static final int EXPONENT_CUTOFF = 1000;
     private static int LIMIT;
@@ -882,6 +882,7 @@ public class PolynomialProperties {
         propertiesDeltaHelper(
                 LIMIT,
                 P.getWheelsProvider(),
+                EP.polynomials(),
                 P.polynomials(),
                 Polynomial::negate,
                 Polynomial::subtract,

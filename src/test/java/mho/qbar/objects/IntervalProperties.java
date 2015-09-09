@@ -31,6 +31,7 @@ import static org.junit.Assert.fail;
 
 public class IntervalProperties {
     private static boolean USE_RANDOM;
+    private static final @NotNull QBarExhaustiveProvider EP = QBarExhaustiveProvider.INSTANCE;
     private static final @NotNull String INTERVAL_CHARS = " (),-/0123456789I[]finty";
     private static final int TINY_LIMIT = 10;
     private static int LIMIT;
@@ -1728,6 +1729,7 @@ public class IntervalProperties {
         propertiesDeltaHelper(
                 LIMIT,
                 P.getWheelsProvider(),
+                EP.intervals(),
                 P.intervals(),
                 Interval::negate,
                 Interval::subtract,
