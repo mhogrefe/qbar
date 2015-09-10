@@ -1049,6 +1049,68 @@ public strictfp abstract class QBarIterableProvider {
         return wheelsProvider.prefixPermutations(xs);
     }
 
+    public @NotNull <T> Iterable<List<T>> listsLex(int size, @NotNull Iterable<T> xs) {
+        return wheelsProvider.listsLex(size, xs);
+    }
+
+    public @NotNull <A, B> Iterable<Pair<A, B>> pairsLex(@NotNull Iterable<A> as, @NotNull Iterable<B> bs) {
+        return wheelsProvider.pairsLex(as, bs);
+    }
+
+    public @NotNull <A, B, C> Iterable<Triple<A, B, C>> triplesLex(
+            @NotNull Iterable<A> as,
+            @NotNull Iterable<B> bs,
+            @NotNull Iterable<C> cs
+    ) {
+        return wheelsProvider.triplesLex(as, bs, cs);
+    }
+
+    public @NotNull <A, B, C, D> Iterable<Quadruple<A, B, C, D>> quadruplesLex(
+            @NotNull Iterable<A> as,
+            @NotNull Iterable<B> bs,
+            @NotNull Iterable<C> cs,
+            @NotNull Iterable<D> ds
+    ) {
+        return wheelsProvider.quadruplesLex(as, bs, cs, ds);
+    }
+
+    public @NotNull <A, B, C, D, E> Iterable<Quintuple<A, B, C, D, E>> quintuplesLex(
+            @NotNull Iterable<A> as,
+            @NotNull Iterable<B> bs,
+            @NotNull Iterable<C> cs,
+            @NotNull Iterable<D> ds,
+            @NotNull Iterable<E> es
+    ) {
+        return wheelsProvider.quintuplesLex(as, bs, cs, ds, es);
+    }
+
+    public @NotNull <A, B, C, D, E, F> Iterable<Sextuple<A, B, C, D, E, F>> sextuplesLex(
+            @NotNull Iterable<A> as,
+            @NotNull Iterable<B> bs,
+            @NotNull Iterable<C> cs,
+            @NotNull Iterable<D> ds,
+            @NotNull Iterable<E> es,
+            @NotNull Iterable<F> fs
+    ) {
+        return wheelsProvider.sextuplesLex(as, bs, cs, ds, es, fs);
+    }
+
+    public @NotNull <A, B, C, D, E, F, G> Iterable<Septuple<A, B, C, D, E, F, G>> septuplesLex(
+            @NotNull Iterable<A> as,
+            @NotNull Iterable<B> bs,
+            @NotNull Iterable<C> cs,
+            @NotNull Iterable<D> ds,
+            @NotNull Iterable<E> es,
+            @NotNull Iterable<F> fs,
+            @NotNull Iterable<G> gs
+    ) {
+        return wheelsProvider.septuplesLex(as, bs, cs, ds, es, fs, gs);
+    }
+
+    public @NotNull Iterable<String> stringsLex(int size, @NotNull String s) {
+        return wheelsProvider.stringsLex(size, s);
+    }
+
     public @NotNull <T> Iterable<List<T>> lists(int size, @NotNull Iterable<T> xs) {
         return wheelsProvider.lists(size, xs);
     }
