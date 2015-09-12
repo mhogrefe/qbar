@@ -1049,14 +1049,42 @@ public strictfp abstract class QBarIterableProvider {
         return wheelsProvider.prefixPermutations(xs);
     }
 
+    /**
+     * Generates all {@code List}s of a given size containing elements from a given {@code Iterable}. The elements are
+     * ordered lexicographically, matching the order given by the original {@code Iterable}.
+     *
+     * @param size the length of each of the generated {@code List}s
+     * @param xs a {@code List} of elements
+     * @param <T> the type of values in the {@code List}s
+     */
     public @NotNull <T> Iterable<List<T>> listsLex(int size, @NotNull Iterable<T> xs) {
         return wheelsProvider.listsLex(size, xs);
     }
 
+    /**
+     * Given two {@code Iterable}s, returns all {@code Pair}s of elements from these {@code Iterable}s. The
+     * {@code Pair}s are ordered lexicographically, matching the order given by the original {@code Iterable}s.
+     *
+     * @param as the first {@code Iterable}
+     * @param bs the second {@code Iterable}
+     * @param <A> the type of the first {@code Iterable}'s elements
+     * @param <B> the type of the second {@code Iterable}'s elements
+     */
     public @NotNull <A, B> Iterable<Pair<A, B>> pairsLex(@NotNull Iterable<A> as, @NotNull Iterable<B> bs) {
         return wheelsProvider.pairsLex(as, bs);
     }
 
+    /**
+     * Given three {@code Iterable}s, returns all {@code Triple}s of elements from these {@code Iterable}s. The
+     * {@code Triple}s are ordered lexicographically, matching the order given by the original {@code Iterable}s.
+     *
+     * @param as the first {@code Iterable}
+     * @param bs the second {@code Iterable}
+     * @param cs the third {@code Iterable}
+     * @param <A> the type of the first {@code Iterable}'s elements
+     * @param <B> the type of the second {@code Iterable}'s elements
+     * @param <C> the type of the third {@code Iterable}'s elements
+     */
     public @NotNull <A, B, C> Iterable<Triple<A, B, C>> triplesLex(
             @NotNull Iterable<A> as,
             @NotNull Iterable<B> bs,
@@ -1065,6 +1093,19 @@ public strictfp abstract class QBarIterableProvider {
         return wheelsProvider.triplesLex(as, bs, cs);
     }
 
+    /**
+     * Given four {@code Iterable}s, returns all {@code Quadruple}s of elements from these {@code Iterable}s. The
+     * {@code Quadruple}s are ordered lexicographically, matching the order given by the original {@code Iterable}s.
+     *
+     * @param as the first {@code Iterable}
+     * @param bs the second {@code Iterable}
+     * @param cs the third {@code Iterable}
+     * @param ds the fourth {@code Iterable}
+     * @param <A> the type of the first {@code Iterable}'s elements
+     * @param <B> the type of the second {@code Iterable}'s elements
+     * @param <C> the type of the third {@code Iterable}'s elements
+     * @param <D> the type of the fourth {@code Iterable}'s elements
+     */
     public @NotNull <A, B, C, D> Iterable<Quadruple<A, B, C, D>> quadruplesLex(
             @NotNull Iterable<A> as,
             @NotNull Iterable<B> bs,
@@ -1074,6 +1115,21 @@ public strictfp abstract class QBarIterableProvider {
         return wheelsProvider.quadruplesLex(as, bs, cs, ds);
     }
 
+    /**
+     * Given five {@code Iterable}s, returns all {@code Quintuple}s of elements from these {@code Iterable}s. The
+     * {@code Quintuple}s are ordered lexicographically, matching the order given by the original {@code Iterable}s.
+     *
+     * @param as the first {@code Iterable}
+     * @param bs the second {@code Iterable}
+     * @param cs the third {@code Iterable}
+     * @param ds the fourth {@code Iterable}
+     * @param es the fifth {@code Iterable}
+     * @param <A> the type of the first {@code Iterable}'s elements
+     * @param <B> the type of the second {@code Iterable}'s elements
+     * @param <C> the type of the third {@code Iterable}'s elements
+     * @param <D> the type of the fourth {@code Iterable}'s elements
+     * @param <E> the type of the fifth {@code Iterable}'s elements
+     */
     public @NotNull <A, B, C, D, E> Iterable<Quintuple<A, B, C, D, E>> quintuplesLex(
             @NotNull Iterable<A> as,
             @NotNull Iterable<B> bs,
@@ -1084,6 +1140,23 @@ public strictfp abstract class QBarIterableProvider {
         return wheelsProvider.quintuplesLex(as, bs, cs, ds, es);
     }
 
+    /**
+     * Given six {@code Iterable}s, returns all {@code Sextuple}s of elements from these {@code Iterable}s. The
+     * {@code Sextuple}s are ordered lexicographically, matching the order given by the original {@code Iterable}s.
+     *
+     * @param as the first {@code Iterable}
+     * @param bs the second {@code Iterable}
+     * @param cs the third {@code Iterable}
+     * @param ds the fourth {@code Iterable}
+     * @param es the fifth {@code Iterable}
+     * @param fs the sixth {@code Iterable}
+     * @param <A> the type of the first {@code Iterable}'s elements
+     * @param <B> the type of the second {@code Iterable}'s elements
+     * @param <C> the type of the third {@code Iterable}'s elements
+     * @param <D> the type of the fourth {@code Iterable}'s elements
+     * @param <E> the type of the fifth {@code Iterable}'s elements
+     * @param <F> the type of the sixth {@code Iterable}'s elements
+     */
     public @NotNull <A, B, C, D, E, F> Iterable<Sextuple<A, B, C, D, E, F>> sextuplesLex(
             @NotNull Iterable<A> as,
             @NotNull Iterable<B> bs,
@@ -1095,6 +1168,25 @@ public strictfp abstract class QBarIterableProvider {
         return wheelsProvider.sextuplesLex(as, bs, cs, ds, es, fs);
     }
 
+    /**
+     * Given seven {@code Iterable}s, returns all {@code Septuple}s of elements from these {@code Iterable}s. The
+     * {@code Septuple}s are ordered lexicographically, matching the order given by the original {@code Iterable}s.
+     *
+     * @param as the first {@code Iterable}
+     * @param bs the second {@code Iterable}
+     * @param cs the third {@code Iterable}
+     * @param ds the fourth {@code Iterable}
+     * @param es the fifth {@code Iterable}
+     * @param fs the sixth {@code Iterable}
+     * @param gs the seventh {@code Iterable}
+     * @param <A> the type of the first {@code Iterable}'s elements
+     * @param <B> the type of the second {@code Iterable}'s elements
+     * @param <C> the type of the third {@code Iterable}'s elements
+     * @param <D> the type of the fourth {@code Iterable}'s elements
+     * @param <E> the type of the fifth {@code Iterable}'s elements
+     * @param <F> the type of the sixth {@code Iterable}'s elements
+     * @param <G> the type of the seventh {@code Iterable}'s elements
+     */
     public @NotNull <A, B, C, D, E, F, G> Iterable<Septuple<A, B, C, D, E, F, G>> septuplesLex(
             @NotNull Iterable<A> as,
             @NotNull Iterable<B> bs,
@@ -1107,6 +1199,13 @@ public strictfp abstract class QBarIterableProvider {
         return wheelsProvider.septuplesLex(as, bs, cs, ds, es, fs, gs);
     }
 
+    /**
+     * Generates all {@code String}s of a given size containing elements from a given {@code String}. The elements are
+     * ordered lexicographically, matching the order given by the original {@code String}.
+     *
+     * @param size the length of each of the generated {@code String}s
+     * @param s a {@code String}
+     */
     public @NotNull Iterable<String> stringsLex(int size, @NotNull String s) {
         return wheelsProvider.stringsLex(size, s);
     }
