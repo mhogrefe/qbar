@@ -1256,18 +1256,49 @@ public strictfp abstract class QBarIterableProvider {
         return wheelsProvider.stringsShortlexAtLeast(minSize, s);
     }
 
+    /**
+     * Generates all {@code List}s of a given size containing elements from a given {@code Iterable}.
+     *
+     * @param size the length of each of the generated {@code List}s
+     * @param xs a {@code List} of elements
+     * @param <T> the type of values in the {@code List}s
+     */
     public @NotNull <T> Iterable<List<T>> lists(int size, @NotNull Iterable<T> xs) {
         return wheelsProvider.lists(size, xs);
     }
 
+    /**
+     * Given two {@code Iterable}s, generates all {@code Pair}s of elements from these {@code Iterable}s.
+     *
+     * @param as the first {@code Iterable}
+     * @param bs the second {@code Iterable}
+     * @param <A> the type of the first {@code Iterable}'s elements
+     * @param <B> the type of the second {@code Iterable}'s elements
+     */
     public @NotNull <A, B> Iterable<Pair<A, B>> pairs(@NotNull Iterable<A> as, @NotNull Iterable<B> bs) {
         return wheelsProvider.pairs(as, bs);
     }
 
+    /**
+     * Generates all {@code Pair}s of elements from an {@code Iterable}s.
+     *
+     * @param xs an {@code Iterable}
+     * @param <T> the type of the {@code Iterable}'s elements
+     */
     public @NotNull <T> Iterable<Pair<T, T>> pairs(@NotNull Iterable<T> xs) {
         return wheelsProvider.pairs(xs);
     }
 
+    /**
+     * Given three {@code Iterable}s, generates all {@code Triple}s of elements from these {@code Iterable}s.
+     *
+     * @param as the first {@code Iterable}
+     * @param bs the second {@code Iterable}
+     * @param cs the third {@code Iterable}
+     * @param <A> the type of the first {@code Iterable}'s elements
+     * @param <B> the type of the second {@code Iterable}'s elements
+     * @param <C> the type of the third {@code Iterable}'s elements
+     */
     public @NotNull <A, B, C> Iterable<Triple<A, B, C>> triples(
             @NotNull Iterable<A> as,
             @NotNull Iterable<B> bs,
@@ -1276,10 +1307,28 @@ public strictfp abstract class QBarIterableProvider {
         return wheelsProvider.triples(as, bs, cs);
     }
 
+    /**
+     * Generates all {@code Triple}s of elements from an {@code Iterable}s.
+     *
+     * @param xs an {@code Iterable}
+     * @param <T> the type of the {@code Iterable}'s elements
+     */
     public @NotNull <T> Iterable<Triple<T, T, T>> triples(@NotNull Iterable<T> xs) {
         return wheelsProvider.triples(xs);
     }
 
+    /**
+     * Given four {@code Iterable}s, generates all {@code Quadruple}s of elements from these {@code Iterable}s.
+     *
+     * @param as the first {@code Iterable}
+     * @param bs the second {@code Iterable}
+     * @param cs the third {@code Iterable}
+     * @param ds the fourth {@code Iterable}
+     * @param <A> the type of the first {@code Iterable}'s elements
+     * @param <B> the type of the second {@code Iterable}'s elements
+     * @param <C> the type of the third {@code Iterable}'s elements
+     * @param <D> the type of the fourth {@code Iterable}'s elements
+     */
     public @NotNull <A, B, C, D> Iterable<Quadruple<A, B, C, D>> quadruples(
             @NotNull Iterable<A> as,
             @NotNull Iterable<B> bs,
@@ -1289,10 +1338,30 @@ public strictfp abstract class QBarIterableProvider {
         return wheelsProvider.quadruples(as, bs, cs, ds);
     }
 
+    /**
+     * Generates all {@code Quadruple}s of elements from an {@code Iterable}s.
+     *
+     * @param xs an {@code Iterable}
+     * @param <T> the type of the {@code Iterable}'s elements
+     */
     public @NotNull <T> Iterable<Quadruple<T, T, T, T>> quadruples(@NotNull Iterable<T> xs) {
         return wheelsProvider.quadruples(xs);
     }
 
+    /**
+     * Given five {@code Iterable}s, generates all {@code Quintuple}s of elements from these {@code Iterable}s.
+     *
+     * @param as the first {@code Iterable}
+     * @param bs the second {@code Iterable}
+     * @param cs the third {@code Iterable}
+     * @param ds the fourth {@code Iterable}
+     * @param es the fifth {@code Iterable}
+     * @param <A> the type of the first {@code Iterable}'s elements
+     * @param <B> the type of the second {@code Iterable}'s elements
+     * @param <C> the type of the third {@code Iterable}'s elements
+     * @param <D> the type of the fourth {@code Iterable}'s elements
+     * @param <E> the type of the fifth {@code Iterable}'s elements
+     */
     public @NotNull <A, B, C, D, E> Iterable<Quintuple<A, B, C, D, E>> quintuples(
             @NotNull Iterable<A> as,
             @NotNull Iterable<B> bs,
@@ -1303,10 +1372,32 @@ public strictfp abstract class QBarIterableProvider {
         return wheelsProvider.quintuples(as, bs, cs, ds, es);
     }
 
+    /**
+     * Generates all {@code Quintuple}s of elements from an {@code Iterable}s.
+     *
+     * @param xs an {@code Iterable}
+     * @param <T> the type of the {@code Iterable}'s elements
+     */
     public @NotNull <T> Iterable<Quintuple<T, T, T, T, T>> quintuples(@NotNull Iterable<T> xs) {
         return wheelsProvider.quintuples(xs);
     }
 
+    /**
+     * Given six {@code Iterable}s, generates all {@code Sextuple}s of elements from these {@code Iterable}s.
+     *
+     * @param as the first {@code Iterable}
+     * @param bs the second {@code Iterable}
+     * @param cs the third {@code Iterable}
+     * @param ds the fourth {@code Iterable}
+     * @param es the fifth {@code Iterable}
+     * @param fs the sixth {@code Iterable}
+     * @param <A> the type of the first {@code Iterable}'s elements
+     * @param <B> the type of the second {@code Iterable}'s elements
+     * @param <C> the type of the third {@code Iterable}'s elements
+     * @param <D> the type of the fourth {@code Iterable}'s elements
+     * @param <E> the type of the fifth {@code Iterable}'s elements
+     * @param <F> the type of the sixth {@code Iterable}'s elements
+     */
     public @NotNull <A, B, C, D, E, F> Iterable<Sextuple<A, B, C, D, E, F>> sextuples(
             @NotNull Iterable<A> as,
             @NotNull Iterable<B> bs,
@@ -1318,10 +1409,34 @@ public strictfp abstract class QBarIterableProvider {
         return wheelsProvider.sextuples(as, bs, cs, ds, es, fs);
     }
 
+    /**
+     * Generates all {@code Sextuple}s of elements from an {@code Iterable}s.
+     *
+     * @param xs an {@code Iterable}
+     * @param <T> the type of the {@code Iterable}'s elements
+     */
     public @NotNull <T> Iterable<Sextuple<T, T, T, T, T, T>> sextuples(@NotNull Iterable<T> xs) {
         return wheelsProvider.sextuples(xs);
     }
 
+    /**
+     * Given seven {@code Iterable}s, generates all {@code Septuple}s of elements from these {@code Iterable}s.
+     *
+     * @param as the first {@code Iterable}
+     * @param bs the second {@code Iterable}
+     * @param cs the third {@code Iterable}
+     * @param ds the fourth {@code Iterable}
+     * @param es the fifth {@code Iterable}
+     * @param fs the sixth {@code Iterable}
+     * @param gs the seventh {@code Iterable}
+     * @param <A> the type of the first {@code Iterable}'s elements
+     * @param <B> the type of the second {@code Iterable}'s elements
+     * @param <C> the type of the third {@code Iterable}'s elements
+     * @param <D> the type of the fourth {@code Iterable}'s elements
+     * @param <E> the type of the fifth {@code Iterable}'s elements
+     * @param <F> the type of the sixth {@code Iterable}'s elements
+     * @param <G> the type of the seventh {@code Iterable}'s elements
+     */
     public @NotNull <A, B, C, D, E, F, G> Iterable<Septuple<A, B, C, D, E, F, G>> septuples(
             @NotNull Iterable<A> as,
             @NotNull Iterable<B> bs,
@@ -1334,14 +1449,31 @@ public strictfp abstract class QBarIterableProvider {
         return wheelsProvider.septuples(as, bs, cs, ds, es, fs, gs);
     }
 
+    /**
+     * Generates all {@code Septuple}s of elements from an {@code Iterable}s.
+     *
+     * @param xs an {@code Iterable}
+     * @param <T> the type of the {@code Iterable}'s elements
+     */
     public @NotNull <T> Iterable<Septuple<T, T, T, T, T, T, T>> septuples(@NotNull Iterable<T> xs) {
         return wheelsProvider.septuples(xs);
     }
 
+    /**
+     * Generates all {@code String}s of a given size containing characters from a given {@code String}.
+     *
+     * @param size the length of each of the generated {@code String}s
+     * @param s a {@code String}
+     */
     public @NotNull Iterable<String> strings(int size, @NotNull String s) {
         return wheelsProvider.strings(size, s);
     }
 
+    /**
+     * Generates all {@code String}s of a given size.
+     *
+     * @param size the length of each of the generated {@code String}s
+     */
     public @NotNull Iterable<String> strings(int size) {
         return wheelsProvider.strings(size);
     }
