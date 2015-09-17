@@ -68,7 +68,7 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
         return ExhaustiveProvider.INSTANCE.distinctStringsLexAtLeast(minSize, s);
     }
 
-    public @NotNull <T> Iterable<List<T>> distinctListsShortlex(@NotNull Iterable<T> xs) {
+    public @NotNull <T> Iterable<List<T>> distinctListsShortlex(@NotNull List<T> xs) {
         return ExhaustiveProvider.INSTANCE.distinctListsShortlex(xs);
     }
 

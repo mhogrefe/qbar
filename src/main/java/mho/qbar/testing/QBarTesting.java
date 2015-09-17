@@ -2,7 +2,6 @@ package mho.qbar.testing;
 
 import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.wheels.iterables.ExhaustiveProvider;
-import mho.wheels.iterables.IterableProvider;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
@@ -34,14 +33,14 @@ public class QBarTesting {
 
         ip.reset();
         iq.reset();
-        for (Pair<T, T> p : take(limit, ExhaustiveProvider.INSTANCE.pairsLex(fxs.apply(ip), fxs.apply(iq)))) {
+        for (Pair<T, T> p : take(limit, ExhaustiveProvider.INSTANCE.pairs(fxs.apply(ip), fxs.apply(iq)))) {
             symmetric(Object::equals, p);
         }
 
         ip.reset();
         iq.reset();
         ir.reset();
-        Iterable<Triple<T, T, T>> ts = ExhaustiveProvider.INSTANCE.triplesLex(
+        Iterable<Triple<T, T, T>> ts = ExhaustiveProvider.INSTANCE.triples(
                 fxs.apply(ip),
                 fxs.apply(iq),
                 fxs.apply(ir)
@@ -76,7 +75,7 @@ public class QBarTesting {
 
         ip.reset();
         iq.reset();
-        for (Pair<T, T> p : take(limit, ExhaustiveProvider.INSTANCE.pairsLex(fxs.apply(ip), fxs.apply(iq)))) {
+        for (Pair<T, T> p : take(limit, ExhaustiveProvider.INSTANCE.pairs(fxs.apply(ip), fxs.apply(iq)))) {
             int compare = p.a.compareTo(p.b);
             assertTrue(p, compare == 0 || compare == 1 || compare == -1);
             antiSymmetric(Ordering::le, p);
@@ -87,7 +86,7 @@ public class QBarTesting {
         ip.reset();
         iq.reset();
         ir.reset();
-        Iterable<Triple<T, T, T>> ts = ExhaustiveProvider.INSTANCE.triplesLex(
+        Iterable<Triple<T, T, T>> ts = ExhaustiveProvider.INSTANCE.triples(
                 fxs.apply(ip),
                 fxs.apply(iq),
                 fxs.apply(ir)
