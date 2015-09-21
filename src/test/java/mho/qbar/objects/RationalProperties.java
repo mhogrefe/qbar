@@ -2430,7 +2430,8 @@ public class RationalProperties {
         initialize();
         System.out.println("\t\ttesting sum(Iterable<Rational>) properties...");
 
-        propertiesFoldHelper(LIMIT, P.getWheelsProvider(), P.rationals(), Rational::add, Rational::sum, r -> {}, true);
+        propertiesFoldHelper(LIMIT, P.getWheelsProvider(), P.rationals(), Rational::add, Rational::sum, r -> {
+        }, true);
 
         for (List<Rational> rs : take(LIMIT, P.lists(P.rationals()))) {
             assertEquals(rs.toString(), sum(rs), sum_alt(rs));
@@ -2472,7 +2473,8 @@ public class RationalProperties {
                 P.rationals(),
                 Rational::multiply,
                 Rational::product,
-                r -> {},
+                r -> {
+                },
                 true
         );
 
@@ -3133,18 +3135,10 @@ public class RationalProperties {
         initialize();
         System.out.println("\t\ttesting digits(BigInteger) properties...");
 
-        Iterable<Pair<Rational, BigInteger>> ps;
-        if (P instanceof QBarExhaustiveProvider) {
-            ps = P.pairsSquareRootOrder(
-                    cons(ZERO, P.positiveRationals()),
-                    P.rangeUp(IntegerUtils.TWO)
-            );
-        } else {
-            ps = P.pairs(
-                    cons(ZERO, P.positiveRationals()),
-                    map(i -> BigInteger.valueOf(i + 2), P.withScale(20).naturalIntegersGeometric())
-            );
-        }
+        Iterable<Pair<Rational, BigInteger>> ps = P.pairsSquareRootOrder(
+                P.withElement(ZERO, P.positiveRationals()),
+                P.rangeUp(IntegerUtils.TWO)
+        );
         for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
             Pair<List<BigInteger>, Iterable<BigInteger>> digits = p.a.digits(p.b);
             assertTrue(p.toString(), digits.a.isEmpty() || !head(digits.a).equals(BigInteger.ZERO));
@@ -3152,17 +3146,19 @@ public class RationalProperties {
             assertEquals(p.toString(), IntegerUtils.fromBigEndianDigits(p.b, digits.a), p.a.floor());
         }
 
+        ps = P.pairsSquareRootOrder(
+                P.withElement(ZERO, P.positiveRationals()),
+                P.withScale(4).rangeUp(IntegerUtils.TWO)
+        );
         for (Pair<Rational, BigInteger> p : take(LIMIT, filter(q -> q.a.hasTerminatingBaseExpansion(q.b), ps))) {
             Pair<List<BigInteger>, Iterable<BigInteger>> digits = p.a.digits(p.b);
             toList(digits.b);
         }
 
-        if (!(P instanceof QBarExhaustiveProvider)) {
-            ps = P.pairs(
-                    cons(ZERO, ((QBarRandomProvider) P).withScale(8).positiveRationals()),
-                    map(i -> BigInteger.valueOf(i + 2), P.withScale(20).naturalIntegersGeometric())
-            );
-        }
+        ps = P.pairsSquareRootOrder(
+                P.withElement(ZERO, P.withScale(8).positiveRationals()),
+                P.rangeUp(IntegerUtils.TWO)
+        );
         for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
             Pair<List<BigInteger>, Iterable<BigInteger>> digits = p.a.digits(p.b);
             Pair<List<BigInteger>, Iterable<BigInteger>> alt = digits_alt(p.a, p.b);
