@@ -1539,16 +1539,34 @@ public strictfp abstract class QBarIterableProvider {
         return wheelsProvider.strings();
     }
 
+    /**
+     * Generates all {@code List}s with a minimum size containing elements from a given {@code Iterable}.
+     *
+     * @param minSize the minimum size of the resulting {@code List}s
+     * @param xs a {@code List} of elements
+     * @param <T> the type of values in the {@code List}s
+     */
     public @NotNull <T> Iterable<List<T>> listsAtLeast(int minSize, @NotNull Iterable<T> xs) {
         return wheelsProvider.listsAtLeast(minSize, xs);
     }
 
+    /**
+     * Generates all {@code String}s with a minimum size containing characters from a given {@code String}.
+     *
+     * @param minSize the minimum size of the resulting {@code List}s
+     * @param s a {@code String}
+     */
     public @NotNull Iterable<String> stringsAtLeast(int minSize, @NotNull String s) {
         return wheelsProvider.stringsAtLeast(minSize, s);
     }
 
-    public @NotNull Iterable<String> stringsAtLeast(int size) {
-        return wheelsProvider.stringsAtLeast(size);
+    /**
+     * Generates all {@code String}s with a minimum size.
+     *
+     * @param minSize the minimum size of the resulting {@code List}s
+     */
+    public @NotNull Iterable<String> stringsAtLeast(int minSize) {
+        return wheelsProvider.stringsAtLeast(minSize);
     }
 
     public @NotNull <T> Iterable<List<T>> distinctLists(int size, @NotNull Iterable<T> xs) {
