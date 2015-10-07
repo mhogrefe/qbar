@@ -1746,7 +1746,7 @@ public strictfp abstract class QBarIterableProvider {
      * repetitions. The {@code String}s are ordered in shortlex order (by length, then lexicographically), matching the
      * order given by the original {@code String}.
      *
-     * @param minSize the minimum size of the resulting {@code List}s
+     * @param minSize the minimum size of the resulting {@code String}s
      * @param s a {@code String}
      */
     public @NotNull Iterable<String> distinctStringsShortlexAtLeast(int minSize, @NotNull String s) {
@@ -1754,9 +1754,10 @@ public strictfp abstract class QBarIterableProvider {
     }
 
     /**
-     * Generates all {@code List}s containing elements from a given {@code List} with no repetitions.
+     * Generates all {@code List}s of a given size containing elements from a given {@code List} with no repetitions.
      *
      * @param xs a {@code List} of elements
+     * @param size the length of each of the generated {@code List}s
      * @param <T> the type of values in the {@code List}s
      */
     public @NotNull <T> Iterable<List<T>> distinctLists(int size, @NotNull Iterable<T> xs) {
@@ -1824,8 +1825,10 @@ public strictfp abstract class QBarIterableProvider {
     }
 
     /**
-     * Generates all {@code String}s containing characters from a given {@code String} with no repetitions.
+     * Generates all {@code String}s of a given size containing characters from a given {@code String} with no
+     * repetitions.
      *
+     * @param size the length of each of the generated {@code String}s
      * @param s a {@code String}
      */
     public @NotNull Iterable<String> distinctStrings(int size, @NotNull String s) {
@@ -1833,33 +1836,69 @@ public strictfp abstract class QBarIterableProvider {
     }
 
     /**
-     * Generates all {@code String}s containing characters from a given {@code String}.
+     * Generates all {@code String}s of a given size containing characters from a given {@code String}.
+     *
+     * @param size the length of each of the generated {@code String}s
      */
     public @NotNull Iterable<String> distinctStrings(int size) {
         return wheelsProvider.distinctStrings(size);
     }
 
+    /**
+     * Generates all {@code List}s containing elements from a given {@code List} with no repetitions.
+     *
+     * @param xs a {@code List} of elements
+     * @param <T> the type of values in the {@code List}s
+     */
     public @NotNull <T> Iterable<List<T>> distinctLists(@NotNull Iterable<T> xs) {
         return wheelsProvider.distinctLists(xs);
     }
 
+    /**
+     * Generates all {@code String}s containing characters from a given {@code String} with no repetitions.
+     *
+     * @param s a {@code String}
+     */
     public @NotNull Iterable<String> distinctStrings(@NotNull String s) {
         return wheelsProvider.distinctStrings(s);
     }
 
-    public @NotNull Iterable<String> distinctStrings() {
+    /**
+     * Generates all {@code String}s containing characters from a given {@code String}.
+     */
+    public Iterable<String> distinctStrings()  {
         return wheelsProvider.distinctStrings();
     }
 
+    /**
+     * Generates all {@code List}s with a minimum size containing elements from a given {@code List} with no
+     * repetitions.
+     *
+     * @param minSize the minimum size of the resulting {@code List}s
+     * @param xs a {@code List} of elements
+     * @param <T> the type of values in the {@code List}s
+     */
     public @NotNull <T> Iterable<List<T>> distinctListsAtLeast(int minSize, @NotNull Iterable<T> xs) {
         return wheelsProvider.distinctListsAtLeast(minSize, xs);
     }
 
-    public @NotNull Iterable<String> distinctStringsAtLeast(int minSize, @NotNull String s) {
+    /**
+     * Generates all {@code String}s with a minimum size containing characters from a given {@code String} with no
+     * repetitions.
+     *
+     * @param minSize the minimum size of the resulting {@code String}s
+     * @param s a {@code String}
+     */
+    public @NotNull Iterable<String> distinctStringsAtLeast(int minSize, @NotNull String s)  {
         return wheelsProvider.distinctStringsAtLeast(minSize, s);
     }
 
-    public @NotNull Iterable<String> distinctStringsAtLeast(int minSize) {
+    /**
+     * Generates all {@code String}s with a minimum size with no repetitions.
+     *
+     * @param minSize the minimum size of the resulting {@code String}s
+     */
+    public @NotNull Iterable<String> distinctStringsAtLeast(int minSize)  {
         return wheelsProvider.distinctStringsAtLeast(minSize);
     }
 
