@@ -1902,8 +1902,132 @@ public strictfp abstract class QBarIterableProvider {
         return wheelsProvider.distinctStringsAtLeast(minSize);
     }
 
-    public @NotNull <T> Iterable<List<T>> bags(int size, @NotNull Iterable<T> xs) {
+    /**
+     * Generates all unordered {@code List}s of a given size containing elements from a given {@code List}. The
+     * {@code List}s are ordered lexicographically, matching the order given by the original {@code List}.
+     *
+     * @param size the length of each of the generated {@code List}s
+     * @param xs a {@code List} of elements
+     * @param <T> the type of values in the {@code List}s
+     */
+    public @NotNull <T extends Comparable<T>> Iterable<List<T>> bagsLex(int size, @NotNull List<T> xs) {
+        return wheelsProvider.bagsLex(size, xs);
+    }
+
+    /**
+     * Generates all unordered {@code Pair}s of elements from a {@code List}. The {@code Pair}s are ordered
+     * lexicographically, matching the order given by the original {@code List}.
+     *
+     * @param xs a {@code List}
+     * @param <T> the type of the {@code List}'s elements
+     */
+    public @NotNull <T extends Comparable<T>> Iterable<Pair<T, T>> bagPairsLex(@NotNull List<T> xs) {
+        return wheelsProvider.bagPairsLex(xs);
+    }
+
+    /**
+     * Generates all unordered {@code Triple}s of elements from a {@code List}. The {@code Triple}s are ordered
+     * lexicographically, matching the order given by the original {@code List}.
+     *
+     * @param xs a {@code List}
+     * @param <T> the type of the {@code List}'s elements
+     */
+    public @NotNull <T extends Comparable<T>> Iterable<Triple<T, T, T>> bagTriplesLex(@NotNull List<T> xs) {
+        return wheelsProvider.bagTriplesLex(xs);
+    }
+
+    /**
+     * Generates all unordered {@code Quadruple}s of elements from a {@code List}. The {@code Quadruple}s are ordered
+     * lexicographically, matching the order given by the original {@code List}.
+     *
+     * @param xs a {@code List}
+     * @param <T> the type of the {@code List}'s elements
+     */
+    public @NotNull <T extends Comparable<T>> Iterable<Quadruple<T, T, T, T>> bagQuadruplesLex(@NotNull List<T> xs) {
+        return wheelsProvider.bagQuadruplesLex(xs);
+    }
+
+    /**
+     * Generates all unordered {@code Quintuple}s of elements from a {@code List}. The {@code Quintuple}s are ordered
+     * lexicographically, matching the order given by the original {@code List}.
+     *
+     * @param xs a {@code List}
+     * @param <T> the type of the {@code List}'s elements
+     */
+    public @NotNull <T extends Comparable<T>> Iterable<Quintuple<T, T, T, T, T>> bagQuintuplesLex(
+            @NotNull List<T> xs
+    ) {
+        return wheelsProvider.bagQuintuplesLex(xs);
+    }
+
+    /**
+     * Generates all unordered {@code Sextuple}s of elements from a {@code List}. The {@code Sextuple}s are ordered
+     * lexicographically, matching the order given by the original {@code List}.
+     *
+     * @param xs a {@code List}
+     * @param <T> the type of the {@code List}'s elements
+     */
+    public @NotNull <T extends Comparable<T>> Iterable<Sextuple<T, T, T, T, T, T>> bagSextuplesLex(
+            @NotNull List<T> xs
+    ) {
+        return wheelsProvider.bagSextuplesLex(xs);
+    }
+
+    /**
+     * Generates all unordered {@code Septuple}s of elements from a {@code List}. The {@code Septuple}s are ordered
+     * lexicographically, matching the order given by the original {@code List}.
+     *
+     * @param xs a {@code List}
+     * @param <T> the type of the {@code List}'s elements
+     */
+    public @NotNull <T extends Comparable<T>> Iterable<Septuple<T, T, T, T, T, T, T>> bagSeptuplesLex(
+            @NotNull List<T> xs
+    ) {
+        return wheelsProvider.bagSeptuplesLex(xs);
+    }
+
+    /**
+     * Generates all unordered {@code String}s containing characters from a given {@code String}. The {@code String}s
+     * are ordered lexicographically, matching the order given by the original {@code String}.
+     *
+     * @param s a {@code String}
+     */
+    public @NotNull Iterable<String> stringBagsLex(int size, @NotNull String s) {
+        return wheelsProvider.stringBagsLex(size, s);
+    }
+
+    public @NotNull <T extends Comparable<T>> Iterable<List<T>> bags(int size, @NotNull Iterable<T> xs) {
         return wheelsProvider.bags(size, xs);
+    }
+
+    public @NotNull <T extends Comparable<T>> Iterable<Pair<T, T>> bagPairs(@NotNull Iterable<T> xs) {
+        return wheelsProvider.bagPairs(xs);
+    }
+
+    public @NotNull <T extends Comparable<T>> Iterable<Triple<T, T, T>> bagTriples(@NotNull Iterable<T> xs) {
+        return wheelsProvider.bagTriples(xs);
+    }
+
+    public @NotNull <T extends Comparable<T>> Iterable<Quadruple<T, T, T, T>> bagQuadruples(@NotNull Iterable<T> xs) {
+        return wheelsProvider.bagQuadruples(xs);
+    }
+
+    public @NotNull <T extends Comparable<T>> Iterable<Quintuple<T, T, T, T, T>> bagQuintuples(
+            @NotNull Iterable<T> xs
+    ) {
+        return wheelsProvider.bagQuintuples(xs);
+    }
+
+    public @NotNull <T extends Comparable<T>> Iterable<Sextuple<T, T, T, T, T, T>> bagSextuples(
+            @NotNull Iterable<T> xs
+    ) {
+        return wheelsProvider.bagSextuples(xs);
+    }
+
+    public @NotNull <T extends Comparable<T>> Iterable<Septuple<T, T, T, T, T, T, T>> bagSeptuples(
+            @NotNull Iterable<T> xs
+    ) {
+        return wheelsProvider.bagSeptuples(xs);
     }
 
     public @NotNull Iterable<String> stringBags(int size, @NotNull String s) {
@@ -1914,7 +2038,7 @@ public strictfp abstract class QBarIterableProvider {
         return wheelsProvider.stringBags(size);
     }
 
-    public @NotNull <T> Iterable<List<T>> bags(@NotNull Iterable<T> xs) {
+    public @NotNull <T extends Comparable<T>> Iterable<List<T>> bags(@NotNull Iterable<T> xs) {
         return wheelsProvider.bags(xs);
     }
 
@@ -1926,7 +2050,7 @@ public strictfp abstract class QBarIterableProvider {
         return wheelsProvider.stringBags();
     }
 
-    public @NotNull <T> Iterable<List<T>> bagsAtLeast(int minSize, @NotNull Iterable<T> xs) {
+    public @NotNull <T extends Comparable<T>> Iterable<List<T>> bagsAtLeast(int minSize, @NotNull Iterable<T> xs) {
         return wheelsProvider.bagsAtLeast(minSize, xs);
     }
 
