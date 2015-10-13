@@ -1996,6 +1996,53 @@ public strictfp abstract class QBarIterableProvider {
         return wheelsProvider.stringBagsLex(size, s);
     }
 
+    /**
+     * Generates all unordered {@code List}s containing elements from a given {@code Iterable}. The {@code List}s are
+     * ordered in shortlex order (by length, then lexicographically).
+     *
+     * @param xs a {@code List} of elements
+     * @param <T> the type of values in the {@code List}s
+     */
+    public @NotNull <T extends Comparable<T>> Iterable<List<T>> bagsShortlex(@NotNull Iterable<T> xs) {
+        return wheelsProvider.bagsShortlex(xs);
+    }
+
+    /**
+     * Generates all unordered {@code String}s containing characters from a given {@code String}. The {@code String}s
+     * are ordered in shortlex order (by length, then lexicographically).
+     *
+     * @param s a {@code String}
+     */
+    public @NotNull Iterable<String> stringBagsShortlex(@NotNull String s) {
+        return wheelsProvider.stringBagsShortlex(s);
+    }
+
+    /**
+     * Generates all unordered {@code List}s with a minimum size containing elements from a given {@code Iterable}. The
+     * {@code List}s are ordered in shortlex order (by length, then lexicographically).
+     *
+     * @param minSize the minimum size of the resulting {@code List}s
+     * @param xs a {@code List} of elements
+     * @param <T> the type of values in the {@code List}s
+     */
+    public @NotNull <T extends Comparable<T>> Iterable<List<T>> bagsShortlexAtLeast(
+            int minSize,
+            @NotNull Iterable<T> xs
+    ) {
+        return wheelsProvider.bagsShortlexAtLeast(minSize, xs);
+    }
+
+    /**
+     * Generates all unordered {@code String}s with a minimum size containing characters from a given {@code String}.
+     * The {@code String}s are ordered in shortlex order (by length, then lexicographically).
+     *
+     * @param minSize the minimum size of the resulting {@code String}s
+     * @param s a {@code String}
+     */
+    public @NotNull Iterable<String> stringBagsShortlexAtLeast(int minSize, @NotNull String s) {
+        return wheelsProvider.stringBagsShortlexAtLeast(minSize, s);
+    }
+
     public @NotNull <T extends Comparable<T>> Iterable<List<T>> bags(int size, @NotNull Iterable<T> xs) {
         return wheelsProvider.bags(size, xs);
     }
