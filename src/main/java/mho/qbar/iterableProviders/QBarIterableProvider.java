@@ -2119,8 +2119,9 @@ public strictfp abstract class QBarIterableProvider {
     }
 
     /**
-     * Generates all unordered {@code String}s containing characters from a given {@code String}.
+     * Generates all unordered {@code String}s of a given size containing characters from a given {@code String}.
      *
+     * @param size the length of each of the generated {@code String}s
      * @param s a {@code String}
      */
     public @NotNull Iterable<String> stringBags(int size, @NotNull String s) {
@@ -2128,32 +2129,66 @@ public strictfp abstract class QBarIterableProvider {
     }
 
     /**
-     * Generates all unordered {@code String}s.
+     * Generates all unordered {@code String}s of a given size.
+     *
+     * @param size the length of each of the generated {@code String}s
      */
     public @NotNull Iterable<String> stringBags(int size) {
         return wheelsProvider.stringBags(size);
     }
 
+    /**
+     * Generates all unordered {@code List}s containing elements from a given {@code Iterable}.
+     *
+     * @param xs an {@code Iterable} of elements
+     * @param <T> the type of values in the {@code List}s
+     */
     public @NotNull <T extends Comparable<T>> Iterable<List<T>> bags(@NotNull Iterable<T> xs) {
         return wheelsProvider.bags(xs);
     }
 
+    /**
+     * Generates all unordered {@code String}s containing characters from a given {@code String}.
+     *
+     * @param s a {@code String}
+     */
     public @NotNull Iterable<String> stringBags(@NotNull String s) {
         return wheelsProvider.stringBags(s);
     }
 
+    /**
+     * Generates all unordered {@code String}s.
+     */
     public @NotNull Iterable<String> stringBags() {
         return wheelsProvider.stringBags();
     }
 
+    /**
+     * Generates all unordered {@code List}s with a minimum size containing elements from a given {@code Iterable}.
+     *
+     * @param minSize the minimum size of the resulting {@code List}s
+     * @param xs an {@code Iterable} of elements
+     * @param <T> the type of values in the {@code List}s
+     */
     public @NotNull <T extends Comparable<T>> Iterable<List<T>> bagsAtLeast(int minSize, @NotNull Iterable<T> xs) {
         return wheelsProvider.bagsAtLeast(minSize, xs);
     }
 
+    /**
+     * Generates all unordered {@code String}s with a minimum size containing characters from a given {@code String}.
+     *
+     * @param minSize the minimum size of the resulting {@code String}s
+     * @param s an {@code String}
+     */
     public @NotNull Iterable<String> stringBagsAtLeast(int minSize, @NotNull String s) {
         return wheelsProvider.stringBagsAtLeast(minSize, s);
     }
 
+    /**
+     * Generates all unordered {@code String}s with a minimum size.
+     *
+     * @param minSize the minimum size of the resulting {@code String}s
+     */
     public @NotNull Iterable<String> stringBagsAtLeast(int minSize) {
         return wheelsProvider.stringBagsAtLeast(minSize);
     }
