@@ -2193,6 +2193,102 @@ public strictfp abstract class QBarIterableProvider {
         return wheelsProvider.stringBagsAtLeast(minSize);
     }
 
+    /**
+     * Generates all unordered {@code List}s of a given size containing elements from a given {@code List} with no
+     * repetitions. The {@code List}s are ordered lexicographically.
+     *
+     * @param size the length of each of the generated {@code List}s
+     * @param xs a {@code List} of elements
+     * @param <T> the type of values in the {@code List}s
+     */
+    public @NotNull <T extends Comparable<T>> Iterable<List<T>> subsetsLex(int size, @NotNull List<T> xs) {
+        return wheelsProvider.subsetsLex(size, xs);
+    }
+
+    /**
+     * Generates all unordered {@code Pair}s of elements from a {@code List} with no repetitions. The {@code Pair}s are
+     * ordered lexicographically.
+     *
+     * @param xs a {@code List}
+     * @param <T> the type of the {@code List}'s elements
+     */
+    public @NotNull <T extends Comparable<T>> Iterable<Pair<T, T>> subsetPairsLex(@NotNull List<T> xs) {
+        return wheelsProvider.subsetPairsLex(xs);
+    }
+
+    /**
+     * Generates all unordered {@code Triple}s of elements from a {@code List} with no repetitions. The {@code Triple}s
+     * are ordered lexicographically.
+     *
+     * @param xs a {@code List}
+     * @param <T> the type of the {@code List}'s elements
+     */
+    public @NotNull <T extends Comparable<T>> Iterable<Triple<T, T, T>> subsetTriplesLex(@NotNull List<T> xs) {
+        return wheelsProvider.subsetTriplesLex(xs);
+    }
+
+    /**
+     * Generates all unordered {@code Quadruple}s of elements from a {@code List} with no repetitions. The
+     * {@code Quadruple}s are ordered lexicographically.
+     *
+     * @param xs a {@code List}
+     * @param <T> the type of the {@code List}'s elements
+     */
+    public @NotNull <T extends Comparable<T>> Iterable<Quadruple<T, T, T, T>> subsetQuadruplesLex(
+            @NotNull List<T> xs
+    ) {
+        return wheelsProvider.subsetQuadruplesLex(xs);
+    }
+
+    /**
+     * Generates all unordered {@code Quintuple}s of elements from a {@code List} with no repetitions. The
+     * {@code Quintuple}s are ordered lexicographically.
+     *
+     * @param xs a {@code List}
+     * @param <T> the type of the {@code List}'s elements
+     */
+    public @NotNull <T extends Comparable<T>> Iterable<Quintuple<T, T, T, T, T>> subsetQuintuplesLex(
+            @NotNull List<T> xs
+    ) {
+        return wheelsProvider.subsetQuintuplesLex(xs);
+    }
+
+    /**
+     * Generates all unordered {@code Sextuple}s of elements from a {@code List} with no repetitions. The
+     * {@code Sextuple}s are ordered lexicographically.
+     *
+     * @param xs a {@code List}
+     * @param <T> the type of the {@code List}'s elements
+     */
+    public @NotNull <T extends Comparable<T>> Iterable<Sextuple<T, T, T, T, T, T>> subsetSextuplesLex(
+            @NotNull List<T> xs
+    ) {
+        return wheelsProvider.subsetSextuplesLex(xs);
+    }
+
+    /**
+     * Generates all unordered {@code Septuple}s of elements from a {@code List} with no repetitions. The
+     * {@code Septuple}s are ordered lexicographically.
+     *
+     * @param xs a {@code List}
+     * @param <T> the type of the {@code List}'s elements
+     */
+    public @NotNull <T extends Comparable<T>> Iterable<Septuple<T, T, T, T, T, T, T>> subsetSeptuplesLex(
+            @NotNull List<T> xs
+    ) {
+        return wheelsProvider.subsetSeptuplesLex(xs);
+    }
+
+    /**
+     * Generates all unordered {@code String}s containing characters from a given {@code String} with no repetitions.
+     * The {@code String}s are ordered lexicographically.
+     *
+     * @param s a {@code String}
+     */
+    public @NotNull Iterable<String> stringSubsetsLex(int size, @NotNull String s) {
+        return wheelsProvider.stringSubsetsLex(size, s);
+    }
+
     public @NotNull <T> Iterable<List<T>> subsets(int size, @NotNull Iterable<T> xs) {
         return wheelsProvider.subsets(size, xs);
     }
