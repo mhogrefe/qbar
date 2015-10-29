@@ -1698,7 +1698,7 @@ public strictfp abstract class QBarIterableProvider {
      * repetitions. The {@code String}s are ordered lexicographically, matching the order given by the original
      * {@code String}.
      *
-     * @param minSize the minimum size of the resulting {@code List}s
+     * @param minSize the minimum size of the resulting {@code String}s
      * @param s a {@code String}
      */
     public @NotNull Iterable<String> distinctStringsLexAtLeast(int minSize, @NotNull String s) {
@@ -2289,6 +2289,50 @@ public strictfp abstract class QBarIterableProvider {
         return wheelsProvider.stringSubsetsLex(size, s);
     }
 
+    /**
+     * Generates all unordered {@code List}s containing elements from a given {@code List} with no repetitions. The
+     * {@code List}s are ordered lexicographically.
+     *
+     * @param xs a {@code List} of elements
+     * @param <T> the type of values in the {@code List}s
+     */
+    public @NotNull <T> Iterable<List<T>> subsetsLex(@NotNull List<T> xs) {
+        return wheelsProvider.subsetsLex(xs);
+    }
+
+    /**
+     * Generates all unordered {@code String}s containing characters from a given {@code String} with no repetitions.
+     * The {@code String}s are ordered lexicographically.
+     *
+     * @param s a {@code String}
+     */
+    public @NotNull Iterable<String> stringSubsetsLex(@NotNull String s) {
+        return wheelsProvider.stringSubsetsLex(s);
+    }
+
+    /**
+     * Generates all unordered {@code List}s with a minimum size containing elements from a given {@code List} with no
+     * repetitions. The {@code List}s are ordered lexicographically.
+     *
+     * @param minSize the minimum size of the resulting {@code List}s
+     * @param xs a {@code List} of elements
+     * @param <T> the type of values in the {@code List}s
+     */
+    public @NotNull <T> Iterable<List<T>> subsetsLexAtLeast(int minSize, @NotNull List<T> xs) {
+        return wheelsProvider.subsetsLexAtLeast(minSize, xs);
+    }
+
+    /**
+     * Generates all unordered {@code String}s with a minimum size containing characters from a given {@code String}
+     * with no repetitions. The {@code String}s are ordered lexicographically.
+     *
+     * @param minSize the minimum size of the resulting {@code String}s
+     * @param s a {@code String}
+     */
+    public @NotNull Iterable<String> stringSubsetsLexAtLeast(int minSize, @NotNull String s) {
+        return wheelsProvider.stringSubsetsLexAtLeast(minSize, s);
+    }
+
     public @NotNull <T> Iterable<List<T>> subsets(int size, @NotNull Iterable<T> xs) {
         return wheelsProvider.subsets(size, xs);
     }
@@ -2303,14 +2347,6 @@ public strictfp abstract class QBarIterableProvider {
 
     public @NotNull <T> Iterable<List<T>> subsets(@NotNull Iterable<T> xs) {
         return wheelsProvider.subsets(xs);
-    }
-
-    public @NotNull <T> Iterable<List<T>> subsetsLimited(int maxSize, @NotNull Iterable<T> xs) {
-        return wheelsProvider.subsetsLimited(maxSize, xs);
-    }
-
-    public @NotNull <T> Iterable<List<T>> subsetsUniform(@NotNull List<T> xs) {
-        return wheelsProvider.subsetsUniform(xs);
     }
 
     public @NotNull Iterable<String> stringSubsets(@NotNull String s) {
