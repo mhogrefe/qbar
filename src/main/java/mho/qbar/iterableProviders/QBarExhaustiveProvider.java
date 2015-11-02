@@ -20,22 +20,6 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
         super(ExhaustiveProvider.INSTANCE);
     }
 
-    public @NotNull <T> Iterable<List<T>> subsetsShortlex(@NotNull Iterable<T> xs) {
-        return ExhaustiveProvider.INSTANCE.subsetsShortlex(xs);
-    }
-
-    public @NotNull Iterable<String> stringSubsetsShortlex(@NotNull String s) {
-        return ExhaustiveProvider.INSTANCE.stringSubsetsShortlex(s);
-    }
-
-    public @NotNull <T> Iterable<List<T>> subsetsShortlexAtLeast(int minSize, @NotNull Iterable<T> xs) {
-        return ExhaustiveProvider.INSTANCE.subsetsShortlexAtLeast(minSize, xs);
-    }
-
-    public @NotNull Iterable<String> stringSubsetsShortlexAtLeast(int minSize, @NotNull String s) {
-        return ExhaustiveProvider.INSTANCE.stringSubsetsShortlexAtLeast(minSize, s);
-    }
-
     public @NotNull <T> Iterable<List<T>> controlledListsLex(@NotNull List<Iterable<T>> xss) {
         return ExhaustiveProvider.INSTANCE.controlledListsLex(xss);
     }

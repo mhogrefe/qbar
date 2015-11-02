@@ -2333,6 +2333,53 @@ public strictfp abstract class QBarIterableProvider {
         return wheelsProvider.stringSubsetsLexAtLeast(minSize, s);
     }
 
+    /**
+     * Generates all unordered {@code List}s containing elements from a given {@code Iterable} with no repetitions. The
+     * {@code List}s are ordered in shortlex order (by length, then lexicographically).
+     *
+     * @param xs a {@code List} of elements
+     * @param <T> the type of values in the {@code List}s
+     */
+    public @NotNull <T extends Comparable<T>> Iterable<List<T>> subsetsShortlex(@NotNull List<T> xs) {
+        return wheelsProvider.subsetsShortlex(xs);
+    }
+
+    /**
+     * Generates all unordered {@code String}s containing characters from a given {@code String} with no repetitions.
+     * The {@code String}s are ordered in shortlex order (by length, then lexicographically).
+     *
+     * @param s a {@code String}
+     */
+    public @NotNull Iterable<String> stringSubsetsShortlex(@NotNull String s) {
+        return wheelsProvider.stringSubsetsShortlex(s);
+    }
+
+    /**
+     * Generates all unordered {@code List}s with a minimum size containing elements from a given {@code Iterable} with
+     * no repetitions. The {@code List}s are ordered in shortlex order (by length, then lexicographically).
+     *
+     * @param minSize the minimum size of the resulting {@code List}s
+     * @param xs a {@code List} of elements
+     * @param <T> the type of values in the {@code List}s
+     */
+    public @NotNull <T extends Comparable<T>> Iterable<List<T>> subsetsShortlexAtLeast(
+            int minSize,
+            @NotNull List<T> xs
+    ) {
+        return wheelsProvider.subsetsShortlexAtLeast(minSize, xs);
+    }
+
+    /**
+     * Generates all unordered {@code String}s with a minimum size containing characters from a given {@code String}
+     * with no repetitions. The {@code String}s are ordered in shortlex order (by length, then lexicographically).
+     *
+     * @param minSize the minimum size of the resulting {@code String}s
+     * @param s a {@code String}
+     */
+    public @NotNull Iterable<String> stringSubsetsShortlexAtLeast(int minSize, @NotNull String s) {
+        return wheelsProvider.stringSubsetsShortlexAtLeast(minSize, s);
+    }
+
     public @NotNull <T extends Comparable<T>> Iterable<List<T>> subsets(int size, @NotNull Iterable<T> xs) {
         return wheelsProvider.subsets(size, xs);
     }
