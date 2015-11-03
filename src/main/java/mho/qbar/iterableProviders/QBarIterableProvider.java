@@ -2380,14 +2380,102 @@ public strictfp abstract class QBarIterableProvider {
         return wheelsProvider.stringSubsetsShortlexAtLeast(minSize, s);
     }
 
-    public @NotNull <T extends Comparable<T>> Iterable<List<T>> subsets(int size, @NotNull Iterable<T> xs) {
+    /**
+     * Generates all unordered {@code List}s of a given size containing elements from a given {@code Iterable} with no
+     * repetitions.
+     *
+     * @param size the length of each of the generated {@code List}s
+     * @param xs an {@code Iterable} of elements
+     * @param <T> the type of values in the {@code List}s
+     */
+    public @NotNull <T> Iterable<List<T>> subsets(int size, @NotNull Iterable<T> xs) {
         return wheelsProvider.subsets(size, xs);
     }
 
+    /**
+     * Generates all unordered {@code Pair}s of elements from an {@code Iterable} with no repetitions.
+     *
+     * @param xs an {@code Iterable}
+     * @param <T> the type of the {@code Iterable}'s elements
+     */
+    public @NotNull <T extends Comparable<T>> Iterable<Pair<T, T>> subsetPairs(@NotNull Iterable<T> xs) {
+        return wheelsProvider.subsetPairs(xs);
+    }
+
+    /**
+     * Generates all unordered {@code Triple}s of elements from an {@code Iterable} with no repetitions.
+     *
+     * @param xs an {@code Iterable}
+     * @param <T> the type of the {@code Iterable}'s elements
+     */
+    public @NotNull <T extends Comparable<T>> Iterable<Triple<T, T, T>> subsetTriples(@NotNull Iterable<T> xs) {
+        return wheelsProvider.subsetTriples(xs);
+    }
+
+    /**
+     * Generates all unordered {@code Quadruple}s of elements from an {@code Iterable} with no repetitions.
+     *
+     * @param xs an {@code Iterable}
+     * @param <T> the type of the {@code Iterable}'s elements
+     */
+    public @NotNull <T extends Comparable<T>> Iterable<Quadruple<T, T, T, T>> subsetQuadruples(
+            @NotNull Iterable<T> xs
+    ) {
+        return wheelsProvider.subsetQuadruples(xs);
+    }
+
+    /**
+     * Generates all unordered {@code Quintuple}s of elements from an {@code Iterable} with no repetitions.
+     *
+     * @param xs an {@code Iterable}
+     * @param <T> the type of the {@code Iterable}'s elements
+     */
+    public @NotNull <T extends Comparable<T>> Iterable<Quintuple<T, T, T, T, T>> subsetQuintuples(
+            @NotNull Iterable<T> xs
+    ) {
+        return wheelsProvider.subsetQuintuples(xs);
+    }
+
+    /**
+     * Generates all unordered {@code Sextuple}s of elements from an {@code Iterable} with no repetitions.
+     *
+     * @param xs an {@code Iterable}
+     * @param <T> the type of the {@code Iterable}'s elements
+     */
+    public @NotNull <T extends Comparable<T>> Iterable<Sextuple<T, T, T, T, T, T>> subsetSextuples(
+            @NotNull Iterable<T> xs
+    ) {
+        return wheelsProvider.subsetSextuples(xs);
+    }
+
+    /**
+     * Generates all unordered {@code Septuple}s of elements from an {@code Iterable} with no repetitions.
+     *
+     * @param xs an {@code Iterable}
+     * @param <T> the type of the {@code Iterable}'s elements
+     */
+    public @NotNull <T extends Comparable<T>> Iterable<Septuple<T, T, T, T, T, T, T>> subsetSeptuples(
+            @NotNull Iterable<T> xs
+    ) {
+        return wheelsProvider.subsetSeptuples(xs);
+    }
+
+    /**
+     * Generates all unordered {@code String}s of a given size containing characters from a given {@code String} with
+     * no repetitons.
+     *
+     * @param size the length of each of the generated {@code String}s
+     * @param s a {@code String}
+     */
     public @NotNull Iterable<String> stringSubsets(int size, @NotNull String s) {
         return wheelsProvider.stringSubsets(size, s);
     }
 
+    /**
+     * Generates all unordered {@code String}s of a given size with no repetitons.
+     *
+     * @param size the length of each of the generated {@code String}s
+     */
     public @NotNull Iterable<String> stringSubsets(int size) {
         return wheelsProvider.stringSubsets(size);
     }
