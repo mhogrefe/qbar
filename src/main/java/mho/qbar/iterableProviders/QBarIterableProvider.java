@@ -2462,7 +2462,7 @@ public strictfp abstract class QBarIterableProvider {
 
     /**
      * Generates all unordered {@code String}s of a given size containing characters from a given {@code String} with
-     * no repetitons.
+     * no repetitions.
      *
      * @param size the length of each of the generated {@code String}s
      * @param s a {@code String}
@@ -2472,7 +2472,7 @@ public strictfp abstract class QBarIterableProvider {
     }
 
     /**
-     * Generates all unordered {@code String}s of a given size with no repetitons.
+     * Generates all unordered {@code String}s of a given size with no repetitions.
      *
      * @param size the length of each of the generated {@code String}s
      */
@@ -2480,26 +2480,63 @@ public strictfp abstract class QBarIterableProvider {
         return wheelsProvider.stringSubsets(size);
     }
 
-    public @NotNull <T> Iterable<List<T>> subsets(@NotNull Iterable<T> xs) {
+    /**
+     * Generates all unordered {@code List}s containing elements from a given {@code Iterable} with no repetitions.
+     *
+     * @param xs an {@code Iterable} of elements
+     * @param <T> the type of values in the {@code List}s
+     */
+    public @NotNull <T extends Comparable<T>> Iterable<List<T>> subsets(@NotNull Iterable<T> xs) {
         return wheelsProvider.subsets(xs);
     }
 
+    /**
+     * Generates all unordered {@code String}s containing characters from a given {@code String} with no repetitions.
+     *
+     * @param s a {@code String}
+     */
     public @NotNull Iterable<String> stringSubsets(@NotNull String s) {
         return wheelsProvider.stringSubsets(s);
     }
 
+    /**
+     * Generates all unordered {@code String}s with no repetitions.
+     */
     public @NotNull Iterable<String> stringSubsets() {
         return wheelsProvider.stringSubsets();
     }
 
-    public @NotNull <T> Iterable<List<T>> subsetsAtLeast(int minSize, @NotNull Iterable<T> xs) {
+    /**
+     * Generates all unordered {@code List}s with a minimum size containing elements from a given {@code Iterable} with
+     * no repetitions.
+     *
+     * @param minSize the minimum size of the resulting {@code List}s
+     * @param xs an {@code Iterable} of elements
+     * @param <T> the type of values in the {@code List}s
+     */
+    public @NotNull <T extends Comparable<T>> Iterable<List<T>> subsetsAtLeast(
+            int minSize,
+            @NotNull Iterable<T> xs
+    ) {
         return wheelsProvider.subsetsAtLeast(minSize, xs);
     }
 
+    /**
+     * Generates all unordered {@code String}s with a minimum size containing characters from a given {@code String}
+     * with no repetitions.
+     *
+     * @param minSize the minimum size of the resulting {@code String}s
+     * @param s an {@code String}
+     */
     public @NotNull Iterable<String> stringSubsetsAtLeast(int minSize, @NotNull String s) {
         return wheelsProvider.stringSubsetsAtLeast(minSize, s);
     }
 
+    /**
+     * Generates all unordered {@code String}s with a minimum size with no repetitions.
+     *
+     * @param minSize the minimum size of the resulting {@code String}s
+     */
     public @NotNull Iterable<String> stringSubsetsAtLeast(int minSize) {
         return wheelsProvider.stringSubsetsAtLeast(minSize);
     }
