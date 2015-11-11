@@ -20,10 +20,6 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
         super(ExhaustiveProvider.INSTANCE);
     }
 
-    public @NotNull <T> Iterable<List<T>> controlledListsLex(@NotNull List<Iterable<T>> xss) {
-        return ExhaustiveProvider.INSTANCE.controlledListsLex(xss);
-    }
-
     @Override
     public @NotNull Iterable<Rational> rangeUp(@NotNull Rational a) {
         return iterate(r -> r.add(Rational.ONE), a);

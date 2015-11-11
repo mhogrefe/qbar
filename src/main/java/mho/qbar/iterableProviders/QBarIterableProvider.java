@@ -2541,6 +2541,17 @@ public strictfp abstract class QBarIterableProvider {
         return wheelsProvider.stringSubsetsAtLeast(minSize);
     }
 
+    /**
+     * Generates the Cartesian product of a {@code List} of {@code List}s, that is, all possible {@code List}s such
+     * that the ith element of the {@code List} comes from the ith input {@code List}.
+     *
+     * @param xss a {@code List} of {@code List}s
+     * @param <T> the type of values in the {@code List}s
+     */
+    public @NotNull <T> Iterable<List<T>> cartesianProduct(@NotNull List<List<T>> xss) {
+        return wheelsProvider.cartesianProduct(xss);
+    }
+
     public @NotNull Iterable<String> stringsWithChar(char c, @NotNull String s) {
         return wheelsProvider.stringsWithChar(c, s);
     }
