@@ -2552,6 +2552,28 @@ public strictfp abstract class QBarIterableProvider {
         return wheelsProvider.cartesianProduct(xss);
     }
 
+    /**
+     * Generates repeating infinite {@code Iterables} whose elements are chosen from a given {@code List}.
+     *
+     * @param xs the source of elements for the generated {@code Iterable}s
+     * @param <T> the type of elements in the {@code Iterable}
+     */
+    public @NotNull <T> Iterable<Iterable<T>> repeatingIterables(@NotNull Iterable<T> xs) {
+        return wheelsProvider.repeatingIterables(xs);
+    }
+
+    /**
+     * Generates repeating infinite {@code Iterables} whose elements are chosen from a given {@code List}. The
+     * repeating part has a specified minimum length.
+     *
+     * @param minSize the minimum length of the repeating part in the generated {@code Iterable}s
+     * @param xs the source of elements for the {@code Iterable}
+     * @param <T> the type of elements in the {@code Iterable}
+     */
+    public @NotNull <T> Iterable<Iterable<T>> repeatingIterablesAtLeast(int minSize, @NotNull Iterable<T> xs) {
+        return wheelsProvider.repeatingIterablesAtLeast(minSize, xs);
+    }
+
     public @NotNull Iterable<String> stringsWithChar(char c, @NotNull String s) {
         return wheelsProvider.stringsWithChar(c, s);
     }
@@ -2566,10 +2588,6 @@ public strictfp abstract class QBarIterableProvider {
 
     public @NotNull Iterable<String> stringsWithSubstrings(@NotNull Iterable<String> substrings) {
         return wheelsProvider.stringsWithSubstrings(substrings);
-    }
-
-    public @NotNull <T> Iterable<Iterable<T>> repeatingIterables(@NotNull Iterable<T> xs) {
-        return wheelsProvider.repeatingIterables(xs);
     }
 
     public @NotNull <T> Iterable<List<T>> listsWithElement(@Nullable T element, Iterable<T> xs) {
