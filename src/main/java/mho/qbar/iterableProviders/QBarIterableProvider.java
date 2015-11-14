@@ -2564,14 +2564,14 @@ public strictfp abstract class QBarIterableProvider {
 
     /**
      * Generates repeating infinite {@code Iterables} whose elements are chosen from a given {@code List}. The
-     * repeating part has a specified minimum length.
+     * {@code Iterable}s have a specified minimum number of distinct elements (at least 2).
      *
-     * @param minSize the minimum length of the repeating part in the generated {@code Iterable}s
+     * @param minSize the minimum number of distinct elements in the generated {@code Iterable}s
      * @param xs the source of elements for the {@code Iterable}
      * @param <T> the type of elements in the {@code Iterable}
      */
-    public @NotNull <T> Iterable<Iterable<T>> repeatingIterablesAtLeast(int minSize, @NotNull Iterable<T> xs) {
-        return wheelsProvider.repeatingIterablesAtLeast(minSize, xs);
+    public @NotNull <T> Iterable<Iterable<T>> repeatingIterablesDistinctAtLeast(int minSize, @NotNull Iterable<T> xs) {
+        return wheelsProvider.repeatingIterablesDistinctAtLeast(minSize, xs);
     }
 
     public @NotNull Iterable<String> stringsWithChar(char c, @NotNull String s) {
