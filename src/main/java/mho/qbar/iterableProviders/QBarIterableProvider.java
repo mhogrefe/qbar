@@ -2625,6 +2625,41 @@ public strictfp abstract class QBarIterableProvider {
         return wheelsProvider.stringsWithChar(c);
     }
 
+    /**
+     * Generates all unordered {@code List}s from an {@code Iterable} of elements {@code xs}, with no repetitions,
+     * which contain a particular element. {@code xs} may or may not contain the element.
+     *
+     * @param x an element that the output {@code List}s must contain
+     * @param xs a {@code List}
+     * @param <T> the type of the elements in {@code xs}
+     */
+    public @NotNull <T extends Comparable<T>> Iterable<List<T>> subsetsWithElement(
+            @Nullable T x,
+            @NotNull Iterable<T> xs
+    ) {
+        return wheelsProvider.subsetsWithElement(x, xs);
+    }
+
+    /**
+     * Generates all unordered {@code String}s containing characters from a given {@code String} {@code s}, with no
+     * repetitions, which contain a particular character. {@code s} may or may not contain the character.
+     *
+     * @param c a character that the output {@code String}s must contain
+     * @param s a {@code String}
+     */
+    public @NotNull Iterable<String> stringSubsetsWithChar(char c, @NotNull String s) {
+        return wheelsProvider.stringSubsetsWithChar(c, s);
+    }
+
+    /**
+     * Generates all unordered {@code String}s with no repetitions which contain a particular character.
+     *
+     * @param c a character that the output {@code String}s must contain
+     */
+    public @NotNull Iterable<String> stringSubsetsWithChar(char c) {
+        return wheelsProvider.stringSubsetsWithChar(c);
+    }
+
     public @NotNull Iterable<String> stringsWithSubstrings(@NotNull Iterable<String> substrings, @NotNull String s) {
         return wheelsProvider.stringsWithSubstrings(substrings, s);
     }
