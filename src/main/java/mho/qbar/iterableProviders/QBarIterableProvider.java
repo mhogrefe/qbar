@@ -2660,19 +2660,39 @@ public strictfp abstract class QBarIterableProvider {
         return wheelsProvider.stringSubsetsWithChar(c);
     }
 
+    /**
+     * Generates all {@code List}s containing elements from a given {@code List} {@code xs} which contain at least one
+     * of a given {@code Iterable} of sublists.
+     *
+     * @param sublists {@code List}s, at least one of which must be contained in each result {@code List}
+     * @param xs a {@code List}
+     * @param <T> the type of elements in {@code xs}
+     */
+    public @NotNull <T> Iterable<List<T>> listsWithSublists(
+            @NotNull Iterable<List<T>> sublists,
+            @NotNull Iterable<T> xs
+    ) {
+        return wheelsProvider.listsWithSublists(sublists, xs);
+    }
+
+    /**
+     * Generates all {@code String}s containing characters from a given {@code String} {@code s} which contain at least
+     * one of a given {@code Iterable} of substrings.
+     *
+     * @param substrings {@code String}s, at least one of which must be contained in each result {@code String}
+     * @param s a {@code String}
+     */
     public @NotNull Iterable<String> stringsWithSubstrings(@NotNull Iterable<String> substrings, @NotNull String s) {
         return wheelsProvider.stringsWithSubstrings(substrings, s);
     }
 
+    /**
+     * Generates all {@code String}s which contain at least one of a given {@code Iterable} of substrings.
+     *
+     * @param substrings {@code String}s, at least one of which must be contained in each result {@code String}
+     */
     public @NotNull Iterable<String> stringsWithSubstrings(@NotNull Iterable<String> substrings) {
         return wheelsProvider.stringsWithSubstrings(substrings);
-    }
-
-    public @NotNull <T> Iterable<List<T>> listsWithSubsequence(
-            @NotNull Iterable<Iterable<T>> subsequences,
-            @NotNull Iterable<T> xs
-    ) {
-        return wheelsProvider.listsWithSubsequence(subsequences, xs);
     }
 
     public @NotNull <K, V> Iterable<Map<K, V>> maps(@NotNull List<K> ks, Iterable<V> vs) {
