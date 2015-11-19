@@ -2634,7 +2634,7 @@ public strictfp abstract class QBarIterableProvider {
      * @param <T> the type of the elements in {@code xs}
      */
     public @NotNull <T extends Comparable<T>> Iterable<List<T>> subsetsWithElement(
-            @Nullable T x,
+            T x,
             @NotNull Iterable<T> xs
     ) {
         return wheelsProvider.subsetsWithElement(x, xs);
