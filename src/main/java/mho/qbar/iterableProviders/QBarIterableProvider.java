@@ -2695,6 +2695,14 @@ public strictfp abstract class QBarIterableProvider {
         return wheelsProvider.stringsWithSubstrings(substrings);
     }
 
+    /**
+     * Generates all {@code HashMap}s whose keys are {@code ks} and whose values are subsets of {@code vs}.
+     *
+     * @param ks the keys of the resulting maps
+     * @param vs a set where the values of the resulting maps are drawn from
+     * @param <K> the type of the maps' keys
+     * @param <V> the type of the maps' values
+     */
     public @NotNull <K, V> Iterable<Map<K, V>> maps(@NotNull List<K> ks, Iterable<V> vs) {
         return wheelsProvider.maps(ks, vs);
     }
