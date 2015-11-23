@@ -3,7 +3,6 @@ package mho.qbar.objects;
 import mho.wheels.io.Readers;
 import mho.wheels.iterables.IterableUtils;
 import mho.wheels.iterables.NoRemoveIterable;
-import mho.wheels.math.MathUtils;
 import mho.wheels.numberUtils.IntegerUtils;
 import mho.wheels.ordering.comparators.ShortlexComparator;
 import mho.wheels.structures.Pair;

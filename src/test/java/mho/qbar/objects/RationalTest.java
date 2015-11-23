@@ -15,8 +15,8 @@ import java.util.Collections;
 import java.util.List;
 
 import static mho.qbar.objects.Rational.*;
+import static mho.qbar.objects.Rational.sum;
 import static mho.wheels.iterables.IterableUtils.*;
-import static mho.wheels.ordering.Ordering.*;
 import static mho.wheels.testing.Testing.*;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;

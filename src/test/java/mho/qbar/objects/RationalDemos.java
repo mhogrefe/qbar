@@ -4,7 +4,6 @@ import mho.qbar.iterableProviders.QBarExhaustiveProvider;
 import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.iterableProviders.QBarRandomProvider;
 import mho.wheels.iterables.IterableUtils;
-import mho.wheels.math.MathUtils;
 import mho.wheels.numberUtils.FloatingPointUtils;
 import mho.wheels.numberUtils.IntegerUtils;
 import mho.wheels.ordering.Ordering;

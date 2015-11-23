@@ -2,20 +2,13 @@ package mho.qbar.iterableProviders;
 
 import mho.qbar.objects.*;
 import mho.wheels.iterables.RandomProvider;
-import mho.wheels.math.BinaryFraction;
-import mho.wheels.ordering.Ordering;
-import mho.wheels.structures.NullableOptional;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.math.RoundingMode;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Supplier;
 
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.ordering.Ordering.le;

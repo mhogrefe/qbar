@@ -6,7 +6,6 @@ import mho.qbar.iterableProviders.QBarRandomProvider;
 import mho.qbar.testing.QBarTesting;
 import mho.wheels.io.Readers;
 import mho.wheels.math.MathUtils;
-import mho.wheels.numberUtils.BigDecimalUtils;
 import mho.wheels.numberUtils.FloatingPointUtils;
 import mho.wheels.numberUtils.IntegerUtils;
 import mho.wheels.ordering.Ordering;
@@ -21,6 +20,7 @@ import java.math.RoundingMode;
 import java.util.*;
 
 import static mho.qbar.objects.Rational.*;
+import static mho.qbar.objects.Rational.sum;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.ordering.Ordering.*;
 import static mho.wheels.testing.Testing.*;

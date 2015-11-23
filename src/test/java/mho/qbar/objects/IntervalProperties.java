@@ -20,6 +20,7 @@ import java.util.*;
 import static mho.qbar.objects.Interval.*;
 import static mho.qbar.objects.Interval.greaterThanOrEqualTo;
 import static mho.qbar.objects.Interval.lessThanOrEqualTo;
+import static mho.qbar.objects.Interval.sum;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.ordering.Ordering.*;
 import static mho.wheels.testing.Testing.*;

@@ -17,7 +17,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
-import static mho.wheels.iterables.IterableUtils.*;
+import static mho.wheels.iterables.IterableUtils.map;
 
 @SuppressWarnings("unused")
 public strictfp abstract class QBarIterableProvider {

@@ -3,11 +3,13 @@ package mho.qbar.iterableProviders;
 import mho.qbar.objects.*;
 import mho.wheels.iterables.ExhaustiveProvider;
 import mho.wheels.iterables.NoRemoveIterator;
-import mho.wheels.structures.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigInteger;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.ordering.Ordering.*;

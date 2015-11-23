@@ -6,7 +6,10 @@ import mho.wheels.ordering.comparators.LexComparator;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
 
 import static mho.wheels.iterables.IterableUtils.*;
 
