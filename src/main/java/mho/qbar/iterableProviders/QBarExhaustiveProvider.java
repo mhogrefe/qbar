@@ -155,55 +155,6 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
     }
 
     @Override
-    public @NotNull Iterable<Byte> bytes(@NotNull Interval a) {
-        Optional<Interval> intersection =
-                a.intersection(Interval.of(Rational.of(Byte.MIN_VALUE), Rational.of(Byte.MAX_VALUE)));
-        if (!intersection.isPresent()) return Collections.emptyList();
-        return map(BigInteger::byteValueExact, bigIntegers(intersection.get()));
-    }
-
-    @Override
-    public @NotNull Iterable<Short> shorts(@NotNull Interval a) {
-        Optional<Interval> intersection =
-                a.intersection(Interval.of(Rational.of(Short.MIN_VALUE), Rational.of(Short.MAX_VALUE)));
-        if (!intersection.isPresent()) return Collections.emptyList();
-        return map(BigInteger::shortValueExact, bigIntegers(intersection.get()));
-    }
-
-    @Override
-    public @NotNull Iterable<Integer> integers(@NotNull Interval a) {
-        Optional<Interval> intersection =
-                a.intersection(Interval.of(Rational.of(Integer.MIN_VALUE), Rational.of(Integer.MAX_VALUE)));
-        if (!intersection.isPresent()) return Collections.emptyList();
-        return map(BigInteger::intValueExact, bigIntegers(intersection.get()));
-    }
-
-    @Override
-    public @NotNull Iterable<Long> longs(@NotNull Interval a) {
-        Optional<Interval> intersection = a.intersection(
-                Interval.of(
-                        Rational.of(BigInteger.valueOf(Long.MIN_VALUE)),
-                        Rational.of(BigInteger.valueOf(Long.MAX_VALUE))
-                )
-        );
-        if (!intersection.isPresent()) return Collections.emptyList();
-        return map(BigInteger::longValueExact, bigIntegers(intersection.get()));
-    }
-
-    @Override
-    public @NotNull Iterable<BigInteger> bigIntegers(@NotNull Interval a) {
-        if (!a.getLower().isPresent() && !a.getUpper().isPresent()) {
-            return bigIntegers();
-        } else if (!a.getLower().isPresent()) {
-            return rangeDown(a.getUpper().get().floor());
-        } else if (!a.getUpper().isPresent()) {
-            return rangeUp(a.getLower().get().ceiling());
-        } else {
-            return range(a.getLower().get().ceiling(), a.getUpper().get().floor());
-        }
-    }
-
-    @Override
     public @NotNull Iterable<Rational> rationals(@NotNull Interval a) {
         if (!a.getLower().isPresent() && !a.getUpper().isPresent()) {
             return rationals();
