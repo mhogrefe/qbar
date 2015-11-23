@@ -8,33 +8,27 @@ import java.util.Random;
  *
  * @author Heinz Kredel
  */
-
 public final class ModLongRing implements ModularRingFactory<ModLong> {
-
     /**
      * Module part of the factory data structure.
      */
     public final long modul;
-
 
     /**
      * Indicator if this ring is a field.
      */
     private int isField = -1; // initially unknown
 
-
     /*
      * Certainty if module is probable prime.
      */
     //private final int certainty = 10;
-
 
     /**
      * maximal representable integer.
      */
     public final static BigInteger MAX_LONG = new BigInteger(
             String.valueOf(Integer.MAX_VALUE)); // not larger!
-
 
     /**
      * The constructor creates a ModLongRing object from a long integer as
@@ -45,7 +39,6 @@ public final class ModLongRing implements ModularRingFactory<ModLong> {
     private ModLongRing(long m) {
         modul = m;
     }
-
 
     /**
      * The constructor creates a ModLongRing object from a long integer as
@@ -58,7 +51,6 @@ public final class ModLongRing implements ModularRingFactory<ModLong> {
         modul = m;
         this.isField = (isField ? 1 : 0);
     }
-
 
     /**
      * The constructor creates a ModLongRing object from a JasBigInteger converted
@@ -73,7 +65,6 @@ public final class ModLongRing implements ModularRingFactory<ModLong> {
             throw new IllegalArgumentException("modul to large for long " + m);
         }
     }
-
 
     /**
      * The constructor creates a ModLongRing object from a JasBigInteger converted
@@ -117,7 +108,6 @@ public final class ModLongRing implements ModularRingFactory<ModLong> {
         return new ModLong(this, 0L);
     }
 
-
     /**
      * Get the one element.
      *
@@ -159,7 +149,6 @@ public final class ModLongRing implements ModularRingFactory<ModLong> {
         return false;
     }
 
-
     /**
      * Characteristic of this ring.
      *
@@ -168,7 +157,6 @@ public final class ModLongRing implements ModularRingFactory<ModLong> {
     public BigInteger characteristic() {
         return new BigInteger(Long.toString(modul));
     }
-
 
     /**
      * Get a ModLong element from a JasBigInteger value.
@@ -180,7 +168,6 @@ public final class ModLongRing implements ModularRingFactory<ModLong> {
         return new ModLong(this, a);
     }
 
-
     /**
      * Get a ModLong element from a long value.
      *
@@ -190,7 +177,6 @@ public final class ModLongRing implements ModularRingFactory<ModLong> {
     public ModLong fromInteger(long a) {
         return new ModLong(this, a);
     }
-
 
     /**
      * Get the String representation.
@@ -215,7 +201,6 @@ public final class ModLongRing implements ModularRingFactory<ModLong> {
         ModLongRing m = (ModLongRing) b;
         return (modul == m.modul);
     }
-
 
     /**
      * Hash code for this ModLongRing.

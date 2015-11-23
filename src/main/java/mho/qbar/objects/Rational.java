@@ -1,6 +1,7 @@
 package mho.qbar.objects;
 
 import mho.wheels.io.Readers;
+import mho.wheels.iterables.NoRemoveIterator;
 import mho.wheels.math.MathUtils;
 import mho.wheels.numberUtils.BigDecimalUtils;
 import mho.wheels.numberUtils.IntegerUtils;
@@ -8,6 +9,7 @@ import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -102,7 +104,7 @@ public final class Rational implements Comparable<Rational> {
     public static final @NotNull Rational LARGEST_DOUBLE = ofExact(Double.MAX_VALUE).get();
 
     /**
-     * an {@code Iterable} that contains every harmonic number. Does not support removal.
+     * an {@code Iterable} that contains every harmonic number. Does not support removal
      *
      * Length is infinite
      */
@@ -1802,12 +1804,12 @@ public final class Rational implements Comparable<Rational> {
         BigInteger numerator = fractionalPart.numerator;
         BigInteger denominator = fractionalPart.denominator;
         final BigInteger firstRemainder = numerator.multiply(base);
-        Iterable<BigInteger> afterDecimal = () -> new Iterator<BigInteger>() {
+        Iterable<BigInteger> afterDecimal = () -> new NoRemoveIterator<BigInteger>() {
             private boolean knownRepeating;
             private int index;
-            private Integer repeatingIndex;
-            private BigInteger remainder;
-            private Map<BigInteger, Integer> remainders;
+            private @Nullable Integer repeatingIndex;
+            private @NotNull BigInteger remainder;
+            private @Nullable Map<BigInteger, Integer> remainders;
             {
                 knownRepeating = false;
                 index = 0;
@@ -1838,11 +1840,6 @@ public final class Rational implements Comparable<Rational> {
                     }
                 }
                 return digit;
-            }
-
-            @Override
-            public void remove() {
-                throw new UnsupportedOperationException("cannot remove from this iterator");
             }
         };
         return new Pair<>(beforeDecimal, skipLastIf(i -> i.equals(BigInteger.ZERO), afterDecimal));

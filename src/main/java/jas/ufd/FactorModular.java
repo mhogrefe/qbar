@@ -150,5 +150,4 @@ public class FactorModular<MOD extends RingElem<MOD> & Modular> extends FactorAb
         factors.addAll(ss);
         return factors;
     }
-
 }

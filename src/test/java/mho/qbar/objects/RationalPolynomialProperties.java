@@ -17,11 +17,11 @@ import java.util.List;
 import java.util.Optional;
 
 import static mho.qbar.objects.RationalPolynomial.*;
+import static mho.qbar.objects.RationalPolynomial.sum;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.ordering.Ordering.*;
 import static mho.wheels.testing.Testing.*;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -29,6 +29,7 @@ import static org.junit.Assert.fail;
 
 public class RationalPolynomialProperties {
     private static boolean USE_RANDOM;
+    private static final @NotNull QBarExhaustiveProvider EP = QBarExhaustiveProvider.INSTANCE;
     private static final @NotNull String RATIONAL_POLYNOMIAL_CHARS = "*+-/0123456789^x";
     private static final int EXPONENT_CUTOFF = 1000;
     private static int LIMIT;
@@ -1079,6 +1080,7 @@ public class RationalPolynomialProperties {
         propertiesDeltaHelper(
                 LIMIT,
                 P.getWheelsProvider(),
+                EP.rationalPolynomials(),
                 P.rationalPolynomials(),
                 RationalPolynomial::negate,
                 RationalPolynomial::subtract,
@@ -1486,13 +1488,7 @@ public class RationalPolynomialProperties {
             assertEquals(p.toString(), op.get(), p);
         }
 
-        Iterable<Character> cs;
-        if (P instanceof QBarExhaustiveProvider) {
-            cs = fromString(RATIONAL_POLYNOMIAL_CHARS);
-        } else {
-            cs = P.uniformSample(RATIONAL_POLYNOMIAL_CHARS);
-        }
-        Iterable<String> ss = filter(s -> read(EXPONENT_CUTOFF, s).isPresent(), P.strings(cs));
+        Iterable<String> ss = filter(s -> read(EXPONENT_CUTOFF, s).isPresent(), P.strings(RATIONAL_POLYNOMIAL_CHARS));
         for (String s : take(LIMIT, ss)) {
             Optional<RationalPolynomial> op = read(s);
             op.get().validate();

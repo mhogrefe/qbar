@@ -3,12 +3,11 @@ package jas.poly;
 import jas.arith.JasBigInteger;
 import jas.arith.ModInteger;
 import jas.arith.ModularRingFactory;
-import jas.util.ListUtil;
+import mho.wheels.iterables.IterableUtils;
 
 import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
-import java.util.function.Function;
 
 public class PolyUtil_ModInteger {
     /**
@@ -36,13 +35,10 @@ public class PolyUtil_ModInteger {
      * @return list of polynomials with JasBigInteger coefficients.
      */
     public static List<GenPolynomial<JasBigInteger>> integerFromModularCoefficients(
-            final GenPolynomialRing<JasBigInteger> fac, List<GenPolynomial<ModInteger>> L) {
-        return ListUtil.map(L,
-                new Function<GenPolynomial<ModInteger>, GenPolynomial<JasBigInteger>>() {
-                    public GenPolynomial<JasBigInteger> apply(GenPolynomial<ModInteger> c) {
-                        return integerFromModularCoefficients(fac, c);
-                    }
-                });
+            final GenPolynomialRing<JasBigInteger> fac,
+            List<GenPolynomial<ModInteger>> L
+    ) {
+        return IterableUtils.toList(IterableUtils.map(c -> integerFromModularCoefficients(fac, c), L));
     }
 
     /**
@@ -57,7 +53,11 @@ public class PolyUtil_ModInteger {
      * B.coFac.modul == B.
      */
     public static GenPolynomial<ModInteger> chineseRemainder(
-            GenPolynomialRing<ModInteger> fac, GenPolynomial<ModInteger> A, ModInteger mi, GenPolynomial<ModInteger> B) {
+            GenPolynomialRing<ModInteger> fac,
+            GenPolynomial<ModInteger> A,
+            ModInteger mi,
+            GenPolynomial<ModInteger> B
+    ) {
         ModularRingFactory<ModInteger> cfac = (ModularRingFactory<ModInteger>) fac.coFac; // get RingFactory
         GenPolynomial<ModInteger> S = fac.getZERO().copy();
         GenPolynomial<ModInteger> Ap = A.copy();

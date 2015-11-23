@@ -9,8 +9,6 @@ import java.util.List;
  * @author Heinz Kredel
  */
 public class Power<C extends RingElem<C>> {
-
-
     private final RingFactory<C> fac;
 
     /**
@@ -21,7 +19,6 @@ public class Power<C extends RingElem<C>> {
     public Power(RingFactory<C> fac) {
         this.fac = fac;
     }
-
 
     //
     //power of a to the n-th, n positive.
@@ -52,7 +49,6 @@ public class Power<C extends RingElem<C>> {
         return p;
     }
 
-
     //
     //power of a to the n-th.
     //
@@ -69,7 +65,6 @@ public class Power<C extends RingElem<C>> {
         //return a;
         return (C) Power.power((MonoidFactory) fac, a, n);
     }
-
 
     /**
      * power of a to the n-th.
@@ -111,7 +106,6 @@ public class Power<C extends RingElem<C>> {
         return p;
     }
 
-
     /**
      * power of a to the n-th modulo m.
      *
@@ -152,7 +146,6 @@ public class Power<C extends RingElem<C>> {
         } while (i.signum() > 0);
         return p;
     }
-
 
     /**
      * power of a to the n-th mod m.

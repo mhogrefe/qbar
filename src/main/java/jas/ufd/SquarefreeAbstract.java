@@ -13,15 +13,11 @@ import java.util.TreeMap;
  *
  * @author Heinz Kredel
  */
-
 public abstract class SquarefreeAbstract<C extends RingElem<C>> {
-
-
     /**
      * GCD engine for respective base coefficients.
      */
     final GreatestCommonDivisorAbstract<C> engine;
-
 
     /**
      * Constructor.
@@ -29,7 +25,6 @@ public abstract class SquarefreeAbstract<C extends RingElem<C>> {
     SquarefreeAbstract(GreatestCommonDivisorAbstract<C> engine) {
         this.engine = engine;
     }
-
 
     /**
      * GenPolynomial polynomial squarefree factorization.
@@ -39,7 +34,6 @@ public abstract class SquarefreeAbstract<C extends RingElem<C>> {
      * p_i^{e_i} and p_i squarefree.
      */
     public abstract SortedMap<GenPolynomial<C>, Long> baseSquarefreeFactors(GenPolynomial<C> A);
-
 
     /**
      * Normalize factorization. p'_i &gt; 0 for i &gt; 1 and p'_1 != 1 if k &gt;
@@ -77,6 +71,4 @@ public abstract class SquarefreeAbstract<C extends RingElem<C>> {
         }
         return Sp;
     }
-
-
 }

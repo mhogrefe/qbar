@@ -2,6 +2,7 @@ package mho.qbar.iterableProviders;
 
 import mho.qbar.objects.*;
 import mho.wheels.iterables.IterableProvider;
+import mho.wheels.iterables.RandomProvider;
 import mho.wheels.math.BinaryFraction;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.*;
@@ -12,6 +13,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -76,6 +78,13 @@ public strictfp abstract class QBarIterableProvider {
     }
 
     /**
+     * Generates {@link Ordering}s, in increasing order if applicable.
+     */
+    public @NotNull Iterable<Ordering> orderingsIncreasing() {
+        return wheelsProvider.orderingsIncreasing();
+    }
+
+    /**
      * Generates {@link Ordering}s.
      */
     public @NotNull Iterable<Ordering> orderings() {
@@ -105,6 +114,34 @@ public strictfp abstract class QBarIterableProvider {
      */
     public @NotNull Iterable<Character> uniformSample(@NotNull String s) {
         return wheelsProvider.uniformSample(s);
+    }
+
+    /**
+     * Generates {@code Byte}s, in increasing order if applicable.
+     */
+    public @NotNull Iterable<Byte> bytesIncreasing() {
+        return wheelsProvider.bytesIncreasing();
+    }
+
+    /**
+     * Generates {@code Short}s, in increasing order if applicable.
+     */
+    public @NotNull Iterable<Short> shortsIncreasing() {
+        return wheelsProvider.shortsIncreasing();
+    }
+
+    /**
+     * Generates {@code Integer}s, in increasing order if applicable.
+     */
+    public @NotNull Iterable<Integer> integersIncreasing() {
+        return wheelsProvider.integersIncreasing();
+    }
+
+    /**
+     * Generates {@code Long}s, in increasing order if applicable.
+     */
+    public @NotNull Iterable<Long> longsIncreasing() {
+        return wheelsProvider.longsIncreasing();
     }
 
     /**
@@ -283,10 +320,24 @@ public strictfp abstract class QBarIterableProvider {
     }
 
     /**
+     * Generates ASCII {@code Character}s, in increasing order if applicable.
+     */
+    public @NotNull Iterable<Character> asciiCharactersIncreasing() {
+        return wheelsProvider.asciiCharactersIncreasing();
+    }
+
+    /**
      * Generates ASCII {@code Character}s.
      */
     public @NotNull Iterable<Character> asciiCharacters() {
         return wheelsProvider.asciiCharacters();
+    }
+
+    /**
+     * Generates {@code Character}s, in increasing order if applicable.
+     */
+    public @NotNull Iterable<Character> charactersIncreasing() {
+        return wheelsProvider.charactersIncreasing();
     }
 
     /**
@@ -817,44 +868,78 @@ public strictfp abstract class QBarIterableProvider {
         return wheelsProvider.rangeCanonical(a, b);
     }
 
-    public @NotNull <T> Iterable<T> withSpecialElement(@Nullable T x, @NotNull Iterable<T> xs) {
-        return wheelsProvider.withSpecialElement(x, xs);
+    /**
+     * Generates all the elements in a given {@code Iterable}, along with an extra element.
+     *
+     * @param x an extra element
+     * @param xs an {@code Iterable}
+     * @param <T> the type of element contained in {@code xs}
+     */
+    public @NotNull <T> Iterable<T> withElement(@Nullable T x, @NotNull Iterable<T> xs) {
+        return wheelsProvider.withElement(x, xs);
     }
 
+    /**
+     * Generates all the elements in a given {@code Iterable}, along with null.
+     *
+     * @param xs an {@code Iterable}
+     * @param <T> the type of element contained in {@code xs}
+     * @return an {@code Iterable} including null and every element in {@code xs}
+     */
     public @NotNull <T> Iterable<T> withNull(@NotNull Iterable<T> xs) {
         return wheelsProvider.withNull(xs);
     }
 
+    /**
+     * Generates nonempty {@link Optional}s; the result contains wrapped values of {@code xs}.
+     *
+     * @param xs an {@code Iterable}.
+     * @param <T> the type of element contained in {@code xs}
+     */
+    public @NotNull <T> Iterable<Optional<T>> nonEmptyOptionals(@NotNull Iterable<T> xs) {
+        return wheelsProvider.nonEmptyOptionals(xs);
+    }
+
+    /**
+     * Generates {@link Optional}s; the result contains wrapped values of {@code xs}, along with the empty
+     * {@code Optional}.
+     *
+     * @param xs an {@code Iterable}.
+     * @param <T> the type of element contained in {@code xs}
+     */
     public @NotNull <T> Iterable<Optional<T>> optionals(@NotNull Iterable<T> xs) {
         return wheelsProvider.optionals(xs);
     }
 
+    /**
+     * Generates nonempty {@link NullableOptional}s; the result contains wrapped values of {@code xs}.
+     *
+     * @param xs an {@code Iterable}.
+     * @param <T> the type of element contained in {@code xs}
+     */
+    public @NotNull <T> Iterable<NullableOptional<T>> nonEmptyNullableOptionals(@NotNull Iterable<T> xs) {
+        return wheelsProvider.nonEmptyNullableOptionals(xs);
+    }
+
+    /**
+     * Generates {@link NullableOptional}s; the result contains wrapped values of {@code xs}, along with the empty
+     * {@code NullableOptional}.
+     *
+     * @param xs an {@code Iterable}.
+     * @param <T> the type of element contained in {@code xs}
+     */
     public @NotNull <T> Iterable<NullableOptional<T>> nullableOptionals(@NotNull Iterable<T> xs) {
         return wheelsProvider.nullableOptionals(xs);
     }
 
-    public @NotNull <T> Iterable<Pair<T, T>> pairsLogarithmicOrder(@NotNull Iterable<T> xs) {
-        return wheelsProvider.pairsLogarithmicOrder(xs);
-    }
-
-    public @NotNull <A, B> Iterable<Pair<A, B>> pairsLogarithmicOrder(
-            @NotNull Iterable<A> as,
-            @NotNull Iterable<B> bs
-    ) {
-        return wheelsProvider.pairsLogarithmicOrder(as, bs);
-    }
-
-    public @NotNull <T> Iterable<Pair<T, T>> pairsSquareRootOrder(@NotNull Iterable<T> xs) {
-        return wheelsProvider.pairsSquareRootOrder(xs);
-    }
-
-    public @NotNull <A, B> Iterable<Pair<A, B>> pairsSquareRootOrder(
-            @NotNull Iterable<A> as,
-            @NotNull Iterable<B> bs
-    ) {
-        return wheelsProvider.pairsSquareRootOrder(as, bs);
-    }
-
+    /**
+     * Generates pairs of values where the second value depends on the first.
+     *
+     * @param xs an {@code Iterable} of values
+     * @param f a function from a value of type {@code a} to an {@code Iterable} of type-{@code B} values
+     * @param <A> the type of values in the first slot
+     * @param <B> the type of values in the second slot
+     */
     public @NotNull <A, B> Iterable<Pair<A, B>> dependentPairs(
             @NotNull Iterable<A> xs,
             @NotNull Function<A, Iterable<B>> f
@@ -862,10 +947,393 @@ public strictfp abstract class QBarIterableProvider {
         return wheelsProvider.dependentPairs(xs, f);
     }
 
+    /**
+     * Generates pairs of values where the second value depends on the first. There must be an infinite number of
+     * possible first values, and every first value must be associated with an infinite number of possible second
+     * values.
+     *
+     * @param xs an {@code Iterable} of values
+     * @param f a function from a value of type {@code a} to an infinite {@code Iterable} of type-{@code B} values
+     * @param <A> the type of values in the first slot
+     * @param <B> the type of values in the second slot
+     */
+    public @NotNull <A, B> Iterable<Pair<A, B>> dependentPairsInfinite(
+            @NotNull Iterable<A> xs,
+            @NotNull Function<A, Iterable<B>> f
+    ) {
+        return wheelsProvider.dependentPairsInfinite(xs, f);
+    }
+
+    /**
+     * Generates pairs of values where the second value depends on the first and the second value grows linearly, but
+     * the first grows logarithmically (if applicable). There must be an infinite number of possible first values, and
+     * every first value must be associated with an infinite number of possible second values.
+     *
+     * @param xs an {@code Iterable} of values
+     * @param f a function from a value of type {@code a} to an infinite {@code Iterable} of type-{@code B} values
+     * @param <A> the type of values in the first slot
+     * @param <B> the type of values in the second slot
+     */
+    public @NotNull <A, B> Iterable<Pair<A, B>> dependentPairsInfiniteLogarithmicOrder(
+            @NotNull Iterable<A> xs,
+            @NotNull Function<A, Iterable<B>> f
+    ) {
+        return wheelsProvider.dependentPairsInfiniteLogarithmicOrder(xs, f);
+    }
+
+    /**
+     * Generates pairs of values where the second value depends on the first and the second value grows as
+     * O(n<sup>2/3</sup>), but the first grows as O(n<sup>1/3</sup>) (if applicable). There must be an infinite number
+     * of possible first values, and every first value must be associated with an infinite number of possible second
+     * values.
+     *
+     * @param xs an {@code Iterable} of values
+     * @param f a function from a value of type {@code a} to an infinite {@code Iterable} of type-{@code B} values
+     * @param <A> the type of values in the first slot
+     * @param <B> the type of values in the second slot
+     */
+    public @NotNull <A, B> Iterable<Pair<A, B>> dependentPairsInfiniteSquareRootOrder(
+            @NotNull Iterable<A> xs,
+            @NotNull Function<A, Iterable<B>> f
+    ) {
+        return wheelsProvider.dependentPairsInfiniteSquareRootOrder(xs, f);
+    }
+
+    /**
+     * Generates pairs of elements where the first component grows linearly but the second grows logarithmically (if
+     * applicable).
+     *
+     * @param as the source of values in the first slot
+     * @param bs the source of values in the second slot
+     * @param <A> the type of values in the first slot
+     * @param <B> the type of values in the second slot
+     */
+    public @NotNull <A, B> Iterable<Pair<A, B>> pairsLogarithmicOrder(
+            @NotNull Iterable<A> as,
+            @NotNull Iterable<B> bs
+    ) {
+        return wheelsProvider.pairsLogarithmicOrder(as, bs);
+    }
+
+    /**
+     * Generates pairs of elements where the first component grows linearly but the second grows logarithmically (if
+     * applicable).
+     *
+     * @param xs the source of values
+     * @param <T> the type of values in the both slots of the result pairs
+     */
+    public @NotNull <T> Iterable<Pair<T, T>> pairsLogarithmicOrder(@NotNull Iterable<T> xs) {
+        return wheelsProvider.pairsLogarithmicOrder(xs);
+    }
+
+    /**
+     * Generates pairs of elements where the first component grows as O(n<sup>2/3</sup>) but the second grows as
+     * O(n<sup>1/3</sup>) (if applicable).
+     *
+     * @param as the source of values in the first slot
+     * @param bs the source of values in the second slot
+     * @param <A> the type of values in the first slot
+     * @param <B> the type of values in the second slot
+     */
+    public @NotNull <A, B> Iterable<Pair<A, B>> pairsSquareRootOrder(
+            @NotNull Iterable<A> as,
+            @NotNull Iterable<B> bs
+    ) {
+        return wheelsProvider.pairsSquareRootOrder(as, bs);
+    }
+
+    /**
+     * Generates pairs of elements where the first component grows as O(n<sup>2/3</sup>) but the second grows as
+     * O(n<sup>1/3</sup>) (if applicable).
+     *
+     * @param xs the source of values
+     * @param <T> the type of values in the both slots of the result pairs
+     */
+    public @NotNull <T> Iterable<Pair<T, T>> pairsSquareRootOrder(@NotNull Iterable<T> xs) {
+        return wheelsProvider.pairsSquareRootOrder(xs);
+    }
+
+    /**
+     * Generates all permutations of a {@code List}.
+     *
+     * @param xs a list of elements
+     * @param <T> the type of values in the permutations
+     */
+    public @NotNull <T> Iterable<List<T>> permutationsFinite(@NotNull List<T> xs) {
+        return wheelsProvider.permutationsFinite(xs);
+    }
+
+    /**
+     * Generates all permutations of a {@code String}.
+     *
+     * @param s a {@code String}
+     */
+    public @NotNull Iterable<String> stringPermutations(@NotNull String s) {
+        return wheelsProvider.stringPermutations(s);
+    }
+
+    /**
+     * Generates permutations of an {@code Iterable}. If the {@code Iterable} is finite, all permutations are
+     * generated; if it is infinite, then only permutations that are equal to the identity except in a finite prefix
+     * are generated.
+     *
+     * @param xs an {@code Iterable} of elements
+     * @param <T> the type of values in the permutations
+     */
+    public @NotNull <T> Iterable<Iterable<T>> prefixPermutations(@NotNull Iterable<T> xs) {
+        return wheelsProvider.prefixPermutations(xs);
+    }
+
+    /**
+     * Generates all {@code List}s of a given size containing elements from a given {@code List}. The {@code List}s are
+     * ordered lexicographically, matching the order given by the original {@code List}.
+     *
+     * @param size the length of each of the generated {@code List}s
+     * @param xs a {@code List} of elements
+     * @param <T> the type of values in the {@code List}s
+     */
+    public @NotNull <T> Iterable<List<T>> listsLex(int size, @NotNull List<T> xs) {
+        return wheelsProvider.listsLex(size, xs);
+    }
+
+    /**
+     * Given two {@code Iterable}s, returns all {@code Pair}s of elements from these {@code Iterable}s. The
+     * {@code Pair}s are ordered lexicographically, matching the order given by the original {@code Iterable}s.
+     *
+     * @param as the first {@code Iterable}
+     * @param bs the second {@code Iterable}
+     * @param <A> the type of the first {@code Iterable}'s elements
+     * @param <B> the type of the second {@code Iterable}'s elements
+     */
+    public @NotNull <A, B> Iterable<Pair<A, B>> pairsLex(@NotNull Iterable<A> as, @NotNull List<B> bs) {
+        return wheelsProvider.pairsLex(as, bs);
+    }
+
+    /**
+     * Given three {@code Iterable}s, returns all {@code Triple}s of elements from these {@code Iterable}s. The
+     * {@code Triple}s are ordered lexicographically, matching the order given by the original {@code Iterable}s.
+     *
+     * @param as the first {@code Iterable}
+     * @param bs the second {@code Iterable}
+     * @param cs the third {@code Iterable}
+     * @param <A> the type of the first {@code Iterable}'s elements
+     * @param <B> the type of the second {@code Iterable}'s elements
+     * @param <C> the type of the third {@code Iterable}'s elements
+     */
+    public @NotNull <A, B, C> Iterable<Triple<A, B, C>> triplesLex(
+            @NotNull Iterable<A> as,
+            @NotNull List<B> bs,
+            @NotNull List<C> cs
+    ) {
+        return wheelsProvider.triplesLex(as, bs, cs);
+    }
+
+    /**
+     * Given four {@code Iterable}s, returns all {@code Quadruple}s of elements from these {@code Iterable}s. The
+     * {@code Quadruple}s are ordered lexicographically, matching the order given by the original {@code Iterable}s.
+     *
+     * @param as the first {@code Iterable}
+     * @param bs the second {@code Iterable}
+     * @param cs the third {@code Iterable}
+     * @param ds the fourth {@code Iterable}
+     * @param <A> the type of the first {@code Iterable}'s elements
+     * @param <B> the type of the second {@code Iterable}'s elements
+     * @param <C> the type of the third {@code Iterable}'s elements
+     * @param <D> the type of the fourth {@code Iterable}'s elements
+     */
+    public @NotNull <A, B, C, D> Iterable<Quadruple<A, B, C, D>> quadruplesLex(
+            @NotNull Iterable<A> as,
+            @NotNull List<B> bs,
+            @NotNull List<C> cs,
+            @NotNull List<D> ds
+    ) {
+        return wheelsProvider.quadruplesLex(as, bs, cs, ds);
+    }
+
+    /**
+     * Given five {@code Iterable}s, returns all {@code Quintuple}s of elements from these {@code Iterable}s. The
+     * {@code Quintuple}s are ordered lexicographically, matching the order given by the original {@code Iterable}s.
+     *
+     * @param as the first {@code Iterable}
+     * @param bs the second {@code Iterable}
+     * @param cs the third {@code Iterable}
+     * @param ds the fourth {@code Iterable}
+     * @param es the fifth {@code Iterable}
+     * @param <A> the type of the first {@code Iterable}'s elements
+     * @param <B> the type of the second {@code Iterable}'s elements
+     * @param <C> the type of the third {@code Iterable}'s elements
+     * @param <D> the type of the fourth {@code Iterable}'s elements
+     * @param <E> the type of the fifth {@code Iterable}'s elements
+     */
+    public @NotNull <A, B, C, D, E> Iterable<Quintuple<A, B, C, D, E>> quintuplesLex(
+            @NotNull Iterable<A> as,
+            @NotNull List<B> bs,
+            @NotNull List<C> cs,
+            @NotNull List<D> ds,
+            @NotNull List<E> es
+    ) {
+        return wheelsProvider.quintuplesLex(as, bs, cs, ds, es);
+    }
+
+    /**
+     * Given six {@code Iterable}s, returns all {@code Sextuple}s of elements from these {@code Iterable}s. The
+     * {@code Sextuple}s are ordered lexicographically, matching the order given by the original {@code Iterable}s.
+     *
+     * @param as the first {@code Iterable}
+     * @param bs the second {@code Iterable}
+     * @param cs the third {@code Iterable}
+     * @param ds the fourth {@code Iterable}
+     * @param es the fifth {@code Iterable}
+     * @param fs the sixth {@code Iterable}
+     * @param <A> the type of the first {@code Iterable}'s elements
+     * @param <B> the type of the second {@code Iterable}'s elements
+     * @param <C> the type of the third {@code Iterable}'s elements
+     * @param <D> the type of the fourth {@code Iterable}'s elements
+     * @param <E> the type of the fifth {@code Iterable}'s elements
+     * @param <F> the type of the sixth {@code Iterable}'s elements
+     */
+    public @NotNull <A, B, C, D, E, F> Iterable<Sextuple<A, B, C, D, E, F>> sextuplesLex(
+            @NotNull Iterable<A> as,
+            @NotNull List<B> bs,
+            @NotNull List<C> cs,
+            @NotNull List<D> ds,
+            @NotNull List<E> es,
+            @NotNull List<F> fs
+    ) {
+        return wheelsProvider.sextuplesLex(as, bs, cs, ds, es, fs);
+    }
+
+    /**
+     * Given seven {@code Iterable}s, returns all {@code Septuple}s of elements from these {@code Iterable}s. The
+     * {@code Septuple}s are ordered lexicographically, matching the order given by the original {@code Iterable}s.
+     *
+     * @param as the first {@code Iterable}
+     * @param bs the second {@code Iterable}
+     * @param cs the third {@code Iterable}
+     * @param ds the fourth {@code Iterable}
+     * @param es the fifth {@code Iterable}
+     * @param fs the sixth {@code Iterable}
+     * @param gs the seventh {@code Iterable}
+     * @param <A> the type of the first {@code Iterable}'s elements
+     * @param <B> the type of the second {@code Iterable}'s elements
+     * @param <C> the type of the third {@code Iterable}'s elements
+     * @param <D> the type of the fourth {@code Iterable}'s elements
+     * @param <E> the type of the fifth {@code Iterable}'s elements
+     * @param <F> the type of the sixth {@code Iterable}'s elements
+     * @param <G> the type of the seventh {@code Iterable}'s elements
+     */
+    public @NotNull <A, B, C, D, E, F, G> Iterable<Septuple<A, B, C, D, E, F, G>> septuplesLex(
+            @NotNull Iterable<A> as,
+            @NotNull List<B> bs,
+            @NotNull List<C> cs,
+            @NotNull List<D> ds,
+            @NotNull List<E> es,
+            @NotNull List<F> fs,
+            @NotNull List<G> gs
+    ) {
+        return wheelsProvider.septuplesLex(as, bs, cs, ds, es, fs, gs);
+    }
+
+    /**
+     * Generates all {@code String}s of a given size containing elements from a given {@code String}. The elements are
+     * ordered lexicographically, matching the order given by the original {@code String}.
+     *
+     * @param size the length of each of the generated {@code String}s
+     * @param s a {@code String}
+     */
+    public @NotNull Iterable<String> stringsLex(int size, @NotNull String s) {
+        return wheelsProvider.stringsLex(size, s);
+    }
+
+    /**
+     * Generates all {@code List}s containing elements from a given {@code Iterable}. The {@code List}s are ordered in
+     * shortlex order (by length, then lexicographically), matching the order given by the original {@code Iterable}.
+     *
+     * @param xs a {@code List} of elements
+     * @param <T> the type of values in the {@code List}s
+     */
+    public <T> Iterable<List<T>> listsShortlex(@NotNull List<T> xs) {
+        return wheelsProvider.listsShortlex(xs);
+    }
+
+    /**
+     * Generates all {@code String}s containing characters from a given {@code String}. The {@code String}s are ordered
+     * in shortlex order (by length, then lexicographically), matching the order given by the original {@code String}.
+     *
+     * @param s a {@code String}
+     */
+    public @NotNull Iterable<String> stringsShortlex(@NotNull String s) {
+        return wheelsProvider.stringsShortlex(s);
+    }
+
+    /**
+     * Generates all {@code List}s with a minimum size containing elements from a given {@code Iterable}. The
+     * {@code List}s are ordered in shortlex order (by length, then lexicographically), matching the order given by the
+     * original {@code Iterable}.
+     *
+     * @param minSize the minimum size of the resulting {@code List}s
+     * @param xs a {@code List} of elements
+     * @param <T> the type of values in the {@code List}s
+     */
+    public @NotNull <T> Iterable<List<T>> listsShortlexAtLeast(int minSize, @NotNull List<T> xs) {
+        return wheelsProvider.listsShortlexAtLeast(minSize, xs);
+    }
+
+    /**
+     * Generates all {@code String}s with a minimum size containing characters from a given {@code String}. The
+     * {@code String}s are ordered in shortlex order (by length, then lexicographically), matching the order given by
+     * the original {@code String}.
+     *
+     * @param minSize the minimum size of the resulting {@code List}s
+     * @param s a {@code String}
+     */
+    public @NotNull Iterable<String> stringsShortlexAtLeast(int minSize, @NotNull String s) {
+        return wheelsProvider.stringsShortlexAtLeast(minSize, s);
+    }
+
+    /**
+     * Generates all {@code List}s of a given size containing elements from a given {@code Iterable}.
+     *
+     * @param size the length of each of the generated {@code List}s
+     * @param xs a {@code List} of elements
+     * @param <T> the type of values in the {@code List}s
+     */
+    public @NotNull <T> Iterable<List<T>> lists(int size, @NotNull Iterable<T> xs) {
+        return wheelsProvider.lists(size, xs);
+    }
+
+    /**
+     * Given two {@code Iterable}s, generates all {@code Pair}s of elements from these {@code Iterable}s.
+     *
+     * @param as the first {@code Iterable}
+     * @param bs the second {@code Iterable}
+     * @param <A> the type of the first {@code Iterable}'s elements
+     * @param <B> the type of the second {@code Iterable}'s elements
+     */
     public @NotNull <A, B> Iterable<Pair<A, B>> pairs(@NotNull Iterable<A> as, @NotNull Iterable<B> bs) {
         return wheelsProvider.pairs(as, bs);
     }
 
+    /**
+     * Generates all {@code Pair}s of elements from an {@code Iterable}.
+     *
+     * @param xs an {@code Iterable}
+     * @param <T> the type of the {@code Iterable}'s elements
+     */
+    public @NotNull <T> Iterable<Pair<T, T>> pairs(@NotNull Iterable<T> xs) {
+        return wheelsProvider.pairs(xs);
+    }
+
+    /**
+     * Given three {@code Iterable}s, generates all {@code Triple}s of elements from these {@code Iterable}s.
+     *
+     * @param as the first {@code Iterable}
+     * @param bs the second {@code Iterable}
+     * @param cs the third {@code Iterable}
+     * @param <A> the type of the first {@code Iterable}'s elements
+     * @param <B> the type of the second {@code Iterable}'s elements
+     * @param <C> the type of the third {@code Iterable}'s elements
+     */
     public @NotNull <A, B, C> Iterable<Triple<A, B, C>> triples(
             @NotNull Iterable<A> as,
             @NotNull Iterable<B> bs,
@@ -874,6 +1342,28 @@ public strictfp abstract class QBarIterableProvider {
         return wheelsProvider.triples(as, bs, cs);
     }
 
+    /**
+     * Generates all {@code Triple}s of elements from an {@code Iterable}.
+     *
+     * @param xs an {@code Iterable}
+     * @param <T> the type of the {@code Iterable}'s elements
+     */
+    public @NotNull <T> Iterable<Triple<T, T, T>> triples(@NotNull Iterable<T> xs) {
+        return wheelsProvider.triples(xs);
+    }
+
+    /**
+     * Given four {@code Iterable}s, generates all {@code Quadruple}s of elements from these {@code Iterable}s.
+     *
+     * @param as the first {@code Iterable}
+     * @param bs the second {@code Iterable}
+     * @param cs the third {@code Iterable}
+     * @param ds the fourth {@code Iterable}
+     * @param <A> the type of the first {@code Iterable}'s elements
+     * @param <B> the type of the second {@code Iterable}'s elements
+     * @param <C> the type of the third {@code Iterable}'s elements
+     * @param <D> the type of the fourth {@code Iterable}'s elements
+     */
     public @NotNull <A, B, C, D> Iterable<Quadruple<A, B, C, D>> quadruples(
             @NotNull Iterable<A> as,
             @NotNull Iterable<B> bs,
@@ -883,6 +1373,30 @@ public strictfp abstract class QBarIterableProvider {
         return wheelsProvider.quadruples(as, bs, cs, ds);
     }
 
+    /**
+     * Generates all {@code Quadruple}s of elements from an {@code Iterable}.
+     *
+     * @param xs an {@code Iterable}
+     * @param <T> the type of the {@code Iterable}'s elements
+     */
+    public @NotNull <T> Iterable<Quadruple<T, T, T, T>> quadruples(@NotNull Iterable<T> xs) {
+        return wheelsProvider.quadruples(xs);
+    }
+
+    /**
+     * Given five {@code Iterable}s, generates all {@code Quintuple}s of elements from these {@code Iterable}s.
+     *
+     * @param as the first {@code Iterable}
+     * @param bs the second {@code Iterable}
+     * @param cs the third {@code Iterable}
+     * @param ds the fourth {@code Iterable}
+     * @param es the fifth {@code Iterable}
+     * @param <A> the type of the first {@code Iterable}'s elements
+     * @param <B> the type of the second {@code Iterable}'s elements
+     * @param <C> the type of the third {@code Iterable}'s elements
+     * @param <D> the type of the fourth {@code Iterable}'s elements
+     * @param <E> the type of the fifth {@code Iterable}'s elements
+     */
     public @NotNull <A, B, C, D, E> Iterable<Quintuple<A, B, C, D, E>> quintuples(
             @NotNull Iterable<A> as,
             @NotNull Iterable<B> bs,
@@ -893,6 +1407,32 @@ public strictfp abstract class QBarIterableProvider {
         return wheelsProvider.quintuples(as, bs, cs, ds, es);
     }
 
+    /**
+     * Generates all {@code Quintuple}s of elements from an {@code Iterable}.
+     *
+     * @param xs an {@code Iterable}
+     * @param <T> the type of the {@code Iterable}'s elements
+     */
+    public @NotNull <T> Iterable<Quintuple<T, T, T, T, T>> quintuples(@NotNull Iterable<T> xs) {
+        return wheelsProvider.quintuples(xs);
+    }
+
+    /**
+     * Given six {@code Iterable}s, generates all {@code Sextuple}s of elements from these {@code Iterable}s.
+     *
+     * @param as the first {@code Iterable}
+     * @param bs the second {@code Iterable}
+     * @param cs the third {@code Iterable}
+     * @param ds the fourth {@code Iterable}
+     * @param es the fifth {@code Iterable}
+     * @param fs the sixth {@code Iterable}
+     * @param <A> the type of the first {@code Iterable}'s elements
+     * @param <B> the type of the second {@code Iterable}'s elements
+     * @param <C> the type of the third {@code Iterable}'s elements
+     * @param <D> the type of the fourth {@code Iterable}'s elements
+     * @param <E> the type of the fifth {@code Iterable}'s elements
+     * @param <F> the type of the sixth {@code Iterable}'s elements
+     */
     public @NotNull <A, B, C, D, E, F> Iterable<Sextuple<A, B, C, D, E, F>> sextuples(
             @NotNull Iterable<A> as,
             @NotNull Iterable<B> bs,
@@ -904,6 +1444,34 @@ public strictfp abstract class QBarIterableProvider {
         return wheelsProvider.sextuples(as, bs, cs, ds, es, fs);
     }
 
+    /**
+     * Generates all {@code Sextuple}s of elements from an {@code Iterable}.
+     *
+     * @param xs an {@code Iterable}
+     * @param <T> the type of the {@code Iterable}'s elements
+     */
+    public @NotNull <T> Iterable<Sextuple<T, T, T, T, T, T>> sextuples(@NotNull Iterable<T> xs) {
+        return wheelsProvider.sextuples(xs);
+    }
+
+    /**
+     * Given seven {@code Iterable}s, generates all {@code Septuple}s of elements from these {@code Iterable}s.
+     *
+     * @param as the first {@code Iterable}
+     * @param bs the second {@code Iterable}
+     * @param cs the third {@code Iterable}
+     * @param ds the fourth {@code Iterable}
+     * @param es the fifth {@code Iterable}
+     * @param fs the sixth {@code Iterable}
+     * @param gs the seventh {@code Iterable}
+     * @param <A> the type of the first {@code Iterable}'s elements
+     * @param <B> the type of the second {@code Iterable}'s elements
+     * @param <C> the type of the third {@code Iterable}'s elements
+     * @param <D> the type of the fourth {@code Iterable}'s elements
+     * @param <E> the type of the fifth {@code Iterable}'s elements
+     * @param <F> the type of the sixth {@code Iterable}'s elements
+     * @param <G> the type of the seventh {@code Iterable}'s elements
+     */
     public @NotNull <A, B, C, D, E, F, G> Iterable<Septuple<A, B, C, D, E, F, G>> septuples(
             @NotNull Iterable<A> as,
             @NotNull Iterable<B> bs,
@@ -916,101 +1484,1258 @@ public strictfp abstract class QBarIterableProvider {
         return wheelsProvider.septuples(as, bs, cs, ds, es, fs, gs);
     }
 
-    public @NotNull <T> Iterable<Pair<T, T>> pairs(@NotNull Iterable<T> xs) {
-        return wheelsProvider.pairs(xs);
-    }
-
-    public @NotNull <T> Iterable<Triple<T, T, T>> triples(@NotNull Iterable<T> xs) {
-        return wheelsProvider.triples(xs);
-    }
-
-    public @NotNull <T> Iterable<Quadruple<T, T, T, T>> quadruples(@NotNull Iterable<T> xs) {
-        return wheelsProvider.quadruples(xs);
-    }
-
-    public @NotNull <T> Iterable<Quintuple<T, T, T, T, T>> quintuples(@NotNull Iterable<T> xs) {
-        return wheelsProvider.quintuples(xs);
-    }
-
-    public @NotNull <T> Iterable<Sextuple<T, T, T, T, T, T>> sextuples(@NotNull Iterable<T> xs) {
-        return wheelsProvider.sextuples(xs);
-    }
-
+    /**
+     * Generates all {@code Septuple}s of elements from an {@code Iterable}.
+     *
+     * @param xs an {@code Iterable}
+     * @param <T> the type of the {@code Iterable}'s elements
+     */
     public @NotNull <T> Iterable<Septuple<T, T, T, T, T, T, T>> septuples(@NotNull Iterable<T> xs) {
         return wheelsProvider.septuples(xs);
     }
 
-    public @NotNull <T> Iterable<List<T>> lists(int size, @NotNull Iterable<T> xs) {
-        return wheelsProvider.lists(size, xs);
+    /**
+     * Generates all {@code String}s of a given size containing characters from a given {@code String}.
+     *
+     * @param size the length of each of the generated {@code String}s
+     * @param s a {@code String}
+     */
+    public @NotNull Iterable<String> strings(int size, @NotNull String s) {
+        return wheelsProvider.strings(size, s);
     }
 
-    public @NotNull <T> Iterable<List<T>> listsAtLeast(int minSize, @NotNull Iterable<T> xs) {
-        return wheelsProvider.listsAtLeast(minSize, xs);
-    }
-
-    public @NotNull <T> Iterable<List<T>> lists(@NotNull Iterable<T> xs) {
-        return wheelsProvider.lists(xs);
-    }
-
-    public @NotNull <T> Iterable<List<T>> listsWithElement(@Nullable T element, Iterable<T> xs) {
-        return wheelsProvider.listsWithElement(element, xs);
-    }
-    public @NotNull <T> Iterable<List<T>> listsWithSubsequence(
-            @NotNull Iterable<Iterable<T>> subsequences,
-            @NotNull Iterable<T> xs
-    ) {
-        return wheelsProvider.listsWithSubsequence(subsequences, xs);
-    }
-
-    public @NotNull Iterable<String> strings(int size, @NotNull Iterable<Character> cs) {
-        return wheelsProvider.strings(size, cs);
-    }
-
-    public @NotNull Iterable<String> stringsAtLeast(int minSize, @NotNull Iterable<Character> cs) {
-        return wheelsProvider.stringsAtLeast(minSize, cs);
-    }
-
+    /**
+     * Generates all {@code String}s of a given size.
+     *
+     * @param size the length of each of the generated {@code String}s
+     */
     public @NotNull Iterable<String> strings(int size) {
         return wheelsProvider.strings(size);
     }
 
-    public @NotNull Iterable<String> stringsAtLeast(int size) {
-        return wheelsProvider.stringsAtLeast(size);
+    /**
+     * Generates all {@code List}s of a containing elements from a given {@code Iterable}.
+     *
+     * @param xs a {@code List} of elements
+     * @param <T> the type of values in the {@code List}s
+     */
+    public @NotNull <T> Iterable<List<T>> lists(@NotNull Iterable<T> xs) {
+        return wheelsProvider.lists(xs);
     }
 
-    public @NotNull Iterable<String> strings(@NotNull Iterable<Character> cs) {
-        return wheelsProvider.strings(cs);
+    /**
+     * Generates all {@code String}s of a containing characters from a given {@code String}.
+     *
+     * @param s a {@code String}
+     */
+    public @NotNull Iterable<String> strings(@NotNull String s) {
+        return wheelsProvider.strings(s);
     }
 
+    /**
+     * Generates all {@code String}s.
+     */
     public @NotNull Iterable<String> strings() {
         return wheelsProvider.strings();
     }
 
-    public @NotNull Iterable<String> stringsWithChar(char c, Iterable<Character> cs) {
-        return wheelsProvider.stringsWithChar(c, cs);
+    /**
+     * Generates all {@code List}s with a minimum size containing elements from a given {@code Iterable}.
+     *
+     * @param minSize the minimum size of the resulting {@code List}s
+     * @param xs a {@code List} of elements
+     * @param <T> the type of values in the {@code List}s
+     */
+    public @NotNull <T> Iterable<List<T>> listsAtLeast(int minSize, @NotNull Iterable<T> xs) {
+        return wheelsProvider.listsAtLeast(minSize, xs);
     }
 
+    /**
+     * Generates all {@code String}s with a minimum size containing characters from a given {@code String}.
+     *
+     * @param minSize the minimum size of the resulting {@code List}s
+     * @param s a {@code String}
+     */
+    public @NotNull Iterable<String> stringsAtLeast(int minSize, @NotNull String s) {
+        return wheelsProvider.stringsAtLeast(minSize, s);
+    }
+
+    /**
+     * Generates all {@code String}s with a minimum size.
+     *
+     * @param minSize the minimum size of the resulting {@code List}s
+     */
+    public @NotNull Iterable<String> stringsAtLeast(int minSize) {
+        return wheelsProvider.stringsAtLeast(minSize);
+    }
+
+    /**
+     * Generates all {@code List}s of a given size containing elements from a given {@code List} with no repetitions.
+     * The {@code List}s are ordered lexicographically, matching the order given by the original {@code List}.
+     *
+     * @param size the length of each of the generated {@code List}s
+     * @param xs a {@code List} of elements
+     * @param <T> the type of values in the {@code List}s
+     */
+    public @NotNull <T> Iterable<List<T>> distinctListsLex(int size, @NotNull List<T> xs) {
+        return wheelsProvider.distinctListsLex(size, xs);
+    }
+
+    /**
+     * Generates all {@code Pair}s of elements from a {@code List} with no repetitions. The {@code Pair}s are ordered
+     * lexicographically, matching the order given by the original {@code List}.
+     *
+     * @param xs a {@code List}
+     * @param <T> the type of the {@code List}'s elements
+     */
+    public @NotNull <T> Iterable<Pair<T, T>> distinctPairsLex(@NotNull List<T> xs) {
+        return wheelsProvider.distinctPairsLex(xs);
+    }
+
+    /**
+     * Generates all {@code Triple}s of elements from a {@code List} with no repetitions. The {@code Triple}s are
+     * ordered lexicographically, matching the order given by the original {@code List}.
+     *
+     * @param xs a {@code List}
+     * @param <T> the type of the {@code List}'s elements
+     */
+    public @NotNull <T> Iterable<Triple<T, T, T>> distinctTriplesLex(@NotNull List<T> xs) {
+        return wheelsProvider.distinctTriplesLex(xs);
+    }
+
+    /**
+     * Generates all {@code Quadruple}s of elements from a {@code List} with no repetitions. The {@code Quadruple}s are
+     * ordered lexicographically, matching the order given by the original {@code List}.
+     *
+     * @param xs a {@code List}
+     * @param <T> the type of the {@code List}'s elements
+     */
+    public @NotNull <T> Iterable<Quadruple<T, T, T, T>> distinctQuadruplesLex(@NotNull List<T> xs) {
+        return wheelsProvider.distinctQuadruplesLex(xs);
+    }
+
+    /**
+     * Generates all {@code Quintuple}s of elements from a {@code List} with no repetitions. The {@code Quintuple}s are
+     * ordered lexicographically, matching the order given by the original {@code List}.
+     *
+     * @param xs a {@code List}
+     * @param <T> the type of the {@code List}'s elements
+     */
+    public @NotNull <T> Iterable<Quintuple<T, T, T, T, T>> distinctQuintuplesLex(@NotNull List<T> xs) {
+        return wheelsProvider.distinctQuintuplesLex(xs);
+    }
+
+    /**
+     * Generates all {@code Sextuple}s of elements from a {@code List} with no repetitions. The {@code Sextuple}s are
+     * ordered lexicographically, matching the order given by the original {@code List}.
+     *
+     * @param xs a {@code List}
+     * @param <T> the type of the {@code List}'s elements
+     */
+    public @NotNull <T> Iterable<Sextuple<T, T, T, T, T, T>> distinctSextuplesLex(@NotNull List<T> xs) {
+        return wheelsProvider.distinctSextuplesLex(xs);
+    }
+
+    /**
+     * Generates all {@code Septuple}s of elements from a {@code List} with no repetitions. The {@code Septuple}s are
+     * ordered lexicographically, matching the order given by the original {@code List}.
+     *
+     * @param xs a {@code List}
+     * @param <T> the type of the {@code List}'s elements
+     */
+    public @NotNull <T> Iterable<Septuple<T, T, T, T, T, T, T>> distinctSeptuplesLex(@NotNull List<T> xs) {
+        return wheelsProvider.distinctSeptuplesLex(xs);
+    }
+
+    /**
+     * Generates all {@code String}s of a given size containing characters from a given {@code String} with no
+     * repetitions. The {@code String}s are ordered lexicographically, matching the order given by the original
+     * {@code String}.
+     *
+     * @param size the length of each of the generated {@code String}s
+     * @param s a {@code String}
+     */
+    public @NotNull Iterable<String> distinctStringsLex(int size, @NotNull String s) {
+        return wheelsProvider.distinctStringsLex(size, s);
+    }
+
+    /**
+     * Generates all {@code List}s containing elements from a given {@code List} with no repetitions. The {@code List}s
+     * are ordered lexicographically, matching the order given by the original {@code List}.
+     *
+     * @param xs a {@code List} of elements
+     * @param <T> the type of values in the {@code List}s
+     */
+    public @NotNull <T> Iterable<List<T>> distinctListsLex(@NotNull List<T> xs) {
+        return wheelsProvider.distinctListsLex(xs);
+    }
+
+    /**
+     * Generates all {@code String}s containing characters from a given {@code String} with no repetitions. The
+     * {@code String}s are ordered lexicographically, matching the order given by the original {@code String}.
+     *
+     * @param s a {@code String}
+     */
+    public @NotNull Iterable<String> distinctStringsLex(@NotNull String s) {
+        return wheelsProvider.distinctStringsLex(s);
+    }
+
+    /**
+     * Generates all {@code List}s with a minimum size containing elements from a given {@code List} with no
+     * repetitions. The {@code List}s are ordered lexicographically, matching the order given by the original
+     * {@code List}.
+     *
+     * @param minSize the minimum size of the resulting {@code List}s
+     * @param xs a {@code List} of elements
+     * @param <T> the type of values in the {@code List}s
+     */
+    public @NotNull <T> Iterable<List<T>> distinctListsLexAtLeast(int minSize, @NotNull List<T> xs) {
+        return wheelsProvider.distinctListsLexAtLeast(minSize, xs);
+    }
+
+    /**
+     * Generates all {@code String}s with a minimum size containing characters from a given {@code String} with no
+     * repetitions. The {@code String}s are ordered lexicographically, matching the order given by the original
+     * {@code String}.
+     *
+     * @param minSize the minimum size of the resulting {@code String}s
+     * @param s a {@code String}
+     */
+    public @NotNull Iterable<String> distinctStringsLexAtLeast(int minSize, @NotNull String s) {
+        return wheelsProvider.distinctStringsLexAtLeast(minSize, s);
+    }
+
+    /**
+     * Generates all {@code List}s containing elements from a given {@code Iterable} with no repetitions. The
+     * {@code List}s are ordered in shortlex order (by length, then lexicographically), matching the order given by the
+     * original {@code Iterable}.
+     *
+     * @param xs a {@code List} of elements
+     * @param <T> the type of values in the {@code List}s
+     */
+    public @NotNull <T> Iterable<List<T>> distinctListsShortlex(@NotNull List<T> xs) {
+        return wheelsProvider.distinctListsShortlex(xs);
+    }
+
+    /**
+     * Generates all {@code String}s containing characters from a given {@code String} with no repetitions. The
+     * {@code String}s are ordered in shortlex order (by length, then lexicographically), matching the order given by
+     * the original {@code String}.
+     *
+     * @param s a {@code String}
+     */
+    public @NotNull Iterable<String> distinctStringsShortlex(@NotNull String s) {
+        return wheelsProvider.distinctStringsShortlex(s);
+    }
+
+    /**
+     * Generates all {@code List}s with a minimum size containing elements from a given {@code Iterable} with no
+     * repetitions. The {@code List}s are ordered in shortlex order (by length, then lexicographically), matching the
+     * order given by the original {@code Iterable}.
+     *
+     * @param minSize the minimum size of the resulting {@code List}s
+     * @param xs a {@code List} of elements
+     * @param <T> the type of values in the {@code List}s
+     */
+    public @NotNull <T> Iterable<List<T>> distinctListsShortlexAtLeast(int minSize, @NotNull List<T> xs) {
+        return wheelsProvider.distinctListsShortlexAtLeast(minSize, xs);
+    }
+
+    /**
+     * Generates all {@code String}s with a minimum size containing characters from a given {@code String} with no
+     * repetitions. The {@code String}s are ordered in shortlex order (by length, then lexicographically), matching the
+     * order given by the original {@code String}.
+     *
+     * @param minSize the minimum size of the resulting {@code String}s
+     * @param s a {@code String}
+     */
+    public @NotNull Iterable<String> distinctStringsShortlexAtLeast(int minSize, @NotNull String s) {
+        return wheelsProvider.distinctStringsShortlexAtLeast(minSize, s);
+    }
+
+    /**
+     * Generates all {@code List}s of a given size containing elements from a given {@code Iterable} with no
+     * repetitions.
+     *
+     * @param xs an {@code Iterable} of elements
+     * @param size the length of each of the generated {@code List}s
+     * @param <T> the type of values in the {@code List}s
+     */
+    public @NotNull <T> Iterable<List<T>> distinctLists(int size, @NotNull Iterable<T> xs) {
+        return wheelsProvider.distinctLists(size, xs);
+    }
+
+    /**
+     * Generates all {@code Pair}s of elements from an {@code Iterable} with no repetitions.
+     *
+     * @param xs an {@code Iterable}
+     * @param <T> the type of the {@code Iterable}'s elements
+     */
+    public @NotNull <T> Iterable<Pair<T, T>> distinctPairs(@NotNull Iterable<T> xs) {
+        return wheelsProvider.distinctPairs(xs);
+    }
+
+    /**
+     * Generates all {@code Triple}s of elements from an {@code Iterable} with no repetitions.
+     *
+     * @param xs an {@code Iterable}
+     * @param <T> the type of the {@code Iterable}'s elements
+     */
+    public @NotNull <T> Iterable<Triple<T, T, T>> distinctTriples(@NotNull Iterable<T> xs) {
+        return wheelsProvider.distinctTriples(xs);
+    }
+
+    /**
+     * Generates all {@code Quadruple}s of elements from an {@code Iterable} with no repetitions.
+     *
+     * @param xs an {@code Iterable}
+     * @param <T> the type of the {@code Iterable}'s elements
+     */
+    public @NotNull <T> Iterable<Quadruple<T, T, T, T>> distinctQuadruples(@NotNull Iterable<T> xs) {
+        return wheelsProvider.distinctQuadruples(xs);
+    }
+
+    /**
+     * Generates all {@code Quintuple}s of elements from an {@code Iterable} with no repetitions.
+     *
+     * @param xs an {@code Iterable}
+     * @param <T> the type of the {@code Iterable}'s elements
+     */
+    public @NotNull <T> Iterable<Quintuple<T, T, T, T, T>> distinctQuintuples(@NotNull Iterable<T> xs) {
+        return wheelsProvider.distinctQuintuples(xs);
+    }
+
+    /**
+     * Generates all {@code Sextuple}s of elements from an {@code Iterable} with no repetitions.
+     *
+     * @param xs an {@code Iterable}
+     * @param <T> the type of the {@code Iterable}'s elements
+     */
+    public @NotNull <T> Iterable<Sextuple<T, T, T, T, T, T>> distinctSextuples(@NotNull Iterable<T> xs) {
+        return wheelsProvider.distinctSextuples(xs);
+    }
+
+    /**
+     * Generates all {@code Septuple}s of elements from an {@code Iterable} with no repetitions.
+     *
+     * @param xs an {@code Iterable}
+     * @param <T> the type of the {@code Iterable}'s elements
+     */
+    public @NotNull <T> Iterable<Septuple<T, T, T, T, T, T, T>> distinctSeptuples(@NotNull Iterable<T> xs) {
+        return wheelsProvider.distinctSeptuples(xs);
+    }
+
+    /**
+     * Generates all {@code String}s of a given size containing characters from a given {@code String} with no
+     * repetitions.
+     *
+     * @param size the length of each of the generated {@code String}s
+     * @param s a {@code String}
+     */
+    public @NotNull Iterable<String> distinctStrings(int size, @NotNull String s) {
+        return wheelsProvider.distinctStrings(size, s);
+    }
+
+    /**
+     * Generates all {@code String}s of a given size containing characters from a given {@code String}.
+     *
+     * @param size the length of each of the generated {@code String}s
+     */
+    public @NotNull Iterable<String> distinctStrings(int size) {
+        return wheelsProvider.distinctStrings(size);
+    }
+
+    /**
+     * Generates all {@code List}s containing elements from a given {@code Iterable} with no repetitions.
+     *
+     * @param xs an {@code Iterable} of elements
+     * @param <T> the type of values in the {@code List}s
+     */
+    public @NotNull <T> Iterable<List<T>> distinctLists(@NotNull Iterable<T> xs) {
+        return wheelsProvider.distinctLists(xs);
+    }
+
+    /**
+     * Generates all {@code String}s containing characters from a given {@code String} with no repetitions.
+     *
+     * @param s a {@code String}
+     */
+    public @NotNull Iterable<String> distinctStrings(@NotNull String s) {
+        return wheelsProvider.distinctStrings(s);
+    }
+
+    /**
+     * Generates all {@code String}s containing characters from a given {@code String}.
+     */
+    public Iterable<String> distinctStrings()  {
+        return wheelsProvider.distinctStrings();
+    }
+
+    /**
+     * Generates all {@code List}s with a minimum size containing elements from a given {@code Iterable} with no
+     * repetitions.
+     *
+     * @param minSize the minimum size of the resulting {@code List}s
+     * @param xs an {@code Iterable} of elements
+     * @param <T> the type of values in the {@code List}s
+     */
+    public @NotNull <T> Iterable<List<T>> distinctListsAtLeast(int minSize, @NotNull Iterable<T> xs) {
+        return wheelsProvider.distinctListsAtLeast(minSize, xs);
+    }
+
+    /**
+     * Generates all {@code String}s with a minimum size containing characters from a given {@code String} with no
+     * repetitions.
+     *
+     * @param minSize the minimum size of the resulting {@code String}s
+     * @param s a {@code String}
+     */
+    public @NotNull Iterable<String> distinctStringsAtLeast(int minSize, @NotNull String s)  {
+        return wheelsProvider.distinctStringsAtLeast(minSize, s);
+    }
+
+    /**
+     * Generates all {@code String}s with a minimum size with no repetitions.
+     *
+     * @param minSize the minimum size of the resulting {@code String}s
+     */
+    public @NotNull Iterable<String> distinctStringsAtLeast(int minSize)  {
+        return wheelsProvider.distinctStringsAtLeast(minSize);
+    }
+
+    /**
+     * Generates all unordered {@code List}s of a given size containing elements from a given {@code List}. The
+     * {@code List}s are ordered lexicographically, matching the order given by the original {@code List}.
+     *
+     * @param size the length of each of the generated {@code List}s
+     * @param xs a {@code List} of elements
+     * @param <T> the type of values in the {@code List}s
+     */
+    public @NotNull <T extends Comparable<T>> Iterable<List<T>> bagsLex(int size, @NotNull List<T> xs) {
+        return wheelsProvider.bagsLex(size, xs);
+    }
+
+    /**
+     * Generates all unordered {@code Pair}s of elements from a {@code List}. The {@code Pair}s are ordered
+     * lexicographically.
+     *
+     * @param xs a {@code List}
+     * @param <T> the type of the {@code List}'s elements
+     */
+    public @NotNull <T extends Comparable<T>> Iterable<Pair<T, T>> bagPairsLex(@NotNull List<T> xs) {
+        return wheelsProvider.bagPairsLex(xs);
+    }
+
+    /**
+     * Generates all unordered {@code Triple}s of elements from a {@code List}. The {@code Triple}s are ordered
+     * lexicographically.
+     *
+     * @param xs a {@code List}
+     * @param <T> the type of the {@code List}'s elements
+     */
+    public @NotNull <T extends Comparable<T>> Iterable<Triple<T, T, T>> bagTriplesLex(@NotNull List<T> xs) {
+        return wheelsProvider.bagTriplesLex(xs);
+    }
+
+    /**
+     * Generates all unordered {@code Quadruple}s of elements from a {@code List}. The {@code Quadruple}s are ordered
+     * lexicographically.
+     *
+     * @param xs a {@code List}
+     * @param <T> the type of the {@code List}'s elements
+     */
+    public @NotNull <T extends Comparable<T>> Iterable<Quadruple<T, T, T, T>> bagQuadruplesLex(@NotNull List<T> xs) {
+        return wheelsProvider.bagQuadruplesLex(xs);
+    }
+
+    /**
+     * Generates all unordered {@code Quintuple}s of elements from a {@code List}. The {@code Quintuple}s are ordered
+     * lexicographically.
+     *
+     * @param xs a {@code List}
+     * @param <T> the type of the {@code List}'s elements
+     */
+    public @NotNull <T extends Comparable<T>> Iterable<Quintuple<T, T, T, T, T>> bagQuintuplesLex(
+            @NotNull List<T> xs
+    ) {
+        return wheelsProvider.bagQuintuplesLex(xs);
+    }
+
+    /**
+     * Generates all unordered {@code Sextuple}s of elements from a {@code List}. The {@code Sextuple}s are ordered
+     * lexicographically.
+     *
+     * @param xs a {@code List}
+     * @param <T> the type of the {@code List}'s elements
+     */
+    public @NotNull <T extends Comparable<T>> Iterable<Sextuple<T, T, T, T, T, T>> bagSextuplesLex(
+            @NotNull List<T> xs
+    ) {
+        return wheelsProvider.bagSextuplesLex(xs);
+    }
+
+    /**
+     * Generates all unordered {@code Septuple}s of elements from a {@code List}. The {@code Septuple}s are ordered
+     * lexicographically.
+     *
+     * @param xs a {@code List}
+     * @param <T> the type of the {@code List}'s elements
+     */
+    public @NotNull <T extends Comparable<T>> Iterable<Septuple<T, T, T, T, T, T, T>> bagSeptuplesLex(
+            @NotNull List<T> xs
+    ) {
+        return wheelsProvider.bagSeptuplesLex(xs);
+    }
+
+    /**
+     * Generates all unordered {@code String}s containing characters from a given {@code String}. The {@code String}s
+     * are ordered lexicographically.
+     *
+     * @param s a {@code String}
+     */
+    public @NotNull Iterable<String> stringBagsLex(int size, @NotNull String s) {
+        return wheelsProvider.stringBagsLex(size, s);
+    }
+
+    /**
+     * Generates all unordered {@code List}s containing elements from a given {@code Iterable}. The {@code List}s are
+     * ordered in shortlex order (by length, then lexicographically).
+     *
+     * @param xs a {@code List} of elements
+     * @param <T> the type of values in the {@code List}s
+     */
+    public @NotNull <T extends Comparable<T>> Iterable<List<T>> bagsShortlex(@NotNull List<T> xs) {
+        return wheelsProvider.bagsShortlex(xs);
+    }
+
+    /**
+     * Generates all unordered {@code String}s containing characters from a given {@code String}. The {@code String}s
+     * are ordered in shortlex order (by length, then lexicographically).
+     *
+     * @param s a {@code String}
+     */
+    public @NotNull Iterable<String> stringBagsShortlex(@NotNull String s) {
+        return wheelsProvider.stringBagsShortlex(s);
+    }
+
+    /**
+     * Generates all unordered {@code List}s with a minimum size containing elements from a given {@code Iterable}. The
+     * {@code List}s are ordered in shortlex order (by length, then lexicographically).
+     *
+     * @param minSize the minimum size of the resulting {@code List}s
+     * @param xs a {@code List} of elements
+     * @param <T> the type of values in the {@code List}s
+     */
+    public @NotNull <T extends Comparable<T>> Iterable<List<T>> bagsShortlexAtLeast(int minSize, @NotNull List<T> xs) {
+        return wheelsProvider.bagsShortlexAtLeast(minSize, xs);
+    }
+
+    /**
+     * Generates all unordered {@code String}s with a minimum size containing characters from a given {@code String}.
+     * The {@code String}s are ordered in shortlex order (by length, then lexicographically).
+     *
+     * @param minSize the minimum size of the resulting {@code String}s
+     * @param s a {@code String}
+     */
+    public @NotNull Iterable<String> stringBagsShortlexAtLeast(int minSize, @NotNull String s) {
+        return wheelsProvider.stringBagsShortlexAtLeast(minSize, s);
+    }
+
+    /**
+     * Generates all unordered {@code List}s of a given size containing elements from a given {@code Iterable}.
+     *
+     * @param size the length of each of the generated {@code List}s
+     * @param xs an {@code Iterable} of elements
+     * @param <T> the type of values in the {@code List}s
+     */
+    public @NotNull <T extends Comparable<T>> Iterable<List<T>> bags(int size, @NotNull Iterable<T> xs) {
+        return wheelsProvider.bags(size, xs);
+    }
+
+    /**
+     * Generates all unordered {@code Pair}s of elements from an {@code Iterable}.
+     *
+     * @param xs an {@code Iterable}
+     * @param <T> the type of the {@code Iterable}'s elements
+     */
+    public @NotNull <T extends Comparable<T>> Iterable<Pair<T, T>> bagPairs(@NotNull Iterable<T> xs) {
+        return wheelsProvider.bagPairs(xs);
+    }
+
+    /**
+     * Generates all unordered {@code Triple}s of elements from an {@code Iterable}.
+     *
+     * @param xs an {@code Iterable}
+     * @param <T> the type of the {@code Iterable}'s elements
+     */
+    public @NotNull <T extends Comparable<T>> Iterable<Triple<T, T, T>> bagTriples(@NotNull Iterable<T> xs) {
+        return wheelsProvider.bagTriples(xs);
+    }
+
+    /**
+     * Generates all unordered {@code Quadruple}s of elements from an {@code Iterable}.
+     *
+     * @param xs an {@code Iterable}
+     * @param <T> the type of the {@code Iterable}'s elements
+     */
+    public @NotNull <T extends Comparable<T>> Iterable<Quadruple<T, T, T, T>> bagQuadruples(@NotNull Iterable<T> xs) {
+        return wheelsProvider.bagQuadruples(xs);
+    }
+
+    /**
+     * Generates all unordered {@code Quintuple}s of elements from an {@code Iterable}.
+     *
+     * @param xs an {@code Iterable}
+     * @param <T> the type of the {@code Iterable}'s elements
+     */
+    public @NotNull <T extends Comparable<T>> Iterable<Quintuple<T, T, T, T, T>> bagQuintuples(
+            @NotNull Iterable<T> xs
+    ) {
+        return wheelsProvider.bagQuintuples(xs);
+    }
+
+    /**
+     * Generates all unordered {@code Sextuple}s of elements from an {@code Iterable}.
+     *
+     * @param xs an {@code Iterable}
+     * @param <T> the type of the {@code Iterable}'s elements
+     */
+    public @NotNull <T extends Comparable<T>> Iterable<Sextuple<T, T, T, T, T, T>> bagSextuples(
+            @NotNull Iterable<T> xs
+    ) {
+        return wheelsProvider.bagSextuples(xs);
+    }
+
+    /**
+     * Generates all unordered {@code Septuple}s of elements from an {@code Iterable}.
+     *
+     * @param xs an {@code Iterable}
+     * @param <T> the type of the {@code Iterable}'s elements
+     */
+    public @NotNull <T extends Comparable<T>> Iterable<Septuple<T, T, T, T, T, T, T>> bagSeptuples(
+            @NotNull Iterable<T> xs
+    ) {
+        return wheelsProvider.bagSeptuples(xs);
+    }
+
+    /**
+     * Generates all unordered {@code String}s of a given size containing characters from a given {@code String}.
+     *
+     * @param size the length of each of the generated {@code String}s
+     * @param s a {@code String}
+     */
+    public @NotNull Iterable<String> stringBags(int size, @NotNull String s) {
+        return wheelsProvider.stringBags(size, s);
+    }
+
+    /**
+     * Generates all unordered {@code String}s of a given size.
+     *
+     * @param size the length of each of the generated {@code String}s
+     */
+    public @NotNull Iterable<String> stringBags(int size) {
+        return wheelsProvider.stringBags(size);
+    }
+
+    /**
+     * Generates all unordered {@code List}s containing elements from a given {@code Iterable}.
+     *
+     * @param xs an {@code Iterable} of elements
+     * @param <T> the type of values in the {@code List}s
+     */
+    public @NotNull <T extends Comparable<T>> Iterable<List<T>> bags(@NotNull Iterable<T> xs) {
+        return wheelsProvider.bags(xs);
+    }
+
+    /**
+     * Generates all unordered {@code String}s containing characters from a given {@code String}.
+     *
+     * @param s a {@code String}
+     */
+    public @NotNull Iterable<String> stringBags(@NotNull String s) {
+        return wheelsProvider.stringBags(s);
+    }
+
+    /**
+     * Generates all unordered {@code String}s.
+     */
+    public @NotNull Iterable<String> stringBags() {
+        return wheelsProvider.stringBags();
+    }
+
+    /**
+     * Generates all unordered {@code List}s with a minimum size containing elements from a given {@code Iterable}.
+     *
+     * @param minSize the minimum size of the resulting {@code List}s
+     * @param xs an {@code Iterable} of elements
+     * @param <T> the type of values in the {@code List}s
+     */
+    public @NotNull <T extends Comparable<T>> Iterable<List<T>> bagsAtLeast(int minSize, @NotNull Iterable<T> xs) {
+        return wheelsProvider.bagsAtLeast(minSize, xs);
+    }
+
+    /**
+     * Generates all unordered {@code String}s with a minimum size containing characters from a given {@code String}.
+     *
+     * @param minSize the minimum size of the resulting {@code String}s
+     * @param s an {@code String}
+     */
+    public @NotNull Iterable<String> stringBagsAtLeast(int minSize, @NotNull String s) {
+        return wheelsProvider.stringBagsAtLeast(minSize, s);
+    }
+
+    /**
+     * Generates all unordered {@code String}s with a minimum size.
+     *
+     * @param minSize the minimum size of the resulting {@code String}s
+     */
+    public @NotNull Iterable<String> stringBagsAtLeast(int minSize) {
+        return wheelsProvider.stringBagsAtLeast(minSize);
+    }
+
+    /**
+     * Generates all unordered {@code List}s of a given size containing elements from a given {@code List} with no
+     * repetitions. The {@code List}s are ordered lexicographically.
+     *
+     * @param size the length of each of the generated {@code List}s
+     * @param xs a {@code List} of elements
+     * @param <T> the type of values in the {@code List}s
+     */
+    public @NotNull <T extends Comparable<T>> Iterable<List<T>> subsetsLex(int size, @NotNull List<T> xs) {
+        return wheelsProvider.subsetsLex(size, xs);
+    }
+
+    /**
+     * Generates all unordered {@code Pair}s of elements from a {@code List} with no repetitions. The {@code Pair}s are
+     * ordered lexicographically.
+     *
+     * @param xs a {@code List}
+     * @param <T> the type of the {@code List}'s elements
+     */
+    public @NotNull <T extends Comparable<T>> Iterable<Pair<T, T>> subsetPairsLex(@NotNull List<T> xs) {
+        return wheelsProvider.subsetPairsLex(xs);
+    }
+
+    /**
+     * Generates all unordered {@code Triple}s of elements from a {@code List} with no repetitions. The {@code Triple}s
+     * are ordered lexicographically.
+     *
+     * @param xs a {@code List}
+     * @param <T> the type of the {@code List}'s elements
+     */
+    public @NotNull <T extends Comparable<T>> Iterable<Triple<T, T, T>> subsetTriplesLex(@NotNull List<T> xs) {
+        return wheelsProvider.subsetTriplesLex(xs);
+    }
+
+    /**
+     * Generates all unordered {@code Quadruple}s of elements from a {@code List} with no repetitions. The
+     * {@code Quadruple}s are ordered lexicographically.
+     *
+     * @param xs a {@code List}
+     * @param <T> the type of the {@code List}'s elements
+     */
+    public @NotNull <T extends Comparable<T>> Iterable<Quadruple<T, T, T, T>> subsetQuadruplesLex(
+            @NotNull List<T> xs
+    ) {
+        return wheelsProvider.subsetQuadruplesLex(xs);
+    }
+
+    /**
+     * Generates all unordered {@code Quintuple}s of elements from a {@code List} with no repetitions. The
+     * {@code Quintuple}s are ordered lexicographically.
+     *
+     * @param xs a {@code List}
+     * @param <T> the type of the {@code List}'s elements
+     */
+    public @NotNull <T extends Comparable<T>> Iterable<Quintuple<T, T, T, T, T>> subsetQuintuplesLex(
+            @NotNull List<T> xs
+    ) {
+        return wheelsProvider.subsetQuintuplesLex(xs);
+    }
+
+    /**
+     * Generates all unordered {@code Sextuple}s of elements from a {@code List} with no repetitions. The
+     * {@code Sextuple}s are ordered lexicographically.
+     *
+     * @param xs a {@code List}
+     * @param <T> the type of the {@code List}'s elements
+     */
+    public @NotNull <T extends Comparable<T>> Iterable<Sextuple<T, T, T, T, T, T>> subsetSextuplesLex(
+            @NotNull List<T> xs
+    ) {
+        return wheelsProvider.subsetSextuplesLex(xs);
+    }
+
+    /**
+     * Generates all unordered {@code Septuple}s of elements from a {@code List} with no repetitions. The
+     * {@code Septuple}s are ordered lexicographically.
+     *
+     * @param xs a {@code List}
+     * @param <T> the type of the {@code List}'s elements
+     */
+    public @NotNull <T extends Comparable<T>> Iterable<Septuple<T, T, T, T, T, T, T>> subsetSeptuplesLex(
+            @NotNull List<T> xs
+    ) {
+        return wheelsProvider.subsetSeptuplesLex(xs);
+    }
+
+    /**
+     * Generates all unordered {@code String}s containing characters from a given {@code String} with no repetitions.
+     * The {@code String}s are ordered lexicographically.
+     *
+     * @param s a {@code String}
+     */
+    public @NotNull Iterable<String> stringSubsetsLex(int size, @NotNull String s) {
+        return wheelsProvider.stringSubsetsLex(size, s);
+    }
+
+    /**
+     * Generates all unordered {@code List}s containing elements from a given {@code List} with no repetitions. The
+     * {@code List}s are ordered lexicographically.
+     *
+     * @param xs a {@code List} of elements
+     * @param <T> the type of values in the {@code List}s
+     */
+    public @NotNull <T extends Comparable<T>> Iterable<List<T>> subsetsLex(@NotNull List<T> xs) {
+        return wheelsProvider.subsetsLex(xs);
+    }
+
+    /**
+     * Generates all unordered {@code String}s containing characters from a given {@code String} with no repetitions.
+     * The {@code String}s are ordered lexicographically.
+     *
+     * @param s a {@code String}
+     */
+    public @NotNull Iterable<String> stringSubsetsLex(@NotNull String s) {
+        return wheelsProvider.stringSubsetsLex(s);
+    }
+
+    /**
+     * Generates all unordered {@code List}s with a minimum size containing elements from a given {@code List} with no
+     * repetitions. The {@code List}s are ordered lexicographically.
+     *
+     * @param minSize the minimum size of the resulting {@code List}s
+     * @param xs a {@code List} of elements
+     * @param <T> the type of values in the {@code List}s
+     */
+    public @NotNull <T extends Comparable<T>> Iterable<List<T>> subsetsLexAtLeast(int minSize, @NotNull List<T> xs) {
+        return wheelsProvider.subsetsLexAtLeast(minSize, xs);
+    }
+
+    /**
+     * Generates all unordered {@code String}s with a minimum size containing characters from a given {@code String}
+     * with no repetitions. The {@code String}s are ordered lexicographically.
+     *
+     * @param minSize the minimum size of the resulting {@code String}s
+     * @param s a {@code String}
+     */
+    public @NotNull Iterable<String> stringSubsetsLexAtLeast(int minSize, @NotNull String s) {
+        return wheelsProvider.stringSubsetsLexAtLeast(minSize, s);
+    }
+
+    /**
+     * Generates all unordered {@code List}s containing elements from a given {@code Iterable} with no repetitions. The
+     * {@code List}s are ordered in shortlex order (by length, then lexicographically).
+     *
+     * @param xs a {@code List} of elements
+     * @param <T> the type of values in the {@code List}s
+     */
+    public @NotNull <T extends Comparable<T>> Iterable<List<T>> subsetsShortlex(@NotNull List<T> xs) {
+        return wheelsProvider.subsetsShortlex(xs);
+    }
+
+    /**
+     * Generates all unordered {@code String}s containing characters from a given {@code String} with no repetitions.
+     * The {@code String}s are ordered in shortlex order (by length, then lexicographically).
+     *
+     * @param s a {@code String}
+     */
+    public @NotNull Iterable<String> stringSubsetsShortlex(@NotNull String s) {
+        return wheelsProvider.stringSubsetsShortlex(s);
+    }
+
+    /**
+     * Generates all unordered {@code List}s with a minimum size containing elements from a given {@code Iterable} with
+     * no repetitions. The {@code List}s are ordered in shortlex order (by length, then lexicographically).
+     *
+     * @param minSize the minimum size of the resulting {@code List}s
+     * @param xs a {@code List} of elements
+     * @param <T> the type of values in the {@code List}s
+     */
+    public @NotNull <T extends Comparable<T>> Iterable<List<T>> subsetsShortlexAtLeast(
+            int minSize,
+            @NotNull List<T> xs
+    ) {
+        return wheelsProvider.subsetsShortlexAtLeast(minSize, xs);
+    }
+
+    /**
+     * Generates all unordered {@code String}s with a minimum size containing characters from a given {@code String}
+     * with no repetitions. The {@code String}s are ordered in shortlex order (by length, then lexicographically).
+     *
+     * @param minSize the minimum size of the resulting {@code String}s
+     * @param s a {@code String}
+     */
+    public @NotNull Iterable<String> stringSubsetsShortlexAtLeast(int minSize, @NotNull String s) {
+        return wheelsProvider.stringSubsetsShortlexAtLeast(minSize, s);
+    }
+
+    /**
+     * Generates all unordered {@code List}s of a given size containing elements from a given {@code Iterable} with no
+     * repetitions.
+     *
+     * @param size the length of each of the generated {@code List}s
+     * @param xs an {@code Iterable} of elements
+     * @param <T> the type of values in the {@code List}s
+     */
+    public @NotNull <T extends Comparable<T>> Iterable<List<T>> subsets(int size, @NotNull Iterable<T> xs) {
+        return wheelsProvider.subsets(size, xs);
+    }
+
+    /**
+     * Generates all unordered {@code Pair}s of elements from an {@code Iterable} with no repetitions.
+     *
+     * @param xs an {@code Iterable}
+     * @param <T> the type of the {@code Iterable}'s elements
+     */
+    public @NotNull <T extends Comparable<T>> Iterable<Pair<T, T>> subsetPairs(@NotNull Iterable<T> xs) {
+        return wheelsProvider.subsetPairs(xs);
+    }
+
+    /**
+     * Generates all unordered {@code Triple}s of elements from an {@code Iterable} with no repetitions.
+     *
+     * @param xs an {@code Iterable}
+     * @param <T> the type of the {@code Iterable}'s elements
+     */
+    public @NotNull <T extends Comparable<T>> Iterable<Triple<T, T, T>> subsetTriples(@NotNull Iterable<T> xs) {
+        return wheelsProvider.subsetTriples(xs);
+    }
+
+    /**
+     * Generates all unordered {@code Quadruple}s of elements from an {@code Iterable} with no repetitions.
+     *
+     * @param xs an {@code Iterable}
+     * @param <T> the type of the {@code Iterable}'s elements
+     */
+    public @NotNull <T extends Comparable<T>> Iterable<Quadruple<T, T, T, T>> subsetQuadruples(
+            @NotNull Iterable<T> xs
+    ) {
+        return wheelsProvider.subsetQuadruples(xs);
+    }
+
+    /**
+     * Generates all unordered {@code Quintuple}s of elements from an {@code Iterable} with no repetitions.
+     *
+     * @param xs an {@code Iterable}
+     * @param <T> the type of the {@code Iterable}'s elements
+     */
+    public @NotNull <T extends Comparable<T>> Iterable<Quintuple<T, T, T, T, T>> subsetQuintuples(
+            @NotNull Iterable<T> xs
+    ) {
+        return wheelsProvider.subsetQuintuples(xs);
+    }
+
+    /**
+     * Generates all unordered {@code Sextuple}s of elements from an {@code Iterable} with no repetitions.
+     *
+     * @param xs an {@code Iterable}
+     * @param <T> the type of the {@code Iterable}'s elements
+     */
+    public @NotNull <T extends Comparable<T>> Iterable<Sextuple<T, T, T, T, T, T>> subsetSextuples(
+            @NotNull Iterable<T> xs
+    ) {
+        return wheelsProvider.subsetSextuples(xs);
+    }
+
+    /**
+     * Generates all unordered {@code Septuple}s of elements from an {@code Iterable} with no repetitions.
+     *
+     * @param xs an {@code Iterable}
+     * @param <T> the type of the {@code Iterable}'s elements
+     */
+    public @NotNull <T extends Comparable<T>> Iterable<Septuple<T, T, T, T, T, T, T>> subsetSeptuples(
+            @NotNull Iterable<T> xs
+    ) {
+        return wheelsProvider.subsetSeptuples(xs);
+    }
+
+    /**
+     * Generates all unordered {@code String}s of a given size containing characters from a given {@code String} with
+     * no repetitions.
+     *
+     * @param size the length of each of the generated {@code String}s
+     * @param s a {@code String}
+     */
+    public @NotNull Iterable<String> stringSubsets(int size, @NotNull String s) {
+        return wheelsProvider.stringSubsets(size, s);
+    }
+
+    /**
+     * Generates all unordered {@code String}s of a given size with no repetitions.
+     *
+     * @param size the length of each of the generated {@code String}s
+     */
+    public @NotNull Iterable<String> stringSubsets(int size) {
+        return wheelsProvider.stringSubsets(size);
+    }
+
+    /**
+     * Generates all unordered {@code List}s containing elements from a given {@code Iterable} with no repetitions.
+     *
+     * @param xs an {@code Iterable} of elements
+     * @param <T> the type of values in the {@code List}s
+     */
+    public @NotNull <T extends Comparable<T>> Iterable<List<T>> subsets(@NotNull Iterable<T> xs) {
+        return wheelsProvider.subsets(xs);
+    }
+
+    /**
+     * Generates all unordered {@code String}s containing characters from a given {@code String} with no repetitions.
+     *
+     * @param s a {@code String}
+     */
+    public @NotNull Iterable<String> stringSubsets(@NotNull String s) {
+        return wheelsProvider.stringSubsets(s);
+    }
+
+    /**
+     * Generates all unordered {@code String}s with no repetitions.
+     */
+    public @NotNull Iterable<String> stringSubsets() {
+        return wheelsProvider.stringSubsets();
+    }
+
+    /**
+     * Generates all unordered {@code List}s with a minimum size containing elements from a given {@code Iterable} with
+     * no repetitions.
+     *
+     * @param minSize the minimum size of the resulting {@code List}s
+     * @param xs an {@code Iterable} of elements
+     * @param <T> the type of values in the {@code List}s
+     */
+    public @NotNull <T extends Comparable<T>> Iterable<List<T>> subsetsAtLeast(
+            int minSize,
+            @NotNull Iterable<T> xs
+    ) {
+        return wheelsProvider.subsetsAtLeast(minSize, xs);
+    }
+
+    /**
+     * Generates all unordered {@code String}s with a minimum size containing characters from a given {@code String}
+     * with no repetitions.
+     *
+     * @param minSize the minimum size of the resulting {@code String}s
+     * @param s an {@code String}
+     */
+    public @NotNull Iterable<String> stringSubsetsAtLeast(int minSize, @NotNull String s) {
+        return wheelsProvider.stringSubsetsAtLeast(minSize, s);
+    }
+
+    /**
+     * Generates all unordered {@code String}s with a minimum size with no repetitions.
+     *
+     * @param minSize the minimum size of the resulting {@code String}s
+     */
+    public @NotNull Iterable<String> stringSubsetsAtLeast(int minSize) {
+        return wheelsProvider.stringSubsetsAtLeast(minSize);
+    }
+
+    /**
+     * Generates the Cartesian product of a {@code List} of {@code List}s, that is, all possible {@code List}s such
+     * that the ith element of the {@code List} comes from the ith input {@code List}.
+     *
+     * @param xss a {@code List} of {@code List}s
+     * @param <T> the type of values in the {@code List}s
+     */
+    public @NotNull <T> Iterable<List<T>> cartesianProduct(@NotNull List<List<T>> xss) {
+        return wheelsProvider.cartesianProduct(xss);
+    }
+
+    /**
+     * Generates repeating infinite {@code Iterables} whose elements are chosen from a given {@code List}.
+     *
+     * @param xs the source of elements for the generated {@code Iterable}s
+     * @param <T> the type of elements in the {@code Iterable}
+     */
+    public @NotNull <T> Iterable<Iterable<T>> repeatingIterables(@NotNull Iterable<T> xs) {
+        return wheelsProvider.repeatingIterables(xs);
+    }
+
+    /**
+     * Generates repeating infinite {@code Iterables} whose elements are chosen from a given {@code List}. The
+     * {@code Iterable}s have a specified minimum number of distinct elements (at least 2).
+     *
+     * @param minSize the minimum number of distinct elements in the generated {@code Iterable}s
+     * @param xs the source of elements for the {@code Iterable}
+     * @param <T> the type of elements in the {@code Iterable}
+     */
+    public @NotNull <T> Iterable<Iterable<T>> repeatingIterablesDistinctAtLeast(int minSize, @NotNull Iterable<T> xs) {
+        return wheelsProvider.repeatingIterablesDistinctAtLeast(minSize, xs);
+    }
+
+    /**
+     * Generates all sublists of a given {@code List}.
+     *
+     * @param xs a {@code List}
+     * @param <T> the type of the elements in {@code xs}
+     */
+    public @NotNull <T> Iterable<List<T>> sublists(@NotNull List<T> xs) {
+        return wheelsProvider.sublists(xs);
+    }
+
+    /**
+     * Generates all substrings of a given {@code String}.
+     *
+     * @param s a {@code String}
+     */
+    public @NotNull Iterable<String> substrings(@NotNull String s) {
+        return wheelsProvider.substrings(s);
+    }
+
+    /**
+     * Generates all {@code List}s from an {@code Iterable} of elements {@code xs} which contain a particular element.
+     * {@code xs} may or may not contain the element.
+     *
+     * @param x an element that the output {@code List}s must contain
+     * @param xs a {@code List}
+     * @param <T> the type of the elements in {@code xs}
+     */
+    public @NotNull <T> Iterable<List<T>> listsWithElement(@Nullable T x, @NotNull Iterable<T> xs) {
+        return wheelsProvider.listsWithElement(x, xs);
+    }
+
+    /**
+     * Generates all {@code String}s from a given {@code String} {@code s} which contain a particular character.
+     * {@code s} may or may not contain the character.
+     *
+     * @param c a character that the output {@code String}s must contain
+     * @param s a {@code String}
+     */
+    public @NotNull Iterable<String> stringsWithChar(char c, @NotNull String s) {
+        return wheelsProvider.stringsWithChar(c, s);
+    }
+
+    /**
+     * Generates all {@code String}s which contain a particular character.
+     *
+     * @param c a character that the output {@code String}s must contain
+     */
     public @NotNull Iterable<String> stringsWithChar(char c) {
         return wheelsProvider.stringsWithChar(c);
     }
 
-    public @NotNull Iterable<String> stringsWithSubstrings(
-            @NotNull Iterable<String> substrings,
-            @NotNull Iterable<Character> cs
+    /**
+     * Generates all unordered {@code List}s from an {@code Iterable} of elements {@code xs}, with no repetitions,
+     * which contain a particular element. {@code xs} may or may not contain the element.
+     *
+     * @param x an element that the output {@code List}s must contain
+     * @param xs a {@code List}
+     * @param <T> the type of the elements in {@code xs}
+     */
+    public @NotNull <T extends Comparable<T>> Iterable<List<T>> subsetsWithElement(
+            T x,
+            @NotNull Iterable<T> xs
     ) {
-        return wheelsProvider.stringsWithSubstrings(substrings, cs);
+        return wheelsProvider.subsetsWithElement(x, xs);
     }
 
+    /**
+     * Generates all unordered {@code String}s containing characters from a given {@code String} {@code s}, with no
+     * repetitions, which contain a particular character. {@code s} may or may not contain the character.
+     *
+     * @param c a character that the output {@code String}s must contain
+     * @param s a {@code String}
+     */
+    public @NotNull Iterable<String> stringSubsetsWithChar(char c, @NotNull String s) {
+        return wheelsProvider.stringSubsetsWithChar(c, s);
+    }
+
+    /**
+     * Generates all unordered {@code String}s with no repetitions which contain a particular character.
+     *
+     * @param c a character that the output {@code String}s must contain
+     */
+    public @NotNull Iterable<String> stringSubsetsWithChar(char c) {
+        return wheelsProvider.stringSubsetsWithChar(c);
+    }
+
+    /**
+     * Generates all {@code List}s containing elements from a given {@code List} {@code xs} which contain at least one
+     * of a given {@code Iterable} of sublists.
+     *
+     * @param sublists {@code List}s, at least one of which must be contained in each result {@code List}
+     * @param xs a {@code List}
+     * @param <T> the type of elements in {@code xs}
+     */
+    public @NotNull <T> Iterable<List<T>> listsWithSublists(
+            @NotNull Iterable<List<T>> sublists,
+            @NotNull Iterable<T> xs
+    ) {
+        return wheelsProvider.listsWithSublists(sublists, xs);
+    }
+
+    /**
+     * Generates all {@code String}s containing characters from a given {@code String} {@code s} which contain at least
+     * one of a given {@code Iterable} of substrings.
+     *
+     * @param substrings {@code String}s, at least one of which must be contained in each result {@code String}
+     * @param s a {@code String}
+     */
+    public @NotNull Iterable<String> stringsWithSubstrings(@NotNull Iterable<String> substrings, @NotNull String s) {
+        return wheelsProvider.stringsWithSubstrings(substrings, s);
+    }
+
+    /**
+     * Generates all {@code String}s which contain at least one of a given {@code Iterable} of substrings.
+     *
+     * @param substrings {@code String}s, at least one of which must be contained in each result {@code String}
+     */
     public @NotNull Iterable<String> stringsWithSubstrings(@NotNull Iterable<String> substrings) {
         return wheelsProvider.stringsWithSubstrings(substrings);
     }
 
-    public @NotNull <T> Iterable<List<T>> permutations(@NotNull List<T> xs) {
-        return wheelsProvider.permutations(xs);
+    /**
+     * Generates all {@code HashMap}s whose keys are {@code ks} and whose values are subsets of {@code vs}.
+     *
+     * @param ks the keys of the resulting maps
+     * @param vs a set where the values of the resulting maps are drawn from
+     * @param <K> the type of the maps' keys
+     * @param <V> the type of the maps' values
+     */
+    public @NotNull <K, V> Iterable<Map<K, V>> maps(@NotNull List<K> ks, Iterable<V> vs) {
+        return wheelsProvider.maps(ks, vs);
     }
 
-    public @NotNull Iterable<String> permutations(@NotNull String s) {
-        return wheelsProvider.permutations(s);
+    /**
+     * Generates all {@code RandomProvider}s with a fixed {@code scale} and {@code secondaryScale}.
+     *
+     * @param scale the {@code scale} of the generated {@code RandomProvider}s
+     * @param secondaryScale the {@code secondaryScale} of the generated {@code RandomProvider}s
+     */
+    public @NotNull Iterable<RandomProvider> randomProvidersFixedScales(int scale, int secondaryScale) {
+        return wheelsProvider.randomProvidersFixedScales(scale, secondaryScale);
+    }
+
+    /**
+     * Generates all {@code RandomProvider}s with the default {@code scale} and {@code secondaryScale}.
+     */
+    public @NotNull Iterable<RandomProvider> randomProvidersDefault() {
+        return wheelsProvider.randomProvidersDefault();
+    }
+
+    /**
+     * Generates all {@code RandomProvider}s with the default {@code secondaryScale}.
+     */
+    public @NotNull Iterable<RandomProvider> randomProvidersDefaultSecondaryScale() {
+        return wheelsProvider.randomProvidersDefaultSecondaryScale();
+    }
+
+    /**
+     * Generates all {@code RandomProvider}s.
+     */
+    public @NotNull Iterable<RandomProvider> randomProviders() {
+        return wheelsProvider.randomProviders();
     }
 
     public abstract @NotNull Iterable<Rational> rationals();
@@ -1028,7 +2753,6 @@ public strictfp abstract class QBarIterableProvider {
     public abstract @NotNull Iterable<Integer> integers(@NotNull Interval a);
     public abstract @NotNull Iterable<Long> longs(@NotNull Interval a);
     public abstract @NotNull Iterable<BigInteger> bigIntegers(@NotNull Interval a);
-
 
     public abstract @NotNull Iterable<Rational> rationals(@NotNull Interval a);
     public abstract @NotNull Iterable<Rational> rationalsNotIn(@NotNull Interval a);

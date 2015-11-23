@@ -7,7 +7,6 @@ import jas.structure.RingElem;
 import jas.structure.RingFactory;
 
 public class FactorFactory {
-
     @SuppressWarnings("unchecked")
     public static <C extends RingElem<C>> FactorAbstract<C> getImplementation(RingFactory<C> fac) {
         FactorAbstract/*raw type<C>*/ufd;
@@ -26,5 +25,4 @@ public class FactorFactory {
         //
         return (FactorAbstract<C>) ufd;
     }
-
 }

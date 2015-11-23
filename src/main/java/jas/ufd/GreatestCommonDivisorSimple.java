@@ -11,7 +11,6 @@ import jas.structure.RingElem;
  *
  * @author Heinz Kredel
  */
-
 public class GreatestCommonDivisorSimple<C extends RingElem<C>> extends GreatestCommonDivisorAbstract<C> {
     /**
      * Univariate GenPolynomial greatest comon divisor. Uses pseudoRemainder for
@@ -83,7 +82,6 @@ public class GreatestCommonDivisorSimple<C extends RingElem<C>> extends Greatest
         return (q.multiply(c)).abs();
     }
 
-
     /**
      * Univariate GenPolynomial recursive greatest comon divisor. Uses
      * pseudoRemainder for remainder.
@@ -93,8 +91,10 @@ public class GreatestCommonDivisorSimple<C extends RingElem<C>> extends Greatest
      * @return gcd(P, S).
      */
     @Override
-    public GenPolynomial<GenPolynomial<C>> recursiveUnivariateGcd(GenPolynomial<GenPolynomial<C>> P,
-                                                                  GenPolynomial<GenPolynomial<C>> S) {
+    public GenPolynomial<GenPolynomial<C>> recursiveUnivariateGcd(
+            GenPolynomial<GenPolynomial<C>> P,
+            GenPolynomial<GenPolynomial<C>> S
+    ) {
         if (S == null || S.isZERO()) {
             return P;
         }

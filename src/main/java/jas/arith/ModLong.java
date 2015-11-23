@@ -10,19 +10,16 @@ import java.math.BigInteger;
  * @author Heinz Kredel
  * @see ModInteger
  */
-
 public final class ModLong implements RingElem<ModLong>, Modular {
     /**
      * ModLongRing reference.
      */
     public final ModLongRing ring;
 
-
     /**
      * Value part of the element data structure.
      */
     public final long val;
-
 
     /**
      * The constructor creates a ModLong object from a ModLongRing and a value
@@ -34,7 +31,6 @@ public final class ModLong implements RingElem<ModLong>, Modular {
     public ModLong(ModLongRing m, BigInteger a) {
         this(m, a.mod(m.getModul()).longValue());
     }
-
 
     /**
      * The constructor creates a ModLong object from a ModLongRing and a long
@@ -49,7 +45,6 @@ public final class ModLong implements RingElem<ModLong>, Modular {
         val = (v >= 0L ? v : v + ring.modul);
     }
 
-
     /**
      * The constructor creates a ModLong object from a ModLongRing and a Long
      * value part.
@@ -61,7 +56,6 @@ public final class ModLong implements RingElem<ModLong>, Modular {
         this(m, a.longValue());
     }
 
-
     /**
      * The constructor creates a ModLong object from a ModLongRing and a String
      * value part.
@@ -72,7 +66,6 @@ public final class ModLong implements RingElem<ModLong>, Modular {
     public ModLong(ModLongRing m, String s) {
         this(m, new Long(s.trim()));
     }
-
 
     /**
      * Get the corresponding element factory.
@@ -107,7 +100,6 @@ public final class ModLong implements RingElem<ModLong>, Modular {
         return val == 0L;
     }
 
-
     /**
      * Is ModLong number one.
      *
@@ -117,7 +109,6 @@ public final class ModLong implements RingElem<ModLong>, Modular {
     public boolean isONE() {
         return val == 1L;
     }
-
 
     /**
      * Is ModLong number a unit.
@@ -158,7 +149,6 @@ public final class ModLong implements RingElem<ModLong>, Modular {
         return b instanceof ModLong && (0 == compareTo((ModLong) b));
     }
 
-
     /**
      * Hash code for this ModLong.
      *
@@ -168,7 +158,6 @@ public final class ModLong implements RingElem<ModLong>, Modular {
     public int hashCode() {
         return (int) val;
     }
-
 
     /**
      * ModLong absolute value.
@@ -180,7 +169,6 @@ public final class ModLong implements RingElem<ModLong>, Modular {
         return new ModLong(ring, (val < 0 ? -val : val));
     }
 
-
     /**
      * ModLong negative.
      *
@@ -190,7 +178,6 @@ public final class ModLong implements RingElem<ModLong>, Modular {
     public ModLong negate() {
         return new ModLong(ring, -val);
     }
-
 
     /**
      * ModLong signum.
@@ -205,7 +192,6 @@ public final class ModLong implements RingElem<ModLong>, Modular {
         return (val < 0L ? -1 : 0);
     }
 
-
     /**
      * ModLong subtraction.
      *
@@ -215,7 +201,6 @@ public final class ModLong implements RingElem<ModLong>, Modular {
     public ModLong subtract(ModLong S) {
         return new ModLong(ring, val - S.val);
     }
-
 
     /**
      * ModLong divide.
@@ -238,7 +223,6 @@ public final class ModLong implements RingElem<ModLong>, Modular {
         }
     }
 
-
     /**
      * ModLong inverse.
      *
@@ -253,7 +237,6 @@ public final class ModLong implements RingElem<ModLong>, Modular {
             throw e;
         }
     }
-
 
     /**
      * ModLong remainder.
@@ -274,7 +257,6 @@ public final class ModLong implements RingElem<ModLong>, Modular {
         return new ModLong(ring, val % S.val);
     }
 
-
     /**
      * ModLong multiply.
      *
@@ -285,7 +267,6 @@ public final class ModLong implements RingElem<ModLong>, Modular {
         return new ModLong(ring, val * S.val);
     }
 
-
     /**
      * ModLong summation.
      *
@@ -295,7 +276,6 @@ public final class ModLong implements RingElem<ModLong>, Modular {
     public ModLong sum(ModLong S) {
         return new ModLong(ring, val + S.val);
     }
-
 
     /**
      * ModInteger greatest common divisor.
@@ -315,7 +295,6 @@ public final class ModLong implements RingElem<ModLong>, Modular {
         }
         return new ModLong(ring, gcd(val, S.val));
     }
-
 
     /**
      * ModInteger extended greatest common divisor.
@@ -391,7 +370,6 @@ public final class ModLong implements RingElem<ModLong>, Modular {
         return ret;
     }
 
-
     /**
      * Long greatest common divisor.
      *
@@ -415,7 +393,6 @@ public final class ModLong implements RingElem<ModLong>, Modular {
         }
         return a;
     }
-
 
     /**
      * Long half extended greatest common divisor.
@@ -458,7 +435,6 @@ public final class ModLong implements RingElem<ModLong>, Modular {
         return ret;
     }
 
-
     /**
      * Long modular inverse.
      *
@@ -484,5 +460,4 @@ public final class ModLong implements RingElem<ModLong>, Modular {
         }
         return b;
     }
-
 }

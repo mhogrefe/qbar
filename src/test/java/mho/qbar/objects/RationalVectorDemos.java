@@ -421,13 +421,7 @@ public class RationalVectorDemos {
 
     private static void demoRead_targeted() {
         initialize();
-        Iterable<Character> cs;
-        if (P instanceof QBarExhaustiveProvider) {
-            cs = fromString(RATIONAL_VECTOR_CHARS);
-        } else {
-            cs = P.uniformSample(RATIONAL_VECTOR_CHARS);
-        }
-        for (String s : take(LIMIT, P.strings(cs))) {
+        for (String s : take(LIMIT, P.strings(RATIONAL_VECTOR_CHARS))) {
             System.out.println("read(" + s + ") = " + read(s));
         }
     }
@@ -441,13 +435,7 @@ public class RationalVectorDemos {
 
     private static void demoFindIn_targeted() {
         initialize();
-        Iterable<Character> cs;
-        if (P instanceof QBarExhaustiveProvider) {
-            cs = fromString(RATIONAL_VECTOR_CHARS);
-        } else {
-            cs = P.uniformSample(RATIONAL_VECTOR_CHARS);
-        }
-        for (String s : take(LIMIT, P.strings(cs))) {
+        for (String s : take(LIMIT, P.strings(RATIONAL_VECTOR_CHARS))) {
             System.out.println("findIn(" + s + ") = " + findIn(s));
         }
     }

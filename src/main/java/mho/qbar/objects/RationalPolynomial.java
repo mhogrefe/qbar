@@ -1,7 +1,7 @@
 package mho.qbar.objects;
 
 import mho.wheels.io.Readers;
-import mho.wheels.math.MathUtils;
+import mho.wheels.iterables.NoRemoveIterable;
 import mho.wheels.numberUtils.IntegerUtils;
 import mho.wheels.ordering.comparators.ShortlexComparator;
 import mho.wheels.structures.Pair;
@@ -38,7 +38,9 @@ public final class RationalPolynomial implements
     /**
      * 1
      */
-    public static final @NotNull RationalPolynomial ONE = new RationalPolynomial(Collections.singletonList(Rational.ONE));
+    public static final @NotNull RationalPolynomial ONE = new RationalPolynomial(
+            Collections.singletonList(Rational.ONE)
+    );
 
     /**
      * x
@@ -86,24 +88,7 @@ public final class RationalPolynomial implements
      */
     @Override
     public @NotNull Iterator<Rational> iterator() {
-        return new Iterator<Rational>() {
-            private int i = 0;
-
-            @Override
-            public boolean hasNext() {
-                return i < coefficients.size();
-            }
-
-            @Override
-            public Rational next() {
-                return coefficients.get(i++);
-            }
-
-            @Override
-            public void remove() {
-                throw new UnsupportedOperationException("cannot remove from this iterator");
-            }
-        };
+        return new NoRemoveIterable<>(coefficients).iterator();
     }
 
     /**

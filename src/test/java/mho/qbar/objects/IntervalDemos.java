@@ -450,13 +450,7 @@ public class IntervalDemos {
 
     private static void demoRead_targeted() {
         initialize();
-        Iterable<Character> cs;
-        if (P instanceof QBarExhaustiveProvider) {
-            cs = fromString(INTERVAL_CHARS);
-        } else {
-            cs = ((QBarRandomProvider) P).uniformSample(INTERVAL_CHARS);
-        }
-        for (String s : take(LIMIT, P.strings(cs))) {
+        for (String s : take(LIMIT, P.strings(INTERVAL_CHARS))) {
             System.out.println("read(" + s + ") = " + read(s));
         }
     }
@@ -470,13 +464,7 @@ public class IntervalDemos {
 
     private static void demoFindIn_targeted() {
         initialize();
-        Iterable<Character> cs;
-        if (P instanceof QBarExhaustiveProvider) {
-            cs = fromString(INTERVAL_CHARS);
-        } else {
-            cs = ((QBarRandomProvider) P).uniformSample(INTERVAL_CHARS);
-        }
-        for (String s : take(LIMIT, P.strings(cs))) {
+        for (String s : take(LIMIT, P.strings(INTERVAL_CHARS))) {
             System.out.println("findIn(" + s + ") = " + findIn(s));
         }
     }

@@ -5,7 +5,6 @@ package jas.arith;
  *
  * @author Heinz Kredel
  */
-
 public interface Modular {
     /**
      * Return a symmetric JasBigInteger from this Element.

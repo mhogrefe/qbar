@@ -43,5 +43,4 @@ class SquarefreeFactory {
         }
         return (SquarefreeAbstract<C>) ufd;
     }
-
 }

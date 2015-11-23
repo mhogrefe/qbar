@@ -15,15 +15,11 @@ import java.util.TreeMap;
  *
  * @author Heinz Kredel
  */
-
 public abstract class SquarefreeFieldCharP<C extends RingElem<C>> extends SquarefreeAbstract<C> {
-
-
     /*
      * Squarefree engine for characteristic p base coefficients.
      */
     //protected final SquarefreeAbstract<C> rengine;
-
 
     /**
      * Factory for finite field of characteristic p coefficients.
@@ -42,7 +38,6 @@ public abstract class SquarefreeFieldCharP<C extends RingElem<C>> extends Square
         }
         coFac = fac;
     }
-
 
     /**
      * Get the String representation.
@@ -192,7 +187,8 @@ public abstract class SquarefreeFieldCharP<C extends RingElem<C>> extends Square
         SortedMap<C, Long> factors = new TreeMap<>();
         RingFactory<C> cfac = (RingFactory<C>) coeff.factory();
         if (cfac.isFinite()) {
-            SquarefreeFiniteFieldCharP<C> reng = (SquarefreeFiniteFieldCharP) SquarefreeFactory.getImplementation(cfac);
+            SquarefreeFiniteFieldCharP<C> reng =
+                    (SquarefreeFiniteFieldCharP) SquarefreeFactory.getImplementation(cfac);
             SortedMap<C, Long> rfactors = reng.rootCharacteristic(coeff); // ??
             factors.putAll(rfactors);
         }

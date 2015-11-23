@@ -102,7 +102,6 @@ public class FactorInteger extends FactorAbstract<JasBigInteger> {
                 BigInteger p = pit.next();
                 //System.out.println("next run ++++++++++++++++++++++++++++++++++");
                 if (++i >= pn) {
-
                     throw new ArithmeticException("prime list exhausted");
                 }
                 if (ModLongRing.MAX_LONG.compareTo(p) > 0) {
@@ -113,7 +112,6 @@ public class FactorInteger extends FactorAbstract<JasBigInteger> {
 
                 nf = cofac.fromInteger(ac.getVal());
                 if (nf.isZERO()) {
-
                     //System.out.println("unlucky prime (nf) = " + p);
                     continue;
                 }
@@ -121,19 +119,16 @@ public class FactorInteger extends FactorAbstract<JasBigInteger> {
                 mfac = new GenPolynomialRing<>(cofac, pfac);
                 am = PolyUtil.fromIntegerCoefficients(mfac, P);
                 if (!am.degreeVector().equals(degv)) {
-
                     //System.out.println("unlucky prime (deg) = " + p);
                     continue;
                 }
                 GenPolynomial<ModLong> ap = PolyUtil.baseDeriviative(am);
                 if (ap.isZERO()) {
-
                     //System.out.println("unlucky prime (a')= " + p);
                     continue;
                 }
                 GenPolynomial<ModLong> g = mengine.baseGcd(am, ap);
                 if (g.isONE()) {
-
                     //System.out.println("**lucky prime = " + p);
                     break;
                 }
@@ -179,12 +174,10 @@ public class FactorInteger extends FactorAbstract<JasBigInteger> {
         }
 
         if (mlist.size() <= 1) {
-
             factors.add(P);
             return factors;
         }
         if (AD.cardinality() <= 2) { // only one possible factor
-
             factors.add(P);
             return factors;
         }
@@ -213,8 +206,12 @@ public class FactorInteger extends FactorAbstract<JasBigInteger> {
      * @return [g_0, ..., g_{n-1}] = lift(C,F), with C = prod_{0,...,n-1} g_i mod
      * p**e. <b>Note:</b> does not work in all cases.
      */
-    List<GenPolynomial<JasBigInteger>> searchFactorsMonic(GenPolynomial<JasBigInteger> C, JasBigInteger M,
-                                                          List<GenPolynomial<ModLong>> F, BitSet D) {
+    List<GenPolynomial<JasBigInteger>> searchFactorsMonic(
+            GenPolynomial<JasBigInteger> C,
+            JasBigInteger M,
+            List<GenPolynomial<ModLong>> F,
+            BitSet D
+    ) {
         //System.out.println("*** monic factor combination ***");
         if (C == null || C.isZERO() || F == null || F.size() == 0) {
             throw new IllegalArgumentException("C must be nonzero and F must be nonempty");
@@ -255,7 +252,6 @@ public class FactorInteger extends FactorAbstract<JasBigInteger> {
             KsubSet<GenPolynomial<ModLong>> ps = new KsubSet<>(lift, j);
             for (List<GenPolynomial<ModLong>> flist : ps) {
                 if (!D.get((int) degreeSum(flist))) {
-
                     continue;
                 }
                 GenPolynomial<ModLong> mtrial = Power.multiply(mpfac, flist);
@@ -293,8 +289,12 @@ public class FactorInteger extends FactorAbstract<JasBigInteger> {
      * @return [g_0, ..., g_{n-1}] = lift(C,F), with C = prod_{0,...,n-1} g_i mod
      * p**e.
      */
-    List<GenPolynomial<JasBigInteger>> searchFactorsNonMonic(GenPolynomial<JasBigInteger> C, JasBigInteger M,
-                                                             List<GenPolynomial<ModLong>> F, BitSet D) {
+    List<GenPolynomial<JasBigInteger>> searchFactorsNonMonic(
+            GenPolynomial<JasBigInteger> C,
+            JasBigInteger M,
+            List<GenPolynomial<ModLong>> F,
+            BitSet D
+    ) {
         if (C == null || C.isZERO() || F == null || F.size() == 0) {
             throw new IllegalArgumentException("C must be nonzero and F must be nonempty");
         }

@@ -4,7 +4,7 @@ import mho.qbar.iterableProviders.QBarExhaustiveProvider;
 import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.iterableProviders.QBarRandomProvider;
 import mho.qbar.testing.QBarTesting;
-import mho.wheels.math.Combinatorics;
+import mho.wheels.iterables.ExhaustiveProvider;
 import mho.wheels.numberUtils.BigDecimalUtils;
 import mho.wheels.numberUtils.FloatingPointUtils;
 import mho.wheels.ordering.Ordering;
@@ -20,6 +20,7 @@ import java.util.*;
 import static mho.qbar.objects.Interval.*;
 import static mho.qbar.objects.Interval.greaterThanOrEqualTo;
 import static mho.qbar.objects.Interval.lessThanOrEqualTo;
+import static mho.qbar.objects.Interval.sum;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.ordering.Ordering.*;
 import static mho.wheels.testing.Testing.*;
@@ -31,6 +32,7 @@ import static org.junit.Assert.fail;
 
 public class IntervalProperties {
     private static boolean USE_RANDOM;
+    private static final @NotNull QBarExhaustiveProvider EP = QBarExhaustiveProvider.INSTANCE;
     private static final @NotNull String INTERVAL_CHARS = " (),-/0123456789I[]finty";
     private static final int TINY_LIMIT = 10;
     private static int LIMIT;
@@ -353,7 +355,7 @@ public class IntervalProperties {
 
         Iterable<Pair<List<Interval>, List<Interval>>> ps = P.dependentPairs(
                 P.listsAtLeast(1, P.intervals()),
-                P::permutations
+                P::permutationsFinite
         );
         for (Pair<List<Interval>, List<Interval>> p : take(LIMIT, ps)) {
             assertEquals(p.toString(), convexHull(p.a), convexHull(p.b));
@@ -474,13 +476,19 @@ public class IntervalProperties {
             List<Interval> disjoint = makeDisjoint(as);
             disjoint.forEach(mho.qbar.objects.IntervalProperties::validate);
             assertTrue(as.toString(), weaklyIncreasing(disjoint));
-            assertTrue(as.toString(), and(map(p -> p.a.disjoint(p.b), Combinatorics.distinctPairs(disjoint))));
+            assertTrue(
+                    as.toString(),
+                    and(map(p -> p.a.disjoint(p.b), ExhaustiveProvider.INSTANCE.distinctPairs(disjoint)))
+            );
             for (Rational r : take(TINY_LIMIT, mux(toList(map(P::rationals, as))))) {
                 assertTrue(as.toString(), or(map(a -> a.contains(r), disjoint)));
             }
         }
 
-        Iterable<Pair<List<Interval>, List<Interval>>> ps = P.dependentPairs(P.lists(P.intervals()), P::permutations);
+        Iterable<Pair<List<Interval>, List<Interval>>> ps = P.dependentPairs(
+                P.lists(P.intervals()),
+                P::permutationsFinite
+        );
         for (Pair<List<Interval>, List<Interval>> p : take(LIMIT, ps)) {
             assertEquals(p.toString(), makeDisjoint(p.a), makeDisjoint(p.b));
         }
@@ -1722,6 +1730,7 @@ public class IntervalProperties {
         propertiesDeltaHelper(
                 LIMIT,
                 P.getWheelsProvider(),
+                EP.intervals(),
                 P.intervals(),
                 Interval::negate,
                 Interval::subtract,
@@ -2010,7 +2019,7 @@ public class IntervalProperties {
 
         Iterable<Triple<Interval, Interval, Interval>> ts = filter(
                 t -> t.a.elementCompare(t.b).equals(Optional.of(LT)) &&
-                     t.b.elementCompare(t.c).equals(Optional.of(LT)),
+                     t.b.elementCompare(t.c).equals(Optional.of(LT)), ///
                 P.triples(P.intervals())
         );
         for (Triple<Interval, Interval, Interval> t : take(LIMIT, ts)) {

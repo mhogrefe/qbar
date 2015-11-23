@@ -2,13 +2,9 @@ package mho.qbar.iterableProviders;
 
 import mho.qbar.objects.*;
 import mho.wheels.iterables.RandomProvider;
-import mho.wheels.math.BinaryFraction;
-import mho.wheels.ordering.Ordering;
 import org.jetbrains.annotations.NotNull;
 
-import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.math.RoundingMode;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -155,454 +151,19 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
     }
 
     /**
-     * Returns a randomly-generated {@code int} from a uniform distribution.
+     * Shuffles a {@code List} in place using the Fisher-Yates algorithm. If the list's elements are unique, every
+     * permutation is an equally likely outcome.
      *
      * <ul>
-     *  <li>{@code this} may be any {@code QBarRandomProvider}.</li>
-     *  <li>The result may be any {@code int}.</li>
-     * </ul>
-     *
-     * @return an {@code int}
-     */
-    public int nextInt() {
-        return ((RandomProvider) wheelsProvider).nextInt();
-    }
-
-    /**
-     * Returns a randomly-generated {@code long} from a uniform distribution.
-     *
-     * <ul>
-     *  <li>{@code this} may be any {@code QBarRandomProvider}.</li>
-     *  <li>The result may be any {@code long}.</li>
-     * </ul>
-     *
-     * @return a {@code long}
-     */
-    public long nextLong() {
-        return ((RandomProvider) wheelsProvider).nextLong();
-    }
-
-    /**
-     * Returns a randomly-generated {@code boolean} from a uniform distribution.
-     *
-     * <ul>
-     *  <li>{@code this} may be any {@code QBarRandomProvider}.</li>
-     *  <li>The result may be either {@code boolean}.</li>
-     * </ul>
-     *
-     * @return a {@code boolean}
-     */
-    public boolean nextBoolean() {
-        return ((RandomProvider) wheelsProvider).nextBoolean();
-    }
-
-    /**
-     * Returns a randomly-generated value taken from a given list.
-     *
-     * <ul>
-     *  <li>{@code this} may be any {@code QBarRandomProvider}.</li>
-     *  <li>{@code xs} cannot be empty.</li>
-     *  <li>The result may be any value of type {@code T}, or null.</li>
-     * </ul>
-     *
-     * @param xs the source list
-     * @param <T> the type of {@code xs}'s elements
-     * @return a value from {@code xs}
-     */
-    public <T> T nextUniformSample(@NotNull List<T> xs) {
-        return ((RandomProvider) wheelsProvider).nextUniformSample(xs);
-    }
-
-    /**
-     * Returns a randomly-generated character taken from a given {@code String}.
-     *
-     * <ul>
-     *  <li>{@code this} may be any {@code QBarRandomProvider}.</li>
-     *  <li>{@code s} cannot be empty.</li>
-     *  <li>The result may be any {@code char}.</li>
-     * </ul>
-     *
-     * @param s the source {@code String}
-     * @return a {@code char} from {@code s}
-     */
-    public char nextUniformSample(@NotNull String s) {
-        return ((RandomProvider) wheelsProvider).nextUniformSample(s);
-    }
-
-    /**
-     * Returns a randomly-generated {@code Ordering} from a uniform distribution.
-     *
-     * <ul>
-     *  <li>{@code this} may be any {@code QBarRandomProvider}.</li>
+     *  <li>{@code xs} cannot be null.</li>
      *  <li>The result is not null.</li>
      * </ul>
      *
-     * @return an {@code Ordering}
+     * @param xs the {@code List} to be shuffled
+     * @param <T> the type of the {@code List}'s elements
      */
-    public @NotNull Ordering nextOrdering() {
-        return ((RandomProvider) wheelsProvider).nextOrdering();
-    }
-
-    /**
-     * Returns a randomly-generated {@code RoundingMode} from a uniform distribution.
-     *
-     * <ul>
-     *  <li>{@code this} may be any {@code QBarRandomProvider}.</li>
-     *  <li>The result is not null.</li>
-     * </ul>
-     *
-     * @return a {@code RoundingMode}
-     */
-    public @NotNull RoundingMode nextRoundingMode() {
-        return ((RandomProvider) wheelsProvider).nextRoundingMode();
-    }
-
-    public byte nextPositiveByte() {
-        return ((RandomProvider) wheelsProvider).nextPositiveByte();
-    }
-
-    public short nextPositiveShort() {
-        return ((RandomProvider) wheelsProvider).nextPositiveShort();
-    }
-
-    public int nextPositiveInt() {
-        return ((RandomProvider) wheelsProvider).nextPositiveInt();
-    }
-
-    public long nextPositiveLong() {
-        return ((RandomProvider) wheelsProvider).nextPositiveLong();
-    }
-
-    public byte nextNegativeByte() {
-        return ((RandomProvider) wheelsProvider).nextNegativeByte();
-    }
-
-    public short nextNegativeShort() {
-        return ((RandomProvider) wheelsProvider).nextNegativeShort();
-    }
-
-    public int nextNegativeInt() {
-        return ((RandomProvider) wheelsProvider).nextNegativeInt();
-    }
-
-    public long nextNegativeLong() {
-        return ((RandomProvider) wheelsProvider).nextNegativeLong();
-    }
-
-    public byte nextNonzeroByte() {
-        return ((RandomProvider) wheelsProvider).nextNonzeroByte();
-    }
-
-    public short nextNonzeroShort() {
-        return ((RandomProvider) wheelsProvider).nextNonzeroShort();
-    }
-
-    public int nextNonzeroInt() {
-        return ((RandomProvider) wheelsProvider).nextNonzeroInt();
-    }
-
-    public long nextNonzeroLong() {
-        return ((RandomProvider) wheelsProvider).nextNonzeroLong();
-    }
-
-    public byte nextNaturalByte() {
-        return ((RandomProvider) wheelsProvider).nextNaturalByte();
-    }
-
-    public short nextNaturalShort() {
-        return ((RandomProvider) wheelsProvider).nextNaturalShort();
-    }
-
-    public int nextNaturalInt() {
-        return ((RandomProvider) wheelsProvider).nextNaturalInt();
-    }
-
-    public long nextNaturalLong() {
-        return ((RandomProvider) wheelsProvider).nextNaturalLong();
-    }
-
-    public byte nextByte() {
-        return ((RandomProvider) wheelsProvider).nextByte();
-    }
-
-    public short nextShort() {
-        return ((RandomProvider) wheelsProvider).nextShort();
-    }
-
-    public char nextAsciiChar() {
-        return ((RandomProvider) wheelsProvider).nextAsciiChar();
-    }
-
-    public char nextChar() {
-        return ((RandomProvider) wheelsProvider).nextChar();
-    }
-
-    public byte nextFromRangeUp(byte a) {
-        return ((RandomProvider) wheelsProvider).nextFromRangeUp(a);
-    }
-
-    public short nextFromRangeUp(short a) {
-        return ((RandomProvider) wheelsProvider).nextFromRangeUp(a);
-    }
-
-    public int nextFromRangeUp(int a) {
-        return ((RandomProvider) wheelsProvider).nextFromRangeUp(a);
-    }
-
-    public long nextFromRangeUp(long a) {
-        return ((RandomProvider) wheelsProvider).nextFromRangeUp(a);
-    }
-
-    public char nextFromRangeUp(char a) {
-        return ((RandomProvider) wheelsProvider).nextFromRangeUp(a);
-    }
-
-    public byte nextFromRangeDown(byte a) {
-        return ((RandomProvider) wheelsProvider).nextFromRangeDown(a);
-    }
-
-    public short nextFromRangeDown(short a) {
-        return ((RandomProvider) wheelsProvider).nextFromRangeDown(a);
-    }
-
-    public int nextFromRangeDown(int a) {
-        return ((RandomProvider) wheelsProvider).nextFromRangeDown(a);
-    }
-
-    public long nextFromRangeDown(long a) {
-        return ((RandomProvider) wheelsProvider).nextFromRangeDown(a);
-    }
-
-    public char nextFromRangeDown(char a) {
-        return ((RandomProvider) wheelsProvider).nextFromRangeDown(a);
-    }
-
-    public byte nextFromRange(byte a, byte b) {
-        return ((RandomProvider) wheelsProvider).nextFromRange(a, b);
-    }
-
-    public short nextFromRange(short a, short b) {
-        return ((RandomProvider) wheelsProvider).nextFromRange(a, b);
-    }
-
-    public int nextFromRange(int a, int b) {
-        return ((RandomProvider) wheelsProvider).nextFromRange(a, b);
-    }
-
-    public long nextFromRange(long a, long b) {
-        return ((RandomProvider) wheelsProvider).nextFromRange(a, b);
-    }
-
-    public @NotNull BigInteger nextFromRange(@NotNull BigInteger a, @NotNull BigInteger b) {
-        return ((RandomProvider) wheelsProvider).nextFromRange(a, b);
-    }
-
-    public char nextFromRange(char a, char b) {
-        return ((RandomProvider) wheelsProvider).nextFromRange(a, b);
-    }
-
-    public int nextPositiveIntGeometric() {
-        return ((RandomProvider) wheelsProvider).nextPositiveIntGeometric();
-    }
-
-    public int nextNegativeIntGeometric() {
-        return ((RandomProvider) wheelsProvider).nextNegativeIntGeometric();
-    }
-
-    public int nextNaturalIntGeometric() {
-        return ((RandomProvider) wheelsProvider).nextNaturalIntGeometric();
-    }
-
-    public int nextNonzeroIntGeometric() {
-        return ((RandomProvider) wheelsProvider).nextNonzeroIntGeometric();
-    }
-
-    public int nextIntGeometric() {
-        return ((RandomProvider) wheelsProvider).nextIntGeometric();
-    }
-
-    public int nextIntGeometricFromRangeUp(int a) {
-        return ((RandomProvider) wheelsProvider).nextIntGeometricFromRangeUp(a);
-    }
-
-    public int nextIntGeometricFromRangeDown(int a) {
-        return ((RandomProvider) wheelsProvider).nextIntGeometricFromRangeDown(a);
-    }
-
-    public @NotNull BigInteger nextPositiveBigInteger() {
-        return ((RandomProvider) wheelsProvider).nextPositiveBigInteger();
-    }
-
-    public @NotNull BigInteger nextNegativeBigInteger() {
-        return ((RandomProvider) wheelsProvider).nextNegativeBigInteger();
-    }
-
-    public @NotNull BigInteger nextNaturalBigInteger() {
-        return ((RandomProvider) wheelsProvider).nextNaturalBigInteger();
-    }
-
-    public @NotNull BigInteger nextNonzeroBigInteger() {
-        return ((RandomProvider) wheelsProvider).nextNonzeroBigInteger();
-    }
-
-    public @NotNull BigInteger nextBigInteger() {
-        return ((RandomProvider) wheelsProvider).nextBigInteger();
-    }
-
-    public @NotNull BigInteger nextFromRangeUp(@NotNull BigInteger a) {
-        return ((RandomProvider) wheelsProvider).nextFromRangeUp(a);
-    }
-
-    public @NotNull BigInteger nextFromRangeDown(@NotNull BigInteger a) {
-        return ((RandomProvider) wheelsProvider).nextFromRangeDown(a);
-    }
-
-    public @NotNull BinaryFraction nextPositiveBinaryFraction() {
-        return ((RandomProvider) wheelsProvider).nextPositiveBinaryFraction();
-    }
-
-    public @NotNull BinaryFraction nextNegativeBinaryFraction() {
-        return ((RandomProvider) wheelsProvider).nextNegativeBinaryFraction();
-    }
-
-    public @NotNull BinaryFraction nextNonzeroBinaryFraction() {
-        return ((RandomProvider) wheelsProvider).nextNonzeroBinaryFraction();
-    }
-
-    public @NotNull BinaryFraction nextBinaryFraction() {
-        return ((RandomProvider) wheelsProvider).nextBinaryFraction();
-    }
-
-    public @NotNull BinaryFraction nextFromRangeUp(@NotNull BinaryFraction a) {
-        return ((RandomProvider) wheelsProvider).nextFromRangeUp(a);
-    }
-
-    public @NotNull BinaryFraction nextFromRangeDown(@NotNull BinaryFraction a) {
-        return ((RandomProvider) wheelsProvider).nextFromRangeDown(a);
-    }
-
-    public @NotNull BinaryFraction nextFromRange(@NotNull BinaryFraction a, @NotNull BinaryFraction b) {
-        return ((RandomProvider) wheelsProvider).nextFromRange(a, b);
-    }
-
-    public float nextPositiveFloat() {
-        return ((RandomProvider) wheelsProvider).nextPositiveFloat();
-    }
-
-    public float nextNegativeFloat() {
-        return ((RandomProvider) wheelsProvider).nextNegativeFloat();
-    }
-
-    public float nextNonzeroFloat() {
-        return ((RandomProvider) wheelsProvider).nextNonzeroFloat();
-    }
-
-    public float nextFloat() {
-        return ((RandomProvider) wheelsProvider).nextFloat();
-    }
-
-    public double nextPositiveDouble() {
-        return ((RandomProvider) wheelsProvider).nextPositiveDouble();
-    }
-
-    public double nextNegativeDouble() {
-        return ((RandomProvider) wheelsProvider).nextNegativeDouble();
-    }
-
-    public double nextNonzeroDouble() {
-        return ((RandomProvider) wheelsProvider).nextNonzeroDouble();
-    }
-
-    public double nextDouble() {
-        return ((RandomProvider) wheelsProvider).nextDouble();
-    }
-
-    public float nextPositiveFloatUniform() {
-        return ((RandomProvider) wheelsProvider).nextPositiveFloatUniform();
-    }
-
-    public float nextNegativeFloatUniform() {
-        return ((RandomProvider) wheelsProvider).nextNegativeFloatUniform();
-    }
-
-    public float nextNonzeroFloatUniform() {
-        return ((RandomProvider) wheelsProvider).nextNonzeroFloatUniform();
-    }
-
-    public float nextFloatUniform() {
-        return ((RandomProvider) wheelsProvider).nextFloatUniform();
-    }
-
-    public double nextPositiveDoubleUniform() {
-        return ((RandomProvider) wheelsProvider).nextPositiveDoubleUniform();
-    }
-
-    public double nextNegativeDoubleUniform() {
-        return ((RandomProvider) wheelsProvider).nextNegativeDoubleUniform();
-    }
-
-    public double nextNonzeroDoubleUniform() {
-        return ((RandomProvider) wheelsProvider).nextNonzeroDoubleUniform();
-    }
-
-    public double nextDoubleUniform() {
-        return ((RandomProvider) wheelsProvider).nextDoubleUniform();
-    }
-
-    public @NotNull BigDecimal nextPositiveBigDecimal() {
-        return ((RandomProvider) wheelsProvider).nextPositiveBigDecimal();
-    }
-
-    public @NotNull BigDecimal nextNegativeBigDecimal() {
-        return ((RandomProvider) wheelsProvider).nextNegativeBigDecimal();
-    }
-
-    public @NotNull BigDecimal nextNonzeroBigDecimal() {
-        return ((RandomProvider) wheelsProvider).nextNonzeroBigDecimal();
-    }
-
-    public @NotNull BigDecimal nextBigDecimal() {
-        return ((RandomProvider) wheelsProvider).nextBigDecimal();
-    }
-
-    public @NotNull BigDecimal nextCanonicalPositiveBigDecimal() {
-        return ((RandomProvider) wheelsProvider).nextPositiveCanonicalBigDecimal();
-    }
-
-    public @NotNull BigDecimal nextCanonicalNegativeBigDecimal() {
-        return ((RandomProvider) wheelsProvider).nextNegativeCanonicalBigDecimal();
-    }
-
-    public @NotNull BigDecimal nextCanonicalNonzeroBigDecimal() {
-        return ((RandomProvider) wheelsProvider).nextNonzeroCanonicalBigDecimal();
-    }
-
-    public @NotNull BigDecimal nextCanonicalBigDecimal() {
-        return ((RandomProvider) wheelsProvider).nextCanonicalBigDecimal();
-    }
-
-    public @NotNull BigDecimal nextFromRangeUp(@NotNull BigDecimal a) {
-        return ((RandomProvider) wheelsProvider).nextFromRangeUp(a);
-    }
-
-    public @NotNull BigDecimal nextFromRangeDown(@NotNull BigDecimal a) {
-        return ((RandomProvider) wheelsProvider).nextFromRangeDown(a);
-    }
-
-    public @NotNull BigDecimal nextFromRange(@NotNull BigDecimal a, @NotNull BigDecimal b) {
-        return ((RandomProvider) wheelsProvider).nextFromRange(a, b);
-    }
-
-    public @NotNull BigDecimal nextFromRangeUpCanonical(@NotNull BigDecimal a) {
-        return ((RandomProvider) wheelsProvider).nextFromRangeUpCanonical(a);
-    }
-
-    public @NotNull BigDecimal nextFromRangeDownCanonical(@NotNull BigDecimal a) {
-        return ((RandomProvider) wheelsProvider).nextFromRangeDownCanonical(a);
-    }
-
-    public @NotNull BigDecimal nextFromRangeCanonical(@NotNull BigDecimal a, @NotNull BigDecimal b) {
-        return ((RandomProvider) wheelsProvider).nextFromRangeCanonical(a, b);
+    public <T> void shuffle(@NotNull List<T> xs) {
+        ((RandomProvider) wheelsProvider).shuffle(xs);
     }
 
     /**
@@ -719,21 +280,18 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
         );
     }
 
-    @NotNull
     @Override
-    public Iterable<Rational> rangeUp(@NotNull Rational a) {
+    public @NotNull Iterable<Rational> rangeUp(@NotNull Rational a) {
         return null;
     }
 
-    @NotNull
     @Override
-    public Iterable<Rational> rangeDown(@NotNull Rational a) {
+    public @NotNull Iterable<Rational> rangeDown(@NotNull Rational a) {
         return null;
     }
 
-    @NotNull
     @Override
-    public Iterable<Rational> range(@NotNull Rational a, @NotNull Rational b) {
+    public @NotNull Iterable<Rational> range(@NotNull Rational a, @NotNull Rational b) {
         return null;
     }
 
@@ -780,7 +338,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
                     return Interval.of(p.a.get(), p.b.get());
                 },
                 filter(p -> !p.a.isPresent() || !p.b.isPresent() || le(p.a.get(), p.b.get()), pairs(optionals(bounds)))
-        );  
+        );
     }
 
     @Override
@@ -954,7 +512,10 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
     public @NotNull Iterable<Polynomial> polynomials(int degree) {
         return map(
                 js -> Polynomial.of(toList(js)),
-                filter(is -> is.isEmpty() || !last(is).equals(BigInteger.ZERO), withScale(getSecondaryScale()).lists(degree + 1, bigIntegers()))
+                filter(
+                        is -> is.isEmpty() || !last(is).equals(BigInteger.ZERO),
+                        withScale(getSecondaryScale()).lists(degree + 1, bigIntegers())
+                )
         );
     }
 
@@ -980,21 +541,18 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
         );
     }
 
-    @NotNull
     @Override
-    public Iterable<Polynomial> primitivePolynomials(int degree) {
+    public @NotNull Iterable<Polynomial> primitivePolynomials(int degree) {
         return null;
     }
 
-    @NotNull
     @Override
-    public Iterable<Polynomial> primitivePolynomialsAtLeast(int minDegree) {
+    public @NotNull Iterable<Polynomial> primitivePolynomialsAtLeast(int minDegree) {
         return null;
     }
 
-    @NotNull
     @Override
-    public Iterable<Polynomial> primitivePolynomials() {
+    public @NotNull Iterable<Polynomial> primitivePolynomials() {
         return null;
     }
 
@@ -1002,7 +560,10 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
     public @NotNull Iterable<RationalPolynomial> rationalPolynomials(int degree) {
         return map(
                 js -> RationalPolynomial.of(toList(js)),
-                filter(is -> is.isEmpty() || last(is) != Rational.ZERO, withScale(getSecondaryScale()).lists(degree + 1, rationals()))
+                filter(
+                        is -> is.isEmpty() || last(is) != Rational.ZERO,
+                        withScale(getSecondaryScale()).lists(degree + 1, rationals())
+                )
         );
     }
 
@@ -1010,7 +571,10 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
     public @NotNull Iterable<RationalPolynomial> rationalPolynomialsAtLeast(int minDegree) {
         return map(
                 js -> RationalPolynomial.of(toList(js)),
-                filter(is -> is.isEmpty() || last(is) != Rational.ZERO, withScale(getSecondaryScale()).listsAtLeast(minDegree + 1, rationals()))
+                filter(
+                        is -> is.isEmpty() || last(is) != Rational.ZERO,
+                        withScale(getSecondaryScale()).listsAtLeast(minDegree + 1, rationals())
+                )
         );
     }
 
@@ -1025,21 +589,18 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
         );
     }
 
-    @NotNull
     @Override
-    public Iterable<RationalPolynomial> monicRationalPolynomials(int degree) {
+    public @NotNull Iterable<RationalPolynomial> monicRationalPolynomials(int degree) {
         return null;
     }
 
-    @NotNull
     @Override
-    public Iterable<RationalPolynomial> monicRationalPolynomialsAtLeast(int minDegree) {
+    public @NotNull Iterable<RationalPolynomial> monicRationalPolynomialsAtLeast(int minDegree) {
         return null;
     }
 
-    @NotNull
     @Override
-    public Iterable<RationalPolynomial> monicRationalPolynomials() {
+    public @NotNull Iterable<RationalPolynomial> monicRationalPolynomials() {
         return null;
     }
 

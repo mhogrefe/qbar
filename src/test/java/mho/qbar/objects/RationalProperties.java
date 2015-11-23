@@ -6,7 +6,6 @@ import mho.qbar.iterableProviders.QBarRandomProvider;
 import mho.qbar.testing.QBarTesting;
 import mho.wheels.io.Readers;
 import mho.wheels.math.MathUtils;
-import mho.wheels.numberUtils.BigDecimalUtils;
 import mho.wheels.numberUtils.FloatingPointUtils;
 import mho.wheels.numberUtils.IntegerUtils;
 import mho.wheels.ordering.Ordering;
@@ -21,6 +20,7 @@ import java.math.RoundingMode;
 import java.util.*;
 
 import static mho.qbar.objects.Rational.*;
+import static mho.qbar.objects.Rational.sum;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.ordering.Ordering.*;
 import static mho.wheels.testing.Testing.*;
@@ -32,6 +32,7 @@ import static org.junit.Assert.fail;
 
 public class RationalProperties {
     private static boolean USE_RANDOM;
+    private static final @NotNull QBarExhaustiveProvider EP = QBarExhaustiveProvider.INSTANCE;
     private static final @NotNull String RATIONAL_CHARS = "-/0123456789";
     private static final int DENOMINATOR_CUTOFF = 1000000;
     private static final int SMALL_LIMIT = 1000;
@@ -442,9 +443,17 @@ public class RationalProperties {
 
         Iterable<Rational> rs = filter(r -> lt(r.abs().fractionalPart(), of(1, 2)), P.rationals());
         for (Rational r : take(LIMIT, rs)) {
-            assertEquals(r.toString(), r.bigIntegerValue(RoundingMode.HALF_DOWN), r.bigIntegerValue(RoundingMode.DOWN));
+            assertEquals(
+                    r.toString(),
+                    r.bigIntegerValue(RoundingMode.HALF_DOWN),
+                    r.bigIntegerValue(RoundingMode.DOWN)
+            );
             assertEquals(r.toString(), r.bigIntegerValue(RoundingMode.HALF_UP), r.bigIntegerValue(RoundingMode.DOWN));
-            assertEquals(r.toString(), r.bigIntegerValue(RoundingMode.HALF_EVEN), r.bigIntegerValue(RoundingMode.DOWN));
+            assertEquals(
+                    r.toString(),
+                    r.bigIntegerValue(RoundingMode.HALF_EVEN),
+                    r.bigIntegerValue(RoundingMode.DOWN)
+            );
         }
 
         rs = filter(r -> gt(r.abs().fractionalPart(), of(1, 2)), P.rationals());
@@ -661,7 +670,7 @@ public class RationalProperties {
         System.out.println("\t\ttesting hasTerminatingBaseExpansion(BigInteger) properties...");
 
         Iterable<Pair<Rational, BigInteger>> ps = P.pairs(
-                P.withSpecialElement(
+                P.withElement(
                         ZERO,
                         filterInfinite(
                                 r -> le(r.getDenominator(), BigInteger.valueOf(DENOMINATOR_CUTOFF)),
@@ -2150,14 +2159,14 @@ public class RationalProperties {
         for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
             assertEquals(p.toString(), p.a.divide(p.b), of(p.b).divide(p.a).invert());
         }
-        
+
         for (BigInteger i : take(LIMIT, filter(j -> !j.equals(BigInteger.ZERO), P.bigIntegers()))) {
             assertEquals(i.toString(), ONE.divide(i), of(i).invert());
             assertEquals(i.toString(), of(i).divide(i), ONE);
         }
-        
+
         for (Rational r : take(LIMIT, P.rationals())) {
-            assertEquals(r.toString(), r.divide(BigInteger.ONE), r);      
+            assertEquals(r.toString(), r.divide(BigInteger.ONE), r);
         }
 
         for (Rational r : take(LIMIT, P.rationals())) {
@@ -2421,7 +2430,8 @@ public class RationalProperties {
         initialize();
         System.out.println("\t\ttesting sum(Iterable<Rational>) properties...");
 
-        propertiesFoldHelper(LIMIT, P.getWheelsProvider(), P.rationals(), Rational::add, Rational::sum, r -> {}, true);
+        propertiesFoldHelper(LIMIT, P.getWheelsProvider(), P.rationals(), Rational::add, Rational::sum, r -> {
+        }, true);
 
         for (List<Rational> rs : take(LIMIT, P.lists(P.rationals()))) {
             assertEquals(rs.toString(), sum(rs), sum_alt(rs));
@@ -2457,7 +2467,16 @@ public class RationalProperties {
         initialize();
         System.out.println("\t\ttesting product(Iterable<Rational>) properties...");
 
-        propertiesFoldHelper(LIMIT, P.getWheelsProvider(), P.rationals(), Rational::multiply, Rational::product, r -> {}, true);
+        propertiesFoldHelper(
+                LIMIT,
+                P.getWheelsProvider(),
+                P.rationals(),
+                Rational::multiply,
+                Rational::product,
+                r -> {
+                },
+                true
+        );
 
         for (List<Rational> rs : take(LIMIT, P.lists(P.rationals()))) {
             assertEquals(rs.toString(), product(rs), product_simplest(rs));
@@ -2492,6 +2511,7 @@ public class RationalProperties {
         propertiesDeltaHelper(
                 LIMIT,
                 P.getWheelsProvider(),
+                EP.rationals(),
                 P.rationals(),
                 Rational::negate,
                 Rational::subtract,
@@ -2948,7 +2968,7 @@ public class RationalProperties {
         System.out.println("\t\ttesting positionalNotation(BigInteger) properties...");
 
         Iterable<Pair<Rational, BigInteger>> ps = P.pairs(
-                P.withSpecialElement(
+                P.withElement(
                         ZERO,
                         filterInfinite(
                                 r -> le(r.getDenominator(), BigInteger.valueOf(DENOMINATOR_CUTOFF)),
@@ -3115,18 +3135,10 @@ public class RationalProperties {
         initialize();
         System.out.println("\t\ttesting digits(BigInteger) properties...");
 
-        Iterable<Pair<Rational, BigInteger>> ps;
-        if (P instanceof QBarExhaustiveProvider) {
-            ps = P.pairsSquareRootOrder(
-                    cons(ZERO, P.positiveRationals()),
-                    P.rangeUp(IntegerUtils.TWO)
-            );
-        } else {
-            ps = P.pairs(
-                    cons(ZERO, P.positiveRationals()),
-                    map(i -> BigInteger.valueOf(i + 2), P.withScale(20).naturalIntegersGeometric())
-            );
-        }
+        Iterable<Pair<Rational, BigInteger>> ps = P.pairsSquareRootOrder(
+                P.withElement(ZERO, P.positiveRationals()),
+                P.rangeUp(IntegerUtils.TWO)
+        );
         for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
             Pair<List<BigInteger>, Iterable<BigInteger>> digits = p.a.digits(p.b);
             assertTrue(p.toString(), digits.a.isEmpty() || !head(digits.a).equals(BigInteger.ZERO));
@@ -3134,17 +3146,19 @@ public class RationalProperties {
             assertEquals(p.toString(), IntegerUtils.fromBigEndianDigits(p.b, digits.a), p.a.floor());
         }
 
+        ps = P.pairsSquareRootOrder(
+                P.withElement(ZERO, P.positiveRationals()),
+                P.withScale(4).rangeUp(IntegerUtils.TWO)
+        );
         for (Pair<Rational, BigInteger> p : take(LIMIT, filter(q -> q.a.hasTerminatingBaseExpansion(q.b), ps))) {
             Pair<List<BigInteger>, Iterable<BigInteger>> digits = p.a.digits(p.b);
             toList(digits.b);
         }
 
-        if (!(P instanceof QBarExhaustiveProvider)) {
-            ps = P.pairs(
-                    cons(ZERO, ((QBarRandomProvider) P).withScale(8).positiveRationals()),
-                    map(i -> BigInteger.valueOf(i + 2), P.withScale(20).naturalIntegersGeometric())
-            );
-        }
+        ps = P.pairsSquareRootOrder(
+                P.withElement(ZERO, P.withScale(8).positiveRationals()),
+                P.rangeUp(IntegerUtils.TWO)
+        );
         for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
             Pair<List<BigInteger>, Iterable<BigInteger>> digits = p.a.digits(p.b);
             Pair<List<BigInteger>, Iterable<BigInteger>> alt = digits_alt(p.a, p.b);
@@ -3174,7 +3188,7 @@ public class RationalProperties {
 
         long totalTime = 0;
         Iterable<Pair<Rational, BigInteger>> ps = P.pairs(
-                P.withSpecialElement(
+                P.withElement(
                         ZERO,
                         filterInfinite(
                                 r -> le(r.getDenominator(), BigInteger.valueOf(DENOMINATOR_CUTOFF)),
@@ -3502,13 +3516,7 @@ public class RationalProperties {
             assertEquals(r.toString(), or.get(), r);
         }
 
-        Iterable<Character> cs;
-        if (P instanceof QBarExhaustiveProvider) {
-            cs = fromString(RATIONAL_CHARS);
-        } else {
-            cs = ((QBarRandomProvider) P).uniformSample(RATIONAL_CHARS);
-        }
-        Iterable<String> ss = filter(s -> read(s).isPresent(), P.strings(cs));
+        Iterable<String> ss = filter(s -> read(s).isPresent(), P.strings(RATIONAL_CHARS));
         for (String s : take(LIMIT, ss)) {
             Optional<Rational> or = read(s);
             or.get().validate();

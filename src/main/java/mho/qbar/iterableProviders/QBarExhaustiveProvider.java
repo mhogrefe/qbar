@@ -2,11 +2,14 @@ package mho.qbar.iterableProviders;
 
 import mho.qbar.objects.*;
 import mho.wheels.iterables.ExhaustiveProvider;
-import mho.wheels.ordering.Ordering;
+import mho.wheels.iterables.NoRemoveIterator;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigInteger;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.ordering.Ordering.*;
@@ -17,34 +20,6 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
 
     private QBarExhaustiveProvider() {
         super(ExhaustiveProvider.INSTANCE);
-    }
-
-    public @NotNull Iterable<Ordering> orderingsIncreasing() {
-        return ExhaustiveProvider.INSTANCE.orderingsIncreasing();
-    }
-
-    public @NotNull Iterable<Byte> bytesIncreasing() {
-        return ExhaustiveProvider.INSTANCE.bytesIncreasing();
-    }
-
-    public @NotNull Iterable<Short> shortsIncreasing() {
-        return ExhaustiveProvider.INSTANCE.shortsIncreasing();
-    }
-
-    public @NotNull Iterable<Integer> integersIncreasing() {
-        return ExhaustiveProvider.INSTANCE.integersIncreasing();
-    }
-
-    public @NotNull Iterable<Long> longsIncreasing() {
-        return ExhaustiveProvider.INSTANCE.longsIncreasing();
-    }
-
-    public @NotNull Iterable<Character> asciiCharactersIncreasing() {
-        return ExhaustiveProvider.INSTANCE.asciiCharactersIncreasing();
-    }
-
-    public @NotNull Iterable<Character> charactersIncreasing() {
-        return ExhaustiveProvider.INSTANCE.charactersIncreasing();
     }
 
     @Override
@@ -60,8 +35,8 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
     @Override
     public @NotNull Iterable<Rational> range(@NotNull Rational a, @NotNull Rational b) {
         if (gt(a, b)) return Collections.emptyList();
-        return () -> new Iterator<Rational>() {
-            private Rational x = a;
+        return () -> new NoRemoveIterator<Rational>() {
+            private @NotNull Rational x = a;
             private boolean reachedEnd;
 
             @Override
@@ -75,11 +50,6 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
                 Rational oldX = x;
                 x = x.add(Rational.ONE);
                 return oldX;
-            }
-
-            @Override
-            public void remove() {
-                throw new UnsupportedOperationException("cannot remove from this iterator");
             }
         };
     }

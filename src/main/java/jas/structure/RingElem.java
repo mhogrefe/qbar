@@ -7,7 +7,6 @@ package jas.structure;
  * @param <C> ring element type
  * @author Heinz Kredel
  */
-
 public interface RingElem<C extends RingElem<C>> extends AbelianGroupElem<C>, MonoidElem<C> {
     /**
      * Greatest common divisor.
@@ -16,7 +15,6 @@ public interface RingElem<C extends RingElem<C>> extends AbelianGroupElem<C>, Mo
      * @return gcd(this, b).
      */
     C gcd(C b);
-
 
     /**
      * Extended greatest common divisor.

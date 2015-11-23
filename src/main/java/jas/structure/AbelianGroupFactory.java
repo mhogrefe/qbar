@@ -5,16 +5,11 @@ package jas.structure;
  *
  * @author Heinz Kredel
  */
-
 public interface AbelianGroupFactory<C extends AbelianGroupElem<C>> extends ElemFactory<C> {
-
-
     /**
      * Get the constant zero for the AbelianGroupElem.
      *
      * @return 0.
      */
     C getZERO();
-
-
 }

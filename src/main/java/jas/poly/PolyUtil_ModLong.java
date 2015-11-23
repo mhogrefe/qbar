@@ -3,12 +3,11 @@ package jas.poly;
 import jas.arith.JasBigInteger;
 import jas.arith.ModLong;
 import jas.arith.ModularRingFactory;
-import jas.util.ListUtil;
+import mho.wheels.iterables.IterableUtils;
 
 import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
-import java.util.function.Function;
 
 public class PolyUtil_ModLong {
     /**
@@ -37,12 +36,7 @@ public class PolyUtil_ModLong {
      */
     public static List<GenPolynomial<JasBigInteger>> integerFromModularCoefficients(
             final GenPolynomialRing<JasBigInteger> fac, List<GenPolynomial<ModLong>> L) {
-        return ListUtil.map(L,
-                new Function<GenPolynomial<ModLong>, GenPolynomial<JasBigInteger>>() {
-                    public GenPolynomial<JasBigInteger> apply(GenPolynomial<ModLong> c) {
-                        return integerFromModularCoefficients(fac, c);
-                    }
-                });
+        return IterableUtils.toList(IterableUtils.map(c -> integerFromModularCoefficients(fac, c), L));
     }
 
     /**

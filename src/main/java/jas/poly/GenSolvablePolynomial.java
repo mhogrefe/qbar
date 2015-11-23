@@ -16,7 +16,6 @@ import java.util.SortedMap;
  * @param <C> coefficient type
  * @author Heinz Kredel
  */
-
 public class GenSolvablePolynomial<C extends RingElem<C>> extends GenPolynomial<C> {
     private final GenSolvablePolynomialRing<C> ring;
 
@@ -42,7 +41,6 @@ public class GenSolvablePolynomial<C extends RingElem<C>> extends GenPolynomial<
         return ring;
     }
 
-
     /**
      * Clone this GenSolvablePolynomial.
      *
@@ -52,7 +50,6 @@ public class GenSolvablePolynomial<C extends RingElem<C>> extends GenPolynomial<
     public GenSolvablePolynomial<C> copy() {
         return new GenSolvablePolynomial<>(ring, this.val);
     }
-
 
     /**
      * Comparison with any other object.

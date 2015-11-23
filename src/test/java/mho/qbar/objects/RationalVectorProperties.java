@@ -18,7 +18,6 @@ import java.util.Optional;
 import static mho.qbar.objects.RationalVector.*;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.ordering.Ordering.compare;
-import static mho.wheels.ordering.Ordering.lt;
 import static mho.wheels.testing.Testing.propertiesFindInHelper;
 import static org.junit.Assert.*;
 
@@ -165,8 +164,8 @@ public class RationalVectorProperties {
         System.out.println("\t\ttesting x(int) properties");
 
         Iterable<Pair<RationalVector, Integer>> ps = P.dependentPairs(
-                P.rationalVectors(),
-                v -> range(0, v.dimension() - 1)
+                P.rationalVectorsAtLeast(1),
+                v -> P.range(0, v.dimension() - 1)
         );
         for (Pair<RationalVector, Integer> p : take(LIMIT, ps)) {
             Rational x = p.a.x(p.b);

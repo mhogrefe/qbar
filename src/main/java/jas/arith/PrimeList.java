@@ -1,6 +1,7 @@
 package jas.arith;
 
 import jas.structure.Power;
+import mho.wheels.iterables.NoRemoveIterator;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -14,10 +15,7 @@ import java.util.List;
  * @author Heinz Kredel See Knuth vol 2,page 390, for list of known primes. See
  *         also ALDES/SAC2 SACPOL.PRIME
  */
-
 public final class PrimeList implements Iterable<BigInteger> {
-
-
     /**
      * Range of probable primes.
      */
@@ -25,36 +23,28 @@ public final class PrimeList implements Iterable<BigInteger> {
         small, low, medium, large, mersenne
     }
 
-
     /**
      * Cache the val list for different size
      */
     private volatile static List<BigInteger> SMALL_LIST = null;
 
-
     private volatile static List<BigInteger> LOW_LIST = null;
-
 
     private volatile static List<BigInteger> MEDIUM_LIST = null;
 
-
     private volatile static List<BigInteger> LARGE_LIST = null;
 
-
     private volatile static List<BigInteger> MERSENNE_LIST = null;
-
 
     /**
      * The list of probable primes in requested range.
      */
     private List<BigInteger> val = null;
 
-
     /**
      * The last prime in the list.
      */
     private BigInteger last;
-
 
     /**
      * Constructor for PrimeList.
@@ -62,7 +52,6 @@ public final class PrimeList implements Iterable<BigInteger> {
     public PrimeList() {
         this(Range.medium);
     }
-
 
     /**
      * Constructor for PrimeList.
@@ -122,7 +111,6 @@ public final class PrimeList implements Iterable<BigInteger> {
         last = get(size() - 1);
     }
 
-
     /**
      * Add small primes.
      */
@@ -139,7 +127,6 @@ public final class PrimeList implements Iterable<BigInteger> {
         val.add(BigInteger.valueOf(23L));
         val.add(BigInteger.valueOf(29L));
     }
-
 
     /**
      * Add low sized primes.
@@ -168,7 +155,6 @@ public final class PrimeList implements Iterable<BigInteger> {
         val.add(getLongPrime(16, 117));
         val.add(getLongPrime(16, 123));
     }
-
 
     /**
      * Add medium sized primes.
@@ -209,7 +195,6 @@ public final class PrimeList implements Iterable<BigInteger> {
         val.add(getLongPrime(32, 267));
     }
 
-
     /**
      * Add large sized primes.
      */
@@ -249,7 +234,6 @@ public final class PrimeList implements Iterable<BigInteger> {
         val.add(getLongPrime(63, 471));
         // 2^64-x not possible
     }
-
 
     /**
      * Add Mersenne sized primes.
@@ -306,14 +290,12 @@ public final class PrimeList implements Iterable<BigInteger> {
         return val.toString();
     }
 
-
     /**
      * size of current list.
      */
     int size() {
         return val.size();
     }
-
 
     /**
      * get prime at index i.
@@ -330,26 +312,16 @@ public final class PrimeList implements Iterable<BigInteger> {
         return p;
     }
 
-
     /**
      * Iterator.
      */
     public Iterator<BigInteger> iterator() {
-        return new Iterator<BigInteger>() {
-
-
+        return new NoRemoveIterator<BigInteger>() {
             int index = -1;
-
 
             public boolean hasNext() {
                 return true;
             }
-
-
-            public void remove() {
-                throw new UnsupportedOperationException("remove not implemented");
-            }
-
 
             public BigInteger next() {
                 index++;
@@ -357,5 +329,4 @@ public final class PrimeList implements Iterable<BigInteger> {
             }
         };
     }
-
 }

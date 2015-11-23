@@ -87,7 +87,6 @@ public final class BigRational implements RingElem<BigRational>, RingFactory<Big
         }
     }
 
-
     /**
      * Get the corresponding element factory.
      *
@@ -96,7 +95,6 @@ public final class BigRational implements RingElem<BigRational>, RingFactory<Big
     public BigRational factory() {
         return this;
     }
-
 
     /**
      * Is this structure finite or infinite.
@@ -132,7 +130,6 @@ public final class BigRational implements RingElem<BigRational>, RingFactory<Big
         return ZERO;
     }
 
-
     /**
      * Get the one element.
      *
@@ -151,7 +148,6 @@ public final class BigRational implements RingElem<BigRational>, RingFactory<Big
         return true;
     }
 
-
     /**
      * Characteristic of this ring.
      *
@@ -160,7 +156,6 @@ public final class BigRational implements RingElem<BigRational>, RingFactory<Big
     public BigInteger characteristic() {
         return BigInteger.ZERO;
     }
-
 
     /**
      * Get a BigRational element from a math.JasBigInteger.
@@ -182,7 +177,6 @@ public final class BigRational implements RingElem<BigRational>, RingFactory<Big
         return new BigRational(a);
     }
 
-
     /**
      * Is BigRational zero.
      *
@@ -192,7 +186,6 @@ public final class BigRational implements RingElem<BigRational>, RingFactory<Big
     public boolean isZERO() {
         return num.equals(BigInteger.ZERO);
     }
-
 
     /**
      * Is BigRational one.
@@ -204,7 +197,6 @@ public final class BigRational implements RingElem<BigRational>, RingFactory<Big
         return num.equals(den);
     }
 
-
     /**
      * Is BigRational unit.
      *
@@ -214,7 +206,6 @@ public final class BigRational implements RingElem<BigRational>, RingFactory<Big
     public boolean isUnit() {
         return (!isZERO());
     }
-
 
     /**
      * Comparison with any other object.
@@ -294,7 +285,6 @@ public final class BigRational implements RingElem<BigRational>, RingFactory<Big
         TL = J3Y.compareTo(J2Y);
         return TL;
     }
-
 
     /**
      * Rational number difference.
@@ -529,7 +519,6 @@ public final class BigRational implements RingElem<BigRational>, RingFactory<Big
         }
         return ONE;
     }
-
 
     /**
      * BigRational extended greatest common divisor.

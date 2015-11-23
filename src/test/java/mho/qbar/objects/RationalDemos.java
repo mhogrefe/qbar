@@ -4,7 +4,6 @@ import mho.qbar.iterableProviders.QBarExhaustiveProvider;
 import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.iterableProviders.QBarRandomProvider;
 import mho.wheels.iterables.IterableUtils;
-import mho.wheels.math.MathUtils;
 import mho.wheels.numberUtils.FloatingPointUtils;
 import mho.wheels.numberUtils.IntegerUtils;
 import mho.wheels.ordering.Ordering;
@@ -203,7 +202,7 @@ public class RationalDemos {
     private static void demoHasTerminatingBaseExpansion() {
         initialize();
         Iterable<Pair<Rational, BigInteger>> ps = P.pairs(
-                P.withSpecialElement(
+                P.withElement(
                         ZERO,
                         filterInfinite(
                                 r -> le(r.getDenominator(), BigInteger.valueOf(DENOMINATOR_CUTOFF)),
@@ -579,7 +578,7 @@ public class RationalDemos {
     private static void demoPositionalNotation() {
         initialize();
         Iterable<Pair<Rational, BigInteger>> ps = P.pairs(
-                P.withSpecialElement(
+                P.withElement(
                         ZERO,
                         filterInfinite(
                                 r -> le(r.getDenominator(), BigInteger.valueOf(DENOMINATOR_CUTOFF)),
@@ -691,12 +690,6 @@ public class RationalDemos {
                     } else {
                         chars += "()0123456789";
                     }
-                    Iterable<Character> unfiltered;
-                    if (P instanceof QBarExhaustiveProvider) {
-                        unfiltered = fromString(chars);
-                    } else {
-                        unfiltered = ((QBarRandomProvider) P).uniformSample(chars);
-                    }
                     return filter(
                             s -> {
                                 try {
@@ -706,7 +699,7 @@ public class RationalDemos {
                                     return false;
                                 }
                             },
-                            P.strings(unfiltered)
+                            P.strings(chars)
                     );
                 }
         );
@@ -762,13 +755,7 @@ public class RationalDemos {
 
     private static void demoRead_targeted() {
         initialize();
-        Iterable<Character> cs;
-        if (P instanceof QBarExhaustiveProvider) {
-            cs = fromString(RATIONAL_CHARS);
-        } else {
-            cs = ((QBarRandomProvider) P).uniformSample(RATIONAL_CHARS);
-        }
-        for (String s : take(LIMIT, P.strings(cs))) {
+        for (String s : take(LIMIT, P.strings(RATIONAL_CHARS))) {
             System.out.println("read(" + s + ") = " + read(s));
         }
     }
@@ -782,13 +769,7 @@ public class RationalDemos {
 
     private static void demoFindIn_targeted() {
         initialize();
-        Iterable<Character> cs;
-        if (P instanceof QBarExhaustiveProvider) {
-            cs = fromString(RATIONAL_CHARS);
-        } else {
-            cs = ((QBarRandomProvider) P).uniformSample(RATIONAL_CHARS);
-        }
-        for (String s : take(LIMIT, P.strings(cs))) {
+        for (String s : take(LIMIT, P.strings(RATIONAL_CHARS))) {
             System.out.println("findIn(" + s + ") = " + findIn(s));
         }
     }

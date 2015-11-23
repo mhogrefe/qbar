@@ -8,8 +8,8 @@ import java.math.BigInteger;
 import java.util.List;
 
 import static mho.qbar.objects.RationalPolynomial.*;
+import static mho.qbar.objects.RationalPolynomial.sum;
 import static mho.wheels.iterables.IterableUtils.*;
-import static mho.wheels.iterables.IterableUtils.toList;
 import static mho.wheels.testing.Testing.*;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;

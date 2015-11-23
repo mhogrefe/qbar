@@ -7,10 +7,7 @@ import java.math.BigInteger;
  *
  * @author Heinz Kredel
  */
-
 public interface RingFactory<C extends RingElem<C>> extends MonoidFactory<C>, AbelianGroupFactory<C> {
-
-
     /**
      * Query if this ring is a field. May return false if it is to hard to
      * determine if this ring is a field.
@@ -19,12 +16,10 @@ public interface RingFactory<C extends RingElem<C>> extends MonoidFactory<C>, Ab
      */
     boolean isField();
 
-
     /**
      * Characteristic of this ring.
      *
      * @return characteristic of this ring.
      */
     BigInteger characteristic();
-
 }

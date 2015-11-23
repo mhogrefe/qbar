@@ -12,16 +12,11 @@ import java.util.SortedMap;
  *
  * @author Heinz Kredel
  */
-
-class PolyIterator<C extends RingElem<C>>
-        implements Iterator<Monomial<C>> {
-
-
+class PolyIterator<C extends RingElem<C>> implements Iterator<Monomial<C>> {
     /**
      * Internal iterator over polynomial map.
      */
     private final Iterator<Map.Entry<ExpVector, C>> ms;
-
 
     /**
      * Constructor of polynomial iterator.
@@ -32,7 +27,6 @@ class PolyIterator<C extends RingElem<C>>
         ms = m.entrySet().iterator();
     }
 
-
     /**
      * Test for availability of a next monomial.
      *
@@ -41,7 +35,6 @@ class PolyIterator<C extends RingElem<C>>
     public boolean hasNext() {
         return ms.hasNext();
     }
-
 
     /**
      * Get next monomial element.
@@ -52,12 +45,10 @@ class PolyIterator<C extends RingElem<C>>
         return new Monomial<>(ms.next());
     }
 
-
     /**
      * Remove the last monomial returned from underlying set if allowed.
      */
     public void remove() {
         ms.remove();
     }
-
 }

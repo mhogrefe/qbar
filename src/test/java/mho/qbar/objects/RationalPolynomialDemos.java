@@ -359,13 +359,7 @@ public class RationalPolynomialDemos {
 
     private static void demoRead_targeted() {
         initialize();
-        Iterable<Character> cs;
-        if (P instanceof QBarExhaustiveProvider) {
-            cs = fromString(RATIONAL_POLYNOMIAL_CHARS);
-        } else {
-            cs = P.uniformSample(RATIONAL_POLYNOMIAL_CHARS);
-        }
-        for (String s : take(LIMIT, P.strings(cs))) {
+        for (String s : take(LIMIT, P.strings(RATIONAL_POLYNOMIAL_CHARS))) {
             System.out.println("read(" + s + ") = " + read(s));
         }
     }
@@ -379,13 +373,7 @@ public class RationalPolynomialDemos {
 
     private static void demoFindIn_targeted() {
         initialize();
-        Iterable<Character> cs;
-        if (P instanceof QBarExhaustiveProvider) {
-            cs = fromString(RATIONAL_POLYNOMIAL_CHARS);
-        } else {
-            cs = P.uniformSample(RATIONAL_POLYNOMIAL_CHARS);
-        }
-        for (String s : take(LIMIT, P.strings(cs))) {
+        for (String s : take(LIMIT, P.strings(RATIONAL_POLYNOMIAL_CHARS))) {
             System.out.println("findIn(" + s + ") = " + findIn(s));
         }
     }

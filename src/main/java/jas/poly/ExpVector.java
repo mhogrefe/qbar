@@ -12,7 +12,6 @@ import java.util.Random;
  *
  * @author Heinz Kredel
  */
-
 public final class ExpVector implements AbelianGroupElem<ExpVector> {
     int hash = 0;
 
@@ -20,7 +19,6 @@ public final class ExpVector implements AbelianGroupElem<ExpVector> {
      * The data structure is an array of longs.
      */
     /*package*/private final long[] val;
-
 
     /**
      * Constructor for ExpVector.
@@ -30,7 +28,6 @@ public final class ExpVector implements AbelianGroupElem<ExpVector> {
     public ExpVector(int n) {
         this(new long[n]);
     }
-
 
     /**
      * Constructor for ExpVector. Sets exponent i to e.
@@ -43,7 +40,6 @@ public final class ExpVector implements AbelianGroupElem<ExpVector> {
         this(new long[n]);
         val[i] = e;
     }
-
 
     /**
      * Constructor for ExpVector. Sets val.

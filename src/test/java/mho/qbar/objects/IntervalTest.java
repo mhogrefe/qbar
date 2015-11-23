@@ -10,11 +10,14 @@ import java.math.BigInteger;
 import java.util.List;
 
 import static mho.qbar.objects.Interval.*;
-import static mho.wheels.iterables.IterableUtils.*;
+import static mho.qbar.objects.Interval.sum;
+import static mho.wheels.iterables.IterableUtils.iterate;
+import static mho.wheels.iterables.IterableUtils.toList;
 import static mho.wheels.testing.Testing.*;
-import static mho.wheels.testing.Testing.testCompareToHelper;
-import static mho.wheels.testing.Testing.testEqualsHelper;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class IntervalTest {
     private static final int TINY_LIMIT = 20;
@@ -372,7 +375,7 @@ public class IntervalTest {
     }
 
     @Test
-     public void testRoundingPreimage_float() {
+    public void testRoundingPreimage_float() {
         aeq(
                 roundingPreimage(0.0f),
                 "[-1/1427247692705959881058285969449495136382746624, 1/1427247692705959881058285969449495136382746624]"
@@ -479,7 +482,8 @@ public class IntervalTest {
         aeq(roundingPreimage(1.0e30), "[999999999999999949515880660992, 1000000000000000090253369016320]");
         aeq(roundingPreimage(Math.PI), "[14148475504056879/4503599627370496, 14148475504056881/4503599627370496]");
         aeq(roundingPreimage(Math.E), "[12242053029736145/4503599627370496, 12242053029736147/4503599627370496]");
-        aeq(roundingPreimage(Math.sqrt(2)), "[12738103345051545/9007199254740992, 12738103345051547/9007199254740992]");
+        aeq(roundingPreimage(Math.sqrt(2)),
+                "[12738103345051545/9007199254740992, 12738103345051547/9007199254740992]");
         aeq(
                 roundingPreimage(Double.MIN_VALUE),
                 "[1/404804506614621236704990693437834614099113299528284236713802716054860679135990693783920767402874" +

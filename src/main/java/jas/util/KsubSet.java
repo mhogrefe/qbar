@@ -27,7 +27,6 @@ public class KsubSet<E> implements Iterable<List<E>> {
         }
         return new KsubSetIterator<>(set, k);
     }
-
 }
 
 class KsubSetIterator<E> implements Iterator<List<E>> {
@@ -92,7 +91,6 @@ class KsubSetIterator<E> implements Iterator<List<E>> {
 }
 
 class OneSubSetIterator<E> implements Iterator<List<E>> {
-
     private final Iterator<E> iter;
 
     public OneSubSetIterator(List<E> set) {
@@ -103,7 +101,6 @@ class OneSubSetIterator<E> implements Iterator<List<E>> {
         iter = set.iterator();
     }
 
-
     /**
      * Test for availability of a next subset.
      *
@@ -112,7 +109,6 @@ class OneSubSetIterator<E> implements Iterator<List<E>> {
     public boolean hasNext() {
         return iter != null && iter.hasNext();
     }
-
 
     /**
      * Get next subset.
@@ -125,12 +121,10 @@ class OneSubSetIterator<E> implements Iterator<List<E>> {
         return next;
     }
 
-
     /**
      * Remove the last subset returned from underlying set if allowed.
      */
     public void remove() {
         throw new UnsupportedOperationException("cannnot remove subsets");
     }
-
 }
