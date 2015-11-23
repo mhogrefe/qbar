@@ -2707,20 +2707,35 @@ public strictfp abstract class QBarIterableProvider {
         return wheelsProvider.maps(ks, vs);
     }
 
+    /**
+     * Generates all {@code RandomProvider}s with a fixed {@code scale} and {@code secondaryScale}.
+     *
+     * @param scale the {@code scale} of the generated {@code RandomProvider}s
+     * @param secondaryScale the {@code secondaryScale} of the generated {@code RandomProvider}s
+     */
     public @NotNull Iterable<RandomProvider> randomProvidersFixedScales(int scale, int secondaryScale) {
         return wheelsProvider.randomProvidersFixedScales(scale, secondaryScale);
     }
 
-    public @NotNull Iterable<RandomProvider> randomProviders() {
-        return wheelsProvider.randomProviders();
-    }
-
+    /**
+     * Generates all {@code RandomProvider}s with the default {@code scale} and {@code secondaryScale}.
+     */
     public @NotNull Iterable<RandomProvider> randomProvidersDefault() {
         return wheelsProvider.randomProvidersDefault();
     }
 
+    /**
+     * Generates all {@code RandomProvider}s with the default {@code secondaryScale}.
+     */
     public @NotNull Iterable<RandomProvider> randomProvidersDefaultSecondaryScale() {
         return wheelsProvider.randomProvidersDefaultSecondaryScale();
+    }
+
+    /**
+     * Generates all {@code RandomProvider}s.
+     */
+    public @NotNull Iterable<RandomProvider> randomProviders() {
+        return wheelsProvider.randomProviders();
     }
 
     public abstract @NotNull Iterable<Rational> rationals();
