@@ -14,12 +14,98 @@ import java.util.Optional;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.ordering.Ordering.*;
 
-@SuppressWarnings("unused")
+/**
+ * A {@code QBarExhaustiveProvider} produces {@code Iterable}s that generate some set of values in a specified order.
+ * There is only a single instance of this class.
+ */
 public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider {
+    /**
+     * The single instance of this class.
+     */
     public static final @NotNull QBarExhaustiveProvider INSTANCE = new QBarExhaustiveProvider();
 
+    /**
+     * Disallow instantiation
+     */
     private QBarExhaustiveProvider() {
         super(ExhaustiveProvider.INSTANCE);
+    }
+
+    /**
+     * An {@code Iterable} that generates every positive {@code Rational}. Does not support removal.
+     *
+     * Length is infinite
+     */
+    @Override
+    public @NotNull Iterable<Rational> positiveRationals() {
+        return map(
+                p -> Rational.of(p.a, p.b),
+                filterInfinite(p -> p.a.gcd(p.b).equals(BigInteger.ONE), pairs(positiveBigIntegers()))
+        );
+    }
+
+    /**
+     * An {@code Iterable} that generates every negative {@code Rational}. Does not support removal.
+     *
+     * Length is infinite
+     */
+    @Override
+    public @NotNull Iterable<Rational> negativeRationals() {
+        return map(
+                p -> Rational.of(p.a, p.b),
+                filterInfinite(
+                        p -> p.a.gcd(p.b).equals(BigInteger.ONE),
+                        pairs(negativeBigIntegers(), positiveBigIntegers())
+                )
+        );
+    }
+
+    /**
+     * An {@code Iterable} that generates every nonzero {@code Rational}. Does not support removal.
+     *
+     * Length is infinite
+     */
+    @Override
+    public @NotNull Iterable<Rational> nonzeroRationals() {
+        return map(
+                p -> Rational.of(p.a, p.b),
+                filterInfinite(
+                        p -> p.a.gcd(p.b).equals(BigInteger.ONE),
+                        pairs(nonzeroBigIntegers(), positiveBigIntegers())
+                )
+        );
+    }
+
+    /**
+     * An {@link Iterable} that generates every {@code Rational}. Does not support removal.
+     *
+     * Length is infinite
+     */
+    @Override
+    public @NotNull Iterable<Rational> rationals() {
+        return map(
+                p -> Rational.of(p.a, p.b),
+                filterInfinite(
+                        p -> p.a.gcd(p.b).equals(BigInteger.ONE),
+                        pairs(bigIntegers(), positiveBigIntegers())
+                )
+        );
+    }
+
+    /**
+     * An {@code Iterable} that generates every {@code Rational} in the interval [0, 1). Does not support removal.
+     *
+     * Length is infinite
+     */
+    @Override
+    public @NotNull Iterable<Rational> nonNegativeRationalsLessThanOne() {
+        return cons(
+                Rational.ZERO,
+                map(
+                        p -> Rational.of(p.a, p.b),
+                        filterInfinite(p -> p.a.gcd(p.b).equals(BigInteger.ONE), subsetPairs(positiveBigIntegers()))
+                )
+        );
     }
 
     @Override
@@ -52,74 +138,6 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
                 return oldX;
             }
         };
-    }
-
-    /**
-     * an {@code Iterable} that contains every positive {@code Rational}. Does not support removal.
-     *
-     * Length is infinite
-     */
-    @Override
-    public @NotNull Iterable<Rational> positiveRationals() {
-        return map(
-                p -> Rational.of(p.a, p.b),
-                filter(p -> p.a.gcd(p.b).equals(BigInteger.ONE), pairs(positiveBigIntegers()))
-        );
-    }
-
-    /**
-     * an {@code Iterable} that contains every negative {@code Rational}. Does not support removal.
-     *
-     * Length is infinite
-     */
-    @Override
-    public @NotNull Iterable<Rational> negativeRationals() {
-        return map(
-                p -> Rational.of(p.a, p.b),
-                filter(p -> p.a.gcd(p.b).equals(BigInteger.ONE), pairs(negativeBigIntegers(), positiveBigIntegers()))
-        );
-    }
-
-    /**
-     * @return an {@code Iterable} that contains every nonzero {@code Rational}. Does not support removal.
-     *
-     * Length is infinite
-     */
-    @Override
-    public @NotNull Iterable<Rational> nonzeroRationals() {
-        return map(
-                p -> Rational.of(p.a, p.b),
-                filter(p -> p.a.gcd(p.b).equals(BigInteger.ONE), pairs(positiveBigIntegers(), positiveBigIntegers()))
-        );
-    }
-
-    /**
-     * @return an {@link Iterable} that contains every {@link mho.qbar.objects.Rational}. Does not support removal.
-     *
-     * Length is infinite
-     */
-    @Override
-    public @NotNull Iterable<Rational> rationals() {
-        return map(
-                p -> Rational.of(p.a, p.b),
-                filter(p -> p.a.gcd(p.b).equals(BigInteger.ONE), pairs(bigIntegers(), positiveBigIntegers()))
-        );
-    }
-
-    /**
-     * an {@code Iterable} that contains every {@code Rational} in the interval [0, 1). Does not support removal.
-     *
-     * Length is infinite
-     */
-    @Override
-    public @NotNull Iterable<Rational> nonNegativeRationalsLessThanOne() {
-        return map(
-                p -> Rational.of(p.a, p.b),
-                filter(
-                        p -> lt(p.a, p.b) && p.a.gcd(p.b).equals(BigInteger.ONE),
-                        pairs(naturalBigIntegers(), positiveBigIntegers())
-                )
-        );
     }
 
     /**

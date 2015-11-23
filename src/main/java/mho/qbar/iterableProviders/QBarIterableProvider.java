@@ -19,14 +19,39 @@ import java.util.function.Function;
 
 import static mho.wheels.iterables.IterableUtils.map;
 
-@SuppressWarnings("unused")
+/**
+ * This class provides {@code Iterables} for testing.
+ */
 public strictfp abstract class QBarIterableProvider {
+    /**
+     * An instance of {@code IterableProvider} to access generators from the wheels project.
+     */
     protected @NotNull IterableProvider wheelsProvider;
 
+    /**
+     * Creates a new {@code QBarIterableProvider} with a {@code IterableProvider}.
+     *
+     * <ul>
+     *  <li>{@code wheelsProvider} cannot be null.</li>
+     *  <li>Any {@code QBarIterableProvider} may be created with this constructor.</li>
+     * </ul>
+     *
+     * @param wheelsProvider an {@code IterableProvider}
+     */
     protected QBarIterableProvider(@NotNull IterableProvider wheelsProvider) {
         this.wheelsProvider = wheelsProvider;
     }
 
+    /**
+     * Returns {@code this}'s wheels provider.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code QBarIterableProvider}.</li>
+     *  <li>The result may be any {@code IterableProvider}.</li>
+     * </ul>
+     *
+     * @return the wheels provider of {@code this}
+     */
     public @NotNull IterableProvider getWheelsProvider() {
         return wheelsProvider;
     }
