@@ -2738,10 +2738,10 @@ public strictfp abstract class QBarIterableProvider {
         return wheelsProvider.randomProviders();
     }
 
-    public abstract @NotNull Iterable<Rational> rationals();
-    public abstract @NotNull Iterable<Rational> nonNegativeRationals();
     public abstract @NotNull Iterable<Rational> positiveRationals();
     public abstract @NotNull Iterable<Rational> negativeRationals();
+    public abstract @NotNull Iterable<Rational> nonzeroRationals();
+    public abstract @NotNull Iterable<Rational> rationals();
     public abstract @NotNull Iterable<Rational> nonNegativeRationalsLessThanOne();
 
     public abstract @NotNull Iterable<Rational> rangeUp(@NotNull Rational a);

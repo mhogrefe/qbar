@@ -167,52 +167,6 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
     }
 
     /**
-     * a pseudorandom {@link Iterable} that generates every {@link Rational}. Each {@code Rational}'s bit size (defined
-     * as the sum of the numerator's and denominator's bit sizes) is chosen from a geometric distribution with mean
-     * approximately {@code meanBitSize} (The ratio between the actual mean bit size and {@code meanBitSize} decreases
-     * as {@code meanBitSize} increases). Does not support removal.
-     *
-     * <ul>
-     *  <li>{@code meanBitSize} must be greater than 5.</li>
-     *  <li>The result is an infinite pseudorandom sequence of all {@code Rational}s.</li>
-     * </ul>
-     *
-     * Length is infinite
-     */
-    @Override
-    public @NotNull Iterable<Rational> rationals() {
-        Iterable<BigInteger> numerators = withScale(getScale() / 2).bigIntegers();
-        Iterable<BigInteger> denominators = withScale(getScale() / 2).positiveBigIntegers();
-        return map(
-                p -> Rational.of(p.a, p.b),
-                filter(q -> q.a.gcd(q.b).equals(BigInteger.ONE), pairs(numerators, denominators))
-        );
-    }
-
-    /**
-     * a pseudorandom {@code Iterable} that generates every non-negative {@code Rational}. Each {@code Rational}'s bit
-     * size (defined as the sum of the numerator and denominator's bit size) is chosen from a geometric distribution
-     * with mean approximately {@code meanBitSize} (The ratio between the actual mean bit size and {@code meanBitSize}
-     * decreases as {@code meanBitSize} increases). Does not support removal.
-     *
-     * <ul>
-     *  <li>{@code meanBitSize} must be greater than 5.</li>
-     *  <li>The result is an infinite pseudorandom sequence of all {@code Rational}s.</li>
-     * </ul>
-     *
-     * Length is infinite
-     */
-    @Override
-    public @NotNull Iterable<Rational> nonNegativeRationals() {
-        Iterable<BigInteger> numerators = withScale(getScale() / 2).naturalBigIntegers();
-        Iterable<BigInteger> denominators = withScale(getScale() / 2).positiveBigIntegers();
-        return map(
-                p -> Rational.of(p.a, p.b),
-                filter(q -> q.a.gcd(q.b).equals(BigInteger.ONE), pairs(numerators, denominators))
-        );
-    }
-
-    /**
      * a pseudorandom {@code Iterable} that generates every positive {@code Rational}. Each {@code Rational}'s bit size
      * (defined as the sum of the numerator 'sand denominator's bit sizes) is chosen from a geometric distribution with
      * mean approximately {@code meanBitSize} (The ratio between the actual mean bit size and {@code meanBitSize}
@@ -250,6 +204,52 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
     @Override
     public @NotNull Iterable<Rational> negativeRationals() {
         Iterable<BigInteger> numerators = withScale(getScale() / 2).negativeBigIntegers();
+        Iterable<BigInteger> denominators = withScale(getScale() / 2).positiveBigIntegers();
+        return map(
+                p -> Rational.of(p.a, p.b),
+                filter(q -> q.a.gcd(q.b).equals(BigInteger.ONE), pairs(numerators, denominators))
+        );
+    }
+
+    /**
+     * a pseudorandom {@code Iterable} that generates every nonzero {@code Rational}. Each {@code Rational}'s bit
+     * size (defined as the sum of the numerator and denominator's bit size) is chosen from a geometric distribution
+     * with mean approximately {@code meanBitSize} (The ratio between the actual mean bit size and {@code meanBitSize}
+     * decreases as {@code meanBitSize} increases). Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code meanBitSize} must be greater than 5.</li>
+     *  <li>The result is an infinite pseudorandom sequence of all {@code Rational}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
+    @Override
+    public @NotNull Iterable<Rational> nonzeroRationals() {
+        Iterable<BigInteger> numerators = withScale(getScale() / 2).positiveBigIntegers();
+        Iterable<BigInteger> denominators = withScale(getScale() / 2).positiveBigIntegers();
+        return map(
+                p -> Rational.of(p.a, p.b),
+                filter(q -> q.a.gcd(q.b).equals(BigInteger.ONE), pairs(numerators, denominators))
+        );
+    }
+
+    /**
+     * a pseudorandom {@link Iterable} that generates every {@link Rational}. Each {@code Rational}'s bit size (defined
+     * as the sum of the numerator's and denominator's bit sizes) is chosen from a geometric distribution with mean
+     * approximately {@code meanBitSize} (The ratio between the actual mean bit size and {@code meanBitSize} decreases
+     * as {@code meanBitSize} increases). Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code meanBitSize} must be greater than 5.</li>
+     *  <li>The result is an infinite pseudorandom sequence of all {@code Rational}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
+    @Override
+    public @NotNull Iterable<Rational> rationals() {
+        Iterable<BigInteger> numerators = withScale(getScale() / 2).bigIntegers();
         Iterable<BigInteger> denominators = withScale(getScale() / 2).positiveBigIntegers();
         return map(
                 p -> Rational.of(p.a, p.b),
@@ -346,9 +346,9 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
         if (!a.getLower().isPresent() && !a.getUpper().isPresent()) {
             return rationals();
         } else if (!a.getLower().isPresent()) {
-            return map(r -> a.getUpper().get().subtract(r), nonNegativeRationals());
+            return map(r -> a.getUpper().get().subtract(r), withElement(Rational.ZERO, positiveRationals()));
         } else if (!a.getUpper().isPresent()) {
-            return map(r -> r.add(a.getLower().get()), nonNegativeRationals());
+            return map(r -> r.add(a.getLower().get()), withElement(Rational.ZERO, positiveRationals()));
         } else {
             Rational diameter = a.diameter().get();
             if (diameter == Rational.ZERO) return repeat(a.getLower().get());

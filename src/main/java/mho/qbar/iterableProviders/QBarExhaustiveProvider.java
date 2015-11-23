@@ -55,32 +55,6 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
     }
 
     /**
-     * @return an {@link Iterable} that contains every {@link mho.qbar.objects.Rational}. Does not support removal.
-     *
-     * Length is infinite
-     */
-    @Override
-    public @NotNull Iterable<Rational> rationals() {
-        return map(
-                p -> Rational.of(p.a, p.b),
-                filter(p -> p.a.gcd(p.b).equals(BigInteger.ONE), pairs(bigIntegers(), positiveBigIntegers()))
-        );
-    }
-
-    /**
-     * @return an {@code Iterable} that contains every non-negative {@code Rational}. Does not support removal.
-     *
-     * Length is infinite
-     */
-    @Override
-    public @NotNull Iterable<Rational> nonNegativeRationals() {
-        return map(
-                p -> Rational.of(p.a, p.b),
-                filter(p -> p.a.gcd(p.b).equals(BigInteger.ONE), pairs(naturalBigIntegers(), positiveBigIntegers()))
-        );
-    }
-
-    /**
      * an {@code Iterable} that contains every positive {@code Rational}. Does not support removal.
      *
      * Length is infinite
@@ -103,6 +77,32 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
         return map(
                 p -> Rational.of(p.a, p.b),
                 filter(p -> p.a.gcd(p.b).equals(BigInteger.ONE), pairs(negativeBigIntegers(), positiveBigIntegers()))
+        );
+    }
+
+    /**
+     * @return an {@code Iterable} that contains every nonzero {@code Rational}. Does not support removal.
+     *
+     * Length is infinite
+     */
+    @Override
+    public @NotNull Iterable<Rational> nonzeroRationals() {
+        return map(
+                p -> Rational.of(p.a, p.b),
+                filter(p -> p.a.gcd(p.b).equals(BigInteger.ONE), pairs(positiveBigIntegers(), positiveBigIntegers()))
+        );
+    }
+
+    /**
+     * @return an {@link Iterable} that contains every {@link mho.qbar.objects.Rational}. Does not support removal.
+     *
+     * Length is infinite
+     */
+    @Override
+    public @NotNull Iterable<Rational> rationals() {
+        return map(
+                p -> Rational.of(p.a, p.b),
+                filter(p -> p.a.gcd(p.b).equals(BigInteger.ONE), pairs(bigIntegers(), positiveBigIntegers()))
         );
     }
 
@@ -159,9 +159,9 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
         if (!a.getLower().isPresent() && !a.getUpper().isPresent()) {
             return rationals();
         } else if (!a.getLower().isPresent()) {
-            return map(r -> a.getUpper().get().subtract(r), nonNegativeRationals());
+            return map(r -> a.getUpper().get().subtract(r), withElement(Rational.ZERO, positiveRationals()));
         } else if (!a.getUpper().isPresent()) {
-            return map(r -> r.add(a.getLower().get()), nonNegativeRationals());
+            return map(r -> r.add(a.getLower().get()), withElement(Rational.ZERO, positiveRationals()));
         } else {
             Rational diameter = a.diameter().get();
             if (diameter == Rational.ZERO) return Collections.singletonList(a.getLower().get());
