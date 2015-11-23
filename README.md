@@ -9,13 +9,13 @@ Progress
 
 | Class                  | Methods | JavaDoc | Tests | Demos | Properties |
 |:----------------------:|:-------:|:-------:|:-----:|:-----:|:----------:|
-| QBarExhaustiveProvider | ✔       | ✘       | ✘     | ✘     | ✘          |
-| QBarIterableProvider   | ✔       | ✘       | ✘     | ✘     | ✘          |
+| QBarExhaustiveProvider | ✘       | ✘       | ✘     | ✘     | ✘          |
+| QBarIterableProvider   | ✘       | ✘       | ✘     | ✘     | ✘          |
 | QBarRandomProvider     | ✘       | ✘       | ✘     | ✘     | ✘          |
-| Interval               | ✔       | ✔       | ✔     | ✔     | ✔          |
+| Interval               | ✘       | ✘       | ✘     | ✘     | ✘          |
 | Polynomial             | ✘       | ✘       | ✘     | ✘     | ✘          |
-| Rational               | ✔       | ✔       | ✔     | ✔     | ✔          |
+| Rational               | ✘       | ✘       | ✘     | ✘     | ✘          |
 | RationalMatrix         | ✘       | ✘       | ✘     | ✘     | ✘          |
 | RationalPolynomial     | ✘       | ✘       | ✘     | ✘     | ✘          |
-| RationalVector         | ✔       | ✔       | ✔     | ✔     | ✔          |
+| RationalVector         | ✘       | ✘       | ✘     | ✘     | ✘          |
 | QBarTesting            | ✘       | ✘       | ✘     | ✘     | ✘          |
