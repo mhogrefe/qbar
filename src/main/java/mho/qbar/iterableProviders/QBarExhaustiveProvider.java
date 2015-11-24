@@ -109,16 +109,60 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
         );
     }
 
+    /**
+     * An {@code Iterable} that generates all {@code Rational}s greater than or equal to {@code a}. Does not support
+     * removal.
+     *
+     * <ul>
+     *  <li>{@code a} cannot be null.</li>
+     *  <li>The result is a non-removable {@code Iterable} containing {@code Rational}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param a the inclusive lower bound of the generated elements
+     * @return {@code Rational}s greater than or equal to {@code a}
+     */
     @Override
     public @NotNull Iterable<Rational> rangeUp(@NotNull Rational a) {
         return map(r -> r.add(a), withElement(Rational.ZERO, positiveRationals()));
     }
 
+    /**
+     * An {@code Iterable} that generates all {@code Rational}s less than or equal to {@code a}. Does not support
+     * removal.
+     *
+     * <ul>
+     *  <li>{@code a} cannot be null.</li>
+     *  <li>The result is a non-removable {@code Iterable} containing {@code Rational}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param a the inclusive upper bound of the generated elements
+     * @return {@code Rational}s less than or equal to {@code a}
+     */
     @Override
     public @NotNull Iterable<Rational> rangeDown(@NotNull Rational a) {
         return map(a::subtract, withElement(Rational.ZERO, positiveRationals()));
     }
 
+    /**
+     * An {@code Iterable} that generates all {@code Rational}s between {@code a} and {@code b}, inclusive. If
+     * {@code a}{@literal >}{@code b}, an empty {@code Iterable} is returned. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code a} cannot be null.</li>
+     *  <li>{@code b} cannot be null.</li>
+     *  <li>The result is a non-removable {@code Iterable} containing {@code Rational}s.</li>
+     * </ul>
+     *
+     * Length is 0 if a{@literal >}b, 1 if a=b, and infinite otherwise
+     *
+     * @param a the inclusive lower bound of the generated elements
+     * @param b the inclusive upper bound of the generated elements
+     * @return {@code Rational}s between {@code a} and {@code b}, inclusive
+     */
     @Override
     public @NotNull Iterable<Rational> range(@NotNull Rational a, @NotNull Rational b) {
         switch (Ordering.compare(a, b)) {
