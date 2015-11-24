@@ -32,6 +32,7 @@
                     <includes>
                         <include>**/JasApiTest.java</include>
                         <include>**/QBarExhaustiveProviderTest.java</include>
+                        <include>**/QBarExhaustiveProviderProperties.java</include>
                         <include>**/QBarRandomProviderTest.java</include>
                         <include>**/IntervalTest.java</include>
                         <include>**/IntervalProperties.java</include>
