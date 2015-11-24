@@ -34,6 +34,7 @@
                         <include>**/QBarExhaustiveProviderTest.java</include>
                         <include>**/QBarExhaustiveProviderProperties.java</include>
                         <include>**/QBarRandomProviderTest.java</include>
+                        <include>**/QBarRandomProviderProperties.java</include>
                         <include>**/IntervalTest.java</include>
                         <include>**/IntervalProperties.java</include>
                         <include>**/PolynomialTest.java</include>

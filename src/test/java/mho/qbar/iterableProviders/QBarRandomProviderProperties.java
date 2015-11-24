@@ -13,7 +13,7 @@ import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.ordering.Ordering.*;
 import static mho.wheels.testing.Testing.*;
 
-public class QBarRandomProviderProviders {
+public class QBarRandomProviderProperties {
     private static final int TINY_LIMIT = 20;
     private static int LIMIT;
     private static QBarIterableProvider P;
@@ -21,25 +21,6 @@ public class QBarRandomProviderProviders {
     private static void initialize(String name) {
         P.reset();
         System.out.println("\t\ttesting " + name + " properties...");
-    }
-
-    private static <T> void simpleTestWithNulls(
-            @NotNull QBarRandomProvider rp,
-            @NotNull Iterable<T> xs,
-            @NotNull Predicate<T> predicate
-    ) {
-        rp.reset();
-        assertTrue(rp, all(predicate, take(TINY_LIMIT, xs)));
-        rp.reset();
-        testNoRemove(TINY_LIMIT, xs);
-    }
-
-    private static <T> void simpleTest(
-            @NotNull QBarRandomProvider rp,
-            @NotNull Iterable<T> xs,
-            @NotNull Predicate<T> predicate
-    ) {
-        simpleTestWithNulls(rp, xs, x -> x != null && predicate.test(x));
     }
 
     @Test
@@ -59,6 +40,25 @@ public class QBarRandomProviderProviders {
             propertiesNonNegativeRationalsLessThanOne();
         }
         System.out.println("Done");
+    }
+
+    private static <T> void simpleTestWithNulls(
+            @NotNull QBarRandomProvider rp,
+            @NotNull Iterable<T> xs,
+            @NotNull Predicate<T> predicate
+    ) {
+        rp.reset();
+        assertTrue(rp, all(predicate, take(TINY_LIMIT, xs)));
+        rp.reset();
+        testNoRemove(TINY_LIMIT, xs);
+    }
+
+    private static <T> void simpleTest(
+            @NotNull QBarRandomProvider rp,
+            @NotNull Iterable<T> xs,
+            @NotNull Predicate<T> predicate
+    ) {
+        simpleTestWithNulls(rp, xs, x -> x != null && predicate.test(x));
     }
 
     private static void propertiesPositiveRationals() {
