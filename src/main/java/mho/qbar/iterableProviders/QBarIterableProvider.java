@@ -2820,13 +2820,10 @@ public strictfp abstract class QBarIterableProvider {
 
     public @NotNull Iterable<QBarRandomProvider> qbarRandomProvidersFixedScales(int scale, int secondaryScale) {
         return map(
-                rp -> new QBarRandomProvider(rp.getSeed()),
-                wheelsProvider.randomProvidersFixedScales(scale, secondaryScale)
+                rp -> (QBarRandomProvider) new QBarRandomProvider(rp.getSeed())
+                        .withScale(scale).withSecondaryScale(secondaryScale),
+                wheelsProvider.randomProvidersDefault()
         );
-    }
-
-    public @NotNull Iterable<QBarRandomProvider> qbarRandomProviders() {
-        return map(rp -> new QBarRandomProvider(rp.getSeed()), wheelsProvider.randomProviders());
     }
 
     public @NotNull Iterable<QBarRandomProvider> qbarRandomProvidersDefault() {
@@ -2835,8 +2832,16 @@ public strictfp abstract class QBarIterableProvider {
 
     public @NotNull Iterable<QBarRandomProvider> qbarRandomProvidersDefaultSecondaryScale() {
         return map(
-                rp -> new QBarRandomProvider(rp.getSeed()),
+                rp -> (QBarRandomProvider) new QBarRandomProvider(rp.getSeed()).withScale(rp.getScale()),
                 wheelsProvider.randomProvidersDefaultSecondaryScale()
+        );
+    }
+
+    public @NotNull Iterable<QBarRandomProvider> qbarRandomProviders() {
+        return map(
+                rp -> (QBarRandomProvider) new QBarRandomProvider(rp.getSeed())
+                        .withScale(rp.getScale()).withSecondaryScale(rp.getSecondaryScale()),
+                wheelsProvider.randomProviders()
         );
     }
 }

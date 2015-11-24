@@ -232,8 +232,12 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
      */
     @Override
     public @NotNull Iterable<Rational> positiveRationals() {
-        int leftScale = getScale() / 2;
-        int rightScale = (getScale() & 1) == 0 ? leftScale : leftScale + 1;
+        int scale = getScale();
+        if (scale < 4) {
+            throw new IllegalStateException("this must have a scale of at least 4. Invalid scale: " + scale);
+        }
+        int leftScale = scale / 2;
+        int rightScale = (scale & 1) == 0 ? leftScale : leftScale + 1;
         return map(
                 p -> Rational.of(p.a, p.b),
                 filterInfinite(
@@ -257,8 +261,12 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
      */
     @Override
     public @NotNull Iterable<Rational> negativeRationals() {
-        int leftScale = getScale() / 2;
-        int rightScale = (getScale() & 1) == 0 ? leftScale : leftScale + 1;
+        int scale = getScale();
+        if (scale < 4) {
+            throw new IllegalStateException("this must have a scale of at least 4. Invalid scale: " + scale);
+        }
+        int leftScale = scale / 2;
+        int rightScale = (scale & 1) == 0 ? leftScale : leftScale + 1;
         return map(
                 p -> Rational.of(p.a, p.b),
                 filterInfinite(
@@ -282,8 +290,12 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
      */
     @Override
     public @NotNull Iterable<Rational> nonzeroRationals() {
-        int leftScale = getScale() / 2;
-        int rightScale = (getScale() & 1) == 0 ? leftScale : leftScale + 1;
+        int scale = getScale();
+        if (scale < 4) {
+            throw new IllegalStateException("this must have a scale of at least 4. Invalid scale: " + scale);
+        }
+        int leftScale = scale / 2;
+        int rightScale = (scale & 1) == 0 ? leftScale : leftScale + 1;
         return map(
                 p -> Rational.of(p.a, p.b),
                 filterInfinite(
@@ -307,8 +319,12 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
      */
     @Override
     public @NotNull Iterable<Rational> rationals() {
-        int leftScale = getScale() / 2;
-        int rightScale = (getScale() & 1) == 0 ? leftScale : leftScale + 1;
+        int scale = getScale();
+        if (scale < 3) {
+            throw new IllegalStateException("this must have a scale of at least 3. Invalid scale: " + scale);
+        }
+        int leftScale = scale / 2;
+        int rightScale = (scale & 1) == 0 ? leftScale : leftScale + 1;
         return map(
                 p -> Rational.of(p.a, p.b),
                 filterInfinite(
@@ -333,8 +349,12 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
      */
     @Override
     public @NotNull Iterable<Rational> nonNegativeRationalsLessThanOne() {
-        int leftScale = getScale() / 2;
-        int rightScale = (getScale() & 1) == 0 ? leftScale : leftScale + 1;
+        int scale = getScale();
+        if (scale < 4) {
+            throw new IllegalStateException("this must have a scale of at least 4. Invalid scale: " + scale);
+        }
+        int leftScale = scale / 2;
+        int rightScale = (scale & 1) == 0 ? leftScale : leftScale + 1;
         return map(
                 p -> Rational.of(p.a, p.b),
                 filterInfinite(
