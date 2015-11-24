@@ -16,7 +16,6 @@ import static mho.wheels.testing.Testing.*;
 public class QBarExhaustiveProviderProperties {
     private static final QBarExhaustiveProvider EP = QBarExhaustiveProvider.INSTANCE;
     private static final int LARGE_LIMIT = 10000;
-    private static final int SMALL_LIMIT = 100;
     private static final int TINY_LIMIT = 20;
     private static int LIMIT;
     private static QBarIterableProvider P;
@@ -33,7 +32,7 @@ public class QBarExhaustiveProviderProperties {
 
     @Test
     public void testAllProperties() {
-        System.out.println("ExhaustiveProvider properties");
+        System.out.println("QBarExhaustiveProvider properties");
         propertiesPositiveRationals();
         propertiesNegativeRationals();
         propertiesNonzeroRationals();
