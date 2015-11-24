@@ -215,9 +215,9 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
         if (!a.getLower().isPresent() && !a.getUpper().isPresent()) {
             return rationals();
         } else if (!a.getLower().isPresent()) {
-            return rangeDown(a.getLower().get());
+            return rangeDown(a.getUpper().get());
         } else if (!a.getUpper().isPresent()) {
-            return rangeUp(a.getUpper().get());
+            return rangeUp(a.getLower().get());
         } else {
             return range(a.getLower().get(), a.getUpper().get());
         }
