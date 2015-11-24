@@ -22,6 +22,7 @@ import static mho.wheels.iterables.IterableUtils.map;
 /**
  * This class provides {@code Iterables} for testing.
  */
+@SuppressWarnings("unused")
 public strictfp abstract class QBarIterableProvider {
     /**
      * An instance of {@code IterableProvider} to access generators from the wheels project.
@@ -2788,8 +2789,26 @@ public strictfp abstract class QBarIterableProvider {
      */
     public abstract @NotNull Iterable<Rational> nonNegativeRationalsLessThanOne();
 
+    /**
+     * Generates {@code Rational}s greater than or equal to a given value.
+     *
+     * @param a the inclusive lower bound of the generated {@code Rational}s
+     */
     public abstract @NotNull Iterable<Rational> rangeUp(@NotNull Rational a);
+
+    /**
+     * Generates {@code Rational}s less than or equal to a given value.
+     *
+     * @param a the inclusive upper bound of the generated {@code Rational}s
+     */
     public abstract @NotNull Iterable<Rational> rangeDown(@NotNull Rational a);
+
+    /**
+     * Generates {@code Rational}s between {@code a} and {@code b}, inclusive.
+     *
+     * @param a the inclusive lower bound of the generated {@code Rational}s
+     * @param b the inclusive upper bound of the generated {@code Rational}s
+     */
     public abstract @NotNull Iterable<Rational> range(@NotNull Rational a, @NotNull Rational b);
 
     public abstract @NotNull Iterable<Interval> finitelyBoundedIntervals();
