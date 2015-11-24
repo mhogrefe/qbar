@@ -34,6 +34,7 @@ import static org.junit.Assert.assertTrue;
  * produce only a finite number of {@code String}s. So in general, the documentation often pretends that the source of
  * randomness is perfect (but still deterministic).</p>
  */
+@SuppressWarnings("unused")
 public final strictfp class QBarRandomProvider extends QBarIterableProvider {
     /**
      * Creates a new {@code QBarRandomProvider} with a {@code RandomProvider}.
@@ -218,116 +219,128 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
     }
 
     /**
-     * a pseudorandom {@code Iterable} that generates every positive {@code Rational}. Each {@code Rational}'s bit size
-     * (defined as the sum of the numerator 'sand denominator's bit sizes) is chosen from a geometric distribution with
-     * mean approximately {@code meanBitSize} (The ratio between the actual mean bit size and {@code meanBitSize}
-     * decreases as {@code meanBitSize} increases). Does not support removal.
+     * An {@code Iterable} that generates all positive {@code Rational}s. Each {@code Rational}'s bit size (defined as
+     * the sum of the numerator 'sand denominator's bit sizes) is chosen from a geometric distribution with mean
+     * approximately {@code scale}. Does not support removal.
      *
      * <ul>
      *  <li>{@code meanBitSize} must be greater than 5.</li>
-     *  <li>The result is an infinite pseudorandom sequence of all positive {@code Rational}s.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing positive {@code Rational}s.</li>
      * </ul>
      *
      * Length is infinite
      */
     @Override
     public @NotNull Iterable<Rational> positiveRationals() {
-        Iterable<BigInteger> components = withScale(getScale() / 2).positiveBigIntegers();
+        int leftScale = getScale() / 2;
+        int rightScale = (getScale() & 1) == 0 ? leftScale : leftScale + 1;
         return map(
                 p -> Rational.of(p.a, p.b),
-                filter(q -> q.a.gcd(q.b).equals(BigInteger.ONE), pairs(components))
+                filterInfinite(
+                        q -> q.a.gcd(q.b).equals(BigInteger.ONE),
+                        pairs(withScale(leftScale).positiveBigIntegers(), withScale(rightScale).positiveBigIntegers())
+                )
         );
     }
 
     /**
-     * a pseudorandom {@code Iterable} that generates every negative {@code Rational}. Each {@code Rational}'s bit size
-     * (defined as the sum of the numerator's and denominator's bit sizes) is chosen from a geometric distribution with
-     * mean approximately {@code meanBitSize} (The ratio between the actual mean bit size and {@code meanBitSize}
-     * decreases as {@code meanBitSize} increases). Does not support removal.
+     * An {@code Iterable} that generates all negative {@code Rational}s. Each {@code Rational}'s bit size (defined as
+     * the sum of the numerator's and denominator's bit sizes) is chosen from a geometric distribution with mean
+     * approximately {@code scale}. Does not support removal.
      *
      * <ul>
      *  <li>{@code meanBitSize} must be greater than 5.</li>
-     *  <li>The result is an infinite pseudorandom sequence of all negative {@code Rational}s.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing negative {@code Rational}s.</li>
      * </ul>
      *
      * Length is infinite
      */
     @Override
     public @NotNull Iterable<Rational> negativeRationals() {
-        Iterable<BigInteger> numerators = withScale(getScale() / 2).negativeBigIntegers();
-        Iterable<BigInteger> denominators = withScale(getScale() / 2).positiveBigIntegers();
+        int leftScale = getScale() / 2;
+        int rightScale = (getScale() & 1) == 0 ? leftScale : leftScale + 1;
         return map(
                 p -> Rational.of(p.a, p.b),
-                filter(q -> q.a.gcd(q.b).equals(BigInteger.ONE), pairs(numerators, denominators))
+                filterInfinite(
+                        q -> q.a.gcd(q.b).equals(BigInteger.ONE),
+                        pairs(withScale(leftScale).negativeBigIntegers(), withScale(rightScale).positiveBigIntegers())
+                )
         );
     }
 
     /**
-     * a pseudorandom {@code Iterable} that generates every nonzero {@code Rational}. Each {@code Rational}'s bit
-     * size (defined as the sum of the numerator and denominator's bit size) is chosen from a geometric distribution
-     * with mean approximately {@code meanBitSize} (The ratio between the actual mean bit size and {@code meanBitSize}
-     * decreases as {@code meanBitSize} increases). Does not support removal.
+     * An {@code Iterable} that generates all nonzero {@code Rational}s. Each {@code Rational}'s bit size (defined as
+     * the sum of the numerator and denominator's bit size) is chosen from a geometric distribution with mean
+     * approximately {@code scale}. Does not support removal.
      *
      * <ul>
      *  <li>{@code meanBitSize} must be greater than 5.</li>
-     *  <li>The result is an infinite pseudorandom sequence of all {@code Rational}s.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing nonzero {@code Rational}s.</li>
      * </ul>
      *
      * Length is infinite
      */
     @Override
     public @NotNull Iterable<Rational> nonzeroRationals() {
-        Iterable<BigInteger> numerators = withScale(getScale() / 2).positiveBigIntegers();
-        Iterable<BigInteger> denominators = withScale(getScale() / 2).positiveBigIntegers();
+        int leftScale = getScale() / 2;
+        int rightScale = (getScale() & 1) == 0 ? leftScale : leftScale + 1;
         return map(
                 p -> Rational.of(p.a, p.b),
-                filter(q -> q.a.gcd(q.b).equals(BigInteger.ONE), pairs(numerators, denominators))
+                filterInfinite(
+                        q -> q.a.gcd(q.b).equals(BigInteger.ONE),
+                        pairs(withScale(leftScale).nonzeroBigIntegers(), withScale(rightScale).positiveBigIntegers())
+                )
         );
     }
 
     /**
-     * a pseudorandom {@link Iterable} that generates every {@link Rational}. Each {@code Rational}'s bit size (defined
-     * as the sum of the numerator's and denominator's bit sizes) is chosen from a geometric distribution with mean
-     * approximately {@code meanBitSize} (The ratio between the actual mean bit size and {@code meanBitSize} decreases
-     * as {@code meanBitSize} increases). Does not support removal.
+     * An {@code Iterable} that generates all {@link Rational}s. Each {@code Rational}'s bit size (defined as the sum
+     * of the numerator's and denominator's bit sizes) is chosen from a geometric distribution with mean approximately
+     * {@code scale}. Does not support removal.
      *
      * <ul>
      *  <li>{@code meanBitSize} must be greater than 5.</li>
-     *  <li>The result is an infinite pseudorandom sequence of all {@code Rational}s.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing {@code Rational}s.</li>
      * </ul>
      *
      * Length is infinite
      */
     @Override
     public @NotNull Iterable<Rational> rationals() {
-        Iterable<BigInteger> numerators = withScale(getScale() / 2).bigIntegers();
-        Iterable<BigInteger> denominators = withScale(getScale() / 2).positiveBigIntegers();
+        int leftScale = getScale() / 2;
+        int rightScale = (getScale() & 1) == 0 ? leftScale : leftScale + 1;
         return map(
                 p -> Rational.of(p.a, p.b),
-                filter(q -> q.a.gcd(q.b).equals(BigInteger.ONE), pairs(numerators, denominators))
+                filterInfinite(
+                        q -> q.a.gcd(q.b).equals(BigInteger.ONE),
+                        pairs(withScale(leftScale).bigIntegers(), withScale(rightScale).positiveBigIntegers())
+                )
         );
     }
 
     /**
-     * a pseudorandom {@code Iterable} that generates every {@code Rational} in the interval [0, 1). Each
-     * {@code Rational}'s bit size (defined as the sum of the numerator's and denominator's bit sizes) is chosen from a
-     * geometric distribution with mean approximately {@code meanBitSize} (The ratio between the actual mean bit size
-     * and {@code meanBitSize} decreases as {@code meanBitSize} increases). Does not support removal.
+     * An {@code Iterable} that generates all {@code Rational} in the interval [0, 1). Each {@code Rational}'s bit size
+     * (defined as the sum of the numerator's and denominator's bit sizes) is chosen from a geometric distribution with
+     * mean approximately {@code size}. Does not support removal.
      *
      * <ul>
      *  <li>{@code meanBitSize} must be greater than 5.</li>
-     *  <li>The result is an infinite pseudorandom sequence of all {@code Rational}s in the interval [0, 1).</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing {@code Rational}s in the interval
+     *  [0, 1).</li>
      * </ul>
      *
      * Length is infinite
      */
     @Override
     public @NotNull Iterable<Rational> nonNegativeRationalsLessThanOne() {
-        Iterable<BigInteger> numerators = withScale(getScale() / 2).naturalBigIntegers();
-        Iterable<BigInteger> denominators = withScale(getScale() / 2).positiveBigIntegers();
+        int leftScale = getScale() / 2;
+        int rightScale = (getScale() & 1) == 0 ? leftScale : leftScale + 1;
         return map(
                 p -> Rational.of(p.a, p.b),
-                filter(q -> lt(q.a, q.b) && q.a.gcd(q.b).equals(BigInteger.ONE), pairs(numerators, denominators))
+                filterInfinite(
+                        q -> lt(q.a, q.b) && q.a.gcd(q.b).equals(BigInteger.ONE),
+                        pairs(withScale(leftScale).positiveBigIntegers(), withScale(rightScale).positiveBigIntegers())
+                )
         );
     }
 
