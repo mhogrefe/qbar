@@ -3,6 +3,7 @@ package mho.qbar.iterableProviders;
 import mho.qbar.objects.*;
 import mho.wheels.iterables.ExhaustiveProvider;
 import mho.wheels.iterables.NoRemoveIterator;
+import mho.wheels.ordering.Ordering;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigInteger;
@@ -110,34 +111,27 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
 
     @Override
     public @NotNull Iterable<Rational> rangeUp(@NotNull Rational a) {
-        return iterate(r -> r.add(Rational.ONE), a);
+        return map(r -> r.add(a), withElement(Rational.ZERO, positiveRationals()));
     }
 
     @Override
     public @NotNull Iterable<Rational> rangeDown(@NotNull Rational a) {
-        return iterate(r -> r.subtract(Rational.ONE), a);
+        return map(a::subtract, withElement(Rational.ZERO, positiveRationals()));
     }
 
     @Override
     public @NotNull Iterable<Rational> range(@NotNull Rational a, @NotNull Rational b) {
-        if (gt(a, b)) return Collections.emptyList();
-        return () -> new NoRemoveIterator<Rational>() {
-            private @NotNull Rational x = a;
-            private boolean reachedEnd;
-
-            @Override
-            public boolean hasNext() {
-                return !reachedEnd;
-            }
-
-            @Override
-            public Rational next() {
-                reachedEnd = x.equals(b);
-                Rational oldX = x;
-                x = x.add(Rational.ONE);
-                return oldX;
-            }
-        };
+        switch (Ordering.compare(a, b)) {
+            case GT: return Collections.emptyList();
+            case EQ: return Collections.singletonList(a);
+            case LT:
+                Rational diameter = b.subtract(a);
+                return concat(
+                        Arrays.asList(a, b),
+                        map(r -> r.multiply(diameter).add(a), tail(nonNegativeRationalsLessThanOne()))
+                );
+            default: throw new IllegalStateException("unreachable");
+        }
     }
 
     /**
@@ -177,21 +171,11 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
         if (!a.getLower().isPresent() && !a.getUpper().isPresent()) {
             return rationals();
         } else if (!a.getLower().isPresent()) {
-            return map(r -> a.getUpper().get().subtract(r), withElement(Rational.ZERO, positiveRationals()));
+            return rangeDown(a.getLower().get());
         } else if (!a.getUpper().isPresent()) {
-            return map(r -> r.add(a.getLower().get()), withElement(Rational.ZERO, positiveRationals()));
+            return rangeUp(a.getUpper().get());
         } else {
-            Rational diameter = a.diameter().get();
-            if (diameter == Rational.ZERO) return Collections.singletonList(a.getLower().get());
-            return concat(
-                    Arrays.asList(a.getLower().get(), a.getUpper().get()),
-                    tail(
-                            map(
-                                    r -> r.multiply(diameter).add(a.getLower().get()),
-                                    nonNegativeRationalsLessThanOne()
-                            )
-                    )
-            );
+            return range(a.getLower().get(), a.getUpper().get());
         }
     }
 
