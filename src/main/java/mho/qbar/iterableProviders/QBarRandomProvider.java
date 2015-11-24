@@ -15,20 +15,71 @@ import static mho.wheels.ordering.Ordering.le;
 import static mho.wheels.ordering.Ordering.lt;
 import static org.junit.Assert.assertTrue;
 
-@SuppressWarnings("unused")
+/**
+ * <p>A {@code QBarRandomProvider} produces {@code Iterable}s that randomly generate some set of values with a
+ * specified distribution. A {@code QBarRandomProvider} is deterministic, but not immutable: its state changes every
+ * time a random value is generated. It may be reverted to its original state with
+ * {@link QBarRandomProvider#reset}.</p>
+ *
+ * <p>{@code QBarRandomProvider} uses the cryptographically-secure ISAAC pseudorandom number generator, implemented in
+ * {@link mho.wheels.random.IsaacPRNG}. The source of its randomness is a {@code int[]} seed. It contains two scale
+ * parameters which some of the distributions depend on; the exact relationship between the parameters and the
+ * distributions is specified in the distribution's documentation.</p>
+ *
+ * <p>To create an instance which shares a generator with {@code this}, use {@link QBarRandomProvider#copy()}. To
+ * create an instance which copies the generator, use {@link QBarRandomProvider#deepCopy()}.</p>
+ *
+ * <p>Note that sometimes the documentation will say things like "returns an {@code Iterable} containing all
+ * {@code String}s". This cannot strictly be true, since {@code IsaacPRNG} has a finite period, and will therefore
+ * produce only a finite number of {@code String}s. So in general, the documentation often pretends that the source of
+ * randomness is perfect (but still deterministic).</p>
+ */
 public final strictfp class QBarRandomProvider extends QBarIterableProvider {
+    /**
+     * Creates a new {@code QBarRandomProvider} with a {@code RandomProvider}.
+     *
+     * <ul>
+     *  <li>{@code randomProvider} cannot be null.</li>
+     *  <li>Any {@code QBarRandomProvider} may be created with this constructor.</li>
+     * </ul>
+     *
+     * @param randomProvider an {@code RandomProvider}
+     */
     private QBarRandomProvider(@NotNull RandomProvider randomProvider) {
         super(randomProvider);
     }
 
+    /**
+     * Constructs a {@code QBarRandomProvider} with a seed generated from the current system time.
+     *
+     * <ul>
+     *  <li>(conjecture) Any {@code QBarRandomProvider} with default {@code scale} and {@code secondaryScale} may be
+     *  constructed with this constructor.</li>
+     * </ul>
+     */
     public QBarRandomProvider() {
         super(new RandomProvider());
     }
 
+    /**
+     * Constructs a {@code QBarRandomProvider} with a given seed.
+     *
+     * <ul>
+     *  <li>{@code seed} must have length {@link mho.wheels.random.IsaacPRNG#SIZE}.</li>
+     *  <li>Any {@code QBarRandomProvider} with default {@code scale} and {@code secondaryScale} may be constructed
+     *  with this constructor.</li>
+     * </ul>
+     *
+     * @param seed the source of randomness
+     */
     public QBarRandomProvider(List<Integer> seed) {
         super(new RandomProvider(seed));
     }
 
+    /**
+     * A {@code QBarRandomProvider} used for testing. This allows for deterministic testing without manually setting up
+     * a lengthy seed each time.
+     */
     public static @NotNull QBarRandomProvider example() {
         return new QBarRandomProvider(RandomProvider.example());
     }
