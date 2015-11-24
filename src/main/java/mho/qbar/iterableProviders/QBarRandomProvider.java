@@ -224,7 +224,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
      * approximately {@code scale}. Does not support removal.
      *
      * <ul>
-     *  <li>{@code meanBitSize} must be greater than 5.</li>
+     *  <li>{@code this} must have a {@code scale} of at least 4.</li>
      *  <li>The result is an infinite, non-removable {@code Iterable} containing positive {@code Rational}s.</li>
      * </ul>
      *
@@ -249,7 +249,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
      * approximately {@code scale}. Does not support removal.
      *
      * <ul>
-     *  <li>{@code meanBitSize} must be greater than 5.</li>
+     *  <li>{@code this} must have a {@code scale} of at least 4.</li>
      *  <li>The result is an infinite, non-removable {@code Iterable} containing negative {@code Rational}s.</li>
      * </ul>
      *
@@ -274,7 +274,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
      * approximately {@code scale}. Does not support removal.
      *
      * <ul>
-     *  <li>{@code meanBitSize} must be greater than 5.</li>
+     *  <li>{@code this} must have a {@code scale} of at least 4.</li>
      *  <li>The result is an infinite, non-removable {@code Iterable} containing nonzero {@code Rational}s.</li>
      * </ul>
      *
@@ -299,7 +299,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
      * {@code scale}. Does not support removal.
      *
      * <ul>
-     *  <li>{@code meanBitSize} must be greater than 5.</li>
+     *  <li>{@code this} must have a {@code scale} of at least 3.</li>
      *  <li>The result is an infinite, non-removable {@code Iterable} containing {@code Rational}s.</li>
      * </ul>
      *
@@ -324,7 +324,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
      * mean approximately {@code size}. Does not support removal.
      *
      * <ul>
-     *  <li>{@code meanBitSize} must be greater than 5.</li>
+     *  <li>{@code this} must have a {@code scale} of at least 4.</li>
      *  <li>The result is an infinite, non-removable {@code Iterable} containing {@code Rational}s in the interval
      *  [0, 1).</li>
      * </ul>
