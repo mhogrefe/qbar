@@ -1,11 +1,13 @@
 package mho.qbar.iterableProviders;
 
 import mho.qbar.objects.Rational;
+import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -45,7 +47,9 @@ public class QBarExhaustiveProviderProperties {
             P = config.a;
             LIMIT = config.b;
             System.out.println("\ttesting " + config.c);
-            //todo
+            propertiesRangeUp_Rational();
+            propertiesRangeDown_Rational();
+            propertiesRange_Rational_Rational();
         }
         System.out.println("Done");
     }
@@ -106,5 +110,40 @@ public class QBarExhaustiveProviderProperties {
         initializeConstant("nonNegativeRationalsLessThanOne()");
         biggerTest(EP, EP.nonNegativeRationalsLessThanOne(), r -> r.signum() != -1 && lt(r, Rational.ONE));
         take(TINY_LIMIT, EP.nonNegativeRationalsLessThanOne()).forEach(Rational::validate);
+    }
+
+    private static void propertiesRangeUp_Rational() {
+        initialize("rangeUp(Rational)");
+        for (Rational r : take(LIMIT, P.rationals())) {
+            Iterable<Rational> rs = EP.rangeUp(r);
+            simpleTest(r, rs, s -> ge(s, r));
+            take(TINY_LIMIT, rs).forEach(Rational::validate);
+        }
+    }
+
+    private static void propertiesRangeDown_Rational() {
+        initialize("rangeDown(Rational)");
+        for (Rational r : take(LIMIT, P.rationals())) {
+            Iterable<Rational> rs = EP.rangeDown(r);
+            simpleTest(r, rs, s -> le(s, r));
+            take(TINY_LIMIT, rs).forEach(Rational::validate);
+        }
+    }
+
+    private static void propertiesRange_Rational_Rational() {
+        initialize("range(Rational, Rational)");
+        for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
+            Iterable<Rational> rs = EP.range(p.a, p.b);
+            simpleTest(p, rs, r -> ge(r, p.a) && le(r, p.b));
+            assertEquals(p, gt(p.a, p.b), isEmpty(rs));
+            take(TINY_LIMIT, rs).forEach(Rational::validate);
+            if (ge(p.a, p.b)) {
+                testHasNext(rs);
+            }
+        }
+
+        for (Rational r : take(LIMIT, P.rationals())) {
+            aeqit(r, EP.range(r, r), Collections.singletonList(r));
+        }
     }
 }
