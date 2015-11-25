@@ -1100,6 +1100,10 @@ public final class Rational implements Comparable<Rational> {
         return doubleValue(RoundingMode.UNNECESSARY);
     }
 
+    public int bitLength() {
+        return numerator.bitLength() + denominator.bitLength();
+    }
+
     /**
      * Returns the sum of {@code this} and {@code that}.
      *

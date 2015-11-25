@@ -160,6 +160,10 @@ public final class Interval implements Comparable<Interval> {
         return new Interval(x, x);
     }
 
+    public int bitLength() {
+        return (lower == null ? 1 : lower.bitLength()) + (upper == null ? 1 : upper.bitLength());
+    }
+
     /**
      * Determines whether {@code this} has finite bounds.
      *

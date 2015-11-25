@@ -406,6 +406,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
      * to elements with a larger mean bit size. Does not support removal.
      *
      * <ul>
+     *  <li>{@code this} must have a {@code scale} of at least 6.</li>
      *  <li>The result is an infinite, non-removable {@code Iterable} containing finitely-bounded
      *  {@code Interval}s.</li>
      * </ul>
@@ -415,6 +416,9 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
     @Override
     public @NotNull Iterable<Interval> finitelyBoundedIntervals() {
         int scale = getScale();
+        if (scale < 6) {
+            throw new IllegalStateException("this must have a scale of at least 6. Invalid scale: " + scale);
+        }
         int leftScale = scale / 2;
         int rightScale = (scale & 1) == 0 ? leftScale : leftScale + 1;
         return map(
@@ -431,6 +435,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
      * larger mean bit size. Does not support removal.
      *
      * <ul>
+     *  <li>{@code this} must have a {@code scale} of at least 6.</li>
      *  <li>The result is an infinite, non-removable {@code Iterable} containing {@code Interval}s.</li>
      * </ul>
      *
@@ -439,6 +444,9 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
     @Override
     public @NotNull Iterable<Interval> intervals() {
         int scale = getScale();
+        if (scale < 6) {
+            throw new IllegalStateException("this must have a scale of at least 6. Invalid scale: " + scale);
+        }
         QBarIterableProvider leftRP = withScale(scale / 2);
         QBarIterableProvider rightRP = withScale((scale & 1) == 0 ? scale / 2 : scale / 2 + 1);
         return map(
