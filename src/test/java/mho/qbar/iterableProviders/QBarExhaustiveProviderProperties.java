@@ -1,5 +1,6 @@
 package mho.qbar.iterableProviders;
 
+import mho.qbar.objects.Interval;
 import mho.qbar.objects.Rational;
 import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
@@ -40,6 +41,8 @@ public class QBarExhaustiveProviderProperties {
         propertiesNonzeroRationals();
         propertiesRationals();
         propertiesNonNegativeRationalsLessThanOne();
+        propertiesFinitelyBoundedIntervals();
+        propertiesIntervals();
         List<Triple<QBarIterableProvider, Integer, String>> configs = new ArrayList<>();
         configs.add(new Triple<>(QBarExhaustiveProvider.INSTANCE, 10000, "exhaustively"));
         configs.add(new Triple<>(QBarRandomProvider.example(), 1000, "randomly"));
@@ -145,5 +148,17 @@ public class QBarExhaustiveProviderProperties {
         for (Rational r : take(LIMIT, P.rationals())) {
             aeqit(r, EP.range(r, r), Collections.singletonList(r));
         }
+    }
+
+    private static void propertiesFinitelyBoundedIntervals() {
+        initializeConstant("finitelyBoundedIntervals()");
+        biggerTest(EP, EP.finitelyBoundedIntervals(), Interval::isFinitelyBounded);
+        take(TINY_LIMIT, EP.finitelyBoundedIntervals()).forEach(Interval::validate);
+    }
+
+    private static void propertiesIntervals() {
+        initializeConstant("intervals()");
+        biggerTest(EP, EP.intervals(), a -> true);
+        take(TINY_LIMIT, EP.intervals()).forEach(Interval::validate);
     }
 }

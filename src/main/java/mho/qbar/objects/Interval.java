@@ -13,6 +13,7 @@ import java.util.*;
 
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.ordering.Ordering.*;
+import static mho.wheels.testing.Testing.*;
 
 /**
  * <p>The {@code Interval} class represents an interval of real numbers. If we let p and q be rationals, p≤q, the
@@ -1425,5 +1426,12 @@ public final class Interval implements Comparable<Interval> {
      */
     public @NotNull String toString() {
         return (lower == null ? "(-Infinity" : "[" + lower) + ", " + (upper == null ? "Infinity)" : upper + "]");
+    }
+
+    /**
+     * Ensures that {@code this} is valid. Must return true for any {@code Interval} used outside this class.
+     */
+    public void validate() {
+        assertTrue(this, lower == null || upper == null || le(lower, upper));
     }
 }
