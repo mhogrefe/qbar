@@ -118,4 +118,26 @@ public class QBarRandomProviderDemos {
             System.out.println("range(" + t.a + ", " + t.b + ", " + t.c + ") = " + its(t.a.range(t.b, t.c)));
         }
     }
+
+    private static void demoFinitelyBoundedIntervals() {
+        initialize();
+        Iterable<QBarRandomProvider> rps = filterInfinite(
+                s -> s.getScale() >= 6,
+                P.qbarRandomProvidersDefaultSecondaryScale()
+        );
+        for (QBarRandomProvider rp : take(SMALL_LIMIT, rps)) {
+            System.out.println("finitelyBoundedIntervals(" + rp + ") = " + its(rp.finitelyBoundedIntervals()));
+        }
+    }
+
+    private static void demoIntervals() {
+        initialize();
+        Iterable<QBarRandomProvider> rps = filterInfinite(
+                s -> s.getScale() >= 6,
+                P.qbarRandomProvidersDefaultSecondaryScale()
+        );
+        for (QBarRandomProvider rp : take(SMALL_LIMIT, rps)) {
+            System.out.println("intervals(" + rp + ") = " + its(rp.intervals()));
+        }
+    }
 }
