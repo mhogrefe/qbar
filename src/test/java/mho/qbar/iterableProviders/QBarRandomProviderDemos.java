@@ -26,10 +26,6 @@ public class QBarRandomProviderDemos {
         }
     }
 
-    public static void main(String[] args) {
-        demoRange_Rational_Rational();
-    }
-
     private static void demoPositiveRationals() {
         initialize();
         Iterable<QBarRandomProvider> rps = filterInfinite(

@@ -159,7 +159,7 @@ public class IntervalProperties {
             validate(a);
             assertFalse(a.toString(), a.getLower().isPresent());
             assertTrue(a.toString(), a.getUpper().isPresent());
-            for (Rational s : take(TINY_LIMIT, P.rationals(a))) {
+            for (Rational s : take(TINY_LIMIT, P.rationalsIn(a))) {
                 assertTrue(r.toString(), le(s, r));
             }
         }
@@ -174,7 +174,7 @@ public class IntervalProperties {
             validate(a);
             assertTrue(a.toString(), a.getLower().isPresent());
             assertFalse(a.toString(), a.getUpper().isPresent());
-            for (Rational s : take(TINY_LIMIT, P.rationals(a))) {
+            for (Rational s : take(TINY_LIMIT, P.rationalsIn(a))) {
                 assertTrue(r.toString(), ge(s, r));
             }
         }
@@ -285,8 +285,8 @@ public class IntervalProperties {
             assertEquals(p.toString(), c, p.b.convexHull(p.a));
             //Given an interval c whose endpoints are in each of two intervals a and b, any Rational in c lies in the
             //convex hull of a and b
-            for (Pair<Rational, Rational> q : take(TINY_LIMIT, P.pairs(P.rationals(p.a), P.rationals(p.b)))) {
-                for (Rational r : take(TINY_LIMIT, P.rationals(of(min(q.a, q.b), max(q.a, q.b))))) {
+            for (Pair<Rational, Rational> q : take(TINY_LIMIT, P.pairs(P.rationalsIn(p.a), P.rationalsIn(p.b)))) {
+                for (Rational r : take(TINY_LIMIT, P.rationalsIn(of(min(q.a, q.b), max(q.a, q.b))))) {
                     assertTrue(p.toString(), c.contains(r));
                 }
             }
@@ -440,7 +440,7 @@ public class IntervalProperties {
 
         for (Pair<Interval, Interval> p : take(LIMIT, filter(q -> !q.a.disjoint(q.b), P.pairs(P.intervals())))) {
             Interval intersection = p.a.intersection(p.b).get();
-            for (Rational r : take(TINY_LIMIT, P.rationals(intersection))) {
+            for (Rational r : take(TINY_LIMIT, P.rationalsIn(intersection))) {
                 assertTrue(p.toString(), p.a.contains(r));
                 assertTrue(p.toString(), p.b.contains(r));
             }
@@ -462,7 +462,7 @@ public class IntervalProperties {
         }
 
         for (Pair<Interval, Interval> p : take(LIMIT, filter(q -> q.a.disjoint(q.b), P.pairs(P.intervals())))) {
-            for (Rational r : take(TINY_LIMIT, P.rationals(p.a))) {
+            for (Rational r : take(TINY_LIMIT, P.rationalsIn(p.a))) {
                 assertFalse(p.toString(), p.b.contains(r));
             }
         }
@@ -480,7 +480,7 @@ public class IntervalProperties {
                     as.toString(),
                     and(map(p -> p.a.disjoint(p.b), ExhaustiveProvider.INSTANCE.distinctPairs(disjoint)))
             );
-            for (Rational r : take(TINY_LIMIT, mux(toList(map(P::rationals, as))))) {
+            for (Rational r : take(TINY_LIMIT, mux(toList(map(P::rationalsIn, as))))) {
                 assertTrue(as.toString(), or(map(a -> a.contains(r), disjoint)));
             }
         }
@@ -613,7 +613,7 @@ public class IntervalProperties {
             validate(split.b);
             assertEquals(p.toString(), split.a.getUpper().get(), p.b);
             assertEquals(p.toString(), split.b.getLower().get(), p.b);
-            for (Rational r : take(TINY_LIMIT, P.rationals(p.a))) {
+            for (Rational r : take(TINY_LIMIT, P.rationalsIn(p.a))) {
                 assertTrue(p.toString(), split.a.contains(r) || split.b.contains(r));
             }
         }
@@ -669,7 +669,7 @@ public class IntervalProperties {
             assertTrue(a.toString(), bisection.b.isFinitelyBounded());
             assertEquals(a.toString(), bisection.a.diameter().get(), bisection.b.diameter().get());
             assertEquals(a.toString(), bisection.a.getUpper().get(), bisection.b.getLower().get());
-            for (Rational r : take(TINY_LIMIT, P.rationals(a))) {
+            for (Rational r : take(TINY_LIMIT, P.rationalsIn(a))) {
                 assertTrue(a.toString(), bisection.a.contains(r) || bisection.b.contains(r));
             }
         }
@@ -706,7 +706,7 @@ public class IntervalProperties {
             Rational central = Rational.ofExact(f).get();
             Rational pred = Rational.ofExact(FloatingPointUtils.predecessor(f)).get();
             Rational succ = Rational.ofExact(FloatingPointUtils.successor(f)).get();
-            for (Rational r : take(TINY_LIMIT, P.rationals(a))) {
+            for (Rational r : take(TINY_LIMIT, P.rationalsIn(a))) {
                 Rational centralDistance = central.subtract(r).abs();
                 Rational predDistance = pred.subtract(r).abs();
                 Rational succDistance = succ.subtract(r).abs();
@@ -722,7 +722,7 @@ public class IntervalProperties {
 
             Rational x = a.getLower().get();
             Rational y = a.getUpper().get();
-            for (Rational r : take(TINY_LIMIT, filter(s -> !s.equals(x) && !s.equals(y), P.rationals(a)))) {
+            for (Rational r : take(TINY_LIMIT, filter(s -> !s.equals(x) && !s.equals(y), P.rationalsIn(a)))) {
                 float g = r.floatValue();
                 float h = f;
                 //get rid of negative zero
@@ -751,7 +751,7 @@ public class IntervalProperties {
             Rational central = Rational.ofExact(d).get();
             Rational pred = Rational.ofExact(FloatingPointUtils.predecessor(d)).get();
             Rational succ = Rational.ofExact(FloatingPointUtils.successor(d)).get();
-            for (Rational r : take(TINY_LIMIT, P.rationals(a))) {
+            for (Rational r : take(TINY_LIMIT, P.rationalsIn(a))) {
                 Rational centralDistance = central.subtract(r).abs();
                 Rational predDistance = pred.subtract(r).abs();
                 Rational succDistance = succ.subtract(r).abs();
@@ -767,7 +767,7 @@ public class IntervalProperties {
 
             Rational x = a.getLower().get();
             Rational y = a.getUpper().get();
-            for (Rational r : take(TINY_LIMIT, filter(s -> !s.equals(x) && !s.equals(y), P.rationals(a)))) {
+            for (Rational r : take(TINY_LIMIT, filter(s -> !s.equals(x) && !s.equals(y), P.rationalsIn(a)))) {
                 double g = r.doubleValue();
                 double h = d;
                 //get rid of negative zero
@@ -792,7 +792,7 @@ public class IntervalProperties {
             Rational central = Rational.of(bd);
             Rational pred = Rational.of(BigDecimalUtils.predecessor(bd));
             Rational succ = Rational.of(BigDecimalUtils.successor(bd));
-            for (Rational r : take(TINY_LIMIT, P.rationals(a))) {
+            for (Rational r : take(TINY_LIMIT, P.rationalsIn(a))) {
                 Rational centralDistance = central.subtract(r).abs();
                 Rational predDistance = pred.subtract(r).abs();
                 Rational succDistance = succ.subtract(r).abs();
@@ -929,7 +929,7 @@ public class IntervalProperties {
             validate(sum);
             assertEquals(p.toString(), sum, p.b.add(p.a));
             assertTrue(p.toString(), sum.subtract(p.b).contains(p.a));
-            for (Pair<Rational, Rational> q : take(TINY_LIMIT, P.pairs(P.rationals(p.a), P.rationals(p.b)))) {
+            for (Pair<Rational, Rational> q : take(TINY_LIMIT, P.pairs(P.rationalsIn(p.a), P.rationalsIn(p.b)))) {
                 assertTrue(p.toString(), sum.contains(q.a.add(q.b)));
             }
         }
@@ -970,7 +970,7 @@ public class IntervalProperties {
             assertEquals(a.toString(), a, negativeA.negate());
             assertTrue(a.toString(), a.add(negativeA).contains(ZERO));
             assertEquals(a.toString(), a.diameter(), negativeA.diameter());
-            for (Rational r : take(TINY_LIMIT, P.rationals(a))) {
+            for (Rational r : take(TINY_LIMIT, P.rationalsIn(a))) {
                 assertTrue(a.toString(), negativeA.contains(r.negate()));
             }
         }
@@ -990,7 +990,7 @@ public class IntervalProperties {
             assertEquals(a.toString(), absA, absA.abs());
             Optional<Interval> negativeIntersection = absA.intersection(lessThanOrEqualTo(Rational.ZERO));
             assertTrue(a.toString(), !negativeIntersection.isPresent() || negativeIntersection.get().equals(ZERO));
-            for (Rational r : take(TINY_LIMIT, P.rationals(a))) {
+            for (Rational r : take(TINY_LIMIT, P.rationalsIn(a))) {
                 assertTrue(a.toString(), absA.contains(r.abs()));
             }
         }
@@ -1016,7 +1016,7 @@ public class IntervalProperties {
             if (signumA.isPresent()) {
                 Integer s = signumA.get();
                 assertTrue(a.toString(), s == -1 || s == 0 || s == 1);
-                for (Rational r : take(TINY_LIMIT, P.rationals(a))) {
+                for (Rational r : take(TINY_LIMIT, P.rationalsIn(a))) {
                     assertTrue(a.toString(), r.signum() == s);
                 }
             } else {
@@ -1035,7 +1035,7 @@ public class IntervalProperties {
             validate(difference);
             assertEquals(p.toString(), difference, p.b.subtract(p.a).negate());
             assertTrue(p.toString(), difference.add(p.b).contains(p.a));
-            for (Pair<Rational, Rational> q : take(TINY_LIMIT, P.pairs(P.rationals(p.a), P.rationals(p.b)))) {
+            for (Pair<Rational, Rational> q : take(TINY_LIMIT, P.pairs(P.rationalsIn(p.a), P.rationalsIn(p.b)))) {
                 assertTrue(p.toString(), difference.contains(q.a.subtract(q.b)));
             }
         }
@@ -1068,7 +1068,7 @@ public class IntervalProperties {
             Interval product = p.a.multiply(p.b);
             validate(product);
             assertEquals(p.toString(), product, p.b.multiply(p.a));
-            for (Pair<Rational, Rational> q : take(TINY_LIMIT, P.pairs(P.rationals(p.a), P.rationals(p.b)))) {
+            for (Pair<Rational, Rational> q : take(TINY_LIMIT, P.pairs(P.rationalsIn(p.a), P.rationalsIn(p.b)))) {
                 assertTrue(p.toString(), product.contains(q.a.multiply(q.b)));
             }
         }
@@ -1119,7 +1119,7 @@ public class IntervalProperties {
             Interval a = p.a.multiply(p.b);
             validate(a);
             assertEquals(p.toString(), a, p.a.multiply(of(p.b)));
-            for (Rational r : take(TINY_LIMIT, P.rationals(p.a))) {
+            for (Rational r : take(TINY_LIMIT, P.rationalsIn(p.a))) {
                 assertTrue(p.toString(), a.contains(r.multiply(p.b)));
             }
         }
@@ -1153,7 +1153,7 @@ public class IntervalProperties {
             Interval a = p.a.multiply(p.b);
             validate(a);
             assertEquals(p.toString(), a, p.a.multiply(Rational.of(p.b)));
-            for (Rational r : take(TINY_LIMIT, P.rationals(p.a))) {
+            for (Rational r : take(TINY_LIMIT, P.rationalsIn(p.a))) {
                 assertTrue(p.toString(), a.contains(r.multiply(p.b)));
             }
         }
@@ -1189,7 +1189,7 @@ public class IntervalProperties {
             Interval a = p.a.multiply(p.b);
             validate(a);
             assertEquals(p.toString(), a, p.a.multiply(Rational.of(p.b)));
-            for (Rational r : take(TINY_LIMIT, P.rationals(p.a))) {
+            for (Rational r : take(TINY_LIMIT, P.rationalsIn(p.a))) {
                 assertTrue(p.toString(), a.contains(r.multiply(p.b)));
             }
         }
@@ -1287,7 +1287,7 @@ public class IntervalProperties {
             Interval inverse = a.invertHull();
             validate(inverse);
 
-            for (Rational r : take(TINY_LIMIT, filter(s -> s != Rational.ZERO, P.rationals(a)))) {
+            for (Rational r : take(TINY_LIMIT, filter(s -> s != Rational.ZERO, P.rationalsIn(a)))) {
                 assertTrue(a.toString(), inverse.contains(r.invert()));
             }
 
@@ -1397,8 +1397,8 @@ public class IntervalProperties {
             validate(quotient);
 
             Iterable<Pair<Rational, Rational>> qs = P.pairs(
-                    P.rationals(p.a),
-                    filter(r -> r != Rational.ZERO, P.rationals(p.b))
+                    P.rationalsIn(p.a),
+                    filter(r -> r != Rational.ZERO, P.rationalsIn(p.b))
             );
             for (Pair<Rational, Rational> q : take(TINY_LIMIT, qs)) {
                 assertTrue(p.toString(), quotient.contains(q.a.divide(q.b)));
@@ -1438,7 +1438,7 @@ public class IntervalProperties {
             Interval quotient = p.a.divide(p.b);
             validate(quotient);
 
-            for (Rational r : take(TINY_LIMIT, P.rationals(p.a))) {
+            for (Rational r : take(TINY_LIMIT, P.rationalsIn(p.a))) {
                 assertTrue(p.toString(), quotient.contains(r.divide(p.b)));
             }
 
@@ -1474,7 +1474,7 @@ public class IntervalProperties {
             Interval quotient = p.a.divide(p.b);
             validate(quotient);
 
-            for (Rational r : take(TINY_LIMIT, P.rationals(p.a))) {
+            for (Rational r : take(TINY_LIMIT, P.rationalsIn(p.a))) {
                 assertTrue(p.toString(), quotient.contains(r.divide(p.b)));
             }
 
@@ -1506,7 +1506,7 @@ public class IntervalProperties {
             Interval quotient = p.a.divide(p.b);
             validate(quotient);
 
-            for (Rational r : take(TINY_LIMIT, P.rationals(p.a))) {
+            for (Rational r : take(TINY_LIMIT, P.rationalsIn(p.a))) {
                 assertTrue(p.toString(), quotient.contains(r.divide(p.b)));
             }
 
@@ -1552,7 +1552,7 @@ public class IntervalProperties {
             Interval shifted = p.a.shiftLeft(p.b);
             validate(shifted);
 
-            for (Rational r : take(TINY_LIMIT, P.rationals(p.a))) {
+            for (Rational r : take(TINY_LIMIT, P.rationalsIn(p.a))) {
                 assertTrue(p.toString(), shifted.contains(r.shiftLeft(p.b)));
             }
 
@@ -1627,7 +1627,7 @@ public class IntervalProperties {
             Interval shifted = p.a.shiftRight(p.b);
             validate(shifted);
 
-            for (Rational r : take(TINY_LIMIT, P.rationals(p.a))) {
+            for (Rational r : take(TINY_LIMIT, P.rationalsIn(p.a))) {
                 assertTrue(p.toString(), shifted.contains(r.shiftRight(p.b)));
             }
 
@@ -1688,7 +1688,7 @@ public class IntervalProperties {
 
         for (List<Interval> is : take(LIMIT, P.lists(P.intervals()))) {
             Interval sum = sum(is);
-            for (List<Rational> rs : take(TINY_LIMIT, transposeTruncating(map(P::rationals, is)))) {
+            for (List<Rational> rs : take(TINY_LIMIT, transposeTruncating(map(P::rationalsIn, is)))) {
                 assertTrue(is.toString(), sum.contains(Rational.sum(rs)));
             }
             assertEquals(is.toString(), sum.isFinitelyBounded(), is.isEmpty() || all(Interval::isFinitelyBounded, is));
@@ -1711,7 +1711,7 @@ public class IntervalProperties {
 
         for (List<Interval> is : take(LIMIT, P.lists(P.intervals()))) {
             Interval product = product(is);
-            for (List<Rational> rs : take(TINY_LIMIT, transposeTruncating(map(P::rationals, is)))) {
+            for (List<Rational> rs : take(TINY_LIMIT, transposeTruncating(map(P::rationalsIn, is)))) {
                 assertTrue(is.toString(), product.contains(Rational.product(rs)));
             }
 
@@ -1740,7 +1740,7 @@ public class IntervalProperties {
 
         for (List<Interval> is : take(LIMIT, P.listsAtLeast(1, P.intervals()))) {
             Iterable<Interval> deltas = delta(is);
-            for (List<Rational> rs : take(TINY_LIMIT, transposeTruncating(map(P::rationals, is)))) {
+            for (List<Rational> rs : take(TINY_LIMIT, transposeTruncating(map(P::rationalsIn, is)))) {
                 assertTrue(is.toString(), and(zipWith(Interval::contains, deltas, Rational.delta(rs))));
             }
         }

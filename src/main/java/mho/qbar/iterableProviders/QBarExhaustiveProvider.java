@@ -172,7 +172,7 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
     }
 
     @Override
-    public @NotNull Iterable<Rational> rationals(@NotNull Interval a) {
+    public @NotNull Iterable<Rational> rationalsIn(@NotNull Interval a) {
         if (!a.getLower().isPresent() && !a.getUpper().isPresent()) {
             return rationals();
         } else if (!a.getLower().isPresent()) {
@@ -192,14 +192,14 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
             case 1:
                 Interval x = complement.get(0);
                 Rational boundary = a.getLower().isPresent() ? a.getLower().get() : a.getUpper().get();
-                return filter(r -> !r.equals(boundary), rationals(x));
+                return filter(r -> !r.equals(boundary), rationalsIn(x));
             case 2:
                 Interval y = complement.get(0);
                 Interval z = complement.get(1);
                 return mux(
                         (List<Iterable<Rational>>) Arrays.asList(
-                                filter(r -> !r.equals(y.getUpper().get()), rationals(y)),
-                                filter(r -> !r.equals(z.getLower().get()), rationals(z))
+                                filter(r -> !r.equals(y.getUpper().get()), rationalsIn(y)),
+                                filter(r -> !r.equals(z.getLower().get()), rationalsIn(z))
                         )
                 );
         }

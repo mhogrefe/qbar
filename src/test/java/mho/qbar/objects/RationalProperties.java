@@ -986,7 +986,7 @@ public class RationalProperties {
             assertTrue(r.toString(), le(r, power.shiftLeft(1)));
         }
 
-        for (Rational r : take(LIMIT, P.rationals(Interval.lessThanOrEqualTo(ZERO)))) {
+        for (Rational r : take(LIMIT, P.rationalsIn(Interval.lessThanOrEqualTo(ZERO)))) {
             try {
                 r.binaryExponent();
                 fail(r.toString());
@@ -1028,7 +1028,7 @@ public class RationalProperties {
             assertTrue(r.toString(), !FloatingPointUtils.isNegativeZero(new Float(rounded)));
         }
 
-        rs = filter(r -> !r.equals(LARGEST_FLOAT), P.rationals(Interval.of(LARGEST_FLOAT.negate(), LARGEST_FLOAT)));
+        rs = filter(r -> !r.equals(LARGEST_FLOAT), P.rationalsIn(Interval.of(LARGEST_FLOAT.negate(), LARGEST_FLOAT)));
         for (Rational r : take(LIMIT, rs)) {
             float rounded = r.floatValue(RoundingMode.FLOOR);
             float successor = FloatingPointUtils.successor(rounded);
@@ -1040,7 +1040,7 @@ public class RationalProperties {
 
         rs = filter(
                 r -> !r.equals(LARGEST_FLOAT.negate()),
-                P.rationals(Interval.of(LARGEST_FLOAT.negate(), LARGEST_FLOAT))
+                P.rationalsIn(Interval.of(LARGEST_FLOAT.negate(), LARGEST_FLOAT))
         );
         for (Rational r : take(LIMIT, rs)) {
             float rounded = r.floatValue(RoundingMode.CEILING);
@@ -1050,14 +1050,14 @@ public class RationalProperties {
             assertTrue(r.toString(), rounded > 0 || Float.isFinite(rounded));
         }
 
-        rs = P.rationals(Interval.of(LARGEST_FLOAT.negate(), LARGEST_FLOAT));
+        rs = P.rationalsIn(Interval.of(LARGEST_FLOAT.negate(), LARGEST_FLOAT));
         for (Rational r : take(LIMIT, rs)) {
             float rounded = r.floatValue(RoundingMode.DOWN);
             assertTrue(r.toString(), le(ofExact(rounded).get().abs(), r.abs()));
             assertTrue(r.toString(), Float.isFinite(rounded));
         }
 
-        rs = filter(r -> r != ZERO, P.rationals(Interval.of(LARGEST_FLOAT.negate(), LARGEST_FLOAT)));
+        rs = filter(r -> r != ZERO, P.rationalsIn(Interval.of(LARGEST_FLOAT.negate(), LARGEST_FLOAT)));
         for (Rational r : take(LIMIT, rs)) {
             float rounded = r.floatValue(RoundingMode.DOWN);
             float successor = FloatingPointUtils.successor(rounded);
@@ -1068,13 +1068,13 @@ public class RationalProperties {
 
         rs = filter(
                 r -> !r.abs().equals(LARGEST_FLOAT),
-                P.rationals(Interval.of(LARGEST_FLOAT.negate(), LARGEST_FLOAT))
+                P.rationalsIn(Interval.of(LARGEST_FLOAT.negate(), LARGEST_FLOAT))
         );
         for (Rational r : take(LIMIT, rs)) {
             assertTrue(r.toString(), !FloatingPointUtils.isNegativeZero(new Float(r.floatValue(RoundingMode.UP))));
         }
 
-        rs = filter(r -> !r.equals(SMALLEST_FLOAT), P.rationals(Interval.of(ZERO, SMALLEST_FLOAT)));
+        rs = filter(r -> !r.equals(SMALLEST_FLOAT), P.rationalsIn(Interval.of(ZERO, SMALLEST_FLOAT)));
         for (Rational r : take(LIMIT, rs)) {
             aeqf(r.toString(), r.floatValue(RoundingMode.FLOOR), 0.0f);
             aeqf(r.toString(), r.floatValue(RoundingMode.DOWN), 0.0f);
@@ -1088,7 +1088,7 @@ public class RationalProperties {
 
         rs = filter(
                 r -> !r.equals(LARGEST_FLOAT.negate()),
-                P.rationals(Interval.lessThanOrEqualTo(LARGEST_FLOAT.negate()))
+                P.rationalsIn(Interval.lessThanOrEqualTo(LARGEST_FLOAT.negate()))
         );
         for (Rational r : take(LIMIT, rs)) {
             float floor = r.floatValue(RoundingMode.FLOOR);
@@ -1104,7 +1104,7 @@ public class RationalProperties {
             aeqf(r.toString(), halfEven, Float.NEGATIVE_INFINITY);
         }
 
-        rs = P.rationals(Interval.greaterThanOrEqualTo(LARGEST_FLOAT));
+        rs = P.rationalsIn(Interval.greaterThanOrEqualTo(LARGEST_FLOAT));
         for (Rational r : take(LIMIT, rs)) {
             aeqf(r.toString(), r.floatValue(RoundingMode.FLOOR), Float.MAX_VALUE);
             aeqf(r.toString(), r.floatValue(RoundingMode.DOWN), Float.MAX_VALUE);
@@ -1113,14 +1113,14 @@ public class RationalProperties {
 
         rs = filter(
                 r -> r != ZERO && !r.equals(SMALLEST_FLOAT.negate()),
-                P.rationals(Interval.of(SMALLEST_FLOAT.negate(), ZERO))
+                P.rationalsIn(Interval.of(SMALLEST_FLOAT.negate(), ZERO))
         );
         for (Rational r : take(LIMIT, rs)) {
             aeqf(r.toString(), r.floatValue(RoundingMode.CEILING), -0.0f);
             aeqf(r.toString(), r.floatValue(RoundingMode.DOWN), -0.0f);
         }
 
-        rs = filter(r -> !r.equals(LARGEST_FLOAT), P.rationals(Interval.greaterThanOrEqualTo(LARGEST_FLOAT)));
+        rs = filter(r -> !r.equals(LARGEST_FLOAT), P.rationalsIn(Interval.greaterThanOrEqualTo(LARGEST_FLOAT)));
         for (Rational r : take(LIMIT, rs)) {
             float ceiling = r.floatValue(RoundingMode.CEILING);
             aeqf(r.toString(), ceiling, Float.POSITIVE_INFINITY);
@@ -1135,7 +1135,7 @@ public class RationalProperties {
             aeqf(r.toString(), halfEven, Float.POSITIVE_INFINITY);
         }
 
-        rs = P.rationals(Interval.lessThanOrEqualTo(LARGEST_FLOAT.negate()));
+        rs = P.rationalsIn(Interval.lessThanOrEqualTo(LARGEST_FLOAT.negate()));
         for (Rational r : take(LIMIT, rs)) {
             aeqf(r.toString(), r.floatValue(RoundingMode.CEILING), -Float.MAX_VALUE);
             aeqf(r.toString(), r.floatValue(RoundingMode.DOWN), -Float.MAX_VALUE);
@@ -1177,13 +1177,13 @@ public class RationalProperties {
             aeqf(r.toString(), r.floatValue(RoundingMode.HALF_EVEN), closest);
         }
 
-        rs = P.rationals(Interval.of(ZERO, SMALLEST_FLOAT.shiftRight(1)));
+        rs = P.rationalsIn(Interval.of(ZERO, SMALLEST_FLOAT.shiftRight(1)));
         for (Rational r : take(LIMIT, rs)) {
             aeqf(r.toString(), r.floatValue(RoundingMode.HALF_DOWN), 0.0f);
             aeqf(r.toString(), r.floatValue(RoundingMode.HALF_EVEN), 0.0f);
         }
 
-        rs = filter(r -> r != ZERO, P.rationals(Interval.of(SMALLEST_FLOAT.shiftRight(1).negate(), ZERO)));
+        rs = filter(r -> r != ZERO, P.rationalsIn(Interval.of(SMALLEST_FLOAT.shiftRight(1).negate(), ZERO)));
         for (Rational r : take(LIMIT, rs)) {
             aeqf(r.toString(), r.floatValue(RoundingMode.HALF_DOWN), -0.0f);
             aeqf(r.toString(), r.floatValue(RoundingMode.HALF_EVEN), -0.0f);
@@ -1191,7 +1191,7 @@ public class RationalProperties {
 
         rs = filter(
                 r -> !r.equals(SMALLEST_FLOAT.shiftRight(1)),
-                P.rationals(Interval.of(ZERO, SMALLEST_FLOAT.shiftRight(1)))
+                P.rationalsIn(Interval.of(ZERO, SMALLEST_FLOAT.shiftRight(1)))
         );
         for (Rational r : take(LIMIT, rs)) {
             aeqf(r.toString(), r.floatValue(RoundingMode.HALF_UP), 0.0f);
@@ -1199,7 +1199,7 @@ public class RationalProperties {
 
         rs = filter(
                 r -> r != ZERO && !r.equals(SMALLEST_FLOAT.shiftRight(1).negate()),
-                P.rationals(Interval.of(SMALLEST_FLOAT.shiftRight(1).negate(), ZERO))
+                P.rationalsIn(Interval.of(SMALLEST_FLOAT.shiftRight(1).negate(), ZERO))
         );
         for (Rational r : take(LIMIT, rs)) {
             aeqf(r.toString(), r.floatValue(RoundingMode.HALF_UP), -0.0f);
@@ -1223,7 +1223,7 @@ public class RationalProperties {
 
         Iterable<Rational> rsFail = filter(
                 r -> !ofExact(r.floatValue(RoundingMode.FLOOR)).get().equals(r),
-                P.rationals(Interval.of(LARGEST_FLOAT.negate(), LARGEST_FLOAT))
+                P.rationalsIn(Interval.of(LARGEST_FLOAT.negate(), LARGEST_FLOAT))
         );
         for (Rational r : take(LIMIT, rsFail)) {
             try {
@@ -1246,14 +1246,14 @@ public class RationalProperties {
 
         Iterable<Rational> rs = filter(
                 r -> !r.equals(LARGEST_FLOAT.negate()),
-                P.rationals(Interval.lessThanOrEqualTo(LARGEST_FLOAT.negate()))
+                P.rationalsIn(Interval.lessThanOrEqualTo(LARGEST_FLOAT.negate()))
         );
         for (Rational r : take(LIMIT, rs)) {
             float rounded = r.floatValue();
             aeqf(r.toString(), rounded, Float.NEGATIVE_INFINITY);
         }
 
-        rs = filter(r -> !r.equals(LARGEST_FLOAT), P.rationals(Interval.greaterThanOrEqualTo(LARGEST_FLOAT)));
+        rs = filter(r -> !r.equals(LARGEST_FLOAT), P.rationalsIn(Interval.greaterThanOrEqualTo(LARGEST_FLOAT)));
         for (Rational r : take(LIMIT, rs)) {
             float rounded = r.floatValue();
             aeqf(r.toString(), rounded, Float.POSITIVE_INFINITY);
@@ -1287,12 +1287,12 @@ public class RationalProperties {
             aeqf(r.toString(), r.floatValue(), closest);
         }
 
-        rs = P.rationals(Interval.of(ZERO, SMALLEST_FLOAT.shiftRight(1)));
+        rs = P.rationalsIn(Interval.of(ZERO, SMALLEST_FLOAT.shiftRight(1)));
         for (Rational r : take(LIMIT, rs)) {
             aeqf(r.toString(), r.floatValue(), 0.0f);
         }
 
-        rs = filter(r -> r != ZERO, P.rationals(Interval.of(SMALLEST_FLOAT.shiftRight(1).negate(), ZERO)));
+        rs = filter(r -> r != ZERO, P.rationalsIn(Interval.of(SMALLEST_FLOAT.shiftRight(1).negate(), ZERO)));
         for (Rational r : take(LIMIT, rs)) {
             aeqf(r.toString(), r.floatValue(), -0.0f);
         }
@@ -1328,7 +1328,7 @@ public class RationalProperties {
 
         Iterable<Rational> rsFail = filter(
                 r -> !ofExact(r.floatValue(RoundingMode.FLOOR)).get().equals(r),
-                P.rationals(Interval.of(LARGEST_FLOAT.negate(), LARGEST_FLOAT))
+                P.rationalsIn(Interval.of(LARGEST_FLOAT.negate(), LARGEST_FLOAT))
         );
         for (Rational r : take(LIMIT, rsFail)) {
             try {
@@ -1372,7 +1372,10 @@ public class RationalProperties {
             assertTrue(r.toString(), !FloatingPointUtils.isNegativeZero(new Double(rounded)));
         }
 
-        rs = filter(r -> !r.equals(LARGEST_DOUBLE), P.rationals(Interval.of(LARGEST_DOUBLE.negate(), LARGEST_DOUBLE)));
+        rs = filter(
+                r -> !r.equals(LARGEST_DOUBLE),
+                P.rationalsIn(Interval.of(LARGEST_DOUBLE.negate(), LARGEST_DOUBLE))
+        );
         for (Rational r : take(LIMIT, rs)) {
             double rounded = r.doubleValue(RoundingMode.FLOOR);
             double successor = FloatingPointUtils.successor(rounded);
@@ -1384,7 +1387,7 @@ public class RationalProperties {
 
         rs = filter(
                 r -> !r.equals(LARGEST_DOUBLE.negate()),
-                P.rationals(Interval.of(LARGEST_DOUBLE.negate(), LARGEST_DOUBLE))
+                P.rationalsIn(Interval.of(LARGEST_DOUBLE.negate(), LARGEST_DOUBLE))
         );
         for (Rational r : take(LIMIT, rs)) {
             double rounded = r.doubleValue(RoundingMode.CEILING);
@@ -1394,14 +1397,14 @@ public class RationalProperties {
             assertTrue(r.toString(), rounded > 0 || Double.isFinite(rounded));
         }
 
-        rs = P.rationals(Interval.of(LARGEST_DOUBLE.negate(), LARGEST_DOUBLE));
+        rs = P.rationalsIn(Interval.of(LARGEST_DOUBLE.negate(), LARGEST_DOUBLE));
         for (Rational r : take(LIMIT, rs)) {
             double rounded = r.doubleValue(RoundingMode.DOWN);
             assertTrue(r.toString(), le(ofExact(rounded).get().abs(), r.abs()));
             assertTrue(r.toString(), Double.isFinite(rounded));
         }
 
-        rs = filter(r -> r != ZERO, P.rationals(Interval.of(LARGEST_DOUBLE.negate(), LARGEST_DOUBLE)));
+        rs = filter(r -> r != ZERO, P.rationalsIn(Interval.of(LARGEST_DOUBLE.negate(), LARGEST_DOUBLE)));
         for (Rational r : take(LIMIT, rs)) {
             double rounded = r.doubleValue(RoundingMode.DOWN);
             double successor = FloatingPointUtils.successor(rounded);
@@ -1412,13 +1415,13 @@ public class RationalProperties {
 
         rs = filter(
                 r -> !r.abs().equals(LARGEST_DOUBLE),
-                P.rationals(Interval.of(LARGEST_DOUBLE.negate(), LARGEST_DOUBLE))
+                P.rationalsIn(Interval.of(LARGEST_DOUBLE.negate(), LARGEST_DOUBLE))
         );
         for (Rational r : take(LIMIT, rs)) {
             assertTrue(r.toString(), !FloatingPointUtils.isNegativeZero(new Double(r.doubleValue(RoundingMode.UP))));
         }
 
-        rs = filter(r -> !r.equals(SMALLEST_DOUBLE), P.rationals(Interval.of(ZERO, SMALLEST_DOUBLE)));
+        rs = filter(r -> !r.equals(SMALLEST_DOUBLE), P.rationalsIn(Interval.of(ZERO, SMALLEST_DOUBLE)));
         for (Rational r : take(LIMIT, rs)) {
             aeqd(r.toString(), r.doubleValue(RoundingMode.FLOOR), 0.0);
             aeqd(r.toString(), r.doubleValue(RoundingMode.DOWN), 0.0);
@@ -1432,7 +1435,7 @@ public class RationalProperties {
 
         rs = filter(
                 r -> !r.equals(LARGEST_DOUBLE.negate()),
-                P.rationals(Interval.lessThanOrEqualTo(LARGEST_DOUBLE.negate()))
+                P.rationalsIn(Interval.lessThanOrEqualTo(LARGEST_DOUBLE.negate()))
         );
         for (Rational r : take(LIMIT, rs)) {
             double floor = r.doubleValue(RoundingMode.FLOOR);
@@ -1448,7 +1451,7 @@ public class RationalProperties {
             aeqd(r.toString(), halfEven, Double.NEGATIVE_INFINITY);
         }
 
-        rs = P.rationals(Interval.greaterThanOrEqualTo(LARGEST_DOUBLE));
+        rs = P.rationalsIn(Interval.greaterThanOrEqualTo(LARGEST_DOUBLE));
         for (Rational r : take(LIMIT, rs)) {
             aeqd(r.toString(), r.doubleValue(RoundingMode.FLOOR), Double.MAX_VALUE);
             aeqd(r.toString(), r.doubleValue(RoundingMode.DOWN), Double.MAX_VALUE);
@@ -1457,14 +1460,14 @@ public class RationalProperties {
 
         rs = filter(
                 r -> r != ZERO && !r.equals(SMALLEST_DOUBLE.negate()),
-                P.rationals(Interval.of(SMALLEST_DOUBLE.negate(), ZERO))
+                P.rationalsIn(Interval.of(SMALLEST_DOUBLE.negate(), ZERO))
         );
         for (Rational r : take(LIMIT, rs)) {
             aeqd(r.toString(), r.doubleValue(RoundingMode.CEILING), -0.0);
             aeqd(r.toString(), r.doubleValue(RoundingMode.DOWN), -0.0);
         }
 
-        rs = filter(r -> !r.equals(LARGEST_DOUBLE), P.rationals(Interval.greaterThanOrEqualTo(LARGEST_DOUBLE)));
+        rs = filter(r -> !r.equals(LARGEST_DOUBLE), P.rationalsIn(Interval.greaterThanOrEqualTo(LARGEST_DOUBLE)));
         for (Rational r : take(LIMIT, rs)) {
             double ceiling = r.doubleValue(RoundingMode.CEILING);
             aeqd(r.toString(), ceiling, Double.POSITIVE_INFINITY);
@@ -1479,7 +1482,7 @@ public class RationalProperties {
             aeqd(r.toString(), halfEven, Double.POSITIVE_INFINITY);
         }
 
-        rs = P.rationals(Interval.lessThanOrEqualTo(LARGEST_DOUBLE.negate()));
+        rs = P.rationalsIn(Interval.lessThanOrEqualTo(LARGEST_DOUBLE.negate()));
         for (Rational r : take(LIMIT, rs)) {
             aeqd(r.toString(), r.doubleValue(RoundingMode.CEILING), -Double.MAX_VALUE);
             aeqd(r.toString(), r.doubleValue(RoundingMode.DOWN), -Double.MAX_VALUE);
@@ -1518,13 +1521,13 @@ public class RationalProperties {
             aeqd(r.toString(), r.doubleValue(RoundingMode.HALF_EVEN), closest);
         }
 
-        rs = P.rationals(Interval.of(ZERO, SMALLEST_DOUBLE.shiftRight(1)));
+        rs = P.rationalsIn(Interval.of(ZERO, SMALLEST_DOUBLE.shiftRight(1)));
         for (Rational r : take(LIMIT, rs)) {
             aeqd(r.toString(), r.doubleValue(RoundingMode.HALF_DOWN), 0.0);
             aeqd(r.toString(), r.doubleValue(RoundingMode.HALF_EVEN), 0.0);
         }
 
-        rs = filter(r -> r != ZERO, P.rationals(Interval.of(SMALLEST_DOUBLE.shiftRight(1).negate(), ZERO)));
+        rs = filter(r -> r != ZERO, P.rationalsIn(Interval.of(SMALLEST_DOUBLE.shiftRight(1).negate(), ZERO)));
         for (Rational r : take(LIMIT, rs)) {
             aeqd(r.toString(), r.doubleValue(RoundingMode.HALF_DOWN), -0.0);
             aeqd(r.toString(), r.doubleValue(RoundingMode.HALF_EVEN), -0.0);
@@ -1532,7 +1535,7 @@ public class RationalProperties {
 
         rs = filter(
                 r -> !r.equals(SMALLEST_DOUBLE.shiftRight(1)),
-                P.rationals(Interval.of(ZERO, SMALLEST_DOUBLE.shiftRight(1)))
+                P.rationalsIn(Interval.of(ZERO, SMALLEST_DOUBLE.shiftRight(1)))
         );
         for (Rational r : take(LIMIT, rs)) {
             aeqd(r.toString(), r.doubleValue(RoundingMode.HALF_UP), 0.0);
@@ -1540,7 +1543,7 @@ public class RationalProperties {
 
         rs = filter(
                 r -> r != ZERO && !r.equals(SMALLEST_DOUBLE.shiftRight(1).negate()),
-                P.rationals(Interval.of(SMALLEST_DOUBLE.shiftRight(1).negate(), ZERO))
+                P.rationalsIn(Interval.of(SMALLEST_DOUBLE.shiftRight(1).negate(), ZERO))
         );
         for (Rational r : take(LIMIT, rs)) {
             aeqd(r.toString(), r.doubleValue(RoundingMode.HALF_UP), -0.0);
@@ -1564,7 +1567,7 @@ public class RationalProperties {
 
         Iterable<Rational> rsFail = filter(
                 r -> !ofExact(r.doubleValue(RoundingMode.FLOOR)).get().equals(r),
-                P.rationals(Interval.of(LARGEST_DOUBLE.negate(), LARGEST_DOUBLE))
+                P.rationalsIn(Interval.of(LARGEST_DOUBLE.negate(), LARGEST_DOUBLE))
         );
         for (Rational r : take(LIMIT, rsFail)) {
             try {
@@ -1587,14 +1590,14 @@ public class RationalProperties {
 
         Iterable<Rational> rs = filter(
                 r -> !r.equals(LARGEST_DOUBLE.negate()),
-                P.rationals(Interval.lessThanOrEqualTo(LARGEST_DOUBLE.negate()))
+                P.rationalsIn(Interval.lessThanOrEqualTo(LARGEST_DOUBLE.negate()))
         );
         for (Rational r : take(LIMIT, rs)) {
             double rounded = r.doubleValue();
             aeqd(r.toString(), rounded, Double.NEGATIVE_INFINITY);
         }
 
-        rs = filter(r -> !r.equals(LARGEST_DOUBLE), P.rationals(Interval.greaterThanOrEqualTo(LARGEST_DOUBLE)));
+        rs = filter(r -> !r.equals(LARGEST_DOUBLE), P.rationalsIn(Interval.greaterThanOrEqualTo(LARGEST_DOUBLE)));
         for (Rational r : take(LIMIT, rs)) {
             double rounded = r.doubleValue();
             aeqd(r.toString(), rounded, Double.POSITIVE_INFINITY);
@@ -1628,12 +1631,12 @@ public class RationalProperties {
             aeqd(r.toString(), r.doubleValue(), closest);
         }
 
-        rs = P.rationals(Interval.of(ZERO, SMALLEST_DOUBLE.shiftRight(1)));
+        rs = P.rationalsIn(Interval.of(ZERO, SMALLEST_DOUBLE.shiftRight(1)));
         for (Rational r : take(LIMIT, rs)) {
             aeqd(r.toString(), r.doubleValue(), 0.0);
         }
 
-        rs = filter(r -> r != ZERO, P.rationals(Interval.of(SMALLEST_DOUBLE.shiftRight(1).negate(), ZERO)));
+        rs = filter(r -> r != ZERO, P.rationalsIn(Interval.of(SMALLEST_DOUBLE.shiftRight(1).negate(), ZERO)));
         for (Rational r : take(LIMIT, rs)) {
             aeqd(r.toString(), r.doubleValue(), -0.0);
         }
@@ -1669,7 +1672,7 @@ public class RationalProperties {
 
         Iterable<Rational> rsFail = filter(
                 r -> !ofExact(r.doubleValue(RoundingMode.FLOOR)).get().equals(r),
-                P.rationals(Interval.of(LARGEST_DOUBLE.negate(), LARGEST_DOUBLE))
+                P.rationalsIn(Interval.of(LARGEST_DOUBLE.negate(), LARGEST_DOUBLE))
         );
         for (Rational r : take(LIMIT, rsFail)) {
             try {
