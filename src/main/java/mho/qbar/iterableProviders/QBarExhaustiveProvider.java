@@ -2,7 +2,6 @@ package mho.qbar.iterableProviders;
 
 import mho.qbar.objects.*;
 import mho.wheels.iterables.ExhaustiveProvider;
-import mho.wheels.iterables.NoRemoveIterator;
 import mho.wheels.ordering.Ordering;
 import org.jetbrains.annotations.NotNull;
 
@@ -107,44 +106,6 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
                         filterInfinite(p -> p.a.gcd(p.b).equals(BigInteger.ONE), subsetPairs(positiveBigIntegers()))
                 )
         );
-    }
-
-    /**
-     * An {@code Iterable} that generates all {@code Rational}s greater than or equal to {@code a}. Does not support
-     * removal.
-     *
-     * <ul>
-     *  <li>{@code a} cannot be null.</li>
-     *  <li>The result is a non-removable {@code Iterable} containing {@code Rational}s.</li>
-     * </ul>
-     *
-     * Length is infinite
-     *
-     * @param a the inclusive lower bound of the generated elements
-     * @return {@code Rational}s greater than or equal to {@code a}
-     */
-    @Override
-    public @NotNull Iterable<Rational> rangeUp(@NotNull Rational a) {
-        return map(r -> r.add(a), withElement(Rational.ZERO, positiveRationals()));
-    }
-
-    /**
-     * An {@code Iterable} that generates all {@code Rational}s less than or equal to {@code a}. Does not support
-     * removal.
-     *
-     * <ul>
-     *  <li>{@code a} cannot be null.</li>
-     *  <li>The result is a non-removable {@code Iterable} containing {@code Rational}s.</li>
-     * </ul>
-     *
-     * Length is infinite
-     *
-     * @param a the inclusive upper bound of the generated elements
-     * @return {@code Rational}s less than or equal to {@code a}
-     */
-    @Override
-    public @NotNull Iterable<Rational> rangeDown(@NotNull Rational a) {
-        return map(a::subtract, withElement(Rational.ZERO, positiveRationals()));
     }
 
     /**

@@ -2794,14 +2794,18 @@ public strictfp abstract class QBarIterableProvider {
      *
      * @param a the inclusive lower bound of the generated {@code Rational}s
      */
-    public abstract @NotNull Iterable<Rational> rangeUp(@NotNull Rational a);
+    public @NotNull Iterable<Rational> rangeUp(@NotNull Rational a) {
+        return map(r -> r.add(a), withElement(Rational.ZERO, positiveRationals()));
+    }
 
     /**
      * Generates {@code Rational}s less than or equal to a given value.
      *
      * @param a the inclusive upper bound of the generated {@code Rational}s
      */
-    public abstract @NotNull Iterable<Rational> rangeDown(@NotNull Rational a);
+    public @NotNull Iterable<Rational> rangeDown(@NotNull Rational a) {
+        return map(a::subtract, withElement(Rational.ZERO, positiveRationals()));
+    }
 
     /**
      * Generates {@code Rational}s between {@code a} and {@code b}, inclusive.

@@ -2,6 +2,7 @@ package mho.qbar.iterableProviders;
 
 import mho.qbar.objects.*;
 import mho.wheels.iterables.RandomProvider;
+import mho.wheels.ordering.Ordering;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigInteger;
@@ -364,19 +365,35 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
         );
     }
 
-    @Override
-    public @NotNull Iterable<Rational> rangeUp(@NotNull Rational a) {
-        return null;
-    }
-
-    @Override
-    public @NotNull Iterable<Rational> rangeDown(@NotNull Rational a) {
-        return null;
-    }
-
+    /**
+     * An {@code Iterable} that generates all {@code Rational}s between {@code a} and {@code b}, inclusive. A larger
+     * {@code scale} corresponds to elements with a larger mean bit size (sum of the bit lengths of the numerator and
+     * denominator). Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code a} cannot be null.</li>
+     *  <li>{@code b} cannot be null.</li>
+     *  <li>{@code a} cannot be greater than {@code b}.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing {@code Rational}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param a the inclusive lower bound of the generated elements
+     * @param b the inclusive upper bound of the generated elements
+     * @return {@code Rational}s between {@code a} and {@code b}, inclusive
+     */
     @Override
     public @NotNull Iterable<Rational> range(@NotNull Rational a, @NotNull Rational b) {
-        return null;
+        switch (Ordering.compare(a, b)) {
+            case GT: throw new IllegalArgumentException("a cannot be greater than b. Invalid a: " + a +
+                    ", and invalid b: " + b);
+            case EQ: return repeat(a);
+            case LT:
+                Rational diameter = b.subtract(a);
+                return withElement(b, map(r -> r.multiply(diameter).add(a), nonNegativeRationalsLessThanOne()));
+            default: throw new IllegalStateException("unreachable");
+        }
     }
 
     /**
