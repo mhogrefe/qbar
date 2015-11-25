@@ -60,7 +60,7 @@ public class QBarExhaustiveProviderTest {
     }
 
     private static void rangeUp_Rational_helper(@NotNull String a, @NotNull String output) {
-        aeqitLimit(TINY_LIMIT, P.rangeUp(Rational.read(a).get()), output);
+        simpleProviderHelper(P.rangeUp(Rational.read(a).get()), output);
     }
 
     @Test
@@ -95,7 +95,7 @@ public class QBarExhaustiveProviderTest {
     }
 
     private static void rangeDown_Rational_helper(@NotNull String a, @NotNull String output) {
-        aeqitLimit(TINY_LIMIT, P.rangeDown(Rational.read(a).get()), output);
+        simpleProviderHelper(P.rangeDown(Rational.read(a).get()), output);
     }
 
     @Test
@@ -130,7 +130,7 @@ public class QBarExhaustiveProviderTest {
     }
 
     private static void range_Rational_Rational_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        aeqitLimit(TINY_LIMIT, P.range(Rational.read(a).get(), Rational.read(b).get()), output);
+        simpleProviderHelper(P.range(Rational.read(a).get(), Rational.read(b).get()), output);
     }
 
     @Test
@@ -162,25 +162,26 @@ public class QBarExhaustiveProviderTest {
 
     @Test
     public void testFinitelyBoundedIntervals() {
-        aeqit(take(50, P.finitelyBoundedIntervals()),
-                "[[0, 0], [0, 1], [1, 1], [0, 1/2], [0, 1/3], [1/2, 1], [1/3, 1], [1/2, 1/2], [1/3, 1/2]," +
-                " [1/3, 1/3], [0, 1/4], [0, 2], [1, 2], [1/2, 2], [1/3, 2], [1/4, 1], [-1, 0], [-1, 1], [1/4, 1/2]," +
-                " [1/4, 1/3], [-1, 1/2], [-1, 1/3], [-1/2, 0], [-1/2, 1], [-1/2, 1/2], [-1/2, 1/3], [1/4, 1/4]," +
-                " [-1, 1/4], [-1, -1], [1/4, 2], [-1, -1/2], [-1, 2], [-1/2, 1/4], [-1/2, -1/2], [-1/2, 2], [2, 2]," +
-                " [0, 2/3], [0, 1/5], [1/2, 2/3], [1/3, 2/3], [0, 1/6], [0, 1/7], [0, 1/8], [-1, -1/3], [-1, -1/4]," +
-                " [1/4, 2/3], [-1, 2/3], [-1, 1/5], [-1/2, -1/3], [-1/2, -1/4]]");
+        simpleProviderHelper(P.finitelyBoundedIntervals(),
+                "[[0, 0], [0, 1], [1, 1], [1/2, 1], [0, 1/2], [0, 1/3], [1/3, 1], [1/4, 1], [1/2, 1/2], [1/3, 1/2]," +
+                " [1/3, 1/3], [1/4, 1/3], [1/4, 1/2], [-1, 1/2], [-1, 1/3], [-1/2, 1/3], [0, 1/4], [-1, 0], [-1, 1]," +
+                " [-1/2, 1], [-1/2, 0], [0, 2], [1, 2], [-1/3, 1], [-1/2, 1/2], [1/2, 2], [1/3, 2], [-1/3, 1/3]," +
+                " [-1/3, 1/2], [-1/4, 1/2], [-1/4, 1/3], [1/3, 2/3], [1/4, 1/4], [-1, 1/4], [-1, -1], [-1, -1/2]," +
+                " [-1/2, 1/4], [1/4, 2], [-1, 2], [-1, -1/3], [-1/2, -1/2], [-1/2, 2], [2, 2], [-1/3, 2]," +
+                " [-1/2, -1/3], [-1/2, -1/4], [-1/4, 2], [2/3, 2], [-1/3, 1/4], [-1/4, 1/4], ...]");
     }
 
     @Test
     public void testIntervals() {
-        aeqit(take(50, P.intervals()),
+        simpleProviderHelper(P.intervals(),
                 "[(-Infinity, Infinity), (-Infinity, 0], [0, Infinity), [0, 0], (-Infinity, 1], (-Infinity, 1/2]," +
                 " [0, 1], [0, 1/2], [1, Infinity), [1/2, Infinity), [1, 1], [1/2, 1], [1/2, 1/2], (-Infinity, 1/3]," +
                 " (-Infinity, 1/4], [0, 1/3], [0, 1/4], (-Infinity, -1], (-Infinity, -1/2], [1/3, Infinity)," +
                 " [1/4, Infinity), [1/3, 1], [1/3, 1/2], [1/4, 1], [1/4, 1/2], [-1, Infinity), [-1, 0]," +
                 " [-1/2, Infinity), [-1/2, 0], [-1, 1], [-1, 1/2], [-1/2, 1], [-1/2, 1/2], [1/3, 1/3], [1/4, 1/3]," +
                 " [1/4, 1/4], [-1, 1/3], [-1, 1/4], [-1/2, 1/3], [-1/2, 1/4], [-1, -1], [-1, -1/2], [-1/2, -1/2]," +
-                " (-Infinity, 2], (-Infinity, -1/3], [0, 2], (-Infinity, -1/4], (-Infinity, 2/3], [0, 2/3], [1, 2]]");
+                " (-Infinity, 2], (-Infinity, -1/3], [0, 2], (-Infinity, -1/4], (-Infinity, 2/3], [0, 2/3], [1, 2]," +
+                " ...]");
     }
 
     @Test
