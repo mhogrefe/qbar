@@ -371,6 +371,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
      * denominator). Does not support removal.
      *
      * <ul>
+     *  <li>{@code this} must have a {@code scale} of at least 4.</li>
      *  <li>{@code a} cannot be null.</li>
      *  <li>{@code b} cannot be null.</li>
      *  <li>{@code a} cannot be greater than {@code b}.</li>
@@ -385,6 +386,10 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
      */
     @Override
     public @NotNull Iterable<Rational> range(@NotNull Rational a, @NotNull Rational b) {
+        int scale = getScale();
+        if (scale < 4) {
+            throw new IllegalStateException("this must have a scale of at least 4. Invalid scale: " + scale);
+        }
         switch (Ordering.compare(a, b)) {
             case GT: throw new IllegalArgumentException("a cannot be greater than b. Invalid a: " + a +
                     ", and invalid b: " + b);

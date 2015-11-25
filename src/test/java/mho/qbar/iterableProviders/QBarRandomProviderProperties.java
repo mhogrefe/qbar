@@ -1,6 +1,7 @@
 package mho.qbar.iterableProviders;
 
 import mho.qbar.objects.Rational;
+import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
@@ -38,6 +39,9 @@ public class QBarRandomProviderProperties {
             propertiesNonzeroRationals();
             propertiesRationals();
             propertiesNonNegativeRationalsLessThanOne();
+            propertiesRangeUp_Rational();
+            propertiesRangeDown_Rational();
+            propertiesRange_Rational_Rational();
         }
         System.out.println("Done");
     }
@@ -183,6 +187,107 @@ public class QBarRandomProviderProperties {
                 rp.nonNegativeRationalsLessThanOne();
                 fail(rp);
             } catch (IllegalStateException ignored) {}
+        }
+    }
+
+    private static void propertiesRangeUp_Rational() {
+        initialize("rangeUp(Rational)");
+        Iterable<Pair<QBarRandomProvider, Rational>> ps = P.pairs(
+                filterInfinite(rp -> rp.getScale() >= 4, P.qbarRandomProviders()),
+                P.rationals()
+        );
+        for (Pair<QBarRandomProvider, Rational> p : take(LIMIT, ps)) {
+            Iterable<Rational> rs = p.a.rangeUp(p.b);
+            simpleTest(p.a, rs, r -> ge(r, p.b));
+        }
+
+        Iterable<Pair<QBarRandomProvider, Rational>> psFail = P.pairs(
+                filterInfinite(rp -> rp.getScale() < 4, P.qbarRandomProviders()),
+                P.rationals()
+        );
+        for (Pair<QBarRandomProvider, Rational> p : take(LIMIT, psFail)) {
+            try {
+                p.a.rangeUp(p.b);
+                fail(p);
+            } catch (IllegalStateException ignored) {}
+        }
+    }
+
+    private static void propertiesRangeDown_Rational() {
+        initialize("rangeDown(Rational)");
+        Iterable<Pair<QBarRandomProvider, Rational>> ps = P.pairs(
+                filterInfinite(rp -> rp.getScale() >= 4, P.qbarRandomProviders()),
+                P.rationals()
+        );
+        for (Pair<QBarRandomProvider, Rational> p : take(LIMIT, ps)) {
+            Iterable<Rational> rs = p.a.rangeDown(p.b);
+            simpleTest(p.a, rs, r -> le(r, p.b));
+        }
+
+        Iterable<Pair<QBarRandomProvider, Rational>> psFail = P.pairs(
+                filterInfinite(rp -> rp.getScale() < 4, P.qbarRandomProviders()),
+                P.rationals()
+        );
+        for (Pair<QBarRandomProvider, Rational> p : take(LIMIT, psFail)) {
+            try {
+                p.a.rangeDown(p.b);
+                fail(p);
+            } catch (IllegalStateException ignored) {}
+        }
+    }
+
+    private static void propertiesRange_Rational_Rational() {
+        initialize("range(Rational, Rational)");
+        Iterable<Triple<QBarRandomProvider, Rational, Rational>> ts = filterInfinite(
+                t -> le(t.b, t.c),
+                P.triples(
+                        filterInfinite(rp -> rp.getScale() >= 4, P.qbarRandomProviders()),
+                        P.rationals(),
+                        P.rationals()
+                )
+        );
+        for (Triple<QBarRandomProvider, Rational, Rational> t : take(LIMIT, ts)) {
+            Iterable<Rational> rs = t.a.range(t.b, t.c);
+            simpleTest(t.a, rs, r -> ge(r, t.b) && le(r, t.c));
+            assertEquals(t, gt(t.b, t.c), isEmpty(rs));
+        }
+
+        Iterable<Pair<QBarRandomProvider, Rational>> ps = P.pairs(
+                filterInfinite(rp -> rp.getScale() >= 4, P.qbarRandomProviders()),
+                P.rationals()
+        );
+        for (Pair<QBarRandomProvider, Rational> p : take(LIMIT, ps)) {
+            assertTrue(p, all(r -> eq(r, p.b), take(TINY_LIMIT, p.a.range(p.b, p.b))));
+        }
+
+        Iterable<Triple<QBarRandomProvider, Rational, Rational>> tsFail = filterInfinite(
+                t -> le(t.b, t.c),
+                P.triples(
+                        filterInfinite(rp -> rp.getScale() < 4, P.qbarRandomProviders()),
+                        P.rationals(),
+                        P.rationals()
+                )
+        );
+        for (Triple<QBarRandomProvider, Rational, Rational> t : take(LIMIT, tsFail)) {
+            try {
+                t.a.range(t.b, t.c);
+                fail(t);
+            } catch (IllegalStateException ignored) {}
+        }
+
+        tsFail = filterInfinite(
+                t -> gt(t.b, t.c),
+                P.triples(
+                        filterInfinite(rp -> rp.getScale() >= 4, P.qbarRandomProviders()),
+                        P.rationals(),
+                        P.rationals()
+                )
+        );
+        for (Triple<QBarRandomProvider, Rational, Rational> t : take(LIMIT, tsFail)) {
+            try {
+                t.a.range(t.b, t.c);
+                fail(t);
+            } catch (IllegalArgumentException ignored) {}
         }
     }
 }
