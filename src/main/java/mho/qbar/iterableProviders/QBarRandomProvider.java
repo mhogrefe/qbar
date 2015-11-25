@@ -402,40 +402,45 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
     }
 
     /**
-     * a pseudorandom {@code Iterable} that generates every {@code Interval} with finite bounds. Each
-     * {@code Interval}'s bit size (defined as the sum of the lower bound's and upper bound's bit sizes) is chosen from
-     * a geometric distribution with mean approximately {@code meanBitSize} (The ratio between the actual mean bit size
-     * and {@code meanBitSize} decreases as {@code meanBitSize} increases). Does not support removal.
+     * An {@code Iterable} that generates all {@code Interval}s with finite bounds. A larger {@code scale} corresponds
+     * to elements with a larger mean bit size. Does not support removal.
      *
      * <ul>
-     *  <li>{@code meanBitSize} must be greater than 11.</li>
-     *  <li>The result is an infinite pseudorandom sequence of all {@code Interval}s with finite bounds.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing finitely-bounded
+     *  {@code Interval}s.</li>
      * </ul>
      *
      * Length is infinite
      */
     @Override
     public @NotNull Iterable<Interval> finitelyBoundedIntervals() {
-        Iterable<Rational> bounds = withScale(getScale() / 2).rationals();
-        return map(p -> Interval.of(p.a, p.b), filter(p -> le(p.a, p.b), pairs(bounds)));
+        int scale = getScale();
+        int leftScale = scale / 2;
+        int rightScale = (scale & 1) == 0 ? leftScale : leftScale + 1;
+        return map(
+                p -> Interval.of(p.a, p.b),
+                filterInfinite(
+                        p -> le(p.a, p.b),
+                        pairs(withScale(leftScale).rationals(), withScale(rightScale).rationals())
+                )
+        );
     }
 
     /**
-     * a pseudorandom {@code Iterable} that generates every {@code Interval}. Each {@code Interval}'s bit size (defined
-     * as the sum of the lower bound's and upper bound's bit sizes) is chosen from a geometric distribution with mean
-     * approximately {@code meanBitSize} (The ratio between the actual mean bit size and {@code meanBitSize} decreases
-     * as {@code meanBitSize} increases). Does not support removal.
+     * An {@code Iterable} that generates all {@code Interval}s. A larger {@code scale} corresponds to elements with a
+     * larger mean bit size. Does not support removal.
      *
      * <ul>
-     *  <li>{@code meanBitSize} must be greater than 11.</li>
-     *  <li>The result is an infinite pseudorandom sequence of all {@code Interval}s.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing {@code Interval}s.</li>
      * </ul>
      *
      * Length is infinite
      */
     @Override
     public @NotNull Iterable<Interval> intervals() {
-        Iterable<Rational> bounds = withScale(getScale() / 2).rationals();
+        int scale = getScale();
+        QBarIterableProvider leftRP = withScale(scale / 2);
+        QBarIterableProvider rightRP = withScale((scale & 1) == 0 ? scale / 2 : scale / 2 + 1);
         return map(
                 p -> {
                     if (!p.a.isPresent() && !p.b.isPresent()) return Interval.ALL;
@@ -443,7 +448,10 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
                     if (!p.b.isPresent()) return Interval.greaterThanOrEqualTo(p.a.get());
                     return Interval.of(p.a.get(), p.b.get());
                 },
-                filter(p -> !p.a.isPresent() || !p.b.isPresent() || le(p.a.get(), p.b.get()), pairs(optionals(bounds)))
+                filterInfinite(
+                        p -> !p.a.isPresent() || !p.b.isPresent() || le(p.a.get(), p.b.get()),
+                        pairs(leftRP.optionals(leftRP.rationals()), rightRP.optionals(rightRP.rationals()))
+                )
         );
     }
 
