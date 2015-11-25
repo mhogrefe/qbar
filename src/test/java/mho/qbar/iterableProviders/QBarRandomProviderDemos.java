@@ -1,5 +1,9 @@
 package mho.qbar.iterableProviders;
 
+import mho.qbar.objects.Rational;
+import mho.wheels.iterables.RandomProvider;
+import mho.wheels.structures.Pair;
+
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.testing.Testing.*;
 
@@ -74,6 +78,28 @@ public class QBarRandomProviderDemos {
         for (QBarRandomProvider rp : take(SMALL_LIMIT, rps)) {
             System.out.println("nonNegativeRationalsLessThanOne(" + rp + ") = " +
                     its(rp.nonNegativeRationalsLessThanOne()));
+        }
+    }
+
+    private static void demoRangeUp_Rational() {
+        initialize();
+        Iterable<Pair<QBarRandomProvider, Rational>> ps = P.pairs(
+                filterInfinite(rp -> rp.getScale() >= 4, P.qbarRandomProvidersDefaultSecondaryScale()),
+                P.rationals()
+        );
+        for (Pair<QBarRandomProvider, Rational> p : take(SMALL_LIMIT, ps)) {
+            System.out.println("rangeUp(" + p.a + ", " + p.b + ") = " + its(p.a.rangeUp(p.b)));
+        }
+    }
+
+    private static void demoRangeDown_Rational() {
+        initialize();
+        Iterable<Pair<QBarRandomProvider, Rational>> ps = P.pairs(
+                filterInfinite(rp -> rp.getScale() >= 4, P.qbarRandomProvidersDefaultSecondaryScale()),
+                P.rationals()
+        );
+        for (Pair<QBarRandomProvider, Rational> p : take(SMALL_LIMIT, ps)) {
+            System.out.println("rangeDown(" + p.a + ", " + p.b + ") = " + its(p.a.rangeDown(p.b)));
         }
     }
 }

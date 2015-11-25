@@ -360,7 +360,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
                 p -> Rational.of(p.a, p.b),
                 filterInfinite(
                         q -> lt(q.a, q.b) && q.a.gcd(q.b).equals(BigInteger.ONE),
-                        pairs(withScale(leftScale).positiveBigIntegers(), withScale(rightScale).positiveBigIntegers())
+                        pairs(withScale(leftScale).naturalBigIntegers(), withScale(rightScale).positiveBigIntegers())
                 )
         );
     }
