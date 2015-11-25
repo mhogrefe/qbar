@@ -2815,9 +2815,28 @@ public strictfp abstract class QBarIterableProvider {
      */
     public abstract @NotNull Iterable<Rational> range(@NotNull Rational a, @NotNull Rational b);
 
+    /**
+     * Generates {@code Interval}s whose bounds are finite.
+     */
     public abstract @NotNull Iterable<Interval> finitelyBoundedIntervals();
+
+    /**
+     * Generates {@code Interval}s.
+     */
     public abstract @NotNull Iterable<Interval> intervals();
+
+    /**
+     * Generates {@code Rational}s contained in a given {@code Interval}.
+     *
+     * @param a an {@code Interval}
+     */
     public abstract @NotNull Iterable<Rational> rationalsIn(@NotNull Interval a);
+
+    /**
+     * Generates {@code Rational}s not contained in a given {@code Interval}.
+     *
+     * @param a an {@code Interval}
+     */
     public abstract @NotNull Iterable<Rational> rationalsNotIn(@NotNull Interval a);
 
     public abstract @NotNull Iterable<RationalVector> rationalVectors(int dimension);
