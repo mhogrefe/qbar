@@ -1,5 +1,6 @@
 package mho.qbar.iterableProviders;
 
+import mho.qbar.objects.Interval;
 import mho.qbar.objects.Rational;
 import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
@@ -42,6 +43,8 @@ public class QBarRandomProviderProperties {
             propertiesRangeUp_Rational();
             propertiesRangeDown_Rational();
             propertiesRange_Rational_Rational();
+            propertiesFinitelyBoundedIntervals();
+            propertiesIntervals();
         }
         System.out.println("Done");
     }
@@ -288,6 +291,56 @@ public class QBarRandomProviderProperties {
                 t.a.range(t.b, t.c);
                 fail(t);
             } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private static void propertiesFinitelyBoundedIntervals() {
+        initialize("finitelyBoundedIntervals()");
+        Iterable<QBarRandomProvider> rps = filterInfinite(
+                s -> s.getScale() >= 6,
+                P.qbarRandomProvidersDefaultSecondaryScale()
+        );
+        for (QBarRandomProvider rp : take(LIMIT, rps)) {
+            Iterable<Interval> as = rp.finitelyBoundedIntervals();
+            rp.reset();
+            take(TINY_LIMIT, as).forEach(Interval::validate);
+            simpleTest(rp, as, Interval::isFinitelyBounded);
+        }
+
+        Iterable<QBarRandomProvider> rpsFail = filterInfinite(
+                s -> s.getScale() < 6,
+                P.qbarRandomProvidersDefaultSecondaryScale()
+        );
+        for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
+            try {
+                rp.finitelyBoundedIntervals();
+                fail(rp);
+            } catch (IllegalStateException ignored) {}
+        }
+    }
+
+    private static void propertiesIntervals() {
+        initialize("intervals()");
+        Iterable<QBarRandomProvider> rps = filterInfinite(
+                s -> s.getScale() >= 6,
+                P.qbarRandomProvidersDefaultSecondaryScale()
+        );
+        for (QBarRandomProvider rp : take(LIMIT, rps)) {
+            Iterable<Interval> as = rp.intervals();
+            rp.reset();
+            take(TINY_LIMIT, as).forEach(Interval::validate);
+            simpleTest(rp, as, a -> true);
+        }
+
+        Iterable<QBarRandomProvider> rpsFail = filterInfinite(
+                s -> s.getScale() < 6,
+                P.qbarRandomProvidersDefaultSecondaryScale()
+        );
+        for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
+            try {
+                rp.intervals();
+                fail(rp);
+            } catch (IllegalStateException ignored) {}
         }
     }
 }
