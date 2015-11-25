@@ -32,7 +32,7 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
     }
 
     /**
-     * An {@code Iterable} that generates every positive {@code Rational}. Does not support removal.
+     * An {@code Iterable} that generates every positive {@link mho.qbar.objects.Rational}. Does not support removal.
      *
      * Length is infinite
      */
@@ -140,18 +140,18 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
     }
 
     /**
-     * an {@code Iterable} that contains every finitely-bounded {@link mho.qbar.objects.Interval}. Does not support
+     * An {@code Iterable} that generates all finitely-bounded {@link mho.qbar.objects.Interval}s. Does not support
      * removal.
      *
      * Length is infinite
      */
     @Override
     public @NotNull Iterable<Interval> finitelyBoundedIntervals() {
-        return map(p -> Interval.of(p.a, p.b), filter(p -> le(p.a, p.b), pairs(rationals())));
+        return map(p -> Interval.of(p.a, p.b), bagPairs(rationals()));
     }
 
     /**
-     * an {@code Iterable} that contains every {@code Interval}. Does not support removal.
+     * An {@code Iterable} that generates all {@code Interval}s. Does not support removal.
      *
      * Length is infinite
      */
@@ -164,7 +164,7 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
                     if (!p.b.isPresent()) return Interval.greaterThanOrEqualTo(p.a.get());
                     return Interval.of(p.a.get(), p.b.get());
                 },
-                filter(
+                filterInfinite(
                         p -> !p.a.isPresent() || !p.b.isPresent() || le(p.a.get(), p.b.get()),
                         pairs(optionals(rationals()))
                 )
