@@ -2847,27 +2847,7 @@ public strictfp abstract class QBarIterableProvider {
      *
      * @param a an {@code Interval}
      */
-    public @NotNull Iterable<Rational> rationalsNotIn(@NotNull Interval a) {
-        List<Interval> complement = a.complement();
-        switch (complement.size()) {
-            case 0:
-                return Collections.emptyList();
-            case 1:
-                Rational boundary = a.getLower().isPresent() ? a.getLower().get() : a.getUpper().get();
-                return filterInfinite(r -> !r.equals(boundary), rationalsIn(complement.get(0)));
-            case 2:
-                Rational x = complement.get(0).getUpper().get();
-                Rational y = complement.get(1).getLower().get();
-                //noinspection RedundantCast
-                return mux(
-                        (List<Iterable<Rational>>) Arrays.asList(
-                                filterInfinite(r -> !r.equals(x), rangeDown(x)),
-                                filterInfinite(r -> !r.equals(y), rangeUp(y))
-                        )
-                );
-            default: throw new IllegalStateException("unreachable");
-        }
-    }
+    public abstract @NotNull Iterable<Rational> rationalsNotIn(@NotNull Interval a);
 
     public abstract @NotNull Iterable<RationalVector> rationalVectors(int dimension);
     public abstract @NotNull Iterable<RationalVector> rationalVectorsAtLeast(int minDimension);

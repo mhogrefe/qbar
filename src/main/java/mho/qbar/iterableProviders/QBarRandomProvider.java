@@ -392,8 +392,8 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
             throw new IllegalStateException("this must have a scale of at least 4. Invalid scale: " + scale);
         }
         switch (Ordering.compare(a, b)) {
-            case GT: throw new IllegalArgumentException("a cannot be greater than b. Invalid a: " + a +
-                    ", and invalid b: " + b);
+            case GT: throw new IllegalArgumentException("a cannot be greater than b. Invalid a: " +
+                    a + ", and invalid b: " + b);
             case EQ: return repeat(a);
             case LT:
                 Rational diameter = b.subtract(a);
@@ -462,6 +462,33 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
                         pairs(leftRP.optionals(leftRP.rationals()), rightRP.optionals(rightRP.rationals()))
                 )
         );
+    }
+
+    @Override
+    public @NotNull Iterable<Rational> rationalsNotIn(@NotNull Interval a) {
+        int scale = getScale();
+        if (scale < 4) {
+            throw new IllegalStateException("this must have a scale of at least 4. Invalid scale: " + scale);
+        }
+        List<Interval> complement = a.complement();
+        switch (complement.size()) {
+            case 0:
+                throw new IllegalArgumentException("a cannot be (-Infinity, Infinity).");
+            case 1:
+                Rational boundary = a.getLower().isPresent() ? a.getLower().get() : a.getUpper().get();
+                return filterInfinite(r -> !r.equals(boundary), rationalsIn(complement.get(0)));
+            case 2:
+                Rational x = complement.get(0).getUpper().get();
+                Rational y = complement.get(1).getLower().get();
+                //noinspection RedundantCast
+                return mux(
+                        (List<Iterable<Rational>>) Arrays.asList(
+                                filterInfinite(r -> !r.equals(x), rangeDown(x)),
+                                filterInfinite(r -> !r.equals(y), rangeUp(y))
+                        )
+                );
+            default: throw new IllegalStateException("unreachable");
+        }
     }
 
     @Override
