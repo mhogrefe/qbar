@@ -1,5 +1,6 @@
 package mho.qbar.iterableProviders;
 
+import mho.qbar.objects.Interval;
 import mho.qbar.objects.Rational;
 import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
@@ -138,6 +139,34 @@ public class QBarRandomProviderDemos {
         );
         for (QBarRandomProvider rp : take(SMALL_LIMIT, rps)) {
             System.out.println("intervals(" + rp + ") = " + its(rp.intervals()));
+        }
+    }
+
+    private static void demoRationalsIn() {
+        initialize();
+        Iterable<Pair<QBarRandomProvider, Interval>> ps = P.pairs(
+                filterInfinite(
+                        s -> s.getScale() >= 4,
+                        P.qbarRandomProvidersDefaultSecondaryScale()
+                ),
+                P.intervals()
+        );
+        for (Pair<QBarRandomProvider, Interval> p : take(SMALL_LIMIT, ps)) {
+            System.out.println("rationalsIn(" + p.a + ", " + p.b + ") = " + its(p.a.rationalsIn(p.b)));
+        }
+    }
+
+    private static void demoRationalsNotIn() {
+        initialize();
+        Iterable<Pair<QBarRandomProvider, Interval>> ps = P.pairs(
+                filterInfinite(
+                        s -> s.getScale() >= 4,
+                        P.qbarRandomProvidersDefaultSecondaryScale()
+                ),
+                filterInfinite(a -> !a.equals(Interval.ALL), P.intervals())
+        );
+        for (Pair<QBarRandomProvider, Interval> p : take(SMALL_LIMIT, ps)) {
+            System.out.println("rationalsNotIn(" + p.a + ", " + p.b + ") = " + its(p.a.rationalsNotIn(p.b)));
         }
     }
 }
