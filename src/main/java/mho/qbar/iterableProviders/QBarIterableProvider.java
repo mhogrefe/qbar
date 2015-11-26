@@ -12,12 +12,12 @@ import org.jetbrains.annotations.Nullable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 
+import static mho.wheels.iterables.IterableUtils.filterInfinite;
 import static mho.wheels.iterables.IterableUtils.map;
+import static mho.wheels.iterables.IterableUtils.mux;
 
 /**
  * This class provides {@code Iterables} for testing.
@@ -2830,14 +2830,44 @@ public strictfp abstract class QBarIterableProvider {
      *
      * @param a an {@code Interval}
      */
-    public abstract @NotNull Iterable<Rational> rationalsIn(@NotNull Interval a);
+    public @NotNull Iterable<Rational> rationalsIn(@NotNull Interval a) {
+        if (!a.getLower().isPresent() && !a.getUpper().isPresent()) {
+            return rationals();
+        } else if (!a.getLower().isPresent()) {
+            return rangeDown(a.getUpper().get());
+        } else if (!a.getUpper().isPresent()) {
+            return rangeUp(a.getLower().get());
+        } else {
+            return range(a.getLower().get(), a.getUpper().get());
+        }
+    }
 
     /**
      * Generates {@code Rational}s not contained in a given {@code Interval}.
      *
      * @param a an {@code Interval}
      */
-    public abstract @NotNull Iterable<Rational> rationalsNotIn(@NotNull Interval a);
+    public @NotNull Iterable<Rational> rationalsNotIn(@NotNull Interval a) {
+        List<Interval> complement = a.complement();
+        switch (complement.size()) {
+            case 0:
+                return Collections.emptyList();
+            case 1:
+                Rational boundary = a.getLower().isPresent() ? a.getLower().get() : a.getUpper().get();
+                return filterInfinite(r -> !r.equals(boundary), rationalsIn(complement.get(0)));
+            case 2:
+                Interval x = complement.get(0);
+                Interval y = complement.get(1);
+                //noinspection RedundantCast
+                return mux(
+                        (List<Iterable<Rational>>) Arrays.asList(
+                                filterInfinite(r -> !r.equals(x.getUpper().get()), rationalsIn(x)),
+                                filterInfinite(r -> !r.equals(y.getLower().get()), rationalsIn(y))
+                        )
+                );
+            default: throw new IllegalStateException("unreachable");
+        }
+    }
 
     public abstract @NotNull Iterable<RationalVector> rationalVectors(int dimension);
     public abstract @NotNull Iterable<RationalVector> rationalVectorsAtLeast(int minDimension);

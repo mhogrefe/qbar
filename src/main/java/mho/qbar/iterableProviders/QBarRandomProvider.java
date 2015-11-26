@@ -464,51 +464,6 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
     }
 
     @Override
-    public @NotNull Iterable<Rational> rationalsIn(@NotNull Interval a) {
-        if (!a.getLower().isPresent() && !a.getUpper().isPresent()) {
-            return rationals();
-        } else if (!a.getLower().isPresent()) {
-            return map(r -> a.getUpper().get().subtract(r), withElement(Rational.ZERO, positiveRationals()));
-        } else if (!a.getUpper().isPresent()) {
-            return map(r -> r.add(a.getLower().get()), withElement(Rational.ZERO, positiveRationals()));
-        } else {
-            Rational diameter = a.diameter().get();
-            if (diameter == Rational.ZERO) return repeat(a.getLower().get());
-            return concat(
-                    Arrays.asList(a.getLower().get(), a.getUpper().get()),
-                    tail(
-                            map(
-                                    r -> r.multiply(diameter).add(a.getLower().get()),
-                                    nonNegativeRationalsLessThanOne()
-                            )
-                    )
-            );
-        }
-    }
-
-    public @NotNull Iterable<Rational> rationalsNotIn(@NotNull Interval a) {
-        List<Interval> complement = a.complement();
-        switch (complement.size()) {
-            case 0:
-                return Collections.emptyList();
-            case 1:
-                Interval x = complement.get(0);
-                Rational boundary = a.getLower().isPresent() ? a.getLower().get() : a.getUpper().get();
-                return filter(r -> !r.equals(boundary), rationalsIn(x));
-            case 2:
-                Interval y = complement.get(0);
-                Interval z = complement.get(1);
-                return mux(
-                        (List<Iterable<Rational>>) Arrays.asList(
-                                filter(r -> !r.equals(y.getUpper().get()), rationalsIn(y)),
-                                filter(r -> !r.equals(z.getLower().get()), rationalsIn(z))
-                        )
-                );
-        }
-        return null; //never happens
-    }
-
-    @Override
     public @NotNull Iterable<RationalVector> rationalVectors(int dimension) {
         return map(RationalVector::of, withScale(getSecondaryScale()).lists(dimension, rationals()));
     }

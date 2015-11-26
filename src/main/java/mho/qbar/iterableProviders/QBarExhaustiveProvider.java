@@ -172,41 +172,6 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
     }
 
     @Override
-    public @NotNull Iterable<Rational> rationalsIn(@NotNull Interval a) {
-        if (!a.getLower().isPresent() && !a.getUpper().isPresent()) {
-            return rationals();
-        } else if (!a.getLower().isPresent()) {
-            return rangeDown(a.getUpper().get());
-        } else if (!a.getUpper().isPresent()) {
-            return rangeUp(a.getLower().get());
-        } else {
-            return range(a.getLower().get(), a.getUpper().get());
-        }
-    }
-
-    public @NotNull Iterable<Rational> rationalsNotIn(@NotNull Interval a) {
-        List<Interval> complement = a.complement();
-        switch (complement.size()) {
-            case 0:
-                return Collections.emptyList();
-            case 1:
-                Interval x = complement.get(0);
-                Rational boundary = a.getLower().isPresent() ? a.getLower().get() : a.getUpper().get();
-                return filter(r -> !r.equals(boundary), rationalsIn(x));
-            case 2:
-                Interval y = complement.get(0);
-                Interval z = complement.get(1);
-                return mux(
-                        (List<Iterable<Rational>>) Arrays.asList(
-                                filter(r -> !r.equals(y.getUpper().get()), rationalsIn(y)),
-                                filter(r -> !r.equals(z.getLower().get()), rationalsIn(z))
-                        )
-                );
-        }
-        return null; //never happens
-    }
-
-    @Override
     public @NotNull Iterable<RationalVector> rationalVectors(int dimension) {
         return map(RationalVector::of, lists(dimension, rationals()));
     }
