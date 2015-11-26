@@ -53,6 +53,8 @@ public class QBarExhaustiveProviderProperties {
             propertiesRangeUp_Rational();
             propertiesRangeDown_Rational();
             propertiesRange_Rational_Rational();
+            propertiesRationalsIn();
+            propertiesRationalsNotIn();
         }
         System.out.println("Done");
     }
@@ -160,5 +162,29 @@ public class QBarExhaustiveProviderProperties {
         initializeConstant("intervals()");
         biggerTest(EP, EP.intervals(), a -> true);
         take(TINY_LIMIT, EP.intervals()).forEach(Interval::validate);
+    }
+
+    private static void propertiesRationalsIn() {
+        initialize("rationalsIn(Interval)");
+        for (Interval a : take(LIMIT, P.intervals())) {
+            Iterable<Rational> rs = EP.rationalsIn(a);
+            simpleTest(a, rs, a::contains);
+            take(TINY_LIMIT, rs).forEach(Rational::validate);
+        }
+
+        for (Rational r : take(LIMIT, P.rationals())) {
+            Iterable<Rational> rs = EP.rationalsIn(Interval.of(r, r));
+            aeqit(r, rs, Collections.singletonList(r));
+            testHasNext(rs);
+        }
+    }
+
+    private static void propertiesRationalsNotIn() {
+        initialize("rationalsNotIn(Interval)");
+        for (Interval a : take(LIMIT, P.intervals())) {
+            Iterable<Rational> rs = EP.rationalsNotIn(a);
+            simpleTest(a, rs, r -> !a.contains(r));
+            take(TINY_LIMIT, rs).forEach(Rational::validate);
+        }
     }
 }
