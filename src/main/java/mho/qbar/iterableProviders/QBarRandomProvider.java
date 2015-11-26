@@ -354,13 +354,14 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
         if (scale < 4) {
             throw new IllegalStateException("this must have a scale of at least 4. Invalid scale: " + scale);
         }
-        int leftScale = scale / 2;
-        int rightScale = (scale & 1) == 0 ? leftScale : leftScale + 1;
         return map(
-                p -> Rational.of(p.a, p.b),
-                filterInfinite(
-                        q -> lt(q.a, q.b) && q.a.gcd(q.b).equals(BigInteger.ONE),
-                        pairs(withScale(leftScale).naturalBigIntegers(), withScale(rightScale).positiveBigIntegers())
+                p -> Rational.of(p.b, p.a),
+                dependentPairsInfinite(
+                        withScale(scale / 2).positiveBigIntegers(),
+                        d -> filterInfinite(
+                                n -> n.gcd(d).equals(BigInteger.ONE),
+                                range(BigInteger.ZERO, d.subtract(BigInteger.ONE))
+                        )
                 )
         );
     }
