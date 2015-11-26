@@ -2,6 +2,8 @@ package mho.qbar.iterableProviders;
 
 import mho.qbar.objects.*;
 import mho.wheels.iterables.ExhaustiveProvider;
+import mho.wheels.iterables.IterableUtils;
+import mho.wheels.numberUtils.IntegerUtils;
 import mho.wheels.ordering.Ordering;
 import org.jetbrains.annotations.NotNull;
 
@@ -101,9 +103,15 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
     public @NotNull Iterable<Rational> nonNegativeRationalsLessThanOne() {
         return cons(
                 Rational.ZERO,
-                map(
-                        p -> Rational.of(p.a, p.b),
-                        filterInfinite(p -> p.a.gcd(p.b).equals(BigInteger.ONE), subsetPairs(positiveBigIntegers()))
+                concatMap(
+                        d -> map(
+                                n -> Rational.of(n, d),
+                                filter(
+                                        n -> n.gcd(d).equals(BigInteger.ONE),
+                                        IterableUtils.range(BigInteger.ONE, d.subtract(BigInteger.ONE))
+                                )
+                        ),
+                        IterableUtils.rangeUp(IntegerUtils.TWO)
                 )
         );
     }
