@@ -1,5 +1,6 @@
 package mho.qbar.iterableProviders;
 
+import mho.qbar.objects.Interval;
 import mho.qbar.objects.Rational;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
@@ -44,6 +45,20 @@ public class QBarExhaustiveProviderDemos {
         initialize();
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
             System.out.println("range(" + p.a + ", " + p.b + ") = " + its(EP.range(p.a, p.b)));
+        }
+    }
+
+    private static void demoRationalsIn() {
+        initialize();
+        for (Interval a : take(SMALL_LIMIT, P.intervals())) {
+            System.out.println("rationalsIn(" + a + ") = " + its(EP.rationalsIn(a)));
+        }
+    }
+
+    private static void demoRationalsNotIn() {
+        initialize();
+        for (Interval a : take(SMALL_LIMIT, P.intervals())) {
+            System.out.println("rationalsNotIn(" + a + ") = " + its(EP.rationalsNotIn(a)));
         }
     }
 }
