@@ -464,6 +464,20 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
         );
     }
 
+    /**
+     * An {@code Iterable} that generates all {@code Rational}s not contained in a given {@code Interval}. Does not
+     * support removal
+     *
+     * <ul>
+     *  <li>{@code a} cannot be (–∞, ∞).</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing {@code Rational}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param a an {@code Interval}
+     * @return {r|r∈{@code a}} //todo negation
+     */
     @Override
     public @NotNull Iterable<Rational> rationalsNotIn(@NotNull Interval a) {
         int scale = getScale();
