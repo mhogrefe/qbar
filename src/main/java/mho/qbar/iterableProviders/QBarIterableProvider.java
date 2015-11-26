@@ -2856,13 +2856,13 @@ public strictfp abstract class QBarIterableProvider {
                 Rational boundary = a.getLower().isPresent() ? a.getLower().get() : a.getUpper().get();
                 return filterInfinite(r -> !r.equals(boundary), rationalsIn(complement.get(0)));
             case 2:
-                Interval x = complement.get(0);
-                Interval y = complement.get(1);
+                Rational x = complement.get(0).getUpper().get();
+                Rational y = complement.get(1).getLower().get();
                 //noinspection RedundantCast
                 return mux(
                         (List<Iterable<Rational>>) Arrays.asList(
-                                filterInfinite(r -> !r.equals(x.getUpper().get()), rationalsIn(x)),
-                                filterInfinite(r -> !r.equals(y.getLower().get()), rationalsIn(y))
+                                filterInfinite(r -> !r.equals(x), rangeDown(x)),
+                                filterInfinite(r -> !r.equals(y), rangeUp(y))
                         )
                 );
             default: throw new IllegalStateException("unreachable");
