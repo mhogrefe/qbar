@@ -71,7 +71,7 @@ public class IntervalProperties {
             propertiesIntersection();
             propertiesDisjoint();
             propertiesMakeDisjoint();
-            propertiesComplement();
+//            propertiesComplement();
             propertiesMidpoint();
             propertiesSplit();
             propertiesBisect();

@@ -45,6 +45,8 @@ public class QBarRandomProviderProperties {
             propertiesRange_Rational_Rational();
             propertiesFinitelyBoundedIntervals();
             propertiesIntervals();
+            propertiesRationalsIn();
+            propertiesRationalsNotIn();
         }
         System.out.println("Done");
     }
@@ -341,6 +343,77 @@ public class QBarRandomProviderProperties {
                 rp.intervals();
                 fail(rp);
             } catch (IllegalStateException ignored) {}
+        }
+    }
+
+    private static void propertiesRationalsIn() {
+        initialize("rationalsIn()");
+        Iterable<Pair<QBarRandomProvider, Interval>> ps = P.pairs(
+                filterInfinite(
+                        s -> s.getScale() >= 4,
+                        P.qbarRandomProvidersDefaultSecondaryScale()
+                ),
+                P.intervals()
+        );
+        for (Pair<QBarRandomProvider, Interval> p : take(LIMIT, ps)) {
+            Iterable<Rational> rs = p.a.rationalsIn(p.b);
+            take(TINY_LIMIT, rs).forEach(Rational::validate);
+            simpleTest(p.a, rs, p.b::contains);
+        }
+
+        Iterable<Pair<QBarRandomProvider, Interval>> psFail = P.pairs(
+                filterInfinite(
+                        s -> s.getScale() < 4,
+                        P.qbarRandomProvidersDefaultSecondaryScale()
+                ),
+                P.intervals()
+        );
+        for (Pair<QBarRandomProvider, Interval> p : take(LIMIT, psFail)) {
+            try {
+                p.a.rationalsIn(p.b);
+                fail(p);
+            } catch (IllegalStateException ignored) {}
+        }
+    }
+
+    private static void propertiesRationalsNotIn() {
+        initialize("rationalsNotIn()");
+        Iterable<Pair<QBarRandomProvider, Interval>> ps = P.pairs(
+                filterInfinite(
+                        s -> s.getScale() >= 4,
+                        P.qbarRandomProvidersDefaultSecondaryScale()
+                ),
+                filterInfinite(a -> !a.equals(Interval.ALL), P.intervals())
+        );
+        for (Pair<QBarRandomProvider, Interval> p : take(LIMIT, ps)) {
+            Iterable<Rational> rs = p.a.rationalsNotIn(p.b);
+            take(TINY_LIMIT, rs).forEach(Rational::validate);
+            simpleTest(p.a, rs, r -> !p.b.contains(r));
+        }
+
+        Iterable<Pair<QBarRandomProvider, Interval>> psFail = P.pairs(
+                filterInfinite(
+                        s -> s.getScale() < 4,
+                        P.qbarRandomProvidersDefaultSecondaryScale()
+                ),
+                filterInfinite(a -> !a.equals(Interval.ALL), P.intervals())
+        );
+        for (Pair<QBarRandomProvider, Interval> p : take(LIMIT, psFail)) {
+            try {
+                p.a.rationalsNotIn(p.b);
+                fail(p);
+            } catch (IllegalStateException ignored) {}
+        }
+
+        Iterable<QBarRandomProvider> rps = filterInfinite(
+                s -> s.getScale() >= 4,
+                P.qbarRandomProvidersDefaultSecondaryScale()
+        );
+        for (QBarRandomProvider rp : take(LIMIT, rps)) {
+            try {
+                rp.rationalsNotIn(Interval.ALL);
+                fail(rp);
+            } catch (IllegalArgumentException ignored) {}
         }
     }
 }

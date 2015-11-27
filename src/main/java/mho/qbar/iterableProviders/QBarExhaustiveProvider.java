@@ -191,7 +191,7 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
      * Length is 0 if {@code a} is (–∞, ∞), infinite otherwise
      *
      * @param a an {@code Interval}
-     * @return {r|r∈{@code a}} //todo negation
+     * @return {r|r∉{@code a}}
      */
     @Override
     public @NotNull Iterable<Rational> rationalsNotIn(@NotNull Interval a) {

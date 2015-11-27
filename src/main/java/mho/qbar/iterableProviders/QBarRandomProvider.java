@@ -465,10 +465,35 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
     }
 
     /**
-     * An {@code Iterable} that generates all {@code Rational}s not contained in a given {@code Interval}. Does not
-     * support removal
+     * An {@code Iterable} that generates all {@code Rational}s contained in a given {@code Interval}. Does not support
+     * removal.
      *
      * <ul>
+     *  <li>{@code this} must have a {@code scale} of at least 4.</li>
+     *  <li>{@code a} cannot be null.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing {@code Rational}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param a an {@code Interval}
+     * @return {r|r∈{@code a}}
+     */
+    @Override
+    public @NotNull Iterable<Rational> rationalsIn(@NotNull Interval a) {
+        int scale = getScale();
+        if (scale < 4) {
+            throw new IllegalStateException("this must have a scale of at least 4. Invalid scale: " + scale);
+        }
+        return super.rationalsIn(a);
+    }
+
+    /**
+     * An {@code Iterable} that generates all {@code Rational}s not contained in a given {@code Interval}. Does not
+     * support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a {@code scale} of at least 4.</li>
      *  <li>{@code a} cannot be (–∞, ∞).</li>
      *  <li>The result is an infinite, non-removable {@code Iterable} containing {@code Rational}s.</li>
      * </ul>
@@ -476,7 +501,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
      * Length is infinite
      *
      * @param a an {@code Interval}
-     * @return {r|r∈{@code a}} //todo negation
+     * @return {r|r∉{@code a}}
      */
     @Override
     public @NotNull Iterable<Rational> rationalsNotIn(@NotNull Interval a) {
