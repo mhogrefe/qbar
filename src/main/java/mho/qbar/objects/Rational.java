@@ -104,7 +104,7 @@ public final class Rational implements Comparable<Rational> {
     public static final @NotNull Rational LARGEST_DOUBLE = ofExact(Double.MAX_VALUE).get();
 
     /**
-     * an {@code Iterable} that contains every harmonic number. Does not support removal
+     * An {@code Iterable} that contains every harmonic number. Does not support removal.
      *
      * Length is infinite
      */

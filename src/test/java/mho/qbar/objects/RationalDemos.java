@@ -29,7 +29,6 @@ public class RationalDemos {
     private static final int SMALL_LIMIT = 1000;
     private static final int MEDIUM_LIMIT = 3000;
     private static int LIMIT;
-
     private static QBarIterableProvider P;
 
     private static void initialize() {
