@@ -2,6 +2,7 @@ package mho.qbar.objects;
 
 import mho.wheels.io.Readers;
 import mho.wheels.iterables.IterableUtils;
+import mho.wheels.math.BinaryFraction;
 import mho.wheels.numberUtils.FloatingPointUtils;
 import mho.wheels.numberUtils.IntegerUtils;
 import mho.wheels.structures.Pair;
@@ -193,6 +194,23 @@ public class RationalTest {
         aeq(of(-23), "-23");
         assertTrue(of(0) == ZERO);
         assertTrue(of(1) == ONE);
+    }
+
+    private static void of_BinaryFraction_helper(@NotNull String input, @NotNull String output) {
+        aeq(of(BinaryFraction.read(input).get()), output);
+    }
+
+    @Test
+    public void testOf_BinaryFraction() {
+        of_BinaryFraction_helper("0", "0");
+        of_BinaryFraction_helper("1", "1");
+        of_BinaryFraction_helper("11", "11");
+        of_BinaryFraction_helper("5 >> 20", "5/1048576");
+        of_BinaryFraction_helper("5 << 20", "5242880");
+        of_BinaryFraction_helper("-1", "-1");
+        of_BinaryFraction_helper("-11", "-11");
+        of_BinaryFraction_helper("-5 >> 20", "-5/1048576");
+        of_BinaryFraction_helper("-5 << 20", "-5242880");
     }
 
     private static void of_float_helper(float f, @NotNull String output) {

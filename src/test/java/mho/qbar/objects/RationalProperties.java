@@ -5,6 +5,7 @@ import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.iterableProviders.QBarRandomProvider;
 import mho.qbar.testing.QBarTesting;
 import mho.wheels.io.Readers;
+import mho.wheels.math.BinaryFraction;
 import mho.wheels.math.MathUtils;
 import mho.wheels.numberUtils.FloatingPointUtils;
 import mho.wheels.numberUtils.IntegerUtils;
@@ -61,6 +62,7 @@ public class RationalProperties {
             propertiesOf_BigInteger();
             propertiesOf_long();
             propertiesOf_int();
+            propertiesOf_BinaryFraction();
             propertiesOf_float();
             propertiesOf_double();
             propertiesOfExact_float();
@@ -259,6 +261,16 @@ public class RationalProperties {
             assertEquals(i, r.getDenominator(), BigInteger.ONE);
             assertTrue(i, ge(r.getNumerator(), BigInteger.valueOf(Integer.MIN_VALUE)));
             assertTrue(i, le(r.getNumerator(), BigInteger.valueOf(Integer.MAX_VALUE)));
+        }
+    }
+
+    private static void propertiesOf_BinaryFraction() {
+        initialize("of(BinaryFraction)");
+        for (BinaryFraction bf : take(LIMIT, P.binaryFractions())) {
+            Rational r = of(bf);
+            r.validate();
+            assertEquals(bf, of(bf.getMantissa()).multiply(ONE.shiftLeft(bf.getExponent())), r);
+            assertTrue(bf, IntegerUtils.isPowerOfTwo(r.getDenominator()));
         }
     }
 

@@ -4,6 +4,7 @@ import mho.qbar.iterableProviders.QBarExhaustiveProvider;
 import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.iterableProviders.QBarRandomProvider;
 import mho.wheels.iterables.IterableUtils;
+import mho.wheels.math.BinaryFraction;
 import mho.wheels.numberUtils.FloatingPointUtils;
 import mho.wheels.numberUtils.IntegerUtils;
 import mho.wheels.ordering.Ordering;
@@ -94,6 +95,13 @@ public class RationalDemos {
         initialize();
         for (int i : take(LIMIT, P.integers())) {
             System.out.println("of(" + i + ") = " + of(i));
+        }
+    }
+
+    private static void demoOf_BinaryFraction() {
+        initialize();
+        for (BinaryFraction bf : take(LIMIT, P.binaryFractions())) {
+            System.out.println("of(" + bf + ") = " + of(bf));
         }
     }
 

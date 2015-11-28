@@ -2,6 +2,7 @@ package mho.qbar.objects;
 
 import mho.wheels.io.Readers;
 import mho.wheels.iterables.NoRemoveIterator;
+import mho.wheels.math.BinaryFraction;
 import mho.wheels.math.MathUtils;
 import mho.wheels.numberUtils.BigDecimalUtils;
 import mho.wheels.numberUtils.IntegerUtils;
@@ -292,6 +293,24 @@ public final class Rational implements Comparable<Rational> {
         if (n == 0) return ZERO;
         if (n == 1) return ONE;
         return new Rational(BigInteger.valueOf(n), BigInteger.ONE);
+    }
+
+    /**
+     * Creates a {@code Rational} from a {@code BinaryFraction}.
+     *
+     * <ul>
+     *  <li>{@code bf} cannot be null.</li>
+     *  <li>The result is a {@code Rational} whose denominator is a power of 2.</li>
+     * </ul>
+     *
+     * @param bf the {@code BinaryFraction}
+     * @return the {@code Rational} corresponding to {@code bf}
+     */
+    public static @NotNull Rational of(@NotNull BinaryFraction bf) {
+        int exponent = bf.getExponent();
+        return exponent >= 0 ?
+                of(bf.bigIntegerValueExact()) :
+                of(bf.getMantissa(), BigInteger.ONE.shiftLeft(-exponent));
     }
 
     /**
