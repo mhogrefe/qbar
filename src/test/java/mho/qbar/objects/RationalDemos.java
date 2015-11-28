@@ -57,27 +57,21 @@ public class RationalDemos {
 
     private static void demoOf_BigInteger_BigInteger() {
         initialize();
-        Iterable<Pair<BigInteger, BigInteger>> ps = filter(
-                p -> !p.b.equals(BigInteger.ZERO),
-                P.pairs(P.bigIntegers())
-        );
-        for (Pair<BigInteger, BigInteger> p : take(LIMIT, ps)) {
+        for (Pair<BigInteger, BigInteger> p : take(LIMIT, P.pairs(P.bigIntegers(), P.nonzeroBigIntegers()))) {
             System.out.println("of(" + p.a + ", " + p.b + ") = " + of(p.a, p.b));
         }
     }
 
     private static void demoOf_long_long() {
         initialize();
-        Iterable<Pair<Long, Long>> ps = filter(p -> p.b != 0, P.pairs(P.longs()));
-        for (Pair<Long, Long> p : take(LIMIT, ps)) {
+        for (Pair<Long, Long> p : take(LIMIT, P.pairs(P.longs(), P.nonzeroLongs()))) {
             System.out.println("of(" + p.a + ", " + p.b + ") = " + of(p.a, p.b));
         }
     }
 
     private static void demoOf_int_int() {
         initialize();
-        Iterable<Pair<Integer, Integer>> ps = filter(p -> p.b != 0, P.pairs(P.integers()));
-        for (Pair<Integer, Integer> p : take(LIMIT, ps)) {
+        for (Pair<Integer, Integer> p : take(LIMIT, P.pairs(P.integers(), P.nonzeroIntegers()))) {
             System.out.println("of(" + p.a + ", " + p.b + ") = " + of(p.a, p.b));
         }
     }

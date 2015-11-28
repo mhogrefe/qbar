@@ -180,8 +180,9 @@ public final class Rational implements Comparable<Rational> {
      * @return the {@code Rational} corresponding to {@code numerator}/{@code denominator}
      */
     public static @NotNull Rational of(@NotNull BigInteger numerator, @NotNull BigInteger denominator) {
-        if (denominator.equals(BigInteger.ZERO))
-            throw new ArithmeticException("division by zero");
+        if (denominator.equals(BigInteger.ZERO)) {
+            throw new ArithmeticException("denominator cannot be equal to 0.");
+        }
         if (numerator.equals(BigInteger.ZERO)) return ZERO;
         if (numerator.equals(denominator)) return ONE;
         BigInteger gcd = numerator.gcd(denominator);
@@ -205,8 +206,9 @@ public final class Rational implements Comparable<Rational> {
      * @return the {@code Rational} corresponding to {@code numerator}/{@code denominator}
      */
     public static @NotNull Rational of(long numerator, long denominator) {
-        if (denominator == 0)
-            throw new ArithmeticException("division by zero");
+        if (denominator == 0) {
+            throw new ArithmeticException("denominator cannot be equal to 0.");
+        }
         if (numerator == 0) return ZERO;
         if (numerator == denominator) return ONE;
         long gcd = MathUtils.gcd(numerator, denominator);
@@ -230,8 +232,9 @@ public final class Rational implements Comparable<Rational> {
      * @return the {@code Rational} corresponding to {@code numerator}/{@code denominator}
      */
     public static @NotNull Rational of(int numerator, int denominator) {
-        if (denominator == 0)
-            throw new ArithmeticException("division by zero");
+        if (denominator == 0) {
+            throw new ArithmeticException("denominator cannot be equal to 0.");
+        }
         if (numerator == 0) return ZERO;
         if (numerator == denominator) return ONE;
         int gcd = MathUtils.gcd(numerator, denominator);

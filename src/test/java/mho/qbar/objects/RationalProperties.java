@@ -173,11 +173,7 @@ public class RationalProperties {
 
     private static void propertiesOf_BigInteger_BigInteger() {
         initialize("of(BigInteger, BigInteger)");
-        Iterable<Pair<BigInteger, BigInteger>> ps = filter(
-                p -> !p.b.equals(BigInteger.ZERO),
-                P.pairs(P.bigIntegers())
-        );
-        for (Pair<BigInteger, BigInteger> p : take(LIMIT, ps)) {
+        for (Pair<BigInteger, BigInteger> p : take(LIMIT, P.pairs(P.bigIntegers(), P.nonzeroBigIntegers()))) {
             Rational r = of(p.a, p.b);
             r.validate();
             assertEquals(p, of(p.a).divide(p.b), r);
@@ -195,8 +191,7 @@ public class RationalProperties {
         initialize("of(long, long)");
         BigInteger minLong = BigInteger.valueOf(Long.MIN_VALUE);
         BigInteger maxLong = BigInteger.valueOf(Long.MAX_VALUE);
-        Iterable<Pair<Long, Long>> ps = filter(p -> p.b != 0, P.pairs(P.longs()));
-        for (Pair<Long, Long> p : take(LIMIT, ps)) {
+        for (Pair<Long, Long> p : take(LIMIT, P.pairs(P.longs(), P.nonzeroLongs()))) {
             Rational r = of(p.a, p.b);
             r.validate();
             assertEquals(p, of(p.a).divide(BigInteger.valueOf(p.b)), r);
@@ -218,8 +213,7 @@ public class RationalProperties {
         initialize("of(int, int)");
         BigInteger minInt = BigInteger.valueOf(Integer.MIN_VALUE);
         BigInteger maxInt = BigInteger.valueOf(Integer.MAX_VALUE);
-        Iterable<Pair<Integer, Integer>> ps = filter(p -> p.b != 0, P.pairs(P.integers()));
-        for (Pair<Integer, Integer> p : take(LIMIT, ps)) {
+        for (Pair<Integer, Integer> p : take(LIMIT, P.pairs(P.integers(), P.nonzeroIntegers()))) {
             Rational r = of(p.a, p.b);
             r.validate();
             assertEquals(p, of(p.a).divide(p.b), r);
@@ -248,27 +242,23 @@ public class RationalProperties {
 
     private static void propertiesOf_long() {
         initialize("of(long)");
-        BigInteger minLong = BigInteger.valueOf(Long.MIN_VALUE);
-        BigInteger maxLong = BigInteger.valueOf(Long.MAX_VALUE);
         for (long l : take(LIMIT, P.longs())) {
             Rational r = of(l);
             r.validate();
             assertEquals(l, r.getDenominator(), BigInteger.ONE);
-            assertTrue(l, ge(r.getNumerator(), minLong));
-            assertTrue(l, le(r.getNumerator(), maxLong));
+            assertTrue(l, ge(r.getNumerator(), BigInteger.valueOf(Long.MIN_VALUE)));
+            assertTrue(l, le(r.getNumerator(), BigInteger.valueOf(Long.MAX_VALUE)));
         }
     }
 
     private static void propertiesOf_int() {
         initialize("of(int)");
-        BigInteger minInt = BigInteger.valueOf(Integer.MIN_VALUE);
-        BigInteger maxInt = BigInteger.valueOf(Integer.MAX_VALUE);
         for (int i : take(LIMIT, P.integers())) {
             Rational r = of(i);
             r.validate();
             assertEquals(i, r.getDenominator(), BigInteger.ONE);
-            assertTrue(i, ge(r.getNumerator(), minInt));
-            assertTrue(i, le(r.getNumerator(), maxInt));
+            assertTrue(i, ge(r.getNumerator(), BigInteger.valueOf(Integer.MIN_VALUE)));
+            assertTrue(i, le(r.getNumerator(), BigInteger.valueOf(Integer.MAX_VALUE)));
         }
     }
 
