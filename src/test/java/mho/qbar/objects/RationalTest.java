@@ -741,557 +741,30 @@ public class RationalTest {
         binaryFractionValueExact_fail_helper("-1/10");
     }
 
-    @Test
-    public void testHasTerminatingBaseExpansion() {
-        assertTrue(ZERO.hasTerminatingBaseExpansion(IntegerUtils.TWO));
-        assertTrue(ONE.hasTerminatingBaseExpansion(IntegerUtils.TWO));
-        assertTrue(read("60").get().hasTerminatingBaseExpansion(IntegerUtils.TWO));
-        assertTrue(read("1/2").get().hasTerminatingBaseExpansion(IntegerUtils.TWO));
-        assertFalse(read("1/5").get().hasTerminatingBaseExpansion(IntegerUtils.TWO));
-        assertFalse(read("-7/100").get().hasTerminatingBaseExpansion(IntegerUtils.TWO));
-        assertFalse(read("-3/640").get().hasTerminatingBaseExpansion(IntegerUtils.TWO));
-        assertFalse(read("1/3").get().hasTerminatingBaseExpansion(IntegerUtils.TWO));
-        assertFalse(read("-1/15").get().hasTerminatingBaseExpansion(IntegerUtils.TWO));
-        assertFalse(read("-2/9").get().hasTerminatingBaseExpansion(IntegerUtils.TWO));
-        assertTrue(ZERO.hasTerminatingBaseExpansion(BigInteger.valueOf(3)));
-        assertTrue(ONE.hasTerminatingBaseExpansion(BigInteger.valueOf(3)));
-        assertTrue(read("60").get().hasTerminatingBaseExpansion(BigInteger.valueOf(3)));
-        assertFalse(read("1/2").get().hasTerminatingBaseExpansion(BigInteger.valueOf(3)));
-        assertFalse(read("1/5").get().hasTerminatingBaseExpansion(BigInteger.valueOf(3)));
-        assertFalse(read("-7/100").get().hasTerminatingBaseExpansion(BigInteger.valueOf(3)));
-        assertFalse(read("-3/640").get().hasTerminatingBaseExpansion(BigInteger.valueOf(3)));
-        assertTrue(read("1/3").get().hasTerminatingBaseExpansion(BigInteger.valueOf(3)));
-        assertFalse(read("-1/15").get().hasTerminatingBaseExpansion(BigInteger.valueOf(3)));
-        assertTrue(read("-2/9").get().hasTerminatingBaseExpansion(BigInteger.valueOf(3)));
-        assertTrue(ZERO.hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
-        assertTrue(ONE.hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
-        assertTrue(read("60").get().hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
-        assertTrue(read("1/2").get().hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
-        assertFalse(read("1/5").get().hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
-        assertFalse(read("-7/100").get().hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
-        assertFalse(read("-3/640").get().hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
-        assertFalse(read("1/3").get().hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
-        assertFalse(read("-1/15").get().hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
-        assertFalse(read("-2/9").get().hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
-        assertTrue(ZERO.hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
-        assertTrue(ONE.hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
-        assertTrue(read("60").get().hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
-        assertTrue(read("1/2").get().hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
-        assertFalse(read("1/5").get().hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
-        assertFalse(read("-7/100").get().hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
-        assertFalse(read("-3/640").get().hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
-        assertFalse(read("1/3").get().hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
-        assertFalse(read("-1/15").get().hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
-        assertFalse(read("-2/9").get().hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
-        assertTrue(ZERO.hasTerminatingBaseExpansion(BigInteger.valueOf(16)));
-        assertTrue(ONE.hasTerminatingBaseExpansion(BigInteger.valueOf(16)));
-        assertTrue(read("60").get().hasTerminatingBaseExpansion(BigInteger.valueOf(16)));
-        assertTrue(read("1/2").get().hasTerminatingBaseExpansion(BigInteger.valueOf(16)));
-        assertFalse(read("1/5").get().hasTerminatingBaseExpansion(BigInteger.valueOf(16)));
-        assertFalse(read("-7/100").get().hasTerminatingBaseExpansion(BigInteger.valueOf(16)));
-        assertFalse(read("-3/640").get().hasTerminatingBaseExpansion(BigInteger.valueOf(16)));
-        assertFalse(read("1/3").get().hasTerminatingBaseExpansion(BigInteger.valueOf(16)));
-        assertFalse(read("-1/15").get().hasTerminatingBaseExpansion(BigInteger.valueOf(16)));
-        assertFalse(read("-2/9").get().hasTerminatingBaseExpansion(BigInteger.valueOf(16)));
-        assertTrue(ZERO.hasTerminatingBaseExpansion(BigInteger.valueOf(83)));
-        assertTrue(ONE.hasTerminatingBaseExpansion(BigInteger.valueOf(83)));
-        assertTrue(read("60").get().hasTerminatingBaseExpansion(BigInteger.valueOf(83)));
-        assertFalse(read("1/2").get().hasTerminatingBaseExpansion(BigInteger.valueOf(83)));
-        assertFalse(read("1/5").get().hasTerminatingBaseExpansion(BigInteger.valueOf(83)));
-        assertFalse(read("-7/100").get().hasTerminatingBaseExpansion(BigInteger.valueOf(83)));
-        assertFalse(read("-3/640").get().hasTerminatingBaseExpansion(BigInteger.valueOf(83)));
-        assertFalse(read("1/3").get().hasTerminatingBaseExpansion(BigInteger.valueOf(83)));
-        assertFalse(read("-1/15").get().hasTerminatingBaseExpansion(BigInteger.valueOf(83)));
-        assertFalse(read("-2/9").get().hasTerminatingBaseExpansion(BigInteger.valueOf(83)));
-        assertTrue(ZERO.hasTerminatingBaseExpansion(BigInteger.valueOf(100)));
-        assertTrue(ONE.hasTerminatingBaseExpansion(BigInteger.valueOf(100)));
-        assertTrue(read("60").get().hasTerminatingBaseExpansion(BigInteger.valueOf(100)));
-        assertTrue(read("1/2").get().hasTerminatingBaseExpansion(BigInteger.valueOf(100)));
-        assertTrue(read("1/5").get().hasTerminatingBaseExpansion(BigInteger.valueOf(100)));
-        assertTrue(read("-7/100").get().hasTerminatingBaseExpansion(BigInteger.valueOf(100)));
-        assertTrue(read("-3/640").get().hasTerminatingBaseExpansion(BigInteger.valueOf(100)));
-        assertFalse(read("1/3").get().hasTerminatingBaseExpansion(BigInteger.valueOf(100)));
-        assertFalse(read("-1/15").get().hasTerminatingBaseExpansion(BigInteger.valueOf(100)));
-        assertFalse(read("-2/9").get().hasTerminatingBaseExpansion(BigInteger.valueOf(100)));
-        try {
-            read("1/2").get().hasTerminatingBaseExpansion(BigInteger.ONE);
-            fail();
-        } catch (IllegalArgumentException ignored) {}
-        try {
-            read("1/2").get().hasTerminatingBaseExpansion(BigInteger.ZERO);
-            fail();
-        } catch (IllegalArgumentException ignored) {}
-        try {
-            read("1/2").get().hasTerminatingBaseExpansion(IntegerUtils.NEGATIVE_ONE);
-            fail();
-        } catch (IllegalArgumentException ignored) {}
+    private static void binaryExponent_helper(@NotNull String input, int output) {
+        aeq(read(input).get().binaryExponent(), output);
     }
 
-    @Test
-    public void testBigDecimalValue_int_RoundingMode() {
-        aeq(ZERO.bigDecimalValue(0, RoundingMode.UNNECESSARY), "0");
-        aeq(ZERO.bigDecimalValue(0, RoundingMode.FLOOR), "0");
-        aeq(ZERO.bigDecimalValue(0, RoundingMode.CEILING), "0");
-        aeq(ZERO.bigDecimalValue(0, RoundingMode.DOWN), "0");
-        aeq(ZERO.bigDecimalValue(0, RoundingMode.UP), "0");
-        aeq(ZERO.bigDecimalValue(0, RoundingMode.HALF_DOWN), "0");
-        aeq(ZERO.bigDecimalValue(0, RoundingMode.HALF_UP), "0");
-        aeq(ZERO.bigDecimalValue(0, RoundingMode.HALF_EVEN), "0");
-        aeq(ZERO.bigDecimalValue(4, RoundingMode.UNNECESSARY), "0.000");
-        aeq(ZERO.bigDecimalValue(4, RoundingMode.FLOOR), "0.000");
-        aeq(ZERO.bigDecimalValue(4, RoundingMode.CEILING), "0.000");
-        aeq(ZERO.bigDecimalValue(4, RoundingMode.DOWN), "0.000");
-        aeq(ZERO.bigDecimalValue(4, RoundingMode.UP), "0.000");
-        aeq(ZERO.bigDecimalValue(4, RoundingMode.HALF_DOWN), "0.000");
-        aeq(ZERO.bigDecimalValue(4, RoundingMode.HALF_UP), "0.000");
-        aeq(ZERO.bigDecimalValue(4, RoundingMode.HALF_EVEN), "0.000");
-        aeq(ONE.bigDecimalValue(0, RoundingMode.UNNECESSARY), "1");
-        aeq(ONE.bigDecimalValue(0, RoundingMode.FLOOR), "1");
-        aeq(ONE.bigDecimalValue(0, RoundingMode.CEILING), "1");
-        aeq(ONE.bigDecimalValue(0, RoundingMode.DOWN), "1");
-        aeq(ONE.bigDecimalValue(0, RoundingMode.UP), "1");
-        aeq(ONE.bigDecimalValue(0, RoundingMode.HALF_DOWN), "1");
-        aeq(ONE.bigDecimalValue(0, RoundingMode.HALF_UP), "1");
-        aeq(ONE.bigDecimalValue(0, RoundingMode.HALF_EVEN), "1");
-        aeq(ONE.bigDecimalValue(4, RoundingMode.UNNECESSARY), "1.000");
-        aeq(ONE.bigDecimalValue(4, RoundingMode.FLOOR), "1.000");
-        aeq(ONE.bigDecimalValue(4, RoundingMode.CEILING), "1.000");
-        aeq(ONE.bigDecimalValue(4, RoundingMode.DOWN), "1.000");
-        aeq(ONE.bigDecimalValue(4, RoundingMode.UP), "1.000");
-        aeq(ONE.bigDecimalValue(4, RoundingMode.HALF_DOWN), "1.000");
-        aeq(ONE.bigDecimalValue(4, RoundingMode.HALF_UP), "1.000");
-        aeq(ONE.bigDecimalValue(4, RoundingMode.HALF_EVEN), "1.000");
-        aeq(read("1/2").get().bigDecimalValue(0, RoundingMode.UNNECESSARY), "0.5");
-        aeq(read("1/2").get().bigDecimalValue(0, RoundingMode.FLOOR), "0.5");
-        aeq(read("1/2").get().bigDecimalValue(0, RoundingMode.CEILING), "0.5");
-        aeq(read("1/2").get().bigDecimalValue(0, RoundingMode.DOWN), "0.5");
-        aeq(read("1/2").get().bigDecimalValue(0, RoundingMode.UP), "0.5");
-        aeq(read("1/2").get().bigDecimalValue(0, RoundingMode.HALF_DOWN), "0.5");
-        aeq(read("1/2").get().bigDecimalValue(0, RoundingMode.HALF_UP), "0.5");
-        aeq(read("1/2").get().bigDecimalValue(0, RoundingMode.HALF_EVEN), "0.5");
-        aeq(read("1/2").get().bigDecimalValue(1, RoundingMode.UNNECESSARY), "0.5");
-        aeq(read("1/2").get().bigDecimalValue(1, RoundingMode.FLOOR), "0.5");
-        aeq(read("1/2").get().bigDecimalValue(1, RoundingMode.CEILING), "0.5");
-        aeq(read("1/2").get().bigDecimalValue(1, RoundingMode.DOWN), "0.5");
-        aeq(read("1/2").get().bigDecimalValue(1, RoundingMode.UP), "0.5");
-        aeq(read("1/2").get().bigDecimalValue(1, RoundingMode.HALF_DOWN), "0.5");
-        aeq(read("1/2").get().bigDecimalValue(1, RoundingMode.HALF_UP), "0.5");
-        aeq(read("1/2").get().bigDecimalValue(1, RoundingMode.HALF_EVEN), "0.5");
-        aeq(read("1/2").get().bigDecimalValue(4, RoundingMode.UNNECESSARY), "0.5000");
-        aeq(read("1/2").get().bigDecimalValue(4, RoundingMode.FLOOR), "0.5000");
-        aeq(read("1/2").get().bigDecimalValue(4, RoundingMode.CEILING), "0.5000");
-        aeq(read("1/2").get().bigDecimalValue(4, RoundingMode.DOWN), "0.5000");
-        aeq(read("1/2").get().bigDecimalValue(4, RoundingMode.UP), "0.5000");
-        aeq(read("1/2").get().bigDecimalValue(4, RoundingMode.HALF_DOWN), "0.5000");
-        aeq(read("1/2").get().bigDecimalValue(4, RoundingMode.HALF_UP), "0.5000");
-        aeq(read("1/2").get().bigDecimalValue(4, RoundingMode.HALF_EVEN), "0.5000");
-        aeq(read("1/64").get().bigDecimalValue(0, RoundingMode.UNNECESSARY), "0.015625");
-        aeq(read("1/64").get().bigDecimalValue(0, RoundingMode.FLOOR), "0.015625");
-        aeq(read("1/64").get().bigDecimalValue(0, RoundingMode.CEILING), "0.015625");
-        aeq(read("1/64").get().bigDecimalValue(0, RoundingMode.DOWN), "0.015625");
-        aeq(read("1/64").get().bigDecimalValue(0, RoundingMode.UP), "0.015625");
-        aeq(read("1/64").get().bigDecimalValue(0, RoundingMode.HALF_DOWN), "0.015625");
-        aeq(read("1/64").get().bigDecimalValue(0, RoundingMode.HALF_UP), "0.015625");
-        aeq(read("1/64").get().bigDecimalValue(0, RoundingMode.HALF_EVEN), "0.015625");
+    private static void binaryExponent_fail_helper(@NotNull String input) {
         try {
-            read("1/64").get().bigDecimalValue(1, RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(read("1/64").get().bigDecimalValue(1, RoundingMode.FLOOR), "0.01");
-        aeq(read("1/64").get().bigDecimalValue(1, RoundingMode.CEILING), "0.02");
-        aeq(read("1/64").get().bigDecimalValue(1, RoundingMode.DOWN), "0.01");
-        aeq(read("1/64").get().bigDecimalValue(1, RoundingMode.UP), "0.02");
-        aeq(read("1/64").get().bigDecimalValue(1, RoundingMode.HALF_DOWN), "0.02");
-        aeq(read("1/64").get().bigDecimalValue(1, RoundingMode.HALF_UP), "0.02");
-        aeq(read("1/64").get().bigDecimalValue(1, RoundingMode.HALF_EVEN), "0.02");
-        try {
-            read("1/64").get().bigDecimalValue(2, RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(read("1/64").get().bigDecimalValue(2, RoundingMode.FLOOR), "0.015");
-        aeq(read("1/64").get().bigDecimalValue(2, RoundingMode.CEILING), "0.016");
-        aeq(read("1/64").get().bigDecimalValue(2, RoundingMode.DOWN), "0.015");
-        aeq(read("1/64").get().bigDecimalValue(2, RoundingMode.UP), "0.016");
-        aeq(read("1/64").get().bigDecimalValue(2, RoundingMode.HALF_DOWN), "0.016");
-        aeq(read("1/64").get().bigDecimalValue(2, RoundingMode.HALF_UP), "0.016");
-        aeq(read("1/64").get().bigDecimalValue(2, RoundingMode.HALF_EVEN), "0.016");
-        try {
-            read("1/64").get().bigDecimalValue(3, RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(read("1/64").get().bigDecimalValue(3, RoundingMode.FLOOR), "0.0156");
-        aeq(read("1/64").get().bigDecimalValue(3, RoundingMode.CEILING), "0.0157");
-        aeq(read("1/64").get().bigDecimalValue(3, RoundingMode.DOWN), "0.0156");
-        aeq(read("1/64").get().bigDecimalValue(3, RoundingMode.UP), "0.0157");
-        aeq(read("1/64").get().bigDecimalValue(3, RoundingMode.HALF_DOWN), "0.0156");
-        aeq(read("1/64").get().bigDecimalValue(3, RoundingMode.HALF_UP), "0.0156");
-        aeq(read("1/64").get().bigDecimalValue(3, RoundingMode.HALF_EVEN), "0.0156");
-        try {
-            read("1/64").get().bigDecimalValue(4, RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(read("1/64").get().bigDecimalValue(4, RoundingMode.FLOOR), "0.01562");
-        aeq(read("1/64").get().bigDecimalValue(4, RoundingMode.CEILING), "0.01563");
-        aeq(read("1/64").get().bigDecimalValue(4, RoundingMode.DOWN), "0.01562");
-        aeq(read("1/64").get().bigDecimalValue(4, RoundingMode.UP), "0.01563");
-        aeq(read("1/64").get().bigDecimalValue(4, RoundingMode.HALF_DOWN), "0.01562");
-        aeq(read("1/64").get().bigDecimalValue(4, RoundingMode.HALF_UP), "0.01563");
-        aeq(read("1/64").get().bigDecimalValue(4, RoundingMode.HALF_EVEN), "0.01562");
-        aeq(read("1/64").get().bigDecimalValue(5, RoundingMode.UNNECESSARY), "0.015625");
-        aeq(read("1/64").get().bigDecimalValue(5, RoundingMode.FLOOR), "0.015625");
-        aeq(read("1/64").get().bigDecimalValue(5, RoundingMode.CEILING), "0.015625");
-        aeq(read("1/64").get().bigDecimalValue(5, RoundingMode.DOWN), "0.015625");
-        aeq(read("1/64").get().bigDecimalValue(5, RoundingMode.UP), "0.015625");
-        aeq(read("1/64").get().bigDecimalValue(5, RoundingMode.HALF_DOWN), "0.015625");
-        aeq(read("1/64").get().bigDecimalValue(5, RoundingMode.HALF_UP), "0.015625");
-        aeq(read("1/64").get().bigDecimalValue(5, RoundingMode.HALF_EVEN), "0.015625");
-        aeq(read("1/64").get().bigDecimalValue(6, RoundingMode.UNNECESSARY), "0.0156250");
-        aeq(read("1/64").get().bigDecimalValue(6, RoundingMode.FLOOR), "0.0156250");
-        aeq(read("1/64").get().bigDecimalValue(6, RoundingMode.CEILING), "0.0156250");
-        aeq(read("1/64").get().bigDecimalValue(6, RoundingMode.DOWN), "0.0156250");
-        aeq(read("1/64").get().bigDecimalValue(6, RoundingMode.UP), "0.0156250");
-        aeq(read("1/64").get().bigDecimalValue(6, RoundingMode.HALF_DOWN), "0.0156250");
-        aeq(read("1/64").get().bigDecimalValue(6, RoundingMode.HALF_UP), "0.0156250");
-        aeq(read("1/64").get().bigDecimalValue(6, RoundingMode.HALF_EVEN), "0.0156250");
-        try {
-            read("-1/3").get().bigDecimalValue(1, RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(read("-1/3").get().bigDecimalValue(1, RoundingMode.FLOOR), "-0.4");
-        aeq(read("-1/3").get().bigDecimalValue(1, RoundingMode.CEILING), "-0.3");
-        aeq(read("-1/3").get().bigDecimalValue(1, RoundingMode.DOWN), "-0.3");
-        aeq(read("-1/3").get().bigDecimalValue(1, RoundingMode.UP), "-0.4");
-        aeq(read("-1/3").get().bigDecimalValue(1, RoundingMode.HALF_DOWN), "-0.3");
-        aeq(read("-1/3").get().bigDecimalValue(1, RoundingMode.HALF_UP), "-0.3");
-        aeq(read("-1/3").get().bigDecimalValue(1, RoundingMode.HALF_EVEN), "-0.3");
-        try {
-            read("-1/3").get().bigDecimalValue(2, RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(read("-1/3").get().bigDecimalValue(2, RoundingMode.FLOOR), "-0.34");
-        aeq(read("-1/3").get().bigDecimalValue(2, RoundingMode.CEILING), "-0.33");
-        aeq(read("-1/3").get().bigDecimalValue(2, RoundingMode.DOWN), "-0.33");
-        aeq(read("-1/3").get().bigDecimalValue(2, RoundingMode.UP), "-0.34");
-        aeq(read("-1/3").get().bigDecimalValue(2, RoundingMode.HALF_DOWN), "-0.33");
-        aeq(read("-1/3").get().bigDecimalValue(2, RoundingMode.HALF_UP), "-0.33");
-        aeq(read("-1/3").get().bigDecimalValue(2, RoundingMode.HALF_EVEN), "-0.33");
-        try {
-            read("-1/3").get().bigDecimalValue(3, RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(read("-1/3").get().bigDecimalValue(3, RoundingMode.FLOOR), "-0.334");
-        aeq(read("-1/3").get().bigDecimalValue(3, RoundingMode.CEILING), "-0.333");
-        aeq(read("-1/3").get().bigDecimalValue(3, RoundingMode.DOWN), "-0.333");
-        aeq(read("-1/3").get().bigDecimalValue(3, RoundingMode.UP), "-0.334");
-        aeq(read("-1/3").get().bigDecimalValue(3, RoundingMode.HALF_DOWN), "-0.333");
-        aeq(read("-1/3").get().bigDecimalValue(3, RoundingMode.HALF_UP), "-0.333");
-        aeq(read("-1/3").get().bigDecimalValue(3, RoundingMode.HALF_EVEN), "-0.333");
-        try {
-            read("-1/3").get().bigDecimalValue(4, RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(read("-1/3").get().bigDecimalValue(4, RoundingMode.FLOOR), "-0.3334");
-        aeq(read("-1/3").get().bigDecimalValue(4, RoundingMode.CEILING), "-0.3333");
-        aeq(read("-1/3").get().bigDecimalValue(4, RoundingMode.DOWN), "-0.3333");
-        aeq(read("-1/3").get().bigDecimalValue(4, RoundingMode.UP), "-0.3334");
-        aeq(read("-1/3").get().bigDecimalValue(4, RoundingMode.HALF_DOWN), "-0.3333");
-        aeq(read("-1/3").get().bigDecimalValue(4, RoundingMode.HALF_UP), "-0.3333");
-        aeq(read("-1/3").get().bigDecimalValue(4, RoundingMode.HALF_EVEN), "-0.3333");
-        aeq(read("6789").get().bigDecimalValue(0, RoundingMode.FLOOR), "6789");
-        aeq(read("6789").get().bigDecimalValue(0, RoundingMode.CEILING), "6789");
-        aeq(read("6789").get().bigDecimalValue(0, RoundingMode.DOWN), "6789");
-        aeq(read("6789").get().bigDecimalValue(0, RoundingMode.UP), "6789");
-        aeq(read("6789").get().bigDecimalValue(0, RoundingMode.HALF_DOWN), "6789");
-        aeq(read("6789").get().bigDecimalValue(0, RoundingMode.HALF_UP), "6789");
-        aeq(read("6789").get().bigDecimalValue(0, RoundingMode.HALF_EVEN), "6789");
-        try {
-            read("6789").get().bigDecimalValue(1, RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(read("6789").get().bigDecimalValue(1, RoundingMode.FLOOR), "6E+3");
-        aeq(read("6789").get().bigDecimalValue(1, RoundingMode.CEILING), "7E+3");
-        aeq(read("6789").get().bigDecimalValue(1, RoundingMode.DOWN), "6E+3");
-        aeq(read("6789").get().bigDecimalValue(1, RoundingMode.UP), "7E+3");
-        aeq(read("6789").get().bigDecimalValue(1, RoundingMode.HALF_DOWN), "7E+3");
-        aeq(read("6789").get().bigDecimalValue(1, RoundingMode.HALF_UP), "7E+3");
-        aeq(read("6789").get().bigDecimalValue(1, RoundingMode.HALF_EVEN), "7E+3");
-        try {
-            read("6789").get().bigDecimalValue(2, RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(read("6789").get().bigDecimalValue(2, RoundingMode.FLOOR), "6.7E+3");
-        aeq(read("6789").get().bigDecimalValue(2, RoundingMode.CEILING), "6.8E+3");
-        aeq(read("6789").get().bigDecimalValue(2, RoundingMode.DOWN), "6.7E+3");
-        aeq(read("6789").get().bigDecimalValue(2, RoundingMode.UP), "6.8E+3");
-        aeq(read("6789").get().bigDecimalValue(2, RoundingMode.HALF_DOWN), "6.8E+3");
-        aeq(read("6789").get().bigDecimalValue(2, RoundingMode.HALF_UP), "6.8E+3");
-        aeq(read("6789").get().bigDecimalValue(2, RoundingMode.HALF_EVEN), "6.8E+3");
-        try {
-            read("6789").get().bigDecimalValue(3, RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(read("6789").get().bigDecimalValue(3, RoundingMode.FLOOR), "6.78E+3");
-        aeq(read("6789").get().bigDecimalValue(3, RoundingMode.CEILING), "6.79E+3");
-        aeq(read("6789").get().bigDecimalValue(3, RoundingMode.DOWN), "6.78E+3");
-        aeq(read("6789").get().bigDecimalValue(3, RoundingMode.UP), "6.79E+3");
-        aeq(read("6789").get().bigDecimalValue(3, RoundingMode.HALF_DOWN), "6.79E+3");
-        aeq(read("6789").get().bigDecimalValue(3, RoundingMode.HALF_UP), "6.79E+3");
-        aeq(read("6789").get().bigDecimalValue(3, RoundingMode.HALF_EVEN), "6.79E+3");
-        aeq(read("6789").get().bigDecimalValue(4, RoundingMode.UNNECESSARY), "6789");
-        aeq(read("6789").get().bigDecimalValue(4, RoundingMode.FLOOR), "6789");
-        aeq(read("6789").get().bigDecimalValue(4, RoundingMode.CEILING), "6789");
-        aeq(read("6789").get().bigDecimalValue(4, RoundingMode.DOWN), "6789");
-        aeq(read("6789").get().bigDecimalValue(4, RoundingMode.UP), "6789");
-        aeq(read("6789").get().bigDecimalValue(4, RoundingMode.HALF_DOWN), "6789");
-        aeq(read("6789").get().bigDecimalValue(4, RoundingMode.HALF_UP), "6789");
-        aeq(read("6789").get().bigDecimalValue(4, RoundingMode.HALF_EVEN), "6789");
-        aeq(read("6789").get().bigDecimalValue(5, RoundingMode.UNNECESSARY), "6789.0");
-        aeq(read("6789").get().bigDecimalValue(5, RoundingMode.FLOOR), "6789.0");
-        aeq(read("6789").get().bigDecimalValue(5, RoundingMode.CEILING), "6789.0");
-        aeq(read("6789").get().bigDecimalValue(5, RoundingMode.DOWN), "6789.0");
-        aeq(read("6789").get().bigDecimalValue(5, RoundingMode.UP), "6789.0");
-        aeq(read("6789").get().bigDecimalValue(5, RoundingMode.HALF_DOWN), "6789.0");
-        aeq(read("6789").get().bigDecimalValue(5, RoundingMode.HALF_UP), "6789.0");
-        aeq(read("6789").get().bigDecimalValue(5, RoundingMode.HALF_EVEN), "6789.0");
-        aeq(read("19/20").get().bigDecimalValue(0, RoundingMode.FLOOR), "0.95");
-        aeq(read("19/20").get().bigDecimalValue(0, RoundingMode.CEILING), "0.95");
-        aeq(read("19/20").get().bigDecimalValue(0, RoundingMode.DOWN), "0.95");
-        aeq(read("19/20").get().bigDecimalValue(0, RoundingMode.UP), "0.95");
-        aeq(read("19/20").get().bigDecimalValue(0, RoundingMode.HALF_DOWN), "0.95");
-        aeq(read("19/20").get().bigDecimalValue(0, RoundingMode.HALF_UP), "0.95");
-        aeq(read("19/20").get().bigDecimalValue(0, RoundingMode.HALF_EVEN), "0.95");
-        try {
-            read("19/20").get().bigDecimalValue(1, RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(read("19/20").get().bigDecimalValue(1, RoundingMode.FLOOR), "0.9");
-        aeq(read("19/20").get().bigDecimalValue(1, RoundingMode.CEILING), "1");
-        aeq(read("19/20").get().bigDecimalValue(1, RoundingMode.DOWN), "0.9");
-        aeq(read("19/20").get().bigDecimalValue(1, RoundingMode.UP), "1");
-        aeq(read("19/20").get().bigDecimalValue(1, RoundingMode.HALF_DOWN), "0.9");
-        aeq(read("19/20").get().bigDecimalValue(1, RoundingMode.HALF_UP), "1");
-        aeq(read("19/20").get().bigDecimalValue(1, RoundingMode.HALF_EVEN), "1");
-        aeq(read("19/20").get().bigDecimalValue(2, RoundingMode.UNNECESSARY), "0.95");
-        aeq(read("19/20").get().bigDecimalValue(2, RoundingMode.FLOOR), "0.95");
-        aeq(read("19/20").get().bigDecimalValue(2, RoundingMode.CEILING), "0.95");
-        aeq(read("19/20").get().bigDecimalValue(2, RoundingMode.DOWN), "0.95");
-        aeq(read("19/20").get().bigDecimalValue(2, RoundingMode.UP), "0.95");
-        aeq(read("19/20").get().bigDecimalValue(2, RoundingMode.HALF_DOWN), "0.95");
-        aeq(read("19/20").get().bigDecimalValue(2, RoundingMode.HALF_UP), "0.95");
-        aeq(read("19/20").get().bigDecimalValue(2, RoundingMode.HALF_EVEN), "0.95");
-        aeq(read("19/20").get().bigDecimalValue(3, RoundingMode.UNNECESSARY), "0.950");
-        aeq(read("19/20").get().bigDecimalValue(3, RoundingMode.FLOOR), "0.950");
-        aeq(read("19/20").get().bigDecimalValue(3, RoundingMode.CEILING), "0.950");
-        aeq(read("19/20").get().bigDecimalValue(3, RoundingMode.DOWN), "0.950");
-        aeq(read("19/20").get().bigDecimalValue(3, RoundingMode.UP), "0.950");
-        aeq(read("19/20").get().bigDecimalValue(3, RoundingMode.HALF_DOWN), "0.950");
-        aeq(read("19/20").get().bigDecimalValue(3, RoundingMode.HALF_UP), "0.950");
-        aeq(read("19/20").get().bigDecimalValue(3, RoundingMode.HALF_EVEN), "0.950");
-        aeq(read("19/20").get().bigDecimalValue(4, RoundingMode.UNNECESSARY), "0.9500");
-        aeq(read("19/20").get().bigDecimalValue(4, RoundingMode.FLOOR), "0.9500");
-        aeq(read("19/20").get().bigDecimalValue(4, RoundingMode.CEILING), "0.9500");
-        aeq(read("19/20").get().bigDecimalValue(4, RoundingMode.DOWN), "0.9500");
-        aeq(read("19/20").get().bigDecimalValue(4, RoundingMode.UP), "0.9500");
-        aeq(read("19/20").get().bigDecimalValue(4, RoundingMode.HALF_DOWN), "0.9500");
-        aeq(read("19/20").get().bigDecimalValue(4, RoundingMode.HALF_UP), "0.9500");
-        aeq(read("19/20").get().bigDecimalValue(4, RoundingMode.HALF_EVEN), "0.9500");
-        aeq(read("19/20").get().bigDecimalValue(5, RoundingMode.UNNECESSARY), "0.95000");
-        aeq(read("19/20").get().bigDecimalValue(5, RoundingMode.FLOOR), "0.95000");
-        aeq(read("19/20").get().bigDecimalValue(5, RoundingMode.CEILING), "0.95000");
-        aeq(read("19/20").get().bigDecimalValue(5, RoundingMode.DOWN), "0.95000");
-        aeq(read("19/20").get().bigDecimalValue(5, RoundingMode.UP), "0.95000");
-        aeq(read("19/20").get().bigDecimalValue(5, RoundingMode.HALF_DOWN), "0.95000");
-        aeq(read("19/20").get().bigDecimalValue(5, RoundingMode.HALF_UP), "0.95000");
-        aeq(read("19/20").get().bigDecimalValue(5, RoundingMode.HALF_EVEN), "0.95000");
-        aeq(read("199/200").get().bigDecimalValue(0, RoundingMode.FLOOR), "0.995");
-        aeq(read("199/200").get().bigDecimalValue(0, RoundingMode.CEILING), "0.995");
-        aeq(read("199/200").get().bigDecimalValue(0, RoundingMode.DOWN), "0.995");
-        aeq(read("199/200").get().bigDecimalValue(0, RoundingMode.UP), "0.995");
-        aeq(read("199/200").get().bigDecimalValue(0, RoundingMode.HALF_DOWN), "0.995");
-        aeq(read("199/200").get().bigDecimalValue(0, RoundingMode.HALF_UP), "0.995");
-        aeq(read("199/200").get().bigDecimalValue(0, RoundingMode.HALF_EVEN), "0.995");
-        try {
-            read("199/200").get().bigDecimalValue(1, RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(read("199/200").get().bigDecimalValue(1, RoundingMode.FLOOR), "0.9");
-        aeq(read("199/200").get().bigDecimalValue(1, RoundingMode.CEILING), "1");
-        aeq(read("199/200").get().bigDecimalValue(1, RoundingMode.DOWN), "0.9");
-        aeq(read("199/200").get().bigDecimalValue(1, RoundingMode.UP), "1");
-        aeq(read("199/200").get().bigDecimalValue(1, RoundingMode.HALF_DOWN), "1");
-        aeq(read("199/200").get().bigDecimalValue(1, RoundingMode.HALF_UP), "1");
-        aeq(read("199/200").get().bigDecimalValue(1, RoundingMode.HALF_EVEN), "1");
-        try {
-            read("199/200").get().bigDecimalValue(2, RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(read("199/200").get().bigDecimalValue(2, RoundingMode.FLOOR), "0.99");
-        aeq(read("199/200").get().bigDecimalValue(2, RoundingMode.CEILING), "1.0");
-        aeq(read("199/200").get().bigDecimalValue(2, RoundingMode.DOWN), "0.99");
-        aeq(read("199/200").get().bigDecimalValue(2, RoundingMode.UP), "1.0");
-        aeq(read("199/200").get().bigDecimalValue(2, RoundingMode.HALF_DOWN), "0.99");
-        aeq(read("199/200").get().bigDecimalValue(2, RoundingMode.HALF_UP), "1.0");
-        aeq(read("199/200").get().bigDecimalValue(2, RoundingMode.HALF_EVEN), "1.0");
-        aeq(read("199/200").get().bigDecimalValue(3, RoundingMode.UNNECESSARY), "0.995");
-        aeq(read("199/200").get().bigDecimalValue(3, RoundingMode.FLOOR), "0.995");
-        aeq(read("199/200").get().bigDecimalValue(3, RoundingMode.CEILING), "0.995");
-        aeq(read("199/200").get().bigDecimalValue(3, RoundingMode.DOWN), "0.995");
-        aeq(read("199/200").get().bigDecimalValue(3, RoundingMode.UP), "0.995");
-        aeq(read("199/200").get().bigDecimalValue(3, RoundingMode.HALF_DOWN), "0.995");
-        aeq(read("199/200").get().bigDecimalValue(3, RoundingMode.HALF_UP), "0.995");
-        aeq(read("199/200").get().bigDecimalValue(3, RoundingMode.HALF_EVEN), "0.995");
-        aeq(read("199/200").get().bigDecimalValue(4, RoundingMode.UNNECESSARY), "0.9950");
-        aeq(read("199/200").get().bigDecimalValue(4, RoundingMode.FLOOR), "0.9950");
-        aeq(read("199/200").get().bigDecimalValue(4, RoundingMode.CEILING), "0.9950");
-        aeq(read("199/200").get().bigDecimalValue(4, RoundingMode.DOWN), "0.9950");
-        aeq(read("199/200").get().bigDecimalValue(4, RoundingMode.UP), "0.9950");
-        aeq(read("199/200").get().bigDecimalValue(4, RoundingMode.HALF_DOWN), "0.9950");
-        aeq(read("199/200").get().bigDecimalValue(4, RoundingMode.HALF_UP), "0.9950");
-        aeq(read("199/200").get().bigDecimalValue(4, RoundingMode.HALF_EVEN), "0.9950");
-        aeq(read("199/200").get().bigDecimalValue(5, RoundingMode.UNNECESSARY), "0.99500");
-        aeq(read("199/200").get().bigDecimalValue(5, RoundingMode.FLOOR), "0.99500");
-        aeq(read("199/200").get().bigDecimalValue(5, RoundingMode.CEILING), "0.99500");
-        aeq(read("199/200").get().bigDecimalValue(5, RoundingMode.DOWN), "0.99500");
-        aeq(read("199/200").get().bigDecimalValue(5, RoundingMode.UP), "0.99500");
-        aeq(read("199/200").get().bigDecimalValue(5, RoundingMode.HALF_DOWN), "0.99500");
-        aeq(read("199/200").get().bigDecimalValue(5, RoundingMode.HALF_UP), "0.99500");
-        aeq(read("199/200").get().bigDecimalValue(5, RoundingMode.HALF_EVEN), "0.99500");
-        try {
-            read("5").get().bigDecimalValue(-1, RoundingMode.UNNECESSARY);
+            read(input).get().binaryExponent();
             fail();
         } catch (IllegalArgumentException ignored) {}
-        try {
-            read("5").get().bigDecimalValue(-1, RoundingMode.FLOOR);
-            fail();
-        } catch (IllegalArgumentException ignored) {}
-        try {
-            read("5").get().bigDecimalValue(-1, RoundingMode.CEILING);
-            fail();
-        } catch (IllegalArgumentException ignored) {}
-        try {
-            read("5").get().bigDecimalValue(-1, RoundingMode.DOWN);
-            fail();
-        } catch (IllegalArgumentException ignored) {}
-        try {
-            read("5").get().bigDecimalValue(-1, RoundingMode.UP);
-            fail();
-        } catch (IllegalArgumentException ignored) {}
-        try {
-            read("5").get().bigDecimalValue(-1, RoundingMode.HALF_DOWN);
-            fail();
-        } catch (IllegalArgumentException ignored) {}
-        try {
-            read("5").get().bigDecimalValue(-1, RoundingMode.HALF_UP);
-            fail();
-        } catch (IllegalArgumentException ignored) {}
-        try {
-            read("5").get().bigDecimalValue(-1, RoundingMode.HALF_EVEN);
-            fail();
-        } catch (IllegalArgumentException ignored) {}
-    }
-
-    @Test
-    public void testBigDecimalValue_int() {
-        aeq(ZERO.bigDecimalValue(4), "0.000");
-        aeq(ZERO.bigDecimalValue(0), "0");
-        aeq(ONE.bigDecimalValue(4), "1.000");
-        aeq(ONE.bigDecimalValue(0), "1");
-        aeq(read("1/2").get().bigDecimalValue(0), "0.5");
-        aeq(read("1/2").get().bigDecimalValue(1), "0.5");
-        aeq(read("1/2").get().bigDecimalValue(4), "0.5000");
-        aeq(read("1/64").get().bigDecimalValue(0), "0.015625");
-        aeq(read("1/64").get().bigDecimalValue(1), "0.02");
-        aeq(read("1/64").get().bigDecimalValue(2), "0.016");
-        aeq(read("1/64").get().bigDecimalValue(3), "0.0156");
-        aeq(read("1/64").get().bigDecimalValue(4), "0.01562");
-        aeq(read("1/64").get().bigDecimalValue(5), "0.015625");
-        aeq(read("1/64").get().bigDecimalValue(6), "0.0156250");
-        aeq(read("-1/3").get().bigDecimalValue(1), "-0.3");
-        aeq(read("-1/3").get().bigDecimalValue(2), "-0.33");
-        aeq(read("-1/3").get().bigDecimalValue(3), "-0.333");
-        aeq(read("-1/3").get().bigDecimalValue(4), "-0.3333");
-        aeq(read("6789").get().bigDecimalValue(0), "6789");
-        aeq(read("6789").get().bigDecimalValue(1), "7E+3");
-        aeq(read("6789").get().bigDecimalValue(2), "6.8E+3");
-        aeq(read("6789").get().bigDecimalValue(3), "6.79E+3");
-        aeq(read("6789").get().bigDecimalValue(4), "6789");
-        aeq(read("6789").get().bigDecimalValue(5), "6789.0");
-        aeq(read("19/20").get().bigDecimalValue(0), "0.95");
-        aeq(read("19/20").get().bigDecimalValue(1), "1");
-        aeq(read("19/20").get().bigDecimalValue(2), "0.95");
-        aeq(read("19/20").get().bigDecimalValue(3), "0.950");
-        aeq(read("19/20").get().bigDecimalValue(4), "0.9500");
-        aeq(read("19/20").get().bigDecimalValue(5), "0.95000");
-        aeq(read("199/200").get().bigDecimalValue(0), "0.995");
-        aeq(read("199/200").get().bigDecimalValue(1), "1");
-        aeq(read("199/200").get().bigDecimalValue(2), "1.0");
-        aeq(read("199/200").get().bigDecimalValue(3), "0.995");
-        aeq(read("199/200").get().bigDecimalValue(4), "0.9950");
-        aeq(read("199/200").get().bigDecimalValue(5), "0.99500");
-        try {
-            read("-1/3").get().bigDecimalValue(0);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        try {
-            read("5").get().bigDecimalValue(-1);
-            fail();
-        } catch (IllegalArgumentException ignored) {}
-    }
-
-    @Test
-    public void testBigDecimalValueExact() {
-        aeq(ZERO.bigDecimalValueExact(), "0");
-        aeq(ONE.bigDecimalValueExact(), "1");
-        aeq(read("-23").get().bigDecimalValueExact(), "-23");
-        aeq(read("4/5").get().bigDecimalValueExact(), "0.8");
-        aeq(read("1/64").get().bigDecimalValueExact(), "0.015625");
-        aeq(read("1234").get().bigDecimalValueExact(), "1234");
-        aeq(read("19/20").get().bigDecimalValueExact(), "0.95");
-        aeq(read("199/200").get().bigDecimalValueExact(), "0.995");
-        aeq(SMALLEST_FLOAT.bigDecimalValueExact(),
-                "1.4012984643248170709237295832899161312802619418765157717570682838897910826858606014866381883621215" +
-                "8203125E-45");
-        aeq(LARGEST_FLOAT.bigDecimalValueExact(), "340282346638528859811704183484516925440");
-        aeq(SMALLEST_DOUBLE.bigDecimalValueExact(),
-                "4.9406564584124654417656879286822137236505980261432476442558568250067550727020875186529983636163599" +
-                "237979656469544571773092665671035593979639877479601078187812630071319031140452784581716784898210368" +
-                "871863605699873072305000638740915356498438731247339727316961514003171538539807412623856559117102665" +
-                "855668676818703956031062493194527159149245532930545654440112748012970999954193198940908041656332452" +
-                "475714786901472678015935523861155013480352649347201937902681071074917033322268447533357208324319360" +
-                "923828934583680601060115061698097530783422773183292479049825247307763759272478746560847782037344696" +
-                "995336470179726777175851256605511991315048911014510378627381672509558373897335989936648099411642057" +
-                "02637090279242767544565229087538682506419718265533447265625E-324");
-        aeq(
-                LARGEST_DOUBLE.bigDecimalValueExact(),
-                "179769313486231570814527423731704356798070567525844996598917476803157260780028538760589558632766878" +
-                "171540458953514382464234321326889464182768467546703537516986049910576551282076245490090389328944075" +
-                "868508455133942304583236903222948165808559332123348274797826204144723168738177180919299881250404026" +
-                "184124858368");
-        try {
-            read("1/3").get().bigDecimalValueExact();
-            fail();
-        } catch (ArithmeticException ignored) {}
     }
 
     @Test
     public void testBinaryExponent() {
-        aeq(read("1/3").get().binaryExponent(), -2);
-        aeq(read("100").get().binaryExponent(), 6);
-        aeq(read("127").get().binaryExponent(), 6);
-        aeq(read("128").get().binaryExponent(), 7);
-        aeq(read("129").get().binaryExponent(), 7);
-        aeq(read("1/127").get().binaryExponent(), -7);
-        aeq(read("1/128").get().binaryExponent(), -7);
-        aeq(read("1/129").get().binaryExponent(), -8);
-        aeq(ONE.binaryExponent(), 0);
-        try {
-            ZERO.binaryExponent();
-            fail();
-        } catch (IllegalArgumentException ignored) {}
-        try {
-            read("-2/3").get().binaryExponent();
-            fail();
-        } catch (IllegalArgumentException ignored) {}
+        binaryExponent_helper("1/3", -2);
+        binaryExponent_helper("100", 6);
+        binaryExponent_helper("127", 6);
+        binaryExponent_helper("128", 7);
+        binaryExponent_helper("129", 7);
+        binaryExponent_helper("1/127", -7);
+        binaryExponent_helper("1/128", -7);
+        binaryExponent_helper("1/129", -8);
+        binaryExponent_helper("1", 0);
+        binaryExponent_fail_helper("0");
+        binaryExponent_fail_helper("-2/3");
     }
 
     @Test
@@ -2427,6 +1900,538 @@ public class RationalTest {
         } catch (ArithmeticException ignored) {}
         try {
             justAboveBoundary.doubleValueExact();
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testHasTerminatingBaseExpansion() {
+        assertTrue(ZERO.hasTerminatingBaseExpansion(IntegerUtils.TWO));
+        assertTrue(ONE.hasTerminatingBaseExpansion(IntegerUtils.TWO));
+        assertTrue(read("60").get().hasTerminatingBaseExpansion(IntegerUtils.TWO));
+        assertTrue(read("1/2").get().hasTerminatingBaseExpansion(IntegerUtils.TWO));
+        assertFalse(read("1/5").get().hasTerminatingBaseExpansion(IntegerUtils.TWO));
+        assertFalse(read("-7/100").get().hasTerminatingBaseExpansion(IntegerUtils.TWO));
+        assertFalse(read("-3/640").get().hasTerminatingBaseExpansion(IntegerUtils.TWO));
+        assertFalse(read("1/3").get().hasTerminatingBaseExpansion(IntegerUtils.TWO));
+        assertFalse(read("-1/15").get().hasTerminatingBaseExpansion(IntegerUtils.TWO));
+        assertFalse(read("-2/9").get().hasTerminatingBaseExpansion(IntegerUtils.TWO));
+        assertTrue(ZERO.hasTerminatingBaseExpansion(BigInteger.valueOf(3)));
+        assertTrue(ONE.hasTerminatingBaseExpansion(BigInteger.valueOf(3)));
+        assertTrue(read("60").get().hasTerminatingBaseExpansion(BigInteger.valueOf(3)));
+        assertFalse(read("1/2").get().hasTerminatingBaseExpansion(BigInteger.valueOf(3)));
+        assertFalse(read("1/5").get().hasTerminatingBaseExpansion(BigInteger.valueOf(3)));
+        assertFalse(read("-7/100").get().hasTerminatingBaseExpansion(BigInteger.valueOf(3)));
+        assertFalse(read("-3/640").get().hasTerminatingBaseExpansion(BigInteger.valueOf(3)));
+        assertTrue(read("1/3").get().hasTerminatingBaseExpansion(BigInteger.valueOf(3)));
+        assertFalse(read("-1/15").get().hasTerminatingBaseExpansion(BigInteger.valueOf(3)));
+        assertTrue(read("-2/9").get().hasTerminatingBaseExpansion(BigInteger.valueOf(3)));
+        assertTrue(ZERO.hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
+        assertTrue(ONE.hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
+        assertTrue(read("60").get().hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
+        assertTrue(read("1/2").get().hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
+        assertFalse(read("1/5").get().hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
+        assertFalse(read("-7/100").get().hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
+        assertFalse(read("-3/640").get().hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
+        assertFalse(read("1/3").get().hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
+        assertFalse(read("-1/15").get().hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
+        assertFalse(read("-2/9").get().hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
+        assertTrue(ZERO.hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
+        assertTrue(ONE.hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
+        assertTrue(read("60").get().hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
+        assertTrue(read("1/2").get().hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
+        assertFalse(read("1/5").get().hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
+        assertFalse(read("-7/100").get().hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
+        assertFalse(read("-3/640").get().hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
+        assertFalse(read("1/3").get().hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
+        assertFalse(read("-1/15").get().hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
+        assertFalse(read("-2/9").get().hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
+        assertTrue(ZERO.hasTerminatingBaseExpansion(BigInteger.valueOf(16)));
+        assertTrue(ONE.hasTerminatingBaseExpansion(BigInteger.valueOf(16)));
+        assertTrue(read("60").get().hasTerminatingBaseExpansion(BigInteger.valueOf(16)));
+        assertTrue(read("1/2").get().hasTerminatingBaseExpansion(BigInteger.valueOf(16)));
+        assertFalse(read("1/5").get().hasTerminatingBaseExpansion(BigInteger.valueOf(16)));
+        assertFalse(read("-7/100").get().hasTerminatingBaseExpansion(BigInteger.valueOf(16)));
+        assertFalse(read("-3/640").get().hasTerminatingBaseExpansion(BigInteger.valueOf(16)));
+        assertFalse(read("1/3").get().hasTerminatingBaseExpansion(BigInteger.valueOf(16)));
+        assertFalse(read("-1/15").get().hasTerminatingBaseExpansion(BigInteger.valueOf(16)));
+        assertFalse(read("-2/9").get().hasTerminatingBaseExpansion(BigInteger.valueOf(16)));
+        assertTrue(ZERO.hasTerminatingBaseExpansion(BigInteger.valueOf(83)));
+        assertTrue(ONE.hasTerminatingBaseExpansion(BigInteger.valueOf(83)));
+        assertTrue(read("60").get().hasTerminatingBaseExpansion(BigInteger.valueOf(83)));
+        assertFalse(read("1/2").get().hasTerminatingBaseExpansion(BigInteger.valueOf(83)));
+        assertFalse(read("1/5").get().hasTerminatingBaseExpansion(BigInteger.valueOf(83)));
+        assertFalse(read("-7/100").get().hasTerminatingBaseExpansion(BigInteger.valueOf(83)));
+        assertFalse(read("-3/640").get().hasTerminatingBaseExpansion(BigInteger.valueOf(83)));
+        assertFalse(read("1/3").get().hasTerminatingBaseExpansion(BigInteger.valueOf(83)));
+        assertFalse(read("-1/15").get().hasTerminatingBaseExpansion(BigInteger.valueOf(83)));
+        assertFalse(read("-2/9").get().hasTerminatingBaseExpansion(BigInteger.valueOf(83)));
+        assertTrue(ZERO.hasTerminatingBaseExpansion(BigInteger.valueOf(100)));
+        assertTrue(ONE.hasTerminatingBaseExpansion(BigInteger.valueOf(100)));
+        assertTrue(read("60").get().hasTerminatingBaseExpansion(BigInteger.valueOf(100)));
+        assertTrue(read("1/2").get().hasTerminatingBaseExpansion(BigInteger.valueOf(100)));
+        assertTrue(read("1/5").get().hasTerminatingBaseExpansion(BigInteger.valueOf(100)));
+        assertTrue(read("-7/100").get().hasTerminatingBaseExpansion(BigInteger.valueOf(100)));
+        assertTrue(read("-3/640").get().hasTerminatingBaseExpansion(BigInteger.valueOf(100)));
+        assertFalse(read("1/3").get().hasTerminatingBaseExpansion(BigInteger.valueOf(100)));
+        assertFalse(read("-1/15").get().hasTerminatingBaseExpansion(BigInteger.valueOf(100)));
+        assertFalse(read("-2/9").get().hasTerminatingBaseExpansion(BigInteger.valueOf(100)));
+        try {
+            read("1/2").get().hasTerminatingBaseExpansion(BigInteger.ONE);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            read("1/2").get().hasTerminatingBaseExpansion(BigInteger.ZERO);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            read("1/2").get().hasTerminatingBaseExpansion(IntegerUtils.NEGATIVE_ONE);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testBigDecimalValue_int_RoundingMode() {
+        aeq(ZERO.bigDecimalValue(0, RoundingMode.UNNECESSARY), "0");
+        aeq(ZERO.bigDecimalValue(0, RoundingMode.FLOOR), "0");
+        aeq(ZERO.bigDecimalValue(0, RoundingMode.CEILING), "0");
+        aeq(ZERO.bigDecimalValue(0, RoundingMode.DOWN), "0");
+        aeq(ZERO.bigDecimalValue(0, RoundingMode.UP), "0");
+        aeq(ZERO.bigDecimalValue(0, RoundingMode.HALF_DOWN), "0");
+        aeq(ZERO.bigDecimalValue(0, RoundingMode.HALF_UP), "0");
+        aeq(ZERO.bigDecimalValue(0, RoundingMode.HALF_EVEN), "0");
+        aeq(ZERO.bigDecimalValue(4, RoundingMode.UNNECESSARY), "0.000");
+        aeq(ZERO.bigDecimalValue(4, RoundingMode.FLOOR), "0.000");
+        aeq(ZERO.bigDecimalValue(4, RoundingMode.CEILING), "0.000");
+        aeq(ZERO.bigDecimalValue(4, RoundingMode.DOWN), "0.000");
+        aeq(ZERO.bigDecimalValue(4, RoundingMode.UP), "0.000");
+        aeq(ZERO.bigDecimalValue(4, RoundingMode.HALF_DOWN), "0.000");
+        aeq(ZERO.bigDecimalValue(4, RoundingMode.HALF_UP), "0.000");
+        aeq(ZERO.bigDecimalValue(4, RoundingMode.HALF_EVEN), "0.000");
+        aeq(ONE.bigDecimalValue(0, RoundingMode.UNNECESSARY), "1");
+        aeq(ONE.bigDecimalValue(0, RoundingMode.FLOOR), "1");
+        aeq(ONE.bigDecimalValue(0, RoundingMode.CEILING), "1");
+        aeq(ONE.bigDecimalValue(0, RoundingMode.DOWN), "1");
+        aeq(ONE.bigDecimalValue(0, RoundingMode.UP), "1");
+        aeq(ONE.bigDecimalValue(0, RoundingMode.HALF_DOWN), "1");
+        aeq(ONE.bigDecimalValue(0, RoundingMode.HALF_UP), "1");
+        aeq(ONE.bigDecimalValue(0, RoundingMode.HALF_EVEN), "1");
+        aeq(ONE.bigDecimalValue(4, RoundingMode.UNNECESSARY), "1.000");
+        aeq(ONE.bigDecimalValue(4, RoundingMode.FLOOR), "1.000");
+        aeq(ONE.bigDecimalValue(4, RoundingMode.CEILING), "1.000");
+        aeq(ONE.bigDecimalValue(4, RoundingMode.DOWN), "1.000");
+        aeq(ONE.bigDecimalValue(4, RoundingMode.UP), "1.000");
+        aeq(ONE.bigDecimalValue(4, RoundingMode.HALF_DOWN), "1.000");
+        aeq(ONE.bigDecimalValue(4, RoundingMode.HALF_UP), "1.000");
+        aeq(ONE.bigDecimalValue(4, RoundingMode.HALF_EVEN), "1.000");
+        aeq(read("1/2").get().bigDecimalValue(0, RoundingMode.UNNECESSARY), "0.5");
+        aeq(read("1/2").get().bigDecimalValue(0, RoundingMode.FLOOR), "0.5");
+        aeq(read("1/2").get().bigDecimalValue(0, RoundingMode.CEILING), "0.5");
+        aeq(read("1/2").get().bigDecimalValue(0, RoundingMode.DOWN), "0.5");
+        aeq(read("1/2").get().bigDecimalValue(0, RoundingMode.UP), "0.5");
+        aeq(read("1/2").get().bigDecimalValue(0, RoundingMode.HALF_DOWN), "0.5");
+        aeq(read("1/2").get().bigDecimalValue(0, RoundingMode.HALF_UP), "0.5");
+        aeq(read("1/2").get().bigDecimalValue(0, RoundingMode.HALF_EVEN), "0.5");
+        aeq(read("1/2").get().bigDecimalValue(1, RoundingMode.UNNECESSARY), "0.5");
+        aeq(read("1/2").get().bigDecimalValue(1, RoundingMode.FLOOR), "0.5");
+        aeq(read("1/2").get().bigDecimalValue(1, RoundingMode.CEILING), "0.5");
+        aeq(read("1/2").get().bigDecimalValue(1, RoundingMode.DOWN), "0.5");
+        aeq(read("1/2").get().bigDecimalValue(1, RoundingMode.UP), "0.5");
+        aeq(read("1/2").get().bigDecimalValue(1, RoundingMode.HALF_DOWN), "0.5");
+        aeq(read("1/2").get().bigDecimalValue(1, RoundingMode.HALF_UP), "0.5");
+        aeq(read("1/2").get().bigDecimalValue(1, RoundingMode.HALF_EVEN), "0.5");
+        aeq(read("1/2").get().bigDecimalValue(4, RoundingMode.UNNECESSARY), "0.5000");
+        aeq(read("1/2").get().bigDecimalValue(4, RoundingMode.FLOOR), "0.5000");
+        aeq(read("1/2").get().bigDecimalValue(4, RoundingMode.CEILING), "0.5000");
+        aeq(read("1/2").get().bigDecimalValue(4, RoundingMode.DOWN), "0.5000");
+        aeq(read("1/2").get().bigDecimalValue(4, RoundingMode.UP), "0.5000");
+        aeq(read("1/2").get().bigDecimalValue(4, RoundingMode.HALF_DOWN), "0.5000");
+        aeq(read("1/2").get().bigDecimalValue(4, RoundingMode.HALF_UP), "0.5000");
+        aeq(read("1/2").get().bigDecimalValue(4, RoundingMode.HALF_EVEN), "0.5000");
+        aeq(read("1/64").get().bigDecimalValue(0, RoundingMode.UNNECESSARY), "0.015625");
+        aeq(read("1/64").get().bigDecimalValue(0, RoundingMode.FLOOR), "0.015625");
+        aeq(read("1/64").get().bigDecimalValue(0, RoundingMode.CEILING), "0.015625");
+        aeq(read("1/64").get().bigDecimalValue(0, RoundingMode.DOWN), "0.015625");
+        aeq(read("1/64").get().bigDecimalValue(0, RoundingMode.UP), "0.015625");
+        aeq(read("1/64").get().bigDecimalValue(0, RoundingMode.HALF_DOWN), "0.015625");
+        aeq(read("1/64").get().bigDecimalValue(0, RoundingMode.HALF_UP), "0.015625");
+        aeq(read("1/64").get().bigDecimalValue(0, RoundingMode.HALF_EVEN), "0.015625");
+        try {
+            read("1/64").get().bigDecimalValue(1, RoundingMode.UNNECESSARY);
+            fail();
+        } catch (ArithmeticException ignored) {}
+        aeq(read("1/64").get().bigDecimalValue(1, RoundingMode.FLOOR), "0.01");
+        aeq(read("1/64").get().bigDecimalValue(1, RoundingMode.CEILING), "0.02");
+        aeq(read("1/64").get().bigDecimalValue(1, RoundingMode.DOWN), "0.01");
+        aeq(read("1/64").get().bigDecimalValue(1, RoundingMode.UP), "0.02");
+        aeq(read("1/64").get().bigDecimalValue(1, RoundingMode.HALF_DOWN), "0.02");
+        aeq(read("1/64").get().bigDecimalValue(1, RoundingMode.HALF_UP), "0.02");
+        aeq(read("1/64").get().bigDecimalValue(1, RoundingMode.HALF_EVEN), "0.02");
+        try {
+            read("1/64").get().bigDecimalValue(2, RoundingMode.UNNECESSARY);
+            fail();
+        } catch (ArithmeticException ignored) {}
+        aeq(read("1/64").get().bigDecimalValue(2, RoundingMode.FLOOR), "0.015");
+        aeq(read("1/64").get().bigDecimalValue(2, RoundingMode.CEILING), "0.016");
+        aeq(read("1/64").get().bigDecimalValue(2, RoundingMode.DOWN), "0.015");
+        aeq(read("1/64").get().bigDecimalValue(2, RoundingMode.UP), "0.016");
+        aeq(read("1/64").get().bigDecimalValue(2, RoundingMode.HALF_DOWN), "0.016");
+        aeq(read("1/64").get().bigDecimalValue(2, RoundingMode.HALF_UP), "0.016");
+        aeq(read("1/64").get().bigDecimalValue(2, RoundingMode.HALF_EVEN), "0.016");
+        try {
+            read("1/64").get().bigDecimalValue(3, RoundingMode.UNNECESSARY);
+            fail();
+        } catch (ArithmeticException ignored) {}
+        aeq(read("1/64").get().bigDecimalValue(3, RoundingMode.FLOOR), "0.0156");
+        aeq(read("1/64").get().bigDecimalValue(3, RoundingMode.CEILING), "0.0157");
+        aeq(read("1/64").get().bigDecimalValue(3, RoundingMode.DOWN), "0.0156");
+        aeq(read("1/64").get().bigDecimalValue(3, RoundingMode.UP), "0.0157");
+        aeq(read("1/64").get().bigDecimalValue(3, RoundingMode.HALF_DOWN), "0.0156");
+        aeq(read("1/64").get().bigDecimalValue(3, RoundingMode.HALF_UP), "0.0156");
+        aeq(read("1/64").get().bigDecimalValue(3, RoundingMode.HALF_EVEN), "0.0156");
+        try {
+            read("1/64").get().bigDecimalValue(4, RoundingMode.UNNECESSARY);
+            fail();
+        } catch (ArithmeticException ignored) {}
+        aeq(read("1/64").get().bigDecimalValue(4, RoundingMode.FLOOR), "0.01562");
+        aeq(read("1/64").get().bigDecimalValue(4, RoundingMode.CEILING), "0.01563");
+        aeq(read("1/64").get().bigDecimalValue(4, RoundingMode.DOWN), "0.01562");
+        aeq(read("1/64").get().bigDecimalValue(4, RoundingMode.UP), "0.01563");
+        aeq(read("1/64").get().bigDecimalValue(4, RoundingMode.HALF_DOWN), "0.01562");
+        aeq(read("1/64").get().bigDecimalValue(4, RoundingMode.HALF_UP), "0.01563");
+        aeq(read("1/64").get().bigDecimalValue(4, RoundingMode.HALF_EVEN), "0.01562");
+        aeq(read("1/64").get().bigDecimalValue(5, RoundingMode.UNNECESSARY), "0.015625");
+        aeq(read("1/64").get().bigDecimalValue(5, RoundingMode.FLOOR), "0.015625");
+        aeq(read("1/64").get().bigDecimalValue(5, RoundingMode.CEILING), "0.015625");
+        aeq(read("1/64").get().bigDecimalValue(5, RoundingMode.DOWN), "0.015625");
+        aeq(read("1/64").get().bigDecimalValue(5, RoundingMode.UP), "0.015625");
+        aeq(read("1/64").get().bigDecimalValue(5, RoundingMode.HALF_DOWN), "0.015625");
+        aeq(read("1/64").get().bigDecimalValue(5, RoundingMode.HALF_UP), "0.015625");
+        aeq(read("1/64").get().bigDecimalValue(5, RoundingMode.HALF_EVEN), "0.015625");
+        aeq(read("1/64").get().bigDecimalValue(6, RoundingMode.UNNECESSARY), "0.0156250");
+        aeq(read("1/64").get().bigDecimalValue(6, RoundingMode.FLOOR), "0.0156250");
+        aeq(read("1/64").get().bigDecimalValue(6, RoundingMode.CEILING), "0.0156250");
+        aeq(read("1/64").get().bigDecimalValue(6, RoundingMode.DOWN), "0.0156250");
+        aeq(read("1/64").get().bigDecimalValue(6, RoundingMode.UP), "0.0156250");
+        aeq(read("1/64").get().bigDecimalValue(6, RoundingMode.HALF_DOWN), "0.0156250");
+        aeq(read("1/64").get().bigDecimalValue(6, RoundingMode.HALF_UP), "0.0156250");
+        aeq(read("1/64").get().bigDecimalValue(6, RoundingMode.HALF_EVEN), "0.0156250");
+        try {
+            read("-1/3").get().bigDecimalValue(1, RoundingMode.UNNECESSARY);
+            fail();
+        } catch (ArithmeticException ignored) {}
+        aeq(read("-1/3").get().bigDecimalValue(1, RoundingMode.FLOOR), "-0.4");
+        aeq(read("-1/3").get().bigDecimalValue(1, RoundingMode.CEILING), "-0.3");
+        aeq(read("-1/3").get().bigDecimalValue(1, RoundingMode.DOWN), "-0.3");
+        aeq(read("-1/3").get().bigDecimalValue(1, RoundingMode.UP), "-0.4");
+        aeq(read("-1/3").get().bigDecimalValue(1, RoundingMode.HALF_DOWN), "-0.3");
+        aeq(read("-1/3").get().bigDecimalValue(1, RoundingMode.HALF_UP), "-0.3");
+        aeq(read("-1/3").get().bigDecimalValue(1, RoundingMode.HALF_EVEN), "-0.3");
+        try {
+            read("-1/3").get().bigDecimalValue(2, RoundingMode.UNNECESSARY);
+            fail();
+        } catch (ArithmeticException ignored) {}
+        aeq(read("-1/3").get().bigDecimalValue(2, RoundingMode.FLOOR), "-0.34");
+        aeq(read("-1/3").get().bigDecimalValue(2, RoundingMode.CEILING), "-0.33");
+        aeq(read("-1/3").get().bigDecimalValue(2, RoundingMode.DOWN), "-0.33");
+        aeq(read("-1/3").get().bigDecimalValue(2, RoundingMode.UP), "-0.34");
+        aeq(read("-1/3").get().bigDecimalValue(2, RoundingMode.HALF_DOWN), "-0.33");
+        aeq(read("-1/3").get().bigDecimalValue(2, RoundingMode.HALF_UP), "-0.33");
+        aeq(read("-1/3").get().bigDecimalValue(2, RoundingMode.HALF_EVEN), "-0.33");
+        try {
+            read("-1/3").get().bigDecimalValue(3, RoundingMode.UNNECESSARY);
+            fail();
+        } catch (ArithmeticException ignored) {}
+        aeq(read("-1/3").get().bigDecimalValue(3, RoundingMode.FLOOR), "-0.334");
+        aeq(read("-1/3").get().bigDecimalValue(3, RoundingMode.CEILING), "-0.333");
+        aeq(read("-1/3").get().bigDecimalValue(3, RoundingMode.DOWN), "-0.333");
+        aeq(read("-1/3").get().bigDecimalValue(3, RoundingMode.UP), "-0.334");
+        aeq(read("-1/3").get().bigDecimalValue(3, RoundingMode.HALF_DOWN), "-0.333");
+        aeq(read("-1/3").get().bigDecimalValue(3, RoundingMode.HALF_UP), "-0.333");
+        aeq(read("-1/3").get().bigDecimalValue(3, RoundingMode.HALF_EVEN), "-0.333");
+        try {
+            read("-1/3").get().bigDecimalValue(4, RoundingMode.UNNECESSARY);
+            fail();
+        } catch (ArithmeticException ignored) {}
+        aeq(read("-1/3").get().bigDecimalValue(4, RoundingMode.FLOOR), "-0.3334");
+        aeq(read("-1/3").get().bigDecimalValue(4, RoundingMode.CEILING), "-0.3333");
+        aeq(read("-1/3").get().bigDecimalValue(4, RoundingMode.DOWN), "-0.3333");
+        aeq(read("-1/3").get().bigDecimalValue(4, RoundingMode.UP), "-0.3334");
+        aeq(read("-1/3").get().bigDecimalValue(4, RoundingMode.HALF_DOWN), "-0.3333");
+        aeq(read("-1/3").get().bigDecimalValue(4, RoundingMode.HALF_UP), "-0.3333");
+        aeq(read("-1/3").get().bigDecimalValue(4, RoundingMode.HALF_EVEN), "-0.3333");
+        aeq(read("6789").get().bigDecimalValue(0, RoundingMode.FLOOR), "6789");
+        aeq(read("6789").get().bigDecimalValue(0, RoundingMode.CEILING), "6789");
+        aeq(read("6789").get().bigDecimalValue(0, RoundingMode.DOWN), "6789");
+        aeq(read("6789").get().bigDecimalValue(0, RoundingMode.UP), "6789");
+        aeq(read("6789").get().bigDecimalValue(0, RoundingMode.HALF_DOWN), "6789");
+        aeq(read("6789").get().bigDecimalValue(0, RoundingMode.HALF_UP), "6789");
+        aeq(read("6789").get().bigDecimalValue(0, RoundingMode.HALF_EVEN), "6789");
+        try {
+            read("6789").get().bigDecimalValue(1, RoundingMode.UNNECESSARY);
+            fail();
+        } catch (ArithmeticException ignored) {}
+        aeq(read("6789").get().bigDecimalValue(1, RoundingMode.FLOOR), "6E+3");
+        aeq(read("6789").get().bigDecimalValue(1, RoundingMode.CEILING), "7E+3");
+        aeq(read("6789").get().bigDecimalValue(1, RoundingMode.DOWN), "6E+3");
+        aeq(read("6789").get().bigDecimalValue(1, RoundingMode.UP), "7E+3");
+        aeq(read("6789").get().bigDecimalValue(1, RoundingMode.HALF_DOWN), "7E+3");
+        aeq(read("6789").get().bigDecimalValue(1, RoundingMode.HALF_UP), "7E+3");
+        aeq(read("6789").get().bigDecimalValue(1, RoundingMode.HALF_EVEN), "7E+3");
+        try {
+            read("6789").get().bigDecimalValue(2, RoundingMode.UNNECESSARY);
+            fail();
+        } catch (ArithmeticException ignored) {}
+        aeq(read("6789").get().bigDecimalValue(2, RoundingMode.FLOOR), "6.7E+3");
+        aeq(read("6789").get().bigDecimalValue(2, RoundingMode.CEILING), "6.8E+3");
+        aeq(read("6789").get().bigDecimalValue(2, RoundingMode.DOWN), "6.7E+3");
+        aeq(read("6789").get().bigDecimalValue(2, RoundingMode.UP), "6.8E+3");
+        aeq(read("6789").get().bigDecimalValue(2, RoundingMode.HALF_DOWN), "6.8E+3");
+        aeq(read("6789").get().bigDecimalValue(2, RoundingMode.HALF_UP), "6.8E+3");
+        aeq(read("6789").get().bigDecimalValue(2, RoundingMode.HALF_EVEN), "6.8E+3");
+        try {
+            read("6789").get().bigDecimalValue(3, RoundingMode.UNNECESSARY);
+            fail();
+        } catch (ArithmeticException ignored) {}
+        aeq(read("6789").get().bigDecimalValue(3, RoundingMode.FLOOR), "6.78E+3");
+        aeq(read("6789").get().bigDecimalValue(3, RoundingMode.CEILING), "6.79E+3");
+        aeq(read("6789").get().bigDecimalValue(3, RoundingMode.DOWN), "6.78E+3");
+        aeq(read("6789").get().bigDecimalValue(3, RoundingMode.UP), "6.79E+3");
+        aeq(read("6789").get().bigDecimalValue(3, RoundingMode.HALF_DOWN), "6.79E+3");
+        aeq(read("6789").get().bigDecimalValue(3, RoundingMode.HALF_UP), "6.79E+3");
+        aeq(read("6789").get().bigDecimalValue(3, RoundingMode.HALF_EVEN), "6.79E+3");
+        aeq(read("6789").get().bigDecimalValue(4, RoundingMode.UNNECESSARY), "6789");
+        aeq(read("6789").get().bigDecimalValue(4, RoundingMode.FLOOR), "6789");
+        aeq(read("6789").get().bigDecimalValue(4, RoundingMode.CEILING), "6789");
+        aeq(read("6789").get().bigDecimalValue(4, RoundingMode.DOWN), "6789");
+        aeq(read("6789").get().bigDecimalValue(4, RoundingMode.UP), "6789");
+        aeq(read("6789").get().bigDecimalValue(4, RoundingMode.HALF_DOWN), "6789");
+        aeq(read("6789").get().bigDecimalValue(4, RoundingMode.HALF_UP), "6789");
+        aeq(read("6789").get().bigDecimalValue(4, RoundingMode.HALF_EVEN), "6789");
+        aeq(read("6789").get().bigDecimalValue(5, RoundingMode.UNNECESSARY), "6789.0");
+        aeq(read("6789").get().bigDecimalValue(5, RoundingMode.FLOOR), "6789.0");
+        aeq(read("6789").get().bigDecimalValue(5, RoundingMode.CEILING), "6789.0");
+        aeq(read("6789").get().bigDecimalValue(5, RoundingMode.DOWN), "6789.0");
+        aeq(read("6789").get().bigDecimalValue(5, RoundingMode.UP), "6789.0");
+        aeq(read("6789").get().bigDecimalValue(5, RoundingMode.HALF_DOWN), "6789.0");
+        aeq(read("6789").get().bigDecimalValue(5, RoundingMode.HALF_UP), "6789.0");
+        aeq(read("6789").get().bigDecimalValue(5, RoundingMode.HALF_EVEN), "6789.0");
+        aeq(read("19/20").get().bigDecimalValue(0, RoundingMode.FLOOR), "0.95");
+        aeq(read("19/20").get().bigDecimalValue(0, RoundingMode.CEILING), "0.95");
+        aeq(read("19/20").get().bigDecimalValue(0, RoundingMode.DOWN), "0.95");
+        aeq(read("19/20").get().bigDecimalValue(0, RoundingMode.UP), "0.95");
+        aeq(read("19/20").get().bigDecimalValue(0, RoundingMode.HALF_DOWN), "0.95");
+        aeq(read("19/20").get().bigDecimalValue(0, RoundingMode.HALF_UP), "0.95");
+        aeq(read("19/20").get().bigDecimalValue(0, RoundingMode.HALF_EVEN), "0.95");
+        try {
+            read("19/20").get().bigDecimalValue(1, RoundingMode.UNNECESSARY);
+            fail();
+        } catch (ArithmeticException ignored) {}
+        aeq(read("19/20").get().bigDecimalValue(1, RoundingMode.FLOOR), "0.9");
+        aeq(read("19/20").get().bigDecimalValue(1, RoundingMode.CEILING), "1");
+        aeq(read("19/20").get().bigDecimalValue(1, RoundingMode.DOWN), "0.9");
+        aeq(read("19/20").get().bigDecimalValue(1, RoundingMode.UP), "1");
+        aeq(read("19/20").get().bigDecimalValue(1, RoundingMode.HALF_DOWN), "0.9");
+        aeq(read("19/20").get().bigDecimalValue(1, RoundingMode.HALF_UP), "1");
+        aeq(read("19/20").get().bigDecimalValue(1, RoundingMode.HALF_EVEN), "1");
+        aeq(read("19/20").get().bigDecimalValue(2, RoundingMode.UNNECESSARY), "0.95");
+        aeq(read("19/20").get().bigDecimalValue(2, RoundingMode.FLOOR), "0.95");
+        aeq(read("19/20").get().bigDecimalValue(2, RoundingMode.CEILING), "0.95");
+        aeq(read("19/20").get().bigDecimalValue(2, RoundingMode.DOWN), "0.95");
+        aeq(read("19/20").get().bigDecimalValue(2, RoundingMode.UP), "0.95");
+        aeq(read("19/20").get().bigDecimalValue(2, RoundingMode.HALF_DOWN), "0.95");
+        aeq(read("19/20").get().bigDecimalValue(2, RoundingMode.HALF_UP), "0.95");
+        aeq(read("19/20").get().bigDecimalValue(2, RoundingMode.HALF_EVEN), "0.95");
+        aeq(read("19/20").get().bigDecimalValue(3, RoundingMode.UNNECESSARY), "0.950");
+        aeq(read("19/20").get().bigDecimalValue(3, RoundingMode.FLOOR), "0.950");
+        aeq(read("19/20").get().bigDecimalValue(3, RoundingMode.CEILING), "0.950");
+        aeq(read("19/20").get().bigDecimalValue(3, RoundingMode.DOWN), "0.950");
+        aeq(read("19/20").get().bigDecimalValue(3, RoundingMode.UP), "0.950");
+        aeq(read("19/20").get().bigDecimalValue(3, RoundingMode.HALF_DOWN), "0.950");
+        aeq(read("19/20").get().bigDecimalValue(3, RoundingMode.HALF_UP), "0.950");
+        aeq(read("19/20").get().bigDecimalValue(3, RoundingMode.HALF_EVEN), "0.950");
+        aeq(read("19/20").get().bigDecimalValue(4, RoundingMode.UNNECESSARY), "0.9500");
+        aeq(read("19/20").get().bigDecimalValue(4, RoundingMode.FLOOR), "0.9500");
+        aeq(read("19/20").get().bigDecimalValue(4, RoundingMode.CEILING), "0.9500");
+        aeq(read("19/20").get().bigDecimalValue(4, RoundingMode.DOWN), "0.9500");
+        aeq(read("19/20").get().bigDecimalValue(4, RoundingMode.UP), "0.9500");
+        aeq(read("19/20").get().bigDecimalValue(4, RoundingMode.HALF_DOWN), "0.9500");
+        aeq(read("19/20").get().bigDecimalValue(4, RoundingMode.HALF_UP), "0.9500");
+        aeq(read("19/20").get().bigDecimalValue(4, RoundingMode.HALF_EVEN), "0.9500");
+        aeq(read("19/20").get().bigDecimalValue(5, RoundingMode.UNNECESSARY), "0.95000");
+        aeq(read("19/20").get().bigDecimalValue(5, RoundingMode.FLOOR), "0.95000");
+        aeq(read("19/20").get().bigDecimalValue(5, RoundingMode.CEILING), "0.95000");
+        aeq(read("19/20").get().bigDecimalValue(5, RoundingMode.DOWN), "0.95000");
+        aeq(read("19/20").get().bigDecimalValue(5, RoundingMode.UP), "0.95000");
+        aeq(read("19/20").get().bigDecimalValue(5, RoundingMode.HALF_DOWN), "0.95000");
+        aeq(read("19/20").get().bigDecimalValue(5, RoundingMode.HALF_UP), "0.95000");
+        aeq(read("19/20").get().bigDecimalValue(5, RoundingMode.HALF_EVEN), "0.95000");
+        aeq(read("199/200").get().bigDecimalValue(0, RoundingMode.FLOOR), "0.995");
+        aeq(read("199/200").get().bigDecimalValue(0, RoundingMode.CEILING), "0.995");
+        aeq(read("199/200").get().bigDecimalValue(0, RoundingMode.DOWN), "0.995");
+        aeq(read("199/200").get().bigDecimalValue(0, RoundingMode.UP), "0.995");
+        aeq(read("199/200").get().bigDecimalValue(0, RoundingMode.HALF_DOWN), "0.995");
+        aeq(read("199/200").get().bigDecimalValue(0, RoundingMode.HALF_UP), "0.995");
+        aeq(read("199/200").get().bigDecimalValue(0, RoundingMode.HALF_EVEN), "0.995");
+        try {
+            read("199/200").get().bigDecimalValue(1, RoundingMode.UNNECESSARY);
+            fail();
+        } catch (ArithmeticException ignored) {}
+        aeq(read("199/200").get().bigDecimalValue(1, RoundingMode.FLOOR), "0.9");
+        aeq(read("199/200").get().bigDecimalValue(1, RoundingMode.CEILING), "1");
+        aeq(read("199/200").get().bigDecimalValue(1, RoundingMode.DOWN), "0.9");
+        aeq(read("199/200").get().bigDecimalValue(1, RoundingMode.UP), "1");
+        aeq(read("199/200").get().bigDecimalValue(1, RoundingMode.HALF_DOWN), "1");
+        aeq(read("199/200").get().bigDecimalValue(1, RoundingMode.HALF_UP), "1");
+        aeq(read("199/200").get().bigDecimalValue(1, RoundingMode.HALF_EVEN), "1");
+        try {
+            read("199/200").get().bigDecimalValue(2, RoundingMode.UNNECESSARY);
+            fail();
+        } catch (ArithmeticException ignored) {}
+        aeq(read("199/200").get().bigDecimalValue(2, RoundingMode.FLOOR), "0.99");
+        aeq(read("199/200").get().bigDecimalValue(2, RoundingMode.CEILING), "1.0");
+        aeq(read("199/200").get().bigDecimalValue(2, RoundingMode.DOWN), "0.99");
+        aeq(read("199/200").get().bigDecimalValue(2, RoundingMode.UP), "1.0");
+        aeq(read("199/200").get().bigDecimalValue(2, RoundingMode.HALF_DOWN), "0.99");
+        aeq(read("199/200").get().bigDecimalValue(2, RoundingMode.HALF_UP), "1.0");
+        aeq(read("199/200").get().bigDecimalValue(2, RoundingMode.HALF_EVEN), "1.0");
+        aeq(read("199/200").get().bigDecimalValue(3, RoundingMode.UNNECESSARY), "0.995");
+        aeq(read("199/200").get().bigDecimalValue(3, RoundingMode.FLOOR), "0.995");
+        aeq(read("199/200").get().bigDecimalValue(3, RoundingMode.CEILING), "0.995");
+        aeq(read("199/200").get().bigDecimalValue(3, RoundingMode.DOWN), "0.995");
+        aeq(read("199/200").get().bigDecimalValue(3, RoundingMode.UP), "0.995");
+        aeq(read("199/200").get().bigDecimalValue(3, RoundingMode.HALF_DOWN), "0.995");
+        aeq(read("199/200").get().bigDecimalValue(3, RoundingMode.HALF_UP), "0.995");
+        aeq(read("199/200").get().bigDecimalValue(3, RoundingMode.HALF_EVEN), "0.995");
+        aeq(read("199/200").get().bigDecimalValue(4, RoundingMode.UNNECESSARY), "0.9950");
+        aeq(read("199/200").get().bigDecimalValue(4, RoundingMode.FLOOR), "0.9950");
+        aeq(read("199/200").get().bigDecimalValue(4, RoundingMode.CEILING), "0.9950");
+        aeq(read("199/200").get().bigDecimalValue(4, RoundingMode.DOWN), "0.9950");
+        aeq(read("199/200").get().bigDecimalValue(4, RoundingMode.UP), "0.9950");
+        aeq(read("199/200").get().bigDecimalValue(4, RoundingMode.HALF_DOWN), "0.9950");
+        aeq(read("199/200").get().bigDecimalValue(4, RoundingMode.HALF_UP), "0.9950");
+        aeq(read("199/200").get().bigDecimalValue(4, RoundingMode.HALF_EVEN), "0.9950");
+        aeq(read("199/200").get().bigDecimalValue(5, RoundingMode.UNNECESSARY), "0.99500");
+        aeq(read("199/200").get().bigDecimalValue(5, RoundingMode.FLOOR), "0.99500");
+        aeq(read("199/200").get().bigDecimalValue(5, RoundingMode.CEILING), "0.99500");
+        aeq(read("199/200").get().bigDecimalValue(5, RoundingMode.DOWN), "0.99500");
+        aeq(read("199/200").get().bigDecimalValue(5, RoundingMode.UP), "0.99500");
+        aeq(read("199/200").get().bigDecimalValue(5, RoundingMode.HALF_DOWN), "0.99500");
+        aeq(read("199/200").get().bigDecimalValue(5, RoundingMode.HALF_UP), "0.99500");
+        aeq(read("199/200").get().bigDecimalValue(5, RoundingMode.HALF_EVEN), "0.99500");
+        try {
+            read("5").get().bigDecimalValue(-1, RoundingMode.UNNECESSARY);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            read("5").get().bigDecimalValue(-1, RoundingMode.FLOOR);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            read("5").get().bigDecimalValue(-1, RoundingMode.CEILING);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            read("5").get().bigDecimalValue(-1, RoundingMode.DOWN);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            read("5").get().bigDecimalValue(-1, RoundingMode.UP);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            read("5").get().bigDecimalValue(-1, RoundingMode.HALF_DOWN);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            read("5").get().bigDecimalValue(-1, RoundingMode.HALF_UP);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            read("5").get().bigDecimalValue(-1, RoundingMode.HALF_EVEN);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testBigDecimalValue_int() {
+        aeq(ZERO.bigDecimalValue(4), "0.000");
+        aeq(ZERO.bigDecimalValue(0), "0");
+        aeq(ONE.bigDecimalValue(4), "1.000");
+        aeq(ONE.bigDecimalValue(0), "1");
+        aeq(read("1/2").get().bigDecimalValue(0), "0.5");
+        aeq(read("1/2").get().bigDecimalValue(1), "0.5");
+        aeq(read("1/2").get().bigDecimalValue(4), "0.5000");
+        aeq(read("1/64").get().bigDecimalValue(0), "0.015625");
+        aeq(read("1/64").get().bigDecimalValue(1), "0.02");
+        aeq(read("1/64").get().bigDecimalValue(2), "0.016");
+        aeq(read("1/64").get().bigDecimalValue(3), "0.0156");
+        aeq(read("1/64").get().bigDecimalValue(4), "0.01562");
+        aeq(read("1/64").get().bigDecimalValue(5), "0.015625");
+        aeq(read("1/64").get().bigDecimalValue(6), "0.0156250");
+        aeq(read("-1/3").get().bigDecimalValue(1), "-0.3");
+        aeq(read("-1/3").get().bigDecimalValue(2), "-0.33");
+        aeq(read("-1/3").get().bigDecimalValue(3), "-0.333");
+        aeq(read("-1/3").get().bigDecimalValue(4), "-0.3333");
+        aeq(read("6789").get().bigDecimalValue(0), "6789");
+        aeq(read("6789").get().bigDecimalValue(1), "7E+3");
+        aeq(read("6789").get().bigDecimalValue(2), "6.8E+3");
+        aeq(read("6789").get().bigDecimalValue(3), "6.79E+3");
+        aeq(read("6789").get().bigDecimalValue(4), "6789");
+        aeq(read("6789").get().bigDecimalValue(5), "6789.0");
+        aeq(read("19/20").get().bigDecimalValue(0), "0.95");
+        aeq(read("19/20").get().bigDecimalValue(1), "1");
+        aeq(read("19/20").get().bigDecimalValue(2), "0.95");
+        aeq(read("19/20").get().bigDecimalValue(3), "0.950");
+        aeq(read("19/20").get().bigDecimalValue(4), "0.9500");
+        aeq(read("19/20").get().bigDecimalValue(5), "0.95000");
+        aeq(read("199/200").get().bigDecimalValue(0), "0.995");
+        aeq(read("199/200").get().bigDecimalValue(1), "1");
+        aeq(read("199/200").get().bigDecimalValue(2), "1.0");
+        aeq(read("199/200").get().bigDecimalValue(3), "0.995");
+        aeq(read("199/200").get().bigDecimalValue(4), "0.9950");
+        aeq(read("199/200").get().bigDecimalValue(5), "0.99500");
+        try {
+            read("-1/3").get().bigDecimalValue(0);
+            fail();
+        } catch (ArithmeticException ignored) {}
+        try {
+            read("5").get().bigDecimalValue(-1);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testBigDecimalValueExact() {
+        aeq(ZERO.bigDecimalValueExact(), "0");
+        aeq(ONE.bigDecimalValueExact(), "1");
+        aeq(read("-23").get().bigDecimalValueExact(), "-23");
+        aeq(read("4/5").get().bigDecimalValueExact(), "0.8");
+        aeq(read("1/64").get().bigDecimalValueExact(), "0.015625");
+        aeq(read("1234").get().bigDecimalValueExact(), "1234");
+        aeq(read("19/20").get().bigDecimalValueExact(), "0.95");
+        aeq(read("199/200").get().bigDecimalValueExact(), "0.995");
+        aeq(SMALLEST_FLOAT.bigDecimalValueExact(),
+                "1.4012984643248170709237295832899161312802619418765157717570682838897910826858606014866381883621215" +
+                "8203125E-45");
+        aeq(LARGEST_FLOAT.bigDecimalValueExact(), "340282346638528859811704183484516925440");
+        aeq(SMALLEST_DOUBLE.bigDecimalValueExact(),
+                "4.9406564584124654417656879286822137236505980261432476442558568250067550727020875186529983636163599" +
+                "237979656469544571773092665671035593979639877479601078187812630071319031140452784581716784898210368" +
+                "871863605699873072305000638740915356498438731247339727316961514003171538539807412623856559117102665" +
+                "855668676818703956031062493194527159149245532930545654440112748012970999954193198940908041656332452" +
+                "475714786901472678015935523861155013480352649347201937902681071074917033322268447533357208324319360" +
+                "923828934583680601060115061698097530783422773183292479049825247307763759272478746560847782037344696" +
+                "995336470179726777175851256605511991315048911014510378627381672509558373897335989936648099411642057" +
+                "02637090279242767544565229087538682506419718265533447265625E-324");
+        aeq(
+                LARGEST_DOUBLE.bigDecimalValueExact(),
+                "179769313486231570814527423731704356798070567525844996598917476803157260780028538760589558632766878" +
+                "171540458953514382464234321326889464182768467546703537516986049910576551282076245490090389328944075" +
+                "868508455133942304583236903222948165808559332123348274797826204144723168738177180919299881250404026" +
+                "184124858368");
+        try {
+            read("1/3").get().bigDecimalValueExact();
             fail();
         } catch (ArithmeticException ignored) {}
     }

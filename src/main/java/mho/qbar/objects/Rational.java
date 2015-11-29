@@ -307,6 +307,8 @@ public final class Rational implements Comparable<Rational> {
      * @return the {@code Rational} corresponding to {@code bf}
      */
     public static @NotNull Rational of(@NotNull BinaryFraction bf) {
+        if (bf == BinaryFraction.ZERO) return ZERO;
+        if (bf == BinaryFraction.ONE) return ONE;
         int exponent = bf.getExponent();
         return exponent >= 0 ?
                 of(bf.bigIntegerValueExact()) :
@@ -661,102 +663,12 @@ public final class Rational implements Comparable<Rational> {
      * @return the {@code BinaryFraction} value of {@code this}
      */
     public @NotNull BinaryFraction binaryFractionValueExact() {
+        if (this == ZERO) return BinaryFraction.ZERO;
+        if (this == ONE) return BinaryFraction.ONE;
         if (!isBinaryFraction()) {
             throw new ArithmeticException("this must be a binary fraction. Invalid this: " + this);
         }
         return BinaryFraction.of(numerator, -denominator.getLowestSetBit());
-    }
-
-    /**
-     * Determines whether {@code this} has a terminating digit expansion in a particular base.
-     *
-     * <ul>
-     *  <li>{@code this} may be any {@code Rational}.</li>
-     *  <li>{@code base} must be at least 2.</li>
-     *  <li>The result may be either {@code boolean}.</li>
-     * </ul>
-     *
-     * @param base the base in which we are interesting in expanding {@code this}
-     * @return whether {@code this} has a terminating base expansion in base-{@code base}
-     */
-    public boolean hasTerminatingBaseExpansion(@NotNull BigInteger base) {
-        if (lt(base, IntegerUtils.TWO))
-            throw new IllegalArgumentException("base must be at least 2");
-        if (isInteger()) return true;
-        BigInteger remainder = denominator;
-        for (BigInteger baseFactor : nub(MathUtils.primeFactors(base))) {
-            while (remainder.mod(baseFactor).equals(BigInteger.ZERO)) {
-                remainder = remainder.divide(baseFactor);
-            }
-        }
-        return remainder.equals(BigInteger.ONE);
-    }
-
-    /**
-     * Rounds {@code this} to a {@link java.math.BigDecimal} with a specified rounding mode (see documentation for
-     * {@code java.math.RoundingMode} for details) and with a specified precision (number of significant digits), or
-     * to full precision if {@code precision} is 0.
-     *
-     * <ul>
-     *  <li>{@code this} may be any {@code Rational}.</li>
-     *  <li>{@code precision} cannot be negative.</li>
-     *  <li>{@code roundingMode} may be any {@code RoundingMode}.</li>
-     *  <li>If {@code precision} is 0, then {@code this} must be a {@code Rational} whose decimal expansion is
-     *  terminating; that is, its denominator must only have 2 or 5 as prime factors.</li>
-     *  <li>If {@code roundingMode} is {@code RoundingMode.UNNECESSARY}, then {@code precision} must be at least as
-     *  large as the number of digits in {@code this}'s decimal expansion.</li>
-     *  <li>The result is non-null.</li>
-     * </ul>
-     *
-     * @param precision the precision with which to round {@code this}. 0 indicates full precision.
-     * @param roundingMode specifies the details of how to round {@code this}.
-     * @return {@code this}, in {@code BigDecimal} form
-     */
-    public @NotNull BigDecimal bigDecimalValue(int precision, @NotNull RoundingMode roundingMode) {
-        MathContext context = new MathContext(precision, roundingMode);
-        BigDecimal result = new BigDecimal(numerator).divide(new BigDecimal(denominator), context);
-        if (precision != 0) {
-            result = BigDecimalUtils.setPrecision(result, precision);
-        }
-        return result;
-    }
-
-    /**
-     * Rounds {@code this} to a {@code BigDecimal} with a specified precision (number of significant digits), or to
-     * full precision if {@code precision} is 0. {@code RoundingMode.HALF_EVEN} is used for rounding.
-     *
-     * <ul>
-     *  <li>{@code this} may be any {@code Rational}.</li>
-     *  <li>{@code precision} cannot be negative.</li>
-     *  <li>If {@code precision} is 0, then {@code this} must be a {@code Rational} whose decimal expansion is
-     *  terminating; that is, its denominator must only have 2 or 5 as prime factors.</li>
-     *  <li>The result is a {@code BigDecimal} with minimal scale. That is, the scale is the smallest non-negative n
-     *  such that {@code this}×10<sup>n</sup> is an integer.</li>
-     * </ul>
-     *
-     * @param precision the precision with which to round {@code this}. 0 indicates full precision.
-     * @return {@code this}, in {@code BigDecimal} form
-     */
-    public @NotNull BigDecimal bigDecimalValue(int precision) {
-        return bigDecimalValue(precision, RoundingMode.HALF_EVEN);
-    }
-
-    /**
-     * Returns a {@code BigDecimal} exactly equal to {@code this}. Throws an {@code ArithmeticException} if
-     * {@code this} cannot be represented as a terminating decimal.
-     *
-     * <ul>
-     *  <li>{@code this} must be a {@code Rational} whose decimal expansion is terminating; that is, its denominator
-     *  must only have 2 or 5 as prime factors.</li>
-     *  <li>The result is a {@code BigDecimal} with minimal scale. That is, the scale is the smallest non-negative n
-     *  such that {@code this}×10<sup>n</sup> is an integer.</li>
-     * </ul>
-     *
-     * @return {@code this}, in {@code BigDecimal} form
-     */
-    public @NotNull BigDecimal bigDecimalValueExact() {
-        //noinspection BigDecimalMethodWithoutRoundingCalled
-        return new BigDecimal(numerator).divide(new BigDecimal(denominator));
     }
 
     /**
@@ -773,8 +685,9 @@ public final class Rational implements Comparable<Rational> {
      */
     public int binaryExponent() {
         if (this == ONE) return 0;
-        if (this == ZERO || this.signum() != 1)
-            throw new IllegalArgumentException("Rational must be positive");
+        if (this == ZERO || signum() != 1) {
+            throw new IllegalArgumentException("this must be positive. Invalid this: " + this);
+        }
         Rational adjusted = this;
         int exponent = 0;
         if (lt(numerator, denominator)) {
@@ -1173,6 +1086,98 @@ public final class Rational implements Comparable<Rational> {
      */
     public double doubleValueExact() {
         return doubleValue(RoundingMode.UNNECESSARY);
+    }
+
+    /**
+     * Determines whether {@code this} has a terminating digit expansion in a particular base.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Rational}.</li>
+     *  <li>{@code base} must be at least 2.</li>
+     *  <li>The result may be either {@code boolean}.</li>
+     * </ul>
+     *
+     * @param base the base in which we are interesting in expanding {@code this}
+     * @return whether {@code this} has a terminating base expansion in base-{@code base}
+     */
+    public boolean hasTerminatingBaseExpansion(@NotNull BigInteger base) {
+        if (lt(base, IntegerUtils.TWO))
+            throw new IllegalArgumentException("base must be at least 2");
+        if (isInteger()) return true;
+        BigInteger remainder = denominator;
+        for (BigInteger baseFactor : nub(MathUtils.primeFactors(base))) {
+            while (remainder.mod(baseFactor).equals(BigInteger.ZERO)) {
+                remainder = remainder.divide(baseFactor);
+            }
+        }
+        return remainder.equals(BigInteger.ONE);
+    }
+
+    /**
+     * Rounds {@code this} to a {@link java.math.BigDecimal} with a specified rounding mode (see documentation for
+     * {@code java.math.RoundingMode} for details) and with a specified precision (number of significant digits), or
+     * to full precision if {@code precision} is 0.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Rational}.</li>
+     *  <li>{@code precision} cannot be negative.</li>
+     *  <li>{@code roundingMode} may be any {@code RoundingMode}.</li>
+     *  <li>If {@code precision} is 0, then {@code this} must be a {@code Rational} whose decimal expansion is
+     *  terminating; that is, its denominator must only have 2 or 5 as prime factors.</li>
+     *  <li>If {@code roundingMode} is {@code RoundingMode.UNNECESSARY}, then {@code precision} must be at least as
+     *  large as the number of digits in {@code this}'s decimal expansion.</li>
+     *  <li>The result is non-null.</li>
+     * </ul>
+     *
+     * @param precision the precision with which to round {@code this}. 0 indicates full precision.
+     * @param roundingMode specifies the details of how to round {@code this}.
+     * @return {@code this}, in {@code BigDecimal} form
+     */
+    public @NotNull BigDecimal bigDecimalValue(int precision, @NotNull RoundingMode roundingMode) {
+        MathContext context = new MathContext(precision, roundingMode);
+        BigDecimal result = new BigDecimal(numerator).divide(new BigDecimal(denominator), context);
+        if (precision != 0) {
+            result = BigDecimalUtils.setPrecision(result, precision);
+        }
+        return result;
+    }
+
+    /**
+     * Rounds {@code this} to a {@code BigDecimal} with a specified precision (number of significant digits), or to
+     * full precision if {@code precision} is 0. {@code RoundingMode.HALF_EVEN} is used for rounding.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Rational}.</li>
+     *  <li>{@code precision} cannot be negative.</li>
+     *  <li>If {@code precision} is 0, then {@code this} must be a {@code Rational} whose decimal expansion is
+     *  terminating; that is, its denominator must only have 2 or 5 as prime factors.</li>
+     *  <li>The result is a {@code BigDecimal} with minimal scale. That is, the scale is the smallest non-negative n
+     *  such that {@code this}×10<sup>n</sup> is an integer.</li>
+     * </ul>
+     *
+     * @param precision the precision with which to round {@code this}. 0 indicates full precision.
+     * @return {@code this}, in {@code BigDecimal} form
+     */
+    public @NotNull BigDecimal bigDecimalValue(int precision) {
+        return bigDecimalValue(precision, RoundingMode.HALF_EVEN);
+    }
+
+    /**
+     * Returns a {@code BigDecimal} exactly equal to {@code this}. Throws an {@code ArithmeticException} if
+     * {@code this} cannot be represented as a terminating decimal.
+     *
+     * <ul>
+     *  <li>{@code this} must be a {@code Rational} whose decimal expansion is terminating; that is, its denominator
+     *  must only have 2 or 5 as prime factors.</li>
+     *  <li>The result is a {@code BigDecimal} with minimal scale. That is, the scale is the smallest non-negative n
+     *  such that {@code this}×10<sup>n</sup> is an integer.</li>
+     * </ul>
+     *
+     * @return {@code this}, in {@code BigDecimal} form
+     */
+    public @NotNull BigDecimal bigDecimalValueExact() {
+        //noinspection BigDecimalMethodWithoutRoundingCalled
+        return new BigDecimal(numerator).divide(new BigDecimal(denominator));
     }
 
     public int bitLength() {
