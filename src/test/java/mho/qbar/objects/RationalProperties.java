@@ -240,6 +240,7 @@ public class RationalProperties {
             Rational r = of(i);
             r.validate();
             assertEquals(i, r.getDenominator(), BigInteger.ONE);
+            inverses(Rational::of, Rational::bigIntegerValueExact, i);
         }
     }
 
@@ -374,9 +375,7 @@ public class RationalProperties {
     }
 
     private static void propertiesIsInteger() {
-        initialize("");
-        System.out.println("\t\ttesting isInteger() properties...");
-
+        initialize("isInteger()");
         for (Rational r : take(LIMIT, P.rationals())) {
             assertEquals(r, r.isInteger(), of(r.floor()).equals(r));
         }
@@ -387,10 +386,8 @@ public class RationalProperties {
     }
 
     private static void propertiesBigIntegerValue_RoundingMode() {
-        initialize("");
-        System.out.println("\t\ttesting bigIntegerValue(RoundingMode) properties...");
-
-        Iterable<Pair<Rational, RoundingMode>> ps = filter(
+        initialize("bigIntegerValue(RoundingMode)");
+        Iterable<Pair<Rational, RoundingMode>> ps = filterInfinite(
                 p -> p.b != RoundingMode.UNNECESSARY || p.a.isInteger(),
                 P.pairs(P.rationals(), P.roundingModes())
         );
@@ -414,29 +411,27 @@ public class RationalProperties {
             assertTrue(r, le(r.subtract(of(r.bigIntegerValue(RoundingMode.HALF_EVEN))).abs(), of(1, 2)));
         }
 
-        Iterable<Rational> rs = filter(r -> lt(r.abs().fractionalPart(), of(1, 2)), P.rationals());
-        for (Rational r : take(LIMIT, rs)) {
+        for (Rational r : take(LIMIT, filterInfinite(s -> lt(s.abs().fractionalPart(), of(1, 2)), P.rationals()))) {
             assertEquals(r, r.bigIntegerValue(RoundingMode.HALF_DOWN), r.bigIntegerValue(RoundingMode.DOWN));
             assertEquals(r, r.bigIntegerValue(RoundingMode.HALF_UP), r.bigIntegerValue(RoundingMode.DOWN));
             assertEquals(r, r.bigIntegerValue(RoundingMode.HALF_EVEN), r.bigIntegerValue(RoundingMode.DOWN));
         }
 
-        rs = filter(r -> gt(r.abs().fractionalPart(), of(1, 2)), P.rationals());
-        for (Rational r : take(LIMIT, rs)) {
+        for (Rational r : take(LIMIT, filterInfinite(s -> gt(s.abs().fractionalPart(), of(1, 2)), P.rationals()))) {
             assertEquals(r, r.bigIntegerValue(RoundingMode.HALF_DOWN), r.bigIntegerValue(RoundingMode.UP));
             assertEquals(r, r.bigIntegerValue(RoundingMode.HALF_UP), r.bigIntegerValue(RoundingMode.UP));
             assertEquals(r, r.bigIntegerValue(RoundingMode.HALF_EVEN), r.bigIntegerValue(RoundingMode.UP));
         }
 
         //odd multiples of 1/2
-        rs = map(i -> of(i.shiftLeft(1).add(BigInteger.ONE), IntegerUtils.TWO), P.bigIntegers());
+        Iterable<Rational> rs = map(i -> of(i.shiftLeft(1).add(BigInteger.ONE), IntegerUtils.TWO), P.bigIntegers());
         for (Rational r : take(LIMIT, rs)) {
             assertEquals(r, r.bigIntegerValue(RoundingMode.HALF_DOWN), r.bigIntegerValue(RoundingMode.DOWN));
             assertEquals(r, r.bigIntegerValue(RoundingMode.HALF_UP), r.bigIntegerValue(RoundingMode.UP));
             assertFalse(r, r.bigIntegerValue(RoundingMode.HALF_EVEN).testBit(0));
         }
 
-        for (Rational r : take(LIMIT, filter(s -> !s.isInteger(), P.rationals()))) {
+        for (Rational r : take(LIMIT, filterInfinite(s -> !s.isInteger(), P.rationals()))) {
             try {
                 r.bigIntegerValue(RoundingMode.UNNECESSARY);
                 fail(r);
@@ -445,41 +440,37 @@ public class RationalProperties {
     }
 
     private static void propertiesBigIntegerValue() {
-        initialize("");
-        System.out.println("\t\ttesting bigIntegerValue() properties...");
-
+        initialize("bigIntegerValue()");
         for (Rational r : take(LIMIT, P.rationals())) {
             BigInteger rounded = r.bigIntegerValue();
             assertTrue(r, rounded.equals(BigInteger.ZERO) || rounded.signum() == r.signum());
             assertTrue(r, le(r.subtract(of(r.bigIntegerValue())).abs(), of(1, 2)));
         }
 
-        Iterable<Rational> rs = filter(r -> lt(r.abs().fractionalPart(), of(1, 2)), P.rationals());
-        for (Rational r : take(LIMIT, rs)) {
+        for (Rational r : take(LIMIT, filterInfinite(s -> lt(s.abs().fractionalPart(), of(1, 2)), P.rationals()))) {
             assertEquals(r, r.bigIntegerValue(), r.bigIntegerValue(RoundingMode.DOWN));
         }
 
-        rs = filter(r -> gt(r.abs().fractionalPart(), of(1, 2)), P.rationals());
-        for (Rational r : take(LIMIT, rs)) {
+        for (Rational r : take(LIMIT, filterInfinite(s -> gt(s.abs().fractionalPart(), of(1, 2)), P.rationals()))) {
             assertEquals(r, r.bigIntegerValue(), r.bigIntegerValue(RoundingMode.UP));
         }
 
         //odd multiples of 1/2
-        rs = map(i -> of(i.shiftLeft(1).add(BigInteger.ONE), IntegerUtils.TWO), P.bigIntegers());
+        Iterable<Rational> rs = map(i -> of(i.shiftLeft(1).add(BigInteger.ONE), IntegerUtils.TWO), P.bigIntegers());
         for (Rational r : take(LIMIT, rs)) {
             assertFalse(r, r.bigIntegerValue().testBit(0));
         }
     }
 
     private static void propertiesBigIntegerValueExact() {
-        initialize("");
-        System.out.println("\t\ttesting bigIntegerValueExact() properties...");
-
+        initialize("bigIntegerValueExact()");
         for (BigInteger i : take(LIMIT, P.bigIntegers())) {
-            assertEquals(i, of(i).bigIntegerValueExact(), i);
+            Rational r = of(i);
+            assertEquals(i, r.bigIntegerValueExact(), i);
+            inverses(Rational::bigIntegerValueExact, Rational::of, r);
         }
 
-        for (Rational r : take(LIMIT, filter(s -> !s.isInteger(), P.rationals()))) {
+        for (Rational r : take(LIMIT, filterInfinite(s -> !s.isInteger(), P.rationals()))) {
             try {
                 r.bigIntegerValueExact();
                 fail(r);

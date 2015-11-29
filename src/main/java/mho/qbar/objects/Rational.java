@@ -473,14 +473,13 @@ public final class Rational implements Comparable<Rational> {
      * @return {@code this}, rounded
      */
     public @NotNull BigInteger bigIntegerValue(@NotNull RoundingMode roundingMode) {
-        Ordering halfCompare = compare(fractionalPart(), of(1, 2));
-        if (signum() == -1) halfCompare = halfCompare.invert();
         switch (roundingMode) {
             case UNNECESSARY:
                 if (denominator.equals(BigInteger.ONE)) {
                     return numerator;
                 } else {
-                    throw new ArithmeticException("Rational not an integer. Use a different rounding mode");
+                    throw new ArithmeticException("If roundingMode is UNNECESSARY, this must be an integer. " +
+                            "Invalid this: " + this);
                 }
             case FLOOR:
                 return floor();
@@ -499,6 +498,10 @@ public final class Rational implements Comparable<Rational> {
                         return down.subtract(BigInteger.ONE);
                     }
                 }
+        }
+        Ordering halfCompare = compare(fractionalPart(), of(1, 2));
+        if (signum() == -1) halfCompare = halfCompare.invert();
+        switch (roundingMode) {
             case HALF_DOWN:
                 if (halfCompare == GT) {
                     return bigIntegerValue(RoundingMode.UP);
@@ -516,8 +519,8 @@ public final class Rational implements Comparable<Rational> {
                 if (halfCompare == GT) return bigIntegerValue(RoundingMode.UP);
                 BigInteger floor = floor();
                 return floor.testBit(0) ? floor.add(BigInteger.ONE) : floor;
+            default: throw new IllegalStateException("unreachable");
         }
-        return null; //never happens
     }
 
     /**
@@ -550,7 +553,7 @@ public final class Rational implements Comparable<Rational> {
         if (denominator.equals(BigInteger.ONE)) {
             return numerator;
         } else {
-            throw new ArithmeticException("Rational not an integer. Use a different rounding mode");
+            throw new ArithmeticException("this must be an integer. Invalid this: " + this);
         }
     }
 

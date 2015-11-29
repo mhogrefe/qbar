@@ -149,7 +149,7 @@ public class RationalDemos {
 
     private static void demoBigIntegerValue_RoundingMode() {
         initialize();
-        Iterable<Pair<Rational, RoundingMode>> ps = filter(
+        Iterable<Pair<Rational, RoundingMode>> ps = filterInfinite(
                 p -> p.b != RoundingMode.UNNECESSARY || p.a.isInteger(),
                 P.pairs(P.rationals(), P.roundingModes())
         );

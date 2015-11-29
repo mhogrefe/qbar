@@ -9,7 +9,6 @@ import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
-import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.util.Collections;
@@ -391,171 +390,186 @@ public class RationalTest {
         of_BigDecimal_helper("1E+15", "1000000000000000");
     }
 
+    private static void isInteger_helper(@NotNull Rational input, boolean output) {
+        aeq(input.isInteger(), output);
+    }
+
+    private static void isInteger_helper(@NotNull String input, boolean output) {
+        isInteger_helper(read(input).get(), output);
+    }
+
     @Test
     public void testIsInteger() {
-        assertTrue(ZERO.isInteger());
-        assertTrue(ONE.isInteger());
-        assertTrue(read("5").get().isInteger());
-        assertTrue(read("-5").get().isInteger());
-        assertFalse(read("1/2").get().isInteger());
-        assertFalse(read("-1/2").get().isInteger());
-        assertFalse(ofExact(Math.PI).get().isInteger());
-        assertFalse(ofExact(-Math.PI).get().isInteger());
+        isInteger_helper("0", true);
+        isInteger_helper("1", true);
+        isInteger_helper("5", true);
+        isInteger_helper("-5", true);
+        isInteger_helper("1/2", false);
+        isInteger_helper("-1/2", false);
+        isInteger_helper("-1/2", false);
+        isInteger_helper(PI_DOUBLE, false);
+        isInteger_helper(PI_DOUBLE.negate(), false);
+    }
+
+    private static void bigIntegerValue_RoundingMode_helper(
+            @NotNull String r,
+            @NotNull String roundingMode,
+            int output
+    ) {
+        aeq(read(r).get().bigIntegerValue(Readers.readRoundingMode(roundingMode).get()), output);
+    }
+
+    private static void bigIntegerValue_RoundingMode_fail_helper(@NotNull String r, @NotNull String roundingMode) {
+        try {
+            read(r).get().bigIntegerValue(Readers.readRoundingMode(roundingMode).get());
+            fail();
+        } catch (ArithmeticException ignored) {}
     }
 
     @Test
     public void testBigIntegerValue_RoundingMode() {
-        aeq(read("11/2").get().bigIntegerValue(RoundingMode.UP), 6);
-        aeq(read("5/2").get().bigIntegerValue(RoundingMode.UP), 3);
-        aeq(read("8/5").get().bigIntegerValue(RoundingMode.UP), 2);
-        aeq(read("11/10").get().bigIntegerValue(RoundingMode.UP), 2);
-        aeq(ONE.bigIntegerValue(RoundingMode.UP), 1);
-        aeq(ZERO.bigIntegerValue(RoundingMode.UP), 0);
-        aeq(read("-1").get().bigIntegerValue(RoundingMode.UP), -1);
-        aeq(read("-11/10").get().bigIntegerValue(RoundingMode.UP), -2);
-        aeq(read("-8/5").get().bigIntegerValue(RoundingMode.UP), -2);
-        aeq(read("-5/2").get().bigIntegerValue(RoundingMode.UP), -3);
-        aeq(read("-11/2").get().bigIntegerValue(RoundingMode.UP), -6);
+        bigIntegerValue_RoundingMode_helper("11/2", "UP", 6);
+        bigIntegerValue_RoundingMode_helper("5/2", "UP", 3);
+        bigIntegerValue_RoundingMode_helper("8/5", "UP", 2);
+        bigIntegerValue_RoundingMode_helper("11/10", "UP", 2);
+        bigIntegerValue_RoundingMode_helper("1", "UP", 1);
+        bigIntegerValue_RoundingMode_helper("0", "UP", 0);
+        bigIntegerValue_RoundingMode_helper("-1", "UP", -1);
+        bigIntegerValue_RoundingMode_helper("-11/10", "UP", -2);
+        bigIntegerValue_RoundingMode_helper("-8/5", "UP", -2);
+        bigIntegerValue_RoundingMode_helper("-5/2", "UP", -3);
+        bigIntegerValue_RoundingMode_helper("-11/2", "UP", -6);
 
-        aeq(read("11/2").get().bigIntegerValue(RoundingMode.DOWN), 5);
-        aeq(read("5/2").get().bigIntegerValue(RoundingMode.DOWN), 2);
-        aeq(read("8/5").get().bigIntegerValue(RoundingMode.DOWN), 1);
-        aeq(read("11/10").get().bigIntegerValue(RoundingMode.DOWN), 1);
-        aeq(ONE.bigIntegerValue(RoundingMode.DOWN), 1);
-        aeq(ZERO.bigIntegerValue(RoundingMode.DOWN), 0);
-        aeq(read("-1").get().bigIntegerValue(RoundingMode.DOWN), -1);
-        aeq(read("-11/10").get().bigIntegerValue(RoundingMode.DOWN), -1);
-        aeq(read("-8/5").get().bigIntegerValue(RoundingMode.DOWN), -1);
-        aeq(read("-5/2").get().bigIntegerValue(RoundingMode.DOWN), -2);
-        aeq(read("-11/2").get().bigIntegerValue(RoundingMode.DOWN), -5);
+        bigIntegerValue_RoundingMode_helper("11/2", "DOWN", 5);
+        bigIntegerValue_RoundingMode_helper("5/2", "DOWN", 2);
+        bigIntegerValue_RoundingMode_helper("8/5", "DOWN", 1);
+        bigIntegerValue_RoundingMode_helper("11/10", "DOWN", 1);
+        bigIntegerValue_RoundingMode_helper("1", "DOWN", 1);
+        bigIntegerValue_RoundingMode_helper("0", "DOWN", 0);
+        bigIntegerValue_RoundingMode_helper("-1", "DOWN", -1);
+        bigIntegerValue_RoundingMode_helper("-11/10", "DOWN", -1);
+        bigIntegerValue_RoundingMode_helper("-8/5", "DOWN", -1);
+        bigIntegerValue_RoundingMode_helper("-5/2", "DOWN", -2);
+        bigIntegerValue_RoundingMode_helper("-11/2", "DOWN", -5);
 
-        aeq(read("11/2").get().bigIntegerValue(RoundingMode.CEILING), 6);
-        aeq(read("5/2").get().bigIntegerValue(RoundingMode.CEILING), 3);
-        aeq(read("8/5").get().bigIntegerValue(RoundingMode.CEILING), 2);
-        aeq(read("11/10").get().bigIntegerValue(RoundingMode.CEILING), 2);
-        aeq(ONE.bigIntegerValue(RoundingMode.CEILING), 1);
-        aeq(ZERO.bigIntegerValue(RoundingMode.CEILING), 0);
-        aeq(read("-1").get().bigIntegerValue(RoundingMode.CEILING), -1);
-        aeq(read("-11/10").get().bigIntegerValue(RoundingMode.CEILING), -1);
-        aeq(read("-8/5").get().bigIntegerValue(RoundingMode.CEILING), -1);
-        aeq(read("-5/2").get().bigIntegerValue(RoundingMode.CEILING), -2);
-        aeq(read("-11/2").get().bigIntegerValue(RoundingMode.CEILING), -5);
+        bigIntegerValue_RoundingMode_helper("11/2", "CEILING", 6);
+        bigIntegerValue_RoundingMode_helper("5/2", "CEILING", 3);
+        bigIntegerValue_RoundingMode_helper("8/5", "CEILING", 2);
+        bigIntegerValue_RoundingMode_helper("11/10", "CEILING", 2);
+        bigIntegerValue_RoundingMode_helper("1", "CEILING", 1);
+        bigIntegerValue_RoundingMode_helper("0", "CEILING", 0);
+        bigIntegerValue_RoundingMode_helper("-1", "CEILING", -1);
+        bigIntegerValue_RoundingMode_helper("-11/10", "CEILING", -1);
+        bigIntegerValue_RoundingMode_helper("-8/5", "CEILING", -1);
+        bigIntegerValue_RoundingMode_helper("-5/2", "CEILING", -2);
+        bigIntegerValue_RoundingMode_helper("-11/2", "CEILING", -5);
 
-        aeq(read("11/2").get().bigIntegerValue(RoundingMode.FLOOR), 5);
-        aeq(read("5/2").get().bigIntegerValue(RoundingMode.FLOOR), 2);
-        aeq(read("8/5").get().bigIntegerValue(RoundingMode.FLOOR), 1);
-        aeq(read("11/10").get().bigIntegerValue(RoundingMode.FLOOR), 1);
-        aeq(ONE.bigIntegerValue(RoundingMode.FLOOR), 1);
-        aeq(ZERO.bigIntegerValue(RoundingMode.FLOOR), 0);
-        aeq(read("-1").get().bigIntegerValue(RoundingMode.FLOOR), -1);
-        aeq(read("-11/10").get().bigIntegerValue(RoundingMode.FLOOR), -2);
-        aeq(read("-8/5").get().bigIntegerValue(RoundingMode.FLOOR), -2);
-        aeq(read("-5/2").get().bigIntegerValue(RoundingMode.FLOOR), -3);
-        aeq(read("-11/2").get().bigIntegerValue(RoundingMode.FLOOR), -6);
+        bigIntegerValue_RoundingMode_helper("11/2", "FLOOR", 5);
+        bigIntegerValue_RoundingMode_helper("5/2", "FLOOR", 2);
+        bigIntegerValue_RoundingMode_helper("8/5", "FLOOR", 1);
+        bigIntegerValue_RoundingMode_helper("11/10", "FLOOR", 1);
+        bigIntegerValue_RoundingMode_helper("1", "FLOOR", 1);
+        bigIntegerValue_RoundingMode_helper("0", "FLOOR", 0);
+        bigIntegerValue_RoundingMode_helper("-1", "FLOOR", -1);
+        bigIntegerValue_RoundingMode_helper("-11/10", "FLOOR", -2);
+        bigIntegerValue_RoundingMode_helper("-8/5", "FLOOR", -2);
+        bigIntegerValue_RoundingMode_helper("-5/2", "FLOOR", -3);
+        bigIntegerValue_RoundingMode_helper("-11/2", "FLOOR", -6);
 
-        aeq(read("11/2").get().bigIntegerValue(RoundingMode.HALF_UP), 6);
-        aeq(read("5/2").get().bigIntegerValue(RoundingMode.HALF_UP), 3);
-        aeq(read("8/5").get().bigIntegerValue(RoundingMode.HALF_UP), 2);
-        aeq(read("11/10").get().bigIntegerValue(RoundingMode.HALF_UP), 1);
-        aeq(ONE.bigIntegerValue(RoundingMode.HALF_UP), 1);
-        aeq(ZERO.bigIntegerValue(RoundingMode.HALF_UP), 0);
-        aeq(read("-1").get().bigIntegerValue(RoundingMode.HALF_UP), -1);
-        aeq(read("-11/10").get().bigIntegerValue(RoundingMode.HALF_UP), -1);
-        aeq(read("-8/5").get().bigIntegerValue(RoundingMode.HALF_UP), -2);
-        aeq(read("-5/2").get().bigIntegerValue(RoundingMode.HALF_UP), -3);
-        aeq(read("-11/2").get().bigIntegerValue(RoundingMode.HALF_UP), -6);
+        bigIntegerValue_RoundingMode_helper("11/2", "HALF_UP", 6);
+        bigIntegerValue_RoundingMode_helper("5/2", "HALF_UP", 3);
+        bigIntegerValue_RoundingMode_helper("8/5", "HALF_UP", 2);
+        bigIntegerValue_RoundingMode_helper("11/10", "HALF_UP", 1);
+        bigIntegerValue_RoundingMode_helper("1", "HALF_UP", 1);
+        bigIntegerValue_RoundingMode_helper("0", "HALF_UP", 0);
+        bigIntegerValue_RoundingMode_helper("-1", "HALF_UP", -1);
+        bigIntegerValue_RoundingMode_helper("-11/10", "HALF_UP", -1);
+        bigIntegerValue_RoundingMode_helper("-8/5", "HALF_UP", -2);
+        bigIntegerValue_RoundingMode_helper("-5/2", "HALF_UP", -3);
+        bigIntegerValue_RoundingMode_helper("-11/2", "HALF_UP", -6);
 
-        aeq(read("11/2").get().bigIntegerValue(RoundingMode.HALF_DOWN), 5);
-        aeq(read("5/2").get().bigIntegerValue(RoundingMode.HALF_DOWN), 2);
-        aeq(read("8/5").get().bigIntegerValue(RoundingMode.HALF_DOWN), 2);
-        aeq(read("11/10").get().bigIntegerValue(RoundingMode.HALF_DOWN), 1);
-        aeq(ONE.bigIntegerValue(RoundingMode.HALF_DOWN), 1);
-        aeq(ZERO.bigIntegerValue(RoundingMode.HALF_DOWN), 0);
-        aeq(read("-1").get().bigIntegerValue(RoundingMode.HALF_DOWN), -1);
-        aeq(read("-11/10").get().bigIntegerValue(RoundingMode.HALF_DOWN), -1);
-        aeq(read("-8/5").get().bigIntegerValue(RoundingMode.HALF_DOWN), -2);
-        aeq(read("-5/2").get().bigIntegerValue(RoundingMode.HALF_DOWN), -2);
-        aeq(read("-11/2").get().bigIntegerValue(RoundingMode.HALF_DOWN), -5);
+        bigIntegerValue_RoundingMode_helper("11/2", "HALF_DOWN", 5);
+        bigIntegerValue_RoundingMode_helper("5/2", "HALF_DOWN", 2);
+        bigIntegerValue_RoundingMode_helper("8/5", "HALF_DOWN", 2);
+        bigIntegerValue_RoundingMode_helper("11/10", "HALF_DOWN", 1);
+        bigIntegerValue_RoundingMode_helper("1", "HALF_DOWN", 1);
+        bigIntegerValue_RoundingMode_helper("0", "HALF_DOWN", 0);
+        bigIntegerValue_RoundingMode_helper("-1", "HALF_DOWN", -1);
+        bigIntegerValue_RoundingMode_helper("-11/10", "HALF_DOWN", -1);
+        bigIntegerValue_RoundingMode_helper("-8/5", "HALF_DOWN", -2);
+        bigIntegerValue_RoundingMode_helper("-5/2", "HALF_DOWN", -2);
+        bigIntegerValue_RoundingMode_helper("-11/2", "HALF_DOWN", -5);
 
-        aeq(read("11/2").get().bigIntegerValue(RoundingMode.HALF_EVEN), 6);
-        aeq(read("5/2").get().bigIntegerValue(RoundingMode.HALF_EVEN), 2);
-        aeq(read("8/5").get().bigIntegerValue(RoundingMode.HALF_EVEN), 2);
-        aeq(read("11/10").get().bigIntegerValue(RoundingMode.HALF_EVEN), 1);
-        aeq(ONE.bigIntegerValue(RoundingMode.HALF_EVEN), 1);
-        aeq(ZERO.bigIntegerValue(RoundingMode.HALF_EVEN), 0);
-        aeq(read("-1").get().bigIntegerValue(RoundingMode.HALF_EVEN), -1);
-        aeq(read("-11/10").get().bigIntegerValue(RoundingMode.HALF_EVEN), -1);
-        aeq(read("-8/5").get().bigIntegerValue(RoundingMode.HALF_EVEN), -2);
-        aeq(read("-5/2").get().bigIntegerValue(RoundingMode.HALF_EVEN), -2);
-        aeq(read("-11/2").get().bigIntegerValue(RoundingMode.HALF_EVEN), -6);
+        bigIntegerValue_RoundingMode_helper("11/2", "HALF_EVEN", 6);
+        bigIntegerValue_RoundingMode_helper("5/2", "HALF_EVEN", 2);
+        bigIntegerValue_RoundingMode_helper("8/5", "HALF_EVEN", 2);
+        bigIntegerValue_RoundingMode_helper("11/10", "HALF_EVEN", 1);
+        bigIntegerValue_RoundingMode_helper("1", "HALF_EVEN", 1);
+        bigIntegerValue_RoundingMode_helper("0", "HALF_EVEN", 0);
+        bigIntegerValue_RoundingMode_helper("-1", "HALF_EVEN", -1);
+        bigIntegerValue_RoundingMode_helper("-11/10", "HALF_EVEN", -1);
+        bigIntegerValue_RoundingMode_helper("-8/5", "HALF_EVEN", -2);
+        bigIntegerValue_RoundingMode_helper("-5/2", "HALF_EVEN", -2);
+        bigIntegerValue_RoundingMode_helper("-11/2", "HALF_EVEN", -6);
 
-        try {
-            read("11/2").get().bigIntegerValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        try {
-            read("5/2").get().bigIntegerValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        try {
-            read("8/5").get().bigIntegerValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        try {
-            read("11/10").get().bigIntegerValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(ONE.bigIntegerValue(RoundingMode.UNNECESSARY), 1);
-        aeq(ZERO.bigIntegerValue(RoundingMode.UNNECESSARY), 0);
-        aeq(read("-1").get().bigIntegerValue(RoundingMode.UNNECESSARY), -1);
-        try {
-            read("-11/10").get().bigIntegerValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        try {
-            read("-8/5").get().bigIntegerValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        try {
-            read("-5/2").get().bigIntegerValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        try {
-            read("-11/2").get().bigIntegerValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
+        bigIntegerValue_RoundingMode_fail_helper("11/2", "UNNECESSARY");
+        bigIntegerValue_RoundingMode_fail_helper("5/2", "UNNECESSARY");
+        bigIntegerValue_RoundingMode_fail_helper("8/5", "UNNECESSARY");
+        bigIntegerValue_RoundingMode_fail_helper("11/10", "UNNECESSARY");
+        bigIntegerValue_RoundingMode_helper("1", "UNNECESSARY", 1);
+        bigIntegerValue_RoundingMode_helper("0", "UNNECESSARY", 0);
+        bigIntegerValue_RoundingMode_helper("-1", "UNNECESSARY", -1);
+        bigIntegerValue_RoundingMode_fail_helper("-11/10", "UNNECESSARY");
+        bigIntegerValue_RoundingMode_fail_helper("-8/5", "UNNECESSARY");
+        bigIntegerValue_RoundingMode_fail_helper("-5/2", "UNNECESSARY");
+        bigIntegerValue_RoundingMode_fail_helper("-11/2", "UNNECESSARY");
+    }
+
+    private static void bigIntegerValue_helper(@NotNull String r, int output
+    ) {
+        aeq(read(r).get().bigIntegerValue(), output);
     }
 
     @Test
     public void testBigIntegerValue() {
-        aeq(read("11/2").get().bigIntegerValue(), 6);
-        aeq(read("5/2").get().bigIntegerValue(), 2);
-        aeq(read("8/5").get().bigIntegerValue(), 2);
-        aeq(read("11/10").get().bigIntegerValue(), 1);
-        aeq(ONE.bigIntegerValue(), 1);
-        aeq(ZERO.bigIntegerValue(), 0);
-        aeq(read("-1").get().bigIntegerValue(), -1);
-        aeq(read("-11/10").get().bigIntegerValue(), -1);
-        aeq(read("-8/5").get().bigIntegerValue(), -2);
-        aeq(read("-5/2").get().bigIntegerValue(), -2);
-        aeq(read("-11/2").get().bigIntegerValue(), -6);
+        bigIntegerValue_helper("11/2", 6);
+        bigIntegerValue_helper("5/2", 2);
+        bigIntegerValue_helper("8/5", 2);
+        bigIntegerValue_helper("11/10", 1);
+        bigIntegerValue_helper("1", 1);
+        bigIntegerValue_helper("0", 0);
+        bigIntegerValue_helper("-1", -1);
+        bigIntegerValue_helper("-11/10", -1);
+        bigIntegerValue_helper("-8/5", -2);
+        bigIntegerValue_helper("-5/2", -2);
+        bigIntegerValue_helper("-11/2", -6);
+    }
+
+    private static void bigIntegerValueExact_helper(@NotNull String r, int output
+    ) {
+        aeq(read(r).get().bigIntegerValueExact(), output);
+    }
+
+    private static void bigIntegerValueExact_fail_helper(@NotNull String r) {
+        try {
+            read(r).get().bigIntegerValueExact();
+            fail();
+        } catch (ArithmeticException ignored) {}
     }
 
     @Test
     public void testBigIntegerValueExact() {
-        aeq(ONE.bigIntegerValueExact(), 1);
-        aeq(ZERO.bigIntegerValueExact(), 0);
-        aeq(read("-1").get().bigIntegerValueExact(), -1);
-        aeq(read("23").get().bigIntegerValueExact(), 23);
-        aeq(read("-8").get().bigIntegerValueExact(), -8);
-        try {
-            read("11/2").get().bigIntegerValueExact();
-            fail();
-        } catch (ArithmeticException ignored) {}
-        try {
-            read("-8/5").get().bigIntegerValueExact();
-            fail();
-        } catch (ArithmeticException ignored) {}
+        bigIntegerValueExact_fail_helper("11/2");
+        bigIntegerValueExact_fail_helper("5/2");
+        bigIntegerValueExact_fail_helper("8/5");
+        bigIntegerValueExact_fail_helper("11/10");
+        bigIntegerValueExact_helper("1", 1);
+        bigIntegerValueExact_helper("0", 0);
+        bigIntegerValueExact_helper("-1", -1);
+        bigIntegerValueExact_fail_helper("-11/10");
+        bigIntegerValueExact_fail_helper("-8/5");
+        bigIntegerValueExact_fail_helper("-5/2");
+        bigIntegerValueExact_fail_helper("-11/2");
     }
 
     @Test
