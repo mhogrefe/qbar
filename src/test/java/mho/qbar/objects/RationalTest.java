@@ -545,8 +545,7 @@ public class RationalTest {
         bigIntegerValue_helper("-11/2", -6);
     }
 
-    private static void bigIntegerValueExact_helper(@NotNull String r, int output
-    ) {
+    private static void bigIntegerValueExact_helper(@NotNull String r, int output) {
         aeq(read(r).get().bigIntegerValueExact(), output);
     }
 
@@ -572,88 +571,96 @@ public class RationalTest {
         bigIntegerValueExact_fail_helper("-11/2");
     }
 
+    private static void byteValueExact_helper(@NotNull String r, @NotNull String output) {
+        aeq(read(r).get().byteValueExact(), output);
+    }
+
+    private static void byteValueExact_fail_helper(@NotNull String r) {
+        try {
+            read(r).get().byteValueExact();
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
     @Test
     public void testByteValueExact() {
-        aeq(ONE.byteValueExact(), 1);
-        aeq(ZERO.byteValueExact(), 0);
-        aeq(read("-1").get().byteValueExact(), -1);
-        aeq(read("23").get().byteValueExact(), 23);
-        aeq(read("-8").get().byteValueExact(), -8);
+        byteValueExact_helper("1", "1");
+        byteValueExact_helper("0", "0");
+        byteValueExact_helper("-1", "-1");
+        byteValueExact_helper("23", "23");
+        byteValueExact_helper("8", "8");
+        byteValueExact_fail_helper("11/2");
+        byteValueExact_fail_helper("-8/5");
+        byteValueExact_fail_helper("1000");
+    }
+
+    private static void shortValueExact_helper(@NotNull String r, @NotNull String output) {
+        aeq(read(r).get().shortValueExact(), output);
+    }
+
+    private static void shortValueExact_fail_helper(@NotNull String r) {
         try {
-            read("11/2").get().byteValueExact();
-            fail();
-        } catch (ArithmeticException ignored) {}
-        try {
-            read("-8/5").get().byteValueExact();
-            fail();
-        } catch (ArithmeticException ignored) {}
-        try {
-            read("1000").get().byteValueExact();
+            read(r).get().shortValueExact();
             fail();
         } catch (ArithmeticException ignored) {}
     }
 
     @Test
     public void testShortValueExact() {
-        aeq(ONE.shortValueExact(), 1);
-        aeq(ZERO.shortValueExact(), 0);
-        aeq(read("-1").get().shortValueExact(), -1);
-        aeq(read("23").get().shortValueExact(), 23);
-        aeq(read("-8").get().shortValueExact(), -8);
+        shortValueExact_helper("1", "1");
+        shortValueExact_helper("0", "0");
+        shortValueExact_helper("-1", "-1");
+        shortValueExact_helper("23", "23");
+        shortValueExact_helper("8", "8");
+        shortValueExact_fail_helper("11/2");
+        shortValueExact_fail_helper("-8/5");
+        shortValueExact_fail_helper("100000");
+    }
+
+    private static void intValueExact_helper(@NotNull String r, @NotNull String output) {
+        aeq(read(r).get().intValueExact(), output);
+    }
+
+    private static void intValueExact_fail_helper(@NotNull String r) {
         try {
-            read("11/2").get().shortValueExact();
-            fail();
-        } catch (ArithmeticException ignored) {}
-        try {
-            read("-8/5").get().shortValueExact();
-            fail();
-        } catch (ArithmeticException ignored) {}
-        try {
-            read("100000").get().shortValueExact();
+            read(r).get().intValueExact();
             fail();
         } catch (ArithmeticException ignored) {}
     }
 
     @Test
     public void testIntValueExact() {
-        aeq(ONE.intValueExact(), 1);
-        aeq(ZERO.intValueExact(), 0);
-        aeq(read("-1").get().intValueExact(), -1);
-        aeq(read("23").get().intValueExact(), 23);
-        aeq(read("-8").get().intValueExact(), -8);
+        intValueExact_helper("1", "1");
+        intValueExact_helper("0", "0");
+        intValueExact_helper("-1", "-1");
+        intValueExact_helper("23", "23");
+        intValueExact_helper("8", "8");
+        intValueExact_fail_helper("11/2");
+        intValueExact_fail_helper("-8/5");
+        intValueExact_fail_helper("10000000000");
+    }
+
+    private static void longValueExact_helper(@NotNull String r, @NotNull String output) {
+        aeq(read(r).get().longValueExact(), output);
+    }
+
+    private static void longValueExact_fail_helper(@NotNull String r) {
         try {
-            read("11/2").get().intValueExact();
-            fail();
-        } catch (ArithmeticException ignored) {}
-        try {
-            read("-8/5").get().intValueExact();
-            fail();
-        } catch (ArithmeticException ignored) {}
-        try {
-            read("10000000000").get().intValueExact();
+            read(r).get().longValueExact();
             fail();
         } catch (ArithmeticException ignored) {}
     }
 
     @Test
     public void testLongValueExact() {
-        aeq(ONE.longValueExact(), 1);
-        aeq(ZERO.longValueExact(), 0);
-        aeq(read("-1").get().longValueExact(), -1);
-        aeq(read("23").get().longValueExact(), 23);
-        aeq(read("-8").get().longValueExact(), -8);
-        try {
-            read("11/2").get().longValueExact();
-            fail();
-        } catch (ArithmeticException ignored) {}
-        try {
-            read("-8/5").get().longValueExact();
-            fail();
-        } catch (ArithmeticException ignored) {}
-        try {
-            read("10000000000000000000").get().longValueExact();
-            fail();
-        } catch (ArithmeticException ignored) {}
+        longValueExact_helper("1", "1");
+        longValueExact_helper("0", "0");
+        longValueExact_helper("-1", "-1");
+        longValueExact_helper("23", "23");
+        longValueExact_helper("8", "8");
+        longValueExact_fail_helper("11/2");
+        longValueExact_fail_helper("-8/5");
+        longValueExact_fail_helper("10000000000000000000");
     }
 
     @Test

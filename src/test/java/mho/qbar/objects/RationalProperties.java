@@ -252,6 +252,7 @@ public class RationalProperties {
             assertEquals(l, r.getDenominator(), BigInteger.ONE);
             assertTrue(l, ge(r.getNumerator(), BigInteger.valueOf(Long.MIN_VALUE)));
             assertTrue(l, le(r.getNumerator(), BigInteger.valueOf(Long.MAX_VALUE)));
+            inverses(Rational::of, Rational::longValueExact, l);
         }
     }
 
@@ -263,6 +264,7 @@ public class RationalProperties {
             assertEquals(i, r.getDenominator(), BigInteger.ONE);
             assertTrue(i, ge(r.getNumerator(), BigInteger.valueOf(Integer.MIN_VALUE)));
             assertTrue(i, le(r.getNumerator(), BigInteger.valueOf(Integer.MAX_VALUE)));
+            inverses(Rational::of, Rational::intValueExact, i);
         }
     }
 
@@ -479,14 +481,14 @@ public class RationalProperties {
     }
 
     private static void propertiesByteValueExact() {
-        initialize("");
-        System.out.println("\t\ttesting byteValueExact() properties...");
-
+        initialize("byteValueExact()");
         for (byte b : take(LIMIT, P.bytes())) {
-            assertEquals(b, of(b).byteValueExact(), b);
+            Rational r = of(b);
+            assertEquals(b, r.byteValueExact(), b);
+            inverses(Rational::byteValueExact, c -> of((int) c), r);
         }
 
-        for (Rational r : take(LIMIT, filter(s -> !s.isInteger(), P.rationals()))) {
+        for (Rational r : take(LIMIT, filterInfinite(s -> !s.isInteger(), P.rationals()))) {
             try {
                 r.byteValueExact();
                 fail(r);
@@ -500,11 +502,7 @@ public class RationalProperties {
             } catch (ArithmeticException ignored) {}
         }
 
-        Iterable<BigInteger> below = rangeBy(
-                BigInteger.valueOf(Byte.MIN_VALUE).subtract(BigInteger.ONE),
-                IntegerUtils.NEGATIVE_ONE
-        );
-        for (BigInteger i : take(LIMIT, below)) {
+        for (BigInteger i : take(LIMIT, P.rangeDown(BigInteger.valueOf(Byte.MIN_VALUE).subtract(BigInteger.ONE)))) {
             try {
                 of(i).byteValueExact();
                 fail(i);
@@ -513,14 +511,14 @@ public class RationalProperties {
     }
 
     private static void propertiesShortValueExact() {
-        initialize("");
-        System.out.println("\t\ttesting shortValueExact() properties...");
-
+        initialize("shortValueExact()");
         for (short s : take(LIMIT, P.shorts())) {
-            assertEquals(s, of(s).shortValueExact(), s);
+            Rational r = of(s);
+            assertEquals(s, r.shortValueExact(), s);
+            inverses(Rational::shortValueExact, t -> of((int) t), r);
         }
 
-        for (Rational r : take(LIMIT, filter(s -> !s.isInteger(), P.rationals()))) {
+        for (Rational r : take(LIMIT, filterInfinite(s -> !s.isInteger(), P.rationals()))) {
             try {
                 r.shortValueExact();
                 fail(r);
@@ -534,11 +532,7 @@ public class RationalProperties {
             } catch (ArithmeticException ignored) {}
         }
 
-        Iterable<BigInteger> below = rangeBy(
-                BigInteger.valueOf(Short.MIN_VALUE).subtract(BigInteger.ONE),
-                IntegerUtils.NEGATIVE_ONE
-        );
-        for (BigInteger i : take(LIMIT, below)) {
+        for (BigInteger i : take(LIMIT, P.rangeDown(BigInteger.valueOf(Short.MIN_VALUE).subtract(BigInteger.ONE)))) {
             try {
                 of(i).shortValueExact();
                 fail(i);
@@ -547,33 +541,32 @@ public class RationalProperties {
     }
 
     private static void propertiesIntValueExact() {
-        initialize("");
-        System.out.println("\t\ttesting intValueExact() properties...");
-
+        initialize("intValueExact()");
         for (int i : take(LIMIT, P.integers())) {
-            assertEquals(i, of(i).intValueExact(), i);
+            Rational r = of(i);
+            assertEquals(i, r.intValueExact(), i);
+            inverses(Rational::intValueExact, Rational::of, r);
         }
 
-        for (Rational r : take(LIMIT, filter(s -> !s.isInteger(), P.rationals()))) {
+        for (Rational r : take(LIMIT, filterInfinite(s -> !s.isInteger(), P.rationals()))) {
             try {
                 r.intValueExact();
                 fail(r);
             } catch (ArithmeticException ignored) {}
         }
 
-        Iterable<BigInteger> is = P.withScale(33).rangeUp(BigInteger.valueOf(Integer.MAX_VALUE).add(BigInteger.ONE));
-        for (BigInteger i : take(LIMIT, is)) {
+        Iterable<BigInteger> isFail = P.withScale(33)
+                .rangeUp(BigInteger.valueOf(Integer.MAX_VALUE).add(BigInteger.ONE));
+        for (BigInteger i : take(LIMIT, isFail)) {
             try {
                 of(i).intValueExact();
                 fail(i);
             } catch (ArithmeticException ignored) {}
         }
 
-        Iterable<BigInteger> below = rangeBy(
-                BigInteger.valueOf(Integer.MIN_VALUE).subtract(BigInteger.ONE),
-                IntegerUtils.NEGATIVE_ONE
-        );
-        for (BigInteger i : take(LIMIT, below)) {
+        Iterable<BigInteger> isFail2 = P.withScale(33)
+                .rangeDown(BigInteger.valueOf(Integer.MIN_VALUE).subtract(BigInteger.ONE));
+        for (BigInteger i : take(LIMIT, isFail2)) {
             try {
                 of(i).intValueExact();
                 fail(i);
@@ -582,33 +575,31 @@ public class RationalProperties {
     }
 
     private static void propertiesLongValueExact() {
-        initialize("");
-        System.out.println("\t\ttesting longValueExact() properties...");
-
+        initialize("longValueExact()");
         for (long l : take(LIMIT, P.longs())) {
-            assertEquals(l, of(l).longValueExact(), l);
+            Rational r = of(l);
+            assertEquals(l, r.longValueExact(), l);
+            inverses(Rational::longValueExact, Rational::of, r);
         }
 
-        for (Rational r : take(LIMIT, filter(s -> !s.isInteger(), P.rationals()))) {
+        for (Rational r : take(LIMIT, filterInfinite(s -> !s.isInteger(), P.rationals()))) {
             try {
                 r.longValueExact();
                 fail(r);
             } catch (ArithmeticException ignored) {}
         }
 
-        Iterable<BigInteger> is = P.withScale(65).rangeUp(BigInteger.valueOf(Long.MAX_VALUE).add(BigInteger.ONE));
-        for (BigInteger i : take(LIMIT, is)) {
+        Iterable<BigInteger> isFail = P.withScale(65).rangeUp(BigInteger.valueOf(Long.MAX_VALUE).add(BigInteger.ONE));
+        for (BigInteger i : take(LIMIT, isFail)) {
             try {
                 of(i).longValueExact();
                 fail(i);
             } catch (ArithmeticException ignored) {}
         }
 
-        Iterable<BigInteger> below = rangeBy(
-                BigInteger.valueOf(Long.MIN_VALUE).subtract(BigInteger.ONE),
-                IntegerUtils.NEGATIVE_ONE
-        );
-        for (BigInteger i : take(LIMIT, below)) {
+        Iterable<BigInteger> isFail2 = P.withScale(65)
+                .rangeDown(BigInteger.valueOf(Long.MIN_VALUE).subtract(BigInteger.ONE));
+        for (BigInteger i : take(LIMIT, isFail2)) {
             try {
                 of(i).longValueExact();
                 fail(i);
