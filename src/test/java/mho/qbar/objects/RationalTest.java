@@ -373,18 +373,22 @@ public class RationalTest {
         ofExact_double_empty_helper(Double.NaN);
     }
 
+    private static void of_BigDecimal_helper(@NotNull String input, @NotNull String output) {
+        aeq(of(Readers.readBigDecimal(input).get()), output);
+    }
+
     @Test
     public void testOf_BigDecimal() {
-        assertTrue(of(BigDecimal.ZERO) == ZERO);
-        assertTrue(of(BigDecimal.ONE) == ONE);
-        aeq(of(new BigDecimal("3")), "3");
-        aeq(of(new BigDecimal("-5")), "-5");
-        aeq(of(new BigDecimal("0.1")), "1/10");
-        aeq(of(new BigDecimal("3.14159")), "314159/100000");
-        aeq(of(new BigDecimal("-2.718281828459045")), "-543656365691809/200000000000000");
-        aeq(of(new BigDecimal("0.00000000000001")), "1/100000000000000");
-        aeq(of(new BigDecimal("1000000000000000")), "1000000000000000");
-        aeq(of(new BigDecimal("1E15")), "1000000000000000");
+        of_BigDecimal_helper("0", "0");
+        of_BigDecimal_helper("1", "1");
+        of_BigDecimal_helper("3", "3");
+        of_BigDecimal_helper("-5", "-5");
+        of_BigDecimal_helper("0.1", "1/10");
+        of_BigDecimal_helper("3.14159", "314159/100000");
+        of_BigDecimal_helper("-2.718281828459045", "-543656365691809/200000000000000");
+        of_BigDecimal_helper("1E-14", "1/100000000000000");
+        of_BigDecimal_helper("1000000000000000", "1000000000000000");
+        of_BigDecimal_helper("1E+15", "1000000000000000");
     }
 
     @Test
