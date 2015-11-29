@@ -663,6 +663,84 @@ public class RationalTest {
         longValueExact_fail_helper("10000000000000000000");
     }
 
+    private static void isPowerOfTwo_helper(@NotNull String input, boolean output) {
+        aeq(read(input).get().isPowerOfTwo(), output);
+    }
+
+    private static void isPowerOfTwo_fail_helper(@NotNull String r) {
+        try {
+            read(r).get().isPowerOfTwo();
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testIsPowerOfTwo() {
+        isPowerOfTwo_helper("1", true);
+        isPowerOfTwo_helper("2", true);
+        isPowerOfTwo_helper("256", true);
+        isPowerOfTwo_helper("1/2", true);
+        isPowerOfTwo_helper("1/256", true);
+        isPowerOfTwo_helper("3", false);
+        isPowerOfTwo_helper("1/3", false);
+        isPowerOfTwo_fail_helper("0");
+        isPowerOfTwo_fail_helper("-1");
+        isPowerOfTwo_fail_helper("-1/2");
+    }
+
+    private static void isBinaryFraction_helper(@NotNull String input, boolean output) {
+        aeq(read(input).get().isBinaryFraction(), output);
+    }
+
+    @Test
+    public void testIsBinaryFraction() {
+        isBinaryFraction_helper("0", true);
+        isBinaryFraction_helper("1", true);
+        isBinaryFraction_helper("2", true);
+        isBinaryFraction_helper("3", true);
+        isBinaryFraction_helper("-1", true);
+        isBinaryFraction_helper("-2", true);
+        isBinaryFraction_helper("-3", true);
+        isBinaryFraction_helper("1/4", true);
+        isBinaryFraction_helper("3/4", true);
+        isBinaryFraction_helper("-1/4", true);
+        isBinaryFraction_helper("-3/4", true);
+        isBinaryFraction_helper("1/3", false);
+        isBinaryFraction_helper("1/10", false);
+        isBinaryFraction_helper("-1/3", false);
+        isBinaryFraction_helper("-1/10", false);
+    }
+
+    private static void binaryFractionValueExact_helper(@NotNull String r, @NotNull String output) {
+        aeq(read(r).get().binaryFractionValueExact(), output);
+    }
+
+    private static void binaryFractionValueExact_fail_helper(@NotNull String r) {
+        try {
+            read(r).get().binaryFractionValueExact();
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testBinaryFractionValueExact() {
+        binaryFractionValueExact_helper("0", "0");
+        binaryFractionValueExact_helper("1", "1");
+        binaryFractionValueExact_helper("2", "1 << 1");
+        binaryFractionValueExact_helper("3", "3");
+        binaryFractionValueExact_helper("-1", "-1");
+        binaryFractionValueExact_helper("-2", "-1 << 1");
+        binaryFractionValueExact_helper("-3", "-3");
+        binaryFractionValueExact_helper("1/4", "1 >> 2");
+        binaryFractionValueExact_helper("3/4", "3 >> 2");
+        binaryFractionValueExact_helper("-1/4", "-1 >> 2");
+        binaryFractionValueExact_helper("-3/4", "-3 >> 2");
+        binaryFractionValueExact_fail_helper("1/3");
+        binaryFractionValueExact_fail_helper("1/10");
+        binaryFractionValueExact_fail_helper("-1/3");
+        binaryFractionValueExact_fail_helper("-1/10");
+    }
+
     @Test
     public void testHasTerminatingBaseExpansion() {
         assertTrue(ZERO.hasTerminatingBaseExpansion(IntegerUtils.TWO));

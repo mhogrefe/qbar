@@ -618,6 +618,56 @@ public final class Rational implements Comparable<Rational> {
     }
 
     /**
+     * Determines whether {@code this} is a power of 2.
+     *
+     * <ul>
+     *  <li>{@code this} must be positive.</li>
+     *  <li>The result may be either boolean.</li>
+     * </ul>
+     *
+     * @return whether {@code this} is a power of two
+     */
+    public boolean isPowerOfTwo() {
+        if (signum() != 1) {
+            throw new ArithmeticException("this must be positive. Invalid this: " + this);
+        }
+        return denominator.equals(BigInteger.ONE) && IntegerUtils.isPowerOfTwo(numerator) ||
+                numerator.equals(BigInteger.ONE) && IntegerUtils.isPowerOfTwo(denominator);
+    }
+
+    /**
+     * Determines whether {@code this} is a binary fraction (whether its denominator is a power of 2).
+     *
+     * <ul>
+     *  <li>{@code this} cannot be null.</li>
+     *  <li>The result may be either boolean.</li>
+     * </ul>
+     *
+     * @return whether {@code this} is a binary fraction
+     */
+    public boolean isBinaryFraction() {
+        return IntegerUtils.isPowerOfTwo(denominator);
+    }
+
+    /**
+     * Converts {@code this} to a {@code BinaryFraction}. Throws an {@link java.lang.ArithmeticException} if
+     * {@code this} is not a binary fraction.
+     *
+     * <ul>
+     *  <li>{@code this} must be a binary fraction (its denominator must be a power of 2.)</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @return the {@code BinaryFraction} value of {@code this}
+     */
+    public @NotNull BinaryFraction binaryFractionValueExact() {
+        if (!isBinaryFraction()) {
+            throw new ArithmeticException("this must be a binary fraction. Invalid this: " + this);
+        }
+        return BinaryFraction.of(numerator, -denominator.getLowestSetBit());
+    }
+
+    /**
      * Determines whether {@code this} has a terminating digit expansion in a particular base.
      *
      * <ul>

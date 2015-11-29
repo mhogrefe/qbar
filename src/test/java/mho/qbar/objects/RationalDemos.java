@@ -200,6 +200,27 @@ public class RationalDemos {
         }
     }
 
+    private static void demoIsPowerOfTwo() {
+        initialize();
+        for (Rational r : take(LIMIT, P.positiveRationals())) {
+            System.out.println(r + " is " + (r.isPowerOfTwo() ? "a" : "not a") + " power of 2");
+        }
+    }
+
+    private static void demoIsBinaryFraction() {
+        initialize();
+        for (Rational r : take(LIMIT, P.rationals())) {
+            System.out.println(r + " is " + (r.isBinaryFraction() ? "a" : "not a") + " binary fraction");
+        }
+    }
+
+    private static void demoBinaryFractionValueExact() {
+        initialize();
+        for (Rational r : take(LIMIT, filterInfinite(Rational::isBinaryFraction, P.rationals()))) {
+            System.out.println("binaryFractionValueExact(" + r + ") = " + r.binaryFractionValueExact());
+        }
+    }
+
     private static void demoHasTerminatingBaseExpansion() {
         initialize();
         Iterable<Pair<Rational, BigInteger>> ps = P.pairs(

@@ -18,6 +18,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.util.*;
+import java.util.function.Function;
 
 import static mho.qbar.objects.Rational.*;
 import static mho.qbar.objects.Rational.sum;
@@ -77,6 +78,9 @@ public class RationalProperties {
             propertiesShortValueExact();
             propertiesIntValueExact();
             propertiesLongValueExact();
+            propertiesIsPowerOfTwo();
+            propertiesIsBinaryFraction();
+            propertiesBinaryFractionValueExact();
             propertiesHasTerminatingBaseExpansion();
             propertiesBigDecimalValue_int_RoundingMode();
             propertiesBigDecimalValue_int();
@@ -275,6 +279,7 @@ public class RationalProperties {
             r.validate();
             assertEquals(bf, of(bf.getMantissa()).multiply(ONE.shiftLeft(bf.getExponent())), r);
             assertTrue(bf, IntegerUtils.isPowerOfTwo(r.getDenominator()));
+            inverses(Rational::of, Rational::binaryFractionValueExact, bf);
         }
     }
 
@@ -380,6 +385,7 @@ public class RationalProperties {
         initialize("isInteger()");
         for (Rational r : take(LIMIT, P.rationals())) {
             assertEquals(r, r.isInteger(), of(r.floor()).equals(r));
+            homomorphic(Rational::negate, Function.identity(), Rational::isInteger, Rational::isInteger, r);
         }
 
         for (BigInteger i : take(LIMIT, P.bigIntegers())) {
@@ -603,6 +609,48 @@ public class RationalProperties {
             try {
                 of(i).longValueExact();
                 fail(i);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private static void propertiesIsPowerOfTwo() {
+        initialize("isPowerOfTwo()");
+        for (Rational r : take(LIMIT, P.positiveRationals())) {
+            assertEquals(r, r.isPowerOfTwo(), ONE.shiftLeft(r.binaryExponent()).equals(r));
+        }
+
+        for (Rational r : take(LIMIT, P.withElement(ZERO, P.negativeRationals()))) {
+            try {
+                r.isPowerOfTwo();
+                fail(r);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private static void propertiesIsBinaryFraction() {
+        initialize("isBinaryFraction()");
+        for (Rational r : take(LIMIT, P.rationals())) {
+            r.isBinaryFraction();
+            homomorphic(
+                    Rational::negate,
+                    Function.identity(),
+                    Rational::isBinaryFraction,
+                    Rational::isBinaryFraction,
+                    r
+            );
+        }
+    }
+
+    private static void propertiesBinaryFractionValueExact() {
+        initialize("binaryFractionExact()");
+        for (Rational r : take(LIMIT, filterInfinite(Rational::isBinaryFraction, P.rationals()))) {
+            inverses(Rational::binaryFractionValueExact, Rational::of, r);
+        }
+
+        for (Rational r : take(LIMIT, filterInfinite(s -> !s.isBinaryFraction(), P.rationals()))) {
+            try {
+                r.binaryFractionValueExact();
+                fail(r);
             } catch (ArithmeticException ignored) {}
         }
     }
