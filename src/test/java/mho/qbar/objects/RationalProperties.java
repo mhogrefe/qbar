@@ -320,20 +320,15 @@ public class RationalProperties {
             assertEquals(f, Float.isFinite(f), or.isPresent());
         }
 
+        int x = 1 << (FLOAT_EXPONENT_WIDTH - 1);
+        BigInteger y = BigInteger.ONE.shiftLeft(-MIN_SUBNORMAL_FLOAT_EXPONENT);
+        BigInteger z = BigInteger.ONE.shiftLeft(x).subtract(BigInteger.ONE.shiftLeft(x - FLOAT_FRACTION_WIDTH - 1));
         for (float f : take(LIMIT, filter(Float::isFinite, P.floats()))) {
             Rational r = ofExact(f).get();
             r.validate();
             assertTrue(f, IntegerUtils.isPowerOfTwo(r.getDenominator()));
-            assertTrue(f, le(r.getDenominator(), BigInteger.ONE.shiftLeft(-MIN_SUBNORMAL_FLOAT_EXPONENT)));
-            int x = 1 << (FLOAT_EXPONENT_WIDTH - 1);
-            assertTrue(
-                    f,
-                    le(
-                            r.getNumerator(),
-                            BigInteger.ONE.shiftLeft(x)
-                                    .subtract(BigInteger.ONE.shiftLeft(x - FLOAT_FRACTION_WIDTH - 1))
-                    )
-            );
+            assertTrue(f, le(r.getDenominator(), y));
+            assertTrue(f, le(r.getNumerator(), z));
         }
 
         for (float f : take(LIMIT, filter(g -> Float.isFinite(g) && !isNegativeZero(g), P.floats()))) {
@@ -349,20 +344,15 @@ public class RationalProperties {
             assertEquals(d, Double.isFinite(d), or.isPresent());
         }
 
+        int x = 1 << (DOUBLE_EXPONENT_WIDTH - 1);
+        BigInteger y = BigInteger.ONE.shiftLeft(-MIN_SUBNORMAL_DOUBLE_EXPONENT);
+        BigInteger z = BigInteger.ONE.shiftLeft(x).subtract(BigInteger.ONE.shiftLeft(x - DOUBLE_FRACTION_WIDTH - 1));
         for (double d : take(LIMIT, filter(Double::isFinite, P.doubles()))) {
             Rational r = ofExact(d).get();
             r.validate();
             assertTrue(d, IntegerUtils.isPowerOfTwo(r.getDenominator()));
-            assertTrue(d, le(r.getDenominator(), BigInteger.ONE.shiftLeft(-MIN_SUBNORMAL_DOUBLE_EXPONENT)));
-            int x = 1 << (DOUBLE_EXPONENT_WIDTH - 1);
-            assertTrue(
-                    d,
-                    le(
-                            r.getNumerator(),
-                            BigInteger.ONE.shiftLeft(x)
-                                    .subtract(BigInteger.ONE.shiftLeft(x - DOUBLE_FRACTION_WIDTH - 1))
-                    )
-            );
+            assertTrue(d, le(r.getDenominator(), y));
+            assertTrue(d, le(r.getNumerator(), z));
         }
 
         for (double d : take(LIMIT, filter(e -> Double.isFinite(e) && !isNegativeZero(e), P.doubles()))) {
@@ -642,7 +632,7 @@ public class RationalProperties {
     }
 
     private static void propertiesBinaryFractionValueExact() {
-        initialize("binaryFractionExact()");
+        initialize("binaryFractionValueExact()");
         for (Rational r : take(LIMIT, filterInfinite(Rational::isBinaryFraction, P.rationals()))) {
             inverses(Rational::binaryFractionValueExact, Rational::of, r);
         }
