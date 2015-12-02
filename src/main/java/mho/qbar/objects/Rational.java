@@ -912,12 +912,12 @@ public final class Rational implements Comparable<Rational> {
     public float floatValue(@NotNull RoundingMode roundingMode) {
         Pair<Float, Float> floatRange = floatRange();
         if (floatRange.a.equals(floatRange.b)) return floatRange.a;
-        Optional<Rational> loFloat = ofExact(floatRange.a);
-        Optional<Rational> hiFloat = ofExact(floatRange.b);
-        if (!(loFloat.isPresent() && hiFloat.isPresent()) && roundingMode == RoundingMode.UNNECESSARY) {
+        if (roundingMode == RoundingMode.UNNECESSARY) {
             throw new ArithmeticException("If roundingMode is UNNECESSARY, this must be exactly equal to a float. " +
                     "Invalid this: " + this);
         }
+        Optional<Rational> loFloat = ofExact(floatRange.a);
+        Optional<Rational> hiFloat = ofExact(floatRange.b);
         if (!loFloat.isPresent()) {
             if (roundingMode == RoundingMode.FLOOR || roundingMode == RoundingMode.UP ||
                     roundingMode == RoundingMode.HALF_UP || roundingMode == RoundingMode.HALF_EVEN) {
@@ -935,9 +935,6 @@ public final class Rational implements Comparable<Rational> {
             }
         }
         switch (roundingMode) {
-            case UNNECESSARY:
-                throw new ArithmeticException("If roundingMode is UNNECESSARY, this must be exactly equal to a" +
-                        " float. Invalid this: " + this);
             case FLOOR:
                 return floatRange.a;
             case CEILING:
@@ -948,30 +945,22 @@ public final class Rational implements Comparable<Rational> {
                 return floatRange.a < 0 ? floatRange.a : floatRange.b;
         }
         Rational midway = loFloat.get().add(hiFloat.get()).shiftRight(1);
-        Ordering midwayCompare = compare(this, midway);
-        switch (roundingMode) {
-            case HALF_DOWN:
-                if (midwayCompare == EQ) {
-                    return signum() == 1 ? floatRange.a : floatRange.b;
-                } else {
-                    return midwayCompare == LT ? floatRange.a : floatRange.b;
+        switch (compare(this, midway)) {
+            case LT:
+                return floatRange.a;
+            case GT:
+                return floatRange.b;
+            case EQ:
+                switch (roundingMode) {
+                    case HALF_DOWN:
+                        return floatRange.a < 0 ? floatRange.b : floatRange.a;
+                    case HALF_UP:
+                        return floatRange.a < 0 ? floatRange.a : floatRange.b;
+                    case HALF_EVEN:
+                        return (Float.floatToIntBits(floatRange.a) & 1) == 0 ? floatRange.a : floatRange.b;
                 }
-            case HALF_UP:
-                if (midwayCompare == EQ) {
-                    return signum() == 1 ? floatRange.b : floatRange.a;
-                } else {
-                    return midwayCompare == LT ? floatRange.a : floatRange.b;
-                }
-            case HALF_EVEN:
-                if (midwayCompare == LT) {
-                    return floatRange.a;
-                } else if (midwayCompare == GT) {
-                    return floatRange.b;
-                } else {
-                    return (Float.floatToIntBits(floatRange.a) & 1) == 0 ? floatRange.a : floatRange.b;
-                }
+            default: throw new IllegalStateException("unreachable");
         }
-        return 0; //never happens
     }
 
     /**
@@ -1071,12 +1060,12 @@ public final class Rational implements Comparable<Rational> {
     public double doubleValue(@NotNull RoundingMode roundingMode) {
         Pair<Double, Double> doubleRange = doubleRange();
         if (doubleRange.a.equals(doubleRange.b)) return doubleRange.a;
-        Optional<Rational> loDouble = ofExact(doubleRange.a);
-        Optional<Rational> hiDouble = ofExact(doubleRange.b);
-        if (!(loDouble.isPresent() && hiDouble.isPresent()) && roundingMode == RoundingMode.UNNECESSARY) {
-            throw new ArithmeticException("If roundingMode is UNNECESSARY, this must be exactly equal to a double. " +
+        if (roundingMode == RoundingMode.UNNECESSARY) {
+            throw new ArithmeticException("If roundingMode is UNNECESSARY, this must be exactly equal to a float. " +
                     "Invalid this: " + this);
         }
+        Optional<Rational> loDouble = ofExact(doubleRange.a);
+        Optional<Rational> hiDouble = ofExact(doubleRange.b);
         if (!loDouble.isPresent()) {
             if (roundingMode == RoundingMode.FLOOR || roundingMode == RoundingMode.UP ||
                     roundingMode == RoundingMode.HALF_UP || roundingMode == RoundingMode.HALF_EVEN) {
@@ -1094,9 +1083,6 @@ public final class Rational implements Comparable<Rational> {
             }
         }
         switch (roundingMode) {
-            case UNNECESSARY:
-                throw new ArithmeticException("If roundingMode is UNNECESSARY, this must be exactly equal to a" +
-                        " double. Invalid this: " + this);
             case FLOOR:
                 return doubleRange.a;
             case CEILING:
@@ -1107,29 +1093,22 @@ public final class Rational implements Comparable<Rational> {
                 return doubleRange.a < 0 ? doubleRange.a : doubleRange.b;
         }
         Rational midway = loDouble.get().add(hiDouble.get()).shiftRight(1);
-        Ordering midwayCompare = compare(this, midway);
-        switch (roundingMode) {
-            case HALF_DOWN:
-                if (midwayCompare == EQ) {
-                    return signum() == 1 ? doubleRange.a : doubleRange.b;
-                } else {
-                    return midwayCompare == LT ? doubleRange.a : doubleRange.b;
+        switch (compare(this, midway)) {
+            case LT:
+                return doubleRange.a;
+            case GT:
+                return doubleRange.b;
+            case EQ:
+                switch (roundingMode) {
+                    case HALF_DOWN:
+                        return doubleRange.a < 0 ? doubleRange.b : doubleRange.a;
+                    case HALF_UP:
+                        return doubleRange.a < 0 ? doubleRange.a : doubleRange.b;
+                    case HALF_EVEN:
+                        return (Double.doubleToLongBits(doubleRange.a) & 1L) == 0L ? doubleRange.a : doubleRange.b;
                 }
-            case HALF_UP:
-                if (midwayCompare == EQ) {
-                    return signum() == 1 ? doubleRange.b : doubleRange.a;
-                } else {
-                    return midwayCompare == LT ? doubleRange.a : doubleRange.b;
-                }
-            case HALF_EVEN:
-                if (midwayCompare == LT) {
-                    return doubleRange.a;
-                } else if (midwayCompare == GT) {
-                    return doubleRange.b;
-                }
-                return (Double.doubleToLongBits(doubleRange.a) & 1) == 0 ? doubleRange.a : doubleRange.b;
+            default: throw new IllegalStateException("unreachable");
         }
-        return 0; //never happens
     }
 
     /**
