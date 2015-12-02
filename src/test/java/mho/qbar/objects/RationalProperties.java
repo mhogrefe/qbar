@@ -83,6 +83,9 @@ public class RationalProperties {
             propertiesBinaryFractionValueExact();
             propertiesBinaryExponent();
             propertiesIsEqualToFloat();
+            compareImplementationsIsEqualToFloat();
+            propertiesIsEqualToDouble();
+            compareImplementationsIsEqualToDouble();
             propertiesIsEqualToDouble();
             propertiesFloatValue_RoundingMode();
             propertiesFloatValue();
@@ -672,11 +675,31 @@ public class RationalProperties {
         }
     }
 
+    private static boolean isEqualToFloat_simplest(@NotNull Rational r) {
+        return ofExact(r.floatValue(RoundingMode.FLOOR)).get().equals(r);
+    }
+
+    private static boolean isEqualToFloat_alt(@NotNull Rational r) {
+        if (r == ZERO || r == ONE) return true;
+        if (r.getNumerator().signum() == -1) {
+            return isEqualToFloat_alt(r.negate());
+        }
+        int exponent = r.binaryExponent();
+        if (exponent > Float.MAX_EXPONENT || exponent == Float.MAX_EXPONENT && gt(r, LARGEST_FLOAT)) {
+            return false;
+        }
+        int shift = exponent < Float.MIN_EXPONENT ? MIN_SUBNORMAL_FLOAT_EXPONENT : exponent - FLOAT_FRACTION_WIDTH;
+        return r.shiftRight(shift).isInteger();
+    }
+
     private static void propertiesIsEqualToFloat() {
         initialize("isEqualToFloat()");
         for (Rational r : take(LIMIT, P.rationals())) {
-            assertTrue(r, !r.isEqualToFloat() || r.isBinaryFraction());
+            boolean ietf = r.isEqualToFloat();
+            assertTrue(r, !ietf || r.isBinaryFraction());
             homomorphic(Rational::negate, Function.identity(), Rational::isEqualToFloat, Rational::isEqualToFloat, r);
+            assertEquals(r, isEqualToFloat_simplest(r), ietf);
+            assertEquals(r, isEqualToFloat_alt(r), ietf);
         }
 
         for (float f : take(LIMIT, filter(g -> Float.isFinite(g) && !isNegativeZero(g), P.floats()))) {
@@ -684,10 +707,36 @@ public class RationalProperties {
         }
     }
 
+    private static void compareImplementationsIsEqualToFloat() {
+        Map<String, Function<Rational, Boolean>> functions = new LinkedHashMap<>();
+        functions.put("simplest", RationalProperties::isEqualToFloat_simplest);
+        functions.put("alt", RationalProperties::isEqualToFloat_alt);
+        functions.put("standard", Rational::isEqualToFloat);
+        compareImplementations("isEqualToFloat()", take(LIMIT, P.rationals()), functions);
+    }
+
+    private static boolean isEqualToDouble_simplest(@NotNull Rational r) {
+        return ofExact(r.doubleValue(RoundingMode.FLOOR)).get().equals(r);
+    }
+
+    private static boolean isEqualToDouble_alt(@NotNull Rational r) {
+        if (r == ZERO || r == ONE) return true;
+        if (r.getNumerator().signum() == -1) {
+            return isEqualToDouble_alt(r.negate());
+        }
+        int exponent = r.binaryExponent();
+        if (exponent > Double.MAX_EXPONENT || exponent == Double.MAX_EXPONENT && gt(r, LARGEST_DOUBLE)) {
+            return false;
+        }
+        int shift = exponent < Double.MIN_EXPONENT ? MIN_SUBNORMAL_DOUBLE_EXPONENT : exponent - DOUBLE_FRACTION_WIDTH;
+        return r.shiftRight(shift).isInteger();
+    }
+
     private static void propertiesIsEqualToDouble() {
         initialize("isEqualToDouble()");
         for (Rational r : take(LIMIT, P.rationals())) {
-            assertTrue(r, !r.isEqualToDouble() || r.isBinaryFraction());
+            boolean ietd = r.isEqualToDouble();
+            assertTrue(r, !ietd || r.isBinaryFraction());
             homomorphic(
                     Rational::negate,
                     Function.identity(),
@@ -695,11 +744,21 @@ public class RationalProperties {
                     Rational::isEqualToDouble,
                     r
             );
+            assertEquals(r, isEqualToDouble_simplest(r), ietd);
+            assertEquals(r, isEqualToDouble_alt(r), ietd);
         }
 
         for (double d : take(LIMIT, filter(e -> Double.isFinite(e) && !isNegativeZero(e), P.doubles()))) {
             assertTrue(d, ofExact(d).get().isEqualToDouble());
         }
+    }
+
+    private static void compareImplementationsIsEqualToDouble() {
+        Map<String, Function<Rational, Boolean>> functions = new LinkedHashMap<>();
+        functions.put("simplest", RationalProperties::isEqualToDouble_simplest);
+        functions.put("alt", RationalProperties::isEqualToDouble_alt);
+        functions.put("standard", Rational::isEqualToDouble);
+        compareImplementations("isEqualToDouble()", take(LIMIT, P.rationals()), functions);
     }
 
     private static boolean floatEquidistant(@NotNull Rational r) {

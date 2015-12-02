@@ -768,12 +768,14 @@ public final class Rational implements Comparable<Rational> {
         if (numerator.signum() == -1) {
             return negate().isEqualToFloat();
         }
-        int exponent = binaryExponent();
+        if (!isBinaryFraction()) return false;
+        int exponent = numerator.bitLength() - denominator.bitLength();
         if (exponent > Float.MAX_EXPONENT || exponent == Float.MAX_EXPONENT && gt(this, LARGEST_FLOAT)) {
             return false;
         }
         int shift = exponent < Float.MIN_EXPONENT ? MIN_SUBNORMAL_FLOAT_EXPONENT : exponent - FLOAT_FRACTION_WIDTH;
-        return shiftRight(shift).isInteger();
+        return numerator.getLowestSetBit() - denominator.getLowestSetBit() >= shift;
+
     }
 
     /**
@@ -840,12 +842,13 @@ public final class Rational implements Comparable<Rational> {
         if (numerator.signum() == -1) {
             return negate().isEqualToDouble();
         }
-        int exponent = binaryExponent();
+        if (!isBinaryFraction()) return false;
+        int exponent = numerator.bitLength() - denominator.bitLength();
         if (exponent > Double.MAX_EXPONENT || exponent == Double.MAX_EXPONENT && gt(this, LARGEST_DOUBLE)) {
             return false;
         }
         int shift = exponent < Double.MIN_EXPONENT ? MIN_SUBNORMAL_DOUBLE_EXPONENT : exponent - DOUBLE_FRACTION_WIDTH;
-        return shiftRight(shift).isInteger();
+        return numerator.getLowestSetBit() - denominator.getLowestSetBit() >= shift;
     }
 
     /**
