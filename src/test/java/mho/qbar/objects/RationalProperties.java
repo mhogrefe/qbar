@@ -417,18 +417,18 @@ public class RationalProperties {
             assertEquals(r, r.bigIntegerValue(RoundingMode.CEILING), r.ceiling());
             assertTrue(r, le(of(r.bigIntegerValue(RoundingMode.DOWN)).abs(), r.abs()));
             assertTrue(r, ge(of(r.bigIntegerValue(RoundingMode.UP)).abs(), r.abs()));
-            assertTrue(r, le(r.subtract(of(r.bigIntegerValue(RoundingMode.HALF_DOWN))).abs(), of(1, 2)));
-            assertTrue(r, le(r.subtract(of(r.bigIntegerValue(RoundingMode.HALF_UP))).abs(), of(1, 2)));
-            assertTrue(r, le(r.subtract(of(r.bigIntegerValue(RoundingMode.HALF_EVEN))).abs(), of(1, 2)));
+            assertTrue(r, le(r.subtract(of(r.bigIntegerValue(RoundingMode.HALF_DOWN))).abs(), ONE_HALF));
+            assertTrue(r, le(r.subtract(of(r.bigIntegerValue(RoundingMode.HALF_UP))).abs(), ONE_HALF));
+            assertTrue(r, le(r.subtract(of(r.bigIntegerValue(RoundingMode.HALF_EVEN))).abs(), ONE_HALF));
         }
 
-        for (Rational r : take(LIMIT, filterInfinite(s -> lt(s.abs().fractionalPart(), of(1, 2)), P.rationals()))) {
+        for (Rational r : take(LIMIT, filterInfinite(s -> lt(s.abs().fractionalPart(), ONE_HALF), P.rationals()))) {
             assertEquals(r, r.bigIntegerValue(RoundingMode.HALF_DOWN), r.bigIntegerValue(RoundingMode.DOWN));
             assertEquals(r, r.bigIntegerValue(RoundingMode.HALF_UP), r.bigIntegerValue(RoundingMode.DOWN));
             assertEquals(r, r.bigIntegerValue(RoundingMode.HALF_EVEN), r.bigIntegerValue(RoundingMode.DOWN));
         }
 
-        for (Rational r : take(LIMIT, filterInfinite(s -> gt(s.abs().fractionalPart(), of(1, 2)), P.rationals()))) {
+        for (Rational r : take(LIMIT, filterInfinite(s -> gt(s.abs().fractionalPart(), ONE_HALF), P.rationals()))) {
             assertEquals(r, r.bigIntegerValue(RoundingMode.HALF_DOWN), r.bigIntegerValue(RoundingMode.UP));
             assertEquals(r, r.bigIntegerValue(RoundingMode.HALF_UP), r.bigIntegerValue(RoundingMode.UP));
             assertEquals(r, r.bigIntegerValue(RoundingMode.HALF_EVEN), r.bigIntegerValue(RoundingMode.UP));
@@ -455,14 +455,14 @@ public class RationalProperties {
         for (Rational r : take(LIMIT, P.rationals())) {
             BigInteger rounded = r.bigIntegerValue();
             assertTrue(r, rounded.equals(BigInteger.ZERO) || rounded.signum() == r.signum());
-            assertTrue(r, le(r.subtract(of(r.bigIntegerValue())).abs(), of(1, 2)));
+            assertTrue(r, le(r.subtract(of(r.bigIntegerValue())).abs(), ONE_HALF));
         }
 
-        for (Rational r : take(LIMIT, filterInfinite(s -> lt(s.abs().fractionalPart(), of(1, 2)), P.rationals()))) {
+        for (Rational r : take(LIMIT, filterInfinite(s -> lt(s.abs().fractionalPart(), ONE_HALF), P.rationals()))) {
             assertEquals(r, r.bigIntegerValue(), r.bigIntegerValue(RoundingMode.DOWN));
         }
 
-        for (Rational r : take(LIMIT, filterInfinite(s -> gt(s.abs().fractionalPart(), of(1, 2)), P.rationals()))) {
+        for (Rational r : take(LIMIT, filterInfinite(s -> gt(s.abs().fractionalPart(), ONE_HALF), P.rationals()))) {
             assertEquals(r, r.bigIntegerValue(), r.bigIntegerValue(RoundingMode.UP));
         }
 
@@ -2849,7 +2849,7 @@ public class RationalProperties {
         }
 
         ps2 = filter(
-                p -> lt(p.a.abs().multiply(p.b).fractionalPart(), of(1, 2)),
+                p -> lt(p.a.abs().multiply(p.b).fractionalPart(), ONE_HALF),
                 P.pairs(P.rationals(), P.positiveBigIntegers())
         );
 
@@ -2872,7 +2872,7 @@ public class RationalProperties {
         }
 
         ps2 = filter(
-                p -> gt(p.a.abs().multiply(p.b).fractionalPart(), of(1, 2)),
+                p -> gt(p.a.abs().multiply(p.b).fractionalPart(), ONE_HALF),
                 P.pairs(P.rationals(), P.positiveBigIntegers())
         );
 
@@ -2897,7 +2897,7 @@ public class RationalProperties {
         Iterable<Rational> rs = filter(r -> !r.getDenominator().testBit(0), P.rationals());
         for (Rational r : take(LIMIT, rs)) {
             BigInteger denominator = r.getDenominator().shiftRight(1);
-            assertEquals(r, r.abs().multiply(denominator).fractionalPart(), of(1, 2));
+            assertEquals(r, r.abs().multiply(denominator).fractionalPart(), ONE_HALF);
             Rational hd = r.roundToDenominator(denominator, RoundingMode.HALF_DOWN);
             assertEquals(r, hd, r.roundToDenominator(denominator, RoundingMode.DOWN));
             Rational hu = r.roundToDenominator(denominator, RoundingMode.HALF_UP);
