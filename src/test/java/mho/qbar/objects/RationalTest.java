@@ -833,6 +833,92 @@ public class RationalTest {
         binaryExponent_fail_helper("-2/3");
     }
 
+    private static void isEqualToFloat_helper(@NotNull Rational r, boolean output) {
+        aeq(r.isEqualToFloat(), output);
+    }
+
+    private static void isEqualToFloat_helper(@NotNull String r, boolean output) {
+        isEqualToFloat_helper(read(r).get(), output);
+    }
+
+    @Test
+    public void testIsEqualToFloat() {
+        isEqualToFloat_helper("0", true);
+        isEqualToFloat_helper("1", true);
+        isEqualToFloat_helper("1/2", true);
+        isEqualToFloat_helper("-1/2", true);
+        isEqualToFloat_helper(PI_FLOAT, true);
+        isEqualToFloat_helper(SUBNORMAL_FLOAT, true);
+        isEqualToFloat_helper(LARGEST_FLOAT, true);
+        isEqualToFloat_helper(LARGEST_FLOAT.negate(), true);
+        isEqualToFloat_helper(LARGEST_SUBNORMAL_FLOAT, true);
+        isEqualToFloat_helper(LARGEST_SUBNORMAL_FLOAT.negate(), true);
+        isEqualToFloat_helper(SMALLEST_FLOAT, true);
+        isEqualToFloat_helper(SMALLEST_FLOAT.negate(), true);
+        isEqualToFloat_helper(SMALLEST_NORMAL_FLOAT, true);
+        isEqualToFloat_helper(SMALLEST_NORMAL_FLOAT.negate(), true);
+        isEqualToFloat_helper("1/3", false);
+        isEqualToFloat_helper("-1/3", false);
+        isEqualToFloat_helper("1/10", false);
+        isEqualToFloat_helper("-1/10", false);
+        isEqualToFloat_helper(ALMOST_ONE, false);
+        isEqualToFloat_helper(TRILLION, false);
+        isEqualToFloat_helper(HALF_ABOVE_PI_FLOAT, false);
+        isEqualToFloat_helper(HALF_BELOW_PI_FLOAT, false);
+        isEqualToFloat_helper(HALF_ABOVE_SUBNORMAL_FLOAT, false);
+        isEqualToFloat_helper(HALF_BELOW_SUBNORMAL_FLOAT, false);
+        isEqualToFloat_helper(BELOW_NEGATIVE_MAX_FLOAT, false);
+        isEqualToFloat_helper(HALF_ABOVE_NEGATIVE_MAX_FLOAT, false);
+        isEqualToFloat_helper(ABOVE_MAX_FLOAT, false);
+        isEqualToFloat_helper(HALF_BELOW_MAX_FLOAT, false);
+        isEqualToFloat_helper(HALF_BELOW_ZERO_FLOAT, false);
+        isEqualToFloat_helper(HALF_ABOVE_ZERO_FLOAT, false);
+        isEqualToFloat_helper(BOUNDARY_FLOAT, false);
+    }
+
+    private static void isEqualToDouble_helper(@NotNull Rational r, boolean output) {
+        aeq(r.isEqualToDouble(), output);
+    }
+
+    private static void isEqualToDouble_helper(@NotNull String r, boolean output) {
+        isEqualToDouble_helper(read(r).get(), output);
+    }
+
+    @Test
+    public void testIsEqualToDouble() {
+        isEqualToDouble_helper("0", true);
+        isEqualToDouble_helper("1", true);
+        isEqualToDouble_helper("1/2", true);
+        isEqualToDouble_helper("-1/2", true);
+        isEqualToDouble_helper(PI_DOUBLE, true);
+        isEqualToDouble_helper(SUBNORMAL_DOUBLE, true);
+        isEqualToDouble_helper(LARGEST_DOUBLE, true);
+        isEqualToDouble_helper(LARGEST_DOUBLE.negate(), true);
+        isEqualToDouble_helper(LARGEST_SUBNORMAL_DOUBLE, true);
+        isEqualToDouble_helper(LARGEST_SUBNORMAL_DOUBLE.negate(), true);
+        isEqualToDouble_helper(SMALLEST_DOUBLE, true);
+        isEqualToDouble_helper(SMALLEST_DOUBLE.negate(), true);
+        isEqualToDouble_helper(SMALLEST_NORMAL_DOUBLE, true);
+        isEqualToDouble_helper(SMALLEST_NORMAL_DOUBLE.negate(), true);
+        isEqualToDouble_helper("1/3", false);
+        isEqualToDouble_helper("-1/3", false);
+        isEqualToDouble_helper("1/10", false);
+        isEqualToDouble_helper("-1/10", false);
+        isEqualToDouble_helper(ALMOST_ONE, false);
+        isEqualToDouble_helper(GOOGOL, false);
+        isEqualToDouble_helper(HALF_ABOVE_PI_DOUBLE, false);
+        isEqualToDouble_helper(HALF_BELOW_PI_DOUBLE, false);
+        isEqualToDouble_helper(HALF_ABOVE_SUBNORMAL_DOUBLE, false);
+        isEqualToDouble_helper(HALF_BELOW_SUBNORMAL_DOUBLE, false);
+        isEqualToDouble_helper(BELOW_NEGATIVE_MAX_DOUBLE, false);
+        isEqualToDouble_helper(HALF_ABOVE_NEGATIVE_MAX_DOUBLE, false);
+        isEqualToDouble_helper(ABOVE_MAX_DOUBLE, false);
+        isEqualToDouble_helper(HALF_BELOW_MAX_DOUBLE, false);
+        isEqualToDouble_helper(HALF_BELOW_ZERO_DOUBLE, false);
+        isEqualToDouble_helper(HALF_ABOVE_ZERO_DOUBLE, false);
+        isEqualToDouble_helper(BOUNDARY_DOUBLE, false);
+    }
+
     private static void floatValue_RoundingMode_helper(
             @NotNull Rational r,
             @NotNull String roundingMode,

@@ -624,7 +624,7 @@ public final class Rational implements Comparable<Rational> {
      *
      * <ul>
      *  <li>{@code this} must be positive.</li>
-     *  <li>The result may be either boolean.</li>
+     *  <li>The result may be either {@code boolean}.</li>
      * </ul>
      *
      * @return whether {@code this} is a power of two
@@ -641,8 +641,8 @@ public final class Rational implements Comparable<Rational> {
      * Determines whether {@code this} is a binary fraction (whether its denominator is a power of 2).
      *
      * <ul>
-     *  <li>{@code this} cannot be null.</li>
-     *  <li>The result may be either boolean.</li>
+     *  <li>{@code this} may be any {@code Rational}.</li>
+     *  <li>The result may be either {@code boolean}.</li>
      * </ul>
      *
      * @return whether {@code this} is a binary fraction
@@ -748,8 +748,32 @@ public final class Rational implements Comparable<Rational> {
         float loFloat = Float.intBitsToFloat(
                 (adjustedExponent << FLOAT_FRACTION_WIDTH) + fraction.floor().intValueExact()
         );
-        float hiFloat = fraction.denominator.equals(BigInteger.ONE) ? loFloat : successor(loFloat);
+        float hiFloat = fraction.isInteger() ? loFloat : successor(loFloat);
         return new Pair<>(loFloat, hiFloat);
+    }
+
+    /**
+     * Determines whether {@code this} is exactly equal to some {@code float}. If true, the {@code float} may be found
+     * using {@link Rational#floatValueExact()}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Rational}.</li>
+     *  <li>The result may be either {@code boolean}.</li>
+     * </ul>
+     *
+     * @return whether {@code this} is exactly equal to a {@code float}
+     */
+    public boolean isEqualToFloat() {
+        if (this == ZERO || this == ONE) return true;
+        if (numerator.signum() == -1) {
+            return negate().isEqualToFloat();
+        }
+        int exponent = binaryExponent();
+        if (exponent > Float.MAX_EXPONENT || exponent == Float.MAX_EXPONENT && gt(this, LARGEST_FLOAT)) {
+            return false;
+        }
+        int shift = exponent < Float.MIN_EXPONENT ? MIN_SUBNORMAL_FLOAT_EXPONENT : exponent - FLOAT_FRACTION_WIDTH;
+        return shiftRight(shift).isInteger();
     }
 
     /**
@@ -796,8 +820,32 @@ public final class Rational implements Comparable<Rational> {
         double loDouble = Double.longBitsToDouble(
                 ((long) adjustedExponent << DOUBLE_FRACTION_WIDTH) + fraction.floor().longValueExact()
         );
-        double hiDouble = fraction.denominator.equals(BigInteger.ONE) ? loDouble : successor(loDouble);
+        double hiDouble = fraction.isInteger() ? loDouble : successor(loDouble);
         return new Pair<>(loDouble, hiDouble);
+    }
+
+    /**
+     * Determines whether {@code this} is exactly equal to some {@code double}. If true, the {@code double} may be
+     * found using {@link Rational#doubleValueExact()}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Rational}.</li>
+     *  <li>The result may be either {@code boolean}.</li>
+     * </ul>
+     *
+     * @return whether {@code this} is exactly equal to a {@code double}
+     */
+    public boolean isEqualToDouble() {
+        if (this == ZERO || this == ONE) return true;
+        if (numerator.signum() == -1) {
+            return negate().isEqualToDouble();
+        }
+        int exponent = binaryExponent();
+        if (exponent > Double.MAX_EXPONENT || exponent == Double.MAX_EXPONENT && gt(this, LARGEST_DOUBLE)) {
+            return false;
+        }
+        int shift = exponent < Double.MIN_EXPONENT ? MIN_SUBNORMAL_DOUBLE_EXPONENT : exponent - DOUBLE_FRACTION_WIDTH;
+        return shiftRight(shift).isInteger();
     }
 
     /**

@@ -82,6 +82,8 @@ public class RationalProperties {
             propertiesIsBinaryFraction();
             propertiesBinaryFractionValueExact();
             propertiesBinaryExponent();
+            propertiesIsEqualToFloat();
+            propertiesIsEqualToDouble();
             propertiesFloatValue_RoundingMode();
             propertiesFloatValue();
             propertiesFloatValueExact();
@@ -667,6 +669,36 @@ public class RationalProperties {
                 r.binaryExponent();
                 fail(r);
             } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private static void propertiesIsEqualToFloat() {
+        initialize("isEqualToFloat()");
+        for (Rational r : take(LIMIT, P.rationals())) {
+            assertTrue(r, !r.isEqualToFloat() || r.isBinaryFraction());
+            homomorphic(Rational::negate, Function.identity(), Rational::isEqualToFloat, Rational::isEqualToFloat, r);
+        }
+
+        for (float f : take(LIMIT, filter(g -> Float.isFinite(g) && !isNegativeZero(g), P.floats()))) {
+            assertTrue(f, ofExact(f).get().isEqualToFloat());
+        }
+    }
+
+    private static void propertiesIsEqualToDouble() {
+        initialize("isEqualToDouble()");
+        for (Rational r : take(LIMIT, P.rationals())) {
+            assertTrue(r, !r.isEqualToDouble() || r.isBinaryFraction());
+            homomorphic(
+                    Rational::negate,
+                    Function.identity(),
+                    Rational::isEqualToDouble,
+                    Rational::isEqualToDouble,
+                    r
+            );
+        }
+
+        for (double d : take(LIMIT, filter(e -> Double.isFinite(e) && !isNegativeZero(e), P.doubles()))) {
+            assertTrue(d, ofExact(d).get().isEqualToDouble());
         }
     }
 

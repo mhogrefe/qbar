@@ -228,6 +228,20 @@ public class RationalDemos {
         }
     }
 
+    private static void demoIsEqualToFloat() {
+        initialize();
+        for (Rational r : take(LIMIT, P.rationals())) {
+            System.out.println(r + " is " + (r.isEqualToFloat() ? "" : "not ") + "equal to a float");
+        }
+    }
+
+    private static void demoIsEqualToDouble() {
+        initialize();
+        for (Rational r : take(LIMIT, P.rationals())) {
+            System.out.println(r + " is " + (r.isEqualToDouble() ? "" : "not ") + "equal to a double");
+        }
+    }
+
     private static void demoFloatValue_RoundingMode() {
         initialize();
         Iterable<Pair<Rational, RoundingMode>> ps = filterInfinite(
