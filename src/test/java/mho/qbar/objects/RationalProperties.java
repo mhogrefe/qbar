@@ -667,6 +667,11 @@ public class RationalProperties {
             assertTrue(r, le(r, power.shiftLeft(1)));
         }
 
+        for (BinaryFraction bf : take(LIMIT, P.positiveBinaryFractions())) {
+            Rational r = of(bf);
+            assertEquals(bf, r.binaryExponent(), r.getNumerator().bitLength() - r.getDenominator().bitLength());
+        }
+
         for (Rational r : take(LIMIT, P.withElement(ZERO, P.negativeRationals()))) {
             try {
                 r.binaryExponent();
@@ -773,7 +778,7 @@ public class RationalProperties {
     private static void propertiesFloatValue_RoundingMode() {
         initialize("floatValue(RoundingMode)");
         Iterable<Pair<Rational, RoundingMode>> ps = filterInfinite(
-                p -> p.b != RoundingMode.UNNECESSARY || p.a.equals(ofExact(p.a.floatValue(RoundingMode.FLOOR)).get()),
+                p -> p.b != RoundingMode.UNNECESSARY || p.a.isEqualToFloat(),
                 P.pairs(P.rationals(), P.roundingModes())
         );
         for (Pair<Rational, RoundingMode> p : take(LIMIT, ps)) {
@@ -987,11 +992,7 @@ public class RationalProperties {
             assertTrue(r, Float.isFinite(halfDown));
         }
 
-        Iterable<Rational> rsFail = filterInfinite(
-                r -> !ofExact(r.floatValue(RoundingMode.FLOOR)).get().equals(r),
-                P.rationalsIn(Interval.of(LARGEST_FLOAT.negate(), LARGEST_FLOAT))
-        );
-        for (Rational r : take(LIMIT, rsFail)) {
+        for (Rational r : take(LIMIT, filterInfinite(s -> !s.isEqualToFloat(), P.rationals()))) {
             try {
                 r.floatValue(RoundingMode.UNNECESSARY);
                 fail(r);
@@ -1066,20 +1067,13 @@ public class RationalProperties {
 
     private static void propertiesFloatValueExact() {
         initialize("floatValueExact()");
-        Iterable<Rational> rs = filterInfinite(
-                r -> {
-                    Optional<Rational> fr = ofExact(r.floatValue(RoundingMode.FLOOR));
-                    return fr.isPresent() && fr.get().equals(r);
-                },
-                P.rationals()
-        );
-        for (Rational r : take(LIMIT, rs)) {
+        for (Rational r : take(LIMIT, filterInfinite(Rational::isEqualToFloat, P.rationals()))) {
             float f = r.floatValueExact();
             assertTrue(r, !Float.isNaN(f));
             assertTrue(r, f == 0.0f || Math.signum(f) == r.signum());
         }
 
-        rs = map(
+        Iterable<Rational> rs = map(
                 f -> ofExact(f).get(),
                 filter(f -> Float.isFinite(f) && !isNegativeZero(f), P.floats())
         );
@@ -1090,11 +1084,7 @@ public class RationalProperties {
             assertTrue(r, !isNegativeZero(f));
         }
 
-        Iterable<Rational> rsFail = filterInfinite(
-                r -> !ofExact(r.floatValue(RoundingMode.FLOOR)).get().equals(r),
-                P.rationalsIn(Interval.of(LARGEST_FLOAT.negate(), LARGEST_FLOAT))
-        );
-        for (Rational r : take(LIMIT, rsFail)) {
+        for (Rational r : take(LIMIT, filterInfinite(s -> !s.isEqualToFloat(), P.rationals()))) {
             try {
                 r.floatValueExact();
                 fail(r);
@@ -1114,7 +1104,7 @@ public class RationalProperties {
     private static void propertiesDoubleValue_RoundingMode() {
         initialize("doubleValue(RoundingMode)");
         Iterable<Pair<Rational, RoundingMode>> ps = filter(
-                p -> p.b != RoundingMode.UNNECESSARY || p.a.equals(ofExact(p.a.doubleValue(RoundingMode.FLOOR)).get()),
+                p -> p.b != RoundingMode.UNNECESSARY || p.a.isEqualToDouble(),
                 P.pairs(P.rationals(), P.roundingModes())
         );
         for (Pair<Rational, RoundingMode> p : take(LIMIT, ps)) {
@@ -1328,11 +1318,7 @@ public class RationalProperties {
             assertTrue(r, Double.isFinite(halfDown));
         }
 
-        Iterable<Rational> rsFail = filterInfinite(
-                r -> !ofExact(r.doubleValue(RoundingMode.FLOOR)).get().equals(r),
-                P.rationalsIn(Interval.of(LARGEST_DOUBLE.negate(), LARGEST_DOUBLE))
-        );
-        for (Rational r : take(LIMIT, rsFail)) {
+        for (Rational r : take(LIMIT, filterInfinite(s -> !s.isEqualToDouble(), P.rationals()))) {
             try {
                 r.doubleValue(RoundingMode.UNNECESSARY);
                 fail(r);
@@ -1407,20 +1393,13 @@ public class RationalProperties {
 
     private static void propertiesDoubleValueExact() {
         initialize("doubleValueExact()");
-        Iterable<Rational> rs = filterInfinite(
-                r -> {
-                    Optional<Rational> dr = ofExact(r.doubleValue(RoundingMode.FLOOR));
-                    return dr.isPresent() && dr.get().equals(r);
-                },
-                P.rationals()
-        );
-        for (Rational r : take(LIMIT, rs)) {
+        for (Rational r : take(LIMIT, filterInfinite(Rational::isEqualToDouble, P.rationals()))) {
             double d = r.doubleValueExact();
             assertTrue(r, !Double.isNaN(d));
             assertTrue(r, d == 0.0 || Math.signum(d) == r.signum());
         }
 
-        rs = map(
+        Iterable<Rational> rs = map(
                 d -> ofExact(d).get(),
                 filter(d -> Double.isFinite(d) && !isNegativeZero(d), P.doubles())
         );
@@ -1431,11 +1410,7 @@ public class RationalProperties {
             assertTrue(r, !isNegativeZero(d));
         }
 
-        Iterable<Rational> rsFail = filterInfinite(
-                r -> !ofExact(r.doubleValue(RoundingMode.FLOOR)).get().equals(r),
-                P.rationalsIn(Interval.of(LARGEST_DOUBLE.negate(), LARGEST_DOUBLE))
-        );
-        for (Rational r : take(LIMIT, rsFail)) {
+        for (Rational r : take(LIMIT, filterInfinite(s -> !s.isEqualToDouble(), P.rationals()))) {
             try {
                 r.doubleValueExact();
                 fail(r);

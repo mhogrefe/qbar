@@ -775,7 +775,6 @@ public final class Rational implements Comparable<Rational> {
         }
         int shift = exponent < Float.MIN_EXPONENT ? MIN_SUBNORMAL_FLOAT_EXPONENT : exponent - FLOAT_FRACTION_WIDTH;
         return numerator.getLowestSetBit() - denominator.getLowestSetBit() >= shift;
-
     }
 
     /**
