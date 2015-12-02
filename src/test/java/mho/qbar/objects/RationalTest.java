@@ -24,36 +24,102 @@ import static org.junit.Assert.fail;
 
 public class RationalTest {
     private static final int TINY_LIMIT = 20;
+    private static final @NotNull Rational ALMOST_ONE =
+            of(BigInteger.TEN.pow(1000).subtract(BigInteger.ONE), BigInteger.TEN.pow(1000));
+
+    private static final @NotNull Rational TRILLION = of(BigInteger.TEN.pow(12));
     private static final @NotNull Rational PI_FLOAT = ofExact((float) Math.PI).get();
-    private static final @NotNull Rational PI_DOUBLE = ofExact(Math.PI).get();
-    private static final @NotNull Rational PI_SUCCESSOR_FLOAT = ofExact(
-            FloatingPointUtils.successor((float) Math.PI)
-    ).get();
-    private static final @NotNull Rational PI_PREDECESSOR_FLOAT = ofExact(
-            FloatingPointUtils.predecessor((float) Math.PI)
-    ).get();
-    private static final @NotNull Rational PI_SUCCESSOR_DOUBLE = ofExact(FloatingPointUtils.successor(Math.PI)).get();
-    private static final @NotNull Rational PI_PREDECESSOR_DOUBLE = ofExact(
-            FloatingPointUtils.predecessor(Math.PI)
-    ).get();
-    private static final @NotNull Rational SUBNORMAL_FLOAT = ofExact(1.0e-40f).get();
-    private static final @NotNull Rational SUBNORMAL_SUCCESSOR_FLOAT = ofExact(
-            FloatingPointUtils.successor(1.0e-40f)
-    ).get();
-    private static final @NotNull Rational SUBNORMAL_PREDECESSOR_FLOAT = ofExact(
-            FloatingPointUtils.predecessor(1.0e-40f)
-    ).get();
-    private static final @NotNull Rational SUBNORMAL_DOUBLE = ofExact(1.0e-310).get();
-    private static final @NotNull Rational SUBNORMAL_SUCCESSOR_DOUBLE = ofExact(
-            FloatingPointUtils.successor(1.0e-310)
-    ).get();
-    private static final @NotNull Rational SUBNORMAL_PREDECESSOR_DOUBLE = ofExact(
-            FloatingPointUtils.predecessor(1.0e-310)
-    ).get();
+    private static final @NotNull Rational PI_SUCCESSOR_FLOAT =
+            ofExact(FloatingPointUtils.successor((float) Math.PI)).get();
+    private static final @NotNull Rational PI_PREDECESSOR_FLOAT =
+            ofExact(FloatingPointUtils.predecessor((float) Math.PI)).get();
+    private static final @NotNull Rational HALF_ABOVE_PI_FLOAT = PI_FLOAT.add(PI_SUCCESSOR_FLOAT).shiftRight(1);
+    private static final @NotNull Rational HALF_BELOW_PI_FLOAT = PI_FLOAT.add(PI_PREDECESSOR_FLOAT).shiftRight(1);
+    private static final @NotNull Rational JUST_ABOVE_PI_FLOAT =
+            PI_FLOAT.shiftLeft(1).add(PI_SUCCESSOR_FLOAT).divide(3);
+    private static final @NotNull Rational JUST_BELOW_PI_FLOAT =
+            PI_FLOAT.shiftLeft(1).add(PI_PREDECESSOR_FLOAT).divide(3);
+    private static final @NotNull Rational SUBNORMAL_FLOAT = ofExact(1.0E-40f).get();
+    private static final @NotNull Rational SUBNORMAL_SUCCESSOR_FLOAT =
+            ofExact(FloatingPointUtils.successor(1.0E-40f)).get();
+    private static final @NotNull Rational SUBNORMAL_PREDECESSOR_FLOAT =
+            ofExact(FloatingPointUtils.predecessor(1.0E-40f)).get();
+    private static final @NotNull Rational HALF_ABOVE_SUBNORMAL_FLOAT =
+            SUBNORMAL_FLOAT.add(SUBNORMAL_SUCCESSOR_FLOAT).shiftRight(1);
+    private static final @NotNull Rational HALF_BELOW_SUBNORMAL_FLOAT =
+            SUBNORMAL_FLOAT.add(SUBNORMAL_PREDECESSOR_FLOAT).shiftRight(1);
+    private static final @NotNull Rational JUST_ABOVE_SUBNORMAL_FLOAT =
+            SUBNORMAL_FLOAT.shiftLeft(1).add(SUBNORMAL_SUCCESSOR_FLOAT).divide(3);
+    private static final @NotNull Rational JUST_BELOW_SUBNORMAL_FLOAT =
+            SUBNORMAL_FLOAT.shiftLeft(1).add(SUBNORMAL_PREDECESSOR_FLOAT).divide(3);
+    private static final @NotNull Rational BELOW_NEGATIVE_MAX_FLOAT = LARGEST_FLOAT.negate().subtract(ONE);
     private static final @NotNull Rational ALMOST_MAX_FLOAT =
             ofExact(FloatingPointUtils.predecessor(Float.MAX_VALUE)).get();
+    private static final @NotNull Rational HALF_ABOVE_NEGATIVE_MAX_FLOAT =
+            LARGEST_FLOAT.negate().add(ALMOST_MAX_FLOAT.negate()).shiftRight(1);
+    private static final @NotNull Rational JUST_ABOVE_NEGATIVE_MAX_FLOAT =
+            LARGEST_FLOAT.negate().shiftLeft(1).add(ALMOST_MAX_FLOAT.negate()).divide(3);
+    private static final @NotNull Rational ABOVE_MAX_FLOAT = LARGEST_FLOAT.add(ONE);
+    private static final @NotNull Rational HALF_BELOW_MAX_FLOAT = LARGEST_FLOAT.add(ALMOST_MAX_FLOAT).shiftRight(1);
+    private static final @NotNull Rational JUST_BELOW_MAX_FLOAT =
+            LARGEST_FLOAT.shiftLeft(1).add(ALMOST_MAX_FLOAT).divide(3);
+    private static final @NotNull Rational HALF_ABOVE_ZERO_FLOAT = SMALLEST_FLOAT.shiftRight(1);
+    private static final @NotNull Rational JUST_ABOVE_ZERO_FLOAT = SMALLEST_FLOAT.divide(3);
+    private static final @NotNull Rational HALF_BELOW_ZERO_FLOAT = HALF_ABOVE_ZERO_FLOAT.negate();
+    private static final @NotNull Rational JUST_BELOW_ZERO_FLOAT = JUST_ABOVE_ZERO_FLOAT.negate();
+    private static final @NotNull Rational BOUNDARY_FLOAT =
+            LARGEST_SUBNORMAL_FLOAT.add(SMALLEST_NORMAL_FLOAT).shiftRight(1);
+    private static final @NotNull Rational JUST_BELOW_BOUNDARY_FLOAT =
+            LARGEST_SUBNORMAL_FLOAT.add(BOUNDARY_FLOAT.shiftLeft(1)).divide(3);
+    private static final @NotNull Rational JUST_ABOVE_BOUNDARY_FLOAT =
+            SMALLEST_NORMAL_FLOAT.add(BOUNDARY_FLOAT.shiftLeft(1)).divide(3);
+
+    private static final @NotNull Rational GOOGOL = of(BigInteger.TEN.pow(100));
+    private static final @NotNull Rational PI_DOUBLE = ofExact(Math.PI).get();
+    private static final @NotNull Rational PI_SUCCESSOR_DOUBLE =
+            ofExact(FloatingPointUtils.successor(Math.PI)).get();
+    private static final @NotNull Rational PI_PREDECESSOR_DOUBLE =
+            ofExact(FloatingPointUtils.predecessor(Math.PI)).get();
+    private static final @NotNull Rational HALF_ABOVE_PI_DOUBLE = PI_DOUBLE.add(PI_SUCCESSOR_DOUBLE).shiftRight(1);
+    private static final @NotNull Rational HALF_BELOW_PI_DOUBLE = PI_DOUBLE.add(PI_PREDECESSOR_DOUBLE).shiftRight(1);
+    private static final @NotNull Rational JUST_ABOVE_PI_DOUBLE =
+            PI_DOUBLE.shiftLeft(1).add(PI_SUCCESSOR_DOUBLE).divide(3);
+    private static final @NotNull Rational JUST_BELOW_PI_DOUBLE =
+            PI_DOUBLE.shiftLeft(1).add(PI_PREDECESSOR_DOUBLE).divide(3);
+    private static final @NotNull Rational SUBNORMAL_DOUBLE = ofExact(1.0E-310).get();
+    private static final @NotNull Rational SUBNORMAL_SUCCESSOR_DOUBLE =
+            ofExact(FloatingPointUtils.successor(1.0E-310)).get();
+    private static final @NotNull Rational SUBNORMAL_PREDECESSOR_DOUBLE =
+            ofExact(FloatingPointUtils.predecessor(1.0E-310)).get();
+    private static final @NotNull Rational HALF_ABOVE_SUBNORMAL_DOUBLE =
+            SUBNORMAL_DOUBLE.add(SUBNORMAL_SUCCESSOR_DOUBLE).shiftRight(1);
+    private static final @NotNull Rational HALF_BELOW_SUBNORMAL_DOUBLE =
+            SUBNORMAL_DOUBLE.add(SUBNORMAL_PREDECESSOR_DOUBLE).shiftRight(1);
+    private static final @NotNull Rational JUST_ABOVE_SUBNORMAL_DOUBLE =
+            SUBNORMAL_DOUBLE.shiftLeft(1).add(SUBNORMAL_SUCCESSOR_DOUBLE).divide(3);
+    private static final @NotNull Rational JUST_BELOW_SUBNORMAL_DOUBLE =
+            SUBNORMAL_DOUBLE.shiftLeft(1).add(SUBNORMAL_PREDECESSOR_DOUBLE).divide(3);
+    private static final @NotNull Rational BELOW_NEGATIVE_MAX_DOUBLE = LARGEST_DOUBLE.negate().subtract(ONE);
     private static final @NotNull Rational ALMOST_MAX_DOUBLE =
             ofExact(FloatingPointUtils.predecessor(Double.MAX_VALUE)).get();
+    private static final @NotNull Rational HALF_ABOVE_NEGATIVE_MAX_DOUBLE =
+            LARGEST_DOUBLE.negate().add(ALMOST_MAX_DOUBLE.negate()).shiftRight(1);
+    private static final @NotNull Rational JUST_ABOVE_NEGATIVE_MAX_DOUBLE =
+            LARGEST_DOUBLE.negate().shiftLeft(1).add(ALMOST_MAX_DOUBLE.negate()).divide(3);
+    private static final @NotNull Rational ABOVE_MAX_DOUBLE = LARGEST_DOUBLE.add(ONE);
+    private static final @NotNull Rational HALF_BELOW_MAX_DOUBLE = LARGEST_DOUBLE.add(ALMOST_MAX_DOUBLE).shiftRight(1);
+    private static final @NotNull Rational JUST_BELOW_MAX_DOUBLE =
+            LARGEST_DOUBLE.shiftLeft(1).add(ALMOST_MAX_DOUBLE).divide(3);
+    private static final @NotNull Rational HALF_ABOVE_ZERO_DOUBLE = SMALLEST_DOUBLE.shiftRight(1);
+    private static final @NotNull Rational JUST_ABOVE_ZERO_DOUBLE = SMALLEST_DOUBLE.divide(3);
+    private static final @NotNull Rational HALF_BELOW_ZERO_DOUBLE = HALF_ABOVE_ZERO_DOUBLE.negate();
+    private static final @NotNull Rational JUST_BELOW_ZERO_DOUBLE = JUST_ABOVE_ZERO_DOUBLE.negate();
+    private static final @NotNull Rational BOUNDARY_DOUBLE =
+            LARGEST_SUBNORMAL_DOUBLE.add(SMALLEST_NORMAL_DOUBLE).shiftRight(1);
+    private static final @NotNull Rational JUST_BELOW_BOUNDARY_DOUBLE =
+            LARGEST_SUBNORMAL_DOUBLE.add(BOUNDARY_DOUBLE.shiftLeft(1)).divide(3);
+    private static final @NotNull Rational JUST_ABOVE_BOUNDARY_DOUBLE =
+            SMALLEST_NORMAL_DOUBLE.add(BOUNDARY_DOUBLE.shiftLeft(1)).divide(3);
 
     @Test
     public void testConstants() {
@@ -767,1141 +833,790 @@ public class RationalTest {
         binaryExponent_fail_helper("-2/3");
     }
 
+    private static void floatValue_RoundingMode_helper(
+            @NotNull Rational r,
+            @NotNull String roundingMode,
+            float output
+    ) {
+        aeq(r.floatValue(Readers.readRoundingMode(roundingMode).get()), output);
+    }
+
+    private static void floatValue_RoundingMode_helper(@NotNull String r, @NotNull String roundingMode, float output) {
+        floatValue_RoundingMode_helper(read(r).get(), roundingMode, output);
+    }
+
+    private static void floatValue_RoundingMode_fail_helper(@NotNull Rational r, @NotNull String roundingMode) {
+        try {
+            r.floatValue(Readers.readRoundingMode(roundingMode).get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    private static void floatValue_RoundingMode_fail_helper(@NotNull String r, @NotNull String roundingMode) {
+        floatValue_RoundingMode_fail_helper(read(r).get(), roundingMode);
+    }
+
     @Test
     public void testFloatValue_RoundingMode() {
-        aeq(ZERO.floatValue(RoundingMode.FLOOR), 0.0);
-        aeq(ZERO.floatValue(RoundingMode.CEILING), 0.0);
-        aeq(ZERO.floatValue(RoundingMode.DOWN), 0.0);
-        aeq(ZERO.floatValue(RoundingMode.UP), 0.0);
-        aeq(ZERO.floatValue(RoundingMode.HALF_DOWN), 0.0);
-        aeq(ZERO.floatValue(RoundingMode.HALF_UP), 0.0);
-        aeq(ZERO.floatValue(RoundingMode.HALF_EVEN), 0.0);
-        aeq(ZERO.floatValue(RoundingMode.UNNECESSARY), 0.0);
-        aeq(ONE.floatValue(RoundingMode.FLOOR), 1.0);
-        aeq(ONE.floatValue(RoundingMode.CEILING), 1.0);
-        aeq(ONE.floatValue(RoundingMode.DOWN), 1.0);
-        aeq(ONE.floatValue(RoundingMode.UP), 1.0);
-        aeq(ONE.floatValue(RoundingMode.HALF_DOWN), 1.0);
-        aeq(ONE.floatValue(RoundingMode.HALF_UP), 1.0);
-        aeq(ONE.floatValue(RoundingMode.HALF_EVEN), 1.0);
-        aeq(ONE.floatValue(RoundingMode.UNNECESSARY), 1.0);
-        aeq(read("1/2").get().floatValue(RoundingMode.FLOOR), 0.5);
-        aeq(read("1/2").get().floatValue(RoundingMode.CEILING), 0.5);
-        aeq(read("1/2").get().floatValue(RoundingMode.DOWN), 0.5);
-        aeq(read("1/2").get().floatValue(RoundingMode.UP), 0.5);
-        aeq(read("1/2").get().floatValue(RoundingMode.HALF_DOWN), 0.5);
-        aeq(read("1/2").get().floatValue(RoundingMode.HALF_UP), 0.5);
-        aeq(read("1/2").get().floatValue(RoundingMode.HALF_EVEN), 0.5);
-        aeq(read("1/2").get().floatValue(RoundingMode.UNNECESSARY), 0.5);
-        aeq(read("1/3").get().floatValue(RoundingMode.FLOOR), 0.3333333);
-        aeq(read("1/3").get().floatValue(RoundingMode.CEILING), 0.33333334);
-        aeq(read("1/3").get().floatValue(RoundingMode.DOWN), 0.3333333);
-        aeq(read("1/3").get().floatValue(RoundingMode.UP), 0.33333334);
-        aeq(read("1/3").get().floatValue(RoundingMode.HALF_DOWN), 0.33333334);
-        aeq(read("1/3").get().floatValue(RoundingMode.HALF_UP), 0.33333334);
-        aeq(read("1/3").get().floatValue(RoundingMode.HALF_EVEN), 0.33333334);
-        try {
-            read("1/3").get().floatValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(read("-1/3").get().floatValue(RoundingMode.FLOOR), -0.33333334);
-        aeq(read("-1/3").get().floatValue(RoundingMode.CEILING), -0.3333333);
-        aeq(read("-1/3").get().floatValue(RoundingMode.DOWN), -0.3333333);
-        aeq(read("-1/3").get().floatValue(RoundingMode.UP), -0.33333334);
-        aeq(read("-1/3").get().floatValue(RoundingMode.HALF_DOWN), -0.33333334);
-        aeq(read("-1/3").get().floatValue(RoundingMode.HALF_UP), -0.33333334);
-        aeq(read("-1/3").get().floatValue(RoundingMode.HALF_EVEN), -0.33333334);
-        try {
-            read("-1/3").get().floatValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        Rational almostOne = of(BigInteger.TEN.pow(1000).subtract(BigInteger.ONE), BigInteger.TEN.pow(1000));
-        aeq(almostOne.floatValue(RoundingMode.FLOOR), 0.99999994);
-        aeq(almostOne.floatValue(RoundingMode.CEILING), 1.0);
-        aeq(almostOne.floatValue(RoundingMode.DOWN), 0.99999994);
-        aeq(almostOne.floatValue(RoundingMode.UP), 1.0);
-        aeq(almostOne.floatValue(RoundingMode.HALF_DOWN), 1.0);
-        aeq(almostOne.floatValue(RoundingMode.HALF_UP), 1.0);
-        aeq(almostOne.floatValue(RoundingMode.HALF_EVEN), 1.0);
-        try {
-            almostOne.floatValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(PI_FLOAT.floatValue(RoundingMode.FLOOR), 3.1415927);
-        aeq(PI_FLOAT.floatValue(RoundingMode.CEILING), 3.1415927);
-        aeq(PI_FLOAT.floatValue(RoundingMode.DOWN), 3.1415927);
-        aeq(PI_FLOAT.floatValue(RoundingMode.UP), 3.1415927);
-        aeq(PI_FLOAT.floatValue(RoundingMode.HALF_DOWN), 3.1415927);
-        aeq(PI_FLOAT.floatValue(RoundingMode.HALF_UP), 3.1415927);
-        aeq(PI_FLOAT.floatValue(RoundingMode.HALF_EVEN), 3.1415927);
-        aeq(PI_FLOAT.floatValue(RoundingMode.UNNECESSARY), 3.1415927);
-        Rational trillion = of(BigInteger.TEN.pow(12));
-        aeq(trillion.floatValue(RoundingMode.FLOOR), 1.0E12);
-        aeq(trillion.floatValue(RoundingMode.CEILING), 1.00000006E12);
-        aeq(trillion.floatValue(RoundingMode.DOWN), 1.0E12);
-        aeq(trillion.floatValue(RoundingMode.UP), 1.00000006E12);
-        aeq(trillion.floatValue(RoundingMode.HALF_DOWN), 1.0E12);
-        aeq(trillion.floatValue(RoundingMode.HALF_UP), 1.0E12);
-        aeq(trillion.floatValue(RoundingMode.HALF_EVEN), 1.0E12);
-        try {
-            trillion.floatValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        Rational halfAbovePi = PI_FLOAT.add(PI_SUCCESSOR_FLOAT).divide(2);
-        Rational halfBelowPi = PI_FLOAT.add(PI_PREDECESSOR_FLOAT).divide(2);
-        Rational justAbovePi = PI_FLOAT.multiply(2).add(PI_SUCCESSOR_FLOAT).divide(3);
-        Rational justBelowPi = PI_FLOAT.multiply(2).add(PI_PREDECESSOR_FLOAT).divide(3);
-        aeq(halfAbovePi.floatValue(RoundingMode.FLOOR), 3.1415927);
-        aeq(halfAbovePi.floatValue(RoundingMode.CEILING), 3.141593);
-        aeq(halfAbovePi.floatValue(RoundingMode.DOWN), 3.1415927);
-        aeq(halfAbovePi.floatValue(RoundingMode.UP), 3.141593);
-        aeq(halfAbovePi.floatValue(RoundingMode.HALF_DOWN), 3.1415927);
-        aeq(halfAbovePi.floatValue(RoundingMode.HALF_UP), 3.141593);
-        aeq(halfAbovePi.floatValue(RoundingMode.HALF_EVEN), 3.141593);
-        try {
-            halfAbovePi.floatValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(halfBelowPi.floatValue(RoundingMode.FLOOR), 3.1415925);
-        aeq(halfBelowPi.floatValue(RoundingMode.CEILING), 3.1415927);
-        aeq(halfBelowPi.floatValue(RoundingMode.DOWN), 3.1415925);
-        aeq(halfBelowPi.floatValue(RoundingMode.UP), 3.1415927);
-        aeq(halfBelowPi.floatValue(RoundingMode.HALF_DOWN), 3.1415925);
-        aeq(halfBelowPi.floatValue(RoundingMode.HALF_UP), 3.1415927);
-        aeq(halfBelowPi.floatValue(RoundingMode.HALF_EVEN), 3.1415925);
-        try {
-            halfBelowPi.floatValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(justAbovePi.floatValue(RoundingMode.FLOOR), 3.1415927);
-        aeq(justAbovePi.floatValue(RoundingMode.CEILING), 3.141593);
-        aeq(justAbovePi.floatValue(RoundingMode.DOWN), 3.1415927);
-        aeq(justAbovePi.floatValue(RoundingMode.UP), 3.141593);
-        aeq(justAbovePi.floatValue(RoundingMode.HALF_DOWN), 3.1415927);
-        aeq(justAbovePi.floatValue(RoundingMode.HALF_UP), 3.1415927);
-        aeq(justAbovePi.floatValue(RoundingMode.HALF_EVEN), 3.1415927);
-        try {
-            justAbovePi.floatValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(justBelowPi.floatValue(RoundingMode.FLOOR), 3.1415925);
-        aeq(justBelowPi.floatValue(RoundingMode.CEILING), 3.1415927);
-        aeq(justBelowPi.floatValue(RoundingMode.DOWN), 3.1415925);
-        aeq(justBelowPi.floatValue(RoundingMode.UP), 3.1415927);
-        aeq(justBelowPi.floatValue(RoundingMode.HALF_DOWN), 3.1415927);
-        aeq(justBelowPi.floatValue(RoundingMode.HALF_UP), 3.1415927);
-        aeq(justBelowPi.floatValue(RoundingMode.HALF_EVEN), 3.1415927);
-        try {
-            justBelowPi.floatValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        Rational halfAboveSubnormal = SUBNORMAL_FLOAT.add(SUBNORMAL_SUCCESSOR_FLOAT).divide(2);
-        Rational halfBelowSubnormal = SUBNORMAL_FLOAT.add(SUBNORMAL_PREDECESSOR_FLOAT).divide(2);
-        Rational justAboveSubnormal = SUBNORMAL_FLOAT.multiply(2).add(SUBNORMAL_SUCCESSOR_FLOAT).divide(3);
-        Rational justBelowSubnormal = SUBNORMAL_FLOAT.multiply(2).add(SUBNORMAL_PREDECESSOR_FLOAT).divide(3);
-        aeq(SUBNORMAL_FLOAT.floatValue(RoundingMode.FLOOR), 1.0E-40);
-        aeq(SUBNORMAL_FLOAT.floatValue(RoundingMode.CEILING), 1.0E-40);
-        aeq(SUBNORMAL_FLOAT.floatValue(RoundingMode.DOWN), 1.0E-40);
-        aeq(SUBNORMAL_FLOAT.floatValue(RoundingMode.UP), 1.0E-40);
-        aeq(SUBNORMAL_FLOAT.floatValue(RoundingMode.HALF_DOWN), 1.0E-40);
-        aeq(SUBNORMAL_FLOAT.floatValue(RoundingMode.HALF_UP), 1.0E-40);
-        aeq(SUBNORMAL_FLOAT.floatValue(RoundingMode.HALF_EVEN), 1.0E-40);
-        aeq(SUBNORMAL_FLOAT.floatValue(RoundingMode.UNNECESSARY), 1.0E-40);
-        aeq(halfAboveSubnormal.floatValue(RoundingMode.FLOOR), 1.0E-40);
-        aeq(halfAboveSubnormal.floatValue(RoundingMode.CEILING), 1.00001E-40);
-        aeq(halfAboveSubnormal.floatValue(RoundingMode.DOWN), 1.0E-40);
-        aeq(halfAboveSubnormal.floatValue(RoundingMode.UP), 1.00001E-40);
-        aeq(halfAboveSubnormal.floatValue(RoundingMode.HALF_DOWN), 1.0E-40);
-        aeq(halfAboveSubnormal.floatValue(RoundingMode.HALF_UP), 1.00001E-40);
-        aeq(halfAboveSubnormal.floatValue(RoundingMode.HALF_EVEN), 1.0E-40);
-        try {
-            halfAboveSubnormal.floatValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(halfBelowSubnormal.floatValue(RoundingMode.FLOOR), 9.9998E-41);
-        aeq(halfBelowSubnormal.floatValue(RoundingMode.CEILING), 1.0E-40);
-        aeq(halfBelowSubnormal.floatValue(RoundingMode.DOWN), 9.9998E-41);
-        aeq(halfBelowSubnormal.floatValue(RoundingMode.UP), 1.0E-40);
-        aeq(halfBelowSubnormal.floatValue(RoundingMode.HALF_DOWN), 9.9998E-41);
-        aeq(halfBelowSubnormal.floatValue(RoundingMode.HALF_UP), 1.0E-40);
-        aeq(halfBelowSubnormal.floatValue(RoundingMode.HALF_EVEN), 1.0E-40);
-        try {
-            halfBelowSubnormal.floatValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(justAboveSubnormal.floatValue(RoundingMode.FLOOR), 1.0E-40);
-        aeq(justAboveSubnormal.floatValue(RoundingMode.CEILING), 1.00001E-40);
-        aeq(justAboveSubnormal.floatValue(RoundingMode.DOWN), 1.0E-40);
-        aeq(justAboveSubnormal.floatValue(RoundingMode.UP), 1.00001E-40);
-        aeq(justAboveSubnormal.floatValue(RoundingMode.HALF_DOWN), 1.0E-40);
-        aeq(justAboveSubnormal.floatValue(RoundingMode.HALF_UP), 1.0E-40);
-        aeq(justAboveSubnormal.floatValue(RoundingMode.HALF_EVEN), 1.0E-40);
-        try {
-            justAboveSubnormal.floatValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(justBelowSubnormal.floatValue(RoundingMode.FLOOR), 9.9998E-41);
-        aeq(justBelowSubnormal.floatValue(RoundingMode.CEILING), 1.0E-40);
-        aeq(justBelowSubnormal.floatValue(RoundingMode.DOWN), 9.9998E-41);
-        aeq(justBelowSubnormal.floatValue(RoundingMode.UP), 1.0E-40);
-        aeq(justBelowSubnormal.floatValue(RoundingMode.HALF_DOWN), 1.0E-40);
-        aeq(justBelowSubnormal.floatValue(RoundingMode.HALF_UP), 1.0E-40);
-        aeq(justBelowSubnormal.floatValue(RoundingMode.HALF_EVEN), 1.0E-40);
-        try {
-            justBelowSubnormal.floatValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        Rational belowNegativeMax = LARGEST_FLOAT.negate().subtract(ONE);
-        Rational halfAboveNegativeMax = LARGEST_FLOAT.negate().add(ALMOST_MAX_FLOAT.negate()).divide(2);
-        Rational justAboveNegativeMax = LARGEST_FLOAT.negate().multiply(2).add(ALMOST_MAX_FLOAT.negate()).divide(3);
-        aeq(belowNegativeMax.floatValue(RoundingMode.FLOOR), Float.NEGATIVE_INFINITY);
-        aeq(belowNegativeMax.floatValue(RoundingMode.CEILING), -3.4028235E38);
-        aeq(belowNegativeMax.floatValue(RoundingMode.DOWN), -3.4028235E38);
-        aeq(belowNegativeMax.floatValue(RoundingMode.UP), Float.NEGATIVE_INFINITY);
-        aeq(belowNegativeMax.floatValue(RoundingMode.HALF_DOWN), -3.4028235E38);
-        aeq(belowNegativeMax.floatValue(RoundingMode.HALF_UP), Float.NEGATIVE_INFINITY);
-        aeq(belowNegativeMax.floatValue(RoundingMode.HALF_EVEN), Float.NEGATIVE_INFINITY);
-        try {
-            belowNegativeMax.floatValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(halfAboveNegativeMax.floatValue(RoundingMode.FLOOR), -3.4028235E38);
-        aeq(halfAboveNegativeMax.floatValue(RoundingMode.CEILING), -3.4028233E38);
-        aeq(halfAboveNegativeMax.floatValue(RoundingMode.DOWN), -3.4028233E38);
-        aeq(halfAboveNegativeMax.floatValue(RoundingMode.UP), -3.4028235E38);
-        aeq(halfAboveNegativeMax.floatValue(RoundingMode.HALF_DOWN), -3.4028233E38);
-        aeq(halfAboveNegativeMax.floatValue(RoundingMode.HALF_UP), -3.4028235E38);
-        aeq(halfAboveNegativeMax.floatValue(RoundingMode.HALF_EVEN), -3.4028233E38);
-        try {
-            halfAboveNegativeMax.floatValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(justAboveNegativeMax.floatValue(RoundingMode.FLOOR), -3.4028235E38);
-        aeq(justAboveNegativeMax.floatValue(RoundingMode.CEILING), -3.4028233E38);
-        aeq(justAboveNegativeMax.floatValue(RoundingMode.DOWN), -3.4028233E38);
-        aeq(justAboveNegativeMax.floatValue(RoundingMode.UP), -3.4028235E38);
-        aeq(justAboveNegativeMax.floatValue(RoundingMode.HALF_DOWN), -3.4028235E38);
-        aeq(justAboveNegativeMax.floatValue(RoundingMode.HALF_UP), -3.4028235E38);
-        aeq(justAboveNegativeMax.floatValue(RoundingMode.HALF_EVEN), -3.4028235E38);
-        try {
-            justAboveNegativeMax.floatValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        Rational aboveMax = LARGEST_FLOAT.add(ONE);
-        Rational halfBelowMax = LARGEST_FLOAT.add(ALMOST_MAX_FLOAT).divide(2);
-        Rational justBelowMax = LARGEST_FLOAT.multiply(2).add(ALMOST_MAX_FLOAT).divide(3);
-        aeq(aboveMax.floatValue(RoundingMode.FLOOR), 3.4028235E38);
-        aeq(aboveMax.floatValue(RoundingMode.CEILING), Float.POSITIVE_INFINITY);
-        aeq(aboveMax.floatValue(RoundingMode.DOWN), 3.4028235E38);
-        aeq(aboveMax.floatValue(RoundingMode.UP), Float.POSITIVE_INFINITY);
-        aeq(aboveMax.floatValue(RoundingMode.HALF_DOWN), 3.4028235E38);
-        aeq(aboveMax.floatValue(RoundingMode.HALF_UP), Float.POSITIVE_INFINITY);
-        aeq(aboveMax.floatValue(RoundingMode.HALF_EVEN), Float.POSITIVE_INFINITY);
-        try {
-            aboveMax.floatValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(halfBelowMax.floatValue(RoundingMode.FLOOR), 3.4028233E38);
-        aeq(halfBelowMax.floatValue(RoundingMode.CEILING), 3.4028235E38);
-        aeq(halfBelowMax.floatValue(RoundingMode.DOWN), 3.4028233E38);
-        aeq(halfBelowMax.floatValue(RoundingMode.UP), 3.4028235E38);
-        aeq(halfBelowMax.floatValue(RoundingMode.HALF_DOWN), 3.4028233E38);
-        aeq(halfBelowMax.floatValue(RoundingMode.HALF_UP), 3.4028235E38);
-        aeq(halfBelowMax.floatValue(RoundingMode.HALF_EVEN), 3.4028233E38);
-        try {
-            halfBelowMax.floatValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(justBelowMax.floatValue(RoundingMode.FLOOR), 3.4028233E38);
-        aeq(justBelowMax.floatValue(RoundingMode.CEILING), 3.4028235E38);
-        aeq(justBelowMax.floatValue(RoundingMode.DOWN), 3.4028233E38);
-        aeq(justBelowMax.floatValue(RoundingMode.UP), 3.4028235E38);
-        aeq(justBelowMax.floatValue(RoundingMode.HALF_DOWN), 3.4028235E38);
-        aeq(justBelowMax.floatValue(RoundingMode.HALF_UP), 3.4028235E38);
-        aeq(justBelowMax.floatValue(RoundingMode.HALF_EVEN), 3.4028235E38);
-        try {
-            justBelowMax.floatValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        Rational halfAboveZero = SMALLEST_FLOAT.shiftRight(1);
-        Rational justAboveZero = SMALLEST_FLOAT.divide(3);
-        Rational halfBelowZero = halfAboveZero.negate();
-        Rational justBelowZero = justAboveZero.negate();
-        aeq(halfBelowZero.floatValue(RoundingMode.FLOOR), -1.4E-45);
-        aeq(halfBelowZero.floatValue(RoundingMode.CEILING), -0.0);
-        aeq(halfBelowZero.floatValue(RoundingMode.DOWN), -0.0);
-        aeq(halfBelowZero.floatValue(RoundingMode.UP), -1.4E-45);
-        aeq(halfBelowZero.floatValue(RoundingMode.HALF_DOWN), -0.0);
-        aeq(halfBelowZero.floatValue(RoundingMode.HALF_UP), -1.4E-45);
-        aeq(halfBelowZero.floatValue(RoundingMode.HALF_EVEN), -0.0);
-        try {
-            halfBelowZero.floatValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(justBelowZero.floatValue(RoundingMode.FLOOR), -1.4E-45);
-        aeq(justBelowZero.floatValue(RoundingMode.CEILING), -0.0);
-        aeq(justBelowZero.floatValue(RoundingMode.DOWN), -0.0);
-        aeq(justBelowZero.floatValue(RoundingMode.UP), -1.4E-45);
-        aeq(justBelowZero.floatValue(RoundingMode.HALF_DOWN), -0.0);
-        aeq(justBelowZero.floatValue(RoundingMode.HALF_UP), -0.0);
-        aeq(justBelowZero.floatValue(RoundingMode.HALF_EVEN), -0.0);
-        try {
-            justBelowZero.floatValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(halfAboveZero.floatValue(RoundingMode.FLOOR), 0.0);
-        aeq(halfAboveZero.floatValue(RoundingMode.CEILING), 1.4E-45);
-        aeq(halfAboveZero.floatValue(RoundingMode.DOWN), 0.0);
-        aeq(halfAboveZero.floatValue(RoundingMode.UP), 1.4E-45);
-        aeq(halfAboveZero.floatValue(RoundingMode.HALF_DOWN), 0.0);
-        aeq(halfAboveZero.floatValue(RoundingMode.HALF_UP), 1.4E-45);
-        aeq(halfAboveZero.floatValue(RoundingMode.HALF_EVEN), 0.0);
-        try {
-            halfAboveZero.floatValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(justAboveZero.floatValue(RoundingMode.FLOOR), 0.0);
-        aeq(justAboveZero.floatValue(RoundingMode.CEILING), 1.4E-45);
-        aeq(justAboveZero.floatValue(RoundingMode.DOWN), 0.0);
-        aeq(justAboveZero.floatValue(RoundingMode.UP), 1.4E-45);
-        aeq(justAboveZero.floatValue(RoundingMode.HALF_DOWN), 0.0);
-        aeq(justAboveZero.floatValue(RoundingMode.HALF_UP), 0.0);
-        aeq(justAboveZero.floatValue(RoundingMode.HALF_EVEN), 0.0);
-        try {
-            justAboveZero.floatValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        Rational boundary = LARGEST_SUBNORMAL_FLOAT.add(SMALLEST_NORMAL_FLOAT).shiftRight(1);
-        Rational halfBelowBoundary = LARGEST_SUBNORMAL_FLOAT.add(boundary).shiftRight(1);
-        Rational halfAboveBoundary = SMALLEST_NORMAL_FLOAT.add(boundary).shiftRight(1);
-        Rational justBelowBoundary = LARGEST_SUBNORMAL_FLOAT.add(boundary.shiftLeft(1)).divide(3);
-        Rational justAboveBoundary = SMALLEST_NORMAL_FLOAT.add(boundary.shiftLeft(1)).divide(3);
-        aeq(boundary.floatValue(RoundingMode.FLOOR), 1.1754942E-38);
-        aeq(boundary.floatValue(RoundingMode.CEILING), 1.17549435E-38);
-        aeq(boundary.floatValue(RoundingMode.DOWN), 1.1754942E-38);
-        aeq(boundary.floatValue(RoundingMode.UP), 1.17549435E-38);
-        aeq(boundary.floatValue(RoundingMode.HALF_DOWN), 1.1754942E-38);
-        aeq(boundary.floatValue(RoundingMode.HALF_UP), 1.17549435E-38);
-        aeq(boundary.floatValue(RoundingMode.HALF_EVEN), 1.17549435E-38);
-        try {
-            boundary.floatValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(halfBelowBoundary.floatValue(RoundingMode.FLOOR), 1.1754942E-38);
-        aeq(halfBelowBoundary.floatValue(RoundingMode.CEILING), 1.17549435E-38);
-        aeq(halfBelowBoundary.floatValue(RoundingMode.DOWN), 1.1754942E-38);
-        aeq(halfBelowBoundary.floatValue(RoundingMode.UP), 1.17549435E-38);
-        aeq(halfBelowBoundary.floatValue(RoundingMode.HALF_DOWN), 1.1754942E-38);
-        aeq(halfBelowBoundary.floatValue(RoundingMode.HALF_UP), 1.1754942E-38);
-        aeq(halfBelowBoundary.floatValue(RoundingMode.HALF_EVEN), 1.1754942E-38);
-        try {
-            halfBelowBoundary.floatValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(justBelowBoundary.floatValue(RoundingMode.FLOOR), 1.1754942E-38);
-        aeq(justBelowBoundary.floatValue(RoundingMode.CEILING), 1.17549435E-38);
-        aeq(justBelowBoundary.floatValue(RoundingMode.DOWN), 1.1754942E-38);
-        aeq(justBelowBoundary.floatValue(RoundingMode.UP), 1.17549435E-38);
-        aeq(justBelowBoundary.floatValue(RoundingMode.HALF_DOWN), 1.1754942E-38);
-        aeq(justBelowBoundary.floatValue(RoundingMode.HALF_UP), 1.1754942E-38);
-        aeq(justBelowBoundary.floatValue(RoundingMode.HALF_EVEN), 1.1754942E-38);
-        try {
-            justBelowBoundary.floatValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(halfAboveBoundary.floatValue(RoundingMode.FLOOR), 1.1754942E-38);
-        aeq(halfAboveBoundary.floatValue(RoundingMode.CEILING), 1.17549435E-38);
-        aeq(halfAboveBoundary.floatValue(RoundingMode.DOWN), 1.1754942E-38);
-        aeq(halfAboveBoundary.floatValue(RoundingMode.UP), 1.17549435E-38);
-        aeq(halfAboveBoundary.floatValue(RoundingMode.HALF_DOWN), 1.17549435E-38);
-        aeq(halfAboveBoundary.floatValue(RoundingMode.HALF_UP), 1.17549435E-38);
-        aeq(halfAboveBoundary.floatValue(RoundingMode.HALF_EVEN), 1.17549435E-38);
-        try {
-            halfAboveBoundary.floatValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(justAboveBoundary.floatValue(RoundingMode.FLOOR), 1.1754942E-38);
-        aeq(justAboveBoundary.floatValue(RoundingMode.CEILING), 1.17549435E-38);
-        aeq(justAboveBoundary.floatValue(RoundingMode.DOWN), 1.1754942E-38);
-        aeq(justAboveBoundary.floatValue(RoundingMode.UP), 1.17549435E-38);
-        aeq(justAboveBoundary.floatValue(RoundingMode.HALF_DOWN), 1.17549435E-38);
-        aeq(justAboveBoundary.floatValue(RoundingMode.HALF_UP), 1.17549435E-38);
-        aeq(justAboveBoundary.floatValue(RoundingMode.HALF_EVEN), 1.17549435E-38);
-        try {
-            justAboveBoundary.floatValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
+        floatValue_RoundingMode_helper("0", "FLOOR", 0.0f);
+        floatValue_RoundingMode_helper("0", "CEILING", 0.0f);
+        floatValue_RoundingMode_helper("0", "DOWN", 0.0f);
+        floatValue_RoundingMode_helper("0", "UP", 0.0f);
+        floatValue_RoundingMode_helper("0", "HALF_DOWN", 0.0f);
+        floatValue_RoundingMode_helper("0", "HALF_UP", 0.0f);
+        floatValue_RoundingMode_helper("0", "HALF_EVEN", 0.0f);
+        floatValue_RoundingMode_helper("0", "UNNECESSARY", 0.0f);
+
+        floatValue_RoundingMode_helper("1", "FLOOR", 1.0f);
+        floatValue_RoundingMode_helper("1", "CEILING", 1.0f);
+        floatValue_RoundingMode_helper("1", "DOWN", 1.0f);
+        floatValue_RoundingMode_helper("1", "UP", 1.0f);
+        floatValue_RoundingMode_helper("1", "HALF_DOWN", 1.0f);
+        floatValue_RoundingMode_helper("1", "HALF_UP", 1.0f);
+        floatValue_RoundingMode_helper("1", "HALF_EVEN", 1.0f);
+        floatValue_RoundingMode_helper("1", "UNNECESSARY", 1.0f);
+
+        floatValue_RoundingMode_helper("1/2", "FLOOR", 0.5f);
+        floatValue_RoundingMode_helper("1/2", "CEILING", 0.5f);
+        floatValue_RoundingMode_helper("1/2", "DOWN", 0.5f);
+        floatValue_RoundingMode_helper("1/2", "UP", 0.5f);
+        floatValue_RoundingMode_helper("1/2", "HALF_DOWN", 0.5f);
+        floatValue_RoundingMode_helper("1/2", "HALF_UP", 0.5f);
+        floatValue_RoundingMode_helper("1/2", "HALF_EVEN", 0.5f);
+        floatValue_RoundingMode_helper("1/2", "UNNECESSARY", 0.5f);
+
+        floatValue_RoundingMode_helper("1/3", "FLOOR", 0.3333333f);
+        floatValue_RoundingMode_helper("1/3", "CEILING", 0.33333334f);
+        floatValue_RoundingMode_helper("1/3", "DOWN", 0.3333333f);
+        floatValue_RoundingMode_helper("1/3", "UP", 0.33333334f);
+        floatValue_RoundingMode_helper("1/3", "HALF_DOWN", 0.33333334f);
+        floatValue_RoundingMode_helper("1/3", "HALF_UP", 0.33333334f);
+        floatValue_RoundingMode_helper("1/3", "HALF_EVEN", 0.33333334f);
+        floatValue_RoundingMode_fail_helper("1/3", "UNNECESSARY");
+
+        floatValue_RoundingMode_helper("-1/3", "FLOOR", -0.33333334f);
+        floatValue_RoundingMode_helper("-1/3", "CEILING", -0.3333333f);
+        floatValue_RoundingMode_helper("-1/3", "DOWN", -0.3333333f);
+        floatValue_RoundingMode_helper("-1/3", "UP", -0.33333334f);
+        floatValue_RoundingMode_helper("-1/3", "HALF_DOWN", -0.33333334f);
+        floatValue_RoundingMode_helper("-1/3", "HALF_UP", -0.33333334f);
+        floatValue_RoundingMode_helper("-1/3", "HALF_EVEN", -0.33333334f);
+        floatValue_RoundingMode_fail_helper("-1/3", "UNNECESSARY");
+
+        floatValue_RoundingMode_helper(ALMOST_ONE, "FLOOR", 0.99999994f);
+        floatValue_RoundingMode_helper(ALMOST_ONE, "CEILING", 1.0f);
+        floatValue_RoundingMode_helper(ALMOST_ONE, "DOWN", 0.99999994f);
+        floatValue_RoundingMode_helper(ALMOST_ONE, "UP", 1.0f);
+        floatValue_RoundingMode_helper(ALMOST_ONE, "HALF_DOWN", 1.0f);
+        floatValue_RoundingMode_helper(ALMOST_ONE, "HALF_UP", 1.0f);
+        floatValue_RoundingMode_helper(ALMOST_ONE, "HALF_EVEN", 1.0f);
+        floatValue_RoundingMode_fail_helper(ALMOST_ONE, "UNNECESSARY");
+
+        floatValue_RoundingMode_helper(TRILLION, "FLOOR", 1.0E12f);
+        floatValue_RoundingMode_helper(TRILLION, "CEILING", 1.00000006E12f);
+        floatValue_RoundingMode_helper(TRILLION, "DOWN", 1.0E12f);
+        floatValue_RoundingMode_helper(TRILLION, "UP", 1.00000006E12f);
+        floatValue_RoundingMode_helper(TRILLION, "HALF_DOWN", 1.0E12f);
+        floatValue_RoundingMode_helper(TRILLION, "HALF_UP", 1.0E12f);
+        floatValue_RoundingMode_helper(TRILLION, "HALF_EVEN", 1.0E12f);
+        floatValue_RoundingMode_fail_helper(TRILLION, "UNNECESSARY");
+
+        floatValue_RoundingMode_helper(PI_FLOAT, "FLOOR", 3.1415927f);
+        floatValue_RoundingMode_helper(PI_FLOAT, "CEILING", 3.1415927f);
+        floatValue_RoundingMode_helper(PI_FLOAT, "DOWN", 3.1415927f);
+        floatValue_RoundingMode_helper(PI_FLOAT, "UP", 3.1415927f);
+        floatValue_RoundingMode_helper(PI_FLOAT, "HALF_DOWN", 3.1415927f);
+        floatValue_RoundingMode_helper(PI_FLOAT, "HALF_UP", 3.1415927f);
+        floatValue_RoundingMode_helper(PI_FLOAT, "HALF_EVEN", 3.1415927f);
+        floatValue_RoundingMode_helper(PI_FLOAT, "UNNECESSARY", 3.1415927f);
+
+        floatValue_RoundingMode_helper(HALF_ABOVE_PI_FLOAT, "FLOOR", 3.1415927f);
+        floatValue_RoundingMode_helper(HALF_ABOVE_PI_FLOAT, "CEILING", 3.141593f);
+        floatValue_RoundingMode_helper(HALF_ABOVE_PI_FLOAT, "DOWN", 3.1415927f);
+        floatValue_RoundingMode_helper(HALF_ABOVE_PI_FLOAT, "UP", 3.141593f);
+        floatValue_RoundingMode_helper(HALF_ABOVE_PI_FLOAT, "HALF_DOWN", 3.1415927f);
+        floatValue_RoundingMode_helper(HALF_ABOVE_PI_FLOAT, "HALF_UP", 3.141593f);
+        floatValue_RoundingMode_helper(HALF_ABOVE_PI_FLOAT, "HALF_EVEN", 3.141593f);
+        floatValue_RoundingMode_fail_helper(HALF_ABOVE_PI_FLOAT, "UNNECESSARY");
+
+        floatValue_RoundingMode_helper(HALF_BELOW_PI_FLOAT, "FLOOR", 3.1415925f);
+        floatValue_RoundingMode_helper(HALF_BELOW_PI_FLOAT, "CEILING", 3.1415927f);
+        floatValue_RoundingMode_helper(HALF_BELOW_PI_FLOAT, "DOWN", 3.1415925f);
+        floatValue_RoundingMode_helper(HALF_BELOW_PI_FLOAT, "UP", 3.1415927f);
+        floatValue_RoundingMode_helper(HALF_BELOW_PI_FLOAT, "HALF_DOWN", 3.1415925f);
+        floatValue_RoundingMode_helper(HALF_BELOW_PI_FLOAT, "HALF_UP", 3.1415927f);
+        floatValue_RoundingMode_helper(HALF_BELOW_PI_FLOAT, "HALF_EVEN", 3.1415925f);
+        floatValue_RoundingMode_fail_helper(HALF_BELOW_PI_FLOAT, "UNNECESSARY");
+
+        floatValue_RoundingMode_helper(JUST_ABOVE_PI_FLOAT, "FLOOR", 3.1415927f);
+        floatValue_RoundingMode_helper(JUST_ABOVE_PI_FLOAT, "CEILING", 3.141593f);
+        floatValue_RoundingMode_helper(JUST_ABOVE_PI_FLOAT, "DOWN", 3.1415927f);
+        floatValue_RoundingMode_helper(JUST_ABOVE_PI_FLOAT, "UP", 3.141593f);
+        floatValue_RoundingMode_helper(JUST_ABOVE_PI_FLOAT, "HALF_DOWN", 3.1415927f);
+        floatValue_RoundingMode_helper(JUST_ABOVE_PI_FLOAT, "HALF_UP", 3.1415927f);
+        floatValue_RoundingMode_helper(JUST_ABOVE_PI_FLOAT, "HALF_EVEN", 3.1415927f);
+        floatValue_RoundingMode_fail_helper(JUST_ABOVE_PI_FLOAT, "UNNECESSARY");
+
+        floatValue_RoundingMode_helper(JUST_BELOW_PI_FLOAT, "FLOOR", 3.1415925f);
+        floatValue_RoundingMode_helper(JUST_BELOW_PI_FLOAT, "CEILING", 3.1415927f);
+        floatValue_RoundingMode_helper(JUST_BELOW_PI_FLOAT, "DOWN", 3.1415925f);
+        floatValue_RoundingMode_helper(JUST_BELOW_PI_FLOAT, "UP", 3.1415927f);
+        floatValue_RoundingMode_helper(JUST_BELOW_PI_FLOAT, "HALF_DOWN", 3.1415927f);
+        floatValue_RoundingMode_helper(JUST_BELOW_PI_FLOAT, "HALF_UP", 3.1415927f);
+        floatValue_RoundingMode_helper(JUST_BELOW_PI_FLOAT, "HALF_EVEN", 3.1415927f);
+        floatValue_RoundingMode_fail_helper(JUST_BELOW_PI_FLOAT, "UNNECESSARY");
+
+        floatValue_RoundingMode_helper(SUBNORMAL_FLOAT, "FLOOR", 1.0E-40f);
+        floatValue_RoundingMode_helper(SUBNORMAL_FLOAT, "CEILING", 1.0E-40f);
+        floatValue_RoundingMode_helper(SUBNORMAL_FLOAT, "DOWN", 1.0E-40f);
+        floatValue_RoundingMode_helper(SUBNORMAL_FLOAT, "UP", 1.0E-40f);
+        floatValue_RoundingMode_helper(SUBNORMAL_FLOAT, "HALF_DOWN", 1.0E-40f);
+        floatValue_RoundingMode_helper(SUBNORMAL_FLOAT, "HALF_UP", 1.0E-40f);
+        floatValue_RoundingMode_helper(SUBNORMAL_FLOAT, "HALF_EVEN", 1.0E-40f);
+        floatValue_RoundingMode_helper(SUBNORMAL_FLOAT, "UNNECESSARY", 1.0E-40f);
+
+        floatValue_RoundingMode_helper(HALF_ABOVE_SUBNORMAL_FLOAT, "FLOOR", 1.0E-40f);
+        floatValue_RoundingMode_helper(HALF_ABOVE_SUBNORMAL_FLOAT, "CEILING", 1.00001E-40f);
+        floatValue_RoundingMode_helper(HALF_ABOVE_SUBNORMAL_FLOAT, "DOWN", 1.0E-40f);
+        floatValue_RoundingMode_helper(HALF_ABOVE_SUBNORMAL_FLOAT, "UP", 1.00001E-40f);
+        floatValue_RoundingMode_helper(HALF_ABOVE_SUBNORMAL_FLOAT, "HALF_DOWN", 1.0E-40f);
+        floatValue_RoundingMode_helper(HALF_ABOVE_SUBNORMAL_FLOAT, "HALF_UP", 1.00001E-40f);
+        floatValue_RoundingMode_helper(HALF_ABOVE_SUBNORMAL_FLOAT, "HALF_EVEN", 1.0E-40f);
+        floatValue_RoundingMode_fail_helper(HALF_ABOVE_SUBNORMAL_FLOAT, "UNNECESSARY");
+
+        floatValue_RoundingMode_helper(HALF_BELOW_SUBNORMAL_FLOAT, "FLOOR", 9.9998E-41f);
+        floatValue_RoundingMode_helper(HALF_BELOW_SUBNORMAL_FLOAT, "CEILING", 1.0E-40f);
+        floatValue_RoundingMode_helper(HALF_BELOW_SUBNORMAL_FLOAT, "DOWN", 9.9998E-41f);
+        floatValue_RoundingMode_helper(HALF_BELOW_SUBNORMAL_FLOAT, "UP", 1.0E-40f);
+        floatValue_RoundingMode_helper(HALF_BELOW_SUBNORMAL_FLOAT, "HALF_DOWN", 9.9998E-41f);
+        floatValue_RoundingMode_helper(HALF_BELOW_SUBNORMAL_FLOAT, "HALF_UP", 1.0E-40f);
+        floatValue_RoundingMode_helper(HALF_BELOW_SUBNORMAL_FLOAT, "HALF_EVEN", 1.0E-40f);
+        floatValue_RoundingMode_fail_helper(HALF_BELOW_SUBNORMAL_FLOAT, "UNNECESSARY");
+
+        floatValue_RoundingMode_helper(JUST_ABOVE_SUBNORMAL_FLOAT, "FLOOR", 1.0E-40f);
+        floatValue_RoundingMode_helper(JUST_ABOVE_SUBNORMAL_FLOAT, "CEILING", 1.00001E-40f);
+        floatValue_RoundingMode_helper(JUST_ABOVE_SUBNORMAL_FLOAT, "DOWN", 1.0E-40f);
+        floatValue_RoundingMode_helper(JUST_ABOVE_SUBNORMAL_FLOAT, "UP", 1.00001E-40f);
+        floatValue_RoundingMode_helper(JUST_ABOVE_SUBNORMAL_FLOAT, "HALF_DOWN", 1.0E-40f);
+        floatValue_RoundingMode_helper(JUST_ABOVE_SUBNORMAL_FLOAT, "HALF_UP", 1.0E-40f);
+        floatValue_RoundingMode_helper(JUST_ABOVE_SUBNORMAL_FLOAT, "HALF_EVEN", 1.0E-40f);
+        floatValue_RoundingMode_fail_helper(JUST_ABOVE_SUBNORMAL_FLOAT, "UNNECESSARY");
+
+        floatValue_RoundingMode_helper(JUST_BELOW_SUBNORMAL_FLOAT, "FLOOR", 9.9998E-41f);
+        floatValue_RoundingMode_helper(JUST_BELOW_SUBNORMAL_FLOAT, "CEILING", 1.0E-40f);
+        floatValue_RoundingMode_helper(JUST_BELOW_SUBNORMAL_FLOAT, "DOWN", 9.9998E-41f);
+        floatValue_RoundingMode_helper(JUST_BELOW_SUBNORMAL_FLOAT, "UP", 1.0E-40f);
+        floatValue_RoundingMode_helper(JUST_BELOW_SUBNORMAL_FLOAT, "HALF_DOWN", 1.0E-40f);
+        floatValue_RoundingMode_helper(JUST_BELOW_SUBNORMAL_FLOAT, "HALF_UP", 1.0E-40f);
+        floatValue_RoundingMode_helper(JUST_BELOW_SUBNORMAL_FLOAT, "HALF_EVEN", 1.0E-40f);
+        floatValue_RoundingMode_fail_helper(JUST_BELOW_SUBNORMAL_FLOAT, "UNNECESSARY");
+
+        floatValue_RoundingMode_helper(BELOW_NEGATIVE_MAX_FLOAT, "FLOOR", Float.NEGATIVE_INFINITY);
+        floatValue_RoundingMode_helper(BELOW_NEGATIVE_MAX_FLOAT, "CEILING", -3.4028235E38f);
+        floatValue_RoundingMode_helper(BELOW_NEGATIVE_MAX_FLOAT, "DOWN", -3.4028235E38f);
+        floatValue_RoundingMode_helper(BELOW_NEGATIVE_MAX_FLOAT, "UP", Float.NEGATIVE_INFINITY);
+        floatValue_RoundingMode_helper(BELOW_NEGATIVE_MAX_FLOAT, "HALF_DOWN", -3.4028235E38f);
+        floatValue_RoundingMode_helper(BELOW_NEGATIVE_MAX_FLOAT, "HALF_UP", Float.NEGATIVE_INFINITY);
+        floatValue_RoundingMode_helper(BELOW_NEGATIVE_MAX_FLOAT, "HALF_EVEN", Float.NEGATIVE_INFINITY);
+        floatValue_RoundingMode_fail_helper(BELOW_NEGATIVE_MAX_FLOAT, "UNNECESSARY");
+
+        floatValue_RoundingMode_helper(HALF_ABOVE_NEGATIVE_MAX_FLOAT, "FLOOR", -3.4028235E38f);
+        floatValue_RoundingMode_helper(HALF_ABOVE_NEGATIVE_MAX_FLOAT, "CEILING", -3.4028233E38f);
+        floatValue_RoundingMode_helper(HALF_ABOVE_NEGATIVE_MAX_FLOAT, "DOWN", -3.4028233E38f);
+        floatValue_RoundingMode_helper(HALF_ABOVE_NEGATIVE_MAX_FLOAT, "UP", -3.4028235E38f);
+        floatValue_RoundingMode_helper(HALF_ABOVE_NEGATIVE_MAX_FLOAT, "HALF_DOWN", -3.4028233E38f);
+        floatValue_RoundingMode_helper(HALF_ABOVE_NEGATIVE_MAX_FLOAT, "HALF_UP", -3.4028235E38f);
+        floatValue_RoundingMode_helper(HALF_ABOVE_NEGATIVE_MAX_FLOAT, "HALF_EVEN", -3.4028233E38f);
+        floatValue_RoundingMode_fail_helper(HALF_ABOVE_NEGATIVE_MAX_FLOAT, "UNNECESSARY");
+
+        floatValue_RoundingMode_helper(JUST_ABOVE_NEGATIVE_MAX_FLOAT, "FLOOR", -3.4028235E38f);
+        floatValue_RoundingMode_helper(JUST_ABOVE_NEGATIVE_MAX_FLOAT, "CEILING", -3.4028233E38f);
+        floatValue_RoundingMode_helper(JUST_ABOVE_NEGATIVE_MAX_FLOAT, "DOWN", -3.4028233E38f);
+        floatValue_RoundingMode_helper(JUST_ABOVE_NEGATIVE_MAX_FLOAT, "UP", -3.4028235E38f);
+        floatValue_RoundingMode_helper(JUST_ABOVE_NEGATIVE_MAX_FLOAT, "HALF_DOWN", -3.4028235E38f);
+        floatValue_RoundingMode_helper(JUST_ABOVE_NEGATIVE_MAX_FLOAT, "HALF_UP", -3.4028235E38f);
+        floatValue_RoundingMode_helper(JUST_ABOVE_NEGATIVE_MAX_FLOAT, "HALF_EVEN", -3.4028235E38f);
+        floatValue_RoundingMode_fail_helper(JUST_ABOVE_NEGATIVE_MAX_FLOAT, "UNNECESSARY");
+
+        floatValue_RoundingMode_helper(ABOVE_MAX_FLOAT, "FLOOR", 3.4028235E38f);
+        floatValue_RoundingMode_helper(ABOVE_MAX_FLOAT, "CEILING", Float.POSITIVE_INFINITY);
+        floatValue_RoundingMode_helper(ABOVE_MAX_FLOAT, "DOWN", 3.4028235E38f);
+        floatValue_RoundingMode_helper(ABOVE_MAX_FLOAT, "UP", Float.POSITIVE_INFINITY);
+        floatValue_RoundingMode_helper(ABOVE_MAX_FLOAT, "HALF_DOWN", 3.4028235E38f);
+        floatValue_RoundingMode_helper(ABOVE_MAX_FLOAT, "HALF_UP", Float.POSITIVE_INFINITY);
+        floatValue_RoundingMode_helper(ABOVE_MAX_FLOAT, "HALF_EVEN", Float.POSITIVE_INFINITY);
+        floatValue_RoundingMode_fail_helper(ABOVE_MAX_FLOAT, "UNNECESSARY");
+
+        floatValue_RoundingMode_helper(HALF_BELOW_MAX_FLOAT, "FLOOR", 3.4028233E38f);
+        floatValue_RoundingMode_helper(HALF_BELOW_MAX_FLOAT, "CEILING", 3.4028235E38f);
+        floatValue_RoundingMode_helper(HALF_BELOW_MAX_FLOAT, "DOWN", 3.4028233E38f);
+        floatValue_RoundingMode_helper(HALF_BELOW_MAX_FLOAT, "UP", 3.4028235E38f);
+        floatValue_RoundingMode_helper(HALF_BELOW_MAX_FLOAT, "HALF_DOWN", 3.4028233E38f);
+        floatValue_RoundingMode_helper(HALF_BELOW_MAX_FLOAT, "HALF_UP", 3.4028235E38f);
+        floatValue_RoundingMode_helper(HALF_BELOW_MAX_FLOAT, "HALF_EVEN", 3.4028233E38f);
+        floatValue_RoundingMode_fail_helper(HALF_BELOW_MAX_FLOAT, "UNNECESSARY");
+
+        floatValue_RoundingMode_helper(JUST_BELOW_MAX_FLOAT, "FLOOR", 3.4028233E38f);
+        floatValue_RoundingMode_helper(JUST_BELOW_MAX_FLOAT, "CEILING", 3.4028235E38f);
+        floatValue_RoundingMode_helper(JUST_BELOW_MAX_FLOAT, "DOWN", 3.4028233E38f);
+        floatValue_RoundingMode_helper(JUST_BELOW_MAX_FLOAT, "UP", 3.4028235E38f);
+        floatValue_RoundingMode_helper(JUST_BELOW_MAX_FLOAT, "HALF_DOWN", 3.4028235E38f);
+        floatValue_RoundingMode_helper(JUST_BELOW_MAX_FLOAT, "HALF_UP", 3.4028235E38f);
+        floatValue_RoundingMode_helper(JUST_BELOW_MAX_FLOAT, "HALF_EVEN", 3.4028235E38f);
+        floatValue_RoundingMode_fail_helper(JUST_BELOW_MAX_FLOAT, "UNNECESSARY");
+
+        floatValue_RoundingMode_helper(HALF_BELOW_ZERO_FLOAT, "FLOOR", -1.4E-45f);
+        floatValue_RoundingMode_helper(HALF_BELOW_ZERO_FLOAT, "CEILING", -0.0f);
+        floatValue_RoundingMode_helper(HALF_BELOW_ZERO_FLOAT, "DOWN", -0.0f);
+        floatValue_RoundingMode_helper(HALF_BELOW_ZERO_FLOAT, "UP", -1.4E-45f);
+        floatValue_RoundingMode_helper(HALF_BELOW_ZERO_FLOAT, "HALF_DOWN", -0.0f);
+        floatValue_RoundingMode_helper(HALF_BELOW_ZERO_FLOAT, "HALF_UP", -1.4E-45f);
+        floatValue_RoundingMode_helper(HALF_BELOW_ZERO_FLOAT, "HALF_EVEN", -0.0f);
+        floatValue_RoundingMode_fail_helper(HALF_BELOW_ZERO_FLOAT, "UNNECESSARY");
+
+        floatValue_RoundingMode_helper(JUST_BELOW_ZERO_FLOAT, "FLOOR", -1.4E-45f);
+        floatValue_RoundingMode_helper(JUST_BELOW_ZERO_FLOAT, "CEILING", -0.0f);
+        floatValue_RoundingMode_helper(JUST_BELOW_ZERO_FLOAT, "DOWN", -0.0f);
+        floatValue_RoundingMode_helper(JUST_BELOW_ZERO_FLOAT, "UP", -1.4E-45f);
+        floatValue_RoundingMode_helper(JUST_BELOW_ZERO_FLOAT, "HALF_DOWN", -0.0f);
+        floatValue_RoundingMode_helper(JUST_BELOW_ZERO_FLOAT, "HALF_UP", -0.0f);
+        floatValue_RoundingMode_helper(JUST_BELOW_ZERO_FLOAT, "HALF_EVEN", -0.0f);
+        floatValue_RoundingMode_fail_helper(JUST_BELOW_ZERO_FLOAT, "UNNECESSARY");
+
+        floatValue_RoundingMode_helper(HALF_ABOVE_ZERO_FLOAT, "FLOOR", 0.0f);
+        floatValue_RoundingMode_helper(HALF_ABOVE_ZERO_FLOAT, "CEILING", 1.4E-45f);
+        floatValue_RoundingMode_helper(HALF_ABOVE_ZERO_FLOAT, "DOWN", 0.0f);
+        floatValue_RoundingMode_helper(HALF_ABOVE_ZERO_FLOAT, "UP", 1.4E-45f);
+        floatValue_RoundingMode_helper(HALF_ABOVE_ZERO_FLOAT, "HALF_DOWN", 0.0f);
+        floatValue_RoundingMode_helper(HALF_ABOVE_ZERO_FLOAT, "HALF_UP", 1.4E-45f);
+        floatValue_RoundingMode_helper(HALF_ABOVE_ZERO_FLOAT, "HALF_EVEN", 0.0f);
+        floatValue_RoundingMode_fail_helper(HALF_ABOVE_ZERO_FLOAT, "UNNECESSARY");
+
+        floatValue_RoundingMode_helper(JUST_ABOVE_ZERO_FLOAT, "FLOOR", 0.0f);
+        floatValue_RoundingMode_helper(JUST_ABOVE_ZERO_FLOAT, "CEILING", 1.4E-45f);
+        floatValue_RoundingMode_helper(JUST_ABOVE_ZERO_FLOAT, "DOWN", 0.0f);
+        floatValue_RoundingMode_helper(JUST_ABOVE_ZERO_FLOAT, "UP", 1.4E-45f);
+        floatValue_RoundingMode_helper(JUST_ABOVE_ZERO_FLOAT, "HALF_DOWN", 0.0f);
+        floatValue_RoundingMode_helper(JUST_ABOVE_ZERO_FLOAT, "HALF_UP", 0.0f);
+        floatValue_RoundingMode_helper(JUST_ABOVE_ZERO_FLOAT, "HALF_EVEN", 0.0f);
+        floatValue_RoundingMode_fail_helper(JUST_ABOVE_ZERO_FLOAT, "UNNECESSARY");
+
+        floatValue_RoundingMode_helper(BOUNDARY_FLOAT, "FLOOR", 1.1754942E-38f);
+        floatValue_RoundingMode_helper(BOUNDARY_FLOAT, "CEILING", 1.17549435E-38f);
+        floatValue_RoundingMode_helper(BOUNDARY_FLOAT, "DOWN", 1.1754942E-38f);
+        floatValue_RoundingMode_helper(BOUNDARY_FLOAT, "UP", 1.17549435E-38f);
+        floatValue_RoundingMode_helper(BOUNDARY_FLOAT, "HALF_DOWN", 1.1754942E-38f);
+        floatValue_RoundingMode_helper(BOUNDARY_FLOAT, "HALF_UP", 1.17549435E-38f);
+        floatValue_RoundingMode_helper(BOUNDARY_FLOAT, "HALF_EVEN", 1.17549435E-38f);
+        floatValue_RoundingMode_fail_helper(BOUNDARY_FLOAT, "UNNECESSARY");
+
+        floatValue_RoundingMode_helper(JUST_BELOW_BOUNDARY_FLOAT, "FLOOR", 1.1754942E-38f);
+        floatValue_RoundingMode_helper(JUST_BELOW_BOUNDARY_FLOAT, "CEILING", 1.17549435E-38f);
+        floatValue_RoundingMode_helper(JUST_BELOW_BOUNDARY_FLOAT, "DOWN", 1.1754942E-38f);
+        floatValue_RoundingMode_helper(JUST_BELOW_BOUNDARY_FLOAT, "UP", 1.17549435E-38f);
+        floatValue_RoundingMode_helper(JUST_BELOW_BOUNDARY_FLOAT, "HALF_DOWN", 1.1754942E-38f);
+        floatValue_RoundingMode_helper(JUST_BELOW_BOUNDARY_FLOAT, "HALF_UP", 1.1754942E-38f);
+        floatValue_RoundingMode_helper(JUST_BELOW_BOUNDARY_FLOAT, "HALF_EVEN", 1.1754942E-38f);
+        floatValue_RoundingMode_fail_helper(JUST_BELOW_BOUNDARY_FLOAT, "UNNECESSARY");
+
+        floatValue_RoundingMode_helper(JUST_ABOVE_BOUNDARY_FLOAT, "FLOOR", 1.1754942E-38f);
+        floatValue_RoundingMode_helper(JUST_ABOVE_BOUNDARY_FLOAT, "CEILING", 1.17549435E-38f);
+        floatValue_RoundingMode_helper(JUST_ABOVE_BOUNDARY_FLOAT, "DOWN", 1.1754942E-38f);
+        floatValue_RoundingMode_helper(JUST_ABOVE_BOUNDARY_FLOAT, "UP", 1.17549435E-38f);
+        floatValue_RoundingMode_helper(JUST_ABOVE_BOUNDARY_FLOAT, "HALF_DOWN", 1.17549435E-38f);
+        floatValue_RoundingMode_helper(JUST_ABOVE_BOUNDARY_FLOAT, "HALF_UP", 1.17549435E-38f);
+        floatValue_RoundingMode_helper(JUST_ABOVE_BOUNDARY_FLOAT, "HALF_EVEN", 1.17549435E-38f);
+        floatValue_RoundingMode_fail_helper(JUST_ABOVE_BOUNDARY_FLOAT, "UNNECESSARY");
+    }
+
+    private static void floatValue_helper(@NotNull Rational r, float output) {
+        aeq(r.floatValue(), output);
+    }
+
+    private static void floatValue_helper(@NotNull String r, float output) {
+        floatValue_helper(read(r).get(), output);
     }
 
     @Test
     public void testFloatValue() {
-        aeq(ZERO.floatValue(), 0.0);
-        aeq(ONE.floatValue(), 1.0);
-        aeq(read("1/2").get().floatValue(), 0.5);
-        aeq(read("1/3").get().floatValue(), 0.33333334);
-        aeq(read("-1/3").get().floatValue(), -0.33333334);
-        Rational almostOne = of(BigInteger.TEN.pow(1000).subtract(BigInteger.ONE), BigInteger.TEN.pow(1000));
-        aeq(almostOne.floatValue(), 1.0);
-        aeq(PI_FLOAT.floatValue(), 3.1415927);
-        Rational trillion = of(BigInteger.TEN.pow(12));
-        aeq(trillion.floatValue(), 1.0E12);
-        Rational halfAbovePi = PI_FLOAT.add(PI_SUCCESSOR_FLOAT).divide(2);
-        Rational halfBelowPi = PI_FLOAT.add(PI_PREDECESSOR_FLOAT).divide(2);
-        Rational justAbovePi = PI_FLOAT.multiply(2).add(PI_SUCCESSOR_FLOAT).divide(3);
-        Rational justBelowPi = PI_FLOAT.multiply(2).add(PI_PREDECESSOR_FLOAT).divide(3);
-        aeq(halfAbovePi.floatValue(), 3.141593);
-        aeq(halfBelowPi.floatValue(), 3.1415925);
-        aeq(justAbovePi.floatValue(), 3.1415927);
-        aeq(justBelowPi.floatValue(), 3.1415927);
-        Rational halfAboveSubnormal = SUBNORMAL_FLOAT.add(SUBNORMAL_SUCCESSOR_FLOAT).divide(2);
-        Rational halfBelowSubnormal = SUBNORMAL_FLOAT.add(SUBNORMAL_PREDECESSOR_FLOAT).divide(2);
-        Rational justAboveSubnormal = SUBNORMAL_FLOAT.multiply(2).add(SUBNORMAL_SUCCESSOR_FLOAT).divide(3);
-        Rational justBelowSubnormal = SUBNORMAL_FLOAT.multiply(2).add(SUBNORMAL_PREDECESSOR_FLOAT).divide(3);
-        aeq(SUBNORMAL_FLOAT.floatValue(), 1.0E-40);
-        aeq(halfAboveSubnormal.floatValue(), 1.0E-40);
-        aeq(halfBelowSubnormal.floatValue(), 1.0E-40);
-        aeq(justAboveSubnormal.floatValue(), 1.0E-40);
-        aeq(justBelowSubnormal.floatValue(), 1.0E-40);
-        Rational belowNegativeMax = LARGEST_FLOAT.negate().subtract(ONE);
-        Rational halfAboveNegativeMax = LARGEST_FLOAT.negate().add(ALMOST_MAX_FLOAT.negate()).divide(2);
-        Rational justAboveNegativeMax = LARGEST_FLOAT.negate().multiply(2).add(ALMOST_MAX_FLOAT.negate()).divide(3);
-        aeq(belowNegativeMax.floatValue(), Float.NEGATIVE_INFINITY);
-        aeq(halfAboveNegativeMax.floatValue(), -3.4028233E38);
-        aeq(justAboveNegativeMax.floatValue(), -3.4028235E38);
-        Rational aboveMax = LARGEST_FLOAT.add(ONE);
-        Rational halfBelowMax = LARGEST_FLOAT.add(ALMOST_MAX_FLOAT).divide(2);
-        Rational justBelowMax = LARGEST_FLOAT.multiply(2).add(ALMOST_MAX_FLOAT).divide(3);
-        aeq(aboveMax.floatValue(), Float.POSITIVE_INFINITY);
-        aeq(halfBelowMax.floatValue(), 3.4028233E38);
-        aeq(justBelowMax.floatValue(), 3.4028235E38);
-        Rational halfAboveZero = SMALLEST_FLOAT.shiftRight(1);
-        Rational justAboveZero = SMALLEST_FLOAT.divide(3);
-        Rational halfBelowZero = halfAboveZero.negate();
-        Rational justBelowZero = justAboveZero.negate();
-        aeq(halfBelowZero.floatValue(), -0.0);
-        aeq(justBelowZero.floatValue(), -0.0);
-        aeq(halfAboveZero.floatValue(), 0.0);
-        aeq(justAboveZero.floatValue(), 0.0);
-        Rational boundary = LARGEST_SUBNORMAL_FLOAT.add(SMALLEST_NORMAL_FLOAT).shiftRight(1);
-        Rational halfBelowBoundary = LARGEST_SUBNORMAL_FLOAT.add(boundary).shiftRight(1);
-        Rational halfAboveBoundary = SMALLEST_NORMAL_FLOAT.add(boundary).shiftRight(1);
-        Rational justBelowBoundary = LARGEST_SUBNORMAL_FLOAT.add(boundary.shiftLeft(1)).divide(3);
-        Rational justAboveBoundary = SMALLEST_NORMAL_FLOAT.add(boundary.shiftLeft(1)).divide(3);
-        aeq(boundary.floatValue(), 1.17549435E-38);
-        aeq(halfBelowBoundary.floatValue(), 1.1754942E-38);
-        aeq(justBelowBoundary.floatValue(), 1.1754942E-38);
-        aeq(halfAboveBoundary.floatValue(), 1.17549435E-38);
-        aeq(justAboveBoundary.floatValue(), 1.17549435E-38);
+        floatValue_helper("0", 0.0f);
+        floatValue_helper("1", 1.0f);
+        floatValue_helper("1/2", 0.5f);
+        floatValue_helper("1/3", 0.33333334f);
+        floatValue_helper("-1/3", -0.33333334f);
+        floatValue_helper(ALMOST_ONE, 1.0f);
+        floatValue_helper(TRILLION, 1.0E12f);
+        floatValue_helper(PI_FLOAT, 3.1415927f);
+        floatValue_helper(HALF_ABOVE_PI_FLOAT, 3.141593f);
+        floatValue_helper(HALF_BELOW_PI_FLOAT, 3.1415925f);
+        floatValue_helper(JUST_ABOVE_PI_FLOAT, 3.1415927f);
+        floatValue_helper(JUST_BELOW_PI_FLOAT, 3.1415927f);
+        floatValue_helper(SUBNORMAL_FLOAT, 1.0E-40f);
+        floatValue_helper(HALF_ABOVE_SUBNORMAL_FLOAT, 1.0E-40f);
+        floatValue_helper(HALF_BELOW_SUBNORMAL_FLOAT, 1.0E-40f);
+        floatValue_helper(JUST_ABOVE_SUBNORMAL_FLOAT, 1.0E-40f);
+        floatValue_helper(JUST_BELOW_SUBNORMAL_FLOAT, 1.0E-40f);
+        floatValue_helper(BELOW_NEGATIVE_MAX_FLOAT, Float.NEGATIVE_INFINITY);
+        floatValue_helper(HALF_ABOVE_NEGATIVE_MAX_FLOAT, -3.4028233E38f);
+        floatValue_helper(JUST_ABOVE_NEGATIVE_MAX_FLOAT, -3.4028235E38f);
+        floatValue_helper(ABOVE_MAX_FLOAT, Float.POSITIVE_INFINITY);
+        floatValue_helper(HALF_BELOW_MAX_FLOAT, 3.4028233E38f);
+        floatValue_helper(JUST_BELOW_MAX_FLOAT, 3.4028235E38f);
+        floatValue_helper(HALF_BELOW_ZERO_FLOAT, -0.0f);
+        floatValue_helper(JUST_BELOW_ZERO_FLOAT, -0.0f);
+        floatValue_helper(HALF_ABOVE_ZERO_FLOAT, 0.0f);
+        floatValue_helper(JUST_ABOVE_ZERO_FLOAT, 0.0f);
+        floatValue_helper(BOUNDARY_FLOAT, 1.17549435E-38f);
+        floatValue_helper(JUST_BELOW_BOUNDARY_FLOAT, 1.1754942E-38f);
+        floatValue_helper(JUST_ABOVE_BOUNDARY_FLOAT, 1.17549435E-38f);
+    }
+
+    private static void floatValueExact_helper(@NotNull Rational r, float output) {
+        aeq(r.floatValueExact(), output);
+    }
+
+    private static void floatValueExact_helper(@NotNull String r, float output) {
+        floatValueExact_helper(read(r).get(), output);
+    }
+
+    private static void floatValueExact_fail_helper(@NotNull Rational r) {
+        try {
+            r.floatValueExact();
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    private static void floatValueExact_fail_helper(@NotNull String r) {
+        floatValueExact_fail_helper(read(r).get());
     }
 
     @Test
     public void testFloatValueExact() {
-        aeq(ZERO.floatValueExact(), 0.0);
-        aeq(ONE.floatValueExact(), 1.0);
-        aeq(read("1/2").get().floatValueExact(), 0.5);
+        floatValueExact_helper("0", 0.0f);
+        floatValueExact_helper("1", 1.0f);
+        floatValueExact_helper("1/2", 0.5f);
+        floatValueExact_fail_helper("1/3");
+        floatValueExact_fail_helper("-1/3");
+        floatValueExact_fail_helper(ALMOST_ONE);
+        floatValueExact_fail_helper(TRILLION);
+        floatValueExact_helper(PI_FLOAT, 3.1415927f);
+        floatValueExact_fail_helper(HALF_ABOVE_PI_FLOAT);
+        floatValueExact_fail_helper(HALF_BELOW_PI_FLOAT);
+        floatValueExact_fail_helper(JUST_ABOVE_PI_FLOAT);
+        floatValueExact_fail_helper(JUST_BELOW_PI_FLOAT);
+        floatValueExact_helper(SUBNORMAL_FLOAT, 1.0E-40f);
+        floatValueExact_fail_helper(HALF_ABOVE_SUBNORMAL_FLOAT);
+        floatValueExact_fail_helper(HALF_BELOW_SUBNORMAL_FLOAT);
+        floatValueExact_fail_helper(JUST_ABOVE_SUBNORMAL_FLOAT);
+        floatValueExact_fail_helper(JUST_BELOW_SUBNORMAL_FLOAT);
+        floatValueExact_fail_helper(BELOW_NEGATIVE_MAX_FLOAT);
+        floatValueExact_fail_helper(HALF_ABOVE_NEGATIVE_MAX_FLOAT);
+        floatValueExact_fail_helper(JUST_ABOVE_NEGATIVE_MAX_FLOAT);
+        floatValueExact_fail_helper(ABOVE_MAX_FLOAT);
+        floatValueExact_fail_helper(HALF_BELOW_MAX_FLOAT);
+        floatValueExact_fail_helper(JUST_BELOW_MAX_FLOAT);
+        floatValueExact_fail_helper(HALF_BELOW_ZERO_FLOAT);
+        floatValueExact_fail_helper(JUST_BELOW_ZERO_FLOAT);
+        floatValueExact_fail_helper(HALF_ABOVE_ZERO_FLOAT);
+        floatValueExact_fail_helper(JUST_ABOVE_ZERO_FLOAT);
+        floatValueExact_fail_helper(BOUNDARY_FLOAT);
+        floatValueExact_fail_helper(JUST_BELOW_BOUNDARY_FLOAT);
+        floatValueExact_fail_helper(JUST_ABOVE_BOUNDARY_FLOAT);
+    }
+
+    private static void doubleValue_RoundingMode_helper(
+            @NotNull Rational r,
+            @NotNull String roundingMode,
+            double output
+    ) {
+        aeq(r.doubleValue(Readers.readRoundingMode(roundingMode).get()), output);
+    }
+
+    private static void doubleValue_RoundingMode_helper(
+            @NotNull String r,
+            @NotNull String roundingMode,
+            double output
+    ) {
+        doubleValue_RoundingMode_helper(read(r).get(), roundingMode, output);
+    }
+
+    private static void doubleValue_RoundingMode_fail_helper(@NotNull Rational r, @NotNull String roundingMode) {
         try {
-            read("1/3").get().floatValueExact();
+            r.doubleValue(Readers.readRoundingMode(roundingMode).get());
             fail();
         } catch (ArithmeticException ignored) {}
-        try {
-            read("-1/3").get().floatValueExact();
-            fail();
-        } catch (ArithmeticException ignored) {}
-        Rational almostOne = of(BigInteger.TEN.pow(1000).subtract(BigInteger.ONE), BigInteger.TEN.pow(1000));
-        try {
-            almostOne.floatValueExact();
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(PI_FLOAT.floatValueExact(), 3.1415927);
-        Rational trillion = of(BigInteger.TEN.pow(12));
-        try {
-            trillion.floatValueExact();
-            fail();
-        } catch (ArithmeticException ignored) {}
-        Rational halfAbovePi = PI_FLOAT.add(PI_PREDECESSOR_FLOAT).divide(2);
-        Rational halfBelowPi = PI_FLOAT.add(PI_PREDECESSOR_FLOAT).divide(2);
-        Rational justAbovePi = PI_FLOAT.multiply(2).add(PI_SUCCESSOR_FLOAT).divide(3);
-        Rational justBelowPi = PI_FLOAT.multiply(2).add(PI_SUCCESSOR_FLOAT).divide(3);
-        try {
-            halfAbovePi.floatValueExact();
-            fail();
-        } catch (ArithmeticException ignored) {}
-        try {
-            halfBelowPi.floatValueExact();
-            fail();
-        } catch (ArithmeticException ignored) {}
-        try {
-            justAbovePi.floatValueExact();
-            fail();
-        } catch (ArithmeticException ignored) {}
-        try {
-            justBelowPi.floatValueExact();
-            fail();
-        } catch (ArithmeticException ignored) {}
-        Rational halfAboveSubnormal = SUBNORMAL_FLOAT.add(SUBNORMAL_SUCCESSOR_FLOAT).divide(2);
-        Rational halfBelowSubnormal = SUBNORMAL_FLOAT.add(SUBNORMAL_PREDECESSOR_FLOAT).divide(2);
-        Rational justAboveSubnormal = SUBNORMAL_FLOAT.multiply(2).add(SUBNORMAL_SUCCESSOR_FLOAT).divide(3);
-        Rational justBelowSubnormal = SUBNORMAL_FLOAT.multiply(2).add(SUBNORMAL_PREDECESSOR_FLOAT).divide(3);
-        try {
-            halfAboveSubnormal.floatValueExact();
-            fail();
-        } catch (ArithmeticException ignored) {}
-        try {
-            halfBelowSubnormal.floatValueExact();
-            fail();
-        } catch (ArithmeticException ignored) {}
-        try {
-            justAboveSubnormal.floatValueExact();
-            fail();
-        } catch (ArithmeticException ignored) {}
-        try {
-            justBelowSubnormal.floatValueExact();
-            fail();
-        } catch (ArithmeticException ignored) {}
-        Rational belowNegativeMax = LARGEST_FLOAT.negate().subtract(ONE);
-        Rational halfAboveNegativeMax = LARGEST_FLOAT.negate().add(ALMOST_MAX_FLOAT.negate()).divide(2);
-        Rational justAboveNegativeMax = LARGEST_FLOAT.negate().multiply(2).add(ALMOST_MAX_FLOAT.negate()).divide(3);
-        try {
-            belowNegativeMax.floatValueExact();
-            fail();
-        } catch (ArithmeticException ignored) {}
-        try {
-            halfAboveNegativeMax.floatValueExact();
-            fail();
-        } catch (ArithmeticException ignored) {}
-        try {
-            justAboveNegativeMax.floatValueExact();
-            fail();
-        } catch (ArithmeticException ignored) {}
-        Rational aboveMax = LARGEST_FLOAT.add(ONE);
-        Rational halfBelowMax = LARGEST_FLOAT.add(ALMOST_MAX_FLOAT).divide(2);
-        Rational justBelowMax = LARGEST_FLOAT.multiply(2).add(ALMOST_MAX_FLOAT).divide(3);
-        try {
-            aboveMax.floatValueExact();
-            fail();
-        } catch (ArithmeticException ignored) {}
-        try {
-            halfBelowMax.floatValueExact();
-            fail();
-        } catch (ArithmeticException ignored) {}
-        try {
-            justBelowMax.floatValueExact();
-            fail();
-        } catch (ArithmeticException ignored) {}
-        Rational halfAboveZero = SMALLEST_FLOAT.shiftRight(1);
-        Rational justAboveZero = SMALLEST_FLOAT.divide(3);
-        Rational halfBelowZero = halfAboveZero.negate();
-        Rational justBelowZero = justAboveZero.negate();
-        try {
-            halfBelowZero.floatValueExact();
-            fail();
-        } catch (ArithmeticException ignored) {}
-        try {
-            justBelowZero.floatValueExact();
-            fail();
-        } catch (ArithmeticException ignored) {}
-        try {
-            halfAboveZero.floatValueExact();
-            fail();
-        } catch (ArithmeticException ignored) {}
-        try {
-            justAboveZero.floatValueExact();
-            fail();
-        } catch (ArithmeticException ignored) {}
-        Rational boundary = LARGEST_SUBNORMAL_FLOAT.add(SMALLEST_NORMAL_FLOAT).shiftRight(1);
-        Rational halfBelowBoundary = LARGEST_SUBNORMAL_FLOAT.add(boundary).shiftRight(1);
-        Rational halfAboveBoundary = SMALLEST_NORMAL_FLOAT.add(boundary).shiftRight(1);
-        Rational justBelowBoundary = LARGEST_SUBNORMAL_FLOAT.add(boundary.shiftLeft(1)).divide(3);
-        Rational justAboveBoundary = SMALLEST_NORMAL_FLOAT.add(boundary.shiftLeft(1)).divide(3);
-        try {
-            boundary.floatValueExact();
-            fail();
-        } catch (ArithmeticException ignored) {}
-        try {
-            halfBelowBoundary.floatValueExact();
-            fail();
-        } catch (ArithmeticException ignored) {}
-        try {
-            justBelowBoundary.floatValueExact();
-            fail();
-        } catch (ArithmeticException ignored) {}
-        try {
-            halfAboveBoundary.floatValueExact();
-            fail();
-        } catch (ArithmeticException ignored) {}
-        try {
-            justAboveBoundary.floatValueExact();
-            fail();
-        } catch (ArithmeticException ignored) {}
+    }
+
+    private static void doubleValue_RoundingMode_fail_helper(@NotNull String r, @NotNull String roundingMode) {
+        doubleValue_RoundingMode_fail_helper(read(r).get(), roundingMode);
     }
 
     @Test
     public void testDoubleValue_RoundingMode() {
-        aeq(ZERO.doubleValue(RoundingMode.FLOOR), 0.0);
-        aeq(ZERO.doubleValue(RoundingMode.CEILING), 0.0);
-        aeq(ZERO.doubleValue(RoundingMode.DOWN), 0.0);
-        aeq(ZERO.doubleValue(RoundingMode.UP), 0.0);
-        aeq(ZERO.doubleValue(RoundingMode.HALF_DOWN), 0.0);
-        aeq(ZERO.doubleValue(RoundingMode.HALF_UP), 0.0);
-        aeq(ZERO.doubleValue(RoundingMode.HALF_EVEN), 0.0);
-        aeq(ZERO.doubleValue(RoundingMode.UNNECESSARY), 0.0);
-        aeq(ONE.doubleValue(RoundingMode.FLOOR), 1.0);
-        aeq(ONE.doubleValue(RoundingMode.CEILING), 1.0);
-        aeq(ONE.doubleValue(RoundingMode.DOWN), 1.0);
-        aeq(ONE.doubleValue(RoundingMode.UP), 1.0);
-        aeq(ONE.doubleValue(RoundingMode.HALF_DOWN), 1.0);
-        aeq(ONE.doubleValue(RoundingMode.HALF_UP), 1.0);
-        aeq(ONE.doubleValue(RoundingMode.HALF_EVEN), 1.0);
-        aeq(ONE.doubleValue(RoundingMode.UNNECESSARY), 1.0);
-        aeq(read("1/2").get().doubleValue(RoundingMode.FLOOR), 0.5);
-        aeq(read("1/2").get().doubleValue(RoundingMode.CEILING), 0.5);
-        aeq(read("1/2").get().doubleValue(RoundingMode.DOWN), 0.5);
-        aeq(read("1/2").get().doubleValue(RoundingMode.UP), 0.5);
-        aeq(read("1/2").get().doubleValue(RoundingMode.HALF_DOWN), 0.5);
-        aeq(read("1/2").get().doubleValue(RoundingMode.HALF_UP), 0.5);
-        aeq(read("1/2").get().doubleValue(RoundingMode.HALF_EVEN), 0.5);
-        aeq(read("1/2").get().doubleValue(RoundingMode.UNNECESSARY), 0.5);
-        aeq(read("1/3").get().doubleValue(RoundingMode.FLOOR), 0.3333333333333333);
-        aeq(read("1/3").get().doubleValue(RoundingMode.CEILING), 0.33333333333333337);
-        aeq(read("1/3").get().doubleValue(RoundingMode.DOWN), 0.3333333333333333);
-        aeq(read("1/3").get().doubleValue(RoundingMode.UP), 0.33333333333333337);
-        aeq(read("1/3").get().doubleValue(RoundingMode.HALF_DOWN), 0.3333333333333333);
-        aeq(read("1/3").get().doubleValue(RoundingMode.HALF_UP), 0.3333333333333333);
-        aeq(read("1/3").get().doubleValue(RoundingMode.HALF_EVEN), 0.3333333333333333);
-        try {
-            read("1/3").get().doubleValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(read("-1/3").get().doubleValue(RoundingMode.FLOOR), -0.33333333333333337);
-        aeq(read("-1/3").get().doubleValue(RoundingMode.CEILING), -0.3333333333333333);
-        aeq(read("-1/3").get().doubleValue(RoundingMode.DOWN), -0.3333333333333333);
-        aeq(read("-1/3").get().doubleValue(RoundingMode.UP), -0.33333333333333337);
-        aeq(read("-1/3").get().doubleValue(RoundingMode.HALF_DOWN), -0.3333333333333333);
-        aeq(read("-1/3").get().doubleValue(RoundingMode.HALF_UP), -0.3333333333333333);
-        aeq(read("-1/3").get().doubleValue(RoundingMode.HALF_EVEN), -0.3333333333333333);
-        try {
-            read("-1/3").get().doubleValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        Rational almostOne = of(BigInteger.TEN.pow(1000).subtract(BigInteger.ONE), BigInteger.TEN.pow(1000));
-        aeq(almostOne.doubleValue(RoundingMode.FLOOR), 0.9999999999999999);
-        aeq(almostOne.doubleValue(RoundingMode.CEILING), 1.0);
-        aeq(almostOne.doubleValue(RoundingMode.DOWN), 0.9999999999999999);
-        aeq(almostOne.doubleValue(RoundingMode.UP), 1.0);
-        aeq(almostOne.doubleValue(RoundingMode.HALF_DOWN), 1.0);
-        aeq(almostOne.doubleValue(RoundingMode.HALF_UP), 1.0);
-        aeq(almostOne.doubleValue(RoundingMode.HALF_EVEN), 1.0);
-        try {
-            almostOne.doubleValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(PI_DOUBLE.doubleValue(RoundingMode.FLOOR), 3.141592653589793);
-        aeq(PI_DOUBLE.doubleValue(RoundingMode.CEILING), 3.141592653589793);
-        aeq(PI_DOUBLE.doubleValue(RoundingMode.DOWN), 3.141592653589793);
-        aeq(PI_DOUBLE.doubleValue(RoundingMode.UP), 3.141592653589793);
-        aeq(PI_DOUBLE.doubleValue(RoundingMode.HALF_DOWN), 3.141592653589793);
-        aeq(PI_DOUBLE.doubleValue(RoundingMode.HALF_UP), 3.141592653589793);
-        aeq(PI_DOUBLE.doubleValue(RoundingMode.HALF_EVEN), 3.141592653589793);
-        aeq(PI_DOUBLE.doubleValue(RoundingMode.UNNECESSARY), 3.141592653589793);
-        Rational googol = of(BigInteger.TEN.pow(100));
-        aeq(googol.doubleValue(RoundingMode.FLOOR), 9.999999999999998E99);
-        aeq(googol.doubleValue(RoundingMode.CEILING), 1.0E100);
-        aeq(googol.doubleValue(RoundingMode.DOWN), 9.999999999999998E99);
-        aeq(googol.doubleValue(RoundingMode.UP), 1.0E100);
-        aeq(googol.doubleValue(RoundingMode.HALF_DOWN), 1.0E100);
-        aeq(googol.doubleValue(RoundingMode.HALF_UP), 1.0E100);
-        aeq(googol.doubleValue(RoundingMode.HALF_EVEN), 1.0E100);
-        try {
-            googol.doubleValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        Rational halfAbovePi = PI_DOUBLE.add(PI_SUCCESSOR_DOUBLE).divide(2);
-        Rational halfBelowPi = PI_DOUBLE.add(PI_PREDECESSOR_DOUBLE).divide(2);
-        Rational justAbovePi = PI_DOUBLE.multiply(2).add(PI_SUCCESSOR_DOUBLE).divide(3);
-        Rational justBelowPi = PI_DOUBLE.multiply(2).add(PI_PREDECESSOR_DOUBLE).divide(3);
-        aeq(halfAbovePi.doubleValue(RoundingMode.FLOOR), 3.141592653589793);
-        aeq(halfAbovePi.doubleValue(RoundingMode.CEILING), 3.1415926535897936);
-        aeq(halfAbovePi.doubleValue(RoundingMode.DOWN), 3.141592653589793);
-        aeq(halfAbovePi.doubleValue(RoundingMode.UP), 3.1415926535897936);
-        aeq(halfAbovePi.doubleValue(RoundingMode.HALF_DOWN), 3.141592653589793);
-        aeq(halfAbovePi.doubleValue(RoundingMode.HALF_UP), 3.1415926535897936);
-        aeq(halfAbovePi.doubleValue(RoundingMode.HALF_EVEN), 3.141592653589793);
-        try {
-            halfAbovePi.doubleValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(halfBelowPi.doubleValue(RoundingMode.FLOOR), 3.1415926535897927);
-        aeq(halfBelowPi.doubleValue(RoundingMode.CEILING), 3.141592653589793);
-        aeq(halfBelowPi.doubleValue(RoundingMode.DOWN), 3.1415926535897927);
-        aeq(halfBelowPi.doubleValue(RoundingMode.UP), 3.141592653589793);
-        aeq(halfBelowPi.doubleValue(RoundingMode.HALF_DOWN), 3.1415926535897927);
-        aeq(halfBelowPi.doubleValue(RoundingMode.HALF_UP), 3.141592653589793);
-        aeq(halfBelowPi.doubleValue(RoundingMode.HALF_EVEN), 3.141592653589793);
-        try {
-            halfBelowPi.doubleValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(justAbovePi.doubleValue(RoundingMode.FLOOR), 3.141592653589793);
-        aeq(justAbovePi.doubleValue(RoundingMode.CEILING), 3.1415926535897936);
-        aeq(justAbovePi.doubleValue(RoundingMode.DOWN), 3.141592653589793);
-        aeq(justAbovePi.doubleValue(RoundingMode.UP), 3.1415926535897936);
-        aeq(justAbovePi.doubleValue(RoundingMode.HALF_DOWN), 3.141592653589793);
-        aeq(justAbovePi.doubleValue(RoundingMode.HALF_UP), 3.141592653589793);
-        aeq(justAbovePi.doubleValue(RoundingMode.HALF_EVEN), 3.141592653589793);
-        try {
-            justAbovePi.doubleValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(justBelowPi.doubleValue(RoundingMode.FLOOR), 3.1415926535897927);
-        aeq(justBelowPi.doubleValue(RoundingMode.CEILING), 3.141592653589793);
-        aeq(justBelowPi.doubleValue(RoundingMode.DOWN), 3.1415926535897927);
-        aeq(justBelowPi.doubleValue(RoundingMode.UP), 3.141592653589793);
-        aeq(justBelowPi.doubleValue(RoundingMode.HALF_DOWN), 3.141592653589793);
-        aeq(justBelowPi.doubleValue(RoundingMode.HALF_UP), 3.141592653589793);
-        aeq(justBelowPi.doubleValue(RoundingMode.HALF_EVEN), 3.141592653589793);
-        try {
-            justBelowPi.doubleValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        Rational halfAboveSubnormal = SUBNORMAL_DOUBLE.add(SUBNORMAL_SUCCESSOR_DOUBLE).divide(2);
-        Rational halfBelowSubnormal = SUBNORMAL_DOUBLE.add(SUBNORMAL_PREDECESSOR_DOUBLE).divide(2);
-        Rational justAboveSubnormal = SUBNORMAL_DOUBLE.multiply(2).add(SUBNORMAL_SUCCESSOR_DOUBLE).divide(3);
-        Rational justBelowSubnormal = SUBNORMAL_DOUBLE.multiply(2).add(SUBNORMAL_PREDECESSOR_DOUBLE).divide(3);
-        aeq(SUBNORMAL_DOUBLE.doubleValue(RoundingMode.FLOOR), 1.0E-310);
-        aeq(SUBNORMAL_DOUBLE.doubleValue(RoundingMode.CEILING), 1.0E-310);
-        aeq(SUBNORMAL_DOUBLE.doubleValue(RoundingMode.DOWN), 1.0E-310);
-        aeq(SUBNORMAL_DOUBLE.doubleValue(RoundingMode.UP), 1.0E-310);
-        aeq(SUBNORMAL_DOUBLE.doubleValue(RoundingMode.HALF_DOWN), 1.0E-310);
-        aeq(SUBNORMAL_DOUBLE.doubleValue(RoundingMode.HALF_UP), 1.0E-310);
-        aeq(SUBNORMAL_DOUBLE.doubleValue(RoundingMode.HALF_EVEN), 1.0E-310);
-        aeq(SUBNORMAL_DOUBLE.doubleValue(RoundingMode.UNNECESSARY), 1.0E-310);
-        aeq(halfAboveSubnormal.doubleValue(RoundingMode.FLOOR), 1.0E-310);
-        aeq(halfAboveSubnormal.doubleValue(RoundingMode.CEILING), 1.00000000000005E-310);
-        aeq(halfAboveSubnormal.doubleValue(RoundingMode.DOWN), 1.0E-310);
-        aeq(halfAboveSubnormal.doubleValue(RoundingMode.UP), 1.00000000000005E-310);
-        aeq(halfAboveSubnormal.doubleValue(RoundingMode.HALF_DOWN), 1.0E-310);
-        aeq(halfAboveSubnormal.doubleValue(RoundingMode.HALF_UP), 1.00000000000005E-310);
-        aeq(halfAboveSubnormal.doubleValue(RoundingMode.HALF_EVEN), 1.00000000000005E-310);
-        try {
-            halfAboveSubnormal.doubleValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(halfBelowSubnormal.doubleValue(RoundingMode.FLOOR), 9.9999999999995E-311);
-        aeq(halfBelowSubnormal.doubleValue(RoundingMode.CEILING), 1.0E-310);
-        aeq(halfBelowSubnormal.doubleValue(RoundingMode.DOWN), 9.9999999999995E-311);
-        aeq(halfBelowSubnormal.doubleValue(RoundingMode.UP), 1.0E-310);
-        aeq(halfBelowSubnormal.doubleValue(RoundingMode.HALF_DOWN), 9.9999999999995E-311);
-        aeq(halfBelowSubnormal.doubleValue(RoundingMode.HALF_UP), 1.0E-310);
-        aeq(halfBelowSubnormal.doubleValue(RoundingMode.HALF_EVEN), 9.9999999999995E-311);
-        try {
-            halfBelowSubnormal.doubleValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(justAboveSubnormal.doubleValue(RoundingMode.FLOOR), 1.0E-310);
-        aeq(justAboveSubnormal.doubleValue(RoundingMode.CEILING), 1.00000000000005E-310);
-        aeq(justAboveSubnormal.doubleValue(RoundingMode.DOWN), 1.0E-310);
-        aeq(justAboveSubnormal.doubleValue(RoundingMode.UP), 1.00000000000005E-310);
-        aeq(justAboveSubnormal.doubleValue(RoundingMode.HALF_DOWN), 1.0E-310);
-        aeq(justAboveSubnormal.doubleValue(RoundingMode.HALF_UP), 1.0E-310);
-        aeq(justAboveSubnormal.doubleValue(RoundingMode.HALF_EVEN), 1.0E-310);
-        try {
-            justAboveSubnormal.doubleValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(justBelowSubnormal.doubleValue(RoundingMode.FLOOR), 9.9999999999995E-311);
-        aeq(justBelowSubnormal.doubleValue(RoundingMode.CEILING), 1.0E-310);
-        aeq(justBelowSubnormal.doubleValue(RoundingMode.DOWN), 9.9999999999995E-311);
-        aeq(justBelowSubnormal.doubleValue(RoundingMode.UP), 1.0E-310);
-        aeq(justBelowSubnormal.doubleValue(RoundingMode.HALF_DOWN), 1.0E-310);
-        aeq(justBelowSubnormal.doubleValue(RoundingMode.HALF_UP), 1.0E-310);
-        aeq(justBelowSubnormal.doubleValue(RoundingMode.HALF_EVEN), 1.0E-310);
-        try {
-            justBelowSubnormal.doubleValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        Rational belowNegativeMax = LARGEST_DOUBLE.negate().subtract(ONE);
-        Rational halfAboveNegativeMax = LARGEST_DOUBLE.negate().add(ALMOST_MAX_DOUBLE.negate()).divide(2);
-        Rational justAboveNegativeMax = LARGEST_DOUBLE.negate().multiply(2).add(ALMOST_MAX_DOUBLE.negate()).divide(3);
-        aeq(belowNegativeMax.doubleValue(RoundingMode.FLOOR), Double.NEGATIVE_INFINITY);
-        aeq(belowNegativeMax.doubleValue(RoundingMode.CEILING), -1.7976931348623157E308);
-        aeq(belowNegativeMax.doubleValue(RoundingMode.DOWN), -1.7976931348623157E308);
-        aeq(belowNegativeMax.doubleValue(RoundingMode.UP), Double.NEGATIVE_INFINITY);
-        aeq(belowNegativeMax.doubleValue(RoundingMode.HALF_DOWN), -1.7976931348623157E308);
-        aeq(belowNegativeMax.doubleValue(RoundingMode.HALF_UP), Double.NEGATIVE_INFINITY);
-        aeq(belowNegativeMax.doubleValue(RoundingMode.HALF_EVEN), Double.NEGATIVE_INFINITY);
-        try {
-            belowNegativeMax.doubleValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(halfAboveNegativeMax.doubleValue(RoundingMode.FLOOR), -1.7976931348623157E308);
-        aeq(halfAboveNegativeMax.doubleValue(RoundingMode.CEILING), -1.7976931348623155E308);
-        aeq(halfAboveNegativeMax.doubleValue(RoundingMode.DOWN), -1.7976931348623155E308);
-        aeq(halfAboveNegativeMax.doubleValue(RoundingMode.UP), -1.7976931348623157E308);
-        aeq(halfAboveNegativeMax.doubleValue(RoundingMode.HALF_DOWN), -1.7976931348623155E308);
-        aeq(halfAboveNegativeMax.doubleValue(RoundingMode.HALF_UP), -1.7976931348623157E308);
-        aeq(halfAboveNegativeMax.doubleValue(RoundingMode.HALF_EVEN), -1.7976931348623155E308);
-        try {
-            halfAboveNegativeMax.doubleValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(justAboveNegativeMax.doubleValue(RoundingMode.FLOOR), -1.7976931348623157E308);
-        aeq(justAboveNegativeMax.doubleValue(RoundingMode.CEILING), -1.7976931348623155E308);
-        aeq(justAboveNegativeMax.doubleValue(RoundingMode.DOWN), -1.7976931348623155E308);
-        aeq(justAboveNegativeMax.doubleValue(RoundingMode.UP), -1.7976931348623157E308);
-        aeq(justAboveNegativeMax.doubleValue(RoundingMode.HALF_DOWN), -1.7976931348623157E308);
-        aeq(justAboveNegativeMax.doubleValue(RoundingMode.HALF_UP), -1.7976931348623157E308);
-        aeq(justAboveNegativeMax.doubleValue(RoundingMode.HALF_EVEN), -1.7976931348623157E308);
-        try {
-            justAboveNegativeMax.doubleValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        Rational aboveMax = LARGEST_DOUBLE.add(ONE);
-        Rational halfBelowMax = LARGEST_DOUBLE.add(ALMOST_MAX_DOUBLE).divide(2);
-        Rational justBelowMax = LARGEST_DOUBLE.multiply(2).add(ALMOST_MAX_DOUBLE).divide(3);
-        aeq(aboveMax.doubleValue(RoundingMode.FLOOR), 1.7976931348623157E308);
-        aeq(aboveMax.doubleValue(RoundingMode.CEILING), Double.POSITIVE_INFINITY);
-        aeq(aboveMax.doubleValue(RoundingMode.DOWN), 1.7976931348623157E308);
-        aeq(aboveMax.doubleValue(RoundingMode.UP), Double.POSITIVE_INFINITY);
-        aeq(aboveMax.doubleValue(RoundingMode.HALF_DOWN), 1.7976931348623157E308);
-        aeq(aboveMax.doubleValue(RoundingMode.HALF_UP), Double.POSITIVE_INFINITY);
-        aeq(aboveMax.doubleValue(RoundingMode.HALF_EVEN), Double.POSITIVE_INFINITY);
-        try {
-            aboveMax.doubleValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(halfBelowMax.doubleValue(RoundingMode.FLOOR), 1.7976931348623155E308);
-        aeq(halfBelowMax.doubleValue(RoundingMode.CEILING), 1.7976931348623157E308);
-        aeq(halfBelowMax.doubleValue(RoundingMode.DOWN), 1.7976931348623155E308);
-        aeq(halfBelowMax.doubleValue(RoundingMode.UP), 1.7976931348623157E308);
-        aeq(halfBelowMax.doubleValue(RoundingMode.HALF_DOWN), 1.7976931348623155E308);
-        aeq(halfBelowMax.doubleValue(RoundingMode.HALF_UP), 1.7976931348623157E308);
-        aeq(halfBelowMax.doubleValue(RoundingMode.HALF_EVEN), 1.7976931348623155E308);
-        try {
-            halfBelowMax.doubleValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(justBelowMax.doubleValue(RoundingMode.FLOOR), 1.7976931348623155E308);
-        aeq(justBelowMax.doubleValue(RoundingMode.CEILING), 1.7976931348623157E308);
-        aeq(justBelowMax.doubleValue(RoundingMode.DOWN), 1.7976931348623155E308);
-        aeq(justBelowMax.doubleValue(RoundingMode.UP), 1.7976931348623157E308);
-        aeq(justBelowMax.doubleValue(RoundingMode.HALF_DOWN), 1.7976931348623157E308);
-        aeq(justBelowMax.doubleValue(RoundingMode.HALF_UP), 1.7976931348623157E308);
-        aeq(justBelowMax.doubleValue(RoundingMode.HALF_EVEN), 1.7976931348623157E308);
-        try {
-            justBelowMax.doubleValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        Rational halfAboveZero = SMALLEST_DOUBLE.shiftRight(1);
-        Rational justAboveZero = SMALLEST_DOUBLE.divide(3);
-        Rational halfBelowZero = halfAboveZero.negate();
-        Rational justBelowZero = justAboveZero.negate();
-        aeq(halfBelowZero.doubleValue(RoundingMode.FLOOR), -4.9E-324);
-        aeq(halfBelowZero.doubleValue(RoundingMode.CEILING), -0.0);
-        aeq(halfBelowZero.doubleValue(RoundingMode.DOWN), -0.0);
-        aeq(halfBelowZero.doubleValue(RoundingMode.UP), -4.9E-324);
-        aeq(halfBelowZero.doubleValue(RoundingMode.HALF_DOWN), -0.0);
-        aeq(halfBelowZero.doubleValue(RoundingMode.HALF_UP), -4.9E-324);
-        aeq(halfBelowZero.doubleValue(RoundingMode.HALF_EVEN), -0.0);
-        try {
-            halfBelowZero.doubleValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(justBelowZero.doubleValue(RoundingMode.FLOOR), -4.9E-324);
-        aeq(justBelowZero.doubleValue(RoundingMode.CEILING), -0.0);
-        aeq(justBelowZero.doubleValue(RoundingMode.DOWN), -0.0);
-        aeq(justBelowZero.doubleValue(RoundingMode.UP), -4.9E-324);
-        aeq(justBelowZero.doubleValue(RoundingMode.HALF_DOWN), -0.0);
-        aeq(justBelowZero.doubleValue(RoundingMode.HALF_UP), -0.0);
-        aeq(justBelowZero.doubleValue(RoundingMode.HALF_EVEN), -0.0);
-        try {
-            justBelowZero.doubleValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(halfAboveZero.doubleValue(RoundingMode.FLOOR), 0.0);
-        aeq(halfAboveZero.doubleValue(RoundingMode.CEILING), 4.9E-324);
-        aeq(halfAboveZero.doubleValue(RoundingMode.DOWN), 0.0);
-        aeq(halfAboveZero.doubleValue(RoundingMode.UP), 4.9E-324);
-        aeq(halfAboveZero.doubleValue(RoundingMode.HALF_DOWN), 0.0);
-        aeq(halfAboveZero.doubleValue(RoundingMode.HALF_UP), 4.9E-324);
-        aeq(halfAboveZero.doubleValue(RoundingMode.HALF_EVEN), 0.0);
-        try {
-            halfAboveZero.doubleValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(justAboveZero.doubleValue(RoundingMode.FLOOR), 0.0);
-        aeq(justAboveZero.doubleValue(RoundingMode.CEILING), 4.9E-324);
-        aeq(justAboveZero.doubleValue(RoundingMode.DOWN), 0.0);
-        aeq(justAboveZero.doubleValue(RoundingMode.UP), 4.9E-324);
-        aeq(justAboveZero.doubleValue(RoundingMode.HALF_DOWN), 0.0);
-        aeq(justAboveZero.doubleValue(RoundingMode.HALF_UP), 0.0);
-        aeq(justAboveZero.doubleValue(RoundingMode.HALF_EVEN), 0.0);
-        try {
-            justAboveZero.doubleValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        Rational boundary = LARGEST_SUBNORMAL_DOUBLE.add(SMALLEST_NORMAL_DOUBLE).shiftRight(1);
-        Rational halfBelowBoundary = LARGEST_SUBNORMAL_DOUBLE.add(boundary).shiftRight(1);
-        Rational halfAboveBoundary = SMALLEST_NORMAL_DOUBLE.add(boundary).shiftRight(1);
-        Rational justBelowBoundary = LARGEST_SUBNORMAL_DOUBLE.add(boundary.shiftLeft(1)).divide(3);
-        Rational justAboveBoundary = SMALLEST_NORMAL_DOUBLE.add(boundary.shiftLeft(1)).divide(3);
-        aeq(boundary.doubleValue(RoundingMode.FLOOR), 2.225073858507201E-308);
-        aeq(boundary.doubleValue(RoundingMode.CEILING), 2.2250738585072014E-308);
-        aeq(boundary.doubleValue(RoundingMode.DOWN), 2.225073858507201E-308);
-        aeq(boundary.doubleValue(RoundingMode.UP), 2.2250738585072014E-308);
-        aeq(boundary.doubleValue(RoundingMode.HALF_DOWN), 2.225073858507201E-308);
-        aeq(boundary.doubleValue(RoundingMode.HALF_UP), 2.2250738585072014E-308);
-        aeq(boundary.doubleValue(RoundingMode.HALF_EVEN), 2.2250738585072014E-308);
-        try {
-            boundary.doubleValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(halfBelowBoundary.doubleValue(RoundingMode.FLOOR), 2.225073858507201E-308);
-        aeq(halfBelowBoundary.doubleValue(RoundingMode.CEILING), 2.2250738585072014E-308);
-        aeq(halfBelowBoundary.doubleValue(RoundingMode.DOWN), 2.225073858507201E-308);
-        aeq(halfBelowBoundary.doubleValue(RoundingMode.UP), 2.2250738585072014E-308);
-        aeq(halfBelowBoundary.doubleValue(RoundingMode.HALF_DOWN), 2.225073858507201E-308);
-        aeq(halfBelowBoundary.doubleValue(RoundingMode.HALF_UP), 2.225073858507201E-308);
-        aeq(halfBelowBoundary.doubleValue(RoundingMode.HALF_EVEN), 2.225073858507201E-308);
-        try {
-            halfBelowBoundary.doubleValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(justBelowBoundary.doubleValue(RoundingMode.FLOOR), 2.225073858507201E-308);
-        aeq(justBelowBoundary.doubleValue(RoundingMode.CEILING), 2.2250738585072014E-308);
-        aeq(justBelowBoundary.doubleValue(RoundingMode.DOWN), 2.225073858507201E-308);
-        aeq(justBelowBoundary.doubleValue(RoundingMode.UP), 2.2250738585072014E-308);
-        aeq(justBelowBoundary.doubleValue(RoundingMode.HALF_DOWN), 2.225073858507201E-308);
-        aeq(justBelowBoundary.doubleValue(RoundingMode.HALF_UP), 2.225073858507201E-308);
-        aeq(justBelowBoundary.doubleValue(RoundingMode.HALF_EVEN), 2.225073858507201E-308);
-        try {
-            justBelowBoundary.doubleValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(halfAboveBoundary.doubleValue(RoundingMode.FLOOR), 2.225073858507201E-308);
-        aeq(halfAboveBoundary.doubleValue(RoundingMode.CEILING), 2.2250738585072014E-308);
-        aeq(halfAboveBoundary.doubleValue(RoundingMode.DOWN), 2.225073858507201E-308);
-        aeq(halfAboveBoundary.doubleValue(RoundingMode.UP), 2.2250738585072014E-308);
-        aeq(halfAboveBoundary.doubleValue(RoundingMode.HALF_DOWN), 2.2250738585072014E-308);
-        aeq(halfAboveBoundary.doubleValue(RoundingMode.HALF_UP), 2.2250738585072014E-308);
-        aeq(halfAboveBoundary.doubleValue(RoundingMode.HALF_EVEN), 2.2250738585072014E-308);
-        try {
-            halfAboveBoundary.doubleValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(justAboveBoundary.doubleValue(RoundingMode.FLOOR), 2.225073858507201E-308);
-        aeq(justAboveBoundary.doubleValue(RoundingMode.CEILING), 2.2250738585072014E-308);
-        aeq(justAboveBoundary.doubleValue(RoundingMode.DOWN), 2.225073858507201E-308);
-        aeq(justAboveBoundary.doubleValue(RoundingMode.UP), 2.2250738585072014E-308);
-        aeq(justAboveBoundary.doubleValue(RoundingMode.HALF_DOWN), 2.2250738585072014E-308);
-        aeq(justAboveBoundary.doubleValue(RoundingMode.HALF_UP), 2.2250738585072014E-308);
-        aeq(justAboveBoundary.doubleValue(RoundingMode.HALF_EVEN), 2.2250738585072014E-308);
-        try {
-            justAboveBoundary.doubleValue(RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
+        doubleValue_RoundingMode_helper("0", "FLOOR", 0.0);
+        doubleValue_RoundingMode_helper("0", "CEILING", 0.0);
+        doubleValue_RoundingMode_helper("0", "DOWN", 0.0);
+        doubleValue_RoundingMode_helper("0", "UP", 0.0);
+        doubleValue_RoundingMode_helper("0", "HALF_DOWN", 0.0);
+        doubleValue_RoundingMode_helper("0", "HALF_UP", 0.0);
+        doubleValue_RoundingMode_helper("0", "HALF_EVEN", 0.0);
+        doubleValue_RoundingMode_helper("0", "UNNECESSARY", 0.0);
+
+        doubleValue_RoundingMode_helper("1", "FLOOR", 1.0);
+        doubleValue_RoundingMode_helper("1", "CEILING", 1.0);
+        doubleValue_RoundingMode_helper("1", "DOWN", 1.0);
+        doubleValue_RoundingMode_helper("1", "UP", 1.0);
+        doubleValue_RoundingMode_helper("1", "HALF_DOWN", 1.0);
+        doubleValue_RoundingMode_helper("1", "HALF_UP", 1.0);
+        doubleValue_RoundingMode_helper("1", "HALF_EVEN", 1.0);
+        doubleValue_RoundingMode_helper("1", "UNNECESSARY", 1.0);
+
+        doubleValue_RoundingMode_helper("1/2", "FLOOR", 0.5);
+        doubleValue_RoundingMode_helper("1/2", "CEILING", 0.5);
+        doubleValue_RoundingMode_helper("1/2", "DOWN", 0.5);
+        doubleValue_RoundingMode_helper("1/2", "UP", 0.5);
+        doubleValue_RoundingMode_helper("1/2", "HALF_DOWN", 0.5);
+        doubleValue_RoundingMode_helper("1/2", "HALF_UP", 0.5);
+        doubleValue_RoundingMode_helper("1/2", "HALF_EVEN", 0.5);
+        doubleValue_RoundingMode_helper("1/2", "UNNECESSARY", 0.5);
+
+        doubleValue_RoundingMode_helper("1/3", "FLOOR", 0.3333333333333333);
+        doubleValue_RoundingMode_helper("1/3", "CEILING", 0.33333333333333337);
+        doubleValue_RoundingMode_helper("1/3", "DOWN", 0.3333333333333333);
+        doubleValue_RoundingMode_helper("1/3", "UP", 0.33333333333333337);
+        doubleValue_RoundingMode_helper("1/3", "HALF_DOWN", 0.3333333333333333);
+        doubleValue_RoundingMode_helper("1/3", "HALF_UP", 0.3333333333333333);
+        doubleValue_RoundingMode_helper("1/3", "HALF_EVEN", 0.3333333333333333);
+        doubleValue_RoundingMode_fail_helper("1/3", "UNNECESSARY");
+
+        doubleValue_RoundingMode_helper("-1/3", "FLOOR", -0.33333333333333337);
+        doubleValue_RoundingMode_helper("-1/3", "CEILING", -0.3333333333333333);
+        doubleValue_RoundingMode_helper("-1/3", "DOWN", -0.3333333333333333);
+        doubleValue_RoundingMode_helper("-1/3", "UP", -0.33333333333333337);
+        doubleValue_RoundingMode_helper("-1/3", "HALF_DOWN", -0.3333333333333333);
+        doubleValue_RoundingMode_helper("-1/3", "HALF_UP", -0.3333333333333333);
+        doubleValue_RoundingMode_helper("-1/3", "HALF_EVEN", -0.3333333333333333);
+        doubleValue_RoundingMode_fail_helper("-1/3", "UNNECESSARY");
+
+        doubleValue_RoundingMode_helper(ALMOST_ONE, "FLOOR", 0.9999999999999999);
+        doubleValue_RoundingMode_helper(ALMOST_ONE, "CEILING", 1.0);
+        doubleValue_RoundingMode_helper(ALMOST_ONE, "DOWN", 0.9999999999999999);
+        doubleValue_RoundingMode_helper(ALMOST_ONE, "UP", 1.0);
+        doubleValue_RoundingMode_helper(ALMOST_ONE, "HALF_DOWN", 1.0);
+        doubleValue_RoundingMode_helper(ALMOST_ONE, "HALF_UP", 1.0);
+        doubleValue_RoundingMode_helper(ALMOST_ONE, "HALF_EVEN", 1.0);
+        doubleValue_RoundingMode_fail_helper(ALMOST_ONE, "UNNECESSARY");
+
+        doubleValue_RoundingMode_helper(GOOGOL, "FLOOR", 9.999999999999998E99);
+        doubleValue_RoundingMode_helper(GOOGOL, "CEILING", 1.0E100);
+        doubleValue_RoundingMode_helper(GOOGOL, "DOWN", 9.999999999999998E99);
+        doubleValue_RoundingMode_helper(GOOGOL, "UP", 1.0E100);
+        doubleValue_RoundingMode_helper(GOOGOL, "HALF_DOWN", 1.0E100);
+        doubleValue_RoundingMode_helper(GOOGOL, "HALF_UP", 1.0E100);
+        doubleValue_RoundingMode_helper(GOOGOL, "HALF_EVEN", 1.0E100);
+        doubleValue_RoundingMode_fail_helper(GOOGOL, "UNNECESSARY");
+
+        doubleValue_RoundingMode_helper(PI_DOUBLE, "FLOOR", 3.141592653589793);
+        doubleValue_RoundingMode_helper(PI_DOUBLE, "CEILING", 3.141592653589793);
+        doubleValue_RoundingMode_helper(PI_DOUBLE, "DOWN", 3.141592653589793);
+        doubleValue_RoundingMode_helper(PI_DOUBLE, "UP", 3.141592653589793);
+        doubleValue_RoundingMode_helper(PI_DOUBLE, "HALF_DOWN",3.141592653589793);
+        doubleValue_RoundingMode_helper(PI_DOUBLE, "HALF_UP", 3.141592653589793);
+        doubleValue_RoundingMode_helper(PI_DOUBLE, "HALF_EVEN", 3.141592653589793);
+        doubleValue_RoundingMode_helper(PI_DOUBLE, "UNNECESSARY", 3.141592653589793);
+
+        doubleValue_RoundingMode_helper(HALF_ABOVE_PI_DOUBLE, "FLOOR", 3.141592653589793);
+        doubleValue_RoundingMode_helper(HALF_ABOVE_PI_DOUBLE, "CEILING", 3.1415926535897936);
+        doubleValue_RoundingMode_helper(HALF_ABOVE_PI_DOUBLE, "DOWN", 3.141592653589793);
+        doubleValue_RoundingMode_helper(HALF_ABOVE_PI_DOUBLE, "UP", 3.1415926535897936);
+        doubleValue_RoundingMode_helper(HALF_ABOVE_PI_DOUBLE, "HALF_DOWN", 3.141592653589793);
+        doubleValue_RoundingMode_helper(HALF_ABOVE_PI_DOUBLE, "HALF_UP", 3.1415926535897936);
+        doubleValue_RoundingMode_helper(HALF_ABOVE_PI_DOUBLE, "HALF_EVEN", 3.141592653589793);
+        doubleValue_RoundingMode_fail_helper(HALF_ABOVE_PI_DOUBLE, "UNNECESSARY");
+
+        doubleValue_RoundingMode_helper(HALF_BELOW_PI_DOUBLE, "FLOOR", 3.1415926535897927);
+        doubleValue_RoundingMode_helper(HALF_BELOW_PI_DOUBLE, "CEILING", 3.141592653589793);
+        doubleValue_RoundingMode_helper(HALF_BELOW_PI_DOUBLE, "DOWN", 3.1415926535897927);
+        doubleValue_RoundingMode_helper(HALF_BELOW_PI_DOUBLE, "UP", 3.141592653589793);
+        doubleValue_RoundingMode_helper(HALF_BELOW_PI_DOUBLE, "HALF_DOWN", 3.1415926535897927);
+        doubleValue_RoundingMode_helper(HALF_BELOW_PI_DOUBLE, "HALF_UP", 3.141592653589793);
+        doubleValue_RoundingMode_helper(HALF_BELOW_PI_DOUBLE, "HALF_EVEN", 3.141592653589793);
+        doubleValue_RoundingMode_fail_helper(HALF_BELOW_PI_DOUBLE, "UNNECESSARY");
+
+        doubleValue_RoundingMode_helper(JUST_ABOVE_PI_DOUBLE, "FLOOR", 3.141592653589793);
+        doubleValue_RoundingMode_helper(JUST_ABOVE_PI_DOUBLE, "CEILING", 3.1415926535897936);
+        doubleValue_RoundingMode_helper(JUST_ABOVE_PI_DOUBLE, "DOWN", 3.141592653589793);
+        doubleValue_RoundingMode_helper(JUST_ABOVE_PI_DOUBLE, "UP", 3.1415926535897936);
+        doubleValue_RoundingMode_helper(JUST_ABOVE_PI_DOUBLE, "HALF_DOWN", 3.141592653589793);
+        doubleValue_RoundingMode_helper(JUST_ABOVE_PI_DOUBLE, "HALF_UP", 3.141592653589793);
+        doubleValue_RoundingMode_helper(JUST_ABOVE_PI_DOUBLE, "HALF_EVEN", 3.141592653589793);
+        doubleValue_RoundingMode_fail_helper(JUST_ABOVE_PI_DOUBLE, "UNNECESSARY");
+
+        doubleValue_RoundingMode_helper(JUST_BELOW_PI_DOUBLE, "FLOOR", 3.1415926535897927);
+        doubleValue_RoundingMode_helper(JUST_BELOW_PI_DOUBLE, "CEILING", 3.141592653589793);
+        doubleValue_RoundingMode_helper(JUST_BELOW_PI_DOUBLE, "DOWN", 3.1415926535897927);
+        doubleValue_RoundingMode_helper(JUST_BELOW_PI_DOUBLE, "UP", 3.141592653589793);
+        doubleValue_RoundingMode_helper(JUST_BELOW_PI_DOUBLE, "HALF_DOWN", 3.141592653589793);
+        doubleValue_RoundingMode_helper(JUST_BELOW_PI_DOUBLE, "HALF_UP", 3.141592653589793);
+        doubleValue_RoundingMode_helper(JUST_BELOW_PI_DOUBLE, "HALF_EVEN", 3.141592653589793);
+        doubleValue_RoundingMode_fail_helper(JUST_BELOW_PI_DOUBLE, "UNNECESSARY");
+
+        doubleValue_RoundingMode_helper(SUBNORMAL_DOUBLE, "FLOOR", 1.0E-310);
+        doubleValue_RoundingMode_helper(SUBNORMAL_DOUBLE, "CEILING", 1.0E-310);
+        doubleValue_RoundingMode_helper(SUBNORMAL_DOUBLE, "DOWN", 1.0E-310);
+        doubleValue_RoundingMode_helper(SUBNORMAL_DOUBLE, "UP", 1.0E-310);
+        doubleValue_RoundingMode_helper(SUBNORMAL_DOUBLE, "HALF_DOWN", 1.0E-310);
+        doubleValue_RoundingMode_helper(SUBNORMAL_DOUBLE, "HALF_UP", 1.0E-310);
+        doubleValue_RoundingMode_helper(SUBNORMAL_DOUBLE, "HALF_EVEN", 1.0E-310);
+        doubleValue_RoundingMode_helper(SUBNORMAL_DOUBLE, "UNNECESSARY", 1.0E-310);
+
+        doubleValue_RoundingMode_helper(HALF_ABOVE_SUBNORMAL_DOUBLE, "FLOOR", 1.0E-310);
+        doubleValue_RoundingMode_helper(HALF_ABOVE_SUBNORMAL_DOUBLE, "CEILING", 1.00000000000005E-310);
+        doubleValue_RoundingMode_helper(HALF_ABOVE_SUBNORMAL_DOUBLE, "DOWN", 1.0E-310);
+        doubleValue_RoundingMode_helper(HALF_ABOVE_SUBNORMAL_DOUBLE, "UP", 1.00000000000005E-310);
+        doubleValue_RoundingMode_helper(HALF_ABOVE_SUBNORMAL_DOUBLE, "HALF_DOWN", 1.0E-310);
+        doubleValue_RoundingMode_helper(HALF_ABOVE_SUBNORMAL_DOUBLE, "HALF_UP", 1.00000000000005E-310);
+        doubleValue_RoundingMode_helper(HALF_ABOVE_SUBNORMAL_DOUBLE, "HALF_EVEN", 1.00000000000005E-310);
+        doubleValue_RoundingMode_fail_helper(HALF_ABOVE_SUBNORMAL_DOUBLE, "UNNECESSARY");
+
+        doubleValue_RoundingMode_helper(HALF_BELOW_SUBNORMAL_DOUBLE, "FLOOR", 9.9999999999995E-311);
+        doubleValue_RoundingMode_helper(HALF_BELOW_SUBNORMAL_DOUBLE, "CEILING", 1.0E-310);
+        doubleValue_RoundingMode_helper(HALF_BELOW_SUBNORMAL_DOUBLE, "DOWN", 9.9999999999995E-311);
+        doubleValue_RoundingMode_helper(HALF_BELOW_SUBNORMAL_DOUBLE, "UP", 1.0E-310);
+        doubleValue_RoundingMode_helper(HALF_BELOW_SUBNORMAL_DOUBLE, "HALF_DOWN", 9.9999999999995E-311);
+        doubleValue_RoundingMode_helper(HALF_BELOW_SUBNORMAL_DOUBLE, "HALF_UP", 1.0E-310);
+        doubleValue_RoundingMode_helper(HALF_BELOW_SUBNORMAL_DOUBLE, "HALF_EVEN", 9.9999999999995E-311);
+        doubleValue_RoundingMode_fail_helper(HALF_BELOW_SUBNORMAL_DOUBLE, "UNNECESSARY");
+
+        doubleValue_RoundingMode_helper(JUST_ABOVE_SUBNORMAL_DOUBLE, "FLOOR", 1.0E-310);
+        doubleValue_RoundingMode_helper(JUST_ABOVE_SUBNORMAL_DOUBLE, "CEILING", 1.00000000000005E-310);
+        doubleValue_RoundingMode_helper(JUST_ABOVE_SUBNORMAL_DOUBLE, "DOWN", 1.0E-310);
+        doubleValue_RoundingMode_helper(JUST_ABOVE_SUBNORMAL_DOUBLE, "UP", 1.00000000000005E-310);
+        doubleValue_RoundingMode_helper(JUST_ABOVE_SUBNORMAL_DOUBLE, "HALF_DOWN", 1.0E-310);
+        doubleValue_RoundingMode_helper(JUST_ABOVE_SUBNORMAL_DOUBLE, "HALF_UP", 1.0E-310);
+        doubleValue_RoundingMode_helper(JUST_ABOVE_SUBNORMAL_DOUBLE, "HALF_EVEN", 1.0E-310);
+        doubleValue_RoundingMode_fail_helper(JUST_ABOVE_SUBNORMAL_DOUBLE, "UNNECESSARY");
+
+        doubleValue_RoundingMode_helper(JUST_BELOW_SUBNORMAL_DOUBLE, "FLOOR", 9.9999999999995E-311);
+        doubleValue_RoundingMode_helper(JUST_BELOW_SUBNORMAL_DOUBLE, "CEILING", 1.0E-310);
+        doubleValue_RoundingMode_helper(JUST_BELOW_SUBNORMAL_DOUBLE, "DOWN", 9.9999999999995E-311);
+        doubleValue_RoundingMode_helper(JUST_BELOW_SUBNORMAL_DOUBLE, "UP", 1.0E-310);
+        doubleValue_RoundingMode_helper(JUST_BELOW_SUBNORMAL_DOUBLE, "HALF_DOWN", 1.0E-310);
+        doubleValue_RoundingMode_helper(JUST_BELOW_SUBNORMAL_DOUBLE, "HALF_UP", 1.0E-310);
+        doubleValue_RoundingMode_helper(JUST_BELOW_SUBNORMAL_DOUBLE, "HALF_EVEN", 1.0E-310);
+        doubleValue_RoundingMode_fail_helper(JUST_BELOW_SUBNORMAL_DOUBLE, "UNNECESSARY");
+
+        doubleValue_RoundingMode_helper(BELOW_NEGATIVE_MAX_DOUBLE, "FLOOR", Double.NEGATIVE_INFINITY);
+        doubleValue_RoundingMode_helper(BELOW_NEGATIVE_MAX_DOUBLE, "CEILING", -1.7976931348623157E308);
+        doubleValue_RoundingMode_helper(BELOW_NEGATIVE_MAX_DOUBLE, "DOWN", -1.7976931348623157E308);
+        doubleValue_RoundingMode_helper(BELOW_NEGATIVE_MAX_DOUBLE, "UP", Double.NEGATIVE_INFINITY);
+        doubleValue_RoundingMode_helper(BELOW_NEGATIVE_MAX_DOUBLE, "HALF_DOWN", -1.7976931348623157E308);
+        doubleValue_RoundingMode_helper(BELOW_NEGATIVE_MAX_DOUBLE, "HALF_UP", Double.NEGATIVE_INFINITY);
+        doubleValue_RoundingMode_helper(BELOW_NEGATIVE_MAX_DOUBLE, "HALF_EVEN", Double.NEGATIVE_INFINITY);
+        doubleValue_RoundingMode_fail_helper(BELOW_NEGATIVE_MAX_DOUBLE, "UNNECESSARY");
+
+        doubleValue_RoundingMode_helper(HALF_ABOVE_NEGATIVE_MAX_DOUBLE, "FLOOR", -1.7976931348623157E308);
+        doubleValue_RoundingMode_helper(HALF_ABOVE_NEGATIVE_MAX_DOUBLE, "CEILING", -1.7976931348623155E308);
+        doubleValue_RoundingMode_helper(HALF_ABOVE_NEGATIVE_MAX_DOUBLE, "DOWN", -1.7976931348623155E308);
+        doubleValue_RoundingMode_helper(HALF_ABOVE_NEGATIVE_MAX_DOUBLE, "UP", -1.7976931348623157E308);
+        doubleValue_RoundingMode_helper(HALF_ABOVE_NEGATIVE_MAX_DOUBLE, "HALF_DOWN", -1.7976931348623155E308);
+        doubleValue_RoundingMode_helper(HALF_ABOVE_NEGATIVE_MAX_DOUBLE, "HALF_UP", -1.7976931348623157E308);
+        doubleValue_RoundingMode_helper(HALF_ABOVE_NEGATIVE_MAX_DOUBLE, "HALF_EVEN", -1.7976931348623155E308);
+        doubleValue_RoundingMode_fail_helper(HALF_ABOVE_NEGATIVE_MAX_DOUBLE, "UNNECESSARY");
+
+        doubleValue_RoundingMode_helper(JUST_ABOVE_NEGATIVE_MAX_DOUBLE, "FLOOR", -1.7976931348623157E308);
+        doubleValue_RoundingMode_helper(JUST_ABOVE_NEGATIVE_MAX_DOUBLE, "CEILING", -1.7976931348623155E308);
+        doubleValue_RoundingMode_helper(JUST_ABOVE_NEGATIVE_MAX_DOUBLE, "DOWN", -1.7976931348623155E308);
+        doubleValue_RoundingMode_helper(JUST_ABOVE_NEGATIVE_MAX_DOUBLE, "UP", -1.7976931348623157E308);
+        doubleValue_RoundingMode_helper(JUST_ABOVE_NEGATIVE_MAX_DOUBLE, "HALF_DOWN", -1.7976931348623157E308);
+        doubleValue_RoundingMode_helper(JUST_ABOVE_NEGATIVE_MAX_DOUBLE, "HALF_UP", -1.7976931348623157E308);
+        doubleValue_RoundingMode_helper(JUST_ABOVE_NEGATIVE_MAX_DOUBLE, "HALF_EVEN", -1.7976931348623157E308);
+        doubleValue_RoundingMode_fail_helper(JUST_ABOVE_NEGATIVE_MAX_DOUBLE, "UNNECESSARY");
+
+        doubleValue_RoundingMode_helper(ABOVE_MAX_DOUBLE, "FLOOR", 1.7976931348623157E308);
+        doubleValue_RoundingMode_helper(ABOVE_MAX_DOUBLE, "CEILING", Double.POSITIVE_INFINITY);
+        doubleValue_RoundingMode_helper(ABOVE_MAX_DOUBLE, "DOWN", 1.7976931348623157E308);
+        doubleValue_RoundingMode_helper(ABOVE_MAX_DOUBLE, "UP", Double.POSITIVE_INFINITY);
+        doubleValue_RoundingMode_helper(ABOVE_MAX_DOUBLE, "HALF_DOWN", 1.7976931348623157E308);
+        doubleValue_RoundingMode_helper(ABOVE_MAX_DOUBLE, "HALF_UP", Double.POSITIVE_INFINITY);
+        doubleValue_RoundingMode_helper(ABOVE_MAX_DOUBLE, "HALF_EVEN", Double.POSITIVE_INFINITY);
+        doubleValue_RoundingMode_fail_helper(ABOVE_MAX_DOUBLE, "UNNECESSARY");
+
+        doubleValue_RoundingMode_helper(HALF_BELOW_MAX_DOUBLE, "FLOOR", 1.7976931348623155E308);
+        doubleValue_RoundingMode_helper(HALF_BELOW_MAX_DOUBLE, "CEILING", 1.7976931348623157E308);
+        doubleValue_RoundingMode_helper(HALF_BELOW_MAX_DOUBLE, "DOWN", 1.7976931348623155E308);
+        doubleValue_RoundingMode_helper(HALF_BELOW_MAX_DOUBLE, "UP", 1.7976931348623157E308);
+        doubleValue_RoundingMode_helper(HALF_BELOW_MAX_DOUBLE, "HALF_DOWN", 1.7976931348623155E308);
+        doubleValue_RoundingMode_helper(HALF_BELOW_MAX_DOUBLE, "HALF_UP", 1.7976931348623157E308);
+        doubleValue_RoundingMode_helper(HALF_BELOW_MAX_DOUBLE, "HALF_EVEN", 1.7976931348623155E308);
+        doubleValue_RoundingMode_fail_helper(HALF_BELOW_MAX_DOUBLE, "UNNECESSARY");
+
+        doubleValue_RoundingMode_helper(JUST_BELOW_MAX_DOUBLE, "FLOOR", 1.7976931348623155E308);
+        doubleValue_RoundingMode_helper(JUST_BELOW_MAX_DOUBLE, "CEILING", 1.7976931348623157E308);
+        doubleValue_RoundingMode_helper(JUST_BELOW_MAX_DOUBLE, "DOWN", 1.7976931348623155E308);
+        doubleValue_RoundingMode_helper(JUST_BELOW_MAX_DOUBLE, "UP", 1.7976931348623157E308);
+        doubleValue_RoundingMode_helper(JUST_BELOW_MAX_DOUBLE, "HALF_DOWN", 1.7976931348623157E308);
+        doubleValue_RoundingMode_helper(JUST_BELOW_MAX_DOUBLE, "HALF_UP", 1.7976931348623157E308);
+        doubleValue_RoundingMode_helper(JUST_BELOW_MAX_DOUBLE, "HALF_EVEN", 1.7976931348623157E308);
+        doubleValue_RoundingMode_fail_helper(JUST_BELOW_MAX_DOUBLE, "UNNECESSARY");
+
+        doubleValue_RoundingMode_helper(HALF_BELOW_ZERO_DOUBLE, "FLOOR", -4.9E-324);
+        doubleValue_RoundingMode_helper(HALF_BELOW_ZERO_DOUBLE, "CEILING", -0.0);
+        doubleValue_RoundingMode_helper(HALF_BELOW_ZERO_DOUBLE, "DOWN", -0.0);
+        doubleValue_RoundingMode_helper(HALF_BELOW_ZERO_DOUBLE, "UP", -4.9E-324);
+        doubleValue_RoundingMode_helper(HALF_BELOW_ZERO_DOUBLE, "HALF_DOWN", -0.0);
+        doubleValue_RoundingMode_helper(HALF_BELOW_ZERO_DOUBLE, "HALF_UP", -4.9E-324);
+        doubleValue_RoundingMode_helper(HALF_BELOW_ZERO_DOUBLE, "HALF_EVEN", -0.0);
+        doubleValue_RoundingMode_fail_helper(HALF_BELOW_ZERO_DOUBLE, "UNNECESSARY");
+
+        doubleValue_RoundingMode_helper(JUST_BELOW_ZERO_DOUBLE, "FLOOR", -4.9E-324);
+        doubleValue_RoundingMode_helper(JUST_BELOW_ZERO_DOUBLE, "CEILING", -0.0);
+        doubleValue_RoundingMode_helper(JUST_BELOW_ZERO_DOUBLE, "DOWN", -0.0);
+        doubleValue_RoundingMode_helper(JUST_BELOW_ZERO_DOUBLE, "UP", -4.9E-324);
+        doubleValue_RoundingMode_helper(JUST_BELOW_ZERO_DOUBLE, "HALF_DOWN", -0.0);
+        doubleValue_RoundingMode_helper(JUST_BELOW_ZERO_DOUBLE, "HALF_UP", -0.0);
+        doubleValue_RoundingMode_helper(JUST_BELOW_ZERO_DOUBLE, "HALF_EVEN", -0.0);
+        doubleValue_RoundingMode_fail_helper(JUST_BELOW_ZERO_DOUBLE, "UNNECESSARY");
+
+        doubleValue_RoundingMode_helper(HALF_ABOVE_ZERO_DOUBLE, "FLOOR", 0.0);
+        doubleValue_RoundingMode_helper(HALF_ABOVE_ZERO_DOUBLE, "CEILING", 4.9E-324);
+        doubleValue_RoundingMode_helper(HALF_ABOVE_ZERO_DOUBLE, "DOWN", 0.0);
+        doubleValue_RoundingMode_helper(HALF_ABOVE_ZERO_DOUBLE, "UP", 4.9E-324);
+        doubleValue_RoundingMode_helper(HALF_ABOVE_ZERO_DOUBLE, "HALF_DOWN", 0.0);
+        doubleValue_RoundingMode_helper(HALF_ABOVE_ZERO_DOUBLE, "HALF_UP", 4.9E-324);
+        doubleValue_RoundingMode_helper(HALF_ABOVE_ZERO_DOUBLE, "HALF_EVEN", 0.0);
+        doubleValue_RoundingMode_fail_helper(HALF_ABOVE_ZERO_DOUBLE, "UNNECESSARY");
+
+        doubleValue_RoundingMode_helper(JUST_ABOVE_ZERO_DOUBLE, "FLOOR", 0.0);
+        doubleValue_RoundingMode_helper(JUST_ABOVE_ZERO_DOUBLE, "CEILING", 4.9E-324);
+        doubleValue_RoundingMode_helper(JUST_ABOVE_ZERO_DOUBLE, "DOWN", 0.0);
+        doubleValue_RoundingMode_helper(JUST_ABOVE_ZERO_DOUBLE, "UP", 4.9E-324);
+        doubleValue_RoundingMode_helper(JUST_ABOVE_ZERO_DOUBLE, "HALF_DOWN", 0.0);
+        doubleValue_RoundingMode_helper(JUST_ABOVE_ZERO_DOUBLE, "HALF_UP", 0.0);
+        doubleValue_RoundingMode_helper(JUST_ABOVE_ZERO_DOUBLE, "HALF_EVEN", 0.0);
+        doubleValue_RoundingMode_fail_helper(JUST_ABOVE_ZERO_DOUBLE, "UNNECESSARY");
+
+        doubleValue_RoundingMode_helper(BOUNDARY_DOUBLE, "FLOOR", 2.225073858507201E-308);
+        doubleValue_RoundingMode_helper(BOUNDARY_DOUBLE, "CEILING", 2.2250738585072014E-308);
+        doubleValue_RoundingMode_helper(BOUNDARY_DOUBLE, "DOWN", 2.225073858507201E-308);
+        doubleValue_RoundingMode_helper(BOUNDARY_DOUBLE, "UP", 2.2250738585072014E-308);
+        doubleValue_RoundingMode_helper(BOUNDARY_DOUBLE, "HALF_DOWN", 2.225073858507201E-308);
+        doubleValue_RoundingMode_helper(BOUNDARY_DOUBLE, "HALF_UP", 2.2250738585072014E-308);
+        doubleValue_RoundingMode_helper(BOUNDARY_DOUBLE, "HALF_EVEN", 2.2250738585072014E-308);
+        doubleValue_RoundingMode_fail_helper(BOUNDARY_DOUBLE, "UNNECESSARY");
+
+        doubleValue_RoundingMode_helper(JUST_BELOW_BOUNDARY_DOUBLE, "FLOOR", 2.225073858507201E-308);
+        doubleValue_RoundingMode_helper(JUST_BELOW_BOUNDARY_DOUBLE, "CEILING", 2.2250738585072014E-308);
+        doubleValue_RoundingMode_helper(JUST_BELOW_BOUNDARY_DOUBLE, "DOWN", 2.225073858507201E-308);
+        doubleValue_RoundingMode_helper(JUST_BELOW_BOUNDARY_DOUBLE, "UP", 2.2250738585072014E-308);
+        doubleValue_RoundingMode_helper(JUST_BELOW_BOUNDARY_DOUBLE, "HALF_DOWN", 2.225073858507201E-308);
+        doubleValue_RoundingMode_helper(JUST_BELOW_BOUNDARY_DOUBLE, "HALF_UP", 2.225073858507201E-308);
+        doubleValue_RoundingMode_helper(JUST_BELOW_BOUNDARY_DOUBLE, "HALF_EVEN", 2.225073858507201E-308);
+        doubleValue_RoundingMode_fail_helper(JUST_BELOW_BOUNDARY_DOUBLE, "UNNECESSARY");
+
+        doubleValue_RoundingMode_helper(JUST_ABOVE_BOUNDARY_DOUBLE, "FLOOR", 2.225073858507201E-308);
+        doubleValue_RoundingMode_helper(JUST_ABOVE_BOUNDARY_DOUBLE, "CEILING", 2.2250738585072014E-308);
+        doubleValue_RoundingMode_helper(JUST_ABOVE_BOUNDARY_DOUBLE, "DOWN", 2.225073858507201E-308);
+        doubleValue_RoundingMode_helper(JUST_ABOVE_BOUNDARY_DOUBLE, "UP", 2.2250738585072014E-308);
+        doubleValue_RoundingMode_helper(JUST_ABOVE_BOUNDARY_DOUBLE, "HALF_DOWN", 2.2250738585072014E-308);
+        doubleValue_RoundingMode_helper(JUST_ABOVE_BOUNDARY_DOUBLE, "HALF_UP", 2.2250738585072014E-308);
+        doubleValue_RoundingMode_helper(JUST_ABOVE_BOUNDARY_DOUBLE, "HALF_EVEN", 2.2250738585072014E-308);
+        doubleValue_RoundingMode_fail_helper(JUST_ABOVE_BOUNDARY_DOUBLE, "UNNECESSARY");
+    }
+
+    private static void doubleValue_helper(@NotNull Rational r, double output) {
+        aeq(r.doubleValue(), output);
+    }
+
+    private static void doubleValue_helper(@NotNull String r, double output) {
+        doubleValue_helper(read(r).get(), output);
     }
 
     @Test
     public void testDoubleValue() {
-        aeq(ZERO.doubleValue(), 0.0);
-        aeq(ONE.doubleValue(), 1.0);
-        aeq(read("1/2").get().doubleValue(), 0.5);
-        aeq(read("1/3").get().doubleValue(), 0.3333333333333333);
-        aeq(read("-1/3").get().doubleValue(), -0.3333333333333333);
-        Rational almostOne = of(BigInteger.TEN.pow(1000).subtract(BigInteger.ONE), BigInteger.TEN.pow(1000));
-        aeq(almostOne.doubleValue(), 1.0);
-        aeq(PI_DOUBLE.doubleValue(), 3.141592653589793);
-        Rational googol = of(BigInteger.TEN.pow(100));
-        aeq(googol.doubleValue(), 1.0E100);
-        Rational halfAbovePi = PI_DOUBLE.add(PI_SUCCESSOR_DOUBLE).divide(2);
-        Rational halfBelowPi = PI_DOUBLE.add(PI_PREDECESSOR_DOUBLE).divide(2);
-        Rational justAbovePi = PI_DOUBLE.multiply(2).add(PI_SUCCESSOR_DOUBLE).divide(3);
-        Rational justBelowPi = PI_DOUBLE.multiply(2).add(PI_PREDECESSOR_DOUBLE).divide(3);
-        aeq(halfAbovePi.doubleValue(), 3.141592653589793);
-        aeq(halfBelowPi.doubleValue(), 3.141592653589793);
-        aeq(justAbovePi.doubleValue(), 3.141592653589793);
-        aeq(justBelowPi.doubleValue(), 3.141592653589793);
-        Rational halfAboveSubnormal = SUBNORMAL_DOUBLE.add(SUBNORMAL_SUCCESSOR_DOUBLE).divide(2);
-        Rational halfBelowSubnormal = SUBNORMAL_DOUBLE.add(SUBNORMAL_PREDECESSOR_DOUBLE).divide(2);
-        Rational justAboveSubnormal = SUBNORMAL_DOUBLE.multiply(2).add(SUBNORMAL_SUCCESSOR_DOUBLE).divide(3);
-        Rational justBelowSubnormal = SUBNORMAL_DOUBLE.multiply(2).add(SUBNORMAL_PREDECESSOR_DOUBLE).divide(3);
-        aeq(SUBNORMAL_DOUBLE.doubleValue(), 1.0E-310);
-        aeq(halfAboveSubnormal.doubleValue(), 1.00000000000005E-310);
-        aeq(halfBelowSubnormal.doubleValue(), 9.9999999999995E-311);
-        aeq(justAboveSubnormal.doubleValue(), 1.0E-310);
-        aeq(justBelowSubnormal.doubleValue(), 1.0E-310);
-        Rational belowNegativeMax = LARGEST_DOUBLE.negate().subtract(ONE);
-        Rational halfAboveNegativeMax = LARGEST_DOUBLE.negate().add(ALMOST_MAX_DOUBLE.negate()).divide(2);
-        Rational justAboveNegativeMax = LARGEST_DOUBLE.negate().multiply(2).add(ALMOST_MAX_DOUBLE.negate()).divide(3);
-        aeq(belowNegativeMax.doubleValue(), Double.NEGATIVE_INFINITY);
-        aeq(halfAboveNegativeMax.doubleValue(), -1.7976931348623155E308);
-        aeq(justAboveNegativeMax.doubleValue(), -1.7976931348623157E308);
-        Rational aboveMax = LARGEST_DOUBLE.add(ONE);
-        Rational halfBelowMax = LARGEST_DOUBLE.add(ALMOST_MAX_DOUBLE).divide(2);
-        Rational justBelowMax = LARGEST_DOUBLE.multiply(2).add(ALMOST_MAX_DOUBLE).divide(3);
-        aeq(aboveMax.doubleValue(), Double.POSITIVE_INFINITY);
-        aeq(halfBelowMax.doubleValue(), 1.7976931348623155E308);
-        aeq(justBelowMax.doubleValue(), 1.7976931348623157E308);
-        Rational halfAboveZero = SMALLEST_DOUBLE.shiftRight(1);
-        Rational justAboveZero = SMALLEST_DOUBLE.divide(3);
-        Rational halfBelowZero = halfAboveZero.negate();
-        Rational justBelowZero = justAboveZero.negate();
-        aeq(halfBelowZero.doubleValue(), -0.0);
-        aeq(justBelowZero.doubleValue(), -0.0);
-        aeq(halfAboveZero.doubleValue(), 0.0);
-        aeq(justAboveZero.doubleValue(), 0.0);
-        Rational boundary = LARGEST_SUBNORMAL_DOUBLE.add(SMALLEST_NORMAL_DOUBLE).shiftRight(1);
-        Rational halfBelowBoundary = LARGEST_SUBNORMAL_DOUBLE.add(boundary).shiftRight(1);
-        Rational halfAboveBoundary = SMALLEST_NORMAL_DOUBLE.add(boundary).shiftRight(1);
-        Rational justBelowBoundary = LARGEST_SUBNORMAL_DOUBLE.add(boundary.shiftLeft(1)).divide(3);
-        Rational justAboveBoundary = SMALLEST_NORMAL_DOUBLE.add(boundary.shiftLeft(1)).divide(3);
-        aeq(boundary.doubleValue(), 2.2250738585072014E-308);
-        aeq(halfBelowBoundary.doubleValue(), 2.225073858507201E-308);
-        aeq(justBelowBoundary.doubleValue(), 2.225073858507201E-308);
-        aeq(halfAboveBoundary.doubleValue(), 2.2250738585072014E-308);
-        aeq(justAboveBoundary.doubleValue(), 2.2250738585072014E-308);
+        doubleValue_helper("0", 0.0);
+        doubleValue_helper("1", 1.0);
+        doubleValue_helper("1/2", 0.5);
+        doubleValue_helper("1/3", 0.3333333333333333);
+        doubleValue_helper("-1/3", -0.3333333333333333);
+        doubleValue_helper(ALMOST_ONE, 1.0);
+        doubleValue_helper(GOOGOL, 1.0E100);
+        doubleValue_helper(PI_DOUBLE, 3.141592653589793);
+        doubleValue_helper(HALF_ABOVE_PI_DOUBLE, 3.141592653589793);
+        doubleValue_helper(HALF_BELOW_PI_DOUBLE, 3.141592653589793);
+        doubleValue_helper(JUST_ABOVE_PI_DOUBLE, 3.141592653589793);
+        doubleValue_helper(JUST_BELOW_PI_DOUBLE, 3.141592653589793);
+        doubleValue_helper(SUBNORMAL_DOUBLE, 1.0E-310);
+        doubleValue_helper(HALF_ABOVE_SUBNORMAL_DOUBLE, 1.00000000000005E-310);
+        doubleValue_helper(HALF_BELOW_SUBNORMAL_DOUBLE, 9.9999999999995E-311);
+        doubleValue_helper(JUST_ABOVE_SUBNORMAL_DOUBLE, 1.0E-310);
+        doubleValue_helper(JUST_BELOW_SUBNORMAL_DOUBLE, 1.0E-310);
+        doubleValue_helper(BELOW_NEGATIVE_MAX_DOUBLE, Double.NEGATIVE_INFINITY);
+        doubleValue_helper(HALF_ABOVE_NEGATIVE_MAX_DOUBLE, -1.7976931348623155E308);
+        doubleValue_helper(JUST_ABOVE_NEGATIVE_MAX_DOUBLE, -1.7976931348623157E308);
+        doubleValue_helper(ABOVE_MAX_DOUBLE, Double.POSITIVE_INFINITY);
+        doubleValue_helper(HALF_BELOW_MAX_DOUBLE, 1.7976931348623155E308);
+        doubleValue_helper(JUST_BELOW_MAX_DOUBLE, 1.7976931348623157E308);
+        doubleValue_helper(HALF_BELOW_ZERO_DOUBLE, -0.0);
+        doubleValue_helper(JUST_BELOW_ZERO_DOUBLE, -0.0);
+        doubleValue_helper(HALF_ABOVE_ZERO_DOUBLE, 0.0);
+        doubleValue_helper(JUST_ABOVE_ZERO_DOUBLE, 0.0);
+        doubleValue_helper(BOUNDARY_DOUBLE, 2.2250738585072014E-308);
+        doubleValue_helper(JUST_BELOW_BOUNDARY_DOUBLE, 2.225073858507201E-308);
+        doubleValue_helper(JUST_ABOVE_BOUNDARY_DOUBLE, 2.2250738585072014E-308);
+    }
+
+    private static void doubleValueExact_helper(@NotNull Rational r, double output) {
+        aeq(r.doubleValueExact(), output);
+    }
+
+    private static void doubleValueExact_helper(@NotNull String r, double output) {
+        doubleValueExact_helper(read(r).get(), output);
+    }
+
+    private static void doubleValueExact_fail_helper(@NotNull Rational r) {
+        try {
+            r.doubleValueExact();
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    private static void doubleValueExact_fail_helper(@NotNull String r) {
+        doubleValueExact_fail_helper(read(r).get());
     }
 
     @Test
     public void testDoubleValueExact() {
-        aeq(ZERO.doubleValueExact(), 0.0);
-        aeq(ONE.doubleValueExact(), 1.0);
-        aeq(read("1/2").get().doubleValueExact(), 0.5);
-        try {
-            read("1/3").get().doubleValueExact();
-            fail();
-        } catch (ArithmeticException ignored) {}
-        try {
-            read("-1/3").get().doubleValueExact();
-            fail();
-        } catch (ArithmeticException ignored) {}
-        Rational almostOne = of(BigInteger.TEN.pow(1000).subtract(BigInteger.ONE), BigInteger.TEN.pow(1000));
-        try {
-            almostOne.doubleValueExact();
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(PI_DOUBLE.doubleValueExact(), 3.141592653589793);
-        Rational googol = of(BigInteger.TEN.pow(100));
-        try {
-            googol.doubleValueExact();
-            fail();
-        } catch (ArithmeticException ignored) {}
-        Rational halfAbovePi = PI_DOUBLE.add(PI_SUCCESSOR_DOUBLE).divide(2);
-        Rational halfBelowPi = PI_DOUBLE.add(PI_PREDECESSOR_DOUBLE).divide(2);
-        Rational justAbovePi = PI_DOUBLE.multiply(2).add(PI_SUCCESSOR_DOUBLE).divide(3);
-        Rational justBelowPi = PI_DOUBLE.multiply(2).add(PI_PREDECESSOR_DOUBLE).divide(3);
-        try {
-            halfAbovePi.doubleValueExact();
-            fail();
-        } catch (ArithmeticException ignored) {}
-        try {
-            halfBelowPi.doubleValueExact();
-            fail();
-        } catch (ArithmeticException ignored) {}
-        try {
-            justAbovePi.doubleValueExact();
-            fail();
-        } catch (ArithmeticException ignored) {}
-        try {
-            justBelowPi.doubleValueExact();
-            fail();
-        } catch (ArithmeticException ignored) {}
-        Rational halfAboveSubnormal = SUBNORMAL_DOUBLE.add(SUBNORMAL_SUCCESSOR_DOUBLE).divide(2);
-        Rational halfBelowSubnormal = SUBNORMAL_DOUBLE.add(SUBNORMAL_PREDECESSOR_DOUBLE).divide(2);
-        Rational justAboveSubnormal = SUBNORMAL_DOUBLE.multiply(2).add(SUBNORMAL_SUCCESSOR_DOUBLE).divide(3);
-        Rational justBelowSubnormal = SUBNORMAL_DOUBLE.multiply(2).add(SUBNORMAL_PREDECESSOR_DOUBLE).divide(3);
-        aeq(SUBNORMAL_DOUBLE.doubleValueExact(), 1.0E-310);
-        try {
-            halfAboveSubnormal.doubleValueExact();
-            fail();
-        } catch (ArithmeticException ignored) {}
-        try {
-            halfBelowSubnormal.doubleValueExact();
-            fail();
-        } catch (ArithmeticException ignored) {}
-        try {
-            justAboveSubnormal.doubleValueExact();
-            fail();
-        } catch (ArithmeticException ignored) {}
-        try {
-            justBelowSubnormal.doubleValueExact();
-            fail();
-        } catch (ArithmeticException ignored) {}
-        Rational belowNegativeMax = LARGEST_DOUBLE.negate().subtract(ONE);
-        Rational halfAboveNegativeMax = LARGEST_DOUBLE.negate().add(ALMOST_MAX_DOUBLE.negate()).divide(2);
-        Rational justAboveNegativeMax = LARGEST_DOUBLE.negate().multiply(2).add(ALMOST_MAX_DOUBLE.negate()).divide(3);
-        try {
-            belowNegativeMax.doubleValueExact();
-            fail();
-        } catch (ArithmeticException ignored) {}
-        try {
-            halfAboveNegativeMax.doubleValueExact();
-            fail();
-        } catch (ArithmeticException ignored) {}
-        try {
-            justAboveNegativeMax.doubleValueExact();
-            fail();
-        } catch (ArithmeticException ignored) {}
-        Rational aboveMax = LARGEST_DOUBLE.add(ONE);
-        Rational halfBelowMax = LARGEST_DOUBLE.add(ALMOST_MAX_DOUBLE).divide(2);
-        Rational justBelowMax = LARGEST_DOUBLE.multiply(2).add(ALMOST_MAX_DOUBLE).divide(3);
-        try {
-            aboveMax.doubleValueExact();
-            fail();
-        } catch (ArithmeticException ignored) {}
-        try {
-            halfBelowMax.doubleValueExact();
-            fail();
-        } catch (ArithmeticException ignored) {}
-        try {
-            justBelowMax.doubleValueExact();
-            fail();
-        } catch (ArithmeticException ignored) {}
-        Rational halfAboveZero = SMALLEST_DOUBLE.shiftRight(1);
-        Rational justAboveZero = SMALLEST_DOUBLE.divide(3);
-        Rational halfBelowZero = halfAboveZero.negate();
-        Rational justBelowZero = justAboveZero.negate();
-        try {
-            halfBelowZero.doubleValueExact();
-            fail();
-        } catch (ArithmeticException ignored) {}
-        try {
-            justBelowZero.doubleValueExact();
-            fail();
-        } catch (ArithmeticException ignored) {}
-        try {
-            halfAboveZero.doubleValueExact();
-            fail();
-        } catch (ArithmeticException ignored) {}
-        try {
-            justAboveZero.doubleValueExact();
-            fail();
-        } catch (ArithmeticException ignored) {}
-        Rational boundary = LARGEST_SUBNORMAL_DOUBLE.add(SMALLEST_NORMAL_DOUBLE).shiftRight(1);
-        Rational halfBelowBoundary = LARGEST_SUBNORMAL_DOUBLE.add(boundary).shiftRight(1);
-        Rational halfAboveBoundary = SMALLEST_NORMAL_DOUBLE.add(boundary).shiftRight(1);
-        Rational justBelowBoundary = LARGEST_SUBNORMAL_DOUBLE.add(boundary.shiftLeft(1)).divide(3);
-        Rational justAboveBoundary = SMALLEST_NORMAL_DOUBLE.add(boundary.shiftLeft(1)).divide(3);
-        try {
-            boundary.doubleValueExact();
-            fail();
-        } catch (ArithmeticException ignored) {}
-        try {
-            halfBelowBoundary.doubleValueExact();
-            fail();
-        } catch (ArithmeticException ignored) {}
-        try {
-            justBelowBoundary.doubleValueExact();
-            fail();
-        } catch (ArithmeticException ignored) {}
-        try {
-            halfAboveBoundary.doubleValueExact();
-            fail();
-        } catch (ArithmeticException ignored) {}
-        try {
-            justAboveBoundary.doubleValueExact();
-            fail();
-        } catch (ArithmeticException ignored) {}
+        doubleValueExact_helper("0", 0.0);
+        doubleValueExact_helper("1", 1.0);
+        doubleValueExact_helper("1/2", 0.5);
+        doubleValueExact_fail_helper("1/3");
+        doubleValueExact_fail_helper("-1/3");
+        doubleValueExact_fail_helper(ALMOST_ONE);
+        doubleValueExact_fail_helper(GOOGOL);
+        doubleValueExact_helper(PI_DOUBLE, 3.141592653589793);
+        doubleValueExact_fail_helper(HALF_ABOVE_PI_DOUBLE);
+        doubleValueExact_fail_helper(HALF_BELOW_PI_DOUBLE);
+        doubleValueExact_fail_helper(JUST_ABOVE_PI_DOUBLE);
+        doubleValueExact_fail_helper(JUST_BELOW_PI_DOUBLE);
+        doubleValueExact_helper(SUBNORMAL_DOUBLE, 1.0E-310);
+        doubleValueExact_fail_helper(HALF_ABOVE_SUBNORMAL_DOUBLE);
+        doubleValueExact_fail_helper(HALF_BELOW_SUBNORMAL_DOUBLE);
+        doubleValueExact_fail_helper(JUST_ABOVE_SUBNORMAL_DOUBLE);
+        doubleValueExact_fail_helper(JUST_BELOW_SUBNORMAL_DOUBLE);
+        doubleValueExact_fail_helper(BELOW_NEGATIVE_MAX_DOUBLE);
+        doubleValueExact_fail_helper(HALF_ABOVE_NEGATIVE_MAX_DOUBLE);
+        doubleValueExact_fail_helper(JUST_ABOVE_NEGATIVE_MAX_DOUBLE);
+        doubleValueExact_fail_helper(ABOVE_MAX_DOUBLE);
+        doubleValueExact_fail_helper(HALF_BELOW_MAX_DOUBLE);
+        doubleValueExact_fail_helper(JUST_BELOW_MAX_DOUBLE);
+        doubleValueExact_fail_helper(HALF_BELOW_ZERO_DOUBLE);
+        doubleValueExact_fail_helper(JUST_BELOW_ZERO_DOUBLE);
+        doubleValueExact_fail_helper(HALF_ABOVE_ZERO_DOUBLE);
+        doubleValueExact_fail_helper(JUST_ABOVE_ZERO_DOUBLE);
+        doubleValueExact_fail_helper(BOUNDARY_DOUBLE);
+        doubleValueExact_fail_helper(JUST_BELOW_BOUNDARY_DOUBLE);
+        doubleValueExact_fail_helper(JUST_ABOVE_BOUNDARY_DOUBLE);
     }
 
     @Test

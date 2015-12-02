@@ -691,15 +691,15 @@ public final class Rational implements Comparable<Rational> {
         Rational adjusted = this;
         int exponent = 0;
         if (lt(numerator, denominator)) {
-            while (lt(adjusted.numerator, adjusted.denominator)) {
+            do {
                 adjusted = adjusted.shiftLeft(1);
                 exponent--;
-            }
+            } while (lt(adjusted.numerator, adjusted.denominator));
         } else {
-            while (ge(adjusted.numerator, adjusted.denominator)) {
+            do {
                 adjusted = adjusted.shiftRight(1);
                 exponent++;
-            }
+            } while (ge(adjusted.numerator, adjusted.denominator));
             exponent--;
         }
         return exponent;
@@ -727,6 +727,7 @@ public final class Rational implements Comparable<Rational> {
      */
     private @NotNull Pair<Float, Float> floatRange() {
         if (this == ZERO) return new Pair<>(0.0f, 0.0f);
+        if (this == ONE) return new Pair<>(1.0f, 1.0f);
         if (numerator.signum() == -1) {
             Pair<Float, Float> negativeRange = negate().floatRange();
             return new Pair<>(-negativeRange.b, -negativeRange.a);
@@ -744,8 +745,9 @@ public final class Rational implements Comparable<Rational> {
             fraction = shiftRight(exponent).subtract(ONE).shiftLeft(FLOAT_FRACTION_WIDTH);
             adjustedExponent = exponent + Float.MAX_EXPONENT;
         }
-        float loFloat = Float.intBitsToFloat((adjustedExponent << FLOAT_FRACTION_WIDTH) +
-                fraction.floor().intValueExact());
+        float loFloat = Float.intBitsToFloat(
+                (adjustedExponent << FLOAT_FRACTION_WIDTH) + fraction.floor().intValueExact()
+        );
         float hiFloat = fraction.denominator.equals(BigInteger.ONE) ? loFloat : successor(loFloat);
         return new Pair<>(loFloat, hiFloat);
     }
@@ -773,6 +775,7 @@ public final class Rational implements Comparable<Rational> {
      */
     private @NotNull Pair<Double, Double> doubleRange() {
         if (this == ZERO) return new Pair<>(0.0, 0.0);
+        if (this == ONE) return new Pair<>(1.0, 1.0);
         if (numerator.signum() == -1) {
             Pair<Double, Double> negativeRange = negate().doubleRange();
             return new Pair<>(-negativeRange.b, -negativeRange.a);
@@ -790,11 +793,10 @@ public final class Rational implements Comparable<Rational> {
             fraction = shiftRight(exponent).subtract(ONE).shiftLeft(DOUBLE_FRACTION_WIDTH);
             adjustedExponent = exponent + Double.MAX_EXPONENT;
         }
-        double loDouble = Double.longBitsToDouble(((long) adjustedExponent << DOUBLE_FRACTION_WIDTH) +
-                fraction.floor().longValueExact());
-        double hiDouble = fraction.denominator.equals(BigInteger.ONE) ?
-                loDouble :
-                successor(loDouble);
+        double loDouble = Double.longBitsToDouble(
+                ((long) adjustedExponent << DOUBLE_FRACTION_WIDTH) + fraction.floor().longValueExact()
+        );
+        double hiDouble = fraction.denominator.equals(BigInteger.ONE) ? loDouble : successor(loDouble);
         return new Pair<>(loDouble, hiDouble);
     }
 
@@ -863,7 +865,8 @@ public final class Rational implements Comparable<Rational> {
         Optional<Rational> loFloat = ofExact(floatRange.a);
         Optional<Rational> hiFloat = ofExact(floatRange.b);
         if (!(loFloat.isPresent() && hiFloat.isPresent()) && roundingMode == RoundingMode.UNNECESSARY) {
-            throw new ArithmeticException("Rational not exactly equal to a float. Use a different rounding mode");
+            throw new ArithmeticException("If roundingMode is UNNECESSARY, this must be exactly equal to a float. " +
+                    "Invalid this: " + this);
         }
         if (!loFloat.isPresent()) {
             if (roundingMode == RoundingMode.FLOOR || roundingMode == RoundingMode.UP ||
@@ -881,11 +884,10 @@ public final class Rational implements Comparable<Rational> {
                 return Float.MAX_VALUE;
             }
         }
-        Rational midway = loFloat.get().add(hiFloat.get()).shiftRight(1);
-        Ordering midwayCompare = compare(this, midway);
         switch (roundingMode) {
             case UNNECESSARY:
-                throw new ArithmeticException("Rational not exactly equal to a float. Use a different rounding mode");
+                throw new ArithmeticException("If roundingMode is UNNECESSARY, this must be exactly equal to a" +
+                        " float. Invalid this: " + this);
             case FLOOR:
                 return floatRange.a;
             case CEILING:
@@ -894,16 +896,30 @@ public final class Rational implements Comparable<Rational> {
                 return floatRange.a < 0 ? floatRange.b : floatRange.a;
             case UP:
                 return floatRange.a < 0 ? floatRange.a : floatRange.b;
+        }
+        Rational midway = loFloat.get().add(hiFloat.get()).shiftRight(1);
+        Ordering midwayCompare = compare(this, midway);
+        switch (roundingMode) {
             case HALF_DOWN:
-                if (midwayCompare == EQ) return signum() == 1 ? floatRange.a : floatRange.b;
-                return midwayCompare == LT ? floatRange.a : floatRange.b;
+                if (midwayCompare == EQ) {
+                    return signum() == 1 ? floatRange.a : floatRange.b;
+                } else {
+                    return midwayCompare == LT ? floatRange.a : floatRange.b;
+                }
             case HALF_UP:
-                if (midwayCompare == EQ) return signum() == 1 ? floatRange.b : floatRange.a;
-                return midwayCompare == LT ? floatRange.a : floatRange.b;
+                if (midwayCompare == EQ) {
+                    return signum() == 1 ? floatRange.b : floatRange.a;
+                } else {
+                    return midwayCompare == LT ? floatRange.a : floatRange.b;
+                }
             case HALF_EVEN:
-                if (midwayCompare == LT) return floatRange.a;
-                if (midwayCompare == GT) return floatRange.b;
-                return (Float.floatToIntBits(floatRange.a) & 1) == 0 ? floatRange.a : floatRange.b;
+                if (midwayCompare == LT) {
+                    return floatRange.a;
+                } else if (midwayCompare == GT) {
+                    return floatRange.b;
+                } else {
+                    return (Float.floatToIntBits(floatRange.a) & 1) == 0 ? floatRange.a : floatRange.b;
+                }
         }
         return 0; //never happens
     }
@@ -1008,7 +1024,8 @@ public final class Rational implements Comparable<Rational> {
         Optional<Rational> loDouble = ofExact(doubleRange.a);
         Optional<Rational> hiDouble = ofExact(doubleRange.b);
         if (!(loDouble.isPresent() && hiDouble.isPresent()) && roundingMode == RoundingMode.UNNECESSARY) {
-            throw new ArithmeticException("Rational not exactly equal to a double. Use a different rounding mode");
+            throw new ArithmeticException("If roundingMode is UNNECESSARY, this must be exactly equal to a double. " +
+                    "Invalid this: " + this);
         }
         if (!loDouble.isPresent()) {
             if (roundingMode == RoundingMode.FLOOR || roundingMode == RoundingMode.UP ||
@@ -1026,11 +1043,10 @@ public final class Rational implements Comparable<Rational> {
                 return Double.MAX_VALUE;
             }
         }
-        Rational midway = loDouble.get().add(hiDouble.get()).shiftRight(1);
-        Ordering midwayCompare = compare(this, midway);
         switch (roundingMode) {
             case UNNECESSARY:
-                throw new ArithmeticException("Rational not exactly equal to a double. Use a different rounding mode");
+                throw new ArithmeticException("If roundingMode is UNNECESSARY, this must be exactly equal to a" +
+                        " double. Invalid this: " + this);
             case FLOOR:
                 return doubleRange.a;
             case CEILING:
@@ -1039,15 +1055,28 @@ public final class Rational implements Comparable<Rational> {
                 return doubleRange.a < 0 ? doubleRange.b : doubleRange.a;
             case UP:
                 return doubleRange.a < 0 ? doubleRange.a : doubleRange.b;
+        }
+        Rational midway = loDouble.get().add(hiDouble.get()).shiftRight(1);
+        Ordering midwayCompare = compare(this, midway);
+        switch (roundingMode) {
             case HALF_DOWN:
-                if (midwayCompare == EQ) return signum() == 1 ? doubleRange.a : doubleRange.b;
-                return midwayCompare == LT ? doubleRange.a : doubleRange.b;
+                if (midwayCompare == EQ) {
+                    return signum() == 1 ? doubleRange.a : doubleRange.b;
+                } else {
+                    return midwayCompare == LT ? doubleRange.a : doubleRange.b;
+                }
             case HALF_UP:
-                if (midwayCompare == EQ) return signum() == 1 ? doubleRange.b : doubleRange.a;
-                return midwayCompare == LT ? doubleRange.a : doubleRange.b;
+                if (midwayCompare == EQ) {
+                    return signum() == 1 ? doubleRange.b : doubleRange.a;
+                } else {
+                    return midwayCompare == LT ? doubleRange.a : doubleRange.b;
+                }
             case HALF_EVEN:
-                if (midwayCompare == LT) return doubleRange.a;
-                if (midwayCompare == GT) return doubleRange.b;
+                if (midwayCompare == LT) {
+                    return doubleRange.a;
+                } else if (midwayCompare == GT) {
+                    return doubleRange.b;
+                }
                 return (Double.doubleToLongBits(doubleRange.a) & 1) == 0 ? doubleRange.a : doubleRange.b;
         }
         return 0; //never happens

@@ -230,7 +230,7 @@ public class RationalDemos {
 
     private static void demoFloatValue_RoundingMode() {
         initialize();
-        Iterable<Pair<Rational, RoundingMode>> ps = filter(
+        Iterable<Pair<Rational, RoundingMode>> ps = filterInfinite(
                 p -> p.b != RoundingMode.UNNECESSARY || ofExact(p.a.floatValue(RoundingMode.FLOOR)).get().equals(p.a),
                 P.pairs(P.rationals(), P.roundingModes())
         );
@@ -259,7 +259,7 @@ public class RationalDemos {
 
     private static void demoDoubleValue_RoundingMode() {
         initialize();
-        Iterable<Pair<Rational, RoundingMode>> ps = filter(
+        Iterable<Pair<Rational, RoundingMode>> ps = filterInfinite(
                 p -> p.b != RoundingMode.UNNECESSARY || ofExact(p.a.floatValue(RoundingMode.FLOOR)).get().equals(p.a),
                 P.pairs(P.rationals(), P.roundingModes()));
         for (Pair<Rational, RoundingMode> p : take(LIMIT, ps)) {
