@@ -1251,7 +1251,7 @@ public final class Rational implements Comparable<Rational> {
      * @return {@code this}, in {@code BigDecimal} form
      */
     public @NotNull BigDecimal bigDecimalValueByScale(int scale) {
-        return bigDecimalValueByPrecision(scale, RoundingMode.HALF_EVEN);
+        return bigDecimalValueByScale(scale, RoundingMode.HALF_EVEN);
     }
 
     /**

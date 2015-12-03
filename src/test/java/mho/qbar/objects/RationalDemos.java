@@ -301,15 +301,10 @@ public class RationalDemos {
 
     private static void demoHasTerminatingBaseExpansion() {
         initialize();
+        //noinspection Convert2MethodRef
         Iterable<Pair<Rational, BigInteger>> ps = P.pairs(
-                P.withElement(
-                        ZERO,
-                        filterInfinite(
-                                r -> le(r.getDenominator(), BigInteger.valueOf(DENOMINATOR_CUTOFF)),
-                                P.withScale(8).positiveRationals()
-                        )
-                ),
-                P.withScale(8).rangeUp(IntegerUtils.TWO)
+                P.rationals(),
+                map(i -> BigInteger.valueOf(i), P.rangeUpGeometric(2))
         );
         for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
             System.out.println(p.a + (p.a.hasTerminatingBaseExpansion(p.b) ? " has " : " doesn't have ") +
@@ -317,49 +312,40 @@ public class RationalDemos {
         }
     }
 
-    private static void demoBigDecimalValue_int_RoundingMode() {
+    private static void demoBigDecimalValueByPrecision_int_RoundingMode() {
         initialize();
-        Iterable<Pair<Rational, Pair<Integer, RoundingMode>>> ps;
-        if (P instanceof QBarExhaustiveProvider) {
-            ps = P.pairs(
-                    P.rationals(),
-                    (Iterable<Pair<Integer, RoundingMode>>) P.pairs(P.naturalIntegers(), P.roundingModes())
-            );
-        } else {
-            ps = P.pairs(
-                    P.rationals(),
-                    (Iterable<Pair<Integer, RoundingMode>>) P.pairs(
-                            P.withScale(20).naturalIntegersGeometric(),
-                            P.roundingModes()
-                    )
-            );
-        }
-        ps = filter(
-                p -> {
+        Iterable<Triple<Rational, Integer, RoundingMode>> ts = filterInfinite(
+                t -> {
                     try {
-                        p.a.bigDecimalValueByPrecision(p.b.a, p.b.b);
+                        t.a.bigDecimalValueByPrecision(t.b, t.c);
                         return true;
                     } catch (ArithmeticException e) {
                         return false;
                     }
                 },
-                ps
+                P.triples(P.rationals(), P.naturalIntegersGeometric(), P.roundingModes())
         );
-        for (Pair<Rational, Pair<Integer, RoundingMode>> p : take(LIMIT, ps)) {
-            System.out.println("bigDecimalValue(" + p.a + ", " + p.b.a + ", " + p.b.b + ") = " +
-                    p.a.bigDecimalValueByPrecision(p.b.a, p.b.b));
+        for (Triple<Rational, Integer, RoundingMode> t : take(LIMIT, ts)) {
+            System.out.println("bigDecimalValueByPrecision(" + t.a + ", " + t.b + ", " + t.c + ") = " +
+                    t.a.bigDecimalValueByPrecision(t.b, t.c));
         }
     }
 
-    private static void demoBigDecimalValue_int() {
+    private static void demoBigDecimalValueByScale_int_RoundingMode() {
         initialize();
-        Iterable<Pair<Rational, Integer>> ps;
-        if (P instanceof QBarExhaustiveProvider) {
-            ps = ((QBarExhaustiveProvider) P).pairsSquareRootOrder(P.rationals(), P.naturalIntegers());
-        } else {
-            ps = P.pairs(P.rationals(), P.withScale(20).naturalIntegersGeometric());
+        Iterable<Triple<Rational, Integer, RoundingMode>> ts = filterInfinite(
+                t -> t.c != RoundingMode.UNNECESSARY || t.a.multiply(TEN.pow(t.b)).isInteger(),
+                P.triples(P.rationals(), P.integersGeometric(), P.roundingModes())
+        );
+        for (Triple<Rational, Integer, RoundingMode> t : take(LIMIT, ts)) {
+            System.out.println("bigDecimalValueByScale(" + t.a + ", " + t.b + ", " + t.c + ") = " +
+                    t.a.bigDecimalValueByScale(t.b, t.c));
         }
-        ps = filter(
+    }
+
+    private static void demoBigDecimalValueByPrecision_int() {
+        initialize();
+        Iterable<Pair<Rational, Integer>> ps = filterInfinite(
                 p -> {
                     try {
                         p.a.bigDecimalValueByPrecision(p.b);
@@ -368,16 +354,25 @@ public class RationalDemos {
                         return false;
                     }
                 },
-                ps
+                P.pairsSquareRootOrder(P.rationals(), P.naturalIntegersGeometric())
         );
         for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
-            System.out.println("bigDecimalValue(" + p.a + ", " + p.b + ") = " + p.a.bigDecimalValueByPrecision(p.b));
+            System.out.println("bigDecimalValueByPrecision(" + p.a + ", " + p.b + ") = " +
+                    p.a.bigDecimalValueByPrecision(p.b));
+        }
+    }
+
+    private static void demoBigDecimalValueByScale_int() {
+        initialize();
+        for (Pair<Rational, Integer> p : take(LIMIT, P.pairsSquareRootOrder(P.rationals(), P.integersGeometric()))) {
+            System.out.println("bigDecimalValueByScale(" + p.a + ", " + p.b + ") = " +
+                    p.a.bigDecimalValueByScale(p.b));
         }
     }
 
     private static void demoBigDecimalValueExact() {
         initialize();
-        Iterable<Rational> rs = filter(r -> r.hasTerminatingBaseExpansion(BigInteger.TEN), P.rationals());
+        Iterable<Rational> rs = filterInfinite(r -> r.hasTerminatingBaseExpansion(BigInteger.TEN), P.rationals());
         for (Rational r : take(LIMIT, rs)) {
             System.out.println("bigDecimalValueExact(" + r + ") = " + r.bigDecimalValueExact());
         }

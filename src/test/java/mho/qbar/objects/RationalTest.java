@@ -2486,12 +2486,15 @@ public class RationalTest {
         bigDecimalValueByScale_int_helper("0", 0, "0");
         bigDecimalValueByScale_int_helper("0", 3, "0.000");
         bigDecimalValueByScale_int_helper("0", -3, "0E+3");
+
         bigDecimalValueByScale_int_helper("1", 0, "1");
         bigDecimalValueByScale_int_helper("1", 3, "1.000");
         bigDecimalValueByScale_int_helper("1", -3, "0E+3");
+
         bigDecimalValueByScale_int_helper("1/2", 0, "0");
         bigDecimalValueByScale_int_helper("1/2", 1, "0.5");
         bigDecimalValueByScale_int_helper("1/2", 4, "0.5000");
+
         bigDecimalValueByScale_int_helper("1/64", 0, "0");
         bigDecimalValueByScale_int_helper("1/64", 1, "0.0");
         bigDecimalValueByScale_int_helper("1/64", 2, "0.02");
@@ -2499,10 +2502,12 @@ public class RationalTest {
         bigDecimalValueByScale_int_helper("1/64", 4, "0.0156");
         bigDecimalValueByScale_int_helper("1/64", 5, "0.01562");
         bigDecimalValueByScale_int_helper("1/64", 6, "0.015625");
+
         bigDecimalValueByScale_int_helper("-1/3", 0, "0");
         bigDecimalValueByScale_int_helper("-1/3", 1, "-0.3");
         bigDecimalValueByScale_int_helper("-1/3", 2, "-0.33");
         bigDecimalValueByScale_int_helper("-1/3", 3, "-0.333");
+
         bigDecimalValueByScale_int_helper("6789", 0, "6789");
         bigDecimalValueByScale_int_helper("6789", -1, "6.79E+3");
         bigDecimalValueByScale_int_helper("6789", -2, "6.8E+3");
