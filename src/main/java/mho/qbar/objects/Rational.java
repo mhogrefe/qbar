@@ -1213,7 +1213,7 @@ public final class Rational implements Comparable<Rational> {
      * @return {@code this}, in {@code BigDecimal} form
      */
     public @NotNull BigDecimal bigDecimalValueByScale(int scale, @NotNull RoundingMode roundingMode) {
-        return new BigDecimal(multiply(TEN.shiftLeft(scale)).bigIntegerValue(roundingMode), scale);
+        return new BigDecimal(multiply(TEN.pow(scale)).bigIntegerValue(roundingMode), scale);
     }
 
     /**
