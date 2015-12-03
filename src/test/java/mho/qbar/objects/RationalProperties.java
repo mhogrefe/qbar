@@ -1472,7 +1472,7 @@ public class RationalProperties {
         ps = filter(
                 p -> {
                     try {
-                        p.a.bigDecimalValue(p.b.a, p.b.b);
+                        p.a.bigDecimalValueByPrecision(p.b.a, p.b.b);
                         return true;
                     } catch (ArithmeticException e) {
                         return false;
@@ -1481,12 +1481,12 @@ public class RationalProperties {
                 ps
         );
         for (Pair<Rational, Pair<Integer, RoundingMode>> p : take(LIMIT, ps)) {
-            BigDecimal bd = p.a.bigDecimalValue(p.b.a, p.b.b);
+            BigDecimal bd = p.a.bigDecimalValueByPrecision(p.b.a, p.b.b);
             assertTrue(p, eq(bd, BigDecimal.ZERO) || bd.signum() == p.a.signum());
         }
 
         for (Pair<Rational, Pair<Integer, RoundingMode>> p : take(LIMIT, filter(q -> q.b.a != 0 && q.a != ZERO, ps))) {
-            BigDecimal bd = p.a.bigDecimalValue(p.b.a, p.b.b);
+            BigDecimal bd = p.a.bigDecimalValueByPrecision(p.b.a, p.b.b);
             assertTrue(p, bd.precision() == p.b.a);
         }
 
@@ -1499,7 +1499,7 @@ public class RationalProperties {
         pris = filter(
                 p -> {
                     try {
-                        p.a.bigDecimalValue(p.b);
+                        p.a.bigDecimalValueByPrecision(p.b);
                         return true;
                     } catch (ArithmeticException e) {
                         return false;
@@ -1508,39 +1508,39 @@ public class RationalProperties {
                 pris
         );
 
-        Iterable<Pair<Rational, Integer>> priExact = filter(p -> of(p.a.bigDecimalValue(p.b)).equals(p.a), pris);
+        Iterable<Pair<Rational, Integer>> priExact = filter(p -> of(p.a.bigDecimalValueByPrecision(p.b)).equals(p.a), pris);
         for (Pair<Rational, Integer> pri : take(LIMIT, priExact)) {
-            BigDecimal bd = pri.a.bigDecimalValue(pri.b, RoundingMode.UNNECESSARY);
-            assertEquals(pri, bd, pri.a.bigDecimalValue(pri.b, RoundingMode.FLOOR));
-            assertEquals(pri, bd, pri.a.bigDecimalValue(pri.b, RoundingMode.CEILING));
-            assertEquals(pri, bd, pri.a.bigDecimalValue(pri.b, RoundingMode.DOWN));
-            assertEquals(pri, bd, pri.a.bigDecimalValue(pri.b, RoundingMode.UP));
-            assertEquals(pri, bd, pri.a.bigDecimalValue(pri.b, RoundingMode.HALF_DOWN));
-            assertEquals(pri, bd, pri.a.bigDecimalValue(pri.b, RoundingMode.HALF_UP));
-            assertEquals(pri, bd, pri.a.bigDecimalValue(pri.b, RoundingMode.HALF_EVEN));
+            BigDecimal bd = pri.a.bigDecimalValueByPrecision(pri.b, RoundingMode.UNNECESSARY);
+            assertEquals(pri, bd, pri.a.bigDecimalValueByPrecision(pri.b, RoundingMode.FLOOR));
+            assertEquals(pri, bd, pri.a.bigDecimalValueByPrecision(pri.b, RoundingMode.CEILING));
+            assertEquals(pri, bd, pri.a.bigDecimalValueByPrecision(pri.b, RoundingMode.DOWN));
+            assertEquals(pri, bd, pri.a.bigDecimalValueByPrecision(pri.b, RoundingMode.UP));
+            assertEquals(pri, bd, pri.a.bigDecimalValueByPrecision(pri.b, RoundingMode.HALF_DOWN));
+            assertEquals(pri, bd, pri.a.bigDecimalValueByPrecision(pri.b, RoundingMode.HALF_UP));
+            assertEquals(pri, bd, pri.a.bigDecimalValueByPrecision(pri.b, RoundingMode.HALF_EVEN));
         }
 
-        Iterable<Pair<Rational, Integer>> priInexact = filter(p -> !of(p.a.bigDecimalValue(p.b)).equals(p.a), pris);
+        Iterable<Pair<Rational, Integer>> priInexact = filter(p -> !of(p.a.bigDecimalValueByPrecision(p.b)).equals(p.a), pris);
         for (Pair<Rational, Integer> pri : take(LIMIT, priInexact)) {
-            BigDecimal low = pri.a.bigDecimalValue(pri.b, RoundingMode.FLOOR);
-            BigDecimal high = pri.a.bigDecimalValue(pri.b, RoundingMode.CEILING);
+            BigDecimal low = pri.a.bigDecimalValueByPrecision(pri.b, RoundingMode.FLOOR);
+            BigDecimal high = pri.a.bigDecimalValueByPrecision(pri.b, RoundingMode.CEILING);
             assertTrue(pri, lt(low, high));
         }
 
         for (Pair<Rational, Integer> pri : take(LIMIT, filter(p -> p.a.signum() == 1, priInexact))) {
-            BigDecimal floor = pri.a.bigDecimalValue(pri.b, RoundingMode.FLOOR);
-            BigDecimal down = pri.a.bigDecimalValue(pri.b, RoundingMode.DOWN);
-            BigDecimal ceiling = pri.a.bigDecimalValue(pri.b, RoundingMode.CEILING);
-            BigDecimal up = pri.a.bigDecimalValue(pri.b, RoundingMode.UP);
+            BigDecimal floor = pri.a.bigDecimalValueByPrecision(pri.b, RoundingMode.FLOOR);
+            BigDecimal down = pri.a.bigDecimalValueByPrecision(pri.b, RoundingMode.DOWN);
+            BigDecimal ceiling = pri.a.bigDecimalValueByPrecision(pri.b, RoundingMode.CEILING);
+            BigDecimal up = pri.a.bigDecimalValueByPrecision(pri.b, RoundingMode.UP);
             assertEquals(pri, floor, down);
             assertEquals(pri, ceiling, up);
         }
 
         for (Pair<Rational, Integer> pri : take(LIMIT, filter(p -> p.a.signum() == -1, priInexact))) {
-            BigDecimal floor = pri.a.bigDecimalValue(pri.b, RoundingMode.FLOOR);
-            BigDecimal down = pri.a.bigDecimalValue(pri.b, RoundingMode.DOWN);
-            BigDecimal ceiling = pri.a.bigDecimalValue(pri.b, RoundingMode.CEILING);
-            BigDecimal up = pri.a.bigDecimalValue(pri.b, RoundingMode.UP);
+            BigDecimal floor = pri.a.bigDecimalValueByPrecision(pri.b, RoundingMode.FLOOR);
+            BigDecimal down = pri.a.bigDecimalValueByPrecision(pri.b, RoundingMode.DOWN);
+            BigDecimal ceiling = pri.a.bigDecimalValueByPrecision(pri.b, RoundingMode.CEILING);
+            BigDecimal up = pri.a.bigDecimalValueByPrecision(pri.b, RoundingMode.UP);
             assertEquals(pri, floor, up);
             assertEquals(pri, ceiling, down);
         }
@@ -1561,11 +1561,11 @@ public class RationalProperties {
         );
         for (Pair<BigDecimal, Integer> p : take(LIMIT, notMidpoints)) {
             Rational r = of(p.a);
-            BigDecimal down = r.bigDecimalValue(p.b, RoundingMode.DOWN);
-            BigDecimal up = r.bigDecimalValue(p.b, RoundingMode.UP);
-            BigDecimal halfDown = r.bigDecimalValue(p.b, RoundingMode.HALF_DOWN);
-            BigDecimal halfUp = r.bigDecimalValue(p.b, RoundingMode.HALF_UP);
-            BigDecimal halfEven = r.bigDecimalValue(p.b, RoundingMode.HALF_EVEN);
+            BigDecimal down = r.bigDecimalValueByPrecision(p.b, RoundingMode.DOWN);
+            BigDecimal up = r.bigDecimalValueByPrecision(p.b, RoundingMode.UP);
+            BigDecimal halfDown = r.bigDecimalValueByPrecision(p.b, RoundingMode.HALF_DOWN);
+            BigDecimal halfUp = r.bigDecimalValueByPrecision(p.b, RoundingMode.HALF_UP);
+            BigDecimal halfEven = r.bigDecimalValueByPrecision(p.b, RoundingMode.HALF_EVEN);
             boolean closerToDown = lt(r.subtract(of(down)).abs(), r.subtract(of(up)).abs());
             assertEquals(p, halfDown, closerToDown ? down : up);
             assertEquals(p, halfUp, closerToDown ? down : up);
@@ -1585,11 +1585,11 @@ public class RationalProperties {
         for (BigDecimal bd : take(LIMIT, midpoints)) {
             Rational r = of(bd);
             int precision = bd.precision() - 1;
-            BigDecimal down = r.bigDecimalValue(precision, RoundingMode.DOWN);
-            BigDecimal up = r.bigDecimalValue(precision, RoundingMode.UP);
-            BigDecimal halfDown = r.bigDecimalValue(precision, RoundingMode.HALF_DOWN);
-            BigDecimal halfUp = r.bigDecimalValue(precision, RoundingMode.HALF_UP);
-            BigDecimal halfEven = r.bigDecimalValue(precision, RoundingMode.HALF_EVEN);
+            BigDecimal down = r.bigDecimalValueByPrecision(precision, RoundingMode.DOWN);
+            BigDecimal up = r.bigDecimalValueByPrecision(precision, RoundingMode.UP);
+            BigDecimal halfDown = r.bigDecimalValueByPrecision(precision, RoundingMode.HALF_DOWN);
+            BigDecimal halfUp = r.bigDecimalValueByPrecision(precision, RoundingMode.HALF_UP);
+            BigDecimal halfEven = r.bigDecimalValueByPrecision(precision, RoundingMode.HALF_EVEN);
             assertEquals(bd, down, halfDown);
             assertEquals(bd, up, halfUp);
             assertTrue(bd, bd.scale() != halfEven.scale() + 1 || !halfEven.unscaledValue().testBit(0));
@@ -1601,7 +1601,7 @@ public class RationalProperties {
         );
         for (Pair<Rational, Pair<Integer, RoundingMode>> p : take(LIMIT, psFail)) {
             try {
-                p.a.bigDecimalValue(p.b.a, p.b.b);
+                p.a.bigDecimalValueByPrecision(p.b.a, p.b.b);
                 fail(p);
             } catch (IllegalArgumentException ignored) {}
         }
@@ -1615,7 +1615,7 @@ public class RationalProperties {
         }
         for (Pair<Rational, Integer> p : take(LIMIT, prisFail)) {
             try {
-                p.a.bigDecimalValue(p.b, RoundingMode.UNNECESSARY);
+                p.a.bigDecimalValueByPrecision(p.b, RoundingMode.UNNECESSARY);
                 fail(p);
             } catch (ArithmeticException ignored) {}
         }
@@ -1634,7 +1634,7 @@ public class RationalProperties {
         ps = filter(
                 p -> {
                     try {
-                        p.a.bigDecimalValue(p.b);
+                        p.a.bigDecimalValueByPrecision(p.b);
                         return true;
                     } catch (ArithmeticException e) {
                         return false;
@@ -1643,13 +1643,13 @@ public class RationalProperties {
                 ps
         );
         for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
-            BigDecimal bd = p.a.bigDecimalValue(p.b);
-            assertEquals(p, bd, p.a.bigDecimalValue(p.b, RoundingMode.HALF_EVEN));
+            BigDecimal bd = p.a.bigDecimalValueByPrecision(p.b);
+            assertEquals(p, bd, p.a.bigDecimalValueByPrecision(p.b, RoundingMode.HALF_EVEN));
             assertTrue(p, eq(bd, BigDecimal.ZERO) || bd.signum() == p.a.signum());
         }
 
         for (Pair<Rational, Integer> p : take(LIMIT, filter(q -> q.b != 0 && q.a != ZERO, ps))) {
-            BigDecimal bd = p.a.bigDecimalValue(p.b);
+            BigDecimal bd = p.a.bigDecimalValueByPrecision(p.b);
             assertTrue(p, bd.precision() == p.b);
         }
 
@@ -1669,9 +1669,9 @@ public class RationalProperties {
         );
         for (Pair<BigDecimal, Integer> p : take(LIMIT, notMidpoints)) {
             Rational r = of(p.a);
-            BigDecimal down = r.bigDecimalValue(p.b, RoundingMode.DOWN);
-            BigDecimal up = r.bigDecimalValue(p.b, RoundingMode.UP);
-            BigDecimal halfEven = r.bigDecimalValue(p.b);
+            BigDecimal down = r.bigDecimalValueByPrecision(p.b, RoundingMode.DOWN);
+            BigDecimal up = r.bigDecimalValueByPrecision(p.b, RoundingMode.UP);
+            BigDecimal halfEven = r.bigDecimalValueByPrecision(p.b);
             boolean closerToDown = lt(r.subtract(of(down)).abs(), r.subtract(of(up)).abs());
             assertEquals(p, halfEven, closerToDown ? down : up);
         }
@@ -1689,13 +1689,13 @@ public class RationalProperties {
         for (BigDecimal bd : take(LIMIT, midpoints)) {
             Rational r = of(bd);
             int precision = bd.precision() - 1;
-            BigDecimal halfEven = r.bigDecimalValue(precision);
+            BigDecimal halfEven = r.bigDecimalValueByPrecision(precision);
             assertTrue(bd, bd.scale() != halfEven.scale() + 1 || !halfEven.unscaledValue().testBit(0));
         }
 
         for (Pair<Rational, Integer> p : take(LIMIT, P.pairs(P.rationals(), P.negativeIntegers()))) {
             try {
-                p.a.bigDecimalValue(p.b);
+                p.a.bigDecimalValueByPrecision(p.b);
                 fail(p);
             } catch (IllegalArgumentException ignored) {}
         }
@@ -1708,14 +1708,14 @@ public class RationalProperties {
         Iterable<Rational> rs = filter(r -> r.hasTerminatingBaseExpansion(BigInteger.TEN), P.rationals());
         for (Rational r : take(LIMIT, rs)) {
             BigDecimal bd = r.bigDecimalValueExact();
-            assertEquals(r, bd, r.bigDecimalValue(0, RoundingMode.UNNECESSARY));
+            assertEquals(r, bd, r.bigDecimalValueByPrecision(0, RoundingMode.UNNECESSARY));
             assertTrue(r, bd.signum() == r.signum());
             assertEquals(r, of(bd), r);
         }
 
         for (Pair<Rational, Integer> p : take(LIMIT, P.pairs(P.rationals(), P.negativeIntegers()))) {
             try {
-                p.a.bigDecimalValue(p.b);
+                p.a.bigDecimalValueByPrecision(p.b);
                 fail(p);
             } catch (IllegalArgumentException ignored) {}
         }

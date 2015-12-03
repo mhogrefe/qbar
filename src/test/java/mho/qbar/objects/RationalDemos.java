@@ -337,7 +337,7 @@ public class RationalDemos {
         ps = filter(
                 p -> {
                     try {
-                        p.a.bigDecimalValue(p.b.a, p.b.b);
+                        p.a.bigDecimalValueByPrecision(p.b.a, p.b.b);
                         return true;
                     } catch (ArithmeticException e) {
                         return false;
@@ -347,7 +347,7 @@ public class RationalDemos {
         );
         for (Pair<Rational, Pair<Integer, RoundingMode>> p : take(LIMIT, ps)) {
             System.out.println("bigDecimalValue(" + p.a + ", " + p.b.a + ", " + p.b.b + ") = " +
-                    p.a.bigDecimalValue(p.b.a, p.b.b));
+                    p.a.bigDecimalValueByPrecision(p.b.a, p.b.b));
         }
     }
 
@@ -362,7 +362,7 @@ public class RationalDemos {
         ps = filter(
                 p -> {
                     try {
-                        p.a.bigDecimalValue(p.b);
+                        p.a.bigDecimalValueByPrecision(p.b);
                         return true;
                     } catch (ArithmeticException e) {
                         return false;
@@ -371,7 +371,7 @@ public class RationalDemos {
                 ps
         );
         for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
-            System.out.println("bigDecimalValue(" + p.a + ", " + p.b + ") = " + p.a.bigDecimalValue(p.b));
+            System.out.println("bigDecimalValue(" + p.a + ", " + p.b + ") = " + p.a.bigDecimalValueByPrecision(p.b));
         }
     }
 

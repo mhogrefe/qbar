@@ -507,7 +507,7 @@ public final class Rational implements Comparable<Rational> {
             case UP:
                 return positive ? ceiling : floor;
         }
-        switch (compare(this, new Rational(floor.add(ceiling), IntegerUtils.TWO))) {
+        switch (compare(fractionalPart(), ONE_HALF)) {
             case LT:
                 return floor;
             case GT:
@@ -1152,8 +1152,9 @@ public final class Rational implements Comparable<Rational> {
      * @return whether {@code this} has a terminating base expansion in base-{@code base}
      */
     public boolean hasTerminatingBaseExpansion(@NotNull BigInteger base) {
-        if (lt(base, IntegerUtils.TWO))
-            throw new IllegalArgumentException("base must be at least 2");
+        if (lt(base, IntegerUtils.TWO)) {
+            throw new IllegalArgumentException("base must be at least 2. Invalid base: " + base);
+        }
         if (isInteger()) return true;
         BigInteger remainder = denominator;
         for (BigInteger baseFactor : nub(MathUtils.primeFactors(base))) {
@@ -1184,13 +1185,35 @@ public final class Rational implements Comparable<Rational> {
      * @param roundingMode specifies the details of how to round {@code this}.
      * @return {@code this}, in {@code BigDecimal} form
      */
-    public @NotNull BigDecimal bigDecimalValue(int precision, @NotNull RoundingMode roundingMode) {
+    public @NotNull BigDecimal bigDecimalValueByPrecision(int precision, @NotNull RoundingMode roundingMode) {
         MathContext context = new MathContext(precision, roundingMode);
         BigDecimal result = new BigDecimal(numerator).divide(new BigDecimal(denominator), context);
         if (precision != 0) {
             result = BigDecimalUtils.setPrecision(result, precision);
         }
         return result;
+    }
+
+    /**
+     * Rounds {@code this} to a {@link java.math.BigDecimal} with a specified rounding mode (see documentation for
+     * {@code java.math.RoundingMode} for details) and with a specified scale (number digits after the decimal point).
+     * Scale may be negative; for example, {@code 1E+1} has a scale of –1.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Rational}.</li>
+     *  <li>{@code scale} may be any {@code int}.</li>
+     *  <li>{@code roundingMode} may be any {@code RoundingMode}.</li>
+     *  <li>If {@code roundingMode} is {@code RoundingMode.UNNECESSARY}, then {@code scale} must be at least as large
+     *  as the smallest n such that {@code this}×10<sup>n</sup> is an integer (and such an n must exist).</li>
+     *  <li>The result is non-null.</li>
+     * </ul>
+     *
+     * @param scale the scale with which to round {@code this}.
+     * @param roundingMode specifies the details of how to round {@code this}.
+     * @return {@code this}, in {@code BigDecimal} form
+     */
+    public @NotNull BigDecimal bigDecimalValueByScale(int scale, @NotNull RoundingMode roundingMode) {
+        return new BigDecimal(multiply(TEN.shiftLeft(scale)).bigIntegerValue(roundingMode), scale);
     }
 
     /**
@@ -1209,8 +1232,26 @@ public final class Rational implements Comparable<Rational> {
      * @param precision the precision with which to round {@code this}. 0 indicates full precision.
      * @return {@code this}, in {@code BigDecimal} form
      */
-    public @NotNull BigDecimal bigDecimalValue(int precision) {
-        return bigDecimalValue(precision, RoundingMode.HALF_EVEN);
+    public @NotNull BigDecimal bigDecimalValueByPrecision(int precision) {
+        return bigDecimalValueByPrecision(precision, RoundingMode.HALF_EVEN);
+    }
+
+    /**
+     * Rounds {@code this} to a {@code BigDecimal} with a specified scale (number digits after the decimal point).
+     * Scale may be negative; for example, {@code 1E+1} has a scale of –1. {@code RoundingMode.HALF_EVEN} is used for
+     * rounding.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Rational}.</li>
+     *  <li>{@code scale} may be any {@code int}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param scale the scale with which to round {@code this}.
+     * @return {@code this}, in {@code BigDecimal} form
+     */
+    public @NotNull BigDecimal bigDecimalValueByScale(int scale) {
+        return bigDecimalValueByPrecision(scale, RoundingMode.HALF_EVEN);
     }
 
     /**
@@ -1709,7 +1750,7 @@ public final class Rational implements Comparable<Rational> {
      */
     public @NotNull Rational fractionalPart() {
         if (denominator.equals(BigInteger.ONE)) return ZERO;
-        return subtract(of(floor()));
+        return new Rational(numerator.mod(denominator), denominator);
     }
 
     /**

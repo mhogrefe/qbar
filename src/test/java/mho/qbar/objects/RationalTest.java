@@ -1706,499 +1706,499 @@ public class RationalTest {
         doubleValueExact_fail_helper(JUST_ABOVE_BOUNDARY_DOUBLE);
     }
 
-    @Test
-    public void testHasTerminatingBaseExpansion() {
-        assertTrue(ZERO.hasTerminatingBaseExpansion(IntegerUtils.TWO));
-        assertTrue(ONE.hasTerminatingBaseExpansion(IntegerUtils.TWO));
-        assertTrue(read("60").get().hasTerminatingBaseExpansion(IntegerUtils.TWO));
-        assertTrue(read("1/2").get().hasTerminatingBaseExpansion(IntegerUtils.TWO));
-        assertFalse(read("1/5").get().hasTerminatingBaseExpansion(IntegerUtils.TWO));
-        assertFalse(read("-7/100").get().hasTerminatingBaseExpansion(IntegerUtils.TWO));
-        assertFalse(read("-3/640").get().hasTerminatingBaseExpansion(IntegerUtils.TWO));
-        assertFalse(read("1/3").get().hasTerminatingBaseExpansion(IntegerUtils.TWO));
-        assertFalse(read("-1/15").get().hasTerminatingBaseExpansion(IntegerUtils.TWO));
-        assertFalse(read("-2/9").get().hasTerminatingBaseExpansion(IntegerUtils.TWO));
-        assertTrue(ZERO.hasTerminatingBaseExpansion(BigInteger.valueOf(3)));
-        assertTrue(ONE.hasTerminatingBaseExpansion(BigInteger.valueOf(3)));
-        assertTrue(read("60").get().hasTerminatingBaseExpansion(BigInteger.valueOf(3)));
-        assertFalse(read("1/2").get().hasTerminatingBaseExpansion(BigInteger.valueOf(3)));
-        assertFalse(read("1/5").get().hasTerminatingBaseExpansion(BigInteger.valueOf(3)));
-        assertFalse(read("-7/100").get().hasTerminatingBaseExpansion(BigInteger.valueOf(3)));
-        assertFalse(read("-3/640").get().hasTerminatingBaseExpansion(BigInteger.valueOf(3)));
-        assertTrue(read("1/3").get().hasTerminatingBaseExpansion(BigInteger.valueOf(3)));
-        assertFalse(read("-1/15").get().hasTerminatingBaseExpansion(BigInteger.valueOf(3)));
-        assertTrue(read("-2/9").get().hasTerminatingBaseExpansion(BigInteger.valueOf(3)));
-        assertTrue(ZERO.hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
-        assertTrue(ONE.hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
-        assertTrue(read("60").get().hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
-        assertTrue(read("1/2").get().hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
-        assertFalse(read("1/5").get().hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
-        assertFalse(read("-7/100").get().hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
-        assertFalse(read("-3/640").get().hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
-        assertFalse(read("1/3").get().hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
-        assertFalse(read("-1/15").get().hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
-        assertFalse(read("-2/9").get().hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
-        assertTrue(ZERO.hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
-        assertTrue(ONE.hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
-        assertTrue(read("60").get().hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
-        assertTrue(read("1/2").get().hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
-        assertFalse(read("1/5").get().hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
-        assertFalse(read("-7/100").get().hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
-        assertFalse(read("-3/640").get().hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
-        assertFalse(read("1/3").get().hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
-        assertFalse(read("-1/15").get().hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
-        assertFalse(read("-2/9").get().hasTerminatingBaseExpansion(BigInteger.valueOf(4)));
-        assertTrue(ZERO.hasTerminatingBaseExpansion(BigInteger.valueOf(16)));
-        assertTrue(ONE.hasTerminatingBaseExpansion(BigInteger.valueOf(16)));
-        assertTrue(read("60").get().hasTerminatingBaseExpansion(BigInteger.valueOf(16)));
-        assertTrue(read("1/2").get().hasTerminatingBaseExpansion(BigInteger.valueOf(16)));
-        assertFalse(read("1/5").get().hasTerminatingBaseExpansion(BigInteger.valueOf(16)));
-        assertFalse(read("-7/100").get().hasTerminatingBaseExpansion(BigInteger.valueOf(16)));
-        assertFalse(read("-3/640").get().hasTerminatingBaseExpansion(BigInteger.valueOf(16)));
-        assertFalse(read("1/3").get().hasTerminatingBaseExpansion(BigInteger.valueOf(16)));
-        assertFalse(read("-1/15").get().hasTerminatingBaseExpansion(BigInteger.valueOf(16)));
-        assertFalse(read("-2/9").get().hasTerminatingBaseExpansion(BigInteger.valueOf(16)));
-        assertTrue(ZERO.hasTerminatingBaseExpansion(BigInteger.valueOf(83)));
-        assertTrue(ONE.hasTerminatingBaseExpansion(BigInteger.valueOf(83)));
-        assertTrue(read("60").get().hasTerminatingBaseExpansion(BigInteger.valueOf(83)));
-        assertFalse(read("1/2").get().hasTerminatingBaseExpansion(BigInteger.valueOf(83)));
-        assertFalse(read("1/5").get().hasTerminatingBaseExpansion(BigInteger.valueOf(83)));
-        assertFalse(read("-7/100").get().hasTerminatingBaseExpansion(BigInteger.valueOf(83)));
-        assertFalse(read("-3/640").get().hasTerminatingBaseExpansion(BigInteger.valueOf(83)));
-        assertFalse(read("1/3").get().hasTerminatingBaseExpansion(BigInteger.valueOf(83)));
-        assertFalse(read("-1/15").get().hasTerminatingBaseExpansion(BigInteger.valueOf(83)));
-        assertFalse(read("-2/9").get().hasTerminatingBaseExpansion(BigInteger.valueOf(83)));
-        assertTrue(ZERO.hasTerminatingBaseExpansion(BigInteger.valueOf(100)));
-        assertTrue(ONE.hasTerminatingBaseExpansion(BigInteger.valueOf(100)));
-        assertTrue(read("60").get().hasTerminatingBaseExpansion(BigInteger.valueOf(100)));
-        assertTrue(read("1/2").get().hasTerminatingBaseExpansion(BigInteger.valueOf(100)));
-        assertTrue(read("1/5").get().hasTerminatingBaseExpansion(BigInteger.valueOf(100)));
-        assertTrue(read("-7/100").get().hasTerminatingBaseExpansion(BigInteger.valueOf(100)));
-        assertTrue(read("-3/640").get().hasTerminatingBaseExpansion(BigInteger.valueOf(100)));
-        assertFalse(read("1/3").get().hasTerminatingBaseExpansion(BigInteger.valueOf(100)));
-        assertFalse(read("-1/15").get().hasTerminatingBaseExpansion(BigInteger.valueOf(100)));
-        assertFalse(read("-2/9").get().hasTerminatingBaseExpansion(BigInteger.valueOf(100)));
+    private static void hasTerminatingBaseExpansion_helper(@NotNull String r, @NotNull String base, boolean output) {
+        aeq(read(r).get().hasTerminatingBaseExpansion(Readers.readBigInteger(base).get()), output);
+    }
+
+    private static void hasTerminatingBaseExpansion_fail_helper(@NotNull String r, @NotNull String base) {
         try {
-            read("1/2").get().hasTerminatingBaseExpansion(BigInteger.ONE);
-            fail();
-        } catch (IllegalArgumentException ignored) {}
-        try {
-            read("1/2").get().hasTerminatingBaseExpansion(BigInteger.ZERO);
-            fail();
-        } catch (IllegalArgumentException ignored) {}
-        try {
-            read("1/2").get().hasTerminatingBaseExpansion(IntegerUtils.NEGATIVE_ONE);
+            read(r).get().hasTerminatingBaseExpansion(Readers.readBigInteger(base).get());
             fail();
         } catch (IllegalArgumentException ignored) {}
     }
 
     @Test
-    public void testBigDecimalValue_int_RoundingMode() {
-        aeq(ZERO.bigDecimalValue(0, RoundingMode.UNNECESSARY), "0");
-        aeq(ZERO.bigDecimalValue(0, RoundingMode.FLOOR), "0");
-        aeq(ZERO.bigDecimalValue(0, RoundingMode.CEILING), "0");
-        aeq(ZERO.bigDecimalValue(0, RoundingMode.DOWN), "0");
-        aeq(ZERO.bigDecimalValue(0, RoundingMode.UP), "0");
-        aeq(ZERO.bigDecimalValue(0, RoundingMode.HALF_DOWN), "0");
-        aeq(ZERO.bigDecimalValue(0, RoundingMode.HALF_UP), "0");
-        aeq(ZERO.bigDecimalValue(0, RoundingMode.HALF_EVEN), "0");
-        aeq(ZERO.bigDecimalValue(4, RoundingMode.UNNECESSARY), "0.000");
-        aeq(ZERO.bigDecimalValue(4, RoundingMode.FLOOR), "0.000");
-        aeq(ZERO.bigDecimalValue(4, RoundingMode.CEILING), "0.000");
-        aeq(ZERO.bigDecimalValue(4, RoundingMode.DOWN), "0.000");
-        aeq(ZERO.bigDecimalValue(4, RoundingMode.UP), "0.000");
-        aeq(ZERO.bigDecimalValue(4, RoundingMode.HALF_DOWN), "0.000");
-        aeq(ZERO.bigDecimalValue(4, RoundingMode.HALF_UP), "0.000");
-        aeq(ZERO.bigDecimalValue(4, RoundingMode.HALF_EVEN), "0.000");
-        aeq(ONE.bigDecimalValue(0, RoundingMode.UNNECESSARY), "1");
-        aeq(ONE.bigDecimalValue(0, RoundingMode.FLOOR), "1");
-        aeq(ONE.bigDecimalValue(0, RoundingMode.CEILING), "1");
-        aeq(ONE.bigDecimalValue(0, RoundingMode.DOWN), "1");
-        aeq(ONE.bigDecimalValue(0, RoundingMode.UP), "1");
-        aeq(ONE.bigDecimalValue(0, RoundingMode.HALF_DOWN), "1");
-        aeq(ONE.bigDecimalValue(0, RoundingMode.HALF_UP), "1");
-        aeq(ONE.bigDecimalValue(0, RoundingMode.HALF_EVEN), "1");
-        aeq(ONE.bigDecimalValue(4, RoundingMode.UNNECESSARY), "1.000");
-        aeq(ONE.bigDecimalValue(4, RoundingMode.FLOOR), "1.000");
-        aeq(ONE.bigDecimalValue(4, RoundingMode.CEILING), "1.000");
-        aeq(ONE.bigDecimalValue(4, RoundingMode.DOWN), "1.000");
-        aeq(ONE.bigDecimalValue(4, RoundingMode.UP), "1.000");
-        aeq(ONE.bigDecimalValue(4, RoundingMode.HALF_DOWN), "1.000");
-        aeq(ONE.bigDecimalValue(4, RoundingMode.HALF_UP), "1.000");
-        aeq(ONE.bigDecimalValue(4, RoundingMode.HALF_EVEN), "1.000");
-        aeq(read("1/2").get().bigDecimalValue(0, RoundingMode.UNNECESSARY), "0.5");
-        aeq(read("1/2").get().bigDecimalValue(0, RoundingMode.FLOOR), "0.5");
-        aeq(read("1/2").get().bigDecimalValue(0, RoundingMode.CEILING), "0.5");
-        aeq(read("1/2").get().bigDecimalValue(0, RoundingMode.DOWN), "0.5");
-        aeq(read("1/2").get().bigDecimalValue(0, RoundingMode.UP), "0.5");
-        aeq(read("1/2").get().bigDecimalValue(0, RoundingMode.HALF_DOWN), "0.5");
-        aeq(read("1/2").get().bigDecimalValue(0, RoundingMode.HALF_UP), "0.5");
-        aeq(read("1/2").get().bigDecimalValue(0, RoundingMode.HALF_EVEN), "0.5");
-        aeq(read("1/2").get().bigDecimalValue(1, RoundingMode.UNNECESSARY), "0.5");
-        aeq(read("1/2").get().bigDecimalValue(1, RoundingMode.FLOOR), "0.5");
-        aeq(read("1/2").get().bigDecimalValue(1, RoundingMode.CEILING), "0.5");
-        aeq(read("1/2").get().bigDecimalValue(1, RoundingMode.DOWN), "0.5");
-        aeq(read("1/2").get().bigDecimalValue(1, RoundingMode.UP), "0.5");
-        aeq(read("1/2").get().bigDecimalValue(1, RoundingMode.HALF_DOWN), "0.5");
-        aeq(read("1/2").get().bigDecimalValue(1, RoundingMode.HALF_UP), "0.5");
-        aeq(read("1/2").get().bigDecimalValue(1, RoundingMode.HALF_EVEN), "0.5");
-        aeq(read("1/2").get().bigDecimalValue(4, RoundingMode.UNNECESSARY), "0.5000");
-        aeq(read("1/2").get().bigDecimalValue(4, RoundingMode.FLOOR), "0.5000");
-        aeq(read("1/2").get().bigDecimalValue(4, RoundingMode.CEILING), "0.5000");
-        aeq(read("1/2").get().bigDecimalValue(4, RoundingMode.DOWN), "0.5000");
-        aeq(read("1/2").get().bigDecimalValue(4, RoundingMode.UP), "0.5000");
-        aeq(read("1/2").get().bigDecimalValue(4, RoundingMode.HALF_DOWN), "0.5000");
-        aeq(read("1/2").get().bigDecimalValue(4, RoundingMode.HALF_UP), "0.5000");
-        aeq(read("1/2").get().bigDecimalValue(4, RoundingMode.HALF_EVEN), "0.5000");
-        aeq(read("1/64").get().bigDecimalValue(0, RoundingMode.UNNECESSARY), "0.015625");
-        aeq(read("1/64").get().bigDecimalValue(0, RoundingMode.FLOOR), "0.015625");
-        aeq(read("1/64").get().bigDecimalValue(0, RoundingMode.CEILING), "0.015625");
-        aeq(read("1/64").get().bigDecimalValue(0, RoundingMode.DOWN), "0.015625");
-        aeq(read("1/64").get().bigDecimalValue(0, RoundingMode.UP), "0.015625");
-        aeq(read("1/64").get().bigDecimalValue(0, RoundingMode.HALF_DOWN), "0.015625");
-        aeq(read("1/64").get().bigDecimalValue(0, RoundingMode.HALF_UP), "0.015625");
-        aeq(read("1/64").get().bigDecimalValue(0, RoundingMode.HALF_EVEN), "0.015625");
+    public void testHasTerminatingBaseExpansion() {
+        hasTerminatingBaseExpansion_helper("0", "2", true);
+        hasTerminatingBaseExpansion_helper("1", "2", true);
+        hasTerminatingBaseExpansion_helper("60", "2", true);
+        hasTerminatingBaseExpansion_helper("1/2", "2", true);
+        hasTerminatingBaseExpansion_helper("1/5", "2", false);
+        hasTerminatingBaseExpansion_helper("-7/100", "2", false);
+        hasTerminatingBaseExpansion_helper("-3/640", "2", false);
+        hasTerminatingBaseExpansion_helper("1/3", "2", false);
+        hasTerminatingBaseExpansion_helper("-1/15", "2", false);
+        hasTerminatingBaseExpansion_helper("-2/9", "2", false);
+
+        hasTerminatingBaseExpansion_helper("0", "3", true);
+        hasTerminatingBaseExpansion_helper("1", "3", true);
+        hasTerminatingBaseExpansion_helper("60", "3", true);
+        hasTerminatingBaseExpansion_helper("1/2", "3", false);
+        hasTerminatingBaseExpansion_helper("1/5", "3", false);
+        hasTerminatingBaseExpansion_helper("-7/100", "3", false);
+        hasTerminatingBaseExpansion_helper("-3/640", "3", false);
+        hasTerminatingBaseExpansion_helper("1/3", "3", true);
+        hasTerminatingBaseExpansion_helper("-1/15", "3", false);
+        hasTerminatingBaseExpansion_helper("-2/9", "3", true);
+
+        hasTerminatingBaseExpansion_helper("0", "4", true);
+        hasTerminatingBaseExpansion_helper("1", "4", true);
+        hasTerminatingBaseExpansion_helper("60", "4", true);
+        hasTerminatingBaseExpansion_helper("1/2", "4", true);
+        hasTerminatingBaseExpansion_helper("1/5", "4", false);
+        hasTerminatingBaseExpansion_helper("-7/100", "4", false);
+        hasTerminatingBaseExpansion_helper("-3/640", "4", false);
+        hasTerminatingBaseExpansion_helper("1/3", "4", false);
+        hasTerminatingBaseExpansion_helper("-1/15", "4", false);
+        hasTerminatingBaseExpansion_helper("-2/9", "4", false);
+
+        hasTerminatingBaseExpansion_helper("0", "16", true);
+        hasTerminatingBaseExpansion_helper("1", "16", true);
+        hasTerminatingBaseExpansion_helper("60", "16", true);
+        hasTerminatingBaseExpansion_helper("1/2", "16", true);
+        hasTerminatingBaseExpansion_helper("1/5", "16", false);
+        hasTerminatingBaseExpansion_helper("-7/100", "16", false);
+        hasTerminatingBaseExpansion_helper("-3/640", "16", false);
+        hasTerminatingBaseExpansion_helper("1/3", "16", false);
+        hasTerminatingBaseExpansion_helper("-1/15", "16", false);
+        hasTerminatingBaseExpansion_helper("-2/9", "16", false);
+
+        hasTerminatingBaseExpansion_helper("0", "83", true);
+        hasTerminatingBaseExpansion_helper("1", "83", true);
+        hasTerminatingBaseExpansion_helper("60", "83", true);
+        hasTerminatingBaseExpansion_helper("1/2", "83", false);
+        hasTerminatingBaseExpansion_helper("1/5", "83", false);
+        hasTerminatingBaseExpansion_helper("-7/100", "83", false);
+        hasTerminatingBaseExpansion_helper("-3/640", "83", false);
+        hasTerminatingBaseExpansion_helper("1/3", "83", false);
+        hasTerminatingBaseExpansion_helper("-1/15", "83", false);
+        hasTerminatingBaseExpansion_helper("-2/9", "83", false);
+
+        hasTerminatingBaseExpansion_helper("0", "100", true);
+        hasTerminatingBaseExpansion_helper("1", "100", true);
+        hasTerminatingBaseExpansion_helper("60", "100", true);
+        hasTerminatingBaseExpansion_helper("1/2", "100", true);
+        hasTerminatingBaseExpansion_helper("1/5", "100", true);
+        hasTerminatingBaseExpansion_helper("-7/100", "100", true);
+        hasTerminatingBaseExpansion_helper("-3/640", "100", true);
+        hasTerminatingBaseExpansion_helper("1/3", "100", false);
+        hasTerminatingBaseExpansion_helper("-1/15", "100", false);
+        hasTerminatingBaseExpansion_helper("-2/9", "100", false);
+
+        hasTerminatingBaseExpansion_fail_helper("1/2", "1");
+        hasTerminatingBaseExpansion_fail_helper("1/2", "0");
+        hasTerminatingBaseExpansion_fail_helper("1/2", "-1");
+    }
+
+    private static void bigDecimalValueByPrecision_helper(
+            @NotNull String r,
+            int precision,
+            @NotNull String roundingMode,
+            @NotNull String output
+    ) {
+        aeq(read(r).get().bigDecimalValueByPrecision(precision, Readers.readRoundingMode(roundingMode).get()), output);
+    }
+
+    private static void bigDecimalValueByPrecision_fail_helper(
+            @NotNull String r,
+            int precision,
+            @NotNull String roundingMode
+    ) {
         try {
-            read("1/64").get().bigDecimalValue(1, RoundingMode.UNNECESSARY);
+            read(r).get().bigDecimalValueByPrecision(precision, Readers.readRoundingMode(roundingMode).get());
             fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(read("1/64").get().bigDecimalValue(1, RoundingMode.FLOOR), "0.01");
-        aeq(read("1/64").get().bigDecimalValue(1, RoundingMode.CEILING), "0.02");
-        aeq(read("1/64").get().bigDecimalValue(1, RoundingMode.DOWN), "0.01");
-        aeq(read("1/64").get().bigDecimalValue(1, RoundingMode.UP), "0.02");
-        aeq(read("1/64").get().bigDecimalValue(1, RoundingMode.HALF_DOWN), "0.02");
-        aeq(read("1/64").get().bigDecimalValue(1, RoundingMode.HALF_UP), "0.02");
-        aeq(read("1/64").get().bigDecimalValue(1, RoundingMode.HALF_EVEN), "0.02");
-        try {
-            read("1/64").get().bigDecimalValue(2, RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(read("1/64").get().bigDecimalValue(2, RoundingMode.FLOOR), "0.015");
-        aeq(read("1/64").get().bigDecimalValue(2, RoundingMode.CEILING), "0.016");
-        aeq(read("1/64").get().bigDecimalValue(2, RoundingMode.DOWN), "0.015");
-        aeq(read("1/64").get().bigDecimalValue(2, RoundingMode.UP), "0.016");
-        aeq(read("1/64").get().bigDecimalValue(2, RoundingMode.HALF_DOWN), "0.016");
-        aeq(read("1/64").get().bigDecimalValue(2, RoundingMode.HALF_UP), "0.016");
-        aeq(read("1/64").get().bigDecimalValue(2, RoundingMode.HALF_EVEN), "0.016");
-        try {
-            read("1/64").get().bigDecimalValue(3, RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(read("1/64").get().bigDecimalValue(3, RoundingMode.FLOOR), "0.0156");
-        aeq(read("1/64").get().bigDecimalValue(3, RoundingMode.CEILING), "0.0157");
-        aeq(read("1/64").get().bigDecimalValue(3, RoundingMode.DOWN), "0.0156");
-        aeq(read("1/64").get().bigDecimalValue(3, RoundingMode.UP), "0.0157");
-        aeq(read("1/64").get().bigDecimalValue(3, RoundingMode.HALF_DOWN), "0.0156");
-        aeq(read("1/64").get().bigDecimalValue(3, RoundingMode.HALF_UP), "0.0156");
-        aeq(read("1/64").get().bigDecimalValue(3, RoundingMode.HALF_EVEN), "0.0156");
-        try {
-            read("1/64").get().bigDecimalValue(4, RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(read("1/64").get().bigDecimalValue(4, RoundingMode.FLOOR), "0.01562");
-        aeq(read("1/64").get().bigDecimalValue(4, RoundingMode.CEILING), "0.01563");
-        aeq(read("1/64").get().bigDecimalValue(4, RoundingMode.DOWN), "0.01562");
-        aeq(read("1/64").get().bigDecimalValue(4, RoundingMode.UP), "0.01563");
-        aeq(read("1/64").get().bigDecimalValue(4, RoundingMode.HALF_DOWN), "0.01562");
-        aeq(read("1/64").get().bigDecimalValue(4, RoundingMode.HALF_UP), "0.01563");
-        aeq(read("1/64").get().bigDecimalValue(4, RoundingMode.HALF_EVEN), "0.01562");
-        aeq(read("1/64").get().bigDecimalValue(5, RoundingMode.UNNECESSARY), "0.015625");
-        aeq(read("1/64").get().bigDecimalValue(5, RoundingMode.FLOOR), "0.015625");
-        aeq(read("1/64").get().bigDecimalValue(5, RoundingMode.CEILING), "0.015625");
-        aeq(read("1/64").get().bigDecimalValue(5, RoundingMode.DOWN), "0.015625");
-        aeq(read("1/64").get().bigDecimalValue(5, RoundingMode.UP), "0.015625");
-        aeq(read("1/64").get().bigDecimalValue(5, RoundingMode.HALF_DOWN), "0.015625");
-        aeq(read("1/64").get().bigDecimalValue(5, RoundingMode.HALF_UP), "0.015625");
-        aeq(read("1/64").get().bigDecimalValue(5, RoundingMode.HALF_EVEN), "0.015625");
-        aeq(read("1/64").get().bigDecimalValue(6, RoundingMode.UNNECESSARY), "0.0156250");
-        aeq(read("1/64").get().bigDecimalValue(6, RoundingMode.FLOOR), "0.0156250");
-        aeq(read("1/64").get().bigDecimalValue(6, RoundingMode.CEILING), "0.0156250");
-        aeq(read("1/64").get().bigDecimalValue(6, RoundingMode.DOWN), "0.0156250");
-        aeq(read("1/64").get().bigDecimalValue(6, RoundingMode.UP), "0.0156250");
-        aeq(read("1/64").get().bigDecimalValue(6, RoundingMode.HALF_DOWN), "0.0156250");
-        aeq(read("1/64").get().bigDecimalValue(6, RoundingMode.HALF_UP), "0.0156250");
-        aeq(read("1/64").get().bigDecimalValue(6, RoundingMode.HALF_EVEN), "0.0156250");
-        try {
-            read("-1/3").get().bigDecimalValue(1, RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(read("-1/3").get().bigDecimalValue(1, RoundingMode.FLOOR), "-0.4");
-        aeq(read("-1/3").get().bigDecimalValue(1, RoundingMode.CEILING), "-0.3");
-        aeq(read("-1/3").get().bigDecimalValue(1, RoundingMode.DOWN), "-0.3");
-        aeq(read("-1/3").get().bigDecimalValue(1, RoundingMode.UP), "-0.4");
-        aeq(read("-1/3").get().bigDecimalValue(1, RoundingMode.HALF_DOWN), "-0.3");
-        aeq(read("-1/3").get().bigDecimalValue(1, RoundingMode.HALF_UP), "-0.3");
-        aeq(read("-1/3").get().bigDecimalValue(1, RoundingMode.HALF_EVEN), "-0.3");
-        try {
-            read("-1/3").get().bigDecimalValue(2, RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(read("-1/3").get().bigDecimalValue(2, RoundingMode.FLOOR), "-0.34");
-        aeq(read("-1/3").get().bigDecimalValue(2, RoundingMode.CEILING), "-0.33");
-        aeq(read("-1/3").get().bigDecimalValue(2, RoundingMode.DOWN), "-0.33");
-        aeq(read("-1/3").get().bigDecimalValue(2, RoundingMode.UP), "-0.34");
-        aeq(read("-1/3").get().bigDecimalValue(2, RoundingMode.HALF_DOWN), "-0.33");
-        aeq(read("-1/3").get().bigDecimalValue(2, RoundingMode.HALF_UP), "-0.33");
-        aeq(read("-1/3").get().bigDecimalValue(2, RoundingMode.HALF_EVEN), "-0.33");
-        try {
-            read("-1/3").get().bigDecimalValue(3, RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(read("-1/3").get().bigDecimalValue(3, RoundingMode.FLOOR), "-0.334");
-        aeq(read("-1/3").get().bigDecimalValue(3, RoundingMode.CEILING), "-0.333");
-        aeq(read("-1/3").get().bigDecimalValue(3, RoundingMode.DOWN), "-0.333");
-        aeq(read("-1/3").get().bigDecimalValue(3, RoundingMode.UP), "-0.334");
-        aeq(read("-1/3").get().bigDecimalValue(3, RoundingMode.HALF_DOWN), "-0.333");
-        aeq(read("-1/3").get().bigDecimalValue(3, RoundingMode.HALF_UP), "-0.333");
-        aeq(read("-1/3").get().bigDecimalValue(3, RoundingMode.HALF_EVEN), "-0.333");
-        try {
-            read("-1/3").get().bigDecimalValue(4, RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(read("-1/3").get().bigDecimalValue(4, RoundingMode.FLOOR), "-0.3334");
-        aeq(read("-1/3").get().bigDecimalValue(4, RoundingMode.CEILING), "-0.3333");
-        aeq(read("-1/3").get().bigDecimalValue(4, RoundingMode.DOWN), "-0.3333");
-        aeq(read("-1/3").get().bigDecimalValue(4, RoundingMode.UP), "-0.3334");
-        aeq(read("-1/3").get().bigDecimalValue(4, RoundingMode.HALF_DOWN), "-0.3333");
-        aeq(read("-1/3").get().bigDecimalValue(4, RoundingMode.HALF_UP), "-0.3333");
-        aeq(read("-1/3").get().bigDecimalValue(4, RoundingMode.HALF_EVEN), "-0.3333");
-        aeq(read("6789").get().bigDecimalValue(0, RoundingMode.FLOOR), "6789");
-        aeq(read("6789").get().bigDecimalValue(0, RoundingMode.CEILING), "6789");
-        aeq(read("6789").get().bigDecimalValue(0, RoundingMode.DOWN), "6789");
-        aeq(read("6789").get().bigDecimalValue(0, RoundingMode.UP), "6789");
-        aeq(read("6789").get().bigDecimalValue(0, RoundingMode.HALF_DOWN), "6789");
-        aeq(read("6789").get().bigDecimalValue(0, RoundingMode.HALF_UP), "6789");
-        aeq(read("6789").get().bigDecimalValue(0, RoundingMode.HALF_EVEN), "6789");
-        try {
-            read("6789").get().bigDecimalValue(1, RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(read("6789").get().bigDecimalValue(1, RoundingMode.FLOOR), "6E+3");
-        aeq(read("6789").get().bigDecimalValue(1, RoundingMode.CEILING), "7E+3");
-        aeq(read("6789").get().bigDecimalValue(1, RoundingMode.DOWN), "6E+3");
-        aeq(read("6789").get().bigDecimalValue(1, RoundingMode.UP), "7E+3");
-        aeq(read("6789").get().bigDecimalValue(1, RoundingMode.HALF_DOWN), "7E+3");
-        aeq(read("6789").get().bigDecimalValue(1, RoundingMode.HALF_UP), "7E+3");
-        aeq(read("6789").get().bigDecimalValue(1, RoundingMode.HALF_EVEN), "7E+3");
-        try {
-            read("6789").get().bigDecimalValue(2, RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(read("6789").get().bigDecimalValue(2, RoundingMode.FLOOR), "6.7E+3");
-        aeq(read("6789").get().bigDecimalValue(2, RoundingMode.CEILING), "6.8E+3");
-        aeq(read("6789").get().bigDecimalValue(2, RoundingMode.DOWN), "6.7E+3");
-        aeq(read("6789").get().bigDecimalValue(2, RoundingMode.UP), "6.8E+3");
-        aeq(read("6789").get().bigDecimalValue(2, RoundingMode.HALF_DOWN), "6.8E+3");
-        aeq(read("6789").get().bigDecimalValue(2, RoundingMode.HALF_UP), "6.8E+3");
-        aeq(read("6789").get().bigDecimalValue(2, RoundingMode.HALF_EVEN), "6.8E+3");
-        try {
-            read("6789").get().bigDecimalValue(3, RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(read("6789").get().bigDecimalValue(3, RoundingMode.FLOOR), "6.78E+3");
-        aeq(read("6789").get().bigDecimalValue(3, RoundingMode.CEILING), "6.79E+3");
-        aeq(read("6789").get().bigDecimalValue(3, RoundingMode.DOWN), "6.78E+3");
-        aeq(read("6789").get().bigDecimalValue(3, RoundingMode.UP), "6.79E+3");
-        aeq(read("6789").get().bigDecimalValue(3, RoundingMode.HALF_DOWN), "6.79E+3");
-        aeq(read("6789").get().bigDecimalValue(3, RoundingMode.HALF_UP), "6.79E+3");
-        aeq(read("6789").get().bigDecimalValue(3, RoundingMode.HALF_EVEN), "6.79E+3");
-        aeq(read("6789").get().bigDecimalValue(4, RoundingMode.UNNECESSARY), "6789");
-        aeq(read("6789").get().bigDecimalValue(4, RoundingMode.FLOOR), "6789");
-        aeq(read("6789").get().bigDecimalValue(4, RoundingMode.CEILING), "6789");
-        aeq(read("6789").get().bigDecimalValue(4, RoundingMode.DOWN), "6789");
-        aeq(read("6789").get().bigDecimalValue(4, RoundingMode.UP), "6789");
-        aeq(read("6789").get().bigDecimalValue(4, RoundingMode.HALF_DOWN), "6789");
-        aeq(read("6789").get().bigDecimalValue(4, RoundingMode.HALF_UP), "6789");
-        aeq(read("6789").get().bigDecimalValue(4, RoundingMode.HALF_EVEN), "6789");
-        aeq(read("6789").get().bigDecimalValue(5, RoundingMode.UNNECESSARY), "6789.0");
-        aeq(read("6789").get().bigDecimalValue(5, RoundingMode.FLOOR), "6789.0");
-        aeq(read("6789").get().bigDecimalValue(5, RoundingMode.CEILING), "6789.0");
-        aeq(read("6789").get().bigDecimalValue(5, RoundingMode.DOWN), "6789.0");
-        aeq(read("6789").get().bigDecimalValue(5, RoundingMode.UP), "6789.0");
-        aeq(read("6789").get().bigDecimalValue(5, RoundingMode.HALF_DOWN), "6789.0");
-        aeq(read("6789").get().bigDecimalValue(5, RoundingMode.HALF_UP), "6789.0");
-        aeq(read("6789").get().bigDecimalValue(5, RoundingMode.HALF_EVEN), "6789.0");
-        aeq(read("19/20").get().bigDecimalValue(0, RoundingMode.FLOOR), "0.95");
-        aeq(read("19/20").get().bigDecimalValue(0, RoundingMode.CEILING), "0.95");
-        aeq(read("19/20").get().bigDecimalValue(0, RoundingMode.DOWN), "0.95");
-        aeq(read("19/20").get().bigDecimalValue(0, RoundingMode.UP), "0.95");
-        aeq(read("19/20").get().bigDecimalValue(0, RoundingMode.HALF_DOWN), "0.95");
-        aeq(read("19/20").get().bigDecimalValue(0, RoundingMode.HALF_UP), "0.95");
-        aeq(read("19/20").get().bigDecimalValue(0, RoundingMode.HALF_EVEN), "0.95");
-        try {
-            read("19/20").get().bigDecimalValue(1, RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(read("19/20").get().bigDecimalValue(1, RoundingMode.FLOOR), "0.9");
-        aeq(read("19/20").get().bigDecimalValue(1, RoundingMode.CEILING), "1");
-        aeq(read("19/20").get().bigDecimalValue(1, RoundingMode.DOWN), "0.9");
-        aeq(read("19/20").get().bigDecimalValue(1, RoundingMode.UP), "1");
-        aeq(read("19/20").get().bigDecimalValue(1, RoundingMode.HALF_DOWN), "0.9");
-        aeq(read("19/20").get().bigDecimalValue(1, RoundingMode.HALF_UP), "1");
-        aeq(read("19/20").get().bigDecimalValue(1, RoundingMode.HALF_EVEN), "1");
-        aeq(read("19/20").get().bigDecimalValue(2, RoundingMode.UNNECESSARY), "0.95");
-        aeq(read("19/20").get().bigDecimalValue(2, RoundingMode.FLOOR), "0.95");
-        aeq(read("19/20").get().bigDecimalValue(2, RoundingMode.CEILING), "0.95");
-        aeq(read("19/20").get().bigDecimalValue(2, RoundingMode.DOWN), "0.95");
-        aeq(read("19/20").get().bigDecimalValue(2, RoundingMode.UP), "0.95");
-        aeq(read("19/20").get().bigDecimalValue(2, RoundingMode.HALF_DOWN), "0.95");
-        aeq(read("19/20").get().bigDecimalValue(2, RoundingMode.HALF_UP), "0.95");
-        aeq(read("19/20").get().bigDecimalValue(2, RoundingMode.HALF_EVEN), "0.95");
-        aeq(read("19/20").get().bigDecimalValue(3, RoundingMode.UNNECESSARY), "0.950");
-        aeq(read("19/20").get().bigDecimalValue(3, RoundingMode.FLOOR), "0.950");
-        aeq(read("19/20").get().bigDecimalValue(3, RoundingMode.CEILING), "0.950");
-        aeq(read("19/20").get().bigDecimalValue(3, RoundingMode.DOWN), "0.950");
-        aeq(read("19/20").get().bigDecimalValue(3, RoundingMode.UP), "0.950");
-        aeq(read("19/20").get().bigDecimalValue(3, RoundingMode.HALF_DOWN), "0.950");
-        aeq(read("19/20").get().bigDecimalValue(3, RoundingMode.HALF_UP), "0.950");
-        aeq(read("19/20").get().bigDecimalValue(3, RoundingMode.HALF_EVEN), "0.950");
-        aeq(read("19/20").get().bigDecimalValue(4, RoundingMode.UNNECESSARY), "0.9500");
-        aeq(read("19/20").get().bigDecimalValue(4, RoundingMode.FLOOR), "0.9500");
-        aeq(read("19/20").get().bigDecimalValue(4, RoundingMode.CEILING), "0.9500");
-        aeq(read("19/20").get().bigDecimalValue(4, RoundingMode.DOWN), "0.9500");
-        aeq(read("19/20").get().bigDecimalValue(4, RoundingMode.UP), "0.9500");
-        aeq(read("19/20").get().bigDecimalValue(4, RoundingMode.HALF_DOWN), "0.9500");
-        aeq(read("19/20").get().bigDecimalValue(4, RoundingMode.HALF_UP), "0.9500");
-        aeq(read("19/20").get().bigDecimalValue(4, RoundingMode.HALF_EVEN), "0.9500");
-        aeq(read("19/20").get().bigDecimalValue(5, RoundingMode.UNNECESSARY), "0.95000");
-        aeq(read("19/20").get().bigDecimalValue(5, RoundingMode.FLOOR), "0.95000");
-        aeq(read("19/20").get().bigDecimalValue(5, RoundingMode.CEILING), "0.95000");
-        aeq(read("19/20").get().bigDecimalValue(5, RoundingMode.DOWN), "0.95000");
-        aeq(read("19/20").get().bigDecimalValue(5, RoundingMode.UP), "0.95000");
-        aeq(read("19/20").get().bigDecimalValue(5, RoundingMode.HALF_DOWN), "0.95000");
-        aeq(read("19/20").get().bigDecimalValue(5, RoundingMode.HALF_UP), "0.95000");
-        aeq(read("19/20").get().bigDecimalValue(5, RoundingMode.HALF_EVEN), "0.95000");
-        aeq(read("199/200").get().bigDecimalValue(0, RoundingMode.FLOOR), "0.995");
-        aeq(read("199/200").get().bigDecimalValue(0, RoundingMode.CEILING), "0.995");
-        aeq(read("199/200").get().bigDecimalValue(0, RoundingMode.DOWN), "0.995");
-        aeq(read("199/200").get().bigDecimalValue(0, RoundingMode.UP), "0.995");
-        aeq(read("199/200").get().bigDecimalValue(0, RoundingMode.HALF_DOWN), "0.995");
-        aeq(read("199/200").get().bigDecimalValue(0, RoundingMode.HALF_UP), "0.995");
-        aeq(read("199/200").get().bigDecimalValue(0, RoundingMode.HALF_EVEN), "0.995");
-        try {
-            read("199/200").get().bigDecimalValue(1, RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(read("199/200").get().bigDecimalValue(1, RoundingMode.FLOOR), "0.9");
-        aeq(read("199/200").get().bigDecimalValue(1, RoundingMode.CEILING), "1");
-        aeq(read("199/200").get().bigDecimalValue(1, RoundingMode.DOWN), "0.9");
-        aeq(read("199/200").get().bigDecimalValue(1, RoundingMode.UP), "1");
-        aeq(read("199/200").get().bigDecimalValue(1, RoundingMode.HALF_DOWN), "1");
-        aeq(read("199/200").get().bigDecimalValue(1, RoundingMode.HALF_UP), "1");
-        aeq(read("199/200").get().bigDecimalValue(1, RoundingMode.HALF_EVEN), "1");
-        try {
-            read("199/200").get().bigDecimalValue(2, RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        aeq(read("199/200").get().bigDecimalValue(2, RoundingMode.FLOOR), "0.99");
-        aeq(read("199/200").get().bigDecimalValue(2, RoundingMode.CEILING), "1.0");
-        aeq(read("199/200").get().bigDecimalValue(2, RoundingMode.DOWN), "0.99");
-        aeq(read("199/200").get().bigDecimalValue(2, RoundingMode.UP), "1.0");
-        aeq(read("199/200").get().bigDecimalValue(2, RoundingMode.HALF_DOWN), "0.99");
-        aeq(read("199/200").get().bigDecimalValue(2, RoundingMode.HALF_UP), "1.0");
-        aeq(read("199/200").get().bigDecimalValue(2, RoundingMode.HALF_EVEN), "1.0");
-        aeq(read("199/200").get().bigDecimalValue(3, RoundingMode.UNNECESSARY), "0.995");
-        aeq(read("199/200").get().bigDecimalValue(3, RoundingMode.FLOOR), "0.995");
-        aeq(read("199/200").get().bigDecimalValue(3, RoundingMode.CEILING), "0.995");
-        aeq(read("199/200").get().bigDecimalValue(3, RoundingMode.DOWN), "0.995");
-        aeq(read("199/200").get().bigDecimalValue(3, RoundingMode.UP), "0.995");
-        aeq(read("199/200").get().bigDecimalValue(3, RoundingMode.HALF_DOWN), "0.995");
-        aeq(read("199/200").get().bigDecimalValue(3, RoundingMode.HALF_UP), "0.995");
-        aeq(read("199/200").get().bigDecimalValue(3, RoundingMode.HALF_EVEN), "0.995");
-        aeq(read("199/200").get().bigDecimalValue(4, RoundingMode.UNNECESSARY), "0.9950");
-        aeq(read("199/200").get().bigDecimalValue(4, RoundingMode.FLOOR), "0.9950");
-        aeq(read("199/200").get().bigDecimalValue(4, RoundingMode.CEILING), "0.9950");
-        aeq(read("199/200").get().bigDecimalValue(4, RoundingMode.DOWN), "0.9950");
-        aeq(read("199/200").get().bigDecimalValue(4, RoundingMode.UP), "0.9950");
-        aeq(read("199/200").get().bigDecimalValue(4, RoundingMode.HALF_DOWN), "0.9950");
-        aeq(read("199/200").get().bigDecimalValue(4, RoundingMode.HALF_UP), "0.9950");
-        aeq(read("199/200").get().bigDecimalValue(4, RoundingMode.HALF_EVEN), "0.9950");
-        aeq(read("199/200").get().bigDecimalValue(5, RoundingMode.UNNECESSARY), "0.99500");
-        aeq(read("199/200").get().bigDecimalValue(5, RoundingMode.FLOOR), "0.99500");
-        aeq(read("199/200").get().bigDecimalValue(5, RoundingMode.CEILING), "0.99500");
-        aeq(read("199/200").get().bigDecimalValue(5, RoundingMode.DOWN), "0.99500");
-        aeq(read("199/200").get().bigDecimalValue(5, RoundingMode.UP), "0.99500");
-        aeq(read("199/200").get().bigDecimalValue(5, RoundingMode.HALF_DOWN), "0.99500");
-        aeq(read("199/200").get().bigDecimalValue(5, RoundingMode.HALF_UP), "0.99500");
-        aeq(read("199/200").get().bigDecimalValue(5, RoundingMode.HALF_EVEN), "0.99500");
-        try {
-            read("5").get().bigDecimalValue(-1, RoundingMode.UNNECESSARY);
-            fail();
-        } catch (IllegalArgumentException ignored) {}
-        try {
-            read("5").get().bigDecimalValue(-1, RoundingMode.FLOOR);
-            fail();
-        } catch (IllegalArgumentException ignored) {}
-        try {
-            read("5").get().bigDecimalValue(-1, RoundingMode.CEILING);
-            fail();
-        } catch (IllegalArgumentException ignored) {}
-        try {
-            read("5").get().bigDecimalValue(-1, RoundingMode.DOWN);
-            fail();
-        } catch (IllegalArgumentException ignored) {}
-        try {
-            read("5").get().bigDecimalValue(-1, RoundingMode.UP);
-            fail();
-        } catch (IllegalArgumentException ignored) {}
-        try {
-            read("5").get().bigDecimalValue(-1, RoundingMode.HALF_DOWN);
-            fail();
-        } catch (IllegalArgumentException ignored) {}
-        try {
-            read("5").get().bigDecimalValue(-1, RoundingMode.HALF_UP);
-            fail();
-        } catch (IllegalArgumentException ignored) {}
-        try {
-            read("5").get().bigDecimalValue(-1, RoundingMode.HALF_EVEN);
-            fail();
-        } catch (IllegalArgumentException ignored) {}
+        } catch (ArithmeticException | IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testBigDecimalValueByPrecision_int_RoundingMode() {
+        bigDecimalValueByPrecision_helper("0", 0, "FLOOR", "0");
+        bigDecimalValueByPrecision_helper("0", 0, "CEILING", "0");
+        bigDecimalValueByPrecision_helper("0", 0, "DOWN", "0");
+        bigDecimalValueByPrecision_helper("0", 0, "UP", "0");
+        bigDecimalValueByPrecision_helper("0", 0, "HALF_DOWN", "0");
+        bigDecimalValueByPrecision_helper("0", 0, "HALF_UP", "0");
+        bigDecimalValueByPrecision_helper("0", 0, "HALF_EVEN", "0");
+        bigDecimalValueByPrecision_helper("0", 0, "UNNECESSARY", "0");
+
+        bigDecimalValueByPrecision_helper("0", 4, "FLOOR", "0.000");
+        bigDecimalValueByPrecision_helper("0", 4, "CEILING", "0.000");
+        bigDecimalValueByPrecision_helper("0", 4, "DOWN", "0.000");
+        bigDecimalValueByPrecision_helper("0", 4, "UP", "0.000");
+        bigDecimalValueByPrecision_helper("0", 4, "HALF_DOWN", "0.000");
+        bigDecimalValueByPrecision_helper("0", 4, "HALF_UP", "0.000");
+        bigDecimalValueByPrecision_helper("0", 4, "HALF_EVEN", "0.000");
+        bigDecimalValueByPrecision_helper("0", 4, "UNNECESSARY", "0.000");
+
+        bigDecimalValueByPrecision_helper("1", 0, "FLOOR", "1");
+        bigDecimalValueByPrecision_helper("1", 0, "CEILING", "1");
+        bigDecimalValueByPrecision_helper("1", 0, "DOWN", "1");
+        bigDecimalValueByPrecision_helper("1", 0, "UP", "1");
+        bigDecimalValueByPrecision_helper("1", 0, "HALF_DOWN", "1");
+        bigDecimalValueByPrecision_helper("1", 0, "HALF_UP", "1");
+        bigDecimalValueByPrecision_helper("1", 0, "HALF_EVEN", "1");
+        bigDecimalValueByPrecision_helper("1", 0, "UNNECESSARY", "1");
+
+        bigDecimalValueByPrecision_helper("1", 4, "FLOOR", "1.000");
+        bigDecimalValueByPrecision_helper("1", 4, "CEILING", "1.000");
+        bigDecimalValueByPrecision_helper("1", 4, "DOWN", "1.000");
+        bigDecimalValueByPrecision_helper("1", 4, "UP", "1.000");
+        bigDecimalValueByPrecision_helper("1", 4, "HALF_DOWN", "1.000");
+        bigDecimalValueByPrecision_helper("1", 4, "HALF_UP", "1.000");
+        bigDecimalValueByPrecision_helper("1", 4, "HALF_EVEN", "1.000");
+        bigDecimalValueByPrecision_helper("1", 4, "UNNECESSARY", "1.000");
+
+        bigDecimalValueByPrecision_helper("1/2", 0, "FLOOR", "0.5");
+        bigDecimalValueByPrecision_helper("1/2", 0, "CEILING", "0.5");
+        bigDecimalValueByPrecision_helper("1/2", 0, "DOWN", "0.5");
+        bigDecimalValueByPrecision_helper("1/2", 0, "UP", "0.5");
+        bigDecimalValueByPrecision_helper("1/2", 0, "HALF_DOWN", "0.5");
+        bigDecimalValueByPrecision_helper("1/2", 0, "HALF_UP", "0.5");
+        bigDecimalValueByPrecision_helper("1/2", 0, "HALF_EVEN", "0.5");
+        bigDecimalValueByPrecision_helper("1/2", 0, "UNNECESSARY", "0.5");
+
+        bigDecimalValueByPrecision_helper("1/2", 1, "FLOOR", "0.5");
+        bigDecimalValueByPrecision_helper("1/2", 1, "CEILING", "0.5");
+        bigDecimalValueByPrecision_helper("1/2", 1, "DOWN", "0.5");
+        bigDecimalValueByPrecision_helper("1/2", 1, "UP", "0.5");
+        bigDecimalValueByPrecision_helper("1/2", 1, "HALF_DOWN", "0.5");
+        bigDecimalValueByPrecision_helper("1/2", 1, "HALF_UP", "0.5");
+        bigDecimalValueByPrecision_helper("1/2", 1, "HALF_EVEN", "0.5");
+        bigDecimalValueByPrecision_helper("1/2", 1, "UNNECESSARY", "0.5");
+
+        bigDecimalValueByPrecision_helper("1/2", 4, "FLOOR", "0.5000");
+        bigDecimalValueByPrecision_helper("1/2", 4, "CEILING", "0.5000");
+        bigDecimalValueByPrecision_helper("1/2", 4, "DOWN", "0.5000");
+        bigDecimalValueByPrecision_helper("1/2", 4, "UP", "0.5000");
+        bigDecimalValueByPrecision_helper("1/2", 4, "HALF_DOWN", "0.5000");
+        bigDecimalValueByPrecision_helper("1/2", 4, "HALF_UP", "0.5000");
+        bigDecimalValueByPrecision_helper("1/2", 4, "HALF_EVEN", "0.5000");
+        bigDecimalValueByPrecision_helper("1/2", 4, "UNNECESSARY", "0.5000");
+
+        bigDecimalValueByPrecision_helper("1/64", 0, "FLOOR", "0.015625");
+        bigDecimalValueByPrecision_helper("1/64", 0, "CEILING", "0.015625");
+        bigDecimalValueByPrecision_helper("1/64", 0, "DOWN", "0.015625");
+        bigDecimalValueByPrecision_helper("1/64", 0, "UP", "0.015625");
+        bigDecimalValueByPrecision_helper("1/64", 0, "HALF_DOWN", "0.015625");
+        bigDecimalValueByPrecision_helper("1/64", 0, "HALF_UP", "0.015625");
+        bigDecimalValueByPrecision_helper("1/64", 0, "HALF_EVEN", "0.015625");
+        bigDecimalValueByPrecision_helper("1/64", 0, "UNNECESSARY", "0.015625");
+
+        bigDecimalValueByPrecision_helper("1/64", 1, "FLOOR", "0.01");
+        bigDecimalValueByPrecision_helper("1/64", 1, "CEILING", "0.02");
+        bigDecimalValueByPrecision_helper("1/64", 1, "DOWN", "0.01");
+        bigDecimalValueByPrecision_helper("1/64", 1, "UP", "0.02");
+        bigDecimalValueByPrecision_helper("1/64", 1, "HALF_DOWN", "0.02");
+        bigDecimalValueByPrecision_helper("1/64", 1, "HALF_UP", "0.02");
+        bigDecimalValueByPrecision_helper("1/64", 1, "HALF_EVEN", "0.02");
+        bigDecimalValueByPrecision_fail_helper("1/64", 1, "UNNECESSARY");
+
+        bigDecimalValueByPrecision_helper("1/64", 2, "FLOOR", "0.015");
+        bigDecimalValueByPrecision_helper("1/64", 2, "CEILING", "0.016");
+        bigDecimalValueByPrecision_helper("1/64", 2, "DOWN", "0.015");
+        bigDecimalValueByPrecision_helper("1/64", 2, "UP", "0.016");
+        bigDecimalValueByPrecision_helper("1/64", 2, "HALF_DOWN", "0.016");
+        bigDecimalValueByPrecision_helper("1/64", 2, "HALF_UP", "0.016");
+        bigDecimalValueByPrecision_helper("1/64", 2, "HALF_EVEN", "0.016");
+        bigDecimalValueByPrecision_fail_helper("1/64", 2, "UNNECESSARY");
+
+        bigDecimalValueByPrecision_helper("1/64", 3, "FLOOR", "0.0156");
+        bigDecimalValueByPrecision_helper("1/64", 3, "CEILING", "0.0157");
+        bigDecimalValueByPrecision_helper("1/64", 3, "DOWN", "0.0156");
+        bigDecimalValueByPrecision_helper("1/64", 3, "UP", "0.0157");
+        bigDecimalValueByPrecision_helper("1/64", 3, "HALF_DOWN", "0.0156");
+        bigDecimalValueByPrecision_helper("1/64", 3, "HALF_UP", "0.0156");
+        bigDecimalValueByPrecision_helper("1/64", 3, "HALF_EVEN", "0.0156");
+        bigDecimalValueByPrecision_fail_helper("1/64", 3, "UNNECESSARY");
+
+        bigDecimalValueByPrecision_helper("1/64", 4, "FLOOR", "0.01562");
+        bigDecimalValueByPrecision_helper("1/64", 4, "CEILING", "0.01563");
+        bigDecimalValueByPrecision_helper("1/64", 4, "DOWN", "0.01562");
+        bigDecimalValueByPrecision_helper("1/64", 4, "UP", "0.01563");
+        bigDecimalValueByPrecision_helper("1/64", 4, "HALF_DOWN", "0.01562");
+        bigDecimalValueByPrecision_helper("1/64", 4, "HALF_UP", "0.01563");
+        bigDecimalValueByPrecision_helper("1/64", 4, "HALF_EVEN", "0.01562");
+        bigDecimalValueByPrecision_fail_helper("1/64", 4, "UNNECESSARY");
+
+        bigDecimalValueByPrecision_helper("1/64", 5, "FLOOR", "0.015625");
+        bigDecimalValueByPrecision_helper("1/64", 5, "CEILING", "0.015625");
+        bigDecimalValueByPrecision_helper("1/64", 5, "DOWN", "0.015625");
+        bigDecimalValueByPrecision_helper("1/64", 5, "UP", "0.015625");
+        bigDecimalValueByPrecision_helper("1/64", 5, "HALF_DOWN", "0.015625");
+        bigDecimalValueByPrecision_helper("1/64", 5, "HALF_UP", "0.015625");
+        bigDecimalValueByPrecision_helper("1/64", 5, "HALF_EVEN", "0.015625");
+        bigDecimalValueByPrecision_helper("1/64", 5, "UNNECESSARY", "0.015625");
+
+        bigDecimalValueByPrecision_helper("1/64", 6, "FLOOR", "0.0156250");
+        bigDecimalValueByPrecision_helper("1/64", 6, "CEILING", "0.0156250");
+        bigDecimalValueByPrecision_helper("1/64", 6, "DOWN", "0.0156250");
+        bigDecimalValueByPrecision_helper("1/64", 6, "UP", "0.0156250");
+        bigDecimalValueByPrecision_helper("1/64", 6, "HALF_DOWN", "0.0156250");
+        bigDecimalValueByPrecision_helper("1/64", 6, "HALF_UP", "0.0156250");
+        bigDecimalValueByPrecision_helper("1/64", 6, "HALF_EVEN", "0.0156250");
+        bigDecimalValueByPrecision_helper("1/64", 6, "UNNECESSARY", "0.0156250");
+
+        bigDecimalValueByPrecision_fail_helper("-1/3", 0, "FLOOR");
+        bigDecimalValueByPrecision_fail_helper("-1/3", 0, "CEILING");
+        bigDecimalValueByPrecision_fail_helper("-1/3", 0, "DOWN");
+        bigDecimalValueByPrecision_fail_helper("-1/3", 0, "UP");
+        bigDecimalValueByPrecision_fail_helper("-1/3", 0, "HALF_DOWN");
+        bigDecimalValueByPrecision_fail_helper("-1/3", 0, "HALF_UP");
+        bigDecimalValueByPrecision_fail_helper("-1/3", 0, "HALF_EVEN");
+        bigDecimalValueByPrecision_fail_helper("-1/3", 0, "UNNECESSARY");
+
+        bigDecimalValueByPrecision_helper("-1/3", 1, "FLOOR", "-0.4");
+        bigDecimalValueByPrecision_helper("-1/3", 1, "CEILING", "-0.3");
+        bigDecimalValueByPrecision_helper("-1/3", 1, "DOWN", "-0.3");
+        bigDecimalValueByPrecision_helper("-1/3", 1, "UP", "-0.4");
+        bigDecimalValueByPrecision_helper("-1/3", 1, "HALF_DOWN", "-0.3");
+        bigDecimalValueByPrecision_helper("-1/3", 1, "HALF_UP", "-0.3");
+        bigDecimalValueByPrecision_helper("-1/3", 1, "HALF_EVEN", "-0.3");
+        bigDecimalValueByPrecision_fail_helper("-1/3", 1, "UNNECESSARY");
+
+        bigDecimalValueByPrecision_helper("-1/3", 2, "FLOOR", "-0.34");
+        bigDecimalValueByPrecision_helper("-1/3", 2, "CEILING", "-0.33");
+        bigDecimalValueByPrecision_helper("-1/3", 2, "DOWN", "-0.33");
+        bigDecimalValueByPrecision_helper("-1/3", 2, "UP", "-0.34");
+        bigDecimalValueByPrecision_helper("-1/3", 2, "HALF_DOWN", "-0.33");
+        bigDecimalValueByPrecision_helper("-1/3", 2, "HALF_UP", "-0.33");
+        bigDecimalValueByPrecision_helper("-1/3", 2, "HALF_EVEN", "-0.33");
+        bigDecimalValueByPrecision_fail_helper("-1/3", 2, "UNNECESSARY");
+
+        bigDecimalValueByPrecision_helper("-1/3", 3, "FLOOR", "-0.334");
+        bigDecimalValueByPrecision_helper("-1/3", 3, "CEILING", "-0.333");
+        bigDecimalValueByPrecision_helper("-1/3", 3, "DOWN", "-0.333");
+        bigDecimalValueByPrecision_helper("-1/3", 3, "UP", "-0.334");
+        bigDecimalValueByPrecision_helper("-1/3", 3, "HALF_DOWN", "-0.333");
+        bigDecimalValueByPrecision_helper("-1/3", 3, "HALF_UP", "-0.333");
+        bigDecimalValueByPrecision_helper("-1/3", 3, "HALF_EVEN", "-0.333");
+        bigDecimalValueByPrecision_fail_helper("-1/3", 3, "UNNECESSARY");
+
+        bigDecimalValueByPrecision_helper("-1/3", 4, "FLOOR", "-0.3334");
+        bigDecimalValueByPrecision_helper("-1/3", 4, "CEILING", "-0.3333");
+        bigDecimalValueByPrecision_helper("-1/3", 4, "DOWN", "-0.3333");
+        bigDecimalValueByPrecision_helper("-1/3", 4, "UP", "-0.3334");
+        bigDecimalValueByPrecision_helper("-1/3", 4, "HALF_DOWN", "-0.3333");
+        bigDecimalValueByPrecision_helper("-1/3", 4, "HALF_UP", "-0.3333");
+        bigDecimalValueByPrecision_helper("-1/3", 4, "HALF_EVEN", "-0.3333");
+        bigDecimalValueByPrecision_fail_helper("-1/3", 4, "UNNECESSARY");
+
+        bigDecimalValueByPrecision_helper("6789", 0, "FLOOR", "6789");
+        bigDecimalValueByPrecision_helper("6789", 0, "CEILING", "6789");
+        bigDecimalValueByPrecision_helper("6789", 0, "DOWN", "6789");
+        bigDecimalValueByPrecision_helper("6789", 0, "UP", "6789");
+        bigDecimalValueByPrecision_helper("6789", 0, "HALF_DOWN", "6789");
+        bigDecimalValueByPrecision_helper("6789", 0, "HALF_UP", "6789");
+        bigDecimalValueByPrecision_helper("6789", 0, "HALF_EVEN", "6789");
+        bigDecimalValueByPrecision_helper("6789", 0, "UNNECESSARY", "6789");
+
+        bigDecimalValueByPrecision_helper("6789", 1, "FLOOR", "6E+3");
+        bigDecimalValueByPrecision_helper("6789", 1, "CEILING", "7E+3");
+        bigDecimalValueByPrecision_helper("6789", 1, "DOWN", "6E+3");
+        bigDecimalValueByPrecision_helper("6789", 1, "UP", "7E+3");
+        bigDecimalValueByPrecision_helper("6789", 1, "HALF_DOWN", "7E+3");
+        bigDecimalValueByPrecision_helper("6789", 1, "HALF_UP", "7E+3");
+        bigDecimalValueByPrecision_helper("6789", 1, "HALF_EVEN", "7E+3");
+        bigDecimalValueByPrecision_fail_helper("6789", 1, "UNNECESSARY");
+
+        bigDecimalValueByPrecision_helper("6789", 2, "FLOOR", "6.7E+3");
+        bigDecimalValueByPrecision_helper("6789", 2, "CEILING", "6.8E+3");
+        bigDecimalValueByPrecision_helper("6789", 2, "DOWN", "6.7E+3");
+        bigDecimalValueByPrecision_helper("6789", 2, "UP", "6.8E+3");
+        bigDecimalValueByPrecision_helper("6789", 2, "HALF_DOWN", "6.8E+3");
+        bigDecimalValueByPrecision_helper("6789", 2, "HALF_UP", "6.8E+3");
+        bigDecimalValueByPrecision_helper("6789", 2, "HALF_EVEN", "6.8E+3");
+        bigDecimalValueByPrecision_fail_helper("6789", 2, "UNNECESSARY");
+
+        bigDecimalValueByPrecision_helper("6789", 3, "FLOOR", "6.78E+3");
+        bigDecimalValueByPrecision_helper("6789", 3, "CEILING", "6.79E+3");
+        bigDecimalValueByPrecision_helper("6789", 3, "DOWN", "6.78E+3");
+        bigDecimalValueByPrecision_helper("6789", 3, "UP", "6.79E+3");
+        bigDecimalValueByPrecision_helper("6789", 3, "HALF_DOWN", "6.79E+3");
+        bigDecimalValueByPrecision_helper("6789", 3, "HALF_UP", "6.79E+3");
+        bigDecimalValueByPrecision_helper("6789", 3, "HALF_EVEN", "6.79E+3");
+        bigDecimalValueByPrecision_fail_helper("6789", 3, "UNNECESSARY");
+
+        bigDecimalValueByPrecision_helper("6789", 4, "FLOOR", "6789");
+        bigDecimalValueByPrecision_helper("6789", 4, "CEILING", "6789");
+        bigDecimalValueByPrecision_helper("6789", 4, "DOWN", "6789");
+        bigDecimalValueByPrecision_helper("6789", 4, "UP", "6789");
+        bigDecimalValueByPrecision_helper("6789", 4, "HALF_DOWN", "6789");
+        bigDecimalValueByPrecision_helper("6789", 4, "HALF_UP", "6789");
+        bigDecimalValueByPrecision_helper("6789", 4, "HALF_EVEN", "6789");
+        bigDecimalValueByPrecision_helper("6789", 4, "UNNECESSARY", "6789");
+
+        bigDecimalValueByPrecision_helper("6789", 5, "FLOOR", "6789.0");
+        bigDecimalValueByPrecision_helper("6789", 5, "CEILING", "6789.0");
+        bigDecimalValueByPrecision_helper("6789", 5, "DOWN", "6789.0");
+        bigDecimalValueByPrecision_helper("6789", 5, "UP", "6789.0");
+        bigDecimalValueByPrecision_helper("6789", 5, "HALF_DOWN", "6789.0");
+        bigDecimalValueByPrecision_helper("6789", 5, "HALF_UP", "6789.0");
+        bigDecimalValueByPrecision_helper("6789", 5, "HALF_EVEN", "6789.0");
+        bigDecimalValueByPrecision_helper("6789", 5, "UNNECESSARY", "6789.0");
+
+        bigDecimalValueByPrecision_helper("19/20", 0, "FLOOR", "0.95");
+        bigDecimalValueByPrecision_helper("19/20", 0, "CEILING", "0.95");
+        bigDecimalValueByPrecision_helper("19/20", 0, "DOWN", "0.95");
+        bigDecimalValueByPrecision_helper("19/20", 0, "UP", "0.95");
+        bigDecimalValueByPrecision_helper("19/20", 0, "HALF_DOWN", "0.95");
+        bigDecimalValueByPrecision_helper("19/20", 0, "HALF_UP", "0.95");
+        bigDecimalValueByPrecision_helper("19/20", 0, "HALF_EVEN", "0.95");
+        bigDecimalValueByPrecision_helper("19/20", 0, "UNNECESSARY", "0.95");
+
+        bigDecimalValueByPrecision_helper("19/20", 1, "FLOOR", "0.9");
+        bigDecimalValueByPrecision_helper("19/20", 1, "CEILING", "1");
+        bigDecimalValueByPrecision_helper("19/20", 1, "DOWN", "0.9");
+        bigDecimalValueByPrecision_helper("19/20", 1, "UP", "1");
+        bigDecimalValueByPrecision_helper("19/20", 1, "HALF_DOWN", "0.9");
+        bigDecimalValueByPrecision_helper("19/20", 1, "HALF_UP", "1");
+        bigDecimalValueByPrecision_helper("19/20", 1, "HALF_EVEN", "1");
+        bigDecimalValueByPrecision_fail_helper("19/20", 1, "UNNECESSARY");
+
+        bigDecimalValueByPrecision_helper("19/20", 2, "FLOOR", "0.95");
+        bigDecimalValueByPrecision_helper("19/20", 2, "CEILING", "0.95");
+        bigDecimalValueByPrecision_helper("19/20", 2, "DOWN", "0.95");
+        bigDecimalValueByPrecision_helper("19/20", 2, "UP", "0.95");
+        bigDecimalValueByPrecision_helper("19/20", 2, "HALF_DOWN", "0.95");
+        bigDecimalValueByPrecision_helper("19/20", 2, "HALF_UP", "0.95");
+        bigDecimalValueByPrecision_helper("19/20", 2, "HALF_EVEN", "0.95");
+        bigDecimalValueByPrecision_helper("19/20", 2, "UNNECESSARY", "0.95");
+
+        bigDecimalValueByPrecision_helper("19/20", 3, "FLOOR", "0.950");
+        bigDecimalValueByPrecision_helper("19/20", 3, "CEILING", "0.950");
+        bigDecimalValueByPrecision_helper("19/20", 3, "DOWN", "0.950");
+        bigDecimalValueByPrecision_helper("19/20", 3, "UP", "0.950");
+        bigDecimalValueByPrecision_helper("19/20", 3, "HALF_DOWN", "0.950");
+        bigDecimalValueByPrecision_helper("19/20", 3, "HALF_UP", "0.950");
+        bigDecimalValueByPrecision_helper("19/20", 3, "HALF_EVEN", "0.950");
+        bigDecimalValueByPrecision_helper("19/20", 3, "UNNECESSARY", "0.950");
+
+        bigDecimalValueByPrecision_helper("19/20", 4, "FLOOR", "0.9500");
+        bigDecimalValueByPrecision_helper("19/20", 4, "CEILING", "0.9500");
+        bigDecimalValueByPrecision_helper("19/20", 4, "DOWN", "0.9500");
+        bigDecimalValueByPrecision_helper("19/20", 4, "UP", "0.9500");
+        bigDecimalValueByPrecision_helper("19/20", 4, "HALF_DOWN", "0.9500");
+        bigDecimalValueByPrecision_helper("19/20", 4, "HALF_UP", "0.9500");
+        bigDecimalValueByPrecision_helper("19/20", 4, "HALF_EVEN", "0.9500");
+        bigDecimalValueByPrecision_helper("19/20", 4, "UNNECESSARY", "0.9500");
+
+        bigDecimalValueByPrecision_helper("19/20", 5, "FLOOR", "0.95000");
+        bigDecimalValueByPrecision_helper("19/20", 5, "CEILING", "0.95000");
+        bigDecimalValueByPrecision_helper("19/20", 5, "DOWN", "0.95000");
+        bigDecimalValueByPrecision_helper("19/20", 5, "UP", "0.95000");
+        bigDecimalValueByPrecision_helper("19/20", 5, "HALF_DOWN", "0.95000");
+        bigDecimalValueByPrecision_helper("19/20", 5, "HALF_UP", "0.95000");
+        bigDecimalValueByPrecision_helper("19/20", 5, "HALF_EVEN", "0.95000");
+        bigDecimalValueByPrecision_helper("19/20", 5, "UNNECESSARY", "0.95000");
+
+        bigDecimalValueByPrecision_helper("199/200", 0, "FLOOR", "0.995");
+        bigDecimalValueByPrecision_helper("199/200", 0, "CEILING", "0.995");
+        bigDecimalValueByPrecision_helper("199/200", 0, "DOWN", "0.995");
+        bigDecimalValueByPrecision_helper("199/200", 0, "UP", "0.995");
+        bigDecimalValueByPrecision_helper("199/200", 0, "HALF_DOWN", "0.995");
+        bigDecimalValueByPrecision_helper("199/200", 0, "HALF_UP", "0.995");
+        bigDecimalValueByPrecision_helper("199/200", 0, "HALF_EVEN", "0.995");
+        bigDecimalValueByPrecision_helper("199/200", 0, "UNNECESSARY", "0.995");
+
+        bigDecimalValueByPrecision_helper("199/200", 1, "FLOOR", "0.9");
+        bigDecimalValueByPrecision_helper("199/200", 1, "CEILING", "1");
+        bigDecimalValueByPrecision_helper("199/200", 1, "DOWN", "0.9");
+        bigDecimalValueByPrecision_helper("199/200", 1, "UP", "1");
+        bigDecimalValueByPrecision_helper("199/200", 1, "HALF_DOWN", "1");
+        bigDecimalValueByPrecision_helper("199/200", 1, "HALF_UP", "1");
+        bigDecimalValueByPrecision_helper("199/200", 1, "HALF_EVEN", "1");
+        bigDecimalValueByPrecision_fail_helper("199/200", 1, "UNNECESSARY");
+
+        bigDecimalValueByPrecision_helper("199/200", 2, "FLOOR", "0.99");
+        bigDecimalValueByPrecision_helper("199/200", 2, "CEILING", "1.0");
+        bigDecimalValueByPrecision_helper("199/200", 2, "DOWN", "0.99");
+        bigDecimalValueByPrecision_helper("199/200", 2, "UP", "1.0");
+        bigDecimalValueByPrecision_helper("199/200", 2, "HALF_DOWN", "0.99");
+        bigDecimalValueByPrecision_helper("199/200", 2, "HALF_UP", "1.0");
+        bigDecimalValueByPrecision_helper("199/200", 2, "HALF_EVEN", "1.0");
+        bigDecimalValueByPrecision_fail_helper("199/200", 2, "UNNECESSARY");
+
+        bigDecimalValueByPrecision_helper("199/200", 3, "FLOOR", "0.995");
+        bigDecimalValueByPrecision_helper("199/200", 3, "CEILING", "0.995");
+        bigDecimalValueByPrecision_helper("199/200", 3, "DOWN", "0.995");
+        bigDecimalValueByPrecision_helper("199/200", 3, "UP", "0.995");
+        bigDecimalValueByPrecision_helper("199/200", 3, "HALF_DOWN", "0.995");
+        bigDecimalValueByPrecision_helper("199/200", 3, "HALF_UP", "0.995");
+        bigDecimalValueByPrecision_helper("199/200", 3, "HALF_EVEN", "0.995");
+        bigDecimalValueByPrecision_helper("199/200", 3, "UNNECESSARY", "0.995");
+
+        bigDecimalValueByPrecision_helper("199/200", 4, "FLOOR", "0.9950");
+        bigDecimalValueByPrecision_helper("199/200", 4, "CEILING", "0.9950");
+        bigDecimalValueByPrecision_helper("199/200", 4, "DOWN", "0.9950");
+        bigDecimalValueByPrecision_helper("199/200", 4, "UP", "0.9950");
+        bigDecimalValueByPrecision_helper("199/200", 4, "HALF_DOWN", "0.9950");
+        bigDecimalValueByPrecision_helper("199/200", 4, "HALF_UP", "0.9950");
+        bigDecimalValueByPrecision_helper("199/200", 4, "HALF_EVEN", "0.9950");
+        bigDecimalValueByPrecision_helper("199/200", 4, "UNNECESSARY", "0.9950");
+
+        bigDecimalValueByPrecision_helper("199/200", 5, "FLOOR", "0.99500");
+        bigDecimalValueByPrecision_helper("199/200", 5, "CEILING", "0.99500");
+        bigDecimalValueByPrecision_helper("199/200", 5, "DOWN", "0.99500");
+        bigDecimalValueByPrecision_helper("199/200", 5, "UP", "0.99500");
+        bigDecimalValueByPrecision_helper("199/200", 5, "HALF_DOWN", "0.99500");
+        bigDecimalValueByPrecision_helper("199/200", 5, "HALF_UP", "0.99500");
+        bigDecimalValueByPrecision_helper("199/200", 5, "HALF_EVEN", "0.99500");
+        bigDecimalValueByPrecision_helper("199/200", 5, "UNNECESSARY", "0.99500");
+
+        bigDecimalValueByPrecision_fail_helper("5", -1, "FLOOR");
+        bigDecimalValueByPrecision_fail_helper("5", -1, "CEILING");
+        bigDecimalValueByPrecision_fail_helper("5", -1, "DOWN");
+        bigDecimalValueByPrecision_fail_helper("5", -1, "UP");
+        bigDecimalValueByPrecision_fail_helper("5", -1, "HALF_DOWN");
+        bigDecimalValueByPrecision_fail_helper("5", -1, "HALF_UP");
+        bigDecimalValueByPrecision_fail_helper("5", -1, "HALF_EVEN");
+        bigDecimalValueByPrecision_fail_helper("5", -1, "UNNECESSARY");
     }
 
     @Test
     public void testBigDecimalValue_int() {
-        aeq(ZERO.bigDecimalValue(4), "0.000");
-        aeq(ZERO.bigDecimalValue(0), "0");
-        aeq(ONE.bigDecimalValue(4), "1.000");
-        aeq(ONE.bigDecimalValue(0), "1");
-        aeq(read("1/2").get().bigDecimalValue(0), "0.5");
-        aeq(read("1/2").get().bigDecimalValue(1), "0.5");
-        aeq(read("1/2").get().bigDecimalValue(4), "0.5000");
-        aeq(read("1/64").get().bigDecimalValue(0), "0.015625");
-        aeq(read("1/64").get().bigDecimalValue(1), "0.02");
-        aeq(read("1/64").get().bigDecimalValue(2), "0.016");
-        aeq(read("1/64").get().bigDecimalValue(3), "0.0156");
-        aeq(read("1/64").get().bigDecimalValue(4), "0.01562");
-        aeq(read("1/64").get().bigDecimalValue(5), "0.015625");
-        aeq(read("1/64").get().bigDecimalValue(6), "0.0156250");
-        aeq(read("-1/3").get().bigDecimalValue(1), "-0.3");
-        aeq(read("-1/3").get().bigDecimalValue(2), "-0.33");
-        aeq(read("-1/3").get().bigDecimalValue(3), "-0.333");
-        aeq(read("-1/3").get().bigDecimalValue(4), "-0.3333");
-        aeq(read("6789").get().bigDecimalValue(0), "6789");
-        aeq(read("6789").get().bigDecimalValue(1), "7E+3");
-        aeq(read("6789").get().bigDecimalValue(2), "6.8E+3");
-        aeq(read("6789").get().bigDecimalValue(3), "6.79E+3");
-        aeq(read("6789").get().bigDecimalValue(4), "6789");
-        aeq(read("6789").get().bigDecimalValue(5), "6789.0");
-        aeq(read("19/20").get().bigDecimalValue(0), "0.95");
-        aeq(read("19/20").get().bigDecimalValue(1), "1");
-        aeq(read("19/20").get().bigDecimalValue(2), "0.95");
-        aeq(read("19/20").get().bigDecimalValue(3), "0.950");
-        aeq(read("19/20").get().bigDecimalValue(4), "0.9500");
-        aeq(read("19/20").get().bigDecimalValue(5), "0.95000");
-        aeq(read("199/200").get().bigDecimalValue(0), "0.995");
-        aeq(read("199/200").get().bigDecimalValue(1), "1");
-        aeq(read("199/200").get().bigDecimalValue(2), "1.0");
-        aeq(read("199/200").get().bigDecimalValue(3), "0.995");
-        aeq(read("199/200").get().bigDecimalValue(4), "0.9950");
-        aeq(read("199/200").get().bigDecimalValue(5), "0.99500");
+        aeq(ZERO.bigDecimalValueByPrecision(4), "0.000");
+        aeq(ZERO.bigDecimalValueByPrecision(0), "0");
+        aeq(ONE.bigDecimalValueByPrecision(4), "1.000");
+        aeq(ONE.bigDecimalValueByPrecision(0), "1");
+        aeq(read("1/2").get().bigDecimalValueByPrecision(0), "0.5");
+        aeq(read("1/2").get().bigDecimalValueByPrecision(1), "0.5");
+        aeq(read("1/2").get().bigDecimalValueByPrecision(4), "0.5000");
+        aeq(read("1/64").get().bigDecimalValueByPrecision(0), "0.015625");
+        aeq(read("1/64").get().bigDecimalValueByPrecision(1), "0.02");
+        aeq(read("1/64").get().bigDecimalValueByPrecision(2), "0.016");
+        aeq(read("1/64").get().bigDecimalValueByPrecision(3), "0.0156");
+        aeq(read("1/64").get().bigDecimalValueByPrecision(4), "0.01562");
+        aeq(read("1/64").get().bigDecimalValueByPrecision(5), "0.015625");
+        aeq(read("1/64").get().bigDecimalValueByPrecision(6), "0.0156250");
+        aeq(read("-1/3").get().bigDecimalValueByPrecision(1), "-0.3");
+        aeq(read("-1/3").get().bigDecimalValueByPrecision(2), "-0.33");
+        aeq(read("-1/3").get().bigDecimalValueByPrecision(3), "-0.333");
+        aeq(read("-1/3").get().bigDecimalValueByPrecision(4), "-0.3333");
+        aeq(read("6789").get().bigDecimalValueByPrecision(0), "6789");
+        aeq(read("6789").get().bigDecimalValueByPrecision(1), "7E+3");
+        aeq(read("6789").get().bigDecimalValueByPrecision(2), "6.8E+3");
+        aeq(read("6789").get().bigDecimalValueByPrecision(3), "6.79E+3");
+        aeq(read("6789").get().bigDecimalValueByPrecision(4), "6789");
+        aeq(read("6789").get().bigDecimalValueByPrecision(5), "6789.0");
+        aeq(read("19/20").get().bigDecimalValueByPrecision(0), "0.95");
+        aeq(read("19/20").get().bigDecimalValueByPrecision(1), "1");
+        aeq(read("19/20").get().bigDecimalValueByPrecision(2), "0.95");
+        aeq(read("19/20").get().bigDecimalValueByPrecision(3), "0.950");
+        aeq(read("19/20").get().bigDecimalValueByPrecision(4), "0.9500");
+        aeq(read("19/20").get().bigDecimalValueByPrecision(5), "0.95000");
+        aeq(read("199/200").get().bigDecimalValueByPrecision(0), "0.995");
+        aeq(read("199/200").get().bigDecimalValueByPrecision(1), "1");
+        aeq(read("199/200").get().bigDecimalValueByPrecision(2), "1.0");
+        aeq(read("199/200").get().bigDecimalValueByPrecision(3), "0.995");
+        aeq(read("199/200").get().bigDecimalValueByPrecision(4), "0.9950");
+        aeq(read("199/200").get().bigDecimalValueByPrecision(5), "0.99500");
         try {
-            read("-1/3").get().bigDecimalValue(0);
+            read("-1/3").get().bigDecimalValueByPrecision(0);
             fail();
         } catch (ArithmeticException ignored) {}
         try {
-            read("5").get().bigDecimalValue(-1);
+            read("5").get().bigDecimalValueByPrecision(-1);
             fail();
         } catch (IllegalArgumentException ignored) {}
     }
