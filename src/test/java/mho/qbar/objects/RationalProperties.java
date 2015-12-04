@@ -7,6 +7,7 @@ import mho.qbar.testing.QBarTesting;
 import mho.wheels.io.Readers;
 import mho.wheels.math.BinaryFraction;
 import mho.wheels.math.MathUtils;
+import mho.wheels.numberUtils.BigDecimalUtils;
 import mho.wheels.numberUtils.IntegerUtils;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
@@ -19,6 +20,7 @@ import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.util.*;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 import static mho.qbar.objects.Rational.*;
 import static mho.qbar.objects.Rational.sum;
@@ -94,8 +96,10 @@ public class RationalProperties {
             propertiesDoubleValue();
             propertiesDoubleValueExact();
             propertiesHasTerminatingBaseExpansion();
-            propertiesBigDecimalValue_int_RoundingMode();
-            propertiesBigDecimalValue_int();
+            propertiesBigDecimalValueByPrecision_int_RoundingMode();
+            propertiesBigDecimalValueByScale_int_RoundingMode();
+            propertiesBigDecimalValueByPrecision_int();
+            propertiesBigDecimalValueByScale_int();
             propertiesBigDecimalValueExact();
             propertiesAdd();
             propertiesNegate();
@@ -382,6 +386,10 @@ public class RationalProperties {
             assertTrue(bd, eq(bd, r.bigDecimalValueExact()));
             assertTrue(bd, r.hasTerminatingBaseExpansion(BigInteger.TEN));
         }
+
+        for (BigDecimal bd : take(LIMIT, P.canonicalBigDecimals())) {
+            inverses(Rational::of, Rational::bigDecimalValueExact, bd);
+        }
     }
 
     private static void propertiesIsInteger() {
@@ -479,6 +487,13 @@ public class RationalProperties {
             Rational r = of(i);
             assertEquals(i, r.bigIntegerValueExact(), i);
             inverses(Rational::bigIntegerValueExact, Rational::of, r);
+            homomorphic(
+                    Rational::negate,
+                    BigInteger::negate,
+                    Rational::bigIntegerValueExact,
+                    Rational::bigIntegerValueExact,
+                    r
+            );
         }
 
         for (Rational r : take(LIMIT, filterInfinite(s -> !s.isInteger(), P.rationals()))) {
@@ -495,6 +510,11 @@ public class RationalProperties {
             Rational r = of(b);
             assertEquals(b, r.byteValueExact(), b);
             inverses(Rational::byteValueExact, c -> of((int) c), r);
+        }
+
+        for (byte b : take(LIMIT, filter(c -> c != Byte.MIN_VALUE, P.bytes()))) {
+            Rational r = of(b);
+            homomorphic(Rational::negate, c -> (byte) -c, Rational::byteValueExact, Rational::byteValueExact, r);
         }
 
         for (Rational r : take(LIMIT, filterInfinite(s -> !s.isInteger(), P.rationals()))) {
@@ -527,6 +547,11 @@ public class RationalProperties {
             inverses(Rational::shortValueExact, t -> of((int) t), r);
         }
 
+        for (short s : take(LIMIT, filter(t -> t != Short.MIN_VALUE, P.shorts()))) {
+            Rational r = of(s);
+            homomorphic(Rational::negate, t -> (short) -t, Rational::shortValueExact, Rational::shortValueExact, r);
+        }
+
         for (Rational r : take(LIMIT, filterInfinite(s -> !s.isInteger(), P.rationals()))) {
             try {
                 r.shortValueExact();
@@ -555,6 +580,11 @@ public class RationalProperties {
             Rational r = of(i);
             assertEquals(i, r.intValueExact(), i);
             inverses(Rational::intValueExact, Rational::of, r);
+        }
+
+        for (int i : take(LIMIT, filter(j -> j != Integer.MIN_VALUE, P.integers()))) {
+            Rational r = of(i);
+            homomorphic(Rational::negate, j -> -j, Rational::intValueExact, Rational::intValueExact, r);
         }
 
         for (Rational r : take(LIMIT, filterInfinite(s -> !s.isInteger(), P.rationals()))) {
@@ -589,6 +619,11 @@ public class RationalProperties {
             Rational r = of(l);
             assertEquals(l, r.longValueExact(), l);
             inverses(Rational::longValueExact, Rational::of, r);
+        }
+
+        for (long l : take(LIMIT, filter(m -> m != Long.MIN_VALUE, P.longs()))) {
+            Rational r = of(l);
+            homomorphic(Rational::negate, m -> -m, Rational::longValueExact, Rational::longValueExact, r);
         }
 
         for (Rational r : take(LIMIT, filterInfinite(s -> !s.isInteger(), P.rationals()))) {
@@ -648,6 +683,13 @@ public class RationalProperties {
         initialize("binaryFractionValueExact()");
         for (Rational r : take(LIMIT, filterInfinite(Rational::isBinaryFraction, P.rationals()))) {
             inverses(Rational::binaryFractionValueExact, Rational::of, r);
+            homomorphic(
+                    Rational::negate,
+                    BinaryFraction::negate,
+                    Rational::binaryFractionValueExact,
+                    Rational::binaryFractionValueExact,
+                    r
+            );
         }
 
         for (Rational r : take(LIMIT, filterInfinite(s -> !s.isBinaryFraction(), P.rationals()))) {
@@ -1071,6 +1113,13 @@ public class RationalProperties {
             float f = r.floatValueExact();
             assertTrue(r, !Float.isNaN(f));
             assertTrue(r, f == 0.0f || Math.signum(f) == r.signum());
+            homomorphic(
+                    Rational::negate,
+                    g -> absNegativeZeros(-g),
+                    Rational::floatValueExact,
+                    Rational::floatValueExact,
+                    r
+            );
         }
 
         Iterable<Rational> rs = map(
@@ -1397,6 +1446,13 @@ public class RationalProperties {
             double d = r.doubleValueExact();
             assertTrue(r, !Double.isNaN(d));
             assertTrue(r, d == 0.0 || Math.signum(d) == r.signum());
+            homomorphic(
+                    Rational::negate,
+                    e -> absNegativeZeros(-e),
+                    Rational::doubleValueExact,
+                    Rational::doubleValueExact,
+                    r
+            );
         }
 
         Iterable<Rational> rs = map(
@@ -1419,26 +1475,18 @@ public class RationalProperties {
     }
 
     private static void propertiesHasTerminatingBaseExpansion() {
-        initialize("");
-
-        System.out.println("\t\ttesting hasTerminatingBaseExpansion(BigInteger) properties...");
-
+        initialize("hasTerminatingBaseExpansion(BigInteger)");
+        //noinspection Convert2MethodRef
         Iterable<Pair<Rational, BigInteger>> ps = P.pairs(
-                P.withElement(
-                        ZERO,
-                        filterInfinite(
-                                r -> le(r.getDenominator(), BigInteger.valueOf(DENOMINATOR_CUTOFF)),
-                                P.withScale(8).positiveRationals()
-                        )
-                ),
-                P.withScale(8).rangeUp(IntegerUtils.TWO)
+                P.withScale(8).rationals(),
+                map(i -> BigInteger.valueOf(i), P.rangeUpGeometric(2))
         );
         for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
             boolean result = p.a.hasTerminatingBaseExpansion(p.b);
             Iterable<BigInteger> dPrimeFactors = nub(MathUtils.primeFactors(p.a.getDenominator()));
             Iterable<BigInteger> bPrimeFactors = nub(MathUtils.primeFactors(p.b));
             assertEquals(p, result, isSubsetOf(dPrimeFactors, bPrimeFactors));
-            Triple<List<BigInteger>, List<BigInteger>, List<BigInteger>> pn = p.a.positionalNotation(p.b);
+            Triple<List<BigInteger>, List<BigInteger>, List<BigInteger>> pn = p.a.abs().positionalNotation(p.b);
             assertEquals(p, result, pn.c.equals(Collections.singletonList(BigInteger.ZERO)));
         }
 
@@ -1450,141 +1498,114 @@ public class RationalProperties {
         }
     }
 
-    private static void propertiesBigDecimalValue_int_RoundingMode() {
-        initialize("");
-        System.out.println("\t\ttesting bigDecimalValue(int, RoundingMode)...");
-
-        Iterable<Pair<Rational, Pair<Integer, RoundingMode>>> ps;
-        if (P instanceof QBarExhaustiveProvider) {
-            ps = P.pairs(
-                    P.rationals(),
-                    (Iterable<Pair<Integer, RoundingMode>>) P.pairs(P.naturalIntegers(), P.roundingModes())
-            );
-        } else {
-            ps = P.pairs(
-                    P.rationals(),
-                    (Iterable<Pair<Integer, RoundingMode>>) P.pairs(
-                            P.withScale(20).naturalIntegersGeometric(),
-                            P.roundingModes()
-                    )
-            );
-        }
-        ps = filter(
-                p -> {
-                    try {
-                        p.a.bigDecimalValueByPrecision(p.b.a, p.b.b);
-                        return true;
-                    } catch (ArithmeticException e) {
-                        return false;
-                    }
-                },
-                ps
+    private static void propertiesBigDecimalValueByPrecision_int_RoundingMode() {
+        initialize("bigDecimalValueByPrecision(int, RoundingMode)");
+        Predicate<Triple<Rational, Integer, RoundingMode>> valid = t -> {
+            try {
+                t.a.bigDecimalValueByPrecision(t.b, t.c);
+                return true;
+            } catch (ArithmeticException e) {
+                return false;
+            }
+        };
+        Iterable<Triple<Rational, Integer, RoundingMode>> ts = filterInfinite(
+                valid,
+                P.triples(P.rationals(), P.naturalIntegersGeometric(), P.roundingModes())
         );
-        for (Pair<Rational, Pair<Integer, RoundingMode>> p : take(LIMIT, ps)) {
-            BigDecimal bd = p.a.bigDecimalValueByPrecision(p.b.a, p.b.b);
-            assertTrue(p, eq(bd, BigDecimal.ZERO) || bd.signum() == p.a.signum());
+        for (Triple<Rational, Integer, RoundingMode> t : take(LIMIT, ts)) {
+            BigDecimal bd = t.a.bigDecimalValueByPrecision(t.b, t.c);
+            assertTrue(t, eq(bd, BigDecimal.ZERO) || bd.signum() == t.a.signum());
         }
 
-        for (Pair<Rational, Pair<Integer, RoundingMode>> p : take(LIMIT, filter(q -> q.b.a != 0 && q.a != ZERO, ps))) {
-            BigDecimal bd = p.a.bigDecimalValueByPrecision(p.b.a, p.b.b);
-            assertTrue(p, bd.precision() == p.b.a);
+        ts = filterInfinite(valid, P.triples(P.nonzeroRationals(), P.positiveIntegersGeometric(), P.roundingModes()));
+        for (Triple<Rational, Integer, RoundingMode> t : take(LIMIT, ts)) {
+            BigDecimal bd = t.a.bigDecimalValueByPrecision(t.b, t.c);
+            assertTrue(t, bd.precision() == t.b);
         }
 
-        Iterable<Pair<Rational, Integer>> pris;
-        if (P instanceof QBarExhaustiveProvider) {
-            pris = P.pairsSquareRootOrder(P.rationals(), P.naturalIntegers());
-        } else {
-            pris = P.pairs(P.rationals(), P.withScale(20).naturalIntegersGeometric());
-        }
-        pris = filter(
-                p -> {
-                    try {
-                        p.a.bigDecimalValueByPrecision(p.b);
-                        return true;
-                    } catch (ArithmeticException e) {
-                        return false;
-                    }
-                },
-                pris
+        Iterable<Pair<Rational, Integer>> ps = filterInfinite(
+                q -> valid.test(new Triple<>(q.a, q.b, RoundingMode.UNNECESSARY)),
+                P.pairsSquareRootOrder(P.rationals(), P.naturalIntegersGeometric())
         );
-
-        Iterable<Pair<Rational, Integer>> priExact = filter(p -> of(p.a.bigDecimalValueByPrecision(p.b)).equals(p.a), pris);
-        for (Pair<Rational, Integer> pri : take(LIMIT, priExact)) {
-            BigDecimal bd = pri.a.bigDecimalValueByPrecision(pri.b, RoundingMode.UNNECESSARY);
-            assertEquals(pri, bd, pri.a.bigDecimalValueByPrecision(pri.b, RoundingMode.FLOOR));
-            assertEquals(pri, bd, pri.a.bigDecimalValueByPrecision(pri.b, RoundingMode.CEILING));
-            assertEquals(pri, bd, pri.a.bigDecimalValueByPrecision(pri.b, RoundingMode.DOWN));
-            assertEquals(pri, bd, pri.a.bigDecimalValueByPrecision(pri.b, RoundingMode.UP));
-            assertEquals(pri, bd, pri.a.bigDecimalValueByPrecision(pri.b, RoundingMode.HALF_DOWN));
-            assertEquals(pri, bd, pri.a.bigDecimalValueByPrecision(pri.b, RoundingMode.HALF_UP));
-            assertEquals(pri, bd, pri.a.bigDecimalValueByPrecision(pri.b, RoundingMode.HALF_EVEN));
+        for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
+            BigDecimal bd = p.a.bigDecimalValueByPrecision(p.b, RoundingMode.UNNECESSARY);
+            assertEquals(p, bd, p.a.bigDecimalValueByPrecision(p.b, RoundingMode.FLOOR));
+            assertEquals(p, bd, p.a.bigDecimalValueByPrecision(p.b, RoundingMode.CEILING));
+            assertEquals(p, bd, p.a.bigDecimalValueByPrecision(p.b, RoundingMode.DOWN));
+            assertEquals(p, bd, p.a.bigDecimalValueByPrecision(p.b, RoundingMode.UP));
+            assertEquals(p, bd, p.a.bigDecimalValueByPrecision(p.b, RoundingMode.HALF_DOWN));
+            assertEquals(p, bd, p.a.bigDecimalValueByPrecision(p.b, RoundingMode.HALF_UP));
+            assertEquals(p, bd, p.a.bigDecimalValueByPrecision(p.b, RoundingMode.HALF_EVEN));
         }
 
-        Iterable<Pair<Rational, Integer>> priInexact = filter(p -> !of(p.a.bigDecimalValueByPrecision(p.b)).equals(p.a), pris);
-        for (Pair<Rational, Integer> pri : take(LIMIT, priInexact)) {
-            BigDecimal low = pri.a.bigDecimalValueByPrecision(pri.b, RoundingMode.FLOOR);
-            BigDecimal high = pri.a.bigDecimalValueByPrecision(pri.b, RoundingMode.CEILING);
-            assertTrue(pri, lt(low, high));
-        }
-
-        for (Pair<Rational, Integer> pri : take(LIMIT, filter(p -> p.a.signum() == 1, priInexact))) {
-            BigDecimal floor = pri.a.bigDecimalValueByPrecision(pri.b, RoundingMode.FLOOR);
-            BigDecimal down = pri.a.bigDecimalValueByPrecision(pri.b, RoundingMode.DOWN);
-            BigDecimal ceiling = pri.a.bigDecimalValueByPrecision(pri.b, RoundingMode.CEILING);
-            BigDecimal up = pri.a.bigDecimalValueByPrecision(pri.b, RoundingMode.UP);
-            assertEquals(pri, floor, down);
-            assertEquals(pri, ceiling, up);
-        }
-
-        for (Pair<Rational, Integer> pri : take(LIMIT, filter(p -> p.a.signum() == -1, priInexact))) {
-            BigDecimal floor = pri.a.bigDecimalValueByPrecision(pri.b, RoundingMode.FLOOR);
-            BigDecimal down = pri.a.bigDecimalValueByPrecision(pri.b, RoundingMode.DOWN);
-            BigDecimal ceiling = pri.a.bigDecimalValueByPrecision(pri.b, RoundingMode.CEILING);
-            BigDecimal up = pri.a.bigDecimalValueByPrecision(pri.b, RoundingMode.UP);
-            assertEquals(pri, floor, up);
-            assertEquals(pri, ceiling, down);
-        }
-
-        Iterable<Pair<BigDecimal, Integer>> notMidpoints;
-        if (P instanceof QBarExhaustiveProvider) {
-            notMidpoints = P.pairsSquareRootOrder(P.bigDecimals(), P.naturalIntegers());
-        } else {
-            notMidpoints = P.pairs(P.bigDecimals(), P.withScale(20).naturalIntegersGeometric());
-        }
-        notMidpoints = filter(
-                p -> {
-                    //noinspection SimplifiableIfStatement
-                    if (p.a.precision() <= 1 || p.b != p.a.precision() - 1) return false;
-                    return !p.a.abs().unscaledValue().mod(BigInteger.TEN).equals(BigInteger.valueOf(5));
-                },
-                notMidpoints
+        ps = filterInfinite(
+                q -> valid.test(new Triple<>(q.a, q.b, RoundingMode.FLOOR)) &&
+                        !of(q.a.bigDecimalValueByPrecision(q.b)).equals(q.a),
+                P.pairsSquareRootOrder(P.rationals(), P.naturalIntegersGeometric())
         );
-        for (Pair<BigDecimal, Integer> p : take(LIMIT, notMidpoints)) {
-            Rational r = of(p.a);
-            BigDecimal down = r.bigDecimalValueByPrecision(p.b, RoundingMode.DOWN);
-            BigDecimal up = r.bigDecimalValueByPrecision(p.b, RoundingMode.UP);
-            BigDecimal halfDown = r.bigDecimalValueByPrecision(p.b, RoundingMode.HALF_DOWN);
-            BigDecimal halfUp = r.bigDecimalValueByPrecision(p.b, RoundingMode.HALF_UP);
-            BigDecimal halfEven = r.bigDecimalValueByPrecision(p.b, RoundingMode.HALF_EVEN);
-            boolean closerToDown = lt(r.subtract(of(down)).abs(), r.subtract(of(up)).abs());
-            assertEquals(p, halfDown, closerToDown ? down : up);
-            assertEquals(p, halfUp, closerToDown ? down : up);
-            assertEquals(p, halfEven, closerToDown ? down : up);
+        for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
+            BigDecimal low = p.a.bigDecimalValueByPrecision(p.b, RoundingMode.FLOOR);
+            BigDecimal high = p.a.bigDecimalValueByPrecision(p.b, RoundingMode.CEILING);
+            assertTrue(p, lt(low, high));
         }
 
-        Iterable<BigDecimal> midpoints = filter(
-                x -> x.precision() > 1,
+        ps = filterInfinite(
+                q -> valid.test(new Triple<>(q.a, q.b, RoundingMode.FLOOR)) &&
+                        !of(q.a.bigDecimalValueByPrecision(q.b)).equals(q.a),
+                P.pairsSquareRootOrder(P.positiveRationals(), P.naturalIntegersGeometric())
+        );
+        for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
+            BigDecimal floor = p.a.bigDecimalValueByPrecision(p.b, RoundingMode.FLOOR);
+            BigDecimal down = p.a.bigDecimalValueByPrecision(p.b, RoundingMode.DOWN);
+            BigDecimal ceiling = p.a.bigDecimalValueByPrecision(p.b, RoundingMode.CEILING);
+            BigDecimal up = p.a.bigDecimalValueByPrecision(p.b, RoundingMode.UP);
+            assertEquals(p, floor, down);
+            assertEquals(p, ceiling, up);
+        }
+
+        ps = filterInfinite(
+                q -> valid.test(new Triple<>(q.a, q.b, RoundingMode.FLOOR)) &&
+                        !of(q.a.bigDecimalValueByPrecision(q.b)).equals(q.a),
+                P.pairsSquareRootOrder(P.negativeRationals(), P.naturalIntegersGeometric())
+        );
+        for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
+            BigDecimal floor = p.a.bigDecimalValueByPrecision(p.b, RoundingMode.FLOOR);
+            BigDecimal down = p.a.bigDecimalValueByPrecision(p.b, RoundingMode.DOWN);
+            BigDecimal ceiling = p.a.bigDecimalValueByPrecision(p.b, RoundingMode.CEILING);
+            BigDecimal up = p.a.bigDecimalValueByPrecision(p.b, RoundingMode.UP);
+            assertEquals(p, floor, up);
+            assertEquals(p, ceiling, down);
+        }
+
+        BigInteger five = BigInteger.valueOf(5);
+        Iterable<BigDecimal> bds = filterInfinite(
+                bd -> bd.precision() > 1 && !bd.abs().unscaledValue().mod(BigInteger.TEN).equals(five),
+                P.bigDecimals()
+        );
+        for (BigDecimal bd : take(LIMIT, bds)) {
+            int precision = bd.precision() - 1;
+            Rational r = of(bd);
+            BigDecimal down = r.bigDecimalValueByPrecision(precision, RoundingMode.DOWN);
+            BigDecimal up = r.bigDecimalValueByPrecision(precision, RoundingMode.UP);
+            BigDecimal halfDown = r.bigDecimalValueByPrecision(precision, RoundingMode.HALF_DOWN);
+            BigDecimal halfUp = r.bigDecimalValueByPrecision(precision, RoundingMode.HALF_UP);
+            BigDecimal halfEven = r.bigDecimalValueByPrecision(precision, RoundingMode.HALF_EVEN);
+            BigDecimal closest = lt(r.subtract(of(down)).abs(), r.subtract(of(up)).abs()) ? down : up;
+            assertEquals(bd, halfDown, closest);
+            assertEquals(bd, halfUp, closest);
+            assertEquals(bd, halfEven, closest);
+        }
+
+        bds = filterInfinite(
+                bd -> bd.precision() > 1,
                 map(
-                        x -> new BigDecimal(
-                                x.unscaledValue().multiply(BigInteger.TEN).add(BigInteger.valueOf(5)),
-                                x.scale()
-                        ),
+                        bd -> new BigDecimal(bd.unscaledValue().multiply(BigInteger.TEN).add(five), bd.scale()),
                         P.bigDecimals()
                 )
         );
-        for (BigDecimal bd : take(LIMIT, midpoints)) {
-            Rational r = of(bd);
+        for (BigDecimal bd : take(LIMIT, bds)) {
             int precision = bd.precision() - 1;
+            Rational r = of(bd);
             BigDecimal down = r.bigDecimalValueByPrecision(precision, RoundingMode.DOWN);
             BigDecimal up = r.bigDecimalValueByPrecision(precision, RoundingMode.UP);
             BigDecimal halfDown = r.bigDecimalValueByPrecision(precision, RoundingMode.HALF_DOWN);
@@ -1595,25 +1616,23 @@ public class RationalProperties {
             assertTrue(bd, bd.scale() != halfEven.scale() + 1 || !halfEven.unscaledValue().testBit(0));
         }
 
-        Iterable<Pair<Rational, Pair<Integer, RoundingMode>>> psFail = P.pairs(
-                P.rationals(),
-                (Iterable<Pair<Integer, RoundingMode>>) P.pairs(P.negativeIntegers(), P.roundingModes())
+        Iterable<Triple<Rational, Integer, RoundingMode>> tsFail = P.triples(
+                P.nonzeroRationals(),
+                P.negativeIntegersGeometric(),
+                P.roundingModes()
         );
-        for (Pair<Rational, Pair<Integer, RoundingMode>> p : take(LIMIT, psFail)) {
+        for (Triple<Rational, Integer, RoundingMode> t : take(LIMIT, tsFail)) {
             try {
-                p.a.bigDecimalValueByPrecision(p.b.a, p.b.b);
-                fail(p);
+                t.a.bigDecimalValueByPrecision(t.b, t.c);
+                fail(t);
             } catch (IllegalArgumentException ignored) {}
         }
 
-        Iterable<Rational> rs = filter(r -> !r.hasTerminatingBaseExpansion(BigInteger.TEN), P.rationals());
-        Iterable<Pair<Rational, Integer>> prisFail;
-        if (P instanceof QBarExhaustiveProvider) {
-            prisFail = P.pairsSquareRootOrder(rs, P.naturalIntegers());
-        } else {
-            prisFail = P.pairs(rs, P.withScale(20).naturalIntegersGeometric());
-        }
-        for (Pair<Rational, Integer> p : take(LIMIT, prisFail)) {
+        Iterable<Pair<Rational, Integer>> psFail = P.pairsSquareRootOrder(
+                filterInfinite(r -> !r.hasTerminatingBaseExpansion(BigInteger.TEN), P.rationals()),
+                P.naturalIntegersGeometric()
+        );
+        for (Pair<Rational, Integer> p : take(LIMIT, psFail)) {
             try {
                 p.a.bigDecimalValueByPrecision(p.b, RoundingMode.UNNECESSARY);
                 fail(p);
@@ -1621,26 +1640,132 @@ public class RationalProperties {
         }
     }
 
-    private static void propertiesBigDecimalValue_int() {
-        initialize("");
-        System.out.println("\t\ttesting bigDecimalValue(int)...");
-
-        Iterable<Pair<Rational, Integer>> ps;
-        if (P instanceof QBarExhaustiveProvider) {
-            ps = P.pairsSquareRootOrder(P.rationals(), P.naturalIntegers());
-        } else {
-            ps = P.pairs(P.rationals(), P.withScale(20).naturalIntegersGeometric());
+    private static void propertiesBigDecimalValueByScale_int_RoundingMode() {
+        initialize("bigDecimalValueByScale(int, RoundingMode)");
+        Predicate<Triple<Rational, Integer, RoundingMode>> valid =
+                t -> t.c != RoundingMode.UNNECESSARY || t.a.multiply(TEN.pow(t.b)).isInteger();
+        Iterable<Triple<Rational, Integer, RoundingMode>> ts = filterInfinite(
+                valid,
+                P.triples(P.rationals(), P.integersGeometric(), P.roundingModes())
+        );
+        for (Triple<Rational, Integer, RoundingMode> t : take(LIMIT, ts)) {
+            BigDecimal bd = t.a.bigDecimalValueByScale(t.b, t.c);
+            assertTrue(t, bd.scale() == t.b);
+            assertTrue(t, eq(bd, BigDecimal.ZERO) || bd.signum() == t.a.signum());
         }
-        ps = filter(
-                p -> {
-                    try {
-                        p.a.bigDecimalValueByPrecision(p.b);
-                        return true;
-                    } catch (ArithmeticException e) {
-                        return false;
-                    }
-                },
-                ps
+
+        Iterable<Pair<Rational, Integer>> ps = filterInfinite(
+                q -> q.a.multiply(TEN.pow(q.b)).isInteger(),
+                P.pairsSquareRootOrder(P.rationals(), P.integersGeometric())
+        );
+        for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
+            BigDecimal bd = p.a.bigDecimalValueByScale(p.b, RoundingMode.UNNECESSARY);
+            assertEquals(p, bd, p.a.bigDecimalValueByScale(p.b, RoundingMode.FLOOR));
+            assertEquals(p, bd, p.a.bigDecimalValueByScale(p.b, RoundingMode.CEILING));
+            assertEquals(p, bd, p.a.bigDecimalValueByScale(p.b, RoundingMode.DOWN));
+            assertEquals(p, bd, p.a.bigDecimalValueByScale(p.b, RoundingMode.UP));
+            assertEquals(p, bd, p.a.bigDecimalValueByScale(p.b, RoundingMode.HALF_DOWN));
+            assertEquals(p, bd, p.a.bigDecimalValueByScale(p.b, RoundingMode.HALF_UP));
+            assertEquals(p, bd, p.a.bigDecimalValueByScale(p.b, RoundingMode.HALF_EVEN));
+        }
+
+        ps = filterInfinite(
+                q -> !q.a.multiply(TEN.pow(q.b)).isInteger(),
+                P.pairsSquareRootOrder(P.rationals(), P.integersGeometric())
+        );
+        for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
+            BigDecimal low = p.a.bigDecimalValueByScale(p.b, RoundingMode.FLOOR);
+            BigDecimal high = p.a.bigDecimalValueByScale(p.b, RoundingMode.CEILING);
+            assertEquals(p, of(high).subtract(of(low)), TEN.pow(-p.b));
+        }
+
+        ps = filterInfinite(
+                q -> !q.a.multiply(TEN.pow(q.b)).isInteger(),
+                P.pairsSquareRootOrder(P.positiveRationals(), P.integersGeometric())
+        );
+        for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
+            BigDecimal floor = p.a.bigDecimalValueByScale(p.b, RoundingMode.FLOOR);
+            BigDecimal down = p.a.bigDecimalValueByScale(p.b, RoundingMode.DOWN);
+            BigDecimal ceiling = p.a.bigDecimalValueByScale(p.b, RoundingMode.CEILING);
+            BigDecimal up = p.a.bigDecimalValueByScale(p.b, RoundingMode.UP);
+            assertEquals(p, floor, down);
+            assertEquals(p, ceiling, up);
+        }
+
+        ps = filterInfinite(
+                q -> !q.a.multiply(TEN.pow(q.b)).isInteger(),
+                P.pairsSquareRootOrder(P.negativeRationals(), P.integersGeometric())
+        );
+        for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
+            BigDecimal floor = p.a.bigDecimalValueByScale(p.b, RoundingMode.FLOOR);
+            BigDecimal down = p.a.bigDecimalValueByScale(p.b, RoundingMode.DOWN);
+            BigDecimal ceiling = p.a.bigDecimalValueByScale(p.b, RoundingMode.CEILING);
+            BigDecimal up = p.a.bigDecimalValueByScale(p.b, RoundingMode.UP);
+            assertEquals(p, floor, up);
+            assertEquals(p, ceiling, down);
+        }
+
+        BigInteger five = BigInteger.valueOf(5);
+        Iterable<BigDecimal> bds = filterInfinite(
+                bd -> !bd.abs().unscaledValue().mod(BigInteger.TEN).equals(five),
+                P.bigDecimals()
+        );
+        for (BigDecimal bd : take(LIMIT, bds)) {
+            int scale = bd.scale() - 1;
+            Rational r = of(bd);
+            BigDecimal down = r.bigDecimalValueByScale(scale, RoundingMode.DOWN);
+            BigDecimal up = r.bigDecimalValueByScale(scale, RoundingMode.UP);
+            BigDecimal halfDown = r.bigDecimalValueByScale(scale, RoundingMode.HALF_DOWN);
+            BigDecimal halfUp = r.bigDecimalValueByScale(scale, RoundingMode.HALF_UP);
+            BigDecimal halfEven = r.bigDecimalValueByScale(scale, RoundingMode.HALF_EVEN);
+            BigDecimal closest = lt(r.subtract(of(down)).abs(), r.subtract(of(up)).abs()) ? down : up;
+            assertEquals(bd, halfDown, closest);
+            assertEquals(bd, halfUp, closest);
+            assertEquals(bd, halfEven, closest);
+        }
+
+        bds = map(
+                bd -> new BigDecimal(bd.unscaledValue().multiply(BigInteger.TEN).add(five), bd.scale()),
+                P.bigDecimals()
+        );
+        for (BigDecimal bd : take(LIMIT, bds)) {
+            int scale = bd.scale() - 1;
+            Rational r = of(bd);
+            BigDecimal down = r.bigDecimalValueByScale(scale, RoundingMode.DOWN);
+            BigDecimal up = r.bigDecimalValueByScale(scale, RoundingMode.UP);
+            BigDecimal halfDown = r.bigDecimalValueByScale(scale, RoundingMode.HALF_DOWN);
+            BigDecimal halfUp = r.bigDecimalValueByScale(scale, RoundingMode.HALF_UP);
+            BigDecimal halfEven = r.bigDecimalValueByScale(scale, RoundingMode.HALF_EVEN);
+            assertEquals(bd, down, halfDown);
+            assertEquals(bd, up, halfUp);
+            assertTrue(bd, !halfEven.unscaledValue().testBit(0));
+        }
+
+        Iterable<Pair<Rational, Integer>> psFail = P.pairsSquareRootOrder(
+                filterInfinite(r -> !r.hasTerminatingBaseExpansion(BigInteger.TEN), P.rationals()),
+                P.naturalIntegersGeometric()
+        );
+        for (Pair<Rational, Integer> p : take(LIMIT, psFail)) {
+            try {
+                p.a.bigDecimalValueByScale(p.b, RoundingMode.UNNECESSARY);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private static void propertiesBigDecimalValueByPrecision_int() {
+        initialize("bigDecimalValueByPrecision(int)");
+        Predicate<Pair<Rational, Integer>> valid = p -> {
+            try {
+                p.a.bigDecimalValueByPrecision(p.b);
+                return true;
+            } catch (ArithmeticException e) {
+                return false;
+            }
+        };
+        Iterable<Pair<Rational, Integer>> ps = filterInfinite(
+                valid,
+                P.pairsSquareRootOrder(P.rationals(), P.naturalIntegersGeometric())
         );
         for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
             BigDecimal bd = p.a.bigDecimalValueByPrecision(p.b);
@@ -1648,47 +1773,40 @@ public class RationalProperties {
             assertTrue(p, eq(bd, BigDecimal.ZERO) || bd.signum() == p.a.signum());
         }
 
-        for (Pair<Rational, Integer> p : take(LIMIT, filter(q -> q.b != 0 && q.a != ZERO, ps))) {
+        ps = filterInfinite(
+                q -> q.a != ZERO && q.b != 0 && valid.test(q),
+                P.pairsSquareRootOrder(P.rationals(), P.naturalIntegersGeometric())
+        );
+        for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
             BigDecimal bd = p.a.bigDecimalValueByPrecision(p.b);
             assertTrue(p, bd.precision() == p.b);
         }
 
-        Iterable<Pair<BigDecimal, Integer>> notMidpoints;
-        if (P instanceof QBarExhaustiveProvider) {
-            notMidpoints = P.pairsSquareRootOrder(P.bigDecimals(), P.naturalIntegers());
-        } else {
-            notMidpoints = P.pairs(P.bigDecimals(), P.withScale(20).naturalIntegersGeometric());
-        }
-        notMidpoints = filter(
-                p -> {
-                    //noinspection SimplifiableIfStatement
-                    if (p.a.precision() <= 1 || p.b != p.a.precision() - 1) return false;
-                    return !p.a.abs().unscaledValue().mod(BigInteger.TEN).equals(BigInteger.valueOf(5));
-                },
-                notMidpoints
+        BigInteger five = BigInteger.valueOf(5);
+        Iterable<BigDecimal> bds = filterInfinite(
+                bd -> bd.precision() > 1 && !bd.abs().unscaledValue().mod(BigInteger.TEN).equals(five),
+                P.bigDecimals()
         );
-        for (Pair<BigDecimal, Integer> p : take(LIMIT, notMidpoints)) {
-            Rational r = of(p.a);
-            BigDecimal down = r.bigDecimalValueByPrecision(p.b, RoundingMode.DOWN);
-            BigDecimal up = r.bigDecimalValueByPrecision(p.b, RoundingMode.UP);
-            BigDecimal halfEven = r.bigDecimalValueByPrecision(p.b);
+        for (BigDecimal bd : take(LIMIT, bds)) {
+            int precision = bd.precision() - 1;
+            Rational r = of(bd);
+            BigDecimal down = r.bigDecimalValueByPrecision(precision, RoundingMode.DOWN);
+            BigDecimal up = r.bigDecimalValueByPrecision(precision, RoundingMode.UP);
+            BigDecimal halfEven = r.bigDecimalValueByPrecision(precision);
             boolean closerToDown = lt(r.subtract(of(down)).abs(), r.subtract(of(up)).abs());
-            assertEquals(p, halfEven, closerToDown ? down : up);
+            assertEquals(bd, halfEven, closerToDown ? down : up);
         }
 
-        Iterable<BigDecimal> midpoints = filter(
-                x -> x.precision() > 1,
+        bds = filterInfinite(
+                bd -> bd.precision() > 1,
                 map(
-                        x -> new BigDecimal(
-                                x.unscaledValue().multiply(BigInteger.TEN).add(BigInteger.valueOf(5)),
-                                x.scale()
-                        ),
+                        bd -> new BigDecimal(bd.unscaledValue().multiply(BigInteger.TEN).add(five), bd.scale()),
                         P.bigDecimals()
                 )
         );
-        for (BigDecimal bd : take(LIMIT, midpoints)) {
-            Rational r = of(bd);
+        for (BigDecimal bd : take(LIMIT, bds)) {
             int precision = bd.precision() - 1;
+            Rational r = of(bd);
             BigDecimal halfEven = r.bigDecimalValueByPrecision(precision);
             assertTrue(bd, bd.scale() != halfEven.scale() + 1 || !halfEven.unscaledValue().testBit(0));
         }
@@ -1701,16 +1819,63 @@ public class RationalProperties {
         }
     }
 
-    private static void propertiesBigDecimalValueExact() {
-        initialize("");
-        System.out.println("\t\ttesting bigDecimalValueExact()...");
+    private static void propertiesBigDecimalValueByScale_int() {
+        initialize("bigDecimalValueByScale(int)");
+        Predicate<Pair<Rational, Integer>> valid = p -> p.a.multiply(TEN.pow(p.b)).isInteger();
+        Iterable<Pair<Rational, Integer>> ps = filterInfinite(
+                valid,
+                P.pairsSquareRootOrder(P.rationals(), P.integersGeometric())
+        );
+        for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
+            BigDecimal bd = p.a.bigDecimalValueByScale(p.b);
+            assertEquals(p, bd, p.a.bigDecimalValueByScale(p.b, RoundingMode.HALF_EVEN));
+            assertTrue(p, eq(bd, BigDecimal.ZERO) || bd.signum() == p.a.signum());
+            assertTrue(p, bd.scale() == p.b);
+        }
 
-        Iterable<Rational> rs = filter(r -> r.hasTerminatingBaseExpansion(BigInteger.TEN), P.rationals());
+        BigInteger five = BigInteger.valueOf(5);
+        Iterable<BigDecimal> bds = filterInfinite(
+                bd -> !bd.abs().unscaledValue().mod(BigInteger.TEN).equals(five),
+                P.bigDecimals()
+        );
+        for (BigDecimal bd : take(LIMIT, bds)) {
+            int scale = bd.scale() - 1;
+            Rational r = of(bd);
+            BigDecimal down = r.bigDecimalValueByScale(scale, RoundingMode.DOWN);
+            BigDecimal up = r.bigDecimalValueByScale(scale, RoundingMode.UP);
+            BigDecimal halfEven = r.bigDecimalValueByScale(scale);
+            BigDecimal closer = lt(r.subtract(of(down)).abs(), r.subtract(of(up)).abs()) ? down : up;
+            assertEquals(bd, halfEven, closer);
+        }
+
+        bds = map(
+                bd -> new BigDecimal(bd.unscaledValue().multiply(BigInteger.TEN).add(five), bd.scale()),
+                P.bigDecimals()
+        );
+        for (BigDecimal bd : take(LIMIT, bds)) {
+            int scale = bd.scale() - 1;
+            Rational r = of(bd);
+            BigDecimal halfEven = r.bigDecimalValueByScale(scale);
+            assertTrue(bd, !halfEven.unscaledValue().testBit(0));
+        }
+    }
+
+    private static void propertiesBigDecimalValueExact() {
+        initialize("bigDecimalValueExact()");
+        Iterable<Rational> rs = filterInfinite(r -> r.hasTerminatingBaseExpansion(BigInteger.TEN), P.rationals());
         for (Rational r : take(LIMIT, rs)) {
             BigDecimal bd = r.bigDecimalValueExact();
+            assertTrue(bd, BigDecimalUtils.isCanonical(bd));
             assertEquals(r, bd, r.bigDecimalValueByPrecision(0, RoundingMode.UNNECESSARY));
             assertTrue(r, bd.signum() == r.signum());
-            assertEquals(r, of(bd), r);
+            inverses(Rational::bigDecimalValueExact, Rational::of, r);
+            homomorphic(
+                    Rational::negate,
+                    BigDecimal::negate,
+                    Rational::bigDecimalValueExact,
+                    Rational::bigDecimalValueExact,
+                    r
+            );
         }
 
         for (Pair<Rational, Integer> p : take(LIMIT, P.pairs(P.rationals(), P.negativeIntegers()))) {
@@ -1720,7 +1885,7 @@ public class RationalProperties {
             } catch (IllegalArgumentException ignored) {}
         }
 
-        Iterable<Rational> rsFail = filter(r -> !r.hasTerminatingBaseExpansion(BigInteger.TEN), P.rationals());
+        Iterable<Rational> rsFail = filterInfinite(r -> !r.hasTerminatingBaseExpansion(BigInteger.TEN), P.rationals());
         for (Rational r : take(LIMIT, rsFail)) {
             try {
                 r.bigDecimalValueExact();

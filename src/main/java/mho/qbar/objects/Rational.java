@@ -1261,8 +1261,7 @@ public final class Rational implements Comparable<Rational> {
      * <ul>
      *  <li>{@code this} must be a {@code Rational} whose decimal expansion is terminating; that is, its denominator
      *  must only have 2 or 5 as prime factors.</li>
-     *  <li>The result is a {@code BigDecimal} with minimal scale. That is, the scale is the smallest non-negative n
-     *  such that {@code this}×10<sup>n</sup> is an integer.</li>
+     *  <li>The result is a canonical {@code BigDecimal} (see {@link BigDecimalUtils#isCanonical(BigDecimal)}.)</li>
      * </ul>
      *
      * @return {@code this}, in {@code BigDecimal} form
