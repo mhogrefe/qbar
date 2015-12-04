@@ -378,6 +378,13 @@ public class RationalDemos {
         }
     }
 
+    private static void demoBitLength() {
+        initialize();
+        for (Rational r : take(LIMIT, P.rationals())) {
+            System.out.println("bitLength(" + r + ") = " + r.bitLength());
+        }
+    }
+
     private static void demoAdd() {
         initialize();
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {

@@ -1271,8 +1271,18 @@ public final class Rational implements Comparable<Rational> {
         return new BigDecimal(numerator).divide(new BigDecimal(denominator));
     }
 
+    /**
+     * Returns the bit length of {@code this}, or the sum of the bit lengths of the numerator and denominator.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Rational}.</li>
+     *  <li>The result is positive.</li>
+     * </ul>
+     *
+     * @return the bit length of {@code this}
+     */
     public int bitLength() {
-        return numerator.bitLength() + denominator.bitLength();
+        return numerator.abs().bitLength() + denominator.bitLength();
     }
 
     /**

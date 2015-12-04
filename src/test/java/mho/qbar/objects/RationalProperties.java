@@ -101,6 +101,7 @@ public class RationalProperties {
             propertiesBigDecimalValueByPrecision_int();
             propertiesBigDecimalValueByScale_int();
             propertiesBigDecimalValueExact();
+            propertiesBitLength();
             propertiesAdd();
             propertiesNegate();
             propertiesAbs();
@@ -1891,6 +1892,18 @@ public class RationalProperties {
                 r.bigDecimalValueExact();
                 fail(r);
             } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private static void propertiesBitLength() {
+        initialize("bitLength()");
+        for (Rational r : take(LIMIT, P.rationals())) {
+            assertTrue(r, r.bitLength() > 0);
+            homomorphic(Rational::negate, Function.identity(), Rational::bitLength, Rational::bitLength, r);
+        }
+
+        for (Rational r : take(LIMIT, P.nonzeroRationals())) {
+            homomorphic(Rational::invert, Function.identity(), Rational::bitLength, Rational::bitLength, r);
         }
     }
 

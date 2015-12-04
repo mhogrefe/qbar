@@ -2562,6 +2562,20 @@ public class RationalTest {
         bigDecimalValueExact_fail_helper("1/3");
     }
 
+    private static void bitLength_helper(@NotNull String x, int output) {
+        aeq(read(x).get().bitLength(), output);
+    }
+
+    @Test
+    public void testBitLength() {
+        bitLength_helper("0", 1);
+        bitLength_helper("1", 2);
+        bitLength_helper("2", 3);
+        bitLength_helper("-2", 3);
+        bitLength_helper("5/3", 5);
+        bitLength_helper("-5/3", 5);
+    }
+
     @Test
     public void testAdd() {
         aeq(read("1/2").get().add(read("1/3").get()), "5/6");
