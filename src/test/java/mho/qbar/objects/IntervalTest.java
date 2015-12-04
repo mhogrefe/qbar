@@ -1291,7 +1291,7 @@ public class IntervalTest {
         try {
             product(readIntervalListWithNulls("[[-2, 5/3], null, [4, 4]]"));
             fail();
-        } catch (NullPointerException ignored) {}
+        } catch (NullPointerException | IllegalArgumentException ignored) {}
     }
 
     @Test

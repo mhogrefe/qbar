@@ -161,7 +161,7 @@ public final class Interval implements Comparable<Interval> {
     }
 
     public int bitLength() {
-        return (lower == null ? 1 : lower.bitLength()) + (upper == null ? 1 : upper.bitLength());
+        return (lower == null ? 0 : lower.bitLength()) + (upper == null ? 0 : upper.bitLength());
     }
 
     /**

@@ -915,7 +915,7 @@ public class QBarRandomProviderTest {
                 "{(-Infinity, Infinity)=136618, (-Infinity, 0]=98468, [0, Infinity)=97756, [0, 0]=70368," +
                 " (-Infinity, -1]=24761, (-Infinity, 1]=24665, [-1, Infinity)=24632, [1, Infinity)=24487," +
                 " [0, 1]=17600, [-1, 0]=17450}",
-                3.7168489999587586
+                2.895178999989618
         );
         intervals_helper(
                 16,
@@ -926,7 +926,7 @@ public class QBarRandomProviderTest {
                 "{(-Infinity, Infinity)=25200, [0, Infinity)=13341, (-Infinity, 0]=13229, [0, 0]=7053," +
                 " (-Infinity, -1]=5441, [-1, Infinity)=5387, (-Infinity, 1]=5376, [1, Infinity)=5369, [-1, 0]=2931," +
                 " [0, 1]=2918}",
-                12.581164000012107
+                12.178759999996757
         );
         intervals_helper(
                 32,
@@ -938,7 +938,7 @@ public class QBarRandomProviderTest {
                 "{(-Infinity, Infinity)=6930, (-Infinity, 0]=2390, [0, Infinity)=2350, [1, Infinity)=1025," +
                 " (-Infinity, -1]=1022, (-Infinity, 1]=1018, [-1, Infinity)=1006, [0, 0]=764, (-Infinity, 1/2]=496," +
                 " (-Infinity, 2]=494}",
-                28.125747000009007
+                27.902336000016298
         );
         intervals_fail_helper(5);
         intervals_fail_helper(0);
