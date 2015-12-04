@@ -84,6 +84,7 @@ public class RationalProperties {
             propertiesIsBinaryFraction();
             propertiesBinaryFractionValueExact();
             propertiesBinaryExponent();
+            compareImplementationsBinaryExponent();
             propertiesIsEqualToFloat();
             compareImplementationsIsEqualToFloat();
             propertiesIsEqualToDouble();
@@ -103,10 +104,10 @@ public class RationalProperties {
             propertiesBigDecimalValueExact();
             propertiesBitLength();
             propertiesAdd();
+            compareImplementationsAdd();
             propertiesNegate();
             propertiesAbs();
             propertiesSignum();
-            compareImplementationsAdd();
             propertiesSubtract();
             compareImplementationsSubtract();
             propertiesMultiply_Rational();
@@ -701,10 +702,29 @@ public class RationalProperties {
         }
     }
 
+    private static int binaryExponent_alt(@NotNull Rational r) {
+        Rational adjusted = r;
+        int exponent = 0;
+        if (lt(r.getNumerator(), r.getDenominator())) {
+            do {
+                adjusted = adjusted.shiftLeft(1);
+                exponent--;
+            } while (lt(adjusted.getNumerator(), adjusted.getDenominator()));
+        } else {
+            do {
+                adjusted = adjusted.shiftRight(1);
+                exponent++;
+            } while (ge(adjusted.getNumerator(), adjusted.getDenominator()));
+            exponent--;
+        }
+        return exponent;
+    }
+
     private static void propertiesBinaryExponent() {
         initialize("binaryExponent()");
         for (Rational r : take(LIMIT, P.positiveRationals())) {
             int exponent = r.binaryExponent();
+            assertEquals(r, binaryExponent_alt(r), exponent);
             Rational power = ONE.shiftLeft(exponent);
             assertTrue(r, le(power, r));
             assertTrue(r, le(r, power.shiftLeft(1)));
@@ -721,6 +741,13 @@ public class RationalProperties {
                 fail(r);
             } catch (IllegalArgumentException ignored) {}
         }
+    }
+
+    private static void compareImplementationsBinaryExponent() {
+        Map<String, Function<Rational, Integer>> functions = new LinkedHashMap<>();
+        functions.put("alt", RationalProperties::binaryExponent_alt);
+        functions.put("standard", Rational::binaryExponent);
+        compareImplementations("binaryExponent()", take(LIMIT, P.positiveRationals()), functions);
     }
 
     private static boolean isEqualToFloat_simplest(@NotNull Rational r) {
@@ -1915,15 +1942,13 @@ public class RationalProperties {
     }
 
     private static void propertiesAdd() {
-        initialize("");
-        System.out.println("\t\ttesting add(Rational) properties...");
-
+        initialize("add(Rational)");
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
             Rational sum = p.a.add(p.b);
             sum.validate();
             assertEquals(p, sum, add_simplest(p.a, p.b));
-            assertEquals(p, sum, p.b.add(p.a));
-            assertEquals(p, sum.subtract(p.b), p.a);
+            commutative(Rational::add, p);
+            inverses(r -> r.add(p.b), (Rational r) -> r.subtract(p.b), p.a);
         }
 
         for (Rational r : take(LIMIT, P.rationals())) {
@@ -1933,67 +1958,48 @@ public class RationalProperties {
         }
 
         for (Triple<Rational, Rational, Rational> t : take(LIMIT, P.triples(P.rationals()))) {
-            Rational sum1 = t.a.add(t.b).add(t.c);
-            Rational sum2 = t.a.add(t.b.add(t.c));
-            assertEquals(t, sum1, sum2);
+            associative(Rational::add, t);
         }
     }
 
     private static void compareImplementationsAdd() {
-        initialize("");
-        System.out.println("\t\tcomparing add(Rational) implementations...");
-
-        long totalTime = 0;
-        for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
-            long time = System.nanoTime();
-            add_simplest(p.a, p.b);
-            totalTime += (System.nanoTime() - time);
-        }
-        System.out.println("\t\t\tsimplest: " + ((double) totalTime) / 1e9 + " s");
-
-        totalTime = 0;
-        for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
-            long time = System.nanoTime();
-            p.a.add(p.b);
-            totalTime += (System.nanoTime() - time);
-        }
-        System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
+        Map<String, Function<Pair<Rational, Rational>, Rational>> functions = new LinkedHashMap<>();
+        functions.put("simplest", p -> add_simplest(p.a, p.b));
+        functions.put("standard", p -> p.a.add(p.b));
+        compareImplementations("add()", take(LIMIT, P.pairs(P.rationals())), functions);
     }
 
     private static void propertiesNegate() {
-        initialize("");
-        System.out.println("\t\ttesting negate() properties...");
-
+        initialize("negate()");
         for (Rational r : take(LIMIT, P.rationals())) {
             Rational negative = r.negate();
             negative.validate();
-            assertEquals(r, r, negative.negate());
+            isInvolution(Rational::negate, r);
             assertTrue(r, r.add(negative) == ZERO);
         }
 
-        for (Rational r : take(LIMIT, filter(s -> s != ZERO, P.rationals()))) {
-            Rational negative = r.negate();
-            assertNotEquals(r, r, negative);
+        for (Rational r : take(LIMIT, P.nonzeroRationals())) {
+            assertNotEquals(r, r, r.negate());
         }
     }
 
     private static void propertiesAbs() {
-        initialize("");
-        System.out.println("\t\ttesting abs() properties...");
-
+        initialize("abs()");
         for (Rational r : take(LIMIT, P.rationals())) {
             Rational abs = r.abs();
             abs.validate();
-            assertEquals(r, abs, abs.abs());
+            idempotent(Rational::abs, r);
             assertNotEquals(r, abs.signum(), -1);
             assertTrue(r, ge(abs, ZERO));
+        }
+
+        for (Rational r : take(LIMIT, P.positiveRationals())) {
+            fixedPoint(Rational::abs, r);
         }
     }
 
     private static void propertiesSignum() {
-        initialize("");
-        System.out.println("\t\ttesting signum() properties...");
-
+        initialize("testing signum()");
         for (Rational r : take(LIMIT, P.rationals())) {
             int signum = r.signum();
             assertEquals(r, signum, Ordering.compare(r, ZERO).toInt());
@@ -2006,43 +2012,27 @@ public class RationalProperties {
     }
 
     private static void propertiesSubtract() {
-        initialize("");
-        System.out.println("\t\ttesting subtract(Rational) properties...");
-
+        initialize("subtract(Rational)");
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
             Rational difference = p.a.subtract(p.b);
             difference.validate();
             assertEquals(p, difference, subtract_simplest(p.a, p.b));
-            assertEquals(p, difference, p.b.subtract(p.a).negate());
-            assertEquals(p, p.a, difference.add(p.b));
+            antiCommutative(Rational::subtract, Rational::negate, p);
+            inverses(r -> r.add(p.b), (Rational r) -> r.subtract(p.b), p.a);
         }
 
         for (Rational r : take(LIMIT, P.rationals())) {
             assertEquals(r, ZERO.subtract(r), r.negate());
-            assertEquals(r, r.subtract(ZERO), r);
+            fixedPoint(s -> s.subtract(ZERO), r);
             assertTrue(r, r.subtract(r) == ZERO);
         }
     }
 
     private static void compareImplementationsSubtract() {
-        initialize("");
-        System.out.println("\t\tcomparing subtract(Rational) implementations...");
-
-        long totalTime = 0;
-        for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
-            long time = System.nanoTime();
-            subtract_simplest(p.a, p.b);
-            totalTime += (System.nanoTime() - time);
-        }
-        System.out.println("\t\t\tsimplest: " + ((double) totalTime) / 1e9 + " s");
-
-        totalTime = 0;
-        for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
-            long time = System.nanoTime();
-            p.a.subtract(p.b);
-            totalTime += (System.nanoTime() - time);
-        }
-        System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
+        Map<String, Function<Pair<Rational, Rational>, Rational>> functions = new LinkedHashMap<>();
+        functions.put("simplest", p -> subtract_simplest(p.a, p.b));
+        functions.put("standard", p -> p.a.subtract(p.b));
+        compareImplementations("subtract()", take(LIMIT, P.pairs(P.rationals())), functions);
     }
 
     private static @NotNull Pair<BigInteger, BigInteger> multiply_Rational_Knuth(

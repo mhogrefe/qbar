@@ -689,21 +689,12 @@ public final class Rational implements Comparable<Rational> {
         if (this == ZERO || signum() != 1) {
             throw new IllegalArgumentException("this must be positive. Invalid this: " + this);
         }
-        Rational adjusted = this;
-        int exponent = 0;
-        if (lt(numerator, denominator)) {
-            do {
-                adjusted = adjusted.shiftLeft(1);
-                exponent--;
-            } while (lt(adjusted.numerator, adjusted.denominator));
+        if (gt(numerator, denominator)) {
+            return numerator.divide(denominator).bitLength() - 1;
         } else {
-            do {
-                adjusted = adjusted.shiftRight(1);
-                exponent++;
-            } while (ge(adjusted.numerator, adjusted.denominator));
-            exponent--;
+            int exponent = -denominator.divide(numerator).bitLength();
+            return isPowerOfTwo() ? exponent + 1 : exponent;
         }
-        return exponent;
     }
 
     /**
@@ -1300,22 +1291,22 @@ public final class Rational implements Comparable<Rational> {
     public @NotNull Rational add(@NotNull Rational that) {
         if (this == ZERO) return that;
         if (that == ZERO) return this;
-        BigInteger d1 = denominator.gcd(that.denominator);
-        if (d1.equals(BigInteger.ONE)) {
-            BigInteger sn = numerator.multiply(that.denominator).add(denominator.multiply(that.numerator));
-            if (sn.equals(BigInteger.ZERO)) return ZERO;
-            BigInteger sd = denominator.multiply(that.denominator);
-            if (sn.equals(sd)) return ONE;
-            return new Rational(sn, sd);
+        BigInteger denominatorGcd = denominator.gcd(that.denominator);
+        if (denominatorGcd.equals(BigInteger.ONE)) {
+            BigInteger sumNumerator = numerator.multiply(that.denominator).add(denominator.multiply(that.numerator));
+            if (sumNumerator.equals(BigInteger.ZERO)) return ZERO;
+            BigInteger sumDenominator = denominator.multiply(that.denominator);
+            if (sumNumerator.equals(sumDenominator)) return ONE;
+            return new Rational(sumNumerator, sumDenominator);
         } else {
-            BigInteger t = numerator.multiply(that.denominator.divide(d1))
-                    .add(that.numerator.multiply(denominator.divide(d1)));
-            if (t.equals(BigInteger.ZERO)) return ZERO;
-            BigInteger d2 = t.gcd(d1);
-            BigInteger sn = t.divide(d2);
-            BigInteger sd = denominator.divide(d1).multiply(that.denominator.divide(d2));
-            if (sn.equals(sd)) return ONE;
-            return new Rational(sn, sd);
+            BigInteger sumNumerator = numerator.multiply(that.denominator.divide(denominatorGcd))
+                    .add(that.numerator.multiply(denominator.divide(denominatorGcd)));
+            if (sumNumerator.equals(BigInteger.ZERO)) return ZERO;
+            BigInteger gcd = sumNumerator.gcd(denominatorGcd);
+            sumNumerator = sumNumerator.divide(gcd);
+            BigInteger sumDenominator = denominator.divide(denominatorGcd).multiply(that.denominator.divide(gcd));
+            if (sumNumerator.equals(sumDenominator)) return ONE;
+            return new Rational(sumNumerator, sumDenominator);
         }
     }
 
@@ -1383,22 +1374,23 @@ public final class Rational implements Comparable<Rational> {
         if (this == ZERO) return that.negate();
         if (that == ZERO) return this;
         if (this == that) return ZERO;
-        BigInteger d1 = denominator.gcd(that.denominator);
-        if (d1.equals(BigInteger.ONE)) {
-            BigInteger sn = numerator.multiply(that.denominator).subtract(denominator.multiply(that.numerator));
-            if (sn.equals(BigInteger.ZERO)) return ZERO;
-            BigInteger sd = denominator.multiply(that.denominator);
-            if (sn.equals(sd)) return ONE;
-            return new Rational(sn, sd);
+        BigInteger denominatorGcd = denominator.gcd(that.denominator);
+        if (denominatorGcd.equals(BigInteger.ONE)) {
+            BigInteger diffNumerator =
+                    numerator.multiply(that.denominator).subtract(denominator.multiply(that.numerator));
+            if (diffNumerator.equals(BigInteger.ZERO)) return ZERO;
+            BigInteger diffDenominator = denominator.multiply(that.denominator);
+            if (diffNumerator.equals(diffDenominator)) return ONE;
+            return new Rational(diffNumerator, diffDenominator);
         } else {
-            BigInteger t = numerator.multiply(that.denominator.divide(d1))
-                    .subtract(that.numerator.multiply(denominator.divide(d1)));
-            if (t.equals(BigInteger.ZERO)) return ZERO;
-            BigInteger d2 = t.gcd(d1);
-            BigInteger sn = t.divide(d2);
-            BigInteger sd = denominator.divide(d1).multiply(that.denominator.divide(d2));
-            if (sn.equals(sd)) return ONE;
-            return new Rational(sn, sd);
+            BigInteger diffNumerator = numerator.multiply(that.denominator.divide(denominatorGcd))
+                    .subtract(that.numerator.multiply(denominator.divide(denominatorGcd)));
+            if (diffNumerator.equals(BigInteger.ZERO)) return ZERO;
+            BigInteger gcd = diffNumerator.gcd(denominatorGcd);
+            diffNumerator = diffNumerator.divide(gcd);
+            BigInteger diffDenominator = denominator.divide(denominatorGcd).multiply(that.denominator.divide(gcd));
+            if (diffNumerator.equals(diffDenominator)) return ONE;
+            return new Rational(diffNumerator, diffDenominator);
         }
     }
 

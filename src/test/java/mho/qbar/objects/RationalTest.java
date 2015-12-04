@@ -188,9 +188,7 @@ public class RationalTest {
     }
 
     private static void of_BigInteger_BigInteger_helper(int x, int y, @NotNull String output) {
-        Rational r = of(BigInteger.valueOf(x), BigInteger.valueOf(y));
-        r.validate();
-        aeq(r, output);
+        aeq(of(BigInteger.valueOf(x), BigInteger.valueOf(y)), output);
     }
 
     @Test
@@ -826,6 +824,7 @@ public class RationalTest {
         binaryExponent_helper("127", 6);
         binaryExponent_helper("128", 7);
         binaryExponent_helper("129", 7);
+        binaryExponent_helper("3/4", -1);
         binaryExponent_helper("1/127", -7);
         binaryExponent_helper("1/128", -7);
         binaryExponent_helper("1/129", -8);
@@ -2576,87 +2575,109 @@ public class RationalTest {
         bitLength_helper("-5/3", 5);
     }
 
+    private static void add_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
+        aeq(read(a).get().add(read(b).get()), output);
+    }
+
     @Test
     public void testAdd() {
-        aeq(read("1/2").get().add(read("1/3").get()), "5/6");
-        aeq(read("1/2").get().add(read("-1/3").get()), "1/6");
-        aeq(read("-1/2").get().add(read("1/3").get()), "-1/6");
-        aeq(read("-1/2").get().add(read("-1/3").get()), "-5/6");
-        aeq(read("2").get().add(read("1/5").get()), "11/5");
-        aeq(read("2").get().add(read("-1/5").get()), "9/5");
-        aeq(read("-2").get().add(read("1/5").get()), "-9/5");
-        aeq(read("-2").get().add(read("-1/5").get()), "-11/5");
-        aeq(read("2").get().add(read("5").get()), "7");
-        aeq(read("2").get().add(read("-5").get()), "-3");
-        aeq(read("-2").get().add(read("5").get()), "3");
-        aeq(read("-2").get().add(read("-5").get()), "-7");
-        assertTrue(read("6/7").get().add(read("1/7").get()) == ONE);
-        assertTrue(read("6/7").get().add(read("-6/7").get()) == ZERO);
-        aeq(read("1/2").get().add(ZERO), "1/2");
-        aeq(read("-1/2").get().add(ZERO), "-1/2");
-        aeq(read("1/2").get().add(ONE), "3/2");
-        aeq(read("-1/2").get().add(ONE), "1/2");
-        assertTrue(ZERO.add(ZERO) == ZERO);
-        assertTrue(ZERO.add(ONE) == ONE);
-        assertTrue(ONE.add(ZERO) == ONE);
-        aeq(ONE.add(ONE), "2");
+        add_helper("1/2", "1/3", "5/6");
+        add_helper("1/2", "-1/3", "1/6");
+        add_helper("-1/2", "1/3", "-1/6");
+        add_helper("-1/2", "-1/3", "-5/6");
+        add_helper("2", "1/5", "11/5");
+        add_helper("2", "-1/5", "9/5");
+        add_helper("-2", "1/5", "-9/5");
+        add_helper("-2", "-1/5", "-11/5");
+        add_helper("2", "5", "7");
+        add_helper("2", "-5", "-3");
+        add_helper("-2", "5", "3");
+        add_helper("-2", "-5", "-7");
+        add_helper("6/7", "1/7", "1");
+        add_helper("6/7", "-6/7", "0");
+        add_helper("1/2", "0", "1/2");
+        add_helper("-1/2", "0", "-1/2");
+        add_helper("1/2", "1", "3/2");
+        add_helper("-1/2", "1", "1/2");
+        add_helper("0", "0", "0");
+        add_helper("0", "1", "1");
+        add_helper("1", "0", "1");
+        add_helper("1", "1", "2");
+    }
+
+    private static void negate_helper(@NotNull String input, @NotNull String output) {
+        aeq(read(input).get().negate(), read(output).get());
     }
 
     @Test
     public void testNegate() {
-        aeq(read("2/3").get().negate(), "-2/3");
-        aeq(read("-2/3").get().negate(), "2/3");
-        aeq(read("4").get().negate(), "-4");
-        aeq(read("-4").get().negate(), "4");
-        assertTrue(ZERO.negate() == ZERO);
-        aeq(ONE.negate(), "-1");
-        assertTrue(read("-1").get().negate() == ONE);
+        negate_helper("2/3", "-2/3");
+        negate_helper("-2/3", "2/3");
+        negate_helper("4", "-4");
+        negate_helper("-4", "4");
+        negate_helper("0", "0");
+        negate_helper("1", "-1");
+        negate_helper("-1", "1");
+    }
+
+    private static void abs_helper(@NotNull String input, @NotNull String output) {
+        aeq(read(input).get().abs(), read(output).get());
     }
 
     @Test
     public void testAbs() {
-        aeq(read("2/3").get().abs(), "2/3");
-        aeq(read("-2/3").get().abs(), "2/3");
-        aeq(read("4").get().abs(), "4");
-        aeq(read("-4").get().abs(), "4");
-        aeq(ZERO.abs(), "0");
-        aeq(ONE.abs(), "1");
+        abs_helper("2/3", "2/3");
+        abs_helper("-2/3", "2/3");
+        abs_helper("4", "4");
+        abs_helper("-4", "4");
+        abs_helper("0", "0");
+        abs_helper("1", "1");
+        abs_helper("-1", "1");
+    }
+
+    private static void signum_helper(@NotNull String input, int output) {
+        aeq(read(input).get().signum(), output);
     }
 
     @Test
     public void testSignum() {
-        aeq(read("2/3").get().signum(), 1);
-        aeq(read("-2/3").get().signum(), -1);
-        aeq(read("4").get().signum(), 1);
-        aeq(read("-4").get().signum(), -1);
-        aeq(ZERO.signum(), 0);
-        aeq(ONE.signum(), 1);
+        signum_helper("2/3", 1);
+        signum_helper("-2/3", -1);
+        signum_helper("4", 1);
+        signum_helper("-4", -1);
+        signum_helper("0", 0);
+        signum_helper("1", 1);
+        signum_helper("-1", -1);
+    }
+
+    private static void subtract_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
+        aeq(read(a).get().subtract(read(b).get()), output);
     }
 
     @Test
     public void testSubtract() {
-        aeq(read("1/2").get().subtract(read("1/3").get()), "1/6");
-        aeq(read("1/2").get().subtract(read("-1/3").get()), "5/6");
-        aeq(read("-1/2").get().subtract(read("1/3").get()), "-5/6");
-        aeq(read("-1/2").get().subtract(read("-1/3").get()), "-1/6");
-        aeq(read("2").get().subtract(read("1/5").get()), "9/5");
-        aeq(read("2").get().subtract(read("-1/5").get()), "11/5");
-        aeq(read("-2").get().subtract(read("1/5").get()), "-11/5");
-        aeq(read("-2").get().subtract(read("-1/5").get()), "-9/5");
-        aeq(read("2").get().subtract(read("5").get()), "-3");
-        aeq(read("2").get().subtract(read("-5").get()), "7");
-        aeq(read("-2").get().subtract(read("5").get()), "-7");
-        aeq(read("-2").get().subtract(read("-5").get()), "3");
-        assertTrue(read("8/7").get().subtract(read("1/7").get()) == ONE);
-        assertTrue(read("6/7").get().subtract(read("6/7").get()) == ZERO);
-        aeq(read("1/2").get().subtract(ZERO), "1/2");
-        aeq(read("-1/2").get().subtract(ZERO), "-1/2");
-        aeq(read("1/2").get().subtract(ONE), "-1/2");
-        aeq(read("-1/2").get().subtract(ONE), "-3/2");
-        assertTrue(ZERO.subtract(ZERO) == ZERO);
-        aeq(ZERO.subtract(ONE), "-1");
-        assertTrue(ONE.subtract(ZERO) == ONE);
-        assertTrue(ONE.subtract(ONE) == ZERO);
+        subtract_helper("1/2", "1/3", "1/6");
+        subtract_helper("1/2", "-1/3", "5/6");
+        subtract_helper("-1/2", "1/3", "-5/6");
+        subtract_helper("-1/2", "-1/3", "-1/6");
+        subtract_helper("2", "1/5", "9/5");
+        subtract_helper("2", "-1/5", "11/5");
+        subtract_helper("-2", "1/5", "-11/5");
+        subtract_helper("-2", "-1/5", "-9/5");
+        subtract_helper("2", "5", "-3");
+        subtract_helper("2", "-5", "7");
+        subtract_helper("-2", "5", "-7");
+        subtract_helper("-2", "-5", "3");
+        subtract_helper("8/7", "1/7", "1");
+        subtract_helper("6/7", "6/7", "0");
+        subtract_helper("1/2", "0", "1/2");
+        subtract_helper("-1/2", "0", "-1/2");
+        subtract_helper("1/2", "1", "-1/2");
+        subtract_helper("-1/2", "1", "-3/2");
+        subtract_helper("0", "0", "0");
+        subtract_helper("0", "1", "-1");
+        subtract_helper("1", "0", "1");
+        subtract_helper("1", "1", "0");
     }
 
     @Test
