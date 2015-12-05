@@ -1681,9 +1681,10 @@ public final class Rational implements Comparable<Rational> {
      * @return H<sub>{@code n}</sub>
      */
     public static @NotNull Rational harmonicNumber(int n) {
-        if (n < 1)
-            throw new ArithmeticException("harmonic number must have positive index");
-        return sum(map(i -> i == 1 ? ONE : new Rational(BigInteger.ONE, BigInteger.valueOf(i)), range(1, n)));
+        if (n < 1) {
+            throw new ArithmeticException("n must be positive. Invalid n: " + n);
+        }
+        return sum(cons(ONE, map(i -> new Rational(BigInteger.ONE, BigInteger.valueOf(i)), range(2, n))));
     }
 
     /**
@@ -1706,14 +1707,14 @@ public final class Rational implements Comparable<Rational> {
             return invert().pow(-p);
         }
         if (this == ZERO || this == ONE) return this;
-        if (this.equals(ONE.negate()) && p % 2 == 0) return ONE;
-        BigInteger pNumerator = numerator.pow(p);
-        BigInteger pDenominator = denominator.pow(p);
-        if (pDenominator.signum() == -1) {
-            pNumerator = pNumerator.negate();
-            pDenominator = pDenominator.negate();
+        if (p % 2 == 0 && this.equals(NEGATIVE_ONE)) return ONE;
+        BigInteger powNumerator = numerator.pow(p);
+        BigInteger powDenominator = denominator.pow(p);
+        if (powDenominator.signum() == -1) {
+            powNumerator = powNumerator.negate();
+            powDenominator = powDenominator.negate();
         }
-        return new Rational(pNumerator, pDenominator);
+        return new Rational(powNumerator, powDenominator);
     }
 
     /**

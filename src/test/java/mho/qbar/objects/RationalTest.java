@@ -3052,74 +3052,87 @@ public class RationalTest {
         delta_fail_helper("[10, null, 12]");
     }
 
-    @Test
-    public void testHarmonicNumber() {
-        aeq(harmonicNumber(1), "1");
-        aeq(harmonicNumber(5), "137/60");
-        aeq(harmonicNumber(10), "7381/2520");
+    private static void harmonicNumber_helper(int input, @NotNull String output) {
+        aeq(harmonicNumber(input), output);
+    }
+
+    private static void harmonicNumber_fail_helper(int input) {
         try {
-            harmonicNumber(0);
+            harmonicNumber(input);
             fail();
         } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testHarmonicNumber() {
+        harmonicNumber_helper(1, "1");
+        harmonicNumber_helper(5, "137/60");
+        harmonicNumber_helper(10, "7381/2520");
+        harmonicNumber_fail_helper(0);
+        harmonicNumber_fail_helper(-5);
+    }
+
+    private static void pow_helper(@NotNull String r, int p, @NotNull String output) {
+        aeq(read(r).get().pow(p), output);
+    }
+
+    private static void pow_fail_helper(@NotNull String r, int p) {
         try {
-            harmonicNumber(-5);
+            read(r).get().pow(p);
             fail();
         } catch (ArithmeticException ignored) {}
     }
 
     @Test
     public void testPow() {
-        assertTrue(read("2/3").get().pow(0) == ONE);
-        aeq(read("2/3").get().pow(1), "2/3");
-        aeq(read("2/3").get().pow(2), "4/9");
-        aeq(read("2/3").get().pow(3), "8/27");
-        aeq(read("2/3").get().pow(-1), "3/2");
-        aeq(read("2/3").get().pow(-2), "9/4");
-        aeq(read("2/3").get().pow(-3), "27/8");
-        aeq(read("-2/3").get().pow(0), "1");
-        aeq(read("-2/3").get().pow(1), "-2/3");
-        aeq(read("-2/3").get().pow(2), "4/9");
-        aeq(read("-2/3").get().pow(3), "-8/27");
-        aeq(read("-2/3").get().pow(-1), "-3/2");
-        aeq(read("-2/3").get().pow(-2), "9/4");
-        aeq(read("-2/3").get().pow(-3), "-27/8");
-        assertTrue(read("2").get().pow(0) == ONE);
-        aeq(read("2").get().pow(1), "2");
-        aeq(read("2").get().pow(2), "4");
-        aeq(read("2").get().pow(3), "8");
-        aeq(read("2").get().pow(-1), "1/2");
-        aeq(read("2").get().pow(-2), "1/4");
-        aeq(read("2").get().pow(-3), "1/8");
-        assertTrue(read("-2").get().pow(0) == ONE);
-        aeq(read("-2").get().pow(1), "-2");
-        aeq(read("-2").get().pow(2), "4");
-        aeq(read("-2").get().pow(3), "-8");
-        aeq(read("-2").get().pow(-1), "-1/2");
-        aeq(read("-2").get().pow(-2), "1/4");
-        aeq(read("-2").get().pow(-3), "-1/8");
-        assertTrue(ZERO.pow(0) == ONE);
-        assertTrue(ZERO.pow(1) == ZERO);
-        assertTrue(ZERO.pow(2) == ZERO);
-        assertTrue(ZERO.pow(3) == ZERO);
-        assertTrue(ONE.pow(0) == ONE);
-        assertTrue(ONE.pow(1) == ONE);
-        assertTrue(ONE.pow(2) == ONE);
-        assertTrue(ONE.pow(3) == ONE);
-        assertTrue(ONE.pow(-1) == ONE);
-        assertTrue(ONE.pow(-2) == ONE);
-        assertTrue(ONE.pow(-3) == ONE);
-        try {
-            ZERO.pow(-1);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        try {
-            ZERO.pow(-2);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        try {
-            ZERO.pow(-3);
-            fail();
-        } catch (ArithmeticException ignored) {}
+        pow_helper("2/3", 0, "1");
+        pow_helper("2/3", 1, "2/3");
+        pow_helper("2/3", 2, "4/9");
+        pow_helper("2/3", 3, "8/27");
+        pow_helper("2/3", -1, "3/2");
+        pow_helper("2/3", -2, "9/4");
+        pow_helper("2/3", -3, "27/8");
+
+        pow_helper("-2/3", 0, "1");
+        pow_helper("-2/3", 1, "-2/3");
+        pow_helper("-2/3", 2, "4/9");
+        pow_helper("-2/3", 3, "-8/27");
+        pow_helper("-2/3", -1, "-3/2");
+        pow_helper("-2/3", -2, "9/4");
+        pow_helper("-2/3", -3, "-27/8");
+
+        pow_helper("2", 0, "1");
+        pow_helper("2", 1, "2");
+        pow_helper("2", 2, "4");
+        pow_helper("2", 3, "8");
+        pow_helper("2", -1, "1/2");
+        pow_helper("2", -2, "1/4");
+        pow_helper("2", -3, "1/8");
+
+        pow_helper("-2", 0, "1");
+        pow_helper("-2", 1, "-2");
+        pow_helper("-2", 2, "4");
+        pow_helper("-2", 3, "-8");
+        pow_helper("-2", -1, "-1/2");
+        pow_helper("-2", -2, "1/4");
+        pow_helper("-2", -3, "-1/8");
+
+        pow_helper("0", 0, "1");
+        pow_helper("0", 1, "0");
+        pow_helper("0", 2, "0");
+        pow_helper("0", 3, "0");
+
+        pow_helper("1", 0, "1");
+        pow_helper("1", 1, "1");
+        pow_helper("1", 2, "1");
+        pow_helper("1", 3, "1");
+        pow_helper("1", -1, "1");
+        pow_helper("1", -2, "1");
+        pow_helper("1", -3, "1");
+
+        pow_fail_helper("0", -1);
+        pow_fail_helper("0", -2);
+        pow_fail_helper("0", -3);
     }
 
     @Test

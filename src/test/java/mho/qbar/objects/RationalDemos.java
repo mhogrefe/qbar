@@ -526,13 +526,10 @@ public class RationalDemos {
 
     private static void demoPow() {
         initialize();
-        Iterable<Integer> exps;
-        if (P instanceof QBarExhaustiveProvider) {
-            exps = P.integers();
-        } else {
-            exps = P.withScale(50).integersGeometric();
-        }
-        Iterable<Pair<Rational, Integer>> ps = filter(p -> p.b >= 0 || p.a != ZERO, P.pairs(P.rationals(), exps));
+        Iterable<Pair<Rational, Integer>> ps = filterInfinite(
+                p -> p.a != ZERO || p.b >= 0,
+                P.pairs(P.rationals(), P.integersGeometric())
+        );
         for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
             System.out.println(p.a + " ^ " + p.b + " = " + p.a.pow(p.b));
         }

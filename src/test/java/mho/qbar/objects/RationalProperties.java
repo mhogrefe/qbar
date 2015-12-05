@@ -2547,26 +2547,21 @@ public class RationalProperties {
     }
 
     private static void propertiesHarmonicNumber() {
-        initialize("");
-        System.out.println("\t\ttesting harmonicNumber(int) properties...");
-
-        Iterable<Integer> is;
-        if (P instanceof QBarExhaustiveProvider) {
-            is = P.positiveIntegers();
-        } else {
-            is = P.withScale(100).positiveIntegersGeometric();
-        }
-        for (int i : take(SMALL_LIMIT, is)) {
+        initialize("harmonicNumber(int)");
+        for (int i : take(SMALL_LIMIT, P.positiveIntegersGeometric())) {
             Rational h = harmonicNumber(i);
             h.validate();
             assertTrue(i, ge(h, ONE));
         }
 
-        is = map(i -> i + 1, is);
-        for (int i : take(SMALL_LIMIT, is)) {
+        for (int i : take(SMALL_LIMIT, P.rangeUpGeometric(2))) {
             Rational h = harmonicNumber(i);
             assertTrue(i, gt(h, harmonicNumber(i - 1)));
             assertFalse(i, h.isInteger());
+        }
+
+        for (int i : take(SMALL_LIMIT, filterInfinite(j -> j != 6, P.rangeUpGeometric(3)))) {
+            assertFalse(i, harmonicNumber(i).hasTerminatingBaseExpansion(BigInteger.TEN));
         }
 
         for (int i : take(LIMIT, P.rangeDown(0))) {
@@ -2583,84 +2578,62 @@ public class RationalProperties {
     }
 
     private static void propertiesPow() {
-        initialize("");
-        System.out.println("\t\ttesting pow(int) properties...");
-
-        Iterable<Integer> exps;
-        if (P instanceof QBarExhaustiveProvider) {
-            exps = P.integers();
-        } else {
-            exps = P.withScale(20).integersGeometric();
-        }
-
-        Iterable<Pair<Rational, Integer>> ps = filter(p -> p.b >= 0 || p.a != ZERO, P.pairs(P.rationals(), exps));
+        initialize("pow(int)");
+        Iterable<Pair<Rational, Integer>> ps = filterInfinite(
+                p -> p.b >= 0 || p.a != ZERO,
+                P.pairs(P.rationals(), P.integersGeometric())
+        );
         for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
             Rational r = p.a.pow(p.b);
             r.validate();
             assertEquals(p, r, pow_simplest(p.a, p.b));
         }
 
-        ps = P.pairs(filter(r -> r != ZERO, P.rationals()), exps);
-        for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
-            Rational r = p.a.pow(p.b);
-            assertEquals(p, r, p.a.pow(-p.b).invert());
-            assertEquals(p, r, p.a.invert().pow(-p.b));
+        for (Pair<Rational, Integer> p : take(LIMIT, P.pairs(P.nonzeroRationals(), P.integersGeometric()))) {
+            homomorphic(Function.identity(), i -> -i, Rational::invert, Rational::pow, Rational::pow, p);
+            homomorphic(Rational::invert, i -> -i, Function.identity(), Rational::pow, Rational::pow, p);
         }
 
-        Iterable<Integer> pexps;
-        if (P instanceof QBarExhaustiveProvider) {
-            pexps = P.positiveIntegers();
-        } else {
-            pexps = P.withScale(20).positiveIntegersGeometric();
-        }
-        for (int i : take(LIMIT, pexps)) {
+        for (int i : take(LIMIT, P.positiveIntegersGeometric())) {
             assertTrue(i, ZERO.pow(i) == ZERO);
         }
 
         for (Rational r : take(LIMIT, P.rationals())) {
             assertTrue(r, r.pow(0) == ONE);
-            assertEquals(r, r.pow(1), r);
+            fixedPoint(s -> s.pow(1), r);
             assertEquals(r, r.pow(2), r.multiply(r));
         }
 
-        Iterable<Rational> rs = filter(r -> r != ZERO, P.rationals());
-        for (Rational r : take(LIMIT, rs)) {
+        for (Rational r : take(LIMIT, P.nonzeroRationals())) {
             assertEquals(r, r.pow(-1), r.invert());
         }
 
-        Iterable<Triple<Rational, Integer, Integer>> ts1 = filter(
-                p -> p.b >= 0 && p.c >= 0 || p.a != ZERO,
-                P.triples(P.rationals(), exps, exps)
+        Iterable<Triple<Rational, Integer, Integer>> ts = filterInfinite(
+                t -> t.a != ZERO || (t.b >= 0 && t.c >= 0),
+                P.triples(P.rationals(), P.integersGeometric(), P.integersGeometric())
         );
-        for (Triple<Rational, Integer, Integer> t : take(LIMIT, ts1)) {
+        for (Triple<Rational, Integer, Integer> t : take(LIMIT, ts)) {
             Rational expression1 = t.a.pow(t.b).multiply(t.a.pow(t.c));
             Rational expression2 = t.a.pow(t.b + t.c);
             assertEquals(t, expression1, expression2);
+            Rational expression3 = t.a.pow(t.b).pow(t.c);
+            Rational expression4 = t.a.pow(t.b * t.c);
+            assertEquals(t, expression3, expression4);
         }
 
-        ts1 = filter(
-                t -> t.a != ZERO || t.c == 0 && t.b >= 0,
-                P.triples(P.rationals(), exps, exps)
+        ts = filterInfinite(
+                t -> t.a != ZERO || (t.c == 0 && t.b >= 0),
+                P.triples(P.rationals(), P.integersGeometric(), P.integersGeometric())
         );
-        for (Triple<Rational, Integer, Integer> t : take(LIMIT, ts1)) {
+        for (Triple<Rational, Integer, Integer> t : take(LIMIT, ts)) {
             Rational expression1 = t.a.pow(t.b).divide(t.a.pow(t.c));
             Rational expression2 = t.a.pow(t.b - t.c);
             assertEquals(t, expression1, expression2);
         }
 
-        ts1 = filter(
-                t -> t.a != ZERO || t.b >= 0 && t.c >= 0,
-                P.triples(P.rationals(), exps, exps)
-        );
-        for (Triple<Rational, Integer, Integer> t : take(LIMIT, ts1)) {
-            Rational expression5 = t.a.pow(t.b).pow(t.c);
-            Rational expression6 = t.a.pow(t.b * t.c);
-            assertEquals(t, expression5, expression6);
-        }
-
         Iterable<Triple<Rational, Rational, Integer>> ts2 = filter(
-                t -> t.a != ZERO && t.b != ZERO || t.c >= 0,
-                P.triples(P.rationals(), P.rationals(), exps)
+                t -> (t.a != ZERO && t.b != ZERO) || t.c >= 0,
+                P.triples(P.rationals(), P.rationals(), P.positiveIntegersGeometric())
         );
         for (Triple<Rational, Rational, Integer> t : take(LIMIT, ts2)) {
             Rational expression1 = t.a.multiply(t.b).pow(t.c);
@@ -2668,9 +2641,9 @@ public class RationalProperties {
             assertEquals(t, expression1, expression2);
         }
 
-        ts2 = filter(
+        ts2 = filterInfinite(
                 t -> t.a != ZERO || t.c >= 0,
-                P.triples(P.rationals(), filter(r -> r != ZERO, P.rationals()), exps)
+                P.triples(P.rationals(), P.nonzeroRationals(), P.positiveIntegersGeometric())
         );
         for (Triple<Rational, Rational, Integer> t : take(LIMIT, ts2)) {
             Rational expression1 = t.a.divide(t.b).pow(t.c);
@@ -2687,31 +2660,14 @@ public class RationalProperties {
     }
 
     private static void compareImplementationsPow() {
-        initialize("");
-        System.out.println("\t\tcomparing pow(int) implementations...");
-
-        long totalTime = 0;
-        Iterable<Integer> exps;
-        if (P instanceof QBarExhaustiveProvider) {
-            exps = P.integers();
-        } else {
-            exps = P.withScale(20).integersGeometric();
-        }
-        Iterable<Pair<Rational, Integer>> ps = filter(p -> p.b >= 0 || p.a != ZERO, P.pairs(P.rationals(), exps));
-        for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
-            long time = System.nanoTime();
-            pow_simplest(p.a, p.b);
-            totalTime += (System.nanoTime() - time);
-        }
-        System.out.println("\t\t\tsimplest: " + ((double) totalTime) / 1e9 + " s");
-
-        totalTime = 0;
-        for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
-            long time = System.nanoTime();
-            p.a.pow(p.b);
-            totalTime += (System.nanoTime() - time);
-        }
-        System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
+        Map<String, Function<Pair<Rational, Integer>, Rational>> functions = new LinkedHashMap<>();
+        functions.put("simplest", p -> pow_simplest(p.a, p.b));
+        functions.put("standard", p -> p.a.pow(p.b));
+        Iterable<Pair<Rational, Integer>> ps = filterInfinite(
+                p -> p.b >= 0 || p.a != ZERO,
+                P.pairs(P.rationals(), P.integersGeometric())
+        );
+        compareImplementations("pow(int", take(LIMIT, ps), functions);
     }
 
     private static void propertiesFloor() {
