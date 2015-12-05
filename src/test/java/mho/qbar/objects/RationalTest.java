@@ -2866,104 +2866,122 @@ public class RationalTest {
         divide_int_fail_helper("2/3", 0);
     }
 
+    private static void shiftLeft_helper(@NotNull String r, int bits, @NotNull String output) {
+        aeq(read(r).get().shiftLeft(bits), output);
+    }
+
     @Test
     public void testShiftLeft() {
-        aeq(read("7/12").get().shiftLeft(0), "7/12");
-        aeq(read("7/12").get().shiftLeft(1), "7/6");
-        aeq(read("7/12").get().shiftLeft(2), "7/3");
-        aeq(read("7/12").get().shiftLeft(3), "14/3");
-        aeq(read("7/12").get().shiftLeft(4), "28/3");
-        aeq(read("7/12").get().shiftLeft(-1), "7/24");
-        aeq(read("7/12").get().shiftLeft(-2), "7/48");
-        aeq(read("7/12").get().shiftLeft(-3), "7/96");
-        aeq(read("7/12").get().shiftLeft(-4), "7/192");
-        aeq(read("4/5").get().shiftLeft(0), "4/5");
-        aeq(read("4/5").get().shiftLeft(1), "8/5");
-        aeq(read("4/5").get().shiftLeft(2), "16/5");
-        aeq(read("4/5").get().shiftLeft(3), "32/5");
-        aeq(read("4/5").get().shiftLeft(4), "64/5");
-        aeq(read("4/5").get().shiftLeft(-1), "2/5");
-        aeq(read("4/5").get().shiftLeft(-2), "1/5");
-        aeq(read("4/5").get().shiftLeft(-3), "1/10");
-        aeq(read("4/5").get().shiftLeft(-4), "1/20");
-        assertTrue(ZERO.shiftLeft(4) == ZERO);
-        assertTrue(ONE.shiftLeft(0) == ONE);
-        aeq(ONE.shiftLeft(1), "2");
-        aeq(ONE.shiftLeft(2), "4");
-        aeq(ONE.shiftLeft(3), "8");
-        aeq(ONE.shiftLeft(4), "16");
-        aeq(ONE.shiftLeft(-1), "1/2");
-        aeq(ONE.shiftLeft(-2), "1/4");
-        aeq(ONE.shiftLeft(-3), "1/8");
-        aeq(ONE.shiftLeft(-4), "1/16");
-        aeq(read("-4/5").get().shiftLeft(0), "-4/5");
-        aeq(read("-4/5").get().shiftLeft(1), "-8/5");
-        aeq(read("-4/5").get().shiftLeft(2), "-16/5");
-        aeq(read("-4/5").get().shiftLeft(3), "-32/5");
-        aeq(read("-4/5").get().shiftLeft(4), "-64/5");
-        aeq(read("-4/5").get().shiftLeft(-1), "-2/5");
-        aeq(read("-4/5").get().shiftLeft(-2), "-1/5");
-        aeq(read("-4/5").get().shiftLeft(-3), "-1/10");
-        aeq(read("-4/5").get().shiftLeft(-4), "-1/20");
-        aeq(read("-1").get().shiftLeft(0), "-1");
-        aeq(read("-1").get().shiftLeft(1), "-2");
-        aeq(read("-1").get().shiftLeft(2), "-4");
-        aeq(read("-1").get().shiftLeft(3), "-8");
-        aeq(read("-1").get().shiftLeft(4), "-16");
-        aeq(read("-1").get().shiftLeft(-1), "-1/2");
-        aeq(read("-1").get().shiftLeft(-2), "-1/4");
-        aeq(read("-1").get().shiftLeft(-3), "-1/8");
-        aeq(read("-1").get().shiftLeft(-4), "-1/16");
+        shiftLeft_helper("7/12", 0, "7/12");
+        shiftLeft_helper("7/12", 1, "7/6");
+        shiftLeft_helper("7/12", 2, "7/3");
+        shiftLeft_helper("7/12", 3, "14/3");
+        shiftLeft_helper("7/12", 4, "28/3");
+        shiftLeft_helper("7/12", -1, "7/24");
+        shiftLeft_helper("7/12", -2, "7/48");
+        shiftLeft_helper("7/12", -3, "7/96");
+        shiftLeft_helper("7/12", -4, "7/192");
+
+        shiftLeft_helper("4/5", 0, "4/5");
+        shiftLeft_helper("4/5", 1, "8/5");
+        shiftLeft_helper("4/5", 2, "16/5");
+        shiftLeft_helper("4/5", 3, "32/5");
+        shiftLeft_helper("4/5", 4, "64/5");
+        shiftLeft_helper("4/5", -1, "2/5");
+        shiftLeft_helper("4/5", -2, "1/5");
+        shiftLeft_helper("4/5", -3, "1/10");
+        shiftLeft_helper("4/5", -4, "1/20");
+
+        shiftLeft_helper("0", 4, "0");
+        shiftLeft_helper("1", 0, "1");
+
+        shiftLeft_helper("1", 1, "2");
+        shiftLeft_helper("1", 2, "4");
+        shiftLeft_helper("1", 3, "8");
+        shiftLeft_helper("1", 4, "16");
+        shiftLeft_helper("1", -1, "1/2");
+        shiftLeft_helper("1", -2, "1/4");
+        shiftLeft_helper("1", -3, "1/8");
+        shiftLeft_helper("1", -4, "1/16");
+
+        shiftLeft_helper("-4/5", 0, "-4/5");
+        shiftLeft_helper("-4/5", 1, "-8/5");
+        shiftLeft_helper("-4/5", 2, "-16/5");
+        shiftLeft_helper("-4/5", 3, "-32/5");
+        shiftLeft_helper("-4/5", 4, "-64/5");
+        shiftLeft_helper("-4/5", -1, "-2/5");
+        shiftLeft_helper("-4/5", -2, "-1/5");
+        shiftLeft_helper("-4/5", -3, "-1/10");
+        shiftLeft_helper("-4/5", -4, "-1/20");
+
+        shiftLeft_helper("-1", 0, "-1");
+        shiftLeft_helper("-1", 1, "-2");
+        shiftLeft_helper("-1", 2, "-4");
+        shiftLeft_helper("-1", 3, "-8");
+        shiftLeft_helper("-1", 4, "-16");
+        shiftLeft_helper("-1", -1, "-1/2");
+        shiftLeft_helper("-1", -2, "-1/4");
+        shiftLeft_helper("-1", -3, "-1/8");
+        shiftLeft_helper("-1", -4, "-1/16");
+    }
+
+    private static void shiftRight_helper(@NotNull String r, int bits, @NotNull String output) {
+        aeq(read(r).get().shiftRight(bits), output);
     }
 
     @Test
     public void testShiftRight() {
-        aeq(read("7/12").get().shiftRight(0), "7/12");
-        aeq(read("7/12").get().shiftRight(1), "7/24");
-        aeq(read("7/12").get().shiftRight(2), "7/48");
-        aeq(read("7/12").get().shiftRight(3), "7/96");
-        aeq(read("7/12").get().shiftRight(4), "7/192");
-        aeq(read("7/12").get().shiftRight(-1), "7/6");
-        aeq(read("7/12").get().shiftRight(-2), "7/3");
-        aeq(read("7/12").get().shiftRight(-3), "14/3");
-        aeq(read("7/12").get().shiftRight(-4), "28/3");
-        aeq(read("4/5").get().shiftRight(0), "4/5");
-        aeq(read("4/5").get().shiftRight(1), "2/5");
-        aeq(read("4/5").get().shiftRight(2), "1/5");
-        aeq(read("4/5").get().shiftRight(3), "1/10");
-        aeq(read("4/5").get().shiftRight(4), "1/20");
-        aeq(read("4/5").get().shiftRight(-1), "8/5");
-        aeq(read("4/5").get().shiftRight(-2), "16/5");
-        aeq(read("4/5").get().shiftRight(-3), "32/5");
-        aeq(read("4/5").get().shiftRight(-4), "64/5");
-        assertTrue(ZERO.shiftRight(4) == ZERO);
-        assertTrue(ONE.shiftRight(0) == ONE);
-        aeq(ONE.shiftRight(1), "1/2");
-        aeq(ONE.shiftRight(2), "1/4");
-        aeq(ONE.shiftRight(3), "1/8");
-        aeq(ONE.shiftRight(4), "1/16");
-        aeq(ONE.shiftRight(-1), "2");
-        aeq(ONE.shiftRight(-2), "4");
-        aeq(ONE.shiftRight(-3), "8");
-        aeq(ONE.shiftRight(-4), "16");
-        aeq(read("-4/5").get().shiftRight(0), "-4/5");
-        aeq(read("-4/5").get().shiftRight(1), "-2/5");
-        aeq(read("-4/5").get().shiftRight(2), "-1/5");
-        aeq(read("-4/5").get().shiftRight(3), "-1/10");
-        aeq(read("-4/5").get().shiftRight(4), "-1/20");
-        aeq(read("-4/5").get().shiftRight(-1), "-8/5");
-        aeq(read("-4/5").get().shiftRight(-2), "-16/5");
-        aeq(read("-4/5").get().shiftRight(-3), "-32/5");
-        aeq(read("-4/5").get().shiftRight(-4), "-64/5");
-        aeq(read("-1").get().shiftRight(0), "-1");
-        aeq(read("-1").get().shiftRight(1), "-1/2");
-        aeq(read("-1").get().shiftRight(2), "-1/4");
-        aeq(read("-1").get().shiftRight(3), "-1/8");
-        aeq(read("-1").get().shiftRight(4), "-1/16");
-        aeq(read("-1").get().shiftRight(-1), "-2");
-        aeq(read("-1").get().shiftRight(-2), "-4");
-        aeq(read("-1").get().shiftRight(-3), "-8");
-        aeq(read("-1").get().shiftRight(-4), "-16");
+        shiftRight_helper("7/12", 0, "7/12");
+        shiftRight_helper("7/12", 1, "7/24");
+        shiftRight_helper("7/12", 2, "7/48");
+        shiftRight_helper("7/12", 3, "7/96");
+        shiftRight_helper("7/12", 4, "7/192");
+        shiftRight_helper("7/12", -1, "7/6");
+        shiftRight_helper("7/12", -2, "7/3");
+        shiftRight_helper("7/12", -3, "14/3");
+        shiftRight_helper("7/12", -4, "28/3");
+
+        shiftRight_helper("4/5", 0, "4/5");
+        shiftRight_helper("4/5", 1, "2/5");
+        shiftRight_helper("4/5", 2, "1/5");
+        shiftRight_helper("4/5", 3, "1/10");
+        shiftRight_helper("4/5", 4, "1/20");
+        shiftRight_helper("4/5", -1, "8/5");
+        shiftRight_helper("4/5", -2, "16/5");
+        shiftRight_helper("4/5", -3, "32/5");
+        shiftRight_helper("4/5", -4, "64/5");
+
+        shiftRight_helper("0", 4, "0");
+        shiftRight_helper("1", 0, "1");
+
+        shiftRight_helper("1", 1, "1/2");
+        shiftRight_helper("1", 2, "1/4");
+        shiftRight_helper("1", 3, "1/8");
+        shiftRight_helper("1", 4, "1/16");
+        shiftRight_helper("1", -1, "2");
+        shiftRight_helper("1", -2, "4");
+        shiftRight_helper("1", -3, "8");
+        shiftRight_helper("1", -4, "16");
+
+        shiftRight_helper("-4/5", 0, "-4/5");
+        shiftRight_helper("-4/5", 1, "-2/5");
+        shiftRight_helper("-4/5", 2, "-1/5");
+        shiftRight_helper("-4/5", 3, "-1/10");
+        shiftRight_helper("-4/5", 4, "-1/20");
+        shiftRight_helper("-4/5", -1, "-8/5");
+        shiftRight_helper("-4/5", -2, "-16/5");
+        shiftRight_helper("-4/5", -3, "-32/5");
+        shiftRight_helper("-4/5", -4, "-64/5");
+
+        shiftRight_helper("-1", 0, "-1");
+        shiftRight_helper("-1", 1, "-1/2");
+        shiftRight_helper("-1", 2, "-1/4");
+        shiftRight_helper("-1", 3, "-1/8");
+        shiftRight_helper("-1", 4, "-1/16");
+        shiftRight_helper("-1", -1, "-2");
+        shiftRight_helper("-1", -2, "-4");
+        shiftRight_helper("-1", -3, "-8");
+        shiftRight_helper("-1", -4, "-16");
     }
 
     @Test

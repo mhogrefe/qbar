@@ -471,26 +471,14 @@ public class RationalDemos {
 
     private static void demoShiftLeft() {
         initialize();
-        Iterable<Integer> is;
-        if (P instanceof QBarExhaustiveProvider) {
-            is = P.integers();
-        } else {
-            is  = P.withScale(50).integersGeometric();
-        }
-        for (Pair<Rational, Integer> p : take(LIMIT, P.pairs(P.rationals(), is))) {
+        for (Pair<Rational, Integer> p : take(LIMIT, P.pairs(P.rationals(), P.integersGeometric()))) {
             System.out.println(p.a + " << " + p.b + " = " + p.a.shiftLeft(p.b));
         }
     }
 
     private static void demoShiftRight() {
         initialize();
-        Iterable<Integer> is;
-        if (P instanceof QBarExhaustiveProvider) {
-            is = P.integers();
-        } else {
-            is  = P.withScale(50).integersGeometric();
-        }
-        for (Pair<Rational, Integer> p : take(LIMIT, P.pairs(P.rationals(), is))) {
+        for (Pair<Rational, Integer> p : take(LIMIT, P.pairs(P.rationals(), P.integersGeometric()))) {
             System.out.println(p.a + " >> " + p.b + " = " + p.a.shiftRight(p.b));
         }
     }
