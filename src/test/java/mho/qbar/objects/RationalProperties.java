@@ -2454,17 +2454,17 @@ public class RationalProperties {
         );
     }
 
-    private static @NotNull Rational sum_alt(@NotNull Iterable<Rational> xs) {
+    private static @NotNull Rational sum_alt(@NotNull List<Rational> xs) {
         List<Rational> denominatorSorted = sort(
                 (x, y) -> {
-                    Ordering o = compare(x.getDenominator(), y.getDenominator());
-                    if (o == EQ) {
-                        o = compare(x.getNumerator().abs(), y.getNumerator().abs());
+                    Ordering ordering = compare(x.getDenominator(), y.getDenominator());
+                    if (ordering == EQ) {
+                        ordering = compare(x.getNumerator().abs(), y.getNumerator().abs());
                     }
-                    if (o == EQ) {
-                        o = compare(x.getNumerator().signum(), y.getNumerator().signum());
+                    if (ordering == EQ) {
+                        ordering = compare(x.getNumerator().signum(), y.getNumerator().signum());
                     }
-                    return o.toInt();
+                    return ordering.toInt();
                 },
                 xs
         );
@@ -2481,11 +2481,16 @@ public class RationalProperties {
     }
 
     private static void propertiesSum() {
-        initialize("");
-        System.out.println("\t\ttesting sum(Iterable<Rational>) properties...");
-
-        propertiesFoldHelper(LIMIT, P.getWheelsProvider(), P.rationals(), Rational::add, Rational::sum, r -> {
-        }, true);
+        initialize("sum(Iterable<Rational>)");
+        propertiesFoldHelper(
+                LIMIT,
+                P.getWheelsProvider(),
+                P.rationals(),
+                Rational::add,
+                Rational::sum,
+                Rational::validate,
+                true
+        );
 
         for (List<Rational> rs : take(LIMIT, P.lists(P.rationals()))) {
             assertEquals(rs, sum(rs), sum_alt(rs));
@@ -2493,24 +2498,10 @@ public class RationalProperties {
     }
 
     private static void compareImplementationsSum() {
-        initialize("");
-        System.out.println("\t\tcomparing sum(Iterable<Rational>) implementations...");
-
-        long totalTime = 0;
-        for (List<Rational> rs : take(LIMIT, P.lists(P.rationals()))) {
-            long time = System.nanoTime();
-            sum_alt(rs);
-            totalTime += (System.nanoTime() - time);
-        }
-        System.out.println("\t\t\talt: " + ((double) totalTime) / 1e9 + " s");
-
-        totalTime = 0;
-        for (List<Rational> rs : take(LIMIT, P.lists(P.rationals()))) {
-            long time = System.nanoTime();
-            sum(rs);
-            totalTime += (System.nanoTime() - time);
-        }
-        System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
+        Map<String, Function<List<Rational>, Rational>> functions = new LinkedHashMap<>();
+        functions.put("alt", RationalProperties::sum_alt);
+        functions.put("standard", Rational::sum);
+        compareImplementations("sum(Iterable<Rational>)", take(LIMIT, P.lists(P.rationals())), functions);
     }
 
     private static @NotNull Rational product_simplest(@NotNull Iterable<Rational> xs) {
@@ -2518,17 +2509,14 @@ public class RationalProperties {
     }
 
     private static void propertiesProduct() {
-        initialize("");
-        System.out.println("\t\ttesting product(Iterable<Rational>) properties...");
-
+        initialize("product(Iterable<Rational>)");
         propertiesFoldHelper(
                 LIMIT,
                 P.getWheelsProvider(),
                 P.rationals(),
                 Rational::multiply,
                 Rational::product,
-                r -> {
-                },
+                Rational::validate,
                 true
         );
 
@@ -2538,30 +2526,14 @@ public class RationalProperties {
     }
 
     private static void compareImplementationsProduct() {
-        initialize("");
-        System.out.println("\t\tcomparing product(Iterable<Rational>) implementations...");
-
-        long totalTime = 0;
-        for (List<Rational> rs : take(LIMIT, P.lists(P.rationals()))) {
-            long time = System.nanoTime();
-            product_simplest(rs);
-            totalTime += (System.nanoTime() - time);
-        }
-        System.out.println("\t\t\tsimplest: " + ((double) totalTime) / 1e9 + " s");
-
-        totalTime = 0;
-        for (List<Rational> rs : take(LIMIT, P.lists(P.rationals()))) {
-            long time = System.nanoTime();
-            product(rs);
-            totalTime += (System.nanoTime() - time);
-        }
-        System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
+        Map<String, Function<List<Rational>, Rational>> functions = new LinkedHashMap<>();
+        functions.put("simplest", RationalProperties::product_simplest);
+        functions.put("standard", Rational::product);
+        compareImplementations("product(Iterable<Rational>)", take(LIMIT, P.lists(P.rationals())), functions);
     }
 
     private static void propertiesDelta() {
-        initialize("");
-        System.out.println("\t\ttesting delta(Iterable<Rational>) properties...");
-
+        initialize("delta(Iterable<Rational>)");
         propertiesDeltaHelper(
                 LIMIT,
                 P.getWheelsProvider(),
@@ -2570,7 +2542,7 @@ public class RationalProperties {
                 Rational::negate,
                 Rational::subtract,
                 Rational::delta,
-                r -> {}
+                Rational::validate
         );
     }
 

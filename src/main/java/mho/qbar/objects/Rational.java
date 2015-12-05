@@ -1610,8 +1610,9 @@ public final class Rational implements Comparable<Rational> {
      * @return Σxs
      */
     public static @NotNull Rational sum(@NotNull Iterable<Rational> xs) {
-        if (any(x -> x == null, xs))
+        if (any(x -> x == null, xs)) {
             throw new NullPointerException();
+        }
         return foldl(Rational::add, ZERO, xs);
     }
 
@@ -1627,18 +1628,17 @@ public final class Rational implements Comparable<Rational> {
      * @return Πxs
      */
     public static @NotNull Rational product(@NotNull Iterable<Rational> xs) {
-        if (any(x -> x == null, xs))
+        if (any(x -> x == null, xs)) {
             throw new NullPointerException();
+        }
         List<Rational> denominatorSorted = sort(
                 (x, y) -> {
-                    Ordering o = compare(x.getDenominator(), y.getDenominator());
-                    if (o == EQ) {
-                        o = compare(x.getNumerator().abs(), y.getNumerator().abs());
-                    }
-                    if (o == EQ) {
-                        o = compare(x.getNumerator().signum(), y.getNumerator().signum());
-                    }
-                    return o.toInt();
+                    Ordering ordering = compare(x.getDenominator(), y.getDenominator());
+                    if (ordering != EQ) return ordering.toInt();
+                    ordering = compare(x.getNumerator().abs(), y.getNumerator().abs());
+                    if (ordering != EQ) return ordering.toInt();
+                    ordering = compare(x.getNumerator().signum(), y.getNumerator().signum());
+                    return ordering.toInt();
                 },
                 xs
         );
@@ -1660,10 +1660,12 @@ public final class Rational implements Comparable<Rational> {
      * @return Δxs
      */
     public static @NotNull Iterable<Rational> delta(@NotNull Iterable<Rational> xs) {
-        if (isEmpty(xs))
-            throw new IllegalArgumentException("cannot get delta of empty Iterable");
-        if (head(xs) == null)
+        if (isEmpty(xs)) {
+            throw new IllegalArgumentException("xs must not be empty.");
+        }
+        if (head(xs) == null) {
             throw new NullPointerException();
+        }
         return adjacentPairsWith((x, y) -> y.subtract(x), xs);
     }
 

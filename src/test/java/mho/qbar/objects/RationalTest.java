@@ -2984,47 +2984,72 @@ public class RationalTest {
         shiftRight_helper("-1", -4, "-16");
     }
 
+    private static void sum_helper(@NotNull String input, @NotNull String output) {
+        aeq(sum(readRationalList(input)), output);
+    }
+
+    private static void sum_fail_helper(@NotNull String input) {
+        try {
+            sum(readRationalListWithNulls(input));
+            fail();
+        } catch (NullPointerException ignored) {}
+    }
+
     @Test
     public void testSum() {
-        assertTrue(sum(readRationalList("[]")) == ZERO);
-        assertTrue(sum(readRationalList("[1]")) == ONE);
-        aeq(sum(readRationalList("[-4/5]")), "-4/5");
-        aeq(sum(readRationalList("[10, 21/2, 11]")), "63/2");
-        aeq(sum(readRationalList("[-4, 6, -8]")), -6);
+        sum_helper("[]", "0");
+        sum_helper("[1]", "1");
+        sum_helper("[-4/5]", "-4/5");
+        sum_helper("[10, 21/2, 11]", "63/2");
+        sum_helper("[-4, 6, -8]", "-6");
+        sum_fail_helper("[10, null, 11]");
+    }
+
+    private static void product_helper(@NotNull String input, @NotNull String output) {
+        aeq(product(readRationalList(input)), output);
+    }
+
+    private static void product_fail_helper(@NotNull String input) {
         try {
-            sum(readRationalListWithNulls("[10, null, 11]"));
+            product(readRationalListWithNulls(input));
             fail();
         } catch (NullPointerException ignored) {}
     }
 
     @Test
     public void testProduct() {
-        assertTrue(product(readRationalList("[]")) == ONE);
-        assertTrue(product(readRationalList("[0]")) == ZERO);
-        aeq(product(readRationalList("[-4/5]")), "-4/5");
-        aeq(product(readRationalList("[10, 21/2, 11]")), 1155);
-        aeq(product(readRationalList("[-4, 6, -8]")), 192);
+        product_helper("[]", "1");
+        product_helper("[0]", "0");
+        product_helper("[-4/5]", "-4/5");
+        product_helper("[10, 21/2, 11]", "1155");
+        product_helper("[-4, 6, -8]", "192");
+        product_fail_helper("[10, null, 11]");
+    }
+
+    private static void delta_helper(@NotNull Iterable<Rational> input, @NotNull String output) {
+        aeqitLimit(TINY_LIMIT, delta(input), output);
+    }
+
+    private static void delta_helper(@NotNull String input, @NotNull String output) {
+        delta_helper(readRationalList(input), output);
+    }
+
+    private static void delta_fail_helper(@NotNull String input) {
         try {
-            product(readRationalListWithNulls("[10, null, 11]"));
+            toList(delta(readRationalListWithNulls(input)));
             fail();
-        } catch (NullPointerException ignored) {}
+        } catch (IllegalArgumentException | NullPointerException ignored) {}
     }
 
     @Test
     public void testDelta() {
-        aeqit(delta(readRationalList("[3]")), "[]");
-        aeqit(delta(readRationalList("[31/10, 41/10, 59/10, 23/10]")), "[1, 9/5, -18/5]");
-        aeqitLimit(TINY_LIMIT, delta(map(i -> of(i).invert(), rangeUp(1))),
+        delta_helper("[3]", "[]");
+        delta_helper("[31/10, 41/10, 59/10, 23/10]", "[1, 9/5, -18/5]");
+        delta_helper(map(i -> of(i).invert(), rangeUp(1)),
                 "[-1/2, -1/6, -1/12, -1/20, -1/30, -1/42, -1/56, -1/72, -1/90, -1/110, -1/132, -1/156, -1/182," +
                 " -1/210, -1/240, -1/272, -1/306, -1/342, -1/380, -1/420, ...]");
-        try {
-            delta(readRationalList("[]"));
-            fail();
-        } catch (IllegalArgumentException ignored) {}
-        try {
-            toList(delta(readRationalListWithNulls("[10, null, 12]")));
-            fail();
-        } catch (NullPointerException ignored) {}
+        delta_fail_helper("[]");
+        delta_fail_helper("[10, null, 12]");
     }
 
     @Test

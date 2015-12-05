@@ -20,16 +20,18 @@ import java.util.List;
 import static mho.qbar.objects.Rational.*;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.ordering.Ordering.le;
+import static mho.wheels.testing.Testing.*;
 
 @SuppressWarnings("UnusedDeclaration")
 public class RationalDemos {
     private static final boolean USE_RANDOM = false;
+    private static final @NotNull QBarExhaustiveProvider EP = QBarExhaustiveProvider.INSTANCE;
     private static final @NotNull String RATIONAL_CHARS = "-/0123456789";
+    private static int LIMIT;
     private static final int DENOMINATOR_CUTOFF = 1000000;
     private static final int SMALLER_LIMIT = 500;
     private static final int SMALL_LIMIT = 1000;
     private static final int MEDIUM_LIMIT = 3000;
-    private static int LIMIT;
     private static QBarIterableProvider P;
 
     private static void initialize() {
@@ -485,7 +487,7 @@ public class RationalDemos {
 
     private static void demoSum() {
         initialize();
-        for (List<Rational> rs : take(LIMIT, P.lists(P.rationals()))) {
+        for (List<Rational> rs : take(LIMIT, P.withScale(4).lists(P.rationals()))) {
             String listString = tail(init(rs.toString()));
             System.out.println("Σ(" + listString + ") = " + sum(rs));
         }
@@ -493,29 +495,31 @@ public class RationalDemos {
 
     private static void demoProduct() {
         initialize();
-        for (List<Rational> rs : take(LIMIT, P.lists(P.rationals()))) {
+        for (List<Rational> rs : take(LIMIT, P.withScale(4).lists(P.rationals()))) {
             String listString = tail(init(rs.toString()));
             System.out.println("Π(" + listString + ") = " + product(rs));
         }
     }
 
-    private static void demoDelta() {
+    private static void demoDelta_finite() {
         initialize();
-        for (List<Rational> rs : take(LIMIT, P.listsAtLeast(1, P.rationals()))) {
+        for (List<Rational> rs : take(LIMIT, P.withScale(4).listsAtLeast(1, P.rationals()))) {
             String listString = tail(init(rs.toString()));
-            System.out.println("Δ(" + listString + ") = " + IterableUtils.toString(delta(rs)));
+            System.out.println("Δ(" + listString + ") = " + its(delta(rs)));
+        }
+    }
+
+    private static void demoDelta_infinite() {
+        initialize();
+        for (Iterable<Rational> rs : take(SMALL_LIMIT, P.prefixPermutations(EP.rationals()))) {
+            String listString = tail(init(its(rs)));
+            System.out.println("Δ(" + listString + ") = " + its(delta(rs)));
         }
     }
 
     private static void demoHarmonicNumber() {
         initialize();
-        Iterable<Integer> is;
-        if (P instanceof QBarExhaustiveProvider) {
-            is = P.positiveIntegers();
-        } else {
-            is = P.withScale(100).positiveIntegersGeometric();
-        }
-        for (int i : take(SMALL_LIMIT, is)) {
+        for (int i : take(SMALL_LIMIT, P.positiveIntegersGeometric())) {
             System.out.println("H_" + i + " = " + harmonicNumber(i));
         }
     }
