@@ -75,6 +75,8 @@ public class RationalProperties {
             propertiesIsInteger();
             propertiesBigIntegerValue_RoundingMode();
             propertiesBigIntegerValue();
+            propertiesFloor();
+            propertiesCeiling();
             propertiesBigIntegerValueExact();
             propertiesByteValueExact();
             propertiesShortValueExact();
@@ -136,8 +138,6 @@ public class RationalProperties {
             propertiesHarmonicNumber();
             propertiesPow();
             compareImplementationsPow();
-            propertiesFloor();
-            propertiesCeiling();
             propertiesFractionalPart();
             propertiesRoundToDenominator();
             propertiesContinuedFraction();
@@ -480,6 +480,32 @@ public class RationalProperties {
         Iterable<Rational> rs = map(i -> of(i.shiftLeft(1).add(BigInteger.ONE), IntegerUtils.TWO), P.bigIntegers());
         for (Rational r : take(LIMIT, rs)) {
             assertFalse(r, r.bigIntegerValue().testBit(0));
+        }
+    }
+
+    private static void propertiesFloor() {
+        initialize("floor()");
+        for (Rational r : take(LIMIT, P.rationals())) {
+            BigInteger floor = r.floor();
+            assertTrue(r, le(of(floor), r));
+            assertTrue(r, le(r.subtract(of(floor)), ONE));
+        }
+
+        for (BigInteger i : take(LIMIT, P.bigIntegers())) {
+            assertEquals(i, of(i).floor(), i);
+        }
+    }
+
+    private static void propertiesCeiling() {
+        initialize("ceiling()");
+        for (Rational r : take(LIMIT, P.rationals())) {
+            BigInteger ceiling = r.ceiling();
+            assertTrue(r, ge(of(ceiling), r));
+            assertTrue(r, le(of(ceiling).subtract(r), ONE));
+        }
+
+        for (BigInteger i : take(LIMIT, P.bigIntegers())) {
+            assertEquals(i, of(i).ceiling(), i);
         }
     }
 
@@ -2668,36 +2694,6 @@ public class RationalProperties {
                 P.pairs(P.rationals(), P.integersGeometric())
         );
         compareImplementations("pow(int", take(LIMIT, ps), functions);
-    }
-
-    private static void propertiesFloor() {
-        initialize("");
-        System.out.println("\t\ttesting floor() properties...");
-
-        for (Rational r : take(LIMIT, P.rationals())) {
-            BigInteger floor = r.floor();
-            assertTrue(r, le(of(floor), r));
-            assertTrue(r, le(r.subtract(of(floor)), ONE));
-        }
-
-        for (BigInteger i : take(LIMIT, P.bigIntegers())) {
-            assertEquals(i, of(i).floor(), i);
-        }
-    }
-
-    private static void propertiesCeiling() {
-        initialize("");
-        System.out.println("\t\ttesting ceiling() properties...");
-
-        for (Rational r : take(LIMIT, P.rationals())) {
-            BigInteger ceiling = r.ceiling();
-            assertTrue(r, ge(of(ceiling), r));
-            assertTrue(r, le(of(ceiling).subtract(r), ONE));
-        }
-
-        for (BigInteger i : take(LIMIT, P.bigIntegers())) {
-            assertEquals(i, of(i).ceiling(), i);
-        }
     }
 
     private static void propertiesFractionalPart() {

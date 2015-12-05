@@ -610,6 +610,40 @@ public class RationalTest {
         bigIntegerValue_helper("-11/2", -6);
     }
 
+    private static void floor_helper(@NotNull String input, int output) {
+        aeq(read(input).get().floor(), output);
+    }
+
+    @Test
+    public void testFloor() {
+        floor_helper("7/3", 2);
+        floor_helper("5/3", 1);
+        floor_helper("2/3", 0);
+        floor_helper("-1/3", -1);
+        floor_helper("-4/3", -2);
+        floor_helper("4", 4);
+        floor_helper("-2", -2);
+        floor_helper("0", 0);
+        floor_helper("1", 1);
+    }
+
+    private static void ceiling_helper(@NotNull String input, int output) {
+        aeq(read(input).get().ceiling(), output);
+    }
+
+    @Test
+    public void testCeiling() {
+        ceiling_helper("7/3", 3);
+        ceiling_helper("5/3", 2);
+        ceiling_helper("2/3", 1);
+        ceiling_helper("-1/3", 0);
+        ceiling_helper("-4/3", -1);
+        ceiling_helper("4", 4);
+        ceiling_helper("-2", -2);
+        ceiling_helper("0", 0);
+        ceiling_helper("1", 1);
+    }
+
     private static void bigIntegerValueExact_helper(@NotNull String r, int output) {
         aeq(read(r).get().bigIntegerValueExact(), output);
     }
@@ -3133,32 +3167,6 @@ public class RationalTest {
         pow_fail_helper("0", -1);
         pow_fail_helper("0", -2);
         pow_fail_helper("0", -3);
-    }
-
-    @Test
-    public void testFloor() {
-        aeq(read("7/3").get().floor(), 2);
-        aeq(read("5/3").get().floor(), 1);
-        aeq(read("2/3").get().floor(), 0);
-        aeq(read("-1/3").get().floor(), -1);
-        aeq(read("-4/3").get().floor(), -2);
-        aeq(read("4").get().floor(), 4);
-        aeq(read("-2").get().floor(), -2);
-        aeq(ZERO.floor(), 0);
-        aeq(ONE.floor(), 1);
-    }
-
-    @Test
-    public void testCeiling() {
-        aeq(read("7/3").get().ceiling(), 3);
-        aeq(read("5/3").get().ceiling(), 2);
-        aeq(read("2/3").get().ceiling(), 1);
-        aeq(read("-1/3").get().ceiling(), 0);
-        aeq(read("-4/3").get().ceiling(), -1);
-        aeq(read("4").get().ceiling(), 4);
-        aeq(read("-2").get().ceiling(), -2);
-        aeq(ZERO.ceiling(), 0);
-        aeq(ONE.ceiling(), 1);
     }
 
     @Test

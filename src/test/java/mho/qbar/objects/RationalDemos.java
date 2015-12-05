@@ -167,6 +167,20 @@ public class RationalDemos {
         }
     }
 
+    private static void demoFloor() {
+        initialize();
+        for (Rational r : take(LIMIT, P.rationals())) {
+            System.out.println("floor(" + r + ") = " + r.floor());
+        }
+    }
+
+    private static void demoCeiling() {
+        initialize();
+        for (Rational r : take(LIMIT, P.rationals())) {
+            System.out.println("ceil(" + r + ") = " + r.ceiling());
+        }
+    }
+
     private static void demoBigIntegerValueExact() {
         initialize();
         for (Rational r : take(LIMIT, map(Rational::of, P.bigIntegers()))) {
@@ -532,20 +546,6 @@ public class RationalDemos {
         );
         for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
             System.out.println(p.a + " ^ " + p.b + " = " + p.a.pow(p.b));
-        }
-    }
-
-    private static void demoFloor() {
-        initialize();
-        for (Rational r : take(LIMIT, P.rationals())) {
-            System.out.println("floor(" + r + ") = " + r.floor());
-        }
-    }
-
-    private static void demoCeiling() {
-        initialize();
-        for (Rational r : take(LIMIT, P.rationals())) {
-            System.out.println("ceil(" + r + ") = " + r.ceiling());
         }
     }
 

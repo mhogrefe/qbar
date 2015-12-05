@@ -542,6 +542,34 @@ public final class Rational implements Comparable<Rational> {
     }
 
     /**
+     * Returns the floor of {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Rational}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @return ⌊{@code this}⌋;
+     */
+    public @NotNull BigInteger floor() {
+        return bigIntegerValue(RoundingMode.FLOOR);
+    }
+
+    /**
+     * Returns the ceiling of {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Rational}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @return ⌈{@code this}⌉
+     */
+    public @NotNull BigInteger ceiling() {
+        return bigIntegerValue(RoundingMode.CEILING);
+    }
+
+    /**
      * Converts {@code this} to a {@code BigInteger}. Throws an {@link java.lang.ArithmeticException} if {@code this}
      * is not integral.
      *
@@ -1715,34 +1743,6 @@ public final class Rational implements Comparable<Rational> {
             powDenominator = powDenominator.negate();
         }
         return new Rational(powNumerator, powDenominator);
-    }
-
-    /**
-     * Returns the floor of {@code this}.
-     *
-     * <ul>
-     *  <li>{@code this} may be any {@code Rational}.</li>
-     *  <li>The result is not null.</li>
-     * </ul>
-     *
-     * @return ⌊{@code this}⌋;
-     */
-    public @NotNull BigInteger floor() {
-        return bigIntegerValue(RoundingMode.FLOOR);
-    }
-
-    /**
-     * Returns the ceiling of {@code this}.
-     *
-     * <ul>
-     *  <li>{@code this} may be any {@code Rational}.</li>
-     *  <li>The result is not null.</li>
-     * </ul>
-     *
-     * @return ⌈{@code this}⌉
-     */
-    public @NotNull BigInteger ceiling() {
-        return bigIntegerValue(RoundingMode.CEILING);
     }
 
     /**
