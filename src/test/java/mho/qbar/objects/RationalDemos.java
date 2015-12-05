@@ -443,33 +443,28 @@ public class RationalDemos {
 
     private static void demoInvert() {
         initialize();
-        for (Rational r : take(LIMIT, filter(s -> s != ZERO, P.rationals()))) {
+        for (Rational r : take(LIMIT, P.nonzeroRationals())) {
             System.out.println("1/(" + r + ") = " + r.invert());
         }
     }
 
     private static void demoDivide_Rational() {
         initialize();
-        Iterable<Pair<Rational, Rational>> ps = filter(p -> p.b != ZERO, P.pairs(P.rationals()));
-        for (Pair<Rational, Rational> p : take(LIMIT, ps)) {
+        for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals(), P.nonzeroRationals()))) {
             System.out.println(p.a + " / " + p.b + " = " + p.a.divide(p.b));
         }
     }
 
     private static void demoDivide_BigInteger() {
         initialize();
-        Iterable<Pair<Rational, BigInteger>> ps = P.pairs(
-                P.rationals(),
-                filter(i -> !i.equals(BigInteger.ZERO), P.bigIntegers())
-        );
-        for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
+        for (Pair<Rational, BigInteger> p : take(LIMIT, P.pairs(P.rationals(), P.nonzeroBigIntegers()))) {
             System.out.println(p.a + " / " + p.b + " = " + p.a.divide(p.b));
         }
     }
 
     private static void demoDivide_int() {
         initialize();
-        for (Pair<Rational, Integer> p : take(LIMIT, P.pairs(P.rationals(), filter(i -> i != 0, P.integers())))) {
+        for (Pair<Rational, Integer> p : take(LIMIT, P.pairs(P.rationals(), P.nonzeroIntegers()))) {
             System.out.println(p.a + " / " + p.b + " = " + p.a.divide(p.b));
         }
     }

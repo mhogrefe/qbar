@@ -2750,96 +2750,120 @@ public class RationalTest {
         multiply_int_helper("2/3", 1, "2/3");
     }
 
+    private static void invert_helper(@NotNull String input, @NotNull String output) {
+        aeq(read(input).get().invert(), output);
+    }
+
+    private static void invert_fail_helper(@NotNull String input) {
+        try {
+            read(input).get().invert();
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
     @Test
     public void testInvert() {
-        aeq(read("2/3").get().invert(), "3/2");
-        aeq(read("-2/3").get().invert(), "-3/2");
-        aeq(read("4").get().invert(), "1/4");
-        aeq(read("1/4").get().invert(), "4");
-        assertTrue(ONE.invert() == ONE);
+        invert_helper("2/3", "3/2");
+        invert_helper("-2/3", "-3/2");
+        invert_helper("4", "1/4");
+        invert_helper("1/4", "4");
+        invert_helper("1", "1");
+        invert_helper("-1", "-1");
+        invert_fail_helper("0");
+    }
+
+    private static void divide_Rational_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
+        aeq(read(a).get().divide(read(b).get()), output);
+    }
+
+    private static void divide_Rational_fail_helper(@NotNull String a, @NotNull String b) {
         try {
-            ZERO.invert();
+            read(a).get().divide(read(b).get());
             fail();
         } catch (ArithmeticException ignored) {}
     }
 
     @Test
     public void testDivide_Rational() {
-        aeq(read("2/3").get().divide(read("6/7").get()), "7/9");
-        aeq(read("2/3").get().divide(read("-6/7").get()), "-7/9");
-        aeq(read("-2/3").get().divide(read("6/7").get()), "-7/9");
-        aeq(read("-2/3").get().divide(read("-6/7").get()), "7/9");
-        aeq(read("2/3").get().divide(read("4").get()), "1/6");
-        aeq(read("2/3").get().divide(read("-4").get()), "-1/6");
-        aeq(read("-2/3").get().divide(read("4").get()), "-1/6");
-        aeq(read("-2/3").get().divide(read("-4").get()), "1/6");
-        aeq(read("3").get().divide(read("5").get()), "3/5");
-        aeq(read("3").get().divide(read("-5").get()), "-3/5");
-        aeq(read("-3").get().divide(read("5").get()), "-3/5");
-        aeq(read("-3").get().divide(read("-5").get()), "3/5");
-        aeq(read("1/4").get().divide(read("4").get()), "1/16");
-        assertTrue(read("2/3").get().divide(read("2/3").get()) == ONE);
-        assertTrue(read("-2/3").get().divide(read("-2/3").get()) == ONE);
-        aeq(read("2/3").get().divide(ONE), "2/3");
-        aeq(read("-2/3").get().divide(ONE), "-2/3");
-        assertTrue(ZERO.divide(ONE) == ZERO);
-        assertTrue(ONE.divide(ONE) == ONE);
+        divide_Rational_helper("2/3", "6/7", "7/9");
+        divide_Rational_helper("2/3", "-6/7", "-7/9");
+        divide_Rational_helper("-2/3", "6/7", "-7/9");
+        divide_Rational_helper("-2/3", "-6/7", "7/9");
+        divide_Rational_helper("2/3", "4", "1/6");
+        divide_Rational_helper("2/3", "-4", "-1/6");
+        divide_Rational_helper("-2/3", "4", "-1/6");
+        divide_Rational_helper("-2/3", "-4", "1/6");
+        divide_Rational_helper("3", "5", "3/5");
+        divide_Rational_helper("3", "-5", "-3/5");
+        divide_Rational_helper("-3", "5", "-3/5");
+        divide_Rational_helper("-3", "-5", "3/5");
+        divide_Rational_helper("1/4", "4", "1/16");
+        divide_Rational_helper("2/3", "2/3", "1");
+        divide_Rational_helper("-2/3", "-2/3", "1");
+        divide_Rational_helper("2/3", "1", "2/3");
+        divide_Rational_helper("-2/3", "1", "-2/3");
+        divide_Rational_helper("0", "1", "0");
+        divide_Rational_helper("1", "1", "1");
+        divide_Rational_fail_helper("2/3", "0");
+        divide_Rational_fail_helper("3", "0");
+        divide_Rational_fail_helper("1", "0");
+        divide_Rational_fail_helper("0", "0");
+    }
+
+    private static void divide_BigInteger_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
+        aeq(read(a).get().divide(Readers.readBigInteger(b).get()), output);
+    }
+
+    private static void divide_BigInteger_fail_helper(@NotNull String a, @NotNull String b) {
         try {
-            read("2/3").get().divide(ZERO);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        try {
-            read("3").get().divide(ZERO);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        try {
-            ONE.divide(ZERO);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        try {
-            ZERO.divide(ZERO);
+            read(a).get().divide(Readers.readBigInteger(b).get());
             fail();
         } catch (ArithmeticException ignored) {}
     }
 
     @Test
     public void divide_BigInteger() {
-        aeq(read("2/3").get().divide(BigInteger.valueOf(4)), "1/6");
-        aeq(read("2/3").get().divide(BigInteger.valueOf(-4)), "-1/6");
-        aeq(read("-2/3").get().divide(BigInteger.valueOf(4)), "-1/6");
-        aeq(read("-2/3").get().divide(BigInteger.valueOf(-4)), "1/6");
-        aeq(read("2/3").get().divide(BigInteger.valueOf(3)), "2/9");
-        aeq(read("2/3").get().divide(BigInteger.valueOf(-3)), "-2/9");
-        aeq(read("-2/3").get().divide(BigInteger.valueOf(3)), "-2/9");
-        aeq(read("-2/3").get().divide(BigInteger.valueOf(-3)), "2/9");
-        aeq(read("2/3").get().divide(BigInteger.ONE), "2/3");
-        assertTrue(ZERO.divide(BigInteger.valueOf(3)) == ZERO);
-        assertTrue(read("5").get().divide(BigInteger.valueOf(5)) == ONE);
-        assertTrue(read("-5").get().divide(BigInteger.valueOf(-5)) == ONE);
+        divide_BigInteger_helper("2/3", "4", "1/6");
+        divide_BigInteger_helper("2/3", "-4", "-1/6");
+        divide_BigInteger_helper("-2/3", "4", "-1/6");
+        divide_BigInteger_helper("-2/3", "-4", "1/6");
+        divide_BigInteger_helper("2/3", "3", "2/9");
+        divide_BigInteger_helper("2/3", "-3", "-2/9");
+        divide_BigInteger_helper("-2/3", "3", "-2/9");
+        divide_BigInteger_helper("-2/3", "-3", "2/9");
+        divide_BigInteger_helper("2/3", "1", "2/3");
+        divide_BigInteger_helper("0", "3", "0");
+        divide_BigInteger_helper("5", "5", "1");
+        divide_BigInteger_helper("-5", "-5", "1");
+        divide_BigInteger_fail_helper("2/3", "0");
+    }
+
+    private static void divide_int_helper(@NotNull String a, int b, @NotNull String output) {
+        aeq(read(a).get().divide(b), output);
+    }
+
+    private static void divide_int_fail_helper(@NotNull String a, int b) {
         try {
-            read("2/3").get().divide(BigInteger.ZERO);
+            read(a).get().divide(b);
             fail();
         } catch (ArithmeticException ignored) {}
     }
 
     @Test
     public void divide_int() {
-        aeq(read("2/3").get().divide(4), "1/6");
-        aeq(read("2/3").get().divide(-4), "-1/6");
-        aeq(read("-2/3").get().divide(4), "-1/6");
-        aeq(read("-2/3").get().divide(-4), "1/6");
-        aeq(read("2/3").get().divide(3), "2/9");
-        aeq(read("2/3").get().divide(-3), "-2/9");
-        aeq(read("-2/3").get().divide(3), "-2/9");
-        aeq(read("-2/3").get().divide(-3), "2/9");
-        aeq(read("2/3").get().divide(1), "2/3");
-        assertTrue(ZERO.divide(3) == ZERO);
-        assertTrue(read("5").get().divide(5) == ONE);
-        assertTrue(read("-5").get().divide(-5) == ONE);
-        try {
-            read("2/3").get().divide(0);
-            fail();
-        } catch (ArithmeticException ignored) {}
+        divide_int_helper("2/3", 4, "1/6");
+        divide_int_helper("2/3", -4, "-1/6");
+        divide_int_helper("-2/3", 4, "-1/6");
+        divide_int_helper("-2/3", -4, "1/6");
+        divide_int_helper("2/3", 3, "2/9");
+        divide_int_helper("2/3", -3, "-2/9");
+        divide_int_helper("-2/3", 3, "-2/9");
+        divide_int_helper("-2/3", -3, "2/9");
+        divide_int_helper("2/3", 1, "2/3");
+        divide_int_helper("0", 3, "0");
+        divide_int_helper("5", 5, "1");
+        divide_int_helper("-5", -5, "1");
+        divide_int_fail_helper("2/3", 0);
     }
 
     @Test

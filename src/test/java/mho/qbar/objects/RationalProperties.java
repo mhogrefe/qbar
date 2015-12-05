@@ -2207,44 +2207,26 @@ public class RationalProperties {
     }
 
     private static void propertiesInvert() {
-        initialize("");
-        System.out.println("\t\ttesting invert() properties...");
-
-        for (Rational r : take(LIMIT, filter(s -> s != ZERO, P.rationals()))) {
+        initialize("invert()");
+        for (Rational r : take(LIMIT, P.nonzeroRationals())) {
             Rational inverse = r.invert();
             inverse.validate();
             assertEquals(r, inverse, invert_simplest(r));
-            assertEquals(r, r, inverse.invert());
+            isInvolution(Rational::invert, r);
             assertTrue(r, r.multiply(inverse) == ONE);
             assertTrue(r, inverse != ZERO);
         }
 
-        for (Rational r : take(LIMIT, filter(s -> s != ZERO && s.abs() != ONE, P.rationals()))) {
-            Rational inverseR = r.invert();
-            assertTrue(r, !r.equals(inverseR));
+        for (Rational r : take(LIMIT, filterInfinite(s -> s.abs() != ONE, P.nonzeroRationals()))) {
+            assertTrue(r, !r.equals(r.invert()));
         }
     }
 
     private static void compareImplementationsInvert() {
-        initialize("");
-        System.out.println("\t\tcomparing invert() implementations...");
-
-        long totalTime = 0;
-        Iterable<Rational> rs = filter(r -> r != ZERO, P.rationals());
-        for (Rational r : take(LIMIT, rs)) {
-            long time = System.nanoTime();
-            invert_simplest(r);
-            totalTime += (System.nanoTime() - time);
-        }
-        System.out.println("\t\t\tsimplest: " + ((double) totalTime) / 1e9 + " s");
-
-        totalTime = 0;
-        for (Rational r : take(LIMIT, rs)) {
-            long time = System.nanoTime();
-            r.invert();
-            totalTime += (System.nanoTime() - time);
-        }
-        System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
+        Map<String, Function<Rational, Rational>> functions = new LinkedHashMap<>();
+        functions.put("simplest", RationalProperties::invert_simplest);
+        functions.put("standard", Rational::invert);
+        compareImplementations("invert()", take(LIMIT, P.nonzeroRationals()), functions);
     }
 
     private static @NotNull Rational divide_Rational_simplest(@NotNull Rational a, @NotNull Rational b) {
@@ -2252,31 +2234,27 @@ public class RationalProperties {
     }
 
     private static void propertiesDivide_Rational() {
-        initialize("");
-        System.out.println("\t\ttesting divide(Rational) properties...");
-
-        for (Pair<Rational, Rational> p : take(LIMIT, filter(q -> q.b != ZERO, P.pairs(P.rationals())))) {
+        initialize("divide(Rational)");
+        for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals(), P.nonzeroRationals()))) {
             Rational quotient = p.a.divide(p.b);
             quotient.validate();
             assertEquals(p, quotient, divide_Rational_simplest(p.a, p.b));
-            assertEquals(p, p.a, quotient.multiply(p.b));
             assertEquals(p, quotient, p.a.multiply(p.b.invert()));
+            inverses(r -> r.divide(p.b), (Rational r) -> r.multiply(p.b), p.a);
         }
 
-        Iterable<Pair<Rational, Rational>> ps = filter(p -> p.a != ZERO && p.b != ZERO, P.pairs(P.rationals()));
-        for (Pair<Rational, Rational> p : take(LIMIT, ps)) {
+        for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.nonzeroRationals()))) {
             assertEquals(p, p.a.divide(p.b), p.b.divide(p.a).invert());
         }
 
         for (Rational r : take(LIMIT, P.rationals())) {
-            assertEquals(r, r.divide(ONE), r);
+            fixedPoint(s -> s.divide(ONE), r);
         }
 
-        Iterable<Rational> rs = filter(r -> r != ZERO, P.rationals());
-        for (Rational r : take(LIMIT, rs)) {
+        for (Rational r : take(LIMIT, P.nonzeroRationals())) {
             assertEquals(r, ONE.divide(r), r.invert());
             assertTrue(r, r.divide(r) == ONE);
-            assertEquals(r, ZERO.divide(r), ZERO);
+            fixedPoint(s -> s.divide(r), ZERO);
         }
 
         for (Rational r : take(LIMIT, P.rationals())) {
@@ -2288,25 +2266,14 @@ public class RationalProperties {
     }
 
     private static void compareImplementationsDivide_Rational() {
-        initialize("");
-        System.out.println("\t\tcomparing divide(Rational) implementations...");
-
-        long totalTime = 0;
-        Iterable<Pair<Rational, Rational>> ps = filter(p -> p.b != ZERO, P.pairs(P.rationals()));
-        for (Pair<Rational, Rational> p : take(LIMIT, ps)) {
-            long time = System.nanoTime();
-            divide_Rational_simplest(p.a, p.b);
-            totalTime += (System.nanoTime() - time);
-        }
-        System.out.println("\t\t\tsimplest: " + ((double) totalTime) / 1e9 + " s");
-
-        totalTime = 0;
-        for (Pair<Rational, Rational> p : take(LIMIT, ps)) {
-            long time = System.nanoTime();
-            p.a.divide(p.b);
-            totalTime += (System.nanoTime() - time);
-        }
-        System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
+        Map<String, Function<Pair<Rational, Rational>, Rational>> functions = new LinkedHashMap<>();
+        functions.put("simplest", p -> divide_Rational_simplest(p.a, p.b));
+        functions.put("standard", p -> p.a.divide(p.b));
+        compareImplementations(
+                "divide(Rational)",
+                take(LIMIT, P.pairs(P.rationals(), P.nonzeroRationals())),
+                functions
+        );
     }
 
     private static @NotNull Rational divide_BigInteger_simplest(@NotNull Rational a, @NotNull BigInteger b) {
@@ -2314,35 +2281,25 @@ public class RationalProperties {
     }
 
     private static void propertiesDivide_BigInteger() {
-        initialize("");
-        System.out.println("\t\ttesting divide(BigInteger) properties...");
-
-        Iterable<Pair<Rational, BigInteger>> ps = P.pairs(
-                P.rationals(),
-                filter(i -> !i.equals(BigInteger.ZERO), P.bigIntegers())
-        );
-        for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
+        initialize("divide(BigInteger)");
+        for (Pair<Rational, BigInteger> p : take(LIMIT, P.pairs(P.rationals(), P.nonzeroBigIntegers()))) {
             Rational quotient = p.a.divide(p.b);
             quotient.validate();
             assertEquals(p, quotient, divide_BigInteger_simplest(p.a, p.b));
-            assertEquals(p, p.a, quotient.multiply(p.b));
+            inverses(r -> r.divide(p.b), (Rational r) -> r.multiply(p.b), p.a);
         }
 
-        ps = P.pairs(
-                filter(r -> r != ZERO, P.rationals()),
-                filter(i -> !i.equals(BigInteger.ZERO), P.bigIntegers())
-        );
-        for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
+        for (Pair<Rational, BigInteger> p : take(LIMIT, P.pairs(P.nonzeroRationals(), P.nonzeroBigIntegers()))) {
             assertEquals(p, p.a.divide(p.b), of(p.b).divide(p.a).invert());
         }
 
-        for (BigInteger i : take(LIMIT, filter(j -> !j.equals(BigInteger.ZERO), P.bigIntegers()))) {
+        for (BigInteger i : take(LIMIT, P.nonzeroBigIntegers())) {
             assertEquals(i, ONE.divide(i), of(i).invert());
             assertEquals(i, of(i).divide(i), ONE);
         }
 
         for (Rational r : take(LIMIT, P.rationals())) {
-            assertEquals(r, r.divide(BigInteger.ONE), r);
+            fixedPoint(s -> s.divide(BigInteger.ONE), r);
         }
 
         for (Rational r : take(LIMIT, P.rationals())) {
@@ -2354,28 +2311,14 @@ public class RationalProperties {
     }
 
     private static void compareImplementationsDivide_BigInteger() {
-        initialize("");
-        System.out.println("\t\tcomparing divide(BigInteger) implementations...");
-
-        long totalTime = 0;
-        Iterable<Pair<Rational, BigInteger>> ps = P.pairs(
-                P.rationals(),
-                filter(i -> !i.equals(BigInteger.ZERO), P.bigIntegers())
+        Map<String, Function<Pair<Rational, BigInteger>, Rational>> functions = new LinkedHashMap<>();
+        functions.put("simplest", p -> divide_BigInteger_simplest(p.a, p.b));
+        functions.put("standard", p -> p.a.divide(p.b));
+        compareImplementations(
+                "divide(BigInteger)",
+                take(LIMIT, P.pairs(P.rationals(), P.nonzeroBigIntegers())),
+                functions
         );
-        for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
-            long time = System.nanoTime();
-            divide_BigInteger_simplest(p.a, p.b);
-            totalTime += (System.nanoTime() - time);
-        }
-        System.out.println("\t\t\tsimplest: " + ((double) totalTime) / 1e9 + " s");
-
-        totalTime = 0;
-        for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
-            long time = System.nanoTime();
-            p.a.divide(p.b);
-            totalTime += (System.nanoTime() - time);
-        }
-        System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
     }
 
     private static @NotNull Rational divide_int_simplest(@NotNull Rational a, int b) {
@@ -2383,29 +2326,25 @@ public class RationalProperties {
     }
 
     private static void propertiesDivide_int() {
-        initialize("");
-        System.out.println("\t\ttesting divide(int) properties...");
-
-        Iterable<Pair<Rational, Integer>> ps = P.pairs(P.rationals(), filter(i -> i != 0, P.integers()));
-        for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
+        initialize("divide(int)");
+        for (Pair<Rational, Integer> p : take(LIMIT, P.pairs(P.rationals(), P.nonzeroIntegers()))) {
             Rational quotient = p.a.divide(p.b);
             quotient.validate();
             assertEquals(p, quotient, divide_int_simplest(p.a, p.b));
-            assertEquals(p, p.a, quotient.multiply(p.b));
+            inverses(r -> r.divide(p.b), (Rational r) -> r.multiply(p.b), p.a);
         }
 
-        ps = P.pairs(filter(r -> r != ZERO, P.rationals()), filter(i -> i != 0, P.integers()));
-        for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
+        for (Pair<Rational, Integer> p : take(LIMIT, P.pairs(P.nonzeroRationals(), P.nonzeroIntegers()))) {
             assertEquals(p, p.a.divide(p.b), of(p.b).divide(p.a).invert());
         }
 
-        for (int i : take(LIMIT, filter(j -> j != 0, P.integers()))) {
+        for (int i : take(LIMIT, P.nonzeroIntegers())) {
             assertEquals(i, ONE.divide(i), of(i).invert());
             assertEquals(i, of(i).divide(i), ONE);
         }
 
         for (Rational r : take(LIMIT, P.rationals())) {
-            assertEquals(r, r.divide(1), r);
+            fixedPoint(s -> s.divide(1), r);
         }
 
         for (Rational r : take(LIMIT, P.rationals())) {
@@ -2417,25 +2356,10 @@ public class RationalProperties {
     }
 
     private static void compareImplementationsDivide_int() {
-        initialize("");
-        System.out.println("\t\tcomparing divide(int) implementations...");
-
-        long totalTime = 0;
-        Iterable<Pair<Rational, Integer>> ps = P.pairs(P.rationals(), filter(i -> i != 0, P.integers()));
-        for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
-            long time = System.nanoTime();
-            divide_int_simplest(p.a, p.b);
-            totalTime += (System.nanoTime() - time);
-        }
-        System.out.println("\t\t\tsimplest: " + ((double) totalTime) / 1e9 + " s");
-
-        totalTime = 0;
-        for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
-            long time = System.nanoTime();
-            p.a.divide(p.b);
-            totalTime += (System.nanoTime() - time);
-        }
-        System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
+        Map<String, Function<Pair<Rational, Integer>, Rational>> functions = new LinkedHashMap<>();
+        functions.put("simplest", p -> divide_int_simplest(p.a, p.b));
+        functions.put("standard", p -> p.a.divide(p.b));
+        compareImplementations("divide(int)", take(LIMIT, P.pairs(P.rationals(), P.nonzeroIntegers())), functions);
     }
 
     private static @NotNull Rational shiftLeft_simplest(@NotNull Rational r, int bits) {

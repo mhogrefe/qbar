@@ -1458,15 +1458,16 @@ public final class Rational implements Comparable<Rational> {
      * Returns the multiplicative inverse of {@code this}.
      *
      * <ul>
-     *  <li>{@code this} may be any non-zero {@code Rational}.</li>
+     *  <li>{@code this} cannot be zero.</li>
      *  <li>The result is a non-zero {@code Rational}.</li>
      * </ul>
      *
      * @return 1/{@code this}
      */
     public @NotNull Rational invert() {
-        if (this == ZERO)
-            throw new ArithmeticException("division by zero");
+        if (this == ZERO) {
+            throw new ArithmeticException("this cannot be zero.");
+        }
         if (this == ONE) return ONE;
         if (numerator.signum() == -1) {
             return new Rational(denominator.negate(), numerator.negate());
@@ -1480,7 +1481,7 @@ public final class Rational implements Comparable<Rational> {
      *
      * <ul>
      *  <li>{@code this} can be any {@code Rational}.</li>
-     *  <li>{@code that} cannot be null or zero.</li>
+     *  <li>{@code that} cannot zero.</li>
      *  <li>The result is not null.</li>
      * </ul>
      *
@@ -1496,7 +1497,7 @@ public final class Rational implements Comparable<Rational> {
      *
      * <ul>
      *  <li>{@code this} may be any {@code Rational}.</li>
-     *  <li>{@code that} cannot be null or zero.</li>
+     *  <li>{@code that} cannot be zero.</li>
      *  <li>The result is not null.</li>
      * </ul>
      *
@@ -1504,13 +1505,14 @@ public final class Rational implements Comparable<Rational> {
      * @return {@code this}/{@code that}
      */
     public @NotNull Rational divide(@NotNull BigInteger that) {
-        if (that.equals(BigInteger.ZERO))
-            throw new ArithmeticException("division by zero");
+        if (that.equals(BigInteger.ZERO)) {
+            throw new ArithmeticException("that cannot be zero.");
+        }
         if (this == ZERO) return ZERO;
         if (denominator.equals(BigInteger.ONE) && numerator.equals(that)) return ONE;
-        BigInteger g = numerator.gcd(that);
-        if (that.signum() == -1) g = g.negate();
-        return new Rational(numerator.divide(g), denominator.multiply(that.divide(g)));
+        BigInteger gcd = numerator.gcd(that);
+        if (that.signum() == -1) gcd = gcd.negate();
+        return new Rational(numerator.divide(gcd), denominator.multiply(that.divide(gcd)));
     }
 
     /**
@@ -1526,13 +1528,14 @@ public final class Rational implements Comparable<Rational> {
      * @return {@code this}/{@code that}
      */
     public @NotNull Rational divide(int that) {
-        if (that == 0)
-            throw new ArithmeticException("division by zero");
+        if (that == 0) {
+            throw new ArithmeticException("that cannot be zero.");
+        }
         if (this == ZERO) return ZERO;
         if (denominator.equals(BigInteger.ONE) && numerator.equals(BigInteger.valueOf(that))) return ONE;
-        BigInteger g = numerator.gcd(BigInteger.valueOf(that));
-        if (that < 0) g = g.negate();
-        return new Rational(numerator.divide(g), denominator.multiply(BigInteger.valueOf(that).divide(g)));
+        BigInteger gcd = numerator.gcd(BigInteger.valueOf(that));
+        if (that < 0) gcd = gcd.negate();
+        return new Rational(numerator.divide(gcd), denominator.multiply(BigInteger.valueOf(that).divide(gcd)));
     }
 
     /**
