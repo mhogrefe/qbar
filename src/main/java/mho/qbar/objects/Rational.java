@@ -1429,8 +1429,8 @@ public final class Rational implements Comparable<Rational> {
         if (this == ZERO || that.equals(BigInteger.ZERO)) return ZERO;
         if (numerator.equals(BigInteger.ONE) && denominator.equals(that) ||
                 numerator.equals(IntegerUtils.NEGATIVE_ONE) && denominator.equals(that.negate())) return ONE;
-        BigInteger g = denominator.gcd(that);
-        return new Rational(numerator.multiply(that.divide(g)), denominator.divide(g));
+        BigInteger gcd = denominator.gcd(that);
+        return new Rational(numerator.multiply(that.divide(gcd)), denominator.divide(gcd));
     }
 
     /**
@@ -1450,8 +1450,8 @@ public final class Rational implements Comparable<Rational> {
         if (numerator.equals(BigInteger.ONE) && denominator.equals(BigInteger.valueOf(that))) return ONE;
         if (numerator.equals(IntegerUtils.NEGATIVE_ONE) && denominator.equals(BigInteger.valueOf(that).negate()))
             return ONE;
-        BigInteger g = denominator.gcd(BigInteger.valueOf(that));
-        return new Rational(numerator.multiply(BigInteger.valueOf(that).divide(g)), denominator.divide(g));
+        BigInteger gcd = denominator.gcd(BigInteger.valueOf(that));
+        return new Rational(numerator.multiply(BigInteger.valueOf(that).divide(gcd)), denominator.divide(gcd));
     }
 
     /**

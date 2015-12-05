@@ -1704,7 +1704,11 @@ public class RationalProperties {
         for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
             BigDecimal low = p.a.bigDecimalValueByScale(p.b, RoundingMode.FLOOR);
             BigDecimal high = p.a.bigDecimalValueByScale(p.b, RoundingMode.CEILING);
-            assertEquals(p, of(high).subtract(of(low)), TEN.pow(-p.b));
+            Rational lowR = of(low);
+            Rational highR = of(high);
+            assertTrue(p, gt(p.a, lowR));
+            assertTrue(p, lt(p.a, highR));
+            assertEquals(p, highR.subtract(lowR), TEN.pow(-p.b));
         }
 
         ps = filterInfinite(
@@ -1849,9 +1853,8 @@ public class RationalProperties {
 
     private static void propertiesBigDecimalValueByScale_int() {
         initialize("bigDecimalValueByScale(int)");
-        Predicate<Pair<Rational, Integer>> valid = p -> p.a.multiply(TEN.pow(p.b)).isInteger();
         Iterable<Pair<Rational, Integer>> ps = filterInfinite(
-                valid,
+                p -> p.a.multiply(TEN.pow(p.b)).isInteger(),
                 P.pairsSquareRootOrder(P.rationals(), P.integersGeometric())
         );
         for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
@@ -1952,8 +1955,8 @@ public class RationalProperties {
         }
 
         for (Rational r : take(LIMIT, P.rationals())) {
-            assertEquals(r, ZERO.add(r), r);
-            assertEquals(r, r.add(ZERO), r);
+            fixedPoint(ZERO::add, r);
+            fixedPoint(s -> r.add(ZERO), r);
             assertTrue(r, r.add(r.negate()) == ZERO);
         }
 
@@ -1966,7 +1969,7 @@ public class RationalProperties {
         Map<String, Function<Pair<Rational, Rational>, Rational>> functions = new LinkedHashMap<>();
         functions.put("simplest", p -> add_simplest(p.a, p.b));
         functions.put("standard", p -> p.a.add(p.b));
-        compareImplementations("add()", take(LIMIT, P.pairs(P.rationals())), functions);
+        compareImplementations("add(Rational)", take(LIMIT, P.pairs(P.rationals())), functions);
     }
 
     private static void propertiesNegate() {
@@ -2032,7 +2035,7 @@ public class RationalProperties {
         Map<String, Function<Pair<Rational, Rational>, Rational>> functions = new LinkedHashMap<>();
         functions.put("simplest", p -> subtract_simplest(p.a, p.b));
         functions.put("standard", p -> p.a.subtract(p.b));
-        compareImplementations("subtract()", take(LIMIT, P.pairs(P.rationals())), functions);
+        compareImplementations("subtract(Rational)", take(LIMIT, P.pairs(P.rationals())), functions);
     }
 
     private static @NotNull Pair<BigInteger, BigInteger> multiply_Rational_Knuth(
@@ -2042,18 +2045,19 @@ public class RationalProperties {
         if (a == ZERO || b == ZERO) return new Pair<>(BigInteger.ZERO, BigInteger.ONE);
         if (a == ONE) return new Pair<>(b.getNumerator(), b.getDenominator());
         if (b == ONE) return new Pair<>(a.getNumerator(), a.getDenominator());
-        BigInteger g1 = a.getNumerator().gcd(b.getDenominator());
-        BigInteger g2 = b.getNumerator().gcd(a.getDenominator());
-        BigInteger mn = a.getNumerator().divide(g1).multiply(b.getNumerator().divide(g2));
-        BigInteger md = a.getDenominator().divide(g2).multiply(b.getDenominator().divide(g1));
-        if (mn.equals(md)) return new Pair<>(BigInteger.ONE, BigInteger.ONE);
-        return new Pair<>(mn, md);
+        BigInteger numeratorGcd = a.getNumerator().gcd(b.getDenominator());
+        BigInteger denominatorGcd = b.getNumerator().gcd(a.getDenominator());
+        BigInteger productNumerator =
+                a.getNumerator().divide(numeratorGcd).multiply(b.getNumerator().divide(denominatorGcd));
+        BigInteger productDenominator =
+                a.getDenominator().divide(denominatorGcd).multiply(b.getDenominator().divide(numeratorGcd));
+        return productNumerator.equals(productDenominator) ?
+                new Pair<>(BigInteger.ONE, BigInteger.ONE) :
+                new Pair<>(productNumerator, productDenominator);
     }
 
     private static void propertiesMultiply_Rational() {
-        initialize("");
-        System.out.println("\t\ttesting multiply(Rational) properties...");
-
+        initialize("multiply(Rational)");
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
             Rational product = p.a.multiply(p.b);
             product.validate();
@@ -2062,55 +2066,44 @@ public class RationalProperties {
                     new Pair<>(product.getNumerator(), product.getDenominator()),
                     multiply_Rational_Knuth(p.a, p.b)
             );
-            assertEquals(p, product, p.b.multiply(p.a));
+            commutative(Rational::multiply, p);
         }
 
-        for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals(), filter(r -> r != ZERO, P.rationals())))) {
-            assertEquals(p, p.a.multiply(p.b).divide(p.b), p.a);
+        for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals(), P.nonzeroRationals()))) {
+            inverses(r -> r.multiply(p.b), (Rational r) -> r.divide(p.b), p.a);
             assertEquals(p, p.a.multiply(p.b), p.a.divide(p.b.invert()));
         }
 
         for (Rational r : take(LIMIT, P.rationals())) {
-            assertEquals(r, ONE.multiply(r), r);
-            assertEquals(r, r.multiply(ONE), r);
-            assertTrue(r, ZERO.multiply(r) == ZERO);
-            assertTrue(r, r.multiply(ZERO) == ZERO);
+            fixedPoint(r::multiply, ZERO);
+            fixedPoint(s -> s.multiply(r), ZERO);
+            fixedPoint(ONE::multiply, r);
+            fixedPoint(s -> s.multiply(ONE), r);
         }
 
-        Iterable<Rational> rs = filter(r -> r != ZERO, P.rationals());
-        for (Rational r : take(LIMIT, rs)) {
+        for (Rational r : take(LIMIT, P.nonzeroRationals())) {
             assertTrue(r, r.multiply(r.invert()) == ONE);
         }
 
         for (Triple<Rational, Rational, Rational> t : take(LIMIT, P.triples(P.rationals()))) {
-            Rational product1 = t.a.multiply(t.b).multiply(t.c);
-            Rational product2 = t.a.multiply(t.b.multiply(t.c));
-            assertEquals(t, product1, product2);
-            Rational expression1 = t.a.add(t.b).multiply(t.c);
-            Rational expression2 = t.a.multiply(t.c).add(t.b.multiply(t.c));
-            assertEquals(t, expression1, expression2);
+            associative(Rational::multiply, t);
+            leftDistributive(Rational::add, Rational::multiply, t);
+            rightDistributive(Rational::add, Rational::multiply, t);
         }
     }
 
     private static void compareImplementationsMultiply_Rational() {
-        initialize("");
-        System.out.println("\t\tcomparing multiply(Rational) implementations...");
-
-        long totalTime = 0;
-        for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
-            long time = System.nanoTime();
-            multiply_Rational_Knuth(p.a, p.b);
-            totalTime += (System.nanoTime() - time);
-        }
-        System.out.println("\t\t\tKnuth: " + ((double) totalTime) / 1e9 + " s");
-
-        totalTime = 0;
-        for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
-            long time = System.nanoTime();
-            p.a.multiply(p.b);
-            totalTime += (System.nanoTime() - time);
-        }
-        System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
+        Map<String, Function<Pair<Rational, Rational>, Pair<BigInteger, BigInteger>>> functions =
+                new LinkedHashMap<>();
+        functions.put("Knuth", p -> multiply_Rational_Knuth(p.a, p.b));
+        functions.put(
+                "standard",
+                p -> {
+                    Rational product = p.a.multiply(p.b);
+                    return new Pair<>(product.getNumerator(), product.getDenominator());
+                }
+        );
+        compareImplementations("multiply(Rational)", take(LIMIT, P.pairs(P.rationals())), functions);
     }
 
     private static @NotNull Rational multiply_BigInteger_simplest(@NotNull Rational a, @NotNull BigInteger b) {
@@ -2118,9 +2111,7 @@ public class RationalProperties {
     }
 
     private static void propertiesMultiply_BigInteger() {
-        initialize("");
-        System.out.println("\t\ttesting multiply(BigInteger) properties...");
-
+        initialize("multiply(BigInteger)");
         for (Pair<Rational, BigInteger> p : take(LIMIT, P.pairs(P.rationals(), P.bigIntegers()))) {
             Rational product = p.a.multiply(p.b);
             product.validate();
@@ -2129,55 +2120,40 @@ public class RationalProperties {
             assertEquals(p, product, of(p.b).multiply(p.a));
         }
 
-        Iterable<Pair<Rational, BigInteger>> ps = P.pairs(
-                P.rationals(),
-                filter(i -> !i.equals(BigInteger.ZERO), P.bigIntegers())
-        );
-        for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
+        for (Pair<Rational, BigInteger> p : take(LIMIT, P.pairs(P.rationals(), P.nonzeroBigIntegers()))) {
             assertEquals(p, p.a.multiply(p.b).divide(p.b), p.a);
+            inverses(r -> r.multiply(p.b), (Rational r) -> r.divide(p.b), p.a);
         }
 
         for (BigInteger i : take(LIMIT, P.bigIntegers())) {
             assertEquals(i, ONE.multiply(i), of(i));
-            assertTrue(i, ZERO.multiply(i) == ZERO);
+            fixedPoint(r -> r.multiply(i), ZERO);
         }
 
         for (Rational r : take(LIMIT, P.rationals())) {
-            assertEquals(r, r.multiply(BigInteger.ONE), r);
+            fixedPoint(s -> s.multiply(BigInteger.ONE), r);
             assertTrue(r, r.multiply(BigInteger.ZERO) == ZERO);
         }
 
-        for (BigInteger i : take(LIMIT, filter(j -> !j.equals(BigInteger.ZERO), P.bigIntegers()))) {
+        for (BigInteger i : take(LIMIT, P.nonzeroBigIntegers())) {
             assertTrue(i, of(i).invert().multiply(i) == ONE);
         }
 
         Iterable<Triple<Rational, Rational, BigInteger>> ts = P.triples(P.rationals(), P.rationals(), P.bigIntegers());
         for (Triple<Rational, Rational, BigInteger> t : take(LIMIT, ts)) {
-            Rational expression1 = t.a.add(t.b).multiply(t.c);
-            Rational expression2 = t.a.multiply(t.c).add(t.b.multiply(t.c));
-            assertEquals(t, expression1, expression2);
+            rightDistributive(Rational::add, Rational::multiply, new Triple<>(t.c, t.a, t.b));
         }
     }
 
     private static void compareImplementationsMultiply_BigInteger() {
-        initialize("");
-        System.out.println("\t\tcomparing multiply(BigInteger) implementations...");
-
-        long totalTime = 0;
-        for (Pair<Rational, BigInteger> p : take(LIMIT, P.pairs(P.rationals(), P.bigIntegers()))) {
-            long time = System.nanoTime();
-            multiply_BigInteger_simplest(p.a, p.b);
-            totalTime += (System.nanoTime() - time);
-        }
-        System.out.println("\t\t\tsimplest: " + ((double) totalTime) / 1e9 + " s");
-
-        totalTime = 0;
-        for (Pair<Rational, BigInteger> p : take(LIMIT, P.pairs(P.rationals(), P.bigIntegers()))) {
-            long time = System.nanoTime();
-            p.a.multiply(p.b);
-            totalTime += (System.nanoTime() - time);
-        }
-        System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
+        Map<String, Function<Pair<Rational, BigInteger>, Rational>> functions = new LinkedHashMap<>();
+        functions.put("simplest", p -> multiply_BigInteger_simplest(p.a, p.b));
+        functions.put("standard", p -> p.a.multiply(p.b));
+        compareImplementations(
+                "multiply(BigInteger)",
+                take(LIMIT, P.pairs(P.rationals(), P.bigIntegers())),
+                functions
+        );
     }
 
     private static @NotNull Rational multiply_int_simplest(@NotNull Rational a, int b) {
@@ -2185,63 +2161,45 @@ public class RationalProperties {
     }
 
     private static void propertiesMultiply_int() {
-        initialize("");
-        System.out.println("\t\ttesting multiply(int) properties...");
-
-        for (Pair<Rational, Integer> p :take(LIMIT, P.pairs(P.rationals(), P.integers()))) {
+        initialize("multiply(int)");
+        for (Pair<Rational, Integer> p : take(LIMIT, P.pairs(P.rationals(), P.integers()))) {
             Rational product = p.a.multiply(p.b);
             product.validate();
             assertEquals(p, product, multiply_int_simplest(p.a, p.b));
-            assertEquals(p, product, p.a.multiply(p.b));
             assertEquals(p, product, p.a.multiply(of(p.b)));
             assertEquals(p, product, of(p.b).multiply(p.a));
         }
 
-        for (Pair<Rational, Integer> p : take(LIMIT, P.pairs(P.rationals(), filter(i -> i != 0, P.integers())))) {
+        for (Pair<Rational, Integer> p : take(LIMIT, P.pairs(P.rationals(), P.nonzeroIntegers()))) {
             assertEquals(p, p.a.multiply(p.b).divide(p.b), p.a);
+            inverses(r -> r.multiply(p.b), (Rational r) -> r.divide(p.b), p.a);
         }
 
         for (int i : take(LIMIT, P.integers())) {
             assertEquals(i, ONE.multiply(i), of(i));
-            assertTrue(i, ZERO.multiply(i) == ZERO);
+            fixedPoint(r -> r.multiply(i), ZERO);
         }
 
         for (Rational r : take(LIMIT, P.rationals())) {
-            assertEquals(r, r.multiply(1), r);
+            fixedPoint(s -> s.multiply(1), r);
             assertTrue(r, r.multiply(0) == ZERO);
         }
 
-        for (int i : take(LIMIT, filter(j -> j != 0, P.integers()))) {
+        for (int i : take(LIMIT, P.nonzeroIntegers())) {
             assertTrue(i, of(i).invert().multiply(i) == ONE);
         }
 
         Iterable<Triple<Rational, Rational, Integer>> ts = P.triples(P.rationals(), P.rationals(), P.integers());
         for (Triple<Rational, Rational, Integer> t : take(LIMIT, ts)) {
-            Rational expression1 = t.a.add(t.b).multiply(t.c);
-            Rational expression2 = t.a.multiply(t.c).add(t.b.multiply(t.c));
-            assertEquals(t, expression1, expression2);
+            rightDistributive(Rational::add, Rational::multiply, new Triple<>(t.c, t.a, t.b));
         }
     }
 
     private static void compareImplementationsMultiply_int() {
-        initialize("");
-        System.out.println("\t\tcomparing multiply(int) implementations...");
-
-        long totalTime = 0;
-        for (Pair<Rational, Integer> p : take(LIMIT, P.pairs(P.rationals(), P.integers()))) {
-            long time = System.nanoTime();
-            multiply_int_simplest(p.a, p.b);
-            totalTime += (System.nanoTime() - time);
-        }
-        System.out.println("\t\t\tsimplest: " + ((double) totalTime) / 1e9 + " s");
-
-        totalTime = 0;
-        for (Pair<Rational, Integer> p : take(LIMIT, P.pairs(P.rationals(), P.integers()))) {
-            long time = System.nanoTime();
-            p.a.multiply(p.b);
-            totalTime += (System.nanoTime() - time);
-        }
-        System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
+        Map<String, Function<Pair<Rational, Integer>, Rational>> functions = new LinkedHashMap<>();
+        functions.put("simplest", p -> multiply_int_simplest(p.a, p.b));
+        functions.put("standard", p -> p.a.multiply(p.b));
+        compareImplementations("multiply(int)", take(LIMIT, P.pairs(P.rationals(), P.integers())), functions);
     }
 
     private static @NotNull Rational invert_simplest(@NotNull Rational r) {

@@ -2680,60 +2680,74 @@ public class RationalTest {
         subtract_helper("1", "1", "0");
     }
 
+    private static void multiply_Rational_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
+        aeq(read(a).get().multiply(read(b).get()), output);
+    }
+
     @Test
     public void testMultiply_Rational() {
-        aeq(read("2/3").get().multiply(read("6/7").get()), "4/7");
-        aeq(read("2/3").get().multiply(read("-6/7").get()), "-4/7");
-        aeq(read("-2/3").get().multiply(read("6/7").get()), "-4/7");
-        aeq(read("-2/3").get().multiply(read("-6/7").get()), "4/7");
-        aeq(read("2/3").get().multiply(read("4").get()), "8/3");
-        aeq(read("2/3").get().multiply(read("-4").get()), "-8/3");
-        aeq(read("-2/3").get().multiply(read("4").get()), "-8/3");
-        aeq(read("-2/3").get().multiply(read("-4").get()), "8/3");
-        aeq(read("3").get().multiply(read("5").get()), "15");
-        aeq(read("3").get().multiply(read("-5").get()), "-15");
-        aeq(read("-3").get().multiply(read("5").get()), "-15");
-        aeq(read("-3").get().multiply(read("-5").get()), "15");
-        assertTrue(read("1/4").get().multiply(read("4").get()) == ONE);
-        assertTrue(read("-1/4").get().multiply(read("-4").get()) == ONE);
-        assertTrue(read("2/3").get().multiply(ZERO) == ZERO);
-        assertTrue(read("-2/3").get().multiply(ZERO) == ZERO);
-        aeq(read("2/3").get().multiply(ONE), "2/3");
-        aeq(read("-2/3").get().multiply(ONE), "-2/3");
-        assertTrue(ZERO.multiply(ZERO) == ZERO);
-        assertTrue(ZERO.multiply(ONE) == ZERO);
-        assertTrue(ONE.multiply(ZERO) == ZERO);
-        assertTrue(ONE.multiply(ONE) == ONE);
+        multiply_Rational_helper("2/3", "6/7", "4/7");
+        multiply_Rational_helper("2/3", "-6/7", "-4/7");
+        multiply_Rational_helper("-2/3", "6/7", "-4/7");
+        multiply_Rational_helper("-2/3", "-6/7", "4/7");
+        multiply_Rational_helper("2/3", "4", "8/3");
+        multiply_Rational_helper("2/3", "-4", "-8/3");
+        multiply_Rational_helper("-2/3", "4", "-8/3");
+        multiply_Rational_helper("-2/3", "-4", "8/3");
+        multiply_Rational_helper("3", "5", "15");
+        multiply_Rational_helper("3", "-5", "-15");
+        multiply_Rational_helper("-3", "5", "-15");
+        multiply_Rational_helper("-3", "-5", "15");
+        multiply_Rational_helper("1/4", "4", "1");
+        multiply_Rational_helper("-1/4", "-4", "1");
+        multiply_Rational_helper("2/3", "0", "0");
+        multiply_Rational_helper("-2/3", "0", "0");
+        multiply_Rational_helper("2/3", "1", "2/3");
+        multiply_Rational_helper("-2/3", "1", "-2/3");
+        multiply_Rational_helper("0", "0", "0");
+        multiply_Rational_helper("0", "1", "0");
+        multiply_Rational_helper("1", "0", "0");
+        multiply_Rational_helper("1", "1", "1");
+    }
+
+    private static void multiply_BigInteger_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
+        aeq(read(a).get().multiply(Readers.readBigInteger(b).get()), output);
     }
 
     @Test
-    public void multiply_BigInteger() {
-        aeq(read("2/3").get().multiply(BigInteger.valueOf(4)), "8/3");
-        aeq(read("2/3").get().multiply(BigInteger.valueOf(-4)), "-8/3");
-        aeq(read("-2/3").get().multiply(BigInteger.valueOf(4)), "-8/3");
-        aeq(read("-2/3").get().multiply(BigInteger.valueOf(-4)), "8/3");
-        aeq(read("2/3").get().multiply(BigInteger.valueOf(3)), "2");
-        aeq(read("2/3").get().multiply(BigInteger.valueOf(-3)), "-2");
-        aeq(read("-2/3").get().multiply(BigInteger.valueOf(3)), "-2");
-        aeq(read("-2/3").get().multiply(BigInteger.valueOf(-3)), "2");
-        assertTrue(read("2/3").get().multiply(BigInteger.ZERO) == ZERO);
-        aeq(read("2/3").get().multiply(BigInteger.ONE), "2/3");
+    public void testMultiply_BigInteger() {
+        multiply_BigInteger_helper("2/3", "4", "8/3");
+        multiply_BigInteger_helper("2/3", "-4", "-8/3");
+        multiply_BigInteger_helper("-2/3", "4", "-8/3");
+        multiply_BigInteger_helper("-2/3", "-4", "8/3");
+        multiply_BigInteger_helper("2/3", "3", "2");
+        multiply_BigInteger_helper("2/3", "-3", "-2");
+        multiply_BigInteger_helper("-2/3", "3", "-2");
+        multiply_BigInteger_helper("-2/3", "-3", "2");
+        multiply_BigInteger_helper("2/3", "0", "0");
+        multiply_BigInteger_helper("1/3", "3", "1");
+        multiply_BigInteger_helper("-1/3", "-3", "1");
+        multiply_BigInteger_helper("2/3", "1", "2/3");
+    }
+
+    private static void multiply_int_helper(@NotNull String a, int b, @NotNull String output) {
+        aeq(read(a).get().multiply(b), output);
     }
 
     @Test
-    public void multiply_int() {
-        aeq(read("2/3").get().multiply(4), "8/3");
-        aeq(read("2/3").get().multiply(-4), "-8/3");
-        aeq(read("-2/3").get().multiply(4), "-8/3");
-        aeq(read("-2/3").get().multiply(-4), "8/3");
-        aeq(read("2/3").get().multiply(3), "2");
-        aeq(read("2/3").get().multiply(-3), "-2");
-        aeq(read("-2/3").get().multiply(3), "-2");
-        aeq(read("-2/3").get().multiply(-3), "2");
-        assertTrue(read("2/3").get().multiply(0) == ZERO);
-        assertTrue(read("1/3").get().multiply(3) == ONE);
-        assertTrue(read("-1/3").get().multiply(-3) == ONE);
-        aeq(read("2/3").get().multiply(1), "2/3");
+    public void testMultiply_int() {
+        multiply_int_helper("2/3", 4, "8/3");
+        multiply_int_helper("2/3", -4, "-8/3");
+        multiply_int_helper("-2/3", 4, "-8/3");
+        multiply_int_helper("-2/3", -4, "8/3");
+        multiply_int_helper("2/3", 3, "2");
+        multiply_int_helper("2/3", -3, "-2");
+        multiply_int_helper("-2/3", 3, "-2");
+        multiply_int_helper("-2/3", -3, "2");
+        multiply_int_helper("2/3", 0, "0");
+        multiply_int_helper("1/3", 3, "1");
+        multiply_int_helper("-1/3", -3, "1");
+        multiply_int_helper("2/3", 1, "2/3");
     }
 
     @Test
