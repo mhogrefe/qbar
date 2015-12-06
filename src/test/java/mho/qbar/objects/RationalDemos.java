@@ -571,7 +571,7 @@ public class RationalDemos {
     private static void demoContinuedFraction() {
         initialize();
         for (Rational r : take(LIMIT, P.rationals())) {
-            System.out.println("continuedFraction(" + r + ") = " + r.continuedFraction());
+            System.out.println("continuedFraction(" + r + ") = " + toList(r.continuedFraction()));
         }
     }
 
@@ -579,10 +579,7 @@ public class RationalDemos {
         initialize();
         Iterable<List<BigInteger>> iss = map(
                 p -> toList(cons(p.a, p.b)),
-                (Iterable<Pair<BigInteger, List<BigInteger>>>) P.pairs(
-                        P.bigIntegers(),
-                        P.lists(P.positiveBigIntegers())
-                )
+                P.pairs(P.bigIntegers(), P.withScale(4).lists(P.positiveBigIntegers()))
         );
         for (List<BigInteger> is : take(LIMIT, iss)) {
             String listString = tail(init(is.toString()));

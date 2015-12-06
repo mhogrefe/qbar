@@ -10,7 +10,6 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
 import java.math.BigInteger;
-import java.math.RoundingMode;
 import java.util.Collections;
 import java.util.List;
 
@@ -3244,58 +3243,70 @@ public class RationalTest {
         roundToDenominator_fail_helper(PI_DOUBLE, "7", "UNNECESSARY");
     }
 
+    private static void continuedFraction_helper(@NotNull Rational input, @NotNull String output) {
+        aeqit(input.continuedFraction(), output);
+    }
+
+    private static void continuedFraction_helper(@NotNull String input, @NotNull String output) {
+        continuedFraction_helper(read(input).get(), output);
+    }
+
     @Test
     public void testContinuedFraction() {
-        aeq(ZERO.continuedFraction(), "[0]");
-        aeq(ONE.continuedFraction(), "[1]");
-        aeq(read("5").get().continuedFraction(), "[5]");
-        aeq(read("-5").get().continuedFraction(), "[-5]");
-        aeq(read("1/2").get().continuedFraction(), "[0, 2]");
-        aeq(read("-1/2").get().continuedFraction(), "[-1, 2]");
-        aeq(read("415/93").get().continuedFraction(), "[4, 2, 6, 7]");
-        aeq(read("-415/93").get().continuedFraction(), "[-5, 1, 1, 6, 7]");
-        aeq(ofExact(Math.sqrt(2)).get().continuedFraction(),
+        continuedFraction_helper("0", "[0]");
+        continuedFraction_helper("1", "[1]");
+        continuedFraction_helper("5", "[5]");
+        continuedFraction_helper("-5", "[-5]");
+        continuedFraction_helper("1/2", "[0, 2]");
+        continuedFraction_helper("-1/2", "[-1, 2]");
+        continuedFraction_helper("415/93", "[4, 2, 6, 7]");
+        continuedFraction_helper("-415/93", "[-5, 1, 1, 6, 7]");
+        continuedFraction_helper(ofExact(Math.sqrt(2)).get(),
                 "[1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 2, 7, 1, 2, 33, 2, 7, 5," +
                 " 2, 1, 1, 16, 2]");
-        aeq(ofExact(-Math.sqrt(2)).get().continuedFraction(),
+        continuedFraction_helper(ofExact(-Math.sqrt(2)).get(),
                 "[-2, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 2, 7, 1, 2, 33, 2, 7," +
                 " 5, 2, 1, 1, 16, 2]");
-        aeq(PI_DOUBLE.continuedFraction(),
+        continuedFraction_helper(PI_DOUBLE,
                 "[3, 7, 15, 1, 292, 1, 1, 1, 2, 1, 3, 1, 14, 3, 3, 2, 1, 3, 3, 7, 2, 1, 1, 3, 2, 42, 2]");
-        aeq(PI_DOUBLE.negate().continuedFraction(),
+        continuedFraction_helper(PI_DOUBLE.negate(),
                 "[-4, 1, 6, 15, 1, 292, 1, 1, 1, 2, 1, 3, 1, 14, 3, 3, 2, 1, 3, 3, 7, 2, 1, 1, 3, 2, 42, 2]");
-        aeq(ofExact(Math.E).get().continuedFraction(),
+        continuedFraction_helper(ofExact(Math.E).get(),
                 "[2, 1, 2, 1, 1, 4, 1, 1, 6, 1, 1, 8, 1, 1, 10, 1, 1, 12, 1, 1, 11, 1, 1, 1, 11, 5, 1, 1, 2, 1, 4," +
                 " 2, 1, 1, 9, 17, 3]");
-        aeq(ofExact(-Math.E).get().continuedFraction(),
+        continuedFraction_helper(ofExact(-Math.E).get(),
                 "[-3, 3, 1, 1, 4, 1, 1, 6, 1, 1, 8, 1, 1, 10, 1, 1, 12, 1, 1, 11, 1, 1, 1, 11, 5, 1, 1, 2, 1, 4, 2," +
                 " 1, 1, 9, 17, 3]");
     }
 
-    @Test
-    public void testFromContinuedFraction() {
-        aeq(fromContinuedFraction(readBigIntegerList("[1]")), "1");
-        aeq(fromContinuedFraction(readBigIntegerList("[0, 2]")), "1/2");
-        aeq(fromContinuedFraction(readBigIntegerList("[-1, 2]")), "-1/2");
-        aeq(fromContinuedFraction(readBigIntegerList("[4, 2, 6, 7]")), "415/93");
-        aeq(fromContinuedFraction(readBigIntegerList("[-5, 1, 1, 6, 7]")), "-415/93");
-        aeq(fromContinuedFraction(readBigIntegerList("[0, 1, 2, 3, 4, 5, 6, 7, 8]")).floatValue(), "0.69777465");
+    private static void fromContinuedFraction_helper(@NotNull String input, @NotNull String output) {
+        aeq(fromContinuedFraction(readBigIntegerList(input)), output);
+    }
+
+    private static void fromContinuedFraction_fail_helper(@NotNull String input) {
         try {
-            fromContinuedFraction(readBigIntegerList("[]"));
+            fromContinuedFraction(readBigIntegerList(input));
             fail();
         } catch (IllegalArgumentException ignored) {}
     }
 
+    @Test
+    public void testFromContinuedFraction() {
+        fromContinuedFraction_helper("[1]", "1");
+        fromContinuedFraction_helper("[0, 2]", "1/2");
+        fromContinuedFraction_helper("[-1, 2]", "-1/2");
+        fromContinuedFraction_helper("[4, 2, 6, 7]", "415/93");
+        fromContinuedFraction_helper("[-5, 1, 1, 6, 7]", "-415/93");
+        aeqf(fromContinuedFraction(readBigIntegerList("[0, 1, 2, 3, 4, 5, 6, 7, 8]")).floatValue(), 0.69777465f);
+        fromContinuedFraction_fail_helper("[]");
+    }
+
     private static void convergentsHelper(@NotNull String x, @NotNull String output) {
-        Iterable<Rational> convergents = read(x).get().convergents();
-        convergents.forEach(Rational::validate);
-        aeqit(convergents, output);
+        aeqit(read(x).get().convergents(), output);
     }
 
     private static void convergentsHelper(double x, @NotNull String output) {
-        Iterable<Rational> convergents = ofExact(x).get().convergents();
-        convergents.forEach(Rational::validate);
-        aeqit(convergents, output);
+        aeqit(ofExact(x).get().convergents(), output);
     }
 
     @Test

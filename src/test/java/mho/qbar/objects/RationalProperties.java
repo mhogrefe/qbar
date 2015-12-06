@@ -2813,49 +2813,42 @@ public class RationalProperties {
     }
 
     private static void propertiesContinuedFraction() {
-        initialize("");
-        System.out.println("\t\ttesting continuedFraction() properties...");
-
+        initialize("continuedFraction()");
         for (Rational r : take(LIMIT, P.rationals())) {
-            List<BigInteger> continuedFraction = r.continuedFraction();
+            List<BigInteger> continuedFraction = toList(r.continuedFraction());
             assertFalse(r, continuedFraction.isEmpty());
             assertTrue(r, all(i -> i != null, continuedFraction));
             assertTrue(r, all(i -> i.signum() == 1, tail(continuedFraction)));
-            assertEquals(r, r, fromContinuedFraction(continuedFraction));
+            inverses(Rational::continuedFraction, xs -> fromContinuedFraction(toList(xs)), r);
         }
 
         for (Rational r : take(LIMIT, filter(s -> !s.isInteger(), P.rationals()))) {
-            List<BigInteger> continuedFraction = r.continuedFraction();
-            assertTrue(r, gt(last(continuedFraction), BigInteger.ONE));
+            assertTrue(r, gt(last(r.continuedFraction()), BigInteger.ONE));
         }
     }
 
     private static void propertiesFromContinuedFraction() {
-        initialize("");
-        System.out.println("\t\ttesting fromContinuedFraction(List<BigInteger>) properties...");
-
+        initialize("fromContinuedFraction(List<BigInteger>)");
         Iterable<List<BigInteger>> iss = map(
                 p -> toList(cons(p.a, p.b)),
-                (Iterable<Pair<BigInteger, List<BigInteger>>>) P.pairs(
-                        P.bigIntegers(),
-                        P.lists(P.positiveBigIntegers())
-                )
+                P.pairs(P.bigIntegers(), P.lists(P.positiveBigIntegers()))
         );
         for (List<BigInteger> is : take(LIMIT, iss)) {
-            Rational r = fromContinuedFraction(is);
-            r.validate();
+            fromContinuedFraction(is).validate();
         }
 
         for (List<BigInteger> is : take(LIMIT, filter(js -> !last(js).equals(BigInteger.ONE), iss))) {
-            Rational r = fromContinuedFraction(is);
-            assertEquals(is, r.continuedFraction(), is);
+            inverses(Rational::fromContinuedFraction, r -> toList(r.continuedFraction()), is);
         }
 
-        Iterable<List<BigInteger>> failIss = filter(
-                is -> any(i -> i.signum() != 1, tail(is)),
-                P.listsAtLeast(1, P.bigIntegers())
+        Iterable<List<BigInteger>> issFail = map(
+                p -> toList(cons(p.a, p.b)),
+                (Iterable<Pair<BigInteger, List<BigInteger>>>) P.pairs(
+                        P.bigIntegers(),
+                        P.listsWithSublists(map(Collections::singletonList, P.negativeBigIntegers()), P.bigIntegers())
+                )
         );
-        for (List<BigInteger> is : take(LIMIT, failIss)) {
+        for (List<BigInteger> is : take(LIMIT, issFail)) {
             try {
                 fromContinuedFraction(is);
                 fail(is);
@@ -2864,9 +2857,7 @@ public class RationalProperties {
     }
 
     private static void propertiesConvergents() {
-        initialize("");
-        System.out.println("\t\ttesting convergents() properties...");
-
+        initialize("convergents()");
         for (Rational r : take(LIMIT, P.rationals())) {
             List<Rational> convergents = toList(r.convergents());
             convergents.forEach(Rational::validate);
@@ -2875,6 +2866,9 @@ public class RationalProperties {
             assertEquals(r, head(convergents), of(r.floor()));
             assertEquals(r, last(convergents), r);
             assertTrue(r, zigzagging(convergents));
+            if (convergents.size() > 1) {
+                assertTrue(r, lt(convergents.get(0), convergents.get(1)));
+            }
         }
     }
 

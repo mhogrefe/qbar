@@ -1,6 +1,7 @@
 package mho.qbar.objects;
 
 import mho.wheels.io.Readers;
+import mho.wheels.iterables.NoRemoveIterable;
 import mho.wheels.iterables.NoRemoveIterator;
 import mho.wheels.math.BinaryFraction;
 import mho.wheels.math.MathUtils;
@@ -1802,17 +1803,28 @@ public final class Rational implements Comparable<Rational> {
      *
      * @return the continued-fraction-representation of {@code this}
      */
-    public @NotNull List<BigInteger> continuedFraction() {
-        List<BigInteger> continuedFraction = new ArrayList<>();
-        Rational remainder = this;
-        while (true) {
-            BigInteger floor = remainder.floor();
-            continuedFraction.add(floor);
-            remainder = remainder.subtract(of(floor));
-            if (remainder == ZERO) break;
-            remainder = remainder.invert();
+    public @NotNull Iterable<BigInteger> continuedFraction() {
+        if (this == ZERO) {
+            return Collections.singletonList(BigInteger.ZERO);
         }
-        return continuedFraction;
+        return () -> new NoRemoveIterator<BigInteger>() {
+            private @NotNull Rational remainder = Rational.this;
+
+            @Override
+            public boolean hasNext() {
+                return remainder != ZERO;
+            }
+
+            @Override
+            public BigInteger next() {
+                BigInteger floor = remainder.floor();
+                remainder = remainder.fractionalPart();
+                if (remainder != ZERO) {
+                    remainder = remainder.invert();
+                };
+                return floor;
+            }
+        };
     }
 
     /**
@@ -1828,15 +1840,20 @@ public final class Rational implements Comparable<Rational> {
      * @return a[0]+1/(a[1]+1/(a[2]+...+1/a[n-1])...)
      */
     public static @NotNull Rational fromContinuedFraction(@NotNull List<BigInteger> continuedFraction) {
-        if (continuedFraction.isEmpty())
-            throw new IllegalArgumentException("continued fraction may not be empty");
-        BigInteger lastElement = continuedFraction.get(continuedFraction.size() - 1);
-        if (continuedFraction.size() > 1 && lastElement.signum() != 1)
-            throw new IllegalArgumentException("all continued fraction elements but the first must be positive");
+        if (continuedFraction.isEmpty()) {
+            throw new IllegalArgumentException("continuedFraction must be non-empty.");
+        }
+        BigInteger lastElement = last(continuedFraction);
+        if (continuedFraction.size() > 1 && lastElement.signum() != 1) {
+            throw new IllegalArgumentException("All elements but the first must be positive. Invalid elements: " +
+                    continuedFraction);
+        }
         Rational x = of(lastElement);
         for (int i = continuedFraction.size() - 2; i >= 0; i--) {
-            if (i != 0 && continuedFraction.get(i).signum() != 1)
-                throw new IllegalArgumentException("all continued fraction elements but the first must be positive");
+            if (i != 0 && continuedFraction.get(i).signum() != 1) {
+                throw new IllegalArgumentException("All elements but the first must be positive. Invalid elements: " +
+                        continuedFraction);
+            }
             x = x.invert().add(of(continuedFraction.get(i)));
         }
         return x;
@@ -1858,7 +1875,7 @@ public final class Rational implements Comparable<Rational> {
      * @return the convergents of {@code this}.
      */
     public @NotNull Iterable<Rational> convergents() {
-        return map(cf -> fromContinuedFraction(toList(cf)), tail(inits(continuedFraction())));
+        return map(Rational::fromContinuedFraction, tail(inits(continuedFraction())));
     }
 
     /**
