@@ -1780,8 +1780,9 @@ public final class Rational implements Comparable<Rational> {
      * @return {@code this}, rounded to an integer multiple of 1/{@code denominator}
      */
     public @NotNull Rational roundToDenominator(@NotNull BigInteger denominator, @NotNull RoundingMode roundingMode) {
-        if (denominator.signum() != 1)
-            throw new ArithmeticException("must round to a positive denominator");
+        if (denominator.signum() != 1) {
+            throw new ArithmeticException("denominator must be positive. Invalid denominator: " + denominator);
+        }
         return of(multiply(denominator).bigIntegerValue(roundingMode)).divide(denominator);
     }
 

@@ -3169,46 +3169,79 @@ public class RationalTest {
         pow_fail_helper("0", -3);
     }
 
+    private static void fractionalPart_helper(@NotNull String input, @NotNull String output) {
+        aeq(read(input).get().fractionalPart(), output);
+    }
+
     @Test
     public void testFractionalPart() {
-        aeq(read("7/3").get().fractionalPart(), "1/3");
-        aeq(read("5/3").get().fractionalPart(), "2/3");
-        aeq(read("2/3").get().fractionalPart(), "2/3");
-        aeq(read("-1/3").get().fractionalPart(), "2/3");
-        aeq(read("-4/3").get().fractionalPart(), "2/3");
-        assertTrue(read("4").get().fractionalPart() == ZERO);
-        assertTrue(read("-2").get().fractionalPart() == ZERO);
-        assertTrue(ZERO.fractionalPart() == ZERO);
-        assertTrue(ONE.fractionalPart() == ZERO);
+        fractionalPart_helper("7/3", "1/3");
+        fractionalPart_helper("5/3", "2/3");
+        fractionalPart_helper("2/3", "2/3");
+        fractionalPart_helper("-1/3", "2/3");
+        fractionalPart_helper("-4/3", "2/3");
+        fractionalPart_helper("4", "0");
+        fractionalPart_helper("-2", "0");
+        fractionalPart_helper("0", "0");
+        fractionalPart_helper("1", "0");
+    }
+
+    private static void roundToDenominator_helper(
+            @NotNull Rational r,
+            @NotNull String denominator,
+            @NotNull String roundingMode,
+            @NotNull String output
+    ) {
+        aeq(
+                r.roundToDenominator(
+                        Readers.readBigInteger(denominator).get(),
+                        Readers.readRoundingMode(roundingMode).get()
+                ),
+                output
+        );
+    }
+
+    private static void roundToDenominator_helper(
+            @NotNull String r,
+            @NotNull String denominator,
+            @NotNull String roundingMode,
+            @NotNull String output
+    ) {
+        roundToDenominator_helper(read(r).get(), denominator, roundingMode, output);
+    }
+
+    private static void roundToDenominator_fail_helper(
+            @NotNull Rational r,
+            @NotNull String denominator,
+            @NotNull String roundingMode
+    ) {
+        try {
+            r.roundToDenominator(
+                    Readers.readBigInteger(denominator).get(),
+                    Readers.readRoundingMode(roundingMode).get()
+            );
+            fail();
+        } catch (ArithmeticException ignored) {}
     }
 
     @Test
     public void testRoundToDenominator() {
-        aeq(PI_DOUBLE.roundToDenominator(BigInteger.ONE, RoundingMode.HALF_EVEN), "3");
-        aeq(PI_DOUBLE.roundToDenominator(IntegerUtils.TWO, RoundingMode.HALF_EVEN), "3");
-        aeq(PI_DOUBLE.roundToDenominator(BigInteger.valueOf(3), RoundingMode.HALF_EVEN), "3");
-        aeq(PI_DOUBLE.roundToDenominator(BigInteger.valueOf(4), RoundingMode.HALF_EVEN), "13/4");
-        aeq(PI_DOUBLE.roundToDenominator(BigInteger.valueOf(5), RoundingMode.HALF_EVEN), "16/5");
-        aeq(PI_DOUBLE.roundToDenominator(BigInteger.valueOf(6), RoundingMode.HALF_EVEN), "19/6");
-        aeq(PI_DOUBLE.roundToDenominator(BigInteger.valueOf(7), RoundingMode.HALF_EVEN), "22/7");
-        aeq(PI_DOUBLE.roundToDenominator(BigInteger.valueOf(8), RoundingMode.HALF_EVEN), "25/8");
-        aeq(PI_DOUBLE.roundToDenominator(BigInteger.valueOf(9), RoundingMode.HALF_EVEN), "28/9");
-        aeq(PI_DOUBLE.roundToDenominator(BigInteger.TEN, RoundingMode.HALF_EVEN), "31/10");
-        aeq(PI_DOUBLE.roundToDenominator(BigInteger.valueOf(100), RoundingMode.HALF_EVEN), "157/50");
-        aeq(PI_DOUBLE.roundToDenominator(BigInteger.valueOf(1000), RoundingMode.HALF_EVEN), "1571/500");
-        aeq(read("3/10").get().roundToDenominator(BigInteger.valueOf(30), RoundingMode.UNNECESSARY), "3/10");
-        try {
-            PI_DOUBLE.roundToDenominator(BigInteger.ZERO, RoundingMode.HALF_EVEN);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        try {
-            PI_DOUBLE.roundToDenominator(IntegerUtils.NEGATIVE_ONE, RoundingMode.HALF_EVEN);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        try {
-            PI_DOUBLE.roundToDenominator(BigInteger.valueOf(7), RoundingMode.UNNECESSARY);
-            fail();
-        } catch (ArithmeticException ignored) {}
+        roundToDenominator_helper(PI_DOUBLE, "1", "HALF_EVEN", "3");
+        roundToDenominator_helper(PI_DOUBLE, "2", "HALF_EVEN", "3");
+        roundToDenominator_helper(PI_DOUBLE, "3", "HALF_EVEN", "3");
+        roundToDenominator_helper(PI_DOUBLE, "4", "HALF_EVEN", "13/4");
+        roundToDenominator_helper(PI_DOUBLE, "5", "HALF_EVEN", "16/5");
+        roundToDenominator_helper(PI_DOUBLE, "6", "HALF_EVEN", "19/6");
+        roundToDenominator_helper(PI_DOUBLE, "7", "HALF_EVEN", "22/7");
+        roundToDenominator_helper(PI_DOUBLE, "8", "HALF_EVEN", "25/8");
+        roundToDenominator_helper(PI_DOUBLE, "9", "HALF_EVEN", "28/9");
+        roundToDenominator_helper(PI_DOUBLE, "10", "HALF_EVEN", "31/10");
+        roundToDenominator_helper(PI_DOUBLE, "100", "HALF_EVEN", "157/50");
+        roundToDenominator_helper(PI_DOUBLE, "1000", "HALF_EVEN", "1571/500");
+        roundToDenominator_helper("3/10", "30", "UNNECESSARY", "3/10");
+        roundToDenominator_fail_helper(PI_DOUBLE, "0", "HALF_EVEN");
+        roundToDenominator_fail_helper(PI_DOUBLE, "-1", "HALF_EVEN");
+        roundToDenominator_fail_helper(PI_DOUBLE, "7", "UNNECESSARY");
     }
 
     @Test

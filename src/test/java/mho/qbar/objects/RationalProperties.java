@@ -2697,9 +2697,7 @@ public class RationalProperties {
     }
 
     private static void propertiesFractionalPart() {
-        initialize("");
-        System.out.println("\t\ttesting fractionalPart() properties...");
-
+        initialize("fractionalPart()");
         for (Rational r : take(LIMIT, P.rationals())) {
             Rational fractionalPart = r.fractionalPart();
             fractionalPart.validate();
@@ -2714,9 +2712,7 @@ public class RationalProperties {
     }
 
     private static void propertiesRoundToDenominator() {
-        initialize("");
-        System.out.println("\t\ttesting roundToDenominator(BigInteger, RoundingMode) properties...");
-
+        initialize("roundToDenominator(BigInteger, RoundingMode)");
         Iterable<Triple<Rational, BigInteger, RoundingMode>> ts = filter(
                 p -> p.c != RoundingMode.UNNECESSARY || p.b.mod(p.a.getDenominator()).equals(BigInteger.ZERO),
                 P.triples(P.rationals(), P.positiveBigIntegers(), P.roundingModes())
@@ -2729,17 +2725,17 @@ public class RationalProperties {
             assertTrue(t, lt(t.a.subtract(rounded).abs(), of(BigInteger.ONE, t.b)));
         }
 
-        Iterable<Pair<Rational, RoundingMode>> ps1 = filter(
+        Iterable<Pair<Rational, RoundingMode>> ps = filterInfinite(
                 p -> p.b != RoundingMode.UNNECESSARY || p.a.isInteger(),
                 P.pairs(P.rationals(), P.roundingModes())
         );
-        for (Pair<Rational, RoundingMode> p : take(LIMIT, ps1)) {
+        for (Pair<Rational, RoundingMode> p : take(LIMIT, ps)) {
             Rational rounded = p.a.roundToDenominator(BigInteger.ONE, p.b);
             assertEquals(p, rounded.getNumerator(), p.a.bigIntegerValue(p.b));
             assertEquals(p, rounded.getDenominator(), BigInteger.ONE);
         }
 
-        Iterable<Pair<Rational, BigInteger>> ps2 = filter(
+        Iterable<Pair<Rational, BigInteger>> ps2 = filterInfinite(
                 p -> p.b.mod(p.a.getDenominator()).equals(BigInteger.ZERO),
                 P.pairs(P.rationals(), P.positiveBigIntegers())
         );
@@ -2747,83 +2743,41 @@ public class RationalProperties {
             assertTrue(p, p.a.roundToDenominator(p.b, RoundingMode.UNNECESSARY).equals(p.a));
         }
 
-        ps2 = P.pairs(P.rationals(), P.positiveBigIntegers());
-        for (Pair<Rational, BigInteger> p : take(LIMIT, ps2)) {
+        for (Pair<Rational, BigInteger> p : take(LIMIT, P.pairs(P.rationals(), P.positiveBigIntegers()))) {
             assertTrue(p, le(p.a.roundToDenominator(p.b, RoundingMode.FLOOR), p.a));
             assertTrue(p, ge(p.a.roundToDenominator(p.b, RoundingMode.CEILING), p.a));
             assertTrue(p, le(p.a.roundToDenominator(p.b, RoundingMode.DOWN).abs(), p.a.abs()));
             assertTrue(p, ge(p.a.roundToDenominator(p.b, RoundingMode.UP).abs(), p.a.abs()));
-            assertTrue(
-                    p,
-                    le(
-                            p.a.subtract(p.a.roundToDenominator(p.b, RoundingMode.HALF_DOWN)).abs(),
-                            of(p.b).shiftLeft(1).invert()
-                    )
-            );
-            assertTrue(
-                    p,
-                    le(
-                            p.a.subtract(p.a.roundToDenominator(p.b, RoundingMode.HALF_UP)).abs(),
-                            of(p.b).shiftLeft(1).invert()
-                    )
-            );
-            assertTrue(
-                    p,
-                    le(
-                            p.a.subtract(p.a.roundToDenominator(p.b, RoundingMode.HALF_EVEN)).abs(),
-                            of(p.b).shiftLeft(1).invert()
-                    )
-            );
+            Rational resolution = of(p.b).shiftLeft(1).invert();
+            assertTrue(p, le(p.a.subtract(p.a.roundToDenominator(p.b, RoundingMode.HALF_DOWN)).abs(), resolution));
+            assertTrue(p, le(p.a.subtract(p.a.roundToDenominator(p.b, RoundingMode.HALF_UP)).abs(), resolution));
+            assertTrue(p, le(p.a.subtract(p.a.roundToDenominator(p.b, RoundingMode.HALF_EVEN)).abs(), resolution));
         }
 
-        ps2 = filter(
+        ps2 = filterInfinite(
                 p -> lt(p.a.abs().multiply(p.b).fractionalPart(), ONE_HALF),
                 P.pairs(P.rationals(), P.positiveBigIntegers())
         );
 
         for (Pair<Rational, BigInteger> p : take(LIMIT, ps2)) {
-            assertEquals(
-                    p,
-                    p.a.roundToDenominator(p.b, RoundingMode.HALF_DOWN),
-                    p.a.roundToDenominator(p.b, RoundingMode.DOWN)
-            );
-            assertEquals(
-                    p,
-                    p.a.roundToDenominator(p.b, RoundingMode.HALF_UP),
-                    p.a.roundToDenominator(p.b, RoundingMode.DOWN)
-            );
-            assertEquals(
-                    p,
-                    p.a.roundToDenominator(p.b, RoundingMode.HALF_EVEN),
-                    p.a.roundToDenominator(p.b, RoundingMode.DOWN)
-            );
+            Rational down = p.a.roundToDenominator(p.b, RoundingMode.DOWN);
+            assertEquals(p, p.a.roundToDenominator(p.b, RoundingMode.HALF_DOWN), down);
+            assertEquals(p, p.a.roundToDenominator(p.b, RoundingMode.HALF_UP), down);
+            assertEquals(p, p.a.roundToDenominator(p.b, RoundingMode.HALF_EVEN), down);
         }
 
-        ps2 = filter(
+        ps2 = filterInfinite(
                 p -> gt(p.a.abs().multiply(p.b).fractionalPart(), ONE_HALF),
                 P.pairs(P.rationals(), P.positiveBigIntegers())
         );
-
         for (Pair<Rational, BigInteger> p : take(LIMIT, ps2)) {
-            assertEquals(
-                    p,
-                    p.a.roundToDenominator(p.b, RoundingMode.HALF_DOWN),
-                    p.a.roundToDenominator(p.b, RoundingMode.UP)
-            );
-            assertEquals(
-                    p,
-                    p.a.roundToDenominator(p.b, RoundingMode.HALF_UP),
-                    p.a.roundToDenominator(p.b, RoundingMode.UP)
-            );
-            assertEquals(
-                    p,
-                    p.a.roundToDenominator(p.b, RoundingMode.HALF_EVEN),
-                    p.a.roundToDenominator(p.b, RoundingMode.UP)
-            );
+            Rational up = p.a.roundToDenominator(p.b, RoundingMode.UP);
+            assertEquals(p, p.a.roundToDenominator(p.b, RoundingMode.HALF_DOWN), up);
+            assertEquals(p, p.a.roundToDenominator(p.b, RoundingMode.HALF_UP), up);
+            assertEquals(p, p.a.roundToDenominator(p.b, RoundingMode.HALF_EVEN), up);
         }
 
-        Iterable<Rational> rs = filter(r -> !r.getDenominator().testBit(0), P.rationals());
-        for (Rational r : take(LIMIT, rs)) {
+        for (Rational r : take(LIMIT, filterInfinite(s -> !s.getDenominator().testBit(0), P.rationals()))) {
             BigInteger denominator = r.getDenominator().shiftRight(1);
             assertEquals(r, r.abs().multiply(denominator).fractionalPart(), ONE_HALF);
             Rational hd = r.roundToDenominator(denominator, RoundingMode.HALF_DOWN);
@@ -2831,26 +2785,26 @@ public class RationalProperties {
             Rational hu = r.roundToDenominator(denominator, RoundingMode.HALF_UP);
             assertEquals(r, hu, r.roundToDenominator(denominator, RoundingMode.UP));
             Rational he = r.roundToDenominator(denominator, RoundingMode.HALF_EVEN);
-            assertEquals(r, he.multiply(denominator).getNumerator().testBit(0), false);
+            assertFalse(r, he.multiply(denominator).getNumerator().testBit(0));
         }
 
-        Iterable<Triple<Rational, BigInteger, RoundingMode>> failTs = P.triples(
+        Iterable<Triple<Rational, BigInteger, RoundingMode>> tsFail = P.triples(
                 P.rationals(),
-                map(BigInteger::negate, P.naturalBigIntegers()),
+                P.withElement(BigInteger.ZERO, P.negativeBigIntegers()),
                 P.roundingModes()
         );
-        for (Triple<Rational, BigInteger, RoundingMode> t : take(LIMIT, failTs)) {
+        for (Triple<Rational, BigInteger, RoundingMode> t : take(LIMIT, tsFail)) {
             try {
                 t.a.roundToDenominator(t.b, t.c);
                 fail(t);
             } catch (ArithmeticException ignored) {}
         }
 
-        Iterable<Pair<Rational, BigInteger>> failPs = filter(
+        Iterable<Pair<Rational, BigInteger>> psFail = filterInfinite(
                 p -> !p.b.mod(p.a.getDenominator()).equals(BigInteger.ZERO),
                 P.pairs(P.rationals(), P.positiveBigIntegers())
         );
-        for (Pair<Rational, BigInteger> p : take(LIMIT, failPs)) {
+        for (Pair<Rational, BigInteger> p : take(LIMIT, psFail)) {
             try {
                 p.a.roundToDenominator(p.b, RoundingMode.UNNECESSARY);
                 fail(p);

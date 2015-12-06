@@ -425,7 +425,7 @@ public class RationalDemos {
     private static void demoSignum() {
         initialize();
         for (Rational r : take(LIMIT, P.rationals())) {
-            System.out.println("sgn(" + r + ") = " + r.signum());
+            System.out.println("signum(" + r + ") = " + r.signum());
         }
     }
 
@@ -558,7 +558,7 @@ public class RationalDemos {
 
     private static void demoRoundToDenominator() {
         initialize();
-        Iterable<Triple<Rational, BigInteger, RoundingMode>> ts = filter(
+        Iterable<Triple<Rational, BigInteger, RoundingMode>> ts = filterInfinite(
                 p -> p.c != RoundingMode.UNNECESSARY || p.b.mod(p.a.getDenominator()).equals(BigInteger.ZERO),
                 P.triples(P.rationals(), P.positiveBigIntegers(), P.roundingModes())
         );
