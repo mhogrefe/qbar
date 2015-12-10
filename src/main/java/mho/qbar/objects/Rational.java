@@ -1,7 +1,6 @@
 package mho.qbar.objects;
 
 import mho.wheels.io.Readers;
-import mho.wheels.iterables.NoRemoveIterable;
 import mho.wheels.iterables.NoRemoveIterator;
 import mho.wheels.math.BinaryFraction;
 import mho.wheels.math.MathUtils;
@@ -1821,7 +1820,7 @@ public final class Rational implements Comparable<Rational> {
                 remainder = remainder.fractionalPart();
                 if (remainder != ZERO) {
                     remainder = remainder.invert();
-                };
+                }
                 return floor;
             }
         };
@@ -1996,11 +1995,12 @@ public final class Rational implements Comparable<Rational> {
      * @return a pair consisting of the digits before the decimal point and the digits after
      */
     public @NotNull Pair<List<BigInteger>, Iterable<BigInteger>> digits(@NotNull BigInteger base) {
-        if (signum() == -1)
-            throw new IllegalArgumentException("this cannot be negative");
+        if (signum() == -1) {
+            throw new IllegalArgumentException("this cannot be negative. Invalid this: " + this);
+        }
         BigInteger floor = floor();
         List<BigInteger> beforeDecimal = IntegerUtils.bigEndianDigits(base, floor);
-        Rational fractionalPart = subtract(of(floor));
+        Rational fractionalPart = fractionalPart();
         BigInteger numerator = fractionalPart.numerator;
         BigInteger denominator = fractionalPart.denominator;
         final BigInteger firstRemainder = numerator.multiply(base);
@@ -2009,7 +2009,7 @@ public final class Rational implements Comparable<Rational> {
             private int index;
             private @Nullable Integer repeatingIndex;
             private @NotNull BigInteger remainder;
-            private @Nullable Map<BigInteger, Integer> remainders;
+            private Map<BigInteger, Integer> remainders;
             {
                 knownRepeating = false;
                 index = 0;
@@ -2034,7 +2034,7 @@ public final class Rational implements Comparable<Rational> {
                     repeatingIndex = remainders.get(remainder);
                     if (repeatingIndex != null && !remainder.equals(BigInteger.ZERO)) {
                         knownRepeating = true;
-                        remainders = null;
+                        remainders = null; //free memory
                     } else {
                         index++;
                     }

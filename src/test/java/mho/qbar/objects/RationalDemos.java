@@ -627,22 +627,14 @@ public class RationalDemos {
 
     private static void demoDigits() {
         initialize();
-        Iterable<Pair<Rational, BigInteger>> ps;
-        if (P instanceof QBarExhaustiveProvider) {
-            ps = ((QBarExhaustiveProvider) P).pairsSquareRootOrder(
-                    cons(ZERO, P.positiveRationals()),
-                    P.rangeUp(IntegerUtils.TWO)
-            );
-        } else {
-            ps = P.pairs(
-                    cons(ZERO, P.positiveRationals()),
-                    map(i -> BigInteger.valueOf(i + 2), P.withScale(20).naturalIntegersGeometric())
-            );
-        }
+        //noinspection Convert2MethodRef
+        Iterable<Pair<Rational, BigInteger>> ps = P.pairsSquareRootOrder(
+                P.withElement(ZERO, P.positiveRationals()),
+                map(i -> BigInteger.valueOf(i), P.rangeUpGeometric(2))
+        );
         for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
             Pair<List<BigInteger>, Iterable<BigInteger>> digits = p.a.digits(p.b);
-            Pair<String, String> digitStrings = new Pair<>(digits.a.toString(), IterableUtils.toString(20, digits.b));
-            System.out.println("digits(" + p.a + ", " + p.b + ") = " + digitStrings);
+            System.out.println("digits(" + p.a + ", " + p.b + ") = " + new Pair<>(digits.a.toString(), its(digits.b)));
         }
     }
 

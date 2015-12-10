@@ -34,6 +34,7 @@ public class RationalProperties {
     private static final @NotNull QBarExhaustiveProvider EP = QBarExhaustiveProvider.INSTANCE;
     private static final @NotNull String RATIONAL_CHARS = "-/0123456789";
     private static final int DENOMINATOR_CUTOFF = 1000000;
+    private static final int TINY_LIMIT = 20;
     private static final int SMALL_LIMIT = 1000;
     private static int LIMIT;
     private static QBarIterableProvider P;
@@ -3094,9 +3095,8 @@ public class RationalProperties {
     }
 
     private static void propertiesDigits() {
-        initialize("");
-        System.out.println("\t\ttesting digits(BigInteger) properties...");
-
+        initialize("digits(BigInteger)");
+        //noinspection Convert2MethodRef
         Iterable<Pair<Rational, BigInteger>> ps = P.pairsSquareRootOrder(
                 P.withElement(ZERO, P.positiveRationals()),
                 P.rangeUp(IntegerUtils.TWO)
@@ -3109,15 +3109,6 @@ public class RationalProperties {
         }
 
         ps = P.pairsSquareRootOrder(
-                P.withElement(ZERO, P.positiveRationals()),
-                P.withScale(4).rangeUp(IntegerUtils.TWO)
-        );
-        for (Pair<Rational, BigInteger> p : take(LIMIT, filter(q -> q.a.hasTerminatingBaseExpansion(q.b), ps))) {
-            Pair<List<BigInteger>, Iterable<BigInteger>> digits = p.a.digits(p.b);
-            toList(digits.b);
-        }
-
-        ps = P.pairsSquareRootOrder(
                 P.withElement(ZERO, P.withScale(8).positiveRationals()),
                 P.rangeUp(IntegerUtils.TWO)
         );
@@ -3125,7 +3116,18 @@ public class RationalProperties {
             Pair<List<BigInteger>, Iterable<BigInteger>> digits = p.a.digits(p.b);
             Pair<List<BigInteger>, Iterable<BigInteger>> alt = digits_alt(p.a, p.b);
             assertEquals(p, digits.a, alt.a);
-            aeqit(p.toString(), take(100, digits.b), take(100, alt.b));
+            aeqit(p.toString(), take(TINY_LIMIT, digits.b), take(TINY_LIMIT, alt.b));
+        }
+
+        ps = filter(
+                q -> q.a.hasTerminatingBaseExpansion(q.b),
+                P.pairsSquareRootOrder(
+                        P.withElement(ZERO, P.positiveRationals()),
+                        P.withScale(4).rangeUp(IntegerUtils.TWO)
+                )
+        );
+        for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
+            toList(p.a.digits(p.b).b);
         }
 
         Iterable<Pair<Rational, BigInteger>> psFail = P.pairs(P.negativeRationals(), P.rangeUp(IntegerUtils.TWO));
@@ -3145,34 +3147,15 @@ public class RationalProperties {
     }
 
     private static void compareImplementationsDigits() {
-        initialize("");
-        System.out.println("\t\tcomparing digits(BigInteger) implementations...");
-
-        long totalTime = 0;
-        Iterable<Pair<Rational, BigInteger>> ps = P.pairs(
-                P.withElement(
-                        ZERO,
-                        filterInfinite(
-                                r -> le(r.getDenominator(), BigInteger.valueOf(DENOMINATOR_CUTOFF)),
-                                P.withScale(8).positiveRationals()
-                        )
-                ),
+        Map<String, Function<Pair<Rational, BigInteger>, List<BigInteger>>> functions = new LinkedHashMap<>();
+        functions.put("alt", p -> toList(take(TINY_LIMIT, digits_alt(p.a, p.b).b)));
+        functions.put("standard", p -> toList(take(TINY_LIMIT, p.a.digits(p.b).b)));
+        //noinspection Convert2MethodRef
+        Iterable<Pair<Rational, BigInteger>> ps = P.pairsSquareRootOrder(
+                P.withElement(ZERO, P.withScale(8).positiveRationals()),
                 P.withScale(8).rangeUp(IntegerUtils.TWO)
         );
-        for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
-            long time = System.nanoTime();
-            toList(take(20, digits_alt(p.a, p.b).b));
-            totalTime += (System.nanoTime() - time);
-        }
-        System.out.println("\t\t\tsimplest: " + ((double) totalTime) / 1e9 + " s");
-
-        totalTime = 0;
-        for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
-            long time = System.nanoTime();
-            toList(take(20, p.a.digits(p.b).b));
-            totalTime += (System.nanoTime() - time);
-        }
-        System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
+        compareImplementations("digits(BigInteger)", take(LIMIT, ps), functions);
     }
 
     private static void propertiesToStringBase_BigInteger() {
