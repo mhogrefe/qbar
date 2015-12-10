@@ -597,14 +597,8 @@ public class RationalDemos {
     private static void demoPositionalNotation() {
         initialize();
         Iterable<Pair<Rational, BigInteger>> ps = P.pairs(
-                P.withElement(
-                        ZERO,
-                        filterInfinite(
-                                r -> le(r.getDenominator(), BigInteger.valueOf(DENOMINATOR_CUTOFF)),
-                                P.withScale(8).positiveRationals()
-                        )
-                ),
-                P.withScale(8).rangeUp(IntegerUtils.TWO)
+                P.withElement(ZERO, P.withScale(4).positiveRationals()),
+                P.rangeUp(IntegerUtils.TWO)
         );
         for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
             System.out.println("positionalNotation(" + p.a + ", " + p.b + ") = " + p.a.positionalNotation(p.b));
@@ -613,19 +607,18 @@ public class RationalDemos {
 
     private static void demoFromPositionalNotation() {
         initialize();
-        Iterable<BigInteger> bases;
-        if (P instanceof QBarExhaustiveProvider) {
-            bases = P.rangeUp(IntegerUtils.TWO);
-        } else {
-            bases = map(i -> BigInteger.valueOf(i + 2), P.withScale(20).naturalIntegersGeometric());
-        }
-        Iterable<Pair<BigInteger, Triple<List<BigInteger>, List<BigInteger>, List<BigInteger>>>> ps = P.dependentPairs(
-                bases,
-                b -> filter(
-                        t -> !t.c.isEmpty(),
-                        P.triples(P.lists(P.range(BigInteger.ZERO, b.subtract(BigInteger.ONE))))
-                )
-        );
+        Iterable<Pair<BigInteger, Triple<List<BigInteger>, List<BigInteger>, List<BigInteger>>>> ps =
+                P.dependentPairsInfinite(
+                        P.withScale(8).rangeUp(IntegerUtils.TWO),
+                        b -> {
+                            Iterable<BigInteger> range = P.range(BigInteger.ZERO, b.subtract(BigInteger.ONE));
+                            return P.triples(
+                                    P.withScale(4).lists(range),
+                                    P.withScale(4).lists(range),
+                                    P.withScale(4).listsAtLeast(1, range)
+                            );
+                        }
+                );
         for (Pair<BigInteger, Triple<List<BigInteger>, List<BigInteger>, List<BigInteger>>> p : take(LIMIT, ps)) {
             System.out.println("fromPositionalNotation(" + p.a + ", " + p.b.a + ", " + p.b.b + ", " + p.b.c + ") = " +
                     fromPositionalNotation(p.a, p.b.a, p.b.b, p.b.c));

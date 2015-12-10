@@ -1905,11 +1905,12 @@ public final class Rational implements Comparable<Rational> {
     public @NotNull Triple<List<BigInteger>, List<BigInteger>, List<BigInteger>> positionalNotation(
             @NotNull BigInteger base
     ) {
-        if (signum() == -1)
-            throw new IllegalArgumentException("this cannot be negative");
+        if (signum() == -1) {
+            throw new IllegalArgumentException("this cannot be negative. Invalid this: " + this);
+        }
         BigInteger floor = floor();
         List<BigInteger> beforeDecimal = IntegerUtils.bigEndianDigits(base, floor);
-        Rational fractionalPart = subtract(of(floor));
+        Rational fractionalPart = fractionalPart();
         BigInteger numerator = fractionalPart.numerator;
         BigInteger denominator = fractionalPart.denominator;
         BigInteger remainder = numerator.multiply(base);
@@ -1963,14 +1964,16 @@ public final class Rational implements Comparable<Rational> {
             @NotNull List<BigInteger> nonRepeating,
             @NotNull List<BigInteger> repeating
     ) {
-        if (repeating.isEmpty())
-            throw new IllegalArgumentException("repeating must be nonempty");
+        if (repeating.isEmpty()) {
+            throw new IllegalArgumentException("repeating cannot be empty.");
+        }
         BigInteger floor = IntegerUtils.fromBigEndianDigits(base, beforeDecimalPoint);
         BigInteger nonRepeatingInteger = IntegerUtils.fromBigEndianDigits(base, nonRepeating);
         BigInteger repeatingInteger = IntegerUtils.fromBigEndianDigits(base, repeating);
-        Rational nonRepeatingPart = of(nonRepeatingInteger, base.pow(nonRepeating.size()));
-        Rational repeatingPart = of(repeatingInteger, base.pow(repeating.size()).subtract(BigInteger.ONE))
-                .divide(base.pow(nonRepeating.size()));
+        BigInteger offset = base.pow(nonRepeating.size());
+        Rational nonRepeatingPart = of(nonRepeatingInteger, offset);
+        Rational repeatingPart =
+                of(repeatingInteger, base.pow(repeating.size()).subtract(BigInteger.ONE)).divide(offset);
         return of(floor).add(nonRepeatingPart).add(repeatingPart);
     }
 

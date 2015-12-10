@@ -2877,7 +2877,7 @@ public class RationalProperties {
         List<T> oldB = new ArrayList<>();
         while (!a.equals(oldA) || !b.equals(oldB)) {
             int longestCommonSuffixLength = 0;
-            for (int i = 0; i < Math.min(a.size(), b.size()); i++) {
+            for (int i = 0; i < min(a.size(), b.size()); i++) {
                 if (!a.get(a.size() - i - 1).equals(b.get(b.size() - i - 1))) break;
                 longestCommonSuffixLength++;
             }
@@ -2890,22 +2890,14 @@ public class RationalProperties {
     }
 
     private static void propertiesPositionalNotation() {
-        initialize("");
-        System.out.println("\t\ttesting positionalNotation(BigInteger) properties...");
-
+        initialize("positionalNotation(BigInteger)");
         Iterable<Pair<Rational, BigInteger>> ps = P.pairs(
-                P.withElement(
-                        ZERO,
-                        filterInfinite(
-                                r -> le(r.getDenominator(), BigInteger.valueOf(DENOMINATOR_CUTOFF)),
-                                P.withScale(8).positiveRationals()
-                        )
-                ),
+                P.withElement(ZERO, P.withScale(4).positiveRationals()),
                 P.withScale(8).rangeUp(IntegerUtils.TWO)
         );
         for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
             Triple<List<BigInteger>, List<BigInteger>, List<BigInteger>> pn = p.a.positionalNotation(p.b);
-            for (List<BigInteger> is : Arrays.asList(pn.a, pn.b, pn.c)) {
+            for (List<BigInteger> is : Triple.toList(pn)) {
                 assertTrue(p, all(i -> i != null && i.signum() != -1 && lt(i, p.b), is));
             }
             assertTrue(p, pn.a.isEmpty() || !head(pn.a).equals(BigInteger.ZERO));
@@ -2920,10 +2912,15 @@ public class RationalProperties {
                     pn.c.equals(Collections.singletonList(BigInteger.ZERO)),
                     p.a.hasTerminatingBaseExpansion(p.b)
             );
+            inverses(
+                    r -> r.positionalNotation(p.b),
+                    (Triple<List<BigInteger>, List<BigInteger>, List<BigInteger>> t) ->
+                            fromPositionalNotation(p.b, t.a, t.b, t.c),
+                    p.a
+            );
         }
 
-        Iterable<Pair<Rational, BigInteger>> psFail = P.pairs(P.negativeRationals(), P.rangeUp(IntegerUtils.TWO));
-        for (Pair<Rational, BigInteger> p : take(LIMIT, psFail)) {
+        for (Pair<Rational, BigInteger> p : take(LIMIT, P.pairs(P.negativeRationals(), P.rangeUp(IntegerUtils.TWO)))) {
             try {
                 p.a.positionalNotation(p.b);
                 fail(p);
@@ -2939,48 +2936,41 @@ public class RationalProperties {
     }
 
     private static void propertiesFromPositionalNotation() {
-        initialize("");
-        System.out.println(
-                "\t\ttesting fromPositionalNotation(BigInteger, List<BigInteger>, List<BigInteger>," +
-                " List<BigInteger>) properties...");
-
-        Iterable<BigInteger> bases;
-        if (P instanceof QBarExhaustiveProvider) {
-            bases = P.rangeUp(IntegerUtils.TWO);
-        } else {
-            bases = map(i -> BigInteger.valueOf(i + 2), P.withScale(20).naturalIntegersGeometric());
-        }
-        Iterable<Pair<BigInteger, Triple<List<BigInteger>, List<BigInteger>, List<BigInteger>>>> ps = P.dependentPairs(
-                bases,
-                b -> filter(
-                        t -> !t.c.isEmpty(),
-                        P.triples(P.lists(P.range(BigInteger.ZERO, b.subtract(BigInteger.ONE))))
-                )
-        );
+        initialize("fromPositionalNotation(BigInteger, List<BigInteger>, List<BigInteger>, List<BigInteger>)");
+        Iterable<Pair<BigInteger, Triple<List<BigInteger>, List<BigInteger>, List<BigInteger>>>> ps =
+                P.dependentPairsInfinite(
+                        P.withScale(8).rangeUp(IntegerUtils.TWO),
+                        b -> {
+                            Iterable<BigInteger> range = P.range(BigInteger.ZERO, b.subtract(BigInteger.ONE));
+                            return P.triples(
+                                    P.withScale(4).lists(range),
+                                    P.withScale(4).lists(range),
+                                    P.withScale(4).listsAtLeast(1, range)
+                            );
+                        }
+                );
         for (Pair<BigInteger, Triple<List<BigInteger>, List<BigInteger>, List<BigInteger>>> p : take(LIMIT, ps)) {
             Rational r = fromPositionalNotation(p.a, p.b.a, p.b.b, p.b.c);
             r.validate();
             assertNotEquals(p, r.signum(), -1);
         }
 
-        ps = filter(
+        Iterable<Pair<BigInteger, Triple<List<BigInteger>, List<BigInteger>, List<BigInteger>>>> ps2 = filterInfinite(
                 p -> {
                     if (!p.b.a.isEmpty() && head(p.b.a).equals(BigInteger.ZERO)) return false;
                     Pair<List<BigInteger>, List<BigInteger>> minimized = minimize(p.b.b, p.b.c);
-                    //noinspection SimplifiableIfStatement
-                    if (!minimized.a.equals(p.b.b) || !minimized.b.equals(p.b.c)) return false;
-                    return !p.b.c.equals(Collections.singletonList(p.a.subtract(BigInteger.ONE)));
+                    return minimized.a.equals(p.b.b) && minimized.b.equals(p.b.c) &&
+                            !p.b.c.equals(Collections.singletonList(p.a.subtract(BigInteger.ONE)));
                 },
                 ps
         );
-        for (Pair<BigInteger, Triple<List<BigInteger>, List<BigInteger>, List<BigInteger>>> p : take(LIMIT, ps)) {
-            Rational r = fromPositionalNotation(p.a, p.b.a, p.b.b, p.b.c);
-            assertEquals(p, r.positionalNotation(p.a), p.b);
+        for (Pair<BigInteger, Triple<List<BigInteger>, List<BigInteger>, List<BigInteger>>> p : take(LIMIT, ps2)) {
+            inverses(t -> fromPositionalNotation(p.a, t.a, t.b, t.c), (Rational s) -> s.positionalNotation(p.a), p.b);
         }
 
         Iterable<Pair<BigInteger, Triple<List<BigInteger>, List<BigInteger>, List<BigInteger>>>> psFail = P.pairs(
                 P.rangeDown(BigInteger.ONE),
-                filter(t -> !t.c.isEmpty(), P.triples(P.lists(P.bigIntegers())))
+                filterInfinite(t -> !t.c.isEmpty(), P.triples(P.lists(P.bigIntegers())))
         );
         for (Pair<BigInteger, Triple<List<BigInteger>, List<BigInteger>, List<BigInteger>>> p : take(LIMIT, psFail)) {
             try {
@@ -2990,11 +2980,25 @@ public class RationalProperties {
         }
 
         psFail = P.dependentPairs(
-                P.rangeUp(IntegerUtils.TWO),
-                b -> filter(
-                        t -> !t.c.isEmpty() && any(x -> x.signum() == -1 || ge(x, b), t.a),
-                        P.triples(P.lists(P.bigIntegers()))
-                )
+                P.withScale(8).rangeUp(IntegerUtils.TWO),
+                b -> {
+                    Iterable<BigInteger> range = P.range(BigInteger.ZERO, b.subtract(BigInteger.ONE));
+                    //noinspection RedundantCast
+                    return P.triples(
+                            P.listsWithSublists(
+                                    map(
+                                            Collections::singletonList,
+                                            (Iterable<BigInteger>) mux(
+                                                    Arrays.asList(P.negativeBigIntegers(),
+                                                    P.withScale(IntegerUtils.ceilingLog2(b) + 2).rangeUp(b))
+                                            ) //todo use either
+                                    ),
+                                    range
+                            ),
+                            P.withScale(4).lists(range),
+                            P.withScale(4).listsAtLeast(1, range)
+                    );
+                }
         );
         for (Pair<BigInteger, Triple<List<BigInteger>, List<BigInteger>, List<BigInteger>>> p : take(LIMIT, psFail)) {
             try {
@@ -3004,11 +3008,25 @@ public class RationalProperties {
         }
 
         psFail = P.dependentPairs(
-                P.rangeUp(IntegerUtils.TWO),
-                b -> filter(
-                        t -> !t.c.isEmpty() && any(x -> x.signum() == -1 || ge(x, b), t.b),
-                        P.triples(P.lists(P.bigIntegers()))
-                )
+                P.withScale(8).rangeUp(IntegerUtils.TWO),
+                b -> {
+                    Iterable<BigInteger> range = P.range(BigInteger.ZERO, b.subtract(BigInteger.ONE));
+                    //noinspection RedundantCast
+                    return P.triples(
+                            P.withScale(4).lists(range),
+                            P.listsWithSublists(
+                                    map(
+                                            Collections::singletonList,
+                                            (Iterable<BigInteger>) mux(
+                                                    Arrays.asList(P.negativeBigIntegers(),
+                                                    P.withScale(IntegerUtils.ceilingLog2(b) + 2).rangeUp(b))
+                                            ) //todo use either
+                                    ),
+                                    range
+                            ),
+                            P.withScale(4).listsAtLeast(1, range)
+                    );
+                }
         );
         for (Pair<BigInteger, Triple<List<BigInteger>, List<BigInteger>, List<BigInteger>>> p : take(LIMIT, psFail)) {
             try {
@@ -3018,11 +3036,28 @@ public class RationalProperties {
         }
 
         psFail = P.dependentPairs(
-                P.rangeUp(IntegerUtils.TWO),
-                b -> filter(
-                        t -> !t.c.isEmpty() && any(x -> x.signum() == -1 || ge(x, b), t.c),
-                        P.triples(P.lists(P.bigIntegers()))
-                )
+                P.withScale(8).rangeUp(IntegerUtils.TWO),
+                b -> {
+                    Iterable<BigInteger> range = P.range(BigInteger.ZERO, b.subtract(BigInteger.ONE));
+                    //noinspection RedundantCast
+                    return P.triples(
+                            P.withScale(4).lists(range),
+                            P.withScale(4).lists(range),
+                            filterInfinite(
+                                    xs -> !xs.isEmpty(),
+                                    (Iterable<List<BigInteger>>) P.listsWithSublists(
+                                            map(
+                                                    Collections::singletonList,
+                                                    (Iterable<BigInteger>) mux(
+                                                            Arrays.asList(P.negativeBigIntegers(),
+                                                            P.withScale(IntegerUtils.ceilingLog2(b) + 2).rangeUp(b))
+                                                    ) //todo use either
+                                            ),
+                                            range
+                                    )
+                            )
+                    );
+                }
         );
         for (Pair<BigInteger, Triple<List<BigInteger>, List<BigInteger>, List<BigInteger>>> p : take(LIMIT, psFail)) {
             try {
@@ -3031,14 +3066,15 @@ public class RationalProperties {
             } catch (IllegalArgumentException ignored) {}
         }
 
-        Iterable<Pair<BigInteger, Pair<List<BigInteger>, List<BigInteger>>>> psFail2 = P.pairs(
+        Iterable<Triple<BigInteger, List<BigInteger>, List<BigInteger>>> tsFail = P.triples(
                 P.rangeDown(BigInteger.ONE),
-                P.pairs(P.lists(P.bigIntegers()))
+                P.lists(P.bigIntegers()),
+                P.lists(P.bigIntegers())
         );
-        for (Pair<BigInteger, Pair<List<BigInteger>, List<BigInteger>>> p : take(LIMIT, psFail2)) {
+        for (Triple<BigInteger, List<BigInteger>, List<BigInteger>> t : take(LIMIT, tsFail)) {
             try {
-                fromPositionalNotation(p.a, p.b.a, p.b.b, Collections.emptyList());
-                fail(p);
+                fromPositionalNotation(t.a, t.b, t.c, Collections.emptyList());
+                fail(t);
             } catch (IllegalArgumentException ignored) {}
         }
     }
