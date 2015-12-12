@@ -698,8 +698,7 @@ public class RationalDemos {
 
     private static void demoCancelDenominators() {
         initialize();
-        int limit = P instanceof QBarExhaustiveProvider ? LIMIT : SMALLER_LIMIT;
-        for (List<Rational> rs : take(limit, P.lists(P.rationals()))) {
+        for (List<Rational> rs : take(LIMIT, P.withScale(4).lists(P.rationals()))) {
             String listString = tail(init(rs.toString()));
             System.out.println("cancelDenominators(" + listString + ") = " + cancelDenominators(rs));
         }

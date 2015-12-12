@@ -1371,7 +1371,7 @@ public final class Rational implements Comparable<Rational> {
      * @return |{@code this}|
      */
     public @NotNull Rational abs() {
-        if (this == ZERO || this == ONE || numerator.signum() == 1) return this;
+        if (numerator.signum() != -1) return this;
         if (numerator.equals(IntegerUtils.NEGATIVE_ONE) && denominator.equals(BigInteger.ONE)) return ONE;
         return new Rational(numerator.abs(), denominator);
     }

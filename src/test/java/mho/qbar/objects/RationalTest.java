@@ -4077,20 +4077,28 @@ public class RationalTest {
         fromStringBase_fail_helper("-.", "10");
     }
 
-    @Test
-    public void testCancelDenominators() {
-        aeq(cancelDenominators(readRationalList("[]")), "[]");
-        aeq(cancelDenominators(readRationalList("[0]")), "[0]");
-        aeq(cancelDenominators(readRationalList("[0, 0]")), "[0, 0]");
-        aeq(cancelDenominators(readRationalList("[2/3]")), "[1]");
-        aeq(cancelDenominators(readRationalList("[-2/3]")), "[-1]");
-        aeq(cancelDenominators(readRationalList("[1, -2/3]")), "[3, -2]");
-        aeq(cancelDenominators(readRationalList("[4, -4, 5/12, 0, 1]")), "[48, -48, 5, 0, 12]");
-        aeq(cancelDenominators(readRationalList("[1, 1/2, 1/3, 1/4, 1/5]")), "[60, 30, 20, 15, 12]");
+    private static void cancelDenominators_helper(@NotNull String input, @NotNull String output) {
+        aeq(cancelDenominators(readRationalList(input)), output);
+    }
+
+    private static void cancelDenominators_fail_helper(@NotNull String input) {
         try {
-            cancelDenominators(readRationalListWithNulls("[1, null, 0]"));
+            cancelDenominators(readRationalListWithNulls(input));
             fail();
         } catch (NullPointerException ignored) {}
+    }
+
+    @Test
+    public void testCancelDenominators() {
+        cancelDenominators_helper("[]", "[]");
+        cancelDenominators_helper("[0]", "[0]");
+        cancelDenominators_helper("[0, 0]", "[0, 0]");
+        cancelDenominators_helper("[2/3]", "[1]");
+        cancelDenominators_helper("[-2/3]", "[-1]");
+        cancelDenominators_helper("[1, -2/3]", "[3, -2]");
+        cancelDenominators_helper("[4, -4, 5/12, 0, 1]", "[48, -48, 5, 0, 12]");
+        cancelDenominators_helper("[1, 1/2, 1/3, 1/4, 1/5]", "[60, 30, 20, 15, 12]");
+        cancelDenominators_fail_helper("[1, null, 0]");
     }
 
     @Test

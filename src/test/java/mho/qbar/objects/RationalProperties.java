@@ -3284,7 +3284,7 @@ public class RationalProperties {
         //noinspection Convert2MethodRef
         Iterable<Pair<BigInteger, String>> ps = P.dependentPairsInfiniteSquareRootOrder(
                 map(i -> BigInteger.valueOf(i), P.rangeUpGeometric(2)),
-                b -> filter(
+                b -> filterInfinite(
                         s -> {
                             try {
                                 fromStringBase(s, b);
@@ -3299,8 +3299,6 @@ public class RationalProperties {
         for (Pair<BigInteger, String> p : take(LIMIT, ps)) {
             Rational r = fromStringBase(p.b, p.a);
             r.validate();
-            assertEquals(p, r.toStringBase(p.a), p.b);
-            inverses(s -> fromStringBase(s, p.a), t -> t.toStringBase(p.a), p.b);
         }
 
         for (BigInteger i : take(LIMIT, P.rangeUp(IntegerUtils.TWO))) {
@@ -3318,14 +3316,12 @@ public class RationalProperties {
     }
 
     private static void propertiesCancelDenominators() {
-        initialize("");
-        System.out.println("\t\ttesting cancelDenominators(List<Rational>) properties...");
-
+        initialize("cancelDenominators(List<Rational>)");
         for (List<Rational> rs : take(LIMIT, P.lists(P.rationals()))) {
             List<BigInteger> canceled = cancelDenominators(rs);
             BigInteger gcd = foldl(BigInteger::gcd, BigInteger.ZERO, canceled);
             assertTrue(rs, gcd.equals(BigInteger.ZERO) || gcd.equals(BigInteger.ONE));
-            assertEquals(rs, cancelDenominators(toList(map(Rational::of, canceled))), canceled);
+            idempotent(ss -> toList(map(Rational::of, cancelDenominators(ss))), rs);
             assertTrue(rs, equal(map(Rational::signum, rs), map(BigInteger::signum, canceled)));
             assertTrue(
                     rs,
