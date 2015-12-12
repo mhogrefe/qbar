@@ -1,17 +1,14 @@
 package mho.qbar.objects;
 
 import mho.wheels.io.Readers;
-import mho.wheels.iterables.IterableUtils;
 import mho.wheels.math.BinaryFraction;
 import mho.wheels.numberUtils.FloatingPointUtils;
-import mho.wheels.numberUtils.IntegerUtils;
 import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
 import java.math.BigInteger;
-import java.util.Collections;
 import java.util.List;
 
 import static mho.qbar.objects.Rational.*;
@@ -3828,268 +3825,256 @@ public class RationalTest {
         digitsFail("1/2", "-1");
     }
 
+    private static void toStringBase_BigInteger_helper(
+            @NotNull Rational r,
+            @NotNull String base,
+            @NotNull String output
+    ) {
+        aeq(r.toStringBase(Readers.readBigInteger(base).get()), output);
+    }
+
+    private static void toStringBase_BigInteger_helper(
+            @NotNull String r,
+            @NotNull String base,
+            @NotNull String output
+    ) {
+        toStringBase_BigInteger_helper(read(r).get(), base, output);
+    }
+
+    private static void toStringBase_BigInteger_fail_helper(@NotNull String r, @NotNull String base) {
+        try {
+            read(r).get().toStringBase(Readers.readBigInteger(base).get());
+            fail();
+        } catch (IllegalArgumentException | ArithmeticException ignored) {}
+    }
+
     @Test
     public void testToStringBase_BigInteger() {
-        aeq(ZERO.toStringBase(IntegerUtils.TWO), "0");
-        aeq(ZERO.toStringBase(BigInteger.valueOf(3)), "0");
-        aeq(ZERO.toStringBase(BigInteger.valueOf(4)), "0");
-        aeq(ZERO.toStringBase(BigInteger.TEN), "0");
-        aeq(ZERO.toStringBase(BigInteger.valueOf(16)), "0");
-        aeq(ZERO.toStringBase(BigInteger.valueOf(83)), "(0)");
-        aeq(ZERO.toStringBase(BigInteger.valueOf(100)), "(0)");
-        aeq(ONE.toStringBase(IntegerUtils.TWO), "1");
-        aeq(ONE.toStringBase(BigInteger.valueOf(3)), "1");
-        aeq(ONE.toStringBase(BigInteger.valueOf(4)), "1");
-        aeq(ONE.toStringBase(BigInteger.TEN), "1");
-        aeq(ONE.toStringBase(BigInteger.valueOf(16)), "1");
-        aeq(ONE.toStringBase(BigInteger.valueOf(83)), "(1)");
-        aeq(ONE.toStringBase(BigInteger.valueOf(100)), "(1)");
-        aeq(read("-1/2").get().toStringBase(IntegerUtils.TWO), "-0.1");
-        aeq(read("-1/2").get().toStringBase(BigInteger.valueOf(4)), "-0.2");
-        aeq(read("-1/2").get().toStringBase(BigInteger.TEN), "-0.5");
-        aeq(read("-1/2").get().toStringBase(BigInteger.valueOf(16)), "-0.8");
-        aeq(read("-1/2").get().toStringBase(BigInteger.valueOf(100)), "-(0).(50)");
-        aeq(read("1/3").get().toStringBase(BigInteger.valueOf(3)), "0.1");
-        aeq(PI_DOUBLE.toStringBase(IntegerUtils.TWO), "11.001001000011111101101010100010001000010110100011");
-        aeq(PI_DOUBLE.toStringBase(BigInteger.valueOf(4)), "3.021003331222202020112203");
-        aeq(PI_DOUBLE.toStringBase(BigInteger.TEN), "3.141592653589793115997963468544185161590576171875");
-        aeq(PI_DOUBLE.toStringBase(BigInteger.valueOf(16)), "3.243F6A8885A3");
-        aeq(PI_DOUBLE.toStringBase(BigInteger.valueOf(100)),
+        toStringBase_BigInteger_helper("0", "2", "0");
+        toStringBase_BigInteger_helper("0", "3", "0");
+        toStringBase_BigInteger_helper("0", "4", "0");
+        toStringBase_BigInteger_helper("0", "10", "0");
+        toStringBase_BigInteger_helper("0", "16", "0");
+        toStringBase_BigInteger_helper("0", "83", "(0)");
+        toStringBase_BigInteger_helper("0", "100", "(0)");
+
+        toStringBase_BigInteger_helper("1", "2", "1");
+        toStringBase_BigInteger_helper("1", "3", "1");
+        toStringBase_BigInteger_helper("1", "4", "1");
+        toStringBase_BigInteger_helper("1", "10", "1");
+        toStringBase_BigInteger_helper("1", "16", "1");
+        toStringBase_BigInteger_helper("1", "83", "(1)");
+        toStringBase_BigInteger_helper("1", "100", "(1)");
+
+        toStringBase_BigInteger_helper("-1/2", "2", "-0.1");
+        toStringBase_BigInteger_helper("-1/2", "4", "-0.2");
+        toStringBase_BigInteger_helper("-1/2", "10", "-0.5");
+        toStringBase_BigInteger_helper("-1/2", "16", "-0.8");
+        toStringBase_BigInteger_helper("-1/2", "100", "-(0).(50)");
+
+        toStringBase_BigInteger_helper("1/3", "3", "0.1");
+
+        toStringBase_BigInteger_helper(PI_DOUBLE, "2", "11.001001000011111101101010100010001000010110100011");
+        toStringBase_BigInteger_helper(PI_DOUBLE, "4", "3.021003331222202020112203");
+        toStringBase_BigInteger_helper(PI_DOUBLE, "10", "3.141592653589793115997963468544185161590576171875");
+        toStringBase_BigInteger_helper(PI_DOUBLE, "16", "3.243F6A8885A3");
+        toStringBase_BigInteger_helper(PI_DOUBLE, "100",
                 "(3).(14)(15)(92)(65)(35)(89)(79)(31)(15)(99)(79)(63)(46)(85)(44)(18)(51)(61)(59)(5)(76)(17)(18)(75)");
-        aeq(read("1/1000").get().toStringBase(BigInteger.TEN, 0), "0");
-        aeq(read("1/1000").get().toStringBase(BigInteger.TEN, 1), "0.0...");
-        aeq(read("1/1000").get().toStringBase(BigInteger.TEN, 2), "0.00...");
-        aeq(read("1/1000").get().toStringBase(BigInteger.TEN, 3), "0.001");
-        aeq(read("1/1000").get().toStringBase(BigInteger.TEN, 4), "0.001");
-        aeq(read("1001/10000").get().toStringBase(BigInteger.TEN, 0), "0");
-        aeq(read("1001/10000").get().toStringBase(BigInteger.TEN, 1), "0.1...");
-        aeq(read("1001/10000").get().toStringBase(BigInteger.TEN, 2), "0.10...");
-        aeq(read("1001/10000").get().toStringBase(BigInteger.TEN, 3), "0.100...");
-        aeq(read("1001/10000").get().toStringBase(BigInteger.TEN, 4), "0.1001");
-        aeq(read("1001/10000").get().toStringBase(BigInteger.TEN, 5), "0.1001");
-        aeq(read("1/1000000").get().toStringBase(BigInteger.valueOf(100), 0), "(0)");
-        aeq(read("1/1000000").get().toStringBase(BigInteger.valueOf(100), 1), "(0).(0)...");
-        aeq(read("1/1000000").get().toStringBase(BigInteger.valueOf(100), 2), "(0).(0)(0)...");
-        aeq(read("1/1000000").get().toStringBase(BigInteger.valueOf(100), 3), "(0).(0)(0)(1)");
-        aeq(read("1/1000000").get().toStringBase(BigInteger.valueOf(100), 4), "(0).(0)(0)(1)");
-        aeq(read("1000001/10000000").get().toStringBase(BigInteger.valueOf(100), 0), "(0)");
-        aeq(read("1000001/10000000").get().toStringBase(BigInteger.valueOf(100), 1), "(0).(10)...");
-        aeq(read("1000001/10000000").get().toStringBase(BigInteger.valueOf(100), 2), "(0).(10)(0)...");
-        aeq(read("1000001/10000000").get().toStringBase(BigInteger.valueOf(100), 3), "(0).(10)(0)(0)...");
-        aeq(read("1000001/10000000").get().toStringBase(BigInteger.valueOf(100), 4), "(0).(10)(0)(0)(10)");
-        aeq(read("1000001/10000000").get().toStringBase(BigInteger.valueOf(100), 5), "(0).(10)(0)(0)(10)");
+
+        toStringBase_BigInteger_fail_helper("-1/2", "1");
+        toStringBase_BigInteger_fail_helper("-1/2", "0");
+        toStringBase_BigInteger_fail_helper("-1/2", "-1");
+        toStringBase_BigInteger_fail_helper("1/3", "10");
+    }
+
+    private static void toStringBase_BigInteger_int_helper(
+            @NotNull Rational r,
+            @NotNull String base,
+            int scale,
+            @NotNull String output
+    ) {
+        aeq(r.toStringBase(Readers.readBigInteger(base).get(), scale), output);
+    }
+
+    private static void toStringBase_BigInteger_int_helper(
+            @NotNull String r,
+            @NotNull String base,
+            int scale,
+            @NotNull String output
+    ) {
+        toStringBase_BigInteger_int_helper(read(r).get(), base, scale, output);
+    }
+
+    private static void toStringBase_BigInteger_int_fail_helper(@NotNull String r, @NotNull String base, int scale) {
         try {
-            read("-1/2").get().toStringBase(BigInteger.ONE);
+            read(r).get().toStringBase(Readers.readBigInteger(base).get(), scale);
             fail();
         } catch (IllegalArgumentException ignored) {}
-        try {
-            read("-1/2").get().toStringBase(BigInteger.ZERO);
-            fail();
-        } catch (IllegalArgumentException ignored) {}
-        try {
-            read("-1/2").get().toStringBase(IntegerUtils.NEGATIVE_ONE);
-            fail();
-        } catch (IllegalArgumentException ignored) {}
-        try {
-            read("1/3").get().toStringBase(BigInteger.TEN);
-            fail();
-        } catch (ArithmeticException ignored) {}
     }
 
     @Test
     public void testToStringBase_BigInteger_int() {
-        aeq(ZERO.toStringBase(BigInteger.TEN, 0), "0");
-        aeq(ZERO.toStringBase(BigInteger.TEN, -1), "0");
-        aeq(ZERO.toStringBase(BigInteger.TEN, 1), "0");
-        aeq(ZERO.toStringBase(BigInteger.valueOf(83), 0), "(0)");
-        aeq(ZERO.toStringBase(BigInteger.valueOf(83), -1), "(0)");
-        aeq(ZERO.toStringBase(BigInteger.valueOf(83), 1), "(0)");
-        aeq(ONE.toStringBase(BigInteger.TEN, 0), "1");
-        aeq(ONE.toStringBase(BigInteger.TEN, -1), "0");
-        aeq(ONE.toStringBase(BigInteger.TEN, 1), "1");
-        aeq(ONE.toStringBase(BigInteger.valueOf(83), 0), "(1)");
-        aeq(ONE.toStringBase(BigInteger.valueOf(83), -1), "(0)");
-        aeq(ONE.toStringBase(BigInteger.valueOf(83), 1), "(1)");
-        aeq(read("198").get().toStringBase(BigInteger.TEN, 0), "198");
-        aeq(read("198").get().toStringBase(BigInteger.TEN, 1), "198");
-        aeq(read("198").get().toStringBase(BigInteger.TEN, -1), "190");
-        aeq(read("198").get().toStringBase(BigInteger.TEN, -2), "100");
-        aeq(read("198").get().toStringBase(BigInteger.TEN, -3), "0");
-        aeq(read("198").get().toStringBase(BigInteger.valueOf(83), 0), "(2)(32)");
-        aeq(read("198").get().toStringBase(BigInteger.valueOf(83), 1), "(2)(32)");
-        aeq(read("198").get().toStringBase(BigInteger.valueOf(83), -1), "(2)(0)");
-        aeq(read("198").get().toStringBase(BigInteger.valueOf(83), -2), "(0)");
-        aeq(read("-1/7").get().toStringBase(BigInteger.TEN, -1), "0");
-        aeq(read("-1/7").get().toStringBase(BigInteger.TEN, 0), "0");
-        aeq(read("-1/7").get().toStringBase(BigInteger.TEN, 5), "-0.14285...");
-        aeq(read("-1/7").get().toStringBase(BigInteger.TEN, 20), "-0.14285714285714285714...");
-        aeq(read("-1/7").get().toStringBase(BigInteger.valueOf(83), -1), "(0)");
-        aeq(read("-1/7").get().toStringBase(BigInteger.valueOf(83), 0), "(0)");
-        aeq(read("-1/7").get().toStringBase(BigInteger.valueOf(83), 5), "-(0).(11)(71)(11)(71)(11)...");
-        aeq(read("-1/7").get().toStringBase(BigInteger.valueOf(83), 20),
+        toStringBase_BigInteger_int_helper("0", "10", 0, "0");
+        toStringBase_BigInteger_int_helper("0", "10", -1, "0");
+        toStringBase_BigInteger_int_helper("0", "10", 1, "0");
+        toStringBase_BigInteger_int_helper("0", "83", 0, "(0)");
+        toStringBase_BigInteger_int_helper("0", "83", -1, "(0)");
+        toStringBase_BigInteger_int_helper("0", "83", 1, "(0)");
+
+        toStringBase_BigInteger_int_helper("1", "10", 0, "1");
+        toStringBase_BigInteger_int_helper("1", "10", -1, "0");
+        toStringBase_BigInteger_int_helper("1", "10", 1, "1");
+        toStringBase_BigInteger_int_helper("1", "83", 0, "(1)");
+        toStringBase_BigInteger_int_helper("1", "83", -1, "(0)");
+        toStringBase_BigInteger_int_helper("1", "83", 1, "(1)");
+
+        toStringBase_BigInteger_int_helper("198", "10", 0, "198");
+        toStringBase_BigInteger_int_helper("198", "10", 1, "198");
+        toStringBase_BigInteger_int_helper("198", "10", -1, "190");
+        toStringBase_BigInteger_int_helper("198", "10", -2, "100");
+        toStringBase_BigInteger_int_helper("198", "10", -3, "0");
+        toStringBase_BigInteger_int_helper("198", "83", 0, "(2)(32)");
+        toStringBase_BigInteger_int_helper("198", "83", 1, "(2)(32)");
+        toStringBase_BigInteger_int_helper("198", "83", -1, "(2)(0)");
+        toStringBase_BigInteger_int_helper("198", "83", -2, "(0)");
+
+        toStringBase_BigInteger_int_helper("-1/7", "10", -1, "0");
+        toStringBase_BigInteger_int_helper("-1/7", "10", 0, "0");
+        toStringBase_BigInteger_int_helper("-1/7", "10", 5, "-0.14285...");
+        toStringBase_BigInteger_int_helper("-1/7", "10", 20, "-0.14285714285714285714...");
+        toStringBase_BigInteger_int_helper("-1/7", "83", -1, "(0)");
+        toStringBase_BigInteger_int_helper("-1/7", "83", 0, "(0)");
+        toStringBase_BigInteger_int_helper("-1/7", "83", 5, "-(0).(11)(71)(11)(71)(11)...");
+        toStringBase_BigInteger_int_helper("-1/7", "83", 20,
                 "-(0).(11)(71)(11)(71)(11)(71)(11)(71)(11)(71)(11)(71)(11)(71)(11)(71)(11)(71)(11)(71)...");
-        aeq(PI_DOUBLE.toStringBase(BigInteger.TEN, -1), "0");
-        aeq(PI_DOUBLE.toStringBase(BigInteger.TEN, 0), "3");
-        aeq(PI_DOUBLE.toStringBase(BigInteger.TEN, 5), "3.14159...");
-        aeq(PI_DOUBLE.toStringBase(BigInteger.TEN, 20), "3.14159265358979311599...");
-        aeq(PI_DOUBLE.toStringBase(BigInteger.valueOf(83), -1), "(0)");
-        aeq(PI_DOUBLE.toStringBase(BigInteger.valueOf(83), 0), "(3)");
-        aeq(PI_DOUBLE.toStringBase(BigInteger.valueOf(83), 5), "(3).(11)(62)(35)(69)(50)...");
-        aeq(PI_DOUBLE.toStringBase(BigInteger.valueOf(83), 20),
+
+        toStringBase_BigInteger_int_helper(PI_DOUBLE, "10", -1, "0");
+        toStringBase_BigInteger_int_helper(PI_DOUBLE, "10", 0, "3");
+        toStringBase_BigInteger_int_helper(PI_DOUBLE, "10", 5, "3.14159...");
+        toStringBase_BigInteger_int_helper(PI_DOUBLE, "10", 20, "3.14159265358979311599...");
+        toStringBase_BigInteger_int_helper(PI_DOUBLE, "83", -1, "(0)");
+        toStringBase_BigInteger_int_helper(PI_DOUBLE, "83", 0, "(3)");
+        toStringBase_BigInteger_int_helper(PI_DOUBLE, "83", 5, "(3).(11)(62)(35)(69)(50)...");
+        toStringBase_BigInteger_int_helper(PI_DOUBLE, "83", 20,
                 "(3).(11)(62)(35)(69)(50)(19)(79)(18)(11)(8)(60)(35)(10)(62)(20)(58)(42)(14)(31)(34)...");
+
+        toStringBase_BigInteger_int_helper("1/1000", "10", 0, "0");
+        toStringBase_BigInteger_int_helper("1/1000", "10", 1, "0.0...");
+        toStringBase_BigInteger_int_helper("1/1000", "10", 2, "0.00...");
+        toStringBase_BigInteger_int_helper("1/1000", "10", 3, "0.001");
+        toStringBase_BigInteger_int_helper("1/1000", "10", 4, "0.001");
+
+        toStringBase_BigInteger_int_helper("1001/10000", "10", 0, "0");
+        toStringBase_BigInteger_int_helper("1001/10000", "10", 1, "0.1...");
+        toStringBase_BigInteger_int_helper("1001/10000", "10", 2, "0.10...");
+        toStringBase_BigInteger_int_helper("1001/10000", "10", 3, "0.100...");
+        toStringBase_BigInteger_int_helper("1001/10000", "10", 4, "0.1001");
+        toStringBase_BigInteger_int_helper("1001/10000", "10", 5, "0.1001");
+
+        toStringBase_BigInteger_int_helper("1/1000000", "100", 0, "(0)");
+        toStringBase_BigInteger_int_helper("1/1000000", "100", 1, "(0).(0)...");
+        toStringBase_BigInteger_int_helper("1/1000000", "100", 2, "(0).(0)(0)...");
+        toStringBase_BigInteger_int_helper("1/1000000", "100", 3, "(0).(0)(0)(1)");
+        toStringBase_BigInteger_int_helper("1/1000000", "100", 4, "(0).(0)(0)(1)");
+
+        toStringBase_BigInteger_int_helper("1000001/10000000", "100", 0, "(0)");
+        toStringBase_BigInteger_int_helper("1000001/10000000", "100", 1, "(0).(10)...");
+        toStringBase_BigInteger_int_helper("1000001/10000000", "100", 2, "(0).(10)(0)...");
+        toStringBase_BigInteger_int_helper("1000001/10000000", "100", 3, "(0).(10)(0)(0)...");
+        toStringBase_BigInteger_int_helper("1000001/10000000", "100", 4, "(0).(10)(0)(0)(10)");
+        toStringBase_BigInteger_int_helper("1000001/10000000", "100", 5, "(0).(10)(0)(0)(10)");
+
+        toStringBase_BigInteger_int_fail_helper("-1/2", "1", 5);
+        toStringBase_BigInteger_int_fail_helper("-1/2", "0", 5);
+        toStringBase_BigInteger_int_fail_helper("-1/2", "-1", 5);
+    }
+
+    private static void fromStringBase_helper(@NotNull String s, @NotNull String base, @NotNull Object output) {
+        aeq(fromStringBase(s, Readers.readBigInteger(base).get()), output);
+    }
+
+    private static void fromStringBase_fail_helper(@NotNull String s, @NotNull String base) {
         try {
-            read("-1/2").get().toStringBase(BigInteger.ONE, 5);
-            fail();
-        } catch (IllegalArgumentException ignored) {}
-        try {
-            read("-1/2").get().toStringBase(BigInteger.ZERO, 5);
-            fail();
-        } catch (IllegalArgumentException ignored) {}
-        try {
-            read("-1/2").get().toStringBase(IntegerUtils.NEGATIVE_ONE, 5);
+            fromStringBase(s, Readers.readBigInteger(base).get());
             fail();
         } catch (IllegalArgumentException ignored) {}
     }
 
     @Test
     public void testFromStringBase() {
-        aeq(fromStringBase(IntegerUtils.TWO, ""), "0");
-        aeq(fromStringBase(BigInteger.valueOf(3), ""), "0");
-        aeq(fromStringBase(BigInteger.valueOf(4), ""), "0");
-        aeq(fromStringBase(BigInteger.TEN, ""), "0");
-        aeq(fromStringBase(BigInteger.valueOf(16), ""), "0");
-        aeq(fromStringBase(BigInteger.valueOf(83), ""), "0");
-        aeq(fromStringBase(BigInteger.valueOf(100), ""), "0");
-        aeq(fromStringBase(IntegerUtils.TWO, "0"), "0");
-        aeq(fromStringBase(BigInteger.valueOf(3), "0"), "0");
-        aeq(fromStringBase(BigInteger.valueOf(4), "0"), "0");
-        aeq(fromStringBase(BigInteger.TEN, "0"), "0");
-        aeq(fromStringBase(BigInteger.valueOf(16), "0"), "0");
-        aeq(fromStringBase(BigInteger.valueOf(83), "(0)"), "0");
-        aeq(fromStringBase(BigInteger.valueOf(100), "(0)"), "0");
-        aeq(fromStringBase(IntegerUtils.TWO, "1"), "1");
-        aeq(fromStringBase(BigInteger.valueOf(3), "1"), "1");
-        aeq(fromStringBase(BigInteger.valueOf(4), "1"), "1");
-        aeq(fromStringBase(BigInteger.TEN, "1"), "1");
-        aeq(fromStringBase(BigInteger.valueOf(16), "1"), "1");
-        aeq(fromStringBase(BigInteger.valueOf(83), "(1)"), "1");
-        aeq(fromStringBase(BigInteger.valueOf(100), "(1)"), "1");
-        aeq(fromStringBase(IntegerUtils.TWO, "-0.1"), "-1/2");
-        aeq(fromStringBase(BigInteger.valueOf(4), "-0.2"), "-1/2");
-        aeq(fromStringBase(BigInteger.TEN, "-0.5"), "-1/2");
-        aeq(fromStringBase(BigInteger.valueOf(16), "-0.8"), "-1/2");
-        aeq(fromStringBase(BigInteger.valueOf(100), "-(0).(50)"), "-1/2");
-        aeq(fromStringBase(BigInteger.valueOf(3), "-0.1"), "-1/3");
-        aeq(fromStringBase(IntegerUtils.TWO, "11.001001000011111101101010100010001000010110100011"), PI_DOUBLE);
-        aeq(fromStringBase(BigInteger.valueOf(4), "3.021003331222202020112203"), PI_DOUBLE);
-        aeq(fromStringBase(BigInteger.TEN, "3.141592653589793115997963468544185161590576171875"), PI_DOUBLE);
-        aeq(fromStringBase(BigInteger.valueOf(16), "3.243F6A8885A3"), PI_DOUBLE);
-        aeq(
-                fromStringBase(
-                        BigInteger.valueOf(100),
-                "(3).(14)(15)(92)(65)(35)(89)(79)(31)(15)(99)(79)(63)(46)(85)(44)(18)(51)(61)(59)(5)(76)(17)(18)(75)"),
+        fromStringBase_helper("", "2", "0");
+        fromStringBase_helper("", "3", "0");
+        fromStringBase_helper("", "4", "0");
+        fromStringBase_helper("", "10", "0");
+        fromStringBase_helper("", "16", "0");
+        fromStringBase_helper("", "83", "0");
+        fromStringBase_helper("", "100", "0");
+
+        fromStringBase_helper("0", "2", "0");
+        fromStringBase_helper("0", "3", "0");
+        fromStringBase_helper("0", "4", "0");
+        fromStringBase_helper("0", "10", "0");
+        fromStringBase_helper("0", "16", "0");
+        fromStringBase_helper("(0)", "83", "0");
+        fromStringBase_helper("(0)", "100", "0");
+
+        fromStringBase_helper("1", "2", "1");
+        fromStringBase_helper("1", "3", "1");
+        fromStringBase_helper("1", "4", "1");
+        fromStringBase_helper("1", "10", "1");
+        fromStringBase_helper("1", "16", "1");
+        fromStringBase_helper("(1)", "83", "1");
+        fromStringBase_helper("(1)", "100", "1");
+
+        fromStringBase_helper("-0.1", "2", "-1/2");
+        fromStringBase_helper("-0.2", "4", "-1/2");
+        fromStringBase_helper("-0.5", "10", "-1/2");
+        fromStringBase_helper("-0.8", "16", "-1/2");
+        fromStringBase_helper("-(0).(50)", "100", "-1/2");
+
+        fromStringBase_helper("-0.1", "3", "-1/3");
+        fromStringBase_helper("11.001001000011111101101010100010001000010110100011", "2", PI_DOUBLE);
+        fromStringBase_helper("3.021003331222202020112203", "4", PI_DOUBLE);
+        fromStringBase_helper("3.141592653589793115997963468544185161590576171875", "10", PI_DOUBLE);
+        fromStringBase_helper("3.243F6A8885A3", "16", PI_DOUBLE);
+        fromStringBase_helper(
+                "(3).(14)(15)(92)(65)(35)(89)(79)(31)(15)(99)(79)(63)(46)(85)(44)(18)(51)(61)(59)(5)(76)(17)(18)(75)",
+                "100",
                 PI_DOUBLE
         );
-        aeq(fromStringBase(BigInteger.TEN, "00"), 0);
-        aeq(fromStringBase(BigInteger.TEN, "0."), 0);
-        aeq(fromStringBase(BigInteger.TEN, ".0"), 0);
-        aeq(fromStringBase(BigInteger.TEN, "0.0"), 0);
-        aeq(fromStringBase(BigInteger.valueOf(100), "(0)(0)"), 0);
-        aeq(fromStringBase(BigInteger.valueOf(100), "(0)."), 0);
-        aeq(fromStringBase(BigInteger.valueOf(100), ".(0)"), 0);
-        aeq(fromStringBase(BigInteger.valueOf(100), "(0).(0)"), 0);
-        try {
-            fromStringBase(BigInteger.ONE, "0");
-            fail();
-        } catch (IllegalArgumentException ignored) {}
-        try {
-            fromStringBase(BigInteger.ZERO, "0");
-            fail();
-        } catch (IllegalArgumentException ignored) {}
-        try {
-            fromStringBase(IntegerUtils.NEGATIVE_ONE, "0");
-            fail();
-        } catch (IllegalArgumentException ignored) {}
-        try {
-            fromStringBase(BigInteger.TEN, "a");
-            fail();
-        } catch (IllegalArgumentException ignored) {}
-        try {
-            fromStringBase(BigInteger.valueOf(100), "[10]");
-            fail();
-        } catch (IllegalArgumentException ignored) {}
-        try {
-            fromStringBase(BigInteger.valueOf(100), "(.10)");
-            fail();
-        } catch (IllegalArgumentException ignored) {}
-        try {
-            fromStringBase(BigInteger.TEN, "5-");
-            fail();
-        } catch (IllegalArgumentException ignored) {}
-        try {
-            fromStringBase(BigInteger.TEN, "-");
-            fail();
-        } catch (IllegalArgumentException ignored) {}
-        try {
-            fromStringBase(BigInteger.valueOf(100), "(5)-");
-            fail();
-        } catch (IllegalArgumentException ignored) {}
-        try {
-            fromStringBase(BigInteger.TEN, "2-3");
-            fail();
-        } catch (IllegalArgumentException ignored) {}
-        try {
-            fromStringBase(BigInteger.valueOf(100), "(2)-(3)");
-            fail();
-        } catch (IllegalArgumentException ignored) {}
-        try {
-            fromStringBase(BigInteger.TEN, "1e5");
-            fail();
-        } catch (IllegalArgumentException ignored) {}
-        try {
-            fromStringBase(BigInteger.TEN, "1E5");
-            fail();
-        } catch (IllegalArgumentException ignored) {}
-        try {
-            fromStringBase(BigInteger.TEN, "(2)(3)");
-            fail();
-        } catch (IllegalArgumentException ignored) {}
-        try {
-            fromStringBase(BigInteger.valueOf(100), "23");
-            fail();
-        } catch (IllegalArgumentException ignored) {}
-        try {
-            fromStringBase(BigInteger.TEN, "-0.1...");
-            fail();
-        } catch (IllegalArgumentException ignored) {}
-        try {
-            fromStringBase(BigInteger.TEN, "-5...");
-            fail();
-        } catch (IllegalArgumentException ignored) {}
-        try {
-            fromStringBase(BigInteger.valueOf(100), "()");
-            fail();
-        } catch (IllegalArgumentException ignored) {}
-        try {
-            fromStringBase(BigInteger.valueOf(100), "()()");
-            fail();
-        } catch (IllegalArgumentException ignored) {}
-        try {
-            fromStringBase(BigInteger.valueOf(100), "(00)");
-            fail();
-        } catch (IllegalArgumentException ignored) {}
-        try {
-            fromStringBase(BigInteger.valueOf(100), "(02)");
-            fail();
-        } catch (IllegalArgumentException ignored) {}
-        try {
-            fromStringBase(BigInteger.TEN, ".");
-            fail();
-        } catch (IllegalArgumentException ignored) {}
-        try {
-            fromStringBase(BigInteger.TEN, "-.");
-            fail();
-        } catch (IllegalArgumentException ignored) {}
+
+        fromStringBase_helper("00", "10", 0);
+        fromStringBase_helper("0.", "10", 0);
+        fromStringBase_helper(".0", "10", 0);
+        fromStringBase_helper("0.0", "10", 0);
+        fromStringBase_helper("(0)(0)", "100", 0);
+        fromStringBase_helper("(0).", "100", 0);
+        fromStringBase_helper(".(0)", "100", 0);
+        fromStringBase_helper("(0).(0)", "100", 0);
+
+        fromStringBase_fail_helper("0", "1");
+        fromStringBase_fail_helper("0", "0");
+        fromStringBase_fail_helper("0", "-1");
+        fromStringBase_fail_helper("a", "10");
+        fromStringBase_fail_helper("[10]", "100");
+        fromStringBase_fail_helper("(.10)", "100");
+        fromStringBase_fail_helper("5-", "10");
+        fromStringBase_fail_helper("-", "10");
+        fromStringBase_fail_helper("(5)-", "100");
+        fromStringBase_fail_helper("2-3", "10");
+        fromStringBase_fail_helper("(2)-(3)", "100");
+        fromStringBase_fail_helper("1e5", "10");
+        fromStringBase_fail_helper("1E5", "10");
+        fromStringBase_fail_helper("(2)(3)", "10");
+        fromStringBase_fail_helper("23", "100");
+        fromStringBase_fail_helper("-0.1...", "10");
+        fromStringBase_fail_helper("-5...", "10");
+        fromStringBase_fail_helper("()", "100");
+        fromStringBase_fail_helper("()()", "100");
+        fromStringBase_fail_helper("(00)", "100");
+        fromStringBase_fail_helper("(02)", "100");
+        fromStringBase_fail_helper(".", "10");
+        fromStringBase_fail_helper("-.", "10");
     }
 
     @Test

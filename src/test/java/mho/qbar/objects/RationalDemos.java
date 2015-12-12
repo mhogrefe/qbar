@@ -3,7 +3,6 @@ package mho.qbar.objects;
 import mho.qbar.iterableProviders.QBarExhaustiveProvider;
 import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.iterableProviders.QBarRandomProvider;
-import mho.wheels.iterables.IterableUtils;
 import mho.wheels.math.BinaryFraction;
 import mho.wheels.numberUtils.FloatingPointUtils;
 import mho.wheels.numberUtils.IntegerUtils;
@@ -15,11 +14,12 @@ import org.jetbrains.annotations.NotNull;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static mho.qbar.objects.Rational.*;
 import static mho.wheels.iterables.IterableUtils.*;
-import static mho.wheels.ordering.Ordering.le;
 import static mho.wheels.testing.Testing.*;
 
 @SuppressWarnings("UnusedDeclaration")
@@ -32,6 +32,7 @@ public class RationalDemos {
     private static final int SMALLER_LIMIT = 500;
     private static final int SMALL_LIMIT = 1000;
     private static final int MEDIUM_LIMIT = 3000;
+    private static final BigInteger ASCII_ALPHANUMERIC_COUNT = BigInteger.valueOf(36);
     private static QBarIterableProvider P;
 
     private static void initialize() {
@@ -640,75 +641,58 @@ public class RationalDemos {
 
     private static void demoToStringBase_BigInteger() {
         initialize();
-        Iterable<Pair<Rational, BigInteger>> ps;
-        if (P instanceof QBarExhaustiveProvider) {
-            ps = ((QBarExhaustiveProvider) P).pairsSquareRootOrder(P.rationals(), P.rangeUp(IntegerUtils.TWO));
-        } else {
-            ps = P.pairs(
-                    P.rationals(),
-                    map(i -> BigInteger.valueOf(i + 2), P.withScale(20).naturalIntegersGeometric())
-            );
-        }
-        for (Pair<Rational, BigInteger> p : take(LIMIT, filter(q -> q.a.hasTerminatingBaseExpansion(q.b), ps))) {
+        //noinspection Convert2MethodRef
+        Iterable<Pair<Rational, BigInteger>> ps = filterInfinite(
+                q -> q.a.hasTerminatingBaseExpansion(q.b),
+                P.pairsSquareRootOrder(
+                        P.rationals(),
+                        map(i -> BigInteger.valueOf(i), P.rangeUpGeometric(2))
+                )
+        );
+        for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
             System.out.println("toStringBase(" + p.a + ", " + p.b + ") = " + p.a.toStringBase(p.b));
         }
     }
 
     private static void demoToStringBase_BigInteger_int() {
         initialize();
-        Iterable<Pair<Rational, Pair<BigInteger, Integer>>> ps;
-        if (P instanceof QBarExhaustiveProvider) {
-            ps = P.pairs(
-                    P.rationals(),
-                    (Iterable<Pair<BigInteger, Integer>>) P.pairs(P.rangeUp(IntegerUtils.TWO), P.integers())
-            );
-        } else {
-            ps = P.pairs(
-                    P.rationals(),
-                    (Iterable<Pair<BigInteger, Integer>>) P.pairs(
-                            map(i -> BigInteger.valueOf(i + 2), P.withScale(20).naturalIntegersGeometric()),
-                            ((QBarRandomProvider) P).withScale(20).integersGeometric()
-                    )
-            );
-        }
-        for (Pair<Rational, Pair<BigInteger, Integer>> p : take(LIMIT, ps)) {
-            System.out.println("toStringBase(" + p.a + ", " + p.b.a + ", " + p.b.b + ") = " +
-                    p.a.toStringBase(p.b.a, p.b.b));
+        //noinspection Convert2MethodRef
+        Iterable<Triple<Rational, BigInteger, Integer>> ts = P.triples(
+                P.rationals(),
+                map(i -> BigInteger.valueOf(i), P.rangeUpGeometric(2)),
+                P.integersGeometric()
+        );
+        for (Triple<Rational, BigInteger, Integer> t : take(LIMIT, ts)) {
+            System.out.println("toStringBase(" + t.a + ", " + t.b + ", " + t.c + ") = " + t.a.toStringBase(t.b, t.c));
         }
     }
 
     private static void demoFromStringBase() {
         initialize();
-        Iterable<BigInteger> bases;
-        if (P instanceof QBarExhaustiveProvider) {
-            bases = P.rangeUp(IntegerUtils.TWO);
-        } else {
-            bases = map(i -> BigInteger.valueOf(i + 2), P.withScale(20).naturalIntegersGeometric());
+        Map<Integer, String> baseChars = new HashMap<>();
+        baseChars.put(0, ".-()0123456789");
+        String chars = ".-0";
+        for (int i = 1; i < ASCII_ALPHANUMERIC_COUNT.intValueExact(); i++) {
+            chars += IntegerUtils.toDigit(i);
+            baseChars.put(i + 1, chars);
         }
-        Iterable<Pair<BigInteger, String>> ps = P.dependentPairs(
-                bases,
-                b -> {
-                    String chars = ".-";
-                    if (Ordering.le(b, BigInteger.valueOf(36))) {
-                        chars += charsToString(range('0', IntegerUtils.toDigit(b.intValueExact() - 1)));
-                    } else {
-                        chars += "()0123456789";
-                    }
-                    return filter(
-                            s -> {
-                                try {
-                                    fromStringBase(b, s);
-                                    return true;
-                                } catch (IllegalArgumentException e) {
-                                    return false;
-                                }
-                            },
-                            P.strings(chars)
-                    );
-                }
+        //noinspection Convert2MethodRef
+        Iterable<Pair<BigInteger, String>> ps = P.dependentPairsInfiniteSquareRootOrder(
+                map(i -> BigInteger.valueOf(i), P.rangeUpGeometric(2)),
+                b -> filterInfinite(
+                        s -> {
+                            try {
+                                fromStringBase(s, b);
+                                return true;
+                            } catch (IllegalArgumentException e) {
+                                return false;
+                            }
+                        },
+                        P.strings(baseChars.get(Ordering.le(b, ASCII_ALPHANUMERIC_COUNT) ? b.intValueExact() : 0))
+                )
         );
-        for (Pair<BigInteger, String> p : take(MEDIUM_LIMIT, ps)) {
-            System.out.println("fromStringBase(" + p.a + ", " + p.b + ") = " + fromStringBase(p.a, p.b));
+        for (Pair<BigInteger, String> p : take(LIMIT, ps)) {
+            System.out.println("fromStringBase(" + p.a + ", " + p.b + ") = " + fromStringBase(p.b, p.a));
         }
     }
 

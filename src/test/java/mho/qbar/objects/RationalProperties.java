@@ -33,9 +33,9 @@ import static mho.wheels.testing.Testing.*;
 public class RationalProperties {
     private static final @NotNull QBarExhaustiveProvider EP = QBarExhaustiveProvider.INSTANCE;
     private static final @NotNull String RATIONAL_CHARS = "-/0123456789";
-    private static final int DENOMINATOR_CUTOFF = 1000000;
     private static final int TINY_LIMIT = 20;
     private static final int SMALL_LIMIT = 1000;
+    private static final BigInteger ASCII_ALPHANUMERIC_COUNT = BigInteger.valueOf(36);
     private static int LIMIT;
     private static QBarIterableProvider P;
 
@@ -3159,49 +3159,42 @@ public class RationalProperties {
     }
 
     private static void propertiesToStringBase_BigInteger() {
-        initialize("");
-        System.out.println("\t\ttesting toStringBase(BigInteger) properties...");
-
-        Iterable<Pair<Rational, BigInteger>> ps;
-        if (P instanceof QBarExhaustiveProvider) {
-            ps = P.pairsSquareRootOrder(P.rationals(), P.rangeUp(IntegerUtils.TWO));
-        } else {
-            ps = P.pairs(
-                    P.rationals(),
-                    map(i -> BigInteger.valueOf(i + 2), P.withScale(20).naturalIntegersGeometric())
-            );
-        }
-        for (Pair<Rational, BigInteger> p : take(LIMIT, filter(q -> q.a.hasTerminatingBaseExpansion(q.b), ps))) {
-            String s = p.a.toStringBase(p.b);
-            assertEquals(p, fromStringBase(p.b, s), p.a);
+        initialize("toStringBase(BigInteger)");
+        //noinspection Convert2MethodRef
+        Iterable<Pair<Rational, BigInteger>> ps = filterInfinite(
+                q -> q.a.hasTerminatingBaseExpansion(q.b),
+                P.pairsSquareRootOrder(
+                        P.rationals(),
+                        map(i -> BigInteger.valueOf(i), P.rangeUpGeometric(2))
+                )
+        );
+        for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
+            inverses(r -> r.toStringBase(p.b), (String t) -> fromStringBase(t, p.b), p.a);
         }
 
-        String chars = charsToString(concat(Arrays.asList(fromString("-."), range('0', '9'), range('A', 'Z'))));
-        if (P instanceof QBarExhaustiveProvider) {
-            ps = P.pairsSquareRootOrder(
-                    P.rationals(),
-                    P.range(IntegerUtils.TWO, BigInteger.valueOf(36))
-            );
-        } else {
-            ps = P.pairs(P.rationals(), P.range(IntegerUtils.TWO, BigInteger.valueOf(36)));
-        }
-        for (Pair<Rational, BigInteger> p : take(LIMIT, filter(q -> q.a.hasTerminatingBaseExpansion(q.b), ps))) {
+        String smallBaseChars =
+                charsToString(concat(Arrays.asList(fromString("-."), range('0', '9'), range('A', 'Z'))));
+        ps = filterInfinite(
+                q -> q.a.hasTerminatingBaseExpansion(q.b),
+                P.pairsSquareRootOrder(P.rationals(), P.range(IntegerUtils.TWO, ASCII_ALPHANUMERIC_COUNT))
+        );
+        for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
             String s = p.a.toStringBase(p.b);
-            assertTrue(p, all(c -> elem(c, chars), s));
+            assertTrue(p, all(c -> elem(c, smallBaseChars), s));
         }
 
-        String chars2 = charsToString(concat(fromString("-.()"), range('0', '9')));
-        if (P instanceof QBarExhaustiveProvider) {
-            ps = P.pairsSquareRootOrder(P.rationals(), P.rangeUp(BigInteger.valueOf(37)));
-        } else {
-            ps = P.pairs(
-                    P.rationals(),
-                    map(i -> BigInteger.valueOf(i + 37), P.withScale(20).naturalIntegersGeometric())
-            );
-        }
+        String largeBaseChars = charsToString(concat(fromString("-.()"), range('0', '9')));
+        //noinspection Convert2MethodRef
+        ps = P.pairsSquareRootOrder(
+                P.rationals(),
+                map(
+                        i -> BigInteger.valueOf(i),
+                        P.withScale(64).rangeUpGeometric(ASCII_ALPHANUMERIC_COUNT.intValueExact() + 1)
+                )
+        );
         for (Pair<Rational, BigInteger> p : take(LIMIT, filter(q -> q.a.hasTerminatingBaseExpansion(q.b), ps))) {
             String s = p.a.toStringBase(p.b);
-            assertTrue(p, all(c -> elem(c, chars2), s));
+            assertTrue(p, all(c -> elem(c, largeBaseChars), s));
         }
 
         for (Pair<Rational, BigInteger> p : take(LIMIT, P.pairs(P.rationals(), P.rangeDown(BigInteger.ONE)))) {
@@ -3211,16 +3204,12 @@ public class RationalProperties {
             } catch (IllegalArgumentException ignored) {}
         }
 
-        Iterable<Pair<Rational, BigInteger>> psFail;
-        if (P instanceof QBarExhaustiveProvider) {
-            psFail = P.pairs(P.rationals(), P.rangeUp(IntegerUtils.TWO));
-        } else {
-            psFail = P.pairs(
-                    P.rationals(),
-                    map(i -> BigInteger.valueOf(i + 2), P.withScale(20).naturalIntegersGeometric())
-            );
-        }
-        for (Pair<Rational, BigInteger> p : take(LIMIT, filter(q -> !q.a.hasTerminatingBaseExpansion(q.b), psFail))) {
+        //noinspection Convert2MethodRef
+        Iterable<Pair<Rational, BigInteger>> psFail = filterInfinite(
+                q -> !q.a.hasTerminatingBaseExpansion(q.b),
+                P.pairs(P.rationals(), map(i -> BigInteger.valueOf(i), P.rangeUpGeometric(2)))
+        );
+        for (Pair<Rational, BigInteger> p : take(LIMIT, psFail)) {
             try {
                 p.a.toStringBase(p.b);
                 fail(p);
@@ -3229,76 +3218,45 @@ public class RationalProperties {
     }
 
     private static void propertiesToStringBase_BigInteger_int() {
-        initialize("");
-        System.out.println("\t\ttesting toStringBase(BigInteger, int) properties...");
-
-        Iterable<Pair<Rational, Pair<BigInteger, Integer>>> ps;
-        if (P instanceof QBarExhaustiveProvider) {
-            ps = P.pairs(
-                    P.rationals(),
-                    (Iterable<Pair<BigInteger, Integer>>) P.pairs(P.rangeUp(IntegerUtils.TWO), P.integers())
-            );
-        } else {
-            ps = P.pairs(
-                    P.rationals(),
-                    (Iterable<Pair<BigInteger, Integer>>) P.pairs(
-                            map(i -> BigInteger.valueOf(i + 2), P.withScale(20).naturalIntegersGeometric()),
-                            P.withScale(20).integersGeometric()
-                    )
-            );
-        }
-        for (Pair<Rational, Pair<BigInteger, Integer>> p : take(LIMIT, ps)) {
-            String s = p.a.toStringBase(p.b.a, p.b.b);
+        initialize("toStringBase(BigInteger, int)");
+        //noinspection Convert2MethodRef
+        Iterable<Triple<Rational, BigInteger, Integer>> ts = P.triples(
+                P.rationals(),
+                map(i -> BigInteger.valueOf(i), P.rangeUpGeometric(2)),
+                P.integersGeometric()
+        );
+        for (Triple<Rational, BigInteger, Integer> t : take(LIMIT, ts)) {
+            String s = t.a.toStringBase(t.b, t.c);
             boolean ellipsis = s.endsWith("...");
             if (ellipsis) s = take(s.length() - 3, s);
-            Rational error = fromStringBase(p.b.a, s).subtract(p.a).abs();
-            assertTrue(p, lt(error, of(p.b.a).pow(-p.b.b)));
+            Rational error = fromStringBase(s, t.b).subtract(t.a).abs();
+            assertTrue(t, lt(error, of(t.b).pow(-t.c)));
             if (ellipsis) {
-                assertTrue(p, error != ZERO);
+                assertTrue(t, error != ZERO);
             }
         }
 
-        String chars = charsToString(concat(Arrays.asList(fromString("-."), range('0', '9'), range('A', 'Z'))));
-        if (P instanceof QBarExhaustiveProvider) {
-            ps = P.pairs(
-                    P.rationals(),
-                    (Iterable<Pair<BigInteger, Integer>>) P.pairs(
-                            P.range(IntegerUtils.TWO, BigInteger.valueOf(36)),
-                            P.integers()
-                    )
-            );
-        } else {
-            ps = P.pairs(
-                    P.rationals(),
-                    (Iterable<Pair<BigInteger, Integer>>) P.pairs(
-                            P.range(IntegerUtils.TWO, BigInteger.valueOf(36)),
-                            P.withScale(20).integersGeometric()
-                    )
-            );
-        }
-        for (Pair<Rational, Pair<BigInteger, Integer>> p : take(LIMIT, ps)) {
-            String s = p.a.toStringBase(p.b.a, p.b.b);
-            assertTrue(p, all(c -> elem(c, chars), s));
+        String smallBaseChars =
+                charsToString(concat(Arrays.asList(fromString("-."), range('0', '9'), range('A', 'Z'))));
+        ts = P.triples(P.rationals(), P.range(IntegerUtils.TWO, ASCII_ALPHANUMERIC_COUNT), P.integersGeometric());
+        for (Triple<Rational, BigInteger, Integer> t : take(LIMIT, ts)) {
+            String s = t.a.toStringBase(t.b, t.c);
+            assertTrue(t, all(c -> elem(c, smallBaseChars), s));
         }
 
-        String chars2 = charsToString(concat(fromString("-.()"), range('0', '9')));
-        if (P instanceof QBarExhaustiveProvider) {
-            ps = P.pairs(
-                    P.rationals(),
-                    (Iterable<Pair<BigInteger, Integer>>) P.pairs(P.rangeUp(BigInteger.valueOf(37)), P.integers())
-            );
-        } else {
-            ps = P.pairs(
-                    P.rationals(),
-                    (Iterable<Pair<BigInteger, Integer>>) P.pairs(
-                            map(i -> BigInteger.valueOf(i + 37), P.withScale(20).naturalIntegersGeometric()),
-                            P.withScale(20).integersGeometric()
-                    )
-            );
-        }
-        for (Pair<Rational, Pair<BigInteger, Integer>> p : take(LIMIT, ps)) {
-            String s = p.a.toStringBase(p.b.a, p.b.b);
-            assertTrue(p, all(c -> elem(c, chars2), s));
+        String largeBaseChars = charsToString(concat(fromString("-.()"), range('0', '9')));
+        //noinspection Convert2MethodRef
+        ts = P.triples(
+                P.rationals(),
+                map(
+                        i -> BigInteger.valueOf(i),
+                        P.withScale(64).rangeUpGeometric(ASCII_ALPHANUMERIC_COUNT.intValueExact() + 1)
+                ),
+                P.withScale(20).integersGeometric()
+        );
+        for (Triple<Rational, BigInteger, Integer> t : take(LIMIT, ts)) {
+            String s = t.a.toStringBase(t.b, t.c);
+            assertTrue(t, all(c -> elem(c, largeBaseChars), s));
         }
 
         Iterable<Triple<Rational, BigInteger, Integer>> tsFail = P.triples(
@@ -3315,37 +3273,43 @@ public class RationalProperties {
     }
 
     private static void propertiesFromStringBase() {
-        initialize("");
-        System.out.println("\t\ttesting fromStringBase(BigInteger, String) properties...");
-
-        Iterable<Pair<BigInteger, String>> ps = map(
-                p -> new Pair<>(BigInteger.valueOf(p.a), p.b.toStringBase(BigInteger.valueOf(p.a))),
-                filter(
-                        q -> {
-                            BigInteger b = BigInteger.valueOf(q.a);
+        initialize("fromStringBase(BigInteger, String)");
+        Map<Integer, String> baseChars = new HashMap<>();
+        baseChars.put(0, ".-()0123456789");
+        String chars = ".-0";
+        for (int i = 1; i < ASCII_ALPHANUMERIC_COUNT.intValueExact(); i++) {
+            chars += IntegerUtils.toDigit(i);
+            baseChars.put(i + 1, chars);
+        }
+        //noinspection Convert2MethodRef
+        Iterable<Pair<BigInteger, String>> ps = P.dependentPairsInfiniteSquareRootOrder(
+                map(i -> BigInteger.valueOf(i), P.rangeUpGeometric(2)),
+                b -> filter(
+                        s -> {
                             try {
-                                q.b.toStringBase(b);
+                                fromStringBase(s, b);
                                 return true;
-                            } catch (ArithmeticException e) {
+                            } catch (IllegalArgumentException e) {
                                 return false;
                             }
                         },
-                        P.pairs(P.rangeUpGeometric(2), P.rationals())
+                        P.strings(baseChars.get(Ordering.le(b, ASCII_ALPHANUMERIC_COUNT) ? b.intValueExact() : 0))
                 )
         );
         for (Pair<BigInteger, String> p : take(LIMIT, ps)) {
-            Rational r = fromStringBase(p.a, p.b);
+            Rational r = fromStringBase(p.b, p.a);
             r.validate();
             assertEquals(p, r.toStringBase(p.a), p.b);
+            inverses(s -> fromStringBase(s, p.a), t -> t.toStringBase(p.a), p.b);
         }
 
         for (BigInteger i : take(LIMIT, P.rangeUp(IntegerUtils.TWO))) {
-            assertTrue(i, fromStringBase(i, "") == ZERO);
+            assertTrue(i, fromStringBase("", i) == ZERO);
         }
 
         for (Pair<BigInteger, String> p : take(LIMIT, P.pairs(P.rangeDown(BigInteger.ONE), P.strings()))) {
             try {
-                fromStringBase(p.a, p.b);
+                fromStringBase(p.b, p.a);
                 fail(p);
             } catch (IllegalArgumentException ignored) {}
         }

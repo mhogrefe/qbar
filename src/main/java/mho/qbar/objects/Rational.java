@@ -118,6 +118,11 @@ public final class Rational implements Comparable<Rational> {
             scanl(Rational::add, ONE, map(i -> new Rational(BigInteger.ONE, BigInteger.valueOf(i)), rangeUp(2)));
 
     /**
+     * 36, the number of ASCII alphanumeric characters
+     */
+    private static final BigInteger ASCII_ALPHANUMERIC_COUNT = BigInteger.valueOf(36);
+
+    /**
      * {@code this} times {@code denominator}
      */
     private final @NotNull BigInteger numerator;
@@ -1366,7 +1371,7 @@ public final class Rational implements Comparable<Rational> {
      * @return |{@code this}|
      */
     public @NotNull Rational abs() {
-        if (this == ZERO || this == ONE) return this;
+        if (this == ZERO || this == ONE || numerator.signum() == 1) return this;
         if (numerator.equals(IntegerUtils.NEGATIVE_ONE) && denominator.equals(BigInteger.ONE)) return ONE;
         return new Rational(numerator.abs(), denominator);
     }
@@ -2066,22 +2071,18 @@ public final class Rational implements Comparable<Rational> {
      * @return a {@code String} representation of {@code this} in base {@code base}
      */
     public @NotNull String toStringBase(@NotNull BigInteger base) {
-        if (!hasTerminatingBaseExpansion(base))
-            throw new ArithmeticException(this + " has a non-terminating base-" + base + " expansion");
-        boolean smallBase = le(base, BigInteger.valueOf(36));
+        if (!hasTerminatingBaseExpansion(base)) {
+            throw new ArithmeticException(this + " must have a terminating base-" + base + "expansion. Invalid" +
+                    " this: " + this);
+        }
+        boolean baseIsSmall = le(base, ASCII_ALPHANUMERIC_COUNT);
         Pair<List<BigInteger>, Iterable<BigInteger>> digits = abs().digits(base);
-        Function<BigInteger, String> digitFunction;
-        if (smallBase) {
-            digitFunction = i -> Character.toString(IntegerUtils.toDigit(i.intValueExact()));
-        } else {
-            digitFunction = i -> "(" + i + ")";
-        }
-        String beforeDecimal;
-        if (digits.a.isEmpty()) {
-            beforeDecimal = smallBase ? "0" : "(0)";
-        } else {
-            beforeDecimal = concatStrings(map(digitFunction, digits.a));
-        }
+        Function<BigInteger, String> digitFunction = baseIsSmall ?
+                i -> Character.toString(IntegerUtils.toDigit(i.intValueExact())) :
+                i -> "(" + i + ")";
+        String beforeDecimal = digits.a.isEmpty() ?
+                (baseIsSmall ? "0" : "(0)") :
+                concatStrings(map(digitFunction, digits.a));
         String result;
         if (isEmpty(digits.b)) {
             result = beforeDecimal;
@@ -2120,22 +2121,22 @@ public final class Rational implements Comparable<Rational> {
      * @return a {@code String} representation of {@code this} in base {@code base}
      */
     public @NotNull String toStringBase(@NotNull BigInteger base, int scale) {
-        if (lt(base, IntegerUtils.TWO))
-            throw new IllegalArgumentException("base must be at least 2");
-        BigInteger power = scale >= 0 ? base.pow(scale) : base.pow(-scale);
+        if (lt(base, IntegerUtils.TWO)) {
+            throw new IllegalArgumentException("base must be at least 2. Invalid base: " + base);
+        }
+        BigInteger power = base.pow(scale >= 0 ? scale : -scale);
         Rational scaled = scale >= 0 ? multiply(power) : divide(power);
-        boolean ellipsis = scale > 0 && !scaled.isInteger();
         Rational rounded = of(scaled.bigIntegerValue(RoundingMode.DOWN));
         rounded = scale >= 0 ? rounded.divide(power) : rounded.multiply(power);
         String result = rounded.toStringBase(base);
-        if (ellipsis) {
+        if (scale > 0 && !scaled.isInteger()) { //append ellipsis
             //pad with trailing zeroes if necessary
             int dotIndex = result.indexOf('.');
             if (dotIndex == -1) {
                 dotIndex = result.length();
                 result = result + ".";
             }
-            if (le(base, BigInteger.valueOf(36))) {
+            if (le(base, ASCII_ALPHANUMERIC_COUNT)) {
                 int missingZeroes = scale - result.length() + dotIndex + 1;
                 result += replicate(missingZeroes, '0');
             } else {
@@ -2162,7 +2163,7 @@ public final class Rational implements Comparable<Rational> {
      *  <li>{@code s} must either be composed of the digits '0' through '9' and 'A' through 'Z', or a sequence of
      *  non-negative decimal integers, each surrounded by parentheses. {@code s} may contain a single decimal point '.'
      *  anywhere outside of parentheses. In any case there may be an optional leading '-'. {@code s} may also be empty,
-     *  but "-" is not permitted. Scientific notation is not accepted.</li>
+     *  but "-", ".", or "-." are not permitted. Scientific notation is not accepted.</li>
      *  <li>If {@code base} is between 2 and 36, {@code s} may only include the corresponding characters, the optional
      *  '.', and the optional leading '-'. If {@code base} is greater than 36, {@code s} must be composed of decimal
      *  integers surrounded by parentheses (with the optional leading '-'), each integer being non-negative and less
@@ -2170,35 +2171,41 @@ public final class Rational implements Comparable<Rational> {
      *  <li>The result is non-null.</li>
      * </ul>
      *
-     * @param base the base that the {@code s} is written in
      * @param s the input {@code String}
+     * @param base the base that the {@code s} is written in
      * @return the {@code Rational} represented by {@code s}
      */
-    public static @NotNull Rational fromStringBase(@NotNull BigInteger base, @NotNull String s) {
-        if (lt(base, IntegerUtils.TWO))
-            throw new IllegalArgumentException("base must be at least 2");
+    public static @NotNull Rational fromStringBase(@NotNull String s, @NotNull BigInteger base) {
+        if (lt(base, IntegerUtils.TWO)) {
+            throw new IllegalArgumentException("base must be at least 2. Invalid base: " + base);
+        }
         if (s.isEmpty()) return ZERO;
         try {
-            if (s.equals("-") || s.equals(".") || s.equals("-."))
-                throw new IllegalArgumentException("invalid String");
+            if (s.equals("-") || s.equals(".") || s.equals("-.")) {
+                throw new IllegalArgumentException("Invalid String: " + s);
+            }
             boolean negative = head(s) == '-';
             if (negative) s = tail(s);
-            boolean smallBase = le(base, BigInteger.valueOf(36));
+            final String sFinal = s;
+            boolean smallBase = le(base, ASCII_ALPHANUMERIC_COUNT);
             Function<String, List<BigInteger>> undigitFunction;
             if (smallBase) {
                 undigitFunction = t -> toList(map(c -> BigInteger.valueOf(IntegerUtils.fromDigit(c)), fromString(t)));
             } else {
                 undigitFunction = t -> {
                     if (t.isEmpty()) return Collections.emptyList();
-                    if (head(t) != '(' || last(t) != ')' || t.contains("()"))
-                        throw new IllegalArgumentException("invalid String");
+                    if (head(t) != '(' || last(t) != ')' || t.contains("()")) {
+                        throw new IllegalArgumentException("Invalid String: " + sFinal);
+                    }
                     t = tail(init(t));
                     return toList(
                             map(
                                     u -> {
                                         Optional<BigInteger> oi = Readers.readBigInteger(u);
-                                        if (!oi.isPresent())
-                                            throw new IllegalArgumentException("improperly-formatted digit");
+                                        if (!oi.isPresent()) {
+                                            throw new IllegalArgumentException("Improperly-formatted digit " + u +
+                                                    " in String " + sFinal);
+                                        }
                                         return oi.get();
                                     },
                                     Arrays.asList(t.split("\\)\\("))
@@ -2222,7 +2229,7 @@ public final class Rational implements Comparable<Rational> {
             }
             return negative ? result.negate() : result;
         } catch (StringIndexOutOfBoundsException e) {
-            throw new IllegalArgumentException(e);
+            throw new IllegalArgumentException(e.getMessage() + ": " + s);
         }
     }
 
