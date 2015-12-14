@@ -2,111 +2,101 @@ package mho.qbar.iterableProviders;
 
 import mho.qbar.objects.Interval;
 import mho.qbar.objects.Rational;
+import mho.qbar.testing.QBarDemos;
 import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
 
 import static mho.wheels.iterables.IterableUtils.filterInfinite;
 import static mho.wheels.iterables.IterableUtils.take;
 import static mho.wheels.ordering.Ordering.le;
+import static mho.wheels.testing.Testing.MEDIUM_LIMIT;
 import static mho.wheels.testing.Testing.its;
 
 @SuppressWarnings("UnusedDeclaration")
-public class QBarRandomProviderDemos {
-    private static final boolean USE_RANDOM = false;
-    private static int LIMIT;
-    private static final int SMALL_LIMIT = 1000;
-    private static final int TINY_LIMIT = 100;
-    private static QBarIterableProvider P;
-
-    private static void initialize() {
-        if (USE_RANDOM) {
-            P = QBarRandomProvider.example();
-            LIMIT = 1000;
-        } else {
-            P = QBarExhaustiveProvider.INSTANCE;
-            LIMIT = 10000;
-        }
+public class QBarRandomProviderDemos extends QBarDemos {
+    public QBarRandomProviderDemos(boolean useRandom) {
+        super(useRandom);
     }
 
-    private static void demoPositiveRationals() {
+    private void demoPositiveRationals() {
         initialize();
         Iterable<QBarRandomProvider> rps = filterInfinite(
                 s -> s.getScale() >= 4,
                 P.qbarRandomProvidersDefaultSecondaryScale()
         );
-        for (QBarRandomProvider rp : take(SMALL_LIMIT, rps)) {
+        for (QBarRandomProvider rp : take(MEDIUM_LIMIT, rps)) {
             System.out.println("positiveRationals(" + rp + ") = " + its(rp.positiveRationals()));
         }
     }
 
-    private static void demoNegativeRationals() {
+    private void demoNegativeRationals() {
         initialize();
         Iterable<QBarRandomProvider> rps = filterInfinite(
                 s -> s.getScale() >= 4,
                 P.qbarRandomProvidersDefaultSecondaryScale()
         );
-        for (QBarRandomProvider rp : take(SMALL_LIMIT, rps)) {
+        for (QBarRandomProvider rp : take(MEDIUM_LIMIT, rps)) {
             System.out.println("negativeRationals(" + rp + ") = " + its(rp.negativeRationals()));
         }
     }
 
-    private static void demoNonzeroRationals() {
+    private void demoNonzeroRationals() {
         initialize();
         Iterable<QBarRandomProvider> rps = filterInfinite(
                 s -> s.getScale() >= 4,
                 P.qbarRandomProvidersDefaultSecondaryScale()
         );
-        for (QBarRandomProvider rp : take(SMALL_LIMIT, rps)) {
+        for (QBarRandomProvider rp : take(MEDIUM_LIMIT, rps)) {
             System.out.println("nonzeroRationals(" + rp + ") = " + its(rp.nonzeroRationals()));
         }
     }
 
-    private static void demoRationals() {
+    private void demoRationals() {
         initialize();
         Iterable<QBarRandomProvider> rps = filterInfinite(
                 s -> s.getScale() >= 3,
                 P.qbarRandomProvidersDefaultSecondaryScale()
         );
-        for (QBarRandomProvider rp : take(SMALL_LIMIT, rps)) {
+        for (QBarRandomProvider rp : take(MEDIUM_LIMIT, rps)) {
             System.out.println("rationals(" + rp + ") = " + its(rp.rationals()));
         }
     }
 
-    private static void demoNonNegativeRationalsLessThanOne() {
+    private void demoNonNegativeRationalsLessThanOne() {
         initialize();
         Iterable<QBarRandomProvider> rps = filterInfinite(
                 s -> s.getScale() >= 4,
                 P.qbarRandomProvidersDefaultSecondaryScale()
         );
-        for (QBarRandomProvider rp : take(SMALL_LIMIT, rps)) {
+        for (QBarRandomProvider rp : take(MEDIUM_LIMIT, rps)) {
             System.out.println("nonNegativeRationalsLessThanOne(" + rp + ") = " +
                     its(rp.nonNegativeRationalsLessThanOne()));
         }
     }
 
-    private static void demoRangeUp_Rational() {
+    private void demoRangeUp_Rational() {
         initialize();
         Iterable<Pair<QBarRandomProvider, Rational>> ps = P.pairs(
                 filterInfinite(rp -> rp.getScale() >= 4, P.qbarRandomProvidersDefaultSecondaryScale()),
                 P.rationals()
         );
-        for (Pair<QBarRandomProvider, Rational> p : take(SMALL_LIMIT, ps)) {
+        for (Pair<QBarRandomProvider, Rational> p : take(MEDIUM_LIMIT, ps)) {
             System.out.println("rangeUp(" + p.a + ", " + p.b + ") = " + its(p.a.rangeUp(p.b)));
         }
     }
 
-    private static void demoRangeDown_Rational() {
+    private void demoRangeDown_Rational() {
         initialize();
         Iterable<Pair<QBarRandomProvider, Rational>> ps = P.pairs(
                 filterInfinite(rp -> rp.getScale() >= 4, P.qbarRandomProvidersDefaultSecondaryScale()),
                 P.rationals()
         );
-        for (Pair<QBarRandomProvider, Rational> p : take(SMALL_LIMIT, ps)) {
+        for (Pair<QBarRandomProvider, Rational> p : take(MEDIUM_LIMIT, ps)) {
             System.out.println("rangeDown(" + p.a + ", " + p.b + ") = " + its(p.a.rangeDown(p.b)));
         }
     }
 
-    private static void demoRange_Rational_Rational() {
+    private void demoRange_Rational_Rational() {
         initialize();
         Iterable<Triple<QBarRandomProvider, Rational, Rational>> ts = filterInfinite(
                 t -> le(t.b, t.c),
@@ -116,34 +106,34 @@ public class QBarRandomProviderDemos {
                         P.rationals()
                 )
         );
-        for (Triple<QBarRandomProvider, Rational, Rational> t : take(SMALL_LIMIT, ts)) {
+        for (Triple<QBarRandomProvider, Rational, Rational> t : take(MEDIUM_LIMIT, ts)) {
             System.out.println("range(" + t.a + ", " + t.b + ", " + t.c + ") = " + its(t.a.range(t.b, t.c)));
         }
     }
 
-    private static void demoFinitelyBoundedIntervals() {
+    private void demoFinitelyBoundedIntervals() {
         initialize();
         Iterable<QBarRandomProvider> rps = filterInfinite(
                 s -> s.getScale() >= 6,
                 P.qbarRandomProvidersDefaultSecondaryScale()
         );
-        for (QBarRandomProvider rp : take(SMALL_LIMIT, rps)) {
+        for (QBarRandomProvider rp : take(MEDIUM_LIMIT, rps)) {
             System.out.println("finitelyBoundedIntervals(" + rp + ") = " + its(rp.finitelyBoundedIntervals()));
         }
     }
 
-    private static void demoIntervals() {
+    private void demoIntervals() {
         initialize();
         Iterable<QBarRandomProvider> rps = filterInfinite(
                 s -> s.getScale() >= 6,
                 P.qbarRandomProvidersDefaultSecondaryScale()
         );
-        for (QBarRandomProvider rp : take(SMALL_LIMIT, rps)) {
+        for (QBarRandomProvider rp : take(MEDIUM_LIMIT, rps)) {
             System.out.println("intervals(" + rp + ") = " + its(rp.intervals()));
         }
     }
 
-    private static void demoRationalsIn() {
+    private void demoRationalsIn() {
         initialize();
         Iterable<Pair<QBarRandomProvider, Interval>> ps = P.pairs(
                 filterInfinite(
@@ -152,12 +142,12 @@ public class QBarRandomProviderDemos {
                 ),
                 P.intervals()
         );
-        for (Pair<QBarRandomProvider, Interval> p : take(SMALL_LIMIT, ps)) {
+        for (Pair<QBarRandomProvider, Interval> p : take(MEDIUM_LIMIT, ps)) {
             System.out.println("rationalsIn(" + p.a + ", " + p.b + ") = " + its(p.a.rationalsIn(p.b)));
         }
     }
 
-    private static void demoRationalsNotIn() {
+    private void demoRationalsNotIn() {
         initialize();
         Iterable<Pair<QBarRandomProvider, Interval>> ps = P.pairs(
                 filterInfinite(
@@ -166,7 +156,7 @@ public class QBarRandomProviderDemos {
                 ),
                 filterInfinite(a -> !a.equals(Interval.ALL), P.intervals())
         );
-        for (Pair<QBarRandomProvider, Interval> p : take(SMALL_LIMIT, ps)) {
+        for (Pair<QBarRandomProvider, Interval> p : take(MEDIUM_LIMIT, ps)) {
             System.out.println("rationalsNotIn(" + p.a + ", " + p.b + ") = " + its(p.a.rationalsNotIn(p.b)));
         }
     }

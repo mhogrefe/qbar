@@ -8,13 +8,17 @@ import static mho.wheels.testing.Testing.LARGE_LIMIT;
 import static mho.wheels.testing.Testing.MEDIUM_LIMIT;
 
 public class QBarDemos {
-    protected final boolean USE_RANDOM = false;
+    private final boolean useRandom;
     protected int LIMIT;
     protected QBarIterableProvider P;
 
+    public QBarDemos(boolean useRandom) {
+        this.useRandom = useRandom;
+    }
+
     protected void initialize() {
         //noinspection ConstantConditions
-        if (USE_RANDOM) {
+        if (useRandom) {
             P = QBarRandomProvider.example();
             LIMIT = MEDIUM_LIMIT;
         } else {

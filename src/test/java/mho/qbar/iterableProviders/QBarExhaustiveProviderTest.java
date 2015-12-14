@@ -5,23 +5,21 @@ import mho.qbar.objects.Rational;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
+import static mho.qbar.testing.QBarTesting.QEP;
 import static mho.wheels.iterables.IterableUtils.take;
 import static mho.wheels.testing.Testing.*;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class QBarExhaustiveProviderTest {
-    private static final @NotNull QBarExhaustiveProvider P = QBarExhaustiveProvider.INSTANCE;
-    private static final int TINY_LIMIT = 50;
-
     private static <T> void simpleProviderHelper(@NotNull Iterable<T> xs, @NotNull String output) {
-        aeqitLimit(TINY_LIMIT, xs, output);
-        testNoRemove(TINY_LIMIT, xs);
+        aeqitLimit(SMALLER_LIMIT, xs, output);
+        testNoRemove(SMALLER_LIMIT, xs);
     }
 
     @Test
     public void testPositiveRationals() {
-        simpleProviderHelper(P.positiveRationals(),
+        simpleProviderHelper(QEP.positiveRationals(),
                 "[1, 1/2, 2, 1/3, 1/4, 2/3, 3, 3/2, 4, 3/4, 4/3, 1/5, 1/6, 2/5, 1/7, 1/8, 2/7, 3/5, 4/5, 3/7, 3/8," +
                 " 4/7, 5, 5/2, 6, 5/3, 5/4, 7, 7/2, 8, 7/3, 7/4, 8/3, 5/6, 6/5, 5/7, 5/8, 6/7, 7/5, 7/6, 8/5, 7/8," +
                 " 8/7, 1/9, 1/10, 2/9, 1/11, 1/12, 2/11, 3/10, ...]");
@@ -29,7 +27,7 @@ public class QBarExhaustiveProviderTest {
 
     @Test
     public void testNegativeRationals() {
-        simpleProviderHelper(P.negativeRationals(),
+        simpleProviderHelper(QEP.negativeRationals(),
                 "[-1, -1/2, -2, -1/3, -1/4, -2/3, -3, -3/2, -4, -3/4, -4/3, -1/5, -1/6, -2/5, -1/7, -1/8, -2/7," +
                 " -3/5, -4/5, -3/7, -3/8, -4/7, -5, -5/2, -6, -5/3, -5/4, -7, -7/2, -8, -7/3, -7/4, -8/3, -5/6," +
                 " -6/5, -5/7, -5/8, -6/7, -7/5, -7/6, -8/5, -7/8, -8/7, -1/9, -1/10, -2/9, -1/11, -1/12, -2/11," +
@@ -38,7 +36,7 @@ public class QBarExhaustiveProviderTest {
 
     @Test
     public void testNonzeroRationals() {
-        simpleProviderHelper(P.nonzeroRationals(),
+        simpleProviderHelper(QEP.nonzeroRationals(),
                 "[1, 1/2, -1, -1/2, 1/3, 1/4, -1/3, -1/4, 2, -2, 2/3, -2/3, 1/5, 1/6, -1/5, -1/6, 1/7, 1/8, -1/7," +
                 " -1/8, 2/5, -2/5, 2/7, -2/7, 3, 3/2, -3, -3/2, 3/4, -3/4, 4, -4, 4/3, -4/3, 3/5, -3/5, 3/7, 3/8," +
                 " -3/7, -3/8, 4/5, -4/5, 4/7, -4/7, 1/9, 1/10, -1/9, -1/10, 1/11, 1/12, ...]");
@@ -46,7 +44,7 @@ public class QBarExhaustiveProviderTest {
 
     @Test
     public void testRationals() {
-        simpleProviderHelper(P.rationals(),
+        simpleProviderHelper(QEP.rationals(),
                 "[0, 1, 1/2, 1/3, 1/4, -1, -1/2, 2, -1/3, -1/4, 2/3, 1/5, 1/6, 1/7, 1/8, -1/5, -1/6, 2/5, -1/7," +
                 " -1/8, 2/7, -2, 3, 3/2, -2/3, 3/4, -3, -3/2, 4, -3/4, 4/3, -2/5, 3/5, -2/7, 3/7, 3/8, -3/5, 4/5," +
                 " -3/7, -3/8, 4/7, 1/9, 1/10, 1/11, 1/12, -1/9, -1/10, 2/9, -1/11, -1/12, ...]");
@@ -54,14 +52,14 @@ public class QBarExhaustiveProviderTest {
 
     @Test
     public void testNonNegativeRationalsLessThanOne() {
-        simpleProviderHelper(P.nonNegativeRationalsLessThanOne(),
+        simpleProviderHelper(QEP.nonNegativeRationalsLessThanOne(),
                 "[0, 1/2, 1/3, 2/3, 1/4, 3/4, 1/5, 2/5, 3/5, 4/5, 1/6, 5/6, 1/7, 2/7, 3/7, 4/7, 5/7, 6/7, 1/8, 3/8," +
                 " 5/8, 7/8, 1/9, 2/9, 4/9, 5/9, 7/9, 8/9, 1/10, 3/10, 7/10, 9/10, 1/11, 2/11, 3/11, 4/11, 5/11," +
                 " 6/11, 7/11, 8/11, 9/11, 10/11, 1/12, 5/12, 7/12, 11/12, 1/13, 2/13, 3/13, 4/13, ...]");
     }
 
     private static void rangeUp_Rational_helper(@NotNull String a, @NotNull String output) {
-        simpleProviderHelper(P.rangeUp(Rational.read(a).get()), output);
+        simpleProviderHelper(QEP.rangeUp(Rational.read(a).get()), output);
     }
 
     @Test
@@ -96,7 +94,7 @@ public class QBarExhaustiveProviderTest {
     }
 
     private static void rangeDown_Rational_helper(@NotNull String a, @NotNull String output) {
-        simpleProviderHelper(P.rangeDown(Rational.read(a).get()), output);
+        simpleProviderHelper(QEP.rangeDown(Rational.read(a).get()), output);
     }
 
     @Test
@@ -131,7 +129,7 @@ public class QBarExhaustiveProviderTest {
     }
 
     private static void range_Rational_Rational_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
-        simpleProviderHelper(P.range(Rational.read(a).get(), Rational.read(b).get()), output);
+        simpleProviderHelper(QEP.range(Rational.read(a).get(), Rational.read(b).get()), output);
     }
 
     @Test
@@ -163,7 +161,7 @@ public class QBarExhaustiveProviderTest {
 
     @Test
     public void testFinitelyBoundedIntervals() {
-        simpleProviderHelper(P.finitelyBoundedIntervals(),
+        simpleProviderHelper(QEP.finitelyBoundedIntervals(),
                 "[[0, 0], [0, 1], [1, 1], [1/2, 1], [0, 1/2], [0, 1/3], [1/3, 1], [1/4, 1], [1/2, 1/2], [1/3, 1/2]," +
                 " [1/3, 1/3], [1/4, 1/3], [1/4, 1/2], [-1, 1/2], [-1, 1/3], [-1/2, 1/3], [0, 1/4], [-1, 0], [-1, 1]," +
                 " [-1/2, 1], [-1/2, 0], [0, 2], [1, 2], [-1/3, 1], [-1/2, 1/2], [1/2, 2], [1/3, 2], [-1/3, 1/3]," +
@@ -174,7 +172,7 @@ public class QBarExhaustiveProviderTest {
 
     @Test
     public void testIntervals() {
-        simpleProviderHelper(P.intervals(),
+        simpleProviderHelper(QEP.intervals(),
                 "[(-Infinity, Infinity), (-Infinity, 0], [0, Infinity), [0, 0], (-Infinity, 1], (-Infinity, 1/2]," +
                 " [0, 1], [0, 1/2], [1, Infinity), [1/2, Infinity), [1, 1], [1/2, 1], [1/2, 1/2], (-Infinity, 1/3]," +
                 " (-Infinity, 1/4], [0, 1/3], [0, 1/4], (-Infinity, -1], (-Infinity, -1/2], [1/3, Infinity)," +
@@ -186,7 +184,7 @@ public class QBarExhaustiveProviderTest {
     }
 
     private static void rationalsIn_helper(@NotNull String a, @NotNull String output) {
-        simpleProviderHelper(P.rationalsIn(Interval.read(a).get()), output);
+        simpleProviderHelper(QEP.rationalsIn(Interval.read(a).get()), output);
     }
 
     @Test
@@ -214,7 +212,7 @@ public class QBarExhaustiveProviderTest {
     }
 
     private static void rationalsNotIn_helper(@NotNull String a, @NotNull String output) {
-        simpleProviderHelper(P.rationalsNotIn(Interval.read(a).get()), output);
+        simpleProviderHelper(QEP.rationalsNotIn(Interval.read(a).get()), output);
     }
 
     @Test
@@ -246,20 +244,20 @@ public class QBarExhaustiveProviderTest {
 
     @Test
     public void testRationalVectors_int() {
-        aeqit(P.rationalVectors(0), "[[]]");
-        aeqit(take(50, P.rationalVectors(1)),
+        aeqit(QEP.rationalVectors(0), "[[]]");
+        aeqit(take(50, QEP.rationalVectors(1)),
                 "[[0], [1], [1/2], [1/3], [1/4], [-1], [-1/2], [2], [-1/3], [-1/4], [2/3], [1/5], [1/6], [1/7]," +
                 " [1/8], [-1/5], [-1/6], [2/5], [-1/7], [-1/8], [2/7], [-2], [3], [3/2], [-2/3], [3/4], [-3]," +
                 " [-3/2], [4], [-3/4], [4/3], [-2/5], [3/5], [-2/7], [3/7], [3/8], [-3/5], [4/5], [-3/7], [-3/8]," +
                 " [4/7], [1/9], [1/10], [1/11], [1/12], [-1/9], [-1/10], [2/9], [-1/11], [-1/12]]");
-        aeqit(take(50, P.rationalVectors(2)),
+        aeqit(take(50, QEP.rationalVectors(2)),
                 "[[0, 0], [0, 1], [1, 0], [1, 1], [0, 1/2], [0, 1/3], [1, 1/2], [1, 1/3], [1/2, 0], [1/2, 1]," +
                 " [1/3, 0], [1/3, 1], [1/2, 1/2], [1/2, 1/3], [1/3, 1/2], [1/3, 1/3], [0, 1/4], [0, -1], [1, 1/4]," +
                 " [1, -1], [0, -1/2], [0, 2], [1, -1/2], [1, 2], [1/2, 1/4], [1/2, -1], [1/3, 1/4], [1/3, -1]," +
                 " [1/2, -1/2], [1/2, 2], [1/3, -1/2], [1/3, 2], [1/4, 0], [1/4, 1], [-1, 0], [-1, 1], [1/4, 1/2]," +
                 " [1/4, 1/3], [-1, 1/2], [-1, 1/3], [-1/2, 0], [-1/2, 1], [2, 0], [2, 1], [-1/2, 1/2], [-1/2, 1/3]," +
                 " [2, 1/2], [2, 1/3], [1/4, 1/4], [1/4, -1]]");
-        aeqit(take(50, P.rationalVectors(3)),
+        aeqit(take(50, QEP.rationalVectors(3)),
                 "[[0, 0, 0], [0, 0, 1], [0, 1, 0], [0, 1, 1], [1, 0, 0], [1, 0, 1], [1, 1, 0], [1, 1, 1]," +
                 " [0, 0, 1/2], [0, 0, 1/3], [0, 1, 1/2], [0, 1, 1/3], [1, 0, 1/2], [1, 0, 1/3], [1, 1, 1/2]," +
                 " [1, 1, 1/3], [0, 1/2, 0], [0, 1/2, 1], [0, 1/3, 0], [0, 1/3, 1], [1, 1/2, 0], [1, 1/2, 1]," +
@@ -268,7 +266,7 @@ public class QBarExhaustiveProviderTest {
                 " [1/2, 1, 1], [1/3, 0, 0], [1/3, 0, 1], [1/3, 1, 0], [1/3, 1, 1], [1/2, 0, 1/2], [1/2, 0, 1/3]," +
                 " [1/2, 1, 1/2], [1/2, 1, 1/3], [1/3, 0, 1/2], [1/3, 0, 1/3], [1/3, 1, 1/2], [1/3, 1, 1/3]," +
                 " [1/2, 1/2, 0], [1/2, 1/2, 1]]");
-        aeqit(take(50, P.rationalVectors(10)),
+        aeqit(take(50, QEP.rationalVectors(10)),
                 "[[0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 1], [0, 0, 0, 0, 0, 0, 0, 0, 1, 0]," +
                 " [0, 0, 0, 0, 0, 0, 0, 0, 1, 1], [0, 0, 0, 0, 0, 0, 0, 1, 0, 0], [0, 0, 0, 0, 0, 0, 0, 1, 0, 1]," +
                 " [0, 0, 0, 0, 0, 0, 0, 1, 1, 0], [0, 0, 0, 0, 0, 0, 0, 1, 1, 1], [0, 0, 0, 0, 0, 0, 1, 0, 0, 0]," +
@@ -290,19 +288,19 @@ public class QBarExhaustiveProviderTest {
 
     @Test
     public void testRationalVectorsAtLeast() {
-        aeqit(take(50, P.rationalVectorsAtLeast(0)),
+        aeqit(take(50, QEP.rationalVectorsAtLeast(0)),
                 "[[], [0], [0, 0], [1], [0, 0, 0], [1/2], [0, 1], [1/3], [0, 0, 0, 0], [1/4], [1, 0], [-1]," +
                 " [0, 0, 1], [-1/2], [1, 1], [2], [0, 0, 0, 0, 0], [-1/3], [0, 1/2], [-1/4], [0, 1, 0], [2/3]," +
                 " [0, 1/3], [1/5], [0, 0, 0, 1], [1/6], [1, 1/2], [1/7], [0, 1, 1], [1/8], [1, 1/3], [-1/5]," +
                 " [0, 0, 0, 0, 0, 0], [-1/6], [1/2, 0], [2/5], [1, 0, 0], [-1/7], [1/2, 1], [-1/8], [0, 0, 1, 0]," +
                 " [2/7], [1/3, 0], [-2], [1, 0, 1], [3], [1/3, 1], [3/2], [0, 0, 0, 0, 1], [-2/3]]");
-        aeqit(take(50, P.rationalVectorsAtLeast(1)),
+        aeqit(take(50, QEP.rationalVectorsAtLeast(1)),
                 "[[0], [0, 0], [1], [0, 0, 0], [1/2], [0, 1], [1/3], [0, 0, 0, 0], [1/4], [1, 0], [-1], [0, 0, 1]," +
                 " [-1/2], [1, 1], [2], [0, 0, 0, 0, 0], [-1/3], [0, 1/2], [-1/4], [0, 1, 0], [2/3], [0, 1/3], [1/5]," +
                 " [0, 0, 0, 1], [1/6], [1, 1/2], [1/7], [0, 1, 1], [1/8], [1, 1/3], [-1/5], [0, 0, 0, 0, 0, 0]," +
                 " [-1/6], [1/2, 0], [2/5], [1, 0, 0], [-1/7], [1/2, 1], [-1/8], [0, 0, 1, 0], [2/7], [1/3, 0], [-2]," +
                 " [1, 0, 1], [3], [1/3, 1], [3/2], [0, 0, 0, 0, 1], [-2/3], [1/2, 1/2]]");
-        aeqit(take(50, P.rationalVectorsAtLeast(2)),
+        aeqit(take(50, QEP.rationalVectorsAtLeast(2)),
                 "[[0, 0], [0, 0, 0], [0, 1], [0, 0, 0, 0], [1, 0], [0, 0, 1], [1, 1], [0, 0, 0, 0, 0], [0, 1/2]," +
                 " [0, 1, 0], [0, 1/3], [0, 0, 0, 1], [1, 1/2], [0, 1, 1], [1, 1/3], [0, 0, 0, 0, 0, 0], [1/2, 0]," +
                 " [1, 0, 0], [1/2, 1], [0, 0, 1, 0], [1/3, 0], [1, 0, 1], [1/3, 1], [0, 0, 0, 0, 1], [1/2, 1/2]," +
@@ -310,7 +308,7 @@ public class QBarExhaustiveProviderTest {
                 " [0, 1/4], [0, 0, 1/2], [0, -1], [0, 1, 0, 0], [1, 1/4], [0, 0, 1/3], [1, -1], [0, 0, 0, 1, 0]," +
                 " [0, -1/2], [0, 1, 1/2], [0, 2], [0, 1, 0, 1], [1, -1/2], [0, 1, 1/3], [1, 2], [0, 0, 0, 0, 0, 1]," +
                 " [1/2, 1/4], [1, 0, 1/2]]");
-        aeqit(take(50, P.rationalVectorsAtLeast(3)),
+        aeqit(take(50, QEP.rationalVectorsAtLeast(3)),
                 "[[0, 0, 0], [0, 0, 0, 0], [0, 0, 1], [0, 0, 0, 0, 0], [0, 1, 0], [0, 0, 0, 1], [0, 1, 1]," +
                 " [0, 0, 0, 0, 0, 0], [1, 0, 0], [0, 0, 1, 0], [1, 0, 1], [0, 0, 0, 0, 1], [1, 1, 0], [0, 0, 1, 1]," +
                 " [1, 1, 1], [0, 0, 0, 0, 0, 0, 0], [0, 0, 1/2], [0, 1, 0, 0], [0, 0, 1/3], [0, 0, 0, 1, 0]," +
@@ -319,7 +317,7 @@ public class QBarExhaustiveProviderTest {
                 " [0, 1/2, 0], [1, 0, 0, 0], [0, 1/2, 1], [0, 0, 1, 0, 0], [0, 1/3, 0], [1, 0, 0, 1], [0, 1/3, 1]," +
                 " [0, 0, 0, 0, 1, 0], [1, 1/2, 0], [1, 0, 1, 0], [1, 1/2, 1], [0, 0, 1, 0, 1], [1, 1/3, 0]," +
                 " [1, 0, 1, 1], [1, 1/3, 1], [0, 0, 0, 0, 0, 0, 1], [0, 1/2, 1/2], [1, 1, 0, 0]]");
-        aeqit(take(50, P.rationalVectorsAtLeast(10)),
+        aeqit(take(50, QEP.rationalVectorsAtLeast(10)),
                 "[[0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 1]," +
                 " [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 1, 0]," +
                 " [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], [0, 0, 0, 0, 0, 0, 0, 0, 1, 1]," +
@@ -349,7 +347,7 @@ public class QBarExhaustiveProviderTest {
 
     @Test
     public void testRationalVectors() {
-        aeqit(take(50, P.rationalVectors()),
+        aeqit(take(50, QEP.rationalVectors()),
                 "[[], [0], [0, 0], [1], [0, 0, 0], [1/2], [0, 1], [1/3], [0, 0, 0, 0], [1/4], [1, 0], [-1]," +
                 " [0, 0, 1], [-1/2], [1, 1], [2], [0, 0, 0, 0, 0], [-1/3], [0, 1/2], [-1/4], [0, 1, 0], [2/3]," +
                 " [0, 1/3], [1/5], [0, 0, 0, 1], [1/6], [1, 1/2], [1/7], [0, 1, 1], [1/8], [1, 1/3], [-1/5]," +
@@ -359,16 +357,16 @@ public class QBarExhaustiveProviderTest {
 
     @Test
     public void testReducedRationalVectors_int() {
-        aeqit(P.reducedRationalVectors(0), "[[]]");
-        aeqit(P.reducedRationalVectors(1), "[[0], [1]]");
-        aeqit(take(50, P.reducedRationalVectors(2)),
+        aeqit(QEP.reducedRationalVectors(0), "[[]]");
+        aeqit(QEP.reducedRationalVectors(1), "[[0], [1]]");
+        aeqit(take(50, QEP.reducedRationalVectors(2)),
                 "[[0, 0], [0, 1], [1, 0], [1, 1], [1, -1], [1, 2], [1, 1/2], [1, -1/2], [1, -2], [1, 3], [1, -3]," +
                 " [1, 4], [1, 3/2], [1, -3/2], [1, 1/3], [1, -1/3], [1, 2/3], [1, 1/4], [1, -1/4], [1, -2/3]," +
                 " [1, 4/3], [1, 3/4], [1, -3/4], [1, -4], [1, 5], [1, -5], [1, 6], [1, 5/2], [1, -5/2], [1, -6]," +
                 " [1, 7], [1, -7], [1, 8], [1, 7/2], [1, -7/2], [1, -4/3], [1, 5/3], [1, -5/3], [1, 5/4], [1, -5/4]," +
                 " [1, 7/3], [1, -7/3], [1, 8/3], [1, 7/4], [1, -7/4], [1, 1/5], [1, -1/5], [1, 2/5], [1, 1/6]," +
                 " [1, -1/6]]");
-        aeqit(take(50, P.reducedRationalVectors(3)),
+        aeqit(take(50, QEP.reducedRationalVectors(3)),
                 "[[0, 0, 0], [0, 0, 1], [0, 1, 0], [0, 1, 1], [1, 0, 0], [1, 0, 1], [1, 1, 0], [1, 1, 1]," +
                 " [0, 1, -1], [0, 1, 2], [1, 0, -1], [1, 0, 2], [1, 1, -1], [1, 1, 2], [0, 1, 1/2], [1, -1, 0]," +
                 " [1, -1, 1], [1, 2, 0], [1, 2, 1], [0, 1, -1/2], [1, -1, -1], [1, -1, 2], [1, 2, -1], [1, 2, 2]," +
@@ -376,7 +374,7 @@ public class QBarExhaustiveProviderTest {
                 " [1, -1/2, 1/2], [1, 1, 1/2], [1, -1/2, -1/2], [1, -1/2, 1], [1, 1, -1/2], [0, 1, -2], [0, 1, 3]," +
                 " [1, 0, -2], [1, 0, 3], [1, 1, -2], [1, 1, 3], [0, 1, -3], [0, 1, 4], [1, 0, -3], [1, 0, 4]," +
                 " [1, 1, -3], [1, 1, 4], [0, 1, 3/2], [1, -1, -2]]");
-        aeqit(take(50, P.reducedRationalVectors(10)),
+        aeqit(take(50, QEP.reducedRationalVectors(10)),
                 "[[0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 1], [0, 0, 0, 0, 0, 0, 0, 0, 1, 0]," +
                 " [0, 0, 0, 0, 0, 0, 0, 0, 1, 1], [0, 0, 0, 0, 0, 0, 0, 1, 0, 0], [0, 0, 0, 0, 0, 0, 0, 1, 0, 1]," +
                 " [0, 0, 0, 0, 0, 0, 0, 1, 1, 0], [0, 0, 0, 0, 0, 0, 0, 1, 1, 1], [0, 0, 0, 0, 0, 0, 1, 0, 0, 0]," +
@@ -398,7 +396,7 @@ public class QBarExhaustiveProviderTest {
 
     @Test
     public void testReducedRationalVectorsAtLeast() {
-        aeqit(take(50, P.reducedRationalVectorsAtLeast(0)),
+        aeqit(take(50, QEP.reducedRationalVectorsAtLeast(0)),
                 "[[], [0], [0, 0], [1], [0, 0, 0], [0, 1], [0, 0, 0, 0], [1, 0], [0, 0, 1], [1, 1], [0, 0, 0, 0, 0]," +
                 " [0, 1, 0], [0, 0, 0, 1], [1, -1], [0, 1, 1], [1, 2], [0, 0, 0, 0, 0, 0], [1, 0, 0], [0, 0, 1, 0]," +
                 " [1, 0, 1], [1, 1/2], [0, 0, 0, 0, 1], [1, 1, 0], [0, 0, 1, 1], [1, -1/2], [1, 1, 1]," +
@@ -406,7 +404,7 @@ public class QBarExhaustiveProviderTest {
                 " [1, -3], [0, 1, 2], [1, 4], [0, 0, 0, 0, 0, 1], [1, 0, -1], [0, 1, 1, 0], [1, 0, 2], [1, 3/2]," +
                 " [0, 0, 0, 1, 1], [1, 1, -1], [0, 1, 1, 1], [1, -3/2], [1, 1, 2], [0, 0, 0, 0, 0, 0, 0, 0]," +
                 " [1, 0, 0, 0], [1, 1/3], [0, 0, 1, 0, 0]]");
-        aeqit(take(50, P.reducedRationalVectorsAtLeast(1)),
+        aeqit(take(50, QEP.reducedRationalVectorsAtLeast(1)),
                 "[[0], [0, 0], [1], [0, 0, 0], [0, 1], [0, 0, 0, 0], [1, 0], [0, 0, 1], [1, 1], [0, 0, 0, 0, 0]," +
                 " [0, 1, 0], [0, 0, 0, 1], [1, -1], [0, 1, 1], [1, 2], [0, 0, 0, 0, 0, 0], [1, 0, 0], [0, 0, 1, 0]," +
                 " [1, 0, 1], [1, 1/2], [0, 0, 0, 0, 1], [1, 1, 0], [0, 0, 1, 1], [1, -1/2], [1, 1, 1]," +
@@ -414,7 +412,7 @@ public class QBarExhaustiveProviderTest {
                 " [1, -3], [0, 1, 2], [1, 4], [0, 0, 0, 0, 0, 1], [1, 0, -1], [0, 1, 1, 0], [1, 0, 2], [1, 3/2]," +
                 " [0, 0, 0, 1, 1], [1, 1, -1], [0, 1, 1, 1], [1, -3/2], [1, 1, 2], [0, 0, 0, 0, 0, 0, 0, 0]," +
                 " [1, 0, 0, 0], [1, 1/3], [0, 0, 1, 0, 0], [1, 0, 0, 1]]");
-        aeqit(take(50, P.reducedRationalVectorsAtLeast(2)),
+        aeqit(take(50, QEP.reducedRationalVectorsAtLeast(2)),
                 "[[0, 0], [0, 0, 0], [0, 1], [0, 0, 0, 0], [1, 0], [0, 0, 1], [1, 1], [0, 0, 0, 0, 0], [0, 1, 0]," +
                 " [0, 0, 0, 1], [1, -1], [0, 1, 1], [1, 2], [0, 0, 0, 0, 0, 0], [1, 0, 0], [0, 0, 1, 0], [1, 0, 1]," +
                 " [1, 1/2], [0, 0, 0, 0, 1], [1, 1, 0], [0, 0, 1, 1], [1, -1/2], [1, 1, 1], [0, 0, 0, 0, 0, 0, 0]," +
@@ -422,7 +420,7 @@ public class QBarExhaustiveProviderTest {
                 " [1, 4], [0, 0, 0, 0, 0, 1], [1, 0, -1], [0, 1, 1, 0], [1, 0, 2], [1, 3/2], [0, 0, 0, 1, 1]," +
                 " [1, 1, -1], [0, 1, 1, 1], [1, -3/2], [1, 1, 2], [0, 0, 0, 0, 0, 0, 0, 0], [1, 0, 0, 0], [1, 1/3]," +
                 " [0, 0, 1, 0, 0], [1, 0, 0, 1], [1, -1/3], [0, 1, 1/2]]");
-        aeqit(take(50, P.reducedRationalVectorsAtLeast(3)),
+        aeqit(take(50, QEP.reducedRationalVectorsAtLeast(3)),
                 "[[0, 0, 0], [0, 0, 0, 0], [0, 0, 1], [0, 0, 0, 0, 0], [0, 1, 0], [0, 0, 0, 1], [0, 1, 1]," +
                 " [0, 0, 0, 0, 0, 0], [1, 0, 0], [0, 0, 1, 0], [1, 0, 1], [0, 0, 0, 0, 1], [1, 1, 0], [0, 0, 1, 1]," +
                 " [1, 1, 1], [0, 0, 0, 0, 0, 0, 0], [0, 1, 0, 0], [0, 0, 0, 1, 0], [0, 1, -1], [0, 1, 0, 1]," +
@@ -431,7 +429,7 @@ public class QBarExhaustiveProviderTest {
                 " [0, 1, 1/2], [0, 0, 0, 0, 1, 0], [1, -1, 0], [1, 0, 1, 0], [1, -1, 1], [0, 0, 1, 0, 1], [1, 2, 0]," +
                 " [1, 0, 1, 1], [1, 2, 1], [0, 0, 0, 0, 0, 0, 1], [1, 1, 0, 0], [0, 0, 1, 1, 0], [0, 1, -1/2]," +
                 " [1, 1, 0, 1], [0, 0, 0, 0, 1, 1], [1, -1, -1], [1, 1, 1, 0]]");
-        aeqit(take(50, P.reducedRationalVectorsAtLeast(10)),
+        aeqit(take(50, QEP.reducedRationalVectorsAtLeast(10)),
                 "[[0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 1]," +
                 " [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 1, 0]," +
                 " [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], [0, 0, 0, 0, 0, 0, 0, 0, 1, 1]," +
@@ -461,7 +459,7 @@ public class QBarExhaustiveProviderTest {
 
     @Test
     public void testReducedRationalVectors() {
-        aeqit(take(50, P.reducedRationalVectors()),
+        aeqit(take(50, QEP.reducedRationalVectors()),
                 "[[], [0], [0, 0], [1], [0, 0, 0], [0, 1], [0, 0, 0, 0], [1, 0], [0, 0, 1], [1, 1], [0, 0, 0, 0, 0]," +
                 " [0, 1, 0], [0, 0, 0, 1], [1, -1], [0, 1, 1], [1, 2], [0, 0, 0, 0, 0, 0], [1, 0, 0], [0, 0, 1, 0]," +
                 " [1, 0, 1], [1, 1/2], [0, 0, 0, 0, 1], [1, 1, 0], [0, 0, 1, 1], [1, -1/2], [1, 1, 1]," +
@@ -473,16 +471,16 @@ public class QBarExhaustiveProviderTest {
 
     @Test
     public void testRationalMatrices_int_int() {
-        aeqit(P.rationalMatrices(0, 0), "[[]#0]");
-        aeqit(P.rationalMatrices(0, 3), "[[]#3]");
-        aeqit(P.rationalMatrices(3, 0), "[[[], [], []]]");
-        aeqit(take(50, P.rationalMatrices(1, 1)),
+        aeqit(QEP.rationalMatrices(0, 0), "[[]#0]");
+        aeqit(QEP.rationalMatrices(0, 3), "[[]#3]");
+        aeqit(QEP.rationalMatrices(3, 0), "[[[], [], []]]");
+        aeqit(take(50, QEP.rationalMatrices(1, 1)),
                 "[[[0]], [[1]], [[1/2]], [[1/3]], [[1/4]], [[-1]], [[-1/2]], [[2]], [[-1/3]], [[-1/4]], [[2/3]]," +
                 " [[1/5]], [[1/6]], [[1/7]], [[1/8]], [[-1/5]], [[-1/6]], [[2/5]], [[-1/7]], [[-1/8]], [[2/7]]," +
                 " [[-2]], [[3]], [[3/2]], [[-2/3]], [[3/4]], [[-3]], [[-3/2]], [[4]], [[-3/4]], [[4/3]], [[-2/5]]," +
                 " [[3/5]], [[-2/7]], [[3/7]], [[3/8]], [[-3/5]], [[4/5]], [[-3/7]], [[-3/8]], [[4/7]], [[1/9]]," +
                 " [[1/10]], [[1/11]], [[1/12]], [[-1/9]], [[-1/10]], [[2/9]], [[-1/11]], [[-1/12]]]");
-        aeqit(take(50, P.rationalMatrices(2, 2)),
+        aeqit(take(50, QEP.rationalMatrices(2, 2)),
                 "[[[0, 0], [0, 0]], [[0, 0], [0, 1]], [[0, 0], [1, 0]], [[0, 0], [1, 1]], [[0, 1], [0, 0]]," +
                 " [[0, 1], [0, 1]], [[0, 1], [1, 0]], [[0, 1], [1, 1]], [[1, 0], [0, 0]], [[1, 0], [0, 1]]," +
                 " [[1, 0], [1, 0]], [[1, 0], [1, 1]], [[1, 1], [0, 0]], [[1, 1], [0, 1]], [[1, 1], [1, 0]]," +
@@ -495,7 +493,7 @@ public class QBarExhaustiveProviderTest {
                 " [[1, 0], [1/2, 0]], [[1, 0], [1/2, 1]], [[1, 0], [1/3, 0]], [[1, 0], [1/3, 1]]," +
                 " [[1, 1], [1/2, 0]], [[1, 1], [1/2, 1]], [[1, 1], [1/3, 0]], [[1, 1], [1/3, 1]]," +
                 " [[0, 0], [1/2, 1/2]], [[0, 0], [1/2, 1/3]]]");
-        aeqit(take(50, P.rationalMatrices(3, 4)),
+        aeqit(take(50, QEP.rationalMatrices(3, 4)),
                 "[[[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]], [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 1]]," +
                 " [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 1, 0]], [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 1, 1]]," +
                 " [[0, 0, 0, 0], [0, 0, 0, 0], [0, 1, 0, 0]], [[0, 0, 0, 0], [0, 0, 0, 0], [0, 1, 0, 1]]," +
@@ -525,7 +523,7 @@ public class QBarExhaustiveProviderTest {
 
 //    @Test
 //    public void testRationalMatrices() {
-//        aeqit(take(50, P.rationalMatrices()),
+//        aeqit(take(50, QEP.rationalMatrices()),
 //                "[[]#0, []#1, [[]], [[0]], [[1]], [[1/2]], [[1/3]], [[1/4]], [[-1]], [[-1/2]], [[2]], [[-1/3]]," +
 //                " [[-1/4]], [[2/3]], [[1/5]], [[1/6]], [[1/7]], [[1/8]], [[-1/5]], []#2, []#3, [[0, 0]]," +
 //                " [[0, 0, 0]], [[0, 1]], [[0, 0, 1]], [[1, 0]], [[0, 1, 0]], [[1, 1]], [[0, 1, 1]], [[0, 1/2]]," +
@@ -536,23 +534,23 @@ public class QBarExhaustiveProviderTest {
 
     @Test
     public void testPolynomials_int() {
-        aeqit(P.polynomials(-1), "[0]");
-        aeqit(take(50, P.polynomials(0)),
+        aeqit(QEP.polynomials(-1), "[0]");
+        aeqit(take(50, QEP.polynomials(0)),
                 "[1, -1, 2, -2, 3, -3, 4, -4, 5, -5, 6, -6, 7, -7, 8, -8, 9, -9, 10, -10, 11, -11, 12, -12, 13, -13," +
                 " 14, -14, 15, -15, 16, -16, 17, -17, 18, -18, 19, -19, 20, -20, 21, -21, 22, -22, 23, -23, 24, -24," +
                 " 25, -25]");
-        aeqit(take(50, P.polynomials(1)),
+        aeqit(take(50, QEP.polynomials(1)),
                 "[x, x+1, -x, 2*x, -x+1, 2*x+1, x-1, x+2, -x-1, 2*x-1, -x+2, 2*x+2, -2*x, 3*x, -2*x+1, 3*x+1, -3*x," +
                 " 4*x, -3*x+1, 4*x+1, -2*x-1, 3*x-1, -2*x+2, 3*x+2, -3*x-1, 4*x-1, -3*x+2, 4*x+2, x-2, x+3, -x-2," +
                 " 2*x-2, -x+3, 2*x+3, x-3, x+4, -x-3, 2*x-3, -x+4, 2*x+4, -2*x-2, 3*x-2, -2*x+3, 3*x+3, -3*x-2," +
                 " 4*x-2, -3*x+3, 4*x+3, -2*x-3, 3*x-3]");
-        aeqit(take(50, P.polynomials(2)),
+        aeqit(take(50, QEP.polynomials(2)),
                 "[x^2, x^2+x, x^2+1, x^2+x+1, -x^2, 2*x^2, -x^2+x, 2*x^2+x, -x^2+1, 2*x^2+1, -x^2+x+1, 2*x^2+x+1," +
                 " x^2-x, x^2+2*x, x^2-x+1, x^2+2*x+1, -x^2-x, 2*x^2-x, -x^2+2*x, 2*x^2+2*x, -x^2-x+1, 2*x^2-x+1," +
                 " -x^2+2*x+1, 2*x^2+2*x+1, x^2-1, x^2+x-1, x^2+2, x^2+x+2, -x^2-1, 2*x^2-1, -x^2+x-1, 2*x^2+x-1," +
                 " -x^2+2, 2*x^2+2, -x^2+x+2, 2*x^2+x+2, x^2-x-1, x^2+2*x-1, x^2-x+2, x^2+2*x+2, -x^2-x-1, 2*x^2-x-1," +
                 " -x^2+2*x-1, 2*x^2+2*x-1, -x^2-x+2, 2*x^2-x+2, -x^2+2*x+2, 2*x^2+2*x+2, -2*x^2, 3*x^2]");
-        aeqit(take(50, P.polynomials(9)),
+        aeqit(take(50, QEP.polynomials(9)),
                 "[x^9, x^9+x^8, x^9+x^7, x^9+x^8+x^7, x^9+x^6, x^9+x^8+x^6, x^9+x^7+x^6, x^9+x^8+x^7+x^6, x^9+x^5," +
                 " x^9+x^8+x^5, x^9+x^7+x^5, x^9+x^8+x^7+x^5, x^9+x^6+x^5, x^9+x^8+x^6+x^5, x^9+x^7+x^6+x^5," +
                 " x^9+x^8+x^7+x^6+x^5, x^9+x^4, x^9+x^8+x^4, x^9+x^7+x^4, x^9+x^8+x^7+x^4, x^9+x^6+x^4," +
@@ -566,26 +564,26 @@ public class QBarExhaustiveProviderTest {
 
     @Test
     public void testPolynomialsAtLeast() {
-        aeqit(take(50, P.polynomialsAtLeast(-1)),
+        aeqit(take(50, QEP.polynomialsAtLeast(-1)),
                 "[0, 1, -1, x, 2, -2, 3, x^2, -3, x+1, 4, -4, -x, 5, -5, 2*x, 6, x^3, -6, -x+1, 7, x^2+x, -7, 2*x+1," +
                 " 8, -8, 9, -9, x-1, 10, -10, 11, x^2+1, -11, x+2, 12, x^4, -12, -x-1, 13, -13, 2*x-1, 14, x^3+x^2," +
                 " -14, -x+2, 15, x^2+x+1, -15, 2*x+2]");
-        aeqit(take(50, P.polynomialsAtLeast(0)),
+        aeqit(take(50, QEP.polynomialsAtLeast(0)),
                 "[1, -1, x, 2, -2, 3, x^2, -3, x+1, 4, -4, -x, 5, -5, 2*x, 6, x^3, -6, -x+1, 7, x^2+x, -7, 2*x+1, 8," +
                 " -8, 9, -9, x-1, 10, -10, 11, x^2+1, -11, x+2, 12, x^4, -12, -x-1, 13, -13, 2*x-1, 14, x^3+x^2," +
                 " -14, -x+2, 15, x^2+x+1, -15, 2*x+2, 16]");
-        aeqit(take(50, P.polynomialsAtLeast(1)),
+        aeqit(take(50, QEP.polynomialsAtLeast(1)),
                 "[x, x^2, x+1, -x, 2*x, x^3, -x+1, x^2+x, 2*x+1, x-1, x^2+1, x+2, x^4, -x-1, 2*x-1, x^3+x^2, -x+2," +
                 " x^2+x+1, 2*x+2, -2*x, -x^2, 3*x, -2*x+1, 2*x^2, 3*x+1, -3*x, -x^2+x, 4*x, x^3+x, -3*x+1, 2*x^2+x," +
                 " 4*x+1, x^5, -2*x-1, -x^2+1, 3*x-1, -2*x+2, 2*x^2+1, 3*x+2, x^4+x^3, -3*x-1, -x^2+x+1, 4*x-1," +
                 " x^3+x^2+x, -3*x+2, 2*x^2+x+1, 4*x+2, x-2, x^2-x, x+3]");
-        aeqit(take(50, P.polynomialsAtLeast(2)),
+        aeqit(take(50, QEP.polynomialsAtLeast(2)),
                 "[x^2, x^3, x^2+x, x^2+1, x^4, x^3+x^2, x^2+x+1, -x^2, 2*x^2, -x^2+x, x^3+x, 2*x^2+x, x^5, -x^2+1," +
                 " 2*x^2+1, x^4+x^3, -x^2+x+1, x^3+x^2+x, 2*x^2+x+1, x^2-x, x^3+1, x^2+2*x, x^2-x+1, x^4+x^2," +
                 " x^3+x^2+1, x^2+2*x+1, x^6, -x^2-x, 2*x^2-x, -x^2+2*x, x^3+x+1, 2*x^2+2*x, x^5+x^4, -x^2-x+1," +
                 " 2*x^2-x+1, x^4+x^3+x^2, -x^2+2*x+1, x^3+x^2+x+1, 2*x^2+2*x+1, -x^3, x^2-1, 2*x^3, x^2+x-1," +
                 " -x^3+x^2, x^2+2, x^4+x, 2*x^3+x^2, x^2+x+2, -x^2-1, -x^3+x]");
-        aeqit(take(50, P.polynomialsAtLeast(9)),
+        aeqit(take(50, QEP.polynomialsAtLeast(9)),
                 "[x^9, x^10, x^9+x^8, x^9+x^7, x^11, x^10+x^9, x^9+x^8+x^7, x^9+x^6, x^10+x^8, x^9+x^8+x^6, x^12," +
                 " x^9+x^7+x^6, x^11+x^10, x^10+x^9+x^8, x^9+x^8+x^7+x^6, x^9+x^5, x^10+x^7, x^9+x^8+x^5," +
                 " x^9+x^7+x^5, x^11+x^9, x^10+x^9+x^7, x^9+x^8+x^7+x^5, x^13, x^9+x^6+x^5, x^10+x^8+x^7," +
@@ -597,7 +595,7 @@ public class QBarExhaustiveProviderTest {
 
     @Test
     public void testPolynomials() {
-        aeqit(take(50, P.polynomials()),
+        aeqit(take(50, QEP.polynomials()),
                 "[0, 1, -1, x, 2, -2, 3, x^2, -3, x+1, 4, -4, -x, 5, -5, 2*x, 6, x^3, -6, -x+1, 7, x^2+x, -7, 2*x+1," +
                 " 8, -8, 9, -9, x-1, 10, -10, 11, x^2+1, -11, x+2, 12, x^4, -12, -x-1, 13, -13, 2*x-1, 14, x^3+x^2," +
                 " -14, -x+2, 15, x^2+x+1, -15, 2*x+2]");
@@ -605,21 +603,21 @@ public class QBarExhaustiveProviderTest {
 
     @Test
     public void testPrimitivePolynomials_int() {
-        aeqit(P.primitivePolynomials(-1), "[]");
-        aeqit(P.primitivePolynomials(0), "[1]");
-        aeqit(take(50, P.primitivePolynomials(1)),
+        aeqit(QEP.primitivePolynomials(-1), "[]");
+        aeqit(QEP.primitivePolynomials(0), "[1]");
+        aeqit(take(50, QEP.primitivePolynomials(1)),
                 "[x, x+1, 2*x+1, x-1, x+2, 2*x-1, 3*x+1, 4*x+1, 3*x-1, 3*x+2, 4*x-1, x-2, x+3, 2*x+3, x-3, x+4," +
                 " 2*x-3, 3*x-2, 4*x+3, 3*x+4, 4*x-3, 5*x+1, 6*x+1, 5*x-1, 5*x+2, 6*x-1, 7*x+1, 8*x+1, 7*x-1, 7*x+2," +
                 " 8*x-1, 5*x-2, 5*x+3, 5*x-3, 5*x+4, 7*x-2, 7*x+3, 8*x+3, 7*x-3, 7*x+4, 8*x-3, x-4, x+5, 2*x+5, x-5," +
                 " x+6, 2*x-5, 3*x-4, 3*x+5, 4*x+5]");
-        aeqit(take(50, P.primitivePolynomials(2)),
+        aeqit(take(50, QEP.primitivePolynomials(2)),
                 "[x^2, x^2+x, x^2+1, x^2+x+1, 2*x^2+x, 2*x^2+1, 2*x^2+x+1, x^2-x, x^2+2*x, x^2-x+1, x^2+2*x+1," +
                 " 2*x^2-x, 2*x^2-x+1, 2*x^2+2*x+1, x^2-1, x^2+x-1, x^2+2, x^2+x+2, 2*x^2-1, 2*x^2+x-1, 2*x^2+x+2," +
                 " x^2-x-1, x^2+2*x-1, x^2-x+2, x^2+2*x+2, 2*x^2-x-1, 2*x^2+2*x-1, 2*x^2-x+2, 3*x^2+x, 3*x^2+1," +
                 " 3*x^2+x+1, 4*x^2+x, 4*x^2+1, 4*x^2+x+1, 3*x^2-x, 3*x^2+2*x, 3*x^2-x+1, 3*x^2+2*x+1, 4*x^2-x," +
                 " 4*x^2-x+1, 4*x^2+2*x+1, 3*x^2-1, 3*x^2+x-1, 3*x^2+2, 3*x^2+x+2, 4*x^2-1, 4*x^2+x-1, 4*x^2+x+2," +
                 " 3*x^2-x-1, 3*x^2+2*x-1]");
-        aeqit(take(50, P.primitivePolynomials(9)),
+        aeqit(take(50, QEP.primitivePolynomials(9)),
                 "[x^9, x^9+x^8, x^9+x^7, x^9+x^8+x^7, x^9+x^6, x^9+x^8+x^6, x^9+x^7+x^6, x^9+x^8+x^7+x^6, x^9+x^5," +
                 " x^9+x^8+x^5, x^9+x^7+x^5, x^9+x^8+x^7+x^5, x^9+x^6+x^5, x^9+x^8+x^6+x^5, x^9+x^7+x^6+x^5," +
                 " x^9+x^8+x^7+x^6+x^5, x^9+x^4, x^9+x^8+x^4, x^9+x^7+x^4, x^9+x^8+x^7+x^4, x^9+x^6+x^4," +
@@ -633,28 +631,28 @@ public class QBarExhaustiveProviderTest {
 
     @Test
     public void testPrimitivePolynomialsAtLeast() {
-        aeqit(take(50, P.primitivePolynomialsAtLeast(-1)),
+        aeqit(take(50, QEP.primitivePolynomialsAtLeast(-1)),
                 "[1, x, x^2, x+1, x^3, x^2+x, 2*x+1, x-1, x^2+1, x+2, x^4, 2*x-1, x^3+x^2, x^2+x+1, 3*x+1, x^3+x," +
                 " 2*x^2+x, 4*x+1, x^5, 3*x-1, 2*x^2+1, 3*x+2, x^4+x^3, 4*x-1, x^3+x^2+x, 2*x^2+x+1, x-2, x^2-x, x+3," +
                 " x^3+1, x^2+2*x, 2*x+3, x-3, x^2-x+1, x+4, x^4+x^2, 2*x-3, x^3+x^2+1, x^2+2*x+1, x^6, 3*x-2," +
                 " 2*x^2-x, x^3+x+1, 4*x+3, x^5+x^4, 2*x^2-x+1, 3*x+4, x^4+x^3+x^2, 4*x-3, x^3+x^2+x+1]");
-        aeqit(take(50, P.primitivePolynomialsAtLeast(0)),
+        aeqit(take(50, QEP.primitivePolynomialsAtLeast(0)),
                 "[1, x, x^2, x+1, x^3, x^2+x, 2*x+1, x-1, x^2+1, x+2, x^4, 2*x-1, x^3+x^2, x^2+x+1, 3*x+1, x^3+x," +
                 " 2*x^2+x, 4*x+1, x^5, 3*x-1, 2*x^2+1, 3*x+2, x^4+x^3, 4*x-1, x^3+x^2+x, 2*x^2+x+1, x-2, x^2-x, x+3," +
                 " x^3+1, x^2+2*x, 2*x+3, x-3, x^2-x+1, x+4, x^4+x^2, 2*x-3, x^3+x^2+1, x^2+2*x+1, x^6, 3*x-2," +
                 " 2*x^2-x, x^3+x+1, 4*x+3, x^5+x^4, 2*x^2-x+1, 3*x+4, x^4+x^3+x^2, 4*x-3, x^3+x^2+x+1]");
-        aeqit(take(50, P.primitivePolynomialsAtLeast(1)),
+        aeqit(take(50, QEP.primitivePolynomialsAtLeast(1)),
                 "[x, x^2, x+1, x^3, x^2+x, 2*x+1, x-1, x^2+1, x+2, x^4, 2*x-1, x^3+x^2, x^2+x+1, 3*x+1, x^3+x," +
                 " 2*x^2+x, 4*x+1, x^5, 3*x-1, 2*x^2+1, 3*x+2, x^4+x^3, 4*x-1, x^3+x^2+x, 2*x^2+x+1, x-2, x^2-x, x+3," +
                 " x^3+1, x^2+2*x, 2*x+3, x-3, x^2-x+1, x+4, x^4+x^2, 2*x-3, x^3+x^2+1, x^2+2*x+1, x^6, 3*x-2," +
                 " 2*x^2-x, x^3+x+1, 4*x+3, x^5+x^4, 2*x^2-x+1, 3*x+4, x^4+x^3+x^2, 4*x-3, x^3+x^2+x+1, 2*x^2+2*x+1]");
-        aeqit(take(50, P.primitivePolynomialsAtLeast(2)),
+        aeqit(take(50, QEP.primitivePolynomialsAtLeast(2)),
                 "[x^2, x^3, x^2+x, x^2+1, x^4, x^3+x^2, x^2+x+1, x^3+x, 2*x^2+x, x^5, 2*x^2+1, x^4+x^3, x^3+x^2+x," +
                 " 2*x^2+x+1, x^2-x, x^3+1, x^2+2*x, x^2-x+1, x^4+x^2, x^3+x^2+1, x^2+2*x+1, x^6, 2*x^2-x, x^3+x+1," +
                 " x^5+x^4, 2*x^2-x+1, x^4+x^3+x^2, x^3+x^2+x+1, 2*x^2+2*x+1, x^2-1, x^2+x-1, x^2+2, x^4+x," +
                 " 2*x^3+x^2, x^2+x+2, 2*x^2-1, 2*x^3+x, 2*x^2+x-1, x^5+x^3, x^4+x^3+x, 2*x^3+x^2+x, 2*x^2+x+2, x^7," +
                 " x^2-x-1, 2*x^3+1, x^2+2*x-1, x^2-x+2, x^4+x^2+x, 2*x^3+x^2+1, x^2+2*x+2]");
-        aeqit(take(50, P.primitivePolynomialsAtLeast(9)),
+        aeqit(take(50, QEP.primitivePolynomialsAtLeast(9)),
                 "[x^9, x^10, x^9+x^8, x^9+x^7, x^11, x^10+x^9, x^9+x^8+x^7, x^9+x^6, x^10+x^8, x^9+x^8+x^6, x^12," +
                 " x^9+x^7+x^6, x^11+x^10, x^10+x^9+x^8, x^9+x^8+x^7+x^6, x^9+x^5, x^10+x^7, x^9+x^8+x^5," +
                 " x^9+x^7+x^5, x^11+x^9, x^10+x^9+x^7, x^9+x^8+x^7+x^5, x^13, x^9+x^6+x^5, x^10+x^8+x^7," +
@@ -666,7 +664,7 @@ public class QBarExhaustiveProviderTest {
 
     @Test
     public void testPrimitivePolynomials() {
-        aeqit(take(50, P.primitivePolynomials()),
+        aeqit(take(50, QEP.primitivePolynomials()),
                 "[1, x, x^2, x+1, x^3, x^2+x, 2*x+1, x-1, x^2+1, x+2, x^4, 2*x-1, x^3+x^2, x^2+x+1, 3*x+1, x^3+x," +
                 " 2*x^2+x, 4*x+1, x^5, 3*x-1, 2*x^2+1, 3*x+2, x^4+x^3, 4*x-1, x^3+x^2+x, 2*x^2+x+1, x-2, x^2-x, x+3," +
                 " x^3+1, x^2+2*x, 2*x+3, x-3, x^2-x+1, x+4, x^4+x^2, 2*x-3, x^3+x^2+1, x^2+2*x+1, x^6, 3*x-2," +
@@ -675,18 +673,18 @@ public class QBarExhaustiveProviderTest {
 
     @Test
     public void testRationalPolynomials_int() {
-        aeqit(P.rationalPolynomials(-1), "[0]");
-        aeqit(take(50, P.rationalPolynomials(0)),
+        aeqit(QEP.rationalPolynomials(-1), "[0]");
+        aeqit(take(50, QEP.rationalPolynomials(0)),
                 "[1, 1/2, 1/3, 1/4, -1, -1/2, 2, -1/3, -1/4, 2/3, 1/5, 1/6, 1/7, 1/8, -1/5, -1/6, 2/5, -1/7, -1/8," +
                 " 2/7, -2, 3, 3/2, -2/3, 3/4, -3, -3/2, 4, -3/4, 4/3, -2/5, 3/5, -2/7, 3/7, 3/8, -3/5, 4/5, -3/7," +
                 " -3/8, 4/7, 1/9, 1/10, 1/11, 1/12, -1/9, -1/10, 2/9, -1/11, -1/12, 2/11]");
-        aeqit(take(50, P.rationalPolynomials(1)),
+        aeqit(take(50, QEP.rationalPolynomials(1)),
                 "[x, x+1, 1/2*x, 1/3*x, 1/2*x+1, 1/3*x+1, x+1/2, x+1/3, 1/2*x+1/2, 1/3*x+1/2, 1/2*x+1/3, 1/3*x+1/3," +
                 " 1/4*x, -x, 1/4*x+1, -x+1, -1/2*x, 2*x, -1/2*x+1, 2*x+1, 1/4*x+1/2, -x+1/2, 1/4*x+1/3, -x+1/3," +
                 " -1/2*x+1/2, 2*x+1/2, -1/2*x+1/3, 2*x+1/3, x+1/4, x-1, 1/2*x+1/4, 1/3*x+1/4, 1/2*x-1, 1/3*x-1," +
                 " x-1/2, x+2, 1/2*x-1/2, 1/3*x-1/2, 1/2*x+2, 1/3*x+2, 1/4*x+1/4, -x+1/4, 1/4*x-1, -x-1, -1/2*x+1/4," +
                 " 2*x+1/4, -1/2*x-1, 2*x-1, 1/4*x-1/2, -x-1/2]");
-        aeqit(take(50, P.rationalPolynomials(2)),
+        aeqit(take(50, QEP.rationalPolynomials(2)),
                 "[x^2, x^2+x, x^2+1, x^2+x+1, 1/2*x^2, 1/3*x^2, 1/2*x^2+x, 1/3*x^2+x, 1/2*x^2+1, 1/3*x^2+1," +
                 " 1/2*x^2+x+1, 1/3*x^2+x+1, x^2+1/2*x, x^2+1/3*x, x^2+1/2*x+1, x^2+1/3*x+1, 1/2*x^2+1/2*x," +
                 " 1/3*x^2+1/2*x, 1/2*x^2+1/3*x, 1/3*x^2+1/3*x, 1/2*x^2+1/2*x+1, 1/3*x^2+1/2*x+1, 1/2*x^2+1/3*x+1," +
@@ -695,7 +693,7 @@ public class QBarExhaustiveProviderTest {
                 " x^2+1/3*x+1/2, x^2+1/2*x+1/3, x^2+1/3*x+1/3, 1/2*x^2+1/2*x+1/2, 1/3*x^2+1/2*x+1/2," +
                 " 1/2*x^2+1/3*x+1/2, 1/3*x^2+1/3*x+1/2, 1/2*x^2+1/2*x+1/3, 1/3*x^2+1/2*x+1/3, 1/2*x^2+1/3*x+1/3," +
                 " 1/3*x^2+1/3*x+1/3, 1/4*x^2, -x^2]");
-        aeqit(take(50, P.rationalPolynomials(9)),
+        aeqit(take(50, QEP.rationalPolynomials(9)),
                 "[x^9, x^9+x^8, x^9+x^7, x^9+x^8+x^7, x^9+x^6, x^9+x^8+x^6, x^9+x^7+x^6, x^9+x^8+x^7+x^6, x^9+x^5," +
                 " x^9+x^8+x^5, x^9+x^7+x^5, x^9+x^8+x^7+x^5, x^9+x^6+x^5, x^9+x^8+x^6+x^5, x^9+x^7+x^6+x^5," +
                 " x^9+x^8+x^7+x^6+x^5, x^9+x^4, x^9+x^8+x^4, x^9+x^7+x^4, x^9+x^8+x^7+x^4, x^9+x^6+x^4," +
@@ -709,30 +707,30 @@ public class QBarExhaustiveProviderTest {
 
     @Test
     public void testRationalPolynomialsAtLeast() {
-        aeqit(take(50, P.rationalPolynomialsAtLeast(-1)),
+        aeqit(take(50, QEP.rationalPolynomialsAtLeast(-1)),
                 "[0, 1, 1/2, x, 1/3, 1/4, -1, x^2, -1/2, x+1, 2, -1/3, 1/2*x, -1/4, 2/3, 1/3*x, 1/5, x^3, 1/6," +
                 " 1/2*x+1, 1/7, x^2+x, 1/8, 1/3*x+1, -1/5, -1/6, 2/5, -1/7, x+1/2, -1/8, 2/7, -2, x^2+1, 3, x+1/3," +
                 " 3/2, x^4, -2/3, 1/2*x+1/2, 3/4, -3, 1/3*x+1/2, -3/2, x^3+x^2, 4, 1/2*x+1/3, -3/4, x^2+x+1, 4/3," +
                 " 1/3*x+1/3]");
-        aeqit(take(50, P.rationalPolynomialsAtLeast(0)),
+        aeqit(take(50, QEP.rationalPolynomialsAtLeast(0)),
                 "[1, 1/2, x, 1/3, 1/4, -1, x^2, -1/2, x+1, 2, -1/3, 1/2*x, -1/4, 2/3, 1/3*x, 1/5, x^3, 1/6, 1/2*x+1," +
                 " 1/7, x^2+x, 1/8, 1/3*x+1, -1/5, -1/6, 2/5, -1/7, x+1/2, -1/8, 2/7, -2, x^2+1, 3, x+1/3, 3/2, x^4," +
                 " -2/3, 1/2*x+1/2, 3/4, -3, 1/3*x+1/2, -3/2, x^3+x^2, 4, 1/2*x+1/3, -3/4, x^2+x+1, 4/3, 1/3*x+1/3," +
                 " -2/5]");
-        aeqit(take(50, P.rationalPolynomialsAtLeast(1)),
+        aeqit(take(50, QEP.rationalPolynomialsAtLeast(1)),
                 "[x, x^2, x+1, 1/2*x, 1/3*x, x^3, 1/2*x+1, x^2+x, 1/3*x+1, x+1/2, x^2+1, x+1/3, x^4, 1/2*x+1/2," +
                 " 1/3*x+1/2, x^3+x^2, 1/2*x+1/3, x^2+x+1, 1/3*x+1/3, 1/4*x, 1/2*x^2, -x, 1/4*x+1, 1/3*x^2, -x+1," +
                 " -1/2*x, 1/2*x^2+x, 2*x, x^3+x, -1/2*x+1, 1/3*x^2+x, 2*x+1, x^5, 1/4*x+1/2, 1/2*x^2+1, -x+1/2," +
                 " 1/4*x+1/3, 1/3*x^2+1, -x+1/3, x^4+x^3, -1/2*x+1/2, 1/2*x^2+x+1, 2*x+1/2, x^3+x^2+x, -1/2*x+1/3," +
                 " 1/3*x^2+x+1, 2*x+1/3, x+1/4, x^2+1/2*x, x-1]");
-        aeqit(take(50, P.rationalPolynomialsAtLeast(2)),
+        aeqit(take(50, QEP.rationalPolynomialsAtLeast(2)),
                 "[x^2, x^3, x^2+x, x^2+1, x^4, x^3+x^2, x^2+x+1, 1/2*x^2, 1/3*x^2, 1/2*x^2+x, x^3+x, 1/3*x^2+x, x^5," +
                 " 1/2*x^2+1, 1/3*x^2+1, x^4+x^3, 1/2*x^2+x+1, x^3+x^2+x, 1/3*x^2+x+1, x^2+1/2*x, x^3+1, x^2+1/3*x," +
                 " x^2+1/2*x+1, x^4+x^2, x^3+x^2+1, x^2+1/3*x+1, x^6, 1/2*x^2+1/2*x, 1/3*x^2+1/2*x, 1/2*x^2+1/3*x," +
                 " x^3+x+1, 1/3*x^2+1/3*x, x^5+x^4, 1/2*x^2+1/2*x+1, 1/3*x^2+1/2*x+1, x^4+x^3+x^2, 1/2*x^2+1/3*x+1," +
                 " x^3+x^2+x+1, 1/3*x^2+1/3*x+1, 1/2*x^3, x^2+1/2, 1/3*x^3, x^2+x+1/2, 1/2*x^3+x^2, x^2+1/3, x^4+x," +
                 " 1/3*x^3+x^2, x^2+x+1/3, 1/2*x^2+1/2, 1/2*x^3+x]");
-        aeqit(take(50, P.rationalPolynomialsAtLeast(9)),
+        aeqit(take(50, QEP.rationalPolynomialsAtLeast(9)),
                 "[x^9, x^10, x^9+x^8, x^9+x^7, x^11, x^10+x^9, x^9+x^8+x^7, x^9+x^6, x^10+x^8, x^9+x^8+x^6, x^12," +
                 " x^9+x^7+x^6, x^11+x^10, x^10+x^9+x^8, x^9+x^8+x^7+x^6, x^9+x^5, x^10+x^7, x^9+x^8+x^5," +
                 " x^9+x^7+x^5, x^11+x^9, x^10+x^9+x^7, x^9+x^8+x^7+x^5, x^13, x^9+x^6+x^5, x^10+x^8+x^7," +
@@ -744,7 +742,7 @@ public class QBarExhaustiveProviderTest {
 
     @Test
     public void testRationalPolynomials() {
-        aeqit(take(50, P.rationalPolynomials()),
+        aeqit(take(50, QEP.rationalPolynomials()),
                 "[0, 1, 1/2, x, 1/3, 1/4, -1, x^2, -1/2, x+1, 2, -1/3, 1/2*x, -1/4, 2/3, 1/3*x, 1/5, x^3, 1/6," +
                 " 1/2*x+1, 1/7, x^2+x, 1/8, 1/3*x+1, -1/5, -1/6, 2/5, -1/7, x+1/2, -1/8, 2/7, -2, x^2+1, 3, x+1/3," +
                 " 3/2, x^4, -2/3, 1/2*x+1/2, 3/4, -3, 1/3*x+1/2, -3/2, x^3+x^2, 4, 1/2*x+1/3, -3/4, x^2+x+1, 4/3," +
@@ -753,21 +751,21 @@ public class QBarExhaustiveProviderTest {
 
     @Test
     public void testMonicRationalPolynomials_int() {
-        aeqit(P.monicRationalPolynomials(-1), "[]");
-        aeqit(P.monicRationalPolynomials(0), "[1]");
-        aeqit(take(50, P.monicRationalPolynomials(1)),
+        aeqit(QEP.monicRationalPolynomials(-1), "[]");
+        aeqit(QEP.monicRationalPolynomials(0), "[1]");
+        aeqit(take(50, QEP.monicRationalPolynomials(1)),
                 "[x, x+1, x+1/2, x-1, x+2, x-1/2, x+1/3, x+1/4, x-1/3, x+2/3, x-1/4, x-2, x+3, x+3/2, x-3, x+4," +
                 " x-3/2, x-2/3, x+3/4, x+4/3, x-3/4, x+1/5, x+1/6, x-1/5, x+2/5, x-1/6, x+1/7, x+1/8, x-1/7, x+2/7," +
                 " x-1/8, x-2/5, x+3/5, x-3/5, x+4/5, x-2/7, x+3/7, x+3/8, x-3/7, x+4/7, x-3/8, x-4, x+5, x+5/2, x-5," +
                 " x+6, x-5/2, x-4/3, x+5/3, x+5/4]");
-        aeqit(take(50, P.monicRationalPolynomials(2)),
+        aeqit(take(50, QEP.monicRationalPolynomials(2)),
                 "[x^2, x^2+x, x^2+1, x^2+x+1, x^2+1/2*x, x^2+1/2, x^2+1/2*x+1/2, x^2-x, x^2+2*x, x^2-x+1, x^2+2*x+1," +
                 " x^2-1/2*x, x^2-1/2*x+1/2, x^2+x+1/2, x^2-1, x^2+x-1, x^2+2, x^2+x+2, x^2-1/2, x^2+1/2*x-1/2," +
                 " x^2+1/2*x+1, x^2-x-1, x^2+2*x-1, x^2-x+2, x^2+2*x+2, x^2-1/2*x-1/2, x^2+x-1/2, x^2-1/2*x+1," +
                 " x^2+1/3*x, x^2+1/3, x^2+1/3*x+1/3, x^2+1/4*x, x^2+1/4, x^2+1/4*x+1/4, x^2-1/3*x, x^2+2/3*x," +
                 " x^2-1/3*x+1/3, x^2+2/3*x+1/3, x^2-1/4*x, x^2-1/4*x+1/4, x^2+1/2*x+1/4, x^2-1/3, x^2+1/3*x-1/3," +
                 " x^2+2/3, x^2+1/3*x+2/3, x^2-1/4, x^2+1/4*x-1/4, x^2+1/4*x+1/2, x^2-1/3*x-1/3, x^2+2/3*x-1/3]");
-        aeqit(take(50, P.monicRationalPolynomials(9)),
+        aeqit(take(50, QEP.monicRationalPolynomials(9)),
                 "[x^9, x^9+x^8, x^9+x^7, x^9+x^8+x^7, x^9+x^6, x^9+x^8+x^6, x^9+x^7+x^6, x^9+x^8+x^7+x^6, x^9+x^5," +
                 " x^9+x^8+x^5, x^9+x^7+x^5, x^9+x^8+x^7+x^5, x^9+x^6+x^5, x^9+x^8+x^6+x^5, x^9+x^7+x^6+x^5," +
                 " x^9+x^8+x^7+x^6+x^5, x^9+x^4, x^9+x^8+x^4, x^9+x^7+x^4, x^9+x^8+x^7+x^4, x^9+x^6+x^4," +
@@ -781,30 +779,30 @@ public class QBarExhaustiveProviderTest {
 
     @Test
     public void testMonicRationalPolynomialsAtLeast() {
-        aeqit(take(50, P.monicRationalPolynomialsAtLeast(-1)),
+        aeqit(take(50, QEP.monicRationalPolynomialsAtLeast(-1)),
                 "[1, x, x^2, x+1, x^3, x^2+x, x+1/2, x-1, x^2+1, x+2, x^4, x-1/2, x^3+x^2, x^2+x+1, x+1/3, x^3+x," +
                 " x^2+1/2*x, x+1/4, x^5, x-1/3, x^2+1/2, x+2/3, x^4+x^3, x-1/4, x^3+x^2+x, x^2+1/2*x+1/2, x-2," +
                 " x^2-x, x+3, x^3+1, x^2+2*x, x+3/2, x-3, x^2-x+1, x+4, x^4+x^2, x-3/2, x^3+x^2+1, x^2+2*x+1, x^6," +
                 " x-2/3, x^2-1/2*x, x^3+x+1, x+3/4, x^5+x^4, x^2-1/2*x+1/2, x+4/3, x^4+x^3+x^2, x-3/4, x^3+x^2+x+1]");
-        aeqit(take(50, P.monicRationalPolynomialsAtLeast(0)),
+        aeqit(take(50, QEP.monicRationalPolynomialsAtLeast(0)),
                 "[1, x, x^2, x+1, x^3, x^2+x, x+1/2, x-1, x^2+1, x+2, x^4, x-1/2, x^3+x^2, x^2+x+1, x+1/3, x^3+x," +
                 " x^2+1/2*x, x+1/4, x^5, x-1/3, x^2+1/2, x+2/3, x^4+x^3, x-1/4, x^3+x^2+x, x^2+1/2*x+1/2, x-2," +
                 " x^2-x, x+3, x^3+1, x^2+2*x, x+3/2, x-3, x^2-x+1, x+4, x^4+x^2, x-3/2, x^3+x^2+1, x^2+2*x+1, x^6," +
                 " x-2/3, x^2-1/2*x, x^3+x+1, x+3/4, x^5+x^4, x^2-1/2*x+1/2, x+4/3, x^4+x^3+x^2, x-3/4, x^3+x^2+x+1]");
-        aeqit(take(50, P.monicRationalPolynomialsAtLeast(1)),
+        aeqit(take(50, QEP.monicRationalPolynomialsAtLeast(1)),
                 "[x, x^2, x+1, x^3, x^2+x, x+1/2, x-1, x^2+1, x+2, x^4, x-1/2, x^3+x^2, x^2+x+1, x+1/3, x^3+x," +
                 " x^2+1/2*x, x+1/4, x^5, x-1/3, x^2+1/2, x+2/3, x^4+x^3, x-1/4, x^3+x^2+x, x^2+1/2*x+1/2, x-2," +
                 " x^2-x, x+3, x^3+1, x^2+2*x, x+3/2, x-3, x^2-x+1, x+4, x^4+x^2, x-3/2, x^3+x^2+1, x^2+2*x+1, x^6," +
                 " x-2/3, x^2-1/2*x, x^3+x+1, x+3/4, x^5+x^4, x^2-1/2*x+1/2, x+4/3, x^4+x^3+x^2, x-3/4, x^3+x^2+x+1," +
                 " x^2+x+1/2]");
-        aeqit(take(50, P.monicRationalPolynomialsAtLeast(2)),
+        aeqit(take(50, QEP.monicRationalPolynomialsAtLeast(2)),
                 "[x^2, x^3, x^2+x, x^2+1, x^4, x^3+x^2, x^2+x+1, x^3+x, x^2+1/2*x, x^5, x^2+1/2, x^4+x^3, x^3+x^2+x," +
                 " x^2+1/2*x+1/2, x^2-x, x^3+1, x^2+2*x, x^2-x+1, x^4+x^2, x^3+x^2+1, x^2+2*x+1, x^6, x^2-1/2*x," +
                 " x^3+x+1, x^5+x^4, x^2-1/2*x+1/2, x^4+x^3+x^2, x^3+x^2+x+1, x^2+x+1/2, x^2-1, x^2+x-1, x^2+2," +
                 " x^4+x, x^3+1/2*x^2, x^2+x+2, x^2-1/2, x^3+1/2*x, x^2+1/2*x-1/2, x^5+x^3, x^4+x^3+x," +
                 " x^3+1/2*x^2+1/2*x, x^2+1/2*x+1, x^7, x^2-x-1, x^3+1/2, x^2+2*x-1, x^2-x+2, x^4+x^2+x," +
                 " x^3+1/2*x^2+1/2, x^2+2*x+2]");
-        aeqit(take(50, P.monicRationalPolynomialsAtLeast(9)),
+        aeqit(take(50, QEP.monicRationalPolynomialsAtLeast(9)),
                 "[x^9, x^10, x^9+x^8, x^9+x^7, x^11, x^10+x^9, x^9+x^8+x^7, x^9+x^6, x^10+x^8, x^9+x^8+x^6, x^12," +
                 " x^9+x^7+x^6, x^11+x^10, x^10+x^9+x^8, x^9+x^8+x^7+x^6, x^9+x^5, x^10+x^7, x^9+x^8+x^5," +
                 " x^9+x^7+x^5, x^11+x^9, x^10+x^9+x^7, x^9+x^8+x^7+x^5, x^13, x^9+x^6+x^5, x^10+x^8+x^7," +
@@ -816,7 +814,7 @@ public class QBarExhaustiveProviderTest {
 
     @Test
     public void testMonicRationalPolynomials() {
-        aeqit(take(50, P.monicRationalPolynomials()),
+        aeqit(take(50, QEP.monicRationalPolynomials()),
                 "[1, x, x^2, x+1, x^3, x^2+x, x+1/2, x-1, x^2+1, x+2, x^4, x-1/2, x^3+x^2, x^2+x+1, x+1/3, x^3+x," +
                 " x^2+1/2*x, x+1/4, x^5, x-1/3, x^2+1/2, x+2/3, x^4+x^3, x-1/4, x^3+x^2+x, x^2+1/2*x+1/2, x-2," +
                 " x^2-x, x+3, x^3+1, x^2+2*x, x+3/2, x-3, x^2-x+1, x+4, x^4+x^2, x-3/2, x^3+x^2+1, x^2+2*x+1, x^6," +
@@ -826,20 +824,20 @@ public class QBarExhaustiveProviderTest {
     @Test
     public void testEquals() {
         //noinspection EqualsWithItself
-        assertTrue(P.equals(P));
+        assertTrue(QEP.equals(QEP));
         //noinspection ObjectEqualsNull
-        assertFalse(P.equals(null));
+        assertFalse(QEP.equals(null));
         //noinspection EqualsBetweenInconvertibleTypes
-        assertFalse(P.equals("hello"));
+        assertFalse(QEP.equals("hello"));
     }
 
     @Test
     public void testHashCode() {
-        aeq(P.hashCode(), 0);
+        aeq(QEP.hashCode(), 0);
     }
 
     @Test
     public void testToString() {
-        aeq(P, "QBarExhaustiveProvider");
+        aeq(QEP, "QBarExhaustiveProvider");
     }
 }

@@ -2,63 +2,52 @@ package mho.qbar.iterableProviders;
 
 import mho.qbar.objects.Interval;
 import mho.qbar.objects.Rational;
+import mho.qbar.testing.QBarDemos;
 import mho.wheels.structures.Pair;
-import org.jetbrains.annotations.NotNull;
 
+import static mho.qbar.testing.QBarTesting.QEP;
 import static mho.wheels.iterables.IterableUtils.take;
+import static mho.wheels.testing.Testing.MEDIUM_LIMIT;
 import static mho.wheels.testing.Testing.its;
 
 @SuppressWarnings("UnusedDeclaration")
-public class QBarExhaustiveProviderDemos {
-    private static final boolean USE_RANDOM = false;
-    private static final @NotNull QBarExhaustiveProvider EP = QBarExhaustiveProvider.INSTANCE;
-    private static final int SMALL_LIMIT = 1000;
-    private static final int TINY_LIMIT = 100;
-    private static int LIMIT;
-    private static QBarIterableProvider P;
-
-    private static void initialize() {
-        if (USE_RANDOM) {
-            P = QBarRandomProvider.example();
-            LIMIT = 1000;
-        } else {
-            P = QBarExhaustiveProvider.INSTANCE;
-            LIMIT = 10000;
-        }
+public class QBarExhaustiveProviderDemos extends QBarDemos {
+    public QBarExhaustiveProviderDemos(boolean useRandom) {
+        super(useRandom);
     }
 
-    private static void demoRangeUp_Rational() {
+    private void demoRangeUp_Rational() {
         initialize();
-        for (Rational r : take(SMALL_LIMIT, P.rationals())) {
-            System.out.println("rangeUp(" + r + ") = " + its(EP.rangeUp(r)));
+        for (Rational r : take(MEDIUM_LIMIT, P.rationals())) {
+            System.out.println("rangeUp(" + r + ") = " + its(QEP.rangeUp(r)));
         }
     }
 
-    private static void demoRangeDown_Rational() {
+    private void demoRangeDown_Rational() {
         initialize();
-        for (Rational r : take(SMALL_LIMIT, P.rationals())) {
-            System.out.println("rangeDown(" + r + ") = " + its(EP.rangeDown(r)));
+        for (Rational r : take(MEDIUM_LIMIT, P.rationals())) {
+            System.out.println("rangeDown(" + r + ") = " + its(QEP.rangeDown(r)));
         }
     }
 
-    private static void demoRange_Rational_Rational() {
+    private void demoRange_Rational_Rational() {
         initialize();
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
-            System.out.println("range(" + p.a + ", " + p.b + ") = " + its(EP.range(p.a, p.b)));
+            System.out.println("range(" + p.a + ", " + p.b + ") = " + its(QEP.range(p.a, p.b)));
         }
     }
 
-    private static void demoRationalsIn() {
+    private void demoRationalsIn() {
         initialize();
-        for (Interval a : take(SMALL_LIMIT, P.intervals())) {
-            System.out.println("rationalsIn(" + a + ") = " + its(EP.rationalsIn(a)));
+        for (Interval a : take(MEDIUM_LIMIT, P.intervals())) {
+            System.out.println("rationalsIn(" + a + ") = " + its(QEP.rationalsIn(a)));
         }
     }
 
-    private static void demoRationalsNotIn() {
+    private void demoRationalsNotIn() {
         initialize();
-        for (Interval a : take(SMALL_LIMIT, P.intervals())) {
-            System.out.println("rationalsNotIn(" + a + ") = " + its(EP.rationalsNotIn(a)));
+        for (Interval a : take(MEDIUM_LIMIT, P.intervals())) {
+            System.out.println("rationalsNotIn(" + a + ") = " + its(QEP.rationalsNotIn(a)));
         }
     }
 }

@@ -14,9 +14,6 @@ import static org.junit.Assert.fail;
 
 public class QBarRandomProviderTest {
     private static QBarRandomProvider P;
-    private static final int DEFAULT_SAMPLE_SIZE = 1000000;
-    private static final int DEFAULT_TOP_COUNT = 10;
-    private static final int TINY_LIMIT = 20;
 
     @Before
     public void initialize() {

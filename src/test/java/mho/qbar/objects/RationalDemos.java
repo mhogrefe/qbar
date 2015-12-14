@@ -27,6 +27,10 @@ public class RationalDemos extends QBarDemos {
     private static final @NotNull String RATIONAL_CHARS = "-/0123456789";
     private static final BigInteger ASCII_ALPHANUMERIC_COUNT = BigInteger.valueOf(36);
 
+    public RationalDemos(boolean useRandom) {
+        super(useRandom);
+    }
+
     private void demoGetNumerator() {
         initialize();
         for (Rational r : take(LIMIT, P.rationals())) {

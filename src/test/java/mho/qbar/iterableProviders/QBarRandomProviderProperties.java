@@ -2,53 +2,36 @@ package mho.qbar.iterableProviders;
 
 import mho.qbar.objects.Interval;
 import mho.qbar.objects.Rational;
+import mho.qbar.testing.QBarTestProperties;
 import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
 import org.jetbrains.annotations.NotNull;
-import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Predicate;
 
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.ordering.Ordering.*;
 import static mho.wheels.testing.Testing.*;
 
-public class QBarRandomProviderProperties {
-    private static final int TINY_LIMIT = 20;
-    private static int LIMIT;
-    private static QBarIterableProvider P;
-
-    private static void initialize(String name) {
-        P.reset();
-        System.out.println("\t\ttesting " + name + " properties...");
+public class QBarRandomProviderProperties extends QBarTestProperties {
+    public QBarRandomProviderProperties() {
+        super("QBarRandomProvider");
     }
 
-    @Test
-    public void testAllProperties() {
-        List<Triple<QBarIterableProvider, Integer, String>> configs = new ArrayList<>();
-        configs.add(new Triple<>(QBarExhaustiveProvider.INSTANCE, 10000, "exhaustively"));
-        configs.add(new Triple<>(QBarRandomProvider.example(), 1000, "randomly"));
-        System.out.println("QBarRandomProvider properties");
-        for (Triple<QBarIterableProvider, Integer, String> config : configs) {
-            P = config.a;
-            LIMIT = config.b;
-            System.out.println("\ttesting " + config.c);
-            propertiesPositiveRationals();
-            propertiesNegativeRationals();
-            propertiesNonzeroRationals();
-            propertiesRationals();
-            propertiesNonNegativeRationalsLessThanOne();
-            propertiesRangeUp_Rational();
-            propertiesRangeDown_Rational();
-            propertiesRange_Rational_Rational();
-            propertiesFinitelyBoundedIntervals();
-            propertiesIntervals();
-            propertiesRationalsIn();
-            propertiesRationalsNotIn();
-        }
-        System.out.println("Done");
+    @Override
+    protected void testBothModes() {
+        propertiesPositiveRationals();
+        propertiesNegativeRationals();
+        propertiesNonzeroRationals();
+        propertiesRationals();
+        propertiesNonNegativeRationalsLessThanOne();
+        propertiesRangeUp_Rational();
+        propertiesRangeDown_Rational();
+        propertiesRange_Rational_Rational();
+        propertiesFinitelyBoundedIntervals();
+        propertiesIntervals();
+        propertiesRationalsIn();
+        propertiesRationalsNotIn();
     }
 
     private static <T> void simpleTestWithNulls(
@@ -70,7 +53,7 @@ public class QBarRandomProviderProperties {
         simpleTestWithNulls(rp, xs, x -> x != null && predicate.test(x));
     }
 
-    private static void propertiesPositiveRationals() {
+    private void propertiesPositiveRationals() {
         initialize("positiveRationals()");
         Iterable<QBarRandomProvider> rps = filterInfinite(
                 s -> s.getScale() >= 4,
@@ -95,7 +78,7 @@ public class QBarRandomProviderProperties {
         }
     }
 
-    private static void propertiesNegativeRationals() {
+    private void propertiesNegativeRationals() {
         initialize("negativeRationals()");
         Iterable<QBarRandomProvider> rps = filterInfinite(
                 s -> s.getScale() >= 4,
@@ -120,7 +103,7 @@ public class QBarRandomProviderProperties {
         }
     }
 
-    private static void propertiesNonzeroRationals() {
+    private void propertiesNonzeroRationals() {
         initialize("nonzeroRationals()");
         Iterable<QBarRandomProvider> rps = filterInfinite(
                 s -> s.getScale() >= 4,
@@ -145,7 +128,7 @@ public class QBarRandomProviderProperties {
         }
     }
 
-    private static void propertiesRationals() {
+    private void propertiesRationals() {
         initialize("rationals()");
         Iterable<QBarRandomProvider> rps = filterInfinite(
                 s -> s.getScale() >= 3,
@@ -170,7 +153,7 @@ public class QBarRandomProviderProperties {
         }
     }
 
-    private static void propertiesNonNegativeRationalsLessThanOne() {
+    private void propertiesNonNegativeRationalsLessThanOne() {
         initialize("nonNegativeRationalsLessThanOne()");
         Iterable<QBarRandomProvider> rps = filterInfinite(
                 s -> s.getScale() >= 4,
@@ -195,7 +178,7 @@ public class QBarRandomProviderProperties {
         }
     }
 
-    private static void propertiesRangeUp_Rational() {
+    private void propertiesRangeUp_Rational() {
         initialize("rangeUp(Rational)");
         Iterable<Pair<QBarRandomProvider, Rational>> ps = P.pairs(
                 filterInfinite(rp -> rp.getScale() >= 4, P.qbarRandomProviders()),
@@ -218,7 +201,7 @@ public class QBarRandomProviderProperties {
         }
     }
 
-    private static void propertiesRangeDown_Rational() {
+    private void propertiesRangeDown_Rational() {
         initialize("rangeDown(Rational)");
         Iterable<Pair<QBarRandomProvider, Rational>> ps = P.pairs(
                 filterInfinite(rp -> rp.getScale() >= 4, P.qbarRandomProviders()),
@@ -241,7 +224,7 @@ public class QBarRandomProviderProperties {
         }
     }
 
-    private static void propertiesRange_Rational_Rational() {
+    private void propertiesRange_Rational_Rational() {
         initialize("range(Rational, Rational)");
         Iterable<Triple<QBarRandomProvider, Rational, Rational>> ts = filterInfinite(
                 t -> le(t.b, t.c),
@@ -296,7 +279,7 @@ public class QBarRandomProviderProperties {
         }
     }
 
-    private static void propertiesFinitelyBoundedIntervals() {
+    private void propertiesFinitelyBoundedIntervals() {
         initialize("finitelyBoundedIntervals()");
         Iterable<QBarRandomProvider> rps = filterInfinite(
                 s -> s.getScale() >= 6,
@@ -321,7 +304,7 @@ public class QBarRandomProviderProperties {
         }
     }
 
-    private static void propertiesIntervals() {
+    private void propertiesIntervals() {
         initialize("intervals()");
         Iterable<QBarRandomProvider> rps = filterInfinite(
                 s -> s.getScale() >= 6,
@@ -346,7 +329,7 @@ public class QBarRandomProviderProperties {
         }
     }
 
-    private static void propertiesRationalsIn() {
+    private void propertiesRationalsIn() {
         initialize("rationalsIn()");
         Iterable<Pair<QBarRandomProvider, Interval>> ps = P.pairs(
                 filterInfinite(
@@ -376,7 +359,7 @@ public class QBarRandomProviderProperties {
         }
     }
 
-    private static void propertiesRationalsNotIn() {
+    private void propertiesRationalsNotIn() {
         initialize("rationalsNotIn()");
         Iterable<Pair<QBarRandomProvider, Interval>> ps = P.pairs(
                 filterInfinite(

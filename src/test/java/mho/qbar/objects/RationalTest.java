@@ -20,7 +20,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class RationalTest {
-    private static final int TINY_LIMIT = 20;
     private static final @NotNull Rational ALMOST_ONE =
             of(BigInteger.TEN.pow(1000).subtract(BigInteger.ONE), BigInteger.TEN.pow(1000));
 
