@@ -3364,25 +3364,12 @@ public class RationalProperties extends QBarTestProperties {
     }
 
     private void propertiesRead() {
-        initialize("");
-        System.out.println("\t\ttesting read(String) properties...");
-
-        for (String s : take(LIMIT, P.strings())) {
-            read(s);
-        }
-
-        for (Rational r : take(LIMIT, P.rationals())) {
-            Optional<Rational> or = read(r.toString());
-            assertEquals(r, or.get(), r);
-        }
-
-        Iterable<String> ss = filter(s -> read(s).isPresent(), P.strings(RATIONAL_CHARS));
-        for (String s : take(LIMIT, ss)) {
-            Optional<Rational> or = read(s);
-            or.get().validate();
-        }
-
-        Pair<Iterable<String>, Iterable<String>> slashPartition = partition(s -> s.contains("/"), ss);
+        initialize("read(String)");
+        propertiesReadHelper(LIMIT, P, RATIONAL_CHARS, P.rationals(), Rational::read, Rational::validate, true);
+        Pair<Iterable<String>, Iterable<String>> slashPartition = partition(
+                s -> s.contains("/"),
+                filterInfinite(s -> read(s).isPresent(), P.strings(RATIONAL_CHARS))
+        );
         for (String s : take(LIMIT, slashPartition.a)) {
             int slashIndex = s.indexOf('/');
             String left = s.substring(0, slashIndex);
@@ -3397,22 +3384,12 @@ public class RationalProperties extends QBarTestProperties {
     }
 
     private void propertiesFindIn() {
-        initialize("");
-        System.out.println("\t\ttesting findIn(String) properties...");
-
+        initialize("findIn(String)");
         propertiesFindInHelper(LIMIT, P.getWheelsProvider(), P.rationals(), Rational::read, Rational::findIn, r -> {});
     }
 
     private void propertiesToString() {
-        initialize("");
-        System.out.println("\t\ttesting toString() properties...");
-
-        for (Rational r : take(LIMIT, P.rationals())) {
-            String s = r.toString();
-            assertTrue(r, isSubsetOf(s, RATIONAL_CHARS));
-            Optional<Rational> readR = read(s);
-            assertTrue(r, readR.isPresent());
-            assertEquals(r, readR.get(), r);
-        }
+        initialize("toString()");
+        propertiesToStringHelper(LIMIT, RATIONAL_CHARS, P.rationals(), Rational::read);
     }
 }

@@ -4127,56 +4127,70 @@ public class RationalTest {
         testCompareToHelper(readRationalList("[-4, -5/12, 0, 5/12, 1, 4]"));
     }
 
+    private static void read_helper(@NotNull String input) {
+        aeq(read(input).get(), input);
+    }
+
+    private static void read_fail_helper(@NotNull String input) {
+        assertFalse(read(input).isPresent());
+    }
+
     @Test
     public void testRead() {
-        assertTrue(read("0").get() == ZERO);
-        assertTrue(read("1").get() == ONE);
-        aeq(read("3").get(), Rational.of(3));
-        aeq(read("-3").get(), Rational.of(-3));
-        aeq(read("5/12").get(), Rational.of(5, 12));
-        aeq(read("-5/12").get(), Rational.of(-5, 12));
-        assertFalse(read("2/0").isPresent());
-        assertFalse(read("").isPresent());
-        assertFalse(read(" ").isPresent());
-        assertFalse(read("1 ").isPresent());
-        assertFalse(read("01").isPresent());
-        assertFalse(read("-").isPresent());
-        assertFalse(read("-0").isPresent());
-        assertFalse(read("--5").isPresent());
-        assertFalse(read("0.1").isPresent());
-        assertFalse(read("/1").isPresent());
-        assertFalse(read("/").isPresent());
-        assertFalse(read("2//3").isPresent());
-        assertFalse(read("2/").isPresent());
-        assertFalse(read("2 /3").isPresent());
-        assertFalse(read("2/ 3").isPresent());
-        assertFalse(read("2 / 3").isPresent());
-        assertFalse(read("a").isPresent());
-        assertFalse(read("2-3").isPresent());
-        assertFalse(read("0x12").isPresent());
-        assertFalse(read("12/3a").isPresent());
-        assertFalse(read("12/6").isPresent());
-        assertFalse(read("12/-6").isPresent());
-        assertFalse(read("6/8").isPresent());
-        assertFalse(read("4/1").isPresent());
+        read_helper("0");
+        read_helper("1");
+        read_helper("3");
+        read_helper("-3");
+        read_helper("5/12");
+        read_helper("-5/12");
+        read_fail_helper("2/0");
+        read_fail_helper("");
+        read_fail_helper(" ");
+        read_fail_helper("1 ");
+        read_fail_helper("01");
+        read_fail_helper("-");
+        read_fail_helper("-0");
+        read_fail_helper("--5");
+        read_fail_helper("0.1");
+        read_fail_helper("/1");
+        read_fail_helper("/");
+        read_fail_helper("2//3");
+        read_fail_helper("2/");
+        read_fail_helper("2 /3");
+        read_fail_helper("2/ 3");
+        read_fail_helper("2 / 3");
+        read_fail_helper("a");
+        read_fail_helper("2-3");
+        read_fail_helper("0x12");
+        read_fail_helper("12/3a");
+        read_fail_helper("12/6");
+        read_fail_helper("12/-6");
+        read_fail_helper("6/8");
+        read_fail_helper("4/1");
+    }
+
+    private static void findIn_helper(@NotNull String input, @NotNull String output) {
+        aeq(findIn(input).get(), output);
+    }
+
+    private static void findIn_fail_helper(@NotNull String input) {
+        assertFalse(findIn(input).isPresent());
     }
 
     @Test
     public void testFindIn() {
-        aeq(findIn("abcd1234xyz").get(), "(1234, 4)");
-        aeq(findIn("0123").get(), "(0, 0)");
-        assertTrue(findIn("0123").get().a == ZERO);
-        aeq(findIn("1-23").get(), "(1, 0)");
-        assertTrue(findIn("1-23").get().a == ONE);
-        aeq(findIn("a-23").get(), "(-23, 1)");
-        aeq(findIn("---34--4").get(), "(-34, 2)");
-        aeq(findIn(" 20.1 ").get(), "(20, 1)");
-        aeq(findIn("ads4/3d").get(), "(4/3, 3)");
-        aeq(findIn("101/101").get(), "(101/10, 0)");
-        aeq(findIn("5/0").get(), "(5, 0)");
-        assertFalse(findIn("").isPresent());
-        assertFalse(findIn("hello").isPresent());
-        assertFalse(findIn("vdfsvfbf").isPresent());
+        findIn_helper("abcd1234xyz", "(1234, 4)");
+        findIn_helper("0123", "(0, 0)");
+        findIn_helper("1-23", "(1, 0)");
+        findIn_helper("a-23", "(-23, 1)");
+        findIn_helper("---34--4", "(-34, 2)");
+        findIn_helper(" 20.1 ", "(20, 1)");
+        findIn_helper("ads4/3d", "(4/3, 3)");
+        findIn_helper("101/101", "(101/10, 0)");
+        findIn_helper("5/0", "(5, 0)");
+        findIn_fail_helper("");
+        findIn_fail_helper("hello");
+        findIn_fail_helper("vdfsvfbf");
     }
 
     private static @NotNull List<BigInteger> readBigIntegerList(@NotNull String s) {

@@ -14,7 +14,7 @@ Progress
 | QBarRandomProvider     | ✘       | ✘       | ✘     | ✘     | ✘          |
 | Interval               | ✘       | ✘       | ✘     | ✘     | ✘          |
 | Polynomial             | ✘       | ✘       | ✘     | ✘     | ✘          |
-| Rational               | ✘       | ✘       | ✘     | ✘     | ✘          |
+| Rational               | ✔       | ✔       | ✔     | ✔     | ✔          |
 | RationalMatrix         | ✘       | ✘       | ✘     | ✘     | ✘          |
 | RationalPolynomial     | ✘       | ✘       | ✘     | ✘     | ✘          |
 | RationalVector         | ✘       | ✘       | ✘     | ✘     | ✘          |

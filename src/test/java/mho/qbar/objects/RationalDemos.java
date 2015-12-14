@@ -21,6 +21,7 @@ import static mho.qbar.testing.QBarTesting.QEP;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.testing.Testing.MEDIUM_LIMIT;
 import static mho.wheels.testing.Testing.its;
+import static mho.wheels.testing.Testing.nicePrint;
 
 @SuppressWarnings("UnusedDeclaration")
 public class RationalDemos extends QBarDemos {
@@ -722,28 +723,28 @@ public class RationalDemos extends QBarDemos {
     private void demoRead() {
         initialize();
         for (String s : take(LIMIT, P.strings())) {
-            System.out.println("read(" + s + ") = " + read(s));
+            System.out.println("read(" + nicePrint(s) + ") = " + read(s));
         }
     }
 
     private void demoRead_targeted() {
         initialize();
         for (String s : take(LIMIT, P.strings(RATIONAL_CHARS))) {
-            System.out.println("read(" + s + ") = " + read(s));
+            System.out.println("read(" + nicePrint(s) + ") = " + read(s));
         }
     }
 
     private void demoFindIn() {
         initialize();
         for (String s : take(LIMIT, P.strings())) {
-            System.out.println("findIn(" + s + ") = " + findIn(s));
+            System.out.println("findIn(" + nicePrint(s) + ") = " + findIn(s));
         }
     }
 
     private void demoFindIn_targeted() {
         initialize();
         for (String s : take(LIMIT, P.strings(RATIONAL_CHARS))) {
-            System.out.println("findIn(" + s + ") = " + findIn(s));
+            System.out.println("findIn(" + nicePrint(s) + ") = " + findIn(s));
         }
     }
 
