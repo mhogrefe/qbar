@@ -27,11 +27,6 @@ import static mho.qbar.testing.QBarTesting.propertiesHashCodeHelper;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.ordering.Ordering.*;
 import static mho.wheels.testing.Testing.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 public class IntervalProperties extends QBarTestProperties {
     private static final @NotNull String INTERVAL_CHARS = " (),-/0123456789I[]finty";
@@ -102,15 +97,13 @@ public class IntervalProperties extends QBarTestProperties {
     }
 
     private void propertiesGetLower() {
-        initialize("");
-        System.out.println("\t\ttesting getLower() properties...");
-
+        initialize("getLower()");
         for (Interval a : take(LIMIT, P.intervals())) {
             a.getLower();
         }
 
         for (Interval a : take(LIMIT, P.finitelyBoundedIntervals())) {
-            assertEquals(a.toString(), of(a.getLower().get(), a.getUpper().get()), a);
+            assertEquals(a, of(a.getLower().get(), a.getUpper().get()), a);
         }
     }
 
@@ -131,7 +124,7 @@ public class IntervalProperties extends QBarTestProperties {
         for (Pair<Rational, Rational> p : take(LIMIT, ps)) {
             Interval a = of(p.a, p.b);
             validate(a);
-            assertTrue(a.toString(), a.isFinitelyBounded());
+            assertTrue(a, a.isFinitelyBounded());
         }
     }
 
@@ -142,10 +135,10 @@ public class IntervalProperties extends QBarTestProperties {
         for (Rational r : take(LIMIT, P.rationals())) {
             Interval a = lessThanOrEqualTo(r);
             validate(a);
-            assertFalse(a.toString(), a.getLower().isPresent());
-            assertTrue(a.toString(), a.getUpper().isPresent());
+            assertFalse(a, a.getLower().isPresent());
+            assertTrue(a, a.getUpper().isPresent());
             for (Rational s : take(TINY_LIMIT, P.rationalsIn(a))) {
-                assertTrue(r.toString(), le(s, r));
+                assertTrue(r, le(s, r));
             }
         }
     }
@@ -157,10 +150,10 @@ public class IntervalProperties extends QBarTestProperties {
         for (Rational r : take(LIMIT, P.rationals())) {
             Interval a = greaterThanOrEqualTo(r);
             validate(a);
-            assertTrue(a.toString(), a.getLower().isPresent());
-            assertFalse(a.toString(), a.getUpper().isPresent());
+            assertTrue(a, a.getLower().isPresent());
+            assertFalse(a, a.getUpper().isPresent());
             for (Rational s : take(TINY_LIMIT, P.rationalsIn(a))) {
-                assertTrue(r.toString(), ge(s, r));
+                assertTrue(r, ge(s, r));
             }
         }
     }
@@ -172,8 +165,8 @@ public class IntervalProperties extends QBarTestProperties {
         for (Rational r : take(LIMIT, P.rationals())) {
             Interval a = of(r);
             validate(a);
-            assertTrue(a.toString(), a.isFinitelyBounded());
-            assertEquals(a.toString(), a.diameter().get(), Rational.ZERO);
+            assertTrue(a, a.isFinitelyBounded());
+            assertEquals(a, a.diameter().get(), Rational.ZERO);
         }
     }
 
@@ -186,12 +179,12 @@ public class IntervalProperties extends QBarTestProperties {
         }
 
         for (Interval a : take(LIMIT, P.finitelyBoundedIntervals())) {
-            assertTrue(a.toString(), a.isFinitelyBounded());
+            assertTrue(a, a.isFinitelyBounded());
         }
 
         for (Rational r : take(LIMIT, P.rationals())) {
-            assertFalse(r.toString(), lessThanOrEqualTo(r).isFinitelyBounded());
-            assertFalse(r.toString(), greaterThanOrEqualTo(r).isFinitelyBounded());
+            assertFalse(r, lessThanOrEqualTo(r).isFinitelyBounded());
+            assertFalse(r, greaterThanOrEqualTo(r).isFinitelyBounded());
         }
     }
 
@@ -204,12 +197,12 @@ public class IntervalProperties extends QBarTestProperties {
         }
 
         for (Rational r : take(LIMIT, P.rationals())) {
-            assertTrue(r.toString(), ALL.contains(r));
-            assertTrue(r.toString(), of(r).contains(r));
+            assertTrue(r, ALL.contains(r));
+            assertTrue(r, of(r).contains(r));
         }
 
         for (Pair<Rational, Rational> p : take(LIMIT, filter(q -> !q.a.equals(q.b), P.pairs(P.rationals())))) {
-            assertFalse(p.toString(), of(p.a).contains(p.b));
+            assertFalse(p, of(p.a).contains(p.b));
         }
     }
 
@@ -222,15 +215,15 @@ public class IntervalProperties extends QBarTestProperties {
         }
 
         for (Interval a : take(LIMIT, P.intervals())) {
-            assertTrue(a.toString(), ALL.contains(a));
-            assertTrue(a.toString(), a.contains(a));
+            assertTrue(a, ALL.contains(a));
+            assertTrue(a, a.contains(a));
         }
 
         for (Pair<Interval, Interval> p : take(LIMIT, filter(q -> q.a.contains(q.b), P.pairs(P.intervals())))) {
             Optional<Rational> ad = p.a.diameter();
             Optional<Rational> bd = p.b.diameter();
-            assertTrue(p.toString(), !ad.isPresent() || le(bd.get(), ad.get()));
-            assertTrue(p.toString(), p.a.convexHull(p.b).equals(p.a));
+            assertTrue(p, !ad.isPresent() || le(bd.get(), ad.get()));
+            assertTrue(p, p.a.convexHull(p.b).equals(p.a));
         }
 
         Iterable<Pair<Rational, Interval>> ps = filter(
@@ -238,7 +231,7 @@ public class IntervalProperties extends QBarTestProperties {
                 P.pairs(P.rationals(), P.intervals())
         );
         for (Pair<Rational, Interval> p : take(LIMIT, ps)) {
-            assertFalse(p.toString(), of(p.a).contains(p.b));
+            assertFalse(p, of(p.a).contains(p.b));
         }
     }
 
@@ -251,12 +244,12 @@ public class IntervalProperties extends QBarTestProperties {
         }
 
         for (Interval a : take(LIMIT, P.finitelyBoundedIntervals())) {
-            assertTrue(a.toString(), a.diameter().get().signum() != -1);
+            assertTrue(a, a.diameter().get().signum() != -1);
         }
 
         for (Rational r : take(LIMIT, P.rationals())) {
-            assertFalse(r.toString(), lessThanOrEqualTo(r).diameter().isPresent());
-            assertFalse(r.toString(), greaterThanOrEqualTo(r).diameter().isPresent());
+            assertFalse(r, lessThanOrEqualTo(r).diameter().isPresent());
+            assertFalse(r, greaterThanOrEqualTo(r).diameter().isPresent());
         }
     }
 
@@ -267,25 +260,25 @@ public class IntervalProperties extends QBarTestProperties {
         for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
             Interval c = p.a.convexHull(p.b);
             validate(c);
-            assertEquals(p.toString(), c, p.b.convexHull(p.a));
+            assertEquals(p, c, p.b.convexHull(p.a));
             //Given an interval c whose endpoints are in each of two intervals a and b, any Rational in c lies in the
             //convex hull of a and b
             for (Pair<Rational, Rational> q : take(TINY_LIMIT, P.pairs(P.rationalsIn(p.a), P.rationalsIn(p.b)))) {
                 for (Rational r : take(TINY_LIMIT, P.rationalsIn(of(min(q.a, q.b), max(q.a, q.b))))) {
-                    assertTrue(p.toString(), c.contains(r));
+                    assertTrue(p, c.contains(r));
                 }
             }
         }
 
         for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.finitelyBoundedIntervals()))) {
             Interval c = p.a.convexHull(p.b);
-            assertTrue(p.toString(), ge(c.diameter().get(), p.a.diameter().get()));
-            assertTrue(p.toString(), ge(c.diameter().get(), p.b.diameter().get()));
+            assertTrue(p, ge(c.diameter().get(), p.a.diameter().get()));
+            assertTrue(p, ge(c.diameter().get(), p.b.diameter().get()));
         }
 
         for (Interval a : take(LIMIT, P.intervals())) {
-            assertTrue(a.toString(), a.convexHull(a).equals(a));
-            assertTrue(a.toString(), ALL.convexHull(a).equals(ALL));
+            assertTrue(a, a.convexHull(a).equals(a));
+            assertTrue(a, ALL.convexHull(a).equals(ALL));
         }
     }
 
@@ -328,14 +321,14 @@ public class IntervalProperties extends QBarTestProperties {
             } else {
                 alt = of(altC.a, altC.b);
             }
-            assertEquals(as.toString(), alt, c);
+            assertEquals(as, alt, c);
             validate(c);
         }
 
         for (List<Interval> as : take(LIMIT, P.listsAtLeast(1, P.finitelyBoundedIntervals()))) {
             Interval c = convexHull(as);
             Rational cd = c.diameter().get();
-            assertTrue(as.toString(), all(a -> ge(cd, a.diameter().get()), as));
+            assertTrue(as, all(a -> ge(cd, a.diameter().get()), as));
         }
 
         Iterable<Pair<List<Interval>, List<Interval>>> ps = P.dependentPairs(
@@ -343,15 +336,15 @@ public class IntervalProperties extends QBarTestProperties {
                 P::permutationsFinite
         );
         for (Pair<List<Interval>, List<Interval>> p : take(LIMIT, ps)) {
-            assertEquals(p.toString(), convexHull(p.a), convexHull(p.b));
+            assertEquals(p, convexHull(p.a), convexHull(p.b));
         }
 
         for (Interval a : take(LIMIT, P.intervals())) {
-            assertEquals(a.toString(), convexHull(Collections.singletonList(a)), a);
+            assertEquals(a, convexHull(Collections.singletonList(a)), a);
         }
 
         for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
-            assertEquals(p.toString(), convexHull(Arrays.asList(p.a, p.b)), p.a.convexHull(p.b));
+            assertEquals(p, convexHull(Arrays.asList(p.a, p.b)), p.a.convexHull(p.b));
         }
 
         Iterable<Pair<Interval, Integer>> ps2;
@@ -361,17 +354,17 @@ public class IntervalProperties extends QBarTestProperties {
             ps2 = P.pairs(P.intervals(), P.withScale(20).positiveIntegersGeometric());
         }
         for (Pair<Interval, Integer> p : take(LIMIT, ps2)) {
-            assertEquals(p.toString(), convexHull(toList(replicate(p.b, p.a))), p.a);
+            assertEquals(p, convexHull(toList(replicate(p.b, p.a))), p.a);
         }
 
         for (List<Interval> as : take(LIMIT, P.listsWithElement(ALL, P.intervals()))) {
-            assertEquals(as.toString(), convexHull(as), ALL);
+            assertEquals(as, convexHull(as), ALL);
         }
 
         for (List<Interval> as : take(LIMIT, P.listsWithElement(null, P.intervals()))) {
             try {
                 convexHull(as);
-                fail(as.toString());
+                fail(as);
             } catch (NullPointerException ignored) {}
         }
     }
@@ -406,28 +399,28 @@ public class IntervalProperties extends QBarTestProperties {
             if (oi.isPresent()) {
                 validate(oi.get());
             }
-            assertEquals(p.toString(), oi, p.b.intersection(p.a));
-            assertEquals(p.toString(), oi.isPresent(), !p.a.disjoint(p.b));
+            assertEquals(p, oi, p.b.intersection(p.a));
+            assertEquals(p, oi.isPresent(), !p.a.disjoint(p.b));
         }
 
         for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.finitelyBoundedIntervals()))) {
             Optional<Interval> oi = p.a.intersection(p.b);
             if (oi.isPresent()) {
-                assertTrue(p.toString(), le(oi.get().diameter().get(), p.a.diameter().get()));
-                assertTrue(p.toString(), le(oi.get().diameter().get(), p.b.diameter().get()));
+                assertTrue(p, le(oi.get().diameter().get(), p.a.diameter().get()));
+                assertTrue(p, le(oi.get().diameter().get(), p.b.diameter().get()));
             }
         }
 
         for (Interval a : take(LIMIT, P.intervals())) {
-            assertEquals(a.toString(), ALL.intersection(a).get(), a);
-            assertEquals(a.toString(), a.intersection(a).get(), a);
+            assertEquals(a, ALL.intersection(a).get(), a);
+            assertEquals(a, a.intersection(a).get(), a);
         }
 
         for (Pair<Interval, Interval> p : take(LIMIT, filter(q -> !q.a.disjoint(q.b), P.pairs(P.intervals())))) {
             Interval intersection = p.a.intersection(p.b).get();
             for (Rational r : take(TINY_LIMIT, P.rationalsIn(intersection))) {
-                assertTrue(p.toString(), p.a.contains(r));
-                assertTrue(p.toString(), p.b.contains(r));
+                assertTrue(p, p.a.contains(r));
+                assertTrue(p, p.b.contains(r));
             }
         }
     }
@@ -438,17 +431,17 @@ public class IntervalProperties extends QBarTestProperties {
 
         for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
             boolean disjoint = p.a.disjoint(p.b);
-            assertEquals(p.toString(), p.b.disjoint(p.a), disjoint);
+            assertEquals(p, p.b.disjoint(p.a), disjoint);
         }
 
         for (Interval a : take(LIMIT, P.intervals())) {
-            assertFalse(a.toString(), ALL.disjoint(a));
-            assertFalse(a.toString(), a.disjoint(a));
+            assertFalse(a, ALL.disjoint(a));
+            assertFalse(a, a.disjoint(a));
         }
 
         for (Pair<Interval, Interval> p : take(LIMIT, filter(q -> q.a.disjoint(q.b), P.pairs(P.intervals())))) {
             for (Rational r : take(TINY_LIMIT, P.rationalsIn(p.a))) {
-                assertFalse(p.toString(), p.b.contains(r));
+                assertFalse(p, p.b.contains(r));
             }
         }
     }
@@ -460,13 +453,13 @@ public class IntervalProperties extends QBarTestProperties {
         for (List<Interval> as : take(LIMIT, P.lists(P.intervals()))) {
             List<Interval> disjoint = makeDisjoint(as);
             disjoint.forEach(mho.qbar.objects.IntervalProperties::validate);
-            assertTrue(as.toString(), weaklyIncreasing(disjoint));
+            assertTrue(as, weaklyIncreasing(disjoint));
             assertTrue(
                     as.toString(),
                     and(map(p -> p.a.disjoint(p.b), ExhaustiveProvider.INSTANCE.distinctPairs(disjoint)))
             );
             for (Rational r : take(TINY_LIMIT, mux(toList(map(P::rationalsIn, as))))) {
-                assertTrue(as.toString(), or(map(a -> a.contains(r), disjoint)));
+                assertTrue(as, or(map(a -> a.contains(r), disjoint)));
             }
         }
 
@@ -475,33 +468,29 @@ public class IntervalProperties extends QBarTestProperties {
                 P::permutationsFinite
         );
         for (Pair<List<Interval>, List<Interval>> p : take(LIMIT, ps)) {
-            assertEquals(p.toString(), makeDisjoint(p.a), makeDisjoint(p.b));
+            assertEquals(p, makeDisjoint(p.a), makeDisjoint(p.b));
         }
 
         for (Interval a : take(LIMIT, P.intervals())) {
-            assertEquals(a.toString(), makeDisjoint(Collections.singletonList(a)), Collections.singletonList(a));
+            assertEquals(a, makeDisjoint(Collections.singletonList(a)), Collections.singletonList(a));
         }
 
         for (Pair<Interval, Interval> p : take(LIMIT, filter(q -> q.a.disjoint(q.b), P.pairs(P.intervals())))) {
-            assertEquals(p.toString(), makeDisjoint(Pair.toList(p)), sort(Pair.toList(p)));
+            assertEquals(p, makeDisjoint(Pair.toList(p)), sort(Pair.toList(p)));
         }
 
         for (Pair<Interval, Interval> p : take(LIMIT, filter(q -> !q.a.disjoint(q.b), P.pairs(P.intervals())))) {
-            assertEquals(
-                    p.toString(),
-                    makeDisjoint(Pair.toList(p)),
-                    Collections.singletonList(convexHull(Pair.toList(p)))
-            );
+            assertEquals(p, makeDisjoint(Pair.toList(p)), Collections.singletonList(convexHull(Pair.toList(p))));
         }
 
         for (List<Interval> as : take(LIMIT, P.listsWithElement(ALL, P.intervals()))) {
-            assertEquals(as.toString(), makeDisjoint(as), Collections.singletonList(ALL));
+            assertEquals(as, makeDisjoint(as), Collections.singletonList(ALL));
         }
 
         for (List<Interval> as : take(LIMIT, P.listsWithElement(null, P.intervals()))) {
             try {
                 convexHull(as);
-                fail(as.toString());
+                fail(as);
             } catch (NullPointerException ignored) {}
         }
     }
@@ -513,7 +502,7 @@ public class IntervalProperties extends QBarTestProperties {
         for (Interval a : take(LIMIT, P.intervals())) {
             List<Interval> complement = a.complement();
             complement.forEach(mho.qbar.objects.IntervalProperties::validate);
-            assertEquals(a.toString(), makeDisjoint(complement), complement);
+            assertEquals(a, makeDisjoint(complement), complement);
             List<Rational> endpoints = new ArrayList<>();
             if (a.getLower().isPresent()) endpoints.add(a.getLower().get());
             if (a.getUpper().isPresent()) endpoints.add(a.getUpper().get());
@@ -522,43 +511,43 @@ public class IntervalProperties extends QBarTestProperties {
             }
             //todo: fix hanging
 //            for (Rational r : take(TINY_LIMIT, filter(s -> !endpoints.contains(s), P.rationals(a)))) {
-//                assertFalse(a.toString(), any(b -> b.contains(r), complement));
+//                assertFalse(a, any(b -> b.contains(r), complement));
 //            }
             for (Rational r : take(TINY_LIMIT, P.rationalsNotIn(a))) {
-                assertTrue(a.toString(), any(b -> b.contains(r), complement));
+                assertTrue(a, any(b -> b.contains(r), complement));
             }
         }
 
         for (Interval a : take(LIMIT, map(Interval::lessThanOrEqualTo, P.rationals()))) {
             List<Interval> complement = a.complement();
-            assertEquals(a.toString(), complement.size(), 1);
+            assertEquals(a, complement.size(), 1);
             Interval x = complement.get(0);
-            assertTrue(a.toString(), x.getLower().isPresent());
-            assertFalse(a.toString(), x.getUpper().isPresent());
+            assertTrue(a, x.getLower().isPresent());
+            assertFalse(a, x.getUpper().isPresent());
         }
 
         for (Interval a : take(LIMIT, map(Interval::greaterThanOrEqualTo, P.rationals()))) {
             List<Interval> complement = a.complement();
-            assertEquals(a.toString(), complement.size(), 1);
+            assertEquals(a, complement.size(), 1);
             Interval x = complement.get(0);
-            assertFalse(a.toString(), x.getLower().isPresent());
-            assertTrue(a.toString(), x.getUpper().isPresent());
+            assertFalse(a, x.getLower().isPresent());
+            assertTrue(a, x.getUpper().isPresent());
         }
 
         for (Interval a : take(LIMIT, map(Interval::of, P.rationals()))) {
-            assertEquals(a.toString(), a.complement(), Collections.singletonList(ALL));
+            assertEquals(a, a.complement(), Collections.singletonList(ALL));
         }
 
         Iterable<Interval> as = filter(b -> b.diameter().get() != Rational.ZERO, P.finitelyBoundedIntervals());
         for (Interval a : take(LIMIT, as)) {
             List<Interval> complement = a.complement();
-            assertEquals(a.toString(), complement.size(), 2);
+            assertEquals(a, complement.size(), 2);
             Interval x = complement.get(0);
             Interval y = complement.get(1);
-            assertFalse(a.toString(), x.getLower().isPresent());
-            assertTrue(a.toString(), x.getUpper().isPresent());
-            assertTrue(a.toString(), y.getLower().isPresent());
-            assertFalse(a.toString(), y.getUpper().isPresent());
+            assertFalse(a, x.getLower().isPresent());
+            assertTrue(a, x.getUpper().isPresent());
+            assertTrue(a, y.getLower().isPresent());
+            assertFalse(a, y.getUpper().isPresent());
         }
     }
 
@@ -568,21 +557,21 @@ public class IntervalProperties extends QBarTestProperties {
 
         for (Interval a : take(LIMIT, P.finitelyBoundedIntervals())) {
             Rational midpoint = a.midpoint();
-            assertEquals(a.toString(), midpoint.subtract(a.getLower().get()), a.getUpper().get().subtract(midpoint));
+            assertEquals(a, midpoint.subtract(a.getLower().get()), a.getUpper().get().subtract(midpoint));
         }
 
         for (Rational r : take(LIMIT, P.rationals())) {
-            assertEquals(r.toString(), of(r).midpoint(), r);
+            assertEquals(r, of(r).midpoint(), r);
         }
 
         for (Rational r : take(LIMIT, P.rationals())) {
             try {
                 lessThanOrEqualTo(r).midpoint();
-                fail(r.toString());
+                fail(r);
             } catch (ArithmeticException ignored) {}
             try {
                 greaterThanOrEqualTo(r).midpoint();
-                fail(r.toString());
+                fail(r);
             } catch (ArithmeticException ignored) {}
         }
     }
@@ -596,38 +585,38 @@ public class IntervalProperties extends QBarTestProperties {
             Pair<Interval, Interval> split = p.a.split(p.b);
             validate(split.a);
             validate(split.b);
-            assertEquals(p.toString(), split.a.getUpper().get(), p.b);
-            assertEquals(p.toString(), split.b.getLower().get(), p.b);
+            assertEquals(p, split.a.getUpper().get(), p.b);
+            assertEquals(p, split.b.getLower().get(), p.b);
             for (Rational r : take(TINY_LIMIT, P.rationalsIn(p.a))) {
-                assertTrue(p.toString(), split.a.contains(r) || split.b.contains(r));
+                assertTrue(p, split.a.contains(r) || split.b.contains(r));
             }
         }
 
         for (Rational r : take(LIMIT, P.rationals())) {
             Interval a = of(r);
-            assertEquals(r.toString(), a.split(r), new Pair<>(a, a));
+            assertEquals(r, a.split(r), new Pair<>(a, a));
 
             Pair<Interval, Interval> p = ALL.split(r);
-            assertFalse(r.toString(), p.a.getLower().isPresent());
-            assertTrue(r.toString(), p.a.getUpper().isPresent());
-            assertTrue(r.toString(), p.b.getLower().isPresent());
-            assertFalse(r.toString(), p.b.getUpper().isPresent());
+            assertFalse(r, p.a.getLower().isPresent());
+            assertTrue(r, p.a.getUpper().isPresent());
+            assertTrue(r, p.b.getLower().isPresent());
+            assertFalse(r, p.b.getUpper().isPresent());
         }
 
         for (Pair<Rational, Rational> p : take(LIMIT, filter(q -> le(q.a, q.b), P.pairs(P.rationals())))) {
             Interval a = lessThanOrEqualTo(p.b);
             Pair<Interval, Interval> q = a.split(p.a);
-            assertFalse(p.toString(), q.a.getLower().isPresent());
-            assertTrue(p.toString(), q.a.getUpper().isPresent());
-            assertTrue(p.toString(), q.b.isFinitelyBounded());
+            assertFalse(p, q.a.getLower().isPresent());
+            assertTrue(p, q.a.getUpper().isPresent());
+            assertTrue(p, q.b.isFinitelyBounded());
         }
 
         for (Pair<Rational, Rational> p : take(LIMIT, filter(q -> le(q.a, q.b), P.pairs(P.rationals())))) {
             Interval a = greaterThanOrEqualTo(p.a);
             Pair<Interval, Interval> q = a.split(p.b);
-            assertTrue(p.toString(), q.a.isFinitelyBounded());
-            assertTrue(p.toString(), q.b.getLower().isPresent());
-            assertFalse(p.toString(), q.b.getUpper().isPresent());
+            assertTrue(p, q.a.isFinitelyBounded());
+            assertTrue(p, q.b.getLower().isPresent());
+            assertFalse(p, q.b.getUpper().isPresent());
         }
 
         Iterable<Pair<Interval, Rational>> psFail = filter(
@@ -637,7 +626,7 @@ public class IntervalProperties extends QBarTestProperties {
         for (Pair<Interval, Rational> p : take(LIMIT, psFail)) {
             try {
                 p.a.split(p.b);
-                fail(p.toString());
+                fail(p);
             } catch (ArithmeticException ignored) {}
         }
     }
@@ -650,28 +639,28 @@ public class IntervalProperties extends QBarTestProperties {
             Pair<Interval, Interval> bisection = a.bisect();
             validate(bisection.a);
             validate(bisection.b);
-            assertTrue(a.toString(), bisection.a.isFinitelyBounded());
-            assertTrue(a.toString(), bisection.b.isFinitelyBounded());
-            assertEquals(a.toString(), bisection.a.diameter().get(), bisection.b.diameter().get());
-            assertEquals(a.toString(), bisection.a.getUpper().get(), bisection.b.getLower().get());
+            assertTrue(a, bisection.a.isFinitelyBounded());
+            assertTrue(a, bisection.b.isFinitelyBounded());
+            assertEquals(a, bisection.a.diameter().get(), bisection.b.diameter().get());
+            assertEquals(a, bisection.a.getUpper().get(), bisection.b.getLower().get());
             for (Rational r : take(TINY_LIMIT, P.rationalsIn(a))) {
-                assertTrue(a.toString(), bisection.a.contains(r) || bisection.b.contains(r));
+                assertTrue(a, bisection.a.contains(r) || bisection.b.contains(r));
             }
         }
 
         for (Rational r : take(LIMIT, P.rationals())) {
             Interval a = of(r);
-            assertEquals(r.toString(), a.bisect(), new Pair<>(a, a));
+            assertEquals(r, a.bisect(), new Pair<>(a, a));
         }
 
         for (Rational r : take(LIMIT, P.rationals())) {
             try {
                 lessThanOrEqualTo(r).bisect();
-                fail(r.toString());
+                fail(r);
             } catch (ArithmeticException ignored) {}
             try {
                 greaterThanOrEqualTo(r).bisect();
-                fail(r.toString());
+                fail(r);
             } catch (ArithmeticException ignored) {}
         }
     }
@@ -683,7 +672,7 @@ public class IntervalProperties extends QBarTestProperties {
         for (float f : take(LIMIT, filter(g -> !Float.isNaN(g), P.floats()))) {
             Interval a = roundingPreimage(f);
             validate(a);
-            assertEquals(Float.toString(f), roundingPreimage(-f), a.negate());
+            assertEquals(f, roundingPreimage(-f), a.negate());
         }
 
         for (float f : take(LIMIT, filter(g -> !Float.isNaN(g) && Math.abs(g) < Float.MAX_VALUE, P.floats()))) {
@@ -695,14 +684,14 @@ public class IntervalProperties extends QBarTestProperties {
                 Rational centralDistance = central.subtract(r).abs();
                 Rational predDistance = pred.subtract(r).abs();
                 Rational succDistance = succ.subtract(r).abs();
-                assertTrue(Float.toString(f), le(centralDistance, predDistance));
-                assertTrue(Float.toString(f), le(centralDistance, succDistance));
+                assertTrue(f, le(centralDistance, predDistance));
+                assertTrue(f, le(centralDistance, succDistance));
             }
             for (Rational r : take(TINY_LIMIT, P.rationalsNotIn(a))) {
                 Rational centralDistance = central.subtract(r).abs();
                 Rational predDistance = pred.subtract(r).abs();
                 Rational succDistance = succ.subtract(r).abs();
-                assertTrue(Float.toString(f), gt(centralDistance, predDistance) || gt(centralDistance, succDistance));
+                assertTrue(f, gt(centralDistance, predDistance) || gt(centralDistance, succDistance));
             }
 
             Rational x = a.getLower().get();
@@ -728,7 +717,7 @@ public class IntervalProperties extends QBarTestProperties {
         for (double d : take(LIMIT, filter(e -> !Double.isNaN(e), P.doubles()))) {
             Interval a = roundingPreimage(d);
             validate(a);
-            assertEquals(Double.toString(d), roundingPreimage(-d), a.negate());
+            assertEquals(d, roundingPreimage(-d), a.negate());
         }
 
         for (double d : take(LIMIT, filter(e -> !Double.isNaN(e) && Math.abs(e) < Double.MAX_VALUE, P.doubles()))) {
@@ -740,14 +729,14 @@ public class IntervalProperties extends QBarTestProperties {
                 Rational centralDistance = central.subtract(r).abs();
                 Rational predDistance = pred.subtract(r).abs();
                 Rational succDistance = succ.subtract(r).abs();
-                assertTrue(Double.toString(d), le(centralDistance, predDistance));
-                assertTrue(Double.toString(d), le(centralDistance, succDistance));
+                assertTrue(d, le(centralDistance, predDistance));
+                assertTrue(d, le(centralDistance, succDistance));
             }
             for (Rational r : take(TINY_LIMIT, P.rationalsNotIn(a))) {
                 Rational centralDistance = central.subtract(r).abs();
                 Rational predDistance = pred.subtract(r).abs();
                 Rational succDistance = succ.subtract(r).abs();
-                assertTrue(Double.toString(d), gt(centralDistance, predDistance) || gt(centralDistance, succDistance));
+                assertTrue(d, gt(centralDistance, predDistance) || gt(centralDistance, succDistance));
             }
 
             Rational x = a.getLower().get();
@@ -773,7 +762,7 @@ public class IntervalProperties extends QBarTestProperties {
         for (BigDecimal bd : take(LIMIT, P.bigDecimals())) {
             Interval a = roundingPreimage(bd);
             validate(a);
-            assertEquals(bd.toString(), roundingPreimage(bd.negate()), a.negate());
+            assertEquals(bd, roundingPreimage(bd.negate()), a.negate());
             Rational central = Rational.of(bd);
             Rational pred = Rational.of(BigDecimalUtils.predecessor(bd));
             Rational succ = Rational.of(BigDecimalUtils.successor(bd));
@@ -781,14 +770,14 @@ public class IntervalProperties extends QBarTestProperties {
                 Rational centralDistance = central.subtract(r).abs();
                 Rational predDistance = pred.subtract(r).abs();
                 Rational succDistance = succ.subtract(r).abs();
-                assertTrue(bd.toString(), le(centralDistance, predDistance));
-                assertTrue(bd.toString(), le(centralDistance, succDistance));
+                assertTrue(bd, le(centralDistance, predDistance));
+                assertTrue(bd, le(centralDistance, succDistance));
             }
             for (Rational r : take(TINY_LIMIT, P.rationalsNotIn(a))) {
                 Rational centralDistance = central.subtract(r).abs();
                 Rational predDistance = pred.subtract(r).abs();
                 Rational succDistance = succ.subtract(r).abs();
-                assertTrue(bd.toString(), gt(centralDistance, predDistance) || gt(centralDistance, succDistance));
+                assertTrue(bd, gt(centralDistance, predDistance) || gt(centralDistance, succDistance));
             }
         }
     }
@@ -799,18 +788,15 @@ public class IntervalProperties extends QBarTestProperties {
 
         for (Interval a : take(LIMIT, P.intervals())) {
             Pair<Float, Float> range = a.floatRange();
-            assertTrue(a.toString(), range.a != null);
-            assertTrue(a.toString(), range.b != null);
-            assertFalse(a.toString(), range.a.isNaN());
-            assertFalse(a.toString(), range.b.isNaN());
-            assertTrue(a.toString(), range.b >= range.a);
-            assertFalse(a.toString(), range.a > 0 && range.a.isInfinite());
-            assertFalse(a.toString(), FloatingPointUtils.isNegativeZero(range.a));
-            assertFalse(a.toString(), range.b < 0 && range.b.isInfinite());
-            assertFalse(
-                    a.toString(),
-                    FloatingPointUtils.isNegativeZero(range.b) && FloatingPointUtils.isPositiveZero(range.a)
-            );
+            assertTrue(a, range.a != null);
+            assertTrue(a, range.b != null);
+            assertFalse(a, range.a.isNaN());
+            assertFalse(a, range.b.isNaN());
+            assertTrue(a, range.b >= range.a);
+            assertFalse(a, range.a > 0 && range.a.isInfinite());
+            assertFalse(a, FloatingPointUtils.isNegativeZero(range.a));
+            assertFalse(a, range.b < 0 && range.b.isInfinite());
+            assertFalse(a, FloatingPointUtils.isNegativeZero(range.b) && FloatingPointUtils.isPositiveZero(range.a));
 
             Pair<Float, Float> negRange = a.negate().floatRange();
             negRange = new Pair<>(-negRange.b, -negRange.a);
@@ -832,20 +818,13 @@ public class IntervalProperties extends QBarTestProperties {
             } else {
                 b = of(Rational.ofExact(range.a).get(), Rational.ofExact(range.b).get());
             }
-            assertTrue(a.toString(), b.contains(a));
+            assertTrue(a, b.contains(a));
         }
 
         for (Interval a : take(LIMIT, P.finitelyBoundedIntervals())) {
             Pair<Float, Float> range = a.floatRange();
-            assertTrue(
-                    a.toString(),
-                    le(a.getLower().get(),
-                    Rational.ofExact(FloatingPointUtils.successor(range.a)).get())
-                    );
-            assertTrue(
-                    a.toString(),
-                    ge(a.getUpper().get(), Rational.ofExact(FloatingPointUtils.predecessor(range.b)).get())
-            );
+            assertTrue(a, le(a.getLower().get(), Rational.ofExact(FloatingPointUtils.successor(range.a)).get()));
+            assertTrue(a, ge(a.getUpper().get(), Rational.ofExact(FloatingPointUtils.predecessor(range.b)).get()));
         }
     }
 
@@ -855,18 +834,15 @@ public class IntervalProperties extends QBarTestProperties {
 
         for (Interval a : take(LIMIT, P.intervals())) {
             Pair<Double, Double> range = a.doubleRange();
-            assertTrue(a.toString(), range.a != null);
-            assertTrue(a.toString(), range.b != null);
-            assertFalse(a.toString(), range.a.isNaN());
-            assertFalse(a.toString(), range.b.isNaN());
-            assertTrue(a.toString(), range.b >= range.a);
-            assertFalse(a.toString(), range.a > 0 && range.a.isInfinite());
-            assertFalse(a.toString(), FloatingPointUtils.isNegativeZero(range.a));
-            assertFalse(a.toString(), range.b < 0 && range.b.isInfinite());
-            assertFalse(
-                    a.toString(),
-                    FloatingPointUtils.isNegativeZero(range.b) && FloatingPointUtils.isPositiveZero(range.a)
-            );
+            assertTrue(a, range.a != null);
+            assertTrue(a, range.b != null);
+            assertFalse(a, range.a.isNaN());
+            assertFalse(a, range.b.isNaN());
+            assertTrue(a, range.b >= range.a);
+            assertFalse(a, range.a > 0 && range.a.isInfinite());
+            assertFalse(a, FloatingPointUtils.isNegativeZero(range.a));
+            assertFalse(a, range.b < 0 && range.b.isInfinite());
+            assertFalse(a, FloatingPointUtils.isNegativeZero(range.b) && FloatingPointUtils.isPositiveZero(range.a));
 
             Pair<Double, Double> negRange = a.negate().doubleRange();
             negRange = new Pair<>(-negRange.b, -negRange.a);
@@ -888,20 +864,13 @@ public class IntervalProperties extends QBarTestProperties {
             } else {
                 b = of(Rational.ofExact(range.a).get(), Rational.ofExact(range.b).get());
             }
-            assertTrue(a.toString(), b.contains(a));
+            assertTrue(a, b.contains(a));
         }
 
         for (Interval a : take(LIMIT, P.finitelyBoundedIntervals())) {
             Pair<Float, Float> range = a.floatRange();
-            assertTrue(
-                    a.toString(),
-                    le(a.getLower().get(),
-                    Rational.ofExact(FloatingPointUtils.successor(range.a)).get())
-            );
-            assertTrue(
-                    a.toString(),
-                    ge(a.getUpper().get(), Rational.ofExact(FloatingPointUtils.predecessor(range.b)).get())
-            );
+            assertTrue(a, le(a.getLower().get(), Rational.ofExact(FloatingPointUtils.successor(range.a)).get()));
+            assertTrue(a, ge(a.getUpper().get(), Rational.ofExact(FloatingPointUtils.predecessor(range.b)).get()));
         }
     }
 
@@ -912,36 +881,36 @@ public class IntervalProperties extends QBarTestProperties {
         for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
             Interval sum = p.a.add(p.b);
             validate(sum);
-            assertEquals(p.toString(), sum, p.b.add(p.a));
-            assertTrue(p.toString(), sum.subtract(p.b).contains(p.a));
+            assertEquals(p, sum, p.b.add(p.a));
+            assertTrue(p, sum.subtract(p.b).contains(p.a));
             for (Pair<Rational, Rational> q : take(TINY_LIMIT, P.pairs(P.rationalsIn(p.a), P.rationalsIn(p.b)))) {
-                assertTrue(p.toString(), sum.contains(q.a.add(q.b)));
+                assertTrue(p, sum.contains(q.a.add(q.b)));
             }
         }
 
         for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.finitelyBoundedIntervals()))) {
             Interval sum = p.a.add(p.b);
             Rational diameter = sum.diameter().get();
-            assertTrue(p.toString(), ge(diameter, p.a.diameter().get()));
-            assertTrue(p.toString(), ge(diameter, p.b.diameter().get()));
+            assertTrue(p, ge(diameter, p.a.diameter().get()));
+            assertTrue(p, ge(diameter, p.b.diameter().get()));
         }
 
         for (Interval a : take(LIMIT, P.intervals())) {
-            assertEquals(a.toString(), ZERO.add(a), a);
-            assertEquals(a.toString(), a.add(ZERO), a);
-            assertTrue(a.toString(), a.subtract(a).contains(ZERO));
-            assertEquals(a.toString(), ALL.add(a), ALL);
-            assertEquals(a.toString(), a.add(ALL), ALL);
+            assertEquals(a, ZERO.add(a), a);
+            assertEquals(a, a.add(ZERO), a);
+            assertTrue(a, a.subtract(a).contains(ZERO));
+            assertEquals(a, ALL.add(a), ALL);
+            assertEquals(a, a.add(ALL), ALL);
         }
 
         for (Triple<Interval, Interval, Interval> t : take(LIMIT, P.triples(P.intervals()))) {
             Interval sum1 = t.a.add(t.b).add(t.c);
             Interval sum2 = t.a.add(t.b.add(t.c));
-            assertEquals(t.toString(), sum1, sum2);
+            assertEquals(t, sum1, sum2);
         }
 
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
-            assertEquals(p.toString(), of(p.a).add(of(p.b)), of(p.a.add(p.b)));
+            assertEquals(p, of(p.a).add(of(p.b)), of(p.a.add(p.b)));
         }
     }
 
@@ -952,16 +921,16 @@ public class IntervalProperties extends QBarTestProperties {
         for (Interval a : take(LIMIT, P.intervals())) {
             Interval negativeA = a.negate();
             validate(negativeA);
-            assertEquals(a.toString(), a, negativeA.negate());
-            assertTrue(a.toString(), a.add(negativeA).contains(ZERO));
-            assertEquals(a.toString(), a.diameter(), negativeA.diameter());
+            assertEquals(a, a, negativeA.negate());
+            assertTrue(a, a.add(negativeA).contains(ZERO));
+            assertEquals(a, a.diameter(), negativeA.diameter());
             for (Rational r : take(TINY_LIMIT, P.rationalsIn(a))) {
-                assertTrue(a.toString(), negativeA.contains(r.negate()));
+                assertTrue(a, negativeA.contains(r.negate()));
             }
         }
 
         for (Rational r : take(LIMIT, P.rationals())) {
-            assertEquals(r.toString(), of(r).negate(), of(r.negate()));
+            assertEquals(r, of(r).negate(), of(r.negate()));
         }
     }
 
@@ -972,22 +941,22 @@ public class IntervalProperties extends QBarTestProperties {
         for (Interval a : take(LIMIT, P.intervals())) {
             Interval absA = a.abs();
             validate(absA);
-            assertEquals(a.toString(), absA, absA.abs());
+            assertEquals(a, absA, absA.abs());
             Optional<Interval> negativeIntersection = absA.intersection(lessThanOrEqualTo(Rational.ZERO));
-            assertTrue(a.toString(), !negativeIntersection.isPresent() || negativeIntersection.get().equals(ZERO));
+            assertTrue(a, !negativeIntersection.isPresent() || negativeIntersection.get().equals(ZERO));
             for (Rational r : take(TINY_LIMIT, P.rationalsIn(a))) {
-                assertTrue(a.toString(), absA.contains(r.abs()));
+                assertTrue(a, absA.contains(r.abs()));
             }
         }
 
         for (Interval a : take(LIMIT, P.finitelyBoundedIntervals())) {
             Rational diameter = a.diameter().get();
             Rational absDiameter = a.abs().diameter().get();
-            assertTrue(a.toString(), le(absDiameter, diameter));
+            assertTrue(a, le(absDiameter, diameter));
         }
 
         for (Rational r : take(LIMIT, P.rationals())) {
-            assertEquals(r.toString(), of(r).abs(), of(r.abs()));
+            assertEquals(r, of(r).abs(), of(r.abs()));
         }
     }
 
@@ -997,16 +966,16 @@ public class IntervalProperties extends QBarTestProperties {
 
         for (Interval a : take(LIMIT, P.intervals())) {
             Optional<Integer> signumA = a.signum();
-            assertEquals(a.toString(), signumA, a.elementCompare(ZERO).map(Ordering::toInt));
+            assertEquals(a, signumA, a.elementCompare(ZERO).map(Ordering::toInt));
             if (signumA.isPresent()) {
                 Integer s = signumA.get();
-                assertTrue(a.toString(), s == -1 || s == 0 || s == 1);
+                assertTrue(a, s == -1 || s == 0 || s == 1);
                 for (Rational r : take(TINY_LIMIT, P.rationalsIn(a))) {
-                    assertTrue(a.toString(), r.signum() == s);
+                    assertTrue(a, r.signum() == s);
                 }
             } else {
-                assertTrue(a.toString(), !a.equals(ZERO));
-                assertTrue(a.toString(), a.contains(ZERO));
+                assertTrue(a, !a.equals(ZERO));
+                assertTrue(a, a.contains(ZERO));
             }
         }
     }
@@ -1018,30 +987,30 @@ public class IntervalProperties extends QBarTestProperties {
         for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
             Interval difference = p.a.subtract(p.b);
             validate(difference);
-            assertEquals(p.toString(), difference, p.b.subtract(p.a).negate());
-            assertTrue(p.toString(), difference.add(p.b).contains(p.a));
+            assertEquals(p, difference, p.b.subtract(p.a).negate());
+            assertTrue(p, difference.add(p.b).contains(p.a));
             for (Pair<Rational, Rational> q : take(TINY_LIMIT, P.pairs(P.rationalsIn(p.a), P.rationalsIn(p.b)))) {
-                assertTrue(p.toString(), difference.contains(q.a.subtract(q.b)));
+                assertTrue(p, difference.contains(q.a.subtract(q.b)));
             }
         }
 
         for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.finitelyBoundedIntervals()))) {
             Interval difference = p.a.subtract(p.b);
             Rational diameter = difference.diameter().get();
-            assertTrue(p.toString(), ge(diameter, p.a.diameter().get()));
-            assertTrue(p.toString(), ge(diameter, p.b.diameter().get()));
+            assertTrue(p, ge(diameter, p.a.diameter().get()));
+            assertTrue(p, ge(diameter, p.b.diameter().get()));
         }
 
         for (Interval a : take(LIMIT, P.intervals())) {
-            assertEquals(a.toString(), ZERO.subtract(a), a.negate());
-            assertEquals(a.toString(), a.subtract(ZERO), a);
-            assertTrue(a.toString(), a.subtract(a).contains(ZERO));
-            assertEquals(a.toString(), ALL.subtract(a), ALL);
-            assertEquals(a.toString(), a.subtract(ALL), ALL);
+            assertEquals(a, ZERO.subtract(a), a.negate());
+            assertEquals(a, a.subtract(ZERO), a);
+            assertTrue(a, a.subtract(a).contains(ZERO));
+            assertEquals(a, ALL.subtract(a), ALL);
+            assertEquals(a, a.subtract(ALL), ALL);
         }
 
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
-            assertEquals(p.toString(), of(p.a).subtract(of(p.b)), of(p.a.subtract(p.b)));
+            assertEquals(p, of(p.a).subtract(of(p.b)), of(p.a.subtract(p.b)));
         }
     }
 
@@ -1052,9 +1021,9 @@ public class IntervalProperties extends QBarTestProperties {
         for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
             Interval product = p.a.multiply(p.b);
             validate(product);
-            assertEquals(p.toString(), product, p.b.multiply(p.a));
+            assertEquals(p, product, p.b.multiply(p.a));
             for (Pair<Rational, Rational> q : take(TINY_LIMIT, P.pairs(P.rationalsIn(p.a), P.rationalsIn(p.b)))) {
-                assertTrue(p.toString(), product.contains(q.a.multiply(q.b)));
+                assertTrue(p, product.contains(q.a.multiply(q.b)));
             }
         }
 
@@ -1062,37 +1031,37 @@ public class IntervalProperties extends QBarTestProperties {
         for (Pair<Interval, Interval> p : take(LIMIT, ps)) {
             Interval product = p.a.multiply(p.b);
             List<Interval> quotient = product.divide(p.b);
-            assertTrue(p.toString(), any(a -> a.contains(p.a), quotient));
+            assertTrue(p, any(a -> a.contains(p.a), quotient));
             quotient = makeDisjoint(toList(concatMap(p.a::divide, p.b.invert())));
-            assertTrue(p.toString(), quotient.contains(product));
+            assertTrue(p, quotient.contains(product));
         }
 
         for (Interval a : take(LIMIT, P.intervals())) {
-            assertEquals(a.toString(), ONE.multiply(a), a);
-            assertEquals(a.toString(), a.multiply(ONE), a);
-            assertTrue(a.toString(), ZERO.multiply(a).equals(ZERO));
-            assertTrue(a.toString(), a.multiply(ZERO).equals(ZERO));
+            assertEquals(a, ONE.multiply(a), a);
+            assertEquals(a, a.multiply(ONE), a);
+            assertTrue(a, ZERO.multiply(a).equals(ZERO));
+            assertTrue(a, a.multiply(ZERO).equals(ZERO));
         }
 
         for (Interval a : take(LIMIT, filter(b -> !b.equals(ZERO), P.intervals()))) {
-            assertEquals(a.toString(), ALL.multiply(a), ALL);
-            assertEquals(a.toString(), a.multiply(ALL), ALL);
+            assertEquals(a, ALL.multiply(a), ALL);
+            assertEquals(a, a.multiply(ALL), ALL);
             List<Interval> inverse = a.invert();
             List<Interval> back = makeDisjoint(toList(map(a::multiply, inverse)));
-            assertTrue(a.toString(), any(b -> b.contains(ONE), back));
+            assertTrue(a, any(b -> b.contains(ONE), back));
         }
 
         for (Triple<Interval, Interval, Interval> t : take(LIMIT, P.triples(P.intervals()))) {
             Interval product1 = t.a.multiply(t.b).multiply(t.c);
             Interval product2 = t.a.multiply(t.b.multiply(t.c));
-            assertEquals(t.toString(), product1, product2);
+            assertEquals(t, product1, product2);
             Interval expression1 = t.a.add(t.b).multiply(t.c);
             Interval expression2 = t.a.multiply(t.c).add(t.b.multiply(t.c));
-            assertTrue(t.toString(), expression2.contains(expression1));
+            assertTrue(t, expression2.contains(expression1));
         }
 
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
-            assertEquals(p.toString(), of(p.a).multiply(of(p.b)), of(p.a.multiply(p.b)));
+            assertEquals(p, of(p.a).multiply(of(p.b)), of(p.a.multiply(p.b)));
         }
     }
 
@@ -1103,30 +1072,30 @@ public class IntervalProperties extends QBarTestProperties {
         for (Pair<Interval, Rational> p : take(LIMIT, P.pairs(P.intervals(), P.rationals()))) {
             Interval a = p.a.multiply(p.b);
             validate(a);
-            assertEquals(p.toString(), a, p.a.multiply(of(p.b)));
+            assertEquals(p, a, p.a.multiply(of(p.b)));
             for (Rational r : take(TINY_LIMIT, P.rationalsIn(p.a))) {
-                assertTrue(p.toString(), a.contains(r.multiply(p.b)));
+                assertTrue(p, a.contains(r.multiply(p.b)));
             }
         }
 
         Iterable<Pair<Interval, Rational>> ps = P.pairs(P.intervals(), filter(r -> r != Rational.ZERO, P.rationals()));
         for (Pair<Interval, Rational> p : take(LIMIT, ps)) {
-            assertEquals(p.toString(), p.a.multiply(p.b).divide(p.b), p.a);
-            assertEquals(p.toString(), p.a.multiply(p.b), p.a.divide(p.b.invert()));
+            assertEquals(p, p.a.multiply(p.b).divide(p.b), p.a);
+            assertEquals(p, p.a.multiply(p.b), p.a.divide(p.b.invert()));
         }
 
         for (Interval a : take(LIMIT, P.intervals())) {
-            assertEquals(a.toString(), a, a.multiply(Rational.ONE));
-            assertEquals(a.toString(), a.multiply(Rational.ZERO), ZERO);
+            assertEquals(a, a, a.multiply(Rational.ONE));
+            assertEquals(a, a.multiply(Rational.ZERO), ZERO);
         }
 
         for (Rational r : take(LIMIT, P.rationals())) {
-            assertEquals(r.toString(), ZERO.multiply(r), ZERO);
-            assertEquals(r.toString(), ONE.multiply(r), of(r));
+            assertEquals(r, ZERO.multiply(r), ZERO);
+            assertEquals(r, ONE.multiply(r), of(r));
         }
 
         for (Rational r : take(LIMIT, filter(s -> s != Rational.ZERO, P.rationals()))) {
-            assertEquals(r.toString(), ALL.multiply(r), ALL);
+            assertEquals(r, ALL.multiply(r), ALL);
         }
     }
 
@@ -1137,9 +1106,9 @@ public class IntervalProperties extends QBarTestProperties {
         for (Pair<Interval, BigInteger> p : take(LIMIT, P.pairs(P.intervals(), P.bigIntegers()))) {
             Interval a = p.a.multiply(p.b);
             validate(a);
-            assertEquals(p.toString(), a, p.a.multiply(Rational.of(p.b)));
+            assertEquals(p, a, p.a.multiply(Rational.of(p.b)));
             for (Rational r : take(TINY_LIMIT, P.rationalsIn(p.a))) {
-                assertTrue(p.toString(), a.contains(r.multiply(p.b)));
+                assertTrue(p, a.contains(r.multiply(p.b)));
             }
         }
 
@@ -1148,12 +1117,12 @@ public class IntervalProperties extends QBarTestProperties {
                 filter(i -> !i.equals(BigInteger.ZERO), P.bigIntegers())
         );
         for (Pair<Interval, BigInteger> p : take(LIMIT, ps)) {
-            assertEquals(p.toString(), p.a.multiply(p.b).divide(p.b), p.a);
+            assertEquals(p, p.a.multiply(p.b).divide(p.b), p.a);
         }
 
         for (Interval a : take(LIMIT, P.intervals())) {
-            assertEquals(a.toString(), a, a.multiply(BigInteger.ONE));
-            assertEquals(a.toString(), a.multiply(BigInteger.ZERO), ZERO);
+            assertEquals(a, a, a.multiply(BigInteger.ONE));
+            assertEquals(a, a.multiply(BigInteger.ZERO), ZERO);
         }
 
         for (BigInteger i : take(LIMIT, P.bigIntegers())) {
@@ -1173,29 +1142,29 @@ public class IntervalProperties extends QBarTestProperties {
         for (Pair<Interval, Integer> p : take(LIMIT, P.pairs(P.intervals(), P.integers()))) {
             Interval a = p.a.multiply(p.b);
             validate(a);
-            assertEquals(p.toString(), a, p.a.multiply(Rational.of(p.b)));
+            assertEquals(p, a, p.a.multiply(Rational.of(p.b)));
             for (Rational r : take(TINY_LIMIT, P.rationalsIn(p.a))) {
-                assertTrue(p.toString(), a.contains(r.multiply(p.b)));
+                assertTrue(p, a.contains(r.multiply(p.b)));
             }
         }
 
         Iterable<Pair<Interval, Integer>> ps = P.pairs(P.intervals(), filter(i -> i != 0, P.integers()));
         for (Pair<Interval, Integer> p : take(LIMIT, ps)) {
-            assertEquals(p.toString(), p.a.multiply(p.b).divide(p.b), p.a);
+            assertEquals(p, p.a.multiply(p.b).divide(p.b), p.a);
         }
 
         for (Interval a : take(LIMIT, P.intervals())) {
-            assertEquals(a.toString(), a, a.multiply(1));
-            assertEquals(a.toString(), a.multiply(0), ZERO);
+            assertEquals(a, a, a.multiply(1));
+            assertEquals(a, a.multiply(0), ZERO);
         }
 
         for (int i : take(LIMIT, P.integers())) {
-            assertEquals(Integer.toString(i), ZERO.multiply(i), ZERO);
-            assertEquals(Integer.toString(i), ONE.multiply(i), of(Rational.of(i)));
+            assertEquals(i, ZERO.multiply(i), ZERO);
+            assertEquals(i, ONE.multiply(i), of(Rational.of(i)));
         }
 
         for (int i : take(LIMIT, filter(j -> j != 0, P.integers()))) {
-            assertEquals(Integer.toString(i), ALL.multiply(i), ALL);
+            assertEquals(i, ALL.multiply(i), ALL);
         }
     }
 
@@ -1209,30 +1178,30 @@ public class IntervalProperties extends QBarTestProperties {
 
             //todo fix hanging
 //            for (Rational r : take(TINY_LIMIT, filter(s -> s != Rational.ZERO, P.rationals(a)))) {
-//                assertTrue(a.toString(), any(b -> b.contains(r.invert()), inverse));
+//                assertTrue(a, any(b -> b.contains(r.invert()), inverse));
 //            }
 
             int size = inverse.size();
-            assertTrue(a.toString(), size == 0 || size == 1 || size == 2);
+            assertTrue(a, size == 0 || size == 1 || size == 2);
             if (size == 1) {
                 Interval i1 = inverse.get(0);
                 Rational p = i1.getLower().isPresent() ? i1.getLower().get() : null;
                 Rational q = i1.getUpper().isPresent() ? i1.getUpper().get() : null;
                 if (p == null && q != null) {
-                    assertTrue(a.toString(), le(q, Rational.ZERO));
+                    assertTrue(a, le(q, Rational.ZERO));
                 } else if (p != null && q == null) {
-                    assertTrue(a.toString(), ge(p, Rational.ZERO));
+                    assertTrue(a, ge(p, Rational.ZERO));
                 } else if (i1.isFinitelyBounded()) {
                     if (p.equals(q)) {
-                        assertNotEquals(a.toString(), p, Rational.ZERO);
+                        assertNotEquals(a, p, Rational.ZERO);
                     } else {
                         int ps = p.signum();
                         int qs = q.signum();
                         if (qs == 1) {
-                            assertTrue(a.toString(), ps != -1);
+                            assertTrue(a, ps != -1);
                         }
                         if (ps == -1) {
-                            assertTrue(a.toString(), qs != 1);
+                            assertTrue(a, qs != 1);
                         }
                     }
                 }
@@ -1243,15 +1212,15 @@ public class IntervalProperties extends QBarTestProperties {
                 Rational q1 = i1.getUpper().isPresent() ? i1.getUpper().get() : null;
                 Rational p2 = i2.getLower().isPresent() ? i2.getLower().get() : null;
                 Rational q2 = i2.getUpper().isPresent() ? i2.getUpper().get() : null;
-                assertTrue(a.toString(), p1 == null);
-                assertTrue(a.toString(), q2 == null);
+                assertTrue(a, p1 == null);
+                assertTrue(a, q2 == null);
                 if (p2 == Rational.ZERO) {
-                    assertTrue(a.toString(), q1.signum() == -1);
+                    assertTrue(a, q1.signum() == -1);
                 } else if (q1 == Rational.ZERO) {
-                    assertTrue(a.toString(), p2.signum() == 1);
+                    assertTrue(a, p2.signum() == 1);
                 } else {
-                    assertTrue(a.toString(), q1.signum() == -1);
-                    assertTrue(a.toString(), p2.signum() == 1);
+                    assertTrue(a, q1.signum() == -1);
+                    assertTrue(a, p2.signum() == 1);
                 }
             }
         }
@@ -1259,8 +1228,8 @@ public class IntervalProperties extends QBarTestProperties {
         for (Interval a : take(LIMIT, filter(b -> !b.equals(ZERO), P.intervals()))) {
             List<Interval> inverse = a.invert();
             List<Interval> back = makeDisjoint(toList(concatMap(Interval::invert, inverse)));
-            assertTrue(a.toString(), convexHull(back).contains(a));
-            assertTrue(a.toString(), convexHull(toList(map(a::multiply, inverse))).contains(ONE));
+            assertTrue(a, convexHull(back).contains(a));
+            assertTrue(a, convexHull(toList(map(a::multiply, inverse))).contains(ONE));
         }
     }
 
@@ -1273,34 +1242,34 @@ public class IntervalProperties extends QBarTestProperties {
             validate(inverse);
 
             for (Rational r : take(TINY_LIMIT, filter(s -> s != Rational.ZERO, P.rationalsIn(a)))) {
-                assertTrue(a.toString(), inverse.contains(r.invert()));
+                assertTrue(a, inverse.contains(r.invert()));
             }
 
             Rational p = inverse.getLower().isPresent() ? inverse.getLower().get() : null;
             Rational q = inverse.getUpper().isPresent() ? inverse.getUpper().get() : null;
             if (p == null && q != null) {
-                assertTrue(a.toString(), le(q, Rational.ZERO));
+                assertTrue(a, le(q, Rational.ZERO));
             } else if (p != null && q == null) {
-                assertTrue(a.toString(), ge(p, Rational.ZERO));
+                assertTrue(a, ge(p, Rational.ZERO));
             } else if (inverse.isFinitelyBounded()) {
                 if (p.equals(q)) {
-                    assertNotEquals(a.toString(), p, ZERO);
+                    assertNotEquals(a, p, ZERO);
                 } else {
                     int ps = p.signum();
                     int qs = q.signum();
                     if (qs == 1) {
-                        assertTrue(a.toString(), ps != -1);
+                        assertTrue(a, ps != -1);
                     }
                     if (ps == -1) {
-                        assertTrue(a.toString(), qs != 1);
+                        assertTrue(a, qs != 1);
                     }
                 }
             }
 
-            assertTrue(a.toString(), all(inverse::contains, a.invert()));
+            assertTrue(a, all(inverse::contains, a.invert()));
             Interval back = inverse.invertHull();
-            assertTrue(a.toString(), back.contains(a));
-            assertTrue(a.toString(), a.multiply(inverse).contains(ONE));
+            assertTrue(a, back.contains(a));
+            assertTrue(a, a.multiply(inverse).contains(ONE));
         }
     }
 
@@ -1318,11 +1287,11 @@ public class IntervalProperties extends QBarTestProperties {
 //                    filter(r -> r != Rational.ZERO, P.rationals(p.b))
 //            );
 //            for (Pair<Rational, Rational> q : take(TINY_LIMIT, qs)) {
-//                assertTrue(p.toString(), any(b -> b.contains(q.a.divide(q.b)), quotient));
+//                assertTrue(p, any(b -> b.contains(q.a.divide(q.b)), quotient));
 //            }
 
             int size = quotient.size();
-            assertTrue(p.toString(), size == 0 || size == 1 || size == 2);
+            assertTrue(p, size == 0 || size == 1 || size == 2);
             if (size == 2) {
                 Interval i1 = quotient.get(0);
                 Interval i2 = quotient.get(1);
@@ -1330,15 +1299,15 @@ public class IntervalProperties extends QBarTestProperties {
                 Rational q1 = i1.getUpper().isPresent() ? i1.getUpper().get() : null;
                 Rational p2 = i2.getLower().isPresent() ? i2.getLower().get() : null;
                 Rational q2 = i2.getUpper().isPresent() ? i2.getUpper().get() : null;
-                assertTrue(p.toString(), p1 == null);
-                assertTrue(p.toString(), q2 == null);
+                assertTrue(p, p1 == null);
+                assertTrue(p, q2 == null);
                 if (p2 == Rational.ZERO) {
-                    assertTrue(p.toString(), q1.signum() == -1);
+                    assertTrue(p, q1.signum() == -1);
                 } else if (q1 == Rational.ZERO) {
-                    assertTrue(p.toString(), p2.signum() == 1);
+                    assertTrue(p, p2.signum() == 1);
                 } else {
-                    assertTrue(p.toString(), q1.signum() == -1);
-                    assertTrue(p.toString(), p2.signum() == 1);
+                    assertTrue(p, q1.signum() == -1);
+                    assertTrue(p, p2.signum() == 1);
                 }
             }
         }
@@ -1347,28 +1316,25 @@ public class IntervalProperties extends QBarTestProperties {
         for (Pair<Interval, Interval> p : take(LIMIT, ps)) {
             List<Interval> quotient = p.a.divide(p.b);
 
-            assertTrue(p.toString(), convexHull(toList(map(a -> a.multiply(p.b), quotient))).contains(p.a));
-            assertTrue(
-                    p.toString(),
-                    convexHull(toList(map(p.a::multiply, p.b.invert()))).contains(convexHull(quotient))
-            );
+            assertTrue(p, convexHull(toList(map(a -> a.multiply(p.b), quotient))).contains(p.a));
+            assertTrue(p, convexHull(toList(map(p.a::multiply, p.b.invert()))).contains(convexHull(quotient)));
         }
 
         for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(filter(a -> !a.equals(ZERO), P.intervals())))) {
             assertTrue(
-                    p.toString(),
+                    p,
                     convexHull(toList(concatMap(Interval::invert, p.b.divide(p.a))))
                             .contains(convexHull(p.a.divide(p.b)))
             );
         }
 
         for (Interval a : take(LIMIT, P.intervals())) {
-            assertTrue(a.toString(), any(b -> b.contains(a), a.divide(ONE)));
+            assertTrue(a, any(b -> b.contains(a), a.divide(ONE)));
         }
 
         for (Interval a : take(LIMIT, filter(b -> !b.equals(ZERO), P.intervals()))) {
-            assertEquals(a.toString(), ONE.divide(a), a.invert());
-            assertTrue(a.toString(), any(b -> b.contains(ONE), a.divide(a)));
+            assertEquals(a, ONE.divide(a), a.invert());
+            assertTrue(a, any(b -> b.contains(ONE), a.divide(a)));
         }
     }
 
@@ -1386,30 +1352,30 @@ public class IntervalProperties extends QBarTestProperties {
                     filter(r -> r != Rational.ZERO, P.rationalsIn(p.b))
             );
             for (Pair<Rational, Rational> q : take(TINY_LIMIT, qs)) {
-                assertTrue(p.toString(), quotient.contains(q.a.divide(q.b)));
+                assertTrue(p, quotient.contains(q.a.divide(q.b)));
             }
 
-            assertTrue(p.toString(), quotient.multiply(p.b).contains(p.a));
-            assertTrue(p.toString(), p.a.multiply(p.b.invertHull()).contains(quotient));
+            assertTrue(p, quotient.multiply(p.b).contains(p.a));
+            assertTrue(p, p.a.multiply(p.b.invertHull()).contains(quotient));
         }
 
         for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(filter(a -> !a.equals(ZERO), P.intervals())))) {
-            assertTrue(p.toString(), p.b.divideHull(p.a).invertHull().contains(p.a.divideHull(p.b)));
+            assertTrue(p, p.b.divideHull(p.a).invertHull().contains(p.a.divideHull(p.b)));
         }
 
         for (Interval a : take(LIMIT, P.intervals())) {
-            assertTrue(a.toString(), a.divideHull(ONE).contains(a));
+            assertTrue(a, a.divideHull(ONE).contains(a));
         }
 
         for (Interval a : take(LIMIT, filter(b -> !b.equals(ZERO), P.intervals()))) {
-            assertEquals(a.toString(), ONE.divideHull(a), a.invertHull());
-            assertTrue(a.toString(), a.divideHull(a).contains(ONE));
+            assertEquals(a, ONE.divideHull(a), a.invertHull());
+            assertTrue(a, a.divideHull(a).contains(ONE));
         }
 
         for (Interval a : take(LIMIT, P.intervals())) {
             try {
                 a.divideHull(ZERO);
-                fail(a.toString());
+                fail(a);
             } catch (ArithmeticException ignored) {}
         }
     }
@@ -1424,25 +1390,25 @@ public class IntervalProperties extends QBarTestProperties {
             validate(quotient);
 
             for (Rational r : take(TINY_LIMIT, P.rationalsIn(p.a))) {
-                assertTrue(p.toString(), quotient.contains(r.divide(p.b)));
+                assertTrue(p, quotient.contains(r.divide(p.b)));
             }
 
-            assertTrue(p.toString(), quotient.multiply(p.b).contains(p.a));
-            assertTrue(p.toString(), p.a.multiply(p.b.invert()).contains(quotient));
+            assertTrue(p, quotient.multiply(p.b).contains(p.a));
+            assertTrue(p, p.a.multiply(p.b.invert()).contains(quotient));
         }
 
         for (Interval a : take(LIMIT, P.intervals())) {
-            assertTrue(a.toString(), a.divide(Rational.ONE).contains(a));
+            assertTrue(a, a.divide(Rational.ONE).contains(a));
         }
 
         for (Rational r : take(LIMIT, filter(s -> s != Rational.ZERO, P.rationals()))) {
-            assertEquals(r.toString(), ONE.divide(r), of(r.invert()));
+            assertEquals(r, ONE.divide(r), of(r.invert()));
         }
 
         for (Interval a : take(LIMIT, P.intervals())) {
             try {
                 a.divide(Rational.ZERO);
-                fail(a.toString());
+                fail(a);
             } catch (ArithmeticException ignored) {}
         }
     }
@@ -1460,25 +1426,25 @@ public class IntervalProperties extends QBarTestProperties {
             validate(quotient);
 
             for (Rational r : take(TINY_LIMIT, P.rationalsIn(p.a))) {
-                assertTrue(p.toString(), quotient.contains(r.divide(p.b)));
+                assertTrue(p, quotient.contains(r.divide(p.b)));
             }
 
-            assertTrue(p.toString(), quotient.multiply(p.b).contains(p.a));
-            assertTrue(p.toString(), p.a.multiply(Rational.of(p.b).invert()).contains(quotient));
+            assertTrue(p, quotient.multiply(p.b).contains(p.a));
+            assertTrue(p, p.a.multiply(Rational.of(p.b).invert()).contains(quotient));
         }
 
         for (Interval a : take(LIMIT, P.intervals())) {
-            assertTrue(a.toString(), a.divide(BigInteger.ONE).contains(a));
+            assertTrue(a, a.divide(BigInteger.ONE).contains(a));
         }
 
         for (BigInteger i : take(LIMIT, filter(j -> !j.equals(BigInteger.ZERO), P.bigIntegers()))) {
-            assertEquals(i.toString(), ONE.divide(i), of(Rational.of(i).invert()));
+            assertEquals(i, ONE.divide(i), of(Rational.of(i).invert()));
         }
 
         for (Interval a : take(LIMIT, P.intervals())) {
             try {
                 a.divide(BigInteger.ZERO);
-                fail(a.toString());
+                fail(a);
             } catch (ArithmeticException ignored) {}
         }
     }
@@ -1492,25 +1458,25 @@ public class IntervalProperties extends QBarTestProperties {
             validate(quotient);
 
             for (Rational r : take(TINY_LIMIT, P.rationalsIn(p.a))) {
-                assertTrue(p.toString(), quotient.contains(r.divide(p.b)));
+                assertTrue(p, quotient.contains(r.divide(p.b)));
             }
 
-            assertTrue(p.toString(), quotient.multiply(p.b).contains(p.a));
-            assertTrue(p.toString(), p.a.multiply(Rational.of(p.b).invert()).contains(quotient));
+            assertTrue(p, quotient.multiply(p.b).contains(p.a));
+            assertTrue(p, p.a.multiply(Rational.of(p.b).invert()).contains(quotient));
         }
 
         for (Interval a : take(LIMIT, P.intervals())) {
-            assertTrue(a.toString(), a.divide(1).contains(a));
+            assertTrue(a, a.divide(1).contains(a));
         }
 
         for (int i : take(LIMIT, filter(j -> j != 0, P.integers()))) {
-            assertEquals(Integer.toString(i), ONE.divide(i), of(Rational.of(i).invert()));
+            assertEquals(i, ONE.divide(i), of(Rational.of(i).invert()));
         }
 
         for (Interval a : take(LIMIT, P.intervals())) {
             try {
                 a.divide(0);
-                fail(a.toString());
+                fail(a);
             } catch (ArithmeticException ignored) {}
         }
     }
@@ -1538,18 +1504,18 @@ public class IntervalProperties extends QBarTestProperties {
             validate(shifted);
 
             for (Rational r : take(TINY_LIMIT, P.rationalsIn(p.a))) {
-                assertTrue(p.toString(), shifted.contains(r.shiftLeft(p.b)));
+                assertTrue(p, shifted.contains(r.shiftLeft(p.b)));
             }
 
-            assertEquals(p.toString(), shifted, shiftLeft_simplest(p.a, p.b));
-            assertEquals(p.toString(), p.a.signum(), shifted.signum());
-            assertEquals(p.toString(), p.a.isFinitelyBounded(), shifted.isFinitelyBounded());
-            assertEquals(p.toString(), p.a.negate().shiftLeft(p.b), shifted.negate());
-            assertEquals(p.toString(), shifted, p.a.shiftRight(-p.b));
+            assertEquals(p, shifted, shiftLeft_simplest(p.a, p.b));
+            assertEquals(p, p.a.signum(), shifted.signum());
+            assertEquals(p, p.a.isFinitelyBounded(), shifted.isFinitelyBounded());
+            assertEquals(p, p.a.negate().shiftLeft(p.b), shifted.negate());
+            assertEquals(p, shifted, p.a.shiftRight(-p.b));
         }
 
         for (Interval a : take(LIMIT, P.intervals())) {
-            assertEquals(a.toString(), a.shiftLeft(0), a);
+            assertEquals(a, a.shiftLeft(0), a);
         }
 
         if (P instanceof QBarExhaustiveProvider) {
@@ -1559,7 +1525,7 @@ public class IntervalProperties extends QBarTestProperties {
         }
         for (Pair<Interval, Integer> p : take(LIMIT, P.pairs(P.intervals(), is))) {
             Interval shifted = p.a.shiftLeft(p.b);
-            assertEquals(p.toString(), shifted, p.a.multiply(BigInteger.ONE.shiftLeft(p.b)));
+            assertEquals(p, shifted, p.a.multiply(BigInteger.ONE.shiftLeft(p.b)));
         }
     }
 
@@ -1613,18 +1579,18 @@ public class IntervalProperties extends QBarTestProperties {
             validate(shifted);
 
             for (Rational r : take(TINY_LIMIT, P.rationalsIn(p.a))) {
-                assertTrue(p.toString(), shifted.contains(r.shiftRight(p.b)));
+                assertTrue(p, shifted.contains(r.shiftRight(p.b)));
             }
 
-            assertEquals(p.toString(), shifted, shiftRight_simplest(p.a, p.b));
-            assertEquals(p.toString(), p.a.signum(), shifted.signum());
-            assertEquals(p.toString(), p.a.isFinitelyBounded(), shifted.isFinitelyBounded());
-            assertEquals(p.toString(), p.a.negate().shiftRight(p.b), shifted.negate());
-            assertEquals(p.toString(), shifted, p.a.shiftLeft(-p.b));
+            assertEquals(p, shifted, shiftRight_simplest(p.a, p.b));
+            assertEquals(p, p.a.signum(), shifted.signum());
+            assertEquals(p, p.a.isFinitelyBounded(), shifted.isFinitelyBounded());
+            assertEquals(p, p.a.negate().shiftRight(p.b), shifted.negate());
+            assertEquals(p, shifted, p.a.shiftLeft(-p.b));
         }
 
         for (Interval a : take(LIMIT, P.intervals())) {
-            assertEquals(a.toString(), a.shiftRight(0), a);
+            assertEquals(a, a.shiftRight(0), a);
         }
 
         if (P instanceof QBarExhaustiveProvider) {
@@ -1634,7 +1600,7 @@ public class IntervalProperties extends QBarTestProperties {
         }
         for (Pair<Interval, Integer> p : take(LIMIT, P.pairs(P.intervals(), is))) {
             Interval shifted = p.a.shiftRight(p.b);
-            assertEquals(p.toString(), shifted, p.a.divide(BigInteger.ONE.shiftLeft(p.b)));
+            assertEquals(p, shifted, p.a.divide(BigInteger.ONE.shiftLeft(p.b)));
         }
     }
 
@@ -1674,9 +1640,9 @@ public class IntervalProperties extends QBarTestProperties {
         for (List<Interval> is : take(LIMIT, P.lists(P.intervals()))) {
             Interval sum = sum(is);
             for (List<Rational> rs : take(TINY_LIMIT, transposeTruncating(map(P::rationalsIn, is)))) {
-                assertTrue(is.toString(), sum.contains(Rational.sum(rs)));
+                assertTrue(is, sum.contains(Rational.sum(rs)));
             }
-            assertEquals(is.toString(), sum.isFinitelyBounded(), is.isEmpty() || all(Interval::isFinitelyBounded, is));
+            assertEquals(is, sum.isFinitelyBounded(), is.isEmpty() || all(Interval::isFinitelyBounded, is));
         }
     }
 
@@ -1697,11 +1663,11 @@ public class IntervalProperties extends QBarTestProperties {
         for (List<Interval> is : take(LIMIT, P.lists(P.intervals()))) {
             Interval product = product(is);
             for (List<Rational> rs : take(TINY_LIMIT, transposeTruncating(map(P::rationalsIn, is)))) {
-                assertTrue(is.toString(), product.contains(Rational.product(rs)));
+                assertTrue(is, product.contains(Rational.product(rs)));
             }
 
             assertEquals(
-                    is.toString(),
+                    is,
                     product.isFinitelyBounded(),
                     is.isEmpty() || is.contains(ZERO) || all(Interval::isFinitelyBounded, is)
             );
@@ -1726,7 +1692,7 @@ public class IntervalProperties extends QBarTestProperties {
         for (List<Interval> is : take(LIMIT, P.listsAtLeast(1, P.intervals()))) {
             Iterable<Interval> deltas = delta(is);
             for (List<Rational> rs : take(TINY_LIMIT, transposeTruncating(map(P::rationalsIn, is)))) {
-                assertTrue(is.toString(), and(zipWith(Interval::contains, deltas, Rational.delta(rs))));
+                assertTrue(is, and(zipWith(Interval::contains, deltas, Rational.delta(rs))));
             }
         }
     }
@@ -1743,11 +1709,11 @@ public class IntervalProperties extends QBarTestProperties {
             //todo fix hanging
 //            Iterable<Rational> rs = p.b < 0 ? filter(r -> r != Rational.ZERO, P.rationals(p.a)) : P.rationals(p.a);
 //            for (Rational r : take(TINY_LIMIT, rs)) {
-//                assertTrue(p.toString(), any(s -> s.contains(r.pow(p.b)), pow));
+//                assertTrue(p, any(s -> s.contains(r.pow(p.b)), pow));
 //            }
 
             int size = pow.size();
-            assertTrue(p.toString(), size == 0 || size == 1 || size == 2);
+            assertTrue(p, size == 0 || size == 1 || size == 2);
             if (size == 2) {
                 Interval i1 = pow.get(0);
                 Interval i2 = pow.get(1);
@@ -1755,15 +1721,15 @@ public class IntervalProperties extends QBarTestProperties {
                 Rational q1 = i1.getUpper().isPresent() ? i1.getUpper().get() : null;
                 Rational p2 = i2.getLower().isPresent() ? i2.getLower().get() : null;
                 Rational q2 = i2.getUpper().isPresent() ? i2.getUpper().get() : null;
-                assertTrue(p.toString(), p1 == null);
-                assertTrue(p.toString(), q2 == null);
+                assertTrue(p, p1 == null);
+                assertTrue(p, q2 == null);
                 if (p2 == Rational.ZERO) {
-                    assertTrue(p.toString(), q1.signum() == -1);
+                    assertTrue(p, q1.signum() == -1);
                 } else if (q1 == Rational.ZERO) {
-                    assertTrue(p.toString(), p2.signum() == 1);
+                    assertTrue(p, p2.signum() == 1);
                 } else {
-                    assertTrue(p.toString(), q1.signum() == -1);
-                    assertTrue(p.toString(), p2.signum() == 1);
+                    assertTrue(p, q1.signum() == -1);
+                    assertTrue(p, p2.signum() == 1);
                 }
             }
         }
@@ -1776,32 +1742,32 @@ public class IntervalProperties extends QBarTestProperties {
             List<Interval> pow = p.a.pow(p.b);
             Interval x = product(replicate(Math.abs(p.b), p.a));
             Interval product = p.b < 0 ? x.invertHull() : x;
-            assertTrue(p.toString(), all(product::contains, pow));
+            assertTrue(p, all(product::contains, pow));
         }
 
         ps = P.pairs(filter(a -> !a.equals(ZERO), P.intervals()), P.withScale(20).integersGeometric());
         for (Pair<Interval, Integer> p : take(LIMIT, ps)) {
             List<Interval> a = p.a.pow(p.b);
             assertTrue(
-                    p.toString(),
+                    p,
                     any(c -> convexHull(toList(concatMap(Interval::invert, p.a.pow(-p.b)))).contains(c), a)
             );
             assertTrue(
-                    p.toString(),
+                    p,
                     any(c -> convexHull(toList(concatMap(b -> b.pow(-p.b), p.a.invert()))).contains(c), a)
             );
         }
 
         for (int i : take(LIMIT, P.withScale(20).positiveIntegersGeometric())) {
-            assertTrue(Integer.toString(i), ZERO.pow(i).equals(Collections.singletonList(ZERO)));
+            assertTrue(i, ZERO.pow(i).equals(Collections.singletonList(ZERO)));
         }
 
         for (Interval a : take(LIMIT, P.intervals())) {
-            assertTrue(a.toString(), a.pow(0).equals(Collections.singletonList(ONE)));
-            assertEquals(a.toString(), a.pow(1), Collections.singletonList(a));
+            assertTrue(a, a.pow(0).equals(Collections.singletonList(ONE)));
+            assertEquals(a, a.pow(1), Collections.singletonList(a));
             Interval product = a.multiply(a);
-            assertTrue(a.toString(), all(product::contains, a.pow(2)));
-            assertEquals(a.toString(), a.pow(-1), a.invert());
+            assertTrue(a, all(product::contains, a.pow(2)));
+            assertEquals(a, a.pow(-1), a.invert());
         }
 
         Iterable<Triple<Interval, Integer, Integer>> ts1 = filter(
@@ -1811,7 +1777,7 @@ public class IntervalProperties extends QBarTestProperties {
         for (Triple<Interval, Integer, Integer> t : take(LIMIT, ts1)) {
             Interval expression1 = convexHull(toList(concatMap(a -> map(a::multiply, t.a.pow(t.c)), t.a.pow(t.b))));
             Interval expression2 = convexHull(t.a.pow(t.b + t.c));
-            assertTrue(t.toString(), expression1.contains(expression2));
+            assertTrue(t, expression1.contains(expression2));
         }
 
         ts1 = filter(
@@ -1823,7 +1789,7 @@ public class IntervalProperties extends QBarTestProperties {
                     toList(concatMap(a -> concatMap(a::divide, t.a.pow(t.c)), t.a.pow(t.b)))
             );
             Interval expression2 = convexHull(t.a.pow(t.b - t.c));
-            assertTrue(t.toString(), expression1.contains(expression2));
+            assertTrue(t, expression1.contains(expression2));
         }
 
         ts1 = filter(
@@ -1833,7 +1799,7 @@ public class IntervalProperties extends QBarTestProperties {
         for (Triple<Interval, Integer, Integer> t : take(LIMIT, ts1)) {
             Interval expression5 = convexHull(toList(concatMap(a -> a.pow(t.c), t.a.pow(t.b))));
             Interval expression6 = convexHull(t.a.pow(t.b * t.c));
-            assertTrue(t.toString(), expression5.contains(expression6));
+            assertTrue(t, expression5.contains(expression6));
         }
 
         Iterable<Triple<Interval, Interval, Integer>> ts2 = filter(
@@ -1843,7 +1809,7 @@ public class IntervalProperties extends QBarTestProperties {
         for (Triple<Interval, Interval, Integer> t : take(LIMIT, ts2)) {
             Interval expression1 = convexHull(t.a.multiply(t.b).pow(t.c));
             Interval expression2 = convexHull(toList(concatMap(a -> map(a::multiply, t.b.pow(t.c)), t.a.pow(t.c))));
-            assertEquals(t.toString(), expression1, expression2);
+            assertEquals(t, expression1, expression2);
         }
 
         ts2 = filter(
@@ -1859,7 +1825,7 @@ public class IntervalProperties extends QBarTestProperties {
             Interval expression2 = convexHull(
                     toList(concatMap(a -> concatMap(a::divide, t.b.pow(t.c)), t.a.pow(t.c)))
             );
-            assertTrue(t.toString(), expression1.contains(expression2));
+            assertTrue(t, expression1.contains(expression2));
         }
     }
 
@@ -1878,19 +1844,19 @@ public class IntervalProperties extends QBarTestProperties {
             //todo fix hanging
 //            Iterable<Rational> rs = p.b < 0 ? filter(r -> r != Rational.ZERO, P.rationals(p.a)) : P.rationals(p.a);
 //            for (Rational r : take(TINY_LIMIT, rs)) {
-//                assertTrue(p.toString(), pow.contains(r.pow(p.b)));
+//                assertTrue(p, pow.contains(r.pow(p.b)));
 //            }
 
             Interval product = product(replicate(Math.abs(p.b), p.a));
             if (p.b < 0) product = product.invertHull();
-            assertTrue(p.toString(), product.contains(pow));
+            assertTrue(p, product.contains(pow));
         }
 
         ps = P.pairs(filter(a -> !a.equals(ZERO), P.intervals()), P.withScale(20).integersGeometric());
         for (Pair<Interval, Integer> p : take(LIMIT, ps)) {
             Interval a = p.a.powHull(p.b);
-            assertTrue(p.toString(), p.a.powHull(-p.b).invertHull().contains(a));
-            assertTrue(p.toString(), p.a.invertHull().powHull(-p.b).contains(a));
+            assertTrue(p, p.a.powHull(-p.b).invertHull().contains(a));
+            assertTrue(p, p.a.invertHull().powHull(-p.b).contains(a));
         }
 
         for (int i : take(LIMIT, P.withScale(20).positiveIntegersGeometric())) {
@@ -1898,14 +1864,14 @@ public class IntervalProperties extends QBarTestProperties {
         }
 
         for (Interval a : take(LIMIT, P.intervals())) {
-            assertTrue(a.toString(), a.powHull(0).equals(ONE));
-            assertEquals(a.toString(), a.powHull(1), a);
-            assertTrue(a.toString(), a.multiply(a).contains(a.powHull(2)));
+            assertTrue(a, a.powHull(0).equals(ONE));
+            assertEquals(a, a.powHull(1), a);
+            assertTrue(a, a.multiply(a).contains(a.powHull(2)));
         }
 
         Iterable<Interval> rs = filter(a -> !a.equals(ZERO), P.intervals());
         for (Interval a : take(LIMIT, rs)) {
-            assertEquals(a.toString(), a.powHull(-1), a.invertHull());
+            assertEquals(a, a.powHull(-1), a.invertHull());
         }
 
         Iterable<Triple<Interval, Integer, Integer>> ts1 = filter(
@@ -1915,7 +1881,7 @@ public class IntervalProperties extends QBarTestProperties {
         for (Triple<Interval, Integer, Integer> t : take(LIMIT, ts1)) {
             Interval expression1 = t.a.powHull(t.b).multiply(t.a.powHull(t.c));
             Interval expression2 = t.a.powHull(t.b + t.c);
-            assertTrue(t.toString(), expression1.contains(expression2));
+            assertTrue(t, expression1.contains(expression2));
         }
 
         ts1 = filter(
@@ -1925,7 +1891,7 @@ public class IntervalProperties extends QBarTestProperties {
         for (Triple<Interval, Integer, Integer> t : take(LIMIT, ts1)) {
             Interval expression1 = t.a.powHull(t.b).divideHull(t.a.powHull(t.c));
             Interval expression2 = t.a.powHull(t.b - t.c);
-            assertTrue(t.toString(), expression1.contains(expression2));
+            assertTrue(t, expression1.contains(expression2));
         }
 
         ts1 = filter(
@@ -1935,7 +1901,7 @@ public class IntervalProperties extends QBarTestProperties {
         for (Triple<Interval, Integer, Integer> t : take(LIMIT, ts1)) {
             Interval expression5 = t.a.powHull(t.b).powHull(t.c);
             Interval expression6 = t.a.powHull(t.b * t.c);
-            assertTrue(t.toString(), expression5.contains(expression6));
+            assertTrue(t, expression5.contains(expression6));
         }
 
         Iterable<Triple<Interval, Interval, Integer>> ts2 = filter(
@@ -1945,7 +1911,7 @@ public class IntervalProperties extends QBarTestProperties {
         for (Triple<Interval, Interval, Integer> t : take(LIMIT, ts2)) {
             Interval expression1 = t.a.multiply(t.b).powHull(t.c);
             Interval expression2 = t.a.powHull(t.c).multiply(t.b.powHull(t.c));
-            assertEquals(t.toString(), expression1, expression2);
+            assertEquals(t, expression1, expression2);
         }
 
         ts2 = filter(
@@ -1959,13 +1925,13 @@ public class IntervalProperties extends QBarTestProperties {
         for (Triple<Interval, Interval, Integer> t : take(LIMIT, ts2)) {
             Interval expression1 = t.a.divideHull(t.b).powHull(t.c);
             Interval expression2 = t.a.powHull(t.c).divideHull(t.b.powHull(t.c));
-            assertTrue(t.toString(), expression1.contains(expression2));
+            assertTrue(t, expression1.contains(expression2));
         }
 
         for (int i : take(LIMIT, P.negativeIntegers())) {
             try {
                 ZERO.powHull(i);
-                fail(Integer.toString(i));
+                fail(i);
             } catch (ArithmeticException ignored) {}
         }
     }
@@ -1985,7 +1951,7 @@ public class IntervalProperties extends QBarTestProperties {
         );
         for (Pair<Interval, Interval> p : take(LIMIT, ps)) {
             Ordering compare = p.a.elementCompare(p.b).get();
-            assertEquals(p.toString(), p.b.elementCompare(p.a).get(), compare.invert());
+            assertEquals(p, p.b.elementCompare(p.a).get(), compare.invert());
         }
 
         ps = filter(
@@ -1993,13 +1959,13 @@ public class IntervalProperties extends QBarTestProperties {
                 P.pairs(P.intervals())
         );
         for (Pair<Interval, Interval> p : take(LIMIT, ps)) {
-            assertFalse(p.toString(), p.b.elementCompare(p.a).isPresent());
+            assertFalse(p, p.b.elementCompare(p.a).isPresent());
         }
 
         for (Interval a : take(LIMIT, P.intervals())) {
             Optional<Ordering> compare = a.elementCompare(a);
-            assertTrue(a.toString(), !compare.isPresent() || compare.get() == EQ);
-            assertEquals(a.toString(), a.elementCompare(ZERO).map(Ordering::toInt), a.signum());
+            assertTrue(a, !compare.isPresent() || compare.get() == EQ);
+            assertEquals(a, a.elementCompare(ZERO).map(Ordering::toInt), a.signum());
         }
 
         Iterable<Triple<Interval, Interval, Interval>> ts = filter(
@@ -2008,7 +1974,7 @@ public class IntervalProperties extends QBarTestProperties {
                 P.triples(P.intervals())
         );
         for (Triple<Interval, Interval, Interval> t : take(LIMIT, ts)) {
-            assertEquals(t.toString(), t.a.elementCompare(t.c), Optional.of(LT));
+            assertEquals(t, t.a.elementCompare(t.c), Optional.of(LT));
         }
     }
 
@@ -2043,7 +2009,7 @@ public class IntervalProperties extends QBarTestProperties {
 
         for (Interval a : take(LIMIT, P.intervals())) {
             Optional<Interval> oi = read(a.toString());
-            assertEquals(a.toString(), oi.get(), a);
+            assertEquals(a, oi.get(), a);
         }
     }
 
@@ -2060,21 +2026,17 @@ public class IntervalProperties extends QBarTestProperties {
 
         for (Interval a : take(LIMIT, P.intervals())) {
             String s = a.toString();
-            assertTrue(a.toString(), isSubsetOf(s, INTERVAL_CHARS));
+            assertTrue(a, isSubsetOf(s, INTERVAL_CHARS));
             Optional<Interval> readI = read(s);
-            assertTrue(a.toString(), readI.isPresent());
-            assertEquals(a.toString(), readI.get(), a);
+            assertTrue(a, readI.isPresent());
+            assertEquals(a, readI.get(), a);
         }
     }
 
     private static void validate(@NotNull Interval a) {
         if (a.getLower().isPresent() && a.getUpper().isPresent()) {
-            assertTrue(a.toString(), le(a.getLower().get(), a.getUpper().get()));
+            assertTrue(a, le(a.getLower().get(), a.getUpper().get()));
         }
-    }
-
-    private static <T> void aeq(String message, Iterable<T> xs, Iterable<T> ys) {
-        assertTrue(message, equal(xs, ys));
     }
 
     private static void aeq(String message, float x, float y) {

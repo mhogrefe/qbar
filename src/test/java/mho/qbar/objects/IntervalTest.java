@@ -27,20 +27,28 @@ public class IntervalTest {
         aeq(ALL, "(-Infinity, Infinity)");
     }
 
+    private static void getLower_helper(@NotNull String input, @NotNull String output) {
+        aeq(read(input).get().getLower(), output);
+    }
+
     @Test
     public void testGetLower() {
-        aeq(ZERO.getLower().get(), "0");
-        aeq(ONE.getLower().get(), "1");
-        aeq(read("[-2, 5/3]").get().getLower().get(), "-2");
-        assertFalse(ALL.getLower().isPresent());
+        getLower_helper("[0, 0]", "Optional[0]");
+        getLower_helper("[1, 1]", "Optional[1]");
+        getLower_helper("[-2, 5/3]", "Optional[-2]");
+        getLower_helper("(-Infinity, Infinity)", "Optional.empty");
+    }
+
+    private static void getUpper_helper(@NotNull String input, @NotNull String output) {
+        aeq(read(input).get().getUpper(), output);
     }
 
     @Test
     public void testGetUpper() {
-        aeq(ZERO.getUpper().get(), "0");
-        aeq(ONE.getUpper().get(), "1");
-        aeq(read("[-2, 5/3]").get().getUpper().get(), "5/3");
-        assertFalse(ALL.getUpper().isPresent());
+        getUpper_helper("[0, 0]", "Optional[0]");
+        getUpper_helper("[1, 1]", "Optional[1]");
+        getUpper_helper("[-2, 5/3]", "Optional[5/3]");
+        getUpper_helper("(-Infinity, Infinity)", "Optional.empty");
     }
 
     @Test
@@ -1294,8 +1302,8 @@ public class IntervalTest {
 
     @Test
     public void testDelta() {
-        aeq(delta(readIntervalList("[[1/3, 2]]")), "[]");
-        aeq(delta(readIntervalList("[[-2, 5/3], (-Infinity, 6], [4, 4]]")), "[(-Infinity, 8], [-2, Infinity)]");
+        aeqit(delta(readIntervalList("[[1/3, 2]]")), "[]");
+        aeqit(delta(readIntervalList("[[-2, 5/3], (-Infinity, 6], [4, 4]]")), "[(-Infinity, 8], [-2, Infinity)]");
         Interval seed = read("[1/3, 1/2]").get();
         aeqitLimit(TINY_LIMIT, delta(iterate(seed::multiply, seed)),
                 "[[-7/18, -1/12], [-23/108, 1/72], [-73/648, 11/432], [-227/3888, 49/2592], [-697/23328, 179/15552]," +
@@ -1563,14 +1571,6 @@ public class IntervalTest {
         assertFalse(findIn("vdfvds(Infinity, 2]vsd").isPresent());
         assertFalse(findIn("abcd[5, 4]xyz").isPresent());
         assertFalse(findIn("abcd[5, 4/0]xyz").isPresent());
-    }
-
-    private static void aeq(Iterable<?> a, Object b) {
-        assertEquals(IterableUtils.toString(a), b.toString());
-    }
-
-    private static void aeq(Object a, Object b) {
-        assertEquals(a.toString(), b.toString());
     }
 
     private static @NotNull List<Interval> readIntervalList(@NotNull String s) {
