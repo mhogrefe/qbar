@@ -105,15 +105,34 @@ public class IntervalTest {
         of_Rational_helper("2", "[2, 2]");
     }
 
+    private static void bitLength_helper(@NotNull String input, int output) {
+        aeq(read(input).get().bitLength(), output);
+    }
+
+    @Test
+    public void testBitLength() {
+        bitLength_helper("[0, 0]", 2);
+        bitLength_helper("[1, 1]", 4);
+        bitLength_helper("(-Infinity, Infinity)", 0);
+        bitLength_helper("[-2, 5/3]", 8);
+        bitLength_helper("[4, 4]", 8);
+        bitLength_helper("(-Infinity, 3/2]", 4);
+        bitLength_helper("[-6, Infinity)", 4);
+    }
+
+    private static void isFinitelyBounded_helper(@NotNull String input, boolean output) {
+        aeq(read(input).get().isFinitelyBounded(), output);
+    }
+
     @Test
     public void testIsFinitelyBounded() {
-        assertTrue(ZERO.isFinitelyBounded());
-        assertTrue(ONE.isFinitelyBounded());
-        assertFalse(ALL.isFinitelyBounded());
-        assertTrue(read("[-2, 5/3]").get().isFinitelyBounded());
-        assertTrue(read("[4, 4]").get().isFinitelyBounded());
-        assertFalse(read("(-Infinity, 3/2]").get().isFinitelyBounded());
-        assertFalse(read("[-6, Infinity)").get().isFinitelyBounded());
+        isFinitelyBounded_helper("[0, 0]", true);
+        isFinitelyBounded_helper("[1, 1]", true);
+        isFinitelyBounded_helper("(-Infinity, Infinity)", false);
+        isFinitelyBounded_helper("[-2, 5/3]", true);
+        isFinitelyBounded_helper("[4, 4]", true);
+        isFinitelyBounded_helper("(-Infinity, 3/2]", false);
+        isFinitelyBounded_helper("[-6, Infinity)", false);
     }
 
     @Test

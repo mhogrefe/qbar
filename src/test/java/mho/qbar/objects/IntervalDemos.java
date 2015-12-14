@@ -67,6 +67,13 @@ public class IntervalDemos extends QBarDemos {
         }
     }
 
+    private void demoBitLength() {
+        initialize();
+        for (Interval a : take(LIMIT, P.intervals())) {
+            System.out.println("bitLength(" + a + ") = " + a.bitLength());
+        }
+    }
+
     private void demoIsFinitelyBounded() {
         initialize();
         for (Interval a : take(LIMIT, P.intervals())) {

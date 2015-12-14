@@ -15,6 +15,7 @@ import org.jetbrains.annotations.NotNull;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;
+import java.util.function.Function;
 
 import static mho.qbar.objects.Interval.*;
 import static mho.qbar.objects.Interval.greaterThanOrEqualTo;
@@ -43,6 +44,7 @@ public class IntervalProperties extends QBarTestProperties {
         propertiesLessThanOrEqualTo();
         propertiesGreaterThanOrEqualTo();
         propertiesOf_Rational();
+        propertiesBitLength();
         propertiesIsFinitelyBounded();
         propertiesContains_Rational();
         propertiesContains_Interval();
@@ -163,12 +165,18 @@ public class IntervalProperties extends QBarTestProperties {
         }
     }
 
-    private void propertiesIsFinitelyBounded() {
-        initialize("");
-        System.out.println("\t\ttesting isFinitelyBounded() properties...");
-
+    private void propertiesBitLength() {
+        initialize("bitLength()");
         for (Interval a : take(LIMIT, P.intervals())) {
-            a.isFinitelyBounded();
+            assertTrue(a, a.bitLength() >= 0);
+            homomorphic(Interval::negate, Function.identity(), Interval::bitLength, Interval::bitLength, a);
+        }
+    }
+
+    private void propertiesIsFinitelyBounded() {
+        initialize("isFinitelyBounded()");
+        for (Interval a : take(LIMIT, P.intervals())) {
+            assertNotEquals(a, a.isFinitelyBounded(), a.toString().contains("Infinity"));
         }
 
         for (Interval a : take(LIMIT, P.finitelyBoundedIntervals())) {

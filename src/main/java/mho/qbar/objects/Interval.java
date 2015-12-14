@@ -162,6 +162,17 @@ public final class Interval implements Comparable<Interval> {
         return new Interval(x, x);
     }
 
+    /**
+     * Returns the bit length of {@code this}, or the sum of the bit lengths of the lower and upper bounds (see
+     * {@link Rational#bitLength()}. If either bound is infinite, it does not contribute to the bit length.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Interval}.</li>
+     *  <li>The result is non-negative.</li>
+     * </ul>
+     *
+     * @return the bit length of {@code this}
+     */
     public int bitLength() {
         return (lower == null ? 0 : lower.bitLength()) + (upper == null ? 0 : upper.bitLength());
     }
