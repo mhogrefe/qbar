@@ -17,11 +17,10 @@ import java.util.List;
 import java.util.Map;
 
 import static mho.qbar.objects.Rational.*;
+import static mho.qbar.objects.Rational.sum;
 import static mho.qbar.testing.QBarTesting.QEP;
 import static mho.wheels.iterables.IterableUtils.*;
-import static mho.wheels.testing.Testing.MEDIUM_LIMIT;
-import static mho.wheels.testing.Testing.its;
-import static mho.wheels.testing.Testing.nicePrint;
+import static mho.wheels.testing.Testing.*;
 
 @SuppressWarnings("UnusedDeclaration")
 public class RationalDemos extends QBarDemos {

@@ -20,7 +20,12 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import static mho.qbar.objects.Rational.*;
+import static mho.qbar.objects.Rational.sum;
 import static mho.qbar.testing.QBarTesting.*;
+import static mho.qbar.testing.QBarTesting.propertiesCompareToHelper;
+import static mho.qbar.testing.QBarTesting.propertiesEqualsHelper;
+import static mho.qbar.testing.QBarTesting.propertiesHashCodeHelper;
+import static mho.qbar.testing.QBarTesting.propertiesReadHelper;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.numberUtils.FloatingPointUtils.*;
 import static mho.wheels.ordering.Ordering.*;

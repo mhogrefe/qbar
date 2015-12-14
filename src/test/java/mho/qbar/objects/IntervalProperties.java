@@ -3,7 +3,7 @@ package mho.qbar.objects;
 import mho.qbar.iterableProviders.QBarExhaustiveProvider;
 import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.iterableProviders.QBarRandomProvider;
-import mho.qbar.testing.QBarTesting;
+import mho.qbar.testing.QBarTestProperties;
 import mho.wheels.iterables.ExhaustiveProvider;
 import mho.wheels.numberUtils.BigDecimalUtils;
 import mho.wheels.numberUtils.FloatingPointUtils;
@@ -11,7 +11,6 @@ import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
 import org.jetbrains.annotations.NotNull;
-import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -21,6 +20,10 @@ import static mho.qbar.objects.Interval.*;
 import static mho.qbar.objects.Interval.greaterThanOrEqualTo;
 import static mho.qbar.objects.Interval.lessThanOrEqualTo;
 import static mho.qbar.objects.Interval.sum;
+import static mho.qbar.testing.QBarTesting.*;
+import static mho.qbar.testing.QBarTesting.propertiesCompareToHelper;
+import static mho.qbar.testing.QBarTesting.propertiesEqualsHelper;
+import static mho.qbar.testing.QBarTesting.propertiesHashCodeHelper;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.ordering.Ordering.*;
 import static mho.wheels.testing.Testing.*;
@@ -30,94 +33,76 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-public class IntervalProperties {
-    private static boolean USE_RANDOM;
-    private static final @NotNull QBarExhaustiveProvider EP = QBarExhaustiveProvider.INSTANCE;
+public class IntervalProperties extends QBarTestProperties {
     private static final @NotNull String INTERVAL_CHARS = " (),-/0123456789I[]finty";
-    private static final int TINY_LIMIT = 10;
-    private static int LIMIT;
 
-    private static QBarIterableProvider P;
-
-    private static void initialize() {
-        if (USE_RANDOM) {
-            P = QBarRandomProvider.example();
-            LIMIT = 1000;
-        } else {
-            P = QBarExhaustiveProvider.INSTANCE;
-            LIMIT = 10000;
-        }
+    public IntervalProperties() {
+        super("Interval");
     }
 
-    @Test
-    public void testAllProperties() {
-        System.out.println("Interval properties");
-        for (boolean useRandom : Arrays.asList(false, true)) {
-            System.out.println("\ttesting " + (useRandom ? "randomly" : "exhaustively"));
-            USE_RANDOM = useRandom;
-            propertiesGetLower();
-            propertiesGetUpper();
-            propertiesOf_Rational_Rational();
-            propertiesLessThanOrEqualTo();
-            propertiesGreaterThanOrEqualTo();
-            propertiesOf_Rational();
-            propertiesIsFinitelyBounded();
-            propertiesContains_Rational();
-            propertiesContains_Interval();
-            propertiesDiameter();
-            propertiesConvexHull_Interval();
-            propertiesConvexHull_List_Interval();
-            compareImplementationsConvexHull_List_Interval();
-            propertiesIntersection();
-            propertiesDisjoint();
-            propertiesMakeDisjoint();
-//            propertiesComplement();
-            propertiesMidpoint();
-            propertiesSplit();
-            propertiesBisect();
-            propertiesRoundingPreimage_float();
-            propertiesRoundingPreimage_double();
-            propertiesRoundingPreimage_BigDecimal();
-            propertiesFloatRange();
-            propertiesDoubleRange();
-            propertiesAdd();
-            propertiesNegate();
-            propertiesAbs();
-            propertiesSignum();
-            propertiesSubtract();
-            propertiesMultiply_Interval();
-            propertiesMultiply_Rational();
-            propertiesMultiply_BigInteger();
-            propertiesMultiply_int();
-            propertiesInvert();
-            propertiesInvertHull();
-            propertiesDivide_Interval();
-            propertiesDivideHull();
-            propertiesDivide_Rational();
-            propertiesDivide_BigInteger();
-            propertiesDivide_int();
-            propertiesShiftLeft();
-            compareImplementationsShiftLeft();
-            propertiesShiftRight();
-            compareImplementationsShiftRight();
-            propertiesSum();
-            propertiesProduct();
-            propertiesDelta();
-            propertiesPow();
-            propertiesPowHull();
-            propertiesElementCompare();
-            propertiesEquals();
-            propertiesHashCode();
-            propertiesCompareTo();
-            propertiesRead();
-            propertiesFindIn();
-            propertiesToString();
-        }
-        System.out.println("Done");
+    @Override
+    protected void testBothModes() {
+        propertiesGetLower();
+        propertiesGetUpper();
+        propertiesOf_Rational_Rational();
+        propertiesLessThanOrEqualTo();
+        propertiesGreaterThanOrEqualTo();
+        propertiesOf_Rational();
+        propertiesIsFinitelyBounded();
+        propertiesContains_Rational();
+        propertiesContains_Interval();
+        propertiesDiameter();
+        propertiesConvexHull_Interval();
+        propertiesConvexHull_List_Interval();
+        compareImplementationsConvexHull_List_Interval();
+        propertiesIntersection();
+        propertiesDisjoint();
+        propertiesMakeDisjoint();
+//        propertiesComplement();
+        propertiesMidpoint();
+        propertiesSplit();
+        propertiesBisect();
+        propertiesRoundingPreimage_float();
+        propertiesRoundingPreimage_double();
+        propertiesRoundingPreimage_BigDecimal();
+        propertiesFloatRange();
+        propertiesDoubleRange();
+        propertiesAdd();
+        propertiesNegate();
+        propertiesAbs();
+        propertiesSignum();
+        propertiesSubtract();
+        propertiesMultiply_Interval();
+        propertiesMultiply_Rational();
+        propertiesMultiply_BigInteger();
+        propertiesMultiply_int();
+        propertiesInvert();
+        propertiesInvertHull();
+        propertiesDivide_Interval();
+        propertiesDivideHull();
+        propertiesDivide_Rational();
+        propertiesDivide_BigInteger();
+        propertiesDivide_int();
+        propertiesShiftLeft();
+        compareImplementationsShiftLeft();
+        propertiesShiftRight();
+        compareImplementationsShiftRight();
+        propertiesSum();
+        propertiesProduct();
+        propertiesDelta();
+        propertiesPow();
+        propertiesPowHull();
+        propertiesElementCompare();
+        propertiesEquals();
+        propertiesHashCode();
+        propertiesCompareTo();
+        propertiesRead();
+        propertiesFindIn();
+        propertiesToString();
     }
 
-    private static void propertiesGetLower() {
-        initialize();
+    private void propertiesGetLower() {
+        initialize("");
         System.out.println("\t\ttesting getLower() properties...");
 
         for (Interval a : take(LIMIT, P.intervals())) {
@@ -129,8 +114,8 @@ public class IntervalProperties {
         }
     }
 
-    private static void propertiesGetUpper() {
-        initialize();
+    private void propertiesGetUpper() {
+        initialize("");
         System.out.println("\t\ttesting getUpper() properties...");
 
         for (Interval a : take(LIMIT, P.intervals())) {
@@ -138,8 +123,8 @@ public class IntervalProperties {
         }
     }
 
-    private static void propertiesOf_Rational_Rational() {
-        initialize();
+    private void propertiesOf_Rational_Rational() {
+        initialize("");
         System.out.println("\t\ttesting of(Rational, Rational) properties...");
 
         Iterable<Pair<Rational, Rational>> ps = filter(q -> le(q.a, q.b), P.pairs(P.rationals()));
@@ -150,8 +135,8 @@ public class IntervalProperties {
         }
     }
 
-    private static void propertiesLessThanOrEqualTo() {
-        initialize();
+    private void propertiesLessThanOrEqualTo() {
+        initialize("");
         System.out.println("\t\ttesting lessThanOrEqualTo(Rational) properties...");
 
         for (Rational r : take(LIMIT, P.rationals())) {
@@ -165,8 +150,8 @@ public class IntervalProperties {
         }
     }
 
-    private static void propertiesGreaterThanOrEqualTo() {
-        initialize();
+    private void propertiesGreaterThanOrEqualTo() {
+        initialize("");
         System.out.println("\t\ttesting greaterThanOrEqualTo(Rational) properties...");
 
         for (Rational r : take(LIMIT, P.rationals())) {
@@ -180,8 +165,8 @@ public class IntervalProperties {
         }
     }
 
-    private static void propertiesOf_Rational() {
-        initialize();
+    private void propertiesOf_Rational() {
+        initialize("");
         System.out.println("\t\ttesting of(Rational) properties...");
 
         for (Rational r : take(LIMIT, P.rationals())) {
@@ -192,8 +177,8 @@ public class IntervalProperties {
         }
     }
 
-    private static void propertiesIsFinitelyBounded() {
-        initialize();
+    private void propertiesIsFinitelyBounded() {
+        initialize("");
         System.out.println("\t\ttesting isFinitelyBounded() properties...");
 
         for (Interval a : take(LIMIT, P.intervals())) {
@@ -210,8 +195,8 @@ public class IntervalProperties {
         }
     }
 
-    private static void propertiesContains_Rational() {
-        initialize();
+    private void propertiesContains_Rational() {
+        initialize("");
         System.out.println("\t\ttesting contains(Rational) properties...");
 
         for (Pair<Interval, Rational> p : take(LIMIT, P.pairs(P.intervals(), P.rationals()))) {
@@ -228,8 +213,8 @@ public class IntervalProperties {
         }
     }
 
-    private static void propertiesContains_Interval() {
-        initialize();
+    private void propertiesContains_Interval() {
+        initialize("");
         System.out.println("\t\ttesting contains(Interval) properties...");
 
         for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
@@ -257,8 +242,8 @@ public class IntervalProperties {
         }
     }
 
-    private static void propertiesDiameter() {
-        initialize();
+    private void propertiesDiameter() {
+        initialize("");
         System.out.println("\t\ttesting diameter() properties...");
 
         for (Interval a : take(LIMIT, P.intervals())) {
@@ -275,8 +260,8 @@ public class IntervalProperties {
         }
     }
 
-    private static void propertiesConvexHull_Interval() {
-        initialize();
+    private void propertiesConvexHull_Interval() {
+        initialize("");
         System.out.println("\t\ttesting convexHull(Interval) properties...");
 
         for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
@@ -326,8 +311,8 @@ public class IntervalProperties {
         return new Pair<>(lower, upper);
     }
 
-    private static void propertiesConvexHull_List_Interval() {
-        initialize();
+    private void propertiesConvexHull_List_Interval() {
+        initialize("");
         System.out.println("\t\ttesting convexHull(List<Interval>) properties...");
 
         for (List<Interval> as : take(LIMIT, P.listsAtLeast(1, P.intervals()))) {
@@ -391,8 +376,8 @@ public class IntervalProperties {
         }
     }
 
-    private static void compareImplementationsConvexHull_List_Interval() {
-        initialize();
+    private void compareImplementationsConvexHull_List_Interval() {
+        initialize("");
         System.out.println("\t\tcomparing convexHull(List<Interval>) implementations...");
 
         long totalTime = 0;
@@ -412,8 +397,8 @@ public class IntervalProperties {
         System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
     }
 
-    private static void propertiesIntersection() {
-        initialize();
+    private void propertiesIntersection() {
+        initialize("");
         System.out.println("\t\ttesting intersection(Interval) properties...");
 
         for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
@@ -447,8 +432,8 @@ public class IntervalProperties {
         }
     }
 
-    private static void propertiesDisjoint() {
-        initialize();
+    private void propertiesDisjoint() {
+        initialize("");
         System.out.println("\t\ttesting disjoint(Interval) properties...");
 
         for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
@@ -468,8 +453,8 @@ public class IntervalProperties {
         }
     }
 
-    private static void propertiesMakeDisjoint() {
-        initialize();
+    private void propertiesMakeDisjoint() {
+        initialize("");
         System.out.println("\t\ttesting makeDisjoint(List<Interval>) properties...");
 
         for (List<Interval> as : take(LIMIT, P.lists(P.intervals()))) {
@@ -521,8 +506,8 @@ public class IntervalProperties {
         }
     }
 
-    private static void propertiesComplement() {
-        initialize();
+    private void propertiesComplement() {
+        initialize("");
         System.out.println("\t\ttesting complement() properties...");
 
         for (Interval a : take(LIMIT, P.intervals())) {
@@ -577,8 +562,8 @@ public class IntervalProperties {
         }
     }
 
-    private static void propertiesMidpoint() {
-        initialize();
+    private void propertiesMidpoint() {
+        initialize("");
         System.out.println("\t\ttesting midpoint() properties...");
 
         for (Interval a : take(LIMIT, P.finitelyBoundedIntervals())) {
@@ -602,8 +587,8 @@ public class IntervalProperties {
         }
     }
 
-    private static void propertiesSplit() {
-        initialize();
+    private void propertiesSplit() {
+        initialize("");
         System.out.println("\t\ttesting split(Rational) properties...");
 
         Iterable<Pair<Interval, Rational>> ps = filter(q -> q.a.contains(q.b), P.pairs(P.intervals(), P.rationals()));
@@ -657,8 +642,8 @@ public class IntervalProperties {
         }
     }
 
-    private static void propertiesBisect() {
-        initialize();
+    private void propertiesBisect() {
+        initialize("");
         System.out.println("\t\ttesting bisect() properties...");
 
         for (Interval a : take(LIMIT, P.finitelyBoundedIntervals())) {
@@ -691,8 +676,8 @@ public class IntervalProperties {
         }
     }
 
-    private static void propertiesRoundingPreimage_float() {
-        initialize();
+    private void propertiesRoundingPreimage_float() {
+        initialize("");
         System.out.println("\t\ttesting roundingPreimage(float) properties...");
 
         for (float f : take(LIMIT, filter(g -> !Float.isNaN(g), P.floats()))) {
@@ -736,8 +721,8 @@ public class IntervalProperties {
         }
     }
 
-    private static void propertiesRoundingPreimage_double() {
-        initialize();
+    private void propertiesRoundingPreimage_double() {
+        initialize("");
         System.out.println("\t\ttesting roundingPreimage(double) properties...");
 
         for (double d : take(LIMIT, filter(e -> !Double.isNaN(e), P.doubles()))) {
@@ -781,8 +766,8 @@ public class IntervalProperties {
         }
     }
 
-    private static void propertiesRoundingPreimage_BigDecimal() {
-        initialize();
+    private void propertiesRoundingPreimage_BigDecimal() {
+        initialize("");
         System.out.println("\t\ttesting roundingPreimage(BigDecimal) properties...");
 
         for (BigDecimal bd : take(LIMIT, P.bigDecimals())) {
@@ -808,8 +793,8 @@ public class IntervalProperties {
         }
     }
 
-    private static void propertiesFloatRange() {
-        initialize();
+    private void propertiesFloatRange() {
+        initialize("");
         System.out.println("\t\ttesting floatRange() properties...");
 
         for (Interval a : take(LIMIT, P.intervals())) {
@@ -864,8 +849,8 @@ public class IntervalProperties {
         }
     }
 
-    private static void propertiesDoubleRange() {
-        initialize();
+    private void propertiesDoubleRange() {
+        initialize("");
         System.out.println("\t\ttesting doubleRange() properties...");
 
         for (Interval a : take(LIMIT, P.intervals())) {
@@ -920,8 +905,8 @@ public class IntervalProperties {
         }
     }
 
-    private static void propertiesAdd() {
-        initialize();
+    private void propertiesAdd() {
+        initialize("");
         System.out.println("\t\ttesting add(Interval) properties...");
 
         for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
@@ -960,8 +945,8 @@ public class IntervalProperties {
         }
     }
 
-    private static void propertiesNegate() {
-        initialize();
+    private void propertiesNegate() {
+        initialize("");
         System.out.println("\t\ttesting negate() properties...");
 
         for (Interval a : take(LIMIT, P.intervals())) {
@@ -980,8 +965,8 @@ public class IntervalProperties {
         }
     }
 
-    private static void propertiesAbs() {
-        initialize();
+    private void propertiesAbs() {
+        initialize("");
         System.out.println("\t\ttesting abs() properties...");
 
         for (Interval a : take(LIMIT, P.intervals())) {
@@ -1006,8 +991,8 @@ public class IntervalProperties {
         }
     }
 
-    private static void propertiesSignum() {
-        initialize();
+    private void propertiesSignum() {
+        initialize("");
         System.out.println("\t\ttesting signum() properties...");
 
         for (Interval a : take(LIMIT, P.intervals())) {
@@ -1026,8 +1011,8 @@ public class IntervalProperties {
         }
     }
 
-    private static void propertiesSubtract() {
-        initialize();
+    private void propertiesSubtract() {
+        initialize("");
         System.out.println("\t\ttesting subtract(Interval) properties...");
 
         for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
@@ -1060,8 +1045,8 @@ public class IntervalProperties {
         }
     }
 
-    private static void propertiesMultiply_Interval() {
-        initialize();
+    private void propertiesMultiply_Interval() {
+        initialize("");
         System.out.println("\t\ttesting multiply(Interval) properties...");
 
         for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
@@ -1111,8 +1096,8 @@ public class IntervalProperties {
         }
     }
 
-    private static void propertiesMultiply_Rational() {
-        initialize();
+    private void propertiesMultiply_Rational() {
+        initialize("");
         System.out.println("\t\ttesting multiply(Rational) properties...");
 
         for (Pair<Interval, Rational> p : take(LIMIT, P.pairs(P.intervals(), P.rationals()))) {
@@ -1145,8 +1130,8 @@ public class IntervalProperties {
         }
     }
 
-    private static void propertiesMultiply_BigInteger() {
-        initialize();
+    private void propertiesMultiply_BigInteger() {
+        initialize("");
         System.out.println("\t\ttesting multiply(BigInteger) properties...");
 
         for (Pair<Interval, BigInteger> p : take(LIMIT, P.pairs(P.intervals(), P.bigIntegers()))) {
@@ -1181,8 +1166,8 @@ public class IntervalProperties {
         }
     }
 
-    private static void propertiesMultiply_int() {
-        initialize();
+    private void propertiesMultiply_int() {
+        initialize("");
         System.out.println("\t\ttesting multiply(int) properties...");
 
         for (Pair<Interval, Integer> p : take(LIMIT, P.pairs(P.intervals(), P.integers()))) {
@@ -1214,8 +1199,8 @@ public class IntervalProperties {
         }
     }
 
-    private static void propertiesInvert() {
-        initialize();
+    private void propertiesInvert() {
+        initialize("");
         System.out.println("\t\ttesting invert() properties...");
 
         for (Interval a : take(LIMIT, P.intervals())) {
@@ -1279,8 +1264,8 @@ public class IntervalProperties {
         }
     }
 
-    private static void propertiesInvertHull() {
-        initialize();
+    private void propertiesInvertHull() {
+        initialize("");
         System.out.println("\t\ttesting invertHull() properties...");
 
         for (Interval a : take(LIMIT, filter(b -> !b.equals(ZERO), P.intervals()))) {
@@ -1319,8 +1304,8 @@ public class IntervalProperties {
         }
     }
 
-    private static void propertiesDivide_Interval() {
-        initialize();
+    private void propertiesDivide_Interval() {
+        initialize("");
         System.out.println("\t\ttesting divide(Interval) properties...");
 
         for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
@@ -1387,8 +1372,8 @@ public class IntervalProperties {
         }
     }
 
-    private static void propertiesDivideHull() {
-        initialize();
+    private void propertiesDivideHull() {
+        initialize("");
         System.out.println("\t\ttesting divideHull(Interval) properties...");
 
         Iterable<Pair<Interval, Interval>> ps = P.pairs(P.intervals(), filter(a -> !a.equals(ZERO), P.intervals()));
@@ -1429,8 +1414,8 @@ public class IntervalProperties {
         }
     }
 
-    private static void propertiesDivide_Rational() {
-        initialize();
+    private void propertiesDivide_Rational() {
+        initialize("");
         System.out.println("\t\ttesting divide(Rational) properties...");
 
         Iterable<Pair<Interval, Rational>> ps = P.pairs(P.intervals(), filter(r -> r != Rational.ZERO, P.rationals()));
@@ -1462,8 +1447,8 @@ public class IntervalProperties {
         }
     }
 
-    private static void propertiesDivide_BigInteger() {
-        initialize();
+    private void propertiesDivide_BigInteger() {
+        initialize("");
         System.out.println("\t\ttesting divide(BigInteger) properties...");
 
         Iterable<Pair<Interval, BigInteger>> ps = P.pairs(
@@ -1498,8 +1483,8 @@ public class IntervalProperties {
         }
     }
 
-    private static void propertiesDivide_int() {
-        initialize();
+    private void propertiesDivide_int() {
+        initialize("");
         System.out.println("\t\ttesting divide(int) properties...");
 
         for (Pair<Interval, Integer> p : take(LIMIT, P.pairs(P.intervals(), filter(i -> i != 0, P.integers())))) {
@@ -1538,8 +1523,8 @@ public class IntervalProperties {
         }
     }
 
-    private static void propertiesShiftLeft() {
-        initialize();
+    private void propertiesShiftLeft() {
+        initialize("");
         System.out.println("\t\ttesting shiftLeft(int) properties...");
 
         Iterable<Integer> is;
@@ -1578,8 +1563,8 @@ public class IntervalProperties {
         }
     }
 
-    private static void compareImplementationsShiftLeft() {
-        initialize();
+    private void compareImplementationsShiftLeft() {
+        initialize("");
         System.out.println("\t\tcomparing shiftLeft(int) implementations...");
 
         long totalTime = 0;
@@ -1613,8 +1598,8 @@ public class IntervalProperties {
         }
     }
 
-    private static void propertiesShiftRight() {
-        initialize();
+    private void propertiesShiftRight() {
+        initialize("");
         System.out.println("\t\ttesting shiftRight(int) properties...");
 
         Iterable<Integer> is;
@@ -1653,8 +1638,8 @@ public class IntervalProperties {
         }
     }
 
-    private static void compareImplementationsShiftRight() {
-        initialize();
+    private void compareImplementationsShiftRight() {
+        initialize("");
         System.out.println("\t\tcomparing shiftRight(int) implementations...");
 
         long totalTime = 0;
@@ -1680,8 +1665,8 @@ public class IntervalProperties {
         System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
     }
 
-    private static void propertiesSum() {
-        initialize();
+    private void propertiesSum() {
+        initialize("");
         System.out.println("\t\ttesting sum(Iterable<Interval>) properties...");
 
         propertiesFoldHelper(LIMIT, P.getWheelsProvider(), P.intervals(), Interval::add, Interval::sum, a -> {}, true);
@@ -1695,8 +1680,8 @@ public class IntervalProperties {
         }
     }
 
-    private static void propertiesProduct() {
-        initialize();
+    private void propertiesProduct() {
+        initialize("");
         System.out.println("\t\ttesting product(Iterable<Interval>) properties...");
 
         propertiesFoldHelper(
@@ -1723,14 +1708,14 @@ public class IntervalProperties {
         }
     }
 
-    private static void propertiesDelta() {
-        initialize();
+    private void propertiesDelta() {
+        initialize("");
         System.out.println("\t\ttesting delta(Iterable<Interval>) properties...");
 
         propertiesDeltaHelper(
                 LIMIT,
                 P.getWheelsProvider(),
-                EP.intervals(),
+                QEP.intervals(),
                 P.intervals(),
                 Interval::negate,
                 Interval::subtract,
@@ -1746,8 +1731,8 @@ public class IntervalProperties {
         }
     }
 
-    private static void propertiesPow() {
-        initialize();
+    private void propertiesPow() {
+        initialize("");
         System.out.println("\t\ttesting pow(int) properties...");
 
         Iterable<Pair<Interval, Integer>> ps = P.pairs(P.intervals(), P.withScale(20).integersGeometric());
@@ -1878,8 +1863,8 @@ public class IntervalProperties {
         }
     }
 
-    private static void propertiesPowHull() {
-        initialize();
+    private void propertiesPowHull() {
+        initialize("");
         System.out.println("\t\ttesting powHull(int) properties...");
 
         Iterable<Pair<Interval, Integer>> ps = filter(
@@ -1985,8 +1970,8 @@ public class IntervalProperties {
         }
     }
 
-    private static void propertiesElementCompare() {
-        initialize();
+    private void propertiesElementCompare() {
+        initialize("");
         System.out.println("\t\ttesting elementCompare(Interval) properties...");
 
         for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
@@ -2027,29 +2012,29 @@ public class IntervalProperties {
         }
     }
 
-    private static void propertiesEquals() {
-        initialize();
+    private void propertiesEquals() {
+        initialize("");
         System.out.println("\t\ttesting equals(Object) properties...");
 
-        QBarTesting.propertiesEqualsHelper(LIMIT, P, QBarIterableProvider::intervals);
+        propertiesEqualsHelper(LIMIT, P, QBarIterableProvider::intervals);
     }
 
-    private static void propertiesHashCode() {
-        initialize();
+    private void propertiesHashCode() {
+        initialize("");
         System.out.println("\t\ttesting hashCode() properties...");
 
-        QBarTesting.propertiesHashCodeHelper(LIMIT, P, QBarIterableProvider::intervals);
+        propertiesHashCodeHelper(LIMIT, P, QBarIterableProvider::intervals);
     }
 
-    private static void propertiesCompareTo() {
-        initialize();
+    private void propertiesCompareTo() {
+        initialize("");
         System.out.println("\t\ttesting compareTo(Interval) properties...");
 
-        QBarTesting.propertiesCompareToHelper(LIMIT, P, QBarIterableProvider::intervals);
+        propertiesCompareToHelper(LIMIT, P, QBarIterableProvider::intervals);
     }
 
-    private static void propertiesRead() {
-        initialize();
+    private void propertiesRead() {
+        initialize("");
         System.out.println("\t\ttesting read(String) properties...");
 
         for (String s : take(LIMIT, P.strings())) {
@@ -2062,15 +2047,15 @@ public class IntervalProperties {
         }
     }
 
-    private static void propertiesFindIn() {
-        initialize();
+    private void propertiesFindIn() {
+        initialize("");
         System.out.println("\t\ttesting findIn(String) properties...");
 
         propertiesFindInHelper(LIMIT, P.getWheelsProvider(), P.intervals(), Interval::read, Interval::findIn, a -> {});
     }
 
-    private static void propertiesToString() {
-        initialize();
+    private void propertiesToString() {
+        initialize("");
         System.out.println("\t\ttesting toString() properties...");
 
         for (Interval a : take(LIMIT, P.intervals())) {

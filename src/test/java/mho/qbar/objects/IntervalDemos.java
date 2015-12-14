@@ -1,8 +1,8 @@
 package mho.qbar.objects;
 
 import mho.qbar.iterableProviders.QBarExhaustiveProvider;
-import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.iterableProviders.QBarRandomProvider;
+import mho.qbar.testing.QBarDemos;
 import mho.wheels.iterables.IterableUtils;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
@@ -15,41 +15,31 @@ import java.util.List;
 import static mho.qbar.objects.Interval.*;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.ordering.Ordering.le;
+import static mho.wheels.testing.Testing.MEDIUM_LIMIT;
 
 @SuppressWarnings("UnusedDeclaration")
-public class IntervalDemos {
-    private static final boolean USE_RANDOM = false;
+public class IntervalDemos extends QBarDemos {
     private static final @NotNull String INTERVAL_CHARS = " (),-/0123456789I[]finty";
-    private static final int SMALL_LIMIT = 1000;
-    private static int LIMIT;
 
-    private static QBarIterableProvider P;
-
-    private static void initialize() {
-        if (USE_RANDOM) {
-            P = QBarRandomProvider.example();
-            LIMIT = 1000;
-        } else {
-            P = QBarExhaustiveProvider.INSTANCE;
-            LIMIT = 10000;
-        }
+    public IntervalDemos(boolean useRandom) {
+        super(useRandom);
     }
 
-    private static void demoGetLower() {
+    private void demoGetLower() {
         initialize();
         for (Interval a : take(LIMIT, P.intervals())) {
             System.out.println("getLower(" + a + ") = " + a.getLower());
         }
     }
 
-    private static void demoGetUpper() {
+    private void demoGetUpper() {
         initialize();
         for (Interval a : take(LIMIT, P.intervals())) {
             System.out.println("getUpper(" + a + ") = " + a.getUpper());
         }
     }
 
-    private static void demoOf_Rational_Rational() {
+    private void demoOf_Rational_Rational() {
         initialize();
         Iterable<Pair<Rational, Rational>> rs = filter(p -> le(p.a, p.b), P.pairs(P.rationals()));
         for (Pair<Rational, Rational> p : take(LIMIT, rs)) {
@@ -57,63 +47,63 @@ public class IntervalDemos {
         }
     }
 
-    private static void demoLessThanOrEqualTo() {
+    private void demoLessThanOrEqualTo() {
         initialize();
         for (Rational r : take(LIMIT, P.rationals())) {
             System.out.println("lessThanOrEqualTo(" + r + ") = " + lessThanOrEqualTo(r));
         }
     }
 
-    private static void demoGreaterThanOrEqualTo() {
+    private void demoGreaterThanOrEqualTo() {
         initialize();
         for (Rational r : take(LIMIT, P.rationals())) {
             System.out.println("greaterThanOrEqualTo(" + r + ") = " + greaterThanOrEqualTo(r));
         }
     }
 
-    private static void demoOf_Rational() {
+    private void demoOf_Rational() {
         initialize();
         for (Rational r : take(LIMIT, P.rationals())) {
             System.out.println("of(" + r + ") = " + Interval.of(r));
         }
     }
 
-    private static void demoIsFinitelyBounded() {
+    private void demoIsFinitelyBounded() {
         initialize();
         for (Interval a : take(LIMIT, P.intervals())) {
             System.out.println(a + " is " + (a.isFinitelyBounded() ? "" : "not ") + "finitely bounded");
         }
     }
 
-    private static void demoContains_Rational() {
+    private void demoContains_Rational() {
         initialize();
         for (Pair<Interval, Rational> p : take(LIMIT, P.pairs(P.intervals(), P.rationals()))) {
             System.out.println(p.a + (p.a.contains(p.b) ? " contains " : " does not contain ") + p.b);
         }
     }
 
-    private static void demoContains_Interval() {
+    private void demoContains_Interval() {
         initialize();
         for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
             System.out.println(p.a + (p.a.contains(p.b) ? " contains " : " does not contain ") + p.b);
         }
     }
 
-    private static void demoDiameter() {
+    private void demoDiameter() {
         initialize();
         for (Interval a : take(LIMIT, P.intervals())) {
             System.out.println("diameter(" + a + ") = " + a.diameter());
         }
     }
 
-    private static void demoConvexHull_Interval() {
+    private void demoConvexHull_Interval() {
         initialize();
         for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
             System.out.println("convexHull(" + p.a + ", " + p.b + ") = " + p.a.convexHull(p.b));
         }
     }
 
-    private static void demoConvexHull_List_Interval() {
+    private void demoConvexHull_List_Interval() {
         initialize();
         for (List<Interval> as : take(LIMIT, P.listsAtLeast(1, P.intervals()))) {
             String listString = tail(init(as.toString()));
@@ -121,21 +111,21 @@ public class IntervalDemos {
         }
     }
 
-    private static void demoIntersection() {
+    private void demoIntersection() {
         initialize();
         for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
             System.out.println("intersection(" + p.a + ", " + p.b + ") = " + p.a.intersection(p.b));
         }
     }
 
-    private static void demoDisjoint() {
+    private void demoDisjoint() {
         initialize();
         for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
             System.out.println(p.a + " and " + p.b + " are " + (p.a.disjoint(p.b) ? "" : "not ") + "disjoint");
         }
     }
 
-    private static void demoMakeDisjoint() {
+    private void demoMakeDisjoint() {
         initialize();
         for (List<Interval> as : take(LIMIT, P.lists(P.intervals()))) {
             String listString = tail(init(as.toString()));
@@ -143,21 +133,21 @@ public class IntervalDemos {
         }
     }
 
-    private static void demoComplement() {
+    private void demoComplement() {
         initialize();
         for (Interval a : take(LIMIT, P.intervals())) {
             System.out.println("complement(" + a + ") = " + a.complement());
         }
     }
 
-    private static void demoMidpoint() {
+    private void demoMidpoint() {
         initialize();
         for (Interval a : take(LIMIT, P.finitelyBoundedIntervals())) {
             System.out.println("midpoint(" + a + ") = " + a.midpoint());
         }
     }
 
-    private static void demoSplit() {
+    private void demoSplit() {
         initialize();
         Iterable<Pair<Interval, Rational>> ps = filter(q -> q.a.contains(q.b), P.pairs(P.intervals(), P.rationals()));
         for (Pair<Interval, Rational> p : take(LIMIT, ps)) {
@@ -165,140 +155,140 @@ public class IntervalDemos {
         }
     }
 
-    private static void demoBisect() {
+    private void demoBisect() {
         initialize();
         for (Interval a : take(LIMIT, P.finitelyBoundedIntervals())) {
             System.out.println("bisect(" + a + ") = " + a.bisect());
         }
     }
 
-    private static void demoRoundingPreimage_float() {
+    private void demoRoundingPreimage_float() {
         initialize();
         for (float f : take(LIMIT, filter(g -> !Float.isNaN(g), P.floats()))) {
             System.out.println("roundingPreimage(" + f + ") = " + roundingPreimage(f));
         }
     }
 
-    private static void demoRoundingPreimage_double() {
+    private void demoRoundingPreimage_double() {
         initialize();
-        for (double d : take(SMALL_LIMIT, filter(e -> !Double.isNaN(e), P.doubles()))) {
+        for (double d : take(MEDIUM_LIMIT, filter(e -> !Double.isNaN(e), P.doubles()))) {
             System.out.println("roundingPreimage(" + d + ") = " + roundingPreimage(d));
         }
     }
 
-    private static void demoRoundingPreimage_BigDecimal() {
+    private void demoRoundingPreimage_BigDecimal() {
         initialize();
         for (BigDecimal bd : take(LIMIT, P.bigDecimals())) {
             System.out.println("roundingPreimage(" + bd + ") = " + roundingPreimage(bd));
         }
     }
 
-    private static void demoFloatRange() {
+    private void demoFloatRange() {
         initialize();
         for (Interval a : take(LIMIT, P.intervals())) {
             System.out.println("floatRange(" + a + ") = " + a.floatRange());
         }
     }
 
-    private static void demoDoubleRange() {
+    private void demoDoubleRange() {
         initialize();
         for (Interval a : take(LIMIT, P.intervals())) {
             System.out.println("doubleRange(" + a + ") = " + a.doubleRange());
         }
     }
 
-    private static void demoAdd() {
+    private void demoAdd() {
         initialize();
         for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
             System.out.println(p.a + " + " + p.b + " = " + p.a.add(p.b));
         }
     }
 
-    private static void demoNegate() {
+    private void demoNegate() {
         initialize();
         for (Interval a : take(LIMIT, P.intervals())) {
             System.out.println("-" + a + " = " + a.negate());
         }
     }
 
-    private static void demoAbs() {
+    private void demoAbs() {
         initialize();
         for (Interval a : take(LIMIT, P.intervals())) {
             System.out.println("|" + a + "| = " + a.abs());
         }
     }
 
-    private static void demoSignum() {
+    private void demoSignum() {
         initialize();
         for (Interval a : take(LIMIT, P.intervals())) {
             System.out.println("sgn(" + a + ") = " + a.signum());
         }
     }
 
-    private static void demoSubtract() {
+    private void demoSubtract() {
         initialize();
         for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
             System.out.println(p.a + " - " + p.b + " = " + p.a.subtract(p.b));
         }
     }
 
-    private static void demoMultiply_Interval() {
+    private void demoMultiply_Interval() {
         initialize();
         for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
             System.out.println(p.a + " * " + p.b + " = " + p.a.multiply(p.b));
         }
     }
 
-    private static void demoMultiply_Rational() {
+    private void demoMultiply_Rational() {
         initialize();
         for (Pair<Interval, Rational> p : take(LIMIT, P.pairs(P.intervals(), P.rationals()))) {
             System.out.println(p.a + " * " + p.b + " = " + p.a.multiply(p.b));
         }
     }
 
-    private static void demoMultiply_BigInteger() {
+    private void demoMultiply_BigInteger() {
         initialize();
         for (Pair<Interval, BigInteger> p : take(LIMIT, P.pairs(P.intervals(), P.bigIntegers()))) {
             System.out.println(p.a + " * " + p.b + " = " + p.a.multiply(p.b));
         }
     }
 
-    private static void demoMultiply_int() {
+    private void demoMultiply_int() {
         initialize();
         for (Pair<Interval, Integer> p : take(LIMIT, P.pairs(P.intervals(), P.integers()))) {
             System.out.println(p.a + " * " + p.b + " = " + p.a.multiply(p.b));
         }
     }
 
-    private static void demoInvert() {
+    private void demoInvert() {
         initialize();
         for (Interval a : take(LIMIT, P.intervals())) {
             System.out.println("1/" + a + " = " + a.invert());
         }
     }
 
-    private static void demoInvertHull() {
+    private void demoInvertHull() {
         initialize();
         for (Interval a : take(LIMIT, filter(b -> !b.equals(ZERO), P.intervals()))) {
             System.out.println("invertHull(" + a + ") = " + a.invertHull());
         }
     }
 
-    private static void demoDivide_Interval() {
+    private void demoDivide_Interval() {
         initialize();
         for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
             System.out.println(p.a + " / " + p.b + " = " + p.a.divide(p.b));
         }
     }
 
-    private static void demoDivideHull() {
+    private void demoDivideHull() {
         initialize();
         for (Pair<Interval, Interval> p : take(LIMIT, filter(q -> !q.b.equals(ZERO), P.pairs(P.intervals())))) {
             System.out.println("divideHull(" + p.a + ", " + p.b + ") = " + p.a.divideHull(p.b));
         }
     }
 
-    private static void demoDivide_Rational() {
+    private void demoDivide_Rational() {
         initialize();
         Iterable<Pair<Interval, Rational>> ps = P.pairs(P.intervals(), filter(r -> r != Rational.ZERO, P.rationals()));
         for (Pair<Interval, Rational> p : take(LIMIT, ps)) {
@@ -306,7 +296,7 @@ public class IntervalDemos {
         }
     }
 
-    private static void demoDivide_BigInteger() {
+    private void demoDivide_BigInteger() {
         initialize();
         Iterable<Pair<Interval, BigInteger>> ps = P.pairs(
                 P.intervals(),
@@ -317,7 +307,7 @@ public class IntervalDemos {
         }
     }
 
-    private static void demoDivide_int() {
+    private void demoDivide_int() {
         initialize();
         Iterable<Pair<Interval, Integer>> ps = P.pairs(P.intervals(), filter(i -> i != 0, P.integers()));
         for (Pair<Interval, Integer> p : take(LIMIT, ps)) {
@@ -325,7 +315,7 @@ public class IntervalDemos {
         }
     }
 
-    private static void demoShiftLeft() {
+    private void demoShiftLeft() {
         initialize();
         Iterable<Integer> is;
         if (P instanceof QBarExhaustiveProvider) {
@@ -338,7 +328,7 @@ public class IntervalDemos {
         }
     }
 
-    private static void demoShiftRight() {
+    private void demoShiftRight() {
         initialize();
         Iterable<Integer> is;
         if (P instanceof QBarExhaustiveProvider) {
@@ -351,7 +341,7 @@ public class IntervalDemos {
         }
     }
 
-    private static void demoSum() {
+    private void demoSum() {
         initialize();
         for (List<Interval> rs : take(LIMIT, P.lists(P.intervals()))) {
             String listString = tail(init(rs.toString()));
@@ -359,7 +349,7 @@ public class IntervalDemos {
         }
     }
 
-    private static void demoProduct() {
+    private void demoProduct() {
         initialize();
         for (List<Interval> rs : take(LIMIT, P.lists(P.intervals()))) {
             String listString = tail(init(rs.toString()));
@@ -367,7 +357,7 @@ public class IntervalDemos {
         }
     }
 
-    private static void demoDelta() {
+    private void demoDelta() {
         initialize();
         for (List<Interval> rs : take(LIMIT, P.listsAtLeast(1, P.intervals()))) {
             String listString = tail(init(rs.toString()));
@@ -375,7 +365,7 @@ public class IntervalDemos {
         }
     }
 
-    private static void demoPow() {
+    private void demoPow() {
         initialize();
         Iterable<Integer> exps;
         if (P instanceof QBarExhaustiveProvider) {
@@ -388,7 +378,7 @@ public class IntervalDemos {
         }
     }
 
-    private static void demoPowHull() {
+    private void demoPowHull() {
         initialize();
         Iterable<Integer> exps;
         if (P instanceof QBarExhaustiveProvider) {
@@ -405,21 +395,21 @@ public class IntervalDemos {
         }
     }
 
-    private static void demoElementCompare() {
+    private void demoElementCompare() {
         initialize();
         for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
             System.out.println("elementCompare(" + p.a + ", " + p.b + ") = " + p.a.elementCompare(p.b));
         }
     }
 
-    private static void demoEquals_Interval() {
+    private void demoEquals_Interval() {
         initialize();
         for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
             System.out.println(p.a + (p.a.equals(p.b) ? " = " : " ≠ ") + p.b);
         }
     }
 
-    private static void demoEquals_null() {
+    private void demoEquals_null() {
         initialize();
         for (Interval a : take(LIMIT, P.intervals())) {
             //noinspection ObjectEqualsNull
@@ -427,49 +417,49 @@ public class IntervalDemos {
         }
     }
 
-    private static void demoHashCode() {
+    private void demoHashCode() {
         initialize();
         for (Interval a : take(LIMIT, P.intervals())) {
             System.out.println("hashCode(" + a + ") = " + a.hashCode());
         }
     }
 
-    private static void demoCompareTo() {
+    private void demoCompareTo() {
         initialize();
         for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
             System.out.println(p.a + " " + Ordering.compare(p.a, p.b).toChar() + " " + p.b);
         }
     }
 
-    private static void demoRead() {
+    private void demoRead() {
         initialize();
         for (String s : take(LIMIT, P.strings())) {
             System.out.println("read(" + s + ") = " + read(s));
         }
     }
 
-    private static void demoRead_targeted() {
+    private void demoRead_targeted() {
         initialize();
         for (String s : take(LIMIT, P.strings(INTERVAL_CHARS))) {
             System.out.println("read(" + s + ") = " + read(s));
         }
     }
 
-    private static void demoFindIn() {
+    private void demoFindIn() {
         initialize();
         for (String s : take(LIMIT, P.strings())) {
             System.out.println("findIn(" + s + ") = " + findIn(s));
         }
     }
 
-    private static void demoFindIn_targeted() {
+    private void demoFindIn_targeted() {
         initialize();
         for (String s : take(LIMIT, P.strings(INTERVAL_CHARS))) {
             System.out.println("findIn(" + s + ") = " + findIn(s));
         }
     }
 
-    private static void demoToString() {
+    private void demoToString() {
         initialize();
         for (Interval a : take(LIMIT, P.intervals())) {
             System.out.println(a);
