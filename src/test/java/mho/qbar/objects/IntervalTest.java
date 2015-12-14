@@ -51,34 +51,58 @@ public class IntervalTest {
         getUpper_helper("(-Infinity, Infinity)", "Optional.empty");
     }
 
-    @Test
-    public void testOf_Rational_Rational() {
-        aeq(of(Rational.read("1/3").get(), Rational.read("1/2").get()), "[1/3, 1/2]");
-        aeq(of(Rational.read("-5").get(), Rational.ZERO), "[-5, 0]");
-        aeq(of(Rational.read("2").get(), Rational.read("2").get()), "[2, 2]");
+    private static void of_Rational_Rational_helper(
+            @NotNull String lower,
+            @NotNull String upper,
+            @NotNull String output
+    ) {
+        aeq(of(Rational.read(lower).get(), Rational.read(upper).get()), output);
+    }
+
+    private static void of_Rational_Rational_fail_helper(@NotNull String lower, @NotNull String upper) {
         try {
-            of(Rational.read("3").get(), Rational.read("2").get());
+            of(Rational.read(lower).get(), Rational.read(upper).get());
             fail();
         } catch (IllegalArgumentException ignored) {}
     }
 
     @Test
+    public void testOf_Rational_Rational() {
+        of_Rational_Rational_helper("1/3", "1/2", "[1/3, 1/2]");
+        of_Rational_Rational_helper("-5", "0", "[-5, 0]");
+        of_Rational_Rational_helper("2", "2", "[2, 2]");
+        of_Rational_Rational_fail_helper("3", "2");
+    }
+
+    private static void lessThanOrEqualTo_helper(@NotNull String upper, @NotNull String output) {
+        aeq(lessThanOrEqualTo(Rational.read(upper).get()), output);
+    }
+
+    @Test
     public void testLessThanOrEqualTo() {
-        aeq(lessThanOrEqualTo(Rational.read("1/3").get()), "(-Infinity, 1/3]");
-        aeq(lessThanOrEqualTo(Rational.ZERO), "(-Infinity, 0]");
+        lessThanOrEqualTo_helper("1/3", "(-Infinity, 1/3]");
+        lessThanOrEqualTo_helper("0", "(-Infinity, 0]");
+    }
+
+    private static void greaterThanOrEqualTo_helper(@NotNull String lower, @NotNull String output) {
+        aeq(greaterThanOrEqualTo(Rational.read(lower).get()), output);
     }
 
     @Test
     public void testGreaterThanOrEqualTo() {
-        aeq(greaterThanOrEqualTo(Rational.read("1/3").get()), "[1/3, Infinity)");
-        aeq(greaterThanOrEqualTo(Rational.ZERO), "[0, Infinity)");
+        greaterThanOrEqualTo_helper("1/3", "[1/3, Infinity)");
+        greaterThanOrEqualTo_helper("0", "[0, Infinity)");
+    }
+
+    private static void of_Rational_helper(@NotNull String input, @NotNull String output) {
+        aeq(of(Rational.read(input).get()), output);
     }
 
     @Test
     public void testOf_Rational() {
-        aeq(of(Rational.ZERO), "[0, 0]");
-        aeq(of(Rational.read("5/4").get()), "[5/4, 5/4]");
-        aeq(of(Rational.read("-2").get()), "[-2, -2]");
+        of_Rational_helper("0", "[0, 0]");
+        of_Rational_helper("5/4", "[5/4, 5/4]");
+        of_Rational_helper("2", "[2, 2]");
     }
 
     @Test

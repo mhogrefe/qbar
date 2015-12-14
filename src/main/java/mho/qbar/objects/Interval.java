@@ -112,8 +112,10 @@ public final class Interval implements Comparable<Interval> {
      * @return [{@code lower}, {@code upper}]
      */
     public static @NotNull Interval of(@NotNull Rational lower, @NotNull Rational upper) {
-        if (gt(lower, upper))
-            throw new IllegalArgumentException("lower bound cannot be greater than upper bound");
+        if (gt(lower, upper)) {
+            throw new IllegalArgumentException("lower must be less than or equal to upper. lower: " +
+                    lower + ", upper: " + upper);
+        }
         return new Interval(lower, upper);
     }
 

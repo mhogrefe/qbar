@@ -111,10 +111,8 @@ public class IntervalProperties extends QBarTestProperties {
     }
 
     private void propertiesOf_Rational_Rational() {
-        initialize("");
-        System.out.println("\t\ttesting of(Rational, Rational) properties...");
-
-        Iterable<Pair<Rational, Rational>> ps = filter(q -> le(q.a, q.b), P.pairs(P.rationals()));
+        initialize("of(Rational, Rational)");
+        Iterable<Pair<Rational, Rational>> ps = filterInfinite(q -> le(q.a, q.b), P.pairs(P.rationals()));
         for (Pair<Rational, Rational> p : take(LIMIT, ps)) {
             Interval a = of(p.a, p.b);
             a.validate();
@@ -127,14 +125,12 @@ public class IntervalProperties extends QBarTestProperties {
     }
 
     private void propertiesLessThanOrEqualTo() {
-        initialize("");
-        System.out.println("\t\ttesting lessThanOrEqualTo(Rational) properties...");
-
+        initialize("lessThanOrEqualTo(Rational)");
         for (Rational r : take(LIMIT, P.rationals())) {
             Interval a = lessThanOrEqualTo(r);
             a.validate();
             assertFalse(a, a.getLower().isPresent());
-            assertTrue(a, a.getUpper().isPresent());
+            assertEquals(a, a.getUpper().get(), r);
             for (Rational s : take(TINY_LIMIT, P.rationalsIn(a))) {
                 assertTrue(r, le(s, r));
             }
@@ -142,13 +138,11 @@ public class IntervalProperties extends QBarTestProperties {
     }
 
     private void propertiesGreaterThanOrEqualTo() {
-        initialize("");
-        System.out.println("\t\ttesting greaterThanOrEqualTo(Rational) properties...");
-
+        initialize("greaterThanOrEqualTo(Rational");
         for (Rational r : take(LIMIT, P.rationals())) {
             Interval a = greaterThanOrEqualTo(r);
             a.validate();
-            assertTrue(a, a.getLower().isPresent());
+            assertEquals(a, a.getLower().get(), r);
             assertFalse(a, a.getUpper().isPresent());
             for (Rational s : take(TINY_LIMIT, P.rationalsIn(a))) {
                 assertTrue(r, ge(s, r));
@@ -157,14 +151,15 @@ public class IntervalProperties extends QBarTestProperties {
     }
 
     private void propertiesOf_Rational() {
-        initialize("");
-        System.out.println("\t\ttesting of(Rational) properties...");
-
+        initialize("of(Rational)");
         for (Rational r : take(LIMIT, P.rationals())) {
             Interval a = of(r);
             a.validate();
             assertTrue(a, a.isFinitelyBounded());
             assertEquals(a, a.diameter().get(), Rational.ZERO);
+            for (Rational s : take(TINY_LIMIT, P.rationalsIn(a))) {
+                assertEquals(r, s, r);
+            }
         }
     }
 

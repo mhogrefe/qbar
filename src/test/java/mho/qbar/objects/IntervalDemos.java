@@ -41,8 +41,7 @@ public class IntervalDemos extends QBarDemos {
 
     private void demoOf_Rational_Rational() {
         initialize();
-        Iterable<Pair<Rational, Rational>> rs = filter(p -> le(p.a, p.b), P.pairs(P.rationals()));
-        for (Pair<Rational, Rational> p : take(LIMIT, rs)) {
+        for (Pair<Rational, Rational> p : take(LIMIT, filterInfinite(q -> le(q.a, q.b), P.pairs(P.rationals())))) {
             System.out.println("of(" + p.a + ", " + p.b + ") = " + of(p.a, p.b));
         }
     }
