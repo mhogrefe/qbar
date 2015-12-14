@@ -759,6 +759,7 @@ public final class Interval implements Comparable<Interval> {
      * @return {@code this}×{@code that}
      */
     public @NotNull Interval multiply(@NotNull Interval that) {
+        if (equals(ZERO) || that.equals(ZERO)) return ZERO;
         boolean thisHasPositive = upper == null || upper.signum() == 1;
         boolean thatHasPositive = that.upper == null || that.upper.signum() == 1;
         boolean thisHasNegative = lower == null || lower.signum() == -1;
@@ -783,7 +784,6 @@ public final class Interval implements Comparable<Interval> {
             if (that.lower != null) extremes.add(upper.multiply(that.lower));
             if (that.upper != null) extremes.add(upper.multiply(that.upper));
         }
-        if (extremes.isEmpty()) extremes.add(Rational.ZERO);
         if (minIsNegInf) return new Interval(null, maximum(extremes));
         if (maxIsPosInf) return new Interval(minimum(extremes), null);
         return new Interval(minimum(extremes), maximum(extremes));
@@ -1403,10 +1403,8 @@ public final class Interval implements Comparable<Interval> {
             if (!optUpper.isPresent()) return Optional.empty();
             upper = optUpper.get();
         }
-        if (lower == null && upper == null) return Optional.of(ALL);
-        if (lower == null) return Optional.of(lessThanOrEqualTo(upper));
-        if (upper == null) return Optional.of(greaterThanOrEqualTo(lower));
-        return le(lower, upper) ? Optional.of(of(lower, upper)) : Optional.<Interval>empty();
+        if (lower != null && upper != null && gt(lower, upper)) return Optional.empty();
+        return Optional.of(new Interval(lower, upper));
     }
 
     /**
