@@ -39,6 +39,11 @@ public class RationalProperties extends QBarTestProperties {
     }
 
     @Override
+    protected void testConstant() {
+        propertiesConstants();
+    }
+
+    @Override
     protected void testBothModes() {
         propertiesGetNumerator();
         propertiesGetDenominator();
