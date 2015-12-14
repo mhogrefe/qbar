@@ -20,11 +20,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import static mho.qbar.objects.Rational.*;
-import static mho.qbar.objects.Rational.sum;
 import static mho.qbar.testing.QBarTesting.*;
-import static mho.qbar.testing.QBarTesting.propertiesCompareToHelper;
-import static mho.qbar.testing.QBarTesting.propertiesEqualsHelper;
-import static mho.qbar.testing.QBarTesting.propertiesHashCodeHelper;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.numberUtils.FloatingPointUtils.*;
 import static mho.wheels.ordering.Ordering.*;
@@ -3337,16 +3333,12 @@ public class RationalProperties extends QBarTestProperties {
     }
 
     private void propertiesEquals() {
-        initialize("");
-        System.out.println("\t\ttesting equals(Object) properties...");
-
+        initialize("equals(Object)");
         propertiesEqualsHelper(LIMIT, P, QBarIterableProvider::rationals);
     }
 
     private void propertiesHashCode() {
-        initialize("");
-        System.out.println("\t\ttesting hashCode() properties...");
-
+        initialize("hashCode()");
         propertiesHashCodeHelper(LIMIT, P, QBarIterableProvider::rationals);
     }
 
@@ -3355,37 +3347,20 @@ public class RationalProperties extends QBarTestProperties {
     }
 
     private void propertiesCompareTo() {
-        initialize("");
-        System.out.println("\t\ttesting compareTo(Rational) properties...");
-
+        initialize("compareTo(Rational)");
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
             int compare = p.a.compareTo(p.b);
             assertEquals(p, compare, compareTo_simplest(p.a, p.b));
             assertEquals(p, p.a.subtract(p.b).signum(), compare);
         }
-
         propertiesCompareToHelper(LIMIT, P, QBarIterableProvider::rationals);
     }
 
     private void compareImplementationsCompareTo() {
-        initialize("");
-        System.out.println("\t\tcomparing compareTo(Rational) implementations...");
-
-        long totalTime = 0;
-        for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
-            long time = System.nanoTime();
-            compareTo_simplest(p.a, p.b);
-            totalTime += (System.nanoTime() - time);
-        }
-        System.out.println("\t\t\tsimplest: " + ((double) totalTime) / 1e9 + " s");
-
-        totalTime = 0;
-        for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
-            long time = System.nanoTime();
-            p.a.compareTo(p.b);
-            totalTime += (System.nanoTime() - time);
-        }
-        System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
+        Map<String, Function<Pair<Rational, Rational>, Integer>> functions = new LinkedHashMap<>();
+        functions.put("simplest", p -> compareTo_simplest(p.a, p.b));
+        functions.put("standard", p -> p.a.compareTo(p.b));
+        compareImplementations("compareTo(Rational)", take(LIMIT, P.pairs(P.rationals())), functions);
     }
 
     private void propertiesRead() {
