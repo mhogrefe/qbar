@@ -5,9 +5,10 @@ import mho.qbar.objects.Rational;
 import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
 
-import static mho.wheels.iterables.IterableUtils.*;
-import static mho.wheels.ordering.Ordering.*;
-import static mho.wheels.testing.Testing.*;
+import static mho.wheels.iterables.IterableUtils.filterInfinite;
+import static mho.wheels.iterables.IterableUtils.take;
+import static mho.wheels.ordering.Ordering.le;
+import static mho.wheels.testing.Testing.its;
 
 @SuppressWarnings("UnusedDeclaration")
 public class QBarRandomProviderDemos {

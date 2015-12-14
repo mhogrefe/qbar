@@ -1,5 +1,6 @@
 package mho.qbar.testing;
 
+import mho.qbar.iterableProviders.QBarExhaustiveProvider;
 import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.wheels.iterables.ExhaustiveProvider;
 import mho.wheels.ordering.Ordering;
@@ -15,6 +16,8 @@ import static mho.wheels.ordering.Ordering.le;
 import static mho.wheels.testing.Testing.*;
 
 public class QBarTesting {
+    public static final @NotNull QBarExhaustiveProvider QEP = QBarExhaustiveProvider.INSTANCE;
+
     public static <T> void propertiesEqualsHelper(
             int limit,
             @NotNull QBarIterableProvider ip,

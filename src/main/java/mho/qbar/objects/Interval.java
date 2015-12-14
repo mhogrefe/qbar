@@ -13,7 +13,7 @@ import java.util.*;
 
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.ordering.Ordering.*;
-import static mho.wheels.testing.Testing.*;
+import static mho.wheels.testing.Testing.assertTrue;
 
 /**
  * <p>The {@code Interval} class represents an interval of real numbers. If we let p and q be rationals, p≤q, the

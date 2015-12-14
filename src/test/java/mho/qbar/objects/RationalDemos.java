@@ -1,8 +1,6 @@
 package mho.qbar.objects;
 
-import mho.qbar.iterableProviders.QBarExhaustiveProvider;
-import mho.qbar.iterableProviders.QBarIterableProvider;
-import mho.qbar.iterableProviders.QBarRandomProvider;
+import mho.qbar.testing.QBarDemos;
 import mho.wheels.math.BinaryFraction;
 import mho.wheels.numberUtils.FloatingPointUtils;
 import mho.wheels.numberUtils.IntegerUtils;
@@ -19,138 +17,122 @@ import java.util.List;
 import java.util.Map;
 
 import static mho.qbar.objects.Rational.*;
+import static mho.qbar.testing.QBarTesting.QEP;
 import static mho.wheels.iterables.IterableUtils.*;
-import static mho.wheels.testing.Testing.*;
+import static mho.wheels.testing.Testing.MEDIUM_LIMIT;
+import static mho.wheels.testing.Testing.its;
 
 @SuppressWarnings("UnusedDeclaration")
-public class RationalDemos {
-    private static final boolean USE_RANDOM = false;
-    private static final @NotNull QBarExhaustiveProvider EP = QBarExhaustiveProvider.INSTANCE;
+public class RationalDemos extends QBarDemos {
     private static final @NotNull String RATIONAL_CHARS = "-/0123456789";
-    private static int LIMIT;
-    private static final int DENOMINATOR_CUTOFF = 1000000;
-    private static final int SMALLER_LIMIT = 500;
-    private static final int SMALL_LIMIT = 1000;
-    private static final int MEDIUM_LIMIT = 3000;
     private static final BigInteger ASCII_ALPHANUMERIC_COUNT = BigInteger.valueOf(36);
-    private static QBarIterableProvider P;
 
-    private static void initialize() {
-        if (USE_RANDOM) {
-            P = QBarRandomProvider.example();
-            LIMIT = 1000;
-        } else {
-            P = QBarExhaustiveProvider.INSTANCE;
-            LIMIT = 10000;
-        }
-    }
-
-    private static void demoGetNumerator() {
+    private void demoGetNumerator() {
         initialize();
         for (Rational r : take(LIMIT, P.rationals())) {
             System.out.println("getNumerator(" + r + ") = " + r.getNumerator());
         }
     }
 
-    private static void demoGetDenominator() {
+    private void demoGetDenominator() {
         initialize();
         for (Rational r : take(LIMIT, P.rationals())) {
             System.out.println("getDenominator(" + r + ") = " + r.getDenominator());
         }
     }
 
-    private static void demoOf_BigInteger_BigInteger() {
+    private void demoOf_BigInteger_BigInteger() {
         initialize();
         for (Pair<BigInteger, BigInteger> p : take(LIMIT, P.pairs(P.bigIntegers(), P.nonzeroBigIntegers()))) {
             System.out.println("of(" + p.a + ", " + p.b + ") = " + of(p.a, p.b));
         }
     }
 
-    private static void demoOf_long_long() {
+    private void demoOf_long_long() {
         initialize();
         for (Pair<Long, Long> p : take(LIMIT, P.pairs(P.longs(), P.nonzeroLongs()))) {
             System.out.println("of(" + p.a + ", " + p.b + ") = " + of(p.a, p.b));
         }
     }
 
-    private static void demoOf_int_int() {
+    private void demoOf_int_int() {
         initialize();
         for (Pair<Integer, Integer> p : take(LIMIT, P.pairs(P.integers(), P.nonzeroIntegers()))) {
             System.out.println("of(" + p.a + ", " + p.b + ") = " + of(p.a, p.b));
         }
     }
 
-    private static void demoOf_BigInteger() {
+    private void demoOf_BigInteger() {
         initialize();
         for (BigInteger i : take(LIMIT, P.bigIntegers())) {
             System.out.println("of(" + i + ") = " + of(i));
         }
     }
 
-    private static void demoOf_long() {
+    private void demoOf_long() {
         initialize();
         for (long l : take(LIMIT, P.longs())) {
             System.out.println("of(" + l + ") = " + of(l));
         }
     }
 
-    private static void demoOf_int() {
+    private void demoOf_int() {
         initialize();
         for (int i : take(LIMIT, P.integers())) {
             System.out.println("of(" + i + ") = " + of(i));
         }
     }
 
-    private static void demoOf_BinaryFraction() {
+    private void demoOf_BinaryFraction() {
         initialize();
         for (BinaryFraction bf : take(LIMIT, P.binaryFractions())) {
             System.out.println("of(" + bf + ") = " + of(bf));
         }
     }
 
-    private static void demoOf_float() {
+    private void demoOf_float() {
         initialize();
         for (float f : take(LIMIT, P.floats())) {
             System.out.println("of(" + f + ") = " + of(f));
         }
     }
 
-    private static void demoOf_double() {
+    private void demoOf_double() {
         initialize();
         for (double d : take(LIMIT, P.doubles())) {
             System.out.println("of(" + d + ") = " + of(d));
         }
     }
 
-    private static void demoOfExact_float() {
+    private void demoOfExact_float() {
         initialize();
         for (float f : take(LIMIT, P.floats())) {
             System.out.println("ofExact(" + f + ") = " + ofExact(f));
         }
     }
 
-    private static void demoOfExact_double() {
+    private void demoOfExact_double() {
         initialize();
         for (double d : take(LIMIT, P.doubles())) {
             System.out.println("ofExact(" + d + ") = " + ofExact(d));
         }
     }
 
-    private static void demoOf_BigDecimal() {
+    private void demoOf_BigDecimal() {
         initialize();
         for (BigDecimal bd : take(LIMIT, P.bigDecimals())) {
             System.out.println("of(" + bd + ") = " + of(bd));
         }
     }
 
-    private static void demoIsInteger() {
+    private void demoIsInteger() {
         initialize();
         for (Rational r : take(LIMIT, P.rationals())) {
             System.out.println(r + " is " + (r.isInteger() ? "" : "not ") + "an integer");
         }
     }
 
-    private static void demoBigIntegerValue_RoundingMode() {
+    private void demoBigIntegerValue_RoundingMode() {
         initialize();
         Iterable<Pair<Rational, RoundingMode>> ps = filterInfinite(
                 p -> p.b != RoundingMode.UNNECESSARY || p.a.isInteger(),
@@ -161,105 +143,105 @@ public class RationalDemos {
         }
     }
 
-    private static void demoBigIntegerValue() {
+    private void demoBigIntegerValue() {
         initialize();
         for (Rational r : take(LIMIT, P.rationals())) {
             System.out.println("bigIntegerValue(" + r + ") = " + r.bigIntegerValue());
         }
     }
 
-    private static void demoFloor() {
+    private void demoFloor() {
         initialize();
         for (Rational r : take(LIMIT, P.rationals())) {
             System.out.println("floor(" + r + ") = " + r.floor());
         }
     }
 
-    private static void demoCeiling() {
+    private void demoCeiling() {
         initialize();
         for (Rational r : take(LIMIT, P.rationals())) {
             System.out.println("ceil(" + r + ") = " + r.ceiling());
         }
     }
 
-    private static void demoBigIntegerValueExact() {
+    private void demoBigIntegerValueExact() {
         initialize();
         for (Rational r : take(LIMIT, map(Rational::of, P.bigIntegers()))) {
             System.out.println("bigIntegerValueExact(" + r + ") = " + r.bigIntegerValueExact());
         }
     }
 
-    private static void demoByteValueExact() {
+    private void demoByteValueExact() {
         initialize();
         for (Rational r : take(LIMIT, map(Rational::of, P.bytes()))) {
             System.out.println("byteValueExact(" + r + ") = " + r.byteValueExact());
         }
     }
 
-    private static void demoShortValueExact() {
+    private void demoShortValueExact() {
         initialize();
         for (Rational r : take(LIMIT, map(Rational::of, P.shorts()))) {
             System.out.println("shortValueExact(" + r + ") = " + r.shortValueExact());
         }
     }
 
-    private static void demoIntValueExact() {
+    private void demoIntValueExact() {
         initialize();
         for (Rational r : take(LIMIT, map(Rational::of, P.integers()))) {
             System.out.println("intValueExact(" + r + ") = " + r.intValueExact());
         }
     }
 
-    private static void demoLongValueExact() {
+    private void demoLongValueExact() {
         initialize();
         for (Rational r : take(LIMIT, map(Rational::of, P.longs()))) {
             System.out.println("longValueExact(" + r + ") = " + r.longValueExact());
         }
     }
 
-    private static void demoIsPowerOfTwo() {
+    private void demoIsPowerOfTwo() {
         initialize();
         for (Rational r : take(LIMIT, P.positiveRationals())) {
             System.out.println(r + " is " + (r.isPowerOfTwo() ? "a" : "not a") + " power of 2");
         }
     }
 
-    private static void demoIsBinaryFraction() {
+    private void demoIsBinaryFraction() {
         initialize();
         for (Rational r : take(LIMIT, P.rationals())) {
             System.out.println(r + " is " + (r.isBinaryFraction() ? "a" : "not a") + " binary fraction");
         }
     }
 
-    private static void demoBinaryFractionValueExact() {
+    private void demoBinaryFractionValueExact() {
         initialize();
         for (Rational r : take(LIMIT, filterInfinite(Rational::isBinaryFraction, P.rationals()))) {
             System.out.println("binaryFractionValueExact(" + r + ") = " + r.binaryFractionValueExact());
         }
     }
 
-    private static void demoBinaryExponent() {
+    private void demoBinaryExponent() {
         initialize();
         for (Rational r : take(LIMIT, P.positiveRationals())) {
             System.out.println("binaryExponent(" + r + ") = " + r.binaryExponent());
         }
     }
 
-    private static void demoIsEqualToFloat() {
+    private void demoIsEqualToFloat() {
         initialize();
         for (Rational r : take(LIMIT, P.rationals())) {
             System.out.println(r + " is " + (r.isEqualToFloat() ? "" : "not ") + "equal to a float");
         }
     }
 
-    private static void demoIsEqualToDouble() {
+    private void demoIsEqualToDouble() {
         initialize();
         for (Rational r : take(LIMIT, P.rationals())) {
             System.out.println(r + " is " + (r.isEqualToDouble() ? "" : "not ") + "equal to a double");
         }
     }
 
-    private static void demoFloatValue_RoundingMode() {
+    private void demoFloatValue_RoundingMode() {
         initialize();
         Iterable<Pair<Rational, RoundingMode>> ps = filterInfinite(
                 p -> p.b != RoundingMode.UNNECESSARY || p.a.isEqualToFloat(),
@@ -270,14 +252,14 @@ public class RationalDemos {
         }
     }
 
-    private static void demoFloatValue() {
+    private void demoFloatValue() {
         initialize();
         for (Rational r : take(LIMIT, P.rationals())) {
             System.out.println("floatValue(" + r + ") = " + r.floatValue());
         }
     }
 
-    private static void demoFloatValueExact() {
+    private void demoFloatValueExact() {
         initialize();
         Iterable<Rational> rs = map(
                 f -> ofExact(f).get(),
@@ -288,7 +270,7 @@ public class RationalDemos {
         }
     }
 
-    private static void demoDoubleValue_RoundingMode() {
+    private void demoDoubleValue_RoundingMode() {
         initialize();
         Iterable<Pair<Rational, RoundingMode>> ps = filterInfinite(
                 p -> p.b != RoundingMode.UNNECESSARY || p.a.isEqualToDouble(),
@@ -298,14 +280,14 @@ public class RationalDemos {
         }
     }
 
-    private static void demoDoubleValue() {
+    private void demoDoubleValue() {
         initialize();
         for (Rational r : take(LIMIT, P.rationals())) {
             System.out.println("doubleValue(" + r + ") = " + r.doubleValue());
         }
     }
 
-    private static void demoDoubleValueExact() {
+    private void demoDoubleValueExact() {
         initialize();
         Iterable<Rational> rs = map(
                 d -> ofExact(d).get(),
@@ -316,7 +298,7 @@ public class RationalDemos {
         }
     }
 
-    private static void demoHasTerminatingBaseExpansion() {
+    private void demoHasTerminatingBaseExpansion() {
         initialize();
         //noinspection Convert2MethodRef
         Iterable<Pair<Rational, BigInteger>> ps = P.pairs(
@@ -329,7 +311,7 @@ public class RationalDemos {
         }
     }
 
-    private static void demoBigDecimalValueByPrecision_int_RoundingMode() {
+    private void demoBigDecimalValueByPrecision_int_RoundingMode() {
         initialize();
         Iterable<Triple<Rational, Integer, RoundingMode>> ts = filterInfinite(
                 t -> {
@@ -348,7 +330,7 @@ public class RationalDemos {
         }
     }
 
-    private static void demoBigDecimalValueByScale_int_RoundingMode() {
+    private void demoBigDecimalValueByScale_int_RoundingMode() {
         initialize();
         Iterable<Triple<Rational, Integer, RoundingMode>> ts = filterInfinite(
                 t -> t.c != RoundingMode.UNNECESSARY || t.a.multiply(TEN.pow(t.b)).isInteger(),
@@ -360,7 +342,7 @@ public class RationalDemos {
         }
     }
 
-    private static void demoBigDecimalValueByPrecision_int() {
+    private void demoBigDecimalValueByPrecision_int() {
         initialize();
         Iterable<Pair<Rational, Integer>> ps = filterInfinite(
                 p -> {
@@ -379,7 +361,7 @@ public class RationalDemos {
         }
     }
 
-    private static void demoBigDecimalValueByScale_int() {
+    private void demoBigDecimalValueByScale_int() {
         initialize();
         for (Pair<Rational, Integer> p : take(LIMIT, P.pairsSquareRootOrder(P.rationals(), P.integersGeometric()))) {
             System.out.println("bigDecimalValueByScale(" + p.a + ", " + p.b + ") = " +
@@ -387,7 +369,7 @@ public class RationalDemos {
         }
     }
 
-    private static void demoBigDecimalValueExact() {
+    private void demoBigDecimalValueExact() {
         initialize();
         Iterable<Rational> rs = filterInfinite(r -> r.hasTerminatingBaseExpansion(BigInteger.TEN), P.rationals());
         for (Rational r : take(LIMIT, rs)) {
@@ -395,112 +377,112 @@ public class RationalDemos {
         }
     }
 
-    private static void demoBitLength() {
+    private void demoBitLength() {
         initialize();
         for (Rational r : take(LIMIT, P.rationals())) {
             System.out.println("bitLength(" + r + ") = " + r.bitLength());
         }
     }
 
-    private static void demoAdd() {
+    private void demoAdd() {
         initialize();
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
             System.out.println(p.a + " + " + p.b + " = " + p.a.add(p.b));
         }
     }
 
-    private static void demoNegate() {
+    private void demoNegate() {
         initialize();
         for (Rational r : take(LIMIT, P.rationals())) {
             System.out.println("-(" + r + ") = " + r.negate());
         }
     }
 
-    private static void demoAbs() {
+    private void demoAbs() {
         initialize();
         for (Rational r : take(LIMIT, P.rationals())) {
             System.out.println("|" + r + "| = " + r.abs());
         }
     }
 
-    private static void demoSignum() {
+    private void demoSignum() {
         initialize();
         for (Rational r : take(LIMIT, P.rationals())) {
             System.out.println("signum(" + r + ") = " + r.signum());
         }
     }
 
-    private static void demoSubtract() {
+    private void demoSubtract() {
         initialize();
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
             System.out.println(p.a + " - " + p.b + " = " + p.a.subtract(p.b));
         }
     }
 
-    private static void demoMultiply_Rational() {
+    private void demoMultiply_Rational() {
         initialize();
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
             System.out.println(p.a + " * " + p.b + " = " + p.a.multiply(p.b));
         }
     }
 
-    private static void demoMultiply_BigInteger() {
+    private void demoMultiply_BigInteger() {
         initialize();
         for (Pair<Rational, BigInteger> p : take(LIMIT, P.pairs(P.rationals(), P.bigIntegers()))) {
             System.out.println(p.a + " * " + p.b + " = " + p.a.multiply(p.b));
         }
     }
 
-    private static void demoMultiply_int() {
+    private void demoMultiply_int() {
         initialize();
         for (Pair<Rational, Integer> p : take(LIMIT, P.pairs(P.rationals(), P.integers()))) {
             System.out.println(p.a + " * " + p.b + " = " + p.a.multiply(p.b));
         }
     }
 
-    private static void demoInvert() {
+    private void demoInvert() {
         initialize();
         for (Rational r : take(LIMIT, P.nonzeroRationals())) {
             System.out.println("1/(" + r + ") = " + r.invert());
         }
     }
 
-    private static void demoDivide_Rational() {
+    private void demoDivide_Rational() {
         initialize();
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals(), P.nonzeroRationals()))) {
             System.out.println(p.a + " / " + p.b + " = " + p.a.divide(p.b));
         }
     }
 
-    private static void demoDivide_BigInteger() {
+    private void demoDivide_BigInteger() {
         initialize();
         for (Pair<Rational, BigInteger> p : take(LIMIT, P.pairs(P.rationals(), P.nonzeroBigIntegers()))) {
             System.out.println(p.a + " / " + p.b + " = " + p.a.divide(p.b));
         }
     }
 
-    private static void demoDivide_int() {
+    private void demoDivide_int() {
         initialize();
         for (Pair<Rational, Integer> p : take(LIMIT, P.pairs(P.rationals(), P.nonzeroIntegers()))) {
             System.out.println(p.a + " / " + p.b + " = " + p.a.divide(p.b));
         }
     }
 
-    private static void demoShiftLeft() {
+    private void demoShiftLeft() {
         initialize();
         for (Pair<Rational, Integer> p : take(LIMIT, P.pairs(P.rationals(), P.integersGeometric()))) {
             System.out.println(p.a + " << " + p.b + " = " + p.a.shiftLeft(p.b));
         }
     }
 
-    private static void demoShiftRight() {
+    private void demoShiftRight() {
         initialize();
         for (Pair<Rational, Integer> p : take(LIMIT, P.pairs(P.rationals(), P.integersGeometric()))) {
             System.out.println(p.a + " >> " + p.b + " = " + p.a.shiftRight(p.b));
         }
     }
 
-    private static void demoSum() {
+    private void demoSum() {
         initialize();
         for (List<Rational> rs : take(LIMIT, P.withScale(4).lists(P.rationals()))) {
             String listString = tail(init(rs.toString()));
@@ -508,7 +490,7 @@ public class RationalDemos {
         }
     }
 
-    private static void demoProduct() {
+    private void demoProduct() {
         initialize();
         for (List<Rational> rs : take(LIMIT, P.withScale(4).lists(P.rationals()))) {
             String listString = tail(init(rs.toString()));
@@ -516,7 +498,7 @@ public class RationalDemos {
         }
     }
 
-    private static void demoDelta_finite() {
+    private void demoDelta_finite() {
         initialize();
         for (List<Rational> rs : take(LIMIT, P.withScale(4).listsAtLeast(1, P.rationals()))) {
             String listString = tail(init(rs.toString()));
@@ -524,22 +506,22 @@ public class RationalDemos {
         }
     }
 
-    private static void demoDelta_infinite() {
+    private void demoDelta_infinite() {
         initialize();
-        for (Iterable<Rational> rs : take(SMALL_LIMIT, P.prefixPermutations(EP.rationals()))) {
+        for (Iterable<Rational> rs : take(MEDIUM_LIMIT, P.prefixPermutations(QEP.rationals()))) {
             String listString = tail(init(its(rs)));
             System.out.println("Δ(" + listString + ") = " + its(delta(rs)));
         }
     }
 
-    private static void demoHarmonicNumber() {
+    private void demoHarmonicNumber() {
         initialize();
-        for (int i : take(SMALL_LIMIT, P.positiveIntegersGeometric())) {
+        for (int i : take(MEDIUM_LIMIT, P.positiveIntegersGeometric())) {
             System.out.println("H_" + i + " = " + harmonicNumber(i));
         }
     }
 
-    private static void demoPow() {
+    private void demoPow() {
         initialize();
         Iterable<Pair<Rational, Integer>> ps = filterInfinite(
                 p -> p.a != ZERO || p.b >= 0,
@@ -550,14 +532,14 @@ public class RationalDemos {
         }
     }
 
-    private static void demoFractionalPart() {
+    private void demoFractionalPart() {
         initialize();
         for (Rational r : take(LIMIT, P.rationals())) {
             System.out.println("fractionalPart(" + r + ") = " + r.fractionalPart());
         }
     }
 
-    private static void demoRoundToDenominator() {
+    private void demoRoundToDenominator() {
         initialize();
         Iterable<Triple<Rational, BigInteger, RoundingMode>> ts = filterInfinite(
                 p -> p.c != RoundingMode.UNNECESSARY || p.b.mod(p.a.getDenominator()).equals(BigInteger.ZERO),
@@ -569,14 +551,14 @@ public class RationalDemos {
         }
     }
 
-    private static void demoContinuedFraction() {
+    private void demoContinuedFraction() {
         initialize();
         for (Rational r : take(LIMIT, P.rationals())) {
             System.out.println("continuedFraction(" + r + ") = " + toList(r.continuedFraction()));
         }
     }
 
-    private static void demoFromContinuedFraction() {
+    private void demoFromContinuedFraction() {
         initialize();
         Iterable<List<BigInteger>> iss = map(
                 p -> toList(cons(p.a, p.b)),
@@ -588,14 +570,14 @@ public class RationalDemos {
         }
     }
 
-    private static void demoConvergents() {
+    private void demoConvergents() {
         initialize();
         for (Rational r : take(LIMIT, P.rationals())) {
             System.out.println("convergents(" + r + ") = " + toList(r.convergents()));
         }
     }
 
-    private static void demoPositionalNotation() {
+    private void demoPositionalNotation() {
         initialize();
         Iterable<Pair<Rational, BigInteger>> ps = P.pairs(
                 P.withElement(ZERO, P.withScale(4).positiveRationals()),
@@ -606,7 +588,7 @@ public class RationalDemos {
         }
     }
 
-    private static void demoFromPositionalNotation() {
+    private void demoFromPositionalNotation() {
         initialize();
         Iterable<Pair<BigInteger, Triple<List<BigInteger>, List<BigInteger>, List<BigInteger>>>> ps =
                 P.dependentPairsInfinite(
@@ -626,7 +608,7 @@ public class RationalDemos {
         }
     }
 
-    private static void demoDigits() {
+    private void demoDigits() {
         initialize();
         //noinspection Convert2MethodRef
         Iterable<Pair<Rational, BigInteger>> ps = P.pairsSquareRootOrder(
@@ -639,7 +621,7 @@ public class RationalDemos {
         }
     }
 
-    private static void demoToStringBase_BigInteger() {
+    private void demoToStringBase_BigInteger() {
         initialize();
         //noinspection Convert2MethodRef
         Iterable<Pair<Rational, BigInteger>> ps = filterInfinite(
@@ -654,7 +636,7 @@ public class RationalDemos {
         }
     }
 
-    private static void demoToStringBase_BigInteger_int() {
+    private void demoToStringBase_BigInteger_int() {
         initialize();
         //noinspection Convert2MethodRef
         Iterable<Triple<Rational, BigInteger, Integer>> ts = P.triples(
@@ -667,7 +649,7 @@ public class RationalDemos {
         }
     }
 
-    private static void demoFromStringBase() {
+    private void demoFromStringBase() {
         initialize();
         Map<Integer, String> baseChars = new HashMap<>();
         baseChars.put(0, ".-()0123456789");
@@ -696,7 +678,7 @@ public class RationalDemos {
         }
     }
 
-    private static void demoCancelDenominators() {
+    private void demoCancelDenominators() {
         initialize();
         for (List<Rational> rs : take(LIMIT, P.withScale(4).lists(P.rationals()))) {
             String listString = tail(init(rs.toString()));
@@ -704,14 +686,14 @@ public class RationalDemos {
         }
     }
 
-    private static void demoEquals_Rational() {
+    private void demoEquals_Rational() {
         initialize();
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
             System.out.println(p.a + (p.a.equals(p.b) ? " = " : " ≠ ") + p.b);
         }
     }
 
-    private static void demoEquals_null() {
+    private void demoEquals_null() {
         initialize();
         for (Rational r : take(LIMIT, P.rationals())) {
             //noinspection ObjectEqualsNull
@@ -719,49 +701,49 @@ public class RationalDemos {
         }
     }
 
-    private static void demoHashCode() {
+    private void demoHashCode() {
         initialize();
         for (Rational r : take(LIMIT, P.rationals())) {
             System.out.println("hashCode(" + r + ") = " + r.hashCode());
         }
     }
 
-    private static void demoCompareTo() {
+    private void demoCompareTo() {
         initialize();
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
             System.out.println(p.a + " " + Ordering.compare(p.a, p.b).toChar() + " " + p.b);
         }
     }
 
-    private static void demoRead() {
+    private void demoRead() {
         initialize();
         for (String s : take(LIMIT, P.strings())) {
             System.out.println("read(" + s + ") = " + read(s));
         }
     }
 
-    private static void demoRead_targeted() {
+    private void demoRead_targeted() {
         initialize();
         for (String s : take(LIMIT, P.strings(RATIONAL_CHARS))) {
             System.out.println("read(" + s + ") = " + read(s));
         }
     }
 
-    private static void demoFindIn() {
+    private void demoFindIn() {
         initialize();
         for (String s : take(LIMIT, P.strings())) {
             System.out.println("findIn(" + s + ") = " + findIn(s));
         }
     }
 
-    private static void demoFindIn_targeted() {
+    private void demoFindIn_targeted() {
         initialize();
         for (String s : take(LIMIT, P.strings(RATIONAL_CHARS))) {
             System.out.println("findIn(" + s + ") = " + findIn(s));
         }
     }
 
-    private static void demoToString() {
+    private void demoToString() {
         initialize();
         for (Rational r : take(LIMIT, P.rationals())) {
             System.out.println(r);

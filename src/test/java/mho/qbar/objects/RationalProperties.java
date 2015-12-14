@@ -1,9 +1,7 @@
 package mho.qbar.objects;
 
-import mho.qbar.iterableProviders.QBarExhaustiveProvider;
 import mho.qbar.iterableProviders.QBarIterableProvider;
-import mho.qbar.iterableProviders.QBarRandomProvider;
-import mho.qbar.testing.QBarTesting;
+import mho.qbar.testing.QBarTestProperties;
 import mho.wheels.io.Readers;
 import mho.wheels.math.BinaryFraction;
 import mho.wheels.math.MathUtils;
@@ -13,7 +11,6 @@ import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
 import org.jetbrains.annotations.NotNull;
-import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -24,148 +21,130 @@ import java.util.function.Predicate;
 
 import static mho.qbar.objects.Rational.*;
 import static mho.qbar.objects.Rational.sum;
+import static mho.qbar.testing.QBarTesting.*;
+import static mho.qbar.testing.QBarTesting.propertiesCompareToHelper;
+import static mho.qbar.testing.QBarTesting.propertiesEqualsHelper;
+import static mho.qbar.testing.QBarTesting.propertiesHashCodeHelper;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.numberUtils.FloatingPointUtils.*;
-import static mho.wheels.numberUtils.FloatingPointUtils.isNegativeZero;
 import static mho.wheels.ordering.Ordering.*;
 import static mho.wheels.testing.Testing.*;
 
-public class RationalProperties {
-    private static final @NotNull QBarExhaustiveProvider EP = QBarExhaustiveProvider.INSTANCE;
+public class RationalProperties extends QBarTestProperties {
     private static final @NotNull String RATIONAL_CHARS = "-/0123456789";
-    private static final int TINY_LIMIT = 20;
-    private static final int SMALL_LIMIT = 1000;
     private static final BigInteger ASCII_ALPHANUMERIC_COUNT = BigInteger.valueOf(36);
-    private static int LIMIT;
-    private static QBarIterableProvider P;
 
-    private static void initializeConstant(String name) {
-        System.out.println("\ttesting " + name + " properties...");
+    public RationalProperties() {
+        super("Rational");
     }
 
-    private static void initialize(String name) {
-        P.reset();
-        System.out.println("\t\ttesting " + name + " properties...");
+    @Override
+    protected void testBothModes() {
+        propertiesGetNumerator();
+        propertiesGetDenominator();
+        propertiesOf_BigInteger_BigInteger();
+        propertiesOf_long_long();
+        propertiesOf_int_int();
+        propertiesOf_BigInteger();
+        propertiesOf_long();
+        propertiesOf_int();
+        propertiesOf_BinaryFraction();
+        propertiesOf_float();
+        propertiesOf_double();
+        propertiesOfExact_float();
+        propertiesOfExact_double();
+        propertiesOf_BigDecimal();
+        propertiesIsInteger();
+        propertiesBigIntegerValue_RoundingMode();
+        propertiesBigIntegerValue();
+        propertiesFloor();
+        propertiesCeiling();
+        propertiesBigIntegerValueExact();
+        propertiesByteValueExact();
+        propertiesShortValueExact();
+        propertiesIntValueExact();
+        propertiesLongValueExact();
+        propertiesIsPowerOfTwo();
+        propertiesIsBinaryFraction();
+        propertiesBinaryFractionValueExact();
+        propertiesBinaryExponent();
+        compareImplementationsBinaryExponent();
+        propertiesIsEqualToFloat();
+        compareImplementationsIsEqualToFloat();
+        propertiesIsEqualToDouble();
+        compareImplementationsIsEqualToDouble();
+        propertiesIsEqualToDouble();
+        propertiesFloatValue_RoundingMode();
+        propertiesFloatValue();
+        propertiesFloatValueExact();
+        propertiesDoubleValue_RoundingMode();
+        propertiesDoubleValue();
+        propertiesDoubleValueExact();
+        propertiesHasTerminatingBaseExpansion();
+        propertiesBigDecimalValueByPrecision_int_RoundingMode();
+        propertiesBigDecimalValueByScale_int_RoundingMode();
+        propertiesBigDecimalValueByPrecision_int();
+        propertiesBigDecimalValueByScale_int();
+        propertiesBigDecimalValueExact();
+        propertiesBitLength();
+        propertiesAdd();
+        compareImplementationsAdd();
+        propertiesNegate();
+        propertiesAbs();
+        propertiesSignum();
+        propertiesSubtract();
+        compareImplementationsSubtract();
+        propertiesMultiply_Rational();
+        compareImplementationsMultiply_Rational();
+        propertiesMultiply_BigInteger();
+        compareImplementationsMultiply_BigInteger();
+        propertiesMultiply_int();
+        compareImplementationsMultiply_int();
+        propertiesInvert();
+        compareImplementationsInvert();
+        propertiesDivide_Rational();
+        compareImplementationsDivide_Rational();
+        propertiesDivide_BigInteger();
+        compareImplementationsDivide_BigInteger();
+        propertiesDivide_int();
+        compareImplementationsDivide_int();
+        propertiesShiftLeft();
+        compareImplementationsShiftLeft();
+        propertiesShiftRight();
+        compareImplementationsShiftRight();
+        propertiesSum();
+        compareImplementationsSum();
+        propertiesProduct();
+        compareImplementationsProduct();
+        propertiesDelta();
+        propertiesHarmonicNumber();
+        propertiesPow();
+        compareImplementationsPow();
+        propertiesFractionalPart();
+        propertiesRoundToDenominator();
+        propertiesContinuedFraction();
+        propertiesFromContinuedFraction();
+        propertiesConvergents();
+        propertiesPositionalNotation();
+        propertiesFromPositionalNotation();
+        propertiesDigits();
+        compareImplementationsDigits();
+        propertiesToStringBase_BigInteger();
+        propertiesToStringBase_BigInteger_int();
+        propertiesFromStringBase();
+        propertiesCancelDenominators();
+        propertiesEquals();
+        propertiesHashCode();
+        propertiesCompareTo();
+        compareImplementationsCompareTo();
+        propertiesRead();
+        propertiesFindIn();
+        propertiesToString();
     }
 
-    @Test
-    public void testAllProperties() {
-        List<Triple<QBarIterableProvider, Integer, String>> configs = new ArrayList<>();
-        configs.add(new Triple<>(QBarExhaustiveProvider.INSTANCE, 10000, "exhaustively"));
-        configs.add(new Triple<>(QBarRandomProvider.example(), 1000, "randomly"));
-        System.out.println("Rational properties");
-        propertiesConstants();
-        for (Triple<QBarIterableProvider, Integer, String> config : configs) {
-            P = config.a;
-            LIMIT = config.b;
-            System.out.println("\ttesting " + config.c);
-            propertiesGetNumerator();
-            propertiesGetDenominator();
-            propertiesOf_BigInteger_BigInteger();
-            propertiesOf_long_long();
-            propertiesOf_int_int();
-            propertiesOf_BigInteger();
-            propertiesOf_long();
-            propertiesOf_int();
-            propertiesOf_BinaryFraction();
-            propertiesOf_float();
-            propertiesOf_double();
-            propertiesOfExact_float();
-            propertiesOfExact_double();
-            propertiesOf_BigDecimal();
-            propertiesIsInteger();
-            propertiesBigIntegerValue_RoundingMode();
-            propertiesBigIntegerValue();
-            propertiesFloor();
-            propertiesCeiling();
-            propertiesBigIntegerValueExact();
-            propertiesByteValueExact();
-            propertiesShortValueExact();
-            propertiesIntValueExact();
-            propertiesLongValueExact();
-            propertiesIsPowerOfTwo();
-            propertiesIsBinaryFraction();
-            propertiesBinaryFractionValueExact();
-            propertiesBinaryExponent();
-            compareImplementationsBinaryExponent();
-            propertiesIsEqualToFloat();
-            compareImplementationsIsEqualToFloat();
-            propertiesIsEqualToDouble();
-            compareImplementationsIsEqualToDouble();
-            propertiesIsEqualToDouble();
-            propertiesFloatValue_RoundingMode();
-            propertiesFloatValue();
-            propertiesFloatValueExact();
-            propertiesDoubleValue_RoundingMode();
-            propertiesDoubleValue();
-            propertiesDoubleValueExact();
-            propertiesHasTerminatingBaseExpansion();
-            propertiesBigDecimalValueByPrecision_int_RoundingMode();
-            propertiesBigDecimalValueByScale_int_RoundingMode();
-            propertiesBigDecimalValueByPrecision_int();
-            propertiesBigDecimalValueByScale_int();
-            propertiesBigDecimalValueExact();
-            propertiesBitLength();
-            propertiesAdd();
-            compareImplementationsAdd();
-            propertiesNegate();
-            propertiesAbs();
-            propertiesSignum();
-            propertiesSubtract();
-            compareImplementationsSubtract();
-            propertiesMultiply_Rational();
-            compareImplementationsMultiply_Rational();
-            propertiesMultiply_BigInteger();
-            compareImplementationsMultiply_BigInteger();
-            propertiesMultiply_int();
-            compareImplementationsMultiply_int();
-            propertiesInvert();
-            compareImplementationsInvert();
-            propertiesDivide_Rational();
-            compareImplementationsDivide_Rational();
-            propertiesDivide_BigInteger();
-            compareImplementationsDivide_BigInteger();
-            propertiesDivide_int();
-            compareImplementationsDivide_int();
-            propertiesShiftLeft();
-            compareImplementationsShiftLeft();
-            propertiesShiftRight();
-            compareImplementationsShiftRight();
-            propertiesSum();
-            compareImplementationsSum();
-            propertiesProduct();
-            compareImplementationsProduct();
-            propertiesDelta();
-            propertiesHarmonicNumber();
-            propertiesPow();
-            compareImplementationsPow();
-            propertiesFractionalPart();
-            propertiesRoundToDenominator();
-            propertiesContinuedFraction();
-            propertiesFromContinuedFraction();
-            propertiesConvergents();
-            propertiesPositionalNotation();
-            propertiesFromPositionalNotation();
-            propertiesDigits();
-            compareImplementationsDigits();
-            propertiesToStringBase_BigInteger();
-            propertiesToStringBase_BigInteger_int();
-            propertiesFromStringBase();
-            propertiesCancelDenominators();
-            propertiesEquals();
-            propertiesHashCode();
-            propertiesCompareTo();
-            compareImplementationsCompareTo();
-            propertiesRead();
-            propertiesFindIn();
-            propertiesToString();
-        }
-        System.out.println("Done");
-    }
-
-    private static void propertiesConstants() {
+    private void propertiesConstants() {
         initializeConstant("constants");
-        List<Rational> sample = toList(take(SMALL_LIMIT, HARMONIC_NUMBERS));
+        List<Rational> sample = toList(take(MEDIUM_LIMIT, HARMONIC_NUMBERS));
         sample.forEach(Rational::validate);
         assertTrue("HARMONIC_NUMBERS", unique(sample));
         assertTrue("HARMONIC_NUMBERS", increasing(sample));
@@ -176,21 +155,21 @@ public class RationalProperties {
         } catch (UnsupportedOperationException ignored) {}
     }
 
-    private static void propertiesGetNumerator() {
+    private void propertiesGetNumerator() {
         initialize("getNumerator()");
         for (Rational r : take(LIMIT, P.rationals())) {
             assertEquals(r, of(r.getNumerator(), r.getDenominator()), r);
         }
     }
 
-    private static void propertiesGetDenominator() {
+    private void propertiesGetDenominator() {
         initialize("getDenominator()");
         for (Rational r : take(LIMIT, P.rationals())) {
             assertEquals(r, r.getDenominator().signum(), 1);
         }
     }
 
-    private static void propertiesOf_BigInteger_BigInteger() {
+    private void propertiesOf_BigInteger_BigInteger() {
         initialize("of(BigInteger, BigInteger)");
         for (Pair<BigInteger, BigInteger> p : take(LIMIT, P.pairs(P.bigIntegers(), P.nonzeroBigIntegers()))) {
             Rational r = of(p.a, p.b);
@@ -206,7 +185,7 @@ public class RationalProperties {
         }
     }
 
-    private static void propertiesOf_long_long() {
+    private void propertiesOf_long_long() {
         initialize("of(long, long)");
         BigInteger minLong = BigInteger.valueOf(Long.MIN_VALUE);
         BigInteger maxLong = BigInteger.valueOf(Long.MAX_VALUE);
@@ -228,7 +207,7 @@ public class RationalProperties {
         }
     }
 
-    private static void propertiesOf_int_int() {
+    private void propertiesOf_int_int() {
         initialize("of(int, int)");
         BigInteger minInt = BigInteger.valueOf(Integer.MIN_VALUE);
         BigInteger maxInt = BigInteger.valueOf(Integer.MAX_VALUE);
@@ -250,7 +229,7 @@ public class RationalProperties {
         }
     }
 
-    private static void propertiesOf_BigInteger() {
+    private void propertiesOf_BigInteger() {
         initialize("of(BigInteger)");
         for (BigInteger i : take(LIMIT, P.bigIntegers())) {
             Rational r = of(i);
@@ -260,7 +239,7 @@ public class RationalProperties {
         }
     }
 
-    private static void propertiesOf_long() {
+    private void propertiesOf_long() {
         initialize("of(long)");
         for (long l : take(LIMIT, P.longs())) {
             Rational r = of(l);
@@ -272,7 +251,7 @@ public class RationalProperties {
         }
     }
 
-    private static void propertiesOf_int() {
+    private void propertiesOf_int() {
         initialize("of(int)");
         for (int i : take(LIMIT, P.integers())) {
             Rational r = of(i);
@@ -284,7 +263,7 @@ public class RationalProperties {
         }
     }
 
-    private static void propertiesOf_BinaryFraction() {
+    private void propertiesOf_BinaryFraction() {
         initialize("of(BinaryFraction)");
         for (BinaryFraction bf : take(LIMIT, P.binaryFractions())) {
             Rational r = of(bf);
@@ -295,7 +274,7 @@ public class RationalProperties {
         }
     }
 
-    private static void propertiesOf_float() {
+    private void propertiesOf_float() {
         initialize("of(float)");
         for (float f : take(LIMIT, filter(Float::isFinite, P.floats()))) {
             Rational r = of(f).get();
@@ -310,7 +289,7 @@ public class RationalProperties {
         }
     }
 
-    private static void propertiesOf_double() {
+    private void propertiesOf_double() {
         initialize("of(double)");
         for (double d : take(LIMIT, filter(Double::isFinite, P.doubles()))) {
             Rational r = of(d).get();
@@ -325,7 +304,7 @@ public class RationalProperties {
         }
     }
 
-    private static void propertiesOfExact_float() {
+    private void propertiesOfExact_float() {
         initialize("ofExact(float)");
         for (float f : take(LIMIT, P.floats())) {
             Optional<Rational> or = ofExact(f);
@@ -353,7 +332,7 @@ public class RationalProperties {
         }
     }
 
-    private static void propertiesOfExact_double() {
+    private void propertiesOfExact_double() {
         initialize("ofExact(double)");
         for (double d : take(LIMIT, P.doubles())) {
             Optional<Rational> or = ofExact(d);
@@ -381,7 +360,7 @@ public class RationalProperties {
         }
     }
 
-    private static void propertiesOf_BigDecimal() {
+    private void propertiesOf_BigDecimal() {
         initialize("of(BigDecimal)");
         for (BigDecimal bd : take(LIMIT, P.bigDecimals())) {
             Rational r = of(bd);
@@ -395,7 +374,7 @@ public class RationalProperties {
         }
     }
 
-    private static void propertiesIsInteger() {
+    private void propertiesIsInteger() {
         initialize("isInteger()");
         for (Rational r : take(LIMIT, P.rationals())) {
             assertEquals(r, r.isInteger(), of(r.floor()).equals(r));
@@ -407,7 +386,7 @@ public class RationalProperties {
         }
     }
 
-    private static void propertiesBigIntegerValue_RoundingMode() {
+    private void propertiesBigIntegerValue_RoundingMode() {
         initialize("bigIntegerValue(RoundingMode)");
         Iterable<Pair<Rational, RoundingMode>> ps = filterInfinite(
                 p -> p.b != RoundingMode.UNNECESSARY || p.a.isInteger(),
@@ -461,7 +440,7 @@ public class RationalProperties {
         }
     }
 
-    private static void propertiesBigIntegerValue() {
+    private void propertiesBigIntegerValue() {
         initialize("bigIntegerValue()");
         for (Rational r : take(LIMIT, P.rationals())) {
             BigInteger rounded = r.bigIntegerValue();
@@ -484,7 +463,7 @@ public class RationalProperties {
         }
     }
 
-    private static void propertiesFloor() {
+    private void propertiesFloor() {
         initialize("floor()");
         for (Rational r : take(LIMIT, P.rationals())) {
             BigInteger floor = r.floor();
@@ -497,7 +476,7 @@ public class RationalProperties {
         }
     }
 
-    private static void propertiesCeiling() {
+    private void propertiesCeiling() {
         initialize("ceiling()");
         for (Rational r : take(LIMIT, P.rationals())) {
             BigInteger ceiling = r.ceiling();
@@ -510,7 +489,7 @@ public class RationalProperties {
         }
     }
 
-    private static void propertiesBigIntegerValueExact() {
+    private void propertiesBigIntegerValueExact() {
         initialize("bigIntegerValueExact()");
         for (BigInteger i : take(LIMIT, P.bigIntegers())) {
             Rational r = of(i);
@@ -533,7 +512,7 @@ public class RationalProperties {
         }
     }
 
-    private static void propertiesByteValueExact() {
+    private void propertiesByteValueExact() {
         initialize("byteValueExact()");
         for (byte b : take(LIMIT, P.bytes())) {
             Rational r = of(b);
@@ -568,7 +547,7 @@ public class RationalProperties {
         }
     }
 
-    private static void propertiesShortValueExact() {
+    private void propertiesShortValueExact() {
         initialize("shortValueExact()");
         for (short s : take(LIMIT, P.shorts())) {
             Rational r = of(s);
@@ -603,7 +582,7 @@ public class RationalProperties {
         }
     }
 
-    private static void propertiesIntValueExact() {
+    private void propertiesIntValueExact() {
         initialize("intValueExact()");
         for (int i : take(LIMIT, P.integers())) {
             Rational r = of(i);
@@ -642,7 +621,7 @@ public class RationalProperties {
         }
     }
 
-    private static void propertiesLongValueExact() {
+    private void propertiesLongValueExact() {
         initialize("longValueExact()");
         for (long l : take(LIMIT, P.longs())) {
             Rational r = of(l);
@@ -680,7 +659,7 @@ public class RationalProperties {
         }
     }
 
-    private static void propertiesIsPowerOfTwo() {
+    private void propertiesIsPowerOfTwo() {
         initialize("isPowerOfTwo()");
         for (Rational r : take(LIMIT, P.positiveRationals())) {
             assertEquals(r, r.isPowerOfTwo(), ONE.shiftLeft(r.binaryExponent()).equals(r));
@@ -694,7 +673,7 @@ public class RationalProperties {
         }
     }
 
-    private static void propertiesIsBinaryFraction() {
+    private void propertiesIsBinaryFraction() {
         initialize("isBinaryFraction()");
         for (Rational r : take(LIMIT, P.rationals())) {
             r.isBinaryFraction();
@@ -708,7 +687,7 @@ public class RationalProperties {
         }
     }
 
-    private static void propertiesBinaryFractionValueExact() {
+    private void propertiesBinaryFractionValueExact() {
         initialize("binaryFractionValueExact()");
         for (Rational r : take(LIMIT, filterInfinite(Rational::isBinaryFraction, P.rationals()))) {
             inverses(Rational::binaryFractionValueExact, Rational::of, r);
@@ -747,7 +726,7 @@ public class RationalProperties {
         return exponent;
     }
 
-    private static void propertiesBinaryExponent() {
+    private void propertiesBinaryExponent() {
         initialize("binaryExponent()");
         for (Rational r : take(LIMIT, P.positiveRationals())) {
             int exponent = r.binaryExponent();
@@ -770,7 +749,7 @@ public class RationalProperties {
         }
     }
 
-    private static void compareImplementationsBinaryExponent() {
+    private void compareImplementationsBinaryExponent() {
         Map<String, Function<Rational, Integer>> functions = new LinkedHashMap<>();
         functions.put("alt", RationalProperties::binaryExponent_alt);
         functions.put("standard", Rational::binaryExponent);
@@ -794,7 +773,7 @@ public class RationalProperties {
         return r.shiftRight(shift).isInteger();
     }
 
-    private static void propertiesIsEqualToFloat() {
+    private void propertiesIsEqualToFloat() {
         initialize("isEqualToFloat()");
         for (Rational r : take(LIMIT, P.rationals())) {
             boolean ietf = r.isEqualToFloat();
@@ -809,7 +788,7 @@ public class RationalProperties {
         }
     }
 
-    private static void compareImplementationsIsEqualToFloat() {
+    private void compareImplementationsIsEqualToFloat() {
         Map<String, Function<Rational, Boolean>> functions = new LinkedHashMap<>();
         functions.put("simplest", RationalProperties::isEqualToFloat_simplest);
         functions.put("alt", RationalProperties::isEqualToFloat_alt);
@@ -834,7 +813,7 @@ public class RationalProperties {
         return r.shiftRight(shift).isInteger();
     }
 
-    private static void propertiesIsEqualToDouble() {
+    private void propertiesIsEqualToDouble() {
         initialize("isEqualToDouble()");
         for (Rational r : take(LIMIT, P.rationals())) {
             boolean ietd = r.isEqualToDouble();
@@ -855,7 +834,7 @@ public class RationalProperties {
         }
     }
 
-    private static void compareImplementationsIsEqualToDouble() {
+    private void compareImplementationsIsEqualToDouble() {
         Map<String, Function<Rational, Boolean>> functions = new LinkedHashMap<>();
         functions.put("simplest", RationalProperties::isEqualToDouble_simplest);
         functions.put("alt", RationalProperties::isEqualToDouble_alt);
@@ -872,7 +851,7 @@ public class RationalProperties {
         return belowDistance.equals(aboveDistance);
     }
 
-    private static void propertiesFloatValue_RoundingMode() {
+    private void propertiesFloatValue_RoundingMode() {
         initialize("floatValue(RoundingMode)");
         Iterable<Pair<Rational, RoundingMode>> ps = filterInfinite(
                 p -> p.b != RoundingMode.UNNECESSARY || p.a.isEqualToFloat(),
@@ -1097,7 +1076,7 @@ public class RationalProperties {
         }
     }
 
-    private static void propertiesFloatValue() {
+    private void propertiesFloatValue() {
         initialize("floatValue()");
         for (Rational r : take(LIMIT, P.rationals())) {
             float rounded = r.floatValue();
@@ -1162,7 +1141,7 @@ public class RationalProperties {
         }
     }
 
-    private static void propertiesFloatValueExact() {
+    private void propertiesFloatValueExact() {
         initialize("floatValueExact()");
         for (Rational r : take(LIMIT, filterInfinite(Rational::isEqualToFloat, P.rationals()))) {
             float f = r.floatValueExact();
@@ -1205,7 +1184,7 @@ public class RationalProperties {
         return belowDistance.equals(aboveDistance);
     }
 
-    private static void propertiesDoubleValue_RoundingMode() {
+    private void propertiesDoubleValue_RoundingMode() {
         initialize("doubleValue(RoundingMode)");
         Iterable<Pair<Rational, RoundingMode>> ps = filter(
                 p -> p.b != RoundingMode.UNNECESSARY || p.a.isEqualToDouble(),
@@ -1430,7 +1409,7 @@ public class RationalProperties {
         }
     }
 
-    private static void propertiesDoubleValue() {
+    private void propertiesDoubleValue() {
         initialize("doubleValue()");
         for (Rational r : take(LIMIT, P.rationals())) {
             double rounded = r.doubleValue();
@@ -1495,7 +1474,7 @@ public class RationalProperties {
         }
     }
 
-    private static void propertiesDoubleValueExact() {
+    private void propertiesDoubleValueExact() {
         initialize("doubleValueExact()");
         for (Rational r : take(LIMIT, filterInfinite(Rational::isEqualToDouble, P.rationals()))) {
             double d = r.doubleValueExact();
@@ -1529,7 +1508,7 @@ public class RationalProperties {
         }
     }
 
-    private static void propertiesHasTerminatingBaseExpansion() {
+    private void propertiesHasTerminatingBaseExpansion() {
         initialize("hasTerminatingBaseExpansion(BigInteger)");
         //noinspection Convert2MethodRef
         Iterable<Pair<Rational, BigInteger>> ps = P.pairs(
@@ -1553,7 +1532,7 @@ public class RationalProperties {
         }
     }
 
-    private static void propertiesBigDecimalValueByPrecision_int_RoundingMode() {
+    private void propertiesBigDecimalValueByPrecision_int_RoundingMode() {
         initialize("bigDecimalValueByPrecision(int, RoundingMode)");
         Predicate<Triple<Rational, Integer, RoundingMode>> valid = t -> {
             try {
@@ -1695,7 +1674,7 @@ public class RationalProperties {
         }
     }
 
-    private static void propertiesBigDecimalValueByScale_int_RoundingMode() {
+    private void propertiesBigDecimalValueByScale_int_RoundingMode() {
         initialize("bigDecimalValueByScale(int, RoundingMode)");
         Predicate<Triple<Rational, Integer, RoundingMode>> valid =
                 t -> t.c != RoundingMode.UNNECESSARY || t.a.multiply(TEN.pow(t.b)).isInteger();
@@ -1812,7 +1791,7 @@ public class RationalProperties {
         }
     }
 
-    private static void propertiesBigDecimalValueByPrecision_int() {
+    private void propertiesBigDecimalValueByPrecision_int() {
         initialize("bigDecimalValueByPrecision(int)");
         Predicate<Pair<Rational, Integer>> valid = p -> {
             try {
@@ -1878,7 +1857,7 @@ public class RationalProperties {
         }
     }
 
-    private static void propertiesBigDecimalValueByScale_int() {
+    private void propertiesBigDecimalValueByScale_int() {
         initialize("bigDecimalValueByScale(int)");
         Iterable<Pair<Rational, Integer>> ps = filterInfinite(
                 p -> p.a.multiply(TEN.pow(p.b)).isInteger(),
@@ -1918,7 +1897,7 @@ public class RationalProperties {
         }
     }
 
-    private static void propertiesBigDecimalValueExact() {
+    private void propertiesBigDecimalValueExact() {
         initialize("bigDecimalValueExact()");
         Iterable<Rational> rs = filterInfinite(r -> r.hasTerminatingBaseExpansion(BigInteger.TEN), P.rationals());
         for (Rational r : take(LIMIT, rs)) {
@@ -1952,7 +1931,7 @@ public class RationalProperties {
         }
     }
 
-    private static void propertiesBitLength() {
+    private void propertiesBitLength() {
         initialize("bitLength()");
         for (Rational r : take(LIMIT, P.rationals())) {
             assertTrue(r, r.bitLength() > 0);
@@ -1971,7 +1950,7 @@ public class RationalProperties {
         );
     }
 
-    private static void propertiesAdd() {
+    private void propertiesAdd() {
         initialize("add(Rational)");
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
             Rational sum = p.a.add(p.b);
@@ -1992,14 +1971,14 @@ public class RationalProperties {
         }
     }
 
-    private static void compareImplementationsAdd() {
+    private void compareImplementationsAdd() {
         Map<String, Function<Pair<Rational, Rational>, Rational>> functions = new LinkedHashMap<>();
         functions.put("simplest", p -> add_simplest(p.a, p.b));
         functions.put("standard", p -> p.a.add(p.b));
         compareImplementations("add(Rational)", take(LIMIT, P.pairs(P.rationals())), functions);
     }
 
-    private static void propertiesNegate() {
+    private void propertiesNegate() {
         initialize("negate()");
         for (Rational r : take(LIMIT, P.rationals())) {
             Rational negative = r.negate();
@@ -2013,7 +1992,7 @@ public class RationalProperties {
         }
     }
 
-    private static void propertiesAbs() {
+    private void propertiesAbs() {
         initialize("abs()");
         for (Rational r : take(LIMIT, P.rationals())) {
             Rational abs = r.abs();
@@ -2028,7 +2007,7 @@ public class RationalProperties {
         }
     }
 
-    private static void propertiesSignum() {
+    private void propertiesSignum() {
         initialize("testing signum()");
         for (Rational r : take(LIMIT, P.rationals())) {
             int signum = r.signum();
@@ -2041,7 +2020,7 @@ public class RationalProperties {
         return a.add(b.negate());
     }
 
-    private static void propertiesSubtract() {
+    private void propertiesSubtract() {
         initialize("subtract(Rational)");
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
             Rational difference = p.a.subtract(p.b);
@@ -2058,7 +2037,7 @@ public class RationalProperties {
         }
     }
 
-    private static void compareImplementationsSubtract() {
+    private void compareImplementationsSubtract() {
         Map<String, Function<Pair<Rational, Rational>, Rational>> functions = new LinkedHashMap<>();
         functions.put("simplest", p -> subtract_simplest(p.a, p.b));
         functions.put("standard", p -> p.a.subtract(p.b));
@@ -2083,7 +2062,7 @@ public class RationalProperties {
                 new Pair<>(productNumerator, productDenominator);
     }
 
-    private static void propertiesMultiply_Rational() {
+    private void propertiesMultiply_Rational() {
         initialize("multiply(Rational)");
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
             Rational product = p.a.multiply(p.b);
@@ -2119,7 +2098,7 @@ public class RationalProperties {
         }
     }
 
-    private static void compareImplementationsMultiply_Rational() {
+    private void compareImplementationsMultiply_Rational() {
         Map<String, Function<Pair<Rational, Rational>, Pair<BigInteger, BigInteger>>> functions =
                 new LinkedHashMap<>();
         functions.put("Knuth", p -> multiply_Rational_Knuth(p.a, p.b));
@@ -2137,7 +2116,7 @@ public class RationalProperties {
         return of(a.getNumerator().multiply(b), a.getDenominator());
     }
 
-    private static void propertiesMultiply_BigInteger() {
+    private void propertiesMultiply_BigInteger() {
         initialize("multiply(BigInteger)");
         for (Pair<Rational, BigInteger> p : take(LIMIT, P.pairs(P.rationals(), P.bigIntegers()))) {
             Rational product = p.a.multiply(p.b);
@@ -2172,7 +2151,7 @@ public class RationalProperties {
         }
     }
 
-    private static void compareImplementationsMultiply_BigInteger() {
+    private void compareImplementationsMultiply_BigInteger() {
         Map<String, Function<Pair<Rational, BigInteger>, Rational>> functions = new LinkedHashMap<>();
         functions.put("simplest", p -> multiply_BigInteger_simplest(p.a, p.b));
         functions.put("standard", p -> p.a.multiply(p.b));
@@ -2187,7 +2166,7 @@ public class RationalProperties {
         return of(a.getNumerator().multiply(BigInteger.valueOf(b)), a.getDenominator());
     }
 
-    private static void propertiesMultiply_int() {
+    private void propertiesMultiply_int() {
         initialize("multiply(int)");
         for (Pair<Rational, Integer> p : take(LIMIT, P.pairs(P.rationals(), P.integers()))) {
             Rational product = p.a.multiply(p.b);
@@ -2222,7 +2201,7 @@ public class RationalProperties {
         }
     }
 
-    private static void compareImplementationsMultiply_int() {
+    private void compareImplementationsMultiply_int() {
         Map<String, Function<Pair<Rational, Integer>, Rational>> functions = new LinkedHashMap<>();
         functions.put("simplest", p -> multiply_int_simplest(p.a, p.b));
         functions.put("standard", p -> p.a.multiply(p.b));
@@ -2233,7 +2212,7 @@ public class RationalProperties {
         return of(r.getDenominator(), r.getNumerator());
     }
 
-    private static void propertiesInvert() {
+    private void propertiesInvert() {
         initialize("invert()");
         for (Rational r : take(LIMIT, P.nonzeroRationals())) {
             Rational inverse = r.invert();
@@ -2249,7 +2228,7 @@ public class RationalProperties {
         }
     }
 
-    private static void compareImplementationsInvert() {
+    private void compareImplementationsInvert() {
         Map<String, Function<Rational, Rational>> functions = new LinkedHashMap<>();
         functions.put("simplest", RationalProperties::invert_simplest);
         functions.put("standard", Rational::invert);
@@ -2260,7 +2239,7 @@ public class RationalProperties {
         return of(a.getNumerator().multiply(b.getDenominator()), a.getDenominator().multiply(b.getNumerator()));
     }
 
-    private static void propertiesDivide_Rational() {
+    private void propertiesDivide_Rational() {
         initialize("divide(Rational)");
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals(), P.nonzeroRationals()))) {
             Rational quotient = p.a.divide(p.b);
@@ -2292,7 +2271,7 @@ public class RationalProperties {
         }
     }
 
-    private static void compareImplementationsDivide_Rational() {
+    private void compareImplementationsDivide_Rational() {
         Map<String, Function<Pair<Rational, Rational>, Rational>> functions = new LinkedHashMap<>();
         functions.put("simplest", p -> divide_Rational_simplest(p.a, p.b));
         functions.put("standard", p -> p.a.divide(p.b));
@@ -2307,7 +2286,7 @@ public class RationalProperties {
         return of(a.getNumerator(), a.getDenominator().multiply(b));
     }
 
-    private static void propertiesDivide_BigInteger() {
+    private void propertiesDivide_BigInteger() {
         initialize("divide(BigInteger)");
         for (Pair<Rational, BigInteger> p : take(LIMIT, P.pairs(P.rationals(), P.nonzeroBigIntegers()))) {
             Rational quotient = p.a.divide(p.b);
@@ -2337,7 +2316,7 @@ public class RationalProperties {
         }
     }
 
-    private static void compareImplementationsDivide_BigInteger() {
+    private void compareImplementationsDivide_BigInteger() {
         Map<String, Function<Pair<Rational, BigInteger>, Rational>> functions = new LinkedHashMap<>();
         functions.put("simplest", p -> divide_BigInteger_simplest(p.a, p.b));
         functions.put("standard", p -> p.a.divide(p.b));
@@ -2352,7 +2331,7 @@ public class RationalProperties {
         return of(a.getNumerator(), a.getDenominator().multiply(BigInteger.valueOf(b)));
     }
 
-    private static void propertiesDivide_int() {
+    private void propertiesDivide_int() {
         initialize("divide(int)");
         for (Pair<Rational, Integer> p : take(LIMIT, P.pairs(P.rationals(), P.nonzeroIntegers()))) {
             Rational quotient = p.a.divide(p.b);
@@ -2382,7 +2361,7 @@ public class RationalProperties {
         }
     }
 
-    private static void compareImplementationsDivide_int() {
+    private void compareImplementationsDivide_int() {
         Map<String, Function<Pair<Rational, Integer>, Rational>> functions = new LinkedHashMap<>();
         functions.put("simplest", p -> divide_int_simplest(p.a, p.b));
         functions.put("standard", p -> p.a.divide(p.b));
@@ -2397,7 +2376,7 @@ public class RationalProperties {
         }
     }
 
-    private static void propertiesShiftLeft() {
+    private void propertiesShiftLeft() {
         initialize("shiftLeft(int)");
         for (Pair<Rational, Integer> p : take(LIMIT, P.pairs(P.rationals(), P.integersGeometric()))) {
             homomorphic(
@@ -2424,7 +2403,7 @@ public class RationalProperties {
         }
     }
 
-    private static void compareImplementationsShiftLeft() {
+    private void compareImplementationsShiftLeft() {
         Map<String, Function<Pair<Rational, Integer>, Rational>> functions = new LinkedHashMap<>();
         functions.put("simplest", p -> shiftLeft_simplest(p.a, p.b));
         functions.put("standard", p -> p.a.shiftLeft(p.b));
@@ -2443,7 +2422,7 @@ public class RationalProperties {
         }
     }
 
-    private static void propertiesShiftRight() {
+    private void propertiesShiftRight() {
         initialize("shiftRight(int)");
         for (Pair<Rational, Integer> p : take(LIMIT, P.pairs(P.rationals(), P.integersGeometric()))) {
             homomorphic(
@@ -2470,7 +2449,7 @@ public class RationalProperties {
         }
     }
 
-    private static void compareImplementationsShiftRight() {
+    private void compareImplementationsShiftRight() {
         Map<String, Function<Pair<Rational, Integer>, Rational>> functions = new LinkedHashMap<>();
         functions.put("simplest", p -> shiftRight_simplest(p.a, p.b));
         functions.put("standard", p -> p.a.shiftLeft(p.b));
@@ -2507,7 +2486,7 @@ public class RationalProperties {
         return sum;
     }
 
-    private static void propertiesSum() {
+    private void propertiesSum() {
         initialize("sum(Iterable<Rational>)");
         propertiesFoldHelper(
                 LIMIT,
@@ -2524,7 +2503,7 @@ public class RationalProperties {
         }
     }
 
-    private static void compareImplementationsSum() {
+    private void compareImplementationsSum() {
         Map<String, Function<List<Rational>, Rational>> functions = new LinkedHashMap<>();
         functions.put("alt", RationalProperties::sum_alt);
         functions.put("standard", Rational::sum);
@@ -2535,7 +2514,7 @@ public class RationalProperties {
         return foldl(Rational::multiply, ONE, xs);
     }
 
-    private static void propertiesProduct() {
+    private void propertiesProduct() {
         initialize("product(Iterable<Rational>)");
         propertiesFoldHelper(
                 LIMIT,
@@ -2552,19 +2531,19 @@ public class RationalProperties {
         }
     }
 
-    private static void compareImplementationsProduct() {
+    private void compareImplementationsProduct() {
         Map<String, Function<List<Rational>, Rational>> functions = new LinkedHashMap<>();
         functions.put("simplest", RationalProperties::product_simplest);
         functions.put("standard", Rational::product);
         compareImplementations("product(Iterable<Rational>)", take(LIMIT, P.lists(P.rationals())), functions);
     }
 
-    private static void propertiesDelta() {
+    private void propertiesDelta() {
         initialize("delta(Iterable<Rational>)");
         propertiesDeltaHelper(
                 LIMIT,
                 P.getWheelsProvider(),
-                EP.rationals(),
+                QEP.rationals(),
                 P.rationals(),
                 Rational::negate,
                 Rational::subtract,
@@ -2573,21 +2552,21 @@ public class RationalProperties {
         );
     }
 
-    private static void propertiesHarmonicNumber() {
+    private void propertiesHarmonicNumber() {
         initialize("harmonicNumber(int)");
-        for (int i : take(SMALL_LIMIT, P.positiveIntegersGeometric())) {
+        for (int i : take(MEDIUM_LIMIT, P.positiveIntegersGeometric())) {
             Rational h = harmonicNumber(i);
             h.validate();
             assertTrue(i, ge(h, ONE));
         }
 
-        for (int i : take(SMALL_LIMIT, P.rangeUpGeometric(2))) {
+        for (int i : take(MEDIUM_LIMIT, P.rangeUpGeometric(2))) {
             Rational h = harmonicNumber(i);
             assertTrue(i, gt(h, harmonicNumber(i - 1)));
             assertFalse(i, h.isInteger());
         }
 
-        for (int i : take(SMALL_LIMIT, filterInfinite(j -> j != 6, P.rangeUpGeometric(3)))) {
+        for (int i : take(MEDIUM_LIMIT, filterInfinite(j -> j != 6, P.rangeUpGeometric(3)))) {
             assertFalse(i, harmonicNumber(i).hasTerminatingBaseExpansion(BigInteger.TEN));
         }
 
@@ -2604,7 +2583,7 @@ public class RationalProperties {
         return p < 0 ? result.invert() : result;
     }
 
-    private static void propertiesPow() {
+    private void propertiesPow() {
         initialize("pow(int)");
         Iterable<Pair<Rational, Integer>> ps = filterInfinite(
                 p -> p.b >= 0 || p.a != ZERO,
@@ -2686,7 +2665,7 @@ public class RationalProperties {
         }
     }
 
-    private static void compareImplementationsPow() {
+    private void compareImplementationsPow() {
         Map<String, Function<Pair<Rational, Integer>, Rational>> functions = new LinkedHashMap<>();
         functions.put("simplest", p -> pow_simplest(p.a, p.b));
         functions.put("standard", p -> p.a.pow(p.b));
@@ -2697,7 +2676,7 @@ public class RationalProperties {
         compareImplementations("pow(int", take(LIMIT, ps), functions);
     }
 
-    private static void propertiesFractionalPart() {
+    private void propertiesFractionalPart() {
         initialize("fractionalPart()");
         for (Rational r : take(LIMIT, P.rationals())) {
             Rational fractionalPart = r.fractionalPart();
@@ -2712,7 +2691,7 @@ public class RationalProperties {
         }
     }
 
-    private static void propertiesRoundToDenominator() {
+    private void propertiesRoundToDenominator() {
         initialize("roundToDenominator(BigInteger, RoundingMode)");
         Iterable<Triple<Rational, BigInteger, RoundingMode>> ts = filter(
                 p -> p.c != RoundingMode.UNNECESSARY || p.b.mod(p.a.getDenominator()).equals(BigInteger.ZERO),
@@ -2813,7 +2792,7 @@ public class RationalProperties {
         }
     }
 
-    private static void propertiesContinuedFraction() {
+    private void propertiesContinuedFraction() {
         initialize("continuedFraction()");
         for (Rational r : take(LIMIT, P.rationals())) {
             List<BigInteger> continuedFraction = toList(r.continuedFraction());
@@ -2828,7 +2807,7 @@ public class RationalProperties {
         }
     }
 
-    private static void propertiesFromContinuedFraction() {
+    private void propertiesFromContinuedFraction() {
         initialize("fromContinuedFraction(List<BigInteger>)");
         Iterable<List<BigInteger>> iss = map(
                 p -> toList(cons(p.a, p.b)),
@@ -2857,7 +2836,7 @@ public class RationalProperties {
         }
     }
 
-    private static void propertiesConvergents() {
+    private void propertiesConvergents() {
         initialize("convergents()");
         for (Rational r : take(LIMIT, P.rationals())) {
             List<Rational> convergents = toList(r.convergents());
@@ -2890,7 +2869,7 @@ public class RationalProperties {
         return new Pair<>(a, b);
     }
 
-    private static void propertiesPositionalNotation() {
+    private void propertiesPositionalNotation() {
         initialize("positionalNotation(BigInteger)");
         Iterable<Pair<Rational, BigInteger>> ps = P.pairs(
                 P.withElement(ZERO, P.withScale(4).positiveRationals()),
@@ -2936,7 +2915,7 @@ public class RationalProperties {
         }
     }
 
-    private static void propertiesFromPositionalNotation() {
+    private void propertiesFromPositionalNotation() {
         initialize("fromPositionalNotation(BigInteger, List<BigInteger>, List<BigInteger>, List<BigInteger>)");
         Iterable<Pair<BigInteger, Triple<List<BigInteger>, List<BigInteger>, List<BigInteger>>>> ps =
                 P.dependentPairsInfinite(
@@ -3094,7 +3073,7 @@ public class RationalProperties {
         return new Pair<>(positionalNotation.a, afterDecimal);
     }
 
-    private static void propertiesDigits() {
+    private void propertiesDigits() {
         initialize("digits(BigInteger)");
         //noinspection Convert2MethodRef
         Iterable<Pair<Rational, BigInteger>> ps = P.pairsSquareRootOrder(
@@ -3146,7 +3125,7 @@ public class RationalProperties {
         }
     }
 
-    private static void compareImplementationsDigits() {
+    private void compareImplementationsDigits() {
         Map<String, Function<Pair<Rational, BigInteger>, List<BigInteger>>> functions = new LinkedHashMap<>();
         functions.put("alt", p -> toList(take(TINY_LIMIT, digits_alt(p.a, p.b).b)));
         functions.put("standard", p -> toList(take(TINY_LIMIT, p.a.digits(p.b).b)));
@@ -3158,7 +3137,7 @@ public class RationalProperties {
         compareImplementations("digits(BigInteger)", take(LIMIT, ps), functions);
     }
 
-    private static void propertiesToStringBase_BigInteger() {
+    private void propertiesToStringBase_BigInteger() {
         initialize("toStringBase(BigInteger)");
         //noinspection Convert2MethodRef
         Iterable<Pair<Rational, BigInteger>> ps = filterInfinite(
@@ -3217,7 +3196,7 @@ public class RationalProperties {
         }
     }
 
-    private static void propertiesToStringBase_BigInteger_int() {
+    private void propertiesToStringBase_BigInteger_int() {
         initialize("toStringBase(BigInteger, int)");
         //noinspection Convert2MethodRef
         Iterable<Triple<Rational, BigInteger, Integer>> ts = P.triples(
@@ -3272,7 +3251,7 @@ public class RationalProperties {
         }
     }
 
-    private static void propertiesFromStringBase() {
+    private void propertiesFromStringBase() {
         initialize("fromStringBase(BigInteger, String)");
         Map<Integer, String> baseChars = new HashMap<>();
         baseChars.put(0, ".-()0123456789");
@@ -3315,7 +3294,7 @@ public class RationalProperties {
         //improper String left untested
     }
 
-    private static void propertiesCancelDenominators() {
+    private void propertiesCancelDenominators() {
         initialize("cancelDenominators(List<Rational>)");
         for (List<Rational> rs : take(LIMIT, P.lists(P.rationals()))) {
             List<BigInteger> canceled = cancelDenominators(rs);
@@ -3352,25 +3331,25 @@ public class RationalProperties {
         }
     }
 
-    private static void propertiesEquals() {
+    private void propertiesEquals() {
         initialize("");
         System.out.println("\t\ttesting equals(Object) properties...");
 
-        QBarTesting.propertiesEqualsHelper(LIMIT, P, QBarIterableProvider::rationals);
+        propertiesEqualsHelper(LIMIT, P, QBarIterableProvider::rationals);
     }
 
-    private static void propertiesHashCode() {
+    private void propertiesHashCode() {
         initialize("");
         System.out.println("\t\ttesting hashCode() properties...");
 
-        QBarTesting.propertiesHashCodeHelper(LIMIT, P, QBarIterableProvider::rationals);
+        propertiesHashCodeHelper(LIMIT, P, QBarIterableProvider::rationals);
     }
 
     private static int compareTo_simplest(@NotNull Rational x, @NotNull Rational y) {
         return x.getNumerator().multiply(y.getDenominator()).compareTo(y.getNumerator().multiply(x.getDenominator()));
     }
 
-    private static void propertiesCompareTo() {
+    private void propertiesCompareTo() {
         initialize("");
         System.out.println("\t\ttesting compareTo(Rational) properties...");
 
@@ -3380,10 +3359,10 @@ public class RationalProperties {
             assertEquals(p, p.a.subtract(p.b).signum(), compare);
         }
 
-        QBarTesting.propertiesCompareToHelper(LIMIT, P, QBarIterableProvider::rationals);
+        propertiesCompareToHelper(LIMIT, P, QBarIterableProvider::rationals);
     }
 
-    private static void compareImplementationsCompareTo() {
+    private void compareImplementationsCompareTo() {
         initialize("");
         System.out.println("\t\tcomparing compareTo(Rational) implementations...");
 
@@ -3404,7 +3383,7 @@ public class RationalProperties {
         System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
     }
 
-    private static void propertiesRead() {
+    private void propertiesRead() {
         initialize("");
         System.out.println("\t\ttesting read(String) properties...");
 
@@ -3437,14 +3416,14 @@ public class RationalProperties {
         }
     }
 
-    private static void propertiesFindIn() {
+    private void propertiesFindIn() {
         initialize("");
         System.out.println("\t\ttesting findIn(String) properties...");
 
         propertiesFindInHelper(LIMIT, P.getWheelsProvider(), P.rationals(), Rational::read, Rational::findIn, r -> {});
     }
 
-    private static void propertiesToString() {
+    private void propertiesToString() {
         initialize("");
         System.out.println("\t\ttesting toString() properties...");
 

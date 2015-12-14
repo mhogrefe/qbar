@@ -5,8 +5,8 @@ import mho.qbar.objects.Rational;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 
-import static mho.wheels.iterables.IterableUtils.*;
-import static mho.wheels.testing.Testing.*;
+import static mho.wheels.iterables.IterableUtils.take;
+import static mho.wheels.testing.Testing.its;
 
 @SuppressWarnings("UnusedDeclaration")
 public class QBarExhaustiveProviderDemos {
