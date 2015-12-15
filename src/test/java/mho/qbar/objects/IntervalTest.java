@@ -1,7 +1,6 @@
 package mho.qbar.objects;
 
 import mho.wheels.io.Readers;
-import mho.wheels.iterables.IterableUtils;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
@@ -14,7 +13,6 @@ import static mho.qbar.objects.Interval.sum;
 import static mho.wheels.iterables.IterableUtils.iterate;
 import static mho.wheels.iterables.IterableUtils.toList;
 import static mho.wheels.testing.Testing.*;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -135,58 +133,76 @@ public class IntervalTest {
         isFinitelyBounded_helper("[-6, Infinity)", false);
     }
 
+    private static void contains_Rational_helper(@NotNull String a, @NotNull String r, boolean output) {
+        aeq(read(a).get().contains(Rational.read(r).get()), output);
+    }
+
     @Test
     public void testContains_Rational() {
-        assertTrue(ZERO.contains(Rational.ZERO));
-        assertFalse(ZERO.contains(Rational.ONE));
-        assertTrue(ONE.contains(Rational.ONE));
-        assertFalse(ONE.contains(Rational.ZERO));
-        assertTrue(ALL.contains(Rational.ZERO));
-        assertTrue(ALL.contains(Rational.ONE));
-        assertTrue(ALL.contains(Rational.read("-4/3").get()));
-        assertTrue(read("[-2, 5/3]").get().contains(Rational.read("-2").get()));
-        assertTrue(read("[-2, 5/3]").get().contains(Rational.read("-1").get()));
-        assertTrue(read("[-2, 5/3]").get().contains(Rational.ZERO));
-        assertTrue(read("[-2, 5/3]").get().contains(Rational.ONE));
-        assertTrue(read("[-2, 5/3]").get().contains(Rational.read("5/3").get()));
-        assertFalse(read("[-2, 5/3]").get().contains(Rational.read("-3").get()));
-        assertFalse(read("[-2, 5/3]").get().contains(Rational.read("2").get()));
-        assertTrue(read("[4, 4]").get().contains(Rational.read("4").get()));
-        assertFalse(read("[4, 4]").get().contains(Rational.read("3").get()));
-        assertFalse(read("[4, 4]").get().contains(Rational.read("5").get()));
-        assertTrue(read("(-Infinity, 3/2]").get().contains(Rational.ZERO));
-        assertTrue(read("(-Infinity, 3/2]").get().contains(Rational.ONE));
-        assertTrue(read("(-Infinity, 3/2]").get().contains(Rational.read("-10").get()));
-        assertTrue(read("(-Infinity, 3/2]").get().contains(Rational.read("3/2").get()));
-        assertFalse(read("(-Infinity, 3/2]").get().contains(Rational.read("2").get()));
-        assertTrue(read("[-6, Infinity)").get().contains(Rational.ZERO));
-        assertTrue(read("[-6, Infinity)").get().contains(Rational.ONE));
-        assertTrue(read("[-6, Infinity)").get().contains(Rational.read("-4").get()));
-        assertTrue(read("[-6, Infinity)").get().contains(Rational.read("5").get()));
-        assertFalse(read("[-6, Infinity)").get().contains(Rational.read("-8").get()));
+        contains_Rational_helper("[0, 0]", "0", true);
+        contains_Rational_helper("[0, 0]", "1", false);
+
+        contains_Rational_helper("[1, 1]", "1", true);
+        contains_Rational_helper("[1, 1]", "0", false);
+
+        contains_Rational_helper("(-Infinity, Infinity)", "1", true);
+        contains_Rational_helper("(-Infinity, Infinity)", "-4/3", true);
+
+        contains_Rational_helper("[-2, 5/3]", "-2", true);
+        contains_Rational_helper("[-2, 5/3]", "-1", true);
+        contains_Rational_helper("[-2, 5/3]", "0", true);
+        contains_Rational_helper("[-2, 5/3]", "1", true);
+        contains_Rational_helper("[-2, 5/3]", "5/3", true);
+        contains_Rational_helper("[-2, 5/3]", "-3", false);
+        contains_Rational_helper("[-2, 5/3]", "2", false);
+
+        contains_Rational_helper("[4, 4]", "4", true);
+        contains_Rational_helper("[4, 4]", "3", false);
+        contains_Rational_helper("[4, 4]", "5", false);
+
+        contains_Rational_helper("(-Infinity, 3/2]", "0", true);
+        contains_Rational_helper("(-Infinity, 3/2]", "1", true);
+        contains_Rational_helper("(-Infinity, 3/2]", "-10", true);
+        contains_Rational_helper("(-Infinity, 3/2]", "3/2", true);
+        contains_Rational_helper("(-Infinity, 3/2]", "2", false);
+
+        contains_Rational_helper("[-6, Infinity)", "0", true);
+        contains_Rational_helper("[-6, Infinity)", "1", true);
+        contains_Rational_helper("[-6, Infinity)", "-4", true);
+        contains_Rational_helper("[-6, Infinity)", "5", true);
+        contains_Rational_helper("[-6, Infinity)", "-8", false);
+    }
+
+    private static void contains_Interval_helper(@NotNull String a, @NotNull String b, boolean output) {
+        aeq(read(a).get().contains(read(b).get()), output);
     }
 
     @Test
     public void testContains_Interval() {
-        assertTrue(ZERO.contains(ZERO));
-        assertTrue(ONE.contains(ONE));
-        assertTrue(ALL.contains(ALL));
-        assertTrue(ALL.contains(ZERO));
-        assertTrue(ALL.contains(ONE));
-        assertFalse(ZERO.contains(ONE));
-        assertFalse(ZERO.contains(ALL));
-        assertFalse(ONE.contains(ZERO));
-        assertFalse(ONE.contains(ALL));
-        assertTrue(read("[1, 4]").get().contains(read("[2, 3]").get()));
-        assertTrue(read("[1, 4]").get().contains(read("[1, 4]").get()));
-        assertFalse(read("[1, 4]").get().contains(read("[0, 2]").get()));
-        assertTrue(read("(-Infinity, 1/2]").get().contains(read("(-Infinity, 0]").get()));
-        assertTrue(read("(-Infinity, 1/2]").get().contains(read("[0, 0]").get()));
-        assertFalse(read("(-Infinity, 1/2]").get().contains(read("(-Infinity, 1]").get()));
-        assertTrue(read("[1/2, Infinity)").get().contains(read("[1, Infinity)").get()));
-        assertTrue(read("[1/2, Infinity)").get().contains(read("[1, 1]").get()));
-        assertFalse(read("[1/2, Infinity)").get().contains(read("[0, Infinity)").get()));
-        assertFalse(read("[1/2, Infinity)").get().contains(read("(-Infinity, 1/2]").get()));
+        contains_Interval_helper("[0, 0]", "[0, 0]", true);
+        contains_Interval_helper("[0, 0]", "[1, 1]", false);
+        contains_Interval_helper("[0, 0]", "(-Infinity, Infinity)", false);
+
+        contains_Interval_helper("[1, 1]", "[1, 1]", true);
+        contains_Interval_helper("[1, 1]", "[0, 0]", false);
+        contains_Interval_helper("[1, 1]", "(-Infinity, Infinity)", false);
+
+        contains_Interval_helper("(-Infinity, Infinity)", "(-Infinity, Infinity)", true);
+        contains_Interval_helper("(-Infinity, Infinity)", "[0, 0]", true);
+        contains_Interval_helper("(-Infinity, Infinity)", "[1, 1]", true);
+
+        contains_Interval_helper("[1, 4]", "[2, 3]", true);
+        contains_Interval_helper("[1, 4]", "[1, 4]", true);
+        contains_Interval_helper("[1, 4]", "[0, 2]", false);
+
+        contains_Interval_helper("(-Infinity, 1/2]", "(-Infinity, 0]", true);
+        contains_Interval_helper("(-Infinity, 1/2]", "[0, 0]", true);
+        contains_Interval_helper("(-Infinity, 1/2]", "(-Infinity, 1]", false);
+
+        contains_Interval_helper("[1/2, Infinity)", "[1, Infinity)", true);
+        contains_Interval_helper("[1/2, Infinity)", "[1, 1]", true);
+        contains_Interval_helper("[1/2, Infinity)", "[0, Infinity)", false);
+        contains_Interval_helper("[1/2, Infinity)", "(-Infinity, 1/2]", false);
     }
 
     @Test

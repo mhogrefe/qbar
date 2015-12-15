@@ -190,9 +190,7 @@ public class IntervalProperties extends QBarTestProperties {
     }
 
     private void propertiesContains_Rational() {
-        initialize("");
-        System.out.println("\t\ttesting contains(Rational) properties...");
-
+        initialize("contains(Rational)");
         for (Pair<Interval, Rational> p : take(LIMIT, P.pairs(P.intervals(), P.rationals()))) {
             p.a.contains(p.b);
         }
@@ -202,15 +200,13 @@ public class IntervalProperties extends QBarTestProperties {
             assertTrue(r, of(r).contains(r));
         }
 
-        for (Pair<Rational, Rational> p : take(LIMIT, filter(q -> !q.a.equals(q.b), P.pairs(P.rationals())))) {
+        for (Pair<Rational, Rational> p : take(LIMIT, P.distinctPairs(P.rationals()))) {
             assertFalse(p, of(p.a).contains(p.b));
         }
     }
 
     private void propertiesContains_Interval() {
-        initialize("");
-        System.out.println("\t\ttesting contains(Interval) properties...");
-
+        initialize("contains(Interval)");
         for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
             p.a.contains(p.b);
         }
@@ -220,18 +216,19 @@ public class IntervalProperties extends QBarTestProperties {
             assertTrue(a, a.contains(a));
         }
 
-        for (Pair<Interval, Interval> p : take(LIMIT, filter(q -> q.a.contains(q.b), P.pairs(P.intervals())))) {
+        Iterable<Pair<Interval, Interval>> ps = filterInfinite(q -> q.a.contains(q.b), P.pairs(P.intervals()));
+        for (Pair<Interval, Interval> p : take(LIMIT, ps)) {
             Optional<Rational> ad = p.a.diameter();
             Optional<Rational> bd = p.b.diameter();
             assertTrue(p, !ad.isPresent() || le(bd.get(), ad.get()));
             assertTrue(p, p.a.convexHull(p.b).equals(p.a));
         }
 
-        Iterable<Pair<Rational, Interval>> ps = filter(
+        Iterable<Pair<Rational, Interval>> ps2 = filterInfinite(
                 q -> !q.b.equals(of(q.a)),
                 P.pairs(P.rationals(), P.intervals())
         );
-        for (Pair<Rational, Interval> p : take(LIMIT, ps)) {
+        for (Pair<Rational, Interval> p : take(LIMIT, ps2)) {
             assertFalse(p, of(p.a).contains(p.b));
         }
     }

@@ -204,10 +204,7 @@ public final class Interval implements Comparable<Interval> {
      * @return {@code x}∈{@code this}
      */
     public boolean contains(@NotNull Rational x) {
-        if (lower == null && upper == null) return true;
-        if (lower == null) return le(x, upper);
-        if (upper == null) return ge(x, lower);
-        return ge(x, lower) && le(x, upper);
+        return (lower == null || ge(x, lower)) && (upper == null || le(x, upper));
     }
 
     /**
