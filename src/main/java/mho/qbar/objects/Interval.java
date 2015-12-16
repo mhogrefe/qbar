@@ -312,6 +312,7 @@ public final class Interval implements Comparable<Interval> {
         } else {
             iLower = max(lower, that.lower);
         }
+
         Rational iUpper;
         if (upper == null && that.upper == null) {
             iUpper = null;
@@ -322,8 +323,12 @@ public final class Interval implements Comparable<Interval> {
         } else {
             iUpper = min(upper, that.upper);
         }
-        if (iLower != null && iUpper != null && gt(iLower, iUpper)) return Optional.empty();
-        return Optional.of(new Interval(iLower, iUpper));
+
+        if (iLower != null && iUpper != null && gt(iLower, iUpper)) {
+            return Optional.empty();
+        } else {
+            return Optional.of(new Interval(iLower, iUpper));
+        }
     }
 
     /**
@@ -339,7 +344,15 @@ public final class Interval implements Comparable<Interval> {
      * @return {@code this}∩{@code that}=∅
      */
     public boolean disjoint(@NotNull Interval that) {
-        return !intersection(that).isPresent();
+        if (lower == null && upper == null) {
+            return false;
+        } else if (lower == null) {
+            return that.lower != null && lt(upper, that.lower);
+        } else if (upper == null) {
+            return that.upper != null && lt(that.upper, lower);
+        } else {
+            return that.lower != null && lt(upper, that.lower) || (that.upper != null && lt(that.upper, lower));
+        }
     }
 
     /**
@@ -1296,8 +1309,6 @@ public final class Interval implements Comparable<Interval> {
         if (!disjoint(that)) return Optional.empty();
         Rational thisSample = lower == null ? upper : lower;
         Rational thatSample = that.lower == null ? that.upper : that.lower;
-        assert thisSample != null;
-        assert thatSample != null;
         return Optional.of(compare(thisSample, thatSample));
     }
 

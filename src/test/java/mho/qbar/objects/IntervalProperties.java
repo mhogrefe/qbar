@@ -4,7 +4,6 @@ import mho.qbar.iterableProviders.QBarExhaustiveProvider;
 import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.iterableProviders.QBarRandomProvider;
 import mho.qbar.testing.QBarTestProperties;
-import mho.qbar.testing.QBarTesting;
 import mho.wheels.iterables.ExhaustiveProvider;
 import mho.wheels.numberUtils.BigDecimalUtils;
 import mho.wheels.numberUtils.FloatingPointUtils;
@@ -55,6 +54,7 @@ public class IntervalProperties extends QBarTestProperties {
         compareImplementationsConvexHull_List_Interval();
         propertiesIntersection();
         propertiesDisjoint();
+        compareImplementationsDisjoint();
         propertiesMakeDisjoint();
 //        propertiesComplement();
         propertiesMidpoint();
@@ -361,16 +361,23 @@ public class IntervalProperties extends QBarTestProperties {
     }
 
     private void propertiesIntersection() {
-        initialize("");
-        System.out.println("\t\ttesting intersection(Interval) properties...");
-
+        initialize("intersection(Interval)");
         for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
             Optional<Interval> oi = p.a.intersection(p.b);
             if (oi.isPresent()) {
                 oi.get().validate();
             }
-            assertEquals(p, oi, p.b.intersection(p.a));
+            commutative(Interval::intersection, p);
             assertEquals(p, oi.isPresent(), !p.a.disjoint(p.b));
+        }
+
+        Iterable<Triple<Optional<Interval>, Optional<Interval>, Optional<Interval>>> ts =
+                P.triples(P.nonEmptyOptionals(P.intervals()));
+        for (Triple<Optional<Interval>, Optional<Interval>, Optional<Interval>> t : take(LIMIT, ts)) {
+            associative(
+                    (a, b) -> !a.isPresent() || !b.isPresent() ? Optional.empty() : a.get().intersection(b.get()),
+                    t
+            );
         }
 
         for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.finitelyBoundedIntervals()))) {
@@ -382,11 +389,13 @@ public class IntervalProperties extends QBarTestProperties {
         }
 
         for (Interval a : take(LIMIT, P.intervals())) {
-            assertEquals(a, ALL.intersection(a).get(), a);
-            assertEquals(a, a.intersection(a).get(), a);
+            fixedPoint(b -> ALL.intersection(b).get(), a);
+            fixedPoint(b -> b.intersection(ALL).get(), a);
+            fixedPoint(b -> b.intersection(b).get(), a);
         }
 
-        for (Pair<Interval, Interval> p : take(LIMIT, filter(q -> !q.a.disjoint(q.b), P.pairs(P.intervals())))) {
+        Iterable<Pair<Interval, Interval>> ps = filterInfinite(q -> !q.a.disjoint(q.b), P.pairs(P.intervals()));
+        for (Pair<Interval, Interval> p : take(LIMIT, ps)) {
             Interval intersection = p.a.intersection(p.b).get();
             for (Rational r : take(TINY_LIMIT, P.rationalsIn(intersection))) {
                 assertTrue(p, p.a.contains(r));
@@ -395,13 +404,15 @@ public class IntervalProperties extends QBarTestProperties {
         }
     }
 
-    private void propertiesDisjoint() {
-        initialize("");
-        System.out.println("\t\ttesting disjoint(Interval) properties...");
+    private static boolean disjoint_simplest(@NotNull Interval a, @NotNull Interval b) {
+        return !a.intersection(b).isPresent();
+    }
 
+    private void propertiesDisjoint() {
+        initialize("disjoint(Interval)");
         for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
-            boolean disjoint = p.a.disjoint(p.b);
-            assertEquals(p, p.b.disjoint(p.a), disjoint);
+            assertEquals(p, p.a.disjoint(p.b), disjoint_simplest(p.a, p.b));
+            commutative(Interval::disjoint, p);
         }
 
         for (Interval a : take(LIMIT, P.intervals())) {
@@ -409,11 +420,19 @@ public class IntervalProperties extends QBarTestProperties {
             assertFalse(a, a.disjoint(a));
         }
 
-        for (Pair<Interval, Interval> p : take(LIMIT, filter(q -> q.a.disjoint(q.b), P.pairs(P.intervals())))) {
+        Iterable<Pair<Interval, Interval>> ps = filterInfinite(q -> q.a.disjoint(q.b), P.pairs(P.intervals()));
+        for (Pair<Interval, Interval> p : take(LIMIT, ps)) {
             for (Rational r : take(TINY_LIMIT, P.rationalsIn(p.a))) {
                 assertFalse(p, p.b.contains(r));
             }
         }
+    }
+
+    private void compareImplementationsDisjoint() {
+        Map<String, Function<Pair<Interval, Interval>, Boolean>> functions = new LinkedHashMap<>();
+        functions.put("simplest", p -> disjoint_simplest(p.a, p.b));
+        functions.put("standard", p -> p.a.disjoint(p.b));
+        compareImplementations("disjoint(Interval)", take(LIMIT, P.pairs(P.intervals())), functions);
     }
 
     private void propertiesMakeDisjoint() {

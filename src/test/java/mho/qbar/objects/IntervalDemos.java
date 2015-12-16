@@ -14,7 +14,6 @@ import java.util.List;
 
 import static mho.qbar.objects.Interval.*;
 import static mho.wheels.iterables.IterableUtils.*;
-import static mho.wheels.ordering.Ordering.le;
 import static mho.wheels.testing.Testing.MEDIUM_LIMIT;
 
 @SuppressWarnings("UnusedDeclaration")
@@ -120,7 +119,7 @@ public class IntervalDemos extends QBarDemos {
     private void demoIntersection() {
         initialize();
         for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
-            System.out.println("intersection(" + p.a + ", " + p.b + ") = " + p.a.intersection(p.b));
+            System.out.println(p.a + " ∩ " + p.b + " = " + p.a.intersection(p.b));
         }
     }
 
