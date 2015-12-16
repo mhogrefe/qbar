@@ -804,6 +804,7 @@ public class PolynomialProperties {
                 Polynomial::add,
                 Polynomial::sum,
                 p -> {},
+                true,
                 true
         );
 
@@ -855,6 +856,7 @@ public class PolynomialProperties {
                 Polynomial::multiply,
                 Polynomial::product,
                 p -> {},
+                true,
                 true
         );
 

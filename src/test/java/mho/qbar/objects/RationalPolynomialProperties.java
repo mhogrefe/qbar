@@ -992,6 +992,7 @@ public class RationalPolynomialProperties {
                 RationalPolynomial::add,
                 RationalPolynomial::sum,
                 rp -> {},
+                true,
                 true
         );
 
@@ -1046,6 +1047,7 @@ public class RationalPolynomialProperties {
                 RationalPolynomial::multiply,
                 RationalPolynomial::product,
                 rp -> {},
+                true,
                 true
         );
 

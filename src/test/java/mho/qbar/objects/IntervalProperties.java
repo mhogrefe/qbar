@@ -4,6 +4,7 @@ import mho.qbar.iterableProviders.QBarExhaustiveProvider;
 import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.iterableProviders.QBarRandomProvider;
 import mho.qbar.testing.QBarTestProperties;
+import mho.qbar.testing.QBarTesting;
 import mho.wheels.iterables.ExhaustiveProvider;
 import mho.wheels.numberUtils.BigDecimalUtils;
 import mho.wheels.numberUtils.FloatingPointUtils;
@@ -114,8 +115,7 @@ public class IntervalProperties extends QBarTestProperties {
 
     private void propertiesOf_Rational_Rational() {
         initialize("of(Rational, Rational)");
-        Iterable<Pair<Rational, Rational>> ps = filterInfinite(q -> le(q.a, q.b), P.pairs(P.rationals()));
-        for (Pair<Rational, Rational> p : take(LIMIT, ps)) {
+        for (Pair<Rational, Rational> p : take(LIMIT, P.bagPairs(P.rationals()))) {
             Interval a = of(p.a, p.b);
             a.validate();
             assertTrue(a, a.isFinitelyBounded());
@@ -222,6 +222,9 @@ public class IntervalProperties extends QBarTestProperties {
             Optional<Rational> bd = p.b.diameter();
             assertTrue(p, !ad.isPresent() || le(bd.get(), ad.get()));
             assertTrue(p, p.a.convexHull(p.b).equals(p.a));
+            for (Rational r : take(TINY_LIMIT, P.rationalsIn(p.b))) {
+                assertTrue(p, p.a.contains(r));
+            }
         }
 
         Iterable<Pair<Rational, Interval>> ps2 = filterInfinite(
@@ -234,9 +237,7 @@ public class IntervalProperties extends QBarTestProperties {
     }
 
     private void propertiesDiameter() {
-        initialize("");
-        System.out.println("\t\ttesting diameter() properties...");
-
+        initialize("diameter()");
         for (Interval a : take(LIMIT, P.intervals())) {
             a.diameter();
         }
@@ -252,20 +253,23 @@ public class IntervalProperties extends QBarTestProperties {
     }
 
     private void propertiesConvexHull_Interval() {
-        initialize("");
-        System.out.println("\t\ttesting convexHull(Interval) properties...");
-
+        initialize("convexHull(Interval)");
         for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
             Interval c = p.a.convexHull(p.b);
             c.validate();
-            assertEquals(p, c, p.b.convexHull(p.a));
+            commutative(Interval::convexHull, p);
             //Given an interval c whose endpoints are in each of two intervals a and b, any Rational in c lies in the
             //convex hull of a and b
             for (Pair<Rational, Rational> q : take(TINY_LIMIT, P.pairs(P.rationalsIn(p.a), P.rationalsIn(p.b)))) {
-                for (Rational r : take(TINY_LIMIT, P.rationalsIn(of(min(q.a, q.b), max(q.a, q.b))))) {
+                Pair<Rational, Rational> minMax = minMax(q.a, q.b);
+                for (Rational r : take(TINY_LIMIT, P.rationalsIn(of(minMax.a, minMax.b)))) {
                     assertTrue(p, c.contains(r));
                 }
             }
+        }
+
+        for (Triple<Interval, Interval, Interval> t : take(LIMIT, P.triples(P.intervals()))) {
+            associative(Interval::convexHull, t);
         }
 
         for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.finitelyBoundedIntervals()))) {
@@ -275,53 +279,54 @@ public class IntervalProperties extends QBarTestProperties {
         }
 
         for (Interval a : take(LIMIT, P.intervals())) {
-            assertTrue(a, a.convexHull(a).equals(a));
-            assertTrue(a, ALL.convexHull(a).equals(ALL));
+            fixedPoint(b -> b.convexHull(b), a);
+            fixedPoint(a::convexHull, ALL);
+            fixedPoint(b -> b.convexHull(a), ALL);
         }
     }
 
     private static @NotNull Pair<Rational, Rational> convexHull_List_Interval_alt(@NotNull List<Interval> as) {
-        if (isEmpty(as))
-            throw new IllegalArgumentException("cannot take convex hull of empty set");
-        Rational lower = minimum(
-                (x, y) -> {
-                    if (x == null) return -1;
-                    if (y == null) return 1;
-                    return x.compareTo(y);
-                },
-                map(a -> a.getLower().isPresent() ? a.getLower().get() : null, as)
-        );
-        Rational upper = maximum(
-                (x, y) -> {
-                    if (x == null) return 1;
-                    if (y == null) return -1;
-                    return x.compareTo(y);
-                },
-                map(a -> a.getUpper().isPresent() ? a.getUpper().get() : null, as)
-        );
+        if (isEmpty(as)) {
+            throw new IllegalArgumentException("as cannot be empty.");
+        }
+        List<Optional<Rational>> lowers = toList(map(Interval::getLower, as));
+        List<Optional<Rational>> uppers = toList(map(Interval::getUpper, as));
+        //noinspection RedundantCast
+        Rational lower = any(a -> !a.isPresent(), lowers) ?
+                null :
+                minimum((Iterable<Rational>) map(Optional::get, lowers));
+        //noinspection RedundantCast
+        Rational upper = any(a -> !a.isPresent(), uppers) ?
+                null :
+                maximum((Iterable<Rational>) map(Optional::get, uppers));
         return new Pair<>(lower, upper);
     }
 
     private void propertiesConvexHull_List_Interval() {
-        initialize("");
-        System.out.println("\t\ttesting convexHull(List<Interval>) properties...");
-
+        initialize("convexHull(List<Interval>)");
         for (List<Interval> as : take(LIMIT, P.listsAtLeast(1, P.intervals()))) {
             Interval c = convexHull(as);
-            Pair<Rational, Rational> altC = convexHull_List_Interval_alt(as);
-            Interval alt;
-            if (altC.a == null && altC.b == null) {
-                alt = ALL;
-            } else if (altC.a == null) {
-                alt = lessThanOrEqualTo(altC.b);
-            } else if (altC.b == null) {
-                alt = greaterThanOrEqualTo(altC.a);
-            } else {
-                alt = of(altC.a, altC.b);
-            }
-            assertEquals(as, alt, c);
+            assertEquals(
+                    as,
+                    convexHull_List_Interval_alt(as),
+                    new Pair<>(
+                            c.getLower().isPresent() ? c.getLower().get() : null,
+                            c.getUpper().isPresent() ? c.getUpper().get() : null
+                    )
+            );
             c.validate();
         }
+
+        propertiesFoldHelper(
+                LIMIT,
+                P.getWheelsProvider(),
+                P.intervals(),
+                Interval::convexHull,
+                Interval::convexHull,
+                Interval::validate,
+                false,
+                true
+        );
 
         for (List<Interval> as : take(LIMIT, P.listsAtLeast(1, P.finitelyBoundedIntervals()))) {
             Interval c = convexHull(as);
@@ -329,28 +334,7 @@ public class IntervalProperties extends QBarTestProperties {
             assertTrue(as, all(a -> ge(cd, a.diameter().get()), as));
         }
 
-        Iterable<Pair<List<Interval>, List<Interval>>> ps = P.dependentPairs(
-                P.listsAtLeast(1, P.intervals()),
-                P::permutationsFinite
-        );
-        for (Pair<List<Interval>, List<Interval>> p : take(LIMIT, ps)) {
-            assertEquals(p, convexHull(p.a), convexHull(p.b));
-        }
-
-        for (Interval a : take(LIMIT, P.intervals())) {
-            assertEquals(a, convexHull(Collections.singletonList(a)), a);
-        }
-
-        for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
-            assertEquals(p, convexHull(Arrays.asList(p.a, p.b)), p.a.convexHull(p.b));
-        }
-
-        Iterable<Pair<Interval, Integer>> ps2;
-        if (P instanceof QBarExhaustiveProvider) {
-            ps2 = ((QBarExhaustiveProvider) P).pairsLogarithmicOrder(P.intervals(), P.positiveIntegers());
-        } else {
-            ps2 = P.pairs(P.intervals(), P.withScale(20).positiveIntegersGeometric());
-        }
+        Iterable<Pair<Interval, Integer>> ps2 = P.pairsLogarithmicOrder(P.intervals(), P.positiveIntegersGeometric());
         for (Pair<Interval, Integer> p : take(LIMIT, ps2)) {
             assertEquals(p, convexHull(toList(replicate(p.b, p.a))), p.a);
         }
@@ -358,34 +342,22 @@ public class IntervalProperties extends QBarTestProperties {
         for (List<Interval> as : take(LIMIT, P.listsWithElement(ALL, P.intervals()))) {
             assertEquals(as, convexHull(as), ALL);
         }
-
-        for (List<Interval> as : take(LIMIT, P.listsWithElement(null, P.intervals()))) {
-            try {
-                convexHull(as);
-                fail(as);
-            } catch (NullPointerException ignored) {}
-        }
     }
 
     private void compareImplementationsConvexHull_List_Interval() {
-        initialize("");
-        System.out.println("\t\tcomparing convexHull(List<Interval>) implementations...");
-
-        long totalTime = 0;
-        for (List<Interval> as : take(LIMIT, P.listsAtLeast(1, P.intervals()))) {
-            long time = System.nanoTime();
-            convexHull_List_Interval_alt(as);
-            totalTime += (System.nanoTime() - time);
-        }
-        System.out.println("\t\t\talt: " + ((double) totalTime) / 1e9 + " s");
-
-        totalTime = 0;
-        for (List<Interval> as : take(LIMIT, P.listsAtLeast(1, P.intervals()))) {
-            long time = System.nanoTime();
-            convexHull(as);
-            totalTime += (System.nanoTime() - time);
-        }
-        System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
+        Map<String, Function<List<Interval>, Pair<Rational, Rational>>> functions = new LinkedHashMap<>();
+        functions.put("alt", IntervalProperties::convexHull_List_Interval_alt);
+        functions.put(
+                "standard",
+                as -> {
+                    Interval a = convexHull(as);
+                    return new Pair<>(
+                            a.getLower().isPresent() ? a.getLower().get() : null,
+                            a.getUpper().isPresent() ? a.getUpper().get() : null
+                    );
+                }
+        );
+        compareImplementations("convexHull(List<Interval>)", take(LIMIT, P.listsAtLeast(1, P.intervals())), functions);
     }
 
     private void propertiesIntersection() {
@@ -1631,7 +1603,16 @@ public class IntervalProperties extends QBarTestProperties {
         initialize("");
         System.out.println("\t\ttesting sum(Iterable<Interval>) properties...");
 
-        propertiesFoldHelper(LIMIT, P.getWheelsProvider(), P.intervals(), Interval::add, Interval::sum, a -> {}, true);
+        propertiesFoldHelper(
+                LIMIT,
+                P.getWheelsProvider(),
+                P.intervals(),
+                Interval::add,
+                Interval::sum,
+                a -> {},
+                true,
+                true
+        );
 
         for (List<Interval> is : take(LIMIT, P.lists(P.intervals()))) {
             Interval sum = sum(is);
@@ -1653,6 +1634,7 @@ public class IntervalProperties extends QBarTestProperties {
                 Interval::multiply,
                 Interval::product,
                 a -> {},
+                true,
                 true
         );
 

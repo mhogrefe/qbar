@@ -237,8 +237,11 @@ public final class Interval implements Comparable<Interval> {
      * @return the diameter of {@code this}
      */
     public @NotNull Optional<Rational> diameter() {
-        if (lower == null || upper == null) return Optional.empty();
-        return Optional.of(upper.subtract(lower));
+        if (lower == null || upper == null) {
+            return Optional.empty();
+        } else {
+            return Optional.of(upper.subtract(lower));
+        }
     }
 
     /**
@@ -276,10 +279,12 @@ public final class Interval implements Comparable<Interval> {
      */
     @SuppressWarnings("JavaDoc")
     public static @NotNull Interval convexHull(@NotNull List<Interval> as) {
-        if (any(a -> a == null, as))
+        if (any(a -> a == null, as)) {
             throw new NullPointerException();
-        if (as.isEmpty())
-            throw new IllegalArgumentException();
+        }
+        if (as.isEmpty()) {
+            throw new IllegalArgumentException("as cannot be empty.");
+        }
         return foldl1(Interval::convexHull, as);
     }
 

@@ -2501,6 +2501,7 @@ public class RationalProperties extends QBarTestProperties {
                 Rational::add,
                 Rational::sum,
                 Rational::validate,
+                true,
                 true
         );
 
@@ -2529,6 +2530,7 @@ public class RationalProperties extends QBarTestProperties {
                 Rational::multiply,
                 Rational::product,
                 Rational::validate,
+                true,
                 true
         );
 

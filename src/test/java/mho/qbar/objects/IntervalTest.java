@@ -205,92 +205,115 @@ public class IntervalTest {
         contains_Interval_helper("[1/2, Infinity)", "(-Infinity, 1/2]", false);
     }
 
+    private static void diameter_helper(@NotNull String input, @NotNull String output) {
+        aeq(read(input).get().diameter().get(), output);
+    }
+
+    private static void diameter_fail_helper(@NotNull String input) {
+        assertFalse(read(input).get().diameter().isPresent());
+    }
+
     @Test
     public void testDiameter() {
-        aeq(ZERO.diameter().get(), "0");
-        aeq(ONE.diameter().get(), "0");
-        assertFalse(ALL.diameter().isPresent());
-        aeq(read("[-2, 5/3]").get().diameter().get(), "11/3");
-        aeq(read("[4, 4]").get().diameter().get(), "0");
-        assertFalse(read("(-Infinity, 3/2]").get().diameter().isPresent());
-        assertFalse(read("[-6, Infinity)").get().diameter().isPresent());
+        diameter_helper("[0, 0]", "0");
+        diameter_helper("[1, 1]", "0");
+        diameter_fail_helper("(-Infinity, Infinity)");
+        diameter_helper("[-2, 5/3]", "11/3");
+        diameter_helper("[4, 4]", "0");
+        diameter_fail_helper("(-Infinity, 3/2]");
+        diameter_fail_helper("[-6, Infinity)");
+    }
+
+    private static void convexHull_Interval_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
+        aeq(read(a).get().convexHull(read(b).get()), output);
     }
 
     @Test
     public void testConvexHull_Interval() {
-        aeq(ZERO.convexHull(ZERO), "[0, 0]");
-        aeq(ZERO.convexHull(ONE), "[0, 1]");
-        aeq(ZERO.convexHull(ALL), "(-Infinity, Infinity)");
-        aeq(ZERO.convexHull(read("[-2, 5/3]").get()), "[-2, 5/3]");
-        aeq(ZERO.convexHull(read("[4, 4]").get()), "[0, 4]");
-        aeq(ZERO.convexHull(read("(-Infinity, 3/2]").get()), "(-Infinity, 3/2]");
-        aeq(ZERO.convexHull(read("[-6, Infinity)").get()), "[-6, Infinity)");
-        aeq(ONE.convexHull(ZERO), "[0, 1]");
-        aeq(ONE.convexHull(ONE), "[1, 1]");
-        aeq(ONE.convexHull(ALL), "(-Infinity, Infinity)");
-        aeq(ONE.convexHull(read("[-2, 5/3]").get()), "[-2, 5/3]");
-        aeq(ONE.convexHull(read("[4, 4]").get()), "[1, 4]");
-        aeq(ONE.convexHull(read("(-Infinity, 3/2]").get()), "(-Infinity, 3/2]");
-        aeq(ONE.convexHull(read("[-6, Infinity)").get()), "[-6, Infinity)");
-        aeq(ALL.convexHull(ZERO), "(-Infinity, Infinity)");
-        aeq(ALL.convexHull(ONE), "(-Infinity, Infinity)");
-        aeq(ALL.convexHull(ALL), "(-Infinity, Infinity)");
-        aeq(ALL.convexHull(read("[-2, 5/3]").get()), "(-Infinity, Infinity)");
-        aeq(ALL.convexHull(read("[4, 4]").get()), "(-Infinity, Infinity)");
-        aeq(ALL.convexHull(read("(-Infinity, 3/2]").get()), "(-Infinity, Infinity)");
-        aeq(ALL.convexHull(read("[-6, Infinity)").get()), "(-Infinity, Infinity)");
-        aeq(read("[-2, 5/3]").get().convexHull(ZERO), "[-2, 5/3]");
-        aeq(read("[-2, 5/3]").get().convexHull(ONE), "[-2, 5/3]");
-        aeq(read("[-2, 5/3]").get().convexHull(ALL), "(-Infinity, Infinity)");
-        aeq(read("[-2, 5/3]").get().convexHull(read("[-2, 5/3]").get()), "[-2, 5/3]");
-        aeq(read("[-2, 5/3]").get().convexHull(read("[4, 4]").get()), "[-2, 4]");
-        aeq(read("[-2, 5/3]").get().convexHull(read("(-Infinity, 3/2]").get()), "(-Infinity, 5/3]");
-        aeq(read("[-2, 5/3]").get().convexHull(read("[-6, Infinity)").get()), "[-6, Infinity)");
-        aeq(read("[4, 4]").get().convexHull(ZERO), "[0, 4]");
-        aeq(read("[4, 4]").get().convexHull(ONE), "[1, 4]");
-        aeq(read("[4, 4]").get().convexHull(ALL), "(-Infinity, Infinity)");
-        aeq(read("[4, 4]").get().convexHull(read("[-2, 5/3]").get()), "[-2, 4]");
-        aeq(read("[4, 4]").get().convexHull(read("[4, 4]").get()), "[4, 4]");
-        aeq(read("[4, 4]").get().convexHull(read("(-Infinity, 3/2]").get()), "(-Infinity, 4]");
-        aeq(read("[4, 4]").get().convexHull(read("[-6, Infinity)").get()), "[-6, Infinity)");
-        aeq(read("(-Infinity, 3/2]").get().convexHull(ZERO), "(-Infinity, 3/2]");
-        aeq(read("(-Infinity, 3/2]").get().convexHull(ONE), "(-Infinity, 3/2]");
-        aeq(read("(-Infinity, 3/2]").get().convexHull(ALL), "(-Infinity, Infinity)");
-        aeq(read("(-Infinity, 3/2]").get().convexHull(read("[-2, 5/3]").get()), "(-Infinity, 5/3]");
-        aeq(read("(-Infinity, 3/2]").get().convexHull(read("[4, 4]").get()), "(-Infinity, 4]");
-        aeq(read("(-Infinity, 3/2]").get().convexHull(read("(-Infinity, 3/2]").get()), "(-Infinity, 3/2]");
-        aeq(read("(-Infinity, 3/2]").get().convexHull(read("[-6, Infinity)").get()), "(-Infinity, Infinity)");
-        aeq(read("[-6, Infinity)").get().convexHull(ZERO), "[-6, Infinity)");
-        aeq(read("[-6, Infinity)").get().convexHull(ONE), "[-6, Infinity)");
-        aeq(read("[-6, Infinity)").get().convexHull(ALL), "(-Infinity, Infinity)");
-        aeq(read("[-6, Infinity)").get().convexHull(read("[-2, 5/3]").get()), "[-6, Infinity)");
-        aeq(read("[-6, Infinity)").get().convexHull(read("[4, 4]").get()), "[-6, Infinity)");
-        aeq(read("[-6, Infinity)").get().convexHull(read("(-Infinity, 3/2]").get()), "(-Infinity, Infinity)");
-        aeq(read("[-6, Infinity)").get().convexHull(read("[-6, Infinity)").get()), "[-6, Infinity)");
+        convexHull_Interval_helper("[0, 0]", "[0, 0]", "[0, 0]");
+        convexHull_Interval_helper("[0, 0]", "[1, 1]", "[0, 1]");
+        convexHull_Interval_helper("[0, 0]", "(-Infinity, Infinity)", "(-Infinity, Infinity)");
+        convexHull_Interval_helper("[0, 0]", "[-2, 5/3]", "[-2, 5/3]");
+        convexHull_Interval_helper("[0, 0]", "[4, 4]", "[0, 4]");
+        convexHull_Interval_helper("[0, 0]", "(-Infinity, 3/2]", "(-Infinity, 3/2]");
+        convexHull_Interval_helper("[0, 0]", "[-6, Infinity)", "[-6, Infinity)");
+
+        convexHull_Interval_helper("[1, 1]", "[0, 0]", "[0, 1]");
+        convexHull_Interval_helper("[1, 1]", "[1, 1]", "[1, 1]");
+        convexHull_Interval_helper("[1, 1]", "(-Infinity, Infinity)", "(-Infinity, Infinity)");
+        convexHull_Interval_helper("[1, 1]", "[-2, 5/3]", "[-2, 5/3]");
+        convexHull_Interval_helper("[1, 1]", "[4, 4]", "[1, 4]");
+        convexHull_Interval_helper("[1, 1]", "(-Infinity, 3/2]", "(-Infinity, 3/2]");
+        convexHull_Interval_helper("[1, 1]", "[-6, Infinity)", "[-6, Infinity)");
+
+        convexHull_Interval_helper("(-Infinity, Infinity)", "[0, 0]", "(-Infinity, Infinity)");
+        convexHull_Interval_helper("(-Infinity, Infinity)", "[1, 1]", "(-Infinity, Infinity)");
+        convexHull_Interval_helper("(-Infinity, Infinity)", "(-Infinity, Infinity)", "(-Infinity, Infinity)");
+        convexHull_Interval_helper("(-Infinity, Infinity)", "[-2, 5/3]", "(-Infinity, Infinity)");
+        convexHull_Interval_helper("(-Infinity, Infinity)", "[4, 4]", "(-Infinity, Infinity)");
+        convexHull_Interval_helper("(-Infinity, Infinity)", "(-Infinity, 3/2]", "(-Infinity, Infinity)");
+        convexHull_Interval_helper("(-Infinity, Infinity)", "[-6, Infinity)", "(-Infinity, Infinity)");
+
+        convexHull_Interval_helper("[-2, 5/3]", "[0, 0]", "[-2, 5/3]");
+        convexHull_Interval_helper("[-2, 5/3]", "[1, 1]", "[-2, 5/3]");
+        convexHull_Interval_helper("[-2, 5/3]", "(-Infinity, Infinity)", "(-Infinity, Infinity)");
+        convexHull_Interval_helper("[-2, 5/3]", "[-2, 5/3]", "[-2, 5/3]");
+        convexHull_Interval_helper("[-2, 5/3]", "[4, 4]", "[-2, 4]");
+        convexHull_Interval_helper("[-2, 5/3]", "(-Infinity, 3/2]", "(-Infinity, 5/3]");
+        convexHull_Interval_helper("[-2, 5/3]", "[-6, Infinity)", "[-6, Infinity)");
+
+        convexHull_Interval_helper("[4, 4]", "[0, 0]", "[0, 4]");
+        convexHull_Interval_helper("[4, 4]", "[1, 1]", "[1, 4]");
+        convexHull_Interval_helper("[4, 4]", "(-Infinity, Infinity)", "(-Infinity, Infinity)");
+        convexHull_Interval_helper("[4, 4]", "[-2, 5/3]", "[-2, 4]");
+        convexHull_Interval_helper("[4, 4]", "[4, 4]", "[4, 4]");
+        convexHull_Interval_helper("[4, 4]", "(-Infinity, 3/2]", "(-Infinity, 4]");
+        convexHull_Interval_helper("[4, 4]", "[-6, Infinity)", "[-6, Infinity)");
+
+        convexHull_Interval_helper("(-Infinity, 3/2]", "[0, 0]", "(-Infinity, 3/2]");
+        convexHull_Interval_helper("(-Infinity, 3/2]", "[1, 1]", "(-Infinity, 3/2]");
+        convexHull_Interval_helper("(-Infinity, 3/2]", "(-Infinity, Infinity)", "(-Infinity, Infinity)");
+        convexHull_Interval_helper("(-Infinity, 3/2]", "[-2, 5/3]", "(-Infinity, 5/3]");
+        convexHull_Interval_helper("(-Infinity, 3/2]", "[4, 4]", "(-Infinity, 4]");
+        convexHull_Interval_helper("(-Infinity, 3/2]", "(-Infinity, 3/2]", "(-Infinity, 3/2]");
+        convexHull_Interval_helper("(-Infinity, 3/2]", "[-6, Infinity)", "(-Infinity, Infinity)");
+
+        convexHull_Interval_helper("[-6, Infinity)", "[0, 0]", "[-6, Infinity)");
+        convexHull_Interval_helper("[-6, Infinity)", "[1, 1]", "[-6, Infinity)");
+        convexHull_Interval_helper("[-6, Infinity)", "(-Infinity, Infinity)", "(-Infinity, Infinity)");
+        convexHull_Interval_helper("[-6, Infinity)", "[-2, 5/3]", "[-6, Infinity)");
+        convexHull_Interval_helper("[-6, Infinity)", "[4, 4]", "[-6, Infinity)");
+        convexHull_Interval_helper("[-6, Infinity)", "(-Infinity, 3/2]", "(-Infinity, Infinity)");
+        convexHull_Interval_helper("[-6, Infinity)", "[-6, Infinity)", "[-6, Infinity)");
+    }
+
+    private static void convexHull_List_Interval_helper(@NotNull String input, @NotNull String output) {
+        aeq(convexHull(readIntervalList(input)), output);
+    }
+
+    private static void convexHull_List_Interval_fail_helper(@NotNull String input) {
+        try {
+            convexHull(readIntervalListWithNulls(input));
+            fail();
+        } catch (NullPointerException | IllegalArgumentException ignored) {}
     }
 
     @Test
     public void testConvexHull_List_Interval() {
-        aeq(convexHull(readIntervalList("[[0, 0]]")), "[0, 0]");
-        aeq(convexHull(readIntervalList("[[-1, 2]]")), "[-1, 2]");
-        aeq(convexHull(readIntervalList("[[-1, Infinity)]")), "[-1, Infinity)");
-        aeq(convexHull(readIntervalList("[(-Infinity, 4]]")), "(-Infinity, 4]");
-        aeq(convexHull(readIntervalList("[(-Infinity, Infinity)]")), "(-Infinity, Infinity)");
-        aeq(convexHull(readIntervalList("[[0, 0], [1, 1]]")), "[0, 1]");
-        aeq(convexHull(readIntervalList("[[1, 2], [3, 4]]")), "[1, 4]");
-        aeq(convexHull(readIntervalList("[[1, 3], [2, 4]]")), "[1, 4]");
-        aeq(convexHull(readIntervalList("[(-Infinity, Infinity), [3, 4]]")), "(-Infinity, Infinity)");
-        aeq(convexHull(readIntervalList("[[-1, Infinity), (-Infinity, 4]]")), "(-Infinity, Infinity)");
-        aeq(convexHull(readIntervalList("[[1, 2], [3, 4], [5, 6]]")), "[1, 6]");
-        aeq(convexHull(readIntervalList("[[1, 2], [2, 2], [3, Infinity)]")), "[1, Infinity)");
-        try {
-            convexHull(readIntervalList("[]"));
-            fail();
-        } catch (IllegalArgumentException ignored) {}
-        try {
-            convexHull(readIntervalListWithNulls("[[1, 2], null]"));
-            fail();
-        } catch (NullPointerException ignored) {}
+        convexHull_List_Interval_helper("[[0, 0]]", "[0, 0]");
+        convexHull_List_Interval_helper("[[-1, 2]]", "[-1, 2]");
+        convexHull_List_Interval_helper("[[-1, Infinity)]", "[-1, Infinity)");
+        convexHull_List_Interval_helper("[(-Infinity, 4]]", "(-Infinity, 4]");
+        convexHull_List_Interval_helper("[(-Infinity, Infinity)]", "(-Infinity, Infinity)");
+        convexHull_List_Interval_helper("[[0, 0], [1, 1]]", "[0, 1]");
+        convexHull_List_Interval_helper("[[1, 2], [3, 4]]", "[1, 4]");
+        convexHull_List_Interval_helper("[[1, 3], [2, 4]]", "[1, 4]");
+        convexHull_List_Interval_helper("[(-Infinity, Infinity), [3, 4]]", "(-Infinity, Infinity)");
+        convexHull_List_Interval_helper("[[-1, Infinity), (-Infinity, 4]]", "(-Infinity, Infinity)");
+        convexHull_List_Interval_helper("[[1, 2], [3, 4], [5, 6]]", "[1, 6]");
+        convexHull_List_Interval_helper("[[1, 2], [2, 2], [3, Infinity)]", "[1, Infinity)");
+        convexHull_List_Interval_fail_helper("[]");
+        convexHull_List_Interval_fail_helper("[[1, 2], null]");
     }
 
     @Test

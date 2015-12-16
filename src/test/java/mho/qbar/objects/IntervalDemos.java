@@ -41,7 +41,7 @@ public class IntervalDemos extends QBarDemos {
 
     private void demoOf_Rational_Rational() {
         initialize();
-        for (Pair<Rational, Rational> p : take(LIMIT, filterInfinite(q -> le(q.a, q.b), P.pairs(P.rationals())))) {
+        for (Pair<Rational, Rational> p : take(LIMIT, P.bagPairs(P.rationals()))) {
             System.out.println("of(" + p.a + ", " + p.b + ") = " + of(p.a, p.b));
         }
     }
@@ -111,7 +111,7 @@ public class IntervalDemos extends QBarDemos {
 
     private void demoConvexHull_List_Interval() {
         initialize();
-        for (List<Interval> as : take(LIMIT, P.listsAtLeast(1, P.intervals()))) {
+        for (List<Interval> as : take(LIMIT, P.withScale(4).listsAtLeast(1, P.intervals()))) {
             String listString = tail(init(as.toString()));
             System.out.println("convexHull(" + listString + ") = " + convexHull(as));
         }
