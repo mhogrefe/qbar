@@ -580,9 +580,7 @@ public class IntervalProperties extends QBarTestProperties {
     }
 
     private void propertiesMidpoint() {
-        initialize("");
-        System.out.println("\t\ttesting midpoint() properties...");
-
+        initialize("midpoint()");
         for (Interval a : take(LIMIT, P.finitelyBoundedIntervals())) {
             Rational midpoint = a.midpoint();
             assertEquals(a, midpoint.subtract(a.getLower().get()), a.getUpper().get().subtract(midpoint));
@@ -605,10 +603,11 @@ public class IntervalProperties extends QBarTestProperties {
     }
 
     private void propertiesSplit() {
-        initialize("");
-        System.out.println("\t\ttesting split(Rational) properties...");
-
-        Iterable<Pair<Interval, Rational>> ps = filter(q -> q.a.contains(q.b), P.pairs(P.intervals(), P.rationals()));
+        initialize("split(Rational)");
+        Iterable<Pair<Interval, Rational>> ps = filterInfinite(
+                q -> q.a.contains(q.b),
+                P.pairs(P.intervals(), P.rationals())
+        );
         for (Pair<Interval, Rational> p : take(LIMIT, ps)) {
             Pair<Interval, Interval> split = p.a.split(p.b);
             split.a.validate();
@@ -623,7 +622,6 @@ public class IntervalProperties extends QBarTestProperties {
         for (Rational r : take(LIMIT, P.rationals())) {
             Interval a = of(r);
             assertEquals(r, a.split(r), new Pair<>(a, a));
-
             Pair<Interval, Interval> p = ALL.split(r);
             assertFalse(r, p.a.getLower().isPresent());
             assertTrue(r, p.a.getUpper().isPresent());
@@ -631,23 +629,21 @@ public class IntervalProperties extends QBarTestProperties {
             assertFalse(r, p.b.getUpper().isPresent());
         }
 
-        for (Pair<Rational, Rational> p : take(LIMIT, filter(q -> le(q.a, q.b), P.pairs(P.rationals())))) {
+        for (Pair<Rational, Rational> p : take(LIMIT, P.bagPairs(P.rationals()))) {
             Interval a = lessThanOrEqualTo(p.b);
             Pair<Interval, Interval> q = a.split(p.a);
             assertFalse(p, q.a.getLower().isPresent());
             assertTrue(p, q.a.getUpper().isPresent());
             assertTrue(p, q.b.isFinitelyBounded());
-        }
 
-        for (Pair<Rational, Rational> p : take(LIMIT, filter(q -> le(q.a, q.b), P.pairs(P.rationals())))) {
-            Interval a = greaterThanOrEqualTo(p.a);
-            Pair<Interval, Interval> q = a.split(p.b);
+            a = greaterThanOrEqualTo(p.a);
+            q = a.split(p.b);
             assertTrue(p, q.a.isFinitelyBounded());
             assertTrue(p, q.b.getLower().isPresent());
             assertFalse(p, q.b.getUpper().isPresent());
         }
 
-        Iterable<Pair<Interval, Rational>> psFail = filter(
+        Iterable<Pair<Interval, Rational>> psFail = filterInfinite(
                 q -> !q.a.contains(q.b),
                 P.pairs(P.intervals(), P.rationals())
         );
@@ -660,17 +656,15 @@ public class IntervalProperties extends QBarTestProperties {
     }
 
     private void propertiesBisect() {
-        initialize("");
-        System.out.println("\t\ttesting bisect() properties...");
-
+        initialize("bisect()");
         for (Interval a : take(LIMIT, P.finitelyBoundedIntervals())) {
             Pair<Interval, Interval> bisection = a.bisect();
             bisection.a.validate();
             bisection.b.validate();
             assertTrue(a, bisection.a.isFinitelyBounded());
             assertTrue(a, bisection.b.isFinitelyBounded());
-            assertEquals(a, bisection.a.diameter().get(), bisection.b.diameter().get());
-            assertEquals(a, bisection.a.getUpper().get(), bisection.b.getLower().get());
+            assertEquals(a, bisection.a.diameter(), bisection.b.diameter());
+            assertEquals(a, bisection.a.getUpper(), bisection.b.getLower());
             for (Rational r : take(TINY_LIMIT, P.rationalsIn(a))) {
                 assertTrue(a, bisection.a.contains(r) || bisection.b.contains(r));
             }

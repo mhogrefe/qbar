@@ -454,8 +454,9 @@ public final class Interval implements Comparable<Interval> {
      * @return the average of {@code lower} and {@code upper}.
      */
     public @NotNull Rational midpoint() {
-        if (lower == null || upper == null)
-            throw new ArithmeticException("an unbounded interval has no midpoint");
+        if (lower == null || upper == null) {
+            throw new ArithmeticException("this must be finitely bounded. Invalid this: " + this);
+        }
         return lower.add(upper).shiftRight(1);
     }
 
@@ -474,8 +475,9 @@ public final class Interval implements Comparable<Interval> {
      * @return the two pieces of {@code this}.
      */
     public @NotNull Pair<Interval, Interval> split(@NotNull Rational x) {
-        if (!contains(x))
-            throw new ArithmeticException("interval does not contain specified split point");
+        if (!contains(x)) {
+            throw new ArithmeticException("this must contain x. this: " + this + ", x: " + x);
+        }
         return new Pair<>(new Interval(lower, x), new Interval(x, upper));
     }
 
@@ -1209,7 +1211,9 @@ public final class Interval implements Comparable<Interval> {
      * @return Σxs
      */
     public static @NotNull Interval sum(@NotNull Iterable<Interval> xs) {
-        if (any(x -> x == null, xs)) throw new NullPointerException();
+        if (any(x -> x == null, xs)) {
+            throw new NullPointerException();
+        }
         return foldl(Interval::add, ZERO, xs);
     }
 
@@ -1225,6 +1229,9 @@ public final class Interval implements Comparable<Interval> {
      * @return Πxs
      */
     public static @NotNull Interval product(@NotNull Iterable<Interval> xs) {
+        if (any(x -> x == null, xs)) {
+            throw new NullPointerException();
+        }
         return foldl(Interval::multiply, ONE, xs);
     }
 

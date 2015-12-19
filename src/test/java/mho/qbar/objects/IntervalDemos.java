@@ -154,7 +154,10 @@ public class IntervalDemos extends QBarDemos {
 
     private void demoSplit() {
         initialize();
-        Iterable<Pair<Interval, Rational>> ps = filter(q -> q.a.contains(q.b), P.pairs(P.intervals(), P.rationals()));
+        Iterable<Pair<Interval, Rational>> ps = filterInfinite(
+                q -> q.a.contains(q.b),
+                P.pairs(P.intervals(), P.rationals())
+        );
         for (Pair<Interval, Rational> p : take(LIMIT, ps)) {
             System.out.println("split(" + p.a + ", " + p.b + ") = " + p.a.split(p.b));
         }

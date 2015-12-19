@@ -409,76 +409,79 @@ public class IntervalTest {
         complement_helper("[-6, Infinity)", "[(-Infinity, -6]]");
     }
 
+    private static void midpoint_helper(@NotNull String input, @NotNull String output) {
+        aeq(read(input).get().midpoint(), output);
+    }
+
+    private static void midpoint_fail_helper(@NotNull String input) {
+        try {
+            read(input).get().midpoint();
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
     @Test
     public void testMidpoint() {
-        aeq(ZERO.midpoint(), "0");
-        aeq(ONE.midpoint(), "1");
-        aeq(read("[4, 4]").get().midpoint(), "4");
-        aeq(read("[1, 2]").get().midpoint(), "3/2");
-        aeq(read("[-2, 5/3]").get().midpoint(), "-1/6");
+        midpoint_helper("[0, 0]", "0");
+        midpoint_helper("[1, 1]", "1");
+        midpoint_helper("[4, 4]", "4");
+        midpoint_helper("[1, 2]", "3/2");
+        midpoint_helper("[-2, 5/3]", "-1/6");
+        midpoint_fail_helper("(-Infinity, Infinity)");
+        midpoint_fail_helper("(-Infinity, 1]");
+        midpoint_fail_helper("[1, Infinity)");
+    }
+
+    private static void split_helper(@NotNull String a, @NotNull String x, @NotNull String output) {
+        aeq(read(a).get().split(Rational.read(x).get()), output);
+    }
+
+    private static void split_fail_helper(@NotNull String a, @NotNull String x) {
         try {
-            ALL.midpoint();
-            fail();
-        } catch (ArithmeticException ignored) {}
-        try {
-            read("(-Infinity, 1]").get().midpoint();
-            fail();
-        } catch (ArithmeticException ignored) {}
-        try {
-            read("[1, Infinity)").get().midpoint();
+            read(a).get().split(Rational.read(x).get());
             fail();
         } catch (ArithmeticException ignored) {}
     }
 
     @Test
     public void testSplit() {
-        aeq(ZERO.split(Rational.ZERO), "([0, 0], [0, 0])");
-        aeq(ONE.split(Rational.ONE), "([1, 1], [1, 1])");
-        aeq(ALL.split(Rational.ONE), "((-Infinity, 1], [1, Infinity))");
-        aeq(read("[4, 4]").get().split(Rational.read("4").get()), "([4, 4], [4, 4])");
-        aeq(read("[0, 1]").get().split(Rational.read("1/3").get()), "([0, 1/3], [1/3, 1])");
-        aeq(read("[0, 1]").get().split(Rational.ZERO), "([0, 0], [0, 1])");
-        aeq(read("[0, 1]").get().split(Rational.ONE), "([0, 1], [1, 1])");
-        aeq(read("[-2, 5/3]").get().split(Rational.read("1").get()), "([-2, 1], [1, 5/3])");
-        aeq(read("(-Infinity, 1]").get().split(Rational.read("-3").get()), "((-Infinity, -3], [-3, 1])");
-        aeq(read("[5/3, Infinity)").get().split(Rational.read("10").get()), "([5/3, 10], [10, Infinity))");
+        split_helper("[0, 0]", "0", "([0, 0], [0, 0])");
+        split_helper("[1, 1]", "1", "([1, 1], [1, 1])");
+        split_helper("(-Infinity, Infinity)", "1", "((-Infinity, 1], [1, Infinity))");
+        split_helper("[4, 4]", "4", "([4, 4], [4, 4])");
+        split_helper("[0, 1]", "1/3", "([0, 1/3], [1/3, 1])");
+        split_helper("[0, 1]", "0", "([0, 0], [0, 1])");
+        split_helper("[0, 1]", "1", "([0, 1], [1, 1])");
+        split_helper("[-2, 5/3]", "1", "([-2, 1], [1, 5/3])");
+        split_helper("(-Infinity, 1]", "-3", "((-Infinity, -3], [-3, 1])");
+        split_helper("[5/3, Infinity)", "10", "([5/3, 10], [10, Infinity))");
+        split_fail_helper("[0, 0]", "1");
+        split_fail_helper("[-2, 5/3]", "-4");
+        split_fail_helper("(-Infinity, 1]", "4");
+        split_fail_helper("[1, Infinity)", "-4");
+    }
+
+    private static void bisect_helper(@NotNull String input, @NotNull String output) {
+        aeq(read(input).get().bisect(), output);
+    }
+
+    private static void bisect_fail_helper(@NotNull String input) {
         try {
-            ZERO.split(Rational.ONE);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        try {
-            read("[-2, 5/3]").get().split(Rational.read("-4").get());
-            fail();
-        } catch (ArithmeticException ignored) {}
-        try {
-            read("(-Infinity, 1]").get().split(Rational.read("4").get());
-            fail();
-        } catch (ArithmeticException ignored) {}
-        try {
-            read("[1, Infinity)").get().split(Rational.read("-4").get());
+            read(input).get().bisect();
             fail();
         } catch (ArithmeticException ignored) {}
     }
 
     @Test
     public void testBisect() {
-        aeq(ZERO.bisect(), "([0, 0], [0, 0])");
-        aeq(ONE.bisect(), "([1, 1], [1, 1])");
-        aeq(read("[4, 4]").get().bisect(), "([4, 4], [4, 4])");
-        aeq(read("[1, 2]").get().bisect(), "([1, 3/2], [3/2, 2])");
-        aeq(read("[-2, 5/3]").get().bisect(), "([-2, -1/6], [-1/6, 5/3])");
-        try {
-            ALL.bisect();
-            fail();
-        } catch (ArithmeticException ignored) {}
-        try {
-            read("(-Infinity, 1]").get().bisect();
-            fail();
-        } catch (ArithmeticException ignored) {}
-        try {
-            read("[1, Infinity)").get().bisect();
-            fail();
-        } catch (ArithmeticException ignored) {}
+        bisect_helper("[0, 0]", "([0, 0], [0, 0])");
+        bisect_helper("[1, 1]", "([1, 1], [1, 1])");
+        bisect_helper("[4, 4]", "([4, 4], [4, 4])");
+        bisect_helper("[1, 2]", "([1, 3/2], [3/2, 2])");
+        bisect_helper("[-2, 5/3]", "([-2, -1/6], [-1/6, 5/3])");
+        bisect_fail_helper("(-Infinity, Infinity)");
+        bisect_fail_helper("(-Infinity, 1]");
+        bisect_fail_helper("[1, Infinity)");
     }
 
     @Test
