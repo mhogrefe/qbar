@@ -130,11 +130,11 @@ public class IntervalDemos extends QBarDemos {
         }
     }
 
-    private void demoMakeDisjoint() {
+    private void demoUnion() {
         initialize();
-        for (List<Interval> as : take(LIMIT, P.lists(P.intervals()))) {
+        for (List<Interval> as : take(LIMIT, P.withScale(4).lists(P.intervals()))) {
             String listString = tail(init(as.toString()));
-            System.out.println("makeDisjoint(" + listString + ") = " + makeDisjoint(as));
+            System.out.println("⋃(" + listString + ") = " + union(as));
         }
     }
 

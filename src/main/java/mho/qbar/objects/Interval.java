@@ -3,6 +3,7 @@ package mho.qbar.objects;
 import mho.wheels.io.Readers;
 import mho.wheels.numberUtils.FloatingPointUtils;
 import mho.wheels.ordering.Ordering;
+import mho.wheels.ordering.comparators.WithNullComparator;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 
@@ -356,8 +357,7 @@ public final class Interval implements Comparable<Interval> {
     }
 
     /**
-     * Transforms a list of {@code Interval}s into a list of disjoint {@code Interval}s with the same union as the
-     * original set.
+     * Expresses the union of a list of {@code Interval}s as a list of disjoint {@code Interval}s in ascending order.
      *
      * <ul>
      *  <li>{@code as} cannot be null and may not contain any null elements.</li>
@@ -365,23 +365,53 @@ public final class Interval implements Comparable<Interval> {
      * </ul>
      *
      * @param as a list of {@code Interval}s
-     * @return a list of disjoint {@code Interval}s whose union is the same as the union of {@code as}
+     * @return ⋃{@code as}
      */
-    public static @NotNull List<Interval> makeDisjoint(@NotNull List<Interval> as) {
-        List<Interval> simplified = new ArrayList<>();
-        Interval acc = null;
-        for (Interval a : sort(as)) {
-            if (acc == null) {
-                acc = a;
-            } else if (acc.disjoint(a)) {
-                simplified.add(acc);
-                acc = a;
+    public static @NotNull List<Interval> union(@NotNull List<Interval> as) {
+        if (as.size() == 1 && head(as) == null) {
+            throw new NullPointerException();
+        }
+        if (as.size() < 2) return as;
+        Map<Rational, Rational> lowerMap = new TreeMap<>(new WithNullComparator<>());
+        for (Interval a : as) {
+            Rational lower = a.lower;
+            Rational upper = a.upper;
+            if (lowerMap.containsKey(lower)) {
+                Rational previousUpper = lowerMap.get(lower);
+                if (previousUpper != null && (upper == null || gt(upper, previousUpper))) {
+                    lowerMap.put(lower, upper);
+                }
             } else {
-                acc = acc.convexHull(a);
+                lowerMap.put(lower, upper);
             }
         }
-        if (acc != null) simplified.add(acc);
-        return simplified;
+        List<Interval> union = new ArrayList<>();
+        Rational currentLower = null;
+        Rational currentUpper = null;
+        boolean first = true;
+        for (Map.Entry<Rational, Rational> entry : lowerMap.entrySet()) {
+            Rational lower = entry.getKey();
+            Rational upper = entry.getValue();
+            if (first) {
+                first = false;
+                currentLower = lower;
+                currentUpper = upper;
+            } else {
+                if (currentUpper == null || le(lower, currentUpper)) {
+                    if (currentUpper != null && (upper == null || gt(upper, currentUpper))) {
+                        currentUpper = upper;
+                    }
+                } else {
+                    union.add(new Interval(currentLower, currentUpper));
+                    currentLower = lower;
+                    currentUpper = upper;
+                }
+            }
+        }
+        if (!first) {
+            union.add(new Interval(currentLower, currentUpper));
+        }
+        return union;
     }
 
     /**
@@ -1012,7 +1042,7 @@ public final class Interval implements Comparable<Interval> {
      * @return {@code this}/{@code that}
      */
     public @NotNull List<Interval> divide(@NotNull Interval that) {
-        return makeDisjoint(toList(map(this::multiply, that.invert())));
+        return union(toList(map(this::multiply, that.invert())));
     }
 
     /**

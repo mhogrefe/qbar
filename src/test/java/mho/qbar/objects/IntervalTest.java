@@ -366,40 +366,47 @@ public class IntervalTest {
         disjoint_helper("[2, Infinity)", "(-Infinity, 3]", false);
     }
 
-    @Test
-    public void testMakeDisjoint() {
-        aeq(makeDisjoint(readIntervalList("[]")), "[]");
-        aeq(makeDisjoint(readIntervalList("[[0, 0]]")), "[[0, 0]]");
-        aeq(makeDisjoint(readIntervalList("[[1, 1]]")), "[[1, 1]]");
-        aeq(makeDisjoint(readIntervalList("[(-Infinity, Infinity)]")), "[(-Infinity, Infinity)]");
-        aeq(makeDisjoint(readIntervalList("[(-Infinity, 3]]")), "[(-Infinity, 3]]");
-        aeq(makeDisjoint(readIntervalList("[[2, Infinity)]")), "[[2, Infinity)]");
-        aeq(makeDisjoint(readIntervalList("[[2, 3]]")), "[[2, 3]]");
-        aeq(
-                makeDisjoint(readIntervalList("[(-Infinity, 3], [4, 5], [6, 7]]")),
-                "[(-Infinity, 3], [4, 5], [6, 7]]"
-        );
-        aeq(makeDisjoint(readIntervalList("[(-Infinity, 3], [3, 5], [5, 7]]")), "[(-Infinity, 7]]");
-        aeq(makeDisjoint(readIntervalList("[(-Infinity, 3], [2, 5], [6, 7]]")), "[(-Infinity, 5], [6, 7]]");
-        aeq(
-                makeDisjoint(readIntervalList("[[1, 2], [4, 6], [10, Infinity), [3, 7], [5, 9]]")),
-                "[[1, 2], [3, 9], [10, Infinity)]"
-        );
+    private static void union_helper(@NotNull String input, @NotNull String output) {
+        aeq(union(readIntervalList(input)), output);
+    }
+
+    private static void union_fail_helper(@NotNull String input) {
         try {
-            makeDisjoint(readIntervalListWithNulls("[[1, 3], null, [5, Infinity)]"));
+            union(readIntervalListWithNulls(input));
             fail();
         } catch (NullPointerException ignored) {}
     }
 
     @Test
+    public void testUnion() {
+        union_helper("[]", "[]");
+        union_helper("[[0, 0]]", "[[0, 0]]");
+        union_helper("[[1, 1]]", "[[1, 1]]");
+        union_helper("[(-Infinity, Infinity)]", "[(-Infinity, Infinity)]");
+        union_helper("[(-Infinity, 3]]", "[(-Infinity, 3]]");
+        union_helper("[[2, Infinity)]", "[[2, Infinity)]");
+        union_helper("[[2, 3]]", "[[2, 3]]");
+        union_helper("[(-Infinity, 3], [4, 5], [6, 7]]", "[(-Infinity, 3], [4, 5], [6, 7]]");
+        union_helper("[(-Infinity, 3], [3, 5], [5, 7]]", "[(-Infinity, 7]]");
+        union_helper("[(-Infinity, 3], [2, 5], [6, 7]]", "[(-Infinity, 5], [6, 7]]");
+        union_helper("[(-Infinity, 3], [2, 5], [2, 6], [6, 7]]", "[(-Infinity, 7]]");
+        union_helper("[[1, 2], [4, 6], [10, Infinity), [3, 7], [5, 9]]", "[[1, 2], [3, 9], [10, Infinity)]");
+        union_fail_helper("[[1, 3], null, [5, Infinity)]");
+    }
+
+    private static void complement_helper(@NotNull String input, @NotNull String output) {
+        aeq(read(input).get().complement(), output);
+    }
+
+    @Test
     public void testComplement() {
-        aeq(ZERO.complement(), "[(-Infinity, Infinity)]");
-        aeq(ONE.complement(), "[(-Infinity, Infinity)]");
-        aeq(ALL.complement(), "[]");
-        aeq(read("[-2, 5/3]").get().complement(), "[(-Infinity, -2], [5/3, Infinity)]");
-        aeq(read("[4, 4]").get().complement(), "[(-Infinity, Infinity)]");
-        aeq(read("(-Infinity, 3/2]").get().complement(), "[[3/2, Infinity)]");
-        aeq(read("[-6, Infinity)").get().complement(), "[(-Infinity, -6]]");
+        complement_helper("[0, 0]", "[(-Infinity, Infinity)]");
+        complement_helper("[1, 1]", "[(-Infinity, Infinity)]");
+        complement_helper("(-Infinity, Infinity)", "[]");
+        complement_helper("[-2, 5/3]", "[(-Infinity, -2], [5/3, Infinity)]");
+        complement_helper("[4, 4]", "[(-Infinity, Infinity)]");
+        complement_helper("(-Infinity, 3/2]", "[[3/2, Infinity)]");
+        complement_helper("[-6, Infinity)", "[(-Infinity, -6]]");
     }
 
     @Test

@@ -4,7 +4,6 @@ import mho.qbar.iterableProviders.QBarExhaustiveProvider;
 import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.iterableProviders.QBarRandomProvider;
 import mho.qbar.testing.QBarTestProperties;
-import mho.wheels.iterables.ExhaustiveProvider;
 import mho.wheels.numberUtils.BigDecimalUtils;
 import mho.wheels.numberUtils.FloatingPointUtils;
 import mho.wheels.ordering.Ordering;
@@ -55,8 +54,9 @@ public class IntervalProperties extends QBarTestProperties {
         propertiesIntersection();
         propertiesDisjoint();
         compareImplementationsDisjoint();
-        propertiesMakeDisjoint();
-//        propertiesComplement();
+        propertiesUnion();
+        compareImplementationsUnion();
+        propertiesComplement();
         propertiesMidpoint();
         propertiesSplit();
         propertiesBisect();
@@ -435,20 +435,34 @@ public class IntervalProperties extends QBarTestProperties {
         compareImplementations("disjoint(Interval)", take(LIMIT, P.pairs(P.intervals())), functions);
     }
 
-    private void propertiesMakeDisjoint() {
-        initialize("");
-        System.out.println("\t\ttesting makeDisjoint(List<Interval>) properties...");
+    private static @NotNull  List<Interval> union_alt(@NotNull List<Interval> as) {
+        if (as.size() < 2) return as;
+        List<Interval> simplified = new ArrayList<>();
+        Interval acc = null;
+        for (Interval a : sort(as)) {
+            if (acc == null) {
+                acc = a;
+            } else if (acc.disjoint(a)) {
+                simplified.add(acc);
+                acc = a;
+            } else {
+                acc = acc.convexHull(a);
+            }
+        }
+        if (acc != null) simplified.add(acc);
+        return simplified;
+    }
 
+    private void propertiesUnion() {
+        initialize("union(List<Interval>)");
         for (List<Interval> as : take(LIMIT, P.lists(P.intervals()))) {
-            List<Interval> disjoint = makeDisjoint(as);
-            disjoint.forEach(Interval::validate);
-            assertTrue(as, weaklyIncreasing(disjoint));
-            assertTrue(
-                    as.toString(),
-                    and(map(p -> p.a.disjoint(p.b), ExhaustiveProvider.INSTANCE.distinctPairs(disjoint)))
-            );
-            for (Rational r : take(TINY_LIMIT, mux(toList(map(P::rationalsIn, as))))) {
-                assertTrue(as, or(map(a -> a.contains(r), disjoint)));
+            List<Interval> union = union(as);
+            union.forEach(Interval::validate);
+            assertEquals(as, union, union_alt(as));
+            assertTrue(as, increasing(union));
+            assertTrue(as.toString(), and(map(p -> p.a.disjoint(p.b), EP.distinctPairs(union))));
+            for (Rational r : take(TINY_LIMIT, mux(toList(map(P::rationalsIn, as))))) { //todo use choose
+                assertTrue(as, or(map(a -> a.contains(r), union)));
             }
         }
 
@@ -457,51 +471,76 @@ public class IntervalProperties extends QBarTestProperties {
                 P::permutationsFinite
         );
         for (Pair<List<Interval>, List<Interval>> p : take(LIMIT, ps)) {
-            assertEquals(p, makeDisjoint(p.a), makeDisjoint(p.b));
+            assertEquals(p, union(p.a), union(p.b));
         }
 
         for (Interval a : take(LIMIT, P.intervals())) {
-            assertEquals(a, makeDisjoint(Collections.singletonList(a)), Collections.singletonList(a));
+            fixedPoint(Interval::union, Collections.singletonList(a));
         }
 
-        for (Pair<Interval, Interval> p : take(LIMIT, filter(q -> q.a.disjoint(q.b), P.pairs(P.intervals())))) {
-            assertEquals(p, makeDisjoint(Pair.toList(p)), sort(Pair.toList(p)));
+        for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
+            commutative((a, b) -> union(Arrays.asList(a, b)), p);
         }
 
-        for (Pair<Interval, Interval> p : take(LIMIT, filter(q -> !q.a.disjoint(q.b), P.pairs(P.intervals())))) {
-            assertEquals(p, makeDisjoint(Pair.toList(p)), Collections.singletonList(convexHull(Pair.toList(p))));
+        Iterable<Pair<Interval, Interval>> ps2 = filterInfinite(q -> q.a.disjoint(q.b), P.pairs(P.intervals()));
+        for (Pair<Interval, Interval> p : take(LIMIT, ps2)) {
+            assertEquals(p, union(Pair.toList(p)), sort(Pair.toList(p)));
+        }
+
+        ps2 = filterInfinite(q -> !q.a.disjoint(q.b), P.pairs(P.intervals()));
+        for (Pair<Interval, Interval> p : take(LIMIT, ps2)) {
+            assertEquals(p, union(Pair.toList(p)), Collections.singletonList(convexHull(Pair.toList(p))));
         }
 
         for (List<Interval> as : take(LIMIT, P.listsWithElement(ALL, P.intervals()))) {
-            assertEquals(as, makeDisjoint(as), Collections.singletonList(ALL));
+            assertEquals(as, union(as), Collections.singletonList(ALL));
         }
 
         for (List<Interval> as : take(LIMIT, P.listsWithElement(null, P.intervals()))) {
             try {
-                convexHull(as);
+                union(as);
                 fail(as);
             } catch (NullPointerException ignored) {}
         }
     }
 
-    private void propertiesComplement() {
-        initialize("");
-        System.out.println("\t\ttesting complement() properties...");
+    private void compareImplementationsUnion() {
+        Map<String, Function<List<Interval>, List<Interval>>> functions = new LinkedHashMap<>();
+        functions.put("alt", IntervalProperties::union_alt);
+        functions.put("standard", Interval::union);
+        compareImplementations("union(List<Interval>)", take(LIMIT, P.lists(P.intervals())), functions);
+    }
 
+    private void propertiesComplement() {
+        initialize("complement()");
         for (Interval a : take(LIMIT, P.intervals())) {
             List<Interval> complement = a.complement();
             complement.forEach(Interval::validate);
-            assertEquals(a, makeDisjoint(complement), complement);
+            assertEquals(a, union(complement), complement);
             List<Rational> endpoints = new ArrayList<>();
             if (a.getLower().isPresent()) endpoints.add(a.getLower().get());
             if (a.getUpper().isPresent()) endpoints.add(a.getUpper().get());
             for (Rational endpoint : endpoints) {
                 any(b -> b.contains(endpoint), complement);
             }
-            //todo: fix hanging
-//            for (Rational r : take(TINY_LIMIT, filter(s -> !endpoints.contains(s), P.rationals(a)))) {
-//                assertFalse(a, any(b -> b.contains(r), complement));
-//            }
+        }
+
+        Iterable<Interval> as = filterInfinite(
+                a -> !a.getLower().isPresent() || !a.getUpper().isPresent() || a.diameter().get() != Rational.ZERO,
+                P.intervals()
+        );
+        for (Interval a : take(LIMIT, as)) {
+            List<Interval> complement = a.complement();
+            List<Rational> endpoints = new ArrayList<>();
+            if (a.getLower().isPresent()) endpoints.add(a.getLower().get());
+            if (a.getUpper().isPresent()) endpoints.add(a.getUpper().get());
+            for (Rational r : take(TINY_LIMIT, filterInfinite(s -> !endpoints.contains(s), P.rationalsIn(a)))) {
+                assertFalse(a, any(b -> b.contains(r), complement));
+            }
+        }
+
+        for (Interval a : take(LIMIT, filterInfinite(b -> !b.equals(ALL), P.intervals()))) {
+            List<Interval> complement = a.complement();
             for (Rational r : take(TINY_LIMIT, P.rationalsNotIn(a))) {
                 assertTrue(a, any(b -> b.contains(r), complement));
             }
@@ -527,7 +566,7 @@ public class IntervalProperties extends QBarTestProperties {
             assertEquals(a, a.complement(), Collections.singletonList(ALL));
         }
 
-        Iterable<Interval> as = filter(b -> b.diameter().get() != Rational.ZERO, P.finitelyBoundedIntervals());
+        as = filterInfinite(b -> b.diameter().get() != Rational.ZERO, P.finitelyBoundedIntervals());
         for (Interval a : take(LIMIT, as)) {
             List<Interval> complement = a.complement();
             assertEquals(a, complement.size(), 2);
@@ -1019,7 +1058,7 @@ public class IntervalProperties extends QBarTestProperties {
             Interval product = p.a.multiply(p.b);
             List<Interval> quotient = product.divide(p.b);
             assertTrue(p, any(a -> a.contains(p.a), quotient));
-            quotient = makeDisjoint(toList(concatMap(p.a::divide, p.b.invert())));
+            quotient = union(toList(concatMap(p.a::divide, p.b.invert())));
             assertTrue(p, quotient.contains(product));
         }
 
@@ -1034,7 +1073,7 @@ public class IntervalProperties extends QBarTestProperties {
             assertEquals(a, ALL.multiply(a), ALL);
             assertEquals(a, a.multiply(ALL), ALL);
             List<Interval> inverse = a.invert();
-            List<Interval> back = makeDisjoint(toList(map(a::multiply, inverse)));
+            List<Interval> back = union(toList(map(a::multiply, inverse)));
             assertTrue(a, any(b -> b.contains(ONE), back));
         }
 
@@ -1214,7 +1253,7 @@ public class IntervalProperties extends QBarTestProperties {
 
         for (Interval a : take(LIMIT, filter(b -> !b.equals(ZERO), P.intervals()))) {
             List<Interval> inverse = a.invert();
-            List<Interval> back = makeDisjoint(toList(concatMap(Interval::invert, inverse)));
+            List<Interval> back = union(toList(concatMap(Interval::invert, inverse)));
             assertTrue(a, convexHull(back).contains(a));
             assertTrue(a, convexHull(toList(map(a::multiply, inverse))).contains(ONE));
         }
