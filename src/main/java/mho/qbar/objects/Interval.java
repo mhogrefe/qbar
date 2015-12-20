@@ -692,10 +692,15 @@ public final class Interval implements Comparable<Interval> {
      * @return –{@code this}
      */
     public @NotNull Interval negate() {
-        if (lower == null && upper == null) return this;
-        if (lower == null) return new Interval(upper.negate(), null);
-        if (upper == null) return new Interval(null, lower.negate());
-        return new Interval(upper.negate(), lower.negate());
+        if (lower == null && upper == null) {
+            return this;
+        } else if (lower == null) {
+            return new Interval(upper.negate(), null);
+        } else if (upper == null) {
+            return new Interval(null, lower.negate());
+        } else {
+            return new Interval(upper.negate(), lower.negate());
+        }
     }
 
     /**
@@ -709,16 +714,19 @@ public final class Interval implements Comparable<Interval> {
      * @return |{@code this}|
      */
     public @NotNull Interval abs() {
-        if (lower == null && upper == null) return new Interval(Rational.ZERO, null);
-        if (lower == null) {
+        if (lower == null && upper == null) {
+            return new Interval(Rational.ZERO, null);
+        } else if (lower == null) {
             return new Interval(upper.signum() == -1 ? upper.negate() : Rational.ZERO, null);
-        }
-        if (upper == null) {
+        } else if (upper == null) {
             return lower.signum() == -1 ? new Interval(Rational.ZERO, null) : this;
+        } else if (lower.signum() != -1 && upper.signum() != -1) {
+            return this;
+        } else if (lower.signum() == -1 && upper.signum() == -1) {
+            return negate();
+        } else {
+            return new Interval(Rational.ZERO, max(lower.negate(), upper));
         }
-        if (lower.signum() == 1 && upper.signum() == 1) return this;
-        if (lower.signum() == -1 && upper.signum() == -1) return negate();
-        return new Interval(Rational.ZERO, max(lower.negate(), upper));
     }
 
     /**
@@ -751,7 +759,9 @@ public final class Interval implements Comparable<Interval> {
      * @return {@code this}–{@code that}
      */
     public @NotNull Interval subtract(@NotNull Interval that) {
-        return add(that.negate());
+        Rational lowerDifference = lower == null || that.upper == null ? null : lower.subtract(that.upper);
+        Rational upperDifference = upper == null || that.lower == null ? null : upper.subtract(that.lower);
+        return new Interval(lowerDifference, upperDifference);
     }
 
     /**

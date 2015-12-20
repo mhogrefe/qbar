@@ -68,6 +68,7 @@ public class IntervalProperties extends QBarTestProperties {
         propertiesAbs();
         propertiesSignum();
         propertiesSubtract();
+        compareImplementationsSubtract();
         propertiesMultiply_Interval();
         propertiesMultiply_Rational();
         propertiesMultiply_BigInteger();
@@ -861,15 +862,14 @@ public class IntervalProperties extends QBarTestProperties {
     }
 
     private void propertiesAbs() {
-        initialize("");
-        System.out.println("\t\ttesting abs() properties...");
-
+        initialize("abs()");
+        Interval nonPositive = lessThanOrEqualTo(Rational.ZERO);
         for (Interval a : take(LIMIT, P.intervals())) {
             Interval abs = a.abs();
             abs.validate();
-            assertEquals(a, abs, abs.abs());
-            Optional<Interval> negativeIntersection = abs.intersection(lessThanOrEqualTo(Rational.ZERO));
-            assertTrue(a, !negativeIntersection.isPresent() || negativeIntersection.get().equals(ZERO));
+            idempotent(Interval::abs, a);
+            Optional<Interval> nonPositiveIntersection = abs.intersection(nonPositive);
+            assertTrue(a, !nonPositiveIntersection.isPresent() || nonPositiveIntersection.get().equals(ZERO));
             for (Rational r : take(TINY_LIMIT, P.rationalsIn(a))) {
                 assertTrue(a, abs.contains(r.abs()));
             }
@@ -882,19 +882,17 @@ public class IntervalProperties extends QBarTestProperties {
         }
 
         for (Rational r : take(LIMIT, P.rationals())) {
-            assertEquals(r, of(r).abs(), of(r.abs()));
+            homomorphic(Interval::of, Interval::of, Rational::abs, Interval::abs, r);
         }
     }
 
     private void propertiesSignum() {
-        initialize("");
-        System.out.println("\t\ttesting signum() properties...");
-
+        initialize("signum()");
         for (Interval a : take(LIMIT, P.intervals())) {
-            Optional<Integer> signumA = a.signum();
-            assertEquals(a, signumA, a.elementCompare(ZERO).map(Ordering::toInt));
-            if (signumA.isPresent()) {
-                Integer s = signumA.get();
+            Optional<Integer> signum = a.signum();
+            assertEquals(a, signum, a.elementCompare(ZERO).map(Ordering::toInt));
+            if (signum.isPresent()) {
+                int s = signum.get();
                 assertTrue(a, s == -1 || s == 0 || s == 1);
                 for (Rational r : take(TINY_LIMIT, P.rationalsIn(a))) {
                     assertTrue(a, r.signum() == s);
@@ -904,16 +902,23 @@ public class IntervalProperties extends QBarTestProperties {
                 assertTrue(a, a.contains(ZERO));
             }
         }
+
+        for (Rational r : take(LIMIT, P.rationals())) {
+            homomorphic(Interval::of, Optional::of, Rational::signum, Interval::signum, r);
+        }
+    }
+
+    private static @NotNull Interval subtract_simplest(@NotNull Interval a, @NotNull Interval b) {
+        return a.add(b.negate());
     }
 
     private void propertiesSubtract() {
-        initialize("");
-        System.out.println("\t\ttesting subtract(Interval) properties...");
-
+        initialize("subtract(Interval)");
         for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
             Interval difference = p.a.subtract(p.b);
             difference.validate();
-            assertEquals(p, difference, p.b.subtract(p.a).negate());
+            assertEquals(p, subtract_simplest(p.a, p.b), difference);
+            antiCommutative(Interval::subtract, Interval::negate, p);
             assertTrue(p, difference.add(p.b).contains(p.a));
             for (Pair<Rational, Rational> q : take(TINY_LIMIT, P.pairs(P.rationalsIn(p.a), P.rationalsIn(p.b)))) {
                 assertTrue(p, difference.contains(q.a.subtract(q.b)));
@@ -929,15 +934,22 @@ public class IntervalProperties extends QBarTestProperties {
 
         for (Interval a : take(LIMIT, P.intervals())) {
             assertEquals(a, ZERO.subtract(a), a.negate());
-            assertEquals(a, a.subtract(ZERO), a);
             assertTrue(a, a.subtract(a).contains(ZERO));
-            assertEquals(a, ALL.subtract(a), ALL);
-            assertEquals(a, a.subtract(ALL), ALL);
+            fixedPoint(b -> b.subtract(ZERO), a);
+            fixedPoint(b -> b.subtract(a), ALL);
+            fixedPoint(a::subtract, ALL);
         }
 
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
-            assertEquals(p, of(p.a).subtract(of(p.b)), of(p.a.subtract(p.b)));
+            homomorphic(Interval::of, Interval::of, Interval::of, Rational::subtract, Interval::subtract, p);
         }
+    }
+
+    private void compareImplementationsSubtract() {
+        Map<String, Function<Pair<Interval, Interval>, Interval>> functions = new LinkedHashMap<>();
+        functions.put("simplest", p -> subtract_simplest(p.a, p.b));
+        functions.put("standard", p -> p.a.subtract(p.b));
+        compareImplementations("subtract(Interval)", take(LIMIT, P.pairs(P.intervals())), functions);
     }
 
     private void propertiesMultiply_Interval() {

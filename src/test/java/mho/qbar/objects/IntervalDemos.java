@@ -188,7 +188,7 @@ public class IntervalDemos extends QBarDemos {
 
     private void demoSignum() {
         for (Interval a : take(LIMIT, P.intervals())) {
-            System.out.println("sgn(" + a + ") = " + a.signum());
+            System.out.println("signum(" + a + ") = " + a.signum());
         }
     }
 
