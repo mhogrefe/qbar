@@ -17,35 +17,30 @@ public class QBarExhaustiveProviderDemos extends QBarDemos {
     }
 
     private void demoRangeUp_Rational() {
-        initialize();
         for (Rational r : take(MEDIUM_LIMIT, P.rationals())) {
             System.out.println("rangeUp(" + r + ") = " + its(QEP.rangeUp(r)));
         }
     }
 
     private void demoRangeDown_Rational() {
-        initialize();
         for (Rational r : take(MEDIUM_LIMIT, P.rationals())) {
             System.out.println("rangeDown(" + r + ") = " + its(QEP.rangeDown(r)));
         }
     }
 
     private void demoRange_Rational_Rational() {
-        initialize();
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
             System.out.println("range(" + p.a + ", " + p.b + ") = " + its(QEP.range(p.a, p.b)));
         }
     }
 
     private void demoRationalsIn() {
-        initialize();
         for (Interval a : take(MEDIUM_LIMIT, P.intervals())) {
             System.out.println("rationalsIn(" + a + ") = " + its(QEP.rationalsIn(a)));
         }
     }
 
     private void demoRationalsNotIn() {
-        initialize();
         for (Interval a : take(MEDIUM_LIMIT, P.intervals())) {
             System.out.println("rationalsNotIn(" + a + ") = " + its(QEP.rationalsNotIn(a)));
         }

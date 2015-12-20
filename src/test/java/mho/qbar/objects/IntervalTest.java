@@ -14,7 +14,6 @@ import static mho.wheels.iterables.IterableUtils.iterate;
 import static mho.wheels.iterables.IterableUtils.toList;
 import static mho.wheels.testing.Testing.*;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class IntervalTest {
@@ -484,67 +483,89 @@ public class IntervalTest {
         bisect_fail_helper("[1, Infinity)");
     }
 
+    private static void roundingPreimage_float_helper(float f, @NotNull String output) {
+        aeq(roundingPreimage(f), output);
+    }
+
+    private static void roundingPreimage_float_fail_helper(float f) {
+        try {
+            roundingPreimage(f);
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
     @Test
     public void testRoundingPreimage_float() {
-        aeq(
-                roundingPreimage(0.0f),
+        roundingPreimage_float_helper(
+                0.0f,
                 "[-1/1427247692705959881058285969449495136382746624, 1/1427247692705959881058285969449495136382746624]"
         );
-        aeq(
-                roundingPreimage(-0.0f),
+        roundingPreimage_float_helper(
+                -0.0f,
                 "[-1/1427247692705959881058285969449495136382746624, 1/1427247692705959881058285969449495136382746624]"
         );
-        aeq(roundingPreimage(Float.POSITIVE_INFINITY), "[340282346638528859811704183484516925440, Infinity)");
-        aeq(roundingPreimage(Float.NEGATIVE_INFINITY), "(-Infinity, -340282346638528859811704183484516925440]");
-        aeq(roundingPreimage(1.0f), "[33554431/33554432, 16777217/16777216]");
-        aeq(roundingPreimage(13.0f), "[27262975/2097152, 27262977/2097152]");
-        aeq(roundingPreimage(-5.0f), "[-20971521/4194304, -20971519/4194304]");
-        aeq(roundingPreimage(1.5f), "[25165823/16777216, 25165825/16777216]");
-        aeq(roundingPreimage(0.15625f), "[20971519/134217728, 20971521/134217728]");
-        aeq(roundingPreimage(0.1f), "[26843545/268435456, 26843547/268435456]");
-        aeq(roundingPreimage(1.0f / 3.0f), "[22369621/67108864, 22369623/67108864]");
-        aeq(roundingPreimage(1.0e10f), "[9999999488, 10000000512]");
-        aeq(roundingPreimage(1.0e30f), "[999999977268534356919527145472, 1000000052826398082833850564608]");
-        aeq(roundingPreimage((float) Math.PI), "[26353589/8388608, 26353591/8388608]");
-        aeq(roundingPreimage((float) Math.E), "[22802599/8388608, 22802601/8388608]");
-        aeq(roundingPreimage((float) Math.sqrt(2)), "[23726565/16777216, 23726567/16777216]");
-        aeq(
-                roundingPreimage(Float.MIN_VALUE),
+        roundingPreimage_float_helper(Float.POSITIVE_INFINITY, "[340282346638528859811704183484516925440, Infinity)");
+        roundingPreimage_float_helper(
+                Float.NEGATIVE_INFINITY,
+                "(-Infinity, -340282346638528859811704183484516925440]"
+        );
+        roundingPreimage_float_helper(1.0f, "[33554431/33554432, 16777217/16777216]");
+        roundingPreimage_float_helper(13.0f, "[27262975/2097152, 27262977/2097152]");
+        roundingPreimage_float_helper(-5.0f, "[-20971521/4194304, -20971519/4194304]");
+        roundingPreimage_float_helper(1.5f, "[25165823/16777216, 25165825/16777216]");
+        roundingPreimage_float_helper(0.15625f, "[20971519/134217728, 20971521/134217728]");
+        roundingPreimage_float_helper(0.1f, "[26843545/268435456, 26843547/268435456]");
+        roundingPreimage_float_helper(1.0f / 3.0f, "[22369621/67108864, 22369623/67108864]");
+        roundingPreimage_float_helper(1.0e10f, "[9999999488, 10000000512]");
+        roundingPreimage_float_helper(1.0e30f, "[999999977268534356919527145472, 1000000052826398082833850564608]");
+        roundingPreimage_float_helper((float) Math.PI, "[26353589/8388608, 26353591/8388608]");
+        roundingPreimage_float_helper((float) Math.E, "[22802599/8388608, 22802601/8388608]");
+        roundingPreimage_float_helper((float) Math.sqrt(2), "[23726565/16777216, 23726567/16777216]");
+        roundingPreimage_float_helper(
+                Float.MIN_VALUE,
                 "[1/1427247692705959881058285969449495136382746624, 3/1427247692705959881058285969449495136382746624]"
         );
-        aeq(
-                roundingPreimage(-Float.MIN_VALUE),
+        roundingPreimage_float_helper(
+                -Float.MIN_VALUE,
                 "[-3/1427247692705959881058285969449495136382746624," +
                 " -1/1427247692705959881058285969449495136382746624]"
         );
-        aeq(
-                roundingPreimage(Float.MIN_NORMAL),
+        roundingPreimage_float_helper(
+                Float.MIN_NORMAL,
                 "[16777215/1427247692705959881058285969449495136382746624," +
                 " 16777217/1427247692705959881058285969449495136382746624]"
         );
-        aeq(
-                roundingPreimage(-Float.MIN_NORMAL),
+        roundingPreimage_float_helper(
+                -Float.MIN_NORMAL,
                 "[-16777217/1427247692705959881058285969449495136382746624," +
                 " -16777215/1427247692705959881058285969449495136382746624]"
         );
-        aeq(
-                roundingPreimage(Float.MAX_VALUE),
+        roundingPreimage_float_helper(
+                Float.MAX_VALUE,
                 "[340282336497324057985868971510891282432, 340282346638528859811704183484516925440]"
         );
-        aeq(
-                roundingPreimage(-Float.MAX_VALUE),
+        roundingPreimage_float_helper(
+                -Float.MAX_VALUE,
                 "[-340282346638528859811704183484516925440, -340282336497324057985868971510891282432]"
         );
+        roundingPreimage_float_fail_helper(Float.NaN);
+    }
+
+    private static void roundingPreimage_double_helper(double d, @NotNull String output) {
+        aeq(roundingPreimage(d), output);
+    }
+
+    private static void roundingPreimage_double_fail_helper(double d) {
         try {
-            roundingPreimage(Float.NaN);
+            roundingPreimage(d);
             fail();
         } catch (ArithmeticException ignored) {}
     }
 
     @Test
     public void testRoundingPreimage_double() {
-        aeq(
-                roundingPreimage(0.0),
+        roundingPreimage_double_helper(
+                0.0,
                 "[-1/40480450661462123670499069343783461409911329952828423671380271605486067913599069378392076740287" +
                 "424899037415572863362382277961747477158695373402679988147701984303484855313272272893381548418643268" +
                 "247953535694549013712401496684938539723620671129831911268162011302471753910466682923046100506437265" +
@@ -554,8 +575,8 @@ public class IntervalTest {
                 "479535356945490137124014966849385397236206711298319112681620113024717539104666829230461005064372655" +
                 "017292012526615415482186989568]"
         );
-        aeq(
-                roundingPreimage(-0.0),
+        roundingPreimage_double_helper(
+                -0.0,
                 "[-1/40480450661462123670499069343783461409911329952828423671380271605486067913599069378392076740287" +
                 "424899037415572863362382277961747477158695373402679988147701984303484855313272272893381548418643268" +
                 "247953535694549013712401496684938539723620671129831911268162011302471753910466682923046100506437265" +
@@ -565,37 +586,66 @@ public class IntervalTest {
                 "479535356945490137124014966849385397236206711298319112681620113024717539104666829230461005064372655" +
                 "017292012526615415482186989568]"
         );
-        aeq(
-                roundingPreimage(Double.POSITIVE_INFINITY),
+        roundingPreimage_double_helper(
+                Double.POSITIVE_INFINITY,
                 "[17976931348623157081452742373170435679807056752584499659891747680315726078002853876058955863276687" +
                 "817154045895351438246423432132688946418276846754670353751698604991057655128207624549009038932894407" +
                 "586850845513394230458323690322294816580855933212334827479782620414472316873817718091929988125040402" +
                 "6184124858368," +
                 " Infinity)"
         );
-        aeq(
-                roundingPreimage(Double.NEGATIVE_INFINITY),
+        roundingPreimage_double_helper(
+                Double.NEGATIVE_INFINITY,
                 "(-Infinity," +
                 " -1797693134862315708145274237317043567980705675258449965989174768031572607800285387605895586327668" +
                 "781715404589535143824642343213268894641827684675467035375169860499105765512820762454900903893289440" +
                 "758685084551339423045832369032229481658085593321233482747978262041447231687381771809192998812504040" +
                 "26184124858368]"
         );
-        aeq(roundingPreimage(1.0), "[18014398509481983/18014398509481984, 9007199254740993/9007199254740992]");
-        aeq(roundingPreimage(13.0), "[14636698788954111/1125899906842624, 14636698788954113/1125899906842624]");
-        aeq(roundingPreimage(-5.0), "[-11258999068426241/2251799813685248, -11258999068426239/2251799813685248]");
-        aeq(roundingPreimage(1.5), "[13510798882111487/9007199254740992, 13510798882111489/9007199254740992]");
-        aeq(roundingPreimage(0.15625), "[11258999068426239/72057594037927936, 11258999068426241/72057594037927936]");
-        aeq(roundingPreimage(0.1), "[14411518807585587/144115188075855872, 14411518807585589/144115188075855872]");
-        aeq(roundingPreimage(1.0 / 3.0), "[12009599006321321/36028797018963968, 12009599006321323/36028797018963968]");
-        aeq(roundingPreimage(1.0e10), "[10485759999999999/1048576, 10485760000000001/1048576]");
-        aeq(roundingPreimage(1.0e30), "[999999999999999949515880660992, 1000000000000000090253369016320]");
-        aeq(roundingPreimage(Math.PI), "[14148475504056879/4503599627370496, 14148475504056881/4503599627370496]");
-        aeq(roundingPreimage(Math.E), "[12242053029736145/4503599627370496, 12242053029736147/4503599627370496]");
-        aeq(roundingPreimage(Math.sqrt(2)),
-                "[12738103345051545/9007199254740992, 12738103345051547/9007199254740992]");
-        aeq(
-                roundingPreimage(Double.MIN_VALUE),
+        roundingPreimage_double_helper(
+                1.0,
+                "[18014398509481983/18014398509481984, 9007199254740993/9007199254740992]"
+        );
+        roundingPreimage_double_helper(
+                13.0,
+                "[14636698788954111/1125899906842624, 14636698788954113/1125899906842624]"
+        );
+        roundingPreimage_double_helper(
+                -5.0,
+                "[-11258999068426241/2251799813685248, -11258999068426239/2251799813685248]"
+        );
+        roundingPreimage_double_helper(
+                1.5,
+                "[13510798882111487/9007199254740992, 13510798882111489/9007199254740992]"
+        );
+        roundingPreimage_double_helper(
+                0.15625,
+                "[11258999068426239/72057594037927936, 11258999068426241/72057594037927936]"
+        );
+        roundingPreimage_double_helper(
+                0.1,
+                "[14411518807585587/144115188075855872, 14411518807585589/144115188075855872]"
+        );
+        roundingPreimage_double_helper(
+                1.0 / 3.0,
+                "[12009599006321321/36028797018963968, 12009599006321323/36028797018963968]"
+        );
+        roundingPreimage_double_helper(1.0e10, "[10485759999999999/1048576, 10485760000000001/1048576]");
+        roundingPreimage_double_helper(1.0e30, "[999999999999999949515880660992, 1000000000000000090253369016320]");
+        roundingPreimage_double_helper(
+                Math.PI,
+                "[14148475504056879/4503599627370496, 14148475504056881/4503599627370496]"
+        );
+        roundingPreimage_double_helper(
+                Math.E,
+                "[12242053029736145/4503599627370496, 12242053029736147/4503599627370496]"
+        );
+        roundingPreimage_double_helper(
+                Math.sqrt(2),
+                "[12738103345051545/9007199254740992, 12738103345051547/9007199254740992]"
+        );
+        roundingPreimage_double_helper(
+                Double.MIN_VALUE,
                 "[1/404804506614621236704990693437834614099113299528284236713802716054860679135990693783920767402874" +
                 "248990374155728633623822779617474771586953734026799881477019843034848553132722728933815484186432682" +
                 "479535356945490137124014966849385397236206711298319112681620113024717539104666829230461005064372655" +
@@ -605,8 +655,8 @@ public class IntervalTest {
                 "479535356945490137124014966849385397236206711298319112681620113024717539104666829230461005064372655" +
                 "017292012526615415482186989568]"
         );
-        aeq(
-                roundingPreimage(-Double.MIN_VALUE),
+        roundingPreimage_double_helper(
+                -Double.MIN_VALUE,
                 "[-3/40480450661462123670499069343783461409911329952828423671380271605486067913599069378392076740287" +
                 "424899037415572863362382277961747477158695373402679988147701984303484855313272272893381548418643268" +
                 "247953535694549013712401496684938539723620671129831911268162011302471753910466682923046100506437265" +
@@ -616,8 +666,8 @@ public class IntervalTest {
                 "247953535694549013712401496684938539723620671129831911268162011302471753910466682923046100506437265" +
                 "5017292012526615415482186989568]"
         );
-        aeq(
-                roundingPreimage(Double.MIN_NORMAL),
+        roundingPreimage_double_helper(
+                Double.MIN_NORMAL,
                 "[9007199254740991/404804506614621236704990693437834614099113299528284236713802716054860679135990693" +
                 "783920767402874248990374155728633623822779617474771586953734026799881477019843034848553132722728933" +
                 "815484186432682479535356945490137124014966849385397236206711298319112681620113024717539104666829230" +
@@ -627,8 +677,8 @@ public class IntervalTest {
                 "815484186432682479535356945490137124014966849385397236206711298319112681620113024717539104666829230" +
                 "461005064372655017292012526615415482186989568]"
         );
-        aeq(
-                roundingPreimage(-Double.MIN_NORMAL),
+        roundingPreimage_double_helper(
+                -Double.MIN_NORMAL,
                 "[-9007199254740993/40480450661462123670499069343783461409911329952828423671380271605486067913599069" +
                 "378392076740287424899037415572863362382277961747477158695373402679988147701984303484855313272272893" +
                 "381548418643268247953535694549013712401496684938539723620671129831911268162011302471753910466682923" +
@@ -638,8 +688,8 @@ public class IntervalTest {
                 "381548418643268247953535694549013712401496684938539723620671129831911268162011302471753910466682923" +
                 "0461005064372655017292012526615415482186989568]"
         );
-        aeq(
-                roundingPreimage(Double.MAX_VALUE),
+        roundingPreimage_double_helper(
+                Double.MAX_VALUE,
                 "[17976931348623156083532587605810529851620700234165216626166117462586955326729232657453009928794654" +
                 "924675063149033587701752208710592698796290627760473556921329019091915239418047621712533496094635638" +
                 "726128664019802903779951418360298151175628372777140383052148396392393563313364280213909166945792787" +
@@ -649,8 +699,8 @@ public class IntervalTest {
                 "586850845513394230458323690322294816580855933212334827479782620414472316873817718091929988125040402" +
                 "6184124858368]"
         );
-        aeq(
-                roundingPreimage(-Double.MAX_VALUE),
+        roundingPreimage_double_helper(
+                -Double.MAX_VALUE,
                 "[-1797693134862315708145274237317043567980705675258449965989174768031572607800285387605895586327668" +
                 "781715404589535143824642343213268894641827684675467035375169860499105765512820762454900903893289440" +
                 "758685084551339423045832369032229481658085593321233482747978262041447231687381771809192998812504040" +
@@ -660,68 +710,28 @@ public class IntervalTest {
                 "872612866401980290377995141836029815117562837277714038305214839639239356331336428021390916694579278" +
                 "74464075218944]"
         );
-        try {
-            roundingPreimage(Double.NaN);
-            fail();
-        } catch (ArithmeticException ignored) {}
+        roundingPreimage_double_fail_helper(Double.NaN);
+    }
+
+    private static void roundingPreimage_BigDecimal_helper(@NotNull String input, @NotNull String output) {
+        aeq(roundingPreimage(Readers.readBigDecimal(input).get()), output);
     }
 
     @Test
     public void testRoundingPreimage_BigDecimal() {
-        aeq(roundingPreimage(BigDecimal.ZERO), "[-1/2, 1/2]");
-        aeq(roundingPreimage(BigDecimal.ONE), "[1/2, 3/2]");
-        aeq(roundingPreimage(new BigDecimal("3")), "[5/2, 7/2]");
-        aeq(roundingPreimage(new BigDecimal("-5")), "[-11/2, -9/2]");
-        aeq(roundingPreimage(new BigDecimal("0.1")), "[1/20, 3/20]");
-        aeq(roundingPreimage(new BigDecimal("3.14159")), "[628317/200000, 628319/200000]");
-        aeq(
-                roundingPreimage(new BigDecimal("-2.718281828459045")),
+        roundingPreimage_BigDecimal_helper("0", "[-1/2, 1/2]");
+        roundingPreimage_BigDecimal_helper("1", "[1/2, 3/2]");
+        roundingPreimage_BigDecimal_helper("3", "[5/2, 7/2]");
+        roundingPreimage_BigDecimal_helper("-5", "[-11/2, -9/2]");
+        roundingPreimage_BigDecimal_helper("0.1", "[1/20, 3/20]");
+        roundingPreimage_BigDecimal_helper("3.14159", "[628317/200000, 628319/200000]");
+        roundingPreimage_BigDecimal_helper(
+                "-2.718281828459045",
                 "[-5436563656918091/2000000000000000, -5436563656918089/2000000000000000]"
         );
-        aeq(roundingPreimage(new BigDecimal("0.00000000000001")), "[1/200000000000000, 3/200000000000000]");
-        aeq(roundingPreimage(new BigDecimal("1000000000000000")), "[1999999999999999/2, 2000000000000001/2]");
-        aeq(roundingPreimage(new BigDecimal("1E15")), "[500000000000000, 1500000000000000]");
-    }
-
-    @Test
-    public void testFloatRange() {
-        aeq(ZERO.floatRange(), "(0.0, 0.0)");
-        aeq(ONE.floatRange(), "(1.0, 1.0)");
-        aeq(ALL.floatRange(), "(-Infinity, Infinity)");
-        aeq(read("[-2, 5/3]").get().floatRange(), "(-2.0, 1.6666667)");
-        aeq(read("[5/3, 4]").get().floatRange(), "(1.6666666, 4.0)");
-        aeq(read("[4, 4]").get().floatRange(), "(4.0, 4.0)");
-        aeq(read("[1/3, 1/3]").get().floatRange(), "(0.3333333, 0.33333334)");
-        aeq(read("(-Infinity, 3/2]").get().floatRange(), "(-Infinity, 1.5)");
-        aeq(read("[-6, Infinity)").get().floatRange(), "(-6.0, Infinity)");
-        aeq(of(Rational.TEN.pow(-100)).floatRange(), "(0.0, 1.4E-45)");
-        aeq(of(Rational.TEN.pow(-100).negate()).floatRange(), "(-1.4E-45, -0.0)");
-        aeq(of(Rational.TEN.pow(-100).negate(), Rational.TEN.pow(-100)).floatRange(), "(-1.4E-45, 1.4E-45)");
-        aeq(of(Rational.TEN.pow(100)).floatRange(), "(3.4028235E38, Infinity)");
-        aeq(of(Rational.TEN.pow(100).negate()).floatRange(), "(-Infinity, -3.4028235E38)");
-        aeq(of(Rational.TEN.pow(100).negate(), Rational.TEN.pow(100)).floatRange(), "(-Infinity, Infinity)");
-    }
-
-    @Test
-    public void testDoubleRange() {
-        aeq(ZERO.doubleRange(), "(0.0, 0.0)");
-        aeq(ONE.doubleRange(), "(1.0, 1.0)");
-        aeq(ALL.doubleRange(), "(-Infinity, Infinity)");
-        aeq(read("[-2, 5/3]").get().doubleRange(), "(-2.0, 1.6666666666666667)");
-        aeq(read("[5/3, 4]").get().doubleRange(), "(1.6666666666666665, 4.0)");
-        aeq(read("[4, 4]").get().doubleRange(), "(4.0, 4.0)");
-        aeq(read("[1/3, 1/3]").get().doubleRange(), "(0.3333333333333333, 0.33333333333333337)");
-        aeq(read("(-Infinity, 3/2]").get().doubleRange(), "(-Infinity, 1.5)");
-        aeq(read("[-6, Infinity)").get().doubleRange(), "(-6.0, Infinity)");
-        aeq(of(Rational.TEN.pow(-1000)).doubleRange(), "(0.0, 4.9E-324)");
-        aeq(of(Rational.TEN.pow(-1000).negate()).doubleRange(), "(-4.9E-324, -0.0)");
-        aeq(
-                of(Rational.TEN.pow(-1000).negate(), Rational.TEN.pow(-1000)).doubleRange(),
-                "(-4.9E-324, 4.9E-324)"
-        );
-        aeq(of(Rational.TEN.pow(1000)).doubleRange(), "(1.7976931348623157E308, Infinity)");
-        aeq(of(Rational.TEN.pow(1000).negate()).doubleRange(), "(-Infinity, -1.7976931348623157E308)");
-        aeq(of(Rational.TEN.pow(1000).negate(), Rational.TEN.pow(1000)).doubleRange(), "(-Infinity, Infinity)");
+        roundingPreimage_BigDecimal_helper("1E-14", "[1/200000000000000, 3/200000000000000]");
+        roundingPreimage_BigDecimal_helper("1000000000000000", "[1999999999999999/2, 2000000000000001/2]");
+        roundingPreimage_BigDecimal_helper("1E+15", "[500000000000000, 1500000000000000]");
     }
 
     @Test

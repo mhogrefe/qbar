@@ -533,8 +533,9 @@ public final class Interval implements Comparable<Interval> {
      * @return the closure of the preimage of {@code f} with respect to rounding-to-nearest-{@code float}.
      */
     public static @NotNull Interval roundingPreimage(float f) {
-        if (Float.isNaN(f))
-            throw new ArithmeticException("cannot find preimage of NaN");
+        if (Float.isNaN(f)) {
+            throw new ArithmeticException("f cannot be NaN.");
+        }
         if (Float.isInfinite(f)) {
             if (f > 0) {
                 return new Interval(Rational.LARGEST_FLOAT, null);
@@ -607,8 +608,9 @@ public final class Interval implements Comparable<Interval> {
      * @return the closure of the preimage of {@code d} with respect to rounding-to-nearest-{@code double}.
      */
     public static @NotNull Interval roundingPreimage(double d) {
-        if (Double.isNaN(d))
-            throw new ArithmeticException("cannot find preimage of NaN");
+        if (Double.isNaN(d)) {
+            throw new ArithmeticException("d cannot be NaN.");
+        }
         if (Double.isInfinite(d)) {
             if (d > 0) {
                 return new Interval(Rational.LARGEST_DOUBLE, null);
@@ -659,45 +661,6 @@ public final class Interval implements Comparable<Interval> {
         Rational center = Rational.of(bd);
         Rational maxAbsoluteError = Rational.TEN.pow(-bd.scale()).shiftRight(1);
         return new Interval(center.subtract(maxAbsoluteError), center.add(maxAbsoluteError));
-    }
-
-    /**
-     * Returns a pair of {@code float}s x, y such that [x, y] is the smallest interval with {@code float} bounds which
-     * contains {@code this}. x or y may be infinite if {@code this}'s bounds are infinite or very large in magnitude.
-     *
-     * <ul>
-     *  <li>{@code this} may be any {@code Interval}.</li>
-     *  <li>Neither of the result's elements are null or {@code NaN}. The second element is greater than or equal to
-     *  the first. The first element cannot be {@code Infinity} or negative zero. The second element cannot be
-     *  {@code -Infinity}. If the second element is negative zero, the first element cannot be positive zero.</li>
-     * </ul>
-     *
-     * @return the smallest {@code float} interval containing {@code this}.
-     */
-    public @NotNull Pair<Float, Float> floatRange() {
-        float fLower = lower == null ? Float.NEGATIVE_INFINITY : lower.floatValue(RoundingMode.FLOOR);
-        float fUpper = upper == null ? Float.POSITIVE_INFINITY : upper.floatValue(RoundingMode.CEILING);
-        return new Pair<>(fLower, fUpper);
-    }
-
-    /**
-     * Returns a pair of {@code double}s x, y such that [x, y] is the smallest interval with {@code double} bounds
-     * which contains {@code this}. x or y may be infinite if {@code this}'s bounds are infinite or very large in
-     * magnitude.
-     *
-     * <ul>
-     *  <li>{@code this} may be any {@code Interval}.</li>
-     *  <li>Neither of the result's elements are null or {@code NaN}. The second element is greater than or equal to
-     *  the first. The first element cannot be {@code Infinity} or negative zero. The second element cannot be
-     *  {@code -Infinity}. If the second element is negative zero, the first element cannot be positive zero.</li>
-     * </ul>
-     *
-     * @return the smallest {@code double} interval containing {@code this}.
-     */
-    public @NotNull Pair<Double, Double> doubleRange() {
-        double dLower = lower == null ? Double.NEGATIVE_INFINITY : lower.doubleValue(RoundingMode.FLOOR);
-        double dUpper = upper == null ? Double.POSITIVE_INFINITY : upper.doubleValue(RoundingMode.CEILING);
-        return new Pair<>(dLower, dUpper);
     }
 
     /**

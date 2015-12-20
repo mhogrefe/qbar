@@ -63,8 +63,6 @@ public class IntervalProperties extends QBarTestProperties {
         propertiesRoundingPreimage_float();
         propertiesRoundingPreimage_double();
         propertiesRoundingPreimage_BigDecimal();
-        propertiesFloatRange();
-        propertiesDoubleRange();
         propertiesAdd();
         propertiesNegate();
         propertiesAbs();
@@ -688,9 +686,7 @@ public class IntervalProperties extends QBarTestProperties {
     }
 
     private void propertiesRoundingPreimage_float() {
-        initialize("");
-        System.out.println("\t\ttesting roundingPreimage(float) properties...");
-
+        initialize("roundingPreimage(float)");
         for (float f : take(LIMIT, filter(g -> !Float.isNaN(g), P.floats()))) {
             Interval a = roundingPreimage(f);
             a.validate();
@@ -699,43 +695,41 @@ public class IntervalProperties extends QBarTestProperties {
 
         for (float f : take(LIMIT, filter(g -> !Float.isNaN(g) && Math.abs(g) < Float.MAX_VALUE, P.floats()))) {
             Interval a = roundingPreimage(f);
-            Rational central = Rational.ofExact(f).get();
-            Rational pred = Rational.ofExact(FloatingPointUtils.predecessor(f)).get();
-            Rational succ = Rational.ofExact(FloatingPointUtils.successor(f)).get();
+            Rational center = Rational.ofExact(f).get();
+            Rational predecessor = Rational.ofExact(FloatingPointUtils.predecessor(f)).get();
+            Rational successor = Rational.ofExact(FloatingPointUtils.successor(f)).get();
             for (Rational r : take(TINY_LIMIT, P.rationalsIn(a))) {
-                Rational centralDistance = central.subtract(r).abs();
-                Rational predDistance = pred.subtract(r).abs();
-                Rational succDistance = succ.subtract(r).abs();
-                assertTrue(f, le(centralDistance, predDistance));
-                assertTrue(f, le(centralDistance, succDistance));
+                Rational centerDistance = center.subtract(r).abs();
+                Rational predecessorDistance = predecessor.subtract(r).abs();
+                Rational successorDistance = successor.subtract(r).abs();
+                assertTrue(f, le(centerDistance, predecessorDistance));
+                assertTrue(f, le(centerDistance, successorDistance));
             }
             for (Rational r : take(TINY_LIMIT, P.rationalsNotIn(a))) {
-                Rational centralDistance = central.subtract(r).abs();
-                Rational predDistance = pred.subtract(r).abs();
-                Rational succDistance = succ.subtract(r).abs();
-                assertTrue(f, gt(centralDistance, predDistance) || gt(centralDistance, succDistance));
+                Rational centralDistance = center.subtract(r).abs();
+                Rational predecessorDistance = predecessor.subtract(r).abs();
+                Rational successorDistance = successor.subtract(r).abs();
+                assertTrue(f, gt(centralDistance, predecessorDistance) || gt(centralDistance, successorDistance));
             }
 
             Rational x = a.getLower().get();
             Rational y = a.getUpper().get();
-            for (Rational r : take(TINY_LIMIT, filter(s -> !s.equals(x) && !s.equals(y), P.rationalsIn(a)))) {
-                float g = r.floatValue();
-                float h = f;
-                //get rid of negative zero
-                if (g == 0.0f) g = Math.abs(g);
-                if (h == 0.0f) h = Math.abs(h);
-                assertEquals(f, g, h);
+            for (Rational r : take(TINY_LIMIT, filterInfinite(s -> !s.equals(x) && !s.equals(y), P.rationalsIn(a)))) {
+                assertEquals(
+                        f,
+                        FloatingPointUtils.absNegativeZeros(r.floatValue()),
+                        FloatingPointUtils.absNegativeZeros(f)
+                );
             }
-            for (Rational r : take(TINY_LIMIT, filter(s -> !s.equals(x) && !s.equals(y), P.rationalsNotIn(a)))) {
+            Iterable<Rational> rs = filterInfinite(s -> !s.equals(x) && !s.equals(y), P.rationalsNotIn(a));
+            for (Rational r : take(TINY_LIMIT, rs)) {
                 assertNotEquals(f, r.floatValue(), f);
             }
         }
     }
 
     private void propertiesRoundingPreimage_double() {
-        initialize("");
-        System.out.println("\t\ttesting roundingPreimage(double) properties...");
-
+        initialize("roundingPreimage(double)");
         for (double d : take(LIMIT, filter(e -> !Double.isNaN(e), P.doubles()))) {
             Interval a = roundingPreimage(d);
             a.validate();
@@ -744,153 +738,71 @@ public class IntervalProperties extends QBarTestProperties {
 
         for (double d : take(LIMIT, filter(e -> !Double.isNaN(e) && Math.abs(e) < Double.MAX_VALUE, P.doubles()))) {
             Interval a = roundingPreimage(d);
-            Rational central = Rational.ofExact(d).get();
-            Rational pred = Rational.ofExact(FloatingPointUtils.predecessor(d)).get();
-            Rational succ = Rational.ofExact(FloatingPointUtils.successor(d)).get();
+            Rational center = Rational.ofExact(d).get();
+            Rational predecessor = Rational.ofExact(FloatingPointUtils.predecessor(d)).get();
+            Rational successor = Rational.ofExact(FloatingPointUtils.successor(d)).get();
             for (Rational r : take(TINY_LIMIT, P.rationalsIn(a))) {
-                Rational centralDistance = central.subtract(r).abs();
-                Rational predDistance = pred.subtract(r).abs();
-                Rational succDistance = succ.subtract(r).abs();
-                assertTrue(d, le(centralDistance, predDistance));
-                assertTrue(d, le(centralDistance, succDistance));
+                Rational centerDistance = center.subtract(r).abs();
+                Rational predecessorDistance = predecessor.subtract(r).abs();
+                Rational successorDistance = successor.subtract(r).abs();
+                assertTrue(d, le(centerDistance, predecessorDistance));
+                assertTrue(d, le(centerDistance, successorDistance));
             }
             for (Rational r : take(TINY_LIMIT, P.rationalsNotIn(a))) {
-                Rational centralDistance = central.subtract(r).abs();
-                Rational predDistance = pred.subtract(r).abs();
-                Rational succDistance = succ.subtract(r).abs();
-                assertTrue(d, gt(centralDistance, predDistance) || gt(centralDistance, succDistance));
+                Rational centerDistance = center.subtract(r).abs();
+                Rational predecessorDistance = predecessor.subtract(r).abs();
+                Rational successorDistance = successor.subtract(r).abs();
+                assertTrue(d, gt(centerDistance, predecessorDistance) || gt(centerDistance, successorDistance));
             }
 
             Rational x = a.getLower().get();
             Rational y = a.getUpper().get();
-            for (Rational r : take(TINY_LIMIT, filter(s -> !s.equals(x) && !s.equals(y), P.rationalsIn(a)))) {
-                double g = r.doubleValue();
-                double h = d;
-                //get rid of negative zero
-                if (g == 0.0) g = Math.abs(g);
-                if (h == 0.0) h = Math.abs(h);
-                assertEquals(d, g, h);
+            for (Rational r : take(TINY_LIMIT, filterInfinite(s -> !s.equals(x) && !s.equals(y), P.rationalsIn(a)))) {
+                assertEquals(
+                        d,
+                        FloatingPointUtils.absNegativeZeros(r.doubleValue()),
+                        FloatingPointUtils.absNegativeZeros(d)
+                );
             }
-            for (Rational r : take(TINY_LIMIT, filter(s -> !s.equals(x) && !s.equals(y), P.rationalsNotIn(a)))) {
+            Iterable<Rational> rs = filterInfinite(s -> !s.equals(x) && !s.equals(y), P.rationalsNotIn(a));
+            for (Rational r : take(TINY_LIMIT, rs)) {
                 assertNotEquals(d, r.doubleValue(), d);
             }
         }
     }
 
     private void propertiesRoundingPreimage_BigDecimal() {
-        initialize("");
-        System.out.println("\t\ttesting roundingPreimage(BigDecimal) properties...");
-
+        initialize("roundingPreimage(BigDecimal)");
         for (BigDecimal bd : take(LIMIT, P.bigDecimals())) {
             Interval a = roundingPreimage(bd);
             a.validate();
             assertEquals(bd, roundingPreimage(bd.negate()), a.negate());
-            Rational central = Rational.of(bd);
-            Rational pred = Rational.of(BigDecimalUtils.predecessor(bd));
-            Rational succ = Rational.of(BigDecimalUtils.successor(bd));
+            Rational center = Rational.of(bd);
+            Rational predecessor = Rational.of(BigDecimalUtils.predecessor(bd));
+            Rational successor = Rational.of(BigDecimalUtils.successor(bd));
             for (Rational r : take(TINY_LIMIT, P.rationalsIn(a))) {
-                Rational centralDistance = central.subtract(r).abs();
-                Rational predDistance = pred.subtract(r).abs();
-                Rational succDistance = succ.subtract(r).abs();
-                assertTrue(bd, le(centralDistance, predDistance));
-                assertTrue(bd, le(centralDistance, succDistance));
+                Rational centerDistance = center.subtract(r).abs();
+                Rational predecessorDistance = predecessor.subtract(r).abs();
+                Rational successorDistance = successor.subtract(r).abs();
+                assertTrue(bd, le(centerDistance, predecessorDistance));
+                assertTrue(bd, le(centerDistance, successorDistance));
             }
             for (Rational r : take(TINY_LIMIT, P.rationalsNotIn(a))) {
-                Rational centralDistance = central.subtract(r).abs();
-                Rational predDistance = pred.subtract(r).abs();
-                Rational succDistance = succ.subtract(r).abs();
-                assertTrue(bd, gt(centralDistance, predDistance) || gt(centralDistance, succDistance));
+                Rational centerDistance = center.subtract(r).abs();
+                Rational predecessorDistance = predecessor.subtract(r).abs();
+                Rational successorDistance = successor.subtract(r).abs();
+                assertTrue(bd, gt(centerDistance, predecessorDistance) || gt(centerDistance, successorDistance));
             }
-        }
-    }
 
-    private void propertiesFloatRange() {
-        initialize("");
-        System.out.println("\t\ttesting floatRange() properties...");
-
-        for (Interval a : take(LIMIT, P.intervals())) {
-            Pair<Float, Float> range = a.floatRange();
-            assertTrue(a, range.a != null);
-            assertTrue(a, range.b != null);
-            assertFalse(a, range.a.isNaN());
-            assertFalse(a, range.b.isNaN());
-            assertTrue(a, range.b >= range.a);
-            assertFalse(a, range.a > 0 && range.a.isInfinite());
-            assertFalse(a, FloatingPointUtils.isNegativeZero(range.a));
-            assertFalse(a, range.b < 0 && range.b.isInfinite());
-            assertFalse(a, FloatingPointUtils.isNegativeZero(range.b) && FloatingPointUtils.isPositiveZero(range.a));
-
-            Pair<Float, Float> negRange = a.negate().floatRange();
-            negRange = new Pair<>(-negRange.b, -negRange.a);
-            float x = FloatingPointUtils.absNegativeZeros(range.a);
-            float y = FloatingPointUtils.absNegativeZeros(range.b);
-            float xn = FloatingPointUtils.absNegativeZeros(negRange.a);
-            float yn = FloatingPointUtils.absNegativeZeros(negRange.b);
-            assertEquals(a, x, xn);
-            assertEquals(a, y, yn);
-
-            Interval b;
-            if (range.a.isInfinite() && range.b.isInfinite()) {
-                b = ALL;
-            } else if (range.a.isInfinite()) {
-                b = lessThanOrEqualTo(Rational.ofExact(range.b).get());
-            } else if (range.b.isInfinite()) {
-                b = greaterThanOrEqualTo(Rational.ofExact(range.a).get());
-            } else {
-                b = of(Rational.ofExact(range.a).get(), Rational.ofExact(range.b).get());
+            Rational x = a.getLower().get();
+            Rational y = a.getUpper().get();
+            for (Rational r : take(TINY_LIMIT, filterInfinite(s -> !s.equals(x) && !s.equals(y), P.rationalsIn(a)))) {
+                assertEquals(bd, r.bigDecimalValueByScale(bd.scale()), bd);
             }
-            assertTrue(a, b.contains(a));
-        }
-
-        for (Interval a : take(LIMIT, P.finitelyBoundedIntervals())) {
-            Pair<Float, Float> range = a.floatRange();
-            assertTrue(a, le(a.getLower().get(), Rational.ofExact(FloatingPointUtils.successor(range.a)).get()));
-            assertTrue(a, ge(a.getUpper().get(), Rational.ofExact(FloatingPointUtils.predecessor(range.b)).get()));
-        }
-    }
-
-    private void propertiesDoubleRange() {
-        initialize("");
-        System.out.println("\t\ttesting doubleRange() properties...");
-
-        for (Interval a : take(LIMIT, P.intervals())) {
-            Pair<Double, Double> range = a.doubleRange();
-            assertTrue(a, range.a != null);
-            assertTrue(a, range.b != null);
-            assertFalse(a, range.a.isNaN());
-            assertFalse(a, range.b.isNaN());
-            assertTrue(a, range.b >= range.a);
-            assertFalse(a, range.a > 0 && range.a.isInfinite());
-            assertFalse(a, FloatingPointUtils.isNegativeZero(range.a));
-            assertFalse(a, range.b < 0 && range.b.isInfinite());
-            assertFalse(a, FloatingPointUtils.isNegativeZero(range.b) && FloatingPointUtils.isPositiveZero(range.a));
-
-            Pair<Double, Double> negRange = a.negate().doubleRange();
-            negRange = new Pair<>(-negRange.b, -negRange.a);
-            double x = FloatingPointUtils.absNegativeZeros(range.a);
-            double y = FloatingPointUtils.absNegativeZeros(range.b);
-            double xn = FloatingPointUtils.absNegativeZeros(negRange.a);
-            double yn = FloatingPointUtils.absNegativeZeros(negRange.b);
-            assertEquals(a, x, xn);
-            assertEquals(a, y, yn);
-
-            Interval b;
-            if (range.a.isInfinite() && range.b.isInfinite()) {
-                b = ALL;
-            } else if (range.a.isInfinite()) {
-                b = lessThanOrEqualTo(Rational.ofExact(range.b).get());
-            } else if (range.b.isInfinite()) {
-                b = greaterThanOrEqualTo(Rational.ofExact(range.a).get());
-            } else {
-                b = of(Rational.ofExact(range.a).get(), Rational.ofExact(range.b).get());
+            Iterable<Rational> rs = filterInfinite(s -> !s.equals(x) && !s.equals(y), P.rationalsNotIn(a));
+            for (Rational r : take(TINY_LIMIT, rs)) {
+                assertNotEquals(bd, r.bigDecimalValueByScale(bd.scale()), bd);
             }
-            assertTrue(a, b.contains(a));
-        }
-
-        for (Interval a : take(LIMIT, P.finitelyBoundedIntervals())) {
-            Pair<Float, Float> range = a.floatRange();
-            assertTrue(a, le(a.getLower().get(), Rational.ofExact(FloatingPointUtils.successor(range.a)).get()));
-            assertTrue(a, ge(a.getUpper().get(), Rational.ofExact(FloatingPointUtils.predecessor(range.b)).get()));
         }
     }
 

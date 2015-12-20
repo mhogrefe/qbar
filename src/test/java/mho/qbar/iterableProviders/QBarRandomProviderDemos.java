@@ -19,7 +19,6 @@ public class QBarRandomProviderDemos extends QBarDemos {
     }
 
     private void demoPositiveRationals() {
-        initialize();
         Iterable<QBarRandomProvider> rps = filterInfinite(
                 s -> s.getScale() >= 4,
                 P.qbarRandomProvidersDefaultSecondaryScale()
@@ -30,7 +29,6 @@ public class QBarRandomProviderDemos extends QBarDemos {
     }
 
     private void demoNegativeRationals() {
-        initialize();
         Iterable<QBarRandomProvider> rps = filterInfinite(
                 s -> s.getScale() >= 4,
                 P.qbarRandomProvidersDefaultSecondaryScale()
@@ -41,7 +39,6 @@ public class QBarRandomProviderDemos extends QBarDemos {
     }
 
     private void demoNonzeroRationals() {
-        initialize();
         Iterable<QBarRandomProvider> rps = filterInfinite(
                 s -> s.getScale() >= 4,
                 P.qbarRandomProvidersDefaultSecondaryScale()
@@ -52,7 +49,6 @@ public class QBarRandomProviderDemos extends QBarDemos {
     }
 
     private void demoRationals() {
-        initialize();
         Iterable<QBarRandomProvider> rps = filterInfinite(
                 s -> s.getScale() >= 3,
                 P.qbarRandomProvidersDefaultSecondaryScale()
@@ -63,7 +59,6 @@ public class QBarRandomProviderDemos extends QBarDemos {
     }
 
     private void demoNonNegativeRationalsLessThanOne() {
-        initialize();
         Iterable<QBarRandomProvider> rps = filterInfinite(
                 s -> s.getScale() >= 4,
                 P.qbarRandomProvidersDefaultSecondaryScale()
@@ -75,7 +70,6 @@ public class QBarRandomProviderDemos extends QBarDemos {
     }
 
     private void demoRangeUp_Rational() {
-        initialize();
         Iterable<Pair<QBarRandomProvider, Rational>> ps = P.pairs(
                 filterInfinite(rp -> rp.getScale() >= 4, P.qbarRandomProvidersDefaultSecondaryScale()),
                 P.rationals()
@@ -86,7 +80,6 @@ public class QBarRandomProviderDemos extends QBarDemos {
     }
 
     private void demoRangeDown_Rational() {
-        initialize();
         Iterable<Pair<QBarRandomProvider, Rational>> ps = P.pairs(
                 filterInfinite(rp -> rp.getScale() >= 4, P.qbarRandomProvidersDefaultSecondaryScale()),
                 P.rationals()
@@ -97,7 +90,6 @@ public class QBarRandomProviderDemos extends QBarDemos {
     }
 
     private void demoRange_Rational_Rational() {
-        initialize();
         Iterable<Triple<QBarRandomProvider, Rational, Rational>> ts = filterInfinite(
                 t -> le(t.b, t.c),
                 P.triples(
@@ -112,7 +104,6 @@ public class QBarRandomProviderDemos extends QBarDemos {
     }
 
     private void demoFinitelyBoundedIntervals() {
-        initialize();
         Iterable<QBarRandomProvider> rps = filterInfinite(
                 s -> s.getScale() >= 6,
                 P.qbarRandomProvidersDefaultSecondaryScale()
@@ -123,7 +114,6 @@ public class QBarRandomProviderDemos extends QBarDemos {
     }
 
     private void demoIntervals() {
-        initialize();
         Iterable<QBarRandomProvider> rps = filterInfinite(
                 s -> s.getScale() >= 6,
                 P.qbarRandomProvidersDefaultSecondaryScale()
@@ -134,7 +124,6 @@ public class QBarRandomProviderDemos extends QBarDemos {
     }
 
     private void demoRationalsIn() {
-        initialize();
         Iterable<Pair<QBarRandomProvider, Interval>> ps = P.pairs(
                 filterInfinite(
                         s -> s.getScale() >= 4,
@@ -148,7 +137,6 @@ public class QBarRandomProviderDemos extends QBarDemos {
     }
 
     private void demoRationalsNotIn() {
-        initialize();
         Iterable<Pair<QBarRandomProvider, Interval>> ps = P.pairs(
                 filterInfinite(
                         s -> s.getScale() >= 4,
