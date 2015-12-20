@@ -9,7 +9,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.math.RoundingMode;
 import java.util.*;
 
 import static mho.wheels.iterables.IterableUtils.*;
@@ -780,21 +779,21 @@ public final class Interval implements Comparable<Interval> {
      */
     public @NotNull Interval multiply(@NotNull Interval that) {
         if (equals(ZERO) || that.equals(ZERO)) return ZERO;
-        boolean thisHasPositive = upper == null || upper.signum() == 1;
-        boolean thatHasPositive = that.upper == null || that.upper.signum() == 1;
-        boolean thisHasNegative = lower == null || lower.signum() == -1;
-        boolean thatHasNegative = that.lower == null || that.lower.signum() == -1;
-        boolean minIsNegInf =
-                lower == null && thatHasPositive ||
-                upper == null && thatHasNegative ||
-                that.lower == null && thisHasPositive ||
-                that.upper == null && thisHasNegative;
-        boolean maxIsPosInf =
-                upper == null && thatHasPositive ||
-                lower == null && thatHasNegative ||
-                that.upper == null && thisHasPositive ||
-                that.lower == null && thisHasNegative;
-        if (minIsNegInf && maxIsPosInf) return ALL;
+        boolean thisContainsPositive = upper == null || upper.signum() == 1;
+        boolean thatContainsPositive = that.upper == null || that.upper.signum() == 1;
+        boolean thisContainsNegative = lower == null || lower.signum() == -1;
+        boolean thatContainsNegative = that.lower == null || that.lower.signum() == -1;
+        boolean unboundedBelow =
+                lower == null && thatContainsPositive ||
+                upper == null && thatContainsNegative ||
+                that.lower == null && thisContainsPositive ||
+                that.upper == null && thisContainsNegative;
+        boolean unboundedAbove =
+                upper == null && thatContainsPositive ||
+                lower == null && thatContainsNegative ||
+                that.upper == null && thisContainsPositive ||
+                that.lower == null && thisContainsNegative;
+        if (unboundedBelow && unboundedAbove) return ALL;
         List<Rational> extremes = new ArrayList<>();
         if (lower != null) {
             if (that.lower != null) extremes.add(lower.multiply(that.lower));
@@ -804,9 +803,14 @@ public final class Interval implements Comparable<Interval> {
             if (that.lower != null) extremes.add(upper.multiply(that.lower));
             if (that.upper != null) extremes.add(upper.multiply(that.upper));
         }
-        if (minIsNegInf) return new Interval(null, maximum(extremes));
-        if (maxIsPosInf) return new Interval(minimum(extremes), null);
-        return new Interval(minimum(extremes), maximum(extremes));
+        if (unboundedBelow) {
+            return new Interval(null, maximum(extremes));
+        } else if (unboundedAbove) {
+            return new Interval(minimum(extremes), null);
+        } else {
+            Pair<Rational, Rational> minimumMaximum = minimumMaximum(extremes);
+            return new Interval(minimumMaximum.a, minimumMaximum.b);
+        }
     }
 
     /**
@@ -822,7 +826,7 @@ public final class Interval implements Comparable<Interval> {
      * @return {@code this}×{@code that}
      */
     public @NotNull Interval multiply(@NotNull Rational that) {
-        if (that == Rational.ZERO) return ZERO;
+        if (that == Rational.ZERO || equals(ZERO)) return ZERO;
         if (that == Rational.ONE) return this;
         if (that.signum() == 1) {
             return new Interval(
@@ -850,7 +854,7 @@ public final class Interval implements Comparable<Interval> {
      * @return {@code this}×{@code that}
      */
     public @NotNull Interval multiply(@NotNull BigInteger that) {
-        if (that.equals(BigInteger.ZERO)) return ZERO;
+        if (that.equals(BigInteger.ZERO) || equals(ZERO)) return ZERO;
         if (that.equals(BigInteger.ONE)) return this;
         if (that.signum() == 1) {
             return new Interval(
@@ -878,7 +882,7 @@ public final class Interval implements Comparable<Interval> {
      * @return {@code this}×{@code that}
      */
     public @NotNull Interval multiply(int that) {
-        if (that == 0) return ZERO;
+        if (that == 0 || equals(ZERO)) return ZERO;
         if (that == 1) return this;
         if (that > 0) {
             return new Interval(

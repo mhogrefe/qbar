@@ -953,19 +953,20 @@ public class IntervalProperties extends QBarTestProperties {
     }
 
     private void propertiesMultiply_Interval() {
-        initialize("");
-        System.out.println("\t\ttesting multiply(Interval) properties...");
-
+        initialize("multiply(Interval)");
         for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
             Interval product = p.a.multiply(p.b);
             product.validate();
-            assertEquals(p, product, p.b.multiply(p.a));
+            commutative(Interval::multiply, p);
             for (Pair<Rational, Rational> q : take(TINY_LIMIT, P.pairs(P.rationalsIn(p.a), P.rationalsIn(p.b)))) {
                 assertTrue(p, product.contains(q.a.multiply(q.b)));
             }
         }
 
-        Iterable<Pair<Interval, Interval>> ps = P.pairs(P.intervals(), filter(a -> !a.equals(ZERO), P.intervals()));
+        Iterable<Pair<Interval, Interval>> ps = P.pairs(
+                P.intervals(),
+                filterInfinite(a -> !a.equals(ZERO), P.intervals())
+        );
         for (Pair<Interval, Interval> p : take(LIMIT, ps)) {
             Interval product = p.a.multiply(p.b);
             List<Interval> quotient = product.divide(p.b);
@@ -975,38 +976,37 @@ public class IntervalProperties extends QBarTestProperties {
         }
 
         for (Interval a : take(LIMIT, P.intervals())) {
-            assertEquals(a, ONE.multiply(a), a);
-            assertEquals(a, a.multiply(ONE), a);
-            assertTrue(a, ZERO.multiply(a).equals(ZERO));
-            assertTrue(a, a.multiply(ZERO).equals(ZERO));
+            fixedPoint(b -> b.multiply(ONE), a);
+            fixedPoint(ONE::multiply, a);
+            fixedPoint(a::multiply, ZERO);
+            fixedPoint(b -> b.multiply(a), ZERO);
         }
 
-        for (Interval a : take(LIMIT, filter(b -> !b.equals(ZERO), P.intervals()))) {
-            assertEquals(a, ALL.multiply(a), ALL);
-            assertEquals(a, a.multiply(ALL), ALL);
+        for (Interval a : take(LIMIT, filterInfinite(b -> !b.equals(ZERO), P.intervals()))) {
+            fixedPoint(b -> b.multiply(a), ALL);
+            fixedPoint(a::multiply, ALL);
             List<Interval> inverse = a.invert();
             List<Interval> back = union(toList(map(a::multiply, inverse)));
             assertTrue(a, any(b -> b.contains(ONE), back));
         }
 
         for (Triple<Interval, Interval, Interval> t : take(LIMIT, P.triples(P.intervals()))) {
-            Interval product1 = t.a.multiply(t.b).multiply(t.c);
-            Interval product2 = t.a.multiply(t.b.multiply(t.c));
-            assertEquals(t, product1, product2);
-            Interval expression1 = t.a.add(t.b).multiply(t.c);
-            Interval expression2 = t.a.multiply(t.c).add(t.b.multiply(t.c));
+            associative(Interval::multiply, t);
+            Interval expression1 = t.a.multiply(t.b.add(t.c));
+            Interval expression2 = t.a.multiply(t.b).add(t.a.multiply(t.c));
             assertTrue(t, expression2.contains(expression1));
+            Interval expression3 = t.a.add(t.b).multiply(t.c);
+            Interval expression4 = t.a.multiply(t.c).add(t.b.multiply(t.c));
+            assertTrue(t, expression4.contains(expression3));
         }
 
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
-            assertEquals(p, of(p.a).multiply(of(p.b)), of(p.a.multiply(p.b)));
+            homomorphic(Interval::of, Interval::of, Interval::of, Rational::multiply, Interval::multiply, p);
         }
     }
 
     private void propertiesMultiply_Rational() {
-        initialize("");
-        System.out.println("\t\ttesting multiply(Rational) properties...");
-
+        initialize("multiply(Rational)");
         for (Pair<Interval, Rational> p : take(LIMIT, P.pairs(P.intervals(), P.rationals()))) {
             Interval a = p.a.multiply(p.b);
             a.validate();
@@ -1016,31 +1016,33 @@ public class IntervalProperties extends QBarTestProperties {
             }
         }
 
-        Iterable<Pair<Interval, Rational>> ps = P.pairs(P.intervals(), filter(r -> r != Rational.ZERO, P.rationals()));
+        Iterable<Pair<Interval, Rational>> ps = P.pairs(P.intervals(), P.nonzeroRationals());
         for (Pair<Interval, Rational> p : take(LIMIT, ps)) {
-            assertEquals(p, p.a.multiply(p.b).divide(p.b), p.a);
+            inverses(a -> a.multiply(p.b), (Interval a) -> a.divide(p.b), p.a);
             assertEquals(p, p.a.multiply(p.b), p.a.divide(p.b.invert()));
         }
 
         for (Interval a : take(LIMIT, P.intervals())) {
-            assertEquals(a, a, a.multiply(Rational.ONE));
+            fixedPoint(b -> b.multiply(Rational.ONE), a);
             assertEquals(a, a.multiply(Rational.ZERO), ZERO);
         }
 
         for (Rational r : take(LIMIT, P.rationals())) {
-            assertEquals(r, ZERO.multiply(r), ZERO);
+            fixedPoint(a -> a.multiply(r), ZERO);
             assertEquals(r, ONE.multiply(r), of(r));
         }
 
-        for (Rational r : take(LIMIT, filter(s -> s != Rational.ZERO, P.rationals()))) {
-            assertEquals(r, ALL.multiply(r), ALL);
+        for (Rational r : take(LIMIT, P.nonzeroRationals())) {
+            fixedPoint(a -> a.multiply(r), ALL);
+        }
+
+        for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
+            homomorphic(Interval::of, Function.identity(), Interval::of, Rational::multiply, Interval::multiply, p);
         }
     }
 
     private void propertiesMultiply_BigInteger() {
-        initialize("");
-        System.out.println("\t\ttesting multiply(BigInteger) properties...");
-
+        initialize("multiply(BigInteger)");
         for (Pair<Interval, BigInteger> p : take(LIMIT, P.pairs(P.intervals(), P.bigIntegers()))) {
             Interval a = p.a.multiply(p.b);
             a.validate();
@@ -1050,33 +1052,31 @@ public class IntervalProperties extends QBarTestProperties {
             }
         }
 
-        Iterable<Pair<Interval, BigInteger>> ps = P.pairs(
-                P.intervals(),
-                filter(i -> !i.equals(BigInteger.ZERO), P.bigIntegers())
-        );
-        for (Pair<Interval, BigInteger> p : take(LIMIT, ps)) {
-            assertEquals(p, p.a.multiply(p.b).divide(p.b), p.a);
+        for (Pair<Interval, BigInteger> p : take(LIMIT, P.pairs(P.intervals(), P.nonzeroBigIntegers()))) {
+            inverses(a -> a.multiply(p.b), (Interval a) -> a.divide(p.b), p.a);
         }
 
         for (Interval a : take(LIMIT, P.intervals())) {
-            assertEquals(a, a, a.multiply(BigInteger.ONE));
+            fixedPoint(b -> b.multiply(BigInteger.ONE), a);
             assertEquals(a, a.multiply(BigInteger.ZERO), ZERO);
         }
 
         for (BigInteger i : take(LIMIT, P.bigIntegers())) {
-            assertEquals(i.toString(), ZERO.multiply(i), ZERO);
+            fixedPoint(a -> a.multiply(i), ZERO);
             assertEquals(i.toString(), ONE.multiply(i), of(Rational.of(i)));
         }
 
-        for (BigInteger i : take(LIMIT, filter(j -> !j.equals(BigInteger.ZERO), P.bigIntegers()))) {
-            assertEquals(i.toString(), ALL.multiply(i), ALL);
+        for (BigInteger i : take(LIMIT, P.nonzeroBigIntegers())) {
+            fixedPoint(a -> a.multiply(i), ALL);
+        }
+
+        for (Pair<Rational, BigInteger> p : take(LIMIT, P.pairs(P.rationals(), P.bigIntegers()))) {
+            homomorphic(Interval::of, Function.identity(), Interval::of, Rational::multiply, Interval::multiply, p);
         }
     }
 
     private void propertiesMultiply_int() {
-        initialize("");
-        System.out.println("\t\ttesting multiply(int) properties...");
-
+        initialize("multiply(int)");
         for (Pair<Interval, Integer> p : take(LIMIT, P.pairs(P.intervals(), P.integers()))) {
             Interval a = p.a.multiply(p.b);
             a.validate();
@@ -1086,23 +1086,26 @@ public class IntervalProperties extends QBarTestProperties {
             }
         }
 
-        Iterable<Pair<Interval, Integer>> ps = P.pairs(P.intervals(), filter(i -> i != 0, P.integers()));
-        for (Pair<Interval, Integer> p : take(LIMIT, ps)) {
-            assertEquals(p, p.a.multiply(p.b).divide(p.b), p.a);
+        for (Pair<Interval, Integer> p : take(LIMIT, P.pairs(P.intervals(), P.nonzeroIntegers()))) {
+            inverses(a -> a.multiply(p.b), (Interval a) -> a.divide(p.b), p.a);
         }
 
         for (Interval a : take(LIMIT, P.intervals())) {
-            assertEquals(a, a, a.multiply(1));
+            fixedPoint(b -> b.multiply(1), a);
             assertEquals(a, a.multiply(0), ZERO);
         }
 
         for (int i : take(LIMIT, P.integers())) {
-            assertEquals(i, ZERO.multiply(i), ZERO);
+            fixedPoint(a -> a.multiply(i), ZERO);
             assertEquals(i, ONE.multiply(i), of(Rational.of(i)));
         }
 
-        for (int i : take(LIMIT, filter(j -> j != 0, P.integers()))) {
-            assertEquals(i, ALL.multiply(i), ALL);
+        for (int i : take(LIMIT, P.nonzeroIntegers())) {
+            fixedPoint(a -> a.multiply(i), ALL);
+        }
+
+        for (Pair<Rational, Integer> p : take(LIMIT, P.pairs(P.rationals(), P.integers()))) {
+            homomorphic(Interval::of, Function.identity(), Interval::of, Rational::multiply, Interval::multiply, p);
         }
     }
 
