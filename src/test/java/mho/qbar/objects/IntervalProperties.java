@@ -807,13 +807,11 @@ public class IntervalProperties extends QBarTestProperties {
     }
 
     private void propertiesAdd() {
-        initialize("");
-        System.out.println("\t\ttesting add(Interval) properties...");
-
+        initialize("add(Interval)");
         for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
             Interval sum = p.a.add(p.b);
             sum.validate();
-            assertEquals(p, sum, p.b.add(p.a));
+            commutative(Interval::add, p);
             assertTrue(p, sum.subtract(p.b).contains(p.a));
             for (Pair<Rational, Rational> q : take(TINY_LIMIT, P.pairs(P.rationalsIn(p.a), P.rationalsIn(p.b)))) {
                 assertTrue(p, sum.contains(q.a.add(q.b)));
@@ -828,32 +826,28 @@ public class IntervalProperties extends QBarTestProperties {
         }
 
         for (Interval a : take(LIMIT, P.intervals())) {
-            assertEquals(a, ZERO.add(a), a);
-            assertEquals(a, a.add(ZERO), a);
+            fixedPoint(ZERO::add, a);
+            fixedPoint(b -> b.add(ZERO), a);
+            fixedPoint(ALL::add, ALL);
+            fixedPoint(b -> b.add(ALL), ALL);
             assertTrue(a, a.subtract(a).contains(ZERO));
-            assertEquals(a, ALL.add(a), ALL);
-            assertEquals(a, a.add(ALL), ALL);
         }
 
         for (Triple<Interval, Interval, Interval> t : take(LIMIT, P.triples(P.intervals()))) {
-            Interval sum1 = t.a.add(t.b).add(t.c);
-            Interval sum2 = t.a.add(t.b.add(t.c));
-            assertEquals(t, sum1, sum2);
+            associative(Interval::add, t);
         }
 
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
-            assertEquals(p, of(p.a).add(of(p.b)), of(p.a.add(p.b)));
+            homomorphic(Interval::of, Interval::of, Interval::of, Rational::add, Interval::add, p);
         }
     }
 
     private void propertiesNegate() {
-        initialize("");
-        System.out.println("\t\ttesting negate() properties...");
-
+        initialize("negate()");
         for (Interval a : take(LIMIT, P.intervals())) {
             Interval negative = a.negate();
             negative.validate();
-            assertEquals(a, a, negative.negate());
+            isInvolution(Interval::negate, a);
             assertTrue(a, a.add(negative).contains(ZERO));
             assertEquals(a, a.diameter(), negative.diameter());
             for (Rational r : take(TINY_LIMIT, P.rationalsIn(a))) {
@@ -862,7 +856,7 @@ public class IntervalProperties extends QBarTestProperties {
         }
 
         for (Rational r : take(LIMIT, P.rationals())) {
-            assertEquals(r, of(r).negate(), of(r.negate()));
+            homomorphic(Interval::of, Interval::of, Rational::negate, Interval::negate, r);
         }
     }
 
