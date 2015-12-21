@@ -75,8 +75,10 @@ public class IntervalProperties extends QBarTestProperties {
         propertiesMultiply_int();
         propertiesInvert();
         propertiesInvertHull();
+        compareImplementationsInvertHull();
         propertiesDivide_Interval();
         propertiesDivideHull();
+        compareImplementationsDivideHull();
         propertiesDivide_Rational();
         propertiesDivide_BigInteger();
         propertiesDivide_int();
@@ -1110,34 +1112,22 @@ public class IntervalProperties extends QBarTestProperties {
     }
 
     private void propertiesInvert() {
-        initialize("");
-        System.out.println("\t\ttesting invert() properties...");
-
+        initialize("invert()");
         for (Interval a : take(LIMIT, P.intervals())) {
             List<Interval> inverse = a.invert();
             inverse.forEach(Interval::validate);
-
-            //todo fix hanging
-//            for (Rational r : take(TINY_LIMIT, filter(s -> s != Rational.ZERO, P.rationals(a)))) {
-//                assertTrue(a, any(b -> b.contains(r.invert()), inverse));
-//            }
-
             int size = inverse.size();
-            assertTrue(a, size == 0 || size == 1 || size == 2);
+            assertTrue(a, size >= 0 && size <= 2);
             if (size == 1) {
-                Interval i1 = inverse.get(0);
-                Rational p = i1.getLower().isPresent() ? i1.getLower().get() : null;
-                Rational q = i1.getUpper().isPresent() ? i1.getUpper().get() : null;
-                if (p == null && q != null) {
-                    assertTrue(a, le(q, Rational.ZERO));
-                } else if (p != null && q == null) {
-                    assertTrue(a, ge(p, Rational.ZERO));
-                } else if (i1.isFinitelyBounded()) {
-                    if (p.equals(q)) {
-                        assertNotEquals(a, p, Rational.ZERO);
+                Interval i = inverse.get(0);
+                Optional<Rational> x = i.getLower();
+                Optional<Rational> y = i.getUpper();
+                if (x.isPresent() && y.isPresent()) {
+                    if (x.get().equals(y.get())) {
+                        assertNotEquals(a, x.get(), Rational.ZERO);
                     } else {
-                        int ps = p.signum();
-                        int qs = q.signum();
+                        int ps = x.get().signum();
+                        int qs = y.get().signum();
                         if (qs == 1) {
                             assertTrue(a, ps != -1);
                         }
@@ -1145,59 +1135,71 @@ public class IntervalProperties extends QBarTestProperties {
                             assertTrue(a, qs != 1);
                         }
                     }
+                } else if (y.isPresent()) {
+                    assertTrue(a, le(y.get(), Rational.ZERO));
+                } else if (x.isPresent()) {
+                    assertTrue(a, ge(x.get(), Rational.ZERO));
                 }
             } else if (size == 2) {
-                Interval i1 = inverse.get(0);
-                Interval i2 = inverse.get(1);
-                Rational p1 = i1.getLower().isPresent() ? i1.getLower().get() : null;
-                Rational q1 = i1.getUpper().isPresent() ? i1.getUpper().get() : null;
-                Rational p2 = i2.getLower().isPresent() ? i2.getLower().get() : null;
-                Rational q2 = i2.getUpper().isPresent() ? i2.getUpper().get() : null;
-                assertTrue(a, p1 == null);
-                assertTrue(a, q2 == null);
-                if (p2 == Rational.ZERO) {
-                    assertTrue(a, q1.signum() == -1);
-                } else if (q1 == Rational.ZERO) {
-                    assertTrue(a, p2.signum() == 1);
+                Interval i = inverse.get(0);
+                Interval j = inverse.get(1);
+                Optional<Rational> ix = i.getLower();
+                Optional<Rational> iy = i.getUpper();
+                Optional<Rational> jx = j.getLower();
+                Optional<Rational> jy = j.getUpper();
+                assertFalse(a, ix.isPresent());
+                assertTrue(a, iy.isPresent());
+                assertTrue(a, jx.isPresent());
+                assertFalse(a, jy.isPresent());
+                if (jx.get() == Rational.ZERO) {
+                    assertTrue(a, iy.get().signum() == -1);
+                } else if (iy.get() == Rational.ZERO) {
+                    assertTrue(a, jx.get().signum() == 1);
                 } else {
-                    assertTrue(a, q1.signum() == -1);
-                    assertTrue(a, p2.signum() == 1);
+                    assertTrue(a, iy.get().signum() == -1);
+                    assertTrue(a, jx.get().signum() == 1);
                 }
             }
         }
 
-        for (Interval a : take(LIMIT, filter(b -> !b.equals(ZERO), P.intervals()))) {
+        Iterable<Interval> as = filterInfinite(
+                b -> !b.isFinitelyBounded() || b.diameter().get() != Rational.ZERO,
+                P.intervals()
+        );
+        for (Interval a : take(LIMIT, as)) {
             List<Interval> inverse = a.invert();
-            List<Interval> back = union(toList(concatMap(Interval::invert, inverse)));
-            assertTrue(a, convexHull(back).contains(a));
-            assertTrue(a, convexHull(toList(map(a::multiply, inverse))).contains(ONE));
+            for (Rational r : take(TINY_LIMIT, filterInfinite(s -> s != Rational.ZERO, P.rationalsIn(a)))) {
+                assertTrue(a, any(b -> b.contains(r.invert()), inverse));
+            }
+        }
+    }
+
+    private static @NotNull Interval invertHull_simplest(@NotNull Interval a) {
+        List<Interval> inverse = a.invert();
+        switch (inverse.size()) {
+            case 0:
+                throw new ArithmeticException("division by zero");
+            case 1:
+                return inverse.get(0);
+            default:
+                return ALL;
         }
     }
 
     private void propertiesInvertHull() {
-        initialize("");
-        System.out.println("\t\ttesting invertHull() properties...");
-
-        for (Interval a : take(LIMIT, filter(b -> !b.equals(ZERO), P.intervals()))) {
+        initialize("invertHull()");
+        for (Interval a : take(LIMIT, filterInfinite(b -> !b.equals(ZERO), P.intervals()))) {
             Interval inverse = a.invertHull();
             inverse.validate();
-
-            for (Rational r : take(TINY_LIMIT, filter(s -> s != Rational.ZERO, P.rationalsIn(a)))) {
-                assertTrue(a, inverse.contains(r.invert()));
-            }
-
-            Rational p = inverse.getLower().isPresent() ? inverse.getLower().get() : null;
-            Rational q = inverse.getUpper().isPresent() ? inverse.getUpper().get() : null;
-            if (p == null && q != null) {
-                assertTrue(a, le(q, Rational.ZERO));
-            } else if (p != null && q == null) {
-                assertTrue(a, ge(p, Rational.ZERO));
-            } else if (inverse.isFinitelyBounded()) {
-                if (p.equals(q)) {
-                    assertNotEquals(a, p, ZERO);
+            assertEquals(a, invertHull_simplest(a), inverse);
+            Optional<Rational> x = inverse.getLower();
+            Optional<Rational> y = inverse.getUpper();
+            if (x.isPresent() && y.isPresent()) {
+                if (x.equals(y)) {
+                    assertNotEquals(a, x.get(), ZERO);
                 } else {
-                    int ps = p.signum();
-                    int qs = q.signum();
+                    int ps = x.get().signum();
+                    int qs = y.get().signum();
                     if (qs == 1) {
                         assertTrue(a, ps != -1);
                     }
@@ -1205,72 +1207,67 @@ public class IntervalProperties extends QBarTestProperties {
                         assertTrue(a, qs != 1);
                     }
                 }
+            } else if (y.isPresent()) {
+                assertTrue(a, le(y.get(), Rational.ZERO));
+            } else if (x.isPresent()) {
+                assertTrue(a, ge(x.get(), Rational.ZERO));
             }
-
             assertTrue(a, all(inverse::contains, a.invert()));
             Interval back = inverse.invertHull();
             assertTrue(a, back.contains(a));
             assertTrue(a, a.multiply(inverse).contains(ONE));
+            for (Rational r : take(TINY_LIMIT, filter(s -> s != Rational.ZERO, P.rationalsIn(a)))) {
+                assertTrue(a, inverse.contains(r.invert()));
+            }
         }
     }
 
-    private void propertiesDivide_Interval() {
-        initialize("");
-        System.out.println("\t\ttesting divide(Interval) properties...");
+    private void compareImplementationsInvertHull() {
+        Map<String, Function<Interval, Interval>> functions = new LinkedHashMap<>();
+        functions.put("simplest", IntervalProperties::invertHull_simplest);
+        functions.put("standard", Interval::invertHull);
+        Iterable<Interval> as = filterInfinite(a -> !a.equals(ZERO), P.intervals());
+        compareImplementations("invertHull()", take(LIMIT, as), functions);
+    }
 
+    private void propertiesDivide_Interval() {
+        initialize("divide(Interval)");
         for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
             List<Interval> quotient = p.a.divide(p.b);
             quotient.forEach(Interval::validate);
-
-            //todo fix hanging
-//            Iterable<Pair<Rational, Rational>> qs = P.pairs(
-//                    P.rationals(p.a),
-//                    filter(r -> r != Rational.ZERO, P.rationals(p.b))
-//            );
-//            for (Pair<Rational, Rational> q : take(TINY_LIMIT, qs)) {
-//                assertTrue(p, any(b -> b.contains(q.a.divide(q.b)), quotient));
-//            }
-
             int size = quotient.size();
-            assertTrue(p, size == 0 || size == 1 || size == 2);
+            assertTrue(p, size >= 0 && size <= 2);
             if (size == 2) {
-                Interval i1 = quotient.get(0);
-                Interval i2 = quotient.get(1);
-                Rational p1 = i1.getLower().isPresent() ? i1.getLower().get() : null;
-                Rational q1 = i1.getUpper().isPresent() ? i1.getUpper().get() : null;
-                Rational p2 = i2.getLower().isPresent() ? i2.getLower().get() : null;
-                Rational q2 = i2.getUpper().isPresent() ? i2.getUpper().get() : null;
-                assertTrue(p, p1 == null);
-                assertTrue(p, q2 == null);
-                if (p2 == Rational.ZERO) {
-                    assertTrue(p, q1.signum() == -1);
-                } else if (q1 == Rational.ZERO) {
-                    assertTrue(p, p2.signum() == 1);
+                Interval i = quotient.get(0);
+                Interval j = quotient.get(1);
+                Optional<Rational> ix = i.getLower();
+                Optional<Rational> iy = i.getUpper();
+                Optional<Rational> jx = j.getLower();
+                Optional<Rational> jy = j.getUpper();
+                assertFalse(p, ix.isPresent());
+                assertTrue(p, iy.isPresent());
+                assertTrue(p, jx.isPresent());
+                assertFalse(p, jy.isPresent());
+                if (jx.get() == Rational.ZERO) {
+                    assertTrue(p, iy.get().signum() == -1);
+                } else if (iy.get() == Rational.ZERO) {
+                    assertTrue(p, jx.get().signum() == 1);
                 } else {
-                    assertTrue(p, q1.signum() == -1);
-                    assertTrue(p, p2.signum() == 1);
+                    assertTrue(p, iy.get().signum() == -1);
+                    assertTrue(p, jx.get().signum() == 1);
                 }
+            }
+            Iterable<Pair<Rational, Rational>> ps = P.pairs(
+                    P.rationalsIn(p.a),
+                    filter(r -> r != Rational.ZERO, P.rationalsIn(p.b))
+            );
+            for (Pair<Rational, Rational> q : take(TINY_LIMIT, ps)) {
+                assertTrue(p, any(b -> b.contains(q.a.divide(q.b)), quotient));
             }
         }
 
-        Iterable<Pair<Interval, Interval>> ps = P.pairs(P.intervals(), filter(a -> !a.equals(ZERO), P.intervals()));
-        for (Pair<Interval, Interval> p : take(LIMIT, ps)) {
-            List<Interval> quotient = p.a.divide(p.b);
-
-            assertTrue(p, convexHull(toList(map(a -> a.multiply(p.b), quotient))).contains(p.a));
-            assertTrue(p, convexHull(toList(map(p.a::multiply, p.b.invert()))).contains(convexHull(quotient)));
-        }
-
-        for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(filter(a -> !a.equals(ZERO), P.intervals())))) {
-            assertTrue(
-                    p,
-                    convexHull(toList(concatMap(Interval::invert, p.b.divide(p.a))))
-                            .contains(convexHull(p.a.divide(p.b)))
-            );
-        }
-
         for (Interval a : take(LIMIT, P.intervals())) {
-            assertTrue(a, any(b -> b.contains(a), a.divide(ONE)));
+            fixedPoint(b -> b.divide(ONE).get(0), a);
         }
 
         for (Interval a : take(LIMIT, filter(b -> !b.equals(ZERO), P.intervals()))) {
@@ -1279,15 +1276,29 @@ public class IntervalProperties extends QBarTestProperties {
         }
     }
 
-    private void propertiesDivideHull() {
-        initialize("");
-        System.out.println("\t\ttesting divideHull(Interval) properties...");
+    private static @NotNull Interval divideHull_alt(@NotNull Interval a, @NotNull Interval b) {
+        List<Interval> quotient = a.divide(b);
+        switch (quotient.size()) {
+            case 0:
+                throw new ArithmeticException("division by zero");
+            case 1:
+                return quotient.get(0);
+            default:
+                return ALL;
+        }
+    }
 
-        Iterable<Pair<Interval, Interval>> ps = P.pairs(P.intervals(), filter(a -> !a.equals(ZERO), P.intervals()));
+    private void propertiesDivideHull() {
+        initialize("divideHull(Interval)");
+        Iterable<Pair<Interval, Interval>> ps = P.pairs(
+                P.intervals(),
+                filterInfinite(a -> !a.equals(ZERO), P.intervals())
+        );
         for (Pair<Interval, Interval> p : take(LIMIT, ps)) {
             Interval quotient = p.a.divideHull(p.b);
             quotient.validate();
-
+            assertEquals(p, divideHull_alt(p.a, p.b), quotient);
+            assertTrue(p, quotient.multiply(p.b).contains(p.a));
             Iterable<Pair<Rational, Rational>> qs = P.pairs(
                     P.rationalsIn(p.a),
                     filter(r -> r != Rational.ZERO, P.rationalsIn(p.b))
@@ -1295,20 +1306,17 @@ public class IntervalProperties extends QBarTestProperties {
             for (Pair<Rational, Rational> q : take(TINY_LIMIT, qs)) {
                 assertTrue(p, quotient.contains(q.a.divide(q.b)));
             }
-
-            assertTrue(p, quotient.multiply(p.b).contains(p.a));
-            assertTrue(p, p.a.multiply(p.b.invertHull()).contains(quotient));
         }
 
-        for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(filter(a -> !a.equals(ZERO), P.intervals())))) {
+        for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(filterInfinite(a -> !a.equals(ZERO), P.intervals())))) {
             assertTrue(p, p.b.divideHull(p.a).invertHull().contains(p.a.divideHull(p.b)));
         }
 
         for (Interval a : take(LIMIT, P.intervals())) {
-            assertTrue(a, a.divideHull(ONE).contains(a));
+            fixedPoint(b -> b.divideHull(ONE), a);
         }
 
-        for (Interval a : take(LIMIT, filter(b -> !b.equals(ZERO), P.intervals()))) {
+        for (Interval a : take(LIMIT, filterInfinite(b -> !b.equals(ZERO), P.intervals()))) {
             assertEquals(a, ONE.divideHull(a), a.invertHull());
             assertTrue(a, a.divideHull(a).contains(ONE));
         }
@@ -1319,6 +1327,17 @@ public class IntervalProperties extends QBarTestProperties {
                 fail(a);
             } catch (ArithmeticException ignored) {}
         }
+    }
+
+    private void compareImplementationsDivideHull() {
+        Map<String, Function<Pair<Interval, Interval>, Interval>> functions = new LinkedHashMap<>();
+        functions.put("alt", p -> divideHull_alt(p.a, p.b));
+        functions.put("standard", p -> p.a.divideHull(p.b));
+        Iterable<Pair<Interval, Interval>> ps = P.pairs(
+                P.intervals(),
+                filterInfinite(a -> !a.equals(ZERO), P.intervals())
+        );
+        compareImplementations("divideHull(Interval)", take(LIMIT, ps), functions);
     }
 
     private void propertiesDivide_Rational() {

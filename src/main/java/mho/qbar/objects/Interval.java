@@ -987,14 +987,40 @@ public final class Interval implements Comparable<Interval> {
      */
     @SuppressWarnings("JavaDoc")
     public @NotNull Interval invertHull() {
-        List<Interval> inverse = invert();
-        switch (inverse.size()) {
-            case 0:
-                throw new ArithmeticException("division by zero");
-            case 1:
-                return inverse.get(0);
-            default:
+        if (lower == null && upper == null) {
+            return ALL;
+        } else if (lower == null) {
+            if (upper == Rational.ZERO) {
+                return this;
+            } else if (upper.signum() == 1) {
                 return ALL;
+            } else {
+                return new Interval(upper.invert(), Rational.ZERO);
+            }
+        } else if (upper == null) {
+            if (lower == Rational.ZERO) {
+                return this;
+            } else if (lower.signum() == 1) {
+                return new Interval(Rational.ZERO, lower.invert());
+            } else {
+                return ALL;
+            }
+        } else if (lower == Rational.ZERO) {
+            if (upper == Rational.ZERO) {
+                throw new ArithmeticException("this cannot be [0, 0].");
+            } else {
+                return new Interval(upper.invert(), null);
+            }
+        } else if (lower.signum() == 1) {
+            return new Interval(upper.invert(), lower.invert());
+        } else {
+            if (upper == Rational.ZERO) {
+                return new Interval(null, lower.invert());
+            } else if (upper.signum() == -1) {
+                return new Interval(upper.invert(), lower.invert());
+            } else {
+                return ALL;
+            }
         }
     }
 
@@ -1038,15 +1064,7 @@ public final class Interval implements Comparable<Interval> {
      */
     @SuppressWarnings("JavaDoc")
     public @NotNull Interval divideHull(@NotNull Interval that) {
-        List<Interval> quotient = divide(that);
-        switch (quotient.size()) {
-            case 0:
-                throw new ArithmeticException("division by zero");
-            case 1:
-                return quotient.get(0);
-            default:
-                return ALL;
-        }
+        return multiply(that.invertHull());
     }
 
     /**

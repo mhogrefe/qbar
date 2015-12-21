@@ -1098,152 +1098,187 @@ public class IntervalTest {
         multiply_int_helper("[-6, Infinity)", -7, "(-Infinity, 42]");
     }
 
+    private static void invert_helper(@NotNull String input, @NotNull String output) {
+        aeq(read(input).get().invert(), output);
+    }
+
     @Test
     public void testInvert() {
-        aeq(ZERO.invert(), "[]");
-        aeq(ONE.invert(), "[[1, 1]]");
-        aeq(ALL.invert(), "[(-Infinity, Infinity)]");
-        aeq(read("[-2, 5/3]").get().invert(), "[(-Infinity, -1/2], [3/5, Infinity)]");
-        aeq(read("[4, 4]").get().invert(), "[[1/4, 1/4]]");
-        aeq(read("[0, 4]").get().invert(), "[[1/4, Infinity)]");
-        aeq(read("[-4, 0]").get().invert(), "[(-Infinity, -1/4]]");
-        aeq(read("(-Infinity, -3/2]").get().invert(), "[[-2/3, 0]]");
-        aeq(read("(-Infinity, 3/2]").get().invert(), "[(-Infinity, 0], [2/3, Infinity)]");
-        aeq(read("(-Infinity, 0]").get().invert(), "[(-Infinity, 0]]");
-        aeq(read("[-6, Infinity)").get().invert(), "[(-Infinity, -1/6], [0, Infinity)]");
-        aeq(read("[6, Infinity)").get().invert(), "[[0, 1/6]]");
-        aeq(read("[0, Infinity)").get().invert(), "[[0, Infinity)]");
-        aeq(read("(-Infinity, 0]").get().invert(), "[(-Infinity, 0]]");
+        invert_helper("[0, 0]", "[]");
+        invert_helper("[1, 1]", "[[1, 1]]");
+        invert_helper("(-Infinity, Infinity)", "[(-Infinity, Infinity)]");
+        invert_helper("[-2, 5/3]", "[(-Infinity, -1/2], [3/5, Infinity)]");
+        invert_helper("[4, 4]", "[[1/4, 1/4]]");
+        invert_helper("[0, 4]", "[[1/4, Infinity)]");
+        invert_helper("[-4, 0]", "[(-Infinity, -1/4]]");
+        invert_helper("(-Infinity, -3/2]", "[[-2/3, 0]]");
+        invert_helper("(-Infinity, 3/2]", "[(-Infinity, 0], [2/3, Infinity)]");
+        invert_helper("(-Infinity, 0]", "[(-Infinity, 0]]");
+        invert_helper("[-6, Infinity)", "[(-Infinity, -1/6], [0, Infinity)]");
+        invert_helper("[6, Infinity)", "[[0, 1/6]]");
+        invert_helper("[0, Infinity)", "[[0, Infinity)]");
+        invert_helper("(-Infinity, 0]", "[(-Infinity, 0]]");
+    }
+
+    private static void invertHull_helper(@NotNull String input, @NotNull String output) {
+        aeq(read(input).get().invertHull(), output);
+    }
+
+    private static void invertHull_fail_helper(@NotNull String input) {
+        try {
+            read(input).get().invertHull();
+            fail();
+        } catch (ArithmeticException ignored) {}
     }
 
     @Test
     public void testInvertHull() {
-        aeq(ONE.invertHull(), "[1, 1]");
-        aeq(ALL.invertHull(), "(-Infinity, Infinity)");
-        aeq(read("[-2, 5/3]").get().invertHull(), "(-Infinity, Infinity)");
-        aeq(read("[4, 4]").get().invertHull(), "[1/4, 1/4]");
-        aeq(read("[0, 4]").get().invertHull(), "[1/4, Infinity)");
-        aeq(read("[-4, 0]").get().invertHull(), "(-Infinity, -1/4]");
-        aeq(read("(-Infinity, -3/2]").get().invertHull(), "[-2/3, 0]");
-        aeq(read("(-Infinity, 3/2]").get().invertHull(), "(-Infinity, Infinity)");
-        aeq(read("(-Infinity, 0]").get().invertHull(), "(-Infinity, 0]");
-        aeq(read("[-6, Infinity)").get().invertHull(), "(-Infinity, Infinity)");
-        aeq(read("[6, Infinity)").get().invertHull(), "[0, 1/6]");
-        aeq(read("[0, Infinity)").get().invertHull(), "[0, Infinity)");
-        aeq(read("(-Infinity, 0]").get().invertHull(), "(-Infinity, 0]");
-        try {
-            ZERO.invertHull();
-            fail();
-        } catch (ArithmeticException ignored) {}
+        invertHull_helper("[1, 1]", "[1, 1]");
+        invertHull_helper("(-Infinity, Infinity)", "(-Infinity, Infinity)");
+        invertHull_helper("[-2, 5/3]", "(-Infinity, Infinity)");
+        invertHull_helper("[4, 4]", "[1/4, 1/4]");
+        invertHull_helper("[0, 4]", "[1/4, Infinity)");
+        invertHull_helper("[-4, 0]", "(-Infinity, -1/4]");
+        invertHull_helper("(-Infinity, -3/2]", "[-2/3, 0]");
+        invertHull_helper("(-Infinity, 3/2]", "(-Infinity, Infinity)");
+        invertHull_helper("(-Infinity, 0]", "(-Infinity, 0]");
+        invertHull_helper("[-6, Infinity)", "(-Infinity, Infinity)");
+        invertHull_helper("[6, Infinity)", "[0, 1/6]");
+        invertHull_helper("[0, Infinity)", "[0, Infinity)");
+        invertHull_helper("(-Infinity, 0]", "(-Infinity, 0]");
+        invertHull_fail_helper("[0, 0]");
+    }
+
+    private static void divide_Interval_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
+        aeq(read(a).get().divide(read(b).get()), output);
     }
 
     @Test
     public void testDivide_Interval() {
-        aeq(ZERO.divide(ZERO), "[]");
-        aeq(ZERO.divide(ONE), "[[0, 0]]");
-        aeq(ZERO.divide(ALL), "[[0, 0]]");
-        aeq(ZERO.divide(read("[-2, 5/3]").get()), "[[0, 0]]");
-        aeq(ZERO.divide(read("[4, 4]").get()), "[[0, 0]]");
-        aeq(ZERO.divide(read("(-Infinity, 3/2]").get()), "[[0, 0]]");
-        aeq(ZERO.divide(read("[-6, Infinity)").get()), "[[0, 0]]");
-        aeq(ONE.divide(ZERO), "[]");
-        aeq(ONE.divide(ONE), "[[1, 1]]");
-        aeq(ONE.divide(ALL), "[(-Infinity, Infinity)]");
-        aeq(ONE.divide(read("[-2, 5/3]").get()), "[(-Infinity, -1/2], [3/5, Infinity)]");
-        aeq(ONE.divide(read("[4, 4]").get()), "[[1/4, 1/4]]");
-        aeq(ONE.divide(read("(-Infinity, 3/2]").get()), "[(-Infinity, 0], [2/3, Infinity)]");
-        aeq(ONE.divide(read("[-6, Infinity)").get()), "[(-Infinity, -1/6], [0, Infinity)]");
-        aeq(ALL.divide(ZERO), "[]");
-        aeq(ALL.divide(ONE), "[(-Infinity, Infinity)]");
-        aeq(ALL.divide(ALL), "[(-Infinity, Infinity)]");
-        aeq(ALL.divide(read("[-2, 5/3]").get()), "[(-Infinity, Infinity)]");
-        aeq(ALL.divide(read("[4, 4]").get()), "[(-Infinity, Infinity)]");
-        aeq(ALL.divide(read("(-Infinity, 3/2]").get()), "[(-Infinity, Infinity)]");
-        aeq(ALL.divide(read("[-6, Infinity)").get()), "[(-Infinity, Infinity)]");
-        aeq(read("[-2, 5/3]").get().divide(ZERO), "[]");
-        aeq(read("[-2, 5/3]").get().divide(ONE), "[[-2, 5/3]]");
-        aeq(read("[-2, 5/3]").get().divide(ALL), "[(-Infinity, Infinity)]");
-        aeq(read("[-2, 5/3]").get().divide(read("[-2, 5/3]").get()), "[(-Infinity, Infinity)]");
-        aeq(read("[-2, 5/3]").get().divide(read("[4, 4]").get()), "[[-1/2, 5/12]]");
-        aeq(read("[-2, 5/3]").get().divide(read("(-Infinity, 3/2]").get()), "[(-Infinity, Infinity)]");
-        aeq(read("[-2, 5/3]").get().divide(read("[-6, Infinity)").get()), "[(-Infinity, Infinity)]");
-        aeq(read("[4, 4]").get().divide(ZERO), "[]");
-        aeq(read("[4, 4]").get().divide(ONE), "[[4, 4]]");
-        aeq(read("[4, 4]").get().divide(ALL), "[(-Infinity, Infinity)]");
-        aeq(read("[4, 4]").get().divide(read("[-2, 5/3]").get()), "[(-Infinity, -2], [12/5, Infinity)]");
-        aeq(read("[4, 4]").get().divide(read("[4, 4]").get()), "[[1, 1]]");
-        aeq(read("[4, 4]").get().divide(read("(-Infinity, 3/2]").get()), "[(-Infinity, 0], [8/3, Infinity)]");
-        aeq(read("[4, 4]").get().divide(read("[-6, Infinity)").get()), "[(-Infinity, -2/3], [0, Infinity)]");
-        aeq(read("(-Infinity, 3/2]").get().divide(ZERO), "[]");
-        aeq(read("(-Infinity, 3/2]").get().divide(ONE), "[(-Infinity, 3/2]]");
-        aeq(read("(-Infinity, 3/2]").get().divide(ALL), "[(-Infinity, Infinity)]");
-        aeq(read("(-Infinity, 3/2]").get().divide(read("[-2, 5/3]").get()), "[(-Infinity, Infinity)]");
-        aeq(read("(-Infinity, 3/2]").get().divide(read("[4, 4]").get()), "[(-Infinity, 3/8]]");
-        aeq(read("(-Infinity, 3/2]").get().divide(read("(-Infinity, 3/2]").get()), "[(-Infinity, Infinity)]");
-        aeq(read("(-Infinity, 3/2]").get().divide(read("[-6, Infinity)").get()), "[(-Infinity, Infinity)]");
-        aeq(read("[-6, Infinity)").get().divide(ZERO), "[]");
-        aeq(read("[-6, Infinity)").get().divide(ONE), "[[-6, Infinity)]");
-        aeq(read("[-6, Infinity)").get().divide(ALL), "[(-Infinity, Infinity)]");
-        aeq(read("[-6, Infinity)").get().divide(read("[-2, 5/3]").get()), "[(-Infinity, Infinity)]");
-        aeq(read("[-6, Infinity)").get().divide(read("[4, 4]").get()), "[[-3/2, Infinity)]");
-        aeq(read("[-6, Infinity)").get().divide(read("(-Infinity, 3/2]").get()), "[(-Infinity, Infinity)]");
-        aeq(read("[-6, Infinity)").get().divide(read("[-6, Infinity)").get()), "[(-Infinity, Infinity)]");
-        aeq(read("(-Infinity, 0]").get().divide(read("(-Infinity, 0]").get()), "[[0, Infinity)]");
+        divide_Interval_helper("[0, 0]", "[0, 0]", "[]");
+        divide_Interval_helper("[0, 0]", "[1, 1]", "[[0, 0]]");
+        divide_Interval_helper("[0, 0]", "(-Infinity, Infinity)", "[[0, 0]]");
+        divide_Interval_helper("[0, 0]", "[-2, 5/3]", "[[0, 0]]");
+        divide_Interval_helper("[0, 0]", "[4, 4]", "[[0, 0]]");
+        divide_Interval_helper("[0, 0]", "(-Infinity, 3/2]", "[[0, 0]]");
+        divide_Interval_helper("[0, 0]", "[-6, Infinity)", "[[0, 0]]");
+
+        divide_Interval_helper("[1, 1]", "[0, 0]", "[]");
+        divide_Interval_helper("[1, 1]", "[1, 1]", "[[1, 1]]");
+        divide_Interval_helper("[1, 1]", "(-Infinity, Infinity)", "[(-Infinity, Infinity)]");
+        divide_Interval_helper("[1, 1]", "[-2, 5/3]", "[(-Infinity, -1/2], [3/5, Infinity)]");
+        divide_Interval_helper("[1, 1]", "[4, 4]", "[[1/4, 1/4]]");
+        divide_Interval_helper("[1, 1]", "(-Infinity, 3/2]", "[(-Infinity, 0], [2/3, Infinity)]");
+        divide_Interval_helper("[1, 1]", "[-6, Infinity)", "[(-Infinity, -1/6], [0, Infinity)]");
+
+        divide_Interval_helper("(-Infinity, Infinity)", "[0, 0]", "[]");
+        divide_Interval_helper("(-Infinity, Infinity)", "[1, 1]", "[(-Infinity, Infinity)]");
+        divide_Interval_helper("(-Infinity, Infinity)", "(-Infinity, Infinity)", "[(-Infinity, Infinity)]");
+        divide_Interval_helper("(-Infinity, Infinity)", "[-2, 5/3]", "[(-Infinity, Infinity)]");
+        divide_Interval_helper("(-Infinity, Infinity)", "[4, 4]", "[(-Infinity, Infinity)]");
+        divide_Interval_helper("(-Infinity, Infinity)", "(-Infinity, 3/2]", "[(-Infinity, Infinity)]");
+        divide_Interval_helper("(-Infinity, Infinity)", "[-6, Infinity)", "[(-Infinity, Infinity)]");
+
+        divide_Interval_helper("[-2, 5/3]", "[0, 0]", "[]");
+        divide_Interval_helper("[-2, 5/3]", "[1, 1]", "[[-2, 5/3]]");
+        divide_Interval_helper("[-2, 5/3]", "(-Infinity, Infinity)", "[(-Infinity, Infinity)]");
+        divide_Interval_helper("[-2, 5/3]", "[-2, 5/3]", "[(-Infinity, Infinity)]");
+        divide_Interval_helper("[-2, 5/3]", "[4, 4]", "[[-1/2, 5/12]]");
+        divide_Interval_helper("[-2, 5/3]", "(-Infinity, 3/2]", "[(-Infinity, Infinity)]");
+        divide_Interval_helper("[-2, 5/3]", "[-6, Infinity)", "[(-Infinity, Infinity)]");
+
+        divide_Interval_helper("[4, 4]", "[0, 0]", "[]");
+        divide_Interval_helper("[4, 4]", "[1, 1]", "[[4, 4]]");
+        divide_Interval_helper("[4, 4]", "(-Infinity, Infinity)", "[(-Infinity, Infinity)]");
+        divide_Interval_helper("[4, 4]", "[-2, 5/3]", "[(-Infinity, -2], [12/5, Infinity)]");
+        divide_Interval_helper("[4, 4]", "[4, 4]", "[[1, 1]]");
+        divide_Interval_helper("[4, 4]", "(-Infinity, 3/2]", "[(-Infinity, 0], [8/3, Infinity)]");
+        divide_Interval_helper("[4, 4]", "[-6, Infinity)", "[(-Infinity, -2/3], [0, Infinity)]");
+
+        divide_Interval_helper("(-Infinity, 3/2]", "[0, 0]", "[]");
+        divide_Interval_helper("(-Infinity, 3/2]", "[1, 1]", "[(-Infinity, 3/2]]");
+        divide_Interval_helper("(-Infinity, 3/2]", "(-Infinity, Infinity)", "[(-Infinity, Infinity)]");
+        divide_Interval_helper("(-Infinity, 3/2]", "[-2, 5/3]", "[(-Infinity, Infinity)]");
+        divide_Interval_helper("(-Infinity, 3/2]", "[4, 4]", "[(-Infinity, 3/8]]");
+        divide_Interval_helper("(-Infinity, 3/2]", "(-Infinity, 3/2]", "[(-Infinity, Infinity)]");
+        divide_Interval_helper("(-Infinity, 3/2]", "[-6, Infinity)", "[(-Infinity, Infinity)]");
+
+        divide_Interval_helper("[-6, Infinity)", "[0, 0]", "[]");
+        divide_Interval_helper("[-6, Infinity)", "[1, 1]", "[[-6, Infinity)]");
+        divide_Interval_helper("[-6, Infinity)", "(-Infinity, Infinity)", "[(-Infinity, Infinity)]");
+        divide_Interval_helper("[-6, Infinity)", "[-2, 5/3]", "[(-Infinity, Infinity)]");
+        divide_Interval_helper("[-6, Infinity)", "[4, 4]", "[[-3/2, Infinity)]");
+        divide_Interval_helper("[-6, Infinity)", "(-Infinity, 3/2]", "[(-Infinity, Infinity)]");
+        divide_Interval_helper("[-6, Infinity)", "[-6, Infinity)", "[(-Infinity, Infinity)]");
+        divide_Interval_helper("(-Infinity, 0]", "(-Infinity, 0]", "[[0, Infinity)]");
+    }
+
+    private static void divideHull_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
+        aeq(read(a).get().divideHull(read(b).get()), output);
+    }
+
+    private static void divideHull_fail_helper(@NotNull String a, @NotNull String b) {
+        try {
+            read(a).get().divideHull(read(b).get());
+            fail();
+        } catch (ArithmeticException ignored) {}
     }
 
     @Test
     public void testDivideHull() {
-        aeq(ZERO.divideHull(ONE), "[0, 0]");
-        aeq(ZERO.divideHull(ALL), "[0, 0]");
-        aeq(ZERO.divideHull(read("[-2, 5/3]").get()), "[0, 0]");
-        aeq(ZERO.divideHull(read("[4, 4]").get()), "[0, 0]");
-        aeq(ZERO.divideHull(read("(-Infinity, 3/2]").get()), "[0, 0]");
-        aeq(ZERO.divideHull(read("[-6, Infinity)").get()), "[0, 0]");
-        aeq(ONE.divideHull(ONE), "[1, 1]");
-        aeq(ONE.divideHull(ALL), "(-Infinity, Infinity)");
-        aeq(ONE.divideHull(read("[-2, 5/3]").get()), "(-Infinity, Infinity)");
-        aeq(ONE.divideHull(read("[4, 4]").get()), "[1/4, 1/4]");
-        aeq(ONE.divideHull(read("(-Infinity, 3/2]").get()), "(-Infinity, Infinity)");
-        aeq(ONE.divideHull(read("[-6, Infinity)").get()), "(-Infinity, Infinity)");
-        aeq(ALL.divideHull(ONE), "(-Infinity, Infinity)");
-        aeq(ALL.divideHull(ALL), "(-Infinity, Infinity)");
-        aeq(ALL.divideHull(read("[-2, 5/3]").get()), "(-Infinity, Infinity)");
-        aeq(ALL.divideHull(read("[4, 4]").get()), "(-Infinity, Infinity)");
-        aeq(ALL.divideHull(read("(-Infinity, 3/2]").get()), "(-Infinity, Infinity)");
-        aeq(ALL.divideHull(read("[-6, Infinity)").get()), "(-Infinity, Infinity)");
-        aeq(read("[-2, 5/3]").get().divideHull(ONE), "[-2, 5/3]");
-        aeq(read("[-2, 5/3]").get().divideHull(ALL), "(-Infinity, Infinity)");
-        aeq(read("[-2, 5/3]").get().divideHull(read("[-2, 5/3]").get()), "(-Infinity, Infinity)");
-        aeq(read("[-2, 5/3]").get().divideHull(read("[4, 4]").get()), "[-1/2, 5/12]");
-        aeq(read("[-2, 5/3]").get().divideHull(read("(-Infinity, 3/2]").get()), "(-Infinity, Infinity)");
-        aeq(read("[-2, 5/3]").get().divideHull(read("[-6, Infinity)").get()), "(-Infinity, Infinity)");
-        aeq(read("[4, 4]").get().divideHull(ONE), "[4, 4]");
-        aeq(read("[4, 4]").get().divideHull(ALL), "(-Infinity, Infinity)");
-        aeq(read("[4, 4]").get().divideHull(read("[-2, 5/3]").get()), "(-Infinity, Infinity)");
-        aeq(read("[4, 4]").get().divideHull(read("[4, 4]").get()), "[1, 1]");
-        aeq(read("[4, 4]").get().divideHull(read("(-Infinity, 3/2]").get()), "(-Infinity, Infinity)");
-        aeq(read("[4, 4]").get().divideHull(read("[-6, Infinity)").get()), "(-Infinity, Infinity)");
-        aeq(read("(-Infinity, 3/2]").get().divideHull(ONE), "(-Infinity, 3/2]");
-        aeq(read("(-Infinity, 3/2]").get().divideHull(ALL), "(-Infinity, Infinity)");
-        aeq(read("(-Infinity, 3/2]").get().divideHull(read("[-2, 5/3]").get()), "(-Infinity, Infinity)");
-        aeq(read("(-Infinity, 3/2]").get().divideHull(read("[4, 4]").get()), "(-Infinity, 3/8]");
-        aeq(read("(-Infinity, 3/2]").get().divideHull(read("(-Infinity, 3/2]").get()), "(-Infinity, Infinity)");
-        aeq(read("(-Infinity, 3/2]").get().divideHull(read("[-6, Infinity)").get()), "(-Infinity, Infinity)");
-        aeq(read("[-6, Infinity)").get().divideHull(ONE), "[-6, Infinity)");
-        aeq(read("[-6, Infinity)").get().divideHull(ALL), "(-Infinity, Infinity)");
-        aeq(read("[-6, Infinity)").get().divideHull(read("[-2, 5/3]").get()), "(-Infinity, Infinity)");
-        aeq(read("[-6, Infinity)").get().divideHull(read("[4, 4]").get()), "[-3/2, Infinity)");
-        aeq(read("[-6, Infinity)").get().divideHull(read("(-Infinity, 3/2]").get()), "(-Infinity, Infinity)");
-        aeq(read("[-6, Infinity)").get().divideHull(read("[-6, Infinity)").get()), "(-Infinity, Infinity)");
-        aeq(read("(-Infinity, 0]").get().divideHull(read("(-Infinity, 0]").get()), "[0, Infinity)");
-        try {
-            ZERO.divideHull(ZERO);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        try {
-            read("[-2, 5/3]").get().divideHull(ZERO);
-            fail();
-        } catch (ArithmeticException ignored) {}
+        divideHull_helper("[0, 0]", "[1, 1]", "[0, 0]");
+        divideHull_helper("[0, 0]", "(-Infinity, Infinity)", "[0, 0]");
+        divideHull_helper("[0, 0]", "[-2, 5/3]", "[0, 0]");
+        divideHull_helper("[0, 0]", "[4, 4]", "[0, 0]");
+        divideHull_helper("[0, 0]", "(-Infinity, 3/2]", "[0, 0]");
+        divideHull_helper("[0, 0]", "[-6, Infinity)", "[0, 0]");
+
+        divideHull_helper("[1, 1]", "[1, 1]", "[1, 1]");
+        divideHull_helper("[1, 1]", "(-Infinity, Infinity)", "(-Infinity, Infinity)");
+        divideHull_helper("[1, 1]", "[-2, 5/3]", "(-Infinity, Infinity)");
+        divideHull_helper("[1, 1]", "[4, 4]", "[1/4, 1/4]");
+        divideHull_helper("[1, 1]", "(-Infinity, 3/2]", "(-Infinity, Infinity)");
+        divideHull_helper("[1, 1]", "[-6, Infinity)", "(-Infinity, Infinity)");
+
+        divideHull_helper("(-Infinity, Infinity)", "[1, 1]", "(-Infinity, Infinity)");
+        divideHull_helper("(-Infinity, Infinity)", "(-Infinity, Infinity)", "(-Infinity, Infinity)");
+        divideHull_helper("(-Infinity, Infinity)", "[-2, 5/3]", "(-Infinity, Infinity)");
+        divideHull_helper("(-Infinity, Infinity)", "[4, 4]", "(-Infinity, Infinity)");
+        divideHull_helper("(-Infinity, Infinity)", "(-Infinity, 3/2]", "(-Infinity, Infinity)");
+        divideHull_helper("(-Infinity, Infinity)", "[-6, Infinity)", "(-Infinity, Infinity)");
+
+        divideHull_helper("[-2, 5/3]", "[1, 1]", "[-2, 5/3]");
+        divideHull_helper("[-2, 5/3]", "(-Infinity, Infinity)", "(-Infinity, Infinity)");
+        divideHull_helper("[-2, 5/3]", "[-2, 5/3]", "(-Infinity, Infinity)");
+        divideHull_helper("[-2, 5/3]", "[4, 4]", "[-1/2, 5/12]");
+        divideHull_helper("[-2, 5/3]", "(-Infinity, 3/2]", "(-Infinity, Infinity)");
+        divideHull_helper("[-2, 5/3]", "[-6, Infinity)", "(-Infinity, Infinity)");
+
+        divideHull_helper("[4, 4]", "[1, 1]", "[4, 4]");
+        divideHull_helper("[4, 4]", "(-Infinity, Infinity)", "(-Infinity, Infinity)");
+        divideHull_helper("[4, 4]", "[-2, 5/3]", "(-Infinity, Infinity)");
+        divideHull_helper("[4, 4]", "[4, 4]", "[1, 1]");
+        divideHull_helper("[4, 4]", "(-Infinity, 3/2]", "(-Infinity, Infinity)");
+        divideHull_helper("[4, 4]", "[-6, Infinity)", "(-Infinity, Infinity)");
+
+        divideHull_helper("(-Infinity, 3/2]", "[1, 1]", "(-Infinity, 3/2]");
+        divideHull_helper("(-Infinity, 3/2]", "(-Infinity, Infinity)", "(-Infinity, Infinity)");
+        divideHull_helper("(-Infinity, 3/2]", "[-2, 5/3]", "(-Infinity, Infinity)");
+        divideHull_helper("(-Infinity, 3/2]", "[4, 4]", "(-Infinity, 3/8]");
+        divideHull_helper("(-Infinity, 3/2]", "(-Infinity, 3/2]", "(-Infinity, Infinity)");
+        divideHull_helper("(-Infinity, 3/2]", "[-6, Infinity)", "(-Infinity, Infinity)");
+
+        divideHull_helper("[-6, Infinity)", "[1, 1]", "[-6, Infinity)");
+        divideHull_helper("[-6, Infinity)", "(-Infinity, Infinity)", "(-Infinity, Infinity)");
+        divideHull_helper("[-6, Infinity)", "[-2, 5/3]", "(-Infinity, Infinity)");
+        divideHull_helper("[-6, Infinity)", "[4, 4]", "[-3/2, Infinity)");
+        divideHull_helper("[-6, Infinity)", "(-Infinity, 3/2]", "(-Infinity, Infinity)");
+        divideHull_helper("[-6, Infinity)", "[-6, Infinity)", "(-Infinity, Infinity)");
+
+        divideHull_helper("(-Infinity, 0]", "(-Infinity, 0]", "[0, Infinity)");
+
+        divideHull_fail_helper("[0, 0]", "[0, 0]");
+        divideHull_fail_helper("[-2, 5/3]", "[0, 0]");
     }
 
     @Test

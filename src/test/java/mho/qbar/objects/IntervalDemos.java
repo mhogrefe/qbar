@@ -224,12 +224,12 @@ public class IntervalDemos extends QBarDemos {
 
     private void demoInvert() {
         for (Interval a : take(LIMIT, P.intervals())) {
-            System.out.println("1/" + a + " = " + a.invert());
+            System.out.println("1 / " + a + " = " + a.invert());
         }
     }
 
     private void demoInvertHull() {
-        for (Interval a : take(LIMIT, filter(b -> !b.equals(ZERO), P.intervals()))) {
+        for (Interval a : take(LIMIT, filterInfinite(b -> !b.equals(ZERO), P.intervals()))) {
             System.out.println("invertHull(" + a + ") = " + a.invertHull());
         }
     }
@@ -241,7 +241,8 @@ public class IntervalDemos extends QBarDemos {
     }
 
     private void demoDivideHull() {
-        for (Pair<Interval, Interval> p : take(LIMIT, filter(q -> !q.b.equals(ZERO), P.pairs(P.intervals())))) {
+        Iterable<Pair<Interval, Interval>> ps = filterInfinite(q -> !q.b.equals(ZERO), P.pairs(P.intervals()));
+        for (Pair<Interval, Interval> p : take(LIMIT, ps)) {
             System.out.println("divideHull(" + p.a + ", " + p.b + ") = " + p.a.divideHull(p.b));
         }
     }
