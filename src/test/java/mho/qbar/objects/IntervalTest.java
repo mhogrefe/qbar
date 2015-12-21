@@ -1281,88 +1281,136 @@ public class IntervalTest {
         divideHull_fail_helper("[-2, 5/3]", "[0, 0]");
     }
 
+    private static void divide_Rational_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
+        aeq(read(a).get().divide(Rational.read(b).get()), output);
+    }
+
+    private static void divide_Rational_fail_helper(@NotNull String a, @NotNull String b) {
+        try {
+            read(a).get().divide(Rational.read(b).get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
     @Test
     public void testDivide_Rational() {
-        aeq(ZERO.divide(Rational.ONE), "[0, 0]");
-        aeq(ZERO.divide(Rational.read("2/3").get()), "[0, 0]");
-        aeq(ZERO.divide(Rational.read("-7").get()), "[0, 0]");
-        aeq(ONE.divide(Rational.ONE), "[1, 1]");
-        aeq(ONE.divide(Rational.read("2/3").get()), "[3/2, 3/2]");
-        aeq(ONE.divide(Rational.read("-7").get()), "[-1/7, -1/7]");
-        aeq(ALL.divide(Rational.ONE), "(-Infinity, Infinity)");
-        aeq(ALL.divide(Rational.read("2/3").get()), "(-Infinity, Infinity)");
-        aeq(ALL.divide(Rational.read("-7").get()), "(-Infinity, Infinity)");
-        aeq(read("[-2, 5/3]").get().divide(Rational.ONE), "[-2, 5/3]");
-        aeq(read("[-2, 5/3]").get().divide(Rational.read("2/3").get()), "[-3, 5/2]");
-        aeq(read("[-2, 5/3]").get().divide(Rational.read("-7").get()), "[-5/21, 2/7]");
-        aeq(read("[4, 4]").get().divide(Rational.ONE), "[4, 4]");
-        aeq(read("[4, 4]").get().divide(Rational.read("2/3").get()), "[6, 6]");
-        aeq(read("[4, 4]").get().divide(Rational.read("-7").get()), "[-4/7, -4/7]");
-        aeq(read("(-Infinity, 3/2]").get().divide(Rational.ONE), "(-Infinity, 3/2]");
-        aeq(read("(-Infinity, 3/2]").get().divide(Rational.read("2/3").get()), "(-Infinity, 9/4]");
-        aeq(read("(-Infinity, 3/2]").get().divide(Rational.read("-7").get()), "[-3/14, Infinity)");
-        aeq(read("[-6, Infinity)").get().divide(Rational.ONE), "[-6, Infinity)");
-        aeq(read("[-6, Infinity)").get().divide(Rational.read("2/3").get()), "[-9, Infinity)");
-        aeq(read("[-6, Infinity)").get().divide(Rational.read("-7").get()), "(-Infinity, 6/7]");
+        divide_Rational_helper("[0, 0]", "1", "[0, 0]");
+        divide_Rational_helper("[0, 0]", "2/3", "[0, 0]");
+        divide_Rational_helper("[0, 0]", "-7", "[0, 0]");
+
+        divide_Rational_helper("[1, 1]", "1", "[1, 1]");
+        divide_Rational_helper("[1, 1]", "2/3", "[3/2, 3/2]");
+        divide_Rational_helper("[1, 1]", "-7", "[-1/7, -1/7]");
+
+        divide_Rational_helper("(-Infinity, Infinity)", "1", "(-Infinity, Infinity)");
+        divide_Rational_helper("(-Infinity, Infinity)", "2/3", "(-Infinity, Infinity)");
+        divide_Rational_helper("(-Infinity, Infinity)", "-7", "(-Infinity, Infinity)");
+
+        divide_Rational_helper("[-2, 5/3]", "1", "[-2, 5/3]");
+        divide_Rational_helper("[-2, 5/3]", "2/3", "[-3, 5/2]");
+        divide_Rational_helper("[-2, 5/3]", "-7", "[-5/21, 2/7]");
+
+        divide_Rational_helper("[4, 4]", "1", "[4, 4]");
+        divide_Rational_helper("[4, 4]", "2/3", "[6, 6]");
+        divide_Rational_helper("[4, 4]", "-7", "[-4/7, -4/7]");
+
+        divide_Rational_helper("(-Infinity, 3/2]", "1", "(-Infinity, 3/2]");
+        divide_Rational_helper("(-Infinity, 3/2]", "2/3", "(-Infinity, 9/4]");
+        divide_Rational_helper("(-Infinity, 3/2]", "-7", "[-3/14, Infinity)");
+
+        divide_Rational_helper("[-6, Infinity)", "1", "[-6, Infinity)");
+        divide_Rational_helper("[-6, Infinity)", "2/3", "[-9, Infinity)");
+        divide_Rational_helper("[-6, Infinity)", "-7", "(-Infinity, 6/7]");
+
+        divide_Rational_fail_helper("[-2, 5/3]", "0");
+    }
+
+    private static void divide_BigInteger_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
+        aeq(read(a).get().divide(Readers.readBigInteger(b).get()), output);
+    }
+
+    private static void divide_BigInteger_fail_helper(@NotNull String a, @NotNull String b) {
         try {
-            read("[-2, 5/3]").get().divide(Rational.ZERO);
+            read(a).get().divide(Readers.readBigInteger(b).get());
+            fail();
         } catch (ArithmeticException ignored) {}
     }
 
     @Test
     public void testDivide_BigInteger() {
-        aeq(ZERO.divide(BigInteger.ONE), "[0, 0]");
-        aeq(ZERO.divide(BigInteger.valueOf(5)), "[0, 0]");
-        aeq(ZERO.divide(BigInteger.valueOf(-7)), "[0, 0]");
-        aeq(ONE.divide(BigInteger.ONE), "[1, 1]");
-        aeq(ONE.divide(BigInteger.valueOf(5)), "[1/5, 1/5]");
-        aeq(ONE.divide(BigInteger.valueOf(-7)), "[-1/7, -1/7]");
-        aeq(ALL.divide(BigInteger.ONE), "(-Infinity, Infinity)");
-        aeq(ALL.divide(BigInteger.valueOf(5)), "(-Infinity, Infinity)");
-        aeq(ALL.divide(BigInteger.valueOf(-7)), "(-Infinity, Infinity)");
-        aeq(read("[-2, 5/3]").get().divide(BigInteger.ONE), "[-2, 5/3]");
-        aeq(read("[-2, 5/3]").get().divide(BigInteger.valueOf(5)), "[-2/5, 1/3]");
-        aeq(read("[-2, 5/3]").get().divide(BigInteger.valueOf(-7)), "[-5/21, 2/7]");
-        aeq(read("[4, 4]").get().divide(BigInteger.ONE), "[4, 4]");
-        aeq(read("[4, 4]").get().divide(BigInteger.valueOf(5)), "[4/5, 4/5]");
-        aeq(read("[4, 4]").get().divide(BigInteger.valueOf(-7)), "[-4/7, -4/7]");
-        aeq(read("(-Infinity, 3/2]").get().divide(BigInteger.ONE), "(-Infinity, 3/2]");
-        aeq(read("(-Infinity, 3/2]").get().divide(BigInteger.valueOf(5)), "(-Infinity, 3/10]");
-        aeq(read("(-Infinity, 3/2]").get().divide(BigInteger.valueOf(-7)), "[-3/14, Infinity)");
-        aeq(read("[-6, Infinity)").get().divide(BigInteger.ONE), "[-6, Infinity)");
-        aeq(read("[-6, Infinity)").get().divide(BigInteger.valueOf(5)), "[-6/5, Infinity)");
-        aeq(read("[-6, Infinity)").get().divide(BigInteger.valueOf(-7)), "(-Infinity, 6/7]");
+        divide_BigInteger_helper("[0, 0]", "1", "[0, 0]");
+        divide_BigInteger_helper("[0, 0]", "5", "[0, 0]");
+        divide_BigInteger_helper("[0, 0]", "-7", "[0, 0]");
+
+        divide_BigInteger_helper("[1, 1]", "1", "[1, 1]");
+        divide_BigInteger_helper("[1, 1]", "5", "[1/5, 1/5]");
+        divide_BigInteger_helper("[1, 1]", "-7", "[-1/7, -1/7]");
+
+        divide_BigInteger_helper("(-Infinity, Infinity)", "1", "(-Infinity, Infinity)");
+        divide_BigInteger_helper("(-Infinity, Infinity)", "5", "(-Infinity, Infinity)");
+        divide_BigInteger_helper("(-Infinity, Infinity)", "-7", "(-Infinity, Infinity)");
+
+        divide_BigInteger_helper("[-2, 5/3]", "1", "[-2, 5/3]");
+        divide_BigInteger_helper("[-2, 5/3]", "5", "[-2/5, 1/3]");
+        divide_BigInteger_helper("[-2, 5/3]", "-7", "[-5/21, 2/7]");
+
+        divide_BigInteger_helper("[4, 4]", "1", "[4, 4]");
+        divide_BigInteger_helper("[4, 4]", "5", "[4/5, 4/5]");
+        divide_BigInteger_helper("[4, 4]", "-7", "[-4/7, -4/7]");
+
+        divide_BigInteger_helper("(-Infinity, 3/2]", "1", "(-Infinity, 3/2]");
+        divide_BigInteger_helper("(-Infinity, 3/2]", "5", "(-Infinity, 3/10]");
+        divide_BigInteger_helper("(-Infinity, 3/2]", "-7", "[-3/14, Infinity)");
+
+        divide_BigInteger_helper("[-6, Infinity)", "1", "[-6, Infinity)");
+        divide_BigInteger_helper("[-6, Infinity)", "5", "[-6/5, Infinity)");
+        divide_BigInteger_helper("[-6, Infinity)", "-7", "(-Infinity, 6/7]");
+
+        divide_BigInteger_fail_helper("[-2, 5/3]", "0");
+    }
+
+    private static void divide_int_helper(@NotNull String a, int b, @NotNull String output) {
+        aeq(read(a).get().divide(b), output);
+    }
+
+    private static void divide_int_fail_helper(@NotNull String a, int b) {
         try {
-            read("[-2, 5/3]").get().divide(BigInteger.ZERO);
+            read(a).get().divide(b);
+            fail();
         } catch (ArithmeticException ignored) {}
     }
 
     @Test
     public void testDivide_int() {
-        aeq(ZERO.divide(1), "[0, 0]");
-        aeq(ZERO.divide(5), "[0, 0]");
-        aeq(ZERO.divide(-7), "[0, 0]");
-        aeq(ONE.divide(1), "[1, 1]");
-        aeq(ONE.divide(5), "[1/5, 1/5]");
-        aeq(ONE.divide(-7), "[-1/7, -1/7]");
-        aeq(ALL.divide(1), "(-Infinity, Infinity)");
-        aeq(ALL.divide(5), "(-Infinity, Infinity)");
-        aeq(ALL.divide(-7), "(-Infinity, Infinity)");
-        aeq(read("[-2, 5/3]").get().divide(1), "[-2, 5/3]");
-        aeq(read("[-2, 5/3]").get().divide(5), "[-2/5, 1/3]");
-        aeq(read("[-2, 5/3]").get().divide(-7), "[-5/21, 2/7]");
-        aeq(read("[4, 4]").get().divide(1), "[4, 4]");
-        aeq(read("[4, 4]").get().divide(5), "[4/5, 4/5]");
-        aeq(read("[4, 4]").get().divide(-7), "[-4/7, -4/7]");
-        aeq(read("(-Infinity, 3/2]").get().divide(1), "(-Infinity, 3/2]");
-        aeq(read("(-Infinity, 3/2]").get().divide(5), "(-Infinity, 3/10]");
-        aeq(read("(-Infinity, 3/2]").get().divide(-7), "[-3/14, Infinity)");
-        aeq(read("[-6, Infinity)").get().divide(1), "[-6, Infinity)");
-        aeq(read("[-6, Infinity)").get().divide(5), "[-6/5, Infinity)");
-        aeq(read("[-6, Infinity)").get().divide(-7), "(-Infinity, 6/7]");
-        try {
-            read("[-2, 5/3]").get().divide(0);
-        } catch (ArithmeticException ignored) {}
+        divide_int_helper("[0, 0]", 1, "[0, 0]");
+        divide_int_helper("[0, 0]", 5, "[0, 0]");
+        divide_int_helper("[0, 0]", -7, "[0, 0]");
+
+        divide_int_helper("[1, 1]", 1, "[1, 1]");
+        divide_int_helper("[1, 1]", 5, "[1/5, 1/5]");
+        divide_int_helper("[1, 1]", -7, "[-1/7, -1/7]");
+
+        divide_int_helper("(-Infinity, Infinity)", 1, "(-Infinity, Infinity)");
+        divide_int_helper("(-Infinity, Infinity)", 5, "(-Infinity, Infinity)");
+        divide_int_helper("(-Infinity, Infinity)", -7, "(-Infinity, Infinity)");
+
+        divide_int_helper("[-2, 5/3]", 1, "[-2, 5/3]");
+        divide_int_helper("[-2, 5/3]", 5, "[-2/5, 1/3]");
+        divide_int_helper("[-2, 5/3]", -7, "[-5/21, 2/7]");
+
+        divide_int_helper("[4, 4]", 1, "[4, 4]");
+        divide_int_helper("[4, 4]", 5, "[4/5, 4/5]");
+        divide_int_helper("[4, 4]", -7, "[-4/7, -4/7]");
+
+        divide_int_helper("(-Infinity, 3/2]", 1, "(-Infinity, 3/2]");
+        divide_int_helper("(-Infinity, 3/2]", 5, "(-Infinity, 3/10]");
+        divide_int_helper("(-Infinity, 3/2]", -7, "[-3/14, Infinity)");
+
+        divide_int_helper("[-6, Infinity)", 1, "[-6, Infinity)");
+        divide_int_helper("[-6, Infinity)", 5, "[-6/5, Infinity)");
+        divide_int_helper("[-6, Infinity)", -7, "(-Infinity, 6/7]");
+
+        divide_int_fail_helper("[-2, 5/3]", 0);
     }
 
     @Test

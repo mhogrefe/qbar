@@ -1341,27 +1341,22 @@ public class IntervalProperties extends QBarTestProperties {
     }
 
     private void propertiesDivide_Rational() {
-        initialize("");
-        System.out.println("\t\ttesting divide(Rational) properties...");
-
-        Iterable<Pair<Interval, Rational>> ps = P.pairs(P.intervals(), filter(r -> r != Rational.ZERO, P.rationals()));
-        for (Pair<Interval, Rational> p : take(LIMIT, ps)) {
+        initialize("divide(Rational)");
+        for (Pair<Interval, Rational> p : take(LIMIT, P.pairs(P.intervals(), P.nonzeroRationals()))) {
             Interval quotient = p.a.divide(p.b);
             quotient.validate();
-
+            assertEquals(p, p.a.multiply(p.b.invert()), quotient);
+            inverses(a -> a.divide(p.b), (Interval a) -> a.multiply(p.b), p.a);
             for (Rational r : take(TINY_LIMIT, P.rationalsIn(p.a))) {
                 assertTrue(p, quotient.contains(r.divide(p.b)));
             }
-
-            assertTrue(p, quotient.multiply(p.b).contains(p.a));
-            assertTrue(p, p.a.multiply(p.b.invert()).contains(quotient));
         }
 
         for (Interval a : take(LIMIT, P.intervals())) {
-            assertTrue(a, a.divide(Rational.ONE).contains(a));
+            fixedPoint(b -> b.divide(Rational.ONE), a);
         }
 
-        for (Rational r : take(LIMIT, filter(s -> s != Rational.ZERO, P.rationals()))) {
+        for (Rational r : take(LIMIT, P.nonzeroRationals())) {
             assertEquals(r, ONE.divide(r), of(r.invert()));
         }
 
@@ -1374,30 +1369,22 @@ public class IntervalProperties extends QBarTestProperties {
     }
 
     private void propertiesDivide_BigInteger() {
-        initialize("");
-        System.out.println("\t\ttesting divide(BigInteger) properties...");
-
-        Iterable<Pair<Interval, BigInteger>> ps = P.pairs(
-                P.intervals(),
-                filter(i -> !i.equals(BigInteger.ZERO), P.bigIntegers())
-        );
-        for (Pair<Interval, BigInteger> p : take(LIMIT, ps)) {
+        initialize("divide(BigInteger)");
+        for (Pair<Interval, BigInteger> p : take(LIMIT, P.pairs(P.intervals(), P.nonzeroBigIntegers()))) {
             Interval quotient = p.a.divide(p.b);
             quotient.validate();
-
+            assertEquals(p, p.a.multiply(Rational.of(p.b).invert()), quotient);
+            inverses(a -> a.divide(p.b), (Interval a) -> a.multiply(p.b), p.a);
             for (Rational r : take(TINY_LIMIT, P.rationalsIn(p.a))) {
                 assertTrue(p, quotient.contains(r.divide(p.b)));
             }
-
-            assertTrue(p, quotient.multiply(p.b).contains(p.a));
-            assertTrue(p, p.a.multiply(Rational.of(p.b).invert()).contains(quotient));
         }
 
         for (Interval a : take(LIMIT, P.intervals())) {
-            assertTrue(a, a.divide(BigInteger.ONE).contains(a));
+            fixedPoint(b -> b.divide(BigInteger.ONE), a);
         }
 
-        for (BigInteger i : take(LIMIT, filter(j -> !j.equals(BigInteger.ZERO), P.bigIntegers()))) {
+        for (BigInteger i : take(LIMIT, P.nonzeroBigIntegers())) {
             assertEquals(i, ONE.divide(i), of(Rational.of(i).invert()));
         }
 
@@ -1410,26 +1397,22 @@ public class IntervalProperties extends QBarTestProperties {
     }
 
     private void propertiesDivide_int() {
-        initialize("");
-        System.out.println("\t\ttesting divide(int) properties...");
-
-        for (Pair<Interval, Integer> p : take(LIMIT, P.pairs(P.intervals(), filter(i -> i != 0, P.integers())))) {
+        initialize("divide(int)");
+        for (Pair<Interval, Integer> p : take(LIMIT, P.pairs(P.intervals(), P.nonzeroIntegers()))) {
             Interval quotient = p.a.divide(p.b);
             quotient.validate();
-
+            assertEquals(p, p.a.multiply(Rational.of(p.b).invert()), quotient);
+            inverses(a -> a.divide(p.b), (Interval a) -> a.multiply(p.b), p.a);
             for (Rational r : take(TINY_LIMIT, P.rationalsIn(p.a))) {
                 assertTrue(p, quotient.contains(r.divide(p.b)));
             }
-
-            assertTrue(p, quotient.multiply(p.b).contains(p.a));
-            assertTrue(p, p.a.multiply(Rational.of(p.b).invert()).contains(quotient));
         }
 
         for (Interval a : take(LIMIT, P.intervals())) {
-            assertTrue(a, a.divide(1).contains(a));
+            fixedPoint(b -> b.divide(1), a);
         }
 
-        for (int i : take(LIMIT, filter(j -> j != 0, P.integers()))) {
+        for (int i : take(LIMIT, P.nonzeroIntegers())) {
             assertEquals(i, ONE.divide(i), of(Rational.of(i).invert()));
         }
 
