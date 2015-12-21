@@ -1209,10 +1209,13 @@ public final class Interval implements Comparable<Interval> {
      * @return Σxs
      */
     public static @NotNull Interval sum(@NotNull Iterable<Interval> xs) {
-        if (any(x -> x == null, xs)) {
-            throw new NullPointerException();
-        }
-        return foldl(Interval::add, ZERO, xs);
+        List<Interval> list = toList(xs);
+        List<Rational> lowers = toList(map(x -> x.lower, list));
+        List<Rational> uppers = toList(map(x -> x.upper, list));
+        return new Interval(
+                any(x -> x == null, lowers) ? null : Rational.sum(lowers),
+                any(x -> x == null, uppers) ? null : Rational.sum(uppers)
+        );
     }
 
     /**
@@ -1227,10 +1230,11 @@ public final class Interval implements Comparable<Interval> {
      * @return Πxs
      */
     public static @NotNull Interval product(@NotNull Iterable<Interval> xs) {
-        if (any(x -> x == null, xs)) {
+        List<Interval> list = toList(xs);
+        if (any(x -> x == null, list)) {
             throw new NullPointerException();
         }
-        return foldl(Interval::multiply, ONE, xs);
+        return foldl(Interval::multiply, ONE, list);
     }
 
     /**
@@ -1248,10 +1252,12 @@ public final class Interval implements Comparable<Interval> {
      * @return Δxs
      */
     public static @NotNull Iterable<Interval> delta(@NotNull Iterable<Interval> xs) {
-        if (isEmpty(xs))
-            throw new IllegalArgumentException("cannot get delta of empty Iterable");
-        if (head(xs) == null)
+        if (isEmpty(xs)) {
+            throw new IllegalArgumentException("xs cannot be empty.");
+        }
+        if (head(xs) == null) {
             throw new NullPointerException();
+        }
         return adjacentPairsWith((x, y) -> y.subtract(x), xs);
     }
 

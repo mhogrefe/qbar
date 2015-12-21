@@ -1,8 +1,6 @@
 package mho.qbar.objects;
 
-import mho.qbar.iterableProviders.QBarExhaustiveProvider;
 import mho.qbar.iterableProviders.QBarIterableProvider;
-import mho.qbar.iterableProviders.QBarRandomProvider;
 import mho.qbar.testing.QBarTestProperties;
 import mho.wheels.numberUtils.BigDecimalUtils;
 import mho.wheels.numberUtils.FloatingPointUtils;
@@ -87,6 +85,7 @@ public class IntervalProperties extends QBarTestProperties {
         propertiesShiftRight();
         compareImplementationsShiftRight();
         propertiesSum();
+        compareImplementationsSum();
         propertiesProduct();
         propertiesDelta();
         propertiesPow();
@@ -1220,6 +1219,10 @@ public class IntervalProperties extends QBarTestProperties {
                 assertTrue(a, inverse.contains(r.invert()));
             }
         }
+
+        for (Rational r : take(LIMIT, P.nonzeroRationals())) {
+            homomorphic(Interval::of, Interval::of, Rational::invert, Interval::invertHull, r);
+        }
     }
 
     private void compareImplementationsInvertHull() {
@@ -1321,6 +1324,10 @@ public class IntervalProperties extends QBarTestProperties {
             assertTrue(a, a.divideHull(a).contains(ONE));
         }
 
+        for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals(), P.nonzeroRationals()))) {
+            homomorphic(Interval::of, Interval::of, Interval::of, Rational::divide, Interval::divideHull, p);
+        }
+
         for (Interval a : take(LIMIT, P.intervals())) {
             try {
                 a.divideHull(ZERO);
@@ -1360,6 +1367,10 @@ public class IntervalProperties extends QBarTestProperties {
             assertEquals(r, ONE.divide(r), of(r.invert()));
         }
 
+        for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals(), P.nonzeroRationals()))) {
+            homomorphic(Interval::of, Function.identity(), Interval::of, Rational::divide, Interval::divide, p);
+        }
+
         for (Interval a : take(LIMIT, P.intervals())) {
             try {
                 a.divide(Rational.ZERO);
@@ -1386,6 +1397,10 @@ public class IntervalProperties extends QBarTestProperties {
 
         for (BigInteger i : take(LIMIT, P.nonzeroBigIntegers())) {
             assertEquals(i, ONE.divide(i), of(Rational.of(i).invert()));
+        }
+
+        for (Pair<Rational, BigInteger> p : take(LIMIT, P.pairs(P.rationals(), P.nonzeroBigIntegers()))) {
+            homomorphic(Interval::of, Function.identity(), Interval::of, Rational::divide, Interval::divide, p);
         }
 
         for (Interval a : take(LIMIT, P.intervals())) {
@@ -1416,6 +1431,10 @@ public class IntervalProperties extends QBarTestProperties {
             assertEquals(i, ONE.divide(i), of(Rational.of(i).invert()));
         }
 
+        for (Pair<Rational, Integer> p : take(LIMIT, P.pairs(P.rationals(), P.nonzeroIntegers()))) {
+            homomorphic(Interval::of, Function.identity(), Interval::of, Rational::divide, Interval::divide, p);
+        }
+
         for (Interval a : take(LIMIT, P.intervals())) {
             try {
                 a.divide(0);
@@ -1433,70 +1452,46 @@ public class IntervalProperties extends QBarTestProperties {
     }
 
     private void propertiesShiftLeft() {
-        initialize("");
-        System.out.println("\t\ttesting shiftLeft(int) properties...");
-
-        Iterable<Integer> is;
-        if (P instanceof QBarExhaustiveProvider) {
-            is = P.integers();
-        } else {
-            is  = ((QBarRandomProvider) P).integersGeometric();
-        }
-        for (Pair<Interval, Integer> p : take(LIMIT, P.pairs(P.intervals(), is))) {
+        initialize("shiftLeft(int)");
+        for (Pair<Interval, Integer> p : take(LIMIT, P.pairs(P.intervals(), P.integersGeometric()))) {
+            homomorphic(
+                    Interval::negate,
+                    Function.identity(),
+                    Interval::negate,
+                    Interval::shiftLeft,
+                    Interval::shiftLeft,
+                    p
+            );
             Interval shifted = p.a.shiftLeft(p.b);
             shifted.validate();
-
-            for (Rational r : take(TINY_LIMIT, P.rationalsIn(p.a))) {
-                assertTrue(p, shifted.contains(r.shiftLeft(p.b)));
-            }
-
             assertEquals(p, shifted, shiftLeft_simplest(p.a, p.b));
             assertEquals(p, p.a.signum(), shifted.signum());
             assertEquals(p, p.a.isFinitelyBounded(), shifted.isFinitelyBounded());
-            assertEquals(p, p.a.negate().shiftLeft(p.b), shifted.negate());
-            assertEquals(p, shifted, p.a.shiftRight(-p.b));
+            inverses(a -> a.shiftLeft(p.b), (Interval a) -> a.shiftRight(p.b), p.a);
+            for (Rational r : take(TINY_LIMIT, P.rationalsIn(p.a))) {
+                assertTrue(p, shifted.contains(r.shiftLeft(p.b)));
+            }
         }
 
         for (Interval a : take(LIMIT, P.intervals())) {
-            assertEquals(a, a.shiftLeft(0), a);
+            fixedPoint(b -> b.shiftLeft(0), a);
         }
 
-        if (P instanceof QBarExhaustiveProvider) {
-            is = P.naturalIntegers();
-        } else {
-            is  = ((QBarRandomProvider) P).naturalIntegersGeometric();
+        for (Pair<Interval, Integer> p : take(LIMIT, P.pairs(P.intervals(), P.naturalIntegersGeometric()))) {
+            assertEquals(p, p.a.shiftLeft(p.b), p.a.multiply(BigInteger.ONE.shiftLeft(p.b)));
         }
-        for (Pair<Interval, Integer> p : take(LIMIT, P.pairs(P.intervals(), is))) {
-            Interval shifted = p.a.shiftLeft(p.b);
-            assertEquals(p, shifted, p.a.multiply(BigInteger.ONE.shiftLeft(p.b)));
+
+        for (Pair<Rational, Integer> p : take(LIMIT, P.pairs(P.rationals(), P.integersGeometric()))) {
+            homomorphic(Interval::of, Function.identity(), Interval::of, Rational::shiftLeft, Interval::shiftLeft, p);
         }
     }
 
     private void compareImplementationsShiftLeft() {
-        initialize("");
-        System.out.println("\t\tcomparing shiftLeft(int) implementations...");
-
-        long totalTime = 0;
-        Iterable<Integer> is;
-        if (P instanceof QBarExhaustiveProvider) {
-            is = P.integers();
-        } else {
-            is  = ((QBarRandomProvider) P).integersGeometric();
-        }
-        for (Pair<Interval, Integer> p : take(LIMIT, P.pairs(P.intervals(), is))) {
-            long time = System.nanoTime();
-            shiftLeft_simplest(p.a, p.b);
-            totalTime += (System.nanoTime() - time);
-        }
-        System.out.println("\t\t\tsimplest: " + ((double) totalTime) / 1e9 + " s");
-
-        totalTime = 0;
-        for (Pair<Interval, Integer> p : take(LIMIT, P.pairs(P.intervals(), is))) {
-            long time = System.nanoTime();
-            p.a.shiftLeft(p.b);
-            totalTime += (System.nanoTime() - time);
-        }
-        System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
+        Map<String, Function<Pair<Interval, Integer>, Interval>> functions = new LinkedHashMap<>();
+        functions.put("simplest", p -> shiftLeft_simplest(p.a, p.b));
+        functions.put("standard", p -> p.a.shiftLeft(p.b));
+        Iterable<Pair<Interval, Integer>> ps = P.pairs(P.intervals(), P.integersGeometric());
+        compareImplementations("shiftLeft(Interval)", take(LIMIT, ps), functions);
     }
 
     private static @NotNull Interval shiftRight_simplest(@NotNull Interval a, int bits) {
@@ -1508,76 +1503,57 @@ public class IntervalProperties extends QBarTestProperties {
     }
 
     private void propertiesShiftRight() {
-        initialize("");
-        System.out.println("\t\ttesting shiftRight(int) properties...");
-
-        Iterable<Integer> is;
-        if (P instanceof QBarExhaustiveProvider) {
-            is = P.integers();
-        } else {
-            is  = ((QBarRandomProvider) P).integersGeometric();
-        }
-        for (Pair<Interval, Integer> p : take(LIMIT, P.pairs(P.intervals(), is))) {
+        initialize("shiftRight(int)");
+        for (Pair<Interval, Integer> p : take(LIMIT, P.pairs(P.intervals(), P.integersGeometric()))) {
+            homomorphic(
+                    Interval::negate,
+                    Function.identity(),
+                    Interval::negate,
+                    Interval::shiftRight,
+                    Interval::shiftRight,
+                    p
+            );
             Interval shifted = p.a.shiftRight(p.b);
             shifted.validate();
-
-            for (Rational r : take(TINY_LIMIT, P.rationalsIn(p.a))) {
-                assertTrue(p, shifted.contains(r.shiftRight(p.b)));
-            }
-
             assertEquals(p, shifted, shiftRight_simplest(p.a, p.b));
             assertEquals(p, p.a.signum(), shifted.signum());
             assertEquals(p, p.a.isFinitelyBounded(), shifted.isFinitelyBounded());
-            assertEquals(p, p.a.negate().shiftRight(p.b), shifted.negate());
-            assertEquals(p, shifted, p.a.shiftLeft(-p.b));
+            inverses(a -> a.shiftRight(p.b), (Interval a) -> a.shiftLeft(p.b), p.a);
+            for (Rational r : take(TINY_LIMIT, P.rationalsIn(p.a))) {
+                assertTrue(p, shifted.contains(r.shiftRight(p.b)));
+            }
         }
 
         for (Interval a : take(LIMIT, P.intervals())) {
-            assertEquals(a, a.shiftRight(0), a);
+            fixedPoint(b -> b.shiftRight(0), a);
         }
 
-        if (P instanceof QBarExhaustiveProvider) {
-            is = P.naturalIntegers();
-        } else {
-            is  = ((QBarRandomProvider) P).naturalIntegersGeometric();
+        for (Pair<Interval, Integer> p : take(LIMIT, P.pairs(P.intervals(), P.naturalIntegersGeometric()))) {
+            assertEquals(p, p.a.shiftRight(p.b), p.a.divide(BigInteger.ONE.shiftLeft(p.b)));
         }
-        for (Pair<Interval, Integer> p : take(LIMIT, P.pairs(P.intervals(), is))) {
-            Interval shifted = p.a.shiftRight(p.b);
-            assertEquals(p, shifted, p.a.divide(BigInteger.ONE.shiftLeft(p.b)));
+
+        for (Pair<Rational, Integer> p : take(LIMIT, P.pairs(P.rationals(), P.integersGeometric()))) {
+            homomorphic(Interval::of, Function.identity(), Interval::of, Rational::shiftRight, Interval::shiftRight, p);
         }
     }
 
     private void compareImplementationsShiftRight() {
-        initialize("");
-        System.out.println("\t\tcomparing shiftRight(int) implementations...");
+        Map<String, Function<Pair<Interval, Integer>, Interval>> functions = new LinkedHashMap<>();
+        functions.put("simplest", p -> shiftRight_simplest(p.a, p.b));
+        functions.put("standard", p -> p.a.shiftRight(p.b));
+        Iterable<Pair<Interval, Integer>> ps = P.pairs(P.intervals(), P.integersGeometric());
+        compareImplementations("shiftRight(Interval)", take(LIMIT, ps), functions);
+    }
 
-        long totalTime = 0;
-        Iterable<Integer> is;
-        if (P instanceof QBarExhaustiveProvider) {
-            is = P.integers();
-        } else {
-            is  = ((QBarRandomProvider) P).integersGeometric();
+    private static @NotNull Interval sum_simplest(@NotNull List<Interval> xs) {
+        if (any(x -> x == null, xs)) {
+            throw new NullPointerException();
         }
-        for (Pair<Interval, Integer> p : take(LIMIT, P.pairs(P.intervals(), is))) {
-            long time = System.nanoTime();
-            shiftRight_simplest(p.a, p.b);
-            totalTime += (System.nanoTime() - time);
-        }
-        System.out.println("\t\t\tsimplest: " + ((double) totalTime) / 1e9 + " s");
-
-        totalTime = 0;
-        for (Pair<Interval, Integer> p : take(LIMIT, P.pairs(P.intervals(), is))) {
-            long time = System.nanoTime();
-            p.a.shiftRight(p.b);
-            totalTime += (System.nanoTime() - time);
-        }
-        System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
+        return foldl(Interval::add, ONE, xs);
     }
 
     private void propertiesSum() {
-        initialize("");
-        System.out.println("\t\ttesting sum(Iterable<Interval>) properties...");
-
+        initialize("sum(Iterable<Interval>)");
         propertiesFoldHelper(
                 LIMIT,
                 P.getWheelsProvider(),
@@ -1596,12 +1572,21 @@ public class IntervalProperties extends QBarTestProperties {
             }
             assertEquals(is, sum.isFinitelyBounded(), is.isEmpty() || all(Interval::isFinitelyBounded, is));
         }
+
+        for (List<Rational> rs : take(LIMIT, P.lists(P.rationals()))) {
+            homomorphic(ss -> toList(map(Interval::of, rs)), Interval::of, Rational::sum, Interval::sum, rs);
+        }
+    }
+
+    private void compareImplementationsSum() {
+        Map<String, Function<List<Interval>, Interval>> functions = new LinkedHashMap<>();
+        functions.put("simplest", IntervalProperties::sum_simplest);
+        functions.put("standard", Interval::sum);
+        compareImplementations("sum(Iterable<Interval>)", take(LIMIT, P.lists(P.intervals())), functions);
     }
 
     private void propertiesProduct() {
-        initialize("");
-        System.out.println("\t\ttesting product(Iterable<Interval>) properties...");
-
+        initialize("product(Iterable<Interval>)");
         propertiesFoldHelper(
                 LIMIT,
                 P.getWheelsProvider(),
@@ -1618,19 +1603,20 @@ public class IntervalProperties extends QBarTestProperties {
             for (List<Rational> rs : take(TINY_LIMIT, transposeTruncating(map(P::rationalsIn, is)))) {
                 assertTrue(is, product.contains(Rational.product(rs)));
             }
-
             assertEquals(
                     is,
                     product.isFinitelyBounded(),
                     is.isEmpty() || is.contains(ZERO) || all(Interval::isFinitelyBounded, is)
             );
         }
+
+        for (List<Rational> rs : take(LIMIT, P.lists(P.rationals()))) {
+            homomorphic(ss -> toList(map(Interval::of, rs)), Interval::of, Rational::product, Interval::product, rs);
+        }
     }
 
     private void propertiesDelta() {
-        initialize("");
-        System.out.println("\t\ttesting delta(Iterable<Interval>) properties...");
-
+        initialize("delta(Iterable<Interval>)");
         propertiesDeltaHelper(
                 LIMIT,
                 P.getWheelsProvider(),
@@ -1642,11 +1628,21 @@ public class IntervalProperties extends QBarTestProperties {
                 a -> {}
         );
 
-        for (List<Interval> is : take(LIMIT, P.listsAtLeast(1, P.intervals()))) {
-            Iterable<Interval> deltas = delta(is);
-            for (List<Rational> rs : take(TINY_LIMIT, transposeTruncating(map(P::rationalsIn, is)))) {
-                assertTrue(is, and(zipWith(Interval::contains, deltas, Rational.delta(rs))));
+        for (List<Interval> as : take(LIMIT, P.listsAtLeast(1, P.intervals()))) {
+            Iterable<Interval> deltas = delta(as);
+            for (List<Rational> rs : take(TINY_LIMIT, transposeTruncating(map(P::rationalsIn, as)))) {
+                assertTrue(as, and(zipWith(Interval::contains, deltas, Rational.delta(rs))));
             }
+        }
+
+        for (List<Rational> rs : take(LIMIT, P.listsAtLeast(1, P.rationals()))) {
+            homomorphic(
+                    ss -> toList(map(Interval::of, ss)),
+                    ss -> toList(map(Interval::of, ss)),
+                    ss -> toList(Rational.delta(ss)),
+                    as -> toList(delta(as)),
+                    rs
+            );
         }
     }
 

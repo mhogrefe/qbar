@@ -1413,167 +1413,219 @@ public class IntervalTest {
         divide_int_fail_helper("[-2, 5/3]", 0);
     }
 
+    private static void shiftLeft_helper(@NotNull String a, int b, @NotNull String output) {
+        aeq(read(a).get().shiftLeft(b), output);
+    }
+
     @Test
     public void testShiftLeft() {
-        aeq(ZERO.shiftLeft(0), "[0, 0]");
-        aeq(ZERO.shiftLeft(1), "[0, 0]");
-        aeq(ZERO.shiftLeft(2), "[0, 0]");
-        aeq(ZERO.shiftLeft(3), "[0, 0]");
-        aeq(ZERO.shiftLeft(4), "[0, 0]");
-        aeq(ZERO.shiftLeft(-1), "[0, 0]");
-        aeq(ZERO.shiftLeft(-2), "[0, 0]");
-        aeq(ZERO.shiftLeft(-3), "[0, 0]");
-        aeq(ZERO.shiftLeft(-4), "[0, 0]");
-        aeq(ONE.shiftLeft(0), "[1, 1]");
-        aeq(ONE.shiftLeft(1), "[2, 2]");
-        aeq(ONE.shiftLeft(2), "[4, 4]");
-        aeq(ONE.shiftLeft(3), "[8, 8]");
-        aeq(ONE.shiftLeft(4), "[16, 16]");
-        aeq(ONE.shiftLeft(-1), "[1/2, 1/2]");
-        aeq(ONE.shiftLeft(-2), "[1/4, 1/4]");
-        aeq(ONE.shiftLeft(-3), "[1/8, 1/8]");
-        aeq(ONE.shiftLeft(-4), "[1/16, 1/16]");
-        aeq(ALL.shiftLeft(0), "(-Infinity, Infinity)");
-        aeq(ALL.shiftLeft(1), "(-Infinity, Infinity)");
-        aeq(ALL.shiftLeft(2), "(-Infinity, Infinity)");
-        aeq(ALL.shiftLeft(3), "(-Infinity, Infinity)");
-        aeq(ALL.shiftLeft(4), "(-Infinity, Infinity)");
-        aeq(ALL.shiftLeft(-1), "(-Infinity, Infinity)");
-        aeq(ALL.shiftLeft(-2), "(-Infinity, Infinity)");
-        aeq(ALL.shiftLeft(-3), "(-Infinity, Infinity)");
-        aeq(ALL.shiftLeft(-4), "(-Infinity, Infinity)");
-        aeq(read("[-2, 5/3]").get().shiftLeft(0), "[-2, 5/3]");
-        aeq(read("[-2, 5/3]").get().shiftLeft(1), "[-4, 10/3]");
-        aeq(read("[-2, 5/3]").get().shiftLeft(2), "[-8, 20/3]");
-        aeq(read("[-2, 5/3]").get().shiftLeft(3), "[-16, 40/3]");
-        aeq(read("[-2, 5/3]").get().shiftLeft(4), "[-32, 80/3]");
-        aeq(read("[-2, 5/3]").get().shiftLeft(-1), "[-1, 5/6]");
-        aeq(read("[-2, 5/3]").get().shiftLeft(-2), "[-1/2, 5/12]");
-        aeq(read("[-2, 5/3]").get().shiftLeft(-3), "[-1/4, 5/24]");
-        aeq(read("[-2, 5/3]").get().shiftLeft(-4), "[-1/8, 5/48]");
-        aeq(read("[4, 4]").get().shiftLeft(0), "[4, 4]");
-        aeq(read("[4, 4]").get().shiftLeft(1), "[8, 8]");
-        aeq(read("[4, 4]").get().shiftLeft(2), "[16, 16]");
-        aeq(read("[4, 4]").get().shiftLeft(3), "[32, 32]");
-        aeq(read("[4, 4]").get().shiftLeft(4), "[64, 64]");
-        aeq(read("[4, 4]").get().shiftLeft(-1), "[2, 2]");
-        aeq(read("[4, 4]").get().shiftLeft(-2), "[1, 1]");
-        aeq(read("[4, 4]").get().shiftLeft(-3), "[1/2, 1/2]");
-        aeq(read("[4, 4]").get().shiftLeft(-4), "[1/4, 1/4]");
-        aeq(read("(-Infinity, -3/2]").get().shiftLeft(0), "(-Infinity, -3/2]");
-        aeq(read("(-Infinity, -3/2]").get().shiftLeft(1), "(-Infinity, -3]");
-        aeq(read("(-Infinity, -3/2]").get().shiftLeft(2), "(-Infinity, -6]");
-        aeq(read("(-Infinity, -3/2]").get().shiftLeft(3), "(-Infinity, -12]");
-        aeq(read("(-Infinity, -3/2]").get().shiftLeft(4), "(-Infinity, -24]");
-        aeq(read("(-Infinity, -3/2]").get().shiftLeft(-1), "(-Infinity, -3/4]");
-        aeq(read("(-Infinity, -3/2]").get().shiftLeft(-2), "(-Infinity, -3/8]");
-        aeq(read("(-Infinity, -3/2]").get().shiftLeft(-3), "(-Infinity, -3/16]");
-        aeq(read("(-Infinity, -3/2]").get().shiftLeft(-4), "(-Infinity, -3/32]");
-        aeq(read("[-6, Infinity)").get().shiftLeft(0), "[-6, Infinity)");
-        aeq(read("[-6, Infinity)").get().shiftLeft(1), "[-12, Infinity)");
-        aeq(read("[-6, Infinity)").get().shiftLeft(2), "[-24, Infinity)");
-        aeq(read("[-6, Infinity)").get().shiftLeft(3), "[-48, Infinity)");
-        aeq(read("[-6, Infinity)").get().shiftLeft(4), "[-96, Infinity)");
-        aeq(read("[-6, Infinity)").get().shiftLeft(-1), "[-3, Infinity)");
-        aeq(read("[-6, Infinity)").get().shiftLeft(-2), "[-3/2, Infinity)");
-        aeq(read("[-6, Infinity)").get().shiftLeft(-3), "[-3/4, Infinity)");
-        aeq(read("[-6, Infinity)").get().shiftLeft(-4), "[-3/8, Infinity)");
+        shiftLeft_helper("[0, 0]", 0, "[0, 0]");
+        shiftLeft_helper("[0, 0]", 1, "[0, 0]");
+        shiftLeft_helper("[0, 0]", 2, "[0, 0]");
+        shiftLeft_helper("[0, 0]", 3, "[0, 0]");
+        shiftLeft_helper("[0, 0]", 4, "[0, 0]");
+        shiftLeft_helper("[0, 0]", -1, "[0, 0]");
+        shiftLeft_helper("[0, 0]", -2, "[0, 0]");
+        shiftLeft_helper("[0, 0]", -3, "[0, 0]");
+        shiftLeft_helper("[0, 0]", -4, "[0, 0]");
+
+        shiftLeft_helper("[1, 1]", 0, "[1, 1]");
+        shiftLeft_helper("[1, 1]", 1, "[2, 2]");
+        shiftLeft_helper("[1, 1]", 2, "[4, 4]");
+        shiftLeft_helper("[1, 1]", 3, "[8, 8]");
+        shiftLeft_helper("[1, 1]", 4, "[16, 16]");
+        shiftLeft_helper("[1, 1]", -1, "[1/2, 1/2]");
+        shiftLeft_helper("[1, 1]", -2, "[1/4, 1/4]");
+        shiftLeft_helper("[1, 1]", -3, "[1/8, 1/8]");
+        shiftLeft_helper("[1, 1]", -4, "[1/16, 1/16]");
+
+        shiftLeft_helper("(-Infinity, Infinity)", 0, "(-Infinity, Infinity)");
+        shiftLeft_helper("(-Infinity, Infinity)", 1, "(-Infinity, Infinity)");
+        shiftLeft_helper("(-Infinity, Infinity)", 2, "(-Infinity, Infinity)");
+        shiftLeft_helper("(-Infinity, Infinity)", 3, "(-Infinity, Infinity)");
+        shiftLeft_helper("(-Infinity, Infinity)", 4, "(-Infinity, Infinity)");
+        shiftLeft_helper("(-Infinity, Infinity)", -1, "(-Infinity, Infinity)");
+        shiftLeft_helper("(-Infinity, Infinity)", -2, "(-Infinity, Infinity)");
+        shiftLeft_helper("(-Infinity, Infinity)", -3, "(-Infinity, Infinity)");
+        shiftLeft_helper("(-Infinity, Infinity)", -4, "(-Infinity, Infinity)");
+
+        shiftLeft_helper("[-2, 5/3]", 0, "[-2, 5/3]");
+        shiftLeft_helper("[-2, 5/3]", 1, "[-4, 10/3]");
+        shiftLeft_helper("[-2, 5/3]", 2, "[-8, 20/3]");
+        shiftLeft_helper("[-2, 5/3]", 3, "[-16, 40/3]");
+        shiftLeft_helper("[-2, 5/3]", 4, "[-32, 80/3]");
+        shiftLeft_helper("[-2, 5/3]", -1, "[-1, 5/6]");
+        shiftLeft_helper("[-2, 5/3]", -2, "[-1/2, 5/12]");
+        shiftLeft_helper("[-2, 5/3]", -3, "[-1/4, 5/24]");
+        shiftLeft_helper("[-2, 5/3]", -4, "[-1/8, 5/48]");
+
+        shiftLeft_helper("[4, 4]", 0, "[4, 4]");
+        shiftLeft_helper("[4, 4]", 1, "[8, 8]");
+        shiftLeft_helper("[4, 4]", 2, "[16, 16]");
+        shiftLeft_helper("[4, 4]", 3, "[32, 32]");
+        shiftLeft_helper("[4, 4]", 4, "[64, 64]");
+        shiftLeft_helper("[4, 4]", -1, "[2, 2]");
+        shiftLeft_helper("[4, 4]", -2, "[1, 1]");
+        shiftLeft_helper("[4, 4]", -3, "[1/2, 1/2]");
+        shiftLeft_helper("[4, 4]", -4, "[1/4, 1/4]");
+
+        shiftLeft_helper("(-Infinity, -3/2]", 0, "(-Infinity, -3/2]");
+        shiftLeft_helper("(-Infinity, -3/2]", 1, "(-Infinity, -3]");
+        shiftLeft_helper("(-Infinity, -3/2]", 2, "(-Infinity, -6]");
+        shiftLeft_helper("(-Infinity, -3/2]", 3, "(-Infinity, -12]");
+        shiftLeft_helper("(-Infinity, -3/2]", 4, "(-Infinity, -24]");
+        shiftLeft_helper("(-Infinity, -3/2]", -1, "(-Infinity, -3/4]");
+        shiftLeft_helper("(-Infinity, -3/2]", -2, "(-Infinity, -3/8]");
+        shiftLeft_helper("(-Infinity, -3/2]", -3, "(-Infinity, -3/16]");
+        shiftLeft_helper("(-Infinity, -3/2]", -4, "(-Infinity, -3/32]");
+
+        shiftLeft_helper("[-6, Infinity)", 0, "[-6, Infinity)");
+        shiftLeft_helper("[-6, Infinity)", 1, "[-12, Infinity)");
+        shiftLeft_helper("[-6, Infinity)", 2, "[-24, Infinity)");
+        shiftLeft_helper("[-6, Infinity)", 3, "[-48, Infinity)");
+        shiftLeft_helper("[-6, Infinity)", 4, "[-96, Infinity)");
+        shiftLeft_helper("[-6, Infinity)", -1, "[-3, Infinity)");
+        shiftLeft_helper("[-6, Infinity)", -2, "[-3/2, Infinity)");
+        shiftLeft_helper("[-6, Infinity)", -3, "[-3/4, Infinity)");
+        shiftLeft_helper("[-6, Infinity)", -4, "[-3/8, Infinity)");
+    }
+
+    private static void shiftRight_helper(@NotNull String a, int b, @NotNull String output) {
+        aeq(read(a).get().shiftRight(b), output);
     }
 
     @Test
     public void testShiftRight() {
-        aeq(ZERO.shiftRight(0), "[0, 0]");
-        aeq(ZERO.shiftRight(1), "[0, 0]");
-        aeq(ZERO.shiftRight(2), "[0, 0]");
-        aeq(ZERO.shiftRight(3), "[0, 0]");
-        aeq(ZERO.shiftRight(4), "[0, 0]");
-        aeq(ZERO.shiftRight(-1), "[0, 0]");
-        aeq(ZERO.shiftRight(-2), "[0, 0]");
-        aeq(ZERO.shiftRight(-3), "[0, 0]");
-        aeq(ZERO.shiftRight(-4), "[0, 0]");
-        aeq(ONE.shiftRight(0), "[1, 1]");
-        aeq(ONE.shiftRight(1), "[1/2, 1/2]");
-        aeq(ONE.shiftRight(2), "[1/4, 1/4]");
-        aeq(ONE.shiftRight(3), "[1/8, 1/8]");
-        aeq(ONE.shiftRight(4), "[1/16, 1/16]");
-        aeq(ONE.shiftRight(-1), "[2, 2]");
-        aeq(ONE.shiftRight(-2), "[4, 4]");
-        aeq(ONE.shiftRight(-3), "[8, 8]");
-        aeq(ONE.shiftRight(-4), "[16, 16]");
-        aeq(ALL.shiftRight(0), "(-Infinity, Infinity)");
-        aeq(ALL.shiftRight(1), "(-Infinity, Infinity)");
-        aeq(ALL.shiftRight(2), "(-Infinity, Infinity)");
-        aeq(ALL.shiftRight(3), "(-Infinity, Infinity)");
-        aeq(ALL.shiftRight(4), "(-Infinity, Infinity)");
-        aeq(ALL.shiftRight(-1), "(-Infinity, Infinity)");
-        aeq(ALL.shiftRight(-2), "(-Infinity, Infinity)");
-        aeq(ALL.shiftRight(-3), "(-Infinity, Infinity)");
-        aeq(ALL.shiftRight(-4), "(-Infinity, Infinity)");
-        aeq(read("[-2, 5/3]").get().shiftRight(0), "[-2, 5/3]");
-        aeq(read("[-2, 5/3]").get().shiftRight(1), "[-1, 5/6]");
-        aeq(read("[-2, 5/3]").get().shiftRight(2), "[-1/2, 5/12]");
-        aeq(read("[-2, 5/3]").get().shiftRight(3), "[-1/4, 5/24]");
-        aeq(read("[-2, 5/3]").get().shiftRight(4), "[-1/8, 5/48]");
-        aeq(read("[-2, 5/3]").get().shiftRight(-1), "[-4, 10/3]");
-        aeq(read("[-2, 5/3]").get().shiftRight(-2), "[-8, 20/3]");
-        aeq(read("[-2, 5/3]").get().shiftRight(-3), "[-16, 40/3]");
-        aeq(read("[-2, 5/3]").get().shiftRight(-4), "[-32, 80/3]");
-        aeq(read("[4, 4]").get().shiftRight(0), "[4, 4]");
-        aeq(read("[4, 4]").get().shiftRight(1), "[2, 2]");
-        aeq(read("[4, 4]").get().shiftRight(2), "[1, 1]");
-        aeq(read("[4, 4]").get().shiftRight(3), "[1/2, 1/2]");
-        aeq(read("[4, 4]").get().shiftRight(4), "[1/4, 1/4]");
-        aeq(read("[4, 4]").get().shiftRight(-1), "[8, 8]");
-        aeq(read("[4, 4]").get().shiftRight(-2), "[16, 16]");
-        aeq(read("[4, 4]").get().shiftRight(-3), "[32, 32]");
-        aeq(read("[4, 4]").get().shiftRight(-4), "[64, 64]");
-        aeq(read("(-Infinity, -3/2]").get().shiftRight(0), "(-Infinity, -3/2]");
-        aeq(read("(-Infinity, -3/2]").get().shiftRight(1), "(-Infinity, -3/4]");
-        aeq(read("(-Infinity, -3/2]").get().shiftRight(2), "(-Infinity, -3/8]");
-        aeq(read("(-Infinity, -3/2]").get().shiftRight(3), "(-Infinity, -3/16]");
-        aeq(read("(-Infinity, -3/2]").get().shiftRight(4), "(-Infinity, -3/32]");
-        aeq(read("(-Infinity, -3/2]").get().shiftRight(-1), "(-Infinity, -3]");
-        aeq(read("(-Infinity, -3/2]").get().shiftRight(-2), "(-Infinity, -6]");
-        aeq(read("(-Infinity, -3/2]").get().shiftRight(-3), "(-Infinity, -12]");
-        aeq(read("(-Infinity, -3/2]").get().shiftRight(-4), "(-Infinity, -24]");
-        aeq(read("[-6, Infinity)").get().shiftRight(0), "[-6, Infinity)");
-        aeq(read("[-6, Infinity)").get().shiftRight(1), "[-3, Infinity)");
-        aeq(read("[-6, Infinity)").get().shiftRight(2), "[-3/2, Infinity)");
-        aeq(read("[-6, Infinity)").get().shiftRight(3), "[-3/4, Infinity)");
-        aeq(read("[-6, Infinity)").get().shiftRight(4), "[-3/8, Infinity)");
-        aeq(read("[-6, Infinity)").get().shiftRight(-1), "[-12, Infinity)");
-        aeq(read("[-6, Infinity)").get().shiftRight(-2), "[-24, Infinity)");
-        aeq(read("[-6, Infinity)").get().shiftRight(-3), "[-48, Infinity)");
-        aeq(read("[-6, Infinity)").get().shiftRight(-4), "[-96, Infinity)");
+        shiftRight_helper("[0, 0]", 0, "[0, 0]");
+        shiftRight_helper("[0, 0]", 1, "[0, 0]");
+        shiftRight_helper("[0, 0]", 2, "[0, 0]");
+        shiftRight_helper("[0, 0]", 3, "[0, 0]");
+        shiftRight_helper("[0, 0]", 4, "[0, 0]");
+        shiftRight_helper("[0, 0]", -1, "[0, 0]");
+        shiftRight_helper("[0, 0]", -2, "[0, 0]");
+        shiftRight_helper("[0, 0]", -3, "[0, 0]");
+        shiftRight_helper("[0, 0]", -4, "[0, 0]");
+
+        shiftRight_helper("[1, 1]", 0, "[1, 1]");
+        shiftRight_helper("[1, 1]", 1, "[1/2, 1/2]");
+        shiftRight_helper("[1, 1]", 2, "[1/4, 1/4]");
+        shiftRight_helper("[1, 1]", 3, "[1/8, 1/8]");
+        shiftRight_helper("[1, 1]", 4, "[1/16, 1/16]");
+        shiftRight_helper("[1, 1]", -1, "[2, 2]");
+        shiftRight_helper("[1, 1]", -2, "[4, 4]");
+        shiftRight_helper("[1, 1]", -3, "[8, 8]");
+        shiftRight_helper("[1, 1]", -4, "[16, 16]");
+
+        shiftRight_helper("(-Infinity, Infinity)", 0, "(-Infinity, Infinity)");
+        shiftRight_helper("(-Infinity, Infinity)", 1, "(-Infinity, Infinity)");
+        shiftRight_helper("(-Infinity, Infinity)", 2, "(-Infinity, Infinity)");
+        shiftRight_helper("(-Infinity, Infinity)", 3, "(-Infinity, Infinity)");
+        shiftRight_helper("(-Infinity, Infinity)", 4, "(-Infinity, Infinity)");
+        shiftRight_helper("(-Infinity, Infinity)", -1, "(-Infinity, Infinity)");
+        shiftRight_helper("(-Infinity, Infinity)", -2, "(-Infinity, Infinity)");
+        shiftRight_helper("(-Infinity, Infinity)", -3, "(-Infinity, Infinity)");
+        shiftRight_helper("(-Infinity, Infinity)", -4, "(-Infinity, Infinity)");
+
+        shiftRight_helper("[-2, 5/3]", 0, "[-2, 5/3]");
+        shiftRight_helper("[-2, 5/3]", 1, "[-1, 5/6]");
+        shiftRight_helper("[-2, 5/3]", 2, "[-1/2, 5/12]");
+        shiftRight_helper("[-2, 5/3]", 3, "[-1/4, 5/24]");
+        shiftRight_helper("[-2, 5/3]", 4, "[-1/8, 5/48]");
+        shiftRight_helper("[-2, 5/3]", -1, "[-4, 10/3]");
+        shiftRight_helper("[-2, 5/3]", -2, "[-8, 20/3]");
+        shiftRight_helper("[-2, 5/3]", -3, "[-16, 40/3]");
+        shiftRight_helper("[-2, 5/3]", -4, "[-32, 80/3]");
+
+        shiftRight_helper("[4, 4]", 0, "[4, 4]");
+        shiftRight_helper("[4, 4]", 1, "[2, 2]");
+        shiftRight_helper("[4, 4]", 2, "[1, 1]");
+        shiftRight_helper("[4, 4]", 3, "[1/2, 1/2]");
+        shiftRight_helper("[4, 4]", 4, "[1/4, 1/4]");
+        shiftRight_helper("[4, 4]", -1, "[8, 8]");
+        shiftRight_helper("[4, 4]", -2, "[16, 16]");
+        shiftRight_helper("[4, 4]", -3, "[32, 32]");
+        shiftRight_helper("[4, 4]", -4, "[64, 64]");
+
+        shiftRight_helper("(-Infinity, -3/2]", 0, "(-Infinity, -3/2]");
+        shiftRight_helper("(-Infinity, -3/2]", 1, "(-Infinity, -3/4]");
+        shiftRight_helper("(-Infinity, -3/2]", 2, "(-Infinity, -3/8]");
+        shiftRight_helper("(-Infinity, -3/2]", 3, "(-Infinity, -3/16]");
+        shiftRight_helper("(-Infinity, -3/2]", 4, "(-Infinity, -3/32]");
+        shiftRight_helper("(-Infinity, -3/2]", -1, "(-Infinity, -3]");
+        shiftRight_helper("(-Infinity, -3/2]", -2, "(-Infinity, -6]");
+        shiftRight_helper("(-Infinity, -3/2]", -3, "(-Infinity, -12]");
+        shiftRight_helper("(-Infinity, -3/2]", -4, "(-Infinity, -24]");
+
+        shiftRight_helper("[-6, Infinity)", 0, "[-6, Infinity)");
+        shiftRight_helper("[-6, Infinity)", 1, "[-3, Infinity)");
+        shiftRight_helper("[-6, Infinity)", 2, "[-3/2, Infinity)");
+        shiftRight_helper("[-6, Infinity)", 3, "[-3/4, Infinity)");
+        shiftRight_helper("[-6, Infinity)", 4, "[-3/8, Infinity)");
+        shiftRight_helper("[-6, Infinity)", -1, "[-12, Infinity)");
+        shiftRight_helper("[-6, Infinity)", -2, "[-24, Infinity)");
+        shiftRight_helper("[-6, Infinity)", -3, "[-48, Infinity)");
+        shiftRight_helper("[-6, Infinity)", -4, "[-96, Infinity)");
+    }
+
+    private static void sum_helper(@NotNull String input, @NotNull String output) {
+        aeq(sum(readIntervalList(input)), output);
+    }
+
+    private static void sum_fail_helper(@NotNull String input) {
+        try {
+            sum(readIntervalListWithNulls(input));
+            fail();
+        } catch (NullPointerException ignored) {}
     }
 
     @Test
     public void testSum() {
-        aeq(sum(readIntervalList("[]")), "[0, 0]");
-        aeq(sum(readIntervalList("[[-2, 5/3], (-Infinity, 6], [4, 4]]")), "(-Infinity, 35/3]");
+        sum_helper("[]", "[0, 0]");
+        sum_helper("[[-2, 5/3], (-Infinity, 6], [4, 4]]", "(-Infinity, 35/3]");
+        sum_fail_helper("[[-2, 5/3], null, [4, 4]]");
+    }
+
+    private static void product_helper(@NotNull String input, @NotNull String output) {
+        aeq(product(readIntervalList(input)), output);
+    }
+
+    private static void product_fail_helper(@NotNull String input) {
         try {
-            sum(readIntervalListWithNulls("[[-2, 5/3], null, [4, 4]]"));
+            product(readIntervalListWithNulls(input));
             fail();
         } catch (NullPointerException ignored) {}
     }
 
     @Test
     public void testProduct() {
-        aeq(product(readIntervalList("[]")), "[1, 1]");
-        aeq(product(readIntervalList("[[-2, 5/3], [0, 6], [4, 4]]")), "[-48, 40]");
-        aeq(product(readIntervalList("[[-2, 5/3], (-Infinity, 6], [4, 4]]")), "(-Infinity, Infinity)");
+        product_helper("[]", "[1, 1]");
+        product_helper("[[-2, 5/3], [0, 6], [4, 4]]", "[-48, 40]");
+        product_helper("[[-2, 5/3], (-Infinity, 6], [4, 4]]", "(-Infinity, Infinity)");
+        product_fail_helper("[[-2, 5/3], null, [4, 4]]");
+    }
+
+    private static void delta_helper(@NotNull Iterable<Interval> input, @NotNull String output) {
+        aeqitLimit(TINY_LIMIT, delta(input), output);
+    }
+
+    private static void delta_helper(@NotNull String input, @NotNull String output) {
+        delta_helper(readIntervalList(input), output);
+    }
+
+    private static void delta_fail_helper(@NotNull String input) {
         try {
-            product(readIntervalListWithNulls("[[-2, 5/3], null, [4, 4]]"));
+            toList(delta(readIntervalListWithNulls(input)));
             fail();
-        } catch (NullPointerException | IllegalArgumentException ignored) {}
+        } catch (IllegalArgumentException | NullPointerException ignored) {}
     }
 
     @Test
     public void testDelta() {
-        aeqit(delta(readIntervalList("[[1/3, 2]]")), "[]");
-        aeqit(delta(readIntervalList("[[-2, 5/3], (-Infinity, 6], [4, 4]]")), "[(-Infinity, 8], [-2, Infinity)]");
+        delta_helper("[[1/3, 2]]", "[]");
+        delta_helper("[[-2, 5/3], (-Infinity, 6], [4, 4]]", "[(-Infinity, 8], [-2, Infinity)]");
         Interval seed = read("[1/3, 1/2]").get();
-        aeqitLimit(TINY_LIMIT, delta(iterate(seed::multiply, seed)),
+        delta_helper(
+                iterate(seed::multiply, seed),
                 "[[-7/18, -1/12], [-23/108, 1/72], [-73/648, 11/432], [-227/3888, 49/2592], [-697/23328, 179/15552]," +
                 " [-2123/139968, 601/93312], [-6433/839808, 1931/559872], [-19427/5038848, 6049/3359232]," +
                 " [-58537/30233088, 18659/20155392], [-176123/181398528, 57001/120932352]," +
@@ -1584,15 +1636,10 @@ public class IntervalTest {
                 " [-387289417/50779978334208, 128878019/33853318889472]," +
                 " [-1161999323/304679870005248, 386896201/203119913336832]," +
                 " [-3486260113/1828079220031488, 1161212891/1218719480020992]," +
-                " [-10459304627/10968475320188928, 3484687249/7312316880125952], ...]");
-        try {
-            delta(readIntervalListWithNulls("[]"));
-            fail();
-        } catch (IllegalArgumentException ignored) {}
-        try {
-            toList(delta(readIntervalListWithNulls("[[-2, 5/3], null, [4, 4]]")));
-            fail();
-        } catch (NullPointerException ignored) {}
+                " [-10459304627/10968475320188928, 3484687249/7312316880125952], ...]"
+        );
+        delta_fail_helper("[]");
+        delta_fail_helper("[[-2, 5/3], null, [4, 4]]");
     }
 
     @Test

@@ -3,7 +3,6 @@ package mho.qbar.objects;
 import mho.qbar.iterableProviders.QBarExhaustiveProvider;
 import mho.qbar.iterableProviders.QBarRandomProvider;
 import mho.qbar.testing.QBarDemos;
-import mho.wheels.iterables.IterableUtils;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
@@ -13,7 +12,9 @@ import java.math.BigInteger;
 import java.util.List;
 
 import static mho.qbar.objects.Interval.*;
+import static mho.qbar.testing.QBarTesting.*;
 import static mho.wheels.iterables.IterableUtils.*;
+import static mho.wheels.testing.Testing.*;
 import static mho.wheels.testing.Testing.MEDIUM_LIMIT;
 
 @SuppressWarnings("UnusedDeclaration")
@@ -266,47 +267,42 @@ public class IntervalDemos extends QBarDemos {
     }
 
     private void demoShiftLeft() {
-        Iterable<Integer> is;
-        if (P instanceof QBarExhaustiveProvider) {
-            is = P.integers();
-        } else {
-            is  = ((QBarRandomProvider) P).integersGeometric();
-        }
-        for (Pair<Interval, Integer> p : take(LIMIT, P.pairs(P.intervals(), is))) {
+        for (Pair<Interval, Integer> p : take(LIMIT, P.pairs(P.intervals(), P.integersGeometric()))) {
             System.out.println(p.a + " << " + p.b + " = " + p.a.shiftLeft(p.b));
         }
     }
 
     private void demoShiftRight() {
-        Iterable<Integer> is;
-        if (P instanceof QBarExhaustiveProvider) {
-            is = P.integers();
-        } else {
-            is  = ((QBarRandomProvider) P).integersGeometric();
-        }
-        for (Pair<Interval, Integer> p : take(LIMIT, P.pairs(P.intervals(), is))) {
-            System.out.println(p.a + " << " + p.b + " = " + p.a.shiftRight(p.b));
+        for (Pair<Interval, Integer> p : take(LIMIT, P.pairs(P.intervals(), P.integersGeometric()))) {
+            System.out.println(p.a + " >> " + p.b + " = " + p.a.shiftRight(p.b));
         }
     }
 
     private void demoSum() {
-        for (List<Interval> rs : take(LIMIT, P.lists(P.intervals()))) {
+        for (List<Interval> rs : take(LIMIT, P.withScale(4).lists(P.intervals()))) {
             String listString = tail(init(rs.toString()));
             System.out.println("Σ(" + listString + ") = " + sum(rs));
         }
     }
 
     private void demoProduct() {
-        for (List<Interval> rs : take(LIMIT, P.lists(P.intervals()))) {
+        for (List<Interval> rs : take(LIMIT, P.withScale(4).lists(P.intervals()))) {
             String listString = tail(init(rs.toString()));
             System.out.println("Π(" + listString + ") = " + product(rs));
         }
     }
 
-    private void demoDelta() {
-        for (List<Interval> rs : take(LIMIT, P.listsAtLeast(1, P.intervals()))) {
+    private void demoDelta_finite() {
+        for (List<Interval> rs : take(LIMIT, P.withScale(4).listsAtLeast(1, P.intervals()))) {
             String listString = tail(init(rs.toString()));
-            System.out.println("Δ(" + listString + ") = " + IterableUtils.toString(delta(rs)));
+            System.out.println("Δ(" + listString + ") = " + its(delta(rs)));
+        }
+    }
+
+    private void demoDelta_infinite() {
+        for (Iterable<Interval> as : take(MEDIUM_LIMIT, P.prefixPermutations(QEP.intervals()))) {
+            String listString = tail(init(its(as)));
+            System.out.println("Δ(" + listString + ") = " + its(delta(as)));
         }
     }
 
