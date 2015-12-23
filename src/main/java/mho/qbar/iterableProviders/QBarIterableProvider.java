@@ -2849,9 +2849,25 @@ public strictfp abstract class QBarIterableProvider {
      */
     public abstract @NotNull Iterable<Rational> rationalsNotIn(@NotNull Interval a);
 
+    /**
+     * Generates {@code RationalVector}s with a given dimension.
+     *
+     * @param dimension the dimension of the generated {@code RationalVector}s
+     */
     public abstract @NotNull Iterable<RationalVector> rationalVectors(int dimension);
-    public abstract @NotNull Iterable<RationalVector> rationalVectorsAtLeast(int minDimension);
+
+    /**
+     * Generates {@code RationalVector}s.
+     */
     public abstract @NotNull Iterable<RationalVector> rationalVectors();
+
+    /**
+     * Generates {@code RationalVector}s with a minimum dimension.
+     *
+     * @param minDimension the minimum dimension of the generated {@code RationalVector}s
+     */
+    public abstract @NotNull Iterable<RationalVector> rationalVectorsAtLeast(int minDimension);
+
     public abstract @NotNull Iterable<RationalVector> reducedRationalVectors(int dimension);
     public abstract @NotNull Iterable<RationalVector> reducedRationalVectorsAtLeast(int minDimension);
     public abstract @NotNull Iterable<RationalVector> reducedRationalVectors();

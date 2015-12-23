@@ -216,19 +216,54 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
         }
     }
 
+    /**
+     * An {@code Iterable} that generates all {@code RationalVector}s with a given dimension.
+     *
+     * <ul>
+     *  <li>{@code dimension} cannot be negative.</li>
+     *  <li>The result is a non-removable {@code Iterable} containing {@code RationalVector}s.</li>
+     * </ul>
+     *
+     * Length is 1 if {@code dimension} is 0, infinite otherwise
+     *
+     * @param dimension the dimension of the generated {@code RationalVector}s
+     * @return all {@code RationalVector}s with dimension {@code dimension}
+     */
     @Override
     public @NotNull Iterable<RationalVector> rationalVectors(int dimension) {
         return map(RationalVector::of, lists(dimension, rationals()));
     }
 
-    @Override
-    public @NotNull Iterable<RationalVector> rationalVectorsAtLeast(int minDimension) {
-        return map(RationalVector::of, listsAtLeast(minDimension, rationals()));
-    }
-
+    /**
+     * An {@code Iterable} that generates all {@code RationalVector}s.
+     *
+     * <ul>
+     *  <li>The result is a non-removable {@code Iterable} containing {@code RationalVector}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
     @Override
     public @NotNull Iterable<RationalVector> rationalVectors() {
         return map(RationalVector::of, lists(rationals()));
+    }
+
+    /**
+     * An {@code Iterable} that generates all {@code RationalVector}s with a minimum dimension.
+     *
+     * <ul>
+     *  <li>{@code dimension} cannot be negative.</li>
+     *  <li>The result is a non-removable {@code Iterable} containing {@code RationalVector}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param minDimension the minimum dimension of the generated {@code RationalVector}s
+     * @return all {@code RationalVector}s with dimension at least {@code minDimension}
+     */
+    @Override
+    public @NotNull Iterable<RationalVector> rationalVectorsAtLeast(int minDimension) {
+        return map(RationalVector::of, listsAtLeast(minDimension, rationals()));
     }
 
     @Override
