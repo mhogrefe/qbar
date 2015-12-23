@@ -1302,8 +1302,7 @@ public final class Interval implements Comparable<Interval> {
             } else {
                 Rational a = lower == null ? null : lower.pow(p);
                 Rational b = upper == null ? null : upper.pow(p);
-                Rational max = a == null || b == null ? null : max(a, b);
-                intervals.add(new Interval(Rational.ZERO, max));
+                intervals.add(new Interval(Rational.ZERO, a == null || b == null ? null : max(a, b)));
             }
         } else {
             intervals.add(new Interval(lower == null ? null : lower.pow(p), upper == null ? null : upper.pow(p)));
@@ -1327,14 +1326,35 @@ public final class Interval implements Comparable<Interval> {
      */
     @SuppressWarnings("JavaDoc")
     public @NotNull Interval powHull(int p) {
-        if (p < 0 && this.equals(ZERO))
-            throw new ArithmeticException("division by zero");
-        return convexHull(pow(p));
+        if (p == 0) {
+            return ONE;
+        } else if (p == 1) {
+            return this;
+        } else if (p < 0) {
+            if (equals(ZERO)) {
+                throw new ArithmeticException("If this is [0, 0], p cannot be negative. Invalid p: " + p);
+            }
+            return powHull(-p).invertHull();
+        } else if (p % 2 == 0) {
+            int lowerSign = lower == null ? -1 : lower.signum();
+            int upperSign = upper == null ? 1 : upper.signum();
+            if (lowerSign != -1 && upperSign != -1) {
+                return new Interval(lower.pow(p), upper == null ? null : upper.pow(p));
+            } else if (lowerSign != 1 && upperSign != 1) {
+                return new Interval(upper.pow(p), lower == null ? null : lower.pow(p));
+            } else {
+                Rational a = lower == null ? null : lower.pow(p);
+                Rational b = upper == null ? null : upper.pow(p);
+                return new Interval(Rational.ZERO, a == null || b == null ? null : max(a, b));
+            }
+        } else {
+            return new Interval(lower == null ? null : lower.pow(p), upper == null ? null : upper.pow(p));
+        }
     }
 
     /**
-     * If {@code this} and {@code that} are disjoint, returns the ordering between any element of {@code this} and any
-     * element of {@code that}; otherwise, returns an empty {@code Optional}.
+     * Returns the ordering between any element of {@code this} and any element of {@code that}. If the ordering
+     * depends on the elements chosen, returns an empty {@code Optional}.
      *
      * <ul>
      *  <li>{@code this} may be any {@code Interval}.</li>
@@ -1370,8 +1390,7 @@ public final class Interval implements Comparable<Interval> {
         if (this == that) return true;
         if (that == null || getClass() != that.getClass()) return false;
         Interval interval = (Interval) that;
-        return (lower == null ? interval.lower == null : lower.equals(interval.lower)) &&
-               (upper == null ? interval.upper == null : upper.equals(interval.upper)); ///
+        return Objects.equals(lower, interval.lower) && Objects.equals(upper, interval.upper);
     }
 
     /**
@@ -1386,9 +1405,7 @@ public final class Interval implements Comparable<Interval> {
      */
     @Override
     public int hashCode() {
-        int result = lower != null ? lower.hashCode() : 0;
-        result = 31 * result + (upper != null ? upper.hashCode() : 0);
-        return result;
+        return (lower != null ? lower.hashCode() : 0) * 31 + (upper != null ? upper.hashCode() : 0);
     }
 
     /**
@@ -1410,11 +1427,11 @@ public final class Interval implements Comparable<Interval> {
         if (this == that) return 0;
         if (lower == null && that.lower != null) return -1;
         if (lower != null && that.lower == null) return 1;
-        Ordering lowerOrdering = lower == null ? EQ : compare(lower, that.lower);
-        if (lowerOrdering != EQ) return lowerOrdering.toInt();
+        int lowerCompare = lower == null ? 0 : lower.compareTo(that.lower);
+        if (lowerCompare != 0) return lowerCompare;
         if (upper == null && that.upper != null) return 1;
         if (upper != null && that.upper == null) return -1;
-        return (upper == null ? EQ : compare(upper, that.upper)).toInt();
+        return upper == null ? 0 : upper.compareTo(that.upper);
     }
 
     /**

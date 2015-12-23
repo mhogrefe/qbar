@@ -1,7 +1,5 @@
 package mho.qbar.objects;
 
-import mho.qbar.iterableProviders.QBarExhaustiveProvider;
-import mho.qbar.iterableProviders.QBarRandomProvider;
 import mho.qbar.testing.QBarDemos;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
@@ -15,7 +13,6 @@ import static mho.qbar.objects.Interval.*;
 import static mho.qbar.testing.QBarTesting.*;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.testing.Testing.*;
-import static mho.wheels.testing.Testing.MEDIUM_LIMIT;
 
 @SuppressWarnings("UnusedDeclaration")
 public class IntervalDemos extends QBarDemos {
@@ -307,30 +304,18 @@ public class IntervalDemos extends QBarDemos {
     }
 
     private void demoPow() {
-        Iterable<Integer> exps;
-        if (P instanceof QBarExhaustiveProvider) {
-            exps = P.integers();
-        } else {
-            exps = ((QBarRandomProvider) P).integersGeometric();
-        }
-        for (Pair<Interval, Integer> p : take(LIMIT, P.pairs(P.intervals(), exps))) {
+        for (Pair<Interval, Integer> p : take(LIMIT, P.pairs(P.intervals(), P.integersGeometric()))) {
             System.out.println(p.a + " ^ " + p.b + " = " + p.a.pow(p.b));
         }
     }
 
     private void demoPowHull() {
-        Iterable<Integer> exps;
-        if (P instanceof QBarExhaustiveProvider) {
-            exps = P.integers();
-        } else {
-            exps = ((QBarRandomProvider) P).integersGeometric();
-        }
-        Iterable<Pair<Interval, Integer>> ps = filter(
+        Iterable<Pair<Interval, Integer>> ps = filterInfinite(
                 p -> p.b >= 0 || !p.a.equals(ZERO),
-                P.pairs(P.intervals(), exps)
+                P.pairs(P.intervals(), P.integersGeometric())
         );
         for (Pair<Interval, Integer> p : take(LIMIT, ps)) {
-            System.out.println(p.a + " ^ " + p.b + " = " + p.a.powHull(p.b));
+            System.out.println("powHull(" + p.a + ", " + p.b + ") = " + p.a.powHull(p.b));
         }
     }
 

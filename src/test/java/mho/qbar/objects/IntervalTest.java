@@ -1642,169 +1642,201 @@ public class IntervalTest {
         delta_fail_helper("[[-2, 5/3], null, [4, 4]]");
     }
 
+    private static void pow_helper(@NotNull String a, int p, @NotNull String output) {
+        aeq(read(a).get().pow(p), output);
+    }
+
     @Test
     public void testPow() {
-        aeq(ZERO.pow(0), "[[1, 1]]");
-        aeq(ZERO.pow(1), "[[0, 0]]");
-        aeq(ZERO.pow(2), "[[0, 0]]");
-        aeq(ZERO.pow(3), "[[0, 0]]");
-        aeq(ONE.pow(0), "[[1, 1]]");
-        aeq(ONE.pow(1), "[[1, 1]]");
-        aeq(ONE.pow(2), "[[1, 1]]");
-        aeq(ONE.pow(3), "[[1, 1]]");
-        aeq(ONE.pow(-1), "[[1, 1]]");
-        aeq(ONE.pow(-2), "[[1, 1]]");
-        aeq(ONE.pow(-3), "[[1, 1]]");
-        aeq(ALL.pow(0), "[[1, 1]]");
-        aeq(ALL.pow(1), "[(-Infinity, Infinity)]");
-        aeq(ALL.pow(2), "[[0, Infinity)]");
-        aeq(ALL.pow(3), "[(-Infinity, Infinity)]");
-        aeq(ALL.pow(-1), "[(-Infinity, Infinity)]");
-        aeq(ALL.pow(-2), "[[0, Infinity)]");
-        aeq(ALL.pow(-3), "[(-Infinity, Infinity)]");
-        aeq(read("[-2, 5/3]").get().pow(0), "[[1, 1]]");
-        aeq(read("[-2, 5/3]").get().pow(1), "[[-2, 5/3]]");
-        aeq(read("[-2, 5/3]").get().pow(2), "[[0, 4]]");
-        aeq(read("[-2, 5/3]").get().pow(3), "[[-8, 125/27]]");
-        aeq(read("[-2, 5/3]").get().pow(-1), "[(-Infinity, -1/2], [3/5, Infinity)]");
-        aeq(read("[-2, 5/3]").get().pow(-2), "[[1/4, Infinity)]");
-        aeq(read("[-2, 5/3]").get().pow(-3), "[(-Infinity, -1/8], [27/125, Infinity)]");
-        aeq(read("[4, 4]").get().pow(0), "[[1, 1]]");
-        aeq(read("[4, 4]").get().pow(1), "[[4, 4]]");
-        aeq(read("[4, 4]").get().pow(2), "[[16, 16]]");
-        aeq(read("[4, 4]").get().pow(3), "[[64, 64]]");
-        aeq(read("[4, 4]").get().pow(-1), "[[1/4, 1/4]]");
-        aeq(read("[4, 4]").get().pow(-2), "[[1/16, 1/16]]");
-        aeq(read("[4, 4]").get().pow(-3), "[[1/64, 1/64]]");
-        aeq(read("(-Infinity, 3/2]").get().pow(0), "[[1, 1]]");
-        aeq(read("(-Infinity, 3/2]").get().pow(1), "[(-Infinity, 3/2]]");
-        aeq(read("(-Infinity, 3/2]").get().pow(2), "[[0, Infinity)]");
-        aeq(read("(-Infinity, 3/2]").get().pow(3), "[(-Infinity, 27/8]]");
-        aeq(read("(-Infinity, 3/2]").get().pow(-1), "[(-Infinity, 0], [2/3, Infinity)]");
-        aeq(read("(-Infinity, 3/2]").get().pow(-2), "[[0, Infinity)]");
-        aeq(read("(-Infinity, 3/2]").get().pow(-3), "[(-Infinity, 0], [8/27, Infinity)]");
-        aeq(read("[-6, Infinity)").get().pow(0), "[[1, 1]]");
-        aeq(read("[-6, Infinity)").get().pow(1), "[[-6, Infinity)]");
-        aeq(read("[-6, Infinity)").get().pow(2), "[[0, Infinity)]");
-        aeq(read("[-6, Infinity)").get().pow(3), "[[-216, Infinity)]");
-        aeq(read("[-6, Infinity)").get().pow(-1), "[(-Infinity, -1/6], [0, Infinity)]");
-        aeq(read("[-6, Infinity)").get().pow(-2), "[[0, Infinity)]");
-        aeq(read("[-6, Infinity)").get().pow(-3), "[(-Infinity, -1/216], [0, Infinity)]");
+        pow_helper("[0, 0]", 0, "[[1, 1]]");
+        pow_helper("[0, 0]", 1, "[[0, 0]]");
+        pow_helper("[0, 0]", 2, "[[0, 0]]");
+        pow_helper("[0, 0]", 3, "[[0, 0]]");
+        pow_helper("[0, 0]", -1, "[]");
+        pow_helper("[0, 0]", -2, "[]");
+        pow_helper("[0, 0]", -3, "[]");
+
+        pow_helper("[1, 1]", 0, "[[1, 1]]");
+        pow_helper("[1, 1]", 1, "[[1, 1]]");
+        pow_helper("[1, 1]", 2, "[[1, 1]]");
+        pow_helper("[1, 1]", 3, "[[1, 1]]");
+        pow_helper("[1, 1]", -1, "[[1, 1]]");
+        pow_helper("[1, 1]", -2, "[[1, 1]]");
+        pow_helper("[1, 1]", -3, "[[1, 1]]");
+
+        pow_helper("(-Infinity, Infinity)", 0, "[[1, 1]]");
+        pow_helper("(-Infinity, Infinity)", 1, "[(-Infinity, Infinity)]");
+        pow_helper("(-Infinity, Infinity)", 2, "[[0, Infinity)]");
+        pow_helper("(-Infinity, Infinity)", 3, "[(-Infinity, Infinity)]");
+        pow_helper("(-Infinity, Infinity)", -1, "[(-Infinity, Infinity)]");
+        pow_helper("(-Infinity, Infinity)", -2, "[[0, Infinity)]");
+        pow_helper("(-Infinity, Infinity)", -3, "[(-Infinity, Infinity)]");
+
+        pow_helper("[-2, 5/3]", 0, "[[1, 1]]");
+        pow_helper("[-2, 5/3]", 1, "[[-2, 5/3]]");
+        pow_helper("[-2, 5/3]", 2, "[[0, 4]]");
+        pow_helper("[-2, 5/3]", 3, "[[-8, 125/27]]");
+        pow_helper("[-2, 5/3]", -1, "[(-Infinity, -1/2], [3/5, Infinity)]");
+        pow_helper("[-2, 5/3]", -2, "[[1/4, Infinity)]");
+        pow_helper("[-2, 5/3]", -3, "[(-Infinity, -1/8], [27/125, Infinity)]");
+
+        pow_helper("[4, 4]", 0, "[[1, 1]]");
+        pow_helper("[4, 4]", 1, "[[4, 4]]");
+        pow_helper("[4, 4]", 2, "[[16, 16]]");
+        pow_helper("[4, 4]", 3, "[[64, 64]]");
+        pow_helper("[4, 4]", -1, "[[1/4, 1/4]]");
+        pow_helper("[4, 4]", -2, "[[1/16, 1/16]]");
+        pow_helper("[4, 4]", -3, "[[1/64, 1/64]]");
+
+        pow_helper("(-Infinity, 3/2]", 0, "[[1, 1]]");
+        pow_helper("(-Infinity, 3/2]", 1, "[(-Infinity, 3/2]]");
+        pow_helper("(-Infinity, 3/2]", 2, "[[0, Infinity)]");
+        pow_helper("(-Infinity, 3/2]", 3, "[(-Infinity, 27/8]]");
+        pow_helper("(-Infinity, 3/2]", -1, "[(-Infinity, 0], [2/3, Infinity)]");
+        pow_helper("(-Infinity, 3/2]", -2, "[[0, Infinity)]");
+        pow_helper("(-Infinity, 3/2]", -3, "[(-Infinity, 0], [8/27, Infinity)]");
+
+        pow_helper("[-6, Infinity)", 0, "[[1, 1]]");
+        pow_helper("[-6, Infinity)", 1, "[[-6, Infinity)]");
+        pow_helper("[-6, Infinity)", 2, "[[0, Infinity)]");
+        pow_helper("[-6, Infinity)", 3, "[[-216, Infinity)]");
+        pow_helper("[-6, Infinity)", -1, "[(-Infinity, -1/6], [0, Infinity)]");
+        pow_helper("[-6, Infinity)", -2, "[[0, Infinity)]");
+        pow_helper("[-6, Infinity)", -3, "[(-Infinity, -1/216], [0, Infinity)]");
+    }
+
+    private static void powHull_helper(@NotNull String a, int p, @NotNull String output) {
+        aeq(read(a).get().powHull(p), output);
+    }
+
+    private static void powHull_fail_helper(@NotNull String a, int p) {
+        try {
+            read(a).get().powHull(p);
+            fail();
+        } catch (ArithmeticException ignored) {}
     }
 
     @Test
     public void testPowHull() {
-        aeq(ZERO.powHull(0), "[1, 1]");
-        aeq(ZERO.powHull(1), "[0, 0]");
-        aeq(ZERO.powHull(2), "[0, 0]");
-        aeq(ZERO.powHull(3), "[0, 0]");
-        aeq(ONE.powHull(0), "[1, 1]");
-        aeq(ONE.powHull(1), "[1, 1]");
-        aeq(ONE.powHull(2), "[1, 1]");
-        aeq(ONE.powHull(3), "[1, 1]");
-        aeq(ONE.powHull(-1), "[1, 1]");
-        aeq(ONE.powHull(-2), "[1, 1]");
-        aeq(ONE.powHull(-3), "[1, 1]");
-        aeq(ALL.powHull(0), "[1, 1]");
-        aeq(ALL.powHull(1), "(-Infinity, Infinity)");
-        aeq(ALL.powHull(2), "[0, Infinity)");
-        aeq(ALL.powHull(3), "(-Infinity, Infinity)");
-        aeq(ALL.powHull(-1), "(-Infinity, Infinity)");
-        aeq(ALL.powHull(-2), "[0, Infinity)");
-        aeq(ALL.powHull(-3), "(-Infinity, Infinity)");
-        aeq(read("[-2, 5/3]").get().powHull(0), "[1, 1]");
-        aeq(read("[-2, 5/3]").get().powHull(1), "[-2, 5/3]");
-        aeq(read("[-2, 5/3]").get().powHull(2), "[0, 4]");
-        aeq(read("[-2, 5/3]").get().powHull(3), "[-8, 125/27]");
-        aeq(read("[-2, 5/3]").get().powHull(-1), "(-Infinity, Infinity)");
-        aeq(read("[-2, 5/3]").get().powHull(-2), "[1/4, Infinity)");
-        aeq(read("[-2, 5/3]").get().powHull(-3), "(-Infinity, Infinity)");
-        aeq(read("[4, 4]").get().powHull(0), "[1, 1]");
-        aeq(read("[4, 4]").get().powHull(1), "[4, 4]");
-        aeq(read("[4, 4]").get().powHull(2), "[16, 16]");
-        aeq(read("[4, 4]").get().powHull(3), "[64, 64]");
-        aeq(read("[4, 4]").get().powHull(-1), "[1/4, 1/4]");
-        aeq(read("[4, 4]").get().powHull(-2), "[1/16, 1/16]");
-        aeq(read("[4, 4]").get().powHull(-3), "[1/64, 1/64]");
-        aeq(read("(-Infinity, 3/2]").get().powHull(0), "[1, 1]");
-        aeq(read("(-Infinity, 3/2]").get().powHull(1), "(-Infinity, 3/2]");
-        aeq(read("(-Infinity, 3/2]").get().powHull(2), "[0, Infinity)");
-        aeq(read("(-Infinity, 3/2]").get().powHull(3), "(-Infinity, 27/8]");
-        aeq(read("(-Infinity, 3/2]").get().powHull(-1), "(-Infinity, Infinity)");
-        aeq(read("(-Infinity, 3/2]").get().powHull(-2), "[0, Infinity)");
-        aeq(read("(-Infinity, 3/2]").get().powHull(-3), "(-Infinity, Infinity)");
-        aeq(read("[-6, Infinity)").get().powHull(0), "[1, 1]");
-        aeq(read("[-6, Infinity)").get().powHull(1), "[-6, Infinity)");
-        aeq(read("[-6, Infinity)").get().powHull(2), "[0, Infinity)");
-        aeq(read("[-6, Infinity)").get().powHull(3), "[-216, Infinity)");
-        aeq(read("[-6, Infinity)").get().powHull(-1), "(-Infinity, Infinity)");
-        aeq(read("[-6, Infinity)").get().powHull(-2), "[0, Infinity)");
-        aeq(read("[-6, Infinity)").get().powHull(-3), "(-Infinity, Infinity)");
-        try {
-            ZERO.powHull(-1);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        try {
-            ZERO.powHull(-2);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        try {
-            ZERO.powHull(-3);
-            fail();
-        } catch (ArithmeticException ignored) {}
+        powHull_helper("[0, 0]", 0, "[1, 1]");
+        powHull_helper("[0, 0]", 1, "[0, 0]");
+        powHull_helper("[0, 0]", 2, "[0, 0]");
+        powHull_helper("[0, 0]", 3, "[0, 0]");
+
+        powHull_helper("[1, 1]", 0, "[1, 1]");
+        powHull_helper("[1, 1]", 1, "[1, 1]");
+        powHull_helper("[1, 1]", 2, "[1, 1]");
+        powHull_helper("[1, 1]", 3, "[1, 1]");
+        powHull_helper("[1, 1]", -1, "[1, 1]");
+        powHull_helper("[1, 1]", -2, "[1, 1]");
+        powHull_helper("[1, 1]", -3, "[1, 1]");
+
+        powHull_helper("(-Infinity, Infinity)", 0, "[1, 1]");
+        powHull_helper("(-Infinity, Infinity)", 1, "(-Infinity, Infinity)");
+        powHull_helper("(-Infinity, Infinity)", 2, "[0, Infinity)");
+        powHull_helper("(-Infinity, Infinity)", 3, "(-Infinity, Infinity)");
+        powHull_helper("(-Infinity, Infinity)", -1, "(-Infinity, Infinity)");
+        powHull_helper("(-Infinity, Infinity)", -2, "[0, Infinity)");
+        powHull_helper("(-Infinity, Infinity)", -3, "(-Infinity, Infinity)");
+
+        powHull_helper("[-2, 5/3]", 0, "[1, 1]");
+        powHull_helper("[-2, 5/3]", 1, "[-2, 5/3]");
+        powHull_helper("[-2, 5/3]", 2, "[0, 4]");
+        powHull_helper("[-2, 5/3]", 3, "[-8, 125/27]");
+        powHull_helper("[-2, 5/3]", -1, "(-Infinity, Infinity)");
+        powHull_helper("[-2, 5/3]", -2, "[1/4, Infinity)");
+        powHull_helper("[-2, 5/3]", -3, "(-Infinity, Infinity)");
+
+        powHull_helper("[4, 4]", 0, "[1, 1]");
+        powHull_helper("[4, 4]", 1, "[4, 4]");
+        powHull_helper("[4, 4]", 2, "[16, 16]");
+        powHull_helper("[4, 4]", 3, "[64, 64]");
+        powHull_helper("[4, 4]", -1, "[1/4, 1/4]");
+        powHull_helper("[4, 4]", -2, "[1/16, 1/16]");
+        powHull_helper("[4, 4]", -3, "[1/64, 1/64]");
+
+        powHull_helper("(-Infinity, 3/2]", 0, "[1, 1]");
+        powHull_helper("(-Infinity, 3/2]", 1, "(-Infinity, 3/2]");
+        powHull_helper("(-Infinity, 3/2]", 2, "[0, Infinity)");
+        powHull_helper("(-Infinity, 3/2]", 3, "(-Infinity, 27/8]");
+        powHull_helper("(-Infinity, 3/2]", -1, "(-Infinity, Infinity)");
+        powHull_helper("(-Infinity, 3/2]", -2, "[0, Infinity)");
+        powHull_helper("(-Infinity, 3/2]", -3, "(-Infinity, Infinity)");
+
+        powHull_helper("[-6, Infinity)", 0, "[1, 1]");
+        powHull_helper("[-6, Infinity)", 1, "[-6, Infinity)");
+        powHull_helper("[-6, Infinity)", 2, "[0, Infinity)");
+        powHull_helper("[-6, Infinity)", 3, "[-216, Infinity)");
+        powHull_helper("[-6, Infinity)", -1, "(-Infinity, Infinity)");
+        powHull_helper("[-6, Infinity)", -2, "[0, Infinity)");
+        powHull_helper("[-6, Infinity)", -3, "(-Infinity, Infinity)");
+
+        powHull_fail_helper("[0, 0]", -1);
+        powHull_fail_helper("[0, 0]", -2);
+        powHull_fail_helper("[0, 0]", -3);
+    }
+
+    private static void elementCompare_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
+        aeq(read(a).get().elementCompare(read(b).get()), output);
     }
 
     @Test
     public void testElementCompare() {
-        aeq(ZERO.elementCompare(ZERO), "Optional[EQ]");
-        aeq(ZERO.elementCompare(ONE), "Optional[LT]");
-        aeq(ZERO.elementCompare(ALL), "Optional.empty");
-        aeq(ZERO.elementCompare(read("[-2, 5/3]").get()), "Optional.empty");
-        aeq(ZERO.elementCompare(read("[4, 4]").get()), "Optional[LT]");
-        aeq(ZERO.elementCompare(read("(-Infinity, 3/2]").get()), "Optional.empty");
-        aeq(ZERO.elementCompare(read("[-6, Infinity)").get()), "Optional.empty");
-        aeq(ONE.elementCompare(ZERO), "Optional[GT]");
-        aeq(ONE.elementCompare(ONE), "Optional[EQ]");
-        aeq(ONE.elementCompare(ALL), "Optional.empty");
-        aeq(ONE.elementCompare(read("[-2, 5/3]").get()), "Optional.empty");
-        aeq(ONE.elementCompare(read("[4, 4]").get()), "Optional[LT]");
-        aeq(ONE.elementCompare(read("(-Infinity, 3/2]").get()), "Optional.empty");
-        aeq(ONE.elementCompare(read("[-6, Infinity)").get()), "Optional.empty");
-        aeq(ALL.elementCompare(ZERO), "Optional.empty");
-        aeq(ALL.elementCompare(ONE), "Optional.empty");
-        aeq(ALL.elementCompare(ALL), "Optional.empty");
-        aeq(ALL.elementCompare(read("[-2, 5/3]").get()), "Optional.empty");
-        aeq(ALL.elementCompare(read("[4, 4]").get()), "Optional.empty");
-        aeq(ALL.elementCompare(read("(-Infinity, 3/2]").get()), "Optional.empty");
-        aeq(ALL.elementCompare(read("[-6, Infinity)").get()), "Optional.empty");
-        aeq(read("[-2, 5/3]").get().elementCompare(ZERO), "Optional.empty");
-        aeq(read("[-2, 5/3]").get().elementCompare(ONE), "Optional.empty");
-        aeq(read("[-2, 5/3]").get().elementCompare(ALL), "Optional.empty");
-        aeq(read("[-2, 5/3]").get().elementCompare(read("[-2, 5/3]").get()), "Optional.empty");
-        aeq(read("[-2, 5/3]").get().elementCompare(read("[4, 4]").get()), "Optional[LT]");
-        aeq(read("[-2, 5/3]").get().elementCompare(read("(-Infinity, 3/2]").get()), "Optional.empty");
-        aeq(read("[-2, 5/3]").get().elementCompare(read("[-6, Infinity)").get()), "Optional.empty");
-        aeq(read("[4, 4]").get().elementCompare(ZERO), "Optional[GT]");
-        aeq(read("[4, 4]").get().elementCompare(ONE), "Optional[GT]");
-        aeq(read("[4, 4]").get().elementCompare(ALL), "Optional.empty");
-        aeq(read("[4, 4]").get().elementCompare(read("[-2, 5/3]").get()), "Optional[GT]");
-        aeq(read("[4, 4]").get().elementCompare(read("[4, 4]").get()), "Optional[EQ]");
-        aeq(read("[4, 4]").get().elementCompare(read("(-Infinity, 3/2]").get()), "Optional[GT]");
-        aeq(read("[4, 4]").get().elementCompare(read("[-6, Infinity)").get()), "Optional.empty");
-        aeq(read("(-Infinity, 3/2]").get().elementCompare(ZERO), "Optional.empty");
-        aeq(read("(-Infinity, 3/2]").get().elementCompare(ONE), "Optional.empty");
-        aeq(read("(-Infinity, 3/2]").get().elementCompare(ALL), "Optional.empty");
-        aeq(read("(-Infinity, 3/2]").get().elementCompare(read("[-2, 5/3]").get()), "Optional.empty");
-        aeq(read("(-Infinity, 3/2]").get().elementCompare(read("[4, 4]").get()), "Optional[LT]");
-        aeq(read("(-Infinity, 3/2]").get().elementCompare(read("(-Infinity, 3/2]").get()), "Optional.empty");
-        aeq(read("(-Infinity, 3/2]").get().elementCompare(read("[-6, Infinity)").get()), "Optional.empty");
-        aeq(read("[-6, Infinity)").get().elementCompare(ZERO), "Optional.empty");
-        aeq(read("[-6, Infinity)").get().elementCompare(ONE), "Optional.empty");
-        aeq(read("[-6, Infinity)").get().elementCompare(ALL), "Optional.empty");
-        aeq(read("[-6, Infinity)").get().elementCompare(read("[-2, 5/3]").get()), "Optional.empty");
-        aeq(read("[-6, Infinity)").get().elementCompare(read("[4, 4]").get()), "Optional.empty");
-        aeq(read("[-6, Infinity)").get().elementCompare(read("(-Infinity, 3/2]").get()), "Optional.empty");
-        aeq(read("[-6, Infinity)").get().elementCompare(read("[-6, Infinity)").get()), "Optional.empty");
+        elementCompare_helper("[0, 0]", "[0, 0]", "Optional[EQ]");
+        elementCompare_helper("[0, 0]", "[1, 1]", "Optional[LT]");
+        elementCompare_helper("[0, 0]", "(-Infinity, Infinity)", "Optional.empty");
+        elementCompare_helper("[0, 0]", "[-2, 5/3]", "Optional.empty");
+        elementCompare_helper("[0, 0]", "[4, 4]", "Optional[LT]");
+        elementCompare_helper("[0, 0]", "(-Infinity, 3/2]", "Optional.empty");
+        elementCompare_helper("[0, 0]", "[-6, Infinity)", "Optional.empty");
+
+        elementCompare_helper("[1, 1]", "[0, 0]", "Optional[GT]");
+        elementCompare_helper("[1, 1]", "[1, 1]", "Optional[EQ]");
+        elementCompare_helper("[1, 1]", "(-Infinity, Infinity)", "Optional.empty");
+        elementCompare_helper("[1, 1]", "[-2, 5/3]", "Optional.empty");
+        elementCompare_helper("[1, 1]", "[4, 4]", "Optional[LT]");
+        elementCompare_helper("[1, 1]", "(-Infinity, 3/2]", "Optional.empty");
+        elementCompare_helper("[1, 1]", "[-6, Infinity)", "Optional.empty");
+
+        elementCompare_helper("(-Infinity, Infinity)", "[0, 0]", "Optional.empty");
+        elementCompare_helper("(-Infinity, Infinity)", "[1, 1]", "Optional.empty");
+        elementCompare_helper("(-Infinity, Infinity)", "(-Infinity, Infinity)", "Optional.empty");
+        elementCompare_helper("(-Infinity, Infinity)", "[-2, 5/3]", "Optional.empty");
+        elementCompare_helper("(-Infinity, Infinity)", "[4, 4]", "Optional.empty");
+        elementCompare_helper("(-Infinity, Infinity)", "(-Infinity, 3/2]", "Optional.empty");
+        elementCompare_helper("(-Infinity, Infinity)", "[-6, Infinity)", "Optional.empty");
+
+        elementCompare_helper("[-2, 5/3]", "[0, 0]", "Optional.empty");
+        elementCompare_helper("[-2, 5/3]", "[1, 1]", "Optional.empty");
+        elementCompare_helper("[-2, 5/3]", "(-Infinity, Infinity)", "Optional.empty");
+        elementCompare_helper("[-2, 5/3]", "[-2, 5/3]", "Optional.empty");
+        elementCompare_helper("[-2, 5/3]", "[4, 4]", "Optional[LT]");
+        elementCompare_helper("[-2, 5/3]", "(-Infinity, 3/2]", "Optional.empty");
+        elementCompare_helper("[-2, 5/3]", "[-6, Infinity)", "Optional.empty");
+
+        elementCompare_helper("[4, 4]", "[0, 0]", "Optional[GT]");
+        elementCompare_helper("[4, 4]", "[1, 1]", "Optional[GT]");
+        elementCompare_helper("[4, 4]", "(-Infinity, Infinity)", "Optional.empty");
+        elementCompare_helper("[4, 4]", "[-2, 5/3]", "Optional[GT]");
+        elementCompare_helper("[4, 4]", "[4, 4]", "Optional[EQ]");
+        elementCompare_helper("[4, 4]", "(-Infinity, 3/2]", "Optional[GT]");
+        elementCompare_helper("[4, 4]", "[-6, Infinity)", "Optional.empty");
+
+        elementCompare_helper("(-Infinity, 3/2]", "[0, 0]", "Optional.empty");
+        elementCompare_helper("(-Infinity, 3/2]", "[1, 1]", "Optional.empty");
+        elementCompare_helper("(-Infinity, 3/2]", "(-Infinity, Infinity)", "Optional.empty");
+        elementCompare_helper("(-Infinity, 3/2]", "[-2, 5/3]", "Optional.empty");
+        elementCompare_helper("(-Infinity, 3/2]", "[4, 4]", "Optional[LT]");
+        elementCompare_helper("(-Infinity, 3/2]", "(-Infinity, 3/2]", "Optional.empty");
+        elementCompare_helper("(-Infinity, 3/2]", "[-6, Infinity)", "Optional.empty");
+
+        elementCompare_helper("[-6, Infinity)", "[0, 0]", "Optional.empty");
+        elementCompare_helper("[-6, Infinity)", "[1, 1]", "Optional.empty");
+        elementCompare_helper("[-6, Infinity)", "(-Infinity, Infinity)", "Optional.empty");
+        elementCompare_helper("[-6, Infinity)", "[-2, 5/3]", "Optional.empty");
+        elementCompare_helper("[-6, Infinity)", "[4, 4]", "Optional.empty");
+        elementCompare_helper("[-6, Infinity)", "(-Infinity, 3/2]", "Optional.empty");
+        elementCompare_helper("[-6, Infinity)", "[-6, Infinity)", "Optional.empty");
     }
 
     @Test
