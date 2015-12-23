@@ -12,7 +12,7 @@ Progress
 | QBarExhaustiveProvider | ✘       | ✘       | ✘     | ✘     | ✘          |
 | QBarIterableProvider   | ✘       | ✘       | ✘     | ✘     | ✘          |
 | QBarRandomProvider     | ✘       | ✘       | ✘     | ✘     | ✘          |
-| Interval               | ✘       | ✘       | ✘     | ✘     | ✘          |
+| Interval               | ✔       | ✔       | ✔     | ✔     | ✔          |
 | Polynomial             | ✘       | ✘       | ✘     | ✘     | ✘          |
 | Rational               | ✔       | ✔       | ✔     | ✔     | ✔          |
 | RationalMatrix         | ✘       | ✘       | ✘     | ✘     | ✘          |

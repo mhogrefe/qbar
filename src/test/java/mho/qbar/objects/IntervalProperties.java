@@ -1896,36 +1896,17 @@ public class IntervalProperties extends QBarTestProperties {
     }
 
     private void propertiesRead() {
-        initialize("");
-        System.out.println("\t\ttesting read(String) properties...");
-
-        for (String s : take(LIMIT, P.strings())) {
-            read(s);
-        }
-
-        for (Interval a : take(LIMIT, P.intervals())) {
-            Optional<Interval> oi = read(a.toString());
-            assertEquals(a, oi.get(), a);
-        }
+        initialize("read(String)");
+        propertiesReadHelper(LIMIT, P, INTERVAL_CHARS, P.intervals(), Interval::read, Interval::validate, false);
     }
 
     private void propertiesFindIn() {
-        initialize("");
-        System.out.println("\t\ttesting findIn(String) properties...");
-
+        initialize("findIn(String)");
         propertiesFindInHelper(LIMIT, P.getWheelsProvider(), P.intervals(), Interval::read, Interval::findIn, a -> {});
     }
 
     private void propertiesToString() {
-        initialize("");
-        System.out.println("\t\ttesting toString() properties...");
-
-        for (Interval a : take(LIMIT, P.intervals())) {
-            String s = a.toString();
-            assertTrue(a, isSubsetOf(s, INTERVAL_CHARS));
-            Optional<Interval> readI = read(s);
-            assertTrue(a, readI.isPresent());
-            assertEquals(a, readI.get(), a);
-        }
+        initialize("toString()");
+        propertiesToStringHelper(LIMIT, INTERVAL_CHARS, P.intervals(), Interval::read);
     }
 }

@@ -1,10 +1,10 @@
 package mho.qbar.objects;
 
 import mho.wheels.io.Readers;
+import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
-import java.math.BigInteger;
 import java.util.List;
 
 import static mho.qbar.objects.Interval.*;
@@ -1875,49 +1875,68 @@ public class IntervalTest {
         );
     }
 
+    private static void read_helper(@NotNull String input) {
+        aeq(read(input).get(), input);
+    }
+
+    private static void read_empty_helper(@NotNull String input) {
+        assertFalse(read(input).isPresent());
+    }
+
     @Test
     public void testRead() {
-        aeq(read("[0, 0]").get(), ZERO);
-        aeq(read("[1, 1]").get(), ONE);
-        aeq(read("(-Infinity, Infinity)").get(), ALL);
-        aeq(read("[-2, 5/3]").get(), "[-2, 5/3]");
-        aeq(read("[4, 4]").get(), "[4, 4]");
-        aeq(read("(-Infinity, 3/2]").get(), "(-Infinity, 3/2]");
-        aeq(read("[-6, Infinity)").get(), "[-6, Infinity)");
-        assertFalse(read("").isPresent());
-        assertFalse(read("[").isPresent());
-        assertFalse(read("[]").isPresent());
-        assertFalse(read("[,]").isPresent());
-        assertFalse(read("[1, 1").isPresent());
-        assertFalse(read("[12]").isPresent());
-        assertFalse(read("[1 1]").isPresent());
-        assertFalse(read("[1,  1]").isPresent());
-        assertFalse(read("[ 1, 1]").isPresent());
-        assertFalse(read("[1, 1 ]").isPresent());
-        assertFalse(read("[1, 1] ").isPresent());
-        assertFalse(read("[-Infinity, Infinity]").isPresent());
-        assertFalse(read("(-Infinity, 4)").isPresent());
-        assertFalse(read("[4, Infinity]").isPresent());
-        assertFalse(read("(Infinity, -Infinity)").isPresent());
-        assertFalse(read("[2, 3-]").isPresent());
-        assertFalse(read("[2.0, 4]").isPresent());
-        assertFalse(read("[2,4]").isPresent());
-        assertFalse(read("[5, 4]").isPresent());
-        assertFalse(read("[5, 4/0]").isPresent());
+        read_helper("[0, 0]");
+        read_helper("[1, 1]");
+        read_helper("(-Infinity, Infinity)");
+        read_helper("[-2, 5/3]");
+        read_helper("[4, 4]");
+        read_helper("(-Infinity, 3/2]");
+        read_helper("[-6, Infinity)");
+        read_empty_helper("");
+        read_empty_helper("[");
+        read_empty_helper("[]");
+        read_empty_helper("[,]");
+        read_empty_helper("[1, 1");
+        read_empty_helper("[12]");
+        read_empty_helper("[1 1]");
+        read_empty_helper("[1,  1]");
+        read_empty_helper("[ 1, 1]");
+        read_empty_helper("[1, 1 ]");
+        read_empty_helper("[1, 1] ");
+        read_empty_helper("[-Infinity, Infinity]");
+        read_empty_helper("(-Infinity, 4)");
+        read_empty_helper("[4, Infinity]");
+        read_empty_helper("(Infinity, -Infinity)");
+        read_empty_helper("[2, 3-]");
+        read_empty_helper("[2.0, 4]");
+        read_empty_helper("[2,4]");
+        read_empty_helper("[5, 4]");
+        read_empty_helper("[5, 4/2]");
+        read_empty_helper("[5, 4/0]");
+    }
+
+    private static void findIn_helper(@NotNull String input, @NotNull String output, int index) {
+        Pair<Interval, Integer> result = findIn(input).get();
+        aeq(result.a, output);
+        aeq(result.b, index);
+    }
+
+    private static void findIn_empty_helper(@NotNull String input) {
+        assertFalse(findIn(input).isPresent());
     }
 
     @Test
     public void testFindIn() {
-        aeq(findIn("abcd[-5, 2/3]xyz").get(), "([-5, 2/3], 4)");
-        aeq(findIn("vdfvdf(-Infinity, 3]cds").get(), "((-Infinity, 3], 6)");
-        aeq(findIn("gvrgw49((-Infinity, Infinity)Infinity)").get(), "((-Infinity, Infinity), 8)");
-        assertFalse(findIn("").isPresent());
-        assertFalse(findIn("hello").isPresent());
-        assertFalse(findIn("vdfsvfbf").isPresent());
-        assertFalse(findIn("vdfvds[-Infinity, 2]vsd").isPresent());
-        assertFalse(findIn("vdfvds(Infinity, 2]vsd").isPresent());
-        assertFalse(findIn("abcd[5, 4]xyz").isPresent());
-        assertFalse(findIn("abcd[5, 4/0]xyz").isPresent());
+        findIn_helper("abcd[-5, 2/3]xyz", "[-5, 2/3]", 4);
+        findIn_helper("vdfvdf(-Infinity, 3]cds", "(-Infinity, 3]", 6);
+        findIn_helper("gvrgw49((-Infinity, Infinity)Infinity)", "(-Infinity, Infinity)", 8);
+        findIn_empty_helper("");
+        findIn_empty_helper("hello");
+        findIn_empty_helper("vdfsvfbf");
+        findIn_empty_helper("vdfvds[-Infinity, 2]vsd");
+        findIn_empty_helper("vdfvds(Infinity, 2]vsd");
+        findIn_empty_helper("abcd[5, 4]xyz");
+        findIn_empty_helper("abcd[5, 4/0]xyz");
     }
 
     private static @NotNull List<Interval> readIntervalList(@NotNull String s) {

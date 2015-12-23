@@ -352,7 +352,7 @@ public class IntervalDemos extends QBarDemos {
 
     private void demoRead() {
         for (String s : take(LIMIT, P.strings())) {
-            System.out.println("read(" + s + ") = " + read(s));
+            System.out.println("read(" + nicePrint(s) + ") = " + read(s));
         }
     }
 
@@ -364,7 +364,7 @@ public class IntervalDemos extends QBarDemos {
 
     private void demoFindIn() {
         for (String s : take(LIMIT, P.strings())) {
-            System.out.println("findIn(" + s + ") = " + findIn(s));
+            System.out.println("findIn(" + nicePrint(s) + ") = " + findIn(s));
         }
     }
 
