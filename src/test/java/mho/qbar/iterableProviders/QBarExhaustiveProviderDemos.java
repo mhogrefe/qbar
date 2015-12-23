@@ -7,8 +7,7 @@ import mho.wheels.structures.Pair;
 
 import static mho.qbar.testing.QBarTesting.QEP;
 import static mho.wheels.iterables.IterableUtils.take;
-import static mho.wheels.testing.Testing.MEDIUM_LIMIT;
-import static mho.wheels.testing.Testing.its;
+import static mho.wheels.testing.Testing.*;
 
 @SuppressWarnings("UnusedDeclaration")
 public class QBarExhaustiveProviderDemos extends QBarDemos {
@@ -43,6 +42,18 @@ public class QBarExhaustiveProviderDemos extends QBarDemos {
     private void demoRationalsNotIn() {
         for (Interval a : take(MEDIUM_LIMIT, P.intervals())) {
             System.out.println("rationalsNotIn(" + a + ") = " + its(QEP.rationalsNotIn(a)));
+        }
+    }
+
+    private void demoRationalVectors_int() {
+        for (int i : take(SMALL_LIMIT, P.naturalIntegersGeometric())) {
+            System.out.println("rationalVectors(" + i + ") = " + its(QEP.rationalVectors(i)));
+        }
+    }
+
+    private void demoRationalVectorsAtLeast_int() {
+        for (int i : take(SMALL_LIMIT, P.naturalIntegersGeometric())) {
+            System.out.println("rationalVectorsAtLeast(" + i + ") = " + its(QEP.rationalVectorsAtLeast(i)));
         }
     }
 }
