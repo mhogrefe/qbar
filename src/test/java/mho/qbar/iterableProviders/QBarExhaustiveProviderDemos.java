@@ -51,7 +51,7 @@ public class QBarExhaustiveProviderDemos extends QBarDemos {
         }
     }
 
-    private void demoRationalVectorsAtLeast_int() {
+    private void demoRationalVectorsAtLeast() {
         for (int i : take(SMALL_LIMIT, P.naturalIntegersGeometric())) {
             System.out.println("rationalVectorsAtLeast(" + i + ") = " + its(QEP.rationalVectorsAtLeast(i)));
         }

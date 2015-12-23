@@ -2389,7 +2389,11 @@ public final class Rational implements Comparable<Rational> {
     public void validate() {
         assertEquals(toString(), numerator.gcd(denominator), BigInteger.ONE);
         assertEquals(toString(), denominator.signum(), 1);
-        if (equals(ZERO)) assertTrue(toString(), this == ZERO);
-        if (equals(ONE)) assertTrue(toString(), this == ONE);
+        if (equals(ZERO)) {
+            assertTrue(toString(), this == ZERO);
+        }
+        if (equals(ONE)) {
+            assertTrue(toString(), this == ONE);
+        }
     }
 }

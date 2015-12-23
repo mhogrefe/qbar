@@ -310,11 +310,11 @@ public class QBarExhaustiveProviderTest {
                 " [2/7], [1/3, 0], [-2], [1, 0, 1], [3], [1/3, 1], [3/2], [0, 0, 0, 0, 1], [-2/3], ...]");
     }
 
-    private static void rationalVectorsAtLeast_int_helper(int minDimension, @NotNull String output) {
+    private static void rationalVectorsAtLeast_helper(int minDimension, @NotNull String output) {
         simpleProviderHelper(QEP.rationalVectorsAtLeast(minDimension), output);
     }
 
-    private static void rationalVectorsAtLeast_int_fail_helper(int minDimension) {
+    private static void rationalVectorsAtLeast_fail_helper(int minDimension) {
         try {
             QEP.rationalVectorsAtLeast(minDimension);
             fail();
@@ -323,19 +323,19 @@ public class QBarExhaustiveProviderTest {
 
     @Test
     public void testRationalVectorsAtLeast() {
-        rationalVectorsAtLeast_int_helper(0,
+        rationalVectorsAtLeast_helper(0,
                 "[[], [0], [0, 0], [1], [0, 0, 0], [1/2], [0, 1], [1/3], [0, 0, 0, 0], [1/4], [1, 0], [-1]," +
                 " [0, 0, 1], [-1/2], [1, 1], [2], [0, 0, 0, 0, 0], [-1/3], [0, 1/2], [-1/4], [0, 1, 0], [2/3]," +
                 " [0, 1/3], [1/5], [0, 0, 0, 1], [1/6], [1, 1/2], [1/7], [0, 1, 1], [1/8], [1, 1/3], [-1/5]," +
                 " [0, 0, 0, 0, 0, 0], [-1/6], [1/2, 0], [2/5], [1, 0, 0], [-1/7], [1/2, 1], [-1/8], [0, 0, 1, 0]," +
                 " [2/7], [1/3, 0], [-2], [1, 0, 1], [3], [1/3, 1], [3/2], [0, 0, 0, 0, 1], [-2/3], ...]");
-        rationalVectorsAtLeast_int_helper(1,
+        rationalVectorsAtLeast_helper(1,
                 "[[0], [0, 0], [1], [0, 0, 0], [1/2], [0, 1], [1/3], [0, 0, 0, 0], [1/4], [1, 0], [-1], [0, 0, 1]," +
                 " [-1/2], [1, 1], [2], [0, 0, 0, 0, 0], [-1/3], [0, 1/2], [-1/4], [0, 1, 0], [2/3], [0, 1/3], [1/5]," +
                 " [0, 0, 0, 1], [1/6], [1, 1/2], [1/7], [0, 1, 1], [1/8], [1, 1/3], [-1/5], [0, 0, 0, 0, 0, 0]," +
                 " [-1/6], [1/2, 0], [2/5], [1, 0, 0], [-1/7], [1/2, 1], [-1/8], [0, 0, 1, 0], [2/7], [1/3, 0], [-2]," +
                 " [1, 0, 1], [3], [1/3, 1], [3/2], [0, 0, 0, 0, 1], [-2/3], [1/2, 1/2], ...]");
-        rationalVectorsAtLeast_int_helper(2,
+        rationalVectorsAtLeast_helper(2,
                 "[[0, 0], [0, 0, 0], [0, 1], [0, 0, 0, 0], [1, 0], [0, 0, 1], [1, 1], [0, 0, 0, 0, 0], [0, 1/2]," +
                 " [0, 1, 0], [0, 1/3], [0, 0, 0, 1], [1, 1/2], [0, 1, 1], [1, 1/3], [0, 0, 0, 0, 0, 0], [1/2, 0]," +
                 " [1, 0, 0], [1/2, 1], [0, 0, 1, 0], [1/3, 0], [1, 0, 1], [1/3, 1], [0, 0, 0, 0, 1], [1/2, 1/2]," +
@@ -343,7 +343,7 @@ public class QBarExhaustiveProviderTest {
                 " [0, 1/4], [0, 0, 1/2], [0, -1], [0, 1, 0, 0], [1, 1/4], [0, 0, 1/3], [1, -1], [0, 0, 0, 1, 0]," +
                 " [0, -1/2], [0, 1, 1/2], [0, 2], [0, 1, 0, 1], [1, -1/2], [0, 1, 1/3], [1, 2], [0, 0, 0, 0, 0, 1]," +
                 " [1/2, 1/4], [1, 0, 1/2], ...]");
-        rationalVectorsAtLeast_int_helper(3,
+        rationalVectorsAtLeast_helper(3,
                 "[[0, 0, 0], [0, 0, 0, 0], [0, 0, 1], [0, 0, 0, 0, 0], [0, 1, 0], [0, 0, 0, 1], [0, 1, 1]," +
                 " [0, 0, 0, 0, 0, 0], [1, 0, 0], [0, 0, 1, 0], [1, 0, 1], [0, 0, 0, 0, 1], [1, 1, 0], [0, 0, 1, 1]," +
                 " [1, 1, 1], [0, 0, 0, 0, 0, 0, 0], [0, 0, 1/2], [0, 1, 0, 0], [0, 0, 1/3], [0, 0, 0, 1, 0]," +
@@ -352,7 +352,7 @@ public class QBarExhaustiveProviderTest {
                 " [0, 1/2, 0], [1, 0, 0, 0], [0, 1/2, 1], [0, 0, 1, 0, 0], [0, 1/3, 0], [1, 0, 0, 1], [0, 1/3, 1]," +
                 " [0, 0, 0, 0, 1, 0], [1, 1/2, 0], [1, 0, 1, 0], [1, 1/2, 1], [0, 0, 1, 0, 1], [1, 1/3, 0]," +
                 " [1, 0, 1, 1], [1, 1/3, 1], [0, 0, 0, 0, 0, 0, 1], [0, 1/2, 1/2], [1, 1, 0, 0], ...]");
-        rationalVectorsAtLeast_int_helper(10,
+        rationalVectorsAtLeast_helper(10,
                 "[[0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 1]," +
                 " [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 1, 0]," +
                 " [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], [0, 0, 0, 0, 0, 0, 0, 0, 1, 1]," +
@@ -378,7 +378,7 @@ public class QBarExhaustiveProviderTest {
                 " [0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1], [0, 0, 0, 0, 0, 1, 0, 1, 1, 1]," +
                 " [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], [0, 0, 0, 0, 0, 1, 1, 0, 0, 0]," +
                 " [0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0], ...]");
-        rationalVectorsAtLeast_int_fail_helper(-1);
+        rationalVectorsAtLeast_fail_helper(-1);
     }
 
     @Test

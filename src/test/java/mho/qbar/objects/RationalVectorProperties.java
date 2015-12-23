@@ -190,7 +190,7 @@ public class RationalVectorProperties {
 
         for (List<Rational> rs : take(LIMIT, P.lists(P.rationals()))) {
             RationalVector v = of(rs);
-            validate(v);
+            v.validate();
             assertEquals(rs.toString(), toList(v), rs);
             assertEquals(rs.toString(), v.dimension(), rs.size());
         }
@@ -209,7 +209,7 @@ public class RationalVectorProperties {
 
         for (Rational r : take(LIMIT, P.rationals())) {
             RationalVector v = of(r);
-            validate(v);
+            v.validate();
             assertEquals(r.toString(), v.dimension(), 1);
             assertEquals(r.toString(), v.x(), r);
         }
@@ -232,7 +232,7 @@ public class RationalVectorProperties {
 
         for (int i : take(LIMIT, P.withScale(20).naturalIntegersGeometric())) {
             RationalVector zero = zero(i);
-            validate(zero);
+            zero.validate();
             assertEquals(Integer.toString(i), zero.dimension(), i);
             assertTrue(Integer.toString(i), zero.isZero());
         }
@@ -255,7 +255,7 @@ public class RationalVectorProperties {
         );
         for (Pair<Integer, Integer> p : take(LIMIT, ps)) {
             RationalVector standard = standard(p.a, p.b);
-            validate(standard);
+            standard.validate();
             assertEquals(p.toString(), standard.dimension(), p.a.intValue());
             List<Rational> sortedCoordinates = reverse(sort(standard));
             assertTrue(p.toString(), head(sortedCoordinates) == Rational.ONE);
@@ -303,7 +303,7 @@ public class RationalVectorProperties {
         );
         for (Pair<RationalVector, RationalVector> p : take(LIMIT, ps)) {
             RationalVector sum = p.a.add(p.b);
-            validate(sum);
+            sum.validate();
             assertEquals(p.toString(), sum.dimension(), p.a.dimension());
             assertEquals(p.toString(), sum, p.b.add(p.a));
             assertEquals(p.toString(), sum.subtract(p.b), p.a);
@@ -345,11 +345,11 @@ public class RationalVectorProperties {
         System.out.println("\t\ttesting negate() properties");
 
         for (RationalVector v : take(LIMIT, P.rationalVectors())) {
-            RationalVector negativeV = v.negate();
-            validate(negativeV);
-            assertEquals(v.toString(), v.dimension(), negativeV.dimension());
-            assertEquals(v.toString(), v, negativeV.negate());
-            assertTrue(v.toString(), v.add(negativeV).isZero());
+            RationalVector negative = v.negate();
+            negative.validate();
+            assertEquals(v.toString(), v.dimension(), negative.dimension());
+            assertEquals(v.toString(), v, negative.negate());
+            assertTrue(v.toString(), v.add(negative).isZero());
         }
 
         for (RationalVector v : take(LIMIT, filter(w -> any(x -> x != Rational.ZERO, w), P.rationalVectors()))) {
@@ -372,7 +372,7 @@ public class RationalVectorProperties {
         );
         for (Pair<RationalVector, RationalVector> p : take(LIMIT, ps)) {
             RationalVector difference = p.a.subtract(p.b);
-            validate(difference);
+            difference.validate();
             assertEquals(p.toString(), difference.dimension(), p.a.dimension());
             assertEquals(p.toString(), difference, p.b.subtract(p.a).negate());
             assertEquals(p.toString(), p.a, difference.add(p.b));
@@ -416,7 +416,7 @@ public class RationalVectorProperties {
 
         for (Pair<RationalVector, Rational> p : take(LIMIT, P.pairs(P.rationalVectors(), P.rationals()))) {
             RationalVector v = p.a.multiply(p.b);
-            validate(v);
+            v.validate();
             assertEquals(p.toString(), v.dimension(), p.a.dimension());
         }
 
@@ -463,7 +463,7 @@ public class RationalVectorProperties {
 
         for (Pair<RationalVector, BigInteger> p : take(LIMIT, P.pairs(P.rationalVectors(), P.bigIntegers()))) {
             RationalVector v = p.a.multiply(p.b);
-            validate(v);
+            v.validate();
             assertEquals(p.toString(), v.dimension(), p.a.dimension());
         }
 
@@ -505,7 +505,7 @@ public class RationalVectorProperties {
 
         for (Pair<RationalVector, Integer> p : take(LIMIT, P.pairs(P.rationalVectors(), P.integers()))) {
             RationalVector v = p.a.multiply(p.b);
-            validate(v);
+            v.validate();
             assertEquals(p.toString(), v.dimension(), p.a.dimension());
         }
 
@@ -548,7 +548,7 @@ public class RationalVectorProperties {
         );
         for (Pair<RationalVector, Rational> p : take(LIMIT, ps)) {
             RationalVector v = p.a.divide(p.b);
-            validate(v);
+            v.validate();
             assertEquals(p.toString(), v.dimension(), p.a.dimension());
             assertEquals(p.toString(), p.a, v.multiply(p.b));
             assertEquals(p.toString(), v, p.a.multiply(p.b.invert()));
@@ -604,7 +604,7 @@ public class RationalVectorProperties {
         );
         for (Pair<RationalVector, BigInteger> p : take(LIMIT, ps)) {
             RationalVector v = p.a.divide(p.b);
-            validate(v);
+            v.validate();
             assertEquals(p.toString(), v.dimension(), p.a.dimension());
             assertEquals(p.toString(), p.a, v.multiply(p.b));
         }
@@ -659,7 +659,7 @@ public class RationalVectorProperties {
         );
         for (Pair<RationalVector, Integer> p : take(LIMIT, ps)) {
             RationalVector v = p.a.divide(p.b);
-            validate(v);
+            v.validate();
             assertEquals(p.toString(), v.dimension(), p.a.dimension());
             assertEquals(p.toString(), p.a, v.multiply(p.b));
         }
@@ -721,7 +721,7 @@ public class RationalVectorProperties {
         }
         for (Pair<RationalVector, Integer> p : take(LIMIT, P.pairs(P.rationalVectors(), is))) {
             RationalVector shifted = p.a.shiftLeft(p.b);
-            validate(shifted);
+            shifted.validate();
             assertEquals(p.toString(), shifted, shiftLeft_simplest(p.a, p.b));
             aeq(p.toString(), map(Rational::signum, p.a), map(Rational::signum, shifted));
             assertEquals(p.toString(), p.a.dimension(), shifted.dimension());
@@ -792,7 +792,7 @@ public class RationalVectorProperties {
         Iterable<Pair<RationalVector, Integer>> ps = P.pairs(P.rationalVectors(), is);
         for (Pair<RationalVector, Integer> p : take(LIMIT, ps)) {
             RationalVector shifted = p.a.shiftRight(p.b);
-            validate(shifted);
+            shifted.validate();
             assertEquals(p.toString(), shifted, shiftRight_simplest(p.a, p.b));
             aeq(p.toString(), map(Rational::signum, p.a), map(Rational::signum, shifted));
             assertEquals(p.toString(), p.a.dimension(), shifted.dimension());
@@ -1128,7 +1128,7 @@ public class RationalVectorProperties {
 
         for (RationalVector v : take(LIMIT, P.rationalVectors())) {
             RationalVector canceled = v.cancelDenominators();
-            validate(canceled);
+            canceled.validate();
 
             assertTrue(v.toString(), all(r -> r.getDenominator().equals(BigInteger.ONE), canceled));
             BigInteger gcd = foldl((x, y) -> x.gcd(y.getNumerator()), BigInteger.ZERO, canceled);
@@ -1203,7 +1203,7 @@ public class RationalVectorProperties {
 
         for (RationalVector v : take(LIMIT, P.rationalVectors())) {
             RationalVector reduced = v.reduce();
-            validate(reduced);
+            reduced.validate();
 
             Optional<Rational> pivot = reduced.pivot();
             assertTrue(v.toString(), !pivot.isPresent() || pivot.get() == Rational.ONE);
@@ -1322,11 +1322,6 @@ public class RationalVectorProperties {
             assertTrue(v.toString(), readV.isPresent());
             assertEquals(v.toString(), readV.get(), v);
         }
-    }
-
-    private static void validate(@NotNull RationalVector v) {
-        assertTrue(v.toString(), all(r -> r != null, v));
-        if (v.equals(ZERO_DIMENSIONAL)) assertTrue(v.toString(), v == ZERO_DIMENSIONAL);
     }
 
     private static <T> void aeq(String message, Iterable<T> xs, Iterable<T> ys) {
