@@ -2854,7 +2854,9 @@ public strictfp abstract class QBarIterableProvider {
      *
      * @param dimension the dimension of the generated {@code RationalVector}s
      */
-    public abstract @NotNull Iterable<RationalVector> rationalVectors(int dimension);
+    public @NotNull Iterable<RationalVector> rationalVectors(int dimension) {
+        return map(RationalVector::of, lists(dimension, rationals()));
+    }
 
     /**
      * Generates {@code RationalVector}s.

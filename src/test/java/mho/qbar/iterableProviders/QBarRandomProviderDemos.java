@@ -9,8 +9,7 @@ import mho.wheels.structures.Triple;
 import static mho.wheels.iterables.IterableUtils.filterInfinite;
 import static mho.wheels.iterables.IterableUtils.take;
 import static mho.wheels.ordering.Ordering.le;
-import static mho.wheels.testing.Testing.MEDIUM_LIMIT;
-import static mho.wheels.testing.Testing.its;
+import static mho.wheels.testing.Testing.*;
 
 @SuppressWarnings("UnusedDeclaration")
 public class QBarRandomProviderDemos extends QBarDemos {
@@ -146,6 +145,40 @@ public class QBarRandomProviderDemos extends QBarDemos {
         );
         for (Pair<QBarRandomProvider, Interval> p : take(MEDIUM_LIMIT, ps)) {
             System.out.println("rationalsNotIn(" + p.a + ", " + p.b + ") = " + its(p.a.rationalsNotIn(p.b)));
+        }
+    }
+
+    private void demoRationalVectors_int() {
+        Iterable<Pair<QBarRandomProvider, Integer>> ps = P.pairsSquareRootOrder(
+                filterInfinite(rp -> rp.getScale() >= 3, P.qbarRandomProvidersDefaultSecondaryScale()),
+                P.naturalIntegersGeometric()
+        );
+        for (Pair<QBarRandomProvider, Integer> p : take(SMALL_LIMIT, ps)) {
+            System.out.println("rationalVectors(" + p.a + ", " + p.b + ") = " + its(p.a.rationalVectors(p.b)));
+        }
+    }
+
+    private void demoRationalVectors() {
+        Iterable<QBarRandomProvider> rps = filterInfinite(
+                rp -> rp.getScale() >= 3 && rp.getSecondaryScale() > 0,
+                P.qbarRandomProviders()
+        );
+        for (QBarRandomProvider rp : take(MEDIUM_LIMIT, rps)) {
+            System.out.println("rationalVectors(" + rp + ") = " + its(rp.rationalVectors()));
+        }
+    }
+
+    private void demoRationalVectorsAtLeast() {
+        Iterable<Pair<QBarRandomProvider, Integer>> ps = filterInfinite(
+                p -> p.a.getSecondaryScale() > p.b,
+                P.pairsSquareRootOrder(
+                        filterInfinite(rp -> rp.getScale() >= 3, P.qbarRandomProviders()),
+                        P.naturalIntegersGeometric()
+                )
+        );
+        for (Pair<QBarRandomProvider, Integer> p : take(MEDIUM_LIMIT, ps)) {
+            System.out.println("rationalVectorsAtLeast(" + p.a + ", " + p.b + ") = " +
+                    its(p.a.rationalVectorsAtLeast(p.b)));
         }
     }
 }

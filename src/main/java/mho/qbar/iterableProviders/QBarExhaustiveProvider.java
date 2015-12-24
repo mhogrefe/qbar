@@ -217,24 +217,6 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
     }
 
     /**
-     * An {@code Iterable} that generates all {@code RationalVector}s with a given dimension.
-     *
-     * <ul>
-     *  <li>{@code dimension} cannot be negative.</li>
-     *  <li>The result is a non-removable {@code Iterable} containing {@code RationalVector}s.</li>
-     * </ul>
-     *
-     * Length is 1 if {@code dimension} is 0, infinite otherwise
-     *
-     * @param dimension the dimension of the generated {@code RationalVector}s
-     * @return all {@code RationalVector}s with dimension {@code dimension}
-     */
-    @Override
-    public @NotNull Iterable<RationalVector> rationalVectors(int dimension) {
-        return map(RationalVector::of, lists(dimension, rationals()));
-    }
-
-    /**
      * An {@code Iterable} that generates all {@code RationalVector}s.
      *
      * <ul>

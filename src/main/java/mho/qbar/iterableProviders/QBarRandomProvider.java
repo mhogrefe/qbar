@@ -185,7 +185,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
      */
     @Override
     public @NotNull QBarIterableProvider withSecondaryScale(int secondaryScale) {
-        return new QBarRandomProvider((RandomProvider) wheelsProvider.withScale(secondaryScale));
+        return new QBarRandomProvider((RandomProvider) wheelsProvider.withSecondaryScale(secondaryScale));
     }
 
     /**
@@ -334,9 +334,9 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
     }
 
     /**
-     * An {@code Iterable} that generates all {@code Rational} in the interval [0, 1). Each {@code Rational}'s bit size
-     * (defined as the sum of the numerator's and denominator's bit sizes) is chosen from a geometric distribution with
-     * mean approximately {@code size}. Does not support removal.
+     * An {@code Iterable} that generates all {@code Rational}s in the interval [0, 1). Each {@code Rational}'s bit
+     * size (defined as the sum of the numerator's and denominator's bit sizes) is chosen from a geometric distribution
+     * with mean approximately {@code scale}. Does not support removal.
      *
      * <ul>
      *  <li>{@code this} must have a {@code scale} of at least 4.</li>
@@ -528,19 +528,53 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
         }
     }
 
-    @Override
-    public @NotNull Iterable<RationalVector> rationalVectors(int dimension) {
-        return map(RationalVector::of, withScale(getSecondaryScale()).lists(dimension, rationals()));
-    }
-
-    @Override
-    public @NotNull Iterable<RationalVector> rationalVectorsAtLeast(int minDimension) {
-        return map(RationalVector::of, withScale(getSecondaryScale()).listsAtLeast(minDimension, rationals()));
-    }
-
+    /**
+     * An {@code Iterable} that generates all {@code RationalVector}s. Each {@code RationalVector}'s dimension is
+     * chosen from a geometric distribution with mean {@code secondaryScale}, and each coordinate's bit size is chosen
+     * from a geometric distribution with mean approximately {@code scale}. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a {@code scale} of at least 3 and a {@code secondaryScale} of at least 1.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing {@code RationalVectors}.</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
     @Override
     public @NotNull Iterable<RationalVector> rationalVectors() {
-        return map(RationalVector::of, withScale(getSecondaryScale()).lists(rationals()));
+        int secondaryScale = getSecondaryScale();
+        if (secondaryScale < 1) {
+            throw new IllegalStateException("this must have a secondaryScale of at least 1. Invalid secondaryScale: " +
+                    secondaryScale);
+        }
+        return map(RationalVector::of, withScale(secondaryScale).lists(rationals()));
+    }
+
+    /**
+     * An {@code Iterable} that generates all {@code RationalVector}s with a minimum dimension. Each
+     * {@code RationalVector}'s dimension is chosen from a geometric distribution with mean {@code secondaryScale}, and
+     * each coordinate's bit size is chosen from a geometric distribution with mean approximately {@code scale}. Does
+     * not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a {@code scale} of at least 3 and a {@code secondaryScale} greater than
+     *  {@code minDimension}.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing {@code RationalVectors}.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param minDimension the minimum dimension of the generated {@code RationalVector}s
+     * @return {@code RationalVector}s with dimension at least {@code minDimension}
+     */
+    @Override
+    public @NotNull Iterable<RationalVector> rationalVectorsAtLeast(int minDimension) {
+        int secondaryScale = getSecondaryScale();
+        if (secondaryScale <= minDimension) {
+            throw new IllegalStateException("this must have a secondaryScale greater than minDimension." +
+                    " secondaryScale: " + secondaryScale + ", minDimension: " + minDimension);
+        }
+        return map(RationalVector::of, withScale(secondaryScale).listsAtLeast(minDimension, rationals()));
     }
 
     @Override

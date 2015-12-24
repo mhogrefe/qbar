@@ -2,6 +2,7 @@ package mho.qbar.iterableProviders;
 
 import mho.qbar.objects.Interval;
 import mho.qbar.objects.Rational;
+import mho.qbar.objects.RationalVector;
 import mho.qbar.testing.QBarTestProperties;
 import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
@@ -32,6 +33,9 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         propertiesIntervals();
         propertiesRationalsIn();
         propertiesRationalsNotIn();
+        propertiesRationalVectors_int();
+        propertiesRationalVectors();
+        propertiesRationalVectorsAtLeast();
     }
 
     private static <T> void simpleTestWithNulls(
@@ -396,6 +400,133 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
             try {
                 rp.rationalsNotIn(Interval.ALL);
                 fail(rp);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesRationalVectors_int() {
+        initialize("rationalVectors(int)");
+        Iterable<Pair<QBarRandomProvider, Integer>> ps = P.pairsSquareRootOrder(
+                filterInfinite(rp -> rp.getScale() >= 3, P.qbarRandomProvidersDefaultSecondaryScale()),
+                P.naturalIntegersGeometric()
+        );
+        for (Pair<QBarRandomProvider, Integer> p : take(LIMIT, ps)) {
+            Iterable<RationalVector> vs = p.a.rationalVectors(p.b);
+            p.a.reset();
+            take(TINY_LIMIT, vs).forEach(RationalVector::validate);
+            simpleTest(p.a, vs, v -> v.dimension() == p.b);
+        }
+
+        Iterable<Pair<QBarRandomProvider, Integer>> psFail = P.pairsSquareRootOrder(
+                filterInfinite(rp -> rp.getScale() < 3, P.qbarRandomProvidersDefaultSecondaryScale()),
+                P.naturalIntegersGeometric()
+        );
+        for (Pair<QBarRandomProvider, Integer> p : take(LIMIT, psFail)) {
+            try {
+                p.a.rationalVectors(p.b);
+                fail(p);
+            } catch (IllegalStateException ignored) {}
+        }
+
+        psFail = P.pairsSquareRootOrder(
+                filterInfinite(rp -> rp.getScale() >= 3, P.qbarRandomProvidersDefaultSecondaryScale()),
+                P.negativeIntegersGeometric()
+        );
+        for (Pair<QBarRandomProvider, Integer> p : take(LIMIT, psFail)) {
+            try {
+                p.a.rationalVectors(p.b);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesRationalVectors() {
+        initialize("rationalVectors()");
+        Iterable<QBarRandomProvider> rps = filterInfinite(
+                rp -> rp.getScale() >= 3 && rp.getSecondaryScale() > 0,
+                P.qbarRandomProviders()
+        );
+        for (QBarRandomProvider rp : take(LIMIT, rps)) {
+            Iterable<RationalVector> vs = rp.rationalVectors();
+            rp.reset();
+            take(TINY_LIMIT, vs).forEach(RationalVector::validate);
+            simpleTest(rp, vs, v -> true);
+        }
+
+        for (QBarRandomProvider rp : take(LIMIT, filterInfinite(s -> s.getScale() < 3, P.qbarRandomProviders()))) {
+            try {
+                rp.rationalVectors();
+                fail(rp);
+            } catch (IllegalStateException ignored) {}
+        }
+
+        Iterable<QBarRandomProvider> rpsFail = filterInfinite(
+                rp -> rp.getSecondaryScale() <= 0,
+                P.qbarRandomProviders()
+        );
+        for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
+            try {
+                rp.rationalVectors();
+                fail(rp);
+            } catch (IllegalStateException ignored) {}
+        }
+    }
+
+    private void propertiesRationalVectorsAtLeast() {
+        initialize("rationalVectorsAtLeast()");
+        Iterable<Pair<QBarRandomProvider, Integer>> ps = filterInfinite(
+                p -> p.a.getSecondaryScale() > p.b,
+                P.pairsSquareRootOrder(
+                        filterInfinite(rp -> rp.getScale() >= 3, P.qbarRandomProviders()),
+                        P.naturalIntegersGeometric()
+                )
+        );
+        for (Pair<QBarRandomProvider, Integer> p : take(LIMIT, ps)) {
+            Iterable<RationalVector> vs = p.a.rationalVectorsAtLeast(p.b);
+            p.a.reset();
+            take(TINY_LIMIT, vs).forEach(RationalVector::validate);
+            simpleTest(p.a, vs, v -> v.dimension() >= p.b);
+        }
+
+        Iterable<Pair<QBarRandomProvider, Integer>> psFail = filterInfinite(
+                p -> p.a.getSecondaryScale() > p.b,
+                P.pairsSquareRootOrder(
+                        filterInfinite(rp -> rp.getScale() < 3, P.qbarRandomProviders()),
+                        P.naturalIntegersGeometric()
+                )
+        );
+        for (Pair<QBarRandomProvider, Integer> p : take(LIMIT, psFail)) {
+            try {
+                p.a.rationalVectorsAtLeast(p.b);
+                fail(p);
+            } catch (IllegalStateException ignored) {}
+        }
+
+        psFail = filterInfinite(
+                p -> p.a.getSecondaryScale() <= p.b,
+                P.pairsSquareRootOrder(
+                        filterInfinite(rp -> rp.getScale() >= 3, P.qbarRandomProviders()),
+                        P.naturalIntegersGeometric()
+                )
+        );
+        for (Pair<QBarRandomProvider, Integer> p : take(LIMIT, psFail)) {
+            try {
+                p.a.rationalVectorsAtLeast(p.b);
+                fail(p);
+            } catch (IllegalStateException ignored) {}
+        }
+
+        psFail = filterInfinite(
+                p -> p.a.getSecondaryScale() > p.b,
+                P.pairsSquareRootOrder(
+                        filterInfinite(rp -> rp.getScale() >= 3, P.qbarRandomProviders()),
+                        P.negativeIntegersGeometric()
+                )
+        );
+        for (Pair<QBarRandomProvider, Integer> p : take(LIMIT, psFail)) {
+            try {
+                p.a.rationalVectorsAtLeast(p.b);
+                fail(p);
             } catch (IllegalArgumentException ignored) {}
         }
     }
