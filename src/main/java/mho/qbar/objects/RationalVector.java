@@ -11,8 +11,7 @@ import java.math.BigInteger;
 import java.util.*;
 
 import static mho.wheels.iterables.IterableUtils.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static mho.wheels.testing.Testing.*;
 
 /**
  * <p>A vector with {@link Rational} coordinates. May be zero-dimensional.</p>
@@ -745,9 +744,9 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
      * Ensures that {@code this} is valid. Must return true for any {@code Rational} used outside this class.
      */
     public void validate() {
-        assertTrue(toString(), all(r -> r != null, coordinates));
+        assertTrue(this, all(r -> r != null, coordinates));
         if (equals(ZERO_DIMENSIONAL)) {
-            assertTrue(toString(), this == ZERO_DIMENSIONAL);
+            assertTrue(this, this == ZERO_DIMENSIONAL);
         }
     }
 }

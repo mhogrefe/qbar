@@ -22,8 +22,7 @@ import java.util.function.Function;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.numberUtils.FloatingPointUtils.*;
 import static mho.wheels.ordering.Ordering.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static mho.wheels.testing.Testing.*;
 
 /**
  * <p>The {@code Rational} class uniquely represents rational numbers. {@code denominator} is the smallest positive
@@ -2387,13 +2386,13 @@ public final class Rational implements Comparable<Rational> {
      * Ensures that {@code this} is valid. Must return true for any {@code Rational} used outside this class.
      */
     public void validate() {
-        assertEquals(toString(), numerator.gcd(denominator), BigInteger.ONE);
-        assertEquals(toString(), denominator.signum(), 1);
+        assertEquals(this, numerator.gcd(denominator), BigInteger.ONE);
+        assertEquals(this, denominator.signum(), 1);
         if (equals(ZERO)) {
-            assertTrue(toString(), this == ZERO);
+            assertTrue(this, this == ZERO);
         }
         if (equals(ONE)) {
-            assertTrue(toString(), this == ONE);
+            assertTrue(this, this == ONE);
         }
     }
 }
