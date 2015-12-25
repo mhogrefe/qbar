@@ -579,74 +579,17 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
 
     @Override
     public @NotNull Iterable<RationalVector> reducedRationalVectors(int dimension) {
-        if (dimension == 1) {
-            return Arrays.asList(RationalVector.of(Rational.ZERO), RationalVector.of(Rational.ONE));
-        }
-        return map(
-                RationalVector::reduce,
-                filter(
-                        v -> {
-                            Optional<Rational> pivot = v.pivot();
-                            return !pivot.isPresent() || pivot.get().signum() == 1;
-                        },
-                        map(
-                                is -> RationalVector.of(toList(map(Rational::of, is))),
-                                filter(
-                                        js -> {
-                                            BigInteger gcd = foldl(BigInteger::gcd, BigInteger.ZERO, js);
-                                            return gcd.equals(BigInteger.ZERO) || gcd.equals(BigInteger.ONE);
-                                        },
-                                        withScale(getSecondaryScale()).lists(dimension, bigIntegers())
-                                )
-                        )
-                )
-        );
-    }
-
-    @Override
-    public @NotNull Iterable<RationalVector> reducedRationalVectorsAtLeast(int minDimension) {
-        return map(
-                RationalVector::reduce,
-                filter(
-                        v -> {
-                            Optional<Rational> pivot = v.pivot();
-                            return !pivot.isPresent() || pivot.get().signum() == 1;
-                        },
-                        map(
-                                is -> RationalVector.of(toList(map(Rational::of, is))),
-                                filter(
-                                        js -> {
-                                            BigInteger gcd = foldl(BigInteger::gcd, BigInteger.ZERO, js);
-                                            return gcd.equals(BigInteger.ZERO) || gcd.equals(BigInteger.ONE);
-                                        },
-                                        withScale(getSecondaryScale()).listsAtLeast(minDimension, bigIntegers())
-                                )
-                        )
-                )
-        );
+        return reducedRationalVectors(withScale(getSecondaryScale()).lists(dimension, bigIntegers()));
     }
 
     @Override
     public @NotNull Iterable<RationalVector> reducedRationalVectors() {
-        return map(
-                RationalVector::reduce,
-                filter(
-                        v -> {
-                            Optional<Rational> pivot = v.pivot();
-                            return !pivot.isPresent() || pivot.get().signum() == 1;
-                        },
-                        map(
-                                is -> RationalVector.of(toList(map(Rational::of, is))),
-                                filter(
-                                        js -> {
-                                            BigInteger gcd = foldl(BigInteger::gcd, BigInteger.ZERO, js);
-                                            return gcd.equals(BigInteger.ZERO) || gcd.equals(BigInteger.ONE);
-                                        },
-                                        withScale(getSecondaryScale()).lists(bigIntegers())
-                                )
-                        )
-                )
-        );
+        return reducedRationalVectors(withScale(getSecondaryScale()).lists(bigIntegers()));
+    }
+
+    @Override
+    public @NotNull Iterable<RationalVector> reducedRationalVectorsAtLeast(int minDimension) {
+        return reducedRationalVectors(withScale(getSecondaryScale()).listsAtLeast(minDimension, bigIntegers()));
     }
 
     @Override

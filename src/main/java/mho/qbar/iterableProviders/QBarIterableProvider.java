@@ -17,7 +17,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
-import static mho.wheels.iterables.IterableUtils.map;
+import static mho.wheels.iterables.IterableUtils.*;
 
 /**
  * This class provides {@code Iterables} for testing.
@@ -2869,6 +2869,45 @@ public strictfp abstract class QBarIterableProvider {
      * @param minDimension the minimum dimension of the generated {@code RationalVector}s
      */
     public abstract @NotNull Iterable<RationalVector> rationalVectorsAtLeast(int minDimension);
+
+    /**
+     * A helper method which takes an {@code Iterable} of {@code BigInteger} {@code List}s and transforms it into an
+     * {@code Iterable} of reduced {@code RationalVector}s.
+     *
+     * <ul>
+     *  <li>{@code bigIntegerLists} cannot contain nulls or elements that contain nulls.</li>
+     *  <li>The result is a non-removable {@code Iterable} of reduced {@code RationalVector}s.</li>
+     * </ul>
+     *
+     * Length is the number of {@code BigInteger} {@code List}s in {@code bigIntegerLists} that have a GCD of zero or
+     * one and whose first nonzero value, if it exists, is positive.
+     *
+     * @param bigIntegerLists the source list
+     * @return the resulting {@code RationalVector}s
+     */
+    protected static @NotNull Iterable<RationalVector> reducedRationalVectors(
+            @NotNull Iterable<List<BigInteger>> bigIntegerLists
+    ) {
+        return map(
+                RationalVector::reduce,
+                filterInfinite(
+                        v -> {
+                            Optional<Rational> pivot = v.pivot();
+                            return !pivot.isPresent() || pivot.get().signum() == 1;
+                        },
+                        map(
+                                is -> RationalVector.of(toList(map(Rational::of, is))),
+                                filterInfinite(
+                                        js -> {
+                                            BigInteger gcd = foldl(BigInteger::gcd, BigInteger.ZERO, js);
+                                            return gcd.equals(BigInteger.ZERO) || gcd.equals(BigInteger.ONE);
+                                        },
+                                        bigIntegerLists
+                                )
+                        )
+                )
+        );
+    }
 
     /**
      * Generates reduced {@code RationalVector}s (see {@link RationalVector#reduce()}) with a given dimension.
