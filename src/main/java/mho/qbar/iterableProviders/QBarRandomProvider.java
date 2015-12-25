@@ -8,7 +8,6 @@ import org.jetbrains.annotations.NotNull;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.ordering.Ordering.le;
@@ -534,7 +533,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
      * from a geometric distribution with mean approximately {@code scale}. Does not support removal.
      *
      * <ul>
-     *  <li>{@code this} must have a {@code scale} of at least 3 and a {@code secondaryScale} of at least 1.</li>
+     *  <li>{@code this} must have a {@code scale} of at least 3 and a positive {@code secondaryScale}.</li>
      *  <li>The result is an infinite, non-removable {@code Iterable} containing {@code RationalVectors}.</li>
      * </ul>
      *
@@ -544,7 +543,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
     public @NotNull Iterable<RationalVector> rationalVectors() {
         int secondaryScale = getSecondaryScale();
         if (secondaryScale < 1) {
-            throw new IllegalStateException("this must have a secondaryScale of at least 1. Invalid secondaryScale: " +
+            throw new IllegalStateException("this must have a positive secondaryScale. Invalid secondaryScale: " +
                     secondaryScale);
         }
         return map(RationalVector::of, withScale(secondaryScale).lists(rationals()));
@@ -577,18 +576,71 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
         return map(RationalVector::of, withScale(secondaryScale).listsAtLeast(minDimension, rationals()));
     }
 
+    /**
+     * An {@code Iterable} that generates all reduced {@code RationalVector}s (see {@link RationalVector#reduce()})
+     * with a given dimension. A larger {@code scale} corresponds to a larger mean coordinate size. Does not support
+     * removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a positive {@code scale}.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing reduced {@code RationalVectors}.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param dimension the dimension of the generated {@code RationalVector}s
+     * @return {@code RationalVector}s with dimension {@code dimension}
+     */
     @Override
     public @NotNull Iterable<RationalVector> reducedRationalVectors(int dimension) {
-        return reducedRationalVectors(withScale(getSecondaryScale()).lists(dimension, bigIntegers()));
+        return reducedRationalVectors(lists(dimension, bigIntegers()));
     }
 
+    /**
+     * An {@code Iterable} that generates all reduced {@code RationalVector}s (see {@link RationalVector#reduce()}).
+     * A larger {@code scale} corresponds to a larger mean coordinate size, and a larger {@code secondaryScale}
+     * corresponds to a larger mean dimension. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a positive {@code scale} and {@code secondaryScale}.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing reduced {@code RationalVectors}.</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
     @Override
     public @NotNull Iterable<RationalVector> reducedRationalVectors() {
+        int secondaryScale = getSecondaryScale();
+        if (secondaryScale < 1) {
+            throw new IllegalStateException("this must have a positive secondaryScale. Invalid secondaryScale: " +
+                    secondaryScale);
+        }
         return reducedRationalVectors(withScale(getSecondaryScale()).lists(bigIntegers()));
     }
 
+    /**
+     * An {@code Iterable} that generates all reduced {@code RationalVector}s (see {@link RationalVector#reduce()})
+     * with a minimum dimension. A larger {@code scale} corresponds to a larger mean coordinate size, and a larger
+     * {@code secondaryScale} corresponds to a larger mean dimension. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a positive {@code scale} and a {@code secondaryScale} greater than
+     *  {@code minDimension}.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing reduced {@code RationalVectors}.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param minDimension the minimum dimension of the generated {@code RationalVector}s
+     * @return {@code RationalVector}s with dimension at least {@code minDimension}
+     */
     @Override
     public @NotNull Iterable<RationalVector> reducedRationalVectorsAtLeast(int minDimension) {
+        int secondaryScale = getSecondaryScale();
+        if (secondaryScale <= minDimension) {
+            throw new IllegalStateException("this must have a secondaryScale greater than minDimension." +
+                    " secondaryScale: " + secondaryScale + ", minDimension: " + minDimension);
+        }
         return reducedRationalVectors(withScale(getSecondaryScale()).listsAtLeast(minDimension, bigIntegers()));
     }
 

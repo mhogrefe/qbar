@@ -150,10 +150,10 @@ public class QBarRandomProviderDemos extends QBarDemos {
 
     private void demoRationalVectors_int() {
         Iterable<Pair<QBarRandomProvider, Integer>> ps = P.pairsSquareRootOrder(
-                filterInfinite(rp -> rp.getScale() >= 3, P.qbarRandomProvidersDefaultSecondaryScale()),
-                P.naturalIntegersGeometric()
+                filterInfinite(rp -> rp.getScale() >= 3, P.withScale(4).qbarRandomProvidersDefaultSecondaryScale()),
+                P.withScale(4).naturalIntegersGeometric()
         );
-        for (Pair<QBarRandomProvider, Integer> p : take(SMALL_LIMIT, ps)) {
+        for (Pair<QBarRandomProvider, Integer> p : take(LIMIT, ps)) {
             System.out.println("rationalVectors(" + p.a + ", " + p.b + ") = " + its(p.a.rationalVectors(p.b)));
         }
     }
@@ -161,9 +161,9 @@ public class QBarRandomProviderDemos extends QBarDemos {
     private void demoRationalVectors() {
         Iterable<QBarRandomProvider> rps = filterInfinite(
                 rp -> rp.getScale() >= 3 && rp.getSecondaryScale() > 0,
-                P.qbarRandomProviders()
+                P.withScale(4).qbarRandomProviders()
         );
-        for (QBarRandomProvider rp : take(MEDIUM_LIMIT, rps)) {
+        for (QBarRandomProvider rp : take(LIMIT, rps)) {
             System.out.println("rationalVectors(" + rp + ") = " + its(rp.rationalVectors()));
         }
     }
@@ -172,13 +172,48 @@ public class QBarRandomProviderDemos extends QBarDemos {
         Iterable<Pair<QBarRandomProvider, Integer>> ps = filterInfinite(
                 p -> p.a.getSecondaryScale() > p.b,
                 P.pairsSquareRootOrder(
-                        filterInfinite(rp -> rp.getScale() >= 3, P.qbarRandomProviders()),
-                        P.naturalIntegersGeometric()
+                        filterInfinite(rp -> rp.getScale() >= 3, P.withScale(4).qbarRandomProviders()),
+                        P.withScale(4).naturalIntegersGeometric()
                 )
         );
-        for (Pair<QBarRandomProvider, Integer> p : take(MEDIUM_LIMIT, ps)) {
+        for (Pair<QBarRandomProvider, Integer> p : take(LIMIT, ps)) {
             System.out.println("rationalVectorsAtLeast(" + p.a + ", " + p.b + ") = " +
                     its(p.a.rationalVectorsAtLeast(p.b)));
+        }
+    }
+
+    private void demoReducedRationalVectors_int() {
+        Iterable<Pair<QBarRandomProvider, Integer>> ps = P.pairsSquareRootOrder(
+                filterInfinite(rp -> rp.getScale() > 0, P.withScale(4).qbarRandomProvidersDefaultSecondaryScale()),
+                P.withScale(4).naturalIntegersGeometric()
+        );
+        for (Pair<QBarRandomProvider, Integer> p : take(LIMIT, ps)) {
+            System.out.println("reducedRationalVectors(" + p.a + ", " + p.b + ") = " +
+                    its(p.a.reducedRationalVectors(p.b)));
+        }
+    }
+
+    private void demoReducedRationalVectors() {
+        Iterable<QBarRandomProvider> rps = filterInfinite(
+                rp -> rp.getScale() > 0 && rp.getSecondaryScale() > 0,
+                P.withScale(4).qbarRandomProviders()
+        );
+        for (QBarRandomProvider rp : take(LIMIT, rps)) {
+            System.out.println("reducedRationalVectors(" + rp + ") = " + its(rp.reducedRationalVectors()));
+        }
+    }
+
+    private void demoReducedRationalVectorsAtLeast() {
+        Iterable<Pair<QBarRandomProvider, Integer>> ps = filterInfinite(
+                p -> p.a.getSecondaryScale() > p.b,
+                P.pairsSquareRootOrder(
+                        filterInfinite(rp -> rp.getScale() > 0, P.withScale(4).qbarRandomProviders()),
+                        P.withScale(4).naturalIntegersGeometric()
+                )
+        );
+        for (Pair<QBarRandomProvider, Integer> p : take(LIMIT, ps)) {
+            System.out.println("reducedRationalVectorsAtLeast(" + p.a + ", " + p.b + ") = " +
+                    its(p.a.reducedRationalVectorsAtLeast(p.b)));
         }
     }
 }

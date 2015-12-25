@@ -36,6 +36,9 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         propertiesRationalVectors_int();
         propertiesRationalVectors();
         propertiesRationalVectorsAtLeast();
+        propertiesReducedRationalVectors_int();
+        propertiesReducedRationalVectors();
+        propertiesReducedRationalVectorsAtLeast();
     }
 
     private static <T> void simpleTestWithNulls(
@@ -526,6 +529,133 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         for (Pair<QBarRandomProvider, Integer> p : take(LIMIT, psFail)) {
             try {
                 p.a.rationalVectorsAtLeast(p.b);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesReducedRationalVectors_int() {
+        initialize("reducedRationalVectors(int)");
+        Iterable<Pair<QBarRandomProvider, Integer>> ps = P.pairsSquareRootOrder(
+                filterInfinite(rp -> rp.getScale() > 0, P.qbarRandomProvidersDefaultSecondaryScale()),
+                P.naturalIntegersGeometric()
+        );
+        for (Pair<QBarRandomProvider, Integer> p : take(LIMIT, ps)) {
+            Iterable<RationalVector> vs = p.a.reducedRationalVectors(p.b);
+            p.a.reset();
+            take(TINY_LIMIT, vs).forEach(RationalVector::validate);
+            simpleTest(p.a, vs, v -> v.isReduced() && v.dimension() == p.b);
+        }
+
+        Iterable<Pair<QBarRandomProvider, Integer>> psFail = P.pairsSquareRootOrder(
+                filterInfinite(rp -> rp.getScale() <= 0, P.qbarRandomProvidersDefaultSecondaryScale()),
+                P.naturalIntegersGeometric()
+        );
+        for (Pair<QBarRandomProvider, Integer> p : take(LIMIT, psFail)) {
+            try {
+                p.a.reducedRationalVectors(p.b);
+                fail(p);
+            } catch (IllegalStateException ignored) {}
+        }
+
+        psFail = P.pairsSquareRootOrder(
+                filterInfinite(rp -> rp.getScale() > 0, P.qbarRandomProvidersDefaultSecondaryScale()),
+                P.negativeIntegersGeometric()
+        );
+        for (Pair<QBarRandomProvider, Integer> p : take(LIMIT, psFail)) {
+            try {
+                p.a.reducedRationalVectors(p.b);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesReducedRationalVectors() {
+        initialize("reducedRationalVectors()");
+        Iterable<QBarRandomProvider> rps = filterInfinite(
+                rp -> rp.getScale() > 0 && rp.getSecondaryScale() > 0,
+                P.qbarRandomProviders()
+        );
+        for (QBarRandomProvider rp : take(LIMIT, rps)) {
+            Iterable<RationalVector> vs = rp.reducedRationalVectors();
+            rp.reset();
+            take(TINY_LIMIT, vs).forEach(RationalVector::validate);
+            simpleTest(rp, vs, RationalVector::isReduced);
+        }
+
+        for (QBarRandomProvider rp : take(LIMIT, filterInfinite(s -> s.getScale() <= 0, P.qbarRandomProviders()))) {
+            try {
+                rp.reducedRationalVectors();
+                fail(rp);
+            } catch (IllegalStateException ignored) {}
+        }
+
+        Iterable<QBarRandomProvider> rpsFail = filterInfinite(
+                rp -> rp.getSecondaryScale() <= 0,
+                P.qbarRandomProviders()
+        );
+        for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
+            try {
+                rp.reducedRationalVectors();
+                fail(rp);
+            } catch (IllegalStateException ignored) {}
+        }
+    }
+
+    private void propertiesReducedRationalVectorsAtLeast() {
+        initialize("reducedRationalVectorsAtLeast()");
+        Iterable<Pair<QBarRandomProvider, Integer>> ps = filterInfinite(
+                p -> p.a.getSecondaryScale() > p.b,
+                P.pairsSquareRootOrder(
+                        filterInfinite(rp -> rp.getScale() > 0, P.qbarRandomProviders()),
+                        P.naturalIntegersGeometric()
+                )
+        );
+        for (Pair<QBarRandomProvider, Integer> p : take(LIMIT, ps)) {
+            Iterable<RationalVector> vs = p.a.reducedRationalVectorsAtLeast(p.b);
+            p.a.reset();
+            take(TINY_LIMIT, vs).forEach(RationalVector::validate);
+            simpleTest(p.a, vs, v -> v.isReduced() && v.dimension() >= p.b);
+        }
+
+        Iterable<Pair<QBarRandomProvider, Integer>> psFail = filterInfinite(
+                p -> p.a.getSecondaryScale() > p.b,
+                P.pairsSquareRootOrder(
+                        filterInfinite(rp -> rp.getScale() <= 0, P.qbarRandomProviders()),
+                        P.naturalIntegersGeometric()
+                )
+        );
+        for (Pair<QBarRandomProvider, Integer> p : take(LIMIT, psFail)) {
+            try {
+                p.a.reducedRationalVectorsAtLeast(p.b);
+                fail(p);
+            } catch (IllegalStateException ignored) {}
+        }
+
+        psFail = filterInfinite(
+                p -> p.a.getSecondaryScale() <= p.b,
+                P.pairsSquareRootOrder(
+                        filterInfinite(rp -> rp.getScale() > 0, P.qbarRandomProviders()),
+                        P.naturalIntegersGeometric()
+                )
+        );
+        for (Pair<QBarRandomProvider, Integer> p : take(LIMIT, psFail)) {
+            try {
+                p.a.reducedRationalVectorsAtLeast(p.b);
+                fail(p);
+            } catch (IllegalStateException ignored) {}
+        }
+
+        psFail = filterInfinite(
+                p -> p.a.getSecondaryScale() > p.b,
+                P.pairsSquareRootOrder(
+                        filterInfinite(rp -> rp.getScale() > 0, P.qbarRandomProviders()),
+                        P.negativeIntegersGeometric()
+                )
+        );
+        for (Pair<QBarRandomProvider, Integer> p : take(LIMIT, psFail)) {
+            try {
+                p.a.reducedRationalVectorsAtLeast(p.b);
                 fail(p);
             } catch (IllegalArgumentException ignored) {}
         }
