@@ -248,76 +248,102 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
         return map(RationalVector::of, listsAtLeast(minDimension, rationals()));
     }
 
+    /**
+     * A helper method to which takes an {@code Iterable} of {@code BigInteger} {@code List}s and transforms it into an
+     * {@code Iterable} of reduced {@code RationalVector}s.
+     *
+     * <ul>
+     *  <li>{@code bigIntegerLists} cannot contain nulls or elements that contain nulls.</li>
+     *  <li>The result is a non-removable {@code Iterable} of reduced {@code RationalVector}s.</li>
+     * </ul>
+     *
+     * Length is the number of {@code BigInteger} {@code List}s in {@code bigIntegerLists} that have a GCD of zero or
+     * one and whose first nonzero value, if it exists, is positive.
+     *
+     * @param bigIntegerLists the source list
+     * @return the resulting {@code RationalVector}s
+     */
+    private static @NotNull Iterable<RationalVector> reducedRationalVectors(
+            @NotNull Iterable<List<BigInteger>> bigIntegerLists
+    ) {
+        return map(
+                RationalVector::reduce,
+                filterInfinite(
+                        v -> {
+                            Optional<Rational> pivot = v.pivot();
+                            return !pivot.isPresent() || pivot.get().signum() == 1;
+                        },
+                        map(
+                                is -> RationalVector.of(toList(map(Rational::of, is))),
+                                filterInfinite(
+                                        js -> {
+                                            BigInteger gcd = foldl(BigInteger::gcd, BigInteger.ZERO, js);
+                                            return gcd.equals(BigInteger.ZERO) || gcd.equals(BigInteger.ONE);
+                                        },
+                                        bigIntegerLists
+                                )
+                        )
+                )
+        );
+    }
+
+    /**
+     * An {@code Iterable} that generates reduced all {@code RationalVector}s with a given dimension (see
+     * {@link RationalVector#reduce()}).
+     *
+     * <ul>
+     *  <li>{@code dimension} cannot be negative.</li>
+     *  <li>The result is a non-removable {@code Iterable} containing {@code RationalVector}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param dimension the dimension of the generated {@code RationalVector}s
+     * @return all {@code RationalVector}s with dimension {@code dimension}
+     */
     @Override
     public @NotNull Iterable<RationalVector> reducedRationalVectors(int dimension) {
-        if (dimension == 1) {
-            return Arrays.asList(RationalVector.of(Rational.ZERO), RationalVector.of(Rational.ONE));
+        switch (dimension) {
+            case 0:
+                return Collections.singletonList(RationalVector.ZERO_DIMENSIONAL);
+            case 1:
+                return Arrays.asList(RationalVector.of(Rational.ZERO), RationalVector.of(Rational.ONE));
+            default:
+                return reducedRationalVectors(lists(dimension, bigIntegers()));
         }
-        return map(
-                RationalVector::reduce,
-                filter(
-                        v -> {
-                            Optional<Rational> pivot = v.pivot();
-                            return !pivot.isPresent() || pivot.get().signum() == 1;
-                        },
-                        map(
-                                is -> RationalVector.of(toList(map(Rational::of, is))),
-                                filter(
-                                        js -> {
-                                            BigInteger gcd = foldl(BigInteger::gcd, BigInteger.ZERO, js);
-                                            return gcd.equals(BigInteger.ZERO) || gcd.equals(BigInteger.ONE);
-                                        },
-                                        lists(dimension, bigIntegers())
-                                )
-                        )
-                )
-        );
     }
 
-    @Override
-    public @NotNull Iterable<RationalVector> reducedRationalVectorsAtLeast(int minDimension) {
-        return map(
-                RationalVector::reduce,
-                filter(
-                        v -> {
-                            Optional<Rational> pivot = v.pivot();
-                            return !pivot.isPresent() || pivot.get().signum() == 1;
-                        },
-                        map(
-                                is -> RationalVector.of(toList(map(Rational::of, is))),
-                                filter(
-                                        js -> {
-                                            BigInteger gcd = foldl(BigInteger::gcd, BigInteger.ZERO, js);
-                                            return gcd.equals(BigInteger.ZERO) || gcd.equals(BigInteger.ONE);
-                                        },
-                                        listsAtLeast(minDimension, bigIntegers())
-                                )
-                        )
-                )
-        );
-    }
-
+    /**
+     * An {@code Iterable} that generates all reduced {@code RationalVector}s (see {@link RationalVector#reduce()}).
+     *
+     * <ul>
+     *  <li>The result is a non-removable {@code Iterable} containing {@code RationalVector}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
     @Override
     public @NotNull Iterable<RationalVector> reducedRationalVectors() {
-        return map(
-                RationalVector::reduce,
-                filter(
-                        v -> {
-                            Optional<Rational> pivot = v.pivot();
-                            return !pivot.isPresent() || pivot.get().signum() == 1;
-                        },
-                        map(
-                                is -> RationalVector.of(toList(map(Rational::of, is))),
-                                filter(
-                                        js -> {
-                                            BigInteger gcd = foldl(BigInteger::gcd, BigInteger.ZERO, js);
-                                            return gcd.equals(BigInteger.ZERO) || gcd.equals(BigInteger.ONE);
-                                        },
-                                        lists(bigIntegers())
-                                )
-                        )
-                )
-        );
+        return reducedRationalVectors(lists(bigIntegers()));
+    }
+
+    /**
+     * An {@code Iterable} that generates reduced all {@code RationalVector}s with a minimum dimension (see
+     * {@link RationalVector#reduce()}).
+     *
+     * <ul>
+     *  <li>{@code dimension} cannot be negative.</li>
+     *  <li>The result is a non-removable {@code Iterable} containing {@code RationalVector}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param minDimension the minimum dimension of the generated {@code RationalVector}s
+     * @return all {@code RationalVector}s with dimension at least {@code minDimension}
+     */
+    @Override
+    public @NotNull Iterable<RationalVector> reducedRationalVectorsAtLeast(int minDimension) {
+        return reducedRationalVectors(listsAtLeast(minDimension, bigIntegers()));
     }
 
     @Override

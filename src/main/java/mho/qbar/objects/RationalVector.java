@@ -606,6 +606,11 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
         return find(r -> r != Rational.ZERO, coordinates);
     }
 
+    public boolean isReduced() {
+        Optional<Rational> pivot = pivot();
+        return !pivot.isPresent() || pivot.get() == Rational.ONE;
+    }
+
     /**
      * Multiplies {@code this} by some nonzero constant to yield a {@code RationalVector} whose pivot, if it exists, is
      * 1. This gives a canonical representation of {@code RationalVector}s considered equivalent under multiplication
