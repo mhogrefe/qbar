@@ -296,7 +296,7 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
      *  <li>The result is a non-removable {@code Iterable} containing {@code RationalVector}s.</li>
      * </ul>
      *
-     * Length is infinite
+     * Length is 1 if {@code dimension} is 0, 2 if {@code dimension} is 1, and infinite otherwise
      *
      * @param dimension the dimension of the generated {@code RationalVector}s
      * @return all {@code RationalVector}s with dimension {@code dimension}

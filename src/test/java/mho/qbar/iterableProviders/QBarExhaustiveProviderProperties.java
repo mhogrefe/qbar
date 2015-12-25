@@ -30,6 +30,7 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
         propertiesFinitelyBoundedIntervals();
         propertiesIntervals();
         propertiesRationalVectors();
+        propertiesReducedRationalVectors();
     }
 
     @Override
@@ -41,6 +42,8 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
         propertiesRationalsNotIn();
         propertiesRationalVectors_int();
         propertiesRationalVectorsAtLeast();
+        propertiesReducedRationalVectors_int();
+        propertiesReducedRationalVectorsAtLeast();
     }
 
     private static <T> void test_helper(
@@ -205,6 +208,44 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
         for (int i : take(LIMIT, P.negativeIntegers())) {
             try {
                 QEP.rationalVectorsAtLeast(i);
+                fail(i);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesReducedRationalVectors_int() {
+        initialize("reducedRationalVectors(int)");
+        for (int i : take(SMALL_LIMIT, P.naturalIntegersGeometric())) {
+            Iterable<RationalVector> vs = QEP.reducedRationalVectors(i);
+            simpleTest(i, vs, v -> v.isReduced() && v.dimension() == i);
+            take(TINY_LIMIT, vs).forEach(RationalVector::validate);
+        }
+
+        for (int i : take(LIMIT, P.negativeIntegers())) {
+            try {
+                QEP.reducedRationalVectors(i);
+                fail(i);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesReducedRationalVectors() {
+        initializeConstant("reducedRationalVectors()");
+        biggerTest(QEP, QEP.reducedRationalVectors(), RationalVector::isReduced);
+        take(TINY_LIMIT, QEP.reducedRationalVectors()).forEach(RationalVector::validate);
+    }
+
+    private void propertiesReducedRationalVectorsAtLeast() {
+        initialize("reducedRationalVectorsAtLeast(int)");
+        for (int i : take(SMALL_LIMIT, P.naturalIntegersGeometric())) {
+            Iterable<RationalVector> vs = QEP.reducedRationalVectorsAtLeast(i);
+            simpleTest(i, vs, v -> v.isReduced() && v.dimension() >= i);
+            take(TINY_LIMIT, vs).forEach(RationalVector::validate);
+        }
+
+        for (int i : take(LIMIT, P.negativeIntegers())) {
+            try {
+                QEP.reducedRationalVectorsAtLeast(i);
                 fail(i);
             } catch (IllegalArgumentException ignored) {}
         }
