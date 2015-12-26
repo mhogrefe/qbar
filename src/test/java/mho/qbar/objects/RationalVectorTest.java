@@ -332,66 +332,74 @@ public class RationalVectorTest {
         divide_int_fail_helper("[5/3, 4, 0]", 0);
     }
 
+    private static void shiftLeft_helper(@NotNull String a, int bits, @NotNull String output) {
+        aeq(read(a).get().shiftLeft(bits), output);
+    }
+
     @Test
     public void testShiftLeft() {
-        assertTrue(ZERO_DIMENSIONAL.shiftLeft(0) == ZERO_DIMENSIONAL);
-        assertTrue(ZERO_DIMENSIONAL.shiftLeft(1) == ZERO_DIMENSIONAL);
-        assertTrue(ZERO_DIMENSIONAL.shiftLeft(2) == ZERO_DIMENSIONAL);
-        assertTrue(ZERO_DIMENSIONAL.shiftLeft(3) == ZERO_DIMENSIONAL);
-        assertTrue(ZERO_DIMENSIONAL.shiftLeft(4) == ZERO_DIMENSIONAL);
-        assertTrue(ZERO_DIMENSIONAL.shiftLeft(-1) == ZERO_DIMENSIONAL);
-        assertTrue(ZERO_DIMENSIONAL.shiftLeft(-2) == ZERO_DIMENSIONAL);
-        assertTrue(ZERO_DIMENSIONAL.shiftLeft(-3) == ZERO_DIMENSIONAL);
-        assertTrue(ZERO_DIMENSIONAL.shiftLeft(-4) == ZERO_DIMENSIONAL);
-        aeq(read("[1/2]").get().shiftLeft(0), "[1/2]");
-        aeq(read("[1/2]").get().shiftLeft(1), "[1]");
-        aeq(read("[1/2]").get().shiftLeft(2), "[2]");
-        aeq(read("[1/2]").get().shiftLeft(3), "[4]");
-        aeq(read("[1/2]").get().shiftLeft(4), "[8]");
-        aeq(read("[1/2]").get().shiftLeft(-1), "[1/4]");
-        aeq(read("[1/2]").get().shiftLeft(-2), "[1/8]");
-        aeq(read("[1/2]").get().shiftLeft(-3), "[1/16]");
-        aeq(read("[1/2]").get().shiftLeft(-4), "[1/32]");
-        aeq(read("[5/3, -1/4, 23]").get().shiftLeft(0), "[5/3, -1/4, 23]");
-        aeq(read("[5/3, -1/4, 23]").get().shiftLeft(1), "[10/3, -1/2, 46]");
-        aeq(read("[5/3, -1/4, 23]").get().shiftLeft(2), "[20/3, -1, 92]");
-        aeq(read("[5/3, -1/4, 23]").get().shiftLeft(3), "[40/3, -2, 184]");
-        aeq(read("[5/3, -1/4, 23]").get().shiftLeft(4), "[80/3, -4, 368]");
-        aeq(read("[5/3, -1/4, 23]").get().shiftLeft(-1), "[5/6, -1/8, 23/2]");
-        aeq(read("[5/3, -1/4, 23]").get().shiftLeft(-2), "[5/12, -1/16, 23/4]");
-        aeq(read("[5/3, -1/4, 23]").get().shiftLeft(-3), "[5/24, -1/32, 23/8]");
-        aeq(read("[5/3, -1/4, 23]").get().shiftLeft(-4), "[5/48, -1/64, 23/16]");
+        shiftLeft_helper("[]", 0, "[]");
+        shiftLeft_helper("[]", 1, "[]");
+        shiftLeft_helper("[]", 2, "[]");
+        shiftLeft_helper("[]", 3, "[]");
+        shiftLeft_helper("[]", 4, "[]");
+        shiftLeft_helper("[]", -1, "[]");
+        shiftLeft_helper("[]", -2, "[]");
+        shiftLeft_helper("[]", -3, "[]");
+        shiftLeft_helper("[]", -4, "[]");
+        shiftLeft_helper("[1/2]", 0, "[1/2]");
+        shiftLeft_helper("[1/2]", 1, "[1]");
+        shiftLeft_helper("[1/2]", 2, "[2]");
+        shiftLeft_helper("[1/2]", 3, "[4]");
+        shiftLeft_helper("[1/2]", 4, "[8]");
+        shiftLeft_helper("[1/2]", -1, "[1/4]");
+        shiftLeft_helper("[1/2]", -2, "[1/8]");
+        shiftLeft_helper("[1/2]", -3, "[1/16]");
+        shiftLeft_helper("[1/2]", -4, "[1/32]");
+        shiftLeft_helper("[5/3, -1/4, 23]", 0, "[5/3, -1/4, 23]");
+        shiftLeft_helper("[5/3, -1/4, 23]", 1, "[10/3, -1/2, 46]");
+        shiftLeft_helper("[5/3, -1/4, 23]", 2, "[20/3, -1, 92]");
+        shiftLeft_helper("[5/3, -1/4, 23]", 3, "[40/3, -2, 184]");
+        shiftLeft_helper("[5/3, -1/4, 23]", 4, "[80/3, -4, 368]");
+        shiftLeft_helper("[5/3, -1/4, 23]", -1, "[5/6, -1/8, 23/2]");
+        shiftLeft_helper("[5/3, -1/4, 23]", -2, "[5/12, -1/16, 23/4]");
+        shiftLeft_helper("[5/3, -1/4, 23]", -3, "[5/24, -1/32, 23/8]");
+        shiftLeft_helper("[5/3, -1/4, 23]", -4, "[5/48, -1/64, 23/16]");
+    }
+
+    private static void shiftRight_helper(@NotNull String a, int bits, @NotNull String output) {
+        aeq(read(a).get().shiftRight(bits), output);
     }
 
     @Test
     public void testShiftRight() {
-        assertTrue(ZERO_DIMENSIONAL.shiftRight(0) == ZERO_DIMENSIONAL);
-        assertTrue(ZERO_DIMENSIONAL.shiftRight(1) == ZERO_DIMENSIONAL);
-        assertTrue(ZERO_DIMENSIONAL.shiftRight(2) == ZERO_DIMENSIONAL);
-        assertTrue(ZERO_DIMENSIONAL.shiftRight(3) == ZERO_DIMENSIONAL);
-        assertTrue(ZERO_DIMENSIONAL.shiftRight(4) == ZERO_DIMENSIONAL);
-        assertTrue(ZERO_DIMENSIONAL.shiftRight(-1) == ZERO_DIMENSIONAL);
-        assertTrue(ZERO_DIMENSIONAL.shiftRight(-2) == ZERO_DIMENSIONAL);
-        assertTrue(ZERO_DIMENSIONAL.shiftRight(-3) == ZERO_DIMENSIONAL);
-        assertTrue(ZERO_DIMENSIONAL.shiftRight(-4) == ZERO_DIMENSIONAL);
-        aeq(read("[1/2]").get().shiftRight(0), "[1/2]");
-        aeq(read("[1/2]").get().shiftRight(1), "[1/4]");
-        aeq(read("[1/2]").get().shiftRight(2), "[1/8]");
-        aeq(read("[1/2]").get().shiftRight(3), "[1/16]");
-        aeq(read("[1/2]").get().shiftRight(4), "[1/32]");
-        aeq(read("[1/2]").get().shiftRight(-1), "[1]");
-        aeq(read("[1/2]").get().shiftRight(-2), "[2]");
-        aeq(read("[1/2]").get().shiftRight(-3), "[4]");
-        aeq(read("[1/2]").get().shiftRight(-4), "[8]");
-        aeq(read("[5/3, -1/4, 23]").get().shiftRight(0), "[5/3, -1/4, 23]");
-        aeq(read("[5/3, -1/4, 23]").get().shiftRight(1), "[5/6, -1/8, 23/2]");
-        aeq(read("[5/3, -1/4, 23]").get().shiftRight(2), "[5/12, -1/16, 23/4]");
-        aeq(read("[5/3, -1/4, 23]").get().shiftRight(3), "[5/24, -1/32, 23/8]");
-        aeq(read("[5/3, -1/4, 23]").get().shiftRight(4), "[5/48, -1/64, 23/16]");
-        aeq(read("[5/3, -1/4, 23]").get().shiftRight(-1), "[10/3, -1/2, 46]");
-        aeq(read("[5/3, -1/4, 23]").get().shiftRight(-2), "[20/3, -1, 92]");
-        aeq(read("[5/3, -1/4, 23]").get().shiftRight(-3), "[40/3, -2, 184]");
-        aeq(read("[5/3, -1/4, 23]").get().shiftRight(-4), "[80/3, -4, 368]");
+        shiftRight_helper("[]", 0, "[]");
+        shiftRight_helper("[]", 1, "[]");
+        shiftRight_helper("[]", 2, "[]");
+        shiftRight_helper("[]", 3, "[]");
+        shiftRight_helper("[]", 4, "[]");
+        shiftRight_helper("[]", -1, "[]");
+        shiftRight_helper("[]", -2, "[]");
+        shiftRight_helper("[]", -3, "[]");
+        shiftRight_helper("[]", -4, "[]");
+        shiftRight_helper("[1/2]", 0, "[1/2]");
+        shiftRight_helper("[1/2]", 1, "[1/4]");
+        shiftRight_helper("[1/2]", 2, "[1/8]");
+        shiftRight_helper("[1/2]", 3, "[1/16]");
+        shiftRight_helper("[1/2]", 4, "[1/32]");
+        shiftRight_helper("[1/2]", -1, "[1]");
+        shiftRight_helper("[1/2]", -2, "[2]");
+        shiftRight_helper("[1/2]", -3, "[4]");
+        shiftRight_helper("[1/2]", -4, "[8]");
+        shiftRight_helper("[5/3, -1/4, 23]", 0, "[5/3, -1/4, 23]");
+        shiftRight_helper("[5/3, -1/4, 23]", 1, "[5/6, -1/8, 23/2]");
+        shiftRight_helper("[5/3, -1/4, 23]", 2, "[5/12, -1/16, 23/4]");
+        shiftRight_helper("[5/3, -1/4, 23]", 3, "[5/24, -1/32, 23/8]");
+        shiftRight_helper("[5/3, -1/4, 23]", 4, "[5/48, -1/64, 23/16]");
+        shiftRight_helper("[5/3, -1/4, 23]", -1, "[10/3, -1/2, 46]");
+        shiftRight_helper("[5/3, -1/4, 23]", -2, "[20/3, -1, 92]");
+        shiftRight_helper("[5/3, -1/4, 23]", -3, "[40/3, -2, 184]");
+        shiftRight_helper("[5/3, -1/4, 23]", -4, "[80/3, -4, 368]");
     }
 
     @Test

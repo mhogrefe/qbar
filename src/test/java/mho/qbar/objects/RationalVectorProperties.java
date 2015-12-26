@@ -630,65 +630,53 @@ public class RationalVectorProperties extends QBarTestProperties {
     }
 
     private void propertiesShiftLeft() {
-        initialize("");
-        System.out.println("\t\ttesting shiftLeft(int) properties...");
-
-        Iterable<Integer> is;
-        if (P instanceof QBarExhaustiveProvider) {
-            is = P.integers();
-        } else {
-            is = P.integersGeometric();
-        }
-        for (Pair<RationalVector, Integer> p : take(LIMIT, P.pairs(P.rationalVectors(), is))) {
+        initialize("shiftLeft(int)");
+        for (Pair<RationalVector, Integer> p : take(LIMIT, P.pairs(P.rationalVectors(), P.integersGeometric()))) {
+            homomorphic(
+                    RationalVector::negate,
+                    Function.identity(),
+                    RationalVector::negate,
+                    RationalVector::shiftLeft,
+                    RationalVector::shiftLeft,
+                    p
+            );
             RationalVector shifted = p.a.shiftLeft(p.b);
             shifted.validate();
             assertEquals(p, shifted, shiftLeft_simplest(p.a, p.b));
             aeqit(p, map(Rational::signum, p.a), map(Rational::signum, shifted));
             assertEquals(p, p.a.dimension(), shifted.dimension());
             assertEquals(p, p.a.negate().shiftLeft(p.b), shifted.negate());
+            inverse(a -> a.shiftLeft(p.b), (RationalVector v) -> v.shiftRight(p.b), p.a);
             assertEquals(p, shifted, p.a.shiftRight(-p.b));
         }
 
         for (RationalVector v : take(LIMIT, P.rationalVectors())) {
-            assertEquals(v, v.shiftLeft(0), v);
+            fixedPoint(u -> u.shiftLeft(0), v);
         }
 
-        if (P instanceof QBarExhaustiveProvider) {
-            is = P.naturalIntegers();
-        } else {
-            is = P.naturalIntegersGeometric();
+        Iterable<Pair<RationalVector, Integer>> ps = P.pairs(P.rationalVectors(), P.naturalIntegersGeometric());
+        for (Pair<RationalVector, Integer> p : take(LIMIT, ps)) {
+            assertEquals(p, p.a.shiftLeft(p.b), p.a.multiply(BigInteger.ONE.shiftLeft(p.b)));
         }
-        for (Pair<RationalVector, Integer> p : take(LIMIT, P.pairs(P.rationalVectors(), is))) {
-            RationalVector shifted = p.a.shiftLeft(p.b);
-            assertEquals(p, shifted, p.a.multiply(BigInteger.ONE.shiftLeft(p.b)));
+
+        for (Pair<Rational, Integer> p : take(LIMIT, P.pairs(P.rationals(), P.integersGeometric()))) {
+            homomorphic(
+                    RationalVector::of,
+                    Function.identity(),
+                    RationalVector::of,
+                    Rational::shiftLeft,
+                    RationalVector::shiftLeft,
+                    p
+            );
         }
     }
 
     private void compareImplementationsShiftLeft() {
-        initialize("");
-        System.out.println("\t\tcomparing shiftLeft(int) implementations...");
-
-        long totalTime = 0;
-        Iterable<Integer> is;
-        if (P instanceof QBarExhaustiveProvider) {
-            is = P.integers();
-        } else {
-            is  = P.integersGeometric();
-        }
-        for (Pair<RationalVector, Integer> p : take(LIMIT, P.pairs(P.rationalVectors(), is))) {
-            long time = System.nanoTime();
-            shiftLeft_simplest(p.a, p.b);
-            totalTime += (System.nanoTime() - time);
-        }
-        System.out.println("\t\t\tsimplest: " + ((double) totalTime) / 1e9 + " s");
-
-        totalTime = 0;
-        for (Pair<RationalVector, Integer> p : take(LIMIT, P.pairs(P.rationalVectors(), is))) {
-            long time = System.nanoTime();
-            p.a.shiftLeft(p.b);
-            totalTime += (System.nanoTime() - time);
-        }
-        System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
+        Map<String, Function<Pair<RationalVector, Integer>, RationalVector>> functions = new LinkedHashMap<>();
+        functions.put("simplest", p -> shiftLeft_simplest(p.a, p.b));
+        functions.put("standard", p -> p.a.shiftLeft(p.b));
+        Iterable<Pair<RationalVector, Integer>> ps = P.pairs(P.rationalVectors(), P.integersGeometric());
+        compareImplementations("shiftLeft(int)", take(LIMIT, ps), functions);
     }
 
     private static @NotNull RationalVector shiftRight_simplest(@NotNull RationalVector v, int bits) {
@@ -700,23 +688,23 @@ public class RationalVectorProperties extends QBarTestProperties {
     }
 
     private void propertiesShiftRight() {
-        initialize("");
-        System.out.println("\t\ttesting shiftRight(int) properties...");
-
-        Iterable<Integer> is;
-        if (P instanceof QBarExhaustiveProvider) {
-            is = P.integers();
-        } else {
-            is  = P.integersGeometric();
-        }
-        Iterable<Pair<RationalVector, Integer>> ps = P.pairs(P.rationalVectors(), is);
-        for (Pair<RationalVector, Integer> p : take(LIMIT, ps)) {
+        initialize("shiftRight(int)");
+        for (Pair<RationalVector, Integer> p : take(LIMIT, P.pairs(P.rationalVectors(), P.integersGeometric()))) {
+            homomorphic(
+                    RationalVector::negate,
+                    Function.identity(),
+                    RationalVector::negate,
+                    RationalVector::shiftRight,
+                    RationalVector::shiftRight,
+                    p
+            );
             RationalVector shifted = p.a.shiftRight(p.b);
             shifted.validate();
             assertEquals(p, shifted, shiftRight_simplest(p.a, p.b));
             aeqit(p, map(Rational::signum, p.a), map(Rational::signum, shifted));
             assertEquals(p, p.a.dimension(), shifted.dimension());
             assertEquals(p, p.a.negate().shiftRight(p.b), shifted.negate());
+            inverse(a -> a.shiftRight(p.b), (RationalVector v) -> v.shiftLeft(p.b), p.a);
             assertEquals(p, shifted, p.a.shiftLeft(-p.b));
         }
 
@@ -724,43 +712,29 @@ public class RationalVectorProperties extends QBarTestProperties {
             assertEquals(v, v.shiftRight(0), v);
         }
 
-        if (P instanceof QBarExhaustiveProvider) {
-            is = P.naturalIntegers();
-        } else {
-            is  = P.naturalIntegersGeometric();
-        }
-        ps = P.pairs(P.rationalVectors(), is);
+        Iterable<Pair<RationalVector, Integer>> ps = P.pairs(P.rationalVectors(), P.naturalIntegersGeometric());
         for (Pair<RationalVector, Integer> p : take(LIMIT, ps)) {
-            RationalVector shifted = p.a.shiftRight(p.b);
-            assertEquals(p, shifted, p.a.divide(BigInteger.ONE.shiftLeft(p.b)));
+            assertEquals(p, p.a.shiftRight(p.b), p.a.divide(BigInteger.ONE.shiftLeft(p.b)));
+        }
+
+        for (Pair<Rational, Integer> p : take(LIMIT, P.pairs(P.rationals(), P.integersGeometric()))) {
+            homomorphic(
+                    RationalVector::of,
+                    Function.identity(),
+                    RationalVector::of,
+                    Rational::shiftRight,
+                    RationalVector::shiftRight,
+                    p
+            );
         }
     }
 
     private void compareImplementationsShiftRight() {
-        initialize("");
-        System.out.println("\t\tcomparing shiftRight(int) implementations...");
-
-        long totalTime = 0;
-        Iterable<Integer> is;
-        if (P instanceof QBarExhaustiveProvider) {
-            is = P.integers();
-        } else {
-            is  = P.integersGeometric();
-        }
-        for (Pair<RationalVector, Integer> p : take(LIMIT, P.pairs(P.rationalVectors(), is))) {
-            long time = System.nanoTime();
-            shiftRight_simplest(p.a, p.b);
-            totalTime += (System.nanoTime() - time);
-        }
-        System.out.println("\t\t\tsimplest: " + ((double) totalTime) / 1e9 + " s");
-
-        totalTime = 0;
-        for (Pair<RationalVector, Integer> p : take(LIMIT, P.pairs(P.rationalVectors(), is))) {
-            long time = System.nanoTime();
-            p.a.shiftRight(p.b);
-            totalTime += (System.nanoTime() - time);
-        }
-        System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
+        Map<String, Function<Pair<RationalVector, Integer>, RationalVector>> functions = new LinkedHashMap<>();
+        functions.put("simplest", p -> shiftRight_simplest(p.a, p.b));
+        functions.put("standard", p -> p.a.shiftRight(p.b));
+        Iterable<Pair<RationalVector, Integer>> ps = P.pairs(P.rationalVectors(), P.integersGeometric());
+        compareImplementations("shiftRight(int)", take(LIMIT, ps), functions);
     }
 
     private static @NotNull RationalVector sum_simplest(@NotNull Iterable<RationalVector> xs) {
