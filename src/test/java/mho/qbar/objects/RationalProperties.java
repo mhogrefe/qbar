@@ -241,7 +241,7 @@ public class RationalProperties extends QBarTestProperties {
             Rational r = of(i);
             r.validate();
             assertEquals(i, r.getDenominator(), BigInteger.ONE);
-            inverses(Rational::of, Rational::bigIntegerValueExact, i);
+            inverse(Rational::of, Rational::bigIntegerValueExact, i);
         }
     }
 
@@ -253,7 +253,7 @@ public class RationalProperties extends QBarTestProperties {
             assertEquals(l, r.getDenominator(), BigInteger.ONE);
             assertTrue(l, ge(r.getNumerator(), BigInteger.valueOf(Long.MIN_VALUE)));
             assertTrue(l, le(r.getNumerator(), BigInteger.valueOf(Long.MAX_VALUE)));
-            inverses(Rational::of, Rational::longValueExact, l);
+            inverse(Rational::of, Rational::longValueExact, l);
         }
     }
 
@@ -265,7 +265,7 @@ public class RationalProperties extends QBarTestProperties {
             assertEquals(i, r.getDenominator(), BigInteger.ONE);
             assertTrue(i, ge(r.getNumerator(), BigInteger.valueOf(Integer.MIN_VALUE)));
             assertTrue(i, le(r.getNumerator(), BigInteger.valueOf(Integer.MAX_VALUE)));
-            inverses(Rational::of, Rational::intValueExact, i);
+            inverse(Rational::of, Rational::intValueExact, i);
         }
     }
 
@@ -276,7 +276,7 @@ public class RationalProperties extends QBarTestProperties {
             r.validate();
             assertEquals(bf, of(bf.getMantissa()).multiply(ONE.shiftLeft(bf.getExponent())), r);
             assertTrue(bf, IntegerUtils.isPowerOfTwo(r.getDenominator()));
-            inverses(Rational::of, Rational::binaryFractionValueExact, bf);
+            inverse(Rational::of, Rational::binaryFractionValueExact, bf);
         }
     }
 
@@ -318,7 +318,7 @@ public class RationalProperties extends QBarTestProperties {
         }
 
         for (float f : take(LIMIT, filter(g -> Float.isFinite(g) && !isNegativeZero(g), P.floats()))) {
-            inverses(g -> ofExact(g).get(), Rational::floatValueExact, f);
+            inverse(g -> ofExact(g).get(), Rational::floatValueExact, f);
         }
 
         int x = 1 << (FLOAT_EXPONENT_WIDTH - 1);
@@ -346,7 +346,7 @@ public class RationalProperties extends QBarTestProperties {
         }
 
         for (double d : take(LIMIT, filter(e -> Double.isFinite(e) && !isNegativeZero(e), P.doubles()))) {
-            inverses(e -> ofExact(e).get(), Rational::doubleValueExact, d);
+            inverse(e -> ofExact(e).get(), Rational::doubleValueExact, d);
         }
 
         int x = 1 << (DOUBLE_EXPONENT_WIDTH - 1);
@@ -376,7 +376,7 @@ public class RationalProperties extends QBarTestProperties {
         }
 
         for (BigDecimal bd : take(LIMIT, P.canonicalBigDecimals())) {
-            inverses(Rational::of, Rational::bigDecimalValueExact, bd);
+            inverse(Rational::of, Rational::bigDecimalValueExact, bd);
         }
     }
 
@@ -500,7 +500,7 @@ public class RationalProperties extends QBarTestProperties {
         for (BigInteger i : take(LIMIT, P.bigIntegers())) {
             Rational r = of(i);
             assertEquals(i, r.bigIntegerValueExact(), i);
-            inverses(Rational::bigIntegerValueExact, Rational::of, r);
+            inverse(Rational::bigIntegerValueExact, Rational::of, r);
             homomorphic(
                     Rational::negate,
                     BigInteger::negate,
@@ -523,7 +523,7 @@ public class RationalProperties extends QBarTestProperties {
         for (byte b : take(LIMIT, P.bytes())) {
             Rational r = of(b);
             assertEquals(b, r.byteValueExact(), b);
-            inverses(Rational::byteValueExact, c -> of((int) c), r);
+            inverse(Rational::byteValueExact, c -> of((int) c), r);
         }
 
         for (byte b : take(LIMIT, filter(c -> c != Byte.MIN_VALUE, P.bytes()))) {
@@ -558,7 +558,7 @@ public class RationalProperties extends QBarTestProperties {
         for (short s : take(LIMIT, P.shorts())) {
             Rational r = of(s);
             assertEquals(s, r.shortValueExact(), s);
-            inverses(Rational::shortValueExact, t -> of((int) t), r);
+            inverse(Rational::shortValueExact, t -> of((int) t), r);
         }
 
         for (short s : take(LIMIT, filter(t -> t != Short.MIN_VALUE, P.shorts()))) {
@@ -593,7 +593,7 @@ public class RationalProperties extends QBarTestProperties {
         for (int i : take(LIMIT, P.integers())) {
             Rational r = of(i);
             assertEquals(i, r.intValueExact(), i);
-            inverses(Rational::intValueExact, Rational::of, r);
+            inverse(Rational::intValueExact, Rational::of, r);
         }
 
         for (int i : take(LIMIT, filter(j -> j != Integer.MIN_VALUE, P.integers()))) {
@@ -632,7 +632,7 @@ public class RationalProperties extends QBarTestProperties {
         for (long l : take(LIMIT, P.longs())) {
             Rational r = of(l);
             assertEquals(l, r.longValueExact(), l);
-            inverses(Rational::longValueExact, Rational::of, r);
+            inverse(Rational::longValueExact, Rational::of, r);
         }
 
         for (long l : take(LIMIT, filter(m -> m != Long.MIN_VALUE, P.longs()))) {
@@ -696,7 +696,7 @@ public class RationalProperties extends QBarTestProperties {
     private void propertiesBinaryFractionValueExact() {
         initialize("binaryFractionValueExact()");
         for (Rational r : take(LIMIT, filterInfinite(Rational::isBinaryFraction, P.rationals()))) {
-            inverses(Rational::binaryFractionValueExact, Rational::of, r);
+            inverse(Rational::binaryFractionValueExact, Rational::of, r);
             homomorphic(
                     Rational::negate,
                     BinaryFraction::negate,
@@ -878,7 +878,7 @@ public class RationalProperties extends QBarTestProperties {
             assertEquals(r, r, ofExact(rounded).get());
             assertTrue(r, Float.isFinite(rounded));
             assertTrue(r, !isNegativeZero(rounded));
-            inverses(s -> s.floatValue(RoundingMode.UNNECESSARY), (Float f) -> ofExact(f).get(), r);
+            inverse(s -> s.floatValue(RoundingMode.UNNECESSARY), (Float f) -> ofExact(f).get(), r);
         }
 
         rs = filterInfinite(
@@ -1211,7 +1211,7 @@ public class RationalProperties extends QBarTestProperties {
             assertEquals(r, r, ofExact(rounded).get());
             assertTrue(r, Double.isFinite(rounded));
             assertTrue(r, !isNegativeZero(rounded));
-            inverses(s -> s.doubleValue(RoundingMode.UNNECESSARY), (Double d) -> ofExact(d).get(), r);
+            inverse(s -> s.doubleValue(RoundingMode.UNNECESSARY), (Double d) -> ofExact(d).get(), r);
         }
 
         rs = filterInfinite(
@@ -1911,7 +1911,7 @@ public class RationalProperties extends QBarTestProperties {
             assertTrue(bd, BigDecimalUtils.isCanonical(bd));
             assertEquals(r, bd, r.bigDecimalValueByPrecision(0, RoundingMode.UNNECESSARY));
             assertTrue(r, bd.signum() == r.signum());
-            inverses(Rational::bigDecimalValueExact, Rational::of, r);
+            inverse(Rational::bigDecimalValueExact, Rational::of, r);
             homomorphic(
                     Rational::negate,
                     BigDecimal::negate,
@@ -1963,7 +1963,7 @@ public class RationalProperties extends QBarTestProperties {
             sum.validate();
             assertEquals(p, sum, add_simplest(p.a, p.b));
             commutative(Rational::add, p);
-            inverses(r -> r.add(p.b), (Rational r) -> r.subtract(p.b), p.a);
+            inverse(r -> r.add(p.b), (Rational r) -> r.subtract(p.b), p.a);
         }
 
         for (Rational r : take(LIMIT, P.rationals())) {
@@ -1989,7 +1989,7 @@ public class RationalProperties extends QBarTestProperties {
         for (Rational r : take(LIMIT, P.rationals())) {
             Rational negative = r.negate();
             negative.validate();
-            isInvolution(Rational::negate, r);
+            involution(Rational::negate, r);
             assertTrue(r, r.add(negative) == ZERO);
         }
 
@@ -2033,7 +2033,7 @@ public class RationalProperties extends QBarTestProperties {
             difference.validate();
             assertEquals(p, difference, subtract_simplest(p.a, p.b));
             antiCommutative(Rational::subtract, Rational::negate, p);
-            inverses(r -> r.add(p.b), (Rational r) -> r.subtract(p.b), p.a);
+            inverse(r -> r.add(p.b), (Rational r) -> r.subtract(p.b), p.a);
         }
 
         for (Rational r : take(LIMIT, P.rationals())) {
@@ -2082,7 +2082,7 @@ public class RationalProperties extends QBarTestProperties {
         }
 
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals(), P.nonzeroRationals()))) {
-            inverses(r -> r.multiply(p.b), (Rational r) -> r.divide(p.b), p.a);
+            inverse(r -> r.multiply(p.b), (Rational r) -> r.divide(p.b), p.a);
             assertEquals(p, p.a.multiply(p.b), p.a.divide(p.b.invert()));
         }
 
@@ -2134,7 +2134,7 @@ public class RationalProperties extends QBarTestProperties {
 
         for (Pair<Rational, BigInteger> p : take(LIMIT, P.pairs(P.rationals(), P.nonzeroBigIntegers()))) {
             assertEquals(p, p.a.multiply(p.b).divide(p.b), p.a);
-            inverses(r -> r.multiply(p.b), (Rational r) -> r.divide(p.b), p.a);
+            inverse(r -> r.multiply(p.b), (Rational r) -> r.divide(p.b), p.a);
         }
 
         for (BigInteger i : take(LIMIT, P.bigIntegers())) {
@@ -2184,7 +2184,7 @@ public class RationalProperties extends QBarTestProperties {
 
         for (Pair<Rational, Integer> p : take(LIMIT, P.pairs(P.rationals(), P.nonzeroIntegers()))) {
             assertEquals(p, p.a.multiply(p.b).divide(p.b), p.a);
-            inverses(r -> r.multiply(p.b), (Rational r) -> r.divide(p.b), p.a);
+            inverse(r -> r.multiply(p.b), (Rational r) -> r.divide(p.b), p.a);
         }
 
         for (int i : take(LIMIT, P.integers())) {
@@ -2224,7 +2224,7 @@ public class RationalProperties extends QBarTestProperties {
             Rational inverse = r.invert();
             inverse.validate();
             assertEquals(r, inverse, invert_simplest(r));
-            isInvolution(Rational::invert, r);
+            involution(Rational::invert, r);
             assertTrue(r, r.multiply(inverse) == ONE);
             assertTrue(r, inverse != ZERO);
         }
@@ -2252,7 +2252,7 @@ public class RationalProperties extends QBarTestProperties {
             quotient.validate();
             assertEquals(p, quotient, divide_Rational_simplest(p.a, p.b));
             assertEquals(p, quotient, p.a.multiply(p.b.invert()));
-            inverses(r -> r.divide(p.b), (Rational r) -> r.multiply(p.b), p.a);
+            inverse(r -> r.divide(p.b), (Rational r) -> r.multiply(p.b), p.a);
         }
 
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.nonzeroRationals()))) {
@@ -2298,7 +2298,7 @@ public class RationalProperties extends QBarTestProperties {
             Rational quotient = p.a.divide(p.b);
             quotient.validate();
             assertEquals(p, quotient, divide_BigInteger_simplest(p.a, p.b));
-            inverses(r -> r.divide(p.b), (Rational r) -> r.multiply(p.b), p.a);
+            inverse(r -> r.divide(p.b), (Rational r) -> r.multiply(p.b), p.a);
         }
 
         for (Pair<Rational, BigInteger> p : take(LIMIT, P.pairs(P.nonzeroRationals(), P.nonzeroBigIntegers()))) {
@@ -2343,7 +2343,7 @@ public class RationalProperties extends QBarTestProperties {
             Rational quotient = p.a.divide(p.b);
             quotient.validate();
             assertEquals(p, quotient, divide_int_simplest(p.a, p.b));
-            inverses(r -> r.divide(p.b), (Rational r) -> r.multiply(p.b), p.a);
+            inverse(r -> r.divide(p.b), (Rational r) -> r.multiply(p.b), p.a);
         }
 
         for (Pair<Rational, Integer> p : take(LIMIT, P.pairs(P.nonzeroRationals(), P.nonzeroIntegers()))) {
@@ -2396,7 +2396,7 @@ public class RationalProperties extends QBarTestProperties {
             Rational shifted = p.a.shiftLeft(p.b);
             shifted.validate();
             assertEquals(p, shifted, shiftLeft_simplest(p.a, p.b));
-            inverses(r -> r.shiftLeft(p.b), (Rational r) -> r.shiftRight(p.b), p.a);
+            inverse(r -> r.shiftLeft(p.b), (Rational r) -> r.shiftRight(p.b), p.a);
             assertEquals(p, shifted, p.a.shiftRight(-p.b));
         }
 
@@ -2442,7 +2442,7 @@ public class RationalProperties extends QBarTestProperties {
             Rational shifted = p.a.shiftRight(p.b);
             shifted.validate();
             assertEquals(p, shifted, shiftRight_simplest(p.a, p.b));
-            inverses(r -> r.shiftRight(p.b), (Rational r) -> r.shiftLeft(p.b), p.a);
+            inverse(r -> r.shiftRight(p.b), (Rational r) -> r.shiftLeft(p.b), p.a);
             assertEquals(p, shifted, p.a.shiftLeft(-p.b));
         }
 
@@ -2807,7 +2807,7 @@ public class RationalProperties extends QBarTestProperties {
             assertFalse(r, continuedFraction.isEmpty());
             assertTrue(r, all(i -> i != null, continuedFraction));
             assertTrue(r, all(i -> i.signum() == 1, tail(continuedFraction)));
-            inverses(Rational::continuedFraction, xs -> fromContinuedFraction(toList(xs)), r);
+            inverse(Rational::continuedFraction, xs -> fromContinuedFraction(toList(xs)), r);
         }
 
         for (Rational r : take(LIMIT, filter(s -> !s.isInteger(), P.rationals()))) {
@@ -2826,7 +2826,7 @@ public class RationalProperties extends QBarTestProperties {
         }
 
         for (List<BigInteger> is : take(LIMIT, filter(js -> !last(js).equals(BigInteger.ONE), iss))) {
-            inverses(Rational::fromContinuedFraction, r -> toList(r.continuedFraction()), is);
+            inverse(Rational::fromContinuedFraction, r -> toList(r.continuedFraction()), is);
         }
 
         Iterable<List<BigInteger>> issFail = map(
@@ -2900,7 +2900,7 @@ public class RationalProperties extends QBarTestProperties {
                     pn.c.equals(Collections.singletonList(BigInteger.ZERO)),
                     p.a.hasTerminatingBaseExpansion(p.b)
             );
-            inverses(
+            inverse(
                     r -> r.positionalNotation(p.b),
                     (Triple<List<BigInteger>, List<BigInteger>, List<BigInteger>> t) ->
                             fromPositionalNotation(p.b, t.a, t.b, t.c),
@@ -2953,7 +2953,7 @@ public class RationalProperties extends QBarTestProperties {
                 ps
         );
         for (Pair<BigInteger, Triple<List<BigInteger>, List<BigInteger>, List<BigInteger>>> p : take(LIMIT, ps2)) {
-            inverses(t -> fromPositionalNotation(p.a, t.a, t.b, t.c), (Rational s) -> s.positionalNotation(p.a), p.b);
+            inverse(t -> fromPositionalNotation(p.a, t.a, t.b, t.c), (Rational s) -> s.positionalNotation(p.a), p.b);
         }
 
         Iterable<Pair<BigInteger, Triple<List<BigInteger>, List<BigInteger>, List<BigInteger>>>> psFail = P.pairs(
@@ -3156,7 +3156,7 @@ public class RationalProperties extends QBarTestProperties {
                 )
         );
         for (Pair<Rational, BigInteger> p : take(LIMIT, ps)) {
-            inverses(r -> r.toStringBase(p.b), (String t) -> fromStringBase(t, p.b), p.a);
+            inverse(r -> r.toStringBase(p.b), (String t) -> fromStringBase(t, p.b), p.a);
         }
 
         String smallBaseChars =

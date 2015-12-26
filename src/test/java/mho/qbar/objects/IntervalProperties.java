@@ -847,7 +847,7 @@ public class IntervalProperties extends QBarTestProperties {
         for (Interval a : take(LIMIT, P.intervals())) {
             Interval negative = a.negate();
             negative.validate();
-            isInvolution(Interval::negate, a);
+            involution(Interval::negate, a);
             assertTrue(a, a.add(negative).contains(ZERO));
             assertEquals(a, a.diameter(), negative.diameter());
             for (Rational r : take(TINY_LIMIT, P.rationalsIn(a))) {
@@ -1017,7 +1017,7 @@ public class IntervalProperties extends QBarTestProperties {
 
         Iterable<Pair<Interval, Rational>> ps = P.pairs(P.intervals(), P.nonzeroRationals());
         for (Pair<Interval, Rational> p : take(LIMIT, ps)) {
-            inverses(a -> a.multiply(p.b), (Interval a) -> a.divide(p.b), p.a);
+            inverse(a -> a.multiply(p.b), (Interval a) -> a.divide(p.b), p.a);
             assertEquals(p, p.a.multiply(p.b), p.a.divide(p.b.invert()));
         }
 
@@ -1052,7 +1052,7 @@ public class IntervalProperties extends QBarTestProperties {
         }
 
         for (Pair<Interval, BigInteger> p : take(LIMIT, P.pairs(P.intervals(), P.nonzeroBigIntegers()))) {
-            inverses(a -> a.multiply(p.b), (Interval a) -> a.divide(p.b), p.a);
+            inverse(a -> a.multiply(p.b), (Interval a) -> a.divide(p.b), p.a);
         }
 
         for (Interval a : take(LIMIT, P.intervals())) {
@@ -1086,7 +1086,7 @@ public class IntervalProperties extends QBarTestProperties {
         }
 
         for (Pair<Interval, Integer> p : take(LIMIT, P.pairs(P.intervals(), P.nonzeroIntegers()))) {
-            inverses(a -> a.multiply(p.b), (Interval a) -> a.divide(p.b), p.a);
+            inverse(a -> a.multiply(p.b), (Interval a) -> a.divide(p.b), p.a);
         }
 
         for (Interval a : take(LIMIT, P.intervals())) {
@@ -1348,7 +1348,7 @@ public class IntervalProperties extends QBarTestProperties {
             Interval quotient = p.a.divide(p.b);
             quotient.validate();
             assertEquals(p, p.a.multiply(p.b.invert()), quotient);
-            inverses(a -> a.divide(p.b), (Interval a) -> a.multiply(p.b), p.a);
+            inverse(a -> a.divide(p.b), (Interval a) -> a.multiply(p.b), p.a);
             for (Rational r : take(TINY_LIMIT, P.rationalsIn(p.a))) {
                 assertTrue(p, quotient.contains(r.divide(p.b)));
             }
@@ -1380,7 +1380,7 @@ public class IntervalProperties extends QBarTestProperties {
             Interval quotient = p.a.divide(p.b);
             quotient.validate();
             assertEquals(p, p.a.multiply(Rational.of(p.b).invert()), quotient);
-            inverses(a -> a.divide(p.b), (Interval a) -> a.multiply(p.b), p.a);
+            inverse(a -> a.divide(p.b), (Interval a) -> a.multiply(p.b), p.a);
             for (Rational r : take(TINY_LIMIT, P.rationalsIn(p.a))) {
                 assertTrue(p, quotient.contains(r.divide(p.b)));
             }
@@ -1412,7 +1412,7 @@ public class IntervalProperties extends QBarTestProperties {
             Interval quotient = p.a.divide(p.b);
             quotient.validate();
             assertEquals(p, p.a.multiply(Rational.of(p.b).invert()), quotient);
-            inverses(a -> a.divide(p.b), (Interval a) -> a.multiply(p.b), p.a);
+            inverse(a -> a.divide(p.b), (Interval a) -> a.multiply(p.b), p.a);
             for (Rational r : take(TINY_LIMIT, P.rationalsIn(p.a))) {
                 assertTrue(p, quotient.contains(r.divide(p.b)));
             }
@@ -1462,7 +1462,7 @@ public class IntervalProperties extends QBarTestProperties {
             assertEquals(p, shifted, shiftLeft_simplest(p.a, p.b));
             assertEquals(p, p.a.signum(), shifted.signum());
             assertEquals(p, p.a.isFinitelyBounded(), shifted.isFinitelyBounded());
-            inverses(a -> a.shiftLeft(p.b), (Interval a) -> a.shiftRight(p.b), p.a);
+            inverse(a -> a.shiftLeft(p.b), (Interval a) -> a.shiftRight(p.b), p.a);
             for (Rational r : take(TINY_LIMIT, P.rationalsIn(p.a))) {
                 assertTrue(p, shifted.contains(r.shiftLeft(p.b)));
             }
@@ -1513,7 +1513,7 @@ public class IntervalProperties extends QBarTestProperties {
             assertEquals(p, shifted, shiftRight_simplest(p.a, p.b));
             assertEquals(p, p.a.signum(), shifted.signum());
             assertEquals(p, p.a.isFinitelyBounded(), shifted.isFinitelyBounded());
-            inverses(a -> a.shiftRight(p.b), (Interval a) -> a.shiftLeft(p.b), p.a);
+            inverse(a -> a.shiftRight(p.b), (Interval a) -> a.shiftLeft(p.b), p.a);
             for (Rational r : take(TINY_LIMIT, P.rationalsIn(p.a))) {
                 assertTrue(p, shifted.contains(r.shiftRight(p.b)));
             }

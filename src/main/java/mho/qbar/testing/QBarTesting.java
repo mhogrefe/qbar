@@ -8,11 +8,7 @@ import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
-import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -123,7 +119,7 @@ public class QBarTesting {
 
         if (denseInUsedCharString) {
             for (String s : take(limit, filterInfinite(t -> read.apply(t).isPresent(), P.strings(usedChars)))) {
-                inverses(t -> read.apply(t).get(), Object::toString, s);
+                inverse(t -> read.apply(t).get(), Object::toString, s);
                 validate.accept(read.apply(s).get());
             }
         }

@@ -74,7 +74,7 @@ public class RationalVectorProperties extends QBarTestProperties {
             List<Rational> rs = toList(v);
             assertTrue(v, all(r -> r != null, rs));
             //noinspection Convert2MethodRef
-            inverses(IterableUtils::toList, (List<Rational> ss) -> of(ss), v);
+            inverse(IterableUtils::toList, (List<Rational> ss) -> of(ss), v);
             try {
                 v.iterator().remove();
                 fail(v);
@@ -111,7 +111,7 @@ public class RationalVectorProperties extends QBarTestProperties {
             RationalVector v = of(rs);
             v.validate();
             //noinspection Convert2MethodRef
-            inverses(RationalVector::of, (RationalVector u) -> toList(u), rs);
+            inverse(RationalVector::of, (RationalVector u) -> toList(u), rs);
             assertEquals(rs, v.dimension(), rs.size());
         }
 
@@ -130,7 +130,7 @@ public class RationalVectorProperties extends QBarTestProperties {
             v.validate();
             assertEquals(r, v.dimension(), 1);
             assertEquals(r, v.get(0), r);
-            inverses(RationalVector::of, (RationalVector u) -> u.get(0), r);
+            inverse(RationalVector::of, (RationalVector u) -> u.get(0), r);
         }
     }
 
@@ -156,7 +156,7 @@ public class RationalVectorProperties extends QBarTestProperties {
             RationalVector zero = zero(i);
             zero.validate();
             assertEquals(i, zero.dimension(), i);
-            inverses(RationalVector::zero, RationalVector::dimension, i);
+            inverse(RationalVector::zero, RationalVector::dimension, i);
             assertTrue(i, zero.isZero());
         }
 
