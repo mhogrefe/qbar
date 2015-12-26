@@ -377,7 +377,7 @@ public class RationalVectorProperties extends QBarTestProperties {
         }
 
         for (Rational r : take(LIMIT, P.rationals())) {
-            assertTrue(r, ZERO_DIMENSIONAL.multiply(r) == ZERO_DIMENSIONAL);
+            fixedPoint(v -> v.multiply(r), ZERO_DIMENSIONAL);
         }
 
         for (Pair<RationalVector, Rational> p : take(LIMIT, P.pairs(P.rationalVectors(1), P.rationals()))) {
@@ -419,7 +419,7 @@ public class RationalVectorProperties extends QBarTestProperties {
         }
 
         for (BigInteger i : take(LIMIT, P.bigIntegers())) {
-            assertTrue(i, ZERO_DIMENSIONAL.multiply(i) == ZERO_DIMENSIONAL);
+            fixedPoint(v -> v.multiply(i), ZERO_DIMENSIONAL);
         }
 
         for (Pair<RationalVector, BigInteger> p : take(LIMIT, P.pairs(P.rationalVectors(1), P.bigIntegers()))) {
@@ -464,7 +464,7 @@ public class RationalVectorProperties extends QBarTestProperties {
         }
 
         for (int i : take(LIMIT, P.integers())) {
-            assertTrue(i, ZERO_DIMENSIONAL.multiply(i) == ZERO_DIMENSIONAL);
+            fixedPoint(v -> v.multiply(i), ZERO_DIMENSIONAL);
         }
 
         for (Pair<RationalVector, Integer> p : take(LIMIT, P.pairs(P.rationalVectors(1), P.integers()))) {
@@ -489,51 +489,40 @@ public class RationalVectorProperties extends QBarTestProperties {
     }
 
     private void propertiesDivide_Rational() {
-        initialize("");
-        System.out.println("\t\ttesting divide(Rational) properties...");
-
-        Iterable<Pair<RationalVector, Rational>> ps = filter(
-                p -> p.b != Rational.ZERO,
-                P.pairs(P.rationalVectors(), P.rationals())
-        );
-        for (Pair<RationalVector, Rational> p : take(LIMIT, ps)) {
+        initialize("divide(Rational)");
+        for (Pair<RationalVector, Rational> p : take(LIMIT, P.pairs(P.rationalVectors(), P.nonzeroRationals()))) {
             RationalVector v = p.a.divide(p.b);
             v.validate();
             assertEquals(p, v.dimension(), p.a.dimension());
-            assertEquals(p, p.a, v.multiply(p.b));
+            inverse(u -> u.divide(p.b), (RationalVector u) -> u.multiply(p.b), p.a);
             assertEquals(p, v, p.a.multiply(p.b.invert()));
         }
 
         for (RationalVector v : take(LIMIT, P.rationalVectors())) {
-            assertEquals(v, v.divide(Rational.ONE), v);
+            fixedPoint(u -> u.divide(Rational.ONE), v);
         }
 
-        for (Rational r : take(LIMIT, filter(s -> s != Rational.ZERO, P.rationals()))) {
-            assertTrue(r, ZERO_DIMENSIONAL.divide(r) == ZERO_DIMENSIONAL);
+        for (Rational r : take(LIMIT, P.nonzeroRationals())) {
+            fixedPoint(v -> v.divide(r), ZERO_DIMENSIONAL);
         }
 
-        ps = P.pairs(
-                filter(v -> v.get(0) != Rational.ZERO, P.rationalVectors(1)),
-                filter(r -> r != Rational.ZERO, P.rationals())
+        Iterable<Pair<Rational, Integer>> ps = P.pairsLogarithmicOrder(
+                P.nonzeroRationals(),
+                P.naturalIntegersGeometric()
         );
-        for (Pair<RationalVector, Rational> p : take(LIMIT, ps)) {
-            assertEquals(p, p.a.divide(p.b).get(0), of(p.b).divide(p.a.get(0)).get(0).invert());
+        for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
+            assertTrue(p, zero(p.b).divide(p.a).isZero());
         }
 
-        Iterable<Pair<Rational, Integer>> ps2;
-        if (P instanceof QBarExhaustiveProvider) {
-            ps2 = P.pairsLogarithmicOrder(
-                    filter(r -> r != Rational.ZERO, P.rationals()),
-                    P.naturalIntegers()
+        for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals(), P.nonzeroRationals()))) {
+            homomorphic(
+                    RationalVector::of,
+                    Function.identity(),
+                    RationalVector::of,
+                    Rational::divide,
+                    RationalVector::divide,
+                    p
             );
-        } else {
-            ps2 = P.pairs(
-                    filter(r -> r != Rational.ZERO, P.rationals()),
-                    P.withScale(20).naturalIntegersGeometric()
-            );
-        }
-        for (Pair<Rational, Integer> p : take(LIMIT, ps2)) {
-            assertTrue(p, zero(p.b).divide(p.a).isZero());
         }
 
         for (RationalVector v : take(LIMIT, P.rationalVectors())) {
@@ -545,50 +534,39 @@ public class RationalVectorProperties extends QBarTestProperties {
     }
 
     private void propertiesDivide_BigInteger() {
-        initialize("");
-        System.out.println("\t\ttesting divide(BigInteger) properties...");
-
-        Iterable<Pair<RationalVector, BigInteger>> ps = filter(
-                p -> !p.b.equals(BigInteger.ZERO),
-                P.pairs(P.rationalVectors(), P.bigIntegers())
-        );
-        for (Pair<RationalVector, BigInteger> p : take(LIMIT, ps)) {
+        initialize("divide(BigInteger)");
+        for (Pair<RationalVector, BigInteger> p : take(LIMIT, P.pairs(P.rationalVectors(), P.nonzeroBigIntegers()))) {
             RationalVector v = p.a.divide(p.b);
             v.validate();
             assertEquals(p, v.dimension(), p.a.dimension());
-            assertEquals(p, p.a, v.multiply(p.b));
+            inverse(u -> u.divide(p.b), (RationalVector u) -> u.multiply(p.b), p.a);
         }
 
         for (RationalVector v : take(LIMIT, P.rationalVectors())) {
             assertEquals(v, v.divide(BigInteger.ONE), v);
         }
 
-        for (BigInteger i : take(LIMIT, filter(j -> !j.equals(BigInteger.ZERO), P.bigIntegers()))) {
-            assertTrue(i, ZERO_DIMENSIONAL.divide(i) == ZERO_DIMENSIONAL);
+        for (BigInteger i : take(LIMIT, P.nonzeroBigIntegers())) {
+            fixedPoint(v -> v.divide(i), ZERO_DIMENSIONAL);
         }
 
-        ps = P.pairs(
-                filter(v -> v.get(0) != Rational.ZERO, P.rationalVectors(1)),
-                filter(i -> !i.equals(BigInteger.ZERO), P.bigIntegers())
+        Iterable<Pair<BigInteger, Integer>> ps = P.pairsLogarithmicOrder(
+                P.nonzeroBigIntegers(),
+                P.naturalIntegersGeometric()
         );
-        for (Pair<RationalVector, BigInteger> p : take(LIMIT, ps)) {
-            assertEquals(p, p.a.divide(p.b).get(0), of(Rational.of(p.b)).divide(p.a.get(0)).get(0).invert());
+        for (Pair<BigInteger, Integer> p : take(LIMIT, ps)) {
+            assertTrue(p, zero(p.b).divide(p.a).isZero());
         }
 
-        Iterable<Pair<BigInteger, Integer>> ps2;
-        if (P instanceof QBarExhaustiveProvider) {
-            ps2 = P.pairsLogarithmicOrder(
-                    filter(i -> !i.equals(BigInteger.ZERO), P.bigIntegers()),
-                    P.naturalIntegers()
+        for (Pair<Rational, BigInteger> p : take(LIMIT, P.pairs(P.rationals(), P.nonzeroBigIntegers()))) {
+            homomorphic(
+                    RationalVector::of,
+                    Function.identity(),
+                    RationalVector::of,
+                    Rational::divide,
+                    RationalVector::divide,
+                    p
             );
-        } else {
-            ps2 = P.pairs(
-                    filter(i -> !i.equals(BigInteger.ZERO), P.bigIntegers()),
-                    P.withScale(20).naturalIntegersGeometric()
-            );
-        }
-        for (Pair<BigInteger, Integer> p : take(LIMIT, ps2)) {
-            assertTrue(p, zero(p.b).divide(p.a).isZero());
         }
 
         for (RationalVector v : take(LIMIT, P.rationalVectors())) {
@@ -600,47 +578,39 @@ public class RationalVectorProperties extends QBarTestProperties {
     }
 
     private void propertiesDivide_int() {
-        initialize("");
-        System.out.println("\t\ttesting divide(int) properties...");
-
-        Iterable<Pair<RationalVector, Integer>> ps = filter(
-                p -> !p.b.equals(0),
-                P.pairs(P.rationalVectors(), P.integers())
-        );
-        for (Pair<RationalVector, Integer> p : take(LIMIT, ps)) {
+        initialize("divide(int)");
+        for (Pair<RationalVector, Integer> p : take(LIMIT, P.pairs(P.rationalVectors(), P.nonzeroIntegers()))) {
             RationalVector v = p.a.divide(p.b);
             v.validate();
             assertEquals(p, v.dimension(), p.a.dimension());
-            assertEquals(p, p.a, v.multiply(p.b));
+            inverse(u -> u.divide(p.b), (RationalVector u) -> u.multiply(p.b), p.a);
         }
 
         for (RationalVector v : take(LIMIT, P.rationalVectors())) {
             assertEquals(v, v.divide(1), v);
         }
 
-        for (int i : take(LIMIT, filter(j -> j != 0, P.integers()))) {
-            assertTrue(i, ZERO_DIMENSIONAL.divide(i) == ZERO_DIMENSIONAL);
+        for (int i : take(LIMIT, P.nonzeroIntegers())) {
+            fixedPoint(v -> v.divide(i), ZERO_DIMENSIONAL);
         }
 
-        ps = P.pairs(
-                filter(v -> v.get(0) != Rational.ZERO, P.rationalVectors(1)),
-                filter(i -> i != 0, P.integers())
+        Iterable<Pair<Integer, Integer>> ps = P.pairsLogarithmicOrder(
+                P.nonzeroIntegers(),
+                P.naturalIntegersGeometric()
         );
-        for (Pair<RationalVector, Integer> p : take(LIMIT, ps)) {
-            assertEquals(p, p.a.divide(p.b).get(0), of(Rational.of(p.b)).divide(p.a.get(0)).get(0).invert());
+        for (Pair<Integer, Integer> p : take(LIMIT, ps)) {
+            assertTrue(p, zero(p.b).divide(p.a).isZero());
         }
 
-        Iterable<Pair<Integer, Integer>> ps2;
-        if (P instanceof QBarExhaustiveProvider) {
-            ps2 = P.pairsLogarithmicOrder(
-                    filter(i -> i != 0, P.integers()),
-                    P.naturalIntegers()
+        for (Pair<Rational, Integer> p : take(LIMIT, P.pairs(P.rationals(), P.nonzeroIntegers()))) {
+            homomorphic(
+                    RationalVector::of,
+                    Function.identity(),
+                    RationalVector::of,
+                    Rational::divide,
+                    RationalVector::divide,
+                    p
             );
-        } else {
-            ps2 = P.pairs(filter(i -> i != 0, P.integers()), P.withScale(20).naturalIntegersGeometric());
-        }
-        for (Pair<Integer, Integer> p : take(LIMIT, ps2)) {
-            assertTrue(p, zero(p.b).divide(p.a).isZero());
         }
 
         for (RationalVector v : take(LIMIT, P.rationalVectors())) {

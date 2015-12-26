@@ -263,58 +263,73 @@ public class RationalVectorTest {
         multiply_int_helper("[5/3, 4, 0]", 5, "[25/3, 20, 0]");
     }
 
-    @Test
-    public void testDivide_Rational() {
-        assertTrue(ZERO_DIMENSIONAL.divide(Rational.ONE) == ZERO_DIMENSIONAL);
-        assertTrue(ZERO_DIMENSIONAL.divide(Rational.read("-3/2").get()) == ZERO_DIMENSIONAL);
-        aeq(read("[2]").get().divide(Rational.ONE), "[2]");
-        aeq(read("[2]").get().divide(Rational.read("-3/2").get()), "[-4/3]");
-        aeq(read("[5/3, 4, 0]").get().divide(Rational.ONE), "[5/3, 4, 0]");
-        aeq(read("[5/3, 4, 0]").get().divide(Rational.read("-3/2").get()), "[-10/9, -8/3, 0]");
+    private static void divide_Rational_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
+        aeq(read(a).get().divide(Rational.read(b).get()), output);
+    }
+
+    private static void divide_Rational_fail_helper(@NotNull String a, @NotNull String b) {
         try {
-            ZERO_DIMENSIONAL.divide(Rational.ZERO);
+            read(a).get().divide(Rational.read(b).get());
             fail();
         } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testDivide_Rational() {
+        divide_Rational_helper("[]", "1", "[]");
+        divide_Rational_helper("[]", "-3/2", "[]");
+        divide_Rational_helper("[2]", "1", "[2]");
+        divide_Rational_helper("[2]", "-3/2", "[-4/3]");
+        divide_Rational_helper("[5/3, 4, 0]", "1", "[5/3, 4, 0]");
+        divide_Rational_helper("[5/3, 4, 0]", "-3/2", "[-10/9, -8/3, 0]");
+        divide_Rational_fail_helper("[]", "0");
+        divide_Rational_fail_helper("[5/3, 4, 0]", "0");
+    }
+
+    private static void divide_BigInteger_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
+        aeq(read(a).get().divide(Readers.readBigInteger(b).get()), output);
+    }
+
+    private static void divide_BigInteger_fail_helper(@NotNull String a, @NotNull String b) {
         try {
-            aeq(read("[5/3, 4, 0]").get().divide(Rational.ZERO), "[-10/9, -8/3, 0]");
+            read(a).get().divide(Readers.readBigInteger(b).get());
             fail();
         } catch (ArithmeticException ignored) {}
     }
 
     @Test
     public void testDivide_BigInteger() {
-        assertTrue(ZERO_DIMENSIONAL.divide(BigInteger.ONE) == ZERO_DIMENSIONAL);
-        assertTrue(ZERO_DIMENSIONAL.divide(BigInteger.valueOf(5)) == ZERO_DIMENSIONAL);
-        aeq(read("[2]").get().divide(BigInteger.ONE), "[2]");
-        aeq(read("[2]").get().divide(BigInteger.valueOf(5)), "[2/5]");
-        aeq(read("[5/3, 4, 0]").get().divide(BigInteger.ONE), "[5/3, 4, 0]");
-        aeq(read("[5/3, 4, 0]").get().divide(BigInteger.valueOf(5)), "[1/3, 4/5, 0]");
+        divide_BigInteger_helper("[]", "1", "[]");
+        divide_BigInteger_helper("[]", "5", "[]");
+        divide_BigInteger_helper("[2]", "1", "[2]");
+        divide_BigInteger_helper("[2]", "5", "[2/5]");
+        divide_BigInteger_helper("[5/3, 4, 0]", "1", "[5/3, 4, 0]");
+        divide_BigInteger_helper("[5/3, 4, 0]", "5", "[1/3, 4/5, 0]");
+        divide_BigInteger_fail_helper("[]", "0");
+        divide_BigInteger_fail_helper("[5/3, 4, 0]", "0");
+    }
+
+    private static void divide_int_helper(@NotNull String a, int b, @NotNull String output) {
+        aeq(read(a).get().divide(b), output);
+    }
+
+    private static void divide_int_fail_helper(@NotNull String a, int b) {
         try {
-            ZERO_DIMENSIONAL.divide(BigInteger.ZERO);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        try {
-            aeq(read("[5/3, 4, 0]").get().divide(BigInteger.ZERO), "[-10/9, -8/3, 0]");
+            read(a).get().divide(b);
             fail();
         } catch (ArithmeticException ignored) {}
     }
 
     @Test
     public void testDivide_int() {
-        assertTrue(ZERO_DIMENSIONAL.divide(1) == ZERO_DIMENSIONAL);
-        assertTrue(ZERO_DIMENSIONAL.divide(5) == ZERO_DIMENSIONAL);
-        aeq(read("[2]").get().divide(1), "[2]");
-        aeq(read("[2]").get().divide(5), "[2/5]");
-        aeq(read("[5/3, 4, 0]").get().divide(1), "[5/3, 4, 0]");
-        aeq(read("[5/3, 4, 0]").get().divide(5), "[1/3, 4/5, 0]");
-        try {
-            ZERO_DIMENSIONAL.divide(0);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        try {
-            aeq(read("[5/3, 4, 0]").get().divide(0), "[-10/9, -8/3, 0]");
-            fail();
-        } catch (ArithmeticException ignored) {}
+        divide_int_helper("[]", 1, "[]");
+        divide_int_helper("[]", 5, "[]");
+        divide_int_helper("[2]", 1, "[2]");
+        divide_int_helper("[2]", 5, "[2/5]");
+        divide_int_helper("[5/3, 4, 0]", 1, "[5/3, 4, 0]");
+        divide_int_helper("[5/3, 4, 0]", 5, "[1/3, 4/5, 0]");
+        divide_int_fail_helper("[]", 0);
+        divide_int_fail_helper("[5/3, 4, 0]", 0);
     }
 
     @Test

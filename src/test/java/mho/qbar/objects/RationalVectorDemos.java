@@ -134,10 +134,7 @@ public class RationalVectorDemos extends QBarDemos {
     }
 
     private void demoDivide_Rational() {
-        Iterable<Pair<RationalVector, Rational>> ps = filter(
-                p -> p.b != Rational.ZERO,
-                P.pairs(P.rationalVectors(), P.rationals())
-        );
+        Iterable<Pair<RationalVector, Rational>> ps = P.pairs(P.withScale(4).rationalVectors(), P.nonzeroRationals());
         for (Pair<RationalVector, Rational> p : take(LIMIT, ps)) {
             System.out.println(p.a + " / " + p.b + " = " + p.a.divide(p.b));
         }
@@ -145,8 +142,8 @@ public class RationalVectorDemos extends QBarDemos {
 
     private void demoDivide_BigInteger() {
         Iterable<Pair<RationalVector, BigInteger>> ps = P.pairs(
-                P.rationalVectors(),
-                filter(bi -> !bi.equals(BigInteger.ZERO), P.bigIntegers())
+                P.withScale(4).rationalVectors(),
+                P.nonzeroBigIntegers()
         );
         for (Pair<RationalVector, BigInteger> p : take(LIMIT, ps)) {
             System.out.println(p.a + " / " + p.b + " = " + p.a.divide(p.b));
@@ -154,7 +151,7 @@ public class RationalVectorDemos extends QBarDemos {
     }
 
     private void demoDivide_int() {
-        Iterable<Pair<RationalVector, Integer>> ps = P.pairs(P.rationalVectors(), filter(i -> i != 0, P.integers()));
+        Iterable<Pair<RationalVector, Integer>> ps = P.pairs(P.withScale(4).rationalVectors(), P.nonzeroIntegers());
         for (Pair<RationalVector, Integer> p : take(LIMIT, ps)) {
             System.out.println(p.a + " / " + p.b + " = " + p.a.divide(p.b));
         }
