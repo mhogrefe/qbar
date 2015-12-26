@@ -25,12 +25,13 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
     /**
      * []
      */
-    public static final RationalVector ZERO_DIMENSIONAL = new RationalVector(Collections.emptyList());
+    public static final @NotNull RationalVector ZERO_DIMENSIONAL = new RationalVector(Collections.emptyList());
 
     /**
      * Used by {@link mho.qbar.objects.RationalVector#compareTo}
      */
-    private static final Comparator<Iterable<Rational>> RATIONAL_ITERABLE_COMPARATOR = new ShortlexComparator<>();
+    private static final @NotNull Comparator<Iterable<Rational>> RATIONAL_ITERABLE_COMPARATOR =
+            new ShortlexComparator<>();
 
     /**
      * The vector's coordinates
@@ -101,8 +102,9 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
      */
     public static @NotNull RationalVector of(@NotNull List<Rational> coordinates) {
         if (coordinates.isEmpty()) return ZERO_DIMENSIONAL;
-        if (any(a -> a == null, coordinates))
+        if (any(a -> a == null, coordinates)) {
             throw new NullPointerException();
+        }
         return new RationalVector(toList(coordinates));
     }
 

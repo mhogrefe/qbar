@@ -30,16 +30,16 @@ public class RationalVectorDemos extends QBarDemos {
 
     private void demoGet() {
         Iterable<Pair<RationalVector, Integer>> ps = P.dependentPairs(
-                P.rationalVectors(),
-                v -> range(0, v.dimension() - 1)
+                P.rationalVectorsAtLeast(1),
+                v -> P.uniformSample(toList(range(0, v.dimension() - 1)))
         );
         for (Pair<RationalVector, Integer> p : take(LIMIT, ps)) {
-            System.out.println("x(" + p.a + ", " + p.b + ") = " + p.a.get(p.b));
+            System.out.println("get(" + p.a + ", " + p.b + ") = " + p.a.get(p.b));
         }
     }
 
     private void demoOf_List_Rational() {
-        for (List<Rational> rs : take(LIMIT, P.lists(P.rationals()))) {
+        for (List<Rational> rs : take(LIMIT, P.withScale(4).lists(P.rationals()))) {
             String listString = tail(init(rs.toString()));
             System.out.println("of(" + listString + ") = " + of(rs));
         }

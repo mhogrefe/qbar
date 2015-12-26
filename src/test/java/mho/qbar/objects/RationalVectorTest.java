@@ -1,7 +1,6 @@
 package mho.qbar.objects;
 
 import mho.wheels.io.Readers;
-import mho.wheels.iterables.IterableUtils;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
@@ -13,7 +12,6 @@ import static mho.qbar.objects.RationalVector.*;
 import static mho.qbar.objects.RationalVector.sum;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.testing.Testing.*;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -26,49 +24,66 @@ public class RationalVectorTest {
         aeq(ZERO_DIMENSIONAL, "[]");
     }
 
+    private static void iterator_helper(@NotNull String input) {
+        aeq(toList(read(input).get()), input);
+    }
+
     @Test
     public void testIterator() {
-        aeq(toList(ZERO_DIMENSIONAL), "[]");
-        aeq(toList(read("[1/2]").get()), "[1/2]");
-        aeq(toList(read("[5/3, -1/4, 23]").get()), "[5/3, -1/4, 23]");
+        iterator_helper("[]");
+        iterator_helper("[1/2]");
+        iterator_helper("[5/3, -1/4, 23]");
+    }
+
+    private static void get_helper(@NotNull String input, int i, @NotNull String output) {
+        aeq(read(input).get().get(i), output);
+    }
+
+    private static void get_fail_helper(@NotNull String input, int i) {
+        try {
+            read(input).get().get(i);
+            fail();
+        } catch (IndexOutOfBoundsException ignored) {}
     }
 
     @Test
     public void testGet() {
-        aeq(read("[1/2]").get().get(0), "1/2");
-        aeq(read("[5/3, -1/4, 23]").get().get(0), "5/3");
-        aeq(read("[5/3, -1/4, 23]").get().get(1), "-1/4");
-        aeq(read("[5/3, -1/4, 23]").get().get(2), "23");
-        try {
-            read("[5/3, -1/4, 23]").get().get(4);
-            fail();
-        } catch (IndexOutOfBoundsException ignored) {}
-        try {
-            read("[1/2]").get().get(3);
-            fail();
-        } catch (IndexOutOfBoundsException ignored) {}
-        try {
-            read("[]").get().get(0);
-            fail();
-        } catch (IndexOutOfBoundsException ignored) {}
+        get_helper("[1/2]", 0, "1/2");
+        get_helper("[5/3, -1/4, 23]", 0, "5/3");
+        get_helper("[5/3, -1/4, 23]", 1, "-1/4");
+        get_helper("[5/3, -1/4, 23]", 2, "23");
+        get_fail_helper("[5/3, -1/4, 23]", 4);
+        get_fail_helper("[1/2]", 3);
+        get_fail_helper("[]", 0);
     }
 
-    @Test
-    public void testOf_List_Rational() {
-        assertTrue(of(readRationalList("[]")) == ZERO_DIMENSIONAL);
-        aeq(of(readRationalList("[1/2]")), "[1/2]");
-        aeq(of(readRationalList("[5/3, -1/4, 23]")), "[5/3, -1/4, 23]");
+    private static void of_List_Rational_helper(@NotNull String input) {
+        aeq(of(readRationalList(input)), input);
+    }
+
+    private static void of_List_Rational_fail_helper(@NotNull String input) {
         try {
-            of(readRationalListWithNulls("[5/3, null, 23]"));
-            fail();
+            of(readRationalListWithNulls(input));
         } catch (NullPointerException ignored) {}
     }
 
     @Test
+    public void testOf_List_Rational() {
+        of_List_Rational_helper("[]");
+        of_List_Rational_helper("[1/2]");
+        of_List_Rational_helper("[5/3, -1/4, 23]");
+        of_List_Rational_fail_helper("[5/3, null, 23]");
+    }
+
+    private static void of_Rational_helper(@NotNull String input, @NotNull String output) {
+        aeq(of(Rational.read(input).get()), output);
+    }
+
+    @Test
     public void testOf_Rational() {
-        aeq(of(Rational.read("1/2").get()), "[1/2]");
-        aeq(of(Rational.read("-5").get()), "[-5]");
-        aeq(of(Rational.read("0").get()), "[0]");
+        of_Rational_helper("1/2", "[1/2]");
+        of_Rational_helper("-5", "[-5]");
+        of_Rational_helper("0", "[0]");
     }
 
     @Test
@@ -346,14 +361,14 @@ public class RationalVectorTest {
 
     @Test
     public void testDelta() {
-        aeq(delta(readRationalVectorList("[[]]")), "[]");
-        aeq(delta(readRationalVectorList("[[], [], []]")), "[[], []]");
-        aeq(delta(readRationalVectorList("[[5/3, 1/4, 23]]")), "[]");
-        aeq(
+        aeqit(delta(readRationalVectorList("[[]]")), "[]");
+        aeqit(delta(readRationalVectorList("[[], [], []]")), "[[], []]");
+        aeqit(delta(readRationalVectorList("[[5/3, 1/4, 23]]")), "[]");
+        aeqit(
                 delta(readRationalVectorList("[[5/3, 1/4, 23], [0, 2/3, -1/8], [32, -45/2, 9]]")),
                 "[[-5/3, 5/12, -185/8], [32, -139/6, 73/8]]"
         );
-        aeq(delta(readRationalVectorList("[[1/2], [2/3], [3/4]]")), "[[1/6], [1/12]]");
+        aeqit(delta(readRationalVectorList("[[1/2], [2/3], [3/4]]")), "[[1/6], [1/12]]");
         aeqitLimit(
                 TINY_LIMIT,
                 delta(
@@ -526,14 +541,6 @@ public class RationalVectorTest {
         assertFalse(findIn("]]][[3/4, 45/0]dsvdf").isPresent());
         assertFalse(findIn("]]][[3/4, 2/4]dsvdf").isPresent());
         assertFalse(findIn("hello").isPresent());
-    }
-
-    private static void aeq(Iterable<?> a, Object b) {
-        assertEquals(IterableUtils.toString(a), b.toString());
-    }
-
-    private static void aeq(Object a, Object b) {
-        assertEquals(a.toString(), b.toString());
     }
 
     private static @NotNull List<Rational> readRationalList(@NotNull String s) {

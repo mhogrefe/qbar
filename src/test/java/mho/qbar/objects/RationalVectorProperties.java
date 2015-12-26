@@ -68,33 +68,30 @@ public class RationalVectorProperties extends QBarTestProperties {
     }
 
     private void propertiesIterator() {
-        initialize("");
-        System.out.println("\t\ttesting iterator() properties...");
-
+        initialize("iterator()");
         for (RationalVector v : take(LIMIT, P.rationalVectors())) {
             List<Rational> rs = toList(v);
             assertTrue(v, all(r -> r != null, rs));
             assertEquals(v, of(toList(v)), v);
             try {
                 v.iterator().remove();
+                fail(v);
             } catch (UnsupportedOperationException ignored) {}
         }
     }
 
     private void propertiesGet() {
-        initialize("");
-        System.out.println("\t\ttesting get(int) properties");
-
+        initialize("get(int)");
         Iterable<Pair<RationalVector, Integer>> ps = P.dependentPairs(
                 P.rationalVectorsAtLeast(1),
-                v -> P.range(0, v.dimension() - 1)
+                v -> P.uniformSample(toList(range(0, v.dimension() - 1)))
         );
         for (Pair<RationalVector, Integer> p : take(LIMIT, ps)) {
             Rational x = p.a.get(p.b);
             assertEquals(p, x, toList(p.a).get(p.b));
         }
 
-        Iterable<Pair<RationalVector, Integer>> psFail = filter(
+        Iterable<Pair<RationalVector, Integer>> psFail = filterInfinite(
                 p -> p.b < 0 || p.b >= p.a.dimension(),
                 P.pairs(P.rationalVectors(), P.integers())
         );
@@ -107,9 +104,7 @@ public class RationalVectorProperties extends QBarTestProperties {
     }
 
     private void propertiesOf_List_Rational() {
-        initialize("");
-        System.out.println("\t\ttesting of(List<Rational>) properties");
-
+        initialize("of(List<Rational>)");
         for (List<Rational> rs : take(LIMIT, P.lists(P.rationals()))) {
             RationalVector v = of(rs);
             v.validate();
@@ -126,9 +121,7 @@ public class RationalVectorProperties extends QBarTestProperties {
     }
 
     private void propertiesOf_Rational() {
-        initialize("");
-        System.out.println("\t\ttesting of(Rational) properties");
-
+        initialize("of(Rational)");
         for (Rational r : take(LIMIT, P.rationals())) {
             RationalVector v = of(r);
             v.validate();
