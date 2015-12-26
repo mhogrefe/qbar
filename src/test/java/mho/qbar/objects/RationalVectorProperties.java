@@ -11,8 +11,11 @@ import mho.wheels.structures.Triple;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigInteger;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 
 import static mho.qbar.objects.RationalVector.*;
 import static mho.wheels.iterables.IterableUtils.*;
@@ -202,41 +205,46 @@ public class RationalVectorProperties extends QBarTestProperties {
     }
 
     private void propertiesAdd() {
-        initialize("");
-        System.out.println("\t\ttesting add(RationalVector) properties...");
-
-        Iterable<Pair<RationalVector, RationalVector>> ps = P.dependentPairs(
-                P.rationalVectors(),
-                v -> P.rationalVectors(v.dimension())
+        initialize("add(RationalVector)");
+        Iterable<Pair<RationalVector, RationalVector>> ps = P.withElement(
+                new Pair<>(ZERO_DIMENSIONAL, ZERO_DIMENSIONAL),
+                map(
+                        p -> p.b,
+                        P.dependentPairsInfiniteLogarithmicOrder(
+                                P.withScale(4).positiveIntegersGeometric(),
+                                i -> P.pairs(P.rationalVectors(i))
+                        )
+                )
         );
         for (Pair<RationalVector, RationalVector> p : take(LIMIT, ps)) {
             RationalVector sum = p.a.add(p.b);
             sum.validate();
             assertEquals(p, sum.dimension(), p.a.dimension());
-            assertEquals(p, sum, p.b.add(p.a));
-            assertEquals(p, sum.subtract(p.b), p.a);
+            commutative(RationalVector::add, p);
+            inverse(v -> v.add(p.b), (RationalVector v) -> v.subtract(p.b), p.a);
         }
 
         for (RationalVector v : take(LIMIT, P.rationalVectors())) {
-            assertEquals(v, zero(v.dimension()).add(v), v);
-            assertEquals(v, v.add(zero(v.dimension())), v);
+            fixedPoint(u -> zero(u.dimension()).add(u), v);
+            fixedPoint(u -> u.add(zero(u.dimension())), v);
             assertTrue(v, v.add(v.negate()).isZero());
         }
 
-        Iterable<Triple<RationalVector, RationalVector, RationalVector>> ts = map(
-                p -> new Triple<>(p.a, p.b.a, p.b.b),
-                P.dependentPairs(
-                        P.rationalVectors(),
-                        v -> P.pairs(P.rationalVectors(v.dimension()))
+        Iterable<Triple<RationalVector, RationalVector, RationalVector>> ts = P.withElement(
+                new Triple<>(ZERO_DIMENSIONAL, ZERO_DIMENSIONAL, ZERO_DIMENSIONAL),
+                map(
+                        t -> t.b,
+                        P.dependentPairsInfiniteLogarithmicOrder(
+                                P.withScale(4).positiveIntegersGeometric(),
+                                i -> P.triples(P.rationalVectors(i))
+                        )
                 )
         );
         for (Triple<RationalVector, RationalVector, RationalVector> t : take(LIMIT, ts)) {
-            RationalVector sum1 = t.a.add(t.b).add(t.c);
-            RationalVector sum2 = t.a.add(t.b.add(t.c));
-            assertEquals(t, sum1, sum2);
+            associative(RationalVector::add, t);
         }
 
-        Iterable<Pair<RationalVector, RationalVector>> psFail = filter(
+        Iterable<Pair<RationalVector, RationalVector>> psFail = filterInfinite(
                 p -> p.a.dimension() != p.b.dimension(),
                 P.pairs(P.rationalVectors())
         );
@@ -249,20 +257,18 @@ public class RationalVectorProperties extends QBarTestProperties {
     }
 
     private void propertiesNegate() {
-        initialize("");
-        System.out.println("\t\ttesting negate() properties");
-
+        initialize("negate()");
         for (RationalVector v : take(LIMIT, P.rationalVectors())) {
             RationalVector negative = v.negate();
             negative.validate();
             assertEquals(v, v.dimension(), negative.dimension());
-            assertEquals(v, v, negative.negate());
+            involution(RationalVector::negate, v);
             assertTrue(v, v.add(negative).isZero());
         }
 
-        for (RationalVector v : take(LIMIT, filter(w -> any(x -> x != Rational.ZERO, w), P.rationalVectors()))) {
-            RationalVector negativeV = v.negate();
-            assertNotEquals(v, v, negativeV);
+        Iterable<RationalVector> vsFail = filterInfinite(w -> any(x -> x != Rational.ZERO, w), P.rationalVectors());
+        for (RationalVector v : take(LIMIT, vsFail)) {
+            assertNotEquals(v, v, v.negate());
         }
     }
 
@@ -271,51 +277,48 @@ public class RationalVectorProperties extends QBarTestProperties {
     }
 
     private void propertiesSubtract() {
-        initialize("");
-        System.out.println("\t\ttesting subtract(RationalVector) properties...");
-
-        Iterable<Pair<RationalVector, RationalVector>> ps = P.dependentPairs(
-                P.rationalVectors(),
-                v -> P.rationalVectors(v.dimension())
+        initialize("subtract(RationalVector)");
+        Iterable<Pair<RationalVector, RationalVector>> ps = P.withElement(
+                new Pair<>(ZERO_DIMENSIONAL, ZERO_DIMENSIONAL),
+                map(
+                        p -> p.b,
+                        P.dependentPairsInfiniteLogarithmicOrder(
+                                P.withScale(4).positiveIntegersGeometric(),
+                                i -> P.pairs(P.rationalVectors(i))
+                        )
+                )
         );
         for (Pair<RationalVector, RationalVector> p : take(LIMIT, ps)) {
             RationalVector difference = p.a.subtract(p.b);
             difference.validate();
+            assertEquals(p, subtract_simplest(p.a, p.b), difference);
             assertEquals(p, difference.dimension(), p.a.dimension());
-            assertEquals(p, difference, p.b.subtract(p.a).negate());
-            assertEquals(p, p.a, difference.add(p.b));
+            antiCommutative(RationalVector::subtract, RationalVector::negate, p);
+            inverse(v -> v.subtract(p.b), (RationalVector v) -> v.add(p.b), p.a);
         }
 
         for (RationalVector v : take(LIMIT, P.rationalVectors())) {
             assertEquals(v, zero(v.dimension()).subtract(v), v.negate());
-            assertEquals(v, v.subtract(zero(v.dimension())), v);
+            fixedPoint(u -> u.subtract(zero(u.dimension())), v);
             assertTrue(v, v.subtract(v).isZero());
         }
     }
 
     private void compareImplementationsSubtract() {
-        initialize("");
-        System.out.println("\t\tcomparing subtract(RationalVector) implementations...");
-
-        long totalTime = 0;
-        Iterable<Pair<RationalVector, RationalVector>> ps = P.dependentPairs(
-                P.rationalVectors(),
-                v -> P.rationalVectors(v.dimension())
+        Map<String, Function<Pair<RationalVector, RationalVector>, RationalVector>> functions = new LinkedHashMap<>();
+        functions.put("simplest", p -> subtract_simplest(p.a, p.b));
+        functions.put("standard", p -> p.a.subtract(p.b));
+        Iterable<Pair<RationalVector, RationalVector>> ps = P.withElement(
+                new Pair<>(ZERO_DIMENSIONAL, ZERO_DIMENSIONAL),
+                map(
+                        p -> p.b,
+                        P.dependentPairsInfiniteLogarithmicOrder(
+                                P.withScale(4).positiveIntegersGeometric(),
+                                i -> P.pairs(P.rationalVectors(i))
+                        )
+                )
         );
-        for (Pair<RationalVector, RationalVector> p : take(LIMIT, ps)) {
-            long time = System.nanoTime();
-            subtract_simplest(p.a, p.b);
-            totalTime += (System.nanoTime() - time);
-        }
-        System.out.println("\t\t\tsimplest: " + ((double) totalTime) / 1e9 + " s");
-
-        totalTime = 0;
-        for (Pair<RationalVector, RationalVector> p : take(LIMIT, ps)) {
-            long time = System.nanoTime();
-            p.a.subtract(p.b);
-            totalTime += (System.nanoTime() - time);
-        }
-        System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
+        compareImplementations("subtract(RationalVector)", take(LIMIT, ps), functions);
     }
 
     private void propertiesMultiply_Rational() {

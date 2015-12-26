@@ -76,15 +76,16 @@ public class RationalVectorDemos extends QBarDemos {
     }
 
     private void demoAdd() {
-        Iterable<Pair<RationalVector, RationalVector>> ps;
-        if (P instanceof QBarExhaustiveProvider) {
-            ps = P.dependentPairs(P.rationalVectors(), v -> P.rationalVectors(v.dimension()));
-        } else {
-            ps = P.dependentPairs(
-                    P.withScale(8).rationalVectors(),
-                    v -> P.withScale(8).rationalVectors(v.dimension())
-            );
-        }
+        Iterable<Pair<RationalVector, RationalVector>> ps = P.withElement(
+                new Pair<>(ZERO_DIMENSIONAL, ZERO_DIMENSIONAL),
+                map(
+                        p -> p.b,
+                        P.dependentPairsInfiniteLogarithmicOrder(
+                                P.withScale(4).positiveIntegersGeometric(),
+                                i -> P.pairs(P.rationalVectors(i))
+                        )
+                )
+        );
         for (Pair<RationalVector, RationalVector> p : take(LIMIT, ps)) {
             System.out.println(p.a + " + " + p.b + " = " + p.a.add(p.b));
         }
@@ -97,15 +98,16 @@ public class RationalVectorDemos extends QBarDemos {
     }
 
     private void demoSubtract() {
-        Iterable<Pair<RationalVector, RationalVector>> ps;
-        if (P instanceof QBarExhaustiveProvider) {
-            ps = P.dependentPairs(P.rationalVectors(), v -> P.rationalVectors(v.dimension()));
-        } else {
-            ps = P.dependentPairs(
-                    P.withScale(8).rationalVectors(),
-                    v -> P.withScale(8).rationalVectors(v.dimension())
-            );
-        }
+        Iterable<Pair<RationalVector, RationalVector>> ps = P.withElement(
+                new Pair<>(ZERO_DIMENSIONAL, ZERO_DIMENSIONAL),
+                map(
+                        p -> p.b,
+                        P.dependentPairsInfiniteLogarithmicOrder(
+                                P.withScale(4).positiveIntegersGeometric(),
+                                i -> P.pairs(P.rationalVectors(i))
+                        )
+                )
+        );
         for (Pair<RationalVector, RationalVector> p : take(LIMIT, ps)) {
             System.out.println(p.a + " - " + p.b + " = " + p.a.subtract(p.b));
         }

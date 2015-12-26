@@ -222,8 +222,10 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
      * @return {@code this}+{@code that}
      */
     public @NotNull RationalVector add(@NotNull RationalVector that) {
-        if (coordinates.size() != that.coordinates.size())
-            throw new ArithmeticException("vectors must have same dimension");
+        if (coordinates.size() != that.coordinates.size()) {
+            throw new ArithmeticException("this and that must have the same dimension. this: " + this + ", that: " +
+                    that);
+        }
         if (this == ZERO_DIMENSIONAL) return ZERO_DIMENSIONAL;
         return new RationalVector(toList(zipWith(Rational::add, coordinates, that.coordinates)));
     }
@@ -261,8 +263,10 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
      * @return {@code this}–{@code that}
      */
     public @NotNull RationalVector subtract(@NotNull RationalVector that) {
-        if (coordinates.size() != that.coordinates.size())
-            throw new ArithmeticException("vectors must have same dimension");
+        if (coordinates.size() != that.coordinates.size()) {
+            throw new ArithmeticException("this and that must have the same dimension. this: " + this + ", that: " +
+                    that);
+        }
         if (this == ZERO_DIMENSIONAL) return ZERO_DIMENSIONAL;
         return new RationalVector(toList(zipWith(Rational::subtract, coordinates, that.coordinates)));
     }

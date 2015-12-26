@@ -154,54 +154,62 @@ public class RationalVectorTest {
         standard_fail_helper(0, 0);
     }
 
+    private static void add_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
+        aeq(read(a).get().add(read(b).get()), output);
+    }
+
+    private static void add_fail_helper(@NotNull String a, @NotNull String b) {
+        try {
+            read(a).get().add(read(b).get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
     @Test
     public void testAdd() {
-        assertTrue(ZERO_DIMENSIONAL.add(ZERO_DIMENSIONAL) == ZERO_DIMENSIONAL);
-        aeq(read("[2]").get().add(read("[3]").get()), "[5]");
-        aeq(read("[5/3, 4, 0]").get().add(read("[-2, 1, 3]").get()), "[-1/3, 5, 3]");
-        aeq(read("[5/3, 4, 0]").get().add(read("[0, 0, 0]").get()), "[5/3, 4, 0]");
-        aeq(read("[5/3, 4, 0]").get().add(read("[-5/3, -4, 0]").get()), "[0, 0, 0]");
-        try {
-            ZERO_DIMENSIONAL.add(read("[1/2]").get());
-            fail();
-        } catch (ArithmeticException ignored) {}
-        try {
-            read("[1/2]").get().add(ZERO_DIMENSIONAL);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        try {
-            read("[1/2, 4, -4]").get().add(read("[5/6, 2/3]").get());
-            fail();
-        } catch (ArithmeticException ignored) {}
+        add_helper("[]", "[]", "[]");
+        add_helper("[2]", "[3]", "[5]");
+        add_helper("[5/3, 4, 0]", "[-2, 1, 3]", "[-1/3, 5, 3]");
+        add_helper("[5/3, 4, 0]", "[0, 0, 0]", "[5/3, 4, 0]");
+        add_helper("[5/3, 4, 0]", "[-5/3, -4, 0]", "[0, 0, 0]");
+        add_fail_helper("[]", "[1/2]");
+        add_fail_helper("[1/2]", "[]");
+        add_fail_helper("[1/2, 4, -4]", "[5/6, 2/3]");
+    }
+
+    private static void negate_helper(@NotNull String input, @NotNull String output) {
+        aeq(read(input).get().negate(), output);
     }
 
     @Test
     public void testNegate() {
-        aeq(ZERO_DIMENSIONAL.negate(), "[]");
-        aeq(read("[1/2]").get().negate(), "[-1/2]");
-        aeq(read("[5/3, -1/4, 23]").get().negate(), "[-5/3, 1/4, -23]");
+        negate_helper("[]", "[]");
+        negate_helper("[1/2]", "[-1/2]");
+        negate_helper("[5/3, -1/4, 23]", "[-5/3, 1/4, -23]");
+    }
+
+    private static void subtract_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
+        aeq(read(a).get().subtract(read(b).get()), output);
+    }
+
+    private static void subtract_fail_helper(@NotNull String a, @NotNull String b) {
+        try {
+            read(a).get().subtract(read(b).get());
+            fail();
+        } catch (ArithmeticException ignored) {}
     }
 
     @Test
     public void testSubtract() {
-        assertTrue(ZERO_DIMENSIONAL.subtract(ZERO_DIMENSIONAL) == ZERO_DIMENSIONAL);
-        aeq(read("[2]").get().subtract(read("[3]").get()), "[-1]");
-        aeq(read("[5/3, 4, 0]").get().subtract(read("[-2, 1, 3]").get()), "[11/3, 3, -3]");
-        aeq(read("[5/3, 4, 0]").get().subtract(read("[0, 0, 0]").get()), "[5/3, 4, 0]");
-        aeq(read("[5/3, 4, 0]").get().subtract(read("[5/3, 4, 0]").get()), "[0, 0, 0]");
-        aeq(read("[0, 0, 0]").get().subtract(read("[5/3, 4, 0]").get()), "[-5/3, -4, 0]");
-        try {
-            ZERO_DIMENSIONAL.subtract(read("[1/2]").get());
-            fail();
-        } catch (ArithmeticException ignored) {}
-        try {
-            read("[1/2]").get().subtract(ZERO_DIMENSIONAL);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        try {
-            read("[1/2, 4, -4]").get().subtract(read("[5/6, 2/3]").get());
-            fail();
-        } catch (ArithmeticException ignored) {}
+        subtract_helper("[]", "[]", "[]");
+        subtract_helper("[2]", "[3]", "[-1]");
+        subtract_helper("[5/3, 4, 0]", "[-2, 1, 3]", "[11/3, 3, -3]");
+        subtract_helper("[5/3, 4, 0]", "[0, 0, 0]", "[5/3, 4, 0]");
+        subtract_helper("[5/3, 4, 0]", "[5/3, 4, 0]", "[0, 0, 0]");
+        subtract_helper("[0, 0, 0]", "[5/3, 4, 0]", "[-5/3, -4, 0]");
+        subtract_fail_helper("[]", "[1/2]");
+        subtract_fail_helper("[1/2]", "[]");
+        subtract_fail_helper("[1/2, 4, -4]", "[5/6, 2/3]");
     }
 
     @Test
