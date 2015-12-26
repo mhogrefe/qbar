@@ -57,33 +57,21 @@ public class RationalVectorDemos extends QBarDemos {
         }
     }
 
-    private void demoZero() {
-        Iterable<Integer> is;
-        if (P instanceof QBarExhaustiveProvider) {
-            is = P.naturalIntegers();
-        } else {
-            is = P.withScale(20).naturalIntegersGeometric();
+    private void demoIsZero() {
+        for (RationalVector v : take(LIMIT, P.rationalVectors())) {
+            System.out.println(v + " is " + (v.isZero() ? "" : " not ") + "zero");
         }
-        for (int i : take(SMALL_LIMIT, is)) {
+    }
+
+    private void demoZero() {
+        for (int i : take(SMALL_LIMIT, P.naturalIntegersGeometric())) {
             System.out.println("zero(" + i + ") = " + zero(i));
         }
     }
 
     private void demoStandard() {
-        Iterable<Integer> is;
-        if (P instanceof QBarExhaustiveProvider) {
-            is = P.naturalIntegers();
-        } else {
-            is = P.withScale(20).naturalIntegersGeometric();
-        }
-        for (Pair<Integer, Integer> p : take(SMALL_LIMIT, filter(q -> q.a > q.b, P.pairs(is)))) {
-            System.out.println("standard(" + p.a + ", " + p.b + ") = " + standard(p.a, p.b));
-        }
-    }
-
-    private void demoIsZero() {
-        for (RationalVector v : take(LIMIT, P.rationalVectors())) {
-            System.out.println(v + " is " + (v.isZero() ? "" : " not ") + "zero");
+        for (Pair<Integer, Integer> p : take(MEDIUM_LIMIT, P.subsetPairs(P.naturalIntegersGeometric()))) {
+            System.out.println("standard(" + p.b + ", " + p.a + ") = " + standard(p.b, p.a));
         }
     }
 

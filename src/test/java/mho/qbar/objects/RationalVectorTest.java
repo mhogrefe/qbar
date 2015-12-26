@@ -86,57 +86,72 @@ public class RationalVectorTest {
         of_Rational_helper("0", "[0]");
     }
 
+    private static void dimension_helper(@NotNull String input, int output) {
+        aeq(read(input).get().dimension(), output);
+    }
+
     @Test
     public void testDimension() {
-        aeq(ZERO_DIMENSIONAL.dimension(), 0);
-        aeq(read("[1/2]").get().dimension(), 1);
-        aeq(read("[5/3, -1/4, 23]").get().dimension(), 3);
+        dimension_helper("[]", 0);
+        dimension_helper("[1/2]", 1);
+        dimension_helper("[5/3, -1/4, 23]", 3);
+    }
+
+    private static void testIsZero(@NotNull String input, boolean output) {
+        aeq(read(input).get().isZero(), output);
+    }
+
+    @Test
+    public void testIsZero() {
+        testIsZero("[]", true);
+        testIsZero("[0]", true);
+        testIsZero("[0, 0, 0]", true);
+        testIsZero("[5]", false);
+        testIsZero("[0, 0, 3]", false);
+    }
+
+    private static void zero_helper(int dimension, @NotNull String output) {
+        aeq(zero(dimension), output);
+    }
+
+    private static void zero_fail_helper(int dimension) {
+        try {
+            zero(dimension);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
     }
 
     @Test
     public void testZero() {
-        assertTrue(zero(0) == ZERO_DIMENSIONAL);
-        aeq(zero(1), "[0]");
-        aeq(zero(3), "[0, 0, 0]");
-        aeq(zero(10), "[0, 0, 0, 0, 0, 0, 0, 0, 0, 0]");
+        zero_helper(0, "[]");
+        zero_helper(1, "[0]");
+        zero_helper(3, "[0, 0, 0]");
+        zero_helper(10, "[0, 0, 0, 0, 0, 0, 0, 0, 0, 0]");
+        zero_fail_helper(-1);
+    }
+
+    private void standard_helper(int dimension, int i, @NotNull String output) {
+        aeq(standard(dimension, i), output);
+    }
+
+    private void standard_fail_helper(int dimension, int i) {
         try {
-            zero(-1);
+            standard(dimension, i);
             fail();
         } catch (IllegalArgumentException ignored) {}
     }
 
     @Test
     public void testStandard() {
-        aeq(standard(1, 0), "[1]");
-        aeq(standard(3, 0), "[1, 0, 0]");
-        aeq(standard(3, 1), "[0, 1, 0]");
-        aeq(standard(3, 2), "[0, 0, 1]");
-        aeq(standard(10, 6), "[0, 0, 0, 0, 0, 0, 1, 0, 0, 0]");
-        try {
-            standard(2, -4);
-            fail();
-        } catch (IllegalArgumentException ignored) {}
-        try {
-            standard(-3, -4);
-            fail();
-        } catch (IllegalArgumentException ignored) {}
-        try {
-            standard(2, 3);
-            fail();
-        } catch (IllegalArgumentException ignored) {}
-        try {
-            standard(0, 0);
-            fail();
-        } catch (IllegalArgumentException ignored) {}
-    }
-
-    @Test
-    public void testIsZero() {
-        assertTrue(ZERO_DIMENSIONAL.isZero());
-        assertTrue(read("[0]").get().isZero());
-        assertFalse(read("[5]").get().isZero());
-        assertTrue(read("[0, 0, 0]").get().isZero());
-        assertFalse(read("[0, 0, 3]").get().isZero());
+        standard_helper(1, 0, "[1]");
+        standard_helper(3, 0, "[1, 0, 0]");
+        standard_helper(3, 1, "[0, 1, 0]");
+        standard_helper(3, 2, "[0, 0, 1]");
+        standard_helper(10, 6, "[0, 0, 0, 0, 0, 0, 1, 0, 0, 0]");
+        standard_fail_helper(2, -4);
+        standard_fail_helper(-3, -4);
+        standard_fail_helper(2, 3);
+        standard_fail_helper(0, 0);
     }
 
     @Test

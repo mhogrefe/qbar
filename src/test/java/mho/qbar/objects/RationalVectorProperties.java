@@ -4,6 +4,7 @@ import mho.qbar.iterableProviders.QBarExhaustiveProvider;
 import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.testing.QBarTestProperties;
 import mho.qbar.testing.QBarTesting;
+import mho.wheels.iterables.IterableUtils;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
@@ -33,9 +34,9 @@ public class RationalVectorProperties extends QBarTestProperties {
         propertiesOf_List_Rational();
         propertiesOf_Rational();
         propertiesDimension();
+        propertiesIsZero();
         propertiesZero();
         propertiesStandard();
-        propertiesIsZero();
         propertiesAdd();
         propertiesNegate();
         propertiesSubtract();
@@ -72,7 +73,8 @@ public class RationalVectorProperties extends QBarTestProperties {
         for (RationalVector v : take(LIMIT, P.rationalVectors())) {
             List<Rational> rs = toList(v);
             assertTrue(v, all(r -> r != null, rs));
-            assertEquals(v, of(toList(v)), v);
+            //noinspection Convert2MethodRef
+            inverses(IterableUtils::toList, (List<Rational> ss) -> of(ss), v);
             try {
                 v.iterator().remove();
                 fail(v);
@@ -108,7 +110,8 @@ public class RationalVectorProperties extends QBarTestProperties {
         for (List<Rational> rs : take(LIMIT, P.lists(P.rationals()))) {
             RationalVector v = of(rs);
             v.validate();
-            assertEquals(rs, toList(v), rs);
+            //noinspection Convert2MethodRef
+            inverses(RationalVector::of, (RationalVector u) -> toList(u), rs);
             assertEquals(rs, v.dimension(), rs.size());
         }
 
@@ -127,13 +130,12 @@ public class RationalVectorProperties extends QBarTestProperties {
             v.validate();
             assertEquals(r, v.dimension(), 1);
             assertEquals(r, v.get(0), r);
+            inverses(RationalVector::of, (RationalVector u) -> u.get(0), r);
         }
     }
 
     private void propertiesDimension() {
-        initialize("");
-        System.out.println("\t\ttesting dimension() properties");
-
+        initialize("dimension()");
         for (RationalVector v : take(LIMIT, P.rationalVectors())) {
             int dimension = v.dimension();
             assertTrue(v, dimension >= 0);
@@ -141,14 +143,20 @@ public class RationalVectorProperties extends QBarTestProperties {
         }
     }
 
-    private void propertiesZero() {
-        initialize("");
-        System.out.println("\t\ttesting zero(int) properties");
+    private void propertiesIsZero() {
+        initialize("isZero()");
+        for (RationalVector v : take(LIMIT, P.rationalVectors())) {
+            assertEquals(v, v.isZero(), zero(v.dimension()).equals(v));
+        }
+    }
 
-        for (int i : take(LIMIT, P.withScale(20).naturalIntegersGeometric())) {
+    private void propertiesZero() {
+        initialize("zero(int)");
+        for (int i : take(LIMIT, P.naturalIntegersGeometric())) {
             RationalVector zero = zero(i);
             zero.validate();
             assertEquals(i, zero.dimension(), i);
+            inverses(RationalVector::zero, RationalVector::dimension, i);
             assertTrue(i, zero.isZero());
         }
 
@@ -161,20 +169,14 @@ public class RationalVectorProperties extends QBarTestProperties {
     }
 
     private void propertiesStandard() {
-        initialize("");
-        System.out.println("\t\ttesting standard(int, int) properties");
-
-        Iterable<Pair<Integer, Integer>> ps = filter(
-                q -> q.a > q.b,
-                P.pairs(P.withScale(20).naturalIntegersGeometric())
-        );
-        for (Pair<Integer, Integer> p : take(LIMIT, ps)) {
-            RationalVector standard = standard(p.a, p.b);
+        initialize("standard(int, int)");
+        for (Pair<Integer, Integer> p : take(LIMIT, P.subsetPairs(P.naturalIntegersGeometric()))) {
+            RationalVector standard = standard(p.b, p.a);
             standard.validate();
-            assertEquals(p, standard.dimension(), p.a);
-            List<Rational> sortedCoordinates = reverse(sort(standard));
-            assertTrue(p, head(sortedCoordinates) == Rational.ONE);
-            assertTrue(p, all(x -> x == Rational.ZERO, tail(sortedCoordinates)));
+            assertEquals(p, standard.dimension(), p.b);
+            for (int i = 0; i < p.b; i++) {
+                assertTrue(p, standard.get(i) == (i == p.a ? Rational.ONE : Rational.ZERO));
+            }
         }
 
         for (Pair<Integer, Integer> p : take(LIMIT, P.pairs(P.rangeDown(0), P.integers()))) {
@@ -191,20 +193,11 @@ public class RationalVectorProperties extends QBarTestProperties {
             } catch (IllegalArgumentException ignored) {}
         }
 
-        for (Pair<Integer, Integer> p : take(LIMIT, filter(q -> q.a <= q.b, P.pairs(P.naturalIntegers())))) {
+        for (Pair<Integer, Integer> p : take(LIMIT, P.bagPairs(P.naturalIntegers()))) {
             try {
                 standard(p.a, p.b);
                 fail(p);
             } catch (IllegalArgumentException ignored) {}
-        }
-    }
-
-    private void propertiesIsZero() {
-        initialize("");
-        System.out.println("\t\ttesting isZero properties");
-
-        for (RationalVector v : take(LIMIT, P.rationalVectors())) {
-            v.isZero();
         }
     }
 

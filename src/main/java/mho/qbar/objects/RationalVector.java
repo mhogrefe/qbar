@@ -140,6 +140,20 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
     }
 
     /**
+     * Determines whether {@code this} is a zero vector
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalVector}.</li>
+     *  <li>The result may be either {@code boolean}.</li>
+     * </ul>
+     *
+     * @return whether {@code this}=0
+     */
+    public boolean isZero() {
+        return all(r -> r == Rational.ZERO, coordinates);
+    }
+
+    /**
      * Creates the zero vector with a given dimension.
      *
      * <ul>
@@ -153,10 +167,13 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
      * @return 0<sub>{@code dimension}</sub>
      */
     public static @NotNull RationalVector zero(int dimension) {
-        if (dimension == 0) return ZERO_DIMENSIONAL;
-        if (dimension < 0)
-            throw new IllegalArgumentException("dimension cannot be negative");
-        return new RationalVector(toList(replicate(dimension, Rational.ZERO)));
+        if (dimension == 0) {
+            return ZERO_DIMENSIONAL;
+        } else if (dimension < 0) {
+            throw new IllegalArgumentException("dimension cannot be negative. Invalid dimension: " );
+        } else {
+            return new RationalVector(toList(replicate(dimension, Rational.ZERO)));
+        }
     }
 
     /**
@@ -178,27 +195,15 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
      * @return a standard basis vector
      */
     public static @NotNull RationalVector standard(int dimension, int i) {
-        if (dimension < 1)
-            throw new IllegalArgumentException("dimension must be positive");
-        if (i < 0)
-            throw new IllegalArgumentException("i cannot be negative");
-        if (i >= dimension)
-            throw new IllegalArgumentException("i must be less than dimension");
-        return new RationalVector(toList(insert(replicate(dimension - 1, Rational.ZERO), i, Rational.ONE)));
-    }
-
-    /**
-     * Determines whether {@code this} is a zero vector
-     *
-     * <ul>
-     *  <li>{@code this} may be any {@code RationalVector}.</li>
-     *  <li>The result may be either {@code boolean}.</li>
-     * </ul>
-     *
-     * @return whether {@code this}=0
-     */
-    public boolean isZero() {
-        return all(r -> r == Rational.ZERO, coordinates);
+        if (dimension < 1) {
+            throw new IllegalArgumentException("dimension must be positive. Invalid dimension: " + dimension);
+        } else if (i < 0) {
+            throw new IllegalArgumentException("i cannot be negative. Invalid i: " + i);
+        } else if (i >= dimension) {
+            throw new IllegalArgumentException("i must be less than dimension. i: " + i + ", dimension: " + dimension);
+        } else {
+            return new RationalVector(toList(insert(replicate(dimension - 1, Rational.ZERO), i, Rational.ONE)));
+        }
     }
 
     /**
@@ -692,7 +697,7 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
     }
 
     /**
-     * Ensures that {@code this} is valid. Must return true for any {@code Rational} used outside this class.
+     * Ensures that {@code this} is valid. Must return true for any {@code RationalVector} used outside this class.
      */
     public void validate() {
         assertTrue(this, all(r -> r != null, coordinates));
