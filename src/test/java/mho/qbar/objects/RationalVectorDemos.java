@@ -23,7 +23,7 @@ public class RationalVectorDemos extends QBarDemos {
     }
 
     private void demoIterator() {
-        for (RationalVector v : take(LIMIT, P.rationalVectors())) {
+        for (RationalVector v : take(LIMIT, P.withScale(4).rationalVectors())) {
             System.out.println("toList(" + v + ") = " + toList(v));
         }
     }
@@ -52,13 +52,13 @@ public class RationalVectorDemos extends QBarDemos {
     }
 
     private void demoDimension() {
-        for (RationalVector v : take(LIMIT, P.rationalVectors())) {
+        for (RationalVector v : take(LIMIT, P.withScale(4).rationalVectors())) {
             System.out.println("dim(" + v + ") = " + v.dimension());
         }
     }
 
     private void demoIsZero() {
-        for (RationalVector v : take(LIMIT, P.rationalVectors())) {
+        for (RationalVector v : take(LIMIT, P.withScale(4).rationalVectors())) {
             System.out.println(v + " is " + (v.isZero() ? "" : " not ") + "zero");
         }
     }
@@ -92,7 +92,7 @@ public class RationalVectorDemos extends QBarDemos {
     }
 
     private void demoNegate() {
-        for (RationalVector v : take(LIMIT, P.rationalVectors())) {
+        for (RationalVector v : take(LIMIT, P.withScale(4).rationalVectors())) {
             System.out.println("-" + v + " = " + v.negate());
         }
     }
@@ -114,19 +114,21 @@ public class RationalVectorDemos extends QBarDemos {
     }
 
     private void demoMultiply_Rational() {
-        for (Pair<RationalVector, Rational> p : take(LIMIT, P.pairs(P.rationalVectors(), P.rationals()))) {
+        Iterable<Pair<RationalVector, Rational>> ps = P.pairs(P.withScale(4).rationalVectors(), P.rationals());
+        for (Pair<RationalVector, Rational> p : take(LIMIT, ps)) {
             System.out.println(p.a + " * " + p.b + " = " + p.a.multiply(p.b));
         }
     }
 
     private void demoMultiply_BigInteger() {
-        for (Pair<RationalVector, BigInteger> p : take(LIMIT, P.pairs(P.rationalVectors(), P.bigIntegers()))) {
+        Iterable<Pair<RationalVector, BigInteger>> ps = P.pairs(P.withScale(4).rationalVectors(), P.bigIntegers());
+        for (Pair<RationalVector, BigInteger> p : take(LIMIT, ps)) {
             System.out.println(p.a + " * " + p.b + " = " + p.a.multiply(p.b));
         }
     }
 
     private void demoMultiply_int() {
-        for (Pair<RationalVector, Integer> p : take(LIMIT, P.pairs(P.rationalVectors(), P.integers()))) {
+        for (Pair<RationalVector, Integer> p : take(LIMIT, P.pairs(P.withScale(4).rationalVectors(), P.integers()))) {
             System.out.println(p.a + " * " + p.b + " = " + p.a.multiply(p.b));
         }
     }

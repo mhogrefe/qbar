@@ -287,6 +287,7 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
      */
     public @NotNull RationalVector multiply(@NotNull Rational that) {
         if (this == ZERO_DIMENSIONAL) return ZERO_DIMENSIONAL;
+        if (that == Rational.ONE) return this;
         return new RationalVector(toList(map(r -> r.multiply(that), coordinates)));
     }
 
@@ -306,6 +307,7 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
      */
     public @NotNull RationalVector multiply(@NotNull BigInteger that) {
         if (this == ZERO_DIMENSIONAL) return ZERO_DIMENSIONAL;
+        if (that.equals(BigInteger.ONE)) return this;
         return new RationalVector(toList(map(r -> r.multiply(that), coordinates)));
     }
 
@@ -325,6 +327,7 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
      */
     public @NotNull RationalVector multiply(int that) {
         if (this == ZERO_DIMENSIONAL) return ZERO_DIMENSIONAL;
+        if (that == 1) return this;
         return new RationalVector(toList(map(r -> r.multiply(that), coordinates)));
     }
 

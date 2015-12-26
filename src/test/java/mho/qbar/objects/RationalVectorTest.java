@@ -212,34 +212,55 @@ public class RationalVectorTest {
         subtract_fail_helper("[1/2, 4, -4]", "[5/6, 2/3]");
     }
 
+    private static void multiply_Rational_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
+        aeq(read(a).get().multiply(Rational.read(b).get()), output);
+    }
+
     @Test
     public void testMultiply_Rational() {
-        assertTrue(ZERO_DIMENSIONAL.multiply(Rational.ZERO) == ZERO_DIMENSIONAL);
-        assertTrue(ZERO_DIMENSIONAL.multiply(Rational.read("-3/2").get()) == ZERO_DIMENSIONAL);
-        aeq(read("[2]").get().multiply(Rational.ZERO), "[0]");
-        aeq(read("[2]").get().multiply(Rational.read("-3/2").get()), "[-3]");
-        aeq(read("[5/3, 4, 0]").get().multiply(Rational.ZERO), "[0, 0, 0]");
-        aeq(read("[5/3, 4, 0]").get().multiply(Rational.read("-3/2").get()), "[-5/2, -6, 0]");
+        multiply_Rational_helper("[]", "0", "[]");
+        multiply_Rational_helper("[]", "1", "[]");
+        multiply_Rational_helper("[]", "-3/2", "[]");
+        multiply_Rational_helper("[2]", "0", "[0]");
+        multiply_Rational_helper("[2]", "1", "[2]");
+        multiply_Rational_helper("[2]", "-3/2", "[-3]");
+        multiply_Rational_helper("[5/3, 4, 0]", "0", "[0, 0, 0]");
+        multiply_Rational_helper("[5/3, 4, 0]", "1", "[5/3, 4, 0]");
+        multiply_Rational_helper("[5/3, 4, 0]", "-3/2", "[-5/2, -6, 0]");
+    }
+
+    private static void multiply_BigInteger_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
+        aeq(read(a).get().multiply(Readers.readBigInteger(b).get()), output);
     }
 
     @Test
     public void testMultiply_BigInteger() {
-        assertTrue(ZERO_DIMENSIONAL.multiply(BigInteger.ZERO) == ZERO_DIMENSIONAL);
-        assertTrue(ZERO_DIMENSIONAL.multiply(BigInteger.valueOf(5)) == ZERO_DIMENSIONAL);
-        aeq(read("[2]").get().multiply(BigInteger.ZERO), "[0]");
-        aeq(read("[2]").get().multiply(BigInteger.valueOf(5)), "[10]");
-        aeq(read("[5/3, 4, 0]").get().multiply(BigInteger.ZERO), "[0, 0, 0]");
-        aeq(read("[5/3, 4, 0]").get().multiply(BigInteger.valueOf(5)), "[25/3, 20, 0]");
+        multiply_BigInteger_helper("[]", "0", "[]");
+        multiply_BigInteger_helper("[]", "1", "[]");
+        multiply_BigInteger_helper("[]", "5", "[]");
+        multiply_BigInteger_helper("[2]", "0", "[0]");
+        multiply_BigInteger_helper("[2]", "1", "[2]");
+        multiply_BigInteger_helper("[2]", "5", "[10]");
+        multiply_BigInteger_helper("[5/3, 4, 0]", "0", "[0, 0, 0]");
+        multiply_BigInteger_helper("[5/3, 4, 0]", "1", "[5/3, 4, 0]");
+        multiply_BigInteger_helper("[5/3, 4, 0]", "5", "[25/3, 20, 0]");
+    }
+
+    private static void multiply_int_helper(@NotNull String a, int b, @NotNull String output) {
+        aeq(read(a).get().multiply(b), output);
     }
 
     @Test
     public void testMultiply_int() {
-        assertTrue(ZERO_DIMENSIONAL.multiply(0) == ZERO_DIMENSIONAL);
-        assertTrue(ZERO_DIMENSIONAL.multiply(5) == ZERO_DIMENSIONAL);
-        aeq(read("[2]").get().multiply(0), "[0]");
-        aeq(read("[2]").get().multiply(5), "[10]");
-        aeq(read("[5/3, 4, 0]").get().multiply(0), "[0, 0, 0]");
-        aeq(read("[5/3, 4, 0]").get().multiply(5), "[25/3, 20, 0]");
+        multiply_int_helper("[]", 0, "[]");
+        multiply_int_helper("[]", 1, "[]");
+        multiply_int_helper("[]", 5, "[]");
+        multiply_int_helper("[2]", 0, "[0]");
+        multiply_int_helper("[2]", 1, "[2]");
+        multiply_int_helper("[2]", 5, "[10]");
+        multiply_int_helper("[5/3, 4, 0]", 0, "[0, 0, 0]");
+        multiply_int_helper("[5/3, 4, 0]", 1, "[5/3, 4, 0]");
+        multiply_int_helper("[5/3, 4, 0]", 5, "[25/3, 20, 0]");
     }
 
     @Test
