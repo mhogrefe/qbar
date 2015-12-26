@@ -69,62 +69,6 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
     }
 
     /**
-     * Returns {@code this}'s x-coordinate.
-     *
-     * <ul>
-     *  <li>{@code this} must be non-empty.</li>
-     *  <li>The result is non-null.</li>
-     * </ul>
-     *
-     * @return the x-coordinate of {@code this}
-     */
-    public @NotNull Rational x() {
-        return coordinates.get(0);
-    }
-
-    /**
-     * Returns {@code this}'s y-coordinate.
-     *
-     * <ul>
-     *  <li>{@code this} must have dimension at least 2.</li>
-     *  <li>The result is non-null.</li>
-     * </ul>
-     *
-     * @return the y-coordinate of {@code this}
-     */
-    public @NotNull Rational y() {
-        return coordinates.get(1);
-    }
-
-    /**
-     * Returns {@code this}'s z-coordinate.
-     *
-     * <ul>
-     *  <li>{@code this} must have dimension at least 3.</li>
-     *  <li>The result is non-null.</li>
-     * </ul>
-     *
-     * @return the z-coordinate of {@code this}
-     */
-    public @NotNull Rational z() {
-        return coordinates.get(2);
-    }
-
-    /**
-     * Returns {@code this}'s w-coordinate (the coordinate of the 4th dimension).
-     *
-     * <ul>
-     *  <li>{@code this} must have dimension at least 4.</li>
-     *  <li>The result is non-null.</li>
-     * </ul>
-     *
-     * @return the w-coordinate of {@code this}
-     */
-    public @NotNull Rational w() {
-        return coordinates.get(3);
-    }
-
-    /**
      * Returns one of {@code this}'s coordinates. 0-indexed.
      *
      * <ul>
@@ -137,7 +81,7 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
      * @param i the 0-based coordinate index
      * @return the {@code i}th coordinate of {@code this}
      */
-    public @NotNull Rational x(int i) {
+    public @NotNull Rational get(int i) {
         return coordinates.get(i);
     }
 

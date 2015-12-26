@@ -34,74 +34,21 @@ public class RationalVectorTest {
     }
 
     @Test
-    public void testGetX() {
-        aeq(read("[1/2]").get().x(), "1/2");
-        aeq(read("[5/3, -1/4, 23]").get().x(), "5/3");
+    public void testGet() {
+        aeq(read("[1/2]").get().get(0), "1/2");
+        aeq(read("[5/3, -1/4, 23]").get().get(0), "5/3");
+        aeq(read("[5/3, -1/4, 23]").get().get(1), "-1/4");
+        aeq(read("[5/3, -1/4, 23]").get().get(2), "23");
         try {
-            read("[]").get().x();
-            fail();
-        } catch (IndexOutOfBoundsException ignored) {}
-    }
-
-    @Test
-    public void testGetY() {
-        aeq(read("[5/3, -1/4, 23]").get().y(), "-1/4");
-        try {
-            read("[1/2]").get().y();
+            read("[5/3, -1/4, 23]").get().get(4);
             fail();
         } catch (IndexOutOfBoundsException ignored) {}
         try {
-            read("[]").get().y();
-            fail();
-        } catch (IndexOutOfBoundsException ignored) {}
-    }
-
-    @Test
-    public void testGetZ() {
-        aeq(read("[5/3, -1/4, 23]").get().z(), "23");
-        try {
-            read("[1/2]").get().z();
+            read("[1/2]").get().get(3);
             fail();
         } catch (IndexOutOfBoundsException ignored) {}
         try {
-            read("[]").get().z();
-            fail();
-        } catch (IndexOutOfBoundsException ignored) {}
-    }
-
-    @Test
-    public void testGetW() {
-        aeq(read("[5/3, -1/4, 23, 58/7]").get().w(), "58/7");
-        try {
-            read("[5/3, -1/4, 23]").get().w();
-            fail();
-        } catch (IndexOutOfBoundsException ignored) {}
-        try {
-            read("[1/2]").get().w();
-            fail();
-        } catch (IndexOutOfBoundsException ignored) {}
-        try {
-            read("[]").get().w();
-            fail();
-        } catch (IndexOutOfBoundsException ignored) {}
-    }
-
-    @Test
-    public void testGetCoordinate() {
-        aeq(read("[1/2]").get().x(0), "1/2");
-        aeq(read("[5/3, -1/4, 23]").get().x(0), "5/3");
-        aeq(read("[5/3, -1/4, 23]").get().x(1), "-1/4");
-        aeq(read("[5/3, -1/4, 23]").get().x(2), "23");
-        try {
-            read("[5/3, -1/4, 23]").get().x(4);
-            fail();
-        } catch (IndexOutOfBoundsException ignored) {}
-        try {
-            read("[1/2]").get().x(3);
-            fail();
-        } catch (IndexOutOfBoundsException ignored) {}
-        try {
-            read("[]").get().x(0);
+            read("[]").get().get(0);
             fail();
         } catch (IndexOutOfBoundsException ignored) {}
     }

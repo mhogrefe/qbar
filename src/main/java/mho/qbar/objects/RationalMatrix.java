@@ -132,7 +132,7 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
                 throw new ArrayIndexOutOfBoundsException();
             return RationalVector.ZERO_DIMENSIONAL;
         } else {
-            return RationalVector.of(toList(map(r -> r.x(j), rows)));
+            return RationalVector.of(toList(map(r -> r.get(j), rows)));
         }
     }
 
@@ -153,7 +153,7 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
      * @return the element of {@code this} in the {@code i}th row and {@code j}th column
      */
     public @NotNull Rational element(int i, int j) {
-        return rows.get(i).x(j);
+        return rows.get(i).get(j);
     }
 
     /**
