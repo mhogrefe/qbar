@@ -1733,12 +1733,10 @@ public final class Rational implements Comparable<Rational> {
      * @return {@code this}<sup>{@code p}</sup>
      */
     public @NotNull Rational pow(int p) {
-        if (p == 0) return ONE;
+        if (p == 0 || this == ONE) return ONE;
         if (p == 1) return this;
-        if (p < 0) {
-            return invert().pow(-p);
-        }
-        if (this == ZERO || this == ONE) return this;
+        if (p < 0) return invert().pow(-p);
+        if (this == ZERO) return this;
         if (p % 2 == 0 && this.equals(NEGATIVE_ONE)) return ONE;
         BigInteger powNumerator = numerator.pow(p);
         BigInteger powDenominator = denominator.pow(p);
