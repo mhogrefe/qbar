@@ -442,12 +442,15 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
      * @return Σxs
      */
     public static @NotNull RationalVector sum(@NotNull Iterable<RationalVector> xs) {
-        if (isEmpty(xs))
-            throw new IllegalArgumentException("cannot take sum of empty RationalVector list");
-        if (!same(map(RationalVector::dimension, xs)))
-            throw new ArithmeticException("all elements must have the same dimension");
-        List<Rational> coordinates = toList(map(Rational::sum, transpose(map(v -> v, xs))));
-        return coordinates.isEmpty() ? ZERO_DIMENSIONAL : new RationalVector(coordinates);
+        if (isEmpty(xs)) {
+            throw new IllegalArgumentException("xs cannot be empty.");
+        } else if (!same(map(RationalVector::dimension, xs))) {
+            throw new ArithmeticException("Every RationalVector in xs must have the same dimension. Invalid xs: " +
+                    xs);
+        } else {
+            List<Rational> coordinates = toList(map(Rational::sum, transpose(map(v -> v, xs))));
+            return coordinates.isEmpty() ? ZERO_DIMENSIONAL : new RationalVector(coordinates);
+        }
     }
 
     /**
@@ -456,7 +459,7 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
      * support removal.
      *
      * <ul>
-     *  <li>{@code xs} must not be empty and may not contain any nulls. Every {@code RationalVector} in {@code xs} must
+     *  <li>{@code xs} cannot be empty and may not contain any nulls. Every {@code RationalVector} in {@code xs} must
      *  have the same dimension.</li>
      *  <li>The result does not contain any nulls.</li>
      * </ul>
@@ -467,10 +470,11 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
      * @return Δxs
      */
     public static @NotNull Iterable<RationalVector> delta(@NotNull Iterable<RationalVector> xs) {
-        if (isEmpty(xs))
-            throw new IllegalArgumentException("cannot get delta of empty Iterable");
-        if (head(xs) == null)
+        if (isEmpty(xs)) {
+            throw new IllegalArgumentException("xs cannot be empty.");
+        } else if (head(xs) == null) {
             throw new NullPointerException();
+        }
         return adjacentPairsWith((x, y) -> y.subtract(x), xs);
     }
 

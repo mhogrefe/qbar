@@ -4,7 +4,6 @@ import mho.wheels.io.Readers;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
-import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.List;
 
@@ -17,8 +16,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class RationalVectorTest {
-    private static final int TINY_LIMIT = 20;
-
     @Test
     public void testConstants() {
         aeq(ZERO_DIMENSIONAL, "[]");
@@ -402,68 +399,66 @@ public class RationalVectorTest {
         shiftRight_helper("[5/3, -1/4, 23]", -4, "[80/3, -4, 368]");
     }
 
+    private static void sum_helper(@NotNull String input, @NotNull String output) {
+        aeq(sum(readRationalVectorList(input)), output);
+    }
+
+    private static void sum_fail_helper(@NotNull String input) {
+        try {
+            sum(readRationalVectorListWithNulls(input));
+            fail();
+        } catch (IllegalArgumentException | ArithmeticException | NullPointerException ignored) {}
+    }
+
     @Test
     public void testSum() {
-        assertTrue(sum(readRationalVectorList("[[]]")) == ZERO_DIMENSIONAL);
-        assertTrue(sum(readRationalVectorList("[[], [], []]")) == ZERO_DIMENSIONAL);
-        aeq(sum(readRationalVectorList("[[5/3, 1/4, 23]]")), "[5/3, 1/4, 23]");
-        aeq(
-                sum(readRationalVectorList("[[5/3, 1/4, 23], [0, 2/3, -1/8], [32, -45/2, 9]]")),
-                "[101/3, -259/12, 255/8]"
-        );
-        aeq(sum(readRationalVectorList("[[1/2], [2/3], [3/4]]")), "[23/12]");
+        sum_helper("[[]]", "[]");
+        sum_helper("[[], [], []]", "[]");
+        sum_helper("[[5/3, 1/4, 23]]", "[5/3, 1/4, 23]");
+        sum_helper("[[5/3, 1/4, 23], [0, 2/3, -1/8], [32, -45/2, 9]]", "[101/3, -259/12, 255/8]");
+        sum_helper("[[1/2], [2/3], [3/4]]", "[23/12]");
+        sum_fail_helper("[]");
+        sum_fail_helper("[[1/2, 3], null]");
+        sum_fail_helper("[[1/2], [3, 4]]");
+    }
+
+    private static void delta_helper(@NotNull Iterable<RationalVector> input, @NotNull String output) {
+        aeqitLimit(TINY_LIMIT, delta(input), output);
+    }
+
+    private static void delta_helper(@NotNull String input, @NotNull String output) {
+        delta_helper(readRationalVectorList(input), output);
+    }
+
+    private static void delta_fail_helper(@NotNull String input) {
         try {
-            sum(readRationalVectorList("[]"));
+            toList(delta(readRationalVectorListWithNulls(input)));
             fail();
-        } catch (IllegalArgumentException ignored) {}
-        try {
-            sum(readRationalVectorListWithNulls("[[1/2, 3], null]"));
-            fail();
-        } catch (NullPointerException ignored) {}
-        try {
-            sum(readRationalVectorList("[[1/2], [3, 4]]"));
-            fail();
-        } catch (ArithmeticException ignored) {}
+        } catch (IllegalArgumentException | ArithmeticException | NullPointerException ignored) {}
     }
 
     @Test
     public void testDelta() {
-        aeqit(delta(readRationalVectorList("[[]]")), "[]");
-        aeqit(delta(readRationalVectorList("[[], [], []]")), "[[], []]");
-        aeqit(delta(readRationalVectorList("[[5/3, 1/4, 23]]")), "[]");
-        aeqit(
-                delta(readRationalVectorList("[[5/3, 1/4, 23], [0, 2/3, -1/8], [32, -45/2, 9]]")),
-                "[[-5/3, 5/12, -185/8], [32, -139/6, 73/8]]"
-        );
-        aeqit(delta(readRationalVectorList("[[1/2], [2/3], [3/4]]")), "[[1/6], [1/12]]");
-        aeqitLimit(
-                TINY_LIMIT,
-                delta(
-                        map(
-                                i -> {
-                                    Rational r = Rational.of(i);
-                                    return of(Arrays.asList(r, r.pow(2), r.pow(3)));
-                                },
-                                rangeUp(1)
-                        )
+        delta_helper("[[]]", "[]");
+        delta_helper("[[], [], []]", "[[], []]");
+        delta_helper("[[5/3, 1/4, 23]]", "[]");
+        delta_helper("[[5/3, 1/4, 23], [0, 2/3, -1/8], [32, -45/2, 9]]", "[[-5/3, 5/12, -185/8], [32, -139/6, 73/8]]");
+        delta_helper("[[1/2], [2/3], [3/4]]", "[[1/6], [1/12]]");
+        delta_helper(
+                map(
+                        i -> {
+                            Rational r = Rational.of(i);
+                            return of(Arrays.asList(r, r.pow(2), r.pow(3)));
+                        },
+                        rangeUp(1)
                 ),
                 "[[1, 3, 7], [1, 5, 19], [1, 7, 37], [1, 9, 61], [1, 11, 91], [1, 13, 127], [1, 15, 169]," +
-                " [1, 17, 217], [1, 19, 271], [1, 21, 331], [1, 23, 397], [1, 25, 469], [1, 27, 547]," +
-                " [1, 29, 631], [1, 31, 721], [1, 33, 817], [1, 35, 919], [1, 37, 1027], [1, 39, 1141]," +
-                " [1, 41, 1261], ...]"
+                " [1, 17, 217], [1, 19, 271], [1, 21, 331], [1, 23, 397], [1, 25, 469], [1, 27, 547], [1, 29, 631]," +
+                " [1, 31, 721], [1, 33, 817], [1, 35, 919], [1, 37, 1027], [1, 39, 1141], [1, 41, 1261], ...]"
         );
-        try {
-            delta(readRationalVectorList("[]"));
-            fail();
-        } catch (IllegalArgumentException ignored) {}
-        try {
-            toList(delta(readRationalVectorListWithNulls("[[1/2, 3], null]")));
-            fail();
-        } catch (NullPointerException ignored) {}
-        try {
-            toList(delta(readRationalVectorList("[[1/2], [3, 4]]")));
-            fail();
-        } catch (ArithmeticException ignored) {}
+        delta_fail_helper("[]");
+        delta_fail_helper("[[1/2, 3], null]");
+        delta_fail_helper("[[1/2], [3, 4]]");
     }
 
     @Test
