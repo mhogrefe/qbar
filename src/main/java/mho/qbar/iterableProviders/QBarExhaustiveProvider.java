@@ -206,11 +206,9 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
                 Rational x = complement.get(0).getUpper().get();
                 Rational y = complement.get(1).getLower().get();
                 //noinspection RedundantCast
-                return mux(
-                        (List<Iterable<Rational>>) Arrays.asList(
-                                filterInfinite(r -> !r.equals(x), rangeDown(x)),
-                                filterInfinite(r -> !r.equals(y), rangeUp(y))
-                        )
+                return choose(
+                        filterInfinite(r -> !r.equals(x), rangeDown(x)),
+                        filterInfinite(r -> !r.equals(y), rangeUp(y))
                 );
             default: throw new IllegalStateException("unreachable");
         }

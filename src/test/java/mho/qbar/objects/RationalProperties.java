@@ -2976,10 +2976,10 @@ public class RationalProperties extends QBarTestProperties {
                             P.listsWithSublists(
                                     map(
                                             Collections::singletonList,
-                                            (Iterable<BigInteger>) mux(
-                                                    Arrays.asList(P.negativeBigIntegers(),
-                                                    P.withScale(IntegerUtils.ceilingLog2(b) + 2).rangeUp(b))
-                                            ) //todo use either
+                                            P.choose(
+                                                    P.negativeBigIntegers(),
+                                                    P.withScale(IntegerUtils.ceilingLog2(b) + 2).rangeUp(b)
+                                            )
                                     ),
                                     range
                             ),
@@ -3005,10 +3005,10 @@ public class RationalProperties extends QBarTestProperties {
                             P.listsWithSublists(
                                     map(
                                             Collections::singletonList,
-                                            (Iterable<BigInteger>) mux(
-                                                    Arrays.asList(P.negativeBigIntegers(),
-                                                    P.withScale(IntegerUtils.ceilingLog2(b) + 2).rangeUp(b))
-                                            ) //todo use either
+                                            P.choose(
+                                                    P.negativeBigIntegers(),
+                                                    P.withScale(IntegerUtils.ceilingLog2(b) + 2).rangeUp(b)
+                                            )
                                     ),
                                     range
                             ),
@@ -3036,10 +3036,10 @@ public class RationalProperties extends QBarTestProperties {
                                     (Iterable<List<BigInteger>>) P.listsWithSublists(
                                             map(
                                                     Collections::singletonList,
-                                                    (Iterable<BigInteger>) mux(
-                                                            Arrays.asList(P.negativeBigIntegers(),
-                                                            P.withScale(IntegerUtils.ceilingLog2(b) + 2).rangeUp(b))
-                                                    ) //todo use either
+                                                    P.choose(
+                                                            P.negativeBigIntegers(),
+                                                            P.withScale(IntegerUtils.ceilingLog2(b) + 2).rangeUp(b)
+                                                    )
                                             ),
                                             range
                                     )

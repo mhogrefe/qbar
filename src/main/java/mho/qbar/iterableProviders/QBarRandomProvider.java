@@ -6,7 +6,6 @@ import mho.wheels.ordering.Ordering;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigInteger;
-import java.util.Arrays;
 import java.util.List;
 
 import static mho.wheels.iterables.IterableUtils.*;
@@ -517,11 +516,9 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
                 Rational x = complement.get(0).getUpper().get();
                 Rational y = complement.get(1).getLower().get();
                 //noinspection RedundantCast
-                return mux(
-                        (List<Iterable<Rational>>) Arrays.asList(
-                                filterInfinite(r -> !r.equals(x), rangeDown(x)),
-                                filterInfinite(r -> !r.equals(y), rangeUp(y))
-                        )
+                return choose(
+                        filterInfinite(r -> !r.equals(x), rangeDown(x)),
+                        filterInfinite(r -> !r.equals(y), rangeUp(y))
                 );
             default: throw new IllegalStateException("unreachable");
         }
