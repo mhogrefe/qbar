@@ -175,12 +175,12 @@ public class RationalVectorDemos extends QBarDemos {
         Iterable<List<RationalVector>> vss = P.chooseLogarithmicOrder(
                 map(
                         p -> p.b,
-                        P.dependentPairsInfiniteLogarithmicOrder(
-                                P.withScale(4).positiveIntegersGeometric(),
-                                i -> P.withScale(4).listsAtLeast(1, P.rationalVectors(i))
+                        P.dependentPairsInfiniteSquareRootOrder(
+                                P.pairs(P.withScale(4).positiveIntegersGeometric()),
+                                p -> P.withScale(4).lists(p.a, P.rationalVectors(p.b))
                         )
                 ),
-                map(i -> toList(replicate(i, ZERO_DIMENSIONAL)), P.withScale(4).positiveIntegersGeometric())
+                map(i -> toList(replicate(i, ZERO_DIMENSIONAL)), P.positiveIntegersGeometric())
         );
         for (List<RationalVector> vs : take(LIMIT, vss)) {
             String listString = tail(init(vs.toString()));
@@ -192,12 +192,12 @@ public class RationalVectorDemos extends QBarDemos {
         Iterable<List<RationalVector>> vss = P.chooseLogarithmicOrder(
                 map(
                         p -> p.b,
-                        P.dependentPairsInfiniteLogarithmicOrder(
-                                P.withScale(4).positiveIntegersGeometric(),
-                                i -> P.withScale(4).listsAtLeast(1, P.rationalVectors(i))
+                        P.dependentPairsInfiniteSquareRootOrder(
+                                P.pairs(P.withScale(4).positiveIntegersGeometric()),
+                                p -> P.withScale(4).lists(p.a, P.rationalVectors(p.b))
                         )
                 ),
-                map(i -> toList(replicate(i, ZERO_DIMENSIONAL)), P.withScale(4).positiveIntegersGeometric())
+                map(i -> toList(replicate(i, ZERO_DIMENSIONAL)), P.positiveIntegersGeometric())
         );
         for (List<RationalVector> vs : take(LIMIT, vss)) {
             String listString = tail(init(vs.toString()));

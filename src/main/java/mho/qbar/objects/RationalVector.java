@@ -448,8 +448,7 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
             throw new ArithmeticException("Every RationalVector in xs must have the same dimension. Invalid xs: " +
                     xs);
         } else {
-            List<Rational> coordinates = toList(map(Rational::sum, transpose(map(v -> v, xs))));
-            return coordinates.isEmpty() ? ZERO_DIMENSIONAL : new RationalVector(coordinates);
+            return foldl1(RationalVector::add, xs);
         }
     }
 

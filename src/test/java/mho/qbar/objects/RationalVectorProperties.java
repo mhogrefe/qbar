@@ -53,7 +53,7 @@ public class RationalVectorProperties extends QBarTestProperties {
         compareImplementationsShiftRight();
         propertiesSum();
         compareImplementationsSum();
-//        propertiesDelta();
+        propertiesDelta();
         propertiesDot();
         propertiesRightAngleCompare();
         propertiesSquaredLength();
@@ -734,8 +734,9 @@ public class RationalVectorProperties extends QBarTestProperties {
         compareImplementations("shiftRight(int)", take(LIMIT, ps), functions);
     }
 
-    private static @NotNull RationalVector sum_simplest(@NotNull Iterable<RationalVector> xs) {
-        return foldl1(RationalVector::add, xs);
+    private static @NotNull RationalVector sum_alt(@NotNull Iterable<RationalVector> xs) {
+        List<Rational> coordinates = toList(map(Rational::sum, transpose(map(v -> v, xs))));
+        return coordinates.isEmpty() ? ZERO_DIMENSIONAL : of(coordinates);
     }
 
     private void propertiesSum() {
@@ -743,17 +744,17 @@ public class RationalVectorProperties extends QBarTestProperties {
         Iterable<List<RationalVector>> vss = P.chooseLogarithmicOrder(
                 map(
                         p -> p.b,
-                        P.dependentPairsInfiniteLogarithmicOrder(
-                                P.withScale(4).positiveIntegersGeometric(),
-                                i -> P.withScale(4).listsAtLeast(1, P.rationalVectors(i))
+                        P.dependentPairsInfiniteSquareRootOrder(
+                                P.pairs(P.withScale(4).positiveIntegersGeometric()),
+                                p -> P.withScale(4).lists(p.a, P.rationalVectors(p.b))
                         )
                 ),
-                map(i -> toList(replicate(i, ZERO_DIMENSIONAL)), P.withScale(4).positiveIntegersGeometric())
+                map(i -> toList(replicate(i, ZERO_DIMENSIONAL)), P.positiveIntegersGeometric())
         );
         for (List<RationalVector> vs : take(LIMIT, vss)) {
             RationalVector sum = sum(vs);
             sum.validate();
-            assertEquals(vs, sum, sum_simplest(vs));
+            assertEquals(vs, sum, sum_alt(vs));
             assertEquals(vs, sum.dimension(), head(vs).dimension());
         }
 
@@ -783,115 +784,152 @@ public class RationalVectorProperties extends QBarTestProperties {
             assertEquals(p, sum(Arrays.asList(p.a, p.b)), p.a.add(p.b));
         }
 
-        //todo failure
+        for (List<Rational> rs : take(LIMIT, P.listsAtLeast(1, P.rationals()))) {
+            homomorphic(
+                    ss -> toList(map(RationalVector::of, ss)),
+                    RationalVector::of,
+                    Rational::sum,
+                    RationalVector::sum,
+                    rs
+            );
+        }
+
+        Iterable<List<RationalVector>> vssFail = filterInfinite(
+                us -> !same(map(RationalVector::dimension, us)),
+                P.listsAtLeast(1, P.rationalVectors())
+        );
+        for (List<RationalVector> vs : take(LIMIT, vssFail)) {
+            try {
+                sum(vs);
+                fail(vs);
+            } catch (ArithmeticException ignored) {}
+        }
+
+        vssFail = map(
+                p -> p.b,
+                P.dependentPairsInfiniteSquareRootOrder(
+                        P.withScale(4).positiveIntegersGeometric(),
+                        i -> P.withScale(4).listsWithElement(null, P.rationalVectors(i))
+                )
+        );
+        for (List<RationalVector> vs : take(LIMIT, vssFail)) {
+            try {
+                sum(vs);
+                fail(vs);
+            } catch (NullPointerException ignored) {}
+        }
     }
 
     private void compareImplementationsSum() {
         Map<String, Function<List<RationalVector>, RationalVector>> functions = new LinkedHashMap<>();
-        functions.put("simplest", RationalVectorProperties::sum_simplest);
+        functions.put("alt", RationalVectorProperties::sum_alt);
         functions.put("standard", RationalVector::sum);
         Iterable<List<RationalVector>> vss = P.chooseLogarithmicOrder(
                 map(
                         p -> p.b,
-                        P.dependentPairsInfiniteLogarithmicOrder(
-                                P.withScale(4).positiveIntegersGeometric(),
-                                i -> P.withScale(4).listsAtLeast(1, P.rationalVectors(i))
+                        P.dependentPairsInfiniteSquareRootOrder(
+                                P.pairs(P.withScale(4).positiveIntegersGeometric()),
+                                p -> P.withScale(4).lists(p.a, P.rationalVectors(p.b))
                         )
                 ),
-                map(i -> toList(replicate(i, ZERO_DIMENSIONAL)), P.withScale(4).positiveIntegersGeometric())
+                map(i -> toList(replicate(i, ZERO_DIMENSIONAL)), P.positiveIntegersGeometric())
         );
         compareImplementations("sum(Iterable<RationalVector>)", take(LIMIT, vss), functions);
     }
 
-//    private void compareImplementationsSum() {
-//        initialize("");
-//        System.out.println("\t\tcomparing sum(Iterable<RationalVector>) implementations...");
-//
-//        long totalTime = 0;
-//        Iterable<Pair<Integer, Integer>> ps;
-//        if (P instanceof QBarExhaustiveProvider) {
-//            ps = P.pairs(P.positiveIntegers(), P.naturalIntegers());
-//        } else {
-//            ps = P.pairs(
-//                    P.withScale(5).positiveIntegersGeometric(),
-//                    P.withScale(3).naturalIntegersGeometric()
-//            );
-//        }
-//        Iterable<List<RationalVector>> vss = map(
-//                q -> q.b,
-//                P.dependentPairsSquare(ps, p -> P.lists(p.a, P.rationalVectors(p.b)))
-//        );
-//        for (List<RationalVector> vs : take(LIMIT, vss)) {
-//            long time = System.nanoTime();
-//            sum_simplest(vs);
-//            totalTime += (System.nanoTime() - time);
-//        }
-//        System.out.println("\t\t\talt: " + ((double) totalTime) / 1e9 + " s");
-//
-//        totalTime = 0;
-//        for (List<RationalVector> vs : take(LIMIT, vss)) {
-//            long time = System.nanoTime();
-//            sum(vs);
-//            totalTime += (System.nanoTime() - time);
-//        }
-//        System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
-//    }
-//
-//    private void propertiesDelta() {
-//        initialize("");
-//        System.out.println("\t\ttesting delta(Iterable<RationalVector>) properties...");
-//
-//        Iterable<Pair<Integer, Integer>> ps0;
-//        if (P instanceof QBarExhaustiveProvider) {
-//            ps0 = P.pairs(P.positiveIntegers(), P.naturalIntegers());
-//        } else {
-//            ps0 = P.pairs(
-//                    P.withScale(5).positiveIntegersGeometric(),
-//                    P.withScale(3).naturalIntegersGeometric()
-//            );
-//        }
-//        Iterable<List<RationalVector>> vss = map(
-//                q -> q.b,
-//                P.dependentPairsSquare(ps0, p -> P.lists(p.a, P.rationalVectors(p.b)))
-//        );
-//        for (List<RationalVector> vs : take(LIMIT, vss)) {
-//            Iterable<RationalVector> deltas = delta(vs);
-//            deltas.forEach(mho.qbar.objects.RationalVectorProperties::validate);
-//            assertTrue(vs, all(v -> v.dimension() == head(vs).dimension(), deltas));
-//            assertEquals(vs, length(deltas), length(vs) - 1);
-//            List<RationalVector> reversed = reverse(map(RationalVector::negate, delta(reverse(vs))));
-//            aeq(vs, deltas, reversed);
-//            try {
-//                deltas.iterator().remove();
-//            } catch (UnsupportedOperationException ignored) {}
-//        }
-//
-//        for (RationalVector v : take(LIMIT, P.rationalVectors())) {
-//            assertTrue(v, isEmpty(delta(Collections.singletonList(v))));
-//        }
-//
-//        Iterable<Pair<RationalVector, RationalVector>> ps = filter(
-//                q -> q.a.dimension() == q.b.dimension(),
-//                P.pairs(P.rationalVectors())
-//        );
-//        for (Pair<RationalVector, RationalVector> p : take(LIMIT, ps)) {
-//            aeq(p, delta(Arrays.asList(p.a, p.b)), Collections.singletonList(p.b.subtract(p.a)));
-//        }
-//
-//        Iterable<List<RationalVector>> failVss = map(
-//                p -> toList(insert(p.a, p.b, null)),
-//                (Iterable<Pair<List<RationalVector>, Integer>>) P.dependentPairsLogarithmic(
-//                        vss,
-//                        rs -> range(0, rs.size())
-//                )
-//        );
-//        for (List<RationalVector> vs : take(LIMIT, failVss)) {
-//            try {
-//                toList(delta(vs));
-//                fail(vs);
-//            } catch (NullPointerException ignored) {}
-//        }
-//    }
+    private void propertiesDelta() {
+        initialize("delta(Iterable<RationalVector>)");
+        Iterable<List<RationalVector>> vss = P.chooseLogarithmicOrder(
+                map(
+                        p -> p.b,
+                        P.dependentPairsInfiniteSquareRootOrder(
+                                P.pairs(P.withScale(4).positiveIntegersGeometric()),
+                                p -> P.withScale(4).lists(p.a, P.rationalVectors(p.b))
+                        )
+                ),
+                map(i -> toList(replicate(i, ZERO_DIMENSIONAL)), P.positiveIntegersGeometric())
+        );
+        for (List<RationalVector> vs : take(LIMIT, vss)) {
+            Iterable<RationalVector> deltas = delta(vs);
+            deltas.forEach(RationalVector::validate);
+            assertTrue(vs, all(v -> v.dimension() == head(vs).dimension(), deltas));
+            assertEquals(vs, length(deltas), length(vs) - 1);
+            List<RationalVector> reversed = reverse(map(RationalVector::negate, delta(reverse(vs))));
+            aeqit(vs, deltas, reversed);
+            testNoRemove(TINY_LIMIT, deltas);
+            testHasNext(deltas);
+        }
+
+        for (RationalVector v : take(LIMIT, P.rationalVectors())) {
+            assertTrue(v, isEmpty(delta(Collections.singletonList(v))));
+        }
+
+        Iterable<Pair<RationalVector, RationalVector>> ps = P.withElement(
+                new Pair<>(ZERO_DIMENSIONAL, ZERO_DIMENSIONAL),
+                map(
+                        p -> p.b,
+                        P.dependentPairsInfiniteLogarithmicOrder(
+                                P.positiveIntegersGeometric(),
+                                i -> P.pairs(P.rationalVectors(i))
+                        )
+                )
+        );
+        for (Pair<RationalVector, RationalVector> p : take(LIMIT, ps)) {
+            aeqit(p, delta(Arrays.asList(p.a, p.b)), Collections.singletonList(p.b.subtract(p.a)));
+        }
+
+        Iterable<Iterable<RationalVector>> vss2 = P.withElement(
+                repeat(ZERO_DIMENSIONAL),
+                map(
+                        p -> p.b, P.dependentPairsInfiniteSquareRootOrder(
+                                P.withScale(4).positiveIntegersGeometric(),
+                                i -> EP.prefixPermutations(QBarTesting.QEP.rationalVectors(i))
+                        )
+                )
+        );
+        for (Iterable<RationalVector> vs : take(LIMIT, vss2)) {
+            Iterable<RationalVector> deltas = delta(vs);
+            List<RationalVector> deltaPrefix = toList(take(TINY_LIMIT, deltas));
+            deltaPrefix.forEach(RationalVector::validate);
+            assertEquals(vs, length(deltaPrefix), TINY_LIMIT);
+            testNoRemove(TINY_LIMIT, deltas);
+        }
+
+        for (List<Rational> rs : take(LIMIT, P.listsAtLeast(1, P.rationals()))) {
+            homomorphic(
+                    ss -> toList(map(RationalVector::of, ss)),
+                    ss -> toList(map(RationalVector::of, ss)),
+                    ss -> toList(Rational.delta(ss)),
+                    vs -> toList(delta(vs)),
+                    rs
+            );
+        }
+
+        Iterable<List<RationalVector>> vssFail = filterInfinite(
+                us -> !same(map(RationalVector::dimension, us)),
+                P.listsAtLeast(1, P.rationalVectors())
+        );
+        for (List<RationalVector> vs : take(LIMIT, vssFail)) {
+            try {
+                toList(delta(vs));
+                fail(vs);
+            } catch (ArithmeticException ignored) {}
+        }
+
+        vssFail = map(
+                p -> p.b,
+                P.dependentPairsInfiniteSquareRootOrder(
+                        P.withScale(4).positiveIntegersGeometric(),
+                        i -> P.withScale(4).listsWithElement(null, P.rationalVectors(i))
+                )
+        );
+        for (List<RationalVector> vs : take(LIMIT, vssFail)) {
+            try {
+                toList(delta(vs));
+                fail(vs);
+            } catch (NullPointerException ignored) {}
+        }
+    }
 
     private void propertiesDot() {
         initialize("");
