@@ -172,12 +172,15 @@ public class RationalVectorDemos extends QBarDemos {
     }
 
     private void demoSum() {
-        Iterable<List<RationalVector>> vss = map(
-                p -> p.b,
-                P.dependentPairsInfiniteLogarithmicOrder(
-                        P.withScale(4).naturalIntegersGeometric(),
-                        i -> P.withScale(4).listsAtLeast(1, P.rationalVectors(i))
-                )
+        Iterable<List<RationalVector>> vss = P.chooseLogarithmicOrder(
+                map(
+                        p -> p.b,
+                        P.dependentPairsInfiniteLogarithmicOrder(
+                                P.withScale(4).positiveIntegersGeometric(),
+                                i -> P.withScale(4).listsAtLeast(1, P.rationalVectors(i))
+                        )
+                ),
+                map(i -> toList(replicate(i, ZERO_DIMENSIONAL)), P.withScale(4).positiveIntegersGeometric())
         );
         for (List<RationalVector> vs : take(LIMIT, vss)) {
             String listString = tail(init(vs.toString()));
@@ -185,47 +188,22 @@ public class RationalVectorDemos extends QBarDemos {
         }
     }
 
-//    private void demoSum() {
-//        initialize();
-//        Iterable<Pair<Integer, Integer>> ps;
-//        if (P instanceof QBarExhaustiveProvider) {
-//            ps = P.pairs(P.positiveIntegers(), P.naturalIntegers());
-//        } else {
-//            ps = P.pairs(
-//                    P.withScale(5).positiveIntegersGeometric(),
-//                    P.withScale(5).naturalIntegersGeometric()
-//            );
-//        }
-//        Iterable<List<RationalVector>> vss = map(
-//                q -> q.b,
-//                P.dependentPairsSquare(ps, p -> P.lists(p.a, P.rationalVectors(p.b)))
-//        );
-//        for (List<RationalVector> vs : take(LIMIT, vss)) {
-//            String listString = tail(init(vs.toString()));
-//            System.out.println("Σ(" + listString + ") = " + sum(vs));
-//        }
-//    }
-
-//    private void demoDelta() {
-//        initialize();
-//        Iterable<Pair<Integer, Integer>> ps;
-//        if (P instanceof QBarExhaustiveProvider) {
-//            ps = P.pairs(P.positiveIntegers(), P.naturalIntegers());
-//        } else {
-//            ps = P.pairs(
-//                    P.withScale(5).positiveIntegersGeometric(),
-//                    P.withScale(5).naturalIntegersGeometric()
-//            );
-//        }
-//        Iterable<List<RationalVector>> vss = map(
-//                q -> q.b,
-//                P.dependentPairsSquare(ps, p -> P.lists(p.a, P.rationalVectors(p.b)))
-//        );
-//        for (List<RationalVector> vs : take(LIMIT, vss)) {
-//            String listString = tail(init(vs.toString()));
-//            System.out.println("Δ(" + listString + ") = " + IterableUtils.toString(delta(vs)));
-//        }
-//    }
+    private void demoDelta() {
+        Iterable<List<RationalVector>> vss = P.chooseLogarithmicOrder(
+                map(
+                        p -> p.b,
+                        P.dependentPairsInfiniteLogarithmicOrder(
+                                P.withScale(4).positiveIntegersGeometric(),
+                                i -> P.withScale(4).listsAtLeast(1, P.rationalVectors(i))
+                        )
+                ),
+                map(i -> toList(replicate(i, ZERO_DIMENSIONAL)), P.withScale(4).positiveIntegersGeometric())
+        );
+        for (List<RationalVector> vs : take(LIMIT, vss)) {
+            String listString = tail(init(vs.toString()));
+            System.out.println("Δ(" + listString + ") = " + its(delta(vs)));
+        }
+    }
 
     private void demoDot() {
         Iterable<Pair<RationalVector, RationalVector>> ps;

@@ -11,10 +11,7 @@ import mho.wheels.structures.Triple;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigInteger;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 
 import static mho.qbar.objects.RationalVector.*;
@@ -54,8 +51,8 @@ public class RationalVectorProperties extends QBarTestProperties {
         compareImplementationsShiftLeft();
         propertiesShiftRight();
         compareImplementationsShiftRight();
-//        propertiesSum();
-//        compareImplementationsSum();
+        propertiesSum();
+        compareImplementationsSum();
 //        propertiesDelta();
         propertiesDot();
         propertiesRightAngleCompare();
@@ -741,64 +738,70 @@ public class RationalVectorProperties extends QBarTestProperties {
         return foldl1(RationalVector::add, xs);
     }
 
-//    private void propertiesSum() {
-//        initialize("");
-//        System.out.println("\t\ttesting sum(Iterable<RationalVector>) properties...");
-//
-//        Iterable<Pair<Integer, Integer>> ps0;
-//        if (P instanceof QBarExhaustiveProvider) {
-//            ps0 = P.pairs(P.positiveIntegers(), P.naturalIntegers());
-//        } else {
-//            ps0 = P.pairs(
-//                    P.withScale(5).positiveIntegersGeometric(),
-//                    P.withScale(3).naturalIntegersGeometric()
-//            );
-//        }
-//        Iterable<List<RationalVector>> vss = map(
-//                q -> q.b,
-//                P.dependentPairs(ps0, p -> P.lists(p.a, P.rationalVectors(p.b)))
-//        );
-//        for (List<RationalVector> vs : take(LIMIT, vss)) {
-//            RationalVector sum = sum(vs);
-//            validate(sum);
-//            assertEquals(vs, sum, sum_simplest(vs));
-//            assertEquals(vs, sum.dimension(), head(vs).dimension());
-//        }
-//
-//        Iterable<Pair<List<RationalVector>, List<RationalVector>>> ps = filter(
-//                q -> !q.a.equals(q.b),
-//                P.dependentPairs(vss, P::permutations)
-//        );
-//        for (Pair<List<RationalVector>, List<RationalVector>> p : take(LIMIT, ps)) {
-//            assertEquals(p, sum(p.a), sum(p.b));
-//        }
-//
-//        for (RationalVector v : take(LIMIT, P.rationalVectors())) {
-//            assertEquals(v, sum(Collections.singletonList(v)), v);
-//        }
-//
-//        Iterable<Pair<RationalVector, RationalVector>> ps2 = filter(
-//                q -> q.a.dimension() == q.b.dimension(),
-//                P.pairs(P.rationalVectors())
-//        );
-//        for (Pair<RationalVector, RationalVector> p : take(LIMIT, ps2)) {
-//            assertEquals(p, sum(Arrays.asList(p.a, p.b)), p.a.add(p.b));
-//        }
-//
-//        Iterable<List<RationalVector>> failVss = map(
-//                p -> toList(insert(p.a, p.b, null)),
-//                (Iterable<Pair<List<RationalVector>, Integer>>) P.dependentPairs(
-//                        vss,
-//                        rs -> range(0, rs.size())
-//                )
-//        );
-//        for (List<RationalVector> vs : take(LIMIT, failVss)) {
-//            try {
-//                sum(vs);
-//                fail(vs);
-//            } catch (NullPointerException ignored) {}
-//        }
-//    }
+    private void propertiesSum() {
+        initialize("sum(Iterable<RationalVector>)");
+        Iterable<List<RationalVector>> vss = P.chooseLogarithmicOrder(
+                map(
+                        p -> p.b,
+                        P.dependentPairsInfiniteLogarithmicOrder(
+                                P.withScale(4).positiveIntegersGeometric(),
+                                i -> P.withScale(4).listsAtLeast(1, P.rationalVectors(i))
+                        )
+                ),
+                map(i -> toList(replicate(i, ZERO_DIMENSIONAL)), P.withScale(4).positiveIntegersGeometric())
+        );
+        for (List<RationalVector> vs : take(LIMIT, vss)) {
+            RationalVector sum = sum(vs);
+            sum.validate();
+            assertEquals(vs, sum, sum_simplest(vs));
+            assertEquals(vs, sum.dimension(), head(vs).dimension());
+        }
+
+        Iterable<Pair<List<RationalVector>, List<RationalVector>>> ps = filter(
+                q -> !q.a.equals(q.b),
+                P.dependentPairs(vss, P::permutationsFinite)
+        );
+        for (Pair<List<RationalVector>, List<RationalVector>> p : take(LIMIT, ps)) {
+            assertEquals(p, sum(p.a), sum(p.b));
+        }
+
+        for (RationalVector v : take(LIMIT, P.rationalVectors())) {
+            assertEquals(v, sum(Collections.singletonList(v)), v);
+        }
+
+        Iterable<Pair<RationalVector, RationalVector>> ps2 = P.withElement(
+                new Pair<>(ZERO_DIMENSIONAL, ZERO_DIMENSIONAL),
+                map(
+                        p -> p.b,
+                        P.dependentPairsInfiniteLogarithmicOrder(
+                                P.positiveIntegersGeometric(),
+                                i -> P.pairs(P.rationalVectors(i))
+                        )
+                )
+        );
+        for (Pair<RationalVector, RationalVector> p : take(LIMIT, ps2)) {
+            assertEquals(p, sum(Arrays.asList(p.a, p.b)), p.a.add(p.b));
+        }
+
+        //todo failure
+    }
+
+    private void compareImplementationsSum() {
+        Map<String, Function<List<RationalVector>, RationalVector>> functions = new LinkedHashMap<>();
+        functions.put("simplest", RationalVectorProperties::sum_simplest);
+        functions.put("standard", RationalVector::sum);
+        Iterable<List<RationalVector>> vss = P.chooseLogarithmicOrder(
+                map(
+                        p -> p.b,
+                        P.dependentPairsInfiniteLogarithmicOrder(
+                                P.withScale(4).positiveIntegersGeometric(),
+                                i -> P.withScale(4).listsAtLeast(1, P.rationalVectors(i))
+                        )
+                ),
+                map(i -> toList(replicate(i, ZERO_DIMENSIONAL)), P.withScale(4).positiveIntegersGeometric())
+        );
+        compareImplementations("sum(Iterable<RationalVector>)", take(LIMIT, vss), functions);
+    }
 
 //    private void compareImplementationsSum() {
 //        initialize("");
