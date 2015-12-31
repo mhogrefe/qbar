@@ -443,6 +443,13 @@ public class RationalDemos extends QBarDemos {
         }
     }
 
+    private void demoSumSign() {
+        for (List<Rational> rs : take(LIMIT, P.withScale(4).lists(P.rationals()))) {
+            String listString = tail(init(rs.toString()));
+            System.out.println("sumSign(" + listString + ") = " + sumSign(rs));
+        }
+    }
+
     private void demoDelta_finite() {
         for (List<Rational> rs : take(LIMIT, P.withScale(4).listsAtLeast(1, P.rationals()))) {
             String listString = tail(init(rs.toString()));

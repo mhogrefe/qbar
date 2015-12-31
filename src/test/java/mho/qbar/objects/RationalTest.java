@@ -3056,6 +3056,29 @@ public class RationalTest {
         product_fail_helper("[10, null, 11]");
     }
 
+    private static void sumSign_helper(@NotNull String input, int output) {
+        aeq(sumSign(readRationalList(input)), output);
+    }
+
+    private static void sumSign_fail_helper(@NotNull String input) {
+        try {
+            sumSign(readRationalListWithNulls(input));
+            fail();
+        } catch (NullPointerException ignored) {}
+    }
+
+    @Test
+    public void testSumSign() {
+        sumSign_helper("[]", 0);
+        sumSign_helper("[0]", 0);
+        sumSign_helper("[-4/5]", -1);
+        sumSign_helper("[10, 21/2, 11]", 1);
+        sumSign_helper("[-4, 11, -8]", -1);
+        sumSign_helper("[-4, 12, -8]", 0);
+        sumSign_helper("[-4, 13, -8]", 1);
+        sumSign_fail_helper("[10, null, 11]");
+    }
+
     private static void delta_helper(@NotNull Iterable<Rational> input, @NotNull String output) {
         aeqitLimit(TINY_LIMIT, delta(input), output);
     }

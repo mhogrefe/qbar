@@ -122,6 +122,8 @@ public class RationalProperties extends QBarTestProperties {
         compareImplementationsSum();
         propertiesProduct();
         compareImplementationsProduct();
+        propertiesSumSign();
+        compareImplementationsSumSign();
         propertiesDelta();
         propertiesHarmonicNumber();
         propertiesPow();
@@ -2544,6 +2546,62 @@ public class RationalProperties extends QBarTestProperties {
         functions.put("simplest", RationalProperties::product_simplest);
         functions.put("standard", Rational::product);
         compareImplementations("product(Iterable<Rational>)", take(LIMIT, P.lists(P.rationals())), functions);
+    }
+
+    private static int sumSign_simplest(@NotNull List<Rational> xs) {
+        return sum(xs).signum();
+    }
+
+    private static int sumSign_alt(@NotNull List<Rational> xs) {
+        switch (xs.size()) {
+            case 0:
+                return 0;
+            case 1:
+                return xs.get(0).signum();
+            default:
+                int mostComplexBitLength = xs.get(0).bitLength();
+                int mostComplexIndex = 0;
+                for (int i = 1; i < xs.size(); i++) {
+                    int bitLength = xs.get(i).bitLength();
+                    if (bitLength > mostComplexBitLength) {
+                        mostComplexBitLength = bitLength;
+                        mostComplexIndex = i;
+                    }
+                }
+                int j = mostComplexIndex;
+                Rational sum = sum(map(xs::get, filter(i -> i != j, range(0, xs.size() - 1))));
+                return Integer.signum(sum.compareTo(xs.get(mostComplexIndex).negate()));
+        }
+    }
+
+    private void propertiesSumSign() {
+        initialize("sumSign(List<Rational>)");
+        for (List<Rational> rs : take(LIMIT, P.lists(P.rationals()))) {
+            int sumSign = sumSign(rs);
+            assertEquals(rs, sumSign_simplest(rs), sumSign);
+            assertEquals(rs, sumSign_alt(rs), sumSign);
+            assertTrue(rs, sumSign == 0 || sumSign == 1 || sumSign == -1);
+            assertEquals(rs, sumSign(toList(map(Rational::negate, rs))), -sumSign);
+        }
+
+        for (Rational r : take(LIMIT, P.rationals())) {
+            assertEquals(r, sumSign(Collections.singletonList(r)), r.signum());
+        }
+
+        for (List<Rational> rs : take(LIMIT, P.listsWithElement(null, P.rationals()))) {
+            try {
+                sumSign(rs);
+                fail(rs);
+            } catch (NullPointerException ignored) {}
+        }
+    }
+
+    private void compareImplementationsSumSign() {
+        Map<String, Function<List<Rational>, Integer>> functions = new LinkedHashMap<>();
+        functions.put("simplest", RationalProperties::sumSign_simplest);
+        functions.put("alt", RationalProperties::sumSign_alt);
+        functions.put("standard", Rational::sumSign);
+        compareImplementations("sumSign(List<Rational>)", take(100000, P.lists(P.rationals())), functions);
     }
 
     private void propertiesDelta() {

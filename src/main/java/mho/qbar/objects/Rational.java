@@ -1638,7 +1638,7 @@ public final class Rational implements Comparable<Rational> {
      *  <li>The result may be any {@code Rational}.</li>
      * </ul>
      *
-     * @param xs an {@code Iterable} of {@code Rational}s.
+     * @param xs an {@code Iterable} of {@code Rational}s
      * @return Σxs
      */
     public static @NotNull Rational sum(@NotNull Iterable<Rational> xs) {
@@ -1656,7 +1656,7 @@ public final class Rational implements Comparable<Rational> {
      *  <li>The result may be any {@code Rational}.</li>
      * </ul>
      *
-     * @param xs an {@code Iterable} of {@code Rational}s.
+     * @param xs an {@code Iterable} of {@code Rational}s
      * @return Πxs
      */
     public static @NotNull Rational product(@NotNull Iterable<Rational> xs) {
@@ -1675,6 +1675,28 @@ public final class Rational implements Comparable<Rational> {
                 xs
         );
         return foldl(Rational::multiply, ONE, denominatorSorted);
+    }
+
+    /**
+     * Returns the sign of the sum of a {@code List} of {@code Rational}s. If {@code xs} is empty, 0 is returned.
+     *
+     * <ul>
+     *  <li>{@code xs} cannot contain nulls.</li>
+     *  <li>The result may be –1, 0, or 1.</li>
+     * </ul>
+     *
+     * @param xs a {@code List} of {@code Rational}s
+     * @return sgn(Σxs)
+     */
+    public static int sumSign(@NotNull List<Rational> xs) {
+        switch (xs.size()) {
+            case 0:
+                return 0;
+            case 1:
+                return xs.get(0).signum();
+            default:
+                return Integer.signum(sum(tail(xs)).compareTo(head(xs).negate()));
+        }
     }
 
     /**

@@ -745,8 +745,8 @@ public class RationalVectorProperties extends QBarTestProperties {
                 map(
                         p -> p.b,
                         P.dependentPairsInfiniteSquareRootOrder(
-                                P.pairs(P.withScale(4).positiveIntegersGeometric()),
-                                p -> P.withScale(4).lists(p.a, P.rationalVectors(p.b))
+                                P.pairs(P.positiveIntegersGeometric()),
+                                p -> P.lists(p.a, P.rationalVectors(p.b))
                         )
                 ),
                 map(i -> toList(replicate(i, ZERO_DIMENSIONAL)), P.positiveIntegersGeometric())
@@ -808,8 +808,8 @@ public class RationalVectorProperties extends QBarTestProperties {
         vssFail = map(
                 p -> p.b,
                 P.dependentPairsInfiniteSquareRootOrder(
-                        P.withScale(4).positiveIntegersGeometric(),
-                        i -> P.withScale(4).listsWithElement(null, P.rationalVectors(i))
+                        P.positiveIntegersGeometric(),
+                        i -> P.listsWithElement(null, P.rationalVectors(i))
                 )
         );
         for (List<RationalVector> vs : take(LIMIT, vssFail)) {
@@ -828,8 +828,8 @@ public class RationalVectorProperties extends QBarTestProperties {
                 map(
                         p -> p.b,
                         P.dependentPairsInfiniteSquareRootOrder(
-                                P.pairs(P.withScale(4).positiveIntegersGeometric()),
-                                p -> P.withScale(4).lists(p.a, P.rationalVectors(p.b))
+                                P.pairs(P.positiveIntegersGeometric()),
+                                p -> P.lists(p.a, P.rationalVectors(p.b))
                         )
                 ),
                 map(i -> toList(replicate(i, ZERO_DIMENSIONAL)), P.positiveIntegersGeometric())
@@ -843,8 +843,8 @@ public class RationalVectorProperties extends QBarTestProperties {
                 map(
                         p -> p.b,
                         P.dependentPairsInfiniteSquareRootOrder(
-                                P.pairs(P.withScale(4).positiveIntegersGeometric()),
-                                p -> P.withScale(4).lists(p.a, P.rationalVectors(p.b))
+                                P.pairs(P.positiveIntegersGeometric()),
+                                p -> P.lists(p.a, P.rationalVectors(p.b))
                         )
                 ),
                 map(i -> toList(replicate(i, ZERO_DIMENSIONAL)), P.positiveIntegersGeometric())
@@ -882,7 +882,7 @@ public class RationalVectorProperties extends QBarTestProperties {
                 repeat(ZERO_DIMENSIONAL),
                 map(
                         p -> p.b, P.dependentPairsInfiniteSquareRootOrder(
-                                P.withScale(4).positiveIntegersGeometric(),
+                                P.positiveIntegersGeometric(),
                                 i -> EP.prefixPermutations(QBarTesting.QEP.rationalVectors(i))
                         )
                 )
@@ -919,8 +919,8 @@ public class RationalVectorProperties extends QBarTestProperties {
         vssFail = map(
                 p -> p.b,
                 P.dependentPairsInfiniteSquareRootOrder(
-                        P.withScale(4).positiveIntegersGeometric(),
-                        i -> P.withScale(4).listsWithElement(null, P.rationalVectors(i))
+                        P.positiveIntegersGeometric(),
+                        i -> P.listsWithElement(null, P.rationalVectors(i))
                 )
         );
         for (List<RationalVector> vs : take(LIMIT, vssFail)) {
