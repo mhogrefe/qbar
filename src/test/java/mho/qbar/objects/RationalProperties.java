@@ -2588,6 +2588,10 @@ public class RationalProperties extends QBarTestProperties {
             assertEquals(r, sumSign(Collections.singletonList(r)), r.signum());
         }
 
+        for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
+            assertEquals(p, sumSign(Pair.toList(p)), Integer.signum(p.a.compareTo(p.b.negate())));
+        }
+
         for (List<Rational> rs : take(LIMIT, P.listsWithElement(null, P.rationals()))) {
             try {
                 sumSign(rs);
