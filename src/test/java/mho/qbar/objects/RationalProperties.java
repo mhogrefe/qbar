@@ -2559,6 +2559,17 @@ public class RationalProperties extends QBarTestProperties {
             case 1:
                 return xs.get(0).signum();
             default:
+                return Integer.signum(sum(tail(xs)).compareTo(head(xs).negate()));
+        }
+    }
+
+    public static int sumSign_alt2(@NotNull List<Rational> xs) {
+        switch (xs.size()) {
+            case 0:
+                return 0;
+            case 1:
+                return xs.get(0).signum();
+            default:
                 int mostComplexBitLength = xs.get(0).bitLength();
                 int mostComplexIndex = 0;
                 for (int i = 1; i < xs.size(); i++) {
@@ -2571,6 +2582,39 @@ public class RationalProperties extends QBarTestProperties {
                 int j = mostComplexIndex;
                 Rational sum = sum(map(xs::get, filter(i -> i != j, range(0, xs.size() - 1))));
                 return Integer.signum(sum.compareTo(xs.get(mostComplexIndex).negate()));
+        }
+    }
+
+    public static int sumSign_alt3(@NotNull List<Rational> xs) {
+        switch (xs.size()) {
+            case 0:
+                return 0;
+            case 1:
+                return xs.get(0).signum();
+            default:
+                int lastPositiveIndex = xs.size();
+                int lastNegativeIndex = xs.size();
+                boolean positiveSeen = false;
+                boolean negativeSeen = false;
+                for (int i = xs.size() - 1; i >= 0 && !(positiveSeen && negativeSeen); i--) {
+                    int sign = xs.get(i).signum();
+                    if (!positiveSeen && sign == 1) {
+                        lastPositiveIndex = i;
+                        positiveSeen = true;
+                    } else if (!negativeSeen && sign == -1) {
+                        lastNegativeIndex = i;
+                        negativeSeen = true;
+                    }
+                }
+                Rational sum = Rational.ZERO;
+                int signum = 0;
+                for (int i = 0; i < xs.size(); i++) {
+                    sum = sum.add(xs.get(i));
+                    signum = sum.signum();
+                    if (signum == 1 && i > lastNegativeIndex) return 1;
+                    if (signum == -1 && i > lastPositiveIndex) return -1;
+                }
+                return signum;
         }
     }
 
@@ -2604,8 +2648,10 @@ public class RationalProperties extends QBarTestProperties {
         Map<String, Function<List<Rational>, Integer>> functions = new LinkedHashMap<>();
         functions.put("simplest", RationalProperties::sumSign_simplest);
         functions.put("alt", RationalProperties::sumSign_alt);
+        functions.put("alt2", RationalProperties::sumSign_alt2);
+        functions.put("alt3", RationalProperties::sumSign_alt3);
         functions.put("standard", Rational::sumSign);
-        compareImplementations("sumSign(List<Rational>)", take(100000, P.lists(P.rationals())), functions);
+        compareImplementations("sumSign(List<Rational>)", take(LIMIT, P.lists(P.rationals())), functions);
     }
 
     private void propertiesDelta() {

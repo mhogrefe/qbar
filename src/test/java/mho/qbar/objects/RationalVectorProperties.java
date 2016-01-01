@@ -56,7 +56,9 @@ public class RationalVectorProperties extends QBarTestProperties {
         propertiesDelta();
         propertiesDot();
         propertiesRightAngleCompare();
+        compareImplementationsRightAngleCompare();
         propertiesSquaredLength();
+        compareImplementationsSquaredLength();
         propertiesCancelDenominators();
         propertiesPivot();
         propertiesReduce();
@@ -758,7 +760,7 @@ public class RationalVectorProperties extends QBarTestProperties {
             assertEquals(vs, sum.dimension(), head(vs).dimension());
         }
 
-        Iterable<Pair<List<RationalVector>, List<RationalVector>>> ps = filter(
+        Iterable<Pair<List<RationalVector>, List<RationalVector>>> ps = filterInfinite(
                 q -> !q.a.equals(q.b),
                 P.dependentPairs(vss, P::permutationsFinite)
         );
@@ -932,22 +934,35 @@ public class RationalVectorProperties extends QBarTestProperties {
     }
 
     private void propertiesDot() {
-        initialize("");
-        System.out.println("\t\ttesting dot(Rational) properties...");
-
-        Iterable<Pair<RationalVector, RationalVector>> ps;
-        if (P instanceof QBarExhaustiveProvider) {
-            ps = P.dependentPairs(P.rationalVectors(), v -> P.rationalVectors(v.dimension()));
-        } else {
-            ps = P.dependentPairs(
-                    P.withScale(8).rationalVectors(),
-                    v -> P.withScale(8).rationalVectors(v.dimension())
-            );
-        }
+        initialize("dot(RationalVector)");
+        Iterable<Pair<RationalVector, RationalVector>> ps = P.withElement(
+                new Pair<>(ZERO_DIMENSIONAL, ZERO_DIMENSIONAL),
+                map(
+                        p -> p.b,
+                        P.dependentPairsInfiniteLogarithmicOrder(
+                                P.positiveIntegersGeometric(),
+                                i -> P.pairs(P.rationalVectors(i))
+                        )
+                )
+        );
         for (Pair<RationalVector, RationalVector> p : take(LIMIT, ps)) {
-            Rational dot = p.a.dot(p.b);
-            assertEquals(p, dot, p.b.dot(p.a));
-            assertEquals(p, p.a.negate().dot(p.b), dot.negate());
+            commutative(RationalVector::dot, p);
+            homomorphic(
+                    RationalVector::negate,
+                    Function.identity(),
+                    Rational::negate,
+                    RationalVector::dot,
+                    RationalVector::dot,
+                    p
+            );
+            homomorphic(
+                    Function.identity(),
+                    RationalVector::negate,
+                    Rational::negate,
+                    RationalVector::dot,
+                    RationalVector::dot,
+                    p
+            );
         }
 
         Iterable<Triple<Rational, RationalVector, RationalVector>> ts = map(
@@ -965,7 +980,18 @@ public class RationalVectorProperties extends QBarTestProperties {
             }
         }
 
-        Iterable<Pair<RationalVector, RationalVector>> psFail = filter(
+        for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
+            homomorphic(
+                    RationalVector::of,
+                    RationalVector::of,
+                    Function.identity(),
+                    Rational::multiply,
+                    RationalVector::dot,
+                    p
+            );
+        }
+
+        Iterable<Pair<RationalVector, RationalVector>> psFail = filterInfinite(
                 p -> p.a.dimension() != p.b.dimension(),
                 P.pairs(P.rationalVectors())
         );
@@ -977,23 +1003,42 @@ public class RationalVectorProperties extends QBarTestProperties {
         }
     }
 
-    private void propertiesRightAngleCompare() {
-        initialize("");
-        System.out.println("\t\ttesting rightAngleCompare(RationalVector) properties...");
+    private static @NotNull Ordering rightAngleCompare_simplest(@NotNull RationalVector a, @NotNull RationalVector b) {
+        return Ordering.compare(a.dot(b), Rational.ZERO).invert();
+    }
 
-        Iterable<Pair<RationalVector, RationalVector>> ps;
-        if (P instanceof QBarExhaustiveProvider) {
-            ps = P.dependentPairs(P.rationalVectors(), v -> P.rationalVectors(v.dimension()));
-        } else {
-            ps = P.dependentPairs(
-                    P.withScale(8).rationalVectors(),
-                    v -> P.withScale(8).rationalVectors(v.dimension())
-            );
-        }
+    private void propertiesRightAngleCompare() {
+        initialize("rightAngleCompare(RationalVector)");
+        Iterable<Pair<RationalVector, RationalVector>> ps = P.withElement(
+                new Pair<>(ZERO_DIMENSIONAL, ZERO_DIMENSIONAL),
+                map(
+                        p -> p.b,
+                        P.dependentPairsInfiniteLogarithmicOrder(
+                                P.positiveIntegersGeometric(),
+                                i -> P.pairs(P.rationalVectors(i))
+                        )
+                )
+        );
         for (Pair<RationalVector, RationalVector> p : take(LIMIT, ps)) {
-            Ordering rightAngleCompare = p.a.rightAngleCompare(p.b);
-            assertEquals(p, rightAngleCompare, p.b.rightAngleCompare(p.a));
-            assertEquals(p, p.a.negate().rightAngleCompare(p.b), rightAngleCompare.invert());
+            Ordering compare = p.a.rightAngleCompare(p.b);
+            assertEquals(p, rightAngleCompare_simplest(p.a, p.b), compare);
+            commutative(RationalVector::rightAngleCompare, p);
+            homomorphic(
+                    RationalVector::negate,
+                    Function.identity(),
+                    Ordering::invert,
+                    RationalVector::rightAngleCompare,
+                    RationalVector::rightAngleCompare,
+                    p
+            );
+            homomorphic(
+                    Function.identity(),
+                    RationalVector::negate,
+                    Ordering::invert,
+                    RationalVector::rightAngleCompare,
+                    RationalVector::rightAngleCompare,
+                    p
+            );
         }
 
         Iterable<Triple<Rational, RationalVector, RationalVector>> ts = map(
@@ -1015,7 +1060,7 @@ public class RationalVectorProperties extends QBarTestProperties {
             }
         }
 
-        Iterable<Pair<RationalVector, RationalVector>> psFail = filter(
+        Iterable<Pair<RationalVector, RationalVector>> psFail = filterInfinite(
                 p -> p.a.dimension() != p.b.dimension(),
                 P.pairs(P.rationalVectors())
         );
@@ -1027,13 +1072,32 @@ public class RationalVectorProperties extends QBarTestProperties {
         }
     }
 
-    private void propertiesSquaredLength() {
-        initialize("");
-        System.out.println("\t\ttesting squaredLength() properties...");
+    private void compareImplementationsRightAngleCompare() {
+        Map<String, Function<Pair<RationalVector, RationalVector>, Ordering>> functions = new LinkedHashMap<>();
+        functions.put("simplest", p -> rightAngleCompare_simplest(p.a, p.b));
+        functions.put("standard", p -> p.a.rightAngleCompare(p.b));
+        Iterable<Pair<RationalVector, RationalVector>> ps = P.withElement(
+                new Pair<>(ZERO_DIMENSIONAL, ZERO_DIMENSIONAL),
+                map(
+                        p -> p.b,
+                        P.dependentPairsInfiniteLogarithmicOrder(
+                                P.positiveIntegersGeometric(),
+                                i -> P.pairs(P.rationalVectors(i))
+                        )
+                )
+        );
+        compareImplementations("rightAngleCompare(RationalVector)", take(LIMIT, ps), functions);
+    }
 
+    private static @NotNull Rational squaredLength_simplest(@NotNull RationalVector v) {
+        return v.dot(v);
+    }
+
+    private void propertiesSquaredLength() {
+        initialize("squaredLength()");
         for (RationalVector v : take(LIMIT, P.rationalVectors())) {
             Rational squaredLength = v.squaredLength();
-            assertEquals(v, squaredLength, v.dot(v));
+            assertEquals(v, squaredLength_simplest(v), squaredLength);
             assertNotEquals(v, squaredLength.signum(), -1);
             assertEquals(v, v.negate().squaredLength(), squaredLength);
         }
@@ -1042,19 +1106,20 @@ public class RationalVectorProperties extends QBarTestProperties {
             assertEquals(p, p.a.multiply(p.b).squaredLength(), p.a.squaredLength().multiply(p.b.pow(2)));
         }
 
-        Iterable<Integer> is;
-        if (P instanceof QBarExhaustiveProvider) {
-            is = P.naturalIntegers();
-        } else {
-            is = P.withScale(20).naturalIntegersGeometric();
-        }
-        for (int i : take(LIMIT, is)) {
+        for (int i : take(LIMIT, P.naturalIntegersGeometric())) {
             assertEquals(i, zero(i).squaredLength(), Rational.ZERO);
         }
 
-        for (Pair<Integer, Integer> p : take(LIMIT, filter(q -> q.a > q.b, P.pairs(is)))) {
-            assertEquals(p, standard(p.a, p.b).squaredLength(), Rational.ONE);
+        for (Pair<Integer, Integer> p : take(LIMIT, P.subsetPairs(P.naturalIntegersGeometric()))) {
+            assertEquals(p, standard(p.b, p.a).squaredLength(), Rational.ONE);
         }
+    }
+
+    private void compareImplementationsSquaredLength() {
+        Map<String, Function<RationalVector, Rational>> functions = new LinkedHashMap<>();
+        functions.put("simplest", RationalVectorProperties::squaredLength_simplest);
+        functions.put("standard", RationalVector::squaredLength);
+        compareImplementations("squaredLength()", take(LIMIT, P.rationalVectors()), functions);
     }
 
     private void propertiesCancelDenominators() {

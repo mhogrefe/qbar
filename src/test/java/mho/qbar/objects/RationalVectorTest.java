@@ -461,60 +461,68 @@ public class RationalVectorTest {
         delta_fail_helper("[[1/2], [3, 4]]");
     }
 
+    private static void dot_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
+        aeq(read(a).get().dot(read(b).get()), output);
+    }
+
+    private static void dot_fail_helper(@NotNull String a, @NotNull String b) {
+        try {
+            read(a).get().dot(read(b).get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
     @Test
     public void testDot() {
-        assertTrue(ZERO_DIMENSIONAL.dot(ZERO_DIMENSIONAL) == Rational.ZERO);
-        aeq(read("[2]").get().dot(read("[3]").get()), "6");
-        aeq(read("[5/3, 4, 0]").get().dot(read("[-2, 1, 3]").get()), "2/3");
-        aeq(read("[5/3, 4, 0]").get().dot(read("[0, 0, 0]").get()), "0");
-        aeq(read("[5/3, 4, 0]").get().dot(read("[-5/3, -4, 0]").get()), "-169/9");
+        dot_helper("[]", "[]", "0");
+        dot_helper("[2]", "[3]", "6");
+        dot_helper("[5/3, 4, 0]", "[-2, 1, 3]", "2/3");
+        dot_helper("[5/3, 4, 0]", "[0, 0, 0]", "0");
+        dot_helper("[5/3, 4, 0]", "[-5/3, -4, 0]", "-169/9");
+        dot_fail_helper("[]", "[1/2]");
+        dot_fail_helper("[1/2]", "[]");
+        dot_fail_helper("[1/2, 4, -4]", "[5/6, 2/3]");
+    }
+
+    private static void rightAngleCompare_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
+        aeq(read(a).get().rightAngleCompare(read(b).get()), output);
+    }
+
+    private static void rightAngleCompare_fail_helper(@NotNull String a, @NotNull String b) {
         try {
-            ZERO_DIMENSIONAL.dot(read("[1/2]").get());
-            fail();
-        } catch (ArithmeticException ignored) {}
-        try {
-            read("[1/2]").get().dot(ZERO_DIMENSIONAL);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        try {
-            read("[1/2, 4, -4]").get().dot(read("[5/6, 2/3]").get());
+            read(a).get().rightAngleCompare(read(b).get());
             fail();
         } catch (ArithmeticException ignored) {}
     }
 
     @Test
     public void testRightAngleCompare() {
-        aeq(ZERO_DIMENSIONAL.rightAngleCompare(ZERO_DIMENSIONAL), "EQ");
-        aeq(read("[2]").get().rightAngleCompare(read("[3]").get()), "LT");
-        aeq(read("[2]").get().rightAngleCompare(read("[-3]").get()), "GT");
-        aeq(read("[1, 0]").get().rightAngleCompare(read("[1, 1]").get()), "LT");
-        aeq(read("[1, -1]").get().rightAngleCompare(read("[1, 1]").get()), "EQ");
-        aeq(read("[0, -1]").get().rightAngleCompare(read("[1, 1]").get()), "GT");
-        aeq(read("[5/3, 4, 0]").get().rightAngleCompare(read("[-2, 1, 3]").get()), "LT");
-        aeq(read("[5/3, 4, 0]").get().rightAngleCompare(read("[0, 0, 0]").get()), "EQ");
-        aeq(read("[5/3, 4, 0]").get().rightAngleCompare(read("[-5/3, -4, 0]").get()), "GT");
-        try {
-            ZERO_DIMENSIONAL.rightAngleCompare(read("[1/2]").get());
-            fail();
-        } catch (ArithmeticException ignored) {}
-        try {
-            read("[1/2]").get().rightAngleCompare(ZERO_DIMENSIONAL);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        try {
-            read("[1/2, 4, -4]").get().rightAngleCompare(read("[5/6, 2/3]").get());
-            fail();
-        } catch (ArithmeticException ignored) {}
+        rightAngleCompare_helper("[]", "[]", "EQ");
+        rightAngleCompare_helper("[2]", "[3]", "LT");
+        rightAngleCompare_helper("[2]", "[-3]", "GT");
+        rightAngleCompare_helper("[1, 0]", "[1, 1]", "LT");
+        rightAngleCompare_helper("[1, -1]", "[1, 1]", "EQ");
+        rightAngleCompare_helper("[0, -1]", "[1, 1]", "GT");
+        rightAngleCompare_helper("[5/3, 4, 0]", "[-2, 1, 3]", "LT");
+        rightAngleCompare_helper("[5/3, 4, 0]", "[0, 0, 0]", "EQ");
+        rightAngleCompare_helper("[5/3, 4, 0]", "[-5/3, -4, 0]", "GT");
+        rightAngleCompare_fail_helper("[]", "[1/2]");
+        rightAngleCompare_fail_helper("[1/2]", "[]");
+        rightAngleCompare_fail_helper("[1/2, 4, -4]", "[5/6, 2/3]");
+    }
+
+    private static void squaredLength_helper(@NotNull String input, @NotNull String output) {
+        aeq(read(input).get().squaredLength(), output);
     }
 
     @Test
     public void testSquaredLength() {
-        aeq(ZERO_DIMENSIONAL.squaredLength(), "0");
-        aeq(read("[2]").get().squaredLength(), "4");
-        aeq(read("[1, 0]").get().squaredLength(), "1");
-        aeq(read("[1, 1]").get().squaredLength(), "2");
-        aeq(read("[5/3, 4, 0]").get().squaredLength(), "169/9");
-        aeq(read("[1/2, 4, -4]").get().squaredLength(), "129/4");
+        squaredLength_helper("[]", "0");
+        squaredLength_helper("[2]", "4");
+        squaredLength_helper("[1, 0]", "1");
+        squaredLength_helper("[1, 1]", "2");
+        squaredLength_helper("[5/3, 4, 0]", "169/9");
+        squaredLength_helper("[1/2, 4, -4]", "129/4");
     }
 
     @Test

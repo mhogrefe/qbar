@@ -492,15 +492,16 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
      * @return {@code this}⋅{@code that}
      */
     public @NotNull Rational dot(@NotNull RationalVector that) {
-        if (coordinates.size() != that.coordinates.size())
-            throw new ArithmeticException("vectors must have same dimension");
+        if (coordinates.size() != that.coordinates.size()) {
+            throw new ArithmeticException("this and that must have the same dimension. this: " + this + ", that: " +
+                    that);
+        }
         return Rational.sum(zipWith(Rational::multiply, coordinates, that.coordinates));
     }
 
     /**
      * Determines whether the angle between {@code this} and {@code that} is less than, equal to, or greater than a
-     * right angle. For the purposes of this method, zero vectors are considered to be at a right angle to any other
-     * vector.
+     * right angle. Zero vectors are a right angle to any other vector.
      *
      * <ul>
      *  <li>{@code this} may be any {@code RationalVector}.</li>
@@ -514,7 +515,12 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
      * obtuse ({@code GT}).
      */
     public @NotNull Ordering rightAngleCompare(@NotNull RationalVector that) {
-        return Ordering.compare(dot(that), Rational.ZERO).invert();
+        if (coordinates.size() != that.coordinates.size()) {
+            throw new ArithmeticException("this and that must have the same dimension. this: " + this + ", that: " +
+                    that);
+        }
+        List<Rational> products = toList(zipWith(Rational::multiply, coordinates, that.coordinates));
+        return Ordering.fromInt(-Rational.sumSign(products));
     }
 
     /**

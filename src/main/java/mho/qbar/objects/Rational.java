@@ -1695,7 +1695,41 @@ public final class Rational implements Comparable<Rational> {
             case 1:
                 return xs.get(0).signum();
             default:
-                return Integer.signum(sum(tail(xs)).compareTo(head(xs).negate()));
+                List<Rational> positives = new ArrayList<>();
+                List<Rational> negatives = new ArrayList<>();
+                for (Rational r : xs) {
+                    int signum = r.signum();
+                    if (signum == 1) {
+                        positives.add(r);
+                    } else if (signum == -1) {
+                        negatives.add(r);
+                    }
+                }
+                int positiveSize = positives.size();
+                int negativeSize = negatives.size();
+                if (positiveSize == 0 && negativeSize == 0) {
+                    return 0;
+                } else if (positiveSize == 0) {
+                    return -1;
+                } else if (negativeSize == 0) {
+                    return 1;
+                } else if (positiveSize < negativeSize) {
+                    Rational positiveSum = sum(positives).negate();
+                    Rational negativeSum = Rational.ZERO;
+                    for (Rational negative : negatives) {
+                        negativeSum = negativeSum.add(negative);
+                        if (lt(negativeSum, positiveSum)) return -1;
+                    }
+                    return negativeSum.equals(positiveSum) ? 0 : 1;
+                } else {
+                    Rational negativeSum = sum(negatives).negate();
+                    Rational positiveSum = Rational.ZERO;
+                    for (Rational positive : positives) {
+                        positiveSum = positiveSum.add(positive);
+                        if (gt(positiveSum, negativeSum)) return 1;
+                    }
+                    return negativeSum.equals(positiveSum) ? 0 : -1;
+                }
         }
     }
 

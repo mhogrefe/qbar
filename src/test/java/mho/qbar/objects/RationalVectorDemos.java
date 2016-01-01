@@ -1,11 +1,9 @@
 package mho.qbar.objects;
 
-import mho.qbar.iterableProviders.QBarExhaustiveProvider;
 import mho.qbar.testing.QBarDemos;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
-import org.junit.Assert;
 
 import java.math.BigInteger;
 import java.util.List;
@@ -206,30 +204,32 @@ public class RationalVectorDemos extends QBarDemos {
     }
 
     private void demoDot() {
-        Iterable<Pair<RationalVector, RationalVector>> ps;
-        if (P instanceof QBarExhaustiveProvider) {
-            ps = P.dependentPairs(P.rationalVectors(), v -> P.rationalVectors(v.dimension()));
-        } else {
-            ps = P.dependentPairs(
-                    P.withScale(8).rationalVectors(),
-                    v -> P.withScale(8).rationalVectors(v.dimension())
-            );
-        }
+        Iterable<Pair<RationalVector, RationalVector>> ps = P.withElement(
+                new Pair<>(ZERO_DIMENSIONAL, ZERO_DIMENSIONAL),
+                map(
+                        p -> p.b,
+                        P.dependentPairsInfiniteLogarithmicOrder(
+                                P.withScale(4).positiveIntegersGeometric(),
+                                i -> P.pairs(P.rationalVectors(i))
+                        )
+                )
+        );
         for (Pair<RationalVector, RationalVector> p : take(LIMIT, ps)) {
-            System.out.println("dot(" + p.a + ", " + p.b + ") = " + p.a.dot(p.b));
+            System.out.println(p.a + " ⋅ " + p.b + " = " + p.a.dot(p.b));
         }
     }
 
     private void demoRightAngleCompare() {
-        Iterable<Pair<RationalVector, RationalVector>> ps;
-        if (P instanceof QBarExhaustiveProvider) {
-            ps = P.dependentPairs(P.rationalVectors(), v -> P.rationalVectors(v.dimension()));
-        } else {
-            ps = P.dependentPairs(
-                    P.withScale(8).rationalVectors(),
-                    v -> P.withScale(8).rationalVectors(v.dimension())
-            );
-        }
+        Iterable<Pair<RationalVector, RationalVector>> ps = P.withElement(
+                new Pair<>(ZERO_DIMENSIONAL, ZERO_DIMENSIONAL),
+                map(
+                        p -> p.b,
+                        P.dependentPairsInfiniteLogarithmicOrder(
+                                P.withScale(4).positiveIntegersGeometric(),
+                                i -> P.pairs(P.rationalVectors(i))
+                        )
+                )
+        );
         for (Pair<RationalVector, RationalVector> p : take(LIMIT, ps)) {
             String angleType;
             switch (p.a.rightAngleCompare(p.b)) {
@@ -243,8 +243,7 @@ public class RationalVectorDemos extends QBarDemos {
                     angleType = "an obtuse";
                     break;
                 default:
-                    Assert.fail();
-                    return;
+                    throw new IllegalStateException("unreachable");
             }
             System.out.println(p.a + " and " + p.b + " make " + angleType + " angle");
         }
