@@ -525,16 +525,20 @@ public class RationalVectorTest {
         squaredLength_helper("[1/2, 4, -4]", "129/4");
     }
 
+    private static void cancelDenominators_helper(@NotNull String input, @NotNull String output) {
+        aeq(read(input).get().cancelDenominators(), output);
+    }
+
     @Test
     public void testCancelDenominators() {
-        assertTrue(ZERO_DIMENSIONAL.cancelDenominators() == ZERO_DIMENSIONAL);
-        aeq(read("[0]").get().cancelDenominators(), "[0]");
-        aeq(read("[0, 0]").get().cancelDenominators(), "[0, 0]");
-        aeq(read("[2/3]").get().cancelDenominators(), "[1]");
-        aeq(read("[-2/3]").get().cancelDenominators(), "[-1]");
-        aeq(read("[1, -2/3]").get().cancelDenominators(), "[3, -2]");
-        aeq(read("[4, -4, 5/12, 0, 1]").get().cancelDenominators(), "[48, -48, 5, 0, 12]");
-        aeq(read("[1, 1/2, 1/3, 1/4, 1/5]").get().cancelDenominators(), "[60, 30, 20, 15, 12]");
+        cancelDenominators_helper("[]", "[]");
+        cancelDenominators_helper("[0]", "[0]");
+        cancelDenominators_helper("[0, 0]", "[0, 0]");
+        cancelDenominators_helper("[2/3]", "[1]");
+        cancelDenominators_helper("[-2/3]", "[-1]");
+        cancelDenominators_helper("[1, -2/3]", "[3, -2]");
+        cancelDenominators_helper("[4, -4, 5/12, 0, 1]", "[48, -48, 5, 0, 12]");
+        cancelDenominators_helper("[1, 1/2, 1/3, 1/4, 1/5]", "[60, 30, 20, 15, 12]");
     }
 
     @Test

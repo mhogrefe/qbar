@@ -1123,17 +1123,14 @@ public class RationalVectorProperties extends QBarTestProperties {
     }
 
     private void propertiesCancelDenominators() {
-        initialize("");
-        System.out.println("\t\ttesting cancelDenominators() properties...");
-
+        initialize("cancelDenominators()");
         for (RationalVector v : take(LIMIT, P.rationalVectors())) {
             RationalVector canceled = v.cancelDenominators();
             canceled.validate();
-
             assertTrue(v, all(r -> r.getDenominator().equals(BigInteger.ONE), canceled));
             BigInteger gcd = foldl((x, y) -> x.gcd(y.getNumerator()), BigInteger.ZERO, canceled);
             assertTrue(v, gcd.equals(BigInteger.ZERO) || gcd.equals(BigInteger.ONE));
-            assertEquals(v, canceled.cancelDenominators(), canceled);
+            idempotent(RationalVector::cancelDenominators, v);
             assertEquals(v, canceled.dimension(), v.dimension());
             assertTrue(v, equal(map(Rational::signum, v), map(Rational::signum, canceled)));
             assertTrue(
@@ -1157,19 +1154,13 @@ public class RationalVectorProperties extends QBarTestProperties {
             assertTrue(r, canceled == Rational.ZERO || canceled == Rational.ONE);
         }
 
-        Iterable<Integer> is;
-        if (P instanceof QBarExhaustiveProvider) {
-            is = P.naturalIntegers();
-        } else {
-            is = P.withScale(20).naturalIntegersGeometric();
-        }
-        for (int i : take(LIMIT, is)) {
+        for (int i : take(LIMIT, P.naturalIntegersGeometric())) {
             RationalVector zero = zero(i);
             assertEquals(i, zero.cancelDenominators(), zero);
         }
 
-        for (Pair<Integer, Integer> p : take(LIMIT, filter(q -> q.a > q.b, P.pairs(is)))) {
-            RationalVector standard = standard(p.a, p.b);
+        for (Pair<Integer, Integer> p : take(LIMIT, P.subsetPairs(P.naturalIntegersGeometric()))) {
+            RationalVector standard = standard(p.b, p.a);
             assertEquals(p, standard.cancelDenominators(), standard);
         }
     }
