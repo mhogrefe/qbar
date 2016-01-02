@@ -1,6 +1,7 @@
 package mho.qbar.objects;
 
 import mho.wheels.io.Readers;
+import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
@@ -617,32 +618,49 @@ public class RationalVectorTest {
         testCompareToHelper(readRationalVectorList("[[], [1/2], [5/3, -1/4, 23], [5/3, 1/4, 23]]"));
     }
 
+    private static void read_helper(@NotNull String input) {
+        aeq(read(input).get(), input);
+    }
+
+    private static void read_fail_helper(@NotNull String input) {
+        assertFalse(read(input).isPresent());
+    }
+
     @Test
     public void testRead() {
-        assertTrue(read("[]").get() == ZERO_DIMENSIONAL);
-        aeq(read("[1/2]").get(), "[1/2]");
-        aeq(read("[0, -23/4, 7/8]").get(), "[0, -23/4, 7/8]");
-        assertFalse(read("").isPresent());
-        assertFalse(read("[ 1/2]").isPresent());
-        assertFalse(read("[1/3, 2/4]").isPresent());
-        assertFalse(read("[1/3, 2/0]").isPresent());
-        assertFalse(read("hello").isPresent());
-        assertFalse(read("][").isPresent());
-        assertFalse(read("1/2, 2/3").isPresent());
-        assertFalse(read("vfbdb ds").isPresent());
+        read_helper("[]");
+        read_helper("[1/2]");
+        read_helper("[0, -23/4, 7/8]");
+        read_fail_helper("");
+        read_fail_helper("[ 1/2]");
+        read_fail_helper("[1/3, 2/4]");
+        read_fail_helper("[1/3, 2/0]");
+        read_fail_helper("hello");
+        read_fail_helper("][");
+        read_fail_helper("1/2, 2/3");
+        read_fail_helper("vfbdb ds");
+    }
+
+    private static void findIn_helper(@NotNull String input, @NotNull String output, int index) {
+        Pair<RationalVector, Integer> result = findIn(input).get();
+        aeq(result.a, output);
+        aeq(result.b, index);
+    }
+
+    private static void findIn_fail_helper(@NotNull String input) {
+        assertFalse(findIn(input).isPresent());
     }
 
     @Test
     public void testFindIn() {
-        aeq(findIn("fr24rev[]evfre").get(), "([], 7)");
-        assertTrue(findIn("fr24rev[]evfre").get().a == ZERO_DIMENSIONAL);
-        aeq(findIn("]]][[3/4, 45/7][]dsvdf").get(), "([3/4, 45/7], 4)");
-        aeq(findIn("]]][[3/4, 45/0][]dsvdf").get(), "([], 15)");
-        aeq(findIn("]]][[3/4, 45/3][]dsvdf").get(), "([], 15)");
-        assertFalse(findIn("").isPresent());
-        assertFalse(findIn("]]][[3/4, 45/0]dsvdf").isPresent());
-        assertFalse(findIn("]]][[3/4, 2/4]dsvdf").isPresent());
-        assertFalse(findIn("hello").isPresent());
+        findIn_helper("fr24rev[]evfre", "[]", 7);
+        findIn_helper("]]][[3/4, 45/7][]dsvdf", "[3/4, 45/7]", 4);
+        findIn_helper("]]][[3/4, 45/0][]dsvdf", "[]", 15);
+        findIn_helper("]]][[3/4, 45/3][]dsvdf", "[]", 15);
+        findIn_fail_helper("");
+        findIn_fail_helper("]]][[3/4, 45/0]dsvdf");
+        findIn_fail_helper("]]][[3/4, 2/4]dsvdf");
+        findIn_fail_helper("hello");
     }
 
     private static @NotNull List<Rational> readRationalList(@NotNull String s) {

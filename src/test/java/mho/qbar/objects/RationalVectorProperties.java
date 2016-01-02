@@ -17,7 +17,6 @@ import static mho.qbar.objects.RationalVector.*;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.ordering.Ordering.compare;
 import static mho.wheels.testing.Testing.*;
-import static mho.wheels.testing.Testing.propertiesFindInHelper;
 
 public class RationalVectorProperties extends QBarTestProperties {
     private static final @NotNull String RATIONAL_VECTOR_CHARS = " ,-/0123456789[]";
@@ -1172,7 +1171,7 @@ public class RationalVectorProperties extends QBarTestProperties {
             v.pivot();
         }
 
-        for (RationalVector v : take(LIMIT, filter(u -> !u.isZero(), P.rationalVectors()))) {
+        for (RationalVector v : take(LIMIT, filterInfinite(u -> !u.isZero(), P.rationalVectors()))) {
             Rational pivot = v.pivot().get();
             assertTrue(v, pivot != Rational.ZERO);
             assertTrue(v, elem(pivot, v));
@@ -1247,26 +1246,20 @@ public class RationalVectorProperties extends QBarTestProperties {
     }
 
     private void propertiesEquals() {
-        initialize("");
-        System.out.println("\t\ttesting equals(Object) properties...");
-
+        initialize("equals(Object)");
         QBarTesting.propertiesEqualsHelper(LIMIT, P, QBarIterableProvider::rationalVectors);
     }
 
     private void propertiesHashCode() {
-        initialize("");
-        System.out.println("\t\ttesting hashCode() properties...");
-
+        initialize("hashCode()");
         QBarTesting.propertiesHashCodeHelper(LIMIT, P, QBarIterableProvider::rationalVectors);
     }
 
     private void propertiesCompareTo() {
-        initialize("");
-        System.out.println("\t\ttesting compareTo(RationalVector) properties...");
-
+        initialize("compareTo(RationalVector)");
         QBarTesting.propertiesCompareToHelper(LIMIT, P, QBarIterableProvider::rationalVectors);
 
-        Iterable<Pair<RationalVector, RationalVector>> ps = filter(
+        Iterable<Pair<RationalVector, RationalVector>> ps = filterInfinite(
                 p -> p.a.dimension() != p.b.dimension(),
                 P.pairs(P.rationalVectors())
         );
@@ -1276,23 +1269,20 @@ public class RationalVectorProperties extends QBarTestProperties {
     }
 
     private void propertiesRead() {
-        initialize("");
-        System.out.println("\t\ttesting read(String) properties...");
-
-        for (String s : take(LIMIT, P.strings())) {
-            read(s);
-        }
-
-        for (RationalVector v : take(LIMIT, P.rationalVectors())) {
-            Optional<RationalVector> ov = read(v.toString());
-            assertEquals(v, ov.get(), v);
-        }
+        initialize("read(String)");
+        QBarTesting.propertiesReadHelper(
+                LIMIT,
+                P,
+                RATIONAL_VECTOR_CHARS,
+                P.rationalVectors(),
+                RationalVector::read,
+                RationalVector::validate,
+                false
+        );
     }
 
     private void propertiesFindIn() {
-        initialize("");
-        System.out.println("\t\ttesting findIn(String) properties...");
-
+        initialize("findIn(String)");
         propertiesFindInHelper(
                 LIMIT,
                 P.getWheelsProvider(),
@@ -1304,15 +1294,7 @@ public class RationalVectorProperties extends QBarTestProperties {
     }
 
     private void propertiesToString() {
-        initialize("");
-        System.out.println("\t\ttesting toString() properties...");
-
-        for (RationalVector v : take(LIMIT, P.rationalVectors())) {
-            String s = v.toString();
-            assertTrue(v, isSubsetOf(s, RATIONAL_VECTOR_CHARS));
-            Optional<RationalVector> readV = read(s);
-            assertTrue(v, readV.isPresent());
-            assertEquals(v, readV.get(), v);
-        }
+        initialize("toString()");
+        propertiesToStringHelper(LIMIT, RATIONAL_VECTOR_CHARS, P.rationalVectors(), RationalVector::read);
     }
 }

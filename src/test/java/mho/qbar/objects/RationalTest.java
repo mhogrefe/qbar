@@ -4192,8 +4192,10 @@ public class RationalTest {
         read_fail_helper("4/1");
     }
 
-    private static void findIn_helper(@NotNull String input, @NotNull String output) {
-        aeq(findIn(input).get(), output);
+    private static void findIn_helper(@NotNull String input, @NotNull String output, int index) {
+        Pair<Rational, Integer> result = findIn(input).get();
+        aeq(result.a, output);
+        aeq(result.b, index);
     }
 
     private static void findIn_fail_helper(@NotNull String input) {
@@ -4202,15 +4204,15 @@ public class RationalTest {
 
     @Test
     public void testFindIn() {
-        findIn_helper("abcd1234xyz", "(1234, 4)");
-        findIn_helper("0123", "(0, 0)");
-        findIn_helper("1-23", "(1, 0)");
-        findIn_helper("a-23", "(-23, 1)");
-        findIn_helper("---34--4", "(-34, 2)");
-        findIn_helper(" 20.1 ", "(20, 1)");
-        findIn_helper("ads4/3d", "(4/3, 3)");
-        findIn_helper("101/101", "(101/10, 0)");
-        findIn_helper("5/0", "(5, 0)");
+        findIn_helper("abcd1234xyz", "1234", 4);
+        findIn_helper("0123", "0", 0);
+        findIn_helper("1-23", "1", 0);
+        findIn_helper("a-23", "-23", 1);
+        findIn_helper("---34--4", "-34", 2);
+        findIn_helper(" 20.1 ", "20", 1);
+        findIn_helper("ads4/3d", "4/3", 3);
+        findIn_helper("101/101", "101/10", 0);
+        findIn_helper("5/0", "5", 0);
         findIn_fail_helper("");
         findIn_fail_helper("hello");
         findIn_fail_helper("vdfsvfbf");
