@@ -2025,9 +2025,7 @@ public class QBarRandomProviderTest {
         aeq(topSampleCount(DEFAULT_TOP_COUNT, sample), topSampleCount);
         aeq(meanOfIntegers(toList(map(m -> m.height() * m.width(), sample))), meanElementCount);
         aeq(
-                meanOfIntegers(
-                        toList(concatMap(m -> concatMap(v -> map(Rational::bitLength, v), m.rowIterable()), sample))
-                ),
+                meanOfIntegers(toList(concatMap(m -> concatMap(v -> map(Rational::bitLength, v), m.rows()), sample))),
                 meanCoordinateBitSize
         );
         P.reset();

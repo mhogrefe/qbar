@@ -70,7 +70,7 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
      *
      * @return an {@code Iterable} over this {@code RationalMatrix}'s rows
      */
-    public @NotNull Iterable<RationalVector> rowIterable() {
+    public @NotNull Iterable<RationalVector> rows() {
         return new NoRemoveIterable<>(rows);
     }
 
@@ -86,7 +86,7 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
      *
      * @return an {@code Iterable} over this {@code RationalMatrix}'s columns
      */
-    public @NotNull Iterable<RationalVector> columnIterable() {
+    public @NotNull Iterable<RationalVector> columns() {
         if (rows.isEmpty()) {
             return replicate(width, RationalVector.ZERO_DIMENSIONAL);
         } else {
