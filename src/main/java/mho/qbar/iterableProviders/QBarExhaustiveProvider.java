@@ -11,7 +11,6 @@ import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.ordering.Ordering.le;
@@ -305,15 +304,53 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
         return reducedRationalVectors(listsAtLeast(minDimension, bigIntegers()));
     }
 
+    /**
+     * An {@code Iterable} that generates all {@code RationalMatrix}es with a given height and width.
+     *
+     * <ul>
+     *  <li>{@code height} cannot be negative.</li>
+     *  <li>{@code width} cannot be negative.</li>
+     *  <li>The result is a non-removable {@code Iterable} containing {@code RationalMatrix}es.</li>
+     * </ul>
+     *
+     * Length is 1 if either {@code height} or {@code width} are 0, infinite otherwise
+     *
+     * @param height the height (number of rows) of the generated {@code RationalMatrix}es
+     * @param width the width (number of columns) of the generated {@code RationalMatrix}es
+     * @return all {@code RationalMatrix}es with height {@code height} and width {@code width}
+     */
     @Override
     public @NotNull Iterable<RationalMatrix> rationalMatrices(int height, int width) {
         if (height == 0 || width == 0) return Collections.singletonList(RationalMatrix.zero(height, width));
-        return map(RationalMatrix::fromColumns, lists(width, rationalVectors(height)));
+        return map(RationalMatrix::fromRows, lists(height, rationalVectors(width)));
     }
 
+    /**
+     * An {@code Iterable} that generates all {@code RationalMatrix}.
+     *
+     * <ul>
+     *  <li>{@code height} cannot be negative.</li>
+     *  <li>{@code width} cannot be negative.</li>
+     *  <li>The result is a non-removable {@code Iterable} containing {@code RationalMatrix}es.</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
     @Override
     public @NotNull Iterable<RationalMatrix> rationalMatrices() {
-        return null;
+        return chooseLogarithmicOrder(
+                map(
+                        p -> RationalMatrix.fromRows(p.b),
+                        dependentPairsInfiniteSquareRootOrder(
+                                pairs(positiveIntegers()),
+                                p -> lists(p.a, rationalVectors(p.b))
+                        )
+                ),
+                choose(
+                        map(i -> RationalMatrix.zero(0, i), naturalIntegers()),
+                        map(i -> RationalMatrix.zero(i, 0), positiveIntegers())
+                )
+        );
     }
 
     @Override

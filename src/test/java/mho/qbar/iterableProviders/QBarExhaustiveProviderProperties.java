@@ -2,6 +2,7 @@ package mho.qbar.iterableProviders;
 
 import mho.qbar.objects.Interval;
 import mho.qbar.objects.Rational;
+import mho.qbar.objects.RationalMatrix;
 import mho.qbar.objects.RationalVector;
 import mho.qbar.testing.QBarTestProperties;
 import mho.wheels.structures.Pair;
@@ -31,6 +32,7 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
         propertiesIntervals();
         propertiesRationalVectors();
         propertiesReducedRationalVectors();
+        propertiesRationalMatrices();
     }
 
     @Override
@@ -44,6 +46,7 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
         propertiesRationalVectorsAtLeast();
         propertiesReducedRationalVectors_int();
         propertiesReducedRationalVectorsAtLeast();
+        propertiesRationalMatrices_int_int();
     }
 
     private static <T> void test_helper(
@@ -249,5 +252,34 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
                 fail(i);
             } catch (IllegalArgumentException ignored) {}
         }
+    }
+
+    private void propertiesRationalMatrices_int_int() {
+        initialize("rationalMatrices(int, int)");
+        for (Pair<Integer, Integer> p : take(SMALL_LIMIT, P.pairs(P.naturalIntegersGeometric()))) {
+            Iterable<RationalMatrix> ms = QEP.rationalMatrices(p.a, p.b);
+            simpleTest(p, ms, n -> n.height() == p.a && n.width() == p.b);
+            take(TINY_LIMIT, ms).forEach(RationalMatrix::validate);
+        }
+
+        for (Pair<Integer, Integer> p : take(LIMIT, P.pairs(P.negativeIntegers(), P.positiveIntegers()))) {
+            try {
+                QEP.rationalMatrices(p.a, p.b);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
+        }
+
+        for (Pair<Integer, Integer> p : take(LIMIT, P.pairs(P.positiveIntegers(), P.negativeIntegers()))) {
+            try {
+                QEP.rationalMatrices(p.a, p.b);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesRationalMatrices() {
+        initializeConstant("rationalMatrices()");
+        biggerTest(QEP, QEP.rationalMatrices(), m -> true);
+        take(TINY_LIMIT, QEP.rationalMatrices()).forEach(RationalMatrix::validate);
     }
 }

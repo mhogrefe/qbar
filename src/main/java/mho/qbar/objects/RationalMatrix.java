@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static mho.wheels.iterables.IterableUtils.*;
+import static mho.wheels.testing.Testing.assertTrue;
 
 /**
  * <p>A matrix with {@link Rational} elements. The number of rows is the height, and the number of rows is the width.
@@ -35,7 +36,7 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
 
     /**
      * The matrix's width. The width can usually be inferred from {@code rows}, except when the height is 0, in which
-     * case {@code rows} is empty.
+     * case {@code rows} is empty and this field is the only way to determine the width.
      */
     private final int width;
 
@@ -391,5 +392,13 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
      */
     public @NotNull String toString() {
         return rows.isEmpty() ? "[]#" + width : rows.toString();
+    }
+
+    /**
+     * Ensures that {@code this} is valid. Must return true for any {@code RationalMatrix} used outside this class.
+     */
+    public void validate() {
+        assertTrue(this, width >= 0);
+        assertTrue(this, all(r -> r.dimension() == width, rows));
     }
 }

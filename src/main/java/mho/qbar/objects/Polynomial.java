@@ -29,7 +29,7 @@ import static org.junit.Assert.assertTrue;
  */
 public final class Polynomial implements
         Comparable<Polynomial>,
-        Function<BigInteger, BigInteger>,
+        Function<Rational, Rational>,
         Iterable<BigInteger> {
     /**
      * 0
@@ -99,7 +99,6 @@ public final class Polynomial implements
      * @param x the argument
      * @return {@code this}({@code x})
      */
-    @Override
     public @NotNull BigInteger apply(@NotNull BigInteger x) {
         return foldr((c, y) -> y.multiply(x).add(c), BigInteger.ZERO, coefficients);
     }
@@ -115,6 +114,7 @@ public final class Polynomial implements
      * @param x the argument
      * @return {@code this}({@code x})
      */
+    @Override
     public @NotNull Rational apply(@NotNull Rational x) {
         return foldr((c, y) -> x.multiply(y).add(Rational.of(c)), Rational.ZERO, coefficients);
     }
