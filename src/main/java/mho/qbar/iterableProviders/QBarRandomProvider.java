@@ -2,6 +2,8 @@ package mho.qbar.iterableProviders;
 
 import mho.qbar.objects.*;
 import mho.wheels.iterables.RandomProvider;
+import mho.wheels.math.MathUtils;
+import mho.wheels.numberUtils.IntegerUtils;
 import mho.wheels.ordering.Ordering;
 import org.jetbrains.annotations.NotNull;
 
@@ -531,7 +533,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
      *
      * <ul>
      *  <li>{@code this} must have a {@code scale} of at least 3 and a positive {@code secondaryScale}.</li>
-     *  <li>The result is an infinite, non-removable {@code Iterable} containing {@code RationalVectors}.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing {@code RationalVector}s.</li>
      * </ul>
      *
      * Length is infinite
@@ -555,7 +557,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
      * <ul>
      *  <li>{@code this} must have a {@code scale} of at least 3 and a {@code secondaryScale} greater than
      *  {@code minDimension}.</li>
-     *  <li>The result is an infinite, non-removable {@code Iterable} containing {@code RationalVectors}.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing {@code RationalVector}s.</li>
      * </ul>
      *
      * Length is infinite
@@ -580,7 +582,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
      *
      * <ul>
      *  <li>{@code this} must have a positive {@code scale}.</li>
-     *  <li>The result is an infinite, non-removable {@code Iterable} containing reduced {@code RationalVectors}.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing reduced {@code RationalVector}s.</li>
      * </ul>
      *
      * Length is infinite
@@ -600,7 +602,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
      *
      * <ul>
      *  <li>{@code this} must have a positive {@code scale} and {@code secondaryScale}.</li>
-     *  <li>The result is an infinite, non-removable {@code Iterable} containing reduced {@code RationalVectors}.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing reduced {@code RationalVector}s.</li>
      * </ul>
      *
      * Length is infinite
@@ -641,15 +643,75 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
         return reducedRationalVectors(withScale(getSecondaryScale()).listsAtLeast(minDimension, bigIntegers()));
     }
 
+    /**
+     * An {@code Iterable} that generates all {@code RationalMatrix}es with a given height and width. Each coordinate's
+     * bit size is chosen from a geometric distribution with mean approximately {@code scale}. Does not support
+     * removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a {@code scale} of at least 3.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing {@code RationalMatrix}es.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param height the height (number of rows) of the generated {@code RationalMatrix}es
+     * @param width the width (number of columns) of the generated {@code RationalMatrix}es
+     * @return {@code RationalMatrix}es with height {@code height} and width {@code width}
+     */
     @Override
     public @NotNull Iterable<RationalMatrix> rationalMatrices(int height, int width) {
-        if (height == 0 || width == 0) return repeat(RationalMatrix.zero(height, width));
-        return map(RationalMatrix::fromRows, lists(height, rationalVectors(width)));
+        if (height == 0 || width == 0) {
+            int scale = getScale();
+            if (scale < 3) {
+                throw new IllegalStateException("this must have a scale of at least 3. Invalid scale: " + scale);
+            }
+            return repeat(RationalMatrix.zero(height, width));
+        } else {
+            return map(RationalMatrix::fromRows, lists(height, rationalVectors(width)));
+        }
     }
 
+    /**
+     * An {@code Iterable} that generates all {@code RationalMatrix}es with a given height and width. Each
+     * {@code RationalMatrix}'s element count is chosen from a geometric distribution with mean approximately
+     * {@code secondaryScale}, and each coordinate's bit size is chosen from a geometric distribution with mean
+     * approximately {@code scale}. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a {@code scale} of at least 3 and a {@code secondaryScale} of at least 2.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing {@code RationalMatrix}es.</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
     @Override
     public @NotNull Iterable<RationalMatrix> rationalMatrices() {
-        return null;
+        int scale = getScale();
+        if (scale < 3) {
+            throw new IllegalStateException("this must have a scale of at least 3. Invalid scale: " + scale);
+        }
+        int secondaryScale = getSecondaryScale();
+        if (secondaryScale < 2) {
+            throw new IllegalStateException("this must have a secondaryScale of at least 2. Invalid secondaryScale: " +
+                    secondaryScale);
+        }
+        QBarRandomProvider dimensionProvider = (QBarRandomProvider) withScale(
+                MathUtils.ceilingRoot(IntegerUtils.TWO, BigInteger.valueOf(secondaryScale)).intValueExact()
+        );
+        return chooseLogarithmicOrder(
+                map(
+                        p -> RationalMatrix.fromRows(p.b),
+                        dependentPairsInfiniteSquareRootOrder(
+                                pairs(dimensionProvider.positiveIntegersGeometric()),
+                                p -> lists(p.a, rationalVectors(p.b))
+                        )
+                ),
+                choose(
+                        map(i -> RationalMatrix.zero(0, i), dimensionProvider.naturalIntegersGeometric()),
+                        map(i -> RationalMatrix.zero(i, 0), dimensionProvider.positiveIntegersGeometric())
+                )
+        );
     }
 
     @Override

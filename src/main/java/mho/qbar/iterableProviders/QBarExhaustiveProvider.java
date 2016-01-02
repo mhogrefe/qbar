@@ -321,8 +321,11 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
      */
     @Override
     public @NotNull Iterable<RationalMatrix> rationalMatrices(int height, int width) {
-        if (height == 0 || width == 0) return Collections.singletonList(RationalMatrix.zero(height, width));
-        return map(RationalMatrix::fromRows, lists(height, rationalVectors(width)));
+        if (height == 0 || width == 0) {
+            return Collections.singletonList(RationalMatrix.zero(height, width));
+        } else {
+            return map(RationalMatrix::fromRows, lists(height, rationalVectors(width)));
+        }
     }
 
     /**

@@ -2,6 +2,7 @@ package mho.qbar.iterableProviders;
 
 import mho.qbar.objects.Interval;
 import mho.qbar.objects.Rational;
+import mho.qbar.objects.RationalMatrix;
 import mho.qbar.objects.RationalVector;
 import mho.qbar.testing.QBarTestProperties;
 import mho.wheels.structures.Pair;
@@ -39,6 +40,8 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         propertiesReducedRationalVectors_int();
         propertiesReducedRationalVectors();
         propertiesReducedRationalVectorsAtLeast();
+        propertiesRationalMatrices_int_int();
+        propertiesRationalMatrices();
     }
 
     private static <T> void simpleTestWithNulls(
@@ -456,17 +459,18 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
             simpleTest(rp, vs, v -> true);
         }
 
-        for (QBarRandomProvider rp : take(LIMIT, filterInfinite(s -> s.getScale() < 3, P.qbarRandomProviders()))) {
+        Iterable<QBarRandomProvider> rpsFail = filterInfinite(
+                rp -> rp.getScale() < 3 && rp.getSecondaryScale() > 0,
+                P.qbarRandomProviders()
+        );
+        for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
             try {
                 rp.rationalVectors();
                 fail(rp);
             } catch (IllegalStateException ignored) {}
         }
 
-        Iterable<QBarRandomProvider> rpsFail = filterInfinite(
-                rp -> rp.getSecondaryScale() <= 0,
-                P.qbarRandomProviders()
-        );
+        rpsFail = filterInfinite(rp -> rp.getScale() >= 3 && rp.getSecondaryScale() <= 0, P.qbarRandomProviders());
         for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
             try {
                 rp.rationalVectors();
@@ -583,17 +587,18 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
             simpleTest(rp, vs, RationalVector::isReduced);
         }
 
-        for (QBarRandomProvider rp : take(LIMIT, filterInfinite(s -> s.getScale() <= 0, P.qbarRandomProviders()))) {
+        Iterable<QBarRandomProvider> rpsFail = filterInfinite(
+                rp -> rp.getScale() <= 0 && rp.getSecondaryScale() > 0,
+                P.qbarRandomProviders()
+        );
+        for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
             try {
                 rp.reducedRationalVectors();
                 fail(rp);
             } catch (IllegalStateException ignored) {}
         }
 
-        Iterable<QBarRandomProvider> rpsFail = filterInfinite(
-                rp -> rp.getSecondaryScale() <= 0,
-                P.qbarRandomProviders()
-        );
+        rpsFail = filterInfinite(rp -> rp.getScale() > 0 && rp.getSecondaryScale() <= 0, P.qbarRandomProviders());
         for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
             try {
                 rp.reducedRationalVectors();
@@ -658,6 +663,93 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
                 p.a.reducedRationalVectorsAtLeast(p.b);
                 fail(p);
             } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesRationalMatrices_int_int() {
+        initialize("rationalMatrices(int, int)");
+        Iterable<Triple<QBarRandomProvider, Integer, Integer>> ts = P.triples(
+                filterInfinite(rp -> rp.getScale() >= 3, P.withScale(4).qbarRandomProvidersDefaultSecondaryScale()),
+                P.withScale(4).naturalIntegersGeometric(),
+                P.withScale(4).naturalIntegersGeometric()
+        );
+        for (Triple<QBarRandomProvider, Integer, Integer> t : take(LIMIT, ts)) {
+            Iterable<RationalMatrix> ms = t.a.rationalMatrices(t.b, t.c);
+            t.a.reset();
+            take(TINY_LIMIT, ms).forEach(RationalMatrix::validate);
+            simpleTest(t.a, ms, m -> m.height() == t.b && m.width() == t.c);
+        }
+
+        Iterable<Triple<QBarRandomProvider, Integer, Integer>> tsFail = P.triples(
+                filterInfinite(rp -> rp.getScale() < 3, P.withScale(4).qbarRandomProvidersDefaultSecondaryScale()),
+                P.withScale(4).naturalIntegersGeometric(),
+                P.withScale(4).naturalIntegersGeometric()
+        );
+        for (Triple<QBarRandomProvider, Integer, Integer> t : take(LIMIT, tsFail)) {
+            try {
+                t.a.rationalMatrices(t.b, t.c);
+                fail(t);
+            } catch (IllegalStateException ignored) {}
+        }
+
+        tsFail = P.triples(
+                filterInfinite(rp -> rp.getScale() >= 3, P.withScale(4).qbarRandomProvidersDefaultSecondaryScale()),
+                P.withScale(4).negativeIntegersGeometric(),
+                P.withScale(4).naturalIntegersGeometric()
+        );
+        for (Triple<QBarRandomProvider, Integer, Integer> t : take(LIMIT, tsFail)) {
+            try {
+                t.a.rationalMatrices(t.b, t.c);
+                fail(t);
+            } catch (IllegalArgumentException ignored) {}
+        }
+
+        tsFail = P.triples(
+                filterInfinite(rp -> rp.getScale() >= 3, P.withScale(4).qbarRandomProvidersDefaultSecondaryScale()),
+                P.withScale(4).naturalIntegersGeometric(),
+                P.withScale(4).negativeIntegersGeometric()
+        );
+        for (Triple<QBarRandomProvider, Integer, Integer> t : take(LIMIT, tsFail)) {
+            try {
+                t.a.rationalMatrices(t.b, t.c);
+                fail(t);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesRationalMatrices() {
+        initialize("rationalMatrices()");
+        Iterable<QBarRandomProvider> rps = filterInfinite(
+                rp -> rp.getScale() >= 3 && rp.getSecondaryScale() >= 2,
+                P.withScale(4).qbarRandomProviders()
+        );
+        for (QBarRandomProvider rp : take(LIMIT, rps)) {
+            Iterable<RationalMatrix> ms = rp.rationalMatrices();
+            rp.reset();
+            take(TINY_LIMIT, ms).forEach(RationalMatrix::validate);
+            simpleTest(rp, ms, m -> true);
+        }
+
+        Iterable<QBarRandomProvider> rpsFail = filterInfinite(
+                rp -> rp.getScale() < 3 && rp.getSecondaryScale() >= 2,
+                P.withScale(4).qbarRandomProviders()
+        );
+        for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
+            try {
+                rp.rationalMatrices();
+                fail(rp);
+            } catch (IllegalStateException ignored) {}
+        }
+
+        rpsFail = filterInfinite(
+                rp -> rp.getScale() >= 3 && rp.getSecondaryScale() < 2,
+                P.withScale(4).qbarRandomProviders()
+        );
+        for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
+            try {
+                rp.rationalMatrices();
+                fail(rp);
+            } catch (IllegalStateException ignored) {}
         }
     }
 }

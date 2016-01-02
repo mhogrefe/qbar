@@ -216,4 +216,26 @@ public class QBarRandomProviderDemos extends QBarDemos {
                     its(p.a.reducedRationalVectorsAtLeast(p.b)));
         }
     }
+
+    private void demoRationalMatrices_int_int() {
+        Iterable<Triple<QBarRandomProvider, Integer, Integer>> ts = P.triples(
+                filterInfinite(rp -> rp.getScale() >= 3, P.withScale(4).qbarRandomProvidersDefaultSecondaryScale()),
+                P.withScale(4).naturalIntegersGeometric(),
+                P.withScale(4).naturalIntegersGeometric()
+        );
+        for (Triple<QBarRandomProvider, Integer, Integer> t : take(SMALL_LIMIT, ts)) {
+            System.out.println("rationalMatrices(" + t.a + ", " + t.b + ", " + t.c + ") = " +
+                    its(t.a.rationalMatrices(t.b, t.c)));
+        }
+    }
+
+    private void demoRationalMatrices() {
+        Iterable<QBarRandomProvider> rps = filterInfinite(
+                rp -> rp.getScale() >= 3 && rp.getSecondaryScale() >= 2,
+                P.withScale(4).qbarRandomProviders()
+        );
+        for (QBarRandomProvider rp : take(MEDIUM_LIMIT, rps)) {
+            System.out.println("rationalMatrices(" + rp + ") = " + its(rp.rationalMatrices()));
+        }
+    }
 }
