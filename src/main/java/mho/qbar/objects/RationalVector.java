@@ -573,6 +573,16 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
         return find(r -> r != Rational.ZERO, coordinates);
     }
 
+    /**
+     * Checks whether this is reduced, <i>i.e.</i> whether the pivot, if it exists, is 1.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalVector}.</li>
+     *  <li>The result may be either {@code boolean}.</li>
+     * </ul>
+     *
+     * @return whether this is reduced (see {@link RationalVector#reduce()})
+     */
     public boolean isReduced() {
         Optional<Rational> pivot = pivot();
         return !pivot.isPresent() || pivot.get() == Rational.ONE;

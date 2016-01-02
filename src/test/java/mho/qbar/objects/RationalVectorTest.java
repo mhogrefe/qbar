@@ -541,27 +541,55 @@ public class RationalVectorTest {
         cancelDenominators_helper("[1, 1/2, 1/3, 1/4, 1/5]", "[60, 30, 20, 15, 12]");
     }
 
+    private static void pivot_helper(@NotNull String input, @NotNull String output) {
+        aeq(read(input).get().pivot().get(), output);
+    }
+
+    private static void pivot_empty_helper(@NotNull String input) {
+        assertFalse(read(input).get().pivot().isPresent());
+    }
+
     @Test
     public void testPivot() {
-        assertFalse(ZERO_DIMENSIONAL.pivot().isPresent());
-        assertFalse(read("[0]").get().pivot().isPresent());
-        assertFalse(read("[0, 0, 0]").get().pivot().isPresent());
-        aeq(read("[2/3]").get().pivot().get(), "2/3");
-        aeq(read("[1, -2/3]").get().pivot().get(), "1");
-        aeq(read("[0, 1, -2/3]").get().pivot().get(), "1");
-        aeq(read("[0, 0, -2/3]").get().pivot().get(), "-2/3");
+        pivot_helper("[2/3]", "2/3");
+        pivot_helper("[1, -2/3]", "1");
+        pivot_helper("[0, 1, -2/3]", "1");
+        pivot_helper("[0, 0, -2/3]", "-2/3");
+        pivot_empty_helper("[]");
+        pivot_empty_helper("[0]");
+        pivot_empty_helper("[0, 0, 0]");
+    }
+
+    private static void isReduced_helper(@NotNull String input, boolean output) {
+        aeq(read(input).get().isReduced(), output);
+    }
+
+    @Test
+    public void testIsReduced() {
+        isReduced_helper("[]", true);
+        isReduced_helper("[0]", true);
+        isReduced_helper("[0, 0, 0]", true);
+        isReduced_helper("[2/3]", false);
+        isReduced_helper("[1, -2/3]", true);
+        isReduced_helper("[-2/3, 1]", false);
+        isReduced_helper("[0, 1, -2/3]", true);
+        isReduced_helper("[0, 0, -2/3]", false);
+    }
+
+    private static void reduce_helper(@NotNull String input, @NotNull String output) {
+        aeq(read(input).get().reduce(), output);
     }
 
     @Test
     public void testReduce() {
-        aeq(ZERO_DIMENSIONAL.reduce(), "[]");
-        aeq(read("[0]").get().reduce(), "[0]");
-        aeq(read("[0, 0, 0]").get().reduce(), "[0, 0, 0]");
-        aeq(read("[2/3]").get().reduce(), "[1]");
-        aeq(read("[1, -2/3]").get().reduce(), "[1, -2/3]");
-        aeq(read("[-2/3, 1]").get().reduce(), "[1, -3/2]");
-        aeq(read("[0, 1, -2/3]").get().reduce(), "[0, 1, -2/3]");
-        aeq(read("[0, 0, -2/3]").get().reduce(), "[0, 0, 1]");
+        reduce_helper("[]", "[]");
+        reduce_helper("[0]", "[0]");
+        reduce_helper("[0, 0, 0]", "[0, 0, 0]");
+        reduce_helper("[2/3]", "[1]");
+        reduce_helper("[1, -2/3]", "[1, -2/3]");
+        reduce_helper("[-2/3, 1]", "[1, -3/2]");
+        reduce_helper("[0, 1, -2/3]", "[0, 1, -2/3]");
+        reduce_helper("[0, 0, -2/3]", "[0, 0, 1]");
     }
 
     @Test

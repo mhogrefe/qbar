@@ -57,7 +57,7 @@ public class RationalVectorDemos extends QBarDemos {
 
     private void demoIsZero() {
         for (RationalVector v : take(LIMIT, P.withScale(4).rationalVectors())) {
-            System.out.println(v + " is " + (v.isZero() ? "" : " not ") + "zero");
+            System.out.println(v + " is " + (v.isZero() ? "" : "not ") + "zero");
         }
     }
 
@@ -264,6 +264,12 @@ public class RationalVectorDemos extends QBarDemos {
     private void demoPivot() {
         for (RationalVector v : take(LIMIT, P.rationalVectors())) {
             System.out.println("pivot(" + v + ") = " + v.pivot());
+        }
+    }
+
+    private void demoIsReduced() {
+        for (RationalVector v : take(LIMIT, P.rationalVectors())) {
+            System.out.println(v + " is " + (v.isReduced() ? "" : "not ") + "reduced");
         }
     }
 

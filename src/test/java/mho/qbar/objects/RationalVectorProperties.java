@@ -1,6 +1,5 @@
 package mho.qbar.objects;
 
-import mho.qbar.iterableProviders.QBarExhaustiveProvider;
 import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.testing.QBarTestProperties;
 import mho.qbar.testing.QBarTesting;
@@ -61,6 +60,8 @@ public class RationalVectorProperties extends QBarTestProperties {
         compareImplementationsSquaredLength();
         propertiesCancelDenominators();
         propertiesPivot();
+        propertiesIsReduced();
+        compareImplementationsIsReduced();
         propertiesReduce();
         propertiesEquals();
         propertiesHashCode();
@@ -1166,39 +1167,49 @@ public class RationalVectorProperties extends QBarTestProperties {
     }
 
     private void propertiesPivot() {
-        initialize("");
-        System.out.println("\t\ttesting pivot() properties...");
-
+        initialize("pivot()");
         for (RationalVector v : take(LIMIT, P.rationalVectors())) {
             v.pivot();
         }
 
-        for (RationalVector v : take(LIMIT, filter(w -> !w.isZero(), P.rationalVectors()))) {
+        for (RationalVector v : take(LIMIT, filter(u -> !u.isZero(), P.rationalVectors()))) {
             Rational pivot = v.pivot().get();
             assertTrue(v, pivot != Rational.ZERO);
             assertTrue(v, elem(pivot, v));
         }
 
-        Iterable<Pair<RationalVector, Rational>> ps = P.pairs(
-                P.rationalVectors(),
-                filter(r -> r != Rational.ZERO, P.rationals())
-        );
-        for (Pair<RationalVector, Rational> p : take(LIMIT, ps)) {
+        for (Pair<RationalVector, Rational> p : take(LIMIT, P.pairs(P.rationalVectors(), P.nonzeroRationals()))) {
             assertEquals(p, p.a.multiply(p.b).pivot(), p.a.pivot().map(r -> r.multiply(p.b)));
         }
     }
 
-    private void propertiesReduce() {
-        initialize("");
-        System.out.println("\t\ttesting reduce() properties...");
+    private static boolean isReduced_simplest(@NotNull RationalVector v) {
+        return v.reduce() == v;
+    }
 
+    private void propertiesIsReduced() {
+        initialize("isReduced()");
+        for (RationalVector v : take(LIMIT, P.rationalVectors())) {
+            assertEquals(v, v.isReduced(), isReduced_simplest(v));
+            assertTrue(v, v.reduce().isReduced());
+        }
+    }
+
+    private void compareImplementationsIsReduced() {
+        Map<String, Function<RationalVector, Boolean>> functions = new LinkedHashMap<>();
+        functions.put("simplest", RationalVectorProperties::isReduced_simplest);
+        functions.put("standard", RationalVector::isReduced);
+        compareImplementations("isReduced()", take(LIMIT, P.rationalVectors()), functions);
+    }
+
+    private void propertiesReduce() {
+        initialize("reduce()");
         for (RationalVector v : take(LIMIT, P.rationalVectors())) {
             RationalVector reduced = v.reduce();
             reduced.validate();
-
             Optional<Rational> pivot = reduced.pivot();
             assertTrue(v, !pivot.isPresent() || pivot.get() == Rational.ONE);
-            assertEquals(v, reduced.reduce(), reduced);
+            idempotent(RationalVector::reduce, v);
             assertEquals(v, reduced.dimension(), v.dimension());
             pivot = v.pivot();
             RationalVector abs = !pivot.isPresent() || pivot.get().signum() != -1 ? v : v.negate();
@@ -1215,11 +1226,7 @@ public class RationalVectorProperties extends QBarTestProperties {
             );
         }
 
-        Iterable<Pair<RationalVector, Rational>> ps = P.pairs(
-                P.rationalVectors(),
-                filter(r -> r != Rational.ZERO, P.rationals())
-        );
-        for (Pair<RationalVector, Rational> p : take(LIMIT, ps)) {
+        for (Pair<RationalVector, Rational> p : take(LIMIT, P.pairs(P.rationalVectors(), P.nonzeroRationals()))) {
             assertEquals(p, p.a.reduce(), p.a.multiply(p.b).reduce());
         }
 
@@ -1228,19 +1235,13 @@ public class RationalVectorProperties extends QBarTestProperties {
             assertTrue(r, reduced == Rational.ZERO || reduced == Rational.ONE);
         }
 
-        Iterable<Integer> is;
-        if (P instanceof QBarExhaustiveProvider) {
-            is = P.naturalIntegers();
-        } else {
-            is = P.withScale(20).naturalIntegersGeometric();
-        }
-        for (int i : take(LIMIT, is)) {
+        for (int i : take(LIMIT, P.naturalIntegersGeometric())) {
             RationalVector zero = zero(i);
             assertEquals(i, zero.reduce(), zero);
         }
 
-        for (Pair<Integer, Integer> p : take(LIMIT, filter(q -> q.a > q.b, P.pairs(is)))) {
-            RationalVector standard = standard(p.a, p.b);
+        for (Pair<Integer, Integer> p : take(LIMIT, P.subsetPairs(P.naturalIntegersGeometric()))) {
+            RationalVector standard = standard(p.b, p.a);
             assertEquals(p, standard.reduce(), standard);
         }
     }

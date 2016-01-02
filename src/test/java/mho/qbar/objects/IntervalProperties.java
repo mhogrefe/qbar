@@ -310,10 +310,7 @@ public class IntervalProperties extends QBarTestProperties {
             assertEquals(
                     as,
                     convexHull_List_Interval_alt(as),
-                    new Pair<>(
-                            c.getLower().isPresent() ? c.getLower().get() : null,
-                            c.getUpper().isPresent() ? c.getUpper().get() : null
-                    )
+                    new Pair<>(c.getLower().orElse(null), c.getUpper().orElse(null))
             );
             c.validate();
         }
@@ -352,10 +349,7 @@ public class IntervalProperties extends QBarTestProperties {
                 "standard",
                 as -> {
                     Interval a = convexHull(as);
-                    return new Pair<>(
-                            a.getLower().isPresent() ? a.getLower().get() : null,
-                            a.getUpper().isPresent() ? a.getUpper().get() : null
-                    );
+                    return new Pair<>(a.getLower().orElse(null), a.getUpper().orElse(null));
                 }
         );
         compareImplementations("convexHull(List<Interval>)", take(LIMIT, P.listsAtLeast(1, P.intervals())), functions);
