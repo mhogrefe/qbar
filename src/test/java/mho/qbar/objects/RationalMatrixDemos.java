@@ -113,6 +113,18 @@ public class RationalMatrixDemos extends QBarDemos {
         }
     }
 
+    private void demoZero() {
+        for (Pair<Integer, Integer> p : take(SMALL_LIMIT, P.pairs(P.withScale(4).naturalIntegersGeometric()))) {
+            System.out.println("zero(" + p.a + ", " + p.b + ") = " + zero(p.a, p.b));
+        }
+    }
+
+    private void demoIdentity() {
+        for (int i : take(SMALL_LIMIT, P.withScale(4).positiveIntegersGeometric())) {
+            System.out.println("identity(" + i + ") = " + identity(i));
+        }
+    }
+
     private void demoToString() {
         for (RationalMatrix m : take(LIMIT, P.rationalMatrices())) {
             System.out.println(m);

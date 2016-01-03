@@ -263,8 +263,12 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
      * @return 0<sub>{@code height}, {@code width}</sub>
      */
     public static @NotNull RationalMatrix zero(int height, int width) {
-        if (height < 0 || width < 0)
-            throw new IllegalArgumentException("height and width cannot be negative");
+        if (height < 0) {
+            throw new IllegalArgumentException("height cannot be negative. Invalid height: " + height);
+        }
+        if (width < 0) {
+            throw new IllegalArgumentException("width cannot be negative. Invalid width: " + width);
+        }
         return new RationalMatrix(toList(replicate(height, RationalVector.zero(width))), width);
     }
 
@@ -281,9 +285,13 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
      * @return I<sub>{@code dimension}</sub>
      */
     public static @NotNull RationalMatrix identity(int dimension) {
-        if (dimension < 1)
-            throw new IllegalArgumentException("dimension must be positive");
-        return new RationalMatrix(toList(map(i -> RationalVector.standard(dimension, i), rangeUp(0))), dimension);
+        if (dimension < 1) {
+            throw new IllegalArgumentException("dimension must be positive. Invalid dimension: " + dimension);
+        }
+        return new RationalMatrix(
+                toList(map(i -> RationalVector.standard(dimension, i), range(0, dimension - 1))),
+                dimension
+        );
     }
 
     /**

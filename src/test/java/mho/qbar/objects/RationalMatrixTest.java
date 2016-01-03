@@ -199,6 +199,52 @@ public class RationalMatrixTest {
         width_helper("[[1, 9, -13], [20, 5, -6]]", 3);
     }
 
+    private static void zero_helper(int height, int width, @NotNull String output) {
+        aeq(zero(height, width), output);
+    }
+
+    private static void zero_fail_helper(int height, int width) {
+        try {
+            zero(height, width);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testZero() {
+        zero_helper(0, 0, "[]#0");
+        zero_helper(0, 3, "[]#3");
+        zero_helper(3, 0, "[[], [], []]");
+        zero_helper(1, 1, "[[0]]");
+        zero_helper(2, 2, "[[0, 0], [0, 0]]");
+        zero_helper(3, 4, "[[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]]");
+        zero_fail_helper(-1, 0);
+        zero_fail_helper(-1, 3);
+        zero_fail_helper(0, -1);
+        zero_fail_helper(3, -1);
+        zero_fail_helper(-1, -1);
+    }
+
+    private static void identity_helper(int dimension, @NotNull String output) {
+        aeq(identity(dimension), output);
+    }
+
+    private static void identity_fail_helper(int dimension) {
+        try {
+            identity(dimension);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testIdentity() {
+        identity_helper(1, "[[1]]");
+        identity_helper(3, "[[1, 0, 0], [0, 1, 0], [0, 0, 1]]");
+        identity_helper(5, "[[1, 0, 0, 0, 0], [0, 1, 0, 0, 0], [0, 0, 1, 0, 0], [0, 0, 0, 1, 0], [0, 0, 0, 0, 1]]");
+        identity_fail_helper(0);
+        identity_fail_helper(-1);
+    }
+
     private static @NotNull List<RationalVector> readRationalVectorList(@NotNull String s) {
         return Readers.readList(RationalVector::read).apply(s).get();
     }

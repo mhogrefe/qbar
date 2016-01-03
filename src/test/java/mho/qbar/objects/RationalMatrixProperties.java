@@ -30,6 +30,8 @@ public class RationalMatrixProperties extends QBarTestProperties {
         propertiesFromColumns();
         propertiesHeight();
         propertiesWidth();
+        propertiesZero();
+        propertiesIdentity();
     }
 
     private void propertiesRows() {
@@ -246,6 +248,52 @@ public class RationalMatrixProperties extends QBarTestProperties {
             int width = m.width();
             assertTrue(m, width >= 0);
             assertEquals(m, width, length(m.columns()));
+        }
+    }
+
+    private void propertiesZero() {
+        initialize("zero(int, int)");
+        for (Pair<Integer, Integer> p : take(SMALL_LIMIT, P.pairs(P.naturalIntegersGeometric()))) {
+            RationalMatrix zero = zero(p.a, p.b);
+            zero.validate();
+            assertEquals(p, zero.height(), p.a);
+            assertEquals(p, zero.width(), p.b);
+            inverse(q -> zero(q.a, q.b), (RationalMatrix m) -> new Pair<>(m.height(), m.width()), p);
+        }
+
+        for (Pair<Integer, Integer> p : take(LIMIT, P.pairs(P.negativeIntegers(), P.naturalIntegers()))) {
+            try {
+                zero(p.a, p.b);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
+        }
+
+        for (Pair<Integer, Integer> p : take(LIMIT, P.pairs(P.naturalIntegers(), P.negativeIntegers()))) {
+            try {
+                zero(p.a, p.b);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesIdentity() {
+        initialize("identity(int)");
+        for (int i : take(SMALL_LIMIT, P.positiveIntegersGeometric())) {
+            RationalMatrix identity = identity(i);
+            identity.validate();
+            for (int r = 0; r < i; r++) {
+                for (int c = 0; c < i; c++) {
+                    assertEquals(i, identity.get(r, c), r == c ? Rational.ONE : Rational.ZERO);
+                }
+            }
+            inverse(RationalMatrix::identity, RationalMatrix::height, i);
+        }
+
+        for (int i : take(LIMIT, P.rangeDown(0))) {
+            try {
+                identity(i);
+                fail(i);
+            } catch (IllegalArgumentException ignored) {}
         }
     }
 }

@@ -175,7 +175,7 @@ public class RationalVectorProperties extends QBarTestProperties {
             standard.validate();
             assertEquals(p, standard.dimension(), p.b);
             for (int i = 0; i < p.b; i++) {
-                assertTrue(p, standard.get(i) == (i == p.a ? Rational.ONE : Rational.ZERO));
+                assertEquals(p, standard.get(i), i == p.a ? Rational.ONE : Rational.ZERO);
             }
         }
 
