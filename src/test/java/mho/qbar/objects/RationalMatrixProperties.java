@@ -28,6 +28,8 @@ public class RationalMatrixProperties extends QBarTestProperties {
         propertiesGet();
         propertiesFromRows();
         propertiesFromColumns();
+        propertiesHeight();
+        propertiesWidth();
     }
 
     private void propertiesRows() {
@@ -226,6 +228,24 @@ public class RationalMatrixProperties extends QBarTestProperties {
                 fromColumns(vs);
                 fail(vs);
             } catch (NullPointerException ignored) {}
+        }
+    }
+
+    private void propertiesHeight() {
+        initialize("height()");
+        for (RationalMatrix m : take(LIMIT, P.rationalMatrices())) {
+            int height = m.height();
+            assertTrue(m, height >= 0);
+            assertEquals(m, height, length(m.rows()));
+        }
+    }
+
+    private void propertiesWidth() {
+        initialize("width()");
+        for (RationalMatrix m : take(LIMIT, P.rationalMatrices())) {
+            int width = m.width();
+            assertTrue(m, width >= 0);
+            assertEquals(m, width, length(m.columns()));
         }
     }
 }

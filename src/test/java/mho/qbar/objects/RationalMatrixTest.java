@@ -167,6 +167,38 @@ public class RationalMatrixTest {
         fromColumns_fail_helper("[[-2/3, -8], [0], [0, 5/7]]");
     }
 
+    private static void height_helper(@NotNull String input, int output) {
+        aeq(read(input).get().height(), output);
+    }
+
+    @Test
+    public void testHeight() {
+        height_helper("[]#0", 0);
+        height_helper("[]#1", 0);
+        height_helper("[]#3", 0);
+        height_helper("[[]]", 1);
+        height_helper("[[], [], []]", 3);
+        height_helper("[[-2/3]]", 1);
+        height_helper("[[-2/3, -8], [0, 5/7]]", 2);
+        height_helper("[[1, 9, -13], [20, 5, -6]]", 2);
+    }
+
+    private static void width_helper(@NotNull String input, int output) {
+        aeq(read(input).get().width(), output);
+    }
+
+    @Test
+    public void testWidth() {
+        width_helper("[]#0", 0);
+        width_helper("[]#1", 1);
+        width_helper("[]#3", 3);
+        width_helper("[[]]", 0);
+        width_helper("[[], [], []]", 0);
+        width_helper("[[-2/3]]", 1);
+        width_helper("[[-2/3, -8], [0, 5/7]]", 2);
+        width_helper("[[1, 9, -13], [20, 5, -6]]", 3);
+    }
+
     private static @NotNull List<RationalVector> readRationalVectorList(@NotNull String s) {
         return Readers.readList(RationalVector::read).apply(s).get();
     }

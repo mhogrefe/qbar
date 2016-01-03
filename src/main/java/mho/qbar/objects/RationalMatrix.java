@@ -225,6 +225,7 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
      *
      * <ul>
      *  <li>{@code this} may be any {@code RationalMatrix}.</li>
+     *  <li>The result is non-negative.</li>
      * </ul>
      *
      * @return the number of rows in {@code this}
@@ -238,6 +239,7 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
      *
      * <ul>
      *  <li>{@code this} may be any {@code RationalMatrix}.</li>
+     *  <li>The result is non-negative.</li>
      * </ul>
      *
      * @return the number of columns in {@code this}
