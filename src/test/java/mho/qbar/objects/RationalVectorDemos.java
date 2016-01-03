@@ -28,7 +28,7 @@ public class RationalVectorDemos extends QBarDemos {
 
     private void demoGet() {
         Iterable<Pair<RationalVector, Integer>> ps = P.dependentPairs(
-                P.rationalVectorsAtLeast(1),
+                P.withScale(4).rationalVectorsAtLeast(1),
                 v -> P.uniformSample(toList(range(0, v.dimension() - 1)))
         );
         for (Pair<RationalVector, Integer> p : take(LIMIT, ps)) {

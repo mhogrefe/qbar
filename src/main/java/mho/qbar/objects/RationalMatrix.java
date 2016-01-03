@@ -130,8 +130,13 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
      */
     public @NotNull RationalVector column(int j) {
         if (rows.isEmpty()) {
-            if (j >= width)
-                throw new ArrayIndexOutOfBoundsException();
+            if (j < 0) {
+                throw new ArrayIndexOutOfBoundsException("j cannot be negative. Invalid j: " + j);
+            }
+            if (j >= width) {
+                throw new ArrayIndexOutOfBoundsException("j must be less than the width of this. j: " + j +
+                        ", this: " + this);
+            }
             return RationalVector.ZERO_DIMENSIONAL;
         } else {
             return RationalVector.of(toList(map(r -> r.get(j), rows)));
