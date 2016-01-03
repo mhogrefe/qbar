@@ -715,23 +715,31 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
     }
 
     @Override
-    public @NotNull Iterable<Polynomial> polynomialsAtLeast(int minDegree) {
+    public @NotNull Iterable<Polynomial> polynomials() {
+        int secondaryScale = getSecondaryScale();
+        if (secondaryScale < 1) {
+            throw new IllegalStateException("this must have a positive secondaryScale. Invalid secondaryScale: " +
+                    secondaryScale);
+        }
         return map(
                 js -> Polynomial.of(toList(js)),
-                filter(
+                filterInfinite(
                         is -> is.isEmpty() || !last(is).equals(BigInteger.ZERO),
-                        withScale(getSecondaryScale()).listsAtLeast(minDegree + 1, bigIntegers())
+                        withScale(secondaryScale).lists(bigIntegers())
                 )
         );
     }
 
     @Override
-    public @NotNull Iterable<Polynomial> polynomials() {
+    public @NotNull Iterable<Polynomial> polynomialsAtLeast(int minDegree) {
+        if (minDegree < -1) {
+            throw new IllegalArgumentException("minDegree must be at least -1. Invalid minDegree: " + minDegree);
+        }
         return map(
                 js -> Polynomial.of(toList(js)),
-                filter(
+                filterInfinite(
                         is -> is.isEmpty() || !last(is).equals(BigInteger.ZERO),
-                        withScale(getSecondaryScale()).lists(bigIntegers())
+                        withScale(getSecondaryScale()).listsAtLeast(minDegree + 1, bigIntegers())
                 )
         );
     }
@@ -752,23 +760,31 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
     }
 
     @Override
-    public @NotNull Iterable<RationalPolynomial> rationalPolynomialsAtLeast(int minDegree) {
+    public @NotNull Iterable<RationalPolynomial> rationalPolynomials() {
+        int secondaryScale = getSecondaryScale();
+        if (secondaryScale < 1) {
+            throw new IllegalStateException("this must have a positive secondaryScale. Invalid secondaryScale: " +
+                    secondaryScale);
+        }
         return map(
                 js -> RationalPolynomial.of(toList(js)),
-                filter(
+                filterInfinite(
                         is -> is.isEmpty() || last(is) != Rational.ZERO,
-                        withScale(getSecondaryScale()).listsAtLeast(minDegree + 1, rationals())
+                        withScale(secondaryScale).lists(rationals())
                 )
         );
     }
 
     @Override
-    public @NotNull Iterable<RationalPolynomial> rationalPolynomials() {
+    public @NotNull Iterable<RationalPolynomial> rationalPolynomialsAtLeast(int minDegree) {
+        if (minDegree < -1) {
+            throw new IllegalArgumentException("minDegree must be at least -1. Invalid minDegree: " + minDegree);
+        }
         return map(
                 js -> RationalPolynomial.of(toList(js)),
-                filter(
+                filterInfinite(
                         is -> is.isEmpty() || last(is) != Rational.ZERO,
-                        withScale(getSecondaryScale()).lists(rationals())
+                        withScale(getSecondaryScale()).listsAtLeast(minDegree + 1, rationals())
                 )
         );
     }

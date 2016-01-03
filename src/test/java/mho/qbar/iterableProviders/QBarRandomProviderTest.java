@@ -1,13 +1,11 @@
 package mho.qbar.iterableProviders;
 
-import mho.qbar.objects.Interval;
-import mho.qbar.objects.Rational;
-import mho.qbar.objects.RationalMatrix;
-import mho.qbar.objects.RationalVector;
+import mho.qbar.objects.*;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.math.BigInteger;
 import java.util.List;
 
 import static mho.wheels.iterables.IterableUtils.*;
@@ -2443,6 +2441,383 @@ public class QBarRandomProviderTest {
         );
         rationalMatrices_fail_helper(2, 2);
         rationalMatrices_fail_helper(3, 1);
+    }
+
+    private static void polynomials_helper(
+            @NotNull Iterable<Polynomial> input,
+            @NotNull String output,
+            @NotNull String topSampleCount,
+            double meanDegree,
+            double meanCoefficientBitSize
+    ) {
+        List<Polynomial> sample = toList(take(DEFAULT_SAMPLE_SIZE, input));
+        aeqitLimit(TINY_LIMIT, sample, output);
+        aeq(topSampleCount(DEFAULT_TOP_COUNT, sample), topSampleCount);
+        aeq(meanOfIntegers(toList(map(Polynomial::degree, sample))), meanDegree);
+        aeq(meanOfIntegers(toList(concatMap(p -> map(BigInteger::bitLength, p), sample))), meanCoefficientBitSize);
+        P.reset();
+    }
+
+    private static void polynomials_int_helper(
+            int scale,
+            int degree,
+            @NotNull String output,
+            @NotNull String topSampleCount,
+            double meanDimension,
+            double meanCoefficientBitSize
+    ) {
+        polynomials_helper(
+                P.withScale(scale).polynomials(degree),
+                output,
+                topSampleCount,
+                meanDimension,
+                meanCoefficientBitSize
+        );
+    }
+
+    private static void polynomials_int_fail_helper(int scale, int degree) {
+        try {
+            P.withScale(scale).polynomials(degree);
+            fail();
+        } catch (IllegalArgumentException | IllegalStateException ignored) {}
+        finally {
+            P.reset();
+        }
+    }
+
+    @Test
+    public void testPolynomials_int() {
+        polynomials_int_helper(
+                1,
+                -1,
+                "[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...]",
+                "{0=1000000}",
+                -1.000000000007918,
+                0.0
+        );
+        polynomials_int_helper(
+                5,
+                3,
+                "[-233*x^3+1256222*x^2+21*x+21, 9*x^3+x^2-1, -x^3-6*x^2-1661016*x-117, -28*x^3-576*x^2-39244*x-67," +
+                " 30*x^3-46*x^2-16989*x-38, -x^3+2*x^2-8*x, x^3-4551*x^2+62, -92*x^3+x^2+9*x, -70*x^3-x^2+x-7," +
+                " 4*x^3-181301872*x^2+x-3026, -19*x^3-2*x^2-x+2, -64580*x^3+5*x-4, -13*x^3-241920*x^2+7818*x+41," +
+                " 5*x^3-122*x^2-394*x-238, x^3-224*x^2+62*x-1, -24*x^3+17*x^2+633*x-4, -2708*x^3+5*x^2-13*x-15," +
+                " x^3+x^2-x-1, 11*x^3+91*x^2+122224*x+111, -618*x^3+16127*x^2-7*x, ...]",
+                "{x^3=403, -x^3=382, 2*x^3=194, x^3-x=184, x^3-x^2=178, -x^3+x^2=178, -x^3-x^2=172, -x^3-x=166," +
+                " 3*x^3=165, x^3+x^2=164}",
+                2.9999999999775233,
+                5.125149750005694
+        );
+        polynomials_int_helper(
+                10,
+                8,
+                "[-437219*x^8-66364*x^7-124*x^6-4626764*x^5-645698713*x^4-117*x^3+220*x^2-337*x-47968091191," +
+                " 81*x^8+1224*x^7+14*x^6-3*x^5+x^4-2*x^3+x^2+56*x+566," +
+                " -454294*x^8-622*x^7-909910*x^6+8293038*x^5-16532643*x^4-4*x^3-19*x^2-16*x+54," +
+                " -58148006*x^8-49*x^7+4*x^6+x^5-2300*x^4+18*x^3-1283*x^2-289302*x-7," +
+                " 101342*x^8-739*x^7-111061034*x^5-2*x^4-506*x^3+87*x^2-30*x+47," +
+                " 15*x^8+3*x^7-394953281*x^6+131588190*x^5+1510370*x^4-17*x^3+16276*x^2-8682*x+345112274," +
+                " -20040*x^8-3015*x^6+5*x^5-9*x^4+7689363762084*x^3-432*x^2+3186328*x," +
+                " 13297953072*x^8-8080881*x^7+152929*x^6+3928*x^5-x^3+3346*x^2-2*x+3064121," +
+                " 1597518*x^8+1105224*x^7+3133*x^6+x^5-3*x^4-3*x^2-x-41349439," +
+                " -434063*x^8+5*x^7+x^6-736*x^5+7182*x^4-7*x^3+3*x^2-248*x-13," +
+                " -21118*x^8-6*x^7-39554*x^6-12*x^5-419*x^4-510*x^3-10*x^2+10025*x+2," +
+                " -355615*x^8-3640006*x^7-3421*x^6+25689*x^5+524*x^4-789*x^3+3*x^2+663885*x+9," +
+                " 7*x^8-330228993066*x^7-11*x^6+1524767947173*x^5-7*x^3-x^2+31*x-2304971396104," +
+                " 112*x^8+397143*x^7+50*x^6-2*x^5-27*x^4-231522*x^3+x^2+6*x+17," +
+                " 7*x^8+32022602*x^7+4886*x^6+60*x^4+3*x^3+629*x^2+114*x-23," +
+                " -375*x^8-589*x^7+44117477702*x^6+207*x^4-198077*x^3-956783*x^2-1344*x+27," +
+                " 36*x^8-632*x^7-4663*x^6-51*x^5-2743875*x^4-435*x^3+19882*x^2-13369365953*x+2," +
+                " -2322630*x^8-281078474*x^7-51*x^6+12544*x^5+34*x^4+7*x^3-127*x^2-5*x-1684," +
+                " -15528*x^8-130*x^7+32359*x^6+36587*x^5+22*x^4-x^3-109310*x^2-1543*x-174785977915," +
+                " -2312*x^8+24*x^7+65*x^6-1060*x^5-40*x^4+22*x-117129, ...]",
+                "{-437219*x^8-66364*x^7-124*x^6-4626764*x^5-645698713*x^4-117*x^3+220*x^2-337*x-47968091191=1," +
+                " 81*x^8+1224*x^7+14*x^6-3*x^5+x^4-2*x^3+x^2+56*x+566=1," +
+                " -454294*x^8-622*x^7-909910*x^6+8293038*x^5-16532643*x^4-4*x^3-19*x^2-16*x+54=1," +
+                " -58148006*x^8-49*x^7+4*x^6+x^5-2300*x^4+18*x^3-1283*x^2-289302*x-7=1," +
+                " 101342*x^8-739*x^7-111061034*x^5-2*x^4-506*x^3+87*x^2-30*x+47=1," +
+                " 15*x^8+3*x^7-394953281*x^6+131588190*x^5+1510370*x^4-17*x^3+16276*x^2-8682*x+345112274=1," +
+                " -20040*x^8-3015*x^6+5*x^5-9*x^4+7689363762084*x^3-432*x^2+3186328*x=1," +
+                " 13297953072*x^8-8080881*x^7+152929*x^6+3928*x^5-x^3+3346*x^2-2*x+3064121=1," +
+                " 1597518*x^8+1105224*x^7+3133*x^6+x^5-3*x^4-3*x^2-x-41349439=1," +
+                " -434063*x^8+5*x^7+x^6-736*x^5+7182*x^4-7*x^3+3*x^2-248*x-13=1}",
+                8.000000000063345,
+                10.031244555547099
+        );
+        polynomials_int_fail_helper(0, -1);
+        polynomials_int_fail_helper(1, -2);
+    }
+
+    private static void polynomials_helper(
+            int scale,
+            int secondaryScale,
+            @NotNull String output,
+            @NotNull String topSampleCount,
+            double meanDegree,
+            double meanCoefficientBitSize
+    ) {
+        polynomials_helper(
+                P.withScale(scale).withSecondaryScale(secondaryScale).polynomials(),
+                output,
+                topSampleCount,
+                meanDegree,
+                meanCoefficientBitSize
+        );
+    }
+
+    private static void polynomials_fail_helper(int scale, int secondaryScale) {
+        try {
+            P.withScale(scale).withSecondaryScale(secondaryScale).polynomials();
+            fail();
+        } catch (IllegalStateException ignored) {}
+        finally {
+            P.reset();
+        }
+    }
+
+    @Test
+    public void testPolynomials() {
+        polynomials_helper(
+                1,
+                1,
+                "[0, 1, 0, x-2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, x, 0, -2*x^5-x^4+x^3-x^2+19*x-5, ...]",
+                "{0=666743, 1=41642, -1=41585, 3=10615, -x=10437, -2=10427, -3=10377, 2=10365, x=10340, 2*x=2716}",
+                -0.33297599999650446,
+                1.2495277531222848
+        );
+        polynomials_helper(
+                5,
+                3,
+                "[x^5-x^3-233*x^2+1256222*x+85, -67*x^4-x^3-6*x^2-1661016*x-240," +
+                " -46*x^5-16989*x^4-38*x^3-28*x^2-576*x-3737, 6, 4, 2*x^3-8*x^2+1, -4551*x^2+94, -1," +
+                " x^3-7*x^2-92*x+4, -239, 4*x^3-181301872*x^2+x-210," +
+                " -x^19+5*x^18-122*x^17-394*x^16-238*x^15-13*x^14-241920*x^13+7818*x^12+41*x^11-64580*x^10+5*x^8-4*" +
+                "x^7-19*x^6-2*x^5-x^4+2*x^3-4452, 17*x^5+633*x^4-4*x^3+x^2-224*x+1, -2708*x^4+5*x^3-13*x^2-15*x, -1," +
+                " 1, 47, -152*x+52, -7350*x^2-2*x, -46*x^3-x^2+47*x, ...]",
+                "{0=284676, 1=15035, -1=14890, 3=6242, -3=6197, -2=6158, 2=6086, -6=2636, -4=2622, -5=2608}",
+                1.8584690000024553,
+                5.1256966579379375
+        );
+        polynomials_helper(
+                10,
+                8,
+                "[-16532643*x^30-4*x^29-19*x^28-16*x^27+54*x^26-2404*x^24+5896747328932606365*x^23-239*x^22-x^21+" +
+                "2*x^20-3*x^19-232*x^18+2*x^17+81*x^16+1224*x^15+14*x^14-3*x^13+x^12-2*x^11+x^10+56*x^9+566*x^8" +
+                "-437219*x^7-66364*x^6-124*x^5-4626764*x^4-645698713*x^3-117*x^2+220*x-2129," +
+                " 4*x^18+x^17-2300*x^16+18*x^15-1283*x^14-289302*x^13-7*x^12+11*x^10+51089054789*x^9+3*x^8+" +
+                "368648822968*x^7+5*x^6+249*x^5-4*x^4+105065295*x^3-454294*x^2-622*x-1434198," +
+                " 87*x^3-30*x^2+47*x-125256870, -8682*x^6+345112274*x^5+101342*x^4-739*x^3-111061034*x-8," +
+                " -9*x^10+7689363762084*x^9-432*x^8+3186328*x^7+15*x^5+3*x^4-394953281*x^3+131588190*x^2+1510370*x-" +
+                "49," +
+                " -3*x^11-x^10-41349439*x^9+13297953072*x^8-8080881*x^7+152929*x^6+3928*x^5-x^3+3346*x^2-2*x+" +
+                "3064121, 0, 3133*x+7," +
+                " -419*x^15-510*x^14-10*x^13+10025*x^12+2*x^11-434063*x^10+5*x^9+x^8-736*x^7+7182*x^6-7*x^5+3*x^4-" +
+                "248*x^3-13*x^2+1597518*x, 9*x^3-21118*x^2-6*x-72322," +
+                " x^18+6*x^17+17*x^16+7*x^15-330228993066*x^14-11*x^13+1524767947173*x^12-7*x^10-x^9+31*x^8-" +
+                "2304971396104*x^7-355615*x^6-3640006*x^5-3421*x^4+25689*x^3+524*x^2-789*x+13," +
+                " 27*x^14+7*x^13+32022602*x^12+4886*x^11+60*x^9+3*x^8+629*x^7+114*x^6-23*x^5+112*x^4+397143*x^3+" +
+                "50*x^2-2*x-43, -13369365953*x^8+2*x^7-375*x^6-589*x^5+44117477702*x^4+207*x^2-198077*x-1481071," +
+                " -281078474*x^13-51*x^12+12544*x^11+34*x^10+7*x^9-127*x^8-5*x^7-1684*x^6+36*x^5-632*x^4-4663*x^3-" +
+                "51*x^2-2743875*x-435," +
+                " -2312*x^17+24*x^16+65*x^15-1060*x^14-40*x^13+22*x^10-117129*x^9-15528*x^8-130*x^7+32359*x^6+" +
+                "36587*x^5+22*x^4-x^3-109310*x^2-1543*x-764745235361," +
+                " 372*x^8+398077*x^7-51*x^6-3*x^5+973*x^4-5*x^3-82699*x^2-202206016023*x+5," +
+                " -11617*x^2+12126258480*x+1," +
+                " 203*x^21+5994968441128*x^19-329*x^18+6*x^17-105*x^16-6*x^15-12*x^14-14*x^13+5*x^12-146275*x^10-" +
+                "x^9-155*x^8-95*x^7-x^6-6158262286914*x^5+486*x^4-11821607*x^3+18553*x^2-142246*x-1," +
+                " -23971*x^4+451*x^3+13*x^2-79595301742*x-337465087682, -6288*x^3+281*x^2+x-1, ...]",
+                "{0=121087, -1=4518, 1=4510, 3=2035, -2=2022, 2=2016, -3=2006, -7=968, -6=937, 5=937}",
+                6.900087000000637,
+                10.035968210988367
+        );
+        polynomials_fail_helper(0, 1);
+        polynomials_fail_helper(1, 0);
+    }
+
+    private static void rationalPolynomials_helper(
+            @NotNull Iterable<RationalPolynomial> input,
+            @NotNull String output,
+            @NotNull String topSampleCount,
+            double meanDegree,
+            double meanCoefficientBitSize
+    ) {
+        List<RationalPolynomial> sample = toList(take(DEFAULT_SAMPLE_SIZE / 10, input));
+        aeqitLimit(TINY_LIMIT, sample, output);
+        aeq(topSampleCount(DEFAULT_TOP_COUNT, sample), topSampleCount);
+        aeq(meanOfIntegers(toList(map(RationalPolynomial::degree, sample))), meanDegree);
+        aeq(meanOfIntegers(toList(concatMap(p -> map(Rational::bitLength, p), sample))), meanCoefficientBitSize);
+        P.reset();
+    }
+
+    private static void rationalPolynomials_int_helper(
+            int scale,
+            int degree,
+            @NotNull String output,
+            @NotNull String topSampleCount,
+            double meanDimension,
+            double meanCoefficientBitSize
+    ) {
+        rationalPolynomials_helper(
+                P.withScale(scale).rationalPolynomials(degree),
+                output,
+                topSampleCount,
+                meanDimension,
+                meanCoefficientBitSize
+        );
+    }
+
+    private static void rationalPolynomials_int_fail_helper(int scale, int degree) {
+        try {
+            P.withScale(scale).rationalPolynomials(degree);
+            fail();
+        } catch (IllegalArgumentException | IllegalStateException ignored) {}
+        finally {
+            P.reset();
+        }
+    }
+
+    @Test
+    public void testRationalPolynomials_int() {
+        rationalPolynomials_int_helper(
+                3,
+                -1,
+                "[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...]",
+                "{0=100000}",
+                -0.9999999999980838,
+                0.0
+        );
+        rationalPolynomials_int_helper(
+                5,
+                3,
+                "[-x^3-29/4*x^2-x+1/36, -2*x^3+1/89*x^2-53/47*x+5/2, -2/683*x^3-22*x^2-4*x-5/6, -4*x^3-1/50*x," +
+                " -1/4*x^3-1/16*x^2+2*x+12757/4452, -718/59937*x^3+3*x^2-6268*x-1, x^3-2/25*x^2-1/38*x+1," +
+                " 17/24*x^3+14*x^2+2*x-5/6, x^3-x+1/7, -1/7*x^3+2*x^2+x+15/619, 14/3*x^3-29/19562*x-1/7," +
+                " 1/6*x^3+1/4*x^2+10*x, -1/6*x^3+16*x^2+8*x-9/4, -2/5*x^3-2/11*x^2-24/47*x+11/2," +
+                " -7/41*x^3+3*x^2+1/10*x-7/2, -22/3*x^3-x^2+1/2*x-3/11, -2/5*x^3-1/21*x^2+1/3*x-3623/3," +
+                " 87*x^3+1/3*x^2+x+1/6, 468*x^3+2/5*x^2-1/2*x-1/13, 1/1790*x^3+1/6*x^2+45/7*x-26, ...]",
+                "{x^3=35, -x^3=33, 2*x^3=18, 3*x^3=17, x^3-1=14, -x^3+x=14, x^3-x=14, x^3+1=13, -1/2*x^3=13," +
+                " 1/2*x^3=13}",
+                3.000000000005079,
+                5.000859999992796
+        );
+        rationalPolynomials_int_helper(
+                10,
+                8,
+                "[2/3*x^8-10*x^7-70/8797*x^6-67/5785*x^5-117/219224*x^4+1/25*x^3-2*x^2+2304798/125*x+21/13," +
+                " -1/6268*x^8-8/5*x^7-2/35*x^6+1/47084144*x^4-239/978*x^3+2/227*x^2-4551*x+62," +
+                " 122224/59*x^8+3/238*x^7-15/13*x^3-8/249*x^2-238/5*x-504064/13," +
+                " -98*x^8+11*x^7+438*x^6+2/47*x^5+1/12*x^4+479*x^3-1130/15659*x^2-7/3839*x+19," +
+                " 3*x^8-70/167*x^7+139/9*x^6-1/5*x^5-30*x^4+1/15*x^3-97/41*x^2+1/926*x+1/6," +
+                " -7*x^8-7*x^7+23/3*x^6-49/5*x^5-1/5*x^4+2260*x^3+1/37*x^2+23/7*x+2/23," +
+                " -26/1537*x^8+13/31*x^7-3*x^6+3954017/6454*x^5+1/344*x^4+x^2+9/13*x+49465/2," +
+                " 5395/2*x^8+1/9*x^7+20*x^6-x^5-34/15*x^4-1/7*x^3+1/3*x^2+6312/23*x+13/5," +
+                " 33*x^8+1/59*x^7+1/11*x^6-5656/31*x^5-3618*x^4+1/69*x^3-125/308*x^2-149/7*x+3," +
+                " 237/832*x^8+19/11*x^7-1/4*x^6+111*x^5+3/112*x^4+246/48401*x^3-x^2+x-9/76," +
+                " -1/3*x^8-5/567*x^7-12*x^6+5*x^5-2/4079803*x^4-58/111*x^3+3/5*x^2+14*x+1/4," +
+                " -43124/2505*x^8+1/3*x^7-2/31*x^6-1/22*x^5-15/1706*x^4+1/519*x^3-20672/9*x^2+280/11*x+21," +
+                " -1/2*x^8-3/11075*x^6+3/3361*x^5+2/11*x^4-4*x^3-3/2*x^2-x+3/2," +
+                " -2588/93967625*x^8-1/46542*x^7-30725/11*x^6+1/2*x^4-1/40*x^3-383*x^2+1/78*x+53/9," +
+                " 13*x^8-893924/13*x^7-9/2*x^6+37*x^5-40*x^4+1/63*x^3+186*x^2-78*x+1/454," +
+                " -203/177*x^8-2*x^7+71/2*x^5-3239437/3*x^4+7/131*x^3+79/3*x^2+17*x-1," +
+                " -1/6*x^8+1/6829*x^7+3/79*x^6-246*x^5+1/11*x^4-x^3-157/3*x^2-209/10*x+2/3," +
+                " -2/483*x^8-9/37841*x^7+30413/72*x^6+11/4*x^5+3/38*x^4+4*x^3-24*x^2+6*x-4," +
+                " -x^8-x^7+40*x^5+3/46*x^4-x^3-2/63*x^2+244/5*x-24/7," +
+                " 1/5*x^8-1/18*x^7+x^6-5/6*x^5-740186/147*x^4-3/80*x^3+x-1/2, ...]",
+                "{2/3*x^8-10*x^7-70/8797*x^6-67/5785*x^5-117/219224*x^4+1/25*x^3-2*x^2+2304798/125*x+21/13=1," +
+                " -1/6268*x^8-8/5*x^7-2/35*x^6+1/47084144*x^4-239/978*x^3+2/227*x^2-4551*x+62=1," +
+                " 122224/59*x^8+3/238*x^7-15/13*x^3-8/249*x^2-238/5*x-504064/13=1," +
+                " -98*x^8+11*x^7+438*x^6+2/47*x^5+1/12*x^4+479*x^3-1130/15659*x^2-7/3839*x+19=1," +
+                " 3*x^8-70/167*x^7+139/9*x^6-1/5*x^5-30*x^4+1/15*x^3-97/41*x^2+1/926*x+1/6=1," +
+                " -7*x^8-7*x^7+23/3*x^6-49/5*x^5-1/5*x^4+2260*x^3+1/37*x^2+23/7*x+2/23=1," +
+                " -26/1537*x^8+13/31*x^7-3*x^6+3954017/6454*x^5+1/344*x^4+x^2+9/13*x+49465/2=1," +
+                " 5395/2*x^8+1/9*x^7+20*x^6-x^5-34/15*x^4-1/7*x^3+1/3*x^2+6312/23*x+13/5=1," +
+                " 33*x^8+1/59*x^7+1/11*x^6-5656/31*x^5-3618*x^4+1/69*x^3-125/308*x^2-149/7*x+3=1," +
+                " 237/832*x^8+19/11*x^7-1/4*x^6+111*x^5+3/112*x^4+246/48401*x^3-x^2+x-9/76=1}",
+                7.99999999998467,
+                9.892031111041902
+        );
+        rationalPolynomials_int_fail_helper(2, -1);
+        rationalPolynomials_int_fail_helper(1, -2);
+    }
+
+    private static void rationalPolynomials_helper(
+            int scale,
+            int secondaryScale,
+            @NotNull String output,
+            @NotNull String topSampleCount,
+            double meanDegree,
+            double meanCoefficientBitSize
+    ) {
+        rationalPolynomials_helper(
+                P.withScale(scale).withSecondaryScale(secondaryScale).rationalPolynomials(),
+                output,
+                topSampleCount,
+                meanDegree,
+                meanCoefficientBitSize
+        );
+    }
+
+    private static void rationalPolynomials_fail_helper(int scale, int secondaryScale) {
+        try {
+            P.withScale(scale).withSecondaryScale(secondaryScale).rationalPolynomials();
+            fail();
+        } catch (IllegalStateException ignored) {}
+        finally {
+            P.reset();
+        }
+    }
+
+    @Test
+    public void testRationalPolynomials() {
+        rationalPolynomials_helper(
+                3,
+                1,
+                "[1/2*x^2+x+3/221, 0, -2/3*x+3, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, -3/4*x, 0, 0, 0, 0, ...]",
+                "{0=60965, -1=2775, 1=2768, -3=738, 3=729, 1/3=714, 1/2=697, -1/3=686, 2=677, -1/2=661}",
+                -0.22369000000018416,
+                3.272416946837637
+        );
+        rationalPolynomials_helper(
+                5,
+                3,
+                "[5/2*x^5-x^4-29/4*x^3-1/10*x^2-20*x+10/3, -7/2*x^2-4*x, 2*x+19," +
+                " x^20+15/619*x^19+x^18-x^16+1/7*x^15+17/24*x^14+14*x^13+2*x^12-5/6*x^11+x^10-2/25*x^9-1/38*x^8+x^7" +
+                "-718/59937*x^6+3*x^5-6268*x^4-x^3-1/4*x^2+x-4452, 0, -9/4*x^4+1/6*x^3+1/4*x^2+10*x, 0, 8*x-1/119," +
+                " -2/11*x^4-24/47*x^3+11/2*x^2-1/6*x, 3*x^2+1/10*x-7/2, -7/41," +
+                " -3623/3*x^12-22/3*x^11-x^10+1/2*x^9-3/11*x^8+1/3*x^5-17*x^4+1/3, -2/5*x+1/2, 1, 7/87, -3/13," +
+                " -26*x^3+468*x^2+2/5*x-1/2, 0, 0, 109/7, ...]",
+                "{0=28636, 1=1210, -1=1150, 3=431, -1/2=423, 2=396, -2=391, 1/3=384, -3=381, 1/2=372}",
+                1.863679999999461,
+                5.007410045814251
+        );
+        rationalPolynomials_helper(
+                10,
+                8,
+                "[2/47*x^30+1/12*x^29+479*x^28-1130/15659*x^27-7/3839*x^26+19*x^25+122224/59*x^24+3/238*x^23-" +
+                "15/13*x^19-8/249*x^18-238/5*x^17-504064/13*x^16-1/6268*x^15-8/5*x^14-2/35*x^13+1/47084144*x^11-" +
+                "239/978*x^10+2/227*x^9-4551*x^8+62*x^7+2/3*x^6-10*x^5-70/8797*x^4-2/171*x^3+25/53*x^2-1/2*x-489/2," +
+                " 11*x+438, 1/926*x^2+1/6*x-98," +
+                " -1/5*x^11+2260*x^10+1/37*x^9+23/7*x^8+2/23*x^7+3*x^6-70/167*x^5+139/9*x^4-1/5*x^3-30*x^2+1/15*x-" +
+                "58/97," +
+                " 3/1760*x^20-21*x^19+5/4*x^18+13/53*x^17-1/8*x^16-841*x^15+1/3*x^14-15*x^13-26/1537*x^12+" +
+                "13/31*x^11-3*x^10+3954017/6454*x^9+1/344*x^8+x^6+9/13*x^5+49465/2*x^4-7*x^3-7*x^2+23/3*x-49/5, 0," +
+                " 21/5," +
+                " -3618*x^11+1/69*x^10-125/308*x^9-149/7*x^8+3*x^7+5395/2*x^6+1/9*x^5+20*x^4-x^3+15/34*x^2+3*x+26," +
+                " 3763/9*x^5+2*x^4-59/17*x^3-29926*x^2-19*x+47, -1/4*x^5+111*x^4+3/112*x^3+246/48401*x^2-x+2, 0," +
+                " 5*x^9-2/4079803*x^8-399/631*x^7-58759/58*x^6-3/4*x^5+3*x^4-25/118*x^3-1344/5*x^2+11/237*x-" +
+                "140502/19, 280/11*x^4+21*x^3-1/3*x^2-394/13*x-20/41, -187/834, 2/21*x^2-4*x-2," +
+                " -383*x^2+1/78*x-219/55, 1/2, 0," +
+                " -729/2*x^11-13/3473*x^10-5/14*x^9-3*x^8+5/7*x^7-1083*x^6-6299/2*x^5-x^4-2588/93967625*x^3+6*x^2-1" +
+                "1/28*x-1/1029," +
+                " 4*x^28-24*x^27+6*x^26-4*x^25-1/6*x^24+1/6829*x^23+3/79*x^22-246*x^21+1/11*x^20-x^19-157/3*x^18-" +
+                "209/10*x^17+2/3*x^16-203/177*x^15-2*x^14+71/2*x^12-3239437/3*x^11+7/131*x^10+79/3*x^9+17*x^8-3*x^7+" +
+                "2/15779*x^6+1/5*x^5-2/101*x^4-1/2*x^3+63/8*x^2+2*x-1/186, ...]",
+                "{0=11712, 1=234, -1=203, 3=102, 1/2=101, 2=97, -3=94, -1/3=93, -2=92, -1/2=80}",
+                6.94774000000149,
+                9.88837958966099
+        );
+        rationalPolynomials_fail_helper(2, 1);
+        rationalPolynomials_fail_helper(1, 0);
     }
 
     private static double meanOfIntegers(@NotNull List<Integer> xs) {
