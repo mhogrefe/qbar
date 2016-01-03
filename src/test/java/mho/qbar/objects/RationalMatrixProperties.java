@@ -38,6 +38,9 @@ public class RationalMatrixProperties extends QBarTestProperties {
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
+        propertiesRead();
+        propertiesFindIn();
+        propertiesToString();
     }
 
     private void propertiesRows() {
@@ -332,5 +335,35 @@ public class RationalMatrixProperties extends QBarTestProperties {
         for (Pair<RationalMatrix, RationalMatrix> p : take(LIMIT, ps)) {
             assertEquals(p, compare(p.a, p.b), compare(p.a.width(), p.b.width()));
         }
+    }
+
+    private void propertiesRead() {
+        initialize("read(String)");
+        QBarTesting.propertiesReadHelper(
+                LIMIT,
+                P,
+                RATIONAL_MATRIX_CHARS,
+                P.rationalMatrices(),
+                RationalMatrix::read,
+                RationalMatrix::validate,
+                false
+        );
+    }
+
+    private void propertiesFindIn() {
+        initialize("findIn(String)");
+        propertiesFindInHelper(
+                LIMIT,
+                P.getWheelsProvider(),
+                P.rationalMatrices(),
+                RationalMatrix::read,
+                RationalMatrix::findIn,
+                rp -> {}
+        );
+    }
+
+    private void propertiesToString() {
+        initialize("toString()");
+        propertiesToStringHelper(LIMIT, RATIONAL_MATRIX_CHARS, P.rationalMatrices(), RationalMatrix::read);
     }
 }

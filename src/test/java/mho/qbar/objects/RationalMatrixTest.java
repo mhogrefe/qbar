@@ -1,6 +1,7 @@
 package mho.qbar.objects;
 
 import mho.wheels.io.Readers;
+import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
@@ -9,6 +10,7 @@ import java.util.List;
 import static mho.qbar.objects.RationalMatrix.*;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.testing.Testing.*;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 
 public class RationalMatrixTest {
@@ -275,6 +277,65 @@ public class RationalMatrixTest {
     public void testCompareTo() {
         testCompareToHelper(readRationalMatrixList("[[]#0, []#1, []#3, [[]], [[-2/3]], [[-2/3, -8], [0, 5/7]]," +
                 " [[1, 9, -13], [20, 5, -6]], [[], [], []]]"));
+    }
+
+    private static void read_helper(@NotNull String input) {
+        aeq(read(input).get(), input);
+    }
+
+    private static void read_fail_helper(@NotNull String input) {
+        assertFalse(read(input).isPresent());
+    }
+
+    @Test
+    public void testRead() {
+        read_helper("[]#0");
+        read_helper("[]#1");
+        read_helper("[]#3");
+        read_helper("[[]]");
+        read_helper("[[], [], []]");
+        read_helper("[[-2/3]]");
+        read_helper("[[-2/3, -8], [0, 5/7]]");
+        read_helper("[[1, 9, -13], [20, 5, -6]]");
+        read_fail_helper("");
+        read_fail_helper("[]");
+        read_fail_helper("[]#");
+        read_fail_helper("[]#-1");
+        read_fail_helper("[[]]#1");
+        read_fail_helper("[[4]]#1");
+        read_fail_helper("[2]");
+        read_fail_helper("[[ ]]");
+        read_fail_helper("[[],]");
+        read_fail_helper("[[1/0]]");
+        read_fail_helper("[[2/4]]");
+        read_fail_helper("[[1/3], null]");
+        read_fail_helper("[[1/3], [2/3, 5/3]]");
+        read_fail_helper("[[]]]");
+        read_fail_helper("[[[]]");
+        read_fail_helper("hello");
+        read_fail_helper("vdfvfmsl;dfbv");
+    }
+
+    private static void findIn_helper(@NotNull String input, @NotNull String output, int index) {
+        Pair<RationalMatrix, Integer> result = findIn(input).get();
+        aeq(result.a, output);
+        aeq(result.b, index);
+    }
+
+    private static void findIn_fail_helper(@NotNull String input) {
+        assertFalse(findIn(input).isPresent());
+    }
+
+    @Test
+    public void testFindIn() {
+        findIn_helper("fr24rev[[]]evfre", "[[]]", 7);
+        findIn_helper("]]][[[1, 9, -13], [20, 5, -6]][[]]dsvdf", "[[1, 9, -13], [20, 5, -6]]", 4);
+        findIn_helper("]]][[[1, 9, -13], [20, 5/5, -6]][[]]dsvdf", "[[]]", 32);
+        findIn_helper("]]][[[1, 9, -13], [20, 2/4, -6]][[]]dsvdf", "[[]]", 32);
+        findIn_helper("]]][[][]#02[]dsvdf", "[]#0", 6);
+        findIn_fail_helper("");
+        findIn_fail_helper("]]][[[1, 9, -13], [20, 5/5, -6]]dsvdf");
+        findIn_fail_helper("hello");
     }
 
     private static @NotNull List<RationalMatrix> readRationalMatrixList(@NotNull String s) {
