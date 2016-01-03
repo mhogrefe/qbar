@@ -245,6 +245,42 @@ public class RationalMatrixTest {
         identity_fail_helper(-1);
     }
 
+    @Test
+    public void testEquals() {
+        testEqualsHelper(
+                readRationalMatrixList("[[]#0, []#1, []#3, [[]], [[], [], []], [[-2/3]], [[-2/3, -8], [0, 5/7]]," +
+                        " [[1, 9, -13], [20, 5, -6]]]"),
+                readRationalMatrixList("[[]#0, []#1, []#3, [[]], [[], [], []], [[-2/3]], [[-2/3, -8], [0, 5/7]]," +
+                        " [[1, 9, -13], [20, 5, -6]]]")
+        );
+    }
+
+    private static void hashCode_helper(@NotNull String input, int hashCode) {
+        aeq(read(input).get().hashCode(), hashCode);
+    }
+
+    @Test
+    public void testHashCode() {
+        hashCode_helper("[]#0", 31);
+        hashCode_helper("[]#1", 32);
+        hashCode_helper("[]#3", 34);
+        hashCode_helper("[[]]", 992);
+        hashCode_helper("[[], [], []]", 954304);
+        hashCode_helper("[[-2/3]]", 94);
+        hashCode_helper("[[-2/3, -8], [0, 5/7]]", -1005948);
+        hashCode_helper("[[1, 9, -13], [20, 5, -6]]", 85734688);
+    }
+
+    @Test
+    public void testCompareTo() {
+        testCompareToHelper(readRationalMatrixList("[[]#0, []#1, []#3, [[]], [[-2/3]], [[-2/3, -8], [0, 5/7]]," +
+                " [[1, 9, -13], [20, 5, -6]], [[], [], []]]"));
+    }
+
+    private static @NotNull List<RationalMatrix> readRationalMatrixList(@NotNull String s) {
+        return Readers.readList(RationalMatrix::read).apply(s).get();
+    }
+
     private static @NotNull List<RationalVector> readRationalVectorList(@NotNull String s) {
         return Readers.readList(RationalVector::read).apply(s).get();
     }

@@ -1,6 +1,7 @@
 package mho.qbar.objects;
 
 import mho.qbar.testing.QBarDemos;
+import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
 import org.jetbrains.annotations.NotNull;
@@ -122,6 +123,31 @@ public class RationalMatrixDemos extends QBarDemos {
     private void demoIdentity() {
         for (int i : take(SMALL_LIMIT, P.withScale(4).positiveIntegersGeometric())) {
             System.out.println("identity(" + i + ") = " + identity(i));
+        }
+    }
+
+    private void demoEquals_RationalMatrix() {
+        for (Pair<RationalMatrix, RationalMatrix> p : take(LIMIT, P.pairs(P.withScale(4).rationalMatrices()))) {
+            System.out.println(p.a + (p.a.equals(p.b) ? " = " : " ≠ ") + p.b);
+        }
+    }
+
+    private void demoEquals_null() {
+        for (RationalMatrix m : take(LIMIT, P.withScale(4).rationalMatrices())) {
+            //noinspection ObjectEqualsNull
+            System.out.println(m + (m.equals(null) ? " = " : " ≠ ") + null);
+        }
+    }
+
+    private void demoHashCode() {
+        for (RationalMatrix m : take(LIMIT, P.withScale(4).rationalMatrices())) {
+            System.out.println("hashCode(" + m + ") = " + m.hashCode());
+        }
+    }
+
+    private void demoCompareTo() {
+        for (Pair<RationalMatrix, RationalMatrix> p : take(LIMIT, P.pairs(P.withScale(4).rationalMatrices()))) {
+            System.out.println(p.a + " " + Ordering.compare(p.a, p.b).toChar() + " " + p.b);
         }
     }
 

@@ -1,6 +1,8 @@
 package mho.qbar.objects;
 
+import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.testing.QBarTestProperties;
+import mho.qbar.testing.QBarTesting;
 import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
 import org.jetbrains.annotations.NotNull;
@@ -10,6 +12,7 @@ import java.util.List;
 import static mho.qbar.objects.RationalMatrix.*;
 import static mho.qbar.objects.RationalVector.ZERO_DIMENSIONAL;
 import static mho.wheels.iterables.IterableUtils.*;
+import static mho.wheels.ordering.Ordering.*;
 import static mho.wheels.testing.Testing.*;
 
 public class RationalMatrixProperties extends QBarTestProperties {
@@ -32,6 +35,9 @@ public class RationalMatrixProperties extends QBarTestProperties {
         propertiesWidth();
         propertiesZero();
         propertiesIdentity();
+        propertiesEquals();
+        propertiesHashCode();
+        propertiesCompareTo();
     }
 
     private void propertiesRows() {
@@ -294,6 +300,37 @@ public class RationalMatrixProperties extends QBarTestProperties {
                 identity(i);
                 fail(i);
             } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesEquals() {
+        initialize("equals(Object)");
+        QBarTesting.propertiesEqualsHelper(LIMIT, P, QBarIterableProvider::rationalMatrices);
+    }
+
+    private void propertiesHashCode() {
+        initialize("hashCode()");
+        QBarTesting.propertiesHashCodeHelper(LIMIT, P, QBarIterableProvider::rationalMatrices);
+    }
+
+    private void propertiesCompareTo() {
+        initialize("compareTo(RationalMatrix)");
+        QBarTesting.propertiesCompareToHelper(LIMIT, P, QBarIterableProvider::rationalMatrices);
+
+        Iterable<Pair<RationalMatrix, RationalMatrix>> ps = filterInfinite(
+                p -> p.a.height() != p.b.height(),
+                P.pairs(P.rationalMatrices())
+        );
+        for (Pair<RationalMatrix, RationalMatrix> p : take(LIMIT, ps)) {
+            assertEquals(p, compare(p.a, p.b), compare(p.a.height(), p.b.height()));
+        }
+
+        ps = filterInfinite(
+                p -> p.a.height() == p.b.height() && p.a.width() != p.b.width(),
+                P.pairs(P.rationalMatrices())
+        );
+        for (Pair<RationalMatrix, RationalMatrix> p : take(LIMIT, ps)) {
+            assertEquals(p, compare(p.a, p.b), compare(p.a.width(), p.b.width()));
         }
     }
 }
