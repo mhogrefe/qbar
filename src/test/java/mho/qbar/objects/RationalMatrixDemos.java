@@ -5,6 +5,10 @@ import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
+
+import static mho.qbar.objects.RationalMatrix.*;
+import static mho.qbar.objects.RationalVector.ZERO_DIMENSIONAL;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.testing.Testing.*;
 
@@ -60,6 +64,40 @@ public class RationalMatrixDemos extends QBarDemos {
         );
         for (Triple<RationalMatrix, Integer, Integer> t : take(LIMIT, ts)) {
             System.out.println("get(" + t.a + ", " + t.b + ", " + t.c + ") = " + t.a.get(t.b, t.c));
+        }
+    }
+
+    private void demoFromRows() {
+        Iterable<List<RationalVector>> vss = P.chooseLogarithmicOrder(
+                map(
+                        p -> p.b,
+                        P.dependentPairsInfiniteSquareRootOrder(
+                                P.pairs(P.withScale(4).positiveIntegersGeometric()),
+                                p -> P.withScale(4).lists(p.a, P.withScale(4).rationalVectors(p.b))
+                        )
+                ),
+                map(i -> toList(replicate(i, ZERO_DIMENSIONAL)), P.withScale(4).positiveIntegersGeometric())
+        );
+        for (List<RationalVector> vs : take(LIMIT, vss)) {
+            String listString = tail(init(vs.toString()));
+            System.out.println("fromRows(" + listString + ") = " + fromRows(vs));
+        }
+    }
+
+    private void demoFromColumns() {
+        Iterable<List<RationalVector>> vss = P.chooseLogarithmicOrder(
+                map(
+                        p -> p.b,
+                        P.dependentPairsInfiniteSquareRootOrder(
+                                P.pairs(P.withScale(4).positiveIntegersGeometric()),
+                                p -> P.withScale(4).lists(p.a, P.withScale(4).rationalVectors(p.b))
+                        )
+                ),
+                map(i -> toList(replicate(i, ZERO_DIMENSIONAL)), P.withScale(4).positiveIntegersGeometric())
+        );
+        for (List<RationalVector> vs : take(LIMIT, vss)) {
+            String listString = tail(init(vs.toString()));
+            System.out.println("fromColumns(" + listString + ") = " + fromColumns(vs));
         }
     }
 

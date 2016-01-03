@@ -80,7 +80,7 @@ public class RationalVectorDemos extends QBarDemos {
                         p -> p.b,
                         P.dependentPairsInfiniteLogarithmicOrder(
                                 P.withScale(4).positiveIntegersGeometric(),
-                                i -> P.pairs(P.rationalVectors(i))
+                                i -> P.pairs(P.withScale(4).rationalVectors(i))
                         )
                 )
         );
@@ -102,7 +102,7 @@ public class RationalVectorDemos extends QBarDemos {
                         p -> p.b,
                         P.dependentPairsInfiniteLogarithmicOrder(
                                 P.withScale(4).positiveIntegersGeometric(),
-                                i -> P.pairs(P.rationalVectors(i))
+                                i -> P.pairs(P.withScale(4).rationalVectors(i))
                         )
                 )
         );
@@ -175,10 +175,10 @@ public class RationalVectorDemos extends QBarDemos {
                         p -> p.b,
                         P.dependentPairsInfiniteSquareRootOrder(
                                 P.pairs(P.withScale(4).positiveIntegersGeometric()),
-                                p -> P.withScale(4).lists(p.a, P.rationalVectors(p.b))
+                                p -> P.withScale(4).lists(p.a, P.withScale(4).rationalVectors(p.b))
                         )
                 ),
-                map(i -> toList(replicate(i, ZERO_DIMENSIONAL)), P.positiveIntegersGeometric())
+                map(i -> toList(replicate(i, ZERO_DIMENSIONAL)), P.withScale(4).positiveIntegersGeometric())
         );
         for (List<RationalVector> vs : take(LIMIT, vss)) {
             String listString = tail(init(vs.toString()));
@@ -192,10 +192,10 @@ public class RationalVectorDemos extends QBarDemos {
                         p -> p.b,
                         P.dependentPairsInfiniteSquareRootOrder(
                                 P.pairs(P.withScale(4).positiveIntegersGeometric()),
-                                p -> P.withScale(4).lists(p.a, P.rationalVectors(p.b))
+                                p -> P.withScale(4).lists(p.a, P.withScale(4).rationalVectors(p.b))
                         )
                 ),
-                map(i -> toList(replicate(i, ZERO_DIMENSIONAL)), P.positiveIntegersGeometric())
+                map(i -> toList(replicate(i, ZERO_DIMENSIONAL)), P.withScale(4).positiveIntegersGeometric())
         );
         for (List<RationalVector> vs : take(LIMIT, vss)) {
             String listString = tail(init(vs.toString()));
@@ -210,7 +210,7 @@ public class RationalVectorDemos extends QBarDemos {
                         p -> p.b,
                         P.dependentPairsInfiniteLogarithmicOrder(
                                 P.withScale(4).positiveIntegersGeometric(),
-                                i -> P.pairs(P.rationalVectors(i))
+                                i -> P.pairs(P.withScale(4).rationalVectors(i))
                         )
                 )
         );
@@ -226,7 +226,7 @@ public class RationalVectorDemos extends QBarDemos {
                         p -> p.b,
                         P.dependentPairsInfiniteLogarithmicOrder(
                                 P.withScale(4).positiveIntegersGeometric(),
-                                i -> P.pairs(P.rationalVectors(i))
+                                i -> P.pairs(P.withScale(4).rationalVectors(i))
                         )
                 )
         );
@@ -250,56 +250,56 @@ public class RationalVectorDemos extends QBarDemos {
     }
 
     private void demoSquaredLength() {
-        for (RationalVector v : take(LIMIT, P.rationalVectors())) {
+        for (RationalVector v : take(LIMIT, P.withScale(4).rationalVectors())) {
             System.out.println("squaredLength(" + v + ") = " + v.squaredLength());
         }
     }
 
     private void demoCancelDenominators() {
-        for (RationalVector v : take(LIMIT, P.rationalVectors())) {
+        for (RationalVector v : take(LIMIT, P.withScale(4).rationalVectors())) {
             System.out.println("cancelDenominators(" + v + ") = " + v.cancelDenominators());
         }
     }
 
     private void demoPivot() {
-        for (RationalVector v : take(LIMIT, P.rationalVectors())) {
+        for (RationalVector v : take(LIMIT, P.withScale(4).rationalVectors())) {
             System.out.println("pivot(" + v + ") = " + v.pivot());
         }
     }
 
     private void demoIsReduced() {
-        for (RationalVector v : take(LIMIT, P.rationalVectors())) {
+        for (RationalVector v : take(LIMIT, P.withScale(4).rationalVectors())) {
             System.out.println(v + " is " + (v.isReduced() ? "" : "not ") + "reduced");
         }
     }
 
     private void demoReduce() {
-        for (RationalVector v : take(LIMIT, P.rationalVectors())) {
+        for (RationalVector v : take(LIMIT, P.withScale(4).rationalVectors())) {
             System.out.println("reduce(" + v + ") = " + v.reduce());
         }
     }
 
     private void demoEquals_RationalVector() {
-        for (Pair<RationalVector, RationalVector> p : take(LIMIT, P.pairs(P.rationalVectors()))) {
+        for (Pair<RationalVector, RationalVector> p : take(LIMIT, P.pairs(P.withScale(4).rationalVectors()))) {
             System.out.println(p.a + (p.a.equals(p.b) ? " = " : " ≠ ") + p.b);
         }
     }
 
     private void demoEquals_null() {
-        for (RationalVector v : take(LIMIT, P.rationalVectors())) {
+        for (RationalVector v : take(LIMIT, P.withScale(4).rationalVectors())) {
             //noinspection ObjectEqualsNull
             System.out.println(v + (v.equals(null) ? " = " : " ≠ ") + null);
         }
     }
 
     private void demoHashCode() {
-        for (RationalVector v : take(LIMIT, P.rationalVectors())) {
+        for (RationalVector v : take(LIMIT, P.withScale(4).rationalVectors())) {
             System.out.println("hashCode(" + v + ") = " + v.hashCode());
         }
     }
 
     private void demoCompareTo() {
-        for (Pair<RationalVector, RationalVector> p : take(LIMIT, P.pairs(P.rationalVectors()))) {
+        for (Pair<RationalVector, RationalVector> p : take(LIMIT, P.pairs(P.withScale(4).rationalVectors()))) {
             System.out.println(p.a + " " + Ordering.compare(p.a, p.b).toChar() + " " + p.b);
         }
     }

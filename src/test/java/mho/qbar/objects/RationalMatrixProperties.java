@@ -7,6 +7,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
+import static mho.qbar.objects.RationalMatrix.*;
+import static mho.qbar.objects.RationalVector.ZERO_DIMENSIONAL;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.testing.Testing.*;
 
@@ -24,6 +26,8 @@ public class RationalMatrixProperties extends QBarTestProperties {
         propertiesRow();
         propertiesColumn();
         propertiesGet();
+        propertiesFromRows();
+        propertiesFromColumns();
     }
 
     private void propertiesRows() {
@@ -126,6 +130,102 @@ public class RationalMatrixProperties extends QBarTestProperties {
                 t.a.get(t.b, t.c);
                 fail(t);
             } catch (IndexOutOfBoundsException ignored) {}
+        }
+    }
+
+    private void propertiesFromRows() {
+        initialize("fromRows(List<RationalVector>)");
+        Iterable<List<RationalVector>> vss = P.chooseLogarithmicOrder(
+                map(
+                        p -> p.b,
+                        P.dependentPairsInfiniteSquareRootOrder(
+                                P.pairs(P.positiveIntegersGeometric()),
+                                p -> P.lists(p.a, P.rationalVectors(p.b))
+                        )
+                ),
+                map(i -> toList(replicate(i, ZERO_DIMENSIONAL)), P.positiveIntegersGeometric())
+        );
+        for (List<RationalVector> vs : take(LIMIT, vss)) {
+            RationalMatrix m = fromRows(vs);
+            m.validate();
+            inverse(RationalMatrix::fromRows, n -> toList(n.rows()), vs);
+            assertEquals(vs, m.height(), vs.size());
+            if (vs.size() != 0) {
+                assertEquals(vs, m.width(), head(vs).dimension());
+            }
+        }
+
+        Iterable<List<RationalVector>> vssFail = filterInfinite(
+                us -> !same(map(RationalVector::dimension, us)),
+                P.listsAtLeast(1, P.rationalVectors())
+        );
+        for (List<RationalVector> vs : take(LIMIT, vssFail)) {
+            try {
+                fromRows(vs);
+                fail(vs);
+            } catch (IllegalArgumentException ignored) {}
+        }
+
+        vssFail = map(
+                p -> p.b,
+                P.dependentPairsInfiniteSquareRootOrder(
+                        P.positiveIntegersGeometric(),
+                        i -> P.listsWithElement(null, P.rationalVectors(i))
+                )
+        );
+        for (List<RationalVector> vs : take(LIMIT, vssFail)) {
+            try {
+                fromRows(vs);
+                fail(vs);
+            } catch (NullPointerException ignored) {}
+        }
+    }
+
+    private void propertiesFromColumns() {
+        initialize("fromColumns(List<RationalVector>)");
+        Iterable<List<RationalVector>> vss = P.chooseLogarithmicOrder(
+                map(
+                        p -> p.b,
+                        P.dependentPairsInfiniteSquareRootOrder(
+                                P.pairs(P.positiveIntegersGeometric()),
+                                p -> P.lists(p.a, P.rationalVectors(p.b))
+                        )
+                ),
+                map(i -> toList(replicate(i, ZERO_DIMENSIONAL)), P.positiveIntegersGeometric())
+        );
+        for (List<RationalVector> vs : take(LIMIT, vss)) {
+            RationalMatrix m = fromColumns(vs);
+            m.validate();
+            inverse(RationalMatrix::fromColumns, n -> toList(n.columns()), vs);
+            assertEquals(vs, m.width(), vs.size());
+            if (vs.size() != 0) {
+                assertEquals(vs, m.height(), head(vs).dimension());
+            }
+        }
+
+        Iterable<List<RationalVector>> vssFail = filterInfinite(
+                us -> !same(map(RationalVector::dimension, us)),
+                P.listsAtLeast(1, P.rationalVectors())
+        );
+        for (List<RationalVector> vs : take(LIMIT, vssFail)) {
+            try {
+                fromColumns(vs);
+                fail(vs);
+            } catch (IllegalArgumentException ignored) {}
+        }
+
+        vssFail = map(
+                p -> p.b,
+                P.dependentPairsInfiniteSquareRootOrder(
+                        P.positiveIntegersGeometric(),
+                        i -> P.listsWithElement(null, P.rationalVectors(i))
+                )
+        );
+        for (List<RationalVector> vs : take(LIMIT, vssFail)) {
+            try {
+                fromColumns(vs);
+                fail(vs);
+            } catch (NullPointerException ignored) {}
         }
     }
 }

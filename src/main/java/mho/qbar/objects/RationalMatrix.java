@@ -176,11 +176,14 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
      * @return a {@code RationalMatrix} with the given rows
      */
     public static @NotNull RationalMatrix fromRows(@NotNull List<RationalVector> rows) {
-        if (any(a -> a == null, rows))
+        if (any(a -> a == null, rows)) {
             throw new NullPointerException();
-        if (!same(map(RationalVector::dimension, rows)))
-            throw new IllegalArgumentException("rows must have same dimension");
-        return new RationalMatrix(toList(rows), rows.isEmpty() ? 0 : rows.get(0).dimension());
+        } else if (!same(map(RationalVector::dimension, rows))) {
+            throw new IllegalArgumentException("Every element of rows must have the same dimension. Invalid rows: " +
+                    rows);
+        } else {
+            return new RationalMatrix(toList(rows), rows.isEmpty() ? 0 : rows.get(0).dimension());
+        }
     }
 
     /**
@@ -196,13 +199,15 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
      * @return a {@code RationalMatrix} with the given columns
      */
     public static @NotNull RationalMatrix fromColumns(@NotNull List<RationalVector> columns) {
-        if (any(a -> a == null, columns))
+        if (any(a -> a == null, columns)) {
             throw new NullPointerException();
-        if (!same(map(RationalVector::dimension, columns)))
-            throw new IllegalArgumentException("columns must have same dimension");
-        if (columns.isEmpty()) {
+        } else if (!same(map(RationalVector::dimension, columns))) {
+            throw new IllegalArgumentException("Every element of columns must have the same dimension." +
+                    " Invalid columns: " + columns);
+        } else if (columns.isEmpty()) {
             return new RationalMatrix(Collections.emptyList(), 0);
         } else {
+            //noinspection RedundantCast
             return new RationalMatrix(
                     toList(
                             map(

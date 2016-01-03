@@ -1,7 +1,10 @@
 package mho.qbar.objects;
 
+import mho.wheels.io.Readers;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
+
+import java.util.List;
 
 import static mho.qbar.objects.RationalMatrix.*;
 import static mho.wheels.iterables.IterableUtils.*;
@@ -120,5 +123,55 @@ public class RationalMatrixTest {
         get_fail_helper("[[]]", 0, 0);
         get_fail_helper("[[1, 9, -13], [20, 5, -6]]", 2, 0);
         get_fail_helper("[[1, 9, -13], [20, 5, -6]]", 0, 3);
+    }
+
+    private static void fromRows_helper(@NotNull String input, @NotNull String output) {
+        aeq(fromRows(readRationalVectorList(input)), output);
+    }
+
+    private static void fromRows_fail_helper(@NotNull String input) {
+        try {
+            fromRows(readRationalVectorListWithNulls(input));
+        } catch (NullPointerException | IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testFromRows() {
+        fromRows_helper("[]", "[]#0");
+        fromRows_helper("[[]]", "[[]]");
+        fromRows_helper("[[-2/3]]", "[[-2/3]]");
+        fromRows_helper("[[-2/3, -8], [0, 5/7]]", "[[-2/3, -8], [0, 5/7]]");
+        fromRows_helper("[[1, 9, -13], [20, 5, -6]]", "[[1, 9, -13], [20, 5, -6]]");
+        fromRows_fail_helper("[[-2/3, -8], null, [0, 5/7]]");
+        fromRows_fail_helper("[[-2/3, -8], [0], [0, 5/7]]");
+    }
+
+    private static void fromColumns_helper(@NotNull String input, @NotNull String output) {
+        aeq(fromColumns(readRationalVectorList(input)), output);
+    }
+
+    private static void fromColumns_fail_helper(@NotNull String input) {
+        try {
+            fromColumns(readRationalVectorListWithNulls(input));
+        } catch (NullPointerException | IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testFromColumns() {
+        fromColumns_helper("[]", "[]#0");
+        fromColumns_helper("[[]]", "[]#1");
+        fromColumns_helper("[[-2/3]]", "[[-2/3]]");
+        fromColumns_helper("[[-2/3, -8], [0, 5/7]]", "[[-2/3, 0], [-8, 5/7]]");
+        fromColumns_helper("[[1, 9, -13], [20, 5, -6]]", "[[1, 20], [9, 5], [-13, -6]]");
+        fromColumns_fail_helper("[[-2/3, -8], null, [0, 5/7]]");
+        fromColumns_fail_helper("[[-2/3, -8], [0], [0, 5/7]]");
+    }
+
+    private static @NotNull List<RationalVector> readRationalVectorList(@NotNull String s) {
+        return Readers.readList(RationalVector::read).apply(s).get();
+    }
+
+    private static @NotNull List<RationalVector> readRationalVectorListWithNulls(@NotNull String s) {
+        return Readers.readListWithNulls(RationalVector::read).apply(s).get();
     }
 }
