@@ -90,6 +90,7 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
         if (rows.isEmpty()) {
             return replicate(width, RationalVector.ZERO_DIMENSIONAL);
         } else {
+            //noinspection RedundantCast
             return map(
                     RationalVector::of,
                     transpose((Iterable<Iterable<Rational>>) map(r -> (Iterable<Rational>) r, rows))
@@ -153,7 +154,7 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
      * @param j the 0-based column index
      * @return the element of {@code this} in the {@code i}th row and {@code j}th column
      */
-    public @NotNull Rational element(int i, int j) {
+    public @NotNull Rational get(int i, int j) {
         return rows.get(i).get(j);
     }
 
@@ -311,7 +312,7 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
     /**
      * Compares {@code this} to {@code that}, returning 1, –1, or 0 if the answer is "greater than", "less than", or
      * "equal to", respectively. Shortlex ordering is used; {@code RationalMatrix}es are compared first by height, then
-     * by width, and then left-to-right, top-to-bottom, element by element.
+     * by width, and then top-to-bottom, left-to-right, element by element.
      *
      * <ul>
      *  <li>{@code this} may be any {@code RationalMatrix}.</li>
@@ -348,7 +349,7 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
     public static @NotNull Optional<RationalMatrix> read(@NotNull String s) {
         if (s.startsWith("[]#")) {
             Optional<Integer> oWidth = Readers.readInteger(s.substring(3));
-            if (oWidth.isPresent()) return Optional.empty();
+            if (!oWidth.isPresent()) return Optional.empty();
             int width = oWidth.get();
             if (width < 0) return Optional.empty();
             return Optional.of(new RationalMatrix(Collections.emptyList(), width));

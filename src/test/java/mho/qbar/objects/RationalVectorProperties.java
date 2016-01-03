@@ -77,10 +77,8 @@ public class RationalVectorProperties extends QBarTestProperties {
             assertTrue(v, all(r -> r != null, rs));
             //noinspection Convert2MethodRef
             inverse(IterableUtils::toList, (List<Rational> ss) -> of(ss), v);
-            try {
-                v.iterator().remove();
-                fail(v);
-            } catch (UnsupportedOperationException ignored) {}
+            testNoRemove(v);
+            testHasNext(v);
         }
     }
 

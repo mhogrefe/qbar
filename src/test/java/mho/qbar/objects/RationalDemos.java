@@ -655,7 +655,7 @@ public class RationalDemos extends QBarDemos {
 
     private void demoRead_targeted() {
         for (String s : take(LIMIT, P.strings(RATIONAL_CHARS))) {
-            System.out.println("read(" + nicePrint(s) + ") = " + read(s));
+            System.out.println("read(" + s + ") = " + read(s));
         }
     }
 
@@ -667,7 +667,7 @@ public class RationalDemos extends QBarDemos {
 
     private void demoFindIn_targeted() {
         for (String s : take(LIMIT, P.strings(RATIONAL_CHARS))) {
-            System.out.println("findIn(" + nicePrint(s) + ") = " + findIn(s));
+            System.out.println("findIn(" + s + ") = " + findIn(s));
         }
     }
 
