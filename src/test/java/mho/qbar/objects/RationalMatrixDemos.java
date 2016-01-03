@@ -12,10 +12,6 @@ public class RationalMatrixDemos extends QBarDemos {
         super(useRandom);
     }
 
-    public static void main(String[] args) {
-        new RationalMatrixDemos(false).demoColumns();
-    }
-
     private void demoRows() {
         for (RationalMatrix m : take(LIMIT, P.rationalMatrices())) {
             System.out.println("rows(" + m + ") = " + toList(m.rows()));

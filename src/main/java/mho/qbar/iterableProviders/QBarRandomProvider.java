@@ -715,17 +715,6 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
     }
 
     @Override
-    public @NotNull Iterable<Polynomial> polynomials(int degree) {
-        return map(
-                js -> Polynomial.of(toList(js)),
-                filter(
-                        is -> is.isEmpty() || !last(is).equals(BigInteger.ZERO),
-                        withScale(getSecondaryScale()).lists(degree + 1, bigIntegers())
-                )
-        );
-    }
-
-    @Override
     public @NotNull Iterable<Polynomial> polynomialsAtLeast(int minDegree) {
         return map(
                 js -> Polynomial.of(toList(js)),
@@ -760,17 +749,6 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
     @Override
     public @NotNull Iterable<Polynomial> primitivePolynomials() {
         return null;
-    }
-
-    @Override
-    public @NotNull Iterable<RationalPolynomial> rationalPolynomials(int degree) {
-        return map(
-                js -> RationalPolynomial.of(toList(js)),
-                filter(
-                        is -> is.isEmpty() || last(is) != Rational.ZERO,
-                        withScale(getSecondaryScale()).lists(degree + 1, rationals())
-                )
-        );
     }
 
     @Override

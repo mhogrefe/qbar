@@ -598,25 +598,36 @@ public class QBarExhaustiveProviderTest {
                 " [[1/2], [0]], [[1, 0], [0, 0]], [[1/2], [1]], [[1, 0], [0, 1]], ...]");
     }
 
+    private static void polynomials_int_helper(int degree, @NotNull String output) {
+        simpleProviderHelper(QEP.polynomials(degree), output);
+    }
+
+    private static void polynomials_int_fail_helper(int degree) {
+        try {
+            QEP.polynomials(degree);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
     @Test
     public void testPolynomials_int() {
-        aeqit(QEP.polynomials(-1), "[0]");
-        aeqit(take(50, QEP.polynomials(0)),
+        polynomials_int_helper(-1, "[0]");
+        polynomials_int_helper(0,
                 "[1, -1, 2, -2, 3, -3, 4, -4, 5, -5, 6, -6, 7, -7, 8, -8, 9, -9, 10, -10, 11, -11, 12, -12, 13, -13," +
                 " 14, -14, 15, -15, 16, -16, 17, -17, 18, -18, 19, -19, 20, -20, 21, -21, 22, -22, 23, -23, 24, -24," +
-                " 25, -25]");
-        aeqit(take(50, QEP.polynomials(1)),
+                " 25, -25, ...]");
+        polynomials_int_helper(1,
                 "[x, x+1, -x, 2*x, -x+1, 2*x+1, x-1, x+2, -x-1, 2*x-1, -x+2, 2*x+2, -2*x, 3*x, -2*x+1, 3*x+1, -3*x," +
                 " 4*x, -3*x+1, 4*x+1, -2*x-1, 3*x-1, -2*x+2, 3*x+2, -3*x-1, 4*x-1, -3*x+2, 4*x+2, x-2, x+3, -x-2," +
                 " 2*x-2, -x+3, 2*x+3, x-3, x+4, -x-3, 2*x-3, -x+4, 2*x+4, -2*x-2, 3*x-2, -2*x+3, 3*x+3, -3*x-2," +
-                " 4*x-2, -3*x+3, 4*x+3, -2*x-3, 3*x-3]");
-        aeqit(take(50, QEP.polynomials(2)),
+                " 4*x-2, -3*x+3, 4*x+3, -2*x-3, 3*x-3, ...]");
+        polynomials_int_helper(2,
                 "[x^2, x^2+x, x^2+1, x^2+x+1, -x^2, 2*x^2, -x^2+x, 2*x^2+x, -x^2+1, 2*x^2+1, -x^2+x+1, 2*x^2+x+1," +
                 " x^2-x, x^2+2*x, x^2-x+1, x^2+2*x+1, -x^2-x, 2*x^2-x, -x^2+2*x, 2*x^2+2*x, -x^2-x+1, 2*x^2-x+1," +
                 " -x^2+2*x+1, 2*x^2+2*x+1, x^2-1, x^2+x-1, x^2+2, x^2+x+2, -x^2-1, 2*x^2-1, -x^2+x-1, 2*x^2+x-1," +
                 " -x^2+2, 2*x^2+2, -x^2+x+2, 2*x^2+x+2, x^2-x-1, x^2+2*x-1, x^2-x+2, x^2+2*x+2, -x^2-x-1, 2*x^2-x-1," +
-                " -x^2+2*x-1, 2*x^2+2*x-1, -x^2-x+2, 2*x^2-x+2, -x^2+2*x+2, 2*x^2+2*x+2, -2*x^2, 3*x^2]");
-        aeqit(take(50, QEP.polynomials(9)),
+                " -x^2+2*x-1, 2*x^2+2*x-1, -x^2-x+2, 2*x^2-x+2, -x^2+2*x+2, 2*x^2+2*x+2, -2*x^2, 3*x^2, ...]");
+        polynomials_int_helper(9,
                 "[x^9, x^9+x^8, x^9+x^7, x^9+x^8+x^7, x^9+x^6, x^9+x^8+x^6, x^9+x^7+x^6, x^9+x^8+x^7+x^6, x^9+x^5," +
                 " x^9+x^8+x^5, x^9+x^7+x^5, x^9+x^8+x^7+x^5, x^9+x^6+x^5, x^9+x^8+x^6+x^5, x^9+x^7+x^6+x^5," +
                 " x^9+x^8+x^7+x^6+x^5, x^9+x^4, x^9+x^8+x^4, x^9+x^7+x^4, x^9+x^8+x^7+x^4, x^9+x^6+x^4," +
@@ -625,46 +636,59 @@ public class QBarExhaustiveProviderTest {
                 " x^9+x^8+x^7+x^6+x^5+x^4, x^9+x^3, x^9+x^8+x^3, x^9+x^7+x^3, x^9+x^8+x^7+x^3, x^9+x^6+x^3," +
                 " x^9+x^8+x^6+x^3, x^9+x^7+x^6+x^3, x^9+x^8+x^7+x^6+x^3, x^9+x^5+x^3, x^9+x^8+x^5+x^3," +
                 " x^9+x^7+x^5+x^3, x^9+x^8+x^7+x^5+x^3, x^9+x^6+x^5+x^3, x^9+x^8+x^6+x^5+x^3, x^9+x^7+x^6+x^5+x^3," +
-                " x^9+x^8+x^7+x^6+x^5+x^3, x^9+x^4+x^3, x^9+x^8+x^4+x^3]");
+                " x^9+x^8+x^7+x^6+x^5+x^3, x^9+x^4+x^3, x^9+x^8+x^4+x^3, ...]");
+        polynomials_int_fail_helper(-2);
+    }
+
+    @Test
+    public void testPolynomials() {
+        simpleProviderHelper(QEP.polynomials(),
+                "[0, 1, -1, x, 2, -2, 3, x^2, -3, x+1, 4, -4, -x, 5, -5, 2*x, 6, x^3, -6, -x+1, 7, x^2+x, -7, 2*x+1," +
+                " 8, -8, 9, -9, x-1, 10, -10, 11, x^2+1, -11, x+2, 12, x^4, -12, -x-1, 13, -13, 2*x-1, 14, x^3+x^2," +
+                " -14, -x+2, 15, x^2+x+1, -15, 2*x+2, ...]");
+    }
+
+    private static void polynomialsAtLeast_helper(int minDegree, @NotNull String output) {
+        simpleProviderHelper(QEP.polynomialsAtLeast(minDegree), output);
+    }
+
+    private static void polynomialsAtLeast_fail_helper(int minDegree) {
+        try {
+            QEP.polynomialsAtLeast(minDegree);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
     }
 
     @Test
     public void testPolynomialsAtLeast() {
-        aeqit(take(50, QEP.polynomialsAtLeast(-1)),
+        polynomialsAtLeast_helper(-1,
                 "[0, 1, -1, x, 2, -2, 3, x^2, -3, x+1, 4, -4, -x, 5, -5, 2*x, 6, x^3, -6, -x+1, 7, x^2+x, -7, 2*x+1," +
                 " 8, -8, 9, -9, x-1, 10, -10, 11, x^2+1, -11, x+2, 12, x^4, -12, -x-1, 13, -13, 2*x-1, 14, x^3+x^2," +
-                " -14, -x+2, 15, x^2+x+1, -15, 2*x+2]");
-        aeqit(take(50, QEP.polynomialsAtLeast(0)),
+                " -14, -x+2, 15, x^2+x+1, -15, 2*x+2, ...]");
+        polynomialsAtLeast_helper(0,
                 "[1, -1, x, 2, -2, 3, x^2, -3, x+1, 4, -4, -x, 5, -5, 2*x, 6, x^3, -6, -x+1, 7, x^2+x, -7, 2*x+1, 8," +
                 " -8, 9, -9, x-1, 10, -10, 11, x^2+1, -11, x+2, 12, x^4, -12, -x-1, 13, -13, 2*x-1, 14, x^3+x^2," +
-                " -14, -x+2, 15, x^2+x+1, -15, 2*x+2, 16]");
-        aeqit(take(50, QEP.polynomialsAtLeast(1)),
+                " -14, -x+2, 15, x^2+x+1, -15, 2*x+2, 16, ...]");
+        polynomialsAtLeast_helper(1,
                 "[x, x^2, x+1, -x, 2*x, x^3, -x+1, x^2+x, 2*x+1, x-1, x^2+1, x+2, x^4, -x-1, 2*x-1, x^3+x^2, -x+2," +
                 " x^2+x+1, 2*x+2, -2*x, -x^2, 3*x, -2*x+1, 2*x^2, 3*x+1, -3*x, -x^2+x, 4*x, x^3+x, -3*x+1, 2*x^2+x," +
                 " 4*x+1, x^5, -2*x-1, -x^2+1, 3*x-1, -2*x+2, 2*x^2+1, 3*x+2, x^4+x^3, -3*x-1, -x^2+x+1, 4*x-1," +
-                " x^3+x^2+x, -3*x+2, 2*x^2+x+1, 4*x+2, x-2, x^2-x, x+3]");
-        aeqit(take(50, QEP.polynomialsAtLeast(2)),
+                " x^3+x^2+x, -3*x+2, 2*x^2+x+1, 4*x+2, x-2, x^2-x, x+3, ...]");
+        polynomialsAtLeast_helper(2,
                 "[x^2, x^3, x^2+x, x^2+1, x^4, x^3+x^2, x^2+x+1, -x^2, 2*x^2, -x^2+x, x^3+x, 2*x^2+x, x^5, -x^2+1," +
                 " 2*x^2+1, x^4+x^3, -x^2+x+1, x^3+x^2+x, 2*x^2+x+1, x^2-x, x^3+1, x^2+2*x, x^2-x+1, x^4+x^2," +
                 " x^3+x^2+1, x^2+2*x+1, x^6, -x^2-x, 2*x^2-x, -x^2+2*x, x^3+x+1, 2*x^2+2*x, x^5+x^4, -x^2-x+1," +
                 " 2*x^2-x+1, x^4+x^3+x^2, -x^2+2*x+1, x^3+x^2+x+1, 2*x^2+2*x+1, -x^3, x^2-1, 2*x^3, x^2+x-1," +
-                " -x^3+x^2, x^2+2, x^4+x, 2*x^3+x^2, x^2+x+2, -x^2-1, -x^3+x]");
-        aeqit(take(50, QEP.polynomialsAtLeast(9)),
+                " -x^3+x^2, x^2+2, x^4+x, 2*x^3+x^2, x^2+x+2, -x^2-1, -x^3+x, ...]");
+        polynomialsAtLeast_helper(9,
                 "[x^9, x^10, x^9+x^8, x^9+x^7, x^11, x^10+x^9, x^9+x^8+x^7, x^9+x^6, x^10+x^8, x^9+x^8+x^6, x^12," +
                 " x^9+x^7+x^6, x^11+x^10, x^10+x^9+x^8, x^9+x^8+x^7+x^6, x^9+x^5, x^10+x^7, x^9+x^8+x^5," +
                 " x^9+x^7+x^5, x^11+x^9, x^10+x^9+x^7, x^9+x^8+x^7+x^5, x^13, x^9+x^6+x^5, x^10+x^8+x^7," +
                 " x^9+x^8+x^6+x^5, x^12+x^11, x^9+x^7+x^6+x^5, x^11+x^10+x^9, x^10+x^9+x^8+x^7, x^9+x^8+x^7+x^6+x^5," +
                 " x^9+x^4, x^10+x^6, x^9+x^8+x^4, x^9+x^7+x^4, x^11+x^8, x^10+x^9+x^6, x^9+x^8+x^7+x^4, x^9+x^6+x^4," +
                 " x^10+x^8+x^6, x^9+x^8+x^6+x^4, x^12+x^10, x^9+x^7+x^6+x^4, x^11+x^10+x^8, x^10+x^9+x^8+x^6," +
-                " x^9+x^8+x^7+x^6+x^4, x^14, x^9+x^5+x^4, x^10+x^7+x^6, x^9+x^8+x^5+x^4]");
-    }
-
-    @Test
-    public void testPolynomials() {
-        aeqit(take(50, QEP.polynomials()),
-                "[0, 1, -1, x, 2, -2, 3, x^2, -3, x+1, 4, -4, -x, 5, -5, 2*x, 6, x^3, -6, -x+1, 7, x^2+x, -7, 2*x+1," +
-                " 8, -8, 9, -9, x-1, 10, -10, 11, x^2+1, -11, x+2, 12, x^4, -12, -x-1, 13, -13, 2*x-1, 14, x^3+x^2," +
-                " -14, -x+2, 15, x^2+x+1, -15, 2*x+2]");
+                " x^9+x^8+x^7+x^6+x^4, x^14, x^9+x^5+x^4, x^10+x^7+x^6, x^9+x^8+x^5+x^4, ...]");
+        polynomialsAtLeast_fail_helper(-2);
     }
 
     @Test
@@ -737,20 +761,31 @@ public class QBarExhaustiveProviderTest {
                 " 2*x^2-x, x^3+x+1, 4*x+3, x^5+x^4, 2*x^2-x+1, 3*x+4, x^4+x^3+x^2, 4*x-3, x^3+x^2+x+1]");
     }
 
+    private static void rationalPolynomials_int_helper(int degree, @NotNull String output) {
+        simpleProviderHelper(QEP.rationalPolynomials(degree), output);
+    }
+
+    private static void rationalPolynomials_int_fail_helper(int degree) {
+        try {
+            QEP.rationalPolynomials(degree);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
     @Test
     public void testRationalPolynomials_int() {
-        aeqit(QEP.rationalPolynomials(-1), "[0]");
-        aeqit(take(50, QEP.rationalPolynomials(0)),
+        rationalPolynomials_int_helper(-1, "[0]");
+        rationalPolynomials_int_helper(0,
                 "[1, 1/2, 1/3, 1/4, -1, -1/2, 2, -1/3, -1/4, 2/3, 1/5, 1/6, 1/7, 1/8, -1/5, -1/6, 2/5, -1/7, -1/8," +
                 " 2/7, -2, 3, 3/2, -2/3, 3/4, -3, -3/2, 4, -3/4, 4/3, -2/5, 3/5, -2/7, 3/7, 3/8, -3/5, 4/5, -3/7," +
-                " -3/8, 4/7, 1/9, 1/10, 1/11, 1/12, -1/9, -1/10, 2/9, -1/11, -1/12, 2/11]");
-        aeqit(take(50, QEP.rationalPolynomials(1)),
+                " -3/8, 4/7, 1/9, 1/10, 1/11, 1/12, -1/9, -1/10, 2/9, -1/11, -1/12, 2/11, ...]");
+        rationalPolynomials_int_helper(1,
                 "[x, x+1, 1/2*x, 1/3*x, 1/2*x+1, 1/3*x+1, x+1/2, x+1/3, 1/2*x+1/2, 1/3*x+1/2, 1/2*x+1/3, 1/3*x+1/3," +
                 " 1/4*x, -x, 1/4*x+1, -x+1, -1/2*x, 2*x, -1/2*x+1, 2*x+1, 1/4*x+1/2, -x+1/2, 1/4*x+1/3, -x+1/3," +
                 " -1/2*x+1/2, 2*x+1/2, -1/2*x+1/3, 2*x+1/3, x+1/4, x-1, 1/2*x+1/4, 1/3*x+1/4, 1/2*x-1, 1/3*x-1," +
                 " x-1/2, x+2, 1/2*x-1/2, 1/3*x-1/2, 1/2*x+2, 1/3*x+2, 1/4*x+1/4, -x+1/4, 1/4*x-1, -x-1, -1/2*x+1/4," +
-                " 2*x+1/4, -1/2*x-1, 2*x-1, 1/4*x-1/2, -x-1/2]");
-        aeqit(take(50, QEP.rationalPolynomials(2)),
+                " 2*x+1/4, -1/2*x-1, 2*x-1, 1/4*x-1/2, -x-1/2, ...]");
+        rationalPolynomials_int_helper(2,
                 "[x^2, x^2+x, x^2+1, x^2+x+1, 1/2*x^2, 1/3*x^2, 1/2*x^2+x, 1/3*x^2+x, 1/2*x^2+1, 1/3*x^2+1," +
                 " 1/2*x^2+x+1, 1/3*x^2+x+1, x^2+1/2*x, x^2+1/3*x, x^2+1/2*x+1, x^2+1/3*x+1, 1/2*x^2+1/2*x," +
                 " 1/3*x^2+1/2*x, 1/2*x^2+1/3*x, 1/3*x^2+1/3*x, 1/2*x^2+1/2*x+1, 1/3*x^2+1/2*x+1, 1/2*x^2+1/3*x+1," +
@@ -758,8 +793,8 @@ public class QBarExhaustiveProviderTest {
                 " 1/3*x^2+x+1/2, 1/2*x^2+1/3, 1/3*x^2+1/3, 1/2*x^2+x+1/3, 1/3*x^2+x+1/3, x^2+1/2*x+1/2," +
                 " x^2+1/3*x+1/2, x^2+1/2*x+1/3, x^2+1/3*x+1/3, 1/2*x^2+1/2*x+1/2, 1/3*x^2+1/2*x+1/2," +
                 " 1/2*x^2+1/3*x+1/2, 1/3*x^2+1/3*x+1/2, 1/2*x^2+1/2*x+1/3, 1/3*x^2+1/2*x+1/3, 1/2*x^2+1/3*x+1/3," +
-                " 1/3*x^2+1/3*x+1/3, 1/4*x^2, -x^2]");
-        aeqit(take(50, QEP.rationalPolynomials(9)),
+                " 1/3*x^2+1/3*x+1/3, 1/4*x^2, -x^2, ...]");
+        rationalPolynomials_int_helper(9,
                 "[x^9, x^9+x^8, x^9+x^7, x^9+x^8+x^7, x^9+x^6, x^9+x^8+x^6, x^9+x^7+x^6, x^9+x^8+x^7+x^6, x^9+x^5," +
                 " x^9+x^8+x^5, x^9+x^7+x^5, x^9+x^8+x^7+x^5, x^9+x^6+x^5, x^9+x^8+x^6+x^5, x^9+x^7+x^6+x^5," +
                 " x^9+x^8+x^7+x^6+x^5, x^9+x^4, x^9+x^8+x^4, x^9+x^7+x^4, x^9+x^8+x^7+x^4, x^9+x^6+x^4," +
@@ -768,51 +803,64 @@ public class QBarExhaustiveProviderTest {
                 " x^9+x^8+x^7+x^6+x^5+x^4, x^9+x^3, x^9+x^8+x^3, x^9+x^7+x^3, x^9+x^8+x^7+x^3, x^9+x^6+x^3," +
                 " x^9+x^8+x^6+x^3, x^9+x^7+x^6+x^3, x^9+x^8+x^7+x^6+x^3, x^9+x^5+x^3, x^9+x^8+x^5+x^3," +
                 " x^9+x^7+x^5+x^3, x^9+x^8+x^7+x^5+x^3, x^9+x^6+x^5+x^3, x^9+x^8+x^6+x^5+x^3, x^9+x^7+x^6+x^5+x^3," +
-                " x^9+x^8+x^7+x^6+x^5+x^3, x^9+x^4+x^3, x^9+x^8+x^4+x^3]");
+                " x^9+x^8+x^7+x^6+x^5+x^3, x^9+x^4+x^3, x^9+x^8+x^4+x^3, ...]");
+        rationalPolynomials_int_fail_helper(-2);
+    }
+
+    @Test
+    public void testRationalPolynomials() {
+        simpleProviderHelper(QEP.rationalPolynomials(),
+                "[0, 1, 1/2, x, 1/3, 1/4, -1, x^2, -1/2, x+1, 2, -1/3, 1/2*x, -1/4, 2/3, 1/3*x, 1/5, x^3, 1/6," +
+                " 1/2*x+1, 1/7, x^2+x, 1/8, 1/3*x+1, -1/5, -1/6, 2/5, -1/7, x+1/2, -1/8, 2/7, -2, x^2+1, 3, x+1/3," +
+                " 3/2, x^4, -2/3, 1/2*x+1/2, 3/4, -3, 1/3*x+1/2, -3/2, x^3+x^2, 4, 1/2*x+1/3, -3/4, x^2+x+1, 4/3," +
+                " 1/3*x+1/3, ...]");
+    }
+
+    private static void rationalPolynomialsAtLeast_helper(int minDegree, @NotNull String output) {
+        simpleProviderHelper(QEP.rationalPolynomialsAtLeast(minDegree), output);
+    }
+
+    private static void rationalPolynomialsAtLeast_fail_helper(int minDegree) {
+        try {
+            QEP.rationalPolynomialsAtLeast(minDegree);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
     }
 
     @Test
     public void testRationalPolynomialsAtLeast() {
-        aeqit(take(50, QEP.rationalPolynomialsAtLeast(-1)),
+        rationalPolynomialsAtLeast_helper(-1,
                 "[0, 1, 1/2, x, 1/3, 1/4, -1, x^2, -1/2, x+1, 2, -1/3, 1/2*x, -1/4, 2/3, 1/3*x, 1/5, x^3, 1/6," +
                 " 1/2*x+1, 1/7, x^2+x, 1/8, 1/3*x+1, -1/5, -1/6, 2/5, -1/7, x+1/2, -1/8, 2/7, -2, x^2+1, 3, x+1/3," +
                 " 3/2, x^4, -2/3, 1/2*x+1/2, 3/4, -3, 1/3*x+1/2, -3/2, x^3+x^2, 4, 1/2*x+1/3, -3/4, x^2+x+1, 4/3," +
-                " 1/3*x+1/3]");
-        aeqit(take(50, QEP.rationalPolynomialsAtLeast(0)),
+                " 1/3*x+1/3, ...]");
+        rationalPolynomialsAtLeast_helper(0,
                 "[1, 1/2, x, 1/3, 1/4, -1, x^2, -1/2, x+1, 2, -1/3, 1/2*x, -1/4, 2/3, 1/3*x, 1/5, x^3, 1/6, 1/2*x+1," +
                 " 1/7, x^2+x, 1/8, 1/3*x+1, -1/5, -1/6, 2/5, -1/7, x+1/2, -1/8, 2/7, -2, x^2+1, 3, x+1/3, 3/2, x^4," +
                 " -2/3, 1/2*x+1/2, 3/4, -3, 1/3*x+1/2, -3/2, x^3+x^2, 4, 1/2*x+1/3, -3/4, x^2+x+1, 4/3, 1/3*x+1/3," +
-                " -2/5]");
-        aeqit(take(50, QEP.rationalPolynomialsAtLeast(1)),
+                " -2/5, ...]");
+        rationalPolynomialsAtLeast_helper(1,
                 "[x, x^2, x+1, 1/2*x, 1/3*x, x^3, 1/2*x+1, x^2+x, 1/3*x+1, x+1/2, x^2+1, x+1/3, x^4, 1/2*x+1/2," +
                 " 1/3*x+1/2, x^3+x^2, 1/2*x+1/3, x^2+x+1, 1/3*x+1/3, 1/4*x, 1/2*x^2, -x, 1/4*x+1, 1/3*x^2, -x+1," +
                 " -1/2*x, 1/2*x^2+x, 2*x, x^3+x, -1/2*x+1, 1/3*x^2+x, 2*x+1, x^5, 1/4*x+1/2, 1/2*x^2+1, -x+1/2," +
                 " 1/4*x+1/3, 1/3*x^2+1, -x+1/3, x^4+x^3, -1/2*x+1/2, 1/2*x^2+x+1, 2*x+1/2, x^3+x^2+x, -1/2*x+1/3," +
-                " 1/3*x^2+x+1, 2*x+1/3, x+1/4, x^2+1/2*x, x-1]");
-        aeqit(take(50, QEP.rationalPolynomialsAtLeast(2)),
+                " 1/3*x^2+x+1, 2*x+1/3, x+1/4, x^2+1/2*x, x-1, ...]");
+        rationalPolynomialsAtLeast_helper(2,
                 "[x^2, x^3, x^2+x, x^2+1, x^4, x^3+x^2, x^2+x+1, 1/2*x^2, 1/3*x^2, 1/2*x^2+x, x^3+x, 1/3*x^2+x, x^5," +
                 " 1/2*x^2+1, 1/3*x^2+1, x^4+x^3, 1/2*x^2+x+1, x^3+x^2+x, 1/3*x^2+x+1, x^2+1/2*x, x^3+1, x^2+1/3*x," +
                 " x^2+1/2*x+1, x^4+x^2, x^3+x^2+1, x^2+1/3*x+1, x^6, 1/2*x^2+1/2*x, 1/3*x^2+1/2*x, 1/2*x^2+1/3*x," +
                 " x^3+x+1, 1/3*x^2+1/3*x, x^5+x^4, 1/2*x^2+1/2*x+1, 1/3*x^2+1/2*x+1, x^4+x^3+x^2, 1/2*x^2+1/3*x+1," +
                 " x^3+x^2+x+1, 1/3*x^2+1/3*x+1, 1/2*x^3, x^2+1/2, 1/3*x^3, x^2+x+1/2, 1/2*x^3+x^2, x^2+1/3, x^4+x," +
-                " 1/3*x^3+x^2, x^2+x+1/3, 1/2*x^2+1/2, 1/2*x^3+x]");
-        aeqit(take(50, QEP.rationalPolynomialsAtLeast(9)),
+                " 1/3*x^3+x^2, x^2+x+1/3, 1/2*x^2+1/2, 1/2*x^3+x, ...]");
+        rationalPolynomialsAtLeast_helper(9,
                 "[x^9, x^10, x^9+x^8, x^9+x^7, x^11, x^10+x^9, x^9+x^8+x^7, x^9+x^6, x^10+x^8, x^9+x^8+x^6, x^12," +
                 " x^9+x^7+x^6, x^11+x^10, x^10+x^9+x^8, x^9+x^8+x^7+x^6, x^9+x^5, x^10+x^7, x^9+x^8+x^5," +
                 " x^9+x^7+x^5, x^11+x^9, x^10+x^9+x^7, x^9+x^8+x^7+x^5, x^13, x^9+x^6+x^5, x^10+x^8+x^7," +
                 " x^9+x^8+x^6+x^5, x^12+x^11, x^9+x^7+x^6+x^5, x^11+x^10+x^9, x^10+x^9+x^8+x^7, x^9+x^8+x^7+x^6+x^5," +
                 " x^9+x^4, x^10+x^6, x^9+x^8+x^4, x^9+x^7+x^4, x^11+x^8, x^10+x^9+x^6, x^9+x^8+x^7+x^4, x^9+x^6+x^4," +
                 " x^10+x^8+x^6, x^9+x^8+x^6+x^4, x^12+x^10, x^9+x^7+x^6+x^4, x^11+x^10+x^8, x^10+x^9+x^8+x^6," +
-                " x^9+x^8+x^7+x^6+x^4, x^14, x^9+x^5+x^4, x^10+x^7+x^6, x^9+x^8+x^5+x^4]");
-    }
-
-    @Test
-    public void testRationalPolynomials() {
-        aeqit(take(50, QEP.rationalPolynomials()),
-                "[0, 1, 1/2, x, 1/3, 1/4, -1, x^2, -1/2, x+1, 2, -1/3, 1/2*x, -1/4, 2/3, 1/3*x, 1/5, x^3, 1/6," +
-                " 1/2*x+1, 1/7, x^2+x, 1/8, 1/3*x+1, -1/5, -1/6, 2/5, -1/7, x+1/2, -1/8, 2/7, -2, x^2+1, 3, x+1/3," +
-                " 3/2, x^4, -2/3, 1/2*x+1/2, 3/4, -3, 1/3*x+1/2, -3/2, x^3+x^2, 4, 1/2*x+1/3, -3/4, x^2+x+1, 4/3," +
-                " 1/3*x+1/3]");
+                " x^9+x^8+x^7+x^6+x^4, x^14, x^9+x^5+x^4, x^10+x^7+x^6, x^9+x^8+x^5+x^4, ...]");
+        rationalPolynomialsAtLeast_fail_helper(-2);
     }
 
     @Test

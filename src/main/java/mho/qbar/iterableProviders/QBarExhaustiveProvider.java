@@ -356,30 +356,44 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
         );
     }
 
-    @Override
-    public @NotNull Iterable<Polynomial> polynomials(int degree) {
-        return map(
-                js -> Polynomial.of(toList(js)),
-                filter(is -> is.isEmpty() || !last(is).equals(BigInteger.ZERO), lists(degree + 1, bigIntegers()))
-        );
-    }
-
-    @Override
-    public @NotNull Iterable<Polynomial> polynomialsAtLeast(int minDegree) {
-        return map(
-                js -> Polynomial.of(toList(js)),
-                filter(
-                        is -> is.isEmpty() || !last(is).equals(BigInteger.ZERO),
-                        listsAtLeast(minDegree + 1, bigIntegers())
-                )
-        );
-    }
-
+    /**
+     * An {@code Iterable} that generates all {@code Polynomial}s.
+     *
+     * <ul>
+     *  <li>The result is a non-removable {@code Iterable} containing {@code Polynomial}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
     @Override
     public @NotNull Iterable<Polynomial> polynomials() {
         return map(
                 js -> Polynomial.of(toList(js)),
-                filter(is -> is.isEmpty() || !last(is).equals(BigInteger.ZERO), lists(bigIntegers()))
+                filterInfinite(is -> is.isEmpty() || !last(is).equals(BigInteger.ZERO), lists(bigIntegers()))
+        );
+    }
+
+    /**
+     * An {@code Iterable} that generates all {@code Polynomial}s with a minimum degree.
+     *
+     * <ul>
+     *  <li>{@code degree} must be at least -1.</li>
+     *  <li>The result is a non-removable {@code Iterable} containing {@code Polynomial}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param minDegree the minimum degree of the generated {@code Polynomial}s
+     * @return all {@code Polynomial}s with degree at least {@code minDegree}
+     */
+    @Override
+    public @NotNull Iterable<Polynomial> polynomialsAtLeast(int minDegree) {
+        return map(
+                js -> Polynomial.of(toList(js)),
+                filterInfinite(
+                        is -> is.isEmpty() || !last(is).equals(BigInteger.ZERO),
+                        listsAtLeast(minDegree + 1, bigIntegers())
+                )
         );
     }
 
@@ -438,30 +452,44 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
         );
     }
 
-    @Override
-    public @NotNull Iterable<RationalPolynomial> rationalPolynomials(int degree) {
-        return map(
-                js -> RationalPolynomial.of(toList(js)),
-                filter(is -> is.isEmpty() || last(is) != Rational.ZERO, lists(degree + 1, rationals()))
-        );
-    }
-
-    @Override
-    public @NotNull Iterable<RationalPolynomial> rationalPolynomialsAtLeast(int minDegree) {
-        return map(
-                js -> RationalPolynomial.of(toList(js)),
-                filter(
-                        is -> is.isEmpty() || last(is) != Rational.ZERO,
-                        listsAtLeast(minDegree + 1, rationals())
-                )
-        );
-    }
-
+    /**
+     * An {@code Iterable} that generates all {@code RationalPolynomial}s.
+     *
+     * <ul>
+     *  <li>The result is a non-removable {@code Iterable} containing {@code RationalPolynomial}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
     @Override
     public @NotNull Iterable<RationalPolynomial> rationalPolynomials() {
         return map(
                 js -> RationalPolynomial.of(toList(js)),
-                filter(is -> is.isEmpty() || last(is) != Rational.ZERO, lists(rationals()))
+                filterInfinite(is -> is.isEmpty() || last(is) != Rational.ZERO, lists(rationals()))
+        );
+    }
+
+    /**
+     * An {@code Iterable} that generates all {@code RationalPolynomial}s with a minimum degree.
+     *
+     * <ul>
+     *  <li>{@code degree} must be at least -1.</li>
+     *  <li>The result is a non-removable {@code Iterable} containing {@code RationalPolynomial}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param minDegree the minimum degree of the generated {@code RationalPolynomial}s
+     * @return all {@code RationalPolynomial}s with degree at least {@code minDegree}
+     */
+    @Override
+    public @NotNull Iterable<RationalPolynomial> rationalPolynomialsAtLeast(int minDegree) {
+        return map(
+                js -> RationalPolynomial.of(toList(js)),
+                filterInfinite(
+                        is -> is.isEmpty() || last(is) != Rational.ZERO,
+                        listsAtLeast(minDegree + 1, rationals())
+                )
         );
     }
 

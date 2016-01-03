@@ -3049,15 +3049,58 @@ public strictfp abstract class QBarIterableProvider {
      */
     public abstract @NotNull Iterable<RationalMatrix> rationalMatrices();
 
-    public abstract @NotNull Iterable<Polynomial> polynomials(int degree);
-    public abstract @NotNull Iterable<Polynomial> polynomialsAtLeast(int minDegree);
+    /**
+     * Generates {@code Polynomial}s with a given degree.
+     *
+     * @param degree the degree of the generated {@code Polynomial}s
+     */
+    public @NotNull Iterable<Polynomial> polynomials(int degree) {
+        return map(
+                js -> Polynomial.of(toList(js)),
+                filter(is -> is.isEmpty() || !last(is).equals(BigInteger.ZERO), lists(degree + 1, bigIntegers()))
+        );
+    }
+
+    /**
+     * Generates {@code Polynomial}s.
+     */
     public abstract @NotNull Iterable<Polynomial> polynomials();
+
+    /**
+     * Generates {@code Polynomial}s with a minimum degree.
+     *
+     * @param minDegree the minimum degree of the generated {@code Polynomial}s
+     */
+    public abstract @NotNull Iterable<Polynomial> polynomialsAtLeast(int minDegree);
+
     public abstract @NotNull Iterable<Polynomial> primitivePolynomials(int degree);
     public abstract @NotNull Iterable<Polynomial> primitivePolynomialsAtLeast(int minDegree);
     public abstract @NotNull Iterable<Polynomial> primitivePolynomials();
-    public abstract @NotNull Iterable<RationalPolynomial> rationalPolynomials(int degree);
-    public abstract @NotNull Iterable<RationalPolynomial> rationalPolynomialsAtLeast(int minDegree);
+
+    /**
+     * Generates {@code RationalPolynomial}s with a given degree.
+     *
+     * @param degree the degree of the generated {@code RationalPolynomial}s
+     */
+    public @NotNull Iterable<RationalPolynomial> rationalPolynomials(int degree) {
+        return map(
+                js -> RationalPolynomial.of(toList(js)),
+                filter(is -> is.isEmpty() || last(is) != Rational.ZERO, lists(degree + 1, rationals()))
+        );
+    }
+
+    /**
+     * Generates {@code RationalPolynomial}s.
+     */
     public abstract @NotNull Iterable<RationalPolynomial> rationalPolynomials();
+
+    /**
+     * Generates {@code RationalPolynomial}s with a minimum degree.
+     *
+     * @param minDegree the minimum degree of the generated {@code RationalPolynomial}s
+     */
+    public abstract @NotNull Iterable<RationalPolynomial> rationalPolynomialsAtLeast(int minDegree);
+
     public abstract @NotNull Iterable<RationalPolynomial> monicRationalPolynomials(int degree);
     public abstract @NotNull Iterable<RationalPolynomial> monicRationalPolynomialsAtLeast(int minDegree);
     public abstract @NotNull Iterable<RationalPolynomial> monicRationalPolynomials();
