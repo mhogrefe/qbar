@@ -735,6 +735,11 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
         if (minDegree < -1) {
             throw new IllegalArgumentException("minDegree must be at least -1. Invalid minDegree: " + minDegree);
         }
+        int secondaryScale = getSecondaryScale();
+        if (secondaryScale <= minDegree + 1) {
+            throw new IllegalStateException("this must have a secondaryScale greater than minDegree + 1." +
+                    " secondaryScale: " + secondaryScale + ", minDegree: " + minDegree);
+        }
         return map(
                 js -> Polynomial.of(toList(js)),
                 filterInfinite(

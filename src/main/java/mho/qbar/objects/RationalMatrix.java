@@ -134,8 +134,8 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
                 throw new ArrayIndexOutOfBoundsException("j cannot be negative. Invalid j: " + j);
             }
             if (j >= width) {
-                throw new ArrayIndexOutOfBoundsException("j must be less than the width of this. j: " + j +
-                        ", this: " + this);
+                throw new ArrayIndexOutOfBoundsException("j must be less than the width of this. j: " +
+                        j + ", this: " + this);
             }
             return RationalVector.ZERO_DIMENSIONAL;
         } else {
