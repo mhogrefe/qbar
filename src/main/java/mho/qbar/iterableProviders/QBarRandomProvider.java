@@ -714,6 +714,18 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
         );
     }
 
+    /**
+     * An {@code Iterable} that generates all {@code Polynomial}s. Each {@code Polynomial}'s degree is chosen from a
+     * geometric distribution with mean {@code secondaryScale}, and each coefficient's bit size is chosen from a
+     * geometric distribution with mean approximately {@code scale}. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a positive {@code scale} and a positive {@code secondaryScale}.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing {@code Polynomial}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
     @Override
     public @NotNull Iterable<Polynomial> polynomials() {
         int secondaryScale = getSecondaryScale();
@@ -730,21 +742,37 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
         );
     }
 
+    /**
+     * An {@code Iterable} that generates all {@code Polynomial}s with a minimum degree. Each {@code Polynomial}'s
+     * degree is chosen from a geometric distribution with mean {@code secondaryScale}, and each coefficient's bit size
+     * is chosen from a geometric distribution with mean approximately {@code scale}. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a positive {@code scale} and a {@code secondaryScale} greater than
+     *  {@code minDegree}.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing {@code Polynomial}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param minDegree the minimum degree of the generated {@code Polynomial}s
+     * @return {@code Polynomial}s with dimension at least {@code minDegree}
+     */
     @Override
     public @NotNull Iterable<Polynomial> polynomialsAtLeast(int minDegree) {
         if (minDegree < -1) {
             throw new IllegalArgumentException("minDegree must be at least -1. Invalid minDegree: " + minDegree);
         }
         int secondaryScale = getSecondaryScale();
-        if (secondaryScale <= minDegree + 1) {
-            throw new IllegalStateException("this must have a secondaryScale greater than minDegree + 1." +
+        if (secondaryScale <= minDegree) {
+            throw new IllegalStateException("this must have a secondaryScale greater than minDegree." +
                     " secondaryScale: " + secondaryScale + ", minDegree: " + minDegree);
         }
         return map(
                 js -> Polynomial.of(toList(js)),
                 filterInfinite(
                         is -> is.isEmpty() || !last(is).equals(BigInteger.ZERO),
-                        withScale(getSecondaryScale()).listsAtLeast(minDegree + 1, bigIntegers())
+                        withScale(secondaryScale + 1).listsAtLeast(minDegree + 1, bigIntegers())
                 )
         );
     }
@@ -764,6 +792,18 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
         return null;
     }
 
+    /**
+     * An {@code Iterable} that generates all {@code RationalPolynomial}s. Each {@code RationalPolynomial}'s degree is
+     * chosen from a geometric distribution with mean {@code secondaryScale}, and each coefficient's bit size is chosen
+     * from a geometric distribution with mean approximately {@code scale}. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a {@code scale} of at least 3 and a positive {@code secondaryScale}.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing {@code RationalPolynomial}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
     @Override
     public @NotNull Iterable<RationalPolynomial> rationalPolynomials() {
         int secondaryScale = getSecondaryScale();
@@ -780,16 +820,38 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
         );
     }
 
+    /**
+     * An {@code Iterable} that generates all {@code RationalPolynomial}s with a minimum degree. Each
+     * {@code RationalPolynomial}'s degree is chosen from a geometric distribution with mean {@code secondaryScale},
+     * and each coefficient's bit size is chosen from a geometric distribution with mean approximately {@code scale}.
+     * Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a {@code scale} of at least 3 and a {@code secondaryScale} greater than
+     *  {@code minDegree}.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing {@code RationalPolynomial}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param minDegree the minimum degree of the generated {@code RationalPolynomial}s
+     * @return {@code RationalPolynomial}s with dimension at least {@code minDegree}
+     */
     @Override
     public @NotNull Iterable<RationalPolynomial> rationalPolynomialsAtLeast(int minDegree) {
         if (minDegree < -1) {
             throw new IllegalArgumentException("minDegree must be at least -1. Invalid minDegree: " + minDegree);
         }
+        int secondaryScale = getSecondaryScale();
+        if (secondaryScale <= minDegree) {
+            throw new IllegalStateException("this must have a secondaryScale greater than minDegree." +
+                    " secondaryScale: " + secondaryScale + ", minDegree: " + minDegree);
+        }
         return map(
                 js -> RationalPolynomial.of(toList(js)),
                 filterInfinite(
                         is -> is.isEmpty() || last(is) != Rational.ZERO,
-                        withScale(getSecondaryScale()).listsAtLeast(minDegree + 1, rationals())
+                        withScale(secondaryScale + 1).listsAtLeast(minDegree + 1, rationals())
                 )
         );
     }
