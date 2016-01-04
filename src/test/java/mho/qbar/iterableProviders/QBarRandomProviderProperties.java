@@ -1,9 +1,6 @@
 package mho.qbar.iterableProviders;
 
-import mho.qbar.objects.Interval;
-import mho.qbar.objects.Rational;
-import mho.qbar.objects.RationalMatrix;
-import mho.qbar.objects.RationalVector;
+import mho.qbar.objects.*;
 import mho.qbar.testing.QBarTestProperties;
 import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
@@ -42,6 +39,12 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         propertiesReducedRationalVectorsAtLeast();
         propertiesRationalMatrices_int_int();
         propertiesRationalMatrices();
+        propertiesPolynomials_int();
+        propertiesPolynomials();
+        propertiesPolynomialsAtLeast();
+        propertiesRationalPolynomials_int();
+        propertiesRationalPolynomials();
+        propertiesRationalPolynomialsAtLeast();
     }
 
     private static <T> void simpleTestWithNulls(
@@ -750,6 +753,262 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
                 rp.rationalMatrices();
                 fail(rp);
             } catch (IllegalStateException ignored) {}
+        }
+    }
+
+    private void propertiesPolynomials_int() {
+        initialize("polynomials(int)");
+        Iterable<Pair<QBarRandomProvider, Integer>> ps = P.pairsSquareRootOrder(
+                filterInfinite(rp -> rp.getScale() > 0, P.qbarRandomProvidersDefaultSecondaryScale()),
+                P.rangeUpGeometric(-1)
+        );
+        for (Pair<QBarRandomProvider, Integer> p : take(LIMIT, ps)) {
+            Iterable<Polynomial> qs = p.a.polynomials(p.b);
+            p.a.reset();
+            take(TINY_LIMIT, qs).forEach(Polynomial::validate);
+            simpleTest(p.a, qs, q -> q.degree() == p.b);
+        }
+
+        Iterable<Pair<QBarRandomProvider, Integer>> psFail = P.pairsSquareRootOrder(
+                filterInfinite(rp -> rp.getScale() <= 0, P.qbarRandomProvidersDefaultSecondaryScale()),
+                P.rangeUpGeometric(-1)
+        );
+        for (Pair<QBarRandomProvider, Integer> p : take(LIMIT, psFail)) {
+            try {
+                p.a.polynomials(p.b);
+                fail(p);
+            } catch (IllegalStateException ignored) {}
+        }
+
+        psFail = P.pairsSquareRootOrder(
+                filterInfinite(rp -> rp.getScale() > 0, P.qbarRandomProvidersDefaultSecondaryScale()),
+                P.rangeDown(-2)
+        );
+        for (Pair<QBarRandomProvider, Integer> p : take(LIMIT, psFail)) {
+            try {
+                p.a.polynomials(p.b);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesPolynomials() {
+        initialize("polynomials()");
+        Iterable<QBarRandomProvider> rps = filterInfinite(
+                rp -> rp.getScale() > 0 && rp.getSecondaryScale() >= 0,
+                P.qbarRandomProviders()
+        );
+        for (QBarRandomProvider rp : take(LIMIT, rps)) {
+            Iterable<Polynomial> ps = rp.polynomials();
+            rp.reset();
+            take(TINY_LIMIT, ps).forEach(Polynomial::validate);
+            simpleTest(rp, ps, p -> true);
+        }
+
+        Iterable<QBarRandomProvider> rpsFail = filterInfinite(
+                rp -> rp.getScale() <= 0 && rp.getSecondaryScale() >= 0,
+                P.qbarRandomProviders()
+        );
+        for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
+            try {
+                rp.polynomials();
+                fail(rp);
+            } catch (IllegalStateException ignored) {}
+        }
+
+        rpsFail = filterInfinite(rp -> rp.getScale() > 0 && rp.getSecondaryScale() < 0, P.qbarRandomProviders());
+        for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
+            try {
+                rp.polynomials();
+                fail(rp);
+            } catch (IllegalStateException ignored) {}
+        }
+    }
+
+    private void propertiesPolynomialsAtLeast() {
+        initialize("polynomialsAtLeast()");
+        Iterable<Pair<QBarRandomProvider, Integer>> ps = filterInfinite(
+                p -> p.a.getSecondaryScale() > p.b,
+                P.pairsSquareRootOrder(
+                        filterInfinite(rp -> rp.getScale() > 0, P.qbarRandomProviders()),
+                        P.rangeUpGeometric(-1)
+                )
+        );
+        for (Pair<QBarRandomProvider, Integer> p : take(LIMIT, ps)) {
+            Iterable<Polynomial> qs = p.a.polynomialsAtLeast(p.b);
+            p.a.reset();
+            take(TINY_LIMIT, qs).forEach(Polynomial::validate);
+            simpleTest(p.a, qs, q -> q.degree() >= p.b);
+        }
+
+        Iterable<Pair<QBarRandomProvider, Integer>> psFail = filterInfinite(
+                p -> p.a.getSecondaryScale() > p.b,
+                P.pairsSquareRootOrder(
+                        filterInfinite(rp -> rp.getScale() <= 0, P.qbarRandomProviders()),
+                        P.rangeUpGeometric(-1)
+                )
+        );
+        for (Pair<QBarRandomProvider, Integer> p : take(LIMIT, psFail)) {
+            try {
+                p.a.polynomialsAtLeast(p.b);
+                fail(p);
+            } catch (IllegalStateException ignored) {}
+        }
+
+        psFail = filterInfinite(
+                p -> p.a.getSecondaryScale() <= p.b,
+                P.pairsSquareRootOrder(
+                        filterInfinite(rp -> rp.getScale() > 0, P.qbarRandomProviders()),
+                        P.rangeUpGeometric(-1)
+                )
+        );
+        for (Pair<QBarRandomProvider, Integer> p : take(LIMIT, psFail)) {
+            try {
+                p.a.polynomialsAtLeast(p.b);
+                fail(p);
+            } catch (IllegalStateException ignored) {}
+        }
+
+        psFail = filterInfinite(
+                p -> p.a.getSecondaryScale() > p.b,
+                P.pairsSquareRootOrder(
+                        filterInfinite(rp -> rp.getScale() > 0, P.qbarRandomProviders()),
+                        P.rangeDown(-2)
+                )
+        );
+        for (Pair<QBarRandomProvider, Integer> p : take(LIMIT, psFail)) {
+            try {
+                p.a.polynomialsAtLeast(p.b);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesRationalPolynomials_int() {
+        initialize("rationalPolynomials(int)");
+        Iterable<Pair<QBarRandomProvider, Integer>> ps = P.pairsSquareRootOrder(
+                filterInfinite(rp -> rp.getScale() >= 3, P.qbarRandomProvidersDefaultSecondaryScale()),
+                P.rangeUpGeometric(-1)
+        );
+        for (Pair<QBarRandomProvider, Integer> p : take(LIMIT, ps)) {
+            Iterable<RationalPolynomial> qs = p.a.rationalPolynomials(p.b);
+            p.a.reset();
+            take(TINY_LIMIT, qs).forEach(RationalPolynomial::validate);
+            simpleTest(p.a, qs, q -> q.degree() == p.b);
+        }
+
+        Iterable<Pair<QBarRandomProvider, Integer>> psFail = P.pairsSquareRootOrder(
+                filterInfinite(rp -> rp.getScale() < 3, P.qbarRandomProvidersDefaultSecondaryScale()),
+                P.rangeUpGeometric(-1)
+        );
+        for (Pair<QBarRandomProvider, Integer> p : take(LIMIT, psFail)) {
+            try {
+                p.a.rationalPolynomials(p.b);
+                fail(p);
+            } catch (IllegalStateException ignored) {}
+        }
+
+        psFail = P.pairsSquareRootOrder(
+                filterInfinite(rp -> rp.getScale() >= 3, P.qbarRandomProvidersDefaultSecondaryScale()),
+                P.rangeDown(-2)
+        );
+        for (Pair<QBarRandomProvider, Integer> p : take(LIMIT, psFail)) {
+            try {
+                p.a.rationalPolynomials(p.b);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesRationalPolynomials() {
+        initialize("rationalPolynomials()");
+        Iterable<QBarRandomProvider> rps = filterInfinite(
+                rp -> rp.getScale() >= 3 && rp.getSecondaryScale() >= 0,
+                P.qbarRandomProviders()
+        );
+        for (QBarRandomProvider rp : take(LIMIT, rps)) {
+            Iterable<RationalPolynomial> ps = rp.rationalPolynomials();
+            rp.reset();
+            take(TINY_LIMIT, ps).forEach(RationalPolynomial::validate);
+            simpleTest(rp, ps, p -> true);
+        }
+
+        Iterable<QBarRandomProvider> rpsFail = filterInfinite(
+                rp -> rp.getScale() < 3 && rp.getSecondaryScale() >= 0,
+                P.qbarRandomProviders()
+        );
+        for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
+            try {
+                rp.rationalPolynomials();
+                fail(rp);
+            } catch (IllegalStateException ignored) {}
+        }
+
+        rpsFail = filterInfinite(rp -> rp.getScale() >= 3 && rp.getSecondaryScale() < 0, P.qbarRandomProviders());
+        for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
+            try {
+                rp.rationalPolynomials();
+                fail(rp);
+            } catch (IllegalStateException ignored) {}
+        }
+    }
+
+    private void propertiesRationalPolynomialsAtLeast() {
+        initialize("rationalPolynomialsAtLeast()");
+        Iterable<Pair<QBarRandomProvider, Integer>> ps = filterInfinite(
+                p -> p.a.getSecondaryScale() > p.b,
+                P.pairsSquareRootOrder(
+                        filterInfinite(rp -> rp.getScale() >= 3, P.qbarRandomProviders()),
+                        P.rangeUpGeometric(-1)
+                )
+        );
+        for (Pair<QBarRandomProvider, Integer> p : take(LIMIT, ps)) {
+            Iterable<RationalPolynomial> qs = p.a.rationalPolynomialsAtLeast(p.b);
+            p.a.reset();
+            take(TINY_LIMIT, qs).forEach(RationalPolynomial::validate);
+            simpleTest(p.a, qs, q -> q.degree() >= p.b);
+        }
+
+        Iterable<Pair<QBarRandomProvider, Integer>> psFail = filterInfinite(
+                p -> p.a.getSecondaryScale() > p.b,
+                P.pairsSquareRootOrder(
+                        filterInfinite(rp -> rp.getScale() < 3, P.qbarRandomProviders()),
+                        P.rangeUpGeometric(-1)
+                )
+        );
+        for (Pair<QBarRandomProvider, Integer> p : take(LIMIT, psFail)) {
+            try {
+                p.a.rationalPolynomialsAtLeast(p.b);
+                fail(p);
+            } catch (IllegalStateException ignored) {}
+        }
+
+        psFail = filterInfinite(
+                p -> p.a.getSecondaryScale() <= p.b,
+                P.pairsSquareRootOrder(
+                        filterInfinite(rp -> rp.getScale() >= 3, P.qbarRandomProviders()),
+                        P.rangeUpGeometric(-1)
+                )
+        );
+        for (Pair<QBarRandomProvider, Integer> p : take(LIMIT, psFail)) {
+            try {
+                p.a.rationalPolynomialsAtLeast(p.b);
+                fail(p);
+            } catch (IllegalStateException ignored) {}
+        }
+
+        psFail = filterInfinite(
+                p -> p.a.getSecondaryScale() > p.b,
+                P.pairsSquareRootOrder(
+                        filterInfinite(rp -> rp.getScale() > 0, P.qbarRandomProviders()),
+                        P.rangeDown(-2)
+                )
+        );
+        for (Pair<QBarRandomProvider, Integer> p : take(LIMIT, psFail)) {
+            try {
+                p.a.rationalPolynomialsAtLeast(p.b);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
         }
     }
 }

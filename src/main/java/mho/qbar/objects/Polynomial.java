@@ -13,7 +13,7 @@ import java.util.*;
 import java.util.function.Function;
 
 import static mho.wheels.iterables.IterableUtils.*;
-import static org.junit.Assert.assertTrue;
+import static mho.wheels.testing.Testing.*;
 
 /**
  * <p>A univariate polynomial in x with {@link BigInteger} coefficients.</p>
@@ -893,9 +893,9 @@ public final class Polynomial implements
      */
     public void validate() {
         if (!coefficients.isEmpty()) {
-            assertTrue(toString(), !last(coefficients).equals(BigInteger.ZERO));
+            assertTrue(this, !last(coefficients).equals(BigInteger.ZERO));
         }
-        if (equals(ZERO)) assertTrue(toString(), this == ZERO);
-        if (equals(ONE)) assertTrue(toString(), this == ONE);
+        if (equals(ZERO)) assertTrue(this, this == ZERO);
+        if (equals(ONE)) assertTrue(this, this == ONE);
     }
 }

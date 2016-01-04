@@ -12,7 +12,7 @@ import java.util.*;
 import java.util.function.Function;
 
 import static mho.wheels.iterables.IterableUtils.*;
-import static org.junit.Assert.assertTrue;
+import static mho.wheels.testing.Testing.*;
 
 /**
  * <p>A univariate polynomial in x with {@link mho.qbar.objects.Rational} coefficients.</p>
@@ -989,9 +989,9 @@ public final class RationalPolynomial implements
      */
     public void validate() {
         if (!coefficients.isEmpty()) {
-            assertTrue(toString(), last(coefficients) != Rational.ZERO);
+            assertTrue(this, last(coefficients) != Rational.ZERO);
         }
-        if (equals(ZERO)) assertTrue(toString(), this == ZERO);
-        if (equals(ONE)) assertTrue(toString(), this == ONE);
+        if (equals(ZERO)) assertTrue(this, this == ZERO);
+        if (equals(ONE)) assertTrue(this, this == ONE);
     }
 }
