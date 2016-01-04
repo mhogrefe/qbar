@@ -720,7 +720,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
      * geometric distribution with mean approximately {@code scale}. Does not support removal.
      *
      * <ul>
-     *  <li>{@code this} must have a positive {@code scale} and a positive {@code secondaryScale}.</li>
+     *  <li>{@code this} must have a positive {@code scale} and a non-negative {@code secondaryScale}.</li>
      *  <li>The result is an infinite, non-removable {@code Iterable} containing {@code Polynomial}s.</li>
      * </ul>
      *
@@ -729,15 +729,15 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
     @Override
     public @NotNull Iterable<Polynomial> polynomials() {
         int secondaryScale = getSecondaryScale();
-        if (secondaryScale < 1) {
-            throw new IllegalStateException("this must have a positive secondaryScale. Invalid secondaryScale: " +
+        if (secondaryScale < 0) {
+            throw new IllegalStateException("this must have a non-negative secondaryScale. Invalid secondaryScale: " +
                     secondaryScale);
         }
         return map(
                 js -> Polynomial.of(toList(js)),
                 filterInfinite(
                         is -> is.isEmpty() || !last(is).equals(BigInteger.ZERO),
-                        withScale(secondaryScale).lists(bigIntegers())
+                        withScale(secondaryScale + 1).lists(bigIntegers())
                 )
         );
     }
@@ -798,7 +798,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
      * from a geometric distribution with mean approximately {@code scale}. Does not support removal.
      *
      * <ul>
-     *  <li>{@code this} must have a {@code scale} of at least 3 and a positive {@code secondaryScale}.</li>
+     *  <li>{@code this} must have a {@code scale} of at least 3 and a non-negative {@code secondaryScale}.</li>
      *  <li>The result is an infinite, non-removable {@code Iterable} containing {@code RationalPolynomial}s.</li>
      * </ul>
      *
@@ -807,15 +807,15 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
     @Override
     public @NotNull Iterable<RationalPolynomial> rationalPolynomials() {
         int secondaryScale = getSecondaryScale();
-        if (secondaryScale < 1) {
-            throw new IllegalStateException("this must have a positive secondaryScale. Invalid secondaryScale: " +
+        if (secondaryScale < 0) {
+            throw new IllegalStateException("this must have a non-negative secondaryScale. Invalid secondaryScale: " +
                     secondaryScale);
         }
         return map(
                 js -> RationalPolynomial.of(toList(js)),
                 filterInfinite(
                         is -> is.isEmpty() || last(is) != Rational.ZERO,
-                        withScale(secondaryScale).lists(rationals())
+                        withScale(secondaryScale + 1).lists(rationals())
                 )
         );
     }
