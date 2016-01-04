@@ -1,8 +1,7 @@
 package mho.qbar.objects;
 
 import mho.qbar.iterableProviders.QBarExhaustiveProvider;
-import mho.qbar.iterableProviders.QBarIterableProvider;
-import mho.qbar.iterableProviders.QBarRandomProvider;
+import mho.qbar.testing.QBarDemos;
 import mho.wheels.iterables.IterableUtils;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
@@ -15,53 +14,38 @@ import static mho.qbar.objects.Polynomial.*;
 import static mho.wheels.iterables.IterableUtils.*;
 
 @SuppressWarnings("UnusedDeclaration")
-public class PolynomialDemos {
-    private static final boolean USE_RANDOM = false;
+public class PolynomialDemos extends QBarDemos {
     private static final @NotNull String POLYNOMIAL_CHARS = "*+-0123456789^x";
-    private static int LIMIT;
 
-    private static QBarIterableProvider P;
-
-    private static void initialize() {
-        if (USE_RANDOM) {
-            P = QBarRandomProvider.example();
-            LIMIT = 1000;
-        } else {
-            P = QBarExhaustiveProvider.INSTANCE;
-            LIMIT = 10000;
-        }
+    public PolynomialDemos(boolean useRandom) {
+        super(useRandom);
     }
 
-    private static void demoIterator() {
-        initialize();
-        for (Polynomial p : take(LIMIT, P.polynomials())) {
+    private void demoIterator() {
+        for (Polynomial p : take(LIMIT, P.withScale(4).polynomials())) {
             System.out.println("toList(" + p + ") = " + toList(p));
         }
     }
 
-    private static void demoApply_BigInteger() {
-        initialize();
+    private void demoApply_BigInteger() {
         for (Pair<Polynomial, BigInteger> p : take(LIMIT, P.pairs(P.polynomials(), P.bigIntegers()))) {
             System.out.println(p.a + " at " + p.b + " = " + p.a.apply(p.b));
         }
     }
 
-    private static void demoApply_Rational() {
-        initialize();
+    private void demoApply_Rational() {
         for (Pair<Polynomial, Rational> p : take(LIMIT, P.pairs(P.polynomials(), P.rationals()))) {
             System.out.println(p.a + " at " + p.b + " = " + p.a.apply(p.b));
         }
     }
 
-    private static void demoToRationalPolynomial() {
-        initialize();
+    private void demoToRationalPolynomial() {
         for (Polynomial p : take(LIMIT, P.polynomials())) {
             System.out.println("toRationalPolynomial(" + p + ") = " + p.toRationalPolynomial());
         }
     }
 
-    private static void demoCoefficient() {
-        initialize();
+    private void demoCoefficient() {
         Iterable<Pair<Polynomial, Integer>> ps;
         if (P instanceof QBarExhaustiveProvider) {
             ps = ((QBarExhaustiveProvider) P).pairsLogarithmicOrder(P.polynomials(), P.naturalIntegers());
@@ -73,23 +57,20 @@ public class PolynomialDemos {
         }
     }
 
-    private static void demoOf_List_BigInteger() {
-        initialize();
+    private void demoOf_List_BigInteger() {
         for (List<BigInteger> is : take(LIMIT, P.lists(P.bigIntegers()))) {
             String listString = tail(init(is.toString()));
             System.out.println("of(" + listString + ") = " + of(is));
         }
     }
 
-    private static void demoOf_BigInteger() {
-        initialize();
+    private void demoOf_BigInteger() {
         for (BigInteger i : take(LIMIT, P.bigIntegers())) {
             System.out.println("of(" + i + ") = " + of(i));
         }
     }
 
-    private static void demoOf_BigInteger_int() {
-        initialize();
+    private void demoOf_BigInteger_int() {
         Iterable<Pair<BigInteger, Integer>> ps;
         if (P instanceof QBarExhaustiveProvider) {
             ps = ((QBarExhaustiveProvider) P).pairsLogarithmicOrder(P.bigIntegers(), P.naturalIntegers());
@@ -101,78 +82,67 @@ public class PolynomialDemos {
         }
     }
 
-    private static void demoDegree() {
-        initialize();
+    private void demoDegree() {
         for (Polynomial p : take(LIMIT, P.polynomials())) {
             System.out.println("degree(" + p + ") = " + p.degree());
         }
     }
 
-    private static void demoLeading() {
-        initialize();
+    private void demoLeading() {
         for (Polynomial p : take(LIMIT, P.polynomials())) {
             System.out.println("leading(" + p + ") = " + p.leading());
         }
     }
 
-    private static void demoAdd() {
-        initialize();
+    private void demoAdd() {
         for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(P.polynomials()))) {
             System.out.println("(" + p.a + ") + (" + p.b + ") = " + p.a.add(p.b));
         }
     }
 
-    private static void demoNegate() {
-        initialize();
+    private void demoNegate() {
         for (Polynomial p : take(LIMIT, P.polynomials())) {
             System.out.println("-(" + p + ") = " + p.negate());
         }
     }
 
-    private static void demoAbs() {
-        initialize();
+    private void demoAbs() {
         for (Polynomial p : take(LIMIT, P.polynomials())) {
             System.out.println("|" + p + "| = " + p.abs());
         }
     }
 
-    private static void demoSignum() {
-        initialize();
+    private void demoSignum() {
         for (Polynomial p : take(LIMIT, P.polynomials())) {
             System.out.println("sgn(" + p + ") = " + p.signum());
         }
     }
 
-    private static void demoSubtract() {
-        initialize();
+    private void demoSubtract() {
         for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(P.polynomials()))) {
             System.out.println("(" + p.a + ") - (" + p.b + ") = " + p.a.subtract(p.b));
         }
     }
 
-    private static void demoMultiply_Polynomial() {
-        initialize();
+    private void demoMultiply_Polynomial() {
         for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(P.polynomials()))) {
             System.out.println("(" + p.a + ") * (" + p.b + ") = " + p.a.multiply(p.b));
         }
     }
 
-    private static void demoMultiply_BigInteger() {
-        initialize();
+    private void demoMultiply_BigInteger() {
         for (Pair<Polynomial, BigInteger> p : take(LIMIT, P.pairs(P.polynomials(), P.bigIntegers()))) {
             System.out.println("(" + p.a + ") * " + p.b + " = " + p.a.multiply(p.b));
         }
     }
 
-    private static void demoMultiply_int() {
-        initialize();
+    private void demoMultiply_int() {
         for (Pair<Polynomial, Integer> p : take(LIMIT, P.pairs(P.polynomials(), P.integers()))) {
             System.out.println("(" + p.a + ") * " + p.b + " = " + p.a.multiply(p.b));
         }
     }
 
-    private static void demoShiftLeft() {
-        initialize();
+    private void demoShiftLeft() {
         Iterable<Integer> is;
         if (P instanceof QBarExhaustiveProvider) {
             is = P.naturalIntegers();
@@ -184,32 +154,28 @@ public class PolynomialDemos {
         }
     }
 
-    private static void demoSum() {
-        initialize();
+    private void demoSum() {
         for (List<Polynomial> ps : take(LIMIT, P.lists(P.polynomials()))) {
             String listString = tail(init(ps.toString()));
             System.out.println("Σ(" + listString + ") = " + sum(ps));
         }
     }
 
-    private static void demoProduct() {
-        initialize();
+    private void demoProduct() {
         for (List<Polynomial> ps : take(LIMIT, P.lists(P.polynomials()))) {
             String listString = tail(init(ps.toString()));
             System.out.println("Π(" + listString + ") = " + product(ps));
         }
     }
 
-    private static void demoDelta() {
-        initialize();
+    private void demoDelta() {
         for (List<Polynomial> ps : take(LIMIT, P.listsAtLeast(1, P.polynomials()))) {
             String listString = tail(init(ps.toString()));
             System.out.println("Δ(" + listString + ") = " + IterableUtils.toString(delta(ps)));
         }
     }
 
-    private static void demoPow() {
-        initialize();
+    private void demoPow() {
         Iterable<Pair<Polynomial, Integer>> ps = P.pairsLogarithmicOrder(
                 P.polynomials(),
                 P.withScale(5).naturalIntegersGeometric()
@@ -219,100 +185,86 @@ public class PolynomialDemos {
         }
     }
 
-    private static void demoSubstitute() {
-        initialize();
+    private void demoSubstitute() {
         for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(P.withScale(16).polynomials()))) {
             System.out.println("substitute(" + p.a + ", " + p.b + ") = " + p.a.substitute(p.b));
         }
     }
 
-    private static void demoDifferentiate() {
-        initialize();
+    private void demoDifferentiate() {
         for (Polynomial p : take(LIMIT, P.polynomials())) {
             System.out.println("differentiate(" + p + ") = " + p.differentiate());
         }
     }
 
-    private static void demoIsMonic() {
-        initialize();
+    private void demoIsMonic() {
         for (Polynomial p : take(LIMIT, P.polynomials())) {
             System.out.println(p + " is " + (p.isMonic() ? "" : "not ") + "monic");
         }
     }
 
-    private static void demoIsPrimitive() {
-        initialize();
+    private void demoIsPrimitive() {
         for (Polynomial p : take(LIMIT, P.polynomials())) {
             System.out.println(p + " is " + (p.isPrimitive() ? "" : "not ") + "primitive");
         }
     }
 
-    private static void demoContentAndPrimitive() {
-        initialize();
+    private void demoContentAndPrimitive() {
         for (Polynomial p : take(LIMIT, filter(q -> q != ZERO, P.polynomials()))) {
             System.out.println("contentAndPrimitive(" + p + ") = " + p.contentAndPrimitive());
         }
     }
 
-    private static void demoEquals_Polynomial() {
-        initialize();
+    private void demoEquals_Polynomial() {
         for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(P.polynomials()))) {
             System.out.println(p.a + (p.a.equals(p.b) ? " = " : " ≠ ") + p.b);
         }
     }
 
-    private static void demoEquals_null() {
-        initialize();
+    private void demoEquals_null() {
         for (Polynomial p : take(LIMIT, P.polynomials())) {
             //noinspection ObjectEqualsNull
             System.out.println(p + (p.equals(null) ? " = " : " ≠ ") + null);
         }
     }
 
-    private static void demoHashCode() {
-        initialize();
+    private void demoHashCode() {
         for (Polynomial p : take(LIMIT, P.polynomials())) {
             System.out.println("hashCode(" + p + ") = " + p.hashCode());
         }
     }
 
-    private static void demoCompareTo() {
-        initialize();
+    private void demoCompareTo() {
         for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(P.polynomials()))) {
             System.out.println(p.a + " " + Ordering.compare(p.a, p.b).toChar() + " " + p.b);
         }
     }
 
-    private static void demoRead() {
-        initialize();
+    private void demoRead() {
         for (String s : take(LIMIT, P.strings())) {
             System.out.println("read(" + s + ") = " + read(s));
         }
     }
 
-    private static void demoRead_targeted() {
-        initialize();
+    private void demoRead_targeted() {
         for (String s : take(LIMIT, P.strings(POLYNOMIAL_CHARS))) {
             System.out.println("read(" + s + ") = " + read(s));
         }
     }
 
-    private static void demoFindIn() {
-        initialize();
+    private void demoFindIn() {
         for (String s : take(LIMIT, P.strings())) {
             System.out.println("findIn(" + s + ") = " + findIn(s));
         }
     }
 
-    private static void demoFindIn_targeted() {
-        initialize();
+    private void demoFindIn_targeted() {
         for (String s : take(LIMIT, P.strings(POLYNOMIAL_CHARS))) {
             System.out.println("findIn(" + s + ") = " + findIn(s));
         }
     }
 
-    private static void demoToString() {
-        initialize();
+    private void demoToString() {
         for (Polynomial p : take(LIMIT, P.polynomials())) {
             System.out.println(p);
         }

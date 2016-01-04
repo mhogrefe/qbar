@@ -16,8 +16,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class RationalPolynomialTest {
-    private static final int TINY_LIMIT = 20;
-
     @Test
     public void testConstants() {
         aeq(ZERO, "0");
