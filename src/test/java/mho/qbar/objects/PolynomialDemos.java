@@ -40,7 +40,7 @@ public class PolynomialDemos extends QBarDemos {
     }
 
     private void demoToRationalPolynomial() {
-        for (Polynomial p : take(LIMIT, P.polynomials())) {
+        for (Polynomial p : take(LIMIT, P.withScale(4).polynomials())) {
             System.out.println("toRationalPolynomial(" + p + ") = " + p.toRationalPolynomial());
         }
     }

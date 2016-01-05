@@ -201,9 +201,7 @@ public class PolynomialProperties extends QBarTestProperties {
     }
 
     private void propertiesToRationalPolynomial() {
-        initialize("");
-        System.out.println("\t\ttesting toRationalPolynomial() properties...");
-
+        initialize("toRationalPolynomial()");
         for (Polynomial p : take(LIMIT, P.polynomials())) {
             RationalPolynomial rp = p.toRationalPolynomial();
             assertEquals(p, p.toString(), rp.toString());

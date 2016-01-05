@@ -137,15 +137,19 @@ public class PolynomialTest {
         apply_Rational_helper("3*x^10", "100", "300000000000000000000");
     }
 
+    private static void toRationalPolynomial_helper(@NotNull String input) {
+        aeq(read(input).get().toRationalPolynomial(), input);
+    }
+
     @Test
     public void testToRationalPolynomial() {
-        assertTrue(ZERO.toRationalPolynomial() == RationalPolynomial.ZERO);
-        assertTrue(ONE.toRationalPolynomial() == RationalPolynomial.ONE);
-        aeq(X.toRationalPolynomial(), RationalPolynomial.X);
-        aeq(read("-17").get().toRationalPolynomial(), "-17");
-        aeq(read("x^2-4*x+7").get().toRationalPolynomial(), "x^2-4*x+7");
-        aeq(read("x^3-1").get().toRationalPolynomial(), "x^3-1");
-        aeq(read("3*x^10").get().toRationalPolynomial(), "3*x^10");
+        toRationalPolynomial_helper("0");
+        toRationalPolynomial_helper("1");
+        toRationalPolynomial_helper("x");
+        toRationalPolynomial_helper("-17");
+        toRationalPolynomial_helper("x^2-4*x+7");
+        toRationalPolynomial_helper("x^3-1");
+        toRationalPolynomial_helper("3*x^10");
     }
 
     @Test
