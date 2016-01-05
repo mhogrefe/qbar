@@ -39,82 +39,102 @@ public class PolynomialTest {
         iteratorHelper("3*x^10", "[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3]");
     }
 
+    private static void apply_BigInteger_helper(@NotNull String p, @NotNull String x, @NotNull String output) {
+        aeq(read(p).get().apply(Readers.readBigInteger(x).get()), output);
+    }
+
     @Test
     public void testApply_BigInteger() {
-        aeq(ZERO.apply(BigInteger.ZERO), 0);
-        aeq(ZERO.apply(BigInteger.ONE), 0);
-        aeq(ZERO.apply(IntegerUtils.NEGATIVE_ONE), 0);
-        aeq(ZERO.apply(BigInteger.valueOf(5)), 0);
-        aeq(ZERO.apply(BigInteger.valueOf(100)), 0);
-        aeq(ONE.apply(BigInteger.ZERO), 1);
-        aeq(ONE.apply(BigInteger.ONE), 1);
-        aeq(ONE.apply(IntegerUtils.NEGATIVE_ONE), 1);
-        aeq(ONE.apply(BigInteger.valueOf(5)), 1);
-        aeq(ONE.apply(BigInteger.valueOf(100)), 1);
-        aeq(X.apply(BigInteger.ZERO), 0);
-        aeq(X.apply(BigInteger.ONE), 1);
-        aeq(X.apply(IntegerUtils.NEGATIVE_ONE), -1);
-        aeq(X.apply(BigInteger.valueOf(5)), 5);
-        aeq(X.apply(BigInteger.valueOf(100)), 100);
-        aeq(read("-17").get().apply(BigInteger.ZERO), -17);
-        aeq(read("-17").get().apply(BigInteger.ONE), -17);
-        aeq(read("-17").get().apply(IntegerUtils.NEGATIVE_ONE), -17);
-        aeq(read("-17").get().apply(BigInteger.valueOf(5)), -17);
-        aeq(read("-17").get().apply(BigInteger.valueOf(100)), -17);
-        aeq(read("x^2-4*x+7").get().apply(BigInteger.ZERO), 7);
-        aeq(read("x^2-4*x+7").get().apply(BigInteger.ONE), 4);
-        aeq(read("x^2-4*x+7").get().apply(IntegerUtils.NEGATIVE_ONE), 12);
-        aeq(read("x^2-4*x+7").get().apply(BigInteger.valueOf(5)), 12);
-        aeq(read("x^2-4*x+7").get().apply(BigInteger.valueOf(100)), 9607);
-        aeq(read("x^3-1").get().apply(BigInteger.ZERO), -1);
-        aeq(read("x^3-1").get().apply(BigInteger.ONE), 0);
-        aeq(read("x^3-1").get().apply(IntegerUtils.NEGATIVE_ONE), -2);
-        aeq(read("x^3-1").get().apply(BigInteger.valueOf(5)), 124);
-        aeq(read("x^3-1").get().apply(BigInteger.valueOf(100)), 999999);
-        aeq(read("3*x^10").get().apply(BigInteger.ZERO), 0);
-        aeq(read("3*x^10").get().apply(BigInteger.ONE), 3);
-        aeq(read("3*x^10").get().apply(IntegerUtils.NEGATIVE_ONE), 3);
-        aeq(read("3*x^10").get().apply(BigInteger.valueOf(5)), 29296875);
-        aeq(read("3*x^10").get().apply(BigInteger.valueOf(100)), "300000000000000000000");
+        apply_BigInteger_helper("0", "0", "0");
+        apply_BigInteger_helper("0", "1", "0");
+        apply_BigInteger_helper("0", "-1", "0");
+        apply_BigInteger_helper("0", "5", "0");
+        apply_BigInteger_helper("0", "100", "0");
+
+        apply_BigInteger_helper("1", "0", "1");
+        apply_BigInteger_helper("1", "1", "1");
+        apply_BigInteger_helper("1", "-1", "1");
+        apply_BigInteger_helper("1", "5", "1");
+        apply_BigInteger_helper("1", "100", "1");
+
+        apply_BigInteger_helper("x", "0", "0");
+        apply_BigInteger_helper("x", "1", "1");
+        apply_BigInteger_helper("x", "-1", "-1");
+        apply_BigInteger_helper("x", "5", "5");
+        apply_BigInteger_helper("x", "100", "100");
+
+        apply_BigInteger_helper("-17", "0", "-17");
+        apply_BigInteger_helper("-17", "1", "-17");
+        apply_BigInteger_helper("-17", "-1", "-17");
+        apply_BigInteger_helper("-17", "5", "-17");
+        apply_BigInteger_helper("-17", "100", "-17");
+
+        apply_BigInteger_helper("x^2-4*x+7", "0", "7");
+        apply_BigInteger_helper("x^2-4*x+7", "1", "4");
+        apply_BigInteger_helper("x^2-4*x+7", "-1", "12");
+        apply_BigInteger_helper("x^2-4*x+7", "5", "12");
+        apply_BigInteger_helper("x^2-4*x+7", "100", "9607");
+
+        apply_BigInteger_helper("x^3-1", "0", "-1");
+        apply_BigInteger_helper("x^3-1", "1", "0");
+        apply_BigInteger_helper("x^3-1", "-1", "-2");
+        apply_BigInteger_helper("x^3-1", "5", "124");
+        apply_BigInteger_helper("x^3-1", "100", "999999");
+
+        apply_BigInteger_helper("3*x^10", "0", "0");
+        apply_BigInteger_helper("3*x^10", "1", "3");
+        apply_BigInteger_helper("3*x^10", "-1", "3");
+        apply_BigInteger_helper("3*x^10", "5", "29296875");
+        apply_BigInteger_helper("3*x^10", "100", "300000000000000000000");
+    }
+
+    private static void apply_Rational_helper(@NotNull String p, @NotNull String x, @NotNull String output) {
+        aeq(read(p).get().apply(Rational.read(x).get()), output);
     }
 
     @Test
     public void testApply_Rational() {
-        aeq(ZERO.apply(Rational.ZERO), 0);
-        aeq(ZERO.apply(Rational.ONE), 0);
-        aeq(ZERO.apply(Rational.NEGATIVE_ONE), 0);
-        aeq(ZERO.apply(Rational.of(4, 5)), 0);
-        aeq(ZERO.apply(Rational.of(100)), 0);
-        aeq(ONE.apply(Rational.ZERO), 1);
-        aeq(ONE.apply(Rational.ONE), 1);
-        aeq(ONE.apply(Rational.NEGATIVE_ONE), 1);
-        aeq(ONE.apply(Rational.of(4, 5)), 1);
-        aeq(ONE.apply(Rational.of(100)), 1);
-        aeq(X.apply(Rational.ZERO), 0);
-        aeq(X.apply(Rational.ONE), 1);
-        aeq(X.apply(Rational.NEGATIVE_ONE), -1);
-        aeq(X.apply(Rational.of(4, 5)), "4/5");
-        aeq(X.apply(Rational.of(100)), 100);
-        aeq(read("-17").get().apply(Rational.ZERO), "-17");
-        aeq(read("-17").get().apply(Rational.ONE), "-17");
-        aeq(read("-17").get().apply(Rational.NEGATIVE_ONE), "-17");
-        aeq(read("-17").get().apply(Rational.of(4, 5)), "-17");
-        aeq(read("-17").get().apply(Rational.of(100)), "-17");
-        aeq(read("x^2-4*x+7").get().apply(Rational.ZERO), "7");
-        aeq(read("x^2-4*x+7").get().apply(Rational.ONE), "4");
-        aeq(read("x^2-4*x+7").get().apply(Rational.NEGATIVE_ONE), "12");
-        aeq(read("x^2-4*x+7").get().apply(Rational.of(4, 5)), "111/25");
-        aeq(read("x^2-4*x+7").get().apply(Rational.of(100)), "9607");
-        aeq(read("x^3-1").get().apply(Rational.ZERO), -1);
-        aeq(read("x^3-1").get().apply(Rational.ONE), 0);
-        aeq(read("x^3-1").get().apply(Rational.NEGATIVE_ONE), -2);
-        aeq(read("x^3-1").get().apply(Rational.of(4, 5)), "-61/125");
-        aeq(read("x^3-1").get().apply(Rational.of(100)), 999999);
-        aeq(read("3*x^10").get().apply(Rational.ZERO), 0);
-        aeq(read("3*x^10").get().apply(Rational.ONE), 3);
-        aeq(read("3*x^10").get().apply(Rational.NEGATIVE_ONE), 3);
-        aeq(read("3*x^10").get().apply(Rational.of(4, 5)), "3145728/9765625");
-        aeq(read("3*x^10").get().apply(Rational.of(100)), "300000000000000000000");
+        apply_Rational_helper("0", "0", "0");
+        apply_Rational_helper("0", "1", "0");
+        apply_Rational_helper("0", "-1", "0");
+        apply_Rational_helper("0", "4/5", "0");
+        apply_Rational_helper("0", "100", "0");
+
+        apply_Rational_helper("1", "0", "1");
+        apply_Rational_helper("1", "1", "1");
+        apply_Rational_helper("1", "-1", "1");
+        apply_Rational_helper("1", "4/5", "1");
+        apply_Rational_helper("1", "100", "1");
+
+        apply_Rational_helper("x", "0", "0");
+        apply_Rational_helper("x", "1", "1");
+        apply_Rational_helper("x", "-1", "-1");
+        apply_Rational_helper("x", "4/5", "4/5");
+        apply_Rational_helper("x", "100", "100");
+
+        apply_Rational_helper("-17", "0", "-17");
+        apply_Rational_helper("-17", "1", "-17");
+        apply_Rational_helper("-17", "-1", "-17");
+        apply_Rational_helper("-17", "4/5", "-17");
+        apply_Rational_helper("-17", "100", "-17");
+
+        apply_Rational_helper("x^2-4*x+7", "0", "7");
+        apply_Rational_helper("x^2-4*x+7", "1", "4");
+        apply_Rational_helper("x^2-4*x+7", "-1", "12");
+        apply_Rational_helper("x^2-4*x+7", "4/5", "111/25");
+        apply_Rational_helper("x^2-4*x+7", "100", "9607");
+
+        apply_Rational_helper("x^3-1", "0", "-1");
+        apply_Rational_helper("x^3-1", "1", "0");
+        apply_Rational_helper("x^3-1", "-1", "-2");
+        apply_Rational_helper("x^3-1", "4/5", "-61/125");
+        apply_Rational_helper("x^3-1", "100", "999999");
+
+        apply_Rational_helper("3*x^10", "0", "0");
+        apply_Rational_helper("3*x^10", "1", "3");
+        apply_Rational_helper("3*x^10", "-1", "3");
+        apply_Rational_helper("3*x^10", "4/5", "3145728/9765625");
+        apply_Rational_helper("3*x^10", "100", "300000000000000000000");
     }
 
     @Test

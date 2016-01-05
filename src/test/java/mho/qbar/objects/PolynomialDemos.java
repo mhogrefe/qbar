@@ -28,13 +28,13 @@ public class PolynomialDemos extends QBarDemos {
     }
 
     private void demoApply_BigInteger() {
-        for (Pair<Polynomial, BigInteger> p : take(LIMIT, P.pairs(P.polynomials(), P.bigIntegers()))) {
+        for (Pair<Polynomial, BigInteger> p : take(LIMIT, P.pairs(P.withScale(4).polynomials(), P.bigIntegers()))) {
             System.out.println(p.a + " at " + p.b + " = " + p.a.apply(p.b));
         }
     }
 
     private void demoApply_Rational() {
-        for (Pair<Polynomial, Rational> p : take(LIMIT, P.pairs(P.polynomials(), P.rationals()))) {
+        for (Pair<Polynomial, Rational> p : take(LIMIT, P.pairs(P.withScale(4).polynomials(), P.rationals()))) {
             System.out.println(p.a + " at " + p.b + " = " + p.a.apply(p.b));
         }
     }

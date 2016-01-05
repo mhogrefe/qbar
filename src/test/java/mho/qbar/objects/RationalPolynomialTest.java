@@ -38,43 +38,53 @@ public class RationalPolynomialTest {
         iteratorHelper("1/2*x^10", "[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1/2]");
     }
 
+    private static void apply_helper(@NotNull String p, @NotNull String x, @NotNull String output) {
+        aeq(read(p).get().apply(Rational.read(x).get()), output);
+    }
+
     @Test
     public void testApply() {
-        aeq(ZERO.apply(Rational.ZERO), 0);
-        aeq(ZERO.apply(Rational.ONE), 0);
-        aeq(ZERO.apply(Rational.NEGATIVE_ONE), 0);
-        aeq(ZERO.apply(Rational.of(4, 5)), 0);
-        aeq(ZERO.apply(Rational.of(100)), 0);
-        aeq(ONE.apply(Rational.ZERO), 1);
-        aeq(ONE.apply(Rational.ONE), 1);
-        aeq(ONE.apply(Rational.NEGATIVE_ONE), 1);
-        aeq(ONE.apply(Rational.of(4, 5)), 1);
-        aeq(ONE.apply(Rational.of(100)), 1);
-        aeq(X.apply(Rational.ZERO), 0);
-        aeq(X.apply(Rational.ONE), 1);
-        aeq(X.apply(Rational.NEGATIVE_ONE), -1);
-        aeq(X.apply(Rational.of(4, 5)), "4/5");
-        aeq(X.apply(Rational.of(100)), 100);
-        aeq(read("-4/3").get().apply(Rational.ZERO), "-4/3");
-        aeq(read("-4/3").get().apply(Rational.ONE), "-4/3");
-        aeq(read("-4/3").get().apply(Rational.NEGATIVE_ONE), "-4/3");
-        aeq(read("-4/3").get().apply(Rational.of(4, 5)), "-4/3");
-        aeq(read("-4/3").get().apply(Rational.of(100)), "-4/3");
-        aeq(read("x^2-7/4*x+1/3").get().apply(Rational.ZERO), "1/3");
-        aeq(read("x^2-7/4*x+1/3").get().apply(Rational.ONE), "-5/12");
-        aeq(read("x^2-7/4*x+1/3").get().apply(Rational.NEGATIVE_ONE), "37/12");
-        aeq(read("x^2-7/4*x+1/3").get().apply(Rational.of(4, 5)), "-32/75");
-        aeq(read("x^2-7/4*x+1/3").get().apply(Rational.of(100)), "29476/3");
-        aeq(read("x^3-1").get().apply(Rational.ZERO), -1);
-        aeq(read("x^3-1").get().apply(Rational.ONE), 0);
-        aeq(read("x^3-1").get().apply(Rational.NEGATIVE_ONE), -2);
-        aeq(read("x^3-1").get().apply(Rational.of(4, 5)), "-61/125");
-        aeq(read("x^3-1").get().apply(Rational.of(100)), 999999);
-        aeq(read("1/2*x^10").get().apply(Rational.ZERO), 0);
-        aeq(read("1/2*x^10").get().apply(Rational.ONE), "1/2");
-        aeq(read("1/2*x^10").get().apply(Rational.NEGATIVE_ONE), "1/2");
-        aeq(read("1/2*x^10").get().apply(Rational.of(4, 5)), "524288/9765625");
-        aeq(read("1/2*x^10").get().apply(Rational.of(100)), "50000000000000000000");
+        apply_helper("0", "0", "0");
+        apply_helper("0", "1", "0");
+        apply_helper("0", "-1", "0");
+        apply_helper("0", "4/5", "0");
+        apply_helper("0", "100", "0");
+
+        apply_helper("1", "0", "1");
+        apply_helper("1", "1", "1");
+        apply_helper("1", "-1", "1");
+        apply_helper("1", "4/5", "1");
+        apply_helper("1", "100", "1");
+
+        apply_helper("x", "0", "0");
+        apply_helper("x", "1", "1");
+        apply_helper("x", "-1", "-1");
+        apply_helper("x", "4/5", "4/5");
+        apply_helper("x", "100", "100");
+
+        apply_helper("-4/3", "0", "-4/3");
+        apply_helper("-4/3", "1", "-4/3");
+        apply_helper("-4/3", "-1", "-4/3");
+        apply_helper("-4/3", "4/5", "-4/3");
+        apply_helper("-4/3", "100", "-4/3");
+
+        apply_helper("x^2-7/4*x+1/3", "0", "1/3");
+        apply_helper("x^2-7/4*x+1/3", "1", "-5/12");
+        apply_helper("x^2-7/4*x+1/3", "-1", "37/12");
+        apply_helper("x^2-7/4*x+1/3", "4/5", "-32/75");
+        apply_helper("x^2-7/4*x+1/3", "100", "29476/3");
+
+        apply_helper("x^3-1", "0", "-1");
+        apply_helper("x^3-1", "1", "0");
+        apply_helper("x^3-1", "-1", "-2");
+        apply_helper("x^3-1", "4/5", "-61/125");
+        apply_helper("x^3-1", "100", "999999");
+
+        apply_helper("1/2*x^10", "0", "0");
+        apply_helper("1/2*x^10", "1", "1/2");
+        apply_helper("1/2*x^10", "-1", "1/2");
+        apply_helper("1/2*x^10", "4/5", "524288/9765625");
+        apply_helper("1/2*x^10", "100", "50000000000000000000");
     }
 
     @Test

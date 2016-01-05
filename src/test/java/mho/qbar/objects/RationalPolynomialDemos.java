@@ -28,7 +28,8 @@ public class RationalPolynomialDemos extends QBarDemos {
     }
 
     private void demoApply() {
-        for (Pair<RationalPolynomial, Rational> p : take(LIMIT, P.pairs(P.rationalPolynomials(), P.rationals()))) {
+        Iterable<Pair<RationalPolynomial, Rational>> ps = P.pairs(P.withScale(4).rationalPolynomials(), P.rationals());
+        for (Pair<RationalPolynomial, Rational> p : take(LIMIT, ps)) {
             System.out.println(p.a + " at " + p.b + " = " + p.a.apply(p.b));
         }
     }

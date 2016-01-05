@@ -92,9 +92,7 @@ public final class RationalPolynomial implements
     }
 
     /**
-     * Evaluates {@code this} at {@code x}. Explicitly taking powers of x turns out to be faster than Horner's method
-     * (except for small {@code RationalPolynomial}s) due to the efficiency of {@code Rational} exponentiation as
-     * compared to repeated {@code Rational} multiplication, which has to perform repeated GCD calculations.
+     * Evaluates {@code this} at {@code x} using Horner's method.
      *
      * <ul>
      *  <li>{@code this} may be any {@code RationalPolynomial}.</li>
@@ -106,9 +104,7 @@ public final class RationalPolynomial implements
      */
     @Override
     public @NotNull Rational apply(@NotNull Rational x) {
-        return Rational.sum(
-                zipWith((c, i) -> c == Rational.ZERO ? Rational.ZERO : x.pow(i).multiply(c), coefficients, rangeUp(0))
-        );
+        return foldr((c, y) -> y.multiply(x).add(c), Rational.ZERO, coefficients);
     }
 
     /**

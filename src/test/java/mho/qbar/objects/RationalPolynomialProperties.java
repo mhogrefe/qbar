@@ -10,9 +10,8 @@ import mho.wheels.structures.Triple;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigInteger;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.function.Function;
 
 import static mho.qbar.objects.RationalPolynomial.*;
 import static mho.qbar.objects.RationalPolynomial.sum;
@@ -94,22 +93,22 @@ public class RationalPolynomialProperties extends QBarTestProperties {
         }
     }
 
-    private static @NotNull Rational apply_horner(@NotNull RationalPolynomial p, @NotNull Rational x) {
-        return foldr((c, y) -> y.multiply(x).add(c), Rational.ZERO, p);
+    private static @NotNull Rational apply_naive(@NotNull RationalPolynomial p, @NotNull Rational x) {
+        return Rational.sum(
+                zipWith((c, i) -> c == Rational.ZERO ? Rational.ZERO : x.pow(i).multiply(c), p, rangeUp(0))
+        );
     }
 
     private void propertiesApply() {
-        initialize("");
-        System.out.println("\t\ttesting apply(Rational) properties...");
-
+        initialize("apply(Rational)");
         for (Pair<RationalPolynomial, Rational> p : take(LIMIT, P.pairs(P.rationalPolynomials(), P.rationals()))) {
             Rational y = p.a.apply(p.b);
-            assertEquals(p, y, apply_horner(p.a, p.b));
+            assertEquals(p, y, apply_naive(p.a, p.b));
         }
 
         for (Rational i : take(LIMIT, P.rationals())) {
             assertEquals(i, ZERO.apply(i), Rational.ZERO);
-            assertEquals(i, X.apply(i), i);
+            fixedPoint(X::apply, i);
             assertEquals(i, of(Rational.NEGATIVE_ONE, 1).apply(i), i.negate());
         }
 
@@ -128,36 +127,17 @@ public class RationalPolynomialProperties extends QBarTestProperties {
             assertEquals(p, of(p.a, 1).apply(p.b), p.b.multiply(p.a));
         }
 
-        Iterable<Integer> is;
-        if (P instanceof QBarExhaustiveProvider) {
-            is = P.naturalIntegers();
-        } else {
-            is = P.withScale(20).naturalIntegersGeometric();
-        }
-        for (Pair<Integer, Rational> p : take(LIMIT, P.pairs(is, P.rationals()))) {
+        for (Pair<Integer, Rational> p : take(LIMIT, P.pairs(P.naturalIntegersGeometric(), P.rationals()))) {
             assertEquals(p, of(Rational.ONE, p.a).apply(p.b), p.b.pow(p.a));
         }
     }
 
     private void compareImplementationsApply() {
-        initialize("");
-        System.out.println("\t\tcomparing apply(Rational) implementations...");
-
-        long totalTime = 0;
-        for (Pair<RationalPolynomial, Rational> p : take(LIMIT, P.pairs(P.rationalPolynomials(), P.rationals()))) {
-            long time = System.nanoTime();
-            apply_horner(p.a, p.b);
-            totalTime += (System.nanoTime() - time);
-        }
-        System.out.println("\t\t\tHorner: " + ((double) totalTime) / 1e9 + " s");
-
-        totalTime = 0;
-        for (Pair<RationalPolynomial, Rational> p : take(LIMIT, P.pairs(P.rationalPolynomials(), P.rationals()))) {
-            long time = System.nanoTime();
-            p.a.apply(p.b);
-            totalTime += (System.nanoTime() - time);
-        }
-        System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
+        Map<String, Function<Pair<RationalPolynomial, Rational>, Rational>> functions = new LinkedHashMap<>();
+        functions.put("naïve", p -> apply_naive(p.a, p.b));
+        functions.put("standard", p -> p.a.apply(p.b));
+        Iterable<Pair<RationalPolynomial, Rational>> ps = P.pairs(P.rationalPolynomials(), P.rationals());
+        compareImplementations("apply(Rational)", take(LIMIT, ps), functions);
     }
 
     private void propertiesCoefficient() {

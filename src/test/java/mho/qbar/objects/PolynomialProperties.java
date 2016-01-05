@@ -10,9 +10,8 @@ import mho.wheels.structures.Triple;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigInteger;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.function.Function;
 
 import static mho.qbar.objects.Polynomial.*;
 import static mho.qbar.objects.Polynomial.sum;
@@ -96,9 +95,7 @@ public class PolynomialProperties extends QBarTestProperties {
     }
 
     private void propertiesApply_BigInteger() {
-        initialize("");
-        System.out.println("\t\ttesting apply(BigInteger) properties...");
-
+        initialize("apply(BigInteger)");
         for (Pair<Polynomial, BigInteger> p : take(LIMIT, P.pairs(P.polynomials(), P.bigIntegers()))) {
             BigInteger y = p.a.apply(p.b);
             assertEquals(p, y, apply_BigInteger_naive(p.a, p.b));
@@ -106,7 +103,7 @@ public class PolynomialProperties extends QBarTestProperties {
 
         for (BigInteger i : take(LIMIT, P.bigIntegers())) {
             assertEquals(i, ZERO.apply(i), BigInteger.ZERO);
-            assertEquals(i, X.apply(i), i);
+            fixedPoint(X::apply, i);
             assertEquals(i, of(IntegerUtils.NEGATIVE_ONE, 1).apply(i), i.negate());
         }
 
@@ -125,36 +122,20 @@ public class PolynomialProperties extends QBarTestProperties {
             assertEquals(p, of(p.a, 1).apply(p.b), p.b.multiply(p.a));
         }
 
-        Iterable<Integer> is;
-        if (P instanceof QBarExhaustiveProvider) {
-            is = P.naturalIntegers();
-        } else {
-            is = P.withScale(20).naturalIntegersGeometric();
-        }
-        for (Pair<Integer, BigInteger> p : take(LIMIT, P.pairs(is, P.bigIntegers()))) {
+        for (Pair<Integer, BigInteger> p : take(LIMIT, P.pairs(P.naturalIntegersGeometric(), P.bigIntegers()))) {
             assertEquals(p, of(BigInteger.ONE, p.a).apply(p.b), p.b.pow(p.a));
         }
     }
 
     private void compareImplementationsApply_BigInteger() {
-        initialize("");
-        System.out.println("\t\tcomparing apply(BigInteger) implementations...");
+        Map<String, Function<Pair<Polynomial, BigInteger>, BigInteger>> functions = new LinkedHashMap<>();
+        functions.put("naïve", p -> apply_BigInteger_naive(p.a, p.b));
+        functions.put("standard", p -> p.a.apply(p.b));
+        compareImplementations("apply(BigInteger)", take(LIMIT, P.pairs(P.polynomials(), P.bigIntegers())), functions);
+    }
 
-        long totalTime = 0;
-        for (Pair<Polynomial, BigInteger> p : take(LIMIT, P.pairs(P.polynomials(), P.bigIntegers()))) {
-            long time = System.nanoTime();
-            apply_BigInteger_naive(p.a, p.b);
-            totalTime += (System.nanoTime() - time);
-        }
-        System.out.println("\t\t\tnaïve: " + ((double) totalTime) / 1e9 + " s");
-
-        totalTime = 0;
-        for (Pair<Polynomial, BigInteger> p : take(LIMIT, P.pairs(P.polynomials(), P.bigIntegers()))) {
-            long time = System.nanoTime();
-            p.a.apply(p.b);
-            totalTime += (System.nanoTime() - time);
-        }
-        System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
+    private static @NotNull Rational apply_Rational_simplest(@NotNull Polynomial p, @NotNull Rational x) {
+        return p.toRationalPolynomial().apply(x);
     }
 
     private static @NotNull Rational apply_Rational_naive(@NotNull Polynomial p, @NotNull Rational x) {
@@ -163,19 +144,26 @@ public class PolynomialProperties extends QBarTestProperties {
         );
     }
 
-    private void propertiesApply_Rational() {
-        initialize("");
-        System.out.println("\t\ttesting apply(Rational) properties...");
+    private static @NotNull Rational apply_Rational_alt(@NotNull Polynomial p, @NotNull Rational x) {
+        if (x.isInteger()) {
+            return Rational.of(p.apply(x.bigIntegerValueExact()));
+        } else {
+            return foldr((c, y) -> x.multiply(y).add(Rational.of(c)), Rational.ZERO, p);
+        }
+    }
 
+    private void propertiesApply_Rational() {
+        initialize("apply(Rational)");
         for (Pair<Polynomial, Rational> p : take(LIMIT, P.pairs(P.polynomials(), P.rationals()))) {
             Rational y = p.a.apply(p.b);
+            assertEquals(p, y, apply_Rational_simplest(p.a, p.b));
             assertEquals(p, y, apply_Rational_naive(p.a, p.b));
-            assertEquals(p, y, p.a.toRationalPolynomial().apply(p.b));
+            assertEquals(p, y, apply_Rational_alt(p.a, p.b));
         }
 
         for (Rational r : take(LIMIT, P.rationals())) {
             assertEquals(r, ZERO.apply(r), Rational.ZERO);
-            assertEquals(r, X.apply(r), r);
+            fixedPoint(X::apply, r);
             assertEquals(r, of(IntegerUtils.NEGATIVE_ONE, 1).apply(r), r.negate());
         }
 
@@ -198,45 +186,18 @@ public class PolynomialProperties extends QBarTestProperties {
             assertEquals(p, of(p.a, 1).apply(p.b), p.b.multiply(p.a));
         }
 
-        Iterable<Integer> is;
-        if (P instanceof QBarExhaustiveProvider) {
-            is = P.naturalIntegers();
-        } else {
-            is = P.withScale(20).naturalIntegersGeometric();
-        }
-        for (Pair<Integer, Rational> p : take(LIMIT, P.pairs(is, P.rationals()))) {
+        for (Pair<Integer, Rational> p : take(LIMIT, P.pairs(P.naturalIntegersGeometric(), P.rationals()))) {
             assertEquals(p, of(BigInteger.ONE, p.a).apply(p.b), p.b.pow(p.a));
         }
     }
 
     private void compareImplementationsApply_Rational() {
-        initialize("");
-        System.out.println("\t\tcomparing apply(Rational) implementations...");
-
-        long totalTime = 0;
-        for (Pair<Polynomial, Rational> p : take(LIMIT, P.pairs(P.polynomials(), P.rationals()))) {
-            RationalPolynomial rp = p.a.toRationalPolynomial();
-            long time = System.nanoTime();
-            rp.apply(p.b);
-            totalTime += (System.nanoTime() - time);
-        }
-        System.out.println("\t\t\tsimplest: " + ((double) totalTime) / 1e9 + " s");
-
-        totalTime = 0;
-        for (Pair<Polynomial, Rational> p : take(LIMIT, P.pairs(P.polynomials(), P.rationals()))) {
-            long time = System.nanoTime();
-            apply_Rational_naive(p.a, p.b);
-            totalTime += (System.nanoTime() - time);
-        }
-        System.out.println("\t\t\tnaïve: " + ((double) totalTime) / 1e9 + " s");
-
-        totalTime = 0;
-        for (Pair<Polynomial, Rational> p : take(LIMIT, P.pairs(P.polynomials(), P.rationals()))) {
-            long time = System.nanoTime();
-            p.a.apply(p.b);
-            totalTime += (System.nanoTime() - time);
-        }
-        System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
+        Map<String, Function<Pair<Polynomial, Rational>, Rational>> functions = new LinkedHashMap<>();
+        functions.put("simplest", p -> apply_Rational_simplest(p.a, p.b));
+        functions.put("naïve", p -> apply_Rational_naive(p.a, p.b));
+        functions.put("alt", p -> apply_Rational_alt(p.a, p.b));
+        functions.put("standard", p -> p.a.apply(p.b));
+        compareImplementations("apply(Rational)", take(LIMIT, P.pairs(P.polynomials(), P.rationals())), functions);
     }
 
     private void propertiesToRationalPolynomial() {
