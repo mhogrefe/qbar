@@ -33,6 +33,7 @@ public class RationalMatrixProperties extends QBarTestProperties {
         propertiesFromColumns();
         propertiesHeight();
         propertiesWidth();
+        propertiesIsZero();
         propertiesZero();
         propertiesIdentity();
         propertiesEquals();
@@ -260,11 +261,19 @@ public class RationalMatrixProperties extends QBarTestProperties {
         }
     }
 
+    private void propertiesIsZero() {
+        initialize("isZero()");
+        for (RationalMatrix m : take(LIMIT, P.rationalMatrices())) {
+            assertEquals(m, m.isZero(), zero(m.height(), m.width()).equals(m));
+        }
+    }
+
     private void propertiesZero() {
         initialize("zero(int, int)");
         for (Pair<Integer, Integer> p : take(SMALL_LIMIT, P.pairs(P.naturalIntegersGeometric()))) {
             RationalMatrix zero = zero(p.a, p.b);
             zero.validate();
+            assertTrue(p, zero.isZero());
             assertEquals(p, zero.height(), p.a);
             assertEquals(p, zero.width(), p.b);
             inverse(q -> zero(q.a, q.b), (RationalMatrix m) -> new Pair<>(m.height(), m.width()), p);

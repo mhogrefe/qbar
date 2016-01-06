@@ -201,6 +201,25 @@ public class RationalMatrixTest {
         width_helper("[[1, 9, -13], [20, 5, -6]]", 3);
     }
 
+    private static void isZero_helper(@NotNull String input, boolean output) {
+        aeq(read(input).get().isZero(), output);
+    }
+
+    @Test
+    public void testIsZero() {
+        isZero_helper("[]#0", true);
+        isZero_helper("[]#1", true);
+        isZero_helper("[]#3", true);
+        isZero_helper("[[]]", true);
+        isZero_helper("[[0]]", true);
+        isZero_helper("[[], [], []]", true);
+        isZero_helper("[[0, 0, 0], [0, 0, 0], [0, 0, 0]]", true);
+        isZero_helper("[[0, 0, 0], [0, 0, 1], [0, 0, 0]]", false);
+        isZero_helper("[[-2/3]]", false);
+        isZero_helper("[[-2/3, -8], [0, 5/7]]", false);
+        isZero_helper("[[1, 9, -13], [20, 5, -6]]", false);
+    }
+
     private static void zero_helper(int height, int width, @NotNull String output) {
         aeq(zero(height, width), output);
     }

@@ -249,7 +249,21 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
     }
 
     /**
-     * Creates the zero matrix with a given height and width.
+     * Determines whether this is a zero matrix.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalMatrix}.</li>
+     *  <li>The result may be either {@code boolean}.</li>
+     * </ul>
+     *
+     * @return whether the elements of {@code this} are all 0.
+     */
+    public boolean isZero() {
+        return all(RationalVector::isZero, rows);
+    }
+
+    /**
+     * Creates a zero matrix with a given height and width.
      *
      * <ul>
      *  <li>{@code height} cannot be negative.</li>
