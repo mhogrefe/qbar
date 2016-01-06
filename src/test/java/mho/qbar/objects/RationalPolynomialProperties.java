@@ -168,18 +168,19 @@ public class RationalPolynomialProperties extends QBarTestProperties {
     }
 
     private void propertiesOf_List_Rational() {
-        initialize("");
-        System.out.println("\t\ttesting of(List<Rational>) properties");
-
+        initialize("of(List<Rational>)");
         for (List<Rational> rs : take(LIMIT, P.lists(P.rationals()))) {
             RationalPolynomial p = of(rs);
             p.validate();
             assertTrue(rs, p.degree() < rs.size());
         }
 
-        Iterable<List<Rational>> rss = filter(rs -> rs.isEmpty() || last(rs) != Rational.ZERO, P.lists(P.rationals()));
+        Iterable<List<Rational>> rss = filterInfinite(
+                rs -> rs.isEmpty() || last(rs) != Rational.ZERO,
+                P.lists(P.rationals())
+        );
         for (List<Rational> rs : take(LIMIT, rss)) {
-            assertEquals(rs, toList(of(rs)), rs);
+            fixedPoint(ss -> toList(of(ss)), rs);
         }
 
         for (List<Rational> rs : take(LIMIT, P.listsWithElement(null, P.rationals()))) {
@@ -191,40 +192,34 @@ public class RationalPolynomialProperties extends QBarTestProperties {
     }
 
     private void propertiesOf_Rational() {
-        initialize("");
-        System.out.println("\t\ttesting of(Rational) properties");
-
+        initialize("of(Rational)");
         for (Rational r : take(LIMIT, P.rationals())) {
             RationalPolynomial p = of(r);
             p.validate();
             assertTrue(r, p.degree() == 0 || p.degree() == -1);
         }
 
-        for (Rational r : take(LIMIT, filter(j -> j != Rational.ZERO, P.rationals()))) {
+        for (Rational r : take(LIMIT, P.nonzeroRationals())) {
             assertEquals(r, of(r).coefficient(0), r);
         }
     }
 
     private void propertiesOf_Rational_int() {
-        initialize("");
-        System.out.println("\t\ttesting of(Rational, int) properties");
-
-        Iterable<Pair<Rational, Integer>> ps;
-        if (P instanceof QBarExhaustiveProvider) {
-            ps = P.pairsLogarithmicOrder(P.rationals(), P.naturalIntegers());
-        } else {
-            ps = P.pairs(P.rationals(), P.withScale(20).naturalIntegersGeometric());
-        }
+        initialize("of(Rational, int)");
+        Iterable<Pair<Rational, Integer>> ps = P.pairsLogarithmicOrder(
+                P.rationals(),
+                P.naturalIntegersGeometric()
+        );
         for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
             RationalPolynomial q = of(p.a, p.b);
             q.validate();
         }
 
-        for (Pair<Rational, Integer> p : take(LIMIT, filter(q -> q.a != Rational.ZERO, ps))) {
+        ps = P.pairsLogarithmicOrder(P.nonzeroRationals(), P.naturalIntegersGeometric());
+        for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
             RationalPolynomial q = of(p.a, p.b);
-            List<Rational> coefficients = toList(q);
-            assertEquals(p, length(filter(r -> r != Rational.ZERO, coefficients)), 1);
-            assertEquals(p, q.degree(), p.b.intValue());
+            assertTrue(p, all(c -> c == Rational.ZERO, init(q)));
+            assertEquals(p, q.degree(), p.b);
         }
 
         for (int i : take(LIMIT, P.naturalIntegers())) {

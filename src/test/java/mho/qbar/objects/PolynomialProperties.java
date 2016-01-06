@@ -244,21 +244,19 @@ public class PolynomialProperties extends QBarTestProperties {
     }
 
     private void propertiesOf_List_BigInteger() {
-        initialize("");
-        System.out.println("\t\ttesting of(List<BigInteger>) properties");
-
+        initialize("of(List<BigInteger>)");
         for (List<BigInteger> is : take(LIMIT, P.lists(P.bigIntegers()))) {
             Polynomial p = of(is);
             p.validate();
             assertTrue(is, p.degree() < is.size());
         }
 
-        Iterable<List<BigInteger>> iss = filter(
+        Iterable<List<BigInteger>> iss = filterInfinite(
                 is -> is.isEmpty() || !last(is).equals(BigInteger.ZERO),
                 P.lists(P.bigIntegers())
         );
         for (List<BigInteger> is : take(LIMIT, iss)) {
-            assertEquals(is, toList(of(is)), is);
+            fixedPoint(js -> toList(of(js)), is);
         }
 
         for (List<BigInteger> is : take(LIMIT, P.listsWithElement(null, P.bigIntegers()))) {
@@ -270,40 +268,34 @@ public class PolynomialProperties extends QBarTestProperties {
     }
 
     private void propertiesOf_BigInteger() {
-        initialize("");
-        System.out.println("\t\ttesting of(BigInteger) properties");
-
+        initialize("of(BigInteger)");
         for (BigInteger i : take(LIMIT, P.bigIntegers())) {
             Polynomial p = of(i);
             p.validate();
             assertTrue(i, p.degree() == 0 || p.degree() == -1);
         }
 
-        for (BigInteger i : take(LIMIT, filter(j -> !j.equals(BigInteger.ZERO), P.bigIntegers()))) {
+        for (BigInteger i : take(LIMIT, P.nonzeroBigIntegers())) {
             assertEquals(i, of(i).coefficient(0), i);
         }
     }
 
     private void propertiesOf_BigInteger_int() {
-        initialize("");
-        System.out.println("\t\ttesting of(BigInteger, int) properties");
-
-        Iterable<Pair<BigInteger, Integer>> ps;
-        if (P instanceof QBarExhaustiveProvider) {
-            ps = ((QBarExhaustiveProvider) P).pairsLogarithmicOrder(P.bigIntegers(), P.naturalIntegers());
-        } else {
-            ps = P.pairs(P.bigIntegers(), P.withScale(20).naturalIntegersGeometric());
-        }
+        initialize("of(BigInteger, int)");
+        Iterable<Pair<BigInteger, Integer>> ps = P.pairsLogarithmicOrder(
+                P.bigIntegers(),
+                P.naturalIntegersGeometric()
+        );
         for (Pair<BigInteger, Integer> p : take(LIMIT, ps)) {
             Polynomial q = of(p.a, p.b);
             q.validate();
         }
 
-        for (Pair<BigInteger, Integer> p : take(LIMIT, filter(q -> !q.a.equals(BigInteger.ZERO), ps))) {
+        ps = P.pairsLogarithmicOrder(P.nonzeroBigIntegers(), P.naturalIntegersGeometric());
+        for (Pair<BigInteger, Integer> p : take(LIMIT, ps)) {
             Polynomial q = of(p.a, p.b);
-            List<BigInteger> coefficients = toList(q);
-            assertEquals(p, length(filter(i -> !i.equals(BigInteger.ZERO), coefficients)), 1);
-            assertEquals(p, q.degree(), p.b.intValue());
+            assertTrue(p, all(c -> c.equals(BigInteger.ZERO), init(q)));
+            assertEquals(p, q.degree(), p.b);
         }
 
         for (int i : take(LIMIT, P.naturalIntegers())) {

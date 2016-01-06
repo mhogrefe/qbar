@@ -184,59 +184,85 @@ public class PolynomialTest {
         coefficient_fail_helper("x^3-1", -1);
     }
 
-    @Test
-    public void testOf_List_BigInteger() {
-        assertTrue(of(readBigIntegerList("[]")) == ZERO);
-        assertTrue(of(readBigIntegerList("[0]")) == ZERO);
-        assertTrue(of(readBigIntegerList("[0, 0, 0]")) == ZERO);
-        assertTrue(of(readBigIntegerList("[1]")) == ONE);
-        assertTrue(of(readBigIntegerList("[1, 0, 0]")) == ONE);
-        aeq(of(readBigIntegerList("[0, 1]")), X);
-        aeq(of(readBigIntegerList("[-17]")), "-17");
-        aeq(of(readBigIntegerList("[7, -4, 1]")), "x^2-4*x+7");
-        aeq(of(readBigIntegerList("[7, -4, 1, 0, 0]")), "x^2-4*x+7");
-        aeq(of(readBigIntegerList("[-1, 0, 0, 1]")), "x^3-1");
-        aeq(of(readBigIntegerList("[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3]")), "3*x^10");
+    private static void of_List_BigInteger_helper(@NotNull String input, @NotNull String output) {
+        aeq(of(readBigIntegerList(input)), output);
+    }
+
+    private static void of_List_BigInteger_fail_helper(@NotNull String input) {
         try {
-            of(readBigIntegerListWithNulls("[7, null, 1]"));
+            of(readBigIntegerListWithNulls(input));
             fail();
         } catch (NullPointerException ignored) {}
     }
 
     @Test
+    public void testOf_List_BigInteger() {
+        of_List_BigInteger_helper("[]", "0");
+        of_List_BigInteger_helper("[0]", "0");
+        of_List_BigInteger_helper("[0, 0, 0]", "0");
+        of_List_BigInteger_helper("[1]", "1");
+        of_List_BigInteger_helper("[1, 0, 0]", "1");
+        of_List_BigInteger_helper("[0, 1]", "x");
+        of_List_BigInteger_helper("[-17]", "-17");
+        of_List_BigInteger_helper("[7, -4, 1]", "x^2-4*x+7");
+        of_List_BigInteger_helper("[7, -4, 1, 0, 0]", "x^2-4*x+7");
+        of_List_BigInteger_helper("[-1, 0, 0, 1]", "x^3-1");
+        of_List_BigInteger_helper("[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3]", "3*x^10");
+        of_List_BigInteger_fail_helper("[7, null, 1]");
+    }
+
+    private static void of_BigInteger_helper(@NotNull String input) {
+        aeq(of(Readers.readBigInteger(input).get()), input);
+    }
+
+    @Test
     public void testOf_BigInteger() {
-        assertTrue(of(BigInteger.ZERO) == ZERO);
-        assertTrue(of(BigInteger.ONE) == ONE);
-        aeq(of(BigInteger.valueOf(5)), 5);
-        aeq(of(BigInteger.valueOf(-7)), -7);
+        of_BigInteger_helper("0");
+        of_BigInteger_helper("1");
+        of_BigInteger_helper("5");
+        of_BigInteger_helper("-7");
+    }
+
+    private static void of_BigInteger_int_helper(@NotNull String input, int i, @NotNull String output) {
+        aeq(of(Readers.readBigInteger(input).get(), i), output);
+    }
+
+    private static void of_BigInteger_int_fail_helper(@NotNull String input, int i) {
+        try {
+            of(Readers.readBigInteger(input).get(), i);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
     }
 
     @Test
     public void testOf_BigInteger_int() {
-        assertTrue(of(BigInteger.ZERO, 0) == ZERO);
-        assertTrue(of(BigInteger.ZERO, 1) == ZERO);
-        assertTrue(of(BigInteger.ZERO, 2) == ZERO);
-        assertTrue(of(BigInteger.ZERO, 3) == ZERO);
-        assertTrue(of(BigInteger.ONE, 0) == ONE);
-        aeq(of(BigInteger.ONE, 1), "x");
-        aeq(of(BigInteger.ONE, 2), "x^2");
-        aeq(of(BigInteger.ONE, 3), "x^3");
-        aeq(of(IntegerUtils.NEGATIVE_ONE, 0), "-1");
-        aeq(of(IntegerUtils.NEGATIVE_ONE, 1), "-x");
-        aeq(of(IntegerUtils.NEGATIVE_ONE, 2), "-x^2");
-        aeq(of(IntegerUtils.NEGATIVE_ONE, 3), "-x^3");
-        aeq(of(BigInteger.valueOf(3), 0), "3");
-        aeq(of(BigInteger.valueOf(3), 1), "3*x");
-        aeq(of(BigInteger.valueOf(3), 2), "3*x^2");
-        aeq(of(BigInteger.valueOf(3), 3), "3*x^3");
-        aeq(of(BigInteger.valueOf(-5), 0), "-5");
-        aeq(of(BigInteger.valueOf(-5), 1), "-5*x");
-        aeq(of(BigInteger.valueOf(-5), 2), "-5*x^2");
-        aeq(of(BigInteger.valueOf(-5), 3), "-5*x^3");
-        try {
-            of(BigInteger.valueOf(-5), -1);
-            fail();
-        } catch (IllegalArgumentException ignored) {}
+        of_BigInteger_int_helper("0", 0, "0");
+        of_BigInteger_int_helper("0", 1, "0");
+        of_BigInteger_int_helper("0", 2, "0");
+        of_BigInteger_int_helper("0", 3, "0");
+
+        of_BigInteger_int_helper("1", 0, "1");
+        of_BigInteger_int_helper("1", 1, "x");
+        of_BigInteger_int_helper("1", 2, "x^2");
+        of_BigInteger_int_helper("1", 3, "x^3");
+
+        of_BigInteger_int_helper("-1", 0, "-1");
+        of_BigInteger_int_helper("-1", 1, "-x");
+        of_BigInteger_int_helper("-1", 2, "-x^2");
+        of_BigInteger_int_helper("-1", 3, "-x^3");
+
+        of_BigInteger_int_helper("3", 0, "3");
+        of_BigInteger_int_helper("3", 1, "3*x");
+        of_BigInteger_int_helper("3", 2, "3*x^2");
+        of_BigInteger_int_helper("3", 3, "3*x^3");
+
+        of_BigInteger_int_helper("-5", 0, "-5");
+        of_BigInteger_int_helper("-5", 1, "-5*x");
+        of_BigInteger_int_helper("-5", 2, "-5*x^2");
+        of_BigInteger_int_helper("-5", 3, "-5*x^3");
+
+        of_BigInteger_int_fail_helper("0", -1);
+        of_BigInteger_int_fail_helper("3", -1);
     }
 
     @Test

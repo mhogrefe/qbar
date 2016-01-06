@@ -45,7 +45,7 @@ public class RationalPolynomialDemos extends QBarDemos {
     }
 
     private void demoOf_List_Rational() {
-        for (List<Rational> rs : take(LIMIT, P.lists(P.rationals()))) {
+        for (List<Rational> rs : take(LIMIT, P.withScale(4).lists(P.rationals()))) {
             String listString = tail(init(rs.toString()));
             System.out.println("of(" + listString + ") = " + of(rs));
         }
@@ -58,12 +58,10 @@ public class RationalPolynomialDemos extends QBarDemos {
     }
 
     private void demoOf_Rational_int() {
-        Iterable<Pair<Rational, Integer>> ps;
-        if (P instanceof QBarExhaustiveProvider) {
-            ps = P.pairsLogarithmicOrder(P.rationals(), P.naturalIntegers());
-        } else {
-            ps = P.pairs(P.rationals(), P.withScale(20).naturalIntegersGeometric());
-        }
+        Iterable<Pair<Rational, Integer>> ps = P.pairsLogarithmicOrder(
+                P.rationals(),
+                P.withScale(4).naturalIntegersGeometric()
+        );
         for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
             System.out.println("of(" + p.a + ", " + p.b + ") = " + of(p.a, p.b));
         }

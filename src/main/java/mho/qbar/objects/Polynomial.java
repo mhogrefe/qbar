@@ -64,6 +64,8 @@ public final class Polynomial implements
      *  <li>Any {@code Polynomial} may be constructed with this constructor.</li>
      * </ul>
      *
+     * Length is |{@code coefficients}|
+     *
      * @param coefficients the polynomial's coefficients
      */
     private Polynomial(@NotNull List<BigInteger> coefficients) {
@@ -127,6 +129,8 @@ public final class Polynomial implements
      *  <li>The result is a {@code RationalPolynomial} with integral coefficients.</li>
      * </ul>
      *
+     * Length is deg({@code this})+1
+     *
      * @return a {@code RationalPolynomial} with the same value as {@code this}
      */
     public @NotNull RationalPolynomial toRationalPolynomial() {
@@ -167,13 +171,12 @@ public final class Polynomial implements
      * @return the {@code Polynomial} with the specified coefficients
      */
     public static @NotNull Polynomial of(@NotNull List<BigInteger> coefficients) {
-        if (any(i -> i == null, coefficients))
+        if (any(i -> i == null, coefficients)) {
             throw new NullPointerException();
-        int actualSize = coefficients.size();
-        for (int i = coefficients.size() - 1; i >= 0; i--) {
-            if (coefficients.get(i).equals(BigInteger.ZERO)) {
-                actualSize--;
-            } else {
+        }
+        int actualSize;
+        for (actualSize = coefficients.size(); actualSize > 0; actualSize--) {
+            if (!coefficients.get(actualSize - 1).equals(BigInteger.ZERO)) {
                 break;
             }
         }
@@ -217,8 +220,9 @@ public final class Polynomial implements
      * @return {@code c}x<sup>p</sup>
      */
     public static @NotNull Polynomial of(@NotNull BigInteger c, int p) {
-        if (p < 0)
-            throw new IllegalArgumentException("power cannot be negative");
+        if (p < 0) {
+            throw new IllegalArgumentException("p cannot be negative. Invalid p: " + p);
+        }
         if (c.equals(BigInteger.ZERO)) return ZERO;
         if (p == 0 && c.equals(BigInteger.ONE)) return ONE;
         return new Polynomial(toList(concat(replicate(p, BigInteger.ZERO), Collections.singletonList(c))));

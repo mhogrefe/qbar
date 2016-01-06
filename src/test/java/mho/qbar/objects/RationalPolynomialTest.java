@@ -119,59 +119,83 @@ public class RationalPolynomialTest {
         coefficient_fail_helper("x^3-1", -1);
     }
 
-    @Test
-    public void testOf_List_Rational() {
-        assertTrue(of(readRationalList("[]")) == ZERO);
-        assertTrue(of(readRationalList("[0]")) == ZERO);
-        assertTrue(of(readRationalList("[0, 0, 0]")) == ZERO);
-        assertTrue(of(readRationalList("[1]")) == ONE);
-        assertTrue(of(readRationalList("[1, 0, 0]")) == ONE);
-        aeq(of(readRationalList("[0, 1]")), X);
-        aeq(of(readRationalList("[-4/3]")), "-4/3");
-        aeq(of(readRationalList("[1/3, -7/4, 1]")), "x^2-7/4*x+1/3");
-        aeq(of(readRationalList("[1/3, -7/4, 1, 0]")), "x^2-7/4*x+1/3");
-        aeq(of(readRationalList("[-1, 0, 0, 1]")), "x^3-1");
-        aeq(of(readRationalList("[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1/2]")), "1/2*x^10");
+    private static void of_List_Rational_helper(@NotNull String input, @NotNull String output) {
+        aeq(of(readRationalList(input)), output);
+    }
+
+    private static void of_List_Rational_fail_helper(@NotNull String input) {
         try {
-            of(readRationalListWithNulls("[1/3, null, 1]"));
+            of(readRationalListWithNulls(input));
             fail();
         } catch (NullPointerException ignored) {}
     }
 
     @Test
+    public void testOf_List_Rational() {
+        of_List_Rational_helper("[]", "0");
+        of_List_Rational_helper("[0]", "0");
+        of_List_Rational_helper("[0, 0, 0]", "0");
+        of_List_Rational_helper("[1]", "1");
+        of_List_Rational_helper("[1, 0, 0]", "1");
+        of_List_Rational_helper("[0, 1]", "x");
+        of_List_Rational_helper("[-4/3]", "-4/3");
+        of_List_Rational_helper("[1/3, -7/4, 1]", "x^2-7/4*x+1/3");
+        of_List_Rational_helper("[1/3, -7/4, 1, 0]", "x^2-7/4*x+1/3");
+        of_List_Rational_helper("[-1, 0, 0, 1]", "x^3-1");
+        of_List_Rational_helper("[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1/2]", "1/2*x^10");
+        of_List_Rational_fail_helper("[1/3, null, 1]");
+    }
+
+    private static void of_Rational_helper(@NotNull String input) {
+        aeq(of(Rational.read(input).get()), input);
+    }
+
+    @Test
     public void testOf_Rational() {
-        assertTrue(of(Rational.ZERO) == ZERO);
-        assertTrue(of(Rational.ONE) == ONE);
-        aeq(of(Rational.read("5/3").get()), "5/3");
-        aeq(of(Rational.read("-1/7").get()), "-1/7");
+        of_Rational_helper("0");
+        of_Rational_helper("1");
+        of_Rational_helper("5/3");
+        of_Rational_helper("-1/7");
+    }
+
+    private static void of_Rational_int_helper(@NotNull String input, int i, @NotNull String output) {
+        aeq(of(Rational.read(input).get(), i), output);
+    }
+
+    private static void of_Rational_int_fail_helper(@NotNull String input, int i) {
+        try {
+            of(Rational.read(input).get(), i);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
     }
 
     @Test
     public void testOf_Rational_int() {
-        assertTrue(of(Rational.ZERO, 0) == ZERO);
-        assertTrue(of(Rational.ZERO, 1) == ZERO);
-        assertTrue(of(Rational.ZERO, 2) == ZERO);
-        assertTrue(of(Rational.ZERO, 3) == ZERO);
-        assertTrue(of(Rational.ONE, 0) == ONE);
-        aeq(of(Rational.ONE, 1), "x");
-        aeq(of(Rational.ONE, 2), "x^2");
-        aeq(of(Rational.ONE, 3), "x^3");
-        aeq(of(Rational.read("-1").get(), 0), "-1");
-        aeq(of(Rational.read("-1").get(), 1), "-x");
-        aeq(of(Rational.read("-1").get(), 2), "-x^2");
-        aeq(of(Rational.read("-1").get(), 3), "-x^3");
-        aeq(of(Rational.read("3/2").get(), 0), "3/2");
-        aeq(of(Rational.read("3/2").get(), 1), "3/2*x");
-        aeq(of(Rational.read("3/2").get(), 2), "3/2*x^2");
-        aeq(of(Rational.read("3/2").get(), 3), "3/2*x^3");
-        aeq(of(Rational.read("-5/7").get(), 0), "-5/7");
-        aeq(of(Rational.read("-5/7").get(), 1), "-5/7*x");
-        aeq(of(Rational.read("-5/7").get(), 2), "-5/7*x^2");
-        aeq(of(Rational.read("-5/7").get(), 3), "-5/7*x^3");
-        try {
-            of(Rational.read("-5/7").get(), -1);
-            fail();
-        } catch (IllegalArgumentException ignored) {}
+        of_Rational_int_helper("0", 0, "0");
+        of_Rational_int_helper("0", 1, "0");
+        of_Rational_int_helper("0", 2, "0");
+        of_Rational_int_helper("0", 3, "0");
+
+        of_Rational_int_helper("1", 0, "1");
+        of_Rational_int_helper("1", 1, "x");
+        of_Rational_int_helper("1", 2, "x^2");
+        of_Rational_int_helper("1", 3, "x^3");
+
+        of_Rational_int_helper("-1", 0, "-1");
+        of_Rational_int_helper("-1", 1, "-x");
+        of_Rational_int_helper("-1", 2, "-x^2");
+        of_Rational_int_helper("-1", 3, "-x^3");
+
+        of_Rational_int_helper("3/2", 0, "3/2");
+        of_Rational_int_helper("3/2", 1, "3/2*x");
+        of_Rational_int_helper("3/2", 2, "3/2*x^2");
+        of_Rational_int_helper("3/2", 3, "3/2*x^3");
+
+        of_Rational_int_helper("-5/7", 0, "-5/7");
+        of_Rational_int_helper("-5/7", 1, "-5/7*x");
+        of_Rational_int_helper("-5/7", 2, "-5/7*x^2");
+        of_Rational_int_helper("-5/7", 3, "-5/7*x^3");
+        of_Rational_int_fail_helper("-5/7", -1);
     }
 
     @Test

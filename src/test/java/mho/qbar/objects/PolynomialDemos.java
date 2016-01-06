@@ -56,7 +56,7 @@ public class PolynomialDemos extends QBarDemos {
     }
 
     private void demoOf_List_BigInteger() {
-        for (List<BigInteger> is : take(LIMIT, P.lists(P.bigIntegers()))) {
+        for (List<BigInteger> is : take(LIMIT, P.withScale(4).lists(P.bigIntegers()))) {
             String listString = tail(init(is.toString()));
             System.out.println("of(" + listString + ") = " + of(is));
         }
@@ -69,12 +69,10 @@ public class PolynomialDemos extends QBarDemos {
     }
 
     private void demoOf_BigInteger_int() {
-        Iterable<Pair<BigInteger, Integer>> ps;
-        if (P instanceof QBarExhaustiveProvider) {
-            ps = ((QBarExhaustiveProvider) P).pairsLogarithmicOrder(P.bigIntegers(), P.naturalIntegers());
-        } else {
-            ps = P.pairs(P.bigIntegers(), P.withScale(20).naturalIntegersGeometric());
-        }
+        Iterable<Pair<BigInteger, Integer>> ps = P.pairsLogarithmicOrder(
+                P.bigIntegers(),
+                P.withScale(4).naturalIntegersGeometric()
+        );
         for (Pair<BigInteger, Integer> p : take(LIMIT, ps)) {
             System.out.println("of(" + p.a + ", " + p.b + ") = " + of(p.a, p.b));
         }

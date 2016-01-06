@@ -67,6 +67,8 @@ public final class RationalPolynomial implements
      *  <li>Any {@code RationalPolynomial} may be constructed with this constructor.</li>
      * </ul>
      *
+     * Length is |{@code coefficients}|
+     *
      * @param coefficients the polynomial's coefficients
      */
     private RationalPolynomial(@NotNull List<Rational> coefficients) {
@@ -139,13 +141,12 @@ public final class RationalPolynomial implements
      * @return the {@code RationalPolynomial} with the specified coefficients
      */
     public static @NotNull RationalPolynomial of(@NotNull List<Rational> coefficients) {
-        if (any(i -> i == null, coefficients))
+        if (any(i -> i == null, coefficients)) {
             throw new NullPointerException();
-        int actualSize = coefficients.size();
-        for (int i = coefficients.size() - 1; i >= 0; i--) {
-            if (coefficients.get(i) == Rational.ZERO) {
-                actualSize--;
-            } else {
+        }
+        int actualSize;
+        for (actualSize = coefficients.size(); actualSize > 0; actualSize--) {
+            if (coefficients.get(actualSize - 1) != Rational.ZERO) {
                 break;
             }
         }
@@ -189,8 +190,9 @@ public final class RationalPolynomial implements
      * @return {@code c}x<sup>p</sup>
      */
     public static @NotNull RationalPolynomial of(@NotNull Rational c, int p) {
-        if (p < 0)
-            throw new IllegalArgumentException("power cannot be negative");
+        if (p < 0) {
+            throw new IllegalArgumentException("p cannot be negative. Invalid p: " + p);
+        }
         if (c == Rational.ZERO) return ZERO;
         if (p == 0 && c == Rational.ONE) return ONE;
         return new RationalPolynomial(toList(concat(replicate(p, Rational.ZERO), Collections.singletonList(c))));
