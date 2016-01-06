@@ -152,28 +152,36 @@ public class PolynomialTest {
         toRationalPolynomial_helper("3*x^10");
     }
 
-    @Test
-    public void testCoefficient() {
-        aeq(ZERO.coefficient(0), 0);
-        aeq(ZERO.coefficient(5), 0);
-        aeq(ONE.coefficient(0), 1);
-        aeq(ONE.coefficient(5), 0);
-        aeq(X.coefficient(0), 0);
-        aeq(X.coefficient(1), 1);
-        aeq(X.coefficient(5), 0);
-        aeq(read("x^2-4*x+7").get().coefficient(0), 7);
-        aeq(read("x^2-4*x+7").get().coefficient(1), -4);
-        aeq(read("x^2-4*x+7").get().coefficient(2), 1);
-        aeq(read("x^2-4*x+7").get().coefficient(3), 0);
-        aeq(read("x^3-1").get().coefficient(0), -1);
-        aeq(read("x^3-1").get().coefficient(1), 0);
-        aeq(read("x^3-1").get().coefficient(2), 0);
-        aeq(read("x^3-1").get().coefficient(3), 1);
-        aeq(read("x^3-1").get().coefficient(4), 0);
+    private static void coefficient_helper(@NotNull String p, int i, @NotNull String output) {
+        aeq(read(p).get().coefficient(i), output);
+    }
+
+    private static void coefficient_fail_helper(@NotNull String p, int i) {
         try {
-            read("x^3-1").get().coefficient(-1);
+            read(p).get().coefficient(i);
             fail();
         } catch (ArrayIndexOutOfBoundsException ignored) {}
+    }
+
+    @Test
+    public void testCoefficient() {
+        coefficient_helper("0", 0, "0");
+        coefficient_helper("0", 5, "0");
+        coefficient_helper("1", 0, "1");
+        coefficient_helper("1", 5, "0");
+        coefficient_helper("x", 0, "0");
+        coefficient_helper("x", 1, "1");
+        coefficient_helper("x", 5, "0");
+        coefficient_helper("x^2-4*x+7", 0, "7");
+        coefficient_helper("x^2-4*x+7", 1, "-4");
+        coefficient_helper("x^2-4*x+7", 2, "1");
+        coefficient_helper("x^2-4*x+7", 3, "0");
+        coefficient_helper("x^3-1", 0, "-1");
+        coefficient_helper("x^3-1", 1, "0");
+        coefficient_helper("x^3-1", 2, "0");
+        coefficient_helper("x^3-1", 3, "1");
+        coefficient_helper("x^3-1", 4, "0");
+        coefficient_fail_helper("x^3-1", -1);
     }
 
     @Test

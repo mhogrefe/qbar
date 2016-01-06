@@ -46,12 +46,10 @@ public class PolynomialDemos extends QBarDemos {
     }
 
     private void demoCoefficient() {
-        Iterable<Pair<Polynomial, Integer>> ps;
-        if (P instanceof QBarExhaustiveProvider) {
-            ps = ((QBarExhaustiveProvider) P).pairsLogarithmicOrder(P.polynomials(), P.naturalIntegers());
-        } else {
-            ps = P.pairs(P.polynomials(), P.withScale(10).naturalIntegersGeometric());
-        }
+        Iterable<Pair<Polynomial, Integer>> ps = P.pairsLogarithmicOrder(
+                P.withScale(4).polynomials(),
+                P.withScale(4).naturalIntegersGeometric()
+        );
         for (Pair<Polynomial, Integer> p : take(LIMIT, ps)) {
             System.out.println("coefficient(" + p.a + ", " + p.b + ") = " + p.a.coefficient(p.b));
         }

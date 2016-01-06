@@ -218,24 +218,20 @@ public class PolynomialProperties extends QBarTestProperties {
     }
 
     private void propertiesCoefficient() {
-        initialize("");
-        System.out.println("\t\ttesting coefficient(int) properties...");
-
-        Iterable<Pair<Polynomial, Integer>> ps;
-        if (P instanceof QBarExhaustiveProvider) {
-            ps = ((QBarExhaustiveProvider) P).pairsLogarithmicOrder(P.polynomials(), P.naturalIntegers());
-        } else {
-            ps = P.pairs(P.polynomials(), P.withScale(10).naturalIntegersGeometric());
-        }
+        initialize("coefficient(int)");
+        Iterable<Pair<Polynomial, Integer>> ps = P.pairsLogarithmicOrder(
+                P.polynomials(),
+                P.naturalIntegersGeometric()
+        );
         for (Pair<Polynomial, Integer> p : take(LIMIT, ps)) {
             p.a.coefficient(p.b);
         }
 
-        for (Pair<Polynomial, Integer> p : take(LIMIT, filter(q -> q.b <= q.a.degree(), ps))) {
+        for (Pair<Polynomial, Integer> p : take(LIMIT, filterInfinite(q -> q.b <= q.a.degree(), ps))) {
             assertEquals(p, p.a.coefficient(p.b), toList(p.a).get(p.b));
         }
 
-        for (Pair<Polynomial, Integer> p : take(LIMIT, filter(q -> q.b > q.a.degree(), ps))) {
+        for (Pair<Polynomial, Integer> p : take(LIMIT, filterInfinite(q -> q.b > q.a.degree(), ps))) {
             assertEquals(p, p.a.coefficient(p.b), BigInteger.ZERO);
         }
 

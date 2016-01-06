@@ -35,12 +35,10 @@ public class RationalPolynomialDemos extends QBarDemos {
     }
 
     private void demoCoefficient() {
-        Iterable<Pair<RationalPolynomial, Integer>> ps;
-        if (P instanceof QBarExhaustiveProvider) {
-            ps = P.pairsLogarithmicOrder(P.rationalPolynomials(), P.naturalIntegers());
-        } else {
-            ps = P.pairs(P.rationalPolynomials(), P.withScale(10).naturalIntegersGeometric());
-        }
+        Iterable<Pair<RationalPolynomial, Integer>> ps = P.pairsLogarithmicOrder(
+                P.withScale(4).rationalPolynomials(),
+                P.withScale(4).naturalIntegersGeometric()
+        );
         for (Pair<RationalPolynomial, Integer> p : take(LIMIT, ps)) {
             System.out.println("coefficient(" + p.a + ", " + p.b + ") = " + p.a.coefficient(p.b));
         }

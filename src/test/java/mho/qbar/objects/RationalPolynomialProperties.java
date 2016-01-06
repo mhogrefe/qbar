@@ -141,24 +141,20 @@ public class RationalPolynomialProperties extends QBarTestProperties {
     }
 
     private void propertiesCoefficient() {
-        initialize("");
-        System.out.println("\t\ttesting coefficient(int) properties...");
-
-        Iterable<Pair<RationalPolynomial, Integer>> ps;
-        if (P instanceof QBarExhaustiveProvider) {
-            ps = P.pairsLogarithmicOrder(P.rationalPolynomials(), P.naturalIntegers());
-        } else {
-            ps = P.pairs(P.rationalPolynomials(), P.withScale(10).naturalIntegersGeometric());
-        }
+        initialize("coefficient(int)");
+        Iterable<Pair<RationalPolynomial, Integer>> ps = P.pairsLogarithmicOrder(
+                P.rationalPolynomials(),
+                P.naturalIntegersGeometric()
+        );
         for (Pair<RationalPolynomial, Integer> p : take(LIMIT, ps)) {
             p.a.coefficient(p.b);
         }
 
-        for (Pair<RationalPolynomial, Integer> p : take(LIMIT, filter(q -> q.b <= q.a.degree(), ps))) {
+        for (Pair<RationalPolynomial, Integer> p : take(LIMIT, filterInfinite(q -> q.b <= q.a.degree(), ps))) {
             assertEquals(p, p.a.coefficient(p.b), toList(p.a).get(p.b));
         }
 
-        for (Pair<RationalPolynomial, Integer> p : take(LIMIT, filter(q -> q.b > q.a.degree(), ps))) {
+        for (Pair<RationalPolynomial, Integer> p : take(LIMIT, filterInfinite(q -> q.b > q.a.degree(), ps))) {
             assertEquals(p, p.a.coefficient(p.b), Rational.ZERO);
         }
 
