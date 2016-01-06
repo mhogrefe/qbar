@@ -132,6 +132,37 @@ public class RationalMatrixDemos extends QBarDemos {
         }
     }
 
+    private void demoAdd() {
+        Iterable<Pair<RationalMatrix, RationalMatrix>> ps = P.chooseLogarithmicOrder(
+                map(
+                        q -> q.b,
+                        P.dependentPairsInfiniteSquareRootOrder(
+                                P.pairs(P.withScale(4).positiveIntegersGeometric()),
+                                p -> P.pairs(P.withScale(4).rationalMatrices(p.a, p.b))
+                        )
+                ),
+                P.choose(
+                        map(
+                                i -> {
+                                    RationalMatrix m = RationalMatrix.zero(0, i);
+                                    return new Pair<>(m, m);
+                                },
+                                P.withScale(4).naturalIntegersGeometric()
+                        ),
+                        map(
+                                i -> {
+                                    RationalMatrix m = RationalMatrix.zero(i, 0);
+                                    return new Pair<>(m, m);
+                                },
+                                P.withScale(4).positiveIntegersGeometric()
+                        )
+                )
+        );
+        for (Pair<RationalMatrix, RationalMatrix> m : take(MEDIUM_LIMIT, ps)) {
+            System.out.println(m.a + " + " + m.b + " = " + m.a.add(m.b));
+        }
+    }
+
     private void demoEquals_RationalMatrix() {
         for (Pair<RationalMatrix, RationalMatrix> p : take(LIMIT, P.pairs(P.withScale(4).rationalMatrices()))) {
             System.out.println(p.a + (p.a.equals(p.b) ? " = " : " ≠ ") + p.b);

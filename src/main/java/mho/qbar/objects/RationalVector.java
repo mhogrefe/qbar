@@ -46,6 +46,8 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
      *  <li>Any {@code RationalVector} may be constructed with this constructor.</li>
      * </ul>
      *
+     * Length is |{@code coordinates}|
+     *
      * @param coordinates the vector's coordinates
      */
     private RationalVector(@NotNull List<Rational> coordinates) {

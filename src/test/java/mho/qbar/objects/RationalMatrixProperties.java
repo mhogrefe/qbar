@@ -36,6 +36,7 @@ public class RationalMatrixProperties extends QBarTestProperties {
         propertiesIsZero();
         propertiesZero();
         propertiesIdentity();
+        propertiesAdd();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -312,6 +313,89 @@ public class RationalMatrixProperties extends QBarTestProperties {
                 identity(i);
                 fail(i);
             } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesAdd() {
+        initialize("add(RationalMatrix)");
+        Iterable<Pair<RationalMatrix, RationalMatrix>> ps = P.chooseLogarithmicOrder(
+                map(
+                        q -> q.b,
+                        P.dependentPairsInfiniteSquareRootOrder(
+                                P.pairs(P.positiveIntegersGeometric()),
+                                p -> P.pairs(P.rationalMatrices(p.a, p.b))
+                        )
+                ),
+                P.choose(
+                        map(
+                                i -> {
+                                    RationalMatrix m = RationalMatrix.zero(0, i);
+                                    return new Pair<>(m, m);
+                                },
+                                P.naturalIntegersGeometric()
+                        ),
+                        map(
+                                i -> {
+                                    RationalMatrix m = RationalMatrix.zero(i, 0);
+                                    return new Pair<>(m, m);
+                                },
+                                P.positiveIntegersGeometric()
+                        )
+                )
+        );
+        for (Pair<RationalMatrix, RationalMatrix> p : take(LIMIT, ps)) {
+            RationalMatrix sum = p.a.add(p.b);
+            sum.validate();
+            assertEquals(p, sum.height(), p.a.height());
+            assertEquals(p, sum.width(), p.a.width());
+            commutative(RationalMatrix::add, p);
+            //todo inverse(m -> m.add(p.b), (RationalMatrix m) -> m.subtract(p.b), p.a);
+        }
+
+        for (RationalMatrix m : take(LIMIT, P.rationalMatrices())) {
+            fixedPoint(n -> zero(n.height(), n.width()).add(n), m);
+            fixedPoint(n -> n.add(zero(n.height(), n.width())), m);
+            //todo assertTrue(m, m.add(m.negate()).isZero());
+        }
+
+        Iterable<Triple<RationalMatrix, RationalMatrix, RationalMatrix>> ts = P.chooseLogarithmicOrder(
+                map(
+                        q -> q.b,
+                        P.dependentPairsInfiniteSquareRootOrder(
+                                P.pairs(P.positiveIntegersGeometric()),
+                                p -> P.triples(P.rationalMatrices(p.a, p.b))
+                        )
+                ),
+                P.choose(
+                        map(
+                                i -> {
+                                    RationalMatrix m = RationalMatrix.zero(0, i);
+                                    return new Triple<>(m, m, m);
+                                },
+                                P.naturalIntegersGeometric()
+                        ),
+                        map(
+                                i -> {
+                                    RationalMatrix m = RationalMatrix.zero(i, 0);
+                                    return new Triple<>(m, m, m);
+                                },
+                                P.positiveIntegersGeometric()
+                        )
+                )
+        );
+        for (Triple<RationalMatrix, RationalMatrix, RationalMatrix> t : take(LIMIT, ts)) {
+            associative(RationalMatrix::add, t);
+        }
+
+        Iterable<Pair<RationalMatrix, RationalMatrix>> psFail = filterInfinite(
+                p -> p.a.height() != p.b.height() || p.a.width() != p.b.width(),
+                P.pairs(P.rationalMatrices())
+        );
+        for (Pair<RationalMatrix, RationalMatrix> p : take(LIMIT, psFail)) {
+            try {
+                p.a.add(p.b);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
         }
     }
 

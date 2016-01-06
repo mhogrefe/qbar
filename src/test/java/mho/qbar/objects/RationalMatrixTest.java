@@ -266,6 +266,31 @@ public class RationalMatrixTest {
         identity_fail_helper(-1);
     }
 
+    private static void add_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
+        aeq(read(a).get().add(read(b).get()), output);
+    }
+
+    private static void add_fail_helper(@NotNull String a, @NotNull String b) {
+        try {
+            read(a).get().add(read(b).get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testAdd() {
+        add_helper("[]#0", "[]#0", "[]#0");
+        add_helper("[]#1", "[]#1", "[]#1");
+        add_helper("[]#3", "[]#3", "[]#3");
+        add_helper("[[]]", "[[]]", "[[]]");
+        add_helper("[[], [], []]", "[[], [], []]", "[[], [], []]");
+        add_helper("[[2/3]]", "[[4/5]]", "[[22/15]]");
+        add_helper("[[1, 3], [1, 0], [1, 2]]", "[[0, 0], [7, 5], [2, 1]]", "[[1, 3], [8, 5], [3, 3]]");
+        add_fail_helper("[]#0", "[]#1");
+        add_fail_helper("[]#0", "[[]]");
+        add_fail_helper("[[2/3]]", "[[2/3], [4/5]]");
+    }
+
     @Test
     public void testEquals() {
         testEqualsHelper(

@@ -108,6 +108,8 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
      *  <li>The result is non-null.</li>
      * </ul>
      *
+     * Length is height({@code this})
+     *
      * @param i the 0-based row index
      * @return the {@code i}th row of {@code this}
      */
@@ -124,6 +126,8 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
      *  <li>{@code j} must be less than the width of {@code this}.</li>
      *  <li>The result is non-null.</li>
      * </ul>
+     *
+     * Length is width({@code this})
      *
      * @param j the 0-based column index
      * @return the {@code j}th column of {@code this}
@@ -172,6 +176,8 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
      *  <li>The result either has nonzero height, or 0 width and 0 height.</li>
      * </ul>
      *
+     * Size is |{@code rows}|×0 if {@code rows} is empty, |{@code rows}|×|{@code rows.get(0)}| otherwise
+     *
      * @param rows the matrix's rows
      * @return a {@code RationalMatrix} with the given rows
      */
@@ -194,6 +200,8 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
      *  <li>{@code this} cannot be null, and every element must have the same dimension.</li>
      *  <li>The result either has nonzero width, or 0 width and 0 height.</li>
      * </ul>
+     *
+     * Size is 0×|{@code columns}| if {@code columns} is empty, |{@code columns.get(0)}|×|{@code columns}| otherwise
      *
      * @param columns the matrix's columns
      * @return a {@code RationalMatrix} with the given columns
@@ -271,6 +279,7 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
      *  <li>The result is a {@code RationalMatrix} all of whose coordinates are 0.</li>
      * </ul>
      *
+     * Size is {@code height}×{@code width}
      *
      * @param height the zero matrix's height
      * @param width the zero matrix's width
@@ -295,6 +304,8 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
      *  and zeros everywhere else.</li>
      * </ul>
      *
+     * Size is {@code dimension}×{@code dimension}
+     *
      * @param dimension the matrix's dimension (width and height)
      * @return I<sub>{@code dimension}</sub>
      */
@@ -306,6 +317,31 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
                 toList(map(i -> RationalVector.standard(dimension, i), range(0, dimension - 1))),
                 dimension
         );
+    }
+
+    /**
+     * Returns the sum of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalMatrix}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>{@code this} and {@code that} must have the same height and the same width.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * Size is height({@code this})×length({@code this})
+     *
+     * @param that the {@code RationalMatrix} added to {@code this}
+     * @return {@code this}+{@code that}
+     */
+    public @NotNull RationalMatrix add(@NotNull RationalMatrix that) {
+        int height = height();
+        if (width != that.width || height != that.height()) {
+            throw new ArithmeticException("this and that must have the same width and height. this: " + this +
+                    ", that: " + that);
+        }
+        if (height == 0 || width == 0) return this;
+        return new RationalMatrix(toList(zipWith(RationalVector::add, rows, that.rows)), width);
     }
 
     /**
