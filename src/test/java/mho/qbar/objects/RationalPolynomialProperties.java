@@ -235,9 +235,7 @@ public class RationalPolynomialProperties extends QBarTestProperties {
     }
 
     private void propertiesDegree() {
-        initialize("");
-        System.out.println("\t\ttesting degree() properties");
-
+        initialize("degree()");
         for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
             int degree = p.degree();
             assertTrue(p, degree >= -1);
@@ -245,9 +243,7 @@ public class RationalPolynomialProperties extends QBarTestProperties {
     }
 
     private void propertiesLeading() {
-        initialize("");
-        System.out.println("\t\ttesting leading() properties");
-
+        initialize("leading()");
         for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
             p.leading();
         }
@@ -257,7 +253,7 @@ public class RationalPolynomialProperties extends QBarTestProperties {
             assertNotEquals(p, leading, Rational.ZERO);
         }
 
-        for (Rational r : take(LIMIT, filter(j -> j != Rational.ZERO, P.rationals()))) {
+        for (Rational r : take(LIMIT, P.nonzeroRationals())) {
             RationalPolynomial p = of(r);
             assertEquals(r, p.leading().get(), p.coefficient(0));
         }

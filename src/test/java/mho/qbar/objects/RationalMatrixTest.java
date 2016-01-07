@@ -266,6 +266,22 @@ public class RationalMatrixTest {
         identity_fail_helper(-1);
     }
 
+    private static void transpose_helper(@NotNull String input, @NotNull String output) {
+        aeq(read(input).get().transpose(), output);
+    }
+
+    @Test
+    public void testTranspose() {
+        transpose_helper("[]#0", "[]#0");
+        transpose_helper("[]#1", "[[]]");
+        transpose_helper("[]#3", "[[], [], []]");
+        transpose_helper("[[]]", "[]#1");
+        transpose_helper("[[], [], []]", "[]#3");
+        transpose_helper("[[-2/3]]", "[[-2/3]]");
+        transpose_helper("[[-2/3, -8], [0, 5/7]]", "[[-2/3, 0], [-8, 5/7]]");
+        transpose_helper("[[1, 9, -13], [20, 5, -6]]", "[[1, 20], [9, 5], [-13, -6]]");
+    }
+
     private static void add_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
         aeq(read(a).get().add(read(b).get()), output);
     }

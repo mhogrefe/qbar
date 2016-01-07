@@ -1,6 +1,7 @@
 package mho.qbar.objects;
 
 import mho.wheels.io.Readers;
+import mho.wheels.iterables.IterableUtils;
 import mho.wheels.iterables.NoRemoveIterable;
 import mho.wheels.ordering.comparators.LexComparator;
 import mho.wheels.structures.Pair;
@@ -93,7 +94,7 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
             //noinspection RedundantCast
             return map(
                     RationalVector::of,
-                    transpose((Iterable<Iterable<Rational>>) map(r -> (Iterable<Rational>) r, rows))
+                    IterableUtils.transpose((Iterable<Iterable<Rational>>) map(r -> (Iterable<Rational>) r, rows))
             );
         }
     }
@@ -220,7 +221,9 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
                     toList(
                             map(
                                     RationalVector::of,
-                                    transpose((Iterable<Iterable<Rational>>) map(c -> (Iterable<Rational>) c, columns))
+                                    IterableUtils.transpose(
+                                            (Iterable<Iterable<Rational>>) map(c -> (Iterable<Rational>) c, columns)
+                                    )
                             )
                     ),
                     columns.size()
@@ -320,6 +323,39 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
     }
 
     /**
+     * Returns the transpose of {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalMatrix}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * Size is width({@code this})×height({@code this})
+     *
+     * @return {@code this}<sup>T</sup>
+     */
+    public @NotNull RationalMatrix transpose() {
+        int height = height();
+        if (height == 0 || width == 0) {
+            //noinspection SuspiciousNameCombination
+            return zero(width, height);
+        } else {
+            //noinspection SuspiciousNameCombination,RedundantCast
+            return new RationalMatrix(
+                    toList(
+                            map(
+                                    RationalVector::of,
+                                    (Iterable<List<Rational>>) IterableUtils.transpose(
+                                            map(r -> (Iterable<Rational>) r, rows)
+                                    )
+                            )
+                    ),
+                    height
+            );
+        }
+    }
+
+    /**
      * Returns the sum of {@code this} and {@code that}.
      *
      * <ul>
@@ -337,8 +373,8 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
     public @NotNull RationalMatrix add(@NotNull RationalMatrix that) {
         int height = height();
         if (width != that.width || height != that.height()) {
-            throw new ArithmeticException("this and that must have the same width and height. this: " + this +
-                    ", that: " + that);
+            throw new ArithmeticException("this and that must have the same width and height. this: " +
+                    this + ", that: " + that);
         }
         if (height == 0 || width == 0) return this;
         return new RationalMatrix(toList(zipWith(RationalVector::add, rows, that.rows)), width);

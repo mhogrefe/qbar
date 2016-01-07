@@ -311,9 +311,7 @@ public class PolynomialProperties extends QBarTestProperties {
     }
 
     private void propertiesDegree() {
-        initialize("");
-        System.out.println("\t\ttesting degree() properties");
-
+        initialize("degree()");
         for (Polynomial p : take(LIMIT, P.polynomials())) {
             int degree = p.degree();
             assertTrue(p, degree >= -1);
@@ -321,9 +319,7 @@ public class PolynomialProperties extends QBarTestProperties {
     }
 
     private void propertiesLeading() {
-        initialize("");
-        System.out.println("\t\ttesting leading() properties");
-
+        initialize("leading()");
         for (Polynomial p : take(LIMIT, P.polynomials())) {
             p.leading();
         }
@@ -333,7 +329,7 @@ public class PolynomialProperties extends QBarTestProperties {
             assertNotEquals(p, leading, BigInteger.ZERO);
         }
 
-        for (BigInteger i : take(LIMIT, filter(j -> !j.equals(BigInteger.ZERO), P.bigIntegers()))) {
+        for (BigInteger i : take(LIMIT, P.nonzeroBigIntegers())) {
             Polynomial p = of(i);
             assertEquals(i, p.leading().get(), p.coefficient(0));
         }

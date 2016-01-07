@@ -132,6 +132,12 @@ public class RationalMatrixDemos extends QBarDemos {
         }
     }
 
+    private void demoTranspose() {
+        for (RationalMatrix m : take(LIMIT, P.withScale(4).rationalMatrices())) {
+            System.out.println("transpose(" + m + ") = " + m.transpose());
+        }
+    }
+
     private void demoAdd() {
         Iterable<Pair<RationalMatrix, RationalMatrix>> ps = P.chooseLogarithmicOrder(
                 map(

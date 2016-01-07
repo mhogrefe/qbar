@@ -68,13 +68,13 @@ public class RationalPolynomialDemos extends QBarDemos {
     }
 
     private void demoDegree() {
-        for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
+        for (RationalPolynomial p : take(LIMIT, P.withScale(4).rationalPolynomials())) {
             System.out.println("degree(" + p + ") = " + p.degree());
         }
     }
 
     private void demoLeading() {
-        for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
+        for (RationalPolynomial p : take(LIMIT, P.withScale(4).rationalPolynomials())) {
             System.out.println("leading(" + p + ") = " + p.leading());
         }
     }

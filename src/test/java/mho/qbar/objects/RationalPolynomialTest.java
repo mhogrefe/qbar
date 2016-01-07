@@ -198,26 +198,36 @@ public class RationalPolynomialTest {
         of_Rational_int_fail_helper("-5/7", -1);
     }
 
+    private static void degree_helper(@NotNull String input, int output) {
+        aeq(read(input).get().degree(), output);
+    }
+
     @Test
     public void testDegree() {
-        aeq(ZERO.degree(), -1);
-        aeq(ONE.degree(), 0);
-        aeq(X.degree(), 1);
-        aeq(read("-4/3").get().degree(), 0);
-        aeq(read("x^2-7/4*x+1/3").get().degree(), 2);
-        aeq(read("x^3-1").get().degree(), 3);
-        aeq(read("1/2*x^10").get().degree(), 10);
+        degree_helper("0", -1);
+        degree_helper("1", 0);
+        degree_helper("x", 1);
+        degree_helper("-4/3", 0);
+        degree_helper("x^2-7/4*x+1/3", 2);
+        degree_helper("x^3-1", 3);
+        degree_helper("1/2*x^10", 10);
+    }
+
+    private static void leading_helper(@NotNull String input, @NotNull String output) {
+        aeq(read(input).get().leading().get(), output);
+    }
+
+    private static void leading_empty_helper(@NotNull String input) {
+        assertFalse(read(input).get().leading().isPresent());
     }
 
     @Test
     public void testLeading() {
-        assertFalse(ZERO.leading().isPresent());
-        aeq(ONE.leading().get(), 1);
-        aeq(X.leading().get(), 1);
-        aeq(read("-4/3").get().leading().get(), "-4/3");
-        aeq(read("x^2-7/4*x+1/3").get().leading().get(), 1);
-        aeq(read("-x^3-1").get().leading().get(), -1);
-        aeq(read("1/2*x^10").get().leading().get(), "1/2");
+        leading_helper("-4/3", "-4/3");
+        leading_helper("x^2-7/4*x+1/3", "1");
+        leading_helper("-x^3-1", "-1");
+        leading_helper("1/2*x^10", "1/2");
+        leading_empty_helper("0");
     }
 
     @Test

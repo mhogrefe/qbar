@@ -265,26 +265,38 @@ public class PolynomialTest {
         of_BigInteger_int_fail_helper("3", -1);
     }
 
+    private static void degree_helper(@NotNull String input, int output) {
+        aeq(read(input).get().degree(), output);
+    }
+
     @Test
     public void testDegree() {
-        aeq(ZERO.degree(), -1);
-        aeq(ONE.degree(), 0);
-        aeq(X.degree(), 1);
-        aeq(read("-17").get().degree(), 0);
-        aeq(read("x^2-4*x+7").get().degree(), 2);
-        aeq(read("x^3-1").get().degree(), 3);
-        aeq(read("3*x^10").get().degree(), 10);
+        degree_helper("0", -1);
+        degree_helper("1", 0);
+        degree_helper("x", 1);
+        degree_helper("-17", 0);
+        degree_helper("x^2-4*x+7", 2);
+        degree_helper("x^3-1", 3);
+        degree_helper("3*x^10", 10);
+    }
+
+    private static void leading_helper(@NotNull String input, @NotNull String output) {
+        aeq(read(input).get().leading().get(), output);
+    }
+
+    private static void leading_empty_helper(@NotNull String input) {
+        assertFalse(read(input).get().leading().isPresent());
     }
 
     @Test
     public void testLeading() {
-        assertFalse(ZERO.leading().isPresent());
-        aeq(ONE.leading().get(), 1);
-        aeq(X.leading().get(), 1);
-        aeq(read("-17").get().leading().get(), -17);
-        aeq(read("x^2-4*x+7").get().leading().get(), 1);
-        aeq(read("-x^3-1").get().leading().get(), -1);
-        aeq(read("3*x^10").get().leading().get(), 3);
+        leading_helper("1", "1");
+        leading_helper("x", "1");
+        leading_helper("-17", "-17");
+        leading_helper("x^2-4*x+7", "1");
+        leading_helper("-x^3-1", "-1");
+        leading_helper("3*x^10", "3");
+        leading_empty_helper("0");
     }
 
     @Test

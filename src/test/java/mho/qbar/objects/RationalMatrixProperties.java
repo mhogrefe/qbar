@@ -36,6 +36,7 @@ public class RationalMatrixProperties extends QBarTestProperties {
         propertiesIsZero();
         propertiesZero();
         propertiesIdentity();
+        propertiesTranspose();
         propertiesAdd();
         propertiesEquals();
         propertiesHashCode();
@@ -313,6 +314,24 @@ public class RationalMatrixProperties extends QBarTestProperties {
                 identity(i);
                 fail(i);
             } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesTranspose() {
+        initialize("transpose()");
+        for (RationalMatrix m : take(LIMIT, P.rationalMatrices())) {
+            RationalMatrix transposed = m.transpose();
+            transposed.validate();
+            int height = m.height();
+            int width = m.width();
+            assertEquals(m, transposed.height(), width);
+            assertEquals(m, transposed.width(), height);
+            for (int i = 0; i < height; i++) {
+                for (int j = 0; j < width; j++) {
+                    assertEquals(m, m.get(i, j), transposed.get(j, i));
+                }
+            }
+            involution(RationalMatrix::transpose, m);
         }
     }
 
