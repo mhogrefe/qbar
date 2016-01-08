@@ -3,11 +3,16 @@ package mho.qbar.objects;
 import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.testing.QBarTestProperties;
 import mho.qbar.testing.QBarTesting;
+import mho.wheels.iterables.IterableUtils;
 import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 
 import static mho.qbar.objects.RationalMatrix.*;
 import static mho.qbar.objects.RationalVector.ZERO_DIMENSIONAL;
@@ -37,6 +42,8 @@ public class RationalMatrixProperties extends QBarTestProperties {
         propertiesZero();
         propertiesIdentity();
         propertiesTranspose();
+        compareImplementationsTranspose();
+        propertiesAugment();
         propertiesAdd();
         propertiesEquals();
         propertiesHashCode();
@@ -317,11 +324,33 @@ public class RationalMatrixProperties extends QBarTestProperties {
         }
     }
 
+    private static @NotNull RationalMatrix transpose_alt(@NotNull RationalMatrix m) {
+        int height = m.height();
+        int width = m.width();
+        if (height == 0 || width == 0) {
+            //noinspection SuspiciousNameCombination
+            return zero(width, height);
+        } else {
+            //noinspection SuspiciousNameCombination,RedundantCast
+            return fromRows(
+                    toList(
+                            map(
+                                    RationalVector::of,
+                                    (Iterable<List<Rational>>) IterableUtils.transpose(
+                                            map(r -> (Iterable<Rational>) r, m.rows())
+                                    )
+                            )
+                    )
+            );
+        }
+    }
+
     private void propertiesTranspose() {
         initialize("transpose()");
         for (RationalMatrix m : take(LIMIT, P.rationalMatrices())) {
             RationalMatrix transposed = m.transpose();
             transposed.validate();
+            assertEquals(m, transposed, transpose_alt(m));
             int height = m.height();
             int width = m.width();
             assertEquals(m, transposed.height(), width);
@@ -332,6 +361,65 @@ public class RationalMatrixProperties extends QBarTestProperties {
                 }
             }
             involution(RationalMatrix::transpose, m);
+        }
+    }
+
+    private void compareImplementationsTranspose() {
+        Map<String, Function<RationalMatrix, RationalMatrix>> functions = new LinkedHashMap<>();
+        functions.put("alt", RationalMatrixProperties::transpose_alt);
+        functions.put("standard", RationalMatrix::transpose);
+        compareImplementations("transpose()", take(LIMIT, P.rationalMatrices()), functions);
+    }
+
+    private void propertiesAugment() {
+        initialize("augment(RationalMatrix)");
+        Iterable<Pair<RationalMatrix, RationalMatrix>> ps = P.chooseLogarithmicOrder(
+                map(
+                        q -> q.b,
+                        P.dependentPairsInfiniteSquareRootOrder(
+                                filterInfinite(
+                                        t -> t.b != 0 || t.c != 0,
+                                        P.triples(
+                                                P.positiveIntegersGeometric(),
+                                                P.naturalIntegersGeometric(),
+                                                P.naturalIntegersGeometric()
+                                        )
+                                ),
+                                t -> P.pairs(P.rationalMatrices(t.a, t.b), P.rationalMatrices(t.a, t.c))
+                        )
+                ),
+                P.choose(
+                        map(p -> new Pair<>(zero(0, p.a), zero(0, p.b)), P.pairs(P.naturalIntegersGeometric())),
+                        map(
+                                i -> {
+                                    RationalMatrix m = zero(i, 0);
+                                    return new Pair<>(m, m);
+                                },
+                                P.positiveIntegersGeometric()
+                        )
+                )
+        );
+        for (Pair<RationalMatrix, RationalMatrix> p : take(LIMIT, ps)) {
+            RationalMatrix augmented = p.a.augment(p.b);
+            augmented.validate();
+            assertEquals(p, augmented.height(), p.a.height());
+            assertEquals(p, augmented.width(), p.a.width() + p.b.width());
+        }
+
+        for (RationalMatrix m : take(LIMIT, P.rationalMatrices())) {
+            assertEquals(m, m, m.augment(zero(m.height(), 0)));
+            assertEquals(m, m, zero(m.height(), 0).augment(m));
+        }
+
+        Iterable<Pair<RationalMatrix, RationalMatrix>> psFail = filterInfinite(
+                q -> q.a.height() != q.b.height(),
+                P.pairs(P.rationalMatrices())
+        );
+        for (Pair<RationalMatrix, RationalMatrix> p : take(LIMIT, psFail)) {
+            try {
+                p.a.augment(p.b);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
         }
     }
 

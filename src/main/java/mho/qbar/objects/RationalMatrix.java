@@ -7,10 +7,7 @@ import mho.wheels.ordering.comparators.LexComparator;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.testing.Testing.assertTrue;
@@ -339,20 +336,43 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
         if (height == 0 || width == 0) {
             //noinspection SuspiciousNameCombination
             return zero(width, height);
-        } else {
-            //noinspection SuspiciousNameCombination,RedundantCast
-            return new RationalMatrix(
-                    toList(
-                            map(
-                                    RationalVector::of,
-                                    (Iterable<List<Rational>>) IterableUtils.transpose(
-                                            map(r -> (Iterable<Rational>) r, rows)
-                                    )
-                            )
-                    ),
-                    height
-            );
         }
+        Rational[][] elements = new Rational[width][height];
+        for (int i = 0; i < height; i++) {
+            RationalVector row = rows.get(i);
+            for (int j = 0; j < width; j++) {
+                elements[j][i] = row.get(j);
+            }
+        }
+        return fromRows(toList(map(i -> RationalVector.of(Arrays.asList(elements[i])), range(0, width - 1))));
+    }
+
+    /**
+     * Returns {@code this} augmented with {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalMatrix}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>{@code this} and {@code that} must have the same height and the same width.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * Size is height({@code this})×(width({@code this}+width({@code that}))
+     *
+     * @param that the {@code RationalMatrix} that {@code this} is augmented by
+     * @return {@code this}|{@code that}
+     */
+    public @NotNull RationalMatrix augment(@NotNull RationalMatrix that) {
+        if (height() != that.height()) {
+            throw new IllegalArgumentException("this and that must have the same height. this: " + this + ", that: " +
+                    that);
+        }
+        if (that.width == 0) return this;
+        if (width == 0) return that;
+        return new RationalMatrix(
+                toList(zipWith((r, s) -> RationalVector.of(toList(concat(r, s))), rows, that.rows)),
+                width + that.width
+        );
     }
 
     /**

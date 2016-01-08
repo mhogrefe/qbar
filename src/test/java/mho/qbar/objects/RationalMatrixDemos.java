@@ -138,6 +138,44 @@ public class RationalMatrixDemos extends QBarDemos {
         }
     }
 
+    private void demoAugment() {
+        Iterable<Pair<RationalMatrix, RationalMatrix>> ps = P.chooseLogarithmicOrder(
+                map(
+                        q -> q.b,
+                        P.dependentPairsInfiniteSquareRootOrder(
+                                filterInfinite(
+                                        t -> t.b != 0 || t.c != 0,
+                                        P.triples(
+                                                P.withScale(4).positiveIntegersGeometric(),
+                                                P.withScale(4).naturalIntegersGeometric(),
+                                                P.withScale(4).naturalIntegersGeometric()
+                                        )
+                                ),
+                                t -> P.pairs(
+                                        P.withScale(4).rationalMatrices(t.a, t.b),
+                                        P.withScale(4).rationalMatrices(t.a, t.c)
+                                )
+                        )
+                ),
+                P.choose(
+                        map(
+                                p -> new Pair<>(zero(0, p.a), zero(0, p.b)),
+                                P.pairs(P.withScale(4).naturalIntegersGeometric())
+                        ),
+                        map(
+                                i -> {
+                                    RationalMatrix m = zero(i, 0);
+                                    return new Pair<>(m, m);
+                                },
+                                P.withScale(4).positiveIntegersGeometric()
+                        )
+                )
+        );
+        for (Pair<RationalMatrix, RationalMatrix> p : take(LIMIT, ps)) {
+            System.out.println(p.a + " | " + p.b + " = " + p.a.augment(p.b));
+        }
+    }
+
     private void demoAdd() {
         Iterable<Pair<RationalMatrix, RationalMatrix>> ps = P.chooseLogarithmicOrder(
                 map(
