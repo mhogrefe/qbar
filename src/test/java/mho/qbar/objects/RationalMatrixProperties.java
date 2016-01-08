@@ -8,7 +8,6 @@ import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,6 +57,7 @@ public class RationalMatrixProperties extends QBarTestProperties {
         for (RationalMatrix m : take(LIMIT, P.rationalMatrices())) {
             List<RationalVector> rows = toList(m.rows());
             assertTrue(m, all(v -> v.dimension() == m.width(), rows));
+            assertEquals(m, rows, toList(m.transpose().columns()));
             testNoRemove(m.rows());
             testHasNext(m.rows());
         }
@@ -72,6 +72,7 @@ public class RationalMatrixProperties extends QBarTestProperties {
         for (RationalMatrix m : take(LIMIT, P.rationalMatrices())) {
             List<RationalVector> columns = toList(m.columns());
             assertTrue(m, all(v -> v.dimension() == m.height(), columns));
+            assertEquals(m, columns, toList(m.transpose().rows()));
             testNoRemove(m.columns());
             testHasNext(m.columns());
         }
@@ -171,6 +172,7 @@ public class RationalMatrixProperties extends QBarTestProperties {
         for (List<RationalVector> vs : take(LIMIT, vss)) {
             RationalMatrix m = fromRows(vs);
             m.validate();
+            assertEquals(vs, m, fromColumns(vs).transpose());
             inverse(RationalMatrix::fromRows, n -> toList(n.rows()), vs);
             assertEquals(vs, m.height(), vs.size());
             if (vs.size() != 0) {
@@ -219,6 +221,7 @@ public class RationalMatrixProperties extends QBarTestProperties {
         for (List<RationalVector> vs : take(LIMIT, vss)) {
             RationalMatrix m = fromColumns(vs);
             m.validate();
+            assertEquals(vs, m, fromRows(vs).transpose());
             inverse(RationalMatrix::fromColumns, n -> toList(n.columns()), vs);
             assertEquals(vs, m.width(), vs.size());
             if (vs.size() != 0) {
