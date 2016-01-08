@@ -335,6 +335,22 @@ public class RationalMatrixTest {
         add_fail_helper("[[2/3]]", "[[2/3], [4/5]]");
     }
 
+    private static void negate_helper(@NotNull String input, @NotNull String output) {
+        aeq(read(input).get().negate(), output);
+    }
+
+    @Test
+    public void testNegate() {
+        negate_helper("[]#0", "[]#0");
+        negate_helper("[]#1", "[]#1");
+        negate_helper("[]#3", "[]#3");
+        negate_helper("[[]]", "[[]]");
+        negate_helper("[[], [], []]", "[[], [], []]");
+        negate_helper("[[-2/3]]", "[[2/3]]");
+        negate_helper("[[-2/3, -8], [0, 5/7]]", "[[2/3, 8], [0, -5/7]]");
+        negate_helper("[[1, 9, -13], [20, 5, -6]]", "[[-1, -9, 13], [-20, -5, 6]]");
+    }
+
     @Test
     public void testEquals() {
         testEqualsHelper(

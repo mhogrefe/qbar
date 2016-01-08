@@ -401,6 +401,24 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
     }
 
     /**
+     * Returns the negative of {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalMatrix}.</li>
+     *  <li>The result is non-null.</li>
+     * </ul>
+     *
+     * Size is height({@code this})×length({@code this})
+     *
+     * @return –{@code this}
+     */
+    public @NotNull RationalMatrix negate() {
+        int height = height();
+        if (height == 0 || width == 0) return this;
+        return new RationalMatrix(toList(map(RationalVector::negate, rows)), width);
+    }
+
+    /**
      * Determines whether {@code this} is equal to {@code that}.
      *
      * <ul>

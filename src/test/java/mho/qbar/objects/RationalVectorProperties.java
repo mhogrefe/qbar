@@ -278,8 +278,7 @@ public class RationalVectorProperties extends QBarTestProperties {
             homomorphic(RationalVector::of, RationalVector::of, Rational::negate, RationalVector::negate, r);
         }
 
-        Iterable<RationalVector> vsFail = filterInfinite(w -> any(x -> x != Rational.ZERO, w), P.rationalVectors());
-        for (RationalVector v : take(LIMIT, vsFail)) {
+        for (RationalVector v : take(LIMIT, filterInfinite(u -> !u.isZero(), P.rationalVectors()))) {
             assertNotEquals(v, v, v.negate());
         }
     }

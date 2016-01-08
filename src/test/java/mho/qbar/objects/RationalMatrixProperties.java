@@ -509,6 +509,22 @@ public class RationalMatrixProperties extends QBarTestProperties {
         }
     }
 
+    private void propertiesNegate() {
+        initialize("negate()");
+        for (RationalMatrix m : take(LIMIT, P.rationalMatrices())) {
+            RationalMatrix negative = m.negate();
+            negative.validate();
+            assertEquals(m, m.height(), negative.height());
+            assertEquals(m, m.width(), negative.width());
+            involution(RationalMatrix::negate, m);
+            assertTrue(m, m.add(negative).isZero());
+        }
+
+        for (RationalMatrix m : take(LIMIT, filterInfinite(n -> !n.isZero(), P.rationalMatrices()))) {
+            assertNotEquals(m, m, m.negate());
+        }
+    }
+
     private void propertiesEquals() {
         initialize("equals(Object)");
         QBarTesting.propertiesEqualsHelper(LIMIT, P, QBarIterableProvider::rationalMatrices);
