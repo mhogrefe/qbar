@@ -91,13 +91,13 @@ public class PolynomialDemos extends QBarDemos {
     }
 
     private void demoAdd() {
-        for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(P.polynomials()))) {
+        for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(P.withScale(4).polynomials()))) {
             System.out.println("(" + p.a + ") + (" + p.b + ") = " + p.a.add(p.b));
         }
     }
 
     private void demoNegate() {
-        for (Polynomial p : take(LIMIT, P.polynomials())) {
+        for (Polynomial p : take(LIMIT, P.withScale(4).polynomials())) {
             System.out.println("-(" + p + ") = " + p.negate());
         }
     }

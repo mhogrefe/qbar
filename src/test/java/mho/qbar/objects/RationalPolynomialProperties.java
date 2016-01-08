@@ -260,15 +260,13 @@ public class RationalPolynomialProperties extends QBarTestProperties {
     }
 
     private void propertiesAdd() {
-        initialize("");
-        System.out.println("\t\ttesting add(Polynomial) properties...");
-
+        initialize("add(RationalPolynomial)");
         for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, P.pairs(P.rationalPolynomials()))) {
             RationalPolynomial sum = p.a.add(p.b);
             sum.validate();
             assertTrue(p, sum.degree() <= max(p.a.degree(), p.b.degree()));
-            assertEquals(p, sum, p.b.add(p.a));
-            assertEquals(p, sum.subtract(p.b), p.a);
+            commutative(RationalPolynomial::add, p);
+            inverse(q -> q.add(p.b), (RationalPolynomial q) -> q.subtract(p.b), p.a);
         }
 
         Iterable<Triple<RationalPolynomial, RationalPolynomial, Rational>> ts = P.triples(
@@ -281,7 +279,14 @@ public class RationalPolynomialProperties extends QBarTestProperties {
         }
 
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
-            assertEquals(p, of(p.a).add(of(p.b)), of(p.a.add(p.b)));
+            homomorphic(
+                    RationalPolynomial::of,
+                    RationalPolynomial::of,
+                    RationalPolynomial::of,
+                    Rational::add,
+                    RationalPolynomial::add,
+                    p
+            );
         }
 
         for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
@@ -294,21 +299,17 @@ public class RationalPolynomialProperties extends QBarTestProperties {
                 P.rationalPolynomials()
         );
         for (Triple<RationalPolynomial, RationalPolynomial, RationalPolynomial> t : take(LIMIT, ts2)) {
-            RationalPolynomial sum1 = t.a.add(t.b).add(t.c);
-            RationalPolynomial sum2 = t.a.add(t.b.add(t.c));
-            assertEquals(t, sum1, sum2);
+            associative(RationalPolynomial::add, t);
         }
     }
 
     private void propertiesNegate() {
-        initialize("");
-        System.out.println("\t\ttesting negate() properties...");
-
+        initialize("negate()");
         for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
             RationalPolynomial negative = p.negate();
             negative.validate();
             assertEquals(p, negative.degree(), p.degree());
-            assertEquals(p, p, negative.negate());
+            involution(RationalPolynomial::negate, p);
             assertTrue(p, p.add(negative) == ZERO);
         }
 
@@ -317,10 +318,17 @@ public class RationalPolynomialProperties extends QBarTestProperties {
         }
 
         for (Rational r : take(LIMIT, P.rationals())) {
+            homomorphic(
+                    RationalPolynomial::of,
+                    RationalPolynomial::of,
+                    Rational::negate,
+                    RationalPolynomial::negate,
+                    r
+            );
             assertEquals(r, of(r).negate(), of(r.negate()));
         }
 
-        for (RationalPolynomial p : take(LIMIT, filter(q -> q != ZERO, P.rationalPolynomials()))) {
+        for (RationalPolynomial p : take(LIMIT, filterInfinite(q -> q != ZERO, P.rationalPolynomials()))) {
             RationalPolynomial negative = p.negate();
             assertNotEquals(p, p, negative);
         }

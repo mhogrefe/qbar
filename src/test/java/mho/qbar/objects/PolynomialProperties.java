@@ -336,15 +336,13 @@ public class PolynomialProperties extends QBarTestProperties {
     }
 
     private void propertiesAdd() {
-        initialize("");
-        System.out.println("\t\ttesting add(Polynomial) properties...");
-
+        initialize("add(Polynomial)");
         for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(P.polynomials()))) {
             Polynomial sum = p.a.add(p.b);
             sum.validate();
             assertTrue(p, sum.degree() <= max(p.a.degree(), p.b.degree()));
-            assertEquals(p, sum, p.b.add(p.a));
-            assertEquals(p, sum.subtract(p.b), p.a);
+            commutative(Polynomial::add, p);
+            inverse(q -> q.add(p.b), (Polynomial q) -> q.subtract(p.b), p.a);
         }
 
         Iterable<Triple<Polynomial, Polynomial, BigInteger>> ts = P.triples(
@@ -357,7 +355,7 @@ public class PolynomialProperties extends QBarTestProperties {
         }
 
         for (Pair<BigInteger, BigInteger> p : take(LIMIT, P.pairs(P.bigIntegers()))) {
-            assertEquals(p, of(p.a).add(of(p.b)), of(p.a.add(p.b)));
+            homomorphic(Polynomial::of, Polynomial::of, Polynomial::of, BigInteger::add, Polynomial::add, p);
         }
 
         for (Polynomial p : take(LIMIT, P.polynomials())) {
@@ -367,21 +365,17 @@ public class PolynomialProperties extends QBarTestProperties {
         }
 
         for (Triple<Polynomial, Polynomial, Polynomial> t : take(LIMIT, P.triples(P.polynomials()))) {
-            Polynomial sum1 = t.a.add(t.b).add(t.c);
-            Polynomial sum2 = t.a.add(t.b.add(t.c));
-            assertEquals(t, sum1, sum2);
+            associative(Polynomial::add, t);
         }
     }
 
     private void propertiesNegate() {
-        initialize("");
-        System.out.println("\t\ttesting negate() properties...");
-
+        initialize("negate()");
         for (Polynomial p : take(LIMIT, P.polynomials())) {
             Polynomial negative = p.negate();
             negative.validate();
             assertEquals(p, negative.degree(), p.degree());
-            assertEquals(p, p, negative.negate());
+            involution(Polynomial::negate, p);
             assertTrue(p, p.add(negative) == ZERO);
         }
 
@@ -390,10 +384,11 @@ public class PolynomialProperties extends QBarTestProperties {
         }
 
         for (BigInteger i : take(LIMIT, P.bigIntegers())) {
+            homomorphic(Polynomial::of, Polynomial::of, BigInteger::negate, Polynomial::negate, i);
             assertEquals(i, of(i).negate(), of(i.negate()));
         }
 
-        for (Polynomial p : take(LIMIT, filter(q -> q != ZERO, P.polynomials()))) {
+        for (Polynomial p : take(LIMIT, filterInfinite(q -> q != ZERO, P.polynomials()))) {
             Polynomial negative = p.negate();
             assertNotEquals(p, p, negative);
         }

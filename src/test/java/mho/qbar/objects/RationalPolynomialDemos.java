@@ -80,13 +80,14 @@ public class RationalPolynomialDemos extends QBarDemos {
     }
 
     private void demoAdd() {
-        for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, P.pairs(P.rationalPolynomials()))) {
+        Iterable<Pair<RationalPolynomial, RationalPolynomial>> ps = P.pairs(P.withScale(4).rationalPolynomials());
+        for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, ps)) {
             System.out.println("(" + p.a + ") + (" + p.b + ") = " + p.a.add(p.b));
         }
     }
 
     private void demoNegate() {
-        for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
+        for (RationalPolynomial p : take(LIMIT, P.withScale(4).rationalPolynomials())) {
             System.out.println("-(" + p + ") = " + p.negate());
         }
     }

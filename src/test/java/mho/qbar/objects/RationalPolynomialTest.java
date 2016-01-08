@@ -230,70 +230,85 @@ public class RationalPolynomialTest {
         leading_empty_helper("0");
     }
 
+    private static void add_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
+        aeq(read(a).get().add(read(b).get()), output);
+    }
+
     @Test
     public void testAdd() {
-        assertTrue(ZERO.add(ZERO) == ZERO);
-        assertTrue(ZERO.add(ONE) == ONE);
-        aeq(ZERO.add(X), "x");
-        aeq(ZERO.add(read("-4/3").get()), "-4/3");
-        aeq(ZERO.add(read("x^2-7/4*x+1/3").get()), "x^2-7/4*x+1/3");
-        aeq(ZERO.add(read("-x^3-1").get()), "-x^3-1");
-        aeq(ZERO.add(read("1/2*x^10").get()), "1/2*x^10");
-        assertTrue(ONE.add(ZERO) == ONE);
-        aeq(ONE.add(ONE), "2");
-        aeq(ONE.add(X), "x+1");
-        aeq(ONE.add(read("-4/3").get()), "-1/3");
-        aeq(ONE.add(read("x^2-7/4*x+1/3").get()), "x^2-7/4*x+4/3");
-        aeq(ONE.add(read("-x^3-1").get()), "-x^3");
-        aeq(ONE.add(read("1/2*x^10").get()), "1/2*x^10+1");
-        aeq(X.add(ZERO), "x");
-        aeq(X.add(ONE), "x+1");
-        aeq(X.add(X), "2*x");
-        aeq(X.add(read("-4/3").get()), "x-4/3");
-        aeq(X.add(read("x^2-7/4*x+1/3").get()), "x^2-3/4*x+1/3");
-        aeq(X.add(read("-x^3-1").get()), "-x^3+x-1");
-        aeq(X.add(read("1/2*x^10").get()), "1/2*x^10+x");
-        aeq(read("-4/3").get().add(ZERO), "-4/3");
-        aeq(read("-4/3").get().add(ONE), "-1/3");
-        aeq(read("-4/3").get().add(X), "x-4/3");
-        aeq(read("-4/3").get().add(read("-4/3").get()), "-8/3");
-        aeq(read("-4/3").get().add(read("x^2-7/4*x+1/3").get()), "x^2-7/4*x-1");
-        aeq(read("-4/3").get().add(read("-x^3-1").get()), "-x^3-7/3");
-        aeq(read("-4/3").get().add(read("1/2*x^10").get()), "1/2*x^10-4/3");
-        aeq(read("x^2-7/4*x+1/3").get().add(ZERO), "x^2-7/4*x+1/3");
-        aeq(read("x^2-7/4*x+1/3").get().add(ONE), "x^2-7/4*x+4/3");
-        aeq(read("x^2-7/4*x+1/3").get().add(X), "x^2-3/4*x+1/3");
-        aeq(read("x^2-7/4*x+1/3").get().add(read("-4/3").get()), "x^2-7/4*x-1");
-        aeq(read("x^2-7/4*x+1/3").get().add(read("x^2-7/4*x+1/3").get()), "2*x^2-7/2*x+2/3");
-        aeq(read("x^2-7/4*x+1/3").get().add(read("-x^3-1").get()), "-x^3+x^2-7/4*x-2/3");
-        aeq(read("x^2-7/4*x+1/3").get().add(read("1/2*x^10").get()), "1/2*x^10+x^2-7/4*x+1/3");
-        aeq(read("-x^3-1").get().add(ZERO), "-x^3-1");
-        aeq(read("-x^3-1").get().add(ONE), "-x^3");
-        aeq(read("-x^3-1").get().add(X), "-x^3+x-1");
-        aeq(read("-x^3-1").get().add(read("-4/3").get()), "-x^3-7/3");
-        aeq(read("-x^3-1").get().add(read("x^2-7/4*x+1/3").get()), "-x^3+x^2-7/4*x-2/3");
-        aeq(read("-x^3-1").get().add(read("-x^3-1").get()), "-2*x^3-2");
-        aeq(read("-x^3-1").get().add(read("1/2*x^10").get()), "1/2*x^10-x^3-1");
-        aeq(read("1/2*x^10").get().add(ZERO), "1/2*x^10");
-        aeq(read("1/2*x^10").get().add(ONE), "1/2*x^10+1");
-        aeq(read("1/2*x^10").get().add(X), "1/2*x^10+x");
-        aeq(read("1/2*x^10").get().add(read("-4/3").get()), "1/2*x^10-4/3");
-        aeq(read("1/2*x^10").get().add(read("x^2-7/4*x+1/3").get()), "1/2*x^10+x^2-7/4*x+1/3");
-        aeq(read("1/2*x^10").get().add(read("-x^3-1").get()), "1/2*x^10-x^3-1");
-        aeq(read("1/2*x^10").get().add(read("1/2*x^10").get()), "x^10");
-        assertTrue(read("x^2-4*x+7").get().add(read("-x^2+4*x-7").get()) == ZERO);
-        assertTrue(read("x+3/4").get().add(read("-x+1/4").get()) == ONE);
+        add_helper("0", "0", "0");
+        add_helper("0", "1", "1");
+        add_helper("0", "x", "x");
+        add_helper("0", "-4/3", "-4/3");
+        add_helper("0", "x^2-7/4*x+1/3", "x^2-7/4*x+1/3");
+        add_helper("0", "-x^3-1", "-x^3-1");
+        add_helper("0", "1/2*x^10", "1/2*x^10");
+
+        add_helper("1", "0", "1");
+        add_helper("1", "1", "2");
+        add_helper("1", "x", "x+1");
+        add_helper("1", "-4/3", "-1/3");
+        add_helper("1", "x^2-7/4*x+1/3", "x^2-7/4*x+4/3");
+        add_helper("1", "-x^3-1", "-x^3");
+        add_helper("1", "1/2*x^10", "1/2*x^10+1");
+
+        add_helper("x", "0", "x");
+        add_helper("x", "1", "x+1");
+        add_helper("x", "x", "2*x");
+        add_helper("x", "-4/3", "x-4/3");
+        add_helper("x", "x^2-7/4*x+1/3", "x^2-3/4*x+1/3");
+        add_helper("x", "-x^3-1", "-x^3+x-1");
+        add_helper("x", "1/2*x^10", "1/2*x^10+x");
+
+        add_helper("-4/3", "0", "-4/3");
+        add_helper("-4/3", "1", "-1/3");
+        add_helper("-4/3", "x", "x-4/3");
+        add_helper("-4/3", "-4/3", "-8/3");
+        add_helper("-4/3", "x^2-7/4*x+1/3", "x^2-7/4*x-1");
+        add_helper("-4/3", "-x^3-1", "-x^3-7/3");
+        add_helper("-4/3", "1/2*x^10", "1/2*x^10-4/3");
+
+        add_helper("x^2-7/4*x+1/3", "0", "x^2-7/4*x+1/3");
+        add_helper("x^2-7/4*x+1/3", "1", "x^2-7/4*x+4/3");
+        add_helper("x^2-7/4*x+1/3", "x", "x^2-3/4*x+1/3");
+        add_helper("x^2-7/4*x+1/3", "-4/3", "x^2-7/4*x-1");
+        add_helper("x^2-7/4*x+1/3", "x^2-7/4*x+1/3", "2*x^2-7/2*x+2/3");
+        add_helper("x^2-7/4*x+1/3", "-x^3-1", "-x^3+x^2-7/4*x-2/3");
+        add_helper("x^2-7/4*x+1/3", "1/2*x^10", "1/2*x^10+x^2-7/4*x+1/3");
+
+        add_helper("-x^3-1", "0", "-x^3-1");
+        add_helper("-x^3-1", "1", "-x^3");
+        add_helper("-x^3-1", "x", "-x^3+x-1");
+        add_helper("-x^3-1", "-4/3", "-x^3-7/3");
+        add_helper("-x^3-1", "x^2-7/4*x+1/3", "-x^3+x^2-7/4*x-2/3");
+        add_helper("-x^3-1", "-x^3-1", "-2*x^3-2");
+        add_helper("-x^3-1", "1/2*x^10", "1/2*x^10-x^3-1");
+
+        add_helper("1/2*x^10", "0", "1/2*x^10");
+        add_helper("1/2*x^10", "1", "1/2*x^10+1");
+        add_helper("1/2*x^10", "x", "1/2*x^10+x");
+        add_helper("1/2*x^10", "-4/3", "1/2*x^10-4/3");
+        add_helper("1/2*x^10", "x^2-7/4*x+1/3", "1/2*x^10+x^2-7/4*x+1/3");
+        add_helper("1/2*x^10", "-x^3-1", "1/2*x^10-x^3-1");
+        add_helper("1/2*x^10", "1/2*x^10", "x^10");
+
+        add_helper("x^2-4*x+7", "-x^2+4*x-7", "0");
+        add_helper("x+3/4", "-x+1/4", "1");
+    }
+
+    private static void negate_helper(@NotNull String input, @NotNull String output) {
+        aeq(read(input).get().negate(), output);
     }
 
     @Test
     public void testNegate() {
-        assertTrue(ZERO.negate() == ZERO);
-        aeq(ONE.negate(), "-1");
-        aeq(X.negate(), "-x");
-        aeq(read("-4/3").get().negate(), "4/3");
-        aeq(read("x^2-7/4*x+1/3").get().negate(), "-x^2+7/4*x-1/3");
-        aeq(read("-x^3-1").get().negate(), "x^3+1");
-        aeq(read("1/2*x^10").get().negate(), "-1/2*x^10");
+        negate_helper("0", "0");
+        negate_helper("1", "-1");
+        negate_helper("x", "-x");
+        negate_helper("-4/3", "4/3");
+        negate_helper("x^2-7/4*x+1/3", "-x^2+7/4*x-1/3");
+        negate_helper("-x^3-1", "x^3+1");
+        negate_helper("1/2*x^10", "-1/2*x^10");
     }
 
     @Test
