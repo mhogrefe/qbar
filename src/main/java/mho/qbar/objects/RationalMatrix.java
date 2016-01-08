@@ -257,6 +257,20 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
     }
 
     /**
+     * Determines whether {@code this} is a square matrix.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalMatrix}.</li>
+     *  <li>The result may be either boolean.</li>
+     * </ul>
+     *
+     * @return whether {@code this} is square
+     */
+    public boolean isSquare() {
+        return rows.size() == width;
+    }
+
+    /**
      * Determines whether this is a zero matrix.
      *
      * <ul>
@@ -293,6 +307,26 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
             throw new IllegalArgumentException("width cannot be negative. Invalid width: " + width);
         }
         return new RationalMatrix(toList(replicate(height, RationalVector.zero(width))), width);
+    }
+
+    /**
+     * Determines whether {@code this} is an identity matrix.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalMatrix}.</li>
+     *  <li>The result may be either boolean.</li>
+     * </ul>
+     *
+     * @return whether {@code this} is an identity
+     */
+    public boolean isIdentity() {
+        if (!isSquare()) return false;
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < width; j++) {
+                if (get(i, j) != (i == j ? Rational.ONE : Rational.ZERO)) return false;
+            }
+        }
+        return true;
     }
 
     /**

@@ -201,6 +201,23 @@ public class RationalMatrixTest {
         width_helper("[[1, 9, -13], [20, 5, -6]]", 3);
     }
 
+    private static void isSquare_helper(@NotNull String input, boolean output) {
+        aeq(read(input).get().isSquare(), output);
+    }
+
+    @Test
+    public void testIsSquare() {
+        isSquare_helper("[]#0", true);
+        isSquare_helper("[]#1", false);
+        isSquare_helper("[]#3", false);
+        isSquare_helper("[[]]", false);
+        isSquare_helper("[[], [], []]", false);
+        isSquare_helper("[[-2/3]]", true);
+        isSquare_helper("[[0, 0, 0], [0, 0, 1], [0, 0, 0]]", true);
+        isSquare_helper("[[0, 0, 0], [0, 0, 1]]", false);
+        isSquare_helper("[[0, 0], [0, 1], [0, 0]]", false);
+    }
+
     private static void isZero_helper(@NotNull String input, boolean output) {
         aeq(read(input).get().isZero(), output);
     }
@@ -244,6 +261,28 @@ public class RationalMatrixTest {
         zero_fail_helper(0, -1);
         zero_fail_helper(3, -1);
         zero_fail_helper(-1, -1);
+    }
+
+    private static void isIdentity_helper(@NotNull String input, boolean output) {
+        aeq(read(input).get().isIdentity(), output);
+    }
+
+    @Test
+    public void testIsIdentity() {
+        isIdentity_helper("[]#0", true);
+        isIdentity_helper("[]#1", false);
+        isIdentity_helper("[]#3", false);
+        isIdentity_helper("[[]]", false);
+        isIdentity_helper("[[], [], []]", false);
+        isIdentity_helper("[[-2/3]]", false);
+        isIdentity_helper("[[0]]", false);
+        isIdentity_helper("[[1]]", true);
+        isIdentity_helper("[[1], [2]]", false);
+        isIdentity_helper("[[1, 0], [0, 1]]", true);
+        isIdentity_helper("[[1, 1/5], [0, 1]]", false);
+        isIdentity_helper("[[0, 1], [1, 0]]", false);
+        isIdentity_helper("[[1, 1], [1, 1]]", false);
+        isIdentity_helper("[[1, 0, 0], [0, 1, 0], [0, 0, 1]]", true);
     }
 
     private static void identity_helper(int dimension, @NotNull String output) {

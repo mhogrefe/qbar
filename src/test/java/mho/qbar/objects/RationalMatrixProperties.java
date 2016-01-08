@@ -37,13 +37,16 @@ public class RationalMatrixProperties extends QBarTestProperties {
         propertiesFromColumns();
         propertiesHeight();
         propertiesWidth();
+        propertiesIsSquare();
         propertiesIsZero();
         propertiesZero();
+        propertiesIsIdentity();
         propertiesIdentity();
         propertiesTranspose();
         compareImplementationsTranspose();
         propertiesAugment();
         propertiesAdd();
+        propertiesNegate();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -273,6 +276,13 @@ public class RationalMatrixProperties extends QBarTestProperties {
         }
     }
 
+    private void propertiesIsSquare() {
+        initialize("isSquare()");
+        for (RationalMatrix m : take(LIMIT, P.rationalMatrices())) {
+            m.isSquare();
+        }
+    }
+
     private void propertiesIsZero() {
         initialize("isZero()");
         for (RationalMatrix m : take(LIMIT, P.rationalMatrices())) {
@@ -306,16 +316,20 @@ public class RationalMatrixProperties extends QBarTestProperties {
         }
     }
 
+    private void propertiesIsIdentity() {
+        initialize("isIdentity()");
+        for (RationalMatrix m : take(LIMIT, P.rationalMatrices())) {
+            m.isIdentity();
+        }
+    }
+
     private void propertiesIdentity() {
         initialize("identity(int)");
         for (int i : take(SMALL_LIMIT, P.positiveIntegersGeometric())) {
             RationalMatrix identity = identity(i);
             identity.validate();
-            for (int r = 0; r < i; r++) {
-                for (int c = 0; c < i; c++) {
-                    assertEquals(i, identity.get(r, c), r == c ? Rational.ONE : Rational.ZERO);
-                }
-            }
+            assertTrue(i, identity.isSquare());
+            assertTrue(i, identity.isIdentity());
             inverse(RationalMatrix::identity, RationalMatrix::height, i);
         }
 
@@ -363,7 +377,15 @@ public class RationalMatrixProperties extends QBarTestProperties {
                     assertEquals(m, m.get(i, j), transposed.get(j, i));
                 }
             }
+            assertEquals(m, m.isSquare(), transposed.isSquare());
+            assertEquals(m, m.isZero(), transposed.isZero());
+            assertEquals(m, m.isIdentity(), transposed.isIdentity());
             involution(RationalMatrix::transpose, m);
+        }
+
+        for (int i : take(SMALL_LIMIT, P.positiveIntegersGeometric())) {
+            RationalMatrix identity = identity(i);
+            assertEquals(i, identity, identity.transpose());
         }
     }
 

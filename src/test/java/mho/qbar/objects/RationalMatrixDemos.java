@@ -114,8 +114,14 @@ public class RationalMatrixDemos extends QBarDemos {
         }
     }
 
+    private void demoIsSquare() {
+        for (RationalMatrix m : take(LIMIT, P.withScale(4).rationalMatrices())) {
+            System.out.println(m + " is " + (m.isSquare() ? "" : "not ") + "square");
+        }
+    }
+
     private void demoIsZero() {
-        for (RationalMatrix m : take(LIMIT, P.rationalMatrices())) {
+        for (RationalMatrix m : take(LIMIT, P.withScale(4).rationalMatrices())) {
             System.out.println(m + " is " + (m.isZero() ? "" : "not ") + "zero");
         }
     }
@@ -123,6 +129,12 @@ public class RationalMatrixDemos extends QBarDemos {
     private void demoZero() {
         for (Pair<Integer, Integer> p : take(SMALL_LIMIT, P.pairs(P.withScale(4).naturalIntegersGeometric()))) {
             System.out.println("zero(" + p.a + ", " + p.b + ") = " + zero(p.a, p.b));
+        }
+    }
+
+    private void demoIsIdentity() {
+        for (RationalMatrix m : take(LIMIT, P.withScale(4).rationalMatrices())) {
+            System.out.println(m + " is " + (m.isIdentity() ? "" : "not ") + "an identity matrix");
         }
     }
 
