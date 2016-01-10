@@ -8,6 +8,7 @@ import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,6 +43,7 @@ public class RationalMatrixProperties extends QBarTestProperties {
         propertiesZero();
         propertiesIsIdentity();
         propertiesIdentity();
+        propertiesSubmatrix();
         propertiesTranspose();
         compareImplementationsTranspose();
         propertiesAugment();
@@ -338,6 +340,84 @@ public class RationalMatrixProperties extends QBarTestProperties {
                 identity(i);
                 fail(i);
             } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesSubmatrix() {
+        initialize("submatrix(List<Integer>, List<Integer>)");
+        Iterable<Triple<RationalMatrix, List<Integer>, List<Integer>>> ts = map(
+                p -> new Triple<>(p.a, p.b.a, p.b.b),
+                P.dependentPairs(
+                        P.withScale(4).rationalMatrices(),
+                        m -> {
+                            List<Integer> allRows = toList(EP.range(0, m.height() - 1));
+                            List<Integer> allColumns = toList(EP.range(0, m.width() - 1));
+                            return P.pairs(
+                                    map(bs -> toList(select(bs, allRows)), P.lists(m.height(), P.booleans())),
+                                    map(bs -> toList(select(bs, allColumns)), P.lists(m.width(), P.booleans()))
+                            );
+                        }
+                )
+        );
+        for (Triple<RationalMatrix, List<Integer>, List<Integer>> t : take(LIMIT, ts)) {
+            RationalMatrix submatrix = t.a.submatrix(t.b, t.c);
+            submatrix.validate();
+            assertEquals(t, submatrix.height(), t.b.size());
+            assertEquals(t, submatrix.width(), t.c.size());
+        }
+
+        RationalMatrix zero = zero(0, 0);
+        for (RationalMatrix m : take(LIMIT, P.rationalMatrices())) {
+            assertEquals(m, m.submatrix(Collections.emptyList(), Collections.emptyList()), zero);
+            assertEquals(m, m.submatrix(toList(range(0, m.height() - 1)), toList(range(0, m.width() - 1))), m);
+        }
+
+        Iterable<Triple<RationalMatrix, List<Integer>, List<Integer>>> tsFail = map(
+                p -> new Triple<>(p.a, p.b.a, p.b.b),
+                P.dependentPairs(
+                        P.withScale(4).rationalMatrices(),
+                        m -> {
+                            int height = m.height();
+                            List<Integer> allColumns = toList(EP.range(0, m.width() - 1));
+                            return P.pairs(
+                                    filterInfinite(
+                                            is -> any(i -> i == null || i < 0 || i >= height, is) || !increasing(is),
+                                            P.lists(P.withNull(P.integersGeometric()))
+                                    ),
+                                    map(bs -> toList(select(bs, allColumns)), P.lists(m.width(), P.booleans()))
+                            );
+                        }
+                )
+        );
+        for (Triple<RationalMatrix, List<Integer>, List<Integer>> t : take(LIMIT, tsFail)) {
+            try {
+                t.a.submatrix(t.b, t.c);
+                fail(t);
+            } catch (NullPointerException | IllegalArgumentException ignored) {}
+        }
+
+        tsFail = map(
+                p -> new Triple<>(p.a, p.b.a, p.b.b),
+                P.dependentPairs(
+                        P.withScale(4).rationalMatrices(),
+                        m -> {
+                            List<Integer> allRows = toList(EP.range(0, m.height() - 1));
+                            int width = m.width();
+                            return P.pairs(
+                                    map(bs -> toList(select(bs, allRows)), P.lists(m.height(), P.booleans())),
+                                    filterInfinite(
+                                            is -> any(i -> i == null || i < 0 || i >= width, is) || !increasing(is),
+                                            P.lists(P.withNull(P.integersGeometric()))
+                                    )
+                            );
+                        }
+                )
+        );
+        for (Triple<RationalMatrix, List<Integer>, List<Integer>> t : take(LIMIT, tsFail)) {
+            try {
+                t.a.submatrix(t.b, t.c);
+                fail(t);
+            } catch (NullPointerException | IllegalArgumentException ignored) {}
         }
     }
 

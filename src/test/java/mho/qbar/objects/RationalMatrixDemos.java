@@ -144,6 +144,26 @@ public class RationalMatrixDemos extends QBarDemos {
         }
     }
 
+    private void demoSubmatrix() {
+        Iterable<Triple<RationalMatrix, List<Integer>, List<Integer>>> ts = map(
+                p -> new Triple<>(p.a, p.b.a, p.b.b),
+                P.dependentPairs(
+                        P.withScale(4).rationalMatrices(),
+                        m -> {
+                            List<Integer> allRows = toList(EP.range(0, m.height() - 1));
+                            List<Integer> allColumns = toList(EP.range(0, m.width() - 1));
+                            return P.pairs(
+                                    map(bs -> toList(select(bs, allRows)), P.lists(m.height(), P.booleans())),
+                                    map(bs -> toList(select(bs, allColumns)), P.lists(m.width(), P.booleans()))
+                            );
+                        }
+                )
+        );
+        for (Triple<RationalMatrix, List<Integer>, List<Integer>> t : take(LIMIT, ts)) {
+            System.out.println("submatrix(" + t.a + ", " + t.b + ", " + t.c + ") = " + t.a.submatrix(t.b, t.c));
+        }
+    }
+
     private void demoTranspose() {
         for (RationalMatrix m : take(LIMIT, P.withScale(4).rationalMatrices())) {
             System.out.println("transpose(" + m + ") = " + m.transpose());

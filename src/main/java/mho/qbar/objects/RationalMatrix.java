@@ -354,6 +354,56 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
     }
 
     /**
+     * Returns a submatrix of {@code this} containing the rows and columns selected by a list of row indices and column
+     * indices (both 0-based, in ascending order, with no repetitions).
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalMatrix}.</li>
+     *  <li>{@code rowIndices} must be in ascending order, cannot have any repetitions, and cannot contain negative
+     *  numbers.</li>
+     *  <li>{@code columnIndices} must be in ascending order, cannot have any repetitions, and cannot contain negative
+     *  numbers.</li>
+     *  <li>The elements of {@code rowIndices} must all be less than height({@code this}).</li>
+     *  <li>The elements of {@code columnIndices} must all be less than width({@code this}).</li>
+     * </ul>
+     *
+     * Size is |{@code rowIndices}|×|{@code columnIndices}|
+     *
+     * @param rowIndices the indices of the rows in the result
+     * @param columnIndices the indices of the columns in the result
+     * @return a submatrix of {@code this}
+     */
+    public @NotNull RationalMatrix submatrix(@NotNull List<Integer> rowIndices, @NotNull List<Integer> columnIndices) {
+        if (!increasing(rowIndices)) {
+            throw new IllegalArgumentException("rowIndices must be in ascending order and cannot have any" +
+                    " repetitions. Invalid rowIndices: " + rowIndices);
+        } else if (!increasing(columnIndices)) {
+            throw new IllegalArgumentException("columnIndices must be in ascending order and cannot have any" +
+                    " repetitions. Invalid columnIndices: " + columnIndices);
+        } else if (!rowIndices.isEmpty() && (head(rowIndices) < 0 || last(rowIndices) >= height())) {
+            throw new IllegalArgumentException("rowIndices cannot contain negative numbers or any elements greater" +
+                    " than or equal to height(this). rowIndices: " + rowIndices + ", height(this): " + height());
+        } else if (!columnIndices.isEmpty() && (head(columnIndices) < 0 || last(columnIndices) >= width)) {
+            throw new IllegalArgumentException("columnIndices cannot contain negative numbers or any elements" +
+                    " greater than or equal to width(this). columnIndices: " + columnIndices + ", width(this): " +
+                    width());
+        } else if (rowIndices.isEmpty() || columnIndices.isEmpty()) {
+            return zero(rowIndices.size(), columnIndices.size());
+        } else if (rowIndices.size() == height() && columnIndices.size() == width) {
+            return this;
+        } else if (columnIndices.size() == width) {
+            return new RationalMatrix(toList(map(rows::get, rowIndices)), width);
+        } else {
+            List<RationalVector> submatrixRows = new ArrayList<>();
+            for (int i : rowIndices) {
+                RationalVector row = rows.get(i);
+                submatrixRows.add(RationalVector.of(toList(map(row::get, columnIndices))));
+            }
+            return new RationalMatrix(submatrixRows, columnIndices.size());
+        }
+    }
+
+    /**
      * Returns the transpose of {@code this}.
      *
      * <ul>

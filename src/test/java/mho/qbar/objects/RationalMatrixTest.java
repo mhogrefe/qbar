@@ -305,6 +305,51 @@ public class RationalMatrixTest {
         identity_fail_helper(-1);
     }
 
+    private static void submatrix_helper(
+            @NotNull String m,
+            @NotNull String rowIndices,
+            @NotNull String columnIndices,
+            @NotNull String output
+    ) {
+        aeq(read(m).get().submatrix(readIntegerList(rowIndices), readIntegerList(columnIndices)), output);
+    }
+
+    private static void submatrix_fail_helper(
+            @NotNull String m,
+            @NotNull String rowIndices,
+            @NotNull String columnIndices
+    ) {
+        try {
+            read(m).get().submatrix(readIntegerListWithNulls(rowIndices), readIntegerListWithNulls(columnIndices));
+            fail();
+        } catch (IllegalArgumentException | NullPointerException ignored) {}
+    }
+
+    @Test
+    public void testSubmatrix() {
+        submatrix_helper("[]#0", "[]", "[]", "[]#0");
+        submatrix_helper("[]#3", "[]", "[]", "[]#0");
+        submatrix_helper("[]#3", "[]", "[0, 2]", "[]#2");
+        submatrix_helper("[]#3", "[]", "[0, 1, 2]", "[]#3");
+        submatrix_helper("[[], [], []]", "[]", "[]", "[]#0");
+        submatrix_helper("[[], [], []]", "[0, 2]", "[]", "[[], []]");
+        submatrix_helper("[[], [], []]", "[0, 1, 2]", "[]", "[[], [], []]");
+        submatrix_helper("[[1, 9, -13], [20, 5, -6]]", "[]", "[]", "[]#0");
+        submatrix_helper("[[1, 9, -13], [20, 5, -6]]", "[]", "[1, 2]", "[]#2");
+        submatrix_helper("[[1, 9, -13], [20, 5, -6]]", "[0, 1]", "[]", "[[], []]");
+        submatrix_helper("[[1, 9, -13], [20, 5, -6]]", "[1]", "[0, 2]", "[[20, -6]]");
+        submatrix_fail_helper("[[0]]", "[null]", "[]");
+        submatrix_fail_helper("[[1, 9, -13], [20, 5, -6]]", "[1]", "[0, null]");
+        submatrix_fail_helper("[[1, 9, -13], [20, 5, -6]]", "[1]", "[2, 0]");
+        submatrix_fail_helper("[[1, 9, -13], [20, 5, -6]]", "[1]", "[0, 0, 2]");
+        submatrix_fail_helper("[[1, 9, -13], [20, 5, -6]]", "[1, 0]", "[0, 2]");
+        submatrix_fail_helper("[[1, 9, -13], [20, 5, -6]]", "[1, 1]", "[0, 2]");
+        submatrix_fail_helper("[[1, 9, -13], [20, 5, -6]]", "[-1]", "[0, 2]");
+        submatrix_fail_helper("[[1, 9, -13], [20, 5, -6]]", "[1]", "[-1, 2]");
+        submatrix_fail_helper("[[1, 9, -13], [20, 5, -6]]", "[2]", "[0, 2]");
+        submatrix_fail_helper("[[1, 9, -13], [20, 5, -6]]", "[1]", "[0, 3]");
+    }
+
     private static void transpose_helper(@NotNull String input, @NotNull String output) {
         aeq(read(input).get().transpose(), output);
     }
@@ -481,8 +526,12 @@ public class RationalMatrixTest {
         findIn_fail_helper("hello");
     }
 
-    private static @NotNull List<RationalMatrix> readRationalMatrixList(@NotNull String s) {
-        return Readers.readList(RationalMatrix::read).apply(s).get();
+    private static @NotNull List<Integer> readIntegerList(@NotNull String s) {
+        return Readers.readList(Readers::readInteger).apply(s).get();
+    }
+
+    private static @NotNull List<Integer> readIntegerListWithNulls(@NotNull String s) {
+        return Readers.readListWithNulls(Readers::readInteger).apply(s).get();
     }
 
     private static @NotNull List<RationalVector> readRationalVectorList(@NotNull String s) {
@@ -491,5 +540,9 @@ public class RationalMatrixTest {
 
     private static @NotNull List<RationalVector> readRationalVectorListWithNulls(@NotNull String s) {
         return Readers.readListWithNulls(RationalVector::read).apply(s).get();
+    }
+
+    private static @NotNull List<RationalMatrix> readRationalMatrixList(@NotNull String s) {
+        return Readers.readList(RationalMatrix::read).apply(s).get();
     }
 }
