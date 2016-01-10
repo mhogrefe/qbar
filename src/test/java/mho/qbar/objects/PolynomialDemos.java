@@ -103,19 +103,19 @@ public class PolynomialDemos extends QBarDemos {
     }
 
     private void demoAbs() {
-        for (Polynomial p : take(LIMIT, P.polynomials())) {
+        for (Polynomial p : take(LIMIT, P.withScale(4).polynomials())) {
             System.out.println("|" + p + "| = " + p.abs());
         }
     }
 
     private void demoSignum() {
-        for (Polynomial p : take(LIMIT, P.polynomials())) {
-            System.out.println("sgn(" + p + ") = " + p.signum());
+        for (Polynomial p : take(LIMIT, P.withScale(4).polynomials())) {
+            System.out.println("signum(" + p + ") = " + p.signum());
         }
     }
 
     private void demoSubtract() {
-        for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(P.polynomials()))) {
+        for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(P.withScale(4).polynomials()))) {
             System.out.println("(" + p.a + ") - (" + p.b + ") = " + p.a.subtract(p.b));
         }
     }

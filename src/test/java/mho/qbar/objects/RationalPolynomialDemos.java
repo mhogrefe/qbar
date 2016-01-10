@@ -93,19 +93,20 @@ public class RationalPolynomialDemos extends QBarDemos {
     }
 
     private void demoAbs() {
-        for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
+        for (RationalPolynomial p : take(LIMIT, P.withScale(4).rationalPolynomials())) {
             System.out.println("|" + p + "| = " + p.abs());
         }
     }
 
     private void demoSignum() {
-        for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
-            System.out.println("sgn(" + p + ") = " + p.signum());
+        for (RationalPolynomial p : take(LIMIT, P.withScale(4).rationalPolynomials())) {
+            System.out.println("signum(" + p + ") = " + p.signum());
         }
     }
 
     private void demoSubtract() {
-        for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, P.pairs(P.rationalPolynomials()))) {
+        Iterable<Pair<RationalPolynomial, RationalPolynomial>> ps = P.pairs(P.withScale(4).rationalPolynomials());
+        for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, ps)) {
             System.out.println("(" + p.a + ") - (" + p.b + ") = " + p.a.subtract(p.b));
         }
     }

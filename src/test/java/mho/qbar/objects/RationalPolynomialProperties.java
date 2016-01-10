@@ -325,7 +325,6 @@ public class RationalPolynomialProperties extends QBarTestProperties {
                     RationalPolynomial::negate,
                     r
             );
-            assertEquals(r, of(r).negate(), of(r.negate()));
         }
 
         for (RationalPolynomial p : take(LIMIT, filterInfinite(q -> q != ZERO, P.rationalPolynomials()))) {
@@ -335,27 +334,24 @@ public class RationalPolynomialProperties extends QBarTestProperties {
     }
 
     private void propertiesAbs() {
-        initialize("");
-        System.out.println("\t\ttesting abs() properties...");
-
+        initialize("abs()");
         for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
             RationalPolynomial abs = p.abs();
             abs.validate();
             assertEquals(p, abs.degree(), p.degree());
-            assertEquals(p, abs, abs.abs());
+            idempotent(RationalPolynomial::abs, p);
             assertNotEquals(p, abs.signum(), -1);
             assertTrue(p, ge(abs, ZERO));
         }
 
         for (Rational r : take(LIMIT, P.rationals())) {
+            homomorphic(RationalPolynomial::of, RationalPolynomial::of, Rational::abs, RationalPolynomial::abs, r);
             assertEquals(r, of(r).abs(), of(r.abs()));
         }
     }
 
     private void propertiesSignum() {
-        initialize("");
-        System.out.println("\t\ttesting signum() properties...");
-
+        initialize("signum()");
         for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
             int signum = p.signum();
             assertEquals(p, signum, Ordering.compare(p, ZERO).toInt());
@@ -363,7 +359,7 @@ public class RationalPolynomialProperties extends QBarTestProperties {
         }
 
         for (Rational r : take(LIMIT, P.rationals())) {
-            assertEquals(r, of(r).signum(), r.signum());
+            homomorphic(RationalPolynomial::of, Function.identity(), Rational::signum, RationalPolynomial::signum, r);
         }
     }
 
@@ -375,16 +371,14 @@ public class RationalPolynomialProperties extends QBarTestProperties {
     }
 
     private void propertiesSubtract() {
-        initialize("");
-        System.out.println("\t\ttesting subtract(RationalPolynomial) properties...");
-
+        initialize("subtract(RationalPolynomial)");
         for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, P.pairs(P.rationalPolynomials()))) {
             RationalPolynomial difference = p.a.subtract(p.b);
             difference.validate();
             assertTrue(p, difference.degree() <= max(p.a.degree(), p.b.degree()));
             assertEquals(p, difference, subtract_simplest(p.a, p.b));
-            assertEquals(p, difference, p.b.subtract(p.a).negate());
-            assertEquals(p, p.a, difference.add(p.b));
+            antiCommutative(RationalPolynomial::subtract, RationalPolynomial::negate, p);
+            inverse(q -> q.subtract(p.b), (RationalPolynomial q) -> q.add(p.b), p.a);
         }
 
         Iterable<Triple<RationalPolynomial, RationalPolynomial, Rational>> ts = P.triples(
@@ -397,35 +391,33 @@ public class RationalPolynomialProperties extends QBarTestProperties {
         }
 
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
-            assertEquals(p, of(p.a).subtract(of(p.b)), of(p.a.subtract(p.b)));
+            homomorphic(
+                    RationalPolynomial::of,
+                    RationalPolynomial::of,
+                    RationalPolynomial::of,
+                    Rational::subtract,
+                    RationalPolynomial::subtract,
+                    p
+            );
         }
 
         for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
             assertEquals(p, ZERO.subtract(p), p.negate());
-            assertEquals(p, p.subtract(ZERO), p);
+            fixedPoint(q -> q.subtract(ZERO), p);
             assertTrue(p, p.subtract(p) == ZERO);
         }
     }
 
     private void compareImplementationsSubtract() {
-        initialize("");
-        System.out.println("\t\tcomparing subtract(RationalPolynomial) implementations...");
-
-        long totalTime = 0;
-        for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, P.pairs(P.rationalPolynomials()))) {
-            long time = System.nanoTime();
-            subtract_simplest(p.a, p.b);
-            totalTime += (System.nanoTime() - time);
-        }
-        System.out.println("\t\t\tsimplest: " + ((double) totalTime) / 1e9 + " s");
-
-        totalTime = 0;
-        for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, P.pairs(P.rationalPolynomials()))) {
-            long time = System.nanoTime();
-            p.a.subtract(p.b);
-            totalTime += (System.nanoTime() - time);
-        }
-        System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
+        Map<String, Function<Pair<RationalPolynomial, RationalPolynomial>, RationalPolynomial>> functions =
+                new LinkedHashMap<>();
+        functions.put("simplest", p -> subtract_simplest(p.a, p.b));
+        functions.put("standard", p -> p.a.subtract(p.b));
+        compareImplementations(
+                "subtract(RationalPolynomial)",
+                take(LIMIT, P.pairs(P.rationalPolynomials())),
+                functions
+        );
     }
 
     private void propertiesMultiply_RationalPolynomial() {

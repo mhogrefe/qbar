@@ -385,7 +385,6 @@ public class PolynomialProperties extends QBarTestProperties {
 
         for (BigInteger i : take(LIMIT, P.bigIntegers())) {
             homomorphic(Polynomial::of, Polynomial::of, BigInteger::negate, Polynomial::negate, i);
-            assertEquals(i, of(i).negate(), of(i.negate()));
         }
 
         for (Polynomial p : take(LIMIT, filterInfinite(q -> q != ZERO, P.polynomials()))) {
@@ -395,27 +394,23 @@ public class PolynomialProperties extends QBarTestProperties {
     }
 
     private void propertiesAbs() {
-        initialize("");
-        System.out.println("\t\ttesting abs() properties...");
-
+        initialize("abs()");
         for (Polynomial p : take(LIMIT, P.polynomials())) {
             Polynomial abs = p.abs();
             abs.validate();
             assertEquals(p, abs.degree(), p.degree());
-            assertEquals(p, abs, abs.abs());
+            idempotent(Polynomial::abs, p);
             assertNotEquals(p, abs.signum(), -1);
             assertTrue(p, ge(abs, ZERO));
         }
 
         for (BigInteger i : take(LIMIT, P.bigIntegers())) {
-            assertEquals(i, of(i).abs(), of(i.abs()));
+            homomorphic(Polynomial::of, Polynomial::of, BigInteger::abs, Polynomial::abs, i);
         }
     }
 
     private void propertiesSignum() {
-        initialize("");
-        System.out.println("\t\ttesting signum() properties...");
-
+        initialize("signum()");
         for (Polynomial p : take(LIMIT, P.polynomials())) {
             int signum = p.signum();
             assertEquals(p, signum, compare(p, ZERO).toInt());
@@ -423,7 +418,7 @@ public class PolynomialProperties extends QBarTestProperties {
         }
 
         for (BigInteger i : take(LIMIT, P.bigIntegers())) {
-            assertEquals(i, of(i).signum(), i.signum());
+            homomorphic(Polynomial::of, Function.identity(), BigInteger::signum, Polynomial::signum, i);
         }
     }
 
@@ -432,16 +427,14 @@ public class PolynomialProperties extends QBarTestProperties {
     }
 
     private void propertiesSubtract() {
-        initialize("");
-        System.out.println("\t\ttesting subtract(Polynomial) properties...");
-
+        initialize("subtract(Polynomial)");
         for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(P.polynomials()))) {
             Polynomial difference = p.a.subtract(p.b);
             difference.validate();
             assertTrue(p, difference.degree() <= max(p.a.degree(), p.b.degree()));
             assertEquals(p, difference, subtract_simplest(p.a, p.b));
-            assertEquals(p, difference, p.b.subtract(p.a).negate());
-            assertEquals(p, p.a, difference.add(p.b));
+            antiCommutative(Polynomial::subtract, Polynomial::negate, p);
+            inverse(q -> q.subtract(p.b), (Polynomial q) -> q.add(p.b), p.a);
         }
 
         Iterable<Triple<Polynomial, Polynomial, BigInteger>> ts = P.triples(
@@ -454,35 +447,21 @@ public class PolynomialProperties extends QBarTestProperties {
         }
 
         for (Pair<BigInteger, BigInteger> p : take(LIMIT, P.pairs(P.bigIntegers()))) {
-            assertEquals(p, of(p.a).subtract(of(p.b)), of(p.a.subtract(p.b)));
+            homomorphic(Polynomial::of, Polynomial::of, Polynomial::of, BigInteger::subtract, Polynomial::subtract, p);
         }
 
         for (Polynomial p : take(LIMIT, P.polynomials())) {
             assertEquals(p, ZERO.subtract(p), p.negate());
-            assertEquals(p, p.subtract(ZERO), p);
+            fixedPoint(q -> q.subtract(ZERO), p);
             assertTrue(p, p.subtract(p) == ZERO);
         }
     }
 
     private void compareImplementationsSubtract() {
-        initialize("");
-        System.out.println("\t\tcomparing subtract(Polynomial) implementations...");
-
-        long totalTime = 0;
-        for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(P.polynomials()))) {
-            long time = System.nanoTime();
-            subtract_simplest(p.a, p.b);
-            totalTime += (System.nanoTime() - time);
-        }
-        System.out.println("\t\t\tsimplest: " + ((double) totalTime) / 1e9 + " s");
-
-        totalTime = 0;
-        for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(P.polynomials()))) {
-            long time = System.nanoTime();
-            p.a.subtract(p.b);
-            totalTime += (System.nanoTime() - time);
-        }
-        System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
+        Map<String, Function<Pair<Polynomial, Polynomial>, Polynomial>> functions = new LinkedHashMap<>();
+        functions.put("simplest", p -> subtract_simplest(p.a, p.b));
+        functions.put("standard", p -> p.a.subtract(p.b));
+        compareImplementations("subtract(Polynomial)", take(LIMIT, P.pairs(P.polynomials())), functions);
     }
 
     private void propertiesMultiply_Polynomial() {
