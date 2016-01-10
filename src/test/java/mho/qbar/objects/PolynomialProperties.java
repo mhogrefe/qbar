@@ -48,6 +48,7 @@ public class PolynomialProperties extends QBarTestProperties {
         propertiesSubtract();
         compareImplementationsSubtract();
         propertiesMultiply_Polynomial();
+        compareImplementationsMultiply_Polynomial();
         propertiesMultiply_BigInteger();
         propertiesMultiply_int();
         propertiesShiftLeft();
@@ -464,15 +465,50 @@ public class PolynomialProperties extends QBarTestProperties {
         compareImplementations("subtract(Polynomial)", take(LIMIT, P.pairs(P.polynomials())), functions);
     }
 
-    private void propertiesMultiply_Polynomial() {
-        initialize("");
-        System.out.println("\t\ttesting multiply(Polynomial) properties...");
+    private static @NotNull Polynomial multiply_Polynomial_alt(@NotNull Polynomial a, @NotNull Polynomial b) {
+        if (a == ZERO || b == ZERO) return ZERO;
+        if (a == ONE) return b;
+        if (b == ONE) return a;
+        int p = a.degree();
+        int q = b.degree();
+        if (p < q) {
+            return multiply_Polynomial_alt(b, a);
+        }
+        int r = p + q;
+        List<BigInteger> productCoefficients = new ArrayList<>();
+        int k = 0;
+        for (; k <= q; k++) {
+            BigInteger coefficient = BigInteger.ZERO;
+            for (int i = 0; i <= k; i++) {
+                coefficient = coefficient.add(a.coefficient(k - i).multiply(b.coefficient(i)));
+            }
+            productCoefficients.add(coefficient);
+        }
+        for (; k < p; k++) {
+            BigInteger coefficient = BigInteger.ZERO;
+            for (int i = 0; i <= q; i++) {
+                coefficient = coefficient.add(a.coefficient(k - i).multiply(b.coefficient(i)));
+            }
+            productCoefficients.add(coefficient);
+        }
+        for (; k <= r; k++) {
+            BigInteger coefficient = BigInteger.ZERO;
+            for (int i = k - p; i <= q; i++) {
+                coefficient = coefficient.add(a.coefficient(k - i).multiply(b.coefficient(i)));
+            }
+            productCoefficients.add(coefficient);
+        }
+        return of(productCoefficients);
+    }
 
+    private void propertiesMultiply_Polynomial() {
+        initialize("multiply(Polynomial)");
         for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(P.polynomials()))) {
             Polynomial product = p.a.multiply(p.b);
             product.validate();
+            assertEquals(p, product, multiply_Polynomial_alt(p.a, p.b));
             assertTrue(p, p.a == ZERO || p.b == ZERO || product.degree() == p.a.degree() + p.b.degree());
-            assertEquals(p, product, p.b.multiply(p.a));
+            commutative(Polynomial::multiply, p);
         }
 
         Iterable<Triple<Polynomial, Polynomial, BigInteger>> ts = P.triples(
@@ -485,24 +521,28 @@ public class PolynomialProperties extends QBarTestProperties {
         }
 
         for (Pair<BigInteger, BigInteger> p : take(LIMIT, P.pairs(P.bigIntegers()))) {
-            assertEquals(p, of(p.a).multiply(of(p.b)), of(p.a.multiply(p.b)));
+            homomorphic(Polynomial::of, Polynomial::of, Polynomial::of, BigInteger::multiply, Polynomial::multiply, p);
         }
 
         for (Polynomial p : take(LIMIT, P.polynomials())) {
-            assertEquals(p, ONE.multiply(p), p);
-            assertEquals(p, p.multiply(ONE), p);
-            assertTrue(p, ZERO.multiply(p) == ZERO);
-            assertTrue(p, p.multiply(ZERO) == ZERO);
+            fixedPoint(ONE::multiply, p);
+            fixedPoint(q -> q.multiply(ONE), p);
+            fixedPoint(q -> q.multiply(p), ZERO);
+            fixedPoint(p::multiply, ZERO);
         }
 
         for (Triple<Polynomial, Polynomial, Polynomial> t : take(LIMIT, P.triples(P.polynomials()))) {
-            Polynomial product1 = t.a.multiply(t.b).multiply(t.c);
-            Polynomial product2 = t.a.multiply(t.b.multiply(t.c));
-            assertEquals(t, product1, product2);
-            Polynomial expression1 = t.a.add(t.b).multiply(t.c);
-            Polynomial expression2 = t.a.multiply(t.c).add(t.b.multiply(t.c));
-            assertEquals(t, expression1, expression2);
+            associative(Polynomial::multiply, t);
+            leftDistributive(Polynomial::add, Polynomial::multiply, t);
+            rightDistributive(Polynomial::add, Polynomial::multiply, t);
         }
+    }
+
+    private void compareImplementationsMultiply_Polynomial() {
+        Map<String, Function<Pair<Polynomial, Polynomial>, Polynomial>> functions = new LinkedHashMap<>();
+        functions.put("alt", p -> multiply_Polynomial_alt(p.a, p.b));
+        functions.put("standard", p -> p.a.multiply(p.b));
+        compareImplementations("multiply(Polynomial)", take(LIMIT, P.pairs(P.polynomials())), functions);
     }
 
     private void propertiesMultiply_BigInteger() {

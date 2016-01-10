@@ -112,7 +112,8 @@ public class RationalPolynomialDemos extends QBarDemos {
     }
 
     private void demoMultiply_RationalPolynomial() {
-        for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, P.pairs(P.rationalPolynomials()))) {
+        Iterable<Pair<RationalPolynomial, RationalPolynomial>> ps = P.pairs(P.withScale(4).rationalPolynomials());
+        for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, ps)) {
             System.out.println("(" + p.a + ") * (" + p.b + ") = " + p.a.multiply(p.b));
         }
     }

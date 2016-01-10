@@ -472,58 +472,67 @@ public class PolynomialTest {
         subtract_helper("3*x^10", "3*x^10", "0");
     }
 
+    private static void multiply_Polynomial_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
+        aeq(read(a).get().multiply(read(b).get()), output);
+    }
+
     @Test
     public void testMultiply_Polynomial() {
-        assertTrue(ZERO.multiply(ZERO) == ZERO);
-        assertTrue(ZERO.multiply(ONE) == ZERO);
-        assertTrue(ZERO.multiply(X) == ZERO);
-        assertTrue(ZERO.multiply(read("-17").get()) == ZERO);
-        assertTrue(ZERO.multiply(read("x^2-4*x+7").get()) == ZERO);
-        assertTrue(ZERO.multiply(read("-x^3-1").get()) == ZERO);
-        assertTrue(ZERO.multiply(read("3*x^10").get()) == ZERO);
-        assertTrue(ONE.multiply(ZERO) == ZERO);
-        assertTrue(ONE.multiply(ONE) == ONE);
-        aeq(ONE.multiply(X), "x");
-        aeq(ONE.multiply(read("-17").get()), "-17");
-        aeq(ONE.multiply(read("x^2-4*x+7").get()), "x^2-4*x+7");
-        aeq(ONE.multiply(read("-x^3-1").get()), "-x^3-1");
-        aeq(ONE.multiply(read("3*x^10").get()), "3*x^10");
-        assertTrue(X.multiply(ZERO) == ZERO);
-        aeq(X.multiply(ONE), "x");
-        aeq(X.multiply(X), "x^2");
-        aeq(X.multiply(read("-17").get()), "-17*x");
-        aeq(X.multiply(read("x^2-4*x+7").get()), "x^3-4*x^2+7*x");
-        aeq(X.multiply(read("-x^3-1").get()), "-x^4-x");
-        aeq(X.multiply(read("3*x^10").get()), "3*x^11");
-        assertTrue(read("-17").get().multiply(ZERO) == ZERO);
-        aeq(read("-17").get().multiply(ONE), "-17");
-        aeq(read("-17").get().multiply(X), "-17*x");
-        aeq(read("-17").get().multiply(read("-17").get()), "289");
-        aeq(read("-17").get().multiply(read("x^2-4*x+7").get()), "-17*x^2+68*x-119");
-        aeq(read("-17").get().multiply(read("-x^3-1").get()), "17*x^3+17");
-        aeq(read("-17").get().multiply(read("3*x^10").get()), "-51*x^10");
-        assertTrue(read("x^2-4*x+7").get().multiply(ZERO) == ZERO);
-        aeq(read("x^2-4*x+7").get().multiply(ONE), "x^2-4*x+7");
-        aeq(read("x^2-4*x+7").get().multiply(X), "x^3-4*x^2+7*x");
-        aeq(read("x^2-4*x+7").get().multiply(read("-17").get()), "-17*x^2+68*x-119");
-        aeq(read("x^2-4*x+7").get().multiply(read("x^2-4*x+7").get()), "x^4-8*x^3+30*x^2-56*x+49");
-        aeq(read("x^2-4*x+7").get().multiply(read("-x^3-1").get()), "-x^5+4*x^4-7*x^3-x^2+4*x-7");
-        aeq(read("x^2-4*x+7").get().multiply(read("3*x^10").get()), "3*x^12-12*x^11+21*x^10");
-        assertTrue(read("-x^3-1").get().multiply(ZERO) == ZERO);
-        aeq(read("-x^3-1").get().multiply(ONE), "-x^3-1");
-        aeq(read("-x^3-1").get().multiply(X), "-x^4-x");
-        aeq(read("-x^3-1").get().multiply(read("-17").get()), "17*x^3+17");
-        aeq(read("-x^3-1").get().multiply(read("x^2-4*x+7").get()), "-x^5+4*x^4-7*x^3-x^2+4*x-7");
-        aeq(read("-x^3-1").get().multiply(read("-x^3-1").get()), "x^6+2*x^3+1");
-        aeq(read("-x^3-1").get().multiply(read("3*x^10").get()), "-3*x^13-3*x^10");
-        assertTrue(read("3*x^10").get().multiply(ZERO) == ZERO);
-        aeq(read("3*x^10").get().multiply(ONE), "3*x^10");
-        aeq(read("3*x^10").get().multiply(X), "3*x^11");
-        aeq(read("3*x^10").get().multiply(read("-17").get()), "-51*x^10");
-        aeq(read("3*x^10").get().multiply(read("x^2-4*x+7").get()), "3*x^12-12*x^11+21*x^10");
-        aeq(read("3*x^10").get().multiply(read("-x^3-1").get()), "-3*x^13-3*x^10");
-        aeq(read("3*x^10").get().multiply(read("3*x^10").get()), "9*x^20");
-        assertTrue(read("-1").get().multiply(read("-1").get()) == ONE);
+        multiply_Polynomial_helper("0", "0", "0");
+        multiply_Polynomial_helper("0", "1", "0");
+        multiply_Polynomial_helper("0", "x", "0");
+        multiply_Polynomial_helper("0", "-17", "0");
+        multiply_Polynomial_helper("0", "x^2-4*x+7", "0");
+        multiply_Polynomial_helper("0", "-x^3-1", "0");
+        multiply_Polynomial_helper("0", "3*x^10", "0");
+
+        multiply_Polynomial_helper("1", "0", "0");
+        multiply_Polynomial_helper("1", "1", "1");
+        multiply_Polynomial_helper("1", "x", "x");
+        multiply_Polynomial_helper("1", "-17", "-17");
+        multiply_Polynomial_helper("1", "x^2-4*x+7", "x^2-4*x+7");
+        multiply_Polynomial_helper("1", "-x^3-1", "-x^3-1");
+        multiply_Polynomial_helper("1", "3*x^10", "3*x^10");
+
+        multiply_Polynomial_helper("x", "0", "0");
+        multiply_Polynomial_helper("x", "1", "x");
+        multiply_Polynomial_helper("x", "x", "x^2");
+        multiply_Polynomial_helper("x", "-17", "-17*x");
+        multiply_Polynomial_helper("x", "x^2-4*x+7", "x^3-4*x^2+7*x");
+        multiply_Polynomial_helper("x", "-x^3-1", "-x^4-x");
+        multiply_Polynomial_helper("x", "3*x^10", "3*x^11");
+
+        multiply_Polynomial_helper("-17", "0", "0");
+        multiply_Polynomial_helper("-17", "1", "-17");
+        multiply_Polynomial_helper("-17", "x", "-17*x");
+        multiply_Polynomial_helper("-17", "-17", "289");
+        multiply_Polynomial_helper("-17", "x^2-4*x+7", "-17*x^2+68*x-119");
+        multiply_Polynomial_helper("-17", "-x^3-1", "17*x^3+17");
+        multiply_Polynomial_helper("-17", "3*x^10", "-51*x^10");
+
+        multiply_Polynomial_helper("x^2-4*x+7", "0", "0");
+        multiply_Polynomial_helper("x^2-4*x+7", "1", "x^2-4*x+7");
+        multiply_Polynomial_helper("x^2-4*x+7", "x", "x^3-4*x^2+7*x");
+        multiply_Polynomial_helper("x^2-4*x+7", "-17", "-17*x^2+68*x-119");
+        multiply_Polynomial_helper("x^2-4*x+7", "x^2-4*x+7", "x^4-8*x^3+30*x^2-56*x+49");
+        multiply_Polynomial_helper("x^2-4*x+7", "-x^3-1", "-x^5+4*x^4-7*x^3-x^2+4*x-7");
+        multiply_Polynomial_helper("x^2-4*x+7", "3*x^10", "3*x^12-12*x^11+21*x^10");
+
+        multiply_Polynomial_helper("-x^3-1", "0", "0");
+        multiply_Polynomial_helper("-x^3-1", "1", "-x^3-1");
+        multiply_Polynomial_helper("-x^3-1", "x", "-x^4-x");
+        multiply_Polynomial_helper("-x^3-1", "-17", "17*x^3+17");
+        multiply_Polynomial_helper("-x^3-1", "x^2-4*x+7", "-x^5+4*x^4-7*x^3-x^2+4*x-7");
+        multiply_Polynomial_helper("-x^3-1", "-x^3-1", "x^6+2*x^3+1");
+        multiply_Polynomial_helper("-x^3-1", "3*x^10", "-3*x^13-3*x^10");
+
+        multiply_Polynomial_helper("3*x^10", "0", "0");
+        multiply_Polynomial_helper("3*x^10", "1", "3*x^10");
+        multiply_Polynomial_helper("3*x^10", "x", "3*x^11");
+        multiply_Polynomial_helper("3*x^10", "-17", "-51*x^10");
+        multiply_Polynomial_helper("3*x^10", "x^2-4*x+7", "3*x^12-12*x^11+21*x^10");
+        multiply_Polynomial_helper("3*x^10", "-x^3-1", "-3*x^13-3*x^10");
+        multiply_Polynomial_helper("3*x^10", "3*x^10", "9*x^20");
     }
 
     @Test

@@ -45,6 +45,7 @@ public class RationalPolynomialProperties extends QBarTestProperties {
         propertiesSubtract();
         compareImplementationsSubtract();
         propertiesMultiply_RationalPolynomial();
+        compareImplementationsMultiply_RationalPolynomial();
         propertiesMultiply_Rational();
         propertiesMultiply_BigInteger();
         propertiesMultiply_int();
@@ -420,15 +421,53 @@ public class RationalPolynomialProperties extends QBarTestProperties {
         );
     }
 
-    private void propertiesMultiply_RationalPolynomial() {
-        initialize("");
-        System.out.println("\t\ttesting multiply(RationalPolynomial) properties...");
+    private static @NotNull RationalPolynomial multiply_RationalPolynomial_alt(
+            @NotNull RationalPolynomial a,
+            @NotNull RationalPolynomial b
+    ) {
+        if (a == ZERO || b == ZERO) return ZERO;
+        if (a == ONE) return b;
+        if (b == ONE) return a;
+        int p = a.degree();
+        int q = b.degree();
+        if (p < q) {
+            return multiply_RationalPolynomial_alt(b, a);
+        }
+        int r = p + q;
+        List<Rational> productCoefficients = new ArrayList<>();
+        int k = 0;
+        for (; k <= q; k++) {
+            Rational coefficient = Rational.ZERO;
+            for (int i = 0; i <= k; i++) {
+                coefficient = coefficient.add(a.coefficient(k - i).multiply(b.coefficient(i)));
+            }
+            productCoefficients.add(coefficient);
+        }
+        for (; k < p; k++) {
+            Rational coefficient = Rational.ZERO;
+            for (int i = 0; i <= q; i++) {
+                coefficient = coefficient.add(a.coefficient(k - i).multiply(b.coefficient(i)));
+            }
+            productCoefficients.add(coefficient);
+        }
+        for (; k <= r; k++) {
+            Rational coefficient = Rational.ZERO;
+            for (int i = k - p; i <= q; i++) {
+                coefficient = coefficient.add(a.coefficient(k - i).multiply(b.coefficient(i)));
+            }
+            productCoefficients.add(coefficient);
+        }
+        return of(productCoefficients);
+    }
 
+    private void propertiesMultiply_RationalPolynomial() {
+        initialize("multiply(RationalPolynomial)");
         for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, P.pairs(P.rationalPolynomials()))) {
             RationalPolynomial product = p.a.multiply(p.b);
             product.validate();
+            assertEquals(p, product, multiply_RationalPolynomial_alt(p.a, p.b));
             assertTrue(p, p.a == ZERO || p.b == ZERO || product.degree() == p.a.degree() + p.b.degree());
-            assertEquals(p, product, p.b.multiply(p.a));
+            commutative(RationalPolynomial::multiply, p);
         }
 
         Iterable<Triple<RationalPolynomial, RationalPolynomial, Rational>> ts = P.triples(
@@ -441,27 +480,43 @@ public class RationalPolynomialProperties extends QBarTestProperties {
         }
 
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
-            assertEquals(p, of(p.a).multiply(of(p.b)), of(p.a.multiply(p.b)));
+            homomorphic(
+                    RationalPolynomial::of,
+                    RationalPolynomial::of,
+                    RationalPolynomial::of,
+                    Rational::multiply,
+                    RationalPolynomial::multiply,
+                    p
+            );
         }
 
         for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
-            assertEquals(p, ONE.multiply(p), p);
-            assertEquals(p, p.multiply(ONE), p);
-            assertTrue(p, ZERO.multiply(p) == ZERO);
-            assertTrue(p, p.multiply(ZERO) == ZERO);
+            fixedPoint(ONE::multiply, p);
+            fixedPoint(q -> q.multiply(ONE), p);
+            fixedPoint(q -> q.multiply(p), ZERO);
+            fixedPoint(p::multiply, ZERO);
         }
 
         Iterable<Triple<RationalPolynomial, RationalPolynomial, RationalPolynomial>> ts2 = P.triples(
                 P.rationalPolynomials()
         );
         for (Triple<RationalPolynomial, RationalPolynomial, RationalPolynomial> t : take(LIMIT, ts2)) {
-            RationalPolynomial product1 = t.a.multiply(t.b).multiply(t.c);
-            RationalPolynomial product2 = t.a.multiply(t.b.multiply(t.c));
-            assertEquals(t, product1, product2);
-            RationalPolynomial expression1 = t.a.add(t.b).multiply(t.c);
-            RationalPolynomial expression2 = t.a.multiply(t.c).add(t.b.multiply(t.c));
-            assertEquals(t, expression1, expression2);
+            associative(RationalPolynomial::multiply, t);
+            leftDistributive(RationalPolynomial::add, RationalPolynomial::multiply, t);
+            rightDistributive(RationalPolynomial::add, RationalPolynomial::multiply, t);
         }
+    }
+
+    private void compareImplementationsMultiply_RationalPolynomial() {
+        Map<String, Function<Pair<RationalPolynomial, RationalPolynomial>, RationalPolynomial>> functions =
+                new LinkedHashMap<>();
+        functions.put("alt", p -> multiply_RationalPolynomial_alt(p.a, p.b));
+        functions.put("standard", p -> p.a.multiply(p.b));
+        compareImplementations(
+                "multiply(RationalPolynomial)",
+                take(LIMIT, P.pairs(P.rationalPolynomials())),
+                functions
+        );
     }
 
     private void propertiesMultiply_Rational() {

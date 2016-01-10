@@ -121,7 +121,7 @@ public class PolynomialDemos extends QBarDemos {
     }
 
     private void demoMultiply_Polynomial() {
-        for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(P.polynomials()))) {
+        for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(P.withScale(4).polynomials()))) {
             System.out.println("(" + p.a + ") * (" + p.b + ") = " + p.a.multiply(p.b));
         }
     }
