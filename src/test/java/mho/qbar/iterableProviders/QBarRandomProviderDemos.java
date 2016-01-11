@@ -239,6 +239,16 @@ public class QBarRandomProviderDemos extends QBarDemos {
         }
     }
 
+    private void demoSquareRationalMatrices() {
+        Iterable<QBarRandomProvider> rps = filterInfinite(
+                rp -> rp.getScale() >= 3 && rp.getSecondaryScale() >= 2,
+                P.withScale(4).qbarRandomProviders()
+        );
+        for (QBarRandomProvider rp : take(SMALL_LIMIT, rps)) {
+            System.out.println("squareRationalMatrices(" + rp + ") = " + its(rp.squareRationalMatrices()));
+        }
+    }
+
     private void demoPolynomials_int() {
         Iterable<Pair<QBarRandomProvider, Integer>> ps = P.pairsSquareRootOrder(
                 filterInfinite(rp -> rp.getScale() > 0, P.withScale(4).qbarRandomProvidersDefaultSecondaryScale()),

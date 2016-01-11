@@ -30,6 +30,7 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
         propertiesRationalVectors();
         propertiesReducedRationalVectors();
         propertiesRationalMatrices();
+        propertiesSquareRationalMatrices();
         propertiesPolynomials();
         propertiesRationalPolynomials();
     }
@@ -284,6 +285,12 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
         initializeConstant("rationalMatrices()");
         biggerTest(QEP, QEP.rationalMatrices(), m -> true);
         take(TINY_LIMIT, QEP.rationalMatrices()).forEach(RationalMatrix::validate);
+    }
+
+    private void propertiesSquareRationalMatrices() {
+        initializeConstant("squareRationalMatrices()");
+        biggerTest(QEP, QEP.squareRationalMatrices(), RationalMatrix::isSquare);
+        take(TINY_LIMIT, QEP.squareRationalMatrices()).forEach(RationalMatrix::validate);
     }
 
     private void propertiesPolynomials_int() {

@@ -39,6 +39,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         propertiesReducedRationalVectorsAtLeast();
         propertiesRationalMatrices_int_int();
         propertiesRationalMatrices();
+        propertiesSquareRationalMatrices();
         propertiesPolynomials_int();
         propertiesPolynomials();
         propertiesPolynomialsAtLeast();
@@ -751,6 +752,42 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
             try {
                 rp.rationalMatrices();
+                fail(rp);
+            } catch (IllegalStateException ignored) {}
+        }
+    }
+
+    private void propertiesSquareRationalMatrices() {
+        initialize("squareRationalMatrices()");
+        Iterable<QBarRandomProvider> rps = filterInfinite(
+                rp -> rp.getScale() >= 3 && rp.getSecondaryScale() >= 2,
+                P.withScale(4).qbarRandomProviders()
+        );
+        for (QBarRandomProvider rp : take(LIMIT, rps)) {
+            Iterable<RationalMatrix> ms = rp.squareRationalMatrices();
+            rp.reset();
+            take(TINY_LIMIT, ms).forEach(RationalMatrix::validate);
+            simpleTest(rp, ms, RationalMatrix::isSquare);
+        }
+
+        Iterable<QBarRandomProvider> rpsFail = filterInfinite(
+                rp -> rp.getScale() < 3 && rp.getSecondaryScale() >= 2,
+                P.withScale(4).qbarRandomProviders()
+        );
+        for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
+            try {
+                rp.squareRationalMatrices();
+                fail(rp);
+            } catch (IllegalStateException ignored) {}
+        }
+
+        rpsFail = filterInfinite(
+                rp -> rp.getScale() >= 3 && rp.getSecondaryScale() < 2,
+                P.withScale(4).qbarRandomProviders()
+        );
+        for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
+            try {
+                rp.squareRationalMatrices();
                 fail(rp);
             } catch (IllegalStateException ignored) {}
         }

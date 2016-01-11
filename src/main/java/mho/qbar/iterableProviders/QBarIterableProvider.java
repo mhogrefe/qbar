@@ -3050,6 +3050,11 @@ public strictfp abstract class QBarIterableProvider {
     public abstract @NotNull Iterable<RationalMatrix> rationalMatrices();
 
     /**
+     * Generates square {@code RationalMatrix}es.
+     */
+    public abstract @NotNull Iterable<RationalMatrix> squareRationalMatrices();
+
+    /**
      * Generates {@code Polynomial}s with a given degree.
      *
      * @param degree the degree of the generated {@code Polynomial}s

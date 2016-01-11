@@ -357,6 +357,25 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
     }
 
     /**
+     * An {@code Iterable} that generates all square {@code RationalMatrix}.
+     *
+     * <ul>
+     *  <li>{@code height} cannot be negative.</li>
+     *  <li>{@code width} cannot be negative.</li>
+     *  <li>The result is a non-removable {@code Iterable} containing square {@code RationalMatrix}es.</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
+    @Override
+    public @NotNull Iterable<RationalMatrix> squareRationalMatrices() {
+        return cons(
+                RationalMatrix.zero(0, 0),
+                map(p -> p.b, dependentPairsInfiniteLogarithmicOrder(positiveIntegers(), i -> rationalMatrices(i, i)))
+        );
+    }
+
+    /**
      * An {@code Iterable} that generates all {@code Polynomial}s.
      *
      * <ul>

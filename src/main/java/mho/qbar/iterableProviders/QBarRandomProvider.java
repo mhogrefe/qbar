@@ -673,10 +673,9 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
     }
 
     /**
-     * An {@code Iterable} that generates all {@code RationalMatrix}es with a given height and width. Each
-     * {@code RationalMatrix}'s element count is chosen from a geometric distribution with mean approximately
-     * {@code secondaryScale}, and each coordinate's bit size is chosen from a geometric distribution with mean
-     * approximately {@code scale}. Does not support removal.
+     * An {@code Iterable} that generates all {@code RationalMatrix}es. Each {@code RationalMatrix}'s element count is
+     * chosen from a geometric distribution with mean approximately {@code secondaryScale}, and each coordinate's bit
+     * size is chosen from a geometric distribution with mean approximately {@code scale}. Does not support removal.
      *
      * <ul>
      *  <li>{@code this} must have a {@code scale} of at least 3 and a {@code secondaryScale} of at least 2.</li>
@@ -710,6 +709,42 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
                 choose(
                         map(i -> RationalMatrix.zero(0, i), dimensionProvider.naturalIntegersGeometric()),
                         map(i -> RationalMatrix.zero(i, 0), dimensionProvider.positiveIntegersGeometric())
+                )
+        );
+    }
+
+    /**
+     * An {@code Iterable} that generates all square {@code RationalMatrix}es. Each {@code RationalMatrix}'s element
+     * count is chosen from a geometric distribution with mean approximately {@code secondaryScale}, and each
+     * coordinate's bit size is chosen from a geometric distribution with mean approximately {@code scale}. Does not
+     * support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a {@code scale} of at least 3 and a {@code secondaryScale} of at least 2.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing square {@code RationalMatrix}es.</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
+    @Override
+    public @NotNull Iterable<RationalMatrix> squareRationalMatrices() {
+        int scale = getScale();
+        if (scale < 3) {
+            throw new IllegalStateException("this must have a scale of at least 3. Invalid scale: " + scale);
+        }
+        int secondaryScale = getSecondaryScale();
+        if (secondaryScale < 2) {
+            throw new IllegalStateException("this must have a secondaryScale of at least 2. Invalid secondaryScale: " +
+                    secondaryScale);
+        }
+        QBarRandomProvider dimensionProvider = (QBarRandomProvider) withScale(
+                MathUtils.ceilingRoot(IntegerUtils.TWO, BigInteger.valueOf(secondaryScale)).intValueExact()
+        );
+        return withElement(
+                RationalMatrix.zero(0, 0),
+                map(p -> p.b, dependentPairsInfiniteLogarithmicOrder(
+                        dimensionProvider.positiveIntegersGeometric(),
+                        i -> rationalMatrices(i, i))
                 )
         );
     }
