@@ -119,19 +119,25 @@ public class RationalPolynomialDemos extends QBarDemos {
     }
 
     private void demoMultiply_Rational() {
-        for (Pair<RationalPolynomial, Rational> p : take(LIMIT, P.pairs(P.rationalPolynomials(), P.rationals()))) {
+        Iterable<Pair<RationalPolynomial, Rational>> ps = P.pairs(P.withScale(4).rationalPolynomials(), P.rationals());
+        for (Pair<RationalPolynomial, Rational> p : take(LIMIT, ps)) {
             System.out.println("(" + p.a + ") * " + p.b + " = " + p.a.multiply(p.b));
         }
     }
 
     private void demoMultiply_BigInteger() {
-        for (Pair<RationalPolynomial, BigInteger> p : take(LIMIT, P.pairs(P.rationalPolynomials(), P.bigIntegers()))) {
+        Iterable<Pair<RationalPolynomial, BigInteger>> ps = P.pairs(
+                P.withScale(4).rationalPolynomials(),
+                P.bigIntegers()
+        );
+        for (Pair<RationalPolynomial, BigInteger> p : take(LIMIT, ps)) {
             System.out.println("(" + p.a + ") * " + p.b + " = " + p.a.multiply(p.b));
         }
     }
 
     private void demoMultiply_int() {
-        for (Pair<RationalPolynomial, Integer> p : take(LIMIT, P.pairs(P.rationalPolynomials(), P.integers()))) {
+        Iterable<Pair<RationalPolynomial, Integer>> ps = P.pairs(P.withScale(4).rationalPolynomials(), P.integers());
+        for (Pair<RationalPolynomial, Integer> p : take(LIMIT, ps)) {
             System.out.println("(" + p.a + ") * " + p.b + " = " + p.a.multiply(p.b));
         }
     }

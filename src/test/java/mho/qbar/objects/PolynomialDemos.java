@@ -127,13 +127,13 @@ public class PolynomialDemos extends QBarDemos {
     }
 
     private void demoMultiply_BigInteger() {
-        for (Pair<Polynomial, BigInteger> p : take(LIMIT, P.pairs(P.polynomials(), P.bigIntegers()))) {
+        for (Pair<Polynomial, BigInteger> p : take(LIMIT, P.pairs(P.withScale(4).polynomials(), P.bigIntegers()))) {
             System.out.println("(" + p.a + ") * " + p.b + " = " + p.a.multiply(p.b));
         }
     }
 
     private void demoMultiply_int() {
-        for (Pair<Polynomial, Integer> p : take(LIMIT, P.pairs(P.polynomials(), P.integers()))) {
+        for (Pair<Polynomial, Integer> p : take(LIMIT, P.pairs(P.withScale(4).polynomials(), P.integers()))) {
             System.out.println("(" + p.a + ") * " + p.b + " = " + p.a.multiply(p.b));
         }
     }

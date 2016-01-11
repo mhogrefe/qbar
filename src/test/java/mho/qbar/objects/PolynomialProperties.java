@@ -546,9 +546,7 @@ public class PolynomialProperties extends QBarTestProperties {
     }
 
     private void propertiesMultiply_BigInteger() {
-        initialize("");
-        System.out.println("\t\ttesting multiply(BigInteger) properties...");
-
+        initialize("multiply(BigInteger)");
         for (Pair<Polynomial, BigInteger> p : take(LIMIT, P.pairs(P.polynomials(), P.bigIntegers()))) {
             Polynomial product = p.a.multiply(p.b);
             product.validate();
@@ -567,16 +565,23 @@ public class PolynomialProperties extends QBarTestProperties {
         }
 
         for (Pair<BigInteger, BigInteger> p : take(LIMIT, P.pairs(P.bigIntegers()))) {
-            assertEquals(p, of(p.a).multiply(p.b), of(p.a.multiply(p.b)));
+            homomorphic(
+                    Polynomial::of,
+                    Function.identity(),
+                    Polynomial::of,
+                    BigInteger::multiply,
+                    Polynomial::multiply,
+                    p
+            );
         }
 
         for (BigInteger i : take(LIMIT, P.bigIntegers())) {
             assertEquals(i, ONE.multiply(i), of(i));
-            assertTrue(i, ZERO.multiply(i) == ZERO);
+            fixedPoint(j -> j.multiply(i), ZERO);
         }
 
         for (Polynomial p : take(LIMIT, P.polynomials())) {
-            assertEquals(p, p.multiply(BigInteger.ONE), p);
+            fixedPoint(q -> q.multiply(BigInteger.ONE), p);
             assertTrue(p, p.multiply(BigInteger.ZERO) == ZERO);
         }
 
@@ -593,9 +598,7 @@ public class PolynomialProperties extends QBarTestProperties {
     }
 
     private void propertiesMultiply_int() {
-        initialize("");
-        System.out.println("\t\ttesting multiply(int) properties...");
-
+        initialize("multiply(int)");
         for (Pair<Polynomial, Integer> p : take(LIMIT, P.pairs(P.polynomials(), P.integers()))) {
             Polynomial product = p.a.multiply(p.b);
             product.validate();
@@ -614,16 +617,23 @@ public class PolynomialProperties extends QBarTestProperties {
         }
 
         for (Pair<BigInteger, Integer> p : take(LIMIT, P.pairs(P.bigIntegers(), P.integers()))) {
-            assertEquals(p, of(p.a).multiply(p.b), of(p.a.multiply(BigInteger.valueOf(p.b))));
+            homomorphic(
+                    Polynomial::of,
+                    Function.identity(),
+                    Polynomial::of,
+                    (i, j) -> i.multiply(BigInteger.valueOf(j)),
+                    Polynomial::multiply,
+                    p
+            );
         }
 
         for (int i : take(LIMIT, P.integers())) {
             assertEquals(i, ONE.multiply(i), of(BigInteger.valueOf(i)));
-            assertTrue(i, ZERO.multiply(i) == ZERO);
+            fixedPoint(j -> j.multiply(i), ZERO);
         }
 
         for (Polynomial p : take(LIMIT, P.polynomials())) {
-            assertEquals(p, p.multiply(1), p);
+            fixedPoint(q -> q.multiply(1), p);
             assertTrue(p, p.multiply(0) == ZERO);
         }
 

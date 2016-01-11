@@ -467,103 +467,136 @@ public class RationalPolynomialTest {
         multiply_Polynomial_helper("1/2*x^10", "1/2*x^10", "1/4*x^20");
     }
 
+    private static void multiply_Rational_helper(@NotNull String p, @NotNull String r, @NotNull String output) {
+        aeq(read(p).get().multiply(Rational.read(r).get()), output);
+    }
+
     @Test
     public void testMultiply_Rational() {
-        assertTrue(ZERO.multiply(Rational.ZERO) == ZERO);
-        assertTrue(ZERO.multiply(Rational.ONE) == ZERO);
-        assertTrue(ZERO.multiply(Rational.read("-3").get()) == ZERO);
-        assertTrue(ZERO.multiply(Rational.read("4/5").get()) == ZERO);
-        assertTrue(ONE.multiply(Rational.ZERO) == ZERO);
-        assertTrue(ONE.multiply(Rational.ONE) == ONE);
-        aeq(ONE.multiply(Rational.read("-3").get()), "-3");
-        aeq(ONE.multiply(Rational.read("4/5").get()), "4/5");
-        assertTrue(X.multiply(Rational.ZERO) == ZERO);
-        aeq(X.multiply(Rational.ONE), "x");
-        aeq(X.multiply(Rational.read("-3").get()), "-3*x");
-        aeq(X.multiply(Rational.read("4/5").get()), "4/5*x");
-        assertTrue(read("-4/3").get().multiply(Rational.ZERO) == ZERO);
-        aeq(read("-4/3").get().multiply(Rational.ONE), "-4/3");
-        aeq(read("-4/3").get().multiply(Rational.read("-3").get()), "4");
-        aeq(read("-4/3").get().multiply(Rational.read("4/5").get()), "-16/15");
-        assertTrue(read("x^2-7/4*x+1/3").get().multiply(Rational.ZERO) == ZERO);
-        aeq(read("x^2-7/4*x+1/3").get().multiply(Rational.ONE), "x^2-7/4*x+1/3");
-        aeq(read("x^2-7/4*x+1/3").get().multiply(Rational.read("-3").get()), "-3*x^2+21/4*x-1");
-        aeq(read("x^2-7/4*x+1/3").get().multiply(Rational.read("4/5").get()), "4/5*x^2-7/5*x+4/15");
-        assertTrue(read("-x^3-1").get().multiply(Rational.ZERO) == ZERO);
-        aeq(read("-x^3-1").get().multiply(Rational.ONE), "-x^3-1");
-        aeq(read("-x^3-1").get().multiply(Rational.read("-3").get()), "3*x^3+3");
-        aeq(read("-x^3-1").get().multiply(Rational.read("4/5").get()), "-4/5*x^3-4/5");
-        assertTrue(read("1/2*x^10").get().multiply(Rational.ZERO) == ZERO);
-        aeq(read("1/2*x^10").get().multiply(Rational.ONE), "1/2*x^10");
-        aeq(read("1/2*x^10").get().multiply(Rational.read("-3").get()), "-3/2*x^10");
-        aeq(read("1/2*x^10").get().multiply(Rational.read("4/5").get()), "2/5*x^10");
-        assertTrue(read("5/4").get().multiply(Rational.read("4/5").get()) == ONE);
+        multiply_Rational_helper("0", "0", "0");
+        multiply_Rational_helper("0", "1", "0");
+        multiply_Rational_helper("0", "-3", "0");
+        multiply_Rational_helper("0", "4/5", "0");
+
+        multiply_Rational_helper("1", "0", "0");
+        multiply_Rational_helper("1", "1", "1");
+        multiply_Rational_helper("1", "-3", "-3");
+        multiply_Rational_helper("1", "4/5", "4/5");
+
+        multiply_Rational_helper("x", "0", "0");
+        multiply_Rational_helper("x", "1", "x");
+        multiply_Rational_helper("x", "-3", "-3*x");
+        multiply_Rational_helper("x", "4/5", "4/5*x");
+
+        multiply_Rational_helper("-4/3", "0", "0");
+        multiply_Rational_helper("-4/3", "1", "-4/3");
+        multiply_Rational_helper("-4/3", "-3", "4");
+        multiply_Rational_helper("-4/3", "4/5", "-16/15");
+
+        multiply_Rational_helper("x^2-7/4*x+1/3", "0", "0");
+        multiply_Rational_helper("x^2-7/4*x+1/3", "1", "x^2-7/4*x+1/3");
+        multiply_Rational_helper("x^2-7/4*x+1/3", "-3", "-3*x^2+21/4*x-1");
+        multiply_Rational_helper("x^2-7/4*x+1/3", "4/5", "4/5*x^2-7/5*x+4/15");
+
+        multiply_Rational_helper("-x^3-1", "0", "0");
+        multiply_Rational_helper("-x^3-1", "1", "-x^3-1");
+        multiply_Rational_helper("-x^3-1", "-3", "3*x^3+3");
+        multiply_Rational_helper("-x^3-1", "4/5", "-4/5*x^3-4/5");
+
+        multiply_Rational_helper("1/2*x^10", "0", "0");
+        multiply_Rational_helper("1/2*x^10", "1", "1/2*x^10");
+        multiply_Rational_helper("1/2*x^10", "-3", "-3/2*x^10");
+        multiply_Rational_helper("1/2*x^10", "4/5", "2/5*x^10");
+
+        multiply_Rational_helper("5/4", "4/5", "1");
+    }
+
+    private static void multiply_BigInteger_helper(@NotNull String p, @NotNull String i, @NotNull String output) {
+        aeq(read(p).get().multiply(Readers.readBigInteger(i).get()), output);
     }
 
     @Test
     public void testMultiply_BigInteger() {
-        assertTrue(ZERO.multiply(BigInteger.ZERO) == ZERO);
-        assertTrue(ZERO.multiply(BigInteger.ONE) == ZERO);
-        assertTrue(ZERO.multiply(BigInteger.valueOf(-3)) == ZERO);
-        assertTrue(ZERO.multiply(BigInteger.valueOf(4)) == ZERO);
-        assertTrue(ONE.multiply(BigInteger.ZERO) == ZERO);
-        assertTrue(ONE.multiply(BigInteger.ONE) == ONE);
-        aeq(ONE.multiply(BigInteger.valueOf(-3)), "-3");
-        aeq(ONE.multiply(BigInteger.valueOf(4)), "4");
-        assertTrue(X.multiply(BigInteger.ZERO) == ZERO);
-        aeq(X.multiply(BigInteger.ONE), "x");
-        aeq(X.multiply(BigInteger.valueOf(-3)), "-3*x");
-        aeq(X.multiply(BigInteger.valueOf(4)), "4*x");
-        assertTrue(read("-4/3").get().multiply(BigInteger.ZERO) == ZERO);
-        aeq(read("-4/3").get().multiply(BigInteger.ONE), "-4/3");
-        aeq(read("-4/3").get().multiply(BigInteger.valueOf(-3)), "4");
-        aeq(read("-4/3").get().multiply(BigInteger.valueOf(4)), "-16/3");
-        assertTrue(read("x^2-7/4*x+1/3").get().multiply(BigInteger.ZERO) == ZERO);
-        aeq(read("x^2-7/4*x+1/3").get().multiply(BigInteger.ONE), "x^2-7/4*x+1/3");
-        aeq(read("x^2-7/4*x+1/3").get().multiply(BigInteger.valueOf(-3)), "-3*x^2+21/4*x-1");
-        aeq(read("x^2-7/4*x+1/3").get().multiply(BigInteger.valueOf(4)), "4*x^2-7*x+4/3");
-        assertTrue(read("-x^3-1").get().multiply(BigInteger.ZERO) == ZERO);
-        aeq(read("-x^3-1").get().multiply(BigInteger.ONE), "-x^3-1");
-        aeq(read("-x^3-1").get().multiply(BigInteger.valueOf(-3)), "3*x^3+3");
-        aeq(read("-x^3-1").get().multiply(BigInteger.valueOf(4)), "-4*x^3-4");
-        assertTrue(read("1/2*x^10").get().multiply(BigInteger.ZERO) == ZERO);
-        aeq(read("1/2*x^10").get().multiply(BigInteger.ONE), "1/2*x^10");
-        aeq(read("1/2*x^10").get().multiply(BigInteger.valueOf(-3)), "-3/2*x^10");
-        aeq(read("1/2*x^10").get().multiply(BigInteger.valueOf(4)), "2*x^10");
-        assertTrue(read("1/4").get().multiply(BigInteger.valueOf(4)) == ONE);
+        multiply_BigInteger_helper("0", "0", "0");
+        multiply_BigInteger_helper("0", "1", "0");
+        multiply_BigInteger_helper("0", "-3", "0");
+        multiply_BigInteger_helper("0", "4", "0");
+
+        multiply_BigInteger_helper("1", "0", "0");
+        multiply_BigInteger_helper("1", "1", "1");
+        multiply_BigInteger_helper("1", "-3", "-3");
+        multiply_BigInteger_helper("1", "4", "4");
+
+        multiply_BigInteger_helper("x", "0", "0");
+        multiply_BigInteger_helper("x", "1", "x");
+        multiply_BigInteger_helper("x", "-3", "-3*x");
+        multiply_BigInteger_helper("x", "4", "4*x");
+
+        multiply_BigInteger_helper("-4/3", "0", "0");
+        multiply_BigInteger_helper("-4/3", "1", "-4/3");
+        multiply_BigInteger_helper("-4/3", "-3", "4");
+        multiply_BigInteger_helper("-4/3", "4", "-16/3");
+
+        multiply_BigInteger_helper("x^2-7/4*x+1/3", "0", "0");
+        multiply_BigInteger_helper("x^2-7/4*x+1/3", "1", "x^2-7/4*x+1/3");
+        multiply_BigInteger_helper("x^2-7/4*x+1/3", "-3", "-3*x^2+21/4*x-1");
+        multiply_BigInteger_helper("x^2-7/4*x+1/3", "4", "4*x^2-7*x+4/3");
+
+        multiply_BigInteger_helper("-x^3-1", "0", "0");
+        multiply_BigInteger_helper("-x^3-1", "1", "-x^3-1");
+        multiply_BigInteger_helper("-x^3-1", "-3", "3*x^3+3");
+        multiply_BigInteger_helper("-x^3-1", "4", "-4*x^3-4");
+
+        multiply_BigInteger_helper("1/2*x^10", "0", "0");
+        multiply_BigInteger_helper("1/2*x^10", "1", "1/2*x^10");
+        multiply_BigInteger_helper("1/2*x^10", "-3", "-3/2*x^10");
+        multiply_BigInteger_helper("1/2*x^10", "4", "2*x^10");
+
+        multiply_BigInteger_helper("1/4", "4", "1");
+    }
+
+    private static void multiply_int_helper(@NotNull String p, int i, @NotNull String output) {
+        aeq(read(p).get().multiply(i), output);
     }
 
     @Test
     public void testMultiply_int() {
-        assertTrue(ZERO.multiply(0) == ZERO);
-        assertTrue(ZERO.multiply(1) == ZERO);
-        assertTrue(ZERO.multiply(-3) == ZERO);
-        assertTrue(ZERO.multiply(4) == ZERO);
-        assertTrue(ONE.multiply(0) == ZERO);
-        assertTrue(ONE.multiply(1) == ONE);
-        aeq(ONE.multiply(-3), "-3");
-        aeq(ONE.multiply(4), "4");
-        assertTrue(X.multiply(0) == ZERO);
-        aeq(X.multiply(1), "x");
-        aeq(X.multiply(-3), "-3*x");
-        aeq(X.multiply(4), "4*x");
-        assertTrue(read("-4/3").get().multiply(0) == ZERO);
-        aeq(read("-4/3").get().multiply(1), "-4/3");
-        aeq(read("-4/3").get().multiply(-3), "4");
-        aeq(read("-4/3").get().multiply(4), "-16/3");
-        assertTrue(read("x^2-7/4*x+1/3").get().multiply(0) == ZERO);
-        aeq(read("x^2-7/4*x+1/3").get().multiply(1), "x^2-7/4*x+1/3");
-        aeq(read("x^2-7/4*x+1/3").get().multiply(-3), "-3*x^2+21/4*x-1");
-        aeq(read("x^2-7/4*x+1/3").get().multiply(4), "4*x^2-7*x+4/3");
-        assertTrue(read("-x^3-1").get().multiply(0) == ZERO);
-        aeq(read("-x^3-1").get().multiply(1), "-x^3-1");
-        aeq(read("-x^3-1").get().multiply(-3), "3*x^3+3");
-        aeq(read("-x^3-1").get().multiply(4), "-4*x^3-4");
-        assertTrue(read("1/2*x^10").get().multiply(0) == ZERO);
-        aeq(read("1/2*x^10").get().multiply(1), "1/2*x^10");
-        aeq(read("1/2*x^10").get().multiply(-3), "-3/2*x^10");
-        aeq(read("1/2*x^10").get().multiply(4), "2*x^10");
-        assertTrue(read("1/4").get().multiply(4) == ONE);
+        multiply_int_helper("0", 0, "0");
+        multiply_int_helper("0", 1, "0");
+        multiply_int_helper("0", -3, "0");
+        multiply_int_helper("0", 4, "0");
+
+        multiply_int_helper("1", 0, "0");
+        multiply_int_helper("1", 1, "1");
+        multiply_int_helper("1", -3, "-3");
+        multiply_int_helper("1", 4, "4");
+
+        multiply_int_helper("x", 0, "0");
+        multiply_int_helper("x", 1, "x");
+        multiply_int_helper("x", -3, "-3*x");
+        multiply_int_helper("x", 4, "4*x");
+
+        multiply_int_helper("-4/3", 0, "0");
+        multiply_int_helper("-4/3", 1, "-4/3");
+        multiply_int_helper("-4/3", -3, "4");
+        multiply_int_helper("-4/3", 4, "-16/3");
+
+        multiply_int_helper("x^2-7/4*x+1/3", 0, "0");
+        multiply_int_helper("x^2-7/4*x+1/3", 1, "x^2-7/4*x+1/3");
+        multiply_int_helper("x^2-7/4*x+1/3", -3, "-3*x^2+21/4*x-1");
+        multiply_int_helper("x^2-7/4*x+1/3", 4, "4*x^2-7*x+4/3");
+
+        multiply_int_helper("-x^3-1", 0, "0");
+        multiply_int_helper("-x^3-1", 1, "-x^3-1");
+        multiply_int_helper("-x^3-1", -3, "3*x^3+3");
+        multiply_int_helper("-x^3-1", 4, "-4*x^3-4");
+
+        multiply_int_helper("1/2*x^10", 0, "0");
+        multiply_int_helper("1/2*x^10", 1, "1/2*x^10");
+        multiply_int_helper("1/2*x^10", -3, "-3/2*x^10");
+        multiply_int_helper("1/2*x^10", 4, "2*x^10");
+
+        multiply_int_helper("1/4", 4, "1");
     }
 
     @Test

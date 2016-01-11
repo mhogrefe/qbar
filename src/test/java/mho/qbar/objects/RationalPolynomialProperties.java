@@ -520,9 +520,7 @@ public class RationalPolynomialProperties extends QBarTestProperties {
     }
 
     private void propertiesMultiply_Rational() {
-        initialize("");
-        System.out.println("\t\ttesting multiply(Rational) properties...");
-
+        initialize("multiply(Rational)");
         for (Pair<RationalPolynomial, Rational> p : take(LIMIT, P.pairs(P.rationalPolynomials(), P.rationals()))) {
             RationalPolynomial product = p.a.multiply(p.b);
             product.validate();
@@ -541,16 +539,23 @@ public class RationalPolynomialProperties extends QBarTestProperties {
         }
 
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
-            assertEquals(p, of(p.a).multiply(p.b), of(p.a.multiply(p.b)));
+            homomorphic(
+                    RationalPolynomial::of,
+                    Function.identity(),
+                    RationalPolynomial::of,
+                    Rational::multiply,
+                    RationalPolynomial::multiply,
+                    p
+            );
         }
 
         for (Rational r : take(LIMIT, P.rationals())) {
             assertEquals(r, ONE.multiply(r), of(r));
-            assertTrue(r, ZERO.multiply(r) == ZERO);
+            fixedPoint(j -> j.multiply(r), ZERO);
         }
 
         for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
-            assertEquals(p, p.multiply(Rational.ONE), p);
+            fixedPoint(q -> q.multiply(Rational.ONE), p);
             assertTrue(p, p.multiply(Rational.ZERO) == ZERO);
         }
 
@@ -567,9 +572,7 @@ public class RationalPolynomialProperties extends QBarTestProperties {
     }
 
     private void propertiesMultiply_BigInteger() {
-        initialize("");
-        System.out.println("\t\ttesting multiply(BigInteger) properties...");
-
+        initialize("multiply(BigInteger)");
         for (Pair<RationalPolynomial, BigInteger> p : take(LIMIT, P.pairs(P.rationalPolynomials(), P.bigIntegers()))) {
             RationalPolynomial product = p.a.multiply(p.b);
             product.validate();
@@ -588,16 +591,23 @@ public class RationalPolynomialProperties extends QBarTestProperties {
         }
 
         for (Pair<Rational, BigInteger> p : take(LIMIT, P.pairs(P.rationals(), P.bigIntegers()))) {
-            assertEquals(p, of(p.a).multiply(p.b), of(p.a.multiply(p.b)));
+            homomorphic(
+                    RationalPolynomial::of,
+                    Function.identity(),
+                    RationalPolynomial::of,
+                    Rational::multiply,
+                    RationalPolynomial::multiply,
+                    p
+            );
         }
 
         for (BigInteger i : take(LIMIT, P.bigIntegers())) {
             assertEquals(i, ONE.multiply(i), of(Rational.of(i)));
-            assertTrue(i, ZERO.multiply(i) == ZERO);
+            fixedPoint(j -> j.multiply(i), ZERO);
         }
 
         for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
-            assertEquals(p, p.multiply(BigInteger.ONE), p);
+            fixedPoint(q -> q.multiply(BigInteger.ONE), p);
             assertTrue(p, p.multiply(BigInteger.ZERO) == ZERO);
         }
 
@@ -614,9 +624,7 @@ public class RationalPolynomialProperties extends QBarTestProperties {
     }
 
     private void propertiesMultiply_int() {
-        initialize("");
-        System.out.println("\t\ttesting multiply(int) properties...");
-
+        initialize("multiply(int)");
         for (Pair<RationalPolynomial, Integer> p : take(LIMIT, P.pairs(P.rationalPolynomials(), P.integers()))) {
             RationalPolynomial product = p.a.multiply(p.b);
             product.validate();
@@ -635,16 +643,23 @@ public class RationalPolynomialProperties extends QBarTestProperties {
         }
 
         for (Pair<Rational, Integer> p : take(LIMIT, P.pairs(P.rationals(), P.integers()))) {
-            assertEquals(p, of(p.a).multiply(p.b), of(p.a.multiply(BigInteger.valueOf(p.b))));
+            homomorphic(
+                    RationalPolynomial::of,
+                    Function.identity(),
+                    RationalPolynomial::of,
+                    Rational::multiply,
+                    RationalPolynomial::multiply,
+                    p
+            );
         }
 
         for (int i : take(LIMIT, P.integers())) {
             assertEquals(i, ONE.multiply(i), of(Rational.of(i)));
-            assertTrue(i, ZERO.multiply(i) == ZERO);
+            fixedPoint(j -> j.multiply(i), ZERO);
         }
 
         for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
-            assertEquals(p, p.multiply(1), p);
+            fixedPoint(q -> q.multiply(1), p);
             assertTrue(p, p.multiply(0) == ZERO);
         }
 
