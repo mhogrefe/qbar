@@ -46,6 +46,7 @@ public class RationalMatrixProperties extends QBarTestProperties {
         propertiesSubmatrix();
         propertiesTranspose();
         compareImplementationsTranspose();
+        propertiesConcat();
         propertiesAugment();
         propertiesAdd();
         propertiesNegate();
@@ -476,6 +477,64 @@ public class RationalMatrixProperties extends QBarTestProperties {
         compareImplementations("transpose()", take(LIMIT, P.rationalMatrices()), functions);
     }
 
+    private void propertiesConcat() {
+        initialize("concat(RationalMatrix)");
+        Iterable<Pair<RationalMatrix, RationalMatrix>> ps = P.chooseLogarithmicOrder(
+                map(
+                        q -> q.b,
+                        P.dependentPairsInfiniteSquareRootOrder(
+                                filterInfinite(
+                                        t -> t.a != 0 || t.b != 0,
+                                        P.triples(
+                                                P.naturalIntegersGeometric(),
+                                                P.naturalIntegersGeometric(),
+                                                P.positiveIntegersGeometric()
+                                        )
+                                ),
+                                t -> P.pairs(
+                                        P.rationalMatrices(t.a, t.c),
+                                        P.rationalMatrices(t.b, t.c)
+                                )
+                        )
+                ),
+                P.choose(
+                        map(
+                                p -> new Pair<>(zero(p.a, 0), zero(p.b, 0)),
+                                P.pairs(P.naturalIntegersGeometric())
+                        ),
+                        map(
+                                i -> {
+                                    RationalMatrix m = zero(0, i);
+                                    return new Pair<>(m, m);
+                                },
+                                P.positiveIntegersGeometric()
+                        )
+                )
+        );
+        for (Pair<RationalMatrix, RationalMatrix> p : take(LIMIT, ps)) {
+            RationalMatrix concatenated = p.a.concat(p.b);
+            concatenated.validate();
+            assertEquals(p, concatenated.height(), p.a.height() + p.b.height());
+            assertEquals(p, concatenated.width(), p.a.width());
+        }
+
+        for (RationalMatrix m : take(LIMIT, P.rationalMatrices())) {
+            assertEquals(m, m, m.concat(zero(0, m.width())));
+            assertEquals(m, m, zero(0, m.width()).concat(m));
+        }
+
+        Iterable<Pair<RationalMatrix, RationalMatrix>> psFail = filterInfinite(
+                q -> q.a.width() != q.b.width(),
+                P.pairs(P.rationalMatrices())
+        );
+        for (Pair<RationalMatrix, RationalMatrix> p : take(LIMIT, psFail)) {
+            try {
+                p.a.concat(p.b);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
     private void propertiesAugment() {
         initialize("augment(RationalMatrix)");
         Iterable<Pair<RationalMatrix, RationalMatrix>> ps = P.chooseLogarithmicOrder(
@@ -567,7 +626,7 @@ public class RationalMatrixProperties extends QBarTestProperties {
         for (RationalMatrix m : take(LIMIT, P.rationalMatrices())) {
             fixedPoint(n -> zero(n.height(), n.width()).add(n), m);
             fixedPoint(n -> n.add(zero(n.height(), n.width())), m);
-            //todo assertTrue(m, m.add(m.negate()).isZero());
+            assertTrue(m, m.add(m.negate()).isZero());
         }
 
         Iterable<Triple<RationalMatrix, RationalMatrix, RationalMatrix>> ts = P.chooseLogarithmicOrder(

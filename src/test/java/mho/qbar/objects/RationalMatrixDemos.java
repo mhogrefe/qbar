@@ -170,6 +170,44 @@ public class RationalMatrixDemos extends QBarDemos {
         }
     }
 
+    private void demoConcat() {
+        Iterable<Pair<RationalMatrix, RationalMatrix>> ps = P.chooseLogarithmicOrder(
+                map(
+                        q -> q.b,
+                        P.dependentPairsInfiniteSquareRootOrder(
+                                filterInfinite(
+                                        t -> t.a != 0 || t.b != 0,
+                                        P.triples(
+                                                P.withScale(4).naturalIntegersGeometric(),
+                                                P.withScale(4).naturalIntegersGeometric(),
+                                                P.withScale(4).positiveIntegersGeometric()
+                                        )
+                                ),
+                                t -> P.pairs(
+                                        P.withScale(4).rationalMatrices(t.a, t.c),
+                                        P.withScale(4).rationalMatrices(t.b, t.c)
+                                )
+                        )
+                ),
+                P.choose(
+                        map(
+                                p -> new Pair<>(zero(p.a, 0), zero(p.b, 0)),
+                                P.pairs(P.withScale(4).naturalIntegersGeometric())
+                        ),
+                        map(
+                                i -> {
+                                    RationalMatrix m = zero(0, i);
+                                    return new Pair<>(m, m);
+                                },
+                                P.withScale(4).positiveIntegersGeometric()
+                        )
+                )
+        );
+        for (Pair<RationalMatrix, RationalMatrix> p : take(LIMIT, ps)) {
+            System.out.println("concat(" + p.a + ", " + p.b + ") = " + p.a.concat(p.b));
+        }
+    }
+
     private void demoAugment() {
         Iterable<Pair<RationalMatrix, RationalMatrix>> ps = P.chooseLogarithmicOrder(
                 map(

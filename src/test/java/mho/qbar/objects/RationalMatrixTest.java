@@ -366,6 +366,34 @@ public class RationalMatrixTest {
         transpose_helper("[[1, 9, -13], [20, 5, -6]]", "[[1, 20], [9, 5], [-13, -6]]");
     }
 
+    private static void concat_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
+        aeq(read(a).get().concat(read(b).get()), output);
+    }
+
+    private static void concat_fail_helper(@NotNull String a, @NotNull String b) {
+        try {
+            read(a).get().concat(read(b).get());
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testConcat() {
+        concat_helper("[]#0", "[]#0", "[]#0");
+        concat_helper("[[]]", "[[], []]", "[[], [], []]");
+        concat_helper("[[1/2]]", "[[1/3], [1/4]]", "[[1/2], [1/3], [1/4]]");
+        concat_helper(
+                "[[1, 3, 2], [2, 0, 1], [5, 2, 2]]",
+                "[[4, 3, 1]]",
+                "[[1, 3, 2], [2, 0, 1], [5, 2, 2], [4, 3, 1]]"
+        );
+        concat_fail_helper("[]#0", "[]#1");
+        concat_fail_helper("[]#3", "[]#4");
+        concat_fail_helper("[[]]", "[[2]]");
+        concat_fail_helper("[[2]]", "[[]]");
+        concat_fail_helper("[[1/2]]", "[[1/3, 1/4]]");
+    }
+
     private static void augment_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
         aeq(read(a).get().augment(read(b).get()), output);
     }

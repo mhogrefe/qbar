@@ -432,12 +432,38 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
     }
 
     /**
+     * Returns the {@code RationalMatrix} produced by concatenating the rows of {@code this} with the rows of
+     * {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalMatrix}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>{@code this} and {@code that} must have the same width.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * Size is (height({@code this}+height({@code that}))×width({@code this})
+     *
+     * @param that the {@code RationalMatrix} that {@code this} is concatenated with
+     * @return {@code this} concatenated with {@code that}
+     */
+    public @NotNull RationalMatrix concat(@NotNull RationalMatrix that) {
+        if (width != that.width) {
+            throw new IllegalArgumentException("this and that must have the same width. this: " + this + ", that: " +
+                    that);
+        }
+        if (height() == 0) return that;
+        if (that.height() == 0) return this;
+        return new RationalMatrix(toList(IterableUtils.concat(rows, that.rows)), width);
+    }
+
+    /**
      * Returns {@code this} augmented with {@code that}.
      *
      * <ul>
      *  <li>{@code this} may be any {@code RationalMatrix}.</li>
      *  <li>{@code that} cannot be null.</li>
-     *  <li>{@code this} and {@code that} must have the same height and the same width.</li>
+     *  <li>{@code this} and {@code that} must have the same height.</li>
      *  <li>The result is not null.</li>
      * </ul>
      *
@@ -451,10 +477,10 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
             throw new IllegalArgumentException("this and that must have the same height. this: " + this + ", that: " +
                     that);
         }
-        if (that.width == 0) return this;
         if (width == 0) return that;
+        if (that.width == 0) return this;
         return new RationalMatrix(
-                toList(zipWith((r, s) -> RationalVector.of(toList(concat(r, s))), rows, that.rows)),
+                toList(zipWith((r, s) -> RationalVector.of(toList(IterableUtils.concat(r, s))), rows, that.rows)),
                 width + that.width
         );
     }
