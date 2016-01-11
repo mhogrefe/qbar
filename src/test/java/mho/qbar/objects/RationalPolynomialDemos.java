@@ -121,7 +121,7 @@ public class RationalPolynomialDemos extends QBarDemos {
     private void demoMultiply_Rational() {
         Iterable<Pair<RationalPolynomial, Rational>> ps = P.pairs(P.withScale(4).rationalPolynomials(), P.rationals());
         for (Pair<RationalPolynomial, Rational> p : take(LIMIT, ps)) {
-            System.out.println("(" + p.a + ") * " + p.b + " = " + p.a.multiply(p.b));
+            System.out.println("(" + p.a + ") * (" + p.b + ") = " + p.a.multiply(p.b));
         }
     }
 
@@ -144,18 +144,18 @@ public class RationalPolynomialDemos extends QBarDemos {
 
     private void demoDivide_Rational() {
         Iterable<Pair<RationalPolynomial, Rational>> ps = P.pairs(
-                P.rationalPolynomials(),
-                filter(r -> r != Rational.ZERO, P.rationals())
+                P.withScale(4).rationalPolynomials(),
+                P.nonzeroRationals()
         );
         for (Pair<RationalPolynomial, Rational> p : take(LIMIT, ps)) {
-            System.out.println("(" + p.a + ") / " + p.b + " = " + p.a.divide(p.b));
+            System.out.println("(" + p.a + ") / (" + p.b + ") = " + p.a.divide(p.b));
         }
     }
 
     private void demoDivide_BigInteger() {
         Iterable<Pair<RationalPolynomial, BigInteger>> ps = P.pairs(
-                P.rationalPolynomials(),
-                filter(i -> !i.equals(BigInteger.ZERO), P.bigIntegers())
+                P.withScale(4).rationalPolynomials(),
+                P.nonzeroBigIntegers()
         );
         for (Pair<RationalPolynomial, BigInteger> p : take(LIMIT, ps)) {
             System.out.println("(" + p.a + ") / " + p.b + " = " + p.a.divide(p.b));
@@ -164,8 +164,8 @@ public class RationalPolynomialDemos extends QBarDemos {
 
     private void demoDivide_int() {
         Iterable<Pair<RationalPolynomial, Integer>> ps = P.pairs(
-                P.rationalPolynomials(),
-                filter(i -> i != 0, P.integers())
+                P.withScale(4).rationalPolynomials(),
+                P.nonzeroIntegers()
         );
         for (Pair<RationalPolynomial, Integer> p : take(LIMIT, ps)) {
             System.out.println("(" + p.a + ") / " + p.b + " = " + p.a.divide(p.b));

@@ -676,45 +676,42 @@ public class RationalPolynomialProperties extends QBarTestProperties {
     }
 
     private void propertiesDivide_Rational() {
-        initialize("");
-        System.out.println("\t\ttesting divide(Rational) properties...");
-
-        Iterable<Pair<RationalPolynomial, Rational>> ps = filter(
-                p -> p.b != Rational.ZERO,
-                P.pairs(P.rationalPolynomials(), P.rationals())
-        );
+        initialize("divide(Rational)");
+        Iterable<Pair<RationalPolynomial, Rational>> ps = P.pairs(P.rationalPolynomials(), P.nonzeroRationals());
         for (Pair<RationalPolynomial, Rational> p : take(LIMIT, ps)) {
             RationalPolynomial quotient = p.a.divide(p.b);
             quotient.validate();
             assertTrue(p, quotient.degree() == p.a.degree());
-            assertEquals(p, p.a, quotient.multiply(p.b));
+            inverse(q -> q.divide(p.b), (RationalPolynomial q) -> q.multiply(p.b), p.a);
             assertEquals(p, quotient, p.a.multiply(p.b.invert()));
         }
 
         Iterable<Triple<RationalPolynomial, Rational, Rational>> ts = P.triples(
                 P.rationalPolynomials(),
-                filter(r -> r != Rational.ZERO, P.rationals()),
+                P.nonzeroRationals(),
                 P.rationals()
         );
         for (Triple<RationalPolynomial, Rational, Rational> t : take(LIMIT, ts)) {
             assertEquals(t, t.a.divide(t.b).apply(t.c), t.a.apply(t.c).divide(t.b));
         }
 
-        Iterable<Pair<Rational, Rational>> ps2 = P.pairs(
-                P.rationals(),
-                filter(r -> r != Rational.ZERO, P.rationals())
-        );
-        for (Pair<Rational, Rational> p : take(LIMIT, ps2)) {
-            assertEquals(p, of(p.a).divide(p.b), of(p.a.divide(p.b)));
+        for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals(), P.nonzeroRationals()))) {
+            homomorphic(
+                    RationalPolynomial::of,
+                    Function.identity(),
+                    RationalPolynomial::of,
+                    Rational::divide,
+                    RationalPolynomial::divide,
+                    p
+            );
         }
 
         for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
-            assertEquals(p, p.divide(Rational.ONE), p);
+            fixedPoint(q -> q.divide(Rational.ONE), p);
         }
 
-        Iterable<Rational> rs = filter(r -> r != Rational.ZERO, P.rationals());
-        for (Rational r : take(LIMIT, rs)) {
-            assertEquals(r, ZERO.divide(r), ZERO);
+        for (Rational r : take(LIMIT, P.nonzeroRationals())) {
+            fixedPoint(p -> p.divide(r), ZERO);
         }
 
         for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
@@ -726,43 +723,41 @@ public class RationalPolynomialProperties extends QBarTestProperties {
     }
 
     private void propertiesDivide_BigInteger() {
-        initialize("");
-        System.out.println("\t\ttesting divide(BigInteger) properties...");
-
-        Iterable<Pair<RationalPolynomial, BigInteger>> ps = P.pairs(
-                P.rationalPolynomials(),
-                filter(i -> !i.equals(BigInteger.ZERO), P.bigIntegers())
-        );
+        initialize("divide(BigInteger)");
+        Iterable<Pair<RationalPolynomial, BigInteger>> ps = P.pairs(P.rationalPolynomials(), P.nonzeroBigIntegers());
         for (Pair<RationalPolynomial, BigInteger> p : take(LIMIT, ps)) {
             RationalPolynomial quotient = p.a.divide(p.b);
             quotient.validate();
             assertTrue(p, quotient.degree() == p.a.degree());
-            assertEquals(p, p.a, quotient.multiply(p.b));
+            inverse(q -> q.divide(p.b), (RationalPolynomial q) -> q.multiply(p.b), p.a);
         }
 
         Iterable<Triple<RationalPolynomial, BigInteger, Rational>> ts = P.triples(
                 P.rationalPolynomials(),
-                filter(i -> !i.equals(BigInteger.ZERO), P.bigIntegers()),
+                P.nonzeroBigIntegers(),
                 P.rationals()
         );
         for (Triple<RationalPolynomial, BigInteger, Rational> t : take(LIMIT, ts)) {
             assertEquals(t, t.a.divide(t.b).apply(t.c), t.a.apply(t.c).divide(t.b));
         }
 
-        Iterable<Pair<Rational, BigInteger>> ps2 = P.pairs(
-                P.rationals(),
-                filter(i -> !i.equals(BigInteger.ZERO), P.bigIntegers())
-        );
-        for (Pair<Rational, BigInteger> p : take(LIMIT, ps2)) {
-            assertEquals(p, of(p.a).divide(p.b), of(p.a.divide(p.b)));
+        for (Pair<Rational, BigInteger> p : take(LIMIT, P.pairs(P.rationals(), P.nonzeroBigIntegers()))) {
+            homomorphic(
+                    RationalPolynomial::of,
+                    Function.identity(),
+                    RationalPolynomial::of,
+                    Rational::divide,
+                    RationalPolynomial::divide,
+                    p
+            );
         }
 
         for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
-            assertEquals(p, p.divide(BigInteger.ONE), p);
+            fixedPoint(q -> q.divide(BigInteger.ONE), p);
         }
 
-        for (BigInteger i : take(LIMIT, filter(j -> !j.equals(BigInteger.ZERO), P.bigIntegers()))) {
-            assertEquals(i, ZERO.divide(i), ZERO);
+        for (BigInteger i : take(LIMIT, P.nonzeroBigIntegers())) {
+            fixedPoint(p -> p.divide(i), ZERO);
         }
 
         for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
@@ -774,40 +769,41 @@ public class RationalPolynomialProperties extends QBarTestProperties {
     }
 
     private void propertiesDivide_int() {
-        initialize("");
-        System.out.println("\t\ttesting divide(int) properties...");
-
-        Iterable<Pair<RationalPolynomial, Integer>> ps = P.pairs(
-                P.rationalPolynomials(),
-                filter(i -> i != 0, P.integers())
-        );
+        initialize("divide(int)");
+        Iterable<Pair<RationalPolynomial, Integer>> ps = P.pairs(P.rationalPolynomials(), P.nonzeroIntegers());
         for (Pair<RationalPolynomial, Integer> p : take(LIMIT, ps)) {
             RationalPolynomial quotient = p.a.divide(p.b);
             quotient.validate();
             assertTrue(p, quotient.degree() == p.a.degree());
-            assertEquals(p, p.a, quotient.multiply(p.b));
+            inverse(q -> q.divide(p.b), (RationalPolynomial q) -> q.multiply(p.b), p.a);
         }
 
         Iterable<Triple<RationalPolynomial, Integer, Rational>> ts = P.triples(
                 P.rationalPolynomials(),
-                filter(i -> i != 0, P.integers()),
+                P.nonzeroIntegers(),
                 P.rationals()
         );
         for (Triple<RationalPolynomial, Integer, Rational> t : take(LIMIT, ts)) {
             assertEquals(t, t.a.divide(t.b).apply(t.c), t.a.apply(t.c).divide(t.b));
         }
 
-        Iterable<Pair<Rational, Integer>> ps2 = P.pairs(P.rationals(), filter(i -> i != 0, P.integers()));
-        for (Pair<Rational, Integer> p : take(LIMIT, ps2)) {
-            assertEquals(p, of(p.a).divide(p.b), of(p.a.divide(BigInteger.valueOf(p.b))));
+        for (Pair<Rational, Integer> p : take(LIMIT, P.pairs(P.rationals(), P.nonzeroIntegers()))) {
+            homomorphic(
+                    RationalPolynomial::of,
+                    Function.identity(),
+                    RationalPolynomial::of,
+                    Rational::divide,
+                    RationalPolynomial::divide,
+                    p
+            );
         }
 
         for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
-            assertEquals(p, p.divide(1), p);
+            fixedPoint(q -> q.divide(1), p);
         }
 
-        for (int i : take(LIMIT, filter(j -> j != 0, P.integers()))) {
-            assertEquals(i, ZERO.divide(i), ZERO);
+        for (int i : take(LIMIT, P.nonzeroIntegers())) {
+            fixedPoint(p -> p.divide(i), ZERO);
         }
 
         for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
