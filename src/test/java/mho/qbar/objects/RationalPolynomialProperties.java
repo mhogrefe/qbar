@@ -58,7 +58,8 @@ public class RationalPolynomialProperties extends QBarTestProperties {
         compareImplementationsShiftRight();
         propertiesSum();
         compareImplementationsSum();
-        //propertiesProduct();
+        propertiesProduct();
+        compareImplementationsProduct();
         propertiesDelta();
 //        propertiesPow();
 //        compareImplementationsPow();
@@ -983,14 +984,31 @@ public class RationalPolynomialProperties extends QBarTestProperties {
         );
     }
 
-    private void propertiesProduct() {
-        initialize("");
-        System.out.println("\t\ttesting product(Iterable<RationalPolynomial>) properties...");
+    private static @NotNull RationalPolynomial product_alt(@NotNull List<RationalPolynomial> xs) {
+        if (any(x -> x == ZERO, xs)) return ZERO;
+        List<Rational> productCoefficients =
+                toList(replicate(sumInteger(map(RationalPolynomial::degree, xs)) + 1, Rational.ZERO));
+        List<List<Pair<Rational, Integer>>> selections = toList(map(p -> toList(zip(p, rangeUp(0))), xs));
+        outer:
+        for (List<Pair<Rational, Integer>> selection : EP.cartesianProduct(selections)) {
+            Rational coefficient = Rational.ONE;
+            int exponent = 0;
+            for (Pair<Rational, Integer> p : selection) {
+                if (p.a.equals(Rational.ZERO)) continue outer;
+                coefficient = coefficient.multiply(p.a);
+                exponent += p.b;
+            }
+            productCoefficients.set(exponent, productCoefficients.get(exponent).add(coefficient));
+        }
+        return of(productCoefficients);
+    }
 
+    private void propertiesProduct() {
+        initialize("product(Iterable<RationalPolynomial>)");
         propertiesFoldHelper(
                 LIMIT,
                 P.getWheelsProvider(),
-                P.withScale(10).rationalPolynomials(),
+                P.withScale(4).rationalPolynomials(),
                 RationalPolynomial::multiply,
                 RationalPolynomial::product,
                 RationalPolynomial::validate,
@@ -998,13 +1016,7 @@ public class RationalPolynomialProperties extends QBarTestProperties {
                 true
         );
 
-        Iterable<List<RationalPolynomial>> pss;
-        if (P instanceof QBarExhaustiveProvider) {
-            pss = P.lists(P.rationalPolynomials());
-        } else {
-            pss = P.lists(P.withScale(10).rationalPolynomials());
-        }
-        for (List<RationalPolynomial> ps : take(LIMIT, pss)) {
+        for (List<RationalPolynomial> ps : take(LIMIT, P.withScale(4).lists(P.withScale(4).rationalPolynomials()))) {
             RationalPolynomial product = product(ps);
             assertTrue(
                     ps,
@@ -1013,13 +1025,40 @@ public class RationalPolynomialProperties extends QBarTestProperties {
             );
         }
 
-        for (Pair<List<RationalPolynomial>, Rational> p : take(LIMIT, P.pairs(pss, P.rationals()))) {
+        Iterable<List<RationalPolynomial>> ps = P.withScale(1).lists(P.withSecondaryScale(1).rationalPolynomials());
+        for (List<RationalPolynomial> xs : take(LIMIT, ps)) {
+            RationalPolynomial product = product(xs);
+            assertEquals(xs, product, product_alt(xs));
+        }
+
+        Iterable<Pair<List<RationalPolynomial>, Rational>> ps2 = P.pairs(
+                P.withScale(4).lists(P.withScale(4).rationalPolynomials()),
+                P.rationals()
+        );
+        for (Pair<List<RationalPolynomial>, Rational> p : take(LIMIT, ps2)) {
             assertEquals(p, product(p.a).apply(p.b), Rational.product(map(q -> q.apply(p.b), p.a)));
         }
 
-        for (List<Rational> rs : take(LIMIT, P.lists(P.rationals()))) {
-            assertEquals(rs, product(map(RationalPolynomial::of, rs)), of(Rational.product(rs)));
+        for (List<Rational> rs : take(LIMIT, P.lists(P.withScale(4).rationals()))) {
+            homomorphic(
+                    ss -> toList(map(RationalPolynomial::of, ss)),
+                    RationalPolynomial::of,
+                    Rational::product,
+                    RationalPolynomial::product,
+                    rs
+            );
         }
+    }
+
+    private void compareImplementationsProduct() {
+        Map<String, Function<List<RationalPolynomial>, RationalPolynomial>> functions = new LinkedHashMap<>();
+        functions.put("alt", RationalPolynomialProperties::product_alt);
+        functions.put("standard", RationalPolynomial::product);
+        compareImplementations(
+                "product(Iterable<RationalPolynomial>)",
+                take(LIMIT, P.withScale(1).lists(P.withSecondaryScale(1).rationalPolynomials())),
+                functions
+        );
     }
 
     private void propertiesDelta() {

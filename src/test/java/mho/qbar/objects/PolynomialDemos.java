@@ -155,7 +155,7 @@ public class PolynomialDemos extends QBarDemos {
     }
 
     private void demoProduct() {
-        for (List<Polynomial> ps : take(LIMIT, P.lists(P.polynomials()))) {
+        for (List<Polynomial> ps : take(LIMIT, P.withScale(4).lists(P.withScale(4).polynomials()))) {
             String listString = tail(init(ps.toString()));
             System.out.println("Π(" + listString + ") = " + product(ps));
         }

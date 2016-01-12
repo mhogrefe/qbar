@@ -702,19 +702,24 @@ public class PolynomialTest {
         sum_fail_helper("[-17, null, -x^3-1, 3*x^10]");
     }
 
-    @Test
-    public void testProduct() {
-        assertTrue(product(readPolynomialList("[]")) == ONE);
-        assertTrue(product(readPolynomialList("[0]")) == ZERO);
-        aeq(product(readPolynomialList("[-17]")), "-17");
-        aeq(
-                product(readPolynomialList("[-17, x^2-4*x+7, -x^3-1, 3*x^10]")),
-                "51*x^15-204*x^14+357*x^13+51*x^12-204*x^11+357*x^10"
-        );
+    private static void product_helper(@NotNull String input, @NotNull String output) {
+        aeq(product(readPolynomialList(input)), output);
+    }
+
+    private static void product_fail_helper(@NotNull String input) {
         try {
-            product(readPolynomialListWithNulls("[-17, null, -x^3-1, 3*x^10]"));
+            product(readPolynomialListWithNulls(input));
             fail();
         } catch (NullPointerException ignored) {}
+    }
+
+    @Test
+    public void testProduct() {
+        product_helper("[]", "1");
+        product_helper("[0]", "0");
+        product_helper("[-17]", "-17");
+        product_helper("[-17, x^2-4*x+7, -x^3-1, 3*x^10]", "51*x^15-204*x^14+357*x^13+51*x^12-204*x^11+357*x^10");
+        product_fail_helper("[-17, null, -x^3-1, 3*x^10]");
     }
 
     @Test

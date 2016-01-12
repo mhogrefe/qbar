@@ -56,6 +56,7 @@ public class PolynomialProperties extends QBarTestProperties {
         propertiesSum();
         compareImplementationsSum();
         propertiesProduct();
+        compareImplementationsProduct();
         propertiesDelta();
         propertiesPow();
         compareImplementationsPow();
@@ -754,10 +755,27 @@ public class PolynomialProperties extends QBarTestProperties {
         compareImplementations("sum(Iterable<Polynomial>)", take(LIMIT, P.lists(P.polynomials())), functions);
     }
 
-    private void propertiesProduct() {
-        initialize("");
-        System.out.println("\t\ttesting product(Iterable<Polynomial>) properties...");
+    private static @NotNull Polynomial product_alt(@NotNull List<Polynomial> xs) {
+        if (any(x -> x == ZERO, xs)) return ZERO;
+        List<BigInteger> productCoefficients =
+                toList(replicate(sumInteger(map(Polynomial::degree, xs)) + 1, BigInteger.ZERO));
+        List<List<Pair<BigInteger, Integer>>> selections = toList(map(p -> toList(zip(p, rangeUp(0))), xs));
+        outer:
+        for (List<Pair<BigInteger, Integer>> selection : EP.cartesianProduct(selections)) {
+            BigInteger coefficient = BigInteger.ONE;
+            int exponent = 0;
+            for (Pair<BigInteger, Integer> p : selection) {
+                if (p.a.equals(BigInteger.ZERO)) continue outer;
+                coefficient = coefficient.multiply(p.a);
+                exponent += p.b;
+            }
+            productCoefficients.set(exponent, productCoefficients.get(exponent).add(coefficient));
+        }
+        return of(productCoefficients);
+    }
 
+    private void propertiesProduct() {
+        initialize("product(Iterable<Polynomial>)");
         propertiesFoldHelper(
                 LIMIT,
                 P.getWheelsProvider(),
@@ -778,13 +796,35 @@ public class PolynomialProperties extends QBarTestProperties {
             );
         }
 
+        for (List<Polynomial> ps : take(LIMIT, P.withScale(1).lists(P.withSecondaryScale(1).polynomials()))) {
+            Polynomial product = product(ps);
+            assertEquals(ps, product, product_alt(ps));
+        }
+
         for (Pair<List<Polynomial>, BigInteger> p : take(LIMIT, P.pairs(P.lists(P.polynomials()), P.bigIntegers()))) {
             assertEquals(p, product(p.a).apply(p.b), productBigInteger(map(q -> q.apply(p.b), p.a)));
         }
 
-        for (List<BigInteger> rs : take(LIMIT, P.lists(P.bigIntegers()))) {
-            assertEquals(rs, product(map(Polynomial::of, rs)), of(productBigInteger(rs)));
+        for (List<BigInteger> is : take(LIMIT, P.lists(P.bigIntegers()))) {
+            homomorphic(
+                    js -> toList(map(Polynomial::of, js)),
+                    Polynomial::of,
+                    IterableUtils::productBigInteger,
+                    Polynomial::product,
+                    is
+            );
         }
+    }
+
+    private void compareImplementationsProduct() {
+        Map<String, Function<List<Polynomial>, Polynomial>> functions = new LinkedHashMap<>();
+        functions.put("alt", PolynomialProperties::product_alt);
+        functions.put("standard", Polynomial::product);
+        compareImplementations(
+                "product(Iterable<Polynomial>)",
+                take(LIMIT, P.withScale(1).lists(P.withSecondaryScale(1).polynomials())),
+                functions
+        );
     }
 
     private void propertiesDelta() {

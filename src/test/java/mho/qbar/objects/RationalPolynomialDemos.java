@@ -200,13 +200,7 @@ public class RationalPolynomialDemos extends QBarDemos {
     }
 
     private void demoProduct() {
-        Iterable<List<RationalPolynomial>> pss;
-        if (P instanceof QBarExhaustiveProvider) {
-            pss = P.lists(P.rationalPolynomials());
-        } else {
-            pss = P.lists(P.withScale(10).rationalPolynomials());
-        }
-        for (List<RationalPolynomial> ps : take(LIMIT, pss)) {
+        for (List<RationalPolynomial> ps : take(LIMIT, P.withScale(4).lists(P.withScale(4).rationalPolynomials()))) {
             String listString = tail(init(ps.toString()));
             System.out.println("Π(" + listString + ") = " + product(ps));
         }
