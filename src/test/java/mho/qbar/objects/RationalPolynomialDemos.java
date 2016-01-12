@@ -173,25 +173,21 @@ public class RationalPolynomialDemos extends QBarDemos {
     }
 
     private void demoShiftLeft() {
-        Iterable<Integer> is;
-        if (P instanceof QBarExhaustiveProvider) {
-            is = P.integers();
-        } else {
-            is  = P.integersGeometric();
-        }
-        for (Pair<RationalPolynomial, Integer> p : take(LIMIT, P.pairs(P.rationalPolynomials(), is))) {
+        Iterable<Pair<RationalPolynomial, Integer>> ps = P.pairs(
+                P.withScale(4).rationalPolynomials(),
+                P.withScale(4).integersGeometric()
+        );
+        for (Pair<RationalPolynomial, Integer> p : take(LIMIT, ps)) {
             System.out.println(p.a + " << " + p.b + " = " + p.a.shiftLeft(p.b));
         }
     }
 
     private void demoShiftRight() {
-        Iterable<Integer> is;
-        if (P instanceof QBarExhaustiveProvider) {
-            is = P.integers();
-        } else {
-            is  = P.integersGeometric();
-        }
-        for (Pair<RationalPolynomial, Integer> p : take(LIMIT, P.pairs(P.rationalPolynomials(), is))) {
+        Iterable<Pair<RationalPolynomial, Integer>> ps = P.pairs(
+                P.withScale(4).rationalPolynomials(),
+                P.withScale(4).integersGeometric()
+        );
+        for (Pair<RationalPolynomial, Integer> p : take(LIMIT, ps)) {
             System.out.println(p.a + " >> " + p.b + " = " + p.a.shiftRight(p.b));
         }
     }

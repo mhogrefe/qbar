@@ -654,16 +654,8 @@ public class PolynomialProperties extends QBarTestProperties {
     }
 
     private void propertiesShiftLeft() {
-        initialize("");
-        System.out.println("\t\ttesting shiftLeft(int) properties...");
-
-        Iterable<Integer> is;
-        if (P instanceof QBarExhaustiveProvider) {
-            is = P.naturalIntegers();
-        } else {
-            is  = P.withScale(10).naturalIntegersGeometric();
-        }
-        for (Pair<Polynomial, Integer> p : take(LIMIT, P.pairs(P.polynomials(), is))) {
+        initialize("shiftLeft(int)");
+        for (Pair<Polynomial, Integer> p : take(LIMIT, P.pairs(P.polynomials(), P.naturalIntegersGeometric()))) {
             Polynomial shifted = p.a.shiftLeft(p.b);
             shifted.validate();
             assertEquals(p, shifted.degree(), p.a.degree());
@@ -674,21 +666,27 @@ public class PolynomialProperties extends QBarTestProperties {
         }
 
         for (Polynomial p : take(LIMIT, P.polynomials())) {
-            assertEquals(p, p.shiftLeft(0), p);
+            fixedPoint(q -> q.shiftLeft(0), p);
         }
 
-        Iterable<Triple<Polynomial, Integer, BigInteger>> ts = P.triples(P.polynomials(), is, P.bigIntegers());
+        Iterable<Triple<Polynomial, Integer, BigInteger>> ts = P.triples(
+                P.polynomials(),
+                P.naturalIntegersGeometric(),
+                P.bigIntegers()
+        );
         for (Triple<Polynomial, Integer, BigInteger> t : take(LIMIT, ts)) {
             assertEquals(t, t.a.shiftLeft(t.b).apply(t.c), t.a.apply(t.c).shiftLeft(t.b));
         }
 
-        for (Pair<BigInteger, Integer> p : take(LIMIT, P.pairs(P.bigIntegers(), is))) {
-            assertEquals(p, of(p.a).shiftLeft(p.b), of(p.a.shiftLeft(p.b)));
-        }
-
-        for (Pair<Polynomial, Integer> p : take(LIMIT, P.pairs(P.polynomials(), is))) {
-            Polynomial shifted = p.a.shiftLeft(p.b);
-            assertEquals(p, shifted, p.a.multiply(BigInteger.ONE.shiftLeft(p.b)));
+        for (Pair<BigInteger, Integer> p : take(LIMIT, P.pairs(P.bigIntegers(), P.naturalIntegersGeometric()))) {
+            homomorphic(
+                    Polynomial::of,
+                    Function.identity(),
+                    Polynomial::of,
+                    BigInteger::shiftLeft,
+                    Polynomial::shiftLeft,
+                    p
+            );
         }
 
         for (Pair<Polynomial, Integer> p : take(LIMIT, P.pairs(P.polynomials(), P.negativeIntegers()))) {
@@ -700,30 +698,14 @@ public class PolynomialProperties extends QBarTestProperties {
     }
 
     private void compareImplementationsShiftLeft() {
-        initialize("");
-        System.out.println("\t\tcomparing shiftLeft(int) implementations...");
-
-        long totalTime = 0;
-        Iterable<Integer> is;
-        if (P instanceof QBarExhaustiveProvider) {
-            is = P.naturalIntegers();
-        } else {
-            is  = P.withScale(10).naturalIntegersGeometric();
-        }
-        for (Pair<Polynomial, Integer> p : take(LIMIT, P.pairs(P.polynomials(), is))) {
-            long time = System.nanoTime();
-            shiftLeft_simplest(p.a, p.b);
-            totalTime += (System.nanoTime() - time);
-        }
-        System.out.println("\t\t\tsimplest: " + ((double) totalTime) / 1e9 + " s");
-
-        totalTime = 0;
-        for (Pair<Polynomial, Integer> p : take(LIMIT, P.pairs(P.polynomials(), is))) {
-            long time = System.nanoTime();
-            p.a.shiftLeft(p.b);
-            totalTime += (System.nanoTime() - time);
-        }
-        System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
+        Map<String, Function<Pair<Polynomial, Integer>, Polynomial>> functions = new LinkedHashMap<>();
+        functions.put("simplest", p -> shiftLeft_simplest(p.a, p.b));
+        functions.put("standard", p -> p.a.shiftLeft(p.b));
+        compareImplementations(
+                "shiftLeft(int)",
+                take(LIMIT, P.pairs(P.polynomials(), P.naturalIntegersGeometric())),
+                functions
+        );
     }
 
     private static @NotNull Polynomial sum_simplest(@NotNull Iterable<Polynomial> xs) {

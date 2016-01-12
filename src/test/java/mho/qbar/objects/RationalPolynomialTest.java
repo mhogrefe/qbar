@@ -4,7 +4,6 @@ import mho.wheels.io.Readers;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
-import java.math.BigInteger;
 import java.util.List;
 
 import static mho.qbar.objects.RationalPolynomial.*;
@@ -740,138 +739,158 @@ public class RationalPolynomialTest {
         divide_int_fail_helper("1", 0);
     }
 
+    private static void shiftLeft_helper(@NotNull String p, int bits, @NotNull String output) {
+        aeq(read(p).get().shiftLeft(bits), output);
+    }
+
     @Test
     public void testShiftLeft() {
-        assertTrue(ZERO.shiftLeft(0) == ZERO);
-        assertTrue(ZERO.shiftLeft(1) == ZERO);
-        assertTrue(ZERO.shiftLeft(2) == ZERO);
-        assertTrue(ZERO.shiftLeft(3) == ZERO);
-        assertTrue(ZERO.shiftLeft(4) == ZERO);
-        assertTrue(ZERO.shiftLeft(-1) == ZERO);
-        assertTrue(ZERO.shiftLeft(-2) == ZERO);
-        assertTrue(ZERO.shiftLeft(-3) == ZERO);
-        assertTrue(ZERO.shiftLeft(-4) == ZERO);
-        assertTrue(ONE.shiftLeft(0) == ONE);
-        aeq(ONE.shiftLeft(1), "2");
-        aeq(ONE.shiftLeft(2), "4");
-        aeq(ONE.shiftLeft(3), "8");
-        aeq(ONE.shiftLeft(4), "16");
-        aeq(ONE.shiftLeft(-1), "1/2");
-        aeq(ONE.shiftLeft(-2), "1/4");
-        aeq(ONE.shiftLeft(-3), "1/8");
-        aeq(ONE.shiftLeft(-4), "1/16");
-        aeq(X.shiftLeft(0), X);
-        aeq(X.shiftLeft(1), "2*x");
-        aeq(X.shiftLeft(2), "4*x");
-        aeq(X.shiftLeft(3), "8*x");
-        aeq(X.shiftLeft(4), "16*x");
-        aeq(X.shiftLeft(-1), "1/2*x");
-        aeq(X.shiftLeft(-2), "1/4*x");
-        aeq(X.shiftLeft(-3), "1/8*x");
-        aeq(X.shiftLeft(-4), "1/16*x");
-        aeq(read("-4/3").get().shiftLeft(0), "-4/3");
-        aeq(read("-4/3").get().shiftLeft(1), "-8/3");
-        aeq(read("-4/3").get().shiftLeft(2), "-16/3");
-        aeq(read("-4/3").get().shiftLeft(3), "-32/3");
-        aeq(read("-4/3").get().shiftLeft(4), "-64/3");
-        aeq(read("-4/3").get().shiftLeft(-1), "-2/3");
-        aeq(read("-4/3").get().shiftLeft(-2), "-1/3");
-        aeq(read("-4/3").get().shiftLeft(-3), "-1/6");
-        aeq(read("-4/3").get().shiftLeft(-4), "-1/12");
-        aeq(read("x^2-7/4*x+1/3").get().shiftLeft(0), "x^2-7/4*x+1/3");
-        aeq(read("x^2-7/4*x+1/3").get().shiftLeft(1), "2*x^2-7/2*x+2/3");
-        aeq(read("x^2-7/4*x+1/3").get().shiftLeft(2), "4*x^2-7*x+4/3");
-        aeq(read("x^2-7/4*x+1/3").get().shiftLeft(3), "8*x^2-14*x+8/3");
-        aeq(read("x^2-7/4*x+1/3").get().shiftLeft(4), "16*x^2-28*x+16/3");
-        aeq(read("x^2-7/4*x+1/3").get().shiftLeft(-1), "1/2*x^2-7/8*x+1/6");
-        aeq(read("x^2-7/4*x+1/3").get().shiftLeft(-2), "1/4*x^2-7/16*x+1/12");
-        aeq(read("x^2-7/4*x+1/3").get().shiftLeft(-3), "1/8*x^2-7/32*x+1/24");
-        aeq(read("x^2-7/4*x+1/3").get().shiftLeft(-4), "1/16*x^2-7/64*x+1/48");
-        aeq(read("-x^3-1").get().shiftLeft(0), "-x^3-1");
-        aeq(read("-x^3-1").get().shiftLeft(1), "-2*x^3-2");
-        aeq(read("-x^3-1").get().shiftLeft(2), "-4*x^3-4");
-        aeq(read("-x^3-1").get().shiftLeft(3), "-8*x^3-8");
-        aeq(read("-x^3-1").get().shiftLeft(4), "-16*x^3-16");
-        aeq(read("-x^3-1").get().shiftLeft(-1), "-1/2*x^3-1/2");
-        aeq(read("-x^3-1").get().shiftLeft(-2), "-1/4*x^3-1/4");
-        aeq(read("-x^3-1").get().shiftLeft(-3), "-1/8*x^3-1/8");
-        aeq(read("-x^3-1").get().shiftLeft(-4), "-1/16*x^3-1/16");
-        aeq(read("1/2*x^10").get().shiftLeft(0), "1/2*x^10");
-        aeq(read("1/2*x^10").get().shiftLeft(1), "x^10");
-        aeq(read("1/2*x^10").get().shiftLeft(2), "2*x^10");
-        aeq(read("1/2*x^10").get().shiftLeft(3), "4*x^10");
-        aeq(read("1/2*x^10").get().shiftLeft(4), "8*x^10");
-        aeq(read("1/2*x^10").get().shiftLeft(-1), "1/4*x^10");
-        aeq(read("1/2*x^10").get().shiftLeft(-2), "1/8*x^10");
-        aeq(read("1/2*x^10").get().shiftLeft(-3), "1/16*x^10");
-        aeq(read("1/2*x^10").get().shiftLeft(-4), "1/32*x^10");
+        shiftLeft_helper("0", 0, "0");
+        shiftLeft_helper("0", 1, "0");
+        shiftLeft_helper("0", 2, "0");
+        shiftLeft_helper("0", 3, "0");
+        shiftLeft_helper("0", 4, "0");
+        shiftLeft_helper("0", -1, "0");
+        shiftLeft_helper("0", -2, "0");
+        shiftLeft_helper("0", -3, "0");
+        shiftLeft_helper("0", -4, "0");
+
+        shiftLeft_helper("1", 0, "1");
+        shiftLeft_helper("1", 1, "2");
+        shiftLeft_helper("1", 2, "4");
+        shiftLeft_helper("1", 3, "8");
+        shiftLeft_helper("1", 4, "16");
+        shiftLeft_helper("1", -1, "1/2");
+        shiftLeft_helper("1", -2, "1/4");
+        shiftLeft_helper("1", -3, "1/8");
+        shiftLeft_helper("1", -4, "1/16");
+
+        shiftLeft_helper("x", 0, "x");
+        shiftLeft_helper("x", 1, "2*x");
+        shiftLeft_helper("x", 2, "4*x");
+        shiftLeft_helper("x", 3, "8*x");
+        shiftLeft_helper("x", 4, "16*x");
+        shiftLeft_helper("x", -1, "1/2*x");
+        shiftLeft_helper("x", -2, "1/4*x");
+        shiftLeft_helper("x", -3, "1/8*x");
+        shiftLeft_helper("x", -4, "1/16*x");
+
+        shiftLeft_helper("-4/3", 0, "-4/3");
+        shiftLeft_helper("-4/3", 1, "-8/3");
+        shiftLeft_helper("-4/3", 2, "-16/3");
+        shiftLeft_helper("-4/3", 3, "-32/3");
+        shiftLeft_helper("-4/3", 4, "-64/3");
+        shiftLeft_helper("-4/3", -1, "-2/3");
+        shiftLeft_helper("-4/3", -2, "-1/3");
+        shiftLeft_helper("-4/3", -3, "-1/6");
+        shiftLeft_helper("-4/3", -4, "-1/12");
+
+        shiftLeft_helper("x^2-7/4*x+1/3", 0, "x^2-7/4*x+1/3");
+        shiftLeft_helper("x^2-7/4*x+1/3", 1, "2*x^2-7/2*x+2/3");
+        shiftLeft_helper("x^2-7/4*x+1/3", 2, "4*x^2-7*x+4/3");
+        shiftLeft_helper("x^2-7/4*x+1/3", 3, "8*x^2-14*x+8/3");
+        shiftLeft_helper("x^2-7/4*x+1/3", 4, "16*x^2-28*x+16/3");
+        shiftLeft_helper("x^2-7/4*x+1/3", -1, "1/2*x^2-7/8*x+1/6");
+        shiftLeft_helper("x^2-7/4*x+1/3", -2, "1/4*x^2-7/16*x+1/12");
+        shiftLeft_helper("x^2-7/4*x+1/3", -3, "1/8*x^2-7/32*x+1/24");
+        shiftLeft_helper("x^2-7/4*x+1/3", -4, "1/16*x^2-7/64*x+1/48");
+
+        shiftLeft_helper("-x^3-1", 0, "-x^3-1");
+        shiftLeft_helper("-x^3-1", 1, "-2*x^3-2");
+        shiftLeft_helper("-x^3-1", 2, "-4*x^3-4");
+        shiftLeft_helper("-x^3-1", 3, "-8*x^3-8");
+        shiftLeft_helper("-x^3-1", 4, "-16*x^3-16");
+        shiftLeft_helper("-x^3-1", -1, "-1/2*x^3-1/2");
+        shiftLeft_helper("-x^3-1", -2, "-1/4*x^3-1/4");
+        shiftLeft_helper("-x^3-1", -3, "-1/8*x^3-1/8");
+        shiftLeft_helper("-x^3-1", -4, "-1/16*x^3-1/16");
+
+        shiftLeft_helper("1/2*x^10", 0, "1/2*x^10");
+        shiftLeft_helper("1/2*x^10", 1, "x^10");
+        shiftLeft_helper("1/2*x^10", 2, "2*x^10");
+        shiftLeft_helper("1/2*x^10", 3, "4*x^10");
+        shiftLeft_helper("1/2*x^10", 4, "8*x^10");
+        shiftLeft_helper("1/2*x^10", -1, "1/4*x^10");
+        shiftLeft_helper("1/2*x^10", -2, "1/8*x^10");
+        shiftLeft_helper("1/2*x^10", -3, "1/16*x^10");
+        shiftLeft_helper("1/2*x^10", -4, "1/32*x^10");
+    }
+
+    private static void shiftRight_helper(@NotNull String p, int bits, @NotNull String output) {
+        aeq(read(p).get().shiftRight(bits), output);
     }
 
     @Test
     public void testShiftRight() {
-        assertTrue(ZERO.shiftRight(0) == ZERO);
-        assertTrue(ZERO.shiftRight(1) == ZERO);
-        assertTrue(ZERO.shiftRight(2) == ZERO);
-        assertTrue(ZERO.shiftRight(3) == ZERO);
-        assertTrue(ZERO.shiftRight(4) == ZERO);
-        assertTrue(ZERO.shiftRight(-1) == ZERO);
-        assertTrue(ZERO.shiftRight(-2) == ZERO);
-        assertTrue(ZERO.shiftRight(-3) == ZERO);
-        assertTrue(ZERO.shiftRight(-4) == ZERO);
-        assertTrue(ONE.shiftRight(0) == ONE);
-        aeq(ONE.shiftRight(1), "1/2");
-        aeq(ONE.shiftRight(2), "1/4");
-        aeq(ONE.shiftRight(3), "1/8");
-        aeq(ONE.shiftRight(4), "1/16");
-        aeq(ONE.shiftRight(-1), "2");
-        aeq(ONE.shiftRight(-2), "4");
-        aeq(ONE.shiftRight(-3), "8");
-        aeq(ONE.shiftRight(-4), "16");
-        aeq(X.shiftRight(0), X);
-        aeq(X.shiftRight(1), "1/2*x");
-        aeq(X.shiftRight(2), "1/4*x");
-        aeq(X.shiftRight(3), "1/8*x");
-        aeq(X.shiftRight(4), "1/16*x");
-        aeq(X.shiftRight(-1), "2*x");
-        aeq(X.shiftRight(-2), "4*x");
-        aeq(X.shiftRight(-3), "8*x");
-        aeq(X.shiftRight(-4), "16*x");
-        aeq(read("-4/3").get().shiftRight(0), "-4/3");
-        aeq(read("-4/3").get().shiftRight(1), "-2/3");
-        aeq(read("-4/3").get().shiftRight(2), "-1/3");
-        aeq(read("-4/3").get().shiftRight(3), "-1/6");
-        aeq(read("-4/3").get().shiftRight(4), "-1/12");
-        aeq(read("-4/3").get().shiftRight(-1), "-8/3");
-        aeq(read("-4/3").get().shiftRight(-2), "-16/3");
-        aeq(read("-4/3").get().shiftRight(-3), "-32/3");
-        aeq(read("-4/3").get().shiftRight(-4), "-64/3");
-        aeq(read("x^2-7/4*x+1/3").get().shiftRight(0), "x^2-7/4*x+1/3");
-        aeq(read("x^2-7/4*x+1/3").get().shiftRight(1), "1/2*x^2-7/8*x+1/6");
-        aeq(read("x^2-7/4*x+1/3").get().shiftRight(2), "1/4*x^2-7/16*x+1/12");
-        aeq(read("x^2-7/4*x+1/3").get().shiftRight(3), "1/8*x^2-7/32*x+1/24");
-        aeq(read("x^2-7/4*x+1/3").get().shiftRight(4), "1/16*x^2-7/64*x+1/48");
-        aeq(read("x^2-7/4*x+1/3").get().shiftRight(-1), "2*x^2-7/2*x+2/3");
-        aeq(read("x^2-7/4*x+1/3").get().shiftRight(-2), "4*x^2-7*x+4/3");
-        aeq(read("x^2-7/4*x+1/3").get().shiftRight(-3), "8*x^2-14*x+8/3");
-        aeq(read("x^2-7/4*x+1/3").get().shiftRight(-4), "16*x^2-28*x+16/3");
-        aeq(read("-x^3-1").get().shiftRight(0), "-x^3-1");
-        aeq(read("-x^3-1").get().shiftRight(1), "-1/2*x^3-1/2");
-        aeq(read("-x^3-1").get().shiftRight(2), "-1/4*x^3-1/4");
-        aeq(read("-x^3-1").get().shiftRight(3), "-1/8*x^3-1/8");
-        aeq(read("-x^3-1").get().shiftRight(4), "-1/16*x^3-1/16");
-        aeq(read("-x^3-1").get().shiftRight(-1), "-2*x^3-2");
-        aeq(read("-x^3-1").get().shiftRight(-2), "-4*x^3-4");
-        aeq(read("-x^3-1").get().shiftRight(-3), "-8*x^3-8");
-        aeq(read("-x^3-1").get().shiftRight(-4), "-16*x^3-16");
-        aeq(read("1/2*x^10").get().shiftRight(0), "1/2*x^10");
-        aeq(read("1/2*x^10").get().shiftRight(1), "1/4*x^10");
-        aeq(read("1/2*x^10").get().shiftRight(2), "1/8*x^10");
-        aeq(read("1/2*x^10").get().shiftRight(3), "1/16*x^10");
-        aeq(read("1/2*x^10").get().shiftRight(4), "1/32*x^10");
-        aeq(read("1/2*x^10").get().shiftRight(-1), "x^10");
-        aeq(read("1/2*x^10").get().shiftRight(-2), "2*x^10");
-        aeq(read("1/2*x^10").get().shiftRight(-3), "4*x^10");
-        aeq(read("1/2*x^10").get().shiftRight(-4), "8*x^10");
+        shiftRight_helper("0", 0, "0");
+        shiftRight_helper("0", 1, "0");
+        shiftRight_helper("0", 2, "0");
+        shiftRight_helper("0", 3, "0");
+        shiftRight_helper("0", 4, "0");
+        shiftRight_helper("0", -1, "0");
+        shiftRight_helper("0", -2, "0");
+        shiftRight_helper("0", -3, "0");
+        shiftRight_helper("0", -4, "0");
+
+        shiftRight_helper("1", 0, "1");
+        shiftRight_helper("1", 1, "1/2");
+        shiftRight_helper("1", 2, "1/4");
+        shiftRight_helper("1", 3, "1/8");
+        shiftRight_helper("1", 4, "1/16");
+        shiftRight_helper("1", -1, "2");
+        shiftRight_helper("1", -2, "4");
+        shiftRight_helper("1", -3, "8");
+        shiftRight_helper("1", -4, "16");
+
+        shiftRight_helper("x", 0, "x");
+        shiftRight_helper("x", 1, "1/2*x");
+        shiftRight_helper("x", 2, "1/4*x");
+        shiftRight_helper("x", 3, "1/8*x");
+        shiftRight_helper("x", 4, "1/16*x");
+        shiftRight_helper("x", -1, "2*x");
+        shiftRight_helper("x", -2, "4*x");
+        shiftRight_helper("x", -3, "8*x");
+        shiftRight_helper("x", -4, "16*x");
+
+        shiftRight_helper("-4/3", 0, "-4/3");
+        shiftRight_helper("-4/3", 1, "-2/3");
+        shiftRight_helper("-4/3", 2, "-1/3");
+        shiftRight_helper("-4/3", 3, "-1/6");
+        shiftRight_helper("-4/3", 4, "-1/12");
+        shiftRight_helper("-4/3", -1, "-8/3");
+        shiftRight_helper("-4/3", -2, "-16/3");
+        shiftRight_helper("-4/3", -3, "-32/3");
+        shiftRight_helper("-4/3", -4, "-64/3");
+
+        shiftRight_helper("x^2-7/4*x+1/3", 0, "x^2-7/4*x+1/3");
+        shiftRight_helper("x^2-7/4*x+1/3", 1, "1/2*x^2-7/8*x+1/6");
+        shiftRight_helper("x^2-7/4*x+1/3", 2, "1/4*x^2-7/16*x+1/12");
+        shiftRight_helper("x^2-7/4*x+1/3", 3, "1/8*x^2-7/32*x+1/24");
+        shiftRight_helper("x^2-7/4*x+1/3", 4, "1/16*x^2-7/64*x+1/48");
+        shiftRight_helper("x^2-7/4*x+1/3", -1, "2*x^2-7/2*x+2/3");
+        shiftRight_helper("x^2-7/4*x+1/3", -2, "4*x^2-7*x+4/3");
+        shiftRight_helper("x^2-7/4*x+1/3", -3, "8*x^2-14*x+8/3");
+        shiftRight_helper("x^2-7/4*x+1/3", -4, "16*x^2-28*x+16/3");
+
+        shiftRight_helper("-x^3-1", 0, "-x^3-1");
+        shiftRight_helper("-x^3-1", 1, "-1/2*x^3-1/2");
+        shiftRight_helper("-x^3-1", 2, "-1/4*x^3-1/4");
+        shiftRight_helper("-x^3-1", 3, "-1/8*x^3-1/8");
+        shiftRight_helper("-x^3-1", 4, "-1/16*x^3-1/16");
+        shiftRight_helper("-x^3-1", -1, "-2*x^3-2");
+        shiftRight_helper("-x^3-1", -2, "-4*x^3-4");
+        shiftRight_helper("-x^3-1", -3, "-8*x^3-8");
+        shiftRight_helper("-x^3-1", -4, "-16*x^3-16");
+
+        shiftRight_helper("1/2*x^10", 0, "1/2*x^10");
+        shiftRight_helper("1/2*x^10", 1, "1/4*x^10");
+        shiftRight_helper("1/2*x^10", 2, "1/8*x^10");
+        shiftRight_helper("1/2*x^10", 3, "1/16*x^10");
+        shiftRight_helper("1/2*x^10", 4, "1/32*x^10");
+        shiftRight_helper("1/2*x^10", -1, "x^10");
+        shiftRight_helper("1/2*x^10", -2, "2*x^10");
+        shiftRight_helper("1/2*x^10", -3, "4*x^10");
+        shiftRight_helper("1/2*x^10", -4, "8*x^10");
     }
 
     @Test

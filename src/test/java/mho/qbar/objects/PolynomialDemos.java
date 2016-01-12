@@ -1,6 +1,5 @@
 package mho.qbar.objects;
 
-import mho.qbar.iterableProviders.QBarExhaustiveProvider;
 import mho.qbar.testing.QBarDemos;
 import mho.wheels.iterables.IterableUtils;
 import mho.wheels.ordering.Ordering;
@@ -139,13 +138,11 @@ public class PolynomialDemos extends QBarDemos {
     }
 
     private void demoShiftLeft() {
-        Iterable<Integer> is;
-        if (P instanceof QBarExhaustiveProvider) {
-            is = P.naturalIntegers();
-        } else {
-            is  = P.withScale(50).naturalIntegersGeometric();
-        }
-        for (Pair<Polynomial, Integer> p : take(LIMIT, P.pairs(P.polynomials(), is))) {
+        Iterable<Pair<Polynomial, Integer>> ps = P.pairs(
+                P.withScale(4).polynomials(),
+                P.withScale(4).naturalIntegersGeometric()
+        );
+        for (Pair<Polynomial, Integer> p : take(LIMIT, ps)) {
             System.out.println(p.a + " << " + p.b + " = " + p.a.shiftLeft(p.b));
         }
     }
