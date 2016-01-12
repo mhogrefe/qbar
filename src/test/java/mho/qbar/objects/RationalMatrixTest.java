@@ -463,6 +463,31 @@ public class RationalMatrixTest {
         negate_helper("[[1, 9, -13], [20, 5, -6]]", "[[-1, -9, 13], [-20, -5, 6]]");
     }
 
+    private static void subtract_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
+        aeq(read(a).get().subtract(read(b).get()), output);
+    }
+
+    private static void subtract_fail_helper(@NotNull String a, @NotNull String b) {
+        try {
+            read(a).get().subtract(read(b).get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testSubtract() {
+        subtract_helper("[]#0", "[]#0", "[]#0");
+        subtract_helper("[]#1", "[]#1", "[]#1");
+        subtract_helper("[]#3", "[]#3", "[]#3");
+        subtract_helper("[[]]", "[[]]", "[[]]");
+        subtract_helper("[[], [], []]", "[[], [], []]", "[[], [], []]");
+        subtract_helper("[[2/3]]", "[[4/5]]", "[[-2/15]]");
+        subtract_helper("[[1, 3], [1, 0], [1, 2]]", "[[0, 0], [7, 5], [2, 1]]", "[[1, 3], [-6, -5], [-1, 1]]");
+        subtract_fail_helper("[]#0", "[]#1");
+        subtract_fail_helper("[]#0", "[[]]");
+        subtract_fail_helper("[[2/3]]", "[[2/3], [4/5]]");
+    }
+
     @Test
     public void testEquals() {
         testEqualsHelper(

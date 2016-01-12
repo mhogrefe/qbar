@@ -529,6 +529,31 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
     }
 
     /**
+     * Returns the difference of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalMatrix}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>{@code this} and {@code that} must have the same height and the same width.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * Size is height({@code this})×length({@code this})
+     *
+     * @param that the {@code RationalMatrix} subtracted from {@code this}
+     * @return {@code this}–{@code that}
+     */
+    public @NotNull RationalMatrix subtract(@NotNull RationalMatrix that) {
+        int height = height();
+        if (width != that.width || height != that.height()) {
+            throw new ArithmeticException("this and that must have the same width and height. this: " +
+                    this + ", that: " + that);
+        }
+        if (height == 0 || width == 0) return this;
+        return new RationalMatrix(toList(zipWith(RationalVector::subtract, rows, that.rows)), width);
+    }
+
+    /**
      * Determines whether {@code this} is equal to {@code that}.
      *
      * <ul>

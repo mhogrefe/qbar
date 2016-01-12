@@ -50,6 +50,8 @@ public class RationalMatrixProperties extends QBarTestProperties {
         propertiesAugment();
         propertiesAdd();
         propertiesNegate();
+        propertiesSubtract();
+        compareImplementationsSubtract();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -622,7 +624,7 @@ public class RationalMatrixProperties extends QBarTestProperties {
             assertEquals(p, sum.height(), p.a.height());
             assertEquals(p, sum.width(), p.a.width());
             commutative(RationalMatrix::add, p);
-            //todo inverse(m -> m.add(p.b), (RationalMatrix m) -> m.subtract(p.b), p.a);
+            inverse(m -> m.add(p.b), (RationalMatrix m) -> m.subtract(p.b), p.a);
         }
 
         for (RationalMatrix m : take(LIMIT, P.rationalMatrices())) {
@@ -686,6 +688,97 @@ public class RationalMatrixProperties extends QBarTestProperties {
         for (RationalMatrix m : take(LIMIT, filterInfinite(n -> !n.isZero(), P.rationalMatrices()))) {
             assertNotEquals(m, m, m.negate());
         }
+    }
+
+    private static @NotNull RationalMatrix subtract_simplest(@NotNull RationalMatrix a, @NotNull RationalMatrix b) {
+        return a.add(b.negate());
+    }
+
+    private void propertiesSubtract() {
+        initialize("subtract(RationalMatrix)");
+        Iterable<Pair<RationalMatrix, RationalMatrix>> ps = P.chooseLogarithmicOrder(
+                map(
+                        q -> q.b,
+                        P.dependentPairsInfiniteSquareRootOrder(
+                                P.pairs(P.positiveIntegersGeometric()),
+                                p -> P.pairs(P.rationalMatrices(p.a, p.b))
+                        )
+                ),
+                P.choose(
+                        map(
+                                i -> {
+                                    RationalMatrix m = RationalMatrix.zero(0, i);
+                                    return new Pair<>(m, m);
+                                },
+                                P.naturalIntegersGeometric()
+                        ),
+                        map(
+                                i -> {
+                                    RationalMatrix m = RationalMatrix.zero(i, 0);
+                                    return new Pair<>(m, m);
+                                },
+                                P.positiveIntegersGeometric()
+                        )
+                )
+        );
+        for (Pair<RationalMatrix, RationalMatrix> p : take(LIMIT, ps)) {
+            RationalMatrix difference = p.a.subtract(p.b);
+            difference.validate();
+            assertEquals(p, difference, subtract_simplest(p.a, p.b));
+            assertEquals(p, difference.height(), p.a.height());
+            assertEquals(p, difference.width(), p.a.width());
+            antiCommutative(RationalMatrix::subtract, RationalMatrix::negate, p);
+            inverse(m -> m.subtract(p.b), (RationalMatrix m) -> m.add(p.b), p.a);
+        }
+
+        for (RationalMatrix m : take(LIMIT, P.rationalMatrices())) {
+            assertEquals(m, zero(m.height(), m.width()).subtract(m), m.negate());
+            fixedPoint(n -> n.subtract(zero(n.height(), n.width())), m);
+            assertTrue(m, m.subtract(m).isZero());
+        }
+
+        Iterable<Pair<RationalMatrix, RationalMatrix>> psFail = filterInfinite(
+                p -> p.a.height() != p.b.height() || p.a.width() != p.b.width(),
+                P.pairs(P.rationalMatrices())
+        );
+        for (Pair<RationalMatrix, RationalMatrix> p : take(LIMIT, psFail)) {
+            try {
+                p.a.subtract(p.b);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void compareImplementationsSubtract() {
+        Map<String, Function<Pair<RationalMatrix, RationalMatrix>, RationalMatrix>> functions = new LinkedHashMap<>();
+        functions.put("simplest", p -> subtract_simplest(p.a, p.b));
+        functions.put("standard", p -> p.a.subtract(p.b));
+        Iterable<Pair<RationalMatrix, RationalMatrix>> ps = P.chooseLogarithmicOrder(
+                map(
+                        q -> q.b,
+                        P.dependentPairsInfiniteSquareRootOrder(
+                                P.pairs(P.positiveIntegersGeometric()),
+                                p -> P.pairs(P.rationalMatrices(p.a, p.b))
+                        )
+                ),
+                P.choose(
+                        map(
+                                i -> {
+                                    RationalMatrix m = RationalMatrix.zero(0, i);
+                                    return new Pair<>(m, m);
+                                },
+                                P.naturalIntegersGeometric()
+                        ),
+                        map(
+                                i -> {
+                                    RationalMatrix m = RationalMatrix.zero(i, 0);
+                                    return new Pair<>(m, m);
+                                },
+                                P.positiveIntegersGeometric()
+                        )
+                )
+        );
+        compareImplementations("subtract(RationalMatrix)", take(LIMIT, ps), functions);
     }
 
     private void propertiesEquals() {
