@@ -722,16 +722,28 @@ public class PolynomialTest {
         product_fail_helper("[-17, null, -x^3-1, 3*x^10]");
     }
 
+    private static void delta_helper(@NotNull Iterable<Polynomial> input, @NotNull String output) {
+        aeqitLimit(TINY_LIMIT, delta(input), output);
+    }
+
+    private static void delta_helper(@NotNull String input, @NotNull String output) {
+        delta_helper(readPolynomialList(input), output);
+    }
+
+    private static void delta_fail_helper(@NotNull String input) {
+        try {
+            toList(delta(readPolynomialListWithNulls(input)));
+            fail();
+        } catch (IllegalArgumentException | NullPointerException ignored) {}
+    }
+
     @Test
     public void testDelta() {
-        aeqit(delta(readPolynomialList("[-17]")), "[]");
-        aeqit(delta(readPolynomialList("[-17, x^2-4*x+7]")), "[x^2-4*x+24]");
-        aeqit(
-                delta(readPolynomialList("[-17, x^2-4*x+7, -x^3-1, 3*x^10]")),
-                "[x^2-4*x+24, -x^3-x^2+4*x-8, 3*x^10+x^3+1]"
-        );
+        delta_helper("[-17]", "[]");
+        delta_helper("[-17, x^2-4*x+7]", "[x^2-4*x+24]");
+        delta_helper("[-17, x^2-4*x+7, -x^3-1, 3*x^10]", "[x^2-4*x+24, -x^3-x^2+4*x-8, 3*x^10+x^3+1]");
         Polynomial seed = read("x+1").get();
-        aeqitLimit(TINY_LIMIT, delta(map(seed::pow, rangeUp(0))),
+        delta_helper(map(seed::pow, rangeUp(0)),
                 "[x, x^2+x, x^3+2*x^2+x, x^4+3*x^3+3*x^2+x, x^5+4*x^4+6*x^3+4*x^2+x," +
                 " x^6+5*x^5+10*x^4+10*x^3+5*x^2+x, x^7+6*x^6+15*x^5+20*x^4+15*x^3+6*x^2+x," +
                 " x^8+7*x^7+21*x^6+35*x^5+35*x^4+21*x^3+7*x^2+x," +
@@ -754,14 +766,8 @@ public class PolynomialTest {
                 "43758*x^9+31824*x^8+18564*x^7+8568*x^6+3060*x^5+816*x^4+153*x^3+18*x^2+x," +
                 " x^20+19*x^19+171*x^18+969*x^17+3876*x^16+11628*x^15+27132*x^14+50388*x^13+75582*x^12+92378*x^11+" +
                 "92378*x^10+75582*x^9+50388*x^8+27132*x^7+11628*x^6+3876*x^5+969*x^4+171*x^3+19*x^2+x, ...]");
-        try {
-            delta(readPolynomialList("[]"));
-            fail();
-        } catch (IllegalArgumentException ignored) {}
-        try {
-            toList(delta(readPolynomialListWithNulls("[-17, null, -x^3-1, 3*x^10]")));
-            fail();
-        } catch (NullPointerException ignored) {}
+        delta_fail_helper("[]");
+        delta_fail_helper("[-17, null, -x^3-1, 3*x^10]");
     }
 
     @Test

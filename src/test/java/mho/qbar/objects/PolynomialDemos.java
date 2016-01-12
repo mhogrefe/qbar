@@ -1,7 +1,6 @@
 package mho.qbar.objects;
 
 import mho.qbar.testing.QBarDemos;
-import mho.wheels.iterables.IterableUtils;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
@@ -11,6 +10,7 @@ import java.util.List;
 
 import static mho.qbar.objects.Polynomial.*;
 import static mho.wheels.iterables.IterableUtils.*;
+import static mho.wheels.testing.Testing.*;
 
 @SuppressWarnings("UnusedDeclaration")
 public class PolynomialDemos extends QBarDemos {
@@ -162,9 +162,9 @@ public class PolynomialDemos extends QBarDemos {
     }
 
     private void demoDelta() {
-        for (List<Polynomial> ps : take(LIMIT, P.listsAtLeast(1, P.polynomials()))) {
+        for (List<Polynomial> ps : take(LIMIT, P.withScale(4).listsAtLeast(1, P.withScale(4).polynomials()))) {
             String listString = tail(init(ps.toString()));
-            System.out.println("Δ(" + listString + ") = " + IterableUtils.toString(delta(ps)));
+            System.out.println("Δ(" + listString + ") = " + its(delta(ps)));
         }
     }
 

@@ -2,7 +2,6 @@ package mho.qbar.objects;
 
 import mho.qbar.iterableProviders.QBarExhaustiveProvider;
 import mho.qbar.testing.QBarDemos;
-import mho.wheels.iterables.IterableUtils;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
@@ -12,6 +11,7 @@ import java.util.List;
 
 import static mho.qbar.objects.RationalPolynomial.*;
 import static mho.wheels.iterables.IterableUtils.*;
+import static mho.wheels.testing.Testing.*;
 
 @SuppressWarnings("UnusedDeclaration")
 public class RationalPolynomialDemos extends QBarDemos {
@@ -207,9 +207,10 @@ public class RationalPolynomialDemos extends QBarDemos {
     }
 
     private void demoDelta() {
-        for (List<RationalPolynomial> ps : take(LIMIT, P.listsAtLeast(1, P.rationalPolynomials()))) {
+        Iterable<List<RationalPolynomial>> pss = P.withScale(4).listsAtLeast(1, P.withScale(4).rationalPolynomials());
+        for (List<RationalPolynomial> ps : take(LIMIT, pss)) {
             String listString = tail(init(ps.toString()));
-            System.out.println("Δ(" + listString + ") = " + IterableUtils.toString(delta(ps)));
+            System.out.println("Δ(" + listString + ") = " + its(delta(ps)));
         }
     }
 

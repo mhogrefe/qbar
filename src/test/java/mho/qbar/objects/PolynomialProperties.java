@@ -828,9 +828,7 @@ public class PolynomialProperties extends QBarTestProperties {
     }
 
     private void propertiesDelta() {
-        initialize("");
-        System.out.println("\t\ttesting delta(Iterable<Polynomial>) properties...");
-
+        initialize("delta(Iterable<Polynomial>)");
         propertiesDeltaHelper(
                 LIMIT,
                 P.getWheelsProvider(),
@@ -848,7 +846,13 @@ public class PolynomialProperties extends QBarTestProperties {
         }
 
         for (List<BigInteger> is : take(LIMIT, P.listsAtLeast(1, P.bigIntegers()))) {
-            aeqit(is.toString(), delta(map(Polynomial::of, is)), map(Polynomial::of, deltaBigInteger(is)));
+            homomorphic(
+                    js -> toList(map(Polynomial::of, js)),
+                    js -> toList(map(Polynomial::of, js)),
+                    js -> toList(deltaBigInteger(js)),
+                    qs -> toList(delta(qs)),
+                    is
+            );
         }
     }
 

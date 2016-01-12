@@ -928,16 +928,28 @@ public class RationalPolynomialTest {
         } catch (NullPointerException ignored) {}
     }
 
+    private static void delta_helper(@NotNull Iterable<RationalPolynomial> input, @NotNull String output) {
+        aeqitLimit(TINY_LIMIT, delta(input), output);
+    }
+
+    private static void delta_helper(@NotNull String input, @NotNull String output) {
+        delta_helper(readRationalPolynomialList(input), output);
+    }
+
+    private static void delta_fail_helper(@NotNull String input) {
+        try {
+            toList(delta(readRationalPolynomialListWithNulls(input)));
+            fail();
+        } catch (IllegalArgumentException | NullPointerException ignored) {}
+    }
+
     @Test
     public void testDelta() {
-        aeqit(delta(readRationalPolynomialList("[-4/3]")), "[]");
-        aeqit(delta(readRationalPolynomialList("[-4/3, x^2-7/4*x+1/3]")), "[x^2-7/4*x+5/3]");
-        aeqit(
-                delta(readRationalPolynomialList("[-4/3, x^2-7/4*x+1/3, -x^3-1, 1/2*x^10]")),
-                "[x^2-7/4*x+5/3, -x^3-x^2+7/4*x-4/3, 1/2*x^10+x^3+1]"
-        );
+        delta_helper("[-4/3]", "[]");
+        delta_helper("[-4/3, x^2-7/4*x+1/3]", "[x^2-7/4*x+5/3]");
+        delta_helper("[-4/3, x^2-7/4*x+1/3, -x^3-1, 1/2*x^10]", "[x^2-7/4*x+5/3, -x^3-x^2+7/4*x-4/3, 1/2*x^10+x^3+1]");
         RationalPolynomial seed = read("x+1/2").get();
-        aeqitLimit(TINY_LIMIT, delta(map(seed::pow, rangeUp(0))),
+        delta_helper(map(seed::pow, rangeUp(0)),
                 "[x-1/2, x^2-1/4, x^3+1/2*x^2-1/4*x-1/8, x^4+x^3-1/4*x-1/16," +
                 " x^5+3/2*x^4+1/2*x^3-1/4*x^2-3/16*x-1/32, x^6+2*x^5+5/4*x^4-5/16*x^2-1/8*x-1/64," +
                 " x^7+5/2*x^6+9/4*x^5+5/8*x^4-5/16*x^3-9/32*x^2-5/64*x-1/128," +
@@ -968,14 +980,8 @@ public class RationalPolynomialTest {
                 "2907/16*x^16+969/4*x^15+969/4*x^14+2907/16*x^13+12597/128*x^12+4199/128*x^11-4199/512*x^9-" +
                 "12597/2048*x^8-2907/1024*x^7-969/1024*x^6-969/4096*x^5-2907/65536*x^4-399/65536*x^3-19/32768*x^2-" +
                 "9/262144*x-1/1048576, ...]");
-        try {
-            delta(readRationalPolynomialList("[]"));
-            fail();
-        } catch (IllegalArgumentException ignored) {}
-        try {
-            toList(delta(readRationalPolynomialListWithNulls("[-4/3, null, -x^3-1, 1/2*x^10]")));
-            fail();
-        } catch (NullPointerException ignored) {}
+        delta_fail_helper("[]");
+        delta_fail_helper("[-4/3, null, -x^3-1, 1/2*x^10]");
     }
 
     @Test

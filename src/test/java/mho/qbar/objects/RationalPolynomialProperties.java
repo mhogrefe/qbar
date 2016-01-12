@@ -1025,10 +1025,10 @@ public class RationalPolynomialProperties extends QBarTestProperties {
             );
         }
 
-        Iterable<List<RationalPolynomial>> ps = P.withScale(1).lists(P.withSecondaryScale(1).rationalPolynomials());
-        for (List<RationalPolynomial> xs : take(LIMIT, ps)) {
-            RationalPolynomial product = product(xs);
-            assertEquals(xs, product, product_alt(xs));
+        Iterable<List<RationalPolynomial>> pss = P.withScale(1).lists(P.withSecondaryScale(1).rationalPolynomials());
+        for (List<RationalPolynomial> ps : take(LIMIT, pss)) {
+            RationalPolynomial product = product(ps);
+            assertEquals(ps, product, product_alt(ps));
         }
 
         Iterable<Pair<List<RationalPolynomial>, Rational>> ps2 = P.pairs(
@@ -1062,9 +1062,7 @@ public class RationalPolynomialProperties extends QBarTestProperties {
     }
 
     private void propertiesDelta() {
-        initialize("");
-        System.out.println("\t\ttesting delta(Iterable<RationalPolynomial>) properties...");
-
+        initialize("delta(Iterable<RationalPolynomial>)");
         propertiesDeltaHelper(
                 LIMIT,
                 P.getWheelsProvider(),
@@ -1085,10 +1083,12 @@ public class RationalPolynomialProperties extends QBarTestProperties {
         }
 
         for (List<Rational> rs : take(LIMIT, P.listsAtLeast(1, P.rationals()))) {
-            aeqit(
-                    rs.toString(),
-                    delta(map(RationalPolynomial::of, rs)),
-                    map(RationalPolynomial::of, Rational.delta(rs))
+            homomorphic(
+                    ss -> toList(map(RationalPolynomial::of, ss)),
+                    ss -> toList(map(RationalPolynomial::of, ss)),
+                    ss -> toList(Rational.delta(ss)),
+                    qs -> toList(delta(qs)),
+                    rs
             );
         }
     }

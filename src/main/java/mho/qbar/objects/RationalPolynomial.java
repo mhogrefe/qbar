@@ -586,10 +586,12 @@ public final class RationalPolynomial implements
      * @return Δxs
      */
     public static @NotNull Iterable<RationalPolynomial> delta(@NotNull Iterable<RationalPolynomial> xs) {
-        if (isEmpty(xs))
-            throw new IllegalArgumentException("cannot get delta of empty Iterable");
-        if (head(xs) == null)
+        if (isEmpty(xs)) {
+            throw new IllegalArgumentException("xs must not be empty.");
+        }
+        if (head(xs) == null) {
             throw new NullPointerException();
+        }
         return adjacentPairsWith((x, y) -> y.subtract(x), xs);
     }
 
