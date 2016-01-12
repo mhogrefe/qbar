@@ -740,7 +740,7 @@ public class RationalMatrixProperties extends QBarTestProperties {
                 P.rationalMatrices(),
                 RationalMatrix::read,
                 RationalMatrix::findIn,
-                rp -> {}
+                RationalMatrix::validate
         );
     }
 

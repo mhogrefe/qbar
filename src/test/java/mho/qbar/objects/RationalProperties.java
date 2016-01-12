@@ -3503,7 +3503,14 @@ public class RationalProperties extends QBarTestProperties {
 
     private void propertiesFindIn() {
         initialize("findIn(String)");
-        propertiesFindInHelper(LIMIT, P.getWheelsProvider(), P.rationals(), Rational::read, Rational::findIn, r -> {});
+        propertiesFindInHelper(
+                LIMIT,
+                P.getWheelsProvider(),
+                P.rationals(),
+                Rational::read,
+                Rational::findIn,
+                Rational::validate
+        );
     }
 
     private void propertiesToString() {

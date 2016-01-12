@@ -193,7 +193,7 @@ public class RationalPolynomialDemos extends QBarDemos {
     }
 
     private void demoSum() {
-        for (List<RationalPolynomial> ps : take(LIMIT, P.lists(P.rationalPolynomials()))) {
+        for (List<RationalPolynomial> ps : take(LIMIT, P.withScale(4).lists(P.withScale(4).rationalPolynomials()))) {
             String listString = tail(init(ps.toString()));
             System.out.println("Σ(" + listString + ") = " + sum(ps));
         }

@@ -935,24 +935,22 @@ public class RationalPolynomialProperties extends QBarTestProperties {
     }
 
     private void propertiesSum() {
-        initialize("");
-        System.out.println("\t\ttesting sum(Iterable<RationalPolynomial>) properties...");
-
+        initialize("sum(Iterable<RationalPolynomial>)");
         propertiesFoldHelper(
                 LIMIT,
                 P.getWheelsProvider(),
                 P.rationalPolynomials(),
                 RationalPolynomial::add,
                 RationalPolynomial::sum,
-                rp -> {},
+                RationalPolynomial::validate,
                 true,
                 true
         );
 
         for (List<RationalPolynomial> ps : take(LIMIT, P.lists(P.rationalPolynomials()))) {
             RationalPolynomial sum = sum(ps);
-            assertTrue(ps, ps.isEmpty() || sum.degree() <= maximum(map(RationalPolynomial::degree, ps)));
             assertEquals(ps, sum, sum_simplest(ps));
+            assertTrue(ps, ps.isEmpty() || sum.degree() <= maximum(map(RationalPolynomial::degree, ps)));
         }
 
         Iterable<Pair<List<RationalPolynomial>, Rational>> ps = P.pairs(
@@ -964,29 +962,25 @@ public class RationalPolynomialProperties extends QBarTestProperties {
         }
 
         for (List<Rational> rs : take(LIMIT, P.lists(P.rationals()))) {
-            assertEquals(rs, sum(map(RationalPolynomial::of, rs)), of(Rational.sum(rs)));
+            homomorphic(
+                    ss -> toList(map(RationalPolynomial::of, ss)),
+                    RationalPolynomial::of,
+                    Rational::sum,
+                    RationalPolynomial::sum,
+                    rs
+            );
         }
     }
 
     private void compareImplementationsSum() {
-        initialize("");
-        System.out.println("\t\tcomparing sum(Iterable<RationalPolynomial) implementations...");
-
-        long totalTime = 0;
-        for (List<RationalPolynomial> ps : take(LIMIT, P.lists(P.rationalPolynomials()))) {
-            long time = System.nanoTime();
-            sum_simplest(ps);
-            totalTime += (System.nanoTime() - time);
-        }
-        System.out.println("\t\t\tsimplest: " + ((double) totalTime) / 1e9 + " s");
-
-        totalTime = 0;
-        for (List<RationalPolynomial> ps : take(LIMIT, P.lists(P.rationalPolynomials()))) {
-            long time = System.nanoTime();
-            sum(ps);
-            totalTime += (System.nanoTime() - time);
-        }
-        System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
+        Map<String, Function<List<RationalPolynomial>, RationalPolynomial>> functions = new LinkedHashMap<>();
+        functions.put("simplest", RationalPolynomialProperties::sum_simplest);
+        functions.put("standard", RationalPolynomial::sum);
+        compareImplementations(
+                "sum(Iterable<RationalPolynomial>)",
+                take(LIMIT, P.lists(P.rationalPolynomials())),
+                functions
+        );
     }
 
     private void propertiesProduct() {
@@ -999,7 +993,7 @@ public class RationalPolynomialProperties extends QBarTestProperties {
                 P.withScale(10).rationalPolynomials(),
                 RationalPolynomial::multiply,
                 RationalPolynomial::product,
-                rp -> {},
+                RationalPolynomial::validate,
                 true,
                 true
         );
@@ -1040,7 +1034,7 @@ public class RationalPolynomialProperties extends QBarTestProperties {
                 RationalPolynomial::negate,
                 RationalPolynomial::subtract,
                 RationalPolynomial::delta,
-                rp -> {}
+                RationalPolynomial::validate
         );
 
         Iterable<Pair<List<RationalPolynomial>, Rational>> ps = P.pairs(
@@ -1456,7 +1450,7 @@ public class RationalPolynomialProperties extends QBarTestProperties {
                 P.rationalPolynomials(),
                 s -> read(MEDIUM_LIMIT, s),
                 s -> findIn(MEDIUM_LIMIT, s),
-                rp -> {}
+                RationalPolynomial::validate
         );
     }
 

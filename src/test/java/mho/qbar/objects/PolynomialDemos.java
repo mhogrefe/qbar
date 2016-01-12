@@ -148,7 +148,7 @@ public class PolynomialDemos extends QBarDemos {
     }
 
     private void demoSum() {
-        for (List<Polynomial> ps : take(LIMIT, P.lists(P.polynomials()))) {
+        for (List<Polynomial> ps : take(LIMIT, P.withScale(4).lists(P.withScale(4).polynomials()))) {
             String listString = tail(init(ps.toString()));
             System.out.println("Σ(" + listString + ") = " + sum(ps));
         }

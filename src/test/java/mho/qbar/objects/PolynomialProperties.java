@@ -713,55 +713,45 @@ public class PolynomialProperties extends QBarTestProperties {
     }
 
     private void propertiesSum() {
-        initialize("");
-        System.out.println("\t\ttesting sum(Iterable<Polynomial>) properties...");
-
+        initialize("sum(Iterable<Polynomial>)");
         propertiesFoldHelper(
                 LIMIT,
                 P.getWheelsProvider(),
                 P.polynomials(),
                 Polynomial::add,
                 Polynomial::sum,
-                p -> {},
+                Polynomial::validate,
                 true,
                 true
         );
 
         for (List<Polynomial> ps : take(LIMIT, P.lists(P.polynomials()))) {
             Polynomial sum = sum(ps);
-            assertTrue(ps, ps.isEmpty() || sum.degree() <= maximum(map(Polynomial::degree, ps)));
+            sum.validate();
             assertEquals(ps, sum, sum_simplest(ps));
+            assertTrue(ps, ps.isEmpty() || sum.degree() <= maximum(map(Polynomial::degree, ps)));
         }
 
-        Iterable<Pair<List<Polynomial>, BigInteger>> ps = P.pairs(P.lists(P.polynomials()), P.bigIntegers());
-        for (Pair<List<Polynomial>, BigInteger> p : take(LIMIT, ps)) {
+        for (Pair<List<Polynomial>, BigInteger> p : take(LIMIT, P.pairs(P.lists(P.polynomials()), P.bigIntegers()))) {
             assertEquals(p, sum(p.a).apply(p.b), sumBigInteger(map(q -> q.apply(p.b), p.a)));
         }
 
         for (List<BigInteger> is : take(LIMIT, P.lists(P.bigIntegers()))) {
-            assertEquals(is, sum(map(Polynomial::of, is)), of(sumBigInteger(is)));
+            homomorphic(
+                    js -> toList(map(Polynomial::of, js)),
+                    Polynomial::of,
+                    IterableUtils::sumBigInteger,
+                    Polynomial::sum,
+                    is
+            );
         }
     }
 
     private void compareImplementationsSum() {
-        initialize("");
-        System.out.println("\t\tcomparing sum(Iterable<Polynomial) implementations...");
-
-        long totalTime = 0;
-        for (List<Polynomial> ps : take(LIMIT, P.lists(P.polynomials()))) {
-            long time = System.nanoTime();
-            sum_simplest(ps);
-            totalTime += (System.nanoTime() - time);
-        }
-        System.out.println("\t\t\tsimplest: " + ((double) totalTime) / 1e9 + " s");
-
-        totalTime = 0;
-        for (List<Polynomial> ps : take(LIMIT, P.lists(P.polynomials()))) {
-            long time = System.nanoTime();
-            sum(ps);
-            totalTime += (System.nanoTime() - time);
-        }
-        System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
+        Map<String, Function<List<Polynomial>, Polynomial>> functions = new LinkedHashMap<>();
+        functions.put("simplest", PolynomialProperties::sum_simplest);
+        functions.put("standard", Polynomial::sum);
+        compareImplementations("sum(Iterable<Polynomial>)", take(LIMIT, P.lists(P.polynomials())), functions);
     }
 
     private void propertiesProduct() {
@@ -774,7 +764,7 @@ public class PolynomialProperties extends QBarTestProperties {
                 P.polynomials(),
                 Polynomial::multiply,
                 Polynomial::product,
-                p -> {},
+                Polynomial::validate,
                 true,
                 true
         );
@@ -809,7 +799,7 @@ public class PolynomialProperties extends QBarTestProperties {
                 Polynomial::negate,
                 Polynomial::subtract,
                 Polynomial::delta,
-                p -> {}
+                Polynomial::validate
         );
 
         Iterable<Pair<List<Polynomial>, BigInteger>> ps = P.pairs(P.listsAtLeast(1, P.polynomials()), P.bigIntegers());
@@ -1098,7 +1088,7 @@ public class PolynomialProperties extends QBarTestProperties {
                 P.polynomials(),
                 s -> read(MEDIUM_LIMIT, s),
                 s -> findIn(MEDIUM_LIMIT, s),
-                p -> {}
+                Polynomial::validate
         );
     }
 

@@ -1286,7 +1286,7 @@ public class RationalVectorProperties extends QBarTestProperties {
                 P.rationalVectors(),
                 RationalVector::read,
                 RationalVector::findIn,
-                rp -> {}
+                RationalVector::validate
         );
     }
 

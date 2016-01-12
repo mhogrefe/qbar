@@ -1,7 +1,6 @@
 package mho.qbar.objects;
 
 import mho.wheels.io.Readers;
-import mho.wheels.numberUtils.IntegerUtils;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
@@ -683,16 +682,24 @@ public class PolynomialTest {
         shiftLeft_fail_helper("-17", -1);
     }
 
-    @Test
-    public void testSum() {
-        assertTrue(sum(readPolynomialList("[]")) == ZERO);
-        assertTrue(sum(readPolynomialList("[1]")) == ONE);
-        aeq(sum(readPolynomialList("[-17]")), "-17");
-        aeq(sum(readPolynomialList("[-17, x^2-4*x+7, -x^3-1, 3*x^10]")), "3*x^10-x^3+x^2-4*x-11");
+    private static void sum_helper(@NotNull String input, @NotNull String output) {
+        aeq(sum(readPolynomialList(input)), output);
+    }
+
+    private static void sum_fail_helper(@NotNull String input) {
         try {
-            sum(readPolynomialListWithNulls("[-17, null, -x^3-1, 3*x^10]"));
+            sum(readPolynomialListWithNulls(input));
             fail();
         } catch (NullPointerException ignored) {}
+    }
+
+    @Test
+    public void testSum() {
+        sum_helper("[]", "0");
+        sum_helper("[1]", "1");
+        sum_helper("[-17]", "-17");
+        sum_helper("[-17, x^2-4*x+7, -x^3-1, 3*x^10]", "3*x^10-x^3+x^2-4*x-11");
+        sum_fail_helper("[-17, null, -x^3-1, 3*x^10]");
     }
 
     @Test

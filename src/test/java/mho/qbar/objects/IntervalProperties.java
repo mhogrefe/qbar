@@ -1556,7 +1556,7 @@ public class IntervalProperties extends QBarTestProperties {
                 P.intervals(),
                 Interval::add,
                 Interval::sum,
-                a -> {},
+                Interval::validate,
                 true,
                 true
         );
@@ -1589,7 +1589,7 @@ public class IntervalProperties extends QBarTestProperties {
                 P.intervals(),
                 Interval::multiply,
                 Interval::product,
-                a -> {},
+                Interval::validate,
                 true,
                 true
         );
@@ -1621,7 +1621,7 @@ public class IntervalProperties extends QBarTestProperties {
                 Interval::negate,
                 Interval::subtract,
                 Interval::delta,
-                a -> {}
+                Interval::validate
         );
 
         for (List<Interval> as : take(LIMIT, P.listsAtLeast(1, P.intervals()))) {
@@ -1896,7 +1896,14 @@ public class IntervalProperties extends QBarTestProperties {
 
     private void propertiesFindIn() {
         initialize("findIn(String)");
-        propertiesFindInHelper(LIMIT, P.getWheelsProvider(), P.intervals(), Interval::read, Interval::findIn, a -> {});
+        propertiesFindInHelper(
+                LIMIT,
+                P.getWheelsProvider(),
+                P.intervals(),
+                Interval::read,
+                Interval::findIn,
+                Interval::validate
+        );
     }
 
     private void propertiesToString() {

@@ -893,19 +893,24 @@ public class RationalPolynomialTest {
         shiftRight_helper("1/2*x^10", -4, "8*x^10");
     }
 
-    @Test
-    public void testSum() {
-        assertTrue(sum(readRationalPolynomialList("[]")) == ZERO);
-        assertTrue(sum(readRationalPolynomialList("[1]")) == ONE);
-        aeq(sum(readRationalPolynomialList("[-4/3]")), "-4/3");
-        aeq(
-                sum(readRationalPolynomialList("[-4/3, x^2-7/4*x+1/3, -x^3-1, 1/2*x^10]")),
-                "1/2*x^10-x^3+x^2-7/4*x-2"
-        );
+    private static void sum_helper(@NotNull String input, @NotNull String output) {
+        aeq(sum(readRationalPolynomialList(input)), output);
+    }
+
+    private static void sum_fail_helper(@NotNull String input) {
         try {
-            sum(readRationalPolynomialListWithNulls("[-4/3, null, -x^3-1, 1/2*x^10]"));
+            sum(readRationalPolynomialListWithNulls(input));
             fail();
         } catch (NullPointerException ignored) {}
+    }
+
+    @Test
+    public void testSum() {
+        sum_helper("[]", "0");
+        sum_helper("[1]", "1");
+        sum_helper("[-4/3]", "-4/3");
+        sum_helper("[-4/3, x^2-7/4*x+1/3, -x^3-1, 1/2*x^10]", "1/2*x^10-x^3+x^2-7/4*x-2");
+        sum_fail_helper("[-4/3, null, -x^3-1, 1/2*x^10]");
     }
 
     @Test
