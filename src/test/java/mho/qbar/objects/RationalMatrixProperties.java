@@ -516,6 +516,7 @@ public class RationalMatrixProperties extends QBarTestProperties {
             concatenated.validate();
             assertEquals(p, concatenated.height(), p.a.height() + p.b.height());
             assertEquals(p, concatenated.width(), p.a.width());
+            assertEquals(p, concatenated, p.a.transpose().augment(p.b.transpose()).transpose());
         }
 
         for (RationalMatrix m : take(LIMIT, P.rationalMatrices())) {
@@ -568,6 +569,7 @@ public class RationalMatrixProperties extends QBarTestProperties {
             augmented.validate();
             assertEquals(p, augmented.height(), p.a.height());
             assertEquals(p, augmented.width(), p.a.width() + p.b.width());
+            assertEquals(p, augmented, p.a.transpose().concat(p.b.transpose()).transpose());
         }
 
         for (RationalMatrix m : take(LIMIT, P.rationalMatrices())) {

@@ -1234,6 +1234,9 @@ public final class Interval implements Comparable<Interval> {
         if (any(x -> x == null, list)) {
             throw new NullPointerException();
         }
+        if (any(x -> x.equals(ZERO), xs)) {
+            return ZERO;
+        }
         return foldl(Interval::multiply, ONE, list);
     }
 

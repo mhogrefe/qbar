@@ -561,8 +561,12 @@ public final class RationalPolynomial implements
      * @return Πxs
      */
     public static @NotNull RationalPolynomial product(@NotNull Iterable<RationalPolynomial> xs) {
-        if (any(x -> x == null, xs))
+        if (any(x -> x == null, xs)) {
             throw new NullPointerException();
+        }
+        if (any(x -> x == ZERO, xs)) {
+            return ZERO;
+        }
         return foldl(RationalPolynomial::multiply, ONE, xs);
     }
 

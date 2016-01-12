@@ -1663,6 +1663,9 @@ public final class Rational implements Comparable<Rational> {
         if (any(x -> x == null, xs)) {
             throw new NullPointerException();
         }
+        if (any(x -> x == ZERO, xs)) {
+            return ZERO;
+        }
         List<Rational> denominatorSorted = sort(
                 (x, y) -> {
                     Ordering ordering = compare(x.getDenominator(), y.getDenominator());

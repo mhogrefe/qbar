@@ -2520,6 +2520,9 @@ public class RationalProperties extends QBarTestProperties {
     }
 
     private static @NotNull Rational product_simplest(@NotNull Iterable<Rational> xs) {
+        if (any(x -> x == ZERO, xs)) {
+            return ZERO;
+        }
         return foldl(Rational::multiply, ONE, xs);
     }
 
