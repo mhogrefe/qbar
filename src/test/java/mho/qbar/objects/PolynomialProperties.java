@@ -872,50 +872,50 @@ public class PolynomialProperties extends QBarTestProperties {
         return product(replicate(p, a));
     }
 
-    //todo clean
     private void propertiesPow() {
-        initialize("");
-        System.out.println("\t\ttesting pow(int) properties...");
-
-        Iterable<Pair<Polynomial, Integer>> ps1 = P.pairsLogarithmicOrder(
-                P.polynomials(),
-                P.withScale(5).naturalIntegersGeometric()
+        initialize("pow(int)");
+        Iterable<Pair<Polynomial, Integer>> ps = P.pairsLogarithmicOrder(
+                P.withScale(4).polynomials(),
+                P.withScale(4).naturalIntegersGeometric()
         );
-        for (Pair<Polynomial, Integer> p : take(LIMIT, ps1)) {
+        for (Pair<Polynomial, Integer> p : take(LIMIT, ps)) {
             Polynomial q = p.a.pow(p.b);
             q.validate();
             assertTrue(p, p.a == ZERO || q.degree() == p.a.degree() * p.b);
             assertEquals(p, q, pow_simplest(p.a, p.b));
         }
 
-        Iterable<Triple<Polynomial, Integer, BigInteger>> ts1 = P.triples(
-                P.polynomials(),
-                P.withScale(5).naturalIntegersGeometric(),
+        Iterable<Triple<Polynomial, Integer, BigInteger>> ts = P.triples(
+                P.withScale(4).polynomials(),
+                P.withScale(4).naturalIntegersGeometric(),
                 P.bigIntegers()
         );
-        for (Triple<Polynomial, Integer, BigInteger> t : take(LIMIT, ts1)) {
+        for (Triple<Polynomial, Integer, BigInteger> t : take(LIMIT, ts)) {
             assertEquals(t, t.a.pow(t.b).apply(t.c), t.a.apply(t.c).pow(t.b));
         }
 
-        Iterable<Pair<BigInteger, Integer>> ps2 = P.pairs(P.bigIntegers(), P.withScale(5).naturalIntegersGeometric());
+        Iterable<Pair<BigInteger, Integer>> ps2 = P.pairsLogarithmicOrder(
+                P.bigIntegers(),
+                P.withScale(4).naturalIntegersGeometric()
+        );
         for (Pair<BigInteger, Integer> p : take(LIMIT, ps2)) {
-            assertEquals(p, of(p.a).pow(p.b), of(p.a.pow(p.b)));
+            homomorphic(Polynomial::of, Function.identity(), Polynomial::of, BigInteger::pow, Polynomial::pow, p);
         }
 
-        for (int i : take(LIMIT, P.withScale(20).positiveIntegersGeometric())) {
-            assertTrue(i, ZERO.pow(i) == ZERO);
+        for (int i : take(LIMIT, P.withScale(4).positiveIntegersGeometric())) {
+            fixedPoint(p -> p.pow(i), ZERO);
         }
 
-        for (Polynomial p : take(LIMIT, P.polynomials())) {
+        for (Polynomial p : take(LIMIT, P.withScale(4).polynomials())) {
             assertTrue(p, p.pow(0) == ONE);
-            assertEquals(p, p.pow(1), p);
+            fixedPoint(q -> q.pow(1), p);
             assertEquals(p, p.pow(2), p.multiply(p));
         }
 
         Iterable<Triple<Polynomial, Integer, Integer>> ts2 = P.triples(
-                P.withScale(5).polynomials(),
-                P.withScale(2).naturalIntegersGeometric(),
-                P.withScale(2).naturalIntegersGeometric()
+                P.withScale(4).withSecondaryScale(4).polynomials(),
+                P.withScale(4).naturalIntegersGeometric(),
+                P.withScale(4).naturalIntegersGeometric()
         );
         for (Triple<Polynomial, Integer, Integer> t : take(LIMIT, ts2)) {
             Polynomial expression1 = t.a.pow(t.b).multiply(t.a.pow(t.c));
@@ -927,45 +927,33 @@ public class PolynomialProperties extends QBarTestProperties {
         }
 
         Iterable<Triple<Polynomial, Polynomial, Integer>> ts3 = P.triples(
-                P.polynomials(),
-                P.polynomials(),
-                P.withScale(2).naturalIntegersGeometric()
+                P.withScale(4).polynomials(),
+                P.withScale(4).polynomials(),
+                P.withScale(4).naturalIntegersGeometric()
         );
         for (Triple<Polynomial, Polynomial, Integer> t : take(LIMIT, ts3)) {
             Polynomial expression1 = t.a.multiply(t.b).pow(t.c);
             Polynomial expression2 = t.a.pow(t.c).multiply(t.b.pow(t.c));
             assertEquals(t, expression1, expression2);
         }
+
+        for (Pair<Polynomial, Integer> p : take(LIMIT, P.pairs(P.polynomials(), P.negativeIntegers()))) {
+            try {
+                p.a.pow(p.b);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
+        }
     }
 
     private void compareImplementationsPow() {
-        initialize("");
-        System.out.println("\t\tcomparing pow(int) implementations...");
-
-        long totalTime = 0;
-        Iterable<Integer> exps;
-        Iterable<Pair<Polynomial, Integer>> ps;
-        if (P instanceof QBarExhaustiveProvider) {
-            exps = P.naturalIntegers();
-            ps = ((QBarExhaustiveProvider) P).pairsLogarithmicOrder(P.polynomials(), exps);
-        } else {
-            exps = P.withScale(5).naturalIntegersGeometric();
-            ps = P.pairs(P.polynomials(), exps);
-        }
-        for (Pair<Polynomial, Integer> p : take(LIMIT, ps)) {
-            long time = System.nanoTime();
-            pow_simplest(p.a, p.b);
-            totalTime += (System.nanoTime() - time);
-        }
-        System.out.println("\t\t\tsimplest: " + ((double) totalTime) / 1e9 + " s");
-
-        totalTime = 0;
-        for (Pair<Polynomial, Integer> p : take(LIMIT, ps)) {
-            long time = System.nanoTime();
-            p.a.pow(p.b);
-            totalTime += (System.nanoTime() - time);
-        }
-        System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
+        Map<String, Function<Pair<Polynomial, Integer>, Polynomial>> functions = new LinkedHashMap<>();
+        functions.put("simplest", p -> pow_simplest(p.a, p.b));
+        functions.put("standard", p -> p.a.pow(p.b));
+        Iterable<Pair<Polynomial, Integer>> ps = P.pairsLogarithmicOrder(
+                P.withScale(4).polynomials(),
+                P.withScale(4).naturalIntegersGeometric()
+        );
+        compareImplementations("pow(int)", take(LIMIT, ps), functions);
     }
 
     private static @NotNull Polynomial substitute_naive(@NotNull Polynomial a, @NotNull Polynomial b) {

@@ -562,8 +562,9 @@ public final class Polynomial implements
      * @return {@code this}<sup>{@code p}</sup>
      */
     public @NotNull Polynomial pow(int p) {
-        if (p < 0)
-            throw new ArithmeticException("cannot raise to a negative power");
+        if (p < 0) {
+            throw new ArithmeticException("p cannot be negative. Invalid p: " + p);
+        }
         if (p == 0) return ONE;
         if (p == 1) return this;
         Polynomial result = ONE;

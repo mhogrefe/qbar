@@ -214,6 +214,16 @@ public class RationalPolynomialDemos extends QBarDemos {
         }
     }
 
+    private void demoPow() {
+        Iterable<Pair<RationalPolynomial, Integer>> ps = P.pairsLogarithmicOrder(
+                P.withScale(4).withSecondaryScale(4).rationalPolynomials(),
+                P.withScale(4).naturalIntegersGeometric()
+        );
+        for (Pair<RationalPolynomial, Integer> p : take(LIMIT, ps)) {
+            System.out.println("(" + p.a + ") ^ " + p.b + " = " + p.a.pow(p.b));
+        }
+    }
+
     private void demoIsMonic() {
         for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
             System.out.println(p + " is " + (p.isMonic() ? "" : "not ") + "monic");
@@ -239,21 +249,6 @@ public class RationalPolynomialDemos extends QBarDemos {
         );
         for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, ps)) {
             System.out.println("(" + p.a + ") / (" + p.b + ") = " + p.a.divide(p.b));
-        }
-    }
-
-    private void demoPow() {
-        Iterable<Pair<RationalPolynomial, Integer>> ps;
-        if (P instanceof QBarExhaustiveProvider) {
-            ps = P.pairsLogarithmicOrder(P.rationalPolynomials(), P.naturalIntegers());
-        } else {
-            ps = P.pairs(
-                    P.withScale(10).rationalPolynomials(),
-                    P.withScale(5).naturalIntegersGeometric()
-            );
-        }
-        for (Pair<RationalPolynomial, Integer> p : take(LIMIT, ps)) {
-            System.out.println("(" + p.a + ") ^ " + p.b + " = " + p.a.pow(p.b));
         }
     }
 

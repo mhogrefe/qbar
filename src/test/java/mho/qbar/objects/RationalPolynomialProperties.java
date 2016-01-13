@@ -61,8 +61,8 @@ public class RationalPolynomialProperties extends QBarTestProperties {
         propertiesProduct();
         compareImplementationsProduct();
         propertiesDelta();
-//        propertiesPow();
-//        compareImplementationsPow();
+        propertiesPow();
+        compareImplementationsPow();
         propertiesSubstitute();
         compareImplementationsSubstitute();
         propertiesIsMonic();
@@ -1110,21 +1110,11 @@ public class RationalPolynomialProperties extends QBarTestProperties {
     }
 
     private void propertiesPow() {
-        initialize("");
-        System.out.println("\t\ttesting pow(int) properties...");
-
-        Iterable<Integer> exps;
-        Iterable<RationalPolynomial> rps;
-        Iterable<Pair<RationalPolynomial, Integer>> ps;
-        if (P instanceof QBarExhaustiveProvider) {
-            rps = P.rationalPolynomials();
-            exps = P.naturalIntegers();
-            ps = P.pairsLogarithmicOrder(rps, exps);
-        } else {
-            rps = P.withScale(10).rationalPolynomials();
-            exps = P.withScale(5).naturalIntegersGeometric();
-            ps = P.pairs(rps, exps);
-        }
+        initialize("pow(int)");
+        Iterable<Pair<RationalPolynomial, Integer>> ps = P.pairsLogarithmicOrder(
+                P.withScale(4).withSecondaryScale(4).rationalPolynomials(),
+                P.withScale(4).naturalIntegersGeometric()
+        );
         for (Pair<RationalPolynomial, Integer> p : take(LIMIT, ps)) {
             RationalPolynomial q = p.a.pow(p.b);
             q.validate();
@@ -1132,81 +1122,84 @@ public class RationalPolynomialProperties extends QBarTestProperties {
             assertEquals(p, q, pow_simplest(p.a, p.b));
         }
 
-        Iterable<Triple<RationalPolynomial, Integer, Rational>> ts1 = P.triples(rps, exps, P.rationals());
-        for (Triple<RationalPolynomial, Integer, Rational> t : take(LIMIT, ts1)) {
+        Iterable<Triple<RationalPolynomial, Integer, Rational>> ts = P.triples(
+                P.withScale(3).withSecondaryScale(1).rationalPolynomials(),
+                P.withScale(1).naturalIntegersGeometric(),
+                P.rationals()
+        );
+        for (Triple<RationalPolynomial, Integer, Rational> t : take(LIMIT, ts)) {
             assertEquals(t, t.a.pow(t.b).apply(t.c), t.a.apply(t.c).pow(t.b));
         }
 
-        for (Pair<Rational, Integer> p : take(LIMIT, P.pairs(P.rationals(), exps))) {
-            assertEquals(p, of(p.a).pow(p.b), of(p.a.pow(p.b)));
+        Iterable<Pair<Rational, Integer>> ps2 = P.pairsLogarithmicOrder(
+                P.rationals(),
+                P.withScale(4).naturalIntegersGeometric()
+        );
+        for (Pair<Rational, Integer> p : take(LIMIT, ps2)) {
+            homomorphic(
+                    RationalPolynomial::of,
+                    Function.identity(),
+                    RationalPolynomial::of,
+                    Rational::pow,
+                    RationalPolynomial::pow,
+                    p
+            );
         }
 
-        Iterable<Integer> pexps;
-        if (P instanceof QBarExhaustiveProvider) {
-            pexps = P.positiveIntegers();
-        } else {
-            pexps = P.withScale(20).positiveIntegersGeometric();
-        }
-        for (int i : take(LIMIT, pexps)) {
-            assertTrue(i, ZERO.pow(i) == ZERO);
+        for (int i : take(LIMIT, P.withScale(4).positiveIntegersGeometric())) {
+            fixedPoint(p -> p.pow(i), ZERO);
         }
 
-        for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
+        for (RationalPolynomial p : take(LIMIT, P.withScale(4).withSecondaryScale(4).rationalPolynomials())) {
             assertTrue(p, p.pow(0) == ONE);
-            assertEquals(p, p.pow(1), p);
+            fixedPoint(q -> q.pow(1), p);
             assertEquals(p, p.pow(2), p.multiply(p));
         }
 
-            //todo fix hanging
-//        if (P instanceof QBarRandomProvider) {
-//            exps = P.withScale(2).naturalIntegersGeometric();
-//        }
-//        Iterable<Triple<RationalPolynomial, Integer, Integer>> ts2 = P.triples(rps, exps, exps);
-//        for (Triple<RationalPolynomial, Integer, Integer> t : take(LIMIT, ts2)) {
-//            System.out.println(t);
-//            RationalPolynomial expression1 = t.a.pow(t.b).multiply(t.a.pow(t.c));
-//            RationalPolynomial expression2 = t.a.pow(t.b + t.c);
-//            assertEquals(t, expression1, expression2);
-//            RationalPolynomial expression5 = t.a.pow(t.b).pow(t.c);
-//            RationalPolynomial expression6 = t.a.pow(t.b * t.c);
-//            assertEquals(t, expression5, expression6);
-//        }
-//
-//        for (Triple<RationalPolynomial, RationalPolynomial, Integer> t : take(LIMIT, P.triples(rps, rps, exps))) {
-//            RationalPolynomial expression1 = t.a.multiply(t.b).pow(t.c);
-//            RationalPolynomial expression2 = t.a.pow(t.c).multiply(t.b.pow(t.c));
-//            assertEquals(t, expression1, expression2);
-//        }
+        Iterable<Triple<RationalPolynomial, Integer, Integer>> ts2 = P.triples(
+                P.withScale(3).withSecondaryScale(1).rationalPolynomials(),
+                P.withScale(1).naturalIntegersGeometric(),
+                P.withScale(1).naturalIntegersGeometric()
+        );
+        for (Triple<RationalPolynomial, Integer, Integer> t : take(LIMIT, ts2)) {
+            RationalPolynomial expression1 = t.a.pow(t.b).multiply(t.a.pow(t.c));
+            RationalPolynomial expression2 = t.a.pow(t.b + t.c);
+            assertEquals(t, expression1, expression2);
+            RationalPolynomial expression5 = t.a.pow(t.b).pow(t.c);
+            RationalPolynomial expression6 = t.a.pow(t.b * t.c);
+            assertEquals(t, expression5, expression6);
+        }
+
+        Iterable<Triple<RationalPolynomial, RationalPolynomial, Integer>> ts3 = P.triples(
+                P.withScale(3).withSecondaryScale(1).rationalPolynomials(),
+                P.withScale(3).withSecondaryScale(1).rationalPolynomials(),
+                P.withScale(1).naturalIntegersGeometric()
+        );
+        for (Triple<RationalPolynomial, RationalPolynomial, Integer> t : take(LIMIT, ts3)) {
+            System.out.println(t);
+            RationalPolynomial expression1 = t.a.multiply(t.b).pow(t.c);
+            RationalPolynomial expression2 = t.a.pow(t.c).multiply(t.b.pow(t.c));
+            assertEquals(t, expression1, expression2);
+        }
+
+        Iterable<Pair<RationalPolynomial, Integer>> psFail = P.pairs(P.rationalPolynomials(), P.negativeIntegers());
+        for (Pair<RationalPolynomial, Integer> p : take(LIMIT, psFail)) {
+            try {
+                p.a.pow(p.b);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
+        }
     }
 
     private void compareImplementationsPow() {
-        initialize("");
-        System.out.println("\t\tcomparing pow(int) implementations...");
-
-        long totalTime = 0;
-        Iterable<Integer> exps;
-        Iterable<Pair<RationalPolynomial, Integer>> ps;
-        if (P instanceof QBarExhaustiveProvider) {
-            exps = P.naturalIntegers();
-            ps = P.pairsLogarithmicOrder(P.rationalPolynomials(), exps);
-        } else {
-            exps = P.withScale(5).naturalIntegersGeometric();
-            ps = P.pairs(P.withScale(10).rationalPolynomials(), exps);
-        }
-        for (Pair<RationalPolynomial, Integer> p : take(LIMIT, ps)) {
-            long time = System.nanoTime();
-            pow_simplest(p.a, p.b);
-            totalTime += (System.nanoTime() - time);
-        }
-        System.out.println("\t\t\tsimplest: " + ((double) totalTime) / 1e9 + " s");
-
-        totalTime = 0;
-        for (Pair<RationalPolynomial, Integer> p : take(LIMIT, ps)) {
-            long time = System.nanoTime();
-            p.a.pow(p.b);
-            totalTime += (System.nanoTime() - time);
-        }
-        System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
+        Map<String, Function<Pair<RationalPolynomial, Integer>, RationalPolynomial>> functions = new LinkedHashMap<>();
+        functions.put("simplest", p -> pow_simplest(p.a, p.b));
+        functions.put("standard", p -> p.a.pow(p.b));
+        Iterable<Pair<RationalPolynomial, Integer>> ps = P.pairsLogarithmicOrder(
+                P.withScale(4).rationalPolynomials(),
+                P.withScale(4).naturalIntegersGeometric()
+        );
+        compareImplementations("pow(int)", take(LIMIT, ps), functions);
     }
 
     private static @NotNull RationalPolynomial substitute_naive(

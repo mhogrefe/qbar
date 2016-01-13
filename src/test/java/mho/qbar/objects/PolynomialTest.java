@@ -770,38 +770,59 @@ public class PolynomialTest {
         delta_fail_helper("[-17, null, -x^3-1, 3*x^10]");
     }
 
+    private static void pow_helper(@NotNull String p, int exponent, @NotNull String output) {
+        aeq(read(p).get().pow(exponent), output);
+    }
+
+    private static void pow_fail_helper(@NotNull String p, int exponent) {
+        try {
+            read(p).get().pow(exponent);
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
     @Test
     public void testPow() {
-        aeq(read("x+1").get().pow(0), "1");
-        aeq(read("x+1").get().pow(1), "x+1");
-        aeq(read("x+1").get().pow(2), "x^2+2*x+1");
-        aeq(read("x+1").get().pow(3), "x^3+3*x^2+3*x+1");
-        aeq(read("x+1").get().pow(4), "x^4+4*x^3+6*x^2+4*x+1");
-        aeq(read("x+1").get().pow(10), "x^10+10*x^9+45*x^8+120*x^7+210*x^6+252*x^5+210*x^4+120*x^3+45*x^2+10*x+1");
-        assertTrue(ZERO.pow(0) == ONE);
-        assertTrue(ZERO.pow(1) == ZERO);
-        assertTrue(ZERO.pow(2) == ZERO);
-        assertTrue(ZERO.pow(3) == ZERO);
-        assertTrue(ONE.pow(0) == ONE);
-        assertTrue(ONE.pow(1) == ONE);
-        assertTrue(ONE.pow(2) == ONE);
-        assertTrue(ONE.pow(3) == ONE);
-        assertTrue(read("-17").get().pow(0) == ONE);
-        aeq(read("-17").get().pow(1), "-17");
-        aeq(read("-17").get().pow(2), "289");
-        aeq(read("-17").get().pow(3), "-4913");
-        assertTrue(read("x^2-4*x+7").get().pow(0) == ONE);
-        aeq(read("x^2-4*x+7").get().pow(1), "x^2-4*x+7");
-        aeq(read("x^2-4*x+7").get().pow(2), "x^4-8*x^3+30*x^2-56*x+49");
-        aeq(read("x^2-4*x+7").get().pow(3), "x^6-12*x^5+69*x^4-232*x^3+483*x^2-588*x+343");
-        assertTrue(read("-x^3-1").get().pow(0) == ONE);
-        aeq(read("-x^3-1").get().pow(1), "-x^3-1");
-        aeq(read("-x^3-1").get().pow(2), "x^6+2*x^3+1");
-        aeq(read("-x^3-1").get().pow(3), "-x^9-3*x^6-3*x^3-1");
-        assertTrue(read("3*x^10").get().pow(0) == ONE);
-        aeq(read("3*x^10").get().pow(1), "3*x^10");
-        aeq(read("3*x^10").get().pow(2), "9*x^20");
-        aeq(read("3*x^10").get().pow(3), "27*x^30");
+        pow_helper("x+1", 0, "1");
+        pow_helper("x+1", 1, "x+1");
+        pow_helper("x+1", 2, "x^2+2*x+1");
+        pow_helper("x+1", 3, "x^3+3*x^2+3*x+1");
+        pow_helper("x+1", 4, "x^4+4*x^3+6*x^2+4*x+1");
+        pow_helper("x+1", 10, "x^10+10*x^9+45*x^8+120*x^7+210*x^6+252*x^5+210*x^4+120*x^3+45*x^2+10*x+1");
+
+        pow_helper("0", 0, "1");
+        pow_helper("0", 1, "0");
+        pow_helper("0", 2, "0");
+        pow_helper("0", 3, "0");
+
+        pow_helper("1", 0, "1");
+        pow_helper("1", 1, "1");
+        pow_helper("1", 2, "1");
+        pow_helper("1", 3, "1");
+
+        pow_helper("-17", 0, "1");
+        pow_helper("-17", 1, "-17");
+        pow_helper("-17", 2, "289");
+        pow_helper("-17", 3, "-4913");
+
+        pow_helper("x^2-4*x+7", 0, "1");
+        pow_helper("x^2-4*x+7", 1, "x^2-4*x+7");
+        pow_helper("x^2-4*x+7", 2, "x^4-8*x^3+30*x^2-56*x+49");
+        pow_helper("x^2-4*x+7", 3, "x^6-12*x^5+69*x^4-232*x^3+483*x^2-588*x+343");
+
+        pow_helper("-x^3-1", 0, "1");
+        pow_helper("-x^3-1", 1, "-x^3-1");
+        pow_helper("-x^3-1", 2, "x^6+2*x^3+1");
+        pow_helper("-x^3-1", 3, "-x^9-3*x^6-3*x^3-1");
+
+        pow_helper("3*x^10", 0, "1");
+        pow_helper("3*x^10", 1, "3*x^10");
+        pow_helper("3*x^10", 2, "9*x^20");
+        pow_helper("3*x^10", 3, "27*x^30");
+
+        pow_fail_helper("3*x^10", -1);
+        pow_fail_helper("0", -1);
+        pow_fail_helper("1", -1);
     }
 
     @Test

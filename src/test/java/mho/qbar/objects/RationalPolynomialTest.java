@@ -984,6 +984,61 @@ public class RationalPolynomialTest {
         delta_fail_helper("[-4/3, null, -x^3-1, 1/2*x^10]");
     }
 
+    private static void pow_helper(@NotNull String p, int exponent, @NotNull String output) {
+        aeq(read(p).get().pow(exponent), output);
+    }
+
+    private static void pow_fail_helper(@NotNull String p, int exponent) {
+        try {
+            read(p).get().pow(exponent);
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testPow() {
+        pow_helper("x+1", 0, "1");
+        pow_helper("x+1", 1, "x+1");
+        pow_helper("x+1", 2, "x^2+2*x+1");
+        pow_helper("x+1", 3, "x^3+3*x^2+3*x+1");
+        pow_helper("x+1", 4, "x^4+4*x^3+6*x^2+4*x+1");
+        pow_helper("x+1", 10, "x^10+10*x^9+45*x^8+120*x^7+210*x^6+252*x^5+210*x^4+120*x^3+45*x^2+10*x+1");
+
+        pow_helper("0", 0, "1");
+        pow_helper("0", 1, "0");
+        pow_helper("0", 2, "0");
+        pow_helper("0", 3, "0");
+
+        pow_helper("1", 0, "1");
+        pow_helper("1", 1, "1");
+        pow_helper("1", 2, "1");
+        pow_helper("1", 3, "1");
+
+        pow_helper("-4/3", 0, "1");
+        pow_helper("-4/3", 1, "-4/3");
+        pow_helper("-4/3", 2, "16/9");
+        pow_helper("-4/3", 3, "-64/27");
+
+        pow_helper("x^2-7/4*x+1/3", 0, "1");
+        pow_helper("x^2-7/4*x+1/3", 1, "x^2-7/4*x+1/3");
+        pow_helper("x^2-7/4*x+1/3", 2, "x^4-7/2*x^3+179/48*x^2-7/6*x+1/9");
+        pow_helper("x^2-7/4*x+1/3", 3, "x^6-21/4*x^5+163/16*x^4-567/64*x^3+163/48*x^2-7/12*x+1/27");
+
+        pow_helper("-x^3-1", 0, "1");
+        pow_helper("-x^3-1", 1, "-x^3-1");
+        pow_helper("-x^3-1", 2, "x^6+2*x^3+1");
+        pow_helper("-x^3-1", 3, "-x^9-3*x^6-3*x^3-1");
+
+        pow_helper("1/2*x^10", 0, "1");
+        pow_helper("1/2*x^10", 1, "1/2*x^10");
+        pow_helper("1/2*x^10", 2, "1/4*x^20");
+        pow_helper("1/2*x^10", 3, "1/8*x^30");
+
+        pow_fail_helper("1/2*x^10", -1);
+        pow_fail_helper("0", -1);
+        pow_fail_helper("1", -1);
+    }
+
     @Test
     public void testIsMonic() {
         assertFalse(ZERO.isMonic());
@@ -1085,40 +1140,6 @@ public class RationalPolynomialTest {
             read("x^2-7/4*x+1/3").get().divide(ZERO);
             fail();
         } catch (ArithmeticException ignored) {}
-    }
-
-    @Test
-    public void testPow() {
-        aeq(read("x+1").get().pow(0), "1");
-        aeq(read("x+1").get().pow(1), "x+1");
-        aeq(read("x+1").get().pow(2), "x^2+2*x+1");
-        aeq(read("x+1").get().pow(3), "x^3+3*x^2+3*x+1");
-        aeq(read("x+1").get().pow(4), "x^4+4*x^3+6*x^2+4*x+1");
-        aeq(read("x+1").get().pow(10), "x^10+10*x^9+45*x^8+120*x^7+210*x^6+252*x^5+210*x^4+120*x^3+45*x^2+10*x+1");
-        assertTrue(ZERO.pow(0) == ONE);
-        assertTrue(ZERO.pow(1) == ZERO);
-        assertTrue(ZERO.pow(2) == ZERO);
-        assertTrue(ZERO.pow(3) == ZERO);
-        assertTrue(ONE.pow(0) == ONE);
-        assertTrue(ONE.pow(1) == ONE);
-        assertTrue(ONE.pow(2) == ONE);
-        assertTrue(ONE.pow(3) == ONE);
-        assertTrue(read("-4/3").get().pow(0) == ONE);
-        aeq(read("-4/3").get().pow(1), "-4/3");
-        aeq(read("-4/3").get().pow(2), "16/9");
-        aeq(read("-4/3").get().pow(3), "-64/27");
-        assertTrue(read("x^2-7/4*x+1/3").get().pow(0) == ONE);
-        aeq(read("x^2-7/4*x+1/3").get().pow(1), "x^2-7/4*x+1/3");
-        aeq(read("x^2-7/4*x+1/3").get().pow(2), "x^4-7/2*x^3+179/48*x^2-7/6*x+1/9");
-        aeq(read("x^2-7/4*x+1/3").get().pow(3), "x^6-21/4*x^5+163/16*x^4-567/64*x^3+163/48*x^2-7/12*x+1/27");
-        assertTrue(read("-x^3-1").get().pow(0) == ONE);
-        aeq(read("-x^3-1").get().pow(1), "-x^3-1");
-        aeq(read("-x^3-1").get().pow(2), "x^6+2*x^3+1");
-        aeq(read("-x^3-1").get().pow(3), "-x^9-3*x^6-3*x^3-1");
-        assertTrue(read("1/2*x^10").get().pow(0) == ONE);
-        aeq(read("1/2*x^10").get().pow(1), "1/2*x^10");
-        aeq(read("1/2*x^10").get().pow(2), "1/4*x^20");
-        aeq(read("1/2*x^10").get().pow(3), "1/8*x^30");
     }
 
     @Test

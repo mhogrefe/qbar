@@ -170,8 +170,8 @@ public class PolynomialDemos extends QBarDemos {
 
     private void demoPow() {
         Iterable<Pair<Polynomial, Integer>> ps = P.pairsLogarithmicOrder(
-                P.polynomials(),
-                P.withScale(5).naturalIntegersGeometric()
+                P.withScale(4).polynomials(),
+                P.withScale(4).naturalIntegersGeometric()
         );
         for (Pair<Polynomial, Integer> p : take(LIMIT, ps)) {
             System.out.println("(" + p.a + ") ^ " + p.b + " = " + p.a.pow(p.b));
