@@ -1,6 +1,5 @@
 package mho.qbar.objects;
 
-import mho.qbar.iterableProviders.QBarExhaustiveProvider;
 import mho.qbar.testing.QBarDemos;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
@@ -224,6 +223,15 @@ public class RationalPolynomialDemos extends QBarDemos {
         }
     }
 
+    private void demoSubstitute() {
+        Iterable<Pair<RationalPolynomial, RationalPolynomial>> ps = P.pairs(
+                P.withScale(4).withSecondaryScale(4).rationalPolynomials()
+        );
+        for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, ps)) {
+            System.out.println("substitute(" + p.a + ", " + p.b + ") = " + p.a.substitute(p.b));
+        }
+    }
+
     private void demoIsMonic() {
         for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
             System.out.println(p + " is " + (p.isMonic() ? "" : "not ") + "monic");
@@ -249,18 +257,6 @@ public class RationalPolynomialDemos extends QBarDemos {
         );
         for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, ps)) {
             System.out.println("(" + p.a + ") / (" + p.b + ") = " + p.a.divide(p.b));
-        }
-    }
-
-    private void demoSubstitute() {
-        Iterable<RationalPolynomial> ps;
-        if (P instanceof QBarExhaustiveProvider) {
-            ps = P.rationalPolynomials();
-        } else {
-            ps = P.withScale(6).rationalPolynomials();
-        }
-        for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, P.pairs(ps))) {
-            System.out.println("substitute(" + p.a + ", " + p.b + ") = " + p.a.substitute(p.b));
         }
     }
 

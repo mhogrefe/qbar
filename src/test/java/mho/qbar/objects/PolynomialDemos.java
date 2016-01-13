@@ -179,7 +179,8 @@ public class PolynomialDemos extends QBarDemos {
     }
 
     private void demoSubstitute() {
-        for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(P.withScale(16).polynomials()))) {
+        Iterable<Pair<Polynomial, Polynomial>> ps = P.pairs(P.withScale(4).withSecondaryScale(4).polynomials());
+        for (Pair<Polynomial, Polynomial> p : take(LIMIT, ps)) {
             System.out.println("substitute(" + p.a + ", " + p.b + ") = " + p.a.substitute(p.b));
         }
     }

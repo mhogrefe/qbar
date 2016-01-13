@@ -825,62 +825,72 @@ public class PolynomialTest {
         pow_fail_helper("1", -1);
     }
 
+    private static void substitute_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
+        aeq(read(a).get().substitute(read(b).get()), output);
+    }
+
     @Test
     public void testSubstitute() {
-        assertTrue(ZERO.substitute(ZERO) == ZERO);
-        assertTrue(ZERO.substitute(ONE) == ZERO);
-        assertTrue(ZERO.substitute(X) == ZERO);
-        assertTrue(ZERO.substitute(read("-17").get()) == ZERO);
-        assertTrue(ZERO.substitute(read("x^2-4*x+7").get()) == ZERO);
-        assertTrue(ZERO.substitute(read("-x^3-1").get()) == ZERO);
-        assertTrue(ZERO.substitute(read("3*x^10").get()) == ZERO);
-        assertTrue(ONE.substitute(ZERO) == ONE);
-        assertTrue(ONE.substitute(ONE) == ONE);
-        assertTrue(ONE.substitute(X) == ONE);
-        assertTrue(ONE.substitute(read("-17").get()) == ONE);
-        assertTrue(ONE.substitute(read("x^2-4*x+7").get()) == ONE);
-        assertTrue(ONE.substitute(read("-x^3-1").get()) == ONE);
-        assertTrue(ONE.substitute(read("3*x^10").get()) == ONE);
-        assertTrue(X.substitute(ZERO) == ZERO);
-        assertTrue(X.substitute(ONE) == ONE);
-        aeq(X.substitute(X), "x");
-        aeq(X.substitute(read("-17").get()), "-17");
-        aeq(X.substitute(read("x^2-4*x+7").get()), "x^2-4*x+7");
-        aeq(X.substitute(read("-x^3-1").get()), "-x^3-1");
-        aeq(X.substitute(read("3*x^10").get()), "3*x^10");
-        aeq(read("-17").get().substitute(ZERO), "-17");
-        aeq(read("-17").get().substitute(ONE), "-17");
-        aeq(read("-17").get().substitute(X), "-17");
-        aeq(read("-17").get().substitute(read("-17").get()), "-17");
-        aeq(read("-17").get().substitute(read("x^2-4*x+7").get()), "-17");
-        aeq(read("-17").get().substitute(read("-x^3-1").get()), "-17");
-        aeq(read("-17").get().substitute(read("3*x^10").get()), "-17");
-        aeq(read("x^2-4*x+7").get().substitute(ZERO), "7");
-        aeq(read("x^2-4*x+7").get().substitute(ONE), "4");
-        aeq(read("x^2-4*x+7").get().substitute(X), "x^2-4*x+7");
-        aeq(read("x^2-4*x+7").get().substitute(read("-17").get()), "364");
-        aeq(read("x^2-4*x+7").get().substitute(read("x^2-4*x+7").get()), "x^4-8*x^3+26*x^2-40*x+28");
-        aeq(read("x^2-4*x+7").get().substitute(read("-x^3-1").get()), "x^6+6*x^3+12");
-        aeq(read("x^2-4*x+7").get().substitute(read("3*x^10").get()), "9*x^20-12*x^10+7");
-        aeq(read("-x^3-1").get().substitute(ZERO), "-1");
-        aeq(read("-x^3-1").get().substitute(ONE), "-2");
-        aeq(read("-x^3-1").get().substitute(X), "-x^3-1");
-        aeq(read("-x^3-1").get().substitute(read("-17").get()), "4912");
-        aeq(read("-x^3-1").get().substitute(read("x^2-4*x+7").get()), "-x^6+12*x^5-69*x^4+232*x^3-483*x^2+588*x-344");
-        aeq(read("-x^3-1").get().substitute(read("-x^3-1").get()), "x^9+3*x^6+3*x^3");
-        aeq(read("-x^3-1").get().substitute(read("3*x^10").get()), "-27*x^30-1");
-        assertTrue(read("3*x^10").get().substitute(ZERO) == ZERO);
-        aeq(read("3*x^10").get().substitute(ONE), "3");
-        aeq(read("3*x^10").get().substitute(X), "3*x^10");
-        aeq(read("3*x^10").get().substitute(read("-17").get()), "6047981701347");
-        aeq(read("3*x^10").get().substitute(read("x^2-4*x+7").get()),
+        substitute_helper("0", "0", "0");
+        substitute_helper("0", "1", "0");
+        substitute_helper("0", "x", "0");
+        substitute_helper("0", "-17", "0");
+        substitute_helper("0", "x^2-4*x+7", "0");
+        substitute_helper("0", "-x^3-1", "0");
+        substitute_helper("0", "3*x^10", "0");
+
+        substitute_helper("1", "0", "1");
+        substitute_helper("1", "1", "1");
+        substitute_helper("1", "x", "1");
+        substitute_helper("1", "-17", "1");
+        substitute_helper("1", "x^2-4*x+7", "1");
+        substitute_helper("1", "-x^3-1", "1");
+        substitute_helper("1", "3*x^10", "1");
+
+        substitute_helper("x", "0", "0");
+        substitute_helper("x", "1", "1");
+        substitute_helper("x", "x", "x");
+        substitute_helper("x", "-17", "-17");
+        substitute_helper("x", "x^2-4*x+7", "x^2-4*x+7");
+        substitute_helper("x", "-x^3-1", "-x^3-1");
+        substitute_helper("x", "3*x^10", "3*x^10");
+
+        substitute_helper("-17", "0", "-17");
+        substitute_helper("-17", "1", "-17");
+        substitute_helper("-17", "x", "-17");
+        substitute_helper("-17", "-17", "-17");
+        substitute_helper("-17", "x^2-4*x+7", "-17");
+        substitute_helper("-17", "-x^3-1", "-17");
+        substitute_helper("-17", "3*x^10", "-17");
+
+        substitute_helper("x^2-4*x+7", "0", "7");
+        substitute_helper("x^2-4*x+7", "1", "4");
+        substitute_helper("x^2-4*x+7", "x", "x^2-4*x+7");
+        substitute_helper("x^2-4*x+7", "-17", "364");
+        substitute_helper("x^2-4*x+7", "x^2-4*x+7", "x^4-8*x^3+26*x^2-40*x+28");
+        substitute_helper("x^2-4*x+7", "-x^3-1", "x^6+6*x^3+12");
+        substitute_helper("x^2-4*x+7", "3*x^10", "9*x^20-12*x^10+7");
+
+        substitute_helper("-x^3-1", "0", "-1");
+        substitute_helper("-x^3-1", "1", "-2");
+        substitute_helper("-x^3-1", "x", "-x^3-1");
+        substitute_helper("-x^3-1", "-17", "4912");
+        substitute_helper("-x^3-1", "x^2-4*x+7", "-x^6+12*x^5-69*x^4+232*x^3-483*x^2+588*x-344");
+        substitute_helper("-x^3-1", "-x^3-1", "x^9+3*x^6+3*x^3");
+        substitute_helper("-x^3-1", "3*x^10", "-27*x^30-1");
+
+        substitute_helper("3*x^10", "0", "0");
+        substitute_helper("3*x^10", "1", "3");
+        substitute_helper("3*x^10", "x", "3*x^10");
+        substitute_helper("3*x^10", "-17", "6047981701347");
+        substitute_helper("3*x^10", "x^2-4*x+7",
                 "3*x^20-120*x^19+2370*x^18-30600*x^17+288855*x^16-2114784*x^15+12441240*x^14-60158880*x^13" +
                 "+242643510*x^12-823956240*x^11+2367787980*x^10-5767693680*x^9+11889531990*x^8-20634495840*x^7" +
                 "+29871417240*x^6-35543174688*x^5+33983501895*x^4-25200415800*x^3+13662578370*x^2-4842432840*x" +
                 "+847425747");
-        aeq(read("3*x^10").get().substitute(read("-x^3-1").get()),
+        substitute_helper("3*x^10", "-x^3-1",
                 "3*x^30+30*x^27+135*x^24+360*x^21+630*x^18+756*x^15+630*x^12+360*x^9+135*x^6+30*x^3+3");
-        aeq(read("3*x^10").get().substitute(read("3*x^10").get()), "177147*x^100");
+        substitute_helper("3*x^10", "3*x^10", "177147*x^100");
     }
 
     private static void differentiateHelper(@NotNull String x, @NotNull String output) {

@@ -1,6 +1,5 @@
 package mho.qbar.objects;
 
-import mho.qbar.iterableProviders.QBarExhaustiveProvider;
 import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.testing.QBarTestProperties;
 import mho.wheels.iterables.IterableUtils;
@@ -961,56 +960,43 @@ public class PolynomialProperties extends QBarTestProperties {
     }
 
     private void propertiesSubstitute() {
-        initialize("");
-        System.out.println("\t\ttesting substitute(Polynomial) properties...");
-
-        Iterable<Polynomial> ps = P.withScale(10).polynomials();
-        for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(ps))) {
+        initialize("substitute(Polynomial)");
+        for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(P.polynomials()))) {
             Polynomial substituted = p.a.substitute(p.b);
             substituted.validate();
             assertTrue(p, p.b == ZERO || substituted == ZERO || substituted.degree() == p.a.degree() * p.b.degree());
         }
 
-        for (Triple<Polynomial, Polynomial, BigInteger> t : take(LIMIT, P.triples(ps, ps, P.bigIntegers()))) {
+        Iterable<Triple<Polynomial, Polynomial, BigInteger>> ts = P.triples(
+                P.polynomials(),
+                P.polynomials(),
+                P.bigIntegers()
+        );
+        for (Triple<Polynomial, Polynomial, BigInteger> t : take(LIMIT, ts)) {
             assertEquals(t, t.a.substitute(t.b).apply(t.c), t.a.apply(t.b.apply(t.c)));
         }
 
         for (Pair<BigInteger, Polynomial> p : take(LIMIT, P.pairs(P.bigIntegers(), P.polynomials()))) {
-            assertEquals(p, of(p.a).substitute(p.b), of(p.a));
+            Polynomial q = of(p.a);
+            assertEquals(p, q.substitute(p.b), q);
         }
 
         for (Polynomial p : take(LIMIT, P.polynomials())) {
             assertEquals(p, p.substitute(ZERO), p == ZERO ? ZERO : of(p.coefficient(0)));
-            assertEquals(p, p.substitute(ONE), of(IterableUtils.sumBigInteger(p)));
-            assertEquals(p, p.substitute(X), p);
+            assertEquals(p, p.substitute(ONE), of(sumBigInteger(p)));
+            fixedPoint(q -> q.substitute(X), p);
         }
     }
 
     private void compareImplementationsSubstitute() {
-        initialize("");
-        System.out.println("\t\tcomparing substitute(Polynomial) implementations...");
-
-        long totalTime = 0;
-        Iterable<Polynomial> ps;
-        if (P instanceof QBarExhaustiveProvider) {
-            ps = P.polynomials();
-        } else {
-            ps = P.withScale(16).polynomials();
-        }
-        for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(ps))) {
-            long time = System.nanoTime();
-            substitute_naive(p.a, p.b);
-            totalTime += (System.nanoTime() - time);
-        }
-        System.out.println("\t\t\tnaïve: " + ((double) totalTime) / 1e9 + " s");
-
-        totalTime = 0;
-        for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(ps))) {
-            long time = System.nanoTime();
-            p.a.substitute(p.b);
-            totalTime += (System.nanoTime() - time);
-        }
-        System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
+        Map<String, Function<Pair<Polynomial, Polynomial>, Polynomial>> functions = new LinkedHashMap<>();
+        functions.put("naïve", p -> substitute_naive(p.a, p.b));
+        functions.put("standard", p -> p.a.substitute(p.b));
+        compareImplementations(
+                "substitute(Polynomial)",
+                take(LIMIT, P.pairs(P.withScale(4).polynomials())),
+                functions
+        );
     }
 
     private void propertiesIsMonic() {
