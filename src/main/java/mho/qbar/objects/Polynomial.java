@@ -627,8 +627,7 @@ public final class Polynomial implements
      * @return whether {@code this} is monic
      */
     public boolean isMonic() {
-        Optional<BigInteger> leading = leading();
-        return leading.isPresent() && leading.get().equals(BigInteger.ONE);
+        return !coefficients.isEmpty() && last(coefficients).equals(BigInteger.ONE);
     }
 
     /**

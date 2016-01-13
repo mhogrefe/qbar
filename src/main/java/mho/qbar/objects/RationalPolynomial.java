@@ -685,15 +685,14 @@ public final class RationalPolynomial implements
      * @return whether {@code this} is monic
      */
     public boolean isMonic() {
-        Optional<Rational> leading = leading();
-        return leading.isPresent() && leading.get() == Rational.ONE;
+        return !coefficients.isEmpty() && last(coefficients) == Rational.ONE;
     }
 
     /**
      * Divides {@code this} by a constant to make it monic. {@code this} cannot be 0.
      *
      * <ul>
-     *  <li>{@code this} must be nonzero.</li>
+     *  <li>{@code this} cannot be zero.</li>
      *  <li>The result is a monic {@code RationalPolynomial}.</li>
      * </ul>
      *
@@ -703,8 +702,9 @@ public final class RationalPolynomial implements
      */
     public @NotNull RationalPolynomial makeMonic() {
         Optional<Rational> leading = leading();
-        if (!leading.isPresent())
-            throw new ArithmeticException("cannot make 0 monic");
+        if (!leading.isPresent()) {
+            throw new ArithmeticException("this cannot be zero.");
+        }
         return leading.get() == Rational.ONE ? this : divide(leading.get());
     }
 
@@ -743,6 +743,7 @@ public final class RationalPolynomial implements
      * @param that the {@code RationalPolynomial} {@code this} is divided by
      * @return ({@code this}/{@code that}, {@code this}%{code that})
      */
+    @SuppressWarnings("JavaDoc")
     public @NotNull Pair<RationalPolynomial, RationalPolynomial> divide(@NotNull RationalPolynomial that) {
         if (that == ZERO)
             throw new ArithmeticException("division by zero");

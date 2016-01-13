@@ -1014,15 +1014,11 @@ public class PolynomialProperties extends QBarTestProperties {
     }
 
     private void propertiesIsMonic() {
-        initialize("");
-        System.out.println("\t\ttesting isMonic() properties...");
-
+        initialize("isMonic()");
         for (Polynomial p : take(LIMIT, P.polynomials())) {
-            p.isMonic();
-        }
-
-        for (Polynomial p : take(LIMIT, filter(Polynomial::isMonic, P.polynomials()))) {
-            assertEquals(p, p.leading().get(), BigInteger.ONE);
+            boolean isMonic = p.isMonic();
+            Optional<BigInteger> leading = p.leading();
+            assertEquals(p, isMonic, leading.isPresent() && leading.get().equals(BigInteger.ONE));
         }
     }
 

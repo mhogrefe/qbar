@@ -239,13 +239,13 @@ public class RationalPolynomialDemos extends QBarDemos {
     }
 
     private void demoIsMonic() {
-        for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
+        for (RationalPolynomial p : take(LIMIT, P.withScale(4).rationalPolynomials())) {
             System.out.println(p + " is " + (p.isMonic() ? "" : "not ") + "monic");
         }
     }
 
     private void demoMakeMonic() {
-        for (RationalPolynomial p : take(LIMIT, filter(q -> q != ZERO, P.rationalPolynomials()))) {
+        for (RationalPolynomial p : take(LIMIT, P.withScale(4).rationalPolynomialsAtLeast(0))) {
             System.out.println("makeMonic(" + p + ") = " + p.makeMonic());
         }
     }

@@ -907,15 +907,19 @@ public class PolynomialTest {
         differentiate_helper("3*x^10", "30*x^9");
     }
 
+    private static void isMonic_helper(@NotNull String input, boolean output) {
+        aeq(read(input).get().isMonic(), output);
+    }
+
     @Test
     public void testIsMonic() {
-        assertFalse(ZERO.isMonic());
-        assertTrue(ONE.isMonic());
-        assertTrue(X.isMonic());
-        assertFalse(read("-17").get().isMonic());
-        assertTrue(read("x^2-4*x+7").get().isMonic());
-        assertFalse(read("-x^3-1").get().isMonic());
-        assertFalse(read("3*x^10").get().isMonic());
+        isMonic_helper("0", false);
+        isMonic_helper("1", true);
+        isMonic_helper("x", true);
+        isMonic_helper("-17", false);
+        isMonic_helper("x^2-4*x+7", true);
+        isMonic_helper("-x^3-1", false);
+        isMonic_helper("3*x^10", false);
     }
 
     @Test

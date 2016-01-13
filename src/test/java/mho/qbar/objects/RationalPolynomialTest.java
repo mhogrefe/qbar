@@ -1121,30 +1121,42 @@ public class RationalPolynomialTest {
         differentiate_helper("1/2*x^10", "5*x^9");
     }
 
+    private static void isMonic_helper(@NotNull String input, boolean output) {
+        aeq(read(input).get().isMonic(), output);
+    }
+
     @Test
     public void testIsMonic() {
-        assertFalse(ZERO.isMonic());
-        assertTrue(ONE.isMonic());
-        assertTrue(X.isMonic());
-        assertFalse(read("-4/3").get().isMonic());
-        assertTrue(read("x^2-7/4*x+1/3").get().isMonic());
-        assertFalse(read("-x^3-1").get().isMonic());
-        assertFalse(read("1/2*x^10").get().isMonic());
+        isMonic_helper("0", false);
+        isMonic_helper("1", true);
+        isMonic_helper("x", true);
+        isMonic_helper("-4/3", false);
+        isMonic_helper("x^2-7/4*x+1/3", true);
+        isMonic_helper("-x^3-1", false);
+        isMonic_helper("1/2*x^10", false);
+    }
+
+    private static void makeMonic_helper(@NotNull String input, @NotNull String output) {
+        aeq(read(input).get().makeMonic(), output);
+    }
+
+    private static void makeMonic_fail_helper(@NotNull String input) {
+        try {
+            read(input).get().makeMonic();
+            fail();
+        } catch (ArithmeticException ignored) {}
     }
 
     @Test
     public void testMakeMonic() {
-        assertTrue(ONE.makeMonic() == ONE);
-        aeq(X.makeMonic(), "x");
-        assertTrue(read("-4/3").get().makeMonic() == ONE);
-        aeq(read("x^2-7/4*x+1/3").get().makeMonic(), "x^2-7/4*x+1/3");
-        aeq(read("3*x^2-7/4*x+1/3").get().makeMonic(), "x^2-7/12*x+1/9");
-        aeq(read("-x^3-1").get().makeMonic(), "x^3+1");
-        aeq(read("1/2*x^10").get().makeMonic(), "x^10");
-        try {
-            ZERO.makeMonic();
-            fail();
-        } catch (ArithmeticException ignored) {}
+        makeMonic_helper("1", "1");
+        makeMonic_helper("x", "x");
+        makeMonic_helper("-4/3", "1");
+        makeMonic_helper("x^2-7/4*x+1/3", "x^2-7/4*x+1/3");
+        makeMonic_helper("3*x^2-7/4*x+1/3", "x^2-7/12*x+1/9");
+        makeMonic_helper("-x^3-1", "x^3+1");
+        makeMonic_helper("1/2*x^10", "x^10");
+        makeMonic_fail_helper("0");
     }
 
     @Test

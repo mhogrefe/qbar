@@ -192,7 +192,7 @@ public class PolynomialDemos extends QBarDemos {
     }
 
     private void demoIsMonic() {
-        for (Polynomial p : take(LIMIT, P.polynomials())) {
+        for (Polynomial p : take(LIMIT, P.withScale(4).polynomials())) {
             System.out.println(p + " is " + (p.isMonic() ? "" : "not ") + "monic");
         }
     }

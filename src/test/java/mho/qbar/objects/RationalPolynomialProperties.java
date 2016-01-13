@@ -1267,24 +1267,22 @@ public class RationalPolynomialProperties extends QBarTestProperties {
     }
 
     private void propertiesIsMonic() {
-        initialize("");
-        System.out.println("\t\ttesting isMonic() properties...");
-
+        initialize("isMonic()");
         for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
-            p.isMonic();
+            boolean isMonic = p.isMonic();
+            Optional<Rational> leading = p.leading();
+            assertEquals(p, isMonic, leading.isPresent() && leading.get() == Rational.ONE);
         }
     }
 
     private void propertiesMakeMonic() {
-        initialize("");
-        System.out.println("\t\ttesting makeMonic() properties...");
-
-        for (RationalPolynomial p : take(LIMIT, filter(q -> q != ZERO, P.rationalPolynomials()))) {
+        initialize("makeMonic()");
+        for (RationalPolynomial p : take(LIMIT, P.rationalPolynomialsAtLeast(0))) {
             RationalPolynomial monic = p.makeMonic();
             monic.validate();
             assertEquals(p, monic.degree(), p.degree());
             assertTrue(p, monic.isMonic());
-            assertEquals(p, monic.makeMonic(), monic);
+            idempotent(RationalPolynomial::makeMonic, p);
             assertEquals(p, p.negate().makeMonic(), monic);
             assertTrue(
                     p,
@@ -1299,8 +1297,8 @@ public class RationalPolynomialProperties extends QBarTestProperties {
         }
 
         Iterable<Pair<RationalPolynomial, Rational>> ps = P.pairs(
-                filter(q -> q != ZERO, P.rationalPolynomials()),
-                filter(r -> r != Rational.ZERO, P.rationals())
+                P.rationalPolynomialsAtLeast(0),
+                P.nonzeroRationals()
         );
         for (Pair<RationalPolynomial, Rational> p : take(LIMIT, ps)) {
             RationalPolynomial monic = p.a.makeMonic();
