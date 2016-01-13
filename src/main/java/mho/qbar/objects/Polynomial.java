@@ -52,6 +52,16 @@ public final class Polynomial implements
     private static final Comparator<Iterable<BigInteger>> BIG_INTEGER_ITERABLE_COMPARATOR = new ShortlexComparator<>();
 
     /**
+     * A {@code Comparator} that compares two {@code Polynomial}s by their denominators, then lexicographically by
+     * their coefficients.
+     */
+    private static final @NotNull Comparator<Polynomial> DEGREE_COEFFICIENT_COMPARATOR = (p, q) -> {
+        int c = Integer.compare(p.degree(), q.degree());
+        if (c != 0) return c;
+        return BIG_INTEGER_ITERABLE_COMPARATOR.compare(p.coefficients, q.coefficients);
+    };
+
+    /**
      * The polynomial's coefficients. The coefficient of x<sup>i</sup> is at the ith position.
      */
     private final @NotNull List<BigInteger> coefficients;
@@ -510,7 +520,7 @@ public final class Polynomial implements
         if (any(x -> x == ZERO, xs)) {
             return ZERO;
         }
-        return foldl(Polynomial::multiply, ONE, xs);
+        return foldl(Polynomial::multiply, ONE, sort(DEGREE_COEFFICIENT_COMPARATOR, xs));
     }
 
     /**

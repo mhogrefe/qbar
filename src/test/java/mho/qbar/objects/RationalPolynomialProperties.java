@@ -984,6 +984,16 @@ public class RationalPolynomialProperties extends QBarTestProperties {
         );
     }
 
+    private static @NotNull RationalPolynomial product_simplest(@NotNull Iterable<RationalPolynomial> xs) {
+        if (any(x -> x == null, xs)) {
+            throw new NullPointerException();
+        }
+        if (any(x -> x == ZERO, xs)) {
+            return ZERO;
+        }
+        return foldl(RationalPolynomial::multiply, ONE, xs);
+    }
+
     private static @NotNull RationalPolynomial product_alt(@NotNull List<RationalPolynomial> xs) {
         if (any(x -> x == ZERO, xs)) return ZERO;
         List<Rational> productCoefficients =
@@ -1028,6 +1038,7 @@ public class RationalPolynomialProperties extends QBarTestProperties {
         Iterable<List<RationalPolynomial>> pss = P.withScale(1).lists(P.withSecondaryScale(1).rationalPolynomials());
         for (List<RationalPolynomial> ps : take(LIMIT, pss)) {
             RationalPolynomial product = product(ps);
+            assertEquals(ps, product, product_simplest(ps));
             assertEquals(ps, product, product_alt(ps));
         }
 
@@ -1052,6 +1063,7 @@ public class RationalPolynomialProperties extends QBarTestProperties {
 
     private void compareImplementationsProduct() {
         Map<String, Function<List<RationalPolynomial>, RationalPolynomial>> functions = new LinkedHashMap<>();
+        functions.put("simplest", RationalPolynomialProperties::product_simplest);
         functions.put("alt", RationalPolynomialProperties::product_alt);
         functions.put("standard", RationalPolynomial::product);
         compareImplementations(

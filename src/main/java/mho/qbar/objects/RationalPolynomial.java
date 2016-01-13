@@ -55,6 +55,16 @@ public final class RationalPolynomial implements
     private static final Comparator<Iterable<Rational>> RATIONAL_ITERABLE_COMPARATOR = new ShortlexComparator<>();
 
     /**
+     * A {@code Comparator} that compares two {@code RationalPolynomial}s by their denominators, then lexicographically
+     * by their coefficients.
+     */
+    private static final @NotNull Comparator<RationalPolynomial> DEGREE_COEFFICIENT_COMPARATOR = (p, q) -> {
+        int c = Integer.compare(p.degree(), q.degree());
+        if (c != 0) return c;
+        return RATIONAL_ITERABLE_COMPARATOR.compare(p.coefficients, q.coefficients);
+    };
+
+    /**
      * The polynomial's coefficients. The coefficient of x<sup>i</sup> is at the ith position.
      */
     private final @NotNull List<Rational> coefficients;
@@ -567,7 +577,7 @@ public final class RationalPolynomial implements
         if (any(x -> x == ZERO, xs)) {
             return ZERO;
         }
-        return foldl(RationalPolynomial::multiply, ONE, xs);
+        return foldl(RationalPolynomial::multiply, ONE, sort(DEGREE_COEFFICIENT_COMPARATOR, xs));
     }
 
     /**

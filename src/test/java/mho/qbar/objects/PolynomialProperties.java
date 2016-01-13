@@ -755,6 +755,16 @@ public class PolynomialProperties extends QBarTestProperties {
         compareImplementations("sum(Iterable<Polynomial>)", take(LIMIT, P.lists(P.polynomials())), functions);
     }
 
+    private static @NotNull Polynomial product_simplest(@NotNull Iterable<Polynomial> xs) {
+        if (any(x -> x == null, xs)) {
+            throw new NullPointerException();
+        }
+        if (any(x -> x == ZERO, xs)) {
+            return ZERO;
+        }
+        return foldl(Polynomial::multiply, ONE, xs);
+    }
+
     private static @NotNull Polynomial product_alt(@NotNull List<Polynomial> xs) {
         if (any(x -> x == ZERO, xs)) return ZERO;
         List<BigInteger> productCoefficients =
@@ -798,6 +808,7 @@ public class PolynomialProperties extends QBarTestProperties {
 
         for (List<Polynomial> ps : take(LIMIT, P.withScale(1).lists(P.withSecondaryScale(1).polynomials()))) {
             Polynomial product = product(ps);
+            assertEquals(ps, product, product_simplest(ps));
             assertEquals(ps, product, product_alt(ps));
         }
 
@@ -818,6 +829,7 @@ public class PolynomialProperties extends QBarTestProperties {
 
     private void compareImplementationsProduct() {
         Map<String, Function<List<Polynomial>, Polynomial>> functions = new LinkedHashMap<>();
+        functions.put("simplest", PolynomialProperties::product_simplest);
         functions.put("alt", PolynomialProperties::product_alt);
         functions.put("standard", Polynomial::product);
         compareImplementations(
