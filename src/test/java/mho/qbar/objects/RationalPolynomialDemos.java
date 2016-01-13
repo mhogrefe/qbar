@@ -232,6 +232,12 @@ public class RationalPolynomialDemos extends QBarDemos {
         }
     }
 
+    private void demoDifferentiate() {
+        for (RationalPolynomial p : take(LIMIT, P.withScale(4).rationalPolynomials())) {
+            System.out.println("differentiate(" + p + ") = " + p.differentiate());
+        }
+    }
+
     private void demoIsMonic() {
         for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
             System.out.println(p + " is " + (p.isMonic() ? "" : "not ") + "monic");
@@ -257,12 +263,6 @@ public class RationalPolynomialDemos extends QBarDemos {
         );
         for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, ps)) {
             System.out.println("(" + p.a + ") / (" + p.b + ") = " + p.a.divide(p.b));
-        }
-    }
-
-    private void demoDifferentiate() {
-        for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
-            System.out.println("differentiate(" + p + ") = " + p.differentiate());
         }
     }
 

@@ -1107,6 +1107,20 @@ public class RationalPolynomialTest {
         substitute_helper("1/2*x^10", "1/2*x^10", "1/2048*x^100");
     }
 
+    private static void differentiate_helper(@NotNull String input, @NotNull String output) {
+        aeq(read(input).get().differentiate(), output);
+    }
+
+    @Test
+    public void testDifferentiate() {
+        differentiate_helper("0", "0");
+        differentiate_helper("1", "0");
+        differentiate_helper("x", "1");
+        differentiate_helper("-4/3", "0");
+        differentiate_helper("x^2-7/4*x+1/3", "2*x-7/4");
+        differentiate_helper("1/2*x^10", "5*x^9");
+    }
+
     @Test
     public void testIsMonic() {
         assertFalse(ZERO.isMonic());
@@ -1208,22 +1222,6 @@ public class RationalPolynomialTest {
             read("x^2-7/4*x+1/3").get().divide(ZERO);
             fail();
         } catch (ArithmeticException ignored) {}
-    }
-
-    private static void differentiateHelper(@NotNull String x, @NotNull String output) {
-        RationalPolynomial derivative = read(x).get().differentiate();
-        derivative.validate();
-        aeq(derivative, output);
-    }
-
-    @Test
-    public void testDifferentiate() {
-        differentiateHelper("0", "0");
-        differentiateHelper("1", "0");
-        differentiateHelper("x", "1");
-        differentiateHelper("-4/3", "0");
-        differentiateHelper("x^2-7/4*x+1/3", "2*x-7/4");
-        differentiateHelper("1/2*x^10", "5*x^9");
     }
 
     @Test

@@ -64,6 +64,7 @@ public class RationalPolynomialProperties extends QBarTestProperties {
         compareImplementationsPow();
         propertiesSubstitute();
         compareImplementationsSubstitute();
+        propertiesDifferentiate();
         propertiesIsMonic();
         propertiesMakeMonic();
         propertiesContentAndPrimitive();
@@ -1250,6 +1251,19 @@ public class RationalPolynomialProperties extends QBarTestProperties {
                 take(LIMIT, P.pairs(P.withScale(4).withSecondaryScale(4).rationalPolynomials())),
                 functions
         );
+    }
+
+    private void propertiesDifferentiate() {
+        initialize("differentiate()");
+        for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
+            RationalPolynomial derivative = p.differentiate();
+            derivative.validate();
+            assertEquals(p, last(take(p.degree() + 2, iterate(RationalPolynomial::differentiate, p))), ZERO);
+        }
+
+        for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials(0))) {
+            assertEquals(p, p.differentiate(), ZERO);
+        }
     }
 
     private void propertiesIsMonic() {

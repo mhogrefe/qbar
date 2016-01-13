@@ -605,11 +605,15 @@ public final class Polynomial implements
      * @return d{@code this}/dx
      */
     public @NotNull Polynomial differentiate() {
-        if (coefficients.size() < 2) return ZERO;
-        if (equals(X)) return ONE;
-        return new Polynomial(
-                toList(zipWith((c, i) -> c.multiply(BigInteger.valueOf(i)), tail(coefficients), rangeUp(1)))
-        );
+        if (coefficients.size() < 2) {
+            return ZERO;
+        } else if (coefficients.size() == 2 && last(coefficients).equals(BigInteger.ONE)) {
+            return ONE;
+        } else {
+            return new Polynomial(
+                    toList(zipWith((c, i) -> c.multiply(BigInteger.valueOf(i)), tail(coefficients), rangeUp(1)))
+            );
+        }
     }
 
     /**

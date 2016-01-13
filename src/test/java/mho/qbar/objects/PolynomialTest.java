@@ -893,20 +893,18 @@ public class PolynomialTest {
         substitute_helper("3*x^10", "3*x^10", "177147*x^100");
     }
 
-    private static void differentiateHelper(@NotNull String x, @NotNull String output) {
-        Polynomial derivative = read(x).get().differentiate();
-        derivative.validate();
-        aeq(derivative, output);
+    private static void differentiate_helper(@NotNull String input, @NotNull String output) {
+        aeq(read(input).get().differentiate(), output);
     }
 
     @Test
     public void testDifferentiate() {
-        differentiateHelper("0", "0");
-        differentiateHelper("1", "0");
-        differentiateHelper("-17", "0");
-        differentiateHelper("x", "1");
-        differentiateHelper("x^2-4*x+7", "2*x-4");
-        differentiateHelper("3*x^10", "30*x^9");
+        differentiate_helper("0", "0");
+        differentiate_helper("1", "0");
+        differentiate_helper("-17", "0");
+        differentiate_helper("x", "1");
+        differentiate_helper("x^2-4*x+7", "2*x-4");
+        differentiate_helper("3*x^10", "30*x^9");
     }
 
     @Test

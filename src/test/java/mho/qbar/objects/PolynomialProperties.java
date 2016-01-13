@@ -61,6 +61,7 @@ public class PolynomialProperties extends QBarTestProperties {
         compareImplementationsPow();
         propertiesSubstitute();
         compareImplementationsSubstitute();
+        propertiesDifferentiate();
         propertiesIsMonic();
         propertiesIsPrimitive();
         propertiesContentAndPrimitive();
@@ -997,6 +998,19 @@ public class PolynomialProperties extends QBarTestProperties {
                 take(LIMIT, P.pairs(P.withScale(4).polynomials())),
                 functions
         );
+    }
+
+    private void propertiesDifferentiate() {
+        initialize("differentiate()");
+        for (Polynomial p : take(LIMIT, P.polynomials())) {
+            Polynomial derivative = p.differentiate();
+            derivative.validate();
+            assertEquals(p, last(take(p.degree() + 2, iterate(Polynomial::differentiate, p))), ZERO);
+        }
+
+        for (Polynomial p : take(LIMIT, P.polynomials(0))) {
+            assertEquals(p, p.differentiate(), ZERO);
+        }
     }
 
     private void propertiesIsMonic() {

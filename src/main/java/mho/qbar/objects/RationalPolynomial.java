@@ -663,11 +663,15 @@ public final class RationalPolynomial implements
      * @return d{@code this}/dx
      */
     public @NotNull RationalPolynomial differentiate() {
-        if (coefficients.size() < 2) return ZERO;
-        if (equals(X)) return ONE;
-        return new RationalPolynomial(
-                toList(zipWith((c, i) -> c.multiply(BigInteger.valueOf(i)), tail(coefficients), rangeUp(1)))
-        );
+        if (coefficients.size() < 2) {
+            return ZERO;
+        } else if (coefficients.size() == 2 && last(coefficients) == Rational.ONE) {
+            return ONE;
+        } else {
+            return new RationalPolynomial(
+                    toList(zipWith((c, i) -> c.multiply(BigInteger.valueOf(i)), tail(coefficients), rangeUp(1)))
+            );
+        }
     }
 
     /**

@@ -186,7 +186,7 @@ public class PolynomialDemos extends QBarDemos {
     }
 
     private void demoDifferentiate() {
-        for (Polynomial p : take(LIMIT, P.polynomials())) {
+        for (Polynomial p : take(LIMIT, P.withScale(4).polynomials())) {
             System.out.println("differentiate(" + p + ") = " + p.differentiate());
         }
     }
