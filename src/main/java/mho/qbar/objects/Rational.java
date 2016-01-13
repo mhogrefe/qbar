@@ -117,9 +117,24 @@ public final class Rational implements Comparable<Rational> {
             scanl(Rational::add, ONE, map(i -> new Rational(BigInteger.ONE, BigInteger.valueOf(i)), rangeUp(2)));
 
     /**
+     * A {@code Comparator} that compares two {@code Rational}s by their denominators, then by the absolute values of
+     * their numerators, and finally by the signs of their numerators. When multiplying a list of {@code Rational}s,
+     * sorting the list with this {@code Comparator} first results in an appreciable speedup.
+     */
+    private static final @NotNull Comparator<Rational> DENOMINATOR_NUMERATOR_COMPARATOR = (x, y) -> {
+        int c = x.getDenominator().compareTo(y.getDenominator());
+        if (c != 0) return c;
+        BigInteger xn = x.getNumerator();
+        BigInteger yn = y.getNumerator();
+        c = xn.abs().compareTo(yn.abs());
+        if (c != 0) return c;
+        return Integer.compare(xn.signum(), yn.signum());
+    };
+
+    /**
      * 36, the number of ASCII alphanumeric characters
      */
-    private static final BigInteger ASCII_ALPHANUMERIC_COUNT = BigInteger.valueOf(36);
+    private static final @NotNull BigInteger ASCII_ALPHANUMERIC_COUNT = BigInteger.valueOf(36);
 
     /**
      * {@code this} times {@code denominator}
@@ -1666,18 +1681,7 @@ public final class Rational implements Comparable<Rational> {
         if (any(x -> x == ZERO, xs)) {
             return ZERO;
         }
-        List<Rational> denominatorSorted = sort(
-                (x, y) -> {
-                    Ordering ordering = compare(x.getDenominator(), y.getDenominator());
-                    if (ordering != EQ) return ordering.toInt();
-                    ordering = compare(x.getNumerator().abs(), y.getNumerator().abs());
-                    if (ordering != EQ) return ordering.toInt();
-                    ordering = compare(x.getNumerator().signum(), y.getNumerator().signum());
-                    return ordering.toInt();
-                },
-                xs
-        );
-        return foldl(Rational::multiply, ONE, denominatorSorted);
+        return foldl(Rational::multiply, ONE, sort(DENOMINATOR_NUMERATOR_COMPARATOR, xs));
     }
 
     /**
