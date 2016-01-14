@@ -198,14 +198,20 @@ public class PolynomialDemos extends QBarDemos {
     }
 
     private void demoIsPrimitive() {
-        for (Polynomial p : take(LIMIT, P.polynomials())) {
+        for (Polynomial p : take(LIMIT, P.withScale(4).polynomials())) {
             System.out.println(p + " is " + (p.isPrimitive() ? "" : "not ") + "primitive");
         }
     }
 
     private void demoContentAndPrimitive() {
-        for (Polynomial p : take(LIMIT, filter(q -> q != ZERO, P.polynomials()))) {
+        for (Polynomial p : take(LIMIT, P.withScale(4).polynomialsAtLeast(0))) {
             System.out.println("contentAndPrimitive(" + p + ") = " + p.contentAndPrimitive());
+        }
+    }
+
+    private void demoConstantFactor() {
+        for (Polynomial p : take(LIMIT, P.withScale(4).polynomialsAtLeast(0))) {
+            System.out.println("constantFactor(" + p + ") = " + p.constantFactor());
         }
     }
 

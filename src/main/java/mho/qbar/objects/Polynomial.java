@@ -631,8 +631,7 @@ public final class Polynomial implements
     }
 
     /**
-     * Determines whether {@code this} is primitive–whether its leading coefficient is positive and the GCD of its
-     * coefficients is 1. 0 is not primitive.
+     * Determines whether {@code this} is primitive–whether the GCD of its coefficients is 1. 0 is not primitive.
      *
      * <ul>
      *  <li>{@code this} may be any {@code Polynomial}.</li>
@@ -642,33 +641,69 @@ public final class Polynomial implements
      * @return whether {@code this} is primitive
      */
     public boolean isPrimitive() {
-        return signum() == 1 && foldl(BigInteger::gcd, BigInteger.ZERO, coefficients).equals(BigInteger.ONE);
+        return foldl(BigInteger::gcd, BigInteger.ZERO, coefficients).equals(BigInteger.ONE);
     }
 
     /**
-     * Returns a {@code Pair} containing {@code this}'s content and primitive part. The primitive part is a constant
-     * multiple of {@code this} whose coefficients have a GCD of 1 and whose leading coefficient is positive, and the
-     * content is {@code this} divided by the primitive part.
+     * Returns a {@code Pair} containing {@code this}'s content and primitive part. The content is the largest integer
+     * that divides all the coefficients of {@code this}, and the primitive part is {@code this} divided by the
+     * content. This method is similar to {@link Polynomial#constantFactor()}, except that in the result of this method
+     * the first element of the pair must be positive, but the leading coefficient of the second element can be
+     * positive or negative.
      *
      * <ul>
-     *  <li>{@code this} must be nonzero.</li>
-     *  <li>The result is a {@code Pair} both of whose elements are not null, whose first element is nonzero, and whose
-     *  last element is primitive.</li>
+     *  <li>{@code this} cannot be zero.</li>
+     *  <li>The result is a {@code Pair} both of whose elements are not null, whose first element is positive, and
+     *  whose last element is primitive.</li>
      * </ul>
      *
      * @return (content({@code this}), primitive({@code this}))
      */
     @SuppressWarnings("JavaDoc")
     public @NotNull Pair<BigInteger, Polynomial> contentAndPrimitive() {
-        if (this == ZERO)
-            throw new ArithmeticException("cannot find content and primitive part of 0");
-        if (coefficients.size() == 1) return new Pair<>(coefficients.get(0), ONE);
-        BigInteger gcd = foldl(BigInteger::gcd, BigInteger.ZERO, coefficients);
-        BigInteger divisor = signum() == -1 ? gcd.negate() : gcd;
-        if (divisor.equals(BigInteger.ONE)) {
+        if (this == ZERO) {
+            throw new ArithmeticException("this cannot be zero.");
+        }
+        if (coefficients.size() == 1) {
+            BigInteger constant = coefficients.get(0);
+            return constant.signum() == 1 ?
+                    new Pair<>(constant, ONE) :
+                    new Pair<>(constant.negate(), of(IntegerUtils.NEGATIVE_ONE));
+        }
+        BigInteger content = foldl(BigInteger::gcd, BigInteger.ZERO, coefficients);
+        if (content.equals(BigInteger.ONE)) {
             return new Pair<>(BigInteger.ONE, this);
         } else {
-            return new Pair<>(divisor, new Polynomial(toList(map(c -> c.divide(divisor), coefficients))));
+            return new Pair<>(content, new Polynomial(toList(map(c -> c.divide(content), coefficients))));
+        }
+    }
+
+    /**
+     * Returns a {@code Pair} containing a constant and polynomial whose product is {@code this}, such that the leading
+     * coefficient of the polynomial part is positive and the GCD of its coefficients is 1. This method is similar to
+     * {@link Polynomial#contentAndPrimitive()}, except that in the result of this method the first element of the pair
+     * can be positive or negative, but the leading coefficient of the second element must be positive.
+     *
+     * <ul>
+     *  <li>{@code this} cannot be zero.</li>
+     *  <li>The result is a {@code Pair} both of whose elements are not null and whose last element has a positive
+     *  leading coefficient and no invertible constant factors.</li>
+     * </ul>
+     *
+     * @return the constant integral factor of {@code this} with the same sign as {@code this} and the largest possible
+     * absolute value
+     */
+    public @NotNull Pair<BigInteger, Polynomial> constantFactor() {
+        if (this == ZERO) {
+            throw new ArithmeticException("this cannot be zero.");
+        }
+        if (coefficients.size() == 1) return new Pair<>(coefficients.get(0), ONE);
+        BigInteger content = foldl(BigInteger::gcd, BigInteger.ZERO, coefficients);
+        BigInteger factor = signum() == -1 ? content.negate() : content;
+        if (factor.equals(BigInteger.ONE)) {
+            return new Pair<>(BigInteger.ONE, this);
+        } else {
+            return new Pair<>(factor, new Polynomial(toList(map(c -> c.divide(factor), coefficients))));
         }
     }
 

@@ -250,9 +250,9 @@ public class RationalPolynomialDemos extends QBarDemos {
         }
     }
 
-    private void demoContentAndPrimitive() {
-        for (RationalPolynomial p : take(LIMIT, filter(q -> q != ZERO, P.rationalPolynomials()))) {
-            System.out.println("contentAndPrimitive(" + p + ") = " + p.contentAndPrimitive());
+    private void demoConstantFactor() {
+        for (RationalPolynomial p : take(LIMIT, P.withScale(4).rationalPolynomialsAtLeast(0))) {
+            System.out.println("constantFactor(" + p + ") = " + p.constantFactor());
         }
     }
 

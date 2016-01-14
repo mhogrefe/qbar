@@ -709,25 +709,28 @@ public final class RationalPolynomial implements
     }
 
     /**
-     * Returns a {@code Pair} containing {@code this}'s content and primitive part. The primitive part is a constant
-     * multiple of {@code this} whose coefficients are integers with a GCD of 1 and whose leading coefficient is
-     * positive, and the content is {@code this} divided by the primitive part.
+     * Returns a {@code Pair} containing a constant and an integer-coefficient polynomial whose product is
+     * {@code this}, such that the leading coefficient of the polynomial part is positive and the GCD of its
+     * coefficients is 1.
      *
      * <ul>
-     *  <li>{@code this} must be nonzero.</li>
-     *  <li>The result is a {@code Pair} both of whose elements are not null, whose first element is nonzero, and whose
-     *  last element is primitive.</li>
+     *  <li>{@code this} cannot be zero.</li>
+     *  <li>The result is a {@code Pair} both of whose elements are not null and whose last element has a positive
+     *  leading coefficient and no invertible integral constant factors.</li>
      * </ul>
      *
-     * @return (content({@code this}), primitive({@code this}))
+     * @return a constant factor of {@code this} and {@code this} divided by the factor
      */
     @SuppressWarnings("JavaDoc")
-    public @NotNull Pair<Rational, Polynomial> contentAndPrimitive() {
-        if (this == ZERO)
-            throw new ArithmeticException("cannot find content and primitive part of 0");
-        Polynomial primitive = Polynomial.of(Rational.cancelDenominators(coefficients));
-        if (primitive.signum() == -1) primitive = primitive.negate();
-        return new Pair<>(leading().get().divide(primitive.leading().get()), primitive);
+    public @NotNull Pair<Rational, Polynomial> constantFactor() {
+        if (this == ZERO) {
+            throw new ArithmeticException("this cannot be zero.");
+        }
+        Polynomial positivePrimitive = Polynomial.of(Rational.cancelDenominators(coefficients));
+        if (positivePrimitive.signum() == -1) {
+            positivePrimitive = positivePrimitive.negate();
+        }
+        return new Pair<>(leading().get().divide(positivePrimitive.leading().get()), positivePrimitive);
     }
 
     /**

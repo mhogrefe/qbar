@@ -65,6 +65,7 @@ public class PolynomialProperties extends QBarTestProperties {
         propertiesIsMonic();
         propertiesIsPrimitive();
         propertiesContentAndPrimitive();
+        propertiesConstantFactor();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -1023,38 +1024,48 @@ public class PolynomialProperties extends QBarTestProperties {
     }
 
     private void propertiesIsPrimitive() {
-        initialize("");
-        System.out.println("\t\ttesting isPrimitive() properties...");
-
+        initialize("isPrimitive()");
         for (Polynomial p : take(LIMIT, P.polynomials())) {
-            p.isPrimitive();
-        }
-
-        for (Polynomial p : take(LIMIT, filter(Polynomial::isPrimitive, P.polynomials()))) {
-            assertEquals(p, p.signum(), 1);
-            assertEquals(p, foldl(BigInteger::gcd, BigInteger.ZERO, p), BigInteger.ONE);
+            boolean primitive = p.isPrimitive();
+            assertEquals(p, primitive, foldl(BigInteger::gcd, BigInteger.ZERO, p).equals(BigInteger.ONE));
+            assertEquals(p, primitive, p.negate().isPrimitive());
         }
     }
 
     private void propertiesContentAndPrimitive() {
-        initialize("");
-        System.out.println("\t\ttesting contentAndPrimitive() properties...");
-
-        for (Polynomial p : take(LIMIT, filter(q -> q != ZERO, P.polynomials()))) {
+        initialize("contentAndPrimitive()");
+        for (Polynomial p : take(LIMIT, P.polynomialsAtLeast(0))) {
             Pair<BigInteger, Polynomial> contentAndPrimitive = p.contentAndPrimitive();
             BigInteger content = contentAndPrimitive.a;
-            assertNotNull(p.toString(), content);
+            assertNotNull(p, content);
             Polynomial primitive = contentAndPrimitive.b;
-            assertNotNull(p.toString(), primitive);
+            assertNotNull(p, primitive);
             primitive.validate();
             assertEquals(p, primitive.degree(), p.degree());
-            assertNotEquals(p, content, BigInteger.ZERO);
             assertTrue(p, primitive.isPrimitive());
             assertEquals(p, primitive.multiply(content), p);
+            assertEquals(p, content.signum(), 1);
+            idempotent(q -> q.contentAndPrimitive().b, p);
+            assertEquals(p, content, p.constantFactor().a.abs());
+        }
+    }
 
-            Pair<BigInteger, Polynomial> primitiveCP = primitive.contentAndPrimitive();
-            assertEquals(p, primitiveCP.a, BigInteger.ONE);
-            assertEquals(p, primitive, primitiveCP.b);
+    private void propertiesConstantFactor() {
+        initialize("constantFactor()");
+        for (Polynomial p : take(LIMIT, P.polynomialsAtLeast(0))) {
+            Pair<BigInteger, Polynomial> contentAndPrimitive = p.constantFactor();
+            BigInteger constantFactor = contentAndPrimitive.a;
+            assertNotNull(p, constantFactor);
+            Polynomial absolutePrimitive = contentAndPrimitive.b;
+            assertNotNull(p, absolutePrimitive);
+            absolutePrimitive.validate();
+            assertEquals(p, absolutePrimitive.degree(), p.degree());
+            assertNotEquals(p, constantFactor, BigInteger.ZERO);
+            assertTrue(p, absolutePrimitive.isPrimitive());
+            assertEquals(p, absolutePrimitive.multiply(constantFactor), p);
+            assertEquals(p, absolutePrimitive.signum(), 1);
+            idempotent(q -> q.constantFactor().b, p);
+            assertEquals(p, absolutePrimitive, p.contentAndPrimitive().b.abs());
         }
     }
 

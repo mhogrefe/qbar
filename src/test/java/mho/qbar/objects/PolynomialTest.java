@@ -1,6 +1,7 @@
 package mho.qbar.objects;
 
 import mho.wheels.io.Readers;
+import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
@@ -922,31 +923,78 @@ public class PolynomialTest {
         isMonic_helper("3*x^10", false);
     }
 
+    private static void isPrimitive_helper(@NotNull String input, boolean output) {
+        aeq(read(input).get().isPrimitive(), output);
+    }
+
     @Test
     public void testIsPrimitive() {
-        assertFalse(ZERO.isPrimitive());
-        assertTrue(ONE.isPrimitive());
-        assertTrue(X.isPrimitive());
-        assertFalse(read("-17").get().isPrimitive());
-        assertTrue(read("x^2-4*x+7").get().isPrimitive());
-        assertFalse(read("6*x^2-4*x+8").get().isPrimitive());
-        assertFalse(read("-x^3-1").get().isPrimitive());
-        assertFalse(read("3*x^10").get().isPrimitive());
+        isPrimitive_helper("0", false);
+        isPrimitive_helper("1", true);
+        isPrimitive_helper("x", true);
+        isPrimitive_helper("-17", false);
+        isPrimitive_helper("x^2-4*x+7", true);
+        isPrimitive_helper("6*x^2-4*x+8", false);
+        isPrimitive_helper("-x^3-1", true);
+        isPrimitive_helper("3*x^10", false);
+    }
+
+    private static void contentAndPrimitive_helper(
+            @NotNull String input,
+            @NotNull String constant,
+            @NotNull String polynomial
+    ) {
+        Pair<BigInteger, Polynomial> result = read(input).get().contentAndPrimitive();
+        aeq(result.a, constant);
+        aeq(result.b, polynomial);
+    }
+
+    private static void contentAndPrimitive_fail_helper(@NotNull String input) {
+        try {
+            read(input).get().contentAndPrimitive();
+            fail();
+        } catch (ArithmeticException ignored) {}
     }
 
     @Test
     public void testContentAndPrimitive() {
-        aeq(ONE.contentAndPrimitive(), "(1, 1)");
-        aeq(X.contentAndPrimitive(), "(1, x)");
-        aeq(read("-17").get().contentAndPrimitive(), "(-17, 1)");
-        aeq(read("x^2-4*x+7").get().contentAndPrimitive(), "(1, x^2-4*x+7)");
-        aeq(read("6*x^2-4*x+8").get().contentAndPrimitive(), "(2, 3*x^2-2*x+4)");
-        aeq(read("-x^3-1").get().contentAndPrimitive(), "(-1, x^3+1)");
-        aeq(read("3*x^10").get().contentAndPrimitive(), "(3, x^10)");
+        contentAndPrimitive_helper("1", "1", "1");
+        contentAndPrimitive_helper("x", "1", "x");
+        contentAndPrimitive_helper("-17", "17", "-1");
+        contentAndPrimitive_helper("x^2-4*x+7", "1", "x^2-4*x+7");
+        contentAndPrimitive_helper("6*x^2-4*x+8", "2", "3*x^2-2*x+4");
+        contentAndPrimitive_helper("-x^3-1", "1", "-x^3-1");
+        contentAndPrimitive_helper("3*x^10", "3", "x^10");
+        contentAndPrimitive_fail_helper("0");
+    }
+
+    private static void constantFactor_helper(
+            @NotNull String input,
+            @NotNull String constant,
+            @NotNull String polynomial
+    ) {
+        Pair<BigInteger, Polynomial> result = read(input).get().constantFactor();
+        aeq(result.a, constant);
+        aeq(result.b, polynomial);
+    }
+
+    private static void constantFactor_fail_helper(@NotNull String input) {
         try {
-            ZERO.contentAndPrimitive();
+            read(input).get().constantFactor();
             fail();
         } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testConstantFactor() {
+        constantFactor_helper("1", "1", "1");
+        constantFactor_helper("x", "1", "x");
+        constantFactor_helper("-17", "-17", "1");
+        constantFactor_helper("x^2-4*x+7", "1", "x^2-4*x+7");
+        constantFactor_helper("6*x^2-4*x+8", "2", "3*x^2-2*x+4");
+        constantFactor_helper("-x^3-1", "-1", "x^3+1");
+        constantFactor_helper("3*x^10", "3", "x^10");
+        constantFactor_fail_helper("0");
     }
 
     @Test

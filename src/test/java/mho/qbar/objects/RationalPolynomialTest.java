@@ -1,6 +1,7 @@
 package mho.qbar.objects;
 
 import mho.wheels.io.Readers;
+import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
@@ -1159,20 +1160,34 @@ public class RationalPolynomialTest {
         makeMonic_fail_helper("0");
     }
 
-    @Test
-    public void testContentAndPrimitive() {
-        aeq(ONE.contentAndPrimitive(), "(1, 1)");
-        aeq(X.contentAndPrimitive(), "(1, x)");
-        aeq(read("-4/3").get().contentAndPrimitive(), "(-4/3, 1)");
-        aeq(read("x^2-4*x+7").get().contentAndPrimitive(), "(1, x^2-4*x+7)");
-        aeq(read("6*x^2-4*x+8").get().contentAndPrimitive(), "(2, 3*x^2-2*x+4)");
-        aeq(read("x^2-7/4*x+1/3").get().contentAndPrimitive(), "(1/12, 12*x^2-21*x+4)");
-        aeq(read("-x^3-1").get().contentAndPrimitive(), "(-1, x^3+1)");
-        aeq(read("1/2*x^10").get().contentAndPrimitive(), "(1/2, x^10)");
+    private static void constantFactor_helper(
+            @NotNull String input,
+            @NotNull String constant,
+            @NotNull String polynomial
+    ) {
+        Pair<Rational, Polynomial> result = read(input).get().constantFactor();
+        aeq(result.a, constant);
+        aeq(result.b, polynomial);
+    }
+
+    private static void constantFactor_fail_helper(@NotNull String input) {
         try {
-            ZERO.contentAndPrimitive();
+            read(input).get().constantFactor();
             fail();
         } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testConstantFactor() {
+        constantFactor_helper("1", "1", "1");
+        constantFactor_helper("x", "1", "x");
+        constantFactor_helper("-4/3", "-4/3", "1");
+        constantFactor_helper("x^2-4*x+7", "1", "x^2-4*x+7");
+        constantFactor_helper("6*x^2-4*x+8", "2", "3*x^2-2*x+4");
+        constantFactor_helper("x^2-7/4*x+1/3", "1/12", "12*x^2-21*x+4");
+        constantFactor_helper("-x^3-1", "-1", "x^3+1");
+        constantFactor_helper("1/2*x^10", "1/2", "x^10");
+        constantFactor_fail_helper("0");
     }
 
     @Test

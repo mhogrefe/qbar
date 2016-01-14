@@ -67,7 +67,7 @@ public class RationalPolynomialProperties extends QBarTestProperties {
         propertiesDifferentiate();
         propertiesIsMonic();
         propertiesMakeMonic();
-        propertiesContentAndPrimitive();
+        propertiesConstantFactor();
         propertiesDivide_RationalPolynomial();
         compareImplementationsDivide_RationalPolynomial();
         propertiesEquals();
@@ -1306,24 +1306,19 @@ public class RationalPolynomialProperties extends QBarTestProperties {
         }
     }
 
-    private void propertiesContentAndPrimitive() {
-        initialize("");
-        System.out.println("\t\ttesting contentAndPrimitive() properties...");
-
-        for (RationalPolynomial p : take(LIMIT, filter(q -> q != ZERO, P.rationalPolynomials()))) {
-            Pair<Rational, Polynomial> contentAndPrimitive = p.contentAndPrimitive();
-            Rational content = contentAndPrimitive.a;
-            assertNotNull(p, content);
-            Polynomial primitive = contentAndPrimitive.b;
-            assertEquals(p, primitive.degree(), p.degree());
-            assertNotNull(p, primitive);
-            assertNotEquals(p, content, BigInteger.ZERO);
-            assertTrue(p, primitive.isPrimitive());
-            assertEquals(p, primitive.toRationalPolynomial().multiply(content), p);
-
-            Pair<BigInteger, Polynomial> primitiveCP = primitive.contentAndPrimitive();
-            assertEquals(p, primitiveCP.a, BigInteger.ONE);
-            assertEquals(p, primitive, primitiveCP.b);
+    private void propertiesConstantFactor() {
+        initialize("constantFactor()");
+        for (RationalPolynomial p : take(LIMIT, P.rationalPolynomialsAtLeast(0))) {
+            Pair<Rational, Polynomial> contentAndPrimitive = p.constantFactor();
+            Rational constantFactor = contentAndPrimitive.a;
+            assertNotNull(p, constantFactor);
+            Polynomial absolutePrimitive = contentAndPrimitive.b;
+            assertEquals(p, absolutePrimitive.degree(), p.degree());
+            assertNotNull(p, absolutePrimitive);
+            assertTrue(p, absolutePrimitive.isPrimitive());
+            assertEquals(p, absolutePrimitive.toRationalPolynomial().multiply(constantFactor), p);
+            assertEquals(p, absolutePrimitive.signum(), 1);
+            idempotent(q -> q.constantFactor().b.toRationalPolynomial(), p);
         }
     }
 
