@@ -818,12 +818,27 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
     }
 
     @Override
+    public @NotNull Iterable<Polynomial> primitivePolynomials() {
+        return null;
+    }
+
+    @Override
     public @NotNull Iterable<Polynomial> primitivePolynomialsAtLeast(int minDegree) {
         return null;
     }
 
     @Override
-    public @NotNull Iterable<Polynomial> primitivePolynomials() {
+    public @NotNull Iterable<Polynomial> positivePrimitivePolynomials(int degree) {
+        return null;
+    }
+
+    @Override
+    public @NotNull Iterable<Polynomial> positivePrimitivePolynomials() {
+        return null;
+    }
+
+    @Override
+    public @NotNull Iterable<Polynomial> positivePrimitivePolynomialsAtLeast(int minDegree) {
         return null;
     }
 

@@ -88,6 +88,32 @@ public class QBarExhaustiveProviderDemos extends QBarDemos {
         }
     }
 
+    private void demoPrimitivePolynomials_int() {
+        for (int i : take(SMALL_LIMIT, P.rangeUpGeometric(-1))) {
+            System.out.println("primitivePolynomials(" + i + ") = " + its(QEP.primitivePolynomials(i)));
+        }
+    }
+
+    private void demoPrimitivePolynomialsAtLeast() {
+        for (int i : take(SMALL_LIMIT, P.rangeUpGeometric(-1))) {
+            System.out.println("primitivePolynomialsAtLeast(" + i + ") = " + its(QEP.primitivePolynomialsAtLeast(i)));
+        }
+    }
+
+    private void demoPositivePrimitivePolynomials_int() {
+        for (int i : take(SMALL_LIMIT, P.rangeUpGeometric(-1))) {
+            System.out.println("positivePrimitivePolynomials(" + i + ") = " +
+                    its(QEP.positivePrimitivePolynomials(i)));
+        }
+    }
+
+    private void demoPositivePrimitivePolynomialsAtLeast() {
+        for (int i : take(SMALL_LIMIT, P.rangeUpGeometric(-1))) {
+            System.out.println("positivePrimitivePolynomialsAtLeast(" + i + ") = " +
+                    its(QEP.positivePrimitivePolynomialsAtLeast(i)));
+        }
+    }
+
     private void demoRationalPolynomials_int() {
         for (int i : take(SMALL_LIMIT, P.rangeUpGeometric(-1))) {
             System.out.println("rationalPolynomials(" + i + ") = " + its(QEP.rationalPolynomials(i)));

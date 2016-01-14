@@ -416,59 +416,120 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
         );
     }
 
+    /**
+     * An {@code Iterable} that generates all primitive {@code Polynomial}s (polynomials whose coefficient GCD is 1)
+     * with a given degree.
+     *
+     * <ul>
+     *  <li>{@code degree} must be at least -1.</li>
+     *  <li>The result is a non-removable {@code Iterable} containing primitive {@code Polynomial}s.</li>
+     * </ul>
+     *
+     * Length is 0 if {@code degree} is –1, 2 if {@code degree} is 0, and infinite otherwise
+     *
+     * @param degree the degree of the generated {@code Polynomial}s
+     * @return all primitive {@code Polynomial}s with degree at {@code degree}
+     */
     @Override
     public @NotNull Iterable<Polynomial> primitivePolynomials(int degree) {
-        if (degree == 0) return Collections.singletonList(Polynomial.ONE);
-        return filter(
-                p -> p.signum() == 1,
-                map(
-                        Polynomial::of,
-                        filter(
-                                js -> {
-                                    if (!js.isEmpty() && last(js).equals(BigInteger.ZERO)) return false;
-                                    BigInteger gcd = foldl(BigInteger::gcd, BigInteger.ZERO, js);
-                                    return gcd.equals(BigInteger.ZERO) || gcd.equals(BigInteger.ONE);
-                                },
-                                lists(degree + 1, bigIntegers())
-                        )
-                )
-        );
+        switch (degree) {
+            case -1: return Collections.emptyList();
+            case 0: return Arrays.asList(Polynomial.ONE, Polynomial.ONE.negate());
+            default: return primitivePolynomials(lists(degree + 1, bigIntegers()));
+        }
     }
 
-    @Override
-    public @NotNull Iterable<Polynomial> primitivePolynomialsAtLeast(int minDegree) {
-        return filter(
-                p -> p.signum() == 1,
-                map(
-                        Polynomial::of,
-                        filter(
-                                js -> {
-                                    if (!js.isEmpty() && last(js).equals(BigInteger.ZERO)) return false;
-                                    BigInteger gcd = foldl(BigInteger::gcd, BigInteger.ZERO, js);
-                                    return gcd.equals(BigInteger.ZERO) || gcd.equals(BigInteger.ONE);
-                                },
-                                listsAtLeast(minDegree + 1, bigIntegers())
-                        )
-                )
-        );
-    }
-
+    /**
+     * An {@code Iterable} that generates all primitive {@code Polynomial}s (polynomials whose coefficient GCD is 1).
+     *
+     * <ul>
+     *  <li>The result is a non-removable {@code Iterable} containing primitive {@code Polynomial}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
     @Override
     public @NotNull Iterable<Polynomial> primitivePolynomials() {
-        return filter(
-                p -> p.signum() == 1,
-                map(
-                        Polynomial::of,
-                        filter(
-                                js -> {
-                                    if (!js.isEmpty() && last(js).equals(BigInteger.ZERO)) return false;
-                                    BigInteger gcd = foldl(BigInteger::gcd, BigInteger.ZERO, js);
-                                    return gcd.equals(BigInteger.ZERO) || gcd.equals(BigInteger.ONE);
-                                },
-                                lists(bigIntegers())
-                        )
-                )
-        );
+        return primitivePolynomials(listsAtLeast(1, bigIntegers()));
+    }
+
+    /**
+     * An {@code Iterable} that generates all primitive {@code Polynomial}s (polynomials whose coefficient GCD is 1)
+     * with a minimum degree.
+     *
+     * <ul>
+     *  <li>{@code minDegree} must be at least -1.</li>
+     *  <li>The result is a non-removable {@code Iterable} containing primitive {@code Polynomial}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param minDegree the minimum degree of the generated {@code Polynomial}s
+     * @return all primitive {@code Polynomial}s with degree at least {@code minDegree}
+     */
+    @Override
+    public @NotNull Iterable<Polynomial> primitivePolynomialsAtLeast(int minDegree) {
+        return primitivePolynomials(listsAtLeast(minDegree == -1 ? 1 : minDegree + 1, bigIntegers()));
+    }
+
+    /**
+     * An {@code Iterable} that generates all primitive {@code Polynomial}s (polynomials whose coefficient GCD is 1)
+     * with a positive leading coefficient with a given degree.
+     *
+     * <ul>
+     *  <li>{@code degree} must be at least -1.</li>
+     *  <li>The result is a non-removable {@code Iterable} containing primitive {@code Polynomial}s with positive
+     *  leading coefficients.</li>
+     * </ul>
+     *
+     * Length is 0 if {@code degree} is –1, 1 if {@code degree} is 0, and infinite otherwise
+     *
+     * @param degree the degree of the generated {@code Polynomial}s
+     * @return all positive primitive {@code Polynomial}s with degree at {@code degree}
+     */
+    @Override
+    public @NotNull Iterable<Polynomial> positivePrimitivePolynomials(int degree) {
+        switch (degree) {
+            case -1: return Collections.emptyList();
+            case 0: return Collections.singletonList(Polynomial.ONE);
+            default: return filterInfinite(p -> p.signum() == 1, primitivePolynomials(degree));
+        }
+    }
+
+    /**
+     * An {@code Iterable} that generates all primitive {@code Polynomial}s (polynomials whose coefficient GCD is 1)
+     * with a positive leasing coefficient.
+     *
+     * <ul>
+     *  <li>The result is a non-removable {@code Iterable} containing primitive {@code Polynomial}s with positive
+     *  leading coefficients.</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
+    @Override
+    public @NotNull Iterable<Polynomial> positivePrimitivePolynomials() {
+        return filterInfinite(p -> p.signum() == 1, primitivePolynomials());
+    }
+
+    /**
+     * An {@code Iterable} that generates all primitive {@code Polynomial}s (polynomials whose coefficient GCD is 1)
+     * with a positive leading coefficient with a minimum degree.
+     *
+     * <ul>
+     *  <li>{@code minDegree} must be at least -1.</li>
+     *  <li>The result is a non-removable {@code Iterable} containing primitive {@code Polynomial}s with positive
+     *  leading coefficients.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param minDegree the minimum degree of the generated {@code Polynomial}s
+     * @return all positive primitive {@code Polynomial}s with degree at least {@code minDegree}
+     */
+    @Override
+    public @NotNull Iterable<Polynomial> positivePrimitivePolynomialsAtLeast(int minDegree) {
+        return filterInfinite(p -> p.signum() == 1, primitivePolynomialsAtLeast(minDegree));
     }
 
     /**

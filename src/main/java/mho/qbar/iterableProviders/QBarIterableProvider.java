@@ -3078,9 +3078,56 @@ public strictfp abstract class QBarIterableProvider {
      */
     public abstract @NotNull Iterable<Polynomial> polynomialsAtLeast(int minDegree);
 
+    /**
+     * Generates primitive {@code Polynomial}s with a given degree.
+     *
+     * @param degree the degree of the generated {@code Polynomial}s
+     */
     public abstract @NotNull Iterable<Polynomial> primitivePolynomials(int degree);
-    public abstract @NotNull Iterable<Polynomial> primitivePolynomialsAtLeast(int minDegree);
+
+    protected static @NotNull Iterable<Polynomial> primitivePolynomials(
+            @NotNull Iterable<List<BigInteger>> bigIntegerLists
+    ) {
+        return map(
+                Polynomial::of,
+                filterInfinite(
+                        is -> !last(is).equals(BigInteger.ZERO) &&
+                                foldl(BigInteger::gcd, BigInteger.ZERO, is).equals(BigInteger.ONE),
+                        bigIntegerLists
+                )
+        );
+    }
+
+    /**
+     * Generates primitive {@code Polynomial}s.
+     */
     public abstract @NotNull Iterable<Polynomial> primitivePolynomials();
+
+    /**
+     * Generates primitive {@code Polynomial}s with a minimum degree.
+     *
+     * @param minDegree the minimum degree of the generated {@code Polynomial}s
+     */
+    public abstract @NotNull Iterable<Polynomial> primitivePolynomialsAtLeast(int minDegree);
+
+    /**
+     * Generates primitive {@code Polynomial}s with positive leading coefficients with a given degree.
+     *
+     * @param degree the degree of the generated {@code Polynomial}s
+     */
+    public abstract @NotNull Iterable<Polynomial> positivePrimitivePolynomials(int degree);
+
+    /**
+     * Generates primitive {@code Polynomial}s with positive leading coefficients.
+     */
+    public abstract @NotNull Iterable<Polynomial> positivePrimitivePolynomials();
+
+    /**
+     * Generates primitive {@code Polynomial}s with positive leading coefficients with a minimum degree.
+     *
+     * @param minDegree the minimum degree of the generated {@code Polynomial}s
+     */
+    public abstract @NotNull Iterable<Polynomial> positivePrimitivePolynomialsAtLeast(int minDegree);
 
     /**
      * Generates {@code RationalPolynomial}s with a given degree.

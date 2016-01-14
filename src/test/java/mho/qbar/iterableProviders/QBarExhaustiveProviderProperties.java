@@ -32,6 +32,8 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
         propertiesRationalMatrices();
         propertiesSquareRationalMatrices();
         propertiesPolynomials();
+        propertiesPrimitivePolynomials();
+        propertiesPositivePrimitivePolynomials();
         propertiesRationalPolynomials();
     }
 
@@ -49,6 +51,10 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
         propertiesRationalMatrices_int_int();
         propertiesPolynomials_int();
         propertiesPolynomialsAtLeast();
+        propertiesPrimitivePolynomials_int();
+        propertiesPrimitivePolynomialsAtLeast();
+        propertiesPositivePrimitivePolynomials_int();
+        propertiesPositivePrimitivePolynomialsAtLeast();
         propertiesRationalPolynomials_int();
         propertiesRationalPolynomialsAtLeast();
     }
@@ -326,6 +332,82 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
         for (int i : take(LIMIT, P.rangeDown(-2))) {
             try {
                 QEP.polynomialsAtLeast(i);
+                fail(i);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesPrimitivePolynomials_int() {
+        initialize("primitivePolynomials(int)");
+        for (int i : take(SMALL_LIMIT, P.rangeUpGeometric(-1))) {
+            Iterable<Polynomial> ps = QEP.primitivePolynomials(i);
+            simpleTest(i, ps, p -> p.degree() == i && p.isPrimitive());
+            take(TINY_LIMIT, ps).forEach(Polynomial::validate);
+        }
+
+        for (int i : take(LIMIT, P.rangeDown(-2))) {
+            try {
+                QEP.primitivePolynomials(i);
+                fail(i);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesPrimitivePolynomials() {
+        initializeConstant("primitivePolynomials()");
+        biggerTest(QEP, QEP.primitivePolynomials(), Polynomial::isPrimitive);
+        take(TINY_LIMIT, QEP.primitivePolynomials()).forEach(Polynomial::validate);
+    }
+
+    private void propertiesPrimitivePolynomialsAtLeast() {
+        initialize("primitivePolynomialsAtLeast(int)");
+        for (int i : take(SMALL_LIMIT, P.rangeUpGeometric(-1))) {
+            Iterable<Polynomial> ps = QEP.primitivePolynomialsAtLeast(i);
+            simpleTest(i, ps, p -> p.degree() >= i && p.isPrimitive());
+            take(TINY_LIMIT, ps).forEach(Polynomial::validate);
+        }
+
+        for (int i : take(LIMIT, P.rangeDown(-2))) {
+            try {
+                QEP.primitivePolynomialsAtLeast(i);
+                fail(i);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesPositivePrimitivePolynomials_int() {
+        initialize("positivePrimitivePolynomials(int)");
+        for (int i : take(SMALL_LIMIT, P.rangeUpGeometric(-1))) {
+            Iterable<Polynomial> ps = QEP.positivePrimitivePolynomials(i);
+            simpleTest(i, ps, p -> p.degree() == i && p.signum() == 1 && p.isPrimitive());
+            take(TINY_LIMIT, ps).forEach(Polynomial::validate);
+        }
+
+        for (int i : take(LIMIT, P.rangeDown(-2))) {
+            try {
+                QEP.positivePrimitivePolynomials(i);
+                fail(i);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesPositivePrimitivePolynomials() {
+        initializeConstant("positivePrimitivePolynomials()");
+        biggerTest(QEP, QEP.positivePrimitivePolynomials(), p -> p.signum() == 1 && p.isPrimitive());
+        take(TINY_LIMIT, QEP.positivePrimitivePolynomials()).forEach(Polynomial::validate);
+    }
+
+    private void propertiesPositivePrimitivePolynomialsAtLeast() {
+        initialize("positivePrimitivePolynomialsAtLeast(int)");
+        for (int i : take(SMALL_LIMIT, P.rangeUpGeometric(-1))) {
+            Iterable<Polynomial> ps = QEP.positivePrimitivePolynomialsAtLeast(i);
+            simpleTest(i, ps, p -> p.degree() >= i && p.signum() == 1 && p.isPrimitive());
+            take(TINY_LIMIT, ps).forEach(Polynomial::validate);
+        }
+
+        for (int i : take(LIMIT, P.rangeDown(-2))) {
+            try {
+                QEP.positivePrimitivePolynomialsAtLeast(i);
                 fail(i);
             } catch (IllegalArgumentException ignored) {}
         }
