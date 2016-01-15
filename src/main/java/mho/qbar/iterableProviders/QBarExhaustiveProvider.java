@@ -485,7 +485,7 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
      * Length is 0 if {@code degree} is –1, 1 if {@code degree} is 0, and infinite otherwise
      *
      * @param degree the degree of the generated {@code Polynomial}s
-     * @return all positive primitive {@code Polynomial}s with degree at {@code degree}
+     * @return all positive primitive {@code Polynomial}s with positive leading coefficients and degree {@code degree}
      */
     @Override
     public @NotNull Iterable<Polynomial> positivePrimitivePolynomials(int degree) {
@@ -525,7 +525,8 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
      * Length is infinite
      *
      * @param minDegree the minimum degree of the generated {@code Polynomial}s
-     * @return all positive primitive {@code Polynomial}s with degree at least {@code minDegree}
+     * @return all positive primitive {@code Polynomial}s with positive leading coefficients and degree at least
+     * {@code minDegree}
      */
     @Override
     public @NotNull Iterable<Polynomial> positivePrimitivePolynomialsAtLeast(int minDegree) {

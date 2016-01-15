@@ -8,6 +8,7 @@ import mho.wheels.ordering.Ordering;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigInteger;
+import java.util.Arrays;
 import java.util.List;
 
 import static mho.wheels.iterables.IterableUtils.*;
@@ -785,13 +786,14 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
      * <ul>
      *  <li>{@code this} must have a positive {@code scale} and a {@code secondaryScale} greater than
      *  {@code minDegree}.</li>
+     *  <li>{@code minDegree} must be at least –1.</li>
      *  <li>The result is an infinite, non-removable {@code Iterable} containing {@code Polynomial}s.</li>
      * </ul>
      *
      * Length is infinite
      *
      * @param minDegree the minimum degree of the generated {@code Polynomial}s
-     * @return {@code Polynomial}s with dimension at least {@code minDegree}
+     * @return {@code Polynomial}s with degree at least {@code minDegree}
      */
     @Override
     public @NotNull Iterable<Polynomial> polynomialsAtLeast(int minDegree) {
@@ -812,34 +814,187 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
         );
     }
 
+    /**
+     * An {@code Iterable} that generates all primitive {@code Polynomial}s (polynomials whose coefficient GCD is 1)
+     * with a given degree. Each coefficient's bit size is chosen from a geometric distribution with mean approximately
+     * {@code scale}. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a positive {@code scale}.</li>
+     *  <li>{@code degree} cannot be negative.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing primitive {@code Polynomial}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param degree the minimum degree of the generated {@code Polynomial}s
+     * @return primitive {@code Polynomial}s with degree {@code minDegree}
+     */
     @Override
     public @NotNull Iterable<Polynomial> primitivePolynomials(int degree) {
-        return null;
+        int scale = getScale();
+        if (scale < 1) {
+            throw new IllegalStateException("this must have a positive scale. Invalid scale: " + scale);
+        }
+        if (degree < 0) {
+            throw new IllegalArgumentException("degree cannot be negative. Invalid degree: " + degree);
+        }
+        if (degree == 0) {
+            return uniformSample(Arrays.asList(Polynomial.ONE, Polynomial.ONE.negate()));
+        }
+        return primitivePolynomials(lists(degree + 1, bigIntegers()));
     }
 
+    /**
+     * An {@code Iterable} that generates all primitive {@code Polynomial}s (polynomials whose coefficient GCD is 1).
+     * Each {@code Polynomial}'s degree is chosen from a geometric distribution with mean approximately
+     * {@code secondaryScale}, and each coefficient's bit size is chosen from a geometric distribution with mean
+     * approximately {@code scale}. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a positive {@code scale} and a positive {@code secondaryScale}.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing primitive {@code Polynomial}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
     @Override
     public @NotNull Iterable<Polynomial> primitivePolynomials() {
-        return null;
+        int secondaryScale = getSecondaryScale();
+        if (secondaryScale < 1) {
+            throw new IllegalStateException("this must have a positive secondaryScale. Invalid secondaryScale: " +
+                    secondaryScale);
+        }
+        return primitivePolynomials(withScale(secondaryScale + 1).listsAtLeast(1, bigIntegers()));
     }
 
+    /**
+     * An {@code Iterable} that generates all primitive {@code Polynomial}s (polynomials whose coefficient GCD is 1)
+     * with a minimum degree. Each {@code Polynomial}'s degree is chosen from a geometric distribution with mean
+     * approximately {@code secondaryScale}, and each coefficient's bit size is chosen from a geometric distribution
+     * with mean approximately {@code scale}. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a positive {@code scale}. It must also have a {@code secondaryScale} that is
+     *  positive and greater than {@code minDegree}.</li>
+     *  <li>{@code degree} must be at least –1.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing primitive {@code Polynomial}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param minDegree the minimum degree of the generated {@code Polynomial}s
+     * @return primitive {@code Polynomial}s with degree at least {@code minDegree}
+     */
     @Override
     public @NotNull Iterable<Polynomial> primitivePolynomialsAtLeast(int minDegree) {
-        return null;
+        if (minDegree < -1) {
+            throw new IllegalArgumentException("minDegree must be at least -1. Invalid minDegree: " + minDegree);
+        }
+        int secondaryScale = getSecondaryScale();
+        if (secondaryScale < 1) {
+            throw new IllegalStateException("this must have a positive secondaryScale. Invalid secondaryScale: " +
+                    secondaryScale);
+        }
+        if (secondaryScale <= minDegree) {
+            throw new IllegalStateException("this must have a secondaryScale greater than the minDegree." +
+                    " secondaryScale: " + secondaryScale + ", minDegree: " + minDegree);
+        }
+        return primitivePolynomials(
+                withScale(secondaryScale + 1).listsAtLeast(minDegree == -1 ? 1 : minDegree + 1, bigIntegers())
+        );
     }
 
+    /**
+     * An {@code Iterable} that generates all primitive {@code Polynomial}s (polynomials whose coefficient GCD is 1)
+     * with a positive leasing coefficient with a given degree. Each coefficient's bit size is chosen from a geometric
+     * distribution with mean approximately {@code scale}. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a positive {@code scale}.</li>
+     *  <li>{@code degree} cannot be negative.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing primitive {@code Polynomial}s with
+     *  positive leading coefficients.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param degree the minimum degree of the generated {@code Polynomial}s
+     * @return primitive {@code Polynomial}s with positive leading coefficients and degree {@code minDegree}
+     */
     @Override
     public @NotNull Iterable<Polynomial> positivePrimitivePolynomials(int degree) {
-        return null;
+        int scale = getScale();
+        if (scale < 1) {
+            throw new IllegalStateException("this must have a positive scale. Invalid scale: " + scale);
+        }
+        if (degree < 0) {
+            throw new IllegalArgumentException("degree cannot be negative. Invalid degree: " + degree);
+        }
+        if (degree == 0) {
+            return repeat(Polynomial.ONE);
+        }
+        return filterInfinite(p -> p.signum() == 1, primitivePolynomials(degree));
     }
 
+    /**
+     * An {@code Iterable} that generates all primitive {@code Polynomial}s (polynomials whose coefficient GCD is 1)
+     * with a positive leasing coefficient. Each {@code Polynomial}'s degree is chosen from a geometric distribution
+     * with mean approximately {@code secondaryScale}, and each coefficient's bit size is chosen from a geometric
+     * distribution with mean approximately {@code scale}. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a positive {@code scale} and a positive {@code secondaryScale}.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing primitive {@code Polynomial}s with
+     *  positive leading coefficients.</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
     @Override
     public @NotNull Iterable<Polynomial> positivePrimitivePolynomials() {
-        return null;
+        int secondaryScale = getSecondaryScale();
+        if (secondaryScale < 1) {
+            throw new IllegalStateException("this must have a positive secondaryScale. Invalid secondaryScale: " +
+                    secondaryScale);
+        }
+        return filterInfinite(p -> p.signum() == 1, primitivePolynomials());
     }
 
+    /**
+     * An {@code Iterable} that generates all primitive {@code Polynomial}s (polynomials whose coefficient GCD is 1)
+     * with a positive leasing coefficient with a minimum degree. Each {@code Polynomial}'s degree is chosen from a
+     * geometric distribution with mean approximately {@code secondaryScale}, and each coefficient's bit size is chosen
+     * from a geometric distribution with mean approximately {@code scale}. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a positive {@code scale}. It must also have a {@code secondaryScale} that is
+     *  positive and greater than {@code minDegree}.</li>
+     *  <li>{@code degree} must be at least –1.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing primitive {@code Polynomial}s with
+     *  positive leading coefficients.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param minDegree the minimum degree of the generated {@code Polynomial}s
+     * @return primitive {@code Polynomial}s with positive leading coefficients and degree at least {@code minDegree}
+     */
     @Override
     public @NotNull Iterable<Polynomial> positivePrimitivePolynomialsAtLeast(int minDegree) {
-        return null;
+        if (minDegree < -1) {
+            throw new IllegalArgumentException("minDegree must be at least -1. Invalid minDegree: " + minDegree);
+        }
+        int secondaryScale = getSecondaryScale();
+        if (secondaryScale < 1) {
+            throw new IllegalStateException("this must have a positive secondaryScale. Invalid secondaryScale: " +
+                    secondaryScale);
+        }
+        if (secondaryScale <= minDegree) {
+            throw new IllegalStateException("this must have a secondaryScale greater than the minDegree." +
+                    " secondaryScale: " + secondaryScale + ", minDegree: " + minDegree);
+        }
+        return filterInfinite(p -> p.signum() == 1, primitivePolynomialsAtLeast(minDegree));
     }
 
     /**
@@ -879,13 +1034,14 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
      * <ul>
      *  <li>{@code this} must have a {@code scale} of at least 3 and a {@code secondaryScale} greater than
      *  {@code minDegree}.</li>
+     *  <li>{@code minDegree} must be at least –1.</li>
      *  <li>The result is an infinite, non-removable {@code Iterable} containing {@code RationalPolynomial}s.</li>
      * </ul>
      *
      * Length is infinite
      *
      * @param minDegree the minimum degree of the generated {@code RationalPolynomial}s
-     * @return {@code RationalPolynomial}s with dimension at least {@code minDegree}
+     * @return {@code RationalPolynomial}s with degree at least {@code minDegree}
      */
     @Override
     public @NotNull Iterable<RationalPolynomial> rationalPolynomialsAtLeast(int minDegree) {
