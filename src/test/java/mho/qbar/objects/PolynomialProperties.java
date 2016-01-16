@@ -1070,27 +1070,17 @@ public class PolynomialProperties extends QBarTestProperties {
     }
 
     private void propertiesEquals() {
-        initialize("");
-        System.out.println("\t\ttesting equals(Object) properties...");
-
+        initialize("equals(Object)");
         propertiesEqualsHelper(LIMIT, P, QBarIterableProvider::polynomials);
-
-        for (Pair<BigInteger, BigInteger> p : take(LIMIT, P.pairs(P.bigIntegers()))) {
-            assertEquals(p, of(p.a).equals(of(p.b)), p.a.equals(p.b));
-        }
     }
 
     private void propertiesHashCode() {
-        initialize("");
-        System.out.println("\t\ttesting hashCode() properties...");
-
+        initialize("hashCode()");
         propertiesHashCodeHelper(LIMIT, P, QBarIterableProvider::polynomials);
     }
 
     private void propertiesCompareTo() {
-        initialize("");
-        System.out.println("\t\ttesting compareTo(Polynomial) properties...");
-
+        initialize("compareTo(Polynomial)");
         propertiesCompareToHelper(LIMIT, P, QBarIterableProvider::polynomials);
 
         for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(P.polynomials()))) {
@@ -1098,15 +1088,29 @@ public class PolynomialProperties extends QBarTestProperties {
         }
 
         for (Pair<BigInteger, BigInteger> p : take(LIMIT, P.pairs(P.bigIntegers()))) {
-            assertEquals(p, of(p.a).compareTo(of(p.b)), p.a.compareTo(p.b));
+            homomorphic(
+                    Polynomial::of,
+                    Polynomial::of,
+                    Function.identity(),
+                    BigInteger::compareTo,
+                    Polynomial::compareTo,
+                    p
+            );
         }
 
-        Iterable<Pair<Polynomial, Polynomial>> ps = filter(
+        Iterable<Pair<Polynomial, Polynomial>> ps = filterInfinite(
                 r -> r.a.degree() != r.b.degree(),
                 P.pairs(filter(q -> q.signum() == 1, P.polynomials()))
         );
         for (Pair<Polynomial, Polynomial> p : take(LIMIT, ps)) {
-            assertEquals(p, compare(p.a, p.b), compare(p.a.degree(), p.b.degree()));
+            homomorphic(
+                    Polynomial::degree,
+                    Polynomial::degree,
+                    Function.identity(),
+                    Polynomial::compareTo,
+                    Integer::compareTo,
+                    p
+            );
         }
     }
 

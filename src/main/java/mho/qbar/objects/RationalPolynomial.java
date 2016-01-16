@@ -819,9 +819,7 @@ public final class RationalPolynomial implements
         int thatSign = that.signum();
         if (thisSign > thatSign) return 1;
         if (thisSign < thatSign) return -1;
-        List<Rational> thisAbsCoefficients = reverse(abs());
-        List<Rational> thatAbsCoefficients = reverse(that.abs());
-        int c = RATIONAL_ITERABLE_COMPARATOR.compare(thisAbsCoefficients, thatAbsCoefficients);
+        int c = RATIONAL_ITERABLE_COMPARATOR.compare(reverse(abs()), reverse(that.abs()));
         return thisSign == -1 ? -c : c;
     }
 

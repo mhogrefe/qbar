@@ -267,26 +267,28 @@ public class RationalPolynomialDemos extends QBarDemos {
     }
 
     private void demoEquals_RationalPolynomial() {
-        for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, P.pairs(P.rationalPolynomials()))) {
+        Iterable<Pair<RationalPolynomial, RationalPolynomial>> ps = P.pairs(P.withScale(4).rationalPolynomials());
+        for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, ps)) {
             System.out.println(p.a + (p.a.equals(p.b) ? " = " : " ≠ ") + p.b);
         }
     }
 
     private void demoEquals_null() {
-        for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
+        for (RationalPolynomial p : take(LIMIT, P.withScale(4).rationalPolynomials())) {
             //noinspection ObjectEqualsNull
             System.out.println(p + (p.equals(null) ? " = " : " ≠ ") + null);
         }
     }
 
     private void demoHashCode() {
-        for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
+        for (RationalPolynomial p : take(LIMIT, P.withScale(4).rationalPolynomials())) {
             System.out.println("hashCode(" + p + ") = " + p.hashCode());
         }
     }
 
     private void demoCompareTo() {
-        for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, P.pairs(P.rationalPolynomials()))) {
+        Iterable<Pair<RationalPolynomial, RationalPolynomial>> ps = P.pairs(P.withScale(4).rationalPolynomials());
+        for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, ps)) {
             System.out.println(p.a + " " + Ordering.compare(p.a, p.b).toChar() + " " + p.b);
         }
     }

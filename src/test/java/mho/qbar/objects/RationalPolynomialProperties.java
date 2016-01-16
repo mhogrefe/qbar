@@ -1397,44 +1397,47 @@ public class RationalPolynomialProperties extends QBarTestProperties {
     }
 
     private void propertiesEquals() {
-        initialize("");
-        System.out.println("\t\ttesting equals(Object) properties...");
-
+        initialize("equals(Object)");
         propertiesEqualsHelper(LIMIT, P, QBarIterableProvider::rationalPolynomials);
-
-        for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
-            assertEquals(p, of(p.a).equals(of(p.b)), p.a.equals(p.b));
-        }
     }
 
     private void propertiesHashCode() {
-        initialize("");
-        System.out.println("\t\ttesting hashCode() properties...");
-
+        initialize("hashCode()");
         propertiesHashCodeHelper(LIMIT, P, QBarIterableProvider::rationalPolynomials);
     }
 
     private void propertiesCompareTo() {
-        initialize("");
-        System.out.println("\t\ttesting compareTo(RationalPolynomial) properties...");
-
+        initialize("compareTo(RationalPolynomial)");
         propertiesCompareToHelper(LIMIT, P, QBarIterableProvider::rationalPolynomials);
 
         for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, P.pairs(P.rationalPolynomials()))) {
-            int compare = p.a.compareTo(p.b);
-            assertEquals(p, p.a.subtract(p.b).signum(), compare);
+            assertEquals(p, p.a.compareTo(p.b), p.a.subtract(p.b).signum());
         }
 
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
-            assertEquals(p, of(p.a).compareTo(of(p.b)), p.a.compareTo(p.b));
+            homomorphic(
+                    RationalPolynomial::of,
+                    RationalPolynomial::of,
+                    Function.identity(),
+                    Rational::compareTo,
+                    RationalPolynomial::compareTo,
+                    p
+            );
         }
 
-        Iterable<Pair<RationalPolynomial, RationalPolynomial>> ps = filter(
+        Iterable<Pair<RationalPolynomial, RationalPolynomial>> ps = filterInfinite(
                 r -> r.a.degree() != r.b.degree(),
                 P.pairs(filter(q -> q.signum() == 1, P.rationalPolynomials()))
         );
         for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, ps)) {
-            assertEquals(p, compare(p.a, p.b), compare(p.a.degree(), p.b.degree()));
+            homomorphic(
+                    RationalPolynomial::degree,
+                    RationalPolynomial::degree,
+                    Function.identity(),
+                    RationalPolynomial::compareTo,
+                    Integer::compareTo,
+                    p
+            );
         }
     }
 

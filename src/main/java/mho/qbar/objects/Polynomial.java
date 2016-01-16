@@ -761,9 +761,7 @@ public final class Polynomial implements
         int thatSign = that.signum();
         if (thisSign > thatSign) return 1;
         if (thisSign < thatSign) return -1;
-        List<BigInteger> thisAbsCoefficients = reverse(abs());
-        List<BigInteger> thatAbsCoefficients = reverse(that.abs());
-        int c = BIG_INTEGER_ITERABLE_COMPARATOR.compare(thisAbsCoefficients, thatAbsCoefficients);
+        int c = BIG_INTEGER_ITERABLE_COMPARATOR.compare(reverse(abs()), reverse(that.abs()));
         return thisSign == -1 ? -c : c;
     }
 
