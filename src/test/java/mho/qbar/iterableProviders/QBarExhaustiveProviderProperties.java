@@ -35,6 +35,7 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
         propertiesPrimitivePolynomials();
         propertiesPositivePrimitivePolynomials();
         propertiesRationalPolynomials();
+        propertiesMonicRationalPolynomials();
     }
 
     @Override
@@ -57,6 +58,8 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
         propertiesPositivePrimitivePolynomialsAtLeast();
         propertiesRationalPolynomials_int();
         propertiesRationalPolynomialsAtLeast();
+        propertiesMonicRationalPolynomials_int();
+        propertiesMonicRationalPolynomialsAtLeast();
     }
 
     private static <T> void test_helper(
@@ -446,6 +449,44 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
         for (int i : take(LIMIT, P.rangeDown(-2))) {
             try {
                 QEP.rationalPolynomialsAtLeast(i);
+                fail(i);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesMonicRationalPolynomials_int() {
+        initialize("monicRationalPolynomials(int)");
+        for (int i : take(SMALL_LIMIT, P.rangeUpGeometric(-1))) {
+            Iterable<RationalPolynomial> ps = QEP.monicRationalPolynomials(i);
+            simpleTest(i, ps, p -> p.degree() == i && p.isMonic());
+            take(TINY_LIMIT, ps).forEach(RationalPolynomial::validate);
+        }
+
+        for (int i : take(LIMIT, P.rangeDown(-2))) {
+            try {
+                QEP.monicRationalPolynomials(i);
+                fail(i);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesMonicRationalPolynomials() {
+        initializeConstant("monicRationalPolynomials()");
+        biggerTest(QEP, QEP.monicRationalPolynomials(), RationalPolynomial::isMonic);
+        take(TINY_LIMIT, QEP.monicRationalPolynomials()).forEach(RationalPolynomial::validate);
+    }
+
+    private void propertiesMonicRationalPolynomialsAtLeast() {
+        initialize("monicRationalPolynomialsAtLeast(int)");
+        for (int i : take(SMALL_LIMIT, P.rangeUpGeometric(-1))) {
+            Iterable<RationalPolynomial> ps = QEP.monicRationalPolynomialsAtLeast(i);
+            simpleTest(i, ps, p -> p.degree() >= i && p.isMonic());
+            take(TINY_LIMIT, ps).forEach(RationalPolynomial::validate);
+        }
+
+        for (int i : take(LIMIT, P.rangeDown(-2))) {
+            try {
+                QEP.monicRationalPolynomialsAtLeast(i);
                 fail(i);
             } catch (IllegalArgumentException ignored) {}
         }

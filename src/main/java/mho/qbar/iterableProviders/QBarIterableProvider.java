@@ -3158,19 +3158,25 @@ public strictfp abstract class QBarIterableProvider {
      *
      * @param degree the degree of the generated {@code RationalPolynomial}s
      */
-    public abstract @NotNull Iterable<RationalPolynomial> monicRationalPolynomials(int degree);
+    public @NotNull Iterable<RationalPolynomial> monicRationalPolynomials(int degree) {
+        return map(p -> p.toRationalPolynomial().makeMonic(), positivePrimitivePolynomials(degree));
+    }
 
     /**
      * Generates monic {@code RationalPolynomial}s.
      */
-    public abstract @NotNull Iterable<RationalPolynomial> monicRationalPolynomials();
+    public @NotNull Iterable<RationalPolynomial> monicRationalPolynomials() {
+        return map(p -> p.toRationalPolynomial().makeMonic(), positivePrimitivePolynomials());
+    }
 
     /**
      * Generates monic {@code RationalPolynomial}s with a minimum degree.
      *
      * @param minDegree the minimum degree of the generated {@code RationalPolynomial}s
      */
-    public abstract @NotNull Iterable<RationalPolynomial> monicRationalPolynomialsAtLeast(int minDegree);
+    public @NotNull Iterable<RationalPolynomial> monicRationalPolynomialsAtLeast(int minDegree) {
+        return map(p -> p.toRationalPolynomial().makeMonic(), positivePrimitivePolynomialsAtLeast(minDegree));
+    }
 
     public @NotNull Iterable<QBarRandomProvider> qbarRandomProvidersFixedScales(int scale, int secondaryScale) {
         return map(

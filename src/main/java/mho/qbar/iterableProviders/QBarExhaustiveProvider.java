@@ -545,7 +545,7 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
     @Override
     public @NotNull Iterable<RationalPolynomial> rationalPolynomials() {
         return map(
-                js -> RationalPolynomial.of(toList(js)),
+                is -> RationalPolynomial.of(toList(is)),
                 filterInfinite(is -> is.isEmpty() || last(is) != Rational.ZERO, lists(rationals()))
         );
     }
@@ -566,27 +566,12 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
     @Override
     public @NotNull Iterable<RationalPolynomial> rationalPolynomialsAtLeast(int minDegree) {
         return map(
-                js -> RationalPolynomial.of(toList(js)),
+                is -> RationalPolynomial.of(toList(is)),
                 filterInfinite(
                         is -> is.isEmpty() || last(is) != Rational.ZERO,
                         listsAtLeast(minDegree + 1, rationals())
                 )
         );
-    }
-
-    @Override
-    public @NotNull Iterable<RationalPolynomial> monicRationalPolynomials(int degree) {
-        return map(p -> p.toRationalPolynomial().makeMonic(), primitivePolynomials(degree));
-    }
-
-    @Override
-    public @NotNull Iterable<RationalPolynomial> monicRationalPolynomialsAtLeast(int minDegree) {
-        return map(p -> p.toRationalPolynomial().makeMonic(), primitivePolynomialsAtLeast(minDegree));
-    }
-
-    @Override
-    public @NotNull Iterable<RationalPolynomial> monicRationalPolynomials() {
-        return map(p -> p.toRationalPolynomial().makeMonic(), primitivePolynomials());
     }
 
     /**

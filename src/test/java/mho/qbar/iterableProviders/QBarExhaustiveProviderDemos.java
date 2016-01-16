@@ -125,4 +125,17 @@ public class QBarExhaustiveProviderDemos extends QBarDemos {
             System.out.println("rationalPolynomialsAtLeast(" + i + ") = " + its(QEP.rationalPolynomialsAtLeast(i)));
         }
     }
+
+    private void demoMonicRationalPolynomials_int() {
+        for (int i : take(SMALL_LIMIT, P.rangeUpGeometric(-1))) {
+            System.out.println("monicRationalPolynomials(" + i + ") = " + its(QEP.monicRationalPolynomials(i)));
+        }
+    }
+
+    private void demoMonicRationalPolynomialsAtLeast() {
+        for (int i : take(SMALL_LIMIT, P.rangeUpGeometric(-1))) {
+            System.out.println("monicRationalPolynomialsAtLeast(" + i + ") = " +
+                    its(QEP.monicRationalPolynomialsAtLeast(i)));
+        }
+    }
 }
