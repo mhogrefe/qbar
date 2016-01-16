@@ -1062,21 +1062,6 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
         );
     }
 
-    @Override
-    public @NotNull Iterable<RationalPolynomial> monicRationalPolynomials(int degree) {
-        return null;
-    }
-
-    @Override
-    public @NotNull Iterable<RationalPolynomial> monicRationalPolynomialsAtLeast(int minDegree) {
-        return null;
-    }
-
-    @Override
-    public @NotNull Iterable<RationalPolynomial> monicRationalPolynomials() {
-        return null;
-    }
-
     /**
      * Determines whether {@code this} is equal to {@code that}.
      *

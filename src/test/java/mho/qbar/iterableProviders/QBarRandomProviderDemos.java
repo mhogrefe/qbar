@@ -385,4 +385,39 @@ public class QBarRandomProviderDemos extends QBarDemos {
                     its(p.a.rationalPolynomialsAtLeast(p.b)));
         }
     }
+
+    private void demoMonicRationalPolynomials_int() {
+        Iterable<Pair<QBarRandomProvider, Integer>> ps = P.pairsSquareRootOrder(
+                filterInfinite(rp -> rp.getScale() > 0, P.withScale(4).qbarRandomProvidersDefaultSecondaryScale()),
+                P.withScale(4).naturalIntegersGeometric()
+        );
+        for (Pair<QBarRandomProvider, Integer> p : take(SMALL_LIMIT, ps)) {
+            System.out.println("monicRationalPolynomials(" + p.a + ", " + p.b + ") = " +
+                    its(p.a.monicRationalPolynomials(p.b)));
+        }
+    }
+
+    private void demoMonicRationalPolynomials() {
+        Iterable<QBarRandomProvider> rps = filterInfinite(
+                rp -> rp.getScale() > 0 && rp.getSecondaryScale() > 0,
+                P.withScale(4).qbarRandomProviders()
+        );
+        for (QBarRandomProvider rp : take(SMALL_LIMIT, rps)) {
+            System.out.println("monicRationalPolynomials(" + rp + ") = " + its(rp.monicRationalPolynomials()));
+        }
+    }
+
+    private void demoMonicRationalPolynomialsAtLeast() {
+        Iterable<Pair<QBarRandomProvider, Integer>> ps = filterInfinite(
+                p -> p.a.getSecondaryScale() > p.b && p.a.getSecondaryScale() > 0,
+                P.pairsSquareRootOrder(
+                        filterInfinite(rp -> rp.getScale() > 0, P.withScale(4).qbarRandomProviders()),
+                        P.withScale(4).rangeUpGeometric(-1)
+                )
+        );
+        for (Pair<QBarRandomProvider, Integer> p : take(SMALL_LIMIT, ps)) {
+            System.out.println("monicRationalPolynomialsAtLeast(" + p.a + ", " + p.b + ") = " +
+                    its(p.a.monicRationalPolynomialsAtLeast(p.b)));
+        }
+    }
 }
