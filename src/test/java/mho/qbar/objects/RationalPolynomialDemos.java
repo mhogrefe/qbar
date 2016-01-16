@@ -258,8 +258,8 @@ public class RationalPolynomialDemos extends QBarDemos {
 
     private void demoDivide_RationalPolynomial() {
         Iterable<Pair<RationalPolynomial, RationalPolynomial>> ps = P.pairs(
-                P.rationalPolynomials(),
-                filter(q -> q != ZERO, P.rationalPolynomials())
+                P.withScale(4).rationalPolynomials(),
+                P.withScale(4).rationalPolynomialsAtLeast(0)
         );
         for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, ps)) {
             System.out.println("(" + p.a + ") / (" + p.b + ") = " + p.a.divide(p.b));

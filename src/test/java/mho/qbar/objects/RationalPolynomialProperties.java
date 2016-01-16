@@ -1340,12 +1340,10 @@ public class RationalPolynomialProperties extends QBarTestProperties {
     }
 
     private void propertiesDivide_RationalPolynomial() {
-        initialize("");
-        System.out.println("\t\ttesting divide(RationalPolynomial) properties...");
-
+        initialize("divide(RationalPolynomial)");
         Iterable<Pair<RationalPolynomial, RationalPolynomial>> ps = P.pairs(
                 P.rationalPolynomials(),
-                filter(q -> q != ZERO, P.rationalPolynomials())
+                P.rationalPolynomialsAtLeast(0)
         );
         for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, ps)) {
             Pair<RationalPolynomial, RationalPolynomial> quotRem = p.a.divide(p.b);
@@ -1357,23 +1355,22 @@ public class RationalPolynomialProperties extends QBarTestProperties {
             quotient.validate();
             remainder.validate();
             assertEquals(p, quotient.multiply(p.b).add(remainder), p.a);
-            assertTrue(p, p.b == ZERO || remainder.degree() < p.b.degree());
+            assertTrue(p, remainder.degree() < p.b.degree());
         }
 
-        Iterable<Pair<Rational, Rational>> ps2 = P.pairs(
-                P.rationals(),
-                filter(r -> r != Rational.ZERO, P.rationals())
-        );
-        for (Pair<Rational, Rational> p : take(LIMIT, ps2)) {
+        for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals(), P.nonzeroRationals()))) {
             Pair<RationalPolynomial, RationalPolynomial> quotRem = of(p.a).divide(of(p.b));
             assertEquals(p, quotRem.a, of(p.a.divide(p.b)));
-            assertTrue(p, quotRem.b == ZERO);
+            assertEquals(p, quotRem.b, ZERO);
         }
 
-        ps = filter(q -> q.a.degree() < q.b.degree(), ps);
+        ps = filterInfinite(
+                q -> q.a.degree() < q.b.degree(),
+                P.pairs(P.rationalPolynomials(), P.rationalPolynomialsAtLeast(0))
+        );
         for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, ps)) {
             Pair<RationalPolynomial, RationalPolynomial> quotRem = p.a.divide(p.b);
-            assertTrue(p, quotRem.a == ZERO);
+            assertEquals(p, quotRem.a, ZERO);
             assertEquals(p, quotRem.b, p.a);
         }
 
@@ -1386,28 +1383,17 @@ public class RationalPolynomialProperties extends QBarTestProperties {
     }
 
     private void compareImplementationsDivide_RationalPolynomial() {
-        initialize("");
-        System.out.println("\t\tcomparing divide(RationalPolynomial) implementations...");
-
-        long totalTime = 0;
+        Map<
+                String,
+                Function<Pair<RationalPolynomial, RationalPolynomial>, Pair<RationalPolynomial, RationalPolynomial>>
+        > functions = new LinkedHashMap<>();
+        functions.put("simplest", p -> divide_RationalPolynomial_simplest(p.a, p.b));
+        functions.put("standard", p -> p.a.divide(p.b));
         Iterable<Pair<RationalPolynomial, RationalPolynomial>> ps = P.pairs(
                 P.rationalPolynomials(),
-                filter(q -> q != ZERO, P.rationalPolynomials())
+                P.rationalPolynomialsAtLeast(0)
         );
-        for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, ps)) {
-            long time = System.nanoTime();
-            divide_RationalPolynomial_simplest(p.a, p.b);
-            totalTime += (System.nanoTime() - time);
-        }
-        System.out.println("\t\t\tsimplest: " + ((double) totalTime) / 1e9 + " s");
-
-        totalTime = 0;
-        for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, ps)) {
-            long time = System.nanoTime();
-            p.a.divide(p.b);
-            totalTime += (System.nanoTime() - time);
-        }
-        System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
+        compareImplementations("divide(RationalPolynomial)", take(LIMIT, ps), functions);
     }
 
     private void propertiesEquals() {

@@ -1190,65 +1190,86 @@ public class RationalPolynomialTest {
         constantFactor_fail_helper("0");
     }
 
+    private static void divide_RationalPolynomial_helper(
+            @NotNull String a,
+            @NotNull String b,
+            @NotNull String quotient,
+            @NotNull String remainder
+    ) {
+        Pair<RationalPolynomial, RationalPolynomial> result = read(a).get().divide(read(b).get());
+        aeq(result.a, quotient);
+        aeq(result.b, remainder);
+    }
+
+    private static void divide_RationalPolynomial_fail_helper(@NotNull String a, @NotNull String b) {
+        try {
+            read(a).get().divide(read(b).get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
     @Test
     public void testDivide_RationalPolynomial() {
-        aeq(read("x^3-2*x^2-4").get().divide(read("x-3").get()), "(x^2+x+3, 5)");
-        aeq(read("x^3-12*x^2-42").get().divide(read("x^2-2*x+1").get()), "(x-10, -21*x-32)");
-        aeq(ZERO.divide(ONE), "(0, 0)");
-        aeq(ZERO.divide(X), "(0, 0)");
-        aeq(ZERO.divide(read("-4/3").get()), "(0, 0)");
-        aeq(ZERO.divide(read("x^2-7/4*x+1/3").get()), "(0, 0)");
-        aeq(ZERO.divide(read("-x^3-1").get()), "(0, 0)");
-        aeq(ZERO.divide(read("1/2*x^10").get()), "(0, 0)");
-        aeq(ONE.divide(ONE), "(1, 0)");
-        aeq(ONE.divide(X), "(0, 1)");
-        aeq(ONE.divide(read("-4/3").get()), "(-3/4, 0)");
-        aeq(ONE.divide(read("x^2-7/4*x+1/3").get()), "(0, 1)");
-        aeq(ONE.divide(read("-x^3-1").get()), "(0, 1)");
-        aeq(ONE.divide(read("1/2*x^10").get()), "(0, 1)");
-        aeq(X.divide(ONE), "(x, 0)");
-        aeq(X.divide(X), "(1, 0)");
-        aeq(X.divide(read("-4/3").get()), "(-3/4*x, 0)");
-        aeq(X.divide(read("x^2-7/4*x+1/3").get()), "(0, x)");
-        aeq(X.divide(read("-x^3-1").get()), "(0, x)");
-        aeq(X.divide(read("1/2*x^10").get()), "(0, x)");
-        aeq(read("-4/3").get().divide(ONE), "(-4/3, 0)");
-        aeq(read("-4/3").get().divide(X), "(0, -4/3)");
-        aeq(read("-4/3").get().divide(read("-4/3").get()), "(1, 0)");
-        aeq(read("-4/3").get().divide(read("x^2-7/4*x+1/3").get()), "(0, -4/3)");
-        aeq(read("-4/3").get().divide(read("-x^3-1").get()), "(0, -4/3)");
-        aeq(read("-4/3").get().divide(read("1/2*x^10").get()), "(0, -4/3)");
-        aeq(read("x^2-7/4*x+1/3").get().divide(ONE), "(x^2-7/4*x+1/3, 0)");
-        aeq(read("x^2-7/4*x+1/3").get().divide(X), "(x-7/4, 1/3)");
-        aeq(read("x^2-7/4*x+1/3").get().divide(read("-4/3").get()), "(-3/4*x^2+21/16*x-1/4, 0)");
-        aeq(read("x^2-7/4*x+1/3").get().divide(read("x^2-7/4*x+1/3").get()), "(1, 0)");
-        aeq(read("x^2-7/4*x+1/3").get().divide(read("-x^3-1").get()), "(0, x^2-7/4*x+1/3)");
-        aeq(read("x^2-7/4*x+1/3").get().divide(read("1/2*x^10").get()), "(0, x^2-7/4*x+1/3)");
-        aeq(read("-x^3-1").get().divide(ONE), "(-x^3-1, 0)");
-        aeq(read("-x^3-1").get().divide(X), "(-x^2, -1)");
-        aeq(read("-x^3-1").get().divide(read("-4/3").get()), "(3/4*x^3+3/4, 0)");
-        aeq(read("-x^3-1").get().divide(read("x^2-7/4*x+1/3").get()), "(-x-7/4, -131/48*x-5/12)");
-        aeq(read("-x^3-1").get().divide(read("-x^3-1").get()), "(1, 0)");
-        aeq(read("-x^3-1").get().divide(read("1/2*x^10").get()), "(0, -x^3-1)");
-        aeq(read("1/2*x^10").get().divide(ONE), "(1/2*x^10, 0)");
-        aeq(read("1/2*x^10").get().divide(X), "(1/2*x^9, 0)");
-        aeq(read("1/2*x^10").get().divide(read("-4/3").get()), "(-3/8*x^10, 0)");
-        aeq(
-                read("1/2*x^10").get().divide(read("x^2-7/4*x+1/3").get()),
-                "(1/2*x^8+7/8*x^7+131/96*x^6+805/384*x^5+14809/4608*x^4+10087/2048*x^3+1669499/221184*x^2" +
-                "+10233965/884736*x+188201281/10616832," +
-                " 1153665527/42467328*x-188201281/31850496)"
+        divide_RationalPolynomial_helper("0", "1", "0", "0");
+        divide_RationalPolynomial_helper("0", "x", "0", "0");
+        divide_RationalPolynomial_helper("0", "-4/3", "0", "0");
+        divide_RationalPolynomial_helper("0", "x^2-7/4*x+1/3", "0", "0");
+        divide_RationalPolynomial_helper("0", "-x^3-1", "0", "0");
+        divide_RationalPolynomial_helper("0", "1/2*x^10", "0", "0");
+
+        divide_RationalPolynomial_helper("1", "1", "1", "0");
+        divide_RationalPolynomial_helper("1", "x", "0", "1");
+        divide_RationalPolynomial_helper("1", "-4/3", "-3/4", "0");
+        divide_RationalPolynomial_helper("1", "x^2-7/4*x+1/3", "0", "1");
+        divide_RationalPolynomial_helper("1", "-x^3-1", "0", "1");
+        divide_RationalPolynomial_helper("1", "1/2*x^10", "0", "1");
+
+        divide_RationalPolynomial_helper("x", "1", "x", "0");
+        divide_RationalPolynomial_helper("x", "x", "1", "0");
+        divide_RationalPolynomial_helper("x", "-4/3", "-3/4*x", "0");
+        divide_RationalPolynomial_helper("x", "x^2-7/4*x+1/3", "0", "x");
+        divide_RationalPolynomial_helper("x", "-x^3-1", "0", "x");
+        divide_RationalPolynomial_helper("x", "1/2*x^10", "0", "x");
+
+        divide_RationalPolynomial_helper("-4/3", "1", "-4/3", "0");
+        divide_RationalPolynomial_helper("-4/3", "x", "0", "-4/3");
+        divide_RationalPolynomial_helper("-4/3", "-4/3", "1", "0");
+        divide_RationalPolynomial_helper("-4/3", "x^2-7/4*x+1/3", "0", "-4/3");
+        divide_RationalPolynomial_helper("-4/3", "-x^3-1", "0", "-4/3");
+        divide_RationalPolynomial_helper("-4/3", "1/2*x^10", "0", "-4/3");
+
+        divide_RationalPolynomial_helper("x^2-7/4*x+1/3", "1", "x^2-7/4*x+1/3", "0");
+        divide_RationalPolynomial_helper("x^2-7/4*x+1/3", "x", "x-7/4", "1/3");
+        divide_RationalPolynomial_helper("x^2-7/4*x+1/3", "-4/3", "-3/4*x^2+21/16*x-1/4", "0");
+        divide_RationalPolynomial_helper("x^2-7/4*x+1/3", "x^2-7/4*x+1/3", "1", "0");
+        divide_RationalPolynomial_helper("x^2-7/4*x+1/3", "-x^3-1", "0", "x^2-7/4*x+1/3");
+        divide_RationalPolynomial_helper("x^2-7/4*x+1/3", "1/2*x^10", "0", "x^2-7/4*x+1/3");
+
+        divide_RationalPolynomial_helper("-x^3-1", "1", "-x^3-1", "0");
+        divide_RationalPolynomial_helper("-x^3-1", "x", "-x^2", "-1");
+        divide_RationalPolynomial_helper("-x^3-1", "-4/3", "3/4*x^3+3/4", "0");
+        divide_RationalPolynomial_helper("-x^3-1", "x^2-7/4*x+1/3", "-x-7/4", "-131/48*x-5/12");
+        divide_RationalPolynomial_helper("-x^3-1", "-x^3-1", "1", "0");
+        divide_RationalPolynomial_helper("-x^3-1", "1/2*x^10", "0", "-x^3-1");
+
+        divide_RationalPolynomial_helper("1/2*x^10", "1", "1/2*x^10", "0");
+        divide_RationalPolynomial_helper("1/2*x^10", "x", "1/2*x^9", "0");
+        divide_RationalPolynomial_helper("1/2*x^10", "-4/3", "-3/8*x^10", "0");
+        divide_RationalPolynomial_helper(
+                "1/2*x^10",
+                "x^2-7/4*x+1/3",
+                "1/2*x^8+7/8*x^7+131/96*x^6+805/384*x^5+14809/4608*x^4+10087/2048*x^3+1669499/221184*x^2+" +
+                        "10233965/884736*x+188201281/10616832",
+                "1153665527/42467328*x-188201281/31850496"
         );
-        aeq(read("1/2*x^10").get().divide(read("-x^3-1").get()), "(-1/2*x^7+1/2*x^4-1/2*x, -1/2*x)");
-        aeq(read("1/2*x^10").get().divide(read("1/2*x^10").get()), "(1, 0)");
-        try {
-            ZERO.divide(ZERO);
-            fail();
-        } catch (ArithmeticException ignored) {}
-        try {
-            read("x^2-7/4*x+1/3").get().divide(ZERO);
-            fail();
-        } catch (ArithmeticException ignored) {}
+        divide_RationalPolynomial_helper("1/2*x^10", "-x^3-1", "-1/2*x^7+1/2*x^4-1/2*x", "-1/2*x");
+        divide_RationalPolynomial_helper("1/2*x^10", "1/2*x^10", "1", "0");
+
+        divide_RationalPolynomial_helper("x^3-2*x^2-4", "x-3", "x^2+x+3", "5");
+        divide_RationalPolynomial_helper("x^3-12*x^2-42", "x^2-2*x+1", "x-10", "-21*x-32");
+
+        divide_RationalPolynomial_fail_helper("0", "0");
+        divide_RationalPolynomial_fail_helper("x^2-7/4*x+1/3", "0");
     }
 
     @Test
