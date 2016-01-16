@@ -2983,12 +2983,13 @@ public strictfp abstract class QBarIterableProvider {
      * {@code Iterable} of reduced {@code RationalVector}s.
      *
      * <ul>
-     *  <li>{@code bigIntegerLists} cannot contain nulls or elements that contain nulls.</li>
+     *  <li>{@code bigIntegerLists} cannot contain nulls or elements that contain nulls. It must also contain
+     *  infinitely many {@code List}s that have a GCD of zero or one and whose first nonzero value, if it exists, is
+     *  positive.</li>
      *  <li>The result is a non-removable {@code Iterable} of reduced {@code RationalVector}s.</li>
      * </ul>
      *
-     * Length is the number of {@code BigInteger} {@code List}s in {@code bigIntegerLists} that have a GCD of zero or
-     * one and whose first nonzero value, if it exists, is positive.
+     * Length is infinite.
      *
      * @param bigIntegerLists the source list
      * @return the resulting {@code RationalVector}s
@@ -3085,6 +3086,21 @@ public strictfp abstract class QBarIterableProvider {
      */
     public abstract @NotNull Iterable<Polynomial> primitivePolynomials(int degree);
 
+    /**
+     * A helper method which takes an {@code Iterable} of {@code BigInteger} {@code List}s and transforms it into an
+     * {@code Iterable} of primitive {@code Polynomial}s.
+     *
+     * <ul>
+     *  <li>{@code bigIntegerLists} cannot contain nulls or elements that contain nulls. It must also contain
+     *  infinitely many {@code List}s that have a GCD of zero or one.</li>
+     *  <li>The result is a non-removable {@code Iterable} of primitive {@code Polynomial}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param bigIntegerLists the source list
+     * @return the resulting {@code Polynomial}s
+     */
     protected static @NotNull Iterable<Polynomial> primitivePolynomials(
             @NotNull Iterable<List<BigInteger>> bigIntegerLists
     ) {
