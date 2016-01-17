@@ -14,6 +14,7 @@ import java.util.*;
 import java.util.function.Function;
 
 import static mho.qbar.objects.RationalVector.*;
+import static mho.qbar.objects.RationalVector.sum;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.ordering.Ordering.compare;
 import static mho.wheels.testing.Testing.*;

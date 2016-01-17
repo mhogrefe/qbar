@@ -13,7 +13,7 @@ import java.util.*;
 import java.util.function.Function;
 
 import static mho.wheels.iterables.IterableUtils.*;
-import static mho.wheels.testing.Testing.*;
+import static mho.wheels.testing.Testing.assertTrue;
 
 /**
  * <p>A univariate polynomial in x with {@link BigInteger} coefficients.</p>

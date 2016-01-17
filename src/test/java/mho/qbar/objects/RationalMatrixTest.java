@@ -8,7 +8,7 @@ import org.junit.Test;
 import java.util.List;
 
 import static mho.qbar.objects.RationalMatrix.*;
-import static mho.wheels.iterables.IterableUtils.*;
+import static mho.wheels.iterables.IterableUtils.toList;
 import static mho.wheels.testing.Testing.*;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;

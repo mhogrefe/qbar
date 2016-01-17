@@ -9,6 +9,7 @@ import java.math.BigInteger;
 import java.util.List;
 
 import static mho.qbar.objects.RationalVector.*;
+import static mho.qbar.objects.RationalVector.sum;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.testing.Testing.*;
 

@@ -10,7 +10,8 @@ import java.math.BigInteger;
 import java.util.List;
 
 import static mho.qbar.objects.Interval.*;
-import static mho.qbar.testing.QBarTesting.*;
+import static mho.qbar.objects.Interval.sum;
+import static mho.qbar.testing.QBarTesting.QEP;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.testing.Testing.*;
 

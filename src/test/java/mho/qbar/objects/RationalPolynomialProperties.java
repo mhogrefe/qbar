@@ -17,8 +17,12 @@ import java.util.function.Function;
 import static mho.qbar.objects.RationalPolynomial.*;
 import static mho.qbar.objects.RationalPolynomial.sum;
 import static mho.qbar.testing.QBarTesting.*;
+import static mho.qbar.testing.QBarTesting.propertiesCompareToHelper;
+import static mho.qbar.testing.QBarTesting.propertiesEqualsHelper;
+import static mho.qbar.testing.QBarTesting.propertiesHashCodeHelper;
 import static mho.wheels.iterables.IterableUtils.*;
-import static mho.wheels.ordering.Ordering.*;
+import static mho.wheels.ordering.Ordering.ge;
+import static mho.wheels.ordering.Ordering.max;
 import static mho.wheels.testing.Testing.*;
 
 public class RationalPolynomialProperties extends QBarTestProperties {

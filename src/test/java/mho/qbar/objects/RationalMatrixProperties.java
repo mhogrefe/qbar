@@ -17,7 +17,7 @@ import java.util.function.Function;
 import static mho.qbar.objects.RationalMatrix.*;
 import static mho.qbar.objects.RationalVector.ZERO_DIMENSIONAL;
 import static mho.wheels.iterables.IterableUtils.*;
-import static mho.wheels.ordering.Ordering.*;
+import static mho.wheels.ordering.Ordering.compare;
 import static mho.wheels.testing.Testing.*;
 
 public class RationalMatrixProperties extends QBarTestProperties {

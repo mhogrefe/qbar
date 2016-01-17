@@ -6,7 +6,6 @@ import mho.wheels.math.BinaryFraction;
 import mho.wheels.math.MathUtils;
 import mho.wheels.numberUtils.BigDecimalUtils;
 import mho.wheels.numberUtils.IntegerUtils;
-import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
 import org.jetbrains.annotations.NotNull;
@@ -22,7 +21,8 @@ import java.util.function.Function;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.numberUtils.FloatingPointUtils.*;
 import static mho.wheels.ordering.Ordering.*;
-import static mho.wheels.testing.Testing.*;
+import static mho.wheels.testing.Testing.assertEquals;
+import static mho.wheels.testing.Testing.assertTrue;
 
 /**
  * <p>The {@code Rational} class uniquely represents rational numbers. {@code denominator} is the smallest positive
