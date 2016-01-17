@@ -13,7 +13,7 @@ import java.util.*;
 import java.util.function.Function;
 
 import static mho.wheels.iterables.IterableUtils.*;
-import static org.junit.Assert.assertTrue;
+import static mho.wheels.testing.Testing.assertTrue;
 
 /**
  * <p>A univariate polynomial in x with {@link BigInteger} coefficients.</p>
@@ -29,7 +29,7 @@ import static org.junit.Assert.assertTrue;
  */
 public final class Polynomial implements
         Comparable<Polynomial>,
-        Function<BigInteger, BigInteger>,
+        Function<Rational, Rational>,
         Iterable<BigInteger> {
     /**
      * 0
@@ -52,6 +52,16 @@ public final class Polynomial implements
     private static final Comparator<Iterable<BigInteger>> BIG_INTEGER_ITERABLE_COMPARATOR = new ShortlexComparator<>();
 
     /**
+     * A {@code Comparator} that compares two {@code Polynomial}s by their denominators, then lexicographically by
+     * their coefficients.
+     */
+    private static final @NotNull Comparator<Polynomial> DEGREE_COEFFICIENT_COMPARATOR = (p, q) -> {
+        int c = Integer.compare(p.degree(), q.degree());
+        if (c != 0) return c;
+        return BIG_INTEGER_ITERABLE_COMPARATOR.compare(p.coefficients, q.coefficients);
+    };
+
+    /**
      * The polynomial's coefficients. The coefficient of x<sup>i</sup> is at the ith position.
      */
     private final @NotNull List<BigInteger> coefficients;
@@ -63,6 +73,8 @@ public final class Polynomial implements
      *  <li>{@code coefficients} cannot have any null elements and cannot end in a 0.</li>
      *  <li>Any {@code Polynomial} may be constructed with this constructor.</li>
      * </ul>
+     *
+     * Length is |{@code coefficients}|
      *
      * @param coefficients the polynomial's coefficients
      */
@@ -99,7 +111,6 @@ public final class Polynomial implements
      * @param x the argument
      * @return {@code this}({@code x})
      */
-    @Override
     public @NotNull BigInteger apply(@NotNull BigInteger x) {
         return foldr((c, y) -> y.multiply(x).add(c), BigInteger.ZERO, coefficients);
     }
@@ -115,6 +126,7 @@ public final class Polynomial implements
      * @param x the argument
      * @return {@code this}({@code x})
      */
+    @Override
     public @NotNull Rational apply(@NotNull Rational x) {
         return foldr((c, y) -> x.multiply(y).add(Rational.of(c)), Rational.ZERO, coefficients);
     }
@@ -126,6 +138,8 @@ public final class Polynomial implements
      *  <li>{@code this} may be any {@code Polynomial}.</li>
      *  <li>The result is a {@code RationalPolynomial} with integral coefficients.</li>
      * </ul>
+     *
+     * Length is deg({@code this})+1
      *
      * @return a {@code RationalPolynomial} with the same value as {@code this}
      */
@@ -167,13 +181,12 @@ public final class Polynomial implements
      * @return the {@code Polynomial} with the specified coefficients
      */
     public static @NotNull Polynomial of(@NotNull List<BigInteger> coefficients) {
-        if (any(i -> i == null, coefficients))
+        if (any(i -> i == null, coefficients)) {
             throw new NullPointerException();
-        int actualSize = coefficients.size();
-        for (int i = coefficients.size() - 1; i >= 0; i--) {
-            if (coefficients.get(i).equals(BigInteger.ZERO)) {
-                actualSize--;
-            } else {
+        }
+        int actualSize;
+        for (actualSize = coefficients.size(); actualSize > 0; actualSize--) {
+            if (!coefficients.get(actualSize - 1).equals(BigInteger.ZERO)) {
                 break;
             }
         }
@@ -217,8 +230,9 @@ public final class Polynomial implements
      * @return {@code c}x<sup>p</sup>
      */
     public static @NotNull Polynomial of(@NotNull BigInteger c, int p) {
-        if (p < 0)
-            throw new IllegalArgumentException("power cannot be negative");
+        if (p < 0) {
+            throw new IllegalArgumentException("p cannot be negative. Invalid p: " + p);
+        }
         if (c.equals(BigInteger.ZERO)) return ZERO;
         if (p == 0 && c.equals(BigInteger.ONE)) return ONE;
         return new Polynomial(toList(concat(replicate(p, BigInteger.ZERO), Collections.singletonList(c))));
@@ -459,8 +473,9 @@ public final class Polynomial implements
      * @return {@code this}≪{@code bits}
      */
     public @NotNull Polynomial shiftLeft(int bits) {
-        if (bits < 0)
-            throw new ArithmeticException("bits cannot be negative");
+        if (bits < 0) {
+            throw new ArithmeticException("bits cannot be negative. Invalid bits: " + bits);
+        }
         if (this == ZERO) return ZERO;
         if (bits == 0) return this;
         List<BigInteger> shiftedCoefficients = toList(map(r -> r.shiftLeft(bits), coefficients));
@@ -499,9 +514,13 @@ public final class Polynomial implements
      * @return Πxs
      */
     public static @NotNull Polynomial product(@NotNull Iterable<Polynomial> xs) {
-        if (any(x -> x == null, xs))
+        if (any(x -> x == null, xs)) {
             throw new NullPointerException();
-        return foldl(Polynomial::multiply, ONE, xs);
+        }
+        if (any(x -> x == ZERO, xs)) {
+            return ZERO;
+        }
+        return foldl(Polynomial::multiply, ONE, sort(DEGREE_COEFFICIENT_COMPARATOR, xs));
     }
 
     /**
@@ -519,10 +538,12 @@ public final class Polynomial implements
      * @return Δxs
      */
     public static @NotNull Iterable<Polynomial> delta(@NotNull Iterable<Polynomial> xs) {
-        if (isEmpty(xs))
-            throw new IllegalArgumentException("cannot get delta of empty Iterable");
-        if (head(xs) == null)
+        if (isEmpty(xs)) {
+            throw new IllegalArgumentException("xs must not be empty.");
+        }
+        if (head(xs) == null) {
             throw new NullPointerException();
+        }
         return adjacentPairsWith((x, y) -> y.subtract(x), xs);
     }
 
@@ -541,8 +562,9 @@ public final class Polynomial implements
      * @return {@code this}<sup>{@code p}</sup>
      */
     public @NotNull Polynomial pow(int p) {
-        if (p < 0)
-            throw new ArithmeticException("cannot raise to a negative power");
+        if (p < 0) {
+            throw new ArithmeticException("p cannot be negative. Invalid p: " + p);
+        }
         if (p == 0) return ONE;
         if (p == 1) return this;
         Polynomial result = ONE;
@@ -583,11 +605,15 @@ public final class Polynomial implements
      * @return d{@code this}/dx
      */
     public @NotNull Polynomial differentiate() {
-        if (coefficients.size() < 2) return ZERO;
-        if (equals(X)) return ONE;
-        return new Polynomial(
-                toList(zipWith((c, i) -> c.multiply(BigInteger.valueOf(i)), tail(coefficients), rangeUp(1)))
-        );
+        if (coefficients.size() < 2) {
+            return ZERO;
+        } else if (coefficients.size() == 2 && last(coefficients).equals(BigInteger.ONE)) {
+            return ONE;
+        } else {
+            return new Polynomial(
+                    toList(zipWith((c, i) -> c.multiply(BigInteger.valueOf(i)), tail(coefficients), rangeUp(1)))
+            );
+        }
     }
 
     /**
@@ -601,13 +627,11 @@ public final class Polynomial implements
      * @return whether {@code this} is monic
      */
     public boolean isMonic() {
-        Optional<BigInteger> leading = leading();
-        return leading.isPresent() && leading.get().equals(BigInteger.ONE);
+        return !coefficients.isEmpty() && last(coefficients).equals(BigInteger.ONE);
     }
 
     /**
-     * Determines whether {@code this} is primitive–whether its leading coefficient is positive and the GCD of its
-     * coefficients is 1. 0 is not primitive.
+     * Determines whether {@code this} is primitive–whether the GCD of its coefficients is 1. 0 is not primitive.
      *
      * <ul>
      *  <li>{@code this} may be any {@code Polynomial}.</li>
@@ -617,33 +641,69 @@ public final class Polynomial implements
      * @return whether {@code this} is primitive
      */
     public boolean isPrimitive() {
-        return signum() == 1 && foldl(BigInteger::gcd, BigInteger.ZERO, coefficients).equals(BigInteger.ONE);
+        return foldl(BigInteger::gcd, BigInteger.ZERO, coefficients).equals(BigInteger.ONE);
     }
 
     /**
-     * Returns a {@code Pair} containing {@code this}'s content and primitive part. The primitive part is a constant
-     * multiple of {@code this} whose coefficients have a GCD of 1 and whose leading coefficient is positive, and the
-     * content is {@code this} divided by the primitive part.
+     * Returns a {@code Pair} containing {@code this}'s content and primitive part. The content is the largest integer
+     * that divides all the coefficients of {@code this}, and the primitive part is {@code this} divided by the
+     * content. This method is similar to {@link Polynomial#constantFactor()}, except that in the result of this method
+     * the first element of the pair must be positive, but the leading coefficient of the second element can be
+     * positive or negative.
      *
      * <ul>
-     *  <li>{@code this} must be nonzero.</li>
-     *  <li>The result is a {@code Pair} both of whose elements are not null, whose first element is nonzero, and whose
-     *  last element is primitive.</li>
+     *  <li>{@code this} cannot be zero.</li>
+     *  <li>The result is a {@code Pair} both of whose elements are not null, whose first element is positive, and
+     *  whose last element is primitive.</li>
      * </ul>
      *
      * @return (content({@code this}), primitive({@code this}))
      */
     @SuppressWarnings("JavaDoc")
     public @NotNull Pair<BigInteger, Polynomial> contentAndPrimitive() {
-        if (this == ZERO)
-            throw new ArithmeticException("cannot find content and primitive part of 0");
-        if (coefficients.size() == 1) return new Pair<>(coefficients.get(0), ONE);
-        BigInteger gcd = foldl(BigInteger::gcd, BigInteger.ZERO, coefficients);
-        BigInteger divisor = signum() == -1 ? gcd.negate() : gcd;
-        if (divisor.equals(BigInteger.ONE)) {
+        if (this == ZERO) {
+            throw new ArithmeticException("this cannot be zero.");
+        }
+        if (coefficients.size() == 1) {
+            BigInteger constant = coefficients.get(0);
+            return constant.signum() == 1 ?
+                    new Pair<>(constant, ONE) :
+                    new Pair<>(constant.negate(), of(IntegerUtils.NEGATIVE_ONE));
+        }
+        BigInteger content = foldl(BigInteger::gcd, BigInteger.ZERO, coefficients);
+        if (content.equals(BigInteger.ONE)) {
             return new Pair<>(BigInteger.ONE, this);
         } else {
-            return new Pair<>(divisor, new Polynomial(toList(map(c -> c.divide(divisor), coefficients))));
+            return new Pair<>(content, new Polynomial(toList(map(c -> c.divide(content), coefficients))));
+        }
+    }
+
+    /**
+     * Returns a {@code Pair} containing a constant and polynomial whose product is {@code this}, such that the leading
+     * coefficient of the polynomial part is positive and the GCD of its coefficients is 1. This method is similar to
+     * {@link Polynomial#contentAndPrimitive()}, except that in the result of this method the first element of the pair
+     * can be positive or negative, but the leading coefficient of the second element must be positive.
+     *
+     * <ul>
+     *  <li>{@code this} cannot be zero.</li>
+     *  <li>The result is a {@code Pair} both of whose elements are not null and whose last element has a positive
+     *  leading coefficient and no invertible constant factors.</li>
+     * </ul>
+     *
+     * @return the constant integral factor of {@code this} with the same sign as {@code this} and the largest possible
+     * absolute value
+     */
+    public @NotNull Pair<BigInteger, Polynomial> constantFactor() {
+        if (this == ZERO) {
+            throw new ArithmeticException("this cannot be zero.");
+        }
+        if (coefficients.size() == 1) return new Pair<>(coefficients.get(0), ONE);
+        BigInteger content = foldl(BigInteger::gcd, BigInteger.ZERO, coefficients);
+        BigInteger factor = signum() == -1 ? content.negate() : content;
+        if (factor.equals(BigInteger.ONE)) {
+            return new Pair<>(BigInteger.ONE, this);
+        } else {
+            return new Pair<>(factor, new Polynomial(toList(map(c -> c.divide(factor), coefficients))));
         }
     }
 
@@ -701,20 +761,19 @@ public final class Polynomial implements
         int thatSign = that.signum();
         if (thisSign > thatSign) return 1;
         if (thisSign < thatSign) return -1;
-        List<BigInteger> thisAbsCoefficients = reverse(abs());
-        List<BigInteger> thatAbsCoefficients = reverse(that.abs());
-        int c = BIG_INTEGER_ITERABLE_COMPARATOR.compare(thisAbsCoefficients, thatAbsCoefficients);
+        int c = BIG_INTEGER_ITERABLE_COMPARATOR.compare(reverse(abs()), reverse(that.abs()));
         return thisSign == -1 ? -c : c;
     }
 
     /**
      * Creates an {@code Polynomial} from a {@code String}. Valid input takes the form of a {@code String} that could
-     * have been returned by {@link mho.qbar.objects.Polynomial#toString}. See that method's tests and demos for
-     * examples of valid input. Caution: It's easy to run out of time and memory reading something like
-     * {@code "x^1000000000"}.
+     * have been returned by {@link mho.qbar.objects.Polynomial#toString}. This method also takes
+     * {@code exponentHandler}, which reads an exponent for a {@code String} if the {@code String} is valid.
      *
      * <ul>
      *  <li>{@code s} cannot be null.</li>
+     *  <li>{@code exponentHandler} must terminate on all possible {@code String}s without throwing an exception, and
+     *  cannot return nulls.</li>
      *  <li>The result may be any {@code Optional<Polynomial>}.</li>
      * </ul>
      *
@@ -804,6 +863,7 @@ public final class Polynomial implements
             }
         }
         if (any(p -> BigInteger.ZERO.equals(p.a), monomials)) return Optional.empty();
+        //noinspection RedundantCast
         if (!increasing((Iterable<Integer>) map(p -> p.b, monomials))) return Optional.empty();
         int degree = last(monomials).b;
         List<BigInteger> coefficients = toList(replicate(degree + 1, BigInteger.ZERO));
@@ -813,16 +873,48 @@ public final class Polynomial implements
         return Optional.of(new Polynomial(coefficients));
     }
 
+    /**
+     * Creates an {@code Polynomial} from a {@code String}. Valid input takes the form of a {@code String} that could
+     * have been returned by {@link mho.qbar.objects.Polynomial#toString}. Caution: It's easy to run out of time and
+     * memory reading something like {@code "x^1000000000"}. If such an input is possible, consider using
+     * {@link Polynomial#read(int, String)} instead.
+     *
+     * <ul>
+     *  <li>{@code s} cannot be null.</li>
+     *  <li>The result may be any {@code Optional<Polynomial>}.</li>
+     * </ul>
+     *
+     * @param s a string representation of a {@code Polynomial}.
+     * @return the wrapped {@code Polynomial} represented by {@code s}, or {@code empty} if {@code s} is invalid.
+     */
     public static @NotNull Optional<Polynomial> read(@NotNull String s) {
         return genericRead(s, Readers::readInteger);
     }
 
-    public static @NotNull Optional<Polynomial> read(int exponentCutoff, @NotNull String s) {
+    /**
+     * Creates an {@code Polynomial} from a {@code String}. Valid input takes the form of a {@code String} that could
+     * have been returned by {@link mho.qbar.objects.Polynomial#toString}. The input {@code Polynomial} cannot have a
+     * degree greater than {@code maxExponent}.
+     *
+     * <ul>
+     *  <li>{@code maxExponent} must be positive.</li>
+     *  <li>{@code s} cannot be null.</li>
+     *  <li>The result may be any {@code Optional<Polynomial>}.</li>
+     * </ul>
+     *
+     * @param s a string representation of a {@code Polynomial}.
+     * @return the wrapped {@code Polynomial} (with degree no greater than {@code maxExponent}) represented by
+     * {@code s}, or {@code empty} if {@code s} is invalid.
+     */
+    public static @NotNull Optional<Polynomial> read(int maxExponent, @NotNull String s) {
+        if (maxExponent < 1) {
+            throw new IllegalArgumentException("maxExponent must be positive. Invalid maxExponent: " + maxExponent);
+        }
         return genericRead(
                 s,
                 powerString -> {
                     Optional<Integer> oPower = Readers.readInteger(powerString);
-                    return !oPower.isPresent() || oPower.get() > exponentCutoff ? Optional.<Integer>empty() : oPower;
+                    return !oPower.isPresent() || oPower.get() > maxExponent ? Optional.<Integer>empty() : oPower;
                 }
         );
     }
@@ -832,7 +924,8 @@ public final class Polynomial implements
      * index at which it was found. Returns an empty {@code Optional} if no {@code Polynomial} is found. Only
      * {@code String}s which could have been emitted by {@link mho.qbar.objects.Polynomial#toString} are recognized.
      * The longest possible {@code Polynomial} is parsed. Caution: It's easy to run out of time and memory finding
-     * something like {@code "x^1000000000"}.
+     * something like {@code "x^1000000000"}. If such an input is possible, consider using
+     * {@link Polynomial#findIn(int, String)} instead.
      *
      * <ul>
      *  <li>{@code s} must be non-null.</li>
@@ -847,8 +940,26 @@ public final class Polynomial implements
         return Readers.genericFindIn(Polynomial::read, "*+-0123456789^x").apply(s);
     }
 
-    public static @NotNull Optional<Pair<Polynomial, Integer>> findIn(int exponentCutoff, @NotNull String s) {
-        return Readers.genericFindIn(t -> read(exponentCutoff, t), "*+-0123456789^x").apply(s);
+    /**
+     * Finds the first occurrence of an {@code Polynomial} in a {@code String}. Returns the {@code Polynomial} and the
+     * index at which it was found. Returns an empty {@code Optional} if no {@code Polynomial} is found. Only
+     * {@code String}s which could have been emitted by {@link mho.qbar.objects.Polynomial#toString} are recognized.
+     * The longest possible {@code Polynomial} is parsed. The input {@code Polynomial} cannot have a degree greater
+     * than {@code maxExponent}.
+     *
+     * <ul>
+     *  <li>{@code maxExponent} can be any {@code int}.</li>
+     *  <li>{@code s} must be non-null.</li>
+     *  <li>The result is non-null. If it is non-empty, then neither of the {@code Pair}'s components is null, and the
+     *  second component is non-negative.</li>
+     * </ul>
+     *
+     * @param s the input {@code String}
+     * @return the first {@code Polynomial} found in {@code s} (with degree no greater than {@code maxExponent}), and
+     * the index at which it was found
+     */
+    public static @NotNull Optional<Pair<Polynomial, Integer>> findIn(int maxExponent, @NotNull String s) {
+        return Readers.genericFindIn(t -> read(maxExponent, t), "*+-0123456789^x").apply(s);
     }
 
     /**
@@ -893,9 +1004,13 @@ public final class Polynomial implements
      */
     public void validate() {
         if (!coefficients.isEmpty()) {
-            assertTrue(toString(), !last(coefficients).equals(BigInteger.ZERO));
+            assertTrue(this, !last(coefficients).equals(BigInteger.ZERO));
         }
-        if (equals(ZERO)) assertTrue(toString(), this == ZERO);
-        if (equals(ONE)) assertTrue(toString(), this == ONE);
+        if (equals(ZERO)) {
+            assertTrue(this, this == ZERO);
+        }
+        if (equals(ONE)) {
+            assertTrue(this, this == ONE);
+        }
     }
 }

@@ -1,17 +1,16 @@
 package mho.qbar.objects;
 
 import mho.wheels.io.Readers;
+import mho.wheels.iterables.IterableUtils;
 import mho.wheels.iterables.NoRemoveIterable;
 import mho.wheels.ordering.comparators.LexComparator;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static mho.wheels.iterables.IterableUtils.*;
+import static mho.wheels.testing.Testing.assertTrue;
 
 /**
  * <p>A matrix with {@link Rational} elements. The number of rows is the height, and the number of rows is the width.
@@ -35,7 +34,7 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
 
     /**
      * The matrix's width. The width can usually be inferred from {@code rows}, except when the height is 0, in which
-     * case {@code rows} is empty.
+     * case {@code rows} is empty and this field is the only way to determine the width.
      */
     private final int width;
 
@@ -69,7 +68,7 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
      *
      * @return an {@code Iterable} over this {@code RationalMatrix}'s rows
      */
-    public @NotNull Iterable<RationalVector> rowIterable() {
+    public @NotNull Iterable<RationalVector> rows() {
         return new NoRemoveIterable<>(rows);
     }
 
@@ -85,13 +84,14 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
      *
      * @return an {@code Iterable} over this {@code RationalMatrix}'s columns
      */
-    public @NotNull Iterable<RationalVector> columnIterable() {
+    public @NotNull Iterable<RationalVector> columns() {
         if (rows.isEmpty()) {
             return replicate(width, RationalVector.ZERO_DIMENSIONAL);
         } else {
+            //noinspection RedundantCast
             return map(
                     RationalVector::of,
-                    transpose((Iterable<Iterable<Rational>>) map(r -> (Iterable<Rational>) r, rows))
+                    IterableUtils.transpose((Iterable<Iterable<Rational>>) map(r -> (Iterable<Rational>) r, rows))
             );
         }
     }
@@ -105,6 +105,8 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
      *  <li>{@code i} must be less than the height of {@code this}.</li>
      *  <li>The result is non-null.</li>
      * </ul>
+     *
+     * Length is height({@code this})
      *
      * @param i the 0-based row index
      * @return the {@code i}th row of {@code this}
@@ -123,16 +125,23 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
      *  <li>The result is non-null.</li>
      * </ul>
      *
+     * Length is width({@code this})
+     *
      * @param j the 0-based column index
      * @return the {@code j}th column of {@code this}
      */
     public @NotNull RationalVector column(int j) {
         if (rows.isEmpty()) {
-            if (j >= width)
-                throw new ArrayIndexOutOfBoundsException();
+            if (j < 0) {
+                throw new ArrayIndexOutOfBoundsException("j cannot be negative. Invalid j: " + j);
+            }
+            if (j >= width) {
+                throw new ArrayIndexOutOfBoundsException("j must be less than the width of this. j: " +
+                        j + ", this: " + this);
+            }
             return RationalVector.ZERO_DIMENSIONAL;
         } else {
-            return RationalVector.of(toList(map(r -> r.x(j), rows)));
+            return RationalVector.of(toList(map(r -> r.get(j), rows)));
         }
     }
 
@@ -152,8 +161,8 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
      * @param j the 0-based column index
      * @return the element of {@code this} in the {@code i}th row and {@code j}th column
      */
-    public @NotNull Rational element(int i, int j) {
-        return rows.get(i).x(j);
+    public @NotNull Rational get(int i, int j) {
+        return rows.get(i).get(j);
     }
 
     /**
@@ -165,15 +174,20 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
      *  <li>The result either has nonzero height, or 0 width and 0 height.</li>
      * </ul>
      *
+     * Size is |{@code rows}|×0 if {@code rows} is empty, |{@code rows}|×|{@code rows.get(0)}| otherwise
+     *
      * @param rows the matrix's rows
      * @return a {@code RationalMatrix} with the given rows
      */
     public static @NotNull RationalMatrix fromRows(@NotNull List<RationalVector> rows) {
-        if (any(a -> a == null, rows))
+        if (any(a -> a == null, rows)) {
             throw new NullPointerException();
-        if (!same(map(RationalVector::dimension, rows)))
-            throw new IllegalArgumentException("rows must have same dimension");
-        return new RationalMatrix(toList(rows), rows.isEmpty() ? 0 : rows.get(0).dimension());
+        } else if (!same(map(RationalVector::dimension, rows))) {
+            throw new IllegalArgumentException("Every element of rows must have the same dimension. Invalid rows: " +
+                    rows);
+        } else {
+            return new RationalMatrix(toList(rows), rows.isEmpty() ? 0 : rows.get(0).dimension());
+        }
     }
 
     /**
@@ -185,22 +199,28 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
      *  <li>The result either has nonzero width, or 0 width and 0 height.</li>
      * </ul>
      *
+     * Size is 0×|{@code columns}| if {@code columns} is empty, |{@code columns.get(0)}|×|{@code columns}| otherwise
+     *
      * @param columns the matrix's columns
      * @return a {@code RationalMatrix} with the given columns
      */
     public static @NotNull RationalMatrix fromColumns(@NotNull List<RationalVector> columns) {
-        if (any(a -> a == null, columns))
+        if (any(a -> a == null, columns)) {
             throw new NullPointerException();
-        if (!same(map(RationalVector::dimension, columns)))
-            throw new IllegalArgumentException("columns must have same dimension");
-        if (columns.isEmpty()) {
+        } else if (!same(map(RationalVector::dimension, columns))) {
+            throw new IllegalArgumentException("Every element of columns must have the same dimension." +
+                    " Invalid columns: " + columns);
+        } else if (columns.isEmpty()) {
             return new RationalMatrix(Collections.emptyList(), 0);
         } else {
+            //noinspection RedundantCast
             return new RationalMatrix(
                     toList(
                             map(
                                     RationalVector::of,
-                                    transpose((Iterable<Iterable<Rational>>) map(c -> (Iterable<Rational>) c, columns))
+                                    IterableUtils.transpose(
+                                            (Iterable<Iterable<Rational>>) map(c -> (Iterable<Rational>) c, columns)
+                                    )
                             )
                     ),
                     columns.size()
@@ -213,6 +233,7 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
      *
      * <ul>
      *  <li>{@code this} may be any {@code RationalMatrix}.</li>
+     *  <li>The result is non-negative.</li>
      * </ul>
      *
      * @return the number of rows in {@code this}
@@ -226,6 +247,7 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
      *
      * <ul>
      *  <li>{@code this} may be any {@code RationalMatrix}.</li>
+     *  <li>The result is non-negative.</li>
      * </ul>
      *
      * @return the number of columns in {@code this}
@@ -235,7 +257,35 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
     }
 
     /**
-     * Creates the zero matrix with a given height and width.
+     * Determines whether {@code this} is a square matrix.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalMatrix}.</li>
+     *  <li>The result may be either boolean.</li>
+     * </ul>
+     *
+     * @return whether {@code this} is square
+     */
+    public boolean isSquare() {
+        return rows.size() == width;
+    }
+
+    /**
+     * Determines whether this is a zero matrix.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalMatrix}.</li>
+     *  <li>The result may be either {@code boolean}.</li>
+     * </ul>
+     *
+     * @return whether the elements of {@code this} are all 0.
+     */
+    public boolean isZero() {
+        return all(RationalVector::isZero, rows);
+    }
+
+    /**
+     * Creates a zero matrix with a given height and width.
      *
      * <ul>
      *  <li>{@code height} cannot be negative.</li>
@@ -243,15 +293,40 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
      *  <li>The result is a {@code RationalMatrix} all of whose coordinates are 0.</li>
      * </ul>
      *
+     * Size is {@code height}×{@code width}
      *
      * @param height the zero matrix's height
      * @param width the zero matrix's width
      * @return 0<sub>{@code height}, {@code width}</sub>
      */
     public static @NotNull RationalMatrix zero(int height, int width) {
-        if (height < 0 || width < 0)
-            throw new IllegalArgumentException("height and width cannot be negative");
+        if (height < 0) {
+            throw new IllegalArgumentException("height cannot be negative. Invalid height: " + height);
+        }
+        if (width < 0) {
+            throw new IllegalArgumentException("width cannot be negative. Invalid width: " + width);
+        }
         return new RationalMatrix(toList(replicate(height, RationalVector.zero(width))), width);
+    }
+
+    /**
+     * Determines whether {@code this} is an identity matrix.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalMatrix}.</li>
+     *  <li>The result may be either boolean.</li>
+     * </ul>
+     *
+     * @return whether {@code this} is an identity
+     */
+    public boolean isIdentity() {
+        if (!isSquare()) return false;
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < width; j++) {
+                if (get(i, j) != (i == j ? Rational.ONE : Rational.ZERO)) return false;
+            }
+        }
+        return true;
     }
 
     /**
@@ -263,13 +338,219 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
      *  and zeros everywhere else.</li>
      * </ul>
      *
+     * Size is {@code dimension}×{@code dimension}
+     *
      * @param dimension the matrix's dimension (width and height)
      * @return I<sub>{@code dimension}</sub>
      */
     public static @NotNull RationalMatrix identity(int dimension) {
-        if (dimension < 1)
-            throw new IllegalArgumentException("dimension must be positive");
-        return new RationalMatrix(toList(map(i -> RationalVector.standard(dimension, i), rangeUp(0))), dimension);
+        if (dimension < 1) {
+            throw new IllegalArgumentException("dimension must be positive. Invalid dimension: " + dimension);
+        }
+        return new RationalMatrix(
+                toList(map(i -> RationalVector.standard(dimension, i), range(0, dimension - 1))),
+                dimension
+        );
+    }
+
+    /**
+     * Returns a submatrix of {@code this} containing the rows and columns selected by a list of row indices and column
+     * indices (both 0-based, in ascending order, with no repetitions).
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalMatrix}.</li>
+     *  <li>{@code rowIndices} must be in ascending order, cannot have any repetitions, and cannot contain negative
+     *  numbers.</li>
+     *  <li>{@code columnIndices} must be in ascending order, cannot have any repetitions, and cannot contain negative
+     *  numbers.</li>
+     *  <li>The elements of {@code rowIndices} must all be less than height({@code this}).</li>
+     *  <li>The elements of {@code columnIndices} must all be less than width({@code this}).</li>
+     * </ul>
+     *
+     * Size is |{@code rowIndices}|×|{@code columnIndices}|
+     *
+     * @param rowIndices the indices of the rows in the result
+     * @param columnIndices the indices of the columns in the result
+     * @return a submatrix of {@code this}
+     */
+    public @NotNull RationalMatrix submatrix(@NotNull List<Integer> rowIndices, @NotNull List<Integer> columnIndices) {
+        if (!increasing(rowIndices)) {
+            throw new IllegalArgumentException("rowIndices must be in ascending order and cannot have any" +
+                    " repetitions. Invalid rowIndices: " + rowIndices);
+        } else if (!increasing(columnIndices)) {
+            throw new IllegalArgumentException("columnIndices must be in ascending order and cannot have any" +
+                    " repetitions. Invalid columnIndices: " + columnIndices);
+        } else if (!rowIndices.isEmpty() && (head(rowIndices) < 0 || last(rowIndices) >= height())) {
+            throw new IllegalArgumentException("rowIndices cannot contain negative numbers or any elements greater" +
+                    " than or equal to height(this). rowIndices: " + rowIndices + ", height(this): " + height());
+        } else if (!columnIndices.isEmpty() && (head(columnIndices) < 0 || last(columnIndices) >= width)) {
+            throw new IllegalArgumentException("columnIndices cannot contain negative numbers or any elements" +
+                    " greater than or equal to width(this). columnIndices: " + columnIndices + ", width(this): " +
+                    width());
+        } else if (rowIndices.isEmpty() || columnIndices.isEmpty()) {
+            return zero(rowIndices.size(), columnIndices.size());
+        } else if (rowIndices.size() == height() && columnIndices.size() == width) {
+            return this;
+        } else if (columnIndices.size() == width) {
+            return new RationalMatrix(toList(map(rows::get, rowIndices)), width);
+        } else {
+            List<RationalVector> submatrixRows = new ArrayList<>();
+            for (int i : rowIndices) {
+                RationalVector row = rows.get(i);
+                submatrixRows.add(RationalVector.of(toList(map(row::get, columnIndices))));
+            }
+            return new RationalMatrix(submatrixRows, columnIndices.size());
+        }
+    }
+
+    /**
+     * Returns the transpose of {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalMatrix}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * Size is width({@code this})×height({@code this})
+     *
+     * @return {@code this}<sup>T</sup>
+     */
+    public @NotNull RationalMatrix transpose() {
+        int height = height();
+        if (height == 0 || width == 0) {
+            //noinspection SuspiciousNameCombination
+            return zero(width, height);
+        }
+        Rational[][] elements = new Rational[width][height];
+        for (int i = 0; i < height; i++) {
+            RationalVector row = rows.get(i);
+            for (int j = 0; j < width; j++) {
+                elements[j][i] = row.get(j);
+            }
+        }
+        return fromRows(toList(map(i -> RationalVector.of(Arrays.asList(elements[i])), range(0, width - 1))));
+    }
+
+    /**
+     * Returns the {@code RationalMatrix} produced by concatenating the rows of {@code this} with the rows of
+     * {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalMatrix}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>{@code this} and {@code that} must have the same width.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * Size is (height({@code this}+height({@code that}))×width({@code this})
+     *
+     * @param that the {@code RationalMatrix} that {@code this} is concatenated with
+     * @return {@code this} concatenated with {@code that}
+     */
+    public @NotNull RationalMatrix concat(@NotNull RationalMatrix that) {
+        if (width != that.width) {
+            throw new IllegalArgumentException("this and that must have the same width. this: " + this + ", that: " +
+                    that);
+        }
+        if (height() == 0) return that;
+        if (that.height() == 0) return this;
+        return new RationalMatrix(toList(IterableUtils.concat(rows, that.rows)), width);
+    }
+
+    /**
+     * Returns {@code this} augmented with {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalMatrix}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>{@code this} and {@code that} must have the same height.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * Size is height({@code this})×(width({@code this}+width({@code that}))
+     *
+     * @param that the {@code RationalMatrix} that {@code this} is augmented by
+     * @return {@code this}|{@code that}
+     */
+    public @NotNull RationalMatrix augment(@NotNull RationalMatrix that) {
+        if (height() != that.height()) {
+            throw new IllegalArgumentException("this and that must have the same height. this: " + this + ", that: " +
+                    that);
+        }
+        if (width == 0) return that;
+        if (that.width == 0) return this;
+        return new RationalMatrix(
+                toList(zipWith((r, s) -> RationalVector.of(toList(IterableUtils.concat(r, s))), rows, that.rows)),
+                width + that.width
+        );
+    }
+
+    /**
+     * Returns the sum of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalMatrix}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>{@code this} and {@code that} must have the same height and the same width.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * Size is height({@code this})×length({@code this})
+     *
+     * @param that the {@code RationalMatrix} added to {@code this}
+     * @return {@code this}+{@code that}
+     */
+    public @NotNull RationalMatrix add(@NotNull RationalMatrix that) {
+        int height = height();
+        if (width != that.width || height != that.height()) {
+            throw new ArithmeticException("this and that must have the same width and height. this: " +
+                    this + ", that: " + that);
+        }
+        if (height == 0 || width == 0) return this;
+        return new RationalMatrix(toList(zipWith(RationalVector::add, rows, that.rows)), width);
+    }
+
+    /**
+     * Returns the negative of {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalMatrix}.</li>
+     *  <li>The result is non-null.</li>
+     * </ul>
+     *
+     * Size is height({@code this})×length({@code this})
+     *
+     * @return –{@code this}
+     */
+    public @NotNull RationalMatrix negate() {
+        int height = height();
+        if (height == 0 || width == 0) return this;
+        return new RationalMatrix(toList(map(RationalVector::negate, rows)), width);
+    }
+
+    /**
+     * Returns the difference of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalMatrix}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>{@code this} and {@code that} must have the same height and the same width.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * Size is height({@code this})×length({@code this})
+     *
+     * @param that the {@code RationalMatrix} subtracted from {@code this}
+     * @return {@code this}–{@code that}
+     */
+    public @NotNull RationalMatrix subtract(@NotNull RationalMatrix that) {
+        int height = height();
+        if (width != that.width || height != that.height()) {
+            throw new ArithmeticException("this and that must have the same width and height. this: " +
+                    this + ", that: " + that);
+        }
+        if (height == 0 || width == 0) return this;
+        return new RationalMatrix(toList(zipWith(RationalVector::subtract, rows, that.rows)), width);
     }
 
     /**
@@ -310,7 +591,7 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
     /**
      * Compares {@code this} to {@code that}, returning 1, –1, or 0 if the answer is "greater than", "less than", or
      * "equal to", respectively. Shortlex ordering is used; {@code RationalMatrix}es are compared first by height, then
-     * by width, and then left-to-right, top-to-bottom, element by element.
+     * by width, and then top-to-bottom, left-to-right, element by element.
      *
      * <ul>
      *  <li>{@code this} may be any {@code RationalMatrix}.</li>
@@ -347,7 +628,7 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
     public static @NotNull Optional<RationalMatrix> read(@NotNull String s) {
         if (s.startsWith("[]#")) {
             Optional<Integer> oWidth = Readers.readInteger(s.substring(3));
-            if (oWidth.isPresent()) return Optional.empty();
+            if (!oWidth.isPresent()) return Optional.empty();
             int width = oWidth.get();
             if (width < 0) return Optional.empty();
             return Optional.of(new RationalMatrix(Collections.emptyList(), width));
@@ -391,5 +672,13 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
      */
     public @NotNull String toString() {
         return rows.isEmpty() ? "[]#" + width : rows.toString();
+    }
+
+    /**
+     * Ensures that {@code this} is valid. Must return true for any {@code RationalMatrix} used outside this class.
+     */
+    public void validate() {
+        assertTrue(this, width >= 0);
+        assertTrue(this, all(r -> r.dimension() == width, rows));
     }
 }

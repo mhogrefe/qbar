@@ -3,16 +3,17 @@ package mho.qbar.objects;
 import mho.wheels.io.Readers;
 import mho.wheels.numberUtils.FloatingPointUtils;
 import mho.wheels.ordering.Ordering;
+import mho.wheels.ordering.comparators.WithNullComparator;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.math.RoundingMode;
 import java.util.*;
 
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.ordering.Ordering.*;
+import static mho.wheels.testing.Testing.assertTrue;
 
 /**
  * <p>The {@code Interval} class represents an interval of real numbers. If we let p and q be rationals, p≤q, the
@@ -111,8 +112,10 @@ public final class Interval implements Comparable<Interval> {
      * @return [{@code lower}, {@code upper}]
      */
     public static @NotNull Interval of(@NotNull Rational lower, @NotNull Rational upper) {
-        if (gt(lower, upper))
-            throw new IllegalArgumentException("lower bound cannot be greater than upper bound");
+        if (gt(lower, upper)) {
+            throw new IllegalArgumentException("lower must be less than or equal to upper. lower: " +
+                    lower + ", upper: " + upper);
+        }
         return new Interval(lower, upper);
     }
 
@@ -160,6 +163,21 @@ public final class Interval implements Comparable<Interval> {
     }
 
     /**
+     * Returns the bit length of {@code this}, or the sum of the bit lengths of the lower and upper bounds (see
+     * {@link Rational#bitLength()}. If either bound is infinite, it does not contribute to the bit length.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Interval}.</li>
+     *  <li>The result is non-negative.</li>
+     * </ul>
+     *
+     * @return the bit length of {@code this}
+     */
+    public int bitLength() {
+        return (lower == null ? 0 : lower.bitLength()) + (upper == null ? 0 : upper.bitLength());
+    }
+
+    /**
      * Determines whether {@code this} has finite bounds.
      *
      * <ul>
@@ -186,10 +204,7 @@ public final class Interval implements Comparable<Interval> {
      * @return {@code x}∈{@code this}
      */
     public boolean contains(@NotNull Rational x) {
-        if (lower == null && upper == null) return true;
-        if (lower == null) return le(x, upper);
-        if (upper == null) return ge(x, lower);
-        return ge(x, lower) && le(x, upper);
+        return (lower == null || ge(x, lower)) && (upper == null || le(x, upper));
     }
 
     /**
@@ -222,8 +237,11 @@ public final class Interval implements Comparable<Interval> {
      * @return the diameter of {@code this}
      */
     public @NotNull Optional<Rational> diameter() {
-        if (lower == null || upper == null) return Optional.empty();
-        return Optional.of(upper.subtract(lower));
+        if (lower == null || upper == null) {
+            return Optional.empty();
+        } else {
+            return Optional.of(upper.subtract(lower));
+        }
     }
 
     /**
@@ -261,10 +279,12 @@ public final class Interval implements Comparable<Interval> {
      */
     @SuppressWarnings("JavaDoc")
     public static @NotNull Interval convexHull(@NotNull List<Interval> as) {
-        if (any(a -> a == null, as))
+        if (any(a -> a == null, as)) {
             throw new NullPointerException();
-        if (as.isEmpty())
-            throw new IllegalArgumentException();
+        }
+        if (as.isEmpty()) {
+            throw new IllegalArgumentException("as cannot be empty.");
+        }
         return foldl1(Interval::convexHull, as);
     }
 
@@ -292,6 +312,7 @@ public final class Interval implements Comparable<Interval> {
         } else {
             iLower = max(lower, that.lower);
         }
+
         Rational iUpper;
         if (upper == null && that.upper == null) {
             iUpper = null;
@@ -302,8 +323,12 @@ public final class Interval implements Comparable<Interval> {
         } else {
             iUpper = min(upper, that.upper);
         }
-        if (iLower != null && iUpper != null && gt(iLower, iUpper)) return Optional.empty();
-        return Optional.of(new Interval(iLower, iUpper));
+
+        if (iLower != null && iUpper != null && gt(iLower, iUpper)) {
+            return Optional.empty();
+        } else {
+            return Optional.of(new Interval(iLower, iUpper));
+        }
     }
 
     /**
@@ -319,12 +344,19 @@ public final class Interval implements Comparable<Interval> {
      * @return {@code this}∩{@code that}=∅
      */
     public boolean disjoint(@NotNull Interval that) {
-        return !intersection(that).isPresent();
+        if (lower == null && upper == null) {
+            return false;
+        } else if (lower == null) {
+            return that.lower != null && lt(upper, that.lower);
+        } else if (upper == null) {
+            return that.upper != null && lt(that.upper, lower);
+        } else {
+            return that.lower != null && lt(upper, that.lower) || (that.upper != null && lt(that.upper, lower));
+        }
     }
 
     /**
-     * Transforms a list of {@code Interval}s into a list of disjoint {@code Interval}s with the same union as the
-     * original set.
+     * Expresses the union of a list of {@code Interval}s as a list of disjoint {@code Interval}s in ascending order.
      *
      * <ul>
      *  <li>{@code as} cannot be null and may not contain any null elements.</li>
@@ -332,23 +364,53 @@ public final class Interval implements Comparable<Interval> {
      * </ul>
      *
      * @param as a list of {@code Interval}s
-     * @return a list of disjoint {@code Interval}s whose union is the same as the union of {@code as}
+     * @return ⋃{@code as}
      */
-    public static @NotNull List<Interval> makeDisjoint(@NotNull List<Interval> as) {
-        List<Interval> simplified = new ArrayList<>();
-        Interval acc = null;
-        for (Interval a : sort(as)) {
-            if (acc == null) {
-                acc = a;
-            } else if (acc.disjoint(a)) {
-                simplified.add(acc);
-                acc = a;
+    public static @NotNull List<Interval> union(@NotNull List<Interval> as) {
+        if (as.size() == 1 && head(as) == null) {
+            throw new NullPointerException();
+        }
+        if (as.size() < 2) return as;
+        Map<Rational, Rational> lowerMap = new TreeMap<>(new WithNullComparator<>());
+        for (Interval a : as) {
+            Rational lower = a.lower;
+            Rational upper = a.upper;
+            if (lowerMap.containsKey(lower)) {
+                Rational previousUpper = lowerMap.get(lower);
+                if (previousUpper != null && (upper == null || gt(upper, previousUpper))) {
+                    lowerMap.put(lower, upper);
+                }
             } else {
-                acc = acc.convexHull(a);
+                lowerMap.put(lower, upper);
             }
         }
-        if (acc != null) simplified.add(acc);
-        return simplified;
+        List<Interval> union = new ArrayList<>();
+        Rational currentLower = null;
+        Rational currentUpper = null;
+        boolean first = true;
+        for (Map.Entry<Rational, Rational> entry : lowerMap.entrySet()) {
+            Rational lower = entry.getKey();
+            Rational upper = entry.getValue();
+            if (first) {
+                first = false;
+                currentLower = lower;
+                currentUpper = upper;
+            } else {
+                if (currentUpper == null || le(lower, currentUpper)) {
+                    if (currentUpper != null && (upper == null || gt(upper, currentUpper))) {
+                        currentUpper = upper;
+                    }
+                } else {
+                    union.add(new Interval(currentLower, currentUpper));
+                    currentLower = lower;
+                    currentUpper = upper;
+                }
+            }
+        }
+        if (!first) {
+            union.add(new Interval(currentLower, currentUpper));
+        }
+        return union;
     }
 
     /**
@@ -391,8 +453,9 @@ public final class Interval implements Comparable<Interval> {
      * @return the average of {@code lower} and {@code upper}.
      */
     public @NotNull Rational midpoint() {
-        if (lower == null || upper == null)
-            throw new ArithmeticException("an unbounded interval has no midpoint");
+        if (lower == null || upper == null) {
+            throw new ArithmeticException("this must be finitely bounded. Invalid this: " + this);
+        }
         return lower.add(upper).shiftRight(1);
     }
 
@@ -411,8 +474,9 @@ public final class Interval implements Comparable<Interval> {
      * @return the two pieces of {@code this}.
      */
     public @NotNull Pair<Interval, Interval> split(@NotNull Rational x) {
-        if (!contains(x))
-            throw new ArithmeticException("interval does not contain specified split point");
+        if (!contains(x)) {
+            throw new ArithmeticException("this must contain x. this: " + this + ", x: " + x);
+        }
         return new Pair<>(new Interval(lower, x), new Interval(x, upper));
     }
 
@@ -468,8 +532,9 @@ public final class Interval implements Comparable<Interval> {
      * @return the closure of the preimage of {@code f} with respect to rounding-to-nearest-{@code float}.
      */
     public static @NotNull Interval roundingPreimage(float f) {
-        if (Float.isNaN(f))
-            throw new ArithmeticException("cannot find preimage of NaN");
+        if (Float.isNaN(f)) {
+            throw new ArithmeticException("f cannot be NaN.");
+        }
         if (Float.isInfinite(f)) {
             if (f > 0) {
                 return new Interval(Rational.LARGEST_FLOAT, null);
@@ -542,8 +607,9 @@ public final class Interval implements Comparable<Interval> {
      * @return the closure of the preimage of {@code d} with respect to rounding-to-nearest-{@code double}.
      */
     public static @NotNull Interval roundingPreimage(double d) {
-        if (Double.isNaN(d))
-            throw new ArithmeticException("cannot find preimage of NaN");
+        if (Double.isNaN(d)) {
+            throw new ArithmeticException("d cannot be NaN.");
+        }
         if (Double.isInfinite(d)) {
             if (d > 0) {
                 return new Interval(Rational.LARGEST_DOUBLE, null);
@@ -597,45 +663,6 @@ public final class Interval implements Comparable<Interval> {
     }
 
     /**
-     * Returns a pair of {@code float}s x, y such that [x, y] is the smallest interval with {@code float} bounds which
-     * contains {@code this}. x or y may be infinite if {@code this}'s bounds are infinite or very large in magnitude.
-     *
-     * <ul>
-     *  <li>{@code this} may be any {@code Interval}.</li>
-     *  <li>Neither of the result's elements are null or {@code NaN}. The second element is greater than or equal to
-     *  the first. The first element cannot be {@code Infinity} or negative zero. The second element cannot be
-     *  {@code -Infinity}. If the second element is negative zero, the first element cannot be positive zero.</li>
-     * </ul>
-     *
-     * @return the smallest {@code float} interval containing {@code this}.
-     */
-    public @NotNull Pair<Float, Float> floatRange() {
-        float fLower = lower == null ? Float.NEGATIVE_INFINITY : lower.floatValue(RoundingMode.FLOOR);
-        float fUpper = upper == null ? Float.POSITIVE_INFINITY : upper.floatValue(RoundingMode.CEILING);
-        return new Pair<>(fLower, fUpper);
-    }
-
-    /**
-     * Returns a pair of {@code double}s x, y such that [x, y] is the smallest interval with {@code double} bounds
-     * which contains {@code this}. x or y may be infinite if {@code this}'s bounds are infinite or very large in
-     * magnitude.
-     *
-     * <ul>
-     *  <li>{@code this} may be any {@code Interval}.</li>
-     *  <li>Neither of the result's elements are null or {@code NaN}. The second element is greater than or equal to
-     *  the first. The first element cannot be {@code Infinity} or negative zero. The second element cannot be
-     *  {@code -Infinity}. If the second element is negative zero, the first element cannot be positive zero.</li>
-     * </ul>
-     *
-     * @return the smallest {@code double} interval containing {@code this}.
-     */
-    public @NotNull Pair<Double, Double> doubleRange() {
-        double dLower = lower == null ? Double.NEGATIVE_INFINITY : lower.doubleValue(RoundingMode.FLOOR);
-        double dUpper = upper == null ? Double.POSITIVE_INFINITY : upper.doubleValue(RoundingMode.CEILING);
-        return new Pair<>(dLower, dUpper);
-    }
-
-    /**
      * Returns the smallest {@code Interval} z such that if a∈{@code this} and b∈{@code that}, a+b∈z.
      *
      * <ul>
@@ -664,10 +691,15 @@ public final class Interval implements Comparable<Interval> {
      * @return –{@code this}
      */
     public @NotNull Interval negate() {
-        if (lower == null && upper == null) return this;
-        if (lower == null) return new Interval(upper.negate(), null);
-        if (upper == null) return new Interval(null, lower.negate());
-        return new Interval(upper.negate(), lower.negate());
+        if (lower == null && upper == null) {
+            return this;
+        } else if (lower == null) {
+            return new Interval(upper.negate(), null);
+        } else if (upper == null) {
+            return new Interval(null, lower.negate());
+        } else {
+            return new Interval(upper.negate(), lower.negate());
+        }
     }
 
     /**
@@ -681,16 +713,19 @@ public final class Interval implements Comparable<Interval> {
      * @return |{@code this}|
      */
     public @NotNull Interval abs() {
-        if (lower == null && upper == null) return new Interval(Rational.ZERO, null);
-        if (lower == null) {
+        if (lower == null && upper == null) {
+            return new Interval(Rational.ZERO, null);
+        } else if (lower == null) {
             return new Interval(upper.signum() == -1 ? upper.negate() : Rational.ZERO, null);
-        }
-        if (upper == null) {
+        } else if (upper == null) {
             return lower.signum() == -1 ? new Interval(Rational.ZERO, null) : this;
+        } else if (lower.signum() != -1 && upper.signum() != -1) {
+            return this;
+        } else if (lower.signum() == -1 && upper.signum() == -1) {
+            return negate();
+        } else {
+            return new Interval(Rational.ZERO, max(lower.negate(), upper));
         }
-        if (lower.signum() == 1 && upper.signum() == 1) return this;
-        if (lower.signum() == -1 && upper.signum() == -1) return negate();
-        return new Interval(Rational.ZERO, max(lower.negate(), upper));
     }
 
     /**
@@ -723,7 +758,9 @@ public final class Interval implements Comparable<Interval> {
      * @return {@code this}–{@code that}
      */
     public @NotNull Interval subtract(@NotNull Interval that) {
-        return add(that.negate());
+        Rational lowerDifference = lower == null || that.upper == null ? null : lower.subtract(that.upper);
+        Rational upperDifference = upper == null || that.lower == null ? null : upper.subtract(that.lower);
+        return new Interval(lowerDifference, upperDifference);
     }
 
     /**
@@ -741,21 +778,22 @@ public final class Interval implements Comparable<Interval> {
      * @return {@code this}×{@code that}
      */
     public @NotNull Interval multiply(@NotNull Interval that) {
-        boolean thisHasPositive = upper == null || upper.signum() == 1;
-        boolean thatHasPositive = that.upper == null || that.upper.signum() == 1;
-        boolean thisHasNegative = lower == null || lower.signum() == -1;
-        boolean thatHasNegative = that.lower == null || that.lower.signum() == -1;
-        boolean minIsNegInf =
-                lower == null && thatHasPositive ||
-                upper == null && thatHasNegative ||
-                that.lower == null && thisHasPositive ||
-                that.upper == null && thisHasNegative;
-        boolean maxIsPosInf =
-                upper == null && thatHasPositive ||
-                lower == null && thatHasNegative ||
-                that.upper == null && thisHasPositive ||
-                that.lower == null && thisHasNegative;
-        if (minIsNegInf && maxIsPosInf) return ALL;
+        if (equals(ZERO) || that.equals(ZERO)) return ZERO;
+        boolean thisContainsPositive = upper == null || upper.signum() == 1;
+        boolean thatContainsPositive = that.upper == null || that.upper.signum() == 1;
+        boolean thisContainsNegative = lower == null || lower.signum() == -1;
+        boolean thatContainsNegative = that.lower == null || that.lower.signum() == -1;
+        boolean unboundedBelow =
+                lower == null && thatContainsPositive ||
+                upper == null && thatContainsNegative ||
+                that.lower == null && thisContainsPositive ||
+                that.upper == null && thisContainsNegative;
+        boolean unboundedAbove =
+                upper == null && thatContainsPositive ||
+                lower == null && thatContainsNegative ||
+                that.upper == null && thisContainsPositive ||
+                that.lower == null && thisContainsNegative;
+        if (unboundedBelow && unboundedAbove) return ALL;
         List<Rational> extremes = new ArrayList<>();
         if (lower != null) {
             if (that.lower != null) extremes.add(lower.multiply(that.lower));
@@ -765,10 +803,14 @@ public final class Interval implements Comparable<Interval> {
             if (that.lower != null) extremes.add(upper.multiply(that.lower));
             if (that.upper != null) extremes.add(upper.multiply(that.upper));
         }
-        if (extremes.isEmpty()) extremes.add(Rational.ZERO);
-        if (minIsNegInf) return new Interval(null, maximum(extremes));
-        if (maxIsPosInf) return new Interval(minimum(extremes), null);
-        return new Interval(minimum(extremes), maximum(extremes));
+        if (unboundedBelow) {
+            return new Interval(null, maximum(extremes));
+        } else if (unboundedAbove) {
+            return new Interval(minimum(extremes), null);
+        } else {
+            Pair<Rational, Rational> minimumMaximum = minimumMaximum(extremes);
+            return new Interval(minimumMaximum.a, minimumMaximum.b);
+        }
     }
 
     /**
@@ -784,7 +826,7 @@ public final class Interval implements Comparable<Interval> {
      * @return {@code this}×{@code that}
      */
     public @NotNull Interval multiply(@NotNull Rational that) {
-        if (that == Rational.ZERO) return ZERO;
+        if (that == Rational.ZERO || equals(ZERO)) return ZERO;
         if (that == Rational.ONE) return this;
         if (that.signum() == 1) {
             return new Interval(
@@ -812,7 +854,7 @@ public final class Interval implements Comparable<Interval> {
      * @return {@code this}×{@code that}
      */
     public @NotNull Interval multiply(@NotNull BigInteger that) {
-        if (that.equals(BigInteger.ZERO)) return ZERO;
+        if (that.equals(BigInteger.ZERO) || equals(ZERO)) return ZERO;
         if (that.equals(BigInteger.ONE)) return this;
         if (that.signum() == 1) {
             return new Interval(
@@ -840,7 +882,7 @@ public final class Interval implements Comparable<Interval> {
      * @return {@code this}×{@code that}
      */
     public @NotNull Interval multiply(int that) {
-        if (that == 0) return ZERO;
+        if (that == 0 || equals(ZERO)) return ZERO;
         if (that == 1) return this;
         if (that > 0) {
             return new Interval(
@@ -945,14 +987,40 @@ public final class Interval implements Comparable<Interval> {
      */
     @SuppressWarnings("JavaDoc")
     public @NotNull Interval invertHull() {
-        List<Interval> inverse = invert();
-        switch (inverse.size()) {
-            case 0:
-                throw new ArithmeticException("division by zero");
-            case 1:
-                return inverse.get(0);
-            default:
+        if (lower == null && upper == null) {
+            return ALL;
+        } else if (lower == null) {
+            if (upper == Rational.ZERO) {
+                return this;
+            } else if (upper.signum() == 1) {
                 return ALL;
+            } else {
+                return new Interval(upper.invert(), Rational.ZERO);
+            }
+        } else if (upper == null) {
+            if (lower == Rational.ZERO) {
+                return this;
+            } else if (lower.signum() == 1) {
+                return new Interval(Rational.ZERO, lower.invert());
+            } else {
+                return ALL;
+            }
+        } else if (lower == Rational.ZERO) {
+            if (upper == Rational.ZERO) {
+                throw new ArithmeticException("this cannot be [0, 0].");
+            } else {
+                return new Interval(upper.invert(), null);
+            }
+        } else if (lower.signum() == 1) {
+            return new Interval(upper.invert(), lower.invert());
+        } else {
+            if (upper == Rational.ZERO) {
+                return new Interval(null, lower.invert());
+            } else if (upper.signum() == -1) {
+                return new Interval(upper.invert(), lower.invert());
+            } else {
+                return ALL;
+            }
         }
     }
 
@@ -979,7 +1047,7 @@ public final class Interval implements Comparable<Interval> {
      * @return {@code this}/{@code that}
      */
     public @NotNull List<Interval> divide(@NotNull Interval that) {
-        return makeDisjoint(toList(map(this::multiply, that.invert())));
+        return union(toList(map(this::multiply, that.invert())));
     }
 
     /**
@@ -996,15 +1064,7 @@ public final class Interval implements Comparable<Interval> {
      */
     @SuppressWarnings("JavaDoc")
     public @NotNull Interval divideHull(@NotNull Interval that) {
-        List<Interval> quotient = divide(that);
-        switch (quotient.size()) {
-            case 0:
-                throw new ArithmeticException("division by zero");
-            case 1:
-                return quotient.get(0);
-            default:
-                return ALL;
-        }
+        return multiply(that.invertHull());
     }
 
     /**
@@ -1020,8 +1080,9 @@ public final class Interval implements Comparable<Interval> {
      * @return {@code this}/{@code that}
      */
     public @NotNull Interval divide(@NotNull Rational that) {
-        if (that == Rational.ZERO)
-            throw new ArithmeticException("division by zero");
+        if (that == Rational.ZERO) {
+            throw new ArithmeticException("that cannot be zero.");
+        }
         if (that == Rational.ONE) return this;
         if (that.signum() == 1) {
             return new Interval(
@@ -1049,8 +1110,9 @@ public final class Interval implements Comparable<Interval> {
      * @return {@code this}/{@code that}
      */
     public @NotNull Interval divide(@NotNull BigInteger that) {
-        if (that.equals(BigInteger.ZERO))
-            throw new ArithmeticException("division by zero");
+        if (that.equals(BigInteger.ZERO)) {
+            throw new ArithmeticException("that cannot be zero.");
+        }
         if (that.equals(BigInteger.ONE)) return this;
         if (that.signum() == 1) {
             return new Interval(
@@ -1078,8 +1140,9 @@ public final class Interval implements Comparable<Interval> {
      * @return {@code this}/{@code that}
      */
     public @NotNull Interval divide(int that) {
-        if (that == 0)
-            throw new ArithmeticException("division by zero");
+        if (that == 0) {
+            throw new ArithmeticException("that cannot be zero.");
+        }
         if (that == 1) return this;
         if (that > 0) {
             return new Interval(
@@ -1146,8 +1209,13 @@ public final class Interval implements Comparable<Interval> {
      * @return Σxs
      */
     public static @NotNull Interval sum(@NotNull Iterable<Interval> xs) {
-        if (any(x -> x == null, xs)) throw new NullPointerException();
-        return foldl(Interval::add, ZERO, xs);
+        List<Interval> list = toList(xs);
+        List<Rational> lowers = toList(map(x -> x.lower, list));
+        List<Rational> uppers = toList(map(x -> x.upper, list));
+        return new Interval(
+                any(x -> x == null, lowers) ? null : Rational.sum(lowers),
+                any(x -> x == null, uppers) ? null : Rational.sum(uppers)
+        );
     }
 
     /**
@@ -1162,7 +1230,14 @@ public final class Interval implements Comparable<Interval> {
      * @return Πxs
      */
     public static @NotNull Interval product(@NotNull Iterable<Interval> xs) {
-        return foldl(Interval::multiply, ONE, xs);
+        List<Interval> list = toList(xs);
+        if (any(x -> x == null, list)) {
+            throw new NullPointerException();
+        }
+        if (any(x -> x.equals(ZERO), xs)) {
+            return ZERO;
+        }
+        return foldl(Interval::multiply, ONE, list);
     }
 
     /**
@@ -1180,10 +1255,12 @@ public final class Interval implements Comparable<Interval> {
      * @return Δxs
      */
     public static @NotNull Iterable<Interval> delta(@NotNull Iterable<Interval> xs) {
-        if (isEmpty(xs))
-            throw new IllegalArgumentException("cannot get delta of empty Iterable");
-        if (head(xs) == null)
+        if (isEmpty(xs)) {
+            throw new IllegalArgumentException("xs cannot be empty.");
+        }
+        if (head(xs) == null) {
             throw new NullPointerException();
+        }
         return adjacentPairsWith((x, y) -> y.subtract(x), xs);
     }
 
@@ -1228,8 +1305,7 @@ public final class Interval implements Comparable<Interval> {
             } else {
                 Rational a = lower == null ? null : lower.pow(p);
                 Rational b = upper == null ? null : upper.pow(p);
-                Rational max = a == null || b == null ? null : max(a, b);
-                intervals.add(new Interval(Rational.ZERO, max));
+                intervals.add(new Interval(Rational.ZERO, a == null || b == null ? null : max(a, b)));
             }
         } else {
             intervals.add(new Interval(lower == null ? null : lower.pow(p), upper == null ? null : upper.pow(p)));
@@ -1253,14 +1329,35 @@ public final class Interval implements Comparable<Interval> {
      */
     @SuppressWarnings("JavaDoc")
     public @NotNull Interval powHull(int p) {
-        if (p < 0 && this.equals(ZERO))
-            throw new ArithmeticException("division by zero");
-        return convexHull(pow(p));
+        if (p == 0) {
+            return ONE;
+        } else if (p == 1) {
+            return this;
+        } else if (p < 0) {
+            if (equals(ZERO)) {
+                throw new ArithmeticException("If this is [0, 0], p cannot be negative. Invalid p: " + p);
+            }
+            return powHull(-p).invertHull();
+        } else if (p % 2 == 0) {
+            int lowerSign = lower == null ? -1 : lower.signum();
+            int upperSign = upper == null ? 1 : upper.signum();
+            if (lowerSign != -1 && upperSign != -1) {
+                return new Interval(lower.pow(p), upper == null ? null : upper.pow(p));
+            } else if (lowerSign != 1 && upperSign != 1) {
+                return new Interval(upper.pow(p), lower == null ? null : lower.pow(p));
+            } else {
+                Rational a = lower == null ? null : lower.pow(p);
+                Rational b = upper == null ? null : upper.pow(p);
+                return new Interval(Rational.ZERO, a == null || b == null ? null : max(a, b));
+            }
+        } else {
+            return new Interval(lower == null ? null : lower.pow(p), upper == null ? null : upper.pow(p));
+        }
     }
 
     /**
-     * If {@code this} and {@code that} are disjoint, returns the ordering between any element of {@code this} and any
-     * element of {@code that}; otherwise, returns an empty {@code Optional}.
+     * Returns the ordering between any element of {@code this} and any element of {@code that}. If the ordering
+     * depends on the elements chosen, returns an empty {@code Optional}.
      *
      * <ul>
      *  <li>{@code this} may be any {@code Interval}.</li>
@@ -1276,8 +1373,6 @@ public final class Interval implements Comparable<Interval> {
         if (!disjoint(that)) return Optional.empty();
         Rational thisSample = lower == null ? upper : lower;
         Rational thatSample = that.lower == null ? that.upper : that.lower;
-        assert thisSample != null;
-        assert thatSample != null;
         return Optional.of(compare(thisSample, thatSample));
     }
 
@@ -1298,8 +1393,7 @@ public final class Interval implements Comparable<Interval> {
         if (this == that) return true;
         if (that == null || getClass() != that.getClass()) return false;
         Interval interval = (Interval) that;
-        return (lower == null ? interval.lower == null : lower.equals(interval.lower)) &&
-               (upper == null ? interval.upper == null : upper.equals(interval.upper)); ///
+        return Objects.equals(lower, interval.lower) && Objects.equals(upper, interval.upper);
     }
 
     /**
@@ -1314,9 +1408,7 @@ public final class Interval implements Comparable<Interval> {
      */
     @Override
     public int hashCode() {
-        int result = lower != null ? lower.hashCode() : 0;
-        result = 31 * result + (upper != null ? upper.hashCode() : 0);
-        return result;
+        return (lower != null ? lower.hashCode() : 0) * 31 + (upper != null ? upper.hashCode() : 0);
     }
 
     /**
@@ -1338,11 +1430,11 @@ public final class Interval implements Comparable<Interval> {
         if (this == that) return 0;
         if (lower == null && that.lower != null) return -1;
         if (lower != null && that.lower == null) return 1;
-        Ordering lowerOrdering = lower == null ? EQ : compare(lower, that.lower);
-        if (lowerOrdering != EQ) return lowerOrdering.toInt();
+        int lowerCompare = lower == null ? 0 : lower.compareTo(that.lower);
+        if (lowerCompare != 0) return lowerCompare;
         if (upper == null && that.upper != null) return 1;
         if (upper != null && that.upper == null) return -1;
-        return (upper == null ? EQ : compare(upper, that.upper)).toInt();
+        return upper == null ? 0 : upper.compareTo(that.upper);
     }
 
     /**
@@ -1385,10 +1477,8 @@ public final class Interval implements Comparable<Interval> {
             if (!optUpper.isPresent()) return Optional.empty();
             upper = optUpper.get();
         }
-        if (lower == null && upper == null) return Optional.of(ALL);
-        if (lower == null) return Optional.of(lessThanOrEqualTo(upper));
-        if (upper == null) return Optional.of(greaterThanOrEqualTo(lower));
-        return le(lower, upper) ? Optional.of(of(lower, upper)) : Optional.<Interval>empty();
+        if (lower != null && upper != null && gt(lower, upper)) return Optional.empty();
+        return Optional.of(new Interval(lower, upper));
     }
 
     /**
@@ -1425,5 +1515,12 @@ public final class Interval implements Comparable<Interval> {
      */
     public @NotNull String toString() {
         return (lower == null ? "(-Infinity" : "[" + lower) + ", " + (upper == null ? "Infinity)" : upper + "]");
+    }
+
+    /**
+     * Ensures that {@code this} is valid. Must return true for any {@code Interval} used outside this class.
+     */
+    public void validate() {
+        assertTrue(this, lower == null || upper == null || le(lower, upper));
     }
 }

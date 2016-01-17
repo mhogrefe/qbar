@@ -11,6 +11,7 @@ import java.math.BigInteger;
 import java.util.*;
 
 import static mho.wheels.iterables.IterableUtils.*;
+import static mho.wheels.testing.Testing.assertTrue;
 
 /**
  * <p>A vector with {@link Rational} coordinates. May be zero-dimensional.</p>
@@ -24,12 +25,13 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
     /**
      * []
      */
-    public static final RationalVector ZERO_DIMENSIONAL = new RationalVector(Collections.emptyList());
+    public static final @NotNull RationalVector ZERO_DIMENSIONAL = new RationalVector(Collections.emptyList());
 
     /**
      * Used by {@link mho.qbar.objects.RationalVector#compareTo}
      */
-    private static final Comparator<Iterable<Rational>> RATIONAL_ITERABLE_COMPARATOR = new ShortlexComparator<>();
+    private static final @NotNull Comparator<Iterable<Rational>> RATIONAL_ITERABLE_COMPARATOR =
+            new ShortlexComparator<>();
 
     /**
      * The vector's coordinates
@@ -43,6 +45,8 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
      *  <li>{@code coordinates} cannot have any null elements.</li>
      *  <li>Any {@code RationalVector} may be constructed with this constructor.</li>
      * </ul>
+     *
+     * Length is |{@code coordinates}|
      *
      * @param coordinates the vector's coordinates
      */
@@ -68,62 +72,6 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
     }
 
     /**
-     * Returns {@code this}'s x-coordinate.
-     *
-     * <ul>
-     *  <li>{@code this} must be non-empty.</li>
-     *  <li>The result is non-null.</li>
-     * </ul>
-     *
-     * @return the x-coordinate of {@code this}
-     */
-    public @NotNull Rational x() {
-        return coordinates.get(0);
-    }
-
-    /**
-     * Returns {@code this}'s y-coordinate.
-     *
-     * <ul>
-     *  <li>{@code this} must have dimension at least 2.</li>
-     *  <li>The result is non-null.</li>
-     * </ul>
-     *
-     * @return the y-coordinate of {@code this}
-     */
-    public @NotNull Rational y() {
-        return coordinates.get(1);
-    }
-
-    /**
-     * Returns {@code this}'s z-coordinate.
-     *
-     * <ul>
-     *  <li>{@code this} must have dimension at least 3.</li>
-     *  <li>The result is non-null.</li>
-     * </ul>
-     *
-     * @return the z-coordinate of {@code this}
-     */
-    public @NotNull Rational z() {
-        return coordinates.get(2);
-    }
-
-    /**
-     * Returns {@code this}'s w-coordinate (the coordinate of the 4th dimension).
-     *
-     * <ul>
-     *  <li>{@code this} must have dimension at least 4.</li>
-     *  <li>The result is non-null.</li>
-     * </ul>
-     *
-     * @return the w-coordinate of {@code this}
-     */
-    public @NotNull Rational w() {
-        return coordinates.get(3);
-    }
-
-    /**
      * Returns one of {@code this}'s coordinates. 0-indexed.
      *
      * <ul>
@@ -136,7 +84,7 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
      * @param i the 0-based coordinate index
      * @return the {@code i}th coordinate of {@code this}
      */
-    public @NotNull Rational x(int i) {
+    public @NotNull Rational get(int i) {
         return coordinates.get(i);
     }
 
@@ -156,8 +104,9 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
      */
     public static @NotNull RationalVector of(@NotNull List<Rational> coordinates) {
         if (coordinates.isEmpty()) return ZERO_DIMENSIONAL;
-        if (any(a -> a == null, coordinates))
+        if (any(a -> a == null, coordinates)) {
             throw new NullPointerException();
+        }
         return new RationalVector(toList(coordinates));
     }
 
@@ -193,6 +142,20 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
     }
 
     /**
+     * Determines whether {@code this} is a zero vector
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalVector}.</li>
+     *  <li>The result may be either {@code boolean}.</li>
+     * </ul>
+     *
+     * @return whether {@code this}=0
+     */
+    public boolean isZero() {
+        return all(r -> r == Rational.ZERO, coordinates);
+    }
+
+    /**
      * Creates the zero vector with a given dimension.
      *
      * <ul>
@@ -206,10 +169,13 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
      * @return 0<sub>{@code dimension}</sub>
      */
     public static @NotNull RationalVector zero(int dimension) {
-        if (dimension == 0) return ZERO_DIMENSIONAL;
-        if (dimension < 0)
-            throw new IllegalArgumentException("dimension cannot be negative");
-        return new RationalVector(toList(replicate(dimension, Rational.ZERO)));
+        if (dimension == 0) {
+            return ZERO_DIMENSIONAL;
+        } else if (dimension < 0) {
+            throw new IllegalArgumentException("dimension cannot be negative. Invalid dimension: " );
+        } else {
+            return new RationalVector(toList(replicate(dimension, Rational.ZERO)));
+        }
     }
 
     /**
@@ -231,27 +197,15 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
      * @return a standard basis vector
      */
     public static @NotNull RationalVector standard(int dimension, int i) {
-        if (dimension < 1)
-            throw new IllegalArgumentException("dimension must be positive");
-        if (i < 0)
-            throw new IllegalArgumentException("i cannot be negative");
-        if (i >= dimension)
-            throw new IllegalArgumentException("i must be less than dimension");
-        return new RationalVector(toList(insert(replicate(dimension - 1, Rational.ZERO), i, Rational.ONE)));
-    }
-
-    /**
-     * Determines whether {@code this} is a zero vector
-     *
-     * <ul>
-     *  <li>{@code this} may be any {@code RationalVector}.</li>
-     *  <li>The result may be either {@code boolean}.</li>
-     * </ul>
-     *
-     * @return whether {@code this}=0
-     */
-    public boolean isZero() {
-        return all(r -> r == Rational.ZERO, coordinates);
+        if (dimension < 1) {
+            throw new IllegalArgumentException("dimension must be positive. Invalid dimension: " + dimension);
+        } else if (i < 0) {
+            throw new IllegalArgumentException("i cannot be negative. Invalid i: " + i);
+        } else if (i >= dimension) {
+            throw new IllegalArgumentException("i must be less than dimension. i: " + i + ", dimension: " + dimension);
+        } else {
+            return new RationalVector(toList(insert(replicate(dimension - 1, Rational.ZERO), i, Rational.ONE)));
+        }
     }
 
     /**
@@ -270,8 +224,10 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
      * @return {@code this}+{@code that}
      */
     public @NotNull RationalVector add(@NotNull RationalVector that) {
-        if (coordinates.size() != that.coordinates.size())
-            throw new ArithmeticException("vectors must have same dimension");
+        if (coordinates.size() != that.coordinates.size()) {
+            throw new ArithmeticException("this and that must have the same dimension. this: " + this + ", that: " +
+                    that);
+        }
         if (this == ZERO_DIMENSIONAL) return ZERO_DIMENSIONAL;
         return new RationalVector(toList(zipWith(Rational::add, coordinates, that.coordinates)));
     }
@@ -309,8 +265,10 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
      * @return {@code this}–{@code that}
      */
     public @NotNull RationalVector subtract(@NotNull RationalVector that) {
-        if (coordinates.size() != that.coordinates.size())
-            throw new ArithmeticException("vectors must have same dimension");
+        if (coordinates.size() != that.coordinates.size()) {
+            throw new ArithmeticException("this and that must have the same dimension. this: " + this + ", that: " +
+                    that);
+        }
         if (this == ZERO_DIMENSIONAL) return ZERO_DIMENSIONAL;
         return new RationalVector(toList(zipWith(Rational::subtract, coordinates, that.coordinates)));
     }
@@ -331,6 +289,7 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
      */
     public @NotNull RationalVector multiply(@NotNull Rational that) {
         if (this == ZERO_DIMENSIONAL) return ZERO_DIMENSIONAL;
+        if (that == Rational.ONE) return this;
         return new RationalVector(toList(map(r -> r.multiply(that), coordinates)));
     }
 
@@ -350,6 +309,7 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
      */
     public @NotNull RationalVector multiply(@NotNull BigInteger that) {
         if (this == ZERO_DIMENSIONAL) return ZERO_DIMENSIONAL;
+        if (that.equals(BigInteger.ONE)) return this;
         return new RationalVector(toList(map(r -> r.multiply(that), coordinates)));
     }
 
@@ -369,6 +329,7 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
      */
     public @NotNull RationalVector multiply(int that) {
         if (this == ZERO_DIMENSIONAL) return ZERO_DIMENSIONAL;
+        if (that == 1) return this;
         return new RationalVector(toList(map(r -> r.multiply(that), coordinates)));
     }
 
@@ -483,12 +444,14 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
      * @return Σxs
      */
     public static @NotNull RationalVector sum(@NotNull Iterable<RationalVector> xs) {
-        if (isEmpty(xs))
-            throw new IllegalArgumentException("cannot take sum of empty RationalVector list");
-        if (!same(map(RationalVector::dimension, xs)))
-            throw new ArithmeticException("all elements must have the same dimension");
-        List<Rational> coordinates = toList(map(Rational::sum, transpose(map(v -> v, xs))));
-        return coordinates.isEmpty() ? ZERO_DIMENSIONAL : new RationalVector(coordinates);
+        if (isEmpty(xs)) {
+            throw new IllegalArgumentException("xs cannot be empty.");
+        } else if (!same(map(RationalVector::dimension, xs))) {
+            throw new ArithmeticException("Every RationalVector in xs must have the same dimension. Invalid xs: " +
+                    xs);
+        } else {
+            return foldl1(RationalVector::add, xs);
+        }
     }
 
     /**
@@ -497,7 +460,7 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
      * support removal.
      *
      * <ul>
-     *  <li>{@code xs} must not be empty and may not contain any nulls. Every {@code RationalVector} in {@code xs} must
+     *  <li>{@code xs} cannot be empty and may not contain any nulls. Every {@code RationalVector} in {@code xs} must
      *  have the same dimension.</li>
      *  <li>The result does not contain any nulls.</li>
      * </ul>
@@ -508,10 +471,11 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
      * @return Δxs
      */
     public static @NotNull Iterable<RationalVector> delta(@NotNull Iterable<RationalVector> xs) {
-        if (isEmpty(xs))
-            throw new IllegalArgumentException("cannot get delta of empty Iterable");
-        if (head(xs) == null)
+        if (isEmpty(xs)) {
+            throw new IllegalArgumentException("xs cannot be empty.");
+        } else if (head(xs) == null) {
             throw new NullPointerException();
+        }
         return adjacentPairsWith((x, y) -> y.subtract(x), xs);
     }
 
@@ -530,15 +494,16 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
      * @return {@code this}⋅{@code that}
      */
     public @NotNull Rational dot(@NotNull RationalVector that) {
-        if (coordinates.size() != that.coordinates.size())
-            throw new ArithmeticException("vectors must have same dimension");
+        if (coordinates.size() != that.coordinates.size()) {
+            throw new ArithmeticException("this and that must have the same dimension. this: " + this + ", that: " +
+                    that);
+        }
         return Rational.sum(zipWith(Rational::multiply, coordinates, that.coordinates));
     }
 
     /**
      * Determines whether the angle between {@code this} and {@code that} is less than, equal to, or greater than a
-     * right angle. For the purposes of this method, zero vectors are considered to be at a right angle to any other
-     * vector.
+     * right angle. Zero vectors are a right angle to any other vector.
      *
      * <ul>
      *  <li>{@code this} may be any {@code RationalVector}.</li>
@@ -552,7 +517,12 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
      * obtuse ({@code GT}).
      */
     public @NotNull Ordering rightAngleCompare(@NotNull RationalVector that) {
-        return Ordering.compare(dot(that), Rational.ZERO).invert();
+        if (coordinates.size() != that.coordinates.size()) {
+            throw new ArithmeticException("this and that must have the same dimension. this: " + this + ", that: " +
+                    that);
+        }
+        List<Rational> products = toList(zipWith(Rational::multiply, coordinates, that.coordinates));
+        return Ordering.fromInt(-Rational.sumSign(products));
     }
 
     /**
@@ -603,6 +573,21 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
      */
     public @NotNull Optional<Rational> pivot() {
         return find(r -> r != Rational.ZERO, coordinates);
+    }
+
+    /**
+     * Checks whether this is reduced, <i>i.e.</i> whether the pivot, if it exists, is 1.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalVector}.</li>
+     *  <li>The result may be either {@code boolean}.</li>
+     * </ul>
+     *
+     * @return whether this is reduced (see {@link RationalVector#reduce()})
+     */
+    public boolean isReduced() {
+        Optional<Rational> pivot = pivot();
+        return !pivot.isPresent() || pivot.get() == Rational.ONE;
     }
 
     /**
@@ -737,5 +722,15 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
      */
     public @NotNull String toString() {
         return coordinates.toString();
+    }
+
+    /**
+     * Ensures that {@code this} is valid. Must return true for any {@code RationalVector} used outside this class.
+     */
+    public void validate() {
+        assertTrue(this, all(r -> r != null, coordinates));
+        if (equals(ZERO_DIMENSIONAL)) {
+            assertTrue(this, this == ZERO_DIMENSIONAL);
+        }
     }
 }

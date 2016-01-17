@@ -2,10 +2,10 @@ package mho.qbar.objects;
 
 import mho.wheels.io.Readers;
 import mho.wheels.iterables.NoRemoveIterator;
+import mho.wheels.math.BinaryFraction;
 import mho.wheels.math.MathUtils;
 import mho.wheels.numberUtils.BigDecimalUtils;
 import mho.wheels.numberUtils.IntegerUtils;
-import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
 import org.jetbrains.annotations.NotNull;
@@ -21,8 +21,8 @@ import java.util.function.Function;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.numberUtils.FloatingPointUtils.*;
 import static mho.wheels.ordering.Ordering.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static mho.wheels.testing.Testing.assertEquals;
+import static mho.wheels.testing.Testing.assertTrue;
 
 /**
  * <p>The {@code Rational} class uniquely represents rational numbers. {@code denominator} is the smallest positive
@@ -49,17 +49,22 @@ public final class Rational implements Comparable<Rational> {
     /**
      * 10
      */
-    public static final @NotNull Rational TEN = new Rational(BigInteger.TEN, BigInteger.ONE);
+    public static final @NotNull Rational TEN = of(10);
 
     /**
      * 2
      */
-    public static final @NotNull Rational TWO = new Rational(IntegerUtils.TWO, BigInteger.ONE);
+    public static final @NotNull Rational TWO = of(2);
 
     /**
      * -1
      */
-    public static final @NotNull Rational NEGATIVE_ONE = new Rational(IntegerUtils.NEGATIVE_ONE, BigInteger.ONE);
+    public static final @NotNull Rational NEGATIVE_ONE = of(-1);
+
+    /**
+     * -1
+     */
+    public static final @NotNull Rational ONE_HALF = of(1, 2);
 
     /**
      * The smallest positive float value, or 2<sup>–149</sup>
@@ -104,12 +109,32 @@ public final class Rational implements Comparable<Rational> {
     public static final @NotNull Rational LARGEST_DOUBLE = ofExact(Double.MAX_VALUE).get();
 
     /**
-     * an {@code Iterable} that contains every harmonic number. Does not support removal
+     * An {@code Iterable} that contains every harmonic number. Does not support removal.
      *
      * Length is infinite
      */
     public static final @NotNull Iterable<Rational> HARMONIC_NUMBERS =
             scanl(Rational::add, ONE, map(i -> new Rational(BigInteger.ONE, BigInteger.valueOf(i)), rangeUp(2)));
+
+    /**
+     * A {@code Comparator} that compares two {@code Rational}s by their denominators, then by the absolute values of
+     * their numerators, and finally by the signs of their numerators. When multiplying a list of {@code Rational}s,
+     * sorting the list with this {@code Comparator} first results in an appreciable speedup.
+     */
+    private static final @NotNull Comparator<Rational> DENOMINATOR_NUMERATOR_COMPARATOR = (x, y) -> {
+        int c = x.getDenominator().compareTo(y.getDenominator());
+        if (c != 0) return c;
+        BigInteger xn = x.getNumerator();
+        BigInteger yn = y.getNumerator();
+        c = xn.abs().compareTo(yn.abs());
+        if (c != 0) return c;
+        return Integer.compare(xn.signum(), yn.signum());
+    };
+
+    /**
+     * 36, the number of ASCII alphanumeric characters
+     */
+    private static final @NotNull BigInteger ASCII_ALPHANUMERIC_COUNT = BigInteger.valueOf(36);
 
     /**
      * {@code this} times {@code denominator}
@@ -180,8 +205,9 @@ public final class Rational implements Comparable<Rational> {
      * @return the {@code Rational} corresponding to {@code numerator}/{@code denominator}
      */
     public static @NotNull Rational of(@NotNull BigInteger numerator, @NotNull BigInteger denominator) {
-        if (denominator.equals(BigInteger.ZERO))
-            throw new ArithmeticException("division by zero");
+        if (denominator.equals(BigInteger.ZERO)) {
+            throw new ArithmeticException("denominator cannot be equal to 0.");
+        }
         if (numerator.equals(BigInteger.ZERO)) return ZERO;
         if (numerator.equals(denominator)) return ONE;
         BigInteger gcd = numerator.gcd(denominator);
@@ -205,8 +231,9 @@ public final class Rational implements Comparable<Rational> {
      * @return the {@code Rational} corresponding to {@code numerator}/{@code denominator}
      */
     public static @NotNull Rational of(long numerator, long denominator) {
-        if (denominator == 0)
-            throw new ArithmeticException("division by zero");
+        if (denominator == 0) {
+            throw new ArithmeticException("denominator cannot be equal to 0.");
+        }
         if (numerator == 0) return ZERO;
         if (numerator == denominator) return ONE;
         long gcd = MathUtils.gcd(numerator, denominator);
@@ -230,8 +257,9 @@ public final class Rational implements Comparable<Rational> {
      * @return the {@code Rational} corresponding to {@code numerator}/{@code denominator}
      */
     public static @NotNull Rational of(int numerator, int denominator) {
-        if (denominator == 0)
-            throw new ArithmeticException("division by zero");
+        if (denominator == 0) {
+            throw new ArithmeticException("denominator cannot be equal to 0.");
+        }
         if (numerator == 0) return ZERO;
         if (numerator == denominator) return ONE;
         int gcd = MathUtils.gcd(numerator, denominator);
@@ -289,6 +317,26 @@ public final class Rational implements Comparable<Rational> {
         if (n == 0) return ZERO;
         if (n == 1) return ONE;
         return new Rational(BigInteger.valueOf(n), BigInteger.ONE);
+    }
+
+    /**
+     * Creates a {@code Rational} from a {@code BinaryFraction}.
+     *
+     * <ul>
+     *  <li>{@code bf} cannot be null.</li>
+     *  <li>The result is a {@code Rational} whose denominator is a power of 2.</li>
+     * </ul>
+     *
+     * @param bf the {@code BinaryFraction}
+     * @return the {@code Rational} corresponding to {@code bf}
+     */
+    public static @NotNull Rational of(@NotNull BinaryFraction bf) {
+        if (bf == BinaryFraction.ZERO) return ZERO;
+        if (bf == BinaryFraction.ONE) return ONE;
+        int exponent = bf.getExponent();
+        return exponent >= 0 ?
+                of(bf.bigIntegerValueExact()) :
+                of(bf.getMantissa(), BigInteger.ONE.shiftLeft(-exponent));
     }
 
     /**
@@ -451,51 +499,50 @@ public final class Rational implements Comparable<Rational> {
      * @return {@code this}, rounded
      */
     public @NotNull BigInteger bigIntegerValue(@NotNull RoundingMode roundingMode) {
-        Ordering halfCompare = compare(fractionalPart(), of(1, 2));
-        if (signum() == -1) halfCompare = halfCompare.invert();
-        switch (roundingMode) {
-            case UNNECESSARY:
-                if (denominator.equals(BigInteger.ONE)) {
-                    return numerator;
-                } else {
-                    throw new ArithmeticException("Rational not an integer. Use a different rounding mode");
-                }
-            case FLOOR:
-                return floor();
-            case CEILING:
-                return ceiling();
-            case DOWN:
-                return numerator.divide(denominator);
-            case UP:
-                BigInteger down = numerator.divide(denominator);
-                if (numerator.mod(denominator).equals(BigInteger.ZERO)) {
-                    return down;
-                } else {
-                    if (numerator.signum() == 1) {
-                        return down.add(BigInteger.ONE);
-                    } else {
-                        return down.subtract(BigInteger.ONE);
-                    }
-                }
-            case HALF_DOWN:
-                if (halfCompare == GT) {
-                    return bigIntegerValue(RoundingMode.UP);
-                } else {
-                    return bigIntegerValue(RoundingMode.DOWN);
-                }
-            case HALF_UP:
-                if (halfCompare == LT) {
-                    return bigIntegerValue(RoundingMode.DOWN);
-                } else {
-                    return bigIntegerValue(RoundingMode.UP);
-                }
-            case HALF_EVEN:
-                if (halfCompare == LT) return bigIntegerValue(RoundingMode.DOWN);
-                if (halfCompare == GT) return bigIntegerValue(RoundingMode.UP);
-                BigInteger floor = floor();
-                return floor.testBit(0) ? floor.add(BigInteger.ONE) : floor;
+        if (denominator.equals(BigInteger.ONE)) {
+            return numerator;
         }
-        return null; //never happens
+        if (roundingMode == RoundingMode.UNNECESSARY) {
+            throw new ArithmeticException("If roundingMode is UNNECESSARY, this must be an integer. Invalid this: " +
+                    this);
+        }
+        boolean positive = numerator.signum() == 1;
+        BigInteger floor;
+        BigInteger ceiling;
+        if (positive) {
+            floor = numerator.divide(denominator);
+            ceiling = floor.add(BigInteger.ONE);
+        } else {
+            ceiling = numerator.divide(denominator);
+            floor = ceiling.subtract(BigInteger.ONE);
+        }
+        switch (roundingMode) {
+            case FLOOR:
+                return floor;
+            case CEILING:
+                return ceiling;
+            case DOWN:
+                return positive ? floor : ceiling;
+            case UP:
+                return positive ? ceiling : floor;
+        }
+        switch (compare(fractionalPart(), ONE_HALF)) {
+            case LT:
+                return floor;
+            case GT:
+                return ceiling;
+            case EQ:
+                switch (roundingMode) {
+                    case HALF_DOWN:
+                        return positive ? floor : ceiling;
+                    case HALF_UP:
+                        return positive ? ceiling : floor;
+                    case HALF_EVEN:
+                        return floor.testBit(0) ? ceiling : floor;
+                }
+            default:
+                throw new IllegalStateException("unreachable");
+        }
     }
 
     /**
@@ -514,6 +561,34 @@ public final class Rational implements Comparable<Rational> {
     }
 
     /**
+     * Returns the floor of {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Rational}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @return ⌊{@code this}⌋;
+     */
+    public @NotNull BigInteger floor() {
+        return bigIntegerValue(RoundingMode.FLOOR);
+    }
+
+    /**
+     * Returns the ceiling of {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Rational}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @return ⌈{@code this}⌉
+     */
+    public @NotNull BigInteger ceiling() {
+        return bigIntegerValue(RoundingMode.CEILING);
+    }
+
+    /**
      * Converts {@code this} to a {@code BigInteger}. Throws an {@link java.lang.ArithmeticException} if {@code this}
      * is not integral.
      *
@@ -528,7 +603,7 @@ public final class Rational implements Comparable<Rational> {
         if (denominator.equals(BigInteger.ONE)) {
             return numerator;
         } else {
-            throw new ArithmeticException("Rational not an integer. Use a different rounding mode");
+            throw new ArithmeticException("this must be an integer. Invalid this: " + this);
         }
     }
 
@@ -593,95 +668,55 @@ public final class Rational implements Comparable<Rational> {
     }
 
     /**
-     * Determines whether {@code this} has a terminating digit expansion in a particular base.
+     * Determines whether {@code this} is a power of 2.
      *
      * <ul>
-     *  <li>{@code this} may be any {@code Rational}.</li>
-     *  <li>{@code base} must be at least 2.</li>
+     *  <li>{@code this} must be positive.</li>
      *  <li>The result may be either {@code boolean}.</li>
      * </ul>
      *
-     * @param base the base in which we are interesting in expanding {@code this}
-     * @return whether {@code this} has a terminating base expansion in base-{@code base}
+     * @return whether {@code this} is a power of two
      */
-    public boolean hasTerminatingBaseExpansion(@NotNull BigInteger base) {
-        if (lt(base, IntegerUtils.TWO))
-            throw new IllegalArgumentException("base must be at least 2");
-        if (isInteger()) return true;
-        BigInteger remainder = denominator;
-        for (BigInteger baseFactor : nub(MathUtils.primeFactors(base))) {
-            while (remainder.mod(baseFactor).equals(BigInteger.ZERO)) {
-                remainder = remainder.divide(baseFactor);
-            }
+    public boolean isPowerOfTwo() {
+        if (signum() != 1) {
+            throw new ArithmeticException("this must be positive. Invalid this: " + this);
         }
-        return remainder.equals(BigInteger.ONE);
+        return denominator.equals(BigInteger.ONE) && IntegerUtils.isPowerOfTwo(numerator) ||
+                numerator.equals(BigInteger.ONE) && IntegerUtils.isPowerOfTwo(denominator);
     }
 
     /**
-     * Rounds {@code this} to a {@link java.math.BigDecimal} with a specified rounding mode (see documentation for
-     * {@code java.math.RoundingMode} for details) and with a specified precision (number of significant digits), or
-     * to full precision if {@code precision} is 0.
+     * Determines whether {@code this} is a binary fraction (whether its denominator is a power of 2).
      *
      * <ul>
      *  <li>{@code this} may be any {@code Rational}.</li>
-     *  <li>{@code precision} cannot be negative.</li>
-     *  <li>{@code roundingMode} may be any {@code RoundingMode}.</li>
-     *  <li>If {@code precision} is 0, then {@code this} must be a {@code Rational} whose decimal expansion is
-     *  terminating; that is, its denominator must only have 2 or 5 as prime factors.</li>
-     *  <li>If {@code roundingMode} is {@code RoundingMode.UNNECESSARY}, then {@code precision} must be at least as
-     *  large as the number of digits in {@code this}'s decimal expansion.</li>
-     *  <li>The result is non-null.</li>
+     *  <li>The result may be either {@code boolean}.</li>
      * </ul>
      *
-     * @param precision the precision with which to round {@code this}. 0 indicates full precision.
-     * @param roundingMode specifies the details of how to round {@code this}.
-     * @return {@code this}, in {@code BigDecimal} form
+     * @return whether {@code this} is a binary fraction
      */
-    public @NotNull BigDecimal bigDecimalValue(int precision, @NotNull RoundingMode roundingMode) {
-        MathContext context = new MathContext(precision, roundingMode);
-        BigDecimal result = new BigDecimal(numerator).divide(new BigDecimal(denominator), context);
-        if (precision != 0) {
-            result = BigDecimalUtils.setPrecision(result, precision);
+    public boolean isBinaryFraction() {
+        return IntegerUtils.isPowerOfTwo(denominator);
+    }
+
+    /**
+     * Converts {@code this} to a {@code BinaryFraction}. Throws an {@link java.lang.ArithmeticException} if
+     * {@code this} is not a binary fraction.
+     *
+     * <ul>
+     *  <li>{@code this} must be a binary fraction (its denominator must be a power of 2.)</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @return the {@code BinaryFraction} value of {@code this}
+     */
+    public @NotNull BinaryFraction binaryFractionValueExact() {
+        if (this == ZERO) return BinaryFraction.ZERO;
+        if (this == ONE) return BinaryFraction.ONE;
+        if (!isBinaryFraction()) {
+            throw new ArithmeticException("this must be a binary fraction. Invalid this: " + this);
         }
-        return result;
-    }
-
-    /**
-     * Rounds {@code this} to a {@code BigDecimal} with a specified precision (number of significant digits), or to
-     * full precision if {@code precision} is 0. {@code RoundingMode.HALF_EVEN} is used for rounding.
-     *
-     * <ul>
-     *  <li>{@code this} may be any {@code Rational}.</li>
-     *  <li>{@code precision} cannot be negative.</li>
-     *  <li>If {@code precision} is 0, then {@code this} must be a {@code Rational} whose decimal expansion is
-     *  terminating; that is, its denominator must only have 2 or 5 as prime factors.</li>
-     *  <li>The result is a {@code BigDecimal} with minimal scale. That is, the scale is the smallest non-negative n
-     *  such that {@code this}×10<sup>n</sup> is an integer.</li>
-     * </ul>
-     *
-     * @param precision the precision with which to round {@code this}. 0 indicates full precision.
-     * @return {@code this}, in {@code BigDecimal} form
-     */
-    public @NotNull BigDecimal bigDecimalValue(int precision) {
-        return bigDecimalValue(precision, RoundingMode.HALF_EVEN);
-    }
-
-    /**
-     * Returns a {@code BigDecimal} exactly equal to {@code this}. Throws an {@code ArithmeticException} if
-     * {@code this} cannot be represented as a terminating decimal.
-     *
-     * <ul>
-     *  <li>{@code this} must be a {@code Rational} whose decimal expansion is terminating; that is, its denominator
-     *  must only have 2 or 5 as prime factors.</li>
-     *  <li>The result is a {@code BigDecimal} with minimal scale. That is, the scale is the smallest non-negative n
-     *  such that {@code this}×10<sup>n</sup> is an integer.</li>
-     * </ul>
-     *
-     * @return {@code this}, in {@code BigDecimal} form
-     */
-    public @NotNull BigDecimal bigDecimalValueExact() {
-        //noinspection BigDecimalMethodWithoutRoundingCalled
-        return new BigDecimal(numerator).divide(new BigDecimal(denominator));
+        return BinaryFraction.of(numerator, -denominator.getLowestSetBit());
     }
 
     /**
@@ -698,23 +733,15 @@ public final class Rational implements Comparable<Rational> {
      */
     public int binaryExponent() {
         if (this == ONE) return 0;
-        if (this == ZERO || this.signum() != 1)
-            throw new IllegalArgumentException("Rational must be positive");
-        Rational adjusted = this;
-        int exponent = 0;
-        if (lt(numerator, denominator)) {
-            while (lt(adjusted.numerator, adjusted.denominator)) {
-                adjusted = adjusted.shiftLeft(1);
-                exponent--;
-            }
-        } else {
-            while (ge(adjusted.numerator, adjusted.denominator)) {
-                adjusted = adjusted.shiftRight(1);
-                exponent++;
-            }
-            exponent--;
+        if (this == ZERO || signum() != 1) {
+            throw new IllegalArgumentException("this must be positive. Invalid this: " + this);
         }
-        return exponent;
+        if (gt(numerator, denominator)) {
+            return numerator.divide(denominator).bitLength() - 1;
+        } else {
+            int exponent = -denominator.divide(numerator).bitLength();
+            return isPowerOfTwo() ? exponent + 1 : exponent;
+        }
     }
 
     /**
@@ -739,6 +766,7 @@ public final class Rational implements Comparable<Rational> {
      */
     private @NotNull Pair<Float, Float> floatRange() {
         if (this == ZERO) return new Pair<>(0.0f, 0.0f);
+        if (this == ONE) return new Pair<>(1.0f, 1.0f);
         if (numerator.signum() == -1) {
             Pair<Float, Float> negativeRange = negate().floatRange();
             return new Pair<>(-negativeRange.b, -negativeRange.a);
@@ -756,10 +784,36 @@ public final class Rational implements Comparable<Rational> {
             fraction = shiftRight(exponent).subtract(ONE).shiftLeft(FLOAT_FRACTION_WIDTH);
             adjustedExponent = exponent + Float.MAX_EXPONENT;
         }
-        float loFloat = Float.intBitsToFloat((adjustedExponent << FLOAT_FRACTION_WIDTH) +
-                fraction.floor().intValueExact());
-        float hiFloat = fraction.denominator.equals(BigInteger.ONE) ? loFloat : successor(loFloat);
+        float loFloat = Float.intBitsToFloat(
+                (adjustedExponent << FLOAT_FRACTION_WIDTH) + fraction.floor().intValueExact()
+        );
+        float hiFloat = fraction.isInteger() ? loFloat : successor(loFloat);
         return new Pair<>(loFloat, hiFloat);
+    }
+
+    /**
+     * Determines whether {@code this} is exactly equal to some {@code float}. If true, the {@code float} may be found
+     * using {@link Rational#floatValueExact()}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Rational}.</li>
+     *  <li>The result may be either {@code boolean}.</li>
+     * </ul>
+     *
+     * @return whether {@code this} is exactly equal to a {@code float}
+     */
+    public boolean isEqualToFloat() {
+        if (this == ZERO || this == ONE) return true;
+        if (numerator.signum() == -1) {
+            return negate().isEqualToFloat();
+        }
+        if (!isBinaryFraction()) return false;
+        int exponent = numerator.bitLength() - denominator.bitLength();
+        if (exponent > Float.MAX_EXPONENT || exponent == Float.MAX_EXPONENT && gt(this, LARGEST_FLOAT)) {
+            return false;
+        }
+        int shift = exponent < Float.MIN_EXPONENT ? MIN_SUBNORMAL_FLOAT_EXPONENT : exponent - FLOAT_FRACTION_WIDTH;
+        return numerator.getLowestSetBit() - denominator.getLowestSetBit() >= shift;
     }
 
     /**
@@ -785,6 +839,7 @@ public final class Rational implements Comparable<Rational> {
      */
     private @NotNull Pair<Double, Double> doubleRange() {
         if (this == ZERO) return new Pair<>(0.0, 0.0);
+        if (this == ONE) return new Pair<>(1.0, 1.0);
         if (numerator.signum() == -1) {
             Pair<Double, Double> negativeRange = negate().doubleRange();
             return new Pair<>(-negativeRange.b, -negativeRange.a);
@@ -802,12 +857,36 @@ public final class Rational implements Comparable<Rational> {
             fraction = shiftRight(exponent).subtract(ONE).shiftLeft(DOUBLE_FRACTION_WIDTH);
             adjustedExponent = exponent + Double.MAX_EXPONENT;
         }
-        double loDouble = Double.longBitsToDouble(((long) adjustedExponent << DOUBLE_FRACTION_WIDTH) +
-                fraction.floor().longValueExact());
-        double hiDouble = fraction.denominator.equals(BigInteger.ONE) ?
-                loDouble :
-                successor(loDouble);
+        double loDouble = Double.longBitsToDouble(
+                ((long) adjustedExponent << DOUBLE_FRACTION_WIDTH) + fraction.floor().longValueExact()
+        );
+        double hiDouble = fraction.isInteger() ? loDouble : successor(loDouble);
         return new Pair<>(loDouble, hiDouble);
+    }
+
+    /**
+     * Determines whether {@code this} is exactly equal to some {@code double}. If true, the {@code double} may be
+     * found using {@link Rational#doubleValueExact()}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Rational}.</li>
+     *  <li>The result may be either {@code boolean}.</li>
+     * </ul>
+     *
+     * @return whether {@code this} is exactly equal to a {@code double}
+     */
+    public boolean isEqualToDouble() {
+        if (this == ZERO || this == ONE) return true;
+        if (numerator.signum() == -1) {
+            return negate().isEqualToDouble();
+        }
+        if (!isBinaryFraction()) return false;
+        int exponent = numerator.bitLength() - denominator.bitLength();
+        if (exponent > Double.MAX_EXPONENT || exponent == Double.MAX_EXPONENT && gt(this, LARGEST_DOUBLE)) {
+            return false;
+        }
+        int shift = exponent < Double.MIN_EXPONENT ? MIN_SUBNORMAL_DOUBLE_EXPONENT : exponent - DOUBLE_FRACTION_WIDTH;
+        return numerator.getLowestSetBit() - denominator.getLowestSetBit() >= shift;
     }
 
     /**
@@ -872,32 +951,10 @@ public final class Rational implements Comparable<Rational> {
     public float floatValue(@NotNull RoundingMode roundingMode) {
         Pair<Float, Float> floatRange = floatRange();
         if (floatRange.a.equals(floatRange.b)) return floatRange.a;
-        Optional<Rational> loFloat = ofExact(floatRange.a);
-        Optional<Rational> hiFloat = ofExact(floatRange.b);
-        if (!(loFloat.isPresent() && hiFloat.isPresent()) && roundingMode == RoundingMode.UNNECESSARY) {
-            throw new ArithmeticException("Rational not exactly equal to a float. Use a different rounding mode");
-        }
-        if (!loFloat.isPresent()) {
-            if (roundingMode == RoundingMode.FLOOR || roundingMode == RoundingMode.UP ||
-                    roundingMode == RoundingMode.HALF_UP || roundingMode == RoundingMode.HALF_EVEN) {
-                return Float.NEGATIVE_INFINITY;
-            } else {
-                return -Float.MAX_VALUE;
-            }
-        }
-        if (!hiFloat.isPresent()) {
-            if (roundingMode == RoundingMode.CEILING || roundingMode == RoundingMode.UP ||
-                    roundingMode == RoundingMode.HALF_UP || roundingMode == RoundingMode.HALF_EVEN) {
-                return Float.POSITIVE_INFINITY;
-            } else {
-                return Float.MAX_VALUE;
-            }
-        }
-        Rational midway = loFloat.get().add(hiFloat.get()).shiftRight(1);
-        Ordering midwayCompare = compare(this, midway);
         switch (roundingMode) {
             case UNNECESSARY:
-                throw new ArithmeticException("Rational not exactly equal to a float. Use a different rounding mode");
+                throw new ArithmeticException("If roundingMode is UNNECESSARY, this must be exactly equal to a" +
+                        " float. Invalid this: " + this);
             case FLOOR:
                 return floatRange.a;
             case CEILING:
@@ -906,18 +963,39 @@ public final class Rational implements Comparable<Rational> {
                 return floatRange.a < 0 ? floatRange.b : floatRange.a;
             case UP:
                 return floatRange.a < 0 ? floatRange.a : floatRange.b;
-            case HALF_DOWN:
-                if (midwayCompare == EQ) return signum() == 1 ? floatRange.a : floatRange.b;
-                return midwayCompare == LT ? floatRange.a : floatRange.b;
-            case HALF_UP:
-                if (midwayCompare == EQ) return signum() == 1 ? floatRange.b : floatRange.a;
-                return midwayCompare == LT ? floatRange.a : floatRange.b;
-            case HALF_EVEN:
-                if (midwayCompare == LT) return floatRange.a;
-                if (midwayCompare == GT) return floatRange.b;
-                return (Float.floatToIntBits(floatRange.a) & 1) == 0 ? floatRange.a : floatRange.b;
         }
-        return 0; //never happens
+        if (floatRange.a == Float.NEGATIVE_INFINITY) {
+            if (roundingMode == RoundingMode.HALF_UP || roundingMode == RoundingMode.HALF_EVEN) {
+                return Float.NEGATIVE_INFINITY;
+            } else {
+                return -Float.MAX_VALUE;
+            }
+        }
+        if (floatRange.b == Float.POSITIVE_INFINITY) {
+            if (roundingMode == RoundingMode.HALF_UP || roundingMode == RoundingMode.HALF_EVEN) {
+                return Float.POSITIVE_INFINITY;
+            } else {
+                return Float.MAX_VALUE;
+            }
+        }
+        Rational midway = ofExact(floatRange.a).get().add(ofExact(floatRange.b).get()).shiftRight(1);
+        switch (compare(this, midway)) {
+            case LT:
+                return floatRange.a;
+            case GT:
+                return floatRange.b;
+            case EQ:
+                switch (roundingMode) {
+                    case HALF_DOWN:
+                        return floatRange.a < 0 ? floatRange.b : floatRange.a;
+                    case HALF_UP:
+                        return floatRange.a < 0 ? floatRange.a : floatRange.b;
+                    case HALF_EVEN:
+                        return (Float.floatToIntBits(floatRange.a) & 1) == 0 ? floatRange.a : floatRange.b;
+                }
+            default:
+                throw new IllegalStateException("unreachable");
+        }
     }
 
     /**
@@ -1017,32 +1095,10 @@ public final class Rational implements Comparable<Rational> {
     public double doubleValue(@NotNull RoundingMode roundingMode) {
         Pair<Double, Double> doubleRange = doubleRange();
         if (doubleRange.a.equals(doubleRange.b)) return doubleRange.a;
-        Optional<Rational> loDouble = ofExact(doubleRange.a);
-        Optional<Rational> hiDouble = ofExact(doubleRange.b);
-        if (!(loDouble.isPresent() && hiDouble.isPresent()) && roundingMode == RoundingMode.UNNECESSARY) {
-            throw new ArithmeticException("Rational not exactly equal to a double. Use a different rounding mode");
-        }
-        if (!loDouble.isPresent()) {
-            if (roundingMode == RoundingMode.FLOOR || roundingMode == RoundingMode.UP ||
-                    roundingMode == RoundingMode.HALF_UP || roundingMode == RoundingMode.HALF_EVEN) {
-                return Double.NEGATIVE_INFINITY;
-            } else {
-                return -Double.MAX_VALUE;
-            }
-        }
-        if (!hiDouble.isPresent()) {
-            if (roundingMode == RoundingMode.CEILING || roundingMode == RoundingMode.UP ||
-                    roundingMode == RoundingMode.HALF_UP || roundingMode == RoundingMode.HALF_EVEN) {
-                return Double.POSITIVE_INFINITY;
-            } else {
-                return Double.MAX_VALUE;
-            }
-        }
-        Rational midway = loDouble.get().add(hiDouble.get()).shiftRight(1);
-        Ordering midwayCompare = compare(this, midway);
         switch (roundingMode) {
             case UNNECESSARY:
-                throw new ArithmeticException("Rational not exactly equal to a double. Use a different rounding mode");
+                throw new ArithmeticException("If roundingMode is UNNECESSARY, this must be exactly equal to a" +
+                        " double. Invalid this: " + this);
             case FLOOR:
                 return doubleRange.a;
             case CEILING:
@@ -1051,18 +1107,39 @@ public final class Rational implements Comparable<Rational> {
                 return doubleRange.a < 0 ? doubleRange.b : doubleRange.a;
             case UP:
                 return doubleRange.a < 0 ? doubleRange.a : doubleRange.b;
-            case HALF_DOWN:
-                if (midwayCompare == EQ) return signum() == 1 ? doubleRange.a : doubleRange.b;
-                return midwayCompare == LT ? doubleRange.a : doubleRange.b;
-            case HALF_UP:
-                if (midwayCompare == EQ) return signum() == 1 ? doubleRange.b : doubleRange.a;
-                return midwayCompare == LT ? doubleRange.a : doubleRange.b;
-            case HALF_EVEN:
-                if (midwayCompare == LT) return doubleRange.a;
-                if (midwayCompare == GT) return doubleRange.b;
-                return (Double.doubleToLongBits(doubleRange.a) & 1) == 0 ? doubleRange.a : doubleRange.b;
         }
-        return 0; //never happens
+        if (doubleRange.a == Double.NEGATIVE_INFINITY) {
+            if (roundingMode == RoundingMode.HALF_UP || roundingMode == RoundingMode.HALF_EVEN) {
+                return Double.NEGATIVE_INFINITY;
+            } else {
+                return -Double.MAX_VALUE;
+            }
+        }
+        if (doubleRange.b == Double.POSITIVE_INFINITY) {
+            if (roundingMode == RoundingMode.HALF_UP || roundingMode == RoundingMode.HALF_EVEN) {
+                return Double.POSITIVE_INFINITY;
+            } else {
+                return Double.MAX_VALUE;
+            }
+        }
+        Rational midway = ofExact(doubleRange.a).get().add(ofExact(doubleRange.b).get()).shiftRight(1);
+        switch (compare(this, midway)) {
+            case LT:
+                return doubleRange.a;
+            case GT:
+                return doubleRange.b;
+            case EQ:
+                switch (roundingMode) {
+                    case HALF_DOWN:
+                        return doubleRange.a < 0 ? doubleRange.b : doubleRange.a;
+                    case HALF_UP:
+                        return doubleRange.a < 0 ? doubleRange.a : doubleRange.b;
+                    case HALF_EVEN:
+                        return (Double.doubleToLongBits(doubleRange.a) & 1L) == 0L ? doubleRange.a : doubleRange.b;
+                }
+            default:
+                throw new IllegalStateException("unreachable");
+        }
     }
 
     /**
@@ -1101,6 +1178,152 @@ public final class Rational implements Comparable<Rational> {
     }
 
     /**
+     * Determines whether {@code this} has a terminating digit expansion in a particular base.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Rational}.</li>
+     *  <li>{@code base} must be at least 2.</li>
+     *  <li>The result may be either {@code boolean}.</li>
+     * </ul>
+     *
+     * @param base the base in which we are interesting in expanding {@code this}
+     * @return whether {@code this} has a terminating base expansion in base-{@code base}
+     */
+    public boolean hasTerminatingBaseExpansion(@NotNull BigInteger base) {
+        if (lt(base, IntegerUtils.TWO)) {
+            throw new IllegalArgumentException("base must be at least 2. Invalid base: " + base);
+        }
+        if (isInteger()) return true;
+        BigInteger remainder = denominator;
+        for (BigInteger baseFactor : nub(MathUtils.primeFactors(base))) {
+            while (remainder.mod(baseFactor).equals(BigInteger.ZERO)) {
+                remainder = remainder.divide(baseFactor);
+            }
+        }
+        return remainder.equals(BigInteger.ONE);
+    }
+
+    /**
+     * Rounds {@code this} to a {@link java.math.BigDecimal} with a specified rounding mode (see documentation for
+     * {@code java.math.RoundingMode} for details) and with a specified precision (number of significant digits), or
+     * to full precision if {@code precision} is 0.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Rational}.</li>
+     *  <li>{@code precision} cannot be negative.</li>
+     *  <li>{@code roundingMode} may be any {@code RoundingMode}.</li>
+     *  <li>If {@code precision} is 0, then {@code this} must be a {@code Rational} whose decimal expansion is
+     *  terminating; that is, its denominator must only have 2 or 5 as prime factors.</li>
+     *  <li>If {@code roundingMode} is {@code RoundingMode.UNNECESSARY}, then {@code precision} must be at least as
+     *  large as the number of digits in {@code this}'s decimal expansion.</li>
+     *  <li>The result is non-null.</li>
+     * </ul>
+     *
+     * @param precision the precision with which to round {@code this}. 0 indicates full precision.
+     * @param roundingMode specifies the details of how to round {@code this}.
+     * @return {@code this}, in {@code BigDecimal} form
+     */
+    public @NotNull BigDecimal bigDecimalValueByPrecision(int precision, @NotNull RoundingMode roundingMode) {
+        MathContext context = new MathContext(precision, roundingMode);
+        BigDecimal result = new BigDecimal(numerator).divide(new BigDecimal(denominator), context);
+        if (precision != 0) {
+            result = BigDecimalUtils.setPrecision(result, precision);
+        }
+        return result;
+    }
+
+    /**
+     * Rounds {@code this} to a {@link java.math.BigDecimal} with a specified rounding mode (see documentation for
+     * {@code java.math.RoundingMode} for details) and with a specified scale (number digits after the decimal point).
+     * Scale may be negative; for example, {@code 1E+1} has a scale of –1.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Rational}.</li>
+     *  <li>{@code scale} may be any {@code int}.</li>
+     *  <li>{@code roundingMode} may be any {@code RoundingMode}.</li>
+     *  <li>If {@code roundingMode} is {@code RoundingMode.UNNECESSARY}, then {@code scale} must be at least as large
+     *  as the smallest n such that {@code this}×10<sup>n</sup> is an integer (and such an n must exist).</li>
+     *  <li>The result is non-null.</li>
+     * </ul>
+     *
+     * @param scale the scale with which to round {@code this}.
+     * @param roundingMode specifies the details of how to round {@code this}.
+     * @return {@code this}, in {@code BigDecimal} form
+     */
+    public @NotNull BigDecimal bigDecimalValueByScale(int scale, @NotNull RoundingMode roundingMode) {
+        return new BigDecimal(multiply(TEN.pow(scale)).bigIntegerValue(roundingMode), scale);
+    }
+
+    /**
+     * Rounds {@code this} to a {@code BigDecimal} with a specified precision (number of significant digits), or to
+     * full precision if {@code precision} is 0. {@code RoundingMode.HALF_EVEN} is used for rounding.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Rational}.</li>
+     *  <li>{@code precision} cannot be negative.</li>
+     *  <li>If {@code precision} is 0, then {@code this} must be a {@code Rational} whose decimal expansion is
+     *  terminating; that is, its denominator must only have 2 or 5 as prime factors.</li>
+     *  <li>The result is a {@code BigDecimal} with minimal scale. That is, the scale is the smallest non-negative n
+     *  such that {@code this}×10<sup>n</sup> is an integer.</li>
+     * </ul>
+     *
+     * @param precision the precision with which to round {@code this}. 0 indicates full precision.
+     * @return {@code this}, in {@code BigDecimal} form
+     */
+    public @NotNull BigDecimal bigDecimalValueByPrecision(int precision) {
+        return bigDecimalValueByPrecision(precision, RoundingMode.HALF_EVEN);
+    }
+
+    /**
+     * Rounds {@code this} to a {@code BigDecimal} with a specified scale (number digits after the decimal point).
+     * Scale may be negative; for example, {@code 1E+1} has a scale of –1. {@code RoundingMode.HALF_EVEN} is used for
+     * rounding.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Rational}.</li>
+     *  <li>{@code scale} may be any {@code int}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param scale the scale with which to round {@code this}.
+     * @return {@code this}, in {@code BigDecimal} form
+     */
+    public @NotNull BigDecimal bigDecimalValueByScale(int scale) {
+        return bigDecimalValueByScale(scale, RoundingMode.HALF_EVEN);
+    }
+
+    /**
+     * Returns a {@code BigDecimal} exactly equal to {@code this}. Throws an {@code ArithmeticException} if
+     * {@code this} cannot be represented as a terminating decimal.
+     *
+     * <ul>
+     *  <li>{@code this} must be a {@code Rational} whose decimal expansion is terminating; that is, its denominator
+     *  must only have 2 or 5 as prime factors.</li>
+     *  <li>The result is a canonical {@code BigDecimal} (see {@link BigDecimalUtils#isCanonical(BigDecimal)}.)</li>
+     * </ul>
+     *
+     * @return {@code this}, in {@code BigDecimal} form
+     */
+    public @NotNull BigDecimal bigDecimalValueExact() {
+        //noinspection BigDecimalMethodWithoutRoundingCalled
+        return new BigDecimal(numerator).divide(new BigDecimal(denominator));
+    }
+
+    /**
+     * Returns the bit length of {@code this}, or the sum of the bit lengths of the numerator and denominator.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Rational}.</li>
+     *  <li>The result is positive.</li>
+     * </ul>
+     *
+     * @return the bit length of {@code this}
+     */
+    public int bitLength() {
+        return numerator.abs().bitLength() + denominator.bitLength();
+    }
+
+    /**
      * Returns the sum of {@code this} and {@code that}.
      *
      * <ul>
@@ -1115,22 +1338,22 @@ public final class Rational implements Comparable<Rational> {
     public @NotNull Rational add(@NotNull Rational that) {
         if (this == ZERO) return that;
         if (that == ZERO) return this;
-        BigInteger d1 = denominator.gcd(that.denominator);
-        if (d1.equals(BigInteger.ONE)) {
-            BigInteger sn = numerator.multiply(that.denominator).add(denominator.multiply(that.numerator));
-            if (sn.equals(BigInteger.ZERO)) return ZERO;
-            BigInteger sd = denominator.multiply(that.denominator);
-            if (sn.equals(sd)) return ONE;
-            return new Rational(sn, sd);
+        BigInteger denominatorGcd = denominator.gcd(that.denominator);
+        if (denominatorGcd.equals(BigInteger.ONE)) {
+            BigInteger sumNumerator = numerator.multiply(that.denominator).add(denominator.multiply(that.numerator));
+            if (sumNumerator.equals(BigInteger.ZERO)) return ZERO;
+            BigInteger sumDenominator = denominator.multiply(that.denominator);
+            if (sumNumerator.equals(sumDenominator)) return ONE;
+            return new Rational(sumNumerator, sumDenominator);
         } else {
-            BigInteger t = numerator.multiply(that.denominator.divide(d1))
-                    .add(that.numerator.multiply(denominator.divide(d1)));
-            if (t.equals(BigInteger.ZERO)) return ZERO;
-            BigInteger d2 = t.gcd(d1);
-            BigInteger sn = t.divide(d2);
-            BigInteger sd = denominator.divide(d1).multiply(that.denominator.divide(d2));
-            if (sn.equals(sd)) return ONE;
-            return new Rational(sn, sd);
+            BigInteger sumNumerator = numerator.multiply(that.denominator.divide(denominatorGcd))
+                    .add(that.numerator.multiply(denominator.divide(denominatorGcd)));
+            if (sumNumerator.equals(BigInteger.ZERO)) return ZERO;
+            BigInteger gcd = sumNumerator.gcd(denominatorGcd);
+            sumNumerator = sumNumerator.divide(gcd);
+            BigInteger sumDenominator = denominator.divide(denominatorGcd).multiply(that.denominator.divide(gcd));
+            if (sumNumerator.equals(sumDenominator)) return ONE;
+            return new Rational(sumNumerator, sumDenominator);
         }
     }
 
@@ -1162,7 +1385,7 @@ public final class Rational implements Comparable<Rational> {
      * @return |{@code this}|
      */
     public @NotNull Rational abs() {
-        if (this == ZERO || this == ONE) return this;
+        if (numerator.signum() != -1) return this;
         if (numerator.equals(IntegerUtils.NEGATIVE_ONE) && denominator.equals(BigInteger.ONE)) return ONE;
         return new Rational(numerator.abs(), denominator);
     }
@@ -1198,22 +1421,23 @@ public final class Rational implements Comparable<Rational> {
         if (this == ZERO) return that.negate();
         if (that == ZERO) return this;
         if (this == that) return ZERO;
-        BigInteger d1 = denominator.gcd(that.denominator);
-        if (d1.equals(BigInteger.ONE)) {
-            BigInteger sn = numerator.multiply(that.denominator).subtract(denominator.multiply(that.numerator));
-            if (sn.equals(BigInteger.ZERO)) return ZERO;
-            BigInteger sd = denominator.multiply(that.denominator);
-            if (sn.equals(sd)) return ONE;
-            return new Rational(sn, sd);
+        BigInteger denominatorGcd = denominator.gcd(that.denominator);
+        if (denominatorGcd.equals(BigInteger.ONE)) {
+            BigInteger diffNumerator =
+                    numerator.multiply(that.denominator).subtract(denominator.multiply(that.numerator));
+            if (diffNumerator.equals(BigInteger.ZERO)) return ZERO;
+            BigInteger diffDenominator = denominator.multiply(that.denominator);
+            if (diffNumerator.equals(diffDenominator)) return ONE;
+            return new Rational(diffNumerator, diffDenominator);
         } else {
-            BigInteger t = numerator.multiply(that.denominator.divide(d1))
-                    .subtract(that.numerator.multiply(denominator.divide(d1)));
-            if (t.equals(BigInteger.ZERO)) return ZERO;
-            BigInteger d2 = t.gcd(d1);
-            BigInteger sn = t.divide(d2);
-            BigInteger sd = denominator.divide(d1).multiply(that.denominator.divide(d2));
-            if (sn.equals(sd)) return ONE;
-            return new Rational(sn, sd);
+            BigInteger diffNumerator = numerator.multiply(that.denominator.divide(denominatorGcd))
+                    .subtract(that.numerator.multiply(denominator.divide(denominatorGcd)));
+            if (diffNumerator.equals(BigInteger.ZERO)) return ZERO;
+            BigInteger gcd = diffNumerator.gcd(denominatorGcd);
+            diffNumerator = diffNumerator.divide(gcd);
+            BigInteger diffDenominator = denominator.divide(denominatorGcd).multiply(that.denominator.divide(gcd));
+            if (diffNumerator.equals(diffDenominator)) return ONE;
+            return new Rational(diffNumerator, diffDenominator);
         }
     }
 
@@ -1252,8 +1476,8 @@ public final class Rational implements Comparable<Rational> {
         if (this == ZERO || that.equals(BigInteger.ZERO)) return ZERO;
         if (numerator.equals(BigInteger.ONE) && denominator.equals(that) ||
                 numerator.equals(IntegerUtils.NEGATIVE_ONE) && denominator.equals(that.negate())) return ONE;
-        BigInteger g = denominator.gcd(that);
-        return new Rational(numerator.multiply(that.divide(g)), denominator.divide(g));
+        BigInteger gcd = denominator.gcd(that);
+        return new Rational(numerator.multiply(that.divide(gcd)), denominator.divide(gcd));
     }
 
     /**
@@ -1273,23 +1497,24 @@ public final class Rational implements Comparable<Rational> {
         if (numerator.equals(BigInteger.ONE) && denominator.equals(BigInteger.valueOf(that))) return ONE;
         if (numerator.equals(IntegerUtils.NEGATIVE_ONE) && denominator.equals(BigInteger.valueOf(that).negate()))
             return ONE;
-        BigInteger g = denominator.gcd(BigInteger.valueOf(that));
-        return new Rational(numerator.multiply(BigInteger.valueOf(that).divide(g)), denominator.divide(g));
+        BigInteger gcd = denominator.gcd(BigInteger.valueOf(that));
+        return new Rational(numerator.multiply(BigInteger.valueOf(that).divide(gcd)), denominator.divide(gcd));
     }
 
     /**
      * Returns the multiplicative inverse of {@code this}.
      *
      * <ul>
-     *  <li>{@code this} may be any non-zero {@code Rational}.</li>
+     *  <li>{@code this} cannot be zero.</li>
      *  <li>The result is a non-zero {@code Rational}.</li>
      * </ul>
      *
      * @return 1/{@code this}
      */
     public @NotNull Rational invert() {
-        if (this == ZERO)
-            throw new ArithmeticException("division by zero");
+        if (this == ZERO) {
+            throw new ArithmeticException("this cannot be zero.");
+        }
         if (this == ONE) return ONE;
         if (numerator.signum() == -1) {
             return new Rational(denominator.negate(), numerator.negate());
@@ -1303,7 +1528,7 @@ public final class Rational implements Comparable<Rational> {
      *
      * <ul>
      *  <li>{@code this} can be any {@code Rational}.</li>
-     *  <li>{@code that} cannot be null or zero.</li>
+     *  <li>{@code that} cannot zero.</li>
      *  <li>The result is not null.</li>
      * </ul>
      *
@@ -1319,7 +1544,7 @@ public final class Rational implements Comparable<Rational> {
      *
      * <ul>
      *  <li>{@code this} may be any {@code Rational}.</li>
-     *  <li>{@code that} cannot be null or zero.</li>
+     *  <li>{@code that} cannot be zero.</li>
      *  <li>The result is not null.</li>
      * </ul>
      *
@@ -1327,13 +1552,14 @@ public final class Rational implements Comparable<Rational> {
      * @return {@code this}/{@code that}
      */
     public @NotNull Rational divide(@NotNull BigInteger that) {
-        if (that.equals(BigInteger.ZERO))
-            throw new ArithmeticException("division by zero");
+        if (that.equals(BigInteger.ZERO)) {
+            throw new ArithmeticException("that cannot be zero.");
+        }
         if (this == ZERO) return ZERO;
         if (denominator.equals(BigInteger.ONE) && numerator.equals(that)) return ONE;
-        BigInteger g = numerator.gcd(that);
-        if (that.signum() == -1) g = g.negate();
-        return new Rational(numerator.divide(g), denominator.multiply(that.divide(g)));
+        BigInteger gcd = numerator.gcd(that);
+        if (that.signum() == -1) gcd = gcd.negate();
+        return new Rational(numerator.divide(gcd), denominator.multiply(that.divide(gcd)));
     }
 
     /**
@@ -1349,13 +1575,14 @@ public final class Rational implements Comparable<Rational> {
      * @return {@code this}/{@code that}
      */
     public @NotNull Rational divide(int that) {
-        if (that == 0)
-            throw new ArithmeticException("division by zero");
+        if (that == 0) {
+            throw new ArithmeticException("that cannot be zero.");
+        }
         if (this == ZERO) return ZERO;
         if (denominator.equals(BigInteger.ONE) && numerator.equals(BigInteger.valueOf(that))) return ONE;
-        BigInteger g = numerator.gcd(BigInteger.valueOf(that));
-        if (that < 0) g = g.negate();
-        return new Rational(numerator.divide(g), denominator.multiply(BigInteger.valueOf(that).divide(g)));
+        BigInteger gcd = numerator.gcd(BigInteger.valueOf(that));
+        if (that < 0) gcd = gcd.negate();
+        return new Rational(numerator.divide(gcd), denominator.multiply(BigInteger.valueOf(that).divide(gcd)));
     }
 
     /**
@@ -1426,12 +1653,13 @@ public final class Rational implements Comparable<Rational> {
      *  <li>The result may be any {@code Rational}.</li>
      * </ul>
      *
-     * @param xs an {@code Iterable} of {@code Rational}s.
+     * @param xs an {@code Iterable} of {@code Rational}s
      * @return Σxs
      */
     public static @NotNull Rational sum(@NotNull Iterable<Rational> xs) {
-        if (any(x -> x == null, xs))
+        if (any(x -> x == null, xs)) {
             throw new NullPointerException();
+        }
         return foldl(Rational::add, ZERO, xs);
     }
 
@@ -1443,26 +1671,73 @@ public final class Rational implements Comparable<Rational> {
      *  <li>The result may be any {@code Rational}.</li>
      * </ul>
      *
-     * @param xs an {@code Iterable} of {@code Rational}s.
+     * @param xs an {@code Iterable} of {@code Rational}s
      * @return Πxs
      */
     public static @NotNull Rational product(@NotNull Iterable<Rational> xs) {
-        if (any(x -> x == null, xs))
+        if (any(x -> x == null, xs)) {
             throw new NullPointerException();
-        List<Rational> denominatorSorted = sort(
-                (x, y) -> {
-                    Ordering o = compare(x.getDenominator(), y.getDenominator());
-                    if (o == EQ) {
-                        o = compare(x.getNumerator().abs(), y.getNumerator().abs());
+        }
+        if (any(x -> x == ZERO, xs)) {
+            return ZERO;
+        }
+        return foldl(Rational::multiply, ONE, sort(DENOMINATOR_NUMERATOR_COMPARATOR, xs));
+    }
+
+    /**
+     * Returns the sign of the sum of a {@code List} of {@code Rational}s. If {@code xs} is empty, 0 is returned.
+     *
+     * <ul>
+     *  <li>{@code xs} cannot contain nulls.</li>
+     *  <li>The result may be –1, 0, or 1.</li>
+     * </ul>
+     *
+     * @param xs a {@code List} of {@code Rational}s
+     * @return sgn(Σxs)
+     */
+    public static int sumSign(@NotNull List<Rational> xs) {
+        switch (xs.size()) {
+            case 0:
+                return 0;
+            case 1:
+                return xs.get(0).signum();
+            default:
+                List<Rational> positives = new ArrayList<>();
+                List<Rational> negatives = new ArrayList<>();
+                for (Rational r : xs) {
+                    int signum = r.signum();
+                    if (signum == 1) {
+                        positives.add(r);
+                    } else if (signum == -1) {
+                        negatives.add(r);
                     }
-                    if (o == EQ) {
-                        o = compare(x.getNumerator().signum(), y.getNumerator().signum());
+                }
+                int positiveSize = positives.size();
+                int negativeSize = negatives.size();
+                if (positiveSize == 0 && negativeSize == 0) {
+                    return 0;
+                } else if (positiveSize == 0) {
+                    return -1;
+                } else if (negativeSize == 0) {
+                    return 1;
+                } else if (positiveSize < negativeSize) {
+                    Rational positiveSum = sum(positives).negate();
+                    Rational negativeSum = Rational.ZERO;
+                    for (Rational negative : negatives) {
+                        negativeSum = negativeSum.add(negative);
+                        if (lt(negativeSum, positiveSum)) return -1;
                     }
-                    return o.toInt();
-                },
-                xs
-        );
-        return foldl(Rational::multiply, ONE, denominatorSorted);
+                    return negativeSum.equals(positiveSum) ? 0 : 1;
+                } else {
+                    Rational negativeSum = sum(negatives).negate();
+                    Rational positiveSum = Rational.ZERO;
+                    for (Rational positive : positives) {
+                        positiveSum = positiveSum.add(positive);
+                        if (gt(positiveSum, negativeSum)) return 1;
+                    }
+                    return negativeSum.equals(positiveSum) ? 0 : -1;
+                }
+        }
     }
 
     /**
@@ -1480,10 +1755,12 @@ public final class Rational implements Comparable<Rational> {
      * @return Δxs
      */
     public static @NotNull Iterable<Rational> delta(@NotNull Iterable<Rational> xs) {
-        if (isEmpty(xs))
-            throw new IllegalArgumentException("cannot get delta of empty Iterable");
-        if (head(xs) == null)
+        if (isEmpty(xs)) {
+            throw new IllegalArgumentException("xs must not be empty.");
+        }
+        if (head(xs) == null) {
             throw new NullPointerException();
+        }
         return adjacentPairsWith((x, y) -> y.subtract(x), xs);
     }
 
@@ -1499,9 +1776,10 @@ public final class Rational implements Comparable<Rational> {
      * @return H<sub>{@code n}</sub>
      */
     public static @NotNull Rational harmonicNumber(int n) {
-        if (n < 1)
-            throw new ArithmeticException("harmonic number must have positive index");
-        return sum(map(i -> i == 1 ? ONE : new Rational(BigInteger.ONE, BigInteger.valueOf(i)), range(1, n)));
+        if (n < 1) {
+            throw new ArithmeticException("n must be positive. Invalid n: " + n);
+        }
+        return sum(cons(ONE, map(i -> new Rational(BigInteger.ONE, BigInteger.valueOf(i)), range(2, n))));
     }
 
     /**
@@ -1518,52 +1796,18 @@ public final class Rational implements Comparable<Rational> {
      * @return {@code this}<sup>{@code p}</sup>
      */
     public @NotNull Rational pow(int p) {
-        if (p == 0) return ONE;
+        if (p == 0 || this == ONE) return ONE;
         if (p == 1) return this;
-        if (p < 0) {
-            return invert().pow(-p);
+        if (p < 0) return invert().pow(-p);
+        if (this == ZERO) return this;
+        if (p % 2 == 0 && this.equals(NEGATIVE_ONE)) return ONE;
+        BigInteger powNumerator = numerator.pow(p);
+        BigInteger powDenominator = denominator.pow(p);
+        if (powDenominator.signum() == -1) {
+            powNumerator = powNumerator.negate();
+            powDenominator = powDenominator.negate();
         }
-        if (this == ZERO || this == ONE) return this;
-        if (this.equals(ONE.negate()) && p % 2 == 0) return ONE;
-        BigInteger pNumerator = numerator.pow(p);
-        BigInteger pDenominator = denominator.pow(p);
-        if (pDenominator.signum() == -1) {
-            pNumerator = pNumerator.negate();
-            pDenominator = pDenominator.negate();
-        }
-        return new Rational(pNumerator, pDenominator);
-    }
-
-    /**
-     * Returns the floor of {@code this}.
-     *
-     * <ul>
-     *  <li>{@code this} may be any {@code Rational}.</li>
-     *  <li>The result is not null.</li>
-     * </ul>
-     *
-     * @return ⌊{@code this}⌋;
-     */
-    public @NotNull BigInteger floor() {
-        if (numerator.signum() < 0) {
-            return isInteger() ? bigIntegerValueExact() : numerator.divide(denominator).subtract(BigInteger.ONE);
-        } else {
-            return numerator.divide(denominator);
-        }
-    }
-
-    /**
-     * Returns the ceiling of {@code this}.
-     *
-     * <ul>
-     *  <li>{@code this} may be any {@code Rational}.</li>
-     *  <li>The result is not null.</li>
-     * </ul>
-     *
-     * @return ⌈{@code this}⌉
-     */
-    public @NotNull BigInteger ceiling() {
-        return isInteger() ? bigIntegerValueExact() : floor().add(BigInteger.ONE);
+        return new Rational(powNumerator, powDenominator);
     }
 
     /**
@@ -1578,7 +1822,7 @@ public final class Rational implements Comparable<Rational> {
      */
     public @NotNull Rational fractionalPart() {
         if (denominator.equals(BigInteger.ONE)) return ZERO;
-        return subtract(of(floor()));
+        return new Rational(numerator.mod(denominator), denominator);
     }
 
     /**
@@ -1601,8 +1845,9 @@ public final class Rational implements Comparable<Rational> {
      * @return {@code this}, rounded to an integer multiple of 1/{@code denominator}
      */
     public @NotNull Rational roundToDenominator(@NotNull BigInteger denominator, @NotNull RoundingMode roundingMode) {
-        if (denominator.signum() != 1)
-            throw new ArithmeticException("must round to a positive denominator");
+        if (denominator.signum() != 1) {
+            throw new ArithmeticException("denominator must be positive. Invalid denominator: " + denominator);
+        }
         return of(multiply(denominator).bigIntegerValue(roundingMode)).divide(denominator);
     }
 
@@ -1622,17 +1867,28 @@ public final class Rational implements Comparable<Rational> {
      *
      * @return the continued-fraction-representation of {@code this}
      */
-    public @NotNull List<BigInteger> continuedFraction() {
-        List<BigInteger> continuedFraction = new ArrayList<>();
-        Rational remainder = this;
-        while (true) {
-            BigInteger floor = remainder.floor();
-            continuedFraction.add(floor);
-            remainder = remainder.subtract(of(floor));
-            if (remainder == ZERO) break;
-            remainder = remainder.invert();
+    public @NotNull Iterable<BigInteger> continuedFraction() {
+        if (this == ZERO) {
+            return Collections.singletonList(BigInteger.ZERO);
         }
-        return continuedFraction;
+        return () -> new NoRemoveIterator<BigInteger>() {
+            private @NotNull Rational remainder = Rational.this;
+
+            @Override
+            public boolean hasNext() {
+                return remainder != ZERO;
+            }
+
+            @Override
+            public BigInteger next() {
+                BigInteger floor = remainder.floor();
+                remainder = remainder.fractionalPart();
+                if (remainder != ZERO) {
+                    remainder = remainder.invert();
+                }
+                return floor;
+            }
+        };
     }
 
     /**
@@ -1648,15 +1904,20 @@ public final class Rational implements Comparable<Rational> {
      * @return a[0]+1/(a[1]+1/(a[2]+...+1/a[n-1])...)
      */
     public static @NotNull Rational fromContinuedFraction(@NotNull List<BigInteger> continuedFraction) {
-        if (continuedFraction.isEmpty())
-            throw new IllegalArgumentException("continued fraction may not be empty");
-        BigInteger lastElement = continuedFraction.get(continuedFraction.size() - 1);
-        if (continuedFraction.size() > 1 && lastElement.signum() != 1)
-            throw new IllegalArgumentException("all continued fraction elements but the first must be positive");
+        if (continuedFraction.isEmpty()) {
+            throw new IllegalArgumentException("continuedFraction must be non-empty.");
+        }
+        BigInteger lastElement = last(continuedFraction);
+        if (continuedFraction.size() > 1 && lastElement.signum() != 1) {
+            throw new IllegalArgumentException("All elements but the first must be positive. Invalid elements: " +
+                    continuedFraction);
+        }
         Rational x = of(lastElement);
         for (int i = continuedFraction.size() - 2; i >= 0; i--) {
-            if (i != 0 && continuedFraction.get(i).signum() != 1)
-                throw new IllegalArgumentException("all continued fraction elements but the first must be positive");
+            if (i != 0 && continuedFraction.get(i).signum() != 1) {
+                throw new IllegalArgumentException("All elements but the first must be positive. Invalid elements: " +
+                        continuedFraction);
+            }
             x = x.invert().add(of(continuedFraction.get(i)));
         }
         return x;
@@ -1678,7 +1939,7 @@ public final class Rational implements Comparable<Rational> {
      * @return the convergents of {@code this}.
      */
     public @NotNull Iterable<Rational> convergents() {
-        return map(cf -> fromContinuedFraction(toList(cf)), tail(inits(continuedFraction())));
+        return map(Rational::fromContinuedFraction, tail(inits(continuedFraction())));
     }
 
     /**
@@ -1708,11 +1969,12 @@ public final class Rational implements Comparable<Rational> {
     public @NotNull Triple<List<BigInteger>, List<BigInteger>, List<BigInteger>> positionalNotation(
             @NotNull BigInteger base
     ) {
-        if (signum() == -1)
-            throw new IllegalArgumentException("this cannot be negative");
+        if (signum() == -1) {
+            throw new IllegalArgumentException("this cannot be negative. Invalid this: " + this);
+        }
         BigInteger floor = floor();
         List<BigInteger> beforeDecimal = IntegerUtils.bigEndianDigits(base, floor);
-        Rational fractionalPart = subtract(of(floor));
+        Rational fractionalPart = fractionalPart();
         BigInteger numerator = fractionalPart.numerator;
         BigInteger denominator = fractionalPart.denominator;
         BigInteger remainder = numerator.multiply(base);
@@ -1766,14 +2028,16 @@ public final class Rational implements Comparable<Rational> {
             @NotNull List<BigInteger> nonRepeating,
             @NotNull List<BigInteger> repeating
     ) {
-        if (repeating.isEmpty())
-            throw new IllegalArgumentException("repeating must be nonempty");
+        if (repeating.isEmpty()) {
+            throw new IllegalArgumentException("repeating cannot be empty.");
+        }
         BigInteger floor = IntegerUtils.fromBigEndianDigits(base, beforeDecimalPoint);
         BigInteger nonRepeatingInteger = IntegerUtils.fromBigEndianDigits(base, nonRepeating);
         BigInteger repeatingInteger = IntegerUtils.fromBigEndianDigits(base, repeating);
-        Rational nonRepeatingPart = of(nonRepeatingInteger, base.pow(nonRepeating.size()));
-        Rational repeatingPart = of(repeatingInteger, base.pow(repeating.size()).subtract(BigInteger.ONE))
-                .divide(base.pow(nonRepeating.size()));
+        BigInteger offset = base.pow(nonRepeating.size());
+        Rational nonRepeatingPart = of(nonRepeatingInteger, offset);
+        Rational repeatingPart =
+                of(repeatingInteger, base.pow(repeating.size()).subtract(BigInteger.ONE)).divide(offset);
         return of(floor).add(nonRepeatingPart).add(repeatingPart);
     }
 
@@ -1796,11 +2060,12 @@ public final class Rational implements Comparable<Rational> {
      * @return a pair consisting of the digits before the decimal point and the digits after
      */
     public @NotNull Pair<List<BigInteger>, Iterable<BigInteger>> digits(@NotNull BigInteger base) {
-        if (signum() == -1)
-            throw new IllegalArgumentException("this cannot be negative");
+        if (signum() == -1) {
+            throw new IllegalArgumentException("this cannot be negative. Invalid this: " + this);
+        }
         BigInteger floor = floor();
         List<BigInteger> beforeDecimal = IntegerUtils.bigEndianDigits(base, floor);
-        Rational fractionalPart = subtract(of(floor));
+        Rational fractionalPart = fractionalPart();
         BigInteger numerator = fractionalPart.numerator;
         BigInteger denominator = fractionalPart.denominator;
         final BigInteger firstRemainder = numerator.multiply(base);
@@ -1809,7 +2074,7 @@ public final class Rational implements Comparable<Rational> {
             private int index;
             private @Nullable Integer repeatingIndex;
             private @NotNull BigInteger remainder;
-            private @Nullable Map<BigInteger, Integer> remainders;
+            private Map<BigInteger, Integer> remainders;
             {
                 knownRepeating = false;
                 index = 0;
@@ -1834,7 +2099,7 @@ public final class Rational implements Comparable<Rational> {
                     repeatingIndex = remainders.get(remainder);
                     if (repeatingIndex != null && !remainder.equals(BigInteger.ZERO)) {
                         knownRepeating = true;
-                        remainders = null;
+                        remainders = null; //free memory
                     } else {
                         index++;
                     }
@@ -1866,22 +2131,18 @@ public final class Rational implements Comparable<Rational> {
      * @return a {@code String} representation of {@code this} in base {@code base}
      */
     public @NotNull String toStringBase(@NotNull BigInteger base) {
-        if (!hasTerminatingBaseExpansion(base))
-            throw new ArithmeticException(this + " has a non-terminating base-" + base + " expansion");
-        boolean smallBase = le(base, BigInteger.valueOf(36));
+        if (!hasTerminatingBaseExpansion(base)) {
+            throw new ArithmeticException(this + " must have a terminating base-" + base + "expansion. Invalid" +
+                    " this: " + this);
+        }
+        boolean baseIsSmall = le(base, ASCII_ALPHANUMERIC_COUNT);
         Pair<List<BigInteger>, Iterable<BigInteger>> digits = abs().digits(base);
-        Function<BigInteger, String> digitFunction;
-        if (smallBase) {
-            digitFunction = i -> Character.toString(IntegerUtils.toDigit(i.intValueExact()));
-        } else {
-            digitFunction = i -> "(" + i + ")";
-        }
-        String beforeDecimal;
-        if (digits.a.isEmpty()) {
-            beforeDecimal = smallBase ? "0" : "(0)";
-        } else {
-            beforeDecimal = concatStrings(map(digitFunction, digits.a));
-        }
+        Function<BigInteger, String> digitFunction = baseIsSmall ?
+                i -> Character.toString(IntegerUtils.toDigit(i.intValueExact())) :
+                i -> "(" + i + ")";
+        String beforeDecimal = digits.a.isEmpty() ?
+                (baseIsSmall ? "0" : "(0)") :
+                concatStrings(map(digitFunction, digits.a));
         String result;
         if (isEmpty(digits.b)) {
             result = beforeDecimal;
@@ -1920,22 +2181,22 @@ public final class Rational implements Comparable<Rational> {
      * @return a {@code String} representation of {@code this} in base {@code base}
      */
     public @NotNull String toStringBase(@NotNull BigInteger base, int scale) {
-        if (lt(base, IntegerUtils.TWO))
-            throw new IllegalArgumentException("base must be at least 2");
-        BigInteger power = scale >= 0 ? base.pow(scale) : base.pow(-scale);
+        if (lt(base, IntegerUtils.TWO)) {
+            throw new IllegalArgumentException("base must be at least 2. Invalid base: " + base);
+        }
+        BigInteger power = base.pow(scale >= 0 ? scale : -scale);
         Rational scaled = scale >= 0 ? multiply(power) : divide(power);
-        boolean ellipsis = scale > 0 && !scaled.isInteger();
         Rational rounded = of(scaled.bigIntegerValue(RoundingMode.DOWN));
         rounded = scale >= 0 ? rounded.divide(power) : rounded.multiply(power);
         String result = rounded.toStringBase(base);
-        if (ellipsis) {
+        if (scale > 0 && !scaled.isInteger()) { //append ellipsis
             //pad with trailing zeroes if necessary
             int dotIndex = result.indexOf('.');
             if (dotIndex == -1) {
                 dotIndex = result.length();
                 result = result + ".";
             }
-            if (le(base, BigInteger.valueOf(36))) {
+            if (le(base, ASCII_ALPHANUMERIC_COUNT)) {
                 int missingZeroes = scale - result.length() + dotIndex + 1;
                 result += replicate(missingZeroes, '0');
             } else {
@@ -1962,7 +2223,7 @@ public final class Rational implements Comparable<Rational> {
      *  <li>{@code s} must either be composed of the digits '0' through '9' and 'A' through 'Z', or a sequence of
      *  non-negative decimal integers, each surrounded by parentheses. {@code s} may contain a single decimal point '.'
      *  anywhere outside of parentheses. In any case there may be an optional leading '-'. {@code s} may also be empty,
-     *  but "-" is not permitted. Scientific notation is not accepted.</li>
+     *  but "-", ".", or "-." are not permitted. Scientific notation is not accepted.</li>
      *  <li>If {@code base} is between 2 and 36, {@code s} may only include the corresponding characters, the optional
      *  '.', and the optional leading '-'. If {@code base} is greater than 36, {@code s} must be composed of decimal
      *  integers surrounded by parentheses (with the optional leading '-'), each integer being non-negative and less
@@ -1970,35 +2231,41 @@ public final class Rational implements Comparable<Rational> {
      *  <li>The result is non-null.</li>
      * </ul>
      *
-     * @param base the base that the {@code s} is written in
      * @param s the input {@code String}
+     * @param base the base that the {@code s} is written in
      * @return the {@code Rational} represented by {@code s}
      */
-    public static @NotNull Rational fromStringBase(@NotNull BigInteger base, @NotNull String s) {
-        if (lt(base, IntegerUtils.TWO))
-            throw new IllegalArgumentException("base must be at least 2");
+    public static @NotNull Rational fromStringBase(@NotNull String s, @NotNull BigInteger base) {
+        if (lt(base, IntegerUtils.TWO)) {
+            throw new IllegalArgumentException("base must be at least 2. Invalid base: " + base);
+        }
         if (s.isEmpty()) return ZERO;
         try {
-            if (s.equals("-") || s.equals(".") || s.equals("-."))
-                throw new IllegalArgumentException("invalid String");
+            if (s.equals("-") || s.equals(".") || s.equals("-.")) {
+                throw new IllegalArgumentException("Invalid String: " + s);
+            }
             boolean negative = head(s) == '-';
             if (negative) s = tail(s);
-            boolean smallBase = le(base, BigInteger.valueOf(36));
+            final String sFinal = s;
+            boolean smallBase = le(base, ASCII_ALPHANUMERIC_COUNT);
             Function<String, List<BigInteger>> undigitFunction;
             if (smallBase) {
                 undigitFunction = t -> toList(map(c -> BigInteger.valueOf(IntegerUtils.fromDigit(c)), fromString(t)));
             } else {
                 undigitFunction = t -> {
                     if (t.isEmpty()) return Collections.emptyList();
-                    if (head(t) != '(' || last(t) != ')' || t.contains("()"))
-                        throw new IllegalArgumentException("invalid String");
+                    if (head(t) != '(' || last(t) != ')' || t.contains("()")) {
+                        throw new IllegalArgumentException("Invalid String: " + sFinal);
+                    }
                     t = tail(init(t));
                     return toList(
                             map(
                                     u -> {
                                         Optional<BigInteger> oi = Readers.readBigInteger(u);
-                                        if (!oi.isPresent())
-                                            throw new IllegalArgumentException("improperly-formatted digit");
+                                        if (!oi.isPresent()) {
+                                            throw new IllegalArgumentException("Improperly-formatted digit " + u +
+                                                    " in String " + sFinal);
+                                        }
                                         return oi.get();
                                     },
                                     Arrays.asList(t.split("\\)\\("))
@@ -2022,7 +2289,7 @@ public final class Rational implements Comparable<Rational> {
             }
             return negative ? result.negate() : result;
         } catch (StringIndexOutOfBoundsException e) {
-            throw new IllegalArgumentException(e);
+            throw new IllegalArgumentException(e.getMessage() + ": " + s);
         }
     }
 
@@ -2180,9 +2447,13 @@ public final class Rational implements Comparable<Rational> {
      * Ensures that {@code this} is valid. Must return true for any {@code Rational} used outside this class.
      */
     public void validate() {
-        assertEquals(toString(), numerator.gcd(denominator), BigInteger.ONE);
-        assertEquals(toString(), denominator.signum(), 1);
-        if (equals(ZERO)) assertTrue(toString(), this == ZERO);
-        if (equals(ONE)) assertTrue(toString(), this == ONE);
+        assertEquals(this, numerator.gcd(denominator), BigInteger.ONE);
+        assertEquals(this, denominator.signum(), 1);
+        if (equals(ZERO)) {
+            assertTrue(this, this == ZERO);
+        }
+        if (equals(ONE)) {
+            assertTrue(this, this == ONE);
+        }
     }
 }

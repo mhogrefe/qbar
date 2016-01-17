@@ -12,7 +12,7 @@ import java.util.*;
 import java.util.function.Function;
 
 import static mho.wheels.iterables.IterableUtils.*;
-import static org.junit.Assert.assertTrue;
+import static mho.wheels.testing.Testing.assertTrue;
 
 /**
  * <p>A univariate polynomial in x with {@link mho.qbar.objects.Rational} coefficients.</p>
@@ -55,6 +55,16 @@ public final class RationalPolynomial implements
     private static final Comparator<Iterable<Rational>> RATIONAL_ITERABLE_COMPARATOR = new ShortlexComparator<>();
 
     /**
+     * A {@code Comparator} that compares two {@code RationalPolynomial}s by their denominators, then lexicographically
+     * by their coefficients.
+     */
+    private static final @NotNull Comparator<RationalPolynomial> DEGREE_COEFFICIENT_COMPARATOR = (p, q) -> {
+        int c = Integer.compare(p.degree(), q.degree());
+        if (c != 0) return c;
+        return RATIONAL_ITERABLE_COMPARATOR.compare(p.coefficients, q.coefficients);
+    };
+
+    /**
      * The polynomial's coefficients. The coefficient of x<sup>i</sup> is at the ith position.
      */
     private final @NotNull List<Rational> coefficients;
@@ -66,6 +76,8 @@ public final class RationalPolynomial implements
      *  <li>{@code coefficients} cannot have any null elements and cannot end in a 0.</li>
      *  <li>Any {@code RationalPolynomial} may be constructed with this constructor.</li>
      * </ul>
+     *
+     * Length is |{@code coefficients}|
      *
      * @param coefficients the polynomial's coefficients
      */
@@ -92,9 +104,7 @@ public final class RationalPolynomial implements
     }
 
     /**
-     * Evaluates {@code this} at {@code x}. Explicitly taking powers of x turns out to be faster than Horner's method
-     * (except for small {@code RationalPolynomial}s) due to the efficiency of {@code Rational} exponentiation as
-     * compared to repeated {@code Rational} multiplication, which has to perform repeated GCD calculations.
+     * Evaluates {@code this} at {@code x} using Horner's method.
      *
      * <ul>
      *  <li>{@code this} may be any {@code RationalPolynomial}.</li>
@@ -106,9 +116,7 @@ public final class RationalPolynomial implements
      */
     @Override
     public @NotNull Rational apply(@NotNull Rational x) {
-        return Rational.sum(
-                zipWith((c, i) -> c == Rational.ZERO ? Rational.ZERO : x.pow(i).multiply(c), coefficients, rangeUp(0))
-        );
+        return foldr((c, y) -> y.multiply(x).add(c), Rational.ZERO, coefficients);
     }
 
     /**
@@ -143,13 +151,12 @@ public final class RationalPolynomial implements
      * @return the {@code RationalPolynomial} with the specified coefficients
      */
     public static @NotNull RationalPolynomial of(@NotNull List<Rational> coefficients) {
-        if (any(i -> i == null, coefficients))
+        if (any(i -> i == null, coefficients)) {
             throw new NullPointerException();
-        int actualSize = coefficients.size();
-        for (int i = coefficients.size() - 1; i >= 0; i--) {
-            if (coefficients.get(i) == Rational.ZERO) {
-                actualSize--;
-            } else {
+        }
+        int actualSize;
+        for (actualSize = coefficients.size(); actualSize > 0; actualSize--) {
+            if (coefficients.get(actualSize - 1) != Rational.ZERO) {
                 break;
             }
         }
@@ -193,8 +200,9 @@ public final class RationalPolynomial implements
      * @return {@code c}x<sup>p</sup>
      */
     public static @NotNull RationalPolynomial of(@NotNull Rational c, int p) {
-        if (p < 0)
-            throw new IllegalArgumentException("power cannot be negative");
+        if (p < 0) {
+            throw new IllegalArgumentException("p cannot be negative. Invalid p: " + p);
+        }
         if (c == Rational.ZERO) return ZERO;
         if (p == 0 && c == Rational.ONE) return ONE;
         return new RationalPolynomial(toList(concat(replicate(p, Rational.ZERO), Collections.singletonList(c))));
@@ -563,9 +571,13 @@ public final class RationalPolynomial implements
      * @return Πxs
      */
     public static @NotNull RationalPolynomial product(@NotNull Iterable<RationalPolynomial> xs) {
-        if (any(x -> x == null, xs))
+        if (any(x -> x == null, xs)) {
             throw new NullPointerException();
-        return foldl(RationalPolynomial::multiply, ONE, xs);
+        }
+        if (any(x -> x == ZERO, xs)) {
+            return ZERO;
+        }
+        return foldl(RationalPolynomial::multiply, ONE, sort(DEGREE_COEFFICIENT_COMPARATOR, xs));
     }
 
     /**
@@ -584,10 +596,12 @@ public final class RationalPolynomial implements
      * @return Δxs
      */
     public static @NotNull Iterable<RationalPolynomial> delta(@NotNull Iterable<RationalPolynomial> xs) {
-        if (isEmpty(xs))
-            throw new IllegalArgumentException("cannot get delta of empty Iterable");
-        if (head(xs) == null)
+        if (isEmpty(xs)) {
+            throw new IllegalArgumentException("xs must not be empty.");
+        }
+        if (head(xs) == null) {
             throw new NullPointerException();
+        }
         return adjacentPairsWith((x, y) -> y.subtract(x), xs);
     }
 
@@ -606,8 +620,9 @@ public final class RationalPolynomial implements
      * @return {@code this}<sup>{@code p}</sup>
      */
     public @NotNull RationalPolynomial pow(int p) {
-        if (p < 0)
-            throw new ArithmeticException("cannot raise to a negative power");
+        if (p < 0) {
+            throw new ArithmeticException("p cannot be negative. Invalid p: " + p);
+        }
         if (p == 0) return ONE;
         if (p == 1) return this;
         RationalPolynomial result = ONE;
@@ -648,11 +663,15 @@ public final class RationalPolynomial implements
      * @return d{@code this}/dx
      */
     public @NotNull RationalPolynomial differentiate() {
-        if (coefficients.size() < 2) return ZERO;
-        if (equals(X)) return ONE;
-        return new RationalPolynomial(
-                toList(zipWith((c, i) -> c.multiply(BigInteger.valueOf(i)), tail(coefficients), rangeUp(1)))
-        );
+        if (coefficients.size() < 2) {
+            return ZERO;
+        } else if (coefficients.size() == 2 && last(coefficients) == Rational.ONE) {
+            return ONE;
+        } else {
+            return new RationalPolynomial(
+                    toList(zipWith((c, i) -> c.multiply(BigInteger.valueOf(i)), tail(coefficients), rangeUp(1)))
+            );
+        }
     }
 
     /**
@@ -666,15 +685,14 @@ public final class RationalPolynomial implements
      * @return whether {@code this} is monic
      */
     public boolean isMonic() {
-        Optional<Rational> leading = leading();
-        return leading.isPresent() && leading.get() == Rational.ONE;
+        return !coefficients.isEmpty() && last(coefficients) == Rational.ONE;
     }
 
     /**
      * Divides {@code this} by a constant to make it monic. {@code this} cannot be 0.
      *
      * <ul>
-     *  <li>{@code this} must be nonzero.</li>
+     *  <li>{@code this} cannot be zero.</li>
      *  <li>The result is a monic {@code RationalPolynomial}.</li>
      * </ul>
      *
@@ -684,36 +702,40 @@ public final class RationalPolynomial implements
      */
     public @NotNull RationalPolynomial makeMonic() {
         Optional<Rational> leading = leading();
-        if (!leading.isPresent())
-            throw new ArithmeticException("cannot make 0 monic");
+        if (!leading.isPresent()) {
+            throw new ArithmeticException("this cannot be zero.");
+        }
         return leading.get() == Rational.ONE ? this : divide(leading.get());
     }
 
     /**
-     * Returns a {@code Pair} containing {@code this}'s content and primitive part. The primitive part is a constant
-     * multiple of {@code this} whose coefficients are integers with a GCD of 1 and whose leading coefficient is
-     * positive, and the content is {@code this} divided by the primitive part.
+     * Returns a {@code Pair} containing a constant and an integer-coefficient polynomial whose product is
+     * {@code this}, such that the leading coefficient of the polynomial part is positive and the GCD of its
+     * coefficients is 1.
      *
      * <ul>
-     *  <li>{@code this} must be nonzero.</li>
-     *  <li>The result is a {@code Pair} both of whose elements are not null, whose first element is nonzero, and whose
-     *  last element is primitive.</li>
+     *  <li>{@code this} cannot be zero.</li>
+     *  <li>The result is a {@code Pair} both of whose elements are not null and whose last element has a positive
+     *  leading coefficient and no invertible integral constant factors.</li>
      * </ul>
      *
-     * @return (content({@code this}), primitive({@code this}))
+     * @return a constant factor of {@code this} and {@code this} divided by the factor
      */
     @SuppressWarnings("JavaDoc")
-    public @NotNull Pair<Rational, Polynomial> contentAndPrimitive() {
-        if (this == ZERO)
-            throw new ArithmeticException("cannot find content and primitive part of 0");
-        Polynomial primitive = Polynomial.of(Rational.cancelDenominators(coefficients));
-        if (primitive.signum() == -1) primitive = primitive.negate();
-        return new Pair<>(leading().get().divide(primitive.leading().get()), primitive);
+    public @NotNull Pair<Rational, Polynomial> constantFactor() {
+        if (this == ZERO) {
+            throw new ArithmeticException("this cannot be zero.");
+        }
+        Polynomial positivePrimitive = Polynomial.of(Rational.cancelDenominators(coefficients));
+        if (positivePrimitive.signum() == -1) {
+            positivePrimitive = positivePrimitive.negate();
+        }
+        return new Pair<>(leading().get().divide(positivePrimitive.leading().get()), positivePrimitive);
     }
 
     /**
      * Returns the quotient and remainder when {@code this} is divided by {@code that}. To be more precise, the result
-     * is (q, r) such that {@code this}={@code that}×q+r and r=0 or deg(r){@literal <}deg({@code that}).
+     * is (q, r) such that {@code this}={@code that}×q+r and deg(r){@literal <}deg({@code that}).
      *
      * <ul>
      *  <li>{@code this} may be any {@code RationalPolynomial}.</li>
@@ -724,9 +746,11 @@ public final class RationalPolynomial implements
      * @param that the {@code RationalPolynomial} {@code this} is divided by
      * @return ({@code this}/{@code that}, {@code this}%{code that})
      */
+    @SuppressWarnings("JavaDoc")
     public @NotNull Pair<RationalPolynomial, RationalPolynomial> divide(@NotNull RationalPolynomial that) {
-        if (that == ZERO)
-            throw new ArithmeticException("division by zero");
+        if (that == ZERO) {
+            throw new ArithmeticException("this cannot be 0.");
+        }
         int m = degree();
         int n = that.degree();
         if (m < n) return new Pair<>(ZERO, this);
@@ -795,20 +819,19 @@ public final class RationalPolynomial implements
         int thatSign = that.signum();
         if (thisSign > thatSign) return 1;
         if (thisSign < thatSign) return -1;
-        List<Rational> thisAbsCoefficients = reverse(abs());
-        List<Rational> thatAbsCoefficients = reverse(that.abs());
-        int c = RATIONAL_ITERABLE_COMPARATOR.compare(thisAbsCoefficients, thatAbsCoefficients);
+        int c = RATIONAL_ITERABLE_COMPARATOR.compare(reverse(abs()), reverse(that.abs()));
         return thisSign == -1 ? -c : c;
     }
 
     /**
      * Creates a {@code RationalPolynomial} from a {@code String}. Valid input takes the form of a {@code String} that
-     * could have been returned by {@link mho.qbar.objects.RationalPolynomial#toString}. See that method's tests and
-     * demos for examples of valid input. Caution: It's easy to run out of time and memory reading something like
-     * {@code "x^1000000000"}.
+     * could have been returned by {@link mho.qbar.objects.RationalPolynomial#toString}. This method also takes
+     * {@code exponentHandler}, which reads an exponent for a {@code String} if the {@code String} is valid.
      *
      * <ul>
      *  <li>{@code s} cannot be null.</li>
+     *  <li>{@code exponentHandler} must terminate on all possible {@code String}s without throwing an exception, and
+     *  cannot return nulls.</li>
      *  <li>The result may be any {@code Optional<RationalPolynomial>}.</li>
      * </ul>
      *
@@ -899,6 +922,7 @@ public final class RationalPolynomial implements
             }
         }
         if (any(p -> p.a == Rational.ZERO, monomials)) return Optional.empty();
+        //noinspection RedundantCast
         if (!increasing((Iterable<Integer>) map(p -> p.b, monomials))) return Optional.empty();
         int degree = last(monomials).b;
         List<Rational> coefficients = toList(replicate(degree + 1, Rational.ZERO));
@@ -908,16 +932,49 @@ public final class RationalPolynomial implements
         return Optional.of(new RationalPolynomial(coefficients));
     }
 
+    /**
+     * Creates a {@code RationalPolynomial} from a {@code String}. Valid input takes the form of a {@code String} that
+     * could have been returned by {@link mho.qbar.objects.RationalPolynomial#toString}. Caution: It's easy to run out
+     * of time and memory reading something like {@code "x^1000000000"}. If such an input is possible, consider using
+     * {@link Polynomial#read(int, String)} instead.
+     *
+     * <ul>
+     *  <li>{@code s} cannot be null.</li>
+     *  <li>The result may be any {@code Optional<RationalPolynomial>}.</li>
+     * </ul>
+     *
+     * @param s a string representation of a {@code RationalPolynomial}.
+     * @return the wrapped {@code RationalPolynomial} represented by {@code s}, or {@code empty} if {@code s} is
+     * invalid.
+     */
     public static @NotNull Optional<RationalPolynomial> read(@NotNull String s) {
         return genericRead(s, Readers::readInteger);
     }
 
-    public static @NotNull Optional<RationalPolynomial> read(int exponentCutoff, @NotNull String s) {
+    /**
+     * Creates an {@code RationalPolynomial} from a {@code String}. Valid input takes the form of a {@code String} that
+     * could have been returned by {@link mho.qbar.objects.RationalPolynomial#toString}. The input
+     * {@code RationalPolynomial} cannot have a degree greater than {@code maxExponent}.
+     *
+     * <ul>
+     *  <li>{@code maxExponent} must be positive.</li>
+     *  <li>{@code s} cannot be null.</li>
+     *  <li>The result may be any {@code Optional<RationalPolynomial>}.</li>
+     * </ul>
+     *
+     * @param s a string representation of a {@code RationalPolynomial}.
+     * @return the wrapped {@code RationalPolynomial} (with degree no greater than {@code maxExponent}) represented by
+     * {@code s}, or {@code empty} if {@code s} is invalid.
+     */
+    public static @NotNull Optional<RationalPolynomial> read(int maxExponent, @NotNull String s) {
+        if (maxExponent < 1) {
+            throw new IllegalArgumentException("maxExponent must be positive. Invalid maxExponent: " + maxExponent);
+        }
         return genericRead(
                 s,
                 powerString -> {
                     Optional<Integer> oPower = Readers.readInteger(powerString);
-                    return !oPower.isPresent() || oPower.get() > exponentCutoff ? Optional.<Integer>empty() : oPower;
+                    return !oPower.isPresent() || oPower.get() > maxExponent ? Optional.<Integer>empty() : oPower;
                 }
         );
     }
@@ -928,7 +985,8 @@ public final class RationalPolynomial implements
      * {@code RationalPolynomial} is found. Only {@code String}s which could have been emitted by
      * {@link mho.qbar.objects.RationalPolynomial#toString} are recognized. The longest possible
      * {@code RationalPolynomial} is parsed. Caution: It's easy to run out of time and memory finding something like
-     * {@code "x^1000000000"}.
+     * {@code "x^1000000000"}. If such an input is possible, consider using
+     * {@link RationalPolynomial#findIn(int, String)} instead.
      *
      * <ul>
      *  <li>{@code s} must be non-null.</li>
@@ -943,8 +1001,27 @@ public final class RationalPolynomial implements
         return Readers.genericFindIn(RationalPolynomial::read, "*+-/0123456789^x").apply(s);
     }
 
-    public static @NotNull Optional<Pair<RationalPolynomial, Integer>> findIn(int exponentCutoff, @NotNull String s) {
-        return Readers.genericFindIn(t -> read(exponentCutoff, t), "*+-/0123456789^x").apply(s);
+    /**
+     * Finds the first occurrence of a {@code RationalPolynomial} in a {@code String}. Returns the
+     * {@code RationalPolynomial} and the index at which it was found. Returns an empty {@code Optional} if no
+     * {@code RationalPolynomial} is found. Only{@code String}s which could have been emitted by
+     * {@link mho.qbar.objects.RationalPolynomial#toString} are recognized. The longest possible
+     * {@code RationalPolynomial} is parsed. The input {@code RationalPolynomial} cannot have a degree greater than
+     * {@code maxExponent}.
+     *
+     * <ul>
+     *  <li>{@code maxExponent} can be any {@code int}.</li>
+     *  <li>{@code s} must be non-null.</li>
+     *  <li>The result is non-null. If it is non-empty, then neither of the {@code Pair}'s components is null, and the
+     *  second component is non-negative.</li>
+     * </ul>
+     *
+     * @param s the input {@code String}
+     * @return the first {@code RationalPolynomial} found in {@code s} (with degree no greater than
+     * {@code maxExponent}), and the index at which it was found
+     */
+    public static @NotNull Optional<Pair<RationalPolynomial, Integer>> findIn(int maxExponent, @NotNull String s) {
+        return Readers.genericFindIn(t -> read(maxExponent, t), "*+-/0123456789^x").apply(s);
     }
 
     /**
@@ -985,13 +1062,17 @@ public final class RationalPolynomial implements
     }
 
     /**
-     * Ensures that {@code this} is valid. Must return true for any {@code Polynomial} used outside this class.
+     * Ensures that {@code this} is valid. Must return true for any {@code RationalPolynomial} used outside this class.
      */
     public void validate() {
         if (!coefficients.isEmpty()) {
-            assertTrue(toString(), last(coefficients) != Rational.ZERO);
+            assertTrue(this, last(coefficients) != Rational.ZERO);
         }
-        if (equals(ZERO)) assertTrue(toString(), this == ZERO);
-        if (equals(ONE)) assertTrue(toString(), this == ONE);
+        if (equals(ZERO)) {
+            assertTrue(this, this == ZERO);
+        }
+        if (equals(ONE)) {
+            assertTrue(this, this == ONE);
+        }
     }
 }

@@ -1,5 +1,6 @@
 package mho.qbar.testing;
 
+import mho.qbar.iterableProviders.QBarExhaustiveProvider;
 import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.wheels.iterables.ExhaustiveProvider;
 import mho.wheels.ordering.Ordering;
@@ -7,6 +8,8 @@ import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import static mho.wheels.iterables.IterableUtils.*;
@@ -15,6 +18,8 @@ import static mho.wheels.ordering.Ordering.le;
 import static mho.wheels.testing.Testing.*;
 
 public class QBarTesting {
+    public static final @NotNull QBarExhaustiveProvider QEP = QBarExhaustiveProvider.INSTANCE;
+
     public static <T> void propertiesEqualsHelper(
             int limit,
             @NotNull QBarIterableProvider ip,
@@ -91,6 +96,34 @@ public class QBarTesting {
         );
         for (Triple<T, T, T> t : take(limit, ts)) {
             transitive(Ordering::le, t);
+        }
+    }
+
+    public static <T> void propertiesReadHelper(
+            int limit,
+            @NotNull QBarIterableProvider P,
+            @NotNull String usedChars,
+            @NotNull Iterable<T> xs,
+            @NotNull Function<String, Optional<T>> read,
+            @NotNull Consumer<T> validate,
+            boolean denseInUsedCharString
+    ) {
+        for (String s : take(limit, P.strings())) {
+            read.apply(s);
+        }
+
+        for (T x : take(limit, xs)) {
+            Optional<T> ox = read.apply(x.toString());
+            T y = ox.get();
+            validate.accept(y);
+            assertEquals(x, y, x);
+        }
+
+        if (denseInUsedCharString) {
+            for (String s : take(limit, filterInfinite(t -> read.apply(t).isPresent(), P.strings(usedChars)))) {
+                inverse(t -> read.apply(t).get(), Object::toString, s);
+                validate.accept(read.apply(s).get());
+            }
         }
     }
 }

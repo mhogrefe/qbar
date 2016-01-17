@@ -1,487 +1,464 @@
 package mho.qbar.objects;
 
-import mho.qbar.iterableProviders.QBarExhaustiveProvider;
 import mho.qbar.iterableProviders.QBarIterableProvider;
-import mho.qbar.iterableProviders.QBarRandomProvider;
-import mho.qbar.testing.QBarTesting;
-import mho.wheels.iterables.ExhaustiveProvider;
+import mho.qbar.testing.QBarTestProperties;
 import mho.wheels.numberUtils.BigDecimalUtils;
 import mho.wheels.numberUtils.FloatingPointUtils;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
 import org.jetbrains.annotations.NotNull;
-import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;
+import java.util.function.Function;
 
 import static mho.qbar.objects.Interval.*;
 import static mho.qbar.objects.Interval.greaterThanOrEqualTo;
 import static mho.qbar.objects.Interval.lessThanOrEqualTo;
 import static mho.qbar.objects.Interval.sum;
+import static mho.qbar.testing.QBarTesting.*;
+import static mho.qbar.testing.QBarTesting.propertiesCompareToHelper;
+import static mho.qbar.testing.QBarTesting.propertiesEqualsHelper;
+import static mho.qbar.testing.QBarTesting.propertiesHashCodeHelper;
+import static mho.qbar.testing.QBarTesting.propertiesReadHelper;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.ordering.Ordering.*;
 import static mho.wheels.testing.Testing.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
-public class IntervalProperties {
-    private static boolean USE_RANDOM;
-    private static final @NotNull QBarExhaustiveProvider EP = QBarExhaustiveProvider.INSTANCE;
+public class IntervalProperties extends QBarTestProperties {
     private static final @NotNull String INTERVAL_CHARS = " (),-/0123456789I[]finty";
-    private static final int TINY_LIMIT = 10;
-    private static int LIMIT;
 
-    private static QBarIterableProvider P;
-
-    private static void initialize() {
-        if (USE_RANDOM) {
-            P = QBarRandomProvider.example();
-            LIMIT = 1000;
-        } else {
-            P = QBarExhaustiveProvider.INSTANCE;
-            LIMIT = 10000;
-        }
+    public IntervalProperties() {
+        super("Interval");
     }
 
-    @Test
-    public void testAllProperties() {
-        System.out.println("Interval properties");
-        for (boolean useRandom : Arrays.asList(false, true)) {
-            System.out.println("\ttesting " + (useRandom ? "randomly" : "exhaustively"));
-            USE_RANDOM = useRandom;
-            propertiesGetLower();
-            propertiesGetUpper();
-            propertiesOf_Rational_Rational();
-            propertiesLessThanOrEqualTo();
-            propertiesGreaterThanOrEqualTo();
-            propertiesOf_Rational();
-            propertiesIsFinitelyBounded();
-            propertiesContains_Rational();
-            propertiesContains_Interval();
-            propertiesDiameter();
-            propertiesConvexHull_Interval();
-            propertiesConvexHull_List_Interval();
-            compareImplementationsConvexHull_List_Interval();
-            propertiesIntersection();
-            propertiesDisjoint();
-            propertiesMakeDisjoint();
-            propertiesComplement();
-            propertiesMidpoint();
-            propertiesSplit();
-            propertiesBisect();
-            propertiesRoundingPreimage_float();
-            propertiesRoundingPreimage_double();
-            propertiesRoundingPreimage_BigDecimal();
-            propertiesFloatRange();
-            propertiesDoubleRange();
-            propertiesAdd();
-            propertiesNegate();
-            propertiesAbs();
-            propertiesSignum();
-            propertiesSubtract();
-            propertiesMultiply_Interval();
-            propertiesMultiply_Rational();
-            propertiesMultiply_BigInteger();
-            propertiesMultiply_int();
-            propertiesInvert();
-            propertiesInvertHull();
-            propertiesDivide_Interval();
-            propertiesDivideHull();
-            propertiesDivide_Rational();
-            propertiesDivide_BigInteger();
-            propertiesDivide_int();
-            propertiesShiftLeft();
-            compareImplementationsShiftLeft();
-            propertiesShiftRight();
-            compareImplementationsShiftRight();
-            propertiesSum();
-            propertiesProduct();
-            propertiesDelta();
-            propertiesPow();
-            propertiesPowHull();
-            propertiesElementCompare();
-            propertiesEquals();
-            propertiesHashCode();
-            propertiesCompareTo();
-            propertiesRead();
-            propertiesFindIn();
-            propertiesToString();
-        }
-        System.out.println("Done");
+    @Override
+    protected void testBothModes() {
+        propertiesGetLower();
+        propertiesGetUpper();
+        propertiesOf_Rational_Rational();
+        propertiesLessThanOrEqualTo();
+        propertiesGreaterThanOrEqualTo();
+        propertiesOf_Rational();
+        propertiesBitLength();
+        propertiesIsFinitelyBounded();
+        propertiesContains_Rational();
+        propertiesContains_Interval();
+        propertiesDiameter();
+        propertiesConvexHull_Interval();
+        propertiesConvexHull_List_Interval();
+        compareImplementationsConvexHull_List_Interval();
+        propertiesIntersection();
+        propertiesDisjoint();
+        compareImplementationsDisjoint();
+        propertiesUnion();
+        compareImplementationsUnion();
+        propertiesComplement();
+        propertiesMidpoint();
+        propertiesSplit();
+        propertiesBisect();
+        propertiesRoundingPreimage_float();
+        propertiesRoundingPreimage_double();
+        propertiesRoundingPreimage_BigDecimal();
+        propertiesAdd();
+        propertiesNegate();
+        propertiesAbs();
+        propertiesSignum();
+        propertiesSubtract();
+        compareImplementationsSubtract();
+        propertiesMultiply_Interval();
+        propertiesMultiply_Rational();
+        propertiesMultiply_BigInteger();
+        propertiesMultiply_int();
+        propertiesInvert();
+        propertiesInvertHull();
+        compareImplementationsInvertHull();
+        propertiesDivide_Interval();
+        propertiesDivideHull();
+        compareImplementationsDivideHull();
+        propertiesDivide_Rational();
+        propertiesDivide_BigInteger();
+        propertiesDivide_int();
+        propertiesShiftLeft();
+        compareImplementationsShiftLeft();
+        propertiesShiftRight();
+        compareImplementationsShiftRight();
+        propertiesSum();
+        compareImplementationsSum();
+        propertiesProduct();
+        propertiesDelta();
+        propertiesPow();
+        propertiesPowHull();
+        compareImplementationsPowHull();
+        propertiesElementCompare();
+        propertiesEquals();
+        propertiesHashCode();
+        propertiesCompareTo();
+        propertiesRead();
+        propertiesFindIn();
+        propertiesToString();
     }
 
-    private static void propertiesGetLower() {
-        initialize();
-        System.out.println("\t\ttesting getLower() properties...");
-
+    private void propertiesGetLower() {
+        initialize("getLower()");
         for (Interval a : take(LIMIT, P.intervals())) {
             a.getLower();
         }
-
-        for (Interval a : take(LIMIT, P.finitelyBoundedIntervals())) {
-            assertEquals(a.toString(), of(a.getLower().get(), a.getUpper().get()), a);
-        }
     }
 
-    private static void propertiesGetUpper() {
-        initialize();
-        System.out.println("\t\ttesting getUpper() properties...");
-
+    private void propertiesGetUpper() {
+        initialize("getUpper()");
         for (Interval a : take(LIMIT, P.intervals())) {
             a.getUpper();
         }
     }
 
-    private static void propertiesOf_Rational_Rational() {
-        initialize();
-        System.out.println("\t\ttesting of(Rational, Rational) properties...");
-
-        Iterable<Pair<Rational, Rational>> ps = filter(q -> le(q.a, q.b), P.pairs(P.rationals()));
-        for (Pair<Rational, Rational> p : take(LIMIT, ps)) {
+    private void propertiesOf_Rational_Rational() {
+        initialize("of(Rational, Rational)");
+        for (Pair<Rational, Rational> p : take(LIMIT, P.bagPairs(P.rationals()))) {
             Interval a = of(p.a, p.b);
-            validate(a);
-            assertTrue(a.toString(), a.isFinitelyBounded());
-        }
-    }
-
-    private static void propertiesLessThanOrEqualTo() {
-        initialize();
-        System.out.println("\t\ttesting lessThanOrEqualTo(Rational) properties...");
-
-        for (Rational r : take(LIMIT, P.rationals())) {
-            Interval a = lessThanOrEqualTo(r);
-            validate(a);
-            assertFalse(a.toString(), a.getLower().isPresent());
-            assertTrue(a.toString(), a.getUpper().isPresent());
-            for (Rational s : take(TINY_LIMIT, P.rationals(a))) {
-                assertTrue(r.toString(), le(s, r));
-            }
-        }
-    }
-
-    private static void propertiesGreaterThanOrEqualTo() {
-        initialize();
-        System.out.println("\t\ttesting greaterThanOrEqualTo(Rational) properties...");
-
-        for (Rational r : take(LIMIT, P.rationals())) {
-            Interval a = greaterThanOrEqualTo(r);
-            validate(a);
-            assertTrue(a.toString(), a.getLower().isPresent());
-            assertFalse(a.toString(), a.getUpper().isPresent());
-            for (Rational s : take(TINY_LIMIT, P.rationals(a))) {
-                assertTrue(r.toString(), ge(s, r));
-            }
-        }
-    }
-
-    private static void propertiesOf_Rational() {
-        initialize();
-        System.out.println("\t\ttesting of(Rational) properties...");
-
-        for (Rational r : take(LIMIT, P.rationals())) {
-            Interval a = of(r);
-            validate(a);
-            assertTrue(a.toString(), a.isFinitelyBounded());
-            assertEquals(a.toString(), a.diameter().get(), Rational.ZERO);
-        }
-    }
-
-    private static void propertiesIsFinitelyBounded() {
-        initialize();
-        System.out.println("\t\ttesting isFinitelyBounded() properties...");
-
-        for (Interval a : take(LIMIT, P.intervals())) {
-            a.isFinitelyBounded();
+            a.validate();
+            assertTrue(a, a.isFinitelyBounded());
         }
 
         for (Interval a : take(LIMIT, P.finitelyBoundedIntervals())) {
-            assertTrue(a.toString(), a.isFinitelyBounded());
-        }
-
-        for (Rational r : take(LIMIT, P.rationals())) {
-            assertFalse(r.toString(), lessThanOrEqualTo(r).isFinitelyBounded());
-            assertFalse(r.toString(), greaterThanOrEqualTo(r).isFinitelyBounded());
+            assertEquals(a, of(a.getLower().get(), a.getUpper().get()), a);
         }
     }
 
-    private static void propertiesContains_Rational() {
-        initialize();
-        System.out.println("\t\ttesting contains(Rational) properties...");
+    private void propertiesLessThanOrEqualTo() {
+        initialize("lessThanOrEqualTo(Rational)");
+        for (Rational r : take(LIMIT, P.rationals())) {
+            Interval a = lessThanOrEqualTo(r);
+            a.validate();
+            assertFalse(a, a.getLower().isPresent());
+            assertEquals(a, a.getUpper().get(), r);
+            for (Rational s : take(TINY_LIMIT, P.rationalsIn(a))) {
+                assertTrue(r, le(s, r));
+            }
+        }
+    }
 
+    private void propertiesGreaterThanOrEqualTo() {
+        initialize("greaterThanOrEqualTo(Rational");
+        for (Rational r : take(LIMIT, P.rationals())) {
+            Interval a = greaterThanOrEqualTo(r);
+            a.validate();
+            assertEquals(a, a.getLower().get(), r);
+            assertFalse(a, a.getUpper().isPresent());
+            for (Rational s : take(TINY_LIMIT, P.rationalsIn(a))) {
+                assertTrue(r, ge(s, r));
+            }
+        }
+    }
+
+    private void propertiesOf_Rational() {
+        initialize("of(Rational)");
+        for (Rational r : take(LIMIT, P.rationals())) {
+            Interval a = of(r);
+            a.validate();
+            assertTrue(a, a.isFinitelyBounded());
+            assertEquals(a, a.diameter().get(), Rational.ZERO);
+            for (Rational s : take(TINY_LIMIT, P.rationalsIn(a))) {
+                assertEquals(r, s, r);
+            }
+        }
+    }
+
+    private void propertiesBitLength() {
+        initialize("bitLength()");
+        for (Interval a : take(LIMIT, P.intervals())) {
+            assertTrue(a, a.bitLength() >= 0);
+            homomorphic(Interval::negate, Function.identity(), Interval::bitLength, Interval::bitLength, a);
+        }
+    }
+
+    private void propertiesIsFinitelyBounded() {
+        initialize("isFinitelyBounded()");
+        for (Interval a : take(LIMIT, P.intervals())) {
+            assertNotEquals(a, a.isFinitelyBounded(), a.toString().contains("Infinity"));
+        }
+
+        for (Interval a : take(LIMIT, P.finitelyBoundedIntervals())) {
+            assertTrue(a, a.isFinitelyBounded());
+        }
+
+        for (Rational r : take(LIMIT, P.rationals())) {
+            assertFalse(r, lessThanOrEqualTo(r).isFinitelyBounded());
+            assertFalse(r, greaterThanOrEqualTo(r).isFinitelyBounded());
+        }
+    }
+
+    private void propertiesContains_Rational() {
+        initialize("contains(Rational)");
         for (Pair<Interval, Rational> p : take(LIMIT, P.pairs(P.intervals(), P.rationals()))) {
             p.a.contains(p.b);
         }
 
         for (Rational r : take(LIMIT, P.rationals())) {
-            assertTrue(r.toString(), ALL.contains(r));
-            assertTrue(r.toString(), of(r).contains(r));
+            assertTrue(r, ALL.contains(r));
+            assertTrue(r, of(r).contains(r));
         }
 
-        for (Pair<Rational, Rational> p : take(LIMIT, filter(q -> !q.a.equals(q.b), P.pairs(P.rationals())))) {
-            assertFalse(p.toString(), of(p.a).contains(p.b));
+        for (Pair<Rational, Rational> p : take(LIMIT, P.distinctPairs(P.rationals()))) {
+            assertFalse(p, of(p.a).contains(p.b));
         }
     }
 
-    private static void propertiesContains_Interval() {
-        initialize();
-        System.out.println("\t\ttesting contains(Interval) properties...");
-
+    private void propertiesContains_Interval() {
+        initialize("contains(Interval)");
         for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
             p.a.contains(p.b);
         }
 
         for (Interval a : take(LIMIT, P.intervals())) {
-            assertTrue(a.toString(), ALL.contains(a));
-            assertTrue(a.toString(), a.contains(a));
+            assertTrue(a, ALL.contains(a));
+            assertTrue(a, a.contains(a));
         }
 
-        for (Pair<Interval, Interval> p : take(LIMIT, filter(q -> q.a.contains(q.b), P.pairs(P.intervals())))) {
+        Iterable<Pair<Interval, Interval>> ps = filterInfinite(q -> q.a.contains(q.b), P.pairs(P.intervals()));
+        for (Pair<Interval, Interval> p : take(LIMIT, ps)) {
             Optional<Rational> ad = p.a.diameter();
             Optional<Rational> bd = p.b.diameter();
-            assertTrue(p.toString(), !ad.isPresent() || le(bd.get(), ad.get()));
-            assertTrue(p.toString(), p.a.convexHull(p.b).equals(p.a));
+            assertTrue(p, !ad.isPresent() || le(bd.get(), ad.get()));
+            assertTrue(p, p.a.convexHull(p.b).equals(p.a));
+            for (Rational r : take(TINY_LIMIT, P.rationalsIn(p.b))) {
+                assertTrue(p, p.a.contains(r));
+            }
         }
 
-        Iterable<Pair<Rational, Interval>> ps = filter(
+        Iterable<Pair<Rational, Interval>> ps2 = filterInfinite(
                 q -> !q.b.equals(of(q.a)),
                 P.pairs(P.rationals(), P.intervals())
         );
-        for (Pair<Rational, Interval> p : take(LIMIT, ps)) {
-            assertFalse(p.toString(), of(p.a).contains(p.b));
+        for (Pair<Rational, Interval> p : take(LIMIT, ps2)) {
+            assertFalse(p, of(p.a).contains(p.b));
         }
     }
 
-    private static void propertiesDiameter() {
-        initialize();
-        System.out.println("\t\ttesting diameter() properties...");
-
+    private void propertiesDiameter() {
+        initialize("diameter()");
         for (Interval a : take(LIMIT, P.intervals())) {
             a.diameter();
         }
 
         for (Interval a : take(LIMIT, P.finitelyBoundedIntervals())) {
-            assertTrue(a.toString(), a.diameter().get().signum() != -1);
+            assertTrue(a, a.diameter().get().signum() != -1);
         }
 
         for (Rational r : take(LIMIT, P.rationals())) {
-            assertFalse(r.toString(), lessThanOrEqualTo(r).diameter().isPresent());
-            assertFalse(r.toString(), greaterThanOrEqualTo(r).diameter().isPresent());
+            assertFalse(r, lessThanOrEqualTo(r).diameter().isPresent());
+            assertFalse(r, greaterThanOrEqualTo(r).diameter().isPresent());
         }
     }
 
-    private static void propertiesConvexHull_Interval() {
-        initialize();
-        System.out.println("\t\ttesting convexHull(Interval) properties...");
-
+    private void propertiesConvexHull_Interval() {
+        initialize("convexHull(Interval)");
         for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
             Interval c = p.a.convexHull(p.b);
-            validate(c);
-            assertEquals(p.toString(), c, p.b.convexHull(p.a));
+            c.validate();
+            commutative(Interval::convexHull, p);
             //Given an interval c whose endpoints are in each of two intervals a and b, any Rational in c lies in the
             //convex hull of a and b
-            for (Pair<Rational, Rational> q : take(TINY_LIMIT, P.pairs(P.rationals(p.a), P.rationals(p.b)))) {
-                for (Rational r : take(TINY_LIMIT, P.rationals(of(min(q.a, q.b), max(q.a, q.b))))) {
-                    assertTrue(p.toString(), c.contains(r));
+            for (Pair<Rational, Rational> q : take(TINY_LIMIT, P.pairs(P.rationalsIn(p.a), P.rationalsIn(p.b)))) {
+                Pair<Rational, Rational> minMax = minMax(q.a, q.b);
+                for (Rational r : take(TINY_LIMIT, P.rationalsIn(of(minMax.a, minMax.b)))) {
+                    assertTrue(p, c.contains(r));
                 }
             }
         }
 
+        for (Triple<Interval, Interval, Interval> t : take(LIMIT, P.triples(P.intervals()))) {
+            associative(Interval::convexHull, t);
+        }
+
         for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.finitelyBoundedIntervals()))) {
             Interval c = p.a.convexHull(p.b);
-            assertTrue(p.toString(), ge(c.diameter().get(), p.a.diameter().get()));
-            assertTrue(p.toString(), ge(c.diameter().get(), p.b.diameter().get()));
+            assertTrue(p, ge(c.diameter().get(), p.a.diameter().get()));
+            assertTrue(p, ge(c.diameter().get(), p.b.diameter().get()));
         }
 
         for (Interval a : take(LIMIT, P.intervals())) {
-            assertTrue(a.toString(), a.convexHull(a).equals(a));
-            assertTrue(a.toString(), ALL.convexHull(a).equals(ALL));
+            fixedPoint(b -> b.convexHull(b), a);
+            fixedPoint(a::convexHull, ALL);
+            fixedPoint(b -> b.convexHull(a), ALL);
         }
     }
 
     private static @NotNull Pair<Rational, Rational> convexHull_List_Interval_alt(@NotNull List<Interval> as) {
-        if (isEmpty(as))
-            throw new IllegalArgumentException("cannot take convex hull of empty set");
-        Rational lower = minimum(
-                (x, y) -> {
-                    if (x == null) return -1;
-                    if (y == null) return 1;
-                    return x.compareTo(y);
-                },
-                map(a -> a.getLower().isPresent() ? a.getLower().get() : null, as)
-        );
-        Rational upper = maximum(
-                (x, y) -> {
-                    if (x == null) return 1;
-                    if (y == null) return -1;
-                    return x.compareTo(y);
-                },
-                map(a -> a.getUpper().isPresent() ? a.getUpper().get() : null, as)
-        );
+        if (isEmpty(as)) {
+            throw new IllegalArgumentException("as cannot be empty.");
+        }
+        List<Optional<Rational>> lowers = toList(map(Interval::getLower, as));
+        List<Optional<Rational>> uppers = toList(map(Interval::getUpper, as));
+        //noinspection RedundantCast
+        Rational lower = any(a -> !a.isPresent(), lowers) ?
+                null :
+                minimum((Iterable<Rational>) map(Optional::get, lowers));
+        //noinspection RedundantCast
+        Rational upper = any(a -> !a.isPresent(), uppers) ?
+                null :
+                maximum((Iterable<Rational>) map(Optional::get, uppers));
         return new Pair<>(lower, upper);
     }
 
-    private static void propertiesConvexHull_List_Interval() {
-        initialize();
-        System.out.println("\t\ttesting convexHull(List<Interval>) properties...");
-
+    private void propertiesConvexHull_List_Interval() {
+        initialize("convexHull(List<Interval>)");
         for (List<Interval> as : take(LIMIT, P.listsAtLeast(1, P.intervals()))) {
             Interval c = convexHull(as);
-            Pair<Rational, Rational> altC = convexHull_List_Interval_alt(as);
-            Interval alt;
-            if (altC.a == null && altC.b == null) {
-                alt = ALL;
-            } else if (altC.a == null) {
-                alt = lessThanOrEqualTo(altC.b);
-            } else if (altC.b == null) {
-                alt = greaterThanOrEqualTo(altC.a);
-            } else {
-                alt = of(altC.a, altC.b);
-            }
-            assertEquals(as.toString(), alt, c);
-            validate(c);
+            assertEquals(
+                    as,
+                    convexHull_List_Interval_alt(as),
+                    new Pair<>(c.getLower().orElse(null), c.getUpper().orElse(null))
+            );
+            c.validate();
         }
+
+        propertiesFoldHelper(
+                LIMIT,
+                P.getWheelsProvider(),
+                P.intervals(),
+                Interval::convexHull,
+                Interval::convexHull,
+                Interval::validate,
+                false,
+                true
+        );
 
         for (List<Interval> as : take(LIMIT, P.listsAtLeast(1, P.finitelyBoundedIntervals()))) {
             Interval c = convexHull(as);
             Rational cd = c.diameter().get();
-            assertTrue(as.toString(), all(a -> ge(cd, a.diameter().get()), as));
+            assertTrue(as, all(a -> ge(cd, a.diameter().get()), as));
         }
 
-        Iterable<Pair<List<Interval>, List<Interval>>> ps = P.dependentPairs(
-                P.listsAtLeast(1, P.intervals()),
-                P::permutationsFinite
-        );
-        for (Pair<List<Interval>, List<Interval>> p : take(LIMIT, ps)) {
-            assertEquals(p.toString(), convexHull(p.a), convexHull(p.b));
-        }
-
-        for (Interval a : take(LIMIT, P.intervals())) {
-            assertEquals(a.toString(), convexHull(Collections.singletonList(a)), a);
-        }
-
-        for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
-            assertEquals(p.toString(), convexHull(Arrays.asList(p.a, p.b)), p.a.convexHull(p.b));
-        }
-
-        Iterable<Pair<Interval, Integer>> ps2;
-        if (P instanceof QBarExhaustiveProvider) {
-            ps2 = ((QBarExhaustiveProvider) P).pairsLogarithmicOrder(P.intervals(), P.positiveIntegers());
-        } else {
-            ps2 = P.pairs(P.intervals(), P.withScale(20).positiveIntegersGeometric());
-        }
+        Iterable<Pair<Interval, Integer>> ps2 = P.pairsLogarithmicOrder(P.intervals(), P.positiveIntegersGeometric());
         for (Pair<Interval, Integer> p : take(LIMIT, ps2)) {
-            assertEquals(p.toString(), convexHull(toList(replicate(p.b, p.a))), p.a);
+            assertEquals(p, convexHull(toList(replicate(p.b, p.a))), p.a);
         }
 
         for (List<Interval> as : take(LIMIT, P.listsWithElement(ALL, P.intervals()))) {
-            assertEquals(as.toString(), convexHull(as), ALL);
-        }
-
-        for (List<Interval> as : take(LIMIT, P.listsWithElement(null, P.intervals()))) {
-            try {
-                convexHull(as);
-                fail(as.toString());
-            } catch (NullPointerException ignored) {}
+            assertEquals(as, convexHull(as), ALL);
         }
     }
 
-    private static void compareImplementationsConvexHull_List_Interval() {
-        initialize();
-        System.out.println("\t\tcomparing convexHull(List<Interval>) implementations...");
-
-        long totalTime = 0;
-        for (List<Interval> as : take(LIMIT, P.listsAtLeast(1, P.intervals()))) {
-            long time = System.nanoTime();
-            convexHull_List_Interval_alt(as);
-            totalTime += (System.nanoTime() - time);
-        }
-        System.out.println("\t\t\talt: " + ((double) totalTime) / 1e9 + " s");
-
-        totalTime = 0;
-        for (List<Interval> as : take(LIMIT, P.listsAtLeast(1, P.intervals()))) {
-            long time = System.nanoTime();
-            convexHull(as);
-            totalTime += (System.nanoTime() - time);
-        }
-        System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
+    private void compareImplementationsConvexHull_List_Interval() {
+        Map<String, Function<List<Interval>, Pair<Rational, Rational>>> functions = new LinkedHashMap<>();
+        functions.put("alt", IntervalProperties::convexHull_List_Interval_alt);
+        functions.put(
+                "standard",
+                as -> {
+                    Interval a = convexHull(as);
+                    return new Pair<>(a.getLower().orElse(null), a.getUpper().orElse(null));
+                }
+        );
+        compareImplementations("convexHull(List<Interval>)", take(LIMIT, P.listsAtLeast(1, P.intervals())), functions);
     }
 
-    private static void propertiesIntersection() {
-        initialize();
-        System.out.println("\t\ttesting intersection(Interval) properties...");
-
+    private void propertiesIntersection() {
+        initialize("intersection(Interval)");
         for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
             Optional<Interval> oi = p.a.intersection(p.b);
             if (oi.isPresent()) {
-                validate(oi.get());
+                oi.get().validate();
             }
-            assertEquals(p.toString(), oi, p.b.intersection(p.a));
-            assertEquals(p.toString(), oi.isPresent(), !p.a.disjoint(p.b));
+            commutative(Interval::intersection, p);
+            assertEquals(p, oi.isPresent(), !p.a.disjoint(p.b));
+        }
+
+        Iterable<Triple<Optional<Interval>, Optional<Interval>, Optional<Interval>>> ts =
+                P.triples(P.nonEmptyOptionals(P.intervals()));
+        for (Triple<Optional<Interval>, Optional<Interval>, Optional<Interval>> t : take(LIMIT, ts)) {
+            associative(
+                    (a, b) -> !a.isPresent() || !b.isPresent() ? Optional.empty() : a.get().intersection(b.get()),
+                    t
+            );
         }
 
         for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.finitelyBoundedIntervals()))) {
             Optional<Interval> oi = p.a.intersection(p.b);
             if (oi.isPresent()) {
-                assertTrue(p.toString(), le(oi.get().diameter().get(), p.a.diameter().get()));
-                assertTrue(p.toString(), le(oi.get().diameter().get(), p.b.diameter().get()));
+                assertTrue(p, le(oi.get().diameter().get(), p.a.diameter().get()));
+                assertTrue(p, le(oi.get().diameter().get(), p.b.diameter().get()));
             }
         }
 
         for (Interval a : take(LIMIT, P.intervals())) {
-            assertEquals(a.toString(), ALL.intersection(a).get(), a);
-            assertEquals(a.toString(), a.intersection(a).get(), a);
+            fixedPoint(b -> ALL.intersection(b).get(), a);
+            fixedPoint(b -> b.intersection(ALL).get(), a);
+            fixedPoint(b -> b.intersection(b).get(), a);
         }
 
-        for (Pair<Interval, Interval> p : take(LIMIT, filter(q -> !q.a.disjoint(q.b), P.pairs(P.intervals())))) {
+        Iterable<Pair<Interval, Interval>> ps = filterInfinite(q -> !q.a.disjoint(q.b), P.pairs(P.intervals()));
+        for (Pair<Interval, Interval> p : take(LIMIT, ps)) {
             Interval intersection = p.a.intersection(p.b).get();
-            for (Rational r : take(TINY_LIMIT, P.rationals(intersection))) {
-                assertTrue(p.toString(), p.a.contains(r));
-                assertTrue(p.toString(), p.b.contains(r));
+            for (Rational r : take(TINY_LIMIT, P.rationalsIn(intersection))) {
+                assertTrue(p, p.a.contains(r));
+                assertTrue(p, p.b.contains(r));
             }
         }
     }
 
-    private static void propertiesDisjoint() {
-        initialize();
-        System.out.println("\t\ttesting disjoint(Interval) properties...");
+    private static boolean disjoint_simplest(@NotNull Interval a, @NotNull Interval b) {
+        return !a.intersection(b).isPresent();
+    }
 
+    private void propertiesDisjoint() {
+        initialize("disjoint(Interval)");
         for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
-            boolean disjoint = p.a.disjoint(p.b);
-            assertEquals(p.toString(), p.b.disjoint(p.a), disjoint);
+            assertEquals(p, p.a.disjoint(p.b), disjoint_simplest(p.a, p.b));
+            commutative(Interval::disjoint, p);
         }
 
         for (Interval a : take(LIMIT, P.intervals())) {
-            assertFalse(a.toString(), ALL.disjoint(a));
-            assertFalse(a.toString(), a.disjoint(a));
+            assertFalse(a, ALL.disjoint(a));
+            assertFalse(a, a.disjoint(a));
         }
 
-        for (Pair<Interval, Interval> p : take(LIMIT, filter(q -> q.a.disjoint(q.b), P.pairs(P.intervals())))) {
-            for (Rational r : take(TINY_LIMIT, P.rationals(p.a))) {
-                assertFalse(p.toString(), p.b.contains(r));
+        Iterable<Pair<Interval, Interval>> ps = filterInfinite(q -> q.a.disjoint(q.b), P.pairs(P.intervals()));
+        for (Pair<Interval, Interval> p : take(LIMIT, ps)) {
+            for (Rational r : take(TINY_LIMIT, P.rationalsIn(p.a))) {
+                assertFalse(p, p.b.contains(r));
             }
         }
     }
 
-    private static void propertiesMakeDisjoint() {
-        initialize();
-        System.out.println("\t\ttesting makeDisjoint(List<Interval>) properties...");
+    private void compareImplementationsDisjoint() {
+        Map<String, Function<Pair<Interval, Interval>, Boolean>> functions = new LinkedHashMap<>();
+        functions.put("simplest", p -> disjoint_simplest(p.a, p.b));
+        functions.put("standard", p -> p.a.disjoint(p.b));
+        compareImplementations("disjoint(Interval)", take(LIMIT, P.pairs(P.intervals())), functions);
+    }
 
+    private static @NotNull  List<Interval> union_alt(@NotNull List<Interval> as) {
+        if (as.size() < 2) return as;
+        List<Interval> simplified = new ArrayList<>();
+        Interval acc = null;
+        for (Interval a : sort(as)) {
+            if (acc == null) {
+                acc = a;
+            } else if (acc.disjoint(a)) {
+                simplified.add(acc);
+                acc = a;
+            } else {
+                acc = acc.convexHull(a);
+            }
+        }
+        if (acc != null) simplified.add(acc);
+        return simplified;
+    }
+
+    private void propertiesUnion() {
+        initialize("union(List<Interval>)");
         for (List<Interval> as : take(LIMIT, P.lists(P.intervals()))) {
-            List<Interval> disjoint = makeDisjoint(as);
-            disjoint.forEach(mho.qbar.objects.IntervalProperties::validate);
-            assertTrue(as.toString(), weaklyIncreasing(disjoint));
-            assertTrue(
-                    as.toString(),
-                    and(map(p -> p.a.disjoint(p.b), ExhaustiveProvider.INSTANCE.distinctPairs(disjoint)))
-            );
-            for (Rational r : take(TINY_LIMIT, mux(toList(map(P::rationals, as))))) {
-                assertTrue(as.toString(), or(map(a -> a.contains(r), disjoint)));
+            List<Interval> union = union(as);
+            union.forEach(Interval::validate);
+            assertEquals(as, union, union_alt(as));
+            assertTrue(as, increasing(union));
+            assertTrue(as.toString(), and(map(p -> p.a.disjoint(p.b), EP.distinctPairs(union))));
+            for (Rational r : take(TINY_LIMIT, mux(toList(map(P::rationalsIn, as))))) { //todo use choose
+                assertTrue(as, or(map(a -> a.contains(r), union)));
             }
         }
 
@@ -490,1042 +467,968 @@ public class IntervalProperties {
                 P::permutationsFinite
         );
         for (Pair<List<Interval>, List<Interval>> p : take(LIMIT, ps)) {
-            assertEquals(p.toString(), makeDisjoint(p.a), makeDisjoint(p.b));
+            assertEquals(p, union(p.a), union(p.b));
         }
 
         for (Interval a : take(LIMIT, P.intervals())) {
-            assertEquals(a.toString(), makeDisjoint(Collections.singletonList(a)), Collections.singletonList(a));
+            fixedPoint(Interval::union, Collections.singletonList(a));
         }
 
-        for (Pair<Interval, Interval> p : take(LIMIT, filter(q -> q.a.disjoint(q.b), P.pairs(P.intervals())))) {
-            assertEquals(p.toString(), makeDisjoint(Pair.toList(p)), sort(Pair.toList(p)));
+        for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
+            commutative((a, b) -> union(Arrays.asList(a, b)), p);
         }
 
-        for (Pair<Interval, Interval> p : take(LIMIT, filter(q -> !q.a.disjoint(q.b), P.pairs(P.intervals())))) {
-            assertEquals(
-                    p.toString(),
-                    makeDisjoint(Pair.toList(p)),
-                    Collections.singletonList(convexHull(Pair.toList(p)))
-            );
+        Iterable<Pair<Interval, Interval>> ps2 = filterInfinite(q -> q.a.disjoint(q.b), P.pairs(P.intervals()));
+        for (Pair<Interval, Interval> p : take(LIMIT, ps2)) {
+            assertEquals(p, union(Pair.toList(p)), sort(Pair.toList(p)));
+        }
+
+        ps2 = filterInfinite(q -> !q.a.disjoint(q.b), P.pairs(P.intervals()));
+        for (Pair<Interval, Interval> p : take(LIMIT, ps2)) {
+            assertEquals(p, union(Pair.toList(p)), Collections.singletonList(convexHull(Pair.toList(p))));
         }
 
         for (List<Interval> as : take(LIMIT, P.listsWithElement(ALL, P.intervals()))) {
-            assertEquals(as.toString(), makeDisjoint(as), Collections.singletonList(ALL));
+            assertEquals(as, union(as), Collections.singletonList(ALL));
         }
 
         for (List<Interval> as : take(LIMIT, P.listsWithElement(null, P.intervals()))) {
             try {
-                convexHull(as);
-                fail(as.toString());
+                union(as);
+                fail(as);
             } catch (NullPointerException ignored) {}
         }
     }
 
-    private static void propertiesComplement() {
-        initialize();
-        System.out.println("\t\ttesting complement() properties...");
+    private void compareImplementationsUnion() {
+        Map<String, Function<List<Interval>, List<Interval>>> functions = new LinkedHashMap<>();
+        functions.put("alt", IntervalProperties::union_alt);
+        functions.put("standard", Interval::union);
+        compareImplementations("union(List<Interval>)", take(LIMIT, P.lists(P.intervals())), functions);
+    }
 
+    private void propertiesComplement() {
+        initialize("complement()");
         for (Interval a : take(LIMIT, P.intervals())) {
             List<Interval> complement = a.complement();
-            complement.forEach(mho.qbar.objects.IntervalProperties::validate);
-            assertEquals(a.toString(), makeDisjoint(complement), complement);
+            complement.forEach(Interval::validate);
+            assertEquals(a, union(complement), complement);
             List<Rational> endpoints = new ArrayList<>();
             if (a.getLower().isPresent()) endpoints.add(a.getLower().get());
             if (a.getUpper().isPresent()) endpoints.add(a.getUpper().get());
             for (Rational endpoint : endpoints) {
                 any(b -> b.contains(endpoint), complement);
             }
-            //todo: fix hanging
-//            for (Rational r : take(TINY_LIMIT, filter(s -> !endpoints.contains(s), P.rationals(a)))) {
-//                assertFalse(a.toString(), any(b -> b.contains(r), complement));
-//            }
+        }
+
+        Iterable<Interval> as = filterInfinite(a -> !a.diameter().equals(Optional.of(Rational.ZERO)), P.intervals());
+        for (Interval a : take(LIMIT, as)) {
+            List<Interval> complement = a.complement();
+            List<Rational> endpoints = new ArrayList<>();
+            if (a.getLower().isPresent()) endpoints.add(a.getLower().get());
+            if (a.getUpper().isPresent()) endpoints.add(a.getUpper().get());
+            for (Rational r : take(TINY_LIMIT, filterInfinite(s -> !endpoints.contains(s), P.rationalsIn(a)))) {
+                assertFalse(a, any(b -> b.contains(r), complement));
+            }
+        }
+
+        for (Interval a : take(LIMIT, filterInfinite(b -> !b.equals(ALL), P.intervals()))) {
+            List<Interval> complement = a.complement();
             for (Rational r : take(TINY_LIMIT, P.rationalsNotIn(a))) {
-                assertTrue(a.toString(), any(b -> b.contains(r), complement));
+                assertTrue(a, any(b -> b.contains(r), complement));
             }
         }
 
         for (Interval a : take(LIMIT, map(Interval::lessThanOrEqualTo, P.rationals()))) {
             List<Interval> complement = a.complement();
-            assertEquals(a.toString(), complement.size(), 1);
+            assertEquals(a, complement.size(), 1);
             Interval x = complement.get(0);
-            assertTrue(a.toString(), x.getLower().isPresent());
-            assertFalse(a.toString(), x.getUpper().isPresent());
+            assertTrue(a, x.getLower().isPresent());
+            assertFalse(a, x.getUpper().isPresent());
         }
 
         for (Interval a : take(LIMIT, map(Interval::greaterThanOrEqualTo, P.rationals()))) {
             List<Interval> complement = a.complement();
-            assertEquals(a.toString(), complement.size(), 1);
+            assertEquals(a, complement.size(), 1);
             Interval x = complement.get(0);
-            assertFalse(a.toString(), x.getLower().isPresent());
-            assertTrue(a.toString(), x.getUpper().isPresent());
+            assertFalse(a, x.getLower().isPresent());
+            assertTrue(a, x.getUpper().isPresent());
         }
 
         for (Interval a : take(LIMIT, map(Interval::of, P.rationals()))) {
-            assertEquals(a.toString(), a.complement(), Collections.singletonList(ALL));
+            assertEquals(a, a.complement(), Collections.singletonList(ALL));
         }
 
-        Iterable<Interval> as = filter(b -> b.diameter().get() != Rational.ZERO, P.finitelyBoundedIntervals());
+        as = filterInfinite(b -> b.diameter().get() != Rational.ZERO, P.finitelyBoundedIntervals());
         for (Interval a : take(LIMIT, as)) {
             List<Interval> complement = a.complement();
-            assertEquals(a.toString(), complement.size(), 2);
+            assertEquals(a, complement.size(), 2);
             Interval x = complement.get(0);
             Interval y = complement.get(1);
-            assertFalse(a.toString(), x.getLower().isPresent());
-            assertTrue(a.toString(), x.getUpper().isPresent());
-            assertTrue(a.toString(), y.getLower().isPresent());
-            assertFalse(a.toString(), y.getUpper().isPresent());
+            assertFalse(a, x.getLower().isPresent());
+            assertTrue(a, x.getUpper().isPresent());
+            assertTrue(a, y.getLower().isPresent());
+            assertFalse(a, y.getUpper().isPresent());
         }
     }
 
-    private static void propertiesMidpoint() {
-        initialize();
-        System.out.println("\t\ttesting midpoint() properties...");
-
+    private void propertiesMidpoint() {
+        initialize("midpoint()");
         for (Interval a : take(LIMIT, P.finitelyBoundedIntervals())) {
             Rational midpoint = a.midpoint();
-            assertEquals(a.toString(), midpoint.subtract(a.getLower().get()), a.getUpper().get().subtract(midpoint));
+            assertEquals(a, midpoint.subtract(a.getLower().get()), a.getUpper().get().subtract(midpoint));
         }
 
         for (Rational r : take(LIMIT, P.rationals())) {
-            assertEquals(r.toString(), of(r).midpoint(), r);
+            assertEquals(r, of(r).midpoint(), r);
         }
 
         for (Rational r : take(LIMIT, P.rationals())) {
             try {
                 lessThanOrEqualTo(r).midpoint();
-                fail(r.toString());
+                fail(r);
             } catch (ArithmeticException ignored) {}
             try {
                 greaterThanOrEqualTo(r).midpoint();
-                fail(r.toString());
+                fail(r);
             } catch (ArithmeticException ignored) {}
         }
     }
 
-    private static void propertiesSplit() {
-        initialize();
-        System.out.println("\t\ttesting split(Rational) properties...");
-
-        Iterable<Pair<Interval, Rational>> ps = filter(q -> q.a.contains(q.b), P.pairs(P.intervals(), P.rationals()));
+    private void propertiesSplit() {
+        initialize("split(Rational)");
+        Iterable<Pair<Interval, Rational>> ps = filterInfinite(
+                q -> q.a.contains(q.b),
+                P.pairs(P.intervals(), P.rationals())
+        );
         for (Pair<Interval, Rational> p : take(LIMIT, ps)) {
             Pair<Interval, Interval> split = p.a.split(p.b);
-            validate(split.a);
-            validate(split.b);
-            assertEquals(p.toString(), split.a.getUpper().get(), p.b);
-            assertEquals(p.toString(), split.b.getLower().get(), p.b);
-            for (Rational r : take(TINY_LIMIT, P.rationals(p.a))) {
-                assertTrue(p.toString(), split.a.contains(r) || split.b.contains(r));
+            split.a.validate();
+            split.b.validate();
+            assertEquals(p, split.a.getUpper().get(), p.b);
+            assertEquals(p, split.b.getLower().get(), p.b);
+            for (Rational r : take(TINY_LIMIT, P.rationalsIn(p.a))) {
+                assertTrue(p, split.a.contains(r) || split.b.contains(r));
             }
         }
 
         for (Rational r : take(LIMIT, P.rationals())) {
             Interval a = of(r);
-            assertEquals(r.toString(), a.split(r), new Pair<>(a, a));
-
+            assertEquals(r, a.split(r), new Pair<>(a, a));
             Pair<Interval, Interval> p = ALL.split(r);
-            assertFalse(r.toString(), p.a.getLower().isPresent());
-            assertTrue(r.toString(), p.a.getUpper().isPresent());
-            assertTrue(r.toString(), p.b.getLower().isPresent());
-            assertFalse(r.toString(), p.b.getUpper().isPresent());
+            assertFalse(r, p.a.getLower().isPresent());
+            assertTrue(r, p.a.getUpper().isPresent());
+            assertTrue(r, p.b.getLower().isPresent());
+            assertFalse(r, p.b.getUpper().isPresent());
         }
 
-        for (Pair<Rational, Rational> p : take(LIMIT, filter(q -> le(q.a, q.b), P.pairs(P.rationals())))) {
+        for (Pair<Rational, Rational> p : take(LIMIT, P.bagPairs(P.rationals()))) {
             Interval a = lessThanOrEqualTo(p.b);
             Pair<Interval, Interval> q = a.split(p.a);
-            assertFalse(p.toString(), q.a.getLower().isPresent());
-            assertTrue(p.toString(), q.a.getUpper().isPresent());
-            assertTrue(p.toString(), q.b.isFinitelyBounded());
+            assertFalse(p, q.a.getLower().isPresent());
+            assertTrue(p, q.a.getUpper().isPresent());
+            assertTrue(p, q.b.isFinitelyBounded());
+
+            a = greaterThanOrEqualTo(p.a);
+            q = a.split(p.b);
+            assertTrue(p, q.a.isFinitelyBounded());
+            assertTrue(p, q.b.getLower().isPresent());
+            assertFalse(p, q.b.getUpper().isPresent());
         }
 
-        for (Pair<Rational, Rational> p : take(LIMIT, filter(q -> le(q.a, q.b), P.pairs(P.rationals())))) {
-            Interval a = greaterThanOrEqualTo(p.a);
-            Pair<Interval, Interval> q = a.split(p.b);
-            assertTrue(p.toString(), q.a.isFinitelyBounded());
-            assertTrue(p.toString(), q.b.getLower().isPresent());
-            assertFalse(p.toString(), q.b.getUpper().isPresent());
-        }
-
-        Iterable<Pair<Interval, Rational>> psFail = filter(
+        Iterable<Pair<Interval, Rational>> psFail = filterInfinite(
                 q -> !q.a.contains(q.b),
                 P.pairs(P.intervals(), P.rationals())
         );
         for (Pair<Interval, Rational> p : take(LIMIT, psFail)) {
             try {
                 p.a.split(p.b);
-                fail(p.toString());
+                fail(p);
             } catch (ArithmeticException ignored) {}
         }
     }
 
-    private static void propertiesBisect() {
-        initialize();
-        System.out.println("\t\ttesting bisect() properties...");
-
+    private void propertiesBisect() {
+        initialize("bisect()");
         for (Interval a : take(LIMIT, P.finitelyBoundedIntervals())) {
             Pair<Interval, Interval> bisection = a.bisect();
-            validate(bisection.a);
-            validate(bisection.b);
-            assertTrue(a.toString(), bisection.a.isFinitelyBounded());
-            assertTrue(a.toString(), bisection.b.isFinitelyBounded());
-            assertEquals(a.toString(), bisection.a.diameter().get(), bisection.b.diameter().get());
-            assertEquals(a.toString(), bisection.a.getUpper().get(), bisection.b.getLower().get());
-            for (Rational r : take(TINY_LIMIT, P.rationals(a))) {
-                assertTrue(a.toString(), bisection.a.contains(r) || bisection.b.contains(r));
+            bisection.a.validate();
+            bisection.b.validate();
+            assertTrue(a, bisection.a.isFinitelyBounded());
+            assertTrue(a, bisection.b.isFinitelyBounded());
+            assertEquals(a, bisection.a.diameter(), bisection.b.diameter());
+            assertEquals(a, bisection.a.getUpper(), bisection.b.getLower());
+            for (Rational r : take(TINY_LIMIT, P.rationalsIn(a))) {
+                assertTrue(a, bisection.a.contains(r) || bisection.b.contains(r));
             }
         }
 
         for (Rational r : take(LIMIT, P.rationals())) {
             Interval a = of(r);
-            assertEquals(r.toString(), a.bisect(), new Pair<>(a, a));
+            assertEquals(r, a.bisect(), new Pair<>(a, a));
         }
 
         for (Rational r : take(LIMIT, P.rationals())) {
             try {
                 lessThanOrEqualTo(r).bisect();
-                fail(r.toString());
+                fail(r);
             } catch (ArithmeticException ignored) {}
             try {
                 greaterThanOrEqualTo(r).bisect();
-                fail(r.toString());
+                fail(r);
             } catch (ArithmeticException ignored) {}
         }
     }
 
-    private static void propertiesRoundingPreimage_float() {
-        initialize();
-        System.out.println("\t\ttesting roundingPreimage(float) properties...");
-
+    private void propertiesRoundingPreimage_float() {
+        initialize("roundingPreimage(float)");
         for (float f : take(LIMIT, filter(g -> !Float.isNaN(g), P.floats()))) {
             Interval a = roundingPreimage(f);
-            validate(a);
-            assertEquals(Float.toString(f), roundingPreimage(-f), a.negate());
+            a.validate();
+            assertEquals(f, roundingPreimage(-f), a.negate());
         }
 
         for (float f : take(LIMIT, filter(g -> !Float.isNaN(g) && Math.abs(g) < Float.MAX_VALUE, P.floats()))) {
             Interval a = roundingPreimage(f);
-            Rational central = Rational.ofExact(f).get();
-            Rational pred = Rational.ofExact(FloatingPointUtils.predecessor(f)).get();
-            Rational succ = Rational.ofExact(FloatingPointUtils.successor(f)).get();
-            for (Rational r : take(TINY_LIMIT, P.rationals(a))) {
-                Rational centralDistance = central.subtract(r).abs();
-                Rational predDistance = pred.subtract(r).abs();
-                Rational succDistance = succ.subtract(r).abs();
-                assertTrue(Float.toString(f), le(centralDistance, predDistance));
-                assertTrue(Float.toString(f), le(centralDistance, succDistance));
+            Rational center = Rational.ofExact(f).get();
+            Rational predecessor = Rational.ofExact(FloatingPointUtils.predecessor(f)).get();
+            Rational successor = Rational.ofExact(FloatingPointUtils.successor(f)).get();
+            for (Rational r : take(TINY_LIMIT, P.rationalsIn(a))) {
+                Rational centerDistance = center.subtract(r).abs();
+                Rational predecessorDistance = predecessor.subtract(r).abs();
+                Rational successorDistance = successor.subtract(r).abs();
+                assertTrue(f, le(centerDistance, predecessorDistance));
+                assertTrue(f, le(centerDistance, successorDistance));
             }
             for (Rational r : take(TINY_LIMIT, P.rationalsNotIn(a))) {
-                Rational centralDistance = central.subtract(r).abs();
-                Rational predDistance = pred.subtract(r).abs();
-                Rational succDistance = succ.subtract(r).abs();
-                assertTrue(Float.toString(f), gt(centralDistance, predDistance) || gt(centralDistance, succDistance));
+                Rational centralDistance = center.subtract(r).abs();
+                Rational predecessorDistance = predecessor.subtract(r).abs();
+                Rational successorDistance = successor.subtract(r).abs();
+                assertTrue(f, gt(centralDistance, predecessorDistance) || gt(centralDistance, successorDistance));
             }
 
             Rational x = a.getLower().get();
             Rational y = a.getUpper().get();
-            for (Rational r : take(TINY_LIMIT, filter(s -> !s.equals(x) && !s.equals(y), P.rationals(a)))) {
-                float g = r.floatValue();
-                float h = f;
-                //get rid of negative zero
-                if (g == 0.0f) g = Math.abs(g);
-                if (h == 0.0f) h = Math.abs(h);
-                aeq(Float.toString(f), g, h);
+            for (Rational r : take(TINY_LIMIT, filterInfinite(s -> !s.equals(x) && !s.equals(y), P.rationalsIn(a)))) {
+                assertEquals(
+                        f,
+                        FloatingPointUtils.absNegativeZeros(r.floatValue()),
+                        FloatingPointUtils.absNegativeZeros(f)
+                );
             }
-            for (Rational r : take(TINY_LIMIT, filter(s -> !s.equals(x) && !s.equals(y), P.rationalsNotIn(a)))) {
-                aneq(Float.toString(f), r.floatValue(), f);
+            Iterable<Rational> rs = filterInfinite(s -> !s.equals(x) && !s.equals(y), P.rationalsNotIn(a));
+            for (Rational r : take(TINY_LIMIT, rs)) {
+                assertNotEquals(f, r.floatValue(), f);
             }
         }
     }
 
-    private static void propertiesRoundingPreimage_double() {
-        initialize();
-        System.out.println("\t\ttesting roundingPreimage(double) properties...");
-
+    private void propertiesRoundingPreimage_double() {
+        initialize("roundingPreimage(double)");
         for (double d : take(LIMIT, filter(e -> !Double.isNaN(e), P.doubles()))) {
             Interval a = roundingPreimage(d);
-            validate(a);
-            assertEquals(Double.toString(d), roundingPreimage(-d), a.negate());
+            a.validate();
+            assertEquals(d, roundingPreimage(-d), a.negate());
         }
 
         for (double d : take(LIMIT, filter(e -> !Double.isNaN(e) && Math.abs(e) < Double.MAX_VALUE, P.doubles()))) {
             Interval a = roundingPreimage(d);
-            Rational central = Rational.ofExact(d).get();
-            Rational pred = Rational.ofExact(FloatingPointUtils.predecessor(d)).get();
-            Rational succ = Rational.ofExact(FloatingPointUtils.successor(d)).get();
-            for (Rational r : take(TINY_LIMIT, P.rationals(a))) {
-                Rational centralDistance = central.subtract(r).abs();
-                Rational predDistance = pred.subtract(r).abs();
-                Rational succDistance = succ.subtract(r).abs();
-                assertTrue(Double.toString(d), le(centralDistance, predDistance));
-                assertTrue(Double.toString(d), le(centralDistance, succDistance));
+            Rational center = Rational.ofExact(d).get();
+            Rational predecessor = Rational.ofExact(FloatingPointUtils.predecessor(d)).get();
+            Rational successor = Rational.ofExact(FloatingPointUtils.successor(d)).get();
+            for (Rational r : take(TINY_LIMIT, P.rationalsIn(a))) {
+                Rational centerDistance = center.subtract(r).abs();
+                Rational predecessorDistance = predecessor.subtract(r).abs();
+                Rational successorDistance = successor.subtract(r).abs();
+                assertTrue(d, le(centerDistance, predecessorDistance));
+                assertTrue(d, le(centerDistance, successorDistance));
             }
             for (Rational r : take(TINY_LIMIT, P.rationalsNotIn(a))) {
-                Rational centralDistance = central.subtract(r).abs();
-                Rational predDistance = pred.subtract(r).abs();
-                Rational succDistance = succ.subtract(r).abs();
-                assertTrue(Double.toString(d), gt(centralDistance, predDistance) || gt(centralDistance, succDistance));
+                Rational centerDistance = center.subtract(r).abs();
+                Rational predecessorDistance = predecessor.subtract(r).abs();
+                Rational successorDistance = successor.subtract(r).abs();
+                assertTrue(d, gt(centerDistance, predecessorDistance) || gt(centerDistance, successorDistance));
             }
 
             Rational x = a.getLower().get();
             Rational y = a.getUpper().get();
-            for (Rational r : take(TINY_LIMIT, filter(s -> !s.equals(x) && !s.equals(y), P.rationals(a)))) {
-                double g = r.doubleValue();
-                double h = d;
-                //get rid of negative zero
-                if (g == 0.0) g = Math.abs(g);
-                if (h == 0.0) h = Math.abs(h);
-                aeq(Double.toString(d), g, h);
+            for (Rational r : take(TINY_LIMIT, filterInfinite(s -> !s.equals(x) && !s.equals(y), P.rationalsIn(a)))) {
+                assertEquals(
+                        d,
+                        FloatingPointUtils.absNegativeZeros(r.doubleValue()),
+                        FloatingPointUtils.absNegativeZeros(d)
+                );
             }
-            for (Rational r : take(TINY_LIMIT, filter(s -> !s.equals(x) && !s.equals(y), P.rationalsNotIn(a)))) {
-                aneq(Double.toString(d), r.doubleValue(), d);
+            Iterable<Rational> rs = filterInfinite(s -> !s.equals(x) && !s.equals(y), P.rationalsNotIn(a));
+            for (Rational r : take(TINY_LIMIT, rs)) {
+                assertNotEquals(d, r.doubleValue(), d);
             }
         }
     }
 
-    private static void propertiesRoundingPreimage_BigDecimal() {
-        initialize();
-        System.out.println("\t\ttesting roundingPreimage(BigDecimal) properties...");
-
+    private void propertiesRoundingPreimage_BigDecimal() {
+        initialize("roundingPreimage(BigDecimal)");
         for (BigDecimal bd : take(LIMIT, P.bigDecimals())) {
             Interval a = roundingPreimage(bd);
-            validate(a);
-            assertEquals(bd.toString(), roundingPreimage(bd.negate()), a.negate());
-            Rational central = Rational.of(bd);
-            Rational pred = Rational.of(BigDecimalUtils.predecessor(bd));
-            Rational succ = Rational.of(BigDecimalUtils.successor(bd));
-            for (Rational r : take(TINY_LIMIT, P.rationals(a))) {
-                Rational centralDistance = central.subtract(r).abs();
-                Rational predDistance = pred.subtract(r).abs();
-                Rational succDistance = succ.subtract(r).abs();
-                assertTrue(bd.toString(), le(centralDistance, predDistance));
-                assertTrue(bd.toString(), le(centralDistance, succDistance));
+            a.validate();
+            assertEquals(bd, roundingPreimage(bd.negate()), a.negate());
+            Rational center = Rational.of(bd);
+            Rational predecessor = Rational.of(BigDecimalUtils.predecessor(bd));
+            Rational successor = Rational.of(BigDecimalUtils.successor(bd));
+            for (Rational r : take(TINY_LIMIT, P.rationalsIn(a))) {
+                Rational centerDistance = center.subtract(r).abs();
+                Rational predecessorDistance = predecessor.subtract(r).abs();
+                Rational successorDistance = successor.subtract(r).abs();
+                assertTrue(bd, le(centerDistance, predecessorDistance));
+                assertTrue(bd, le(centerDistance, successorDistance));
             }
             for (Rational r : take(TINY_LIMIT, P.rationalsNotIn(a))) {
-                Rational centralDistance = central.subtract(r).abs();
-                Rational predDistance = pred.subtract(r).abs();
-                Rational succDistance = succ.subtract(r).abs();
-                assertTrue(bd.toString(), gt(centralDistance, predDistance) || gt(centralDistance, succDistance));
+                Rational centerDistance = center.subtract(r).abs();
+                Rational predecessorDistance = predecessor.subtract(r).abs();
+                Rational successorDistance = successor.subtract(r).abs();
+                assertTrue(bd, gt(centerDistance, predecessorDistance) || gt(centerDistance, successorDistance));
+            }
+
+            Rational x = a.getLower().get();
+            Rational y = a.getUpper().get();
+            for (Rational r : take(TINY_LIMIT, filterInfinite(s -> !s.equals(x) && !s.equals(y), P.rationalsIn(a)))) {
+                assertEquals(bd, r.bigDecimalValueByScale(bd.scale()), bd);
+            }
+            Iterable<Rational> rs = filterInfinite(s -> !s.equals(x) && !s.equals(y), P.rationalsNotIn(a));
+            for (Rational r : take(TINY_LIMIT, rs)) {
+                assertNotEquals(bd, r.bigDecimalValueByScale(bd.scale()), bd);
             }
         }
     }
 
-    private static void propertiesFloatRange() {
-        initialize();
-        System.out.println("\t\ttesting floatRange() properties...");
-
-        for (Interval a : take(LIMIT, P.intervals())) {
-            Pair<Float, Float> range = a.floatRange();
-            assertTrue(a.toString(), range.a != null);
-            assertTrue(a.toString(), range.b != null);
-            assertFalse(a.toString(), range.a.isNaN());
-            assertFalse(a.toString(), range.b.isNaN());
-            assertTrue(a.toString(), range.b >= range.a);
-            assertFalse(a.toString(), range.a > 0 && range.a.isInfinite());
-            assertFalse(a.toString(), FloatingPointUtils.isNegativeZero(range.a));
-            assertFalse(a.toString(), range.b < 0 && range.b.isInfinite());
-            assertFalse(
-                    a.toString(),
-                    FloatingPointUtils.isNegativeZero(range.b) && FloatingPointUtils.isPositiveZero(range.a)
-            );
-
-            Pair<Float, Float> negRange = a.negate().floatRange();
-            negRange = new Pair<>(-negRange.b, -negRange.a);
-            float x = FloatingPointUtils.absNegativeZeros(range.a);
-            float y = FloatingPointUtils.absNegativeZeros(range.b);
-            float xn = FloatingPointUtils.absNegativeZeros(negRange.a);
-            float yn = FloatingPointUtils.absNegativeZeros(negRange.b);
-            aeq(a.toString(), x, xn);
-            //noinspection SuspiciousNameCombination
-            aeq(a.toString(), y, yn);
-
-            Interval b;
-            if (range.a.isInfinite() && range.b.isInfinite()) {
-                b = ALL;
-            } else if (range.a.isInfinite()) {
-                b = lessThanOrEqualTo(Rational.ofExact(range.b).get());
-            } else if (range.b.isInfinite()) {
-                b = greaterThanOrEqualTo(Rational.ofExact(range.a).get());
-            } else {
-                b = of(Rational.ofExact(range.a).get(), Rational.ofExact(range.b).get());
-            }
-            assertTrue(a.toString(), b.contains(a));
-        }
-
-        for (Interval a : take(LIMIT, P.finitelyBoundedIntervals())) {
-            Pair<Float, Float> range = a.floatRange();
-            assertTrue(
-                    a.toString(),
-                    le(a.getLower().get(),
-                    Rational.ofExact(FloatingPointUtils.successor(range.a)).get())
-                    );
-            assertTrue(
-                    a.toString(),
-                    ge(a.getUpper().get(), Rational.ofExact(FloatingPointUtils.predecessor(range.b)).get())
-            );
-        }
-    }
-
-    private static void propertiesDoubleRange() {
-        initialize();
-        System.out.println("\t\ttesting doubleRange() properties...");
-
-        for (Interval a : take(LIMIT, P.intervals())) {
-            Pair<Double, Double> range = a.doubleRange();
-            assertTrue(a.toString(), range.a != null);
-            assertTrue(a.toString(), range.b != null);
-            assertFalse(a.toString(), range.a.isNaN());
-            assertFalse(a.toString(), range.b.isNaN());
-            assertTrue(a.toString(), range.b >= range.a);
-            assertFalse(a.toString(), range.a > 0 && range.a.isInfinite());
-            assertFalse(a.toString(), FloatingPointUtils.isNegativeZero(range.a));
-            assertFalse(a.toString(), range.b < 0 && range.b.isInfinite());
-            assertFalse(
-                    a.toString(),
-                    FloatingPointUtils.isNegativeZero(range.b) && FloatingPointUtils.isPositiveZero(range.a)
-            );
-
-            Pair<Double, Double> negRange = a.negate().doubleRange();
-            negRange = new Pair<>(-negRange.b, -negRange.a);
-            double x = FloatingPointUtils.absNegativeZeros(range.a);
-            double y = FloatingPointUtils.absNegativeZeros(range.b);
-            double xn = FloatingPointUtils.absNegativeZeros(negRange.a);
-            double yn = FloatingPointUtils.absNegativeZeros(negRange.b);
-            aeq(a.toString(), x, xn);
-            //noinspection SuspiciousNameCombination
-            aeq(a.toString(), y, yn);
-
-            Interval b;
-            if (range.a.isInfinite() && range.b.isInfinite()) {
-                b = ALL;
-            } else if (range.a.isInfinite()) {
-                b = lessThanOrEqualTo(Rational.ofExact(range.b).get());
-            } else if (range.b.isInfinite()) {
-                b = greaterThanOrEqualTo(Rational.ofExact(range.a).get());
-            } else {
-                b = of(Rational.ofExact(range.a).get(), Rational.ofExact(range.b).get());
-            }
-            assertTrue(a.toString(), b.contains(a));
-        }
-
-        for (Interval a : take(LIMIT, P.finitelyBoundedIntervals())) {
-            Pair<Float, Float> range = a.floatRange();
-            assertTrue(
-                    a.toString(),
-                    le(a.getLower().get(),
-                    Rational.ofExact(FloatingPointUtils.successor(range.a)).get())
-            );
-            assertTrue(
-                    a.toString(),
-                    ge(a.getUpper().get(), Rational.ofExact(FloatingPointUtils.predecessor(range.b)).get())
-            );
-        }
-    }
-
-    private static void propertiesAdd() {
-        initialize();
-        System.out.println("\t\ttesting add(Interval) properties...");
-
+    private void propertiesAdd() {
+        initialize("add(Interval)");
         for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
             Interval sum = p.a.add(p.b);
-            validate(sum);
-            assertEquals(p.toString(), sum, p.b.add(p.a));
-            assertTrue(p.toString(), sum.subtract(p.b).contains(p.a));
-            for (Pair<Rational, Rational> q : take(TINY_LIMIT, P.pairs(P.rationals(p.a), P.rationals(p.b)))) {
-                assertTrue(p.toString(), sum.contains(q.a.add(q.b)));
+            sum.validate();
+            commutative(Interval::add, p);
+            assertTrue(p, sum.subtract(p.b).contains(p.a));
+            for (Pair<Rational, Rational> q : take(TINY_LIMIT, P.pairs(P.rationalsIn(p.a), P.rationalsIn(p.b)))) {
+                assertTrue(p, sum.contains(q.a.add(q.b)));
             }
         }
 
         for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.finitelyBoundedIntervals()))) {
             Interval sum = p.a.add(p.b);
             Rational diameter = sum.diameter().get();
-            assertTrue(p.toString(), ge(diameter, p.a.diameter().get()));
-            assertTrue(p.toString(), ge(diameter, p.b.diameter().get()));
+            assertTrue(p, ge(diameter, p.a.diameter().get()));
+            assertTrue(p, ge(diameter, p.b.diameter().get()));
         }
 
         for (Interval a : take(LIMIT, P.intervals())) {
-            assertEquals(a.toString(), ZERO.add(a), a);
-            assertEquals(a.toString(), a.add(ZERO), a);
-            assertTrue(a.toString(), a.subtract(a).contains(ZERO));
-            assertEquals(a.toString(), ALL.add(a), ALL);
-            assertEquals(a.toString(), a.add(ALL), ALL);
+            fixedPoint(ZERO::add, a);
+            fixedPoint(b -> b.add(ZERO), a);
+            fixedPoint(ALL::add, ALL);
+            fixedPoint(b -> b.add(ALL), ALL);
+            assertTrue(a, a.subtract(a).contains(ZERO));
         }
 
         for (Triple<Interval, Interval, Interval> t : take(LIMIT, P.triples(P.intervals()))) {
-            Interval sum1 = t.a.add(t.b).add(t.c);
-            Interval sum2 = t.a.add(t.b.add(t.c));
-            assertEquals(t.toString(), sum1, sum2);
+            associative(Interval::add, t);
         }
 
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
-            assertEquals(p.toString(), of(p.a).add(of(p.b)), of(p.a.add(p.b)));
+            homomorphic(Interval::of, Interval::of, Interval::of, Rational::add, Interval::add, p);
         }
     }
 
-    private static void propertiesNegate() {
-        initialize();
-        System.out.println("\t\ttesting negate() properties...");
-
+    private void propertiesNegate() {
+        initialize("negate()");
         for (Interval a : take(LIMIT, P.intervals())) {
-            Interval negativeA = a.negate();
-            validate(negativeA);
-            assertEquals(a.toString(), a, negativeA.negate());
-            assertTrue(a.toString(), a.add(negativeA).contains(ZERO));
-            assertEquals(a.toString(), a.diameter(), negativeA.diameter());
-            for (Rational r : take(TINY_LIMIT, P.rationals(a))) {
-                assertTrue(a.toString(), negativeA.contains(r.negate()));
+            Interval negative = a.negate();
+            negative.validate();
+            involution(Interval::negate, a);
+            assertTrue(a, a.add(negative).contains(ZERO));
+            assertEquals(a, a.diameter(), negative.diameter());
+            for (Rational r : take(TINY_LIMIT, P.rationalsIn(a))) {
+                assertTrue(a, negative.contains(r.negate()));
             }
         }
 
         for (Rational r : take(LIMIT, P.rationals())) {
-            assertEquals(r.toString(), of(r).negate(), of(r.negate()));
+            homomorphic(Interval::of, Interval::of, Rational::negate, Interval::negate, r);
         }
     }
 
-    private static void propertiesAbs() {
-        initialize();
-        System.out.println("\t\ttesting abs() properties...");
-
+    private void propertiesAbs() {
+        initialize("abs()");
+        Interval nonPositive = lessThanOrEqualTo(Rational.ZERO);
         for (Interval a : take(LIMIT, P.intervals())) {
-            Interval absA = a.abs();
-            validate(absA);
-            assertEquals(a.toString(), absA, absA.abs());
-            Optional<Interval> negativeIntersection = absA.intersection(lessThanOrEqualTo(Rational.ZERO));
-            assertTrue(a.toString(), !negativeIntersection.isPresent() || negativeIntersection.get().equals(ZERO));
-            for (Rational r : take(TINY_LIMIT, P.rationals(a))) {
-                assertTrue(a.toString(), absA.contains(r.abs()));
+            Interval abs = a.abs();
+            abs.validate();
+            idempotent(Interval::abs, a);
+            Optional<Interval> nonPositiveIntersection = abs.intersection(nonPositive);
+            assertTrue(a, !nonPositiveIntersection.isPresent() || nonPositiveIntersection.get().equals(ZERO));
+            for (Rational r : take(TINY_LIMIT, P.rationalsIn(a))) {
+                assertTrue(a, abs.contains(r.abs()));
             }
         }
 
         for (Interval a : take(LIMIT, P.finitelyBoundedIntervals())) {
             Rational diameter = a.diameter().get();
             Rational absDiameter = a.abs().diameter().get();
-            assertTrue(a.toString(), le(absDiameter, diameter));
+            assertTrue(a, le(absDiameter, diameter));
         }
 
         for (Rational r : take(LIMIT, P.rationals())) {
-            assertEquals(r.toString(), of(r).abs(), of(r.abs()));
+            homomorphic(Interval::of, Interval::of, Rational::abs, Interval::abs, r);
         }
     }
 
-    private static void propertiesSignum() {
-        initialize();
-        System.out.println("\t\ttesting signum() properties...");
-
+    private void propertiesSignum() {
+        initialize("signum()");
         for (Interval a : take(LIMIT, P.intervals())) {
-            Optional<Integer> signumA = a.signum();
-            assertEquals(a.toString(), signumA, a.elementCompare(ZERO).map(Ordering::toInt));
-            if (signumA.isPresent()) {
-                Integer s = signumA.get();
-                assertTrue(a.toString(), s == -1 || s == 0 || s == 1);
-                for (Rational r : take(TINY_LIMIT, P.rationals(a))) {
-                    assertTrue(a.toString(), r.signum() == s);
+            Optional<Integer> signum = a.signum();
+            assertEquals(a, signum, a.elementCompare(ZERO).map(Ordering::toInt));
+            if (signum.isPresent()) {
+                int s = signum.get();
+                assertTrue(a, s == -1 || s == 0 || s == 1);
+                for (Rational r : take(TINY_LIMIT, P.rationalsIn(a))) {
+                    assertTrue(a, r.signum() == s);
                 }
             } else {
-                assertTrue(a.toString(), !a.equals(ZERO));
-                assertTrue(a.toString(), a.contains(ZERO));
+                assertTrue(a, !a.equals(ZERO));
+                assertTrue(a, a.contains(ZERO));
             }
+        }
+
+        for (Rational r : take(LIMIT, P.rationals())) {
+            homomorphic(Interval::of, Optional::of, Rational::signum, Interval::signum, r);
         }
     }
 
-    private static void propertiesSubtract() {
-        initialize();
-        System.out.println("\t\ttesting subtract(Interval) properties...");
+    private static @NotNull Interval subtract_simplest(@NotNull Interval a, @NotNull Interval b) {
+        return a.add(b.negate());
+    }
 
+    private void propertiesSubtract() {
+        initialize("subtract(Interval)");
         for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
             Interval difference = p.a.subtract(p.b);
-            validate(difference);
-            assertEquals(p.toString(), difference, p.b.subtract(p.a).negate());
-            assertTrue(p.toString(), difference.add(p.b).contains(p.a));
-            for (Pair<Rational, Rational> q : take(TINY_LIMIT, P.pairs(P.rationals(p.a), P.rationals(p.b)))) {
-                assertTrue(p.toString(), difference.contains(q.a.subtract(q.b)));
+            difference.validate();
+            assertEquals(p, subtract_simplest(p.a, p.b), difference);
+            antiCommutative(Interval::subtract, Interval::negate, p);
+            assertTrue(p, difference.add(p.b).contains(p.a));
+            for (Pair<Rational, Rational> q : take(TINY_LIMIT, P.pairs(P.rationalsIn(p.a), P.rationalsIn(p.b)))) {
+                assertTrue(p, difference.contains(q.a.subtract(q.b)));
             }
         }
 
         for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.finitelyBoundedIntervals()))) {
             Interval difference = p.a.subtract(p.b);
             Rational diameter = difference.diameter().get();
-            assertTrue(p.toString(), ge(diameter, p.a.diameter().get()));
-            assertTrue(p.toString(), ge(diameter, p.b.diameter().get()));
+            assertTrue(p, ge(diameter, p.a.diameter().get()));
+            assertTrue(p, ge(diameter, p.b.diameter().get()));
         }
 
         for (Interval a : take(LIMIT, P.intervals())) {
-            assertEquals(a.toString(), ZERO.subtract(a), a.negate());
-            assertEquals(a.toString(), a.subtract(ZERO), a);
-            assertTrue(a.toString(), a.subtract(a).contains(ZERO));
-            assertEquals(a.toString(), ALL.subtract(a), ALL);
-            assertEquals(a.toString(), a.subtract(ALL), ALL);
+            assertEquals(a, ZERO.subtract(a), a.negate());
+            assertTrue(a, a.subtract(a).contains(ZERO));
+            fixedPoint(b -> b.subtract(ZERO), a);
+            fixedPoint(b -> b.subtract(a), ALL);
+            fixedPoint(a::subtract, ALL);
         }
 
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
-            assertEquals(p.toString(), of(p.a).subtract(of(p.b)), of(p.a.subtract(p.b)));
+            homomorphic(Interval::of, Interval::of, Interval::of, Rational::subtract, Interval::subtract, p);
         }
     }
 
-    private static void propertiesMultiply_Interval() {
-        initialize();
-        System.out.println("\t\ttesting multiply(Interval) properties...");
+    private void compareImplementationsSubtract() {
+        Map<String, Function<Pair<Interval, Interval>, Interval>> functions = new LinkedHashMap<>();
+        functions.put("simplest", p -> subtract_simplest(p.a, p.b));
+        functions.put("standard", p -> p.a.subtract(p.b));
+        compareImplementations("subtract(Interval)", take(LIMIT, P.pairs(P.intervals())), functions);
+    }
 
+    private void propertiesMultiply_Interval() {
+        initialize("multiply(Interval)");
         for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
             Interval product = p.a.multiply(p.b);
-            validate(product);
-            assertEquals(p.toString(), product, p.b.multiply(p.a));
-            for (Pair<Rational, Rational> q : take(TINY_LIMIT, P.pairs(P.rationals(p.a), P.rationals(p.b)))) {
-                assertTrue(p.toString(), product.contains(q.a.multiply(q.b)));
+            product.validate();
+            commutative(Interval::multiply, p);
+            for (Pair<Rational, Rational> q : take(TINY_LIMIT, P.pairs(P.rationalsIn(p.a), P.rationalsIn(p.b)))) {
+                assertTrue(p, product.contains(q.a.multiply(q.b)));
             }
         }
 
-        Iterable<Pair<Interval, Interval>> ps = P.pairs(P.intervals(), filter(a -> !a.equals(ZERO), P.intervals()));
+        Iterable<Pair<Interval, Interval>> ps = P.pairs(
+                P.intervals(),
+                filterInfinite(a -> !a.equals(ZERO), P.intervals())
+        );
         for (Pair<Interval, Interval> p : take(LIMIT, ps)) {
             Interval product = p.a.multiply(p.b);
             List<Interval> quotient = product.divide(p.b);
-            assertTrue(p.toString(), any(a -> a.contains(p.a), quotient));
-            quotient = makeDisjoint(toList(concatMap(p.a::divide, p.b.invert())));
-            assertTrue(p.toString(), quotient.contains(product));
+            assertTrue(p, any(a -> a.contains(p.a), quotient));
+            quotient = union(toList(concatMap(p.a::divide, p.b.invert())));
+            assertTrue(p, quotient.contains(product));
         }
 
         for (Interval a : take(LIMIT, P.intervals())) {
-            assertEquals(a.toString(), ONE.multiply(a), a);
-            assertEquals(a.toString(), a.multiply(ONE), a);
-            assertTrue(a.toString(), ZERO.multiply(a).equals(ZERO));
-            assertTrue(a.toString(), a.multiply(ZERO).equals(ZERO));
+            fixedPoint(b -> b.multiply(ONE), a);
+            fixedPoint(ONE::multiply, a);
+            fixedPoint(a::multiply, ZERO);
+            fixedPoint(b -> b.multiply(a), ZERO);
         }
 
-        for (Interval a : take(LIMIT, filter(b -> !b.equals(ZERO), P.intervals()))) {
-            assertEquals(a.toString(), ALL.multiply(a), ALL);
-            assertEquals(a.toString(), a.multiply(ALL), ALL);
+        for (Interval a : take(LIMIT, filterInfinite(b -> !b.equals(ZERO), P.intervals()))) {
+            fixedPoint(b -> b.multiply(a), ALL);
+            fixedPoint(a::multiply, ALL);
             List<Interval> inverse = a.invert();
-            List<Interval> back = makeDisjoint(toList(map(a::multiply, inverse)));
-            assertTrue(a.toString(), any(b -> b.contains(ONE), back));
+            List<Interval> back = union(toList(map(a::multiply, inverse)));
+            assertTrue(a, any(b -> b.contains(ONE), back));
         }
 
         for (Triple<Interval, Interval, Interval> t : take(LIMIT, P.triples(P.intervals()))) {
-            Interval product1 = t.a.multiply(t.b).multiply(t.c);
-            Interval product2 = t.a.multiply(t.b.multiply(t.c));
-            assertEquals(t.toString(), product1, product2);
-            Interval expression1 = t.a.add(t.b).multiply(t.c);
-            Interval expression2 = t.a.multiply(t.c).add(t.b.multiply(t.c));
-            assertTrue(t.toString(), expression2.contains(expression1));
+            associative(Interval::multiply, t);
+            Interval expression1 = t.a.multiply(t.b.add(t.c));
+            Interval expression2 = t.a.multiply(t.b).add(t.a.multiply(t.c));
+            assertTrue(t, expression2.contains(expression1));
+            Interval expression3 = t.a.add(t.b).multiply(t.c);
+            Interval expression4 = t.a.multiply(t.c).add(t.b.multiply(t.c));
+            assertTrue(t, expression4.contains(expression3));
         }
 
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
-            assertEquals(p.toString(), of(p.a).multiply(of(p.b)), of(p.a.multiply(p.b)));
+            homomorphic(Interval::of, Interval::of, Interval::of, Rational::multiply, Interval::multiply, p);
         }
     }
 
-    private static void propertiesMultiply_Rational() {
-        initialize();
-        System.out.println("\t\ttesting multiply(Rational) properties...");
-
+    private void propertiesMultiply_Rational() {
+        initialize("multiply(Rational)");
         for (Pair<Interval, Rational> p : take(LIMIT, P.pairs(P.intervals(), P.rationals()))) {
             Interval a = p.a.multiply(p.b);
-            validate(a);
-            assertEquals(p.toString(), a, p.a.multiply(of(p.b)));
-            for (Rational r : take(TINY_LIMIT, P.rationals(p.a))) {
-                assertTrue(p.toString(), a.contains(r.multiply(p.b)));
+            a.validate();
+            assertEquals(p, a, p.a.multiply(of(p.b)));
+            for (Rational r : take(TINY_LIMIT, P.rationalsIn(p.a))) {
+                assertTrue(p, a.contains(r.multiply(p.b)));
             }
         }
 
-        Iterable<Pair<Interval, Rational>> ps = P.pairs(P.intervals(), filter(r -> r != Rational.ZERO, P.rationals()));
+        Iterable<Pair<Interval, Rational>> ps = P.pairs(P.intervals(), P.nonzeroRationals());
         for (Pair<Interval, Rational> p : take(LIMIT, ps)) {
-            assertEquals(p.toString(), p.a.multiply(p.b).divide(p.b), p.a);
-            assertEquals(p.toString(), p.a.multiply(p.b), p.a.divide(p.b.invert()));
+            inverse(a -> a.multiply(p.b), (Interval a) -> a.divide(p.b), p.a);
+            assertEquals(p, p.a.multiply(p.b), p.a.divide(p.b.invert()));
         }
 
         for (Interval a : take(LIMIT, P.intervals())) {
-            assertEquals(a.toString(), a, a.multiply(Rational.ONE));
-            assertEquals(a.toString(), a.multiply(Rational.ZERO), ZERO);
+            fixedPoint(b -> b.multiply(Rational.ONE), a);
+            assertEquals(a, a.multiply(Rational.ZERO), ZERO);
         }
 
         for (Rational r : take(LIMIT, P.rationals())) {
-            assertEquals(r.toString(), ZERO.multiply(r), ZERO);
-            assertEquals(r.toString(), ONE.multiply(r), of(r));
+            fixedPoint(a -> a.multiply(r), ZERO);
+            assertEquals(r, ONE.multiply(r), of(r));
         }
 
-        for (Rational r : take(LIMIT, filter(s -> s != Rational.ZERO, P.rationals()))) {
-            assertEquals(r.toString(), ALL.multiply(r), ALL);
+        for (Rational r : take(LIMIT, P.nonzeroRationals())) {
+            fixedPoint(a -> a.multiply(r), ALL);
+        }
+
+        for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
+            homomorphic(Interval::of, Function.identity(), Interval::of, Rational::multiply, Interval::multiply, p);
         }
     }
 
-    private static void propertiesMultiply_BigInteger() {
-        initialize();
-        System.out.println("\t\ttesting multiply(BigInteger) properties...");
-
+    private void propertiesMultiply_BigInteger() {
+        initialize("multiply(BigInteger)");
         for (Pair<Interval, BigInteger> p : take(LIMIT, P.pairs(P.intervals(), P.bigIntegers()))) {
             Interval a = p.a.multiply(p.b);
-            validate(a);
-            assertEquals(p.toString(), a, p.a.multiply(Rational.of(p.b)));
-            for (Rational r : take(TINY_LIMIT, P.rationals(p.a))) {
-                assertTrue(p.toString(), a.contains(r.multiply(p.b)));
+            a.validate();
+            assertEquals(p, a, p.a.multiply(Rational.of(p.b)));
+            for (Rational r : take(TINY_LIMIT, P.rationalsIn(p.a))) {
+                assertTrue(p, a.contains(r.multiply(p.b)));
             }
         }
 
-        Iterable<Pair<Interval, BigInteger>> ps = P.pairs(
-                P.intervals(),
-                filter(i -> !i.equals(BigInteger.ZERO), P.bigIntegers())
-        );
-        for (Pair<Interval, BigInteger> p : take(LIMIT, ps)) {
-            assertEquals(p.toString(), p.a.multiply(p.b).divide(p.b), p.a);
+        for (Pair<Interval, BigInteger> p : take(LIMIT, P.pairs(P.intervals(), P.nonzeroBigIntegers()))) {
+            inverse(a -> a.multiply(p.b), (Interval a) -> a.divide(p.b), p.a);
         }
 
         for (Interval a : take(LIMIT, P.intervals())) {
-            assertEquals(a.toString(), a, a.multiply(BigInteger.ONE));
-            assertEquals(a.toString(), a.multiply(BigInteger.ZERO), ZERO);
+            fixedPoint(b -> b.multiply(BigInteger.ONE), a);
+            assertEquals(a, a.multiply(BigInteger.ZERO), ZERO);
         }
 
         for (BigInteger i : take(LIMIT, P.bigIntegers())) {
-            assertEquals(i.toString(), ZERO.multiply(i), ZERO);
+            fixedPoint(a -> a.multiply(i), ZERO);
             assertEquals(i.toString(), ONE.multiply(i), of(Rational.of(i)));
         }
 
-        for (BigInteger i : take(LIMIT, filter(j -> !j.equals(BigInteger.ZERO), P.bigIntegers()))) {
-            assertEquals(i.toString(), ALL.multiply(i), ALL);
+        for (BigInteger i : take(LIMIT, P.nonzeroBigIntegers())) {
+            fixedPoint(a -> a.multiply(i), ALL);
+        }
+
+        for (Pair<Rational, BigInteger> p : take(LIMIT, P.pairs(P.rationals(), P.bigIntegers()))) {
+            homomorphic(Interval::of, Function.identity(), Interval::of, Rational::multiply, Interval::multiply, p);
         }
     }
 
-    private static void propertiesMultiply_int() {
-        initialize();
-        System.out.println("\t\ttesting multiply(int) properties...");
-
+    private void propertiesMultiply_int() {
+        initialize("multiply(int)");
         for (Pair<Interval, Integer> p : take(LIMIT, P.pairs(P.intervals(), P.integers()))) {
             Interval a = p.a.multiply(p.b);
-            validate(a);
-            assertEquals(p.toString(), a, p.a.multiply(Rational.of(p.b)));
-            for (Rational r : take(TINY_LIMIT, P.rationals(p.a))) {
-                assertTrue(p.toString(), a.contains(r.multiply(p.b)));
+            a.validate();
+            assertEquals(p, a, p.a.multiply(Rational.of(p.b)));
+            for (Rational r : take(TINY_LIMIT, P.rationalsIn(p.a))) {
+                assertTrue(p, a.contains(r.multiply(p.b)));
             }
         }
 
-        Iterable<Pair<Interval, Integer>> ps = P.pairs(P.intervals(), filter(i -> i != 0, P.integers()));
-        for (Pair<Interval, Integer> p : take(LIMIT, ps)) {
-            assertEquals(p.toString(), p.a.multiply(p.b).divide(p.b), p.a);
+        for (Pair<Interval, Integer> p : take(LIMIT, P.pairs(P.intervals(), P.nonzeroIntegers()))) {
+            inverse(a -> a.multiply(p.b), (Interval a) -> a.divide(p.b), p.a);
         }
 
         for (Interval a : take(LIMIT, P.intervals())) {
-            assertEquals(a.toString(), a, a.multiply(1));
-            assertEquals(a.toString(), a.multiply(0), ZERO);
+            fixedPoint(b -> b.multiply(1), a);
+            assertEquals(a, a.multiply(0), ZERO);
         }
 
         for (int i : take(LIMIT, P.integers())) {
-            assertEquals(Integer.toString(i), ZERO.multiply(i), ZERO);
-            assertEquals(Integer.toString(i), ONE.multiply(i), of(Rational.of(i)));
+            fixedPoint(a -> a.multiply(i), ZERO);
+            assertEquals(i, ONE.multiply(i), of(Rational.of(i)));
         }
 
-        for (int i : take(LIMIT, filter(j -> j != 0, P.integers()))) {
-            assertEquals(Integer.toString(i), ALL.multiply(i), ALL);
+        for (int i : take(LIMIT, P.nonzeroIntegers())) {
+            fixedPoint(a -> a.multiply(i), ALL);
+        }
+
+        for (Pair<Rational, Integer> p : take(LIMIT, P.pairs(P.rationals(), P.integers()))) {
+            homomorphic(Interval::of, Function.identity(), Interval::of, Rational::multiply, Interval::multiply, p);
         }
     }
 
-    private static void propertiesInvert() {
-        initialize();
-        System.out.println("\t\ttesting invert() properties...");
-
+    private void propertiesInvert() {
+        initialize("invert()");
         for (Interval a : take(LIMIT, P.intervals())) {
             List<Interval> inverse = a.invert();
-            inverse.forEach(mho.qbar.objects.IntervalProperties::validate);
-
-            //todo fix hanging
-//            for (Rational r : take(TINY_LIMIT, filter(s -> s != Rational.ZERO, P.rationals(a)))) {
-//                assertTrue(a.toString(), any(b -> b.contains(r.invert()), inverse));
-//            }
-
+            inverse.forEach(Interval::validate);
             int size = inverse.size();
-            assertTrue(a.toString(), size == 0 || size == 1 || size == 2);
+            assertTrue(a, size >= 0 && size <= 2);
             if (size == 1) {
-                Interval i1 = inverse.get(0);
-                Rational p = i1.getLower().isPresent() ? i1.getLower().get() : null;
-                Rational q = i1.getUpper().isPresent() ? i1.getUpper().get() : null;
-                if (p == null && q != null) {
-                    assertTrue(a.toString(), le(q, Rational.ZERO));
-                } else if (p != null && q == null) {
-                    assertTrue(a.toString(), ge(p, Rational.ZERO));
-                } else if (i1.isFinitelyBounded()) {
-                    if (p.equals(q)) {
-                        assertNotEquals(a.toString(), p, Rational.ZERO);
+                Interval i = inverse.get(0);
+                Optional<Rational> x = i.getLower();
+                Optional<Rational> y = i.getUpper();
+                if (x.isPresent() && y.isPresent()) {
+                    if (x.get().equals(y.get())) {
+                        assertNotEquals(a, x.get(), Rational.ZERO);
                     } else {
-                        int ps = p.signum();
-                        int qs = q.signum();
+                        int ps = x.get().signum();
+                        int qs = y.get().signum();
                         if (qs == 1) {
-                            assertTrue(a.toString(), ps != -1);
+                            assertTrue(a, ps != -1);
                         }
                         if (ps == -1) {
-                            assertTrue(a.toString(), qs != 1);
+                            assertTrue(a, qs != 1);
                         }
                     }
+                } else if (y.isPresent()) {
+                    assertTrue(a, le(y.get(), Rational.ZERO));
+                } else if (x.isPresent()) {
+                    assertTrue(a, ge(x.get(), Rational.ZERO));
                 }
             } else if (size == 2) {
-                Interval i1 = inverse.get(0);
-                Interval i2 = inverse.get(1);
-                Rational p1 = i1.getLower().isPresent() ? i1.getLower().get() : null;
-                Rational q1 = i1.getUpper().isPresent() ? i1.getUpper().get() : null;
-                Rational p2 = i2.getLower().isPresent() ? i2.getLower().get() : null;
-                Rational q2 = i2.getUpper().isPresent() ? i2.getUpper().get() : null;
-                assertTrue(a.toString(), p1 == null);
-                assertTrue(a.toString(), q2 == null);
-                if (p2 == Rational.ZERO) {
-                    assertTrue(a.toString(), q1.signum() == -1);
-                } else if (q1 == Rational.ZERO) {
-                    assertTrue(a.toString(), p2.signum() == 1);
+                Interval i = inverse.get(0);
+                Interval j = inverse.get(1);
+                Optional<Rational> ix = i.getLower();
+                Optional<Rational> iy = i.getUpper();
+                Optional<Rational> jx = j.getLower();
+                Optional<Rational> jy = j.getUpper();
+                assertFalse(a, ix.isPresent());
+                assertTrue(a, iy.isPresent());
+                assertTrue(a, jx.isPresent());
+                assertFalse(a, jy.isPresent());
+                if (jx.get() == Rational.ZERO) {
+                    assertTrue(a, iy.get().signum() == -1);
+                } else if (iy.get() == Rational.ZERO) {
+                    assertTrue(a, jx.get().signum() == 1);
                 } else {
-                    assertTrue(a.toString(), q1.signum() == -1);
-                    assertTrue(a.toString(), p2.signum() == 1);
+                    assertTrue(a, iy.get().signum() == -1);
+                    assertTrue(a, jx.get().signum() == 1);
                 }
             }
         }
 
-        for (Interval a : take(LIMIT, filter(b -> !b.equals(ZERO), P.intervals()))) {
+        Iterable<Interval> as = filterInfinite(a -> !a.diameter().equals(Optional.of(Rational.ZERO)), P.intervals());
+        for (Interval a : take(LIMIT, as)) {
             List<Interval> inverse = a.invert();
-            List<Interval> back = makeDisjoint(toList(concatMap(Interval::invert, inverse)));
-            assertTrue(a.toString(), convexHull(back).contains(a));
-            assertTrue(a.toString(), convexHull(toList(map(a::multiply, inverse))).contains(ONE));
+            for (Rational r : take(TINY_LIMIT, filterInfinite(s -> s != Rational.ZERO, P.rationalsIn(a)))) {
+                assertTrue(a, any(b -> b.contains(r.invert()), inverse));
+            }
         }
     }
 
-    private static void propertiesInvertHull() {
-        initialize();
-        System.out.println("\t\ttesting invertHull() properties...");
+    private static @NotNull Interval invertHull_simplest(@NotNull Interval a) {
+        List<Interval> inverse = a.invert();
+        switch (inverse.size()) {
+            case 0:
+                throw new ArithmeticException("division by zero");
+            case 1:
+                return inverse.get(0);
+            default:
+                return ALL;
+        }
+    }
 
-        for (Interval a : take(LIMIT, filter(b -> !b.equals(ZERO), P.intervals()))) {
+    private void propertiesInvertHull() {
+        initialize("invertHull()");
+        for (Interval a : take(LIMIT, filterInfinite(b -> !b.equals(ZERO), P.intervals()))) {
             Interval inverse = a.invertHull();
-            validate(inverse);
-
-            for (Rational r : take(TINY_LIMIT, filter(s -> s != Rational.ZERO, P.rationals(a)))) {
-                assertTrue(a.toString(), inverse.contains(r.invert()));
-            }
-
-            Rational p = inverse.getLower().isPresent() ? inverse.getLower().get() : null;
-            Rational q = inverse.getUpper().isPresent() ? inverse.getUpper().get() : null;
-            if (p == null && q != null) {
-                assertTrue(a.toString(), le(q, Rational.ZERO));
-            } else if (p != null && q == null) {
-                assertTrue(a.toString(), ge(p, Rational.ZERO));
-            } else if (inverse.isFinitelyBounded()) {
-                if (p.equals(q)) {
-                    assertNotEquals(a.toString(), p, ZERO);
+            inverse.validate();
+            assertEquals(a, invertHull_simplest(a), inverse);
+            Optional<Rational> x = inverse.getLower();
+            Optional<Rational> y = inverse.getUpper();
+            if (x.isPresent() && y.isPresent()) {
+                if (x.equals(y)) {
+                    assertNotEquals(a, x.get(), ZERO);
                 } else {
-                    int ps = p.signum();
-                    int qs = q.signum();
+                    int ps = x.get().signum();
+                    int qs = y.get().signum();
                     if (qs == 1) {
-                        assertTrue(a.toString(), ps != -1);
+                        assertTrue(a, ps != -1);
                     }
                     if (ps == -1) {
-                        assertTrue(a.toString(), qs != 1);
+                        assertTrue(a, qs != 1);
                     }
                 }
+            } else if (y.isPresent()) {
+                assertTrue(a, le(y.get(), Rational.ZERO));
+            } else if (x.isPresent()) {
+                assertTrue(a, ge(x.get(), Rational.ZERO));
             }
-
-            assertTrue(a.toString(), all(inverse::contains, a.invert()));
+            assertTrue(a, all(inverse::contains, a.invert()));
             Interval back = inverse.invertHull();
-            assertTrue(a.toString(), back.contains(a));
-            assertTrue(a.toString(), a.multiply(inverse).contains(ONE));
+            assertTrue(a, back.contains(a));
+            assertTrue(a, a.multiply(inverse).contains(ONE));
+            for (Rational r : take(TINY_LIMIT, filter(s -> s != Rational.ZERO, P.rationalsIn(a)))) {
+                assertTrue(a, inverse.contains(r.invert()));
+            }
+        }
+
+        for (Rational r : take(LIMIT, P.nonzeroRationals())) {
+            homomorphic(Interval::of, Interval::of, Rational::invert, Interval::invertHull, r);
         }
     }
 
-    private static void propertiesDivide_Interval() {
-        initialize();
-        System.out.println("\t\ttesting divide(Interval) properties...");
+    private void compareImplementationsInvertHull() {
+        Map<String, Function<Interval, Interval>> functions = new LinkedHashMap<>();
+        functions.put("simplest", IntervalProperties::invertHull_simplest);
+        functions.put("standard", Interval::invertHull);
+        Iterable<Interval> as = filterInfinite(a -> !a.equals(ZERO), P.intervals());
+        compareImplementations("invertHull()", take(LIMIT, as), functions);
+    }
 
+    private void propertiesDivide_Interval() {
+        initialize("divide(Interval)");
         for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
             List<Interval> quotient = p.a.divide(p.b);
-            quotient.forEach(mho.qbar.objects.IntervalProperties::validate);
-
-            //todo fix hanging
-//            Iterable<Pair<Rational, Rational>> qs = P.pairs(
-//                    P.rationals(p.a),
-//                    filter(r -> r != Rational.ZERO, P.rationals(p.b))
-//            );
-//            for (Pair<Rational, Rational> q : take(TINY_LIMIT, qs)) {
-//                assertTrue(p.toString(), any(b -> b.contains(q.a.divide(q.b)), quotient));
-//            }
-
+            quotient.forEach(Interval::validate);
             int size = quotient.size();
-            assertTrue(p.toString(), size == 0 || size == 1 || size == 2);
+            assertTrue(p, size >= 0 && size <= 2);
             if (size == 2) {
-                Interval i1 = quotient.get(0);
-                Interval i2 = quotient.get(1);
-                Rational p1 = i1.getLower().isPresent() ? i1.getLower().get() : null;
-                Rational q1 = i1.getUpper().isPresent() ? i1.getUpper().get() : null;
-                Rational p2 = i2.getLower().isPresent() ? i2.getLower().get() : null;
-                Rational q2 = i2.getUpper().isPresent() ? i2.getUpper().get() : null;
-                assertTrue(p.toString(), p1 == null);
-                assertTrue(p.toString(), q2 == null);
-                if (p2 == Rational.ZERO) {
-                    assertTrue(p.toString(), q1.signum() == -1);
-                } else if (q1 == Rational.ZERO) {
-                    assertTrue(p.toString(), p2.signum() == 1);
+                Interval i = quotient.get(0);
+                Interval j = quotient.get(1);
+                Optional<Rational> ix = i.getLower();
+                Optional<Rational> iy = i.getUpper();
+                Optional<Rational> jx = j.getLower();
+                Optional<Rational> jy = j.getUpper();
+                assertFalse(p, ix.isPresent());
+                assertTrue(p, iy.isPresent());
+                assertTrue(p, jx.isPresent());
+                assertFalse(p, jy.isPresent());
+                if (jx.get() == Rational.ZERO) {
+                    assertTrue(p, iy.get().signum() == -1);
+                } else if (iy.get() == Rational.ZERO) {
+                    assertTrue(p, jx.get().signum() == 1);
                 } else {
-                    assertTrue(p.toString(), q1.signum() == -1);
-                    assertTrue(p.toString(), p2.signum() == 1);
+                    assertTrue(p, iy.get().signum() == -1);
+                    assertTrue(p, jx.get().signum() == 1);
                 }
+            }
+            Iterable<Pair<Rational, Rational>> ps = P.pairs(
+                    P.rationalsIn(p.a),
+                    filter(r -> r != Rational.ZERO, P.rationalsIn(p.b))
+            );
+            for (Pair<Rational, Rational> q : take(TINY_LIMIT, ps)) {
+                assertTrue(p, any(b -> b.contains(q.a.divide(q.b)), quotient));
             }
         }
 
-        Iterable<Pair<Interval, Interval>> ps = P.pairs(P.intervals(), filter(a -> !a.equals(ZERO), P.intervals()));
-        for (Pair<Interval, Interval> p : take(LIMIT, ps)) {
-            List<Interval> quotient = p.a.divide(p.b);
-
-            assertTrue(p.toString(), convexHull(toList(map(a -> a.multiply(p.b), quotient))).contains(p.a));
-            assertTrue(
-                    p.toString(),
-                    convexHull(toList(map(p.a::multiply, p.b.invert()))).contains(convexHull(quotient))
-            );
-        }
-
-        for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(filter(a -> !a.equals(ZERO), P.intervals())))) {
-            assertTrue(
-                    p.toString(),
-                    convexHull(toList(concatMap(Interval::invert, p.b.divide(p.a))))
-                            .contains(convexHull(p.a.divide(p.b)))
-            );
-        }
-
         for (Interval a : take(LIMIT, P.intervals())) {
-            assertTrue(a.toString(), any(b -> b.contains(a), a.divide(ONE)));
+            fixedPoint(b -> b.divide(ONE).get(0), a);
         }
 
         for (Interval a : take(LIMIT, filter(b -> !b.equals(ZERO), P.intervals()))) {
-            assertEquals(a.toString(), ONE.divide(a), a.invert());
-            assertTrue(a.toString(), any(b -> b.contains(ONE), a.divide(a)));
+            assertEquals(a, ONE.divide(a), a.invert());
+            assertTrue(a, any(b -> b.contains(ONE), a.divide(a)));
         }
     }
 
-    private static void propertiesDivideHull() {
-        initialize();
-        System.out.println("\t\ttesting divideHull(Interval) properties...");
+    private static @NotNull Interval divideHull_alt(@NotNull Interval a, @NotNull Interval b) {
+        List<Interval> quotient = a.divide(b);
+        switch (quotient.size()) {
+            case 0:
+                throw new ArithmeticException("division by zero");
+            case 1:
+                return quotient.get(0);
+            default:
+                return ALL;
+        }
+    }
 
-        Iterable<Pair<Interval, Interval>> ps = P.pairs(P.intervals(), filter(a -> !a.equals(ZERO), P.intervals()));
+    private void propertiesDivideHull() {
+        initialize("divideHull(Interval)");
+        Iterable<Pair<Interval, Interval>> ps = P.pairs(
+                P.intervals(),
+                filterInfinite(a -> !a.equals(ZERO), P.intervals())
+        );
         for (Pair<Interval, Interval> p : take(LIMIT, ps)) {
             Interval quotient = p.a.divideHull(p.b);
-            validate(quotient);
-
+            quotient.validate();
+            assertEquals(p, divideHull_alt(p.a, p.b), quotient);
+            assertTrue(p, quotient.multiply(p.b).contains(p.a));
             Iterable<Pair<Rational, Rational>> qs = P.pairs(
-                    P.rationals(p.a),
-                    filter(r -> r != Rational.ZERO, P.rationals(p.b))
+                    P.rationalsIn(p.a),
+                    filter(r -> r != Rational.ZERO, P.rationalsIn(p.b))
             );
             for (Pair<Rational, Rational> q : take(TINY_LIMIT, qs)) {
-                assertTrue(p.toString(), quotient.contains(q.a.divide(q.b)));
+                assertTrue(p, quotient.contains(q.a.divide(q.b)));
             }
-
-            assertTrue(p.toString(), quotient.multiply(p.b).contains(p.a));
-            assertTrue(p.toString(), p.a.multiply(p.b.invertHull()).contains(quotient));
         }
 
-        for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(filter(a -> !a.equals(ZERO), P.intervals())))) {
-            assertTrue(p.toString(), p.b.divideHull(p.a).invertHull().contains(p.a.divideHull(p.b)));
+        for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(filterInfinite(a -> !a.equals(ZERO), P.intervals())))) {
+            assertTrue(p, p.b.divideHull(p.a).invertHull().contains(p.a.divideHull(p.b)));
         }
 
         for (Interval a : take(LIMIT, P.intervals())) {
-            assertTrue(a.toString(), a.divideHull(ONE).contains(a));
+            fixedPoint(b -> b.divideHull(ONE), a);
         }
 
-        for (Interval a : take(LIMIT, filter(b -> !b.equals(ZERO), P.intervals()))) {
-            assertEquals(a.toString(), ONE.divideHull(a), a.invertHull());
-            assertTrue(a.toString(), a.divideHull(a).contains(ONE));
+        for (Interval a : take(LIMIT, filterInfinite(b -> !b.equals(ZERO), P.intervals()))) {
+            assertEquals(a, ONE.divideHull(a), a.invertHull());
+            assertTrue(a, a.divideHull(a).contains(ONE));
+        }
+
+        for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals(), P.nonzeroRationals()))) {
+            homomorphic(Interval::of, Interval::of, Interval::of, Rational::divide, Interval::divideHull, p);
         }
 
         for (Interval a : take(LIMIT, P.intervals())) {
             try {
                 a.divideHull(ZERO);
-                fail(a.toString());
+                fail(a);
             } catch (ArithmeticException ignored) {}
         }
     }
 
-    private static void propertiesDivide_Rational() {
-        initialize();
-        System.out.println("\t\ttesting divide(Rational) properties...");
+    private void compareImplementationsDivideHull() {
+        Map<String, Function<Pair<Interval, Interval>, Interval>> functions = new LinkedHashMap<>();
+        functions.put("alt", p -> divideHull_alt(p.a, p.b));
+        functions.put("standard", p -> p.a.divideHull(p.b));
+        Iterable<Pair<Interval, Interval>> ps = P.pairs(
+                P.intervals(),
+                filterInfinite(a -> !a.equals(ZERO), P.intervals())
+        );
+        compareImplementations("divideHull(Interval)", take(LIMIT, ps), functions);
+    }
 
-        Iterable<Pair<Interval, Rational>> ps = P.pairs(P.intervals(), filter(r -> r != Rational.ZERO, P.rationals()));
-        for (Pair<Interval, Rational> p : take(LIMIT, ps)) {
+    private void propertiesDivide_Rational() {
+        initialize("divide(Rational)");
+        for (Pair<Interval, Rational> p : take(LIMIT, P.pairs(P.intervals(), P.nonzeroRationals()))) {
             Interval quotient = p.a.divide(p.b);
-            validate(quotient);
-
-            for (Rational r : take(TINY_LIMIT, P.rationals(p.a))) {
-                assertTrue(p.toString(), quotient.contains(r.divide(p.b)));
+            quotient.validate();
+            assertEquals(p, p.a.multiply(p.b.invert()), quotient);
+            inverse(a -> a.divide(p.b), (Interval a) -> a.multiply(p.b), p.a);
+            for (Rational r : take(TINY_LIMIT, P.rationalsIn(p.a))) {
+                assertTrue(p, quotient.contains(r.divide(p.b)));
             }
-
-            assertTrue(p.toString(), quotient.multiply(p.b).contains(p.a));
-            assertTrue(p.toString(), p.a.multiply(p.b.invert()).contains(quotient));
         }
 
         for (Interval a : take(LIMIT, P.intervals())) {
-            assertTrue(a.toString(), a.divide(Rational.ONE).contains(a));
+            fixedPoint(b -> b.divide(Rational.ONE), a);
         }
 
-        for (Rational r : take(LIMIT, filter(s -> s != Rational.ZERO, P.rationals()))) {
-            assertEquals(r.toString(), ONE.divide(r), of(r.invert()));
+        for (Rational r : take(LIMIT, P.nonzeroRationals())) {
+            assertEquals(r, ONE.divide(r), of(r.invert()));
+        }
+
+        for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals(), P.nonzeroRationals()))) {
+            homomorphic(Interval::of, Function.identity(), Interval::of, Rational::divide, Interval::divide, p);
         }
 
         for (Interval a : take(LIMIT, P.intervals())) {
             try {
                 a.divide(Rational.ZERO);
-                fail(a.toString());
+                fail(a);
             } catch (ArithmeticException ignored) {}
         }
     }
 
-    private static void propertiesDivide_BigInteger() {
-        initialize();
-        System.out.println("\t\ttesting divide(BigInteger) properties...");
-
-        Iterable<Pair<Interval, BigInteger>> ps = P.pairs(
-                P.intervals(),
-                filter(i -> !i.equals(BigInteger.ZERO), P.bigIntegers())
-        );
-        for (Pair<Interval, BigInteger> p : take(LIMIT, ps)) {
+    private void propertiesDivide_BigInteger() {
+        initialize("divide(BigInteger)");
+        for (Pair<Interval, BigInteger> p : take(LIMIT, P.pairs(P.intervals(), P.nonzeroBigIntegers()))) {
             Interval quotient = p.a.divide(p.b);
-            validate(quotient);
-
-            for (Rational r : take(TINY_LIMIT, P.rationals(p.a))) {
-                assertTrue(p.toString(), quotient.contains(r.divide(p.b)));
+            quotient.validate();
+            assertEquals(p, p.a.multiply(Rational.of(p.b).invert()), quotient);
+            inverse(a -> a.divide(p.b), (Interval a) -> a.multiply(p.b), p.a);
+            for (Rational r : take(TINY_LIMIT, P.rationalsIn(p.a))) {
+                assertTrue(p, quotient.contains(r.divide(p.b)));
             }
-
-            assertTrue(p.toString(), quotient.multiply(p.b).contains(p.a));
-            assertTrue(p.toString(), p.a.multiply(Rational.of(p.b).invert()).contains(quotient));
         }
 
         for (Interval a : take(LIMIT, P.intervals())) {
-            assertTrue(a.toString(), a.divide(BigInteger.ONE).contains(a));
+            fixedPoint(b -> b.divide(BigInteger.ONE), a);
         }
 
-        for (BigInteger i : take(LIMIT, filter(j -> !j.equals(BigInteger.ZERO), P.bigIntegers()))) {
-            assertEquals(i.toString(), ONE.divide(i), of(Rational.of(i).invert()));
+        for (BigInteger i : take(LIMIT, P.nonzeroBigIntegers())) {
+            assertEquals(i, ONE.divide(i), of(Rational.of(i).invert()));
+        }
+
+        for (Pair<Rational, BigInteger> p : take(LIMIT, P.pairs(P.rationals(), P.nonzeroBigIntegers()))) {
+            homomorphic(Interval::of, Function.identity(), Interval::of, Rational::divide, Interval::divide, p);
         }
 
         for (Interval a : take(LIMIT, P.intervals())) {
             try {
                 a.divide(BigInteger.ZERO);
-                fail(a.toString());
+                fail(a);
             } catch (ArithmeticException ignored) {}
         }
     }
 
-    private static void propertiesDivide_int() {
-        initialize();
-        System.out.println("\t\ttesting divide(int) properties...");
-
-        for (Pair<Interval, Integer> p : take(LIMIT, P.pairs(P.intervals(), filter(i -> i != 0, P.integers())))) {
+    private void propertiesDivide_int() {
+        initialize("divide(int)");
+        for (Pair<Interval, Integer> p : take(LIMIT, P.pairs(P.intervals(), P.nonzeroIntegers()))) {
             Interval quotient = p.a.divide(p.b);
-            validate(quotient);
-
-            for (Rational r : take(TINY_LIMIT, P.rationals(p.a))) {
-                assertTrue(p.toString(), quotient.contains(r.divide(p.b)));
+            quotient.validate();
+            assertEquals(p, p.a.multiply(Rational.of(p.b).invert()), quotient);
+            inverse(a -> a.divide(p.b), (Interval a) -> a.multiply(p.b), p.a);
+            for (Rational r : take(TINY_LIMIT, P.rationalsIn(p.a))) {
+                assertTrue(p, quotient.contains(r.divide(p.b)));
             }
-
-            assertTrue(p.toString(), quotient.multiply(p.b).contains(p.a));
-            assertTrue(p.toString(), p.a.multiply(Rational.of(p.b).invert()).contains(quotient));
         }
 
         for (Interval a : take(LIMIT, P.intervals())) {
-            assertTrue(a.toString(), a.divide(1).contains(a));
+            fixedPoint(b -> b.divide(1), a);
         }
 
-        for (int i : take(LIMIT, filter(j -> j != 0, P.integers()))) {
-            assertEquals(Integer.toString(i), ONE.divide(i), of(Rational.of(i).invert()));
+        for (int i : take(LIMIT, P.nonzeroIntegers())) {
+            assertEquals(i, ONE.divide(i), of(Rational.of(i).invert()));
+        }
+
+        for (Pair<Rational, Integer> p : take(LIMIT, P.pairs(P.rationals(), P.nonzeroIntegers()))) {
+            homomorphic(Interval::of, Function.identity(), Interval::of, Rational::divide, Interval::divide, p);
         }
 
         for (Interval a : take(LIMIT, P.intervals())) {
             try {
                 a.divide(0);
-                fail(a.toString());
+                fail(a);
             } catch (ArithmeticException ignored) {}
         }
     }
@@ -1538,71 +1441,47 @@ public class IntervalProperties {
         }
     }
 
-    private static void propertiesShiftLeft() {
-        initialize();
-        System.out.println("\t\ttesting shiftLeft(int) properties...");
-
-        Iterable<Integer> is;
-        if (P instanceof QBarExhaustiveProvider) {
-            is = P.integers();
-        } else {
-            is  = ((QBarRandomProvider) P).integersGeometric();
-        }
-        for (Pair<Interval, Integer> p : take(LIMIT, P.pairs(P.intervals(), is))) {
+    private void propertiesShiftLeft() {
+        initialize("shiftLeft(int)");
+        for (Pair<Interval, Integer> p : take(LIMIT, P.pairs(P.intervals(), P.integersGeometric()))) {
+            homomorphic(
+                    Interval::negate,
+                    Function.identity(),
+                    Interval::negate,
+                    Interval::shiftLeft,
+                    Interval::shiftLeft,
+                    p
+            );
             Interval shifted = p.a.shiftLeft(p.b);
-            validate(shifted);
-
-            for (Rational r : take(TINY_LIMIT, P.rationals(p.a))) {
-                assertTrue(p.toString(), shifted.contains(r.shiftLeft(p.b)));
+            shifted.validate();
+            assertEquals(p, shifted, shiftLeft_simplest(p.a, p.b));
+            assertEquals(p, p.a.signum(), shifted.signum());
+            assertEquals(p, p.a.isFinitelyBounded(), shifted.isFinitelyBounded());
+            inverse(a -> a.shiftLeft(p.b), (Interval a) -> a.shiftRight(p.b), p.a);
+            for (Rational r : take(TINY_LIMIT, P.rationalsIn(p.a))) {
+                assertTrue(p, shifted.contains(r.shiftLeft(p.b)));
             }
-
-            assertEquals(p.toString(), shifted, shiftLeft_simplest(p.a, p.b));
-            assertEquals(p.toString(), p.a.signum(), shifted.signum());
-            assertEquals(p.toString(), p.a.isFinitelyBounded(), shifted.isFinitelyBounded());
-            assertEquals(p.toString(), p.a.negate().shiftLeft(p.b), shifted.negate());
-            assertEquals(p.toString(), shifted, p.a.shiftRight(-p.b));
         }
 
         for (Interval a : take(LIMIT, P.intervals())) {
-            assertEquals(a.toString(), a.shiftLeft(0), a);
+            fixedPoint(b -> b.shiftLeft(0), a);
         }
 
-        if (P instanceof QBarExhaustiveProvider) {
-            is = P.naturalIntegers();
-        } else {
-            is  = ((QBarRandomProvider) P).naturalIntegersGeometric();
+        for (Pair<Interval, Integer> p : take(LIMIT, P.pairs(P.intervals(), P.naturalIntegersGeometric()))) {
+            assertEquals(p, p.a.shiftLeft(p.b), p.a.multiply(BigInteger.ONE.shiftLeft(p.b)));
         }
-        for (Pair<Interval, Integer> p : take(LIMIT, P.pairs(P.intervals(), is))) {
-            Interval shifted = p.a.shiftLeft(p.b);
-            assertEquals(p.toString(), shifted, p.a.multiply(BigInteger.ONE.shiftLeft(p.b)));
+
+        for (Pair<Rational, Integer> p : take(LIMIT, P.pairs(P.rationals(), P.integersGeometric()))) {
+            homomorphic(Interval::of, Function.identity(), Interval::of, Rational::shiftLeft, Interval::shiftLeft, p);
         }
     }
 
-    private static void compareImplementationsShiftLeft() {
-        initialize();
-        System.out.println("\t\tcomparing shiftLeft(int) implementations...");
-
-        long totalTime = 0;
-        Iterable<Integer> is;
-        if (P instanceof QBarExhaustiveProvider) {
-            is = P.integers();
-        } else {
-            is  = ((QBarRandomProvider) P).integersGeometric();
-        }
-        for (Pair<Interval, Integer> p : take(LIMIT, P.pairs(P.intervals(), is))) {
-            long time = System.nanoTime();
-            shiftLeft_simplest(p.a, p.b);
-            totalTime += (System.nanoTime() - time);
-        }
-        System.out.println("\t\t\tsimplest: " + ((double) totalTime) / 1e9 + " s");
-
-        totalTime = 0;
-        for (Pair<Interval, Integer> p : take(LIMIT, P.pairs(P.intervals(), is))) {
-            long time = System.nanoTime();
-            p.a.shiftLeft(p.b);
-            totalTime += (System.nanoTime() - time);
-        }
-        System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
+    private void compareImplementationsShiftLeft() {
+        Map<String, Function<Pair<Interval, Integer>, Interval>> functions = new LinkedHashMap<>();
+        functions.put("simplest", p -> shiftLeft_simplest(p.a, p.b));
+        functions.put("standard", p -> p.a.shiftLeft(p.b));
+        Iterable<Pair<Interval, Integer>> ps = P.pairs(P.intervals(), P.integersGeometric());
+        compareImplementations("shiftLeft(int)", take(LIMIT, ps), functions);
     }
 
     private static @NotNull Interval shiftRight_simplest(@NotNull Interval a, int bits) {
@@ -1613,498 +1492,423 @@ public class IntervalProperties {
         }
     }
 
-    private static void propertiesShiftRight() {
-        initialize();
-        System.out.println("\t\ttesting shiftRight(int) properties...");
-
-        Iterable<Integer> is;
-        if (P instanceof QBarExhaustiveProvider) {
-            is = P.integers();
-        } else {
-            is  = ((QBarRandomProvider) P).integersGeometric();
-        }
-        for (Pair<Interval, Integer> p : take(LIMIT, P.pairs(P.intervals(), is))) {
+    private void propertiesShiftRight() {
+        initialize("shiftRight(int)");
+        for (Pair<Interval, Integer> p : take(LIMIT, P.pairs(P.intervals(), P.integersGeometric()))) {
+            homomorphic(
+                    Interval::negate,
+                    Function.identity(),
+                    Interval::negate,
+                    Interval::shiftRight,
+                    Interval::shiftRight,
+                    p
+            );
             Interval shifted = p.a.shiftRight(p.b);
-            validate(shifted);
-
-            for (Rational r : take(TINY_LIMIT, P.rationals(p.a))) {
-                assertTrue(p.toString(), shifted.contains(r.shiftRight(p.b)));
+            shifted.validate();
+            assertEquals(p, shifted, shiftRight_simplest(p.a, p.b));
+            assertEquals(p, p.a.signum(), shifted.signum());
+            assertEquals(p, p.a.isFinitelyBounded(), shifted.isFinitelyBounded());
+            inverse(a -> a.shiftRight(p.b), (Interval a) -> a.shiftLeft(p.b), p.a);
+            for (Rational r : take(TINY_LIMIT, P.rationalsIn(p.a))) {
+                assertTrue(p, shifted.contains(r.shiftRight(p.b)));
             }
-
-            assertEquals(p.toString(), shifted, shiftRight_simplest(p.a, p.b));
-            assertEquals(p.toString(), p.a.signum(), shifted.signum());
-            assertEquals(p.toString(), p.a.isFinitelyBounded(), shifted.isFinitelyBounded());
-            assertEquals(p.toString(), p.a.negate().shiftRight(p.b), shifted.negate());
-            assertEquals(p.toString(), shifted, p.a.shiftLeft(-p.b));
         }
 
         for (Interval a : take(LIMIT, P.intervals())) {
-            assertEquals(a.toString(), a.shiftRight(0), a);
+            fixedPoint(b -> b.shiftRight(0), a);
         }
 
-        if (P instanceof QBarExhaustiveProvider) {
-            is = P.naturalIntegers();
-        } else {
-            is  = ((QBarRandomProvider) P).naturalIntegersGeometric();
+        for (Pair<Interval, Integer> p : take(LIMIT, P.pairs(P.intervals(), P.naturalIntegersGeometric()))) {
+            assertEquals(p, p.a.shiftRight(p.b), p.a.divide(BigInteger.ONE.shiftLeft(p.b)));
         }
-        for (Pair<Interval, Integer> p : take(LIMIT, P.pairs(P.intervals(), is))) {
-            Interval shifted = p.a.shiftRight(p.b);
-            assertEquals(p.toString(), shifted, p.a.divide(BigInteger.ONE.shiftLeft(p.b)));
+
+        for (Pair<Rational, Integer> p : take(LIMIT, P.pairs(P.rationals(), P.integersGeometric()))) {
+            homomorphic(
+                    Interval::of,
+                    Function.identity(),
+                    Interval::of,
+                    Rational::shiftRight,
+                    Interval::shiftRight,
+                    p
+            );
         }
     }
 
-    private static void compareImplementationsShiftRight() {
-        initialize();
-        System.out.println("\t\tcomparing shiftRight(int) implementations...");
-
-        long totalTime = 0;
-        Iterable<Integer> is;
-        if (P instanceof QBarExhaustiveProvider) {
-            is = P.integers();
-        } else {
-            is  = ((QBarRandomProvider) P).integersGeometric();
-        }
-        for (Pair<Interval, Integer> p : take(LIMIT, P.pairs(P.intervals(), is))) {
-            long time = System.nanoTime();
-            shiftRight_simplest(p.a, p.b);
-            totalTime += (System.nanoTime() - time);
-        }
-        System.out.println("\t\t\tsimplest: " + ((double) totalTime) / 1e9 + " s");
-
-        totalTime = 0;
-        for (Pair<Interval, Integer> p : take(LIMIT, P.pairs(P.intervals(), is))) {
-            long time = System.nanoTime();
-            p.a.shiftRight(p.b);
-            totalTime += (System.nanoTime() - time);
-        }
-        System.out.println("\t\t\tstandard: " + ((double) totalTime) / 1e9 + " s");
+    private void compareImplementationsShiftRight() {
+        Map<String, Function<Pair<Interval, Integer>, Interval>> functions = new LinkedHashMap<>();
+        functions.put("simplest", p -> shiftRight_simplest(p.a, p.b));
+        functions.put("standard", p -> p.a.shiftRight(p.b));
+        Iterable<Pair<Interval, Integer>> ps = P.pairs(P.intervals(), P.integersGeometric());
+        compareImplementations("shiftRight(int)", take(LIMIT, ps), functions);
     }
 
-    private static void propertiesSum() {
-        initialize();
-        System.out.println("\t\ttesting sum(Iterable<Interval>) properties...");
+    private static @NotNull Interval sum_simplest(@NotNull List<Interval> xs) {
+        if (any(x -> x == null, xs)) {
+            throw new NullPointerException();
+        }
+        return foldl(Interval::add, ONE, xs);
+    }
 
-        propertiesFoldHelper(LIMIT, P.getWheelsProvider(), P.intervals(), Interval::add, Interval::sum, a -> {}, true);
+    private void propertiesSum() {
+        initialize("sum(Iterable<Interval>)");
+        propertiesFoldHelper(
+                LIMIT,
+                P.getWheelsProvider(),
+                P.intervals(),
+                Interval::add,
+                Interval::sum,
+                Interval::validate,
+                true,
+                true
+        );
 
         for (List<Interval> is : take(LIMIT, P.lists(P.intervals()))) {
             Interval sum = sum(is);
-            for (List<Rational> rs : take(TINY_LIMIT, transposeTruncating(map(P::rationals, is)))) {
-                assertTrue(is.toString(), sum.contains(Rational.sum(rs)));
+            for (List<Rational> rs : take(TINY_LIMIT, transposeTruncating(map(P::rationalsIn, is)))) {
+                assertTrue(is, sum.contains(Rational.sum(rs)));
             }
-            assertEquals(is.toString(), sum.isFinitelyBounded(), is.isEmpty() || all(Interval::isFinitelyBounded, is));
+            assertEquals(is, sum.isFinitelyBounded(), is.isEmpty() || all(Interval::isFinitelyBounded, is));
+        }
+
+        for (List<Rational> rs : take(LIMIT, P.lists(P.rationals()))) {
+            homomorphic(ss -> toList(map(Interval::of, rs)), Interval::of, Rational::sum, Interval::sum, rs);
         }
     }
 
-    private static void propertiesProduct() {
-        initialize();
-        System.out.println("\t\ttesting product(Iterable<Interval>) properties...");
+    private void compareImplementationsSum() {
+        Map<String, Function<List<Interval>, Interval>> functions = new LinkedHashMap<>();
+        functions.put("simplest", IntervalProperties::sum_simplest);
+        functions.put("standard", Interval::sum);
+        compareImplementations("sum(Iterable<Interval>)", take(LIMIT, P.lists(P.intervals())), functions);
+    }
 
+    private void propertiesProduct() {
+        initialize("product(Iterable<Interval>)");
         propertiesFoldHelper(
                 LIMIT,
                 P.getWheelsProvider(),
                 P.intervals(),
                 Interval::multiply,
                 Interval::product,
-                a -> {},
+                Interval::validate,
+                true,
                 true
         );
 
         for (List<Interval> is : take(LIMIT, P.lists(P.intervals()))) {
             Interval product = product(is);
-            for (List<Rational> rs : take(TINY_LIMIT, transposeTruncating(map(P::rationals, is)))) {
-                assertTrue(is.toString(), product.contains(Rational.product(rs)));
+            for (List<Rational> rs : take(TINY_LIMIT, transposeTruncating(map(P::rationalsIn, is)))) {
+                assertTrue(is, product.contains(Rational.product(rs)));
             }
-
             assertEquals(
-                    is.toString(),
+                    is,
                     product.isFinitelyBounded(),
                     is.isEmpty() || is.contains(ZERO) || all(Interval::isFinitelyBounded, is)
             );
         }
+
+        for (List<Rational> rs : take(LIMIT, P.lists(P.rationals()))) {
+            homomorphic(ss -> toList(map(Interval::of, rs)), Interval::of, Rational::product, Interval::product, rs);
+        }
     }
 
-    private static void propertiesDelta() {
-        initialize();
-        System.out.println("\t\ttesting delta(Iterable<Interval>) properties...");
-
+    private void propertiesDelta() {
+        initialize("delta(Iterable<Interval>)");
         propertiesDeltaHelper(
                 LIMIT,
                 P.getWheelsProvider(),
-                EP.intervals(),
+                QEP.intervals(),
                 P.intervals(),
                 Interval::negate,
                 Interval::subtract,
                 Interval::delta,
-                a -> {}
+                Interval::validate
         );
 
-        for (List<Interval> is : take(LIMIT, P.listsAtLeast(1, P.intervals()))) {
-            Iterable<Interval> deltas = delta(is);
-            for (List<Rational> rs : take(TINY_LIMIT, transposeTruncating(map(P::rationals, is)))) {
-                assertTrue(is.toString(), and(zipWith(Interval::contains, deltas, Rational.delta(rs))));
+        for (List<Interval> as : take(LIMIT, P.listsAtLeast(1, P.intervals()))) {
+            Iterable<Interval> deltas = delta(as);
+            for (List<Rational> rs : take(TINY_LIMIT, transposeTruncating(map(P::rationalsIn, as)))) {
+                assertTrue(as, and(zipWith(Interval::contains, deltas, Rational.delta(rs))));
             }
+        }
+
+        for (List<Rational> rs : take(LIMIT, P.listsAtLeast(1, P.rationals()))) {
+            homomorphic(
+                    ss -> toList(map(Interval::of, ss)),
+                    ss -> toList(map(Interval::of, ss)),
+                    ss -> toList(Rational.delta(ss)),
+                    as -> toList(delta(as)),
+                    rs
+            );
         }
     }
 
-    private static void propertiesPow() {
-        initialize();
-        System.out.println("\t\ttesting pow(int) properties...");
-
-        Iterable<Pair<Interval, Integer>> ps = P.pairs(P.intervals(), P.withScale(20).integersGeometric());
-        for (Pair<Interval, Integer> p : take(LIMIT, ps)) {
+    private void propertiesPow() {
+        initialize("pow(int)");
+        for (Pair<Interval, Integer> p : take(LIMIT, P.pairs(P.intervals(), P.integersGeometric()))) {
             List<Interval> pow = p.a.pow(p.b);
-            pow.forEach(mho.qbar.objects.IntervalProperties::validate);
-
-            //todo fix hanging
-//            Iterable<Rational> rs = p.b < 0 ? filter(r -> r != Rational.ZERO, P.rationals(p.a)) : P.rationals(p.a);
-//            for (Rational r : take(TINY_LIMIT, rs)) {
-//                assertTrue(p.toString(), any(s -> s.contains(r.pow(p.b)), pow));
-//            }
-
+            pow.forEach(Interval::validate);
             int size = pow.size();
-            assertTrue(p.toString(), size == 0 || size == 1 || size == 2);
+            assertTrue(p, size >= 0 && size <= 2);
             if (size == 2) {
-                Interval i1 = pow.get(0);
-                Interval i2 = pow.get(1);
-                Rational p1 = i1.getLower().isPresent() ? i1.getLower().get() : null;
-                Rational q1 = i1.getUpper().isPresent() ? i1.getUpper().get() : null;
-                Rational p2 = i2.getLower().isPresent() ? i2.getLower().get() : null;
-                Rational q2 = i2.getUpper().isPresent() ? i2.getUpper().get() : null;
-                assertTrue(p.toString(), p1 == null);
-                assertTrue(p.toString(), q2 == null);
-                if (p2 == Rational.ZERO) {
-                    assertTrue(p.toString(), q1.signum() == -1);
-                } else if (q1 == Rational.ZERO) {
-                    assertTrue(p.toString(), p2.signum() == 1);
+                Interval i = pow.get(0);
+                Interval j = pow.get(1);
+                Optional<Rational> ix = i.getLower();
+                Optional<Rational> iy = i.getUpper();
+                Optional<Rational> jx = j.getLower();
+                Optional<Rational> jy = j.getUpper();
+                assertFalse(p, ix.isPresent());
+                assertTrue(p, iy.isPresent());
+                assertTrue(p, jx.isPresent());
+                assertFalse(p, jy.isPresent());
+                if (jx.get() == Rational.ZERO) {
+                    assertTrue(p, iy.get().signum() == -1);
+                } else if (iy.get() == Rational.ZERO) {
+                    assertTrue(p, jx.get().signum() == 1);
                 } else {
-                    assertTrue(p.toString(), q1.signum() == -1);
-                    assertTrue(p.toString(), p2.signum() == 1);
+                    assertTrue(p, iy.get().signum() == -1);
+                    assertTrue(p, jx.get().signum() == 1);
                 }
             }
         }
 
-        ps = filter(
+        Iterable<Pair<Interval, Integer>> ps = filterInfinite(
                 p -> p.b >= 0 || !p.a.equals(ZERO),
-                P.pairs(P.intervals(), P.withScale(20).integersGeometric())
+                P.pairs(P.intervals(), P.integersGeometric())
         );
         for (Pair<Interval, Integer> p : take(LIMIT, ps)) {
             List<Interval> pow = p.a.pow(p.b);
             Interval x = product(replicate(Math.abs(p.b), p.a));
             Interval product = p.b < 0 ? x.invertHull() : x;
-            assertTrue(p.toString(), all(product::contains, pow));
+            assertTrue(p, all(product::contains, pow));
         }
 
-        ps = P.pairs(filter(a -> !a.equals(ZERO), P.intervals()), P.withScale(20).integersGeometric());
+        ps = filterInfinite(
+                p -> p.b >= 0 || !p.a.equals(ZERO),
+                P.pairs(
+                        filterInfinite(a -> !a.diameter().equals(Optional.of(Rational.ZERO)), P.intervals()),
+                        P.integersGeometric()
+                )
+        );
+        for (Pair<Interval, Integer> p : take(LIMIT, ps)) {
+            Iterable<Rational> rs = p.b < 0 ?
+                    filterInfinite(r -> r != Rational.ZERO, P.rationalsIn(p.a)) :
+                    P.rationalsIn(p.a);
+            for (Rational r : take(TINY_LIMIT, rs)) {
+                List<Interval> pow = p.a.pow(p.b);
+                assertTrue(p, any(s -> s.contains(r.pow(p.b)), pow));
+            }
+        }
+
+        ps = P.pairs(filter(a -> !a.equals(ZERO), P.intervals()), P.integersGeometric());
         for (Pair<Interval, Integer> p : take(LIMIT, ps)) {
             List<Interval> a = p.a.pow(p.b);
-            assertTrue(
-                    p.toString(),
-                    any(c -> convexHull(toList(concatMap(Interval::invert, p.a.pow(-p.b)))).contains(c), a)
-            );
-            assertTrue(
-                    p.toString(),
-                    any(c -> convexHull(toList(concatMap(b -> b.pow(-p.b), p.a.invert()))).contains(c), a)
-            );
+            assertTrue(p, any(c -> convexHull(toList(concatMap(Interval::invert, p.a.pow(-p.b)))).contains(c), a));
+            assertTrue(p, any(c -> convexHull(toList(concatMap(b -> b.pow(-p.b), p.a.invert()))).contains(c), a));
         }
 
-        for (int i : take(LIMIT, P.withScale(20).positiveIntegersGeometric())) {
-            assertTrue(Integer.toString(i), ZERO.pow(i).equals(Collections.singletonList(ZERO)));
+        for (int i : take(LIMIT, P.positiveIntegersGeometric())) {
+            assertTrue(i, ZERO.pow(i).equals(Collections.singletonList(ZERO)));
         }
 
         for (Interval a : take(LIMIT, P.intervals())) {
-            assertTrue(a.toString(), a.pow(0).equals(Collections.singletonList(ONE)));
-            assertEquals(a.toString(), a.pow(1), Collections.singletonList(a));
+            assertTrue(a, a.pow(0).equals(Collections.singletonList(ONE)));
+            assertEquals(a, a.pow(1), Collections.singletonList(a));
             Interval product = a.multiply(a);
-            assertTrue(a.toString(), all(product::contains, a.pow(2)));
-            assertEquals(a.toString(), a.pow(-1), a.invert());
-        }
-
-        Iterable<Triple<Interval, Integer, Integer>> ts1 = filter(
-                p -> p.b >= 0 && p.c >= 0 || !p.a.equals(ZERO),
-                P.triples(P.intervals(), P.withScale(20).integersGeometric(), P.withScale(20).integersGeometric())
-        );
-        for (Triple<Interval, Integer, Integer> t : take(LIMIT, ts1)) {
-            Interval expression1 = convexHull(toList(concatMap(a -> map(a::multiply, t.a.pow(t.c)), t.a.pow(t.b))));
-            Interval expression2 = convexHull(t.a.pow(t.b + t.c));
-            assertTrue(t.toString(), expression1.contains(expression2));
-        }
-
-        ts1 = filter(
-                t -> !t.a.equals(ZERO) || t.c == 0 && t.b >= 0,
-                P.triples(P.intervals(), P.withScale(20).integersGeometric(), P.withScale(20).integersGeometric())
-        );
-        for (Triple<Interval, Integer, Integer> t : take(LIMIT, ts1)) {
-            Interval expression1 = convexHull(
-                    toList(concatMap(a -> concatMap(a::divide, t.a.pow(t.c)), t.a.pow(t.b)))
-            );
-            Interval expression2 = convexHull(t.a.pow(t.b - t.c));
-            assertTrue(t.toString(), expression1.contains(expression2));
-        }
-
-        ts1 = filter(
-                t -> !t.a.equals(ZERO) || t.b >= 0 && t.c >= 0,
-                P.triples(P.intervals(), P.withScale(20).integersGeometric(), P.withScale(20).integersGeometric())
-        );
-        for (Triple<Interval, Integer, Integer> t : take(LIMIT, ts1)) {
-            Interval expression5 = convexHull(toList(concatMap(a -> a.pow(t.c), t.a.pow(t.b))));
-            Interval expression6 = convexHull(t.a.pow(t.b * t.c));
-            assertTrue(t.toString(), expression5.contains(expression6));
-        }
-
-        Iterable<Triple<Interval, Interval, Integer>> ts2 = filter(
-                t -> !t.a.equals(ZERO) && !t.b.equals(ZERO) || t.c >= 0,
-                P.triples(P.intervals(), P.intervals(), P.withScale(20).integersGeometric())
-        );
-        for (Triple<Interval, Interval, Integer> t : take(LIMIT, ts2)) {
-            Interval expression1 = convexHull(t.a.multiply(t.b).pow(t.c));
-            Interval expression2 = convexHull(toList(concatMap(a -> map(a::multiply, t.b.pow(t.c)), t.a.pow(t.c))));
-            assertEquals(t.toString(), expression1, expression2);
-        }
-
-        ts2 = filter(
-                t -> !t.a.equals(ZERO) || t.c >= 0,
-                P.triples(
-                        P.intervals(),
-                        filter(a -> !a.equals(ZERO), P.intervals()),
-                        P.withScale(20).integersGeometric()
-                )
-        );
-        for (Triple<Interval, Interval, Integer> t : take(LIMIT, ts2)) {
-            Interval expression1 = convexHull(toList(concatMap(a -> a.pow(t.c), t.a.divide(t.b))));
-            Interval expression2 = convexHull(
-                    toList(concatMap(a -> concatMap(a::divide, t.b.pow(t.c)), t.a.pow(t.c)))
-            );
-            assertTrue(t.toString(), expression1.contains(expression2));
+            assertTrue(a, all(product::contains, a.pow(2)));
+            assertEquals(a, a.pow(-1), a.invert());
         }
     }
 
-    private static void propertiesPowHull() {
-        initialize();
-        System.out.println("\t\ttesting powHull(int) properties...");
+    private static @NotNull Interval powHull_simplest(@NotNull Interval a, int p) {
+        if (p < 0 && a.equals(ZERO)) {
+            throw new ArithmeticException();
+        }
+        return convexHull(a.pow(p));
+    }
 
-        Iterable<Pair<Interval, Integer>> ps = filter(
+    private void propertiesPowHull() {
+        initialize("powHull(int)");
+        Iterable<Pair<Interval, Integer>> ps = filterInfinite(
                 p -> p.b >= 0 || !p.a.equals(ZERO),
-                P.pairs(P.intervals(), P.withScale(20).integersGeometric())
+                P.pairs(P.intervals(), P.integersGeometric())
         );
         for (Pair<Interval, Integer> p : take(LIMIT, ps)) {
-            Interval pow = p.a.powHull(p.b);
-            validate(pow);
-
-            //todo fix hanging
-//            Iterable<Rational> rs = p.b < 0 ? filter(r -> r != Rational.ZERO, P.rationals(p.a)) : P.rationals(p.a);
-//            for (Rational r : take(TINY_LIMIT, rs)) {
-//                assertTrue(p.toString(), pow.contains(r.pow(p.b)));
-//            }
-
+            Interval powHull = p.a.powHull(p.b);
+            powHull.validate();
+            assertEquals(p, powHull_simplest(p.a, p.b), powHull);
             Interval product = product(replicate(Math.abs(p.b), p.a));
             if (p.b < 0) product = product.invertHull();
-            assertTrue(p.toString(), product.contains(pow));
+            assertTrue(p, product.contains(powHull));
         }
 
-        ps = P.pairs(filter(a -> !a.equals(ZERO), P.intervals()), P.withScale(20).integersGeometric());
+        ps = P.pairs(filterInfinite(a -> !a.equals(ZERO), P.intervals()), P.integersGeometric());
         for (Pair<Interval, Integer> p : take(LIMIT, ps)) {
             Interval a = p.a.powHull(p.b);
-            assertTrue(p.toString(), p.a.powHull(-p.b).invertHull().contains(a));
-            assertTrue(p.toString(), p.a.invertHull().powHull(-p.b).contains(a));
+            assertTrue(p, p.a.powHull(-p.b).invertHull().contains(a));
+            assertTrue(p, p.a.invertHull().powHull(-p.b).contains(a));
         }
 
-        for (int i : take(LIMIT, P.withScale(20).positiveIntegersGeometric())) {
+        ps = filterInfinite(
+                p -> p.b >= 0 || !p.a.equals(ZERO),
+                P.pairs(
+                        filterInfinite(a -> !a.diameter().equals(Optional.of(Rational.ZERO)), P.intervals()),
+                        P.integersGeometric()
+                )
+        );
+        for (Pair<Interval, Integer> p : take(LIMIT, ps)) {
+            Iterable<Rational> rs = p.b < 0 ?
+                    filterInfinite(r -> r != Rational.ZERO, P.rationalsIn(p.a)) :
+                    P.rationalsIn(p.a);
+            for (Rational r : take(TINY_LIMIT, rs)) {
+                Interval powHull = p.a.powHull(p.b);
+                assertTrue(p, powHull.contains(r.pow(p.b)));
+            }
+        }
+
+        for (int i : take(LIMIT, P.positiveIntegersGeometric())) {
             assertTrue(Integer.toString(i), ZERO.powHull(i).equals(ZERO));
         }
 
         for (Interval a : take(LIMIT, P.intervals())) {
-            assertTrue(a.toString(), a.powHull(0).equals(ONE));
-            assertEquals(a.toString(), a.powHull(1), a);
-            assertTrue(a.toString(), a.multiply(a).contains(a.powHull(2)));
+            assertTrue(a, a.powHull(0).equals(ONE));
+            fixedPoint(b -> b.powHull(1), a);
+            assertTrue(a, a.multiply(a).contains(a.powHull(2)));
         }
 
-        Iterable<Interval> rs = filter(a -> !a.equals(ZERO), P.intervals());
-        for (Interval a : take(LIMIT, rs)) {
-            assertEquals(a.toString(), a.powHull(-1), a.invertHull());
+        for (Interval a : take(LIMIT, filterInfinite(a -> !a.equals(ZERO), P.intervals()))) {
+            assertEquals(a, a.powHull(-1), a.invertHull());
         }
 
-        Iterable<Triple<Interval, Integer, Integer>> ts1 = filter(
+        Iterable<Triple<Interval, Integer, Integer>> ts1 = filterInfinite(
                 p -> p.b >= 0 && p.c >= 0 || !p.a.equals(ZERO),
-                P.triples(P.intervals(), P.withScale(20).integersGeometric(), P.withScale(20).integersGeometric())
+                P.triples(P.intervals(), P.integersGeometric(), P.integersGeometric())
         );
         for (Triple<Interval, Integer, Integer> t : take(LIMIT, ts1)) {
             Interval expression1 = t.a.powHull(t.b).multiply(t.a.powHull(t.c));
             Interval expression2 = t.a.powHull(t.b + t.c);
-            assertTrue(t.toString(), expression1.contains(expression2));
+            assertTrue(t, expression1.contains(expression2));
         }
 
-        ts1 = filter(
+        ts1 = filterInfinite(
                 t -> !t.a.equals(ZERO) || t.c == 0 && t.b >= 0,
-                P.triples(P.intervals(), P.withScale(20).integersGeometric(), P.withScale(20).integersGeometric())
+                P.triples(P.intervals(), P.integersGeometric(), P.integersGeometric())
         );
         for (Triple<Interval, Integer, Integer> t : take(LIMIT, ts1)) {
             Interval expression1 = t.a.powHull(t.b).divideHull(t.a.powHull(t.c));
             Interval expression2 = t.a.powHull(t.b - t.c);
-            assertTrue(t.toString(), expression1.contains(expression2));
+            assertTrue(t, expression1.contains(expression2));
         }
 
-        ts1 = filter(
+        ts1 = filterInfinite(
                 t -> !t.a.equals(ZERO) || t.b >= 0 && t.c >= 0,
-                P.triples(P.intervals(), P.withScale(20).integersGeometric(), P.withScale(20).integersGeometric())
+                P.triples(P.intervals(), P.integersGeometric(), P.integersGeometric())
         );
         for (Triple<Interval, Integer, Integer> t : take(LIMIT, ts1)) {
             Interval expression5 = t.a.powHull(t.b).powHull(t.c);
             Interval expression6 = t.a.powHull(t.b * t.c);
-            assertTrue(t.toString(), expression5.contains(expression6));
+            assertTrue(t, expression5.contains(expression6));
         }
 
-        Iterable<Triple<Interval, Interval, Integer>> ts2 = filter(
+        Iterable<Triple<Interval, Interval, Integer>> ts2 = filterInfinite(
                 t -> !t.a.equals(ZERO) && !t.b.equals(ZERO) || t.c >= 0,
-                P.triples(P.intervals(), P.intervals(), P.withScale(20).integersGeometric())
+                P.triples(P.intervals(), P.intervals(), P.integersGeometric())
         );
         for (Triple<Interval, Interval, Integer> t : take(LIMIT, ts2)) {
             Interval expression1 = t.a.multiply(t.b).powHull(t.c);
             Interval expression2 = t.a.powHull(t.c).multiply(t.b.powHull(t.c));
-            assertEquals(t.toString(), expression1, expression2);
+            assertEquals(t, expression1, expression2);
         }
 
-        ts2 = filter(
+        ts2 = filterInfinite(
                 t -> !t.a.equals(ZERO) || t.c >= 0,
-                P.triples(
-                        P.intervals(),
-                        filter(a -> !a.equals(ZERO), P.intervals()),
-                        P.withScale(20).integersGeometric()
-                )
+                P.triples(P.intervals(), filterInfinite(a -> !a.equals(ZERO), P.intervals()), P.integersGeometric())
         );
         for (Triple<Interval, Interval, Integer> t : take(LIMIT, ts2)) {
             Interval expression1 = t.a.divideHull(t.b).powHull(t.c);
             Interval expression2 = t.a.powHull(t.c).divideHull(t.b.powHull(t.c));
-            assertTrue(t.toString(), expression1.contains(expression2));
+            assertTrue(t, expression1.contains(expression2));
+        }
+
+        Iterable<Pair<Rational, Integer>> ps2 = filterInfinite(
+                p -> p.b >= 0 || p.a != Rational.ZERO,
+                P.pairs(P.rationals(), P.integersGeometric())
+        );
+        for (Pair<Rational, Integer> p : take(LIMIT, ps2)) {
+            homomorphic(Interval::of, Function.identity(), Interval::of, Rational::pow, Interval::powHull, p);
         }
 
         for (int i : take(LIMIT, P.negativeIntegers())) {
             try {
                 ZERO.powHull(i);
-                fail(Integer.toString(i));
+                fail(i);
             } catch (ArithmeticException ignored) {}
         }
     }
 
-    private static void propertiesElementCompare() {
-        initialize();
-        System.out.println("\t\ttesting elementCompare(Interval) properties...");
+    private void compareImplementationsPowHull() {
+        Map<String, Function<Pair<Interval, Integer>, Interval>> functions = new LinkedHashMap<>();
+        functions.put("simplest", p -> powHull_simplest(p.a, p.b));
+        functions.put("standard", p -> p.a.powHull(p.b));
+        Iterable<Pair<Interval, Integer>> ps = filterInfinite(
+                p -> p.b >= 0 || !p.a.equals(ZERO),
+                P.pairs(P.intervals(), P.integersGeometric())
+        );
+        compareImplementations("powHull(int)", take(LIMIT, ps), functions);
+    }
 
+    private void propertiesElementCompare() {
+        initialize("elementCompare(Interval)");
         for (Pair<Interval, Interval> p : take(LIMIT, P.pairs(P.intervals()))) {
-            @SuppressWarnings("UnusedDeclaration")
-            Optional<Ordering> compare = p.a.elementCompare(p.b);
-        }
-
-        Iterable<Pair<Interval, Interval>> ps = filter(
-                q -> q.a.elementCompare(q.b).isPresent(),
-                P.pairs(P.intervals())
-        );
-        for (Pair<Interval, Interval> p : take(LIMIT, ps)) {
-            Ordering compare = p.a.elementCompare(p.b).get();
-            assertEquals(p.toString(), p.b.elementCompare(p.a).get(), compare.invert());
-        }
-
-        ps = filter(
-                q -> !q.a.elementCompare(q.b).isPresent(),
-                P.pairs(P.intervals())
-        );
-        for (Pair<Interval, Interval> p : take(LIMIT, ps)) {
-            assertFalse(p.toString(), p.b.elementCompare(p.a).isPresent());
+            p.a.elementCompare(p.b);
+            antiCommutative(Interval::elementCompare, oc -> oc.map(Ordering::invert), p);
         }
 
         for (Interval a : take(LIMIT, P.intervals())) {
             Optional<Ordering> compare = a.elementCompare(a);
-            assertTrue(a.toString(), !compare.isPresent() || compare.get() == EQ);
-            assertEquals(a.toString(), a.elementCompare(ZERO).map(Ordering::toInt), a.signum());
+            assertTrue(a, !compare.isPresent() || compare.get() == EQ);
+            assertEquals(a, a.elementCompare(ZERO).map(Ordering::toInt), a.signum());
         }
 
-        Iterable<Triple<Interval, Interval, Interval>> ts = filter(
-                t -> t.a.elementCompare(t.b).equals(Optional.of(LT)) &&
-                     t.b.elementCompare(t.c).equals(Optional.of(LT)), ///
-                P.triples(P.intervals())
+        for (Triple<Interval, Interval, Interval> t : take(LIMIT, P.triples(P.intervals()))) {
+            transitive((a, b) -> a.elementCompare(b).equals(Optional.of(LT)), t);
+        }
+    }
+
+    private void propertiesEquals() {
+        initialize("equals(Object)");
+        propertiesEqualsHelper(LIMIT, P, QBarIterableProvider::intervals);
+    }
+
+    private void propertiesHashCode() {
+        initialize("hashCode()");
+        propertiesHashCodeHelper(LIMIT, P, QBarIterableProvider::intervals);
+    }
+
+    private void propertiesCompareTo() {
+        initialize("compareTo(Interval)");
+        propertiesCompareToHelper(LIMIT, P, QBarIterableProvider::intervals);
+    }
+
+    private void propertiesRead() {
+        initialize("read(String)");
+        propertiesReadHelper(LIMIT, P, INTERVAL_CHARS, P.intervals(), Interval::read, Interval::validate, false);
+    }
+
+    private void propertiesFindIn() {
+        initialize("findIn(String)");
+        propertiesFindInHelper(
+                LIMIT,
+                P.getWheelsProvider(),
+                P.intervals(),
+                Interval::read,
+                Interval::findIn,
+                Interval::validate
         );
-        for (Triple<Interval, Interval, Interval> t : take(LIMIT, ts)) {
-            assertEquals(t.toString(), t.a.elementCompare(t.c), Optional.of(LT));
-        }
     }
 
-    private static void propertiesEquals() {
-        initialize();
-        System.out.println("\t\ttesting equals(Object) properties...");
-
-        QBarTesting.propertiesEqualsHelper(LIMIT, P, QBarIterableProvider::intervals);
-    }
-
-    private static void propertiesHashCode() {
-        initialize();
-        System.out.println("\t\ttesting hashCode() properties...");
-
-        QBarTesting.propertiesHashCodeHelper(LIMIT, P, QBarIterableProvider::intervals);
-    }
-
-    private static void propertiesCompareTo() {
-        initialize();
-        System.out.println("\t\ttesting compareTo(Interval) properties...");
-
-        QBarTesting.propertiesCompareToHelper(LIMIT, P, QBarIterableProvider::intervals);
-    }
-
-    private static void propertiesRead() {
-        initialize();
-        System.out.println("\t\ttesting read(String) properties...");
-
-        for (String s : take(LIMIT, P.strings())) {
-            read(s);
-        }
-
-        for (Interval a : take(LIMIT, P.intervals())) {
-            Optional<Interval> oi = read(a.toString());
-            assertEquals(a.toString(), oi.get(), a);
-        }
-    }
-
-    private static void propertiesFindIn() {
-        initialize();
-        System.out.println("\t\ttesting findIn(String) properties...");
-
-        propertiesFindInHelper(LIMIT, P.getWheelsProvider(), P.intervals(), Interval::read, Interval::findIn, a -> {});
-    }
-
-    private static void propertiesToString() {
-        initialize();
-        System.out.println("\t\ttesting toString() properties...");
-
-        for (Interval a : take(LIMIT, P.intervals())) {
-            String s = a.toString();
-            assertTrue(a.toString(), isSubsetOf(s, INTERVAL_CHARS));
-            Optional<Interval> readI = read(s);
-            assertTrue(a.toString(), readI.isPresent());
-            assertEquals(a.toString(), readI.get(), a);
-        }
-    }
-
-    private static void validate(@NotNull Interval a) {
-        if (a.getLower().isPresent() && a.getUpper().isPresent()) {
-            assertTrue(a.toString(), le(a.getLower().get(), a.getUpper().get()));
-        }
-    }
-
-    private static <T> void aeq(String message, Iterable<T> xs, Iterable<T> ys) {
-        assertTrue(message, equal(xs, ys));
-    }
-
-    private static void aeq(String message, float x, float y) {
-        assertEquals(message, Float.toString(x), Float.toString(y));
-    }
-
-    private static void aeq(String message, double x, double y) {
-        assertEquals(message, Double.toString(x), Double.toString(y));
-    }
-
-    private static void aneq(String message, float x, float y) {
-        assertNotEquals(message, Float.toString(x), Float.toString(y));
-    }
-
-    private static void aneq(String message, double x, double y) {
-        assertNotEquals(message, Double.toString(x), Double.toString(y));
+    private void propertiesToString() {
+        initialize("toString()");
+        propertiesToStringHelper(LIMIT, INTERVAL_CHARS, P.intervals(), Interval::read);
     }
 }

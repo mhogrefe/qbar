@@ -9,8 +9,8 @@ Progress
 
 | Class                  | Methods | JavaDoc | Tests | Demos | Properties |
 |:----------------------:|:-------:|:-------:|:-----:|:-----:|:----------:|
-| QBarExhaustiveProvider | ✔       | ✘       | ✘     | ✘     | ✘          |
-| QBarIterableProvider   | ✔       | ✘       | ✘     | ✘     | ✘          |
+| QBarExhaustiveProvider | ✘       | ✘       | ✘     | ✘     | ✘          |
+| QBarIterableProvider   | ✘       | ✘       | ✘     | ✘     | ✘          |
 | QBarRandomProvider     | ✘       | ✘       | ✘     | ✘     | ✘          |
 | Interval               | ✔       | ✔       | ✔     | ✔     | ✔          |
 | Polynomial             | ✘       | ✘       | ✘     | ✘     | ✘          |
@@ -18,4 +18,6 @@ Progress
 | RationalMatrix         | ✘       | ✘       | ✘     | ✘     | ✘          |
 | RationalPolynomial     | ✘       | ✘       | ✘     | ✘     | ✘          |
 | RationalVector         | ✔       | ✔       | ✔     | ✔     | ✔          |
+| QBarDemos              | ✘       | ✘       | ✘     | ✘     | ✘          |
 | QBarTesting            | ✘       | ✘       | ✘     | ✘     | ✘          |
+| QBarTestProperties     | ✘       | ✘       | ✘     | ✘     | ✘          |

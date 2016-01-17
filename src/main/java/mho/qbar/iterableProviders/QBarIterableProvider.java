@@ -17,16 +17,42 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
-import static mho.wheels.iterables.IterableUtils.map;
+import static mho.wheels.iterables.IterableUtils.*;
 
+/**
+ * This class provides {@code Iterables} for testing.
+ */
 @SuppressWarnings("unused")
 public strictfp abstract class QBarIterableProvider {
+    /**
+     * An instance of {@code IterableProvider} to access generators from the wheels project.
+     */
     protected @NotNull IterableProvider wheelsProvider;
 
+    /**
+     * Creates a new {@code QBarIterableProvider} with a {@code IterableProvider}.
+     *
+     * <ul>
+     *  <li>{@code wheelsProvider} cannot be null.</li>
+     *  <li>Any {@code QBarIterableProvider} may be created with this constructor.</li>
+     * </ul>
+     *
+     * @param wheelsProvider an {@code IterableProvider}
+     */
     protected QBarIterableProvider(@NotNull IterableProvider wheelsProvider) {
         this.wheelsProvider = wheelsProvider;
     }
 
+    /**
+     * Returns {@code this}'s wheels provider.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code QBarIterableProvider}.</li>
+     *  <li>The result may be any {@code IterableProvider}.</li>
+     * </ul>
+     *
+     * @return the wheels provider of {@code this}
+     */
     public @NotNull IterableProvider getWheelsProvider() {
         return wheelsProvider;
     }
@@ -2542,6 +2568,114 @@ public strictfp abstract class QBarIterableProvider {
     }
 
     /**
+     * Generates all {@code Either}s from two {@code Iterable}s. If applicable, {@code Either}s from the first
+     * {@code Iterable} are generated before {@code Either}s from the second.
+     *
+     * @param as the first {@code Iterable}
+     * @param bs the second {@code Iterable}
+     * @param <A> the type of the first {@code Iterable}'s elements
+     * @param <B> the type of the second {@code Iterable}'s elements
+     */
+    public @NotNull <A, B> Iterable<Either<A, B>> eithersSuccessive(@NotNull Iterable<A> as, @NotNull Iterable<B> bs) {
+        return wheelsProvider.eithersSuccessive(as, bs);
+    }
+
+    /**
+     * Generates all {@code Either}s from two {@code Iterable}s. If applicable, the ratio of elements derived from the
+     * second {@code Iterable} approaches sqrt(n)/n, where n is the number of elements generated (assuming the two
+     * source {@code Iterable}s are infinite).
+     *
+     * @param as the first {@code Iterable}
+     * @param bs the second {@code Iterable}
+     * @param <A> the type of the first {@code Iterable}'s elements
+     * @param <B> the type of the second {@code Iterable}'s elements
+     */
+    public @NotNull <A, B> Iterable<Either<A, B>> eithersSquareRootOrder(
+            @NotNull Iterable<A> as,
+            @NotNull Iterable<B> bs
+    ) {
+        return wheelsProvider.eithersSquareRootOrder(as, bs);
+    }
+
+    /**
+     * Generates all {@code Either}s from two {@code Iterable}s. If applicable, the ratio of elements derived from the
+     * second {@code Iterable} approaches log<sub>2</sub>(n)/n, where n is the number of elements generated (assuming
+     * the two source {@code Iterable}s are infinite).
+     *
+     * @param as the first {@code Iterable}
+     * @param bs the second {@code Iterable}
+     * @param <A> the type of the first {@code Iterable}'s elements
+     * @param <B> the type of the second {@code Iterable}'s elements
+     */
+    public @NotNull <A, B> Iterable<Either<A, B>> eithersLogarithmicOrder(
+            @NotNull Iterable<A> as,
+            @NotNull Iterable<B> bs
+    ) {
+        return wheelsProvider.eithersLogarithmicOrder(as, bs);
+    }
+
+    /**
+     * Generates all {@code Either}s from two {@code Iterable}s.
+     *
+     * @param as the first {@code Iterable}
+     * @param bs the second {@code Iterable}
+     * @param <A> the type of the first {@code Iterable}'s elements
+     * @param <B> the type of the second {@code Iterable}'s elements
+     */
+    public @NotNull <A, B> Iterable<Either<A, B>> eithers(@NotNull Iterable<A> as, @NotNull Iterable<B> bs) {
+        return wheelsProvider.eithers(as, bs);
+    }
+
+    /**
+     * Given two {@code Iterable}s, generates an {@code Iterable} containing the elements of both. If applicable,
+     * elements from the first {@code Iterable} are returned before elements from the second.
+     *
+     * @param as the first {@code Iterable}
+     * @param bs the second {@code Iterable}
+     * @param <T> the type of the {@code Iterables}' elements
+     */
+    public @NotNull <T> Iterable<T> chooseSuccessive(@NotNull Iterable<T> as, @NotNull Iterable<T> bs) {
+        return wheelsProvider.chooseSuccessive(as, bs);
+    }
+
+    /**
+     * Given two {@code Iterable}s, generates an {@code Iterable} containing the elements of both. If applicable, the
+     * ratio of elements from the second {@code Iterable} approaches sqrt(n)/n, where n is the number of elements
+     * generated (assuming the two source {@code Iterable}s are infinite).
+     *
+     * @param as the first {@code Iterable}
+     * @param bs the second {@code Iterable}
+     * @param <T> the type of the {@code Iterables}' elements
+     */
+    public @NotNull <T> Iterable<T> chooseSquareRootOrder(@NotNull Iterable<T> as, @NotNull Iterable<T> bs) {
+        return wheelsProvider.chooseSquareRootOrder(as, bs);
+    }
+
+    /**
+     * Given two {@code Iterable}s, generates an {@code Iterable} containing the elements of both. If applicable, the
+     * ratio of elements from the second {@code Iterable} approaches log<sub>2</sub>(n)/n, where n is the number of
+     * elements generated (assuming the two source {@code Iterable}s are infinite).
+     *
+     * @param as the first {@code Iterable}
+     * @param bs the second {@code Iterable}
+     * @param <T> the type of the {@code Iterables}' elements
+     */
+    public @NotNull <T> Iterable<T> chooseLogarithmicOrder(@NotNull Iterable<T> as, @NotNull Iterable<T> bs) {
+        return wheelsProvider.chooseLogarithmicOrder(as, bs);
+    }
+
+    /**
+     * Given two {@code Iterable}s, generates an {@code Iterable} containing the elements of both.
+     *
+     * @param as the first {@code Iterable}
+     * @param bs the second {@code Iterable}
+     * @param <T> the type of the {@code Iterables}' elements
+     */
+    public @NotNull <T> Iterable<T> choose(@NotNull Iterable<T> as, @NotNull Iterable<T> bs) {
+        return wheelsProvider.choose(as, bs);
+    }
+
+    /**
      * Generates the Cartesian product of a {@code List} of {@code List}s, that is, all possible {@code List}s such
      * that the ith element of the {@code List} comes from the ith input {@code List}.
      *
@@ -2738,54 +2872,334 @@ public strictfp abstract class QBarIterableProvider {
         return wheelsProvider.randomProviders();
     }
 
-    public abstract @NotNull Iterable<Rational> rationals();
-    public abstract @NotNull Iterable<Rational> nonNegativeRationals();
+    /**
+     * Generates positive {@code Rational}s.
+     */
     public abstract @NotNull Iterable<Rational> positiveRationals();
+
+    /**
+     * Generates negative {@code Rational}s.
+     */
     public abstract @NotNull Iterable<Rational> negativeRationals();
+
+    /**
+     * Generates nonzero {@code Rational}s.
+     */
+    public abstract @NotNull Iterable<Rational> nonzeroRationals();
+
+    /**
+     * Generates {@code Rational}s.
+     */
+    public abstract @NotNull Iterable<Rational> rationals();
+
+    /**
+     * Generates {@code Rational}s in the interval [0, 1).
+     */
     public abstract @NotNull Iterable<Rational> nonNegativeRationalsLessThanOne();
-    public abstract @NotNull Iterable<Rational> rangeUp(@NotNull Rational a);
-    public abstract @NotNull Iterable<Rational> rangeDown(@NotNull Rational a);
+
+    /**
+     * Generates {@code Rational}s greater than or equal to a given value.
+     *
+     * @param a the inclusive lower bound of the generated {@code Rational}s
+     */
+    public @NotNull Iterable<Rational> rangeUp(@NotNull Rational a) {
+        return map(r -> r.add(a), withElement(Rational.ZERO, positiveRationals()));
+    }
+
+    /**
+     * Generates {@code Rational}s less than or equal to a given value.
+     *
+     * @param a the inclusive upper bound of the generated {@code Rational}s
+     */
+    public @NotNull Iterable<Rational> rangeDown(@NotNull Rational a) {
+        return map(a::subtract, withElement(Rational.ZERO, positiveRationals()));
+    }
+
+    /**
+     * Generates {@code Rational}s between {@code a} and {@code b}, inclusive.
+     *
+     * @param a the inclusive lower bound of the generated {@code Rational}s
+     * @param b the inclusive upper bound of the generated {@code Rational}s
+     */
     public abstract @NotNull Iterable<Rational> range(@NotNull Rational a, @NotNull Rational b);
+
+    /**
+     * Generates {@code Interval}s whose bounds are finite.
+     */
     public abstract @NotNull Iterable<Interval> finitelyBoundedIntervals();
+
+    /**
+     * Generates {@code Interval}s.
+     */
     public abstract @NotNull Iterable<Interval> intervals();
-    public abstract @NotNull Iterable<Byte> bytes(@NotNull Interval a);
-    public abstract @NotNull Iterable<Short> shorts(@NotNull Interval a);
-    public abstract @NotNull Iterable<Integer> integers(@NotNull Interval a);
-    public abstract @NotNull Iterable<Long> longs(@NotNull Interval a);
-    public abstract @NotNull Iterable<BigInteger> bigIntegers(@NotNull Interval a);
 
-    public abstract @NotNull Iterable<Rational> rationals(@NotNull Interval a);
+    /**
+     * Generates {@code Rational}s contained in a given {@code Interval}.
+     *
+     * @param a an {@code Interval}
+     */
+    public @NotNull Iterable<Rational> rationalsIn(@NotNull Interval a) {
+        if (!a.getLower().isPresent() && !a.getUpper().isPresent()) {
+            return rationals();
+        } else if (!a.getLower().isPresent()) {
+            return rangeDown(a.getUpper().get());
+        } else if (!a.getUpper().isPresent()) {
+            return rangeUp(a.getLower().get());
+        } else {
+            return range(a.getLower().get(), a.getUpper().get());
+        }
+    }
+
+    /**
+     * Generates {@code Rational}s not contained in a given {@code Interval}.
+     *
+     * @param a an {@code Interval}
+     */
     public abstract @NotNull Iterable<Rational> rationalsNotIn(@NotNull Interval a);
-    public abstract @NotNull Iterable<RationalVector> rationalVectors(int dimension);
-    public abstract @NotNull Iterable<RationalVector> rationalVectorsAtLeast(int minDimension);
-    public abstract @NotNull Iterable<RationalVector> rationalVectors();
-    public abstract @NotNull Iterable<RationalVector> reducedRationalVectors(int dimension);
-    public abstract @NotNull Iterable<RationalVector> reducedRationalVectorsAtLeast(int minDimension);
-    public abstract @NotNull Iterable<RationalVector> reducedRationalVectors();
-    public abstract @NotNull Iterable<RationalMatrix> rationalMatrices(int height, int width);
-    public abstract @NotNull Iterable<RationalMatrix> rationalMatrices();
-    public abstract @NotNull Iterable<Polynomial> polynomials(int degree);
-    public abstract @NotNull Iterable<Polynomial> polynomialsAtLeast(int minDegree);
-    public abstract @NotNull Iterable<Polynomial> polynomials();
-    public abstract @NotNull Iterable<Polynomial> primitivePolynomials(int degree);
-    public abstract @NotNull Iterable<Polynomial> primitivePolynomialsAtLeast(int minDegree);
-    public abstract @NotNull Iterable<Polynomial> primitivePolynomials();
-    public abstract @NotNull Iterable<RationalPolynomial> rationalPolynomials(int degree);
-    public abstract @NotNull Iterable<RationalPolynomial> rationalPolynomialsAtLeast(int minDegree);
-    public abstract @NotNull Iterable<RationalPolynomial> rationalPolynomials();
-    public abstract @NotNull Iterable<RationalPolynomial> monicRationalPolynomials(int degree);
-    public abstract @NotNull Iterable<RationalPolynomial> monicRationalPolynomialsAtLeast(int minDegree);
-    public abstract @NotNull Iterable<RationalPolynomial> monicRationalPolynomials();
 
-    public @NotNull Iterable<QBarRandomProvider> qbarRandomProvidersFixedScales(int scale, int secondaryScale) {
+    /**
+     * Generates {@code RationalVector}s with a given dimension.
+     *
+     * @param dimension the dimension of the generated {@code RationalVector}s
+     */
+    public @NotNull Iterable<RationalVector> rationalVectors(int dimension) {
+        return map(RationalVector::of, lists(dimension, rationals()));
+    }
+
+    /**
+     * Generates {@code RationalVector}s.
+     */
+    public abstract @NotNull Iterable<RationalVector> rationalVectors();
+
+    /**
+     * Generates {@code RationalVector}s with a minimum dimension.
+     *
+     * @param minDimension the minimum dimension of the generated {@code RationalVector}s
+     */
+    public abstract @NotNull Iterable<RationalVector> rationalVectorsAtLeast(int minDimension);
+
+    /**
+     * A helper method which takes an {@code Iterable} of {@code BigInteger} {@code List}s and transforms it into an
+     * {@code Iterable} of reduced {@code RationalVector}s.
+     *
+     * <ul>
+     *  <li>{@code bigIntegerLists} cannot contain nulls or elements that contain nulls. It must also contain
+     *  infinitely many {@code List}s that have a GCD of zero or one and whose first nonzero value, if it exists, is
+     *  positive.</li>
+     *  <li>The result is a non-removable {@code Iterable} of reduced {@code RationalVector}s.</li>
+     * </ul>
+     *
+     * Length is infinite.
+     *
+     * @param bigIntegerLists the source list
+     * @return the resulting {@code RationalVector}s
+     */
+    protected static @NotNull Iterable<RationalVector> reducedRationalVectors(
+            @NotNull Iterable<List<BigInteger>> bigIntegerLists
+    ) {
         return map(
-                rp -> new QBarRandomProvider(rp.getSeed()),
-                wheelsProvider.randomProvidersFixedScales(scale, secondaryScale)
+                RationalVector::reduce,
+                filterInfinite(
+                        v -> {
+                            Optional<Rational> pivot = v.pivot();
+                            return !pivot.isPresent() || pivot.get().signum() == 1;
+                        },
+                        map(
+                                is -> RationalVector.of(toList(map(Rational::of, is))),
+                                filterInfinite(
+                                        js -> {
+                                            BigInteger gcd = foldl(BigInteger::gcd, BigInteger.ZERO, js);
+                                            return gcd.equals(BigInteger.ZERO) || gcd.equals(BigInteger.ONE);
+                                        },
+                                        bigIntegerLists
+                                )
+                        )
+                )
         );
     }
 
-    public @NotNull Iterable<QBarRandomProvider> qbarRandomProviders() {
-        return map(rp -> new QBarRandomProvider(rp.getSeed()), wheelsProvider.randomProviders());
+    /**
+     * Generates reduced {@code RationalVector}s (see {@link RationalVector#reduce()}) with a given dimension.
+     *
+     * @param dimension the dimension of the generated {@code RationalVector}s
+     */
+    public abstract @NotNull Iterable<RationalVector> reducedRationalVectors(int dimension);
+
+    /**
+     * Generates reduced {@code RationalVector}s (see {@link RationalVector#reduce()}).
+     */
+    public abstract @NotNull Iterable<RationalVector> reducedRationalVectors();
+
+    /**
+     * Generates reduced {@code RationalVector}s (see {@link RationalVector#reduce()}) with a minimum dimension.
+     *
+     * @param minDimension the minimum dimension of the generated {@code RationalVector}s
+     */
+    public abstract @NotNull Iterable<RationalVector> reducedRationalVectorsAtLeast(int minDimension);
+
+    /**
+     * Generates {@code RationalMatrix}es with a given {@code height} and {@code width}.
+     *
+     * @param height the height (number of rows) of the generated {@code RationalMatrix}es
+     * @param width the width (number of columns) of the generated {@code RationalMatrix}es
+     */
+    public abstract @NotNull Iterable<RationalMatrix> rationalMatrices(int height, int width);
+
+    /**
+     * Generates {@code RationalMatrix}es.
+     */
+    public abstract @NotNull Iterable<RationalMatrix> rationalMatrices();
+
+    /**
+     * Generates square {@code RationalMatrix}es.
+     */
+    public abstract @NotNull Iterable<RationalMatrix> squareRationalMatrices();
+
+    /**
+     * Generates {@code Polynomial}s with a given degree.
+     *
+     * @param degree the degree of the generated {@code Polynomial}s
+     */
+    public @NotNull Iterable<Polynomial> polynomials(int degree) {
+        return map(
+                js -> Polynomial.of(toList(js)),
+                filter(is -> is.isEmpty() || !last(is).equals(BigInteger.ZERO), lists(degree + 1, bigIntegers()))
+        );
+    }
+
+    /**
+     * Generates {@code Polynomial}s.
+     */
+    public abstract @NotNull Iterable<Polynomial> polynomials();
+
+    /**
+     * Generates {@code Polynomial}s with a minimum degree.
+     *
+     * @param minDegree the minimum degree of the generated {@code Polynomial}s
+     */
+    public abstract @NotNull Iterable<Polynomial> polynomialsAtLeast(int minDegree);
+
+    /**
+     * Generates primitive {@code Polynomial}s with a given degree.
+     *
+     * @param degree the degree of the generated {@code Polynomial}s
+     */
+    public abstract @NotNull Iterable<Polynomial> primitivePolynomials(int degree);
+
+    /**
+     * A helper method which takes an {@code Iterable} of {@code BigInteger} {@code List}s and transforms it into an
+     * {@code Iterable} of primitive {@code Polynomial}s.
+     *
+     * <ul>
+     *  <li>{@code bigIntegerLists} cannot contain nulls or elements that contain nulls. It must also contain
+     *  infinitely many {@code List}s that have a GCD of zero or one.</li>
+     *  <li>The result is a non-removable {@code Iterable} of primitive {@code Polynomial}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param bigIntegerLists the source list
+     * @return the resulting {@code Polynomial}s
+     */
+    protected static @NotNull Iterable<Polynomial> primitivePolynomials(
+            @NotNull Iterable<List<BigInteger>> bigIntegerLists
+    ) {
+        return map(
+                Polynomial::of,
+                filterInfinite(
+                        is -> !last(is).equals(BigInteger.ZERO) &&
+                                foldl(BigInteger::gcd, BigInteger.ZERO, is).equals(BigInteger.ONE),
+                        bigIntegerLists
+                )
+        );
+    }
+
+    /**
+     * Generates primitive {@code Polynomial}s.
+     */
+    public abstract @NotNull Iterable<Polynomial> primitivePolynomials();
+
+    /**
+     * Generates primitive {@code Polynomial}s with a minimum degree.
+     *
+     * @param minDegree the minimum degree of the generated {@code Polynomial}s
+     */
+    public abstract @NotNull Iterable<Polynomial> primitivePolynomialsAtLeast(int minDegree);
+
+    /**
+     * Generates primitive {@code Polynomial}s with positive leading coefficients with a given degree.
+     *
+     * @param degree the degree of the generated {@code Polynomial}s
+     */
+    public abstract @NotNull Iterable<Polynomial> positivePrimitivePolynomials(int degree);
+
+    /**
+     * Generates primitive {@code Polynomial}s with positive leading coefficients.
+     */
+    public abstract @NotNull Iterable<Polynomial> positivePrimitivePolynomials();
+
+    /**
+     * Generates primitive {@code Polynomial}s with positive leading coefficients with a minimum degree.
+     *
+     * @param minDegree the minimum degree of the generated {@code Polynomial}s
+     */
+    public abstract @NotNull Iterable<Polynomial> positivePrimitivePolynomialsAtLeast(int minDegree);
+
+    /**
+     * Generates {@code RationalPolynomial}s with a given degree.
+     *
+     * @param degree the degree of the generated {@code RationalPolynomial}s
+     */
+    public @NotNull Iterable<RationalPolynomial> rationalPolynomials(int degree) {
+        return map(
+                js -> RationalPolynomial.of(toList(js)),
+                filter(is -> is.isEmpty() || last(is) != Rational.ZERO, lists(degree + 1, rationals()))
+        );
+    }
+
+    /**
+     * Generates {@code RationalPolynomial}s.
+     */
+    public abstract @NotNull Iterable<RationalPolynomial> rationalPolynomials();
+
+    /**
+     * Generates {@code RationalPolynomial}s with a minimum degree.
+     *
+     * @param minDegree the minimum degree of the generated {@code RationalPolynomial}s
+     */
+    public abstract @NotNull Iterable<RationalPolynomial> rationalPolynomialsAtLeast(int minDegree);
+
+    /**
+     * Generates monic {@code RationalPolynomial}s with a given degree.
+     *
+     * @param degree the degree of the generated {@code RationalPolynomial}s
+     */
+    public @NotNull Iterable<RationalPolynomial> monicRationalPolynomials(int degree) {
+        return map(p -> p.toRationalPolynomial().makeMonic(), positivePrimitivePolynomials(degree));
+    }
+
+    /**
+     * Generates monic {@code RationalPolynomial}s.
+     */
+    public @NotNull Iterable<RationalPolynomial> monicRationalPolynomials() {
+        return map(p -> p.toRationalPolynomial().makeMonic(), positivePrimitivePolynomials());
+    }
+
+    /**
+     * Generates monic {@code RationalPolynomial}s with a minimum degree.
+     *
+     * @param minDegree the minimum degree of the generated {@code RationalPolynomial}s
+     */
+    public @NotNull Iterable<RationalPolynomial> monicRationalPolynomialsAtLeast(int minDegree) {
+        return map(p -> p.toRationalPolynomial().makeMonic(), positivePrimitivePolynomialsAtLeast(minDegree));
+    }
+
+    public @NotNull Iterable<QBarRandomProvider> qbarRandomProvidersFixedScales(int scale, int secondaryScale) {
+        return map(
+                rp -> (QBarRandomProvider) new QBarRandomProvider(rp.getSeed())
+                        .withScale(scale).withSecondaryScale(secondaryScale),
+                wheelsProvider.randomProvidersDefault()
+        );
     }
 
     public @NotNull Iterable<QBarRandomProvider> qbarRandomProvidersDefault() {
@@ -2794,8 +3208,16 @@ public strictfp abstract class QBarIterableProvider {
 
     public @NotNull Iterable<QBarRandomProvider> qbarRandomProvidersDefaultSecondaryScale() {
         return map(
-                rp -> new QBarRandomProvider(rp.getSeed()),
+                rp -> (QBarRandomProvider) new QBarRandomProvider(rp.getSeed()).withScale(rp.getScale()),
                 wheelsProvider.randomProvidersDefaultSecondaryScale()
+        );
+    }
+
+    public @NotNull Iterable<QBarRandomProvider> qbarRandomProviders() {
+        return map(
+                rp -> (QBarRandomProvider) new QBarRandomProvider(rp.getSeed())
+                        .withScale(rp.getScale()).withSecondaryScale(rp.getSecondaryScale()),
+                wheelsProvider.randomProviders()
         );
     }
 }

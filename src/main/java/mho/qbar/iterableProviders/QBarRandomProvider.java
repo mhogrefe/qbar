@@ -2,33 +2,85 @@ package mho.qbar.iterableProviders;
 
 import mho.qbar.objects.*;
 import mho.wheels.iterables.RandomProvider;
+import mho.wheels.math.MathUtils;
+import mho.wheels.numberUtils.IntegerUtils;
+import mho.wheels.ordering.Ordering;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigInteger;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.ordering.Ordering.le;
-import static mho.wheels.ordering.Ordering.lt;
 import static org.junit.Assert.assertTrue;
 
+/**
+ * <p>A {@code QBarRandomProvider} produces {@code Iterable}s that randomly generate some set of values with a
+ * specified distribution. A {@code QBarRandomProvider} is deterministic, but not immutable: its state changes every
+ * time a random value is generated. It may be reverted to its original state with
+ * {@link QBarRandomProvider#reset}.</p>
+ *
+ * <p>{@code QBarRandomProvider} uses the cryptographically-secure ISAAC pseudorandom number generator, implemented in
+ * {@link mho.wheels.random.IsaacPRNG}. The source of its randomness is a {@code int[]} seed. It contains two scale
+ * parameters which some of the distributions depend on; the exact relationship between the parameters and the
+ * distributions is specified in the distribution's documentation.</p>
+ *
+ * <p>To create an instance which shares a generator with {@code this}, use {@link QBarRandomProvider#copy()}. To
+ * create an instance which copies the generator, use {@link QBarRandomProvider#deepCopy()}.</p>
+ *
+ * <p>Note that sometimes the documentation will say things like "returns an {@code Iterable} containing all
+ * {@code String}s". This cannot strictly be true, since {@code IsaacPRNG} has a finite period, and will therefore
+ * produce only a finite number of {@code String}s. So in general, the documentation often pretends that the source of
+ * randomness is perfect (but still deterministic).</p>
+ */
 @SuppressWarnings("unused")
 public final strictfp class QBarRandomProvider extends QBarIterableProvider {
+    /**
+     * Creates a new {@code QBarRandomProvider} with a {@code RandomProvider}.
+     *
+     * <ul>
+     *  <li>{@code randomProvider} cannot be null.</li>
+     *  <li>Any {@code QBarRandomProvider} may be created with this constructor.</li>
+     * </ul>
+     *
+     * @param randomProvider an {@code RandomProvider}
+     */
     private QBarRandomProvider(@NotNull RandomProvider randomProvider) {
         super(randomProvider);
     }
 
+    /**
+     * Constructs a {@code QBarRandomProvider} with a seed generated from the current system time.
+     *
+     * <ul>
+     *  <li>(conjecture) Any {@code QBarRandomProvider} with default {@code scale} and {@code secondaryScale} may be
+     *  constructed with this constructor.</li>
+     * </ul>
+     */
     public QBarRandomProvider() {
         super(new RandomProvider());
     }
 
+    /**
+     * Constructs a {@code QBarRandomProvider} with a given seed.
+     *
+     * <ul>
+     *  <li>{@code seed} must have length {@link mho.wheels.random.IsaacPRNG#SIZE}.</li>
+     *  <li>Any {@code QBarRandomProvider} with default {@code scale} and {@code secondaryScale} may be constructed
+     *  with this constructor.</li>
+     * </ul>
+     *
+     * @param seed the source of randomness
+     */
     public QBarRandomProvider(List<Integer> seed) {
         super(new RandomProvider(seed));
     }
 
+    /**
+     * A {@code QBarRandomProvider} used for testing. This allows for deterministic testing without manually setting up
+     * a lengthy seed each time.
+     */
     public static @NotNull QBarRandomProvider example() {
         return new QBarRandomProvider(RandomProvider.example());
     }
@@ -134,7 +186,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
      */
     @Override
     public @NotNull QBarIterableProvider withSecondaryScale(int secondaryScale) {
-        return new QBarRandomProvider((RandomProvider) wheelsProvider.withScale(secondaryScale));
+        return new QBarRandomProvider((RandomProvider) wheelsProvider.withSecondaryScale(secondaryScale));
     }
 
     /**
@@ -167,169 +219,236 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
     }
 
     /**
-     * a pseudorandom {@link Iterable} that generates every {@link Rational}. Each {@code Rational}'s bit size (defined
-     * as the sum of the numerator's and denominator's bit sizes) is chosen from a geometric distribution with mean
-     * approximately {@code meanBitSize} (The ratio between the actual mean bit size and {@code meanBitSize} decreases
-     * as {@code meanBitSize} increases). Does not support removal.
+     * An {@code Iterable} that generates all positive {@code Rational}s. Each {@code Rational}'s bit size (defined as
+     * the sum of the numerator 'sand denominator's bit sizes) is chosen from a geometric distribution with mean
+     * approximately {@code scale}. Does not support removal.
      *
      * <ul>
-     *  <li>{@code meanBitSize} must be greater than 5.</li>
-     *  <li>The result is an infinite pseudorandom sequence of all {@code Rational}s.</li>
-     * </ul>
-     *
-     * Length is infinite
-     */
-    @Override
-    public @NotNull Iterable<Rational> rationals() {
-        Iterable<BigInteger> numerators = withScale(getScale() / 2).bigIntegers();
-        Iterable<BigInteger> denominators = withScale(getScale() / 2).positiveBigIntegers();
-        return map(
-                p -> Rational.of(p.a, p.b),
-                filter(q -> q.a.gcd(q.b).equals(BigInteger.ONE), pairs(numerators, denominators))
-        );
-    }
-
-    /**
-     * a pseudorandom {@code Iterable} that generates every non-negative {@code Rational}. Each {@code Rational}'s bit
-     * size (defined as the sum of the numerator and denominator's bit size) is chosen from a geometric distribution
-     * with mean approximately {@code meanBitSize} (The ratio between the actual mean bit size and {@code meanBitSize}
-     * decreases as {@code meanBitSize} increases). Does not support removal.
-     *
-     * <ul>
-     *  <li>{@code meanBitSize} must be greater than 5.</li>
-     *  <li>The result is an infinite pseudorandom sequence of all {@code Rational}s.</li>
-     * </ul>
-     *
-     * Length is infinite
-     */
-    @Override
-    public @NotNull Iterable<Rational> nonNegativeRationals() {
-        Iterable<BigInteger> numerators = withScale(getScale() / 2).naturalBigIntegers();
-        Iterable<BigInteger> denominators = withScale(getScale() / 2).positiveBigIntegers();
-        return map(
-                p -> Rational.of(p.a, p.b),
-                filter(q -> q.a.gcd(q.b).equals(BigInteger.ONE), pairs(numerators, denominators))
-        );
-    }
-
-    /**
-     * a pseudorandom {@code Iterable} that generates every positive {@code Rational}. Each {@code Rational}'s bit size
-     * (defined as the sum of the numerator 'sand denominator's bit sizes) is chosen from a geometric distribution with
-     * mean approximately {@code meanBitSize} (The ratio between the actual mean bit size and {@code meanBitSize}
-     * decreases as {@code meanBitSize} increases). Does not support removal.
-     *
-     * <ul>
-     *  <li>{@code meanBitSize} must be greater than 5.</li>
-     *  <li>The result is an infinite pseudorandom sequence of all positive {@code Rational}s.</li>
+     *  <li>{@code this} must have a {@code scale} of at least 4.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing positive {@code Rational}s.</li>
      * </ul>
      *
      * Length is infinite
      */
     @Override
     public @NotNull Iterable<Rational> positiveRationals() {
-        Iterable<BigInteger> components = withScale(getScale() / 2).positiveBigIntegers();
+        int scale = getScale();
+        if (scale < 4) {
+            throw new IllegalStateException("this must have a scale of at least 4. Invalid scale: " + scale);
+        }
+        int leftScale = scale / 2;
+        int rightScale = (scale & 1) == 0 ? leftScale : leftScale + 1;
         return map(
                 p -> Rational.of(p.a, p.b),
-                filter(q -> q.a.gcd(q.b).equals(BigInteger.ONE), pairs(components))
+                filterInfinite(
+                        q -> q.a.gcd(q.b).equals(BigInteger.ONE),
+                        pairs(withScale(leftScale).positiveBigIntegers(), withScale(rightScale).positiveBigIntegers())
+                )
         );
     }
 
     /**
-     * a pseudorandom {@code Iterable} that generates every negative {@code Rational}. Each {@code Rational}'s bit size
-     * (defined as the sum of the numerator's and denominator's bit sizes) is chosen from a geometric distribution with
-     * mean approximately {@code meanBitSize} (The ratio between the actual mean bit size and {@code meanBitSize}
-     * decreases as {@code meanBitSize} increases). Does not support removal.
+     * An {@code Iterable} that generates all negative {@code Rational}s. Each {@code Rational}'s bit size (defined as
+     * the sum of the numerator's and denominator's bit sizes) is chosen from a geometric distribution with mean
+     * approximately {@code scale}. Does not support removal.
      *
      * <ul>
-     *  <li>{@code meanBitSize} must be greater than 5.</li>
-     *  <li>The result is an infinite pseudorandom sequence of all negative {@code Rational}s.</li>
+     *  <li>{@code this} must have a {@code scale} of at least 4.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing negative {@code Rational}s.</li>
      * </ul>
      *
      * Length is infinite
      */
     @Override
     public @NotNull Iterable<Rational> negativeRationals() {
-        Iterable<BigInteger> numerators = withScale(getScale() / 2).negativeBigIntegers();
-        Iterable<BigInteger> denominators = withScale(getScale() / 2).positiveBigIntegers();
+        int scale = getScale();
+        if (scale < 4) {
+            throw new IllegalStateException("this must have a scale of at least 4. Invalid scale: " + scale);
+        }
+        int leftScale = scale / 2;
+        int rightScale = (scale & 1) == 0 ? leftScale : leftScale + 1;
         return map(
                 p -> Rational.of(p.a, p.b),
-                filter(q -> q.a.gcd(q.b).equals(BigInteger.ONE), pairs(numerators, denominators))
+                filterInfinite(
+                        q -> q.a.gcd(q.b).equals(BigInteger.ONE),
+                        pairs(withScale(leftScale).negativeBigIntegers(), withScale(rightScale).positiveBigIntegers())
+                )
         );
     }
 
     /**
-     * a pseudorandom {@code Iterable} that generates every {@code Rational} in the interval [0, 1). Each
-     * {@code Rational}'s bit size (defined as the sum of the numerator's and denominator's bit sizes) is chosen from a
-     * geometric distribution with mean approximately {@code meanBitSize} (The ratio between the actual mean bit size
-     * and {@code meanBitSize} decreases as {@code meanBitSize} increases). Does not support removal.
+     * An {@code Iterable} that generates all nonzero {@code Rational}s. Each {@code Rational}'s bit size (defined as
+     * the sum of the numerator and denominator's bit size) is chosen from a geometric distribution with mean
+     * approximately {@code scale}. Does not support removal.
      *
      * <ul>
-     *  <li>{@code meanBitSize} must be greater than 5.</li>
-     *  <li>The result is an infinite pseudorandom sequence of all {@code Rational}s in the interval [0, 1).</li>
+     *  <li>{@code this} must have a {@code scale} of at least 4.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing nonzero {@code Rational}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
+    @Override
+    public @NotNull Iterable<Rational> nonzeroRationals() {
+        int scale = getScale();
+        if (scale < 4) {
+            throw new IllegalStateException("this must have a scale of at least 4. Invalid scale: " + scale);
+        }
+        int leftScale = scale / 2;
+        int rightScale = (scale & 1) == 0 ? leftScale : leftScale + 1;
+        return map(
+                p -> Rational.of(p.a, p.b),
+                filterInfinite(
+                        q -> q.a.gcd(q.b).equals(BigInteger.ONE),
+                        pairs(withScale(leftScale).nonzeroBigIntegers(), withScale(rightScale).positiveBigIntegers())
+                )
+        );
+    }
+
+    /**
+     * An {@code Iterable} that generates all {@link Rational}s. Each {@code Rational}'s bit size (defined as the sum
+     * of the numerator's and denominator's bit sizes) is chosen from a geometric distribution with mean approximately
+     * {@code scale}. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a {@code scale} of at least 3.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing {@code Rational}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
+    @Override
+    public @NotNull Iterable<Rational> rationals() {
+        int scale = getScale();
+        if (scale < 3) {
+            throw new IllegalStateException("this must have a scale of at least 3. Invalid scale: " + scale);
+        }
+        int leftScale = scale / 2;
+        int rightScale = (scale & 1) == 0 ? leftScale : leftScale + 1;
+        return map(
+                p -> Rational.of(p.a, p.b),
+                filterInfinite(
+                        q -> q.a.gcd(q.b).equals(BigInteger.ONE),
+                        pairs(withScale(leftScale).bigIntegers(), withScale(rightScale).positiveBigIntegers())
+                )
+        );
+    }
+
+    /**
+     * An {@code Iterable} that generates all {@code Rational}s in the interval [0, 1). Each {@code Rational}'s bit
+     * size (defined as the sum of the numerator's and denominator's bit sizes) is chosen from a geometric distribution
+     * with mean approximately {@code scale}. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a {@code scale} of at least 4.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing {@code Rational}s in the interval
+     *  [0, 1).</li>
      * </ul>
      *
      * Length is infinite
      */
     @Override
     public @NotNull Iterable<Rational> nonNegativeRationalsLessThanOne() {
-        Iterable<BigInteger> numerators = withScale(getScale() / 2).naturalBigIntegers();
-        Iterable<BigInteger> denominators = withScale(getScale() / 2).positiveBigIntegers();
+        int scale = getScale();
+        if (scale < 4) {
+            throw new IllegalStateException("this must have a scale of at least 4. Invalid scale: " + scale);
+        }
         return map(
-                p -> Rational.of(p.a, p.b),
-                filter(q -> lt(q.a, q.b) && q.a.gcd(q.b).equals(BigInteger.ONE), pairs(numerators, denominators))
+                p -> Rational.of(p.b, p.a),
+                dependentPairsInfinite(
+                        withScale(scale / 2).positiveBigIntegers(),
+                        d -> filterInfinite(
+                                n -> n.gcd(d).equals(BigInteger.ONE),
+                                range(BigInteger.ZERO, d.subtract(BigInteger.ONE))
+                        )
+                )
         );
     }
 
-    @Override
-    public @NotNull Iterable<Rational> rangeUp(@NotNull Rational a) {
-        return null;
-    }
-
-    @Override
-    public @NotNull Iterable<Rational> rangeDown(@NotNull Rational a) {
-        return null;
-    }
-
+    /**
+     * An {@code Iterable} that generates all {@code Rational}s between {@code a} and {@code b}, inclusive. A larger
+     * {@code scale} corresponds to elements with a larger mean bit size (sum of the bit lengths of the numerator and
+     * denominator). Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a {@code scale} of at least 4.</li>
+     *  <li>{@code a} cannot be null.</li>
+     *  <li>{@code b} cannot be null.</li>
+     *  <li>{@code a} cannot be greater than {@code b}.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing {@code Rational}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param a the inclusive lower bound of the generated elements
+     * @param b the inclusive upper bound of the generated elements
+     * @return {@code Rational}s between {@code a} and {@code b}, inclusive
+     */
     @Override
     public @NotNull Iterable<Rational> range(@NotNull Rational a, @NotNull Rational b) {
-        return null;
+        int scale = getScale();
+        if (scale < 4) {
+            throw new IllegalStateException("this must have a scale of at least 4. Invalid scale: " + scale);
+        }
+        switch (Ordering.compare(a, b)) {
+            case GT: throw new IllegalArgumentException("a cannot be greater than b. Invalid a: " +
+                    a + ", and invalid b: " + b);
+            case EQ: return repeat(a);
+            case LT:
+                Rational diameter = b.subtract(a);
+                return withElement(b, map(r -> r.multiply(diameter).add(a), nonNegativeRationalsLessThanOne()));
+            default: throw new IllegalStateException("unreachable");
+        }
     }
 
     /**
-     * a pseudorandom {@code Iterable} that generates every {@code Interval} with finite bounds. Each
-     * {@code Interval}'s bit size (defined as the sum of the lower bound's and upper bound's bit sizes) is chosen from
-     * a geometric distribution with mean approximately {@code meanBitSize} (The ratio between the actual mean bit size
-     * and {@code meanBitSize} decreases as {@code meanBitSize} increases). Does not support removal.
+     * An {@code Iterable} that generates all {@code Interval}s with finite bounds. A larger {@code scale} corresponds
+     * to elements with a larger mean bit size. Does not support removal.
      *
      * <ul>
-     *  <li>{@code meanBitSize} must be greater than 11.</li>
-     *  <li>The result is an infinite pseudorandom sequence of all {@code Interval}s with finite bounds.</li>
+     *  <li>{@code this} must have a {@code scale} of at least 6.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing finitely-bounded
+     *  {@code Interval}s.</li>
      * </ul>
      *
      * Length is infinite
      */
     @Override
     public @NotNull Iterable<Interval> finitelyBoundedIntervals() {
-        Iterable<Rational> bounds = withScale(getScale() / 2).rationals();
-        return map(p -> Interval.of(p.a, p.b), filter(p -> le(p.a, p.b), pairs(bounds)));
+        int scale = getScale();
+        if (scale < 6) {
+            throw new IllegalStateException("this must have a scale of at least 6. Invalid scale: " + scale);
+        }
+        int leftScale = scale / 2;
+        int rightScale = (scale & 1) == 0 ? leftScale : leftScale + 1;
+        return map(
+                p -> Interval.of(p.a, p.b),
+                filterInfinite(
+                        p -> le(p.a, p.b),
+                        pairs(withScale(leftScale).rationals(), withScale(rightScale).rationals())
+                )
+        );
     }
 
     /**
-     * a pseudorandom {@code Iterable} that generates every {@code Interval}. Each {@code Interval}'s bit size (defined
-     * as the sum of the lower bound's and upper bound's bit sizes) is chosen from a geometric distribution with mean
-     * approximately {@code meanBitSize} (The ratio between the actual mean bit size and {@code meanBitSize} decreases
-     * as {@code meanBitSize} increases). Does not support removal.
+     * An {@code Iterable} that generates all {@code Interval}s. A larger {@code scale} corresponds to elements with a
+     * larger mean bit size. Does not support removal.
      *
      * <ul>
-     *  <li>{@code meanBitSize} must be greater than 11.</li>
-     *  <li>The result is an infinite pseudorandom sequence of all {@code Interval}s.</li>
+     *  <li>{@code this} must have a {@code scale} of at least 6.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing {@code Interval}s.</li>
      * </ul>
      *
      * Length is infinite
      */
     @Override
     public @NotNull Iterable<Interval> intervals() {
-        Iterable<Rational> bounds = withScale(getScale() / 2).rationals();
+        int scale = getScale();
+        if (scale < 6) {
+            throw new IllegalStateException("this must have a scale of at least 6. Invalid scale: " + scale);
+        }
+        QBarIterableProvider leftRP = withScale(scale / 2);
+        QBarIterableProvider rightRP = withScale((scale & 1) == 0 ? scale / 2 : scale / 2 + 1);
         return map(
                 p -> {
                     if (!p.a.isPresent() && !p.b.isPresent()) return Interval.ALL;
@@ -337,271 +456,610 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
                     if (!p.b.isPresent()) return Interval.greaterThanOrEqualTo(p.a.get());
                     return Interval.of(p.a.get(), p.b.get());
                 },
-                filter(p -> !p.a.isPresent() || !p.b.isPresent() || le(p.a.get(), p.b.get()), pairs(optionals(bounds)))
+                filterInfinite(
+                        p -> !p.a.isPresent() || !p.b.isPresent() || le(p.a.get(), p.b.get()),
+                        pairs(leftRP.optionals(leftRP.rationals()), rightRP.optionals(rightRP.rationals()))
+                )
         );
     }
 
+    /**
+     * An {@code Iterable} that generates all {@code Rational}s contained in a given {@code Interval}. Does not support
+     * removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a {@code scale} of at least 4.</li>
+     *  <li>{@code a} cannot be null.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing {@code Rational}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param a an {@code Interval}
+     * @return {r|r∈{@code a}}
+     */
     @Override
-    public @NotNull Iterable<Byte> bytes(@NotNull Interval a) {
-        return null;
-    }
-
-    @Override
-    public @NotNull Iterable<Short> shorts(@NotNull Interval a) {
-        return null;
-    }
-
-    @Override
-    public @NotNull Iterable<Integer> integers(@NotNull Interval a) {
-        return null;
-    }
-
-    @Override
-    public @NotNull Iterable<Long> longs(@NotNull Interval a) {
-        return null;
-    }
-
-    public @NotNull Iterable<BigInteger> bigIntegers(@NotNull Interval a) {
-        return null;
-    }
-
-    @Override
-    public @NotNull Iterable<Rational> rationals(@NotNull Interval a) {
-        if (!a.getLower().isPresent() && !a.getUpper().isPresent()) {
-            return rationals();
-        } else if (!a.getLower().isPresent()) {
-            return map(r -> a.getUpper().get().subtract(r), nonNegativeRationals());
-        } else if (!a.getUpper().isPresent()) {
-            return map(r -> r.add(a.getLower().get()), nonNegativeRationals());
-        } else {
-            Rational diameter = a.diameter().get();
-            if (diameter == Rational.ZERO) return repeat(a.getLower().get());
-            return concat(
-                    Arrays.asList(a.getLower().get(), a.getUpper().get()),
-                    tail(
-                            map(
-                                    r -> r.multiply(diameter).add(a.getLower().get()),
-                                    nonNegativeRationalsLessThanOne()
-                            )
-                    )
-            );
+    public @NotNull Iterable<Rational> rationalsIn(@NotNull Interval a) {
+        int scale = getScale();
+        if (scale < 4) {
+            throw new IllegalStateException("this must have a scale of at least 4. Invalid scale: " + scale);
         }
+        return super.rationalsIn(a);
     }
 
+    /**
+     * An {@code Iterable} that generates all {@code Rational}s not contained in a given {@code Interval}. Does not
+     * support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a {@code scale} of at least 4.</li>
+     *  <li>{@code a} cannot be (–∞, ∞).</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing {@code Rational}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param a an {@code Interval}
+     * @return {r|r∉{@code a}}
+     */
+    @Override
     public @NotNull Iterable<Rational> rationalsNotIn(@NotNull Interval a) {
+        int scale = getScale();
+        if (scale < 4) {
+            throw new IllegalStateException("this must have a scale of at least 4. Invalid scale: " + scale);
+        }
         List<Interval> complement = a.complement();
         switch (complement.size()) {
             case 0:
-                return Collections.emptyList();
+                throw new IllegalArgumentException("a cannot be (-Infinity, Infinity).");
             case 1:
-                Interval x = complement.get(0);
                 Rational boundary = a.getLower().isPresent() ? a.getLower().get() : a.getUpper().get();
-                return filter(r -> !r.equals(boundary), rationals(x));
+                return filterInfinite(r -> !r.equals(boundary), rationalsIn(complement.get(0)));
             case 2:
-                Interval y = complement.get(0);
-                Interval z = complement.get(1);
-                return mux(
-                        (List<Iterable<Rational>>) Arrays.asList(
-                                filter(r -> !r.equals(y.getUpper().get()), rationals(y)),
-                                filter(r -> !r.equals(z.getLower().get()), rationals(z))
-                        )
+                Rational x = complement.get(0).getUpper().get();
+                Rational y = complement.get(1).getLower().get();
+                //noinspection RedundantCast
+                return choose(
+                        filterInfinite(r -> !r.equals(x), rangeDown(x)),
+                        filterInfinite(r -> !r.equals(y), rangeUp(y))
                 );
+            default: throw new IllegalStateException("unreachable");
         }
-        return null; //never happens
     }
 
-    @Override
-    public @NotNull Iterable<RationalVector> rationalVectors(int dimension) {
-        return map(RationalVector::of, withScale(getSecondaryScale()).lists(dimension, rationals()));
-    }
-
-    @Override
-    public @NotNull Iterable<RationalVector> rationalVectorsAtLeast(int minDimension) {
-        return map(RationalVector::of, withScale(getSecondaryScale()).listsAtLeast(minDimension, rationals()));
-    }
-
+    /**
+     * An {@code Iterable} that generates all {@code RationalVector}s. Each {@code RationalVector}'s dimension is
+     * chosen from a geometric distribution with mean {@code secondaryScale}, and each coordinate's bit size is chosen
+     * from a geometric distribution with mean approximately {@code scale}. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a {@code scale} of at least 3 and a positive {@code secondaryScale}.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing {@code RationalVector}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
     @Override
     public @NotNull Iterable<RationalVector> rationalVectors() {
-        return map(RationalVector::of, withScale(getSecondaryScale()).lists(rationals()));
+        int secondaryScale = getSecondaryScale();
+        if (secondaryScale < 1) {
+            throw new IllegalStateException("this must have a positive secondaryScale. Invalid secondaryScale: " +
+                    secondaryScale);
+        }
+        return map(RationalVector::of, withScale(secondaryScale).lists(rationals()));
     }
 
+    /**
+     * An {@code Iterable} that generates all {@code RationalVector}s with a minimum dimension. Each
+     * {@code RationalVector}'s dimension is chosen from a geometric distribution with mean {@code secondaryScale}, and
+     * each coordinate's bit size is chosen from a geometric distribution with mean approximately {@code scale}. Does
+     * not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a {@code scale} of at least 3 and a {@code secondaryScale} greater than
+     *  {@code minDimension}.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing {@code RationalVector}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param minDimension the minimum dimension of the generated {@code RationalVector}s
+     * @return {@code RationalVector}s with dimension at least {@code minDimension}
+     */
+    @Override
+    public @NotNull Iterable<RationalVector> rationalVectorsAtLeast(int minDimension) {
+        int secondaryScale = getSecondaryScale();
+        if (secondaryScale <= minDimension) {
+            throw new IllegalStateException("this must have a secondaryScale greater than minDimension." +
+                    " secondaryScale: " + secondaryScale + ", minDimension: " + minDimension);
+        }
+        return map(RationalVector::of, withScale(secondaryScale).listsAtLeast(minDimension, rationals()));
+    }
+
+    /**
+     * An {@code Iterable} that generates all reduced {@code RationalVector}s (see {@link RationalVector#reduce()})
+     * with a given dimension. A larger {@code scale} corresponds to a larger mean coordinate size. Does not support
+     * removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a positive {@code scale}.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing reduced {@code RationalVector}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param dimension the dimension of the generated {@code RationalVector}s
+     * @return {@code RationalVector}s with dimension {@code dimension}
+     */
     @Override
     public @NotNull Iterable<RationalVector> reducedRationalVectors(int dimension) {
-        if (dimension == 1) {
-            return Arrays.asList(RationalVector.of(Rational.ZERO), RationalVector.of(Rational.ONE));
-        }
-        return map(
-                RationalVector::reduce,
-                filter(
-                        v -> {
-                            Optional<Rational> pivot = v.pivot();
-                            return !pivot.isPresent() || pivot.get().signum() == 1;
-                        },
-                        map(
-                                is -> RationalVector.of(toList(map(Rational::of, is))),
-                                filter(
-                                        js -> {
-                                            BigInteger gcd = foldl(BigInteger::gcd, BigInteger.ZERO, js);
-                                            return gcd.equals(BigInteger.ZERO) || gcd.equals(BigInteger.ONE);
-                                        },
-                                        withScale(getSecondaryScale()).lists(dimension, bigIntegers())
-                                )
-                        )
-                )
-        );
+        return reducedRationalVectors(lists(dimension, bigIntegers()));
     }
 
-    @Override
-    public @NotNull Iterable<RationalVector> reducedRationalVectorsAtLeast(int minDimension) {
-        return map(
-                RationalVector::reduce,
-                filter(
-                        v -> {
-                            Optional<Rational> pivot = v.pivot();
-                            return !pivot.isPresent() || pivot.get().signum() == 1;
-                        },
-                        map(
-                                is -> RationalVector.of(toList(map(Rational::of, is))),
-                                filter(
-                                        js -> {
-                                            BigInteger gcd = foldl(BigInteger::gcd, BigInteger.ZERO, js);
-                                            return gcd.equals(BigInteger.ZERO) || gcd.equals(BigInteger.ONE);
-                                        },
-                                        withScale(getSecondaryScale()).listsAtLeast(minDimension, bigIntegers())
-                                )
-                        )
-                )
-        );
-    }
-
+    /**
+     * An {@code Iterable} that generates all reduced {@code RationalVector}s (see {@link RationalVector#reduce()}).
+     * A larger {@code scale} corresponds to a larger mean coordinate size, and a larger {@code secondaryScale}
+     * corresponds to a larger mean dimension. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a positive {@code scale} and {@code secondaryScale}.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing reduced {@code RationalVector}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
     @Override
     public @NotNull Iterable<RationalVector> reducedRationalVectors() {
-        return map(
-                RationalVector::reduce,
-                filter(
-                        v -> {
-                            Optional<Rational> pivot = v.pivot();
-                            return !pivot.isPresent() || pivot.get().signum() == 1;
-                        },
-                        map(
-                                is -> RationalVector.of(toList(map(Rational::of, is))),
-                                filter(
-                                        js -> {
-                                            BigInteger gcd = foldl(BigInteger::gcd, BigInteger.ZERO, js);
-                                            return gcd.equals(BigInteger.ZERO) || gcd.equals(BigInteger.ONE);
-                                        },
-                                        withScale(getSecondaryScale()).lists(bigIntegers())
-                                )
-                        )
-                )
-        );
+        int secondaryScale = getSecondaryScale();
+        if (secondaryScale < 1) {
+            throw new IllegalStateException("this must have a positive secondaryScale. Invalid secondaryScale: " +
+                    secondaryScale);
+        }
+        return reducedRationalVectors(withScale(getSecondaryScale()).lists(bigIntegers()));
     }
 
+    /**
+     * An {@code Iterable} that generates all reduced {@code RationalVector}s (see {@link RationalVector#reduce()})
+     * with a minimum dimension. A larger {@code scale} corresponds to a larger mean coordinate size, and a larger
+     * {@code secondaryScale} corresponds to a larger mean dimension. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a positive {@code scale} and a {@code secondaryScale} greater than
+     *  {@code minDimension}.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing reduced {@code RationalVectors}.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param minDimension the minimum dimension of the generated {@code RationalVector}s
+     * @return {@code RationalVector}s with dimension at least {@code minDimension}
+     */
+    @Override
+    public @NotNull Iterable<RationalVector> reducedRationalVectorsAtLeast(int minDimension) {
+        int secondaryScale = getSecondaryScale();
+        if (secondaryScale <= minDimension) {
+            throw new IllegalStateException("this must have a secondaryScale greater than minDimension." +
+                    " secondaryScale: " + secondaryScale + ", minDimension: " + minDimension);
+        }
+        return reducedRationalVectors(withScale(getSecondaryScale()).listsAtLeast(minDimension, bigIntegers()));
+    }
+
+    /**
+     * An {@code Iterable} that generates all {@code RationalMatrix}es with a given height and width. Each coordinate's
+     * bit size is chosen from a geometric distribution with mean approximately {@code scale}. Does not support
+     * removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a {@code scale} of at least 3.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing {@code RationalMatrix}es.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param height the height (number of rows) of the generated {@code RationalMatrix}es
+     * @param width the width (number of columns) of the generated {@code RationalMatrix}es
+     * @return {@code RationalMatrix}es with height {@code height} and width {@code width}
+     */
     @Override
     public @NotNull Iterable<RationalMatrix> rationalMatrices(int height, int width) {
-        if (height == 0 || width == 0) return repeat(RationalMatrix.zero(height, width));
-        return map(RationalMatrix::fromRows, lists(height, rationalVectors(width)));
+        if (height == 0 || width == 0) {
+            int scale = getScale();
+            if (scale < 3) {
+                throw new IllegalStateException("this must have a scale of at least 3. Invalid scale: " + scale);
+            }
+            return repeat(RationalMatrix.zero(height, width));
+        } else {
+            return map(RationalMatrix::fromRows, lists(height, rationalVectors(width)));
+        }
     }
 
+    /**
+     * An {@code Iterable} that generates all {@code RationalMatrix}es. Each {@code RationalMatrix}'s element count is
+     * chosen from a geometric distribution with mean approximately {@code secondaryScale}, and each coordinate's bit
+     * size is chosen from a geometric distribution with mean approximately {@code scale}. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a {@code scale} of at least 3 and a {@code secondaryScale} of at least 2.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing {@code RationalMatrix}es.</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
     @Override
     public @NotNull Iterable<RationalMatrix> rationalMatrices() {
-        return null;
-    }
-
-    @Override
-    public @NotNull Iterable<Polynomial> polynomials(int degree) {
-        return map(
-                js -> Polynomial.of(toList(js)),
-                filter(
-                        is -> is.isEmpty() || !last(is).equals(BigInteger.ZERO),
-                        withScale(getSecondaryScale()).lists(degree + 1, bigIntegers())
+        int scale = getScale();
+        if (scale < 3) {
+            throw new IllegalStateException("this must have a scale of at least 3. Invalid scale: " + scale);
+        }
+        int secondaryScale = getSecondaryScale();
+        if (secondaryScale < 2) {
+            throw new IllegalStateException("this must have a secondaryScale of at least 2. Invalid secondaryScale: " +
+                    secondaryScale);
+        }
+        QBarRandomProvider dimensionProvider = (QBarRandomProvider) withScale(
+                MathUtils.ceilingRoot(IntegerUtils.TWO, BigInteger.valueOf(secondaryScale)).intValueExact()
+        );
+        return chooseLogarithmicOrder(
+                map(
+                        p -> RationalMatrix.fromRows(p.b),
+                        dependentPairsInfiniteSquareRootOrder(
+                                pairs(dimensionProvider.positiveIntegersGeometric()),
+                                p -> lists(p.a, rationalVectors(p.b))
+                        )
+                ),
+                choose(
+                        map(i -> RationalMatrix.zero(0, i), dimensionProvider.naturalIntegersGeometric()),
+                        map(i -> RationalMatrix.zero(i, 0), dimensionProvider.positiveIntegersGeometric())
                 )
         );
     }
 
+    /**
+     * An {@code Iterable} that generates all square {@code RationalMatrix}es. Each {@code RationalMatrix}'s element
+     * count is chosen from a geometric distribution with mean approximately {@code secondaryScale}, and each
+     * coordinate's bit size is chosen from a geometric distribution with mean approximately {@code scale}. Does not
+     * support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a {@code scale} of at least 3 and a {@code secondaryScale} of at least 2.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing square {@code RationalMatrix}es.</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
     @Override
-    public @NotNull Iterable<Polynomial> polynomialsAtLeast(int minDegree) {
-        return map(
-                js -> Polynomial.of(toList(js)),
-                filter(
-                        is -> is.isEmpty() || !last(is).equals(BigInteger.ZERO),
-                        withScale(getSecondaryScale()).listsAtLeast(minDegree + 1, bigIntegers())
+    public @NotNull Iterable<RationalMatrix> squareRationalMatrices() {
+        int scale = getScale();
+        if (scale < 3) {
+            throw new IllegalStateException("this must have a scale of at least 3. Invalid scale: " + scale);
+        }
+        int secondaryScale = getSecondaryScale();
+        if (secondaryScale < 2) {
+            throw new IllegalStateException("this must have a secondaryScale of at least 2. Invalid secondaryScale: " +
+                    secondaryScale);
+        }
+        QBarRandomProvider dimensionProvider = (QBarRandomProvider) withScale(
+                MathUtils.ceilingRoot(IntegerUtils.TWO, BigInteger.valueOf(secondaryScale)).intValueExact()
+        );
+        return withElement(
+                RationalMatrix.zero(0, 0),
+                map(p -> p.b, dependentPairsInfiniteLogarithmicOrder(
+                        dimensionProvider.positiveIntegersGeometric(),
+                        i -> rationalMatrices(i, i))
                 )
         );
     }
 
+    /**
+     * An {@code Iterable} that generates all {@code Polynomial}s. Each {@code Polynomial}'s degree is chosen from a
+     * geometric distribution with mean {@code secondaryScale}, and each coefficient's bit size is chosen from a
+     * geometric distribution with mean approximately {@code scale}. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a positive {@code scale} and a non-negative {@code secondaryScale}.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing {@code Polynomial}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
     @Override
     public @NotNull Iterable<Polynomial> polynomials() {
+        int secondaryScale = getSecondaryScale();
+        if (secondaryScale < 0) {
+            throw new IllegalStateException("this must have a non-negative secondaryScale. Invalid secondaryScale: " +
+                    secondaryScale);
+        }
         return map(
                 js -> Polynomial.of(toList(js)),
-                filter(
+                filterInfinite(
                         is -> is.isEmpty() || !last(is).equals(BigInteger.ZERO),
-                        withScale(getSecondaryScale()).lists(bigIntegers())
+                        withScale(secondaryScale + 1).lists(bigIntegers())
                 )
         );
     }
 
+    /**
+     * An {@code Iterable} that generates all {@code Polynomial}s with a minimum degree. Each {@code Polynomial}'s
+     * degree is chosen from a geometric distribution with mean {@code secondaryScale}, and each coefficient's bit size
+     * is chosen from a geometric distribution with mean approximately {@code scale}. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a positive {@code scale} and a {@code secondaryScale} greater than
+     *  {@code minDegree}.</li>
+     *  <li>{@code minDegree} must be at least –1.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing {@code Polynomial}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param minDegree the minimum degree of the generated {@code Polynomial}s
+     * @return {@code Polynomial}s with degree at least {@code minDegree}
+     */
+    @Override
+    public @NotNull Iterable<Polynomial> polynomialsAtLeast(int minDegree) {
+        if (minDegree < -1) {
+            throw new IllegalArgumentException("minDegree must be at least -1. Invalid minDegree: " + minDegree);
+        }
+        int secondaryScale = getSecondaryScale();
+        if (secondaryScale <= minDegree) {
+            throw new IllegalStateException("this must have a secondaryScale greater than minDegree." +
+                    " secondaryScale: " + secondaryScale + ", minDegree: " + minDegree);
+        }
+        return map(
+                js -> Polynomial.of(toList(js)),
+                filterInfinite(
+                        is -> is.isEmpty() || !last(is).equals(BigInteger.ZERO),
+                        withScale(secondaryScale + 1).listsAtLeast(minDegree + 1, bigIntegers())
+                )
+        );
+    }
+
+    /**
+     * An {@code Iterable} that generates all primitive {@code Polynomial}s (polynomials whose coefficient GCD is 1)
+     * with a given degree. Each coefficient's bit size is chosen from a geometric distribution with mean approximately
+     * {@code scale}. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a positive {@code scale}.</li>
+     *  <li>{@code degree} cannot be negative.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing primitive {@code Polynomial}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param degree the minimum degree of the generated {@code Polynomial}s
+     * @return primitive {@code Polynomial}s with degree {@code minDegree}
+     */
     @Override
     public @NotNull Iterable<Polynomial> primitivePolynomials(int degree) {
-        return null;
+        int scale = getScale();
+        if (scale < 1) {
+            throw new IllegalStateException("this must have a positive scale. Invalid scale: " + scale);
+        }
+        if (degree < 0) {
+            throw new IllegalArgumentException("degree cannot be negative. Invalid degree: " + degree);
+        }
+        if (degree == 0) {
+            return uniformSample(Arrays.asList(Polynomial.ONE, Polynomial.ONE.negate()));
+        }
+        return primitivePolynomials(lists(degree + 1, bigIntegers()));
     }
 
-    @Override
-    public @NotNull Iterable<Polynomial> primitivePolynomialsAtLeast(int minDegree) {
-        return null;
-    }
-
+    /**
+     * An {@code Iterable} that generates all primitive {@code Polynomial}s (polynomials whose coefficient GCD is 1).
+     * Each {@code Polynomial}'s degree is chosen from a geometric distribution with mean approximately
+     * {@code secondaryScale}, and each coefficient's bit size is chosen from a geometric distribution with mean
+     * approximately {@code scale}. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a positive {@code scale} and a positive {@code secondaryScale}.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing primitive {@code Polynomial}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
     @Override
     public @NotNull Iterable<Polynomial> primitivePolynomials() {
-        return null;
+        int secondaryScale = getSecondaryScale();
+        if (secondaryScale < 1) {
+            throw new IllegalStateException("this must have a positive secondaryScale. Invalid secondaryScale: " +
+                    secondaryScale);
+        }
+        return primitivePolynomials(withScale(secondaryScale + 1).listsAtLeast(1, bigIntegers()));
     }
 
+    /**
+     * An {@code Iterable} that generates all primitive {@code Polynomial}s (polynomials whose coefficient GCD is 1)
+     * with a minimum degree. Each {@code Polynomial}'s degree is chosen from a geometric distribution with mean
+     * approximately {@code secondaryScale}, and each coefficient's bit size is chosen from a geometric distribution
+     * with mean approximately {@code scale}. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a positive {@code scale}. It must also have a {@code secondaryScale} that is
+     *  positive and greater than {@code minDegree}.</li>
+     *  <li>{@code degree} must be at least –1.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing primitive {@code Polynomial}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param minDegree the minimum degree of the generated {@code Polynomial}s
+     * @return primitive {@code Polynomial}s with degree at least {@code minDegree}
+     */
     @Override
-    public @NotNull Iterable<RationalPolynomial> rationalPolynomials(int degree) {
-        return map(
-                js -> RationalPolynomial.of(toList(js)),
-                filter(
-                        is -> is.isEmpty() || last(is) != Rational.ZERO,
-                        withScale(getSecondaryScale()).lists(degree + 1, rationals())
-                )
+    public @NotNull Iterable<Polynomial> primitivePolynomialsAtLeast(int minDegree) {
+        if (minDegree < -1) {
+            throw new IllegalArgumentException("minDegree must be at least -1. Invalid minDegree: " + minDegree);
+        }
+        int secondaryScale = getSecondaryScale();
+        if (secondaryScale < 1) {
+            throw new IllegalStateException("this must have a positive secondaryScale. Invalid secondaryScale: " +
+                    secondaryScale);
+        }
+        if (secondaryScale <= minDegree) {
+            throw new IllegalStateException("this must have a secondaryScale greater than the minDegree." +
+                    " secondaryScale: " + secondaryScale + ", minDegree: " + minDegree);
+        }
+        return primitivePolynomials(
+                withScale(secondaryScale + 1).listsAtLeast(minDegree == -1 ? 1 : minDegree + 1, bigIntegers())
         );
     }
 
+    /**
+     * An {@code Iterable} that generates all primitive {@code Polynomial}s (polynomials whose coefficient GCD is 1)
+     * with a positive leasing coefficient with a given degree. Each coefficient's bit size is chosen from a geometric
+     * distribution with mean approximately {@code scale}. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a positive {@code scale}.</li>
+     *  <li>{@code degree} cannot be negative.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing primitive {@code Polynomial}s with
+     *  positive leading coefficients.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param degree the minimum degree of the generated {@code Polynomial}s
+     * @return primitive {@code Polynomial}s with positive leading coefficients and degree {@code minDegree}
+     */
     @Override
-    public @NotNull Iterable<RationalPolynomial> rationalPolynomialsAtLeast(int minDegree) {
-        return map(
-                js -> RationalPolynomial.of(toList(js)),
-                filter(
-                        is -> is.isEmpty() || last(is) != Rational.ZERO,
-                        withScale(getSecondaryScale()).listsAtLeast(minDegree + 1, rationals())
-                )
-        );
+    public @NotNull Iterable<Polynomial> positivePrimitivePolynomials(int degree) {
+        int scale = getScale();
+        if (scale < 1) {
+            throw new IllegalStateException("this must have a positive scale. Invalid scale: " + scale);
+        }
+        if (degree < 0) {
+            throw new IllegalArgumentException("degree cannot be negative. Invalid degree: " + degree);
+        }
+        if (degree == 0) {
+            return repeat(Polynomial.ONE);
+        }
+        return filterInfinite(p -> p.signum() == 1, primitivePolynomials(degree));
     }
 
+    /**
+     * An {@code Iterable} that generates all primitive {@code Polynomial}s (polynomials whose coefficient GCD is 1)
+     * with a positive leasing coefficient. Each {@code Polynomial}'s degree is chosen from a geometric distribution
+     * with mean approximately {@code secondaryScale}, and each coefficient's bit size is chosen from a geometric
+     * distribution with mean approximately {@code scale}. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a positive {@code scale} and a positive {@code secondaryScale}.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing primitive {@code Polynomial}s with
+     *  positive leading coefficients.</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
+    @Override
+    public @NotNull Iterable<Polynomial> positivePrimitivePolynomials() {
+        int secondaryScale = getSecondaryScale();
+        if (secondaryScale < 1) {
+            throw new IllegalStateException("this must have a positive secondaryScale. Invalid secondaryScale: " +
+                    secondaryScale);
+        }
+        return filterInfinite(p -> p.signum() == 1, primitivePolynomials());
+    }
+
+    /**
+     * An {@code Iterable} that generates all primitive {@code Polynomial}s (polynomials whose coefficient GCD is 1)
+     * with a positive leasing coefficient with a minimum degree. Each {@code Polynomial}'s degree is chosen from a
+     * geometric distribution with mean approximately {@code secondaryScale}, and each coefficient's bit size is chosen
+     * from a geometric distribution with mean approximately {@code scale}. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a positive {@code scale}. It must also have a {@code secondaryScale} that is
+     *  positive and greater than {@code minDegree}.</li>
+     *  <li>{@code degree} must be at least –1.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing primitive {@code Polynomial}s with
+     *  positive leading coefficients.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param minDegree the minimum degree of the generated {@code Polynomial}s
+     * @return primitive {@code Polynomial}s with positive leading coefficients and degree at least {@code minDegree}
+     */
+    @Override
+    public @NotNull Iterable<Polynomial> positivePrimitivePolynomialsAtLeast(int minDegree) {
+        if (minDegree < -1) {
+            throw new IllegalArgumentException("minDegree must be at least -1. Invalid minDegree: " + minDegree);
+        }
+        int secondaryScale = getSecondaryScale();
+        if (secondaryScale < 1) {
+            throw new IllegalStateException("this must have a positive secondaryScale. Invalid secondaryScale: " +
+                    secondaryScale);
+        }
+        if (secondaryScale <= minDegree) {
+            throw new IllegalStateException("this must have a secondaryScale greater than the minDegree." +
+                    " secondaryScale: " + secondaryScale + ", minDegree: " + minDegree);
+        }
+        return filterInfinite(p -> p.signum() == 1, primitivePolynomialsAtLeast(minDegree));
+    }
+
+    /**
+     * An {@code Iterable} that generates all {@code RationalPolynomial}s. Each {@code RationalPolynomial}'s degree is
+     * chosen from a geometric distribution with mean {@code secondaryScale}, and each coefficient's bit size is chosen
+     * from a geometric distribution with mean approximately {@code scale}. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a {@code scale} of at least 3 and a non-negative {@code secondaryScale}.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing {@code RationalPolynomial}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
     @Override
     public @NotNull Iterable<RationalPolynomial> rationalPolynomials() {
+        int secondaryScale = getSecondaryScale();
+        if (secondaryScale < 0) {
+            throw new IllegalStateException("this must have a non-negative secondaryScale. Invalid secondaryScale: " +
+                    secondaryScale);
+        }
         return map(
                 js -> RationalPolynomial.of(toList(js)),
-                filter(
+                filterInfinite(
                         is -> is.isEmpty() || last(is) != Rational.ZERO,
-                        withScale(getSecondaryScale()).lists(rationals())
+                        withScale(secondaryScale + 1).lists(rationals())
                 )
         );
     }
 
+    /**
+     * An {@code Iterable} that generates all {@code RationalPolynomial}s with a minimum degree. Each
+     * {@code RationalPolynomial}'s degree is chosen from a geometric distribution with mean {@code secondaryScale},
+     * and each coefficient's bit size is chosen from a geometric distribution with mean approximately {@code scale}.
+     * Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a {@code scale} of at least 3 and a {@code secondaryScale} greater than
+     *  {@code minDegree}.</li>
+     *  <li>{@code minDegree} must be at least –1.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing {@code RationalPolynomial}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param minDegree the minimum degree of the generated {@code RationalPolynomial}s
+     * @return {@code RationalPolynomial}s with degree at least {@code minDegree}
+     */
     @Override
-    public @NotNull Iterable<RationalPolynomial> monicRationalPolynomials(int degree) {
-        return null;
-    }
-
-    @Override
-    public @NotNull Iterable<RationalPolynomial> monicRationalPolynomialsAtLeast(int minDegree) {
-        return null;
-    }
-
-    @Override
-    public @NotNull Iterable<RationalPolynomial> monicRationalPolynomials() {
-        return null;
+    public @NotNull Iterable<RationalPolynomial> rationalPolynomialsAtLeast(int minDegree) {
+        if (minDegree < -1) {
+            throw new IllegalArgumentException("minDegree must be at least -1. Invalid minDegree: " + minDegree);
+        }
+        int secondaryScale = getSecondaryScale();
+        if (secondaryScale <= minDegree) {
+            throw new IllegalStateException("this must have a secondaryScale greater than minDegree." +
+                    " secondaryScale: " + secondaryScale + ", minDegree: " + minDegree);
+        }
+        return map(
+                js -> RationalPolynomial.of(toList(js)),
+                filterInfinite(
+                        is -> is.isEmpty() || last(is) != Rational.ZERO,
+                        withScale(secondaryScale + 1).listsAtLeast(minDegree + 1, rationals())
+                )
+        );
     }
 
     /**
