@@ -428,7 +428,11 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
                 elements[j][i] = row.get(j);
             }
         }
-        return fromRows(toList(map(i -> RationalVector.of(Arrays.asList(elements[i])), range(0, width - 1))));
+        //noinspection SuspiciousNameCombination
+        return new RationalMatrix(
+                toList(map(i -> RationalVector.of(Arrays.asList(elements[i])), range(0, width - 1))),
+                height
+        );
     }
 
     /**
