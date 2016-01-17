@@ -1300,84 +1300,231 @@ public class RationalPolynomialTest {
         testCompareToHelper(readRationalPolynomialList("[-x^3-1, -4/3, 0, 1, x, x^2-7/4*x+1/3, 1/2*x^10]"));
     }
 
-    @Test
-    public void testRead() {
-        assertTrue(read("0").get() == ZERO);
-        assertTrue(read("1").get() == ONE);
-        aeq(read("x").get(), X);
-        aeq(read("2").get(), "2");
-        aeq(read("-2").get(), "-2");
-        aeq(read("4/3").get(), "4/3");
-        aeq(read("-4/3").get(), "-4/3");
-        aeq(read("-x").get(), "-x");
-        aeq(read("3*x").get(), "3*x");
-        aeq(read("-3*x").get(), "-3*x");
-        aeq(read("x^2").get(), "x^2");
-        aeq(read("-x^2").get(), "-x^2");
-        aeq(read("2*x^2").get(), "2*x^2");
-        aeq(read("-2*x^2").get(), "-2*x^2");
-        aeq(read("x-1").get(), "x-1");
-        aeq(read("-x-1").get(), "-x-1");
-        aeq(read("x^2-1").get(), "x^2-1");
-        aeq(read("x^2-7/4*x+1/3").get(), "x^2-7/4*x+1/3");
-        aeq(read("1/2*x^10").get(), "1/2*x^10");
-        assertFalse(read("").isPresent());
-        assertFalse(read("+").isPresent());
-        assertFalse(read("-").isPresent());
-        assertFalse(read("-0").isPresent());
-        assertFalse(read("+0").isPresent());
-        assertFalse(read("--").isPresent());
-        assertFalse(read("+1").isPresent());
-        assertFalse(read("+x").isPresent());
-        assertFalse(read("+x^2").isPresent());
-        assertFalse(read("+x^2-x").isPresent());
-        assertFalse(read("x^1000000000000").isPresent());
-        assertFalse(read(" x").isPresent());
-        assertFalse(read("x ").isPresent());
-        assertFalse(read("X").isPresent());
-        assertFalse(read("x + 1").isPresent());
-        assertFalse(read("x^0").isPresent());
-        assertFalse(read("x^-1").isPresent());
-        assertFalse(read("x^1").isPresent());
-        assertFalse(read("1-2").isPresent());
-        assertFalse(read("1*x").isPresent());
-        assertFalse(read("-1*x").isPresent());
-        assertFalse(read("1*x^2").isPresent());
-        assertFalse(read("-1*x^2").isPresent());
-        assertFalse(read("x+x").isPresent());
-        assertFalse(read("x+x^2").isPresent());
-        assertFalse(read("1+x").isPresent());
-        assertFalse(read("x+0").isPresent());
-        assertFalse(read("0*x").isPresent());
-        assertFalse(read("-0*x").isPresent());
-        assertFalse(read("+0*x").isPresent());
-        assertFalse(read("2x").isPresent());
-        assertFalse(read("1/2x").isPresent());
-        assertFalse(read("x^2+1+x").isPresent());
-        assertFalse(read("x^2+3*x^2").isPresent());
-        assertFalse(read("2^x").isPresent());
-        assertFalse(read("abc").isPresent());
-        assertFalse(read("x+y").isPresent());
-        assertFalse(read("y").isPresent());
-        assertFalse(read("x/2").isPresent());
+    private static void read_String_helper(@NotNull String input) {
+        aeq(read(input).get(), input);
+    }
+
+    private static void read_String_fail_helper(@NotNull String input) {
+        assertFalse(read(input).isPresent());
     }
 
     @Test
-    public void testFindIn() {
-        aeq(findIn("0123").get(), "(0, 0)");
-        aeq(findIn("yxy").get(), "(x, 1)");
-        aeq(findIn("ax+12b").get(), "(x+12, 1)");
-        aeq(findIn("------x------").get(), "(-x, 5)");
-        aeq(findIn("3*x^2z").get(), "(3*x^2, 0)");
-        aeq(findIn("1+x+x^2").get(), "(1, 0)");
-        aeq(findIn("+1").get(), "(1, 1)");
-        aeq(findIn("y^12").get(), "(12, 2)");
-        aeq(findIn("52*x^-10").get(), "(52*x, 0)");
-        aeq(findIn("2/4*x").get(), "(2, 0)");
-        aeq(findIn("x/2").get(), "(x, 0)");
-        assertFalse(findIn("").isPresent());
-        assertFalse(findIn("o").isPresent());
-        assertFalse(findIn("hello").isPresent());
+    public void testRead_String() {
+        read_String_helper("0");
+        read_String_helper("1");
+        read_String_helper("x");
+        read_String_helper("2");
+        read_String_helper("-2");
+        read_String_helper("4/3");
+        read_String_helper("-4/3");
+        read_String_helper("-x");
+        read_String_helper("3*x");
+        read_String_helper("-3*x");
+        read_String_helper("x^2");
+        read_String_helper("-x^2");
+        read_String_helper("2*x^2");
+        read_String_helper("-2*x^2");
+        read_String_helper("x-1");
+        read_String_helper("-x-1");
+        read_String_helper("x^2-1");
+        read_String_helper("x^2-7/4*x+1/3");
+        read_String_helper("1/2*x^10");
+        read_String_fail_helper("");
+        read_String_fail_helper("+");
+        read_String_fail_helper("-");
+        read_String_fail_helper("-0");
+        read_String_fail_helper("+0");
+        read_String_fail_helper("--");
+        read_String_fail_helper("+1");
+        read_String_fail_helper("+x");
+        read_String_fail_helper("+x^2");
+        read_String_fail_helper("+x^2-x");
+        read_String_fail_helper("x^1000000000000");
+        read_String_fail_helper(" x");
+        read_String_fail_helper("x ");
+        read_String_fail_helper("X");
+        read_String_fail_helper("x + 1");
+        read_String_fail_helper("x^0");
+        read_String_fail_helper("x^-1");
+        read_String_fail_helper("x^1");
+        read_String_fail_helper("1-2");
+        read_String_fail_helper("1*x");
+        read_String_fail_helper("-1*x");
+        read_String_fail_helper("1*x^2");
+        read_String_fail_helper("-1*x^2");
+        read_String_fail_helper("x+x");
+        read_String_fail_helper("x+x^2");
+        read_String_fail_helper("1+x");
+        read_String_fail_helper("x+0");
+        read_String_fail_helper("0*x");
+        read_String_fail_helper("-0*x");
+        read_String_fail_helper("+0*x");
+        read_String_fail_helper("2x");
+        read_String_fail_helper("1/2x");
+        read_String_fail_helper("x^2+1+x");
+        read_String_fail_helper("x^2+3*x^2");
+        read_String_fail_helper("2^x");
+        read_String_fail_helper("abc");
+        read_String_fail_helper("x+y");
+        read_String_fail_helper("y");
+        read_String_fail_helper("x/2");
+    }
+
+    private static void read_int_String_helper(int maxExponent, @NotNull String input) {
+        aeq(read(maxExponent, input).get(), input);
+    }
+
+    private static void read_int_String_fail_helper(int maxExponent, @NotNull String input) {
+        assertFalse(read(maxExponent, input).isPresent());
+    }
+
+    private static void read_int_String_bad_maxExponent_fail_helper(int maxExponent, @NotNull String input) {
+        try {
+            read(maxExponent, input);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testRead_int_String() {
+        read_int_String_helper(1, "0");
+        read_int_String_helper(1, "1");
+        read_int_String_helper(1, "x");
+        read_int_String_helper(1, "2");
+        read_int_String_helper(1, "-2");
+        read_int_String_helper(1, "4/3");
+        read_int_String_helper(1, "-4/3");
+        read_int_String_helper(1, "-x");
+        read_int_String_helper(1, "3*x");
+        read_int_String_helper(1, "-3*x");
+        read_int_String_helper(2, "x^2");
+        read_int_String_helper(2, "-x^2");
+        read_int_String_helper(2, "2*x^2");
+        read_int_String_helper(2, "-2*x^2");
+        read_int_String_helper(1, "x-1");
+        read_int_String_helper(1, "-x-1");
+        read_int_String_helper(2, "x^2-1");
+        read_int_String_helper(2, "x^2-7/4*x+1/3");
+        read_int_String_helper(10, "1/2*x^10");
+        read_int_String_fail_helper(1, "x^2");
+        read_int_String_fail_helper(1, "-x^2");
+        read_int_String_fail_helper(1, "2*x^2");
+        read_int_String_fail_helper(1, "-2*x^2");
+        read_int_String_fail_helper(1, "x^2-1");
+        read_int_String_fail_helper(1, "x^2-7/4*x+1/3");
+        read_int_String_fail_helper(9, "1/2*x^10");
+        read_int_String_fail_helper(10, "");
+        read_int_String_fail_helper(10, "+");
+        read_int_String_fail_helper(10, "-");
+        read_int_String_fail_helper(10, "-0");
+        read_int_String_fail_helper(10, "+0");
+        read_int_String_fail_helper(10, "--");
+        read_int_String_fail_helper(10, "+1");
+        read_int_String_fail_helper(10, "+x");
+        read_int_String_fail_helper(10, "+x^2");
+        read_int_String_fail_helper(10, "+x^2-x");
+        read_int_String_fail_helper(10, "x^1000000000000");
+        read_int_String_fail_helper(10, " x");
+        read_int_String_fail_helper(10, "x ");
+        read_int_String_fail_helper(10, "X");
+        read_int_String_fail_helper(10, "x + 1");
+        read_int_String_fail_helper(10, "x^0");
+        read_int_String_fail_helper(10, "x^-1");
+        read_int_String_fail_helper(10, "x^1");
+        read_int_String_fail_helper(10, "1-2");
+        read_int_String_fail_helper(10, "1*x");
+        read_int_String_fail_helper(10, "-1*x");
+        read_int_String_fail_helper(10, "1*x^2");
+        read_int_String_fail_helper(10, "-1*x^2");
+        read_int_String_fail_helper(10, "x+x");
+        read_int_String_fail_helper(10, "x+x^2");
+        read_int_String_fail_helper(10, "1+x");
+        read_int_String_fail_helper(10, "x+0");
+        read_int_String_fail_helper(10, "0*x");
+        read_int_String_fail_helper(10, "-0*x");
+        read_int_String_fail_helper(10, "+0*x");
+        read_int_String_fail_helper(10, "2x");
+        read_int_String_fail_helper(10, "1/2x");
+        read_int_String_fail_helper(10, "x^2+1+x");
+        read_int_String_fail_helper(10, "x^2+3*x^2");
+        read_int_String_fail_helper(10, "2^x");
+        read_int_String_fail_helper(10, "abc");
+        read_int_String_fail_helper(10, "x+y");
+        read_int_String_fail_helper(10, "y");
+        read_int_String_fail_helper(10, "x/2");
+        read_int_String_bad_maxExponent_fail_helper(0, "1");
+        read_int_String_bad_maxExponent_fail_helper(-1, "0");
+    }
+
+    private static void findIn_String_helper(@NotNull String input, @NotNull String output, int index) {
+        Pair<RationalPolynomial, Integer> result = findIn(input).get();
+        aeq(result.a, output);
+        aeq(result.b, index);
+    }
+
+    private static void findIn_String_fail_helper(@NotNull String input) {
+        assertFalse(findIn(input).isPresent());
+    }
+
+    @Test
+    public void testFindIn_String() {
+        findIn_String_helper("0123", "0", 0);
+        findIn_String_helper("yxy", "x", 1);
+        findIn_String_helper("ax+12b", "x+12", 1);
+        findIn_String_helper("------x------", "-x", 5);
+        findIn_String_helper("3*x^2z", "3*x^2", 0);
+        findIn_String_helper("1+x+x^2", "1", 0);
+        findIn_String_helper("+1", "1", 1);
+        findIn_String_helper("y^12", "12", 2);
+        findIn_String_helper("52*x^-10", "52*x", 0);
+        findIn_String_helper("2/4*x", "2", 0);
+        findIn_String_helper("x/2", "x", 0);
+        findIn_String_fail_helper("");
+        findIn_String_fail_helper("o");
+        findIn_String_fail_helper("hello");
+    }
+
+    private static void findIn_int_String_helper(
+            int maxExponent,
+            @NotNull String input,
+            @NotNull String output,
+            int index
+    ) {
+        Pair<RationalPolynomial, Integer> result = findIn(maxExponent, input).get();
+        aeq(result.a, output);
+        aeq(result.b, index);
+    }
+
+    private static void findIn_int_String_fail_helper(int maxExponent, @NotNull String input) {
+        assertFalse(findIn(maxExponent, input).isPresent());
+    }
+
+    private static void findIn_int_String_bad_maxExponent_fail_helper(int maxExponent, @NotNull String input) {
+        try {
+            findIn(maxExponent, input);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testFindIn_int_String() {
+        findIn_int_String_helper(2, "0123", "0", 0);
+        findIn_int_String_helper(2, "yxy", "x", 1);
+        findIn_int_String_helper(2, "ax+12b", "x+12", 1);
+        findIn_int_String_helper(2, "------x------", "-x", 5);
+        findIn_int_String_helper(2, "3*x^2z", "3*x^2", 0);
+        findIn_int_String_helper(1, "3*x^2z", "3*x", 0);
+        findIn_int_String_helper(2, "1+x+x^2", "1", 0);
+        findIn_int_String_helper(2, "+1", "1", 1);
+        findIn_int_String_helper(2, "y^12", "12", 2);
+        findIn_int_String_helper(2, "52*x^-10", "52*x", 0);
+        findIn_int_String_helper(2, "2/4*x", "2", 0);
+        findIn_int_String_helper(2, "x/2", "x", 0);
+        findIn_int_String_fail_helper(2, "");
+        findIn_int_String_fail_helper(2, "o");
+        findIn_int_String_fail_helper(2, "hello");
+        findIn_int_String_bad_maxExponent_fail_helper(0, "1");
+        findIn_int_String_bad_maxExponent_fail_helper(-1, "0");
     }
 
     private static @NotNull List<Rational> readRationalList(@NotNull String s) {

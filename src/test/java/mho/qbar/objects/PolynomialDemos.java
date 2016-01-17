@@ -1,12 +1,14 @@
 package mho.qbar.objects;
 
 import mho.qbar.testing.QBarDemos;
+import mho.wheels.io.Readers;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigInteger;
 import java.util.List;
+import java.util.Optional;
 
 import static mho.qbar.objects.Polynomial.*;
 import static mho.wheels.iterables.IterableUtils.*;
@@ -240,32 +242,105 @@ public class PolynomialDemos extends QBarDemos {
         }
     }
 
-    private void demoRead() {
+    private void demoRead_String() {
         for (String s : take(LIMIT, P.strings())) {
-            System.out.println("read(" + s + ") = " + read(s));
+            System.out.println("read(" + nicePrint(s) + ") = " + read(s));
         }
     }
 
-    private void demoRead_targeted() {
+    private void demoRead_String_targeted() {
         for (String s : take(LIMIT, P.strings(POLYNOMIAL_CHARS))) {
             System.out.println("read(" + s + ") = " + read(s));
         }
     }
 
-    private void demoFindIn() {
-        for (String s : take(LIMIT, P.strings())) {
+    private void demoRead_int_String() {
+        Iterable<Pair<String, Integer>> ps = P.pairsLogarithmicOrder(P.strings(), P.positiveIntegersGeometric());
+        for (Pair<String, Integer> p : take(LIMIT, ps)) {
+            System.out.println("read(" + p.b + ", " + nicePrint(p.a) + ") = " + read(p.b, p.a));
+        }
+    }
+
+    private void demoRead_int_String_targeted() {
+        Iterable<Pair<String, Integer>> ps = P.pairsLogarithmicOrder(
+                P.strings(POLYNOMIAL_CHARS),
+                P.positiveIntegersGeometric()
+        );
+        for (Pair<String, Integer> p : take(LIMIT, ps)) {
+            System.out.println("read(" + p.b + ", " + p.a + ") = " + read(p.b, p.a));
+        }
+    }
+
+    private static @NotNull Optional<String> badString(@NotNull String s) {
+        boolean seenX = false;
+        boolean seenXCaret = false;
+        int exponentDigitCount = 0;
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            if (c == 'x') {
+                seenX = true;
+            } else if (seenX && c == '^') {
+                seenXCaret = true;
+            } else if (seenXCaret && c >= '0' && c <= '9') {
+                exponentDigitCount++;
+                if (exponentDigitCount > 3) return Optional.of("");
+            } else {
+                seenX = false;
+                seenXCaret = false;
+                exponentDigitCount = 0;
+            }
+        }
+        return Optional.empty();
+    }
+
+    private void demoFindIn_String() {
+        Iterable<String> ss = filterInfinite(
+                s -> !Readers.genericFindIn(PolynomialDemos::badString).apply(s).isPresent(),
+                P.strings()
+        );
+        for (String s : take(LIMIT, ss)) {
+            System.out.println("findIn(" + nicePrint(s) + ") = " + findIn(s));
+        }
+    }
+
+    private void demoFindIn_String_targeted() {
+        Iterable<String> ss = filterInfinite(
+                s -> !Readers.genericFindIn(PolynomialDemos::badString).apply(s).isPresent(),
+                P.strings(POLYNOMIAL_CHARS)
+        );
+        for (String s : take(LIMIT, ss)) {
             System.out.println("findIn(" + s + ") = " + findIn(s));
         }
     }
 
-    private void demoFindIn_targeted() {
-        for (String s : take(LIMIT, P.strings(POLYNOMIAL_CHARS))) {
-            System.out.println("findIn(" + s + ") = " + findIn(s));
+    private void demoFindIn_int_String() {
+        Iterable<Pair<String, Integer>> ps = P.pairsLogarithmicOrder(
+                filterInfinite(
+                        s -> !Readers.genericFindIn(PolynomialDemos::badString).apply(s).isPresent(),
+                        P.strings()
+                ),
+                P.positiveIntegersGeometric()
+        );
+        for (Pair<String, Integer> p : take(LIMIT, ps)) {
+            System.out.println("findIn(" + p.b + ", " + nicePrint(p.a) + ") = " + findIn(p.b, p.a));
+        }
+    }
+
+    private void demoFindIn_int_String_targeted() {
+        Iterable<Pair<String, Integer>> ps = P.pairsLogarithmicOrder(
+                filterInfinite(
+                        s -> !Readers.genericFindIn(PolynomialDemos::badString).apply(s).isPresent(),
+                        P.strings(POLYNOMIAL_CHARS)
+                ),
+                P.positiveIntegersGeometric()
+        );
+        for (Pair<String, Integer> p : take(LIMIT, ps)) {
+            System.out.println("findIn(" + p.b + ", " + p.a + ") = " + findIn(p.b, p.a));
         }
     }
 
     private void demoToString() {
-        for (Polynomial p : take(LIMIT, P.polynomials())) {
+        for (Polynomial p : take(LIMIT, P.withScale(4).polynomials())) {
             System.out.println(p);
         }
     }

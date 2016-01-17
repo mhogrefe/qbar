@@ -114,7 +114,9 @@ public class QBarTesting {
 
         for (T x : take(limit, xs)) {
             Optional<T> ox = read.apply(x.toString());
-            assertEquals(x, ox.get(), x);
+            T y = ox.get();
+            validate.accept(y);
+            assertEquals(x, y, x);
         }
 
         if (denseInUsedCharString) {
