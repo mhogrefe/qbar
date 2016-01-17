@@ -1184,7 +1184,6 @@ public class RationalPolynomialProperties extends QBarTestProperties {
                 P.withScale(1).naturalIntegersGeometric()
         );
         for (Triple<RationalPolynomial, RationalPolynomial, Integer> t : take(LIMIT, ts3)) {
-            System.out.println(t);
             RationalPolynomial expression1 = t.a.multiply(t.b).pow(t.c);
             RationalPolynomial expression2 = t.a.pow(t.c).multiply(t.b.pow(t.c));
             assertEquals(t, expression1, expression2);
