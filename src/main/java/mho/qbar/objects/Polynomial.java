@@ -1,5 +1,6 @@
 package mho.qbar.objects;
 
+import jas.JasApi;
 import mho.wheels.io.Readers;
 import mho.wheels.iterables.IterableUtils;
 import mho.wheels.iterables.NoRemoveIterable;
@@ -724,6 +725,7 @@ public final class Polynomial implements
      * @param that the {@code RationalPolynomial} {@code this} is divided by
      * @return ({@code this}/{@code that}, {@code this}%{code that})
      */
+    @SuppressWarnings("JavaDoc")
     public @NotNull Pair<Polynomial, Polynomial> pseudoDivide(@NotNull Polynomial that) {
         if (that == ZERO) {
             throw new ArithmeticException("that cannot be zero.");
@@ -755,6 +757,41 @@ public final class Polynomial implements
             }
         }
         return new Pair<>(of(reverse(q)), of(toList(take(n, r))));
+    }
+
+    /**
+     * Factors {@code this}. The result is sorted (see {@link Polynomial#compareTo(Polynomial)}). 0 cannot be factored.
+     *
+     * <ul>
+     *  <li>{@code this} cannot be zero.</li>
+     *  <li>The result is weakly increasing. All elements, except possibly the first, are non-constant, primitive,
+     *  irreducible, and have a positive leading coefficient.</li>
+     * </ul>
+     *
+     * @return the irreducible factors of {@code this}
+     */
+    public @NotNull List<Polynomial> factor() {
+        if (this == ZERO) {
+            throw new ArithmeticException("this cannot be zero.");
+        }
+        return sort(map(Polynomial::new, JasApi.factorPolynomial(toList(coefficients))));
+    }
+
+    /**
+     * Determines whether {@code this} is irreducible–that is, whether it cannot be factored further using
+     * {@link Polynomial#factor}.
+     *
+     * <li>{@code this} cannot be zero.</li>
+     * <li>The result may be either {@code boolean}.</li>
+     *
+     * @return whether {@code this} is irreducible
+     */
+    public boolean isIrreducible() {
+        if (this == ZERO) {
+            throw new ArithmeticException("this cannot be zero.");
+        }
+        return degree() == 0 ||
+                signum() != -1 && (equals(X) || !coefficient(0).equals(BigInteger.ZERO)) && factor().size() == 1;
     }
 
     /**

@@ -30,7 +30,6 @@
                 <version>2.17</version>
                 <configuration>
                     <includes>
-                        <include>**/JasApiTest.java</include>
                         <include>**/QBarExhaustiveProviderTest.java</include>
                         <include>**/QBarExhaustiveProviderProperties.java</include>
                         <include>**/QBarRandomProviderTest.java</include>

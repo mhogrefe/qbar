@@ -228,6 +228,18 @@ public class PolynomialDemos extends QBarDemos {
         }
     }
 
+    private void demoFactor() {
+        for (Polynomial p : take(LIMIT, P.withScale(4).polynomialsAtLeast(0))) {
+            System.out.println("factor(" + p + ") = " + p.factor());
+        }
+    }
+
+    private void demoIsIrreducible() {
+        for (Polynomial p : take(LIMIT, P.withScale(4).polynomialsAtLeast(0))) {
+            System.out.println(p + " is " + (p.isIrreducible() ? "" : "not ") + "irreducible");
+        }
+    }
+
     private void demoEquals_Polynomial() {
         for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(P.withScale(4).polynomials()))) {
             System.out.println(p.a + (p.a.equals(p.b) ? " = " : " ≠ ") + p.b);

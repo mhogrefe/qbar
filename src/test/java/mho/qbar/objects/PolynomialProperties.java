@@ -73,6 +73,9 @@ public class PolynomialProperties extends QBarTestProperties {
         propertiesConstantFactor();
         propertiesPseudoDivide();
         compareImplementationsPseudoDivide();
+        propertiesFactor();
+        propertiesIsIrreducible();
+        compareImplementationsIsIrreducible();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -1036,9 +1039,9 @@ public class PolynomialProperties extends QBarTestProperties {
     private void propertiesIsPrimitive() {
         initialize("isPrimitive()");
         for (Polynomial p : take(LIMIT, P.polynomials())) {
-            boolean primitive = p.isPrimitive();
-            assertEquals(p, primitive, foldl(BigInteger::gcd, BigInteger.ZERO, p).equals(BigInteger.ONE));
-            assertEquals(p, primitive, p.negate().isPrimitive());
+            boolean isPrimitive = p.isPrimitive();
+            assertEquals(p, isPrimitive, foldl(BigInteger::gcd, BigInteger.ZERO, p).equals(BigInteger.ONE));
+            assertEquals(p, isPrimitive, p.negate().isPrimitive());
         }
     }
 
@@ -1200,6 +1203,67 @@ public class PolynomialProperties extends QBarTestProperties {
                 P.pairs(P.polynomials(), P.polynomialsAtLeast(0))
         );
         compareImplementations("pseudoDivide(Polynomial)", take(LIMIT, ps), functions);
+    }
+
+    private void propertiesFactor() {
+        initialize("factor()");
+        for (Polynomial p : take(LIMIT, P.withScale(4).polynomialsAtLeast(0))) {
+            List<Polynomial> factors = p.factor();
+            assertFalse(p, factors.isEmpty());
+            assertFalse(p, any(q -> q == ZERO, factors));
+            assertTrue(p, weaklyIncreasing(factors));
+            assertEquals(p, product(factors), p);
+            if (factors.size() > 1) {
+                assertTrue(p, all(Polynomial::isIrreducible, factors));
+            }
+            boolean firstFactorConstant = head(factors).degree() == 0;
+            assertTrue(
+                    p,
+                    all(
+                            q -> q.degree() > 0 && q.signum() == 1 && q.isPrimitive() && q.isIrreducible(),
+                            firstFactorConstant ? tail(factors) : factors
+                    )
+            );
+        }
+
+        //todo use irreduciblePolynomials
+        Iterable<Pair<Polynomial, Polynomial>> ps = P.bagPairs(
+                filterInfinite(Polynomial::isIrreducible, P.withScale(4).positivePrimitivePolynomialsAtLeast(1))
+        );
+        for (Pair<Polynomial, Polynomial> p : take(LIMIT, ps)) {
+            assertEquals(p, p.a.multiply(p.b).factor(), Pair.toList(p));
+        }
+    }
+
+    private static boolean isIrreducible_simplest(@NotNull Polynomial p) {
+        return p.factor().size() == 1;
+    }
+
+    private void propertiesIsIrreducible() {
+        initialize("isIrreducible()");
+        for (Polynomial p : take(LIMIT, P.withScale(4).polynomialsAtLeast(0))) {
+            p.isIrreducible();
+        }
+
+        for (Polynomial p : take(SMALL_LIMIT, P.withScale(4).polynomialsAtLeast(0))) {
+            assertEquals(p, p.isIrreducible(), isIrreducible_simplest(p));
+        }
+
+        for (Polynomial p : take(LIMIT, filterInfinite(q -> q != ONE, P.withScale(4).polynomialsAtLeast(0)))) {
+            assertFalse(p, p.multiply(X).isIrreducible());
+        }
+
+        for (Polynomial p : take(LIMIT, P.polynomials(0))) {
+            assertTrue(p, p.isIrreducible());
+        }
+    }
+
+    private void compareImplementationsIsIrreducible() {
+        Map<String, Function<Polynomial, Boolean>> functions = new LinkedHashMap<>();
+        functions.put("simplest", PolynomialProperties::isIrreducible_simplest);
+        functions.put("standard", Polynomial::isIrreducible);
+        Iterable<Polynomial> ps = P.withScale(4).polynomialsAtLeast(0);
+        compareImplementations("isIrreducible()", take(SMALL_LIMIT, ps), functions);
     }
 
     private void propertiesEquals() {
