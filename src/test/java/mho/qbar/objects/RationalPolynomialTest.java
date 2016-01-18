@@ -23,19 +23,19 @@ public class RationalPolynomialTest {
         aeq(X, "x");
     }
 
-    private static void iteratorHelper(@NotNull String x, @NotNull String output) {
+    private static void iterator_helper(@NotNull String x, @NotNull String output) {
         aeq(toList(read(x).get()), output);
     }
 
     @Test
     public void testIterator() {
-        iteratorHelper("0", "[]");
-        iteratorHelper("1", "[1]");
-        iteratorHelper("x", "[0, 1]");
-        iteratorHelper("-4/3", "[-4/3]");
-        iteratorHelper("x^2-7/4*x+1/3", "[1/3, -7/4, 1]");
-        iteratorHelper("x^3-1", "[-1, 0, 0, 1]");
-        iteratorHelper("1/2*x^10", "[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1/2]");
+        iterator_helper("0", "[]");
+        iterator_helper("1", "[1]");
+        iterator_helper("x", "[0, 1]");
+        iterator_helper("-4/3", "[-4/3]");
+        iterator_helper("x^2-7/4*x+1/3", "[1/3, -7/4, 1]");
+        iterator_helper("x^3-1", "[-1, 0, 0, 1]");
+        iterator_helper("1/2*x^10", "[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1/2]");
     }
 
     private static void apply_helper(@NotNull String p, @NotNull String x, @NotNull String output) {
@@ -85,6 +85,31 @@ public class RationalPolynomialTest {
         apply_helper("1/2*x^10", "-1", "1/2");
         apply_helper("1/2*x^10", "4/5", "524288/9765625");
         apply_helper("1/2*x^10", "100", "50000000000000000000");
+    }
+
+    private static void toPolynomial_helper(@NotNull String input) {
+        aeq(read(input).get().toPolynomial(), input);
+    }
+
+    private static void toPolynomial_fail_helper(@NotNull String input) {
+        try {
+            read(input).get().toPolynomial();
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testToRationalPolynomial() {
+        toPolynomial_helper("0");
+        toPolynomial_helper("1");
+        toPolynomial_helper("x");
+        toPolynomial_helper("-17");
+        toPolynomial_helper("x^2-4*x+7");
+        toPolynomial_helper("x^3-1");
+        toPolynomial_helper("3*x^10");
+        toPolynomial_fail_helper("-4/3");
+        toPolynomial_fail_helper("x^2-7/4*x+1/3");
+        toPolynomial_fail_helper("1/2*x^10");
     }
 
     private static void coefficient_helper(@NotNull String p, int i, @NotNull String output) {

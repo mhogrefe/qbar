@@ -36,6 +36,12 @@ public class RationalPolynomialDemos extends QBarDemos {
         }
     }
 
+    private void demoToPolynomial() {
+        for (RationalPolynomial p : take(LIMIT, map(Polynomial::toRationalPolynomial, P.withScale(4).polynomials()))) {
+            System.out.println("toPolynomial(" + p + ") = " + p.toPolynomial());
+        }
+    }
+
     private void demoCoefficient() {
         Iterable<Pair<RationalPolynomial, Integer>> ps = P.pairsLogarithmicOrder(
                 P.withScale(4).rationalPolynomials(),

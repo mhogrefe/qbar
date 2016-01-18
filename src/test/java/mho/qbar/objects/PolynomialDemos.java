@@ -218,6 +218,16 @@ public class PolynomialDemos extends QBarDemos {
         }
     }
 
+    private void demoPseudoDivide() {
+        Iterable<Pair<Polynomial, Polynomial>> ps = filterInfinite(
+                q -> q.a.degree() >= q.b.degree(),
+                P.pairs(P.withScale(4).polynomials(), P.withScale(4).polynomialsAtLeast(0))
+        );
+        for (Pair<Polynomial, Polynomial> p : take(LIMIT, ps)) {
+            System.out.println("pseudoDivide(" + p.a + ", " + p.b + ") = " + p.a.pseudoDivide(p.b));
+        }
+    }
+
     private void demoEquals_Polynomial() {
         for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(P.withScale(4).polynomials()))) {
             System.out.println(p.a + (p.a.equals(p.b) ? " = " : " ≠ ") + p.b);

@@ -132,7 +132,7 @@ public final class Polynomial implements
     }
 
     /**
-     * Converts this to a {@code RationalPolynomial}.
+     * Converts {@code this} to a {@code RationalPolynomial}.
      *
      * <ul>
      *  <li>{@code this} may be any {@code Polynomial}.</li>
@@ -705,6 +705,49 @@ public final class Polynomial implements
         } else {
             return new Pair<>(factor, new Polynomial(toList(map(c -> c.divide(factor), coefficients))));
         }
+    }
+
+    /**
+     * Returns the pseudo-quotient and pseudo-remainder when {@code this} is divided by {@code that}. To be more
+     * precise, the result is (q, r) such that
+     * {@code this}×leading({@code that})<sup>deg({@code a})–deg({@code n})+1</sup>={@code that}×q+r and
+     * deg(r){@literal <}deg({@code that}). This is a useful variant of polynomial division that does not require
+     * rational arithmetic.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalPolynomial}.</li>
+     *  <li>{@code that} cannot be 0.</li>
+     *  <li>The degree of {@code this} must be greater than the degree of {@code that}.</li>
+     *  <li>Neither element of the result is null.</li>
+     * </ul>
+     *
+     * @param that the {@code RationalPolynomial} {@code this} is divided by
+     * @return ({@code this}/{@code that}, {@code this}%{code that})
+     */
+    public @NotNull Pair<Polynomial, Polynomial> pseudoDivide(@NotNull Polynomial that) {
+        if (that == ZERO) {
+            throw new ArithmeticException("that cannot be zero.");
+        }
+        int m = degree();
+        int n = that.degree();
+        if (m < n) {
+            throw new ArithmeticException("The degree of this must be greater than the degree of that. this: " +
+                    that + ", that: " + that);
+        }
+        List<BigInteger> q = new ArrayList<>();
+        List<BigInteger> r = toList(coefficients);
+        BigInteger thatLeading = that.leading().get();
+        if (m < n) return new Pair<>(ZERO, this);
+        for (int k = m - n; k >= 0; k--) {
+            q.add(r.get(n + k).multiply(thatLeading.pow(k)));
+            for (int j = n + k - 1; j >= k; j--) {
+                r.set(j, thatLeading.multiply(r.get(j)).subtract(r.get(n + k).multiply(that.coefficients.get(j - k))));
+            }
+            for (int j = k - 1; j >= 0; j--) {
+                r.set(j, thatLeading.multiply(r.get(j)));
+            }
+        }
+        return new Pair<>(of(reverse(q)), of(toList(take(n, r))));
     }
 
     /**

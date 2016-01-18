@@ -37,6 +37,7 @@ public class RationalPolynomialProperties extends QBarTestProperties {
         propertiesIterator();
         propertiesApply();
         compareImplementationsApply();
+        propertiesToPolynomial();
         propertiesCoefficient();
         propertiesOf_List_Rational();
         propertiesOf_Rational();
@@ -148,6 +149,35 @@ public class RationalPolynomialProperties extends QBarTestProperties {
         functions.put("standard", p -> p.a.apply(p.b));
         Iterable<Pair<RationalPolynomial, Rational>> ps = P.pairs(P.rationalPolynomials(), P.rationals());
         compareImplementations("apply(Rational)", take(LIMIT, ps), functions);
+    }
+
+    private void propertiesToPolynomial() {
+        initialize("toPolynomial()");
+        for (RationalPolynomial p : take(LIMIT, map(Polynomial::toRationalPolynomial, P.polynomials()))) {
+            Polynomial q = p.toPolynomial();
+            assertEquals(p, p.toString(), q.toString());
+            assertEquals(p, p.degree(), q.degree());
+            inverse(RationalPolynomial::toPolynomial, Polynomial::toRationalPolynomial, p);
+        }
+
+        Iterable<Pair<RationalPolynomial, BigInteger>> ps = P.pairs(
+                map(Polynomial::toRationalPolynomial, P.polynomials()),
+                P.bigIntegers()
+        );
+        for (Pair<RationalPolynomial, BigInteger> p : take(LIMIT, ps)) {
+            assertEquals(p, p.a.apply(Rational.of(p.b)).bigIntegerValueExact(), p.a.toPolynomial().apply(p.b));
+        }
+
+        Iterable<RationalPolynomial> psFail = filterInfinite(
+                p -> any(c -> !c.isInteger(), p),
+                P.rationalPolynomials()
+        );
+        for (RationalPolynomial p : take(LIMIT, psFail)) {
+            try {
+                p.toPolynomial();
+                fail(p);
+            } catch (ArithmeticException ignored) {}
+        }
     }
 
     private void propertiesCoefficient() {

@@ -23,19 +23,19 @@ public class PolynomialTest {
         aeq(X, "x");
     }
 
-    private static void iteratorHelper(@NotNull String x, @NotNull String output) {
+    private static void iterator_helper(@NotNull String x, @NotNull String output) {
         aeq(toList(read(x).get()), output);
     }
 
     @Test
     public void testIterator() {
-        iteratorHelper("0", "[]");
-        iteratorHelper("1", "[1]");
-        iteratorHelper("x", "[0, 1]");
-        iteratorHelper("-17", "[-17]");
-        iteratorHelper("x^2-4*x+7", "[7, -4, 1]");
-        iteratorHelper("x^3-1", "[-1, 0, 0, 1]");
-        iteratorHelper("3*x^10", "[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3]");
+        iterator_helper("0", "[]");
+        iterator_helper("1", "[1]");
+        iterator_helper("x", "[0, 1]");
+        iterator_helper("-17", "[-17]");
+        iterator_helper("x^2-4*x+7", "[7, -4, 1]");
+        iterator_helper("x^3-1", "[-1, 0, 0, 1]");
+        iterator_helper("3*x^10", "[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3]");
     }
 
     private static void apply_BigInteger_helper(@NotNull String p, @NotNull String x, @NotNull String output) {
@@ -994,6 +994,75 @@ public class PolynomialTest {
         constantFactor_helper("-x^3-1", "-1", "x^3+1");
         constantFactor_helper("3*x^10", "3", "x^10");
         constantFactor_fail_helper("0");
+    }
+
+    private static void pseudoDivide_helper(
+            @NotNull String a,
+            @NotNull String b,
+            @NotNull String pseudoQuotient,
+            @NotNull String pseudoRemainder
+    ) {
+        Pair<Polynomial, Polynomial> result = read(a).get().pseudoDivide(read(b).get());
+        aeq(result.a, pseudoQuotient);
+        aeq(result.b, pseudoRemainder);
+    }
+
+    private static void pseudoDivide_fail_helper(@NotNull String a, @NotNull String b) {
+        try {
+            read(a).get().pseudoDivide(read(b).get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testPseudoDivide() {
+        pseudoDivide_helper("1", "1", "1", "0");
+        pseudoDivide_helper("1", "-17", "1", "0");
+
+        pseudoDivide_helper("x", "1", "x", "0");
+        pseudoDivide_helper("x", "x", "1", "0");
+        pseudoDivide_helper("x", "-17", "-17*x", "0");
+
+        pseudoDivide_helper("-17", "1", "-17", "0");
+        pseudoDivide_helper("-17", "-17", "-17", "0");
+
+        pseudoDivide_helper("x^2-4*x+7", "1", "x^2-4*x+7", "0");
+        pseudoDivide_helper("x^2-4*x+7", "x", "x-4", "7");
+        pseudoDivide_helper("x^2-4*x+7", "-17", "289*x^2-1156*x+2023", "0");
+        pseudoDivide_helper("x^2-4*x+7", "x^2-4*x+7", "1", "0");
+
+        pseudoDivide_helper("-x^3-1", "1", "-x^3-1", "0");
+        pseudoDivide_helper("-x^3-1", "x", "-x^2", "-1");
+        pseudoDivide_helper("-x^3-1", "-17", "4913*x^3+4913", "0");
+        pseudoDivide_helper("-x^3-1", "x^2-4*x+7", "-x-4", "-9*x+27");
+        pseudoDivide_helper("-x^3-1", "-x^3-1", "-1", "0");
+
+        pseudoDivide_helper("3*x^10", "1", "3*x^10", "0");
+        pseudoDivide_helper("3*x^10", "x", "3*x^9", "0");
+        pseudoDivide_helper("3*x^10", "-17", "6047981701347*x^10", "0");
+        pseudoDivide_helper(
+                "3*x^10",
+                "x^2-4*x+7",
+                "3*x^8+12*x^7+27*x^6+24*x^5-93*x^4-540*x^3-1509*x^2-2256*x+1539",
+                "21948*x-10773"
+        );
+        pseudoDivide_helper("3*x^10", "-x^3-1", "-3*x^7+3*x^4-3*x", "-3*x");
+        pseudoDivide_helper("3*x^10", "3*x^10", "3", "0");
+
+        pseudoDivide_helper(
+                "x^8+x^6-3*x^4-3*x^3+8*x^2+2*x-5",
+                "3*x^6+5*x^4-4*x^2-9*x+21",
+                "9*x^2-6",
+                "-15*x^4+3*x^2-9"
+        );
+        pseudoDivide_helper("x^3+x+1", "3*x^2+x+1", "3*x-1", "7*x+10");
+        pseudoDivide_helper("x+1", "x-1", "1", "2");
+        pseudoDivide_helper("x", "x+1", "1", "-1");
+        pseudoDivide_helper("2*x+1", "x", "2", "1");
+
+        pseudoDivide_fail_helper("x", "0");
+        pseudoDivide_fail_helper("0", "x");
+        pseudoDivide_fail_helper("x^2", "x^3");
     }
 
     @Test
