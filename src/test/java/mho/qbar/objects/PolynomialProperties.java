@@ -1083,13 +1083,48 @@ public class PolynomialProperties extends QBarTestProperties {
             @NotNull Polynomial a,
             @NotNull Polynomial b
     ) {
+        if (b == ZERO) {
+            throw new ArithmeticException("that cannot be zero.");
+        }
         int m = a.degree();
         int n = b.degree();
-        if (m < n) return new Pair<>(ZERO, a);
+        if (m < n) {
+            throw new ArithmeticException("The degree of this must be greater than the degree of that. this: " +
+                    a + ", that: " + b);
+        }
         BigInteger factor = b.leading().get().pow(m - n + 1);
         Pair<RationalPolynomial, RationalPolynomial> quotRem =
                 a.multiply(factor).toRationalPolynomial().divide(b.toRationalPolynomial());
         return new Pair<>(quotRem.a.toPolynomial(), quotRem.b.toPolynomial());
+    }
+
+    private static @NotNull Pair<Polynomial, Polynomial> pseudoDivide_alt(
+            @NotNull Polynomial a,
+            @NotNull Polynomial b
+    ) {
+        if (b == ZERO) {
+            throw new ArithmeticException("that cannot be zero.");
+        }
+        int m = a.degree();
+        int n = b.degree();
+        if (m < n) {
+            throw new ArithmeticException("The degree of this must be greater than the degree of that. this: " +
+                    a + ", that: " + b);
+        }
+        List<BigInteger> q = new ArrayList<>();
+        List<BigInteger> r = toList(a);
+        BigInteger bLeading = b.leading().get();
+        if (m < n) return new Pair<>(ZERO, a);
+        for (int k = m - n; k >= 0; k--) {
+            q.add(r.get(n + k).multiply(bLeading.pow(k)));
+            for (int j = n + k - 1; j >= k; j--) {
+                r.set(j, bLeading.multiply(r.get(j)).subtract(r.get(n + k).multiply(b.coefficient(j - k))));
+            }
+            for (int j = k - 1; j >= 0; j--) {
+                r.set(j, bLeading.multiply(r.get(j)));
+            }
+        }
+        return new Pair<>(of(reverse(q)), of(toList(take(n, r))));
     }
 
     private void propertiesPseudoDivide() {
@@ -1101,6 +1136,7 @@ public class PolynomialProperties extends QBarTestProperties {
         for (Pair<Polynomial, Polynomial> p : take(LIMIT, ps)) {
             Pair<Polynomial, Polynomial> pseudoQuotRem = p.a.pseudoDivide(p.b);
             assertEquals(p, pseudoQuotRem, pseudoDivide_simplest(p.a, p.b));
+            assertEquals(p, pseudoQuotRem, pseudoDivide_alt(p.a, p.b));
             Polynomial quotient = pseudoQuotRem.a;
             assertNotNull(p, quotient);
             Polynomial remainder = pseudoQuotRem.b;
@@ -1157,6 +1193,7 @@ public class PolynomialProperties extends QBarTestProperties {
         Map<String, Function<Pair<Polynomial, Polynomial>, Pair<Polynomial, Polynomial>>> functions =
                 new LinkedHashMap<>();
         functions.put("simplest", p -> pseudoDivide_simplest(p.a, p.b));
+        functions.put("alt", p -> pseudoDivide_alt(p.a, p.b));
         functions.put("standard", p -> p.a.pseudoDivide(p.b));
         Iterable<Pair<Polynomial, Polynomial>> ps = filterInfinite(
                 q -> q.a.degree() >= q.b.degree(),

@@ -738,8 +738,15 @@ public final class Polynomial implements
         List<BigInteger> r = toList(coefficients);
         BigInteger thatLeading = that.leading().get();
         if (m < n) return new Pair<>(ZERO, this);
+        List<BigInteger> leadingPowers = new ArrayList<>();
+        BigInteger power = BigInteger.ONE;
+        for (int i = 0; i < m - n; i++) {
+            leadingPowers.add(power);
+            power = power.multiply(thatLeading);
+        }
+        leadingPowers.add(power);
         for (int k = m - n; k >= 0; k--) {
-            q.add(r.get(n + k).multiply(thatLeading.pow(k)));
+            q.add(r.get(n + k).multiply(leadingPowers.get(k)));
             for (int j = n + k - 1; j >= k; j--) {
                 r.set(j, thatLeading.multiply(r.get(j)).subtract(r.get(n + k).multiply(that.coefficients.get(j - k))));
             }
