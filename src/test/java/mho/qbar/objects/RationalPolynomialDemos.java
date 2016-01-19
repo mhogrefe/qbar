@@ -275,6 +275,16 @@ public class RationalPolynomialDemos extends QBarDemos {
         }
     }
 
+    private void demoIsDivisibleBy_RationalPolynomial() {
+        Iterable<Pair<RationalPolynomial, RationalPolynomial>> ps = P.pairs(
+                P.withScale(4).rationalPolynomials(),
+                P.withScale(4).rationalPolynomialsAtLeast(0)
+        );
+        for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, ps)) {
+            System.out.println(p.a + " is " + (p.a.isDivisibleBy(p.b) ? "" : "not ") + "divisible by " + p.b);
+        }
+    }
+
     private void demoEquals_RationalPolynomial() {
         Iterable<Pair<RationalPolynomial, RationalPolynomial>> ps = P.pairs(P.withScale(4).rationalPolynomials());
         for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, ps)) {

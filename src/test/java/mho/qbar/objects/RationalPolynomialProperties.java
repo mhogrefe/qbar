@@ -77,6 +77,8 @@ public class RationalPolynomialProperties extends QBarTestProperties {
         propertiesConstantFactor();
         propertiesDivide_RationalPolynomial();
         compareImplementationsDivide_RationalPolynomial();
+        propertiesIsDivisibleBy();
+        compareImplementationsIsDivisibleBy();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -1431,6 +1433,58 @@ public class RationalPolynomialProperties extends QBarTestProperties {
                 P.rationalPolynomialsAtLeast(0)
         );
         compareImplementations("divide(RationalPolynomial)", take(LIMIT, ps), functions);
+    }
+
+    private static boolean isDivisibleBy_simplest(@NotNull RationalPolynomial a, @NotNull RationalPolynomial b) {
+        return a.divide(b).b == ZERO;
+    }
+
+    private void propertiesIsDivisibleBy() {
+        initialize("isDivisibleBy(RationalPolynomial)");
+        Iterable<Pair<RationalPolynomial, RationalPolynomial>> ps = P.pairs(
+                P.rationalPolynomials(),
+                P.rationalPolynomialsAtLeast(0)
+        );
+        for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, ps)) {
+            boolean isDivisible = p.a.isDivisibleBy(p.b);
+            assertEquals(p, isDivisible, isDivisibleBy_simplest(p.a, p.b));
+            assertEquals(p, isDivisible, p.a.equals(p.a.divide(p.b).a.multiply(p.b)));
+            assertTrue(p, p.a.multiply(p.b).isDivisibleBy(p.b));
+        }
+
+        ps = P.pairs(P.rationalPolynomials(), P.rationalPolynomials(0));
+        for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, ps)) {
+            assertTrue(p, p.a.isDivisibleBy(p.b));
+        }
+
+        Iterable<Triple<RationalPolynomial, RationalPolynomial, Rational>> ts = P.triples(
+                P.rationalPolynomials(),
+                P.rationalPolynomialsAtLeast(0),
+                P.nonzeroRationals()
+        );
+        for (Triple<RationalPolynomial, RationalPolynomial, Rational> t : take(LIMIT, ts)) {
+            boolean isDivisible = t.a.isDivisibleBy(t.b);
+            assertEquals(t, isDivisible, t.a.multiply(t.c).isDivisibleBy(t.b));
+            assertEquals(t, isDivisible, t.a.isDivisibleBy(t.b.multiply(t.c)));
+        }
+
+        for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
+            try {
+                p.isDivisibleBy(ZERO);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void compareImplementationsIsDivisibleBy() {
+        Map<String, Function<Pair<RationalPolynomial, RationalPolynomial>, Boolean>> functions = new LinkedHashMap<>();
+        functions.put("simplest", p -> isDivisibleBy_simplest(p.a, p.b));
+        functions.put("standard", p -> p.a.isDivisibleBy(p.b));
+        Iterable<Pair<RationalPolynomial, RationalPolynomial>> ps = P.pairs(
+                P.rationalPolynomials(),
+                P.rationalPolynomialsAtLeast(0)
+        );
+        compareImplementations("isDivisibleBy(RationalPolynomial)", take(LIMIT, ps), functions);
     }
 
     private void propertiesEquals() {

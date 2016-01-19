@@ -1297,6 +1297,48 @@ public class RationalPolynomialTest {
         divide_RationalPolynomial_fail_helper("x^2-7/4*x+1/3", "0");
     }
 
+    private static void divisibleBy_helper(@NotNull String a, @NotNull String b, boolean output) {
+        aeq(read(a).get().isDivisibleBy(read(b).get()), output);
+    }
+
+    private static void divisibleBy_fail_helper(@NotNull String a, @NotNull String b) {
+        try {
+            read(a).get().isDivisibleBy(read(b).get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testDivisibleBy() {
+        divisibleBy_helper("1", "1", true);
+        divisibleBy_helper("1", "5/2", true);
+        divisibleBy_helper("3", "5/2", true);
+        divisibleBy_helper("0", "1", true);
+        divisibleBy_helper("0", "5/2", true);
+        divisibleBy_helper("x", "1", true);
+        divisibleBy_helper("x", "5/2", true);
+        divisibleBy_helper("x", "-5/2", true);
+        divisibleBy_helper("-x", "5/2", true);
+        divisibleBy_helper("-x", "-5/2", true);
+        divisibleBy_helper("5/2", "x", false);
+        divisibleBy_helper("5/2", "-x", false);
+        divisibleBy_helper("-5/2", "x", false);
+        divisibleBy_helper("-5/2", "-x", false);
+        divisibleBy_helper("x^2-1", "x+1", true);
+        divisibleBy_helper("x^2-1", "x-1", true);
+        divisibleBy_helper("x^2-1", "1/3*x+1/3", true);
+        divisibleBy_helper("-2*x^2+1", "3*x+3", false);
+        divisibleBy_helper("x^3", "x^2", true);
+        divisibleBy_helper("x^2", "x^3", false);
+        divisibleBy_helper("-2*x^3", "5/2*x^2", true);
+        divisibleBy_helper("-x^5+7/4*x^4-1/3*x^3-x^2+7/4*x-1/3", "-x^3-1", true);
+        divisibleBy_helper("-x^5+7/4*x^4-1/3*x^3-x^2+7/4*x-1/3", "x^2-7/4*x+1/3", true);
+
+        divisibleBy_fail_helper("0", "0");
+        divisibleBy_fail_helper("-5/2", "0");
+        divisibleBy_fail_helper("x^2", "0");
+    }
+
     @Test
     public void testEquals() {
         testEqualsHelper(

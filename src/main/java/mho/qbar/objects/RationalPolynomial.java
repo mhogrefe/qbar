@@ -785,6 +785,28 @@ public final class RationalPolynomial implements
     }
 
     /**
+     * Determines whether {@code this} is divisible by {@code that}, i.e. whether there exists a
+     * {@code RationalPolynomial} p such that {@code p}×{@code that}={@code this}. {@code that} cannot be 0, even when
+     * {@code this} is 0.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalPolynomial}.</li>
+     *  <li>{@code that} cannot be 0.</li>
+     * </ul>
+     *
+     * @param that the {@code RationalPolynomial} that {@code this} may or may not be divisible by
+     * @return whether {@code this} is divisible by {@code that}
+     */
+    public boolean isDivisibleBy(@NotNull RationalPolynomial that) {
+        if (that == ZERO) {
+            throw new ArithmeticException("that cannot be 0.");
+        }
+        return this == ZERO ||
+                degree() >= that.degree() &&
+                constantFactor().b.pseudoDivide(that.constantFactor().b).b == Polynomial.ZERO;
+    }
+
+    /**
      * Determines whether {@code this} is equal to {@code that}.
      *
      * <ul>

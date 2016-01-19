@@ -718,7 +718,7 @@ public final class Polynomial implements
      * <ul>
      *  <li>{@code this} may be any {@code RationalPolynomial}.</li>
      *  <li>{@code that} cannot be 0.</li>
-     *  <li>The degree of {@code this} must be greater than the degree of {@code that}.</li>
+     *  <li>The degree of {@code this} must be greater than or equal to the degree of {@code that}.</li>
      *  <li>Neither element of the result is null.</li>
      * </ul>
      *
@@ -733,8 +733,8 @@ public final class Polynomial implements
         int m = degree();
         int n = that.degree();
         if (m < n) {
-            throw new ArithmeticException("The degree of this must be greater than the degree of that. this: " +
-                    that + ", that: " + that);
+            throw new ArithmeticException("The degree of this must be greater than or equal to the degree of that." +
+                    " this: " + this + ", that: " + that);
         }
         List<BigInteger> q = new ArrayList<>();
         List<BigInteger> r = toList(coefficients);
@@ -757,6 +757,26 @@ public final class Polynomial implements
             }
         }
         return new Pair<>(of(reverse(q)), of(toList(take(n, r))));
+    }
+
+    /**
+     * Determines whether {@code this} is divisible by {@code that}, i.e. whether there exists a
+     * {@code RationalPolynomial} p (with not-necessarily-integral coefficients) such that
+     * {@code p}×{@code that}={@code this}. {@code that} cannot be 0, even when {@code this} is 0.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>{@code that} cannot be 0.</li>
+     * </ul>
+     *
+     * @param that the {@code Polynomial} that {@code this} may or may not be divisible by
+     * @return whether {@code this} is divisible by {@code that}
+     */
+    public boolean isDivisibleBy(@NotNull Polynomial that) {
+        if (that == ZERO) {
+            throw new ArithmeticException("that cannot be zero.");
+        }
+        return this == ZERO || degree() >= that.degree() && pseudoDivide(that).b == ZERO;
     }
 
     /**

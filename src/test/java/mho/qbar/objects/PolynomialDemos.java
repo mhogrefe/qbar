@@ -228,6 +228,16 @@ public class PolynomialDemos extends QBarDemos {
         }
     }
 
+    private void demoIsDivisibleBy_Polynomial() {
+        Iterable<Pair<Polynomial, Polynomial>> ps = P.pairs(
+                P.withScale(4).polynomials(),
+                P.withScale(4).polynomialsAtLeast(0)
+        );
+        for (Pair<Polynomial, Polynomial> p : take(LIMIT, ps)) {
+            System.out.println(p.a + " is " + (p.a.isDivisibleBy(p.b) ? "" : "not ") + "divisible by " + p.b);
+        }
+    }
+
     private void demoFactor() {
         for (Polynomial p : take(LIMIT, P.withScale(4).polynomialsAtLeast(0))) {
             System.out.println("factor(" + p + ") = " + p.factor());

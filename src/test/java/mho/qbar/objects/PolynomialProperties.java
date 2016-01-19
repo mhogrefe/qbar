@@ -72,6 +72,8 @@ public class PolynomialProperties extends QBarTestProperties {
         propertiesContentAndPrimitive();
         propertiesConstantFactor();
         propertiesPseudoDivide();
+        propertiesIsDivisibleBy();
+        compareImplementationsIsDivisibleBy();
         compareImplementationsPseudoDivide();
         propertiesFactor();
         propertiesIsIrreducible();
@@ -1203,6 +1205,52 @@ public class PolynomialProperties extends QBarTestProperties {
                 P.pairs(P.polynomials(), P.polynomialsAtLeast(0))
         );
         compareImplementations("pseudoDivide(Polynomial)", take(LIMIT, ps), functions);
+    }
+
+    private static boolean isDivisibleBy_alt(@NotNull Polynomial a, @NotNull Polynomial b) {
+        return a.toRationalPolynomial().divide(b.toRationalPolynomial()).b == RationalPolynomial.ZERO;
+    }
+
+    private void propertiesIsDivisibleBy() {
+        initialize("isDivisibleBy(Polynomial)");
+        for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(P.polynomials(), P.polynomialsAtLeast(0)))) {
+            boolean isDivisible = p.a.isDivisibleBy(p.b);
+            assertEquals(p, isDivisible, isDivisibleBy_alt(p.a, p.b));
+            RationalPolynomial ar = p.a.toRationalPolynomial();
+            RationalPolynomial br = p.b.toRationalPolynomial();
+            assertEquals(p, isDivisible, ar.equals(p.a.toRationalPolynomial().divide(br).a.multiply(br)));
+            assertTrue(p, p.a.multiply(p.b).isDivisibleBy(p.b));
+        }
+
+        for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(P.polynomials(), P.polynomials(0)))) {
+            assertTrue(p, p.a.isDivisibleBy(p.b));
+        }
+
+        Iterable<Triple<Polynomial, Polynomial, BigInteger>> ts = P.triples(
+                P.polynomials(),
+                P.polynomialsAtLeast(0),
+                P.nonzeroBigIntegers()
+        );
+        for (Triple<Polynomial, Polynomial, BigInteger> t : take(LIMIT, ts)) {
+            boolean isDivisible = t.a.isDivisibleBy(t.b);
+            assertEquals(t, isDivisible, t.a.multiply(t.c).isDivisibleBy(t.b));
+            assertEquals(t, isDivisible, t.a.isDivisibleBy(t.b.multiply(t.c)));
+        }
+
+        for (Polynomial p : take(LIMIT, P.polynomials())) {
+            try {
+                p.isDivisibleBy(ZERO);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void compareImplementationsIsDivisibleBy() {
+        Map<String, Function<Pair<Polynomial, Polynomial>, Boolean>> functions = new LinkedHashMap<>();
+        functions.put("alt", p -> isDivisibleBy_alt(p.a, p.b));
+        functions.put("standard", p -> p.a.isDivisibleBy(p.b));
+        Iterable<Pair<Polynomial, Polynomial>> ps = P.pairs(P.polynomials(), P.polynomialsAtLeast(0));
+        compareImplementations("isDivisibleBy(Polynomial)", take(LIMIT, ps), functions);
     }
 
     private void propertiesFactor() {
