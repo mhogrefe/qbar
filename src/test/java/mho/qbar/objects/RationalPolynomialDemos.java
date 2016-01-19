@@ -12,6 +12,7 @@ import java.util.Optional;
 
 import static mho.qbar.objects.RationalPolynomial.*;
 import static mho.wheels.iterables.IterableUtils.*;
+import static mho.wheels.testing.Testing.*;
 import static mho.wheels.testing.Testing.its;
 import static mho.wheels.testing.Testing.nicePrint;
 
@@ -282,6 +283,17 @@ public class RationalPolynomialDemos extends QBarDemos {
         );
         for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, ps)) {
             System.out.println(p.a + " is " + (p.a.isDivisibleBy(p.b) ? "" : "not ") + "divisible by " + p.b);
+        }
+    }
+
+    private void demoSignedRemainderSequence() {
+        Iterable<Pair<RationalPolynomial, RationalPolynomial>> ps = filterInfinite(
+                p -> p.a != ZERO || p.b != ZERO,
+                P.pairs(P.withScale(4).withSecondaryScale(4).rationalPolynomials())
+        );
+        for (Pair<RationalPolynomial, RationalPolynomial> p : take(SMALL_LIMIT, ps)) {
+            System.out.println("signedRemainderSequence(" + p.a + ", " + p.b + ") = " +
+                    p.a.signedRemainderSequence(p.b));
         }
     }
 

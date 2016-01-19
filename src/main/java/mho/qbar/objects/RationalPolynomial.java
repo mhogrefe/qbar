@@ -707,7 +707,7 @@ public final class RationalPolynomial implements
     }
 
     /**
-     * Divides {@code this} by a constant to make it monic. {@code this} cannot be 0.
+     * Divides {@code this} by a constant to make it monic. {@code this} cannot be zero.
      *
      * <ul>
      *  <li>{@code this} cannot be zero.</li>
@@ -757,7 +757,7 @@ public final class RationalPolynomial implements
      *
      * <ul>
      *  <li>{@code this} may be any {@code RationalPolynomial}.</li>
-     *  <li>{@code that} cannot be 0.</li>
+     *  <li>{@code that} cannot be zero.</li>
      *  <li>Neither element of the result is null.</li>
      * </ul>
      *
@@ -767,7 +767,7 @@ public final class RationalPolynomial implements
     @SuppressWarnings("JavaDoc")
     public @NotNull Pair<RationalPolynomial, RationalPolynomial> divide(@NotNull RationalPolynomial that) {
         if (that == ZERO) {
-            throw new ArithmeticException("that cannot be 0.");
+            throw new ArithmeticException("that cannot be zero.");
         }
         int m = degree();
         int n = that.degree();
@@ -786,12 +786,12 @@ public final class RationalPolynomial implements
 
     /**
      * Determines whether {@code this} is divisible by {@code that}, i.e. whether there exists a
-     * {@code RationalPolynomial} p such that {@code p}×{@code that}={@code this}. {@code that} cannot be 0, even when
-     * {@code this} is 0.
+     * {@code RationalPolynomial} p such that {@code p}×{@code that}={@code this}. {@code that} cannot be zero, even
+     * when {@code this} is zero.
      *
      * <ul>
      *  <li>{@code this} may be any {@code RationalPolynomial}.</li>
-     *  <li>{@code that} cannot be 0.</li>
+     *  <li>{@code that} cannot be zero.</li>
      * </ul>
      *
      * @param that the {@code RationalPolynomial} that {@code this} may or may not be divisible by
@@ -799,11 +799,40 @@ public final class RationalPolynomial implements
      */
     public boolean isDivisibleBy(@NotNull RationalPolynomial that) {
         if (that == ZERO) {
-            throw new ArithmeticException("that cannot be 0.");
+            throw new ArithmeticException("that cannot be zero.");
         }
         return this == ZERO ||
                 degree() >= that.degree() &&
                 constantFactor().b.pseudoDivide(that.constantFactor().b).b == Polynomial.ZERO;
+    }
+
+    /**
+     * Given two {@code RationalPolynomial}s, returns a list of {@code RatinalPolynomial}s with certain useful
+     * properties. For example, the last element is a GCD of the two polynomials, and the signed remainder sequence of
+     * a squarefree polynomial and its derivative is a Sturm chain.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalPolynomial}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>{@code this} and {@code that} cannot both be zero.</li>
+     * </ul>
+     *
+     * @param that another {@code RationalPolynomial}
+     * @return the signed remainder sequence of {@code this} and {@code that}
+     */
+    public @NotNull List<RationalPolynomial> signedRemainderSequence(@NotNull RationalPolynomial that) {
+        if (this == ZERO && that == ZERO) {
+            throw new ArithmeticException("this and that cannot both be zero.");
+        }
+        List<RationalPolynomial> sequence = new ArrayList<>();
+        sequence.add(this);
+        if (that == ZERO) return sequence;
+        sequence.add(that);
+        for (int i = 0; ; i++) {
+            RationalPolynomial next = sequence.get(i).divide(sequence.get(i + 1)).b.negate();
+            if (next == ZERO) return sequence;
+            sequence.add(next);
+        }
     }
 
     /**

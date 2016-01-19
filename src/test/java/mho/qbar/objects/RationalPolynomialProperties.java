@@ -7,6 +7,7 @@ import mho.wheels.io.Readers;
 import mho.wheels.iterables.IterableUtils;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
+import mho.wheels.structures.Quadruple;
 import mho.wheels.structures.Triple;
 import org.jetbrains.annotations.NotNull;
 
@@ -79,6 +80,7 @@ public class RationalPolynomialProperties extends QBarTestProperties {
         compareImplementationsDivide_RationalPolynomial();
         propertiesIsDivisibleBy();
         compareImplementationsIsDivisibleBy();
+        propertiesSignedRemainderSequence();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -1397,6 +1399,10 @@ public class RationalPolynomialProperties extends QBarTestProperties {
             assertTrue(p, remainder.degree() < p.b.degree());
         }
 
+        for (Quadruple<RationalPolynomial, RationalPolynomial, Rational, Rational> q : take(LIMIT, P.quadruples(P.rationalPolynomials(), P.rationalPolynomialsAtLeast(0), P.rationals(), P.nonzeroRationals()))) {
+            assertEquals(q, q.a.multiply(q.c).divide(q.b.multiply(q.d)).b, q.a.divide(q.b).b.multiply(q.c));
+        }
+
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals(), P.nonzeroRationals()))) {
             Pair<RationalPolynomial, RationalPolynomial> quotRem = of(p.a).divide(of(p.b));
             assertEquals(p, quotRem.a, of(p.a.divide(p.b)));
@@ -1485,6 +1491,25 @@ public class RationalPolynomialProperties extends QBarTestProperties {
                 P.rationalPolynomialsAtLeast(0)
         );
         compareImplementations("isDivisibleBy(RationalPolynomial)", take(LIMIT, ps), functions);
+    }
+
+    private void propertiesSignedRemainderSequence() {
+        initialize("signedRemainderSequence(RationalPolynomial)");
+        Iterable<Pair<RationalPolynomial, RationalPolynomial>> ps = filterInfinite(
+                p -> p.a != ZERO || p.b != ZERO,
+                P.pairs(P.withScale(4).rationalPolynomials())
+        );
+        for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, ps)) {
+            List<RationalPolynomial> sequence = p.a.signedRemainderSequence(p.b);
+            assertFalse(p, sequence.isEmpty());
+            assertNotEquals(p, last(sequence), ZERO);
+            //todo GCD
+        }
+
+        for (RationalPolynomial p : take(LIMIT, P.rationalPolynomialsAtLeast(0))) {
+            assertEquals(p, p.signedRemainderSequence(ZERO), Collections.singletonList(p));
+            assertEquals(p, ZERO.signedRemainderSequence(p), Arrays.asList(ZERO, p));
+        }
     }
 
     private void propertiesEquals() {
