@@ -548,6 +548,11 @@ public class RationalPolynomialProperties extends QBarTestProperties {
             leftDistributive(RationalPolynomial::add, RationalPolynomial::multiply, t);
             rightDistributive(RationalPolynomial::add, RationalPolynomial::multiply, t);
         }
+
+        for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, P.pairs(P.monicRationalPolynomials()))) {
+            RationalPolynomial product = p.a.multiply(p.b);
+            assertTrue(p, product.isMonic());
+        }
     }
 
     private void compareImplementationsMultiply_RationalPolynomial() {

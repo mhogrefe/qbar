@@ -553,6 +553,11 @@ public class PolynomialProperties extends QBarTestProperties {
             leftDistributive(Polynomial::add, Polynomial::multiply, t);
             rightDistributive(Polynomial::add, Polynomial::multiply, t);
         }
+
+        for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(P.positivePrimitivePolynomials()))) {
+            Polynomial product = p.a.multiply(p.b);
+            assertTrue(p, product.signum() == 1 && product.isPrimitive());
+        }
     }
 
     private void compareImplementationsMultiply_Polynomial() {
