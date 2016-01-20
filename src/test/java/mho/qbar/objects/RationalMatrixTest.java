@@ -488,6 +488,192 @@ public class RationalMatrixTest {
         subtract_fail_helper("[[2/3]]", "[[2/3], [4/5]]");
     }
 
+    private static void multiply_Rational_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
+        aeq(read(a).get().multiply(Rational.read(b).get()), output);
+    }
+
+    @Test
+    public void testMultiply_Rational() {
+        multiply_Rational_helper("[]#0", "0", "[]#0");
+        multiply_Rational_helper("[]#0", "1", "[]#0");
+        multiply_Rational_helper("[]#0", "-3/2", "[]#0");
+
+        multiply_Rational_helper("[]#3", "0", "[]#3");
+        multiply_Rational_helper("[]#3", "1", "[]#3");
+        multiply_Rational_helper("[]#3", "-3/2", "[]#3");
+
+        multiply_Rational_helper("[[], [], []]", "0", "[[], [], []]");
+        multiply_Rational_helper("[[], [], []]", "1", "[[], [], []]");
+        multiply_Rational_helper("[[], [], []]", "-3/2", "[[], [], []]");
+
+        multiply_Rational_helper("[[-2/3]]", "0", "[[0]]");
+        multiply_Rational_helper("[[-2/3]]", "1", "[[-2/3]]");
+        multiply_Rational_helper("[[-2/3]]", "-3/2", "[[1]]");
+
+        multiply_Rational_helper("[[-2/3, -8], [0, 5/7]]", "0", "[[0, 0], [0, 0]]");
+        multiply_Rational_helper("[[-2/3, -8], [0, 5/7]]", "1", "[[-2/3, -8], [0, 5/7]]");
+        multiply_Rational_helper("[[-2/3, -8], [0, 5/7]]", "-3/2", "[[1, 12], [0, -15/14]]");
+    }
+
+    private static void multiply_BigInteger_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
+        aeq(read(a).get().multiply(Readers.readBigInteger(b).get()), output);
+    }
+
+    @Test
+    public void testMultiply_BigInteger() {
+        multiply_BigInteger_helper("[]#0", "0", "[]#0");
+        multiply_BigInteger_helper("[]#0", "1", "[]#0");
+        multiply_BigInteger_helper("[]#0", "5", "[]#0");
+
+        multiply_BigInteger_helper("[]#3", "0", "[]#3");
+        multiply_BigInteger_helper("[]#3", "1", "[]#3");
+        multiply_BigInteger_helper("[]#3", "5", "[]#3");
+
+        multiply_BigInteger_helper("[[], [], []]", "0", "[[], [], []]");
+        multiply_BigInteger_helper("[[], [], []]", "1", "[[], [], []]");
+        multiply_BigInteger_helper("[[], [], []]", "5", "[[], [], []]");
+
+        multiply_BigInteger_helper("[[-2/3]]", "0", "[[0]]");
+        multiply_BigInteger_helper("[[-2/3]]", "1", "[[-2/3]]");
+        multiply_BigInteger_helper("[[-2/3]]", "5", "[[-10/3]]");
+
+        multiply_BigInteger_helper("[[-2/3, -8], [0, 5/7]]", "0", "[[0, 0], [0, 0]]");
+        multiply_BigInteger_helper("[[-2/3, -8], [0, 5/7]]", "1", "[[-2/3, -8], [0, 5/7]]");
+        multiply_BigInteger_helper("[[-2/3, -8], [0, 5/7]]", "5", "[[-10/3, -40], [0, 25/7]]");
+    }
+
+    private static void multiply_int_helper(@NotNull String a, int b, @NotNull String output) {
+        aeq(read(a).get().multiply(b), output);
+    }
+
+    @Test
+    public void testMultiply_int() {
+        multiply_int_helper("[]#0", 0, "[]#0");
+        multiply_int_helper("[]#0", 1, "[]#0");
+        multiply_int_helper("[]#0", 5, "[]#0");
+
+        multiply_int_helper("[]#3", 0, "[]#3");
+        multiply_int_helper("[]#3", 1, "[]#3");
+        multiply_int_helper("[]#3", 5, "[]#3");
+
+        multiply_int_helper("[[], [], []]", 0, "[[], [], []]");
+        multiply_int_helper("[[], [], []]", 1, "[[], [], []]");
+        multiply_int_helper("[[], [], []]", 5, "[[], [], []]");
+
+        multiply_int_helper("[[-2/3]]", 0, "[[0]]");
+        multiply_int_helper("[[-2/3]]", 1, "[[-2/3]]");
+        multiply_int_helper("[[-2/3]]", 5, "[[-10/3]]");
+
+        multiply_int_helper("[[-2/3, -8], [0, 5/7]]", 0, "[[0, 0], [0, 0]]");
+        multiply_int_helper("[[-2/3, -8], [0, 5/7]]", 1, "[[-2/3, -8], [0, 5/7]]");
+        multiply_int_helper("[[-2/3, -8], [0, 5/7]]", 5, "[[-10/3, -40], [0, 25/7]]");
+    }
+
+    private static void divide_Rational_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
+        aeq(read(a).get().divide(Rational.read(b).get()), output);
+    }
+
+    private static void divide_Rational_fail_helper(@NotNull String a, @NotNull String b) {
+        try {
+            read(a).get().divide(Rational.read(b).get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testDivide_Rational() {
+        divide_Rational_helper("[]#0", "1", "[]#0");
+        divide_Rational_helper("[]#0", "-3/2", "[]#0");
+
+        divide_Rational_helper("[]#3", "1", "[]#3");
+        divide_Rational_helper("[]#3", "-3/2", "[]#3");
+
+        divide_Rational_helper("[[], [], []]", "1", "[[], [], []]");
+        divide_Rational_helper("[[], [], []]", "-3/2", "[[], [], []]");
+
+        divide_Rational_helper("[[-2/3]]", "1", "[[-2/3]]");
+        divide_Rational_helper("[[-2/3]]", "-3/2", "[[4/9]]");
+
+        divide_Rational_helper("[[-2/3, -8], [0, 5/7]]", "1", "[[-2/3, -8], [0, 5/7]]");
+        divide_Rational_helper("[[-2/3, -8], [0, 5/7]]", "-3/2", "[[4/9, 16/3], [0, -10/21]]");
+
+        divide_Rational_fail_helper("[]#0", "0");
+        divide_Rational_fail_helper("[]#3", "0");
+        divide_Rational_fail_helper("[[], [], []]", "0");
+        divide_Rational_fail_helper("[[-2/3]]", "0");
+        divide_Rational_fail_helper("[[-2/3, -8], [0, 5/7]]", "0");
+    }
+
+    private static void divide_BigInteger_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
+        aeq(read(a).get().divide(Readers.readBigInteger(b).get()), output);
+    }
+
+    private static void divide_BigInteger_fail_helper(@NotNull String a, @NotNull String b) {
+        try {
+            read(a).get().divide(Readers.readBigInteger(b).get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testDivide_BigInteger() {
+        divide_BigInteger_helper("[]#0", "1", "[]#0");
+        divide_BigInteger_helper("[]#0", "5", "[]#0");
+
+        divide_BigInteger_helper("[]#3", "1", "[]#3");
+        divide_BigInteger_helper("[]#3", "5", "[]#3");
+
+        divide_BigInteger_helper("[[], [], []]", "1", "[[], [], []]");
+        divide_BigInteger_helper("[[], [], []]", "5", "[[], [], []]");
+
+        divide_BigInteger_helper("[[-2/3]]", "1", "[[-2/3]]");
+        divide_BigInteger_helper("[[-2/3]]", "5", "[[-2/15]]");
+
+        divide_BigInteger_helper("[[-2/3, -8], [0, 5/7]]", "1", "[[-2/3, -8], [0, 5/7]]");
+        divide_BigInteger_helper("[[-2/3, -8], [0, 5/7]]", "5", "[[-2/15, -8/5], [0, 1/7]]");
+
+        divide_BigInteger_fail_helper("[]#0", "0");
+        divide_BigInteger_fail_helper("[]#3", "0");
+        divide_BigInteger_fail_helper("[[], [], []]", "0");
+        divide_BigInteger_fail_helper("[[-2/3]]", "0");
+        divide_BigInteger_fail_helper("[[-2/3, -8], [0, 5/7]]", "0");
+    }
+
+    private static void divide_int_helper(@NotNull String a, int b, @NotNull String output) {
+        aeq(read(a).get().divide(b), output);
+    }
+
+    private static void divide_int_fail_helper(@NotNull String a, int b) {
+        try {
+            read(a).get().divide(b);
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testDivide_int() {
+        divide_int_helper("[]#0", 1, "[]#0");
+        divide_int_helper("[]#0", 5, "[]#0");
+
+        divide_int_helper("[]#3", 1, "[]#3");
+        divide_int_helper("[]#3", 5, "[]#3");
+
+        divide_int_helper("[[], [], []]", 1, "[[], [], []]");
+        divide_int_helper("[[], [], []]", 5, "[[], [], []]");
+
+        divide_int_helper("[[-2/3]]", 1, "[[-2/3]]");
+        divide_int_helper("[[-2/3]]", 5, "[[-2/15]]");
+
+        divide_int_helper("[[-2/3, -8], [0, 5/7]]", 1, "[[-2/3, -8], [0, 5/7]]");
+        divide_int_helper("[[-2/3, -8], [0, 5/7]]", 5, "[[-2/15, -8/5], [0, 1/7]]");
+
+        divide_int_fail_helper("[]#0", 0);
+        divide_int_fail_helper("[]#3", 0);
+        divide_int_fail_helper("[[], [], []]", 0);
+        divide_int_fail_helper("[[-2/3]]", 0);
+        divide_int_fail_helper("[[-2/3, -8], [0, 5/7]]", 0);
+    }
+
     @Test
     public void testEquals() {
         testEqualsHelper(

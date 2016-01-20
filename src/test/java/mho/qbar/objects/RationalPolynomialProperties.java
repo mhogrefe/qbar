@@ -1399,7 +1399,13 @@ public class RationalPolynomialProperties extends QBarTestProperties {
             assertTrue(p, remainder.degree() < p.b.degree());
         }
 
-        for (Quadruple<RationalPolynomial, RationalPolynomial, Rational, Rational> q : take(LIMIT, P.quadruples(P.rationalPolynomials(), P.rationalPolynomialsAtLeast(0), P.rationals(), P.nonzeroRationals()))) {
+        Iterable<Quadruple<RationalPolynomial, RationalPolynomial, Rational, Rational>> qs = P.quadruples(
+                P.rationalPolynomials(),
+                P.rationalPolynomialsAtLeast(0),
+                P.rationals(),
+                P.nonzeroRationals()
+        );
+        for (Quadruple<RationalPolynomial, RationalPolynomial, Rational, Rational> q : take(LIMIT, qs)) {
             assertEquals(q, q.a.multiply(q.c).divide(q.b.multiply(q.d)).b, q.a.divide(q.b).b.multiply(q.c));
         }
 

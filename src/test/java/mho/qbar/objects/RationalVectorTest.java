@@ -218,9 +218,11 @@ public class RationalVectorTest {
         multiply_Rational_helper("[]", "0", "[]");
         multiply_Rational_helper("[]", "1", "[]");
         multiply_Rational_helper("[]", "-3/2", "[]");
+
         multiply_Rational_helper("[2]", "0", "[0]");
         multiply_Rational_helper("[2]", "1", "[2]");
         multiply_Rational_helper("[2]", "-3/2", "[-3]");
+
         multiply_Rational_helper("[5/3, 4, 0]", "0", "[0, 0, 0]");
         multiply_Rational_helper("[5/3, 4, 0]", "1", "[5/3, 4, 0]");
         multiply_Rational_helper("[5/3, 4, 0]", "-3/2", "[-5/2, -6, 0]");
@@ -235,9 +237,11 @@ public class RationalVectorTest {
         multiply_BigInteger_helper("[]", "0", "[]");
         multiply_BigInteger_helper("[]", "1", "[]");
         multiply_BigInteger_helper("[]", "5", "[]");
+
         multiply_BigInteger_helper("[2]", "0", "[0]");
         multiply_BigInteger_helper("[2]", "1", "[2]");
         multiply_BigInteger_helper("[2]", "5", "[10]");
+
         multiply_BigInteger_helper("[5/3, 4, 0]", "0", "[0, 0, 0]");
         multiply_BigInteger_helper("[5/3, 4, 0]", "1", "[5/3, 4, 0]");
         multiply_BigInteger_helper("[5/3, 4, 0]", "5", "[25/3, 20, 0]");
@@ -252,9 +256,11 @@ public class RationalVectorTest {
         multiply_int_helper("[]", 0, "[]");
         multiply_int_helper("[]", 1, "[]");
         multiply_int_helper("[]", 5, "[]");
+
         multiply_int_helper("[2]", 0, "[0]");
         multiply_int_helper("[2]", 1, "[2]");
         multiply_int_helper("[2]", 5, "[10]");
+
         multiply_int_helper("[5/3, 4, 0]", 0, "[0, 0, 0]");
         multiply_int_helper("[5/3, 4, 0]", 1, "[5/3, 4, 0]");
         multiply_int_helper("[5/3, 4, 0]", 5, "[25/3, 20, 0]");
@@ -275,10 +281,13 @@ public class RationalVectorTest {
     public void testDivide_Rational() {
         divide_Rational_helper("[]", "1", "[]");
         divide_Rational_helper("[]", "-3/2", "[]");
+
         divide_Rational_helper("[2]", "1", "[2]");
         divide_Rational_helper("[2]", "-3/2", "[-4/3]");
+
         divide_Rational_helper("[5/3, 4, 0]", "1", "[5/3, 4, 0]");
         divide_Rational_helper("[5/3, 4, 0]", "-3/2", "[-10/9, -8/3, 0]");
+
         divide_Rational_fail_helper("[]", "0");
         divide_Rational_fail_helper("[5/3, 4, 0]", "0");
     }
@@ -298,10 +307,13 @@ public class RationalVectorTest {
     public void testDivide_BigInteger() {
         divide_BigInteger_helper("[]", "1", "[]");
         divide_BigInteger_helper("[]", "5", "[]");
+
         divide_BigInteger_helper("[2]", "1", "[2]");
         divide_BigInteger_helper("[2]", "5", "[2/5]");
+
         divide_BigInteger_helper("[5/3, 4, 0]", "1", "[5/3, 4, 0]");
         divide_BigInteger_helper("[5/3, 4, 0]", "5", "[1/3, 4/5, 0]");
+
         divide_BigInteger_fail_helper("[]", "0");
         divide_BigInteger_fail_helper("[5/3, 4, 0]", "0");
     }
@@ -321,10 +333,13 @@ public class RationalVectorTest {
     public void testDivide_int() {
         divide_int_helper("[]", 1, "[]");
         divide_int_helper("[]", 5, "[]");
+
         divide_int_helper("[2]", 1, "[2]");
         divide_int_helper("[2]", 5, "[2/5]");
+
         divide_int_helper("[5/3, 4, 0]", 1, "[5/3, 4, 0]");
         divide_int_helper("[5/3, 4, 0]", 5, "[1/3, 4/5, 0]");
+
         divide_int_fail_helper("[]", 0);
         divide_int_fail_helper("[5/3, 4, 0]", 0);
     }

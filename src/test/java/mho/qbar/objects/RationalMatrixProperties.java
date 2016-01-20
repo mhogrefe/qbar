@@ -8,6 +8,7 @@ import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
 import org.jetbrains.annotations.NotNull;
 
+import java.math.BigInteger;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -52,6 +53,12 @@ public class RationalMatrixProperties extends QBarTestProperties {
         propertiesNegate();
         propertiesSubtract();
         compareImplementationsSubtract();
+        propertiesMultiply_Rational();
+        propertiesMultiply_BigInteger();
+        propertiesMultiply_int();
+        propertiesDivide_Rational();
+        propertiesDivide_BigInteger();
+        propertiesDivide_int();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -779,6 +786,179 @@ public class RationalMatrixProperties extends QBarTestProperties {
                 )
         );
         compareImplementations("subtract(RationalMatrix)", take(LIMIT, ps), functions);
+    }
+
+    private void propertiesMultiply_Rational() {
+        initialize("multiply(Rational)");
+        for (Pair<RationalMatrix, Rational> p : take(LIMIT, P.pairs(P.rationalMatrices(), P.rationals()))) {
+            RationalMatrix m = p.a.multiply(p.b);
+            m.validate();
+            assertEquals(p, m.height(), p.a.height());
+            assertEquals(p, m.width(), p.a.width());
+        }
+
+        for (Pair<RationalMatrix, Rational> p : take(LIMIT, P.pairs(P.rationalMatrices(), P.nonzeroRationals()))) {
+            inverse(m -> m.multiply(p.b), (RationalMatrix m) -> m.divide(p.b), p.a);
+            assertEquals(p, p.a.multiply(p.b), p.a.divide(p.b.invert()));
+        }
+
+        for (RationalMatrix m : take(LIMIT, P.rationalMatrices())) {
+            fixedPoint(n -> n.multiply(Rational.ONE), m);
+            assertTrue(m, m.multiply(Rational.ZERO).isZero());
+        }
+
+        Iterable<Triple<Integer, Integer, Rational>> ts = map(
+                p -> new Triple<>(p.b.a, p.b.b, p.a),
+                P.pairsSquareRootOrder(P.rationals(), P.pairs(P.naturalIntegersGeometric()))
+        );
+        for (Triple<Integer, Integer, Rational> t : take(LIMIT, ts)) {
+            assertTrue(t, zero(t.a, t.b).multiply(t.c).isZero());
+        }
+    }
+
+    private void propertiesMultiply_BigInteger() {
+        initialize("multiply(BigInteger)");
+        for (Pair<RationalMatrix, BigInteger> p : take(LIMIT, P.pairs(P.rationalMatrices(), P.bigIntegers()))) {
+            RationalMatrix m = p.a.multiply(p.b);
+            m.validate();
+            assertEquals(p, m.height(), p.a.height());
+            assertEquals(p, m.width(), p.a.width());
+        }
+
+        for (Pair<RationalMatrix, BigInteger> p : take(LIMIT, P.pairs(P.rationalMatrices(), P.nonzeroBigIntegers()))) {
+            inverse(m -> m.multiply(p.b), (RationalMatrix m) -> m.divide(p.b), p.a);
+        }
+
+        for (RationalMatrix m : take(LIMIT, P.rationalMatrices())) {
+            fixedPoint(n -> n.multiply(BigInteger.ONE), m);
+            assertTrue(m, m.multiply(BigInteger.ZERO).isZero());
+        }
+
+        Iterable<Triple<Integer, Integer, BigInteger>> ts = map(
+                p -> new Triple<>(p.b.a, p.b.b, p.a),
+                P.pairsSquareRootOrder(P.bigIntegers(), P.pairs(P.naturalIntegersGeometric()))
+        );
+        for (Triple<Integer, Integer, BigInteger> t : take(LIMIT, ts)) {
+            assertTrue(t, zero(t.a, t.b).multiply(t.c).isZero());
+        }
+    }
+
+    private void propertiesMultiply_int() {
+        initialize("multiply(int)");
+        for (Pair<RationalMatrix, Integer> p : take(LIMIT, P.pairs(P.rationalMatrices(), P.integers()))) {
+            RationalMatrix m = p.a.multiply(p.b);
+            m.validate();
+            assertEquals(p, m.height(), p.a.height());
+            assertEquals(p, m.width(), p.a.width());
+        }
+
+        for (Pair<RationalMatrix, Integer> p : take(LIMIT, P.pairs(P.rationalMatrices(), P.nonzeroIntegers()))) {
+            inverse(m -> m.multiply(p.b), (RationalMatrix m) -> m.divide(p.b), p.a);
+        }
+
+        for (RationalMatrix m : take(LIMIT, P.rationalMatrices())) {
+            fixedPoint(n -> n.multiply(1), m);
+            assertTrue(m, m.multiply(0).isZero());
+        }
+
+        Iterable<Triple<Integer, Integer, Integer>> ts = map(
+                p -> new Triple<>(p.b.a, p.b.b, p.a),
+                P.pairsSquareRootOrder(P.integers(), P.pairs(P.naturalIntegersGeometric()))
+        );
+        for (Triple<Integer, Integer, Integer> t : take(LIMIT, ts)) {
+            assertTrue(t, zero(t.a, t.b).multiply(t.c).isZero());
+        }
+    }
+
+    private void propertiesDivide_Rational() {
+        initialize("divide(Rational)");
+        for (Pair<RationalMatrix, Rational> p : take(LIMIT, P.pairs(P.rationalMatrices(), P.nonzeroRationals()))) {
+            RationalMatrix m = p.a.divide(p.b);
+            m.validate();
+            assertEquals(p, m.height(), p.a.height());
+            assertEquals(p, m.width(), p.a.width());
+            inverse(n -> n.divide(p.b), (RationalMatrix n) -> n.multiply(p.b), p.a);
+            assertEquals(p, m, p.a.multiply(p.b.invert()));
+        }
+
+        for (RationalMatrix m : take(LIMIT, P.rationalMatrices())) {
+            fixedPoint(u -> u.divide(Rational.ONE), m);
+        }
+
+        Iterable<Triple<Integer, Integer, Rational>> ts = map(
+                p -> new Triple<>(p.b.a, p.b.b, p.a),
+                P.pairsSquareRootOrder(P.nonzeroRationals(), P.pairs(P.naturalIntegersGeometric()))
+        );
+        for (Triple<Integer, Integer, Rational> t : take(LIMIT, ts)) {
+            assertTrue(t, zero(t.a, t.b).divide(t.c).isZero());
+        }
+
+        for (RationalMatrix m : take(LIMIT, P.rationalMatrices())) {
+            try {
+                m.divide(Rational.ZERO);
+                fail(m);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void propertiesDivide_BigInteger() {
+        initialize("divide(BigInteger)");
+        for (Pair<RationalMatrix, BigInteger> p : take(LIMIT, P.pairs(P.rationalMatrices(), P.nonzeroBigIntegers()))) {
+            RationalMatrix m = p.a.divide(p.b);
+            m.validate();
+            assertEquals(p, m.height(), p.a.height());
+            assertEquals(p, m.width(), p.a.width());
+            inverse(n -> n.divide(p.b), (RationalMatrix n) -> n.multiply(p.b), p.a);
+        }
+
+        for (RationalMatrix m : take(LIMIT, P.rationalMatrices())) {
+            fixedPoint(u -> u.divide(BigInteger.ONE), m);
+        }
+
+        Iterable<Triple<Integer, Integer, BigInteger>> ts = map(
+                p -> new Triple<>(p.b.a, p.b.b, p.a),
+                P.pairsSquareRootOrder(P.nonzeroBigIntegers(), P.pairs(P.naturalIntegersGeometric()))
+        );
+        for (Triple<Integer, Integer, BigInteger> t : take(LIMIT, ts)) {
+            assertTrue(t, zero(t.a, t.b).divide(t.c).isZero());
+        }
+
+        for (RationalMatrix m : take(LIMIT, P.rationalMatrices())) {
+            try {
+                m.divide(BigInteger.ZERO);
+                fail(m);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void propertiesDivide_int() {
+        initialize("divide(int)");
+        for (Pair<RationalMatrix, Integer> p : take(LIMIT, P.pairs(P.rationalMatrices(), P.nonzeroIntegers()))) {
+            RationalMatrix m = p.a.divide(p.b);
+            m.validate();
+            assertEquals(p, m.height(), p.a.height());
+            assertEquals(p, m.width(), p.a.width());
+            inverse(n -> n.divide(p.b), (RationalMatrix n) -> n.multiply(p.b), p.a);
+        }
+
+        for (RationalMatrix m : take(LIMIT, P.rationalMatrices())) {
+            fixedPoint(u -> u.divide(1), m);
+        }
+
+        Iterable<Triple<Integer, Integer, Integer>> ts = map(
+                p -> new Triple<>(p.b.a, p.b.b, p.a),
+                P.pairsSquareRootOrder(P.nonzeroIntegers(), P.pairs(P.naturalIntegersGeometric()))
+        );
+        for (Triple<Integer, Integer, Integer> t : take(LIMIT, ts)) {
+            assertTrue(t, zero(t.a, t.b).divide(t.c).isZero());
+        }
+
+        for (RationalMatrix m : take(LIMIT, P.rationalMatrices())) {
+            try {
+                m.divide(0);
+                fail(m);
+            } catch (ArithmeticException ignored) {}
+        }
     }
 
     private void propertiesEquals() {

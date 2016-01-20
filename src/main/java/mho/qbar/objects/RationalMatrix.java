@@ -7,6 +7,8 @@ import mho.wheels.ordering.comparators.LexComparator;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.*;
 
 import static mho.wheels.iterables.IterableUtils.*;
@@ -555,6 +557,117 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
         }
         if (height == 0 || width == 0) return this;
         return new RationalMatrix(toList(zipWith(RationalVector::subtract, rows, that.rows)), width);
+    }
+
+    /**
+     * Returns the scalar product of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} can be any {@code RationalMatrix}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * Size is height({@code this})×length({@code this})
+     *
+     * @param that the {@code Rational} {@code this} is multiplied by
+     * @return {@code this}×{@code that}
+     */
+    public @NotNull RationalMatrix multiply(@NotNull Rational that) {
+        if (height() == 0 || width == 0 || that == Rational.ONE) return this;
+        return new RationalMatrix(toList(map(r -> r.multiply(that), rows)), width);
+    }
+
+    /**
+     * Returns the scalar product of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} can be any {@code RationalMatrix}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * Size is height({@code this})×length({@code this})
+     *
+     * @param that the {@code BigInteger} {@code this} is multiplied by
+     * @return {@code this}×{@code that}
+     */
+    public @NotNull RationalMatrix multiply(@NotNull BigInteger that) {
+        if (height() == 0 || width == 0 || that.equals(BigInteger.ONE)) return this;
+        return new RationalMatrix(toList(map(r -> r.multiply(that), rows)), width);
+    }
+
+    /**
+     * Returns the scalar product of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} can be any {@code RationalMatrix}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * Size is height({@code this})×length({@code this})
+     *
+     * @param that the {@code int} {@code this} is multiplied by
+     * @return {@code this}×{@code that}
+     */
+    public @NotNull RationalMatrix multiply(int that) {
+        if (height() == 0 || width == 0 || that == 1) return this;
+        return new RationalMatrix(toList(map(r -> r.multiply(that), rows)), width);
+    }
+
+    /**
+     * Returns the scalar product of {@code this} and the inverse of {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} can be any {@code RationalMatrix}.</li>
+     *  <li>{@code that} cannot be zero.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * Size is height({@code this})×length({@code this})
+     *
+     * @param that the {@code Rational} {@code this} is divided by
+     * @return {@code this}/{@code that}
+     */
+    public @NotNull RationalMatrix divide(@NotNull Rational that) {
+        return multiply(that.invert());
+    }
+
+    /**
+     * Returns the scalar product of {@code this} and the inverse of {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} can be any {@code RationalMatrix}.</li>
+     *  <li>{@code that} cannot be zero.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * Size is height({@code this})×length({@code this})
+     *
+     * @param that the {@code BigInteger} {@code this} is divided by
+     * @return {@code this}/{@code that}
+     */
+    public @NotNull RationalMatrix divide(@NotNull BigInteger that) {
+        return multiply(Rational.of(BigInteger.ONE, that));
+    }
+
+    /**
+     * Returns the scalar product of {@code this} and the inverse of {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} can be any {@code RationalMatrix}.</li>
+     *  <li>{@code that} cannot be zero.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * Size is height({@code this})×length({@code this})
+     *
+     * @param that the {@code int} {@code this} is divided by
+     * @return {@code this}/{@code that}
+     */
+    public @NotNull RationalMatrix divide(int that) {
+        return multiply(Rational.of(1, that));
     }
 
     /**

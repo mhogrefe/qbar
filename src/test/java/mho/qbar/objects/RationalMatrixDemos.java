@@ -6,6 +6,7 @@ import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
 import org.jetbrains.annotations.NotNull;
 
+import java.math.BigInteger;
 import java.util.List;
 
 import static mho.qbar.objects.RationalMatrix.*;
@@ -311,6 +312,51 @@ public class RationalMatrixDemos extends QBarDemos {
         );
         for (Pair<RationalMatrix, RationalMatrix> m : take(MEDIUM_LIMIT, ps)) {
             System.out.println(m.a + " - " + m.b + " = " + m.a.subtract(m.b));
+        }
+    }
+
+    private void demoMultiply_Rational() {
+        Iterable<Pair<RationalMatrix, Rational>> ps = P.pairs(P.withScale(4).rationalMatrices(), P.rationals());
+        for (Pair<RationalMatrix, Rational> p : take(LIMIT, ps)) {
+            System.out.println(p.a + " * " + p.b + " = " + p.a.multiply(p.b));
+        }
+    }
+
+    private void demoMultiply_BigInteger() {
+        Iterable<Pair<RationalMatrix, BigInteger>> ps = P.pairs(P.withScale(4).rationalMatrices(), P.bigIntegers());
+        for (Pair<RationalMatrix, BigInteger> p : take(LIMIT, ps)) {
+            System.out.println(p.a + " * " + p.b + " = " + p.a.multiply(p.b));
+        }
+    }
+
+    private void demoMultiply_int() {
+        Iterable<Pair<RationalMatrix, Integer>> ps = P.pairs(P.withScale(4).rationalMatrices(), P.integers());
+        for (Pair<RationalMatrix, Integer> p : take(LIMIT, ps)) {
+            System.out.println(p.a + " * " + p.b + " = " + p.a.multiply(p.b));
+        }
+    }
+
+    private void demoDivide_Rational() {
+        Iterable<Pair<RationalMatrix, Rational>> ps = P.pairs(P.withScale(4).rationalMatrices(), P.nonzeroRationals());
+        for (Pair<RationalMatrix, Rational> p : take(LIMIT, ps)) {
+            System.out.println(p.a + " / " + p.b + " = " + p.a.divide(p.b));
+        }
+    }
+
+    private void demoDivide_BigInteger() {
+        Iterable<Pair<RationalMatrix, BigInteger>> ps = P.pairs(
+                P.withScale(4).rationalMatrices(),
+                P.nonzeroBigIntegers()
+        );
+        for (Pair<RationalMatrix, BigInteger> p : take(LIMIT, ps)) {
+            System.out.println(p.a + " / " + p.b + " = " + p.a.divide(p.b));
+        }
+    }
+
+    private void demoDivide_int() {
+        Iterable<Pair<RationalMatrix, Integer>> ps = P.pairs(P.withScale(4).rationalMatrices(), P.nonzeroIntegers());
+        for (Pair<RationalMatrix, Integer> p : take(LIMIT, ps)) {
+            System.out.println(p.a + " / " + p.b + " = " + p.a.divide(p.b));
         }
     }
 
