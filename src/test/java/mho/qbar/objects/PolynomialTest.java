@@ -1065,6 +1065,62 @@ public class PolynomialTest {
         pseudoDivide_fail_helper("x^2", "x^3");
     }
 
+    private static void pseudoRemainder_helper(
+            @NotNull String a,
+            @NotNull String b,
+            @NotNull String output
+    ) {
+        aeq(read(a).get().pseudoRemainder(read(b).get()), output);
+    }
+
+    private static void pseudoRemainder_fail_helper(@NotNull String a, @NotNull String b) {
+        try {
+            read(a).get().pseudoRemainder(read(b).get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testPseudoRemainder() {
+        pseudoRemainder_helper("1", "1", "0");
+        pseudoRemainder_helper("1", "-17", "0");
+
+        pseudoRemainder_helper("x", "1", "0");
+        pseudoRemainder_helper("x", "x", "0");
+        pseudoRemainder_helper("x", "-17", "0");
+
+        pseudoRemainder_helper("-17", "1", "0");
+        pseudoRemainder_helper("-17", "-17", "0");
+
+        pseudoRemainder_helper("x^2-4*x+7", "1", "0");
+        pseudoRemainder_helper("x^2-4*x+7", "x", "7");
+        pseudoRemainder_helper("x^2-4*x+7", "-17", "0");
+        pseudoRemainder_helper("x^2-4*x+7", "x^2-4*x+7", "0");
+
+        pseudoRemainder_helper("-x^3-1", "1", "0");
+        pseudoRemainder_helper("-x^3-1", "x", "-1");
+        pseudoRemainder_helper("-x^3-1", "-17", "0");
+        pseudoRemainder_helper("-x^3-1", "x^2-4*x+7", "-9*x+27");
+        pseudoRemainder_helper("-x^3-1", "-x^3-1", "0");
+
+        pseudoRemainder_helper("3*x^10", "1", "0");
+        pseudoRemainder_helper("3*x^10", "x", "0");
+        pseudoRemainder_helper("3*x^10", "-17", "0");
+        pseudoRemainder_helper("3*x^10", "x^2-4*x+7", "21948*x-10773");
+        pseudoRemainder_helper("3*x^10", "-x^3-1", "-3*x");
+        pseudoRemainder_helper("3*x^10", "3*x^10", "0");
+
+        pseudoRemainder_helper("x^8+x^6-3*x^4-3*x^3+8*x^2+2*x-5", "3*x^6+5*x^4-4*x^2-9*x+21", "-15*x^4+3*x^2-9");
+        pseudoRemainder_helper("x^3+x+1", "3*x^2+x+1", "7*x+10");
+        pseudoRemainder_helper("x+1", "x-1", "2");
+        pseudoRemainder_helper("x", "x+1", "-1");
+        pseudoRemainder_helper("2*x+1", "x", "1");
+
+        pseudoRemainder_fail_helper("x", "0");
+        pseudoRemainder_fail_helper("0", "x");
+        pseudoRemainder_fail_helper("x^2", "x^3");
+    }
+
     private static void divisibleBy_helper(@NotNull String a, @NotNull String b, boolean output) {
         aeq(read(a).get().isDivisibleBy(read(b).get()), output);
     }
@@ -1105,6 +1161,37 @@ public class PolynomialTest {
         divisibleBy_fail_helper("0", "0");
         divisibleBy_fail_helper("-5", "0");
         divisibleBy_fail_helper("x^2", "0");
+    }
+
+    private static void divideExact_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
+        aeq(read(a).get().divideExact(read(b).get()), output);
+    }
+
+    private static void divideExact_fail_helper(@NotNull String a, @NotNull String b) {
+        try {
+            read(a).get().divideExact(read(b).get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testDivideExact() {
+        divideExact_helper("0", "1", "0");
+        divideExact_helper("0", "x^2", "0");
+        divideExact_helper("6", "3", "2");
+        divideExact_helper("6*x-3", "3", "2*x-1");
+        divideExact_helper("x^2-1", "x+1", "x-1");
+        divideExact_helper("x^2-1", "x-1", "x+1");
+        divideExact_helper("6*x^10", "-2*x^3", "-3*x^7");
+        divideExact_helper("-x^5+4*x^4-7*x^3-x^2+4*x-7", "x^2-4*x+7", "-x^3-1");
+        divideExact_helper("-x^5+4*x^4-7*x^3-x^2+4*x-7", "-x^3-1", "x^2-4*x+7");
+
+        divideExact_fail_helper("0", "0");
+        divideExact_fail_helper("1", "0");
+        divideExact_fail_helper("2", "3");
+        divideExact_fail_helper("6*x-3", "4");
+        divideExact_fail_helper("x^5", "x+1");
+        divideExact_fail_helper("x^2+2*x+1", "x-1");
     }
 
     private static void factor_helper(@NotNull String input, @NotNull String output) {

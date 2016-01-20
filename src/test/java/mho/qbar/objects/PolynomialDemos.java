@@ -228,6 +228,16 @@ public class PolynomialDemos extends QBarDemos {
         }
     }
 
+    private void demoPseudoRemainder() {
+        Iterable<Pair<Polynomial, Polynomial>> ps = filterInfinite(
+                q -> q.a.degree() >= q.b.degree(),
+                P.pairs(P.withScale(4).polynomials(), P.withScale(4).polynomialsAtLeast(0))
+        );
+        for (Pair<Polynomial, Polynomial> p : take(LIMIT, ps)) {
+            System.out.println("pseudoRemainder(" + p.a + ", " + p.b + ") = " + p.a.pseudoRemainder(p.b));
+        }
+    }
+
     private void demoIsDivisibleBy_Polynomial() {
         Iterable<Pair<Polynomial, Polynomial>> ps = P.pairs(
                 P.withScale(4).polynomials(),
@@ -235,6 +245,16 @@ public class PolynomialDemos extends QBarDemos {
         );
         for (Pair<Polynomial, Polynomial> p : take(LIMIT, ps)) {
             System.out.println(p.a + " is " + (p.a.isDivisibleBy(p.b) ? "" : "not ") + "divisible by " + p.b);
+        }
+    }
+
+    private void demoDivideExact() {
+        Iterable<Pair<Polynomial, Polynomial>> ps = map(
+                p -> new Pair<>(p.a.multiply(p.b), p.a),
+                P.pairs(P.withScale(4).polynomialsAtLeast(1), P.withScale(4).polynomials())
+        );
+        for (Pair<Polynomial, Polynomial> p : take(LIMIT, ps)) {
+            System.out.println("(" + p.a + ") / (" + p.b + ") = " + p.a.divideExact(p.b));
         }
     }
 

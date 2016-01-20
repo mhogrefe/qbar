@@ -739,7 +739,6 @@ public final class Polynomial implements
         List<BigInteger> q = new ArrayList<>();
         List<BigInteger> r = toList(coefficients);
         BigInteger thatLeading = that.leading().get();
-        if (m < n) return new Pair<>(ZERO, this);
         List<BigInteger> leadingPowers = new ArrayList<>();
         BigInteger power = BigInteger.ONE;
         for (int i = 0; i < m - n; i++) {
@@ -757,6 +756,29 @@ public final class Polynomial implements
             }
         }
         return new Pair<>(of(reverse(q)), of(toList(take(n, r))));
+    }
+
+    public @NotNull Polynomial pseudoRemainder(@NotNull Polynomial that) {
+        if (that == ZERO) {
+            throw new ArithmeticException("that cannot be zero.");
+        }
+        int m = degree();
+        int n = that.degree();
+        if (m < n) {
+            throw new ArithmeticException("The degree of this must be greater than or equal to the degree of that." +
+                    " this: " + this + ", that: " + that);
+        }
+        List<BigInteger> r = toList(coefficients);
+        BigInteger thatLeading = that.leading().get();
+        for (int k = m - n; k >= 0; k--) {
+            for (int j = n + k - 1; j >= k; j--) {
+                r.set(j, thatLeading.multiply(r.get(j)).subtract(r.get(n + k).multiply(that.coefficients.get(j - k))));
+            }
+            for (int j = k - 1; j >= 0; j--) {
+                r.set(j, thatLeading.multiply(r.get(j)));
+            }
+        }
+        return of(toList(take(n, r)));
     }
 
     /**
@@ -777,6 +799,34 @@ public final class Polynomial implements
             throw new ArithmeticException("that cannot be zero.");
         }
         return this == ZERO || degree() >= that.degree() && pseudoDivide(that).b == ZERO;
+    }
+
+    public @NotNull Polynomial divideExact(@NotNull Polynomial that) {
+        if (that == ZERO) {
+            throw new ArithmeticException("that cannot be zero.");
+        }
+        if (this == ZERO) return ZERO;
+        int m = degree();
+        int n = that.degree();
+        if (m < n) {
+            throw new ArithmeticException();
+        }
+        List<BigInteger> q = new ArrayList<>();
+        List<BigInteger> r = toList(coefficients);
+        for (int k = m - n; k >= 0; k--) {
+            BigInteger[] qCoefficient = r.get(n + k).divideAndRemainder(that.coefficient(n));
+            if (!qCoefficient[1].equals(BigInteger.ZERO)) {
+                throw new ArithmeticException();
+            }
+            q.add(qCoefficient[0]);
+            for (int j = n + k - 1; j >= k; j--) {
+                r.set(j, r.get(j).subtract(qCoefficient[0].multiply(that.coefficient(j - k))));
+            }
+        }
+        if (any(c -> !c.equals(BigInteger.ZERO), take(n, r))) {
+            throw new ArithmeticException();
+        }
+        return of(reverse(q));
     }
 
     /**
