@@ -120,6 +120,20 @@ public final class RationalPolynomial implements
     }
 
     /**
+     * Determines whether the coefficients of {@code this} are all integers.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalPolynomial}.</li>
+     *  <li>The result may be either {@code boolean}.</li>
+     * </ul>
+     *
+     * @return whether {@code this} has integral coefficients.
+     */
+    public boolean hasIntegralCoefficients() {
+        return all(Rational::isInteger, coefficients);
+    }
+
+    /**
      * Converts {@code this} to a {@code Polynomial}.
      *
      * <ul>

@@ -37,6 +37,13 @@ public class RationalPolynomialDemos extends QBarDemos {
         }
     }
 
+    private void demoHasIntegralCoefficients() {
+        for (RationalPolynomial p : take(LIMIT, P.withScale(4).rationalPolynomials())) {
+            System.out.println(p + (p.hasIntegralCoefficients() ? " has " : " doesn't have ") +
+                    "integral coefficients");
+        }
+    }
+
     private void demoToPolynomial() {
         for (RationalPolynomial p : take(LIMIT, map(Polynomial::toRationalPolynomial, P.withScale(4).polynomials()))) {
             System.out.println("toPolynomial(" + p + ") = " + p.toPolynomial());

@@ -87,6 +87,24 @@ public class RationalPolynomialTest {
         apply_helper("1/2*x^10", "100", "50000000000000000000");
     }
 
+    private static void hasIntegralCoefficients_helper(@NotNull String input, boolean output) {
+        aeq(read(input).get().hasIntegralCoefficients(), output);
+    }
+
+    @Test
+    public void testHasIntegralCoefficients() {
+        hasIntegralCoefficients_helper("0", true);
+        hasIntegralCoefficients_helper("1", true);
+        hasIntegralCoefficients_helper("x", true);
+        hasIntegralCoefficients_helper("-17", true);
+        hasIntegralCoefficients_helper("x^2-4*x+7", true);
+        hasIntegralCoefficients_helper("x^3-1", true);
+        hasIntegralCoefficients_helper("3*x^10", true);
+        hasIntegralCoefficients_helper("-4/3", false);
+        hasIntegralCoefficients_helper("x^2-7/4*x+1/3", false);
+        hasIntegralCoefficients_helper("1/2*x^10", false);
+    }
+
     private static void toPolynomial_helper(@NotNull String input) {
         aeq(read(input).get().toPolynomial(), input);
     }

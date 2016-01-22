@@ -844,7 +844,8 @@ public final class Polynomial implements
         if (this == ZERO) {
             throw new ArithmeticException("this cannot be zero.");
         }
-        return sort(map(Polynomial::new, JasApi.factorPolynomial(toList(coefficients))));
+        //noinspection RedundantCast
+        return sort((Iterable<Polynomial>) map(Polynomial::of, JasApi.factorPolynomial(toList(coefficients))));
     }
 
     /**

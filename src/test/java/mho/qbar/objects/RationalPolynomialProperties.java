@@ -38,6 +38,7 @@ public class RationalPolynomialProperties extends QBarTestProperties {
         propertiesIterator();
         propertiesApply();
         compareImplementationsApply();
+        propertiesHasIntegralCoefficients();
         propertiesToPolynomial();
         propertiesCoefficient();
         propertiesOf_List_Rational();
@@ -153,6 +154,17 @@ public class RationalPolynomialProperties extends QBarTestProperties {
         functions.put("standard", p -> p.a.apply(p.b));
         Iterable<Pair<RationalPolynomial, Rational>> ps = P.pairs(P.rationalPolynomials(), P.rationals());
         compareImplementations("apply(Rational)", take(LIMIT, ps), functions);
+    }
+
+    private void propertiesHasIntegralCoefficients() {
+        initialize("hasIntegralCoefficients");
+        for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
+            p.hasIntegralCoefficients();
+        }
+
+        for (RationalPolynomial p : take(LIMIT, map(Polynomial::toRationalPolynomial, P.polynomials()))) {
+            assertTrue(p, p.hasIntegralCoefficients());
+        }
     }
 
     private void propertiesToPolynomial() {
