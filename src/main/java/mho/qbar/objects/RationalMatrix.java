@@ -671,6 +671,22 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
     }
 
     /**
+     * Returns the product of {@code this} and {@code that}. The result is {@code that} after a linear transformation
+     * whose basis vectors are the columns of {@code this}.
+     *
+     * Length is height({@code this})
+     *
+     * @param that the {@code RationalVector} {@code this} is multiplied by
+     * @return {@code this}×{@code that}
+     */
+    public @NotNull RationalVector multiply(@NotNull RationalVector that) {
+        if (width != that.dimension()) {
+            throw new ArithmeticException();
+        }
+        return RationalVector.of(toList(map(r -> r.dot(that), rows)));
+    }
+
+    /**
      * Determines whether {@code this} is equal to {@code that}.
      *
      * <ul>
