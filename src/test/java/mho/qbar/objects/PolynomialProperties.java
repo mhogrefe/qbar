@@ -78,6 +78,7 @@ public class PolynomialProperties extends QBarTestProperties {
         propertiesIsDivisibleBy();
         compareImplementationsIsDivisibleBy();
         propertiesDivideExact();
+        compareImplementationsDivideExact();
         propertiesFactor();
         propertiesIsIrreducible();
         compareImplementationsIsIrreducible();
@@ -1266,7 +1267,7 @@ public class PolynomialProperties extends QBarTestProperties {
                 q -> q.a.degree() >= q.b.degree(),
                 P.pairs(P.polynomials(), P.polynomialsAtLeast(0))
         );
-        compareImplementations("pseudoRemainder(Polynomial)", take(100000, ps), functions);
+        compareImplementations("pseudoRemainder(Polynomial)", take(LIMIT, ps), functions);
     }
 
     private static boolean isDivisibleBy_alt(@NotNull Polynomial a, @NotNull Polynomial b) {
@@ -1315,6 +1316,15 @@ public class PolynomialProperties extends QBarTestProperties {
         compareImplementations("isDivisibleBy(Polynomial)", take(LIMIT, ps), functions);
     }
 
+    private static @NotNull Polynomial divideExact_simplest(@NotNull Polynomial a, @NotNull Polynomial b) {
+        Pair<RationalPolynomial, RationalPolynomial> quotRem =
+                a.toRationalPolynomial().divide(b.toRationalPolynomial());
+        if (quotRem.b != RationalPolynomial.ZERO || !quotRem.a.hasIntegralCoefficients()) {
+            throw new ArithmeticException();
+        }
+        return quotRem.a.toPolynomial();
+    }
+
     private void propertiesDivideExact() {
         initialize("divideExact(Polynomial)");
         Iterable<Pair<Polynomial, Polynomial>> ps = map(
@@ -1324,6 +1334,7 @@ public class PolynomialProperties extends QBarTestProperties {
         for (Pair<Polynomial, Polynomial> p : take(LIMIT, ps)) {
             Polynomial quotient = p.a.divideExact(p.b);
             quotient.validate();
+            assertEquals(p, divideExact_simplest(p.a, p.b), quotient);
             inverse(q -> q.divideExact(p.b), (Polynomial q) -> q.multiply(p.b), p.a);
         }
 
@@ -1353,6 +1364,17 @@ public class PolynomialProperties extends QBarTestProperties {
                 fail(p);
             } catch (ArithmeticException ignored) {}
         }
+    }
+
+    private void compareImplementationsDivideExact() {
+        Map<String, Function<Pair<Polynomial, Polynomial>, Polynomial>> functions = new LinkedHashMap<>();
+        functions.put("simplest", p -> divideExact_simplest(p.a, p.b));
+        functions.put("standard", p -> p.a.divideExact(p.b));
+        Iterable<Pair<Polynomial, Polynomial>> ps = map(
+                p -> new Pair<>(p.a.multiply(p.b), p.a),
+                P.pairs(P.polynomialsAtLeast(1), P.polynomials())
+        );
+        compareImplementations("divideExact(Polynomial)", take(LIMIT, ps), functions);
     }
 
     private void propertiesFactor() {
