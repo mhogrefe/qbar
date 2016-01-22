@@ -79,6 +79,7 @@ public class PolynomialProperties extends QBarTestProperties {
         compareImplementationsIsDivisibleBy();
         propertiesDivideExact();
         compareImplementationsDivideExact();
+        propertiesTrivialPseudoRemainderSequence();
         propertiesFactor();
         propertiesIsIrreducible();
         compareImplementationsIsIrreducible();
@@ -1375,6 +1376,24 @@ public class PolynomialProperties extends QBarTestProperties {
                 P.pairs(P.polynomialsAtLeast(1), P.polynomials())
         );
         compareImplementations("divideExact(Polynomial)", take(LIMIT, ps), functions);
+    }
+
+    private void propertiesTrivialPseudoRemainderSequence() {
+        initialize("trivialPseudoRemainderSequence(Polynomial)");
+        Iterable<Pair<Polynomial, Polynomial>> ps = filterInfinite(
+                p -> (p.a != ZERO || p.b != ZERO) && p.a.degree() >= p.b.degree(),
+                P.pairs(P.withScale(4).withSecondaryScale(4).polynomials())
+        );
+        for (Pair<Polynomial, Polynomial> p : take(LIMIT, ps)) {
+            List<Polynomial> sequence = p.a.trivialPseudoRemainderSequence(p.b);
+            assertFalse(p, sequence.isEmpty());
+            assertNotEquals(p, last(sequence), ZERO);
+            //todo GCD
+        }
+
+        for (Polynomial p : take(LIMIT, P.polynomialsAtLeast(0))) {
+            assertEquals(p, p.trivialPseudoRemainderSequence(ZERO), Collections.singletonList(p));
+        }
     }
 
     private void propertiesFactor() {

@@ -758,6 +758,23 @@ public final class Polynomial implements
         return new Pair<>(of(reverse(q)), of(toList(take(n, r))));
     }
 
+    /**
+     * Returns the pseudo-remainder when {@code this} is divided by {@code that}. To be more precise, the result is r
+     * such that there exists a q such that
+     * {@code this}×leading({@code that})<sup>deg({@code a})–deg({@code n})+1</sup>={@code that}×q+r and
+     * deg(r){@literal <}deg({@code that}).
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>{@code that} cannot be 0.</li>
+     *  <li>The degree of {@code this} must be greater than or equal to the degree of {@code that}.</li>
+     *  <li>Neither element of the result is null.</li>
+     * </ul>
+     *
+     * @param that the {@code RationalPolynomial} {@code this} is divided by
+     * @return ({@code this}/{@code that}, {@code this}%{code that})
+     */
+    @SuppressWarnings("JavaDoc")
     public @NotNull Polynomial pseudoRemainder(@NotNull Polynomial that) {
         if (that == ZERO) {
             throw new ArithmeticException("that cannot be zero.");
@@ -801,6 +818,20 @@ public final class Polynomial implements
         return this == ZERO || degree() >= that.degree() && pseudoDivide(that).b == ZERO;
     }
 
+    /**
+     * Returns the quotient of {@code this} and {@code that}, assuming that {@code this} is divisible by {@code that}
+     * in the ring ℤ[x]. Otherwise, an exception is thrown.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>{@code that} cannot be zero.</li>
+     *  <li>{@code this} must be divisible by {@code that} and the quotient must have integral coefficients.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param that the {@code Polynomial} {@code this} is divided by
+     * @return {@code this}/{@code that}.
+     */
     public @NotNull Polynomial divideExact(@NotNull Polynomial that) {
         if (that == ZERO) {
             throw new ArithmeticException("that cannot be zero.");
@@ -827,6 +858,37 @@ public final class Polynomial implements
             throw new ArithmeticException();
         }
         return of(reverse(q));
+    }
+
+    /**
+     * Given two {@code Polynomial}s, returns a list of {@code Polynomial}s with certain useful properties. For
+     * example, the last element is a GCD of the two polynomials. This particular sequence is inefficient and is only
+     * implemented here for testing purposes.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>{@code that} may be any {@code Polynomial}.</li>
+     *  <li>The degree of {@code this} must be greater than or equal to the degree of {@code that}.</li>
+     *  <li>{@code this} and {@code that} cannot both be zero.</li>
+     *  <li>Neither element of the result is null.</li>
+     * </ul>
+     *
+     * @param that another {@code RationalPolynomial}
+     * @return the remainder sequence of {@code this} and {@code that}
+     */
+    public @NotNull List<Polynomial> trivialPseudoRemainderSequence(@NotNull Polynomial that) {
+        if (this == ZERO && that == ZERO) {
+            throw new ArithmeticException("this and that cannot both be zero.");
+        }
+        List<Polynomial> sequence = new ArrayList<>();
+        sequence.add(this);
+        if (that == ZERO) return sequence;
+        sequence.add(that);
+        for (int i = 0; ; i++) {
+            Polynomial next = sequence.get(i).pseudoRemainder(sequence.get(i + 1));
+            if (next == ZERO) return sequence;
+            sequence.add(next);
+        }
     }
 
     /**

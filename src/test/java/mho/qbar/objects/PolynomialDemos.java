@@ -12,6 +12,7 @@ import java.util.Optional;
 
 import static mho.qbar.objects.Polynomial.*;
 import static mho.wheels.iterables.IterableUtils.*;
+import static mho.wheels.testing.Testing.SMALL_LIMIT;
 import static mho.wheels.testing.Testing.its;
 import static mho.wheels.testing.Testing.nicePrint;
 
@@ -220,7 +221,7 @@ public class PolynomialDemos extends QBarDemos {
 
     private void demoPseudoDivide() {
         Iterable<Pair<Polynomial, Polynomial>> ps = filterInfinite(
-                q -> q.a.degree() >= q.b.degree(),
+                p -> p.a.degree() >= p.b.degree(),
                 P.pairs(P.withScale(4).polynomials(), P.withScale(4).polynomialsAtLeast(0))
         );
         for (Pair<Polynomial, Polynomial> p : take(LIMIT, ps)) {
@@ -230,7 +231,7 @@ public class PolynomialDemos extends QBarDemos {
 
     private void demoPseudoRemainder() {
         Iterable<Pair<Polynomial, Polynomial>> ps = filterInfinite(
-                q -> q.a.degree() >= q.b.degree(),
+                p -> p.a.degree() >= p.b.degree(),
                 P.pairs(P.withScale(4).polynomials(), P.withScale(4).polynomialsAtLeast(0))
         );
         for (Pair<Polynomial, Polynomial> p : take(LIMIT, ps)) {
@@ -255,6 +256,17 @@ public class PolynomialDemos extends QBarDemos {
         );
         for (Pair<Polynomial, Polynomial> p : take(LIMIT, ps)) {
             System.out.println("(" + p.a + ") / (" + p.b + ") = " + p.a.divideExact(p.b));
+        }
+    }
+
+    private void demoTrivialPseudoRemainderSequence() {
+        Iterable<Pair<Polynomial, Polynomial>> ps = filterInfinite(
+                p -> (p.a != ZERO || p.b != ZERO) && p.a.degree() >= p.b.degree(),
+                P.pairs(P.withScale(4).withSecondaryScale(4).polynomials())
+        );
+        for (Pair<Polynomial, Polynomial> p : take(SMALL_LIMIT, ps)) {
+            System.out.println("trivialPseudoRemainderSequence(" + p.a + ", " + p.b + ") = " +
+                    p.a.trivialPseudoRemainderSequence(p.b));
         }
     }
 
