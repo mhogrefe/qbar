@@ -81,6 +81,7 @@ public class RationalPolynomialProperties extends QBarTestProperties {
         compareImplementationsDivide_RationalPolynomial();
         propertiesIsDivisibleBy();
         compareImplementationsIsDivisibleBy();
+        propertiesRemainderSequence();
         propertiesSignedRemainderSequence();
         propertiesEquals();
         propertiesHashCode();
@@ -1516,6 +1517,25 @@ public class RationalPolynomialProperties extends QBarTestProperties {
         compareImplementations("isDivisibleBy(RationalPolynomial)", take(LIMIT, ps), functions);
     }
 
+    private void propertiesRemainderSequence() {
+        initialize("remainderSequence(RationalPolynomial)");
+        Iterable<Pair<RationalPolynomial, RationalPolynomial>> ps = filterInfinite(
+                p -> p.a != ZERO || p.b != ZERO,
+                P.pairs(P.withScale(4).rationalPolynomials())
+        );
+        for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, ps)) {
+            List<RationalPolynomial> sequence = p.a.remainderSequence(p.b);
+            assertFalse(p, sequence.isEmpty());
+            assertNotEquals(p, last(sequence), ZERO);
+            //todo GCD
+        }
+
+        for (RationalPolynomial p : take(LIMIT, P.rationalPolynomialsAtLeast(0))) {
+            assertEquals(p, p.remainderSequence(ZERO), Collections.singletonList(p));
+            assertEquals(p, ZERO.remainderSequence(p), Arrays.asList(ZERO, p));
+        }
+    }
+
     private void propertiesSignedRemainderSequence() {
         initialize("signedRemainderSequence(RationalPolynomial)");
         Iterable<Pair<RationalPolynomial, RationalPolynomial>> ps = filterInfinite(
@@ -1527,6 +1547,11 @@ public class RationalPolynomialProperties extends QBarTestProperties {
             assertFalse(p, sequence.isEmpty());
             assertNotEquals(p, last(sequence), ZERO);
             //todo GCD
+            assertEquals(
+                    p,
+                    toList(map(RationalPolynomial::abs, sequence)),
+                    toList(map(RationalPolynomial::abs, p.a.remainderSequence(p.b)))
+            );
         }
 
         for (RationalPolynomial p : take(LIMIT, P.rationalPolynomialsAtLeast(0))) {

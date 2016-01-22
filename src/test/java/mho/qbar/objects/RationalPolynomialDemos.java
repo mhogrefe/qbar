@@ -293,6 +293,16 @@ public class RationalPolynomialDemos extends QBarDemos {
         }
     }
 
+    private void demoRemainderSequence() {
+        Iterable<Pair<RationalPolynomial, RationalPolynomial>> ps = filterInfinite(
+                p -> p.a != ZERO || p.b != ZERO,
+                P.pairs(P.withScale(4).withSecondaryScale(4).rationalPolynomials())
+        );
+        for (Pair<RationalPolynomial, RationalPolynomial> p : take(SMALL_LIMIT, ps)) {
+            System.out.println("remainderSequence(" + p.a + ", " + p.b + ") = " + p.a.remainderSequence(p.b));
+        }
+    }
+
     private void demoSignedRemainderSequence() {
         Iterable<Pair<RationalPolynomial, RationalPolynomial>> ps = filterInfinite(
                 p -> p.a != ZERO || p.b != ZERO,

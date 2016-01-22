@@ -822,6 +822,34 @@ public final class RationalPolynomial implements
 
     /**
      * Given two {@code RationalPolynomial}s, returns a list of {@code RatinalPolynomial}s with certain useful
+     * properties. For example, the last element is a GCD of the two polynomials.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalPolynomial}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>{@code this} and {@code that} cannot both be zero.</li>
+     * </ul>
+     *
+     * @param that another {@code RationalPolynomial}
+     * @return the remainder sequence of {@code this} and {@code that}
+     */
+    public @NotNull List<RationalPolynomial> remainderSequence(@NotNull RationalPolynomial that) {
+        if (this == ZERO && that == ZERO) {
+            throw new ArithmeticException("this and that cannot both be zero.");
+        }
+        List<RationalPolynomial> sequence = new ArrayList<>();
+        sequence.add(this);
+        if (that == ZERO) return sequence;
+        sequence.add(that);
+        for (int i = 0; ; i++) {
+            RationalPolynomial next = sequence.get(i).divide(sequence.get(i + 1)).b;
+            if (next == ZERO) return sequence;
+            sequence.add(next);
+        }
+    }
+
+    /**
+     * Given two {@code RationalPolynomial}s, returns a list of {@code RatinalPolynomial}s with certain useful
      * properties. For example, the last element is a GCD of the two polynomials, and the signed remainder sequence of
      * a squarefree polynomial and its derivative is a Sturm chain.
      *
