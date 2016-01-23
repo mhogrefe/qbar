@@ -12,43 +12,43 @@ import static mho.wheels.testing.Testing.assertTrue;
 public class Monomial implements Comparable<Monomial> {
     private static final @NotNull Monomial CONSTANT = new Monomial(Collections.emptyList());
 
-    private final @NotNull List<Integer> variables;
+    private final @NotNull List<Integer> exponents;
 
-    private Monomial(@NotNull List<Integer> variables) {
-        this.variables = variables;
+    private Monomial(@NotNull List<Integer> exponents) {
+        this.exponents = exponents;
     }
 
-    public static @NotNull Monomial of(@NotNull List<Integer> variables) {
-        if (any(v -> v == null, variables)) {
+    public static @NotNull Monomial of(@NotNull List<Integer> exponents) {
+        if (any(v -> v == null, exponents)) {
             throw new NullPointerException();
         }
-        if (any(v -> v < 0, variables)) {
+        if (any(v -> v < 0, exponents)) {
             throw new IllegalArgumentException();
         }
         int actualSize;
-        for (actualSize = variables.size(); actualSize > 0; actualSize--) {
-            if (variables.get(actualSize - 1) != 0) {
+        for (actualSize = exponents.size(); actualSize > 0; actualSize--) {
+            if (exponents.get(actualSize - 1) != 0) {
                 break;
             }
         }
         if (actualSize == 0) return CONSTANT;
-        return new Monomial(toList(variables));
+        return new Monomial(toList(exponents));
     }
 
     public int degree() {
-        return sumInteger(variables);
+        return sumInteger(exponents);
     }
 
     @Override
     public boolean equals(Object that) {
         return this == that ||
-                that != null && getClass() == that.getClass() && variables.equals(((Monomial) that).variables);
+                that != null && getClass() == that.getClass() && exponents.equals(((Monomial) that).exponents);
 
     }
 
     @Override
     public int hashCode() {
-        return variables.hashCode();
+        return exponents.hashCode();
     }
 
     //grevlex
@@ -59,14 +59,14 @@ public class Monomial implements Comparable<Monomial> {
         int thatDegree = that.degree();
         if (thisDegree > thatDegree) return 1;
         if (thisDegree < thatDegree) return -1;
-        int size = that.variables.size();
-        if (variables.size() > size) return -1;
-        if (variables.size() < size) return 1;
+        int size = that.exponents.size();
+        if (exponents.size() > size) return -1;
+        if (exponents.size() < size) return 1;
         for (int i = size - 1; i >= 0; i--) {
-            int thisVariable = variables.get(i);
-            int thatVariable = that.variables.get(i);
-            if (thisVariable > thatVariable) return -1;
-            if (thisVariable < thatVariable) return 1;
+            int thisExponent = exponents.get(i);
+            int thatExponent = that.exponents.get(i);
+            if (thisExponent > thatExponent) return -1;
+            if (thisExponent < thatExponent) return 1;
         }
         return 0;
     }
@@ -75,8 +75,8 @@ public class Monomial implements Comparable<Monomial> {
         if (this == CONSTANT) return "constant";
         StringBuilder sb = new StringBuilder();
         boolean first = true;
-        for (int i = 0; i < variables.size(); i++) {
-            int exponent = variables.get(i);
+        for (int i = 0; i < exponents.size(); i++) {
+            int exponent = exponents.get(i);
             if (exponent != 0) {
                 if (first) {
                     first = false;
@@ -96,9 +96,9 @@ public class Monomial implements Comparable<Monomial> {
      * Ensures that {@code this} is valid. Must return true for any {@code Polynomial} used outside this class.
      */
     public void validate() {
-        assertTrue(this, all(v -> v >= 0, variables));
-        if (!variables.isEmpty()) {
-            assertTrue(this, last(variables) != 0);
+        assertTrue(this, all(v -> v >= 0, exponents));
+        if (!exponents.isEmpty()) {
+            assertTrue(this, last(exponents) != 0);
         }
         if (equals(CONSTANT)) {
             assertTrue(this, this == CONSTANT);
