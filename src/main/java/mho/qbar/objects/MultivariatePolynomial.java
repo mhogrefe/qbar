@@ -7,7 +7,7 @@ import java.math.BigInteger;
 import java.util.List;
 
 /**
- * <p>A multivariate polynomial in x with {@link BigInteger} coefficients.</p>
+ * <p>A multivariate polynomial with {@link BigInteger} coefficients.</p>
  *
  * <p>There is only one instance of {@code ZERO}, and one instance of {@code ONE}, so these may be compared with other
  * {@code MultivariatePolynomial}s using {@code ==}.</p>

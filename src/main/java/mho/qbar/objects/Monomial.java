@@ -59,9 +59,9 @@ public class Monomial implements Comparable<Monomial> {
         int thatDegree = that.degree();
         if (thisDegree > thatDegree) return 1;
         if (thisDegree < thatDegree) return -1;
-        int size = variables.size();
-        if (size > that.variables.size()) return -1;
-        if (size < that.variables.size()) return 1;
+        int size = that.variables.size();
+        if (variables.size() > size) return -1;
+        if (variables.size() < size) return 1;
         for (int i = size - 1; i >= 0; i--) {
             int thisVariable = variables.get(i);
             int thatVariable = that.variables.get(i);
