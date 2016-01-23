@@ -1177,6 +1177,7 @@ public final class RationalPolynomial implements
      * Ensures that {@code this} is valid. Must return true for any {@code RationalPolynomial} used outside this class.
      */
     public void validate() {
+        assertTrue(this, all(r -> r != null, coefficients));
         if (!coefficients.isEmpty()) {
             assertTrue(this, last(coefficients) != Rational.ZERO);
         }
