@@ -10,7 +10,6 @@ import java.math.BigInteger;
 import java.util.List;
 
 import static mho.qbar.objects.RationalMatrix.*;
-import static mho.qbar.objects.RationalVector.ZERO_DIMENSIONAL;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.testing.Testing.*;
 
@@ -78,7 +77,10 @@ public class RationalMatrixDemos extends QBarDemos {
                                 p -> P.withScale(4).lists(p.a, P.withScale(4).rationalVectors(p.b))
                         )
                 ),
-                map(i -> toList(replicate(i, ZERO_DIMENSIONAL)), P.withScale(4).positiveIntegersGeometric())
+                map(
+                        i -> toList(replicate(i, RationalVector.ZERO_DIMENSIONAL)),
+                        P.withScale(4).positiveIntegersGeometric()
+                )
         );
         for (List<RationalVector> vs : take(LIMIT, vss)) {
             String listString = tail(init(vs.toString()));
@@ -95,7 +97,10 @@ public class RationalMatrixDemos extends QBarDemos {
                                 p -> P.withScale(4).lists(p.a, P.withScale(4).rationalVectors(p.b))
                         )
                 ),
-                map(i -> toList(replicate(i, ZERO_DIMENSIONAL)), P.withScale(4).positiveIntegersGeometric())
+                map(
+                        i -> toList(replicate(i, RationalVector.ZERO_DIMENSIONAL)),
+                        P.withScale(4).positiveIntegersGeometric()
+                )
         );
         for (List<RationalVector> vs : take(LIMIT, vss)) {
             String listString = tail(init(vs.toString()));
@@ -357,6 +362,31 @@ public class RationalMatrixDemos extends QBarDemos {
         Iterable<Pair<RationalMatrix, Integer>> ps = P.pairs(P.withScale(4).rationalMatrices(), P.nonzeroIntegers());
         for (Pair<RationalMatrix, Integer> p : take(LIMIT, ps)) {
             System.out.println(p.a + " / " + p.b + " = " + p.a.divide(p.b));
+        }
+    }
+
+    private void demoMultiply_RationalVector() {
+        Iterable<Pair<RationalMatrix, RationalVector>> ps = P.chooseLogarithmicOrder(
+                map(
+                        q -> q.b,
+                        P.dependentPairsInfiniteSquareRootOrder(
+                                P.pairs(P.withScale(4).positiveIntegersGeometric()),
+                                p -> P.pairs(
+                                        P.withScale(4).rationalMatrices(p.a, p.b),
+                                        P.withScale(4).rationalVectors(p.b)
+                                )
+                        )
+                ),
+                P.choose(
+                        map(
+                                i -> new Pair<>(zero(i, 0), RationalVector.ZERO_DIMENSIONAL),
+                                P.withScale(4).naturalIntegersGeometric()
+                        ),
+                        map(v -> new Pair<>(zero(0, v.dimension()), v), P.withScale(4).rationalVectorsAtLeast(1))
+                )
+        );
+        for (Pair<RationalMatrix, RationalVector> p : take(LIMIT, ps)) {
+            System.out.println(p.a + " * " + p.b + " = " + p.a.multiply(p.b));
         }
     }
 

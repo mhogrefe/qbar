@@ -7,7 +7,6 @@ import mho.wheels.ordering.comparators.LexComparator;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 
-import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;
 
@@ -674,6 +673,12 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
      * Returns the product of {@code this} and {@code that}. The result is {@code that} after a linear transformation
      * whose basis vectors are the columns of {@code this}.
      *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalMatrix}</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>The width of {@code this} must equal the dimension of {@code that}.</li>
+     * </ul>
+     *
      * Length is height({@code this})
      *
      * @param that the {@code RationalVector} {@code this} is multiplied by
@@ -681,7 +686,8 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
      */
     public @NotNull RationalVector multiply(@NotNull RationalVector that) {
         if (width != that.dimension()) {
-            throw new ArithmeticException();
+            throw new ArithmeticException("The width of this must equal the dimension of that. this: " +
+                    this + ", that: " + that);
         }
         return RationalVector.of(toList(map(r -> r.dot(that), rows)));
     }

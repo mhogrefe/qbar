@@ -1525,6 +1525,7 @@ public class RationalPolynomialProperties extends QBarTestProperties {
         );
         for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, ps)) {
             List<RationalPolynomial> sequence = p.a.remainderSequence(p.b);
+            sequence.forEach(RationalPolynomial::validate);
             assertFalse(p, sequence.isEmpty());
             assertNotEquals(p, last(sequence), ZERO);
             //todo GCD
@@ -1544,6 +1545,7 @@ public class RationalPolynomialProperties extends QBarTestProperties {
         );
         for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, ps)) {
             List<RationalPolynomial> sequence = p.a.signedRemainderSequence(p.b);
+            sequence.forEach(RationalPolynomial::validate);
             assertFalse(p, sequence.isEmpty());
             assertNotEquals(p, last(sequence), ZERO);
             //todo GCD

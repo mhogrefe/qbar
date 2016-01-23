@@ -674,6 +674,34 @@ public class RationalMatrixTest {
         divide_int_fail_helper("[[-2/3, -8], [0, 5/7]]", 0);
     }
 
+    private static void multiply_RationalVector_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
+        aeq(read(a).get().multiply(RationalVector.read(b).get()), output);
+    }
+
+    private static void multiply_RationalVector_fail_helper(@NotNull String a, @NotNull String b) {
+        try {
+            read(a).get().multiply(RationalVector.read(b).get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testMultiply_RationalVector() {
+        multiply_RationalVector_helper("[]#0", "[]", "[]");
+        multiply_RationalVector_helper("[]#1", "[4/3]", "[]");
+        multiply_RationalVector_helper("[]#3", "[4/3, 0, -3]", "[]");
+        multiply_RationalVector_helper("[[]]", "[]", "[0]");
+        multiply_RationalVector_helper("[[], [], []]", "[]", "[0, 0, 0]");
+        multiply_RationalVector_helper("[[5]]", "[-1/3]", "[-5/3]");
+        multiply_RationalVector_helper("[[0, 0], [0, 0]]", "[3, 2]", "[0, 0]");
+        multiply_RationalVector_helper("[[1, 0], [0, 1]]", "[3, 2]", "[3, 2]");
+        multiply_RationalVector_helper("[[1, -1, 2], [0, -3, 1]]", "[2, 1, 0]", "[1, -3]");
+
+        multiply_RationalVector_fail_helper("[]#0", "[0]");
+        multiply_RationalVector_fail_helper("[]#3", "[1, 2]");
+        multiply_RationalVector_fail_helper("[[1, 0], [0, 1]]", "[1, 2, 3]");
+    }
+
     @Test
     public void testEquals() {
         testEqualsHelper(

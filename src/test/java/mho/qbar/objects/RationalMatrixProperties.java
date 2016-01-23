@@ -16,7 +16,6 @@ import java.util.Map;
 import java.util.function.Function;
 
 import static mho.qbar.objects.RationalMatrix.*;
-import static mho.qbar.objects.RationalVector.ZERO_DIMENSIONAL;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.ordering.Ordering.compare;
 import static mho.wheels.testing.Testing.*;
@@ -59,6 +58,7 @@ public class RationalMatrixProperties extends QBarTestProperties {
         propertiesDivide_Rational();
         propertiesDivide_BigInteger();
         propertiesDivide_int();
+        propertiesMultiply_RationalVector();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -182,7 +182,7 @@ public class RationalMatrixProperties extends QBarTestProperties {
                                 p -> P.lists(p.a, P.rationalVectors(p.b))
                         )
                 ),
-                map(i -> toList(replicate(i, ZERO_DIMENSIONAL)), P.positiveIntegersGeometric())
+                map(i -> toList(replicate(i, RationalVector.ZERO_DIMENSIONAL)), P.positiveIntegersGeometric())
         );
         for (List<RationalVector> vs : take(LIMIT, vss)) {
             RationalMatrix m = fromRows(vs);
@@ -231,7 +231,7 @@ public class RationalMatrixProperties extends QBarTestProperties {
                                 p -> P.lists(p.a, P.rationalVectors(p.b))
                         )
                 ),
-                map(i -> toList(replicate(i, ZERO_DIMENSIONAL)), P.positiveIntegersGeometric())
+                map(i -> toList(replicate(i, RationalVector.ZERO_DIMENSIONAL)), P.positiveIntegersGeometric())
         );
         for (List<RationalVector> vs : take(LIMIT, vss)) {
             RationalMatrix m = fromColumns(vs);
@@ -957,6 +957,72 @@ public class RationalMatrixProperties extends QBarTestProperties {
             try {
                 m.divide(0);
                 fail(m);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void propertiesMultiply_RationalVector() {
+        initialize("multiply(RationalVector)");
+        Iterable<Pair<RationalMatrix, RationalVector>> ps = P.chooseLogarithmicOrder(
+                map(
+                        q -> q.b,
+                        P.dependentPairsInfiniteSquareRootOrder(
+                                P.pairs(P.positiveIntegersGeometric()),
+                                p -> P.pairs(P.rationalMatrices(p.a, p.b), P.rationalVectors(p.b))
+                        )
+                ),
+                P.choose(
+                        map(
+                                i -> new Pair<>(zero(i, 0), RationalVector.ZERO_DIMENSIONAL),
+                                P.naturalIntegersGeometric()
+                        ),
+                        map(v -> new Pair<>(zero(0, v.dimension()), v), P.rationalVectorsAtLeast(1))
+                )
+        );
+        for (Pair<RationalMatrix, RationalVector> p : take(LIMIT, ps)) {
+            RationalVector v = p.a.multiply(p.b);
+            assertEquals(p, v.dimension(), p.a.height());
+        }
+
+        Iterable<Pair<RationalVector, RationalVector>> ps2 = P.withElement(
+                new Pair<>(RationalVector.ZERO_DIMENSIONAL, RationalVector.ZERO_DIMENSIONAL),
+                map(
+                        p -> p.b,
+                        P.dependentPairsInfiniteLogarithmicOrder(
+                                P.positiveIntegersGeometric(),
+                                i -> P.pairs(P.rationalVectors(i))
+                        )
+                )
+        );
+        for (Pair<RationalVector, RationalVector> p : take(LIMIT, ps2)) {
+            Rational r = fromRows(Collections.singletonList(p.a)).multiply(p.b).get(0);
+            assertEquals(p, r, p.a.dot(p.b));
+        }
+
+        for (RationalMatrix m : take(LIMIT, P.rationalMatrices())) {
+            assertEquals(m, m.multiply(RationalVector.zero(m.width())), RationalVector.zero(m.height()));
+        }
+
+        for (RationalVector v : take(LIMIT, P.rationalVectorsAtLeast(1))) {
+            assertEquals(v, identity(v.dimension()).multiply(v), v);
+        }
+
+        ps = map(
+                q -> new Pair<>(zero(q.a, q.b.dimension()), q.b),
+                P.pairs(P.naturalIntegersGeometric(), P.rationalVectors())
+        );
+        for (Pair<RationalMatrix, RationalVector> p : take(LIMIT, ps)) {
+            assertEquals(p, p.a.multiply(p.b), RationalVector.zero(p.a.height()));
+        }
+
+        Iterable<Pair<RationalMatrix, RationalVector>> psFail = filterInfinite(
+                p -> p.a.width() != p.b.dimension(),
+                P.pairs(P.rationalMatrices(), P.rationalVectors())
+        );
+        for (Pair<RationalMatrix, RationalVector> p : take(LIMIT, psFail)) {
+            try {
+                p.a.multiply(p.b);
+                fail(p);
             } catch (ArithmeticException ignored) {}
         }
     }
