@@ -384,6 +384,55 @@ public class RationalPolynomialTest {
         signum_helper("1/2*x^10", 1);
     }
 
+    private static void signum_Rational_helper(@NotNull String p, @NotNull String x, int output) {
+        aeq(read(p).get().signum(Rational.read(x).get()), output);
+    }
+
+    @Test
+    public void testSignum_Rational() {
+        signum_Rational_helper("0", "0", 0);
+        signum_Rational_helper("0", "1", 0);
+        signum_Rational_helper("0", "-1", 0);
+        signum_Rational_helper("0", "4/5", 0);
+        signum_Rational_helper("0", "100", 0);
+
+        signum_Rational_helper("1", "0", 1);
+        signum_Rational_helper("1", "1", 1);
+        signum_Rational_helper("1", "-1", 1);
+        signum_Rational_helper("1", "4/5", 1);
+        signum_Rational_helper("1", "100", 1);
+
+        signum_Rational_helper("x", "0", 0);
+        signum_Rational_helper("x", "1", 1);
+        signum_Rational_helper("x", "-1", -1);
+        signum_Rational_helper("x", "4/5", 1);
+        signum_Rational_helper("x", "100", 1);
+
+        signum_Rational_helper("-4/3", "0", -1);
+        signum_Rational_helper("-4/3", "1", -1);
+        signum_Rational_helper("-4/3", "-1", -1);
+        signum_Rational_helper("-4/3", "4/5", -1);
+        signum_Rational_helper("-4/3", "100", -1);
+
+        signum_Rational_helper("x^2-7/4*x+1/3", "0", 1);
+        signum_Rational_helper("x^2-7/4*x+1/3", "1", -1);
+        signum_Rational_helper("x^2-7/4*x+1/3", "-1", 1);
+        signum_Rational_helper("x^2-7/4*x+1/3", "4/5", -1);
+        signum_Rational_helper("x^2-7/4*x+1/3", "100", 1);
+
+        signum_Rational_helper("x^3-1", "0", -1);
+        signum_Rational_helper("x^3-1", "1", 0);
+        signum_Rational_helper("x^3-1", "-1", -1);
+        signum_Rational_helper("x^3-1", "4/5", -1);
+        signum_Rational_helper("x^3-1", "100", 1);
+
+        signum_Rational_helper("1/2*x^10", "0", 0);
+        signum_Rational_helper("1/2*x^10", "1", 1);
+        signum_Rational_helper("1/2*x^10", "-1", 1);
+        signum_Rational_helper("1/2*x^10", "4/5", 1);
+        signum_Rational_helper("1/2*x^10", "100", 1);
+    }
+
     private static void subtract_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
         aeq(read(a).get().subtract(read(b).get()), output);
     }

@@ -339,11 +339,45 @@ public final class Polynomial implements
      *  <li>The result may be –1, 0, or 1.</li>
      * </ul>
      *
-     * @return sgn(p(∞))
+     * @return sgn({@code this}(∞))
      */
     @SuppressWarnings("JavaDoc")
     public int signum() {
         return this == ZERO ? 0 : leading().get().signum();
+    }
+
+    /**
+     * Returns the sign of {@code this} when evaluated at {@code x}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>{@code x} cannot be null.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param x where {@code this} is evaluated
+     * @return sgn({@code this}(x))
+     */
+    @SuppressWarnings("JavaDoc")
+    public int signum(@NotNull BigInteger x) {
+        return apply(x).signum();
+    }
+
+    /**
+     * Returns the sign of {@code this} when evaluated at {@code x}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>{@code x} cannot be null.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param x where {@code this} is evaluated
+     * @return sgn({@code this}(x))
+     */
+    @SuppressWarnings("JavaDoc")
+    public int signum(@NotNull Rational x) {
+        return apply(x).signum();
     }
 
     /**

@@ -49,6 +49,10 @@ public class PolynomialProperties extends QBarTestProperties {
         propertiesNegate();
         propertiesAbs();
         propertiesSignum();
+        propertiesSignum_BigInteger();
+        compareImplementationsSignum_BigInteger();
+        propertiesSignum_Rational();
+        compareImplementationsSignum_Rational();
         propertiesSubtract();
         compareImplementationsSubtract();
         propertiesMultiply_Polynomial();
@@ -443,6 +447,118 @@ public class PolynomialProperties extends QBarTestProperties {
         for (BigInteger i : take(LIMIT, P.bigIntegers())) {
             homomorphic(Polynomial::of, Function.identity(), BigInteger::signum, Polynomial::signum, i);
         }
+    }
+
+    private static int signum_BigInteger_alt(@NotNull Polynomial p, @NotNull BigInteger x) {
+        return sumSignBigInteger(
+                toList(
+                        zipWith(
+                                (c, i) -> c.equals(BigInteger.ZERO) ? BigInteger.ZERO : x.pow(i).multiply(c),
+                                p,
+                                rangeUp(0)
+                        )
+                )
+        );
+    }
+
+    private static int signum_BigInteger_alt2(@NotNull Polynomial p, @NotNull BigInteger x) {
+        if (p == ZERO) return 0;
+        BigInteger partialResult = foldr((c, y) -> y.multiply(x).add(c), BigInteger.ZERO, tail(p)).multiply(x);
+        return Integer.signum(partialResult.compareTo(head(p).negate()));
+    }
+
+    private void propertiesSignum_BigInteger() {
+        initialize("signum(BigInteger)");
+        for (Pair<Polynomial, BigInteger> p : take(LIMIT, P.pairs(P.polynomials(), P.bigIntegers()))) {
+            int signum = p.a.signum(p.b);
+            assertEquals(p, signum, signum_BigInteger_alt(p.a, p.b));
+            assertEquals(p, signum, signum_BigInteger_alt2(p.a, p.b));
+        }
+
+        for (BigInteger i : take(LIMIT, P.bigIntegers())) {
+            assertEquals(i, ZERO.signum(i), 0);
+            assertEquals(i, X.signum(i), i.signum());
+            assertEquals(i, of(IntegerUtils.NEGATIVE_ONE, 1).signum(i), -i.signum());
+        }
+
+        for (Polynomial p : take(LIMIT, P.polynomialsAtLeast(0))) {
+            assertEquals(p, p.signum(BigInteger.ZERO), p.coefficient(0).signum());
+        }
+
+        for (Polynomial p : take(LIMIT, P.polynomials())) {
+            assertEquals(p, p.signum(BigInteger.ONE), sumSignBigInteger(toList(p)));
+        }
+
+        for (Pair<BigInteger, BigInteger> p : take(LIMIT, P.pairs(P.bigIntegers()))) {
+            assertEquals(p, of(p.a).signum(p.b), p.a.signum());
+        }
+    }
+
+    private void compareImplementationsSignum_BigInteger() {
+        Map<String, Function<Pair<Polynomial, BigInteger>, Integer>> functions = new LinkedHashMap<>();
+        functions.put("alt", p -> signum_BigInteger_alt(p.a, p.b));
+        functions.put("alt2", p -> signum_BigInteger_alt2(p.a, p.b));
+        functions.put("standard", p -> p.a.signum(p.b));
+        Iterable<Pair<Polynomial, BigInteger>> ps = P.pairs(P.polynomials(), P.bigIntegers());
+        compareImplementations("signum(BigInteger)", take(LIMIT, ps), functions);
+    }
+
+    private static int signum_Rational_alt(@NotNull Polynomial p, @NotNull Rational x) {
+        return Rational.sumSign(
+                toList(
+                        zipWith(
+                                (c, i) -> c.equals(BigInteger.ZERO) ? Rational.ZERO : x.pow(i).multiply(c),
+                                p,
+                                rangeUp(0)
+                        )
+                )
+        );
+    }
+
+    private static int signum_Rational_alt2(@NotNull Polynomial p, @NotNull Rational x) {
+        if (p == ZERO) return 0;
+        Rational partialResult = foldr(
+                (c, y) -> y.multiply(x).add(Rational.of(c)),
+                Rational.ZERO,
+                tail(p)
+        ).multiply(x);
+        return Integer.signum(partialResult.compareTo(Rational.of(head(p).negate())));
+    }
+
+    private void propertiesSignum_Rational() {
+        initialize("signum(Rational)");
+        for (Pair<Polynomial, Rational> p : take(LIMIT, P.pairs(P.polynomials(), P.rationals()))) {
+            int signum = p.a.signum(p.b);
+            assertEquals(p, signum, signum_Rational_alt(p.a, p.b));
+            assertEquals(p, signum, signum_Rational_alt2(p.a, p.b));
+        }
+
+        for (Rational r : take(LIMIT, P.rationals())) {
+            assertEquals(r, ZERO.signum(r), 0);
+            assertEquals(r, X.signum(r), r.signum());
+            assertEquals(r, of(IntegerUtils.NEGATIVE_ONE, 1).signum(r), -r.signum());
+        }
+
+        for (Polynomial p : take(LIMIT, P.polynomialsAtLeast(0))) {
+            assertEquals(p, p.signum(Rational.ZERO), p.coefficient(0).signum());
+        }
+
+        for (Polynomial p : take(LIMIT, P.polynomials())) {
+            assertEquals(p, p.signum(Rational.ONE), sumSignBigInteger(toList(p)));
+        }
+
+        for (Pair<BigInteger, Rational> p : take(LIMIT, P.pairs(P.bigIntegers(), P.rationals()))) {
+            assertEquals(p, of(p.a).signum(p.b), p.a.signum());
+        }
+    }
+
+    private void compareImplementationsSignum_Rational() {
+        Map<String, Function<Pair<Polynomial, Rational>, Integer>> functions = new LinkedHashMap<>();
+        functions.put("alt", p -> signum_Rational_alt(p.a, p.b));
+        functions.put("alt2", p -> signum_Rational_alt2(p.a, p.b));
+        functions.put("standard", p -> p.a.signum(p.b));
+        Iterable<Pair<Polynomial, Rational>> ps = P.pairs(P.polynomials(), P.rationals());
+        compareImplementations("signum(Rational)", take(LIMIT, ps), functions);
     }
 
     private static @NotNull Polynomial subtract_simplest(@NotNull Polynomial a, @NotNull Polynomial b) {

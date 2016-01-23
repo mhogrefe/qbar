@@ -50,6 +50,8 @@ public class RationalPolynomialProperties extends QBarTestProperties {
         propertiesNegate();
         propertiesAbs();
         propertiesSignum();
+        propertiesSignum_Rational();
+        compareImplementationsSignum_Rational();
         propertiesSubtract();
         compareImplementationsSubtract();
         propertiesMultiply_RationalPolynomial();
@@ -418,6 +420,58 @@ public class RationalPolynomialProperties extends QBarTestProperties {
         for (Rational r : take(LIMIT, P.rationals())) {
             homomorphic(RationalPolynomial::of, Function.identity(), Rational::signum, RationalPolynomial::signum, r);
         }
+    }
+
+    private static int signum_Rational_simplest(@NotNull RationalPolynomial p, @NotNull Rational x) {
+        return p.apply(x).signum();
+    }
+
+    private static int signum_Rational_alt(@NotNull RationalPolynomial p, @NotNull Rational x) {
+        return Rational.sumSign(
+                toList(
+                        zipWith(
+                                (c, i) -> c == Rational.ZERO ? Rational.ZERO : x.pow(i).multiply(c),
+                                p,
+                                rangeUp(0)
+                        )
+                )
+        );
+    }
+
+    private void propertiesSignum_Rational() {
+        initialize("signum(Rational)");
+        for (Pair<RationalPolynomial, Rational> p : take(LIMIT, P.pairs(P.rationalPolynomials(), P.rationals()))) {
+            int signum = p.a.signum(p.b);
+            assertEquals(p, signum, signum_Rational_simplest(p.a, p.b));
+            assertEquals(p, signum, signum_Rational_alt(p.a, p.b));
+        }
+
+        for (Rational r : take(LIMIT, P.rationals())) {
+            assertEquals(r, ZERO.signum(r), 0);
+            assertEquals(r, X.signum(r), r.signum());
+            assertEquals(r, of(Rational.NEGATIVE_ONE, 1).signum(r), -r.signum());
+        }
+
+        for (RationalPolynomial p : take(LIMIT, P.rationalPolynomialsAtLeast(0))) {
+            assertEquals(p, p.signum(Rational.ZERO), p.coefficient(0).signum());
+        }
+
+        for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
+            assertEquals(p, p.signum(Rational.ONE), Rational.sumSign(toList(p)));
+        }
+
+        for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
+            assertEquals(p, of(p.a).signum(p.b), p.a.signum());
+        }
+    }
+
+    private void compareImplementationsSignum_Rational() {
+        Map<String, Function<Pair<RationalPolynomial, Rational>, Integer>> functions = new LinkedHashMap<>();
+        functions.put("simplest", p -> signum_Rational_simplest(p.a, p.b));
+        functions.put("alt", p -> signum_Rational_alt(p.a, p.b));
+        functions.put("standard", p -> p.a.signum(p.b));
+        Iterable<Pair<RationalPolynomial, Rational>> ps = P.pairs(P.rationalPolynomials(), P.rationals());
+        compareImplementations("signum(Rational)", take(100000, ps), functions);
     }
 
     private static @NotNull RationalPolynomial subtract_simplest(

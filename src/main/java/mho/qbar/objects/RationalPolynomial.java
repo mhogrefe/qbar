@@ -338,6 +338,25 @@ public final class RationalPolynomial implements
     }
 
     /**
+     * Returns the sign of {@code this} when evaluated at {@code x}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>{@code x} cannot be null.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param x where {@code this} is evaluated
+     * @return sgn({@code this}(x))
+     */
+    @SuppressWarnings("JavaDoc")
+    public int signum(@NotNull Rational x) {
+        if (this == ZERO) return 0;
+        Rational partialResult = foldr((c, y) -> y.multiply(x).add(c), Rational.ZERO, tail(coefficients)).multiply(x);
+        return Integer.signum(partialResult.compareTo(head(coefficients).negate()));
+    }
+
+    /**
      * Returns the difference of {@code this} and {@code that}.
      *
      * <ul>

@@ -117,6 +117,18 @@ public class PolynomialDemos extends QBarDemos {
         }
     }
 
+    private void demoSignum_BigInteger() {
+        for (Pair<Polynomial, BigInteger> p : take(LIMIT, P.pairs(P.withScale(4).polynomials(), P.bigIntegers()))) {
+            System.out.println("signum(" + p.a + ", " + p.b + ") = " + p.a.signum(p.b));
+        }
+    }
+
+    private void demoSignum_Rational() {
+        for (Pair<Polynomial, Rational> p : take(LIMIT, P.pairs(P.withScale(4).polynomials(), P.rationals()))) {
+            System.out.println("signum(" + p.a + ", " + p.b + ") = " + p.a.signum(p.b));
+        }
+    }
+
     private void demoSubtract() {
         for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(P.withScale(4).polynomials()))) {
             System.out.println("(" + p.a + ") - (" + p.b + ") = " + p.a.subtract(p.b));

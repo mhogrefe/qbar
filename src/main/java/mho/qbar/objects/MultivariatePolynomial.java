@@ -27,7 +27,6 @@ public class MultivariatePolynomial {
     public boolean equals(Object that) {
         return this == that ||
                 that != null && getClass() == that.getClass() && terms.equals(((MultivariatePolynomial) that).terms);
-
     }
 
     @Override

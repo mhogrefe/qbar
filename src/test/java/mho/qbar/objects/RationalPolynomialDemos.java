@@ -120,6 +120,13 @@ public class RationalPolynomialDemos extends QBarDemos {
         }
     }
 
+    private void demoSignum_Rational() {
+        Iterable<Pair<RationalPolynomial, Rational>> ps = P.pairs(P.withScale(4).rationalPolynomials(), P.rationals());
+        for (Pair<RationalPolynomial, Rational> p : take(LIMIT, ps)) {
+            System.out.println("signum(" + p.a + ", " + p.b + ") = " + p.a.signum(p.b));
+        }
+    }
+
     private void demoSubtract() {
         Iterable<Pair<RationalPolynomial, RationalPolynomial>> ps = P.pairs(P.withScale(4).rationalPolynomials());
         for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, ps)) {

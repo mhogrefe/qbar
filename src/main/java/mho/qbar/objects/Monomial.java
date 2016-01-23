@@ -43,7 +43,6 @@ public class Monomial implements Comparable<Monomial> {
     public boolean equals(Object that) {
         return this == that ||
                 that != null && getClass() == that.getClass() && exponents.equals(((Monomial) that).exponents);
-
     }
 
     @Override

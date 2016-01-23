@@ -408,6 +408,104 @@ public class PolynomialTest {
         signum_helper("3*x^10", 1);
     }
 
+    private static void signum_BigInteger_helper(@NotNull String p, @NotNull String x, int output) {
+        aeq(read(p).get().signum(Readers.readBigInteger(x).get()), output);
+    }
+
+    @Test
+    public void testSignum_BigInteger() {
+        signum_BigInteger_helper("0", "0", 0);
+        signum_BigInteger_helper("0", "1", 0);
+        signum_BigInteger_helper("0", "-1", 0);
+        signum_BigInteger_helper("0", "5", 0);
+        signum_BigInteger_helper("0", "100", 0);
+
+        signum_BigInteger_helper("1", "0", 1);
+        signum_BigInteger_helper("1", "1", 1);
+        signum_BigInteger_helper("1", "-1", 1);
+        signum_BigInteger_helper("1", "5", 1);
+        signum_BigInteger_helper("1", "100", 1);
+
+        signum_BigInteger_helper("x", "0", 0);
+        signum_BigInteger_helper("x", "1", 1);
+        signum_BigInteger_helper("x", "-1", -1);
+        signum_BigInteger_helper("x", "5", 1);
+        signum_BigInteger_helper("x", "100", 1);
+
+        signum_BigInteger_helper("-17", "0", -1);
+        signum_BigInteger_helper("-17", "1", -1);
+        signum_BigInteger_helper("-17", "-1", -1);
+        signum_BigInteger_helper("-17", "5", -1);
+        signum_BigInteger_helper("-17", "100", -1);
+
+        signum_BigInteger_helper("x^2-4*x+7", "0", 1);
+        signum_BigInteger_helper("x^2-4*x+7", "1", 1);
+        signum_BigInteger_helper("x^2-4*x+7", "-1", 1);
+        signum_BigInteger_helper("x^2-4*x+7", "5", 1);
+        signum_BigInteger_helper("x^2-4*x+7", "100", 1);
+
+        signum_BigInteger_helper("x^3-1", "0", -1);
+        signum_BigInteger_helper("x^3-1", "1", 0);
+        signum_BigInteger_helper("x^3-1", "-1", -1);
+        signum_BigInteger_helper("x^3-1", "5", 1);
+        signum_BigInteger_helper("x^3-1", "100", 1);
+
+        signum_BigInteger_helper("3*x^10", "0", 0);
+        signum_BigInteger_helper("3*x^10", "1", 1);
+        signum_BigInteger_helper("3*x^10", "-1", 1);
+        signum_BigInteger_helper("3*x^10", "5", 1);
+        signum_BigInteger_helper("3*x^10", "100", 1);
+    }
+
+    private static void signum_Rational_helper(@NotNull String p, @NotNull String x, int output) {
+        aeq(read(p).get().signum(Rational.read(x).get()), output);
+    }
+
+    @Test
+    public void testSignum_Rational() {
+        signum_Rational_helper("0", "0", 0);
+        signum_Rational_helper("0", "1", 0);
+        signum_Rational_helper("0", "-1", 0);
+        signum_Rational_helper("0", "4/5", 0);
+        signum_Rational_helper("0", "100", 0);
+
+        signum_Rational_helper("1", "0", 1);
+        signum_Rational_helper("1", "1", 1);
+        signum_Rational_helper("1", "-1", 1);
+        signum_Rational_helper("1", "4/5", 1);
+        signum_Rational_helper("1", "100", 1);
+
+        signum_Rational_helper("x", "0", 0);
+        signum_Rational_helper("x", "1", 1);
+        signum_Rational_helper("x", "-1", -1);
+        signum_Rational_helper("x", "4/5", 1);
+        signum_Rational_helper("x", "100", 1);
+
+        signum_Rational_helper("-17", "0", -1);
+        signum_Rational_helper("-17", "1", -1);
+        signum_Rational_helper("-17", "-1", -1);
+        signum_Rational_helper("-17", "4/5", -1);
+        signum_Rational_helper("-17", "100", -1);
+
+        signum_Rational_helper("x^2-4*x+7", "0", 1);
+        signum_Rational_helper("x^2-4*x+7", "1", 1);
+        signum_Rational_helper("x^2-4*x+7", "-1", 1);
+        signum_Rational_helper("x^2-4*x+7", "4/5", 1);
+        signum_Rational_helper("x^2-4*x+7", "100", 1);
+
+        signum_Rational_helper("x^3-1", "0", -1);
+        signum_Rational_helper("x^3-1", "1", 0);
+        signum_Rational_helper("x^3-1", "-1", -1);
+        signum_Rational_helper("x^3-1", "4/5", -1);
+        signum_Rational_helper("x^3-1", "100", 1);
+
+        signum_Rational_helper("3*x^10", "0", 0);
+        signum_Rational_helper("3*x^10", "1", 1);
+        signum_Rational_helper("3*x^10", "-1", 1);
+        signum_Rational_helper("3*x^10", "4/5", 1);
+        signum_Rational_helper("3*x^10", "100", 1);
+    }
+
     private static void subtract_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
         aeq(read(a).get().subtract(read(b).get()), output);
     }
