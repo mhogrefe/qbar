@@ -17,9 +17,9 @@ import java.util.List;
  * <p>This class is immutable.</p>
  */
 public class MultivariatePolynomial {
-    private final @NotNull List<Pair<BigInteger, Monomial>> terms;
+    private final @NotNull List<Pair<BigInteger, ExponentVector>> terms;
 
-    private MultivariatePolynomial(@NotNull List<Pair<BigInteger, Monomial>> terms) {
+    private MultivariatePolynomial(@NotNull List<Pair<BigInteger, ExponentVector>> terms) {
         this.terms = terms;
     }
 

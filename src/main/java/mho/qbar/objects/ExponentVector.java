@@ -9,19 +9,16 @@ import java.util.List;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.testing.Testing.assertTrue;
 
-public class Monomial implements Comparable<Monomial> {
-    private static final @NotNull Monomial CONSTANT = new Monomial(Collections.emptyList());
+public class ExponentVector implements Comparable<ExponentVector> {
+    private static final @NotNull ExponentVector CONSTANT = new ExponentVector(Collections.emptyList());
 
     private final @NotNull List<Integer> exponents;
 
-    private Monomial(@NotNull List<Integer> exponents) {
+    private ExponentVector(@NotNull List<Integer> exponents) {
         this.exponents = exponents;
     }
 
-    public static @NotNull Monomial of(@NotNull List<Integer> exponents) {
-        if (any(v -> v == null, exponents)) {
-            throw new NullPointerException();
-        }
+    public static @NotNull ExponentVector of(@NotNull List<Integer> exponents) {
         if (any(v -> v < 0, exponents)) {
             throw new IllegalArgumentException();
         }
@@ -32,7 +29,7 @@ public class Monomial implements Comparable<Monomial> {
             }
         }
         if (actualSize == 0) return CONSTANT;
-        return new Monomial(toList(exponents));
+        return new ExponentVector(toList(take(actualSize, exponents)));
     }
 
     public int degree() {
@@ -42,7 +39,7 @@ public class Monomial implements Comparable<Monomial> {
     @Override
     public boolean equals(Object that) {
         return this == that ||
-                that != null && getClass() == that.getClass() && exponents.equals(((Monomial) that).exponents);
+                that != null && getClass() == that.getClass() && exponents.equals(((ExponentVector) that).exponents);
     }
 
     @Override
@@ -52,7 +49,7 @@ public class Monomial implements Comparable<Monomial> {
 
     //grevlex
     @Override
-    public int compareTo(@NotNull Monomial that) {
+    public int compareTo(@NotNull ExponentVector that) {
         if (this == that) return 0;
         int thisDegree = degree();
         int thatDegree = that.degree();
