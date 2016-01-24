@@ -38,6 +38,8 @@ public class PolynomialProperties extends QBarTestProperties {
         compareImplementationsApply_BigInteger();
         propertiesApply_Rational();
         compareImplementationsApply_Rational();
+        propertiesSpecialApply();
+        compareImplementationsSpecialApply();
         propertiesToRationalPolynomial();
         propertiesCoefficient();
         propertiesOf_List_BigInteger();
@@ -171,6 +173,10 @@ public class PolynomialProperties extends QBarTestProperties {
     }
 
     private static @NotNull Rational apply_Rational_alt(@NotNull Polynomial p, @NotNull Rational x) {
+        return foldr((c, y) -> x.multiply(y).add(Rational.of(c)), Rational.ZERO, p);
+    }
+
+    private static @NotNull Rational apply_Rational_alt2(@NotNull Polynomial p, @NotNull Rational x) {
         if (x.isInteger()) {
             return Rational.of(p.apply(x.bigIntegerValueExact()));
         } else {
@@ -185,6 +191,7 @@ public class PolynomialProperties extends QBarTestProperties {
             assertEquals(p, y, apply_Rational_simplest(p.a, p.b));
             assertEquals(p, y, apply_Rational_naive(p.a, p.b));
             assertEquals(p, y, apply_Rational_alt(p.a, p.b));
+            assertEquals(p, y, apply_Rational_alt2(p.a, p.b));
         }
 
         for (Rational r : take(LIMIT, P.rationals())) {
@@ -222,8 +229,62 @@ public class PolynomialProperties extends QBarTestProperties {
         functions.put("simplest", p -> apply_Rational_simplest(p.a, p.b));
         functions.put("naïve", p -> apply_Rational_naive(p.a, p.b));
         functions.put("alt", p -> apply_Rational_alt(p.a, p.b));
+        functions.put("alt2", p -> apply_Rational_alt2(p.a, p.b));
         functions.put("standard", p -> p.a.apply(p.b));
         compareImplementations("apply(Rational)", take(LIMIT, P.pairs(P.polynomials(), P.rationals())), functions);
+    }
+
+    private static @NotNull BigInteger specialApply_simplest(@NotNull Polynomial p, @NotNull Rational x) {
+        if (p == ZERO) {
+            return BigInteger.ZERO;
+        } else {
+            return p.apply(x).multiply(x.getDenominator().pow(p.degree())).bigIntegerValueExact();
+        }
+    }
+
+    private void propertiesSpecialApply() {
+        initialize("specialApply(Rational)");
+        for (Pair<Polynomial, Rational> p : take(LIMIT, P.pairs(P.polynomials(), P.rationals()))) {
+            BigInteger y = p.a.specialApply(p.b);
+            assertEquals(p, y, specialApply_simplest(p.a, p.b));
+        }
+
+        for (Pair<Polynomial, BigInteger> p : take(LIMIT, P.pairs(P.polynomials(), P.bigIntegers()))) {
+            assertEquals(p, p.a.specialApply(Rational.of(p.b)), p.a.apply(p.b));
+        }
+
+        for (Rational r : take(LIMIT, P.rationals())) {
+            assertEquals(r, ZERO.specialApply(r), BigInteger.ZERO);
+            assertEquals(r, X.specialApply(r), r.getNumerator());
+            assertEquals(r, of(IntegerUtils.NEGATIVE_ONE, 1).specialApply(r), r.getNumerator().negate());
+        }
+
+        for (Polynomial p : take(LIMIT, P.polynomialsAtLeast(0))) {
+            assertEquals(p, p.specialApply(Rational.ZERO), p.coefficient(0));
+        }
+
+        for (Polynomial p : take(LIMIT, P.polynomials())) {
+            assertEquals(p, p.specialApply(Rational.ONE), sumBigInteger(p));
+        }
+
+        for (Pair<BigInteger, Rational> p : take(LIMIT, P.pairs(P.bigIntegers(), P.rationals()))) {
+            assertEquals(p, of(p.a).specialApply(p.b), p.a);
+        }
+
+        for (Pair<Integer, Rational> p : take(LIMIT, P.pairs(P.naturalIntegersGeometric(), P.rationals()))) {
+            assertEquals(p, of(BigInteger.ONE, p.a).specialApply(p.b), p.b.getNumerator().pow(p.a));
+        }
+    }
+
+    private void compareImplementationsSpecialApply() {
+        Map<String, Function<Pair<Polynomial, Rational>, BigInteger>> functions = new LinkedHashMap<>();
+        functions.put("simplest", p -> specialApply_simplest(p.a, p.b));
+        functions.put("standard", p -> p.a.specialApply(p.b));
+        compareImplementations(
+                "specialApply(Rational)",
+                take(LIMIT, P.pairs(P.polynomials(), P.rationals())),
+                functions
+        );
     }
 
     private void propertiesToRationalPolynomial() {
@@ -503,6 +564,10 @@ public class PolynomialProperties extends QBarTestProperties {
         compareImplementations("signum(BigInteger)", take(LIMIT, ps), functions);
     }
 
+    private static int signum_Rational_simplest(@NotNull Polynomial p, @NotNull Rational x) {
+        return p.apply(x).signum();
+    }
+
     private static int signum_Rational_alt(@NotNull Polynomial p, @NotNull Rational x) {
         return Rational.sumSign(
                 toList(
@@ -529,6 +594,7 @@ public class PolynomialProperties extends QBarTestProperties {
         initialize("signum(Rational)");
         for (Pair<Polynomial, Rational> p : take(LIMIT, P.pairs(P.polynomials(), P.rationals()))) {
             int signum = p.a.signum(p.b);
+            assertEquals(p, signum, signum_Rational_simplest(p.a, p.b));
             assertEquals(p, signum, signum_Rational_alt(p.a, p.b));
             assertEquals(p, signum, signum_Rational_alt2(p.a, p.b));
         }
@@ -554,6 +620,7 @@ public class PolynomialProperties extends QBarTestProperties {
 
     private void compareImplementationsSignum_Rational() {
         Map<String, Function<Pair<Polynomial, Rational>, Integer>> functions = new LinkedHashMap<>();
+        functions.put("simplest", p -> signum_Rational_simplest(p.a, p.b));
         functions.put("alt", p -> signum_Rational_alt(p.a, p.b));
         functions.put("alt2", p -> signum_Rational_alt2(p.a, p.b));
         functions.put("standard", p -> p.a.signum(p.b));

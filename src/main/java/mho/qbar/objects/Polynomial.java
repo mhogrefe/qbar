@@ -129,7 +129,34 @@ public final class Polynomial implements
      */
     @Override
     public @NotNull Rational apply(@NotNull Rational x) {
-        return foldr((c, y) -> x.multiply(y).add(Rational.of(c)), Rational.ZERO, coefficients);
+        if (this == ZERO) return Rational.ZERO;
+        return Rational.of(specialApply(x), x.getDenominator().pow(degree()));
+    }
+
+    /**
+     * Given a {@code Rational x} = b/c, return c<sup>deg({@code this})</sup>{@code this}({@code x}). This modification
+     * of {@link Polynomial#apply(Rational)} only uses {@code BigInteger} arithmetic.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param x the argument
+     * @return {@code this} evaluated at {@code x}, times the denominator of {@code x} raised to the degree of
+     * {@code this}
+     */
+    public @NotNull BigInteger specialApply(@NotNull Rational x) {
+        if (this == ZERO) return BigInteger.ZERO;
+        BigInteger numerator = x.getNumerator();
+        BigInteger denominator = x.getDenominator();
+        BigInteger result = last(coefficients);
+        BigInteger multiplier = BigInteger.ONE;
+        for (int i = coefficients.size() - 2; i >= 0; i--) {
+            multiplier = multiplier.multiply(denominator);
+            result = result.multiply(numerator).add(coefficients.get(i).multiply(multiplier));
+        }
+        return result;
     }
 
     /**
@@ -377,7 +404,7 @@ public final class Polynomial implements
      */
     @SuppressWarnings("JavaDoc")
     public int signum(@NotNull Rational x) {
-        return apply(x).signum();
+        return specialApply(x).signum();
     }
 
     /**

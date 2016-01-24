@@ -42,6 +42,12 @@ public class PolynomialDemos extends QBarDemos {
         }
     }
 
+    private void demoSpecialApply() {
+        for (Pair<Polynomial, Rational> p : take(LIMIT, P.pairs(P.withScale(4).polynomials(), P.rationals()))) {
+            System.out.println("specialApply(" + p.a + ", " + p.b + ") = " + p.a.specialApply(p.b));
+        }
+    }
+
     private void demoToRationalPolynomial() {
         for (Polynomial p : take(LIMIT, P.withScale(4).polynomials())) {
             System.out.println("toRationalPolynomial(" + p + ") = " + p.toRationalPolynomial());

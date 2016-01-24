@@ -136,6 +136,55 @@ public class PolynomialTest {
         apply_Rational_helper("3*x^10", "100", "300000000000000000000");
     }
 
+    private static void specialApply_helper(@NotNull String p, @NotNull String x, @NotNull String output) {
+        aeq(read(p).get().specialApply(Rational.read(x).get()), output);
+    }
+
+    @Test
+    public void testSpecialApply_Rational() {
+        specialApply_helper("0", "0", "0");
+        specialApply_helper("0", "1", "0");
+        specialApply_helper("0", "-1", "0");
+        specialApply_helper("0", "4/5", "0");
+        specialApply_helper("0", "100", "0");
+
+        specialApply_helper("1", "0", "1");
+        specialApply_helper("1", "1", "1");
+        specialApply_helper("1", "-1", "1");
+        specialApply_helper("1", "4/5", "1");
+        specialApply_helper("1", "100", "1");
+
+        specialApply_helper("x", "0", "0");
+        specialApply_helper("x", "1", "1");
+        specialApply_helper("x", "-1", "-1");
+        specialApply_helper("x", "4/5", "4");
+        specialApply_helper("x", "100", "100");
+
+        specialApply_helper("-17", "0", "-17");
+        specialApply_helper("-17", "1", "-17");
+        specialApply_helper("-17", "-1", "-17");
+        specialApply_helper("-17", "4/5", "-17");
+        specialApply_helper("-17", "100", "-17");
+
+        specialApply_helper("x^2-4*x+7", "0", "7");
+        specialApply_helper("x^2-4*x+7", "1", "4");
+        specialApply_helper("x^2-4*x+7", "-1", "12");
+        specialApply_helper("x^2-4*x+7", "4/5", "111");
+        specialApply_helper("x^2-4*x+7", "100", "9607");
+
+        specialApply_helper("x^3-1", "0", "-1");
+        specialApply_helper("x^3-1", "1", "0");
+        specialApply_helper("x^3-1", "-1", "-2");
+        specialApply_helper("x^3-1", "4/5", "-61");
+        specialApply_helper("x^3-1", "100", "999999");
+
+        specialApply_helper("3*x^10", "0", "0");
+        specialApply_helper("3*x^10", "1", "3");
+        specialApply_helper("3*x^10", "-1", "3");
+        specialApply_helper("3*x^10", "4/5", "3145728");
+        specialApply_helper("3*x^10", "100", "300000000000000000000");
+    }
+
     private static void toRationalPolynomial_helper(@NotNull String input) {
         aeq(read(input).get().toRationalPolynomial(), input);
     }
@@ -504,6 +553,9 @@ public class PolynomialTest {
         signum_Rational_helper("3*x^10", "-1", 1);
         signum_Rational_helper("3*x^10", "4/5", 1);
         signum_Rational_helper("3*x^10", "100", 1);
+
+        signum_Rational_helper("x^5-8*x^3+10*x+6", "3/2", 1);
+        signum_Rational_helper("x^5-8*x^3+10*x+6", "7/4", -1);
     }
 
     private static void subtract_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
