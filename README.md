@@ -12,8 +12,8 @@ Progress
 | QBarExhaustiveProvider | ✘       | ✘       | ✘     | ✘     | ✘          |
 | QBarIterableProvider   | ✘       | ✘       | ✘     | ✘     | ✘          |
 | QBarRandomProvider     | ✘       | ✘       | ✘     | ✘     | ✘          |
+| ExponentVector         | ✘       | ✘       | ✘     | ✘     | ✘          |
 | Interval               | ✔       | ✔       | ✔     | ✔     | ✔          |
-| Monomial               | ✘       | ✘       | ✘     | ✘     | ✘          |
 | MultivariatePolynomial | ✘       | ✘       | ✘     | ✘     | ✘          |
 | Polynomial             | ✘       | ✘       | ✘     | ✘     | ✘          |
 | Rational               | ✔       | ✔       | ✔     | ✔     | ✔          |

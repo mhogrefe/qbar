@@ -1,14 +1,30 @@
 package mho.qbar.objects;
 
+import mho.wheels.io.Readers;
 import mho.wheels.math.MathUtils;
+import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.testing.Testing.assertTrue;
 
+/**
+ * <p>An exponent vector, for example x<sup>2</sup>yz. A component of multivariate polynomials.</p>
+ *
+ * <p>There is only one instance of {@code CONSTANT}, so it may be compared with other {@code ExponentVector}s using
+ * {@code ==}.</p>
+ *
+ * <p>The exponent vectors are represented by a list of non-negative integers, where the last element is nonzero. Each
+ * index of the list represents a different variable, and the value at the index is the variable's exponent. The names
+ * of the variables 0, 1, 2, … are "a", "b", "c", …, "aa", "bb", "cc", …, "aaa", "bbb", "ccc", ….</p>
+ *
+ * <p>This class is immutable.</p>
+ */
 public class ExponentVector implements Comparable<ExponentVector> {
     private static final @NotNull ExponentVector CONSTANT = new ExponentVector(Collections.emptyList());
 
@@ -65,6 +81,40 @@ public class ExponentVector implements Comparable<ExponentVector> {
             if (thisExponent < thatExponent) return 1;
         }
         return 0;
+    }
+
+    public static @NotNull Optional<ExponentVector> read(@NotNull String s) {
+        if (s.equals("constant")) return Optional.of(CONSTANT);
+        String[] termStrings = s.split("\\*");
+        if (termStrings.length == 0) return Optional.empty();
+        List<Pair<Integer, Integer>> terms = new ArrayList<>();
+        for (String termString : termStrings) {
+            int caretIndex = termString.indexOf('^');
+            if (caretIndex == -1) {
+                Optional<Integer> variableIndex = MathUtils.stringToVariableIndex(termString);
+                if (!variableIndex.isPresent()) return Optional.empty();
+                terms.add(new Pair<>(variableIndex.get(), 1));
+            } else {
+                Optional<Integer> oExponent = Readers.readInteger(termString.substring(caretIndex + 1));
+                if (!oExponent.isPresent()) return Optional.empty();
+                int exponent = oExponent.get();
+                if (exponent < 2) return Optional.empty();
+                Optional<Integer> variableIndex = MathUtils.stringToVariableIndex(termString.substring(0, caretIndex));
+                if (!variableIndex.isPresent()) return Optional.empty();
+                terms.add(new Pair<>(variableIndex.get(), exponent));
+            }
+        }
+        //noinspection RedundantCast
+        if (!increasing((Iterable<Integer>) map(t -> t.a, terms))) return Optional.empty();
+        List<Integer> exponents = toList(replicate(last(terms).a + 1, 0));
+        for (Pair<Integer, Integer> term : terms) {
+            exponents.set(term.a, term.b);
+        }
+        return Optional.of(new ExponentVector(exponents));
+    }
+
+    public static @NotNull Optional<Pair<ExponentVector, Integer>> findIn(@NotNull String s) {
+        return Readers.genericFindIn(ExponentVector::read, "*0123456789^abcdefghijklmnopqrstuvwxyz").apply(s);
     }
 
     public @NotNull String toString() {
