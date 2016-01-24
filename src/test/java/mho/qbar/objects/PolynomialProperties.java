@@ -247,6 +247,13 @@ public class PolynomialProperties extends QBarTestProperties {
         for (Pair<Polynomial, Rational> p : take(LIMIT, P.pairs(P.polynomials(), P.rationals()))) {
             BigInteger y = p.a.specialApply(p.b);
             assertEquals(p, y, specialApply_simplest(p.a, p.b));
+            if (p.a != ZERO) {
+                int coefficientBitSizeBound = maximum(map(BigInteger::bitLength, p.a));
+                int argumentBitSizeBound = max(p.b.getNumerator().bitLength(), p.b.getDenominator().bitLength());
+                int resultBitSizeBound = coefficientBitSizeBound + argumentBitSizeBound * p.a.degree() +
+                        BigInteger.valueOf(p.a.degree() + 1).bitLength();
+                assertTrue(p, y.bitLength() <= resultBitSizeBound);
+            }
         }
 
         for (Pair<Polynomial, BigInteger> p : take(LIMIT, P.pairs(P.polynomials(), P.bigIntegers()))) {
@@ -590,6 +597,23 @@ public class PolynomialProperties extends QBarTestProperties {
         return Integer.signum(partialResult.compareTo(Rational.of(head(p).negate())));
     }
 
+    private static int signum_Rational_alt3(@NotNull Polynomial p, @NotNull Rational x) {
+        if (p == ZERO) return 0;
+        int degree = p.degree();
+        if (degree == 0) return p.coefficient(0).signum();
+        BigInteger numerator = x.getNumerator();
+        BigInteger denominator = x.getDenominator();
+        BigInteger result = last(p);
+        BigInteger multiplier = BigInteger.ONE;
+        for (int i = p.degree() - 1; i > 0; i--) {
+            multiplier = multiplier.multiply(denominator);
+            result = result.multiply(numerator).add(p.coefficient(i).multiply(multiplier));
+        }
+        multiplier = multiplier.multiply(denominator);
+        result = result.multiply(numerator);
+        return result.compareTo(p.coefficient(0).multiply(multiplier).negate());
+    }
+
     private void propertiesSignum_Rational() {
         initialize("signum(Rational)");
         for (Pair<Polynomial, Rational> p : take(LIMIT, P.pairs(P.polynomials(), P.rationals()))) {
@@ -597,6 +621,7 @@ public class PolynomialProperties extends QBarTestProperties {
             assertEquals(p, signum, signum_Rational_simplest(p.a, p.b));
             assertEquals(p, signum, signum_Rational_alt(p.a, p.b));
             assertEquals(p, signum, signum_Rational_alt2(p.a, p.b));
+            assertEquals(p, signum, signum_Rational_alt3(p.a, p.b));
         }
 
         for (Rational r : take(LIMIT, P.rationals())) {
@@ -623,6 +648,7 @@ public class PolynomialProperties extends QBarTestProperties {
         functions.put("simplest", p -> signum_Rational_simplest(p.a, p.b));
         functions.put("alt", p -> signum_Rational_alt(p.a, p.b));
         functions.put("alt2", p -> signum_Rational_alt2(p.a, p.b));
+        functions.put("alt3", p -> signum_Rational_alt3(p.a, p.b));
         functions.put("standard", p -> p.a.signum(p.b));
         Iterable<Pair<Polynomial, Rational>> ps = P.pairs(P.polynomials(), P.rationals());
         compareImplementations("signum(Rational)", take(LIMIT, ps), functions);
