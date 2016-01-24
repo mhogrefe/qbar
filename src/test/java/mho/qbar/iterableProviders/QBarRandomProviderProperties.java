@@ -55,6 +55,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         propertiesMonicRationalPolynomials_int();
         propertiesMonicRationalPolynomials();
         propertiesMonicRationalPolynomialsAtLeast();
+        propertiesExponentVectors();
     }
 
     private static <T> void simpleTestWithNulls(
@@ -1439,6 +1440,31 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
                 p.a.monicRationalPolynomialsAtLeast(p.b);
                 fail(p);
             } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesExponentVectors() {
+        initialize("exponentVectors()");
+        Iterable<QBarRandomProvider> rps = filterInfinite(
+                s -> s.getScale() > 0,
+                P.qbarRandomProvidersDefaultSecondaryScale()
+        );
+        for (QBarRandomProvider rp : take(LIMIT, rps)) {
+            Iterable<ExponentVector> evs = rp.exponentVectors();
+            rp.reset();
+            take(TINY_LIMIT, evs).forEach(ExponentVector::validate);
+            simpleTest(rp, evs, ev -> true);
+        }
+
+        Iterable<QBarRandomProvider> rpsFail = filterInfinite(
+                s -> s.getScale() <= 0,
+                P.qbarRandomProvidersDefaultSecondaryScale()
+        );
+        for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
+            try {
+                rp.exponentVectors();
+                fail(rp);
+            } catch (IllegalStateException ignored) {}
         }
     }
 }

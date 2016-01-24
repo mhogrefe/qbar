@@ -420,4 +420,14 @@ public class QBarRandomProviderDemos extends QBarDemos {
                     its(p.a.monicRationalPolynomialsAtLeast(p.b)));
         }
     }
+
+    private void demoExponentVectors() {
+        Iterable<QBarRandomProvider> rps = filterInfinite(
+                s -> s.getScale() > 0,
+                P.withScale(4).qbarRandomProvidersDefaultSecondaryScale()
+        );
+        for (QBarRandomProvider rp : take(MEDIUM_LIMIT, rps)) {
+            System.out.println("exponentVectors(" + rp + ") = " + its(rp.exponentVectors()));
+        }
+    }
 }

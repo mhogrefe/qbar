@@ -16,7 +16,7 @@ import static mho.wheels.testing.Testing.assertTrue;
 /**
  * <p>An exponent vector, for example x<sup>2</sup>yz. A component of multivariate polynomials.</p>
  *
- * <p>There is only one instance of {@code CONSTANT}, so it may be compared with other {@code ExponentVector}s using
+ * <p>There is only one instance of {@code ONE}, so it may be compared with other {@code ExponentVector}s using
  * {@code ==}.</p>
  *
  * <p>The exponent vectors are represented by a list of non-negative integers, where the last element is nonzero. Each
@@ -26,7 +26,7 @@ import static mho.wheels.testing.Testing.assertTrue;
  * <p>This class is immutable.</p>
  */
 public class ExponentVector implements Comparable<ExponentVector> {
-    public static final @NotNull ExponentVector CONSTANT = new ExponentVector(Collections.emptyList());
+    public static final @NotNull ExponentVector ONE = new ExponentVector(Collections.emptyList());
 
     private final @NotNull List<Integer> exponents;
 
@@ -44,12 +44,12 @@ public class ExponentVector implements Comparable<ExponentVector> {
                 break;
             }
         }
-        if (actualSize == 0) return CONSTANT;
+        if (actualSize == 0) return ONE;
         return new ExponentVector(toList(take(actualSize, exponents)));
     }
 
     public static @NotNull ExponentVector fromTerms(@NotNull List<Pair<Integer, Integer>> terms) {
-        if (terms.isEmpty()) return ExponentVector.CONSTANT;
+        if (terms.isEmpty()) return ExponentVector.ONE;
         //noinspection RedundantCast
         if (!increasing((Iterable<Integer>) map(t -> t.a, terms))) {
             throw new IllegalArgumentException();
@@ -97,7 +97,7 @@ public class ExponentVector implements Comparable<ExponentVector> {
     }
 
     public static @NotNull Optional<ExponentVector> read(@NotNull String s) {
-        if (s.equals("constant")) return Optional.of(CONSTANT);
+        if (s.equals("1")) return Optional.of(ONE);
         String[] termStrings = s.split("\\*");
         if (termStrings.length == 0) return Optional.empty();
         List<Pair<Integer, Integer>> terms = new ArrayList<>();
@@ -127,7 +127,7 @@ public class ExponentVector implements Comparable<ExponentVector> {
     }
 
     public @NotNull String toString() {
-        if (this == CONSTANT) return "constant";
+        if (this == ONE) return "1";
         StringBuilder sb = new StringBuilder();
         boolean first = true;
         for (int i = 0; i < exponents.size(); i++) {
@@ -155,8 +155,8 @@ public class ExponentVector implements Comparable<ExponentVector> {
         if (!exponents.isEmpty()) {
             assertTrue(this, last(exponents) != 0);
         }
-        if (equals(CONSTANT)) {
-            assertTrue(this, this == CONSTANT);
+        if (equals(ONE)) {
+            assertTrue(this, this == ONE);
         }
     }
 }
