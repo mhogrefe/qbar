@@ -4626,6 +4626,73 @@ public class QBarRandomProviderTest {
         monicRationalPolynomialsAtLeast_fail_helper(1, 1, -2);
     }
 
+    private static void exponentVectorHelper(
+            @NotNull Iterable<ExponentVector> xs,
+            @NotNull String output,
+            @NotNull String topSampleCount,
+            double degreeMean
+    ) {
+        List<ExponentVector> sample = toList(take(DEFAULT_SAMPLE_SIZE, xs));
+        aeqitLimit(TINY_LIMIT, sample, output);
+        aeq(topSampleCount(DEFAULT_TOP_COUNT, sample), topSampleCount);
+        aeq(meanOfIntegers(toList(map(ExponentVector::degree, sample))), degreeMean);
+    }
+
+    private static void exponentVectors_helper(
+            int scale,
+            @NotNull String output,
+            @NotNull String topSampleCount,
+            double degreeMean
+    ) {
+        exponentVectorHelper(P.withScale(scale).exponentVectors(), output, topSampleCount, degreeMean);
+        P.reset();
+    }
+
+    private static void exponentVectors_fail_helper(int scale) {
+        try {
+            P.withScale(scale).exponentVectors();
+            fail();
+        } catch (IllegalStateException ignored) {}
+        finally {
+            P.reset();
+        }
+    }
+
+    @Test
+    public void testExponentVectors() {
+        exponentVectors_helper(
+                1,
+                "[a^2*b^9*c^2, b, c^2, a, constant, a^2, constant, constant, constant, constant, constant, constant," +
+                " constant, constant, constant, constant, constant, a^4, b, a^3*b*c^5*d^3*e*f, ...]",
+                "{constant=666515, a=83441, a^2=42011, a^3=20629, b=20569, a^4=10580, a*b=10523, b^2=10383," +
+                " a*b^2=5193, a^2*b=5149}",
+                1.0010019999980002
+        );
+        exponentVectors_helper(
+                8,
+                "[a^27*b^9*c^9*d^5*e^29*f^18, a^5, constant, constant, a^10*b^13*d^10*e^6*f^3*g^3*i," +
+                " a^5*b^10*c^8*d^3*e^7, a^2, a, a^7*b^48*c^11, a^5, constant, a*b^4, constant, constant," +
+                " a^15*b^20*c^16, a^9, a^15, a^21*b^2*c^8, a^30*b^5*c^32*d^5*e*f^4*g^13*h^8*i^7, a^7*c^2*d^5*e^6," +
+                " ...]",
+                "{constant=272869, a=20020, a^2=17990, a^3=15944, a^4=14310, a^5=12346, a^6=11025, a^7=9815," +
+                " a^8=8817, a^9=7855}",
+                24.01019300000956
+        );
+        exponentVectors_helper(
+                32,
+                "[a^17*b^47*c^25*e^19, a^41, a^6*b^15, a^16*b^23*c^24*d^9*e^84*f^32*g^28, a^2," +
+                " a^38*b^3*c^12*d^21*e^45*f^34*g^28*h^14, constant, a^10*b^2*c^24*d^40*e^37," +
+                " a^82*b^31*c^19*d^31*e^19*f^36*g^44*h^43*i^168, a^14*b^7*c^3*d^31, a^7*b^121*c^23*d^122*e^19, a^74," +
+                " a^7*b^6*c^16*d^51*e^10*f^7*g^31*h^9*i^18, a^9*b^17*c*d^73, a^7*b^29*c^21*d^3*e^55," +
+                " a^12*b^35*c^10*d^64, a^9*b^48*c^24*d^170, a^59, a^18*b^32*c^22, constant, ...]",
+                "{constant=146150, a=3659, a^2=3603, a^3=3516, a^4=3320, a^5=3299, a^6=3164, a^7=3018, a^8=2987," +
+                " a^9=2851}",
+                192.2389910000015
+        );
+        exponentVectors_fail_helper(0);
+        exponentVectors_fail_helper(-1);
+    }
+
     private static double meanOfIntegers(@NotNull List<Integer> xs) {
         int size = xs.size();
         return sumDouble(map(i -> (double) i / size, xs));

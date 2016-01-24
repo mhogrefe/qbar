@@ -3194,6 +3194,11 @@ public strictfp abstract class QBarIterableProvider {
         return map(p -> p.toRationalPolynomial().makeMonic(), positivePrimitivePolynomialsAtLeast(minDegree));
     }
 
+    /**
+     * Generates {@code ExponentVector}s.
+     */
+    public abstract @NotNull Iterable<ExponentVector> exponentVectors();
+
     public @NotNull Iterable<QBarRandomProvider> qbarRandomProvidersFixedScales(int scale, int secondaryScale) {
         return map(
                 rp -> (QBarRandomProvider) new QBarRandomProvider(rp.getSeed())

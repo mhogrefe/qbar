@@ -575,6 +575,20 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
     }
 
     /**
+     * An {@code Iterable} that generates all {@code ExponentVector}s.
+     *
+     * <ul>
+     *  <li>The result is a non-removable {@code Iterable} containing {@code ExponentVector}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
+    @Override
+    public @NotNull Iterable<ExponentVector> exponentVectors() {
+        return map(is -> ExponentVector.fromTerms(toList(countAdjacent(is))), bags(naturalIntegersGeometric()));
+    }
+
+    /**
      * Determines whether {@code this} is equal to {@code that}. This implementation is the same as in
      * {@link java.lang.Object#equals}, but repeated here for clarity.
      *

@@ -26,7 +26,7 @@ import static mho.wheels.testing.Testing.assertTrue;
  * <p>This class is immutable.</p>
  */
 public class ExponentVector implements Comparable<ExponentVector> {
-    private static final @NotNull ExponentVector CONSTANT = new ExponentVector(Collections.emptyList());
+    public static final @NotNull ExponentVector CONSTANT = new ExponentVector(Collections.emptyList());
 
     private final @NotNull List<Integer> exponents;
 
@@ -46,6 +46,19 @@ public class ExponentVector implements Comparable<ExponentVector> {
         }
         if (actualSize == 0) return CONSTANT;
         return new ExponentVector(toList(take(actualSize, exponents)));
+    }
+
+    public static @NotNull ExponentVector fromTerms(@NotNull List<Pair<Integer, Integer>> terms) {
+        if (terms.isEmpty()) return ExponentVector.CONSTANT;
+        //noinspection RedundantCast
+        if (!increasing((Iterable<Integer>) map(t -> t.a, terms))) {
+            throw new IllegalArgumentException();
+        }
+        List<Integer> exponents = toList(replicate(last(terms).a + 1, 0));
+        for (Pair<Integer, Integer> term : terms) {
+            exponents.set(term.a, term.b);
+        }
+        return new ExponentVector(exponents);
     }
 
     public int degree() {
@@ -106,11 +119,7 @@ public class ExponentVector implements Comparable<ExponentVector> {
         }
         //noinspection RedundantCast
         if (!increasing((Iterable<Integer>) map(t -> t.a, terms))) return Optional.empty();
-        List<Integer> exponents = toList(replicate(last(terms).a + 1, 0));
-        for (Pair<Integer, Integer> term : terms) {
-            exponents.set(term.a, term.b);
-        }
-        return Optional.of(new ExponentVector(exponents));
+        return Optional.of(fromTerms(terms));
     }
 
     public static @NotNull Optional<Pair<ExponentVector, Integer>> findIn(@NotNull String s) {
