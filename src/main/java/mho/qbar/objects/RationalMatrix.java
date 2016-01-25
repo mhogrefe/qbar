@@ -500,7 +500,7 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
      *  <li>The result is not null.</li>
      * </ul>
      *
-     * Size is height({@code this})×length({@code this})
+     * Size is height({@code this})×width({@code this})
      *
      * @param that the {@code RationalMatrix} added to {@code this}
      * @return {@code this}+{@code that}
@@ -523,7 +523,7 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
      *  <li>The result is non-null.</li>
      * </ul>
      *
-     * Size is height({@code this})×length({@code this})
+     * Size is height({@code this})×width({@code this})
      *
      * @return –{@code this}
      */
@@ -543,7 +543,7 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
      *  <li>The result is not null.</li>
      * </ul>
      *
-     * Size is height({@code this})×length({@code this})
+     * Size is height({@code this})×width({@code this})
      *
      * @param that the {@code RationalMatrix} subtracted from {@code this}
      * @return {@code this}–{@code that}
@@ -567,7 +567,7 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
      *  <li>The result is not null.</li>
      * </ul>
      *
-     * Size is height({@code this})×length({@code this})
+     * Size is height({@code this})×width({@code this})
      *
      * @param that the {@code Rational} {@code this} is multiplied by
      * @return {@code this}×{@code that}
@@ -586,7 +586,7 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
      *  <li>The result is not null.</li>
      * </ul>
      *
-     * Size is height({@code this})×length({@code this})
+     * Size is height({@code this})×width({@code this})
      *
      * @param that the {@code BigInteger} {@code this} is multiplied by
      * @return {@code this}×{@code that}
@@ -605,7 +605,7 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
      *  <li>The result is not null.</li>
      * </ul>
      *
-     * Size is height({@code this})×length({@code this})
+     * Size is height({@code this})×width({@code this})
      *
      * @param that the {@code int} {@code this} is multiplied by
      * @return {@code this}×{@code that}
@@ -624,7 +624,7 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
      *  <li>The result is not null.</li>
      * </ul>
      *
-     * Size is height({@code this})×length({@code this})
+     * Size is height({@code this})×width({@code this})
      *
      * @param that the {@code Rational} {@code this} is divided by
      * @return {@code this}/{@code that}
@@ -642,7 +642,7 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
      *  <li>The result is not null.</li>
      * </ul>
      *
-     * Size is height({@code this})×length({@code this})
+     * Size is height({@code this})×width({@code this})
      *
      * @param that the {@code BigInteger} {@code this} is divided by
      * @return {@code this}/{@code that}
@@ -660,7 +660,7 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
      *  <li>The result is not null.</li>
      * </ul>
      *
-     * Size is height({@code this})×length({@code this})
+     * Size is height({@code this})×width({@code this})
      *
      * @param that the {@code int} {@code this} is divided by
      * @return {@code this}/{@code that}
@@ -674,7 +674,7 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
      * whose basis vectors are the columns of {@code this}.
      *
      * <ul>
-     *  <li>{@code this} may be any {@code RationalMatrix}</li>
+     *  <li>{@code this} can be any {@code RationalMatrix}.</li>
      *  <li>{@code that} cannot be null.</li>
      *  <li>The width of {@code this} must equal the dimension of {@code that}.</li>
      * </ul>
@@ -690,6 +690,47 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
                     this + ", that: " + that);
         }
         return RationalVector.of(toList(map(r -> r.dot(that), rows)));
+    }
+
+    /**
+     * Returns the matrix product of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} can be any {@code RationalMatrix}</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>The width of {@code this} must equal the height of {@code that}.</li>
+     * </ul>
+     *
+     * Size is height({@code this})×width({@code that})
+     *
+     * @param that the {@code RationalMatrix} {@code this} is multiplied by
+     * @return {@code this}×{@code that}
+     */
+    public @NotNull RationalMatrix multiply(@NotNull RationalMatrix that) {
+        int n = height();
+        int m = width;
+        if (m != that.height()) {
+            throw new ArithmeticException("the width of this must equal the height of that. this: " +
+                    this + ", that: " + that);
+        }
+        int l = that.width;
+        if (n == 0) {
+            return zero(0, l);
+        }
+        List<RationalVector> rows = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            RationalVector aRow = row(i);
+            List<Rational> row = new ArrayList<>();
+            for (int k = 0; k < l; k++) {
+                Rational sum = Rational.ZERO;
+                for (int j = 0; j < m; j++) {
+                    sum = sum.add(aRow.get(j).multiply(that.get(j, k)));
+                }
+                row.add(sum);
+            }
+            rows.add(RationalVector.of(row));
+        }
+        return fromRows(rows);
     }
 
     /**
