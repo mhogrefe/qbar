@@ -209,12 +209,20 @@ public class RationalPolynomialProperties extends QBarTestProperties {
             p.a.coefficient(p.b);
         }
 
-        for (Pair<RationalPolynomial, Integer> p : take(LIMIT, filterInfinite(q -> q.b <= q.a.degree(), ps))) {
+        ps = filterInfinite(
+                q -> q.b <= q.a.degree(),
+                P.pairsLogarithmicOrder(P.rationalPolynomials(), P.naturalIntegersGeometric())
+        );
+        for (Pair<RationalPolynomial, Integer> p : take(LIMIT, ps)) {
             assertEquals(p, p.a.coefficient(p.b), toList(p.a).get(p.b));
         }
 
-        for (Pair<RationalPolynomial, Integer> p : take(LIMIT, filterInfinite(q -> q.b > q.a.degree(), ps))) {
-            assertEquals(p, p.a.coefficient(p.b), Rational.ZERO);
+        ps = filterInfinite(
+                q -> q.b > q.a.degree(),
+                P.pairsLogarithmicOrder(P.rationalPolynomials(), P.naturalIntegersGeometric())
+        );
+        for (Pair<RationalPolynomial, Integer> p : take(LIMIT, ps)) {
+            assertEquals(p, p.a.coefficient(p.b), BigInteger.ZERO);
         }
 
         Iterable<Pair<RationalPolynomial, Integer>> psFail = P.pairs(P.rationalPolynomials(), P.negativeIntegers());

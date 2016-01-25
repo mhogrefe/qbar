@@ -323,11 +323,19 @@ public class PolynomialProperties extends QBarTestProperties {
             p.a.coefficient(p.b);
         }
 
-        for (Pair<Polynomial, Integer> p : take(LIMIT, filterInfinite(q -> q.b <= q.a.degree(), ps))) {
+        ps = filterInfinite(
+                q -> q.b <= q.a.degree(),
+                P.pairsLogarithmicOrder(P.polynomials(), P.naturalIntegersGeometric())
+        );
+        for (Pair<Polynomial, Integer> p : take(LIMIT, ps)) {
             assertEquals(p, p.a.coefficient(p.b), toList(p.a).get(p.b));
         }
 
-        for (Pair<Polynomial, Integer> p : take(LIMIT, filterInfinite(q -> q.b > q.a.degree(), ps))) {
+        ps = filterInfinite(
+                q -> q.b > q.a.degree(),
+                P.pairsLogarithmicOrder(P.polynomials(), P.naturalIntegersGeometric())
+        );
+        for (Pair<Polynomial, Integer> p : take(LIMIT, ps)) {
             assertEquals(p, p.a.coefficient(p.b), BigInteger.ZERO);
         }
 

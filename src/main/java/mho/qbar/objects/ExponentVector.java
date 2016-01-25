@@ -1,14 +1,12 @@
 package mho.qbar.objects;
 
 import mho.wheels.io.Readers;
+import mho.wheels.iterables.NoRemoveIterator;
 import mho.wheels.math.MathUtils;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.testing.Testing.assertTrue;
@@ -26,12 +24,68 @@ import static mho.wheels.testing.Testing.assertTrue;
  * <p>This class is immutable.</p>
  */
 public class ExponentVector implements Comparable<ExponentVector> {
+    /**
+     * 1, the constant {@code ExponentVector}
+     */
     public static final @NotNull ExponentVector ONE = new ExponentVector(Collections.emptyList());
 
+    /**
+     * The exponent vector's exponents. The value at the ith index is the ith variable's exponent.
+     */
     private final @NotNull List<Integer> exponents;
 
+    /**
+     * Private constructor for {@code ExponentVector}; assumes argument is valid
+     *
+     * <ul>
+     *  <li>{@code coefficients} cannot have any null or negative elements and cannot end in a 0.</li>
+     *  <li>Any {@code ExponentVector} may be constructed with this constructor.</li>
+     * </ul>
+     *
+     * @param exponents the exponent vector's exponents for each variable
+     */
     private ExponentVector(@NotNull List<Integer> exponents) {
         this.exponents = exponents;
+    }
+
+    /**
+     * Returns the exponent of a given variable. If {@code this} does not contain the variable, 0 is returned.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code ExponentVector}.</li>
+     *  <li>{@code variableIndex} cannot be negative.</li>
+     *  <li>The result is not negative.</li>
+     * </ul>
+     *
+     * @param variableIndex the index of a variable
+     * @return the exponent of the variable corresponding to {@code variableIndex}
+     */
+    public int exponent(int variableIndex) {
+        return variableIndex >= exponents.size() ? 0 : exponents.get(variableIndex);
+    }
+
+    public @NotNull Iterable<Pair<Integer, Integer>> terms() {
+        return () -> new NoRemoveIterator<Pair<Integer, Integer>>() {
+            private int i = 0;
+
+            @Override
+            public boolean hasNext() {
+                return i != exponents.size();
+            }
+
+            @Override
+            public Pair<Integer, Integer> next() {
+                if (i == exponents.size()) {
+                    throw new NoSuchElementException();
+                }
+                int e;
+                do {
+                    e = exponents.get(i);
+                    i++;
+                } while (e == 0);
+                return new Pair<>(i - 1, e);
+            }
+        };
     }
 
     public static @NotNull ExponentVector of(@NotNull List<Integer> exponents) {

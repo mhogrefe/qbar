@@ -585,7 +585,13 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
      */
     @Override
     public @NotNull Iterable<ExponentVector> exponentVectors() {
-        return map(is -> ExponentVector.fromTerms(toList(countAdjacent(is))), bags(naturalIntegersGeometric()));
+        return map(
+                js -> ExponentVector.of(toList(js)),
+                filterInfinite(
+                        is -> is.isEmpty() || last(is) != 0,
+                        map(i -> toList(map(p -> p.b - 1, countAdjacent(IntegerUtils.bits(i)))), naturalIntegers())
+                )
+        );
     }
 
     /**
