@@ -1102,9 +1102,10 @@ public class QBarExhaustiveProviderTest {
     @Test
     public void testExponentVectors() {
         simpleProviderHelper(QEP.exponentVectors(),
-                "[1, a, a^2, b, a^3, c, a*b, d, a^4, e, b^2, f, a^2*b, g, b*c, h, a^5, i, a*c, j, a*b^2, k, a*d, l," +
-                " a^3*b, m, b*d, n, a*b*c, o, b*e, p, a^6, q, c^2, r, b^3, s, c*d, t, a^2*b^2, u, d^2, v, b^2*c, w," +
-                " d*e, x, a^4*b, y, ...]");
+                "[1, a, b, a^2, a*b, c, b^2, a^3, a^2*b, b*c, d, a*c, a*b^2, c^2, b^3, a^4, a^3*b, b^2*c, c*d," +
+                " a*b*c, a*d, e, b*d, a^2*c, a^2*b^2, b*c^2, d^2, a*c^2, a*b^3, c^3, b^4, a^5, a^4*b, b^3*c, c^2*d," +
+                " a*b^2*c, a*c*d, d*e, b*c*d, a^2*b*c, a^2*d, b*e, f, a*e, a*b*d, c*e, b^2*d, a^3*c, a^3*b^2," +
+                " b^2*c^2, ...]");
     }
 
     @Test
