@@ -86,6 +86,7 @@ public class PolynomialProperties extends QBarTestProperties {
         propertiesDivideExact();
         compareImplementationsDivideExact();
         propertiesTrivialPseudoRemainderSequence();
+        propertiesPrimitivePseudoRemainderSequence();
         propertiesFactor();
         propertiesIsIrreducible();
         compareImplementationsIsIrreducible();
@@ -1598,10 +1599,38 @@ public class PolynomialProperties extends QBarTestProperties {
             assertFalse(p, sequence.isEmpty());
             assertNotEquals(p, last(sequence), ZERO);
             //todo GCD
+            assertEquals(
+                    p,
+                    toList(map(q -> q == ZERO ? ZERO : q.contentAndPrimitive().b, sequence)),
+                    p.a.primitivePseudoRemainderSequence(p.b)
+            );
         }
 
         for (Polynomial p : take(LIMIT, P.polynomialsAtLeast(0))) {
             assertEquals(p, p.trivialPseudoRemainderSequence(ZERO), Collections.singletonList(p));
+        }
+    }
+
+    private void propertiesPrimitivePseudoRemainderSequence() {
+        initialize("primitivePseudoRemainderSequence(Polynomial)");
+        Iterable<Pair<Polynomial, Polynomial>> ps = filterInfinite(
+                p -> (p.a != ZERO || p.b != ZERO) && p.a.degree() >= p.b.degree(),
+                P.pairs(P.withScale(4).polynomials())
+        );
+        for (Pair<Polynomial, Polynomial> p : take(LIMIT, ps)) {
+            List<Polynomial> sequence = p.a.primitivePseudoRemainderSequence(p.b);
+            assertFalse(p, sequence.isEmpty());
+            assertNotEquals(p, last(sequence), ZERO);
+            assertTrue(p, all(q -> q == ZERO || q.isPrimitive(), sequence));
+            //todo GCD
+        }
+
+        for (Polynomial p : take(LIMIT, P.polynomialsAtLeast(0))) {
+            assertEquals(
+                    p,
+                    p.primitivePseudoRemainderSequence(ZERO),
+                    Collections.singletonList(p.contentAndPrimitive().b)
+            );
         }
     }
 

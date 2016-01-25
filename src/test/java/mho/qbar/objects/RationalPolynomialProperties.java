@@ -1585,6 +1585,20 @@ public class RationalPolynomialProperties extends QBarTestProperties {
             //todo GCD
         }
 
+        ps = filterInfinite(
+                p -> (p.a != ZERO || p.b != ZERO) && p.a.degree() >= p.b.degree(),
+                P.pairs(P.withScale(4).rationalPolynomials())
+        );
+        for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, ps)) {
+            Polynomial pa = p.a == ZERO ? Polynomial.ZERO : p.a.constantFactor().b;
+            Polynomial pb = p.b == ZERO ? Polynomial.ZERO : p.b.constantFactor().b;
+            assertEquals(
+                    p,
+                    toList(map(q -> q == ZERO ? Polynomial.ZERO : q.constantFactor().b, p.a.remainderSequence(p.b))),
+                    toList(map(Polynomial::abs, pa.primitivePseudoRemainderSequence(pb)))
+            );
+        }
+
         for (RationalPolynomial p : take(LIMIT, P.rationalPolynomialsAtLeast(0))) {
             assertEquals(p, p.remainderSequence(ZERO), Collections.singletonList(p));
             assertEquals(p, ZERO.remainderSequence(p), Arrays.asList(ZERO, p));

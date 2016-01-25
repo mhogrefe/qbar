@@ -847,6 +847,7 @@ public final class RationalPolynomial implements
      *  <li>{@code this} may be any {@code RationalPolynomial}.</li>
      *  <li>{@code that} cannot be null.</li>
      *  <li>{@code this} and {@code that} cannot both be zero.</li>
+     *  <li>No element of the result is null.</li>
      * </ul>
      *
      * @param that another {@code RationalPolynomial}
@@ -876,6 +877,7 @@ public final class RationalPolynomial implements
      *  <li>{@code this} may be any {@code RationalPolynomial}.</li>
      *  <li>{@code that} cannot be null.</li>
      *  <li>{@code this} and {@code that} cannot both be zero.</li>
+     *  <li>No element of the result is null.</li>
      * </ul>
      *
      * @param that another {@code RationalPolynomial}

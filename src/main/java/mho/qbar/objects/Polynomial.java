@@ -867,6 +867,7 @@ public final class Polynomial implements
      * <ul>
      *  <li>{@code this} may be any {@code Polynomial}.</li>
      *  <li>{@code that} cannot be 0.</li>
+     *  <li>The result may be either {@code boolean}.</li>
      * </ul>
      *
      * @param that the {@code Polynomial} that {@code this} may or may not be divisible by
@@ -901,14 +902,14 @@ public final class Polynomial implements
         int m = degree();
         int n = that.degree();
         if (m < n) {
-            throw new ArithmeticException();
+            throw new ArithmeticException("this must be divisible by that. this: " + this + ", that: " + that);
         }
         List<BigInteger> q = new ArrayList<>();
         List<BigInteger> r = toList(coefficients);
         for (int k = m - n; k >= 0; k--) {
             BigInteger[] qCoefficient = r.get(n + k).divideAndRemainder(that.coefficient(n));
             if (!qCoefficient[1].equals(BigInteger.ZERO)) {
-                throw new ArithmeticException();
+                throw new ArithmeticException("this must be divisible by that. this: " + this + ", that: " + that);
             }
             q.add(qCoefficient[0]);
             for (int j = n + k - 1; j >= k; j--) {
@@ -916,7 +917,7 @@ public final class Polynomial implements
             }
         }
         if (any(c -> !c.equals(BigInteger.ZERO), take(n, r))) {
-            throw new ArithmeticException();
+            throw new ArithmeticException("this must be divisible by that. this: " + this + ", that: " + that);
         }
         return of(reverse(q));
     }
@@ -931,11 +932,11 @@ public final class Polynomial implements
      *  <li>{@code that} may be any {@code Polynomial}.</li>
      *  <li>The degree of {@code this} must be greater than or equal to the degree of {@code that}.</li>
      *  <li>{@code this} and {@code that} cannot both be zero.</li>
-     *  <li>Neither element of the result is null.</li>
+     *  <li>No element of the result is null.</li>
      * </ul>
      *
      * @param that another {@code RationalPolynomial}
-     * @return the remainder sequence of {@code this} and {@code that}
+     * @return the trivial pseudo-remainder sequence of {@code this} and {@code that}
      */
     public @NotNull List<Polynomial> trivialPseudoRemainderSequence(@NotNull Polynomial that) {
         if (this == ZERO && that == ZERO) {
@@ -949,6 +950,36 @@ public final class Polynomial implements
             Polynomial next = sequence.get(i).pseudoRemainder(sequence.get(i + 1));
             if (next == ZERO) return sequence;
             sequence.add(next);
+        }
+    }
+
+    /**
+     * Given two {@code Polynomial}s, returns a list of {@code Polynomial}s with certain useful properties. For
+     * example, every element in the list is primitive or zero, and the last element is a GCD of the two polynomials.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>{@code that} may be any {@code Polynomial}.</li>
+     *  <li>The degree of {@code this} must be greater than or equal to the degree of {@code that}.</li>
+     *  <li>{@code this} and {@code that} cannot both be zero.</li>
+     *  <li>No element of the result is null.</li>
+     * </ul>
+     *
+     * @param that another {@code RationalPolynomial}
+     * @return the primitive pseudo-remainder sequence of {@code this} and {@code that}
+     */
+    public @NotNull List<Polynomial> primitivePseudoRemainderSequence(@NotNull Polynomial that) {
+        if (this == ZERO && that == ZERO) {
+            throw new ArithmeticException("this and that cannot both be zero.");
+        }
+        List<Polynomial> sequence = new ArrayList<>();
+        sequence.add(this == ZERO ? ZERO : contentAndPrimitive().b);
+        if (that == ZERO) return sequence;
+        sequence.add(that.contentAndPrimitive().b);
+        for (int i = 0; ; i++) {
+            Polynomial next = sequence.get(i).pseudoRemainder(sequence.get(i + 1));
+            if (next == ZERO) return sequence;
+            sequence.add(next.contentAndPrimitive().b);
         }
     }
 
