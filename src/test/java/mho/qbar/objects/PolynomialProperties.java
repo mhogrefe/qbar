@@ -87,6 +87,7 @@ public class PolynomialProperties extends QBarTestProperties {
         compareImplementationsDivideExact();
         propertiesTrivialPseudoRemainderSequence();
         propertiesPrimitivePseudoRemainderSequence();
+        propertiesGcd();
         propertiesFactor();
         propertiesIsIrreducible();
         compareImplementationsIsIrreducible();
@@ -1604,9 +1605,10 @@ public class PolynomialProperties extends QBarTestProperties {
         );
         for (Pair<Polynomial, Polynomial> p : take(LIMIT, ps)) {
             List<Polynomial> sequence = p.a.trivialPseudoRemainderSequence(p.b);
+            sequence.forEach(Polynomial::validate);
             assertFalse(p, sequence.isEmpty());
             assertNotEquals(p, last(sequence), ZERO);
-            //todo GCD
+            assertEquals(p, last(sequence).constantFactor().b, p.a.gcd(p.b));
             assertEquals(
                     p,
                     toList(map(q -> q == ZERO ? ZERO : q.contentAndPrimitive().b, sequence)),
@@ -1627,10 +1629,11 @@ public class PolynomialProperties extends QBarTestProperties {
         );
         for (Pair<Polynomial, Polynomial> p : take(LIMIT, ps)) {
             List<Polynomial> sequence = p.a.primitivePseudoRemainderSequence(p.b);
+            sequence.forEach(Polynomial::validate);
             assertFalse(p, sequence.isEmpty());
             assertNotEquals(p, last(sequence), ZERO);
             assertTrue(p, all(q -> q == ZERO || q.isPrimitive(), sequence));
-            //todo GCD
+            assertEquals(p, last(sequence).constantFactor().b, p.a.gcd(p.b));
         }
 
         for (Polynomial p : take(LIMIT, P.polynomialsAtLeast(0))) {
@@ -1639,6 +1642,33 @@ public class PolynomialProperties extends QBarTestProperties {
                     p.primitivePseudoRemainderSequence(ZERO),
                     Collections.singletonList(p.contentAndPrimitive().b)
             );
+        }
+    }
+
+    private void propertiesGcd() {
+        initialize("gcd(Polynomial)");
+        Iterable<Pair<Polynomial, Polynomial>> ps = filterInfinite(
+                p -> p.a != ZERO || p.b != ZERO,
+                P.pairs(P.polynomials())
+        );
+        for (Pair<Polynomial, Polynomial> p : take(LIMIT, ps)) {
+            Polynomial gcd = p.a.gcd(p.b);
+            gcd.validate();
+            assertFalse(p, gcd == ZERO);
+            Polynomial ap = p.a == ZERO ? ZERO : p.a.constantFactor().b;
+            Polynomial bp = p.b == ZERO ? ZERO : p.b.constantFactor().b;
+            assertEquals(p, gcd, ap.gcd(bp));
+            assertTrue(p, p.a.isDivisibleBy(gcd));
+            assertTrue(p, p.b.isDivisibleBy(gcd));
+            commutative(Polynomial::gcd, p);
+        }
+
+        for (Polynomial p : take(LIMIT, P.positivePrimitivePolynomials())) {
+            fixedPoint(q -> q.gcd(ZERO), p);
+            fixedPoint(ZERO::gcd, p);
+            fixedPoint(p::gcd, ONE);
+            fixedPoint(q -> q.gcd(p), ONE);
+            fixedPoint(q -> q.gcd(q), p);
         }
     }
 

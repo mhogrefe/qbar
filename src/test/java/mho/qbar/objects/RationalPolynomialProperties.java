@@ -1590,7 +1590,9 @@ public class RationalPolynomialProperties extends QBarTestProperties {
             sequence.forEach(RationalPolynomial::validate);
             assertFalse(p, sequence.isEmpty());
             assertNotEquals(p, last(sequence), ZERO);
-            //todo GCD
+            Polynomial pa = p.a == ZERO ? Polynomial.ZERO : p.a.constantFactor().b;
+            Polynomial pb = p.b == ZERO ? Polynomial.ZERO : p.b.constantFactor().b;
+            assertEquals(p, last(sequence).constantFactor().b, pa.gcd(pb));
         }
 
         ps = filterInfinite(
@@ -1624,7 +1626,9 @@ public class RationalPolynomialProperties extends QBarTestProperties {
             sequence.forEach(RationalPolynomial::validate);
             assertFalse(p, sequence.isEmpty());
             assertNotEquals(p, last(sequence), ZERO);
-            //todo GCD
+            Polynomial pa = p.a == ZERO ? Polynomial.ZERO : p.a.constantFactor().b;
+            Polynomial pb = p.b == ZERO ? Polynomial.ZERO : p.b.constantFactor().b;
+            assertEquals(p, last(sequence).constantFactor().b, pa.gcd(pb));
             assertEquals(
                     p,
                     toList(map(RationalPolynomial::abs, sequence)),

@@ -984,6 +984,47 @@ public final class Polynomial implements
     }
 
     /**
+     * Returns the unique primitive GCD with positive leading coefficient of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>{@code that} may be any {@code Polynomial}.</li>
+     *  <li>{@code this} and {@code that} cannot both be zero.</li>
+     *  <li>The result is not zero.</li>
+     * </ul>
+     *
+     * @param that the {@code Polynomial} that {@code this} is GCD'd with
+     * @return the primitive polynomial of maximum degree with positive leading coefficient that divides {@code this}
+     * and {@code that}
+     */
+    public @NotNull Polynomial gcd(@NotNull Polynomial that) {
+        if (this == ZERO && that == ZERO) {
+            throw new ArithmeticException("this and that cannot both be zero.");
+        }
+        if (this == ZERO) return that.constantFactor().b;
+        if (that == ZERO) return constantFactor().b;
+        if (this == ONE || that == ONE) return ONE;
+        Polynomial a;
+        Polynomial b;
+        if (degree() >= that.degree()) {
+            a = contentAndPrimitive().b;
+            b = that.contentAndPrimitive().b;
+        } else {
+            a = that.contentAndPrimitive().b;
+            b = contentAndPrimitive().b;
+        }
+        while (true) {
+            Polynomial remainder = a.pseudoRemainder(b);
+            if (remainder == ZERO) {
+                return b.abs();
+            } else {
+                a = b;
+                b = remainder.contentAndPrimitive().b;
+            }
+        }
+    }
+
+    /**
      * Factors {@code this}. The result is sorted (see {@link Polynomial#compareTo(Polynomial)}). 0 cannot be factored.
      *
      * <ul>

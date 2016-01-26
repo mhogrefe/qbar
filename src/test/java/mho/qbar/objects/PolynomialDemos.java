@@ -299,6 +299,16 @@ public class PolynomialDemos extends QBarDemos {
         }
     }
 
+    private void demoGcd() {
+        Iterable<Pair<Polynomial, Polynomial>> ps = filterInfinite(
+                p -> p.a != ZERO || p.b != ZERO,
+                P.pairs(P.withScale(4).polynomials())
+        );
+        for (Pair<Polynomial, Polynomial> p : take(LIMIT, ps)) {
+            System.out.println("gcd(" + p.a + ", " + p.b + ") = " + p.a.gcd(p.b));
+        }
+    }
+
     private void demoFactor() {
         for (Polynomial p : take(LIMIT, P.withScale(4).polynomialsAtLeast(0))) {
             System.out.println("factor(" + p + ") = " + p.factor());
