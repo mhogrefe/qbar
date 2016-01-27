@@ -85,6 +85,8 @@ public class PolynomialProperties extends QBarTestProperties {
         compareImplementationsIsDivisibleBy();
         propertiesDivideExact();
         compareImplementationsDivideExact();
+        propertiesRemainderExact();
+        compareImplementationsRemainderExact();
         propertiesTrivialPseudoRemainderSequence();
         propertiesPrimitivePseudoRemainderSequence();
         propertiesGcd();
@@ -1560,6 +1562,7 @@ public class PolynomialProperties extends QBarTestProperties {
         }
 
         for (Polynomial p : take(LIMIT, P.polynomialsAtLeast(0))) {
+            assertEquals(p, p.divideExact(p), ONE);
             fixedPoint(q -> q.divideExact(ONE), p);
             fixedPoint(q -> q.divideExact(p), ZERO);
         }
@@ -1596,6 +1599,71 @@ public class PolynomialProperties extends QBarTestProperties {
                 P.pairs(P.polynomialsAtLeast(1), P.polynomials())
         );
         compareImplementations("divideExact(Polynomial)", take(LIMIT, ps), functions);
+    }
+
+    private static @NotNull Polynomial remainderExact_simplest(@NotNull Polynomial a, @NotNull Polynomial b) {
+        Pair<RationalPolynomial, RationalPolynomial> quotRem =
+                a.toRationalPolynomial().divide(b.toRationalPolynomial());
+        if (!quotRem.a.hasIntegralCoefficients() || !quotRem.b.hasIntegralCoefficients()) {
+            throw new ArithmeticException();
+        }
+        return quotRem.b.toPolynomial();
+    }
+
+    private void propertiesRemainderExact() {
+        initialize("remainderExact(Polynomial)");
+        Iterable<Pair<Polynomial, Polynomial>> ps = filterInfinite(
+                p -> {
+                    Pair<RationalPolynomial, RationalPolynomial> qr =
+                            p.a.toRationalPolynomial().divide(p.b.toRationalPolynomial());
+                    return qr.a.hasIntegralCoefficients() && qr.b.hasIntegralCoefficients();
+                },
+                P.pairs(P.polynomials(), P.polynomialsAtLeast(0))
+        );
+        for (Pair<Polynomial, Polynomial> p : take(LIMIT, ps)) {
+            Polynomial remainder = p.a.remainderExact(p.b);
+            remainder.validate();
+            assertEquals(p, remainderExact_simplest(p.a, p.b), remainder);
+        }
+
+        ps = map(p -> new Pair<>(p.a.multiply(p.b), p.a), P.pairs(P.polynomialsAtLeast(1), P.polynomials()));
+        for (Pair<Polynomial, Polynomial> p : take(LIMIT, ps)) {
+            assertEquals(p, p.a.remainderExact(p.b), ZERO);
+        }
+
+        for (Polynomial p : take(LIMIT, P.polynomialsAtLeast(0))) {
+            fixedPoint(q -> q.remainderExact(p), ZERO);
+        }
+
+        Iterable<Pair<Polynomial, Polynomial>> psFail = filterInfinite(
+                p -> {
+                    Pair<RationalPolynomial, RationalPolynomial> qr =
+                            p.a.toRationalPolynomial().divide(p.b.toRationalPolynomial());
+                    return !qr.a.hasIntegralCoefficients() || !qr.b.hasIntegralCoefficients();
+                },
+                P.pairs(P.polynomials(), P.polynomialsAtLeast(0))
+        );
+        for (Pair<Polynomial, Polynomial> p : take(LIMIT, psFail)) {
+            try {
+                p.a.remainderExact(p.b);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void compareImplementationsRemainderExact() {
+        Map<String, Function<Pair<Polynomial, Polynomial>, Polynomial>> functions = new LinkedHashMap<>();
+        functions.put("simplest", p -> remainderExact_simplest(p.a, p.b));
+        functions.put("standard", p -> p.a.remainderExact(p.b));
+        Iterable<Pair<Polynomial, Polynomial>> ps = filterInfinite(
+                p -> {
+                    Pair<RationalPolynomial, RationalPolynomial> qr =
+                            p.a.toRationalPolynomial().divide(p.b.toRationalPolynomial());
+                    return qr.a.hasIntegralCoefficients() && qr.b.hasIntegralCoefficients();
+                },
+                P.pairs(P.polynomials(), P.polynomialsAtLeast(0))
+        );
+        compareImplementations("remainderExact(Polynomial)", take(LIMIT, ps), functions);
     }
 
     private void propertiesTrivialPseudoRemainderSequence() {

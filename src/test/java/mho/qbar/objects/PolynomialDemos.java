@@ -277,6 +277,20 @@ public class PolynomialDemos extends QBarDemos {
         }
     }
 
+    private void demoRemainderExact() {
+        Iterable<Pair<Polynomial, Polynomial>> ps = filterInfinite(
+                p -> {
+                    Pair<RationalPolynomial, RationalPolynomial> qr =
+                            p.a.toRationalPolynomial().divide(p.b.toRationalPolynomial());
+                    return qr.a.hasIntegralCoefficients() && qr.b.hasIntegralCoefficients();
+                },
+                P.pairs(P.withScale(4).polynomials(), P.withScale(4).polynomialsAtLeast(0))
+        );
+        for (Pair<Polynomial, Polynomial> p : take(LIMIT, ps)) {
+            System.out.println("remainderExact(" + p.a + ", " + p.b + ") = " + p.a.remainderExact(p.b));
+        }
+    }
+
     private void demoTrivialPseudoRemainderSequence() {
         Iterable<Pair<Polynomial, Polynomial>> ps = filterInfinite(
                 p -> (p.a != ZERO || p.b != ZERO) && p.a.degree() >= p.b.degree(),

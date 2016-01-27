@@ -833,7 +833,7 @@ public final class Polynomial implements
      * </ul>
      *
      * @param that the {@code RationalPolynomial} {@code this} is divided by
-     * @return ({@code this}/{@code that}, {@code this}%{code that})
+     * @return {@code this}%{code that}
      */
     @SuppressWarnings("JavaDoc")
     public @NotNull Polynomial pseudoRemainder(@NotNull Polynomial that) {
@@ -920,6 +920,41 @@ public final class Polynomial implements
             throw new ArithmeticException("this must be divisible by that. this: " + this + ", that: " + that);
         }
         return of(reverse(q));
+    }
+
+    /**
+     * Returns the remainder of {@code this} and {@code that}, assuming that both the quotient and the remainder are in
+     * the ring ℤ[x]. Otherwise, an exception is thrown.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>{@code that} cannot be zero.</li>
+     *  <li>The quotient and remainder of {@code this} divided by {@code that} must have integral coefficients.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param that the {@code Polynomial} {@code this} is divided by
+     * @return {@code this}%{@code that}
+     */
+    public @NotNull Polynomial remainderExact(@NotNull Polynomial that) {
+        if (that == ZERO) {
+            throw new ArithmeticException("that cannot be zero.");
+        }
+        int m = degree();
+        int n = that.degree();
+        if (m < n) return this;
+        List<BigInteger> r = toList(coefficients);
+        for (int k = m - n; k >= 0; k--) {
+            BigInteger[] qCoefficient = r.get(n + k).divideAndRemainder(that.coefficient(n));
+            if (!qCoefficient[1].equals(BigInteger.ZERO)) {
+                throw new ArithmeticException("The quotient and remainder of this divided by that must have integral" +
+                        " coefficients.");
+            }
+            for (int j = n + k - 1; j >= k; j--) {
+                r.set(j, r.get(j).subtract(qCoefficient[0].multiply(that.coefficient(j - k))));
+            }
+        }
+        return of(toList(take(n, r)));
     }
 
     /**

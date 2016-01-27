@@ -1344,6 +1344,72 @@ public class PolynomialTest {
         divideExact_fail_helper("x^2+2*x+1", "x-1");
     }
 
+    private static void remainderExact_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
+        aeq(read(a).get().remainderExact(read(b).get()), output);
+    }
+
+    private static void remainderExact_fail_helper(@NotNull String a, @NotNull String b) {
+        try {
+            read(a).get().remainderExact(read(b).get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testRemainderExact() {
+        remainderExact_helper("0", "1", "0");
+        remainderExact_helper("0", "x", "0");
+        remainderExact_helper("0", "-17", "0");
+        remainderExact_helper("0", "x^2-4*x+7", "0");
+        remainderExact_helper("0", "-x^3-1", "0");
+        remainderExact_helper("0", "3*x^10", "0");
+
+        remainderExact_helper("1", "1", "0");
+        remainderExact_helper("1", "x", "1");
+        remainderExact_helper("1", "x^2-4*x+7", "1");
+        remainderExact_helper("1", "-x^3-1", "1");
+        remainderExact_helper("1", "3*x^10", "1");
+
+        remainderExact_helper("x", "1", "0");
+        remainderExact_helper("x", "x", "0");
+        remainderExact_helper("x", "x^2-4*x+7", "x");
+        remainderExact_helper("x", "-x^3-1", "x");
+        remainderExact_helper("x", "3*x^10", "x");
+
+        remainderExact_helper("-17", "1", "0");
+        remainderExact_helper("-17", "x", "-17");
+        remainderExact_helper("-17", "-17", "0");
+        remainderExact_helper("-17", "x^2-4*x+7", "-17");
+        remainderExact_helper("-17", "-x^3-1", "-17");
+        remainderExact_helper("-17", "3*x^10", "-17");
+
+        remainderExact_helper("x^2-4*x+7", "1", "0");
+        remainderExact_helper("x^2-4*x+7", "x", "7");
+        remainderExact_helper("x^2-4*x+7", "x^2-4*x+7", "0");
+        remainderExact_helper("x^2-4*x+7", "-x^3-1", "x^2-4*x+7");
+        remainderExact_helper("x^2-4*x+7", "3*x^10", "x^2-4*x+7");
+
+        remainderExact_helper("-x^3-1", "1", "0");
+        remainderExact_helper("-x^3-1", "x", "-1");
+        remainderExact_helper("-x^3-1", "x^2-4*x+7", "-9*x+27");
+        remainderExact_helper("-x^3-1", "-x^3-1", "0");
+        remainderExact_helper("-x^3-1", "3*x^10", "-x^3-1");
+
+        remainderExact_helper("3*x^10", "1", "0");
+        remainderExact_helper("3*x^10", "x", "0");
+        remainderExact_helper("3*x^10", "x^2-4*x+7", "21948*x-10773");
+        remainderExact_helper("3*x^10", "-x^3-1", "-3*x");
+        remainderExact_helper("3*x^10", "3*x^10", "0");
+
+        remainderExact_helper("x^5", "x+1", "-1");
+        remainderExact_helper("x^2+2*x+1", "x-1", "4");
+
+        remainderExact_fail_helper("0", "0");
+        remainderExact_fail_helper("1", "0");
+        remainderExact_fail_helper("2", "3");
+        remainderExact_fail_helper("6*x-3", "4");
+    }
+
     private static void trivialPseudoRemainderSequence_helper(
             @NotNull String a,
             @NotNull String b,
