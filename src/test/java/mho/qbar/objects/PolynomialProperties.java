@@ -88,6 +88,7 @@ public class PolynomialProperties extends QBarTestProperties {
         propertiesTrivialPseudoRemainderSequence();
         propertiesPrimitivePseudoRemainderSequence();
         propertiesGcd();
+        compareImplementationsGcd();
         propertiesFactor();
         propertiesIsIrreducible();
         compareImplementationsIsIrreducible();
@@ -1645,6 +1646,70 @@ public class PolynomialProperties extends QBarTestProperties {
         }
     }
 
+    private static @NotNull Polynomial gcd_simplest(@NotNull Polynomial a, @NotNull Polynomial b) {
+        if (a == ZERO && b == ZERO) {
+            throw new ArithmeticException("this and that cannot both be zero.");
+        }
+        if (a == ZERO) return b.constantFactor().b;
+        if (b == ZERO) return a.constantFactor().b;
+        if (a.degree() == 0 || b.degree() == 0) return ONE;
+        return product(intersect(a.constantFactor().b.factor(), b.constantFactor().b.factor()));
+    }
+
+    private static @NotNull Polynomial gcd_alt(@NotNull Polynomial x, @NotNull Polynomial y) {
+        if (x == ZERO && y == ZERO) {
+            throw new ArithmeticException("this and that cannot both be zero.");
+        }
+        if (x == ZERO) return y.constantFactor().b;
+        if (y == ZERO) return x.constantFactor().b;
+        if (x == ONE || y == ONE) return ONE;
+        RationalPolynomial a;
+        RationalPolynomial b;
+        if (x.degree() >= y.degree()) {
+            a = x.toRationalPolynomial();
+            b = y.toRationalPolynomial();
+        } else {
+            a = y.toRationalPolynomial();
+            b = x.toRationalPolynomial();
+        }
+        while (true) {
+            RationalPolynomial remainder = a.divide(b).b;
+            if (remainder == RationalPolynomial.ZERO) {
+                return b.constantFactor().b;
+            } else {
+                a = b;
+                b = remainder;
+            }
+        }
+    }
+
+    private static @NotNull Polynomial gcd_alt2(@NotNull Polynomial x, @NotNull Polynomial y) {
+        if (x == ZERO && y == ZERO) {
+            throw new ArithmeticException("this and that cannot both be zero.");
+        }
+        if (x == ZERO) return y.constantFactor().b;
+        if (y == ZERO) return x.constantFactor().b;
+        if (x == ONE || y == ONE) return ONE;
+        Polynomial a;
+        Polynomial b;
+        if (x.degree() >= y.degree()) {
+            a = x;
+            b = y;
+        } else {
+            a = y;
+            b = x;
+        }
+        while (true) {
+            Polynomial remainder = a.pseudoRemainder(b);
+            if (remainder == ZERO) {
+                return b.constantFactor().b;
+            } else {
+                a = b;
+                b = remainder;
+            }
+        }
+    }
+
     private void propertiesGcd() {
         initialize("gcd(Polynomial)");
         Iterable<Pair<Polynomial, Polynomial>> ps = filterInfinite(
@@ -1663,6 +1728,17 @@ public class PolynomialProperties extends QBarTestProperties {
             commutative(Polynomial::gcd, p);
         }
 
+        ps = filterInfinite(
+                p -> p.a != ZERO || p.b != ZERO,
+                P.pairs(P.withScale(4).withSecondaryScale(2).polynomials())
+        );
+        for (Pair<Polynomial, Polynomial> p : take(LIMIT, ps)) {
+            Polynomial gcd = p.a.gcd(p.b);
+            assertEquals(p, gcd, gcd_simplest(p.a, p.b));
+            assertEquals(p, gcd, gcd_alt(p.a, p.b));
+            assertEquals(p, gcd, gcd_alt2(p.a, p.b));
+        }
+
         for (Polynomial p : take(LIMIT, P.positivePrimitivePolynomials())) {
             fixedPoint(q -> q.gcd(ZERO), p);
             fixedPoint(ZERO::gcd, p);
@@ -1670,6 +1746,27 @@ public class PolynomialProperties extends QBarTestProperties {
             fixedPoint(q -> q.gcd(p), ONE);
             fixedPoint(q -> q.gcd(q), p);
         }
+
+        //todo use irreduciblePolynomials
+        Iterable<Triple<Polynomial, Polynomial, Polynomial>> ts = P.subsetTriples(
+                filterInfinite(Polynomial::isIrreducible, P.positivePrimitivePolynomialsAtLeast(1))
+        );
+        for (Triple<Polynomial, Polynomial, Polynomial> t : take(LIMIT, ts)) {
+            assertEquals(t, t.a.multiply(t.b).gcd(t.b.multiply(t.c)), t.b);
+        }
+    }
+
+    private void compareImplementationsGcd() {
+        Map<String, Function<Pair<Polynomial, Polynomial>, Polynomial>> functions = new LinkedHashMap<>();
+        functions.put("simplest", p -> gcd_simplest(p.a, p.b));
+        functions.put("alt", p -> gcd_alt(p.a, p.b));
+        functions.put("alt2", p -> gcd_alt2(p.a, p.b));
+        functions.put("standard", p -> p.a.gcd(p.b));
+        Iterable<Pair<Polynomial, Polynomial>> ps = filterInfinite(
+                p -> p.a != ZERO || p.b != ZERO,
+                P.pairs(P.withScale(4).withSecondaryScale(2).polynomials())
+        );
+        compareImplementations("gcd(Polynomial)", take(LIMIT, ps), functions);
     }
 
     private void propertiesFactor() {
@@ -1710,7 +1807,11 @@ public class PolynomialProperties extends QBarTestProperties {
     private void propertiesIsIrreducible() {
         initialize("isIrreducible()");
         for (Polynomial p : take(LIMIT, P.withScale(4).polynomialsAtLeast(0))) {
-            p.isIrreducible();
+            boolean isIrreducible = p.isIrreducible();
+            if (isIrreducible && p.degree() != 0) {
+                assertTrue(p, p.isPrimitive());
+                assertTrue(p, p.signum() == 1);
+            }
         }
 
         for (Polynomial p : take(SMALL_LIMIT, P.withScale(4).polynomialsAtLeast(0))) {
