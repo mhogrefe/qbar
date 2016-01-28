@@ -89,8 +89,10 @@ public class PolynomialProperties extends QBarTestProperties {
         compareImplementationsRemainderExact();
         propertiesTrivialPseudoRemainderSequence();
         propertiesPrimitivePseudoRemainderSequence();
+        propertiesSubresultantSequence();
         propertiesGcd();
-        compareImplementationsGcd();
+        compareImplementationsGcd1();
+        compareImplementationsGcd2();
         propertiesFactor();
         propertiesIsIrreducible();
         compareImplementationsIsIrreducible();
@@ -1714,6 +1716,30 @@ public class PolynomialProperties extends QBarTestProperties {
         }
     }
 
+    private void propertiesSubresultantSequence() {
+        initialize("subresultantSequence(Polynomial)");
+        Iterable<Pair<Polynomial, Polynomial>> ps = filterInfinite(
+                p -> (p.a != ZERO || p.b != ZERO) && p.a.degree() >= p.b.degree(),
+                P.pairs(P.polynomials())
+        );
+        for (Pair<Polynomial, Polynomial> p : take(LIMIT, ps)) {
+            List<Polynomial> sequence = p.a.subresultantSequence(p.b);
+            sequence.forEach(Polynomial::validate);
+            assertFalse(p, sequence.isEmpty());
+            assertNotEquals(p, last(sequence), ZERO);
+            assertEquals(p, last(sequence).constantFactor().b, p.a.gcd(p.b));
+            assertEquals(
+                    p,
+                    toList(map(q -> q == ZERO ? ZERO : q.constantFactor().b, sequence)),
+                    toList(map(Polynomial::abs, p.a.primitivePseudoRemainderSequence(p.b)))
+            );
+        }
+
+        for (Polynomial p : take(LIMIT, P.polynomialsAtLeast(0))) {
+            assertEquals(p, p.subresultantSequence(ZERO), Collections.singletonList(p));
+        }
+    }
+
     private static @NotNull Polynomial gcd_simplest(@NotNull Polynomial a, @NotNull Polynomial b) {
         if (a == ZERO && b == ZERO) {
             throw new ArithmeticException("this and that cannot both be zero.");
@@ -1778,6 +1804,33 @@ public class PolynomialProperties extends QBarTestProperties {
         }
     }
 
+    private static @NotNull Polynomial gcd_alt3(@NotNull Polynomial x, @NotNull Polynomial y) {
+        if (x == ZERO && y == ZERO) {
+            throw new ArithmeticException("this and that cannot both be zero.");
+        }
+        if (x == ZERO) return y.constantFactor().b;
+        if (y == ZERO) return x.constantFactor().b;
+        if (x == ONE || y == ONE) return ONE;
+        Polynomial a;
+        Polynomial b;
+        if (x.degree() >= y.degree()) {
+            a = x.contentAndPrimitive().b;
+            b = y.contentAndPrimitive().b;
+        } else {
+            a = y.contentAndPrimitive().b;
+            b = x.contentAndPrimitive().b;
+        }
+        while (true) {
+            Polynomial remainder = a.pseudoRemainder(b);
+            if (remainder == ZERO) {
+                return b.abs();
+            } else {
+                a = b;
+                b = remainder.contentAndPrimitive().b;
+            }
+        }
+    }
+
     private void propertiesGcd() {
         initialize("gcd(Polynomial)");
         Iterable<Pair<Polynomial, Polynomial>> ps = filterInfinite(
@@ -1805,6 +1858,7 @@ public class PolynomialProperties extends QBarTestProperties {
             assertEquals(p, gcd, gcd_simplest(p.a, p.b));
             assertEquals(p, gcd, gcd_alt(p.a, p.b));
             assertEquals(p, gcd, gcd_alt2(p.a, p.b));
+            assertEquals(p, gcd, gcd_alt3(p.a, p.b));
         }
 
         for (Polynomial p : take(LIMIT, P.positivePrimitivePolynomials())) {
@@ -1824,7 +1878,7 @@ public class PolynomialProperties extends QBarTestProperties {
         }
     }
 
-    private void compareImplementationsGcd() {
+    private void compareImplementationsGcd1() {
         Map<String, Function<Pair<Polynomial, Polynomial>, Polynomial>> functions = new LinkedHashMap<>();
         functions.put("simplest", p -> gcd_simplest(p.a, p.b));
         functions.put("alt", p -> gcd_alt(p.a, p.b));
@@ -1835,6 +1889,17 @@ public class PolynomialProperties extends QBarTestProperties {
                 P.pairs(P.withScale(4).withSecondaryScale(2).polynomials())
         );
         compareImplementations("gcd(Polynomial)", take(LIMIT, ps), functions);
+    }
+
+    private void compareImplementationsGcd2() {
+        Map<String, Function<Pair<Polynomial, Polynomial>, Polynomial>> functions = new LinkedHashMap<>();
+        functions.put("alt3", p -> gcd_alt3(p.a, p.b));
+        functions.put("standard", p -> p.a.gcd(p.b));
+        Iterable<Pair<Polynomial, Polynomial>> ps = filterInfinite(
+                p -> p.a != ZERO || p.b != ZERO,
+                P.pairs(P.polynomials())
+        );
+        compareImplementations("gcd(Polynomial)", take(SMALL_LIMIT, ps), functions);
     }
 
     private void propertiesFactor() {

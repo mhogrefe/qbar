@@ -1530,6 +1530,66 @@ public class PolynomialTest {
         primitivePseudoRemainderSequence_fail_helper("x^2", "x^3");
     }
 
+    private static void subresultantSequence_helper(
+            @NotNull String a,
+            @NotNull String b,
+            @NotNull String output
+    ) {
+        aeq(read(a).get().subresultantSequence(read(b).get()), output);
+    }
+
+    private static void subresultantSequence_fail_helper(@NotNull String a, @NotNull String b) {
+        try {
+            read(a).get().subresultantSequence(read(b).get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testSubresultantSequence() {
+        subresultantSequence_helper("1", "0", "[1]");
+        subresultantSequence_helper("1", "1", "[1, 1]");
+        subresultantSequence_helper("1", "-17", "[1, -17]");
+
+        subresultantSequence_helper("x", "0", "[x]");
+        subresultantSequence_helper("x", "1", "[x, 1]");
+        subresultantSequence_helper("x", "x", "[x, x]");
+        subresultantSequence_helper("x", "-17", "[x, -17]");
+
+        subresultantSequence_helper("-17", "0", "[-17]");
+        subresultantSequence_helper("-17", "1", "[-17, 1]");
+        subresultantSequence_helper("-17", "-17", "[-17, -17]");
+
+        subresultantSequence_helper("x^2-4*x+7", "0", "[x^2-4*x+7]");
+        subresultantSequence_helper("x^2-4*x+7", "1", "[x^2-4*x+7, 1]");
+        subresultantSequence_helper("x^2-4*x+7", "x", "[x^2-4*x+7, x, 7]");
+        subresultantSequence_helper("x^2-4*x+7", "-17", "[x^2-4*x+7, -17]");
+        subresultantSequence_helper("x^2-4*x+7", "x^2-4*x+7", "[x^2-4*x+7, x^2-4*x+7]");
+
+        subresultantSequence_helper("-x^3-1", "0", "[-x^3-1]");
+        subresultantSequence_helper("-x^3-1", "1", "[-x^3-1, 1]");
+        subresultantSequence_helper("-x^3-1", "x", "[-x^3-1, x, -1]");
+        subresultantSequence_helper("-x^3-1", "-17", "[-x^3-1, -17]");
+        subresultantSequence_helper("-x^3-1", "x^2-4*x+7", "[-x^3-1, x^2-4*x+7, -9*x+27, 324]");
+        subresultantSequence_helper("-x^3-1", "-x^3-1", "[-x^3-1, -x^3-1]");
+
+        subresultantSequence_helper("3*x^10", "0", "[3*x^10]");
+        subresultantSequence_helper("3*x^10", "1", "[3*x^10, 1]");
+        subresultantSequence_helper("3*x^10", "x", "[3*x^10, x]");
+        subresultantSequence_helper("3*x^10", "-17", "[3*x^10, -17]");
+        subresultantSequence_helper("3*x^10", "x^2-4*x+7", "[3*x^10, x^2-4*x+7, 21948*x-10773, 2542277241]");
+        subresultantSequence_helper("3*x^10", "-x^3-1", "[3*x^10, -x^3-1, -3*x, -27]");
+        subresultantSequence_helper("3*x^10", "3*x^10", "[3*x^10, 3*x^10]");
+
+        subresultantSequence_helper("x^8+x^6-3*x^4-3*x^3+8*x^2+2*x-5", "3*x^6+5*x^4-4*x^2-9*x+21",
+                "[x^8+x^6-3*x^4-3*x^3+8*x^2+2*x-5, 3*x^6+5*x^4-4*x^2-9*x+21, -15*x^4+3*x^2-9, 65*x^2+125*x-245," +
+                " -9326*x+12300, 260708]");
+
+        subresultantSequence_fail_helper("0", "0");
+        subresultantSequence_fail_helper("0", "x");
+        subresultantSequence_fail_helper("x^2", "x^3");
+    }
+
     private static void gcd_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
         aeq(read(a).get().gcd(read(b).get()), output);
     }

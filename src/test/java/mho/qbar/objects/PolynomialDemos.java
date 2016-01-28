@@ -313,6 +313,16 @@ public class PolynomialDemos extends QBarDemos {
         }
     }
 
+    private void demoSubresultantSequence() {
+        Iterable<Pair<Polynomial, Polynomial>> ps = filterInfinite(
+                p -> (p.a != ZERO || p.b != ZERO) && p.a.degree() >= p.b.degree(),
+                P.pairs(P.withScale(4).withSecondaryScale(4).polynomials())
+        );
+        for (Pair<Polynomial, Polynomial> p : take(LIMIT, ps)) {
+            System.out.println("subresultantSequence(" + p.a + ", " + p.b + ") = " + p.a.subresultantSequence(p.b));
+        }
+    }
+
     private void demoGcd() {
         Iterable<Pair<Polynomial, Polynomial>> ps = filterInfinite(
                 p -> p.a != ZERO || p.b != ZERO,

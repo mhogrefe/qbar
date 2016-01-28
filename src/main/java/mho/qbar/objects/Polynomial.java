@@ -1019,6 +1019,46 @@ public final class Polynomial implements
     }
 
     /**
+     * Given two {@code Polynomial}s, returns a list of {@code Polynomial}s with certain useful properties. For
+     * example, the last element is a GCD of the two polynomials.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>{@code that} may be any {@code Polynomial}.</li>
+     *  <li>The degree of {@code this} must be greater than or equal to the degree of {@code that}.</li>
+     *  <li>{@code this} and {@code that} cannot both be zero.</li>
+     *  <li>No element of the result is null.</li>
+     * </ul>
+     *
+     * @param that another {@code RationalPolynomial}
+     * @return the subresultant sequence of {@code this} and {@code that}
+     */
+    public @NotNull List<Polynomial> subresultantSequence(@NotNull Polynomial that) {
+        if (this == ZERO && that == ZERO) {
+            throw new ArithmeticException("this and that cannot both be zero.");
+        }
+        List<Polynomial> sequence = new ArrayList<>();
+        sequence.add(this);
+        if (that == ZERO) return sequence;
+        sequence.add(that);
+        BigInteger g = BigInteger.ONE;
+        BigInteger h = BigInteger.ONE;
+        Polynomial a = this;
+        Polynomial b = that;
+        while (true) {
+            int delta = a.degree() - b.degree();
+            Polynomial r = a.pseudoRemainder(b);
+            if (r == ZERO) return sequence;
+            BigInteger divisor = g.multiply(h.pow(delta));
+            g = b.leading().get();
+            h = delta > 0 ? g.pow(delta).divide(h.pow(delta - 1)) : g.pow(delta).multiply(h.pow(1 - delta));
+            a = b;
+            b = of(toList(map(c -> c.divide(divisor), r)));
+            sequence.add(b);
+        }
+    }
+
+    /**
      * Returns the unique primitive GCD with positive leading coefficient of {@code this} and {@code that}.
      *
      * <ul>
@@ -1042,20 +1082,23 @@ public final class Polynomial implements
         Polynomial a;
         Polynomial b;
         if (degree() >= that.degree()) {
-            a = contentAndPrimitive().b;
-            b = that.contentAndPrimitive().b;
+            a = this;
+            b = that;
         } else {
-            a = that.contentAndPrimitive().b;
-            b = contentAndPrimitive().b;
+            a = that;
+            b = this;
         }
+        BigInteger g = BigInteger.ONE;
+        BigInteger h = BigInteger.ONE;
         while (true) {
-            Polynomial remainder = a.pseudoRemainder(b);
-            if (remainder == ZERO) {
-                return b.abs();
-            } else {
-                a = b;
-                b = remainder.contentAndPrimitive().b;
-            }
+            int delta = a.degree() - b.degree();
+            Polynomial r = a.pseudoRemainder(b);
+            if (r == ZERO) return b.constantFactor().b;
+            BigInteger divisor = g.multiply(h.pow(delta));
+            g = b.leading().get();
+            h = delta > 0 ? g.pow(delta).divide(h.pow(delta - 1)) : g.pow(delta).multiply(h.pow(1 - delta));
+            a = b;
+            b = of(toList(map(c -> c.divide(divisor), r)));
         }
     }
 
