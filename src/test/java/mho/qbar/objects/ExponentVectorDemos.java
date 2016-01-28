@@ -26,6 +26,12 @@ public class ExponentVectorDemos extends QBarDemos {
         }
     }
 
+    private void demoTerms() {
+        for (ExponentVector ev : take(LIMIT, P.exponentVectors())) {
+            System.out.println("terms(" + ev + ") = " + toList(ev.terms()));
+        }
+    }
+
     private void demoToString() {
         for (ExponentVector ev : take(LIMIT, P.withScale(4).exponentVectors())) {
             System.out.println(ev);

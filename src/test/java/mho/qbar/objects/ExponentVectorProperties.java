@@ -4,6 +4,8 @@ import mho.qbar.testing.QBarTestProperties;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
+
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.testing.Testing.*;
 
@@ -17,6 +19,7 @@ public class ExponentVectorProperties extends QBarTestProperties {
     @Override
     protected void testBothModes() {
         propertiesExponent();
+        propertiesTerms();
     }
 
     private void propertiesExponent() {
@@ -35,6 +38,20 @@ public class ExponentVectorProperties extends QBarTestProperties {
                 p.a.exponent(p.b);
                 fail(p);
             } catch (IndexOutOfBoundsException ignored) {}
+        }
+    }
+
+    private void propertiesTerms() {
+        initialize("terms()");
+        for (ExponentVector ev : take(LIMIT, P.exponentVectors())) {
+            Iterable<Pair<Integer, Integer>> termsIterable = ev.terms();
+            testNoRemove(termsIterable);
+            testHasNext(termsIterable);
+            List<Pair<Integer, Integer>> terms = toList(termsIterable);
+            assertTrue(ev, all(t -> t.a >= 0, terms));
+            assertTrue(ev, all(t -> t.b > 0, terms));
+            //noinspection RedundantCast
+            assertTrue(ev, increasing((Iterable<Integer>) map(t -> t.a, terms)));
         }
     }
 }

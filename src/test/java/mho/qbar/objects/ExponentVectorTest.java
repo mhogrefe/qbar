@@ -6,6 +6,7 @@ import org.junit.Test;
 
 import static mho.qbar.objects.ExponentVector.*;
 import static mho.wheels.testing.Testing.aeq;
+import static mho.wheels.testing.Testing.aeqit;
 import static org.junit.Assert.fail;
 
 public class ExponentVectorTest {
@@ -42,5 +43,18 @@ public class ExponentVectorTest {
         exponent_fail_helper("1", -1);
         exponent_fail_helper("a", -1);
         exponent_fail_helper("x^2*y*z^3", -1);
+    }
+
+    private static void terms_helper(@NotNull String input, @NotNull String output) {
+        aeqit(read(input).get().terms(), output);
+    }
+
+    @Test
+    public void testTerms() {
+        terms_helper("1", "[]");
+        terms_helper("a", "[(0, 1)]");
+        terms_helper("a^2", "[(0, 2)]");
+        terms_helper("a^3", "[(0, 3)]");
+        terms_helper("x^2*y*z^3", "[(23, 2), (24, 1), (25, 3)]");
     }
 }

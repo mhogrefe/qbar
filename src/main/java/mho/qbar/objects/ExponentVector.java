@@ -64,6 +64,18 @@ public class ExponentVector implements Comparable<ExponentVector> {
         return variableIndex >= exponents.size() ? 0 : exponents.get(variableIndex);
     }
 
+    /**
+     * Returns the terms of {@code this} in the form of pairs, where the first element is a variable index and the
+     * second is the exponent of the corresponding variable.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code ExponentVector}.</li>
+     *  <li>The result is finite and does not contain any nulls. No first element of any pair is negative, the second
+     *  element of every pair is positive, and the first elements unique and are in ascending order.</li>
+     * </ul>
+     *
+     * @return the terms of {@code this}
+     */
     public @NotNull Iterable<Pair<Integer, Integer>> terms() {
         return () -> new NoRemoveIterator<Pair<Integer, Integer>>() {
             private int i = 0;
@@ -102,6 +114,18 @@ public class ExponentVector implements Comparable<ExponentVector> {
         return new ExponentVector(toList(take(actualSize, exponents)));
     }
 
+    /**
+     * Creates an {@code ExponentVector} from a list of pairs, where the first element is a variable index and the
+     * second is the corresponding variable's exponent.
+     *
+     * <ul>
+     *  <li>{@code term}s cannot contain any nulls. No first element of any pair can be negative, the second element of
+     *  every pair must be positive, and the first elements must be unique and in ascending order.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @return the {@code ExponentVector} containing the terms in {@code terms}
+     */
     public static @NotNull ExponentVector fromTerms(@NotNull List<Pair<Integer, Integer>> terms) {
         if (terms.isEmpty()) return ExponentVector.ONE;
         //noinspection RedundantCast
