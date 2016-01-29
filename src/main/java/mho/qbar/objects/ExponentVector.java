@@ -100,9 +100,22 @@ public class ExponentVector implements Comparable<ExponentVector> {
         };
     }
 
+    /**
+     * Creates an {@code ExponentVector} from a list of exponents. The value at the ith index is the ith variable's
+     * exponent.
+     *
+     * <ul>
+     *  <li>None of the elements in {@code exponents} may be negative.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param exponents the exponents in this {@code ExponentVector}
+     * @return the {@code ExponentVector} with the exponents in {@code exponents}
+     */
     public static @NotNull ExponentVector of(@NotNull List<Integer> exponents) {
         if (any(v -> v < 0, exponents)) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("None of the elements in exponents may be negative. Invalid " +
+                    "exponents: " + exponents);
         }
         int actualSize;
         for (actualSize = exponents.size(); actualSize > 0; actualSize--) {

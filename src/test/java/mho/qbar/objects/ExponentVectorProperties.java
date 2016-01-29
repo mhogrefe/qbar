@@ -4,8 +4,10 @@ import mho.qbar.testing.QBarTestProperties;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collections;
 import java.util.List;
 
+import static mho.qbar.objects.ExponentVector.*;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.testing.Testing.*;
 
@@ -20,6 +22,7 @@ public class ExponentVectorProperties extends QBarTestProperties {
     protected void testBothModes() {
         propertiesExponent();
         propertiesTerms();
+        propertiesOf();
     }
 
     private void propertiesExponent() {
@@ -52,6 +55,40 @@ public class ExponentVectorProperties extends QBarTestProperties {
             assertTrue(ev, all(t -> t.b > 0, terms));
             //noinspection RedundantCast
             assertTrue(ev, increasing((Iterable<Integer>) map(t -> t.a, terms)));
+        }
+    }
+
+    private void propertiesOf() {
+        initialize("of(List<Integer>)");
+        for (List<Integer> is : take(LIMIT, P.withScale(4).lists(P.naturalIntegersGeometric()))) {
+            ExponentVector ev = of(is);
+            ev.validate();
+        }
+
+//        Iterable<List<Integer>> iss = filterInfinite(
+//                is -> is.isEmpty() || last(is) != 0,
+//                P.lists(P.naturalIntegersGeometric())
+//        );
+//        for (List<Integer> is : take(LIMIT, iss)) {
+//            fixedPoint(js -> toList(of(js)), is);
+//        }
+
+        Iterable<List<Integer>> iss = P.listsWithSublists(
+                map(Collections::singletonList, P.negativeIntegersGeometric()),
+                P.naturalIntegersGeometric()
+        );
+        for (List<Integer> is : take(LIMIT, iss)) {
+            try {
+                of(is);
+                fail(is);
+            } catch (IllegalArgumentException ignored) {}
+        }
+
+        for (List<Integer> is : take(LIMIT, P.listsWithElement(null, P.naturalIntegersGeometric()))) {
+            try {
+                of(is);
+                fail(is);
+            } catch (NullPointerException ignored) {}
         }
     }
 }

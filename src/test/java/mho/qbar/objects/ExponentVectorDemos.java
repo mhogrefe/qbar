@@ -5,6 +5,9 @@ import mho.wheels.math.MathUtils;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
+
+import static mho.qbar.objects.ExponentVector.*;
 import static mho.wheels.iterables.IterableUtils.*;
 
 @SuppressWarnings("UnusedDeclaration")
@@ -29,6 +32,13 @@ public class ExponentVectorDemos extends QBarDemos {
     private void demoTerms() {
         for (ExponentVector ev : take(LIMIT, P.exponentVectors())) {
             System.out.println("terms(" + ev + ") = " + toList(ev.terms()));
+        }
+    }
+
+    private void demoOf() {
+        for (List<Integer> is : take(LIMIT, P.withScale(4).lists(P.naturalIntegersGeometric()))) {
+            String listString = tail(init(is.toString()));
+            System.out.println("of(" + listString + ") = " + of(is));
         }
     }
 
