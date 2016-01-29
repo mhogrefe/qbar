@@ -148,12 +148,46 @@ public class QBarRandomProviderDemos extends QBarDemos {
         }
     }
 
+    private void demoVectors_int() {
+        Iterable<Pair<QBarRandomProvider, Integer>> ps = P.pairsSquareRootOrder(
+                filterInfinite(rp -> rp.getScale() > 0, P.withScale(4).qbarRandomProvidersDefaultSecondaryScale()),
+                P.withScale(4).naturalIntegersGeometric()
+        );
+        for (Pair<QBarRandomProvider, Integer> p : take(MEDIUM_LIMIT, ps)) {
+            System.out.println("vectors(" + p.a + ", " + p.b + ") = " + its(p.a.vectors(p.b)));
+        }
+    }
+
+    private void demoVectors() {
+        Iterable<QBarRandomProvider> rps = filterInfinite(
+                rp -> rp.getScale() > 0 && rp.getSecondaryScale() > 0,
+                P.withScale(4).qbarRandomProviders()
+        );
+        for (QBarRandomProvider rp : take(MEDIUM_LIMIT, rps)) {
+            System.out.println("vectors(" + rp + ") = " + its(rp.vectors()));
+        }
+    }
+
+    private void demoVectorsAtLeast() {
+        Iterable<Pair<QBarRandomProvider, Integer>> ps = filterInfinite(
+                p -> p.a.getSecondaryScale() > p.b,
+                P.pairsSquareRootOrder(
+                        filterInfinite(rp -> rp.getScale() > 0, P.withScale(4).qbarRandomProviders()),
+                        P.withScale(4).naturalIntegersGeometric()
+                )
+        );
+        for (Pair<QBarRandomProvider, Integer> p : take(MEDIUM_LIMIT, ps)) {
+            System.out.println("vectorsAtLeast(" + p.a + ", " + p.b + ") = " +
+                    its(p.a.vectorsAtLeast(p.b)));
+        }
+    }
+
     private void demoRationalVectors_int() {
         Iterable<Pair<QBarRandomProvider, Integer>> ps = P.pairsSquareRootOrder(
                 filterInfinite(rp -> rp.getScale() >= 3, P.withScale(4).qbarRandomProvidersDefaultSecondaryScale()),
                 P.withScale(4).naturalIntegersGeometric()
         );
-        for (Pair<QBarRandomProvider, Integer> p : take(LIMIT, ps)) {
+        for (Pair<QBarRandomProvider, Integer> p : take(MEDIUM_LIMIT, ps)) {
             System.out.println("rationalVectors(" + p.a + ", " + p.b + ") = " + its(p.a.rationalVectors(p.b)));
         }
     }
@@ -163,7 +197,7 @@ public class QBarRandomProviderDemos extends QBarDemos {
                 rp -> rp.getScale() >= 3 && rp.getSecondaryScale() > 0,
                 P.withScale(4).qbarRandomProviders()
         );
-        for (QBarRandomProvider rp : take(LIMIT, rps)) {
+        for (QBarRandomProvider rp : take(MEDIUM_LIMIT, rps)) {
             System.out.println("rationalVectors(" + rp + ") = " + its(rp.rationalVectors()));
         }
     }
@@ -176,7 +210,7 @@ public class QBarRandomProviderDemos extends QBarDemos {
                         P.withScale(4).naturalIntegersGeometric()
                 )
         );
-        for (Pair<QBarRandomProvider, Integer> p : take(LIMIT, ps)) {
+        for (Pair<QBarRandomProvider, Integer> p : take(MEDIUM_LIMIT, ps)) {
             System.out.println("rationalVectorsAtLeast(" + p.a + ", " + p.b + ") = " +
                     its(p.a.rationalVectorsAtLeast(p.b)));
         }
@@ -187,7 +221,7 @@ public class QBarRandomProviderDemos extends QBarDemos {
                 filterInfinite(rp -> rp.getScale() > 0, P.withScale(4).qbarRandomProvidersDefaultSecondaryScale()),
                 P.withScale(4).naturalIntegersGeometric()
         );
-        for (Pair<QBarRandomProvider, Integer> p : take(LIMIT, ps)) {
+        for (Pair<QBarRandomProvider, Integer> p : take(MEDIUM_LIMIT, ps)) {
             System.out.println("reducedRationalVectors(" + p.a + ", " + p.b + ") = " +
                     its(p.a.reducedRationalVectors(p.b)));
         }
@@ -198,7 +232,7 @@ public class QBarRandomProviderDemos extends QBarDemos {
                 rp -> rp.getScale() > 0 && rp.getSecondaryScale() > 0,
                 P.withScale(4).qbarRandomProviders()
         );
-        for (QBarRandomProvider rp : take(LIMIT, rps)) {
+        for (QBarRandomProvider rp : take(MEDIUM_LIMIT, rps)) {
             System.out.println("reducedRationalVectors(" + rp + ") = " + its(rp.reducedRationalVectors()));
         }
     }
@@ -211,7 +245,7 @@ public class QBarRandomProviderDemos extends QBarDemos {
                         P.withScale(4).naturalIntegersGeometric()
                 )
         );
-        for (Pair<QBarRandomProvider, Integer> p : take(LIMIT, ps)) {
+        for (Pair<QBarRandomProvider, Integer> p : take(MEDIUM_LIMIT, ps)) {
             System.out.println("reducedRationalVectorsAtLeast(" + p.a + ", " + p.b + ") = " +
                     its(p.a.reducedRationalVectorsAtLeast(p.b)));
         }

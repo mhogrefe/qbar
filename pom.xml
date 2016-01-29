@@ -48,6 +48,8 @@
                         <include>**/RationalPolynomialProperties.java</include>
                         <include>**/RationalVectorTest.java</include>
                         <include>**/RationalVectorProperties.java</include>
+                        <include>**/VectorTest.java</include>
+                        <include>**/VectorProperties.java</include>
                     </includes>
                 </configuration>
             </plugin>

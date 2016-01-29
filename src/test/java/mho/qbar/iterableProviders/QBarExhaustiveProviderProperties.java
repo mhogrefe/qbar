@@ -27,6 +27,7 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
         propertiesNonNegativeRationalsLessThanOne();
         propertiesFinitelyBoundedIntervals();
         propertiesIntervals();
+        propertiesVectors();
         propertiesRationalVectors();
         propertiesReducedRationalVectors();
         propertiesRationalMatrices();
@@ -46,6 +47,8 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
         propertiesRange_Rational_Rational();
         propertiesRationalsIn();
         propertiesRationalsNotIn();
+        propertiesVectors_int();
+        propertiesVectorsAtLeast();
         propertiesRationalVectors_int();
         propertiesRationalVectorsAtLeast();
         propertiesReducedRationalVectors_int();
@@ -189,6 +192,44 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
             Iterable<Rational> rs = QEP.rationalsNotIn(a);
             simpleTest(a, rs, r -> !a.contains(r));
             take(TINY_LIMIT, rs).forEach(Rational::validate);
+        }
+    }
+
+    private void propertiesVectors_int() {
+        initialize("vectors(int)");
+        for (int i : take(SMALL_LIMIT, P.naturalIntegersGeometric())) {
+            Iterable<Vector> vs = QEP.vectors(i);
+            simpleTest(i, vs, v -> v.dimension() == i);
+            take(TINY_LIMIT, vs).forEach(Vector::validate);
+        }
+
+        for (int i : take(LIMIT, P.negativeIntegers())) {
+            try {
+                QEP.vectors(i);
+                fail(i);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesVectors() {
+        initializeConstant("vectors()");
+        biggerTest(QEP, QEP.vectors(), v -> true);
+        take(TINY_LIMIT, QEP.vectors()).forEach(Vector::validate);
+    }
+
+    private void propertiesVectorsAtLeast() {
+        initialize("vectorsAtLeast(int)");
+        for (int i : take(SMALL_LIMIT, P.naturalIntegersGeometric())) {
+            Iterable<Vector> vs = QEP.vectorsAtLeast(i);
+            simpleTest(i, vs, v -> v.dimension() >= i);
+            take(TINY_LIMIT, vs).forEach(Vector::validate);
+        }
+
+        for (int i : take(LIMIT, P.negativeIntegers())) {
+            try {
+                QEP.vectorsAtLeast(i);
+                fail(i);
+            } catch (IllegalArgumentException ignored) {}
         }
     }
 

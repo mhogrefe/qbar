@@ -45,6 +45,18 @@ public class QBarExhaustiveProviderDemos extends QBarDemos {
         }
     }
 
+    private void demoVectors_int() {
+        for (int i : take(SMALL_LIMIT, P.naturalIntegersGeometric())) {
+            System.out.println("vectors(" + i + ") = " + its(QEP.vectors(i)));
+        }
+    }
+
+    private void demoVectorsAtLeast() {
+        for (int i : take(SMALL_LIMIT, P.naturalIntegersGeometric())) {
+            System.out.println("vectorsAtLeast(" + i + ") = " + its(QEP.vectorsAtLeast(i)));
+        }
+    }
+
     private void demoRationalVectors_int() {
         for (int i : take(SMALL_LIMIT, P.naturalIntegersGeometric())) {
             System.out.println("rationalVectors(" + i + ") = " + its(QEP.rationalVectors(i)));

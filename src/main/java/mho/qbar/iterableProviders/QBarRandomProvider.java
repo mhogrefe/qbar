@@ -528,6 +528,54 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
     }
 
     /**
+     * An {@code Iterable} that generates all {@code Vector}s. Each {@code Vector}'s dimension is chosen from a
+     * geometric distribution with mean {@code scale}, and each coordinate's bit size is chosen from a geometric
+     * distribution with mean approximately {@code scale}. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a positive {@code scale} and a positive {@code secondaryScale}.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing {@code Vector}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
+    @Override
+    public @NotNull Iterable<Vector> vectors() {
+        int secondaryScale = getSecondaryScale();
+        if (secondaryScale < 1) {
+            throw new IllegalStateException("this must have a positive secondaryScale. Invalid secondaryScale: " +
+                    secondaryScale);
+        }
+        return map(Vector::of, withScale(secondaryScale).lists(bigIntegers()));
+    }
+
+    /**
+     * An {@code Iterable} that generates all {@code Vector}s with a minimum dimension. Each {@code Vector}'s dimension
+     * is chosen from a geometric distribution with mean {@code secondaryScale}, and each coordinate's bit size is
+     * chosen from a geometric distribution with mean approximately {@code scale}. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a positive {@code scale} and a {@code secondaryScale} greater than
+     *  {@code minDimension}.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing {@code Vector}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param minDimension the minimum dimension of the generated {@code Vector}s
+     * @return {@code Vector}s with dimension at least {@code minDimension}
+     */
+    @Override
+    public @NotNull Iterable<Vector> vectorsAtLeast(int minDimension) {
+        int secondaryScale = getSecondaryScale();
+        if (secondaryScale <= minDimension) {
+            throw new IllegalStateException("this must have a secondaryScale greater than minDimension." +
+                    " secondaryScale: " + secondaryScale + ", minDimension: " + minDimension);
+        }
+        return map(Vector::of, withScale(secondaryScale).listsAtLeast(minDimension, bigIntegers()));
+    }
+
+    /**
      * An {@code Iterable} that generates all {@code RationalVector}s. Each {@code RationalVector}'s dimension is
      * chosen from a geometric distribution with mean {@code secondaryScale}, and each coordinate's bit size is chosen
      * from a geometric distribution with mean approximately {@code scale}. Does not support removal.

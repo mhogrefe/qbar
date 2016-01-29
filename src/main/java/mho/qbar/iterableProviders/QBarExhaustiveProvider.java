@@ -214,6 +214,38 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
     }
 
     /**
+     * An {@code Iterable} that generates all {@code Vector}s.
+     *
+     * <ul>
+     *  <li>The result is a non-removable {@code Iterable} containing {@code Vector}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
+    @Override
+    public @NotNull Iterable<Vector> vectors() {
+        return map(Vector::of, lists(bigIntegers()));
+    }
+
+    /**
+     * An {@code Iterable} that generates all {@code Vector}s with a minimum dimension.
+     *
+     * <ul>
+     *  <li>{@code dimension} cannot be negative.</li>
+     *  <li>The result is a non-removable {@code Iterable} containing {@code Vector}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param minDimension the minimum dimension of the generated {@code Vector}s
+     * @return all {@code Vector}s with dimension at least {@code minDimension}
+     */
+    @Override
+    public @NotNull Iterable<Vector> vectorsAtLeast(int minDimension) {
+        return map(Vector::of, listsAtLeast(minDimension, bigIntegers()));
+    }
+
+    /**
      * An {@code Iterable} that generates all {@code RationalVector}s.
      *
      * <ul>
