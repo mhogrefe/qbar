@@ -2,6 +2,7 @@ package mho.qbar.objects;
 
 import mho.wheels.io.Readers;
 import mho.wheels.iterables.NoRemoveIterable;
+import mho.wheels.ordering.Ordering;
 import mho.wheels.ordering.comparators.ShortlexComparator;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
@@ -138,6 +139,311 @@ public class Vector implements Comparable<Vector>, Iterable<BigInteger> {
      */
     public int dimension() {
         return coordinates.size();
+    }
+
+    /**
+     * Determines whether {@code this} is a zero vector
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Vector}.</li>
+     *  <li>The result may be either {@code boolean}.</li>
+     * </ul>
+     *
+     * @return whether {@code this}=0
+     */
+    public boolean isZero() {
+        return all(i -> i.equals(BigInteger.ZERO), coordinates);
+    }
+
+    /**
+     * Creates the zero vector with a given dimension.
+     *
+     * <ul>
+     *  <li>{@code dimension} cannot be negative.</li>
+     *  <li>The result is a {@code Vector} all of whose coordinates are 0.</li>
+     * </ul>
+     *
+     * Length is {@code dimension}
+     *
+     * @param dimension the zero vector's dimension
+     * @return 0<sub>{@code dimension}</sub>
+     */
+    public static @NotNull Vector zero(int dimension) {
+        if (dimension == 0) {
+            return ZERO_DIMENSIONAL;
+        } else if (dimension < 0) {
+            throw new IllegalArgumentException("dimension cannot be negative. Invalid dimension: " );
+        } else {
+            return new Vector(toList(replicate(dimension, BigInteger.ZERO)));
+        }
+    }
+
+    /**
+     * Creates an standard basis vector; that is, a vector with a given dimension, all of whose coordinates are 0,
+     * except for a single coordinate which is 1. Identity matrices are made up of standard basis vectors. There is no
+     * standard basis vector of dimension 0.
+     *
+     * <ul>
+     *  <li>{@code dimension} must be positive.</li>
+     *  <li>{@code i} cannot be negative.</li>
+     *  <li>{@code i} must be less than {@code dimension}.</li>
+     *  <li>The result is a {@code Vector} with one coordinate equal to 1 and the others equal to 0.</li>
+     * </ul>
+     *
+     * Length is {@code dimension}
+     *
+     * @param dimension the vector's dimension
+     * @param i the index of the vector coordinate which is 1
+     * @return a standard basis vector
+     */
+    public static @NotNull Vector standard(int dimension, int i) {
+        if (dimension < 1) {
+            throw new IllegalArgumentException("dimension must be positive. Invalid dimension: " + dimension);
+        } else if (i < 0) {
+            throw new IllegalArgumentException("i cannot be negative. Invalid i: " + i);
+        } else if (i >= dimension) {
+            throw new IllegalArgumentException("i must be less than dimension. i: " + i + ", dimension: " + dimension);
+        } else {
+            return new Vector(toList(insert(replicate(dimension - 1, BigInteger.ZERO), i, BigInteger.ONE)));
+        }
+    }
+
+    /**
+     * Returns the sum of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Vector}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>{@code this} and {@code that} must have the same dimension.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * Length is dim({@code this})
+     *
+     * @param that the {@code Vector} added to {@code this}
+     * @return {@code this}+{@code that}
+     */
+    public @NotNull Vector add(@NotNull Vector that) {
+        if (coordinates.size() != that.coordinates.size()) {
+            throw new ArithmeticException("this and that must have the same dimension. this: " + this + ", that: " +
+                    that);
+        }
+        if (this == ZERO_DIMENSIONAL) return ZERO_DIMENSIONAL;
+        return new Vector(toList(zipWith(BigInteger::add, coordinates, that.coordinates)));
+    }
+
+    /**
+     * Returns the negative of {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Vector}.</li>
+     *  <li>The result is non-null.</li>
+     * </ul>
+     *
+     * Length is |{@code coordinates}|
+     *
+     * @return –{@code this}
+     */
+    public @NotNull Vector negate() {
+        if (this == ZERO_DIMENSIONAL) return ZERO_DIMENSIONAL;
+        return new Vector(toList(map(BigInteger::negate, coordinates)));
+    }
+
+    /**
+     * Returns the difference of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Vector}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>{@code this} and {@code that} must have the same dimension.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * Length is |{@code this}|
+     *
+     * @param that the {@code Vector} subtracted from {@code this}
+     * @return {@code this}–{@code that}
+     */
+    public @NotNull Vector subtract(@NotNull Vector that) {
+        if (coordinates.size() != that.coordinates.size()) {
+            throw new ArithmeticException("this and that must have the same dimension. this: " + this + ", that: " +
+                    that);
+        }
+        if (this == ZERO_DIMENSIONAL) return ZERO_DIMENSIONAL;
+        return new Vector(toList(zipWith(BigInteger::subtract, coordinates, that.coordinates)));
+    }
+
+    /**
+     * Returns the scalar product of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} can be any {@code Vector}.</li>
+     *  <li>{@code that} may be any {@code int}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * Length is dim({@code this})
+     *
+     * @param that the {@code BigInteger} {@code this} is multiplied by
+     * @return {@code this}×{@code that}
+     */
+    public @NotNull Vector multiply(@NotNull BigInteger that) {
+        if (this == ZERO_DIMENSIONAL) return ZERO_DIMENSIONAL;
+        if (that.equals(BigInteger.ONE)) return this;
+        return new Vector(toList(map(i -> i.multiply(that), coordinates)));
+    }
+
+    /**
+     * Returns the scalar product of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} can be any {@code Vector}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * Length is dim({@code this})
+     *
+     * @param that the {@code int} {@code this} is multiplied by
+     * @return {@code this}×{@code that}
+     */
+    public @NotNull Vector multiply(int that) {
+        if (this == ZERO_DIMENSIONAL) return ZERO_DIMENSIONAL;
+        if (that == 1) return this;
+        return new Vector(toList(map(i -> i.multiply(BigInteger.valueOf(that)), coordinates)));
+    }
+
+    /**
+     * Returns the left shift of {@code this} by {@code bits}; {@code this}×2<sup>{@code bits}</sup>. Negative
+     * {@code bits} corresponds to a right shift.
+     *
+     * <ul>
+     *  <li>{@code this} can be any {@code Vector}.</li>
+     *  <li>{@code bits} cannot be negative.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * Length is dim({@code this})
+     *
+     * @param bits the number of bits to left-shift by
+     * @return {@code this}≪{@code bits}
+     */
+    public @NotNull Vector shiftLeft(int bits) {
+        if (bits < 0) {
+            throw new ArithmeticException("bits cannot be negative. Invalid bits: " + bits);
+        }
+        if (this == ZERO_DIMENSIONAL) return ZERO_DIMENSIONAL;
+        if (bits == 0) return this;
+        return new Vector(toList(map(i -> i.shiftLeft(bits), coordinates)));
+    }
+
+    /**
+     * Returns the sum of all the {@code Vector}s in {@code xs}.
+     *
+     * <ul>
+     *  <li>{@code xs} must be finite and non-empty, and may not contain any nulls. Every {@code Vector} in {@code xs}
+     *  must have the same dimension.</li>
+     *  <li>The result may be any {@code Vector}.</li>
+     * </ul>
+     *
+     * Length is dim(head({@code xs}))
+     *
+     * @param xs an {@code Iterable} of {@code Vector}s.
+     * @return Σxs
+     */
+    public static @NotNull Vector sum(@NotNull Iterable<Vector> xs) {
+        if (isEmpty(xs)) {
+            throw new IllegalArgumentException("xs cannot be empty.");
+        } else if (!same(map(Vector::dimension, xs))) {
+            throw new ArithmeticException("Every Vector in xs must have the same dimension. Invalid xs: " + xs);
+        } else {
+            return foldl1(Vector::add, xs);
+        }
+    }
+
+    /**
+     * Returns the differences between successive {@code Vector}s in {@code xs}. If {@code xs} contains a single
+     * {@code Vector}, an empty {@code Iterable} is returned. {@code xs} cannot be empty. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code xs} cannot be empty and may not contain any nulls. Every {@code Vector} in {@code xs} must have the
+     *  same dimension.</li>
+     *  <li>The result does not contain any nulls.</li>
+     * </ul>
+     *
+     * Length is |{@code xs}|–1
+     *
+     * @param xs an {@code Iterable} of {@code Vector}s.
+     * @return Δxs
+     */
+    public static @NotNull Iterable<Vector> delta(@NotNull Iterable<Vector> xs) {
+        if (isEmpty(xs)) {
+            throw new IllegalArgumentException("xs cannot be empty.");
+        } else if (head(xs) == null) {
+            throw new NullPointerException();
+        }
+        return adjacentPairsWith((x, y) -> y.subtract(x), xs);
+    }
+
+    /**
+     * Returns the dot product of {@code this} and {@code that}. The dot product of the zero-dimensional vector with
+     * itself is 0.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Vector}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>{@code this} and {@code that} must have the same dimension.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param that the {@code Vector} {@code this} is being dotted with
+     * @return {@code this}⋅{@code that}
+     */
+    public @NotNull BigInteger dot(@NotNull Vector that) {
+        if (coordinates.size() != that.coordinates.size()) {
+            throw new ArithmeticException("this and that must have the same dimension. this: " + this + ", that: " +
+                    that);
+        }
+        return sumBigInteger(zipWith(BigInteger::multiply, coordinates, that.coordinates));
+    }
+
+    /**
+     * Determines whether the angle between {@code this} and {@code that} is less than, equal to, or greater than a
+     * right angle. Zero vectors are a right angle to any other vector.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Vector}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>{@code this} and {@code that} must have the same dimension.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param that the {@code Vector} which, along with {@code this}, creates the angle under consideration
+     * @return whether the angle between {@code this} and {@code that} is acute ({@code LT}), right ({@code EQ}), or
+     * obtuse ({@code GT}).
+     */
+    public @NotNull Ordering rightAngleCompare(@NotNull Vector that) {
+        if (coordinates.size() != that.coordinates.size()) {
+            throw new ArithmeticException("this and that must have the same dimension. this: " + this + ", that: " +
+                    that);
+        }
+        List<BigInteger> products = toList(zipWith(BigInteger::multiply, coordinates, that.coordinates));
+        return Ordering.fromInt(-sumSignBigInteger(products));
+    }
+
+    /**
+     * Returns the square of the length (a.k.a. magnitude, a.k.a. norm) of {@code this}. The actual length may be
+     * irrational. The length of the zero-dimensional vector is 0.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Vector}.</li>
+     *  <li>The result is non-negative.</li>
+     * </ul>
+     *
+     * @return ‖{@code this}‖²
+     */
+    public @NotNull BigInteger squaredLength() {
+        return sumBigInteger(map(x -> x.pow(2), coordinates));
     }
 
     /**
