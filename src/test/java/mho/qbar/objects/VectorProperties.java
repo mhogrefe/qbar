@@ -51,6 +51,8 @@ public class VectorProperties extends QBarTestProperties {
         compareImplementationsRightAngleCompare();
         propertiesSquaredLength();
         compareImplementationsSquaredLength();
+        propertiesPivot();
+        propertiesIsReduced();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -803,6 +805,30 @@ public class VectorProperties extends QBarTestProperties {
         functions.put("simplest", VectorProperties::squaredLength_simplest);
         functions.put("standard", Vector::squaredLength);
         compareImplementations("squaredLength()", take(LIMIT, P.vectors()), functions);
+    }
+
+    private void propertiesPivot() {
+        initialize("pivot()");
+        for (Vector v : take(LIMIT, P.vectors())) {
+            v.pivot();
+        }
+
+        for (Vector v : take(LIMIT, filterInfinite(u -> !u.isZero(), P.vectors()))) {
+            BigInteger pivot = v.pivot().get();
+            assertFalse(v, pivot.equals(BigInteger.ZERO));
+            assertTrue(v, elem(pivot, v));
+        }
+
+        for (Pair<Vector, BigInteger> p : take(LIMIT, P.pairs(P.vectors(), P.nonzeroBigIntegers()))) {
+            assertEquals(p, p.a.multiply(p.b).pivot(), p.a.pivot().map(r -> r.multiply(p.b)));
+        }
+    }
+
+    private void propertiesIsReduced() {
+        initialize("isReduced()");
+        for (Vector v : take(LIMIT, P.vectors())) {
+            v.isReduced();
+        }
     }
 
     private void propertiesEquals() {

@@ -399,6 +399,41 @@ public class VectorTest {
         squaredLength_helper("[2, 4, -4]", "36");
     }
 
+    private static void pivot_helper(@NotNull String input, @NotNull String output) {
+        aeq(read(input).get().pivot().get(), output);
+    }
+
+    private static void pivot_empty_helper(@NotNull String input) {
+        assertFalse(read(input).get().pivot().isPresent());
+    }
+
+    @Test
+    public void testPivot() {
+        pivot_helper("[3]", "3");
+        pivot_helper("[1, -3]", "1");
+        pivot_helper("[0, 1, -3]", "1");
+        pivot_helper("[0, 0, -3]", "-3");
+        pivot_empty_helper("[]");
+        pivot_empty_helper("[0]");
+        pivot_empty_helper("[0, 0, 0]");
+    }
+
+    private static void isReduced_helper(@NotNull String input, boolean output) {
+        aeq(read(input).get().isReduced(), output);
+    }
+
+    @Test
+    public void testIsReduced() {
+        isReduced_helper("[]", true);
+        isReduced_helper("[0]", true);
+        isReduced_helper("[0, 0, 0]", true);
+        isReduced_helper("[3]", false);
+        isReduced_helper("[1, -3]", true);
+        isReduced_helper("[-3, 1]", false);
+        isReduced_helper("[0, 1, -3]", true);
+        isReduced_helper("[0, 0, -3]", false);
+    }
+
     @Test
     public void testEquals() {
         testEqualsHelper(

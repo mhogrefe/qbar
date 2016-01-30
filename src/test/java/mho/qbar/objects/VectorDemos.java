@@ -217,6 +217,18 @@ public class VectorDemos extends QBarDemos {
         }
     }
 
+    private void demoPivot() {
+        for (Vector v : take(LIMIT, P.withScale(4).vectors())) {
+            System.out.println("pivot(" + v + ") = " + v.pivot());
+        }
+    }
+
+    private void demoIsReduced() {
+        for (Vector v : take(LIMIT, P.withScale(4).vectors())) {
+            System.out.println(v + " is " + (v.isReduced() ? "" : "not ") + "reduced");
+        }
+    }
+
     private void demoEquals_Vector() {
         for (Pair<Vector, Vector> p : take(LIMIT, P.pairs(P.withScale(4).vectors()))) {
             System.out.println(p.a + (p.a.equals(p.b) ? " = " : " ≠ ") + p.b);

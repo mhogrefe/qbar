@@ -447,6 +447,36 @@ public class Vector implements Comparable<Vector>, Iterable<BigInteger> {
     }
 
     /**
+     * Returns the pivot of {@code this}, or the first nonzero coordinate. Since the pivot may not exist, this method
+     * returns an {@code Optional}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Vector}.</li>
+     *  <li>The result may be empty, or it may contain a nonzero {@code BigInteger}.</li>
+     * </ul>
+     *
+     * @return {@code this}'s pivot
+     */
+    public @NotNull Optional<BigInteger> pivot() {
+        return find(i -> !i.equals(BigInteger.ZERO), coordinates);
+    }
+
+    /**
+     * Checks whether this is reduced, <i>i.e.</i> whether the pivot, if it exists, is 1.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Vector}.</li>
+     *  <li>The result may be either {@code boolean}.</li>
+     * </ul>
+     *
+     * @return whether this is reduced
+     */
+    public boolean isReduced() {
+        Optional<BigInteger> pivot = pivot();
+        return !pivot.isPresent() || pivot.get().equals(BigInteger.ONE);
+    }
+
+    /**
      * Determines whether {@code this} is equal to {@code that}.
      *
      * <ul>
