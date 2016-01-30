@@ -108,6 +108,12 @@ public class RationalMatrixDemos extends QBarDemos {
         }
     }
 
+    private void demoMaxElementBitLength() {
+        for (RationalMatrix m : take(LIMIT, P.withScale(4).rationalMatrices())) {
+            System.out.println("maxElementBitLength(" + m + ") = " + m.maxElementBitLength());
+        }
+    }
+
     private void demoHeight() {
         for (RationalMatrix m : take(LIMIT, P.withScale(4).rationalMatrices())) {
             System.out.println("height(" + m + ") = " + m.height());

@@ -230,6 +230,21 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
     }
 
     /**
+     * Returns the maximum bit length of any element, or 0 if {@code this} has no elements.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalMatrix}.</li>
+     *  <li>The result is non-negative.</li>
+     * </ul>
+     *
+     * @return the maximum coordinate bit length
+     */
+    public int maxElementBitLength() {
+        if (isZero()) return 0;
+        return maximum(map(RationalVector::maxCoordinateBitLength, rows));
+    }
+
+    /**
      * Returns this {@code RationalMatrix}'s height.
      *
      * <ul>

@@ -169,6 +169,22 @@ public class RationalMatrixTest {
         fromColumns_fail_helper("[[-2/3, -8], [0], [0, 5/7]]");
     }
 
+    private static void maxElementBitLength_helper(@NotNull String input, int output) {
+        aeq(read(input).get().maxElementBitLength(), output);
+    }
+
+    @Test
+    public void testMaxElementBitLength() {
+        maxElementBitLength_helper("[]#0", 0);
+        maxElementBitLength_helper("[]#1", 0);
+        maxElementBitLength_helper("[]#3", 0);
+        maxElementBitLength_helper("[[]]", 0);
+        maxElementBitLength_helper("[[], [], []]", 0);
+        maxElementBitLength_helper("[[-2/3]]", 4);
+        maxElementBitLength_helper("[[-2/3, -8], [0, 5/7]]", 6);
+        maxElementBitLength_helper("[[1, 9, -13], [20, 5, -6]]", 6);
+    }
+
     private static void height_helper(@NotNull String input, int output) {
         aeq(read(input).get().height(), output);
     }

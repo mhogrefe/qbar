@@ -162,7 +162,7 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
      * Returns the maximum bit length of any coordinate, or 0 if {@code this} is 0-dimensional.
      *
      * <ul>
-     *  <li>{@code this} may be any {@code Vector}.</li>
+     *  <li>{@code this} may be any {@code RationalVector}.</li>
      *  <li>The result is non-negative.</li>
      * </ul>
      *

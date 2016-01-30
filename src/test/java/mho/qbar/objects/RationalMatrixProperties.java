@@ -33,6 +33,7 @@ public class RationalMatrixProperties extends QBarTestProperties {
         propertiesGet();
         propertiesFromRows();
         propertiesFromColumns();
+        propertiesMaxElementBitLength();
         propertiesHeight();
         propertiesWidth();
         propertiesIsSquare();
@@ -266,6 +267,13 @@ public class RationalMatrixProperties extends QBarTestProperties {
                 fromColumns(vs);
                 fail(vs);
             } catch (NullPointerException ignored) {}
+        }
+    }
+
+    private void propertiesMaxElementBitLength() {
+        initialize("maxElementBitLength()");
+        for (RationalMatrix m : take(LIMIT, P.rationalMatrices())) {
+            assertTrue(m, m.maxElementBitLength() >= 0);
         }
     }
 
