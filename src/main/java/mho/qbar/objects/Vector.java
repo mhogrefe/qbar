@@ -145,6 +145,22 @@ public class Vector implements Comparable<Vector>, Iterable<BigInteger> {
     }
 
     /**
+     * Returns the maximum bit length of any coordinate, or 0 if {@code this} is 0-dimensional.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Vector}.</li>
+     *  <li>The result is non-negative.</li>
+     * </ul>
+     *
+     * @return the maximum coordinate bit length
+     */
+    public int maxCoordinateBitLength() {
+        if (this == ZERO_DIMENSIONAL) return 0;
+        //noinspection RedundantCast
+        return maximum((Iterable<Integer>) map(c -> c.abs().bitLength(), coordinates));
+    }
+
+    /**
      * Returns this {@code Vector}'s dimension
      *
      * <ul>

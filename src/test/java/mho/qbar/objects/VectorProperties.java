@@ -32,6 +32,7 @@ public class VectorProperties extends QBarTestProperties {
         propertiesGet();
         propertiesOf_List_BigInteger();
         propertiesOf_BigInteger();
+        propertiesMaxCoordinateBitLength();
         propertiesDimension();
         propertiesIsZero();
         propertiesZero();
@@ -135,6 +136,20 @@ public class VectorProperties extends QBarTestProperties {
             assertEquals(i, v.dimension(), 1);
             assertEquals(i, v.get(0), i);
             inverse(Vector::of, (Vector u) -> u.get(0), i);
+        }
+    }
+
+    private void propertiesMaxCoordinateBitLength() {
+        initialize("maxCoordinateBitLength()");
+        for (Vector v : take(LIMIT, P.vectors())) {
+            assertTrue(v, v.maxCoordinateBitLength() >= 0);
+            homomorphic(
+                    Vector::negate,
+                    Function.identity(),
+                    Vector::maxCoordinateBitLength,
+                    Vector::maxCoordinateBitLength,
+                    v
+            );
         }
     }
 

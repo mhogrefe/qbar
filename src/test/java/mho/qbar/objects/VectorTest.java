@@ -94,6 +94,18 @@ public class VectorTest {
         of_BigInteger_helper("0", "[0]");
     }
 
+    private static void maxCoordinateBitLength_helper(@NotNull String input, int output) {
+        aeq(read(input).get().maxCoordinateBitLength(), output);
+    }
+
+    @Test
+    public void testMaxCoordinateBitLength() {
+        maxCoordinateBitLength_helper("[]", 0);
+        maxCoordinateBitLength_helper("[2]", 2);
+        maxCoordinateBitLength_helper("[-2]", 2);
+        maxCoordinateBitLength_helper("[5, -4, 23]", 5);
+    }
+
     private static void dimension_helper(@NotNull String input, int output) {
         aeq(read(input).get().dimension(), output);
     }

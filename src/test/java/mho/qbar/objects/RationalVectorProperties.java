@@ -34,6 +34,7 @@ public class RationalVectorProperties extends QBarTestProperties {
         propertiesGet();
         propertiesOf_List_Rational();
         propertiesOf_Rational();
+        propertiesMaxCoordinateBitLength();
         propertiesDimension();
         propertiesIsZero();
         propertiesZero();
@@ -163,6 +164,20 @@ public class RationalVectorProperties extends QBarTestProperties {
             assertEquals(r, v.dimension(), 1);
             assertEquals(r, v.get(0), r);
             inverse(RationalVector::of, (RationalVector u) -> u.get(0), r);
+        }
+    }
+
+    private void propertiesMaxCoordinateBitLength() {
+        initialize("maxCoordinateBitLength()");
+        for (RationalVector v : take(LIMIT, P.rationalVectors())) {
+            assertTrue(v, v.maxCoordinateBitLength() >= 0);
+            homomorphic(
+                    RationalVector::negate,
+                    Function.identity(),
+                    RationalVector::maxCoordinateBitLength,
+                    RationalVector::maxCoordinateBitLength,
+                    v
+            );
         }
     }
 

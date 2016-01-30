@@ -115,6 +115,17 @@ public class RationalVectorTest {
         of_Rational_helper("0", "[0]");
     }
 
+    private static void maxCoordinateBitLength_helper(@NotNull String input, int output) {
+        aeq(read(input).get().maxCoordinateBitLength(), output);
+    }
+
+    @Test
+    public void testMaxCoordinateBitLength() {
+        maxCoordinateBitLength_helper("[]", 0);
+        maxCoordinateBitLength_helper("[1/2]", 3);
+        maxCoordinateBitLength_helper("[5/3, -1/4, 23]", 6);
+    }
+
     private static void dimension_helper(@NotNull String input, int output) {
         aeq(read(input).get().dimension(), output);
     }

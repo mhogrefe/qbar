@@ -62,6 +62,12 @@ public class RationalVectorDemos extends QBarDemos {
         }
     }
 
+    private void demoMaxCoordinateBitLength() {
+        for (RationalVector v : take(LIMIT, P.rationalVectors())) {
+            System.out.println("maxCoordinateBitLength(" + v + ") = " + v.maxCoordinateBitLength());
+        }
+    }
+
     private void demoDimension() {
         for (RationalVector v : take(LIMIT, P.withScale(4).rationalVectors())) {
             System.out.println("dim(" + v + ") = " + v.dimension());
