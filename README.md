@@ -20,7 +20,7 @@ Progress
 | RationalMatrix         | ✘       | ✘       | ✘     | ✘     | ✘          |
 | RationalPolynomial     | ✘       | ✘       | ✘     | ✘     | ✘          |
 | RationalVector         | ✔       | ✔       | ✔     | ✔     | ✔          |
-| Vector                 | ✘       | ✘       | ✘     | ✘     | ✘          |
+| Vector                 | ✔       | ✔       | ✔     | ✔     | ✔          |
 | QBarDemos              | ✘       | ✘       | ✘     | ✘     | ✘          |
 | QBarTesting            | ✘       | ✘       | ✘     | ✘     | ✘          |
 | QBarTestProperties     | ✘       | ✘       | ✘     | ✘     | ✘          |
