@@ -29,6 +29,8 @@ public class RationalVectorProperties extends QBarTestProperties {
     @Override
     protected void testBothModes() {
         propertiesIterator();
+        propertiesHasIntegralCoordinates();
+        propertiesToVector();
         propertiesGet();
         propertiesOf_List_Rational();
         propertiesOf_Rational();
@@ -80,6 +82,35 @@ public class RationalVectorProperties extends QBarTestProperties {
             inverse(IterableUtils::toList, (List<Rational> ss) -> of(ss), v);
             testNoRemove(v);
             testHasNext(v);
+        }
+    }
+
+    private void propertiesHasIntegralCoordinates() {
+        initialize("hasIntegralCoordinates()");
+        for (RationalVector v : take(LIMIT, P.rationalVectors())) {
+            v.hasIntegralCoordinates();
+        }
+
+        for (RationalVector v : take(LIMIT, map(Vector::toRationalVector, P.vectors()))) {
+            assertTrue(v, v.hasIntegralCoordinates());
+        }
+    }
+
+    private void propertiesToVector() {
+        initialize("toVector()");
+        for (RationalVector v : take(LIMIT, map(Vector::toRationalVector, P.vectors()))) {
+            Vector u = v.toVector();
+            assertEquals(v, v.toString(), u.toString());
+            assertEquals(v, v.dimension(), u.dimension());
+            inverse(RationalVector::toVector, Vector::toRationalVector, v);
+        }
+
+        Iterable<RationalVector> psFail = filterInfinite(p -> any(c -> !c.isInteger(), p), P.rationalVectors());
+        for (RationalVector v : take(LIMIT, psFail)) {
+            try {
+                v.toVector();
+                fail(v);
+            } catch (ArithmeticException ignored) {}
         }
     }
 

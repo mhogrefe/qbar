@@ -72,6 +72,23 @@ public class Vector implements Comparable<Vector>, Iterable<BigInteger> {
     }
 
     /**
+     * Converts {@code this} to a {@code RationalVector}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Vector}.</li>
+     *  <li>The result is a {@code RationalVector} with integral coordinates.</li>
+     * </ul>
+     *
+     * Length is dim({@code this})
+     *
+     * @return a {@code RationalVector} with the same value as {@code this}
+     */
+    public @NotNull RationalVector toRationalVector() {
+        if (this == ZERO_DIMENSIONAL) return RationalVector.ZERO_DIMENSIONAL;
+        return RationalVector.of(toList(map(Rational::of, coordinates)));
+    }
+
+    /**
      * Returns one of {@code this}'s coordinates. 0-indexed.
      *
      * <ul>

@@ -160,7 +160,7 @@ public class RationalPolynomialProperties extends QBarTestProperties {
     }
 
     private void propertiesHasIntegralCoefficients() {
-        initialize("hasIntegralCoefficients");
+        initialize("hasIntegralCoefficients()");
         for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
             p.hasIntegralCoefficients();
         }

@@ -26,6 +26,12 @@ public class VectorDemos extends QBarDemos {
         }
     }
 
+    private void demoToRationalVector() {
+        for (Vector v : take(LIMIT, P.withScale(4).vectors())) {
+            System.out.println("toRationalVector(" + v + ") = " + v.toRationalVector());
+        }
+    }
+
     private void demoGet() {
         Iterable<Pair<Vector, Integer>> ps = P.dependentPairs(
                 P.withScale(4).vectorsAtLeast(1),

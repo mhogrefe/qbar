@@ -32,6 +32,17 @@ public class VectorTest {
         iterator_helper("[5, -4, 23]");
     }
 
+    private static void toRationalVector_helper(@NotNull String input) {
+        aeq(read(input).get().toRationalVector(), input);
+    }
+
+    @Test
+    public void testToRationalVector() {
+        toRationalVector_helper("[]");
+        toRationalVector_helper("[2]");
+        toRationalVector_helper("[5, -4, 23]");
+    }
+
     private static void get_helper(@NotNull String input, int i, @NotNull String output) {
         aeq(read(input).get().get(i), output);
     }

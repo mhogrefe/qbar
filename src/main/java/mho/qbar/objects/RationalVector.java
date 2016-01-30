@@ -72,6 +72,37 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
     }
 
     /**
+     * Determines whether the coordinates of {@code this} are all integers.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalVector}.</li>
+     *  <li>The result may be either {@code boolean}.</li>
+     * </ul>
+     *
+     * @return whether {@code this} has integral coordinates.
+     */
+    public boolean hasIntegralCoordinates() {
+        return all(Rational::isInteger, coordinates);
+    }
+
+    /**
+     * Converts {@code this} to a {@code Vector}.
+     *
+     * <ul>
+     *  <li>{@code this} must only have integral coordinates.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * Length is dim({@code this})
+     *
+     * @return a {@code Vector} with the same value as {@code this}
+     */
+    public @NotNull Vector toVector() {
+        if (this == ZERO_DIMENSIONAL) return Vector.ZERO_DIMENSIONAL;
+        return Vector.of(toList(map(Rational::bigIntegerValueExact, coordinates)));
+    }
+
+    /**
      * Returns one of {@code this}'s coordinates. 0-indexed.
      *
      * <ul>

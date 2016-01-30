@@ -28,6 +28,7 @@ public class VectorProperties extends QBarTestProperties {
     @Override
     protected void testBothModes() {
         propertiesIterator();
+        propertiesToRationalVector();
         propertiesGet();
         propertiesOf_List_BigInteger();
         propertiesOf_BigInteger();
@@ -70,6 +71,16 @@ public class VectorProperties extends QBarTestProperties {
             inverse(IterableUtils::toList, (List<BigInteger> js) -> of(js), v);
             testNoRemove(v);
             testHasNext(v);
+        }
+    }
+
+    private void propertiesToRationalVector() {
+        initialize("toRationalVector");
+        for (Vector v : take(LIMIT, P.vectors())) {
+            RationalVector rv = v.toRationalVector();
+            assertEquals(v, v.toString(), rv.toString());
+            assertEquals(v, v.dimension(), rv.dimension());
+            inverse(Vector::toRationalVector, RationalVector::toVector, v);
         }
     }
 

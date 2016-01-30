@@ -31,6 +31,39 @@ public class RationalVectorTest {
         iterator_helper("[5/3, -1/4, 23]");
     }
 
+    private static void hasIntegralCoordinates_helper(@NotNull String input, boolean output) {
+        aeq(read(input).get().hasIntegralCoordinates(), output);
+    }
+
+    @Test
+    public void testHasIntegralCoefficients() {
+        hasIntegralCoordinates_helper("[]", true);
+        hasIntegralCoordinates_helper("[2]", true);
+        hasIntegralCoordinates_helper("[12, -4, 0, 2]", true);
+        hasIntegralCoordinates_helper("[1/2]", false);
+        hasIntegralCoordinates_helper("[5/3, -1/4, 23]", false);
+    }
+
+    private static void toVector_helper(@NotNull String input) {
+        aeq(read(input).get().toVector(), input);
+    }
+
+    private static void toVector_fail_helper(@NotNull String input) {
+        try {
+            read(input).get().toVector();
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testToRationalPolynomial() {
+        toVector_helper("[]");
+        toVector_helper("[2]");
+        toVector_helper("[12, -4, 0, 2]");
+        toVector_fail_helper("[1/2]");
+        toVector_fail_helper("[5/3, -1/4, 23]");
+    }
+
     private static void get_helper(@NotNull String input, int i, @NotNull String output) {
         aeq(read(input).get().get(i), output);
     }

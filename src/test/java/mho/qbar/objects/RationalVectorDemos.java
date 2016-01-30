@@ -27,6 +27,18 @@ public class RationalVectorDemos extends QBarDemos {
         }
     }
 
+    private void demoHasIntegralCoordinates() {
+        for (RationalVector v : take(LIMIT, P.withScale(4).rationalVectors())) {
+            System.out.println(v + (v.hasIntegralCoordinates() ? " has " : " doesn't have ") + "integral coordinates");
+        }
+    }
+
+    private void demoToVector() {
+        for (RationalVector v : take(LIMIT, map(Vector::toRationalVector, P.withScale(4).vectors()))) {
+            System.out.println("toVector(" + v + ") = " + v.toVector());
+        }
+    }
+
     private void demoGet() {
         Iterable<Pair<RationalVector, Integer>> ps = P.dependentPairs(
                 P.withScale(4).rationalVectorsAtLeast(1),
