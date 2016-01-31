@@ -14,6 +14,7 @@ Progress
 | QBarRandomProvider     | ✘       | ✘       | ✘     | ✘     | ✘          |
 | ExponentVector         | ✘       | ✘       | ✘     | ✘     | ✘          |
 | Interval               | ✔       | ✔       | ✔     | ✔     | ✔          |
+| Matrix                 | ✘       | ✘       | ✘     | ✘     | ✘          |
 | MultivariatePolynomial | ✘       | ✘       | ✘     | ✘     | ✘          |
 | Polynomial             | ✘       | ✘       | ✘     | ✘     | ✘          |
 | Rational               | ✔       | ✔       | ✔     | ✔     | ✔          |

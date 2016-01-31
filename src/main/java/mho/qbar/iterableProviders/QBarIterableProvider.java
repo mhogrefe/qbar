@@ -3059,6 +3059,24 @@ public strictfp abstract class QBarIterableProvider {
     public abstract @NotNull Iterable<RationalVector> reducedRationalVectorsAtLeast(int minDimension);
 
     /**
+     * Generates {@code Matrix}es with a given {@code height} and {@code width}.
+     *
+     * @param height the height (number of rows) of the generated {@code Matrix}es
+     * @param width the width (number of columns) of the generated {@code Matrix}es
+     */
+    public abstract @NotNull Iterable<Matrix> matrices(int height, int width);
+
+    /**
+     * Generates {@code Matrix}es.
+     */
+    public abstract @NotNull Iterable<Matrix> matrices();
+
+    /**
+     * Generates square {@code Matrix}es.
+     */
+    public abstract @NotNull Iterable<Matrix> squareMatrices();
+
+    /**
      * Generates {@code RationalMatrix}es with a given {@code height} and {@code width}.
      *
      * @param height the height (number of rows) of the generated {@code RationalMatrix}es

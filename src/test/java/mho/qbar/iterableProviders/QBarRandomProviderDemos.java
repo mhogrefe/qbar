@@ -251,6 +251,37 @@ public class QBarRandomProviderDemos extends QBarDemos {
         }
     }
 
+    private void demoMatrices_int_int() {
+        Iterable<Triple<QBarRandomProvider, Integer, Integer>> ts = P.triples(
+                filterInfinite(rp -> rp.getScale() > 0, P.withScale(4).qbarRandomProvidersDefaultSecondaryScale()),
+                P.withScale(4).naturalIntegersGeometric(),
+                P.withScale(4).naturalIntegersGeometric()
+        );
+        for (Triple<QBarRandomProvider, Integer, Integer> t : take(SMALL_LIMIT, ts)) {
+            System.out.println("matrices(" + t.a + ", " + t.b + ", " + t.c + ") = " + its(t.a.matrices(t.b, t.c)));
+        }
+    }
+
+    private void demoMatrices() {
+        Iterable<QBarRandomProvider> rps = filterInfinite(
+                rp -> rp.getScale() > 0 && rp.getSecondaryScale() >= 2,
+                P.withScale(4).qbarRandomProviders()
+        );
+        for (QBarRandomProvider rp : take(MEDIUM_LIMIT, rps)) {
+            System.out.println("matrices(" + rp + ") = " + its(rp.matrices()));
+        }
+    }
+
+    private void demoSquareMatrices() {
+        Iterable<QBarRandomProvider> rps = filterInfinite(
+                rp -> rp.getScale() >= 2 && rp.getSecondaryScale() >= 2,
+                P.withScale(4).qbarRandomProviders()
+        );
+        for (QBarRandomProvider rp : take(SMALL_LIMIT, rps)) {
+            System.out.println("squareMatrices(" + rp + ") = " + its(rp.squareMatrices()));
+        }
+    }
+
     private void demoRationalMatrices_int_int() {
         Iterable<Triple<QBarRandomProvider, Integer, Integer>> ts = P.triples(
                 filterInfinite(rp -> rp.getScale() >= 3, P.withScale(4).qbarRandomProvidersDefaultSecondaryScale()),

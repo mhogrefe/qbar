@@ -337,6 +337,71 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
     }
 
     /**
+     * An {@code Iterable} that generates all {@code Matrix}es with a given height and width.
+     *
+     * <ul>
+     *  <li>{@code height} cannot be negative.</li>
+     *  <li>{@code width} cannot be negative.</li>
+     *  <li>The result is a non-removable {@code Iterable} containing {@code Matrix}es.</li>
+     * </ul>
+     *
+     * Length is 1 if either {@code height} or {@code width} are 0, infinite otherwise
+     *
+     * @param height the height (number of rows) of the generated {@code Matrix}es
+     * @param width the width (number of columns) of the generated {@code Matrix}es
+     * @return all {@code Matrix}es with height {@code height} and width {@code width}
+     */
+    @Override
+    public @NotNull Iterable<Matrix> matrices(int height, int width) {
+        if (height == 0 || width == 0) {
+            return Collections.singletonList(Matrix.zero(height, width));
+        } else {
+            return map(Matrix::fromRows, lists(height, vectors(width)));
+        }
+    }
+
+    /**
+     * An {@code Iterable} that generates all {@code Matrix}.
+     *
+     * <ul>
+     *  <li>{@code height} cannot be negative.</li>
+     *  <li>{@code width} cannot be negative.</li>
+     *  <li>The result is a non-removable {@code Iterable} containing {@code Matrix}es.</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
+    @Override
+    public @NotNull Iterable<Matrix> matrices() {
+        return chooseLogarithmicOrder(
+                map(
+                        p -> Matrix.fromRows(p.b),
+                        dependentPairsInfiniteSquareRootOrder(pairs(positiveIntegers()), p -> lists(p.a, vectors(p.b)))
+                ),
+                choose(map(i -> Matrix.zero(0, i), naturalIntegers()), map(i -> Matrix.zero(i, 0), positiveIntegers()))
+        );
+    }
+
+    /**
+     * An {@code Iterable} that generates all square {@code Matrix}es.
+     *
+     * <ul>
+     *  <li>{@code height} cannot be negative.</li>
+     *  <li>{@code width} cannot be negative.</li>
+     *  <li>The result is a non-removable {@code Iterable} containing square {@code Matrix}es.</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
+    @Override
+    public @NotNull Iterable<Matrix> squareMatrices() {
+        return cons(
+                Matrix.zero(0, 0),
+                map(p -> p.b, dependentPairsInfiniteLogarithmicOrder(positiveIntegers(), i -> matrices(i, i)))
+        );
+    }
+
+    /**
      * An {@code Iterable} that generates all {@code RationalMatrix}es with a given height and width.
      *
      * <ul>
@@ -389,7 +454,7 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
     }
 
     /**
-     * An {@code Iterable} that generates all square {@code RationalMatrix}.
+     * An {@code Iterable} that generates all square {@code RationalMatrix}es.
      *
      * <ul>
      *  <li>{@code height} cannot be negative.</li>

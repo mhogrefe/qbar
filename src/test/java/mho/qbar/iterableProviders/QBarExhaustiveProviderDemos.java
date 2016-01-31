@@ -82,6 +82,12 @@ public class QBarExhaustiveProviderDemos extends QBarDemos {
         }
     }
 
+    private void demoMatrices_int_int() {
+        for (Pair<Integer, Integer> p : take(SMALL_LIMIT, P.pairs(P.withScale(4).naturalIntegersGeometric()))) {
+            System.out.println("matrices(" + p.a + ", " + p.b + ") = " + its(QEP.matrices(p.a, p.b)));
+        }
+    }
+
     private void demoRationalMatrices_int_int() {
         for (Pair<Integer, Integer> p : take(SMALL_LIMIT, P.pairs(P.withScale(4).naturalIntegersGeometric()))) {
             System.out.println("rationalMatrices(" + p.a + ", " + p.b + ") = " + its(QEP.rationalMatrices(p.a, p.b)));

@@ -30,6 +30,8 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
         propertiesVectors();
         propertiesRationalVectors();
         propertiesReducedRationalVectors();
+        propertiesMatrices();
+        propertiesSquareMatrices();
         propertiesRationalMatrices();
         propertiesSquareRationalMatrices();
         propertiesPolynomials();
@@ -53,6 +55,7 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
         propertiesRationalVectorsAtLeast();
         propertiesReducedRationalVectors_int();
         propertiesReducedRationalVectorsAtLeast();
+        propertiesMatrices_int_int();
         propertiesRationalMatrices_int_int();
         propertiesPolynomials_int();
         propertiesPolynomialsAtLeast();
@@ -307,6 +310,41 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
                 fail(i);
             } catch (IllegalArgumentException ignored) {}
         }
+    }
+
+    private void propertiesMatrices_int_int() {
+        initialize("matrices(int, int)");
+        for (Pair<Integer, Integer> p : take(SMALL_LIMIT, P.pairs(P.naturalIntegersGeometric()))) {
+            Iterable<Matrix> ms = QEP.matrices(p.a, p.b);
+            simpleTest(p, ms, n -> n.height() == p.a && n.width() == p.b);
+            take(TINY_LIMIT, ms).forEach(Matrix::validate);
+        }
+
+        for (Pair<Integer, Integer> p : take(LIMIT, P.pairs(P.negativeIntegers(), P.positiveIntegers()))) {
+            try {
+                QEP.matrices(p.a, p.b);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
+        }
+
+        for (Pair<Integer, Integer> p : take(LIMIT, P.pairs(P.positiveIntegers(), P.negativeIntegers()))) {
+            try {
+                QEP.matrices(p.a, p.b);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesMatrices() {
+        initializeConstant("matrices()");
+        biggerTest(QEP, QEP.matrices(), m -> true);
+        take(TINY_LIMIT, QEP.matrices()).forEach(Matrix::validate);
+    }
+
+    private void propertiesSquareMatrices() {
+        initializeConstant("squareMatrices()");
+        biggerTest(QEP, QEP.squareMatrices(), Matrix::isSquare);
+        take(TINY_LIMIT, QEP.squareMatrices()).forEach(Matrix::validate);
     }
 
     private void propertiesRationalMatrices_int_int() {

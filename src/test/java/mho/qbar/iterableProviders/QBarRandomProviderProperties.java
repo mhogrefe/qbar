@@ -40,6 +40,9 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         propertiesReducedRationalVectors_int();
         propertiesReducedRationalVectors();
         propertiesReducedRationalVectorsAtLeast();
+        propertiesMatrices_int_int();
+        propertiesMatrices();
+        propertiesSquareMatrices();
         propertiesRationalMatrices_int_int();
         propertiesRationalMatrices();
         propertiesSquareRationalMatrices();
@@ -808,6 +811,129 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
                 p.a.reducedRationalVectorsAtLeast(p.b);
                 fail(p);
             } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesMatrices_int_int() {
+        initialize("matrices(int, int)");
+        Iterable<Triple<QBarRandomProvider, Integer, Integer>> ts = P.triples(
+                filterInfinite(rp -> rp.getScale() > 0, P.withScale(4).qbarRandomProvidersDefaultSecondaryScale()),
+                P.withScale(4).naturalIntegersGeometric(),
+                P.withScale(4).naturalIntegersGeometric()
+        );
+        for (Triple<QBarRandomProvider, Integer, Integer> t : take(LIMIT, ts)) {
+            Iterable<Matrix> ms = t.a.matrices(t.b, t.c);
+            t.a.reset();
+            take(TINY_LIMIT, ms).forEach(Matrix::validate);
+            simpleTest(t.a, ms, m -> m.height() == t.b && m.width() == t.c);
+        }
+
+        Iterable<Triple<QBarRandomProvider, Integer, Integer>> tsFail = P.triples(
+                filterInfinite(rp -> rp.getScale() <= 0, P.withScale(4).qbarRandomProvidersDefaultSecondaryScale()),
+                P.withScale(4).naturalIntegersGeometric(),
+                P.withScale(4).naturalIntegersGeometric()
+        );
+        for (Triple<QBarRandomProvider, Integer, Integer> t : take(LIMIT, tsFail)) {
+            try {
+                t.a.matrices(t.b, t.c);
+                fail(t);
+            } catch (IllegalStateException ignored) {}
+        }
+
+        tsFail = P.triples(
+                filterInfinite(rp -> rp.getScale() > 0, P.withScale(4).qbarRandomProvidersDefaultSecondaryScale()),
+                P.withScale(4).negativeIntegersGeometric(),
+                P.withScale(4).naturalIntegersGeometric()
+        );
+        for (Triple<QBarRandomProvider, Integer, Integer> t : take(LIMIT, tsFail)) {
+            try {
+                t.a.matrices(t.b, t.c);
+                fail(t);
+            } catch (IllegalArgumentException ignored) {}
+        }
+
+        tsFail = P.triples(
+                filterInfinite(rp -> rp.getScale() > 0, P.withScale(4).qbarRandomProvidersDefaultSecondaryScale()),
+                P.withScale(4).naturalIntegersGeometric(),
+                P.withScale(4).negativeIntegersGeometric()
+        );
+        for (Triple<QBarRandomProvider, Integer, Integer> t : take(LIMIT, tsFail)) {
+            try {
+                t.a.matrices(t.b, t.c);
+                fail(t);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesMatrices() {
+        initialize("matrices()");
+        Iterable<QBarRandomProvider> rps = filterInfinite(
+                rp -> rp.getScale() > 0 && rp.getSecondaryScale() >= 2,
+                P.withScale(4).qbarRandomProviders()
+        );
+        for (QBarRandomProvider rp : take(LIMIT, rps)) {
+            Iterable<Matrix> ms = rp.matrices();
+            rp.reset();
+            take(TINY_LIMIT, ms).forEach(Matrix::validate);
+            simpleTest(rp, ms, m -> true);
+        }
+
+        Iterable<QBarRandomProvider> rpsFail = filterInfinite(
+                rp -> rp.getScale() <= 0 && rp.getSecondaryScale() >= 2,
+                P.withScale(4).qbarRandomProviders()
+        );
+        for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
+            try {
+                rp.matrices();
+                fail(rp);
+            } catch (IllegalStateException ignored) {}
+        }
+
+        rpsFail = filterInfinite(
+                rp -> rp.getScale() > 0 && rp.getSecondaryScale() < 2,
+                P.withScale(4).qbarRandomProviders()
+        );
+        for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
+            try {
+                rp.matrices();
+                fail(rp);
+            } catch (IllegalStateException ignored) {}
+        }
+    }
+
+    private void propertiesSquareMatrices() {
+        initialize("squareMatrices()");
+        Iterable<QBarRandomProvider> rps = filterInfinite(
+                rp -> rp.getScale() >= 2 && rp.getSecondaryScale() >= 2,
+                P.withScale(4).qbarRandomProviders()
+        );
+        for (QBarRandomProvider rp : take(LIMIT, rps)) {
+            Iterable<Matrix> ms = rp.squareMatrices();
+            rp.reset();
+            take(TINY_LIMIT, ms).forEach(Matrix::validate);
+            simpleTest(rp, ms, Matrix::isSquare);
+        }
+
+        Iterable<QBarRandomProvider> rpsFail = filterInfinite(
+                rp -> rp.getScale() < 2 && rp.getSecondaryScale() >= 2,
+                P.withScale(4).qbarRandomProviders()
+        );
+        for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
+            try {
+                rp.squareMatrices();
+                fail(rp);
+            } catch (IllegalStateException ignored) {}
+        }
+
+        rpsFail = filterInfinite(
+                rp -> rp.getScale() >= 2 && rp.getSecondaryScale() < 2,
+                P.withScale(4).qbarRandomProviders()
+        );
+        for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
+            try {
+                rp.squareMatrices();
+                fail(rp);
+            } catch (IllegalStateException ignored) {}
         }
     }
 
