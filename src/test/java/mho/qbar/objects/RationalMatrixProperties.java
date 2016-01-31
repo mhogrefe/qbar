@@ -1167,26 +1167,26 @@ public class RationalMatrixProperties extends QBarTestProperties {
                         )
                 ),
                 P.choose(
-                    P.choose(
-                            map(
-                                    m -> new Pair<>(m, zero(m.width(), 0)),
-                                    filterInfinite(
-                                            m -> m.height() != 0 && m.width() != 0,
-                                            P.withScale(4).rationalMatrices()
-                                    )
-                            ),
-                            map(
-                                    m -> new Pair<>(zero(0, m.height()), m),
-                                    filterInfinite(
-                                            m -> m.height() != 0 && m.width() != 0,
-                                            P.withScale(4).rationalMatrices()
-                                    )
-                            )
-                    ),
-                    map(
-                            p -> new Pair<>(zero(p.a, 0), zero(0, p.b)),
-                            P.pairs(P.positiveIntegersGeometric())
-                    )
+                        P.choose(
+                                map(
+                                        m -> new Pair<>(m, zero(m.width(), 0)),
+                                        filterInfinite(
+                                                m -> m.height() != 0 && m.width() != 0,
+                                                P.withScale(4).rationalMatrices()
+                                        )
+                                ),
+                                map(
+                                        m -> new Pair<>(zero(0, m.height()), m),
+                                        filterInfinite(
+                                                m -> m.height() != 0 && m.width() != 0,
+                                                P.withScale(4).rationalMatrices()
+                                        )
+                                )
+                        ),
+                        map(
+                                p -> new Pair<>(zero(p.a, 0), zero(0, p.b)),
+                                P.pairs(P.positiveIntegersGeometric())
+                        )
                 )
         );
         compareImplementations("multiply(RationalMatrix)", take(LIMIT, ps), functions);

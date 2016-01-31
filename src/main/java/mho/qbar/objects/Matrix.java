@@ -8,10 +8,7 @@ import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigInteger;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.testing.Testing.*;
@@ -326,6 +323,349 @@ public class Matrix implements Comparable<Matrix> {
             throw new IllegalArgumentException("width cannot be negative. Invalid width: " + width);
         }
         return new Matrix(toList(replicate(height, Vector.zero(width))), width);
+    }
+
+    /**
+     * Determines whether {@code this} is an identity matrix.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Matrix}.</li>
+     *  <li>The result may be either boolean.</li>
+     * </ul>
+     *
+     * @return whether {@code this} is an identity
+     */
+    public boolean isIdentity() {
+        if (!isSquare()) return false;
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < width; j++) {
+                if (!get(i, j).equals(i == j ? BigInteger.ONE : BigInteger.ZERO)) return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Creates an identity matrix. The dimension must be positive.
+     *
+     * <ul>
+     *  <li>{@code dimension} must be positive.</li>
+     *  <li>The result is a square {@code Matrix}, with height and width at least 1, with ones on the diagonal and
+     *  zeros everywhere else.</li>
+     * </ul>
+     *
+     * Size is {@code dimension}×{@code dimension}
+     *
+     * @param dimension the matrix's dimension (width and height)
+     * @return I<sub>{@code dimension}</sub>
+     */
+    public static @NotNull Matrix identity(int dimension) {
+        if (dimension < 1) {
+            throw new IllegalArgumentException("dimension must be positive. Invalid dimension: " + dimension);
+        }
+        return new Matrix(toList(map(i -> Vector.standard(dimension, i), range(0, dimension - 1))), dimension);
+    }
+
+    /**
+     * Returns a submatrix of {@code this} containing the rows and columns selected by a list of row indices and column
+     * indices (both 0-based, in ascending order, with no repetitions).
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Matrix}.</li>
+     *  <li>{@code rowIndices} must be in ascending order, cannot have any repetitions, and cannot contain negative
+     *  numbers.</li>
+     *  <li>{@code columnIndices} must be in ascending order, cannot have any repetitions, and cannot contain negative
+     *  numbers.</li>
+     *  <li>The elements of {@code rowIndices} must all be less than height({@code this}).</li>
+     *  <li>The elements of {@code columnIndices} must all be less than width({@code this}).</li>
+     * </ul>
+     *
+     * Size is |{@code rowIndices}|×|{@code columnIndices}|
+     *
+     * @param rowIndices the indices of the rows in the result
+     * @param columnIndices the indices of the columns in the result
+     * @return a submatrix of {@code this}
+     */
+    public @NotNull Matrix submatrix(@NotNull List<Integer> rowIndices, @NotNull List<Integer> columnIndices) {
+        if (!increasing(rowIndices)) {
+            throw new IllegalArgumentException("rowIndices must be in ascending order and cannot have any" +
+                    " repetitions. Invalid rowIndices: " + rowIndices);
+        } else if (!increasing(columnIndices)) {
+            throw new IllegalArgumentException("columnIndices must be in ascending order and cannot have any" +
+                    " repetitions. Invalid columnIndices: " + columnIndices);
+        } else if (!rowIndices.isEmpty() && (head(rowIndices) < 0 || last(rowIndices) >= height())) {
+            throw new IllegalArgumentException("rowIndices cannot contain negative numbers or any elements greater" +
+                    " than or equal to height(this). rowIndices: " + rowIndices + ", height(this): " + height());
+        } else if (!columnIndices.isEmpty() && (head(columnIndices) < 0 || last(columnIndices) >= width)) {
+            throw new IllegalArgumentException("columnIndices cannot contain negative numbers or any elements" +
+                    " greater than or equal to width(this). columnIndices: " + columnIndices + ", width(this): " +
+                    width());
+        } else if (rowIndices.isEmpty() || columnIndices.isEmpty()) {
+            return zero(rowIndices.size(), columnIndices.size());
+        } else if (rowIndices.size() == height() && columnIndices.size() == width) {
+            return this;
+        } else if (columnIndices.size() == width) {
+            return new Matrix(toList(map(rows::get, rowIndices)), width);
+        } else {
+            List<Vector> submatrixRows = new ArrayList<>();
+            for (int i : rowIndices) {
+                Vector row = rows.get(i);
+                submatrixRows.add(Vector.of(toList(map(row::get, columnIndices))));
+            }
+            return new Matrix(submatrixRows, columnIndices.size());
+        }
+    }
+
+    /**
+     * Returns the transpose of {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Matrix}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * Size is width({@code this})×height({@code this})
+     *
+     * @return {@code this}<sup>T</sup>
+     */
+    public @NotNull Matrix transpose() {
+        int height = height();
+        if (height == 0 || width == 0) {
+            //noinspection SuspiciousNameCombination
+            return zero(width, height);
+        }
+        BigInteger[][] elements = new BigInteger[width][height];
+        for (int i = 0; i < height; i++) {
+            Vector row = rows.get(i);
+            for (int j = 0; j < width; j++) {
+                elements[j][i] = row.get(j);
+            }
+        }
+        //noinspection SuspiciousNameCombination
+        return new Matrix(toList(map(i -> Vector.of(Arrays.asList(elements[i])), range(0, width - 1))), height);
+    }
+
+    /**
+     * Returns the {@code Matrix} produced by concatenating the rows of {@code this} with the rows of {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Matrix}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>{@code this} and {@code that} must have the same width.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * Size is (height({@code this}+height({@code that}))×width({@code this})
+     *
+     * @param that the {@code Matrix} that {@code this} is concatenated with
+     * @return {@code this} concatenated with {@code that}
+     */
+    public @NotNull Matrix concat(@NotNull Matrix that) {
+        if (width != that.width) {
+            throw new IllegalArgumentException("this and that must have the same width. this: " + this + ", that: " +
+                    that);
+        }
+        if (height() == 0) return that;
+        if (that.height() == 0) return this;
+        return new Matrix(toList(IterableUtils.concat(rows, that.rows)), width);
+    }
+
+    /**
+     * Returns {@code this} augmented with {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Matrix}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>{@code this} and {@code that} must have the same height.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * Size is height({@code this})×(width({@code this}+width({@code that}))
+     *
+     * @param that the {@code Matrix} that {@code this} is augmented by
+     * @return {@code this}|{@code that}
+     */
+    public @NotNull Matrix augment(@NotNull Matrix that) {
+        if (height() != that.height()) {
+            throw new IllegalArgumentException("this and that must have the same height. this: " + this + ", that: " +
+                    that);
+        }
+        if (width == 0) return that;
+        if (that.width == 0) return this;
+        return new Matrix(
+                toList(zipWith((r, s) -> Vector.of(toList(IterableUtils.concat(r, s))), rows, that.rows)),
+                width + that.width
+        );
+    }
+
+    /**
+     * Returns the sum of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Matrix}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>{@code this} and {@code that} must have the same height and the same width.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * Size is height({@code this})×width({@code this})
+     *
+     * @param that the {@code Matrix} added to {@code this}
+     * @return {@code this}+{@code that}
+     */
+    public @NotNull Matrix add(@NotNull Matrix that) {
+        int height = height();
+        if (width != that.width || height != that.height()) {
+            throw new ArithmeticException("this and that must have the same width and height. this: " +
+                    this + ", that: " + that);
+        }
+        if (height == 0 || width == 0) return this;
+        return new Matrix(toList(zipWith(Vector::add, rows, that.rows)), width);
+    }
+
+    /**
+     * Returns the negative of {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Matrix}.</li>
+     *  <li>The result is non-null.</li>
+     * </ul>
+     *
+     * Size is height({@code this})×width({@code this})
+     *
+     * @return –{@code this}
+     */
+    public @NotNull Matrix negate() {
+        int height = height();
+        if (height == 0 || width == 0) return this;
+        return new Matrix(toList(map(Vector::negate, rows)), width);
+    }
+
+    /**
+     * Returns the difference of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Matrix}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>{@code this} and {@code that} must have the same height and the same width.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * Size is height({@code this})×width({@code this})
+     *
+     * @param that the {@code Matrix} subtracted from {@code this}
+     * @return {@code this}–{@code that}
+     */
+    public @NotNull Matrix subtract(@NotNull Matrix that) {
+        int height = height();
+        if (width != that.width || height != that.height()) {
+            throw new ArithmeticException("this and that must have the same width and height. this: " +
+                    this + ", that: " + that);
+        }
+        if (height == 0 || width == 0) return this;
+        return new Matrix(toList(zipWith(Vector::subtract, rows, that.rows)), width);
+    }
+
+    /**
+     * Returns the scalar product of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} can be any {@code Matrix}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * Size is height({@code this})×width({@code this})
+     *
+     * @param that the {@code BigInteger} {@code this} is multiplied by
+     * @return {@code this}×{@code that}
+     */
+    public @NotNull Matrix multiply(@NotNull BigInteger that) {
+        if (height() == 0 || width == 0 || that.equals(BigInteger.ONE)) return this;
+        return new Matrix(toList(map(r -> r.multiply(that), rows)), width);
+    }
+
+    /**
+     * Returns the scalar product of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} can be any {@code Matrix}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * Size is height({@code this})×width({@code this})
+     *
+     * @param that the {@code int} {@code this} is multiplied by
+     * @return {@code this}×{@code that}
+     */
+    public @NotNull Matrix multiply(int that) {
+        if (height() == 0 || width == 0 || that == 1) return this;
+        return new Matrix(toList(map(r -> r.multiply(that), rows)), width);
+    }
+
+    /**
+     * Returns the product of {@code this} and {@code that}. The result is {@code that} after a linear transformation
+     * whose basis vectors are the columns of {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} can be any {@code Matrix}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>The width of {@code this} must equal the dimension of {@code that}.</li>
+     * </ul>
+     *
+     * Length is height({@code this})
+     *
+     * @param that the {@code Vector} {@code this} is multiplied by
+     * @return {@code this}×{@code that}
+     */
+    public @NotNull Vector multiply(@NotNull Vector that) {
+        if (width != that.dimension()) {
+            throw new ArithmeticException("The width of this must equal the dimension of that. this: " +
+                    this + ", that: " + that);
+        }
+        return Vector.of(toList(map(r -> r.dot(that), rows)));
+    }
+
+    /**
+     * Returns the matrix product of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} can be any {@code Matrix}</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>The width of {@code this} must equal the height of {@code that}.</li>
+     * </ul>
+     *
+     * Size is height({@code this})×width({@code that})
+     *
+     * @param that the {@code Matrix} {@code this} is multiplied by
+     * @return {@code this}×{@code that}
+     */
+    public @NotNull Matrix multiply(@NotNull Matrix that) {
+        int n = height();
+        int m = width;
+        if (m != that.height()) {
+            throw new ArithmeticException("the width of this must equal the height of that. this: " +
+                    this + ", that: " + that);
+        }
+        int l = that.width;
+        if (n == 0) {
+            return zero(0, l);
+        }
+        List<Vector> rows = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            Vector aRow = row(i);
+            List<BigInteger> row = new ArrayList<>();
+            for (int k = 0; k < l; k++) {
+                BigInteger sum = BigInteger.ZERO;
+                for (int j = 0; j < m; j++) {
+                    sum = sum.add(aRow.get(j).multiply(that.get(j, k)));
+                }
+                row.add(sum);
+            }
+            rows.add(Vector.of(row));
+        }
+        return fromRows(rows);
     }
 
     /**

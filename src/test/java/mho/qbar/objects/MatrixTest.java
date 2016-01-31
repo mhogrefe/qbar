@@ -279,6 +279,345 @@ public class MatrixTest {
         zero_fail_helper(-1, -1);
     }
 
+    private static void isIdentity_helper(@NotNull String input, boolean output) {
+        aeq(read(input).get().isIdentity(), output);
+    }
+
+    @Test
+    public void testIsIdentity() {
+        isIdentity_helper("[]#0", true);
+        isIdentity_helper("[]#1", false);
+        isIdentity_helper("[]#3", false);
+        isIdentity_helper("[[]]", false);
+        isIdentity_helper("[[], [], []]", false);
+        isIdentity_helper("[[-3]]", false);
+        isIdentity_helper("[[0]]", false);
+        isIdentity_helper("[[1]]", true);
+        isIdentity_helper("[[1], [2]]", false);
+        isIdentity_helper("[[1, 0], [0, 1]]", true);
+        isIdentity_helper("[[1, 5], [0, 1]]", false);
+        isIdentity_helper("[[0, 1], [1, 0]]", false);
+        isIdentity_helper("[[1, 1], [1, 1]]", false);
+        isIdentity_helper("[[1, 0, 0], [0, 1, 0], [0, 0, 1]]", true);
+    }
+
+    private static void identity_helper(int dimension, @NotNull String output) {
+        aeq(identity(dimension), output);
+    }
+
+    private static void identity_fail_helper(int dimension) {
+        try {
+            identity(dimension);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testIdentity() {
+        identity_helper(1, "[[1]]");
+        identity_helper(3, "[[1, 0, 0], [0, 1, 0], [0, 0, 1]]");
+        identity_helper(5, "[[1, 0, 0, 0, 0], [0, 1, 0, 0, 0], [0, 0, 1, 0, 0], [0, 0, 0, 1, 0], [0, 0, 0, 0, 1]]");
+        identity_fail_helper(0);
+        identity_fail_helper(-1);
+    }
+
+    private static void submatrix_helper(
+            @NotNull String m,
+            @NotNull String rowIndices,
+            @NotNull String columnIndices,
+            @NotNull String output
+    ) {
+        aeq(read(m).get().submatrix(readIntegerList(rowIndices), readIntegerList(columnIndices)), output);
+    }
+
+    private static void submatrix_fail_helper(
+            @NotNull String m,
+            @NotNull String rowIndices,
+            @NotNull String columnIndices
+    ) {
+        try {
+            read(m).get().submatrix(readIntegerListWithNulls(rowIndices), readIntegerListWithNulls(columnIndices));
+            fail();
+        } catch (IllegalArgumentException | NullPointerException ignored) {}
+    }
+
+    @Test
+    public void testSubmatrix() {
+        submatrix_helper("[]#0", "[]", "[]", "[]#0");
+        submatrix_helper("[]#3", "[]", "[]", "[]#0");
+        submatrix_helper("[]#3", "[]", "[0, 2]", "[]#2");
+        submatrix_helper("[]#3", "[]", "[0, 1, 2]", "[]#3");
+        submatrix_helper("[[], [], []]", "[]", "[]", "[]#0");
+        submatrix_helper("[[], [], []]", "[0, 2]", "[]", "[[], []]");
+        submatrix_helper("[[], [], []]", "[0, 1, 2]", "[]", "[[], [], []]");
+        submatrix_helper("[[1, 9, -13], [20, 5, -6]]", "[]", "[]", "[]#0");
+        submatrix_helper("[[1, 9, -13], [20, 5, -6]]", "[]", "[1, 2]", "[]#2");
+        submatrix_helper("[[1, 9, -13], [20, 5, -6]]", "[0, 1]", "[]", "[[], []]");
+        submatrix_helper("[[1, 9, -13], [20, 5, -6]]", "[1]", "[0, 2]", "[[20, -6]]");
+        submatrix_fail_helper("[[0]]", "[null]", "[]");
+        submatrix_fail_helper("[[1, 9, -13], [20, 5, -6]]", "[1]", "[0, null]");
+        submatrix_fail_helper("[[1, 9, -13], [20, 5, -6]]", "[1]", "[2, 0]");
+        submatrix_fail_helper("[[1, 9, -13], [20, 5, -6]]", "[1]", "[0, 0, 2]");
+        submatrix_fail_helper("[[1, 9, -13], [20, 5, -6]]", "[1, 0]", "[0, 2]");
+        submatrix_fail_helper("[[1, 9, -13], [20, 5, -6]]", "[1, 1]", "[0, 2]");
+        submatrix_fail_helper("[[1, 9, -13], [20, 5, -6]]", "[-1]", "[0, 2]");
+        submatrix_fail_helper("[[1, 9, -13], [20, 5, -6]]", "[1]", "[-1, 2]");
+        submatrix_fail_helper("[[1, 9, -13], [20, 5, -6]]", "[2]", "[0, 2]");
+        submatrix_fail_helper("[[1, 9, -13], [20, 5, -6]]", "[1]", "[0, 3]");
+    }
+
+    private static void transpose_helper(@NotNull String input, @NotNull String output) {
+        aeq(read(input).get().transpose(), output);
+    }
+
+    @Test
+    public void testTranspose() {
+        transpose_helper("[]#0", "[]#0");
+        transpose_helper("[]#1", "[[]]");
+        transpose_helper("[]#3", "[[], [], []]");
+        transpose_helper("[[]]", "[]#1");
+        transpose_helper("[[], [], []]", "[]#3");
+        transpose_helper("[[-3]]", "[[-3]]");
+        transpose_helper("[[-3, -8], [0, 7]]", "[[-3, 0], [-8, 7]]");
+        transpose_helper("[[1, 9, -13], [20, 5, -6]]", "[[1, 20], [9, 5], [-13, -6]]");
+    }
+
+    private static void concat_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
+        aeq(read(a).get().concat(read(b).get()), output);
+    }
+
+    private static void concat_fail_helper(@NotNull String a, @NotNull String b) {
+        try {
+            read(a).get().concat(read(b).get());
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testConcat() {
+        concat_helper("[]#0", "[]#0", "[]#0");
+        concat_helper("[[]]", "[[], []]", "[[], [], []]");
+        concat_helper("[[2]]", "[[3], [4]]", "[[2], [3], [4]]");
+        concat_helper(
+                "[[1, 3, 2], [2, 0, 1], [5, 2, 2]]",
+                "[[4, 3, 1]]",
+                "[[1, 3, 2], [2, 0, 1], [5, 2, 2], [4, 3, 1]]"
+        );
+        concat_fail_helper("[]#0", "[]#1");
+        concat_fail_helper("[]#3", "[]#4");
+        concat_fail_helper("[[]]", "[[2]]");
+        concat_fail_helper("[[2]]", "[[]]");
+        concat_fail_helper("[[2]]", "[[3, 4]]");
+    }
+
+    private static void augment_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
+        aeq(read(a).get().augment(read(b).get()), output);
+    }
+
+    private static void augment_fail_helper(@NotNull String a, @NotNull String b) {
+        try {
+            read(a).get().augment(read(b).get());
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testAugment() {
+        augment_helper("[]#0", "[]#0", "[]#0");
+        augment_helper("[]#3", "[]#4", "[]#7");
+        augment_helper("[[]]", "[[2]]", "[[2]]");
+        augment_helper("[[2]]", "[[]]", "[[2]]");
+        augment_helper("[[2]]", "[[3, 4]]", "[[2, 3, 4]]");
+        augment_helper(
+                "[[1, 3, 2], [2, 0, 1], [5, 2, 2]]",
+                "[[4], [3], [1]]",
+                "[[1, 3, 2, 4], [2, 0, 1, 3], [5, 2, 2, 1]]"
+        );
+        augment_fail_helper("[]#0", "[[]]");
+        augment_fail_helper("[[]]", "[[], []]");
+        augment_fail_helper("[[2]]", "[[3], [4]]");
+    }
+
+    private static void add_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
+        aeq(read(a).get().add(read(b).get()), output);
+    }
+
+    private static void add_fail_helper(@NotNull String a, @NotNull String b) {
+        try {
+            read(a).get().add(read(b).get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testAdd() {
+        add_helper("[]#0", "[]#0", "[]#0");
+        add_helper("[]#1", "[]#1", "[]#1");
+        add_helper("[]#3", "[]#3", "[]#3");
+        add_helper("[[]]", "[[]]", "[[]]");
+        add_helper("[[], [], []]", "[[], [], []]", "[[], [], []]");
+        add_helper("[[3]]", "[[5]]", "[[8]]");
+        add_helper("[[1, 3], [1, 0], [1, 2]]", "[[0, 0], [7, 5], [2, 1]]", "[[1, 3], [8, 5], [3, 3]]");
+        add_fail_helper("[]#0", "[]#1");
+        add_fail_helper("[]#0", "[[]]");
+        add_fail_helper("[[3]]", "[[3], [5]]");
+    }
+
+    private static void negate_helper(@NotNull String input, @NotNull String output) {
+        aeq(read(input).get().negate(), output);
+    }
+
+    @Test
+    public void testNegate() {
+        negate_helper("[]#0", "[]#0");
+        negate_helper("[]#1", "[]#1");
+        negate_helper("[]#3", "[]#3");
+        negate_helper("[[]]", "[[]]");
+        negate_helper("[[], [], []]", "[[], [], []]");
+        negate_helper("[[-3]]", "[[3]]");
+        negate_helper("[[-3, -8], [0, 7]]", "[[3, 8], [0, -7]]");
+        negate_helper("[[1, 9, -13], [20, 5, -6]]", "[[-1, -9, 13], [-20, -5, 6]]");
+    }
+
+    private static void subtract_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
+        aeq(read(a).get().subtract(read(b).get()), output);
+    }
+
+    private static void subtract_fail_helper(@NotNull String a, @NotNull String b) {
+        try {
+            read(a).get().subtract(read(b).get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testSubtract() {
+        subtract_helper("[]#0", "[]#0", "[]#0");
+        subtract_helper("[]#1", "[]#1", "[]#1");
+        subtract_helper("[]#3", "[]#3", "[]#3");
+        subtract_helper("[[]]", "[[]]", "[[]]");
+        subtract_helper("[[], [], []]", "[[], [], []]", "[[], [], []]");
+        subtract_helper("[[3]]", "[[5]]", "[[-2]]");
+        subtract_helper("[[1, 3], [1, 0], [1, 2]]", "[[0, 0], [7, 5], [2, 1]]", "[[1, 3], [-6, -5], [-1, 1]]");
+        subtract_fail_helper("[]#0", "[]#1");
+        subtract_fail_helper("[]#0", "[[]]");
+        subtract_fail_helper("[[3]]", "[[3], [5]]");
+    }
+
+    private static void multiply_BigInteger_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
+        aeq(read(a).get().multiply(Readers.readBigInteger(b).get()), output);
+    }
+
+    @Test
+    public void testMultiply_BigInteger() {
+        multiply_BigInteger_helper("[]#0", "0", "[]#0");
+        multiply_BigInteger_helper("[]#0", "1", "[]#0");
+        multiply_BigInteger_helper("[]#0", "5", "[]#0");
+
+        multiply_BigInteger_helper("[]#3", "0", "[]#3");
+        multiply_BigInteger_helper("[]#3", "1", "[]#3");
+        multiply_BigInteger_helper("[]#3", "5", "[]#3");
+
+        multiply_BigInteger_helper("[[], [], []]", "0", "[[], [], []]");
+        multiply_BigInteger_helper("[[], [], []]", "1", "[[], [], []]");
+        multiply_BigInteger_helper("[[], [], []]", "5", "[[], [], []]");
+
+        multiply_BigInteger_helper("[[-3]]", "0", "[[0]]");
+        multiply_BigInteger_helper("[[-3]]", "1", "[[-3]]");
+        multiply_BigInteger_helper("[[-3]]", "5", "[[-15]]");
+
+        multiply_BigInteger_helper("[[-3, -8], [0, 7]]", "0", "[[0, 0], [0, 0]]");
+        multiply_BigInteger_helper("[[-3, -8], [0, 7]]", "1", "[[-3, -8], [0, 7]]");
+        multiply_BigInteger_helper("[[-3, -8], [0, 7]]", "5", "[[-15, -40], [0, 35]]");
+    }
+
+    private static void multiply_int_helper(@NotNull String a, int b, @NotNull String output) {
+        aeq(read(a).get().multiply(b), output);
+    }
+
+    @Test
+    public void testMultiply_int() {
+        multiply_int_helper("[]#0", 0, "[]#0");
+        multiply_int_helper("[]#0", 1, "[]#0");
+        multiply_int_helper("[]#0", 5, "[]#0");
+
+        multiply_int_helper("[]#3", 0, "[]#3");
+        multiply_int_helper("[]#3", 1, "[]#3");
+        multiply_int_helper("[]#3", 5, "[]#3");
+
+        multiply_int_helper("[[], [], []]", 0, "[[], [], []]");
+        multiply_int_helper("[[], [], []]", 1, "[[], [], []]");
+        multiply_int_helper("[[], [], []]", 5, "[[], [], []]");
+
+        multiply_int_helper("[[-3]]", 0, "[[0]]");
+        multiply_int_helper("[[-3]]", 1, "[[-3]]");
+        multiply_int_helper("[[-3]]", 5, "[[-15]]");
+
+        multiply_int_helper("[[-3, -8], [0, 7]]", 0, "[[0, 0], [0, 0]]");
+        multiply_int_helper("[[-3, -8], [0, 7]]", 1, "[[-3, -8], [0, 7]]");
+        multiply_int_helper("[[-3, -8], [0, 7]]", 5, "[[-15, -40], [0, 35]]");
+    }
+
+    private static void multiply_Vector_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
+        aeq(read(a).get().multiply(Vector.read(b).get()), output);
+    }
+
+    private static void multiply_Vector_fail_helper(@NotNull String a, @NotNull String b) {
+        try {
+            read(a).get().multiply(Vector.read(b).get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testMultiply_RationalVector() {
+        multiply_Vector_helper("[]#0", "[]", "[]");
+        multiply_Vector_helper("[]#1", "[3]", "[]");
+        multiply_Vector_helper("[]#3", "[3, 0, -3]", "[]");
+        multiply_Vector_helper("[[]]", "[]", "[0]");
+        multiply_Vector_helper("[[], [], []]", "[]", "[0, 0, 0]");
+        multiply_Vector_helper("[[5]]", "[-3]", "[-15]");
+        multiply_Vector_helper("[[0, 0], [0, 0]]", "[3, 2]", "[0, 0]");
+        multiply_Vector_helper("[[1, 0], [0, 1]]", "[3, 2]", "[3, 2]");
+        multiply_Vector_helper("[[1, -1, 2], [0, -3, 1]]", "[2, 1, 0]", "[1, -3]");
+
+        multiply_Vector_fail_helper("[]#0", "[0]");
+        multiply_Vector_fail_helper("[]#3", "[1, 2]");
+        multiply_Vector_fail_helper("[[1, 0], [0, 1]]", "[1, 2, 3]");
+    }
+
+    private static void multiply_RationalMatrix_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
+        aeq(read(a).get().multiply(read(b).get()), output);
+    }
+
+    private static void multiply_RationalMatrix_fail_helper(@NotNull String a, @NotNull String b) {
+        try {
+            read(a).get().multiply(read(b).get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testMultiply_RationalMatrix() {
+        multiply_RationalMatrix_helper("[]#0", "[]#0", "[]#0");
+        multiply_RationalMatrix_helper("[]#1", "[[3, 4]]", "[]#2");
+        multiply_RationalMatrix_helper("[[], [], []]", "[]#5", "[[0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0]]");
+        multiply_RationalMatrix_helper("[[1], [2], [3], [4]]", "[[]]", "[[], [], [], []]");
+        multiply_RationalMatrix_helper("[[3, 4, 0]]", "[[-2], [1], [3]]", "[[-2]]");
+        multiply_RationalMatrix_helper("[[-3, -8], [0, 7]]", "[[0, 0], [0, 0]]", "[[0, 0], [0, 0]]");
+        multiply_RationalMatrix_helper("[[-3, -8], [0, 7]]", "[[1, 0], [0, 1]]", "[[-3, -8], [0, 7]]");
+
+        multiply_RationalMatrix_helper("[[1, 3], [-1, 2]]", "[[3], [4]]", "[[15], [5]]");
+        multiply_RationalMatrix_helper(
+                "[[1, 2], [3, 4], [5, 6]]",
+                "[[1, 2, 3, 4], [5, 6, 7, 8]]",
+                "[[11, 14, 17, 20], [23, 30, 37, 44], [35, 46, 57, 68]]"
+        );
+
+        multiply_RationalMatrix_fail_helper("[]#0", "[[]]");
+        multiply_RationalMatrix_fail_helper("[[1, 2, 3, 4], [5, 6, 7, 8]]", "[[1, 2], [3, 4], [5, 6]]");
+    }
+
     @Test
     public void testEquals() {
         testEqualsHelper(
