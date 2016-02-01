@@ -9,10 +9,7 @@ import mho.wheels.structures.Triple;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigInteger;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 
 import static mho.qbar.objects.Matrix.*;
@@ -60,6 +57,7 @@ public class MatrixProperties extends QBarTestProperties {
         compareImplementationsMultiply_Matrix();
         propertiesShiftLeft();
         compareImplementationsShiftLeft();
+        propertiesRowEchelonForm();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -1085,6 +1083,41 @@ public class MatrixProperties extends QBarTestProperties {
         functions.put("standard", p -> p.a.shiftLeft(p.b));
         Iterable<Pair<Matrix, Integer>> ps = P.pairs(P.matrices(), P.naturalIntegersGeometric());
         compareImplementations("shiftLeft(int)", take(LIMIT, ps), functions);
+    }
+
+    private void propertiesRowEchelonForm() {
+        initialize("rowEchelonForm()");
+        for (Matrix m : take(LIMIT, P.matrices())) {
+            Matrix ref = m.rowEchelonForm();
+            ref.validate();
+            boolean seenNonzero = false;
+            for (int i = ref.height() - 1; i >= 0; i--) {
+                boolean zero = ref.row(i).isZero();
+                if (zero) {
+                    if (seenNonzero) {
+                        fail(m);
+                    }
+                } else {
+                    seenNonzero = true;
+                }
+            }
+            int lastPivotIndex = -1;
+            for (Vector row : ref.rows()) {
+                Optional<Integer> oi = findIndex(x -> !x.equals(BigInteger.ZERO), row);
+                if (!oi.isPresent()) break;
+                int pivotIndex = oi.get();
+                if (pivotIndex <= lastPivotIndex) {
+                    fail(m);
+                }
+                lastPivotIndex = pivotIndex;
+            }
+            idempotent(Matrix::rowEchelonForm, m);
+        }
+
+        for (Pair<Integer, Integer> p : take(SMALL_LIMIT, P.pairs(P.naturalIntegersGeometric()))) {
+            Matrix zero = zero(p.a, p.b);
+            assertEquals(p, zero.rowEchelonForm(), zero);
+        }
     }
 
     private void propertiesEquals() {

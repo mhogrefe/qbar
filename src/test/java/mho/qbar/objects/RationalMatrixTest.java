@@ -864,6 +864,25 @@ public class RationalMatrixTest {
         shiftRight_helper("[[-2/3, -8], [0, 5/7]]", -4, "[[-32/3, -128], [0, 80/7]]");
     }
 
+    private static void rowEchelonForm_helper(@NotNull String input, @NotNull String output) {
+        aeq(read(input).get().rowEchelonForm(), output);
+    }
+
+    @Test
+    public void testRowEchelonForm() {
+        rowEchelonForm_helper("[]#0", "[]#0");
+        rowEchelonForm_helper("[]#3", "[]#3");
+        rowEchelonForm_helper("[[], [], []]", "[[], [], []]");
+        rowEchelonForm_helper("[[-2/3]]", "[[1]]");
+        rowEchelonForm_helper("[[-2/3, -8], [0, 5/7]]", "[[1, 12], [0, 1]]");
+        rowEchelonForm_helper("[[1, 9, -13], [20, 5, -6]]", "[[1, 9, -13], [0, 1, -254/175]]");
+
+        rowEchelonForm_helper(
+                "[[0, -3, -6, 4, 9], [-1, -2, -1, 3, 1], [-2, -3, 0, 3, -1], [1, 4, 5, -9, -7]]",
+                "[[1, 2, 1, -3, -1], [0, 1, 2, -4/3, -3], [0, 0, 0, 1, 0], [0, 0, 0, 0, 0]]"
+        );
+    }
+
     @Test
     public void testEquals() {
         testEqualsHelper(

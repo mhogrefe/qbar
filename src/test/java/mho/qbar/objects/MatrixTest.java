@@ -668,6 +668,25 @@ public class MatrixTest {
         shiftLeft_fail_helper("[[-3, -8], [0, 7]]", -1);
     }
 
+    private static void rowEchelonForm_helper(@NotNull String input, @NotNull String output) {
+        aeq(read(input).get().rowEchelonForm(), output);
+    }
+
+    @Test
+    public void testRowEchelonForm() {
+        rowEchelonForm_helper("[]#0", "[]#0");
+        rowEchelonForm_helper("[]#3", "[]#3");
+        rowEchelonForm_helper("[[], [], []]", "[[], [], []]");
+        rowEchelonForm_helper("[[-3]]", "[[-3]]");
+        rowEchelonForm_helper("[[-3, -8], [0, 7]]", "[[-3, -8], [0, 7]]");
+        rowEchelonForm_helper("[[1, 9, -13], [20, 5, -6]]", "[[1, 9, -13], [0, -175, 254]]");
+
+        rowEchelonForm_helper(
+                "[[0, -3, -6, 4, 9], [-1, -2, -1, 3, 1], [-2, -3, 0, 3, -1], [1, 4, 5, -9, -7]]",
+                "[[-1, -2, -1, 3, 1], [0, -3, -6, 4, 9], [0, 0, 0, -5, 0], [0, 0, 0, 0, 0]]"
+        );
+    }
+
     @Test
     public void testEquals() {
         testEqualsHelper(

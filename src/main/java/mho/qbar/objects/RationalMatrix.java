@@ -789,6 +789,65 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
     }
 
     /**
+     * Returns a row echelon form of {@code this}. In other words, all zero rows are at the bottom, the first nonzero
+     * element of every row is 1, and the first nonzero element of every row is strictly to the right of the first
+     * nonzero element of the row above it.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalMatrix}.</li>
+     *  <li>The result is in row echelon form.</li>
+     * </ul>
+     *
+     * Size is height({@code this})×width({@code this})
+     *
+     * @return a row echelon form of {@code this}
+     */
+    public @NotNull RationalMatrix rowEchelonForm() {
+        int height = height();
+        boolean changed = false;
+        List<RationalVector> refRows = rows;
+        int i = 0;
+        outer:
+        for (int j = 0; i < height && j < width; j++) {
+            int nonzeroRowIndex = i;
+            Rational pivot = refRows.get(i).get(j);
+            while (pivot == Rational.ZERO) {
+                nonzeroRowIndex++;
+                if (nonzeroRowIndex == height) continue outer;
+                pivot = refRows.get(nonzeroRowIndex).get(j);
+            }
+            if (nonzeroRowIndex != i) {
+                if (!changed) {
+                    changed = true;
+                    refRows = toList(rows);
+                }
+                Collections.swap(refRows, i, nonzeroRowIndex);
+            }
+            RationalVector nonzeroRow = refRows.get(i);
+            if (pivot != Rational.ONE) {
+                if (!changed) {
+                    changed = true;
+                    refRows = toList(rows);
+                }
+                nonzeroRow = nonzeroRow.divide(pivot);
+                refRows.set(i, nonzeroRow);
+            }
+            for (int k = i + 1; k < height; k++) {
+                RationalVector row = refRows.get(k);
+                if (row.get(j) != Rational.ZERO) {
+                    if (!changed) {
+                        changed = true;
+                        refRows = toList(rows);
+                    }
+                    refRows.set(k, row.subtract(nonzeroRow.multiply(row.get(j))));
+                }
+            }
+            i++;
+        }
+        return changed ? new RationalMatrix(refRows, width) : this;
+    }
+
+    /**
      * Determines whether {@code this} is equal to {@code that}.
      *
      * <ul>

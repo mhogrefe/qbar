@@ -691,6 +691,57 @@ public class Matrix implements Comparable<Matrix> {
     }
 
     /**
+     * Returns a row echelon form of {@code this}. In other words, all zero rows are at the bottom, and the first
+     * nonzero element of every row is strictly to the right of the first nonzero element of the row above it. Note
+     * that contrary to some definitions of row echelon form, the first nonzero element of a row is not necessarily 1.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Matrix}.</li>
+     *  <li>The result is in row echelon form.</li>
+     * </ul>
+     *
+     * Size is height({@code this})×width({@code this})
+     *
+     * @return a row echelon form of {@code this}
+     */
+    public @NotNull Matrix rowEchelonForm() {
+        int height = height();
+        boolean changed = false;
+        List<Vector> refRows = rows;
+        int i = 0;
+        outer:
+        for (int j = 0; i < height && j < width; j++) {
+            int nonzeroRowIndex = i;
+            BigInteger pivot = refRows.get(i).get(j);
+            while (pivot.equals(BigInteger.ZERO)) {
+                nonzeroRowIndex++;
+                if (nonzeroRowIndex == height) continue outer;
+                pivot = refRows.get(nonzeroRowIndex).get(j);
+            }
+            if (nonzeroRowIndex != i) {
+                if (!changed) {
+                    changed = true;
+                    refRows = toList(rows);
+                }
+                Collections.swap(refRows, i, nonzeroRowIndex);
+            }
+            Vector nonzeroRow = refRows.get(i);
+            for (int k = i + 1; k < height; k++) {
+                Vector row = refRows.get(k);
+                if (!row.get(j).equals(BigInteger.ZERO)) {
+                    if (!changed) {
+                        changed = true;
+                        refRows = toList(rows);
+                    }
+                    refRows.set(k, row.multiply(pivot).subtract(nonzeroRow.multiply(row.get(j))));
+                }
+            }
+            i++;
+        }
+        return changed ? new Matrix(refRows, width) : this;
+    }
+
+    /**
      * Determines whether {@code this} is equal to {@code that}.
      *
      * <ul>

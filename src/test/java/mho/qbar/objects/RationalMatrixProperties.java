@@ -63,6 +63,7 @@ public class RationalMatrixProperties extends QBarTestProperties {
         compareImplementationsShiftLeft();
         propertiesShiftRight();
         compareImplementationsShiftRight();
+        propertiesRowEchelonForm();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -1288,6 +1289,41 @@ public class RationalMatrixProperties extends QBarTestProperties {
         functions.put("standard", p -> p.a.shiftRight(p.b));
         Iterable<Pair<RationalMatrix, Integer>> ps = P.pairs(P.rationalMatrices(), P.integersGeometric());
         compareImplementations("shiftRight(int)", take(LIMIT, ps), functions);
+    }
+
+    private void propertiesRowEchelonForm() {
+        initialize("rowEchelonForm()");
+        for (RationalMatrix m : take(LIMIT, P.rationalMatrices())) {
+            RationalMatrix ref = m.rowEchelonForm();
+            ref.validate();
+            boolean seenNonzero = false;
+            for (int i = ref.height() - 1; i >= 0; i--) {
+                boolean zero = ref.row(i).isZero();
+                if (zero) {
+                    if (seenNonzero) {
+                        fail(m);
+                    }
+                } else {
+                    seenNonzero = true;
+                }
+            }
+            int lastPivotIndex = -1;
+            for (RationalVector row : ref.rows()) {
+                Optional<Integer> oi = findIndex(x -> x != Rational.ZERO, row);
+                if (!oi.isPresent()) break;
+                int pivotIndex = oi.get();
+                if (row.get(pivotIndex) != Rational.ONE || pivotIndex <= lastPivotIndex) {
+                    fail(m);
+                }
+                lastPivotIndex = pivotIndex;
+            }
+            idempotent(RationalMatrix::rowEchelonForm, m);
+        }
+
+        for (Pair<Integer, Integer> p : take(SMALL_LIMIT, P.pairs(P.naturalIntegersGeometric()))) {
+            RationalMatrix zero = zero(p.a, p.b);
+            assertEquals(p, zero.rowEchelonForm(), zero);
+        }
     }
 
     private void propertiesEquals() {
