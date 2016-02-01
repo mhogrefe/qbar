@@ -669,6 +669,28 @@ public class Matrix implements Comparable<Matrix> {
     }
 
     /**
+     * Returns the left shift of {@code this} by {@code bits}; {@code this}×2<sup>{@code bits}</sup>.
+     *
+     * <ul>
+     *  <li>{@code this} can be any {@code Matrix}.</li>
+     *  <li>{@code bits} cannot be negative.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * Size is height({@code this})×width({@code this})
+     *
+     * @param bits the number of bits to left-shift by
+     * @return {@code this}≪{@code bits}
+     */
+    public @NotNull Matrix shiftLeft(int bits) {
+        if (bits < 0) {
+            throw new ArithmeticException("bits cannot be negative. Invalid bits: " + bits);
+        }
+        if (isZero() || bits == 0) return this;
+        return new Matrix(toList(map(r -> r.shiftLeft(bits), rows)), width);
+    }
+
+    /**
      * Determines whether {@code this} is equal to {@code that}.
      *
      * <ul>

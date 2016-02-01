@@ -449,8 +449,7 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
      * @return {@code this}≪{@code bits}
      */
     public @NotNull RationalVector shiftLeft(int bits) {
-        if (this == ZERO_DIMENSIONAL) return ZERO_DIMENSIONAL;
-        if (bits == 0) return this;
+        if (this == ZERO_DIMENSIONAL || bits == 0) return this;
         return new RationalVector(toList(map(r -> r.shiftLeft(bits), coordinates)));
     }
 
@@ -470,8 +469,7 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
      * @return {@code this}≫{@code bits}
      */
     public @NotNull RationalVector shiftRight(int bits) {
-        if (this == ZERO_DIMENSIONAL) return ZERO_DIMENSIONAL;
-        if (bits == 0) return this;
+        if (this == ZERO_DIMENSIONAL || bits == 0) return this;
         return new RationalVector(toList(map(r -> r.shiftRight(bits), coordinates)));
     }
 

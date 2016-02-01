@@ -288,11 +288,13 @@ public class VectorTest {
         shiftLeft_helper("[]", 2, "[]");
         shiftLeft_helper("[]", 3, "[]");
         shiftLeft_helper("[]", 4, "[]");
+
         shiftLeft_helper("[2]", 0, "[2]");
         shiftLeft_helper("[2]", 1, "[4]");
         shiftLeft_helper("[2]", 2, "[8]");
         shiftLeft_helper("[2]", 3, "[16]");
         shiftLeft_helper("[2]", 4, "[32]");
+
         shiftLeft_helper("[5, -4, 23]", 0, "[5, -4, 23]");
         shiftLeft_helper("[5, -4, 23]", 1, "[10, -8, 46]");
         shiftLeft_helper("[5, -4, 23]", 2, "[20, -16, 92]");

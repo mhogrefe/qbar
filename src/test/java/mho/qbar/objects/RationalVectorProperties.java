@@ -675,14 +675,6 @@ public class RationalVectorProperties extends QBarTestProperties {
     private void propertiesShiftLeft() {
         initialize("shiftLeft(int)");
         for (Pair<RationalVector, Integer> p : take(LIMIT, P.pairs(P.rationalVectors(), P.integersGeometric()))) {
-            homomorphic(
-                    RationalVector::negate,
-                    Function.identity(),
-                    RationalVector::negate,
-                    RationalVector::shiftLeft,
-                    RationalVector::shiftLeft,
-                    p
-            );
             RationalVector shifted = p.a.shiftLeft(p.b);
             shifted.validate();
             assertEquals(p, shifted, shiftLeft_simplest(p.a, p.b));
@@ -691,6 +683,14 @@ public class RationalVectorProperties extends QBarTestProperties {
             assertEquals(p, p.a.negate().shiftLeft(p.b), shifted.negate());
             inverse(a -> a.shiftLeft(p.b), (RationalVector v) -> v.shiftRight(p.b), p.a);
             assertEquals(p, shifted, p.a.shiftRight(-p.b));
+            homomorphic(
+                    RationalVector::negate,
+                    Function.identity(),
+                    RationalVector::negate,
+                    RationalVector::shiftLeft,
+                    RationalVector::shiftLeft,
+                    p
+            );
         }
 
         for (RationalVector v : take(LIMIT, P.rationalVectors())) {
@@ -733,14 +733,6 @@ public class RationalVectorProperties extends QBarTestProperties {
     private void propertiesShiftRight() {
         initialize("shiftRight(int)");
         for (Pair<RationalVector, Integer> p : take(LIMIT, P.pairs(P.rationalVectors(), P.integersGeometric()))) {
-            homomorphic(
-                    RationalVector::negate,
-                    Function.identity(),
-                    RationalVector::negate,
-                    RationalVector::shiftRight,
-                    RationalVector::shiftRight,
-                    p
-            );
             RationalVector shifted = p.a.shiftRight(p.b);
             shifted.validate();
             assertEquals(p, shifted, shiftRight_simplest(p.a, p.b));
@@ -749,6 +741,14 @@ public class RationalVectorProperties extends QBarTestProperties {
             assertEquals(p, p.a.negate().shiftRight(p.b), shifted.negate());
             inverse(a -> a.shiftRight(p.b), (RationalVector v) -> v.shiftLeft(p.b), p.a);
             assertEquals(p, shifted, p.a.shiftLeft(-p.b));
+            homomorphic(
+                    RationalVector::negate,
+                    Function.identity(),
+                    RationalVector::negate,
+                    RationalVector::shiftRight,
+                    RationalVector::shiftRight,
+                    p
+            );
         }
 
         for (RationalVector v : take(LIMIT, P.rationalVectors())) {

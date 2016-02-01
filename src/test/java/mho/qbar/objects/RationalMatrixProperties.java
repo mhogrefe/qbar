@@ -59,6 +59,10 @@ public class RationalMatrixProperties extends QBarTestProperties {
         propertiesMultiply_RationalVector();
         propertiesMultiply_RationalMatrix();
         compareImplementationsMultiply_RationalMatrix();
+        propertiesShiftLeft();
+        compareImplementationsShiftLeft();
+        propertiesShiftRight();
+        compareImplementationsShiftRight();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -1190,6 +1194,100 @@ public class RationalMatrixProperties extends QBarTestProperties {
                 )
         );
         compareImplementations("multiply(RationalMatrix)", take(LIMIT, ps), functions);
+    }
+
+    private static @NotNull RationalMatrix shiftLeft_simplest(@NotNull RationalMatrix m, int bits) {
+        if (bits < 0) {
+            return m.divide(BigInteger.ONE.shiftLeft(-bits));
+        } else {
+            return m.multiply(BigInteger.ONE.shiftLeft(bits));
+        }
+    }
+
+    private void propertiesShiftLeft() {
+        initialize("shiftLeft(int)");
+        for (Pair<RationalMatrix, Integer> p : take(LIMIT, P.pairs(P.rationalMatrices(), P.integersGeometric()))) {
+            RationalMatrix shifted = p.a.shiftLeft(p.b);
+            shifted.validate();
+            assertEquals(p, shifted, shiftLeft_simplest(p.a, p.b));
+            assertEquals(p, p.a.height(), shifted.height());
+            assertEquals(p, p.a.width(), shifted.width());
+            assertEquals(p, p.a.negate().shiftLeft(p.b), shifted.negate());
+            inverse(a -> a.shiftLeft(p.b), (RationalMatrix m) -> m.shiftRight(p.b), p.a);
+            assertEquals(p, shifted, p.a.shiftRight(-p.b));
+            homomorphic(
+                    RationalMatrix::negate,
+                    Function.identity(),
+                    RationalMatrix::negate,
+                    RationalMatrix::shiftLeft,
+                    RationalMatrix::shiftLeft,
+                    p
+            );
+        }
+
+        for (RationalMatrix m : take(LIMIT, P.rationalMatrices())) {
+            fixedPoint(n -> n.shiftLeft(0), m);
+        }
+
+        Iterable<Pair<RationalMatrix, Integer>> ps = P.pairs(P.rationalMatrices(), P.naturalIntegersGeometric());
+        for (Pair<RationalMatrix, Integer> p : take(LIMIT, ps)) {
+            assertEquals(p, p.a.shiftLeft(p.b), p.a.multiply(BigInteger.ONE.shiftLeft(p.b)));
+        }
+    }
+
+    private void compareImplementationsShiftLeft() {
+        Map<String, Function<Pair<RationalMatrix, Integer>, RationalMatrix>> functions = new LinkedHashMap<>();
+        functions.put("simplest", p -> shiftLeft_simplest(p.a, p.b));
+        functions.put("standard", p -> p.a.shiftLeft(p.b));
+        Iterable<Pair<RationalMatrix, Integer>> ps = P.pairs(P.rationalMatrices(), P.integersGeometric());
+        compareImplementations("shiftLeft(int)", take(LIMIT, ps), functions);
+    }
+
+    private static @NotNull RationalMatrix shiftRight_simplest(@NotNull RationalMatrix m, int bits) {
+        if (bits < 0) {
+            return m.multiply(BigInteger.ONE.shiftLeft(-bits));
+        } else {
+            return m.divide(BigInteger.ONE.shiftLeft(bits));
+        }
+    }
+
+    private void propertiesShiftRight() {
+        initialize("shiftRight(int)");
+        for (Pair<RationalMatrix, Integer> p : take(LIMIT, P.pairs(P.rationalMatrices(), P.integersGeometric()))) {
+            RationalMatrix shifted = p.a.shiftRight(p.b);
+            shifted.validate();
+            assertEquals(p, shifted, shiftRight_simplest(p.a, p.b));
+            assertEquals(p, p.a.height(), shifted.height());
+            assertEquals(p, p.a.width(), shifted.width());
+            assertEquals(p, p.a.negate().shiftRight(p.b), shifted.negate());
+            inverse(a -> a.shiftRight(p.b), (RationalMatrix m) -> m.shiftLeft(p.b), p.a);
+            assertEquals(p, shifted, p.a.shiftLeft(-p.b));
+            homomorphic(
+                    RationalMatrix::negate,
+                    Function.identity(),
+                    RationalMatrix::negate,
+                    RationalMatrix::shiftRight,
+                    RationalMatrix::shiftRight,
+                    p
+            );
+        }
+
+        for (RationalMatrix m : take(LIMIT, P.rationalMatrices())) {
+            assertEquals(m, m.shiftRight(0), m);
+        }
+
+        Iterable<Pair<RationalMatrix, Integer>> ps = P.pairs(P.rationalMatrices(), P.naturalIntegersGeometric());
+        for (Pair<RationalMatrix, Integer> p : take(LIMIT, ps)) {
+            assertEquals(p, p.a.shiftRight(p.b), p.a.divide(BigInteger.ONE.shiftLeft(p.b)));
+        }
+    }
+
+    private void compareImplementationsShiftRight() {
+        Map<String, Function<Pair<RationalMatrix, Integer>, RationalMatrix>> functions = new LinkedHashMap<>();
+        functions.put("simplest", p -> shiftRight_simplest(p.a, p.b));
+        functions.put("standard", p -> p.a.shiftRight(p.b));
+        Iterable<Pair<RationalMatrix, Integer>> ps = P.pairs(P.rationalMatrices(), P.integersGeometric());
+        compareImplementations("shiftRight(int)", take(LIMIT, ps), functions);
     }
 
     private void propertiesEquals() {

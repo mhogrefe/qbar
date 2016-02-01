@@ -749,6 +749,46 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
     }
 
     /**
+     * Returns the left shift of {@code this} by {@code bits}; {@code this}×2<sup>{@code bits}</sup>. Negative
+     * {@code bits} corresponds to a right shift.
+     *
+     * <ul>
+     *  <li>{@code this} can be any {@code RationalMatrix}.</li>
+     *  <li>{@code bits} may be any {@code int}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * Size is height({@code this})×width({@code this})
+     *
+     * @param bits the number of bits to left-shift by
+     * @return {@code this}≪{@code bits}
+     */
+    public @NotNull RationalMatrix shiftLeft(int bits) {
+        if (isZero() || bits == 0) return this;
+        return new RationalMatrix(toList(map(r -> r.shiftLeft(bits), rows)), width);
+    }
+
+    /**
+     * Returns the right shift of {@code this} by {@code bits}; {@code this}×2<sup>–{@code bits}</sup>. Negative
+     * {@code bits} corresponds to a left shift.
+     *
+     * <ul>
+     *  <li>{@code this} can be any {@code RationalMatrix}.</li>
+     *  <li>{@code bits} may be any {@code int}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * Size is height({@code this})×width({@code this})
+     *
+     * @param bits the number of bits to right-shift by
+     * @return {@code this}≫{@code bits}
+     */
+    public @NotNull RationalMatrix shiftRight(int bits) {
+        if (isZero() || bits == 0) return this;
+        return new RationalMatrix(toList(map(r -> r.shiftRight(bits), rows)), width);
+    }
+
+    /**
      * Determines whether {@code this} is equal to {@code that}.
      *
      * <ul>

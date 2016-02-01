@@ -402,6 +402,7 @@ public class RationalVectorTest {
         shiftLeft_helper("[]", -2, "[]");
         shiftLeft_helper("[]", -3, "[]");
         shiftLeft_helper("[]", -4, "[]");
+
         shiftLeft_helper("[1/2]", 0, "[1/2]");
         shiftLeft_helper("[1/2]", 1, "[1]");
         shiftLeft_helper("[1/2]", 2, "[2]");
@@ -411,6 +412,7 @@ public class RationalVectorTest {
         shiftLeft_helper("[1/2]", -2, "[1/8]");
         shiftLeft_helper("[1/2]", -3, "[1/16]");
         shiftLeft_helper("[1/2]", -4, "[1/32]");
+
         shiftLeft_helper("[5/3, -1/4, 23]", 0, "[5/3, -1/4, 23]");
         shiftLeft_helper("[5/3, -1/4, 23]", 1, "[10/3, -1/2, 46]");
         shiftLeft_helper("[5/3, -1/4, 23]", 2, "[20/3, -1, 92]");

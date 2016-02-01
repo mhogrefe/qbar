@@ -750,6 +750,120 @@ public class RationalMatrixTest {
         multiply_RationalMatrix_fail_helper("[[1, 2, 3, 4], [5, 6, 7, 8]]", "[[1, 2], [3, 4], [5, 6]]");
     }
 
+    private static void shiftLeft_helper(@NotNull String a, int bits, @NotNull String output) {
+        aeq(read(a).get().shiftLeft(bits), output);
+    }
+
+    @Test
+    public void testShiftLeft() {
+        shiftLeft_helper("[]#0", 0, "[]#0");
+        shiftLeft_helper("[]#0", 1, "[]#0");
+        shiftLeft_helper("[]#0", 2, "[]#0");
+        shiftLeft_helper("[]#0", 3, "[]#0");
+        shiftLeft_helper("[]#0", 4, "[]#0");
+        shiftLeft_helper("[]#0", -1, "[]#0");
+        shiftLeft_helper("[]#0", -2, "[]#0");
+        shiftLeft_helper("[]#0", -3, "[]#0");
+        shiftLeft_helper("[]#0", -4, "[]#0");
+
+        shiftLeft_helper("[]#3", 0, "[]#3");
+        shiftLeft_helper("[]#3", 1, "[]#3");
+        shiftLeft_helper("[]#3", 2, "[]#3");
+        shiftLeft_helper("[]#3", 3, "[]#3");
+        shiftLeft_helper("[]#3", 4, "[]#3");
+        shiftLeft_helper("[]#3", -1, "[]#3");
+        shiftLeft_helper("[]#3", -2, "[]#3");
+        shiftLeft_helper("[]#3", -3, "[]#3");
+        shiftLeft_helper("[]#3", -4, "[]#3");
+
+        shiftLeft_helper("[[], [], []]", 0, "[[], [], []]");
+        shiftLeft_helper("[[], [], []]", 1, "[[], [], []]");
+        shiftLeft_helper("[[], [], []]", 2, "[[], [], []]");
+        shiftLeft_helper("[[], [], []]", 3, "[[], [], []]");
+        shiftLeft_helper("[[], [], []]", 4, "[[], [], []]");
+        shiftLeft_helper("[[], [], []]", -1, "[[], [], []]");
+        shiftLeft_helper("[[], [], []]", -2, "[[], [], []]");
+        shiftLeft_helper("[[], [], []]", -3, "[[], [], []]");
+        shiftLeft_helper("[[], [], []]", -4, "[[], [], []]");
+
+        shiftLeft_helper("[[2/3]]", 0, "[[2/3]]");
+        shiftLeft_helper("[[2/3]]", 1, "[[4/3]]");
+        shiftLeft_helper("[[2/3]]", 2, "[[8/3]]");
+        shiftLeft_helper("[[2/3]]", 3, "[[16/3]]");
+        shiftLeft_helper("[[2/3]]", 4, "[[32/3]]");
+        shiftLeft_helper("[[2/3]]", -1, "[[1/3]]");
+        shiftLeft_helper("[[2/3]]", -2, "[[1/6]]");
+        shiftLeft_helper("[[2/3]]", -3, "[[1/12]]");
+        shiftLeft_helper("[[2/3]]", -4, "[[1/24]]");
+
+        shiftLeft_helper("[[-2/3, -8], [0, 5/7]]", 0, "[[-2/3, -8], [0, 5/7]]");
+        shiftLeft_helper("[[-2/3, -8], [0, 5/7]]", 1, "[[-4/3, -16], [0, 10/7]]");
+        shiftLeft_helper("[[-2/3, -8], [0, 5/7]]", 2, "[[-8/3, -32], [0, 20/7]]");
+        shiftLeft_helper("[[-2/3, -8], [0, 5/7]]", 3, "[[-16/3, -64], [0, 40/7]]");
+        shiftLeft_helper("[[-2/3, -8], [0, 5/7]]", 4, "[[-32/3, -128], [0, 80/7]]");
+        shiftLeft_helper("[[-2/3, -8], [0, 5/7]]", -1, "[[-1/3, -4], [0, 5/14]]");
+        shiftLeft_helper("[[-2/3, -8], [0, 5/7]]", -2, "[[-1/6, -2], [0, 5/28]]");
+        shiftLeft_helper("[[-2/3, -8], [0, 5/7]]", -3, "[[-1/12, -1], [0, 5/56]]");
+        shiftLeft_helper("[[-2/3, -8], [0, 5/7]]", -4, "[[-1/24, -1/2], [0, 5/112]]");
+    }
+
+    private static void shiftRight_helper(@NotNull String a, int bits, @NotNull String output) {
+        aeq(read(a).get().shiftRight(bits), output);
+    }
+
+    @Test
+    public void testShiftRight() {
+        shiftRight_helper("[]#0", 0, "[]#0");
+        shiftRight_helper("[]#0", 1, "[]#0");
+        shiftRight_helper("[]#0", 2, "[]#0");
+        shiftRight_helper("[]#0", 3, "[]#0");
+        shiftRight_helper("[]#0", 4, "[]#0");
+        shiftRight_helper("[]#0", -1, "[]#0");
+        shiftRight_helper("[]#0", -2, "[]#0");
+        shiftRight_helper("[]#0", -3, "[]#0");
+        shiftRight_helper("[]#0", -4, "[]#0");
+
+        shiftRight_helper("[]#3", 0, "[]#3");
+        shiftRight_helper("[]#3", 1, "[]#3");
+        shiftRight_helper("[]#3", 2, "[]#3");
+        shiftRight_helper("[]#3", 3, "[]#3");
+        shiftRight_helper("[]#3", 4, "[]#3");
+        shiftRight_helper("[]#3", -1, "[]#3");
+        shiftRight_helper("[]#3", -2, "[]#3");
+        shiftRight_helper("[]#3", -3, "[]#3");
+        shiftRight_helper("[]#3", -4, "[]#3");
+
+        shiftRight_helper("[[], [], []]", 0, "[[], [], []]");
+        shiftRight_helper("[[], [], []]", 1, "[[], [], []]");
+        shiftRight_helper("[[], [], []]", 2, "[[], [], []]");
+        shiftRight_helper("[[], [], []]", 3, "[[], [], []]");
+        shiftRight_helper("[[], [], []]", 4, "[[], [], []]");
+        shiftRight_helper("[[], [], []]", -1, "[[], [], []]");
+        shiftRight_helper("[[], [], []]", -2, "[[], [], []]");
+        shiftRight_helper("[[], [], []]", -3, "[[], [], []]");
+        shiftRight_helper("[[], [], []]", -4, "[[], [], []]");
+
+        shiftRight_helper("[[2/3]]", 0, "[[2/3]]");
+        shiftRight_helper("[[2/3]]", 1, "[[1/3]]");
+        shiftRight_helper("[[2/3]]", 2, "[[1/6]]");
+        shiftRight_helper("[[2/3]]", 3, "[[1/12]]");
+        shiftRight_helper("[[2/3]]", 4, "[[1/24]]");
+        shiftRight_helper("[[2/3]]", -1, "[[4/3]]");
+        shiftRight_helper("[[2/3]]", -2, "[[8/3]]");
+        shiftRight_helper("[[2/3]]", -3, "[[16/3]]");
+        shiftRight_helper("[[2/3]]", -4, "[[32/3]]");
+
+        shiftRight_helper("[[-2/3, -8], [0, 5/7]]", 0, "[[-2/3, -8], [0, 5/7]]");
+        shiftRight_helper("[[-2/3, -8], [0, 5/7]]", 1, "[[-1/3, -4], [0, 5/14]]");
+        shiftRight_helper("[[-2/3, -8], [0, 5/7]]", 2, "[[-1/6, -2], [0, 5/28]]");
+        shiftRight_helper("[[-2/3, -8], [0, 5/7]]", 3, "[[-1/12, -1], [0, 5/56]]");
+        shiftRight_helper("[[-2/3, -8], [0, 5/7]]", 4, "[[-1/24, -1/2], [0, 5/112]]");
+        shiftRight_helper("[[-2/3, -8], [0, 5/7]]", -1, "[[-4/3, -16], [0, 10/7]]");
+        shiftRight_helper("[[-2/3, -8], [0, 5/7]]", -2, "[[-8/3, -32], [0, 20/7]]");
+        shiftRight_helper("[[-2/3, -8], [0, 5/7]]", -3, "[[-16/3, -64], [0, 40/7]]");
+        shiftRight_helper("[[-2/3, -8], [0, 5/7]]", -4, "[[-32/3, -128], [0, 80/7]]");
+    }
+
     @Test
     public void testEquals() {
         testEqualsHelper(

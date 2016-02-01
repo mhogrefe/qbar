@@ -347,8 +347,7 @@ public class Vector implements Comparable<Vector>, Iterable<BigInteger> {
     }
 
     /**
-     * Returns the left shift of {@code this} by {@code bits}; {@code this}×2<sup>{@code bits}</sup>. Negative
-     * {@code bits} corresponds to a right shift.
+     * Returns the left shift of {@code this} by {@code bits}; {@code this}×2<sup>{@code bits}</sup>.
      *
      * <ul>
      *  <li>{@code this} can be any {@code Vector}.</li>
@@ -365,8 +364,7 @@ public class Vector implements Comparable<Vector>, Iterable<BigInteger> {
         if (bits < 0) {
             throw new ArithmeticException("bits cannot be negative. Invalid bits: " + bits);
         }
-        if (this == ZERO_DIMENSIONAL) return ZERO_DIMENSIONAL;
-        if (bits == 0) return this;
+        if (this == ZERO_DIMENSIONAL || bits == 0) return this;
         return new Vector(toList(map(i -> i.shiftLeft(bits), coordinates)));
     }
 

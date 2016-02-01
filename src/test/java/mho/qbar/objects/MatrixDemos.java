@@ -384,6 +384,13 @@ public class MatrixDemos extends QBarDemos {
         }
     }
 
+    private void demoShiftLeft() {
+        Iterable<Pair<Matrix, Integer>> ps = P.pairs(P.withScale(4).matrices(), P.naturalIntegersGeometric());
+        for (Pair<Matrix, Integer> p : take(LIMIT, ps)) {
+            System.out.println(p.a + " << " + p.b + " = " + p.a.shiftLeft(p.b));
+        }
+    }
+
     private void demoEquals_Matrix() {
         for (Pair<Matrix, Matrix> p : take(LIMIT, P.pairs(P.withScale(4).matrices()))) {
             System.out.println(p.a + (p.a.equals(p.b) ? " = " : " ≠ ") + p.b);

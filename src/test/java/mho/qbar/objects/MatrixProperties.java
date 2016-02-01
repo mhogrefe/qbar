@@ -58,6 +58,8 @@ public class MatrixProperties extends QBarTestProperties {
         propertiesMultiply_Vector();
         propertiesMultiply_Matrix();
         compareImplementationsMultiply_Matrix();
+        propertiesShiftLeft();
+        compareImplementationsShiftLeft();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -1044,6 +1046,45 @@ public class MatrixProperties extends QBarTestProperties {
                 )
         );
         compareImplementations("multiply(Matrix)", take(LIMIT, ps), functions);
+    }
+
+    private static @NotNull Matrix shiftLeft_simplest(@NotNull Matrix m, int bits) {
+        if (bits < 0) {
+            throw new ArithmeticException("bits cannot be negative. Invalid bits: " + bits);
+        }
+        return m.multiply(BigInteger.ONE.shiftLeft(bits));
+    }
+
+    private void propertiesShiftLeft() {
+        initialize("shiftLeft(int)");
+        for (Pair<Matrix, Integer> p : take(LIMIT, P.pairs(P.matrices(), P.naturalIntegersGeometric()))) {
+            Matrix shifted = p.a.shiftLeft(p.b);
+            shifted.validate();
+            assertEquals(p, shifted, shiftLeft_simplest(p.a, p.b));
+            assertEquals(p, p.a.height(), shifted.height());
+            assertEquals(p, p.a.width(), shifted.width());
+            assertEquals(p, p.a.negate().shiftLeft(p.b), shifted.negate());
+            homomorphic(Matrix::negate, Function.identity(), Matrix::negate, Matrix::shiftLeft, Matrix::shiftLeft, p);
+        }
+
+        for (Matrix m : take(LIMIT, P.matrices())) {
+            fixedPoint(n -> n.shiftLeft(0), m);
+        }
+
+        for (Pair<Matrix, Integer> p : take(LIMIT, P.pairs(P.matrices(), P.negativeIntegersGeometric()))) {
+            try {
+                p.a.shiftLeft(p.b);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void compareImplementationsShiftLeft() {
+        Map<String, Function<Pair<Matrix, Integer>, Matrix>> functions = new LinkedHashMap<>();
+        functions.put("simplest", p -> shiftLeft_simplest(p.a, p.b));
+        functions.put("standard", p -> p.a.shiftLeft(p.b));
+        Iterable<Pair<Matrix, Integer>> ps = P.pairs(P.matrices(), P.naturalIntegersGeometric());
+        compareImplementations("shiftLeft(int)", take(LIMIT, ps), functions);
     }
 
     private void propertiesEquals() {

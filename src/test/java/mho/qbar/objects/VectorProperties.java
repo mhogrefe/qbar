@@ -441,13 +441,13 @@ public class VectorProperties extends QBarTestProperties {
     private void propertiesShiftLeft() {
         initialize("shiftLeft(int)");
         for (Pair<Vector, Integer> p : take(LIMIT, P.pairs(P.vectors(), P.naturalIntegersGeometric()))) {
-            homomorphic(Vector::negate, Function.identity(), Vector::negate, Vector::shiftLeft, Vector::shiftLeft, p);
             Vector shifted = p.a.shiftLeft(p.b);
             shifted.validate();
             assertEquals(p, shifted, shiftLeft_simplest(p.a, p.b));
             aeqit(p, map(BigInteger::signum, p.a), map(BigInteger::signum, shifted));
             assertEquals(p, p.a.dimension(), shifted.dimension());
             assertEquals(p, p.a.negate().shiftLeft(p.b), shifted.negate());
+            homomorphic(Vector::negate, Function.identity(), Vector::negate, Vector::shiftLeft, Vector::shiftLeft, p);
         }
 
         for (Vector v : take(LIMIT, P.vectors())) {

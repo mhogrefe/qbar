@@ -618,6 +618,56 @@ public class MatrixTest {
         multiply_RationalMatrix_fail_helper("[[1, 2, 3, 4], [5, 6, 7, 8]]", "[[1, 2], [3, 4], [5, 6]]");
     }
 
+    private static void shiftLeft_helper(@NotNull String a, int bits, @NotNull String output) {
+        aeq(read(a).get().shiftLeft(bits), output);
+    }
+
+    private static void shiftLeft_fail_helper(@NotNull String a, int bits) {
+        try {
+            read(a).get().shiftLeft(bits);
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testShiftLeft() {
+        shiftLeft_helper("[]#0", 0, "[]#0");
+        shiftLeft_helper("[]#0", 1, "[]#0");
+        shiftLeft_helper("[]#0", 2, "[]#0");
+        shiftLeft_helper("[]#0", 3, "[]#0");
+        shiftLeft_helper("[]#0", 4, "[]#0");
+
+        shiftLeft_helper("[]#3", 0, "[]#3");
+        shiftLeft_helper("[]#3", 1, "[]#3");
+        shiftLeft_helper("[]#3", 2, "[]#3");
+        shiftLeft_helper("[]#3", 3, "[]#3");
+        shiftLeft_helper("[]#3", 4, "[]#3");
+
+        shiftLeft_helper("[[], [], []]", 0, "[[], [], []]");
+        shiftLeft_helper("[[], [], []]", 1, "[[], [], []]");
+        shiftLeft_helper("[[], [], []]", 2, "[[], [], []]");
+        shiftLeft_helper("[[], [], []]", 3, "[[], [], []]");
+        shiftLeft_helper("[[], [], []]", 4, "[[], [], []]");
+
+        shiftLeft_helper("[[-3]]", 0, "[[-3]]");
+        shiftLeft_helper("[[-3]]", 1, "[[-6]]");
+        shiftLeft_helper("[[-3]]", 2, "[[-12]]");
+        shiftLeft_helper("[[-3]]", 3, "[[-24]]");
+        shiftLeft_helper("[[-3]]", 4, "[[-48]]");
+
+        shiftLeft_helper("[[-3, -8], [0, 7]]", 0, "[[-3, -8], [0, 7]]");
+        shiftLeft_helper("[[-3, -8], [0, 7]]", 1, "[[-6, -16], [0, 14]]");
+        shiftLeft_helper("[[-3, -8], [0, 7]]", 2, "[[-12, -32], [0, 28]]");
+        shiftLeft_helper("[[-3, -8], [0, 7]]", 3, "[[-24, -64], [0, 56]]");
+        shiftLeft_helper("[[-3, -8], [0, 7]]", 4, "[[-48, -128], [0, 112]]");
+
+        shiftLeft_fail_helper("[]#0", -1);
+        shiftLeft_fail_helper("[]#3", -1);
+        shiftLeft_fail_helper("[[], [], []]", -1);
+        shiftLeft_fail_helper("[[-3]]", -1);
+        shiftLeft_fail_helper("[[-3, -8], [0, 7]]", -1);
+    }
+
     @Test
     public void testEquals() {
         testEqualsHelper(
