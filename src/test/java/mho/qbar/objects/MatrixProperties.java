@@ -4,6 +4,7 @@ import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.testing.QBarTestProperties;
 import mho.qbar.testing.QBarTesting;
 import mho.wheels.iterables.IterableUtils;
+import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
 import org.jetbrains.annotations.NotNull;
@@ -634,6 +635,10 @@ public class MatrixProperties extends QBarTestProperties {
             assertEquals(p, sum.width(), p.a.width());
             commutative(Matrix::add, p);
             inverse(m -> m.add(p.b), (Matrix m) -> m.subtract(p.b), p.a);
+            assertTrue(
+                    p,
+                    sum.maxElementBitLength() <= Ordering.max(p.a.maxElementBitLength(), p.b.maxElementBitLength()) + 1
+            );
         }
 
         for (Matrix m : take(LIMIT, P.matrices())) {
@@ -949,6 +954,12 @@ public class MatrixProperties extends QBarTestProperties {
             assertEquals(p, multiply_Matrix_alt(p.a, p.b), product);
             assertEquals(p, product.height(), p.a.height());
             assertEquals(p, product.width(), p.b.width());
+            assertTrue(
+                    p,
+                    p.a.multiply(p.b).maxElementBitLength() <=
+                            p.a.maxElementBitLength() + p.b.maxElementBitLength() +
+                            BigInteger.valueOf(p.a.width()).bitLength()
+            );
         }
 
         Iterable<Pair<Vector, Vector>> ps2 = P.withElement(
