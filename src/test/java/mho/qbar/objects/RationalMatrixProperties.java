@@ -63,6 +63,7 @@ public class RationalMatrixProperties extends QBarTestProperties {
         compareImplementationsShiftLeft();
         propertiesShiftRight();
         compareImplementationsShiftRight();
+        propertiesIsInRowEchelonForm();
         propertiesRowEchelonForm();
         propertiesEquals();
         propertiesHashCode();
@@ -1291,38 +1292,30 @@ public class RationalMatrixProperties extends QBarTestProperties {
         compareImplementations("shiftRight(int)", take(LIMIT, ps), functions);
     }
 
+    private void propertiesIsInRowEchelonForm() {
+        initialize("isInRowEchelonForm()");
+        for (RationalMatrix m : take(LIMIT, P.rationalMatrices())) {
+            assertEquals(m, m.isInRowEchelonForm(), m.equals(m.rowEchelonForm()));
+        }
+
+        for (Pair<Integer, Integer> p : take(SMALL_LIMIT, P.pairs(P.naturalIntegersGeometric()))) {
+            RationalMatrix zero = zero(p.a, p.b);
+            assertTrue(p, zero.isInRowEchelonForm());
+        }
+
+        for (int i : take(SMALL_LIMIT, P.positiveIntegersGeometric())) {
+            RationalMatrix identity = identity(i);
+            assertTrue(i, identity.isInRowEchelonForm());
+        }
+    }
+
     private void propertiesRowEchelonForm() {
         initialize("rowEchelonForm()");
         for (RationalMatrix m : take(LIMIT, P.rationalMatrices())) {
             RationalMatrix ref = m.rowEchelonForm();
             ref.validate();
-            boolean seenNonzero = false;
-            for (int i = ref.height() - 1; i >= 0; i--) {
-                boolean zero = ref.row(i).isZero();
-                if (zero) {
-                    if (seenNonzero) {
-                        fail(m);
-                    }
-                } else {
-                    seenNonzero = true;
-                }
-            }
-            int lastPivotIndex = -1;
-            for (RationalVector row : ref.rows()) {
-                Optional<Integer> oi = findIndex(x -> x != Rational.ZERO, row);
-                if (!oi.isPresent()) break;
-                int pivotIndex = oi.get();
-                if (row.get(pivotIndex) != Rational.ONE || pivotIndex <= lastPivotIndex) {
-                    fail(m);
-                }
-                lastPivotIndex = pivotIndex;
-            }
+            assertTrue(m, ref.isInRowEchelonForm());
             idempotent(RationalMatrix::rowEchelonForm, m);
-        }
-
-        for (Pair<Integer, Integer> p : take(SMALL_LIMIT, P.pairs(P.naturalIntegersGeometric()))) {
-            RationalMatrix zero = zero(p.a, p.b);
-            assertEquals(p, zero.rowEchelonForm(), zero);
         }
     }
 

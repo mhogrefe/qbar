@@ -691,6 +691,39 @@ public class Matrix implements Comparable<Matrix> {
     }
 
     /**
+     * Determines whether {@code this} is in row echelon form; whether all zero rows are at the bottom, and the first
+     * nonzero element of every row is strictly to the right of the first nonzero element of the row above it. Note
+     * that contrary to some definitions of row echelon form, the first nonzero element of a row is not necessarily 1.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalMatrix}.</li>
+     *  <li>The result may be either {@code boolean}.</li>
+     * </ul>
+     *
+     * @return whether {@code this} is in row echelon form
+     */
+    public boolean isInRowEchelonForm() {
+        boolean seenNonzero = false;
+        for (int i = height() - 1; i >= 0; i--) {
+            boolean zero = row(i).isZero();
+            if (zero) {
+                if (seenNonzero) return false;
+            } else {
+                seenNonzero = true;
+            }
+        }
+        int lastPivotIndex = -1;
+        for (Vector row : rows()) {
+            Optional<Integer> oi = findIndex(x -> !x.equals(BigInteger.ZERO), row);
+            if (!oi.isPresent()) break;
+            int pivotIndex = oi.get();
+            if (pivotIndex <= lastPivotIndex) return false;
+            lastPivotIndex = pivotIndex;
+        }
+        return true;
+    }
+
+    /**
      * Returns a row echelon form of {@code this}. In other words, all zero rows are at the bottom, and the first
      * nonzero element of every row is strictly to the right of the first nonzero element of the row above it. Note
      * that contrary to some definitions of row echelon form, the first nonzero element of a row is not necessarily 1.

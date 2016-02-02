@@ -789,6 +789,39 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
     }
 
     /**
+     * Determines whether {@code this} is in row echelon form; whether all zero rows are at the bottom, the first
+     * nonzero element of every row is 1, and the first nonzero element of every row is strictly to the right of the
+     * first nonzero element of the row above it.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalMatrix}.</li>
+     *  <li>The result may be either {@code boolean}.</li>
+     * </ul>
+     *
+     * @return whether {@code this} is in row echelon form
+     */
+    public boolean isInRowEchelonForm() {
+        boolean seenNonzero = false;
+        for (int i = height() - 1; i >= 0; i--) {
+            boolean zero = row(i).isZero();
+            if (zero) {
+                if (seenNonzero) return false;
+            } else {
+                seenNonzero = true;
+            }
+        }
+        int lastPivotIndex = -1;
+        for (RationalVector row : rows()) {
+            Optional<Integer> oi = findIndex(x -> x != Rational.ZERO, row);
+            if (!oi.isPresent()) break;
+            int pivotIndex = oi.get();
+            if (row.get(pivotIndex) != Rational.ONE || pivotIndex <= lastPivotIndex) return false;
+            lastPivotIndex = pivotIndex;
+        }
+        return true;
+    }
+
+    /**
      * Returns a row echelon form of {@code this}. In other words, all zero rows are at the bottom, the first nonzero
      * element of every row is 1, and the first nonzero element of every row is strictly to the right of the first
      * nonzero element of the row above it.

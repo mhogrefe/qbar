@@ -450,6 +450,12 @@ public class RationalMatrixDemos extends QBarDemos {
         }
     }
 
+    private void demoIsInRowEchelonForm() {
+        for (RationalMatrix m : take(LIMIT, P.withScale(4).rationalMatrices())) {
+            System.out.println(m + " is " + (m.isInRowEchelonForm() ? "" : "not ") + "in row echelon form");
+        }
+    }
+
     private void demoRowEchelonForm() {
         for (RationalMatrix m : take(LIMIT, P.withScale(4).rationalMatrices())) {
             System.out.println("rowEchelonForm(" + m + ") = " + m.rowEchelonForm());

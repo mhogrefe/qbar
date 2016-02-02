@@ -57,7 +57,9 @@ public class MatrixProperties extends QBarTestProperties {
         compareImplementationsMultiply_Matrix();
         propertiesShiftLeft();
         compareImplementationsShiftLeft();
+        propertiesIsInRowEchelonForm();
         propertiesRowEchelonForm();
+        compareImplementationsRowEchelonForm();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -1085,39 +1087,101 @@ public class MatrixProperties extends QBarTestProperties {
         compareImplementations("shiftLeft(int)", take(LIMIT, ps), functions);
     }
 
-    private void propertiesRowEchelonForm() {
-        initialize("rowEchelonForm()");
+    private void propertiesIsInRowEchelonForm() {
+        initialize("isInRowEchelonForm()");
         for (Matrix m : take(LIMIT, P.matrices())) {
-            Matrix ref = m.rowEchelonForm();
-            ref.validate();
-            boolean seenNonzero = false;
-            for (int i = ref.height() - 1; i >= 0; i--) {
-                boolean zero = ref.row(i).isZero();
-                if (zero) {
-                    if (seenNonzero) {
-                        fail(m);
-                    }
-                } else {
-                    seenNonzero = true;
-                }
-            }
-            int lastPivotIndex = -1;
-            for (Vector row : ref.rows()) {
-                Optional<Integer> oi = findIndex(x -> !x.equals(BigInteger.ZERO), row);
-                if (!oi.isPresent()) break;
-                int pivotIndex = oi.get();
-                if (pivotIndex <= lastPivotIndex) {
-                    fail(m);
-                }
-                lastPivotIndex = pivotIndex;
-            }
-            idempotent(Matrix::rowEchelonForm, m);
+            assertEquals(m, m.isInRowEchelonForm(), m.equals(m.rowEchelonForm()));
         }
 
         for (Pair<Integer, Integer> p : take(SMALL_LIMIT, P.pairs(P.naturalIntegersGeometric()))) {
             Matrix zero = zero(p.a, p.b);
-            assertEquals(p, zero.rowEchelonForm(), zero);
+            assertTrue(p, zero.isInRowEchelonForm());
         }
+
+        for (int i : take(SMALL_LIMIT, P.positiveIntegersGeometric())) {
+            Matrix identity = identity(i);
+            assertTrue(i, identity.isInRowEchelonForm());
+        }
+    }
+
+    private static @NotNull Matrix rowEchelonForm_alt(@NotNull Matrix m) {
+        int height = m.height();
+        boolean changed = false;
+        List<Vector> refRows = toList(m.rows());
+        int i = 0;
+        outer:
+        for (int j = 0; i < height && j < m.width(); j++) {
+            int nonzeroRowIndex = i;
+            BigInteger pivot = refRows.get(i).get(j);
+            while (pivot.equals(BigInteger.ZERO)) {
+                nonzeroRowIndex++;
+                if (nonzeroRowIndex == height) continue outer;
+                pivot = refRows.get(nonzeroRowIndex).get(j);
+            }
+            if (nonzeroRowIndex != i) {
+                if (!changed) {
+                    changed = true;
+                    refRows = toList(m.rows());
+                }
+                Collections.swap(refRows, i, nonzeroRowIndex);
+            }
+            Vector nonzeroRow = refRows.get(i);
+            for (int k = i + 1; k < height; k++) {
+                Vector row = refRows.get(k);
+                if (!row.get(j).equals(BigInteger.ZERO)) {
+                    if (!changed) {
+                        changed = true;
+                        refRows = toList(m.rows());
+                    }
+                    BigInteger leading = row.get(j);
+                    BigInteger gcd = pivot.gcd(leading);
+                    refRows.set(
+                            k,
+                            row.multiply(pivot.divide(gcd)).subtract(nonzeroRow.multiply(row.get(j).divide(gcd)))
+                    );
+                }
+            }
+            i++;
+        }
+        return changed ? fromRows(refRows) : m;
+    }
+
+    private void propertiesRowEchelonForm() {
+        initialize("rowEchelonForm()");
+        Function<Matrix, Matrix> toZeroOne = m -> {
+            if (m.width() == 0 || m.height() == 0) return m;
+            return fromRows(
+                    toList(
+                            map(
+                                    r -> Vector.of(
+                                            toList(
+                                                    map(
+                                                            x -> x.equals(BigInteger.ZERO) ?
+                                                                    BigInteger.ZERO :
+                                                                    BigInteger.ONE,
+                                                            r
+                                                    )
+                                            )
+                                    ),
+                                    m.rows()
+                            )
+                    )
+            );
+        };
+        for (Matrix m : take(LIMIT, P.matrices())) {
+            Matrix ref = m.rowEchelonForm();
+            ref.validate();
+            assertEquals(m, toZeroOne.apply(ref), toZeroOne.apply(rowEchelonForm_alt(m)));
+            assertTrue(m, ref.isInRowEchelonForm());
+            idempotent(Matrix::rowEchelonForm, m);
+        }
+    }
+
+    private void compareImplementationsRowEchelonForm() {
+        Map<String, Function<Matrix, Matrix>> functions = new LinkedHashMap<>();
+        functions.put("alt", MatrixProperties::rowEchelonForm_alt);
+        functions.put("standard", Matrix::rowEchelonForm);
+        compareImplementations("rowEchelonForm()", take(LIMIT, P.matrices()), functions);
     }
 
     private void propertiesEquals() {

@@ -391,6 +391,12 @@ public class MatrixDemos extends QBarDemos {
         }
     }
 
+    private void demoIsInRowEchelonForm() {
+        for (Matrix m : take(LIMIT, P.withScale(4).matrices())) {
+            System.out.println(m + " is " + (m.isInRowEchelonForm() ? "" : "not ") + "in row echelon form");
+        }
+    }
+
     private void demoRowEchelonForm() {
         for (Matrix m : take(LIMIT, P.withScale(4).matrices())) {
             System.out.println("rowEchelonForm(" + m + ") = " + m.rowEchelonForm());
