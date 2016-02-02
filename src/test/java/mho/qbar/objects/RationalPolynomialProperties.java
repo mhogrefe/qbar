@@ -86,6 +86,7 @@ public class RationalPolynomialProperties extends QBarTestProperties {
         compareImplementationsIsDivisibleBy();
         propertiesRemainderSequence();
         propertiesSignedRemainderSequence();
+        propertiesPowerSums();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -1654,6 +1655,38 @@ public class RationalPolynomialProperties extends QBarTestProperties {
         for (RationalPolynomial p : take(LIMIT, P.rationalPolynomialsAtLeast(0))) {
             assertEquals(p, p.signedRemainderSequence(ZERO), Collections.singletonList(p));
             assertEquals(p, ZERO.signedRemainderSequence(p), Arrays.asList(ZERO, p));
+        }
+    }
+
+    private void propertiesPowerSums() {
+        initialize("powerSums()");
+        for (RationalPolynomial p : take(LIMIT, P.monicRationalPolynomials())) {
+            List<Rational> sums = p.powerSums();
+            assertFalse(p, sums.isEmpty());
+            assertNotEquals(p, head(sums).signum(), -1);
+        }
+
+        for (List<Rational> rs : take(LIMIT, P.withScale(4).bags(P.rationals()))) {
+            List<RationalPolynomial> factors = new ArrayList<>();
+            for (Rational r : rs) {
+                factors.add(of(Arrays.asList(r.negate(), Rational.ONE)));
+            }
+            List<Rational> sums = product(factors).powerSums();
+            for (int i = 0; i <= rs.size(); i++) {
+                int p = i;
+                assertEquals(rs, sums.get(i), Rational.sum(map(r -> r.pow(p), rs)));
+            }
+        }
+
+        for (RationalPolynomial p : take(LIMIT, P.monicRationalPolynomials(1))) {
+            assertEquals(p, p.powerSums(), Arrays.asList(Rational.ONE, p.coefficient(0).negate()));
+        }
+
+        for (RationalPolynomial p : take(LIMIT, filterInfinite(q -> !q.isMonic(), P.rationalPolynomials()))) {
+            try {
+                p.powerSums();
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
         }
     }
 

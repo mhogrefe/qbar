@@ -1582,6 +1582,51 @@ public class RationalPolynomialTest {
         signedRemainderSequence_fail_helper("0", "0");
     }
 
+    private static void powerSums_helper(@NotNull String input, @NotNull String output) {
+        aeq(read(input).get().powerSums(), output);
+    }
+
+    @Test
+    public void testPowerSums() {
+        powerSums_helper("1", "[0]");
+        powerSums_helper("x", "[1, 0]");
+        powerSums_helper("x^2-7/4*x+1/3", "[2, 7/4, 115/48]");
+        powerSums_helper("x^3-1", "[3, 0, 0, 3]");
+        powerSums_helper("x^10", "[10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]");
+
+        powerSums_helper("x^2-2", "[2, 0, 4]");
+        powerSums_helper("x^3-3/2*x^2+1/2*x", "[3, 3/2, 5/4, 9/8]");
+        powerSums_helper("x^5-4*x^4+13/2*x^3-16/3*x^2+53/24*x-11/30", "[5, 4, 3, 2, 1, 0]");
+    }
+
+    private static void fromPowerSums_helper(@NotNull String input, @NotNull String output) {
+        aeq(fromPowerSums(readRationalList(input)), output);
+    }
+
+    private static void fromPowerSums_fail_helper(@NotNull String input) {
+        try {
+            fromPowerSums(readRationalListWithNulls(input));
+            fail();
+        } catch (NullPointerException | IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testFromPowerSums() {
+        fromPowerSums_helper("[0]", "1");
+        fromPowerSums_helper("[1, 0]", "x");
+        fromPowerSums_helper("[2, 7/4, 115/48]", "x^2-7/4*x+1/3");
+        fromPowerSums_helper("[3, 0, 0, 3]", "x^3-1");
+        fromPowerSums_helper("[10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]", "x^10");
+
+        fromPowerSums_helper("[2, 0, 4]", "x^2-2");
+        fromPowerSums_helper("[3, 3/2, 5/4, 9/8]", "x^3-3/2*x^2+1/2*x");
+        fromPowerSums_helper("[5, 4, 3, 2, 1, 0]", "x^5-4*x^4+13/2*x^3-16/3*x^2+53/24*x-11/30");
+
+        fromPowerSums_fail_helper("[]");
+        fromPowerSums_fail_helper("[1, 0, 1]");
+        fromPowerSums_fail_helper("[2, 0, null]");
+    }
+
     @Test
     public void testEquals() {
         testEqualsHelper(

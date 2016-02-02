@@ -915,6 +915,71 @@ public final class RationalPolynomial implements
     }
 
     /**
+     * Let i range from 0 to deg({@code this}); this method returns a list that contains, for every i, the sum of the
+     * ith powers of the roots of {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} must be monic.</li>
+     *  <li>The result is non-empty and contains no nulls. The first element is equal to deg({@code this}).</li>
+     * </ul>
+     *
+     * @return the first deg({@code this}) Newton sums of {@code this}
+     */
+    public @NotNull List<Rational> powerSums() {
+        if (!isMonic()) {
+            throw new IllegalArgumentException("this must be monic. Invalid this: " + this);
+        }
+        List<Rational> powerSums = new ArrayList<>();
+        int n = degree();
+        powerSums.add(Rational.of(n));
+        if (n == 0) return powerSums;
+        int k = degree();
+        powerSums.add(coefficient(k - 1).negate());
+        if (n == 1) return powerSums;
+        for (int i = 2; i <= n; i++) {
+            List<Rational> terms = new ArrayList<>();
+            for (int j = 1; j < i; j++) {
+                terms.add(coefficient(k - j).multiply(powerSums.get(i - j)).negate());
+            }
+            terms.add(coefficient(k - i).multiply(i).negate());
+            powerSums.add(Rational.sum(terms));
+        }
+        return powerSums;
+    }
+
+    /**
+     * Given the 0th to dth power sums of a d-degree monic polynomial, where the ith power sum is the sum of the ith
+     * powers of the roots, returns the polynomial.
+     *
+     * <ul>
+     *  <li>{@code powerSums} cannot be empty, and its first element must be one less than its length.</li>
+     *  <li>The result is monic.</li>
+     * </ul>
+     *
+     * @param powerSums the Newton sums of a monic {@code RationalPolynomial}
+     * @return the monic {@code RationalPolynomial} whose Newton sums are {@code powerSums}
+     */
+    public static @NotNull RationalPolynomial fromPowerSums(@NotNull List<Rational> powerSums) {
+        if (powerSums.isEmpty()) {
+            throw new IllegalArgumentException("powerSums cannot be empty.");
+        }
+        if (!head(powerSums).equals(Rational.of(powerSums.size() - 1))) {
+            throw new IllegalArgumentException("The first element of powerSums must be one less than its length." +
+                    " Invalid powerSums: " + powerSums);
+        }
+        List<Rational> coefficients = new ArrayList<>();
+        coefficients.add(Rational.ONE);
+        for (int i = 1; i < powerSums.size(); i++) {
+            List<Rational> terms = new ArrayList<>();
+            for (int j = 1; j <= i; j++) {
+                terms.add(powerSums.get(j).multiply(coefficients.get(i - j)));
+            }
+            coefficients.add(Rational.sum(terms).negate().divide(i));
+        }
+        return new RationalPolynomial(reverse(coefficients));
+    }
+
+    /**
      * Determines whether {@code this} is equal to {@code that}.
      *
      * <ul>
