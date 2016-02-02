@@ -2,6 +2,7 @@ package mho.qbar.objects;
 
 import mho.qbar.testing.QBarDemos;
 import mho.wheels.io.Readers;
+import mho.wheels.iterables.IterableUtils;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
@@ -330,6 +331,17 @@ public class RationalPolynomialDemos extends QBarDemos {
     private void demoPowerSums() {
         for (RationalPolynomial p : take(LIMIT, P.withScale(4).monicRationalPolynomials())) {
             System.out.println("powerSums(" + p + ") = " + p.powerSums());
+        }
+    }
+
+    private void demoFromPowerSums() {
+        Iterable<List<Rational>> rss = map(
+                rs -> toList(cons(Rational.of(rs.size()), rs)),
+                P.withScale(4).lists(P.rationals())
+        );
+        for (List<Rational> rs : take(LIMIT, rss)) {
+            String listString = tail(init(rs.toString()));
+            System.out.println("fromPowerSums(" + listString + ") = " + fromPowerSums(rs));
         }
     }
 

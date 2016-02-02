@@ -87,6 +87,7 @@ public class RationalPolynomialProperties extends QBarTestProperties {
         propertiesRemainderSequence();
         propertiesSignedRemainderSequence();
         propertiesPowerSums();
+        propertiesFromPowerSums();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -1664,6 +1665,7 @@ public class RationalPolynomialProperties extends QBarTestProperties {
             List<Rational> sums = p.powerSums();
             assertFalse(p, sums.isEmpty());
             assertNotEquals(p, head(sums).signum(), -1);
+            inverse(RationalPolynomial::powerSums, RationalPolynomial::fromPowerSums, p);
         }
 
         for (List<Rational> rs : take(LIMIT, P.withScale(4).bags(P.rationals()))) {
@@ -1687,6 +1689,46 @@ public class RationalPolynomialProperties extends QBarTestProperties {
                 p.powerSums();
                 fail(p);
             } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesFromPowerSums() {
+        initialize("fromPowerSums(List<Rational>)");
+        Iterable<List<Rational>> rss = map(
+                rs -> toList(cons(Rational.of(rs.size()), rs)),
+                P.withScale(4).lists(P.rationals())
+        );
+        for (List<Rational> rs : take(LIMIT, rss)) {
+            RationalPolynomial p = fromPowerSums(rs);
+            p.validate();
+            assertTrue(rs, p.isMonic());
+            inverse(RationalPolynomial::fromPowerSums, RationalPolynomial::powerSums, rs);
+        }
+
+        Iterable<List<Rational>> rssFail = filterInfinite(
+                ss -> !head(ss).equals(Rational.of(ss.size() - 1)),
+                P.listsAtLeast(1, P.rationals())
+        );
+        for (List<Rational> rs : take(LIMIT, rssFail)) {
+            try {
+                fromPowerSums(rs);
+                fail(rs);
+            } catch (IllegalArgumentException ignored) {}
+        }
+
+        rssFail = map(rs -> toList(cons(Rational.of(rs.size()), rs)), P.listsWithElement(null, P.rationals()));
+        for (List<Rational> rs : take(LIMIT, rssFail)) {
+            try {
+                fromPowerSums(rs);
+                fail(rs);
+            } catch (NullPointerException ignored) {}
+        }
+
+        for (List<Rational> rs : take(LIMIT, map(ss -> toList(cons(null, ss)), P.lists(P.rationals())))) {
+            try {
+                fromPowerSums(rs);
+                fail(rs);
+            } catch (NullPointerException ignored) {}
         }
     }
 

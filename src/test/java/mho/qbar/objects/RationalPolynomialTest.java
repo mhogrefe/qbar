@@ -1597,6 +1597,7 @@ public class RationalPolynomialTest {
         powerSums_helper("x^2-2", "[2, 0, 4]");
         powerSums_helper("x^3-3/2*x^2+1/2*x", "[3, 3/2, 5/4, 9/8]");
         powerSums_helper("x^5-4*x^4+13/2*x^3-16/3*x^2+53/24*x-11/30", "[5, 4, 3, 2, 1, 0]");
+        powerSums_helper("x^5+4*x^4+19/2*x^3+52/3*x^2+641/24*x+1091/30", "[5, -4, -3, -2, -1, 0]");
     }
 
     private static void fromPowerSums_helper(@NotNull String input, @NotNull String output) {
@@ -1621,6 +1622,7 @@ public class RationalPolynomialTest {
         fromPowerSums_helper("[2, 0, 4]", "x^2-2");
         fromPowerSums_helper("[3, 3/2, 5/4, 9/8]", "x^3-3/2*x^2+1/2*x");
         fromPowerSums_helper("[5, 4, 3, 2, 1, 0]", "x^5-4*x^4+13/2*x^3-16/3*x^2+53/24*x-11/30");
+        fromPowerSums_helper("[5, -4, -3, -2, -1, 0]", "x^5+4*x^4+19/2*x^3+52/3*x^2+641/24*x+1091/30");
 
         fromPowerSums_fail_helper("[]");
         fromPowerSums_fail_helper("[1, 0, 1]");
