@@ -267,6 +267,22 @@ public final class Polynomial implements
     }
 
     /**
+     * Returns the maximum bit length of any coefficient, or 0 if {@code this} is 0.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>The result is non-negative.</li>
+     * </ul>
+     *
+     * @return the maximum coefficient bit length
+     */
+    public int maxCoefficientBitLength() {
+        if (this == ZERO) return 0;
+        //noinspection RedundantCast
+        return maximum((Iterable<Integer>) map(c -> c.abs().bitLength(), coefficients));
+    }
+
+    /**
      * Returns this {@code Polynomial}'s degree. We consider 0 to have degree –1.
      *
      * <ul>

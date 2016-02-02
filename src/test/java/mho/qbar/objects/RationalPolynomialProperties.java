@@ -44,6 +44,7 @@ public class RationalPolynomialProperties extends QBarTestProperties {
         propertiesOf_List_Rational();
         propertiesOf_Rational();
         propertiesOf_Rational_int();
+        propertiesMaxCoefficientBitLength();
         propertiesDegree();
         propertiesLeading();
         propertiesAdd();
@@ -298,6 +299,20 @@ public class RationalPolynomialProperties extends QBarTestProperties {
                 of(p.a, p.b);
                 fail(p);
             } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesMaxCoefficientBitLength() {
+        initialize("maxCoefficientBitLength()");
+        for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
+            assertTrue(p, p.maxCoefficientBitLength() >= 0);
+            homomorphic(
+                    RationalPolynomial::negate,
+                    Function.identity(),
+                    RationalPolynomial::maxCoefficientBitLength,
+                    RationalPolynomial::maxCoefficientBitLength,
+                    p
+            );
         }
     }
 

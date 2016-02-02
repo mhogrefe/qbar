@@ -241,6 +241,22 @@ public final class RationalPolynomial implements
     }
 
     /**
+     * Returns the maximum bit length of any coefficient, or 0 if {@code this} is 0.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalPolynomial}.</li>
+     *  <li>The result is non-negative.</li>
+     * </ul>
+     *
+     * @return the maximum coefficient bit length
+     */
+    public int maxCoefficientBitLength() {
+        if (this == ZERO) return 0;
+        //noinspection RedundantCast
+        return maximum((Iterable<Integer>) map(Rational::bitLength, coefficients));
+    }
+
+    /**
      * Returns this {@code RationalPolynomial}'s degree. We consider 0 to have degree –1.
      *
      * <ul>

@@ -83,6 +83,12 @@ public class RationalPolynomialDemos extends QBarDemos {
         }
     }
 
+    private void demoMaxCoefficientBitLength() {
+        for (RationalPolynomial p : take(LIMIT, P.withScale(4).rationalPolynomials())) {
+            System.out.println("maxCoefficientBitLength(" + p + ") = " + p.maxCoefficientBitLength());
+        }
+    }
+
     private void demoDegree() {
         for (RationalPolynomial p : take(LIMIT, P.withScale(4).rationalPolynomials())) {
             System.out.println("degree(" + p + ") = " + p.degree());

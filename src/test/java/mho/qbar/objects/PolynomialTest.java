@@ -313,6 +313,21 @@ public class PolynomialTest {
         of_BigInteger_int_fail_helper("3", -1);
     }
 
+    private static void maxCoefficientBitLength_helper(@NotNull String input, int output) {
+        aeq(read(input).get().maxCoefficientBitLength(), output);
+    }
+
+    @Test
+    public void testMaxCoefficientBitLength() {
+        maxCoefficientBitLength_helper("0", 0);
+        maxCoefficientBitLength_helper("1", 1);
+        maxCoefficientBitLength_helper("x", 1);
+        maxCoefficientBitLength_helper("-17", 5);
+        maxCoefficientBitLength_helper("x^2-4*x+7", 3);
+        maxCoefficientBitLength_helper("x^3-1", 1);
+        maxCoefficientBitLength_helper("3*x^10", 2);
+    }
+
     private static void degree_helper(@NotNull String input, int output) {
         aeq(read(input).get().degree(), output);
     }

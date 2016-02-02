@@ -241,6 +241,21 @@ public class RationalPolynomialTest {
         of_Rational_int_fail_helper("-5/7", -1);
     }
 
+    private static void maxCoefficientBitLength_helper(@NotNull String input, int output) {
+        aeq(read(input).get().maxCoefficientBitLength(), output);
+    }
+
+    @Test
+    public void testMaxCoefficientBitLength() {
+        maxCoefficientBitLength_helper("0", 0);
+        maxCoefficientBitLength_helper("1", 2);
+        maxCoefficientBitLength_helper("x", 2);
+        maxCoefficientBitLength_helper("-4/3", 5);
+        maxCoefficientBitLength_helper("x^2-7/4*x+1/3", 6);
+        maxCoefficientBitLength_helper("x^3-1", 2);
+        maxCoefficientBitLength_helper("1/2*x^10", 3);
+    }
+
     private static void degree_helper(@NotNull String input, int output) {
         aeq(read(input).get().degree(), output);
     }

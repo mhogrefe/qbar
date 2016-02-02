@@ -45,6 +45,7 @@ public class PolynomialProperties extends QBarTestProperties {
         propertiesOf_List_BigInteger();
         propertiesOf_BigInteger();
         propertiesOf_BigInteger_int();
+        propertiesMaxCoefficientBitLength();
         propertiesDegree();
         propertiesLeading();
         propertiesAdd();
@@ -255,11 +256,12 @@ public class PolynomialProperties extends QBarTestProperties {
             BigInteger y = p.a.specialApply(p.b);
             assertEquals(p, y, specialApply_simplest(p.a, p.b));
             if (p.a != ZERO) {
-                int coefficientBitSizeBound = maximum(map(BigInteger::bitLength, p.a));
-                int argumentBitSizeBound = max(p.b.getNumerator().bitLength(), p.b.getDenominator().bitLength());
-                int resultBitSizeBound = coefficientBitSizeBound + argumentBitSizeBound * p.a.degree() +
-                        BigInteger.valueOf(p.a.degree() + 1).bitLength();
-                assertTrue(p, y.bitLength() <= resultBitSizeBound);
+                assertTrue(
+                        p,
+                        y.bitLength() <=
+                                p.a.maxCoefficientBitLength() + p.b.bitLength() * p.a.degree() +
+                                BigInteger.valueOf(p.a.degree() + 1).bitLength()
+                );
             }
         }
 
@@ -417,6 +419,20 @@ public class PolynomialProperties extends QBarTestProperties {
                 of(p.a, p.b);
                 fail(p);
             } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesMaxCoefficientBitLength() {
+        initialize("maxCoefficientBitLength()");
+        for (Polynomial p : take(LIMIT, P.polynomials())) {
+            assertTrue(p, p.maxCoefficientBitLength() >= 0);
+            homomorphic(
+                    Polynomial::negate,
+                    Function.identity(),
+                    Polynomial::maxCoefficientBitLength,
+                    Polynomial::maxCoefficientBitLength,
+                    p
+            );
         }
     }
 
