@@ -1674,6 +1674,7 @@ public class PolynomialTest {
         gcd_helper("3*x^10", "3*x^10", "x^10");
 
         gcd_helper("x^2+7*x+6", "x^2-5*x-6", "x+1");
+
         gcd_fail_helper("0", "0");
     }
 
@@ -1683,6 +1684,7 @@ public class PolynomialTest {
 
     @Test
     public void testLcm() {
+        lcm_helper("0", "0", "0");
         lcm_helper("0", "1", "0");
         lcm_helper("0", "x", "0");
         lcm_helper("0", "-17", "0");
@@ -1739,6 +1741,146 @@ public class PolynomialTest {
         lcm_helper("3*x^10", "3*x^10", "x^10");
 
         lcm_helper("x^2+7*x+6", "x^2-5*x-6", "x^3+x^2-36*x-36");
+    }
+
+    private static void isRelativelyPrimeTo_helper(@NotNull String a, @NotNull String b, boolean output) {
+        aeq(read(a).get().isRelativelyPrimeTo(read(b).get()), output);
+    }
+
+    private static void isRelativelyPrimeTo_fail_helper(@NotNull String a, @NotNull String b) {
+        try {
+            read(a).get().isRelativelyPrimeTo(read(b).get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testIsRelativelyPrimeTo() {
+        isRelativelyPrimeTo_helper("0", "1", true);
+        isRelativelyPrimeTo_helper("0", "x", false);
+        isRelativelyPrimeTo_helper("0", "-17", true);
+        isRelativelyPrimeTo_helper("0", "x^2-4*x+7", false);
+        isRelativelyPrimeTo_helper("0", "-x^3-1", false);
+        isRelativelyPrimeTo_helper("0", "3*x^10", false);
+
+        isRelativelyPrimeTo_helper("1", "0", true);
+        isRelativelyPrimeTo_helper("1", "1", true);
+        isRelativelyPrimeTo_helper("1", "x", true);
+        isRelativelyPrimeTo_helper("1", "-17", true);
+        isRelativelyPrimeTo_helper("1", "x^2-4*x+7", true);
+        isRelativelyPrimeTo_helper("1", "-x^3-1", true);
+        isRelativelyPrimeTo_helper("1", "3*x^10", true);
+
+        isRelativelyPrimeTo_helper("x", "0", false);
+        isRelativelyPrimeTo_helper("x", "1", true);
+        isRelativelyPrimeTo_helper("x", "x", false);
+        isRelativelyPrimeTo_helper("x", "-17", true);
+        isRelativelyPrimeTo_helper("x", "x^2-4*x+7", true);
+        isRelativelyPrimeTo_helper("x", "-x^3-1", true);
+        isRelativelyPrimeTo_helper("x", "3*x^10", false);
+
+        isRelativelyPrimeTo_helper("-17", "0", true);
+        isRelativelyPrimeTo_helper("-17", "1", true);
+        isRelativelyPrimeTo_helper("-17", "x", true);
+        isRelativelyPrimeTo_helper("-17", "-17", true);
+        isRelativelyPrimeTo_helper("-17", "x^2-4*x+7", true);
+        isRelativelyPrimeTo_helper("-17", "-x^3-1", true);
+        isRelativelyPrimeTo_helper("-17", "3*x^10", true);
+
+        isRelativelyPrimeTo_helper("x^2-4*x+7", "0", false);
+        isRelativelyPrimeTo_helper("x^2-4*x+7", "1", true);
+        isRelativelyPrimeTo_helper("x^2-4*x+7", "x", true);
+        isRelativelyPrimeTo_helper("x^2-4*x+7", "-17", true);
+        isRelativelyPrimeTo_helper("x^2-4*x+7", "x^2-4*x+7", false);
+        isRelativelyPrimeTo_helper("x^2-4*x+7", "-x^3-1", true);
+        isRelativelyPrimeTo_helper("x^2-4*x+7", "3*x^10", true);
+
+        isRelativelyPrimeTo_helper("-x^3-1", "0", false);
+        isRelativelyPrimeTo_helper("-x^3-1", "1", true);
+        isRelativelyPrimeTo_helper("-x^3-1", "x", true);
+        isRelativelyPrimeTo_helper("-x^3-1", "-17", true);
+        isRelativelyPrimeTo_helper("-x^3-1", "x^2-4*x+7", true);
+        isRelativelyPrimeTo_helper("-x^3-1", "-x^3-1", false);
+        isRelativelyPrimeTo_helper("-x^3-1", "3*x^10", true);
+
+        isRelativelyPrimeTo_helper("3*x^10", "0", false);
+        isRelativelyPrimeTo_helper("3*x^10", "1", true);
+        isRelativelyPrimeTo_helper("3*x^10", "x", false);
+        isRelativelyPrimeTo_helper("3*x^10", "-17", true);
+        isRelativelyPrimeTo_helper("3*x^10", "x^2-4*x+7", true);
+        isRelativelyPrimeTo_helper("3*x^10", "-x^3-1", true);
+        isRelativelyPrimeTo_helper("3*x^10", "3*x^10", false);
+
+        isRelativelyPrimeTo_helper("x^2+7*x+6", "x^2-5*x-6", false);
+
+        isRelativelyPrimeTo_fail_helper("0", "0");
+    }
+
+    private static void isSquareFree_helper(@NotNull String input, boolean output) {
+        aeq(read(input).get().isSquareFree(), output);
+    }
+
+    @Test
+    public void testIsSquareFree() {
+        isSquareFree_helper("0", false);
+        isSquareFree_helper("1", true);
+        isSquareFree_helper("x", true);
+        isSquareFree_helper("-17", true);
+        isSquareFree_helper("x^2-4*x+7", true);
+        isSquareFree_helper("-x^3-1", true);
+        isSquareFree_helper("3*x^10", false);
+
+        isSquareFree_helper("x^2+2*x+1", false);
+    }
+
+    private static void squareFreePart_helper(@NotNull String input, @NotNull String output) {
+        aeq(read(input).get().squareFreePart(), output);
+    }
+
+    private static void squareFreePart_fail_helper(@NotNull String input) {
+        try {
+            read(input).get().squareFreePart();
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testSquareFreePart() {
+        squareFreePart_helper("1", "1");
+        squareFreePart_helper("x", "x");
+        squareFreePart_helper("-17", "1");
+        squareFreePart_helper("x^2-4*x+7", "x^2-4*x+7");
+        squareFreePart_helper("-x^3-1", "x^3+1");
+        squareFreePart_helper("3*x^10", "x");
+
+        squareFreePart_helper("x^2+2*x+1", "x+1");
+
+        squareFreePart_fail_helper("0");
+    }
+
+    private static void squareFreeFactor_helper(@NotNull String input, @NotNull String output) {
+        aeq(read(input).get().squareFreeFactor(), output);
+    }
+
+    private static void squareFreeFactor_fail_helper(@NotNull String input) {
+        try {
+            read(input).get().squareFreeFactor();
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testSquareFreeFactor() {
+        squareFreeFactor_helper("1", "[]");
+        squareFreeFactor_helper("x", "[x]");
+        squareFreeFactor_helper("-17", "[]");
+        squareFreeFactor_helper("x^2-4*x+7", "[x^2-4*x+7]");
+        squareFreeFactor_helper("-x^3-1", "[x^3+1]");
+        squareFreeFactor_helper("3*x^10", "[x, x, x, x, x, x, x, x, x, x]");
+
+        squareFreeFactor_helper("x^2+2*x+1", "[x+1, x+1]");
+
+        squareFreeFactor_fail_helper("0");
     }
 
     private static void factor_helper(@NotNull String input, @NotNull String output) {

@@ -1134,10 +1134,77 @@ public final class Polynomial implements
      */
     public @NotNull Polynomial lcm(@NotNull Polynomial that) {
         if (this == ZERO || that == ZERO) return ZERO;
-        Polynomial positivePrimitiveThis = constantFactor().b;
-        Polynomial positivePrimitiveThat = that.constantFactor().b;
-        return positivePrimitiveThis.divideExact(positivePrimitiveThis.gcd(positivePrimitiveThat))
-                .multiply(positivePrimitiveThat);
+        Polynomial ppThis = constantFactor().b;
+        Polynomial ppThat = that.constantFactor().b;
+        return ppThis.divideExact(ppThis.gcd(ppThat)).multiply(ppThat);
+    }
+
+    /**
+     * Determines whether {@code this} is relatively prime to {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>{@code that} may be any {@code Polynomial}.</li>
+     *  <li>{@code this} and {@code that} cannot both be zero.</li>
+     *  <li>The result may be either {@code boolean}.</li>
+     * </ul>
+     *
+     * @param that the {@code Polynomial} that may be relatively prime to {@code this}
+     * @return whether {@code this} and {@code that} have no nonconstant common factors
+     */
+    public boolean isRelativelyPrimeTo(@NotNull Polynomial that) {
+        return gcd(that) == ONE;
+    }
+
+    /**
+     * Determines whether {@code this} is square-free.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>The result may be either {@code boolean}.</li>
+     * </ul>
+     *
+     * @return whether {@code this} has no repeated factors
+     */
+    public boolean isSquareFree() {
+        return this != ZERO && isRelativelyPrimeTo(differentiate());
+    }
+
+    /**
+     * Returns the square-free part of {@code this}, or {@code this} with all repeated factors removed.
+     *
+     * <ul>
+     *  <li>{@code this} cannot be zero.</li>
+     *  <li>The result is primitive and has positive leading coefficient.</li>
+     * </ul>
+     *
+     * @return the square-free part of {@code this}
+     */
+    public @NotNull Polynomial squareFreePart() {
+        Polynomial ppThis = constantFactor().b;
+        return ppThis.divideExact(ppThis.gcd(ppThis.differentiate()));
+    }
+
+    /**
+     * Returns a list of {@code Polynomial}s whose product is the positive primitive part of {@code this} and each of
+     * which is square-free. Uses Yun's algorithm.
+     *
+     * <ul>
+     *  <li>{@code this} cannot be zero.</li>
+     *  <li>The result is a list of primitive, square-free {@code Polynomial}s with positive leading coefficients.</li>
+     * </ul>
+     *
+     * @return a square-free factorization of {@code this}
+     */
+    public @NotNull List<Polynomial> squareFreeFactor() {
+        List<Polynomial> factors = new ArrayList<>();
+        Polynomial p = constantFactor().b;
+        while (p != ONE) {
+            Polynomial gcd = p.gcd(p.differentiate());
+            factors.add(p.divideExact(gcd));
+            p = gcd;
+        }
+        return factors;
     }
 
     /**

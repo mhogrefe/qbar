@@ -95,6 +95,13 @@ public class PolynomialProperties extends QBarTestProperties {
         compareImplementationsGcd1();
         compareImplementationsGcd2();
         propertiesLcm();
+        propertiesIsRelativelyPrimeTo();
+        compareImplementationsIsRelativelyPrimeTo();
+        propertiesIsSquareFree();
+        compareImplementationsIsSquareFree();
+        propertiesSquareFreePart();
+        compareImplementationsSquareFreePart();
+        propertiesSquareFreeFactor();
         propertiesFactor();
         propertiesIsIrreducible();
         compareImplementationsIsIrreducible();
@@ -1927,10 +1934,145 @@ public class PolynomialProperties extends QBarTestProperties {
         initialize("lcm(Polynomial)");
         for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(P.polynomials()))) {
             Polynomial lcm = p.a.lcm(p.b);
+            lcm.validate();
             assertNotEquals(p, lcm.signum(), -1);
             assertTrue(p, lcm == ZERO || lcm.isPrimitive());
             assertTrue(p, p.a == ZERO || lcm.isDivisibleBy(p.a));
             assertTrue(p, p.b == ZERO || lcm.isDivisibleBy(p.b));
+            commutative(Polynomial::lcm, p);
+        }
+
+        for (Polynomial p : take(LIMIT, P.polynomials())) {
+            fixedPoint(p::lcm, ZERO);
+            fixedPoint(q -> q.lcm(p), ZERO);
+            Polynomial ppp = p == ZERO ? ZERO : p.constantFactor().b;
+            assertEquals(p, p.lcm(ONE), ppp);
+            assertEquals(p, ONE.lcm(p), ppp);
+        }
+    }
+
+    private static boolean isRelativelyPrimeTo_simplest(@NotNull Polynomial a, @NotNull Polynomial b) {
+        if (a == ZERO && b == ZERO) {
+            throw new ArithmeticException();
+        }
+        Polynomial ppA = a == ZERO ? ZERO : a.constantFactor().b;
+        Polynomial ppB = b == ZERO ? ZERO : b.constantFactor().b;
+        if (ppA == ONE || ppB == ONE) return true;
+        //noinspection SimplifiableIfStatement
+        if (a == ZERO || b == ZERO) return false;
+        return isEmpty(intersect(ppA.factor(), ppB.factor()));
+    }
+
+    private void propertiesIsRelativelyPrimeTo() {
+        initialize("isRelativelyPrimeTo(Polynomial)");
+        Iterable<Pair<Polynomial, Polynomial>> ps = filterInfinite(
+                p -> p.a != ZERO || p.b != ZERO,
+                P.pairs(P.polynomials())
+        );
+        for (Pair<Polynomial, Polynomial> p : take(LIMIT, ps)) {
+            commutative(Polynomial::isRelativelyPrimeTo, p);
+        }
+
+        ps = filterInfinite(p -> p.a != ZERO || p.b != ZERO, P.pairs(P.withScale(4).polynomials()));
+        for (Pair<Polynomial, Polynomial> p : take(LIMIT, ps)) {
+            assertEquals(p, p.a.isRelativelyPrimeTo(p.b), isRelativelyPrimeTo_simplest(p.a, p.b));
+        }
+
+        for (Polynomial p : take(LIMIT, P.polynomials())) {
+            assertTrue(p, p.isRelativelyPrimeTo(ONE));
+            assertTrue(p, ONE.isRelativelyPrimeTo(p));
+        }
+
+        for (Polynomial p : take(LIMIT, P.polynomialsAtLeast(1))) {
+            assertFalse(p, p.isRelativelyPrimeTo(ZERO));
+            assertFalse(p, ZERO.isRelativelyPrimeTo(p));
+        }
+    }
+
+    private void compareImplementationsIsRelativelyPrimeTo() {
+        Map<String, Function<Pair<Polynomial, Polynomial>, Boolean>> functions = new LinkedHashMap<>();
+        functions.put("simplest", p -> isRelativelyPrimeTo_simplest(p.a, p.b));
+        functions.put("standard", p -> p.a.isRelativelyPrimeTo(p.b));
+        Iterable<Pair<Polynomial, Polynomial>> ps = filterInfinite(
+                p -> p.a != ZERO || p.b != ZERO,
+                P.pairs(P.withScale(4).polynomials())
+        );
+        compareImplementations("isRelativelyPrimeTo(Polynomial)", take(SMALL_LIMIT, ps), functions);
+    }
+
+    private static boolean isSquareFree_simplest(@NotNull Polynomial p) {
+        return p != ZERO && unique(p.factor());
+    }
+
+    private void propertiesIsSquareFree() {
+        initialize("isSquareFree()");
+        for (Polynomial p : take(LIMIT, P.polynomials())) {
+            p.isSquareFree();
+        }
+
+        for (Polynomial p : take(LIMIT, P.withScale(4).polynomials())) {
+            assertEquals(p, p.isSquareFree(), isSquareFree_simplest(p));
+        }
+
+        for (Polynomial p : take(LIMIT, P.polynomialsAtLeast(1))) {
+            assertFalse(p, p.pow(2).isSquareFree());
+        }
+
+        for (Polynomial p : take(LIMIT, P.polynomials(0))) {
+            assertTrue(p, p.isSquareFree());
+        }
+    }
+
+    private void compareImplementationsIsSquareFree() {
+        Map<String, Function<Polynomial, Boolean>> functions = new LinkedHashMap<>();
+        functions.put("simplest", PolynomialProperties::isSquareFree_simplest);
+        functions.put("standard", Polynomial::isSquareFree);
+        compareImplementations("isSquareFree()", take(SMALL_LIMIT, P.withScale(4).polynomials()), functions);
+    }
+
+    private static @NotNull Polynomial squareFreePart_simplest(@NotNull Polynomial p) {
+        switch (p.degree()) {
+            case -1: throw new ArithmeticException();
+            case 0: return ONE;
+            default: return product(nub(p.constantFactor().b.factor()));
+        }
+    }
+
+    private void propertiesSquareFreePart() {
+        initialize("squareFreePart()");
+        for (Polynomial p : take(LIMIT, P.polynomialsAtLeast(0))) {
+            Polynomial sfp = p.squareFreePart();
+            sfp.validate();
+            assertEquals(p, sfp.signum(), 1);
+            assertTrue(p, sfp.isPrimitive());
+            assertTrue(p, sfp.isSquareFree());
+            assertTrue(p, p.isDivisibleBy(sfp));
+        }
+
+        for (Polynomial p : take(LIMIT, P.withScale(4).polynomialsAtLeast(0))) {
+            assertEquals(p, p.squareFreePart(), squareFreePart_simplest(p));
+        }
+    }
+
+    private void compareImplementationsSquareFreePart() {
+        Map<String, Function<Polynomial, Polynomial>> functions = new LinkedHashMap<>();
+        functions.put("simplest", PolynomialProperties::squareFreePart_simplest);
+        functions.put("standard", Polynomial::squareFreePart);
+        compareImplementations("squareFreePart()", take(SMALL_LIMIT, P.withScale(4).polynomialsAtLeast(0)), functions);
+    }
+
+    private void propertiesSquareFreeFactor() {
+        initialize("squareFreeFactor()");
+        for (Polynomial p : take(LIMIT, P.polynomialsAtLeast(0))) {
+            List<Polynomial> factors = p.squareFreeFactor();
+            factors.forEach(Polynomial::validate);
+            Polynomial ppp = p.constantFactor().b;
+            assertEquals(p, product(factors), ppp);
+            for (Polynomial factor : factors) {
+                assertEquals(p, factor.signum(), 1);
+                assertTrue(p, factor.isPrimitive());
+                assertTrue(p, factor.isSquareFree());
+            }
         }
     }
 

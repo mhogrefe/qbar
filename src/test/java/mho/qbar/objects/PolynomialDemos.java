@@ -345,6 +345,35 @@ public class PolynomialDemos extends QBarDemos {
         }
     }
 
+    private void demoIsRelativelyPrimeTo() {
+        Iterable<Pair<Polynomial, Polynomial>> ps = filterInfinite(
+                p -> p.a != ZERO || p.b != ZERO,
+                P.pairs(P.withScale(4).polynomials())
+        );
+        for (Pair<Polynomial, Polynomial> p : take(LIMIT, ps)) {
+            System.out.println(p.a + " is " + (p.a.isRelativelyPrimeTo(p.b) ? "" : "not ") + "relatively prime to " +
+                    p.b);
+        }
+    }
+
+    private void demoIsSquareFree() {
+        for (Polynomial p : take(LIMIT, P.withScale(4).polynomials())) {
+            System.out.println(p + " is " + (p.isSquareFree() ? "" : "not ") + "square-free");
+        }
+    }
+
+    private void demoSquareFreePart() {
+        for (Polynomial p : take(LIMIT, P.withScale(4).polynomialsAtLeast(0))) {
+            System.out.println("squareFreePart(" + p + ") = " + p.squareFreePart());
+        }
+    }
+
+    private void demoSquareFreeFactor() {
+        for (Polynomial p : take(LIMIT, P.withScale(4).polynomialsAtLeast(0))) {
+            System.out.println("squareFreeFactor(" + p + ") = " + p.squareFreeFactor());
+        }
+    }
+
     private void demoFactor() {
         for (Polynomial p : take(LIMIT, P.withScale(4).polynomialsAtLeast(0))) {
             System.out.println("factor(" + p + ") = " + p.factor());
