@@ -976,7 +976,7 @@ public final class RationalPolynomial implements
             }
             coefficients.add(Rational.sum(terms).negate().divide(i));
         }
-        return of(reverse(coefficients));
+        return coefficients.size() == 1 ? ONE : new RationalPolynomial(reverse(coefficients));
     }
 
     /**
