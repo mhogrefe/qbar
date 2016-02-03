@@ -1119,6 +1119,28 @@ public final class Polynomial implements
     }
 
     /**
+     * Returns the unique primitive LCM with positive leading coefficient of {@code this} and {@code that}, or zero if
+     * either input is zero.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>{@code that} may be any {@code Polynomial}.</li>
+     *  <li>The result is zero or primitive and with positive leading coefficient.</li>
+     * </ul>
+     *
+     * @param that the {@code Polynomial} that {@code this} is LCM'd with
+     * @return the polynomial of minimum degree that has {@code this} and {@code that} as factors and is primitive with
+     * positive leading coefficient or zero
+     */
+    public @NotNull Polynomial lcm(@NotNull Polynomial that) {
+        if (this == ZERO || that == ZERO) return ZERO;
+        Polynomial positivePrimitiveThis = constantFactor().b;
+        Polynomial positivePrimitiveThat = that.constantFactor().b;
+        return positivePrimitiveThis.divideExact(positivePrimitiveThis.gcd(positivePrimitiveThat))
+                .multiply(positivePrimitiveThat);
+    }
+
+    /**
      * Factors {@code this}. The result is sorted (see {@link Polynomial#compareTo(Polynomial)}). 0 cannot be factored.
      *
      * <ul>

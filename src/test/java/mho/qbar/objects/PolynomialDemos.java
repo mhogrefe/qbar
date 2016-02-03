@@ -339,6 +339,12 @@ public class PolynomialDemos extends QBarDemos {
         }
     }
 
+    private void demoLcm() {
+        for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(P.withScale(4).polynomials()))) {
+            System.out.println("lcm(" + p.a + ", " + p.b + ") = " + p.a.lcm(p.b));
+        }
+    }
+
     private void demoFactor() {
         for (Polynomial p : take(LIMIT, P.withScale(4).polynomialsAtLeast(0))) {
             System.out.println("factor(" + p + ") = " + p.factor());

@@ -1677,6 +1677,70 @@ public class PolynomialTest {
         gcd_fail_helper("0", "0");
     }
 
+    private static void lcm_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
+        aeq(read(a).get().lcm(read(b).get()), output);
+    }
+
+    @Test
+    public void testLcm() {
+        lcm_helper("0", "1", "0");
+        lcm_helper("0", "x", "0");
+        lcm_helper("0", "-17", "0");
+        lcm_helper("0", "x^2-4*x+7", "0");
+        lcm_helper("0", "-x^3-1", "0");
+        lcm_helper("0", "3*x^10", "0");
+
+        lcm_helper("1", "0", "0");
+        lcm_helper("1", "1", "1");
+        lcm_helper("1", "x", "x");
+        lcm_helper("1", "-17", "1");
+        lcm_helper("1", "x^2-4*x+7", "x^2-4*x+7");
+        lcm_helper("1", "-x^3-1", "x^3+1");
+        lcm_helper("1", "3*x^10", "x^10");
+
+        lcm_helper("x", "0", "0");
+        lcm_helper("x", "1", "x");
+        lcm_helper("x", "x", "x");
+        lcm_helper("x", "-17", "x");
+        lcm_helper("x", "x^2-4*x+7", "x^3-4*x^2+7*x");
+        lcm_helper("x", "-x^3-1", "x^4+x");
+        lcm_helper("x", "3*x^10", "x^10");
+
+        lcm_helper("-17", "0", "0");
+        lcm_helper("-17", "1", "1");
+        lcm_helper("-17", "x", "x");
+        lcm_helper("-17", "-17", "1");
+        lcm_helper("-17", "x^2-4*x+7", "x^2-4*x+7");
+        lcm_helper("-17", "-x^3-1", "x^3+1");
+        lcm_helper("-17", "3*x^10", "x^10");
+
+        lcm_helper("x^2-4*x+7", "0", "0");
+        lcm_helper("x^2-4*x+7", "1", "x^2-4*x+7");
+        lcm_helper("x^2-4*x+7", "x", "x^3-4*x^2+7*x");
+        lcm_helper("x^2-4*x+7", "-17", "x^2-4*x+7");
+        lcm_helper("x^2-4*x+7", "x^2-4*x+7", "x^2-4*x+7");
+        lcm_helper("x^2-4*x+7", "-x^3-1", "x^5-4*x^4+7*x^3+x^2-4*x+7");
+        lcm_helper("x^2-4*x+7", "3*x^10", "x^12-4*x^11+7*x^10");
+
+        lcm_helper("-x^3-1", "0", "0");
+        lcm_helper("-x^3-1", "1", "x^3+1");
+        lcm_helper("-x^3-1", "x", "x^4+x");
+        lcm_helper("-x^3-1", "-17", "x^3+1");
+        lcm_helper("-x^3-1", "x^2-4*x+7", "x^5-4*x^4+7*x^3+x^2-4*x+7");
+        lcm_helper("-x^3-1", "-x^3-1", "x^3+1");
+        lcm_helper("-x^3-1", "3*x^10", "x^13+x^10");
+
+        lcm_helper("3*x^10", "0", "0");
+        lcm_helper("3*x^10", "1", "x^10");
+        lcm_helper("3*x^10", "x", "x^10");
+        lcm_helper("3*x^10", "-17", "x^10");
+        lcm_helper("3*x^10", "x^2-4*x+7", "x^12-4*x^11+7*x^10");
+        lcm_helper("3*x^10", "-x^3-1", "x^13+x^10");
+        lcm_helper("3*x^10", "3*x^10", "x^10");
+
+        lcm_helper("x^2+7*x+6", "x^2-5*x-6", "x^3+x^2-36*x-36");
+    }
+
     private static void factor_helper(@NotNull String input, @NotNull String output) {
         aeq(read(input).get().factor(), output);
     }

@@ -94,6 +94,7 @@ public class PolynomialProperties extends QBarTestProperties {
         propertiesGcd();
         compareImplementationsGcd1();
         compareImplementationsGcd2();
+        propertiesLcm();
         propertiesFactor();
         propertiesIsIrreducible();
         compareImplementationsIsIrreducible();
@@ -1299,6 +1300,10 @@ public class PolynomialProperties extends QBarTestProperties {
             assertEquals(p, isPrimitive, foldl(BigInteger::gcd, BigInteger.ZERO, p).equals(BigInteger.ONE));
             assertEquals(p, isPrimitive, p.negate().isPrimitive());
         }
+
+        for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(P.primitivePolynomials()))) {
+            assertTrue(p, p.a.multiply(p.b).isPrimitive());
+        }
     }
 
     private void propertiesContentAndPrimitive() {
@@ -1916,6 +1921,17 @@ public class PolynomialProperties extends QBarTestProperties {
                 P.pairs(P.polynomials())
         );
         compareImplementations("gcd(Polynomial)", take(SMALL_LIMIT, ps), functions);
+    }
+
+    private void propertiesLcm() {
+        initialize("lcm(Polynomial)");
+        for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(P.polynomials()))) {
+            Polynomial lcm = p.a.lcm(p.b);
+            assertNotEquals(p, lcm.signum(), -1);
+            assertTrue(p, lcm == ZERO || lcm.isPrimitive());
+            assertTrue(p, p.a == ZERO || lcm.isDivisibleBy(p.a));
+            assertTrue(p, p.b == ZERO || lcm.isDivisibleBy(p.b));
+        }
     }
 
     private void propertiesFactor() {
