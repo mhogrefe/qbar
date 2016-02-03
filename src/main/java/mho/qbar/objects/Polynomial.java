@@ -1062,9 +1062,9 @@ public final class Polynomial implements
         Polynomial a = this;
         Polynomial b = that;
         while (true) {
-            int delta = a.degree() - b.degree();
             Polynomial r = a.pseudoRemainder(b);
             if (r == ZERO) return sequence;
+            int delta = a.degree() - b.degree();
             BigInteger divisor = g.multiply(h.pow(delta));
             g = b.leading().get();
             h = delta > 0 ? g.pow(delta).divide(h.pow(delta - 1)) : g.pow(delta).multiply(h.pow(1 - delta));
@@ -1107,9 +1107,9 @@ public final class Polynomial implements
         BigInteger g = BigInteger.ONE;
         BigInteger h = BigInteger.ONE;
         while (true) {
-            int delta = a.degree() - b.degree();
             Polynomial r = a.pseudoRemainder(b);
             if (r == ZERO) return b.constantFactor().b;
+            int delta = a.degree() - b.degree();
             BigInteger divisor = g.multiply(h.pow(delta));
             g = b.leading().get();
             h = delta > 0 ? g.pow(delta).divide(h.pow(delta - 1)) : g.pow(delta).multiply(h.pow(1 - delta));
