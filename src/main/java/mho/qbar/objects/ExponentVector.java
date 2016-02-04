@@ -2,7 +2,6 @@ package mho.qbar.objects;
 
 import mho.wheels.io.Readers;
 import mho.wheels.iterables.NoRemoveIterator;
-import mho.wheels.math.MathUtils;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 
@@ -18,8 +17,7 @@ import static mho.wheels.testing.Testing.assertTrue;
  * {@code ==}.</p>
  *
  * <p>The exponent vectors are represented by a list of non-negative integers, where the last element is nonzero. Each
- * index of the list represents a different variable, and the value at the index is the variable's exponent. The names
- * of the variables 0, 1, 2, … are "a", "b", "c", …, "aa", "bb", "cc", …, "aaa", "bbb", "ccc", ….</p>
+ * index of the list represents a different variable, and the value at the index is the variable's exponent.</p>
  *
  * <p>This class is immutable.</p>
  */
@@ -53,31 +51,31 @@ public class ExponentVector implements Comparable<ExponentVector> {
      *
      * <ul>
      *  <li>{@code this} may be any {@code ExponentVector}.</li>
-     *  <li>{@code variableIndex} cannot be negative.</li>
+     *  <li>{@code variable} cannot be null.</li>
      *  <li>The result is not negative.</li>
      * </ul>
      *
-     * @param variableIndex the index of a variable
-     * @return the exponent of the variable corresponding to {@code variableIndex}
+     * @param variable a variable
+     * @return the exponent of {@code variable}
      */
-    public int exponent(int variableIndex) {
-        return variableIndex >= exponents.size() ? 0 : exponents.get(variableIndex);
+    public int exponent(@NotNull Variable variable) {
+        return variable.index >= exponents.size() ? 0 : exponents.get(variable.index);
     }
 
     /**
-     * Returns the terms of {@code this} in the form of pairs, where the first element is a variable index and the
-     * second is the exponent of the corresponding variable.
+     * Returns the terms of {@code this} in the form of pairs, where the first element is a variable and the second is
+     * the variable's exponent.
      *
      * <ul>
      *  <li>{@code this} may be any {@code ExponentVector}.</li>
-     *  <li>The result is finite and does not contain any nulls. No first element of any pair is negative, the second
-     *  element of every pair is positive, and the first elements unique and are in ascending order.</li>
+     *  <li>The result is finite and does not contain any nulls. The second element of every pair is positive, and the
+     *  first elements are unique and are in ascending order.</li>
      * </ul>
      *
      * @return the terms of {@code this}
      */
-    public @NotNull Iterable<Pair<Integer, Integer>> terms() {
-        return () -> new NoRemoveIterator<Pair<Integer, Integer>>() {
+    public @NotNull Iterable<Pair<Variable, Integer>> terms() {
+        return () -> new NoRemoveIterator<Pair<Variable, Integer>>() {
             private int i = 0;
 
             @Override
@@ -86,7 +84,7 @@ public class ExponentVector implements Comparable<ExponentVector> {
             }
 
             @Override
-            public Pair<Integer, Integer> next() {
+            public Pair<Variable, Integer> next() {
                 if (i == exponents.size()) {
                     throw new NoSuchElementException();
                 }
@@ -95,7 +93,7 @@ public class ExponentVector implements Comparable<ExponentVector> {
                     e = exponents.get(i);
                     i++;
                 } while (e == 0);
-                return new Pair<>(i - 1, e);
+                return new Pair<>(Variable.of(i - 1), e);
             }
         };
     }
@@ -128,26 +126,26 @@ public class ExponentVector implements Comparable<ExponentVector> {
     }
 
     /**
-     * Creates an {@code ExponentVector} from a list of pairs, where the first element is a variable index and the
-     * second is the corresponding variable's exponent.
+     * Creates an {@code ExponentVector} from a list of pairs, where the first element is a variable and the second is
+     * the variable's exponent.
      *
      * <ul>
-     *  <li>{@code term}s cannot contain any nulls. No first element of any pair can be negative, the second element of
-     *  every pair must be positive, and the first elements must be unique and in ascending order.</li>
+     *  <li>{@code term}s cannot contain any nulls. The second element of every pair must be positive and the first
+     *  elements must be unique and in ascending order.</li>
      *  <li>The result is not null.</li>
      * </ul>
      *
      * @return the {@code ExponentVector} containing the terms in {@code terms}
      */
-    public static @NotNull ExponentVector fromTerms(@NotNull List<Pair<Integer, Integer>> terms) {
+    public static @NotNull ExponentVector fromTerms(@NotNull List<Pair<Variable, Integer>> terms) {
         if (terms.isEmpty()) return ExponentVector.ONE;
         //noinspection RedundantCast
-        if (!increasing((Iterable<Integer>) map(t -> t.a, terms))) {
+        if (!increasing((Iterable<Variable>) map(t -> t.a, terms))) {
             throw new IllegalArgumentException();
         }
-        List<Integer> exponents = toList(replicate(last(terms).a + 1, 0));
-        for (Pair<Integer, Integer> term : terms) {
-            exponents.set(term.a, term.b);
+        List<Integer> exponents = toList(replicate(last(terms).a.index + 1, 0));
+        for (Pair<Variable, Integer> term : terms) {
+            exponents.set(term.a.index, term.b);
         }
         return new ExponentVector(exponents);
     }
@@ -191,25 +189,25 @@ public class ExponentVector implements Comparable<ExponentVector> {
         if (s.equals("1")) return Optional.of(ONE);
         String[] termStrings = s.split("\\*");
         if (termStrings.length == 0) return Optional.empty();
-        List<Pair<Integer, Integer>> terms = new ArrayList<>();
+        List<Pair<Variable, Integer>> terms = new ArrayList<>();
         for (String termString : termStrings) {
             int caretIndex = termString.indexOf('^');
             if (caretIndex == -1) {
-                Optional<Integer> variableIndex = MathUtils.stringToVariableIndex(termString);
-                if (!variableIndex.isPresent()) return Optional.empty();
-                terms.add(new Pair<>(variableIndex.get(), 1));
+                Optional<Variable> variable = Variable.read(termString);
+                if (!variable.isPresent()) return Optional.empty();
+                terms.add(new Pair<>(variable.get(), 1));
             } else {
                 Optional<Integer> oExponent = Readers.readInteger(termString.substring(caretIndex + 1));
                 if (!oExponent.isPresent()) return Optional.empty();
                 int exponent = oExponent.get();
                 if (exponent < 2) return Optional.empty();
-                Optional<Integer> variableIndex = MathUtils.stringToVariableIndex(termString.substring(0, caretIndex));
-                if (!variableIndex.isPresent()) return Optional.empty();
-                terms.add(new Pair<>(variableIndex.get(), exponent));
+                Optional<Variable> variable = Variable.read(termString.substring(0, caretIndex));
+                if (!variable.isPresent()) return Optional.empty();
+                terms.add(new Pair<>(variable.get(), exponent));
             }
         }
         //noinspection RedundantCast
-        if (!increasing((Iterable<Integer>) map(t -> t.a, terms))) return Optional.empty();
+        if (!increasing((Iterable<Variable>) map(t -> t.a, terms))) return Optional.empty();
         return Optional.of(fromTerms(terms));
     }
 
@@ -229,7 +227,7 @@ public class ExponentVector implements Comparable<ExponentVector> {
                 } else {
                     sb.append('*');
                 }
-                sb.append(MathUtils.variableIndexToString(i));
+                sb.append(Variable.of(i));
                 if (exponent > 1) {
                     sb.append('^').append(exponent);
                 }

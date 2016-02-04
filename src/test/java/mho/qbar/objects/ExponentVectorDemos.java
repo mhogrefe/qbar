@@ -18,16 +18,16 @@ public class ExponentVectorDemos extends QBarDemos {
         super(useRandom);
     }
 
-    private void demoExponent() {
-        Iterable<Pair<ExponentVector, Integer>> ps = P.pairsLogarithmicOrder(
-                P.withScale(4).exponentVectors(),
-                P.withScale(4).naturalIntegersGeometric()
-        );
-        for (Pair<ExponentVector, Integer> p : take(LIMIT, ps)) {
-            System.out.println("exponent(" + p.a + ", " + MathUtils.variableIndexToString(p.b) + ") = " +
-                    p.a.exponent(p.b));
-        }
-    }
+//    private void demoExponent() {
+//        Iterable<Pair<ExponentVector, Integer>> ps = P.pairsLogarithmicOrder(
+//                P.withScale(4).exponentVectors(),
+//                P.withScale(4).naturalIntegersGeometric()
+//        );
+//        for (Pair<ExponentVector, Integer> p : take(LIMIT, ps)) {
+//            System.out.println("exponent(" + p.a + ", " + MathUtils.variableIndexToString(p.b) + ") = " +
+//                    p.a.exponent(p.b));
+//        }
+//    }
 
     private void demoTerms() {
         for (ExponentVector ev : take(LIMIT, P.exponentVectors())) {
