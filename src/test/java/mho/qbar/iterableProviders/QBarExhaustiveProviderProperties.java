@@ -39,6 +39,7 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
         propertiesPositivePrimitivePolynomials();
         propertiesRationalPolynomials();
         propertiesMonicRationalPolynomials();
+        propertiesVariables();
         propertiesExponentVectors();
     }
 
@@ -570,6 +571,12 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
                 fail(i);
             } catch (IllegalArgumentException ignored) {}
         }
+    }
+
+    private void propertiesVariables() {
+        initializeConstant("variables()");
+        biggerTest(QEP, QEP.variables(), v -> true);
+        take(TINY_LIMIT, QEP.variables()).forEach(Variable::validate);
     }
 
     private void propertiesExponentVectors() {

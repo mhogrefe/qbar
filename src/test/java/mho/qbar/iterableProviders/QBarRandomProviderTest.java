@@ -5584,6 +5584,46 @@ public class QBarRandomProviderTest {
         }
     }
 
+    private static void variables_helper(int mean, @NotNull String output, @NotNull String topSampleCount) {
+        List<Variable> sample = toList(take(DEFAULT_SAMPLE_SIZE, P.withScale(mean).variables()));
+        aeqitLimit(TINY_LIMIT, sample, output);
+        aeq(topSampleCount(DEFAULT_TOP_COUNT, sample), topSampleCount);
+        P.reset();
+    }
+
+    private static void variables_fail_helper(int mean) {
+        try {
+            P.withScale(mean).variables();
+            fail();
+        } catch (IllegalStateException ignored) {}
+        finally {
+            P.reset();
+        }
+    }
+
+    @Test
+    public void testVariables() {
+        variables_helper(
+                1,
+                "[d, c, j, c, c, a, b, d, a, a, c, c, c, a, c, a, a, b, b, a, ...]",
+                "{a=499125, b=250897, c=124849, d=62518, e=31407, f=15634, g=7825, h=3926, i=1896, j=956}"
+        );
+        variables_helper(
+                10,
+                "[kk, m, k, i, gg, y, b, h, a, r, u, a, k, i, d, e, a, b, d, g, ...]",
+                "{a=90519, b=82798, c=75630, d=68355, e=62062, f=56573, g=51318, h=46453, i=42422, j=38243}"
+        );
+        variables_helper(
+                100,
+                "[tttttt, a, nnn, hh, ff, oooooo, ii, mmmmm, aa, gggg, i, lll, k, p, a, hhhhhh, kk, dddddddddddd," +
+                " wwwww, nnn, ...]",
+                "{a=9916, c=9740, b=9715, e=9630, d=9504, f=9377, g=9328, h=9252, j=9073, i=9025}"
+        );
+        variables_fail_helper(0);
+        variables_fail_helper(-1);
+        variables_fail_helper(Integer.MAX_VALUE);
+    }
+
     @Test
     public void testExponentVectors() {
         exponentVectors_helper(

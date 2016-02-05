@@ -486,6 +486,16 @@ public class QBarRandomProviderDemos extends QBarDemos {
         }
     }
 
+    private void demoVariables() {
+        Iterable<QBarRandomProvider> rps = filterInfinite(
+                s -> s.getScale() > 0,
+                P.withScale(4).qbarRandomProvidersDefaultSecondaryScale()
+        );
+        for (QBarRandomProvider rp : take(MEDIUM_LIMIT, rps)) {
+            System.out.println("variables(" + rp + ") = " + its(rp.variables()));
+        }
+    }
+
     private void demoExponentVectors() {
         Iterable<QBarRandomProvider> rps = filterInfinite(
                 s -> s.getScale() > 0,

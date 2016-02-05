@@ -3234,6 +3234,13 @@ public strictfp abstract class QBarIterableProvider {
     }
 
     /**
+     * Generates {@code Variable}s.
+     */
+    public @NotNull Iterable<Variable> variables() {
+        return map(Variable::of, naturalIntegersGeometric());
+    }
+
+    /**
      * Generates {@code ExponentVector}s.
      */
     public abstract @NotNull Iterable<ExponentVector> exponentVectors();

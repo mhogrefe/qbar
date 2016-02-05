@@ -1,7 +1,6 @@
 package mho.qbar.objects;
 
 import mho.qbar.testing.QBarDemos;
-import mho.wheels.math.MathUtils;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 
@@ -18,16 +17,15 @@ public class ExponentVectorDemos extends QBarDemos {
         super(useRandom);
     }
 
-//    private void demoExponent() {
-//        Iterable<Pair<ExponentVector, Integer>> ps = P.pairsLogarithmicOrder(
-//                P.withScale(4).exponentVectors(),
-//                P.withScale(4).naturalIntegersGeometric()
-//        );
-//        for (Pair<ExponentVector, Integer> p : take(LIMIT, ps)) {
-//            System.out.println("exponent(" + p.a + ", " + MathUtils.variableIndexToString(p.b) + ") = " +
-//                    p.a.exponent(p.b));
-//        }
-//    }
+    private void demoExponent() {
+        Iterable<Pair<ExponentVector, Variable>> ps = P.pairsLogarithmicOrder(
+                P.withScale(4).exponentVectors(),
+                P.withScale(4).variables()
+        );
+        for (Pair<ExponentVector, Variable> p : take(LIMIT, ps)) {
+            System.out.println("exponent(" + p.a + ", " + p.b + ") = " + p.a.exponent(p.b));
+        }
+    }
 
     private void demoTerms() {
         for (ExponentVector ev : take(LIMIT, P.exponentVectors())) {
