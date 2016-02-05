@@ -60,7 +60,7 @@ public class MatrixProperties extends QBarTestProperties {
         compareImplementationsShiftLeft();
         propertiesIsInRowEchelonForm();
         propertiesRowEchelonForm();
-        compareImplementationsRowEchelonForm();
+        propertiesRowEchelonFormGcd();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -1115,48 +1115,6 @@ public class MatrixProperties extends QBarTestProperties {
         }
     }
 
-    private static @NotNull Matrix rowEchelonForm_alt(@NotNull Matrix m) {
-        int height = m.height();
-        boolean changed = false;
-        List<Vector> refRows = toList(m.rows());
-        int i = 0;
-        outer:
-        for (int j = 0; i < height && j < m.width(); j++) {
-            int nonzeroRowIndex = i;
-            BigInteger pivot = refRows.get(i).get(j);
-            while (pivot.equals(BigInteger.ZERO)) {
-                nonzeroRowIndex++;
-                if (nonzeroRowIndex == height) continue outer;
-                pivot = refRows.get(nonzeroRowIndex).get(j);
-            }
-            if (nonzeroRowIndex != i) {
-                if (!changed) {
-                    changed = true;
-                    refRows = toList(m.rows());
-                }
-                Collections.swap(refRows, i, nonzeroRowIndex);
-            }
-            Vector nonzeroRow = refRows.get(i);
-            for (int k = i + 1; k < height; k++) {
-                Vector row = refRows.get(k);
-                if (!row.get(j).equals(BigInteger.ZERO)) {
-                    if (!changed) {
-                        changed = true;
-                        refRows = toList(m.rows());
-                    }
-                    BigInteger leading = row.get(j);
-                    BigInteger gcd = pivot.gcd(leading);
-                    refRows.set(
-                            k,
-                            row.multiply(pivot.divide(gcd)).subtract(nonzeroRow.multiply(row.get(j).divide(gcd)))
-                    );
-                }
-            }
-            i++;
-        }
-        return changed ? fromRows(refRows) : m;
-    }
-
     private void propertiesRowEchelonForm() {
         initialize("rowEchelonForm()");
         Function<Matrix, Matrix> toZeroOne = m -> {
@@ -1182,17 +1140,20 @@ public class MatrixProperties extends QBarTestProperties {
         for (Matrix m : take(LIMIT, P.matrices())) {
             Matrix ref = m.rowEchelonForm();
             ref.validate();
-            assertEquals(m, toZeroOne.apply(ref), toZeroOne.apply(rowEchelonForm_alt(m)));
+            assertEquals(m, toZeroOne.apply(ref), toZeroOne.apply(m.rowEchelonFormGcd()));
             assertTrue(m, ref.isInRowEchelonForm());
             idempotent(Matrix::rowEchelonForm, m);
         }
     }
 
-    private void compareImplementationsRowEchelonForm() {
-        Map<String, Function<Matrix, Matrix>> functions = new LinkedHashMap<>();
-        functions.put("alt", MatrixProperties::rowEchelonForm_alt);
-        functions.put("standard", Matrix::rowEchelonForm);
-        compareImplementations("rowEchelonForm()", take(LIMIT, P.matrices()), functions);
+    private void propertiesRowEchelonFormGcd() {
+        initialize("rowEchelonFormGcd()");
+        for (Matrix m : take(LIMIT, P.matrices())) {
+            Matrix ref = m.rowEchelonForm();
+            ref.validate();
+            assertTrue(m, ref.isInRowEchelonForm());
+            idempotent(Matrix::rowEchelonFormGcd, m);
+        }
     }
 
     private void propertiesEquals() {
