@@ -778,19 +778,19 @@ public class Matrix implements Comparable<Matrix> {
      * Returns a row echelon form of {@code this}. In other words, all zero rows are at the bottom, and the first
      * nonzero element of every row is strictly to the right of the first nonzero element of the row above it. Note
      * that contrary to some definitions of row echelon form, the first nonzero element of a row is not necessarily 1.
-     * This method differs from {@link Matrix#rowEchelonForm()} in that some GCDs are performed to reduce the size of
-     * some of the elements in the result.
+     * This method differs from {@link Matrix#rowEchelonForm()} in that each row is primitive (see
+     * {@link Vector#isPrimitive()}).
      *
      * <ul>
      *  <li>{@code this} may be any {@code Matrix}.</li>
-     *  <li>The result is in row echelon form.</li>
+     *  <li>The result is in row echelon form and each row is primitive.</li>
      * </ul>
      *
      * Size is height({@code this})×width({@code this})
      *
-     * @return a row echelon form of {@code this}
+     * @return a row echelon form of {@code this} with all rows primitive
      */
-    public @NotNull Matrix rowEchelonFormGcd() {
+    public @NotNull Matrix primitiveRowEchelonForm() {
         int height = height();
         boolean changed = false;
         List<Vector> refRows = toList(rows());
@@ -828,6 +828,17 @@ public class Matrix implements Comparable<Matrix> {
                 }
             }
             i++;
+        }
+        for (i = 0; i < height; i++) {
+            Vector row = refRows.get(i);
+            Vector primitiveRow = row.makePrimitive();
+            if (row != primitiveRow) {
+                if (!changed) {
+                    changed = true;
+                    refRows = toList(rows());
+                }
+                refRows.set(i, primitiveRow);
+            }
         }
         return changed ? fromRows(refRows) : this;
     }

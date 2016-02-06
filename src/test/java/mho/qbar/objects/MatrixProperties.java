@@ -60,7 +60,8 @@ public class MatrixProperties extends QBarTestProperties {
         compareImplementationsShiftLeft();
         propertiesIsInRowEchelonForm();
         propertiesRowEchelonForm();
-        propertiesRowEchelonFormGcd();
+        propertiesPrimitiveRowEchelonForm();
+        compareImplementationsPrimitiveRowEchelonForm();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -1140,20 +1141,46 @@ public class MatrixProperties extends QBarTestProperties {
         for (Matrix m : take(LIMIT, P.matrices())) {
             Matrix ref = m.rowEchelonForm();
             ref.validate();
-            assertEquals(m, toZeroOne.apply(ref), toZeroOne.apply(m.rowEchelonFormGcd()));
+            assertEquals(m, toZeroOne.apply(ref), toZeroOne.apply(m.primitiveRowEchelonForm()));
             assertTrue(m, ref.isInRowEchelonForm());
             idempotent(Matrix::rowEchelonForm, m);
         }
     }
 
-    private void propertiesRowEchelonFormGcd() {
-        initialize("rowEchelonFormGcd()");
-        for (Matrix m : take(LIMIT, P.matrices())) {
-            Matrix ref = m.rowEchelonForm();
-            ref.validate();
-            assertTrue(m, ref.isInRowEchelonForm());
-            idempotent(Matrix::rowEchelonFormGcd, m);
+    private static @NotNull Matrix primitiveRowEchelonForm_simplest(@NotNull Matrix m) {
+        Matrix ref = m.rowEchelonForm();
+        List<Vector> refRows = toList(ref.rows());
+        boolean changed = false;
+        for (int i = 0; i < m.height(); i++) {
+            Vector row = refRows.get(i);
+            Vector primitiveRow = row.makePrimitive();
+            if (row != primitiveRow) {
+                if (!changed) {
+                    changed = true;
+                }
+                refRows.set(i, primitiveRow);
+            }
         }
+        return changed ? fromRows(refRows) : ref;
+    }
+
+    private void propertiesPrimitiveRowEchelonForm() {
+        initialize("primitiveRowEchelonForm()");
+        for (Matrix m : take(LIMIT, P.matrices())) {
+            Matrix ref = m.primitiveRowEchelonForm();
+            ref.validate();
+            assertEquals(m, ref, primitiveRowEchelonForm_simplest(m));
+            assertTrue(m, ref.isInRowEchelonForm());
+            assertTrue(m, all(Vector::isPrimitive, ref.rows()));
+            idempotent(Matrix::primitiveRowEchelonForm, m);
+        }
+    }
+
+    private void compareImplementationsPrimitiveRowEchelonForm() {
+        Map<String, Function<Matrix, Matrix>> functions = new LinkedHashMap<>();
+        functions.put("simplest", MatrixProperties::primitiveRowEchelonForm_simplest);
+        functions.put("standard", Matrix::primitiveRowEchelonForm);
+        compareImplementations("primitiveRowEchelonForm()", take(LIMIT, P.matrices()), functions);
     }
 
     private void propertiesEquals() {

@@ -403,9 +403,9 @@ public class MatrixDemos extends QBarDemos {
         }
     }
 
-    private void demoRowEchelonFormGcd() {
+    private void demoPrimitiveRowEchelonForm() {
         for (Matrix m : take(LIMIT, P.withScale(4).matrices())) {
-            System.out.println("rowEchelonFormGcd(" + m + ") = " + m.rowEchelonFormGcd());
+            System.out.println("primitiveRowEchelonForm(" + m + ") = " + m.primitiveRowEchelonForm());
         }
     }
 

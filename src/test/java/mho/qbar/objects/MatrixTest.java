@@ -708,23 +708,23 @@ public class MatrixTest {
         );
     }
 
-    private static void rowEchelonFormGcd_helper(@NotNull String input, @NotNull String output) {
-        aeq(read(input).get().rowEchelonFormGcd(), output);
+    private static void primitiveRowEchelonForm_helper(@NotNull String input, @NotNull String output) {
+        aeq(read(input).get().primitiveRowEchelonForm(), output);
     }
 
     @Test
-    public void testRowEchelonFormGcd() {
-        rowEchelonFormGcd_helper("[]#0", "[]#0");
-        rowEchelonFormGcd_helper("[]#3", "[]#3");
-        rowEchelonFormGcd_helper("[[], [], []]", "[[], [], []]");
-        rowEchelonFormGcd_helper("[[-3]]", "[[-3]]");
-        rowEchelonFormGcd_helper("[[-3, -8], [0, 7]]", "[[-3, -8], [0, 7]]");
-        rowEchelonFormGcd_helper("[[1, 9, -13], [20, 5, -6]]", "[[1, 9, -13], [0, -175, 254]]");
-        rowEchelonFormGcd_helper("[[2, 18, -26], [40, 10, -12]]", "[[2, 18, -26], [0, -350, 508]]");
+    public void testPrimitiveRowEchelonForm() {
+        primitiveRowEchelonForm_helper("[]#0", "[]#0");
+        primitiveRowEchelonForm_helper("[]#3", "[]#3");
+        primitiveRowEchelonForm_helper("[[], [], []]", "[[], [], []]");
+        primitiveRowEchelonForm_helper("[[-3]]", "[[-1]]");
+        primitiveRowEchelonForm_helper("[[-3, -8], [0, 7]]", "[[-3, -8], [0, 1]]");
+        primitiveRowEchelonForm_helper("[[1, 9, -13], [20, 5, -6]]", "[[1, 9, -13], [0, -175, 254]]");
+        primitiveRowEchelonForm_helper("[[2, 18, -26], [40, 10, -12]]", "[[1, 9, -13], [0, -175, 254]]");
 
-        rowEchelonFormGcd_helper(
+        primitiveRowEchelonForm_helper(
                 "[[0, -3, -6, 4, 9], [-1, -2, -1, 3, 1], [-2, -3, 0, 3, -1], [1, 4, 5, -9, -7]]",
-                "[[-1, -2, -1, 3, 1], [0, -3, -6, 4, 9], [0, 0, 0, -5, 0], [0, 0, 0, 0, 0]]"
+                "[[-1, -2, -1, 3, 1], [0, -3, -6, 4, 9], [0, 0, 0, -1, 0], [0, 0, 0, 0, 0]]"
         );
     }
 
