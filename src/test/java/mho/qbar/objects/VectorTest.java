@@ -459,6 +459,46 @@ public class VectorTest {
         isReduced_helper("[0, 0, -3]", false);
     }
 
+    private static void isPrimitive_helper(@NotNull String input, boolean output) {
+        aeq(read(input).get().isPrimitive(), output);
+    }
+
+    @Test
+    public void testIsPrimitive() {
+        isPrimitive_helper("[]", true);
+        isPrimitive_helper("[0]", true);
+        isPrimitive_helper("[0, 0, 0]", true);
+        isPrimitive_helper("[3]", false);
+        isPrimitive_helper("[1, -3]", true);
+        isPrimitive_helper("[-3, 1]", true);
+        isPrimitive_helper("[2, 4]", false);
+        isPrimitive_helper("[0, 1, -3]", true);
+        isPrimitive_helper("[0, 0, -3]", false);
+        isPrimitive_helper("[0, 0, 3]", false);
+        isPrimitive_helper("[0, 0, 1]", true);
+        isPrimitive_helper("[0, 0, -1]", true);
+    }
+
+    private static void makePrimitive_helper(@NotNull String input, @NotNull String output) {
+        aeq(read(input).get().makePrimitive(), output);
+    }
+
+    @Test
+    public void testMakePrimitive() {
+        makePrimitive_helper("[]", "[]");
+        makePrimitive_helper("[0]", "[0]");
+        makePrimitive_helper("[0, 0, 0]", "[0, 0, 0]");
+        makePrimitive_helper("[3]", "[1]");
+        makePrimitive_helper("[1, -3]", "[1, -3]");
+        makePrimitive_helper("[-3, 1]", "[-3, 1]");
+        makePrimitive_helper("[2, 4]", "[1, 2]");
+        makePrimitive_helper("[0, 1, -3]", "[0, 1, -3]");
+        makePrimitive_helper("[0, 0, -3]", "[0, 0, -1]");
+        makePrimitive_helper("[0, 0, 3]", "[0, 0, 1]");
+        makePrimitive_helper("[0, 0, 1]", "[0, 0, 1]");
+        makePrimitive_helper("[0, 0, -1]", "[0, 0, -1]");
+    }
+
     @Test
     public void testEquals() {
         testEqualsHelper(

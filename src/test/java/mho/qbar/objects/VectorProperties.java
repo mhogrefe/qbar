@@ -55,6 +55,8 @@ public class VectorProperties extends QBarTestProperties {
         compareImplementationsSquaredLength();
         propertiesPivot();
         propertiesIsReduced();
+        propertiesIsPrimitive();
+        propertiesMakePrimitive();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -853,7 +855,47 @@ public class VectorProperties extends QBarTestProperties {
     private void propertiesIsReduced() {
         initialize("isReduced()");
         for (Vector v : take(LIMIT, P.vectors())) {
-            v.isReduced();
+            boolean reduced = v.isReduced();
+            if (reduced) {
+                assertTrue(v, v.isPrimitive());
+            }
+        }
+
+        for (int i : take(LIMIT, P.naturalIntegersGeometric())) {
+            Vector zero = zero(i);
+            assertTrue(i, zero.isReduced());
+        }
+
+        for (Pair<Integer, Integer> p : take(LIMIT, P.subsetPairs(P.naturalIntegersGeometric()))) {
+            Vector standard = standard(p.b, p.a);
+            assertTrue(p, standard.isReduced());
+        }
+    }
+
+    private void propertiesIsPrimitive() {
+        initialize("isPrimitive()");
+        for (Vector v : take(LIMIT, P.vectors())) {
+            v.isPrimitive();
+        }
+
+        for (int i : take(LIMIT, P.naturalIntegersGeometric())) {
+            Vector zero = zero(i);
+            assertTrue(i, zero.isPrimitive());
+        }
+
+        for (Pair<Integer, Integer> p : take(LIMIT, P.subsetPairs(P.naturalIntegersGeometric()))) {
+            Vector standard = standard(p.b, p.a);
+            assertTrue(p, standard.isPrimitive());
+        }
+    }
+
+    private void propertiesMakePrimitive() {
+        initialize("makePrimitive()");
+        for (Vector v : take(LIMIT, P.vectors())) {
+            Vector primitive = v.makePrimitive();
+            primitive.validate();
+            assertTrue(v, primitive.isPrimitive());
+            idempotent(Vector::makePrimitive, v);
         }
     }
 

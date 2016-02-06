@@ -508,6 +508,40 @@ public class Vector implements Comparable<Vector>, Iterable<BigInteger> {
     }
 
     /**
+     * Returns true iff the GCD of the coordinates of {@code this} is zero or one.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Vector}.</li>
+     *  <li>The result may be either {@code boolean}.</li>
+     * </ul>
+     *
+     * @return whether the coordinates of {@code this} have no nontrivial common factors
+     */
+    public boolean isPrimitive() {
+        BigInteger gcd = foldl(BigInteger::gcd, BigInteger.ZERO, coordinates);
+        return gcd.equals(BigInteger.ZERO) || gcd.equals(BigInteger.ONE);
+    }
+
+    /**
+     * Divides {@code this} by some positive constant so that the GCD of the coordinates of the result is zero or one.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Vector}.</li>
+     *  <li>The GCD of the coordinates of the result is zero or one.</li>
+     * </ul>
+     *
+     * Length is dim({@code this})
+     *
+     * @return a primitive multiple of {@code this}
+     */
+    public @NotNull Vector makePrimitive() {
+        if (this == ZERO_DIMENSIONAL) return ZERO_DIMENSIONAL;
+        BigInteger gcd = foldl(BigInteger::gcd, BigInteger.ZERO, coordinates);
+        if (gcd.equals(BigInteger.ZERO) || gcd.equals(BigInteger.ONE)) return this;
+        return new Vector(toList(map(c -> c.divide(gcd), coordinates)));
+    }
+
+    /**
      * Determines whether {@code this} is equal to {@code that}.
      *
      * <ul>

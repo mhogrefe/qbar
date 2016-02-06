@@ -241,6 +241,18 @@ public class VectorDemos extends QBarDemos {
         }
     }
 
+    private void demoIsPrimitive() {
+        for (Vector v : take(LIMIT, P.withScale(4).vectors())) {
+            System.out.println(v + " is " + (v.isPrimitive() ? "" : "not ") + "primitive");
+        }
+    }
+
+    private void demoMakePrimitive() {
+        for (Vector v : take(LIMIT, P.withScale(4).vectors())) {
+            System.out.println("makePrimitive(" + v + ") = " + v.makePrimitive());
+        }
+    }
+
     private void demoEquals_Vector() {
         for (Pair<Vector, Vector> p : take(LIMIT, P.pairs(P.withScale(4).vectors()))) {
             System.out.println(p.a + (p.a.equals(p.b) ? " = " : " ≠ ") + p.b);
