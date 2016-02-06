@@ -881,6 +881,69 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
     }
 
     /**
+     * Determines whether {@code this} is in reduced row echelon form; whether it is in row echelon form (see
+     * {@link RationalMatrix#isInRowEchelonForm()}) and every leading element is the only nonzero element in its
+     * column.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalMatrix}.</li>
+     *  <li>The result may be either {@code boolean}.</li>
+     * </ul>
+     *
+     * @return whether {@code this} is in reduced row echelon form
+     */
+    public boolean isInReducedRowEchelonForm() {
+        if (!isInRowEchelonForm()) return false;
+        for (int i = 0; i < height(); i++) {
+            RationalVector row = row(i);
+            Optional<Integer> oi = findIndex(x -> x != Rational.ZERO, row);
+            if (!oi.isPresent()) break;
+            int pivotIndex = oi.get();
+            for (int j = 0; j < height(); j++) {
+                if (i != j && get(j, pivotIndex) != Rational.ZERO) return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Returns the reduced row echelon form of {@code this}. In other words, the result is in row echelon form (see
+     * {@link RationalMatrix#isInRowEchelonForm()}) and every leading element is the only nonzero element in its
+     * column.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalMatrix}.</li>
+     *  <li>The result is in reduced row echelon form.</li>
+     * </ul>
+     *
+     * Size is height({@code this})×width({@code this})
+     *
+     * @return the reduced row echelon form of {@code this}
+     */
+    public @NotNull RationalMatrix reducedRowEchelonForm() {
+        RationalMatrix ref = rowEchelonForm();
+        boolean changed = false;
+        List<RationalVector> rrefRows = ref.rows;
+        for (int i = 0; i < height(); i++) {
+            RationalVector row = rrefRows.get(i);
+            Optional<Integer> pivotIndex = findIndex(x -> x != Rational.ZERO, row);
+            if (!pivotIndex.isPresent()) break;
+            int j = pivotIndex.get();
+            for (int k = i - 1; k >= 0; k--) {
+                RationalVector above = rrefRows.get(k);
+                if (above.get(j) != Rational.ZERO) {
+                    if (!changed) {
+                        changed = true;
+                        rrefRows = toList(ref.rows);
+                    }
+                    rrefRows.set(k, above.subtract(row.multiply(above.get(j))));
+                }
+            }
+        }
+        return changed ? new RationalMatrix(rrefRows, width) : ref;
+    }
+
+    /**
      * Determines whether {@code this} is equal to {@code that}.
      *
      * <ul>

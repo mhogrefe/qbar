@@ -462,6 +462,18 @@ public class RationalMatrixDemos extends QBarDemos {
         }
     }
 
+    private void demoIsInReducedRowEchelonForm() {
+        for (RationalMatrix m : take(LIMIT, P.withScale(4).rationalMatrices())) {
+            System.out.println(m + " is " + (m.isInReducedRowEchelonForm() ? "" : "not ") + "in reduced row echelon form");
+        }
+    }
+
+    private void demoReducedRowEchelonForm() {
+        for (RationalMatrix m : take(LIMIT, P.withScale(4).rationalMatrices())) {
+            System.out.println("reducedRowEchelonForm(" + m + ") = " + m.reducedRowEchelonForm());
+        }
+    }
+
     private void demoEquals_RationalMatrix() {
         for (Pair<RationalMatrix, RationalMatrix> p : take(LIMIT, P.pairs(P.withScale(4).rationalMatrices()))) {
             System.out.println(p.a + (p.a.equals(p.b) ? " = " : " ≠ ") + p.b);
