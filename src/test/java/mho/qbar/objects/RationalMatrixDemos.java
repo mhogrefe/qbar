@@ -151,8 +151,14 @@ public class RationalMatrixDemos extends QBarDemos {
     }
 
     private void demoIdentity() {
-        for (int i : take(SMALL_LIMIT, P.withScale(4).positiveIntegersGeometric())) {
+        for (int i : take(SMALL_LIMIT, P.withScale(4).naturalIntegersGeometric())) {
             System.out.println("identity(" + i + ") = " + identity(i));
+        }
+    }
+
+    private void demoTrace() {
+        for (RationalMatrix m : take(LIMIT, P.withScale(4).squareRationalMatrices())) {
+            System.out.println("trace(" + m + ") = " + m.trace());
         }
     }
 
@@ -471,6 +477,18 @@ public class RationalMatrixDemos extends QBarDemos {
     private void demoReducedRowEchelonForm() {
         for (RationalMatrix m : take(LIMIT, P.withScale(4).rationalMatrices())) {
             System.out.println("reducedRowEchelonForm(" + m + ") = " + m.reducedRowEchelonForm());
+        }
+    }
+
+    private void demoRank() {
+        for (RationalMatrix m : take(LIMIT, P.withScale(4).rationalMatrices())) {
+            System.out.println("rank(" + m + ") = " + m.rank());
+        }
+    }
+
+    private void demoIsInvertible() {
+        for (RationalMatrix m : take(LIMIT, P.withScale(4).squareRationalMatrices())) {
+            System.out.println(m + " is " + (m.isInvertible() ? "" : "not ") + "invertible");
         }
     }
 

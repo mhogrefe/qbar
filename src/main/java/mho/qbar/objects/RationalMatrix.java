@@ -346,10 +346,32 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
     }
 
     /**
+     * Returns the trace of {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} must be square.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @return tr({@code this})
+     */
+    @SuppressWarnings("JavaDoc")
+    public @NotNull Rational trace() {
+        if (!isSquare()) {
+            throw new IllegalArgumentException("this must be square. Invalid this: " + this);
+        }
+        Rational sum = Rational.ZERO;
+        for (int i = 0; i < width; i++) {
+            sum = sum.add(get(i, i));
+        }
+        return sum;
+    }
+
+    /**
      * Creates an identity matrix. The dimension must be positive.
      *
      * <ul>
-     *  <li>{@code dimension} must be positive.</li>
+     *  <li>{@code dimension} cannot be negative.</li>
      *  <li>The result is a square {@code RationalMatrix}, with height and width at least 1, with ones on the diagonal
      *  and zeros everywhere else.</li>
      * </ul>
@@ -360,8 +382,8 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
      * @return I<sub>{@code dimension}</sub>
      */
     public static @NotNull RationalMatrix identity(int dimension) {
-        if (dimension < 1) {
-            throw new IllegalArgumentException("dimension must be positive. Invalid dimension: " + dimension);
+        if (dimension < 0) {
+            throw new IllegalArgumentException("dimension cannot be negative. Invalid dimension: " + dimension);
         }
         return new RationalMatrix(
                 toList(map(i -> RationalVector.standard(dimension, i), range(0, dimension - 1))),
@@ -878,6 +900,45 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
             i++;
         }
         return changed ? new RationalMatrix(refRows, width) : this;
+    }
+
+    /**
+     * Returns the rank of {@code this}, or the dimension of the row space (which equals the dimension of the column
+     * space).
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalMatrix}.</li>
+     *  <li>The result is not negative.</li>
+     * </ul>
+     *
+     * @return rank({@code this})
+     */
+    @SuppressWarnings("JavaDoc")
+    public int rank() {
+        RationalMatrix ref = rowEchelonForm();
+        for (int rank = height(); rank > 0; rank--) {
+            if (!ref.row(rank - 1).isZero()) {
+                return rank;
+            }
+        }
+        return 0;
+    }
+
+    /**
+     * Determines whether {@code this} is invertible.
+     *
+     * <ul>
+     *  <li>{@code this} must be square.</li>
+     *  <li>The result may be either {@code boolean}.</li>
+     * </ul>
+     *
+     * @return whether {@code this} is invertible
+     */
+    public boolean isInvertible() {
+        if (!isSquare()) {
+            throw new IllegalArgumentException("this must be square. Invalid this: " + this);
+        }
+        return rank() == width;
     }
 
     /**

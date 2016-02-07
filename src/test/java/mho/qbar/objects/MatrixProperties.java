@@ -42,6 +42,7 @@ public class MatrixProperties extends QBarTestProperties {
         propertiesZero();
         propertiesIsIdentity();
         propertiesIdentity();
+        propertiesTrace();
         propertiesSubmatrix();
         propertiesTranspose();
         compareImplementationsTranspose();
@@ -62,6 +63,9 @@ public class MatrixProperties extends QBarTestProperties {
         propertiesRowEchelonForm();
         propertiesPrimitiveRowEchelonForm();
         compareImplementationsPrimitiveRowEchelonForm();
+        propertiesRank();
+        compareImplementationsRank();
+        propertiesIsInvertible();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -151,7 +155,7 @@ public class MatrixProperties extends QBarTestProperties {
         Iterable<Triple<Matrix, Integer, Integer>> ts = map(
                 p -> new Triple<>(p.a, p.b.a, p.b.b),
                 P.dependentPairs(
-                        filterInfinite(m -> m.height() > 0 && m.width() > 0, P.withScale(4).matrices()),
+                        filterInfinite(m -> m.height() > 0 && m.width() > 0, P.matrices()),
                         m -> P.uniformSample(
                                 toList(EP.pairsLex(range(0, m.height() - 1), toList(range(0, m.width() - 1))))
                         )
@@ -347,7 +351,7 @@ public class MatrixProperties extends QBarTestProperties {
 
     private void propertiesIdentity() {
         initialize("identity(int)");
-        for (int i : take(SMALL_LIMIT, P.positiveIntegersGeometric())) {
+        for (int i : take(SMALL_LIMIT, P.naturalIntegersGeometric())) {
             Matrix identity = identity(i);
             identity.validate();
             assertTrue(i, identity.isSquare());
@@ -355,11 +359,43 @@ public class MatrixProperties extends QBarTestProperties {
             inverse(Matrix::identity, Matrix::height, i);
         }
 
-        for (int i : take(LIMIT, P.rangeDown(0))) {
+        for (int i : take(LIMIT, P.negativeIntegers())) {
             try {
                 identity(i);
                 fail(i);
             } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesTrace() {
+        initialize("trace()");
+        for (Matrix m : take(LIMIT, P.squareMatrices())) {
+            BigInteger trace = m.trace();
+            assertEquals(m, trace, m.transpose().trace());
+        }
+
+        Iterable<Pair<Matrix, Matrix>> ps = P.withElement(
+                new Pair<>(zero(0, 0), zero(0, 0)),
+                map(
+                        p -> p.b,
+                        P.dependentPairsInfiniteSquareRootOrder(
+                                P.positiveIntegersGeometric(),
+                                i -> P.pairs(P.withScale(4).matrices(i, i))
+                        )
+                )
+        );
+        for (Pair<Matrix, Matrix> p : take(LIMIT, ps)) {
+            assertEquals(p, p.a.add(p.b).trace(), p.a.trace().add(p.b.trace()));
+            commutative((a, b) -> a.multiply(b).trace(), p);
+            BigInteger productTrace = BigInteger.ZERO;
+            for (int i = 0; i < p.a.height(); i++) {
+                productTrace = productTrace.add(p.a.row(i).dot(p.b.column(i)));
+            }
+            assertEquals(p, p.a.multiply(p.b).trace(), productTrace);
+        }
+
+        for (Pair<Matrix, BigInteger> p : take(LIMIT, P.pairs(P.withScale(4).squareMatrices(), P.bigIntegers()))) {
+            assertEquals(p, p.a.multiply(p.b).trace(), p.a.trace().multiply(p.b));
         }
     }
 
@@ -368,7 +404,7 @@ public class MatrixProperties extends QBarTestProperties {
         Iterable<Triple<Matrix, List<Integer>, List<Integer>>> ts = map(
                 p -> new Triple<>(p.a, p.b.a, p.b.b),
                 P.dependentPairs(
-                        P.withScale(4).matrices(),
+                        P.matrices(),
                         m -> {
                             List<Integer> allRows = toList(EP.range(0, m.height() - 1));
                             List<Integer> allColumns = toList(EP.range(0, m.width() - 1));
@@ -395,7 +431,7 @@ public class MatrixProperties extends QBarTestProperties {
         Iterable<Triple<Matrix, List<Integer>, List<Integer>>> tsFail = map(
                 p -> new Triple<>(p.a, p.b.a, p.b.b),
                 P.dependentPairs(
-                        P.withScale(4).matrices(),
+                        P.matrices(),
                         m -> {
                             int height = m.height();
                             List<Integer> allColumns = toList(EP.range(0, m.width() - 1));
@@ -419,7 +455,7 @@ public class MatrixProperties extends QBarTestProperties {
         tsFail = map(
                 p -> new Triple<>(p.a, p.b.a, p.b.b),
                 P.dependentPairs(
-                        P.withScale(4).matrices(),
+                        P.matrices(),
                         m -> {
                             List<Integer> allRows = toList(EP.range(0, m.height() - 1));
                             int width = m.width();
@@ -483,7 +519,7 @@ public class MatrixProperties extends QBarTestProperties {
             involution(Matrix::transpose, m);
         }
 
-        for (int i : take(SMALL_LIMIT, P.positiveIntegersGeometric())) {
+        for (int i : take(SMALL_LIMIT, P.naturalIntegersGeometric())) {
             Matrix identity = identity(i);
             assertEquals(i, identity, identity.transpose());
         }
@@ -884,7 +920,7 @@ public class MatrixProperties extends QBarTestProperties {
             assertEquals(m, m.multiply(Vector.zero(m.width())), Vector.zero(m.height()));
         }
 
-        for (Vector v : take(LIMIT, P.vectorsAtLeast(1))) {
+        for (Vector v : take(LIMIT, P.vectors())) {
             assertEquals(v, identity(v.dimension()).multiply(v), v);
         }
 
@@ -1005,7 +1041,7 @@ public class MatrixProperties extends QBarTestProperties {
             assertEquals(p, zero(p.b, p.a.height()).multiply(p.a), zero(p.b, p.a.width()));
         }
 
-        for (Matrix m : take(LIMIT, filterInfinite(n -> n.width() > 0, P.squareMatrices()))) {
+        for (Matrix m : take(LIMIT, P.squareMatrices())) {
             assertEquals(m, m.multiply(identity(m.width())), m);
             assertEquals(m, identity(m.width()).multiply(m), m);
         }
@@ -1110,7 +1146,7 @@ public class MatrixProperties extends QBarTestProperties {
             assertTrue(p, zero.isInRowEchelonForm());
         }
 
-        for (int i : take(SMALL_LIMIT, P.positiveIntegersGeometric())) {
+        for (int i : take(SMALL_LIMIT, P.naturalIntegersGeometric())) {
             Matrix identity = identity(i);
             assertTrue(i, identity.isInRowEchelonForm());
         }
@@ -1181,6 +1217,58 @@ public class MatrixProperties extends QBarTestProperties {
         functions.put("simplest", MatrixProperties::primitiveRowEchelonForm_simplest);
         functions.put("standard", Matrix::primitiveRowEchelonForm);
         compareImplementations("primitiveRowEchelonForm()", take(LIMIT, P.matrices()), functions);
+    }
+
+    private static int rank_alt(@NotNull Matrix m) {
+        Matrix ref = m.primitiveRowEchelonForm();
+        for (int rank = m.height(); rank > 0; rank--) {
+            if (!ref.row(rank - 1).isZero()) {
+                return rank;
+            }
+        }
+        return 0;
+    }
+
+    private void propertiesRank() {
+        initialize("rank()");
+        for (Matrix m : take(LIMIT, P.matrices())) {
+            int rank = m.rank();
+            assertEquals(m, rank_alt(m), rank);
+            assertTrue(m, rank >= 0);
+            assertTrue(m, rank <= m.height());
+            assertTrue(m, rank <= m.width());
+            assertEquals(m, m.transpose().rank(), rank);
+        }
+
+        for (Pair<Integer, Integer> p : take(SMALL_LIMIT, P.pairs(P.naturalIntegersGeometric()))) {
+            Matrix zero = zero(p.a, p.b);
+            assertEquals(p, zero.rank(), 0);
+        }
+
+        for (int i : take(SMALL_LIMIT, P.naturalIntegersGeometric())) {
+            Matrix identity = identity(i);
+            assertEquals(i, identity.rank(), i);
+        }
+    }
+
+    private void compareImplementationsRank() {
+        Map<String, Function<Matrix, Integer>> functions = new LinkedHashMap<>();
+        functions.put("alt", MatrixProperties::rank_alt);
+        functions.put("standard", Matrix::rank);
+        compareImplementations("rank()", take(LIMIT, P.matrices()), functions);
+    }
+
+    private void propertiesIsInvertible() {
+        initialize("isInvertible()");
+        for (Matrix m : take(LIMIT, P.withScale(4).squareMatrices())) {
+            boolean isInvertible = m.isInvertible();
+            assertEquals(m, m.transpose().isInvertible(), isInvertible);
+        }
+
+        for (int i : take(SMALL_LIMIT, P.naturalIntegersGeometric())) {
+            Matrix identity = identity(i);
+            assertTrue(i, identity.isInvertible());
+        }
     }
 
     private void propertiesEquals() {

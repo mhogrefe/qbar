@@ -41,6 +41,7 @@ public class RationalMatrixProperties extends QBarTestProperties {
         propertiesZero();
         propertiesIsIdentity();
         propertiesIdentity();
+        propertiesTrace();
         propertiesSubmatrix();
         propertiesTranspose();
         compareImplementationsTranspose();
@@ -67,6 +68,8 @@ public class RationalMatrixProperties extends QBarTestProperties {
         propertiesRowEchelonForm();
         propertiesIsInReducedRowEchelonForm();
         propertiesReducedRowEchelonForm();
+        propertiesRank();
+        propertiesIsInvertible();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -156,7 +159,7 @@ public class RationalMatrixProperties extends QBarTestProperties {
         Iterable<Triple<RationalMatrix, Integer, Integer>> ts = map(
                 p -> new Triple<>(p.a, p.b.a, p.b.b),
                 P.dependentPairs(
-                        filterInfinite(m -> m.height() > 0 && m.width() > 0, P.withScale(4).rationalMatrices()),
+                        filterInfinite(m -> m.height() > 0 && m.width() > 0, P.rationalMatrices()),
                         m -> P.uniformSample(
                                 toList(EP.pairsLex(range(0, m.height() - 1), toList(range(0, m.width() - 1))))
                         )
@@ -352,7 +355,7 @@ public class RationalMatrixProperties extends QBarTestProperties {
 
     private void propertiesIdentity() {
         initialize("identity(int)");
-        for (int i : take(SMALL_LIMIT, P.positiveIntegersGeometric())) {
+        for (int i : take(SMALL_LIMIT, P.naturalIntegersGeometric())) {
             RationalMatrix identity = identity(i);
             identity.validate();
             assertTrue(i, identity.isSquare());
@@ -360,11 +363,44 @@ public class RationalMatrixProperties extends QBarTestProperties {
             inverse(RationalMatrix::identity, RationalMatrix::height, i);
         }
 
-        for (int i : take(LIMIT, P.rangeDown(0))) {
+        for (int i : take(LIMIT, P.negativeIntegers())) {
             try {
                 identity(i);
                 fail(i);
             } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesTrace() {
+        initialize("trace()");
+        for (RationalMatrix m : take(LIMIT, P.squareRationalMatrices())) {
+            Rational trace = m.trace();
+            assertEquals(m, trace, m.transpose().trace());
+        }
+
+        Iterable<Pair<RationalMatrix, RationalMatrix>> ps = P.withElement(
+                new Pair<>(zero(0, 0), zero(0, 0)),
+                map(
+                        p -> p.b,
+                        P.dependentPairsInfiniteSquareRootOrder(
+                                P.withScale(4).positiveIntegersGeometric(),
+                                i -> P.pairs(P.rationalMatrices(i, i))
+                        )
+                )
+        );
+        for (Pair<RationalMatrix, RationalMatrix> p : take(LIMIT, ps)) {
+            assertEquals(p, p.a.add(p.b).trace(), p.a.trace().add(p.b.trace()));
+            commutative((a, b) -> a.multiply(b).trace(), p);
+            Rational productTrace = Rational.ZERO;
+            for (int i = 0; i < p.a.height(); i++) {
+                productTrace = productTrace.add(p.a.row(i).dot(p.b.column(i)));
+            }
+            assertEquals(p, p.a.multiply(p.b).trace(), productTrace);
+        }
+
+        Iterable<Pair<RationalMatrix, Rational>> qs = P.pairs(P.withScale(4).squareRationalMatrices(), P.rationals());
+        for (Pair<RationalMatrix, Rational> p : take(LIMIT, qs)) {
+            assertEquals(p, p.a.multiply(p.b).trace(), p.a.trace().multiply(p.b));
         }
     }
 
@@ -373,7 +409,7 @@ public class RationalMatrixProperties extends QBarTestProperties {
         Iterable<Triple<RationalMatrix, List<Integer>, List<Integer>>> ts = map(
                 p -> new Triple<>(p.a, p.b.a, p.b.b),
                 P.dependentPairs(
-                        P.withScale(4).rationalMatrices(),
+                        P.rationalMatrices(),
                         m -> {
                             List<Integer> allRows = toList(EP.range(0, m.height() - 1));
                             List<Integer> allColumns = toList(EP.range(0, m.width() - 1));
@@ -400,7 +436,7 @@ public class RationalMatrixProperties extends QBarTestProperties {
         Iterable<Triple<RationalMatrix, List<Integer>, List<Integer>>> tsFail = map(
                 p -> new Triple<>(p.a, p.b.a, p.b.b),
                 P.dependentPairs(
-                        P.withScale(4).rationalMatrices(),
+                        P.rationalMatrices(),
                         m -> {
                             int height = m.height();
                             List<Integer> allColumns = toList(EP.range(0, m.width() - 1));
@@ -424,7 +460,7 @@ public class RationalMatrixProperties extends QBarTestProperties {
         tsFail = map(
                 p -> new Triple<>(p.a, p.b.a, p.b.b),
                 P.dependentPairs(
-                        P.withScale(4).rationalMatrices(),
+                        P.rationalMatrices(),
                         m -> {
                             List<Integer> allRows = toList(EP.range(0, m.height() - 1));
                             int width = m.width();
@@ -488,7 +524,7 @@ public class RationalMatrixProperties extends QBarTestProperties {
             involution(RationalMatrix::transpose, m);
         }
 
-        for (int i : take(SMALL_LIMIT, P.positiveIntegersGeometric())) {
+        for (int i : take(SMALL_LIMIT, P.naturalIntegersGeometric())) {
             RationalMatrix identity = identity(i);
             assertEquals(i, identity, identity.transpose());
         }
@@ -1018,7 +1054,7 @@ public class RationalMatrixProperties extends QBarTestProperties {
             assertEquals(m, m.multiply(RationalVector.zero(m.width())), RationalVector.zero(m.height()));
         }
 
-        for (RationalVector v : take(LIMIT, P.rationalVectorsAtLeast(1))) {
+        for (RationalVector v : take(LIMIT, P.rationalVectors())) {
             assertEquals(v, identity(v.dimension()).multiply(v), v);
         }
 
@@ -1142,7 +1178,7 @@ public class RationalMatrixProperties extends QBarTestProperties {
             assertEquals(p, zero(p.b, p.a.height()).multiply(p.a), zero(p.b, p.a.width()));
         }
 
-        for (RationalMatrix m : take(LIMIT, filterInfinite(n -> n.width() > 0, P.squareRationalMatrices()))) {
+        for (RationalMatrix m : take(LIMIT, P.squareRationalMatrices())) {
             assertEquals(m, m.multiply(identity(m.width())), m);
             assertEquals(m, identity(m.width()).multiply(m), m);
         }
@@ -1305,7 +1341,7 @@ public class RationalMatrixProperties extends QBarTestProperties {
             assertTrue(p, zero.isInRowEchelonForm());
         }
 
-        for (int i : take(SMALL_LIMIT, P.positiveIntegersGeometric())) {
+        for (int i : take(SMALL_LIMIT, P.naturalIntegersGeometric())) {
             RationalMatrix identity = identity(i);
             assertTrue(i, identity.isInRowEchelonForm());
         }
@@ -1336,7 +1372,7 @@ public class RationalMatrixProperties extends QBarTestProperties {
             assertTrue(p, zero.isInReducedRowEchelonForm());
         }
 
-        for (int i : take(SMALL_LIMIT, P.positiveIntegersGeometric())) {
+        for (int i : take(SMALL_LIMIT, P.naturalIntegersGeometric())) {
             RationalMatrix identity = identity(i);
             assertTrue(i, identity.isInReducedRowEchelonForm());
         }
@@ -1349,6 +1385,40 @@ public class RationalMatrixProperties extends QBarTestProperties {
             rref.validate();
             assertTrue(m, rref.isInReducedRowEchelonForm());
             idempotent(RationalMatrix::reducedRowEchelonForm, m);
+        }
+    }
+
+    private void propertiesRank() {
+        initialize("rank()");
+        for (RationalMatrix m : take(LIMIT, P.rationalMatrices())) {
+            int rank = m.rank();
+            assertTrue(m, rank >= 0);
+            assertTrue(m, rank <= m.height());
+            assertTrue(m, rank <= m.width());
+            assertEquals(m, m.transpose().rank(), rank);
+        }
+
+        for (Pair<Integer, Integer> p : take(SMALL_LIMIT, P.pairs(P.naturalIntegersGeometric()))) {
+            RationalMatrix zero = zero(p.a, p.b);
+            assertEquals(p, zero.rank(), 0);
+        }
+
+        for (int i : take(SMALL_LIMIT, P.naturalIntegersGeometric())) {
+            RationalMatrix identity = identity(i);
+            assertEquals(i, identity.rank(), i);
+        }
+    }
+
+    private void propertiesIsInvertible() {
+        initialize("isInvertible()");
+        for (RationalMatrix m : take(LIMIT, P.squareRationalMatrices())) {
+            boolean isInvertible = m.isInvertible();
+            assertEquals(m, m.transpose().isInvertible(), isInvertible);
+        }
+
+        for (int i : take(SMALL_LIMIT, P.naturalIntegersGeometric())) {
+            RationalMatrix identity = identity(i);
+            assertTrue(i, identity.isInvertible());
         }
     }
 

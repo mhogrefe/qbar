@@ -346,10 +346,10 @@ public class Matrix implements Comparable<Matrix> {
     }
 
     /**
-     * Creates an identity matrix. The dimension must be positive.
+     * Creates an identity matrix.
      *
      * <ul>
-     *  <li>{@code dimension} must be positive.</li>
+     *  <li>{@code dimension} cannot be negative.</li>
      *  <li>The result is a square {@code Matrix}, with height and width at least 1, with ones on the diagonal and
      *  zeros everywhere else.</li>
      * </ul>
@@ -360,10 +360,32 @@ public class Matrix implements Comparable<Matrix> {
      * @return I<sub>{@code dimension}</sub>
      */
     public static @NotNull Matrix identity(int dimension) {
-        if (dimension < 1) {
-            throw new IllegalArgumentException("dimension must be positive. Invalid dimension: " + dimension);
+        if (dimension < 0) {
+            throw new IllegalArgumentException("dimension cannot be negative. Invalid dimension: " + dimension);
         }
         return new Matrix(toList(map(i -> Vector.standard(dimension, i), range(0, dimension - 1))), dimension);
+    }
+
+    /**
+     * Returns the trace of {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} must be square.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @return tr({@code this})
+     */
+    @SuppressWarnings("JavaDoc")
+    public @NotNull BigInteger trace() {
+        if (!isSquare()) {
+            throw new IllegalArgumentException("this must be square. Invalid this: " + this);
+        }
+        BigInteger sum = BigInteger.ZERO;
+        for (int i = 0; i < width; i++) {
+            sum = sum.add(get(i, i));
+        }
+        return sum;
     }
 
     /**
@@ -841,6 +863,45 @@ public class Matrix implements Comparable<Matrix> {
             }
         }
         return changed ? fromRows(refRows) : this;
+    }
+
+    /**
+     * Returns the rank of {@code this}, or the dimension of the row space (which equals the dimension of the column
+     * space).
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Matrix}.</li>
+     *  <li>The result is not negative.</li>
+     * </ul>
+     *
+     * @return rank({@code this})
+     */
+    @SuppressWarnings("JavaDoc")
+    public int rank() {
+        Matrix ref = rowEchelonForm();
+        for (int rank = height(); rank > 0; rank--) {
+            if (!ref.row(rank - 1).isZero()) {
+                return rank;
+            }
+        }
+        return 0;
+    }
+
+    /**
+     * Determines whether {@code this} is invertible.
+     *
+     * <ul>
+     *  <li>{@code this} must be square.</li>
+     *  <li>The result may be either {@code boolean}.</li>
+     * </ul>
+     *
+     * @return whether {@code this} is invertible
+     */
+    public boolean isInvertible() {
+        if (!isSquare()) {
+            throw new IllegalArgumentException("this must be square. Invalid this: " + this);
+        }
+        return rank() == width;
     }
 
     /**
