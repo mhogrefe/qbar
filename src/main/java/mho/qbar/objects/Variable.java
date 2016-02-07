@@ -20,9 +20,9 @@ public class Variable implements Comparable<Variable> {
     private static @NotNull String ALPHABET = charsToString(range('a', 'z'));
 
     /**
-     * This {@code Variable}'s nonnegative index.
+     * This {@code Variable}'s non-negative index.
      */
-    public final int index;
+    private final int index;
 
     /**
      * Private constructor for {@code Variable}; assumes argument is valid
@@ -39,10 +39,23 @@ public class Variable implements Comparable<Variable> {
     }
 
     /**
+     * Returns this {@code Variable}'s index.
+     *
+     * <ul>
+     *  <li>The result is non-negative.</li>
+     * </ul>
+     *
+     * @return the numerator
+     */
+    public int getIndex() {
+        return index;
+    }
+
+    /**
      * Creates a {@code Variable} from an index.
      *
      * <ul>
-     *  <li>{@code index} cannot be zero.</li>
+     *  <li>{@code index} cannot be negative.</li>
      *  <li>Any {@code Variable} may be constructed with this constructor.</li>
      * </ul>
      *
@@ -50,7 +63,7 @@ public class Variable implements Comparable<Variable> {
      */
     public static @NotNull Variable of(int index) {
         if (index < 0) {
-            throw new IllegalArgumentException("index cannot be zero. Invalid index: " + index);
+            throw new IllegalArgumentException("index cannot be negative. Invalid index: " + index);
         }
         return new Variable(index);
     }
@@ -106,23 +119,6 @@ public class Variable implements Comparable<Variable> {
     }
 
     /**
-     * Creates a {@code String} representation of {@code this}.
-     *
-     * <ul>
-     *  <li>{@code this} may be any {@code Variable}.</li>
-     *  <li>The result is a nonempty {@code String} consisting of some number of repetitions of a single ASCII
-     *  letter.</li>
-     * </ul>
-     *
-     * @return a {@code String} representation of {@code this}
-     */
-    public @NotNull String toString() {
-        char letter = (char) ('a' + index % ALPHABET.length());
-        int multiplicity = 1 + index / ALPHABET.length();
-        return replicate(multiplicity, letter);
-    }
-
-    /**
      * Creates a {@code Variable} from a {@code String}. A valid {@code String} consists of some number of repetitions
      * of a single ASCII letter.
      *
@@ -159,6 +155,23 @@ public class Variable implements Comparable<Variable> {
      */
     public static @NotNull Optional<Pair<Variable, Integer>> findIn(@NotNull String s) {
         return Readers.genericFindIn(Variable::read, ALPHABET).apply(s);
+    }
+
+    /**
+     * Creates a {@code String} representation of {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Variable}.</li>
+     *  <li>The result is a nonempty {@code String} consisting of some number of repetitions of a single ASCII
+     *  letter.</li>
+     * </ul>
+     *
+     * @return a {@code String} representation of {@code this}
+     */
+    public @NotNull String toString() {
+        char letter = (char) ('a' + index % ALPHABET.length());
+        int multiplicity = 1 + index / ALPHABET.length();
+        return replicate(multiplicity, letter);
     }
 
     /**

@@ -470,7 +470,8 @@ public class RationalMatrixDemos extends QBarDemos {
 
     private void demoIsInReducedRowEchelonForm() {
         for (RationalMatrix m : take(LIMIT, P.withScale(4).rationalMatrices())) {
-            System.out.println(m + " is " + (m.isInReducedRowEchelonForm() ? "" : "not ") + "in reduced row echelon form");
+            System.out.println(m + " is " + (m.isInReducedRowEchelonForm() ? "" : "not ") +
+                    "in reduced row echelon form");
         }
     }
 

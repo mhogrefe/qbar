@@ -59,7 +59,7 @@ public class ExponentVector implements Comparable<ExponentVector> {
      * @return the exponent of {@code variable}
      */
     public int exponent(@NotNull Variable variable) {
-        return variable.index >= exponents.size() ? 0 : exponents.get(variable.index);
+        return variable.getIndex() >= exponents.size() ? 0 : exponents.get(variable.getIndex());
     }
 
     /**
@@ -143,9 +143,9 @@ public class ExponentVector implements Comparable<ExponentVector> {
         if (!increasing((Iterable<Variable>) map(t -> t.a, terms))) {
             throw new IllegalArgumentException();
         }
-        List<Integer> exponents = toList(replicate(last(terms).a.index + 1, 0));
+        List<Integer> exponents = toList(replicate(last(terms).a.getIndex() + 1, 0));
         for (Pair<Variable, Integer> term : terms) {
-            exponents.set(term.a.index, term.b);
+            exponents.set(term.a.getIndex(), term.b);
         }
         return new ExponentVector(exponents);
     }

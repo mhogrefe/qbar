@@ -50,6 +50,8 @@
                         <include>**/RationalPolynomialProperties.java</include>
                         <include>**/RationalVectorTest.java</include>
                         <include>**/RationalVectorProperties.java</include>
+                        <include>**/VariableTest.java</include>
+                        <include>**/VariableProperties.java</include>
                         <include>**/VectorTest.java</include>
                         <include>**/VectorProperties.java</include>
                     </includes>
