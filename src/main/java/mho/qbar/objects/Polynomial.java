@@ -1222,13 +1222,14 @@ public final class Polynomial implements
         if (this == ZERO) {
             throw new ArithmeticException("this cannot be zero.");
         }
+        if (this == ONE) return Collections.emptyList();
         //noinspection RedundantCast
         return sort((Iterable<Polynomial>) map(Polynomial::of, JasApi.factorPolynomial(toList(coefficients))));
     }
 
     /**
-     * Determines whether {@code this} is irreducible–that is, whether it cannot be factored further using
-     * {@link Polynomial#factor}.
+     * Determines whether {@code this} is irreducible–that is, it has a positive leading coefficient and no nontrivial
+     * factors, including constant factors.
      *
      * <li>{@code this} cannot be zero.</li>
      * <li>The result may be either {@code boolean}.</li>
@@ -1239,8 +1240,9 @@ public final class Polynomial implements
         if (this == ZERO) {
             throw new ArithmeticException("this cannot be zero.");
         }
-        return degree() == 0 ||
-                signum() != -1 && (equals(X) || !coefficient(0).equals(BigInteger.ZERO)) && factor().size() == 1;
+        return this == ONE ||
+                degree() > 0 && signum() != -1 && (equals(X) || !coefficient(0).equals(BigInteger.ZERO)) &&
+                factor().size() == 1;
     }
 
     /**

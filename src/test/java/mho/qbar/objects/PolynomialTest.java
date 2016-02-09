@@ -1896,7 +1896,7 @@ public class PolynomialTest {
 
     @Test
     public void testFactor() {
-        factor_helper("1", "[1]");
+        factor_helper("1", "[]");
         factor_helper("-1", "[-1]");
         factor_helper("x", "[x]");
         factor_helper("-17", "[-17]");
@@ -1910,6 +1910,7 @@ public class PolynomialTest {
         factor_helper("x^10", "[x, x, x, x, x, x, x, x, x, x]");
         factor_helper("x^2-1", "[x-1, x+1]");
         factor_helper("3*x^6+24*x+2", "[3*x^6+24*x+2]");
+        factor_helper("3*x^6+24*x+12", "[3, x^6+8*x+4]");
         factor_helper("x^8+x^6-3*x^4-3*x^3+8*x^2+2*x-5", "[x^8+x^6-3*x^4-3*x^3+8*x^2+2*x-5]");
         factor_helper("x^5+x^4+x^2+x+2", "[x^2+x+1, x^3-x+2]");
         factor_helper(
@@ -1976,19 +1977,20 @@ public class PolynomialTest {
     @Test
     public void testIsIrreducible() {
         isIrreducible_helper("1", true);
-        isIrreducible_helper("-1", true);
+        isIrreducible_helper("-1", false);
         isIrreducible_helper("x", true);
-        isIrreducible_helper("-17", true);
+        isIrreducible_helper("-17", false);
         isIrreducible_helper("x^2-4*x+7", true);
         isIrreducible_helper("x^3-1", false);
         isIrreducible_helper("3*x^10", false);
 
-        isIrreducible_helper("6", true);
+        isIrreducible_helper("6", false);
         isIrreducible_helper("-x", false);
         isIrreducible_helper("3*x", false);
         isIrreducible_helper("x^10", false);
         isIrreducible_helper("x^2-1", false);
         isIrreducible_helper("3*x^6+24*x+2", true);
+        isIrreducible_helper("3*x^6+24*x+12", false);
         isIrreducible_helper("x^8+x^6-3*x^4-3*x^3+8*x^2+2*x-5", true);
         isIrreducible_helper("x^5+x^4+x^2+x+2", false);
         isIrreducible_helper("x^6-41*x^5+652*x^4-5102*x^3+20581*x^2-40361*x+30031", true);

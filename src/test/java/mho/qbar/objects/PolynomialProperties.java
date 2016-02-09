@@ -2081,21 +2081,19 @@ public class PolynomialProperties extends QBarTestProperties {
         for (Polynomial p : take(LIMIT, P.withScale(4).polynomialsAtLeast(0))) {
             List<Polynomial> factors = p.factor();
             factors.forEach(Polynomial::validate);
-            assertFalse(p, factors.isEmpty());
             assertFalse(p, any(q -> q == ZERO, factors));
             assertTrue(p, weaklyIncreasing(factors));
             assertEquals(p, product(factors), p);
-            if (factors.size() > 1) {
-                assertTrue(p, all(Polynomial::isIrreducible, factors));
+            if (p != ONE) {
+                boolean firstFactorConstant = head(factors).degree() == 0;
+                assertTrue(
+                        p,
+                        all(
+                                q -> q.degree() > 0 && q.signum() == 1 && q.isIrreducible(),
+                                firstFactorConstant ? tail(factors) : factors
+                        )
+                );
             }
-            boolean firstFactorConstant = head(factors).degree() == 0;
-            assertTrue(
-                    p,
-                    all(
-                            q -> q.degree() > 0 && q.signum() == 1 && q.isPrimitive() && q.isIrreducible(),
-                            firstFactorConstant ? tail(factors) : factors
-                    )
-            );
         }
 
         //todo use irreduciblePolynomials
@@ -2108,14 +2106,17 @@ public class PolynomialProperties extends QBarTestProperties {
     }
 
     private static boolean isIrreducible_simplest(@NotNull Polynomial p) {
-        return p.factor().size() == 1;
+        if (p == ZERO) {
+            throw new ArithmeticException("p cannot be zero.");
+        }
+        return p == ONE || p.degree() > 0 && p.factor().size() == 1;
     }
 
     private void propertiesIsIrreducible() {
         initialize("isIrreducible()");
         for (Polynomial p : take(LIMIT, P.withScale(4).polynomialsAtLeast(0))) {
             boolean isIrreducible = p.isIrreducible();
-            if (isIrreducible && p.degree() != 0) {
+            if (isIrreducible) {
                 assertTrue(p, p.isPrimitive());
                 assertTrue(p, p.signum() == 1);
             }
@@ -2129,8 +2130,8 @@ public class PolynomialProperties extends QBarTestProperties {
             assertFalse(p, p.multiply(X).isIrreducible());
         }
 
-        for (Polynomial p : take(LIMIT, P.polynomials(0))) {
-            assertTrue(p, p.isIrreducible());
+        for (Polynomial p : take(LIMIT, filterInfinite(q -> q != ONE, P.polynomials(0)))) {
+            assertFalse(p, p.isIrreducible());
         }
     }
 

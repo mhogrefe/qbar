@@ -3185,6 +3185,81 @@ public strictfp abstract class QBarIterableProvider {
     public abstract @NotNull Iterable<Polynomial> positivePrimitivePolynomialsAtLeast(int minDegree);
 
     /**
+     * Generates square-free {@code Polynomial}s with a given degree.
+     *
+     * @param degree the degree of the generated {@code Polynomial}s
+     */
+    public @NotNull Iterable<Polynomial> squareFreePolynomials(int degree) {
+        return filter(Polynomial::isSquareFree, polynomials(degree));
+    }
+
+    /**
+     * Generates square-free {@code Polynomial}s.
+     */
+    public @NotNull Iterable<Polynomial> squareFreePolynomials() {
+        return filter(Polynomial::isSquareFree, polynomials());
+    }
+
+    /**
+     * Generates square-free {@code Polynomial}s with a minimum degree.
+     *
+     * @param minDegree the minimum degree of the generated {@code Polynomial}s
+     */
+    public @NotNull Iterable<Polynomial> squareFreePolynomialsAtLeast(int minDegree) {
+        return filter(Polynomial::isSquareFree, polynomialsAtLeast(minDegree));
+    }
+
+    /**
+     * Generates primitive square-free {@code Polynomial}s with positive leading coefficients with a given degree.
+     *
+     * @param degree the degree of the generated {@code Polynomial}s
+     */
+    public @NotNull Iterable<Polynomial> positivePrimitiveSquareFreePolynomials(int degree) {
+        return filter(Polynomial::isSquareFree, positivePrimitivePolynomials(degree));
+    }
+
+    /**
+     * Generates primitive square-free {@code Polynomial}s with positive leading coefficients.
+     */
+    public @NotNull Iterable<Polynomial> positivePrimitiveSquareFreePolynomials() {
+        return filter(Polynomial::isSquareFree, positivePrimitivePolynomials());
+    }
+
+    /**
+     * Generates primitive square-free {@code Polynomial}s with positive leading coefficients with a minimum degree.
+     *
+     * @param minDegree the minimum degree of the generated {@code Polynomial}s
+     */
+    public @NotNull Iterable<Polynomial> positivePrimitiveSquareFreePolynomialsAtLeast(int minDegree) {
+        return filter(Polynomial::isSquareFree, positivePrimitivePolynomialsAtLeast(minDegree));
+    }
+
+    /**
+     * Generates irreducible {@code Polynomial}s with a given degree.
+     *
+     * @param degree the degree of the generated {@code Polynomial}s
+     */
+    public @NotNull Iterable<Polynomial> irreduciblePolynomials(int degree) {
+        return filter(Polynomial::isIrreducible, polynomials(degree));
+    }
+
+    /**
+     * Generates irreducible {@code Polynomial}s.
+     */
+    public @NotNull Iterable<Polynomial> irreduciblePolynomials() {
+        return filter(Polynomial::isIrreducible, polynomials());
+    }
+
+    /**
+     * Generates irreducible {@code Polynomial}s with a minimum degree.
+     *
+     * @param minDegree the minimum degree of the generated {@code Polynomial}s
+     */
+    public @NotNull Iterable<Polynomial> irreducibleAtLeast(int minDegree) {
+        return filter(Polynomial::isIrreducible, polynomialsAtLeast(minDegree));
+    }
+
+    /**
      * Generates {@code RationalPolynomial}s with a given degree.
      *
      * @param degree the degree of the generated {@code RationalPolynomial}s
