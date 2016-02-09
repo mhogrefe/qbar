@@ -78,7 +78,7 @@ public class VectorProperties extends QBarTestProperties {
     }
 
     private void propertiesToRationalVector() {
-        initialize("toRationalVector");
+        initialize("toRationalVector()");
         for (Vector v : take(LIMIT, P.vectors())) {
             RationalVector rv = v.toRationalVector();
             assertEquals(v, v.toString(), rv.toString());

@@ -53,6 +53,12 @@ public class MatrixDemos extends QBarDemos {
         }
     }
 
+    private void demoToRationalMatrix() {
+        for (Matrix m : take(LIMIT, P.withScale(4).matrices())) {
+            System.out.println("toRationalMatrix(" + m + ") = " + m.toRationalMatrix());
+        }
+    }
+
     private void demoGet() {
         Iterable<Triple<Matrix, Integer, Integer>> ts = map(
                 p -> new Triple<>(p.a, p.b.a, p.b.b),

@@ -55,8 +55,8 @@ public final class RationalPolynomial implements
     private static final Comparator<Iterable<Rational>> RATIONAL_ITERABLE_COMPARATOR = new ShortlexComparator<>();
 
     /**
-     * A {@code Comparator} that compares two {@code RationalPolynomial}s by their denominators, then lexicographically
-     * by their coefficients.
+     * A {@code Comparator} that compares two {@code RationalPolynomial}s by their degrees, then lexicographically by
+     * their coefficients.
      */
     private static final @NotNull Comparator<RationalPolynomial> DEGREE_COEFFICIENT_COMPARATOR = (p, q) -> {
         int c = Integer.compare(p.degree(), q.degree());

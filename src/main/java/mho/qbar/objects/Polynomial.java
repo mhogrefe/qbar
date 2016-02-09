@@ -53,8 +53,8 @@ public final class Polynomial implements
     private static final Comparator<Iterable<BigInteger>> BIG_INTEGER_ITERABLE_COMPARATOR = new ShortlexComparator<>();
 
     /**
-     * A {@code Comparator} that compares two {@code Polynomial}s by their denominators, then lexicographically by
-     * their coefficients.
+     * A {@code Comparator} that compares two {@code Polynomial}s by their degrees, then lexicographically by their
+     * coefficients.
      */
     private static final @NotNull Comparator<Polynomial> DEGREE_COEFFICIENT_COMPARATOR = (p, q) -> {
         int c = Integer.compare(p.degree(), q.degree());

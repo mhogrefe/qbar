@@ -30,6 +30,8 @@ public class RationalMatrixProperties extends QBarTestProperties {
         propertiesColumns();
         propertiesRow();
         propertiesColumn();
+        propertiesHasIntegralElements();
+        propertiesToMatrix();
         propertiesGet();
         propertiesFromRows();
         propertiesFromColumns();
@@ -151,6 +153,39 @@ public class RationalMatrixProperties extends QBarTestProperties {
                 p.a.column(p.b);
                 fail(p);
             } catch (IndexOutOfBoundsException ignored) {}
+        }
+    }
+
+    private void propertiesHasIntegralElements() {
+        initialize("hasIntegralElements()");
+        for (RationalMatrix m : take(LIMIT, P.rationalMatrices())) {
+            m.hasIntegralElements();
+        }
+
+        for (RationalMatrix m : take(LIMIT, map(Matrix::toRationalMatrix, P.matrices()))) {
+            assertTrue(m, m.hasIntegralElements());
+        }
+    }
+
+    private void propertiesToMatrix() {
+        initialize("toMatrix()");
+        for (RationalMatrix m : take(LIMIT, map(Matrix::toRationalMatrix, P.matrices()))) {
+            Matrix n = m.toMatrix();
+            assertEquals(m, m.toString(), n.toString());
+            assertEquals(m, m.height(), n.height());
+            assertEquals(m, m.width(), n.width());
+            inverse(RationalMatrix::toMatrix, Matrix::toRationalMatrix, m);
+        }
+
+        Iterable<RationalMatrix> msFail = filterInfinite(
+                m -> any(r -> !r.hasIntegralCoordinates(),
+                m.rows()), P.rationalMatrices()
+        );
+        for (RationalMatrix m : take(LIMIT, msFail)) {
+            try {
+                m.toMatrix();
+                fail(m);
+            } catch (ArithmeticException ignored) {}
         }
     }
 

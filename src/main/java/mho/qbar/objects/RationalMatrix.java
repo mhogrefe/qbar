@@ -147,6 +147,40 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
     }
 
     /**
+     * Determines whether the elements of {@code this} are all integers.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalMatrix}.</li>
+     *  <li>The result may be either {@code boolean}.</li>
+     * </ul>
+     *
+     * @return whether {@code this} has integral elements.
+     */
+    public boolean hasIntegralElements() {
+        return all(RationalVector::hasIntegralCoordinates, rows);
+    }
+
+    /**
+     * Converts {@code this} to a {@code Matrix}.
+     *
+     * <ul>
+     *  <li>{@code this} must only have integral elements.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * Size is height({@code this})×width({@code this})
+     *
+     * @return a {@code Matrix} with the same value as {@code this}
+     */
+    public @NotNull Matrix toMatrix() {
+        if (rows.isEmpty()) {
+            return Matrix.zero(0, width);
+        } else {
+            return Matrix.fromRows(toList(map(RationalVector::toVector, rows)));
+        }
+    }
+
+    /**
      * Returns one of {@code this}'s elements. 0-indexed.
      *
      * <ul>

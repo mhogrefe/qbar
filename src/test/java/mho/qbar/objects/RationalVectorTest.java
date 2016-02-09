@@ -56,7 +56,7 @@ public class RationalVectorTest {
     }
 
     @Test
-    public void testToRationalPolynomial() {
+    public void testToVector() {
         toVector_helper("[]");
         toVector_helper("[2]");
         toVector_helper("[12, -4, 0, 2]");

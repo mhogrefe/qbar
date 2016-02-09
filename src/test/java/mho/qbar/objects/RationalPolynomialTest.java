@@ -117,7 +117,7 @@ public class RationalPolynomialTest {
     }
 
     @Test
-    public void testToRationalPolynomial() {
+    public void testToPolynomial() {
         toPolynomial_helper("0");
         toPolynomial_helper("1");
         toPolynomial_helper("x");

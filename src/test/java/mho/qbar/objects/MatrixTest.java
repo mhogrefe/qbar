@@ -103,6 +103,22 @@ public class MatrixTest {
         column_fail_helper("[[1, 9, -13], [20, 5, -6]]", -1);
     }
 
+    private static void toRationalMatrix_helper(@NotNull String input) {
+        aeq(read(input).get().toRationalMatrix(), input);
+    }
+
+    @Test
+    public void testToRationalMatrix() {
+        toRationalMatrix_helper("[]#0");
+        toRationalMatrix_helper("[]#1");
+        toRationalMatrix_helper("[]#3");
+        toRationalMatrix_helper("[[]]");
+        toRationalMatrix_helper("[[], [], []]");
+        toRationalMatrix_helper("[[-3]]");
+        toRationalMatrix_helper("[[-3, -8], [0, 7]]");
+        toRationalMatrix_helper("[[1, 9, -13], [20, 5, -6]]");
+    }
+
     private static void get_helper(@NotNull String input, int i, int j, @NotNull String output) {
         aeq(read(input).get().get(i, j), output);
     }

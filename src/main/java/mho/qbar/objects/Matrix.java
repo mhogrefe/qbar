@@ -146,6 +146,26 @@ public class Matrix implements Comparable<Matrix> {
     }
 
     /**
+     * Converts {@code this} to a {@code RationalMatrix}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Matrix}.</li>
+     *  <li>The result is a {@code RationalMatrix} with integral elements.</li>
+     * </ul>
+     *
+     * Size is height({@code this})×width({@code this})
+     *
+     * @return a {@code RationalMatrix} with the same value as {@code this}
+     */
+    public @NotNull RationalMatrix toRationalMatrix() {
+        if (rows.isEmpty()) {
+            return RationalMatrix.zero(0, width);
+        } else {
+            return RationalMatrix.fromRows(toList(map(Vector::toRationalVector, rows)));
+        }
+    }
+
+    /**
      * Returns one of {@code this}'s elements. 0-indexed.
      *
      * <ul>

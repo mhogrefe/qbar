@@ -31,6 +31,7 @@ public class MatrixProperties extends QBarTestProperties {
         propertiesColumns();
         propertiesRow();
         propertiesColumn();
+        propertiesToRationalMatrix();
         propertiesGet();
         propertiesFromRows();
         propertiesFromColumns();
@@ -66,6 +67,7 @@ public class MatrixProperties extends QBarTestProperties {
         propertiesRank();
         compareImplementationsRank();
         propertiesIsInvertible();
+        compareImplementationsIsInvertible();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -147,6 +149,17 @@ public class MatrixProperties extends QBarTestProperties {
                 p.a.column(p.b);
                 fail(p);
             } catch (IndexOutOfBoundsException ignored) {}
+        }
+    }
+
+    private void propertiesToRationalMatrix() {
+        initialize("toRationalMatrix()");
+        for (Matrix m : take(LIMIT, P.matrices())) {
+            RationalMatrix rm = m.toRationalMatrix();
+            assertEquals(m, m.toString(), m.toString());
+            assertEquals(m, m.height(), rm.height());
+            assertEquals(m, m.width(), rm.width());
+            inverse(Matrix::toRationalMatrix, RationalMatrix::toMatrix, m);
         }
     }
 
@@ -1229,11 +1242,22 @@ public class MatrixProperties extends QBarTestProperties {
         return 0;
     }
 
+    private static int rank_alt2(@NotNull Matrix m) {
+        RationalMatrix ref = m.toRationalMatrix().rowEchelonForm();
+        for (int rank = m.height(); rank > 0; rank--) {
+            if (!ref.row(rank - 1).isZero()) {
+                return rank;
+            }
+        }
+        return 0;
+    }
+
     private void propertiesRank() {
         initialize("rank()");
         for (Matrix m : take(LIMIT, P.matrices())) {
             int rank = m.rank();
             assertEquals(m, rank_alt(m), rank);
+            assertEquals(m, rank_alt2(m), rank);
             assertTrue(m, rank >= 0);
             assertTrue(m, rank <= m.height());
             assertTrue(m, rank <= m.width());
@@ -1254,14 +1278,23 @@ public class MatrixProperties extends QBarTestProperties {
     private void compareImplementationsRank() {
         Map<String, Function<Matrix, Integer>> functions = new LinkedHashMap<>();
         functions.put("alt", MatrixProperties::rank_alt);
+        functions.put("alt2", MatrixProperties::rank_alt2);
         functions.put("standard", Matrix::rank);
         compareImplementations("rank()", take(LIMIT, P.matrices()), functions);
+    }
+
+    private static boolean isInvertible_alt(@NotNull Matrix m) {
+        if (!m.isSquare()) {
+            throw new IllegalArgumentException("this must be square. Invalid this: " + m);
+        }
+        return m.toRationalMatrix().rank() == m.width();
     }
 
     private void propertiesIsInvertible() {
         initialize("isInvertible()");
         for (Matrix m : take(LIMIT, P.withScale(4).squareMatrices())) {
             boolean isInvertible = m.isInvertible();
+            assertEquals(m, isInvertible_alt(m), isInvertible);
             assertEquals(m, m.transpose().isInvertible(), isInvertible);
         }
 
@@ -1269,6 +1302,13 @@ public class MatrixProperties extends QBarTestProperties {
             Matrix identity = identity(i);
             assertTrue(i, identity.isInvertible());
         }
+    }
+
+    private void compareImplementationsIsInvertible() {
+        Map<String, Function<Matrix, Boolean>> functions = new LinkedHashMap<>();
+        functions.put("alt", MatrixProperties::isInvertible_alt);
+        functions.put("standard", Matrix::isInvertible);
+        compareImplementations("isInvertible()", take(LIMIT, P.withScale(4).squareMatrices()), functions);
     }
 
     private void propertiesEquals() {

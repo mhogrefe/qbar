@@ -103,6 +103,45 @@ public class RationalMatrixTest {
         column_fail_helper("[[1, 9, -13], [20, 5, -6]]", -1);
     }
 
+    private static void hasIntegralElements_helper(@NotNull String input, boolean output) {
+        aeq(read(input).get().hasIntegralElements(), output);
+    }
+
+    @Test
+    public void testHasIntegralElements() {
+        hasIntegralElements_helper("[]#0", true);
+        hasIntegralElements_helper("[]#1", true);
+        hasIntegralElements_helper("[]#3", true);
+        hasIntegralElements_helper("[[]]", true);
+        hasIntegralElements_helper("[[], [], []]", true);
+        hasIntegralElements_helper("[[-2/3]]", false);
+        hasIntegralElements_helper("[[-2/3, -8], [0, 5/7]]", false);
+        hasIntegralElements_helper("[[1, 9, -13], [20, 5, -6]]", true);
+    }
+
+    private static void toMatrix_helper(@NotNull String input) {
+        aeq(read(input).get().toMatrix(), input);
+    }
+
+    private static void toMatrix_fail_helper(@NotNull String input) {
+        try {
+            read(input).get().toMatrix();
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testToMatrix() {
+        toMatrix_helper("[]#0");
+        toMatrix_helper("[]#1");
+        toMatrix_helper("[]#3");
+        toMatrix_helper("[[]]");
+        toMatrix_helper("[[], [], []]");
+        toMatrix_helper("[[1, 9, -13], [20, 5, -6]]");
+        toMatrix_fail_helper("[[-2/3]]");
+        toMatrix_fail_helper("[[-2/3, -8], [0, 5/7]]");
+    }
+
     private static void get_helper(@NotNull String input, int i, int j, @NotNull String output) {
         aeq(read(input).get().get(i, j), output);
     }

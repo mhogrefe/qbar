@@ -53,6 +53,18 @@ public class RationalMatrixDemos extends QBarDemos {
         }
     }
 
+    private void demoHasIntegralElements() {
+        for (RationalMatrix m : take(LIMIT, P.withScale(4).rationalMatrices())) {
+            System.out.println(m + (m.hasIntegralElements() ? " has " : " doesn't have ") + "integral elements");
+        }
+    }
+
+    private void demoToMatrix() {
+        for (RationalMatrix m : take(LIMIT, map(Matrix::toRationalMatrix, P.withScale(4).matrices()))) {
+            System.out.println("toMatrix(" + m + ") = " + m.toMatrix());
+        }
+    }
+
     private void demoGet() {
         Iterable<Triple<RationalMatrix, Integer, Integer>> ts = map(
                 p -> new Triple<>(p.a, p.b.a, p.b.b),
