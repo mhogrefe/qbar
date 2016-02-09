@@ -3206,7 +3206,7 @@ public strictfp abstract class QBarIterableProvider {
      * @param minDegree the minimum degree of the generated {@code Polynomial}s
      */
     public @NotNull Iterable<Polynomial> squareFreePolynomialsAtLeast(int minDegree) {
-        return filter(Polynomial::isSquareFree, polynomialsAtLeast(minDegree));
+        return filterInfinite(Polynomial::isSquareFree, polynomialsAtLeast(minDegree));
     }
 
     /**
@@ -3231,7 +3231,7 @@ public strictfp abstract class QBarIterableProvider {
      * @param minDegree the minimum degree of the generated {@code Polynomial}s
      */
     public @NotNull Iterable<Polynomial> positivePrimitiveSquareFreePolynomialsAtLeast(int minDegree) {
-        return filter(Polynomial::isSquareFree, positivePrimitivePolynomialsAtLeast(minDegree));
+        return filterInfinite(Polynomial::isSquareFree, positivePrimitivePolynomialsAtLeast(minDegree));
     }
 
     /**
@@ -3240,14 +3240,14 @@ public strictfp abstract class QBarIterableProvider {
      * @param degree the degree of the generated {@code Polynomial}s
      */
     public @NotNull Iterable<Polynomial> irreduciblePolynomials(int degree) {
-        return filter(Polynomial::isIrreducible, polynomials(degree));
+        return filter(p -> p != Polynomial.ZERO && p.isIrreducible(), positivePrimitivePolynomials(degree));
     }
 
     /**
      * Generates irreducible {@code Polynomial}s.
      */
     public @NotNull Iterable<Polynomial> irreduciblePolynomials() {
-        return filter(Polynomial::isIrreducible, polynomials());
+        return filter(p -> p != Polynomial.ZERO && p.isIrreducible(), positivePrimitivePolynomials());
     }
 
     /**
@@ -3255,8 +3255,11 @@ public strictfp abstract class QBarIterableProvider {
      *
      * @param minDegree the minimum degree of the generated {@code Polynomial}s
      */
-    public @NotNull Iterable<Polynomial> irreducibleAtLeast(int minDegree) {
-        return filter(Polynomial::isIrreducible, polynomialsAtLeast(minDegree));
+    public @NotNull Iterable<Polynomial> irreduciblePolynomialsAtLeast(int minDegree) {
+        return filterInfinite(
+                p -> p != Polynomial.ZERO && p.isIrreducible(),
+                positivePrimitivePolynomialsAtLeast(minDegree)
+        );
     }
 
     /**

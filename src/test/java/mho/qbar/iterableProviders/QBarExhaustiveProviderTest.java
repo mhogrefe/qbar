@@ -1128,6 +1128,305 @@ public class QBarExhaustiveProviderTest {
         positivePrimitivePolynomialsAtLeast_fail_helper(-2);
     }
 
+    private static void squareFreePolynomials_int_helper(int degree, @NotNull String output) {
+        simpleProviderHelper(QEP.squareFreePolynomials(degree), output);
+    }
+
+    private static void squareFreePolynomials_int_fail_helper(int degree) {
+        try {
+            QEP.squareFreePolynomials(degree);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testSquareFreePolynomials_int() {
+        squareFreePolynomials_int_helper(-1, "[]");
+        squareFreePolynomials_int_helper(0,
+                "[1, -1, 2, -2, 3, -3, 4, -4, 5, -5, 6, -6, 7, -7, 8, -8, 9, -9, 10, -10, 11, -11, 12, -12, 13, -13," +
+                " 14, -14, 15, -15, 16, -16, 17, -17, 18, -18, 19, -19, 20, -20, 21, -21, 22, -22, 23, -23, 24, -24," +
+                " 25, -25, ...]");
+        squareFreePolynomials_int_helper(1,
+                "[x, x+1, -x, 2*x, -x+1, 2*x+1, x-1, x+2, -x-1, 2*x-1, -x+2, 2*x+2, -2*x, 3*x, -2*x+1, 3*x+1, -3*x," +
+                " 4*x, -3*x+1, 4*x+1, -2*x-1, 3*x-1, -2*x+2, 3*x+2, -3*x-1, 4*x-1, -3*x+2, 4*x+2, x-2, x+3, -x-2," +
+                " 2*x-2, -x+3, 2*x+3, x-3, x+4, -x-3, 2*x-3, -x+4, 2*x+4, -2*x-2, 3*x-2, -2*x+3, 3*x+3, -3*x-2," +
+                " 4*x-2, -3*x+3, 4*x+3, -2*x-3, 3*x-3, ...]");
+        squareFreePolynomials_int_helper(2,
+                "[x^2+x, x^2+1, x^2+x+1, -x^2+x, 2*x^2+x, -x^2+1, 2*x^2+1, -x^2+x+1, 2*x^2+x+1, x^2-x, x^2+2*x," +
+                " x^2-x+1, -x^2-x, 2*x^2-x, -x^2+2*x, 2*x^2+2*x, -x^2-x+1, 2*x^2-x+1, -x^2+2*x+1, 2*x^2+2*x+1," +
+                " x^2-1, x^2+x-1, x^2+2, x^2+x+2, -x^2-1, 2*x^2-1, -x^2+x-1, 2*x^2+x-1, -x^2+2, 2*x^2+2, -x^2+x+2," +
+                " 2*x^2+x+2, x^2-x-1, x^2+2*x-1, x^2-x+2, x^2+2*x+2, -x^2-x-1, 2*x^2-x-1, 2*x^2+2*x-1, -x^2-x+2," +
+                " 2*x^2-x+2, -x^2+2*x+2, 2*x^2+2*x+2, -2*x^2+x, 3*x^2+x, -2*x^2+1, 3*x^2+1, -2*x^2+x+1, 3*x^2+x+1," +
+                " -3*x^2+x, ...]");
+        squareFreePolynomials_int_helper(8,
+                "[x^8+x, x^8+x^7+x, x^8+x^6+x, x^8+x^7+x^6+x, x^8+x^5+x, x^8+x^7+x^5+x, x^8+x^6+x^5+x," +
+                " x^8+x^7+x^6+x^5+x, x^8+x^4+x, x^8+x^7+x^4+x, x^8+x^6+x^4+x, x^8+x^7+x^6+x^4+x, x^8+x^5+x^4+x," +
+                " x^8+x^7+x^5+x^4+x, x^8+x^6+x^5+x^4+x, x^8+x^7+x^6+x^5+x^4+x, x^8+x^3+x, x^8+x^7+x^3+x," +
+                " x^8+x^6+x^3+x, x^8+x^7+x^6+x^3+x, x^8+x^5+x^3+x, x^8+x^7+x^5+x^3+x, x^8+x^6+x^5+x^3+x," +
+                " x^8+x^7+x^6+x^5+x^3+x, x^8+x^4+x^3+x, x^8+x^7+x^4+x^3+x, x^8+x^6+x^4+x^3+x, x^8+x^7+x^6+x^4+x^3+x," +
+                " x^8+x^5+x^4+x^3+x, x^8+x^7+x^5+x^4+x^3+x, x^8+x^7+x^6+x^5+x^4+x^3+x, x^8+x^2+x, x^8+x^7+x^2+x," +
+                " x^8+x^6+x^2+x, x^8+x^7+x^6+x^2+x, x^8+x^5+x^2+x, x^8+x^7+x^5+x^2+x, x^8+x^6+x^5+x^2+x," +
+                " x^8+x^7+x^6+x^5+x^2+x, x^8+x^4+x^2+x, x^8+x^7+x^4+x^2+x, x^8+x^6+x^4+x^2+x, x^8+x^7+x^6+x^4+x^2+x," +
+                " x^8+x^5+x^4+x^2+x, x^8+x^7+x^5+x^4+x^2+x, x^8+x^6+x^5+x^4+x^2+x, x^8+x^7+x^6+x^5+x^4+x^2+x," +
+                " x^8+x^3+x^2+x, x^8+x^7+x^3+x^2+x, x^8+x^6+x^3+x^2+x, ...]");
+        squareFreePolynomials_int_fail_helper(-2);
+    }
+
+    @Test
+    public void testSquareFreePolynomials() {
+        simpleProviderHelper(QEP.squareFreePolynomials(),
+                "[1, -1, x, 2, -2, 3, -3, x+1, 4, -4, -x, 5, -5, 2*x, 6, -6, -x+1, 7, x^2+x, -7, 2*x+1, 8, -8, 9," +
+                " -9, x-1, 10, -10, 11, x^2+1, -11, x+2, 12, -12, -x-1, 13, -13, 2*x-1, 14, -14, -x+2, 15, x^2+x+1," +
+                " -15, 2*x+2, 16, -16, -2*x, 17, -17, ...]");
+    }
+
+    private static void squareFreePolynomialsAtLeast_helper(int minDegree, @NotNull String output) {
+        simpleProviderHelper(QEP.squareFreePolynomialsAtLeast(minDegree), output);
+    }
+
+    private static void squareFreePolynomialsAtLeast_fail_helper(int minDegree) {
+        try {
+            QEP.squareFreePolynomialsAtLeast(minDegree);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testSquareFreePolynomialsAtLeast() {
+        squareFreePolynomialsAtLeast_helper(-1,
+                "[1, -1, x, 2, -2, 3, -3, x+1, 4, -4, -x, 5, -5, 2*x, 6, -6, -x+1, 7, x^2+x, -7, 2*x+1, 8, -8, 9," +
+                " -9, x-1, 10, -10, 11, x^2+1, -11, x+2, 12, -12, -x-1, 13, -13, 2*x-1, 14, -14, -x+2, 15, x^2+x+1," +
+                " -15, 2*x+2, 16, -16, -2*x, 17, -17, ...]");
+        squareFreePolynomialsAtLeast_helper(0,
+                "[1, -1, x, 2, -2, 3, -3, x+1, 4, -4, -x, 5, -5, 2*x, 6, -6, -x+1, 7, x^2+x, -7, 2*x+1, 8, -8, 9," +
+                " -9, x-1, 10, -10, 11, x^2+1, -11, x+2, 12, -12, -x-1, 13, -13, 2*x-1, 14, -14, -x+2, 15, x^2+x+1," +
+                " -15, 2*x+2, 16, -16, -2*x, 17, -17, ...]");
+        squareFreePolynomialsAtLeast_helper(1,
+                "[x, x+1, -x, 2*x, -x+1, x^2+x, 2*x+1, x-1, x^2+1, x+2, -x-1, 2*x-1, -x+2, x^2+x+1, 2*x+2, -2*x," +
+                " 3*x, -2*x+1, 3*x+1, -3*x, -x^2+x, 4*x, x^3+x, -3*x+1, 2*x^2+x, 4*x+1, -2*x-1, -x^2+1, 3*x-1," +
+                " -2*x+2, 2*x^2+1, 3*x+2, -3*x-1, -x^2+x+1, 4*x-1, x^3+x^2+x, -3*x+2, 2*x^2+x+1, 4*x+2, x-2, x^2-x," +
+                " x+3, -x-2, 2*x-2, x^3+1, -x+3, x^2+2*x, 2*x+3, x-3, x^2-x+1, ...]");
+        squareFreePolynomialsAtLeast_helper(2,
+                "[x^2+x, x^2+1, x^2+x+1, -x^2+x, x^3+x, 2*x^2+x, -x^2+1, 2*x^2+1, -x^2+x+1, x^3+x^2+x, 2*x^2+x+1," +
+                " x^2-x, x^3+1, x^2+2*x, x^2-x+1, x^3+x^2+1, -x^2-x, 2*x^2-x, -x^2+2*x, x^3+x+1, 2*x^2+2*x," +
+                " -x^2-x+1, 2*x^2-x+1, -x^2+2*x+1, x^3+x^2+x+1, 2*x^2+2*x+1, x^2-1, x^2+x-1, x^2+2, x^4+x, x^2+x+2," +
+                " -x^2-1, -x^3+x, 2*x^2-1, -x^2+x-1, 2*x^3+x, 2*x^2+x-1, -x^2+2, -x^3+x^2+x, 2*x^2+2, x^4+x^3+x," +
+                " -x^2+x+2, 2*x^3+x^2+x, 2*x^2+x+2, -x^3+1, x^2-x-1, 2*x^3+1, x^2+2*x-1, -x^3+x^2+1, x^2-x+2, ...]");
+        squareFreePolynomialsAtLeast_helper(8,
+                "[x^8+x, x^8+x^7+x, x^8+x^6+x, x^8+x^7+x^6+x, x^8+x^5+x, x^8+x^7+x^5+x, x^8+x^6+x^5+x," +
+                " x^8+x^7+x^6+x^5+x, x^8+x^4+x, x^8+x^7+x^4+x, x^8+x^6+x^4+x, x^8+x^7+x^6+x^4+x, x^8+x^5+x^4+x," +
+                " x^8+x^7+x^5+x^4+x, x^8+x^6+x^5+x^4+x, x^8+x^7+x^6+x^5+x^4+x, x^8+x^3+x, x^8+x^7+x^3+x," +
+                " x^8+x^6+x^3+x, x^8+x^7+x^6+x^3+x, x^8+x^5+x^3+x, x^8+x^7+x^5+x^3+x, x^8+x^6+x^5+x^3+x," +
+                " x^8+x^7+x^6+x^5+x^3+x, x^8+x^4+x^3+x, x^8+x^7+x^4+x^3+x, x^8+x^6+x^4+x^3+x, x^8+x^7+x^6+x^4+x^3+x," +
+                " x^8+x^5+x^4+x^3+x, x^8+x^7+x^5+x^4+x^3+x, x^8+x^7+x^6+x^5+x^4+x^3+x, x^8+x^2+x, x^8+x^7+x^2+x," +
+                " x^8+x^6+x^2+x, x^8+x^7+x^6+x^2+x, x^8+x^5+x^2+x, x^8+x^7+x^5+x^2+x, x^8+x^6+x^5+x^2+x," +
+                " x^8+x^7+x^6+x^5+x^2+x, x^8+x^4+x^2+x, x^8+x^7+x^4+x^2+x, x^8+x^6+x^4+x^2+x, x^8+x^7+x^6+x^4+x^2+x," +
+                " x^8+x^5+x^4+x^2+x, x^8+x^7+x^5+x^4+x^2+x, x^8+x^6+x^5+x^4+x^2+x, x^8+x^7+x^6+x^5+x^4+x^2+x," +
+                " x^8+x^3+x^2+x, x^8+x^7+x^3+x^2+x, x^8+x^6+x^3+x^2+x, ...]");
+        squareFreePolynomialsAtLeast_fail_helper(-2);
+    }
+
+    private static void positivePrimitiveSquareFreePolynomials_int_helper(int degree, @NotNull String output) {
+        simpleProviderHelper(QEP.positivePrimitiveSquareFreePolynomials(degree), output);
+    }
+
+    private static void positivePrimitiveSquareFreePolynomials_int_fail_helper(int degree) {
+        try {
+            QEP.positivePrimitiveSquareFreePolynomials(degree);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testPositivePrimitiveSquareFreePolynomials_int() {
+        positivePrimitiveSquareFreePolynomials_int_helper(-1, "[]");
+        positivePrimitiveSquareFreePolynomials_int_helper(0, "[1]");
+        positivePrimitiveSquareFreePolynomials_int_helper(1,
+                "[x, x+1, 2*x+1, x-1, x+2, 2*x-1, 3*x+1, 4*x+1, 3*x-1, 3*x+2, 4*x-1, x-2, x+3, 2*x+3, x-3, x+4," +
+                " 2*x-3, 3*x-2, 4*x+3, 3*x+4, 4*x-3, 5*x+1, 6*x+1, 5*x-1, 5*x+2, 6*x-1, 7*x+1, 8*x+1, 7*x-1, 7*x+2," +
+                " 8*x-1, 5*x-2, 5*x+3, 5*x-3, 5*x+4, 7*x-2, 7*x+3, 8*x+3, 7*x-3, 7*x+4, 8*x-3, x-4, x+5, 2*x+5, x-5," +
+                " x+6, 2*x-5, 3*x-4, 3*x+5, 4*x+5, ...]");
+        positivePrimitiveSquareFreePolynomials_int_helper(2,
+                "[x^2+x, x^2+1, x^2+x+1, 2*x^2+x, 2*x^2+1, 2*x^2+x+1, x^2-x, x^2+2*x, x^2-x+1, 2*x^2-x, 2*x^2-x+1," +
+                " 2*x^2+2*x+1, x^2-1, x^2+x-1, x^2+2, x^2+x+2, 2*x^2-1, 2*x^2+x-1, 2*x^2+x+2, x^2-x-1, x^2+2*x-1," +
+                " x^2-x+2, x^2+2*x+2, 2*x^2-x-1, 2*x^2+2*x-1, 2*x^2-x+2, 3*x^2+x, 3*x^2+1, 3*x^2+x+1, 4*x^2+x," +
+                " 4*x^2+1, 4*x^2+x+1, 3*x^2-x, 3*x^2+2*x, 3*x^2-x+1, 3*x^2+2*x+1, 4*x^2-x, 4*x^2-x+1, 4*x^2+2*x+1," +
+                " 3*x^2-1, 3*x^2+x-1, 3*x^2+2, 3*x^2+x+2, 4*x^2-1, 4*x^2+x-1, 4*x^2+x+2, 3*x^2-x-1, 3*x^2+2*x-1," +
+                " 3*x^2-x+2, 3*x^2+2*x+2, ...]");
+        positivePrimitiveSquareFreePolynomials_int_helper(8,
+                "[x^8+x, x^8+x^7+x, x^8+x^6+x, x^8+x^7+x^6+x, x^8+x^5+x, x^8+x^7+x^5+x, x^8+x^6+x^5+x," +
+                " x^8+x^7+x^6+x^5+x, x^8+x^4+x, x^8+x^7+x^4+x, x^8+x^6+x^4+x, x^8+x^7+x^6+x^4+x, x^8+x^5+x^4+x," +
+                " x^8+x^7+x^5+x^4+x, x^8+x^6+x^5+x^4+x, x^8+x^7+x^6+x^5+x^4+x, x^8+x^3+x, x^8+x^7+x^3+x," +
+                " x^8+x^6+x^3+x, x^8+x^7+x^6+x^3+x, x^8+x^5+x^3+x, x^8+x^7+x^5+x^3+x, x^8+x^6+x^5+x^3+x," +
+                " x^8+x^7+x^6+x^5+x^3+x, x^8+x^4+x^3+x, x^8+x^7+x^4+x^3+x, x^8+x^6+x^4+x^3+x, x^8+x^7+x^6+x^4+x^3+x," +
+                " x^8+x^5+x^4+x^3+x, x^8+x^7+x^5+x^4+x^3+x, x^8+x^7+x^6+x^5+x^4+x^3+x, x^8+x^2+x, x^8+x^7+x^2+x," +
+                " x^8+x^6+x^2+x, x^8+x^7+x^6+x^2+x, x^8+x^5+x^2+x, x^8+x^7+x^5+x^2+x, x^8+x^6+x^5+x^2+x," +
+                " x^8+x^7+x^6+x^5+x^2+x, x^8+x^4+x^2+x, x^8+x^7+x^4+x^2+x, x^8+x^6+x^4+x^2+x, x^8+x^7+x^6+x^4+x^2+x," +
+                " x^8+x^5+x^4+x^2+x, x^8+x^7+x^5+x^4+x^2+x, x^8+x^6+x^5+x^4+x^2+x, x^8+x^7+x^6+x^5+x^4+x^2+x," +
+                " x^8+x^3+x^2+x, x^8+x^7+x^3+x^2+x, x^8+x^6+x^3+x^2+x, ...]");
+        positivePrimitiveSquareFreePolynomials_int_fail_helper(-2);
+    }
+
+    @Test
+    public void testPositivePrimitiveSquareFreePolynomials() {
+        simpleProviderHelper(QEP.positivePrimitiveSquareFreePolynomials(),
+                "[1, x, x+1, x^2+x, 2*x+1, x-1, x^2+1, x+2, 2*x-1, x^2+x+1, 3*x+1, x^3+x, 2*x^2+x, 4*x+1, 3*x-1," +
+                " 2*x^2+1, 3*x+2, 4*x-1, x^3+x^2+x, 2*x^2+x+1, x-2, x^2-x, x+3, x^3+1, x^2+2*x, 2*x+3, x-3, x^2-x+1," +
+                " x+4, 2*x-3, x^3+x^2+1, 3*x-2, 2*x^2-x, x^3+x+1, 4*x+3, 2*x^2-x+1, 3*x+4, 4*x-3, x^3+x^2+x+1," +
+                " 2*x^2+2*x+1, x^2-1, 5*x+1, x^2+x-1, 6*x+1, 5*x-1, x^2+2, 5*x+2, x^4+x, 6*x-1, x^2+x+2, ...]");
+    }
+
+    private static void positivePrimitiveSquareFreePolynomialsAtLeast_helper(int minDegree, @NotNull String output) {
+        simpleProviderHelper(QEP.positivePrimitiveSquareFreePolynomialsAtLeast(minDegree), output);
+    }
+
+    private static void positivePrimitiveSquareFreePolynomialsAtLeast_fail_helper(int minDegree) {
+        try {
+            QEP.positivePrimitiveSquareFreePolynomialsAtLeast(minDegree);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testPositivePrimitiveSquareFreePolynomialsAtLeast() {
+        positivePrimitiveSquareFreePolynomialsAtLeast_helper(-1,
+                "[1, x, x+1, x^2+x, 2*x+1, x-1, x^2+1, x+2, 2*x-1, x^2+x+1, 3*x+1, x^3+x, 2*x^2+x, 4*x+1, 3*x-1," +
+                " 2*x^2+1, 3*x+2, 4*x-1, x^3+x^2+x, 2*x^2+x+1, x-2, x^2-x, x+3, x^3+1, x^2+2*x, 2*x+3, x-3, x^2-x+1," +
+                " x+4, 2*x-3, x^3+x^2+1, 3*x-2, 2*x^2-x, x^3+x+1, 4*x+3, 2*x^2-x+1, 3*x+4, 4*x-3, x^3+x^2+x+1," +
+                " 2*x^2+2*x+1, x^2-1, 5*x+1, x^2+x-1, 6*x+1, 5*x-1, x^2+2, 5*x+2, x^4+x, 6*x-1, x^2+x+2, ...]");
+        positivePrimitiveSquareFreePolynomialsAtLeast_helper(0,
+                "[1, x, x+1, x^2+x, 2*x+1, x-1, x^2+1, x+2, 2*x-1, x^2+x+1, 3*x+1, x^3+x, 2*x^2+x, 4*x+1, 3*x-1," +
+                " 2*x^2+1, 3*x+2, 4*x-1, x^3+x^2+x, 2*x^2+x+1, x-2, x^2-x, x+3, x^3+1, x^2+2*x, 2*x+3, x-3, x^2-x+1," +
+                " x+4, 2*x-3, x^3+x^2+1, 3*x-2, 2*x^2-x, x^3+x+1, 4*x+3, 2*x^2-x+1, 3*x+4, 4*x-3, x^3+x^2+x+1," +
+                " 2*x^2+2*x+1, x^2-1, 5*x+1, x^2+x-1, 6*x+1, 5*x-1, x^2+2, 5*x+2, x^4+x, 6*x-1, x^2+x+2, ...]");
+        positivePrimitiveSquareFreePolynomialsAtLeast_helper(1,
+                "[x, x+1, x^2+x, 2*x+1, x-1, x^2+1, x+2, 2*x-1, x^2+x+1, 3*x+1, x^3+x, 2*x^2+x, 4*x+1, 3*x-1," +
+                " 2*x^2+1, 3*x+2, 4*x-1, x^3+x^2+x, 2*x^2+x+1, x-2, x^2-x, x+3, x^3+1, x^2+2*x, 2*x+3, x-3, x^2-x+1," +
+                " x+4, 2*x-3, x^3+x^2+1, 3*x-2, 2*x^2-x, x^3+x+1, 4*x+3, 2*x^2-x+1, 3*x+4, 4*x-3, x^3+x^2+x+1," +
+                " 2*x^2+2*x+1, x^2-1, 5*x+1, x^2+x-1, 6*x+1, 5*x-1, x^2+2, 5*x+2, x^4+x, 6*x-1, x^2+x+2, 2*x^2-1," +
+                " ...]");
+        positivePrimitiveSquareFreePolynomialsAtLeast_helper(2,
+                "[x^2+x, x^2+1, x^2+x+1, x^3+x, 2*x^2+x, 2*x^2+1, x^3+x^2+x, 2*x^2+x+1, x^2-x, x^3+1, x^2+2*x," +
+                " x^2-x+1, x^3+x^2+1, 2*x^2-x, x^3+x+1, 2*x^2-x+1, x^3+x^2+x+1, 2*x^2+2*x+1, x^2-1, x^2+x-1, x^2+2," +
+                " x^4+x, x^2+x+2, 2*x^2-1, 2*x^3+x, 2*x^2+x-1, x^4+x^3+x, 2*x^3+x^2+x, 2*x^2+x+2, x^2-x-1, 2*x^3+1," +
+                " x^2+2*x-1, x^2-x+2, x^4+x^2+x, 2*x^3+x^2+1, x^2+2*x+2, 2*x^2-x-1, 2*x^3+x+1, 2*x^2+2*x-1," +
+                " 2*x^2-x+2, x^4+x^3+x^2+x, 2*x^3+x^2+x+1, 3*x^2+x, 3*x^2+1, x^4+1, 3*x^2+x+1, x^3-x^2+x, 4*x^2+x," +
+                " 4*x^2+1, x^4+x^3+1, ...]");
+        positivePrimitiveSquareFreePolynomialsAtLeast_helper(8,
+                "[x^8+x, x^8+x^7+x, x^8+x^6+x, x^8+x^7+x^6+x, x^8+x^5+x, x^8+x^7+x^5+x, x^8+x^6+x^5+x," +
+                " x^8+x^7+x^6+x^5+x, x^8+x^4+x, x^8+x^7+x^4+x, x^8+x^6+x^4+x, x^8+x^7+x^6+x^4+x, x^8+x^5+x^4+x," +
+                " x^8+x^7+x^5+x^4+x, x^8+x^6+x^5+x^4+x, x^8+x^7+x^6+x^5+x^4+x, x^8+x^3+x, x^8+x^7+x^3+x," +
+                " x^8+x^6+x^3+x, x^8+x^7+x^6+x^3+x, x^8+x^5+x^3+x, x^8+x^7+x^5+x^3+x, x^8+x^6+x^5+x^3+x," +
+                " x^8+x^7+x^6+x^5+x^3+x, x^8+x^4+x^3+x, x^8+x^7+x^4+x^3+x, x^8+x^6+x^4+x^3+x, x^8+x^7+x^6+x^4+x^3+x," +
+                " x^8+x^5+x^4+x^3+x, x^8+x^7+x^5+x^4+x^3+x, x^8+x^7+x^6+x^5+x^4+x^3+x, x^8+x^2+x, x^8+x^7+x^2+x," +
+                " x^8+x^6+x^2+x, x^8+x^7+x^6+x^2+x, x^8+x^5+x^2+x, x^8+x^7+x^5+x^2+x, x^8+x^6+x^5+x^2+x," +
+                " x^8+x^7+x^6+x^5+x^2+x, x^8+x^4+x^2+x, x^8+x^7+x^4+x^2+x, x^8+x^6+x^4+x^2+x, x^8+x^7+x^6+x^4+x^2+x," +
+                " x^8+x^5+x^4+x^2+x, x^8+x^7+x^5+x^4+x^2+x, x^8+x^6+x^5+x^4+x^2+x, x^8+x^7+x^6+x^5+x^4+x^2+x," +
+                " x^8+x^3+x^2+x, x^8+x^7+x^3+x^2+x, x^8+x^6+x^3+x^2+x, ...]");
+        positivePrimitiveSquareFreePolynomialsAtLeast_fail_helper(-2);
+    }
+
+    private static void irreduciblePolynomials_int_helper(int degree, @NotNull String output) {
+        simpleProviderHelper(QEP.irreduciblePolynomials(degree), output);
+    }
+
+    private static void irreduciblePolynomials_int_fail_helper(int degree) {
+        try {
+            QEP.irreduciblePolynomials(degree);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testIrreduciblePolynomials_int() {
+        irreduciblePolynomials_int_helper(-1, "[]");
+        irreduciblePolynomials_int_helper(0, "[1]");
+        irreduciblePolynomials_int_helper(1,
+                "[x, x+1, 2*x+1, x-1, x+2, 2*x-1, 3*x+1, 4*x+1, 3*x-1, 3*x+2, 4*x-1, x-2, x+3, 2*x+3, x-3, x+4," +
+                " 2*x-3, 3*x-2, 4*x+3, 3*x+4, 4*x-3, 5*x+1, 6*x+1, 5*x-1, 5*x+2, 6*x-1, 7*x+1, 8*x+1, 7*x-1, 7*x+2," +
+                " 8*x-1, 5*x-2, 5*x+3, 5*x-3, 5*x+4, 7*x-2, 7*x+3, 8*x+3, 7*x-3, 7*x+4, 8*x-3, x-4, x+5, 2*x+5, x-5," +
+                " x+6, 2*x-5, 3*x-4, 3*x+5, 4*x+5, ...]");
+        irreduciblePolynomials_int_helper(2,
+                "[x^2+1, x^2+x+1, 2*x^2+1, 2*x^2+x+1, x^2-x+1, 2*x^2-x+1, 2*x^2+2*x+1, x^2+x-1, x^2+2, x^2+x+2," +
+                " 2*x^2-1, 2*x^2+x+2, x^2-x-1, x^2+2*x-1, x^2-x+2, x^2+2*x+2, 2*x^2+2*x-1, 2*x^2-x+2, 3*x^2+1," +
+                " 3*x^2+x+1, 4*x^2+1, 4*x^2+x+1, 3*x^2-x+1, 3*x^2+2*x+1, 4*x^2-x+1, 4*x^2+2*x+1, 3*x^2-1, 3*x^2+x-1," +
+                " 3*x^2+2, 3*x^2+x+2, 4*x^2+x-1, 4*x^2+x+2, 3*x^2-x-1, 3*x^2-x+2, 3*x^2+2*x+2, 4*x^2-x-1," +
+                " 4*x^2+2*x-1, 4*x^2-x+2, x^2+3*x+1, 2*x^2-2*x+1, x^2-3*x+1, x^2+4*x+1, 2*x^2+4*x+1, x^2-2*x-1," +
+                " x^2+3*x-1, x^2-2*x+2, 2*x^2-2*x-1, 2*x^2+3*x-1, 2*x^2+3*x+2, x^2-3*x-1, ...]");
+        irreduciblePolynomials_int_helper(8,
+                "[x^8+1, x^8+x^6+1, x^8+x^7+x^6+1, x^8+x^5+1, x^8+x^6+x^5+1, x^8+x^7+x^6+x^5+1, x^8+x^7+x^4+1," +
+                " x^8+x^6+x^4+1, x^8+x^5+x^4+1, x^8+x^7+x^5+x^4+1, x^8+x^6+x^5+x^4+1, x^8+x^3+1, x^8+x^6+x^3+1," +
+                " x^8+x^7+x^6+x^3+1, x^8+x^7+x^5+x^3+1, x^8+x^6+x^5+x^3+1, x^8+x^4+x^3+1, x^8+x^7+x^4+x^3+1," +
+                " x^8+x^7+x^6+x^4+x^3+1, x^8+x^5+x^4+x^3+1, x^8+x^6+x^5+x^4+x^3+1, x^8+x^7+x^6+x^5+x^4+x^3+1," +
+                " x^8+x^2+1, x^8+x^7+x^2+1, x^8+x^7+x^6+x^2+1, x^8+x^5+x^2+1, x^8+x^7+x^5+x^2+1, x^8+x^6+x^5+x^2+1," +
+                " x^8+x^4+x^2+1, x^8+x^7+x^4+x^2+1, x^8+x^7+x^5+x^4+x^2+1, x^8+x^6+x^5+x^4+x^2+1," +
+                " x^8+x^7+x^6+x^5+x^4+x^2+1, x^8+x^3+x^2+1, x^8+x^7+x^3+x^2+1, x^8+x^6+x^3+x^2+1," +
+                " x^8+x^7+x^6+x^3+x^2+1, x^8+x^5+x^3+x^2+1, x^8+x^7+x^6+x^5+x^3+x^2+1, x^8+x^4+x^3+x^2+1," +
+                " x^8+x^6+x^4+x^3+x^2+1, x^8+x^7+x^6+x^4+x^3+x^2+1, x^8+x^5+x^4+x^3+x^2+1," +
+                " x^8+x^7+x^5+x^4+x^3+x^2+1, x^8+x^7+x^6+x^5+x^4+x^3+x^2+1, x^8+x^6+x+1, x^8+x^7+x^6+x+1," +
+                " x^8+x^7+x^5+x+1, x^8+x^6+x^5+x+1, x^8+x^4+x+1, ...]");
+        irreduciblePolynomials_int_fail_helper(-2);
+    }
+
+    @Test
+    public void testIrreduciblePolynomials() {
+        simpleProviderHelper(QEP.irreduciblePolynomials(),
+                "[1, x, x+1, 2*x+1, x-1, x^2+1, x+2, 2*x-1, x^2+x+1, 3*x+1, 4*x+1, 3*x-1, 2*x^2+1, 3*x+2, 4*x-1," +
+                " 2*x^2+x+1, x-2, x+3, 2*x+3, x-3, x^2-x+1, x+4, 2*x-3, x^3+x^2+1, 3*x-2, x^3+x+1, 4*x+3, 2*x^2-x+1," +
+                " 3*x+4, 4*x-3, 2*x^2+2*x+1, 5*x+1, x^2+x-1, 6*x+1, 5*x-1, x^2+2, 5*x+2, 6*x-1, x^2+x+2, 2*x^2-1," +
+                " 7*x+1, 8*x+1, 7*x-1, 7*x+2, 8*x-1, 2*x^2+x+2, 5*x-2, x^2-x-1, 5*x+3, 2*x^3+1, ...]");
+    }
+
+    private static void irreduciblePolynomialsAtLeast_helper(int minDegree, @NotNull String output) {
+        simpleProviderHelper(QEP.irreduciblePolynomialsAtLeast(minDegree), output);
+    }
+
+    private static void irreduciblePolynomialsAtLeast_fail_helper(int minDegree) {
+        try {
+            QEP.irreduciblePolynomialsAtLeast(minDegree);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testIrreduciblePolynomialsAtLeast() {
+        irreduciblePolynomialsAtLeast_helper(-1,
+                "[1, x, x+1, 2*x+1, x-1, x^2+1, x+2, 2*x-1, x^2+x+1, 3*x+1, 4*x+1, 3*x-1, 2*x^2+1, 3*x+2, 4*x-1," +
+                " 2*x^2+x+1, x-2, x+3, 2*x+3, x-3, x^2-x+1, x+4, 2*x-3, x^3+x^2+1, 3*x-2, x^3+x+1, 4*x+3, 2*x^2-x+1," +
+                " 3*x+4, 4*x-3, 2*x^2+2*x+1, 5*x+1, x^2+x-1, 6*x+1, 5*x-1, x^2+2, 5*x+2, 6*x-1, x^2+x+2, 2*x^2-1," +
+                " 7*x+1, 8*x+1, 7*x-1, 7*x+2, 8*x-1, 2*x^2+x+2, 5*x-2, x^2-x-1, 5*x+3, 2*x^3+1, ...]");
+        irreduciblePolynomialsAtLeast_helper(0,
+                "[1, x, x+1, 2*x+1, x-1, x^2+1, x+2, 2*x-1, x^2+x+1, 3*x+1, 4*x+1, 3*x-1, 2*x^2+1, 3*x+2, 4*x-1," +
+                " 2*x^2+x+1, x-2, x+3, 2*x+3, x-3, x^2-x+1, x+4, 2*x-3, x^3+x^2+1, 3*x-2, x^3+x+1, 4*x+3, 2*x^2-x+1," +
+                " 3*x+4, 4*x-3, 2*x^2+2*x+1, 5*x+1, x^2+x-1, 6*x+1, 5*x-1, x^2+2, 5*x+2, 6*x-1, x^2+x+2, 2*x^2-1," +
+                " 7*x+1, 8*x+1, 7*x-1, 7*x+2, 8*x-1, 2*x^2+x+2, 5*x-2, x^2-x-1, 5*x+3, 2*x^3+1, ...]");
+        irreduciblePolynomialsAtLeast_helper(1,
+                "[x, x+1, 2*x+1, x-1, x^2+1, x+2, 2*x-1, x^2+x+1, 3*x+1, 4*x+1, 3*x-1, 2*x^2+1, 3*x+2, 4*x-1," +
+                " 2*x^2+x+1, x-2, x+3, 2*x+3, x-3, x^2-x+1, x+4, 2*x-3, x^3+x^2+1, 3*x-2, x^3+x+1, 4*x+3, 2*x^2-x+1," +
+                " 3*x+4, 4*x-3, 2*x^2+2*x+1, 5*x+1, x^2+x-1, 6*x+1, 5*x-1, x^2+2, 5*x+2, 6*x-1, x^2+x+2, 2*x^2-1," +
+                " 7*x+1, 8*x+1, 7*x-1, 7*x+2, 8*x-1, 2*x^2+x+2, 5*x-2, x^2-x-1, 5*x+3, 2*x^3+1, x^2+2*x-1, ...]");
+        irreduciblePolynomialsAtLeast_helper(2,
+                "[x^2+1, x^2+x+1, 2*x^2+1, 2*x^2+x+1, x^2-x+1, x^3+x^2+1, x^3+x+1, 2*x^2-x+1, 2*x^2+2*x+1, x^2+x-1," +
+                " x^2+2, x^2+x+2, 2*x^2-1, 2*x^2+x+2, x^2-x-1, 2*x^3+1, x^2+2*x-1, x^2-x+2, x^2+2*x+2, 2*x^3+x+1," +
+                " 2*x^2+2*x-1, 2*x^2-x+2, 2*x^3+x^2+x+1, 3*x^2+1, x^4+1, 3*x^2+x+1, 4*x^2+1, x^4+x^3+1, 4*x^2+x+1," +
+                " x^3-x^2+1, 3*x^2-x+1, x^3+2*x^2+1, 3*x^2+2*x+1, x^3-x^2+x+1, 4*x^2-x+1, x^4+x^3+x^2+1," +
+                " x^3+2*x^2+x+1, 4*x^2+2*x+1, 3*x^2-1, 3*x^2+x-1, 3*x^2+2, x^4+x+1, 3*x^2+x+2, 4*x^2+x-1, 4*x^2+x+2," +
+                " 3*x^2-x-1, 2*x^3-x^2+1, 3*x^2-x+2, x^4+x^2+x+1, 2*x^3+2*x^2+1, ...]");
+        irreduciblePolynomialsAtLeast_helper(8,
+                "[x^8+1, x^8+x^6+1, x^8+x^7+x^6+1, x^8+x^5+1, x^8+x^6+x^5+1, x^8+x^7+x^6+x^5+1, x^8+x^7+x^4+1," +
+                " x^8+x^6+x^4+1, x^8+x^5+x^4+1, x^8+x^7+x^5+x^4+1, x^8+x^6+x^5+x^4+1, x^8+x^3+1, x^8+x^6+x^3+1," +
+                " x^8+x^7+x^6+x^3+1, x^8+x^7+x^5+x^3+1, x^8+x^6+x^5+x^3+1, x^8+x^4+x^3+1, x^8+x^7+x^4+x^3+1," +
+                " x^8+x^7+x^6+x^4+x^3+1, x^8+x^5+x^4+x^3+1, x^8+x^6+x^5+x^4+x^3+1, x^8+x^7+x^6+x^5+x^4+x^3+1," +
+                " x^8+x^2+1, x^8+x^7+x^2+1, x^8+x^7+x^6+x^2+1, x^8+x^5+x^2+1, x^8+x^7+x^5+x^2+1, x^8+x^6+x^5+x^2+1," +
+                " x^8+x^4+x^2+1, x^8+x^7+x^4+x^2+1, x^8+x^7+x^5+x^4+x^2+1, x^8+x^6+x^5+x^4+x^2+1," +
+                " x^8+x^7+x^6+x^5+x^4+x^2+1, x^8+x^3+x^2+1, x^8+x^7+x^3+x^2+1, x^8+x^6+x^3+x^2+1," +
+                " x^8+x^7+x^6+x^3+x^2+1, x^8+x^5+x^3+x^2+1, x^8+x^7+x^6+x^5+x^3+x^2+1, x^8+x^4+x^3+x^2+1," +
+                " x^8+x^6+x^4+x^3+x^2+1, x^8+x^7+x^6+x^4+x^3+x^2+1, x^8+x^5+x^4+x^3+x^2+1," +
+                " x^8+x^7+x^5+x^4+x^3+x^2+1, x^8+x^7+x^6+x^5+x^4+x^3+x^2+1, x^8+x^6+x+1, x^8+x^7+x^6+x+1," +
+                " x^8+x^7+x^5+x+1, x^8+x^6+x^5+x+1, x^8+x^4+x+1, ...]");
+        irreduciblePolynomialsAtLeast_fail_helper(-2);
+    }
+
     private static void rationalPolynomials_int_helper(int degree, @NotNull String output) {
         simpleProviderHelper(QEP.rationalPolynomials(degree), output);
     }
