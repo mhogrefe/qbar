@@ -175,7 +175,8 @@ public class Variable implements Comparable<Variable> {
     }
 
     /**
-     * Ensures that {@code this} is valid. Must return true for any {@code Variable} used outside this class.
+     * Ensures that {@code this} is valid. Must return without exceptions for any {@code Variable} used outside this
+     * class.
      */
     public void validate() {
         assertTrue(this, index >= 0);

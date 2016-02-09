@@ -1160,7 +1160,8 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
     }
 
     /**
-     * Ensures that {@code this} is valid. Must return true for any {@code RationalMatrix} used outside this class.
+     * Ensures that {@code this} is valid. Must return without exceptions for any {@code RationalMatrix} used outside
+     * this class.
      */
     public void validate() {
         assertTrue(this, width >= 0);

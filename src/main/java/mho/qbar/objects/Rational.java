@@ -2444,7 +2444,8 @@ public final class Rational implements Comparable<Rational> {
     }
 
     /**
-     * Ensures that {@code this} is valid. Must return true for any {@code Rational} used outside this class.
+     * Ensures that {@code this} is valid. Must return without exceptions for any {@code Rational} used outside this
+     * class.
      */
     public void validate() {
         assertEquals(this, numerator.gcd(denominator), BigInteger.ONE);
