@@ -3247,7 +3247,15 @@ public strictfp abstract class QBarIterableProvider {
      * Generates irreducible {@code Polynomial}s.
      */
     public @NotNull Iterable<Polynomial> irreduciblePolynomials() {
-        return filter(p -> p != Polynomial.ZERO && p.isIrreducible(), positivePrimitivePolynomials());
+        return withElement(
+                Polynomial.ONE, map(
+                        p -> p.b,
+                        dependentPairsInfiniteLogarithmicOrder(
+                                positiveBigIntegers(),
+                                i -> irreduciblePolynomials(i.intValueExact())
+                        )
+                )
+        );
     }
 
     /**
@@ -3256,9 +3264,16 @@ public strictfp abstract class QBarIterableProvider {
      * @param minDegree the minimum degree of the generated {@code Polynomial}s
      */
     public @NotNull Iterable<Polynomial> irreduciblePolynomialsAtLeast(int minDegree) {
-        return filterInfinite(
-                p -> p != Polynomial.ZERO && p.isIrreducible(),
-                positivePrimitivePolynomialsAtLeast(minDegree)
+        if (minDegree < -1) {
+            throw new IllegalArgumentException("minDegree must be at least -1. Invalid minDegree: " + minDegree);
+        }
+        if (minDegree < 1) return irreduciblePolynomials();
+        return map(
+                p -> p.b,
+                dependentPairsInfiniteLogarithmicOrder(
+                        rangeUp(BigInteger.valueOf(minDegree)),
+                        i -> irreduciblePolynomials(i.intValueExact())
+                )
         );
     }
 

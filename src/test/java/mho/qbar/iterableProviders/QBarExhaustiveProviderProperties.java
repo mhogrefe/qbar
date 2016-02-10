@@ -37,6 +37,9 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
         propertiesPolynomials();
         propertiesPrimitivePolynomials();
         propertiesPositivePrimitivePolynomials();
+        propertiesSquareFreePolynomials();
+        propertiesPositivePrimitiveSquareFreePolynomials();
+        propertiesIrreduciblePolynomials();
         propertiesRationalPolynomials();
         propertiesMonicRationalPolynomials();
         propertiesVariables();
@@ -64,6 +67,12 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
         propertiesPrimitivePolynomialsAtLeast();
         propertiesPositivePrimitivePolynomials_int();
         propertiesPositivePrimitivePolynomialsAtLeast();
+        propertiesSquareFreePolynomials_int();
+        propertiesSquareFreePolynomialsAtLeast();
+        propertiesPositivePrimitiveSquareFreePolynomials_int();
+        propertiesPositivePrimitiveSquareFreePolynomialsAtLeast();
+        propertiesIrreduciblePolynomials_int();
+        propertiesIrreduciblePolynomialsAtLeast();
         propertiesRationalPolynomials_int();
         propertiesRationalPolynomialsAtLeast();
         propertiesMonicRationalPolynomials_int();
@@ -492,6 +501,124 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
         for (int i : take(LIMIT, P.rangeDown(-2))) {
             try {
                 QEP.positivePrimitivePolynomialsAtLeast(i);
+                fail(i);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesSquareFreePolynomials_int() {
+        initialize("squareFreePolynomials(int)");
+        for (int i : take(TINY_LIMIT, P.withScale(4).rangeUpGeometric(-1))) {
+            Iterable<Polynomial> ps = QEP.squareFreePolynomials(i);
+            simpleTest(i, ps, p -> p.degree() == i && p.isSquareFree());
+            take(TINY_LIMIT, ps).forEach(Polynomial::validate);
+        }
+
+        for (int i : take(LIMIT, P.rangeDown(-2))) {
+            try {
+                QEP.squareFreePolynomials(i);
+                fail(i);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesSquareFreePolynomials() {
+        initializeConstant("squareFreePolynomials()");
+        biggerTest(QEP, QEP.withScale(4).squareFreePolynomials(), Polynomial::isSquareFree);
+        take(TINY_LIMIT, QEP.squareFreePolynomials()).forEach(Polynomial::validate);
+    }
+
+    private void propertiesSquareFreePolynomialsAtLeast() {
+        initialize("squareFreePolynomialsAtLeast(int)");
+        for (int i : take(TINY_LIMIT, P.withScale(4).rangeUpGeometric(-1))) {
+            Iterable<Polynomial> ps = QEP.squareFreePolynomialsAtLeast(i);
+            simpleTest(i, ps, p -> p.degree() >= i && p.isSquareFree());
+            take(TINY_LIMIT, ps).forEach(Polynomial::validate);
+        }
+
+        for (int i : take(LIMIT, P.rangeDown(-2))) {
+            try {
+                QEP.squareFreePolynomialsAtLeast(i);
+                fail(i);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesPositivePrimitiveSquareFreePolynomials_int() {
+        initialize("positivePrimitiveSquareFreePolynomials(int)");
+        for (int i : take(TINY_LIMIT, P.withScale(4).rangeUpGeometric(-1))) {
+            Iterable<Polynomial> ps = QEP.positivePrimitiveSquareFreePolynomials(i);
+            simpleTest(i, ps, p -> p.degree() == i && p.signum() == 1 && p.isPrimitive() && p.isSquareFree());
+            take(TINY_LIMIT, ps).forEach(Polynomial::validate);
+        }
+
+        for (int i : take(LIMIT, P.rangeDown(-2))) {
+            try {
+                QEP.positivePrimitiveSquareFreePolynomials(i);
+                fail(i);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesPositivePrimitiveSquareFreePolynomials() {
+        initializeConstant("positivePrimitiveSquareFreePolynomials()");
+        biggerTest(
+                QEP,
+                QEP.withScale(4).positivePrimitiveSquareFreePolynomials(),
+                p -> p.signum() == 1 && p.isPrimitive() && p.isSquareFree()
+        );
+        take(TINY_LIMIT, QEP.positivePrimitiveSquareFreePolynomials()).forEach(Polynomial::validate);
+    }
+
+    private void propertiesPositivePrimitiveSquareFreePolynomialsAtLeast() {
+        initialize("positivePrimitiveSquareFreePolynomialsAtLeast(int)");
+        for (int i : take(TINY_LIMIT, P.withScale(4).rangeUpGeometric(-1))) {
+            Iterable<Polynomial> ps = QEP.positivePrimitiveSquareFreePolynomialsAtLeast(i);
+            simpleTest(i, ps, p -> p.degree() >= i && p.signum() == 1 && p.isPrimitive() && p.isSquareFree());
+            take(TINY_LIMIT, ps).forEach(Polynomial::validate);
+        }
+
+        for (int i : take(LIMIT, P.rangeDown(-2))) {
+            try {
+                QEP.positivePrimitiveSquareFreePolynomialsAtLeast(i);
+                fail(i);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesIrreduciblePolynomials_int() {
+        initialize("irreduciblePolynomials(int)");
+        for (int i : take(TINY_LIMIT, P.withScale(4).rangeUpGeometric(-1))) {
+            Iterable<Polynomial> ps = QEP.irreduciblePolynomials(i);
+            simpleTest(i, ps, p -> p.degree() == i && p.isIrreducible());
+            take(TINY_LIMIT, ps).forEach(Polynomial::validate);
+        }
+
+        for (int i : take(LIMIT, P.rangeDown(-2))) {
+            try {
+                QEP.irreduciblePolynomials(i);
+                fail(i);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesIrreduciblePolynomials() {
+        initializeConstant("irreduciblePolynomials()");
+        biggerTest(QEP, QEP.withScale(4).irreduciblePolynomials(), Polynomial::isIrreducible);
+        take(TINY_LIMIT, QEP.irreduciblePolynomials()).forEach(Polynomial::validate);
+    }
+
+    private void propertiesIrreduciblePolynomialsAtLeast() {
+        initialize("irreduciblePolynomialsAtLeast(int)");
+        for (int i : take(TINY_LIMIT, P.withScale(1).rangeUpGeometric(-1))) {
+            Iterable<Polynomial> ps = QEP.irreduciblePolynomialsAtLeast(i);
+            simpleTest(i, ps, p -> p.degree() >= i && p.isIrreducible());
+            take(TINY_LIMIT, ps).forEach(Polynomial::validate);
+        }
+
+        for (int i : take(LIMIT, P.rangeDown(-2))) {
+            try {
+                QEP.irreduciblePolynomialsAtLeast(i);
                 fail(i);
             } catch (IllegalArgumentException ignored) {}
         }

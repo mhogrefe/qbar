@@ -1955,12 +1955,13 @@ public class PolynomialProperties extends QBarTestProperties {
         if (a == ZERO && b == ZERO) {
             throw new ArithmeticException();
         }
-        Polynomial ppA = a == ZERO ? ZERO : a.constantFactor().b;
-        Polynomial ppB = b == ZERO ? ZERO : b.constantFactor().b;
-        if (ppA == ONE || ppB == ONE) return true;
-        //noinspection SimplifiableIfStatement
-        if (a == ZERO || b == ZERO) return false;
-        return isEmpty(intersect(ppA.factor(), ppB.factor()));
+        return a.degree() == 0 || b.degree() == 0 ||
+                a != ZERO && b != ZERO &&
+                isEmpty(intersect(a.constantFactor().b.factor(), b.constantFactor().b.factor()));
+    }
+
+    private static boolean isRelativelyPrimeTo_alt(@NotNull Polynomial a, @NotNull Polynomial b) {
+        return a.gcd(b) == ONE;
     }
 
     private void propertiesIsRelativelyPrimeTo() {
@@ -1975,7 +1976,9 @@ public class PolynomialProperties extends QBarTestProperties {
 
         ps = filterInfinite(p -> p.a != ZERO || p.b != ZERO, P.pairs(P.withScale(4).polynomials()));
         for (Pair<Polynomial, Polynomial> p : take(LIMIT, ps)) {
-            assertEquals(p, p.a.isRelativelyPrimeTo(p.b), isRelativelyPrimeTo_simplest(p.a, p.b));
+            boolean isRelativelyPrimeTo = p.a.isRelativelyPrimeTo(p.b);
+            assertEquals(p, isRelativelyPrimeTo, isRelativelyPrimeTo_simplest(p.a, p.b));
+            assertEquals(p, isRelativelyPrimeTo, isRelativelyPrimeTo_alt(p.a, p.b));
         }
 
         for (Polynomial p : take(LIMIT, P.polynomials())) {
@@ -1992,6 +1995,7 @@ public class PolynomialProperties extends QBarTestProperties {
     private void compareImplementationsIsRelativelyPrimeTo() {
         Map<String, Function<Pair<Polynomial, Polynomial>, Boolean>> functions = new LinkedHashMap<>();
         functions.put("simplest", p -> isRelativelyPrimeTo_simplest(p.a, p.b));
+        functions.put("alt", p -> isRelativelyPrimeTo_alt(p.a, p.b));
         functions.put("standard", p -> p.a.isRelativelyPrimeTo(p.b));
         Iterable<Pair<Polynomial, Polynomial>> ps = filterInfinite(
                 p -> p.a != ZERO || p.b != ZERO,

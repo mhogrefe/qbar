@@ -132,6 +132,46 @@ public class QBarExhaustiveProviderDemos extends QBarDemos {
         }
     }
 
+    private void demoSquareFreePolynomials_int() {
+        for (int i : take(TINY_LIMIT, P.withScale(4).rangeUpGeometric(-1))) {
+            System.out.println("squareFreePolynomials(" + i + ") = " + its(QEP.squareFreePolynomials(i)));
+        }
+    }
+
+    private void demoSquareFreePolynomialsAtLeast() {
+        for (int i : take(TINY_LIMIT, P.withScale(4).rangeUpGeometric(-1))) {
+            System.out.println("squareFreePolynomialsAtLeast(" + i + ") = " +
+                    its(QEP.squareFreePolynomialsAtLeast(i)));
+        }
+    }
+
+    private void demoPositivePrimitiveSquareFreePolynomials_int() {
+        for (int i : take(TINY_LIMIT, P.withScale(4).rangeUpGeometric(-1))) {
+            System.out.println("positivePrimitiveSquareFreePolynomials(" + i + ") = " +
+                    its(QEP.positivePrimitiveSquareFreePolynomials(i)));
+        }
+    }
+
+    private void demoPositivePrimitiveSquareFreePolynomialsAtLeast() {
+        for (int i : take(TINY_LIMIT, P.withScale(4).rangeUpGeometric(-1))) {
+            System.out.println("positivePrimitiveSquareFreePolynomialsAtLeast(" + i + ") = " +
+                    its(QEP.positivePrimitiveSquareFreePolynomialsAtLeast(i)));
+        }
+    }
+
+    private void demoIrreduciblePolynomials_int() {
+        for (int i : take(TINY_LIMIT, P.withScale(4).rangeUpGeometric(-1))) {
+            System.out.println("irreduciblePolynomials(" + i + ") = " + its(QEP.irreduciblePolynomials(i)));
+        }
+    }
+
+    private void demoIrreduciblePolynomialsAtLeast() {
+        for (int i : take(TINY_LIMIT, P.withScale(1).rangeUpGeometric(-1))) {
+            System.out.println("irreduciblePolynomialsAtLeast(" + i + ") = " +
+                    its(QEP.irreduciblePolynomialsAtLeast(i)));
+        }
+    }
+
     private void demoRationalPolynomials_int() {
         for (int i : take(SMALL_LIMIT, P.rangeUpGeometric(-1))) {
             System.out.println("rationalPolynomials(" + i + ") = " + its(QEP.rationalPolynomials(i)));

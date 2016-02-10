@@ -1153,7 +1153,14 @@ public final class Polynomial implements
      * @return whether {@code this} and {@code that} have no nonconstant common factors
      */
     public boolean isRelativelyPrimeTo(@NotNull Polynomial that) {
-        return gcd(that) == ONE;
+        if (this == ZERO && that == ZERO) {
+            throw new ArithmeticException();
+        }
+        if (degree() == 0 || that.degree() == 0) return true;
+        if (this == ZERO || that == ZERO) return false;
+        int aLowestPower = findIndex(c -> !c.equals(BigInteger.ZERO), coefficients).get();
+        int bLowestPower = findIndex(c -> !c.equals(BigInteger.ZERO), that.coefficients).get();
+        return (aLowestPower == 0 || bLowestPower == 0) && gcd(that) == ONE;
     }
 
     /**
