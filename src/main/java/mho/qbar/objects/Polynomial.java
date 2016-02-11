@@ -4,6 +4,7 @@ import jas.JasApi;
 import mho.wheels.io.Readers;
 import mho.wheels.iterables.IterableUtils;
 import mho.wheels.iterables.NoRemoveIterable;
+import mho.wheels.math.MathUtils;
 import mho.wheels.numberUtils.IntegerUtils;
 import mho.wheels.ordering.comparators.ShortlexComparator;
 import mho.wheels.structures.Pair;
@@ -14,6 +15,7 @@ import java.util.*;
 import java.util.function.Function;
 
 import static mho.wheels.iterables.IterableUtils.*;
+import static mho.wheels.ordering.Ordering.gt;
 import static mho.wheels.testing.Testing.assertTrue;
 
 /**
@@ -719,7 +721,7 @@ public final class Polynomial implements
      * @return whether {@code this} is primitive
      */
     public boolean isPrimitive() {
-        return foldl(BigInteger::gcd, BigInteger.ZERO, coefficients).equals(BigInteger.ONE);
+        return MathUtils.gcd(coefficients).equals(BigInteger.ONE);
     }
 
     /**
@@ -748,7 +750,7 @@ public final class Polynomial implements
                     new Pair<>(constant, ONE) :
                     new Pair<>(constant.negate(), of(IntegerUtils.NEGATIVE_ONE));
         }
-        BigInteger content = foldl(BigInteger::gcd, BigInteger.ZERO, coefficients);
+        BigInteger content = MathUtils.gcd(coefficients);
         if (content.equals(BigInteger.ONE)) {
             return new Pair<>(BigInteger.ONE, this);
         } else {
@@ -776,7 +778,7 @@ public final class Polynomial implements
             throw new ArithmeticException("this cannot be zero.");
         }
         if (coefficients.size() == 1) return new Pair<>(coefficients.get(0), ONE);
-        BigInteger content = foldl(BigInteger::gcd, BigInteger.ZERO, coefficients);
+        BigInteger content = MathUtils.gcd(coefficients);
         BigInteger factor = signum() == -1 ? content.negate() : content;
         if (factor.equals(BigInteger.ONE)) {
             return new Pair<>(BigInteger.ONE, this);
@@ -1230,6 +1232,18 @@ public final class Polynomial implements
             throw new ArithmeticException("this cannot be zero.");
         }
         if (this == ONE) return Collections.emptyList();
+        BigInteger gcd = MathUtils.gcd(init(coefficients));
+        if (gt(gcd, BigInteger.ONE)) {
+            boolean eisenstein = any(
+                    n -> !last(coefficients).mod(n).equals(BigInteger.ZERO) &&
+                            !head(coefficients).mod(n.pow(2)).equals(BigInteger.ZERO),
+                    toList(nub(MathUtils.primeFactors(gcd)))
+            );
+            if (eisenstein) {
+                Pair<BigInteger, Polynomial> cf = constantFactor();
+                return cf.a.equals(BigInteger.ONE) ? Collections.singletonList(this) : Arrays.asList(of(cf.a), cf.b);
+            }
+        }
         //noinspection RedundantCast
         return sort((Iterable<Polynomial>) map(Polynomial::of, JasApi.factorPolynomial(toList(coefficients))));
     }

@@ -4,6 +4,7 @@ import mho.qbar.objects.*;
 import mho.wheels.iterables.IterableProvider;
 import mho.wheels.iterables.RandomProvider;
 import mho.wheels.math.BinaryFraction;
+import mho.wheels.math.MathUtils;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.*;
 import org.jetbrains.annotations.NotNull;
@@ -3029,7 +3030,7 @@ public strictfp abstract class QBarIterableProvider {
                                 is -> RationalVector.of(toList(map(Rational::of, is))),
                                 filterInfinite(
                                         js -> {
-                                            BigInteger gcd = foldl(BigInteger::gcd, BigInteger.ZERO, js);
+                                            BigInteger gcd = MathUtils.gcd(js);
                                             return gcd.equals(BigInteger.ZERO) || gcd.equals(BigInteger.ONE);
                                         },
                                         bigIntegerLists
@@ -3146,8 +3147,7 @@ public strictfp abstract class QBarIterableProvider {
         return map(
                 Polynomial::of,
                 filterInfinite(
-                        is -> !last(is).equals(BigInteger.ZERO) &&
-                                foldl(BigInteger::gcd, BigInteger.ZERO, is).equals(BigInteger.ONE),
+                        is -> !last(is).equals(BigInteger.ZERO) && MathUtils.gcd(is).equals(BigInteger.ONE),
                         bigIntegerLists
                 )
         );

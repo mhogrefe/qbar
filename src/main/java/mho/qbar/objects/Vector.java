@@ -2,6 +2,7 @@ package mho.qbar.objects;
 
 import mho.wheels.io.Readers;
 import mho.wheels.iterables.NoRemoveIterable;
+import mho.wheels.math.MathUtils;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.ordering.comparators.ShortlexComparator;
 import mho.wheels.structures.Pair;
@@ -518,7 +519,7 @@ public class Vector implements Comparable<Vector>, Iterable<BigInteger> {
      * @return whether the coordinates of {@code this} have no nontrivial common factors
      */
     public boolean isPrimitive() {
-        BigInteger gcd = foldl(BigInteger::gcd, BigInteger.ZERO, coordinates);
+        BigInteger gcd = MathUtils.gcd(coordinates);
         return gcd.equals(BigInteger.ZERO) || gcd.equals(BigInteger.ONE);
     }
 
@@ -536,7 +537,7 @@ public class Vector implements Comparable<Vector>, Iterable<BigInteger> {
      */
     public @NotNull Vector makePrimitive() {
         if (this == ZERO_DIMENSIONAL) return ZERO_DIMENSIONAL;
-        BigInteger gcd = foldl(BigInteger::gcd, BigInteger.ZERO, coordinates);
+        BigInteger gcd = MathUtils.gcd(coordinates);
         if (gcd.equals(BigInteger.ZERO) || gcd.equals(BigInteger.ONE)) return this;
         return new Vector(toList(map(c -> c.divide(gcd), coordinates)));
     }

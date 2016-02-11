@@ -1,10 +1,12 @@
 package mho.qbar.objects;
 
+import jas.JasApi;
 import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.testing.QBarTestProperties;
 import mho.qbar.testing.QBarTesting;
 import mho.wheels.io.Readers;
 import mho.wheels.iterables.IterableUtils;
+import mho.wheels.math.MathUtils;
 import mho.wheels.numberUtils.IntegerUtils;
 import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
@@ -33,86 +35,87 @@ public class PolynomialProperties extends QBarTestProperties {
 
     @Override
     protected void testBothModes() {
-        propertiesIterator();
-        propertiesApply_BigInteger();
-        compareImplementationsApply_BigInteger();
-        propertiesApply_Rational();
-        compareImplementationsApply_Rational();
-        propertiesSpecialApply();
-        compareImplementationsSpecialApply();
-        propertiesToRationalPolynomial();
-        propertiesCoefficient();
-        propertiesOf_List_BigInteger();
-        propertiesOf_BigInteger();
-        propertiesOf_BigInteger_int();
-        propertiesMaxCoefficientBitLength();
-        propertiesDegree();
-        propertiesLeading();
-        propertiesAdd();
-        propertiesNegate();
-        propertiesAbs();
-        propertiesSignum();
-        propertiesSignum_BigInteger();
-        compareImplementationsSignum_BigInteger();
-        propertiesSignum_Rational();
-        compareImplementationsSignum_Rational();
-        propertiesSubtract();
-        compareImplementationsSubtract();
-        propertiesMultiply_Polynomial();
-        compareImplementationsMultiply_Polynomial();
-        propertiesMultiply_BigInteger();
-        propertiesMultiply_int();
-        propertiesShiftLeft();
-        compareImplementationsShiftLeft();
-        propertiesSum();
-        compareImplementationsSum();
-        propertiesProduct();
-        compareImplementationsProduct();
-        propertiesDelta();
-        propertiesPow();
-        compareImplementationsPow();
-        propertiesSubstitute();
-        compareImplementationsSubstitute();
-        propertiesDifferentiate();
-        propertiesIsMonic();
-        propertiesIsPrimitive();
-        propertiesContentAndPrimitive();
-        propertiesConstantFactor();
-        propertiesPseudoDivide();
-        compareImplementationsPseudoDivide();
-        propertiesPseudoRemainder();
-        compareImplementationsPseudoRemainder();
-        propertiesIsDivisibleBy();
-        compareImplementationsIsDivisibleBy();
-        propertiesDivideExact();
-        compareImplementationsDivideExact();
-        propertiesRemainderExact();
-        compareImplementationsRemainderExact();
-        propertiesTrivialPseudoRemainderSequence();
-        propertiesPrimitivePseudoRemainderSequence();
-        propertiesSubresultantSequence();
-        propertiesGcd();
-        compareImplementationsGcd1();
-        compareImplementationsGcd2();
-        propertiesLcm();
-        propertiesIsRelativelyPrimeTo();
-        compareImplementationsIsRelativelyPrimeTo();
-        propertiesIsSquareFree();
-        compareImplementationsIsSquareFree();
-        propertiesSquareFreePart();
-        compareImplementationsSquareFreePart();
-        propertiesSquareFreeFactor();
+//        propertiesIterator();
+//        propertiesApply_BigInteger();
+//        compareImplementationsApply_BigInteger();
+//        propertiesApply_Rational();
+//        compareImplementationsApply_Rational();
+//        propertiesSpecialApply();
+//        compareImplementationsSpecialApply();
+//        propertiesToRationalPolynomial();
+//        propertiesCoefficient();
+//        propertiesOf_List_BigInteger();
+//        propertiesOf_BigInteger();
+//        propertiesOf_BigInteger_int();
+//        propertiesMaxCoefficientBitLength();
+//        propertiesDegree();
+//        propertiesLeading();
+//        propertiesAdd();
+//        propertiesNegate();
+//        propertiesAbs();
+//        propertiesSignum();
+//        propertiesSignum_BigInteger();
+//        compareImplementationsSignum_BigInteger();
+//        propertiesSignum_Rational();
+//        compareImplementationsSignum_Rational();
+//        propertiesSubtract();
+//        compareImplementationsSubtract();
+//        propertiesMultiply_Polynomial();
+//        compareImplementationsMultiply_Polynomial();
+//        propertiesMultiply_BigInteger();
+//        propertiesMultiply_int();
+//        propertiesShiftLeft();
+//        compareImplementationsShiftLeft();
+//        propertiesSum();
+//        compareImplementationsSum();
+//        propertiesProduct();
+//        compareImplementationsProduct();
+//        propertiesDelta();
+//        propertiesPow();
+//        compareImplementationsPow();
+//        propertiesSubstitute();
+//        compareImplementationsSubstitute();
+//        propertiesDifferentiate();
+//        propertiesIsMonic();
+//        propertiesIsPrimitive();
+//        propertiesContentAndPrimitive();
+//        propertiesConstantFactor();
+//        propertiesPseudoDivide();
+//        compareImplementationsPseudoDivide();
+//        propertiesPseudoRemainder();
+//        compareImplementationsPseudoRemainder();
+//        propertiesIsDivisibleBy();
+//        compareImplementationsIsDivisibleBy();
+//        propertiesDivideExact();
+//        compareImplementationsDivideExact();
+//        propertiesRemainderExact();
+//        compareImplementationsRemainderExact();
+//        propertiesTrivialPseudoRemainderSequence();
+//        propertiesPrimitivePseudoRemainderSequence();
+//        propertiesSubresultantSequence();
+//        propertiesGcd();
+//        compareImplementationsGcd1();
+//        compareImplementationsGcd2();
+//        propertiesLcm();
+//        propertiesIsRelativelyPrimeTo();
+//        compareImplementationsIsRelativelyPrimeTo();
+//        propertiesIsSquareFree();
+//        compareImplementationsIsSquareFree();
+//        propertiesSquareFreePart();
+//        compareImplementationsSquareFreePart();
+//        propertiesSquareFreeFactor();
         propertiesFactor();
-        propertiesIsIrreducible();
-        compareImplementationsIsIrreducible();
-        propertiesEquals();
-        propertiesHashCode();
-        propertiesCompareTo();
-        propertiesRead_String();
-        propertiesRead_int_String();
-        propertiesFindIn_String();
-        propertiesFindIn_int_String();
-        propertiesToString();
+        compareImplementationsFactor();
+//        propertiesIsIrreducible();
+//        compareImplementationsIsIrreducible();
+//        propertiesEquals();
+//        propertiesHashCode();
+//        propertiesCompareTo();
+//        propertiesRead_String();
+//        propertiesRead_int_String();
+//        propertiesFindIn_String();
+//        propertiesFindIn_int_String();
+//        propertiesToString();
     }
 
     private void propertiesIterator() {
@@ -1304,7 +1307,6 @@ public class PolynomialProperties extends QBarTestProperties {
         initialize("isPrimitive()");
         for (Polynomial p : take(LIMIT, P.polynomials())) {
             boolean isPrimitive = p.isPrimitive();
-            assertEquals(p, isPrimitive, foldl(BigInteger::gcd, BigInteger.ZERO, p).equals(BigInteger.ONE));
             assertEquals(p, isPrimitive, p.negate().isPrimitive());
         }
 
@@ -2080,11 +2082,21 @@ public class PolynomialProperties extends QBarTestProperties {
         }
     }
 
+    private static @NotNull List<Polynomial> factor_alt(@NotNull Polynomial p) {
+        if (p == ZERO) {
+            throw new ArithmeticException("this cannot be zero.");
+        }
+        if (p == ONE) return Collections.emptyList();
+        //noinspection RedundantCast
+        return sort((Iterable<Polynomial>) map(Polynomial::of, JasApi.factorPolynomial(toList(p))));
+    }
+
     private void propertiesFactor() {
         initialize("factor()");
         for (Polynomial p : take(LIMIT, P.withScale(4).polynomialsAtLeast(0))) {
             List<Polynomial> factors = p.factor();
             factors.forEach(Polynomial::validate);
+            assertEquals(p, factors, factor_alt(p));
             assertFalse(p, any(q -> q == ZERO, factors));
             assertTrue(p, weaklyIncreasing(factors));
             assertEquals(p, product(factors), p);
@@ -2107,6 +2119,13 @@ public class PolynomialProperties extends QBarTestProperties {
         for (Pair<Polynomial, Polynomial> p : take(LIMIT, ps)) {
             assertEquals(p, p.a.multiply(p.b).factor(), Pair.toList(p));
         }
+    }
+
+    private void compareImplementationsFactor() {
+        Map<String, Function<Polynomial, List<Polynomial>>> functions = new LinkedHashMap<>();
+        functions.put("alt", PolynomialProperties::factor_alt);
+        functions.put("standard", Polynomial::factor);
+        compareImplementations("factor()", take(SMALL_LIMIT, P.withScale(4).polynomialsAtLeast(0)), functions);
     }
 
     private static boolean isIrreducible_simplest(@NotNull Polynomial p) {
@@ -2143,8 +2162,7 @@ public class PolynomialProperties extends QBarTestProperties {
         Map<String, Function<Polynomial, Boolean>> functions = new LinkedHashMap<>();
         functions.put("simplest", PolynomialProperties::isIrreducible_simplest);
         functions.put("standard", Polynomial::isIrreducible);
-        Iterable<Polynomial> ps = P.withScale(4).polynomialsAtLeast(0);
-        compareImplementations("isIrreducible()", take(SMALL_LIMIT, ps), functions);
+        compareImplementations("isIrreducible()", take(SMALL_LIMIT, P.withScale(4).polynomialsAtLeast(0)), functions);
     }
 
     private void propertiesEquals() {

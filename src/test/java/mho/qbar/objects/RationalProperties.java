@@ -3417,7 +3417,7 @@ public class RationalProperties extends QBarTestProperties {
         initialize("cancelDenominators(List<Rational>)");
         for (List<Rational> rs : take(LIMIT, P.lists(P.rationals()))) {
             List<BigInteger> canceled = cancelDenominators(rs);
-            BigInteger gcd = foldl(BigInteger::gcd, BigInteger.ZERO, canceled);
+            BigInteger gcd = MathUtils.gcd(canceled);
             assertTrue(rs, gcd.equals(BigInteger.ZERO) || gcd.equals(BigInteger.ONE));
             idempotent(ss -> toList(map(Rational::of, cancelDenominators(ss))), rs);
             assertTrue(rs, equal(map(Rational::signum, rs), map(BigInteger::signum, canceled)));
