@@ -1029,7 +1029,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
      * <ul>
      *  <li>{@code this} must have a positive {@code scale}. It must also have a {@code secondaryScale} that is
      *  positive and greater than {@code minDegree}.</li>
-     *  <li>{@code degree} must be at least –1.</li>
+     *  <li>{@code minDegree} must be at least –1.</li>
      *  <li>The result is an infinite, non-removable {@code Iterable} containing primitive {@code Polynomial}s.</li>
      * </ul>
      *
@@ -1122,7 +1122,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
      * <ul>
      *  <li>{@code this} must have a positive {@code scale}. It must also have a {@code secondaryScale} that is
      *  positive and greater than {@code minDegree}.</li>
-     *  <li>{@code degree} must be at least –1.</li>
+     *  <li>{@code minDegree} must be at least –1.</li>
      *  <li>The result is an infinite, non-removable {@code Iterable} containing primitive {@code Polynomial}s with
      *  positive leading coefficients.</li>
      * </ul>
@@ -1147,6 +1147,93 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
                     " secondaryScale: " + secondaryScale + ", minDegree: " + minDegree);
         }
         return filterInfinite(p -> p.signum() == 1, primitivePolynomialsAtLeast(minDegree));
+    }
+
+    /**
+     * An {@code Iterable} that generates all square-free {@code Polynomial}s. Each coefficient's bit size is chosen
+     * from a geometric distribution with mean approximately {@code scale}. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a positive {@code scale}.</li>
+     *  <li>{@code degree} cannot be negative.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing square-free {@code Polynomial}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param degree the minimum degree of the generated {@code Polynomial}s
+     * @return square-free {@code Polynomial}s with degree {@code minDegree}
+     */
+    @Override
+    public @NotNull Iterable<Polynomial> squareFreePolynomials(int degree) {
+        if (degree < 0) {
+            throw new IllegalArgumentException("degree cannot be negative. Invalid degree: " + degree);
+        }
+        return filter(Polynomial::isSquareFree, polynomials(degree));
+    }
+
+    /**
+     * An {@code Iterable} that generates all irreducible {@code Polynomial}s. Each {@code Polynomial}'s degree is
+     * chosen from a geometric distribution with mean {@code secondaryScale}, and each coefficient's bit size is chosen
+     * from a geometric distribution with mean approximately {@code scale}. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a {@code scale} of at least 2 and a positive {@code secondaryScale} of at least
+     *  2.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing irreducible {@code Polynomial}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
+    @Override
+    public @NotNull Iterable<Polynomial> irreduciblePolynomials() {
+        int secondaryScale = getSecondaryScale();
+        if (secondaryScale < 2) {
+            throw new IllegalStateException("this must have a secondaryScale of at least 2. Invalid scale: " +
+                    secondaryScale);
+        }
+        return withElement(
+                Polynomial.ONE, map(
+                        p -> p.b,
+                        dependentPairsInfiniteLogarithmicOrder(
+                                withScale(secondaryScale).positiveIntegersGeometric(),
+                                this::irreduciblePolynomials
+                        )
+                )
+        );
+    }
+
+    /**
+     * An {@code Iterable} that generates all irreducible {@code Polynomial}s with a minimum degree. Each
+     * {@code Polynomial}'s degree is chosen from a geometric distribution with mean approximately
+     * {@code secondaryScale}, and each coefficient's bit size is chosen from a geometric distribution with mean
+     * approximately {@code scale}. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a {@code scale} of at least 2. It must also have a {@code secondaryScale} that is at
+     *  least 2 and greater than {@code minDegree}.</li>
+     *  <li>{@code minDegree} must be at least –1.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing irreducible {@code Polynomial}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param minDegree the minimum degree of the generated {@code Polynomial}s
+     * @return irreducible {@code Polynomial}s with degree at least {@code minDegree}
+     */
+    @Override
+    public @NotNull Iterable<Polynomial> irreduciblePolynomialsAtLeast(int minDegree) {
+        if (minDegree < -1) {
+            throw new IllegalArgumentException("minDegree must be at least -1. Invalid minDegree: " + minDegree);
+        }
+        if (minDegree < 1) return irreduciblePolynomials();
+        return map(
+                p -> p.b,
+                dependentPairsInfiniteLogarithmicOrder(
+                        withScale(getSecondaryScale()).rangeUpGeometric(minDegree),
+                        this::irreduciblePolynomials
+                )
+        );
     }
 
     /**

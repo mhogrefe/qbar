@@ -631,6 +631,75 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
     }
 
     /**
+     * An {@code Iterable} that generates all square-free {@code Polynomial}s with a given degree.
+     *
+     * <ul>
+     *  <li>{@code degree} must be at least -1.</li>
+     *  <li>The result is a non-removable {@code Iterable} containing square-free {@code Polynomial}s.</li>
+     * </ul>
+     *
+     * Length is 0 if {@code degree} is –1, infinite otherwise
+     *
+     * @param degree the degree of the generated {@code Polynomial}s
+     * @return all square-free {@code Polynomial}s with degree {@code degree}
+     */
+    @Override
+    public @NotNull Iterable<Polynomial> squareFreePolynomials(int degree) {
+        return filter(Polynomial::isSquareFree, polynomials(degree));
+    }
+
+    /**
+     * An {@code Iterable} that generates all irreducible {@code Polynomial}s.
+     *
+     * <ul>
+     *  <li>The result is a non-removable {@code Iterable} containing irreducible {@code Polynomial}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
+    @Override
+    public @NotNull Iterable<Polynomial> irreduciblePolynomials() {
+        return withElement(
+                Polynomial.ONE, map(
+                        p -> p.b,
+                        dependentPairsInfiniteLogarithmicOrder(
+                                positiveBigIntegers(),
+                                i -> irreduciblePolynomials(i.intValueExact())
+                        )
+                )
+        );
+    }
+
+    /**
+     * An {@code Iterable} that generates all irreducible {@code Polynomial}s with a minimum degree.
+     *
+     * <ul>
+     *  <li>{@code minDegree} must be at least -1.</li>
+     *  <li>The result is a non-removable {@code Iterable} containing irreducible {@code Polynomial}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param minDegree the minimum degree of the generated {@code Polynomial}s
+     * @return all irreducible {@code Polynomial}s with positive leading coefficients and degree at least
+     * {@code minDegree}
+     */
+    @Override
+    public @NotNull Iterable<Polynomial> irreduciblePolynomialsAtLeast(int minDegree) {
+        if (minDegree < -1) {
+            throw new IllegalArgumentException("minDegree must be at least -1. Invalid minDegree: " + minDegree);
+        }
+        if (minDegree < 1) return irreduciblePolynomials();
+        return map(
+                p -> p.b,
+                dependentPairsInfiniteLogarithmicOrder(
+                        rangeUp(BigInteger.valueOf(minDegree)),
+                        i -> irreduciblePolynomials(i.intValueExact())
+                )
+        );
+    }
+
+    /**
      * An {@code Iterable} that generates all {@code RationalPolynomial}s.
      *
      * <ul>

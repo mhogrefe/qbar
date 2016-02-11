@@ -3189,9 +3189,7 @@ public strictfp abstract class QBarIterableProvider {
      *
      * @param degree the degree of the generated {@code Polynomial}s
      */
-    public @NotNull Iterable<Polynomial> squareFreePolynomials(int degree) {
-        return filter(Polynomial::isSquareFree, polynomials(degree));
-    }
+    public abstract @NotNull Iterable<Polynomial> squareFreePolynomials(int degree);
 
     /**
      * Generates square-free {@code Polynomial}s.
@@ -3246,17 +3244,7 @@ public strictfp abstract class QBarIterableProvider {
     /**
      * Generates irreducible {@code Polynomial}s.
      */
-    public @NotNull Iterable<Polynomial> irreduciblePolynomials() {
-        return withElement(
-                Polynomial.ONE, map(
-                        p -> p.b,
-                        dependentPairsInfiniteLogarithmicOrder(
-                                positiveBigIntegers(),
-                                i -> irreduciblePolynomials(i.intValueExact())
-                        )
-                )
-        );
-    }
+    public abstract @NotNull Iterable<Polynomial> irreduciblePolynomials();
 
     /**
      * Generates irreducible {@code Polynomial}s with a minimum degree.

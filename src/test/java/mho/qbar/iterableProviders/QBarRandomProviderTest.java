@@ -3534,18 +3534,29 @@ public class QBarRandomProviderTest {
     }
 
     private static void polynomials_helper(
+            int defaultSampleSize,
             @NotNull Iterable<Polynomial> input,
             @NotNull String output,
             @NotNull String topSampleCount,
             double meanDegree,
             double meanCoefficientBitSize
     ) {
-        List<Polynomial> sample = toList(take(DEFAULT_SAMPLE_SIZE, input));
+        List<Polynomial> sample = toList(take(defaultSampleSize, input));
         aeqitLimit(TINY_LIMIT, sample, output);
         aeq(topSampleCount(DEFAULT_TOP_COUNT, sample), topSampleCount);
         aeq(meanOfIntegers(toList(map(Polynomial::degree, sample))), meanDegree);
         aeq(meanOfIntegers(toList(concatMap(p -> map(BigInteger::bitLength, p), sample))), meanCoefficientBitSize);
         P.reset();
+    }
+
+    private static void polynomials_helper(
+            @NotNull Iterable<Polynomial> input,
+            @NotNull String output,
+            @NotNull String topSampleCount,
+            double meanDegree,
+            double meanCoefficientBitSize
+    ) {
+        polynomials_helper(DEFAULT_SAMPLE_SIZE, input, output, topSampleCount, meanDegree, meanCoefficientBitSize);
     }
 
     private static void polynomials_int_helper(
@@ -4712,6 +4723,699 @@ public class QBarRandomProviderTest {
         positivePrimitivePolynomialsAtLeast_fail_helper(0, 1, 0);
         positivePrimitivePolynomialsAtLeast_fail_helper(1, 3, 3);
         positivePrimitivePolynomialsAtLeast_fail_helper(1, 1, -2);
+    }
+
+    private static void squareFreePolynomials_int_helper(
+            int scale,
+            int degree,
+            @NotNull String output,
+            @NotNull String topSampleCount,
+            double meanDimension,
+            double meanCoefficientBitSize
+    ) {
+        polynomials_helper(
+                DEFAULT_SAMPLE_SIZE / 10,
+                P.withScale(scale).squareFreePolynomials(degree),
+                output,
+                topSampleCount,
+                meanDimension,
+                meanCoefficientBitSize
+        );
+    }
+
+    private static void squareFreePolynomials_int_fail_helper(int scale, int degree) {
+        try {
+            P.withScale(scale).squareFreePolynomials(degree);
+            fail();
+        } catch (IllegalArgumentException | IllegalStateException ignored) {}
+        finally {
+            P.reset();
+        }
+    }
+
+    @Test
+    public void testSquareFreePolynomials_int() {
+        squareFreePolynomials_int_helper(
+                1,
+                0,
+                "[5, 221, 1, -2, 3, 1, -1, -1, 1, -1, -1, 5, -2, 1, 1, 21, -1, 19, -1, 1, ...]",
+                "{-1=25061, 1=24828, 3=6332, -2=6326, 2=6246, -3=6236, 4=1637, 5=1628, -7=1607, 6=1561}",
+                0.0,
+                1.666559999999875
+        );
+        squareFreePolynomials_int_helper(
+                1,
+                1,
+                "[3*x-2, x, -x-1, -x-1, -2*x+5, x+1, 21*x, 19*x-1, x-1, -2*x-1, 2*x, 3*x, -6*x, -x-1, -2*x, x, x," +
+                " 6*x, -2*x-1, -2*x-2, ...]",
+                "{-x=12564, x=12483, -x+1=3179, 3*x=3176, -2*x=3142, -x-1=3114, x+1=3112, x-1=3103, 2*x=3079," +
+                " -3*x=2988}",
+                0.9999999999980838,
+                1.2471400000007853
+        );
+        squareFreePolynomials_int_helper(
+                5,
+                3,
+                "[-233*x^3+1256222*x^2+21*x+21, 9*x^3+x^2-1, -x^3-6*x^2-1661016*x-117, -28*x^3-576*x^2-39244*x-67," +
+                " 30*x^3-46*x^2-16989*x-38, -x^3+2*x^2-8*x, x^3-4551*x^2+62, -92*x^3+x^2+9*x, -70*x^3-x^2+x-7," +
+                " 4*x^3-181301872*x^2+x-3026, -19*x^3-2*x^2-x+2, -64580*x^3+5*x-4, -13*x^3-241920*x^2+7818*x+41," +
+                " 5*x^3-122*x^2-394*x-238, x^3-224*x^2+62*x-1, -24*x^3+17*x^2+633*x-4, -2708*x^3+5*x^2-13*x-15," +
+                " 11*x^3+91*x^2+122224*x+111, -618*x^3+16127*x^2-7*x, 223*x^3+114*x^2-x-15659, ...]",
+                "{x^3+1=21, -x^3+1=20, -x^3-x=19, x^3-x=18, -x^3+x=18, x^3+x=17, x^3-1=15, -x^3-1=13, -x^3+x^2+x=11," +
+                " -x^3-x+1=11}",
+                3.000000000005079,
+                5.200314999992706
+        );
+        squareFreePolynomials_int_fail_helper(0, 0);
+        squareFreePolynomials_int_fail_helper(1, -1);
+    }
+
+    private static void squareFreePolynomials_helper(
+            int scale,
+            int secondaryScale,
+            @NotNull String output,
+            @NotNull String topSampleCount,
+            double meanDegree,
+            double meanCoefficientBitSize
+    ) {
+        polynomials_helper(
+                DEFAULT_SAMPLE_SIZE / 10,
+                P.withScale(scale).withSecondaryScale(secondaryScale).squareFreePolynomials(),
+                output,
+                topSampleCount,
+                meanDegree,
+                meanCoefficientBitSize
+        );
+    }
+
+    private static void squareFreePolynomials_fail_helper(int scale, int secondaryScale) {
+        try {
+            P.withScale(scale).withSecondaryScale(secondaryScale).squareFreePolynomials();
+            fail();
+        } catch (IllegalStateException ignored) {}
+        finally {
+            P.reset();
+        }
+    }
+
+    @Test
+    public void testSquareFreePolynomials() {
+        squareFreePolynomials_helper(
+                1,
+                0,
+                "[1, x-2, 9, x, -2*x^5-x^4+x^3-x^2+19*x-5, 2*x, 7, x, -3, -1, -32, -2*x, -2*x, 1," +
+                " -2*x^6+x^5+4*x^4+4*x^3-11*x^2+x-49, x-1, 1, 4*x-1, -x^3+13*x^2-77*x-6, -x^3-x^2+2*x, ...]",
+                "{1=13508, -1=13310, 3=3428, -2=3386, -x=3371, x=3370, 2=3315, -3=3238, 2*x=879, 4=863}",
+                0.8634199999996628,
+                1.3381041311144288
+        );
+        squareFreePolynomials_helper(
+                5,
+                3,
+                "[-x^3-233*x^2+1256222*x+85, 25, -39244*x^4-67*x^3-x^2-6*x-3758168," +
+                " 2*x^7+x^6+30*x^5-46*x^4-16989*x^3-38*x^2-12*x-1, -8*x^2+1, 62*x-3," +
+                " -70*x^8-x^7+x^6-7*x^5-92*x^4+x^3+9*x^2+4, -x^8+2*x^7-2404*x^4+54644*x^3+4*x^2-181301872*x+3," +
+                " 41*x^4-64580*x^3+5*x-24, x^9-224*x^8+62*x^7-x^6+5*x^5-122*x^4-394*x^3-238*x^2-13*x-504064," +
+                " 17*x^2+633*x, -2708*x^4+5*x^3-13*x^2-15*x, -1, 7, -618*x^6+16127*x^5-7*x^4+11*x^2+91*x+122224," +
+                " -x^12+47*x^11+2*x^10-7350*x^9-2*x^8-4*x^7-152*x^6+12*x^5+x^4+223*x^2+114*x-5," +
+                " -4*x^4+7*x^2-2*x+438," +
+                " -5*x^20+4*x^18-x^17-14*x^14+15*x^13+41*x^11-97*x^10-26*x^9+102910*x^8+2462*x^7+x^6-10*x^5-7*x^3-" +
+                "2275*x^2-158, x^4+27*x^3-11815*x^2-38*x-5, -37*x^7+7*x^5+15*x^4-15*x^3+2*x^2+5, ...]",
+                "{-1=1779, 1=1746, -2=712, 3=706, -3=692, 2=671, 5=328, 4=309, -6=308, -4=300}",
+                3.9696700000014955,
+                5.119983821854156
+        );
+        squareFreePolynomials_fail_helper(0, 0);
+        squareFreePolynomials_fail_helper(1, -1);
+    }
+
+    private static void squareFreePolynomialsAtLeast_helper(
+            int scale,
+            int secondaryScale,
+            int minDegree,
+            @NotNull String output,
+            @NotNull String topSampleCount,
+            double meanDegree,
+            double meanCoefficientBitSize
+    ) {
+        polynomials_helper(
+                DEFAULT_SAMPLE_SIZE / 10,
+                P.withScale(scale).withSecondaryScale(secondaryScale).squareFreePolynomialsAtLeast(minDegree),
+                output,
+                topSampleCount,
+                meanDegree,
+                meanCoefficientBitSize
+        );
+    }
+
+    private static void squareFreePolynomialsAtLeast_fail_helper(int scale, int secondaryScale, int minDegree) {
+        try {
+            P.withScale(scale).withSecondaryScale(secondaryScale).squareFreePolynomialsAtLeast(minDegree);
+            fail();
+        } catch (IllegalStateException | IllegalArgumentException ignored) {}
+        finally {
+            P.reset();
+        }
+    }
+
+    @Test
+    public void testSquareFreePolynomialsAtLeast() {
+        squareFreePolynomialsAtLeast_helper(
+                1,
+                0,
+                -1,
+                "[1, x-2, 9, x, -2*x^5-x^4+x^3-x^2+19*x-5, 2*x, 7, x, -3, -1, -32, -2*x, -2*x, 1," +
+                " -2*x^6+x^5+4*x^4+4*x^3-11*x^2+x-49, x-1, 1, 4*x-1, -x^3+13*x^2-77*x-6, -x^3-x^2+2*x, ...]",
+                "{1=13508, -1=13310, 3=3428, -2=3386, -x=3371, x=3370, 2=3315, -3=3238, 2*x=879, 4=863}",
+                0.8634199999996628,
+                1.3381041311144288
+        );
+        squareFreePolynomialsAtLeast_helper(
+                1,
+                1,
+                0,
+                "[x^3+85*x+3, -4, -2*x^2+3, x-2, 1, x^2+x-10, 37, 7*x+1, -5*x-1, 2*x, 1, -2*x^4-x^2-x, -3, -1," +
+                " -6*x-1, 2*x, 1, -2*x, -2, -3, ...]",
+                "{-1=13356, 1=13336, 3=3391, 2=3353, -x=3338, x=3316, -3=3296, -2=3290, -3*x=919, 4=861}",
+                0.8642899999996785,
+                1.3383593754208227
+        );
+        squareFreePolynomialsAtLeast_helper(
+                5,
+                3,
+                -1,
+                "[-x^3-233*x^2+1256222*x+85, 25, -39244*x^4-67*x^3-x^2-6*x-3758168," +
+                " 2*x^7+x^6+30*x^5-46*x^4-16989*x^3-38*x^2-12*x-1, -8*x^2+1, 62*x-3," +
+                " -70*x^8-x^7+x^6-7*x^5-92*x^4+x^3+9*x^2+4, -x^8+2*x^7-2404*x^4+54644*x^3+4*x^2-181301872*x+3," +
+                " 41*x^4-64580*x^3+5*x-24, x^9-224*x^8+62*x^7-x^6+5*x^5-122*x^4-394*x^3-238*x^2-13*x-504064," +
+                " 17*x^2+633*x, -2708*x^4+5*x^3-13*x^2-15*x, -1, 7, -618*x^6+16127*x^5-7*x^4+11*x^2+91*x+122224," +
+                " -x^12+47*x^11+2*x^10-7350*x^9-2*x^8-4*x^7-152*x^6+12*x^5+x^4+223*x^2+114*x-5," +
+                " -4*x^4+7*x^2-2*x+438," +
+                " -5*x^20+4*x^18-x^17-14*x^14+15*x^13+41*x^11-97*x^10-26*x^9+102910*x^8+2462*x^7+x^6-10*x^5-7*x^3-2" +
+                "275*x^2-158, x^4+27*x^3-11815*x^2-38*x-5, -37*x^7+7*x^5+15*x^4-15*x^3+2*x^2+5, ...]",
+                "{-1=1779, 1=1746, -2=712, 3=706, -3=692, 2=671, 5=328, 4=309, -6=308, -4=300}",
+                3.9696700000014955,
+                5.119983821854156
+        );
+        squareFreePolynomialsAtLeast_helper(
+                5,
+                3,
+                0,
+                "[9*x^6+x^5-x^3-233*x^2+1256222*x+85, -6*x^2-1661016*x-13, x^7-7*x^6-92*x^5+x^4+9*x^3+x-17," +
+                " -3026*x-239, 4*x-986608240," +
+                " 62*x^20-x^19+5*x^18-122*x^17-394*x^16-238*x^15-13*x^14-241920*x^13+7818*x^12+41*x^11-64580*x^10+" +
+                "5*x^8-4*x^7-19*x^6-2*x^5-x^4+2*x^3-4452, 633*x^3-4*x^2+x-13," +
+                " x^7-x^6-x^5-2708*x^4+5*x^3-13*x^2-15*x-56, 238*x," +
+                " x^12+223*x^10+114*x^9-x^8-15659*x^7-618*x^6+16127*x^5-7*x^4+11*x^2+91*x+38," +
+                " 2*x^4-7350*x^3-2*x^2-4*x-280, 31, -46, -10*x^10-7*x^8-2275*x^7-98*x^5-16624788*x^4-4*x^3+7*x-6," +
+                " -97*x^3-26*x^2+102910*x+4510, 25, -1, -5*x^2+1, -11815*x^3-38*x^2-5*x+7, x+7, ...]",
+                "{-1=2116, 1=2082, -2=890, 3=889, -3=840, 2=832, -7=386, -6=379, 4=371, 5=365}",
+                2.9729500000011333,
+                5.180837916413763
+        );
+        squareFreePolynomialsAtLeast_helper(
+                5,
+                3,
+                2,
+                "[-117*x^2+9*x+1, -16989*x^8-38*x^7-28*x^6-576*x^5-39244*x^4-67*x^3-x^2-6*x-55384, x^2+30*x-46," +
+                " -x^2+2*x-4, -4551*x^2+30, -92*x^3+x^2+9*x-1, -70*x^3-x^2+x-3, 4*x^3-181301872*x^2+x-2002," +
+                " -2*x^6-x^5+2*x^4-2404*x+2517, -64580*x^4+5*x^2-4*x-3, -13*x^3-241920*x^2+7818*x+9," +
+                " -224*x^6+62*x^5-x^4+5*x^3-122*x^2-394*x-14, 633*x^2-4*x+1, -2708*x^5+5*x^4-13*x^3-15*x^2-24*x+3," +
+                " 3*x^3-x-1, 91*x^2+122224*x+47, -618*x^4+16127*x^3-7*x^2+7, 114*x^2-x-15659, 12*x^3+x^2+223," +
+                " -2*x^2-4*x-152, ...]",
+                "{-x^2-x=61, -x^2-1=60, x^2+x=59, x^2-x=53, x^2-1=50, -x^2+1=47, x^2+1=42, -x^2+x=42, x^2-2*x=35," +
+                " -2*x^2+1=29}",
+                3.006200000001613,
+                5.203389745910559
+        );
+        squareFreePolynomialsAtLeast_fail_helper(1, -1, -1);
+        squareFreePolynomialsAtLeast_fail_helper(0, 0, -1);
+        squareFreePolynomialsAtLeast_fail_helper(1, -1, -1);
+        squareFreePolynomialsAtLeast_fail_helper(0, 0, -1);
+        squareFreePolynomialsAtLeast_fail_helper(1, 3, 3);
+        squareFreePolynomialsAtLeast_fail_helper(1, 1, -2);
+    }
+
+    private static void positivePrimitiveSquareFreePolynomials_int_helper(
+            int scale,
+            int degree,
+            @NotNull String output,
+            @NotNull String topSampleCount,
+            double meanDimension,
+            double meanCoefficientBitSize
+    ) {
+        polynomials_helper(
+                DEFAULT_SAMPLE_SIZE / 10,
+                P.withScale(scale).positivePrimitiveSquareFreePolynomials(degree),
+                output,
+                topSampleCount,
+                meanDimension,
+                meanCoefficientBitSize
+        );
+    }
+
+    private static void positivePrimitiveSquareFreePolynomials_int_fail_helper(int scale, int degree) {
+        try {
+            P.withScale(scale).positivePrimitiveSquareFreePolynomials(degree);
+            fail();
+        } catch (IllegalArgumentException | IllegalStateException ignored) {}
+        finally {
+            P.reset();
+        }
+    }
+
+    @Test
+    public void testPositivePrimitiveSquareFreePolynomials_int() {
+        positivePrimitiveSquareFreePolynomials_int_helper(
+                1,
+                0,
+                "[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ...]",
+                "{1=100000}",
+                0.0,
+                0.9999999999980838
+        );
+        positivePrimitiveSquareFreePolynomials_int_helper(
+                1,
+                1,
+                "[3*x-2, x, x+1, 19*x-1, x-1, x, x, 115*x+1, x-9, 4*x-11, x+4, x-38, x, 6*x+1, 13*x-77, x, x, x-2," +
+                " 11*x-5, x-1, ...]",
+                "{x=35824, x-1=8888, x+1=8884, x-3=2279, x+3=2269, x+2=2250, 2*x-1=2234, 2*x+1=2229, 3*x-1=2209," +
+                " x-2=2199}",
+                0.9999999999980838,
+                1.2849400000016107
+        );
+        positivePrimitiveSquareFreePolynomials_int_helper(
+                5,
+                3,
+                "[9*x^3+x^2-1, 30*x^3-46*x^2-16989*x-38, x^3-4551*x^2+62, 4*x^3-181301872*x^2+x-3026," +
+                " 5*x^3-122*x^2-394*x-238, x^3-224*x^2+62*x-1, 11*x^3+91*x^2+122224*x+111, 223*x^3+114*x^2-x-15659," +
+                " 438*x^3-46*x^2-x+47, x^3-10*x^2-7, x^3+27*x^2-11815*x-38, 2*x^3+3*x-498, 23*x^3+9*x^2-17*x+766," +
+                " 20161*x^3-51*x^2-78*x, 344*x^3+2*x^2-1, 31*x^3+5*x^2+33*x+37, 5*x^3-117*x^2+13*x+8," +
+                " 13*x^3-3*x^2+3, 15*x^3+2216*x^2+3*x+13, 3*x^3+6*x-10, ...]",
+                "{x^3-x=44, x^3+1=41, x^3-1=34, x^3+x=33, x^3-x^2-1=22, x^3-3*x=21, x^3+2=20, x^3-2*x=19," +
+                " 2*x^3-x=19, 3*x^3+1=18}",
+                3.000000000005079,
+                5.233984999991867
+        );
+        positivePrimitiveSquareFreePolynomials_int_fail_helper(0, 0);
+        positivePrimitiveSquareFreePolynomials_int_fail_helper(1, -1);
+    }
+
+    private static void positivePrimitiveSquareFreePolynomials_helper(
+            int scale,
+            int secondaryScale,
+            @NotNull String output,
+            @NotNull String topSampleCount,
+            double meanDegree,
+            double meanCoefficientBitSize
+    ) {
+        polynomials_helper(
+                DEFAULT_SAMPLE_SIZE / 10,
+                P.withScale(scale).withSecondaryScale(secondaryScale).positivePrimitiveSquareFreePolynomials(),
+                output,
+                topSampleCount,
+                meanDegree,
+                meanCoefficientBitSize
+        );
+    }
+
+    private static void positivePrimitiveSquareFreePolynomials_fail_helper(int scale, int secondaryScale) {
+        try {
+            P.withScale(scale).withSecondaryScale(secondaryScale).positivePrimitiveSquareFreePolynomials();
+            fail();
+        } catch (IllegalStateException ignored) {}
+        finally {
+            P.reset();
+        }
+    }
+
+    @Test
+    public void testPositivePrimitiveSquareFreePolynomials() {
+        positivePrimitiveSquareFreePolynomials_helper(
+                1,
+                1,
+                "[x^3+85*x+3, x-2, 1, x^2+x-10, 7*x+1, 1, 1, 4*x^4+4*x^3-11*x^2-1, 1, 1, x^2+x-1, 1, 13*x^2+4*x-1," +
+                " 7*x^2-2, x^3-2*x^2-x, 11*x^3-3*x^2+x-2, 1, 1, 1, 1, ...]",
+                "{1=41456, x=10397, x+1=2632, x-1=2539, 2*x+1=683, x+2=679, x^2-1=672, x^2+1=671, x^2-x=665, x-3=650}",
+                1.1869899999997364,
+                1.1991778654697347
+        );
+        positivePrimitiveSquareFreePolynomials_helper(
+                5,
+                3,
+                "[9*x^6+x^5-x^3-233*x^2+1256222*x+85, x^7-7*x^6-92*x^5+x^4+9*x^3+x-17," +
+                " 62*x^20-x^19+5*x^18-122*x^17-394*x^16-238*x^15-13*x^14-241920*x^13+7818*x^12+41*x^11-64580*x^10+" +
+                "5*x^8-4*x^7-19*x^6-2*x^5-x^4+2*x^3-4452, 633*x^3-4*x^2+x-13," +
+                " x^7-x^6-x^5-2708*x^4+5*x^3-13*x^2-15*x-56," +
+                " x^12+223*x^10+114*x^9-x^8-15659*x^7-618*x^6+16127*x^5-7*x^4+11*x^2+91*x+38, x+7, 3*x-242," +
+                " 7*x^2+15*x-23, 2*x^7-x^5+13*x^3+9*x^2-2*x+115001, 13*x^5+8*x^4-x^3-329*x," +
+                " 13*x^8-3*x^7+3*x^5-21*x^4-13*x^2+8*x+9, x^4-2*x^3+3347*x^2+9*x+3, 5209*x^4+6*x^3-x^2-3*x-149," +
+                " 6*x^4-12135*x^3-308*x^2-61*x+3, 18566*x^8-19*x^6+31*x^4-5656*x^3-3618*x-336," +
+                " 33*x^4-59*x^3-13542*x+1166, x^4+x^3-48401*x+10, 3*x^5+86*x^4+4843*x^3-x^2+111*x+4," +
+                " 3*x^5-832*x^4+237*x^3+7*x^2+19*x-140502, ...]",
+                "{1=6102, x=822, x-1=350, x+1=303, 3*x-1=139, 2*x-1=138, x+3=135, x+2=133, 3*x+1=131, x-3=125}",
+                4.111800000001742,
+                5.070521147155589
+        );
+        positivePrimitiveSquareFreePolynomials_fail_helper(0, 0);
+        positivePrimitiveSquareFreePolynomials_fail_helper(1, -1);
+    }
+
+    private static void positivePrimitiveSquareFreePolynomialsAtLeast_helper(
+            int scale,
+            int secondaryScale,
+            int minDegree,
+            @NotNull String output,
+            @NotNull String topSampleCount,
+            double meanDegree,
+            double meanCoefficientBitSize
+    ) {
+        polynomials_helper(
+                DEFAULT_SAMPLE_SIZE / 10,
+                P.withScale(scale).withSecondaryScale(secondaryScale)
+                        .positivePrimitiveSquareFreePolynomialsAtLeast(minDegree),
+                output,
+                topSampleCount,
+                meanDegree,
+                meanCoefficientBitSize
+        );
+    }
+
+    private static void positivePrimitiveSquareFreePolynomialsAtLeast_fail_helper(
+            int scale,
+            int secondaryScale,
+            int minDegree
+    ) {
+        try {
+            P.withScale(scale).withSecondaryScale(secondaryScale)
+                    .positivePrimitiveSquareFreePolynomialsAtLeast(minDegree);
+            fail();
+        } catch (IllegalStateException | IllegalArgumentException ignored) {}
+        finally {
+            P.reset();
+        }
+    }
+
+    @Test
+    public void testPositivePrimitiveSquareFreePolynomialsAtLeast() {
+        positivePrimitiveSquareFreePolynomialsAtLeast_helper(
+                1,
+                1,
+                -1,
+                "[x^3+85*x+3, x-2, 1, x^2+x-10, 7*x+1, 1, 1, 4*x^4+4*x^3-11*x^2-1, 1, 1, x^2+x-1, 1, 13*x^2+4*x-1," +
+                " 7*x^2-2, x^3-2*x^2-x, 11*x^3-3*x^2+x-2, 1, 1, 1, 1, ...]",
+                "{1=41456, x=10397, x+1=2632, x-1=2539, 2*x+1=683, x+2=679, x^2-1=672, x^2+1=671, x^2-x=665, x-3=650}",
+                1.1869899999997364,
+                1.1991778654697347
+        );
+        positivePrimitiveSquareFreePolynomialsAtLeast_helper(
+                1,
+                1,
+                0,
+                "[x^3+85*x+3, x-2, 1, x^2+x-10, 7*x+1, 1, 1, 4*x^4+4*x^3-11*x^2-1, 1, 1, x^2+x-1, 1, 13*x^2+4*x-1," +
+                " 7*x^2-2, x^3-2*x^2-x, 11*x^3-3*x^2+x-2, 1, 1, 1, 1, ...]",
+                "{1=41456, x=10397, x+1=2632, x-1=2539, 2*x+1=683, x+2=679, x^2-1=672, x^2+1=671, x^2-x=665, x-3=650}",
+                1.1869899999997364,
+                1.1991778654697347
+        );
+        positivePrimitiveSquareFreePolynomialsAtLeast_helper(
+                5,
+                3,
+                -1,
+                "[9*x^6+x^5-x^3-233*x^2+1256222*x+85, x^7-7*x^6-92*x^5+x^4+9*x^3+x-17," +
+                " 62*x^20-x^19+5*x^18-122*x^17-394*x^16-238*x^15-13*x^14-241920*x^13+7818*x^12+41*x^11-64580*x^10+" +
+                "5*x^8-4*x^7-19*x^6-2*x^5-x^4+2*x^3-4452, 633*x^3-4*x^2+x-13," +
+                " x^7-x^6-x^5-2708*x^4+5*x^3-13*x^2-15*x-56," +
+                " x^12+223*x^10+114*x^9-x^8-15659*x^7-618*x^6+16127*x^5-7*x^4+11*x^2+91*x+38, x+7, 3*x-242," +
+                " 7*x^2+15*x-23, 2*x^7-x^5+13*x^3+9*x^2-2*x+115001, 13*x^5+8*x^4-x^3-329*x," +
+                " 13*x^8-3*x^7+3*x^5-21*x^4-13*x^2+8*x+9, x^4-2*x^3+3347*x^2+9*x+3, 5209*x^4+6*x^3-x^2-3*x-149," +
+                " 6*x^4-12135*x^3-308*x^2-61*x+3, 18566*x^8-19*x^6+31*x^4-5656*x^3-3618*x-336," +
+                " 33*x^4-59*x^3-13542*x+1166, x^4+x^3-48401*x+10, 3*x^5+86*x^4+4843*x^3-x^2+111*x+4," +
+                " 3*x^5-832*x^4+237*x^3+7*x^2+19*x-140502, ...]",
+                "{1=6102, x=822, x-1=350, x+1=303, 3*x-1=139, 2*x-1=138, x+3=135, x+2=133, 3*x+1=131, x-3=125}",
+                4.111800000001742,
+                5.070521147155589
+        );
+        positivePrimitiveSquareFreePolynomialsAtLeast_helper(
+                5,
+                3,
+                0,
+                "[9*x^6+x^5-x^3-233*x^2+1256222*x+85, x^7-7*x^6-92*x^5+x^4+9*x^3+x-17," +
+                " 62*x^20-x^19+5*x^18-122*x^17-394*x^16-238*x^15-13*x^14-241920*x^13+7818*x^12+41*x^11-64580*x^10+" +
+                "5*x^8-4*x^7-19*x^6-2*x^5-x^4+2*x^3-4452, 633*x^3-4*x^2+x-13," +
+                " x^7-x^6-x^5-2708*x^4+5*x^3-13*x^2-15*x-56," +
+                " x^12+223*x^10+114*x^9-x^8-15659*x^7-618*x^6+16127*x^5-7*x^4+11*x^2+91*x+38, x+7, 3*x-242," +
+                " 7*x^2+15*x-23, 2*x^7-x^5+13*x^3+9*x^2-2*x+115001, 13*x^5+8*x^4-x^3-329*x," +
+                " 13*x^8-3*x^7+3*x^5-21*x^4-13*x^2+8*x+9, x^4-2*x^3+3347*x^2+9*x+3, 5209*x^4+6*x^3-x^2-3*x-149," +
+                " 6*x^4-12135*x^3-308*x^2-61*x+3, 18566*x^8-19*x^6+31*x^4-5656*x^3-3618*x-336," +
+                " 33*x^4-59*x^3-13542*x+1166, x^4+x^3-48401*x+10, 3*x^5+86*x^4+4843*x^3-x^2+111*x+4," +
+                " 3*x^5-832*x^4+237*x^3+7*x^2+19*x-140502, ...]",
+                "{1=6102, x=822, x-1=350, x+1=303, 3*x-1=139, 2*x-1=138, x+3=135, x+2=133, 3*x+1=131, x-3=125}",
+                4.111800000001742,
+                5.070521147155589
+        );
+        positivePrimitiveSquareFreePolynomialsAtLeast_helper(
+                5,
+                3,
+                2,
+                "[x^2+30*x-46, 4*x^3-181301872*x^2+x-2002, 633*x^2-4*x+1, 3*x^3-x-1, 91*x^2+122224*x+47," +
+                " 114*x^2-x-15659, 12*x^3+x^2+223, 47*x^2+2*x-3254, x^5+27*x^4-11815*x^3-38*x^2-5*x+7," +
+                " 7*x^3+15*x^2-15*x+1, 766*x^2-730*x+13, 1856865*x^3+344*x^2+2*x-1, 33*x^4+37*x^3-x^2-3*x+6454," +
+                " 1537*x^5-26*x^4+5*x^3-11*x^2+79, 13*x^2+16*x, x^3+12*x^2+21*x, 2216*x^4+3*x^3+13*x^2-224," +
+                " 6*x^2-10*x+7, x^2-2*x+3347, 1305*x^4+6*x^2-12135*x-118, ...]",
+                "{x^2+x=117, x^2-1=112, x^2-x=110, x^2+1=105, 3*x^2+x=61, 2*x^2-x=58, x^2+x-1=56, x^2-2*x=54," +
+                " 2*x^2-1=53, x^2+2=52}",
+                3.0810300000016992,
+                5.204828192899828
+        );
+        positivePrimitiveSquareFreePolynomialsAtLeast_fail_helper(1, 0, -1);
+        positivePrimitiveSquareFreePolynomialsAtLeast_fail_helper(0, 1, -1);
+        positivePrimitiveSquareFreePolynomialsAtLeast_fail_helper(1, -1, -1);
+        positivePrimitiveSquareFreePolynomialsAtLeast_fail_helper(0, 1, 1);
+        positivePrimitiveSquareFreePolynomialsAtLeast_fail_helper(1, 3, 3);
+        positivePrimitiveSquareFreePolynomialsAtLeast_fail_helper(1, 1, -2);
+    }
+
+    private static void irreduciblePolynomials_int_helper(
+            int scale,
+            int degree,
+            @NotNull String output,
+            @NotNull String topSampleCount,
+            double meanDimension,
+            double meanCoefficientBitSize
+    ) {
+        polynomials_helper(
+                DEFAULT_SAMPLE_SIZE / 10,
+                P.withScale(scale).irreduciblePolynomials(degree),
+                output,
+                topSampleCount,
+                meanDimension,
+                meanCoefficientBitSize
+        );
+    }
+
+    private static void irreduciblePolynomials_int_fail_helper(int scale, int degree) {
+        try {
+            P.withScale(scale).irreduciblePolynomials(degree);
+            fail();
+        } catch (IllegalArgumentException | IllegalStateException ignored) {}
+        finally {
+            P.reset();
+        }
+    }
+
+    @Test
+    public void testIrreduciblePolynomials_int() {
+        irreduciblePolynomials_int_helper(
+                1,
+                0,
+                "[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ...]",
+                "{1=100000}",
+                0.0,
+                0.9999999999980838
+        );
+        irreduciblePolynomials_int_helper(
+                1,
+                1,
+                "[3*x-2, x, x+1, 19*x-1, x-1, x, x, 115*x+1, x-9, 4*x-11, x+4, x-38, x, 6*x+1, 13*x-77, x, x, x-2," +
+                " 11*x-5, x-1, ...]",
+                "{x=35824, x-1=8888, x+1=8884, x-3=2279, x+3=2269, x+2=2250, 2*x-1=2234, 2*x+1=2229, 3*x-1=2209," +
+                " x-2=2199}",
+                0.9999999999980838,
+                1.2849400000016107
+        );
+        irreduciblePolynomials_int_helper(
+                5,
+                3,
+                "[9*x^3+x^2-1, 30*x^3-46*x^2-16989*x-38, x^3-4551*x^2+62, 4*x^3-181301872*x^2+x-3026," +
+                " 5*x^3-122*x^2-394*x-238, x^3-224*x^2+62*x-1, 11*x^3+91*x^2+122224*x+111, 223*x^3+114*x^2-x-15659," +
+                " 438*x^3-46*x^2-x+47, x^3-10*x^2-7, x^3+27*x^2-11815*x-38, 2*x^3+3*x-498, 23*x^3+9*x^2-17*x+766," +
+                " 344*x^3+2*x^2-1, 31*x^3+5*x^2+33*x+37, 5*x^3-117*x^2+13*x+8, 13*x^3-3*x^2+3," +
+                " 15*x^3+2216*x^2+3*x+13, 3*x^3+6*x-10, 17*x^3+5209*x^2+6*x-1, ...]",
+                "{x^3-x^2-1=24, x^3+2=23, 3*x^3+1=20, x^3+x^2+1=20, x^3+3=19, x^3+x-1=17, x^3-x^2+1=17, 2*x^3-1=16," +
+                " x^3+x^2-1=16, 2*x^3+1=15}",
+                3.000000000005079,
+                5.445429999991603
+        );
+        irreduciblePolynomials_int_fail_helper(0, 0);
+        irreduciblePolynomials_int_fail_helper(1, -1);
+    }
+
+    private static void irreduciblePolynomials_helper(
+            int scale,
+            int secondaryScale,
+            @NotNull String output,
+            @NotNull String topSampleCount,
+            double meanDegree,
+            double meanCoefficientBitSize
+    ) {
+        polynomials_helper(
+                DEFAULT_SAMPLE_SIZE / 10,
+                P.withScale(scale).withSecondaryScale(secondaryScale).irreduciblePolynomials(),
+                output,
+                topSampleCount,
+                meanDegree,
+                meanCoefficientBitSize
+        );
+    }
+
+    private static void irreduciblePolynomials_fail_helper(int scale, int secondaryScale) {
+        try {
+            P.withScale(scale).withSecondaryScale(secondaryScale).irreduciblePolynomials();
+            fail();
+        } catch (IllegalStateException ignored) {}
+        finally {
+            P.reset();
+        }
+    }
+
+    @Test
+    public void testIrreduciblePolynomials() {
+        irreduciblePolynomials_helper(
+                2,
+                2,
+                "[x^2+31*x-21, x+1, x^5+2*x^4-3*x^3-3*x^2-52*x-1, 1, 1, x+1, 2*x^2-12*x-1, 87*x-2, 25*x-3, 41*x-1," +
+                " 1, x+1, x+2, 1, 1, 1, x-2, 1, 3*x+29, 1, ...]",
+                "{1=50134, x=4182, x+1=1382, x-1=1379, 2*x-1=484, 2*x+1=460, x+3=457, 3*x-1=455, x-2=452, 3*x+1=445}",
+                1.0023799999996275,
+                2.030174092832156
+        );
+        irreduciblePolynomials_helper(
+                5,
+                3,
+                "[x^3+30*x^2-46*x-16989, 1, 62*x^3-x^2+2*x-8, x-7," +
+                " 122224*x^9+111*x^8+x^7+x^6-x^5-x^4-2708*x^3+5*x^2-13*x-15, 1, 9*x^3+x-17, x-3026, 15*x^3+41*x-97," +
+                " 71*x-5, 1, 1, 3*x-74, x^3+27*x^2-11815*x-206, 13*x^4+9*x^3-2*x^2+20161*x-51," +
+                " 1537*x^6-26*x^5+5*x^4-11*x^3+31*x+21, 15*x-1, 29*x^3+x-10," +
+                " 6*x^8-12135*x^7-308*x^6-61*x^5+17*x^4+5209*x^3+6*x^2-x-7, 1, ...]",
+                "{1=19803, x=1144, x+1=515, x-1=471, 3*x+1=226, 2*x+1=215, x+3=215, 2*x-1=213, 3*x-1=200, x-3=192}",
+                2.4175200000008608,
+                5.069922048738439
+        );
+        irreduciblePolynomials_fail_helper(1, 2);
+        irreduciblePolynomials_fail_helper(2, 1);
+    }
+
+    private static void irreduciblePolynomialsAtLeast_helper(
+            int scale,
+            int secondaryScale,
+            int minDegree,
+            @NotNull String output,
+            @NotNull String topSampleCount,
+            double meanDegree,
+            double meanCoefficientBitSize
+    ) {
+        polynomials_helper(
+                DEFAULT_SAMPLE_SIZE / 100,
+                P.withScale(scale).withSecondaryScale(secondaryScale).irreduciblePolynomialsAtLeast(minDegree),
+                output,
+                topSampleCount,
+                meanDegree,
+                meanCoefficientBitSize
+        );
+    }
+
+    private static void irreduciblePolynomialsAtLeast_fail_helper(
+            int scale,
+            int secondaryScale,
+            int minDegree
+    ) {
+        try {
+            P.withScale(scale).withSecondaryScale(secondaryScale).irreduciblePolynomialsAtLeast(minDegree);
+            fail();
+        } catch (IllegalStateException | IllegalArgumentException ignored) {}
+        finally {
+            P.reset();
+        }
+    }
+
+    @Test
+    public void testIrreduciblePolynomialsAtLeast() {
+        irreduciblePolynomialsAtLeast_helper(
+                2,
+                2,
+                -1,
+                "[x^2+31*x-21, x+1, x^5+2*x^4-3*x^3-3*x^2-52*x-1, 1, 1, x+1, 2*x^2-12*x-1, 87*x-2, 25*x-3, 41*x-1," +
+                " 1, x+1, x+2, 1, 1, 1, x-2, 1, 3*x+29, 1, ...]",
+                "{1=5047, x=428, x+1=144, x-1=120, 2*x-1=58, x+2=52, x-2=47, 2*x+1=47, x-3=45, 3*x-1=43}",
+                1.0019999999999425,
+                2.0269230769228126
+        );
+        irreduciblePolynomialsAtLeast_helper(
+                2,
+                2,
+                0,
+                "[x^2+31*x-21, x+1, x^5+2*x^4-3*x^3-3*x^2-52*x-1, 1, 1, x+1, 2*x^2-12*x-1, 87*x-2, 25*x-3, 41*x-1," +
+                " 1, x+1, x+2, 1, 1, 1, x-2, 1, 3*x+29, 1, ...]",
+                "{1=5047, x=428, x+1=144, x-1=120, 2*x-1=58, x+2=52, x-2=47, 2*x+1=47, x-3=45, 3*x-1=43}",
+                1.0019999999999425,
+                2.0269230769228126
+        );
+        irreduciblePolynomialsAtLeast_helper(
+                5,
+                3,
+                -1,
+                "[x^3+30*x^2-46*x-16989, 1, 62*x^3-x^2+2*x-8, x-7," +
+                " 122224*x^9+111*x^8+x^7+x^6-x^5-x^4-2708*x^3+5*x^2-13*x-15, 1, 9*x^3+x-17, x-3026, 15*x^3+41*x-97," +
+                " 71*x-5, 1, 1, 3*x-74, x^3+27*x^2-11815*x-206, 13*x^4+9*x^3-2*x^2+20161*x-51," +
+                " 1537*x^6-26*x^5+5*x^4-11*x^3+31*x+21, 15*x-1, 29*x^3+x-10," +
+                " 6*x^8-12135*x^7-308*x^6-61*x^5+17*x^4+5209*x^3+6*x^2-x-7, 1, ...]",
+                "{1=1986, x=114, x+1=52, x-1=51, 2*x+1=26, x+3=25, x-2=22, 3*x+1=22, x+2=21, 3*x-1=20}",
+                2.4041999999999892,
+                5.046090123964768
+        );
+        irreduciblePolynomialsAtLeast_helper(
+                5,
+                3,
+                0,
+                "[x^3+30*x^2-46*x-16989, 1, 62*x^3-x^2+2*x-8, x-7," +
+                " 122224*x^9+111*x^8+x^7+x^6-x^5-x^4-2708*x^3+5*x^2-13*x-15, 1, 9*x^3+x-17, x-3026, 15*x^3+41*x-97," +
+                " 71*x-5, 1, 1, 3*x-74, x^3+27*x^2-11815*x-206, 13*x^4+9*x^3-2*x^2+20161*x-51," +
+                " 1537*x^6-26*x^5+5*x^4-11*x^3+31*x+21, 15*x-1, 29*x^3+x-10," +
+                " 6*x^8-12135*x^7-308*x^6-61*x^5+17*x^4+5209*x^3+6*x^2-x-7, 1, ...]",
+                "{1=1986, x=114, x+1=52, x-1=51, 2*x+1=26, x+3=25, x-2=22, 3*x+1=22, x+2=21, 3*x-1=20}",
+                2.4041999999999892,
+                5.046090123964768
+        );
+        irreduciblePolynomialsAtLeast_helper(
+                5,
+                3,
+                2,
+                "[x^5-3026*x^4-70*x^3-x^2+x-7, 7818*x^2+41*x-97348, 5*x^2-122*x-394," +
+                " 11*x^8+91*x^7+122224*x^6+111*x^5+x^4+x^3-x^2-x-148, 5*x^2-13*x-15, 9*x^2-17*x+766," +
+                " 20161*x^2-51*x-78, 13*x^2+9*x-1, 2*x^2-1, x^6+12*x^5+13*x^4-3*x^3+3*x-21, 46834*x^2+1856865*x+216," +
+                " 26766*x^3+18566*x^2-19, x^2-2*x+3347, 3763*x^2+1, 14*x^2+17*x+1, 33*x^3-59*x^2-13542," +
+                " 7*x^3+19*x^2-74966*x+1, x^4+2*x^3+126*x^2+2, 3*x^2+86*x+4843, 21*x^2+3*x-1, ...]",
+                "{x^2+1=15, x^2-2=12, 2*x^2-1=9, x^2-3=7, 3*x^2-1=7, x^2+x+3=7, x^2+2=6, x^2-x+1=6, x^2-x-1=6," +
+                " x^2+3=6}",
+                2.997899999999992,
+                5.4128167287826034
+        );
+        irreduciblePolynomialsAtLeast_fail_helper(2, 1, -1);
+        irreduciblePolynomialsAtLeast_fail_helper(1, 2, -1);
+        irreduciblePolynomialsAtLeast_fail_helper(2, 2, 2);
+        irreduciblePolynomialsAtLeast_fail_helper(2, 2, -2);
+        irreduciblePolynomialsAtLeast_fail_helper(5, 3, 3);
     }
 
     private static void rationalPolynomials_helper(
