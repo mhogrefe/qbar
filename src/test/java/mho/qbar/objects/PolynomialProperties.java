@@ -107,7 +107,8 @@ public class PolynomialProperties extends QBarTestProperties {
         propertiesFactor();
         compareImplementationsFactor();
         propertiesIsIrreducible();
-        compareImplementationsIsIrreducible();
+        compareImplementationsIsIrreducible(false);
+        compareImplementationsIsIrreducible(true);
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -2106,6 +2107,9 @@ public class PolynomialProperties extends QBarTestProperties {
 
     private void propertiesFactor() {
         initialize("factor()");
+        boolean oldUseFactorCache = USE_FACTOR_CACHE;
+        USE_FACTOR_CACHE = false;
+
         for (Polynomial p : take(LIMIT, P.withScale(4).polynomialsAtLeast(0))) {
             List<Polynomial> factors = p.factor();
             factors.forEach(Polynomial::validate);
@@ -2132,13 +2136,20 @@ public class PolynomialProperties extends QBarTestProperties {
         for (Pair<Polynomial, Polynomial> p : take(LIMIT, ps)) {
             assertEquals(p, p.a.multiply(p.b).factor(), Pair.toList(p));
         }
+
+        USE_FACTOR_CACHE = oldUseFactorCache;
     }
 
     private void compareImplementationsFactor() {
+        boolean oldUseFactorCache = USE_FACTOR_CACHE;
+        USE_FACTOR_CACHE = false;
+
         Map<String, Function<Polynomial, List<Polynomial>>> functions = new LinkedHashMap<>();
         functions.put("alt", PolynomialProperties::factor_alt);
         functions.put("standard", Polynomial::factor);
         compareImplementations("factor()", take(SMALL_LIMIT, P.withScale(4).polynomialsAtLeast(0)), functions);
+
+        USE_FACTOR_CACHE = oldUseFactorCache;
     }
 
     private static boolean isIrreducible_simplest(@NotNull Polynomial p) {
@@ -2171,11 +2182,17 @@ public class PolynomialProperties extends QBarTestProperties {
         }
     }
 
-    private void compareImplementationsIsIrreducible() {
+    private void compareImplementationsIsIrreducible(boolean useFactorCache) {
+        boolean oldUseFactorCache = USE_FACTOR_CACHE;
+        USE_FACTOR_CACHE = useFactorCache;
+        System.out.println("\t\tUSE_FACTOR_CACHE = " + USE_FACTOR_CACHE);
+
         Map<String, Function<Polynomial, Boolean>> functions = new LinkedHashMap<>();
         functions.put("simplest", PolynomialProperties::isIrreducible_simplest);
         functions.put("standard", Polynomial::isIrreducible);
         compareImplementations("isIrreducible()", take(SMALL_LIMIT, P.withScale(4).polynomialsAtLeast(0)), functions);
+
+        USE_FACTOR_CACHE = oldUseFactorCache;
     }
 
     private void propertiesEquals() {

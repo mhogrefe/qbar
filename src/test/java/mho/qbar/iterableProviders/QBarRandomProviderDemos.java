@@ -417,6 +417,118 @@ public class QBarRandomProviderDemos extends QBarDemos {
         }
     }
 
+    private void demoSquareFreePolynomials_int() {
+        Iterable<Pair<QBarRandomProvider, Integer>> ps = P.pairsSquareRootOrder(
+                filterInfinite(rp -> rp.getScale() > 0, P.withScale(4).qbarRandomProvidersDefaultSecondaryScale()),
+                P.withScale(4).naturalIntegersGeometric()
+        );
+        for (Pair<QBarRandomProvider, Integer> p : take(MEDIUM_LIMIT, ps)) {
+            System.out.println("squareFreePolynomials(" + p.a + ", " + p.b + ") = " +
+                    its(p.a.squareFreePolynomials(p.b)));
+        }
+    }
+
+    private void demoSquareFreePolynomials() {
+        Iterable<QBarRandomProvider> rps = filterInfinite(
+                rp -> rp.getScale() > 0 && rp.getSecondaryScale() >= 0,
+                P.withScale(4).qbarRandomProviders()
+        );
+        for (QBarRandomProvider rp : take(MEDIUM_LIMIT, rps)) {
+            System.out.println("squareFreePolynomials(" + rp + ") = " + its(rp.squareFreePolynomials()));
+        }
+    }
+
+    private void demoSquareFreePolynomialsAtLeast() {
+        Iterable<Pair<QBarRandomProvider, Integer>> ps = filterInfinite(
+                p -> p.a.getSecondaryScale() > p.b && p.a.getSecondaryScale() > 0,
+                P.pairsSquareRootOrder(
+                        filterInfinite(rp -> rp.getScale() > 0, P.withScale(4).qbarRandomProviders()),
+                        P.withScale(4).rangeUpGeometric(-1)
+                )
+        );
+        for (Pair<QBarRandomProvider, Integer> p : take(MEDIUM_LIMIT, ps)) {
+            System.out.println("squareFreePolynomialsAtLeast(" + p.a + ", " + p.b + ") = " +
+                    its(p.a.squareFreePolynomialsAtLeast(p.b)));
+        }
+    }
+
+    private void demoPositivePrimitiveSquareFreePolynomials_int() {
+        Iterable<Pair<QBarRandomProvider, Integer>> ps = P.pairsSquareRootOrder(
+                filterInfinite(rp -> rp.getScale() > 0, P.withScale(4).qbarRandomProvidersDefaultSecondaryScale()),
+                P.withScale(4).naturalIntegersGeometric()
+        );
+        for (Pair<QBarRandomProvider, Integer> p : take(MEDIUM_LIMIT, ps)) {
+            System.out.println("positivePrimitiveSquareFreePolynomials(" + p.a + ", " + p.b + ") = " +
+                    its(p.a.positivePrimitiveSquareFreePolynomials(p.b)));
+        }
+    }
+
+    private void demoPositivePrimitiveSquareFreePolynomials() {
+        Iterable<QBarRandomProvider> rps = filterInfinite(
+                rp -> rp.getScale() > 0 && rp.getSecondaryScale() > 0,
+                P.withScale(4).qbarRandomProviders()
+        );
+        for (QBarRandomProvider rp : take(MEDIUM_LIMIT, rps)) {
+            System.out.println("positivePrimitiveSquareFreePolynomials(" + rp + ") = " +
+                    its(rp.positivePrimitiveSquareFreePolynomials()));
+        }
+    }
+
+    private void demoPositivePrimitiveSquareFreePolynomialsAtLeast() {
+        Iterable<Pair<QBarRandomProvider, Integer>> ps = filterInfinite(
+                p -> p.a.getSecondaryScale() > p.b && p.a.getSecondaryScale() > 0,
+                P.pairsSquareRootOrder(
+                        filterInfinite(
+                                rp -> rp.getScale() > 0 && rp.getSecondaryScale() > 0,
+                                P.withScale(4).qbarRandomProviders()
+                        ),
+                        P.withScale(4).rangeUpGeometric(-1)
+                )
+        );
+        for (Pair<QBarRandomProvider, Integer> p : take(MEDIUM_LIMIT, ps)) {
+            System.out.println("positivePrimitiveSquareFreePolynomialsAtLeast(" + p.a + ", " + p.b + ") = " +
+                    its(p.a.positivePrimitiveSquareFreePolynomialsAtLeast(p.b)));
+        }
+    }
+
+    private void demoIrreduciblePolynomials_int() {
+        Iterable<Pair<QBarRandomProvider, Integer>> ps = P.pairsSquareRootOrder(
+                filterInfinite(rp -> rp.getScale() > 0, P.withScale(1).qbarRandomProvidersDefaultSecondaryScale()),
+                P.withScale(4).naturalIntegersGeometric()
+        );
+        for (Pair<QBarRandomProvider, Integer> p : take(MEDIUM_LIMIT, ps)) {
+            System.out.println("irreduciblePolynomials(" + p.a + ", " + p.b + ") = " +
+                    its(p.a.irreduciblePolynomials(p.b)));
+        }
+    }
+
+    private void demoIrreduciblePolynomials() {
+        Iterable<QBarRandomProvider> rps = filterInfinite(
+                rp -> rp.getScale() >= 2 && rp.getSecondaryScale() >= 2,
+                P.withScale(1).qbarRandomProviders()
+        );
+        for (QBarRandomProvider rp : take(MEDIUM_LIMIT, rps)) {
+            System.out.println("irreduciblePolynomials(" + rp + ") = " + its(rp.irreduciblePolynomials()));
+        }
+    }
+
+    private void demoIrreduciblePolynomialsAtLeast() {
+        Iterable<Pair<QBarRandomProvider, Integer>> ps = filterInfinite(
+                p -> p.a.getSecondaryScale() > p.b && p.a.getSecondaryScale() > 0,
+                P.pairsSquareRootOrder(
+                        filterInfinite(
+                                rp -> rp.getScale() >= 2 && rp.getSecondaryScale() >= 2,
+                                P.withScale(1).qbarRandomProviders()
+                        ),
+                        P.withScale(4).rangeUpGeometric(-1)
+                )
+        );
+        for (Pair<QBarRandomProvider, Integer> p : take(MEDIUM_LIMIT, ps)) {
+            System.out.println("irreduciblePolynomialsAtLeast(" + p.a + ", " + p.b + ") = " +
+                    its(p.a.irreduciblePolynomialsAtLeast(p.b)));
+        }
+    }
+
     private void demoRationalPolynomials_int() {
         Iterable<Pair<QBarRandomProvider, Integer>> ps = P.pairsSquareRootOrder(
                 filterInfinite(rp -> rp.getScale() >= 3, P.withScale(4).qbarRandomProvidersDefaultSecondaryScale()),

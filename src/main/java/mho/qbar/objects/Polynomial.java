@@ -1,6 +1,7 @@
 package mho.qbar.objects;
 
 import jas.JasApi;
+import mho.wheels.concurrency.ResultCache;
 import mho.wheels.io.Readers;
 import mho.wheels.iterables.IterableUtils;
 import mho.wheels.iterables.NoRemoveIterable;
@@ -53,6 +54,11 @@ public final class Polynomial implements
      * Used by {@link mho.qbar.objects.Polynomial#compareTo}
      */
     private static final Comparator<Iterable<BigInteger>> BIG_INTEGER_ITERABLE_COMPARATOR = new ShortlexComparator<>();
+
+    public static boolean USE_FACTOR_CACHE = true;
+
+    private static final ResultCache<Polynomial, List<Polynomial>> FACTOR_CACHE =
+            new ResultCache<>(Polynomial::factorRaw, p -> p.degree() > 6);
 
     /**
      * A {@code Comparator} that compares two {@code Polynomial}s by their degrees, then lexicographically by their
@@ -1227,13 +1233,17 @@ public final class Polynomial implements
      *
      * @return the irreducible factors of {@code this}
      */
-    public @NotNull List<Polynomial> factor() {
+    public @NotNull List<Polynomial> factorRaw() {
         if (this == ZERO) {
             throw new ArithmeticException("this cannot be zero.");
         }
         if (this == ONE) return Collections.emptyList();
         //noinspection RedundantCast
         return sort((Iterable<Polynomial>) map(Polynomial::of, JasApi.factorPolynomial(coefficients)));
+    }
+
+    public @NotNull List<Polynomial> factor() {
+        return USE_FACTOR_CACHE ? FACTOR_CACHE.get(this) : factorRaw();
     }
 
     /**
