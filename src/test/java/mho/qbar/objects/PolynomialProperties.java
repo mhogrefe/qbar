@@ -2082,11 +2082,24 @@ public class PolynomialProperties extends QBarTestProperties {
         }
     }
 
+    //this uses Eisenstein's criterion. It's too slow for inputs with large coefficients because of prime factorization
     private static @NotNull List<Polynomial> factor_alt(@NotNull Polynomial p) {
         if (p == ZERO) {
             throw new ArithmeticException("this cannot be zero.");
         }
         if (p == ONE) return Collections.emptyList();
+        BigInteger gcd = MathUtils.gcd(init(p));
+        if (gt(gcd, BigInteger.ONE)) {
+            boolean eisenstein = any(
+                    n -> !last(p).mod(n).equals(BigInteger.ZERO) &&
+                            !head(p).mod(n.pow(2)).equals(BigInteger.ZERO),
+                    toList(nub(MathUtils.primeFactors(gcd)))
+            );
+            if (eisenstein) {
+                Pair<BigInteger, Polynomial> cf = p.constantFactor();
+                return cf.a.equals(BigInteger.ONE) ? Collections.singletonList(p) : Arrays.asList(of(cf.a), cf.b);
+            }
+        }
         //noinspection RedundantCast
         return sort((Iterable<Polynomial>) map(Polynomial::of, JasApi.factorPolynomial(toList(p))));
     }

@@ -1232,20 +1232,8 @@ public final class Polynomial implements
             throw new ArithmeticException("this cannot be zero.");
         }
         if (this == ONE) return Collections.emptyList();
-        BigInteger gcd = MathUtils.gcd(init(coefficients));
-        if (gt(gcd, BigInteger.ONE)) {
-            boolean eisenstein = any(
-                    n -> !last(coefficients).mod(n).equals(BigInteger.ZERO) &&
-                            !head(coefficients).mod(n.pow(2)).equals(BigInteger.ZERO),
-                    toList(nub(MathUtils.primeFactors(gcd)))
-            );
-            if (eisenstein) {
-                Pair<BigInteger, Polynomial> cf = constantFactor();
-                return cf.a.equals(BigInteger.ONE) ? Collections.singletonList(this) : Arrays.asList(of(cf.a), cf.b);
-            }
-        }
         //noinspection RedundantCast
-        return sort((Iterable<Polynomial>) map(Polynomial::of, JasApi.factorPolynomial(toList(coefficients))));
+        return sort((Iterable<Polynomial>) map(Polynomial::of, JasApi.factorPolynomial(coefficients)));
     }
 
     /**
