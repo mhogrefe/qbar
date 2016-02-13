@@ -452,6 +452,34 @@ public class MatrixDemos extends QBarDemos {
         }
     }
 
+    private void demoSolveLinearSystem() {
+        Iterable<Pair<Matrix, Vector>> ps = P.chooseLogarithmicOrder(
+                map(
+                        q -> q.b,
+                        P.dependentPairsInfiniteSquareRootOrder(
+                                P.pairs(P.withScale(4).positiveIntegersGeometric()),
+                                p -> P.pairs(P.withScale(4).matrices(p.a, p.b), P.withScale(4).vectors(p.a))
+                        )
+                ),
+                P.choose(
+                        map(
+                                i -> new Pair<>(zero(0, i), Vector.ZERO_DIMENSIONAL),
+                                P.withScale(4).naturalIntegersGeometric()
+                        ),
+                        map(v -> new Pair<>(zero(v.dimension(), 0), v), P.withScale(4).vectorsAtLeast(1))
+                )
+        );
+        for (Pair<Matrix, Vector> p : take(LIMIT, ps)) {
+            System.out.println("solveLinearSystem(" + p.a + ", " + p.b + ") = " + p.a.solveLinearSystem(p.b));
+        }
+    }
+
+    private void demoInvert() {
+        for (Matrix m : take(LIMIT, P.withScale(4).withSecondaryScale(4).squareMatrices())) {
+            System.out.println(m + "⁻¹ = " + m.invert());
+        }
+    }
+
     private void demoEquals_Matrix() {
         for (Pair<Matrix, Matrix> p : take(LIMIT, P.pairs(P.withScale(4).matrices()))) {
             System.out.println(p.a + (p.a.equals(p.b) ? " = " : " ≠ ") + p.b);

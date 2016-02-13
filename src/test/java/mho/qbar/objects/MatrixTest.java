@@ -883,6 +883,64 @@ public class MatrixTest {
         );
     }
 
+    private static void solveLinearSystem_helper(@NotNull String m, @NotNull String v, @NotNull String output) {
+        aeq(read(m).get().solveLinearSystem(Vector.read(v).get()), output);
+    }
+
+    private static void solveLinearSystem_fail_helper(@NotNull String m, @NotNull String v) {
+        try {
+            read(m).get().solveLinearSystem(Vector.read(v).get());
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testSolveLinearSystem() {
+        solveLinearSystem_helper("[]#0", "[]", "Optional[[]]");
+        solveLinearSystem_helper("[]#3", "[]", "Optional.empty");
+        solveLinearSystem_helper("[[], [], []]", "[0, 0, 0]", "Optional[[]]");
+        solveLinearSystem_helper("[[], [], []]", "[0, 3, 0]", "Optional.empty");
+        solveLinearSystem_helper("[[-3]]", "[0]", "Optional[[0]]");
+        solveLinearSystem_helper("[[-3]]", "[-3]", "Optional[[1]]");
+        solveLinearSystem_helper("[[-3]]", "[7]", "Optional[[-7/3]]");
+
+        solveLinearSystem_helper("[[1, 1], [1, -1]]", "[10, 5]", "Optional[[15/2, 5/2]]");
+        solveLinearSystem_helper("[[1, 1], [1, -1], [2, 2]]", "[10, 5, 20]", "Optional[[15/2, 5/2]]");
+        solveLinearSystem_helper("[[1, 1], [1, -1], [2, 2]]", "[10, 5, 19]", "Optional.empty");
+        solveLinearSystem_helper("[[2, 3], [4, 9]]", "[6, 15]", "Optional[[3/2, 1]]");
+        solveLinearSystem_helper("[[3, 2, -1], [2, -2, 4], [-2, 1, -2]]", "[1, -2, 0]", "Optional[[1, -2, -2]]");
+
+        solveLinearSystem_fail_helper("[]#0", "[0]");
+        solveLinearSystem_fail_helper("[[2, 3], [4, 9]]", "[6, 15, 3]");
+    }
+
+    private static void invert_helper(@NotNull String input, @NotNull String output) {
+        aeq(read(input).get().invert(), output);
+    }
+
+    private static void invert_fail_helper(@NotNull String input) {
+        try {
+            read(input).get().invert();
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testInvert() {
+        invert_helper("[]#0", "Optional[[]#0]");
+        invert_helper("[[1]]", "Optional[[[1]]]");
+        invert_helper("[[-1]]", "Optional[[[-1]]]");
+        invert_helper("[[-3]]", "Optional[[[-1/3]]]");
+        invert_helper("[[1, 0], [0, 1]]", "Optional[[[1, 0], [0, 1]]]");
+        invert_helper("[[0, 1], [1, 0]]", "Optional[[[0, 1], [1, 0]]]");
+        invert_helper("[[-2, -8], [0, 5]]", "Optional[[[-1/2, -4/5], [0, 1/5]]]");
+        invert_helper("[[1, 3, 3], [1, 4, 3], [1, 3, 4]]", "Optional[[[7, -3, -3], [-1, 1, 0], [-1, 0, 1]]]");
+
+        invert_fail_helper("[]#3");
+        invert_fail_helper("[[], [], []]");
+        invert_fail_helper("[[1, 9, -13], [20, 5, -6]]");
+    }
+
     @Test
     public void testEquals() {
         testEqualsHelper(

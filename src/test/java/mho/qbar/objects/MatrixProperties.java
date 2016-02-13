@@ -72,6 +72,10 @@ public class MatrixProperties extends QBarTestProperties {
         propertiesReducedRowEchelonForm();
         propertiesPrimitiveReducedRowEchelonForm();
         compareImplementationsPrimitiveReducedRowEchelonForm();
+        propertiesSolveLinearSystem();
+        compareImplementationsSolveLinearSystem();
+        propertiesInvert();
+        compareImplementationsInvert();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -1399,6 +1403,155 @@ public class MatrixProperties extends QBarTestProperties {
         functions.put("simplest", MatrixProperties::primitiveReducedRowEchelonForm_simplest);
         functions.put("standard", Matrix::primitiveReducedRowEchelonForm);
         compareImplementations("primitiveReducedRowEchelonForm()", take(LIMIT, P.matrices()), functions);
+    }
+
+    private static @NotNull Optional<RationalVector> solveLinearSystem_simplest(@NotNull Matrix m, @NotNull Vector v) {
+        return m.toRationalMatrix().solveLinearSystem(v.toRationalVector());
+    }
+
+    private static @NotNull Optional<RationalVector> solveLinearSystem_alt(@NotNull Matrix m, @NotNull Vector v) {
+        if (m.height() != v.dimension()) {
+            throw new IllegalArgumentException("The dimension of v must equal the height of m. v: " + v + ", m: " + m);
+        }
+        if (m.width() > m.height()) return Optional.empty();
+        Matrix rref = m.augment(fromColumns(Collections.singletonList(v))).primitiveReducedRowEchelonForm();
+        Matrix bottom = rref.submatrix(toList(range(m.width(), m.height() - 1)), toList(range(0, m.width())));
+        if (!bottom.isZero()) return Optional.empty();
+        List<Rational> result = new ArrayList<>();
+        int lastColumnIndex = rref.width() - 1;
+        for (int i = 0; i < m.width(); i++) {
+            Vector row = rref.row(i);
+            for (int j = 0; j < m.width(); j++) {
+                if ((i == j) == row.get(j).equals(BigInteger.ZERO)) return Optional.empty();
+            }
+            result.add(Rational.of(row.get(lastColumnIndex), row.get(i)));
+        }
+        return Optional.of(RationalVector.of(result));
+    }
+
+    private void propertiesSolveLinearSystem() {
+        initialize("solveLinearSystem(Vector)");
+        Iterable<Pair<Matrix, Vector>> ps = P.chooseLogarithmicOrder(
+                map(
+                        q -> q.b,
+                        P.dependentPairsInfiniteSquareRootOrder(
+                                P.pairs(P.withScale(4).positiveIntegersGeometric()),
+                                p -> P.pairs(P.withScale(4).matrices(p.a, p.b), P.withScale(4).vectors(p.a))
+                        )
+                ),
+                P.choose(
+                        map(
+                                i -> new Pair<>(zero(0, i), Vector.ZERO_DIMENSIONAL),
+                                P.withScale(4).naturalIntegersGeometric()
+                        ),
+                        map(v -> new Pair<>(zero(v.dimension(), 0), v), P.withScale(4).vectorsAtLeast(1))
+                )
+        );
+        for (Pair<Matrix, Vector> p : take(LIMIT, ps)) {
+            Optional<RationalVector> solution = p.a.solveLinearSystem(p.b);
+            assertEquals(p, solveLinearSystem_simplest(p.a, p.b), solution);
+            assertEquals(p, solveLinearSystem_alt(p.a, p.b), solution);
+            if (solution.isPresent()) {
+                assertTrue(p, p.a.height() >= p.a.width());
+                RationalVector v = solution.get();
+                assertEquals(p, p.a.toRationalMatrix().multiply(v).toVector(), p.b);
+            }
+        }
+
+        Iterable<Pair<Matrix, Vector>> psFail = filterInfinite(
+                q -> q.b.dimension() != q.a.height(),
+                P.pairs(P.matrices(), P.vectors())
+        );
+        for (Pair<Matrix, Vector> p : take(LIMIT, psFail)) {
+            try {
+                p.a.solveLinearSystem(p.b);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void compareImplementationsSolveLinearSystem() {
+        Map<String, Function<Pair<Matrix, Vector>, Optional<RationalVector>>> functions = new LinkedHashMap<>();
+        functions.put("simplest", p -> solveLinearSystem_simplest(p.a, p.b));
+        functions.put("alt", p -> solveLinearSystem_alt(p.a, p.b));
+        functions.put("standard", p -> p.a.solveLinearSystem(p.b));
+        Iterable<Pair<Matrix, Vector>> ps = P.chooseLogarithmicOrder(
+                map(
+                        q -> q.b,
+                        P.dependentPairsInfiniteSquareRootOrder(
+                                P.pairs(P.withScale(4).positiveIntegersGeometric()),
+                                p -> P.pairs(P.withScale(4).matrices(p.a, p.b), P.withScale(4).vectors(p.a))
+                        )
+                ),
+                P.choose(
+                        map(
+                                i -> new Pair<>(zero(0, i), Vector.ZERO_DIMENSIONAL),
+                                P.withScale(4).naturalIntegersGeometric()
+                        ),
+                        map(v -> new Pair<>(zero(v.dimension(), 0), v), P.withScale(4).vectorsAtLeast(1))
+                )
+        );
+        compareImplementations("solveLinearSystem(Vector)", take(LIMIT, ps), functions);
+    }
+
+    private static @NotNull Optional<RationalMatrix> invert_simplest(@NotNull Matrix m) {
+        return m.toRationalMatrix().invert();
+    }
+
+    private static @NotNull Optional<RationalMatrix> invert_alt(@NotNull Matrix m) {
+        if (!m.isSquare()) {
+            throw new IllegalArgumentException("m must be square. Invalid m: " + m);
+        }
+        Matrix rref = m.augment(identity(m.width())).primitiveReducedRowEchelonForm();
+        List<RationalVector> resultRows = new ArrayList<>();
+        for (int i = 0; i < m.height(); i++) {
+            Vector row = rref.row(i);
+            for (int j = 0; j < m.width(); j++) {
+                if ((i == j) == row.get(j).equals(BigInteger.ZERO)) return Optional.empty();
+            }
+            BigInteger denominator = row.get(i);
+            List<Rational> resultRow = new ArrayList<>();
+            for (int j = m.width(); j < 2 * m.width(); j++) {
+                resultRow.add(Rational.of(row.get(j), denominator));
+            }
+            resultRows.add(RationalVector.of(resultRow));
+        }
+        return Optional.of(RationalMatrix.fromRows(resultRows));
+    }
+
+    private void propertiesInvert() {
+        initialize("invert()");
+        for (Matrix m : take(LIMIT, P.withScale(4).withSecondaryScale(4).squareMatrices())) {
+            Optional<RationalMatrix> oInverse = m.invert();
+            assertEquals(m, invert_simplest(m), oInverse);
+            assertEquals(m, invert_alt(m), oInverse);
+            assertEquals(m, oInverse.isPresent(), m.isInvertible());
+            if (oInverse.isPresent()) {
+                RationalMatrix inverse = oInverse.get();
+                assertTrue(m, m.toRationalMatrix().multiply(inverse).isIdentity());
+                assertTrue(m, inverse.multiply(m.toRationalMatrix()).isIdentity());
+                assertEquals(m, inverse.invert().get().toMatrix(), m);
+            }
+        }
+
+        for (int i : take(SMALL_LIMIT, P.positiveIntegersGeometric())) {
+            Matrix zero = zero(i, i);
+            assertFalse(i, zero.invert().isPresent());
+        }
+
+        for (int i : take(SMALL_LIMIT, P.naturalIntegersGeometric())) {
+            Matrix identity = identity(i);
+            idempotent(m -> m.invert().get().toMatrix(), identity);
+        }
+    }
+
+    private void compareImplementationsInvert() {
+        Map<String, Function<Matrix, Optional<RationalMatrix>>> functions = new LinkedHashMap<>();
+        functions.put("simplest", MatrixProperties::invert_simplest);
+        functions.put("alt", MatrixProperties::invert_alt);
+        functions.put("standard", Matrix::invert);
+        Iterable<Matrix> ms = P.withScale(4).withSecondaryScale(4).squareMatrices();
+        compareImplementations("invert()", take(LIMIT, ms), functions);
     }
 
     private void propertiesEquals() {
