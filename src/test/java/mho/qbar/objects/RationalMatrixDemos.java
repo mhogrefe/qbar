@@ -505,6 +505,37 @@ public class RationalMatrixDemos extends QBarDemos {
         }
     }
 
+    private void demoSolveLinearSystem() {
+        Iterable<Pair<RationalMatrix, RationalVector>> ps = P.chooseLogarithmicOrder(
+                map(
+                        q -> q.b,
+                        P.dependentPairsInfiniteSquareRootOrder(
+                                P.pairs(P.withScale(4).positiveIntegersGeometric()),
+                                p -> P.pairs(
+                                        P.withScale(4).rationalMatrices(p.a, p.b),
+                                        P.withScale(4).rationalVectors(p.a)
+                                )
+                        )
+                ),
+                P.choose(
+                        map(
+                                i -> new Pair<>(zero(0, i), RationalVector.ZERO_DIMENSIONAL),
+                                P.withScale(4).naturalIntegersGeometric()
+                        ),
+                        map(v -> new Pair<>(zero(v.dimension(), 0), v), P.withScale(4).rationalVectorsAtLeast(1))
+                )
+        );
+        for (Pair<RationalMatrix, RationalVector> p : take(LIMIT, ps)) {
+            System.out.println("solveLinearSystem(" + p.a + ", " + p.b + ") = " + p.a.solveLinearSystem(p.b));
+        }
+    }
+
+    private void demoInvert() {
+        for (RationalMatrix m : take(LIMIT, P.withScale(4).squareRationalMatrices())) {
+            System.out.println(m + "⁻¹ = " + m.invert());
+        }
+    }
+
     private void demoEquals_RationalMatrix() {
         for (Pair<RationalMatrix, RationalMatrix> p : take(LIMIT, P.pairs(P.withScale(4).rationalMatrices()))) {
             System.out.println(p.a + (p.a.equals(p.b) ? " = " : " ≠ ") + p.b);

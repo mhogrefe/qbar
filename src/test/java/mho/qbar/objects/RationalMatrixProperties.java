@@ -72,6 +72,8 @@ public class RationalMatrixProperties extends QBarTestProperties {
         propertiesIsInvertible();
         propertiesIsInReducedRowEchelonForm();
         propertiesReducedRowEchelonForm();
+        propertiesSolveLinearSystem();
+        propertiesInvert();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -1454,6 +1456,70 @@ public class RationalMatrixProperties extends QBarTestProperties {
             rref.validate();
             assertTrue(m, rref.isInReducedRowEchelonForm());
             idempotent(RationalMatrix::reducedRowEchelonForm, m);
+        }
+    }
+
+    private void propertiesSolveLinearSystem() {
+        initialize("solveLinearSystem(RationalVector)");
+        Iterable<Pair<RationalMatrix, RationalVector>> ps = P.chooseLogarithmicOrder(
+                map(
+                        q -> q.b,
+                        P.dependentPairsInfiniteSquareRootOrder(
+                                P.pairs(P.withScale(4).positiveIntegersGeometric()),
+                                p -> P.pairs(P.rationalMatrices(p.a, p.b), P.rationalVectors(p.a))
+                        )
+                ),
+                P.choose(
+                        map(
+                                i -> new Pair<>(zero(0, i), RationalVector.ZERO_DIMENSIONAL),
+                                P.withScale(4).naturalIntegersGeometric()
+                        ),
+                        map(v -> new Pair<>(zero(v.dimension(), 0), v), P.withScale(4).rationalVectorsAtLeast(1))
+                )
+        );
+        for (Pair<RationalMatrix, RationalVector> p : take(LIMIT, ps)) {
+            Optional<RationalVector> solution = p.a.solveLinearSystem(p.b);
+            if (solution.isPresent()) {
+                assertTrue(p, p.a.height() >= p.a.width());
+                RationalVector v = solution.get();
+                assertEquals(p, p.a.multiply(v), p.b);
+            }
+        }
+
+        Iterable<Pair<RationalMatrix, RationalVector>> psFail = filterInfinite(
+                q -> q.b.dimension() != q.a.height(),
+                P.pairs(P.rationalMatrices(), P.rationalVectors())
+        );
+        for (Pair<RationalMatrix, RationalVector> p : take(LIMIT, psFail)) {
+            try {
+                p.a.solveLinearSystem(p.b);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesInvert() {
+        initialize("invert()");
+        for (RationalMatrix m : take(LIMIT, P.withScale(4).squareRationalMatrices())) {
+            Optional<RationalMatrix> oInverse = m.invert();
+            assertEquals(m, oInverse.isPresent(), m.isInvertible());
+            if (oInverse.isPresent()) {
+                RationalMatrix inverse = oInverse.get();
+                inverse.validate();
+                assertTrue(m, m.multiply(inverse).isIdentity());
+                assertTrue(m, inverse.multiply(m).isIdentity());
+                involution(n -> n.invert().get(), m);
+            }
+        }
+
+        for (int i : take(SMALL_LIMIT, P.positiveIntegersGeometric())) {
+            RationalMatrix zero = zero(i, i);
+            assertFalse(i, zero.invert().isPresent());
+        }
+
+        for (int i : take(SMALL_LIMIT, P.naturalIntegersGeometric())) {
+            RationalMatrix identity = identity(i);
+            idempotent(m -> m.invert().get(), identity);
         }
     }
 

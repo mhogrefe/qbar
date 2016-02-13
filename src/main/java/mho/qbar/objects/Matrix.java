@@ -358,8 +358,9 @@ public class Matrix implements Comparable<Matrix> {
     public boolean isIdentity() {
         if (!isSquare()) return false;
         for (int i = 0; i < width; i++) {
+            Vector row = row(i);
             for (int j = 0; j < width; j++) {
-                if (!get(i, j).equals(i == j ? BigInteger.ONE : BigInteger.ZERO)) return false;
+                if (!row.get(j).equals(i == j ? BigInteger.ONE : BigInteger.ZERO)) return false;
             }
         }
         return true;

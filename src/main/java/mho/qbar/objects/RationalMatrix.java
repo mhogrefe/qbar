@@ -372,8 +372,9 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
     public boolean isIdentity() {
         if (!isSquare()) return false;
         for (int i = 0; i < width; i++) {
+            RationalVector row = row(i);
             for (int j = 0; j < width; j++) {
-                if (get(i, j) != (i == j ? Rational.ONE : Rational.ZERO)) return false;
+                if (row.get(j) != (i == j ? Rational.ONE : Rational.ZERO)) return false;
             }
         }
         return true;
@@ -1000,6 +1001,62 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
             }
         }
         return true;
+    }
+
+    /**
+     * Solves a linear system of equations. If this is a matrix with <i>n</i> rows and <i>m</i> columns, then the
+     * system contains <i>n</i> equations in <i>m</i> variables, and the entry (<i>i</i>, <i>j</i>) is the coefficient
+     * of the <i>j</i>th variable in the <i>i</i>th equation. The vector {@code rhs} represents the right-hand side of
+     * the equations, and its <i>i</i>th entry is the right-hand side of the <i>i</i>th equation. If the system is
+     * inconsistent or underdetermined, the result is empty; otherwise, it is non-empty. Note that if the system is
+     * overdetermined, it may still be consistent. If the result is non-empty, it represents the values of the <i>m</i>
+     * variables, and its <i>j</i>th element is the value of the <i>j</i>th variable.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalMatrix}.</li>
+     *  <li>{@code rhs} may be any {@code RationalVector}.</li>
+     *  <li>The dimension of {@code rhs} must equal the height of {@code this}.</li>
+     * </ul>
+     *
+     * Length is width({@code this})
+     *
+     * @param rhs the right-hand side of the system of equations
+     * @return The assignments to the variables in the equations
+     */
+    public @NotNull Optional<RationalVector> solveLinearSystem(@NotNull RationalVector rhs) {
+        if (height() != rhs.dimension()) {
+            throw new IllegalArgumentException("The dimension of rhs must equal the height of this. rhs: " +
+                    rhs + ", this: " + this);
+        }
+        if (width > height()) return Optional.empty();
+        RationalMatrix rref = augment(fromColumns(Collections.singletonList(rhs))).reducedRowEchelonForm();
+        RationalMatrix bottom = rref.submatrix(toList(range(width, height() - 1)), toList(range(0, width)));
+        if (!bottom.isZero()) return Optional.empty();
+        RationalMatrix left = rref.submatrix(toList(range(0, width - 1)), toList(range(0, width - 1)));
+        if (!left.isIdentity()) return Optional.empty();
+        return Optional.of(rref.submatrix(toList(range(0, width - 1)), Collections.singletonList(width)).column(0));
+    }
+
+    /**
+     * Returns the inverse of {@code this}, or an empty {@code Optional} if {@code this} is not invertible.
+     *
+     * <ul>
+     *  <li>{@code this} must be square.</li>
+     *  <li>The result is either empty or an invertible {@code RationalMatrix}.</li>
+     * </ul>
+     *
+     * Size is height({@code this})×width({@code this})
+     *
+     * @return {@code this}<sup>–1</sup>
+     */
+    public @NotNull Optional<RationalMatrix> invert() {
+        if (!isSquare()) {
+            throw new IllegalArgumentException();
+        }
+        RationalMatrix rref = augment(identity(width)).reducedRowEchelonForm();
+        RationalMatrix left = rref.submatrix(toList(range(0, width - 1)), toList(range(0, width - 1)));
+        if (!left.isIdentity()) return Optional.empty();
+        return Optional.of(rref.submatrix(toList(range(0, width - 1)), toList(range(width, 2 * width - 1))));
     }
 
     /**
