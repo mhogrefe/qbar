@@ -1900,9 +1900,8 @@ public class PolynomialProperties extends QBarTestProperties {
             fixedPoint(q -> q.gcd(q), p);
         }
 
-        //todo use irreduciblePolynomials
         Iterable<Triple<Polynomial, Polynomial, Polynomial>> ts = P.subsetTriples(
-                filterInfinite(Polynomial::isIrreducible, P.positivePrimitivePolynomialsAtLeast(1))
+                P.withScale(4).irreduciblePolynomialsAtLeast(1)
         );
         for (Triple<Polynomial, Polynomial, Polynomial> t : take(LIMIT, ts)) {
             assertEquals(t, t.a.multiply(t.b).gcd(t.b.multiply(t.c)), t.b);
@@ -2129,10 +2128,7 @@ public class PolynomialProperties extends QBarTestProperties {
             }
         }
 
-        //todo use irreduciblePolynomials
-        Iterable<Pair<Polynomial, Polynomial>> ps = P.bagPairs(
-                filterInfinite(Polynomial::isIrreducible, P.withScale(4).positivePrimitivePolynomialsAtLeast(1))
-        );
+        Iterable<Pair<Polynomial, Polynomial>> ps = P.bagPairs(P.withScale(4).irreduciblePolynomialsAtLeast(1));
         for (Pair<Polynomial, Polynomial> p : take(LIMIT, ps)) {
             assertEquals(p, p.a.multiply(p.b).factor(), Pair.toList(p));
         }
