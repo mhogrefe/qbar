@@ -440,7 +440,7 @@ public class QBarRandomProviderDemos extends QBarDemos {
 
     private void demoSquareFreePolynomialsAtLeast() {
         Iterable<Pair<QBarRandomProvider, Integer>> ps = filterInfinite(
-                p -> p.a.getSecondaryScale() > p.b && p.a.getSecondaryScale() > 0,
+                p -> p.a.getSecondaryScale() > p.b && p.a.getSecondaryScale() >= 0,
                 P.pairsSquareRootOrder(
                         filterInfinite(rp -> rp.getScale() > 0, P.withScale(4).qbarRandomProviders()),
                         P.withScale(4).rangeUpGeometric(-1)

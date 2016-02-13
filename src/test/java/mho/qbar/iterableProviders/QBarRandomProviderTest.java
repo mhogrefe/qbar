@@ -5413,6 +5413,7 @@ public class QBarRandomProviderTest {
         );
         irreduciblePolynomialsAtLeast_fail_helper(2, 1, -1);
         irreduciblePolynomialsAtLeast_fail_helper(1, 2, -1);
+        irreduciblePolynomialsAtLeast_fail_helper(0, 2, 1);
         irreduciblePolynomialsAtLeast_fail_helper(2, 2, 2);
         irreduciblePolynomialsAtLeast_fail_helper(2, 2, -2);
         irreduciblePolynomialsAtLeast_fail_helper(5, 3, 3);

@@ -1189,7 +1189,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
     public @NotNull Iterable<Polynomial> irreduciblePolynomials() {
         int secondaryScale = getSecondaryScale();
         if (secondaryScale < 2) {
-            throw new IllegalStateException("this must have a secondaryScale of at least 2. Invalid scale: " +
+            throw new IllegalStateException("this must have a secondaryScale of at least 2. Invalid secondaryScale: " +
                     secondaryScale);
         }
         return withElement(
@@ -1225,6 +1225,10 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
     public @NotNull Iterable<Polynomial> irreduciblePolynomialsAtLeast(int minDegree) {
         if (minDegree < -1) {
             throw new IllegalArgumentException("minDegree must be at least -1. Invalid minDegree: " + minDegree);
+        }
+        int scale = getScale();
+        if (scale < 2) {
+            throw new IllegalStateException("this must have a scale of at least 2. Invalid scale: " + scale);
         }
         if (minDegree < 1) return irreduciblePolynomials();
         return map(
