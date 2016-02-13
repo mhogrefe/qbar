@@ -16,7 +16,6 @@ import java.util.*;
 import java.util.function.Function;
 
 import static mho.wheels.iterables.IterableUtils.*;
-import static mho.wheels.ordering.Ordering.gt;
 import static mho.wheels.testing.Testing.assertTrue;
 
 /**
@@ -55,8 +54,14 @@ public final class Polynomial implements
      */
     private static final Comparator<Iterable<BigInteger>> BIG_INTEGER_ITERABLE_COMPARATOR = new ShortlexComparator<>();
 
+    /**
+     * Whether to cache some results of {@link Polynomial#factor()}
+     */
     public static boolean USE_FACTOR_CACHE = true;
 
+    /**
+     * A thread-safe cache of some of the results of {@link Polynomial#factor()}
+     */
     private static final ResultCache<Polynomial, List<Polynomial>> FACTOR_CACHE =
             new ResultCache<>(Polynomial::factorRaw, p -> p.degree() > 6);
 
@@ -1223,15 +1228,7 @@ public final class Polynomial implements
     }
 
     /**
-     * Factors {@code this}. The result is sorted (see {@link Polynomial#compareTo(Polynomial)}). 0 cannot be factored.
-     *
-     * <ul>
-     *  <li>{@code this} cannot be zero.</li>
-     *  <li>The result is weakly increasing. All elements, except possibly the first, are non-constant, primitive,
-     *  irreducible, and have a positive leading coefficient.</li>
-     * </ul>
-     *
-     * @return the irreducible factors of {@code this}
+     * The no-cache version of {@link Polynomial#factor()}.
      */
     public @NotNull List<Polynomial> factorRaw() {
         if (this == ZERO) {
@@ -1242,6 +1239,17 @@ public final class Polynomial implements
         return sort((Iterable<Polynomial>) map(Polynomial::of, JasApi.factorPolynomial(coefficients)));
     }
 
+    /**
+     * Factors {@code this}. The result is sorted (see {@link Polynomial#compareTo(Polynomial)}). 0 cannot be factored.
+     *
+     * <ul>
+     *  <li>{@code this} cannot be zero.</li>
+     *  <li>The result is weakly increasing. All elements, except possibly the first, are non-constant, primitive,
+     *  irreducible, and have a positive leading coefficient.</li>
+     * </ul>
+     *
+     * @return the irreducible factors of {@code this}
+     */
     public @NotNull List<Polynomial> factor() {
         return USE_FACTOR_CACHE ? FACTOR_CACHE.get(this) : factorRaw();
     }
