@@ -480,6 +480,18 @@ public class RationalMatrixDemos extends QBarDemos {
         }
     }
 
+    private void demoRank() {
+        for (RationalMatrix m : take(LIMIT, P.withScale(4).rationalMatrices())) {
+            System.out.println("rank(" + m + ") = " + m.rank());
+        }
+    }
+
+    private void demoIsInvertible() {
+        for (RationalMatrix m : take(LIMIT, P.withScale(4).squareRationalMatrices())) {
+            System.out.println(m + " is " + (m.isInvertible() ? "" : "not ") + "invertible");
+        }
+    }
+
     private void demoIsInReducedRowEchelonForm() {
         for (RationalMatrix m : take(LIMIT, P.withScale(4).rationalMatrices())) {
             System.out.println(m + " is " + (m.isInReducedRowEchelonForm() ? "" : "not ") +
@@ -490,18 +502,6 @@ public class RationalMatrixDemos extends QBarDemos {
     private void demoReducedRowEchelonForm() {
         for (RationalMatrix m : take(LIMIT, P.withScale(4).rationalMatrices())) {
             System.out.println("reducedRowEchelonForm(" + m + ") = " + m.reducedRowEchelonForm());
-        }
-    }
-
-    private void demoRank() {
-        for (RationalMatrix m : take(LIMIT, P.withScale(4).rationalMatrices())) {
-            System.out.println("rank(" + m + ") = " + m.rank());
-        }
-    }
-
-    private void demoIsInvertible() {
-        for (RationalMatrix m : take(LIMIT, P.withScale(4).squareRationalMatrices())) {
-            System.out.println(m + " is " + (m.isInvertible() ? "" : "not ") + "invertible");
         }
     }
 

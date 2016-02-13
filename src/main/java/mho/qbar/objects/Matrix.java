@@ -803,12 +803,13 @@ public class Matrix implements Comparable<Matrix> {
             Vector nonzeroRow = refRows.get(i);
             for (int k = i + 1; k < height; k++) {
                 Vector row = refRows.get(k);
-                if (!row.get(j).equals(BigInteger.ZERO)) {
+                BigInteger belowPivot = row.get(j);
+                if (!belowPivot.equals(BigInteger.ZERO)) {
                     if (!changed) {
                         changed = true;
                         refRows = toList(rows);
                     }
-                    refRows.set(k, row.multiply(pivot).subtract(nonzeroRow.multiply(row.get(j))));
+                    refRows.set(k, row.multiply(pivot).subtract(nonzeroRow.multiply(belowPivot)));
                 }
             }
             i++;
@@ -856,13 +857,13 @@ public class Matrix implements Comparable<Matrix> {
             Vector nonzeroRow = refRows.get(i);
             for (int k = i + 1; k < height; k++) {
                 Vector row = refRows.get(k);
-                if (!row.get(j).equals(BigInteger.ZERO)) {
+                BigInteger belowPivot = row.get(j);
+                if (!belowPivot.equals(BigInteger.ZERO)) {
                     if (!changed) {
                         changed = true;
                         refRows = toList(rows());
                     }
-                    BigInteger leading = row.get(j);
-                    BigInteger gcd = pivot.gcd(leading);
+                    BigInteger gcd = pivot.gcd(belowPivot);
                     refRows.set(
                             k,
                             row.multiply(pivot.divide(gcd)).subtract(nonzeroRow.multiply(row.get(j).divide(gcd)))
@@ -922,6 +923,138 @@ public class Matrix implements Comparable<Matrix> {
             throw new IllegalArgumentException("this must be square. Invalid this: " + this);
         }
         return rank() == width;
+    }
+
+    /**
+     * Determines whether {@code this} is in reduced row echelon form; whether it is in row echelon form (see
+     * {@link Matrix#isInRowEchelonForm()}) and every leading element is the only nonzero element in its column. Note
+     * that contrary to the usual definitions of reduced row echelon form, the first nonzero element of a row is not
+     * necessarily 1.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Matrix}.</li>
+     *  <li>The result may be either {@code boolean}.</li>
+     * </ul>
+     *
+     * @return whether {@code this} is in reduced row echelon form
+     */
+    public boolean isInReducedRowEchelonForm() {
+        if (!isInRowEchelonForm()) return false;
+        for (int i = 0; i < height(); i++) {
+            Vector row = row(i);
+            Optional<Integer> oi = findIndex(x -> !x.equals(BigInteger.ZERO), row);
+            if (!oi.isPresent()) break;
+            int pivotIndex = oi.get();
+            for (int j = 0; j < i; j++) {
+                if (!get(j, pivotIndex).equals(BigInteger.ZERO)) return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Returns the reduced row echelon form of {@code this}. In other words, the result is in row echelon form (see
+     * {@link Matrix#isInRowEchelonForm()}) and every leading element is the only nonzero element in its column. Note
+     * that contrary to the usual definitions of reduced row echelon form, the first nonzero element of a row is not
+     * necessarily 1.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Matrix}.</li>
+     *  <li>The result is in reduced row echelon form.</li>
+     * </ul>
+     *
+     * Size is height({@code this})×width({@code this})
+     *
+     * @return the reduced row echelon form of {@code this}
+     */
+    public @NotNull Matrix reducedRowEchelonForm() {
+        int height = height();
+        if (width == 0 || height == 0) return this;
+        Matrix ref = rowEchelonForm();
+        if (width <= height && !ref.row(width - 1).isZero()) {
+            Matrix identity = identity(width);
+            return width == height ? identity : identity.concat(zero(height - width, width));
+        }
+        boolean changed = false;
+        List<Vector> rrefRows = ref.rows;
+        for (int i = 0; i < height(); i++) {
+            Vector row = rrefRows.get(i);
+            Optional<Integer> pivotIndex = findIndex(x -> !x.equals(BigInteger.ZERO), row);
+            if (!pivotIndex.isPresent()) break;
+            int j = pivotIndex.get();
+            BigInteger pivot = row.get(j);
+            for (int k = i - 1; k >= 0; k--) {
+                Vector above = rrefRows.get(k);
+                BigInteger abovePivot = above.get(j);
+                if (!abovePivot.equals(BigInteger.ZERO)) {
+                    if (!changed) {
+                        changed = true;
+                        rrefRows = toList(ref.rows);
+                    }
+                    rrefRows.set(k, above.multiply(pivot).subtract(row.multiply(abovePivot)));
+                }
+            }
+        }
+        return changed ? new Matrix(rrefRows, width) : ref;
+    }
+
+    /**
+     * Returns the reduced row echelon form of {@code this}. In other words, the result is in row echelon form (see
+     * {@link Matrix#isInRowEchelonForm()}) and every leading element is the only nonzero element in its column. Note
+     * that contrary to the usual definitions of reduced row echelon form, the first nonzero element of a row is not
+     * necessarily 1. This method differs from {@link Matrix#reducedRowEchelonForm()} in that each row is primitive
+     * (see {@link Vector#isPrimitive()}).
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Matrix}.</li>
+     *  <li>The result is in reduced row echelon form.</li>
+     * </ul>
+     *
+     * Size is height({@code this})×width({@code this})
+     *
+     * @return the reduced row echelon form of {@code this}
+     */
+    public @NotNull Matrix primitiveReducedRowEchelonForm() {
+        int height = height();
+        if (width == 0 || height == 0) return this;
+        Matrix ref = primitiveRowEchelonForm();
+        if (width <= height && !ref.row(width - 1).isZero()) {
+            Matrix identity = identity(width);
+            return width == height ? identity : identity.concat(zero(height - width, width));
+        }
+        boolean changed = false;
+        List<Vector> rrefRows = ref.rows;
+        for (int i = 0; i < height(); i++) {
+            Vector row = rrefRows.get(i);
+            Optional<Integer> pivotIndex = findIndex(x -> !x.equals(BigInteger.ZERO), row);
+            if (!pivotIndex.isPresent()) break;
+            int j = pivotIndex.get();
+            BigInteger pivot = row.get(j);
+            for (int k = i - 1; k >= 0; k--) {
+                Vector above = rrefRows.get(k);
+                BigInteger abovePivot = above.get(j);
+                if (!abovePivot.equals(BigInteger.ZERO)) {
+                    if (!changed) {
+                        changed = true;
+                        rrefRows = toList(ref.rows);
+                    }
+                    BigInteger gcd = pivot.gcd(abovePivot);
+                    rrefRows.set(k, above.multiply(pivot.divide(gcd)).subtract(row.multiply(abovePivot.divide(gcd))));
+                }
+            }
+        }
+        for (int k = 0; k < height; k++) {
+            Vector row = rrefRows.get(k);
+            Vector primitiveRow = row.makePrimitive();
+            if (row != primitiveRow) {
+                if (!changed) {
+                    changed = true;
+                    rrefRows = toList(rows());
+                }
+                rrefRows.set(k, primitiveRow);
+            }
+        }
+        return changed ? new Matrix(rrefRows, width) : ref;
     }
 
     /**

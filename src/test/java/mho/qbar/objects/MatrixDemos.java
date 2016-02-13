@@ -433,6 +433,25 @@ public class MatrixDemos extends QBarDemos {
         }
     }
 
+    private void demoIsInReducedRowEchelonForm() {
+        for (Matrix m : take(LIMIT, P.withScale(4).matrices())) {
+            System.out.println(m + " is " + (m.isInReducedRowEchelonForm() ? "" : "not ") +
+                    "in reduced row echelon form");
+        }
+    }
+
+    private void demoReducedRowEchelonForm() {
+        for (Matrix m : take(LIMIT, P.withScale(4).matrices())) {
+            System.out.println("reducedRowEchelonForm(" + m + ") = " + m.reducedRowEchelonForm());
+        }
+    }
+
+    private void demoPrimitiveReducedRowEchelonForm() {
+        for (Matrix m : take(MEDIUM_LIMIT, P.withScale(4).matrices())) {
+            System.out.println("primitiveReducedRowEchelonForm(" + m + ") = " + m.primitiveReducedRowEchelonForm());
+        }
+    }
+
     private void demoEquals_Matrix() {
         for (Pair<Matrix, Matrix> p : take(LIMIT, P.pairs(P.withScale(4).matrices()))) {
             System.out.println(p.a + (p.a.equals(p.b) ? " = " : " ≠ ") + p.b);

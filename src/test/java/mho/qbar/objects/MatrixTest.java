@@ -814,6 +814,75 @@ public class MatrixTest {
         isInvertible_fail_helper("[[1, 9, -13], [20, 5, -6]]");
     }
 
+    private static void isInReducedRowEchelonForm_helper(@NotNull String input, boolean output) {
+        aeq(read(input).get().isInReducedRowEchelonForm(), output);
+    }
+
+    @Test
+    public void testIsInReducedRowEchelonForm() {
+        isInReducedRowEchelonForm_helper("[]#0", true);
+        isInReducedRowEchelonForm_helper("[]#3", true);
+        isInReducedRowEchelonForm_helper("[[], [], []]", true);
+        isInReducedRowEchelonForm_helper("[[-3]]", true);
+        isInReducedRowEchelonForm_helper("[[-1]]", true);
+        isInReducedRowEchelonForm_helper("[[1]]", true);
+        isInReducedRowEchelonForm_helper("[[-3, -8], [0, 7]]", false);
+        isInReducedRowEchelonForm_helper("[[1, 9, -13], [20, 5, -6]]", false);
+        isInReducedRowEchelonForm_helper("[[1, 9, -13], [0, 1, -6]]", false);
+        isInReducedRowEchelonForm_helper("[[1, 0, -13], [0, 1, -6]]", true);
+
+        isInReducedRowEchelonForm_helper(
+                "[[0, -3, -6, 4, 9], [-1, -2, -1, 3, 1], [-2, -3, 0, 3, -1], [1, 4, 5, -9, -7]]",
+                false
+        );
+        isInReducedRowEchelonForm_helper(
+                "[[-1, -2, -1, 3, 1], [0, -3, -6, 4, 9], [0, 0, 0, -5, 0], [0, 0, 0, 0, 0]]",
+                false
+        );
+        isInReducedRowEchelonForm_helper(
+                "[[1, 0, -3, 0, 5], [0, 1, 2, 0, -3], [0, 0, 0, 1, 0], [0, 0, 0, 0, 0]]",
+                true
+        );
+    }
+
+    private static void reducedRowEchelonForm_helper(@NotNull String input, @NotNull String output) {
+        aeq(read(input).get().reducedRowEchelonForm(), output);
+    }
+
+    @Test
+    public void testReducedRowEchelonForm() {
+        reducedRowEchelonForm_helper("[]#0", "[]#0");
+        reducedRowEchelonForm_helper("[]#3", "[]#3");
+        reducedRowEchelonForm_helper("[[], [], []]", "[[], [], []]");
+        reducedRowEchelonForm_helper("[[-3]]", "[[1]]");
+        reducedRowEchelonForm_helper("[[-3, -8], [0, 7]]", "[[1, 0], [0, 1]]");
+        reducedRowEchelonForm_helper("[[1, 9, -13], [20, 5, -6]]", "[[-175, 0, -11], [0, -175, 254]]");
+
+        reducedRowEchelonForm_helper(
+                "[[0, -3, -6, 4, 9], [-1, -2, -1, 3, 1], [-2, -3, 0, 3, -1], [1, 4, 5, -9, -7]]",
+                "[[-15, 0, 45, 0, -75], [0, 15, 30, 0, -45], [0, 0, 0, -5, 0], [0, 0, 0, 0, 0]]"
+        );
+    }
+
+    private static void primitiveReducedRowEchelonForm_helper(@NotNull String input, @NotNull String output) {
+        aeq(read(input).get().primitiveReducedRowEchelonForm(), output);
+    }
+
+    @Test
+    public void testPrimitiveReducedRowEchelonForm() {
+        primitiveReducedRowEchelonForm_helper("[]#0", "[]#0");
+        primitiveReducedRowEchelonForm_helper("[]#3", "[]#3");
+        primitiveReducedRowEchelonForm_helper("[[], [], []]", "[[], [], []]");
+        primitiveReducedRowEchelonForm_helper("[[-3]]", "[[1]]");
+        primitiveReducedRowEchelonForm_helper("[[-3, -8], [0, 7]]", "[[1, 0], [0, 1]]");
+        primitiveReducedRowEchelonForm_helper("[[1, 9, -13], [20, 5, -6]]", "[[-175, 0, -11], [0, -175, 254]]");
+
+        primitiveReducedRowEchelonForm_helper(
+                "[[0, -3, -6, 4, 9], [-1, -2, -1, 3, 1], [-2, -3, 0, 3, -1], [1, 4, 5, -9, -7]]",
+                "[[-1, 0, 3, 0, -5], [0, 1, 2, 0, -3], [0, 0, 0, -1, 0], [0, 0, 0, 0, 0]]"
+        );
+    }
+
     @Test
     public void testEquals() {
         testEqualsHelper(

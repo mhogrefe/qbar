@@ -68,10 +68,10 @@ public class RationalMatrixProperties extends QBarTestProperties {
         compareImplementationsShiftRight();
         propertiesIsInRowEchelonForm();
         propertiesRowEchelonForm();
-        propertiesIsInReducedRowEchelonForm();
-        propertiesReducedRowEchelonForm();
         propertiesRank();
         propertiesIsInvertible();
+        propertiesIsInReducedRowEchelonForm();
+        propertiesReducedRowEchelonForm();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -1392,37 +1392,6 @@ public class RationalMatrixProperties extends QBarTestProperties {
         }
     }
 
-    private void propertiesIsInReducedRowEchelonForm() {
-        initialize("isInReducedRowEchelonForm()");
-        for (RationalMatrix m : take(LIMIT, P.rationalMatrices())) {
-            boolean inRref = m.isInReducedRowEchelonForm();
-            assertEquals(m, inRref, m.equals(m.reducedRowEchelonForm()));
-            if (inRref) {
-                assertTrue(m, m.isInRowEchelonForm());
-            }
-        }
-
-        for (Pair<Integer, Integer> p : take(SMALL_LIMIT, P.pairs(P.naturalIntegersGeometric()))) {
-            RationalMatrix zero = zero(p.a, p.b);
-            assertTrue(p, zero.isInReducedRowEchelonForm());
-        }
-
-        for (int i : take(SMALL_LIMIT, P.naturalIntegersGeometric())) {
-            RationalMatrix identity = identity(i);
-            assertTrue(i, identity.isInReducedRowEchelonForm());
-        }
-    }
-
-    private void propertiesReducedRowEchelonForm() {
-        initialize("reducedRowEchelonForm()");
-        for (RationalMatrix m : take(LIMIT, P.rationalMatrices())) {
-            RationalMatrix rref = m.reducedRowEchelonForm();
-            rref.validate();
-            assertTrue(m, rref.isInReducedRowEchelonForm());
-            idempotent(RationalMatrix::reducedRowEchelonForm, m);
-        }
-    }
-
     private void propertiesRank() {
         initialize("rank()");
         for (RationalMatrix m : take(LIMIT, P.rationalMatrices())) {
@@ -1454,6 +1423,37 @@ public class RationalMatrixProperties extends QBarTestProperties {
         for (int i : take(SMALL_LIMIT, P.naturalIntegersGeometric())) {
             RationalMatrix identity = identity(i);
             assertTrue(i, identity.isInvertible());
+        }
+    }
+
+    private void propertiesIsInReducedRowEchelonForm() {
+        initialize("isInReducedRowEchelonForm()");
+        for (RationalMatrix m : take(LIMIT, P.rationalMatrices())) {
+            boolean inRref = m.isInReducedRowEchelonForm();
+            assertEquals(m, inRref, m.equals(m.reducedRowEchelonForm()));
+            if (inRref) {
+                assertTrue(m, m.isInRowEchelonForm());
+            }
+        }
+
+        for (Pair<Integer, Integer> p : take(SMALL_LIMIT, P.pairs(P.naturalIntegersGeometric()))) {
+            RationalMatrix zero = zero(p.a, p.b);
+            assertTrue(p, zero.isInReducedRowEchelonForm());
+        }
+
+        for (int i : take(SMALL_LIMIT, P.naturalIntegersGeometric())) {
+            RationalMatrix identity = identity(i);
+            assertTrue(i, identity.isInReducedRowEchelonForm());
+        }
+    }
+
+    private void propertiesReducedRowEchelonForm() {
+        initialize("reducedRowEchelonForm()");
+        for (RationalMatrix m : take(LIMIT, P.rationalMatrices())) {
+            RationalMatrix rref = m.reducedRowEchelonForm();
+            rref.validate();
+            assertTrue(m, rref.isInReducedRowEchelonForm());
+            idempotent(RationalMatrix::reducedRowEchelonForm, m);
         }
     }
 

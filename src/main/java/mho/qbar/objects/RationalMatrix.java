@@ -995,8 +995,8 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
             Optional<Integer> oi = findIndex(x -> x != Rational.ZERO, row);
             if (!oi.isPresent()) break;
             int pivotIndex = oi.get();
-            for (int j = 0; j < height(); j++) {
-                if (i != j && get(j, pivotIndex) != Rational.ZERO) return false;
+            for (int j = 0; j < i; j++) {
+                if (get(j, pivotIndex) != Rational.ZERO) return false;
             }
         }
         return true;
@@ -1020,7 +1020,7 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
         int height = height();
         if (width == 0 || height == 0) return this;
         RationalMatrix ref = rowEchelonForm();
-        if (width <= height && !row(width - 1).isZero()) {
+        if (width <= height && !ref.row(width - 1).isZero()) {
             RationalMatrix identity = identity(width);
             return width == height ? identity : identity.concat(zero(height - width, width));
         }

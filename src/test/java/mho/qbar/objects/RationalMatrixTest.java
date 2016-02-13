@@ -972,6 +972,52 @@ public class RationalMatrixTest {
         );
     }
 
+    private static void rank_helper(@NotNull String input, int output) {
+        aeq(read(input).get().rank(), output);
+    }
+
+    @Test
+    public void testRank() {
+        rank_helper("[]#0", 0);
+        rank_helper("[]#1", 0);
+        rank_helper("[]#3", 0);
+        rank_helper("[[]]", 0);
+        rank_helper("[[], [], []]", 0);
+        rank_helper("[[-2/3]]", 1);
+        rank_helper("[[-2/3, -8], [0, 5/7]]", 2);
+        rank_helper("[[1, 9, -13], [20, 5, -6]]", 2);
+
+        rank_helper("[[1, 2, 1], [-2, -3, 1], [3, 5, 0]]", 2);
+        rank_helper("[[1, 1, 0, 2], [-1, -1, 0, -2]]", 1);
+        rank_helper("[[1, -1], [1, -1], [0, 0], [2, -2]]", 1);
+    }
+
+    private static void isInvertible_helper(@NotNull String input, boolean output) {
+        aeq(read(input).get().isInvertible(), output);
+    }
+
+    private static void isInvertible_fail_helper(@NotNull String input) {
+        try {
+            read(input).get().isInvertible();
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testIsInvertible() {
+        isInvertible_helper("[]#0", true);
+        isInvertible_helper("[[-2/3]]", true);
+        isInvertible_helper("[[-2/3, -8], [0, 5/7]]", true);
+        isInvertible_helper("[[1, 2, 1], [-2, -3, 1], [3, 5, 0]]", false);
+        isInvertible_helper("[[1, 1], [-1, -1]]", false);
+
+        isInvertible_fail_helper("[]#1");
+        isInvertible_fail_helper("[]#3");
+        isInvertible_fail_helper("[[]]");
+        isInvertible_fail_helper("[[], [], []]");
+        isInvertible_fail_helper("[[1, 9, -13], [20, 5, -6]]");
+    }
+
     private static void isInReducedRowEchelonForm_helper(@NotNull String input, boolean output) {
         aeq(read(input).get().isInReducedRowEchelonForm(), output);
     }
@@ -1020,52 +1066,6 @@ public class RationalMatrixTest {
                 "[[0, -3, -6, 4, 9], [-1, -2, -1, 3, 1], [-2, -3, 0, 3, -1], [1, 4, 5, -9, -7]]",
                 "[[1, 0, -3, 0, 5], [0, 1, 2, 0, -3], [0, 0, 0, 1, 0], [0, 0, 0, 0, 0]]"
         );
-    }
-
-    private static void rank_helper(@NotNull String input, int output) {
-        aeq(read(input).get().rank(), output);
-    }
-
-    @Test
-    public void testRank() {
-        rank_helper("[]#0", 0);
-        rank_helper("[]#1", 0);
-        rank_helper("[]#3", 0);
-        rank_helper("[[]]", 0);
-        rank_helper("[[], [], []]", 0);
-        rank_helper("[[-2/3]]", 1);
-        rank_helper("[[-2/3, -8], [0, 5/7]]", 2);
-        rank_helper("[[1, 9, -13], [20, 5, -6]]", 2);
-
-        rank_helper("[[1, 2, 1], [-2, -3, 1], [3, 5, 0]]", 2);
-        rank_helper("[[1, 1, 0, 2], [-1, -1, 0, -2]]", 1);
-        rank_helper("[[1, -1], [1, -1], [0, 0], [2, -2]]", 1);
-    }
-
-    private static void isInvertible_helper(@NotNull String input, boolean output) {
-        aeq(read(input).get().isInvertible(), output);
-    }
-
-    private static void isInvertible_fail_helper(@NotNull String input) {
-        try {
-            read(input).get().isInvertible();
-            fail();
-        } catch (IllegalArgumentException ignored) {}
-    }
-
-    @Test
-    public void testIsInvertible() {
-        isInvertible_helper("[]#0", true);
-        isInvertible_helper("[[-2/3]]", true);
-        isInvertible_helper("[[-2/3, -8], [0, 5/7]]", true);
-        isInvertible_helper("[[1, 2, 1], [-2, -3, 1], [3, 5, 0]]", false);
-        isInvertible_helper("[[1, 1], [-1, -1]]", false);
-
-        isInvertible_fail_helper("[]#1");
-        isInvertible_fail_helper("[]#3");
-        isInvertible_fail_helper("[[]]");
-        isInvertible_fail_helper("[[], [], []]");
-        isInvertible_fail_helper("[[1, 9, -13], [20, 5, -6]]");
     }
 
     @Test
