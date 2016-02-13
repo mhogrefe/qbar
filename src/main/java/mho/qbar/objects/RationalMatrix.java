@@ -893,6 +893,7 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
      */
     public @NotNull RationalMatrix rowEchelonForm() {
         int height = height();
+        if (width == 0 || height == 0) return this;
         boolean changed = false;
         List<RationalVector> refRows = rows;
         int i = 0;
@@ -1016,7 +1017,13 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
      * @return the reduced row echelon form of {@code this}
      */
     public @NotNull RationalMatrix reducedRowEchelonForm() {
+        int height = height();
+        if (width == 0 || height == 0) return this;
         RationalMatrix ref = rowEchelonForm();
+        if (width <= height && !row(width - 1).isZero()) {
+            RationalMatrix identity = identity(width);
+            return width == height ? identity : identity.concat(zero(height - width, width));
+        }
         boolean changed = false;
         List<RationalVector> rrefRows = ref.rows;
         for (int i = 0; i < height(); i++) {
