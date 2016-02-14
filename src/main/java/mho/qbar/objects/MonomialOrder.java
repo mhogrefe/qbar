@@ -1,9 +1,13 @@
 package mho.qbar.objects;
 
+import mho.wheels.io.Readers;
 import mho.wheels.ordering.comparators.LexComparator;
+import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Optional;
 
 /**
  * An ordering for monomials, or {@link ExponentVector}s.
@@ -113,5 +117,47 @@ public enum MonomialOrder implements Comparator<ExponentVector> {
             }
             return 0;
         }
+    };
+
+    /**
+     * Reads an {@link MonomialOrder} from a {@code String}.
+     *
+     * <ul>
+     *  <li>{@code s} must be non-null.</li>
+     *  <li>The result is non-null.</li>
+     * </ul>
+     *
+     * @param s the input {@code String}
+     * @return the {@code MonomialOrder} represented by {@code s}, or {@code Optional.empty} if {@code s} does not
+     * represent a {@code MonomialOrder}
+     */
+    public static @NotNull Optional<MonomialOrder> read(@NotNull String s) {
+        switch (s) {
+            case "LEX":
+                return Optional.of(MonomialOrder.LEX);
+            case "GRLEX":
+                return Optional.of(MonomialOrder.GRLEX);
+            case "GREVLEX":
+                return Optional.of(MonomialOrder.GREVLEX);
+            default:
+                return Optional.empty();
+        }
+    }
+
+    /**
+     * Finds the first occurrence of an {@code MonomialOrder} in a {@code String}. Returns the {@code MonomialOrder}
+     * and the index at which it was found. Returns an empty {@code Optional} if no {@code MonomialOrder} is found.
+     *
+     * <ul>
+     *  <li>{@code s} must be non-null.</li>
+     *  <li>The result is non-null. If it is non-empty, then neither of the {@code Pair}'s components is null, and the
+     *  second component is non-negative.</li>
+     * </ul>
+     *
+     * @param s the input {@code String}
+     * @return the first {@code MonomialOrder} found in {@code s}, and the index at which it was found
+     */
+    public static @NotNull Optional<Pair<MonomialOrder, Integer>> findIn(@NotNull String s) {
+        return Readers.genericFindIn(Arrays.asList(MonomialOrder.values())).apply(s);
     }
 }

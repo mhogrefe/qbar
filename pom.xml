@@ -40,6 +40,8 @@
                         <include>**/IntervalProperties.java</include>
                         <include>**/MatrixTest.java</include>
                         <include>**/MatrixProperties.java</include>
+                        <include>**/MonomialOrderTest.java</include>
+                        <include>**/MonomialOrderProperties.java</include>
                         <include>**/PolynomialTest.java</include>
                         <include>**/PolynomialProperties.java</include>
                         <include>**/RationalTest.java</include>
