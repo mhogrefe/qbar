@@ -1,6 +1,7 @@
 package mho.qbar.objects;
 
 import mho.wheels.io.Readers;
+import mho.wheels.structures.NullableOptional;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
@@ -1578,6 +1579,34 @@ public class RationalPolynomialTest {
         signedRemainderSequence_helper("x^8+x^6-3*x^4-3*x^3+8*x^2+2*x-5", "3*x^6+5*x^4-4*x^2-9*x+21",
                 "[x^8+x^6-3*x^4-3*x^3+8*x^2+2*x-5, 3*x^6+5*x^4-4*x^2-9*x+21, 5/9*x^4-1/9*x^2+1/3," +
                 " 117/25*x^2+9*x-441/25, 233150/19773*x-102500/6591, -1288744821/543589225]");
+        signedRemainderSequence_helper(
+                "9*x^13-18*x^11-33*x^10+102*x^8+7*x^7-36*x^6-122*x^5+49*x^4+93*x^3-42*x^2-18*x+9",
+                "117*x^12-198*x^10-330*x^9+816*x^7+49*x^6-216*x^5-610*x^4+196*x^3+279*x^2-84*x-18",
+                "[9*x^13-18*x^11-33*x^10+102*x^8+7*x^7-36*x^6-122*x^5+49*x^4+93*x^3-42*x^2-18*x+9," +
+                " 117*x^12-198*x^10-330*x^9+816*x^7+49*x^6-216*x^5-610*x^4+196*x^3+279*x^2-84*x-18," +
+                " 36/13*x^11+99/13*x^10-510/13*x^8-42/13*x^7+252/13*x^6+976/13*x^5-441/13*x^4-930/13*x^3+462/13*x^2+" +
+                "216/13*x-9," +
+                " -10989/16*x^10-2655/2*x^9+35373/8*x^8+3027/8*x^7+3483/4*x^6-39761/4*x^5+24463/16*x^4+76939/8*x^3-" +
+                "29649/8*x^2-8907/4*x+17019/16," +
+                " -2228672/165649*x^9+11497792/496947*x^8-758720/496947*x^7+8858368/496947*x^6-72291808/1490841*x^5-" +
+                "14747008/1490841*x^4+81689728/1490841*x^3-7130848/496947*x^2-6742336/496947*x+910304/165649," +
+                " -900202097355/4850565316*x^8+4790758416807/19402261264*x^7-871080009261/38804522528*x^6+" +
+                "15288527907631/38804522528*x^5-11178436305883/19402261264*x^4-5169096757231/38804522528*x^3+" +
+                "13117087511715/38804522528*x^2-871080009261/38804522528*x-1515244576329/38804522528," +
+                " -3841677139249510908/543561530761725025*x^7+6180347358405238902/543561530761725025*x^6-" +
+                "2388192201565258842/543561530761725025*x^5+8963913324915525452/543561530761725025*x^4-" +
+                "14420810502945557438/543561530761725025*x^3+346154266213885278/108712306152345005*x^2+" +
+                "6180347358405238902/543561530761725025*x-2388192201565258842/543561530761725025," +
+                " -6648854900739944448789496725/676140352527579535315696712*x^6+" +
+                "4693072116514804907890170825/676140352527579535315696712*x^5+" +
+                "15513994768393203713842159025/676140352527579535315696712*x^3-" +
+                "10950501605201211451743731925/676140352527579535315696712*x^2-" +
+                "6648854900739944448789496725/676140352527579535315696712*x+" +
+                "4693072116514804907890170825/676140352527579535315696712," +
+                " -200117670554781699308164692478544184/1807309302290980501324553958871415645*x^5+" +
+                "66705890184927233102721564159514728/258187043184425785903507708410202235*x^2-" +
+                "200117670554781699308164692478544184/1807309302290980501324553958871415645]"
+        );
 
         signedRemainderSequence_fail_helper("0", "0");
     }
@@ -1627,6 +1656,31 @@ public class RationalPolynomialTest {
         fromPowerSums_fail_helper("[]");
         fromPowerSums_fail_helper("[1, 0, 1]");
         fromPowerSums_fail_helper("[2, 0, null]");
+    }
+
+    private static void interpolate_helper(@NotNull String input, @NotNull String output) {
+        aeq(interpolate(readRationalPairList(input)), output);
+    }
+
+    private static void interpolate_fail_helper(@NotNull String input) {
+        try {
+            interpolate(readRationalPairListWithNulls(input));
+            fail();
+        } catch (IllegalArgumentException | NullPointerException ignored) {}
+    }
+
+    @Test
+    public void testInterpolate() {
+        interpolate_helper("[]", "0");
+        interpolate_helper("[(2/3, 1/5)]", "1/5");
+        interpolate_helper("[(1, 2), (10, 5)]", "1/3*x+5/3");
+        interpolate_helper("[(1, 1), (2, 4), (3, 9), (4, 16), (5, 25)]", "x^2");
+        interpolate_helper("[(1, 2), (2, 3), (3, 5), (4, 7), (5, 11)]", "1/8*x^4-17/12*x^3+47/8*x^2-103/12*x+6");
+
+        interpolate_fail_helper("[(1, 1), (1, 2)]");
+        interpolate_fail_helper("[(1, 1), null]");
+        interpolate_fail_helper("[(1, 1), (2, null)]");
+        interpolate_fail_helper("[(1, 1), (null, 3)]");
     }
 
     @Test
@@ -1898,5 +1952,21 @@ public class RationalPolynomialTest {
 
     private static @NotNull List<RationalPolynomial> readRationalPolynomialListWithNulls(@NotNull String s) {
         return Readers.readListWithNulls(RationalPolynomial::read).apply(s).get();
+    }
+
+    private static @NotNull List<Pair<Rational, Rational>> readRationalPairList(@NotNull String s) {
+        return Readers.readList(
+                t -> Pair.read(
+                        t,
+                        r -> NullableOptional.fromOptional(Rational.read(r)),
+                        r -> NullableOptional.fromOptional(Rational.read(r))
+                )
+        ).apply(s).get();
+    }
+
+    private static @NotNull List<Pair<Rational, Rational>> readRationalPairListWithNulls(@NotNull String s) {
+        return Readers.readListWithNulls(
+                t -> Pair.read(t, Readers.readWithNulls(Rational::read), Readers.readWithNulls(Rational::read))
+        ).apply(s).get();
     }
 }

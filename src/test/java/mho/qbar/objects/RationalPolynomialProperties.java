@@ -88,6 +88,7 @@ public class RationalPolynomialProperties extends QBarTestProperties {
         propertiesSignedRemainderSequence();
         propertiesPowerSums();
         propertiesFromPowerSums();
+        propertiesInterpolate();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -1729,6 +1730,56 @@ public class RationalPolynomialProperties extends QBarTestProperties {
                 fromPowerSums(rs);
                 fail(rs);
             } catch (NullPointerException ignored) {}
+        }
+    }
+
+    private void propertiesInterpolate() {
+        initialize("interpolate(List<Pair<Rational, Rational>>)");
+        Iterable<List<Pair<Rational, Rational>>> pss = P.withElement(
+                Collections.emptyList(),
+                map(
+                        p -> toList(zip(p.a, p.b)),
+                        P.dependentPairsInfinite(
+                                P.withScale(4).distinctListsAtLeast(1, P.withScale(4).rationals()),
+                                rs -> P.lists(rs.size(), P.withScale(4).rationals())
+                        )
+                )
+        );
+        for (List<Pair<Rational, Rational>> ps : take(LIMIT, pss)) {
+            RationalPolynomial p = interpolate(ps);
+            p.validate();
+            for (Pair<Rational, Rational> point : ps) {
+                assertEquals(ps, p.apply(point.a), point.b);
+            }
+        }
+
+        Iterable<Pair<RationalPolynomial, List<Rational>>> ps = P.dependentPairsInfinite(
+                P.withScale(4).rationalPolynomials(),
+                p -> P.withScale(p.degree() + 2).distinctListsAtLeast(p.degree() + 1, P.withScale(4).rationals())
+        );
+        for (Pair<RationalPolynomial, List<Rational>> p : take(LIMIT, ps)) {
+            List<Pair<Rational, Rational>> points = toList(map(r -> new Pair<>(r, p.a.apply(r)), p.b));
+            assertEquals(p, interpolate(points), p.a);
+        }
+
+        Iterable<List<Pair<Rational, Rational>>> pssFail = filterInfinite(
+                qs -> (qs.contains(null) || any(q -> q.a == null || q.b == null, filter(q -> q != null, qs)))
+                        && unique(map(q -> q.a, filter(q -> q != null, qs))),
+                P.lists(P.withScale(2).withNull(P.pairs(P.withScale(2).withNull(P.rationals()))))
+        );
+        for (List<Pair<Rational, Rational>> qs : take(LIMIT, pssFail)) {
+            try {
+                interpolate(qs);
+                fail(qs);
+            } catch (NullPointerException ignored) {}
+        }
+
+        pssFail = filterInfinite(qs -> !unique(map(q -> q.a, qs)), P.lists(P.pairs(P.rationals())));
+        for (List<Pair<Rational, Rational>> qs : take(LIMIT, pssFail)) {
+            try {
+                interpolate(qs);
+                fail(qs);
+            } catch (IllegalArgumentException ignored) {}
         }
     }
 

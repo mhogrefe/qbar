@@ -980,6 +980,39 @@ public final class RationalPolynomial implements
     }
 
     /**
+     * Given a {@code List} of {@code Pair}s of {@code Rational}s representing (x, y)-points, returns the
+     * minimal-degree {@code RationalPolynomial} passing through those points. The x-values, or the first elements of
+     * the pairs, must be unique. A list with duplicates will cause an exception, even if the y-values are the same. If
+     * {@code points} is empty, the result is 0.
+     *
+     * <ul>
+     *  <li>{@code points} cannot contain nulls, and neither element of any {@code Pair} can be null. The first
+     *  elements of the {@code Pair}s must be unique.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param points the (x, y)-values of the points to be interpolated
+     * @return the {@code RationalPolynomial} with the smallest degree that passes through {@code points}
+     */
+    public static @NotNull RationalPolynomial interpolate(@NotNull List<Pair<Rational, Rational>> points) {
+        if (any(p -> p.a == null, points)) {
+            throw new NullPointerException();
+        }
+        if (!unique(map(p -> p.a, points))) {
+            throw new IllegalArgumentException();
+        }
+        int degree = points.size() - 1;
+        List<RationalVector> rows = new ArrayList<>();
+        //noinspection Convert2streamapi
+        for (Pair<Rational, Rational> point : points) {
+            rows.add(RationalVector.of(toList(take(degree + 1, iterate(r -> r.multiply(point.a), Rational.ONE)))));
+        }
+        RationalMatrix matrix = RationalMatrix.fromRows(rows);
+        RationalVector yValues = RationalVector.of(toList(map(p -> p.b, points)));
+        return of(toList(matrix.solveLinearSystem(yValues).get()));
+    }
+
+    /**
      * Determines whether {@code this} is equal to {@code that}.
      *
      * <ul>

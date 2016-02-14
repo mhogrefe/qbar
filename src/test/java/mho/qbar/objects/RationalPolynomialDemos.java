@@ -2,12 +2,12 @@ package mho.qbar.objects;
 
 import mho.qbar.testing.QBarDemos;
 import mho.wheels.io.Readers;
-import mho.wheels.iterables.IterableUtils;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigInteger;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -342,6 +342,23 @@ public class RationalPolynomialDemos extends QBarDemos {
         for (List<Rational> rs : take(LIMIT, rss)) {
             String listString = tail(init(rs.toString()));
             System.out.println("fromPowerSums(" + listString + ") = " + fromPowerSums(rs));
+        }
+    }
+
+    private void demoInterpolate() {
+        Iterable<List<Pair<Rational, Rational>>> pss = P.withElement(
+                Collections.emptyList(),
+                map(
+                        p -> toList(zip(p.a, p.b)),
+                        P.dependentPairsInfinite(
+                                P.withScale(4).distinctListsAtLeast(1, P.withScale(4).rationals()),
+                                rs -> P.lists(rs.size(), P.withScale(4).rationals())
+                        )
+                )
+        );
+        for (List<Pair<Rational, Rational>> ps : take(LIMIT, pss)) {
+            String listString = tail(init(ps.toString()));
+            System.out.println("interpolate(" + listString + ") = " + interpolate(ps));
         }
     }
 

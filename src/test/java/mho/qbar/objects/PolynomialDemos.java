@@ -7,6 +7,7 @@ import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigInteger;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -383,6 +384,23 @@ public class PolynomialDemos extends QBarDemos {
     private void demoIsIrreducible() {
         for (Polynomial p : take(LIMIT, P.withScale(4).polynomialsAtLeast(0))) {
             System.out.println(p + " is " + (p.isIrreducible() ? "" : "not ") + "irreducible");
+        }
+    }
+
+    private void demoInterpolate() {
+        Iterable<List<Pair<BigInteger, BigInteger>>> pss = P.withElement(
+                Collections.emptyList(),
+                map(
+                        p -> toList(zip(p.a, p.b)),
+                        P.dependentPairsInfinite(
+                                P.withScale(4).distinctListsAtLeast(1, P.withScale(4).bigIntegers()),
+                                rs -> P.lists(rs.size(), P.withScale(4).bigIntegers())
+                        )
+                )
+        );
+        for (List<Pair<BigInteger, BigInteger>> ps : take(LIMIT, pss)) {
+            String listString = tail(init(ps.toString()));
+            System.out.println("interpolate(" + listString + ") = " + interpolate(ps));
         }
     }
 

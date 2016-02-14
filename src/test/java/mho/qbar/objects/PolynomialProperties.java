@@ -109,6 +109,8 @@ public class PolynomialProperties extends QBarTestProperties {
         propertiesIsIrreducible();
         compareImplementationsIsIrreducible(false);
         compareImplementationsIsIrreducible(true);
+        propertiesInterpolate();
+        compareImplementationsInterpolate();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -2189,6 +2191,83 @@ public class PolynomialProperties extends QBarTestProperties {
         compareImplementations("isIrreducible()", take(SMALL_LIMIT, P.withScale(4).polynomialsAtLeast(0)), functions);
 
         USE_FACTOR_CACHE = oldUseFactorCache;
+    }
+
+    private static @NotNull RationalPolynomial interpolate_simplest(
+            @NotNull List<Pair<BigInteger, BigInteger>> points
+    ) {
+        return RationalPolynomial.interpolate(
+                toList(map(p -> new Pair<>(Rational.of(p.a), Rational.of(p.b)), points))
+        );
+    }
+
+    private void propertiesInterpolate() {
+        initialize("interpolate(List<Pair<BigInteger, BigInteger>>)");
+        Iterable<List<Pair<BigInteger, BigInteger>>> pss = P.withElement(
+                Collections.emptyList(),
+                map(
+                        p -> toList(zip(p.a, p.b)),
+                        P.dependentPairsInfinite(
+                                P.withScale(4).distinctListsAtLeast(1, P.withScale(4).bigIntegers()),
+                                rs -> P.lists(rs.size(), P.withScale(4).bigIntegers())
+                        )
+                )
+        );
+        for (List<Pair<BigInteger, BigInteger>> ps : take(LIMIT, pss)) {
+            RationalPolynomial p = interpolate(ps);
+            assertEquals(ps, p, interpolate_simplest(ps));
+            p.validate();
+            for (Pair<BigInteger, BigInteger> point : ps) {
+                assertEquals(ps, p.apply(Rational.of(point.a)).bigIntegerValueExact(), point.b);
+            }
+        }
+
+        Iterable<Pair<Polynomial, List<BigInteger>>> ps = P.dependentPairsInfinite(
+                P.withScale(1).withSecondaryScale(1).polynomials(),
+                p -> P.withScale(p.degree() + 2).distinctListsAtLeast(p.degree() + 1, P.withScale(1).bigIntegers())
+        );
+        for (Pair<Polynomial, List<BigInteger>> p : take(LIMIT, ps)) {
+            List<Pair<BigInteger, BigInteger>> points = toList(map(r -> new Pair<>(r, p.a.apply(r)), p.b));
+            assertEquals(p, interpolate(points).toPolynomial(), p.a);
+        }
+
+        Iterable<List<Pair<BigInteger, BigInteger>>> pssFail = filterInfinite(
+                qs -> (qs.contains(null) || any(q -> q.a == null || q.b == null, filter(q -> q != null, qs)))
+                        && unique(map(q -> q.a, filter(q -> q != null, qs))),
+                P.lists(P.withScale(2).withNull(P.pairs(P.withScale(2).withNull(P.bigIntegers()))))
+        );
+        for (List<Pair<BigInteger, BigInteger>> qs : take(LIMIT, pssFail)) {
+            try {
+                interpolate(qs);
+                fail(qs);
+            } catch (NullPointerException ignored) {}
+        }
+
+        pssFail = filterInfinite(qs -> !unique(map(q -> q.a, qs)), P.lists(P.pairs(P.bigIntegers())));
+        for (List<Pair<BigInteger, BigInteger>> qs : take(LIMIT, pssFail)) {
+            try {
+                interpolate(qs);
+                fail(qs);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void compareImplementationsInterpolate() {
+        Map<String, Function<List<Pair<BigInteger, BigInteger>>, RationalPolynomial>> functions =
+                new LinkedHashMap<>();
+        functions.put("simplest", PolynomialProperties::interpolate_simplest);
+        functions.put("standard", Polynomial::interpolate);
+        Iterable<List<Pair<BigInteger, BigInteger>>> pss = P.withElement(
+                Collections.emptyList(),
+                map(
+                        p -> toList(zip(p.a, p.b)),
+                        P.dependentPairsInfinite(
+                                P.withScale(4).distinctListsAtLeast(1, P.withScale(4).bigIntegers()),
+                                rs -> P.lists(rs.size(), P.withScale(4).bigIntegers())
+                        )
+                )
+        );
+        compareImplementations("interpolate(List<Pair<BigInteger, BigInteger>>)", take(SMALL_LIMIT, pss), functions);
     }
 
     private void propertiesEquals() {

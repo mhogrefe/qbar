@@ -1,6 +1,7 @@
 package mho.qbar.objects;
 
 import mho.wheels.io.Readers;
+import mho.wheels.structures.NullableOptional;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
@@ -2022,6 +2023,31 @@ public class PolynomialTest {
         isIrreducible_fail_helper("0");
     }
 
+    private static void interpolate_helper(@NotNull String input, @NotNull String output) {
+        aeq(interpolate(readBigIntegerPairList(input)), output);
+    }
+
+    private static void interpolate_fail_helper(@NotNull String input) {
+        try {
+            interpolate(readBigIntegerPairListWithNulls(input));
+            fail();
+        } catch (IllegalArgumentException | NullPointerException ignored) {}
+    }
+
+    @Test
+    public void testInterpolate() {
+        interpolate_helper("[]", "0");
+        interpolate_helper("[(3, 5)]", "5");
+        interpolate_helper("[(1, 2), (10, 5)]", "1/3*x+5/3");
+        interpolate_helper("[(1, 1), (2, 4), (3, 9), (4, 16), (5, 25)]", "x^2");
+        interpolate_helper("[(1, 2), (2, 3), (3, 5), (4, 7), (5, 11)]", "1/8*x^4-17/12*x^3+47/8*x^2-103/12*x+6");
+
+        interpolate_fail_helper("[(1, 1), (1, 2)]");
+        interpolate_fail_helper("[(1, 1), null]");
+        interpolate_fail_helper("[(1, 1), (2, null)]");
+        interpolate_fail_helper("[(1, 1), (null, 3)]");
+    }
+
     @Test
     public void testEquals() {
         testEqualsHelper(
@@ -2283,5 +2309,24 @@ public class PolynomialTest {
 
     private static @NotNull List<Polynomial> readPolynomialListWithNulls(@NotNull String s) {
         return Readers.readListWithNulls(Polynomial::read).apply(s).get();
+    }
+
+    private static @NotNull List<Pair<BigInteger, BigInteger>> readBigIntegerPairList(@NotNull String s) {
+        return Readers.readList(
+                t -> Pair.read(
+                        t,
+                        i -> NullableOptional.fromOptional(Readers.readBigInteger(i)),
+                        i -> NullableOptional.fromOptional(Readers.readBigInteger(i))
+                )
+        ).apply(s).get();
+    }
+
+    private static @NotNull List<Pair<BigInteger, BigInteger>> readBigIntegerPairListWithNulls(@NotNull String s) {
+        return Readers.readListWithNulls(
+                t -> Pair.read(
+                        t,
+                        Readers.readWithNulls(Readers::readBigInteger), Readers.readWithNulls(Readers::readBigInteger)
+                )
+        ).apply(s).get();
     }
 }
