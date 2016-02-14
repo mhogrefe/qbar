@@ -1638,6 +1638,11 @@ public class QBarExhaustiveProviderTest {
     }
 
     @Test
+    public void testMonomialOrders() {
+        simpleProviderHelper(QEP.monomialOrders(), "[LEX, GRLEX, GREVLEX]");
+    }
+
+    @Test
     public void testExponentVectors() {
         simpleProviderHelper(QEP.exponentVectors(),
                 "[1, a, b, a^2, a*b, c, b^2, a^3, a^2*b, b*c, d, a*c, a*b^2, c^2, b^3, a^4, a^3*b, b^2*c, c*d," +

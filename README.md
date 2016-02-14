@@ -15,6 +15,7 @@ Progress
 | ExponentVector         | ✘       | ✘       | ✘     | ✘     | ✘          |
 | Interval               | ✔       | ✔       | ✔     | ✔     | ✔          |
 | Matrix                 | ✘       | ✘       | ✘     | ✘     | ✘          |
+| MonomialOrder          | ✔       | ✔       | ✘     | ✘     | ✘          |
 | MultivariatePolynomial | ✘       | ✘       | ✘     | ✘     | ✘          |
 | Polynomial             | ✘       | ✘       | ✘     | ✘     | ✘          |
 | Rational               | ✔       | ✔       | ✔     | ✔     | ✔          |

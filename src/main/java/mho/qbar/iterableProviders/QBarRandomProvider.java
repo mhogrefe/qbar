@@ -37,6 +37,12 @@ import static org.junit.Assert.assertTrue;
 @SuppressWarnings("unused")
 public final strictfp class QBarRandomProvider extends QBarIterableProvider {
     /**
+     * A list of all {@code MonomialOrder}s.
+     */
+    private static final @NotNull List<MonomialOrder> MONOMIAL_ORDERS =
+            toList(QBarExhaustiveProvider.INSTANCE.monomialOrders());
+
+    /**
      * Creates a new {@code QBarRandomProvider} with a {@code RandomProvider}.
      *
      * <ul>
@@ -1303,6 +1309,17 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
                         withScale(secondaryScale + 1).listsAtLeast(minDegree + 1, rationals())
                 )
         );
+    }
+
+    /**
+     * An {@code Iterator} that generates all {@code MonomialOrder}s from a uniform distribution. Does not support
+     * removal.
+     *
+     * Length is infinite
+     */
+    @Override
+    public @NotNull Iterable<MonomialOrder> monomialOrders() {
+        return uniformSample(MONOMIAL_ORDERS);
     }
 
     /**

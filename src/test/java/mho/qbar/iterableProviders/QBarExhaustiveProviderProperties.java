@@ -43,6 +43,7 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
         propertiesRationalPolynomials();
         propertiesMonicRationalPolynomials();
         propertiesVariables();
+        propertiesMonomialOrders();
         propertiesExponentVectors();
     }
 
@@ -704,6 +705,11 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
         initializeConstant("variables()");
         biggerTest(QEP, QEP.variables(), v -> true);
         take(TINY_LIMIT, QEP.variables()).forEach(Variable::validate);
+    }
+
+    private void propertiesMonomialOrders() {
+        initializeConstant("monomialOrders()");
+        biggerTest(QEP, QEP.monomialOrders(), o -> true);
     }
 
     private void propertiesExponentVectors() {

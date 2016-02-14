@@ -71,6 +71,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         propertiesMonicRationalPolynomials();
         propertiesMonicRationalPolynomialsAtLeast();
         propertiesVariables();
+        propertiesMonomialOrders();
         propertiesExponentVectors();
     }
 
@@ -2116,6 +2117,15 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
                 rp.variables();
                 fail(rp);
             } catch (IllegalStateException ignored) {}
+        }
+    }
+
+    private void propertiesMonomialOrders() {
+        initialize("monomialOrders()");
+        for (QBarRandomProvider rp : take(LIMIT, P.qbarRandomProvidersDefault())) {
+            Iterable<MonomialOrder> os = rp.monomialOrders();
+            rp.reset();
+            simpleTest(rp, os, o -> true);
         }
     }
 

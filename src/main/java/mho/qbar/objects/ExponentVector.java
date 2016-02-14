@@ -46,6 +46,10 @@ public class ExponentVector implements Comparable<ExponentVector> {
         this.exponents = exponents;
     }
 
+    public @NotNull List<Integer> getExponents() {
+        return toList(exponents);
+    }
+
     /**
      * Returns the exponent of a given variable. If {@code this} does not contain the variable, 0 is returned.
      *
@@ -96,6 +100,10 @@ public class ExponentVector implements Comparable<ExponentVector> {
                 return new Pair<>(Variable.of(i - 1), e);
             }
         };
+    }
+
+    public int size() {
+        return exponents.size();
     }
 
     /**
@@ -165,24 +173,9 @@ public class ExponentVector implements Comparable<ExponentVector> {
         return exponents.hashCode();
     }
 
-    //grevlex
     @Override
     public int compareTo(@NotNull ExponentVector that) {
-        if (this == that) return 0;
-        int thisDegree = degree();
-        int thatDegree = that.degree();
-        if (thisDegree > thatDegree) return 1;
-        if (thisDegree < thatDegree) return -1;
-        int size = that.exponents.size();
-        if (exponents.size() > size) return -1;
-        if (exponents.size() < size) return 1;
-        for (int i = size - 1; i >= 0; i--) {
-            int thisExponent = exponents.get(i);
-            int thatExponent = that.exponents.get(i);
-            if (thisExponent > thatExponent) return -1;
-            if (thisExponent < thatExponent) return 1;
-        }
-        return 0;
+        return MonomialOrder.GREVLEX.compare(this, that);
     }
 
     public static @NotNull Optional<ExponentVector> read(@NotNull String s) {

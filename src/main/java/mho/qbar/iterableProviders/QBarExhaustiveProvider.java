@@ -3,6 +3,7 @@ package mho.qbar.iterableProviders;
 import mho.qbar.objects.*;
 import mho.wheels.iterables.ExhaustiveProvider;
 import mho.wheels.iterables.IterableUtils;
+import mho.wheels.iterables.NoRemoveIterable;
 import mho.wheels.numberUtils.IntegerUtils;
 import mho.wheels.ordering.Ordering;
 import org.jetbrains.annotations.NotNull;
@@ -738,6 +739,16 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
                         listsAtLeast(minDegree + 1, rationals())
                 )
         );
+    }
+
+    /**
+     * An {@code Iterable} that generates all {@link MonomialOrder}s. Does not support removal.
+     *
+     * Length is 3
+     */
+    @Override
+    public @NotNull Iterable<MonomialOrder> monomialOrders() {
+        return new NoRemoveIterable<>(Arrays.asList(MonomialOrder.LEX, MonomialOrder.GRLEX, MonomialOrder.GREVLEX));
     }
 
     /**

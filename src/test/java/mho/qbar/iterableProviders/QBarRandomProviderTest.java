@@ -6257,38 +6257,6 @@ public class QBarRandomProviderTest {
         monicRationalPolynomialsAtLeast_fail_helper(1, 1, -2);
     }
 
-    private static void exponentVectorHelper(
-            @NotNull Iterable<ExponentVector> xs,
-            @NotNull String output,
-            @NotNull String topSampleCount,
-            double degreeMean
-    ) {
-        List<ExponentVector> sample = toList(take(DEFAULT_SAMPLE_SIZE, xs));
-        aeqitLimit(TINY_LIMIT, sample, output);
-        aeq(topSampleCount(DEFAULT_TOP_COUNT, sample), topSampleCount);
-        aeq(meanOfIntegers(toList(map(ExponentVector::degree, sample))), degreeMean);
-    }
-
-    private static void exponentVectors_helper(
-            int scale,
-            @NotNull String output,
-            @NotNull String topSampleCount,
-            double degreeMean
-    ) {
-        exponentVectorHelper(P.withScale(scale).exponentVectors(), output, topSampleCount, degreeMean);
-        P.reset();
-    }
-
-    private static void exponentVectors_fail_helper(int scale) {
-        try {
-            P.withScale(scale).exponentVectors();
-            fail();
-        } catch (IllegalStateException ignored) {}
-        finally {
-            P.reset();
-        }
-    }
-
     private static void variables_helper(int mean, @NotNull String output, @NotNull String topSampleCount) {
         List<Variable> sample = toList(take(DEFAULT_SAMPLE_SIZE, P.withScale(mean).variables()));
         aeqitLimit(TINY_LIMIT, sample, output);
@@ -6327,6 +6295,59 @@ public class QBarRandomProviderTest {
         variables_fail_helper(0);
         variables_fail_helper(-1);
         variables_fail_helper(Integer.MAX_VALUE);
+    }
+
+    private static <T> void simpleProviderHelper(
+            @NotNull Iterable<T> xs,
+            @NotNull String output,
+            @NotNull String sampleCountOutput
+    ) {
+        List<T> sample = toList(take(DEFAULT_SAMPLE_SIZE, xs));
+        aeqitLimit(TINY_LIMIT, sample, output);
+        aeqit(sampleCount(sample).entrySet(), sampleCountOutput);
+        P.reset();
+    }
+
+    @Test
+    public void testMonomialOrders() {
+        simpleProviderHelper(
+                P.monomialOrders(),
+                "[GRLEX, GRLEX, GREVLEX, GRLEX, LEX, GRLEX, GRLEX, GRLEX, GRLEX, GRLEX, LEX, GRLEX, GRLEX, GREVLEX," +
+                " GRLEX, GREVLEX, LEX, GREVLEX, GRLEX, GRLEX, ...]",
+                "[GRLEX=333313, GREVLEX=333615, LEX=333072]"
+        );
+    }
+
+    private static void exponentVectorHelper(
+            @NotNull Iterable<ExponentVector> xs,
+            @NotNull String output,
+            @NotNull String topSampleCount,
+            double degreeMean
+    ) {
+        List<ExponentVector> sample = toList(take(DEFAULT_SAMPLE_SIZE, xs));
+        aeqitLimit(TINY_LIMIT, sample, output);
+        aeq(topSampleCount(DEFAULT_TOP_COUNT, sample), topSampleCount);
+        aeq(meanOfIntegers(toList(map(ExponentVector::degree, sample))), degreeMean);
+    }
+
+    private static void exponentVectors_helper(
+            int scale,
+            @NotNull String output,
+            @NotNull String topSampleCount,
+            double degreeMean
+    ) {
+        exponentVectorHelper(P.withScale(scale).exponentVectors(), output, topSampleCount, degreeMean);
+        P.reset();
+    }
+
+    private static void exponentVectors_fail_helper(int scale) {
+        try {
+            P.withScale(scale).exponentVectors();
+            fail();
+        } catch (IllegalStateException ignored) {}
+        finally {
+            P.reset();
+        }
     }
 
     @Test

@@ -3310,6 +3310,11 @@ public strictfp abstract class QBarIterableProvider {
     }
 
     /**
+     * Generates {@code MonomialOrder}s.
+     */
+    public abstract @NotNull Iterable<MonomialOrder> monomialOrders();
+
+    /**
      * Generates {@code ExponentVector}s.
      */
     public abstract @NotNull Iterable<ExponentVector> exponentVectors();

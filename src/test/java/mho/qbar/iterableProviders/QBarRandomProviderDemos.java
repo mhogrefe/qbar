@@ -608,6 +608,12 @@ public class QBarRandomProviderDemos extends QBarDemos {
         }
     }
 
+    private void demoMonomialOrders() {
+        for (QBarRandomProvider rp : take(MEDIUM_LIMIT, P.qbarRandomProvidersDefault())) {
+            System.out.println("monomialOrders(" + rp + ") = " + its(rp.monomialOrders()));
+        }
+    }
+
     private void demoExponentVectors() {
         Iterable<QBarRandomProvider> rps = filterInfinite(
                 s -> s.getScale() > 0,
