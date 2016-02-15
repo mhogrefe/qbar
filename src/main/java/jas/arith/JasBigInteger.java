@@ -177,16 +177,6 @@ public final class JasBigInteger implements RingElem<JasBigInteger>, RingFactory
         return (this.isONE() || this.negate().isONE());
     }
 
-    /**
-     * Get the String representation.
-     *
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
-        return val.toString();
-    }
-
     //
     //Compare to JasBigInteger b.
     //

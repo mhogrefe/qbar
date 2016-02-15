@@ -1,6 +1,5 @@
 package jas.poly;
 
-import jas.arith.ModIntegerRing;
 import jas.structure.RingElem;
 import jas.structure.RingFactory;
 
@@ -132,36 +131,6 @@ public class GenPolynomialRing<C extends RingElem<C>> implements RingFactory<Gen
     }
 
     /**
-     * Get the String representation.
-     *
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
-        String res = null;
-        if (coFac != null) {
-            String scf = coFac.getClass().getSimpleName();
-            Object oFac = coFac;
-            if (oFac instanceof GenPolynomialRing) {
-                GenPolynomialRing rf = (GenPolynomialRing) coFac;
-                res = "IntFunc" + "( " + rf.toString() + " )";
-            }
-            if (oFac instanceof ModIntegerRing) {
-                ModIntegerRing mn = (ModIntegerRing) ((Object) coFac);
-                res = "Mod " + mn.getModul() + " ";
-            }
-            if (res == null) {
-                res = coFac.toString();
-                if (res.matches("[0-9].*")) {
-                    res = scf;
-                }
-            }
-            res += "( " + varsToString() + " ) " + tord.toString() + " ";
-        }
-        return res;
-    }
-
-    /**
      * Comparison with any other object.
      *
      * @see java.lang.Object#equals(java.lang.Object)
@@ -211,14 +180,6 @@ public class GenPolynomialRing<C extends RingElem<C>> implements RingFactory<Gen
      */
     public String[] getVars() {
         return Arrays.copyOf(vars, vars.length); // > Java-5
-    }
-
-    String varsToString() {
-        if (vars == null) {
-            return "#" + nvar;
-        }
-        //return Arrays.toString(vars);
-        return ExpVector.varsToString(vars);
     }
 
     /**

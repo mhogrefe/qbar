@@ -31,16 +31,6 @@ public class SquarefreeRingChar0<C extends RingElem<C>> extends SquarefreeAbstra
         coFac = fac;
     }
 
-    /**
-     * Get the String representation.
-     *
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
-        return getClass().getName() + " with " + engine + " over " + coFac;
-    }
-
     @Override
     public SortedMap<GenPolynomial<C>, Long> baseSquarefreeFactors(GenPolynomial<C> A) {
         SortedMap<GenPolynomial<C>, Long> sfactors = new TreeMap<>();

@@ -40,16 +40,6 @@ public abstract class SquarefreeFieldCharP<C extends RingElem<C>> extends Square
     }
 
     /**
-     * Get the String representation.
-     *
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
-        return getClass().getName() + " with " + engine + " over " + coFac;
-    }
-
-    /**
      * GenPolynomial polynomial squarefree factorization.
      *
      * @param A GenPolynomial.

@@ -69,12 +69,4 @@ public class PolynomialComparator<C extends RingElem<C>> implements Serializable
     public int hashCode() {
         return tord.hashCode();
     }
-
-    /**
-     * toString.
-     */
-    @Override
-    public String toString() {
-        return "PolynomialComparator(" + tord + ")";
-    }
 }

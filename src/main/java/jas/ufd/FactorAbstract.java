@@ -34,16 +34,6 @@ public abstract class FactorAbstract<C extends RingElem<C>> {
     }
 
     /**
-     * Get the String representation.
-     *
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
-        return getClass().getName();
-    }
-
-    /**
      * Remove one occurrence of elements.
      *
      * @param a list of objects.

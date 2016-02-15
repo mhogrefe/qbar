@@ -144,16 +144,6 @@ public final class ModIntegerRing implements ModularRingFactory<ModInteger> {
     }
 
     /**
-     * Get the String representation.
-     *
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
-        return " bigMod(" + modul.toString() + ")";
-    }
-
-    /**
      * Comparison with any other object.
      *
      * @see java.lang.Object#equals(java.lang.Object)

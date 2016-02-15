@@ -2,7 +2,6 @@ package jas.poly;
 
 import jas.structure.AbelianGroupElem;
 
-import java.util.Arrays;
 import java.util.Random;
 
 /**
@@ -352,24 +351,6 @@ public final class ExpVector implements AbelianGroupElem<ExpVector> {
 
     public static ExpVector create(long e) {
         return new ExpVector(e);
-    }
-
-    public String toString(String[] vars) {
-        return "";
-    }
-
-    public static String varsToString(String[] vars) {
-        if (vars == null) {
-            return "null";
-        }
-        StringBuilder s = new StringBuilder();
-        for (int i = 0; i < vars.length; i++) {
-            s.append(vars[i]);
-            if (i < vars.length - 1) {
-                s.append(",");
-            }
-        }
-        return s.toString();
     }
 
     @Override

@@ -71,16 +71,6 @@ public final class ModInteger implements RingElem<ModInteger>, Modular {
         return (g.equals(BigInteger.ONE));
     }
 
-    /**
-     * Get the String representation.
-     *
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
-        return val.toString();
-    }
-
     @Override
     public int compareTo(ModInteger b) {
         BigInteger v = b.val;
@@ -160,9 +150,9 @@ public final class ModInteger implements RingElem<ModInteger>, Modular {
                 if (val.remainder(S.val).equals(BigInteger.ZERO)) {
                     return new ModInteger(ring, val.divide(S.val));
                 }
-                throw new ArithmeticException(e.toString());
+                throw new ArithmeticException();
             } catch (ArithmeticException a) {
-                throw new ArithmeticException(a.toString());
+                throw new ArithmeticException();
             }
         }
     }

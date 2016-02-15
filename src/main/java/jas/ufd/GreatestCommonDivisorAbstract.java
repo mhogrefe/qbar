@@ -12,16 +12,6 @@ import jas.structure.RingElem;
  */
 public abstract class GreatestCommonDivisorAbstract<C extends RingElem<C>> {
     /**
-     * Get the String representation.
-     *
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
-        return getClass().getName();
-    }
-
-    /**
      * GenPolynomial base coefficient content.
      *
      * @param P GenPolynomial.

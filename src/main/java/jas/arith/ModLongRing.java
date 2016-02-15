@@ -179,16 +179,6 @@ public final class ModLongRing implements ModularRingFactory<ModLong> {
     }
 
     /**
-     * Get the String representation.
-     *
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
-        return " mod(" + modul + ")"; //",max="  + MAX_LONG + ")";
-    }
-
-    /**
      * Comparison with any other object.
      *
      * @see java.lang.Object#equals(java.lang.Object)

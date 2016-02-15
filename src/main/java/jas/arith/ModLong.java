@@ -128,11 +128,6 @@ public final class ModLong implements RingElem<ModLong>, Modular {
     }
 
     @Override
-    public String toString() {
-        return Long.toString(val);
-    }
-
-    @Override
     public int compareTo(ModLong b) {
         long v = b.val;
         if (ring != b.ring) {
@@ -216,9 +211,9 @@ public final class ModLong implements RingElem<ModLong>, Modular {
                 if ((val % S.val) == 0L) {
                     return new ModLong(ring, val / S.val);
                 }
-                throw new ArithmeticException(e.getCause().toString());
+                throw new ArithmeticException();
             } catch (ArithmeticException a) {
-                throw new ArithmeticException(a.getCause().toString());
+                throw new ArithmeticException();
             }
         }
     }

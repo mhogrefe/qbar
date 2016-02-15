@@ -283,14 +283,6 @@ public final class PrimeList implements Iterable<BigInteger> {
     }
 
     /**
-     * toString.
-     */
-    @Override
-    public String toString() {
-        return val.toString();
-    }
-
-    /**
      * size of current list.
      */
     int size() {

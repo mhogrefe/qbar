@@ -7,9 +7,4 @@ public abstract class FactorAbsolute<C extends RingElem<C>> extends FactorAbstra
     FactorAbsolute(RingFactory<C> cfac) {
         super(cfac);
     }
-
-    @Override
-    public String toString() {
-        return getClass().getName();
-    }
 }
