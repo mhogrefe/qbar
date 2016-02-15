@@ -45,7 +45,7 @@ public class FactorInteger {
             throw new IllegalArgumentException(this.getClass().getName() + " P != null");
         }
         GenPolynomialRing<JasBigInteger> pfac = P.ring;
-        SortedMap<GenPolynomial<JasBigInteger>, Long> factors = new TreeMap<>(pfac.getComparator());
+        SortedMap<GenPolynomial<JasBigInteger>, Long> factors = new TreeMap<>();
         if (P.isZERO()) {
             return factors;
         }

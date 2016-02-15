@@ -59,7 +59,7 @@ public class SquarefreeFiniteFieldCharP<C extends RingElem<C>> extends Squarefre
      * @param P GenPolynomial.
      * @return char-th_rootOf(P), or null if no char-th root.
      */
-    public GenPolynomial<C> baseRootCharacteristic(GenPolynomial<C> P) {
+    private GenPolynomial<C> baseRootCharacteristic(GenPolynomial<C> P) {
         if (P == null || P.isZERO()) {
             return P;
         }
@@ -150,11 +150,6 @@ public class SquarefreeFiniteFieldCharP<C extends RingElem<C>> extends Squarefre
                 T = engine.baseGcd(T0, Tp);
                 T = T.monic();
                 V = PolyUtil.basePseudoDivide(T0, T);
-                //System.out.println("iT0 = " + T0);
-                //System.out.println("iTp = " + Tp);
-                //System.out.println("iT  = " + T);
-                //System.out.println("iV  = " + V);
-                //System.out.println("const(iV)  = " + V.isConstant());
                 k = 0L;
                 init = false;
             }
@@ -174,12 +169,8 @@ public class SquarefreeFiniteFieldCharP<C extends RingElem<C>> extends Squarefre
             GenPolynomial<C> W = engine.baseGcd(T, V);
             W = W.monic();
             GenPolynomial<C> z = PolyUtil.basePseudoDivide(V, W);
-            //System.out.println("W = " + W);
-            //System.out.println("z = " + z);
             V = W;
             T = PolyUtil.basePseudoDivide(T, V);
-            //System.out.println("V = " + V);
-            //System.out.println("T = " + T);
             if (z.degree() > 0) {
                 if (ldbcf.isONE() && !z.leadingBaseCoefficient().isONE()) {
                     z = z.monic();
@@ -187,15 +178,6 @@ public class SquarefreeFiniteFieldCharP<C extends RingElem<C>> extends Squarefre
                 sfactors.put(z, (e * k));
             }
         }
-        //      look, a stupid error:
-        //         if ( !ldbcf.isONE() ) {
-        //             GenPolynomial<C> f1 = sfactors.firstKey();
-        //             long e1 = sfactors.remove(f1);
-        //             System.out.println("gcda sqf c = " + c);
-        //             f1 = f1.multiply(c);
-        //             //System.out.println("gcda sqf f1e = " + f1);
-        //             sfactors.put(f1,e1);
-        //         }
         return sfactors;
     }
 

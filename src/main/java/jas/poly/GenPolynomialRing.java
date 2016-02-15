@@ -1,5 +1,6 @@
 package jas.poly;
 
+import jas.arith.JasBigInteger;
 import jas.structure.RingElem;
 import jas.structure.RingFactory;
 
@@ -62,13 +63,8 @@ public class GenPolynomialRing<C extends RingElem<C>> implements RingFactory<Gen
         this(cf, (String) null);
     }
 
-    //
-    //The constructor creates a polynomial factory object.
-    //
-    //@param cf factory for coefficients of type C.
-    //
-    public static <C extends RingElem<C>> GenPolynomialRing<C> make(RingFactory<C> cf) {
-        return new GenPolynomialRing<>(cf, "x");
+    public static GenPolynomialRing<JasBigInteger> make() {
+        return new GenPolynomialRing<>(new JasBigInteger(), "x");
     }
 
     /**
@@ -317,15 +313,6 @@ public class GenPolynomialRing<C extends RingElem<C>> implements RingFactory<Gen
      */
     public boolean isFinite() {
         return false;
-    }
-
-    /**
-     * Get PolynomialComparator.
-     *
-     * @return polynomial comparator.
-     */
-    public PolynomialComparator<C> getComparator() {
-        return new PolynomialComparator<>();
     }
 
     /**
