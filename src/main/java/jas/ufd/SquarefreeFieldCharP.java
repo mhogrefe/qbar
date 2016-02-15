@@ -21,7 +21,7 @@ public abstract class SquarefreeFieldCharP<C extends RingElem<C>> extends Square
      */
     @SuppressWarnings("unchecked")
     SquarefreeFieldCharP(RingFactory<C> fac) {
-        super(GCDFactory.<C>getProxy(fac));
+        super(GCDFactory.<C>getImplementation(fac));
         if (fac.characteristic().signum() == 0) {
             throw new IllegalArgumentException("characterisic(fac) must be non-zero");
         }

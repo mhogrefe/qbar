@@ -19,7 +19,7 @@ public class SquarefreeRingChar0<C extends RingElem<C>> extends SquarefreeAbstra
      * Factory for ring of characteristic 0 coefficients.
      */
     public SquarefreeRingChar0(RingFactory<C> fac) {
-        super(GCDFactory.<C>getProxy(fac));
+        super(GCDFactory.<C>getImplementation(fac));
         if (fac.isField()) {
             throw new IllegalArgumentException("fac is a field: use SquarefreeFieldChar0");
         }

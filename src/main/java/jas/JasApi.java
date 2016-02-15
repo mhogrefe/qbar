@@ -15,7 +15,7 @@ import static mho.wheels.iterables.IterableUtils.toList;
 public class JasApi {
     public static List<List<BigInteger>> factorPolynomial(List<BigInteger> xs) {
         GenPolynomial<JasBigInteger> tmp = toPolynomial(xs);
-        FactorAbstract<JasBigInteger> engine = new FactorInteger();
+        FactorInteger engine = new FactorInteger();
         SortedMap<GenPolynomial<JasBigInteger>, Long> factors = engine.baseFactors(tmp);
         List<List<BigInteger>> fs = new ArrayList<>();
         for (Map.Entry<GenPolynomial<JasBigInteger>, Long> entry : factors.entrySet()) {

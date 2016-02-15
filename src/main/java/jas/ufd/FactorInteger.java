@@ -8,16 +8,17 @@ import jas.structure.Power;
 import jas.util.KsubSet;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
-public class FactorInteger extends FactorAbstract<JasBigInteger> {
+public class FactorInteger {
+    final GreatestCommonDivisorAbstract<JasBigInteger> engine;
+
+    private final SquarefreeAbstract<JasBigInteger> sengine;
+
     /**
      * Factorization engine for modular base coefficients.
      */
-    private final FactorAbstract<ModLong> mfactor;
+    private final FactorModular<ModLong> mfactor;
 
     /**
      * Gcd engine for modular base coefficients.
@@ -26,10 +27,79 @@ public class FactorInteger extends FactorAbstract<JasBigInteger> {
 
     @SuppressWarnings("unchecked")
     public FactorInteger() {
-        super(JasBigInteger.ONE);
-        ModularRingFactory<ModLong> mcofac = new ModLongRing(13);
-        mfactor = FactorFactory.getImplementation(mcofac);
-        mengine = GCDFactory.getImplementation(mcofac);
+        engine = GCDFactory.getImplementation(JasBigInteger.ONE);
+        sengine = SquarefreeFactory.getImplementation(JasBigInteger.ONE);
+        mfactor = new FactorModular(new ModLongRing(13));
+        mengine = new GreatestCommonDivisorModEval<>();
+    }
+
+     /**
+     * Univariate GenPolynomial factorization.
+     *
+     * @param P GenPolynomial in one variable.
+     * @return [p_1 -&gt; e_1, ..., p_k -&gt; e_k] with P = prod_{i=1,...,k}
+     * p_i**e_i.
+     */
+    public SortedMap<GenPolynomial<JasBigInteger>, Long> baseFactors(GenPolynomial<JasBigInteger> P) {
+        if (P == null) {
+            throw new IllegalArgumentException(this.getClass().getName() + " P != null");
+        }
+        GenPolynomialRing<JasBigInteger> pfac = P.ring;
+        SortedMap<GenPolynomial<JasBigInteger>, Long> factors = new TreeMap<>(pfac.getComparator());
+        if (P.isZERO()) {
+            return factors;
+        }
+        if (P.isConstant()) {
+            factors.put(P, 1L);
+            return factors;
+        }
+        JasBigInteger c;
+        if (pfac.coFac.isField()) { //pfac.characteristic().signum() > 0
+            c = P.leadingBaseCoefficient();
+        } else {
+            c = engine.baseContent(P);
+            // move sign to the content
+            if (P.signum() < 0 && c.signum() > 0) {
+                c = c.negate();
+                //P = P.negate();
+            }
+        }
+        if (!c.isONE()) {
+            GenPolynomial<JasBigInteger> pc = pfac.getONE().multiply(c);
+            factors.put(pc, 1L);
+            P = P.divide(c); // make primitive or monic
+        }
+        SortedMap<GenPolynomial<JasBigInteger>, Long> facs = sengine.baseSquarefreeFactors(P);
+        if (facs == null || facs.size() == 0) {
+            facs = new TreeMap<>();
+            facs.put(P, 1L);
+        }
+        for (Map.Entry<GenPolynomial<JasBigInteger>, Long> me : facs.entrySet()) {
+            GenPolynomial<JasBigInteger> g = me.getKey();
+            Long k = me.getValue(); //facs.get(g);
+            //System.out.println("g       = " + g);
+            if (pfac.coFac.isField() && !g.leadingBaseCoefficient().isONE()) {
+                g = g.monic(); // how can this happen?
+            }
+            if (g.degree() <= 1) {
+                if (!g.isONE()) {
+                    factors.put(g, k);
+                }
+            } else {
+                List<GenPolynomial<JasBigInteger>> sfacs = baseFactorsSquarefree(g);
+                for (GenPolynomial<JasBigInteger> h : sfacs) {
+                    Long j = factors.get(h); // evtl. constants
+                    if (j != null) {
+                        k += j;
+                    }
+                    if (!h.isONE()) {
+                        factors.put(h, k);
+                    }
+                }
+            }
+        }
+        //System.out.println("factors = " + factors);
+        return factors;
     }
 
     /**
@@ -39,10 +109,9 @@ public class FactorInteger extends FactorAbstract<JasBigInteger> {
      * @return [p_1, ..., p_k] with P = prod_{i=1, ..., k} p_i.
      */
     @SuppressWarnings("unchecked")
-    @Override
     public List<GenPolynomial<JasBigInteger>> baseFactorsSquarefree(GenPolynomial<JasBigInteger> P) {
         if (P == null) {
-            throw new IllegalArgumentException(this.getClass().getName() + " P == null");
+            throw new IllegalArgumentException();
         }
         List<GenPolynomial<JasBigInteger>> factors = new ArrayList<>();
         if (P.isZERO()) {
@@ -54,7 +123,7 @@ public class FactorInteger extends FactorAbstract<JasBigInteger> {
         }
         GenPolynomialRing<JasBigInteger> pfac = P.ring;
         if (!engine.baseContent(P).isONE()) {
-            throw new IllegalArgumentException(this.getClass().getName() + " P not primitive");
+            throw new IllegalArgumentException();
         }
         if (P.degree() <= 1L) { // linear is irreducible
             factors.add(P);
@@ -268,6 +337,33 @@ public class FactorInteger extends FactorAbstract<JasBigInteger> {
             factors.add(C);
         }
         return normalizeFactorization(factors);
+    }
+
+    static <T> List<T> removeOnce(List<T> a, List<T> b) {
+        List<T> res = new ArrayList<>();
+        res.addAll(a);
+        b.forEach(res::remove);
+        return res;
+    }
+
+    List<GenPolynomial<JasBigInteger>> normalizeFactorization(List<GenPolynomial<JasBigInteger>> F) {
+        if (F == null || F.size() <= 1) {
+            return F;
+        }
+        List<GenPolynomial<JasBigInteger>> Fp = new ArrayList<>(F.size());
+        GenPolynomial<JasBigInteger> f0 = F.get(0);
+        for (int i = 1; i < F.size(); i++) {
+            GenPolynomial<JasBigInteger> fi = F.get(i);
+            if (fi.signum() < 0) {
+                fi = fi.negate();
+                f0 = f0.negate();
+            }
+            Fp.add(fi);
+        }
+        if (!f0.isONE()) {
+            Fp.add(0, f0);
+        }
+        return Fp;
     }
 
     /**
