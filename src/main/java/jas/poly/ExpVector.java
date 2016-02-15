@@ -38,168 +38,35 @@ public final class ExpVector implements Comparable<ExpVector> {
     }
 
     public int invLexCompareTo(ExpVector V, int begin, int end) {
-        long u = val;
-        long v = V.val;
-        int t = 0;
-        for (int i = begin; i < end; i++) {
-            if (u > v)
-                return 1;
-            if (u < v)
-                return -1;
-        }
-        return t;
+        return Long.compare(val, V.val);
     }
 
     public int invGradCompareTo(ExpVector V) {
-        long u = val;
-        long v = V.val;
-        int t = 0;
-        if (u > v) {
-            t = 1;
-        }
-        if (u < v) {
-            t = -1;
-        }
-        if (t == 0) {
-            return t;
-        }
-        return t;
+        return Long.compare(val, V.val);
     }
 
     public int invGradCompareTo(ExpVector V, int begin, int end) {
-        long u = val;
-        long v = V.val;
-        int t = 0;
-        int i;
-        for (i = begin; i < end; i++) {
-            if (u > v) {
-                t = 1;
-                break;
-            }
-            if (u < v) {
-                t = -1;
-                break;
-            }
-        }
-        if (t == 0) {
-            return t;
-        }
-        long up = 0;
-        long vp = 0;
-        for (int j = i; j < end; j++) {
-            up += u;
-            vp += v;
-        }
-        if (up > vp) {
-            t = 1;
-        } else {
-            if (up < vp) {
-                t = -1;
-            }
-        }
-        return t;
+        return Long.compare(val, V.val);
     }
 
     public int revInvLexCompareTo(ExpVector V) {
-        long u = val;
-        long v = V.val;
-        int t = 0;
-        if (u > v)
-            return 1;
-        if (u < v)
-            return -1;
-        return t;
-        //return EVRILCP(this, V);
+        return Long.compare(val, V.val);
     }
 
     public int revInvLexCompareTo(ExpVector V, int begin, int end) {
-        long u = val;
-        long v = V.val;
-        int t = 0;
-        for (int i = end - 1; i >= begin; i--) {
-            if (u > v)
-                return 1;
-            if (u < v)
-                return -1;
-        }
-        return t;
+        return Long.compare(val, V.val);
     }
 
     public int revInvGradCompareTo(ExpVector V) {
-        long u = val;
-        long v = V.val;
-        int t = 0;
-        int i;
-        if (u > v) {
-            t = 1;
-        }
-        if (u < v) {
-            t = -1;
-        }
-        if (t == 0) {
-            return t;
-        }
-        long up = 0;
-        long vp = 0;
-        return t;
+        return Long.compare(val, V.val);
     }
 
     public int revInvGradCompareTo(ExpVector V, int begin, int end) {
-        long u = val;
-        long v = V.val;
-        int t = 0;
-        int i;
-        for (i = end - 1; i >= begin; i--) {
-            if (u > v) {
-                t = 1;
-                break;
-            }
-            if (u < v) {
-                t = -1;
-                break;
-            }
-        }
-        if (t == 0) {
-            return t;
-        }
-        long up = 0;
-        long vp = 0;
-        for (int j = i; j >= begin; j--) {
-            up += u;
-            vp += v;
-        }
-        if (up > vp) {
-            t = 1;
-        } else {
-            if (up < vp) {
-                t = -1;
-            }
-        }
-        return t;
+        return Long.compare(val, V.val);
     }
 
     public int invWeightCompareTo(long[][] w, ExpVector V) {
-        long u = val;
-        long v = V.val;
-        int t = 0;
-        if (u > v) {
-            t = 1;
-        }
-        if (u < v) {
-            t = -1;
-        }
-        if (t == 0) {
-            return t;
-        }
-        return t;
-    }
-
-    public static ExpVector create() {
-        return new ExpVector();
-    }
-
-    public static ExpVector create(long e) {
-        return new ExpVector(e);
+        return Long.compare(val, V.val);
     }
 
     @Override
@@ -234,7 +101,7 @@ public final class ExpVector implements Comparable<ExpVector> {
             }
             w[i] = e;
         }
-        return create(w[0]);
+        return new ExpVector(w[0]);
         //return new ExpVector( w );
     }
 

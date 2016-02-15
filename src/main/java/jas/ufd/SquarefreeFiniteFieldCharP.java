@@ -80,7 +80,7 @@ public class SquarefreeFiniteFieldCharP<C extends RingElem<C>> extends Squarefre
                 return null;
             }
             fl = fl / mp;
-            ExpVector e = ExpVector.create(fl);
+            ExpVector e = new ExpVector(fl);
             // for m.c exists a char-th root, since finite field
             C r = m.c;
             d.doPutToMap(e, r);
