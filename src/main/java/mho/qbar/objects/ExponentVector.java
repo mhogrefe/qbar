@@ -46,6 +46,17 @@ public class ExponentVector implements Comparable<ExponentVector> {
         this.exponents = exponents;
     }
 
+    /**
+     * Returns this {@code ExponentVector}s exponents, from 'a' to the highest variable with nonzero exponent. Makes a
+     * defensive copy.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code ExponentVector}.</li>
+     *  <li>The result contains no negative {@code Integer}s, and its last element, if it exists, is nonzero.</li>
+     * </ul>
+     *
+     * @return the exponents of {@code this}
+     */
     public @NotNull List<Integer> getExponents() {
         return toList(exponents);
     }
@@ -64,6 +75,21 @@ public class ExponentVector implements Comparable<ExponentVector> {
      */
     public int exponent(@NotNull Variable variable) {
         return variable.getIndex() >= exponents.size() ? 0 : exponents.get(variable.getIndex());
+    }
+
+    /**
+     * Returns the size of {@code this}, or one more than the index of the largest variable with a nonzero power in
+     * {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code ExponentVector}.</li>
+     *  <li>The result is not negative.</li>
+     * </ul>
+     *
+     * @return the size of {@code this}
+     */
+    public int size() {
+        return exponents.size();
     }
 
     /**
@@ -100,10 +126,6 @@ public class ExponentVector implements Comparable<ExponentVector> {
                 return new Pair<>(Variable.of(i - 1), e);
             }
         };
-    }
-
-    public int size() {
-        return exponents.size();
     }
 
     /**

@@ -17,6 +17,12 @@ public class ExponentVectorDemos extends QBarDemos {
         super(useRandom);
     }
 
+    private void demoGetExponents() {
+        for (ExponentVector ev : take(LIMIT, P.exponentVectors())) {
+            System.out.println("getExponents(" + ev + ") = " + ev.getExponents());
+        }
+    }
+
     private void demoExponent() {
         Iterable<Pair<ExponentVector, Variable>> ps = P.pairsLogarithmicOrder(
                 P.withScale(4).exponentVectors(),
@@ -24,6 +30,12 @@ public class ExponentVectorDemos extends QBarDemos {
         );
         for (Pair<ExponentVector, Variable> p : take(LIMIT, ps)) {
             System.out.println("exponent(" + p.a + ", " + p.b + ") = " + p.a.exponent(p.b));
+        }
+    }
+
+    private void demoSize() {
+        for (ExponentVector ev : take(LIMIT, P.exponentVectors())) {
+            System.out.println("size(" + ev + ") = " + ev.size());
         }
     }
 

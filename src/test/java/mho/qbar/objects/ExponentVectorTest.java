@@ -17,6 +17,20 @@ public class ExponentVectorTest {
         aeq(ONE, "1");
     }
 
+    private static void getExponents_helper(@NotNull String x, @NotNull String output) {
+        aeq(read(x).get().getExponents(), output);
+    }
+
+    @Test
+    public void testGetExponents() {
+        getExponents_helper("1", "[]");
+        getExponents_helper("a", "[1]");
+        getExponents_helper("a^2", "[2]");
+        getExponents_helper("a^3", "[3]");
+        getExponents_helper("x^2*y*z^3",
+                "[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 1, 3]");
+    }
+
     private static void exponent_helper(@NotNull String ev, @NotNull String v, int output) {
         aeq(read(ev).get().exponent(Variable.read(v).get()), output);
     }
@@ -35,6 +49,19 @@ public class ExponentVectorTest {
         exponent_helper("x^2*y*z^3", "x", 2);
         exponent_helper("x^2*y*z^3", "y", 1);
         exponent_helper("x^2*y*z^3", "z", 3);
+    }
+
+    private static void size_helper(@NotNull String ev, int output) {
+        aeq(read(ev).get().size(), output);
+    }
+
+    @Test
+    public void testSize() {
+        size_helper("1", 0);
+        size_helper("a", 1);
+        size_helper("a^2", 1);
+        size_helper("a^3", 1);
+        size_helper("x^2*y*z^3", 26);
     }
 
     private static void terms_helper(@NotNull String input, @NotNull String output) {
