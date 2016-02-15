@@ -106,7 +106,8 @@ public class PolynomialProperties extends QBarTestProperties {
         compareImplementationsSquareFreePart();
         propertiesSquareFreeFactor();
         propertiesFactor();
-        compareImplementationsFactor();
+        compareImplementationsFactor1();
+        compareImplementationsFactor2();
         propertiesIsIrreducible();
         compareImplementationsIsIrreducible(false);
         compareImplementationsIsIrreducible(true);
@@ -2217,7 +2218,7 @@ public class PolynomialProperties extends QBarTestProperties {
         USE_FACTOR_CACHE = oldUseFactorCache;
     }
 
-    private void compareImplementationsFactor() {
+    private void compareImplementationsFactor1() {
         boolean oldUseFactorCache = USE_FACTOR_CACHE;
         USE_FACTOR_CACHE = false;
 
@@ -2225,6 +2226,22 @@ public class PolynomialProperties extends QBarTestProperties {
         functions.put("alt", PolynomialProperties::factor_alt);
         functions.put("standard", Polynomial::factor);
         compareImplementations("factor()", take(SMALL_LIMIT, P.withScale(4).polynomialsAtLeast(0)), functions);
+
+        USE_FACTOR_CACHE = oldUseFactorCache;
+    }
+
+    private void compareImplementationsFactor2() {
+        boolean oldUseFactorCache = USE_FACTOR_CACHE;
+        USE_FACTOR_CACHE = false;
+
+        Map<String, Function<Polynomial, List<Polynomial>>> functions = new LinkedHashMap<>();
+        functions.put("Yun-Kronecker", PolynomialProperties::factor_Yun_Kronecker);
+        functions.put("standard", Polynomial::factor);
+        Iterable<Polynomial> ps = filterInfinite(
+                q -> q.degree() < 7,
+                P.withScale(1).withSecondaryScale(1).polynomialsAtLeast(0)
+        );
+        compareImplementations("factor()", take(SMALL_LIMIT, ps), functions);
 
         USE_FACTOR_CACHE = oldUseFactorCache;
     }

@@ -1,7 +1,6 @@
 package jas.ufd;
 
 import jas.arith.*;
-import jas.poly.ExpVector;
 import jas.poly.GenPolynomial;
 import jas.poly.GenPolynomialRing;
 import jas.poly.PolyUtil;
@@ -85,8 +84,8 @@ public class GreatestCommonDivisorModular<MOD extends RingElem<MOD> & Modular> e
         JasBigInteger n = (an.compareTo(bn) < 0 ? bn : an);
         n = n.multiply(cc).multiply(n.fromInteger(2));
         // compute degree vectors
-        ExpVector rdegv = r.degreeVector();
-        ExpVector qdegv = q.degreeVector();
+        long rdegv = r.degreeVector();
+        long qdegv = q.degreeVector();
         //compute factor coefficient bounds
         JasBigInteger af = an.multiply(PolyUtil.factorBound(rdegv));
         JasBigInteger bf = bn.multiply(PolyUtil.factorBound(qdegv));
@@ -96,7 +95,7 @@ public class GreatestCommonDivisorModular<MOD extends RingElem<MOD> & Modular> e
         PrimeList primes = new PrimeList();
         int pn = 10; //primes.size();
         System.exit(1);
-        ExpVector wdegv = null;
+        long wdegv = -1;
         // +1 seems to be a hack for the unlucky prime test
         ModularRingFactory<MOD> cofac;
         ModularRingFactory<MOD> cofacM;
@@ -130,11 +129,11 @@ public class GreatestCommonDivisorModular<MOD extends RingElem<MOD> & Modular> e
             // initialize polynomial factory and map polynomials
             mfac = new GenPolynomialRing<>(cofac, fac.nvar, fac.tord, fac.getVars());
             qm = PolyUtil.fromIntegerCoefficients(mfac, q);
-            if (qm.isZERO() || !qm.degreeVector().equals(qdegv)) {
+            if (qm.isZERO() || qm.degreeVector() != qdegv) {
                 continue;
             }
             rm = PolyUtil.fromIntegerCoefficients(mfac, r);
-            if (rm.isZERO() || !rm.degreeVector().equals(rdegv)) {
+            if (rm.isZERO() || rm.degreeVector() != rdegv) {
                 continue;
             }
             // compute modular gcd
@@ -145,8 +144,8 @@ public class GreatestCommonDivisorModular<MOD extends RingElem<MOD> & Modular> e
                 //return cm.abs().multiply( c );
             }
             // test for unlucky prime
-            ExpVector mdegv = cm.degreeVector();
-            if (wdegv.equals(mdegv)) { // TL = 0
+            long mdegv = cm.degreeVector();
+            if (wdegv == mdegv) { // TL = 0
                 // prime ok, next round
                 if (M != null) {
                     if (M.compareTo(cfe) > 0) {
@@ -156,11 +155,11 @@ public class GreatestCommonDivisorModular<MOD extends RingElem<MOD> & Modular> e
                 }
             } else { // TL = 3
                 boolean ok = false;
-                if (wdegv.val >= mdegv.val) { // TL = 2 // EVMT(wdegv,mdegv)
+                if (wdegv >= mdegv) { // TL = 2 // EVMT(wdegv,mdegv)
                     M = null; // init chinese remainder
                     ok = true; // prime ok
                 }
-                if (mdegv.val >= wdegv.val) { // TL = 1 // EVMT(mdegv,wdegv)
+                if (mdegv >= wdegv) { // TL = 1 // EVMT(mdegv,wdegv)
                     continue; // skip this prime
                 }
                 if (!ok) {
@@ -177,7 +176,7 @@ public class GreatestCommonDivisorModular<MOD extends RingElem<MOD> & Modular> e
                 cp = cm;
                 System.exit(1);
                 cfe = cf;
-                cfe = cfe.multiply(new JasBigInteger(wdegv.val + 1));
+                cfe = cfe.multiply(new JasBigInteger(wdegv + 1));
             } else {
                 // apply chinese remainder algorithm
                 JasBigInteger Mp = M;

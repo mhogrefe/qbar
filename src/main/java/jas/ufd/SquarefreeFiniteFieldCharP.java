@@ -1,6 +1,5 @@
 package jas.ufd;
 
-import jas.poly.ExpVector;
 import jas.poly.GenPolynomial;
 import jas.poly.GenPolynomialRing;
 import jas.poly.Monomial;
@@ -74,13 +73,12 @@ public class SquarefreeFiniteFieldCharP<C extends RingElem<C>> extends Squarefre
         long mp = rf.characteristic().longValue();
         GenPolynomial<C> d = pfac.getZERO().copy();
         for (Monomial<C> m : P) {
-            ExpVector f = m.e;
-            long fl = f.val;
+            long fl = m.e;
             if (fl % mp != 0) {
                 return null;
             }
             fl = fl / mp;
-            ExpVector e = new ExpVector(fl);
+            long e = fl;
             // for m.c exists a char-th root, since finite field
             C r = m.c;
             d.doPutToMap(e, r);

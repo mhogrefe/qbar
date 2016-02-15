@@ -24,14 +24,14 @@ public class GenSolvablePolynomial<C extends RingElem<C>> extends GenPolynomial<
         ring = r;
     }
 
-    public GenSolvablePolynomial(GenSolvablePolynomialRing<C> r, C c, ExpVector e) {
+    public GenSolvablePolynomial(GenSolvablePolynomialRing<C> r, C c, long e) {
         this(r);
         if (c != null && !c.isZERO()) {
             val.put(e, c);
         }
     }
 
-    GenSolvablePolynomial(GenSolvablePolynomialRing<C> r, SortedMap<ExpVector, C> v) {
+    GenSolvablePolynomial(GenSolvablePolynomialRing<C> r, SortedMap<Long, C> v) {
         this(r);
         val.putAll(v); // assume no zero coefficients
     }
@@ -74,10 +74,10 @@ public class GenSolvablePolynomial<C extends RingElem<C>> extends GenPolynomial<
         if (b == null || b.isZERO()) {
             return Cp;
         }
-        Map<ExpVector, C> Cm = Cp.val; //getMap();
-        Map<ExpVector, C> Am = val;
-        for (Map.Entry<ExpVector, C> y : Am.entrySet()) {
-            ExpVector e = y.getKey();
+        Map<Long, C> Cm = Cp.val; //getMap();
+        Map<Long, C> Am = val;
+        for (Map.Entry<Long, C> y : Am.entrySet()) {
+            long e = y.getKey();
             C a = y.getValue();
             C c = a.multiply(b);
             if (!c.isZERO()) {
@@ -99,10 +99,10 @@ public class GenSolvablePolynomial<C extends RingElem<C>> extends GenPolynomial<
         if (b == null || b.isZERO()) {
             return Cp;
         }
-        Map<ExpVector, C> Cm = Cp.val; //getMap();
-        Map<ExpVector, C> Am = val;
-        for (Map.Entry<ExpVector, C> y : Am.entrySet()) {
-            ExpVector e = y.getKey();
+        Map<Long, C> Cm = Cp.val; //getMap();
+        Map<Long, C> Am = val;
+        for (Map.Entry<Long, C> y : Am.entrySet()) {
+            long e = y.getKey();
             C a = y.getValue();
             C c = b.multiply(a);
             if (!c.isZERO()) {

@@ -85,11 +85,11 @@ public class GenSolvablePolynomialRing_BigRational extends GenSolvablePolynomial
     @Override
     GenSolvablePolynomial<BigRational> random(int k, int l, int d, float q, Random rnd) {
         GenSolvablePolynomial<BigRational> r = getZERO(); //.clone();
-        ExpVector e;
+        long e;
         BigRational a;
         // add random coeffs and exponents
         for (int i = 0; i < l; i++) {
-            e = ExpVector.EVRAND(nvar, d, q, rnd);
+            e = GenPolynomial.EVRAND(nvar, d, q, rnd);
             a = coFac.random(k, rnd);
             r = (GenSolvablePolynomial<BigRational>) r.sum(a, e);
             // somewhat inefficient but clean

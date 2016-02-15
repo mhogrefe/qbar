@@ -16,14 +16,14 @@ class PolyIterator<C extends RingElem<C>> implements Iterator<Monomial<C>> {
     /**
      * Internal iterator over polynomial map.
      */
-    private final Iterator<Map.Entry<ExpVector, C>> ms;
+    private final Iterator<Map.Entry<Long, C>> ms;
 
     /**
      * Constructor of polynomial iterator.
      *
      * @param m SortetMap of a polynomial.
      */
-    public PolyIterator(SortedMap<ExpVector, C> m) {
+    public PolyIterator(SortedMap<Long, C> m) {
         ms = m.entrySet().iterator();
     }
 

@@ -336,7 +336,7 @@ public class HenselUtil {
         }
         GenPolynomialRing<JasBigInteger> ifac = new GenPolynomialRing<>(new JasBigInteger(), fac);
         for (Monomial<ModLong> m : C) {
-            long e = m.e.val;
+            long e = m.e;
             List<GenPolynomial<ModLong>> S = liftDiophant(A, B, e, k);
             ModLong a = m.c;
             a = fac.coFac.fromInteger(a.getSymmetricInteger().getVal());
@@ -478,8 +478,8 @@ public class HenselUtil {
         Ai = PolyUtil.integerFromModularCoefficients(fac, A);
         Bi = PolyUtil.integerFromModularCoefficients(fac, B);
         // replace leading base coefficients
-        ExpVector ea = Ai.leadingExpVector();
-        ExpVector eb = Bi.leadingExpVector();
+        Long ea = Ai.leadingExpVector();
+        Long eb = Bi.leadingExpVector();
         Ai.doPutToMap(ea, c);
         Bi.doPutToMap(eb, c);
 

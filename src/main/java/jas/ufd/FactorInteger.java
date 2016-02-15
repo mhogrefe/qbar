@@ -1,7 +1,6 @@
 package jas.ufd;
 
 import jas.arith.*;
-import jas.poly.ExpVector;
 import jas.poly.GenPolynomial;
 import jas.poly.GenPolynomialRing;
 import jas.poly.PolyUtil;
@@ -68,7 +67,7 @@ public class FactorInteger extends FactorAbstract<JasBigInteger> {
         JasBigInteger an = P.maxNorm();
         JasBigInteger ac = P.leadingBaseCoefficient();
         //compute factor coefficient bounds
-        ExpVector degv = P.degreeVector();
+        long degv = P.degreeVector();
         int degi = (int) P.degree(0);
         JasBigInteger M = an.multiply(PolyUtil.factorBound(degv));
         M = M.multiply(ac.abs().multiply(ac.fromInteger(8)));
@@ -118,7 +117,7 @@ public class FactorInteger extends FactorAbstract<JasBigInteger> {
                 // initialize polynomial factory and map polynomial
                 mfac = new GenPolynomialRing<>(cofac, pfac);
                 am = PolyUtil.fromIntegerCoefficients(mfac, P);
-                if (!am.degreeVector().equals(degv)) {
+                if (am.degreeVector() != degv) {
                     //System.out.println("unlucky prime (deg) = " + p);
                     continue;
                 }
@@ -157,7 +156,7 @@ public class FactorInteger extends FactorAbstract<JasBigInteger> {
         int min = Integer.MAX_VALUE;
         BitSet AD = null;
         for (int k = 0; k < TT; k++) {
-            List<ExpVector> ev = PolyUtil.leadingExpVector(modfac[k]);
+            List<Long> ev = PolyUtil.leadingExpVector(modfac[k]);
             BitSet D = factorDegrees(ev, degi);
             if (AD == null) {
                 AD = D;
@@ -373,18 +372,17 @@ public class FactorInteger extends FactorAbstract<JasBigInteger> {
     private static long degreeSum(List<GenPolynomial<ModLong>> L) {
         long s = 0L;
         for (GenPolynomial<ModLong> p : L) {
-            ExpVector e = p.leadingExpVector();
-            long d = e.val;
+            long d = p.leadingExpVector();
             s += d;
         }
         return s;
     }
 
-    public static BitSet factorDegrees(List<ExpVector> E, int deg) {
+    public static BitSet factorDegrees(List<Long> E, int deg) {
         BitSet D = new BitSet(deg + 1);
         D.set(0); // constant factor
-        for (ExpVector e : E) {
-            int i = (int) e.val;
+        for (Long e : E) {
+            int i = e.intValue();
             BitSet s = new BitSet(deg + 1);
             for (int k = 0; k < deg + 1 - i; k++) { // shift by i places
                 s.set(i + k, D.get(k));

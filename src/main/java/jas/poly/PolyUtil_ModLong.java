@@ -55,12 +55,12 @@ public class PolyUtil_ModLong {
         ModularRingFactory<ModLong> cfac = (ModularRingFactory<ModLong>) fac.coFac; // get RingFactory
         GenPolynomial<ModLong> S = fac.getZERO().copy();
         GenPolynomial<ModLong> Ap = A.copy();
-        SortedMap<ExpVector, ModLong> av = Ap.val; //getMap();
-        SortedMap<ExpVector, ModLong> bv = B.getMap();
-        SortedMap<ExpVector, ModLong> sv = S.val; //getMap();
+        SortedMap<Long, ModLong> av = Ap.val; //getMap();
+        SortedMap<Long, ModLong> bv = B.getMap();
+        SortedMap<Long, ModLong> sv = S.val; //getMap();
         ModLong c;
-        for (Map.Entry<ExpVector, ModLong> me : bv.entrySet()) {
-            ExpVector e = me.getKey();
+        for (Map.Entry<Long, ModLong> me : bv.entrySet()) {
+            Long e = me.getKey();
             ModLong y = me.getValue(); //bv.get(e); // assert y != null
             ModLong x = av.get(e);
             if (x != null) {
@@ -78,8 +78,8 @@ public class PolyUtil_ModLong {
             }
         }
         // assert bv is empty = done
-        for (Map.Entry<ExpVector, ModLong> me : av.entrySet()) { // rest of av
-            ExpVector e = me.getKey();
+        for (Map.Entry<Long, ModLong> me : av.entrySet()) { // rest of av
+            Long e = me.getKey();
             ModLong x = me.getValue(); // av.get(e); // assert x != null
             //c = cfac.fromInteger( x.getVal() );
             c = cfac.chineseRemainder(x, mi, B.ring.coFac.getZERO());

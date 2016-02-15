@@ -7,17 +7,7 @@ import java.util.Comparator;
 public final class TermOrder implements Serializable {
     private static final int LEX = 1;
 
-    private static final int INVLEX = 2;
-
-    private static final int GRLEX = 3;
-
     private static final int IGRLEX = 4;
-
-    private static final int REVLEX = 5;
-
-    private static final int REVILEX = 6;
-
-    private static final int REVTDEG = 7;
 
     private static final int REVITDG = 8;
 
@@ -39,8 +29,8 @@ public final class TermOrder implements Serializable {
 
     private final EVComparator horder;
 
-    public static abstract class EVComparator implements Comparator<ExpVector>, Serializable {
-        public abstract int compare(ExpVector e1, ExpVector e2);
+    public static abstract class EVComparator implements Comparator<Long>, Serializable {
+        public abstract int compare(Long e1, Long e2);
     }
 
     public TermOrder() {
@@ -61,8 +51,8 @@ public final class TermOrder implements Serializable {
         if (evord != IGRLEX) System.out.println(evord);
         horder = new EVComparator() {
             @Override
-            public int compare(ExpVector e1, ExpVector e2) {
-                return -ExpVector.EVIGLC(e1, e2);
+            public int compare(Long e1, Long e2) {
+                return -Long.compare(e1, e2);
             }
         };
     }
@@ -81,8 +71,8 @@ public final class TermOrder implements Serializable {
 
         horder = new EVComparator() {
             @Override
-            public int compare(ExpVector e1, ExpVector e2) {
-                return -ExpVector.EVIWLC(weight, e1, e2);
+            public int compare(Long e1, Long e2) {
+                return -Long.compare(e1, e2);
             }
         };
     }
@@ -108,12 +98,12 @@ public final class TermOrder implements Serializable {
         if (evord2 != IGRLEX) System.out.println(evord2);
         horder = new EVComparator() {
             @Override
-            public int compare(ExpVector e1, ExpVector e2) {
-                int t = -ExpVector.EVIGLC(e1, e2, evbeg1, evend1);
+            public int compare(Long e1, Long e2) {
+                int t = -Long.compare(e1, e2);;
                 if (t != 0) {
                     return t;
                 }
-                return -ExpVector.EVIGLC(e1, e2, evbeg2, evend2);
+                return -Long.compare(e1, e2);
             }
         };
     }

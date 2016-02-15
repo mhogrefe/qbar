@@ -2,7 +2,6 @@ package jas.ufd;
 
 import jas.arith.Modular;
 import jas.arith.ModularRingFactory;
-import jas.poly.ExpVector;
 import jas.poly.GenPolynomial;
 import jas.poly.GenPolynomialRing;
 import jas.poly.PolyUtil;
@@ -125,8 +124,8 @@ public class GreatestCommonDivisorModEval<MOD extends RingElem<MOD> & Modular>
         GenPolynomial<MOD> bc = qr.leadingBaseCoefficient();
         GenPolynomial<MOD> cc = gcd(ac, bc);
         // compute degrees and degree vectors
-        ExpVector rdegv = rr.degreeVector();
-        ExpVector qdegv = qr.degreeVector();
+        long rdegv = rr.degreeVector();
+        long qdegv = qr.degreeVector();
         long rd0 = PolyUtil.coeffMaxDegree(rr);
         long qd0 = PolyUtil.coeffMaxDegree(qr);
         long cd0 = cc.degree(0);
@@ -134,7 +133,7 @@ public class GreatestCommonDivisorModEval<MOD extends RingElem<MOD> & Modular>
 
         // initialize element and degree vector
         System.exit(1);
-        ExpVector wdegv = null;
+        long wdegv = -1;
         // +1 seems to be a hack for the unlucky prime test
         MOD inc = cofac.getONE();
         long i = 0;
@@ -160,11 +159,11 @@ public class GreatestCommonDivisorModEval<MOD extends RingElem<MOD> & Modular>
             }
             // map polynomials
             qm = PolyUtil.evaluateFirstRec(ufac, mfac, qr, d);
-            if (qm.isZERO() || !qm.degreeVector().equals(qdegv)) {
+            if (qm.isZERO() || qm.degreeVector() != qdegv) {
                 continue;
             }
             rm = PolyUtil.evaluateFirstRec(ufac, mfac, rr, d);
-            if (rm.isZERO() || !rm.degreeVector().equals(rdegv)) {
+            if (rm.isZERO() || rm.degreeVector() != rdegv) {
                 continue;
             }
             // compute modular gcd in recursion
@@ -180,19 +179,19 @@ public class GreatestCommonDivisorModEval<MOD extends RingElem<MOD> & Modular>
                 return q;
             }
             // test for unlucky prime
-            ExpVector mdegv = cm.degreeVector();
-            if (wdegv.equals(mdegv)) { // TL = 0
+            long mdegv = cm.degreeVector();
+            if (wdegv == mdegv) { // TL = 0
                 // prime ok, next round
                 if (M != null) {
                     M.degree(0);
                 }
             } else { // TL = 3
                 boolean ok = false;
-                if (wdegv.val >= mdegv.val) { // TL = 2
+                if (wdegv >= mdegv) { // TL = 2
                     M = null; // init chinese remainder
                     ok = true; // prime ok
                 }
-                if (mdegv.val >= wdegv.val) { // TL = 1
+                if (mdegv >= wdegv) { // TL = 1
                     continue; // skip this prime
                 }
                 if (!ok) {

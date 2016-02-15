@@ -53,7 +53,7 @@ public class GenPolynomialRing<C extends RingElem<C>> implements RingFactory<Gen
     /**
      * The constant exponent vector 0 for this ring.
      */
-    public final ExpVector evzero;
+    public final long evzero;
 
     /**
      * A default random sequence generator.
@@ -106,7 +106,7 @@ public class GenPolynomialRing<C extends RingElem<C>> implements RingFactory<Gen
         if (nvar != 1) {
             System.exit(1);
         }
-        evzero = new ExpVector();
+        evzero = 0L;
         ONE = new GenPolynomial<>(this, coeff, evzero);
         if (vars == null) {
             vars = newVars(nvar);
@@ -305,11 +305,11 @@ public class GenPolynomialRing<C extends RingElem<C>> implements RingFactory<Gen
      */
     GenPolynomial<C> random(int k, int l, int d, float q, Random rnd) {
         GenPolynomial<C> r = getZERO(); //.clone() or copy( ZERO );
-        ExpVector e;
+        long e;
         C a;
         // add l random coeffs and exponents
         for (int i = 0; i < l; i++) {
-            e = ExpVector.EVRAND(nvar, d, q, rnd);
+            e = GenPolynomial.EVRAND(nvar, d, q, rnd);
             a = coFac.random(k, rnd);
             r = r.sum(a, e); // somewhat inefficient but clean
             //System.out.println("e = " + e + " a = " + a);
@@ -355,11 +355,10 @@ public class GenPolynomialRing<C extends RingElem<C>> implements RingFactory<Gen
         }
         if (0 <= i && i < r) {
             C one = coFac.getONE();
-            ExpVector f = new ExpVector(e);
             if (modv > 0) {
                 System.exit(1);
             }
-            p = p.sum(one, f);
+            p = p.sum(one, e);
         }
         return p;
     }

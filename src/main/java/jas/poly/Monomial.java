@@ -15,7 +15,7 @@ public final class Monomial<C extends RingElem<C>> {
     /**
      * Exponent of monomial.
      */
-    public final ExpVector e;
+    public final long e;
 
     /**
      * Coefficient of monomial.
@@ -27,7 +27,7 @@ public final class Monomial<C extends RingElem<C>> {
      *
      * @param me a MapEntry.
      */
-    public Monomial(Map.Entry<ExpVector, C> me) {
+    public Monomial(Map.Entry<Long, C> me) {
         this(me.getKey(), me.getValue());
     }
 
@@ -37,7 +37,7 @@ public final class Monomial<C extends RingElem<C>> {
      * @param e exponent.
      * @param c coefficient.
      */
-    private Monomial(ExpVector e, C c) {
+    private Monomial(long e, C c) {
         this.e = e;
         this.c = c;
     }
