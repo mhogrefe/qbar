@@ -4,7 +4,6 @@ import jas.arith.*;
 import jas.structure.RingElem;
 import jas.structure.RingFactory;
 import mho.wheels.iterables.IterableUtils;
-import mho.wheels.structures.Pair;
 
 import java.math.BigInteger;
 import java.util.List;

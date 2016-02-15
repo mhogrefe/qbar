@@ -27,6 +27,5 @@ public class GreatestCommonDivisorModular extends GreatestCommonDivisorAbstract<
             return S;
         }
         return baseGcd(P, S);
-
     }
 }

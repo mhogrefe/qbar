@@ -11,7 +11,7 @@ import java.math.BigInteger;
 import java.util.*;
 
 public class FactorInteger {
-    final GreatestCommonDivisorAbstract<JasBigInteger> engine;
+    final GreatestCommonDivisorModular engine;
 
     private final SquarefreeAbstract<JasBigInteger> sengine;
 
@@ -27,13 +27,13 @@ public class FactorInteger {
 
     @SuppressWarnings("unchecked")
     public FactorInteger() {
-        engine = GCDFactory.getImplementation(JasBigInteger.ONE);
-        sengine = SquarefreeFactory.getImplementation(JasBigInteger.ONE);
+        engine = new GreatestCommonDivisorModular();
+        sengine = new SquarefreeRingChar0<>(JasBigInteger.ONE);
         mfactor = new FactorModular(new ModLongRing(13));
         mengine = new GreatestCommonDivisorModEval<>();
     }
 
-     /**
+    /**
      * Univariate GenPolynomial factorization.
      *
      * @param P GenPolynomial in one variable.

@@ -4,7 +4,6 @@ import jas.arith.*;
 import jas.poly.*;
 import jas.structure.Power;
 import jas.structure.RingFactory;
-import mho.wheels.structures.Pair;
 
 import java.util.ArrayList;
 import java.util.List;

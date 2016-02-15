@@ -5,7 +5,6 @@ import jas.arith.ModInteger;
 import jas.arith.ModLong;
 import jas.structure.RingElem;
 import mho.wheels.iterables.IterableUtils;
-import mho.wheels.structures.Pair;
 
 import java.util.*;
 

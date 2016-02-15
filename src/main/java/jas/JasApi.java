@@ -3,7 +3,6 @@ package jas;
 import jas.arith.JasBigInteger;
 import jas.poly.GenPolynomial;
 import jas.poly.GenPolynomialRing;
-import jas.ufd.FactorAbstract;
 import jas.ufd.FactorInteger;
 
 import java.math.BigInteger;
