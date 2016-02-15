@@ -534,7 +534,7 @@ public class PolyUtil {
                 C a = m.getValue();
                 C x = a.multiply(cf);
                 if (x != null && !x.isZERO()) {
-                    ExpVector e = ExpVector.create(0, fl - 1L);
+                    ExpVector e = ExpVector.create(fl - 1L);
                     dm.put(e, x);
                 }
             }

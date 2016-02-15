@@ -394,7 +394,7 @@ public class GenPolynomialRing<C extends RingElem<C>> implements RingFactory<Gen
         }
         if (0 <= i && i < r) {
             C one = coFac.getONE();
-            ExpVector f = ExpVector.create(i, e);
+            ExpVector f = ExpVector.create(e);
             if (modv > 0) {
                 System.exit(1);
             }

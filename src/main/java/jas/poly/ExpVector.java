@@ -24,7 +24,7 @@ public final class ExpVector implements AbelianGroupElem<ExpVector> {
      * Constructor for ExpVector.
      */
     public ExpVector() {
-        this(new long[1]);
+        val = new long[1];
     }
 
     /**
@@ -33,21 +33,8 @@ public final class ExpVector implements AbelianGroupElem<ExpVector> {
      * @param e exponent to be set.
      */
     public ExpVector(long e) {
-        this(new long[1]);
+        val = new long[1];
         val[0] = e;
-    }
-
-    /**
-     * Constructor for ExpVector. Sets val.
-     *
-     * @param v internal representation array.
-     */
-    public ExpVector(long[] v) {
-        hash = 0;
-        if (v == null) {
-            throw new IllegalArgumentException("null val not allowed");
-        }
-        val = Arrays.copyOf(v, v.length); // > Java-5
     }
 
     public long getVal() {
@@ -84,7 +71,7 @@ public final class ExpVector implements AbelianGroupElem<ExpVector> {
         long[] v = V.val;
         long[] w = new long[1];
         w[0] = u[0] + v[0];
-        return new ExpVector(w);
+        return new ExpVector(w[0]);
     }
 
     @Override
@@ -93,7 +80,7 @@ public final class ExpVector implements AbelianGroupElem<ExpVector> {
         long[] v = V.val;
         long[] w = new long[1];
         w[0] = u[0] - v[0];
-        return new ExpVector(w);
+        return new ExpVector(w[0]);
     }
 
     @Override
@@ -119,7 +106,7 @@ public final class ExpVector implements AbelianGroupElem<ExpVector> {
     public ExpVector lcm(ExpVector V) {
         long[] w = new long[1];
         w[0] = (val[0] >= V.val[0] ? val[0] : V.val[0]);
-        return new ExpVector(w);
+        return new ExpVector(w[0]);
     }
 
     //todo continue usage investigation
@@ -363,12 +350,8 @@ public final class ExpVector implements AbelianGroupElem<ExpVector> {
         return new ExpVector();
     }
 
-    public static ExpVector create(int i, long e) {
+    public static ExpVector create(long e) {
         return new ExpVector(e);
-    }
-
-    private static ExpVector create(long[] v) {
-        return new ExpVector(v);
     }
 
     public String toString(String[] vars) {
@@ -414,7 +397,7 @@ public final class ExpVector implements AbelianGroupElem<ExpVector> {
             }
             w[i] = e;
         }
-        return create(w);
+        return create(w[0]);
         //return new ExpVector( w );
     }
 
