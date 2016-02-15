@@ -29,13 +29,13 @@ public class FactorModular<MOD extends RingElem<MOD> & Modular> extends FactorAb
         GenPolynomialRing<MOD> pfac = P.ring;
         ModularRingFactory<MOD> mr = (ModularRingFactory<MOD>) pfac.coFac;
         BigInteger m = mr.getIntegerModul().getVal();
-        GenPolynomial<MOD> x = pfac.univariate(0);
+        GenPolynomial<MOD> x = pfac.univariateA(0);
         GenPolynomial<MOD> h = x;
         GenPolynomial<MOD> f = P;
         GenPolynomial<MOD> g;
         Power<GenPolynomial<MOD>> pow = new Power<>(pfac);
         long d = 0;
-        while (d + 1 <= f.degree(0) / 2) {
+        while (d + 1 <= f.degree() / 2) {
             d++;
             h = pow.modPower(h, m, f);
             g = engine.gcd(h.subtract(x), f);
@@ -45,7 +45,7 @@ public class FactorModular<MOD extends RingElem<MOD> & Modular> extends FactorAb
             }
         }
         if (!f.isONE()) {
-            d = f.degree(0);
+            d = f.degree();
             facs.put(d, f);
         }
         return facs;
@@ -60,7 +60,7 @@ public class FactorModular<MOD extends RingElem<MOD> & Modular> extends FactorAb
             return facs;
         }
         GenPolynomialRing<MOD> pfac = P.ring;
-        if (P.degree(0) == deg) {
+        if (P.degree() == deg) {
             facs.add(P);
             return facs;
         }
@@ -71,7 +71,7 @@ public class FactorModular<MOD extends RingElem<MOD> & Modular> extends FactorAb
             p2 = true;
         }
         GenPolynomial<MOD> one = pfac.getONE();
-        GenPolynomial<MOD> t = pfac.univariate(0, 1L);
+        GenPolynomial<MOD> t = pfac.univariateB(0, 1L);
         GenPolynomial<MOD> r;
         GenPolynomial<MOD> h;
         GenPolynomial<MOD> f = P;
@@ -88,11 +88,11 @@ public class FactorModular<MOD extends RingElem<MOD> & Modular> extends FactorAb
                     h = t.sum(h.multiply(h));
                     h = h.remainder(f);
                 }
-                t = t.multiply(pfac.univariate(0, 2L));
+                t = t.multiply(pfac.univariateB(0, 2L));
                 //System.out.println("h = " + h);
             } else {
                 r = pfac.random(degi, 2 * degi);
-                if (r.degree(0) >= f.degree(0)) {
+                if (r.degree() >= f.degree()) {
                     r = r.remainder(f);
                 }
                 r = r.monic();
@@ -102,7 +102,7 @@ public class FactorModular<MOD extends RingElem<MOD> & Modular> extends FactorAb
             }
             g = engine.gcd(h, f);
             //System.out.println("g = " + g);
-        } while (g.degree(0) == 0 || g.degree(0) == f.degree(0));
+        } while (g.degree() == 0 || g.degree() == f.degree());
         f = f.divide(g);
         facs.addAll(baseEqualDegreeFactors(f, deg));
         facs.addAll(baseEqualDegreeFactors(g, deg));

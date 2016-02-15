@@ -99,7 +99,7 @@ public final class TermOrder implements Serializable {
         horder = new EVComparator() {
             @Override
             public int compare(Long e1, Long e2) {
-                int t = -Long.compare(e1, e2);;
+                int t = -Long.compare(e1, e2);
                 if (t != 0) {
                     return t;
                 }

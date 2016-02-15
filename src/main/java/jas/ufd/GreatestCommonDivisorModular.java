@@ -16,13 +16,7 @@ import java.math.BigInteger;
  */
 public class GreatestCommonDivisorModular<MOD extends RingElem<MOD> & Modular> extends
         GreatestCommonDivisorAbstract<JasBigInteger> {
-    private final GreatestCommonDivisorAbstract<MOD> mufd;
-
     private final GreatestCommonDivisorAbstract<JasBigInteger> iufd = new GreatestCommonDivisorSubres<>();
-
-    public GreatestCommonDivisorModular() {
-        mufd = new GreatestCommonDivisorModEval<>();
-    }
 
     @Override
     public GenPolynomial<JasBigInteger> baseGcd(GenPolynomial<JasBigInteger> P, GenPolynomial<JasBigInteger> S) {

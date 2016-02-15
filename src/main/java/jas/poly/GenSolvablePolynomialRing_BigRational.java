@@ -13,7 +13,7 @@ public class GenSolvablePolynomialRing_BigRational extends GenSolvablePolynomial
 
     private final GenSolvablePolynomial<BigRational> ONE;
 
-    public GenSolvablePolynomialRing_BigRational(RingFactory<BigRational> cf, TermOrder t, String[] v) {
+    public GenSolvablePolynomialRing_BigRational(RingFactory<BigRational> cf, TermOrder t, String v) {
         super(cf, t, v);
         table = new RelationTable<>(this);
         ZERO = new GenSolvablePolynomial<>(this);
@@ -86,7 +86,7 @@ public class GenSolvablePolynomialRing_BigRational extends GenSolvablePolynomial
         BigRational a;
         // add random coeffs and exponents
         for (int i = 0; i < l; i++) {
-            e = GenPolynomial.EVRAND(1, d, q, rnd);
+            e = GenPolynomial.EVRAND(d, q, rnd);
             a = coFac.random(k, rnd);
             r = (GenSolvablePolynomial<BigRational>) r.sum(a, e);
             // somewhat inefficient but clean
@@ -95,8 +95,8 @@ public class GenSolvablePolynomialRing_BigRational extends GenSolvablePolynomial
     }
 
     @Override
-    public GenSolvablePolynomial<BigRational> univariate(int i) {
-        return super.univariate(i);
+    public GenSolvablePolynomial<BigRational> univariateA(int i) {
+        return super.univariateA(i);
     }
 
     /**
@@ -108,21 +108,7 @@ public class GenSolvablePolynomialRing_BigRational extends GenSolvablePolynomial
      * @return X_i^e as solvable univariate polynomial.
      */
     @Override
-    public GenSolvablePolynomial<BigRational> univariate(int i, long e) {
-        return super.univariate(i, e);
-    }
-
-    /**
-     * Generate univariate solvable polynomial in a given variable with given
-     * exponent.
-     *
-     * @param modv number of module variables.
-     * @param i    the index of the variable.
-     * @param e    the exponent of the variable.
-     * @return X_i^e as solvable univariate polynomial.
-     */
-    @Override
-    public GenSolvablePolynomial<BigRational> univariate(int modv, int i, long e) {
-        return super.univariate(modv, i, e);
+    public GenSolvablePolynomial<BigRational> univariateB(int i, long e) {
+        return super.univariateB(i, e);
     }
 }

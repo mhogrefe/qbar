@@ -29,8 +29,8 @@ public class GreatestCommonDivisorSimple<C extends RingElem<C>> extends Greatest
             return S;
         }
         boolean field = P.ring.coFac.isField();
-        long e = P.degree(0);
-        long f = S.degree(0);
+        long e = P.degree();
+        long f = S.degree();
         GenPolynomial<C> q;
         GenPolynomial<C> r;
         if (f > e) {
@@ -98,14 +98,13 @@ public class GreatestCommonDivisorSimple<C extends RingElem<C>> extends Greatest
             return S;
         }
         boolean field = P.leadingBaseCoefficient().ring.coFac.isField();
-        long e = P.degree(0);
-        long f = S.degree(0);
+        long e = P.degree();
+        long f = S.degree();
         GenPolynomial<GenPolynomial<C>> q;
         GenPolynomial<GenPolynomial<C>> r;
         if (f > e) {
             r = P;
             q = S;
-            long g = f;
         } else {
             q = P;
             r = S;

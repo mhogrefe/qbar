@@ -85,7 +85,7 @@ public class SquarefreeRingChar0<C extends RingElem<C>> extends SquarefreeAbstra
             T = PolyUtil.basePseudoDivide(T, V);
             //System.out.println("V = " + V);
             //System.out.println("T = " + T);
-            if (z.degree(0) > 0) {
+            if (z.degree() > 0) {
                 if (ldbcf.isONE() && !z.leadingBaseCoefficient().isONE()) {
                     z = engine.basePrimitivePart(z);
                 }

@@ -19,38 +19,6 @@ import java.util.function.Function;
  * @author Heinz Kredel
  */
 public class PolyUtil {
-    /**
-     * Recursive representation. Represent as polynomial in i variables with
-     * coefficients in n-i variables. Works for arbitrary term orders.
-     *
-     * @param <C>  coefficient type.
-     * @param rfac recursive polynomial ring factory.
-     * @param A    polynomial to be converted.
-     * @return Recursive represenations of this in the ring rfac.
-     */
-    public static <C extends RingElem<C>> GenPolynomial<GenPolynomial<C>> recursive(
-            GenPolynomialRing<GenPolynomial<C>> rfac, GenPolynomial<C> A) {
-        GenPolynomial<GenPolynomial<C>> B = rfac.getZERO().copy();
-        if (A.isZERO()) {
-            return B;
-        }
-        GenPolynomial<C> zero = rfac.getZEROCoefficient();
-        Map<Long, GenPolynomial<C>> Bv = B.val; //getMap();
-        for (Map.Entry<Long, C> y : A.getMap().entrySet()) {
-            C a = y.getValue();
-            System.exit(1);
-            long f = -1;
-            long g = -1;
-            GenPolynomial<C> p = Bv.get(f);
-            if (p == null) {
-                p = zero;
-            }
-            p = p.sum(a, g);
-            Bv.put(f, p);
-        }
-        return B;
-    }
-
     //
     //JasBigInteger from ModInteger coefficients, symmetric. Represent as
     //polynomial with JasBigInteger coefficients by removing the modules and
@@ -282,8 +250,8 @@ public class PolyUtil {
         if (S.isConstant()) {
             return P.ring.getZERO();
         }
-        long m = P.degree(0);
-        long n = S.degree(0);
+        long m = P.degree();
+        long n = S.degree();
         C c = S.leadingBaseCoefficient();
         long e = S.leadingExpVector();
         GenPolynomial<C> h;
@@ -292,7 +260,7 @@ public class PolyUtil {
             if (r.isZERO()) {
                 return r;
             }
-            long k = r.degree(0);
+            long k = r.degree();
             if (i == k) {
                 long f = r.leadingExpVector();
                 C a = r.leadingBaseCoefficient();
@@ -478,8 +446,8 @@ public class PolyUtil {
         if (S.isConstant()) {
             return P.ring.getZERO();
         }
-        long m = P.degree(0);
-        long n = S.degree(0);
+        long m = P.degree();
+        long n = S.degree();
         GenPolynomial<C> c = S.leadingBaseCoefficient();
         long e = S.leadingExpVector();
         GenPolynomial<GenPolynomial<C>> h;
@@ -488,7 +456,7 @@ public class PolyUtil {
             if (r.isZERO()) {
                 return r;
             }
-            long k = r.degree(0);
+            long k = r.degree();
             if (i == k) {
                 long f = r.leadingExpVector();
                 GenPolynomial<C> a = r.leadingBaseCoefficient();

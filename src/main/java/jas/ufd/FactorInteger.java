@@ -56,7 +56,7 @@ public class FactorInteger extends FactorAbstract<JasBigInteger> {
         if (!engine.baseContent(P).isONE()) {
             throw new IllegalArgumentException(this.getClass().getName() + " P not primitive");
         }
-        if (P.degree(0) <= 1L) { // linear is irreducible
+        if (P.degree() <= 1L) { // linear is irreducible
             factors.add(P);
             return factors;
         }
@@ -65,7 +65,7 @@ public class FactorInteger extends FactorAbstract<JasBigInteger> {
         JasBigInteger ac = P.leadingBaseCoefficient();
         //compute factor coefficient bounds
         long degv = P.degreeVector();
-        int degi = (int) P.degree(0);
+        int degi = (int) P.degree();
         JasBigInteger M = an.multiply(PolyUtil.factorBound(degv));
         M = M.multiply(ac.abs().multiply(ac.fromInteger(8)));
         //System.out.println("M = " + M);
@@ -248,7 +248,7 @@ public class FactorInteger extends FactorAbstract<JasBigInteger> {
                     continue;
                 }
                 GenPolynomial<ModLong> mtrial = Power.multiply(mpfac, flist);
-                mtrial.degree(0);
+                mtrial.degree();
                 GenPolynomial<JasBigInteger> trial = PolyUtil.integerFromModularCoefficients(pfac, mtrial);
                 trial = engine.basePrimitivePart(trial);
                 if (PolyUtil.baseSparsePseudoRemainder(u, trial).isZERO()) {
@@ -323,7 +323,7 @@ public class FactorInteger extends FactorAbstract<JasBigInteger> {
                 for (GenPolynomial<ModLong> fk : flist) {
                     trial = trial.multiply(fk);
                 }
-                trial.degree(0);
+                trial.degree();
                 GenPolynomial<ModLong> cofactor = um.divide(trial);
                 try {
                     ilist = HenselUtil.liftHenselQuadratic(PP, M, trial, cofactor);

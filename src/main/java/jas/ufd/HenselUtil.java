@@ -381,7 +381,7 @@ public class HenselUtil {
         A = PolyUtil.fromIntegerCoefficients(fac, PolyUtil_ModLong.integerFromModularCoefficients(ifac, A));
         B = PolyUtil.fromIntegerCoefficients(fac, PolyUtil_ModLong.integerFromModularCoefficients(ifac, B));
 
-        GenPolynomial<ModLong> xe = fac.univariate(0, e);
+        GenPolynomial<ModLong> xe = fac.univariateB(0, e);
         GenPolynomial<ModLong> q = s1.multiply(xe);
         GenPolynomial<ModLong>[] QR = q.quotientRemainder(A);
         q = QR[0];
@@ -531,10 +531,7 @@ public class HenselUtil {
             Eb1 = Eb.multiply(Qi);
             Ea = Ai.sum(Eb1); // Eb1 and Ea1 are required
             Eb = Bi.sum(Ea1); //--------------------------
-            assert (Ea.degree(0) + Eb.degree(0) <= C.degree(0));
-            //if ( Ea.degree(0)+Eb.degree(0) > C.degree(0) ) { // debug
-            //   throw new RuntimeException("deg(A)+deg(B) > deg(C)");
-            //}
+            assert (Ea.degree() + Eb.degree() <= C.degree());
             Ai = Ea;
             Bi = Eb;
 

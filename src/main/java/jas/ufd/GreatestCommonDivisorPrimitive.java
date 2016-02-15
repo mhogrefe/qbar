@@ -27,14 +27,13 @@ public class GreatestCommonDivisorPrimitive<C extends RingElem<C>> extends Great
         if (P == null || P.isZERO()) {
             return S;
         }
-        long e = P.degree(0);
-        long f = S.degree(0);
+        long e = P.degree();
+        long f = S.degree();
         GenPolynomial<C> q;
         GenPolynomial<C> r;
         if (f > e) {
             r = P;
             q = S;
-            long g = f;
         } else {
             q = P;
             r = S;
@@ -80,14 +79,13 @@ public class GreatestCommonDivisorPrimitive<C extends RingElem<C>> extends Great
         if (P == null || P.isZERO()) {
             return S;
         }
-        long e = P.degree(0);
-        long f = S.degree(0);
+        long e = P.degree();
+        long f = S.degree();
         GenPolynomial<GenPolynomial<C>> q;
         GenPolynomial<GenPolynomial<C>> r;
         if (f > e) {
             r = P;
             q = S;
-            long g = f;
         } else {
             q = P;
             r = S;

@@ -13,7 +13,7 @@ public class GenSolvablePolynomialRing<C extends RingElem<C>> extends GenPolynom
 
     private final GenSolvablePolynomial<C> ONE;
 
-    public GenSolvablePolynomialRing(RingFactory<C> cf, TermOrder t, String[] v) {
+    public GenSolvablePolynomialRing(RingFactory<C> cf, TermOrder t, String v) {
         super(cf, t, v);
         table = new RelationTable<>(this);
         ZERO = new GenSolvablePolynomial<>(this);
@@ -86,7 +86,7 @@ public class GenSolvablePolynomialRing<C extends RingElem<C>> extends GenPolynom
         C a;
         // add random coeffs and exponents
         for (int i = 0; i < l; i++) {
-            e = GenPolynomial.EVRAND(1, d, q, rnd);
+            e = GenPolynomial.EVRAND(d, q, rnd);
             a = coFac.random(k, rnd);
             r = (GenSolvablePolynomial<C>) r.sum(a, e);
         }
@@ -94,8 +94,8 @@ public class GenSolvablePolynomialRing<C extends RingElem<C>> extends GenPolynom
     }
 
     @Override
-    public GenSolvablePolynomial<C> univariate(int i) {
-        return (GenSolvablePolynomial<C>) super.univariate(i);
+    public GenSolvablePolynomial<C> univariateA(int i) {
+        return (GenSolvablePolynomial<C>) super.univariateA(i);
     }
 
     /**
@@ -107,21 +107,20 @@ public class GenSolvablePolynomialRing<C extends RingElem<C>> extends GenPolynom
      * @return X_i^e as solvable univariate polynomial.
      */
     @Override
-    public GenSolvablePolynomial<C> univariate(int i, long e) {
-        return (GenSolvablePolynomial<C>) super.univariate(i, e);
+    public GenSolvablePolynomial<C> univariateB(int i, long e) {
+        return (GenSolvablePolynomial<C>) super.univariateB(i, e);
     }
 
     /**
      * Generate univariate solvable polynomial in a given variable with given
      * exponent.
      *
-     * @param modv number of module variables.
      * @param i    the index of the variable.
      * @param e    the exponent of the variable.
      * @return X_i^e as solvable univariate polynomial.
      */
     @Override
-    public GenSolvablePolynomial<C> univariate(int modv, int i, long e) {
-        return (GenSolvablePolynomial<C>) super.univariate(modv, i, e);
+    public GenSolvablePolynomial<C> univariateC(int i, long e) {
+        return (GenSolvablePolynomial<C>) super.univariateC(i, e);
     }
 }

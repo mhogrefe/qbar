@@ -28,8 +28,8 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
         return IterableUtils.head(factory().getONE().val.values()).getClass();
     }
 
-    public static long EVRAND(int r, long k, float q, Random rnd) {
-        long[] w = new long[r];
+    public static long EVRAND(long k, float q, Random rnd) {
+        long[] w = new long[1];
         long e;
         float f;
         for (int i = 0; i < w.length; i++) {
@@ -311,25 +311,6 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
             return ring.coFac.getZERO();
         }
         return c;
-    }
-
-    //
-    //Degree in variable i.
-    //
-    //@return maximal degree in the variable i.
-    //
-    public long degree(int i) {
-        if (val.size() == 0) {
-            return 0; // 0 or -1 ?;
-        }
-        long deg = 0;
-        for (Long e : val.keySet()) {
-            long d = e;
-            if (d > deg) {
-                deg = d;
-            }
-        }
-        return deg;
     }
 
     /**

@@ -29,14 +29,13 @@ public class GreatestCommonDivisorSubres<C extends RingElem<C>> extends Greatest
         if (P == null || P.isZERO()) {
             return S;
         }
-        long e = P.degree(0);
-        long f = S.degree(0);
+        long e = P.degree();
+        long f = S.degree();
         GenPolynomial<C> q;
         GenPolynomial<C> r;
         if (f > e) {
             r = P;
             q = S;
-            long g = f;
         } else {
             q = P;
             r = S;
@@ -59,7 +58,7 @@ public class GreatestCommonDivisorSubres<C extends RingElem<C>> extends Greatest
         GenPolynomial<C> x;
         C z;
         while (!r.isZERO()) {
-            long delta = q.degree(0) - r.degree(0);
+            long delta = q.degree() - r.degree();
             //System.out.println("delta    = " + delta);
             x = PolyUtil.baseDensePseudoRemainder(q, r);
             q = r;
@@ -99,14 +98,13 @@ public class GreatestCommonDivisorSubres<C extends RingElem<C>> extends Greatest
         if (P == null || P.isZERO()) {
             return S;
         }
-        long e = P.degree(0);
-        long f = S.degree(0);
+        long e = P.degree();
+        long f = S.degree();
         GenPolynomial<GenPolynomial<C>> q;
         GenPolynomial<GenPolynomial<C>> r;
         if (f > e) {
             r = P;
             q = S;
-            long g = f;
         } else {
             q = P;
             r = S;
@@ -131,7 +129,7 @@ public class GreatestCommonDivisorSubres<C extends RingElem<C>> extends Greatest
         GenPolynomial<GenPolynomial<C>> x;
         GenPolynomial<C> z;
         while (!r.isZERO()) {
-            long delta = q.degree(0) - r.degree(0);
+            long delta = q.degree() - r.degree();
             x = PolyUtil.recursiveDensePseudoRemainder(q, r);
             q = r;
             if (!x.isZERO()) {

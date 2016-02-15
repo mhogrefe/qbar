@@ -96,7 +96,7 @@ public abstract class FactorAbstract<C extends RingElem<C>> {
             if (pfac.coFac.isField() && !g.leadingBaseCoefficient().isONE()) {
                 g = g.monic(); // how can this happen?
             }
-            if (g.degree(0) <= 1) {
+            if (g.degree() <= 1) {
                 if (!g.isONE()) {
                     factors.put(g, k);
                 }

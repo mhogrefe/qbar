@@ -141,7 +141,7 @@ public abstract class SquarefreeFieldCharP<C extends RingElem<C>> extends Square
             T = PolyUtil.basePseudoDivide(T, V);
             //System.out.println("V = " + V);
             //System.out.println("T = " + T);
-            if (z.degree(0) > 0) {
+            if (z.degree() > 0) {
                 if (ldbcf.isONE() && !z.leadingBaseCoefficient().isONE()) {
                     z = z.monic();
                 }
