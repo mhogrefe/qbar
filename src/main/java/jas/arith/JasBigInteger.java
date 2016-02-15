@@ -66,15 +66,6 @@ public final class JasBigInteger implements RingElem<JasBigInteger>, RingFactory
     }
 
     /**
-     * Get the value as long.
-     *
-     * @return val as long.
-     */
-    public long longValue() {
-        return val.longValue();
-    }
-
-    /**
      * Get the corresponding element factory.
      *
      * @return factory for this Element.

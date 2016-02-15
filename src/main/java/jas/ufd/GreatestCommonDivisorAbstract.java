@@ -1,8 +1,6 @@
 package jas.ufd;
 
 import jas.poly.GenPolynomial;
-import jas.poly.GenPolynomialRing;
-import jas.poly.PolyUtil;
 import jas.structure.RingElem;
 
 /**
@@ -70,66 +68,6 @@ public abstract class GreatestCommonDivisorAbstract<C extends RingElem<C>> {
      * @return gcd(P, S).
      */
     public abstract GenPolynomial<C> baseGcd(GenPolynomial<C> P, GenPolynomial<C> S);
-
-    /**
-     * GenPolynomial recursive content.
-     *
-     * @param P recursive GenPolynomial.
-     * @return cont(P).
-     */
-    public GenPolynomial<C> recursiveContent(GenPolynomial<GenPolynomial<C>> P) {
-        if (P == null) {
-            throw new IllegalArgumentException(this.getClass().getName() + " P != null");
-        }
-        if (P.isZERO()) {
-            return P.ring.getZEROCoefficient();
-        }
-        GenPolynomial<C> d = null;
-        for (GenPolynomial<C> c : P.getMap().values()) {
-            if (d == null) {
-                d = c;
-            } else {
-                d = gcd(d, c); // go to recursion
-            }
-            if (d.isONE()) {
-                return d;
-            }
-        }
-        return d.abs();
-    }
-
-    /**
-     * GenPolynomial recursive primitive part.
-     *
-     * @param P recursive GenPolynomial.
-     * @return pp(P).
-     */
-    GenPolynomial<GenPolynomial<C>> recursivePrimitivePart(GenPolynomial<GenPolynomial<C>> P) {
-        if (P == null) {
-            throw new IllegalArgumentException(this.getClass().getName() + " P != null");
-        }
-        if (P.isZERO()) {
-            return P;
-        }
-        GenPolynomial<C> d = recursiveContent(P);
-        if (d.isONE()) {
-            return P;
-        }
-        return PolyUtil.recursiveDivide(P, d);
-    }
-
-    /**
-     * Univariate GenPolynomial recursive greatest common divisor. Uses
-     * pseudoRemainder for remainder.
-     *
-     * @param P univariate recursive GenPolynomial.
-     * @param S univariate recursive GenPolynomial.
-     * @return gcd(P, S).
-     */
-    public abstract GenPolynomial<GenPolynomial<C>> recursiveUnivariateGcd(
-            GenPolynomial<GenPolynomial<C>> P,
-            GenPolynomial<GenPolynomial<C>> S
-    );
 
     /**
      * GenPolynomial division. Indirection to GenPolynomial method.

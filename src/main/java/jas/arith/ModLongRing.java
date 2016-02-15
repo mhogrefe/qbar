@@ -186,19 +186,4 @@ public final class ModLongRing implements ModularRingFactory<ModLong> {
         BigInteger v = new BigInteger(n, rnd);
         return new ModLong(this, v); // rnd.nextLong() not ok
     }
-
-    public ModLong chineseRemainder(ModLong c, ModLong ci, ModLong a) {
-        if (c.ring.modul < a.ring.modul) {
-            System.exit(1);
-        }
-        ModLong b = a.ring.fromInteger(c.val); // c mod a.modul
-        ModLong d = a.subtract(b); // a-c mod a.modul
-        if (d.isZERO()) {
-            return new ModLong(this, c.val);
-        }
-        b = d.multiply(ci); // b = (a-c)*ci mod a.modul
-        long s = c.ring.modul * b.val;
-        s = s + c.val;
-        return new ModLong(this, s);
-    }
 }

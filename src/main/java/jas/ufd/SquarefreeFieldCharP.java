@@ -16,27 +16,15 @@ import java.util.TreeMap;
  * @author Heinz Kredel
  */
 public abstract class SquarefreeFieldCharP<C extends RingElem<C>> extends SquarefreeAbstract<C> {
-    /*
-     * Squarefree engine for characteristic p base coefficients.
-     */
-    //protected final SquarefreeAbstract<C> rengine;
-
-    /**
-     * Factory for finite field of characteristic p coefficients.
-     */
-    private final RingFactory<C> coFac;
-
     /**
      * Constructor.
      */
     @SuppressWarnings("unchecked")
     SquarefreeFieldCharP(RingFactory<C> fac) {
         super(GCDFactory.<C>getProxy(fac));
-        fac.isField();
         if (fac.characteristic().signum() == 0) {
             throw new IllegalArgumentException("characterisic(fac) must be non-zero");
         }
-        coFac = fac;
     }
 
     /**

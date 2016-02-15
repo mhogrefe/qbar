@@ -47,15 +47,6 @@ public final class ModIntegerRing implements ModularRingFactory<ModInteger> {
     }
 
     /**
-     * Get the module part.
-     *
-     * @return modul.
-     */
-    public BigInteger getModul() {
-        return modul;
-    }
-
-    /**
      * Get the module part as JasBigInteger.
      *
      * @return modul.
@@ -177,26 +168,5 @@ public final class ModIntegerRing implements ModularRingFactory<ModInteger> {
     public ModInteger random(int n, Random rnd) {
         BigInteger v = new BigInteger(n, rnd);
         return new ModInteger(this, v);
-    }
-
-    //
-    //ModInteger chinese remainder algorithm. This is a factory method. Assert
-    //c.modul >= a.modul and c.modul * a.modul = this.modul.
-    //
-    //@param c  ModInteger.
-    //@param ci inverse of c.modul in ring of a.
-    //@param a  other ModInteger.
-    //@return S, with S mod c.modul == c and S mod a.modul == a.
-    //
-    public ModInteger chineseRemainder(ModInteger c, ModInteger ci, ModInteger a) {
-        ModInteger b = a.ring.fromInteger(c.val); // c mod a.modul
-        ModInteger d = a.subtract(b); // a-c mod a.modul
-        if (d.isZERO()) {
-            return fromInteger(c.val);
-        }
-        b = d.multiply(ci); // b = (a-c)*ci mod a.modul
-        BigInteger s = c.ring.modul.multiply(b.val);
-        s = s.add(c.val);
-        return fromInteger(s);
     }
 }

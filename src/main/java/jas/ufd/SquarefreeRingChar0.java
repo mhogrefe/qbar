@@ -18,8 +18,6 @@ public class SquarefreeRingChar0<C extends RingElem<C>> extends SquarefreeAbstra
     /**
      * Factory for ring of characteristic 0 coefficients.
      */
-    private final RingFactory<C> coFac;
-
     public SquarefreeRingChar0(RingFactory<C> fac) {
         super(GCDFactory.<C>getProxy(fac));
         if (fac.isField()) {
@@ -28,7 +26,6 @@ public class SquarefreeRingChar0<C extends RingElem<C>> extends SquarefreeAbstra
         if (fac.characteristic().signum() != 0) {
             throw new IllegalArgumentException("characterisic(fac) must be zero");
         }
-        coFac = fac;
     }
 
     @Override

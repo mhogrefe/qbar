@@ -77,7 +77,7 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
      * @param r polynomial ring factory.
      */
     public GenPolynomial(GenPolynomialRing<C> r) {
-        this(r, new TreeMap<>(r.tord.getDescendComparator()));
+        this(r, new TreeMap<>((x, y) -> -Long.compare(x, y)));
     }
 
     /**
@@ -301,19 +301,6 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
     }
 
     /**
-     * Trailing base coefficient.
-     *
-     * @return coefficient of constant term.
-     */
-    public C trailingBaseCoefficient() {
-        C c = val.get(ring.evzero);
-        if (c == null) {
-            return ring.coFac.getZERO();
-        }
-        return c;
-    }
-
-    /**
      * Maximal degree.
      *
      * @return maximal degree in any variables.
@@ -360,20 +347,6 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
             if (n.compareTo(x) < 0) {
                 n = x;
             }
-        }
-        return n;
-    }
-
-    /**
-     * GenPolynomial sum norm.
-     *
-     * @return sum of all absolute values of coefficients.
-     */
-    public C sumNorm() {
-        C n = ring.getZEROCoefficient();
-        for (C c : val.values()) {
-            C x = c.abs();
-            n = n.sum(x);
         }
         return n;
     }
@@ -887,20 +860,6 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
             return ring.getONE().multiply(c);
         }
         throw new ArithmeticException("element not invertible " + this + " :: " + ring);
-    }
-
-    /**
-     * Extend variables. Used e.g. in module embedding. Extend all ExpVectors by
-     * i elements and multiply by x_j^k.
-     *
-     * @param pfac extended polynomial ring factory (by i variables).
-     * @return extended polynomial.
-     */
-    public GenPolynomial<C> extend(GenPolynomialRing<C> pfac) {
-        if (ring.equals(pfac)) { // nothing to do
-            return this;
-        }
-        return pfac.getZERO().copy();
     }
 
     /**

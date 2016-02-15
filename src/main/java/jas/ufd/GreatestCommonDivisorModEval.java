@@ -1,10 +1,7 @@
 package jas.ufd;
 
 import jas.arith.Modular;
-import jas.arith.ModularRingFactory;
 import jas.poly.GenPolynomial;
-import jas.poly.GenPolynomialRing;
-import jas.poly.PolyUtil;
 import jas.structure.RingElem;
 
 /**
@@ -34,21 +31,6 @@ public class GreatestCommonDivisorModEval<MOD extends RingElem<MOD> & Modular>
     public GenPolynomial<MOD> baseGcd(GenPolynomial<MOD> P, GenPolynomial<MOD> S) {
         // required as recursion base
         return mufd.baseGcd(P, S);
-    }
-
-    /**
-     * Recursive univariate GenPolynomial greatest common divisor.
-     *
-     * @param P univariate recursive GenPolynomial.
-     * @param S univariate recursive GenPolynomial.
-     * @return gcd(P, S).
-     */
-    @Override
-    public GenPolynomial<GenPolynomial<MOD>> recursiveUnivariateGcd(
-            GenPolynomial<GenPolynomial<MOD>> P,
-            GenPolynomial<GenPolynomial<MOD>> S
-    ) {
-        return mufd.recursiveUnivariateGcd(P, S);
     }
 
     /**

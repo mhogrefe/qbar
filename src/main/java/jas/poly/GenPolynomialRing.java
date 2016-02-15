@@ -20,11 +20,6 @@ public class GenPolynomialRing<C extends RingElem<C>> implements RingFactory<Gen
      */
     public final RingFactory<C> coFac;
 
-    /**
-     * The term order.
-     */
-    public final TermOrder tord;
-
     String var;
 
     /**
@@ -64,7 +59,7 @@ public class GenPolynomialRing<C extends RingElem<C>> implements RingFactory<Gen
      * @param cf factory for coefficients of type C.
      */
     public GenPolynomialRing(RingFactory<C> cf) {
-        this(cf, new TermOrder(), null);
+        this(cf, (String) null);
     }
 
     //
@@ -73,19 +68,17 @@ public class GenPolynomialRing<C extends RingElem<C>> implements RingFactory<Gen
     //@param cf factory for coefficients of type C.
     //
     public static <C extends RingElem<C>> GenPolynomialRing<C> make(RingFactory<C> cf) {
-        return new GenPolynomialRing<>(cf, new TermOrder(), "x");
+        return new GenPolynomialRing<>(cf, "x");
     }
 
     /**
      * The constructor creates a polynomial factory object.
      *
      * @param cf factory for coefficients of type C.
-     * @param t  a term order.
      * @param v  names for the variables.
      */
-    public GenPolynomialRing(RingFactory<C> cf, TermOrder t, String v) {
+    public GenPolynomialRing(RingFactory<C> cf, String v) {
         coFac = cf;
-        tord = t;
         if (v == null) {
             var = null;
         } else {
@@ -111,7 +104,7 @@ public class GenPolynomialRing<C extends RingElem<C>> implements RingFactory<Gen
      * @param o  other polynomial ring.
      */
     public GenPolynomialRing(RingFactory<C> cf, GenPolynomialRing o) {
-        this(cf, o.tord, o.var);
+        this(cf, o.var);
     }
 
     /**
@@ -133,9 +126,6 @@ public class GenPolynomialRing<C extends RingElem<C>> implements RingFactory<Gen
         if (!coFac.equals(oring.coFac)) {
             return false;
         }
-        if (!tord.equals(oring.tord)) {
-            return false;
-        }
         // same variables required ?
         return var.equals(oring.var);
     }
@@ -150,7 +140,6 @@ public class GenPolynomialRing<C extends RingElem<C>> implements RingFactory<Gen
         int h;
         h = (1 << 27);
         h += (coFac.hashCode() << 11);
-        h += tord.hashCode();
         return h;
     }
 
@@ -336,7 +325,7 @@ public class GenPolynomialRing<C extends RingElem<C>> implements RingFactory<Gen
      * @return polynomial comparator.
      */
     public PolynomialComparator<C> getComparator() {
-        return new PolynomialComparator<>(tord);
+        return new PolynomialComparator<>();
     }
 
     /**

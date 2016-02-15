@@ -2,11 +2,6 @@ package jas.ufd;
 
 import jas.arith.*;
 import jas.poly.GenPolynomial;
-import jas.poly.GenPolynomialRing;
-import jas.poly.PolyUtil;
-import jas.structure.RingElem;
-
-import java.math.BigInteger;
 
 /**
  * Greatest common divisor algorithms with modular computation and chinese
@@ -14,19 +9,12 @@ import java.math.BigInteger;
  *
  * @author Heinz Kredel
  */
-public class GreatestCommonDivisorModular<MOD extends RingElem<MOD> & Modular> extends
-        GreatestCommonDivisorAbstract<JasBigInteger> {
+public class GreatestCommonDivisorModular extends GreatestCommonDivisorAbstract<JasBigInteger> {
     private final GreatestCommonDivisorAbstract<JasBigInteger> iufd = new GreatestCommonDivisorSubres<>();
 
     @Override
     public GenPolynomial<JasBigInteger> baseGcd(GenPolynomial<JasBigInteger> P, GenPolynomial<JasBigInteger> S) {
         return iufd.baseGcd(P, S);
-    }
-
-    @Override
-    public GenPolynomial<GenPolynomial<JasBigInteger>> recursiveUnivariateGcd(
-            GenPolynomial<GenPolynomial<JasBigInteger>> P, GenPolynomial<GenPolynomial<JasBigInteger>> S) {
-        return iufd.recursiveUnivariateGcd(P, S);
     }
 
     @Override

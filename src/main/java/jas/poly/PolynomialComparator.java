@@ -12,8 +12,6 @@ import java.util.Comparator;
  * @author Heinz Kredel.
  */
 public class PolynomialComparator<C extends RingElem<C>> implements Serializable, Comparator<GenPolynomial<C>> {
-    private final TermOrder tord;
-
     private final boolean reverse;
 
     /**
@@ -21,8 +19,7 @@ public class PolynomialComparator<C extends RingElem<C>> implements Serializable
      *
      * @param t TermOrder.
      */
-    public PolynomialComparator(TermOrder t) {
-        tord = t;
+    public PolynomialComparator() {
         this.reverse = false;
     }
 
@@ -41,32 +38,5 @@ public class PolynomialComparator<C extends RingElem<C>> implements Serializable
             return -s;
         }
         return s;
-    }
-
-    /**
-     * Equals test of comparator.
-     *
-     * @param o other object.
-     * @return true if this = o, else false.
-     */
-    @Override
-    public boolean equals(Object o) {
-        PolynomialComparator pc;
-        try {
-            pc = (PolynomialComparator) o;
-        } catch (ClassCastException ignored) {
-            return false;
-        }
-        return pc != null && tord.equals(pc.tord);
-    }
-
-    /**
-     * Hash code for this PolynomialComparator.
-     *
-     * @see java.lang.Object#hashCode()
-     */
-    @Override
-    public int hashCode() {
-        return tord.hashCode();
     }
 }

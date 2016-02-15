@@ -9,7 +9,7 @@ class GCDFactory {
     public static <C extends RingElem<C>> GreatestCommonDivisorAbstract<C> getImplementation(RingFactory<C> fac) {
         GreatestCommonDivisorAbstract ufd;
         if (fac instanceof JasBigInteger) {
-            ufd = new GreatestCommonDivisorModular<ModInteger>();
+            ufd = new GreatestCommonDivisorModular();
         } else if (fac instanceof ModIntegerRing) {
             ufd = new GreatestCommonDivisorModEval<ModInteger>();
         } else if (fac instanceof ModLongRing) {

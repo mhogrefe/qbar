@@ -13,8 +13,8 @@ public class GenSolvablePolynomialRing<C extends RingElem<C>> extends GenPolynom
 
     private final GenSolvablePolynomial<C> ONE;
 
-    public GenSolvablePolynomialRing(RingFactory<C> cf, TermOrder t, String v) {
-        super(cf, t, v);
+    public GenSolvablePolynomialRing(RingFactory<C> cf, String v) {
+        super(cf, v);
         table = new RelationTable<>(this);
         ZERO = new GenSolvablePolynomial<>(this);
         C coeff = coFac.getONE();
