@@ -6,6 +6,7 @@ import jas.arith.ModularRingFactory;
 import jas.structure.RingElem;
 import jas.structure.RingFactory;
 import mho.wheels.iterables.IterableUtils;
+import mho.wheels.structures.Pair;
 
 import java.math.BigInteger;
 import java.util.List;
@@ -746,10 +747,10 @@ public class PolyUtil {
             GenPolynomialRing<D> ring, GenPolynomial<C> p, Function<C, D> f) {
         GenPolynomial<D> n = ring.getZERO().copy();
         SortedMap<Long, D> nv = n.val;
-        for (Monomial<C> m : p) {
-            D c = f.apply(m.c);
+        for (Pair<Long, C> m : p) {
+            D c = f.apply(m.b);
             if (c != null && !c.isZERO()) {
-                nv.put(m.e, c);
+                nv.put(m.a, c);
             }
         }
         return n;

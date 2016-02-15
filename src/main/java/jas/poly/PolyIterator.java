@@ -1,6 +1,7 @@
 package jas.poly;
 
 import jas.structure.RingElem;
+import mho.wheels.structures.Pair;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -12,7 +13,7 @@ import java.util.SortedMap;
  *
  * @author Heinz Kredel
  */
-class PolyIterator<C extends RingElem<C>> implements Iterator<Monomial<C>> {
+class PolyIterator<C extends RingElem<C>> implements Iterator<Pair<Long, C>> {
     /**
      * Internal iterator over polynomial map.
      */
@@ -41,8 +42,9 @@ class PolyIterator<C extends RingElem<C>> implements Iterator<Monomial<C>> {
      *
      * @return next monomial.
      */
-    public Monomial<C> next() {
-        return new Monomial<>(ms.next());
+    public Pair<Long, C> next() {
+        SortedMap.Entry<Long, C> next = ms.next();
+        return new Pair<>(next.getKey(), next.getValue());
     }
 
     /**

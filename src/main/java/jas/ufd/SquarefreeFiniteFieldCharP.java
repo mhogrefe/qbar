@@ -2,9 +2,9 @@ package jas.ufd;
 
 import jas.poly.GenPolynomial;
 import jas.poly.GenPolynomialRing;
-import jas.poly.Monomial;
 import jas.structure.RingElem;
 import jas.structure.RingFactory;
+import mho.wheels.structures.Pair;
 
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -72,15 +72,15 @@ public class SquarefreeFiniteFieldCharP<C extends RingElem<C>> extends Squarefre
         }
         long mp = rf.characteristic().longValue();
         GenPolynomial<C> d = pfac.getZERO().copy();
-        for (Monomial<C> m : P) {
-            long fl = m.e;
+        for (Pair<Long, C> m : P) {
+            long fl = m.a;
             if (fl % mp != 0) {
                 return null;
             }
             fl = fl / mp;
             long e = fl;
             // for m.c exists a char-th root, since finite field
-            C r = m.c;
+            C r = m.b;
             d.doPutToMap(e, r);
         }
         return d;

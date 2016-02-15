@@ -4,6 +4,7 @@ import jas.arith.*;
 import jas.poly.*;
 import jas.structure.Power;
 import jas.structure.RingFactory;
+import mho.wheels.structures.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -335,10 +336,10 @@ public class HenselUtil {
             sol.add(zero);
         }
         GenPolynomialRing<JasBigInteger> ifac = new GenPolynomialRing<>(new JasBigInteger(), fac);
-        for (Monomial<ModLong> m : C) {
-            long e = m.e;
+        for (Pair<Long, ModLong> m : C) {
+            long e = m.a;
             List<GenPolynomial<ModLong>> S = liftDiophant(A, B, e, k);
-            ModLong a = m.c;
+            ModLong a = m.b;
             a = fac.coFac.fromInteger(a.getSymmetricInteger().getVal());
             int i = 0;
             for (GenPolynomial<ModLong> d : S) {

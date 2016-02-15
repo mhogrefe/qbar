@@ -1,6 +1,7 @@
 package jas.poly;
 
 import jas.structure.RingElem;
+import mho.wheels.structures.Pair;
 
 import java.util.*;
 
@@ -18,8 +19,7 @@ import java.util.*;
  * @param <C> coefficient type
  * @author Heinz Kredel
  */
-public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynomial<C>>, /* not yet Polynomial<C> */
-        Iterable<Monomial<C>> {
+public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynomial<C>>, Iterable<Pair<Long, C>> {
 
     public static long EVRAND(int r, long k, float q, Random rnd) {
         long[] w = new long[r];
@@ -950,7 +950,7 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
      *
      * @return a PolyIterator.
      */
-    public Iterator<Monomial<C>> iterator() {
+    public Iterator<Pair<Long, C>> iterator() {
         return new PolyIterator<>(val);
     }
 }
