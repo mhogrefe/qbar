@@ -179,23 +179,6 @@ public abstract class GreatestCommonDivisorAbstract<C extends RingElem<C>> {
         if (P == null || P.isZERO()) {
             return S;
         }
-        GenPolynomialRing<C> pfac = P.ring;
-        if (pfac.nvar <= 1) {
-            return baseGcd(P, S);
-        }
-        System.exit(1);
-        GenPolynomialRing<C> cfac = null;
-        GenPolynomialRing<GenPolynomial<C>> rfac;
-        if (pfac.getVars() != null && pfac.getVars().length > 0) {
-            rfac = GenPolynomialRing.make(cfac);
-        } else {
-            rfac = new GenPolynomialRing<>(cfac);
-        }
-        GenPolynomial<GenPolynomial<C>> Pr = PolyUtil.recursive(rfac, P);
-        GenPolynomial<GenPolynomial<C>> Sr = PolyUtil.recursive(rfac, S);
-        GenPolynomial<GenPolynomial<C>> Dr = recursiveUnivariateGcd(Pr, Sr);
-        System.exit(1);
-        return null;
-//        return PolyUtil.distribute(pfac, Dr);
+        return baseGcd(P, S);
     }
 }

@@ -21,7 +21,7 @@ public class PolyUtil_ModInteger {
      */
     public static GenPolynomial<JasBigInteger> integerFromModularCoefficients(
             GenPolynomialRing<JasBigInteger> fac, GenPolynomial<ModInteger> A) {
-        return PolyUtil.map(fac, A, new ModSymToInt<ModInteger>());
+        return PolyUtil.map(fac, A, new ModSymToInt<>());
     }
 
     /**

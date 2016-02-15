@@ -27,9 +27,6 @@ public class GreatestCommonDivisorPrimitive<C extends RingElem<C>> extends Great
         if (P == null || P.isZERO()) {
             return S;
         }
-        if (P.ring.nvar > 1) {
-            throw new IllegalArgumentException(this.getClass().getName() + " no univariate polynomial");
-        }
         long e = P.degree(0);
         long f = S.degree(0);
         GenPolynomial<C> q;
@@ -82,9 +79,6 @@ public class GreatestCommonDivisorPrimitive<C extends RingElem<C>> extends Great
         }
         if (P == null || P.isZERO()) {
             return S;
-        }
-        if (P.ring.nvar > 1) {
-            throw new IllegalArgumentException(this.getClass().getName() + " no univariate polynomial");
         }
         long e = P.degree(0);
         long f = S.degree(0);

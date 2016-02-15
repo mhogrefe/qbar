@@ -30,9 +30,6 @@ public class HenselUtil {
             throw new IllegalArgumentException("C must be nonzero and F must be nonempty");
         }
         GenPolynomialRing<JasBigInteger> fac = C.ring;
-        if (fac.nvar != 1) { // todo assert
-            throw new IllegalArgumentException("polynomial ring not univariate");
-        }
         List<GenPolynomial<ModLong>> lift = new ArrayList<>(F.size());
         GenPolynomialRing<ModLong> pfac = F.get(0).ring;
         RingFactory<ModLong> pcfac = pfac.coFac;
@@ -148,9 +145,6 @@ public class HenselUtil {
             throw new IllegalArgumentException("A must be non null and non empty");
         }
         GenPolynomialRing<ModLong> fac = A.get(0).ring;
-        if (fac.nvar != 1) { // todo assert
-            throw new IllegalArgumentException("polynomial ring not univariate");
-        }
         GenPolynomial<ModLong> zero = fac.getZERO();
         int r = A.size();
         List<GenPolynomial<ModLong>> Q = new ArrayList<>(r);
@@ -213,9 +207,6 @@ public class HenselUtil {
             throw new IllegalArgumentException("A and B must be nonzero, A = " + A + ", B = " + B);
         }
         GenPolynomialRing<ModLong> fac = A.ring;
-        if (fac.nvar != 1) { // todo assert
-            throw new IllegalArgumentException("polynomial ring not univariate");
-        }
         // start with extended Euclidean relation mod p
         GenPolynomial<ModLong>[] gst;
         try {
@@ -327,9 +318,6 @@ public class HenselUtil {
         }
         List<GenPolynomial<ModLong>> sol = new ArrayList<>();
         GenPolynomialRing<ModLong> fac = C.ring;
-        if (fac.nvar != 1) { // todo assert
-            throw new IllegalArgumentException("polynomial ring not univariate");
-        }
         //System.out.println("C = " + C);
         GenPolynomial<ModLong> zero = fac.getZERO();
         for (int i = 0; i < 2; i++) {
@@ -378,9 +366,6 @@ public class HenselUtil {
         }
         List<GenPolynomial<ModLong>> sol = new ArrayList<>();
         GenPolynomialRing<ModLong> fac = A.ring;
-        if (fac.nvar != 1) { // todo assert
-            throw new IllegalArgumentException("polynomial ring not univariate");
-        }
         // lift EE relation to p^k
         GenPolynomial<ModLong>[] lee = liftExtendedEuclidean(B, A, k);
         GenPolynomial<ModLong> s1 = lee[0];
@@ -442,9 +427,6 @@ public class HenselUtil {
             throw new IllegalArgumentException("A and B must be nonzero");
         }
         GenPolynomialRing<JasBigInteger> fac = C.ring;
-        if (fac.nvar != 1) { // todo assert
-            throw new IllegalArgumentException("polynomial ring not univariate");
-        }
         // setup factories
         GenPolynomialRing<ModLong> pfac = A.ring;
         RingFactory<ModLong> p = pfac.coFac;
@@ -639,9 +621,6 @@ public class HenselUtil {
             throw new IllegalArgumentException("A and B must be nonzero");
         }
         GenPolynomialRing<JasBigInteger> fac = C.ring;
-        if (fac.nvar != 1) { // todo assert
-            throw new IllegalArgumentException("polynomial ring not univariate");
-        }
         // one Hensel step on part polynomials
         try {
             GenPolynomial<ModLong>[] gst = A.egcd(B);

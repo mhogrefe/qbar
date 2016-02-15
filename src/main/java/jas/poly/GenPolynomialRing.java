@@ -21,11 +21,6 @@ public class GenPolynomialRing<C extends RingElem<C>> implements RingFactory<Gen
     public final RingFactory<C> coFac;
 
     /**
-     * The number of variables.
-     */
-    public final int nvar;
-
-    /**
      * The term order.
      */
     public final TermOrder tord;
@@ -72,7 +67,7 @@ public class GenPolynomialRing<C extends RingElem<C>> implements RingFactory<Gen
      * @param cf factory for coefficients of type C.
      */
     public GenPolynomialRing(RingFactory<C> cf) {
-        this(cf, 1, new TermOrder(), null);
+        this(cf, new TermOrder(), null);
     }
 
     //
@@ -81,20 +76,18 @@ public class GenPolynomialRing<C extends RingElem<C>> implements RingFactory<Gen
     //@param cf factory for coefficients of type C.
     //
     public static <C extends RingElem<C>> GenPolynomialRing<C> make(RingFactory<C> cf) {
-        return new GenPolynomialRing<>(cf, 1, new TermOrder(), new String[]{"x"});
+        return new GenPolynomialRing<>(cf, new TermOrder(), new String[]{"x"});
     }
 
     /**
      * The constructor creates a polynomial factory object.
      *
      * @param cf factory for coefficients of type C.
-     * @param n  number of variables.
      * @param t  a term order.
      * @param v  names for the variables.
      */
-    public GenPolynomialRing(RingFactory<C> cf, int n, TermOrder t, String[] v) {
+    public GenPolynomialRing(RingFactory<C> cf, TermOrder t, String[] v) {
         coFac = cf;
-        nvar = n;
         tord = t;
         if (v == null) {
             vars = null;
@@ -103,16 +96,13 @@ public class GenPolynomialRing<C extends RingElem<C>> implements RingFactory<Gen
         }
         ZERO = new GenPolynomial<>(this);
         C coeff = coFac.getONE();
-        if (nvar != 1) {
-            System.exit(1);
-        }
         evzero = 0L;
         ONE = new GenPolynomial<>(this, coeff, evzero);
         if (vars == null) {
-            vars = newVars(nvar);
+            vars = newVars(1);
         } else {
-            if (vars.length != nvar) {
-                throw new IllegalArgumentException("incompatible variable size " + vars.length + ", " + nvar);
+            if (vars.length != 1) {
+                throw new IllegalArgumentException();
             }
             addVars(vars);
         }
@@ -127,7 +117,7 @@ public class GenPolynomialRing<C extends RingElem<C>> implements RingFactory<Gen
      * @param o  other polynomial ring.
      */
     public GenPolynomialRing(RingFactory<C> cf, GenPolynomialRing o) {
-        this(cf, o.nvar, o.tord, o.vars);
+        this(cf, o.tord, o.vars);
     }
 
     /**
@@ -145,9 +135,6 @@ public class GenPolynomialRing<C extends RingElem<C>> implements RingFactory<Gen
         try {
             oring = (GenPolynomialRing<C>) other;
         } catch (ClassCastException ignored) {
-        }
-        if (nvar != oring.nvar) {
-            return false;
         }
         if (!coFac.equals(oring.coFac)) {
             return false;
@@ -167,7 +154,7 @@ public class GenPolynomialRing<C extends RingElem<C>> implements RingFactory<Gen
     @Override
     public int hashCode() {
         int h;
-        h = (nvar << 27);
+        h = (1 << 27);
         h += (coFac.hashCode() << 11);
         h += tord.hashCode();
         return h;
@@ -230,10 +217,6 @@ public class GenPolynomialRing<C extends RingElem<C>> implements RingFactory<Gen
         if (isField == 0) {
             return false;
         }
-        if (coFac.isField() && nvar == 0) {
-            isField = 1;
-            return true;
-        }
         isField = 0;
         return false;
     }
@@ -276,10 +259,7 @@ public class GenPolynomialRing<C extends RingElem<C>> implements RingFactory<Gen
      * @return a random polynomial.
      */
     public GenPolynomial<C> random(int n, Random rnd) {
-        if (nvar == 1) {
-            return random(3, n, n, 0.7f, rnd);
-        }
-        return random(5, n, 3, 0.3f, rnd);
+        return random(3, n, n, 0.7f, rnd);
     }
 
     /**
@@ -309,7 +289,7 @@ public class GenPolynomialRing<C extends RingElem<C>> implements RingFactory<Gen
         C a;
         // add l random coeffs and exponents
         for (int i = 0; i < l; i++) {
-            e = GenPolynomial.EVRAND(nvar, d, q, rnd);
+            e = GenPolynomial.EVRAND(1, d, q, rnd);
             a = coFac.random(k, rnd);
             r = r.sum(a, e); // somewhat inefficient but clean
             //System.out.println("e = " + e + " a = " + a);
@@ -349,7 +329,7 @@ public class GenPolynomialRing<C extends RingElem<C>> implements RingFactory<Gen
      */
     GenPolynomial<C> univariate(int modv, int i, long e) {
         GenPolynomial<C> p = getZERO();
-        int r = nvar - modv;
+        int r = 1 - modv;
         if (r != 1) {
             System.exit(1);
         }
@@ -370,7 +350,7 @@ public class GenPolynomialRing<C extends RingElem<C>> implements RingFactory<Gen
      * @see jas.structure.ElemFactory#isFinite()
      */
     public boolean isFinite() {
-        return (nvar == 0) && coFac.isFinite();
+        return false;
     }
 
     /**

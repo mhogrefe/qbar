@@ -27,9 +27,6 @@ public class FactorModular<MOD extends RingElem<MOD> & Modular> extends FactorAb
             return facs;
         }
         GenPolynomialRing<MOD> pfac = P.ring;
-        if (pfac.nvar > 1) {
-            throw new IllegalArgumentException(this.getClass().getName() + " only for univariate polynomials");
-        }
         ModularRingFactory<MOD> mr = (ModularRingFactory<MOD>) pfac.coFac;
         BigInteger m = mr.getIntegerModul().getVal();
         GenPolynomial<MOD> x = pfac.univariate(0);
@@ -63,9 +60,6 @@ public class FactorModular<MOD extends RingElem<MOD> & Modular> extends FactorAb
             return facs;
         }
         GenPolynomialRing<MOD> pfac = P.ring;
-        if (pfac.nvar > 1) {
-            throw new IllegalArgumentException(this.getClass().getName() + " only for univariate polynomials");
-        }
         if (P.degree(0) == deg) {
             facs.add(P);
             return facs;
@@ -129,9 +123,6 @@ public class FactorModular<MOD extends RingElem<MOD> & Modular> extends FactorAb
             return factors;
         }
         GenPolynomialRing<MOD> pfac = P.ring;
-        if (pfac.nvar > 1) {
-            throw new IllegalArgumentException(this.getClass().getName() + " only for univariate polynomials");
-        }
         if (!P.leadingBaseCoefficient().isONE()) {
             throw new IllegalArgumentException("ldcf(P) != 1: " + P);
         }

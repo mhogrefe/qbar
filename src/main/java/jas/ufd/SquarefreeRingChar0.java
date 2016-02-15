@@ -42,9 +42,6 @@ public class SquarefreeRingChar0<C extends RingElem<C>> extends SquarefreeAbstra
             return sfactors;
         }
         GenPolynomialRing<C> pfac = A.ring;
-        if (pfac.nvar > 1) {
-            throw new IllegalArgumentException(this.getClass().getName() + " only for univariate polynomials");
-        }
         C ldbcf = A.leadingBaseCoefficient();
         if (!ldbcf.isONE()) {
             C cc = engine.baseContent(A);

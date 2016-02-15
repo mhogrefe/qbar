@@ -53,9 +53,6 @@ public class FactorInteger extends FactorAbstract<JasBigInteger> {
             return factors;
         }
         GenPolynomialRing<JasBigInteger> pfac = P.ring;
-        if (pfac.nvar > 1) {
-            throw new IllegalArgumentException(this.getClass().getName() + " only for univariate polynomials");
-        }
         if (!engine.baseContent(P).isONE()) {
             throw new IllegalArgumentException(this.getClass().getName() + " P not primitive");
         }
@@ -216,9 +213,6 @@ public class FactorInteger extends FactorAbstract<JasBigInteger> {
             throw new IllegalArgumentException("C must be nonzero and F must be nonempty");
         }
         GenPolynomialRing<JasBigInteger> pfac = C.ring;
-        if (pfac.nvar != 1) { // todo assert
-            throw new IllegalArgumentException("polynomial ring not univariate");
-        }
         List<GenPolynomial<JasBigInteger>> factors = new ArrayList<>(F.size());
         List<GenPolynomial<ModLong>> lift;
 
@@ -298,9 +292,6 @@ public class FactorInteger extends FactorAbstract<JasBigInteger> {
             throw new IllegalArgumentException("C must be nonzero and F must be nonempty");
         }
         GenPolynomialRing<JasBigInteger> pfac = C.ring;
-        if (pfac.nvar != 1) { // todo assert
-            throw new IllegalArgumentException("polynomial ring not univariate");
-        }
         List<GenPolynomial<JasBigInteger>> factors = new ArrayList<>(F.size());
         List<GenPolynomial<ModLong>> mlist = F;
         ModLong nf;

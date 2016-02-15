@@ -72,9 +72,6 @@ public abstract class SquarefreeFieldCharP<C extends RingElem<C>> extends Square
             }
             return sfactors;
         }
-        if (pfac.nvar > 1) {
-            throw new IllegalArgumentException(this.getClass().getName() + " only for univariate polynomials");
-        }
         C ldbcf = A.leadingBaseCoefficient();
         if (!ldbcf.isONE()) {
             A = A.divide(ldbcf);

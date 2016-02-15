@@ -64,9 +64,6 @@ public abstract class FactorAbstract<C extends RingElem<C>> {
         if (P.isZERO()) {
             return factors;
         }
-        if (pfac.nvar > 1) {
-            throw new IllegalArgumentException(this.getClass().getName() + " only for univariate polynomials");
-        }
         if (P.isConstant()) {
             factors.put(P, 1L);
             return factors;

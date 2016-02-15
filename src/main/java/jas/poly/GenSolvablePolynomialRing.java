@@ -13,8 +13,8 @@ public class GenSolvablePolynomialRing<C extends RingElem<C>> extends GenPolynom
 
     private final GenSolvablePolynomial<C> ONE;
 
-    public GenSolvablePolynomialRing(RingFactory<C> cf, int n, TermOrder t, String[] v) {
-        super(cf, n, t, v);
+    public GenSolvablePolynomialRing(RingFactory<C> cf, TermOrder t, String[] v) {
+        super(cf, t, v);
         table = new RelationTable<>(this);
         ZERO = new GenSolvablePolynomial<>(this);
         C coeff = coFac.getONE();
@@ -71,10 +71,7 @@ public class GenSolvablePolynomialRing<C extends RingElem<C>> extends GenPolynom
 
     @Override
     public GenSolvablePolynomial<C> random(int n, Random rnd) {
-        if (nvar == 1) {
-            return random(5, n, n, 0.7f, rnd);
-        }
-        return random(5, n, 3, 0.3f, rnd);
+        return random(5, n, n, 0.7f, rnd);
     }
 
     @Override
@@ -89,7 +86,7 @@ public class GenSolvablePolynomialRing<C extends RingElem<C>> extends GenPolynom
         C a;
         // add random coeffs and exponents
         for (int i = 0; i < l; i++) {
-            e = GenPolynomial.EVRAND(nvar, d, q, rnd);
+            e = GenPolynomial.EVRAND(1, d, q, rnd);
             a = coFac.random(k, rnd);
             r = (GenSolvablePolynomial<C>) r.sum(a, e);
         }

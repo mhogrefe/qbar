@@ -28,9 +28,6 @@ public class GreatestCommonDivisorSimple<C extends RingElem<C>> extends Greatest
         if (P == null || P.isZERO()) {
             return S;
         }
-        if (P.ring.nvar > 1) {
-            throw new IllegalArgumentException(this.getClass().getName() + " no univariate polynomial");
-        }
         boolean field = P.ring.coFac.isField();
         long e = P.degree(0);
         long f = S.degree(0);
@@ -39,7 +36,6 @@ public class GreatestCommonDivisorSimple<C extends RingElem<C>> extends Greatest
         if (f > e) {
             r = P;
             q = S;
-            long g = f;
         } else {
             q = P;
             r = S;
@@ -100,9 +96,6 @@ public class GreatestCommonDivisorSimple<C extends RingElem<C>> extends Greatest
         }
         if (P == null || P.isZERO()) {
             return S;
-        }
-        if (P.ring.nvar > 1) {
-            throw new IllegalArgumentException(this.getClass().getName() + " no univariate polynomial");
         }
         boolean field = P.leadingBaseCoefficient().ring.coFac.isField();
         long e = P.degree(0);

@@ -61,10 +61,6 @@ public class SquarefreeFiniteFieldCharP<C extends RingElem<C>> extends Squarefre
             return P;
         }
         GenPolynomialRing<C> pfac = P.ring;
-        if (pfac.nvar > 1) {
-            // basePthRoot not possible by return type
-            throw new IllegalArgumentException(P.getClass().getName() + " only for univariate polynomials");
-        }
         RingFactory<C> rf = pfac.coFac;
         if (rf.characteristic().signum() != 1) {
             // basePthRoot not possible

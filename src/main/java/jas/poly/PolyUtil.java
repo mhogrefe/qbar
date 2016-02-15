@@ -1,8 +1,6 @@
 package jas.poly;
 
-import jas.arith.JasBigInteger;
-import jas.arith.Modular;
-import jas.arith.ModularRingFactory;
+import jas.arith.*;
 import jas.structure.RingElem;
 import jas.structure.RingFactory;
 import mho.wheels.iterables.IterableUtils;
@@ -65,6 +63,9 @@ public class PolyUtil {
     @Deprecated
     public static <C extends RingElem<C> & Modular> GenPolynomial<JasBigInteger> integerFromModularCoefficients(
             GenPolynomialRing<JasBigInteger> fac, GenPolynomial<C> A) {
+        if (A.elementClass() != ModLong.class && A.elementClass() != ModInteger.class) {
+            System.out.println(A.elementClass());
+        }
         return PolyUtil.map(fac, A, new ModSymToInt<>());
     }
 
@@ -80,6 +81,7 @@ public class PolyUtil {
     @Deprecated
     public static <C extends RingElem<C> & Modular> List<GenPolynomial<JasBigInteger>> integerFromModularCoefficients(
             final GenPolynomialRing<JasBigInteger> fac, List<GenPolynomial<C>> L) {
+        //C must be ModLong
         return IterableUtils.toList(IterableUtils.map(c -> PolyUtil.integerFromModularCoefficients(fac, c), L));
     }
 
@@ -389,10 +391,6 @@ public class PolyUtil {
             if (!c.isZERO()) {
                 pv.put(e1, c); // or m1.setValue( c )
             } else {
-                System.out.println("rDiv, P  = " + P);
-                System.out.println("rDiv, c1 = " + c1);
-                System.out.println("rDiv, s  = " + s);
-                System.out.println("rDiv, c  = " + c);
                 throw new RuntimeException("something is wrong");
             }
         }
@@ -518,10 +516,6 @@ public class PolyUtil {
             return P;
         }
         GenPolynomialRing<C> pfac = P.ring;
-        if (pfac.nvar > 1) {
-            // baseContent not possible by return type
-            throw new IllegalArgumentException(P.getClass().getName() + " only for univariate polynomials");
-        }
         RingFactory<C> rf = pfac.coFac;
         GenPolynomial<C> d = pfac.getZERO().copy();
         Map<Long, C> dm = d.val; //getMap();
@@ -579,9 +573,6 @@ public class PolyUtil {
     public static <C extends RingElem<C>> C evaluateMain(RingFactory<C> cfac, GenPolynomial<C> A, C a) {
         if (A == null || A.isZERO()) {
             return cfac.getZERO();
-        }
-        if (A.ring.nvar != 1) { // todo assert
-            throw new IllegalArgumentException("evaluateMain no univariate polynomial");
         }
         if (a == null || a.isZERO()) {
             return A.trailingBaseCoefficient();
