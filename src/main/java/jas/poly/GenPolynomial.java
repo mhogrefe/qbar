@@ -300,7 +300,7 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
         }
         long deg = 0;
         for (ExpVector e : val.keySet()) {
-            long d = e.getVal();
+            long d = e.val;
             if (d > deg) {
                 deg = d;
             }

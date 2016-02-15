@@ -177,9 +177,7 @@ public class GreatestCommonDivisorModular<MOD extends RingElem<MOD> & Modular> e
                 cp = cm;
                 System.exit(1);
                 cfe = cf;
-                for (int k = 0; k < wdegv.length(); k++) {
-                    cfe = cfe.multiply(new JasBigInteger(wdegv.getVal() + 1));
-                }
+                cfe = cfe.multiply(new JasBigInteger(wdegv.val + 1));
             } else {
                 // apply chinese remainder algorithm
                 JasBigInteger Mp = M;

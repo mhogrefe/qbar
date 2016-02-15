@@ -12,18 +12,13 @@ import java.util.Random;
  * @author Heinz Kredel
  */
 public final class ExpVector implements AbelianGroupElem<ExpVector> {
-    int hash = 0;
-
-    /**
-     * The data structure is an array of longs.
-     */
-    /*package*/private final long[] val;
+    public final long val;
 
     /**
      * Constructor for ExpVector.
      */
     public ExpVector() {
-        val = new long[1];
+        val = 0;
     }
 
     /**
@@ -32,26 +27,7 @@ public final class ExpVector implements AbelianGroupElem<ExpVector> {
      * @param e exponent to be set.
      */
     public ExpVector(long e) {
-        val = new long[1];
-        val[0] = e;
-    }
-
-    public long getVal() {
-        return val[0];
-    }
-
-    public int length() {
-        return 1;
-    }
-
-    @Override
-    public boolean equals(Object B) {
-        if (!(B instanceof ExpVector)) {
-            return false;
-        }
-        ExpVector b = (ExpVector) B;
-        int t = this.invLexCompareTo(b);
-        return (0 == t);
+        val = e;
     }
 
     @Override
@@ -66,52 +42,35 @@ public final class ExpVector implements AbelianGroupElem<ExpVector> {
 
     @Override
     public ExpVector sum(ExpVector V) {
-        long[] u = val;
-        long[] v = V.val;
-        long[] w = new long[1];
-        w[0] = u[0] + v[0];
-        return new ExpVector(w[0]);
+        return new ExpVector(val + V.val);
     }
 
     @Override
     public ExpVector subtract(ExpVector V) {
-        long[] u = val;
-        long[] v = V.val;
-        long[] w = new long[1];
-        w[0] = u[0] - v[0];
-        return new ExpVector(w[0]);
+        return new ExpVector(val - V.val);
     }
 
     @Override
     public int signum() {
-        int t = 0;
-        if (val[0] < 0) {
-            return -1;
-        }
-        if (val[0] > 0) {
-            t = 1;
-        }
-        return t;
+        return Long.signum(-1);
     }
 
     public long maxDeg() {
         long t = 0;
-        if (val[0] > t) {
-            t = val[0];
+        if (val > t) {
+            t = val;
         }
         return t;
     }
 
     public ExpVector lcm(ExpVector V) {
-        long[] w = new long[1];
-        w[0] = (val[0] >= V.val[0] ? val[0] : V.val[0]);
-        return new ExpVector(w[0]);
+        return new ExpVector(val >= V.val ? val : V.val);
     }
 
     //todo continue usage investigation
 
     public boolean multipleOf(ExpVector V) {
-        if (val[0] < V.val[0]) {
+        if (val < V.val) {
             return false;
         }
         return true;
@@ -123,76 +82,56 @@ public final class ExpVector implements AbelianGroupElem<ExpVector> {
     }
 
     protected int invLexCompareTo(ExpVector V) {
-        long[] u = val;
-        long[] v = V.val;
+        long u = val;
+        long v = V.val;
         int t = 0;
-        for (int i = 0; i < u.length; i++) {
-            if (u[i] > v[i])
-                return 1;
-            if (u[i] < v[i])
-                return -1;
-        }
+        if (u > v)
+            return 1;
+        if (u < v)
+            return -1;
         return t;
     }
 
     public int invLexCompareTo(ExpVector V, int begin, int end) {
-        long[] u = val;
-        long[] v = V.val;
+        long u = val;
+        long v = V.val;
         int t = 0;
         for (int i = begin; i < end; i++) {
-            if (u[i] > v[i])
+            if (u > v)
                 return 1;
-            if (u[i] < v[i])
+            if (u < v)
                 return -1;
         }
         return t;
     }
 
     public int invGradCompareTo(ExpVector V) {
-        long[] u = val;
-        long[] v = V.val;
+        long u = val;
+        long v = V.val;
         int t = 0;
-        int i;
-        for (i = 0; i < u.length; i++) {
-            if (u[i] > v[i]) {
-                t = 1;
-                break;
-            }
-            if (u[i] < v[i]) {
-                t = -1;
-                break;
-            }
+        if (u > v) {
+            t = 1;
+        }
+        if (u < v) {
+            t = -1;
         }
         if (t == 0) {
             return t;
-        }
-        long up = 0;
-        long vp = 0;
-        for (int j = i; j < u.length; j++) {
-            up += u[j];
-            vp += v[j];
-        }
-        if (up > vp) {
-            t = 1;
-        } else {
-            if (up < vp) {
-                t = -1;
-            }
         }
         return t;
     }
 
     public int invGradCompareTo(ExpVector V, int begin, int end) {
-        long[] u = val;
-        long[] v = V.val;
+        long u = val;
+        long v = V.val;
         int t = 0;
         int i;
         for (i = begin; i < end; i++) {
-            if (u[i] > v[i]) {
+            if (u > v) {
                 t = 1;
                 break;
             }
-            if (u[i] < v[i]) {
+            if (u < v) {
                 t = -1;
                 break;
             }
@@ -203,8 +142,8 @@ public final class ExpVector implements AbelianGroupElem<ExpVector> {
         long up = 0;
         long vp = 0;
         for (int j = i; j < end; j++) {
-            up += u[j];
-            vp += v[j];
+            up += u;
+            vp += v;
         }
         if (up > vp) {
             t = 1;
@@ -217,77 +156,60 @@ public final class ExpVector implements AbelianGroupElem<ExpVector> {
     }
 
     public int revInvLexCompareTo(ExpVector V) {
-        long[] u = val;
-        long[] v = V.val;
+        long u = val;
+        long v = V.val;
         int t = 0;
-        for (int i = u.length - 1; i >= 0; i--) {
-            if (u[i] > v[i])
-                return 1;
-            if (u[i] < v[i])
-                return -1;
-        }
+        if (u > v)
+            return 1;
+        if (u < v)
+            return -1;
         return t;
         //return EVRILCP(this, V);
     }
 
     public int revInvLexCompareTo(ExpVector V, int begin, int end) {
-        long[] u = val;
-        long[] v = V.val;
+        long u = val;
+        long v = V.val;
         int t = 0;
         for (int i = end - 1; i >= begin; i--) {
-            if (u[i] > v[i])
+            if (u > v)
                 return 1;
-            if (u[i] < v[i])
+            if (u < v)
                 return -1;
         }
         return t;
     }
 
     public int revInvGradCompareTo(ExpVector V) {
-        long[] u = val;
-        long[] v = V.val;
+        long u = val;
+        long v = V.val;
         int t = 0;
         int i;
-        for (i = u.length - 1; i >= 0; i--) {
-            if (u[i] > v[i]) {
-                t = 1;
-                break;
-            }
-            if (u[i] < v[i]) {
-                t = -1;
-                break;
-            }
+        if (u > v) {
+            t = 1;
+        }
+        if (u < v) {
+            t = -1;
         }
         if (t == 0) {
             return t;
         }
         long up = 0;
         long vp = 0;
-        for (int j = i; j >= 0; j--) {
-            up += u[j];
-            vp += v[j];
-        }
-        if (up > vp) {
-            t = 1;
-        } else {
-            if (up < vp) {
-                t = -1;
-            }
-        }
         return t;
     }
 
     public int revInvGradCompareTo(ExpVector V, int begin, int end) {
-        long[] u = val;
-        long[] v = V.val;
+        long u = val;
+        long v = V.val;
         int t = 0;
         int i;
         for (i = end - 1; i >= begin; i--) {
-            if (u[i] > v[i]) {
+            if (u > v) {
                 t = 1;
                 break;
             }
-            if (u[i] < v[i]) {
+            if (u < v) {
                 t = -1;
                 break;
             }
@@ -298,8 +220,8 @@ public final class ExpVector implements AbelianGroupElem<ExpVector> {
         long up = 0;
         long vp = 0;
         for (int j = i; j >= begin; j--) {
-            up += u[j];
-            vp += v[j];
+            up += u;
+            vp += v;
         }
         if (up > vp) {
             t = 1;
@@ -312,35 +234,17 @@ public final class ExpVector implements AbelianGroupElem<ExpVector> {
     }
 
     public int invWeightCompareTo(long[][] w, ExpVector V) {
-        long[] u = val;
-        long[] v = V.val;
+        long u = val;
+        long v = V.val;
         int t = 0;
-        int i;
-        for (i = 0; i < u.length; i++) {
-            if (u[i] > v[i]) {
-                t = 1;
-                break;
-            }
-            if (u[i] < v[i]) {
-                t = -1;
-                break;
-            }
+        if (u > v) {
+            t = 1;
+        }
+        if (u < v) {
+            t = -1;
         }
         if (t == 0) {
             return t;
-        }
-        for (long[] wk : w) {
-            long up = 0;
-            long vp = 0;
-            for (int j = i; j < u.length; j++) {
-                up += wk[j] * u[j];
-                vp += wk[j] * v[j];
-            }
-            if (up > vp) {
-                return 1;
-            } else if (up < vp) {
-                return -1;
-            }
         }
         return t;
     }
@@ -354,8 +258,19 @@ public final class ExpVector implements AbelianGroupElem<ExpVector> {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ExpVector expVector = (ExpVector) o;
+
+        return val == expVector.val;
+
+    }
+
+    @Override
     public int hashCode() {
-        return Long.hashCode(val[0]);
+        return (int) (val ^ (val >>> 32));
     }
 
     public boolean isZERO() {

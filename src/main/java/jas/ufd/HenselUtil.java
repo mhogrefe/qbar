@@ -336,25 +336,18 @@ public class HenselUtil {
         }
         GenPolynomialRing<JasBigInteger> ifac = new GenPolynomialRing<>(new JasBigInteger(), fac);
         for (Monomial<ModLong> m : C) {
-            //System.out.println("monomial = " + m);
-            long e = m.e.getVal();
+            long e = m.e.val;
             List<GenPolynomial<ModLong>> S = liftDiophant(A, B, e, k);
-            //System.out.println("Se = " + S);
             ModLong a = m.c;
-            //System.out.println("C.fac = " + fac.toScript());
             a = fac.coFac.fromInteger(a.getSymmetricInteger().getVal());
             int i = 0;
             for (GenPolynomial<ModLong> d : S) {
-                //System.out.println("d = " + d);
                 d = PolyUtil.fromIntegerCoefficients(fac, PolyUtil_ModLong.integerFromModularCoefficients(ifac, d));
                 d = d.multiply(a);
                 d = sol.get(i).sum(d);
-                //System.out.println("d = " + d);
                 sol.set(i++, d);
             }
-            //System.out.println("sol = " + sol + ", for " + m);
         }
-        //GenPolynomialRing<JasBigInteger> ifac = new GenPolynomialRing<JasBigInteger>(new JasBigInteger(), fac);
         A = PolyUtil.fromIntegerCoefficients(fac, PolyUtil_ModLong.integerFromModularCoefficients(ifac, A));
         B = PolyUtil.fromIntegerCoefficients(fac, PolyUtil_ModLong.integerFromModularCoefficients(ifac, B));
         C = PolyUtil.fromIntegerCoefficients(fac, PolyUtil_ModLong.integerFromModularCoefficients(ifac, C));

@@ -31,7 +31,7 @@ public class JasApi {
     private static List<BigInteger> fromPolynomial(GenPolynomial<JasBigInteger> p) {
         List<BigInteger> cs = toList(replicate((int) p.degree() + 1, BigInteger.ZERO));
         for (Map.Entry<ExpVector, JasBigInteger> e2 : p.val.entrySet()) {
-            cs.set((int) e2.getKey().getVal(), e2.getValue().getVal());
+            cs.set((int) e2.getKey().val, e2.getValue().getVal());
         }
         return cs;
     }
