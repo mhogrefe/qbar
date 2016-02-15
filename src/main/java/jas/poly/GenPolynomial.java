@@ -23,7 +23,8 @@ import java.util.*;
  * @param <C> coefficient type
  * @author Heinz Kredel
  */
-public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynomial<C>>, Iterable<Pair<Long, C>> {
+public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynomial<C>>,
+Iterable<SortedMap.Entry<Long, C>> {
     public Class elementClass() {
         return IterableUtils.head(factory().getONE().val.values()).getClass();
     }
@@ -867,7 +868,7 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
      *
      * @return a PolyIterator.
      */
-    public Iterator<Pair<Long, C>> iterator() {
-        return new PolyIterator<>(val);
+    public Iterator<SortedMap.Entry<Long, C>> iterator() {
+        return val.entrySet().iterator();
     }
 }

@@ -68,15 +68,15 @@ public class SquarefreeFiniteFieldCharP<C extends RingElem<C>> extends Squarefre
         }
         long mp = rf.characteristic().longValue();
         GenPolynomial<C> d = pfac.getZERO().copy();
-        for (Pair<Long, C> m : P) {
-            long fl = m.a;
+        for (SortedMap.Entry<Long, C> m : P) {
+            long fl = m.getKey();
             if (fl % mp != 0) {
                 return null;
             }
             fl = fl / mp;
             long e = fl;
             // for m.c exists a char-th root, since finite field
-            C r = m.b;
+            C r = m.getValue();
             d.doPutToMap(e, r);
         }
         return d;

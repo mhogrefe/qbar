@@ -93,22 +93,4 @@ public class GenSolvablePolynomialRing_BigRational extends GenSolvablePolynomial
         }
         return r;
     }
-
-    @Override
-    public GenSolvablePolynomial<BigRational> univariateA(int i) {
-        return super.univariateA(i);
-    }
-
-    /**
-     * Generate univariate solvable polynomial in a given variable with given
-     * exponent.
-     *
-     * @param i the index of the variable.
-     * @param e the exponent of the variable.
-     * @return X_i^e as solvable univariate polynomial.
-     */
-    @Override
-    public GenSolvablePolynomial<BigRational> univariateB(int i, long e) {
-        return super.univariateB(i, e);
-    }
 }

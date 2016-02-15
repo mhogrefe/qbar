@@ -8,6 +8,7 @@ import mho.wheels.structures.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.SortedMap;
 
 public class HenselUtil {
     /**
@@ -324,10 +325,10 @@ public class HenselUtil {
             sol.add(zero);
         }
         GenPolynomialRing<JasBigInteger> ifac = new GenPolynomialRing<>(new JasBigInteger(), fac);
-        for (Pair<Long, ModLong> m : C) {
-            long e = m.a;
+        for (SortedMap.Entry<Long, ModLong> m : C) {
+            long e = m.getKey();
             List<GenPolynomial<ModLong>> S = liftDiophant(A, B, e, k);
-            ModLong a = m.b;
+            ModLong a = m.getValue();
             a = fac.coFac.fromInteger(a.getSymmetricInteger().getVal());
             int i = 0;
             for (GenPolynomial<ModLong> d : S) {

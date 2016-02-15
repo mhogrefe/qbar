@@ -325,10 +325,10 @@ public class PolyUtil {
             GenPolynomialRing<D> ring, GenPolynomial<C> p, Function<C, D> f) {
         GenPolynomial<D> n = ring.getZERO().copy();
         SortedMap<Long, D> nv = n.val;
-        for (Pair<Long, C> m : p) {
-            D c = f.apply(m.b);
+        for (SortedMap.Entry<Long, C> m : p) {
+            D c = f.apply(m.getValue());
             if (c != null && !c.isZERO()) {
-                nv.put(m.a, c);
+                nv.put(m.getKey(), c);
             }
         }
         return n;
