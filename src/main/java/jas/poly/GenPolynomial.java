@@ -381,7 +381,7 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
         }
         long deg = 0;
         for (ExpVector e : val.keySet()) {
-            long d = e.getVal(j);
+            long d = e.getVal();
             if (d > deg) {
                 deg = d;
             }

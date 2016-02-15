@@ -374,7 +374,7 @@ public class FactorInteger extends FactorAbstract<JasBigInteger> {
         long s = 0L;
         for (GenPolynomial<ModLong> p : L) {
             ExpVector e = p.leadingExpVector();
-            long d = e.getVal(0);
+            long d = e.getVal();
             s += d;
         }
         return s;
@@ -384,7 +384,7 @@ public class FactorInteger extends FactorAbstract<JasBigInteger> {
         BitSet D = new BitSet(deg + 1);
         D.set(0); // constant factor
         for (ExpVector e : E) {
-            int i = (int) e.getVal(0);
+            int i = (int) e.getVal();
             BitSet s = new BitSet(deg + 1);
             for (int k = 0; k < deg + 1 - i; k++) { // shift by i places
                 s.set(i + k, D.get(k));

@@ -528,7 +528,7 @@ public class PolyUtil {
         Map<ExpVector, C> dm = d.val; //getMap();
         for (Map.Entry<ExpVector, C> m : P.getMap().entrySet()) {
             ExpVector f = m.getKey();
-            long fl = f.getVal(0);
+            long fl = f.getVal();
             if (fl > 0) {
                 C cf = rf.fromInteger(fl);
                 C a = m.getValue();
@@ -557,12 +557,10 @@ public class PolyUtil {
         if (e == null || e.isZERO()) {
             return JasBigInteger.ONE;
         }
-        for (int i = 0; i < e.length(); i++) {
-            if (e.getVal(i) > 0) {
-                n += (2 * e.getVal(i) - 1);
-                v = new BigInteger("" + (e.getVal(i) - 1));
-                p = p.multiply(v);
-            }
+        if (e.getVal() > 0) {
+            n += (2 * e.getVal() - 1);
+            v = new BigInteger("" + (e.getVal() - 1));
+            p = p.multiply(v);
         }
         n += (p.bitCount() + 1); // log2(p)
         n /= 2;
@@ -597,7 +595,7 @@ public class PolyUtil {
         long el2 = -1;
         for (Map.Entry<ExpVector, C> me : val.entrySet()) {
             ExpVector e = me.getKey();
-            el2 = e.getVal(0);
+            el2 = e.getVal();
             if (B == null /*el1 < 0*/) { // first turn
                 B = me.getValue(); // val.get(e);
             } else {

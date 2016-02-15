@@ -75,7 +75,7 @@ public class SquarefreeFiniteFieldCharP<C extends RingElem<C>> extends Squarefre
         GenPolynomial<C> d = pfac.getZERO().copy();
         for (Monomial<C> m : P) {
             ExpVector f = m.e;
-            long fl = f.getVal(0);
+            long fl = f.getVal();
             if (fl % mp != 0) {
                 return null;
             }

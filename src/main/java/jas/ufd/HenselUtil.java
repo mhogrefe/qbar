@@ -337,7 +337,7 @@ public class HenselUtil {
         GenPolynomialRing<JasBigInteger> ifac = new GenPolynomialRing<>(new JasBigInteger(), fac);
         for (Monomial<ModLong> m : C) {
             //System.out.println("monomial = " + m);
-            long e = m.e.getVal(0);
+            long e = m.e.getVal();
             List<GenPolynomial<ModLong>> S = liftDiophant(A, B, e, k);
             //System.out.println("Se = " + S);
             ModLong a = m.c;

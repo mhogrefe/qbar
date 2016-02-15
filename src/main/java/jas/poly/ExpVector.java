@@ -30,12 +30,11 @@ public final class ExpVector implements AbelianGroupElem<ExpVector> {
     /**
      * Constructor for ExpVector. Sets exponent i to e.
      *
-     * @param i index of exponent to be set.
      * @param e exponent to be set.
      */
-    public ExpVector(int i, long e) {
+    public ExpVector(long e) {
         this(new long[1]);
-        val[i] = e;
+        val[0] = e;
     }
 
     /**
@@ -51,18 +50,12 @@ public final class ExpVector implements AbelianGroupElem<ExpVector> {
         val = Arrays.copyOf(v, v.length); // > Java-5
     }
 
-    /**
-     * Get the exponent at position i.
-     *
-     * @param i position.
-     * @return val[i].
-     */
-    public long getVal(int i) {
-        return val[i];
+    public long getVal() {
+        return val[0];
     }
 
     public int length() {
-        return val.length;
+        return 1;
     }
 
     @Override
@@ -89,10 +82,8 @@ public final class ExpVector implements AbelianGroupElem<ExpVector> {
     public ExpVector sum(ExpVector V) {
         long[] u = val;
         long[] v = V.val;
-        long[] w = new long[u.length];
-        for (int i = 0; i < u.length; i++) {
-            w[i] = u[i] + v[i];
-        }
+        long[] w = new long[1];
+        w[0] = u[0] + v[0];
         return new ExpVector(w);
     }
 
@@ -100,58 +91,42 @@ public final class ExpVector implements AbelianGroupElem<ExpVector> {
     public ExpVector subtract(ExpVector V) {
         long[] u = val;
         long[] v = V.val;
-        long[] w = new long[u.length];
-        for (int i = 0; i < u.length; i++) {
-            w[i] = u[i] - v[i];
-        }
+        long[] w = new long[1];
+        w[0] = u[0] - v[0];
         return new ExpVector(w);
     }
 
     @Override
     public int signum() {
         int t = 0;
-        long[] u = val;
-        for (long anU : u) {
-            if (anU < 0) {
-                return -1;
-            }
-            if (anU > 0) {
-                t = 1;
-            }
+        if (val[0] < 0) {
+            return -1;
+        }
+        if (val[0] > 0) {
+            t = 1;
         }
         return t;
     }
 
     public long maxDeg() {
         long t = 0;
-        long[] u = val;
-        for (long anU : u) {
-            if (anU > t) {
-                t = anU;
-            }
+        if (val[0] > t) {
+            t = val[0];
         }
         return t;
     }
 
     public ExpVector lcm(ExpVector V) {
-        long[] u = val;
-        long[] v = V.val;
-        long[] w = new long[u.length];
-        for (int i = 0; i < u.length; i++) {
-            w[i] = (u[i] >= v[i] ? u[i] : v[i]);
-        }
+        long[] w = new long[1];
+        w[0] = (val[0] >= V.val[0] ? val[0] : V.val[0]);
         return new ExpVector(w);
     }
 
     //todo continue usage investigation
 
     public boolean multipleOf(ExpVector V) {
-        long[] u = val;
-        long[] v = V.val;
-        for (int i = 0; i < u.length; i++) {
-            if (u[i] < v[i]) {
-                return false;
-            }
+        if (val[0] < V.val[0]) {
+            return false;
         }
         return true;
     }
@@ -389,7 +364,7 @@ public final class ExpVector implements AbelianGroupElem<ExpVector> {
     }
 
     public static ExpVector create(int i, long e) {
-        return new ExpVector(i, e);
+        return new ExpVector(e);
     }
 
     private static ExpVector create(long[] v) {
@@ -397,43 +372,7 @@ public final class ExpVector implements AbelianGroupElem<ExpVector> {
     }
 
     public String toString(String[] vars) {
-        StringBuilder s = new StringBuilder();
-        boolean pit;
-        int r = length();
-        if (r != vars.length) {
-            //
-            return toString();
-        }
-        if (r == 0) {
-            return s.toString();
-        }
-        long vi;
-        for (int i = r - 1; i > 0; i--) {
-            vi = getVal(i);
-            if (vi != 0) {
-                s.append(vars[r - 1 - i]);
-                if (vi != 1) {
-                    s.append("^").append(vi);
-                }
-                pit = false;
-                for (int j = i - 1; j >= 0; j--) {
-                    if (getVal(j) != 0) {
-                        pit = true;
-                    }
-                }
-                if (pit) {
-                    s.append(" * ");
-                }
-            }
-        }
-        vi = getVal(0);
-        if (vi != 0) {
-            s.append(vars[r - 1]);
-            if (vi != 1) {
-                s.append("^").append(vi);
-            }
-        }
-        return s.toString();
+        return "";
     }
 
     public static String varsToString(String[] vars) {
@@ -452,15 +391,7 @@ public final class ExpVector implements AbelianGroupElem<ExpVector> {
 
     @Override
     public int hashCode() {
-        if (hash == 0) {
-            for (int i = 0; i < length(); i++) {
-                hash = hash << 4 + getVal(i);
-            }
-            if (hash == 0) {
-                hash = 1;
-            }
-        }
-        return hash;
+        return Long.hashCode(val[0]);
     }
 
     public boolean isZERO() {
