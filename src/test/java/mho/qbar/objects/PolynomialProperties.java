@@ -5,6 +5,7 @@ import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.testing.QBarTestProperties;
 import mho.qbar.testing.QBarTesting;
 import mho.wheels.io.Readers;
+import mho.wheels.iterables.ExhaustiveProvider;
 import mho.wheels.iterables.IterableUtils;
 import mho.wheels.math.MathUtils;
 import mho.wheels.numberUtils.IntegerUtils;
@@ -2106,6 +2107,75 @@ public class PolynomialProperties extends QBarTestProperties {
         return sort((Iterable<Polynomial>) map(Polynomial::of, JasApi.factorPolynomial(toList(p))));
     }
 
+    private static boolean queueIsOptimal(@NotNull PriorityQueue<Pair<BigInteger, List<BigInteger>>> queue) {
+        for (Pair<BigInteger, List<BigInteger>> entry : queue) {
+            if (entry.b.size() > 4) return false;
+        }
+        return true;
+    }
+
+    private static @NotNull List<Polynomial> kroneckerHelper(@NotNull Polynomial p) {
+        if (p.degree() == 1) {
+            return Collections.singletonList(p);
+        }
+        int choiceCount = p.degree() / 2 + 1;
+        PriorityQueue<Pair<BigInteger, List<BigInteger>>> choiceQueue = new PriorityQueue<>(
+            (a, b) -> {
+                if (a.b.size() > b.b.size()) return -1;
+                if (a.b.size() < b.b.size()) return 1;
+                return -a.a.abs().compareTo(b.a.abs());
+            }
+        );
+        int countdown = choiceCount * 100;
+        for (BigInteger x : ExhaustiveProvider.INSTANCE.bigIntegers()) {
+            BigInteger y = p.apply(x);
+            if (!y.equals(BigInteger.ZERO)) {
+                List<BigInteger> yFactors = MathUtils.factors(y.abs());
+                yFactors = toList(concat(yFactors, map(BigInteger::negate, yFactors)));
+                if (choiceQueue.size() < choiceCount) {
+                    choiceQueue.offer(new Pair<>(x, yFactors));
+                } else {
+                    Pair<BigInteger, List<BigInteger>> currentWorstChoice = choiceQueue.peek();
+                    if (yFactors.size() < currentWorstChoice.b.size()) {
+                        choiceQueue.poll();
+                        choiceQueue.offer(new Pair<>(x, yFactors));
+                    }
+                }
+                if (choiceQueue.size() == choiceCount && (queueIsOptimal(choiceQueue) || countdown <= 0)) {
+                    break;
+                }
+            }
+            countdown--;
+        }
+        Pair<Iterable<BigInteger>, Iterable<List<BigInteger>>> choiceLists = unzip(choiceQueue);
+        List<BigInteger> xs = toList(choiceLists.a);
+        //noinspection RedundantCast
+        Iterable<List<Pair<BigInteger, BigInteger>>> choices = map(
+                ys -> toList(zip(xs, ys)),
+                ExhaustiveProvider.INSTANCE.cartesianProduct((List<List<BigInteger>>) toList(choiceLists.b))
+        );
+        for (List<Pair<BigInteger, BigInteger>> choice : choices) {
+            Polynomial f = interpolate(choice).constantFactor().b;
+            if (f != ONE && p.isDivisibleBy(f)) {
+                return toList(concat(kroneckerHelper(f), kroneckerHelper(p.divideExact(f))));
+            }
+        }
+        return Collections.singletonList(p);
+    }
+
+    private static @NotNull List<Polynomial> factor_Yun_Kronecker(@NotNull Polynomial p) {
+        Pair<BigInteger, Polynomial> cf = p.constantFactor();
+        List<Polynomial> squareFreeFactors = cf.b.squareFreeFactor();
+        List<Polynomial> factors = new ArrayList<>();
+        if (!cf.a.equals(BigInteger.ONE)) {
+            factors.add(of(cf.a));
+        }
+        for (Polynomial squareFreeFactor : squareFreeFactors) {
+            factors.addAll(kroneckerHelper(squareFreeFactor));
+        }
+        return sort(factors);
+    }
+
     private void propertiesFactor() {
         initialize("factor()");
         boolean oldUseFactorCache = USE_FACTOR_CACHE;
@@ -2130,8 +2200,17 @@ public class PolynomialProperties extends QBarTestProperties {
             }
         }
 
-        Iterable<Pair<Polynomial, Polynomial>> ps = P.bagPairs(P.withScale(4).irreduciblePolynomialsAtLeast(1));
-        for (Pair<Polynomial, Polynomial> p : take(LIMIT, ps)) {
+        Iterable<Polynomial> ps = filterInfinite(
+                q -> q.degree() < 7,
+                P.withScale(1).withSecondaryScale(1).polynomialsAtLeast(0)
+        );
+        for (Polynomial p : take(LIMIT, ps)) {
+            List<Polynomial> factors = p.factor();
+            assertEquals(p, factors, factor_Yun_Kronecker(p));
+        }
+
+        Iterable<Pair<Polynomial, Polynomial>> ps2 = P.bagPairs(P.withScale(4).irreduciblePolynomialsAtLeast(1));
+        for (Pair<Polynomial, Polynomial> p : take(LIMIT, ps2)) {
             assertEquals(p, p.a.multiply(p.b).factor(), Pair.toList(p));
         }
 
