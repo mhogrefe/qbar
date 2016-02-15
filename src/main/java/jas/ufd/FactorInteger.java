@@ -27,7 +27,7 @@ public class FactorInteger extends FactorAbstract<JasBigInteger> {
     @SuppressWarnings("unchecked")
     public FactorInteger() {
         super(JasBigInteger.ONE);
-        ModularRingFactory<ModLong> mcofac = new ModLongRing(13, true);
+        ModularRingFactory<ModLong> mcofac = new ModLongRing(13);
         mfactor = FactorFactory.getImplementation(mcofac);
         mengine = GCDFactory.getImplementation(mcofac);
     }
@@ -101,9 +101,9 @@ public class FactorInteger extends FactorAbstract<JasBigInteger> {
                     throw new ArithmeticException("prime list exhausted");
                 }
                 if (ModLongRing.MAX_LONG.compareTo(p) > 0) {
-                    cofac = (ModularRingFactory) new ModLongRing(p, true);
+                    cofac = (ModularRingFactory) new ModLongRing(p);
                 } else {
-                    cofac = (ModularRingFactory) new ModIntegerRing(p, true);
+                    cofac = (ModularRingFactory) new ModIntegerRing(p);
                 }
 
                 nf = cofac.fromInteger(ac.getVal());

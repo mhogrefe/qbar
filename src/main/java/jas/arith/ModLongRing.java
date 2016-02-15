@@ -34,35 +34,11 @@ public final class ModLongRing implements ModularRingFactory<ModLong> {
      * The constructor creates a ModLongRing object from a long integer as
      * module part.
      *
-     * @param m long integer.
-     */
-    private ModLongRing(long m) {
-        modul = m;
-    }
-
-    /**
-     * The constructor creates a ModLongRing object from a long integer as
-     * module part.
-     *
      * @param m       long integer.
-     * @param isField indicator if m is prime.
      */
-    public ModLongRing(long m, boolean isField) {
+    public ModLongRing(long m) {
         modul = m;
-        this.isField = (isField ? 1 : 0);
-    }
-
-    /**
-     * The constructor creates a ModLongRing object from a JasBigInteger converted
-     * to long as module part.
-     *
-     * @param m java.math.JasBigInteger.
-     */
-    public ModLongRing(BigInteger m) {
-        this(m.longValue());
-        if (MAX_LONG.compareTo(m) < 0) { // m > max
-            throw new IllegalArgumentException("modul to large for long " + m);
-        }
+        this.isField = 1;
     }
 
     /**
@@ -70,10 +46,9 @@ public final class ModLongRing implements ModularRingFactory<ModLong> {
      * to long as module part.
      *
      * @param m       java.math.JasBigInteger.
-     * @param isField indicator if m is prime.
      */
-    public ModLongRing(BigInteger m, boolean isField) {
-        this(m.longValue(), true);
+    public ModLongRing(BigInteger m) {
+        this(m.longValue());
         if (MAX_LONG.compareTo(m) < 0) { // m > max
             throw new IllegalArgumentException("modul to large for long " + m);
         }
