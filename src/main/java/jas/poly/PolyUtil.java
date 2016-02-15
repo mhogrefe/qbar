@@ -242,9 +242,9 @@ public class PolyUtil {
         GenPolynomial<C> r = P;
         while (!r.isZERO()) {
             ExpVector f = r.leadingExpVector();
-            if (f.multipleOf(e)) {
+            if (f.val >= e.val) {
                 C a = r.leadingBaseCoefficient();
-                f = f.subtract(e);
+                f = new ExpVector(f.val - e.val);
                 C x = a.remainder(c);
                 if (x.isZERO()) {
                     C y = a.divide(c);
@@ -295,7 +295,7 @@ public class PolyUtil {
             if (i == k) {
                 ExpVector f = r.leadingExpVector();
                 C a = r.leadingBaseCoefficient();
-                f = f.subtract(e); // EVDIF( f, e );
+                f = new ExpVector(f.val - e.val);
                 //System.out.println("red div = " + f);
                 r = r.multiply(c); // coeff ac
                 h = S.multiply(a, f); // coeff ac
@@ -339,9 +339,9 @@ public class PolyUtil {
 
         while (!r.isZERO()) {
             ExpVector f = r.leadingExpVector();
-            if (f.multipleOf(e)) {
+            if (f.val >= e.val) {
                 C a = r.leadingBaseCoefficient();
-                f = f.subtract(e);
+                f = new ExpVector(f.val - e.val);
                 C x = a.remainder(c);
                 if (x.isZERO()) {
                     C y = a.divide(c);
@@ -444,9 +444,9 @@ public class PolyUtil {
         GenPolynomial<GenPolynomial<C>> r = P;
         while (!r.isZERO()) {
             ExpVector f = r.leadingExpVector();
-            if (f.multipleOf(e)) {
+            if (f.val >= e.val) {
                 GenPolynomial<C> a = r.leadingBaseCoefficient();
-                f = f.subtract(e);
+                f = new ExpVector(f.val - e.val);
                 if (c.isZERO()) {
                     GenPolynomial<C> y = PolyUtil.basePseudoDivide(a, c);
                     h = S.multiply(y, f); // coeff a
@@ -495,7 +495,7 @@ public class PolyUtil {
             if (i == k) {
                 ExpVector f = r.leadingExpVector();
                 GenPolynomial<C> a = r.leadingBaseCoefficient();
-                f = f.subtract(e); //EVDIF( f, e );
+                f = new ExpVector(f.val - e.val);
                 //System.out.println("red div = " + f);
                 r = r.multiply(c); // coeff ac
                 h = S.multiply(a, f); // coeff ac
@@ -554,7 +554,7 @@ public class PolyUtil {
         int n = 0;
         BigInteger p = BigInteger.ONE;
         BigInteger v;
-        if (e == null || e.isZERO()) {
+        if (e == null || e.val == 0) {
             return JasBigInteger.ONE;
         }
         if (e.val > 0) {

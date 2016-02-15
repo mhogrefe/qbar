@@ -156,11 +156,11 @@ public class GreatestCommonDivisorModular<MOD extends RingElem<MOD> & Modular> e
                 }
             } else { // TL = 3
                 boolean ok = false;
-                if (wdegv.multipleOf(mdegv)) { // TL = 2 // EVMT(wdegv,mdegv)
+                if (wdegv.val >= mdegv.val) { // TL = 2 // EVMT(wdegv,mdegv)
                     M = null; // init chinese remainder
                     ok = true; // prime ok
                 }
-                if (mdegv.multipleOf(wdegv)) { // TL = 1 // EVMT(mdegv,wdegv)
+                if (mdegv.val >= wdegv.val) { // TL = 1 // EVMT(mdegv,wdegv)
                     continue; // skip this prime
                 }
                 if (!ok) {

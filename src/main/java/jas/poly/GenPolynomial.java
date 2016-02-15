@@ -319,7 +319,7 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
         }
         long deg = 0;
         for (ExpVector e : val.keySet()) {
-            long d = e.maxDeg();
+            long d = e.val;
             if (d > deg) {
                 deg = d;
             }
@@ -338,7 +338,7 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
             return deg;
         }
         for (ExpVector e : val.keySet()) {
-            deg = deg.lcm(e);
+            deg = new ExpVector(Long.max(deg.val, e.val));
         }
         return deg;
     }
@@ -555,7 +555,7 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
                 ExpVector e2 = m2.getKey();
                 C c = c1.multiply(c2); // check non zero if not domain
                 if (!c.isZERO()) {
-                    ExpVector e = e1.sum(e2);
+                    ExpVector e = new ExpVector(e1.val + e2.val);
                     C c0 = pv.get(e);
                     if (c0 == null) {
                         pv.put(e, c);
@@ -651,7 +651,7 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
             ExpVector e1 = m1.getKey();
             C c = c1.multiply(s); // check non zero if not domain
             if (!c.isZERO()) {
-                ExpVector e2 = e1.sum(e);
+                ExpVector e2 = new ExpVector(e1.val + e.val);
                 pv.put(e2, c);
             }
         }
@@ -705,9 +705,9 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
         GenPolynomial<C> r = this.copy();
         while (!r.isZERO()) {
             ExpVector f = r.leadingExpVector();
-            if (f.multipleOf(e)) {
+            if (f.val >= e.val) {
                 C a = r.leadingBaseCoefficient();
-                f = f.subtract(e);
+                f = new ExpVector(f.val - e.val);
                 a = a.multiply(ci);
                 q = q.sum(a, f);
                 h = S.multiply(a, f);
@@ -775,9 +775,9 @@ public class GenPolynomial<C extends RingElem<C>> implements RingElem<GenPolynom
         GenPolynomial<C> r = this.copy();
         while (!r.isZERO()) {
             ExpVector f = r.leadingExpVector();
-            if (f.multipleOf(e)) {
+            if (f.val >= e.val) {
                 C a = r.leadingBaseCoefficient();
-                f = f.subtract(e);
+                f = new ExpVector(f.val - e.val);
                 //
                 a = a.multiply(ci);
                 h = S.multiply(a, f);

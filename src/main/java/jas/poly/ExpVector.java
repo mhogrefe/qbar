@@ -1,7 +1,5 @@
 package jas.poly;
 
-import jas.structure.AbelianGroupElem;
-
 import java.util.Random;
 
 /**
@@ -11,7 +9,7 @@ import java.util.Random;
  *
  * @author Heinz Kredel
  */
-public final class ExpVector implements AbelianGroupElem<ExpVector> {
+public final class ExpVector implements Comparable<ExpVector> {
     public final long val;
 
     /**
@@ -31,65 +29,12 @@ public final class ExpVector implements AbelianGroupElem<ExpVector> {
     }
 
     @Override
-    public ExpVector abs() {
-        return null;
-    }
-
-    @Override
-    public ExpVector negate() {
-        return null;
-    }
-
-    @Override
-    public ExpVector sum(ExpVector V) {
-        return new ExpVector(val + V.val);
-    }
-
-    @Override
-    public ExpVector subtract(ExpVector V) {
-        return new ExpVector(val - V.val);
-    }
-
-    @Override
-    public int signum() {
-        return Long.signum(-1);
-    }
-
-    public long maxDeg() {
-        long t = 0;
-        if (val > t) {
-            t = val;
-        }
-        return t;
-    }
-
-    public ExpVector lcm(ExpVector V) {
-        return new ExpVector(val >= V.val ? val : V.val);
-    }
-
-    //todo continue usage investigation
-
-    public boolean multipleOf(ExpVector V) {
-        if (val < V.val) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
     public int compareTo(ExpVector V) {
         return this.invLexCompareTo(V);
     }
 
     protected int invLexCompareTo(ExpVector V) {
-        long u = val;
-        long v = V.val;
-        int t = 0;
-        if (u > v)
-            return 1;
-        if (u < v)
-            return -1;
-        return t;
+        return Long.compare(val, V.val);
     }
 
     public int invLexCompareTo(ExpVector V, int begin, int end) {
@@ -271,10 +216,6 @@ public final class ExpVector implements AbelianGroupElem<ExpVector> {
     @Override
     public int hashCode() {
         return (int) (val ^ (val >>> 32));
-    }
-
-    public boolean isZERO() {
-        return (0 == this.signum());
     }
 
     public static ExpVector EVRAND(int r, long k, float q, Random rnd) {
