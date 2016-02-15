@@ -40,7 +40,7 @@ public class JasApi {
         SortedMap<ExpVector, JasBigInteger> z = new TreeMap<>();
         for (int i = 0; i < xs.size(); i++) {
             if (!xs.get(i).equals(BigInteger.ZERO)) {
-                z.put(new ExpVector(1, 0, i), new JasBigInteger(xs.get(i)));
+                z.put(new ExpVector(0, i), new JasBigInteger(xs.get(i)));
             }
         }
         return new GenPolynomial<>(GenPolynomialRing.make(new JasBigInteger()), z);

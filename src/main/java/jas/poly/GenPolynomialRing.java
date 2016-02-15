@@ -104,7 +104,10 @@ public class GenPolynomialRing<C extends RingElem<C>> implements RingFactory<Gen
         }
         ZERO = new GenPolynomial<>(this);
         C coeff = coFac.getONE();
-        evzero = ExpVector.create(nvar);
+        if (nvar != 1) {
+            System.exit(1);
+        }
+        evzero = ExpVector.create();
         ONE = new GenPolynomial<>(this, coeff, evzero);
         if (vars == null) {
             vars = newVars(nvar);
@@ -386,9 +389,12 @@ public class GenPolynomialRing<C extends RingElem<C>> implements RingFactory<Gen
     GenPolynomial<C> univariate(int modv, int i, long e) {
         GenPolynomial<C> p = getZERO();
         int r = nvar - modv;
+        if (r != 1) {
+            System.exit(1);
+        }
         if (0 <= i && i < r) {
             C one = coFac.getONE();
-            ExpVector f = ExpVector.create(r, i, e);
+            ExpVector f = ExpVector.create(i, e);
             if (modv > 0) {
                 System.exit(1);
             }

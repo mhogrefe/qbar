@@ -22,22 +22,19 @@ public final class ExpVector implements AbelianGroupElem<ExpVector> {
 
     /**
      * Constructor for ExpVector.
-     *
-     * @param n length of exponent vector.
      */
-    public ExpVector(int n) {
-        this(new long[n]);
+    public ExpVector() {
+        this(new long[1]);
     }
 
     /**
      * Constructor for ExpVector. Sets exponent i to e.
      *
-     * @param n length of exponent vector.
      * @param i index of exponent to be set.
      * @param e exponent to be set.
      */
-    public ExpVector(int n, int i, long e) {
-        this(new long[n]);
+    public ExpVector(int i, long e) {
+        this(new long[1]);
         val[i] = e;
     }
 
@@ -387,12 +384,12 @@ public final class ExpVector implements AbelianGroupElem<ExpVector> {
         return t;
     }
 
-    public static ExpVector create(int n) {
-        return new ExpVector(n);
+    public static ExpVector create() {
+        return new ExpVector();
     }
 
-    public static ExpVector create(int n, int i, long e) {
-        return new ExpVector(n, i, e);
+    public static ExpVector create(int i, long e) {
+        return new ExpVector(i, e);
     }
 
     private static ExpVector create(long[] v) {
