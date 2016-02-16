@@ -1119,20 +1119,22 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
         }
         int n = width;
         if (n == 0) return Rational.ONE;
-        Rational[][] b = new Rational[n][n];
+        if (n == 1) return get(0, 0);
+        Rational[][] arrayA = new Rational[n][n];
         for (int i = 0; i < n; i++) {
             RationalVector row = row(i);
-            b[i] = new Rational[n];
+            arrayA[i] = new Rational[n];
             for (int j = 0; j < n; j++) {
-                b[i][j] = row.get(j);
+                arrayA[i][j] = row.get(j);
             }
         }
-        Rational[][] oldB = null;
+        Rational[][] arrayB = new Rational[n - 1][n - 1];
+        arrayB[0][0] = Rational.ONE;
         boolean swapSign = true;
         for (int k = 0; k < n - 1; k++) {
             int firstNonzeroColumnIndex = -1;
-            for (int j = k; j < n; j++) {
-                if (b[k][j] != Rational.ZERO) {
+            for (int j = 0; j < n - k; j++) {
+                if (arrayA[0][j] != Rational.ZERO) {
                     firstNonzeroColumnIndex = j;
                     break;
                 }
@@ -1140,27 +1142,28 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
             if (firstNonzeroColumnIndex == -1) {
                 return Rational.ZERO;
             }
-            if (firstNonzeroColumnIndex != k) {
-                for (Rational[] row : b) {
+            if (firstNonzeroColumnIndex != 0) {
+                for (Rational[] row : arrayA) {
                     Rational temp = row[firstNonzeroColumnIndex];
-                    row[firstNonzeroColumnIndex] = row[k];
-                    row[k] = temp;
+                    row[firstNonzeroColumnIndex] = row[0];
+                    row[0] = temp;
                 }
                 swapSign = !swapSign;
             }
-            Rational[][] newB = new Rational[n][n];
-            Rational denominator = oldB == null ? Rational.ONE : oldB[k - 1][k - 1];
-            for (int i = k + 1; i < n; i++) {
-                newB[i][k] = Rational.ZERO;
-                for (int j = k + 1; j < n; j++) {
-                    Rational numerator = b[k][k].multiply(b[i][j]).subtract(b[i][k].multiply(b[k][j]));
-                    newB[i][j] = numerator.divide(denominator);
+            Rational denominator = arrayB[0][0];
+            for (int i = 1; i < n - k; i++) {
+                arrayB[i - 1][0] = Rational.ZERO;
+                for (int j = 1; j < n - k; j++) {
+                    Rational numerator = arrayA[0][0].multiply(arrayA[i][j])
+                            .subtract(arrayA[i][0].multiply(arrayA[0][j]));
+                    arrayB[i - 1][j - 1] = numerator.divide(denominator);
                 }
             }
-            oldB = b;
-            b = newB;
+            Rational[][] temp = arrayA;
+            arrayA = arrayB;
+            arrayB = temp;
         }
-        Rational determinant = b[n - 1][n - 1];
+        Rational determinant = arrayA[0][0];
         return swapSign ? determinant : determinant.negate();
     }
 
