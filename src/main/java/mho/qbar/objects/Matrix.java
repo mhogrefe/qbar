@@ -1135,6 +1135,70 @@ public class Matrix implements Comparable<Matrix> {
     }
 
     /**
+     * Returns the determinant of {@code this} using the Dogdson-Jordan-Gauss algorithm (Basu, Pollack, and Roy 2006).
+     *
+     * <ul>
+     *  <li>{@code this} must be square.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @return |{@code this}|
+     */
+    public @NotNull BigInteger determinant() {
+        if (width != height()) {
+            throw new IllegalArgumentException("this must be square. Invalid this: " + this);
+        }
+        int n = width;
+        if (n == 0) return BigInteger.ONE;
+        if (n == 1) return get(0, 0);
+        BigInteger[][] arrayA = new BigInteger[n][n];
+        for (int i = 0; i < n; i++) {
+            Vector row = row(i);
+            arrayA[i] = new BigInteger[n];
+            for (int j = 0; j < n; j++) {
+                arrayA[i][j] = row.get(j);
+            }
+        }
+        BigInteger[][] arrayB = new BigInteger[n - 1][n - 1];
+        arrayB[0][0] = BigInteger.ONE;
+        boolean swapSign = true;
+        for (int k = 0; k < n - 1; k++) {
+            int firstNonzeroColumnIndex = -1;
+            for (int j = 0; j < n - k; j++) {
+                if (!arrayA[0][j].equals(BigInteger.ZERO)) {
+                    firstNonzeroColumnIndex = j;
+                    break;
+                }
+            }
+            if (firstNonzeroColumnIndex == -1) {
+                return BigInteger.ZERO;
+            }
+            if (firstNonzeroColumnIndex != 0) {
+                for (BigInteger[] row : arrayA) {
+                    BigInteger temp = row[firstNonzeroColumnIndex];
+                    row[firstNonzeroColumnIndex] = row[0];
+                    row[0] = temp;
+                }
+                swapSign = !swapSign;
+            }
+            BigInteger denominator = arrayB[0][0];
+            for (int i = 1; i < n - k; i++) {
+                arrayB[i - 1][0] = BigInteger.ZERO;
+                for (int j = 1; j < n - k; j++) {
+                    BigInteger numerator = arrayA[0][0].multiply(arrayA[i][j])
+                            .subtract(arrayA[i][0].multiply(arrayA[0][j]));
+                    arrayB[i - 1][j - 1] = numerator.divide(denominator);
+                }
+            }
+            BigInteger[][] temp = arrayA;
+            arrayA = arrayB;
+            arrayB = temp;
+        }
+        BigInteger determinant = arrayA[0][0];
+        return swapSign ? determinant : determinant.negate();
+    }
+
+    /**
      * Determines whether {@code this} is equal to {@code that}.
      *
      * <ul>

@@ -941,6 +941,33 @@ public class MatrixTest {
         invert_fail_helper("[[1, 9, -13], [20, 5, -6]]");
     }
 
+    private static void determinant_helper(@NotNull String input, @NotNull String output) {
+        aeq(read(input).get().determinant(), output);
+    }
+
+    private static void determinant_fail_helper(@NotNull String input) {
+        try {
+            read(input).get().determinant();
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testDeterminant() {
+        determinant_helper("[]#0", "1");
+        determinant_helper("[[1]]", "1");
+        determinant_helper("[[-1]]", "-1");
+        determinant_helper("[[-3]]", "-3");
+        determinant_helper("[[1, 0], [0, 1]]", "1");
+        determinant_helper("[[0, 1], [1, 0]]", "-1");
+        determinant_helper("[[-3, -8], [0, 7]]", "-21");
+        determinant_helper("[[-2, 2, -3], [-1, 1, 3], [2, 0, -1]]", "18");
+
+        determinant_fail_helper("[]#3");
+        determinant_fail_helper("[[], [], []]");
+        determinant_fail_helper("[[1, 9, -13], [20, 5, -6]]");
+    }
+
     @Test
     public void testEquals() {
         testEqualsHelper(

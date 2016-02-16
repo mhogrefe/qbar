@@ -76,6 +76,8 @@ public class MatrixProperties extends QBarTestProperties {
         compareImplementationsSolveLinearSystem();
         propertiesInvert();
         compareImplementationsInvert();
+        propertiesDeterminant();
+        compareImplementationsDeterminant();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -1552,6 +1554,88 @@ public class MatrixProperties extends QBarTestProperties {
         functions.put("standard", Matrix::invert);
         Iterable<Matrix> ms = P.withScale(4).withSecondaryScale(4).squareMatrices();
         compareImplementations("invert()", take(LIMIT, ms), functions);
+    }
+
+    private static @NotNull BigInteger determinant_simplest(@NotNull Matrix m) {
+        return m.toRationalMatrix().determinant().bigIntegerValueExact();
+    }
+
+    private static @NotNull BigInteger determinant_Laplace(@NotNull Matrix m) {
+        if (m.width() == 0) return BigInteger.ONE;
+        if (m.width() == 1) return m.get(0, 0);
+        BigInteger determinant = BigInteger.ZERO;
+        Vector firstRow = m.row(0);
+        List<Integer> rowIndices = toList(range(1, m.width() - 1));
+        boolean sign = true;
+        for (int i = 0; i < m.width(); i++) {
+            BigInteger factor = firstRow.get(i);
+            if (!sign) factor = factor.negate();
+            sign = !sign;
+            if (factor.equals(BigInteger.ZERO)) continue;
+            BigInteger minor = m.submatrix(
+                    rowIndices,
+                    toList(concat(range(0, i - 1), range(i + 1, m.width() - 1)))
+            ).determinant();
+            determinant = determinant.add(factor.multiply(minor));
+        }
+        return determinant;
+    }
+
+    private void propertiesDeterminant() {
+        initialize("determinant()");
+        for (Matrix m : take(LIMIT, P.withScale(4).withSecondaryScale(4).squareMatrices())) {
+            BigInteger determinant = m.determinant();
+            assertEquals(m, determinant, determinant_simplest(m));
+            assertEquals(m, determinant, determinant_Laplace(m));
+            assertEquals(m, determinant, m.transpose().determinant());
+            assertNotEquals(m, determinant.equals(BigInteger.ZERO), m.isInvertible());
+            if (!determinant.equals(BigInteger.ZERO)) {
+                assertEquals(m, m.invert().get().determinant(), Rational.of(determinant).invert());
+            }
+        }
+
+        Iterable<Pair<Matrix, Pair<Integer, Integer>>> ps = P.dependentPairs(
+                filterInfinite(m -> m.width() > 1, P.withScale(4).squareMatrices()),
+                m -> P.subsetPairs(P.range(0, m.height() - 1))
+        );
+        for (Pair<Matrix, Pair<Integer, Integer>> p : take(LIMIT, ps)) {
+            List<Vector> rows = toList(p.a.rows());
+            Collections.swap(rows, p.b.a, p.b.b);
+            Matrix swapped = fromRows(rows);
+            assertEquals(p, swapped.determinant(), p.a.determinant().negate());
+        }
+
+        Iterable<Pair<Pair<Matrix, BigInteger>, Integer>> ps2 = P.dependentPairs(
+                P.pairs(
+                        filterInfinite(m -> m.width() > 0, P.withScale(4).squareMatrices()),
+                        P.withScale(4).bigIntegers()
+                ),
+                p -> P.range(0, p.a.height() - 1)
+        );
+        for (Pair<Pair<Matrix, BigInteger>, Integer> p : take(LIMIT, ps2)) {
+            List<Vector> rows = toList(p.a.a.rows());
+            rows.set(p.b, rows.get(p.b).multiply(p.a.b));
+            Matrix rowScaled = fromRows(rows);
+            assertEquals(p, rowScaled.determinant(), p.a.a.determinant().multiply(p.a.b));
+        }
+
+        for (int i : take(SMALL_LIMIT, P.positiveIntegersGeometric())) {
+            Matrix zero = zero(i, i);
+            assertEquals(i, zero.determinant(), BigInteger.ZERO);
+        }
+
+        for (int i : take(SMALL_LIMIT, P.naturalIntegersGeometric())) {
+            Matrix identity = identity(i);
+            assertEquals(i, identity.determinant(), BigInteger.ONE);
+        }
+    }
+
+    private void compareImplementationsDeterminant() {
+        Map<String, Function<Matrix, BigInteger>> functions = new LinkedHashMap<>();
+        functions.put("simplest", MatrixProperties::determinant_simplest);
+        functions.put("Laplace", MatrixProperties::determinant_Laplace);
+        functions.put("standard", Matrix::determinant);
+        compareImplementations("determinant()", take(LIMIT, P.withScale(4).squareMatrices()), functions);
     }
 
     private void propertiesEquals() {
