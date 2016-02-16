@@ -1104,6 +1104,71 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
     }
 
     /**
+     * Returns the determinant of {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} must be square.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @return |{@code this}|
+     */
+    public @NotNull Rational determinant() {
+        if (width != height()) {
+            throw new IllegalArgumentException("this must be square. Invalid this: " + this);
+        }
+        boolean changed = false;
+        Rational det = Rational.ONE;
+        List<RationalVector> refRows = rows;
+        int i = 0;
+        outer:
+        for (int j = 0; i < width && j < width; j++) {
+            int nonzeroRowIndex = i;
+            Rational pivot = refRows.get(i).get(j);
+            while (pivot == Rational.ZERO) {
+                nonzeroRowIndex++;
+                if (nonzeroRowIndex == width) continue outer;
+                pivot = refRows.get(nonzeroRowIndex).get(j);
+            }
+            if (nonzeroRowIndex != i) {
+                if (!changed) {
+                    changed = true;
+                    refRows = toList(rows);
+                }
+                Collections.swap(refRows, i, nonzeroRowIndex);
+                det = det.negate();
+            }
+            RationalVector nonzeroRow = refRows.get(i);
+            if (pivot != Rational.ONE) {
+                if (!changed) {
+                    changed = true;
+                    refRows = toList(rows);
+                }
+                nonzeroRow = nonzeroRow.divide(pivot);
+                refRows.set(i, nonzeroRow);
+                det = det.multiply(pivot);
+            }
+            for (int k = i + 1; k < width; k++) {
+                RationalVector row = refRows.get(k);
+                if (row.get(j) != Rational.ZERO) {
+                    if (!changed) {
+                        changed = true;
+                        refRows = toList(rows);
+                    }
+                    refRows.set(k, row.subtract(nonzeroRow.multiply(row.get(j))));
+                }
+            }
+            i++;
+        }
+        for (int k = width - 1; k >= 0; k--) {
+            if (refRows.get(k).get(k) == Rational.ZERO) {
+                return Rational.ZERO;
+            }
+        }
+        return det;
+    }
+
+    /**
      * Determines whether {@code this} is equal to {@code that}.
      *
      * <ul>

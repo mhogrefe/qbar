@@ -74,6 +74,8 @@ public class RationalMatrixProperties extends QBarTestProperties {
         propertiesReducedRowEchelonForm();
         propertiesSolveLinearSystem();
         propertiesInvert();
+        propertiesDeterminant();
+        compareImplementationsDeterminant();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -1521,6 +1523,82 @@ public class RationalMatrixProperties extends QBarTestProperties {
             RationalMatrix identity = identity(i);
             idempotent(m -> m.invert().get(), identity);
         }
+    }
+
+    private static @NotNull Rational determinant_Laplace(@NotNull RationalMatrix m) {
+        if (m.width() == 0) return Rational.ONE;
+        if (m.width() == 1) return m.get(0, 0);
+        Rational determinant = Rational.ZERO;
+        RationalVector firstRow = m.row(0);
+        List<Integer> rowIndices = toList(range(1, m.width() - 1));
+        boolean sign = true;
+        for (int i = 0; i < m.width(); i++) {
+            Rational factor = firstRow.get(i);
+            if (!sign) factor = factor.negate();
+            sign = !sign;
+            if (factor == Rational.ZERO) continue;
+            Rational minor = m.submatrix(
+                    rowIndices,
+                    toList(concat(range(0, i - 1), range(i + 1, m.width() - 1)))
+            ).determinant();
+            determinant = determinant.add(factor.multiply(minor));
+        }
+        return determinant;
+    }
+
+    private void propertiesDeterminant() {
+        initialize("determinant()");
+        for (RationalMatrix m : take(LIMIT, P.withScale(4).squareRationalMatrices())) {
+            Rational determinant = m.determinant();
+            assertEquals(m, determinant, determinant_Laplace(m));
+            assertEquals(m, determinant, m.transpose().determinant());
+            assertEquals(m, determinant != Rational.ZERO, m.isInvertible());
+            if (determinant != Rational.ZERO) {
+                assertEquals(m, m.invert().get().determinant(), determinant.invert());
+            }
+        }
+
+        Iterable<Pair<RationalMatrix, Pair<Integer, Integer>>> ps = P.dependentPairs(
+                filterInfinite(m -> m.width() > 1, P.withScale(4).squareRationalMatrices()),
+                m -> P.subsetPairs(P.range(0, m.height() - 1))
+        );
+        for (Pair<RationalMatrix, Pair<Integer, Integer>> p : take(LIMIT, ps)) {
+            List<RationalVector> rows = toList(p.a.rows());
+            Collections.swap(rows, p.b.a, p.b.b);
+            RationalMatrix swapped = fromRows(rows);
+            assertEquals(p, swapped.determinant(), p.a.determinant().negate());
+        }
+
+        Iterable<Pair<Pair<RationalMatrix, Rational>, Integer>> ps2 = P.dependentPairs(
+                P.pairs(
+                        filterInfinite(m -> m.width() > 0, P.withScale(4).squareRationalMatrices()),
+                        P.withScale(4).rationals()
+                ),
+                p -> P.range(0, p.a.height() - 1)
+        );
+        for (Pair<Pair<RationalMatrix, Rational>, Integer> p : take(LIMIT, ps2)) {
+            List<RationalVector> rows = toList(p.a.a.rows());
+            rows.set(p.b, rows.get(p.b).multiply(p.a.b));
+            RationalMatrix rowScaled = fromRows(rows);
+            assertEquals(p, rowScaled.determinant(), p.a.a.determinant().multiply(p.a.b));
+        }
+
+        for (int i : take(SMALL_LIMIT, P.positiveIntegersGeometric())) {
+            RationalMatrix zero = zero(i, i);
+            assertEquals(i, zero.determinant(), Rational.ZERO);
+        }
+
+        for (int i : take(SMALL_LIMIT, P.naturalIntegersGeometric())) {
+            RationalMatrix identity = identity(i);
+            assertEquals(i, identity.determinant(), Rational.ONE);
+        }
+    }
+
+    private void compareImplementationsDeterminant() {
+        Map<String, Function<RationalMatrix, Rational>> functions = new LinkedHashMap<>();
+        functions.put("Laplace", RationalMatrixProperties::determinant_Laplace);
+        functions.put("standard", RationalMatrix::determinant);
+        compareImplementations("determinant()", take(LIMIT, P.withScale(4).squareRationalMatrices()), functions);
     }
 
     private void propertiesEquals() {
