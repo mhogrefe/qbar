@@ -1104,7 +1104,7 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
     }
 
     /**
-     * Returns the determinant of {@code this} using the Dogdson-Jordan-Gauss algorithm (Basu, Pollack, and Roy 2006).
+     * Computes the determinant of {@code this} using the Dogdson-Jordan-Gauss algorithm (Basu, Pollack, and Roy 2006).
      *
      * <ul>
      *  <li>{@code this} must be square.</li>
@@ -1165,6 +1165,56 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
         }
         Rational determinant = arrayA[0][0];
         return swapSign ? determinant : determinant.negate();
+    }
+
+    /**
+     * Computes the characteristic polynomial of {@code this} using the Faddeev-Leverrier algorithm.
+     *
+     * <ul>{@code this} must be square.</ul>
+     * <ul>The result is monic.</ul>
+     *
+     * @return det(Ix–{@code this})
+     */
+    @SuppressWarnings("JavaDoc")
+    public @NotNull RationalPolynomial characteristicPolynomial() {
+        if (width != height()) {
+            throw new IllegalArgumentException("this must be square. Invalid this: " + this);
+        }
+        int n = width;
+        if (n == 0) return RationalPolynomial.ONE;
+        int r = 1;
+        while (r * r <= n) r++;
+        List<RationalMatrix> powers = new ArrayList<>();
+        RationalMatrix previousPower = identity(n);
+        powers.add(previousPower);
+        List<Rational> powerSums = toList(replicate(r * r, Rational.ZERO));
+        powerSums.set(0, Rational.of(n));
+        for (int i = 1; i < r; i++) {
+            RationalMatrix nextPower = multiply(previousPower);
+            powers.add(nextPower);
+            powerSums.set(i, nextPower.trace());
+            previousPower = nextPower;
+        }
+        List<RationalMatrix> cs = new ArrayList<>();
+        RationalMatrix firstC = multiply(powers.get(r - 1));
+        cs.add(firstC);
+        RationalMatrix previousC = firstC;
+        powerSums.set(r, firstC.trace());
+        for (int j = 2; j < r; j++) {
+            RationalMatrix nextC = firstC.multiply(previousC);
+            powerSums.set(j * r, nextC.trace());
+            cs.add(nextC);
+            previousC = nextC;
+        }
+        for (int i = 1; i < r; i++) {
+            for (int j = 1; j < r; j++) {
+                int index = j * r + i;
+                if (index <= n) {
+                    powerSums.set(index, powers.get(i).multiply(cs.get(j - 1)).trace());
+                }
+            }
+        }
+        return RationalPolynomial.fromPowerSums(toList(take(n + 1, powerSums)));
     }
 
     /**

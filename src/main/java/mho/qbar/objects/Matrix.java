@@ -1135,7 +1135,7 @@ public class Matrix implements Comparable<Matrix> {
     }
 
     /**
-     * Returns the determinant of {@code this} using the Dogdson-Jordan-Gauss algorithm (Basu, Pollack, and Roy 2006).
+     * Computes the determinant of {@code this} using the Dogdson-Jordan-Gauss algorithm (Basu, Pollack, and Roy 2006).
      *
      * <ul>
      *  <li>{@code this} must be square.</li>

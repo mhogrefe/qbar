@@ -4,6 +4,7 @@ import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.testing.QBarTestProperties;
 import mho.qbar.testing.QBarTesting;
 import mho.wheels.iterables.IterableUtils;
+import mho.wheels.numberUtils.IntegerUtils;
 import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
 import org.jetbrains.annotations.NotNull;
@@ -76,6 +77,7 @@ public class RationalMatrixProperties extends QBarTestProperties {
         propertiesInvert();
         propertiesDeterminant();
         compareImplementationsDeterminant();
+        propertiesCharacteristicPolynomial();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -1635,6 +1637,33 @@ public class RationalMatrixProperties extends QBarTestProperties {
         for (int i : take(SMALL_LIMIT, P.naturalIntegersGeometric())) {
             RationalMatrix identity = identity(i);
             assertEquals(i, identity.determinant(), Rational.ONE);
+        }
+    }
+
+    private void propertiesCharacteristicPolynomial() {
+        initialize("characteristicPolynomial()");
+        for (RationalMatrix m : take(LIMIT, P.withScale(4).squareRationalMatrices())) {
+            RationalPolynomial p = m.characteristicPolynomial();
+            assertTrue(m, p.isMonic());
+            Rational det = m.determinant();
+            assertEquals(m, p.coefficient(0), m.height() % 2 == 0 ? det : det.negate());
+            if (m.height() > 0) {
+                assertEquals(m, p.coefficient(m.height() - 1), m.trace().negate());
+            }
+        }
+
+        for (int i : take(SMALL_LIMIT, P.naturalIntegersGeometric())) {
+            RationalMatrix zero = zero(i, i);
+            assertEquals(i, zero.characteristicPolynomial(), RationalPolynomial.of(Rational.ONE, i));
+        }
+
+        for (int i : take(SMALL_LIMIT, P.naturalIntegersGeometric())) {
+            RationalMatrix identity = identity(i);
+            assertEquals(
+                    i,
+                    identity.characteristicPolynomial(),
+                    RationalPolynomial.of(Arrays.asList(Rational.NEGATIVE_ONE, Rational.ONE)).pow(i)
+            );
         }
     }
 

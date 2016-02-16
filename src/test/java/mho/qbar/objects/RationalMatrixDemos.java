@@ -542,6 +542,12 @@ public class RationalMatrixDemos extends QBarDemos {
         }
     }
 
+    private void demoCharacteristicPolynomial() {
+        for (RationalMatrix m : take(LIMIT, P.withScale(4).squareRationalMatrices())) {
+            System.out.println("characteristicPolynomial(" + m + ") = " + m.characteristicPolynomial());
+        }
+    }
+
     private void demoEquals_RationalMatrix() {
         for (Pair<RationalMatrix, RationalMatrix> p : take(LIMIT, P.pairs(P.withScale(4).rationalMatrices()))) {
             System.out.println(p.a + (p.a.equals(p.b) ? " = " : " ≠ ") + p.b);
