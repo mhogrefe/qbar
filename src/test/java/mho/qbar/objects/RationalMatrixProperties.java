@@ -1546,11 +1546,55 @@ public class RationalMatrixProperties extends QBarTestProperties {
         return determinant;
     }
 
+    private static @NotNull Rational determinant_Gauss(@NotNull RationalMatrix m) {
+        int n = m.width();
+        if (n != m.height()) {
+            throw new IllegalArgumentException("m must be square. Invalid m: " + m);
+        }
+        Rational det = Rational.ONE;
+        List<RationalVector> refRows = toList(m.rows());
+        int i = 0;
+        outer:
+        for (int j = 0; i < n && j < n; j++) {
+            int nonzeroRowIndex = i;
+            Rational pivot = refRows.get(i).get(j);
+            while (pivot == Rational.ZERO) {
+                nonzeroRowIndex++;
+                if (nonzeroRowIndex == n) continue outer;
+                pivot = refRows.get(nonzeroRowIndex).get(j);
+            }
+            if (nonzeroRowIndex != i) {
+                Collections.swap(refRows, i, nonzeroRowIndex);
+                det = det.negate();
+            }
+            RationalVector nonzeroRow = refRows.get(i);
+            if (pivot != Rational.ONE) {
+                nonzeroRow = nonzeroRow.divide(pivot);
+                refRows.set(i, nonzeroRow);
+                det = det.multiply(pivot);
+            }
+            for (int k = i + 1; k < n; k++) {
+                RationalVector row = refRows.get(k);
+                if (row.get(j) != Rational.ZERO) {
+                    refRows.set(k, row.subtract(nonzeroRow.multiply(row.get(j))));
+                }
+            }
+            i++;
+        }
+        for (int k = n - 1; k >= 0; k--) {
+            if (refRows.get(k).get(k) == Rational.ZERO) {
+                return Rational.ZERO;
+            }
+        }
+        return det;
+    }
+
     private void propertiesDeterminant() {
         initialize("determinant()");
         for (RationalMatrix m : take(LIMIT, P.withScale(4).squareRationalMatrices())) {
             Rational determinant = m.determinant();
             assertEquals(m, determinant, determinant_Laplace(m));
+            assertEquals(m, determinant, determinant_Gauss(m));
             assertEquals(m, determinant, m.transpose().determinant());
             assertEquals(m, determinant != Rational.ZERO, m.isInvertible());
             if (determinant != Rational.ZERO) {
@@ -1597,6 +1641,7 @@ public class RationalMatrixProperties extends QBarTestProperties {
     private void compareImplementationsDeterminant() {
         Map<String, Function<RationalMatrix, Rational>> functions = new LinkedHashMap<>();
         functions.put("Laplace", RationalMatrixProperties::determinant_Laplace);
+        functions.put("Gauss", RationalMatrixProperties::determinant_Gauss);
         functions.put("standard", RationalMatrix::determinant);
         compareImplementations("determinant()", take(LIMIT, P.withScale(4).squareRationalMatrices()), functions);
     }

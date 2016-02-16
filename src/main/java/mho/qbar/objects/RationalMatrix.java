@@ -1104,7 +1104,7 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
     }
 
     /**
-     * Returns the determinant of {@code this}.
+     * Returns the determinant of {@code this} using the Dogdson-Jordan-Gauss algorithm (Basu, Pollack, and Roy 2006).
      *
      * <ul>
      *  <li>{@code this} must be square.</li>
@@ -1117,55 +1117,51 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
         if (width != height()) {
             throw new IllegalArgumentException("this must be square. Invalid this: " + this);
         }
-        boolean changed = false;
-        Rational det = Rational.ONE;
-        List<RationalVector> refRows = rows;
-        int i = 0;
-        outer:
-        for (int j = 0; i < width && j < width; j++) {
-            int nonzeroRowIndex = i;
-            Rational pivot = refRows.get(i).get(j);
-            while (pivot == Rational.ZERO) {
-                nonzeroRowIndex++;
-                if (nonzeroRowIndex == width) continue outer;
-                pivot = refRows.get(nonzeroRowIndex).get(j);
+        int n = width;
+        if (n == 0) return Rational.ONE;
+        Rational[][] b = new Rational[n][n];
+        for (int i = 0; i < n; i++) {
+            RationalVector row = row(i);
+            b[i] = new Rational[n];
+            for (int j = 0; j < n; j++) {
+                b[i][j] = row.get(j);
             }
-            if (nonzeroRowIndex != i) {
-                if (!changed) {
-                    changed = true;
-                    refRows = toList(rows);
-                }
-                Collections.swap(refRows, i, nonzeroRowIndex);
-                det = det.negate();
-            }
-            RationalVector nonzeroRow = refRows.get(i);
-            if (pivot != Rational.ONE) {
-                if (!changed) {
-                    changed = true;
-                    refRows = toList(rows);
-                }
-                nonzeroRow = nonzeroRow.divide(pivot);
-                refRows.set(i, nonzeroRow);
-                det = det.multiply(pivot);
-            }
-            for (int k = i + 1; k < width; k++) {
-                RationalVector row = refRows.get(k);
-                if (row.get(j) != Rational.ZERO) {
-                    if (!changed) {
-                        changed = true;
-                        refRows = toList(rows);
-                    }
-                    refRows.set(k, row.subtract(nonzeroRow.multiply(row.get(j))));
-                }
-            }
-            i++;
         }
-        for (int k = width - 1; k >= 0; k--) {
-            if (refRows.get(k).get(k) == Rational.ZERO) {
+        Rational[][] oldB = null;
+        boolean swapSign = true;
+        for (int k = 0; k < n - 1; k++) {
+            int firstNonzeroColumnIndex = -1;
+            for (int j = k; j < n; j++) {
+                if (b[k][j] != Rational.ZERO) {
+                    firstNonzeroColumnIndex = j;
+                    break;
+                }
+            }
+            if (firstNonzeroColumnIndex == -1) {
                 return Rational.ZERO;
             }
+            if (firstNonzeroColumnIndex != k) {
+                for (Rational[] row : b) {
+                    Rational temp = row[firstNonzeroColumnIndex];
+                    row[firstNonzeroColumnIndex] = row[k];
+                    row[k] = temp;
+                }
+                swapSign = !swapSign;
+            }
+            Rational[][] newB = new Rational[n][n];
+            Rational denominator = oldB == null ? Rational.ONE : oldB[k - 1][k - 1];
+            for (int i = k + 1; i < n; i++) {
+                newB[i][k] = Rational.ZERO;
+                for (int j = k + 1; j < n; j++) {
+                    Rational numerator = b[k][k].multiply(b[i][j]).subtract(b[i][k].multiply(b[k][j]));
+                    newB[i][j] = numerator.divide(denominator);
+                }
+            }
+            oldB = b;
+            b = newB;
         }
-        return det;
+        Rational determinant = b[n - 1][n - 1];
+        return swapSign ? determinant : determinant.negate();
     }
 
     /**
