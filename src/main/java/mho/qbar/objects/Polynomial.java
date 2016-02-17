@@ -1131,9 +1131,24 @@ public final class Polynomial implements
         }
     }
 
-    //todo document and test
-    public static @NotNull Polynomial gcd(@NotNull Iterable<Polynomial> ps) {
-        return foldl(Polynomial::gcd, Polynomial.ZERO, ps);
+    /**
+     * Returns the unique primitive GCD with positive leading coefficient of {@code ps}. The GCD of a set containing
+     * only zeros is undefined.
+     *
+     * <ul>
+     *  <li>{@code ps} must contain at least one nonzero {@code Polynomial}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param ps the {@code Polynomial}s whose GCD is sought
+     * @return the primitive polynomial of maximum degree with positive leading coefficient that divides all of
+     * {@code ps}
+     */
+    public static @NotNull Polynomial gcd(@NotNull List<Polynomial> ps) {
+        if (all(p -> p == ZERO, ps)) {
+            throw new ArithmeticException("ps must contain at least one nonzero Polynomial. Invalid ps: " + ps);
+        }
+        return foldl1(Polynomial::gcd, ps);
     }
 
     /**
