@@ -1606,11 +1606,11 @@ public class PolynomialTest {
         subresultantSequence_fail_helper("x^2", "x^3");
     }
 
-    private static void gcd_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
+    private static void gcd_Polynomial_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
         aeq(read(a).get().gcd(read(b).get()), output);
     }
 
-    private static void gcd_fail_helper(@NotNull String a, @NotNull String b) {
+    private static void gcd_Polynomial_fail_helper(@NotNull String a, @NotNull String b) {
         try {
             read(a).get().gcd(read(b).get());
             fail();
@@ -1618,65 +1618,86 @@ public class PolynomialTest {
     }
 
     @Test
-    public void testGcd() {
-        gcd_helper("0", "1", "1");
-        gcd_helper("0", "x", "x");
-        gcd_helper("0", "-17", "1");
-        gcd_helper("0", "x^2-4*x+7", "x^2-4*x+7");
-        gcd_helper("0", "-x^3-1", "x^3+1");
-        gcd_helper("0", "3*x^10", "x^10");
+    public void testGcd_Polynomial() {
+        gcd_Polynomial_helper("0", "1", "1");
+        gcd_Polynomial_helper("0", "x", "x");
+        gcd_Polynomial_helper("0", "-17", "1");
+        gcd_Polynomial_helper("0", "x^2-4*x+7", "x^2-4*x+7");
+        gcd_Polynomial_helper("0", "-x^3-1", "x^3+1");
+        gcd_Polynomial_helper("0", "3*x^10", "x^10");
 
-        gcd_helper("1", "0", "1");
-        gcd_helper("1", "1", "1");
-        gcd_helper("1", "x", "1");
-        gcd_helper("1", "-17", "1");
-        gcd_helper("1", "x^2-4*x+7", "1");
-        gcd_helper("1", "-x^3-1", "1");
-        gcd_helper("1", "3*x^10", "1");
+        gcd_Polynomial_helper("1", "0", "1");
+        gcd_Polynomial_helper("1", "1", "1");
+        gcd_Polynomial_helper("1", "x", "1");
+        gcd_Polynomial_helper("1", "-17", "1");
+        gcd_Polynomial_helper("1", "x^2-4*x+7", "1");
+        gcd_Polynomial_helper("1", "-x^3-1", "1");
+        gcd_Polynomial_helper("1", "3*x^10", "1");
 
-        gcd_helper("x", "0", "x");
-        gcd_helper("x", "1", "1");
-        gcd_helper("x", "x", "x");
-        gcd_helper("x", "-17", "1");
-        gcd_helper("x", "x^2-4*x+7", "1");
-        gcd_helper("x", "-x^3-1", "1");
-        gcd_helper("x", "3*x^10", "x");
+        gcd_Polynomial_helper("x", "0", "x");
+        gcd_Polynomial_helper("x", "1", "1");
+        gcd_Polynomial_helper("x", "x", "x");
+        gcd_Polynomial_helper("x", "-17", "1");
+        gcd_Polynomial_helper("x", "x^2-4*x+7", "1");
+        gcd_Polynomial_helper("x", "-x^3-1", "1");
+        gcd_Polynomial_helper("x", "3*x^10", "x");
 
-        gcd_helper("-17", "0", "1");
-        gcd_helper("-17", "1", "1");
-        gcd_helper("-17", "x", "1");
-        gcd_helper("-17", "-17", "1");
-        gcd_helper("-17", "x^2-4*x+7", "1");
-        gcd_helper("-17", "-x^3-1", "1");
-        gcd_helper("-17", "3*x^10", "1");
+        gcd_Polynomial_helper("-17", "0", "1");
+        gcd_Polynomial_helper("-17", "1", "1");
+        gcd_Polynomial_helper("-17", "x", "1");
+        gcd_Polynomial_helper("-17", "-17", "1");
+        gcd_Polynomial_helper("-17", "x^2-4*x+7", "1");
+        gcd_Polynomial_helper("-17", "-x^3-1", "1");
+        gcd_Polynomial_helper("-17", "3*x^10", "1");
 
-        gcd_helper("x^2-4*x+7", "0", "x^2-4*x+7");
-        gcd_helper("x^2-4*x+7", "1", "1");
-        gcd_helper("x^2-4*x+7", "x", "1");
-        gcd_helper("x^2-4*x+7", "-17", "1");
-        gcd_helper("x^2-4*x+7", "x^2-4*x+7", "x^2-4*x+7");
-        gcd_helper("x^2-4*x+7", "-x^3-1", "1");
-        gcd_helper("x^2-4*x+7", "3*x^10", "1");
+        gcd_Polynomial_helper("x^2-4*x+7", "0", "x^2-4*x+7");
+        gcd_Polynomial_helper("x^2-4*x+7", "1", "1");
+        gcd_Polynomial_helper("x^2-4*x+7", "x", "1");
+        gcd_Polynomial_helper("x^2-4*x+7", "-17", "1");
+        gcd_Polynomial_helper("x^2-4*x+7", "x^2-4*x+7", "x^2-4*x+7");
+        gcd_Polynomial_helper("x^2-4*x+7", "-x^3-1", "1");
+        gcd_Polynomial_helper("x^2-4*x+7", "3*x^10", "1");
 
-        gcd_helper("-x^3-1", "0", "x^3+1");
-        gcd_helper("-x^3-1", "1", "1");
-        gcd_helper("-x^3-1", "x", "1");
-        gcd_helper("-x^3-1", "-17", "1");
-        gcd_helper("-x^3-1", "x^2-4*x+7", "1");
-        gcd_helper("-x^3-1", "-x^3-1", "x^3+1");
-        gcd_helper("-x^3-1", "3*x^10", "1");
+        gcd_Polynomial_helper("-x^3-1", "0", "x^3+1");
+        gcd_Polynomial_helper("-x^3-1", "1", "1");
+        gcd_Polynomial_helper("-x^3-1", "x", "1");
+        gcd_Polynomial_helper("-x^3-1", "-17", "1");
+        gcd_Polynomial_helper("-x^3-1", "x^2-4*x+7", "1");
+        gcd_Polynomial_helper("-x^3-1", "-x^3-1", "x^3+1");
+        gcd_Polynomial_helper("-x^3-1", "3*x^10", "1");
 
-        gcd_helper("3*x^10", "0", "x^10");
-        gcd_helper("3*x^10", "1", "1");
-        gcd_helper("3*x^10", "x", "x");
-        gcd_helper("3*x^10", "-17", "1");
-        gcd_helper("3*x^10", "x^2-4*x+7", "1");
-        gcd_helper("3*x^10", "-x^3-1", "1");
-        gcd_helper("3*x^10", "3*x^10", "x^10");
+        gcd_Polynomial_helper("3*x^10", "0", "x^10");
+        gcd_Polynomial_helper("3*x^10", "1", "1");
+        gcd_Polynomial_helper("3*x^10", "x", "x");
+        gcd_Polynomial_helper("3*x^10", "-17", "1");
+        gcd_Polynomial_helper("3*x^10", "x^2-4*x+7", "1");
+        gcd_Polynomial_helper("3*x^10", "-x^3-1", "1");
+        gcd_Polynomial_helper("3*x^10", "3*x^10", "x^10");
 
-        gcd_helper("x^2+7*x+6", "x^2-5*x-6", "x+1");
+        gcd_Polynomial_helper("x^2+7*x+6", "x^2-5*x-6", "x+1");
 
-        gcd_fail_helper("0", "0");
+        gcd_Polynomial_fail_helper("0", "0");
+    }
+
+    private static void gcd_List_Polynomial_helper(@NotNull String input, @NotNull String output) {
+        aeq(gcd(readPolynomialList(input)), output);
+    }
+
+    private static void gcd_List_Polynomial_fail_helper(@NotNull String input) {
+        try {
+            gcd(readPolynomialListWithNulls(input));
+            fail();
+        } catch (IllegalArgumentException | NullPointerException ignored) {}
+    }
+
+    @Test
+    public void testGcd_List_Polynomial() {
+        gcd_List_Polynomial_helper("[1]", "1");
+        gcd_List_Polynomial_helper("[-17]", "1");
+        gcd_List_Polynomial_helper("[-17, x^2-4*x+7, -x^3-1, 3*x^10]", "1");
+        gcd_List_Polynomial_helper("[x+1, x^2+2*x+1, 3*x+3]", "x+1");
+
+        gcd_List_Polynomial_fail_helper("[-17, null, -x^3-1, 3*x^10]");
     }
 
     private static void lcm_helper(@NotNull String a, @NotNull String b, @NotNull String output) {

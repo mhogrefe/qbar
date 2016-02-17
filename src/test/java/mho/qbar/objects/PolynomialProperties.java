@@ -94,9 +94,10 @@ public class PolynomialProperties extends QBarTestProperties {
         propertiesTrivialPseudoRemainderSequence();
         propertiesPrimitivePseudoRemainderSequence();
         propertiesSubresultantSequence();
-        propertiesGcd();
-        compareImplementationsGcd1();
-        compareImplementationsGcd2();
+        propertiesGcd_Polynomial();
+        compareImplementationsGcd_Polynomial1();
+        compareImplementationsGcd_Polynomial2();
+        propertiesGcd_List_Polynomial();
         propertiesLcm();
         propertiesIsRelativelyPrimeTo();
         compareImplementationsIsRelativelyPrimeTo();
@@ -1866,7 +1867,7 @@ public class PolynomialProperties extends QBarTestProperties {
         }
     }
 
-    private void propertiesGcd() {
+    private void propertiesGcd_Polynomial() {
         initialize("gcd(Polynomial)");
         Iterable<Pair<Polynomial, Polynomial>> ps = filterInfinite(
                 p -> p.a != ZERO || p.b != ZERO,
@@ -1875,7 +1876,8 @@ public class PolynomialProperties extends QBarTestProperties {
         for (Pair<Polynomial, Polynomial> p : take(LIMIT, ps)) {
             Polynomial gcd = p.a.gcd(p.b);
             gcd.validate();
-            assertFalse(p, gcd == ZERO);
+            assertEquals(p, gcd.signum(), 1);
+            assertTrue(p, gcd.isPrimitive());
             Polynomial ap = p.a == ZERO ? ZERO : p.a.constantFactor().b;
             Polynomial bp = p.b == ZERO ? ZERO : p.b.constantFactor().b;
             assertEquals(p, gcd, ap.gcd(bp));
@@ -1912,7 +1914,7 @@ public class PolynomialProperties extends QBarTestProperties {
         }
     }
 
-    private void compareImplementationsGcd1() {
+    private void compareImplementationsGcd_Polynomial1() {
         Map<String, Function<Pair<Polynomial, Polynomial>, Polynomial>> functions = new LinkedHashMap<>();
         functions.put("simplest", p -> gcd_simplest(p.a, p.b));
         functions.put("alt", p -> gcd_alt(p.a, p.b));
@@ -1925,7 +1927,7 @@ public class PolynomialProperties extends QBarTestProperties {
         compareImplementations("gcd(Polynomial)", take(LIMIT, ps), functions);
     }
 
-    private void compareImplementationsGcd2() {
+    private void compareImplementationsGcd_Polynomial2() {
         Map<String, Function<Pair<Polynomial, Polynomial>, Polynomial>> functions = new LinkedHashMap<>();
         functions.put("alt3", p -> gcd_alt3(p.a, p.b));
         functions.put("standard", p -> p.a.gcd(p.b));
@@ -1934,6 +1936,47 @@ public class PolynomialProperties extends QBarTestProperties {
                 P.pairs(P.polynomials())
         );
         compareImplementations("gcd(Polynomial)", take(SMALL_LIMIT, ps), functions);
+    }
+
+    private void propertiesGcd_List_Polynomial() {
+        initialize("gcd(List<Polynomial>)");
+        Iterable<List<Polynomial>> pss = filterInfinite(p -> any(q -> q != ZERO, p), P.lists(P.polynomials()));
+        for (List<Polynomial> ps : take(LIMIT, pss)) {
+            Polynomial gcd = gcd(ps);
+            gcd.validate();
+            assertEquals(ps, gcd.signum(), 1);
+            assertTrue(ps, gcd.isPrimitive());
+        }
+
+        for (Polynomial p : take(LIMIT, P.polynomialsAtLeast(0))) {
+            assertEquals(p, gcd(Collections.singletonList(p)), p.constantFactor().b);
+        }
+
+        Iterable<Pair<Polynomial, Polynomial>> ps = filterInfinite(
+                q -> q.a != ZERO || q.b != ZERO,
+                P.pairs(P.polynomials())
+        );
+        for (Pair<Polynomial, Polynomial> p : take(LIMIT, ps)) {
+            assertEquals(p, gcd(Arrays.asList(p.a, p.b)), p.a.gcd(p.b));
+        }
+
+        Iterable<List<Polynomial>> psFail = filterInfinite(
+                qs -> any(q -> q != ZERO, qs),
+                P.listsWithElement(null, P.polynomials())
+        );
+        for (List<Polynomial> qs : take(LIMIT, psFail)) {
+            try {
+                gcd(qs);
+                fail(qs);
+            } catch (NullPointerException | IllegalArgumentException ignored) {}
+        }
+
+        for (int i : take(LIMIT, P.naturalIntegersGeometric())) {
+            try {
+                gcd(toList(replicate(i, ZERO)));
+                fail(i);
+            } catch (ArithmeticException ignored) {}
+        }
     }
 
     private void propertiesLcm() {

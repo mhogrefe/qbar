@@ -1094,7 +1094,7 @@ public final class Polynomial implements
      *  <li>{@code this} may be any {@code Polynomial}.</li>
      *  <li>{@code that} may be any {@code Polynomial}.</li>
      *  <li>{@code this} and {@code that} cannot both be zero.</li>
-     *  <li>The result is not zero.</li>
+     *  <li>The result is primitive and has positive leading coefficient.</li>
      * </ul>
      *
      * @param that the {@code Polynomial} that {@code this} is GCD'd with
@@ -1136,8 +1136,8 @@ public final class Polynomial implements
      * only zeros is undefined.
      *
      * <ul>
-     *  <li>{@code ps} must contain at least one nonzero {@code Polynomial}.</li>
-     *  <li>The result is not null.</li>
+     *  <li>{@code ps} cannot contain nulls and must contain at least one nonzero {@code Polynomial}.</li>
+     *  <li>The result is primitive and has a positive leading coefficient.</li>
      * </ul>
      *
      * @param ps the {@code Polynomial}s whose GCD is sought
@@ -1145,10 +1145,15 @@ public final class Polynomial implements
      * {@code ps}
      */
     public static @NotNull Polynomial gcd(@NotNull List<Polynomial> ps) {
-        if (all(p -> p == ZERO, ps)) {
+        List<Polynomial> noZeros = toList(filter(p -> p != ZERO, ps));
+        if (noZeros.isEmpty()) {
             throw new ArithmeticException("ps must contain at least one nonzero Polynomial. Invalid ps: " + ps);
         }
-        return foldl1(Polynomial::gcd, ps);
+        if (noZeros.size() == 1) {
+            return head(noZeros).constantFactor().b;
+        } else {
+            return foldl1(Polynomial::gcd, noZeros);
+        }
     }
 
     /**

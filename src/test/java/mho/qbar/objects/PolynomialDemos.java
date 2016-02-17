@@ -330,13 +330,24 @@ public class PolynomialDemos extends QBarDemos {
         }
     }
 
-    private void demoGcd() {
+    private void demoGcd_Polynomial() {
         Iterable<Pair<Polynomial, Polynomial>> ps = filterInfinite(
                 p -> p.a != ZERO || p.b != ZERO,
                 P.pairs(P.withScale(4).polynomials())
         );
         for (Pair<Polynomial, Polynomial> p : take(LIMIT, ps)) {
             System.out.println("gcd(" + p.a + ", " + p.b + ") = " + p.a.gcd(p.b));
+        }
+    }
+
+    private void demoGcd_List_Polynomial() {
+        Iterable<List<Polynomial>> pss = filterInfinite(
+                p -> any(q -> q != ZERO, p),
+                P.withScale(4).lists(P.withScale(4).polynomials())
+        );
+        for (List<Polynomial> ps : take(LIMIT, pss)) {
+            String listString = tail(init(ps.toString()));
+            System.out.println("gcd(" + listString + ") = " + gcd(ps));
         }
     }
 
