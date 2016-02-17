@@ -1131,6 +1131,11 @@ public final class Polynomial implements
         }
     }
 
+    //todo document and test
+    public static @NotNull Polynomial gcd(@NotNull Iterable<Polynomial> ps) {
+        return foldl(Polynomial::gcd, Polynomial.ZERO, ps);
+    }
+
     /**
      * Returns the unique primitive LCM with positive leading coefficient of {@code this} and {@code that}, or zero if
      * either input is zero.

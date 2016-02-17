@@ -174,7 +174,7 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
     }
 
     /**
-     * Returns this {@code RationalVector}'s dimension
+     * Returns this {@code RationalVector}'s dimension.
      *
      * <ul>
      *  <li>{@code this} may be any {@code RationalVector}.</li>
@@ -188,7 +188,7 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
     }
 
     /**
-     * Determines whether {@code this} is a zero vector
+     * Determines whether {@code this} is a zero vector.
      *
      * <ul>
      *  <li>{@code this} may be any {@code RationalVector}.</li>
@@ -344,7 +344,7 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
      *
      * <ul>
      *  <li>{@code this} can be any {@code RationalVector}.</li>
-     *  <li>{@code that} may be any {@code int}.</li>
+     *  <li>{@code that} cannot be null.</li>
      *  <li>The result is not null.</li>
      * </ul>
      *
@@ -364,7 +364,7 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
      *
      * <ul>
      *  <li>{@code this} can be any {@code RationalVector}.</li>
-     *  <li>{@code that} cannot be null.</li>
+     *  <li>{@code that} may be any {@code int}.</li>
      *  <li>The result is not null.</li>
      * </ul>
      *
@@ -390,7 +390,7 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
      *
      * Length is dim({@code this})
      *
-     * @param that the {@code RationalVector} {@code this} is divided by
+     * @param that the {@code Rational} {@code this} is divided by
      * @return {@code this}/{@code that}
      */
     public @NotNull RationalVector divide(@NotNull Rational that) {
@@ -408,7 +408,7 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
      *
      * Length is dim({@code this})
      *
-     * @param that the {@code RationalVector} {@code this} is divided by
+     * @param that the {@code BigInteger} {@code this} is divided by
      * @return {@code this}/{@code that}
      */
     public @NotNull RationalVector divide(@NotNull BigInteger that) {
@@ -426,7 +426,7 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
      *
      * Length is dim({@code this})
      *
-     * @param that the {@code RationalVector} {@code this} is divided by
+     * @param that the {@code int} {@code this} is divided by
      * @return {@code this}/{@code that}
      */
     public @NotNull RationalVector divide(int that) {

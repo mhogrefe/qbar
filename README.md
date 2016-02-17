@@ -7,23 +7,25 @@ Uses heavily-modified code from [JAS](http://krum.rz.uni-mannheim.de/jas/) for p
 Progress
 ========
 
-| Class                  | Methods | JavaDoc | Tests | Demos | Properties |
-|:----------------------:|:-------:|:-------:|:-----:|:-----:|:----------:|
-| QBarExhaustiveProvider | ✘       | ✘       | ✘     | ✘     | ✘          |
-| QBarIterableProvider   | ✘       | ✘       | ✘     | ✘     | ✘          |
-| QBarRandomProvider     | ✘       | ✘       | ✘     | ✘     | ✘          |
-| ExponentVector         | ✘       | ✘       | ✘     | ✘     | ✘          |
-| Interval               | ✔       | ✔       | ✔     | ✔     | ✔          |
-| Matrix                 | ✘       | ✘       | ✘     | ✘     | ✘          |
-| MonomialOrder          | ✔       | ✔       | ✔     | ✔     | ✔          |
-| MultivariatePolynomial | ✘       | ✘       | ✘     | ✘     | ✘          |
-| Polynomial             | ✘       | ✘       | ✘     | ✘     | ✘          |
-| Rational               | ✔       | ✔       | ✔     | ✔     | ✔          |
-| RationalMatrix         | ✘       | ✘       | ✘     | ✘     | ✘          |
-| RationalPolynomial     | ✘       | ✘       | ✘     | ✘     | ✘          |
-| RationalVector         | ✔       | ✔       | ✔     | ✔     | ✔          |
-| Variable               | ✔       | ✔       | ✔     | ✔     | ✔          |
-| Vector                 | ✔       | ✔       | ✔     | ✔     | ✔          |
-| QBarDemos              | ✘       | ✘       | ✘     | ✘     | ✘          |
-| QBarTesting            | ✘       | ✘       | ✘     | ✘     | ✘          |
-| QBarTestProperties     | ✘       | ✘       | ✘     | ✘     | ✘          |
+| Class                    | Methods | JavaDoc | Tests | Demos | Properties |
+|:------------------------:|:-------:|:-------:|:-----:|:-----:|:----------:|
+| QBarExhaustiveProvider   | ✘       | ✘       | ✘     | ✘     | ✘          |
+| QBarIterableProvider     | ✘       | ✘       | ✘     | ✘     | ✘          |
+| QBarRandomProvider       | ✘       | ✘       | ✘     | ✘     | ✘          |
+| ExponentVector           | ✘       | ✘       | ✘     | ✘     | ✘          |
+| Interval                 | ✔       | ✔       | ✔     | ✔     | ✔          |
+| Matrix                   | ✘       | ✘       | ✘     | ✘     | ✘          |
+| MonomialOrder            | ✔       | ✔       | ✔     | ✔     | ✔          |
+| MultivariatePolynomial   | ✘       | ✘       | ✘     | ✘     | ✘          |
+| Polynomial               | ✘       | ✘       | ✘     | ✘     | ✘          |
+| PolynomialVector         | ✔       | ✘       | ✘     | ✘     | ✘          |
+| Rational                 | ✔       | ✔       | ✔     | ✔     | ✔          |
+| RationalMatrix           | ✘       | ✘       | ✘     | ✘     | ✘          |
+| RationalPolynomial       | ✘       | ✘       | ✘     | ✘     | ✘          |
+| RationalPolynomialVector | ✔       | ✘       | ✘     | ✘     | ✘          |
+| RationalVector           | ✔       | ✔       | ✔     | ✔     | ✔          |
+| Variable                 | ✔       | ✔       | ✔     | ✔     | ✔          |
+| Vector                   | ✔       | ✔       | ✔     | ✔     | ✔          |
+| QBarDemos                | ✘       | ✘       | ✘     | ✘     | ✘          |
+| QBarTesting              | ✘       | ✘       | ✘     | ✘     | ✘          |
+| QBarTestProperties       | ✘       | ✘       | ✘     | ✘     | ✘          |
