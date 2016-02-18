@@ -1,6 +1,8 @@
 package mho.qbar.objects;
 
 import mho.wheels.io.Readers;
+import mho.wheels.structures.NullableOptional;
+import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
@@ -102,11 +104,55 @@ public class ExponentVectorTest {
         of_fail_helper("[1, null, 3]");
     }
 
+    private static void fromTerms_helper(@NotNull String input, @NotNull String output) {
+        aeq(fromTerms(readVariableIntegerPairList(input)), output);
+    }
+
+    private static void fromTerms_fail_helper(@NotNull String input) {
+        try {
+            fromTerms(readVariableIntegerPairListWithNulls(input));
+            fail();
+        } catch (NullPointerException | IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testFromTerms() {
+        fromTerms_helper("[]", "1");
+        fromTerms_helper("[(a, 1)]", "a");
+        fromTerms_helper("[(a, 2)]", "a^2");
+        fromTerms_helper("[(a, 3)]", "a^3");
+        fromTerms_helper("[(x, 2), (y, 1), (z, 3)]", "x^2*y*z^3");
+
+        fromTerms_fail_helper("[null]");
+        fromTerms_fail_helper("[(a, 1), null]");
+        fromTerms_fail_helper("[(a, null)]");
+        fromTerms_fail_helper("[(null, 1)]");
+        fromTerms_fail_helper("[(a, -1)]");
+        fromTerms_fail_helper("[(b, 2), (b, 3)]");
+        fromTerms_fail_helper("[(b, 2), (a, 3)]");
+    }
+
     private static @NotNull List<Integer> readIntegerList(@NotNull String s) {
         return Readers.readList(Readers::readInteger).apply(s).get();
     }
 
     private static @NotNull List<Integer> readIntegerListWithNulls(@NotNull String s) {
         return Readers.readListWithNulls(Readers::readInteger).apply(s).get();
+    }
+
+    private static @NotNull List<Pair<Variable, Integer>> readVariableIntegerPairList(@NotNull String s) {
+        return Readers.readList(
+                u -> Pair.read(
+                        u,
+                        t -> NullableOptional.fromOptional(Variable.read(t)),
+                        t -> NullableOptional.fromOptional(Readers.readInteger(t))
+                )
+        ).apply(s).get();
+    }
+
+    private static @NotNull List<Pair<Variable, Integer>> readVariableIntegerPairListWithNulls(@NotNull String s) {
+        return Readers.readListWithNulls(
+                u -> Pair.read(u, Readers.readWithNulls(Variable::read), Readers.readWithNulls(Readers::readInteger))
+        ).apply(s).get();
     }
 }

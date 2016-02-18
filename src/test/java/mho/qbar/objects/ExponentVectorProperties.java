@@ -25,6 +25,7 @@ public class ExponentVectorProperties extends QBarTestProperties {
         propertiesSize();
         propertiesTerms();
         propertiesOf();
+        propertiesFromTerms();
     }
 
     private void propertiesGetExponents() {
@@ -70,6 +71,7 @@ public class ExponentVectorProperties extends QBarTestProperties {
             assertTrue(ev, all(t -> t.b > 0, terms));
             //noinspection RedundantCast
             assertTrue(ev, increasing((Iterable<Variable>) map(t -> t.a, terms)));
+            inverse(u -> toList(u.terms()), ExponentVector::fromTerms, ev);
         }
     }
 
@@ -104,6 +106,78 @@ public class ExponentVectorProperties extends QBarTestProperties {
                 of(is);
                 fail(is);
             } catch (NullPointerException ignored) {}
+        }
+    }
+
+    private void propertiesFromTerms() {
+        initialize("fromTerms(List<Pair<Variable, Integer>>)");
+        Iterable<List<Pair<Variable, Integer>>> pss = P.withElement(
+                Collections.emptyList(),
+                map(
+                        p -> toList(zip(p.a, p.b)),
+                        P.dependentPairsInfinite(
+                                P.subsetsAtLeast(1, P.variables()),
+                                vs -> filterInfinite(
+                                        is -> last(is) != 0,
+                                        P.lists(vs.size(), P.positiveIntegersGeometric())
+                                )
+                        )
+                )
+        );
+        for (List<Pair<Variable, Integer>> ps : take(LIMIT, pss)) {
+            ExponentVector ev = fromTerms(ps);
+            ev.validate();
+            inverse(ExponentVector::fromTerms, u -> toList(u.terms()), ps);
+        }
+
+        Iterable<List<Pair<Variable, Integer>>> pssFail = map(
+                p -> toList(zip(p.a, p.b)),
+                P.dependentPairsInfinite(
+                        P.subsetsAtLeast(1, P.variables()),
+                        vs -> filterInfinite(
+                                is -> last(is) == 0 || any(i -> i <= 0, is),
+                                P.lists(vs.size(), P.integersGeometric())
+                        )
+                )
+        );
+        for (List<Pair<Variable, Integer>> ps : take(LIMIT, pssFail)) {
+            try {
+                fromTerms(ps);
+                fail(ps);
+            } catch (IllegalArgumentException ignored) {}
+        }
+
+        pssFail = map(
+                p -> toList(zip(p.a, p.b)),
+                P.dependentPairsInfinite(
+                        filterInfinite(is -> !increasing(is), P.listsAtLeast(1, P.variables())),
+                        vs -> filterInfinite(is -> last(is) != 0, P.lists(vs.size(), P.integersGeometric()))
+                )
+        );
+        for (List<Pair<Variable, Integer>> ps : take(LIMIT, pssFail)) {
+            try {
+                fromTerms(ps);
+                fail(ps);
+            } catch (IllegalArgumentException ignored) {}
+        }
+
+        pssFail = P.listsWithElement(null, P.pairs(P.variables(), P.positiveIntegers()));
+        for (List<Pair<Variable, Integer>> ps : take(LIMIT, pssFail)) {
+            try {
+                fromTerms(ps);
+                fail(ps);
+            } catch (NullPointerException ignored) {}
+        }
+
+        pssFail = filterInfinite(
+                ps -> any(p -> p.a == null || p.b == null, ps),
+                P.lists(P.pairs(P.withScale(4).withNull(P.variables()), P.withScale(4).withNull(P.positiveIntegers())))
+        );
+        for (List<Pair<Variable, Integer>> ps : take(LIMIT, pssFail)) {
+            try {
+                fromTerms(ps);
+                fail(ps);
+            } catch (NullPointerException | IllegalArgumentException ignored) {}
         }
     }
 }

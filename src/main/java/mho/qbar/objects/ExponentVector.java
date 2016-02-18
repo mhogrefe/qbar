@@ -169,6 +169,13 @@ public class ExponentVector implements Comparable<ExponentVector> {
      */
     public static @NotNull ExponentVector fromTerms(@NotNull List<Pair<Variable, Integer>> terms) {
         if (terms.isEmpty()) return ExponentVector.ONE;
+        if (any(t -> t.b == null, terms)) {
+            throw new NullPointerException();
+        }
+        if (any(t -> t.b <= 0, terms)) {
+            throw new IllegalArgumentException("The second element of every pair in terms must be positive." +
+                    " Invalid terms: " + terms);
+        }
         //noinspection RedundantCast
         if (!increasing((Iterable<Variable>) map(t -> t.a, terms))) {
             throw new IllegalArgumentException();
