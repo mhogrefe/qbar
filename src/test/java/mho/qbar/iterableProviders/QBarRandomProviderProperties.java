@@ -98,7 +98,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         initialize("positiveRationals()");
         Iterable<QBarRandomProvider> rps = filterInfinite(
                 s -> s.getScale() >= 4,
-                P.qbarRandomProvidersDefaultSecondaryScale()
+                P.qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
         );
         for (QBarRandomProvider rp : take(LIMIT, rps)) {
             Iterable<Rational> rs = rp.positiveRationals();
@@ -109,7 +109,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
 
         Iterable<QBarRandomProvider> rpsFail = filterInfinite(
                 s -> s.getScale() < 4,
-                P.qbarRandomProvidersDefaultSecondaryScale()
+                P.qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
         );
         for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
             try {
@@ -123,7 +123,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         initialize("negativeRationals()");
         Iterable<QBarRandomProvider> rps = filterInfinite(
                 s -> s.getScale() >= 4,
-                P.qbarRandomProvidersDefaultSecondaryScale()
+                P.qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
         );
         for (QBarRandomProvider rp : take(LIMIT, rps)) {
             Iterable<Rational> rs = rp.negativeRationals();
@@ -134,7 +134,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
 
         Iterable<QBarRandomProvider> rpsFail = filterInfinite(
                 s -> s.getScale() < 4,
-                P.qbarRandomProvidersDefaultSecondaryScale()
+                P.qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
         );
         for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
             try {
@@ -148,7 +148,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         initialize("nonzeroRationals()");
         Iterable<QBarRandomProvider> rps = filterInfinite(
                 s -> s.getScale() >= 4,
-                P.qbarRandomProvidersDefaultSecondaryScale()
+                P.qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
         );
         for (QBarRandomProvider rp : take(LIMIT, rps)) {
             Iterable<Rational> rs = rp.nonzeroRationals();
@@ -159,7 +159,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
 
         Iterable<QBarRandomProvider> rpsFail = filterInfinite(
                 s -> s.getScale() < 4,
-                P.qbarRandomProvidersDefaultSecondaryScale()
+                P.qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
         );
         for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
             try {
@@ -173,7 +173,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         initialize("rationals()");
         Iterable<QBarRandomProvider> rps = filterInfinite(
                 s -> s.getScale() >= 3,
-                P.qbarRandomProvidersDefaultSecondaryScale()
+                P.qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
         );
         for (QBarRandomProvider rp : take(LIMIT, rps)) {
             Iterable<Rational> rs = rp.rationals();
@@ -184,7 +184,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
 
         Iterable<QBarRandomProvider> rpsFail = filterInfinite(
                 s -> s.getScale() < 3,
-                P.qbarRandomProvidersDefaultSecondaryScale()
+                P.qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
         );
         for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
             try {
@@ -198,7 +198,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         initialize("nonNegativeRationalsLessThanOne()");
         Iterable<QBarRandomProvider> rps = filterInfinite(
                 s -> s.getScale() >= 4,
-                P.qbarRandomProvidersDefaultSecondaryScale()
+                P.qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
         );
         for (QBarRandomProvider rp : take(LIMIT, rps)) {
             Iterable<Rational> rs = rp.nonNegativeRationalsLessThanOne();
@@ -209,7 +209,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
 
         Iterable<QBarRandomProvider> rpsFail = filterInfinite(
                 s -> s.getScale() < 4,
-                P.qbarRandomProvidersDefaultSecondaryScale()
+                P.qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
         );
         for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
             try {
@@ -222,7 +222,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
     private void propertiesRangeUp_Rational() {
         initialize("rangeUp(Rational)");
         Iterable<Pair<QBarRandomProvider, Rational>> ps = P.pairs(
-                filterInfinite(rp -> rp.getScale() >= 4, P.qbarRandomProviders()),
+                filterInfinite(rp -> rp.getScale() >= 4, P.qbarRandomProvidersDefaultTertiaryScale()),
                 P.rationals()
         );
         for (Pair<QBarRandomProvider, Rational> p : take(LIMIT, ps)) {
@@ -231,7 +231,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         }
 
         Iterable<Pair<QBarRandomProvider, Rational>> psFail = P.pairs(
-                filterInfinite(rp -> rp.getScale() < 4, P.qbarRandomProviders()),
+                filterInfinite(rp -> rp.getScale() < 4, P.qbarRandomProvidersDefaultTertiaryScale()),
                 P.rationals()
         );
         for (Pair<QBarRandomProvider, Rational> p : take(LIMIT, psFail)) {
@@ -245,7 +245,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
     private void propertiesRangeDown_Rational() {
         initialize("rangeDown(Rational)");
         Iterable<Pair<QBarRandomProvider, Rational>> ps = P.pairs(
-                filterInfinite(rp -> rp.getScale() >= 4, P.qbarRandomProviders()),
+                filterInfinite(rp -> rp.getScale() >= 4, P.qbarRandomProvidersDefaultTertiaryScale()),
                 P.rationals()
         );
         for (Pair<QBarRandomProvider, Rational> p : take(LIMIT, ps)) {
@@ -254,7 +254,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         }
 
         Iterable<Pair<QBarRandomProvider, Rational>> psFail = P.pairs(
-                filterInfinite(rp -> rp.getScale() < 4, P.qbarRandomProviders()),
+                filterInfinite(rp -> rp.getScale() < 4, P.qbarRandomProvidersDefaultTertiaryScale()),
                 P.rationals()
         );
         for (Pair<QBarRandomProvider, Rational> p : take(LIMIT, psFail)) {
@@ -270,7 +270,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         Iterable<Triple<QBarRandomProvider, Rational, Rational>> ts = filterInfinite(
                 t -> le(t.b, t.c),
                 P.triples(
-                        filterInfinite(rp -> rp.getScale() >= 4, P.qbarRandomProviders()),
+                        filterInfinite(rp -> rp.getScale() >= 4, P.qbarRandomProvidersDefaultTertiaryScale()),
                         P.rationals(),
                         P.rationals()
                 )
@@ -282,7 +282,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         }
 
         Iterable<Pair<QBarRandomProvider, Rational>> ps = P.pairs(
-                filterInfinite(rp -> rp.getScale() >= 4, P.qbarRandomProviders()),
+                filterInfinite(rp -> rp.getScale() >= 4, P.qbarRandomProvidersDefaultTertiaryScale()),
                 P.rationals()
         );
         for (Pair<QBarRandomProvider, Rational> p : take(LIMIT, ps)) {
@@ -292,7 +292,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         Iterable<Triple<QBarRandomProvider, Rational, Rational>> tsFail = filterInfinite(
                 t -> le(t.b, t.c),
                 P.triples(
-                        filterInfinite(rp -> rp.getScale() < 4, P.qbarRandomProviders()),
+                        filterInfinite(rp -> rp.getScale() < 4, P.qbarRandomProvidersDefaultTertiaryScale()),
                         P.rationals(),
                         P.rationals()
                 )
@@ -307,7 +307,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         tsFail = filterInfinite(
                 t -> gt(t.b, t.c),
                 P.triples(
-                        filterInfinite(rp -> rp.getScale() >= 4, P.qbarRandomProviders()),
+                        filterInfinite(rp -> rp.getScale() >= 4, P.qbarRandomProvidersDefaultTertiaryScale()),
                         P.rationals(),
                         P.rationals()
                 )
@@ -324,7 +324,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         initialize("finitelyBoundedIntervals()");
         Iterable<QBarRandomProvider> rps = filterInfinite(
                 s -> s.getScale() >= 6,
-                P.qbarRandomProvidersDefaultSecondaryScale()
+                P.qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
         );
         for (QBarRandomProvider rp : take(LIMIT, rps)) {
             Iterable<Interval> as = rp.finitelyBoundedIntervals();
@@ -335,7 +335,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
 
         Iterable<QBarRandomProvider> rpsFail = filterInfinite(
                 s -> s.getScale() < 6,
-                P.qbarRandomProvidersDefaultSecondaryScale()
+                P.qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
         );
         for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
             try {
@@ -349,7 +349,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         initialize("intervals()");
         Iterable<QBarRandomProvider> rps = filterInfinite(
                 s -> s.getScale() >= 6,
-                P.qbarRandomProvidersDefaultSecondaryScale()
+                P.qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
         );
         for (QBarRandomProvider rp : take(LIMIT, rps)) {
             Iterable<Interval> as = rp.intervals();
@@ -360,7 +360,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
 
         Iterable<QBarRandomProvider> rpsFail = filterInfinite(
                 s -> s.getScale() < 6,
-                P.qbarRandomProvidersDefaultSecondaryScale()
+                P.qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
         );
         for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
             try {
@@ -375,7 +375,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         Iterable<Pair<QBarRandomProvider, Interval>> ps = P.pairs(
                 filterInfinite(
                         s -> s.getScale() >= 4,
-                        P.qbarRandomProvidersDefaultSecondaryScale()
+                        P.qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
                 ),
                 P.intervals()
         );
@@ -388,7 +388,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         Iterable<Pair<QBarRandomProvider, Interval>> psFail = P.pairs(
                 filterInfinite(
                         s -> s.getScale() < 4,
-                        P.qbarRandomProvidersDefaultSecondaryScale()
+                        P.qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
                 ),
                 P.intervals()
         );
@@ -405,7 +405,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         Iterable<Pair<QBarRandomProvider, Interval>> ps = P.pairs(
                 filterInfinite(
                         s -> s.getScale() >= 4,
-                        P.qbarRandomProvidersDefaultSecondaryScale()
+                        P.qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
                 ),
                 filterInfinite(a -> !a.equals(Interval.ALL), P.intervals())
         );
@@ -418,7 +418,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         Iterable<Pair<QBarRandomProvider, Interval>> psFail = P.pairs(
                 filterInfinite(
                         s -> s.getScale() < 4,
-                        P.qbarRandomProvidersDefaultSecondaryScale()
+                        P.qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
                 ),
                 filterInfinite(a -> !a.equals(Interval.ALL), P.intervals())
         );
@@ -431,7 +431,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
 
         Iterable<QBarRandomProvider> rps = filterInfinite(
                 s -> s.getScale() >= 4,
-                P.qbarRandomProvidersDefaultSecondaryScale()
+                P.qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
         );
         for (QBarRandomProvider rp : take(LIMIT, rps)) {
             try {
@@ -444,7 +444,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
     private void propertiesVectors_int() {
         initialize("vectors(int)");
         Iterable<Pair<QBarRandomProvider, Integer>> ps = P.pairsSquareRootOrder(
-                filterInfinite(rp -> rp.getScale() > 0, P.qbarRandomProvidersDefaultSecondaryScale()),
+                filterInfinite(rp -> rp.getScale() > 0, P.qbarRandomProvidersDefaultSecondaryAndTertiaryScale()),
                 P.naturalIntegersGeometric()
         );
         for (Pair<QBarRandomProvider, Integer> p : take(LIMIT, ps)) {
@@ -455,7 +455,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         }
 
         Iterable<Pair<QBarRandomProvider, Integer>> psFail = P.pairsSquareRootOrder(
-                filterInfinite(rp -> rp.getScale() <= 0, P.qbarRandomProvidersDefaultSecondaryScale()),
+                filterInfinite(rp -> rp.getScale() <= 0, P.qbarRandomProvidersDefaultSecondaryAndTertiaryScale()),
                 P.naturalIntegersGeometric()
         );
         for (Pair<QBarRandomProvider, Integer> p : take(LIMIT, psFail)) {
@@ -466,7 +466,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         }
 
         psFail = P.pairsSquareRootOrder(
-                filterInfinite(rp -> rp.getScale() > 0, P.qbarRandomProvidersDefaultSecondaryScale()),
+                filterInfinite(rp -> rp.getScale() > 0, P.qbarRandomProvidersDefaultSecondaryAndTertiaryScale()),
                 P.negativeIntegersGeometric()
         );
         for (Pair<QBarRandomProvider, Integer> p : take(LIMIT, psFail)) {
@@ -481,7 +481,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         initialize("vectors()");
         Iterable<QBarRandomProvider> rps = filterInfinite(
                 rp -> rp.getScale() > 0 && rp.getSecondaryScale() > 0,
-                P.qbarRandomProviders()
+                P.qbarRandomProvidersDefaultTertiaryScale()
         );
         for (QBarRandomProvider rp : take(LIMIT, rps)) {
             Iterable<Vector> vs = rp.vectors();
@@ -492,7 +492,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
 
         Iterable<QBarRandomProvider> rpsFail = filterInfinite(
                 rp -> rp.getScale() <= 0 && rp.getSecondaryScale() > 0,
-                P.qbarRandomProviders()
+                P.qbarRandomProvidersDefaultTertiaryScale()
         );
         for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
             try {
@@ -501,7 +501,10 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
             } catch (IllegalStateException ignored) {}
         }
 
-        rpsFail = filterInfinite(rp -> rp.getScale() > 0 && rp.getSecondaryScale() <= 0, P.qbarRandomProviders());
+        rpsFail = filterInfinite(
+                rp -> rp.getScale() > 0 && rp.getSecondaryScale() <= 0,
+                P.qbarRandomProvidersDefaultTertiaryScale()
+        );
         for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
             try {
                 rp.vectors();
@@ -515,7 +518,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         Iterable<Pair<QBarRandomProvider, Integer>> ps = filterInfinite(
                 p -> p.a.getSecondaryScale() > p.b,
                 P.pairsSquareRootOrder(
-                        filterInfinite(rp -> rp.getScale() > 0, P.qbarRandomProviders()),
+                        filterInfinite(rp -> rp.getScale() > 0, P.qbarRandomProvidersDefaultTertiaryScale()),
                         P.naturalIntegersGeometric()
                 )
         );
@@ -529,7 +532,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         Iterable<Pair<QBarRandomProvider, Integer>> psFail = filterInfinite(
                 p -> p.a.getSecondaryScale() > p.b,
                 P.pairsSquareRootOrder(
-                        filterInfinite(rp -> rp.getScale() <= 0, P.qbarRandomProviders()),
+                        filterInfinite(rp -> rp.getScale() <= 0, P.qbarRandomProvidersDefaultTertiaryScale()),
                         P.naturalIntegersGeometric()
                 )
         );
@@ -543,7 +546,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         psFail = filterInfinite(
                 p -> p.a.getSecondaryScale() <= p.b,
                 P.pairsSquareRootOrder(
-                        filterInfinite(rp -> rp.getScale() > 0, P.qbarRandomProviders()),
+                        filterInfinite(rp -> rp.getScale() > 0, P.qbarRandomProvidersDefaultTertiaryScale()),
                         P.naturalIntegersGeometric()
                 )
         );
@@ -557,7 +560,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         psFail = filterInfinite(
                 p -> p.a.getSecondaryScale() > p.b,
                 P.pairsSquareRootOrder(
-                        filterInfinite(rp -> rp.getScale() > 0, P.qbarRandomProviders()),
+                        filterInfinite(rp -> rp.getScale() > 0, P.qbarRandomProvidersDefaultTertiaryScale()),
                         P.negativeIntegersGeometric()
                 )
         );
@@ -572,7 +575,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
     private void propertiesRationalVectors_int() {
         initialize("rationalVectors(int)");
         Iterable<Pair<QBarRandomProvider, Integer>> ps = P.pairsSquareRootOrder(
-                filterInfinite(rp -> rp.getScale() >= 3, P.qbarRandomProvidersDefaultSecondaryScale()),
+                filterInfinite(rp -> rp.getScale() >= 3, P.qbarRandomProvidersDefaultSecondaryAndTertiaryScale()),
                 P.naturalIntegersGeometric()
         );
         for (Pair<QBarRandomProvider, Integer> p : take(LIMIT, ps)) {
@@ -583,7 +586,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         }
 
         Iterable<Pair<QBarRandomProvider, Integer>> psFail = P.pairsSquareRootOrder(
-                filterInfinite(rp -> rp.getScale() < 3, P.qbarRandomProvidersDefaultSecondaryScale()),
+                filterInfinite(rp -> rp.getScale() < 3, P.qbarRandomProvidersDefaultSecondaryAndTertiaryScale()),
                 P.naturalIntegersGeometric()
         );
         for (Pair<QBarRandomProvider, Integer> p : take(LIMIT, psFail)) {
@@ -594,7 +597,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         }
 
         psFail = P.pairsSquareRootOrder(
-                filterInfinite(rp -> rp.getScale() >= 3, P.qbarRandomProvidersDefaultSecondaryScale()),
+                filterInfinite(rp -> rp.getScale() >= 3, P.qbarRandomProvidersDefaultSecondaryAndTertiaryScale()),
                 P.negativeIntegersGeometric()
         );
         for (Pair<QBarRandomProvider, Integer> p : take(LIMIT, psFail)) {
@@ -609,7 +612,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         initialize("rationalVectors()");
         Iterable<QBarRandomProvider> rps = filterInfinite(
                 rp -> rp.getScale() >= 3 && rp.getSecondaryScale() > 0,
-                P.qbarRandomProviders()
+                P.qbarRandomProvidersDefaultTertiaryScale()
         );
         for (QBarRandomProvider rp : take(LIMIT, rps)) {
             Iterable<RationalVector> vs = rp.rationalVectors();
@@ -620,7 +623,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
 
         Iterable<QBarRandomProvider> rpsFail = filterInfinite(
                 rp -> rp.getScale() < 3 && rp.getSecondaryScale() > 0,
-                P.qbarRandomProviders()
+                P.qbarRandomProvidersDefaultTertiaryScale()
         );
         for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
             try {
@@ -629,7 +632,10 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
             } catch (IllegalStateException ignored) {}
         }
 
-        rpsFail = filterInfinite(rp -> rp.getScale() >= 3 && rp.getSecondaryScale() <= 0, P.qbarRandomProviders());
+        rpsFail = filterInfinite(
+                rp -> rp.getScale() >= 3 && rp.getSecondaryScale() <= 0,
+                P.qbarRandomProvidersDefaultTertiaryScale()
+        );
         for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
             try {
                 rp.rationalVectors();
@@ -643,7 +649,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         Iterable<Pair<QBarRandomProvider, Integer>> ps = filterInfinite(
                 p -> p.a.getSecondaryScale() > p.b,
                 P.pairsSquareRootOrder(
-                        filterInfinite(rp -> rp.getScale() >= 3, P.qbarRandomProviders()),
+                        filterInfinite(rp -> rp.getScale() >= 3, P.qbarRandomProvidersDefaultTertiaryScale()),
                         P.naturalIntegersGeometric()
                 )
         );
@@ -657,7 +663,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         Iterable<Pair<QBarRandomProvider, Integer>> psFail = filterInfinite(
                 p -> p.a.getSecondaryScale() > p.b,
                 P.pairsSquareRootOrder(
-                        filterInfinite(rp -> rp.getScale() < 3, P.qbarRandomProviders()),
+                        filterInfinite(rp -> rp.getScale() < 3, P.qbarRandomProvidersDefaultTertiaryScale()),
                         P.naturalIntegersGeometric()
                 )
         );
@@ -671,7 +677,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         psFail = filterInfinite(
                 p -> p.a.getSecondaryScale() <= p.b,
                 P.pairsSquareRootOrder(
-                        filterInfinite(rp -> rp.getScale() >= 3, P.qbarRandomProviders()),
+                        filterInfinite(rp -> rp.getScale() >= 3, P.qbarRandomProvidersDefaultTertiaryScale()),
                         P.naturalIntegersGeometric()
                 )
         );
@@ -685,7 +691,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         psFail = filterInfinite(
                 p -> p.a.getSecondaryScale() > p.b,
                 P.pairsSquareRootOrder(
-                        filterInfinite(rp -> rp.getScale() >= 3, P.qbarRandomProviders()),
+                        filterInfinite(rp -> rp.getScale() >= 3, P.qbarRandomProvidersDefaultTertiaryScale()),
                         P.negativeIntegersGeometric()
                 )
         );
@@ -700,7 +706,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
     private void propertiesReducedRationalVectors_int() {
         initialize("reducedRationalVectors(int)");
         Iterable<Pair<QBarRandomProvider, Integer>> ps = P.pairsSquareRootOrder(
-                filterInfinite(rp -> rp.getScale() > 0, P.qbarRandomProvidersDefaultSecondaryScale()),
+                filterInfinite(rp -> rp.getScale() > 0, P.qbarRandomProvidersDefaultSecondaryAndTertiaryScale()),
                 P.naturalIntegersGeometric()
         );
         for (Pair<QBarRandomProvider, Integer> p : take(LIMIT, ps)) {
@@ -711,7 +717,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         }
 
         Iterable<Pair<QBarRandomProvider, Integer>> psFail = P.pairsSquareRootOrder(
-                filterInfinite(rp -> rp.getScale() <= 0, P.qbarRandomProvidersDefaultSecondaryScale()),
+                filterInfinite(rp -> rp.getScale() <= 0, P.qbarRandomProvidersDefaultSecondaryAndTertiaryScale()),
                 P.naturalIntegersGeometric()
         );
         for (Pair<QBarRandomProvider, Integer> p : take(LIMIT, psFail)) {
@@ -722,7 +728,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         }
 
         psFail = P.pairsSquareRootOrder(
-                filterInfinite(rp -> rp.getScale() > 0, P.qbarRandomProvidersDefaultSecondaryScale()),
+                filterInfinite(rp -> rp.getScale() > 0, P.qbarRandomProvidersDefaultSecondaryAndTertiaryScale()),
                 P.negativeIntegersGeometric()
         );
         for (Pair<QBarRandomProvider, Integer> p : take(LIMIT, psFail)) {
@@ -737,7 +743,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         initialize("reducedRationalVectors()");
         Iterable<QBarRandomProvider> rps = filterInfinite(
                 rp -> rp.getScale() > 0 && rp.getSecondaryScale() > 0,
-                P.qbarRandomProviders()
+                P.qbarRandomProvidersDefaultTertiaryScale()
         );
         for (QBarRandomProvider rp : take(LIMIT, rps)) {
             Iterable<RationalVector> vs = rp.reducedRationalVectors();
@@ -748,7 +754,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
 
         Iterable<QBarRandomProvider> rpsFail = filterInfinite(
                 rp -> rp.getScale() <= 0 && rp.getSecondaryScale() > 0,
-                P.qbarRandomProviders()
+                P.qbarRandomProvidersDefaultTertiaryScale()
         );
         for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
             try {
@@ -757,7 +763,10 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
             } catch (IllegalStateException ignored) {}
         }
 
-        rpsFail = filterInfinite(rp -> rp.getScale() > 0 && rp.getSecondaryScale() <= 0, P.qbarRandomProviders());
+        rpsFail = filterInfinite(
+                rp -> rp.getScale() > 0 && rp.getSecondaryScale() <= 0,
+                P.qbarRandomProvidersDefaultTertiaryScale()
+        );
         for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
             try {
                 rp.reducedRationalVectors();
@@ -771,7 +780,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         Iterable<Pair<QBarRandomProvider, Integer>> ps = filterInfinite(
                 p -> p.a.getSecondaryScale() > p.b,
                 P.pairsSquareRootOrder(
-                        filterInfinite(rp -> rp.getScale() > 0, P.qbarRandomProviders()),
+                        filterInfinite(rp -> rp.getScale() > 0, P.qbarRandomProvidersDefaultTertiaryScale()),
                         P.naturalIntegersGeometric()
                 )
         );
@@ -785,7 +794,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         Iterable<Pair<QBarRandomProvider, Integer>> psFail = filterInfinite(
                 p -> p.a.getSecondaryScale() > p.b,
                 P.pairsSquareRootOrder(
-                        filterInfinite(rp -> rp.getScale() <= 0, P.qbarRandomProviders()),
+                        filterInfinite(rp -> rp.getScale() <= 0, P.qbarRandomProvidersDefaultTertiaryScale()),
                         P.naturalIntegersGeometric()
                 )
         );
@@ -799,7 +808,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         psFail = filterInfinite(
                 p -> p.a.getSecondaryScale() <= p.b,
                 P.pairsSquareRootOrder(
-                        filterInfinite(rp -> rp.getScale() > 0, P.qbarRandomProviders()),
+                        filterInfinite(rp -> rp.getScale() > 0, P.qbarRandomProvidersDefaultTertiaryScale()),
                         P.naturalIntegersGeometric()
                 )
         );
@@ -813,7 +822,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         psFail = filterInfinite(
                 p -> p.a.getSecondaryScale() > p.b,
                 P.pairsSquareRootOrder(
-                        filterInfinite(rp -> rp.getScale() > 0, P.qbarRandomProviders()),
+                        filterInfinite(rp -> rp.getScale() > 0, P.qbarRandomProvidersDefaultTertiaryScale()),
                         P.negativeIntegersGeometric()
                 )
         );
@@ -828,7 +837,10 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
     private void propertiesMatrices_int_int() {
         initialize("matrices(int, int)");
         Iterable<Triple<QBarRandomProvider, Integer, Integer>> ts = P.triples(
-                filterInfinite(rp -> rp.getScale() > 0, P.withScale(4).qbarRandomProvidersDefaultSecondaryScale()),
+                filterInfinite(
+                        rp -> rp.getScale() > 0,
+                        P.withScale(4).qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
+                ),
                 P.withScale(4).naturalIntegersGeometric(),
                 P.withScale(4).naturalIntegersGeometric()
         );
@@ -840,7 +852,10 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         }
 
         Iterable<Triple<QBarRandomProvider, Integer, Integer>> tsFail = P.triples(
-                filterInfinite(rp -> rp.getScale() <= 0, P.withScale(4).qbarRandomProvidersDefaultSecondaryScale()),
+                filterInfinite(
+                        rp -> rp.getScale() <= 0,
+                        P.withScale(4).qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
+                ),
                 P.withScale(4).naturalIntegersGeometric(),
                 P.withScale(4).naturalIntegersGeometric()
         );
@@ -852,7 +867,10 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         }
 
         tsFail = P.triples(
-                filterInfinite(rp -> rp.getScale() > 0, P.withScale(4).qbarRandomProvidersDefaultSecondaryScale()),
+                filterInfinite(
+                        rp -> rp.getScale() > 0,
+                        P.withScale(4).qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
+                ),
                 P.withScale(4).negativeIntegersGeometric(),
                 P.withScale(4).naturalIntegersGeometric()
         );
@@ -864,7 +882,10 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         }
 
         tsFail = P.triples(
-                filterInfinite(rp -> rp.getScale() > 0, P.withScale(4).qbarRandomProvidersDefaultSecondaryScale()),
+                filterInfinite(
+                        rp -> rp.getScale() > 0,
+                        P.withScale(4).qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
+                ),
                 P.withScale(4).naturalIntegersGeometric(),
                 P.withScale(4).negativeIntegersGeometric()
         );
@@ -880,7 +901,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         initialize("matrices()");
         Iterable<QBarRandomProvider> rps = filterInfinite(
                 rp -> rp.getScale() > 0 && rp.getSecondaryScale() >= 2,
-                P.withScale(4).qbarRandomProviders()
+                P.withScale(4).qbarRandomProvidersDefaultTertiaryScale()
         );
         for (QBarRandomProvider rp : take(LIMIT, rps)) {
             Iterable<Matrix> ms = rp.matrices();
@@ -891,7 +912,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
 
         Iterable<QBarRandomProvider> rpsFail = filterInfinite(
                 rp -> rp.getScale() <= 0 && rp.getSecondaryScale() >= 2,
-                P.withScale(4).qbarRandomProviders()
+                P.withScale(4).qbarRandomProvidersDefaultTertiaryScale()
         );
         for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
             try {
@@ -902,7 +923,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
 
         rpsFail = filterInfinite(
                 rp -> rp.getScale() > 0 && rp.getSecondaryScale() < 2,
-                P.withScale(4).qbarRandomProviders()
+                P.withScale(4).qbarRandomProvidersDefaultTertiaryScale()
         );
         for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
             try {
@@ -916,7 +937,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         initialize("squareMatrices()");
         Iterable<QBarRandomProvider> rps = filterInfinite(
                 rp -> rp.getScale() >= 2 && rp.getSecondaryScale() >= 2,
-                P.withScale(4).qbarRandomProviders()
+                P.withScale(4).qbarRandomProvidersDefaultTertiaryScale()
         );
         for (QBarRandomProvider rp : take(LIMIT, rps)) {
             Iterable<Matrix> ms = rp.squareMatrices();
@@ -927,7 +948,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
 
         Iterable<QBarRandomProvider> rpsFail = filterInfinite(
                 rp -> rp.getScale() < 2 && rp.getSecondaryScale() >= 2,
-                P.withScale(4).qbarRandomProviders()
+                P.withScale(4).qbarRandomProvidersDefaultTertiaryScale()
         );
         for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
             try {
@@ -938,7 +959,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
 
         rpsFail = filterInfinite(
                 rp -> rp.getScale() >= 2 && rp.getSecondaryScale() < 2,
-                P.withScale(4).qbarRandomProviders()
+                P.withScale(4).qbarRandomProvidersDefaultTertiaryScale()
         );
         for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
             try {
@@ -951,7 +972,10 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
     private void propertiesRationalMatrices_int_int() {
         initialize("rationalMatrices(int, int)");
         Iterable<Triple<QBarRandomProvider, Integer, Integer>> ts = P.triples(
-                filterInfinite(rp -> rp.getScale() >= 3, P.withScale(4).qbarRandomProvidersDefaultSecondaryScale()),
+                filterInfinite(
+                        rp -> rp.getScale() >= 3,
+                        P.withScale(4).qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
+                ),
                 P.withScale(4).naturalIntegersGeometric(),
                 P.withScale(4).naturalIntegersGeometric()
         );
@@ -963,7 +987,10 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         }
 
         Iterable<Triple<QBarRandomProvider, Integer, Integer>> tsFail = P.triples(
-                filterInfinite(rp -> rp.getScale() < 3, P.withScale(4).qbarRandomProvidersDefaultSecondaryScale()),
+                filterInfinite(
+                        rp -> rp.getScale() < 3,
+                        P.withScale(4).qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
+                ),
                 P.withScale(4).naturalIntegersGeometric(),
                 P.withScale(4).naturalIntegersGeometric()
         );
@@ -975,7 +1002,10 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         }
 
         tsFail = P.triples(
-                filterInfinite(rp -> rp.getScale() >= 3, P.withScale(4).qbarRandomProvidersDefaultSecondaryScale()),
+                filterInfinite(
+                        rp -> rp.getScale() >= 3,
+                        P.withScale(4).qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
+                ),
                 P.withScale(4).negativeIntegersGeometric(),
                 P.withScale(4).naturalIntegersGeometric()
         );
@@ -987,7 +1017,10 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         }
 
         tsFail = P.triples(
-                filterInfinite(rp -> rp.getScale() >= 3, P.withScale(4).qbarRandomProvidersDefaultSecondaryScale()),
+                filterInfinite(
+                        rp -> rp.getScale() >= 3,
+                        P.withScale(4).qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
+                ),
                 P.withScale(4).naturalIntegersGeometric(),
                 P.withScale(4).negativeIntegersGeometric()
         );
@@ -1003,7 +1036,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         initialize("rationalMatrices()");
         Iterable<QBarRandomProvider> rps = filterInfinite(
                 rp -> rp.getScale() >= 3 && rp.getSecondaryScale() >= 2,
-                P.withScale(4).qbarRandomProviders()
+                P.withScale(4).qbarRandomProvidersDefaultTertiaryScale()
         );
         for (QBarRandomProvider rp : take(LIMIT, rps)) {
             Iterable<RationalMatrix> ms = rp.rationalMatrices();
@@ -1014,7 +1047,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
 
         Iterable<QBarRandomProvider> rpsFail = filterInfinite(
                 rp -> rp.getScale() < 3 && rp.getSecondaryScale() >= 2,
-                P.withScale(4).qbarRandomProviders()
+                P.withScale(4).qbarRandomProvidersDefaultTertiaryScale()
         );
         for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
             try {
@@ -1025,7 +1058,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
 
         rpsFail = filterInfinite(
                 rp -> rp.getScale() >= 3 && rp.getSecondaryScale() < 2,
-                P.withScale(4).qbarRandomProviders()
+                P.withScale(4).qbarRandomProvidersDefaultTertiaryScale()
         );
         for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
             try {
@@ -1039,7 +1072,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         initialize("squareRationalMatrices()");
         Iterable<QBarRandomProvider> rps = filterInfinite(
                 rp -> rp.getScale() >= 3 && rp.getSecondaryScale() >= 2,
-                P.withScale(4).qbarRandomProviders()
+                P.withScale(4).qbarRandomProvidersDefaultTertiaryScale()
         );
         for (QBarRandomProvider rp : take(LIMIT, rps)) {
             Iterable<RationalMatrix> ms = rp.squareRationalMatrices();
@@ -1050,7 +1083,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
 
         Iterable<QBarRandomProvider> rpsFail = filterInfinite(
                 rp -> rp.getScale() < 3 && rp.getSecondaryScale() >= 2,
-                P.withScale(4).qbarRandomProviders()
+                P.withScale(4).qbarRandomProvidersDefaultTertiaryScale()
         );
         for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
             try {
@@ -1061,7 +1094,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
 
         rpsFail = filterInfinite(
                 rp -> rp.getScale() >= 3 && rp.getSecondaryScale() < 2,
-                P.withScale(4).qbarRandomProviders()
+                P.withScale(4).qbarRandomProvidersDefaultTertiaryScale()
         );
         for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
             try {
@@ -1074,7 +1107,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
     private void propertiesPolynomials_int() {
         initialize("polynomials(int)");
         Iterable<Pair<QBarRandomProvider, Integer>> ps = P.pairsSquareRootOrder(
-                filterInfinite(rp -> rp.getScale() > 0, P.qbarRandomProvidersDefaultSecondaryScale()),
+                filterInfinite(rp -> rp.getScale() > 0, P.qbarRandomProvidersDefaultSecondaryAndTertiaryScale()),
                 P.rangeUpGeometric(-1)
         );
         for (Pair<QBarRandomProvider, Integer> p : take(LIMIT, ps)) {
@@ -1085,7 +1118,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         }
 
         Iterable<Pair<QBarRandomProvider, Integer>> psFail = P.pairsSquareRootOrder(
-                filterInfinite(rp -> rp.getScale() <= 0, P.qbarRandomProvidersDefaultSecondaryScale()),
+                filterInfinite(rp -> rp.getScale() <= 0, P.qbarRandomProvidersDefaultSecondaryAndTertiaryScale()),
                 P.rangeUpGeometric(-1)
         );
         for (Pair<QBarRandomProvider, Integer> p : take(LIMIT, psFail)) {
@@ -1096,7 +1129,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         }
 
         psFail = P.pairsSquareRootOrder(
-                filterInfinite(rp -> rp.getScale() > 0, P.qbarRandomProvidersDefaultSecondaryScale()),
+                filterInfinite(rp -> rp.getScale() > 0, P.qbarRandomProvidersDefaultSecondaryAndTertiaryScale()),
                 P.rangeDown(-2)
         );
         for (Pair<QBarRandomProvider, Integer> p : take(LIMIT, psFail)) {
@@ -1111,7 +1144,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         initialize("polynomials()");
         Iterable<QBarRandomProvider> rps = filterInfinite(
                 rp -> rp.getScale() > 0 && rp.getSecondaryScale() >= 0,
-                P.qbarRandomProviders()
+                P.qbarRandomProvidersDefaultTertiaryScale()
         );
         for (QBarRandomProvider rp : take(LIMIT, rps)) {
             Iterable<Polynomial> ps = rp.polynomials();
@@ -1122,7 +1155,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
 
         Iterable<QBarRandomProvider> rpsFail = filterInfinite(
                 rp -> rp.getScale() <= 0 && rp.getSecondaryScale() >= 0,
-                P.qbarRandomProviders()
+                P.qbarRandomProvidersDefaultTertiaryScale()
         );
         for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
             try {
@@ -1131,7 +1164,10 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
             } catch (IllegalStateException ignored) {}
         }
 
-        rpsFail = filterInfinite(rp -> rp.getScale() > 0 && rp.getSecondaryScale() < 0, P.qbarRandomProviders());
+        rpsFail = filterInfinite(
+                rp -> rp.getScale() > 0 && rp.getSecondaryScale() < 0,
+                P.qbarRandomProvidersDefaultTertiaryScale()
+        );
         for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
             try {
                 rp.polynomials();
@@ -1145,7 +1181,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         Iterable<Pair<QBarRandomProvider, Integer>> ps = filterInfinite(
                 p -> p.a.getSecondaryScale() > p.b,
                 P.pairsSquareRootOrder(
-                        filterInfinite(rp -> rp.getScale() > 0, P.qbarRandomProviders()),
+                        filterInfinite(rp -> rp.getScale() > 0, P.qbarRandomProvidersDefaultTertiaryScale()),
                         P.rangeUpGeometric(-1)
                 )
         );
@@ -1159,7 +1195,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         Iterable<Pair<QBarRandomProvider, Integer>> psFail = filterInfinite(
                 p -> p.a.getSecondaryScale() > p.b,
                 P.pairsSquareRootOrder(
-                        filterInfinite(rp -> rp.getScale() <= 0, P.qbarRandomProviders()),
+                        filterInfinite(rp -> rp.getScale() <= 0, P.qbarRandomProvidersDefaultTertiaryScale()),
                         P.rangeUpGeometric(-1)
                 )
         );
@@ -1173,7 +1209,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         psFail = filterInfinite(
                 p -> p.a.getSecondaryScale() <= p.b,
                 P.pairsSquareRootOrder(
-                        filterInfinite(rp -> rp.getScale() > 0, P.qbarRandomProviders()),
+                        filterInfinite(rp -> rp.getScale() > 0, P.qbarRandomProvidersDefaultTertiaryScale()),
                         P.rangeUpGeometric(-1)
                 )
         );
@@ -1187,7 +1223,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         psFail = filterInfinite(
                 p -> p.a.getSecondaryScale() > p.b,
                 P.pairsSquareRootOrder(
-                        filterInfinite(rp -> rp.getScale() > 0, P.qbarRandomProviders()),
+                        filterInfinite(rp -> rp.getScale() > 0, P.qbarRandomProvidersDefaultTertiaryScale()),
                         P.rangeDown(-2)
                 )
         );
@@ -1202,7 +1238,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
     private void propertiesPrimitivePolynomials_int() {
         initialize("primitivePolynomials(int)");
         Iterable<Pair<QBarRandomProvider, Integer>> ps = P.pairsSquareRootOrder(
-                filterInfinite(rp -> rp.getScale() > 0, P.qbarRandomProvidersDefaultSecondaryScale()),
+                filterInfinite(rp -> rp.getScale() > 0, P.qbarRandomProvidersDefaultSecondaryAndTertiaryScale()),
                 P.naturalIntegersGeometric()
         );
         for (Pair<QBarRandomProvider, Integer> p : take(LIMIT, ps)) {
@@ -1213,7 +1249,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         }
 
         Iterable<Pair<QBarRandomProvider, Integer>> psFail = P.pairsSquareRootOrder(
-                filterInfinite(rp -> rp.getScale() <= 0, P.qbarRandomProvidersDefaultSecondaryScale()),
+                filterInfinite(rp -> rp.getScale() <= 0, P.qbarRandomProvidersDefaultSecondaryAndTertiaryScale()),
                 P.naturalIntegersGeometric()
         );
         for (Pair<QBarRandomProvider, Integer> p : take(LIMIT, psFail)) {
@@ -1224,7 +1260,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         }
 
         psFail = P.pairsSquareRootOrder(
-                filterInfinite(rp -> rp.getScale() > 0, P.qbarRandomProvidersDefaultSecondaryScale()),
+                filterInfinite(rp -> rp.getScale() > 0, P.qbarRandomProvidersDefaultSecondaryAndTertiaryScale()),
                 P.negativeIntegers()
         );
         for (Pair<QBarRandomProvider, Integer> p : take(LIMIT, psFail)) {
@@ -1239,7 +1275,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         initialize("primitivePolynomials()");
         Iterable<QBarRandomProvider> rps = filterInfinite(
                 rp -> rp.getScale() > 0 && rp.getSecondaryScale() > 0,
-                P.qbarRandomProviders()
+                P.qbarRandomProvidersDefaultTertiaryScale()
         );
         for (QBarRandomProvider rp : take(LIMIT, rps)) {
             Iterable<Polynomial> ps = rp.primitivePolynomials();
@@ -1250,7 +1286,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
 
         Iterable<QBarRandomProvider> rpsFail = filterInfinite(
                 rp -> rp.getScale() <= 0 && rp.getSecondaryScale() > 0,
-                P.qbarRandomProviders()
+                P.qbarRandomProvidersDefaultTertiaryScale()
         );
         for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
             try {
@@ -1259,7 +1295,10 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
             } catch (IllegalStateException ignored) {}
         }
 
-        rpsFail = filterInfinite(rp -> rp.getScale() > 0 && rp.getSecondaryScale() <= 0, P.qbarRandomProviders());
+        rpsFail = filterInfinite(
+                rp -> rp.getScale() > 0 && rp.getSecondaryScale() <= 0,
+                P.qbarRandomProvidersDefaultTertiaryScale()
+        );
         for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
             try {
                 rp.primitivePolynomials();
@@ -1273,7 +1312,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         Iterable<Pair<QBarRandomProvider, Integer>> ps = filterInfinite(
                 p -> p.a.getSecondaryScale() > 0 && p.a.getSecondaryScale() > p.b,
                 P.pairsSquareRootOrder(
-                        filterInfinite(rp -> rp.getScale() > 0, P.qbarRandomProviders()),
+                        filterInfinite(rp -> rp.getScale() > 0, P.qbarRandomProvidersDefaultTertiaryScale()),
                         P.rangeUpGeometric(-1)
                 )
         );
@@ -1287,7 +1326,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         Iterable<Pair<QBarRandomProvider, Integer>> psFail = filterInfinite(
                 p -> p.a.getSecondaryScale() > 0 && p.a.getSecondaryScale() > p.b,
                 P.pairsSquareRootOrder(
-                        filterInfinite(rp -> rp.getScale() <= 0, P.qbarRandomProviders()),
+                        filterInfinite(rp -> rp.getScale() <= 0, P.qbarRandomProvidersDefaultTertiaryScale()),
                         P.rangeUpGeometric(-1)
                 )
         );
@@ -1301,7 +1340,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         psFail = filterInfinite(
                 p -> p.a.getSecondaryScale() <= 0 || p.a.getSecondaryScale() <= p.b,
                 P.pairsSquareRootOrder(
-                        filterInfinite(rp -> rp.getScale() > 0, P.qbarRandomProviders()),
+                        filterInfinite(rp -> rp.getScale() > 0, P.qbarRandomProvidersDefaultTertiaryScale()),
                         P.rangeUpGeometric(-1)
                 )
         );
@@ -1315,7 +1354,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         psFail = filterInfinite(
                 p -> p.a.getSecondaryScale() > 0 && p.a.getSecondaryScale() > p.b,
                 P.pairsSquareRootOrder(
-                        filterInfinite(rp -> rp.getScale() > 0, P.qbarRandomProviders()),
+                        filterInfinite(rp -> rp.getScale() > 0, P.qbarRandomProvidersDefaultTertiaryScale()),
                         P.rangeDown(-2)
                 )
         );
@@ -1330,7 +1369,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
     private void propertiesPositivePrimitivePolynomials_int() {
         initialize("positivePrimitivePolynomials(int)");
         Iterable<Pair<QBarRandomProvider, Integer>> ps = P.pairsSquareRootOrder(
-                filterInfinite(rp -> rp.getScale() > 0, P.qbarRandomProvidersDefaultSecondaryScale()),
+                filterInfinite(rp -> rp.getScale() > 0, P.qbarRandomProvidersDefaultSecondaryAndTertiaryScale()),
                 P.naturalIntegersGeometric()
         );
         for (Pair<QBarRandomProvider, Integer> p : take(LIMIT, ps)) {
@@ -1341,7 +1380,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         }
 
         Iterable<Pair<QBarRandomProvider, Integer>> psFail = P.pairsSquareRootOrder(
-                filterInfinite(rp -> rp.getScale() <= 0, P.qbarRandomProvidersDefaultSecondaryScale()),
+                filterInfinite(rp -> rp.getScale() <= 0, P.qbarRandomProvidersDefaultSecondaryAndTertiaryScale()),
                 P.naturalIntegersGeometric()
         );
         for (Pair<QBarRandomProvider, Integer> p : take(LIMIT, psFail)) {
@@ -1352,7 +1391,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         }
 
         psFail = P.pairsSquareRootOrder(
-                filterInfinite(rp -> rp.getScale() > 0, P.qbarRandomProvidersDefaultSecondaryScale()),
+                filterInfinite(rp -> rp.getScale() > 0, P.qbarRandomProvidersDefaultSecondaryAndTertiaryScale()),
                 P.negativeIntegers()
         );
         for (Pair<QBarRandomProvider, Integer> p : take(LIMIT, psFail)) {
@@ -1367,7 +1406,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         initialize("positivePrimitivePolynomials()");
         Iterable<QBarRandomProvider> rps = filterInfinite(
                 rp -> rp.getScale() > 0 && rp.getSecondaryScale() > 0,
-                P.qbarRandomProviders()
+                P.qbarRandomProvidersDefaultTertiaryScale()
         );
         for (QBarRandomProvider rp : take(LIMIT, rps)) {
             Iterable<Polynomial> ps = rp.positivePrimitivePolynomials();
@@ -1378,7 +1417,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
 
         Iterable<QBarRandomProvider> rpsFail = filterInfinite(
                 rp -> rp.getScale() <= 0 && rp.getSecondaryScale() > 0,
-                P.qbarRandomProviders()
+                P.qbarRandomProvidersDefaultTertiaryScale()
         );
         for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
             try {
@@ -1387,7 +1426,10 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
             } catch (IllegalStateException ignored) {}
         }
 
-        rpsFail = filterInfinite(rp -> rp.getScale() > 0 && rp.getSecondaryScale() <= 0, P.qbarRandomProviders());
+        rpsFail = filterInfinite(
+                rp -> rp.getScale() > 0 && rp.getSecondaryScale() <= 0,
+                P.qbarRandomProvidersDefaultTertiaryScale()
+        );
         for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
             try {
                 rp.positivePrimitivePolynomials();
@@ -1401,7 +1443,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         Iterable<Pair<QBarRandomProvider, Integer>> ps = filterInfinite(
                 p -> p.a.getSecondaryScale() > 0 && p.a.getSecondaryScale() > p.b,
                 P.pairsSquareRootOrder(
-                        filterInfinite(rp -> rp.getScale() > 0, P.qbarRandomProviders()),
+                        filterInfinite(rp -> rp.getScale() > 0, P.qbarRandomProvidersDefaultTertiaryScale()),
                         P.rangeUpGeometric(-1)
                 )
         );
@@ -1415,7 +1457,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         Iterable<Pair<QBarRandomProvider, Integer>> psFail = filterInfinite(
                 p -> p.a.getSecondaryScale() > 0 && p.a.getSecondaryScale() > p.b,
                 P.pairsSquareRootOrder(
-                        filterInfinite(rp -> rp.getScale() <= 0, P.qbarRandomProviders()),
+                        filterInfinite(rp -> rp.getScale() <= 0, P.qbarRandomProvidersDefaultTertiaryScale()),
                         P.rangeUpGeometric(-1)
                 )
         );
@@ -1429,7 +1471,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         psFail = filterInfinite(
                 p -> p.a.getSecondaryScale() <= 0 || p.a.getSecondaryScale() <= p.b,
                 P.pairsSquareRootOrder(
-                        filterInfinite(rp -> rp.getScale() > 0, P.qbarRandomProviders()),
+                        filterInfinite(rp -> rp.getScale() > 0, P.qbarRandomProvidersDefaultTertiaryScale()),
                         P.rangeUpGeometric(-1)
                 )
         );
@@ -1443,7 +1485,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         psFail = filterInfinite(
                 p -> p.a.getSecondaryScale() > 0 && p.a.getSecondaryScale() > p.b,
                 P.pairsSquareRootOrder(
-                        filterInfinite(rp -> rp.getScale() > 0, P.qbarRandomProviders()),
+                        filterInfinite(rp -> rp.getScale() > 0, P.qbarRandomProvidersDefaultTertiaryScale()),
                         P.rangeDown(-2)
                 )
         );
@@ -1458,7 +1500,10 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
     private void propertiesSquareFreePolynomials_int() {
         initialize("squareFreePolynomials(int)");
         Iterable<Pair<QBarRandomProvider, Integer>> ps = P.pairsSquareRootOrder(
-                filterInfinite(rp -> rp.getScale() > 0, P.withScale(4).qbarRandomProvidersDefaultSecondaryScale()),
+                filterInfinite(
+                        rp -> rp.getScale() > 0,
+                        P.withScale(4).qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
+                ),
                 P.withScale(4).naturalIntegersGeometric()
         );
         for (Pair<QBarRandomProvider, Integer> p : take(MEDIUM_LIMIT, ps)) {
@@ -1469,7 +1514,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         }
 
         Iterable<Pair<QBarRandomProvider, Integer>> psFail = P.pairsSquareRootOrder(
-                filterInfinite(rp -> rp.getScale() <= 0, P.qbarRandomProvidersDefaultSecondaryScale()),
+                filterInfinite(rp -> rp.getScale() <= 0, P.qbarRandomProvidersDefaultSecondaryAndTertiaryScale()),
                 P.naturalIntegersGeometric()
         );
         for (Pair<QBarRandomProvider, Integer> p : take(LIMIT, psFail)) {
@@ -1480,7 +1525,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         }
 
         psFail = P.pairsSquareRootOrder(
-                filterInfinite(rp -> rp.getScale() > 0, P.qbarRandomProvidersDefaultSecondaryScale()),
+                filterInfinite(rp -> rp.getScale() > 0, P.qbarRandomProvidersDefaultSecondaryAndTertiaryScale()),
                 P.negativeIntegers()
         );
         for (Pair<QBarRandomProvider, Integer> p : take(LIMIT, psFail)) {
@@ -1495,7 +1540,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         initialize("squareFreePolynomials()");
         Iterable<QBarRandomProvider> rps = filterInfinite(
                 rp -> rp.getScale() > 0 && rp.getSecondaryScale() >= 0,
-                P.withScale(4).qbarRandomProviders()
+                P.withScale(4).qbarRandomProvidersDefaultTertiaryScale()
         );
         for (QBarRandomProvider rp : take(MEDIUM_LIMIT, rps)) {
             Iterable<Polynomial> ps = rp.squareFreePolynomials();
@@ -1506,7 +1551,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
 
         Iterable<QBarRandomProvider> rpsFail = filterInfinite(
                 rp -> rp.getScale() <= 0 && rp.getSecondaryScale() >= 0,
-                P.qbarRandomProviders()
+                P.qbarRandomProvidersDefaultTertiaryScale()
         );
         for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
             try {
@@ -1515,7 +1560,10 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
             } catch (IllegalStateException ignored) {}
         }
 
-        rpsFail = filterInfinite(rp -> rp.getScale() > 0 && rp.getSecondaryScale() < 0, P.qbarRandomProviders());
+        rpsFail = filterInfinite(
+                rp -> rp.getScale() > 0 && rp.getSecondaryScale() < 0,
+                P.qbarRandomProvidersDefaultTertiaryScale()
+        );
         for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
             try {
                 rp.squareFreePolynomials();
@@ -1529,7 +1577,10 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         Iterable<Pair<QBarRandomProvider, Integer>> ps = filterInfinite(
                 p -> p.a.getSecondaryScale() >= 0 && p.a.getSecondaryScale() > p.b,
                 P.pairsSquareRootOrder(
-                        filterInfinite(rp -> rp.getScale() > 0, P.withScale(4).qbarRandomProviders()),
+                        filterInfinite(
+                                rp -> rp.getScale() > 0,
+                                P.withScale(4).qbarRandomProvidersDefaultTertiaryScale()
+                        ),
                         P.withScale(4).rangeUpGeometric(-1)
                 )
         );
@@ -1543,7 +1594,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         Iterable<Pair<QBarRandomProvider, Integer>> psFail = filterInfinite(
                 p -> p.a.getSecondaryScale() >= 0 && p.a.getSecondaryScale() > p.b,
                 P.pairsSquareRootOrder(
-                        filterInfinite(rp -> rp.getScale() <= 0, P.qbarRandomProviders()),
+                        filterInfinite(rp -> rp.getScale() <= 0, P.qbarRandomProvidersDefaultTertiaryScale()),
                         P.rangeUpGeometric(-1)
                 )
         );
@@ -1557,7 +1608,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         psFail = filterInfinite(
                 p -> p.a.getSecondaryScale() < 0 || p.a.getSecondaryScale() <= p.b,
                 P.pairsSquareRootOrder(
-                        filterInfinite(rp -> rp.getScale() > 0, P.qbarRandomProviders()),
+                        filterInfinite(rp -> rp.getScale() > 0, P.qbarRandomProvidersDefaultTertiaryScale()),
                         P.rangeUpGeometric(-1)
                 )
         );
@@ -1571,7 +1622,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         psFail = filterInfinite(
                 p -> p.a.getSecondaryScale() >= 0 && p.a.getSecondaryScale() > p.b,
                 P.pairsSquareRootOrder(
-                        filterInfinite(rp -> rp.getScale() > 0, P.qbarRandomProviders()),
+                        filterInfinite(rp -> rp.getScale() > 0, P.qbarRandomProvidersDefaultTertiaryScale()),
                         P.rangeDown(-2)
                 )
         );
@@ -1586,7 +1637,10 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
     private void propertiesPositivePrimitiveSquareFreePolynomials_int() {
         initialize("positivePrimitiveSquareFreePolynomials(int)");
         Iterable<Pair<QBarRandomProvider, Integer>> ps = P.pairsSquareRootOrder(
-                filterInfinite(rp -> rp.getScale() > 0, P.withScale(4).qbarRandomProvidersDefaultSecondaryScale()),
+                filterInfinite(
+                        rp -> rp.getScale() > 0,
+                        P.withScale(4).qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
+                ),
                 P.withScale(4).naturalIntegersGeometric()
         );
         for (Pair<QBarRandomProvider, Integer> p : take(MEDIUM_LIMIT, ps)) {
@@ -1597,7 +1651,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         }
 
         Iterable<Pair<QBarRandomProvider, Integer>> psFail = P.pairsSquareRootOrder(
-                filterInfinite(rp -> rp.getScale() <= 0, P.qbarRandomProvidersDefaultSecondaryScale()),
+                filterInfinite(rp -> rp.getScale() <= 0, P.qbarRandomProvidersDefaultSecondaryAndTertiaryScale()),
                 P.naturalIntegersGeometric()
         );
         for (Pair<QBarRandomProvider, Integer> p : take(LIMIT, psFail)) {
@@ -1608,7 +1662,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         }
 
         psFail = P.pairsSquareRootOrder(
-                filterInfinite(rp -> rp.getScale() > 0, P.qbarRandomProvidersDefaultSecondaryScale()),
+                filterInfinite(rp -> rp.getScale() > 0, P.qbarRandomProvidersDefaultSecondaryAndTertiaryScale()),
                 P.negativeIntegers()
         );
         for (Pair<QBarRandomProvider, Integer> p : take(LIMIT, psFail)) {
@@ -1623,7 +1677,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         initialize("positivePrimitiveSquareFreePolynomials()");
         Iterable<QBarRandomProvider> rps = filterInfinite(
                 rp -> rp.getScale() > 0 && rp.getSecondaryScale() > 0,
-                P.withScale(4).qbarRandomProviders()
+                P.withScale(4).qbarRandomProvidersDefaultTertiaryScale()
         );
         for (QBarRandomProvider rp : take(MEDIUM_LIMIT, rps)) {
             Iterable<Polynomial> ps = rp.positivePrimitiveSquareFreePolynomials();
@@ -1634,7 +1688,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
 
         Iterable<QBarRandomProvider> rpsFail = filterInfinite(
                 rp -> rp.getScale() <= 0 && rp.getSecondaryScale() > 0,
-                P.qbarRandomProviders()
+                P.qbarRandomProvidersDefaultTertiaryScale()
         );
         for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
             try {
@@ -1643,7 +1697,10 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
             } catch (IllegalStateException ignored) {}
         }
 
-        rpsFail = filterInfinite(rp -> rp.getScale() > 0 && rp.getSecondaryScale() <= 0, P.qbarRandomProviders());
+        rpsFail = filterInfinite(
+                rp -> rp.getScale() > 0 && rp.getSecondaryScale() <= 0,
+                P.qbarRandomProvidersDefaultTertiaryScale()
+        );
         for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
             try {
                 rp.positivePrimitiveSquareFreePolynomials();
@@ -1657,7 +1714,10 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         Iterable<Pair<QBarRandomProvider, Integer>> ps = filterInfinite(
                 p -> p.a.getSecondaryScale() > 0 && p.a.getSecondaryScale() > p.b,
                 P.pairsSquareRootOrder(
-                        filterInfinite(rp -> rp.getScale() > 0, P.withScale(4).qbarRandomProviders()),
+                        filterInfinite(
+                                rp -> rp.getScale() > 0,
+                                P.withScale(4).qbarRandomProvidersDefaultTertiaryScale()
+                        ),
                         P.withScale(4).rangeUpGeometric(-1)
                 )
         );
@@ -1671,7 +1731,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         Iterable<Pair<QBarRandomProvider, Integer>> psFail = filterInfinite(
                 p -> p.a.getSecondaryScale() > 0 && p.a.getSecondaryScale() > p.b,
                 P.pairsSquareRootOrder(
-                        filterInfinite(rp -> rp.getScale() <= 0, P.qbarRandomProviders()),
+                        filterInfinite(rp -> rp.getScale() <= 0, P.qbarRandomProvidersDefaultTertiaryScale()),
                         P.rangeUpGeometric(-1)
                 )
         );
@@ -1685,7 +1745,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         psFail = filterInfinite(
                 p -> p.a.getSecondaryScale() <= 0 || p.a.getSecondaryScale() <= p.b,
                 P.pairsSquareRootOrder(
-                        filterInfinite(rp -> rp.getScale() > 0, P.qbarRandomProviders()),
+                        filterInfinite(rp -> rp.getScale() > 0, P.qbarRandomProvidersDefaultTertiaryScale()),
                         P.rangeUpGeometric(-1)
                 )
         );
@@ -1699,7 +1759,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         psFail = filterInfinite(
                 p -> p.a.getSecondaryScale() > 0 && p.a.getSecondaryScale() > p.b,
                 P.pairsSquareRootOrder(
-                        filterInfinite(rp -> rp.getScale() > 0, P.qbarRandomProviders()),
+                        filterInfinite(rp -> rp.getScale() > 0, P.qbarRandomProvidersDefaultTertiaryScale()),
                         P.rangeDown(-2)
                 )
         );
@@ -1714,7 +1774,10 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
     private void propertiesIrreduciblePolynomials_int() {
         initialize("irreduciblePolynomials(int)");
         Iterable<Pair<QBarRandomProvider, Integer>> ps = P.pairsSquareRootOrder(
-                filterInfinite(rp -> rp.getScale() > 0, P.withScale(1).qbarRandomProvidersDefaultSecondaryScale()),
+                filterInfinite(
+                        rp -> rp.getScale() > 0,
+                        P.withScale(1).qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
+                ),
                 P.withScale(4).naturalIntegersGeometric()
         );
         for (Pair<QBarRandomProvider, Integer> p : take(MEDIUM_LIMIT, ps)) {
@@ -1725,7 +1788,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         }
 
         Iterable<Pair<QBarRandomProvider, Integer>> psFail = P.pairsSquareRootOrder(
-                filterInfinite(rp -> rp.getScale() <= 0, P.qbarRandomProvidersDefaultSecondaryScale()),
+                filterInfinite(rp -> rp.getScale() <= 0, P.qbarRandomProvidersDefaultSecondaryAndTertiaryScale()),
                 P.naturalIntegersGeometric()
         );
         for (Pair<QBarRandomProvider, Integer> p : take(LIMIT, psFail)) {
@@ -1736,7 +1799,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         }
 
         psFail = P.pairsSquareRootOrder(
-                filterInfinite(rp -> rp.getScale() > 0, P.qbarRandomProvidersDefaultSecondaryScale()),
+                filterInfinite(rp -> rp.getScale() > 0, P.qbarRandomProvidersDefaultSecondaryAndTertiaryScale()),
                 P.negativeIntegers()
         );
         for (Pair<QBarRandomProvider, Integer> p : take(LIMIT, psFail)) {
@@ -1751,7 +1814,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         initialize("irreduciblePolynomials()");
         Iterable<QBarRandomProvider> rps = filterInfinite(
                 rp -> rp.getScale() >= 2 && rp.getSecondaryScale() >= 2,
-                P.withScale(1).qbarRandomProviders()
+                P.withScale(1).qbarRandomProvidersDefaultTertiaryScale()
         );
         for (QBarRandomProvider rp : take(MEDIUM_LIMIT, rps)) {
             Iterable<Polynomial> ps = rp.irreduciblePolynomials();
@@ -1762,7 +1825,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
 
         Iterable<QBarRandomProvider> rpsFail = filterInfinite(
                 rp -> rp.getScale() < 2 && rp.getSecondaryScale() >= 2,
-                P.qbarRandomProviders()
+                P.qbarRandomProvidersDefaultTertiaryScale()
         );
         for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
             try {
@@ -1771,7 +1834,10 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
             } catch (IllegalStateException ignored) {}
         }
 
-        rpsFail = filterInfinite(rp -> rp.getScale() >= 2 && rp.getSecondaryScale() < 2, P.qbarRandomProviders());
+        rpsFail = filterInfinite(
+                rp -> rp.getScale() >= 2 && rp.getSecondaryScale() < 2,
+                P.qbarRandomProvidersDefaultTertiaryScale()
+        );
         for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
             try {
                 rp.irreduciblePolynomials();
@@ -1785,7 +1851,10 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         Iterable<Pair<QBarRandomProvider, Integer>> ps = filterInfinite(
                 p -> p.a.getSecondaryScale() >= 2 && p.a.getSecondaryScale() > p.b,
                 P.pairsSquareRootOrder(
-                        filterInfinite(rp -> rp.getScale() >= 2, P.withScale(1).qbarRandomProviders()),
+                        filterInfinite(
+                                rp -> rp.getScale() >= 2,
+                                P.withScale(1).qbarRandomProvidersDefaultTertiaryScale()
+                        ),
                         P.withScale(4).rangeUpGeometric(-1)
                 )
         );
@@ -1799,7 +1868,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         Iterable<Pair<QBarRandomProvider, Integer>> psFail = filterInfinite(
                 p -> p.a.getSecondaryScale() >= 2 && p.a.getSecondaryScale() > p.b,
                 P.pairsSquareRootOrder(
-                        filterInfinite(rp -> rp.getScale() < 2, P.qbarRandomProviders()),
+                        filterInfinite(rp -> rp.getScale() < 2, P.qbarRandomProvidersDefaultTertiaryScale()),
                         P.rangeUpGeometric(-1)
                 )
         );
@@ -1813,7 +1882,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         psFail = filterInfinite(
                 p -> p.a.getSecondaryScale() < 2 || p.a.getSecondaryScale() <= p.b,
                 P.pairsSquareRootOrder(
-                        filterInfinite(rp -> rp.getScale() >= 2, P.qbarRandomProviders()),
+                        filterInfinite(rp -> rp.getScale() >= 2, P.qbarRandomProvidersDefaultTertiaryScale()),
                         P.rangeUpGeometric(-1)
                 )
         );
@@ -1827,7 +1896,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         psFail = filterInfinite(
                 p -> p.a.getSecondaryScale() >= 2 && p.a.getSecondaryScale() > p.b,
                 P.pairsSquareRootOrder(
-                        filterInfinite(rp -> rp.getScale() >= 2, P.qbarRandomProviders()),
+                        filterInfinite(rp -> rp.getScale() >= 2, P.qbarRandomProvidersDefaultTertiaryScale()),
                         P.rangeDown(-2)
                 )
         );
@@ -1842,7 +1911,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
     private void propertiesRationalPolynomials_int() {
         initialize("rationalPolynomials(int)");
         Iterable<Pair<QBarRandomProvider, Integer>> ps = P.pairsSquareRootOrder(
-                filterInfinite(rp -> rp.getScale() >= 3, P.qbarRandomProvidersDefaultSecondaryScale()),
+                filterInfinite(rp -> rp.getScale() >= 3, P.qbarRandomProvidersDefaultSecondaryAndTertiaryScale()),
                 P.rangeUpGeometric(-1)
         );
         for (Pair<QBarRandomProvider, Integer> p : take(LIMIT, ps)) {
@@ -1853,7 +1922,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         }
 
         Iterable<Pair<QBarRandomProvider, Integer>> psFail = P.pairsSquareRootOrder(
-                filterInfinite(rp -> rp.getScale() < 3, P.qbarRandomProvidersDefaultSecondaryScale()),
+                filterInfinite(rp -> rp.getScale() < 3, P.qbarRandomProvidersDefaultSecondaryAndTertiaryScale()),
                 P.rangeUpGeometric(-1)
         );
         for (Pair<QBarRandomProvider, Integer> p : take(LIMIT, psFail)) {
@@ -1864,7 +1933,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         }
 
         psFail = P.pairsSquareRootOrder(
-                filterInfinite(rp -> rp.getScale() >= 3, P.qbarRandomProvidersDefaultSecondaryScale()),
+                filterInfinite(rp -> rp.getScale() >= 3, P.qbarRandomProvidersDefaultSecondaryAndTertiaryScale()),
                 P.rangeDown(-2)
         );
         for (Pair<QBarRandomProvider, Integer> p : take(LIMIT, psFail)) {
@@ -1879,7 +1948,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         initialize("rationalPolynomials()");
         Iterable<QBarRandomProvider> rps = filterInfinite(
                 rp -> rp.getScale() >= 3 && rp.getSecondaryScale() >= 0,
-                P.qbarRandomProviders()
+                P.qbarRandomProvidersDefaultTertiaryScale()
         );
         for (QBarRandomProvider rp : take(LIMIT, rps)) {
             Iterable<RationalPolynomial> ps = rp.rationalPolynomials();
@@ -1890,7 +1959,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
 
         Iterable<QBarRandomProvider> rpsFail = filterInfinite(
                 rp -> rp.getScale() < 3 && rp.getSecondaryScale() >= 0,
-                P.qbarRandomProviders()
+                P.qbarRandomProvidersDefaultTertiaryScale()
         );
         for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
             try {
@@ -1899,7 +1968,10 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
             } catch (IllegalStateException ignored) {}
         }
 
-        rpsFail = filterInfinite(rp -> rp.getScale() >= 3 && rp.getSecondaryScale() < 0, P.qbarRandomProviders());
+        rpsFail = filterInfinite(
+                rp -> rp.getScale() >= 3 && rp.getSecondaryScale() < 0,
+                P.qbarRandomProvidersDefaultTertiaryScale()
+        );
         for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
             try {
                 rp.rationalPolynomials();
@@ -1913,7 +1985,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         Iterable<Pair<QBarRandomProvider, Integer>> ps = filterInfinite(
                 p -> p.a.getSecondaryScale() > p.b,
                 P.pairsSquareRootOrder(
-                        filterInfinite(rp -> rp.getScale() >= 3, P.qbarRandomProviders()),
+                        filterInfinite(rp -> rp.getScale() >= 3, P.qbarRandomProvidersDefaultTertiaryScale()),
                         P.rangeUpGeometric(-1)
                 )
         );
@@ -1927,7 +1999,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         Iterable<Pair<QBarRandomProvider, Integer>> psFail = filterInfinite(
                 p -> p.a.getSecondaryScale() > p.b,
                 P.pairsSquareRootOrder(
-                        filterInfinite(rp -> rp.getScale() < 3, P.qbarRandomProviders()),
+                        filterInfinite(rp -> rp.getScale() < 3, P.qbarRandomProvidersDefaultTertiaryScale()),
                         P.rangeUpGeometric(-1)
                 )
         );
@@ -1941,7 +2013,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         psFail = filterInfinite(
                 p -> p.a.getSecondaryScale() <= p.b,
                 P.pairsSquareRootOrder(
-                        filterInfinite(rp -> rp.getScale() >= 3, P.qbarRandomProviders()),
+                        filterInfinite(rp -> rp.getScale() >= 3, P.qbarRandomProvidersDefaultTertiaryScale()),
                         P.rangeUpGeometric(-1)
                 )
         );
@@ -1955,7 +2027,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         psFail = filterInfinite(
                 p -> p.a.getSecondaryScale() > p.b,
                 P.pairsSquareRootOrder(
-                        filterInfinite(rp -> rp.getScale() > 0, P.qbarRandomProviders()),
+                        filterInfinite(rp -> rp.getScale() > 0, P.qbarRandomProvidersDefaultTertiaryScale()),
                         P.rangeDown(-2)
                 )
         );
@@ -1970,7 +2042,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
     private void propertiesMonicRationalPolynomials_int() {
         initialize("monicRationalPolynomials(int)");
         Iterable<Pair<QBarRandomProvider, Integer>> ps = P.pairsSquareRootOrder(
-                filterInfinite(rp -> rp.getScale() > 0, P.qbarRandomProvidersDefaultSecondaryScale()),
+                filterInfinite(rp -> rp.getScale() > 0, P.qbarRandomProvidersDefaultSecondaryAndTertiaryScale()),
                 P.naturalIntegersGeometric()
         );
         for (Pair<QBarRandomProvider, Integer> p : take(LIMIT, ps)) {
@@ -1981,7 +2053,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         }
 
         Iterable<Pair<QBarRandomProvider, Integer>> psFail = P.pairsSquareRootOrder(
-                filterInfinite(rp -> rp.getScale() <= 0, P.qbarRandomProvidersDefaultSecondaryScale()),
+                filterInfinite(rp -> rp.getScale() <= 0, P.qbarRandomProvidersDefaultSecondaryAndTertiaryScale()),
                 P.naturalIntegersGeometric()
         );
         for (Pair<QBarRandomProvider, Integer> p : take(LIMIT, psFail)) {
@@ -1992,7 +2064,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         }
 
         psFail = P.pairsSquareRootOrder(
-                filterInfinite(rp -> rp.getScale() > 0, P.qbarRandomProvidersDefaultSecondaryScale()),
+                filterInfinite(rp -> rp.getScale() > 0, P.qbarRandomProvidersDefaultSecondaryAndTertiaryScale()),
                 P.negativeIntegers()
         );
         for (Pair<QBarRandomProvider, Integer> p : take(LIMIT, psFail)) {
@@ -2007,7 +2079,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         initialize("monicRationalPolynomials()");
         Iterable<QBarRandomProvider> rps = filterInfinite(
                 rp -> rp.getScale() > 0 && rp.getSecondaryScale() > 0,
-                P.qbarRandomProviders()
+                P.qbarRandomProvidersDefaultTertiaryScale()
         );
         for (QBarRandomProvider rp : take(LIMIT, rps)) {
             Iterable<RationalPolynomial> ps = rp.monicRationalPolynomials();
@@ -2018,7 +2090,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
 
         Iterable<QBarRandomProvider> rpsFail = filterInfinite(
                 rp -> rp.getScale() <= 0 && rp.getSecondaryScale() > 0,
-                P.qbarRandomProviders()
+                P.qbarRandomProvidersDefaultTertiaryScale()
         );
         for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
             try {
@@ -2027,7 +2099,10 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
             } catch (IllegalStateException ignored) {}
         }
 
-        rpsFail = filterInfinite(rp -> rp.getScale() > 0 && rp.getSecondaryScale() <= 0, P.qbarRandomProviders());
+        rpsFail = filterInfinite(
+                rp -> rp.getScale() > 0 && rp.getSecondaryScale() <= 0,
+                P.qbarRandomProvidersDefaultTertiaryScale()
+        );
         for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
             try {
                 rp.monicRationalPolynomials();
@@ -2041,7 +2116,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         Iterable<Pair<QBarRandomProvider, Integer>> ps = filterInfinite(
                 p -> p.a.getSecondaryScale() > 0 && p.a.getSecondaryScale() > p.b,
                 P.pairsSquareRootOrder(
-                        filterInfinite(rp -> rp.getScale() > 0, P.qbarRandomProviders()),
+                        filterInfinite(rp -> rp.getScale() > 0, P.qbarRandomProvidersDefaultTertiaryScale()),
                         P.rangeUpGeometric(-1)
                 )
         );
@@ -2055,7 +2130,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         Iterable<Pair<QBarRandomProvider, Integer>> psFail = filterInfinite(
                 p -> p.a.getSecondaryScale() > 0 && p.a.getSecondaryScale() > p.b,
                 P.pairsSquareRootOrder(
-                        filterInfinite(rp -> rp.getScale() <= 0, P.qbarRandomProviders()),
+                        filterInfinite(rp -> rp.getScale() <= 0, P.qbarRandomProvidersDefaultTertiaryScale()),
                         P.rangeUpGeometric(-1)
                 )
         );
@@ -2069,7 +2144,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         psFail = filterInfinite(
                 p -> p.a.getSecondaryScale() <= 0 || p.a.getSecondaryScale() <= p.b,
                 P.pairsSquareRootOrder(
-                        filterInfinite(rp -> rp.getScale() > 0, P.qbarRandomProviders()),
+                        filterInfinite(rp -> rp.getScale() > 0, P.qbarRandomProvidersDefaultTertiaryScale()),
                         P.rangeUpGeometric(-1)
                 )
         );
@@ -2083,7 +2158,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         psFail = filterInfinite(
                 p -> p.a.getSecondaryScale() > 0 && p.a.getSecondaryScale() > p.b,
                 P.pairsSquareRootOrder(
-                        filterInfinite(rp -> rp.getScale() > 0, P.qbarRandomProviders()),
+                        filterInfinite(rp -> rp.getScale() > 0, P.qbarRandomProvidersDefaultTertiaryScale()),
                         P.rangeDown(-2)
                 )
         );
@@ -2099,7 +2174,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         initialize("variables()");
         Iterable<QBarRandomProvider> rps = filterInfinite(
                 s -> s.getScale() > 0,
-                P.qbarRandomProvidersDefaultSecondaryScale()
+                P.qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
         );
         for (QBarRandomProvider rp : take(LIMIT, rps)) {
             Iterable<Variable> vs = rp.variables();
@@ -2110,7 +2185,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
 
         Iterable<QBarRandomProvider> rpsFail = filterInfinite(
                 s -> s.getScale() <= 0,
-                P.qbarRandomProvidersDefaultSecondaryScale()
+                P.qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
         );
         for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
             try {
@@ -2133,7 +2208,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         initialize("exponentVectors()");
         Iterable<QBarRandomProvider> rps = filterInfinite(
                 s -> s.getScale() > 0,
-                P.qbarRandomProvidersDefaultSecondaryScale()
+                P.qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
         );
         for (QBarRandomProvider rp : take(LIMIT, rps)) {
             Iterable<ExponentVector> evs = rp.exponentVectors();
@@ -2144,7 +2219,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
 
         Iterable<QBarRandomProvider> rpsFail = filterInfinite(
                 s -> s.getScale() <= 0,
-                P.qbarRandomProvidersDefaultSecondaryScale()
+                P.qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
         );
         for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
             try {

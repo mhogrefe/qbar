@@ -98,6 +98,15 @@ public strictfp abstract class QBarIterableProvider {
     }
 
     /**
+     * Returns a shallow copy of {@code this} with a given tertiary scale.
+     *
+     * @param tertiaryScale the tertiary scale.
+     */
+    public @NotNull QBarIterableProvider withTertiaryScale(int tertiaryScale) {
+        return this;
+    }
+
+    /**
      * Generates {@code Boolean}s.
      */
     public @NotNull Iterable<Boolean> booleans() {
@@ -2843,13 +2852,19 @@ public strictfp abstract class QBarIterableProvider {
     }
 
     /**
-     * Generates all {@code RandomProvider}s with a fixed {@code scale} and {@code secondaryScale}.
+     * Generates all {@code RandomProvider}s with a fixed {@code scale}, {@code secondaryScale}, and
+     * {@code tertiaryScale}.
      *
      * @param scale the {@code scale} of the generated {@code RandomProvider}s
      * @param secondaryScale the {@code secondaryScale} of the generated {@code RandomProvider}s
+     * @param tertiaryScale the {@code tertiaryScale} of the generated {@code RandomProvider}s
      */
-    public @NotNull Iterable<RandomProvider> randomProvidersFixedScales(int scale, int secondaryScale) {
-        return wheelsProvider.randomProvidersFixedScales(scale, secondaryScale);
+    public @NotNull Iterable<RandomProvider> randomProvidersFixedScales(
+            int scale,
+            int secondaryScale,
+            int tertiaryScale
+    ) {
+        return wheelsProvider.randomProvidersFixedScales(scale, secondaryScale, tertiaryScale);
     }
 
     /**
@@ -2860,10 +2875,17 @@ public strictfp abstract class QBarIterableProvider {
     }
 
     /**
-     * Generates all {@code RandomProvider}s with the default {@code secondaryScale}.
+     * Generates all {@code RandomProvider}s with the default {@code secondaryScale} and {@code tertiaryScale}.
      */
-    public @NotNull Iterable<RandomProvider> randomProvidersDefaultSecondaryScale() {
-        return wheelsProvider.randomProvidersDefaultSecondaryScale();
+    public @NotNull Iterable<RandomProvider> randomProvidersDefaultSecondaryAndTertiaryScale() {
+        return wheelsProvider.randomProvidersDefaultSecondaryAndTertiaryScale();
+    }
+
+    /**
+     * Generates all {@code RandomProvider}s with the default {@code tertiaryScale}.
+     */
+    public @NotNull Iterable<RandomProvider> randomProvidersDefaultTertiaryScale() {
+        return wheelsProvider.randomProvidersDefaultTertiaryScale();
     }
 
     /**
@@ -3319,10 +3341,14 @@ public strictfp abstract class QBarIterableProvider {
      */
     public abstract @NotNull Iterable<ExponentVector> exponentVectors();
 
-    public @NotNull Iterable<QBarRandomProvider> qbarRandomProvidersFixedScales(int scale, int secondaryScale) {
+    public @NotNull Iterable<QBarRandomProvider> qbarRandomProvidersFixedScales(
+            int scale,
+            int secondaryScale,
+            int tertiaryScale
+    ) {
         return map(
                 rp -> (QBarRandomProvider) new QBarRandomProvider(rp.getSeed())
-                        .withScale(scale).withSecondaryScale(secondaryScale),
+                        .withScale(scale).withSecondaryScale(secondaryScale).withTertiaryScale(tertiaryScale),
                 wheelsProvider.randomProvidersDefault()
         );
     }
@@ -3331,17 +3357,26 @@ public strictfp abstract class QBarIterableProvider {
         return map(rp -> new QBarRandomProvider(rp.getSeed()), wheelsProvider.randomProvidersDefault());
     }
 
-    public @NotNull Iterable<QBarRandomProvider> qbarRandomProvidersDefaultSecondaryScale() {
+    public @NotNull Iterable<QBarRandomProvider> qbarRandomProvidersDefaultSecondaryAndTertiaryScale() {
         return map(
                 rp -> (QBarRandomProvider) new QBarRandomProvider(rp.getSeed()).withScale(rp.getScale()),
-                wheelsProvider.randomProvidersDefaultSecondaryScale()
+                wheelsProvider.randomProvidersDefaultSecondaryAndTertiaryScale()
+        );
+    }
+
+    public @NotNull Iterable<QBarRandomProvider> qbarRandomProvidersDefaultTertiaryScale() {
+        return map(
+                rp -> (QBarRandomProvider) new QBarRandomProvider(rp.getSeed()).withScale(rp.getScale())
+                        .withSecondaryScale(rp.getSecondaryScale()),
+                wheelsProvider.randomProvidersDefaultTertiaryScale()
         );
     }
 
     public @NotNull Iterable<QBarRandomProvider> qbarRandomProviders() {
         return map(
                 rp -> (QBarRandomProvider) new QBarRandomProvider(rp.getSeed())
-                        .withScale(rp.getScale()).withSecondaryScale(rp.getSecondaryScale()),
+                        .withScale(rp.getScale()).withSecondaryScale(rp.getSecondaryScale())
+                        .withTertiaryScale(rp.getTertiaryScale()),
                 wheelsProvider.randomProviders()
         );
     }

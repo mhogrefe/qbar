@@ -92,29 +92,42 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
     }
 
     /**
-     * Returns {@code this}'s scale parameter.
+     * Returns {@code this}'s first scale parameter.
      *
      * <ul>
      *  <li>The result may be any {@code int}.</li>
      * </ul>
      *
-     * @return the scale parameter of {@code this}
+     * @return the first scale parameter of {@code this}
      */
     public int getScale() {
         return ((RandomProvider) wheelsProvider).getScale();
     }
 
     /**
-     * Returns {@code this}'s other scale parameter.
+     * Returns {@code this}'s second scale parameter.
      *
      * <ul>
      *  <li>The result may be any {@code int}.</li>
      * </ul>
      *
-     * @return the other scale parameter of {@code this}
+     * @return the second scale parameter of {@code this}
      */
     public int getSecondaryScale() {
         return ((RandomProvider) wheelsProvider).getSecondaryScale();
+    }
+
+    /**
+     * Returns {@code this}'s third scale parameter.
+     *
+     * <ul>
+     *  <li>The result may be any {@code int}.</li>
+     * </ul>
+     *
+     * @return the third scale parameter of {@code this}
+     */
+    public int getTertiaryScale() {
+        return ((RandomProvider) wheelsProvider).getTertiaryScale();
     }
 
     /**
@@ -193,6 +206,23 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
     @Override
     public @NotNull QBarIterableProvider withSecondaryScale(int secondaryScale) {
         return new QBarRandomProvider((RandomProvider) wheelsProvider.withSecondaryScale(secondaryScale));
+    }
+
+    /**
+     * A {@code QBarRandomProvider} with the same fields as {@code this} except for a new tertiary scale.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code QBarRandomProvider}.</li>
+     *  <li>{@code tertiaryScale} mat be any {@code int}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param tertiaryScale the new tertiary scale
+     * @return A copy of {@code this} with a new tertiary scale
+     */
+    @Override
+    public @NotNull QBarIterableProvider withTertiaryScale(int tertiaryScale) {
+        return new QBarRandomProvider((RandomProvider) wheelsProvider.withTertiaryScale(tertiaryScale));
     }
 
     /**
