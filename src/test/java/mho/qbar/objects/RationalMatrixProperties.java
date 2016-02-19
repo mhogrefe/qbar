@@ -1640,6 +1640,14 @@ public class RationalMatrixProperties extends QBarTestProperties {
         }
     }
 
+    private void compareImplementationsDeterminant() {
+        Map<String, Function<RationalMatrix, Rational>> functions = new LinkedHashMap<>();
+        functions.put("Laplace", RationalMatrixProperties::determinant_Laplace);
+        functions.put("Gauss", RationalMatrixProperties::determinant_Gauss);
+        functions.put("standard", RationalMatrix::determinant);
+        compareImplementations("determinant()", take(LIMIT, P.withScale(4).squareRationalMatrices()), functions);
+    }
+
     private void propertiesCharacteristicPolynomial() {
         initialize("characteristicPolynomial()");
         for (RationalMatrix m : take(LIMIT, P.withScale(4).squareRationalMatrices())) {
@@ -1665,14 +1673,6 @@ public class RationalMatrixProperties extends QBarTestProperties {
                     RationalPolynomial.of(Arrays.asList(Rational.NEGATIVE_ONE, Rational.ONE)).pow(i)
             );
         }
-    }
-
-    private void compareImplementationsDeterminant() {
-        Map<String, Function<RationalMatrix, Rational>> functions = new LinkedHashMap<>();
-        functions.put("Laplace", RationalMatrixProperties::determinant_Laplace);
-        functions.put("Gauss", RationalMatrixProperties::determinant_Gauss);
-        functions.put("standard", RationalMatrix::determinant);
-        compareImplementations("determinant()", take(LIMIT, P.withScale(4).squareRationalMatrices()), functions);
     }
 
     private void propertiesEquals() {

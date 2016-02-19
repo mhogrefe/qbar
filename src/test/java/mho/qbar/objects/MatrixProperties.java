@@ -4,6 +4,7 @@ import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.testing.QBarTestProperties;
 import mho.qbar.testing.QBarTesting;
 import mho.wheels.iterables.IterableUtils;
+import mho.wheels.numberUtils.IntegerUtils;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
@@ -78,6 +79,8 @@ public class MatrixProperties extends QBarTestProperties {
         compareImplementationsInvert();
         propertiesDeterminant();
         compareImplementationsDeterminant();
+        propertiesCharacteristicPolynomial();
+        compareImplementationsCharacteristicPolynomial();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -1636,6 +1639,45 @@ public class MatrixProperties extends QBarTestProperties {
         functions.put("Laplace", MatrixProperties::determinant_Laplace);
         functions.put("standard", Matrix::determinant);
         compareImplementations("determinant()", take(LIMIT, P.withScale(4).squareMatrices()), functions);
+    }
+
+    private static @NotNull Polynomial characteristicPolynomial_simplest(@NotNull Matrix m) {
+        return m.toRationalMatrix().characteristicPolynomial().toPolynomial();
+    }
+
+    private void propertiesCharacteristicPolynomial() {
+        initialize("characteristicPolynomial()");
+        for (Matrix m : take(LIMIT, P.withScale(4).squareMatrices())) {
+            Polynomial p = m.characteristicPolynomial();
+            assertEquals(m, characteristicPolynomial_simplest(m), p);
+            assertTrue(m, p.isMonic());
+            BigInteger det = m.determinant();
+            assertEquals(m, p.coefficient(0), m.height() % 2 == 0 ? det : det.negate());
+            if (m.height() > 0) {
+                assertEquals(m, p.coefficient(m.height() - 1), m.trace().negate());
+            }
+        }
+
+        for (int i : take(SMALL_LIMIT, P.naturalIntegersGeometric())) {
+            Matrix zero = zero(i, i);
+            assertEquals(i, zero.characteristicPolynomial(), Polynomial.of(BigInteger.ONE, i));
+        }
+
+        for (int i : take(SMALL_LIMIT, P.naturalIntegersGeometric())) {
+            Matrix identity = identity(i);
+            assertEquals(
+                    i,
+                    identity.characteristicPolynomial(),
+                    Polynomial.of(Arrays.asList(IntegerUtils.NEGATIVE_ONE, BigInteger.ONE)).pow(i)
+            );
+        }
+    }
+
+    private void compareImplementationsCharacteristicPolynomial() {
+        Map<String, Function<Matrix, Polynomial>> functions = new LinkedHashMap<>();
+        functions.put("simplest", MatrixProperties::characteristicPolynomial_simplest);
+        functions.put("standard", Matrix::characteristicPolynomial);
+        compareImplementations("characteristicPolynomial()", take(LIMIT, P.withScale(4).squareMatrices()), functions);
     }
 
     private void propertiesEquals() {

@@ -791,16 +791,16 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
         }
         List<RationalVector> rows = new ArrayList<>();
         for (int i = 0; i < n; i++) {
-            RationalVector aRow = row(i);
-            List<Rational> row = new ArrayList<>();
+            RationalVector row = row(i);
+            List<Rational> productRow = new ArrayList<>();
             for (int k = 0; k < l; k++) {
                 Rational sum = Rational.ZERO;
                 for (int j = 0; j < m; j++) {
-                    sum = sum.add(aRow.get(j).multiply(that.get(j, k)));
+                    sum = sum.add(row.get(j).multiply(that.get(j, k)));
                 }
-                row.add(sum);
+                productRow.add(sum);
             }
-            rows.add(RationalVector.of(row));
+            rows.add(RationalVector.of(productRow));
         }
         return fromRows(rows);
     }

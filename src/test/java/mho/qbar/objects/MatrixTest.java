@@ -968,6 +968,34 @@ public class MatrixTest {
         determinant_fail_helper("[[1, 9, -13], [20, 5, -6]]");
     }
 
+    private static void characteristicPolynomial_helper(@NotNull String input, @NotNull String output) {
+        aeq(read(input).get().characteristicPolynomial(), output);
+    }
+
+    private static void characteristicPolynomial_fail_helper(@NotNull String input) {
+        try {
+            read(input).get().characteristicPolynomial();
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testCharacteristicPolynomial() {
+        characteristicPolynomial_helper("[]#0", "1");
+        characteristicPolynomial_helper("[[1]]", "x-1");
+        characteristicPolynomial_helper("[[-1]]", "x+1");
+        characteristicPolynomial_helper("[[-3]]", "x+3");
+        characteristicPolynomial_helper("[[1, 0], [0, 1]]", "x^2-2*x+1");
+        characteristicPolynomial_helper("[[0, 1], [1, 0]]", "x^2-1");
+        characteristicPolynomial_helper("[[2, 1], [-1, 0]]", "x^2-2*x+1");
+        characteristicPolynomial_helper("[[-3, -8], [0, 7]]", "x^2-4*x-21");
+        characteristicPolynomial_helper("[[-2, 2, -3], [-1, 1, 3], [2, 0, -1]]", "x^3+2*x^2+7*x-18");
+
+        characteristicPolynomial_fail_helper("[]#3");
+        characteristicPolynomial_fail_helper("[[], [], []]");
+        characteristicPolynomial_fail_helper("[[1, 9, -13], [20, 5, -6]]");
+    }
+
     @Test
     public void testEquals() {
         testEqualsHelper(

@@ -697,16 +697,16 @@ public class Matrix implements Comparable<Matrix> {
         }
         List<Vector> rows = new ArrayList<>();
         for (int i = 0; i < n; i++) {
-            Vector aRow = row(i);
-            List<BigInteger> row = new ArrayList<>();
+            Vector row = row(i);
+            List<BigInteger> productRow = new ArrayList<>();
             for (int k = 0; k < l; k++) {
                 BigInteger sum = BigInteger.ZERO;
                 for (int j = 0; j < m; j++) {
-                    sum = sum.add(aRow.get(j).multiply(that.get(j, k)));
+                    sum = sum.add(row.get(j).multiply(that.get(j, k)));
                 }
-                row.add(sum);
+                productRow.add(sum);
             }
-            rows.add(Vector.of(row));
+            rows.add(Vector.of(productRow));
         }
         return fromRows(rows);
     }
@@ -1196,6 +1196,82 @@ public class Matrix implements Comparable<Matrix> {
         }
         BigInteger determinant = arrayA[0][0];
         return swapSign ? determinant : determinant.negate();
+    }
+
+    /**
+     * Given the 0th to dth power sums of a d-degree monic polynomial, where the ith power sum is the sum of the ith
+     * powers of the roots, returns the polynomial. This method is of limited use, because it only works when the power
+     * sums are all integers and it is known ahead of time that the result polynomial has integer coefficients.
+     *
+     * <ul>
+     *  <li>{@code powerSums} cannot be empty, and its first element must be one less than its length.</li>
+     *  <li>The result is monic.</li>
+     * </ul>
+     *
+     * @param powerSums the Newton sums of a monic {@code Polynomial}
+     * @return the monic {@code Polynomial} whose Newton sums are {@code powerSums}
+     */
+    private static @NotNull Polynomial fromPowerSums(@NotNull List<BigInteger> powerSums) {
+        List<BigInteger> coefficients = new ArrayList<>();
+        coefficients.add(BigInteger.ONE);
+        for (int i = 1; i < powerSums.size(); i++) {
+            List<BigInteger> terms = new ArrayList<>();
+            for (int j = 1; j <= i; j++) {
+                terms.add(powerSums.get(j).multiply(coefficients.get(i - j)));
+            }
+            coefficients.add(sumBigInteger(terms).negate().divide(BigInteger.valueOf(i)));
+        }
+        return Polynomial.of(reverse(coefficients));
+    }
+
+    /**
+     * Computes the characteristic polynomial of {@code this} using the Faddeev-Leverrier algorithm.
+     *
+     * <ul>{@code this} must be square.</ul>
+     * <ul>The result is monic.</ul>
+     *
+     * @return det(Ix–{@code this})
+     */
+    @SuppressWarnings("JavaDoc")
+    public @NotNull Polynomial characteristicPolynomial() {
+        if (width != height()) {
+            throw new IllegalArgumentException("this must be square. Invalid this: " + this);
+        }
+        int n = width;
+        if (n == 0) return Polynomial.ONE;
+        int r = 1;
+        while (r * r <= n) r++;
+        List<Matrix> powers = new ArrayList<>();
+        Matrix previousPower = identity(n);
+        powers.add(previousPower);
+        List<BigInteger> powerSums = toList(replicate(r * r, BigInteger.ZERO));
+        powerSums.set(0, BigInteger.valueOf(n));
+        for (int i = 1; i < r; i++) {
+            Matrix nextPower = multiply(previousPower);
+            powers.add(nextPower);
+            powerSums.set(i, nextPower.trace());
+            previousPower = nextPower;
+        }
+        List<Matrix> cs = new ArrayList<>();
+        Matrix firstC = multiply(powers.get(r - 1));
+        cs.add(firstC);
+        Matrix previousC = firstC;
+        powerSums.set(r, firstC.trace());
+        for (int j = 2; j < r; j++) {
+            Matrix nextC = firstC.multiply(previousC);
+            powerSums.set(j * r, nextC.trace());
+            cs.add(nextC);
+            previousC = nextC;
+        }
+        for (int i = 1; i < r; i++) {
+            for (int j = 1; j < r; j++) {
+                int index = j * r + i;
+                if (index <= n) {
+                    powerSums.set(index, powers.get(i).multiply(cs.get(j - 1)).trace());
+                }
+            }
+        }
+        return fromPowerSums(toList(take(n + 1, powerSums)));
     }
 
     /**
