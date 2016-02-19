@@ -82,6 +82,31 @@ public class QBarExhaustiveProviderDemos extends QBarDemos {
         }
     }
 
+    private void demoPolynomialVectors_int() {
+        for (int i : take(SMALL_LIMIT, P.naturalIntegersGeometric())) {
+            System.out.println("polynomialVectors(" + i + ") = " + its(QEP.polynomialVectors(i)));
+        }
+    }
+
+    private void demoPolynomialVectorsAtLeast() {
+        for (int i : take(SMALL_LIMIT, P.naturalIntegersGeometric())) {
+            System.out.println("polynomialVectorsAtLeast(" + i + ") = " + its(QEP.polynomialVectorsAtLeast(i)));
+        }
+    }
+
+    private void demoRationalPolynomialVectors_int() {
+        for (int i : take(SMALL_LIMIT, P.naturalIntegersGeometric())) {
+            System.out.println("rationalPolynomialVectors(" + i + ") = " + its(QEP.rationalPolynomialVectors(i)));
+        }
+    }
+
+    private void demoRationalPolynomialVectorsAtLeast() {
+        for (int i : take(SMALL_LIMIT, P.naturalIntegersGeometric())) {
+            System.out.println("rationalPolynomialVectorsAtLeast(" + i + ") = " +
+                    its(QEP.rationalPolynomialVectorsAtLeast(i)));
+        }
+    }
+
     private void demoMatrices_int_int() {
         for (Pair<Integer, Integer> p : take(SMALL_LIMIT, P.pairs(P.withScale(4).naturalIntegersGeometric()))) {
             System.out.println("matrices(" + p.a + ", " + p.b + ") = " + its(QEP.matrices(p.a, p.b)));

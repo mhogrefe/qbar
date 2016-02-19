@@ -30,6 +30,8 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
         propertiesVectors();
         propertiesRationalVectors();
         propertiesReducedRationalVectors();
+        propertiesPolynomialVectors();
+        propertiesRationalPolynomialVectors();
         propertiesMatrices();
         propertiesSquareMatrices();
         propertiesRationalMatrices();
@@ -60,6 +62,10 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
         propertiesRationalVectorsAtLeast();
         propertiesReducedRationalVectors_int();
         propertiesReducedRationalVectorsAtLeast();
+        propertiesPolynomialVectors_int();
+        propertiesPolynomialVectorsAtLeast();
+        propertiesRationalPolynomialVectors_int();
+        propertiesRationalPolynomialVectorsAtLeast();
         propertiesMatrices_int_int();
         propertiesRationalMatrices_int_int();
         propertiesPolynomials_int();
@@ -318,6 +324,82 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
         for (int i : take(LIMIT, P.negativeIntegers())) {
             try {
                 QEP.reducedRationalVectorsAtLeast(i);
+                fail(i);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesPolynomialVectors_int() {
+        initialize("polynomialVectors(int)");
+        for (int i : take(SMALL_LIMIT, P.naturalIntegersGeometric())) {
+            Iterable<PolynomialVector> vs = QEP.polynomialVectors(i);
+            simpleTest(i, vs, v -> v.dimension() == i);
+            take(TINY_LIMIT, vs).forEach(PolynomialVector::validate);
+        }
+
+        for (int i : take(LIMIT, P.negativeIntegers())) {
+            try {
+                QEP.polynomialVectors(i);
+                fail(i);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesPolynomialVectors() {
+        initializeConstant("polynomialVectors()");
+        biggerTest(QEP, QEP.polynomialVectors(), v -> true);
+        take(TINY_LIMIT, QEP.polynomialVectors()).forEach(PolynomialVector::validate);
+    }
+
+    private void propertiesPolynomialVectorsAtLeast() {
+        initialize("polynomialVectorsAtLeast(int)");
+        for (int i : take(SMALL_LIMIT, P.naturalIntegersGeometric())) {
+            Iterable<PolynomialVector> vs = QEP.polynomialVectorsAtLeast(i);
+            simpleTest(i, vs, v -> v.dimension() >= i);
+            take(TINY_LIMIT, vs).forEach(PolynomialVector::validate);
+        }
+
+        for (int i : take(LIMIT, P.negativeIntegers())) {
+            try {
+                QEP.polynomialVectorsAtLeast(i);
+                fail(i);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesRationalPolynomialVectors_int() {
+        initialize("rationalPolynomialVectors(int)");
+        for (int i : take(SMALL_LIMIT, P.naturalIntegersGeometric())) {
+            Iterable<RationalPolynomialVector> vs = QEP.rationalPolynomialVectors(i);
+            simpleTest(i, vs, v -> v.dimension() == i);
+            take(TINY_LIMIT, vs).forEach(RationalPolynomialVector::validate);
+        }
+
+        for (int i : take(LIMIT, P.negativeIntegers())) {
+            try {
+                QEP.rationalPolynomialVectors(i);
+                fail(i);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesRationalPolynomialVectors() {
+        initializeConstant("rationalPolynomialVectors()");
+        biggerTest(QEP, QEP.rationalPolynomialVectors(), v -> true);
+        take(TINY_LIMIT, QEP.rationalPolynomialVectors()).forEach(RationalPolynomialVector::validate);
+    }
+
+    private void propertiesRationalPolynomialVectorsAtLeast() {
+        initialize("rationalPolynomialVectorsAtLeast(int)");
+        for (int i : take(SMALL_LIMIT, P.naturalIntegersGeometric())) {
+            Iterable<RationalPolynomialVector> vs = QEP.rationalPolynomialVectorsAtLeast(i);
+            simpleTest(i, vs, v -> v.dimension() >= i);
+            take(TINY_LIMIT, vs).forEach(RationalPolynomialVector::validate);
+        }
+
+        for (int i : take(LIMIT, P.negativeIntegers())) {
+            try {
+                QEP.rationalPolynomialVectorsAtLeast(i);
                 fail(i);
             } catch (IllegalArgumentException ignored) {}
         }
