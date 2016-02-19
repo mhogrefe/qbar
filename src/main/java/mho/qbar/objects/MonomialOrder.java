@@ -110,8 +110,9 @@ public enum MonomialOrder implements Comparator<ExponentVector> {
             if (a.size() > b.size()) return -1;
             if (b.size() < a.size()) return 1;
             for (int i = size - 1; i >= 0; i--) {
-                int thisExponent = a.exponent(Variable.of(i));
-                int thatExponent = b.exponent(Variable.of(i));
+                Variable v = Variable.of(i);
+                int thisExponent = a.exponent(v);
+                int thatExponent = b.exponent(v);
                 if (thisExponent > thatExponent) return -1;
                 if (thisExponent < thatExponent) return 1;
             }

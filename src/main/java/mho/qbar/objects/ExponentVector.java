@@ -187,26 +187,85 @@ public class ExponentVector implements Comparable<ExponentVector> {
         return new ExponentVector(exponents);
     }
 
+    /**
+     * Returns the degree, or the sum of the exponents of {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code ExponentVector}.</li>
+     *  <li>The result is non-negative.</li>
+     * </ul>
+     *
+     * @return deg({@code this})
+     */
+    @SuppressWarnings("JavaDoc")
     public int degree() {
         return sumInteger(exponents);
     }
 
+    /**
+     * Determines whether {@code this} is equal to {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code ExponentVector}.</li>
+     *  <li>{@code that} may be any {@code Object}.</li>
+     *  <li>The result may be either {@code boolean}.</li>
+     * </ul>
+     *
+     * @param that The {@code Object} to be compared with {@code this}
+     * @return {@code this}={@code that}
+     */
     @Override
     public boolean equals(Object that) {
         return this == that ||
                 that != null && getClass() == that.getClass() && exponents.equals(((ExponentVector) that).exponents);
     }
 
+    /**
+     * Calculates the hash code of {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code ExponentVector}.</li>
+     *  <li>(conjecture) The result may be any {@code int}.</li>
+     * </ul>
+     *
+     * @return {@code this}'s hash code.
+     */
     @Override
     public int hashCode() {
         return exponents.hashCode();
     }
 
+    /**
+     * Compares {@code this} to {@code that}, returning 1, –1, or 0 if the answer is "greater than", "less than", or
+     * "equal to", respectively. Uses grevlex ordering (see {@link MonomialOrder#GREVLEX}).
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>The result may be –1, 0, or 1.</li>
+     * </ul>
+     *
+     * @param that the {@code Polynomial} to be compared with {@code this}
+     * @return {@code this} compared to {@code that}
+     */
     @Override
     public int compareTo(@NotNull ExponentVector that) {
         return MonomialOrder.GREVLEX.compare(this, that);
     }
 
+    /**
+     * Creates an {@code ExponentVector} from a {@code String}. Valid input takes the form of a {@code String} that
+     * could have been returned by {@link ExponentVector#toString()}.
+     *
+     * <ul>
+     *  <li>{@code s} must be non-null.</li>
+     *  <li>The result may contain any {@code ExponentVector}, or be empty.</li>
+     * </ul>
+     *
+     * @param s a string representation of an {@code ExponentVector}
+     * @return the {@code ExponentVector} represented by {@code s}, or an empty {@code Optional} if {@code s} is
+     * invalid
+     */
     public static @NotNull Optional<ExponentVector> read(@NotNull String s) {
         if (s.equals("1")) return Optional.of(ONE);
         String[] termStrings = s.split("\\*");
@@ -233,10 +292,35 @@ public class ExponentVector implements Comparable<ExponentVector> {
         return Optional.of(fromTerms(terms));
     }
 
+    /**
+     * Finds the first occurrence of an {@code ExponentVector} in a {@code String}. Returns the {@code ExponentVector}
+     * and the index at which it was found. Returns an empty {@code Optional} if no {@code ExponentVector} is found.
+     * Only {@code String}s which could have been emitted by {@link ExponentVector#toString} are recognized. The
+     * longest possible {@code ExponentVector} is parsed.
+     *
+     * <ul>
+     *  <li>{@code s} must be non-null.</li>
+     *  <li>The result is non-null. If it is non-empty, then neither of the {@code Pair}'s components is null, and the
+     *  second component is non-negative.</li>
+     * </ul>
+     *
+     * @param s the input {@code String}
+     * @return the first {@code ExponentVector} found in {@code s}, and the index at which it was found
+     */
     public static @NotNull Optional<Pair<ExponentVector, Integer>> findIn(@NotNull String s) {
         return Readers.genericFindIn(ExponentVector::read, "*0123456789^abcdefghijklmnopqrstuvwxyz").apply(s);
     }
 
+    /**
+     * Creates a {@code String} representation of {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code ExponentVector}.</li>
+     *  <li>See tests and demos for example results.</li>
+     * </ul>
+     *
+     * @return a {@code String} representation of {@code this}
+     */
     public @NotNull String toString() {
         if (this == ONE) return "1";
         StringBuilder sb = new StringBuilder();
@@ -259,8 +343,8 @@ public class ExponentVector implements Comparable<ExponentVector> {
     }
 
     /**
-     * Ensures that {@code this} is valid. Must return without exceptions for any {@code Polynomial} used outside this
-     * class.
+     * Ensures that {@code this} is valid. Must return without exceptions for any {@code ExponentVector} used outside
+     * this class.
      */
     public void validate() {
         assertTrue(this, all(v -> v >= 0, exponents));
