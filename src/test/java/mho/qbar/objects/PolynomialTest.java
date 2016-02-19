@@ -1698,6 +1698,7 @@ public class PolynomialTest {
         gcd_List_Polynomial_helper("[x+1, x^2+2*x+1, 3*x+3]", "x+1");
 
         gcd_List_Polynomial_fail_helper("[-17, null, -x^3-1, 3*x^10]");
+        gcd_List_Polynomial_fail_helper("[1, null]");
     }
 
     private static void lcm_helper(@NotNull String a, @NotNull String b, @NotNull String output) {

@@ -1145,6 +1145,9 @@ public final class Polynomial implements
      * {@code ps}
      */
     public static @NotNull Polynomial gcd(@NotNull List<Polynomial> ps) {
+        if (any(p -> p == null, ps)) {
+            throw new NullPointerException();
+        }
         List<Polynomial> noZeros = toList(filter(p -> p != ZERO, ps));
         if (noZeros.isEmpty()) {
             throw new ArithmeticException("ps must contain at least one nonzero Polynomial. Invalid ps: " + ps);
