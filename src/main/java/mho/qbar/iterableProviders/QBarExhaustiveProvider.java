@@ -279,6 +279,70 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
     }
 
     /**
+     * An {@code Iterable} that generates all {@code PolynomialVector}s.
+     *
+     * <ul>
+     *  <li>The result is a non-removable {@code Iterable} containing {@code PolynomialVector}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
+    @Override
+    public @NotNull Iterable<PolynomialVector> polynomialVectors() {
+        return map(PolynomialVector::of, lists(polynomials()));
+    }
+
+    /**
+     * An {@code Iterable} that generates all {@code PolynomialVector}s with a minimum dimension.
+     *
+     * <ul>
+     *  <li>{@code dimension} cannot be negative.</li>
+     *  <li>The result is a non-removable {@code Iterable} containing {@code PolynomialVector}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param minDimension the minimum dimension of the generated {@code PolynomialVector}s
+     * @return all {@code PolynomialVector}s with dimension at least {@code minDimension}
+     */
+    @Override
+    public @NotNull Iterable<PolynomialVector> polynomialVectorsAtLeast(int minDimension) {
+        return map(PolynomialVector::of, listsAtLeast(minDimension, polynomials()));
+    }
+
+    /**
+     * An {@code Iterable} that generates all {@code RationalPolynomialVector}s.
+     *
+     * <ul>
+     *  <li>The result is a non-removable {@code Iterable} containing {@code RationalPolynomialVector}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
+    @Override
+    public @NotNull Iterable<RationalPolynomialVector> rationalPolynomialVectors() {
+        return map(RationalPolynomialVector::of, lists(rationalPolynomials()));
+    }
+
+    /**
+     * An {@code Iterable} that generates all {@code RationalPolynomialVector}s with a minimum dimension.
+     *
+     * <ul>
+     *  <li>{@code dimension} cannot be negative.</li>
+     *  <li>The result is a non-removable {@code Iterable} containing {@code RationalPolynomialVector}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param minDimension the minimum dimension of the generated {@code RationalPolynomialVector}s
+     * @return all {@code RationalPolynomialVector}s with dimension at least {@code minDimension}
+     */
+    @Override
+    public @NotNull Iterable<RationalPolynomialVector> rationalPolynomialVectorsAtLeast(int minDimension) {
+        return map(RationalPolynomialVector::of, listsAtLeast(minDimension, rationalPolynomials()));
+    }
+
+    /**
      * An {@code Iterable} that generates reduced all {@code RationalVector}s with a given dimension (see
      * {@link RationalVector#reduce()}).
      *

@@ -661,6 +661,116 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
     }
 
     /**
+     * An {@code Iterable} that generates all {@code PolynomialVector}s. Each {@code PolynomialVector}'s dimension is
+     * chosen from a geometric distribution with mean {@code tertiaryScale}, each coordinate's degree is chosen from a
+     * geometric distribution with mean {@code secondaryScale}, and each coordinate's coefficient's bit size is chosen
+     * from a geometric distribution with mean approximately {@code scale}. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a positive {@code scale}, a non-negative {@code secondaryScale}, and a positive
+     *  {@code tertiaryScale}.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing {@code PolynomialVector}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
+    @Override
+    public @NotNull Iterable<PolynomialVector> polynomialVectors() {
+        int tertiaryScale = getTertiaryScale();
+        if (tertiaryScale < 1) {
+            throw new IllegalStateException("this must have a positive tertiaryScale. Invalid tertiaryScale: " +
+                    tertiaryScale);
+        }
+        return map(PolynomialVector::of, withScale(tertiaryScale).lists(polynomials()));
+    }
+
+    /**
+     * An {@code Iterable} that generates all {@code PolynomialVector}s with a minimum dimension. Each
+     * {@code PolynomialVector}'s dimension is chosen from a geometric distribution with mean {@code tertiaryScale},
+     * each coordinate's degree is chosen from a geometric distribution with mean {@code secondaryScale}, and each
+     * coordinate's coefficient's bit size is chosen from a geometric distribution with mean approximately
+     * {@code scale}. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a {@code scale} of at least 3, a non-negative {@code secondaryScale}, and a
+     *  {@code tertiaryScale} greater than {@code minDimension}.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing {@code PolynomialVector}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param minDimension the minimum dimension of the generated {@code PolynomialVector}s
+     * @return {@code PolynomialVector}s with dimension at least {@code minDimension}
+     */
+    @Override
+    public @NotNull Iterable<PolynomialVector> polynomialVectorsAtLeast(int minDimension) {
+        int tertiaryScale = getTertiaryScale();
+        if (tertiaryScale <= minDimension) {
+            throw new IllegalStateException("this must have a tertiaryScale greater than minDimension." +
+                    " tertiaryScale: " + tertiaryScale + ", minDimension: " + minDimension);
+        }
+        return map(PolynomialVector::of, withScale(tertiaryScale).listsAtLeast(minDimension, polynomials()));
+    }
+
+    /**
+     * An {@code Iterable} that generates all {@code RationalPolynomialVector}s. Each
+     * {@code RationalPolynomialVector}'s dimension is chosen from a geometric distribution with mean
+     * {@code tertiaryScale}, each coordinate's degree is chosen from a geometric distribution with mean
+     * {@code secondaryScale}, and each coordinate's coefficient's bit size is chosen from a geometric distribution
+     * with mean approximately {@code scale}. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a {@code scale} of at least 3, a non-negative {@code secondaryScale}, and a positive
+     *  {@code tertiaryScale}.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing
+     *  {@code RationalPolynomialVector}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
+    @Override
+    public @NotNull Iterable<RationalPolynomialVector> rationalPolynomialVectors() {
+        int tertiaryScale = getTertiaryScale();
+        if (tertiaryScale < 1) {
+            throw new IllegalStateException("this must have a positive tertiaryScale. Invalid tertiaryScale: " +
+                    tertiaryScale);
+        }
+        return map(RationalPolynomialVector::of, withScale(tertiaryScale).lists(rationalPolynomials()));
+    }
+
+    /**
+     * An {@code Iterable} that generates all {@code RationalPolynomialVector}s with a minimum dimension. Each
+     * {@code RationalPolynomialVector}'s dimension is chosen from a geometric distribution with mean
+     * {@code tertiaryScale}, each coordinate's degree is chosen from a geometric distribution with mean
+     * {@code secondaryScale}, and each coordinate's coefficient's bit size is chosen from a geometric distribution
+     * with mean approximately {@code scale}. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a positive {@code scale}, a non-negative {@code secondaryScale}, and a
+     *  {@code tertiaryScale} greater than {@code minDimension}.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing
+     *  {@code RationalPolynomialVector}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param minDimension the minimum dimension of the generated {@code RationalPolynomialVector}s
+     * @return {@code RationalPolynomialVector}s with dimension at least {@code minDimension}
+     */
+    @Override
+    public @NotNull Iterable<RationalPolynomialVector> rationalPolynomialVectorsAtLeast(int minDimension) {
+        int tertiaryScale = getTertiaryScale();
+        if (tertiaryScale <= minDimension) {
+            throw new IllegalStateException("this must have a tertiaryScale greater than minDimension." +
+                    " tertiaryScale: " + tertiaryScale + ", minDimension: " + minDimension);
+        }
+        return map(
+                RationalPolynomialVector::of,
+                withScale(tertiaryScale).listsAtLeast(minDimension, rationalPolynomials())
+        );
+    }
+
+    /**
      * An {@code Iterable} that generates all reduced {@code RationalVector}s (see {@link RationalVector#reduce()})
      * with a given dimension. A larger {@code scale} corresponds to a larger mean coordinate size. Does not support
      * removal.

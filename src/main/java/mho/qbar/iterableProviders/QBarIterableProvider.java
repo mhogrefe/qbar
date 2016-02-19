@@ -3016,6 +3016,48 @@ public strictfp abstract class QBarIterableProvider {
     public abstract @NotNull Iterable<RationalVector> rationalVectors();
 
     /**
+     * Generates {@code PolynomialVector}s with a minimum dimension.
+     *
+     * @param minDimension the minimum dimension of the generated {@code PolynomialVector}s
+     */
+    public abstract @NotNull Iterable<PolynomialVector> polynomialVectorsAtLeast(int minDimension);
+
+    /**
+     * Generates {@code PolynomialVector}s with a given dimension.
+     *
+     * @param dimension the dimension of the generated {@code PolynomialVector}s
+     */
+    public @NotNull Iterable<PolynomialVector> polynomialVectors(int dimension) {
+        return map(PolynomialVector::of, lists(dimension, polynomials()));
+    }
+
+    /**
+     * Generates {@code PolynomialVector}s.
+     */
+    public abstract @NotNull Iterable<PolynomialVector> polynomialVectors();
+
+    /**
+     * Generates {@code RationalPolynomialVector}s with a minimum dimension.
+     *
+     * @param minDimension the minimum dimension of the generated {@code RationalPolynomialVector}s
+     */
+    public abstract @NotNull Iterable<RationalPolynomialVector> rationalPolynomialVectorsAtLeast(int minDimension);
+
+    /**
+     * Generates {@code RationalPolynomialVector}s with a given dimension.
+     *
+     * @param dimension the dimension of the generated {@code RationalPolynomialVector}s
+     */
+    public @NotNull Iterable<RationalPolynomialVector> rationalPolynomialVectors(int dimension) {
+        return map(RationalPolynomialVector::of, lists(dimension, rationalPolynomials()));
+    }
+
+    /**
+     * Generates {@code RationalPolynomialVector}s.
+     */
+    public abstract @NotNull Iterable<RationalPolynomialVector> rationalPolynomialVectors();
+
+    /**
      * Generates {@code RationalVector}s with a minimum dimension.
      *
      * @param minDimension the minimum dimension of the generated {@code RationalVector}s
