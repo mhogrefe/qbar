@@ -1449,7 +1449,7 @@ public class QBarRandomProviderTest {
         try {
             P.withScale(scale).withSecondaryScale(secondaryScale).vectorsAtLeast(minDimension);
             fail();
-        } catch (IllegalStateException ignored) {}
+        } catch (IllegalStateException | IllegalArgumentException ignored) {}
         finally {
             P.reset();
         }
@@ -1597,6 +1597,7 @@ public class QBarRandomProviderTest {
         vectorsAtLeast_fail_helper(1, 1, 1);
         vectorsAtLeast_fail_helper(1, 1, 2);
         vectorsAtLeast_fail_helper(0, 1, 0);
+        vectorsAtLeast_fail_helper(3, 2, -1);
     }
 
     private static void rationalVectors_helper(
@@ -1816,7 +1817,7 @@ public class QBarRandomProviderTest {
         try {
             P.withScale(scale).withSecondaryScale(secondaryScale).rationalVectorsAtLeast(minDimension);
             fail();
-        } catch (IllegalStateException ignored) {}
+        } catch (IllegalStateException | IllegalArgumentException ignored) {}
         finally {
             P.reset();
         }
@@ -1960,6 +1961,7 @@ public class QBarRandomProviderTest {
         rationalVectorsAtLeast_fail_helper(3, 1, 1);
         rationalVectorsAtLeast_fail_helper(3, 1, 2);
         rationalVectorsAtLeast_fail_helper(2, 1, 0);
+        rationalVectorsAtLeast_fail_helper(3, 2, -1);
     }
 
     private static void reducedRationalVectors_int_helper(
@@ -2216,7 +2218,7 @@ public class QBarRandomProviderTest {
         try {
             P.withScale(scale).withSecondaryScale(secondaryScale).reducedRationalVectorsAtLeast(minDimension);
             fail();
-        } catch (IllegalStateException ignored) {}
+        } catch (IllegalStateException | IllegalArgumentException ignored) {}
         finally {
             P.reset();
         }
@@ -2374,6 +2376,151 @@ public class QBarRandomProviderTest {
         reducedRationalVectorsAtLeast_fail_helper(1, 1, 1);
         reducedRationalVectorsAtLeast_fail_helper(1, 1, 2);
         reducedRationalVectorsAtLeast_fail_helper(0, 1, 0);
+        reducedRationalVectorsAtLeast_fail_helper(1, 1, -1);
+    }
+
+    private static void polynomialVectors_helper(
+            @NotNull Iterable<PolynomialVector> input,
+            @NotNull String output,
+            @NotNull String topSampleCount,
+            double meanDimension,
+            double meanCoordinateDegree,
+            double meanCoordinateCoefficientBitSize
+    ) {
+        List<PolynomialVector> sample = toList(take(DEFAULT_SAMPLE_SIZE / 10, input));
+        aeqitLimit(TINY_LIMIT, sample, output);
+        aeq(topSampleCount(DEFAULT_TOP_COUNT, sample), topSampleCount);
+        aeq(meanOfIntegers(toList(map(PolynomialVector::dimension, sample))), meanDimension);
+        aeq(meanOfIntegers(toList(concatMap(v -> map(Polynomial::degree, v), sample))), meanCoordinateDegree);
+        aeq(meanOfIntegers(
+                toList(concatMap(v -> concatMap(p -> map(BigInteger::bitLength, p), v), sample))),
+                meanCoordinateCoefficientBitSize
+        );
+        P.reset();
+    }
+
+    private static void polynomialVectors_int_helper(
+            int scale,
+            int secondaryScale,
+            int dimension,
+            @NotNull String output,
+            @NotNull String topSampleCount,
+            double meanDimension,
+            double meanCoordinateDegree,
+            double meanCoordinateCoefficientBitSize
+    ) {
+        polynomialVectors_helper(
+                P.withScale(scale).withSecondaryScale(secondaryScale).polynomialVectors(dimension),
+                output,
+                topSampleCount,
+                meanDimension,
+                meanCoordinateDegree,
+                meanCoordinateCoefficientBitSize
+        );
+    }
+
+    private static void polynomialVectors_int_fail_helper(int scale, int secondaryScale, int dimension) {
+        try {
+            P.withScale(scale).withSecondaryScale(secondaryScale).polynomialVectors(dimension);
+            fail();
+        } catch (IllegalArgumentException | IllegalStateException ignored) {}
+        finally {
+            P.reset();
+        }
+    }
+
+    @Test
+    public void testPolynomialVectors_int() {
+
+        polynomialVectors_int_fail_helper(0, 0, 2);
+        polynomialVectors_int_fail_helper(1, -1, 2);
+        polynomialVectors_int_fail_helper(1, 0, -1);
+    }
+
+    private static void polynomialVectors_helper(
+            int scale,
+            int secondaryScale,
+            int tertiaryScale,
+            @NotNull String output,
+            @NotNull String topSampleCount,
+            double meanDimension,
+            double meanCoordinateDegree,
+            double meanCoordinateCoefficientBitSize
+    ) {
+        polynomialVectors_helper(
+                P.withScale(scale).withSecondaryScale(secondaryScale).withTertiaryScale(tertiaryScale)
+                        .polynomialVectors(),
+                output,
+                topSampleCount,
+                meanDimension,
+                meanCoordinateDegree,
+                meanCoordinateCoefficientBitSize
+        );
+    }
+
+    private static void polynomialVectors_fail_helper(int scale, int secondaryScale, int tertiaryScale) {
+        try {
+            P.withScale(scale).withSecondaryScale(secondaryScale).withTertiaryScale(tertiaryScale).rationalVectors();
+            fail();
+        } catch (IllegalStateException ignored) {}
+        finally {
+            P.reset();
+        }
+    }
+
+    @Test
+    public void testPolynomialVectors() {
+
+        polynomialVectors_fail_helper(0, 0, 1);
+        polynomialVectors_fail_helper(1, -1, 1);
+        polynomialVectors_fail_helper(1, 0, 0);
+    }
+
+    private static void polynomialVectorsAtLeast_helper(
+            int scale,
+            int secondaryScale,
+            int tertiaryScale,
+            int minDimension,
+            @NotNull String output,
+            @NotNull String topSampleCount,
+            double meanDimension,
+            double meanCoordinateDegree,
+            double meanCoordinateCoefficientBitSize
+    ) {
+        polynomialVectors_helper(
+                P.withScale(scale).withSecondaryScale(secondaryScale).withTertiaryScale(tertiaryScale)
+                        .polynomialVectorsAtLeast(minDimension),
+                output,
+                topSampleCount,
+                meanDimension,
+                meanCoordinateDegree,
+                meanCoordinateCoefficientBitSize
+        );
+    }
+
+    private static void polynomialVectorsAtLeast_fail_helper(
+            int scale,
+            int secondaryScale,
+            int tertiaryScale,
+            int minDimension
+    ) {
+        try {
+            P.withScale(scale).withSecondaryScale(secondaryScale).withTertiaryScale(tertiaryScale)
+                    .polynomialVectorsAtLeast(minDimension);
+            fail();
+        } catch (IllegalStateException | IllegalArgumentException ignored) {}
+        finally {
+            P.reset();
+        }
+    }
+
+    @Test
+    public void testPolynomialVectorsAtLeast() {
+
+        polynomialVectorsAtLeast_fail_helper(1, 0, 1, 1);
+        polynomialVectorsAtLeast_fail_helper(0, 0, 1, 1);
+        polynomialVectorsAtLeast_fail_helper(1, -1, 0, 1);
+        polynomialVectorsAtLeast_fail_helper(1, 0, 1, -1);
     }
 
     private static void matrices_helper(

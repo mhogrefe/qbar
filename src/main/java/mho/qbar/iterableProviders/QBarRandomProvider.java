@@ -593,6 +593,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
      * <ul>
      *  <li>{@code this} must have a positive {@code scale} and a {@code secondaryScale} greater than
      *  {@code minDimension}.</li>
+     *  <li>{@code minDimension} cannot be negative.</li>
      *  <li>The result is an infinite, non-removable {@code Iterable} containing {@code Vector}s.</li>
      * </ul>
      *
@@ -642,6 +643,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
      * <ul>
      *  <li>{@code this} must have a {@code scale} of at least 3 and a {@code secondaryScale} greater than
      *  {@code minDimension}.</li>
+     *  <li>{@code minDimension} cannot be negative.</li>
      *  <li>The result is an infinite, non-removable {@code Iterable} containing {@code RationalVector}s.</li>
      * </ul>
      *
@@ -692,8 +694,9 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
      * {@code scale}. Does not support removal.
      *
      * <ul>
-     *  <li>{@code this} must have a {@code scale} of at least 3, a non-negative {@code secondaryScale}, and a
+     *  <li>{@code this} must have a positive {@code scale}, a non-negative {@code secondaryScale}, and a
      *  {@code tertiaryScale} greater than {@code minDimension}.</li>
+     *  <li>{@code minDimension} cannot be negative.</li>
      *  <li>The result is an infinite, non-removable {@code Iterable} containing {@code PolynomialVector}s.</li>
      * </ul>
      *
@@ -746,8 +749,9 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
      * with mean approximately {@code scale}. Does not support removal.
      *
      * <ul>
-     *  <li>{@code this} must have a positive {@code scale}, a non-negative {@code secondaryScale}, and a
+     *  <li>{@code this} must have a {@code scale} of at least 3, a non-negative {@code secondaryScale}, and a
      *  {@code tertiaryScale} greater than {@code minDimension}.</li>
+     *  <li>{@code minDimension} cannot be negative.</li>
      *  <li>The result is an infinite, non-removable {@code Iterable} containing
      *  {@code RationalPolynomialVector}s.</li>
      * </ul>
@@ -777,6 +781,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
      *
      * <ul>
      *  <li>{@code this} must have a positive {@code scale}.</li>
+     *  <li>{@code minDimension} cannot be negative.</li>
      *  <li>The result is an infinite, non-removable {@code Iterable} containing reduced {@code RationalVector}s.</li>
      * </ul>
      *
@@ -820,6 +825,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
      * <ul>
      *  <li>{@code this} must have a positive {@code scale} and a {@code secondaryScale} greater than
      *  {@code minDimension}.</li>
+     *  <li>{@code minDimension} cannot be negative.</li>
      *  <li>The result is an infinite, non-removable {@code Iterable} containing reduced {@code RationalVectors}.</li>
      * </ul>
      *
