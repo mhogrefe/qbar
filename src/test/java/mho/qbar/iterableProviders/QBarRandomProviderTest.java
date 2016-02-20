@@ -2431,7 +2431,49 @@ public class QBarRandomProviderTest {
 
     @Test
     public void testPolynomialVectors_int() {
-
+        polynomialVectors_int_helper(
+                1,
+                0,
+                0,
+                "[[], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], ...]",
+                "{[]=100000}",
+                0.0,
+                0.0,
+                0.0
+        );
+        polynomialVectors_int_helper(
+                5,
+                3,
+                3,
+                "[[-x^3-233*x^2+1256222*x+85, 0, 0]," +
+                " [25, -39244*x^4-67*x^3-x^2-6*x-3758168, 2*x^7+x^6+30*x^5-46*x^4-16989*x^3-38*x^2-12*x-1]," +
+                " [-8*x^2+1, 62*x-3, 0]," +
+                " [-70*x^8-x^7+x^6-7*x^5-92*x^4+x^3+9*x^2+4, -x^8+2*x^7-2404*x^4+54644*x^3+4*x^2-181301872*x+3," +
+                " 41*x^4-64580*x^3+5*x-24]," +
+                " [x^9-224*x^8+62*x^7-x^6+5*x^5-122*x^4-394*x^3-238*x^2-13*x-504064, 17*x^2+633*x," +
+                " -2708*x^4+5*x^3-13*x^2-15*x], [-1, 0, 7]," +
+                " [-618*x^6+16127*x^5-7*x^4+11*x^2+91*x+122224," +
+                " -x^12+47*x^11+2*x^10-7350*x^9-2*x^8-4*x^7-152*x^6+12*x^5+x^4+223*x^2+114*x-5," +
+                " -4*x^4+7*x^2-2*x+438]," +
+                " [-5*x^20+4*x^18-x^17-14*x^14+15*x^13+41*x^11-97*x^10-26*x^9+102910*x^8+2462*x^7+x^6-10*x^5-7*x^3-" +
+                "2275*x^2-158, x^4+27*x^3-11815*x^2-38*x-5, -37*x^7+7*x^5+15*x^4-15*x^3+2*x^2+5]," +
+                " [-106, 0, 29*x^2+4], [-1, 1856865*x+1880, -31], [0, x, 8*x^4-x^3-329*x-4]," +
+                " [-13*x^3+8*x^2+5*x-138, 0, x^5+12*x^4+13*x^3-3*x^2+7], [15*x-34, 0, -58]," +
+                " [986*x-4, x^3+x^2-2*x+9491, -61*x^5+17*x^4+5209*x^3+6*x^2-x-7]," +
+                " [x^10+33*x^9-59*x^8-13542*x^6+26766*x^5+18566*x^4-19*x^2+47, 0, 17*x^4+x^3-227*x-9]," +
+                " [x^2+3*x, 246*x^4-233*x," +
+                " x^14+73*x^13+4*x^11-x^10+3*x^9+86*x^8+4843*x^7-x^6+111*x^5+206*x^4+x^3+x^2]," +
+                " [x^14+2*x^13+126*x^12+14*x^10+8*x^9+x^7-54*x^6-9*x^5+3*x^4-832*x^3+237*x^2+7*x+35, -22501*x+28," +
+                " 37796775*x^4-2*x^3+6*x^2-631*x-911]," +
+                " [-138*x^8-222*x^7-12*x^6-606*x^5-12*x^3+3*x+1245, -1656*x^2-183*x-1, -x^4-3*x^3-6*x+1048]," +
+                " [-1, 53, 0]," +
+                " [-2*x^8+5*x^7-12480*x^6-62*x^5-322*x^4-115*x^3-7*x, -2567*x^5+x^4-57908*x^3-146*x^2+425*x, 1], ...]",
+                "{[0, 0, 0]=1211, [0, 0, -1]=82, [0, 0, 1]=75, [-1, 0, 0]=72, [1, 0, 0]=67, [0, -1, 0]=67," +
+                " [0, 1, 0]=62, [3, 0, 0]=37, [0, 0, 3]=34, [-2, 0, 0]=33}",
+                3.000000000005079,
+                2.841233333337271,
+                5.0814477988870035
+        );
         polynomialVectors_int_fail_helper(0, 0, 2);
         polynomialVectors_int_fail_helper(1, -1, 2);
         polynomialVectors_int_fail_helper(1, 0, -1);
@@ -2460,7 +2502,7 @@ public class QBarRandomProviderTest {
 
     private static void polynomialVectors_fail_helper(int scale, int secondaryScale, int tertiaryScale) {
         try {
-            P.withScale(scale).withSecondaryScale(secondaryScale).withTertiaryScale(tertiaryScale).rationalVectors();
+            P.withScale(scale).withSecondaryScale(secondaryScale).withTertiaryScale(tertiaryScale).polynomialVectors();
             fail();
         } catch (IllegalStateException ignored) {}
         finally {
@@ -2470,7 +2512,41 @@ public class QBarRandomProviderTest {
 
     @Test
     public void testPolynomialVectors() {
-
+        polynomialVectors_helper(
+                1,
+                0,
+                1,
+                "[[0, 1, 0], [x, 0], [], [], [0], [], [], [], [], [], [], [], [], [], [], [-x^4+x^3-x^2+19*x-5]," +
+                " [0, 0], [], [], [], ...]",
+                "{[]=49551, [0]=16890, [0, 0]=5598, [0, 0, 0]=1881, [-1]=1061, [1]=972, [0, 0, 0, 0]=655," +
+                " [0, 1]=368, [1, 0]=358, [0, -1]=352}",
+                1.0080899999996153,
+                -0.3357438323961038,
+                1.2442692233026915
+        );
+        polynomialVectors_helper(
+                5,
+                3,
+                2,
+                "[[-x^2-233*x+6499102, 0, 0, 25], [-x^2-6*x-3758168]," +
+                " [2*x^13-8*x^12-6*x^9+2*x^8+x^7+30*x^6-46*x^5-16989*x^4-38*x^3-28*x^2-320*x, 94, 0," +
+                " -70*x^8-x^7+x^6-7*x^5-92*x^4+x^3+9*x^2+4, -x^8+2*x^7-2404*x^4+54644*x^3+4*x^2-181301872*x+3," +
+                " 41*x^4-64580*x^3+5*x-24], []," +
+                " [-504064, -394*x^2-46*x+1, -4*x^5+x^4-224*x^3+62*x^2-x+13," +
+                " -x^6-2708*x^5+5*x^4-13*x^3-15*x^2-24*x+49, 0, 0, 7, -618*x^6+16127*x^5-7*x^4+11*x^2+91*x+122224," +
+                " -x^12+47*x^11+2*x^10-7350*x^9-2*x^8-4*x^7-152*x^6+12*x^5+x^4+223*x^2+114*x-5," +
+                " -4*x^4+7*x^2-2*x+438]," +
+                " [41*x^11-97*x^10-26*x^9+102910*x^8+2462*x^7+x^6-10*x^5-7*x^3-2275*x^2-158, 0, 0, -x^3-30," +
+                " 71*x^2-3*x-2], [-11815*x-206], [-498*x+5], [0, -x^4-37*x^3+7*x+23], [29*x^2+4]," +
+                " [-51*x^2-78*x+2, 37*x^12-x^11-3*x^10+46834*x^9+1856865*x^8+344*x^7+2*x^6-x^4+13*x^2+9*x-6]," +
+                " [1537*x^3-26*x^2+3*x-1, 0, -38, -329*x, 0, 16, -13*x^3+8*x^2+5*x-138], [], []," +
+                " [1, 21, 15*x^2+2216*x+9, -2, 15*x-34, 0], [], [], [], [], [], ...]",
+                "{[]=33212, [0]=5094, [0, 0]=780, [-1]=284, [1]=281, [2]=121, [-2]=119, [-3]=119, [0, 0, 0]=109," +
+                " [3]=106}",
+                2.0116100000000747,
+                2.863313465336309,
+                5.084824254831631
+        );
         polynomialVectors_fail_helper(0, 0, 1);
         polynomialVectors_fail_helper(1, -1, 1);
         polynomialVectors_fail_helper(1, 0, 0);
@@ -2516,11 +2592,401 @@ public class QBarRandomProviderTest {
 
     @Test
     public void testPolynomialVectorsAtLeast() {
-
-        polynomialVectorsAtLeast_fail_helper(1, 0, 1, 1);
-        polynomialVectorsAtLeast_fail_helper(0, 0, 1, 1);
-        polynomialVectorsAtLeast_fail_helper(1, -1, 0, 1);
+        polynomialVectorsAtLeast_helper(
+                1,
+                0,
+                1,
+                0,
+                "[[0, 1, 0], [x, 0], [], [], [0], [], [], [], [], [], [], [], [], [], [], [-x^4+x^3-x^2+19*x-5]," +
+                " [0, 0], [], [], [], ...]",
+                "{[]=49551, [0]=16890, [0, 0]=5598, [0, 0, 0]=1881, [-1]=1061, [1]=972, [0, 0, 0, 0]=655," +
+                " [0, 1]=368, [1, 0]=358, [0, -1]=352}",
+                1.0080899999996153,
+                -0.3357438323961038,
+                1.2442692233026915
+        );
+        polynomialVectorsAtLeast_helper(
+                5,
+                3,
+                1,
+                0,
+                "[[0, -x^2-233*x+6499102, 0], [], [], [], [], [], [-6*x^2-1661016*x-240], [], [], [], []," +
+                " [-16989*x^4-38*x^3-28*x^2-576*x-170316, -6*x^4+2*x^3+x^2+14*x], [], [0, -x^2+2*x], []," +
+                " [x^2-2503*x+1]," +
+                " [-7*x^2-92*x+4, -6, 4*x^3-181301872*x^2+x-3026," +
+                " x^12-224*x^11+62*x^10-x^9+5*x^8-122*x^7-394*x^6-238*x^5-13*x^4-241920*x^3+7818*x^2+41*x], [], []," +
+                " [], ...]",
+                "{[]=49867, [0]=5744, [0, 0]=663, [-1]=323, [1]=315, [2]=149, [3]=143, [-2]=123, [-3]=115," +
+                " [0, 0, 0]=72}",
+                1.006299999999629,
+                2.8524992546957577,
+                5.083236818273093
+        );
+        polynomialVectorsAtLeast_helper(
+                5,
+                3,
+                2,
+                1,
+                "[[0, -x^2-233*x+6499102, 0, 0], [25]," +
+                " [-x^2-6*x-3758168, 30*x^6-46*x^5-16989*x^4-38*x^3-28*x^2-576*x-170316, 4], [1, 0], [-x^2+2*x]," +
+                " [-92*x+4], [-x+2, 4*x^3-181301872*x^2+x-3026]," +
+                " [-19*x^6-2*x^5-x^4+2*x^3-4452, 5*x, 0," +
+                " -4*x^13+x^12-224*x^11+62*x^10-x^9+5*x^8-122*x^7-394*x^6-238*x^5-13*x^4-241920*x^3+7818*x^2+41*x," +
+                " -x^6-2708*x^5+5*x^4-13*x^3-15*x^2-24*x+49], [0, 7]," +
+                " [16127*x^5-7*x^4+11*x^2+91*x+122224]," +
+                " [-x-43798, 12*x^3+x^2+735, -x^5+47*x^4+2*x^3-7350*x^2-2*x-8, -4*x^4+7*x^2-2*x+438," +
+                " -5*x^20+4*x^18-x^17-14*x^14+15*x^13+41*x^11-97*x^10-26*x^9+102910*x^8+2462*x^7+x^6-10*x^5-7*x^3-" +
+                "2275*x^2-158]," +
+                " [-11815*x^2-38*x-5, -23, -37*x^2+15, -106], [29*x^2+4]," +
+                " [-51*x^2-78*x+2, 37*x^12-x^11-3*x^10+46834*x^9+1856865*x^8+344*x^7+2*x^6-x^4+13*x^2+9*x-6," +
+                " 5*x^4-11*x^3+31*x+21], [-15*x^3-x^2+2561], [x], [16, -13*x^3+8*x^2+5*x-138, 0]," +
+                " [12*x^4+13*x^3-3*x^2+7]," +
+                " [15*x^10+3*x^8+6*x^6-10*x^5+15*x^4+2216*x^3+3*x^2+21*x-1, -26*x^4-x^3+15*x-1]," +
+                " [-4, 25*x^7-6*x^5+12*x^2-54*x-794, 5209*x^7+6*x^6-x^5-3*x^4-67*x^3+x^2+x-8], ...]",
+                "{[0]=11481, [0, 0]=1309, [1]=658, [-1]=636, [2]=307, [3]=264, [-3]=261, [-2]=260, [0, 0, 0]=149," +
+                " [-7]=122}",
+                2.0001200000002344,
+                2.8603683778951354,
+                5.081219240520803
+        );
+        polynomialVectorsAtLeast_helper(
+                5,
+                3,
+                3,
+                2,
+                "[[0, -x^2-233*x+6499102, 0, 0, 25]," +
+                " [-x^2-6*x-3758168, 30*x^6-46*x^5-16989*x^4-38*x^3-28*x^2-576*x-170316, 4, -8*x^2+1]," +
+                " [-3, 9*x^4+x^2-2503*x+1]," +
+                " [0, x^6-3026*x^5-70*x^4-x^3+x^2-3*x-1," +
+                " -224*x^24+62*x^23-x^22+5*x^21-122*x^20-394*x^19-238*x^18-13*x^17-241920*x^16+7818*x^15+41*x^14-" +
+                "64580*x^13+5*x^11-4*x^10-19*x^9-2*x^8-x^7+2*x^6-2404*x^3+54644*x^2+x+1, -24]," +
+                " [-2708*x^5+5*x^4-13*x^3-15*x^2-24*x+49, -1, 0], [0, 238]," +
+                " [x^11+223*x^9+114*x^8-x^7-15659*x^6-618*x^5+16127*x^4-7*x^3+11*x+229, -2*x^2-4*x-280," +
+                " -98*x^10-16624788*x^9-4*x^8+7*x^6-2*x^5+438*x^4-46*x^3-x^2+47*x+4]," +
+                " [41*x^9-97*x^8-26*x^7+102910*x^6+2462*x^5+x^4-10*x^3-7*x, 0], [-x^3-30, 71*x^2-3*x-2]," +
+                " [27*x^2-11815*x-206, -1778], [0, 0, -x^4-37*x^3+7*x+23, x^5-10*x^4+1236*x^2+2*x+1]," +
+                " [-17*x^2+766*x-2778, -x+39]," +
+                " [0, -51*x^2-78*x+2, 37*x^12-x^11-3*x^10+46834*x^9+1856865*x^8+344*x^7+2*x^6-x^4+13*x^2+9*x-6," +
+                " 5*x^4-11*x^3+31*x+21], [-15*x^3-x^2+2561, 0], [-38, -329*x], [16, -13*x^3+8*x^2+5*x-138]," +
+                " [x^5+12*x^4+13*x^3-3*x^2+7, 15*x-34], [-58, 986*x-4], [-6*x^4+12*x-118, 0, x^3+x^2-2*x+9491]," +
+                " [17*x^4+5209*x^3+6*x^2-x-7, 1305*x^4+6*x^2-12135*x-564], ...]",
+                "{[0, 0]=2623, [0, 0, 0]=303, [-1, 0]=161, [1, 0]=151, [0, -1]=146, [0, 1]=135, [-2, 0]=64," +
+                " [0, 3]=64, [0, 2]=62, [-3, 0]=59}",
+                3.005030000001571,
+                2.8498517485643293,
+                5.080032535425985
+        );
+        polynomialVectorsAtLeast_fail_helper(0, 0, 1, 0);
+        polynomialVectorsAtLeast_fail_helper(1, -1, 1, 0);
+        polynomialVectorsAtLeast_fail_helper(1, 0, 0, -1);
         polynomialVectorsAtLeast_fail_helper(1, 0, 1, -1);
+    }
+
+    private static void rationalPolynomialVectors_helper(
+            @NotNull Iterable<RationalPolynomialVector> input,
+            @NotNull String output,
+            @NotNull String topSampleCount,
+            double meanDimension,
+            double meanCoordinateDegree,
+            double meanCoordinateCoefficientBitSize
+    ) {
+        List<RationalPolynomialVector> sample = toList(take(DEFAULT_SAMPLE_SIZE / 10, input));
+        aeqitLimit(TINY_LIMIT, sample, output);
+        aeq(topSampleCount(DEFAULT_TOP_COUNT, sample), topSampleCount);
+        aeq(meanOfIntegers(toList(map(RationalPolynomialVector::dimension, sample))), meanDimension);
+        aeq(meanOfIntegers(toList(concatMap(v -> map(RationalPolynomial::degree, v), sample))), meanCoordinateDegree);
+        aeq(meanOfIntegers(
+                toList(concatMap(v -> concatMap(p -> map(Rational::bitLength, p), v), sample))),
+                meanCoordinateCoefficientBitSize
+        );
+        P.reset();
+    }
+
+    private static void rationalPolynomialVectors_int_helper(
+            int scale,
+            int secondaryScale,
+            int dimension,
+            @NotNull String output,
+            @NotNull String topSampleCount,
+            double meanDimension,
+            double meanCoordinateDegree,
+            double meanCoordinateCoefficientBitSize
+    ) {
+        rationalPolynomialVectors_helper(
+                P.withScale(scale).withSecondaryScale(secondaryScale).rationalPolynomialVectors(dimension),
+                output,
+                topSampleCount,
+                meanDimension,
+                meanCoordinateDegree,
+                meanCoordinateCoefficientBitSize
+        );
+    }
+
+    private static void rationalPolynomialVectors_int_fail_helper(int scale, int secondaryScale, int dimension) {
+        try {
+            P.withScale(scale).withSecondaryScale(secondaryScale).rationalPolynomialVectors(dimension);
+            fail();
+        } catch (IllegalArgumentException | IllegalStateException ignored) {}
+        finally {
+            P.reset();
+        }
+    }
+
+    @Test
+    public void testRationalPolynomialVectors_int() {
+        rationalPolynomialVectors_int_helper(
+                3,
+                0,
+                0,
+                "[[], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], ...]",
+                "{[]=100000}",
+                0.0,
+                0.0,
+                0.0
+        );
+        rationalPolynomialVectors_int_helper(
+                5,
+                3,
+                3,
+                "[[-29/4*x^3-1/10*x^2-20*x+10/3, -5/6*x^4-1/427*x^3-89/2*x^2+47/3*x-2/53, 0]," +
+                " [1/19*x^7-7/2*x^6-4*x^5-1/50*x^3-2/683*x-1/2, -1/367*x^3-24*x^2+9/2*x+4," +
+                " 3*x^8-6268*x^7-x^6-1/4*x^5-1/16*x^4+2*x^3+12757/4452*x^2-10*x-6/17]," +
+                " [0, 2, -1/7*x^4-1/7*x^3+2*x^2-1/35*x+363]," +
+                " [0, -24/47*x^10+11/2*x^9-1/6*x^8+16*x^7+8*x^6-9/4*x^5+1/6*x^4+1/4*x^3+10*x^2+14/3, 0]," +
+                " [1, 0, -x+1/2], [1/2, 468*x^5+2/5*x^4+2/3*x^2-13/4*x+9, 7*x^2-1/45*x-1]," +
+                " [1/2*x+1, -7/9*x^5+2/7*x^4+1/48*x^3-1/7*x+3, 0], [6*x+1/69, 0, -1/4*x^4+8*x^2+257]," +
+                " [-1/8*x-3, 1/53*x^3-x^2+x-53/5, 1/44]," +
+                " [x-1/21, -28/5*x^7+3*x^5-1/22*x^4-7/10*x^3+1/2*x^2+1/23*x, -13/6]," +
+                " [-9/2*x^4-1/3*x^3+5/7*x^2-3/2, -1/14*x^8-4/3*x^7+1/3*x^6+x^5+2/3763*x^4-2*x^3-4*x^2+8/3*x-1," +
+                " -x^4-1/9*x^3-1/5*x^2-3*x-1/5], [9/29, -3*x+1, -111*x^6-1/2*x^5-2/67*x^4+19/99*x^3-1/12*x+1/5]," +
+                " [-55/4*x^2+1/40*x-73/7, 0, -399*x^2+18/7*x-1/12]," +
+                " [-1/3*x^6+1/7*x^5-20*x^4-1/5341*x^3+5/23*x^2-15*x, 1/7*x^5-x^4+2/199*x^2+2*x-9/632, 0]," +
+                " [-7/3*x^7-31/2*x^6-824/27*x^5+23/402*x^4+31/2*x^3+7/8*x^2+3*x-3, 1/11," +
+                " x^5-1/3*x^4+3/2*x^3-13/25*x^2-30*x-11/371], [0, 0, -1/7*x]," +
+                " [-7/5*x^2-5/14*x+11/31, -x^10+1/59*x^9-115/174*x^8-x^7-1/4*x^6+x^5-1/5*x^4+2/3*x^3+x-61/141, 3]," +
+                " [6, -1/3, 0], [-45, 213*x^8-x^7+2*x^6+x^5+2*x^4-1/3*x^2+3*x+3, 0]," +
+                " [-x^4+371/5*x^3-2/3*x^2+1/853, -2*x-5, 0], ...]",
+                "{[0, 0, 0]=1194, [0, 0, -1]=60, [0, 1, 0]=53, [0, 0, 1]=53, [1, 0, 0]=52, [0, -1, 0]=51," +
+                " [-1, 0, 0]=50, [1/3, 0, 0]=26, [0, -3, 0]=26, [0, 0, -3]=24}",
+                3.000000000005079,
+                2.856606666670599,
+                4.960392642253054
+        );
+        rationalPolynomialVectors_int_fail_helper(2, 0, 2);
+        rationalPolynomialVectors_int_fail_helper(3, -1, 2);
+        rationalPolynomialVectors_int_fail_helper(3, 0, -1);
+    }
+
+    private static void rationalPolynomialVectors_helper(
+            int scale,
+            int secondaryScale,
+            int tertiaryScale,
+            @NotNull String output,
+            @NotNull String topSampleCount,
+            double meanDimension,
+            double meanCoordinateDegree,
+            double meanCoordinateCoefficientBitSize
+    ) {
+        rationalPolynomialVectors_helper(
+                P.withScale(scale).withSecondaryScale(secondaryScale).withTertiaryScale(tertiaryScale)
+                        .rationalPolynomialVectors(),
+                output,
+                topSampleCount,
+                meanDimension,
+                meanCoordinateDegree,
+                meanCoordinateCoefficientBitSize
+        );
+    }
+
+    private static void rationalPolynomialVectors_fail_helper(int scale, int secondaryScale, int tertiaryScale) {
+        try {
+            P.withScale(scale).withSecondaryScale(secondaryScale).withTertiaryScale(tertiaryScale)
+                    .rationalPolynomialVectors();
+            fail();
+        } catch (IllegalStateException ignored) {}
+        finally {
+            P.reset();
+        }
+    }
+
+    @Test
+    public void testRationalPolynomialVectors() {
+        rationalPolynomialVectors_helper(
+                3,
+                0,
+                1,
+                "[[x+477, -2/3*x+1, 0], [], [0], [], [], [], [], [], [-1/15], [0], [], [], [], [0, 0, -1, 0]," +
+                " [0, 0, -2], [], [0, 0], [], [], [-1], ...]",
+                "{[]=49756, [0]=15336, [0, 0]=4725, [0, 0, 0]=1387, [1]=748, [-1]=704, [0, 0, 0, 0]=451, [0, 1]=240," +
+                " [1, 0]=211, [-1, 0]=199}",
+                1.0022699999996099,
+                -0.2237620601232904,
+                3.2825964010289757
+        );
+        rationalPolynomialVectors_helper(
+                5,
+                3,
+                2,
+                "[[-x^2+1/36*x-31/10, 0, -5/6*x^6-2*x^5+1/89*x^4-53/47*x^3+5/2*x^2-x-1, 0]," +
+                " [-1/50*x^3-2/683*x-1/2, 0], [], [], []," +
+                " [0, 2/3*x-5/7, -1/16*x^8+2*x^7+12757/4452*x^6+17/10*x^4-1/367*x^3-24*x^2+9/2*x+4], []," +
+                " [-6268*x-1, x-3/718], [0], [-1/5, 14*x^2+2*x-5/6, -x^2+1/7*x+49/24, 0, 0], [2]," +
+                " [16*x^12+8*x^11-9/4*x^10+1/6*x^9+1/4*x^8+10*x^7+14/3*x^5-29/19562*x^3-1/7*x^2+x+19/2, 1," +
+                " -197/15*x^7-7/41*x^6+3*x^5+1/10*x^4-7/2*x^3-2/5*x^2-2/11*x-2/11," +
+                " -3623/3*x^11-22/3*x^10-x^9+1/2*x^8-3/11*x^7-1/14*x^4+41*x^3-x^2-2/17*x], [1/6*x^2-2/5*x-2/21]," +
+                " [1/3]," +
+                " [-3/13, 2/5*x-1/2, 45/7*x^2-26*x, -1/115*x^6+1/2*x^5+23/3*x^2-5/17*x+3/1790," +
+                " -1/4*x^13+8*x^11+257*x^9-1/7*x^8+6*x^7-7/9*x^6+2/7*x^5+1/48*x^4-1/7*x^2+3*x-3/7, -1/8*x-3," +
+                " 1/53*x^3-x^2+x-53/5], [2/25, 0]," +
+                " [-1/3*x-28, 4*x^2+2/3*x+3, 1/2*x-15/13, 3*x-6, -28/5*x+1/6, -13/6, -9/2*x^4-1/3*x^3+5/7*x^2-3/2," +
+                " -1/14*x^8-4/3*x^7+1/3*x^6+x^5+2/3763*x^4-2*x^3-4*x^2+8/3*x-1]," +
+                " [-3*x-1/5, 0, 0, -631/3*x^6-3*x^5+x^4+29*x^3+15*x+9]," +
+                " [13/3, 0, 19/99*x, -399*x^9+18/7*x^8-1/12*x^7-55/4*x^6+1/40*x^5-41/7*x^4-111*x^2+5*x+232/3," +
+                " -1/3*x^6+1/7*x^5-20*x^4-1/5341*x^3+5/23*x^2-15*x], [2*x-9/632, 0, 11*x^3+1/7*x-3], ...]",
+                "{[]=33309, [0]=5105, [0, 0]=706, [-1]=240, [1]=212, [0, 0, 0]=139, [2]=89, [-3]=86, [3]=84," +
+                " [-1/3]=83}",
+                2.0040200000000756,
+                2.85786568996148,
+                4.961487419860152
+        );
+        rationalPolynomialVectors_fail_helper(2, 0, 1);
+        rationalPolynomialVectors_fail_helper(3, -1, 1);
+        rationalPolynomialVectors_fail_helper(3, 0, 0);
+    }
+
+    private static void rationalPolynomialVectorsAtLeast_helper(
+            int scale,
+            int secondaryScale,
+            int tertiaryScale,
+            int minDimension,
+            @NotNull String output,
+            @NotNull String topSampleCount,
+            double meanDimension,
+            double meanCoordinateDegree,
+            double meanCoordinateCoefficientBitSize
+    ) {
+        rationalPolynomialVectors_helper(
+                P.withScale(scale).withSecondaryScale(secondaryScale).withTertiaryScale(tertiaryScale)
+                        .rationalPolynomialVectorsAtLeast(minDimension),
+                output,
+                topSampleCount,
+                meanDimension,
+                meanCoordinateDegree,
+                meanCoordinateCoefficientBitSize
+        );
+    }
+
+    private static void rationalPolynomialVectorsAtLeast_fail_helper(
+            int scale,
+            int secondaryScale,
+            int tertiaryScale,
+            int minDimension
+    ) {
+        try {
+            P.withScale(scale).withSecondaryScale(secondaryScale).withTertiaryScale(tertiaryScale)
+                    .rationalPolynomialVectorsAtLeast(minDimension);
+            fail();
+        } catch (IllegalStateException | IllegalArgumentException ignored) {}
+        finally {
+            P.reset();
+        }
+    }
+
+    @Test
+    public void testRationalPolynomialVectorsAtLeast() {
+        rationalPolynomialVectorsAtLeast_helper(
+                3,
+                0,
+                1,
+                0,
+                "[[x+477, -2/3*x+1, 0], [], [0], [], [], [], [], [], [-1/15], [0], [], [], [], [0, 0, -1, 0]," +
+                " [0, 0, -2], [], [0, 0], [], [], [-1], ...]",
+                "{[]=49756, [0]=15336, [0, 0]=4725, [0, 0, 0]=1387, [1]=748, [-1]=704, [0, 0, 0, 0]=451, [0, 1]=240," +
+                " [1, 0]=211, [-1, 0]=199}",
+                1.0022699999996099,
+                -0.2237620601232904,
+                3.2825964010289757
+        );
+        rationalPolynomialVectorsAtLeast_helper(
+                5,
+                3,
+                1,
+                0,
+                "[[0, -x^2+1/36*x-31/10, 0], [1/89*x^4-53/47*x^3+5/2*x^2-x-1, -22*x^3-4*x^2-5/6*x-1/427], []," +
+                " [1/19*x^2-7/2*x]," +
+                " [9/2*x, 2*x^6+12757/4452*x^5+17/10*x^3-1/367*x^2-1/6*x, -x-1/4," +
+                " 14*x^9+2*x^8-5/6*x^7+x^6-2/25*x^5-1/38*x^4+x^3-718/59937*x^2+3*x, -x^2+1/7*x+49/24], [], [0], []," +
+                " [], [], [0, 14/3*x^7-29/19562*x^5-1/7*x^4-1/7*x^3+2*x^2-1/35*x+363, -x^2-13*x-1/2]," +
+                " [-2/5*x^6-2/11*x^5-24/47*x^4+11/2*x^3-1/6*x^2+16*x+8, -197/15*x^3-7/41*x^2+3*x+3/10," +
+                " -3623/3*x^11-22/3*x^10-x^9+1/2*x^8-3/11*x^7-1/14*x^4+41*x^3-x^2-2/17*x, 1/2," +
+                " 468*x^5+2/5*x^4+2/3*x^2-13/4*x+9], []," +
+                " [0, 1/6*x^2+45/7*x, 1/48*x^9-1/7*x^7+3*x^6-1/115*x^5+1/2*x^4+23/3*x-9/17," +
+                " 1/44*x^15-53/3*x^14-x^13+5/3*x^12+13/53*x^11-1/8*x^10-3*x^9-8/65*x^8-1/4*x^7+8*x^5+257*x^3-" +
+                "1/7*x^2+6*x+7/11, x-1/21], [], [3*x^5-1/22*x^4-7/10*x^3+1/2*x^2+1/23*x], [], []," +
+                " [x^4-154*x^3+11*x^2-28/5*x+1/6], [], ...]",
+                "{[]=49988, [0]=5788, [0, 0]=673, [-1]=275, [1]=272, [1/3]=94, [-2]=86, [-1/3]=86, [1/2]=84," +
+                " [-1/2]=83}",
+                1.001089999999618,
+                2.8693224385427754,
+                4.963606933180434
+        );
+        rationalPolynomialVectorsAtLeast_helper(
+                5,
+                3,
+                2,
+                1,
+                "[[0, -x^2+1/36*x-31/10, 0, -5/6*x^6-2*x^5+1/89*x^4-53/47*x^3+5/2*x^2-x-1]," +
+                " [1/19*x^7-7/2*x^6-4*x^5-1/50*x^3-2/683*x-1/2]," +
+                " [9/2*x, 2*x^6+12757/4452*x^5+17/10*x^3-1/367*x^2-1/6*x, -x-1/4," +
+                " 14*x^9+2*x^8-5/6*x^7+x^6-2/25*x^5-1/38*x^4+x^3-718/59937*x^2+3*x, -x^2+1/7*x+49/24, 0], [0, 2]," +
+                " [-1/35*x+363, -1/7*x-1/7, 0]," +
+                " [11/2*x^9-1/6*x^8+16*x^7+8*x^6-9/4*x^5+1/6*x^4+1/4*x^3+10*x^2+14/3, -2/11]," +
+                " [1/10*x^2-3/7, -17*x^5-197/15*x-7/41], [1/2*x^4-3/11*x^3+2/3]," +
+                " [-2/5*x^4-1/21*x^3+1/3*x^2+5/7719, 0, 0], [0, 2/5*x^4-1/2*x^3-1/13*x^2+87*x+1/3]," +
+                " [45/7*x^2-26*x, -1/115*x^6+1/2*x^5+23/3*x^2-5/17*x+3/1790], [-1/8*x-3]," +
+                " [1/53*x^3-x^2+x-53/5, 1/44], [x-1/21], [-28/5*x^7+3*x^5-1/22*x^4-7/10*x^3+1/2*x^2+1/23*x]," +
+                " [-3/2*x^4+13/15*x^3+7/3*x^2+x-282], [-1/2*x-13/6], [-1/3*x^2+5/7*x, 25*x^2-9/2*x-172/7], [-1]," +
+                " [9/29], ...]",
+                "{[0]=11659, [0, 0]=1367, [1]=522, [-1]=517, [1/2]=198, [-3]=179, [-2]=176, [-1/2]=174, [2]=169," +
+                " [-1/3]=167}",
+                2.0056700000002503,
+                2.8553799977069874,
+                4.962938822759252
+        );
+        rationalPolynomialVectorsAtLeast_helper(
+                5,
+                3,
+                3,
+                2,
+                "[[0, -x^2+1/36*x-31/10, 0, -5/6*x^6-2*x^5+1/89*x^4-53/47*x^3+5/2*x^2-x-1, 0]," +
+                " [-7/2*x^6-4*x^5-1/50*x^3-2/683*x-1/2, 19], [0, 9/2]," +
+                " [x^10-2/25*x^9-1/38*x^8+x^7-718/59937*x^6+3*x^5-6268*x^4-x^3-1/4*x^2+x-4452," +
+                " 1/7*x^6+17/24*x^5+14*x^4+2*x^3-5/6*x^2-1/84*x+6, 0, 0], [0, 363]," +
+                " [19/2, 0, 14/3*x^3-29/19562*x-1/7]," +
+                " [-13*x-1/2, -24/47*x^6+11/2*x^5-1/6*x^4+16*x^3+8*x^2+2/3*x-2]," +
+                " [1/3*x^10-17*x^9-197/15*x^5-7/41*x^4+3*x^3+1/10*x^2-3/7, 0, 1/2*x^3-3/11*x^2-3/2*x-1/3]," +
+                " [-2/5*x^4-1/21*x^3+1/3*x^2+5/7719, 0, 0, 2], [-1/2*x^2-1/13*x+87, 45/7*x^2-26*x+468]," +
+                " [1/2*x+1, -7/9*x^5+2/7*x^4+1/48*x^3-1/7*x+3, 0], [0, -1/7*x^2+6*x+425/13, 0]," +
+                " [-8/65*x^3-6/257, 13/53*x+1/2, 1/53*x^2-x+3, 1/44]," +
+                " [x-1/21, -28/5*x^7+3*x^5-1/22*x^4-7/10*x^3+1/2*x^2+1/23*x], [-3/2*x^4+13/15*x^3+7/3*x^2+x-282, 0]," +
+                " [-13/6, -9/2*x^4-1/3*x^3+5/7*x^2-3/2," +
+                " -1/14*x^8-4/3*x^7+1/3*x^6+x^5+2/3763*x^4-2*x^3-4*x^2+8/3*x-1]," +
+                " [-3*x-1/5, 0, 0, -631/3*x^6-3*x^5+x^4+29*x^3+15*x+9, -2/67*x^3+19/99*x^2+13/3," +
+                " -1/12*x^3-55/4*x^2+1/40*x]," +
+                " [2/199*x^10+2*x^9-5/632*x^8-1/3*x^7+1/7*x^6-20*x^5+23/14*x^4-1/5*x^3-2*x^2+7/2*x-399," +
+                " -7/3*x^7-31/2*x^6-824/27*x^5+23/402*x^4+31/2*x^3+7/8*x^2+3*x-3, 1/11]," +
+                " [-1/3*x^4+3/2*x^3-13/25*x^2-30*x-11/371, 14*x^4+31/9*x^3+2/11*x^2-1/7*x]," +
+                " [-141*x^2-4/125*x+3/83, 1/59*x^5-115/174*x^4-x^3-1/4*x^2+x-1/5, -1/2], ...]",
+                "{[0, 0]=2687, [0, 0, 0]=267, [-1, 0]=131, [0, -1]=122, [1, 0]=115, [0, 1]=114, [1/3, 0]=55," +
+                " [2, 0]=48, [-3, 0]=46, [0, 0, 0, 0]=46}",
+                3.000630000001584,
+                2.852697600166462,
+                4.962965333734074
+        );
+        rationalPolynomialVectorsAtLeast_fail_helper(2, 0, 1, 0);
+        rationalPolynomialVectorsAtLeast_fail_helper(3, -1, 1, 0);
+        rationalPolynomialVectorsAtLeast_fail_helper(3, 0, 0, -1);
+        rationalPolynomialVectorsAtLeast_fail_helper(3, 0, 1, -1);
     }
 
     private static void matrices_helper(
