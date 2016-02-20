@@ -36,7 +36,7 @@ public class RationalVectorTest {
     }
 
     @Test
-    public void testHasIntegralCoefficients() {
+    public void testHasIntegralCoordinates() {
         hasIntegralCoordinates_helper("[]", true);
         hasIntegralCoordinates_helper("[2]", true);
         hasIntegralCoordinates_helper("[12, -4, 0, 2]", true);

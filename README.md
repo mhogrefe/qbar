@@ -18,11 +18,11 @@ Progress
 | MonomialOrder            | ✔       | ✔       | ✔     | ✔     | ✔          |
 | MultivariatePolynomial   | ✘       | ✘       | ✘     | ✘     | ✘          |
 | Polynomial               | ✘       | ✘       | ✘     | ✘     | ✘          |
-| PolynomialVector         | ✔       | ✘       | ✘     | ✘     | ✘          |
+| PolynomialVector         | ✔       | ✔       | ✘     | ✘     | ✘          |
 | Rational                 | ✔       | ✔       | ✔     | ✔     | ✔          |
 | RationalMatrix           | ✘       | ✘       | ✘     | ✘     | ✘          |
 | RationalPolynomial       | ✘       | ✘       | ✘     | ✘     | ✘          |
-| RationalPolynomialVector | ✔       | ✘       | ✘     | ✘     | ✘          |
+| RationalPolynomialVector | ✔       | ✔       | ✘     | ✘     | ✘          |
 | RationalVector           | ✔       | ✔       | ✔     | ✔     | ✔          |
 | Variable                 | ✔       | ✔       | ✔     | ✔     | ✔          |
 | Vector                   | ✔       | ✔       | ✔     | ✔     | ✔          |
