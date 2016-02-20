@@ -4,7 +4,6 @@ import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.testing.QBarTestProperties;
 import mho.qbar.testing.QBarTesting;
 import mho.wheels.iterables.IterableUtils;
-import mho.wheels.numberUtils.IntegerUtils;
 import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
 import org.jetbrains.annotations.NotNull;
