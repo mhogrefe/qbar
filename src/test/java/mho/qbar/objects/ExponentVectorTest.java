@@ -9,9 +9,9 @@ import org.junit.Test;
 import java.util.List;
 
 import static mho.qbar.objects.ExponentVector.*;
-import static mho.wheels.testing.Testing.aeq;
-import static mho.wheels.testing.Testing.aeqit;
+import static mho.wheels.testing.Testing.*;
 import static org.junit.Assert.fail;
+import static org.junit.Assert.assertFalse;
 
 public class ExponentVectorTest {
     @Test
@@ -132,6 +132,98 @@ public class ExponentVectorTest {
         fromTerms_fail_helper("[(b, 2), (a, 3)]");
     }
 
+    private static void degree_helper(@NotNull String ev, int output) {
+        aeq(read(ev).get().degree(), output);
+    }
+
+    @Test
+    public void testDegree() {
+        degree_helper("1", 0);
+        degree_helper("a", 1);
+        degree_helper("a^2", 2);
+        degree_helper("a^3", 3);
+        degree_helper("x^2*y*z^3", 6);
+    }
+
+    @Test
+    public void testEquals() {
+        testEqualsHelper(
+                readExponentVectorList("[1, a, a^2, a^3, x^2*y*z^3]"),
+                readExponentVectorList("[1, a, a^2, a^3, x^2*y*z^3]")
+        );
+    }
+
+    private static void hashCode_helper(@NotNull String input, int hashCode) {
+        aeq(read(input).get().hashCode(), hashCode);
+    }
+
+    @Test
+    public void testHashCode() {
+        hashCode_helper("1", 1);
+        hashCode_helper("a", 32);
+        hashCode_helper("a^2", 33);
+        hashCode_helper("a^3", 34);
+        hashCode_helper("x^2*y*z^3", 961615973);
+    }
+
+    @Test
+    public void testCompareTo() {
+        testCompareToHelper(
+                readExponentVectorList(
+                        "[1, ooo, b, a, z^2, y^2, x*y, x^2, x*y^2, x^2*y, x^3, x^2*z^2, x*y^2*z, a*b*c*d]"
+                )
+        );
+    }
+
+    private static void read_helper(@NotNull String input) {
+        aeq(read(input).get(), input);
+    }
+
+    private static void read_fail_helper(@NotNull String input) {
+        assertFalse(read(input).isPresent());
+    }
+
+    @Test
+    public void testRead() {
+        read_helper("1");
+        read_helper("a");
+        read_helper("a^2");
+        read_helper("a^3");
+        read_helper("x^2*y*z^3");
+        read_helper("ooo");
+        read_fail_helper("");
+        read_fail_helper(" ");
+        read_fail_helper("ab");
+        read_fail_helper("3*a");
+        read_fail_helper("a^0");
+        read_fail_helper("a^1");
+        read_fail_helper("a^-1");
+        read_fail_helper("b*a");
+        read_fail_helper("a*a");
+        read_fail_helper("123");
+    }
+
+    private static void findIn_helper(@NotNull String input, @NotNull String output, int index) {
+        Pair<ExponentVector, Integer> result = findIn(input).get();
+        aeq(result.a, output);
+        aeq(result.b, index);
+    }
+
+    private static void findIn_fail_helper(@NotNull String input) {
+        assertFalse(findIn(input).isPresent());
+    }
+
+    @Test
+    public void testFindIn() {
+        findIn_helper("hello", "h", 0);
+        findIn_helper("b*a*b", "b", 0);
+        findIn_helper("3*a*b", "a*b", 2);
+        findIn_helper("2*a^2a", "a^2", 2);
+        findIn_helper("123", "1", 0);
+        findIn_fail_helper("");
+        findIn_fail_helper("234");
+    }
+
     private static @NotNull List<Integer> readIntegerList(@NotNull String s) {
         return Readers.readList(Readers::readInteger).apply(s).get();
     }
@@ -154,5 +246,9 @@ public class ExponentVectorTest {
         return Readers.readListWithNulls(
                 u -> Pair.read(u, Readers.readWithNulls(Variable::read), Readers.readWithNulls(Readers::readInteger))
         ).apply(s).get();
+    }
+
+    private static @NotNull List<ExponentVector> readExponentVectorList(@NotNull String s) {
+        return Readers.readList(ExponentVector::read).apply(s).get();
     }
 }
