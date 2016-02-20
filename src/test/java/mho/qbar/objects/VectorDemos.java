@@ -56,7 +56,7 @@ public class VectorDemos extends QBarDemos {
     }
 
     private void demoMaxCoordinateBitLength() {
-        for (Vector v : take(LIMIT, P.vectors())) {
+        for (Vector v : take(LIMIT, P.withScale(4).vectors())) {
             System.out.println("maxCoordinateBitLength(" + v + ") = " + v.maxCoordinateBitLength());
         }
     }
@@ -303,7 +303,7 @@ public class VectorDemos extends QBarDemos {
     }
 
     private void demoToString() {
-        for (Vector v : take(LIMIT, P.vectors())) {
+        for (Vector v : take(LIMIT, P.withScale(4).vectors())) {
             System.out.println(v);
         }
     }

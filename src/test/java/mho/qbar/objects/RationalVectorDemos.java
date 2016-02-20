@@ -348,7 +348,7 @@ public class RationalVectorDemos extends QBarDemos {
     }
 
     private void demoToString() {
-        for (RationalVector v : take(LIMIT, P.rationalVectors())) {
+        for (RationalVector v : take(LIMIT, P.withScale(4).rationalVectors())) {
             System.out.println(v);
         }
     }
