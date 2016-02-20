@@ -272,6 +272,87 @@ public class QBarRandomProviderDemos extends QBarDemos {
         }
     }
 
+    private void demoPolynomialVectors_int() {
+        Iterable<Pair<QBarRandomProvider, Integer>> ps = P.pairsSquareRootOrder(
+                filterInfinite(
+                        rp -> rp.getScale() > 0 && rp.getSecondaryScale() > 0,
+                        P.withScale(4).qbarRandomProvidersDefaultTertiaryScale()
+                ),
+                P.withScale(4).naturalIntegersGeometric()
+        );
+        for (Pair<QBarRandomProvider, Integer> p : take(SMALL_LIMIT, ps)) {
+            System.out.println("polynomialVectors(" + p.a + ", " + p.b + ") = " + its(p.a.polynomialVectors(p.b)));
+        }
+    }
+
+    private void demoPolynomialVectors() {
+        Iterable<QBarRandomProvider> rps = filterInfinite(
+                rp -> rp.getScale() > 0 && rp.getSecondaryScale() >= 0 && rp.getTertiaryScale() > 0,
+                P.withScale(4).qbarRandomProviders()
+        );
+        for (QBarRandomProvider rp : take(SMALL_LIMIT, rps)) {
+            System.out.println("polynomialVectors(" + rp + ") = " + its(rp.polynomialVectors()));
+        }
+    }
+
+    private void demoPolynomialVectorsAtLeast() {
+        Iterable<Pair<QBarRandomProvider, Integer>> ps = filterInfinite(
+                p -> p.a.getTertiaryScale() > p.b,
+                P.pairsSquareRootOrder(
+                        filterInfinite(
+                                rp -> rp.getScale() > 0 && rp.getSecondaryScale() >= 0,
+                                P.withScale(4).qbarRandomProviders()
+                        ),
+                        P.withScale(4).naturalIntegersGeometric()
+                )
+        );
+        for (Pair<QBarRandomProvider, Integer> p : take(SMALL_LIMIT, ps)) {
+            System.out.println("polynomialVectorsAtLeast(" + p.a + ", " + p.b + ") = " +
+                    its(p.a.polynomialVectorsAtLeast(p.b)));
+        }
+    }
+
+    private void demoRationalPolynomialVectors_int() {
+        Iterable<Pair<QBarRandomProvider, Integer>> ps = P.pairsSquareRootOrder(
+                filterInfinite(
+                        rp -> rp.getScale() >= 3 && rp.getSecondaryScale() > 0,
+                        P.withScale(4).qbarRandomProvidersDefaultTertiaryScale()
+                ),
+                P.withScale(4).naturalIntegersGeometric()
+        );
+        for (Pair<QBarRandomProvider, Integer> p : take(SMALL_LIMIT, ps)) {
+            System.out.println("rationalPolynomialVectors(" + p.a + ", " + p.b + ") = " +
+                    its(p.a.rationalPolynomialVectors(p.b)));
+        }
+    }
+
+    private void demoRationalPolynomialVectors() {
+        Iterable<QBarRandomProvider> rps = filterInfinite(
+                rp -> rp.getScale() >= 3 && rp.getSecondaryScale() >= 0 && rp.getTertiaryScale() > 0,
+                P.withScale(4).qbarRandomProviders()
+        );
+        for (QBarRandomProvider rp : take(SMALL_LIMIT, rps)) {
+            System.out.println("rationalPolynomialVectors(" + rp + ") = " + its(rp.rationalPolynomialVectors()));
+        }
+    }
+
+    private void demoRationalPolynomialVectorsAtLeast() {
+        Iterable<Pair<QBarRandomProvider, Integer>> ps = filterInfinite(
+                p -> p.a.getTertiaryScale() > p.b,
+                P.pairsSquareRootOrder(
+                        filterInfinite(
+                                rp -> rp.getScale() >= 3 && rp.getSecondaryScale() >= 0,
+                                P.withScale(4).qbarRandomProviders()
+                        ),
+                        P.withScale(4).naturalIntegersGeometric()
+                )
+        );
+        for (Pair<QBarRandomProvider, Integer> p : take(SMALL_LIMIT, ps)) {
+            System.out.println("rationalPolynomialVectorsAtLeast(" + p.a + ", " + p.b + ") = " +
+                    its(p.a.rationalPolynomialVectorsAtLeast(p.b)));
+        }
+    }
+
     private void demoMatrices_int_int() {
         Iterable<Triple<QBarRandomProvider, Integer, Integer>> ts = P.triples(
                 filterInfinite(
