@@ -1615,6 +1615,13 @@ public class RationalPolynomialTest {
         aeq(read(input).get().powerSums(), output);
     }
 
+    private static void powerSums_fail_helper(@NotNull String input) {
+        try {
+            read(input).get().powerSums();
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
     @Test
     public void testPowerSums() {
         powerSums_helper("1", "[0]");
@@ -1627,6 +1634,11 @@ public class RationalPolynomialTest {
         powerSums_helper("x^3-3/2*x^2+1/2*x", "[3, 3/2, 5/4, 9/8]");
         powerSums_helper("x^5-4*x^4+13/2*x^3-16/3*x^2+53/24*x-11/30", "[5, 4, 3, 2, 1, 0]");
         powerSums_helper("x^5+4*x^4+19/2*x^3+52/3*x^2+641/24*x+1091/30", "[5, -4, -3, -2, -1, 0]");
+
+        powerSums_fail_helper("0");
+        powerSums_fail_helper("2");
+        powerSums_fail_helper("-1");
+        powerSums_fail_helper("1/2*x^2");
     }
 
     private static void fromPowerSums_helper(@NotNull String input, @NotNull String output) {
@@ -1681,6 +1693,35 @@ public class RationalPolynomialTest {
         interpolate_fail_helper("[(1, 1), null]");
         interpolate_fail_helper("[(1, 1), (2, null)]");
         interpolate_fail_helper("[(1, 1), (null, 3)]");
+    }
+
+    private static void companionMatrix_helper(@NotNull String input, @NotNull String output) {
+        aeq(read(input).get().companionMatrix(), output);
+    }
+
+    private static void companionMatrix_fail_helper(@NotNull String input) {
+        try {
+            read(input).get().companionMatrix();
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testCompanionMatrix() {
+        companionMatrix_helper("1", "[]#0");
+        companionMatrix_helper("x", "[[0]]");
+        companionMatrix_helper("x^2-7/4*x+1/3", "[[0, -1/3], [1, 7/4]]");
+        companionMatrix_helper("x^3-1", "[[0, 0, 1], [1, 0, 0], [0, 1, 0]]");
+        companionMatrix_helper("x^10",
+                "[[0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [1, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 1, 0, 0, 0, 0, 0, 0, 0, 0]," +
+                " [0, 0, 1, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 1, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 1, 0, 0, 0, 0, 0]," +
+                " [0, 0, 0, 0, 0, 1, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 1, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 1, 0, 0]," +
+                " [0, 0, 0, 0, 0, 0, 0, 0, 1, 0]]");
+
+        companionMatrix_fail_helper("0");
+        companionMatrix_fail_helper("2");
+        companionMatrix_fail_helper("-1");
+        companionMatrix_fail_helper("1/2*x^2");
     }
 
     @Test

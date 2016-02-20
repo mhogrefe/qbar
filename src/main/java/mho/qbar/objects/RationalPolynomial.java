@@ -1013,6 +1013,40 @@ public final class RationalPolynomial implements
     }
 
     /**
+     * Returns the Frobenius companion matrix of {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} must be monic.</li>
+     *  <li>The first row of the result has zeros in all but the last column, and the submatrix produced by omitting
+     *  the first row and the last column is the identity.</li>
+     * </ul>
+     *
+     * @return the companion matrix of {@code this}
+     */
+    public @NotNull RationalMatrix companionMatrix() {
+        if (this == ONE) {
+            return RationalMatrix.zero(0, 0);
+        }
+        if (!isMonic()) {
+            throw new IllegalArgumentException();
+        }
+        int degree = degree();
+        List<RationalVector> rows = new ArrayList<>();
+        List<Rational> row = toList(replicate(degree - 1, Rational.ZERO));
+        row.add(coefficients.get(0).negate());
+        rows.add(RationalVector.of(row));
+        for (int i = 1; i < degree; i++) {
+            row.clear();
+            for (int j = 1; j < degree; j++) {
+                row.add(i == j ? Rational.ONE : Rational.ZERO);
+            }
+            row.add(coefficients.get(i).negate());
+            rows.add(RationalVector.of(row));
+        }
+        return RationalMatrix.fromRows(rows);
+    }
+
+    /**
      * Determines whether {@code this} is equal to {@code that}.
      *
      * <ul>

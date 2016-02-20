@@ -362,6 +362,12 @@ public class RationalPolynomialDemos extends QBarDemos {
         }
     }
 
+    private void demoCompanionMatrix() {
+        for (RationalPolynomial p : take(LIMIT, P.withScale(4).monicRationalPolynomials())) {
+            System.out.println("companionMatrix(" + p + ") = " + p.companionMatrix());
+        }
+    }
+
     private void demoEquals_RationalPolynomial() {
         Iterable<Pair<RationalPolynomial, RationalPolynomial>> ps = P.pairs(P.withScale(4).rationalPolynomials());
         for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, ps)) {

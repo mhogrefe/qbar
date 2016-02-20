@@ -90,6 +90,7 @@ public class RationalPolynomialProperties extends QBarTestProperties {
         propertiesFromPowerSums();
         propertiesInterpolate();
         propertiesEquals();
+        propertiesCompanionMatrix();
         propertiesHashCode();
         propertiesCompareTo();
         propertiesRead_String();
@@ -1671,6 +1672,7 @@ public class RationalPolynomialProperties extends QBarTestProperties {
 
         for (List<Rational> rs : take(LIMIT, P.withScale(4).bags(P.rationals()))) {
             List<RationalPolynomial> factors = new ArrayList<>();
+            //noinspection Convert2streamapi
             for (Rational r : rs) {
                 factors.add(of(Arrays.asList(r.negate(), Rational.ONE)));
             }
@@ -1779,6 +1781,44 @@ public class RationalPolynomialProperties extends QBarTestProperties {
             try {
                 interpolate(qs);
                 fail(qs);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesCompanionMatrix() {
+        initialize("companionMatrix()");
+        for (RationalPolynomial p : take(LIMIT, P.monicRationalPolynomials())) {
+            RationalMatrix companionMatrix = p.companionMatrix();
+            assertTrue(
+                    p,
+                    companionMatrix.submatrix(toList(range(1, p.degree() - 1)), toList(range(0, p.degree() - 2)))
+                            .isIdentity()
+            );
+        }
+
+        for (RationalPolynomial p : take(LIMIT, P.monicRationalPolynomialsAtLeast(1))) {
+            RationalMatrix companionMatrix = p.companionMatrix();
+            assertTrue(
+                    p,
+                    companionMatrix.submatrix(Collections.singletonList(0), toList(range(0, p.degree() - 2))).isZero()
+            );
+        }
+
+        for (RationalPolynomial p : take(LIMIT, P.withScale(4).withSecondaryScale(4).monicRationalPolynomials())) {
+            inverse(RationalPolynomial::companionMatrix, RationalMatrix::characteristicPolynomial, p);
+        }
+
+        for (RationalPolynomial p : take(LIMIT, P.monicRationalPolynomials(1))) {
+            RationalMatrix companionMatrix = p.companionMatrix();
+            assertEquals(p, companionMatrix.height(), 1);
+            assertEquals(p, companionMatrix.width(), 1);
+            assertEquals(p, companionMatrix.get(0, 0), p.coefficient(0).negate());
+        }
+
+        for (RationalPolynomial p : take(LIMIT, filterInfinite(q -> !q.isMonic(), P.rationalPolynomials()))) {
+            try {
+                p.companionMatrix();
+                fail(p);
             } catch (IllegalArgumentException ignored) {}
         }
     }
