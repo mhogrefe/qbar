@@ -264,6 +264,27 @@ public class PolynomialDemos extends QBarDemos {
         }
     }
 
+    private void demoAbsolutePseudoDivide() {
+        Iterable<Pair<Polynomial, Polynomial>> ps = filterInfinite(
+                p -> p.a.degree() >= p.b.degree(),
+                P.pairs(P.withScale(4).polynomials(), P.withScale(4).polynomialsAtLeast(0))
+        );
+        for (Pair<Polynomial, Polynomial> p : take(LIMIT, ps)) {
+            System.out.println("absolutePseudoDivide(" + p.a + ", " + p.b + ") = " + p.a.absolutePseudoDivide(p.b));
+        }
+    }
+
+    private void demoAbsolutePseudoRemainder() {
+        Iterable<Pair<Polynomial, Polynomial>> ps = filterInfinite(
+                p -> p.a.degree() >= p.b.degree(),
+                P.pairs(P.withScale(4).polynomials(), P.withScale(4).polynomialsAtLeast(0))
+        );
+        for (Pair<Polynomial, Polynomial> p : take(LIMIT, ps)) {
+            System.out.println("absolutePseudoRemainder(" + p.a + ", " + p.b + ") = " +
+                    p.a.absolutePseudoRemainder(p.b));
+        }
+    }
+
     private void demoIsDivisibleBy_Polynomial() {
         Iterable<Pair<Polynomial, Polynomial>> ps = P.pairs(
                 P.withScale(4).polynomials(),

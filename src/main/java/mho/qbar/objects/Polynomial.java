@@ -889,6 +889,82 @@ public final class Polynomial implements
     }
 
     /**
+     * Returns a variant of the pseudo-quotient and pseudo-remainder when {@code this} is divided by {@code that}. To
+     * be more precise, the result is (q, r) such that
+     * {@code this}×|leading({@code that})|<sup>deg({@code a})–deg({@code n})+1</sup>={@code that}×q+r and
+     * deg(r){@literal <}deg({@code that}).\
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalPolynomial}.</li>
+     *  <li>{@code that} cannot be 0.</li>
+     *  <li>The degree of {@code this} must be greater than or equal to the degree of {@code that}.</li>
+     *  <li>Neither element of the result is null.</li>
+     * </ul>
+     *
+     * @param that the {@code RationalPolynomial} {@code this} is divided by
+     * @return ({@code this}/{@code that}, {@code this}%{code that})
+     */
+    @SuppressWarnings("JavaDoc")
+    public @NotNull Pair<Polynomial, Polynomial> absolutePseudoDivide(@NotNull Polynomial that) {
+        if (that == ZERO) {
+            throw new ArithmeticException("that cannot be zero.");
+        }
+        int m = degree();
+        int n = that.degree();
+        if (m < n) {
+            throw new ArithmeticException("The degree of this must be greater than or equal to the degree of that." +
+                    " this: " + this + ", that: " + that);
+        }
+        List<BigInteger> q = new ArrayList<>();
+        List<BigInteger> r = toList(multiply(that.leading().get().abs().pow(m - n + 1)));
+        for (int k = m - n; k >= 0; k--) {
+            BigInteger qCoefficient = r.get(n + k).divide(that.coefficient(n));
+            q.add(qCoefficient);
+            for (int j = n + k - 1; j >= k; j--) {
+                r.set(j, r.get(j).subtract(qCoefficient.multiply(that.coefficient(j - k))));
+            }
+        }
+        return new Pair<>(of(reverse(q)), of(toList(take(n, r))));
+    }
+
+    /**
+     * Returns a variant of the pseudo-remainder when {@code this} is divided by {@code that}. To be more precise, the
+     * result is r such that there exists a q such that
+     * {@code this}×|leading({@code that})|<sup>deg({@code a})–deg({@code n})+1</sup>={@code that}×q+r and
+     * deg(r){@literal <}deg({@code that}).
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>{@code that} cannot be 0.</li>
+     *  <li>The degree of {@code this} must be greater than or equal to the degree of {@code that}.</li>
+     *  <li>Neither element of the result is null.</li>
+     * </ul>
+     *
+     * @param that the {@code RationalPolynomial} {@code this} is divided by
+     * @return {@code this}%{code that}
+     */
+    @SuppressWarnings("JavaDoc")
+    public @NotNull Polynomial absolutePseudoRemainder(@NotNull Polynomial that) {
+        if (that == ZERO) {
+            throw new ArithmeticException("that cannot be zero.");
+        }
+        int m = degree();
+        int n = that.degree();
+        if (m < n) {
+            throw new ArithmeticException("The degree of this must be greater than or equal to the degree of that." +
+                    " this: " + this + ", that: " + that);
+        }
+        List<BigInteger> r = toList(multiply(that.leading().get().abs().pow(m - n + 1)));
+        for (int k = m - n; k >= 0; k--) {
+            BigInteger qCoefficient = r.get(n + k).divide(that.coefficient(n));
+            for (int j = n + k - 1; j >= k; j--) {
+                r.set(j, r.get(j).subtract(qCoefficient.multiply(that.coefficient(j - k))));
+            }
+        }
+        return of(toList(take(n, r)));
+    }
+
+    /**
      * Determines whether {@code this} is divisible by {@code that}, i.e. whether there exists a
      * {@code RationalPolynomial} p (with not-necessarily-integral coefficients) such that
      * {@code p}×{@code that}={@code this}. {@code that} cannot be 0, even when {@code this} is 0.

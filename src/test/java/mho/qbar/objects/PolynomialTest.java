@@ -1287,6 +1287,135 @@ public class PolynomialTest {
         pseudoRemainder_fail_helper("x^2", "x^3");
     }
 
+    private static void absolutePseudoDivide_helper(
+            @NotNull String a,
+            @NotNull String b,
+            @NotNull String pseudoQuotient,
+            @NotNull String pseudoRemainder
+    ) {
+        Pair<Polynomial, Polynomial> result = read(a).get().absolutePseudoDivide(read(b).get());
+        aeq(result.a, pseudoQuotient);
+        aeq(result.b, pseudoRemainder);
+    }
+
+    private static void absolutePseudoDivide_fail_helper(@NotNull String a, @NotNull String b) {
+        try {
+            read(a).get().absolutePseudoDivide(read(b).get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testAbsolutePseudoDivide() {
+        absolutePseudoDivide_helper("1", "1", "1", "0");
+        absolutePseudoDivide_helper("1", "-17", "-1", "0");
+
+        absolutePseudoDivide_helper("x", "1", "x", "0");
+        absolutePseudoDivide_helper("x", "x", "1", "0");
+        absolutePseudoDivide_helper("x", "-17", "-17*x", "0");
+
+        absolutePseudoDivide_helper("-17", "1", "-17", "0");
+        absolutePseudoDivide_helper("-17", "-17", "17", "0");
+
+        absolutePseudoDivide_helper("x^2-4*x+7", "1", "x^2-4*x+7", "0");
+        absolutePseudoDivide_helper("x^2-4*x+7", "x", "x-4", "7");
+        absolutePseudoDivide_helper("x^2-4*x+7", "-17", "-289*x^2+1156*x-2023", "0");
+        absolutePseudoDivide_helper("x^2-4*x+7", "x^2-4*x+7", "1", "0");
+
+        absolutePseudoDivide_helper("-x^3-1", "1", "-x^3-1", "0");
+        absolutePseudoDivide_helper("-x^3-1", "x", "-x^2", "-1");
+        absolutePseudoDivide_helper("-x^3-1", "-17", "4913*x^3+4913", "0");
+        absolutePseudoDivide_helper("-x^3-1", "x^2-4*x+7", "-x-4", "-9*x+27");
+        absolutePseudoDivide_helper("-x^3-1", "-x^3-1", "1", "0");
+
+        absolutePseudoDivide_helper("3*x^10", "1", "3*x^10", "0");
+        absolutePseudoDivide_helper("3*x^10", "x", "3*x^9", "0");
+        absolutePseudoDivide_helper("3*x^10", "-17", "-6047981701347*x^10", "0");
+        absolutePseudoDivide_helper(
+                "3*x^10",
+                "x^2-4*x+7",
+                "3*x^8+12*x^7+27*x^6+24*x^5-93*x^4-540*x^3-1509*x^2-2256*x+1539",
+                "21948*x-10773"
+        );
+        absolutePseudoDivide_helper("3*x^10", "-x^3-1", "-3*x^7+3*x^4-3*x", "-3*x");
+        absolutePseudoDivide_helper("3*x^10", "3*x^10", "3", "0");
+
+        absolutePseudoDivide_helper(
+                "x^8+x^6-3*x^4-3*x^3+8*x^2+2*x-5",
+                "3*x^6+5*x^4-4*x^2-9*x+21",
+                "9*x^2-6",
+                "-15*x^4+3*x^2-9"
+        );
+        absolutePseudoDivide_helper("x^3+x+1", "3*x^2+x+1", "3*x-1", "7*x+10");
+        absolutePseudoDivide_helper("x+1", "x-1", "1", "2");
+        absolutePseudoDivide_helper("x", "x+1", "1", "-1");
+        absolutePseudoDivide_helper("2*x+1", "x", "2", "1");
+
+        absolutePseudoDivide_fail_helper("x", "0");
+        absolutePseudoDivide_fail_helper("0", "x");
+        absolutePseudoDivide_fail_helper("x^2", "x^3");
+    }
+
+    private static void absolutePseudoRemainder_helper(
+            @NotNull String a,
+            @NotNull String b,
+            @NotNull String output
+    ) {
+        aeq(read(a).get().absolutePseudoRemainder(read(b).get()), output);
+    }
+
+    private static void absolutePseudoRemainder_fail_helper(@NotNull String a, @NotNull String b) {
+        try {
+            read(a).get().absolutePseudoRemainder(read(b).get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testAbsolutePseudoRemainder() {
+        absolutePseudoRemainder_helper("1", "1", "0");
+        absolutePseudoRemainder_helper("1", "-17", "0");
+
+        absolutePseudoRemainder_helper("x", "1", "0");
+        absolutePseudoRemainder_helper("x", "x", "0");
+        absolutePseudoRemainder_helper("x", "-17", "0");
+
+        absolutePseudoRemainder_helper("-17", "1", "0");
+        absolutePseudoRemainder_helper("-17", "-17", "0");
+
+        absolutePseudoRemainder_helper("x^2-4*x+7", "1", "0");
+        absolutePseudoRemainder_helper("x^2-4*x+7", "x", "7");
+        absolutePseudoRemainder_helper("x^2-4*x+7", "-17", "0");
+        absolutePseudoRemainder_helper("x^2-4*x+7", "x^2-4*x+7", "0");
+
+        absolutePseudoRemainder_helper("-x^3-1", "1", "0");
+        absolutePseudoRemainder_helper("-x^3-1", "x", "-1");
+        absolutePseudoRemainder_helper("-x^3-1", "-17", "0");
+        absolutePseudoRemainder_helper("-x^3-1", "x^2-4*x+7", "-9*x+27");
+        absolutePseudoRemainder_helper("-x^3-1", "-x^3-1", "0");
+
+        absolutePseudoRemainder_helper("3*x^10", "1", "0");
+        absolutePseudoRemainder_helper("3*x^10", "x", "0");
+        absolutePseudoRemainder_helper("3*x^10", "-17", "0");
+        absolutePseudoRemainder_helper("3*x^10", "x^2-4*x+7", "21948*x-10773");
+        absolutePseudoRemainder_helper("3*x^10", "-x^3-1", "-3*x");
+        absolutePseudoRemainder_helper("3*x^10", "3*x^10", "0");
+
+        absolutePseudoRemainder_helper(
+                "x^8+x^6-3*x^4-3*x^3+8*x^2+2*x-5",
+                "3*x^6+5*x^4-4*x^2-9*x+21",
+                "-15*x^4+3*x^2-9"
+        );
+        absolutePseudoRemainder_helper("x^3+x+1", "3*x^2+x+1", "7*x+10");
+        absolutePseudoRemainder_helper("x+1", "x-1", "2");
+        absolutePseudoRemainder_helper("x", "x+1", "-1");
+        absolutePseudoRemainder_helper("2*x+1", "x", "1");
+
+        absolutePseudoRemainder_fail_helper("x", "0");
+        absolutePseudoRemainder_fail_helper("0", "x");
+        absolutePseudoRemainder_fail_helper("x^2", "x^3");
+    }
+
     private static void divisibleBy_helper(@NotNull String a, @NotNull String b, boolean output) {
         aeq(read(a).get().isDivisibleBy(read(b).get()), output);
     }
