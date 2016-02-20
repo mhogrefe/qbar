@@ -275,7 +275,7 @@ public class QBarRandomProviderDemos extends QBarDemos {
     private void demoPolynomialVectors_int() {
         Iterable<Pair<QBarRandomProvider, Integer>> ps = P.pairsSquareRootOrder(
                 filterInfinite(
-                        rp -> rp.getScale() > 0 && rp.getSecondaryScale() > 0,
+                        rp -> rp.getScale() > 0 && rp.getSecondaryScale() >= 0,
                         P.withScale(4).qbarRandomProvidersDefaultTertiaryScale()
                 ),
                 P.withScale(4).naturalIntegersGeometric()
@@ -315,7 +315,7 @@ public class QBarRandomProviderDemos extends QBarDemos {
     private void demoRationalPolynomialVectors_int() {
         Iterable<Pair<QBarRandomProvider, Integer>> ps = P.pairsSquareRootOrder(
                 filterInfinite(
-                        rp -> rp.getScale() >= 3 && rp.getSecondaryScale() > 0,
+                        rp -> rp.getScale() >= 3 && rp.getSecondaryScale() >= 0,
                         P.withScale(4).qbarRandomProvidersDefaultTertiaryScale()
                 ),
                 P.withScale(4).naturalIntegersGeometric()
