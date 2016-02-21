@@ -7,6 +7,7 @@ import mho.wheels.iterables.IterableUtils;
 import mho.wheels.numberUtils.IntegerUtils;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
+import mho.wheels.structures.Quadruple;
 import mho.wheels.structures.Triple;
 import org.jetbrains.annotations.NotNull;
 
@@ -81,6 +82,8 @@ public class MatrixProperties extends QBarTestProperties {
         compareImplementationsDeterminant();
         propertiesCharacteristicPolynomial();
         compareImplementationsCharacteristicPolynomial();
+        propertiesKroneckerMultiply();
+        propertiesKroneckerAdd();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -1678,6 +1681,167 @@ public class MatrixProperties extends QBarTestProperties {
         functions.put("simplest", MatrixProperties::characteristicPolynomial_simplest);
         functions.put("standard", Matrix::characteristicPolynomial);
         compareImplementations("characteristicPolynomial()", take(LIMIT, P.withScale(4).squareMatrices()), functions);
+    }
+
+    private void propertiesKroneckerMultiply() {
+        initialize("kroneckerMultiply(Matrix)");
+        for (Pair<Matrix, Matrix> p : take(LIMIT, P.pairs(P.matrices()))) {
+            Matrix product = p.a.kroneckerMultiply(p.b);
+            assertEquals(p, product.height(), p.a.height() * p.b.height());
+            assertEquals(p, product.width(), p.a.width() * p.b.width());
+        }
+
+        Iterable<Triple<Matrix, Matrix, BigInteger>> ts = P.triples(P.matrices(), P.matrices(), P.bigIntegers());
+        for (Triple<Matrix, Matrix, BigInteger> t : take(LIMIT, ts)) {
+            Matrix product = t.a.multiply(t.c).kroneckerMultiply(t.b);
+            assertEquals(t, product, t.a.kroneckerMultiply(t.b.multiply(t.c)));
+            assertEquals(t, product, t.a.kroneckerMultiply(t.b).multiply(t.c));
+        }
+
+        for (Triple<Matrix, Matrix, Matrix> t : take(LIMIT, P.triples(P.matrices()))) {
+            associative(Matrix::kroneckerMultiply, t);
+        }
+
+        Iterable<Pair<Matrix, Matrix>> psAdd = P.chooseLogarithmicOrder(
+                map(
+                        q -> q.b,
+                        P.dependentPairsInfiniteSquareRootOrder(
+                                P.pairs(P.positiveIntegersGeometric()),
+                                p -> P.pairs(P.matrices(p.a, p.b))
+                        )
+                ),
+                P.choose(
+                        map(
+                                i -> {
+                                    Matrix m = Matrix.zero(0, i);
+                                    return new Pair<>(m, m);
+                                },
+                                P.naturalIntegersGeometric()
+                        ),
+                        map(
+                                i -> {
+                                    Matrix m = Matrix.zero(i, 0);
+                                    return new Pair<>(m, m);
+                                },
+                                P.positiveIntegersGeometric()
+                        )
+                )
+        );
+        Iterable<Triple<Matrix, Matrix, Matrix>> ts2 = map(
+                p -> new Triple<>(p.b, p.a.a, p.a.b),
+                P.pairs(psAdd, P.matrices())
+        );
+        for (Triple<Matrix, Matrix, Matrix> t : take(LIMIT, ts2)) {
+            leftDistributive(Matrix::add, Matrix::kroneckerMultiply, t);
+            rightDistributive(Matrix::add, Matrix::kroneckerMultiply, t);
+        }
+
+        Iterable<Pair<Matrix, Matrix>> psMult = P.chooseLogarithmicOrder(
+                map(
+                        q -> q.b,
+                        P.dependentPairsInfiniteSquareRootOrder(
+                                P.triples(P.withScale(4).positiveIntegersGeometric()),
+                                t -> P.pairs(
+                                        P.withScale(4).withSecondaryScale(4).matrices(t.a, t.b),
+                                        P.withScale(4).withSecondaryScale(4).matrices(t.b, t.c)
+                                )
+                        )
+                ),
+                P.choose(
+                    P.choose(
+                            map(
+                                    m -> new Pair<>(m, zero(m.width(), 0)),
+                                    filterInfinite(
+                                            m -> m.height() != 0 && m.width() != 0,
+                                            P.withScale(4).withSecondaryScale(4).matrices()
+                                    )
+                            ),
+                            map(
+                                    m -> new Pair<>(zero(0, m.height()), m),
+                                    filterInfinite(
+                                            m -> m.height() != 0 && m.width() != 0,
+                                            P.withScale(4).withSecondaryScale(4).matrices()
+                                    )
+                            )
+                    ),
+                    map(
+                            p -> new Pair<>(zero(p.a, 0), zero(0, p.b)),
+                            P.pairs(P.withScale(4).positiveIntegersGeometric())
+                    )
+                )
+        );
+        Iterable<Quadruple<Matrix, Matrix, Matrix, Matrix>> qs = map(
+                p -> new Quadruple<>(p.a.a, p.b.a, p.a.b, p.b.b),
+                P.pairs(psMult)
+        );
+        for (Quadruple<Matrix, Matrix, Matrix, Matrix> q : take(LIMIT, qs)) {
+            assertEquals(
+                    q,
+                    q.a.kroneckerMultiply(q.b).multiply(q.c.kroneckerMultiply(q.d)),
+                    q.a.multiply(q.c).kroneckerMultiply(q.b.multiply(q.d))
+            );
+        }
+
+        for (Pair<Matrix, Matrix> p : take(LIMIT, P.pairs(P.matrices()))) {
+            assertEquals(
+                    p,
+                    p.a.kroneckerMultiply(p.b).transpose(),
+                    p.a.transpose().kroneckerMultiply(p.b.transpose())
+            );
+        }
+
+        for (Pair<Matrix, Matrix> p : take(LIMIT, P.pairs(P.squareMatrices()))) {
+            assertEquals(
+                    p,
+                    p.a.kroneckerMultiply(p.b).determinant(),
+                    p.a.determinant().pow(p.b.width()).multiply(p.b.determinant().pow(p.a.width()))
+            );
+        }
+
+        //todo use invertible generators
+        Iterable<Pair<Matrix, Matrix>> ps = P.pairs(
+                filterInfinite(Matrix::isInvertible, P.withScale(2).withSecondaryScale(2).squareMatrices())
+        );
+        for (Pair<Matrix, Matrix> p : take(LIMIT, ps)) {
+            assertEquals(
+                    p,
+                    p.a.kroneckerMultiply(p.b).invert().get(),
+                    p.a.invert().get().kroneckerMultiply(p.b.invert().get())
+            );
+        }
+
+        for (Pair<Matrix, BigInteger> p : take(LIMIT, P.pairs(P.matrices(), P.bigIntegers()))) {
+            assertEquals(
+                    p,
+                    p.a.kroneckerMultiply(fromRows(Collections.singletonList(Vector.of(p.b)))),
+                    p.a.multiply(p.b)
+            );
+        }
+
+        for (Pair<BigInteger, BigInteger> p : take(LIMIT, P.pairs(P.bigIntegers()))) {
+            Matrix product = fromRows(Collections.singletonList(Vector.of(p.a)))
+                    .kroneckerMultiply(fromRows(Collections.singletonList(Vector.of(p.b))));
+            assertEquals(p, product.height(), 1);
+            assertEquals(p, product.width(), 1);
+            assertEquals(p, product.get(0, 0), p.a.multiply(p.b));
+        }
+    }
+
+    private void propertiesKroneckerAdd() {
+        initialize("kroneckerAdd(Matrix)");
+        for (Pair<Matrix, Matrix> p : take(LIMIT, P.pairs(P.squareMatrices()))) {
+            Matrix sum = p.a.kroneckerAdd(p.b);
+            assertEquals(p, sum.height(), p.a.height() * p.b.height());
+            assertEquals(p, sum.width(), p.a.width() * p.b.width());
+        }
+
+        for (Pair<BigInteger, BigInteger> p : take(LIMIT, P.pairs(P.bigIntegers()))) {
+            Matrix sum = fromRows(Collections.singletonList(Vector.of(p.a)))
+                    .kroneckerAdd(fromRows(Collections.singletonList(Vector.of(p.b))));
+            assertEquals(p, sum.height(), 1);
+            assertEquals(p, sum.width(), 1);
+            assertEquals(p, sum.get(0, 0), p.a.add(p.b));
+        }
     }
 
     private void propertiesEquals() {

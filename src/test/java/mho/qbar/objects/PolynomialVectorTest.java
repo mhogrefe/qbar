@@ -189,9 +189,9 @@ public class PolynomialVectorTest {
     @Test
     public void testHashCode() {
         hashCode_helper("[]", 1);
-        hashCode_helper("[x]", 33);
-        hashCode_helper("[5, -4*x+3, 23*x^5]", 34495);
-        hashCode_helper("[5, 4*x+3, 23*x^5]", 34743);
+        hashCode_helper("[x]", 993);
+        hashCode_helper("[5, -4*x+3, 23*x^5]", 887600641);
+        hashCode_helper("[5, 4*x+3, 23*x^5]", 887600889);
     }
 
     @Test

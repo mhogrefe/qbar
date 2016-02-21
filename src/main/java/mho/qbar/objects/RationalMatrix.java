@@ -1173,6 +1173,8 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
      * <ul>{@code this} must be square.</ul>
      * <ul>The result is monic.</ul>
      *
+     * Length is height({@code this})+1
+     *
      * @return det(Ix–{@code this})
      */
     @SuppressWarnings("JavaDoc")
@@ -1215,6 +1217,56 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
             }
         }
         return RationalPolynomial.fromPowerSums(toList(take(n + 1, powerSums)));
+    }
+
+    /**
+     * Returns the Kronecker product of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalMatrix}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>The result is the Kronecker product of two matrices.</li>
+     * </ul>
+     *
+     * Size is (height({@code this})height({@code that}))×(width({@code this})width({@code that}))
+     *
+     * @param that the {@code RationalMatrix} that {@code this} is multiplied by.
+     * @return {@code this}⊗{@code that}
+     */
+    public @NotNull RationalMatrix kroneckerMultiply(@NotNull RationalMatrix that) {
+        List<RationalVector> productRows = new ArrayList<>();
+        for (RationalVector thisRow : rows) {
+            //noinspection Convert2streamapi
+            for (RationalVector thatRow : that.rows) {
+                //noinspection Convert2MethodRef
+                productRows.add(RationalVector.of(toList(concatMap(x -> map(y -> x.multiply(y), thatRow), thisRow))));
+            }
+        }
+        return new RationalMatrix(productRows, width * that.width);
+    }
+
+    /**
+     * Returns the Kronecker sum of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} must be square.</li>
+     *  <li>{@code that} must be square.</li>
+     *  <li>The result is the Kronecker sum of two matrices.</li>
+     * </ul>
+     *
+     * Size is (height({@code this})height({@code that}))×(width({@code this})width({@code that}))
+     *
+     * @param that the {@code RationalMatrix} added to {@code this}
+     * @return {@code this}⊕{@code that}
+     */
+    public @NotNull RationalMatrix kroneckerAdd(@NotNull RationalMatrix that) {
+        if (!isSquare()) {
+            throw new IllegalArgumentException("this must be square. Invalid this: " + this);
+        }
+        if (!that.isSquare()) {
+            throw new IllegalArgumentException("that must be square. Invalid that: " + that);
+        }
+        return kroneckerMultiply(identity(that.width)).add(identity(width).kroneckerMultiply(that));
     }
 
     /**

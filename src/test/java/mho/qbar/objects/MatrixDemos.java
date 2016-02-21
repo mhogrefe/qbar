@@ -492,6 +492,18 @@ public class MatrixDemos extends QBarDemos {
         }
     }
 
+    private void demoKroneckerMultiply() {
+        for (Pair<Matrix, Matrix> p : take(LIMIT, P.pairs(P.withScale(4).matrices()))) {
+            System.out.println(p.a + " ⊗ " + p.b + " = " + p.a.kroneckerMultiply(p.b));
+        }
+    }
+
+    private void demoKroneckerAdd() {
+        for (Pair<Matrix, Matrix> p : take(MEDIUM_LIMIT, P.pairs(P.withScale(4).squareMatrices()))) {
+            System.out.println(p.a + " ⊕ " + p.b + " = " + p.a.kroneckerAdd(p.b));
+        }
+    }
+
     private void demoEquals_Matrix() {
         for (Pair<Matrix, Matrix> p : take(LIMIT, P.pairs(P.withScale(4).matrices()))) {
             System.out.println(p.a + (p.a.equals(p.b) ? " = " : " ≠ ") + p.b);

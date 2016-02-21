@@ -5,6 +5,7 @@ import mho.qbar.testing.QBarTestProperties;
 import mho.qbar.testing.QBarTesting;
 import mho.wheels.iterables.IterableUtils;
 import mho.wheels.structures.Pair;
+import mho.wheels.structures.Quadruple;
 import mho.wheels.structures.Triple;
 import org.jetbrains.annotations.NotNull;
 
@@ -78,6 +79,8 @@ public class RationalMatrixProperties extends QBarTestProperties {
         compareImplementationsDeterminant();
         propertiesCharacteristicPolynomial();
         propertiesEquals();
+        propertiesKroneckerMultiply();
+        propertiesKroneckerAdd();
         propertiesHashCode();
         propertiesCompareTo();
         propertiesRead();
@@ -1671,6 +1674,177 @@ public class RationalMatrixProperties extends QBarTestProperties {
                     identity.characteristicPolynomial(),
                     RationalPolynomial.of(Arrays.asList(Rational.NEGATIVE_ONE, Rational.ONE)).pow(i)
             );
+        }
+    }
+
+    private void propertiesKroneckerMultiply() {
+        initialize("kroneckerMultiply(RationalMatrix)");
+        for (Pair<RationalMatrix, RationalMatrix> p : take(LIMIT, P.pairs(P.rationalMatrices()))) {
+            RationalMatrix product = p.a.kroneckerMultiply(p.b);
+            assertEquals(p, product.height(), p.a.height() * p.b.height());
+            assertEquals(p, product.width(), p.a.width() * p.b.width());
+        }
+
+        Iterable<Triple<RationalMatrix, RationalMatrix, Rational>> ts = P.triples(
+                P.rationalMatrices(),
+                P.rationalMatrices(),
+                P.rationals()
+        );
+        for (Triple<RationalMatrix, RationalMatrix, Rational> t : take(LIMIT, ts)) {
+            RationalMatrix product = t.a.multiply(t.c).kroneckerMultiply(t.b);
+            assertEquals(t, product, t.a.kroneckerMultiply(t.b.multiply(t.c)));
+            assertEquals(t, product, t.a.kroneckerMultiply(t.b).multiply(t.c));
+        }
+
+        for (Triple<RationalMatrix, RationalMatrix, RationalMatrix> t : take(LIMIT, P.triples(P.rationalMatrices()))) {
+            associative(RationalMatrix::kroneckerMultiply, t);
+        }
+
+        Iterable<Pair<RationalMatrix, RationalMatrix>> psAdd = P.chooseLogarithmicOrder(
+                map(
+                        q -> q.b,
+                        P.dependentPairsInfiniteSquareRootOrder(
+                                P.pairs(P.positiveIntegersGeometric()),
+                                p -> P.pairs(P.rationalMatrices(p.a, p.b))
+                        )
+                ),
+                P.choose(
+                        map(
+                                i -> {
+                                    RationalMatrix m = RationalMatrix.zero(0, i);
+                                    return new Pair<>(m, m);
+                                },
+                                P.naturalIntegersGeometric()
+                        ),
+                        map(
+                                i -> {
+                                    RationalMatrix m = RationalMatrix.zero(i, 0);
+                                    return new Pair<>(m, m);
+                                },
+                                P.positiveIntegersGeometric()
+                        )
+                )
+        );
+        Iterable<Triple<RationalMatrix, RationalMatrix, RationalMatrix>> ts2 = map(
+                p -> new Triple<>(p.b, p.a.a, p.a.b),
+                P.pairs(psAdd, P.rationalMatrices())
+        );
+        for (Triple<RationalMatrix, RationalMatrix, RationalMatrix> t : take(LIMIT, ts2)) {
+            leftDistributive(RationalMatrix::add, RationalMatrix::kroneckerMultiply, t);
+            rightDistributive(RationalMatrix::add, RationalMatrix::kroneckerMultiply, t);
+        }
+
+        Iterable<Pair<RationalMatrix, RationalMatrix>> psMult = P.chooseLogarithmicOrder(
+                map(
+                        q -> q.b,
+                        P.dependentPairsInfiniteSquareRootOrder(
+                                P.triples(P.withScale(4).positiveIntegersGeometric()),
+                                t -> P.pairs(
+                                        P.withScale(4).withSecondaryScale(4).rationalMatrices(t.a, t.b),
+                                        P.withScale(4).withSecondaryScale(4).rationalMatrices(t.b, t.c)
+                                )
+                        )
+                ),
+                P.choose(
+                    P.choose(
+                            map(
+                                    m -> new Pair<>(m, zero(m.width(), 0)),
+                                    filterInfinite(
+                                            m -> m.height() != 0 && m.width() != 0,
+                                            P.withScale(4).withSecondaryScale(4).rationalMatrices()
+                                    )
+                            ),
+                            map(
+                                    m -> new Pair<>(zero(0, m.height()), m),
+                                    filterInfinite(
+                                            m -> m.height() != 0 && m.width() != 0,
+                                            P.withScale(4).withSecondaryScale(4).rationalMatrices()
+                                    )
+                            )
+                    ),
+                    map(
+                            p -> new Pair<>(zero(p.a, 0), zero(0, p.b)),
+                            P.pairs(P.withScale(4).positiveIntegersGeometric())
+                    )
+                )
+        );
+        Iterable<Quadruple<RationalMatrix, RationalMatrix, RationalMatrix, RationalMatrix>> qs = map(
+                p -> new Quadruple<>(p.a.a, p.b.a, p.a.b, p.b.b),
+                P.pairs(psMult)
+        );
+        for (Quadruple<RationalMatrix, RationalMatrix, RationalMatrix, RationalMatrix> q : take(LIMIT, qs)) {
+            assertEquals(
+                    q,
+                    q.a.kroneckerMultiply(q.b).multiply(q.c.kroneckerMultiply(q.d)),
+                    q.a.multiply(q.c).kroneckerMultiply(q.b.multiply(q.d))
+            );
+        }
+
+        for (Pair<RationalMatrix, RationalMatrix> p : take(LIMIT, P.pairs(P.rationalMatrices()))) {
+            assertEquals(
+                    p,
+                    p.a.kroneckerMultiply(p.b).transpose(),
+                    p.a.transpose().kroneckerMultiply(p.b.transpose())
+            );
+        }
+
+        Iterable<Pair<RationalMatrix, RationalMatrix>> ps = P.pairs(
+                P.withScale(4).withSecondaryScale(4).squareRationalMatrices()
+        );
+        for (Pair<RationalMatrix, RationalMatrix> p : take(LIMIT, ps)) {
+            assertEquals(
+                    p,
+                    p.a.kroneckerMultiply(p.b).determinant(),
+                    p.a.determinant().pow(p.b.width()).multiply(p.b.determinant().pow(p.a.width()))
+            );
+        }
+
+        //todo use invertible generators
+        ps = P.pairs(
+                filterInfinite(
+                        RationalMatrix::isInvertible,
+                        P.withScale(3).withSecondaryScale(2).squareRationalMatrices()
+                )
+        );
+        for (Pair<RationalMatrix, RationalMatrix> p : take(LIMIT, ps)) {
+            assertEquals(
+                    p,
+                    p.a.kroneckerMultiply(p.b).invert().get(),
+                    p.a.invert().get().kroneckerMultiply(p.b.invert().get())
+            );
+        }
+
+        for (Pair<RationalMatrix, Rational> p : take(LIMIT, P.pairs(P.rationalMatrices(), P.rationals()))) {
+            assertEquals(
+                    p,
+                    p.a.kroneckerMultiply(fromRows(Collections.singletonList(RationalVector.of(p.b)))),
+                    p.a.multiply(p.b)
+            );
+        }
+
+        for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
+            RationalMatrix product = fromRows(Collections.singletonList(RationalVector.of(p.a)))
+                    .kroneckerMultiply(fromRows(Collections.singletonList(RationalVector.of(p.b))));
+            assertEquals(p, product.height(), 1);
+            assertEquals(p, product.width(), 1);
+            assertEquals(p, product.get(0, 0), p.a.multiply(p.b));
+        }
+    }
+
+    private void propertiesKroneckerAdd() {
+        initialize("kroneckerAdd(RationalMatrix)");
+        for (Pair<RationalMatrix, RationalMatrix> p : take(LIMIT, P.pairs(P.squareRationalMatrices()))) {
+            RationalMatrix sum = p.a.kroneckerAdd(p.b);
+            assertEquals(p, sum.height(), p.a.height() * p.b.height());
+            assertEquals(p, sum.width(), p.a.width() * p.b.width());
+        }
+
+        for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
+            RationalMatrix sum = fromRows(Collections.singletonList(RationalVector.of(p.a)))
+                    .kroneckerAdd(fromRows(Collections.singletonList(RationalVector.of(p.b))));
+            assertEquals(p, sum.height(), 1);
+            assertEquals(p, sum.width(), 1);
+            assertEquals(p, sum.get(0, 0), p.a.add(p.b));
         }
     }
 

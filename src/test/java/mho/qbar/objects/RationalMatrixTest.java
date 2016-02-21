@@ -1181,6 +1181,58 @@ public class RationalMatrixTest {
         characteristicPolynomial_fail_helper("[[1, 9, -13], [20, 5, -6]]");
     }
 
+    private static void kroneckerMultiply_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
+        aeq(read(a).get().kroneckerMultiply(read(b).get()), output);
+    }
+
+    @Test
+    public void testKroneckerMultiply() {
+        kroneckerMultiply_helper("[]#0", "[]#0", "[]#0");
+        kroneckerMultiply_helper("[]#0", "[[]]", "[]#0");
+        kroneckerMultiply_helper("[[]]", "[]#0", "[]#0");
+        kroneckerMultiply_helper("[]#1", "[[1/2, 4]]", "[]#2");
+        kroneckerMultiply_helper("[[1/2, 4]]", "[]#1", "[]#2");
+        kroneckerMultiply_helper("[[], [], []]", "[]#5", "[]#0");
+        kroneckerMultiply_helper("[]#5", "[[], [], []]", "[]#0");
+        kroneckerMultiply_helper("[[1], [2/3], [3], [4]]", "[[]]", "[[], [], [], []]");
+        kroneckerMultiply_helper("[[1, 2, 3/5, 4], [5, 6, 7, 8]]", "[[1, 2], [3, 4], [5, 6]]",
+                "[[1, 2, 2, 4, 3/5, 6/5, 4, 8], [3, 4, 6, 8, 9/5, 12/5, 12, 16], [5, 6, 10, 12, 3, 18/5, 20, 24]," +
+                " [5, 10, 6, 12, 7, 14, 8, 16], [15, 20, 18, 24, 21, 28, 24, 32], [25, 30, 30, 36, 35, 42, 40, 48]]");
+        kroneckerMultiply_helper("[[3, 4, 0]]", "[[-2], [1], [3]]", "[[-6, -8, 0], [3, 4, 0], [9, 12, 0]]");
+        kroneckerMultiply_helper("[[-3, -8], [0, 1/7]]", "[[0, 0], [0, 0]]",
+                "[[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]]");
+        kroneckerMultiply_helper("[[-3, -8], [0, 1/7]]", "[[1, 0], [0, 1]]",
+                "[[-3, 0, -8, 0], [0, -3, 0, -8], [0, 0, 1/7, 0], [0, 0, 0, 1/7]]");
+    }
+
+    private static void kroneckerAdd_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
+        aeq(read(a).get().kroneckerAdd(read(b).get()), output);
+    }
+
+    private static void kroneckerAdd_fail_helper(@NotNull String a, @NotNull String b) {
+        try {
+            read(a).get().kroneckerAdd(read(b).get());
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testKroneckerAdd() {
+        kroneckerAdd_helper("[]#0", "[]#0", "[]#0");
+        kroneckerAdd_helper("[]#0", "[[0, 0, 0], [0, 0, 0], [0, 0, 0]]", "[]#0");
+        kroneckerAdd_helper("[[0, 0, 0], [0, 0, 0], [0, 0, 0]]", "[]#0", "[]#0");
+        kroneckerAdd_helper("[[1, 2/3], [3, 4]]", "[[-3]]", "[[-2, 2/3], [3, 1]]");
+        kroneckerAdd_helper("[[1, 2/3], [3, 4]]", "[[7, 4], [2, 0]]",
+                "[[8, 4, 2/3, 0], [2, 1, 0, 2/3], [3, 0, 11, 4], [0, 3, 2, 4]]");
+        kroneckerAdd_helper("[[1, 2], [3, 4]]", "[[0, 0], [0, 0]]",
+                "[[1, 0, 2, 0], [0, 1, 0, 2], [3, 0, 4, 0], [0, 3, 0, 4]]");
+        kroneckerAdd_helper("[[1, 2], [3, 4]]", "[[1, 0], [0, 1]]",
+                "[[2, 0, 2, 0], [0, 2, 0, 2], [3, 0, 5, 0], [0, 3, 0, 5]]");
+
+        kroneckerAdd_fail_helper("[]#0", "[[], [], []]");
+        kroneckerAdd_fail_helper("[[], [], []]", "[]#0");
+    }
+
     @Test
     public void testEquals() {
         testEqualsHelper(

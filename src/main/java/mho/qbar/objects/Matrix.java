@@ -1230,6 +1230,8 @@ public class Matrix implements Comparable<Matrix> {
      * <ul>{@code this} must be square.</ul>
      * <ul>The result is monic.</ul>
      *
+     * Length is height({@code this})+1
+     *
      * @return det(Ix–{@code this})
      */
     @SuppressWarnings("JavaDoc")
@@ -1272,6 +1274,56 @@ public class Matrix implements Comparable<Matrix> {
             }
         }
         return fromPowerSums(toList(take(n + 1, powerSums)));
+    }
+
+    /**
+     * Returns the Kronecker product of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Matrix}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>The result is the Kronecker product of two matrices.</li>
+     * </ul>
+     *
+     * Size is (height({@code this})height({@code that}))×(width({@code this})width({@code that}))
+     *
+     * @param that the {@code Matrix} that {@code this} is multiplied by.
+     * @return {@code this}⊗{@code that}
+     */
+    public @NotNull Matrix kroneckerMultiply(@NotNull Matrix that) {
+        List<Vector> productRows = new ArrayList<>();
+        for (Vector thisRow : rows) {
+            //noinspection Convert2streamapi
+            for (Vector thatRow : that.rows) {
+                //noinspection Convert2MethodRef
+                productRows.add(Vector.of(toList(concatMap(x -> map(y -> x.multiply(y), thatRow), thisRow))));
+            }
+        }
+        return new Matrix(productRows, width * that.width);
+    }
+
+    /**
+     * Returns the Kronecker sum of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} must be square.</li>
+     *  <li>{@code that} must be square.</li>
+     *  <li>The result is the Kronecker sum of two matrices.</li>
+     * </ul>
+     *
+     * Size is (height({@code this})height({@code that}))×(width({@code this})width({@code that}))
+     *
+     * @param that the {@code Matrix} added to {@code this}
+     * @return {@code this}⊕{@code that}
+     */
+    public @NotNull Matrix kroneckerAdd(@NotNull Matrix that) {
+        if (!isSquare()) {
+            throw new IllegalArgumentException("this must be square. Invalid this: " + this);
+        }
+        if (!that.isSquare()) {
+            throw new IllegalArgumentException("that must be square. Invalid that: " + that);
+        }
+        return kroneckerMultiply(identity(that.width)).add(identity(width).kroneckerMultiply(that));
     }
 
     /**

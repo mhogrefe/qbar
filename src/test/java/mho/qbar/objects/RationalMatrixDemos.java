@@ -548,6 +548,19 @@ public class RationalMatrixDemos extends QBarDemos {
         }
     }
 
+    private void demoKroneckerMultiply() {
+        for (Pair<RationalMatrix, RationalMatrix> p : take(LIMIT, P.pairs(P.withScale(4).rationalMatrices()))) {
+            System.out.println(p.a + " ⊗ " + p.b + " = " + p.a.kroneckerMultiply(p.b));
+        }
+    }
+
+    private void demoKroneckerAdd() {
+        Iterable<Pair<RationalMatrix, RationalMatrix>> ps = P.pairs(P.withScale(4).squareRationalMatrices());
+        for (Pair<RationalMatrix, RationalMatrix> p : take(MEDIUM_LIMIT, ps)) {
+            System.out.println(p.a + " ⊕ " + p.b + " = " + p.a.kroneckerAdd(p.b));
+        }
+    }
+
     private void demoEquals_RationalMatrix() {
         for (Pair<RationalMatrix, RationalMatrix> p : take(LIMIT, P.pairs(P.withScale(4).rationalMatrices()))) {
             System.out.println(p.a + (p.a.equals(p.b) ? " = " : " ≠ ") + p.b);
