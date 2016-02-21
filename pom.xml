@@ -45,13 +45,15 @@
                         <include>**/PolynomialTest.java</include>
                         <include>**/PolynomialProperties.java</include>
                         <include>**/PolynomialVectorTest.java</include>
+                        <include>**/PolynomialVectorProperties.java</include>
                         <include>**/RationalTest.java</include>
                         <include>**/RationalProperties.java</include>
                         <include>**/RationalMatrixTest.java</include>
                         <include>**/RationalMatrixProperties.java</include>
                         <include>**/RationalPolynomialTest.java</include>
                         <include>**/RationalPolynomialProperties.java</include>
-                        <include>**/RationalPolynomialVector.java</include>
+                        <include>**/RationalPolynomialVectorTest.java</include>
+                        <include>**/RationalPolynomialVectorProperties.java</include>
                         <include>**/RationalVectorTest.java</include>
                         <include>**/RationalVectorProperties.java</include>
                         <include>**/VariableTest.java</include>
