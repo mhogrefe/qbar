@@ -195,6 +195,64 @@ public class RationalPolynomialVectorTest {
         standard_fail_helper(0, 0);
     }
 
+    private static void add_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
+        aeq(read(a).get().add(read(b).get()), output);
+    }
+
+    private static void add_fail_helper(@NotNull String a, @NotNull String b) {
+        try {
+            read(a).get().add(read(b).get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testAdd() {
+        add_helper("[]", "[]", "[]");
+        add_helper("[1/2*x]", "[x^2]", "[x^2+1/2*x]");
+        add_helper("[5/3, -1/4*x+3, 23*x^5]", "[-2, 1, 3]", "[-1/3, -1/4*x+4, 23*x^5+3]");
+        add_helper("[5/3, -1/4*x+3, 23*x^5]", "[0, 0, 0]", "[5/3, -1/4*x+3, 23*x^5]");
+        add_helper("[5/3, -1/4*x+3, 23*x^5]", "[-5/3, 1/4*x-3, -23*x^5]", "[0, 0, 0]");
+        add_fail_helper("[]", "[1/2*x]");
+        add_fail_helper("[1/2*x]", "[]");
+        add_fail_helper("[5/3, -1/4*x+3, 23*x^5]", "[5/6, 2/3]");
+    }
+
+    private static void negate_helper(@NotNull String input, @NotNull String output) {
+        aeq(read(input).get().negate(), output);
+    }
+
+    @Test
+    public void testNegate() {
+        negate_helper("[]", "[]");
+        negate_helper("[1/2*x]", "[-1/2*x]");
+        negate_helper("[5/3, -1/4, 23]", "[-5/3, 1/4, -23]");
+    }
+
+    private static void subtract_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
+        aeq(read(a).get().subtract(read(b).get()), output);
+    }
+
+    private static void subtract_fail_helper(@NotNull String a, @NotNull String b) {
+        try {
+            read(a).get().subtract(read(b).get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testSubtract() {
+        subtract_helper("[]", "[]", "[]");
+        subtract_helper("[1/2*x]", "[x^2]", "[-x^2+1/2*x]");
+        subtract_helper("[5/3, -1/4*x+3, 23*x^5]", "[-2, 1, 3]", "[11/3, -1/4*x+2, 23*x^5-3]");
+        subtract_helper("[5/3, -1/4*x+3, 23*x^5]", "[0, 0, 0]", "[5/3, -1/4*x+3, 23*x^5]");
+        subtract_helper("[5/3, -1/4*x+3, 23*x^5]", "[5/3, -1/4*x+3, 23*x^5]", "[0, 0, 0]");
+        subtract_helper("[0, 0, 0]", "[5/3, -1/4*x+3, 23*x^5]", "[-5/3, 1/4*x-3, -23*x^5]");
+        subtract_fail_helper("[]", "[1/2*x]");
+        subtract_fail_helper("[1/2*x]", "[]");
+        subtract_fail_helper("[5/3, -1/4*x+3, 23*x^5]", "[5/6, 2/3]");
+    }
+
     @Test
     public void testEquals() {
         testEqualsHelper(

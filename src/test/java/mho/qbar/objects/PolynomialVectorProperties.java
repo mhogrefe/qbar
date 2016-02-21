@@ -5,9 +5,12 @@ import mho.qbar.testing.QBarTestProperties;
 import mho.qbar.testing.QBarTesting;
 import mho.wheels.iterables.IterableUtils;
 import mho.wheels.structures.Pair;
+import mho.wheels.structures.Triple;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 
 import static mho.qbar.objects.PolynomialVector.*;
@@ -34,6 +37,10 @@ public class PolynomialVectorProperties extends QBarTestProperties {
         propertiesIsZero();
         propertiesZero();
         propertiesStandard();
+        propertiesAdd();
+        propertiesNegate();
+        propertiesSubtract();
+        compareImplementationsSubtract();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -197,6 +204,163 @@ public class PolynomialVectorProperties extends QBarTestProperties {
                 fail(p);
             } catch (IllegalArgumentException ignored) {}
         }
+    }
+
+    private void propertiesAdd() {
+        initialize("add(PolynomialVector)");
+        Iterable<Pair<PolynomialVector, PolynomialVector>> ps = P.withElement(
+                new Pair<>(ZERO_DIMENSIONAL, ZERO_DIMENSIONAL),
+                map(
+                        p -> p.b,
+                        P.dependentPairsInfiniteLogarithmicOrder(
+                                P.positiveIntegersGeometric(),
+                                i -> P.pairs(P.polynomialVectors(i))
+                        )
+                )
+        );
+        for (Pair<PolynomialVector, PolynomialVector> p : take(LIMIT, ps)) {
+            PolynomialVector sum = p.a.add(p.b);
+            sum.validate();
+            assertEquals(p, sum.dimension(), p.a.dimension());
+            commutative(PolynomialVector::add, p);
+            inverse(v -> v.add(p.b), (PolynomialVector v) -> v.subtract(p.b), p.a);
+        }
+
+        for (PolynomialVector v : take(LIMIT, P.polynomialVectors())) {
+            fixedPoint(u -> zero(u.dimension()).add(u), v);
+            fixedPoint(u -> u.add(zero(u.dimension())), v);
+            assertTrue(v, v.add(v.negate()).isZero());
+        }
+
+        Iterable<Triple<PolynomialVector, PolynomialVector, PolynomialVector>> ts = P.withElement(
+                new Triple<>(ZERO_DIMENSIONAL, ZERO_DIMENSIONAL, ZERO_DIMENSIONAL),
+                map(
+                        t -> t.b,
+                        P.dependentPairsInfiniteLogarithmicOrder(
+                                P.positiveIntegersGeometric(),
+                                i -> P.triples(P.polynomialVectors(i))
+                        )
+                )
+        );
+        for (Triple<PolynomialVector, PolynomialVector, PolynomialVector> t : take(LIMIT, ts)) {
+            associative(PolynomialVector::add, t);
+        }
+
+        for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(P.polynomials()))) {
+            homomorphic(
+                    PolynomialVector::of,
+                    PolynomialVector::of,
+                    PolynomialVector::of,
+                    Polynomial::add,
+                    PolynomialVector::add,
+                    p
+            );
+        }
+
+        Iterable<Pair<PolynomialVector, PolynomialVector>> psFail = filterInfinite(
+                p -> p.a.dimension() != p.b.dimension(),
+                P.pairs(P.polynomialVectors())
+        );
+        for (Pair<PolynomialVector, PolynomialVector> p : take(LIMIT, psFail)) {
+            try {
+                p.a.add(p.b);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void propertiesNegate() {
+        initialize("negate()");
+        for (PolynomialVector v : take(LIMIT, P.polynomialVectors())) {
+            PolynomialVector negative = v.negate();
+            negative.validate();
+            assertEquals(v, v.dimension(), negative.dimension());
+            involution(PolynomialVector::negate, v);
+            assertTrue(v, v.add(negative).isZero());
+        }
+
+        for (Polynomial p : take(LIMIT, P.polynomials())) {
+            homomorphic(PolynomialVector::of, PolynomialVector::of, Polynomial::negate, PolynomialVector::negate, p);
+        }
+
+        for (PolynomialVector v : take(LIMIT, filterInfinite(u -> !u.isZero(), P.polynomialVectors()))) {
+            assertNotEquals(v, v, v.negate());
+        }
+    }
+
+    private static @NotNull PolynomialVector subtract_simplest(
+            @NotNull PolynomialVector a,
+            @NotNull PolynomialVector b
+    ) {
+        return a.add(b.negate());
+    }
+
+    private void propertiesSubtract() {
+        initialize("subtract(PolynomialVector)");
+        Iterable<Pair<PolynomialVector, PolynomialVector>> ps = P.withElement(
+                new Pair<>(ZERO_DIMENSIONAL, ZERO_DIMENSIONAL),
+                map(
+                        p -> p.b,
+                        P.dependentPairsInfiniteLogarithmicOrder(
+                                P.positiveIntegersGeometric(),
+                                i -> P.pairs(P.polynomialVectors(i))
+                        )
+                )
+        );
+        for (Pair<PolynomialVector, PolynomialVector> p : take(LIMIT, ps)) {
+            PolynomialVector difference = p.a.subtract(p.b);
+            difference.validate();
+            assertEquals(p, subtract_simplest(p.a, p.b), difference);
+            assertEquals(p, difference.dimension(), p.a.dimension());
+            antiCommutative(PolynomialVector::subtract, PolynomialVector::negate, p);
+            inverse(v -> v.subtract(p.b), (PolynomialVector v) -> v.add(p.b), p.a);
+        }
+
+        for (PolynomialVector v : take(LIMIT, P.polynomialVectors())) {
+            assertEquals(v, zero(v.dimension()).subtract(v), v.negate());
+            fixedPoint(u -> u.subtract(zero(u.dimension())), v);
+            assertTrue(v, v.subtract(v).isZero());
+        }
+
+        for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(P.polynomials()))) {
+            homomorphic(
+                    PolynomialVector::of,
+                    PolynomialVector::of,
+                    PolynomialVector::of,
+                    Polynomial::subtract,
+                    PolynomialVector::subtract,
+                    p
+            );
+        }
+
+        Iterable<Pair<PolynomialVector, PolynomialVector>> psFail = filterInfinite(
+                p -> p.a.dimension() != p.b.dimension(),
+                P.pairs(P.polynomialVectors())
+        );
+        for (Pair<PolynomialVector, PolynomialVector> p : take(LIMIT, psFail)) {
+            try {
+                p.a.subtract(p.b);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void compareImplementationsSubtract() {
+        Map<String, Function<Pair<PolynomialVector, PolynomialVector>, PolynomialVector>> functions =
+                new LinkedHashMap<>();
+        functions.put("simplest", p -> subtract_simplest(p.a, p.b));
+        functions.put("standard", p -> p.a.subtract(p.b));
+        Iterable<Pair<PolynomialVector, PolynomialVector>> ps = P.withElement(
+                new Pair<>(ZERO_DIMENSIONAL, ZERO_DIMENSIONAL),
+                map(
+                        p -> p.b,
+                        P.dependentPairsInfiniteLogarithmicOrder(
+                                P.positiveIntegersGeometric(),
+                                i -> P.pairs(P.polynomialVectors(i))
+                        )
+                )
+        );
+        compareImplementations("subtract(PolynomialVector)", take(LIMIT, ps), functions);
     }
 
     private void propertiesEquals() {

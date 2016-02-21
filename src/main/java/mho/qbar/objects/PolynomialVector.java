@@ -475,41 +475,6 @@ public class PolynomialVector implements Comparable<PolynomialVector>, Iterable<
     }
 
     /**
-     * Returns true iff the GCD of the coordinates of {@code this} is zero or one.
-     *
-     * <ul>
-     *  <li>{@code this} may be any {@code PolynomialVector}.</li>
-     *  <li>The result may be either {@code boolean}.</li>
-     * </ul>
-     *
-     * @return whether the coordinates of {@code this} have no nontrivial common factors
-     */
-    public boolean isPrimitive() {
-        Polynomial gcd = Polynomial.gcd(coordinates);
-        return gcd == Polynomial.ZERO || gcd == Polynomial.ONE;
-    }
-
-    /**
-     * Divides {@code this} by some positive {@code Polynomial} so that the GCD of the coordinates of the result is
-     * zero or one.
-     *
-     * <ul>
-     *  <li>{@code this} may be any {@code PolynomialVector}.</li>
-     *  <li>The GCD of the coordinates of the result is zero or one.</li>
-     * </ul>
-     *
-     * Length is dim({@code this})
-     *
-     * @return a primitive {@code PolynomialVector} that {@code this} is a multiple of
-     */
-    public @NotNull PolynomialVector makePrimitive() {
-        if (this == ZERO_DIMENSIONAL) return ZERO_DIMENSIONAL;
-        Polynomial gcd = Polynomial.gcd(coordinates);
-        if (gcd == Polynomial.ZERO || gcd == Polynomial.ONE) return this;
-        return new PolynomialVector(toList(map(p -> p.divideExact(gcd), coordinates)));
-    }
-
-    /**
      * Determines whether {@code this} is equal to {@code that}.
      *
      * <ul>

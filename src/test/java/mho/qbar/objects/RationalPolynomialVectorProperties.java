@@ -5,9 +5,12 @@ import mho.qbar.testing.QBarTestProperties;
 import mho.qbar.testing.QBarTesting;
 import mho.wheels.iterables.IterableUtils;
 import mho.wheels.structures.Pair;
+import mho.wheels.structures.Triple;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 
 import static mho.qbar.objects.RationalPolynomialVector.*;
@@ -35,6 +38,10 @@ public class RationalPolynomialVectorProperties extends QBarTestProperties {
         propertiesIsZero();
         propertiesZero();
         propertiesStandard();
+        propertiesAdd();
+        propertiesNegate();
+        propertiesSubtract();
+        compareImplementationsSubtract();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -226,6 +233,178 @@ public class RationalPolynomialVectorProperties extends QBarTestProperties {
                 fail(p);
             } catch (IllegalArgumentException ignored) {}
         }
+    }
+
+    private void propertiesAdd() {
+        initialize("add(RationalPolynomialVector)");
+        Iterable<Pair<RationalPolynomialVector, RationalPolynomialVector>> ps = P.withElement(
+                new Pair<>(ZERO_DIMENSIONAL, ZERO_DIMENSIONAL),
+                map(
+                        p -> p.b,
+                        P.dependentPairsInfiniteLogarithmicOrder(
+                                P.positiveIntegersGeometric(),
+                                i -> P.pairs(P.rationalPolynomialVectors(i))
+                        )
+                )
+        );
+        for (Pair<RationalPolynomialVector, RationalPolynomialVector> p : take(LIMIT, ps)) {
+            RationalPolynomialVector sum = p.a.add(p.b);
+            sum.validate();
+            assertEquals(p, sum.dimension(), p.a.dimension());
+            commutative(RationalPolynomialVector::add, p);
+            inverse(v -> v.add(p.b), (RationalPolynomialVector v) -> v.subtract(p.b), p.a);
+        }
+
+        for (RationalPolynomialVector v : take(LIMIT, P.rationalPolynomialVectors())) {
+            fixedPoint(u -> zero(u.dimension()).add(u), v);
+            fixedPoint(u -> u.add(zero(u.dimension())), v);
+            assertTrue(v, v.add(v.negate()).isZero());
+        }
+
+        Iterable<
+                Triple<RationalPolynomialVector, RationalPolynomialVector, RationalPolynomialVector>
+        > ts = P.withElement(
+                new Triple<>(ZERO_DIMENSIONAL, ZERO_DIMENSIONAL, ZERO_DIMENSIONAL),
+                map(
+                        t -> t.b,
+                        P.dependentPairsInfiniteLogarithmicOrder(
+                                P.positiveIntegersGeometric(),
+                                i -> P.triples(P.rationalPolynomialVectors(i))
+                        )
+                )
+        );
+        for (Triple<
+                RationalPolynomialVector,
+                RationalPolynomialVector,
+                RationalPolynomialVector
+        > t : take(LIMIT, ts)) {
+            associative(RationalPolynomialVector::add, t);
+        }
+
+        for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, P.pairs(P.rationalPolynomials()))) {
+            homomorphic(
+                    RationalPolynomialVector::of,
+                    RationalPolynomialVector::of,
+                    RationalPolynomialVector::of,
+                    RationalPolynomial::add,
+                    RationalPolynomialVector::add,
+                    p
+            );
+        }
+
+        Iterable<Pair<RationalPolynomialVector, RationalPolynomialVector>> psFail = filterInfinite(
+                p -> p.a.dimension() != p.b.dimension(),
+                P.pairs(P.rationalPolynomialVectors())
+        );
+        for (Pair<RationalPolynomialVector, RationalPolynomialVector> p : take(LIMIT, psFail)) {
+            try {
+                p.a.add(p.b);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void propertiesNegate() {
+        initialize("negate()");
+        for (RationalPolynomialVector v : take(LIMIT, P.rationalPolynomialVectors())) {
+            RationalPolynomialVector negative = v.negate();
+            negative.validate();
+            assertEquals(v, v.dimension(), negative.dimension());
+            involution(RationalPolynomialVector::negate, v);
+            assertTrue(v, v.add(negative).isZero());
+        }
+
+        for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
+            homomorphic(
+                    RationalPolynomialVector::of,
+                    RationalPolynomialVector::of,
+                    RationalPolynomial::negate,
+                    RationalPolynomialVector::negate,
+                    p
+            );
+        }
+
+        Iterable<RationalPolynomialVector> vs = filterInfinite(u -> !u.isZero(), P.rationalPolynomialVectors());
+        for (RationalPolynomialVector v : take(LIMIT, vs)) {
+            assertNotEquals(v, v, v.negate());
+        }
+    }
+
+    private static @NotNull RationalPolynomialVector subtract_simplest(
+            @NotNull RationalPolynomialVector a,
+            @NotNull RationalPolynomialVector b
+    ) {
+        return a.add(b.negate());
+    }
+
+    private void propertiesSubtract() {
+        initialize("subtract(RationalPolynomialVector)");
+        Iterable<Pair<RationalPolynomialVector, RationalPolynomialVector>> ps = P.withElement(
+                new Pair<>(ZERO_DIMENSIONAL, ZERO_DIMENSIONAL),
+                map(
+                        p -> p.b,
+                        P.dependentPairsInfiniteLogarithmicOrder(
+                                P.positiveIntegersGeometric(),
+                                i -> P.pairs(P.rationalPolynomialVectors(i))
+                        )
+                )
+        );
+        for (Pair<RationalPolynomialVector, RationalPolynomialVector> p : take(LIMIT, ps)) {
+            RationalPolynomialVector difference = p.a.subtract(p.b);
+            difference.validate();
+            assertEquals(p, subtract_simplest(p.a, p.b), difference);
+            assertEquals(p, difference.dimension(), p.a.dimension());
+            antiCommutative(RationalPolynomialVector::subtract, RationalPolynomialVector::negate, p);
+            inverse(v -> v.subtract(p.b), (RationalPolynomialVector v) -> v.add(p.b), p.a);
+        }
+
+        for (RationalPolynomialVector v : take(LIMIT, P.rationalPolynomialVectors())) {
+            assertEquals(v, zero(v.dimension()).subtract(v), v.negate());
+            fixedPoint(u -> u.subtract(zero(u.dimension())), v);
+            assertTrue(v, v.subtract(v).isZero());
+        }
+
+        for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, P.pairs(P.rationalPolynomials()))) {
+            homomorphic(
+                    RationalPolynomialVector::of,
+                    RationalPolynomialVector::of,
+                    RationalPolynomialVector::of,
+                    RationalPolynomial::subtract,
+                    RationalPolynomialVector::subtract,
+                    p
+            );
+        }
+
+        Iterable<Pair<RationalPolynomialVector, RationalPolynomialVector>> psFail = filterInfinite(
+                p -> p.a.dimension() != p.b.dimension(),
+                P.pairs(P.rationalPolynomialVectors())
+        );
+        for (Pair<RationalPolynomialVector, RationalPolynomialVector> p : take(LIMIT, psFail)) {
+            try {
+                p.a.subtract(p.b);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void compareImplementationsSubtract() {
+        Map<
+                String,
+                Function<Pair<RationalPolynomialVector, RationalPolynomialVector>, RationalPolynomialVector>
+        > functions = new LinkedHashMap<>();
+        functions.put("simplest", p -> subtract_simplest(p.a, p.b));
+        functions.put("standard", p -> p.a.subtract(p.b));
+        Iterable<Pair<RationalPolynomialVector, RationalPolynomialVector>> ps = P.withElement(
+                new Pair<>(ZERO_DIMENSIONAL, ZERO_DIMENSIONAL),
+                map(
+                        p -> p.b,
+                        P.dependentPairsInfiniteLogarithmicOrder(
+                                P.positiveIntegersGeometric(),
+                                i -> P.pairs(P.rationalPolynomialVectors(i))
+                        )
+                )
+        );
+        compareImplementations("subtract(RationalPolynomialVector)", take(LIMIT, ps), functions);
     }
 
     private void propertiesEquals() {

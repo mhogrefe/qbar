@@ -101,6 +101,44 @@ public class RationalPolynomialVectorDemos extends QBarDemos {
         }
     }
 
+    private void demoAdd() {
+        Iterable<Pair<RationalPolynomialVector, RationalPolynomialVector>> ps = P.withElement(
+                new Pair<>(ZERO_DIMENSIONAL, ZERO_DIMENSIONAL),
+                map(
+                        p -> p.b,
+                        P.dependentPairsInfiniteLogarithmicOrder(
+                                P.withScale(4).positiveIntegersGeometric(),
+                                i -> P.pairs(P.withScale(4).rationalPolynomialVectors(i))
+                        )
+                )
+        );
+        for (Pair<RationalPolynomialVector, RationalPolynomialVector> p : take(LIMIT, ps)) {
+            System.out.println(p.a + " + " + p.b + " = " + p.a.add(p.b));
+        }
+    }
+
+    private void demoNegate() {
+        for (RationalPolynomialVector v : take(LIMIT, P.withScale(4).rationalPolynomialVectors())) {
+            System.out.println("-" + v + " = " + v.negate());
+        }
+    }
+
+    private void demoSubtract() {
+        Iterable<Pair<RationalPolynomialVector, RationalPolynomialVector>> ps = P.withElement(
+                new Pair<>(ZERO_DIMENSIONAL, ZERO_DIMENSIONAL),
+                map(
+                        p -> p.b,
+                        P.dependentPairsInfiniteLogarithmicOrder(
+                                P.withScale(4).positiveIntegersGeometric(),
+                                i -> P.pairs(P.withScale(4).rationalPolynomialVectors(i))
+                        )
+                )
+        );
+        for (Pair<RationalPolynomialVector, RationalPolynomialVector> p : take(LIMIT, ps)) {
+            System.out.println(p.a + " - " + p.b + " = " + p.a.subtract(p.b));
+        }
+    }
+
     private void demoEquals_RationalPolynomialVector() {
         Iterable<Pair<RationalPolynomialVector, RationalPolynomialVector>> ps = P.pairs(
                 P.withScale(4).withSecondaryScale(4).rationalPolynomialVectors()
