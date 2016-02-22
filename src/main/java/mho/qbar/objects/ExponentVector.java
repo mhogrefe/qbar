@@ -268,6 +268,7 @@ public class ExponentVector implements Comparable<ExponentVector> {
      */
     public static @NotNull Optional<ExponentVector> read(@NotNull String s) {
         if (s.equals("1")) return Optional.of(ONE);
+        if (s.isEmpty() || last(s) == '*') return Optional.empty();
         String[] termStrings = s.split("\\*");
         if (termStrings.length == 0) return Optional.empty();
         List<Pair<Variable, Integer>> terms = new ArrayList<>();

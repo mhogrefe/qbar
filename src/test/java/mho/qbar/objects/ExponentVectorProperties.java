@@ -1,6 +1,8 @@
 package mho.qbar.objects;
 
+import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.testing.QBarTestProperties;
+import mho.qbar.testing.QBarTesting;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 
@@ -26,6 +28,13 @@ public class ExponentVectorProperties extends QBarTestProperties {
         propertiesTerms();
         propertiesOf();
         propertiesFromTerms();
+        propertiesDegree();
+        propertiesEquals();
+        propertiesHashCode();
+        propertiesCompareTo();
+        propertiesRead();
+        propertiesFindIn();
+        propertiesToString();
     }
 
     private void propertiesGetExponents() {
@@ -179,5 +188,58 @@ public class ExponentVectorProperties extends QBarTestProperties {
                 fail(ps);
             } catch (NullPointerException | IllegalArgumentException ignored) {}
         }
+    }
+
+    private void propertiesDegree() {
+        initialize("degree()");
+        for (ExponentVector ev : take(LIMIT, P.exponentVectors())) {
+            int degree = ev.degree();
+            assertTrue(ev, degree >= 0);
+        }
+    }
+
+    private void propertiesEquals() {
+        initialize("equals(Object)");
+        QBarTesting.propertiesEqualsHelper(LIMIT, P, QBarIterableProvider::exponentVectors);
+    }
+
+    private void propertiesHashCode() {
+        initialize("hashCode()");
+        QBarTesting.propertiesHashCodeHelper(LIMIT, P, QBarIterableProvider::exponentVectors);
+    }
+
+    private void propertiesCompareTo() {
+        initialize("compareTo(ExponentVector)");
+        QBarTesting.propertiesCompareToHelper(LIMIT, P, QBarIterableProvider::exponentVectors);
+    }
+
+    private void propertiesRead() {
+        initialize("read(String)");
+        QBarTesting.propertiesReadHelper(
+                LIMIT,
+                P,
+                EXPONENT_VECTOR_CHARS,
+                P.exponentVectors(),
+                ExponentVector::read,
+                ExponentVector::validate,
+                false
+        );
+    }
+
+    private void propertiesFindIn() {
+        initialize("findIn(String)");
+        propertiesFindInHelper(
+                LIMIT,
+                P.getWheelsProvider(),
+                P.exponentVectors(),
+                ExponentVector::read,
+                ExponentVector::findIn,
+                ExponentVector::validate
+        );
+    }
+
+    private void propertiesToString() {
+        initialize("toString()");
+        propertiesToStringHelper(LIMIT, EXPONENT_VECTOR_CHARS, P.exponentVectors(), ExponentVector::read);
     }
 }

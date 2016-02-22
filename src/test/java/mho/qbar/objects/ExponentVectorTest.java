@@ -201,6 +201,8 @@ public class ExponentVectorTest {
         read_fail_helper("b*a");
         read_fail_helper("a*a");
         read_fail_helper("123");
+        read_fail_helper("aa*");
+        read_fail_helper("*aa");
     }
 
     private static void findIn_helper(@NotNull String input, @NotNull String output, int index) {
