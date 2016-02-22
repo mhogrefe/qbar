@@ -1,6 +1,5 @@
 package jas.poly;
 
-import jas.arith.JasBigInteger;
 import jas.structure.RingElem;
 import jas.structure.RingFactory;
 
@@ -20,13 +19,6 @@ public class GenPolynomialRing<C extends RingElem<C>> implements RingFactory<Gen
      * The factory for the coefficients.
      */
     public final RingFactory<C> coFac;
-
-    String var;
-
-    /**
-     * The names of all known variables.
-     */
-    private static final Set<String> knownVars = new HashSet<>();
 
     /**
      * The constant polynomial 0 for this ring.
@@ -54,53 +46,16 @@ public class GenPolynomialRing<C extends RingElem<C>> implements RingFactory<Gen
     private int isField = -1; // initially unknown
 
     /**
-     * The constructor creates a polynomial factory object with the default term
-     * order.
+     * The constructor creates a polynomial factory object.
      *
      * @param cf factory for coefficients of type C.
      */
     public GenPolynomialRing(RingFactory<C> cf) {
-        this(cf, (String) null);
-    }
-
-    public static GenPolynomialRing<JasBigInteger> make() {
-        return new GenPolynomialRing<>(new JasBigInteger(), "x");
-    }
-
-    /**
-     * The constructor creates a polynomial factory object.
-     *
-     * @param cf factory for coefficients of type C.
-     * @param v  names for the variables.
-     */
-    public GenPolynomialRing(RingFactory<C> cf, String v) {
         coFac = cf;
-        if (v == null) {
-            var = null;
-        } else {
-            var = v;
-        }
         ZERO = new GenPolynomial<>(this);
         C coeff = coFac.getONE();
         evzero = 0L;
         ONE = new GenPolynomial<>(this, coeff, evzero);
-        if (v == null) {
-            var = newVars();
-        } else {
-            addVars(var);
-        }
-    }
-
-    /**
-     * The constructor creates a polynomial factory object with the the same
-     * term order, number of variables and variable names as the given
-     * polynomial factory, only the coefficient factories differ.
-     *
-     * @param cf factory for coefficients of type C.
-     * @param o  other polynomial ring.
-     */
-    public GenPolynomialRing(RingFactory<C> cf, GenPolynomialRing o) {
-        this(cf, o.var);
     }
 
     /**
@@ -119,11 +74,7 @@ public class GenPolynomialRing<C extends RingElem<C>> implements RingFactory<Gen
             oring = (GenPolynomialRing<C>) other;
         } catch (ClassCastException ignored) {
         }
-        if (!coFac.equals(oring.coFac)) {
-            return false;
-        }
-        // same variables required ?
-        return var.equals(oring.var);
+        return coFac.equals(oring.coFac);
     }
 
     /**
@@ -313,34 +264,5 @@ public class GenPolynomialRing<C extends RingElem<C>> implements RingFactory<Gen
      */
     public boolean isFinite() {
         return false;
-    }
-
-    /**
-     * New variable names. Generate new names for variables,
-     *
-     * @return new variable names.
-     */
-    private static String newVars() {
-        int m = knownVars.size();
-        String name = "x" + m;
-        while (knownVars.contains(name)) {
-            m++;
-            name = "x" + m;
-        }
-        String var = name;
-        knownVars.add(name);
-        return var;
-    }
-
-    /**
-     * Add variable names.
-     *
-     * @param vars variable names to be recorded.
-     */
-    private static void addVars(String vars) {
-        if (vars == null) {
-            return;
-        }
-        knownVars.add(vars);
     }
 }

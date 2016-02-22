@@ -122,7 +122,6 @@ public class FactorInteger {
             factors.add(P);
             return factors;
         }
-        GenPolynomialRing<JasBigInteger> pfac = P.ring;
         if (!engine.baseContent(P).isONE()) {
             throw new IllegalArgumentException();
         }
@@ -146,7 +145,6 @@ public class FactorInteger {
         final int TT = 5; // 7
         List<GenPolynomial<ModLong>>[] modfac = new List[TT];
         List<GenPolynomial<ModLong>> mlist = null;
-        int i = 0;
         Iterator<BigInteger> pit = MathUtils.primes().iterator();
         pit.next(); // skip p = 2
         pit.next(); // skip p = 3
@@ -170,7 +168,7 @@ public class FactorInteger {
                     continue;
                 }
                 // initialize polynomial factory and map polynomial
-                mfac = new GenPolynomialRing<>(cofac, pfac);
+                mfac = new GenPolynomialRing<>(cofac);
                 am = PolyUtil.fromIntegerCoefficients(mfac, P);
                 if (am.degreeVector() != degv) {
                     //System.out.println("unlucky prime (deg) = " + p);
@@ -376,7 +374,6 @@ public class FactorInteger {
         if (C == null || C.isZERO() || F == null || F.size() == 0) {
             throw new IllegalArgumentException("C must be nonzero and F must be nonempty");
         }
-        GenPolynomialRing<JasBigInteger> pfac = C.ring;
         List<GenPolynomial<JasBigInteger>> factors = new ArrayList<>(F.size());
         List<GenPolynomial<ModLong>> mlist = F;
         ModLong nf;

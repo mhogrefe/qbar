@@ -41,6 +41,6 @@ public class JasApi {
                 z.put((long) i, new JasBigInteger(xs.get(i)));
             }
         }
-        return new GenPolynomial<>(GenPolynomialRing.make(), z);
+        return new GenPolynomial<>(new GenPolynomialRing<>(new JasBigInteger()), z);
     }
 }

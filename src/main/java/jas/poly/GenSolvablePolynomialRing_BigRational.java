@@ -13,8 +13,8 @@ public class GenSolvablePolynomialRing_BigRational extends GenSolvablePolynomial
 
     private final GenSolvablePolynomial<BigRational> ONE;
 
-    public GenSolvablePolynomialRing_BigRational(RingFactory<BigRational> cf, String v) {
-        super(cf, v);
+    public GenSolvablePolynomialRing_BigRational(RingFactory<BigRational> cf) {
+        super(cf);
         table = new RelationTable<>(this);
         ZERO = new GenSolvablePolynomial<>(this);
         BigRational coeff = coFac.getONE();

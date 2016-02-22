@@ -164,13 +164,7 @@ public final class ModInteger implements RingElem<ModInteger>, Modular {
      * @see jas.structure.RingElem#inverse()
      */
     public ModInteger inverse() /*throws NotInvertibleException*/ {
-        try {
-            return new ModInteger(ring, val.modInverse(ring.modul));
-        } catch (ArithmeticException e) {
-            BigInteger g = val.gcd(ring.modul);
-            ring.modul.divide(g);
-            throw e;
-        }
+        return new ModInteger(ring, val.modInverse(ring.modul));
     }
 
     /**
