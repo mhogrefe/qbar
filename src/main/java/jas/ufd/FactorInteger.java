@@ -6,6 +6,7 @@ import jas.poly.GenPolynomialRing;
 import jas.poly.PolyUtil;
 import jas.structure.Power;
 import jas.util.KsubSet;
+import mho.wheels.math.MathUtils;
 
 import java.math.BigInteger;
 import java.util.*;
@@ -137,12 +138,8 @@ public class FactorInteger {
         int degi = (int) P.degree();
         JasBigInteger M = an.multiply(PolyUtil.factorBound(degv));
         M = M.multiply(ac.abs().multiply(ac.fromInteger(8)));
-        //System.out.println("M = " + M);
-        //M = M.multiply(M); // test
-
         //initialize prime list and degree vector
-        PrimeList primes = new PrimeList(PrimeList.Range.small);
-        int pn = 100; //primes.size();
+        PrimeList primes;
         ModularRingFactory<ModLong> cofac;
         GenPolynomial<ModLong> am = null;
         GenPolynomialRing<ModLong> mfac = null;
@@ -150,25 +147,17 @@ public class FactorInteger {
         List<GenPolynomial<ModLong>>[] modfac = new List[TT];
         List<GenPolynomial<ModLong>> mlist = null;
         int i = 0;
-        Iterator<BigInteger> pit = primes.iterator();
+        Iterator<BigInteger> pit = MathUtils.primes().iterator();
         pit.next(); // skip p = 2
         pit.next(); // skip p = 3
         ModLong nf = null;
         for (int k = 0; k < TT; k++) {
             if (k == TT - 1) { // -2
-                primes = new PrimeList(PrimeList.Range.medium);
-                pit = primes.iterator();
-            }
-            if (k == TT + 1) { // -1
-                primes = new PrimeList(PrimeList.Range.large);
+                primes = new PrimeList();
                 pit = primes.iterator();
             }
             while (pit.hasNext()) {
                 BigInteger p = pit.next();
-                //System.out.println("next run ++++++++++++++++++++++++++++++++++");
-                if (++i >= pn) {
-                    throw new ArithmeticException("prime list exhausted");
-                }
                 if (ModLongRing.MAX_LONG.compareTo(p) > 0) {
                     cofac = (ModularRingFactory) new ModLongRing(p);
                 } else {
