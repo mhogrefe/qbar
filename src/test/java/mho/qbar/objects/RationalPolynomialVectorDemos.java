@@ -5,6 +5,7 @@ import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 
+import java.math.BigInteger;
 import java.util.List;
 
 import static mho.qbar.objects.RationalPolynomialVector.*;
@@ -136,6 +137,76 @@ public class RationalPolynomialVectorDemos extends QBarDemos {
         );
         for (Pair<RationalPolynomialVector, RationalPolynomialVector> p : take(LIMIT, ps)) {
             System.out.println(p.a + " - " + p.b + " = " + p.a.subtract(p.b));
+        }
+    }
+
+    private void demoMultiply_RationalPolynomial() {
+        Iterable<Pair<RationalPolynomialVector, RationalPolynomial>> ps = P.pairs(
+                P.withScale(4).rationalPolynomialVectors(),
+                P.withScale(4).rationalPolynomials()
+        );
+        for (Pair<RationalPolynomialVector, RationalPolynomial> p : take(LIMIT, ps)) {
+            System.out.println(p.a + " * " + p.b + " = " + p.a.multiply(p.b));
+        }
+    }
+
+    private void demoMultiply_Rational() {
+        Iterable<Pair<RationalPolynomialVector, Rational>> ps = P.pairs(
+                P.withScale(4).rationalPolynomialVectors(),
+                P.rationals()
+        );
+        for (Pair<RationalPolynomialVector, Rational> p : take(LIMIT, ps)) {
+            System.out.println(p.a + " * " + p.b + " = " + p.a.multiply(p.b));
+        }
+    }
+
+    private void demoMultiply_BigInteger() {
+        Iterable<Pair<RationalPolynomialVector, BigInteger>> ps = P.pairs(
+                P.withScale(4).rationalPolynomialVectors(),
+                P.bigIntegers()
+        );
+        for (Pair<RationalPolynomialVector, BigInteger> p : take(LIMIT, ps)) {
+            System.out.println(p.a + " * " + p.b + " = " + p.a.multiply(p.b));
+        }
+    }
+
+    private void demoMultiply_int() {
+        Iterable<Pair<RationalPolynomialVector, Integer>> ps = P.pairs(
+                P.withScale(4).rationalPolynomialVectors(),
+                P.integers()
+        );
+        for (Pair<RationalPolynomialVector, Integer> p : take(LIMIT, ps)) {
+            System.out.println(p.a + " * " + p.b + " = " + p.a.multiply(p.b));
+        }
+    }
+
+    private void demoDivide_Rational() {
+        Iterable<Pair<RationalPolynomialVector, Rational>> ps = P.pairs(
+                P.withScale(4).rationalPolynomialVectors(),
+                P.nonzeroRationals()
+        );
+        for (Pair<RationalPolynomialVector, Rational> p : take(LIMIT, ps)) {
+            System.out.println(p.a + " / " + p.b + " = " + p.a.divide(p.b));
+        }
+    }
+
+    private void demoDivide_BigInteger() {
+        Iterable<Pair<RationalPolynomialVector, BigInteger>> ps = P.pairs(
+                P.withScale(4).rationalPolynomialVectors(),
+                P.nonzeroBigIntegers()
+        );
+        for (Pair<RationalPolynomialVector, BigInteger> p : take(LIMIT, ps)) {
+            System.out.println(p.a + " / " + p.b + " = " + p.a.divide(p.b));
+        }
+    }
+
+    private void demoDivide_int() {
+        Iterable<Pair<RationalPolynomialVector, Integer>> ps = P.pairs(
+                P.withScale(4).rationalPolynomialVectors(),
+                P.nonzeroIntegers()
+        );
+        for (Pair<RationalPolynomialVector, Integer> p : take(LIMIT, ps)) {
+            System.out.println(p.a + " / " + p.b + " = " + p.a.divide(p.b));
         }
     }
 

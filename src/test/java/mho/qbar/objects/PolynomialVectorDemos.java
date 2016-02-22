@@ -5,6 +5,7 @@ import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 
+import java.math.BigInteger;
 import java.util.List;
 
 import static mho.qbar.objects.PolynomialVector.*;
@@ -119,6 +120,30 @@ public class PolynomialVectorDemos extends QBarDemos {
         );
         for (Pair<PolynomialVector, PolynomialVector> p : take(LIMIT, ps)) {
             System.out.println(p.a + " - " + p.b + " = " + p.a.subtract(p.b));
+        }
+    }
+
+    private void demoMultiply_Polynomial() {
+        Iterable<Pair<PolynomialVector, Polynomial>> ps = P.pairs(
+                P.withScale(4).polynomialVectors(),
+                P.withScale(4).polynomials()
+        );
+        for (Pair<PolynomialVector, Polynomial> p : take(LIMIT, ps)) {
+            System.out.println(p.a + " * " + p.b + " = " + p.a.multiply(p.b));
+        }
+    }
+
+    private void demoMultiply_BigInteger() {
+        Iterable<Pair<PolynomialVector, BigInteger>> ps = P.pairs(P.withScale(4).polynomialVectors(), P.bigIntegers());
+        for (Pair<PolynomialVector, BigInteger> p : take(LIMIT, ps)) {
+            System.out.println(p.a + " * " + p.b + " = " + p.a.multiply(p.b));
+        }
+    }
+
+    private void demoMultiply_int() {
+        Iterable<Pair<PolynomialVector, Integer>> ps = P.pairs(P.withScale(4).polynomialVectors(), P.integers());
+        for (Pair<PolynomialVector, Integer> p : take(LIMIT, ps)) {
+            System.out.println(p.a + " * " + p.b + " = " + p.a.multiply(p.b));
         }
     }
 

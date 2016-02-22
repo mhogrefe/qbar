@@ -8,6 +8,7 @@ import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
 import org.jetbrains.annotations.NotNull;
 
+import java.math.BigInteger;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,6 +42,9 @@ public class PolynomialVectorProperties extends QBarTestProperties {
         propertiesNegate();
         propertiesSubtract();
         compareImplementationsSubtract();
+        propertiesMultiply_Polynomial();
+        propertiesMultiply_BigInteger();
+        propertiesMultiply_int();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -361,6 +365,126 @@ public class PolynomialVectorProperties extends QBarTestProperties {
                 )
         );
         compareImplementations("subtract(PolynomialVector)", take(LIMIT, ps), functions);
+    }
+
+    private void propertiesMultiply_Polynomial() {
+        initialize("multiply(Polynomial)");
+        for (Pair<PolynomialVector, Polynomial> p : take(LIMIT, P.pairs(P.polynomialVectors(), P.polynomials()))) {
+            PolynomialVector v = p.a.multiply(p.b);
+            v.validate();
+            assertEquals(p, v.dimension(), p.a.dimension());
+        }
+
+        for (PolynomialVector v : take(LIMIT, P.polynomialVectors())) {
+            fixedPoint(u -> u.multiply(Polynomial.ONE), v);
+            assertTrue(v, v.multiply(Polynomial.ZERO).isZero());
+        }
+
+        for (Polynomial p : take(LIMIT, P.polynomials())) {
+            fixedPoint(v -> v.multiply(p), ZERO_DIMENSIONAL);
+        }
+
+        for (Pair<PolynomialVector, Polynomial> p : take(LIMIT, P.pairs(P.polynomialVectors(1), P.polynomials()))) {
+            assertEquals(p, p.a.multiply(p.b), of(p.b).multiply(p.a.get(0)));
+        }
+
+        Iterable<Pair<Polynomial, Integer>> ps = P.pairsLogarithmicOrder(
+                P.polynomials(),
+                P.naturalIntegersGeometric()
+        );
+        for (Pair<Polynomial, Integer> p : take(LIMIT, ps)) {
+            assertTrue(p, zero(p.b).multiply(p.a).isZero());
+        }
+
+        for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(P.polynomials()))) {
+            homomorphic(
+                    PolynomialVector::of,
+                    Function.identity(),
+                    PolynomialVector::of,
+                    Polynomial::multiply,
+                    PolynomialVector::multiply,
+                    p
+            );
+        }
+    }
+
+    private void propertiesMultiply_BigInteger() {
+        initialize("multiply(BigInteger)");
+        for (Pair<PolynomialVector, BigInteger> p : take(LIMIT, P.pairs(P.polynomialVectors(), P.bigIntegers()))) {
+            PolynomialVector v = p.a.multiply(p.b);
+            v.validate();
+            assertEquals(p, v.dimension(), p.a.dimension());
+        }
+
+        for (PolynomialVector v : take(LIMIT, P.polynomialVectors())) {
+            fixedPoint(u -> u.multiply(BigInteger.ONE), v);
+            assertTrue(v, v.multiply(BigInteger.ZERO).isZero());
+        }
+
+        for (BigInteger i : take(LIMIT, P.bigIntegers())) {
+            fixedPoint(v -> v.multiply(i), ZERO_DIMENSIONAL);
+        }
+
+        for (Pair<PolynomialVector, BigInteger> p : take(LIMIT, P.pairs(P.polynomialVectors(1), P.bigIntegers()))) {
+            assertEquals(p, p.a.multiply(p.b), of(Polynomial.of(p.b)).multiply(p.a.get(0)));
+        }
+
+        Iterable<Pair<BigInteger, Integer>> ps = P.pairsLogarithmicOrder(
+                P.bigIntegers(),
+                P.naturalIntegersGeometric()
+        );
+        for (Pair<BigInteger, Integer> p : take(LIMIT, ps)) {
+            assertTrue(p, zero(p.b).multiply(p.a).isZero());
+        }
+
+        for (Pair<Polynomial, BigInteger> p : take(LIMIT, P.pairs(P.polynomials(), P.bigIntegers()))) {
+            homomorphic(
+                    PolynomialVector::of,
+                    Function.identity(),
+                    PolynomialVector::of,
+                    Polynomial::multiply,
+                    PolynomialVector::multiply,
+                    p
+            );
+        }
+    }
+
+    private void propertiesMultiply_int() {
+        initialize("multiply(int)");
+        for (Pair<PolynomialVector, Integer> p : take(LIMIT, P.pairs(P.polynomialVectors(), P.integers()))) {
+            PolynomialVector v = p.a.multiply(p.b);
+            v.validate();
+            assertEquals(p, v.dimension(), p.a.dimension());
+        }
+
+        for (PolynomialVector v : take(LIMIT, P.polynomialVectors())) {
+            fixedPoint(u -> u.multiply(1), v);
+            assertTrue(v, v.multiply(0).isZero());
+        }
+
+        for (int i : take(LIMIT, P.integers())) {
+            fixedPoint(v -> v.multiply(i), ZERO_DIMENSIONAL);
+        }
+
+        for (Pair<PolynomialVector, Integer> p : take(LIMIT, P.pairs(P.polynomialVectors(1), P.integers()))) {
+            assertEquals(p, p.a.multiply(p.b), of(Polynomial.of(BigInteger.valueOf(p.b))).multiply(p.a.get(0)));
+        }
+
+        Iterable<Pair<Integer, Integer>> ps = P.pairsLogarithmicOrder(P.integers(), P.naturalIntegersGeometric());
+        for (Pair<Integer, Integer> p : take(LIMIT, ps)) {
+            assertTrue(p, zero(p.b).multiply(p.a).isZero());
+        }
+
+        for (Pair<Polynomial, Integer> p : take(LIMIT, P.pairs(P.polynomials(), P.integers()))) {
+            homomorphic(
+                    PolynomialVector::of,
+                    Function.identity(),
+                    PolynomialVector::of,
+                    Polynomial::multiply,
+                    PolynomialVector::multiply,
+                    p
+            );
+        }
     }
 
     private void propertiesEquals() {

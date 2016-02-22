@@ -253,6 +253,168 @@ public class RationalPolynomialVectorTest {
         subtract_fail_helper("[5/3, -1/4*x+3, 23*x^5]", "[5/6, 2/3]");
     }
 
+    private static void multiply_RationalPolynomial_helper(
+            @NotNull String a,
+            @NotNull String b,
+            @NotNull String output
+    ) {
+        aeq(read(a).get().multiply(RationalPolynomial.read(b).get()), output);
+    }
+
+    @Test
+    public void testMultiply_RationalPolynomial() {
+        multiply_RationalPolynomial_helper("[]", "0", "[]");
+        multiply_RationalPolynomial_helper("[]", "1", "[]");
+        multiply_RationalPolynomial_helper("[]", "x", "[]");
+        multiply_RationalPolynomial_helper("[]", "-1/4*x+3", "[]");
+
+        multiply_RationalPolynomial_helper("[x]", "0", "[0]");
+        multiply_RationalPolynomial_helper("[x]", "1", "[x]");
+        multiply_RationalPolynomial_helper("[x]", "x", "[x^2]");
+        multiply_RationalPolynomial_helper("[x]", "-1/4*x+3", "[-1/4*x^2+3*x]");
+
+        multiply_RationalPolynomial_helper("[5/3, -1/4*x+3, 23*x^5]", "0", "[0, 0, 0]");
+        multiply_RationalPolynomial_helper("[5/3, -1/4*x+3, 23*x^5]", "1", "[5/3, -1/4*x+3, 23*x^5]");
+        multiply_RationalPolynomial_helper("[5/3, -1/4*x+3, 23*x^5]", "x", "[5/3*x, -1/4*x^2+3*x, 23*x^6]");
+        multiply_RationalPolynomial_helper("[5/3, -1/4*x+3, 23*x^5]", "-1/4*x+3",
+                "[-5/12*x+5, 1/16*x^2-3/2*x+9, -23/4*x^6+69*x^5]");
+    }
+
+    private static void multiply_Rational_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
+        aeq(read(a).get().multiply(Rational.read(b).get()), output);
+    }
+
+    @Test
+    public void testMultiply_Rational() {
+        multiply_Rational_helper("[]", "0", "[]");
+        multiply_Rational_helper("[]", "1", "[]");
+        multiply_Rational_helper("[]", "-3/2", "[]");
+
+        multiply_Rational_helper("[x]", "0", "[0]");
+        multiply_Rational_helper("[x]", "1", "[x]");
+        multiply_Rational_helper("[x]", "-3/2", "[-3/2*x]");
+
+        multiply_Rational_helper("[5/3, -1/4*x+3, 23*x^5]", "0", "[0, 0, 0]");
+        multiply_Rational_helper("[5/3, -1/4*x+3, 23*x^5]", "1", "[5/3, -1/4*x+3, 23*x^5]");
+        multiply_Rational_helper("[5/3, -1/4*x+3, 23*x^5]", "-3/2", "[-5/2, 3/8*x-9/2, -69/2*x^5]");
+    }
+
+    private static void multiply_BigInteger_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
+        aeq(read(a).get().multiply(Readers.readBigInteger(b).get()), output);
+    }
+
+    @Test
+    public void testMultiply_BigInteger() {
+        multiply_BigInteger_helper("[]", "0", "[]");
+        multiply_BigInteger_helper("[]", "1", "[]");
+        multiply_BigInteger_helper("[]", "5", "[]");
+
+        multiply_BigInteger_helper("[x]", "0", "[0]");
+        multiply_BigInteger_helper("[x]", "1", "[x]");
+        multiply_BigInteger_helper("[x]", "5", "[5*x]");
+
+        multiply_BigInteger_helper("[5/3, -1/4*x+3, 23*x^5]", "0", "[0, 0, 0]");
+        multiply_BigInteger_helper("[5/3, -1/4*x+3, 23*x^5]", "1", "[5/3, -1/4*x+3, 23*x^5]");
+        multiply_BigInteger_helper("[5/3, -1/4*x+3, 23*x^5]", "5", "[25/3, -5/4*x+15, 115*x^5]");
+    }
+
+    private static void multiply_int_helper(@NotNull String a, int b, @NotNull String output) {
+        aeq(read(a).get().multiply(b), output);
+    }
+
+    @Test
+    public void testMultiply_int() {
+        multiply_int_helper("[]", 0, "[]");
+        multiply_int_helper("[]", 1, "[]");
+        multiply_int_helper("[]", 5, "[]");
+
+        multiply_int_helper("[x]", 0, "[0]");
+        multiply_int_helper("[x]", 1, "[x]");
+        multiply_int_helper("[x]", 5, "[5*x]");
+
+        multiply_int_helper("[5/3, -1/4*x+3, 23*x^5]", 0, "[0, 0, 0]");
+        multiply_int_helper("[5/3, -1/4*x+3, 23*x^5]", 1, "[5/3, -1/4*x+3, 23*x^5]");
+        multiply_int_helper("[5/3, -1/4*x+3, 23*x^5]", 5, "[25/3, -5/4*x+15, 115*x^5]");
+    }
+
+    private static void divide_Rational_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
+        aeq(read(a).get().divide(Rational.read(b).get()), output);
+    }
+
+    private static void divide_Rational_fail_helper(@NotNull String a, @NotNull String b) {
+        try {
+            read(a).get().divide(Rational.read(b).get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testDivide_Rational() {
+        divide_Rational_helper("[]", "1", "[]");
+        divide_Rational_helper("[]", "-3/2", "[]");
+
+        divide_Rational_helper("[x]", "1", "[x]");
+        divide_Rational_helper("[x]", "-3/2", "[-2/3*x]");
+
+        divide_Rational_helper("[5/3, -1/4*x+3, 23*x^5]", "1", "[5/3, -1/4*x+3, 23*x^5]");
+        divide_Rational_helper("[5/3, -1/4*x+3, 23*x^5]", "-3/2", "[-10/9, 1/6*x-2, -46/3*x^5]");
+
+        divide_Rational_fail_helper("[]", "0");
+        divide_Rational_fail_helper("[5/3, -1/4*x+3, 23*x^5]", "0");
+    }
+
+    private static void divide_BigInteger_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
+        aeq(read(a).get().divide(Readers.readBigInteger(b).get()), output);
+    }
+
+    private static void divide_BigInteger_fail_helper(@NotNull String a, @NotNull String b) {
+        try {
+            read(a).get().divide(Readers.readBigInteger(b).get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testDivide_BigInteger() {
+        divide_BigInteger_helper("[]", "1", "[]");
+        divide_BigInteger_helper("[]", "5", "[]");
+
+        divide_BigInteger_helper("[x]", "1", "[x]");
+        divide_BigInteger_helper("[x]", "5", "[1/5*x]");
+
+        divide_BigInteger_helper("[5/3, -1/4*x+3, 23*x^5]", "1", "[5/3, -1/4*x+3, 23*x^5]");
+        divide_BigInteger_helper("[5/3, -1/4*x+3, 23*x^5]", "5", "[1/3, -1/20*x+3/5, 23/5*x^5]");
+
+        divide_BigInteger_fail_helper("[]", "0");
+        divide_BigInteger_fail_helper("[5/3, -1/4*x+3, 23*x^5]", "0");
+    }
+
+    private static void divide_int_helper(@NotNull String a, int b, @NotNull String output) {
+        aeq(read(a).get().divide(b), output);
+    }
+
+    private static void divide_int_fail_helper(@NotNull String a, int b) {
+        try {
+            read(a).get().divide(b);
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testDivide_int() {
+        divide_int_helper("[]", 1, "[]");
+        divide_int_helper("[]", 5, "[]");
+
+        divide_int_helper("[x]", 1, "[x]");
+        divide_int_helper("[x]", 5, "[1/5*x]");
+
+        divide_int_helper("[5/3, -1/4*x+3, 23*x^5]", 1, "[5/3, -1/4*x+3, 23*x^5]");
+        divide_int_helper("[5/3, -1/4*x+3, 23*x^5]", 5, "[1/3, -1/20*x+3/5, 23/5*x^5]");
+
+        divide_int_fail_helper("[]", 0);
+        divide_int_fail_helper("[5/3, -1/4*x+3, 23*x^5]", 0);
+    }
+
     @Test
     public void testEquals() {
         testEqualsHelper(

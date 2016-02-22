@@ -232,6 +232,66 @@ public class PolynomialVectorTest {
         subtract_fail_helper("[5, -4*x+3, 23*x^5]", "[6, 3]");
     }
 
+    private static void multiply_Polynomial_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
+        aeq(read(a).get().multiply(Polynomial.read(b).get()), output);
+    }
+
+    @Test
+    public void testMultiply_Polynomial() {
+        multiply_Polynomial_helper("[]", "0", "[]");
+        multiply_Polynomial_helper("[]", "1", "[]");
+        multiply_Polynomial_helper("[]", "x", "[]");
+        multiply_Polynomial_helper("[]", "23*x^5", "[]");
+
+        multiply_Polynomial_helper("[x]", "0", "[0]");
+        multiply_Polynomial_helper("[x]", "1", "[x]");
+        multiply_Polynomial_helper("[x]", "x", "[x^2]");
+        multiply_Polynomial_helper("[x]", "23*x^5", "[23*x^6]");
+
+        multiply_Polynomial_helper("[5, -4*x+3, 23*x^5]", "0", "[0, 0, 0]");
+        multiply_Polynomial_helper("[5, -4*x+3, 23*x^5]", "1", "[5, -4*x+3, 23*x^5]");
+        multiply_Polynomial_helper("[5, -4*x+3, 23*x^5]", "x", "[5*x, -4*x^2+3*x, 23*x^6]");
+        multiply_Polynomial_helper("[5, -4*x+3, 23*x^5]", "23*x^5", "[115*x^5, -92*x^6+69*x^5, 529*x^10]");
+    }
+
+    private static void multiply_BigInteger_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
+        aeq(read(a).get().multiply(Readers.readBigInteger(b).get()), output);
+    }
+
+    @Test
+    public void testMultiply_BigInteger() {
+        multiply_BigInteger_helper("[]", "0", "[]");
+        multiply_BigInteger_helper("[]", "1", "[]");
+        multiply_BigInteger_helper("[]", "5", "[]");
+
+        multiply_BigInteger_helper("[x]", "0", "[0]");
+        multiply_BigInteger_helper("[x]", "1", "[x]");
+        multiply_BigInteger_helper("[x]", "5", "[5*x]");
+
+        multiply_BigInteger_helper("[5, -4*x+3, 23*x^5]", "0", "[0, 0, 0]");
+        multiply_BigInteger_helper("[5, -4*x+3, 23*x^5]", "1", "[5, -4*x+3, 23*x^5]");
+        multiply_BigInteger_helper("[5, -4*x+3, 23*x^5]", "5", "[25, -20*x+15, 115*x^5]");
+    }
+
+    private static void multiply_int_helper(@NotNull String a, int b, @NotNull String output) {
+        aeq(read(a).get().multiply(b), output);
+    }
+
+    @Test
+    public void testMultiply_int() {
+        multiply_int_helper("[]", 0, "[]");
+        multiply_int_helper("[]", 1, "[]");
+        multiply_int_helper("[]", 5, "[]");
+
+        multiply_int_helper("[x]", 0, "[0]");
+        multiply_int_helper("[x]", 1, "[x]");
+        multiply_int_helper("[x]", 5, "[5*x]");
+
+        multiply_int_helper("[5, -4*x+3, 23*x^5]", 0, "[0, 0, 0]");
+        multiply_int_helper("[5, -4*x+3, 23*x^5]", 1, "[5, -4*x+3, 23*x^5]");
+        multiply_int_helper("[5, -4*x+3, 23*x^5]", 5, "[25, -20*x+15, 115*x^5]");
+    }
+
     @Test
     public void testEquals() {
         testEqualsHelper(

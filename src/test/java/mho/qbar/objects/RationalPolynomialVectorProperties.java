@@ -8,6 +8,7 @@ import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
 import org.jetbrains.annotations.NotNull;
 
+import java.math.BigInteger;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,6 +43,13 @@ public class RationalPolynomialVectorProperties extends QBarTestProperties {
         propertiesNegate();
         propertiesSubtract();
         compareImplementationsSubtract();
+        propertiesMultiply_RationalPolynomial();
+        propertiesMultiply_Rational();
+        propertiesMultiply_BigInteger();
+        propertiesMultiply_int();
+        propertiesDivide_Rational();
+        propertiesDivide_BigInteger();
+        propertiesDivide_int();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -405,6 +413,342 @@ public class RationalPolynomialVectorProperties extends QBarTestProperties {
                 )
         );
         compareImplementations("subtract(RationalPolynomialVector)", take(LIMIT, ps), functions);
+    }
+
+    private void propertiesMultiply_RationalPolynomial() {
+        initialize("multiply(RationalPolynomial)");
+        Iterable<Pair<RationalPolynomialVector, RationalPolynomial>> ps = P.pairs(
+                P.rationalPolynomialVectors(),
+                P.rationalPolynomials()
+        );
+        for (Pair<RationalPolynomialVector, RationalPolynomial> p : take(LIMIT, ps)) {
+            RationalPolynomialVector v = p.a.multiply(p.b);
+            v.validate();
+            assertEquals(p, v.dimension(), p.a.dimension());
+        }
+
+        for (RationalPolynomialVector v : take(LIMIT, P.rationalPolynomialVectors())) {
+            fixedPoint(u -> u.multiply(RationalPolynomial.ONE), v);
+            assertTrue(v, v.multiply(RationalPolynomial.ZERO).isZero());
+        }
+
+        for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
+            fixedPoint(v -> v.multiply(p), ZERO_DIMENSIONAL);
+        }
+
+        ps = P.pairs(P.rationalPolynomialVectors(1), P.rationalPolynomials());
+        for (Pair<RationalPolynomialVector, RationalPolynomial> p : take(LIMIT, ps)) {
+            assertEquals(p, p.a.multiply(p.b), of(p.b).multiply(p.a.get(0)));
+        }
+
+        Iterable<Pair<RationalPolynomial, Integer>> ps2 = P.pairsLogarithmicOrder(
+                P.rationalPolynomials(),
+                P.naturalIntegersGeometric()
+        );
+        for (Pair<RationalPolynomial, Integer> p : take(LIMIT, ps2)) {
+            assertTrue(p, zero(p.b).multiply(p.a).isZero());
+        }
+
+        for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, P.pairs(P.rationalPolynomials()))) {
+            homomorphic(
+                    RationalPolynomialVector::of,
+                    Function.identity(),
+                    RationalPolynomialVector::of,
+                    RationalPolynomial::multiply,
+                    RationalPolynomialVector::multiply,
+                    p
+            );
+        }
+    }
+
+    private void propertiesMultiply_Rational() {
+        initialize("multiply(Rational)");
+        Iterable<Pair<RationalPolynomialVector, Rational>> ps = P.pairs(P.rationalPolynomialVectors(), P.rationals());
+        for (Pair<RationalPolynomialVector, Rational> p : take(LIMIT, ps)) {
+            RationalPolynomialVector v = p.a.multiply(p.b);
+            v.validate();
+            assertEquals(p, v.dimension(), p.a.dimension());
+        }
+
+        ps = P.pairs(P.rationalPolynomialVectors(), P.nonzeroRationals());
+        for (Pair<RationalPolynomialVector, Rational> p : take(LIMIT, ps)) {
+            inverse(v -> v.multiply(p.b), (RationalPolynomialVector v) -> v.divide(p.b), p.a);
+            assertEquals(p, p.a.multiply(p.b), p.a.divide(p.b.invert()));
+        }
+
+        for (RationalPolynomialVector v : take(LIMIT, P.rationalPolynomialVectors())) {
+            fixedPoint(u -> u.multiply(Rational.ONE), v);
+            assertTrue(v, v.multiply(Rational.ZERO).isZero());
+        }
+
+        for (Rational r : take(LIMIT, P.rationals())) {
+            fixedPoint(v -> v.multiply(r), ZERO_DIMENSIONAL);
+        }
+
+        ps = P.pairs(P.rationalPolynomialVectors(1), P.rationals());
+        for (Pair<RationalPolynomialVector, Rational> p : take(LIMIT, ps)) {
+            assertEquals(p, p.a.multiply(p.b), of(RationalPolynomial.of(p.b)).multiply(p.a.get(0)));
+        }
+
+        Iterable<Pair<Rational, Integer>> ps2 = P.pairsLogarithmicOrder(P.rationals(), P.naturalIntegersGeometric());
+        for (Pair<Rational, Integer> p : take(LIMIT, ps2)) {
+            assertTrue(p, zero(p.b).multiply(p.a).isZero());
+        }
+
+        for (Pair<RationalPolynomial, Rational> p : take(LIMIT, P.pairs(P.rationalPolynomials(), P.rationals()))) {
+            homomorphic(
+                    RationalPolynomialVector::of,
+                    Function.identity(),
+                    RationalPolynomialVector::of,
+                    RationalPolynomial::multiply,
+                    RationalPolynomialVector::multiply,
+                    p
+            );
+        }
+    }
+
+    private void propertiesMultiply_BigInteger() {
+        initialize("multiply(BigInteger)");
+        Iterable<Pair<RationalPolynomialVector, BigInteger>> ps = P.pairs(
+                P.rationalPolynomialVectors(),
+                P.bigIntegers()
+        );
+        for (Pair<RationalPolynomialVector, BigInteger> p : take(LIMIT, ps)) {
+            RationalPolynomialVector v = p.a.multiply(p.b);
+            v.validate();
+            assertEquals(p, v.dimension(), p.a.dimension());
+        }
+
+        ps = P.pairs(P.rationalPolynomialVectors(), P.nonzeroBigIntegers());
+        for (Pair<RationalPolynomialVector, BigInteger> p : take(LIMIT, ps)) {
+            inverse(v -> v.multiply(p.b), (RationalPolynomialVector v) -> v.divide(p.b), p.a);
+        }
+
+        for (RationalPolynomialVector v : take(LIMIT, P.rationalPolynomialVectors())) {
+            fixedPoint(u -> u.multiply(BigInteger.ONE), v);
+            assertTrue(v, v.multiply(BigInteger.ZERO).isZero());
+        }
+
+        for (BigInteger i : take(LIMIT, P.bigIntegers())) {
+            fixedPoint(v -> v.multiply(i), ZERO_DIMENSIONAL);
+        }
+
+        ps = P.pairs(P.rationalPolynomialVectors(1), P.bigIntegers());
+        for (Pair<RationalPolynomialVector, BigInteger> p : take(LIMIT, ps)) {
+            assertEquals(p, p.a.multiply(p.b), of(RationalPolynomial.of(Rational.of(p.b))).multiply(p.a.get(0)));
+        }
+
+        Iterable<Pair<BigInteger, Integer>> ps2 = P.pairsLogarithmicOrder(
+                P.bigIntegers(),
+                P.naturalIntegersGeometric()
+        );
+        for (Pair<BigInteger, Integer> p : take(LIMIT, ps2)) {
+            assertTrue(p, zero(p.b).multiply(p.a).isZero());
+        }
+
+        for (Pair<RationalPolynomial, BigInteger> p : take(LIMIT, P.pairs(P.rationalPolynomials(), P.bigIntegers()))) {
+            homomorphic(
+                    RationalPolynomialVector::of,
+                    Function.identity(),
+                    RationalPolynomialVector::of,
+                    RationalPolynomial::multiply,
+                    RationalPolynomialVector::multiply,
+                    p
+            );
+        }
+    }
+
+    private void propertiesMultiply_int() {
+        initialize("multiply(int)");
+        Iterable<Pair<RationalPolynomialVector, Integer>> ps = P.pairs(P.rationalPolynomialVectors(), P.integers());
+        for (Pair<RationalPolynomialVector, Integer> p : take(LIMIT, ps)) {
+            RationalPolynomialVector v = p.a.multiply(p.b);
+            v.validate();
+            assertEquals(p, v.dimension(), p.a.dimension());
+        }
+
+        ps = P.pairs(P.rationalPolynomialVectors(), P.nonzeroIntegers());
+        for (Pair<RationalPolynomialVector, Integer> p : take(LIMIT, ps)) {
+            inverse(v -> v.multiply(p.b), (RationalPolynomialVector v) -> v.divide(p.b), p.a);
+        }
+
+        for (RationalPolynomialVector v : take(LIMIT, P.rationalPolynomialVectors())) {
+            fixedPoint(u -> u.multiply(1), v);
+            assertTrue(v, v.multiply(0).isZero());
+        }
+
+        for (int i : take(LIMIT, P.integers())) {
+            fixedPoint(v -> v.multiply(i), ZERO_DIMENSIONAL);
+        }
+
+        ps = P.pairs(P.rationalPolynomialVectors(1), P.integers());
+        for (Pair<RationalPolynomialVector, Integer> p : take(LIMIT, ps)) {
+            assertEquals(p, p.a.multiply(p.b), of(RationalPolynomial.of(Rational.of(p.b))).multiply(p.a.get(0)));
+        }
+
+        Iterable<Pair<Integer, Integer>> ps2 = P.pairsLogarithmicOrder(P.integers(), P.naturalIntegersGeometric());
+        for (Pair<Integer, Integer> p : take(LIMIT, ps2)) {
+            assertTrue(p, zero(p.b).multiply(p.a).isZero());
+        }
+
+        for (Pair<RationalPolynomial, Integer> p : take(LIMIT, P.pairs(P.rationalPolynomials(), P.integers()))) {
+            homomorphic(
+                    RationalPolynomialVector::of,
+                    Function.identity(),
+                    RationalPolynomialVector::of,
+                    RationalPolynomial::multiply,
+                    RationalPolynomialVector::multiply,
+                    p
+            );
+        }
+    }
+
+    private void propertiesDivide_Rational() {
+        initialize("divide(Rational)");
+        Iterable<Pair<RationalPolynomialVector, Rational>> ps = P.pairs(
+                P.rationalPolynomialVectors(),
+                P.nonzeroRationals()
+        );
+        for (Pair<RationalPolynomialVector, Rational> p : take(LIMIT, ps)) {
+            RationalPolynomialVector v = p.a.divide(p.b);
+            v.validate();
+            assertEquals(p, v.dimension(), p.a.dimension());
+            inverse(u -> u.divide(p.b), (RationalPolynomialVector u) -> u.multiply(p.b), p.a);
+            assertEquals(p, v, p.a.multiply(p.b.invert()));
+        }
+
+        for (RationalPolynomialVector v : take(LIMIT, P.rationalPolynomialVectors())) {
+            fixedPoint(u -> u.divide(Rational.ONE), v);
+        }
+
+        for (Rational r : take(LIMIT, P.nonzeroRationals())) {
+            fixedPoint(v -> v.divide(r), ZERO_DIMENSIONAL);
+        }
+
+        Iterable<Pair<Rational, Integer>> ps2 = P.pairsLogarithmicOrder(
+                P.nonzeroRationals(),
+                P.naturalIntegersGeometric()
+        );
+        for (Pair<Rational, Integer> p : take(LIMIT, ps2)) {
+            assertTrue(p, zero(p.b).divide(p.a).isZero());
+        }
+
+        Iterable<Pair<RationalPolynomial, Rational>> ps3 = P.pairs(P.rationalPolynomials(), P.nonzeroRationals());
+        for (Pair<RationalPolynomial, Rational> p : take(LIMIT, ps3)) {
+            homomorphic(
+                    RationalPolynomialVector::of,
+                    Function.identity(),
+                    RationalPolynomialVector::of,
+                    RationalPolynomial::divide,
+                    RationalPolynomialVector::divide,
+                    p
+            );
+        }
+
+        for (RationalPolynomialVector v : take(LIMIT, P.rationalPolynomialVectors())) {
+            try {
+                v.divide(Rational.ZERO);
+                fail(v);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void propertiesDivide_BigInteger() {
+        initialize("divide(BigInteger)");
+        Iterable<Pair<RationalPolynomialVector, BigInteger>> ps = P.pairs(
+                P.rationalPolynomialVectors(),
+                P.nonzeroBigIntegers()
+        );
+        for (Pair<RationalPolynomialVector, BigInteger> p : take(LIMIT, ps)) {
+            RationalPolynomialVector v = p.a.divide(p.b);
+            v.validate();
+            assertEquals(p, v.dimension(), p.a.dimension());
+            inverse(u -> u.divide(p.b), (RationalPolynomialVector u) -> u.multiply(p.b), p.a);
+        }
+
+        for (RationalPolynomialVector v : take(LIMIT, P.rationalPolynomialVectors())) {
+            assertEquals(v, v.divide(BigInteger.ONE), v);
+        }
+
+        for (BigInteger i : take(LIMIT, P.nonzeroBigIntegers())) {
+            fixedPoint(v -> v.divide(i), ZERO_DIMENSIONAL);
+        }
+
+        Iterable<Pair<BigInteger, Integer>> ps2 = P.pairsLogarithmicOrder(
+                P.nonzeroBigIntegers(),
+                P.naturalIntegersGeometric()
+        );
+        for (Pair<BigInteger, Integer> p : take(LIMIT, ps2)) {
+            assertTrue(p, zero(p.b).divide(p.a).isZero());
+        }
+
+        Iterable<Pair<RationalPolynomial, BigInteger>> ps3 = P.pairs(P.rationalPolynomials(), P.nonzeroBigIntegers());
+        for (Pair<RationalPolynomial, BigInteger> p : take(LIMIT, ps3)) {
+            homomorphic(
+                    RationalPolynomialVector::of,
+                    Function.identity(),
+                    RationalPolynomialVector::of,
+                    RationalPolynomial::divide,
+                    RationalPolynomialVector::divide,
+                    p
+            );
+        }
+
+        for (RationalPolynomialVector v : take(LIMIT, P.rationalPolynomialVectors())) {
+            try {
+                v.divide(BigInteger.ZERO);
+                fail(v);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void propertiesDivide_int() {
+        initialize("divide(int)");
+        Iterable<Pair<RationalPolynomialVector, Integer>> ps = P.pairs(
+                P.rationalPolynomialVectors(),
+                P.nonzeroIntegers()
+        );
+        for (Pair<RationalPolynomialVector, Integer> p : take(LIMIT, ps)) {
+            RationalPolynomialVector v = p.a.divide(p.b);
+            v.validate();
+            assertEquals(p, v.dimension(), p.a.dimension());
+            inverse(u -> u.divide(p.b), (RationalPolynomialVector u) -> u.multiply(p.b), p.a);
+        }
+
+        for (RationalPolynomialVector v : take(LIMIT, P.rationalPolynomialVectors())) {
+            assertEquals(v, v.divide(1), v);
+        }
+
+        for (int i : take(LIMIT, P.nonzeroIntegers())) {
+            fixedPoint(v -> v.divide(i), ZERO_DIMENSIONAL);
+        }
+
+        Iterable<Pair<Integer, Integer>> ps2 = P.pairsLogarithmicOrder(
+                P.nonzeroIntegers(),
+                P.naturalIntegersGeometric()
+        );
+        for (Pair<Integer, Integer> p : take(LIMIT, ps2)) {
+            assertTrue(p, zero(p.b).divide(p.a).isZero());
+        }
+
+        Iterable<Pair<RationalPolynomial, Integer>> ps3 = P.pairs(P.rationalPolynomials(), P.nonzeroIntegers());
+        for (Pair<RationalPolynomial, Integer> p : take(LIMIT, ps3)) {
+            homomorphic(
+                    RationalPolynomialVector::of,
+                    Function.identity(),
+                    RationalPolynomialVector::of,
+                    RationalPolynomial::divide,
+                    RationalPolynomialVector::divide,
+                    p
+            );
+        }
+
+        for (RationalPolynomialVector v : take(LIMIT, P.rationalPolynomialVectors())) {
+            try {
+                v.divide(0);
+                fail(v);
+            } catch (ArithmeticException ignored) {}
+        }
     }
 
     private void propertiesEquals() {
