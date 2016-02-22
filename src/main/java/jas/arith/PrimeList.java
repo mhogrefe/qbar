@@ -1,7 +1,9 @@
 package jas.arith;
 
 import jas.structure.Power;
+import mho.wheels.iterables.IterableUtils;
 import mho.wheels.iterables.NoRemoveIterator;
+import mho.wheels.math.MathUtils;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -116,16 +118,10 @@ public final class PrimeList implements Iterable<BigInteger> {
      */
     private void addSmall() {
         // really small
-        val.add(BigInteger.valueOf(2L));
-        val.add(BigInteger.valueOf(3L));
-        val.add(BigInteger.valueOf(5L));
-        val.add(BigInteger.valueOf(7L));
-        val.add(BigInteger.valueOf(11L));
-        val.add(BigInteger.valueOf(13L));
-        val.add(BigInteger.valueOf(17L));
-        val.add(BigInteger.valueOf(19L));
-        val.add(BigInteger.valueOf(23L));
-        val.add(BigInteger.valueOf(29L));
+        for (BigInteger p : IterableUtils.take(100, MathUtils.primes())) {
+            val.add(p);
+        }
+        //todo running out of primes is a possibility here
     }
 
     /**

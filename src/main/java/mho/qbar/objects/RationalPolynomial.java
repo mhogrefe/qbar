@@ -1080,6 +1080,28 @@ public final class RationalPolynomial implements
     }
 
     /**
+     * Returns the reflection of {@code this} across the y-axis. If {@code this} has odd degree, the result is negated
+     * as well; this preserves the sign of the leading coefficient. The roots of the result are the negatives of the
+     * roots of {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalPolynomial}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @return {@code this} reflected across the y-axis
+     */
+    public @NotNull RationalPolynomial reflect() {
+        if (degree() < 1) return this;
+        List<Rational> reflectedCoefficients = new ArrayList<>();
+        boolean negateResult = degree() % 2 == 0;
+        for (int i = 0; i < coefficients.size(); i++) {
+            reflectedCoefficients.add(i % 2 == 0 == negateResult ? coefficients.get(i) : coefficients.get(i).negate());
+        }
+        return of(reflectedCoefficients);
+    }
+
+    /**
      * Determines whether {@code this} is equal to {@code that}.
      *
      * <ul>

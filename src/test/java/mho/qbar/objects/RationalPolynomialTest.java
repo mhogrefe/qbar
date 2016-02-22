@@ -1749,6 +1749,21 @@ public class RationalPolynomialTest {
         coefficientMatrix_fail_helper("[1, 1/2*x, -4/3]");
     }
 
+    private static void reflect_helper(@NotNull String input, @NotNull String output) {
+        aeq(read(input).get().reflect(), output);
+    }
+
+    @Test
+    public void testReflect() {
+        reflect_helper("0", "0");
+        reflect_helper("1", "1");
+        reflect_helper("1/2*x", "1/2*x");
+        reflect_helper("-4/3", "-4/3");
+        reflect_helper("x^2-4*x+7", "x^2+4*x+7");
+        reflect_helper("x^2-7/4*x+1/3", "x^2+7/4*x+1/3");
+        reflect_helper("1/2*x^10", "1/2*x^10");
+    }
+
     @Test
     public void testEquals() {
         testEqualsHelper(

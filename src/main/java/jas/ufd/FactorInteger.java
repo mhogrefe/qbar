@@ -142,7 +142,7 @@ public class FactorInteger {
 
         //initialize prime list and degree vector
         PrimeList primes = new PrimeList(PrimeList.Range.small);
-        int pn = 30; //primes.size();
+        int pn = 100; //primes.size();
         ModularRingFactory<ModLong> cofac;
         GenPolynomial<ModLong> am = null;
         GenPolynomialRing<ModLong> mfac = null;

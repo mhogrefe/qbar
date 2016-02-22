@@ -120,6 +120,7 @@ public class PolynomialProperties extends QBarTestProperties {
         compareImplementationsInterpolate();
         propertiesCompanionMatrix();
         propertiesCoefficientMatrix();
+        propertiesReflect();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -2633,6 +2634,23 @@ public class PolynomialProperties extends QBarTestProperties {
                 coefficientMatrix(ps);
                 fail(ps);
             } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesReflect() {
+        initialize("reflect()");
+        for (Polynomial p : take(LIMIT, P.polynomials())) {
+            Polynomial reflected = p.reflect();
+            assertEquals(p, p.signum(), reflected.signum());
+            assertEquals(p, p.isPrimitive(), reflected.isPrimitive());
+            involution(Polynomial::reflect, p);
+        }
+
+        for (List<BigInteger> is : take(LIMIT, P.withScale(4).bags(P.withScale(4).bigIntegers()))) {
+            Polynomial p = product(map(i -> of(Arrays.asList(i.negate(), BigInteger.ONE)), is));
+            Polynomial reflected = p.reflect();
+            List<BigInteger> negatedRoots = reverse(map(f -> f.coefficient(0).negate(), reflected.factor()));
+            assertEquals(is, reverse(map(BigInteger::negate, is)), negatedRoots);
         }
     }
 

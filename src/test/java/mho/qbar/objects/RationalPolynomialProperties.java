@@ -89,6 +89,7 @@ public class RationalPolynomialProperties extends QBarTestProperties {
         propertiesPowerSums();
         propertiesFromPowerSums();
         propertiesInterpolate();
+        propertiesReflect();
         propertiesEquals();
         propertiesCompanionMatrix();
         propertiesCoefficientMatrix();
@@ -1856,6 +1857,15 @@ public class RationalPolynomialProperties extends QBarTestProperties {
                 coefficientMatrix(ps);
                 fail(ps);
             } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesReflect() {
+        initialize("reflect()");
+        for (RationalPolynomial p : take(LIMIT, P.rationalPolynomials())) {
+            RationalPolynomial reflected = p.reflect();
+            assertEquals(p, p.signum(), reflected.signum());
+            involution(RationalPolynomial::reflect, p);
         }
     }
 

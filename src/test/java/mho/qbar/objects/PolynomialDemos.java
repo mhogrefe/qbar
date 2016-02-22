@@ -4,7 +4,6 @@ import mho.qbar.testing.QBarDemos;
 import mho.wheels.io.Readers;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
-import mho.wheels.testing.Testing;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigInteger;
@@ -455,6 +454,12 @@ public class PolynomialDemos extends QBarDemos {
         for (List<Polynomial> ps : take(LIMIT, pss)) {
             String listString = tail(init(ps.toString()));
             System.out.println("coefficientMatrix(" + listString + ") = " + coefficientMatrix(ps));
+        }
+    }
+
+    private void demoReflect() {
+        for (Polynomial p : take(LIMIT, P.withScale(4).polynomials())) {
+            System.out.println("reflect(" + p + ") = " + p.reflect());
         }
     }
 
