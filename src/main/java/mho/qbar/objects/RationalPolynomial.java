@@ -1028,7 +1028,7 @@ public final class RationalPolynomial implements
             return RationalMatrix.zero(0, 0);
         }
         if (!isMonic()) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("this must be monic. Invalid this: " + this);
         }
         int degree = degree();
         List<RationalVector> rows = new ArrayList<>();
@@ -1041,6 +1041,39 @@ public final class RationalPolynomial implements
                 row.add(i == j ? Rational.ONE : Rational.ZERO);
             }
             row.add(coefficients.get(i).negate());
+            rows.add(RationalVector.of(row));
+        }
+        return RationalMatrix.fromRows(rows);
+    }
+
+    /**
+     * Returns a {@code RationalMatrix} containing the coefficients of a {@code List} of {@code RationalPolynomial}s.
+     *
+     * <ul>
+     *  <li>{@code ps} may not have more elements than one more than the maximum degree of {@code ps}.</li>
+     *  <li>The result has a height less than or equal to its width, and its first column, if it exists, does not only
+     *  contain zeros.</li>
+     * </ul>
+     *
+     * Size is length({@code ps})×(max({deg(p)|p∈{@code ps}})+1)
+     *
+     * @param ps a {@code List} of {@code RationalPolynomial}s
+     * @return Mat({@code ps})
+     */
+    @SuppressWarnings("JavaDoc")
+    public static @NotNull RationalMatrix coefficientMatrix(@NotNull List<RationalPolynomial> ps) {
+        if (ps.isEmpty()) return RationalMatrix.zero(0, 0);
+        int width = maximum(map(RationalPolynomial::degree, ps)) + 1;
+        if (ps.size() > width) {
+            throw new IllegalArgumentException("ps may not have more elements than one more than the maximum degree" +
+                    " of ps. Invalid ps: " + ps);
+        }
+        List<RationalVector> rows = new ArrayList<>();
+        for (RationalPolynomial p : ps) {
+            List<Rational> row = new ArrayList<>();
+            for (int i = width - 1; i >= 0; i--) {
+                row.add(p.coefficient(i));
+            }
             rows.add(RationalVector.of(row));
         }
         return RationalMatrix.fromRows(rows);

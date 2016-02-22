@@ -118,6 +118,8 @@ public class PolynomialProperties extends QBarTestProperties {
         compareImplementationsIsIrreducible(true);
         propertiesInterpolate();
         compareImplementationsInterpolate();
+        propertiesCompanionMatrix();
+        propertiesCoefficientMatrix();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -2555,6 +2557,83 @@ public class PolynomialProperties extends QBarTestProperties {
                 )
         );
         compareImplementations("interpolate(List<Pair<BigInteger, BigInteger>>)", take(SMALL_LIMIT, pss), functions);
+    }
+
+    private void propertiesCompanionMatrix() {
+        initialize("companionMatrix()");
+        for (Polynomial p : take(LIMIT, filterInfinite(Polynomial::isMonic, P.polynomials()))) {
+            Matrix companionMatrix = p.companionMatrix();
+            assertTrue(
+                    p,
+                    companionMatrix.submatrix(toList(range(1, p.degree() - 1)), toList(range(0, p.degree() - 2)))
+                            .isIdentity()
+            );
+        }
+
+        for (Polynomial p : take(LIMIT, filterInfinite(Polynomial::isMonic, P.polynomialsAtLeast(1)))) {
+            Matrix companionMatrix = p.companionMatrix();
+            assertTrue(
+                    p,
+                    companionMatrix.submatrix(Collections.singletonList(0), toList(range(0, p.degree() - 2))).isZero()
+            );
+        }
+
+        Iterable<Polynomial> ps = filterInfinite(
+                Polynomial::isMonic,
+                P.withScale(4).withSecondaryScale(4).polynomials()
+        );
+        for (Polynomial p : take(LIMIT, ps)) {
+            inverse(Polynomial::companionMatrix, Matrix::characteristicPolynomial, p);
+        }
+
+        for (Polynomial p : take(LIMIT, filterInfinite(Polynomial::isMonic, P.polynomials(1)))) {
+            Matrix companionMatrix = p.companionMatrix();
+            assertEquals(p, companionMatrix.height(), 1);
+            assertEquals(p, companionMatrix.width(), 1);
+            assertEquals(p, companionMatrix.get(0, 0), p.coefficient(0).negate());
+        }
+
+        for (Polynomial p : take(LIMIT, filterInfinite(q -> !q.isMonic(), P.polynomials()))) {
+            try {
+                p.companionMatrix();
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesCoefficientMatrix() {
+        initialize("coefficientMatrix(List<Polynomial>)");
+        Iterable<List<Polynomial>> pss = P.withElement(
+                Collections.emptyList(),
+                filterInfinite(
+                        ps -> ps.size() <= maximum(map(Polynomial::degree, ps)) + 1,
+                        P.listsAtLeast(1, P.polynomials())
+                )
+        );
+        for (List<Polynomial> ps : take(LIMIT, pss)) {
+            Matrix coefficientMatrix = coefficientMatrix(ps);
+            assertEquals(ps, coefficientMatrix.height(), ps.size());
+            assertTrue(ps, coefficientMatrix.height() <= coefficientMatrix.width());
+            if (!ps.isEmpty()) {
+                assertEquals(ps, coefficientMatrix.width(), maximum(map(Polynomial::degree, ps)) + 1);
+                assertFalse(
+                        ps,
+                        coefficientMatrix.submatrix(toList(range(0, ps.size() - 1)), Collections.singletonList(0))
+                                .isZero()
+                );
+            }
+        }
+
+        Iterable<List<Polynomial>> pssFail = filterInfinite(
+                ps -> ps.size() > maximum(map(Polynomial::degree, ps)) + 1,
+                P.listsAtLeast(1, P.polynomials())
+        );
+        for (List<Polynomial> ps : take(LIMIT, pssFail)) {
+            try {
+                coefficientMatrix(ps);
+                fail(ps);
+            } catch (IllegalArgumentException ignored) {}
+        }
     }
 
     private void propertiesEquals() {

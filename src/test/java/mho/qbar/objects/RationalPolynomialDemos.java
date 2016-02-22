@@ -368,6 +368,20 @@ public class RationalPolynomialDemos extends QBarDemos {
         }
     }
 
+    private void demoCoefficientMatrix() {
+        Iterable<List<RationalPolynomial>> pss = P.withElement(
+                Collections.emptyList(),
+                filterInfinite(
+                        ps -> ps.size() <= maximum(map(RationalPolynomial::degree, ps)) + 1,
+                        P.withScale(4).listsAtLeast(1, P.withScale(4).rationalPolynomials())
+                )
+        );
+        for (List<RationalPolynomial> ps : take(LIMIT, pss)) {
+            String listString = tail(init(ps.toString()));
+            System.out.println("coefficientMatrix(" + listString + ") = " + coefficientMatrix(ps));
+        }
+    }
+
     private void demoEquals_RationalPolynomial() {
         Iterable<Pair<RationalPolynomial, RationalPolynomial>> ps = P.pairs(P.withScale(4).rationalPolynomials());
         for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, ps)) {

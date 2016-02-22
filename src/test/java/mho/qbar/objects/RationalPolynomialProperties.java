@@ -91,6 +91,7 @@ public class RationalPolynomialProperties extends QBarTestProperties {
         propertiesInterpolate();
         propertiesEquals();
         propertiesCompanionMatrix();
+        propertiesCoefficientMatrix();
         propertiesHashCode();
         propertiesCompareTo();
         propertiesRead_String();
@@ -1819,6 +1820,41 @@ public class RationalPolynomialProperties extends QBarTestProperties {
             try {
                 p.companionMatrix();
                 fail(p);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesCoefficientMatrix() {
+        initialize("coefficientMatrix(List<RationalPolynomial>)");
+        Iterable<List<RationalPolynomial>> pss = P.withElement(
+                Collections.emptyList(),
+                filterInfinite(
+                        ps -> ps.size() <= maximum(map(RationalPolynomial::degree, ps)) + 1,
+                        P.listsAtLeast(1, P.rationalPolynomials())
+                )
+        );
+        for (List<RationalPolynomial> ps : take(LIMIT, pss)) {
+            RationalMatrix coefficientMatrix = coefficientMatrix(ps);
+            assertEquals(ps, coefficientMatrix.height(), ps.size());
+            assertTrue(ps, coefficientMatrix.height() <= coefficientMatrix.width());
+            if (!ps.isEmpty()) {
+                assertEquals(ps, coefficientMatrix.width(), maximum(map(RationalPolynomial::degree, ps)) + 1);
+                assertFalse(
+                        ps,
+                        coefficientMatrix.submatrix(toList(range(0, ps.size() - 1)), Collections.singletonList(0))
+                                .isZero()
+                );
+            }
+        }
+
+        Iterable<List<RationalPolynomial>> pssFail = filterInfinite(
+                ps -> ps.size() > maximum(map(RationalPolynomial::degree, ps)) + 1,
+                P.listsAtLeast(1, P.rationalPolynomials())
+        );
+        for (List<RationalPolynomial> ps : take(LIMIT, pssFail)) {
+            try {
+                coefficientMatrix(ps);
+                fail(ps);
             } catch (IllegalArgumentException ignored) {}
         }
     }

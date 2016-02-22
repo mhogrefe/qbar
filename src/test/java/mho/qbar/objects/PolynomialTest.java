@@ -2199,6 +2199,60 @@ public class PolynomialTest {
         interpolate_fail_helper("[(1, 1), (null, 3)]");
     }
 
+    private static void companionMatrix_helper(@NotNull String input, @NotNull String output) {
+        aeq(read(input).get().companionMatrix(), output);
+    }
+
+    private static void companionMatrix_fail_helper(@NotNull String input) {
+        try {
+            read(input).get().companionMatrix();
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testCompanionMatrix() {
+        companionMatrix_helper("1", "[]#0");
+        companionMatrix_helper("x", "[[0]]");
+        companionMatrix_helper("x^2-4*x+7", "[[0, -7], [1, 4]]");
+        companionMatrix_helper("x^3-1", "[[0, 0, 1], [1, 0, 0], [0, 1, 0]]");
+        companionMatrix_helper("x^10",
+                "[[0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [1, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 1, 0, 0, 0, 0, 0, 0, 0, 0]," +
+                " [0, 0, 1, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 1, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 1, 0, 0, 0, 0, 0]," +
+                " [0, 0, 0, 0, 0, 1, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 1, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 1, 0, 0]," +
+                " [0, 0, 0, 0, 0, 0, 0, 0, 1, 0]]");
+
+        companionMatrix_fail_helper("0");
+        companionMatrix_fail_helper("2");
+        companionMatrix_fail_helper("-1");
+        companionMatrix_fail_helper("2*x^2");
+    }
+
+    private static void coefficientMatrix_helper(@NotNull String input, @NotNull String output) {
+        aeq(coefficientMatrix(readPolynomialList(input)), output);
+    }
+
+    private static void coefficientMatrix_fail_helper(@NotNull String input) {
+        try {
+            coefficientMatrix(readPolynomialList(input));
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testCoefficientMatrix() {
+        coefficientMatrix_helper("[]", "[]#0");
+        coefficientMatrix_helper("[0, x]", "[[0, 0], [1, 0]]");
+        coefficientMatrix_helper("[1]", "[[1]]");
+        coefficientMatrix_helper("[1, x, x^3-17]", "[[0, 0, 0, 1], [0, 0, 1, 0], [1, 0, 0, -17]]");
+        coefficientMatrix_helper("[x^2-4*x+7, x^10, 4]",
+                "[[0, 0, 0, 0, 0, 0, 0, 0, 1, -4, 7], [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]," +
+                " [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4]]");
+
+        coefficientMatrix_fail_helper("[0]");
+        coefficientMatrix_fail_helper("[1, x, -17]");
+    }
+
     @Test
     public void testEquals() {
         testEqualsHelper(

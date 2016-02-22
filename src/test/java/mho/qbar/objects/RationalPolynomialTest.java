@@ -1724,6 +1724,31 @@ public class RationalPolynomialTest {
         companionMatrix_fail_helper("1/2*x^2");
     }
 
+    private static void coefficientMatrix_helper(@NotNull String input, @NotNull String output) {
+        aeq(coefficientMatrix(readRationalPolynomialList(input)), output);
+    }
+
+    private static void coefficientMatrix_fail_helper(@NotNull String input) {
+        try {
+            coefficientMatrix(readRationalPolynomialList(input));
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testCoefficientMatrix() {
+        coefficientMatrix_helper("[]", "[]#0");
+        coefficientMatrix_helper("[0, 1/2*x]", "[[0, 0], [1/2, 0]]");
+        coefficientMatrix_helper("[1]", "[[1]]");
+        coefficientMatrix_helper("[1, x, x^3-4/3]", "[[0, 0, 0, 1], [0, 0, 1, 0], [1, 0, 0, -4/3]]");
+        coefficientMatrix_helper("[x^2-7/4*x+1/3, 1/2*x^10, 4]",
+                "[[0, 0, 0, 0, 0, 0, 0, 0, 1, -7/4, 1/3], [1/2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]," +
+                " [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4]]");
+
+        coefficientMatrix_fail_helper("[0]");
+        coefficientMatrix_fail_helper("[1, 1/2*x, -4/3]");
+    }
+
     @Test
     public void testEquals() {
         testEqualsHelper(

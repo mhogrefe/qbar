@@ -4,6 +4,7 @@ import mho.qbar.testing.QBarDemos;
 import mho.wheels.io.Readers;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
+import mho.wheels.testing.Testing;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigInteger;
@@ -13,6 +14,7 @@ import java.util.Optional;
 
 import static mho.qbar.objects.Polynomial.*;
 import static mho.wheels.iterables.IterableUtils.*;
+import static mho.wheels.testing.Testing.*;
 import static mho.wheels.testing.Testing.SMALL_LIMIT;
 import static mho.wheels.testing.Testing.its;
 import static mho.wheels.testing.Testing.nicePrint;
@@ -433,6 +435,26 @@ public class PolynomialDemos extends QBarDemos {
         for (List<Pair<BigInteger, BigInteger>> ps : take(LIMIT, pss)) {
             String listString = tail(init(ps.toString()));
             System.out.println("interpolate(" + listString + ") = " + interpolate(ps));
+        }
+    }
+
+    private void demoCompanionMatrix() {
+        for (Polynomial p : take(MEDIUM_LIMIT, filterInfinite(Polynomial::isMonic, P.withScale(4).polynomials()))) {
+            System.out.println("companionMatrix(" + p + ") = " + p.companionMatrix());
+        }
+    }
+
+    private void demoCoefficientMatrix() {
+        Iterable<List<Polynomial>> pss = P.withElement(
+                Collections.emptyList(),
+                filterInfinite(
+                        ps -> ps.size() <= maximum(map(Polynomial::degree, ps)) + 1,
+                        P.withScale(4).listsAtLeast(1, P.withScale(4).polynomials())
+                )
+        );
+        for (List<Polynomial> ps : take(LIMIT, pss)) {
+            String listString = tail(init(ps.toString()));
+            System.out.println("coefficientMatrix(" + listString + ") = " + coefficientMatrix(ps));
         }
     }
 

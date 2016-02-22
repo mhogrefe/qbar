@@ -1410,6 +1410,73 @@ public final class Polynomial implements
     }
 
     /**
+     * Returns the Frobenius companion matrix of {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} must be monic.</li>
+     *  <li>The first row of the result has zeros in all but the last column, and the submatrix produced by omitting
+     *  the first row and the last column is the identity.</li>
+     * </ul>
+     *
+     * @return the companion matrix of {@code this}
+     */
+    public @NotNull Matrix companionMatrix() {
+        if (this == ONE) {
+            return Matrix.zero(0, 0);
+        }
+        if (!isMonic()) {
+            throw new IllegalArgumentException("this must be monic. Invalid this: " + this);
+        }
+        int degree = degree();
+        List<Vector> rows = new ArrayList<>();
+        List<BigInteger> row = toList(replicate(degree - 1, BigInteger.ZERO));
+        row.add(coefficients.get(0).negate());
+        rows.add(Vector.of(row));
+        for (int i = 1; i < degree; i++) {
+            row.clear();
+            for (int j = 1; j < degree; j++) {
+                row.add(i == j ? BigInteger.ONE : BigInteger.ZERO);
+            }
+            row.add(coefficients.get(i).negate());
+            rows.add(Vector.of(row));
+        }
+        return Matrix.fromRows(rows);
+    }
+
+    /**
+     * Returns a {@code Matrix} containing the coefficients of a {@code List} of {@code Polynomial}s.
+     *
+     * <ul>
+     *  <li>{@code ps} may not have more elements than one more than the maximum degree of {@code ps}.</li>
+     *  <li>The result has a height less than or equal to its width, and its first column, if it exists, does not only
+     *  contain zeros.</li>
+     * </ul>
+     *
+     * Size is length({@code ps})×(max({deg(p)|p∈{@code ps}})+1)
+     *
+     * @param ps a {@code List} of {@code Polynomial}s
+     * @return Mat({@code ps})
+     */
+    @SuppressWarnings("JavaDoc")
+    public static @NotNull Matrix coefficientMatrix(@NotNull List<Polynomial> ps) {
+        if (ps.isEmpty()) return Matrix.zero(0, 0);
+        int width = maximum(map(Polynomial::degree, ps)) + 1;
+        if (ps.size() > width) {
+            throw new IllegalArgumentException("ps may not have more elements than one more than the maximum degree" +
+                    " of ps. Invalid ps: " + ps);
+        }
+        List<Vector> rows = new ArrayList<>();
+        for (Polynomial p : ps) {
+            List<BigInteger> row = new ArrayList<>();
+            for (int i = width - 1; i >= 0; i--) {
+                row.add(p.coefficient(i));
+            }
+            rows.add(Vector.of(row));
+        }
+        return Matrix.fromRows(rows);
+    }
+
+    /**
      * Determines whether {@code this} is equal to {@code that}.
      *
      * <ul>
