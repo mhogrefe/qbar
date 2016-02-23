@@ -1339,8 +1339,27 @@ public final class Polynomial implements
             throw new ArithmeticException("this cannot be zero.");
         }
         if (this == ONE) return Collections.emptyList();
-        //noinspection RedundantCast
-        return sort((Iterable<Polynomial>) map(Polynomial::of, JasApi.factorPolynomial(coefficients)));
+        if (degree() < 1) return Collections.singletonList(this);
+        List<Polynomial> factors = new ArrayList<>();
+        Pair<BigInteger, Polynomial> cf = constantFactor();
+        if (!cf.a.equals(BigInteger.ONE)) {
+            factors.add(of(cf.a));
+        }
+        Map<Polynomial, Integer> factorMultiset = new HashMap<>();
+        for (Polynomial p : cf.b.squareFreeFactor()) {
+            Integer frequency = factorMultiset.get(p);
+            if (frequency == null) {
+                frequency = 0;
+            }
+            factorMultiset.put(p, frequency + 1);
+        }
+        for (Map.Entry<Polynomial, Integer> entry : factorMultiset.entrySet()) {
+            List<Polynomial> fs = toList(map(Polynomial::of, JasApi.factorSquareFree(toList(entry.getKey()))));
+            for (int i = 0; i < entry.getValue(); i++) {
+                factors.addAll(fs);
+            }
+        }
+        return sort(factors);
     }
 
     /**

@@ -2,6 +2,7 @@ package jas.ufd;
 
 import jas.arith.Modular;
 import jas.poly.GenPolynomial;
+import jas.poly.PolyUtil;
 import jas.structure.RingElem;
 
 /**
@@ -13,14 +14,6 @@ import jas.structure.RingElem;
 public class GreatestCommonDivisorModEval<MOD extends RingElem<MOD> & Modular>
         extends GreatestCommonDivisorAbstract<MOD> {
     /**
-     * Modular gcd algorithm to use.
-     */
-    private final GreatestCommonDivisorAbstract<MOD> mufd
-            = new GreatestCommonDivisorSimple<>();
-    // = new GreatestCommonDivisorPrimitive<MOD>();
-    // not okay: = new GreatestCommonDivisorSubres<MOD>();
-
-    /**
      * Univariate GenPolynomial greatest common divisor.
      *
      * @param P univariate GenPolynomial.
@@ -29,8 +22,60 @@ public class GreatestCommonDivisorModEval<MOD extends RingElem<MOD> & Modular>
      */
     @Override
     public GenPolynomial<MOD> baseGcd(GenPolynomial<MOD> P, GenPolynomial<MOD> S) {
-        // required as recursion base
-        return mufd.baseGcd(P, S);
+        if (S == null || S.isZERO()) {
+            return P;
+        }
+        if (P == null || P.isZERO()) {
+            return S;
+        }
+        boolean field = P.ring.coFac.isField();
+        long e = P.degree();
+        long f = S.degree();
+        GenPolynomial<MOD> q;
+        GenPolynomial<MOD> r;
+        if (f > e) {
+            r = P;
+            q = S;
+        } else {
+            q = P;
+            r = S;
+        }
+        MOD c;
+        if (field) {
+            r = r.monic();
+            q = q.monic();
+            c = P.ring.getONECoefficient();
+        } else {
+            r = r.abs();
+            q = q.abs();
+            MOD a = baseContent(r);
+            MOD b = baseContent(q);
+            c = gcd(a, b); // indirection
+            r = divide(r, a); // indirection
+            q = divide(q, b); // indirection
+        }
+        if (r.isONE()) {
+            return r.multiply(c);
+        }
+        if (q.isONE()) {
+            return q.multiply(c);
+        }
+        GenPolynomial<MOD> x;
+        //System.out.println("q = " + q);
+        //System.out.println("r = " + r);
+        while (!r.isZERO()) {
+            x = PolyUtil.baseSparsePseudoRemainder(q, r);
+            q = r;
+            if (field) {
+                r = x.monic();
+            } else {
+                r = x;
+            }
+            //System.out.println("q = " + q);
+            //System.out.println("r = " + r);
+        }
+        q = basePrimitivePart(q);
+        return (q.multiply(c)).abs();
     }
 
     /**

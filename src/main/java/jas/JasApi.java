@@ -12,16 +12,13 @@ import static mho.wheels.iterables.IterableUtils.replicate;
 import static mho.wheels.iterables.IterableUtils.toList;
 
 public class JasApi {
-    public static List<List<BigInteger>> factorPolynomial(List<BigInteger> xs) {
+    public static List<List<BigInteger>> factorSquareFree(List<BigInteger> xs) {
         GenPolynomial<JasBigInteger> tmp = toPolynomial(xs);
         FactorInteger engine = new FactorInteger();
-        SortedMap<GenPolynomial<JasBigInteger>, Long> factors = engine.baseFactors(tmp);
+        List<GenPolynomial<JasBigInteger>> factors = engine.baseFactorsSquarefree(tmp);
         List<List<BigInteger>> fs = new ArrayList<>();
-        for (Map.Entry<GenPolynomial<JasBigInteger>, Long> entry : factors.entrySet()) {
-            List<BigInteger> cs = fromPolynomial(entry.getKey());
-            for (int j = 0; j < entry.getValue(); j++) {
-                fs.add(cs);
-            }
+        for (GenPolynomial<JasBigInteger> factor : factors) {
+            fs.add(fromPolynomial(factor));
         }
         return fs;
     }

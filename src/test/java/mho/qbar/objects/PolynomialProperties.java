@@ -1,6 +1,5 @@
 package mho.qbar.objects;
 
-import jas.JasApi;
 import mho.qbar.iterableProviders.QBarIterableProvider;
 import mho.qbar.testing.QBarTestProperties;
 import mho.qbar.testing.QBarTesting;
@@ -111,8 +110,7 @@ public class PolynomialProperties extends QBarTestProperties {
         compareImplementationsSquareFreePart();
         propertiesSquareFreeFactor();
         propertiesFactor();
-        compareImplementationsFactor1();
-        compareImplementationsFactor2();
+        compareImplementationsFactor();
         propertiesIsIrreducible();
         compareImplementationsIsIrreducible(false);
         compareImplementationsIsIrreducible(true);
@@ -2280,28 +2278,6 @@ public class PolynomialProperties extends QBarTestProperties {
         }
     }
 
-    //this uses Eisenstein's criterion. It's too slow for inputs with large coefficients because of prime factorization
-    private static @NotNull List<Polynomial> factor_alt(@NotNull Polynomial p) {
-        if (p == ZERO) {
-            throw new ArithmeticException("this cannot be zero.");
-        }
-        if (p == ONE) return Collections.emptyList();
-        BigInteger gcd = MathUtils.gcd(init(p));
-        if (gt(gcd, BigInteger.ONE)) {
-            boolean eisenstein = any(
-                    n -> !last(p).mod(n).equals(BigInteger.ZERO) &&
-                            !head(p).mod(n.pow(2)).equals(BigInteger.ZERO),
-                    toList(nub(MathUtils.primeFactors(gcd)))
-            );
-            if (eisenstein) {
-                Pair<BigInteger, Polynomial> cf = p.constantFactor();
-                return cf.a.equals(BigInteger.ONE) ? Collections.singletonList(p) : Arrays.asList(of(cf.a), cf.b);
-            }
-        }
-        //noinspection RedundantCast
-        return sort((Iterable<Polynomial>) map(Polynomial::of, JasApi.factorPolynomial(toList(p))));
-    }
-
     private static boolean queueIsOptimal(@NotNull PriorityQueue<Pair<BigInteger, List<BigInteger>>> queue) {
         for (Pair<BigInteger, List<BigInteger>> entry : queue) {
             if (entry.b.size() > 4) return false;
@@ -2379,7 +2355,6 @@ public class PolynomialProperties extends QBarTestProperties {
         for (Polynomial p : take(LIMIT, P.withScale(4).polynomialsAtLeast(0))) {
             List<Polynomial> factors = p.factor();
             factors.forEach(Polynomial::validate);
-            assertEquals(p, factors, factor_alt(p));
             assertFalse(p, any(q -> q == ZERO, factors));
             assertTrue(p, weaklyIncreasing(factors));
             assertEquals(p, product(factors), p);
@@ -2412,19 +2387,7 @@ public class PolynomialProperties extends QBarTestProperties {
         USE_FACTOR_CACHE = oldUseFactorCache;
     }
 
-    private void compareImplementationsFactor1() {
-        boolean oldUseFactorCache = USE_FACTOR_CACHE;
-        USE_FACTOR_CACHE = false;
-
-        Map<String, Function<Polynomial, List<Polynomial>>> functions = new LinkedHashMap<>();
-        functions.put("alt", PolynomialProperties::factor_alt);
-        functions.put("standard", Polynomial::factor);
-        compareImplementations("factor()", take(SMALL_LIMIT, P.withScale(4).polynomialsAtLeast(0)), functions);
-
-        USE_FACTOR_CACHE = oldUseFactorCache;
-    }
-
-    private void compareImplementationsFactor2() {
+    private void compareImplementationsFactor() {
         boolean oldUseFactorCache = USE_FACTOR_CACHE;
         USE_FACTOR_CACHE = false;
 
