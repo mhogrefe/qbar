@@ -1314,7 +1314,7 @@ public final class Polynomial implements
      * which is square-free. Uses Yun's algorithm.
      *
      * <ul>
-     *  <li>{@code this} cannot be zero.</li>
+     *  <li>{@code this} cannot be zero, must have a positive leading coefficient, and must be primitive.</li>
      *  <li>The result is a list of primitive, square-free {@code Polynomial}s with positive leading coefficients.</li>
      * </ul>
      *
@@ -1322,7 +1322,7 @@ public final class Polynomial implements
      */
     public @NotNull List<Polynomial> squareFreeFactor() {
         List<Polynomial> factors = new ArrayList<>();
-        Polynomial p = constantFactor().b;
+        Polynomial p = this;
         while (p != ONE) {
             Polynomial gcd = p.gcd(p.differentiate());
             factors.add(p.divideExact(gcd));

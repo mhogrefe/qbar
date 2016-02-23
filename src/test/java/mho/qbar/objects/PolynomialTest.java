@@ -2014,25 +2014,14 @@ public class PolynomialTest {
         aeq(read(input).get().squareFreeFactor(), output);
     }
 
-    private static void squareFreeFactor_fail_helper(@NotNull String input) {
-        try {
-            read(input).get().squareFreeFactor();
-            fail();
-        } catch (ArithmeticException ignored) {}
-    }
-
     @Test
     public void testSquareFreeFactor() {
         squareFreeFactor_helper("1", "[]");
         squareFreeFactor_helper("x", "[x]");
-        squareFreeFactor_helper("-17", "[]");
         squareFreeFactor_helper("x^2-4*x+7", "[x^2-4*x+7]");
-        squareFreeFactor_helper("-x^3-1", "[x^3+1]");
-        squareFreeFactor_helper("3*x^10", "[x, x, x, x, x, x, x, x, x, x]");
-
+        squareFreeFactor_helper("x^3+1", "[x^3+1]");
+        squareFreeFactor_helper("x^10", "[x, x, x, x, x, x, x, x, x, x]");
         squareFreeFactor_helper("x^2+2*x+1", "[x+1, x+1]");
-
-        squareFreeFactor_fail_helper("0");
     }
 
     private static void factor_helper(@NotNull String input, @NotNull String output) {

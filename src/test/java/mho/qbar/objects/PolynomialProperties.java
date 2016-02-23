@@ -2265,7 +2265,7 @@ public class PolynomialProperties extends QBarTestProperties {
 
     private void propertiesSquareFreeFactor() {
         initialize("squareFreeFactor()");
-        for (Polynomial p : take(LIMIT, P.polynomialsAtLeast(0))) {
+        for (Polynomial p : take(LIMIT, P.positivePrimitivePolynomialsAtLeast(0))) {
             List<Polynomial> factors = p.squareFreeFactor();
             factors.forEach(Polynomial::validate);
             Polynomial ppp = p.constantFactor().b;

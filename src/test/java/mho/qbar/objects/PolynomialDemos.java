@@ -403,7 +403,7 @@ public class PolynomialDemos extends QBarDemos {
     }
 
     private void demoSquareFreeFactor() {
-        for (Polynomial p : take(LIMIT, P.withScale(4).polynomialsAtLeast(0))) {
+        for (Polynomial p : take(LIMIT, P.withScale(4).positivePrimitivePolynomialsAtLeast(0))) {
             System.out.println("squareFreeFactor(" + p + ") = " + p.squareFreeFactor());
         }
     }
