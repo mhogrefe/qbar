@@ -572,6 +572,43 @@ public class RationalPolynomialVectorTest {
         delta_fail_helper("[[1/2*x], [3, 4]]");
     }
 
+    private static void dot_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
+        aeq(read(a).get().dot(read(b).get()), output);
+    }
+
+    private static void dot_fail_helper(@NotNull String a, @NotNull String b) {
+        try {
+            read(a).get().dot(read(b).get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testDot() {
+        dot_helper("[]", "[]", "0");
+        dot_helper("[1/2*x]", "[3]", "3/2*x");
+        dot_helper("[5/3, -1/4*x+3, 23*x^5]", "[0, 1/2*x^10, x-1/3]", "-1/8*x^11+3/2*x^10+23*x^6-23/3*x^5");
+        dot_helper("[5/3, -1/4*x+3, 23*x^5]", "[0, 0, 0]", "0");
+        dot_helper("[5/3, -1/4*x+3, 23*x^5]", "[-5/3, 1/4*x-3, -23*x^5]", "-529*x^10-1/16*x^2+3/2*x-106/9");
+        dot_fail_helper("[]", "[1/2*x]");
+        dot_fail_helper("[1/2*x]", "[]");
+        dot_fail_helper("[0, 1/2*x^10, x-1/3]", "[5/6, 2/3]");
+    }
+
+    private static void squaredLength_helper(@NotNull String input, @NotNull String output) {
+        aeq(read(input).get().squaredLength(), output);
+    }
+
+    @Test
+    public void testSquaredLength() {
+        squaredLength_helper("[]", "0");
+        squaredLength_helper("[1/2*x]", "1/4*x^2");
+        squaredLength_helper("[1, 0]", "1");
+        squaredLength_helper("[1, 1]", "2");
+        squaredLength_helper("[5/3, -1/4*x+3, 23*x^5]", "529*x^10+1/16*x^2-3/2*x+106/9");
+        squaredLength_helper("[0, 1/2*x^10, x-1/3]", "1/4*x^20+x^2-2/3*x+1/9");
+    }
+
     @Test
     public void testEquals() {
         testEqualsHelper(

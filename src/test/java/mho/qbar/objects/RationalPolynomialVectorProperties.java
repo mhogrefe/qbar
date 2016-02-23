@@ -55,6 +55,9 @@ public class RationalPolynomialVectorProperties extends QBarTestProperties {
         propertiesSum();
         compareImplementationsSum();
         propertiesDelta();
+        propertiesDot();
+        propertiesSquaredLength();
+        compareImplementationsSquaredLength();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -1094,6 +1097,113 @@ public class RationalPolynomialVectorProperties extends QBarTestProperties {
                 fail(vs);
             } catch (NullPointerException ignored) {}
         }
+    }
+
+    private void propertiesDot() {
+        initialize("dot(RationalPolynomialVector)");
+        Iterable<Pair<RationalPolynomialVector, RationalPolynomialVector>> ps = P.withElement(
+                new Pair<>(ZERO_DIMENSIONAL, ZERO_DIMENSIONAL),
+                map(
+                        p -> p.b,
+                        P.dependentPairsInfiniteLogarithmicOrder(
+                                P.positiveIntegersGeometric(),
+                                i -> P.pairs(P.withScale(4).rationalPolynomialVectors(i))
+                        )
+                )
+        );
+        for (Pair<RationalPolynomialVector, RationalPolynomialVector> p : take(LIMIT, ps)) {
+            commutative(RationalPolynomialVector::dot, p);
+            homomorphic(
+                    RationalPolynomialVector::negate,
+                    Function.identity(),
+                    RationalPolynomial::negate,
+                    RationalPolynomialVector::dot,
+                    RationalPolynomialVector::dot,
+                    p
+            );
+            homomorphic(
+                    Function.identity(),
+                    RationalPolynomialVector::negate,
+                    RationalPolynomial::negate,
+                    RationalPolynomialVector::dot,
+                    RationalPolynomialVector::dot,
+                    p
+            );
+        }
+
+        Iterable<Triple<RationalPolynomial, RationalPolynomialVector, RationalPolynomialVector>> ts = map(
+                p -> new Triple<>(p.b, p.a.a, p.a.b),
+                P.pairs(ps, P.withScale(4).rationalPolynomials())
+        );
+        for (Triple<RationalPolynomial, RationalPolynomialVector, RationalPolynomialVector> t : take(LIMIT, ts)) {
+            assertEquals(t, t.b.dot(t.c).multiply(t.a), t.b.multiply(t.a).dot(t.c));
+        }
+
+        for (RationalPolynomialVector v : take(LIMIT, P.rationalPolynomialVectors())) {
+            assertEquals(v, v.dot(zero(v.dimension())), RationalPolynomial.ZERO);
+            for (int i = 0; i < v.dimension(); i++) {
+                assertEquals(v, v.dot(standard(v.dimension(), i)), v.get(i));
+            }
+        }
+
+        for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, P.pairs(P.rationalPolynomials()))) {
+            homomorphic(
+                    RationalPolynomialVector::of,
+                    RationalPolynomialVector::of,
+                    Function.identity(),
+                    RationalPolynomial::multiply,
+                    RationalPolynomialVector::dot,
+                    p
+            );
+        }
+
+        Iterable<Pair<RationalPolynomialVector, RationalPolynomialVector>> psFail = filterInfinite(
+                p -> p.a.dimension() != p.b.dimension(),
+                P.pairs(P.rationalPolynomialVectors())
+        );
+        for (Pair<RationalPolynomialVector, RationalPolynomialVector> p : take(LIMIT, psFail)) {
+            try {
+                p.a.dot(p.b);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private static @NotNull RationalPolynomial squaredLength_simplest(@NotNull RationalPolynomialVector v) {
+        return v.dot(v);
+    }
+
+    private void propertiesSquaredLength() {
+        initialize("squaredLength()");
+        for (RationalPolynomialVector v : take(LIMIT, P.rationalPolynomialVectors())) {
+            RationalPolynomial squaredLength = v.squaredLength();
+            assertEquals(v, squaredLength_simplest(v), squaredLength);
+            assertNotEquals(v, squaredLength.signum(), -1);
+            assertEquals(v, v.negate().squaredLength(), squaredLength);
+        }
+
+        Iterable<Pair<RationalPolynomialVector, RationalPolynomial>> ps = P.pairs(
+                P.rationalPolynomialVectors(),
+                P.rationalPolynomials()
+        );
+        for (Pair<RationalPolynomialVector, RationalPolynomial> p : take(LIMIT, ps)) {
+            assertEquals(p, p.a.multiply(p.b).squaredLength(), p.a.squaredLength().multiply(p.b.pow(2)));
+        }
+
+        for (int i : take(LIMIT, P.naturalIntegersGeometric())) {
+            assertEquals(i, zero(i).squaredLength(), RationalPolynomial.ZERO);
+        }
+
+        for (Pair<Integer, Integer> p : take(LIMIT, P.subsetPairs(P.naturalIntegersGeometric()))) {
+            assertEquals(p, standard(p.b, p.a).squaredLength(), RationalPolynomial.ONE);
+        }
+    }
+
+    private void compareImplementationsSquaredLength() {
+        Map<String, Function<RationalPolynomialVector, RationalPolynomial>> functions = new LinkedHashMap<>();
+        functions.put("simplest", RationalPolynomialVectorProperties::squaredLength_simplest);
+        functions.put("standard", RationalPolynomialVector::squaredLength);
+        compareImplementations("squaredLength()", take(LIMIT, P.rationalPolynomialVectors()), functions);
     }
 
     private void propertiesEquals() {

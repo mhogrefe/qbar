@@ -197,6 +197,28 @@ public class PolynomialVectorDemos extends QBarDemos {
         }
     }
 
+    private void demoDot() {
+        Iterable<Pair<PolynomialVector, PolynomialVector>> ps = P.withElement(
+                new Pair<>(ZERO_DIMENSIONAL, ZERO_DIMENSIONAL),
+                map(
+                        p -> p.b,
+                        P.dependentPairsInfiniteLogarithmicOrder(
+                                P.withScale(4).positiveIntegersGeometric(),
+                                i -> P.pairs(P.withScale(4).polynomialVectors(i))
+                        )
+                )
+        );
+        for (Pair<PolynomialVector, PolynomialVector> p : take(LIMIT, ps)) {
+            System.out.println(p.a + " ⋅ " + p.b + " = " + p.a.dot(p.b));
+        }
+    }
+
+    private void demoSquaredLength() {
+        for (PolynomialVector v : take(LIMIT, P.withScale(4).polynomialVectors())) {
+            System.out.println("squaredLength(" + v + ") = " + v.squaredLength());
+        }
+    }
+
     private void demoEquals_PolynomialVector() {
         Iterable<Pair<PolynomialVector, PolynomialVector>> ps = P.pairs(
                 P.withScale(4).withSecondaryScale(4).polynomialVectors()

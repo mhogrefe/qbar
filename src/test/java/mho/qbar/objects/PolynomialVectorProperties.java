@@ -48,6 +48,9 @@ public class PolynomialVectorProperties extends QBarTestProperties {
         propertiesSum();
         compareImplementationsSum();
         propertiesDelta();
+        propertiesDot();
+        propertiesSquaredLength();
+        compareImplementationsSquaredLength();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -747,6 +750,109 @@ public class PolynomialVectorProperties extends QBarTestProperties {
                 fail(vs);
             } catch (NullPointerException ignored) {}
         }
+    }
+
+    private void propertiesDot() {
+        initialize("dot(PolynomialVector)");
+        Iterable<Pair<PolynomialVector, PolynomialVector>> ps = P.withElement(
+                new Pair<>(ZERO_DIMENSIONAL, ZERO_DIMENSIONAL),
+                map(
+                        p -> p.b,
+                        P.dependentPairsInfiniteLogarithmicOrder(
+                                P.positiveIntegersGeometric(),
+                                i -> P.pairs(P.polynomialVectors(i))
+                        )
+                )
+        );
+        for (Pair<PolynomialVector, PolynomialVector> p : take(LIMIT, ps)) {
+            commutative(PolynomialVector::dot, p);
+            homomorphic(
+                    PolynomialVector::negate,
+                    Function.identity(),
+                    Polynomial::negate,
+                    PolynomialVector::dot,
+                    PolynomialVector::dot,
+                    p
+            );
+            homomorphic(
+                    Function.identity(),
+                    PolynomialVector::negate,
+                    Polynomial::negate,
+                    PolynomialVector::dot,
+                    PolynomialVector::dot,
+                    p
+            );
+        }
+
+        Iterable<Triple<Polynomial, PolynomialVector, PolynomialVector>> ts = map(
+                p -> new Triple<>(p.b, p.a.a, p.a.b),
+                P.pairs(ps, P.polynomials())
+        );
+        for (Triple<Polynomial, PolynomialVector, PolynomialVector> t : take(LIMIT, ts)) {
+            assertEquals(t, t.b.dot(t.c).multiply(t.a), t.b.multiply(t.a).dot(t.c));
+        }
+
+        for (PolynomialVector v : take(LIMIT, P.polynomialVectors())) {
+            assertEquals(v, v.dot(zero(v.dimension())), Polynomial.ZERO);
+            for (int i = 0; i < v.dimension(); i++) {
+                assertEquals(v, v.dot(standard(v.dimension(), i)), v.get(i));
+            }
+        }
+
+        for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(P.polynomials()))) {
+            homomorphic(
+                    PolynomialVector::of,
+                    PolynomialVector::of,
+                    Function.identity(),
+                    Polynomial::multiply,
+                    PolynomialVector::dot,
+                    p
+            );
+        }
+
+        Iterable<Pair<PolynomialVector, PolynomialVector>> psFail = filterInfinite(
+                p -> p.a.dimension() != p.b.dimension(),
+                P.pairs(P.polynomialVectors())
+        );
+        for (Pair<PolynomialVector, PolynomialVector> p : take(LIMIT, psFail)) {
+            try {
+                p.a.dot(p.b);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private static @NotNull Polynomial squaredLength_simplest(@NotNull PolynomialVector v) {
+        return v.dot(v);
+    }
+
+    private void propertiesSquaredLength() {
+        initialize("squaredLength()");
+        for (PolynomialVector v : take(LIMIT, P.polynomialVectors())) {
+            Polynomial squaredLength = v.squaredLength();
+            assertEquals(v, squaredLength_simplest(v), squaredLength);
+            assertNotEquals(v, squaredLength.signum(), -1);
+            assertEquals(v, v.negate().squaredLength(), squaredLength);
+        }
+
+        for (Pair<PolynomialVector, Polynomial> p : take(LIMIT, P.pairs(P.polynomialVectors(), P.polynomials()))) {
+            assertEquals(p, p.a.multiply(p.b).squaredLength(), p.a.squaredLength().multiply(p.b.pow(2)));
+        }
+
+        for (int i : take(LIMIT, P.naturalIntegersGeometric())) {
+            assertEquals(i, zero(i).squaredLength(), Polynomial.ZERO);
+        }
+
+        for (Pair<Integer, Integer> p : take(LIMIT, P.subsetPairs(P.naturalIntegersGeometric()))) {
+            assertEquals(p, standard(p.b, p.a).squaredLength(), Polynomial.ONE);
+        }
+    }
+
+    private void compareImplementationsSquaredLength() {
+        Map<String, Function<PolynomialVector, Polynomial>> functions = new LinkedHashMap<>();
+        functions.put("simplest", PolynomialVectorProperties::squaredLength_simplest);
+        functions.put("standard", PolynomialVector::squaredLength);
+        compareImplementations("squaredLength()", take(LIMIT, P.polynomialVectors()), functions);
     }
 
     private void propertiesEquals() {
