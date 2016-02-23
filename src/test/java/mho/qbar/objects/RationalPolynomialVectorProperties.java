@@ -9,9 +9,7 @@ import mho.wheels.structures.Triple;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigInteger;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 
 import static mho.qbar.objects.RationalPolynomialVector.*;
@@ -54,6 +52,9 @@ public class RationalPolynomialVectorProperties extends QBarTestProperties {
         compareImplementationsShiftLeft();
         propertiesShiftRight();
         compareImplementationsShiftRight();
+        propertiesSum();
+        compareImplementationsSum();
+        propertiesDelta();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -893,6 +894,206 @@ public class RationalPolynomialVectorProperties extends QBarTestProperties {
                 P.integersGeometric()
         );
         compareImplementations("shiftRight(int)", take(LIMIT, ps), functions);
+    }
+
+    private static @NotNull RationalPolynomialVector sum_alt(@NotNull Iterable<RationalPolynomialVector> xs) {
+        List<RationalPolynomial> coordinates = toList(map(RationalPolynomial::sum, transpose(map(v -> v, xs))));
+        return coordinates.isEmpty() ? ZERO_DIMENSIONAL : of(coordinates);
+    }
+
+    private void propertiesSum() {
+        initialize("sum(Iterable<RationalPolynomialVector>)");
+        Iterable<List<RationalPolynomialVector>> vss = P.chooseLogarithmicOrder(
+                map(
+                        p -> p.b,
+                        P.dependentPairsInfiniteSquareRootOrder(
+                                P.pairs(P.positiveIntegersGeometric()),
+                                p -> P.lists(p.a, P.withScale(4).rationalPolynomialVectors(p.b))
+                        )
+                ),
+                map(i -> toList(replicate(i, ZERO_DIMENSIONAL)), P.positiveIntegersGeometric())
+        );
+        for (List<RationalPolynomialVector> vs : take(LIMIT, vss)) {
+            RationalPolynomialVector sum = sum(vs);
+            sum.validate();
+            assertEquals(vs, sum, sum_alt(vs));
+            assertEquals(vs, sum.dimension(), head(vs).dimension());
+        }
+
+        Iterable<Pair<List<RationalPolynomialVector>, List<RationalPolynomialVector>>> ps = filterInfinite(
+                q -> !q.a.equals(q.b),
+                P.dependentPairs(vss, P::permutationsFinite)
+        );
+        for (Pair<List<RationalPolynomialVector>, List<RationalPolynomialVector>> p : take(LIMIT, ps)) {
+            assertEquals(p, sum(p.a), sum(p.b));
+        }
+
+        for (RationalPolynomialVector v : take(LIMIT, P.rationalPolynomialVectors())) {
+            assertEquals(v, sum(Collections.singletonList(v)), v);
+        }
+
+        Iterable<Pair<RationalPolynomialVector, RationalPolynomialVector>> ps2 = P.withElement(
+                new Pair<>(ZERO_DIMENSIONAL, ZERO_DIMENSIONAL),
+                map(
+                        p -> p.b,
+                        P.dependentPairsInfiniteLogarithmicOrder(
+                                P.positiveIntegersGeometric(),
+                                i -> P.pairs(P.rationalPolynomialVectors(i))
+                        )
+                )
+        );
+        for (Pair<RationalPolynomialVector, RationalPolynomialVector> p : take(LIMIT, ps2)) {
+            assertEquals(p, sum(Arrays.asList(p.a, p.b)), p.a.add(p.b));
+        }
+
+        for (List<RationalPolynomial> rs : take(LIMIT, P.listsAtLeast(1, P.rationalPolynomials()))) {
+            homomorphic(
+                    ss -> toList(map(RationalPolynomialVector::of, ss)),
+                    RationalPolynomialVector::of,
+                    RationalPolynomial::sum,
+                    RationalPolynomialVector::sum,
+                    rs
+            );
+        }
+
+        Iterable<List<RationalPolynomialVector>> vssFail = filterInfinite(
+                us -> !same(map(RationalPolynomialVector::dimension, us)),
+                P.listsAtLeast(1, P.rationalPolynomialVectors())
+        );
+        for (List<RationalPolynomialVector> vs : take(LIMIT, vssFail)) {
+            try {
+                sum(vs);
+                fail(vs);
+            } catch (ArithmeticException ignored) {}
+        }
+
+        vssFail = map(
+                p -> p.b,
+                P.dependentPairsInfiniteSquareRootOrder(
+                        P.positiveIntegersGeometric(),
+                        i -> P.listsWithElement(null, P.rationalPolynomialVectors(i))
+                )
+        );
+        for (List<RationalPolynomialVector> vs : take(LIMIT, vssFail)) {
+            try {
+                sum(vs);
+                fail(vs);
+            } catch (NullPointerException ignored) {}
+        }
+    }
+
+    private void compareImplementationsSum() {
+        Map<String, Function<List<RationalPolynomialVector>, RationalPolynomialVector>> functions =
+                new LinkedHashMap<>();
+        functions.put("alt", RationalPolynomialVectorProperties::sum_alt);
+        functions.put("standard", RationalPolynomialVector::sum);
+        Iterable<List<RationalPolynomialVector>> vss = P.chooseLogarithmicOrder(
+                map(
+                        p -> p.b,
+                        P.dependentPairsInfiniteSquareRootOrder(
+                                P.pairs(P.positiveIntegersGeometric()),
+                                p -> P.lists(p.a, P.withScale(4).rationalPolynomialVectors(p.b))
+                        )
+                ),
+                map(i -> toList(replicate(i, ZERO_DIMENSIONAL)), P.positiveIntegersGeometric())
+        );
+        compareImplementations("sum(Iterable<RationalPolynomialVector>)", take(LIMIT, vss), functions);
+    }
+
+    private void propertiesDelta() {
+        initialize("delta(Iterable<RationalPolynomialVector>)");
+        Iterable<List<RationalPolynomialVector>> vss = P.chooseLogarithmicOrder(
+                map(
+                        p -> p.b,
+                        P.dependentPairsInfiniteSquareRootOrder(
+                                P.pairs(P.positiveIntegersGeometric()),
+                                p -> P.lists(p.a, P.withScale(4).rationalPolynomialVectors(p.b))
+                        )
+                ),
+                map(i -> toList(replicate(i, ZERO_DIMENSIONAL)), P.positiveIntegersGeometric())
+        );
+        for (List<RationalPolynomialVector> vs : take(LIMIT, vss)) {
+            Iterable<RationalPolynomialVector> deltas = delta(vs);
+            deltas.forEach(RationalPolynomialVector::validate);
+            assertTrue(vs, all(v -> v.dimension() == head(vs).dimension(), deltas));
+            assertEquals(vs, length(deltas), length(vs) - 1);
+            List<RationalPolynomialVector> reversed = reverse(
+                    map(RationalPolynomialVector::negate, delta(reverse(vs)))
+            );
+            aeqit(vs, deltas, reversed);
+            testNoRemove(TINY_LIMIT, deltas);
+            testHasNext(deltas);
+        }
+
+        for (RationalPolynomialVector v : take(LIMIT, P.rationalPolynomialVectors())) {
+            assertTrue(v, isEmpty(delta(Collections.singletonList(v))));
+        }
+
+        Iterable<Pair<RationalPolynomialVector, RationalPolynomialVector>> ps = P.withElement(
+                new Pair<>(ZERO_DIMENSIONAL, ZERO_DIMENSIONAL),
+                map(
+                        p -> p.b,
+                        P.dependentPairsInfiniteLogarithmicOrder(
+                                P.positiveIntegersGeometric(),
+                                i -> P.pairs(P.rationalPolynomialVectors(i))
+                        )
+                )
+        );
+        for (Pair<RationalPolynomialVector, RationalPolynomialVector> p : take(LIMIT, ps)) {
+            aeqit(p, delta(Arrays.asList(p.a, p.b)), Collections.singletonList(p.b.subtract(p.a)));
+        }
+
+        Iterable<Iterable<RationalPolynomialVector>> vss2 = P.withElement(
+                repeat(ZERO_DIMENSIONAL),
+                map(
+                        p -> p.b, P.dependentPairsInfiniteSquareRootOrder(
+                                P.positiveIntegersGeometric(),
+                                i -> EP.prefixPermutations(QBarTesting.QEP.rationalPolynomialVectors(i))
+                        )
+                )
+        );
+        for (Iterable<RationalPolynomialVector> vs : take(LIMIT, vss2)) {
+            Iterable<RationalPolynomialVector> deltas = delta(vs);
+            List<RationalPolynomialVector> deltaPrefix = toList(take(TINY_LIMIT, deltas));
+            deltaPrefix.forEach(RationalPolynomialVector::validate);
+            assertEquals(vs, length(deltaPrefix), TINY_LIMIT);
+            testNoRemove(TINY_LIMIT, deltas);
+        }
+
+        for (List<RationalPolynomial> rs : take(LIMIT, P.listsAtLeast(1, P.rationalPolynomials()))) {
+            homomorphic(
+                    ss -> toList(map(RationalPolynomialVector::of, ss)),
+                    ss -> toList(map(RationalPolynomialVector::of, ss)),
+                    ss -> toList(RationalPolynomial.delta(ss)),
+                    vs -> toList(delta(vs)),
+                    rs
+            );
+        }
+
+        Iterable<List<RationalPolynomialVector>> vssFail = filterInfinite(
+                us -> !same(map(RationalPolynomialVector::dimension, us)),
+                P.listsAtLeast(1, P.rationalPolynomialVectors())
+        );
+        for (List<RationalPolynomialVector> vs : take(LIMIT, vssFail)) {
+            try {
+                toList(delta(vs));
+                fail(vs);
+            } catch (ArithmeticException ignored) {}
+        }
+
+        vssFail = map(
+                p -> p.b,
+                P.dependentPairsInfiniteSquareRootOrder(
+                        P.positiveIntegersGeometric(),
+                        i -> P.listsWithElement(null, P.rationalPolynomialVectors(i))
+                )
+        );
+        for (List<RationalPolynomialVector> vs : take(LIMIT, vssFail)) {
+            try {
+                toList(delta(vs));
+                fail(vs);
+            } catch (NullPointerException ignored) {}
+        }
     }
 
     private void propertiesEquals() {

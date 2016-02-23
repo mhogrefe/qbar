@@ -10,6 +10,7 @@ import java.util.List;
 
 import static mho.qbar.objects.RationalPolynomialVector.*;
 import static mho.wheels.iterables.IterableUtils.*;
+import static mho.wheels.testing.Testing.*;
 import static mho.wheels.testing.Testing.MEDIUM_LIMIT;
 import static mho.wheels.testing.Testing.SMALL_LIMIT;
 import static mho.wheels.testing.Testing.nicePrint;
@@ -227,6 +228,46 @@ public class RationalPolynomialVectorDemos extends QBarDemos {
         );
         for (Pair<RationalPolynomialVector, Integer> p : take(LIMIT, ps)) {
             System.out.println(p.a + " >> " + p.b + " = " + p.a.shiftRight(p.b));
+        }
+    }
+
+    private void demoSum() {
+        Iterable<List<RationalPolynomialVector>> vss = P.chooseLogarithmicOrder(
+                map(
+                        p -> p.b,
+                        P.dependentPairsInfiniteSquareRootOrder(
+                                P.pairs(P.withScale(4).positiveIntegersGeometric()),
+                                p -> P.withScale(4).lists(
+                                        p.a,
+                                        P.withScale(4).withSecondaryScale(4).rationalPolynomialVectors(p.b)
+                                )
+                        )
+                ),
+                map(i -> toList(replicate(i, ZERO_DIMENSIONAL)), P.withScale(4).positiveIntegersGeometric())
+        );
+        for (List<RationalPolynomialVector> vs : take(LIMIT, vss)) {
+            String listString = tail(init(vs.toString()));
+            System.out.println("Σ(" + listString + ") = " + sum(vs));
+        }
+    }
+
+    private void demoDelta() {
+        Iterable<List<RationalPolynomialVector>> vss = P.chooseLogarithmicOrder(
+                map(
+                        p -> p.b,
+                        P.dependentPairsInfiniteSquareRootOrder(
+                                P.pairs(P.withScale(4).positiveIntegersGeometric()),
+                                p -> P.withScale(4).lists(
+                                        p.a,
+                                        P.withScale(4).withSecondaryScale(4).rationalPolynomialVectors(p.b)
+                                )
+                        )
+                ),
+                map(i -> toList(replicate(i, ZERO_DIMENSIONAL)), P.withScale(4).positiveIntegersGeometric())
+        );
+        for (List<RationalPolynomialVector> vs : take(LIMIT, vss)) {
+            String listString = tail(init(vs.toString()));
+            System.out.println("Δ(" + listString + ") = " + its(delta(vs)));
         }
     }
 

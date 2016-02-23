@@ -5,10 +5,12 @@ import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static mho.qbar.objects.RationalPolynomialVector.*;
 import static mho.wheels.iterables.IterableUtils.*;
+import static mho.wheels.testing.Testing.*;
 import static mho.wheels.testing.Testing.aeq;
 import static mho.wheels.testing.Testing.testCompareToHelper;
 import static mho.wheels.testing.Testing.testEqualsHelper;
@@ -487,6 +489,87 @@ public class RationalPolynomialVectorTest {
         shiftRight_helper("[5/3, -1/4*x+3, 23*x^5]", -2, "[20/3, -x+12, 92*x^5]");
         shiftRight_helper("[5/3, -1/4*x+3, 23*x^5]", -3, "[40/3, -2*x+24, 184*x^5]");
         shiftRight_helper("[5/3, -1/4*x+3, 23*x^5]", -4, "[80/3, -4*x+48, 368*x^5]");
+    }
+
+    private static void sum_helper(@NotNull String input, @NotNull String output) {
+        aeq(sum(readRationalPolynomialVectorList(input)), output);
+    }
+
+    private static void sum_fail_helper(@NotNull String input) {
+        try {
+            sum(readRationalPolynomialVectorListWithNulls(input));
+            fail();
+        } catch (IllegalArgumentException | ArithmeticException | NullPointerException ignored) {}
+    }
+
+    @Test
+    public void testSum() {
+        sum_helper("[[]]", "[]");
+        sum_helper("[[], [], []]", "[]");
+        sum_helper("[[5/3, -1/4*x+3, 23*x^5]]", "[5/3, -1/4*x+3, 23*x^5]");
+        sum_helper("[[5/3, -1/4*x+3, 23*x^5], [0, 1/2*x^10, x-1/3], [x^2-1, 2, 4/3]]",
+                "[x^2+2/3, 1/2*x^10-1/4*x+5, 23*x^5+x+1]");
+        sum_helper("[[x], [1/2*x], [x-1/4]]", "[5/2*x-1/4]");
+        sum_fail_helper("[]");
+        sum_fail_helper("[[x], [1/2*x], null]");
+        sum_fail_helper("[[1/2*x], [3, 4]]");
+    }
+
+    private static void delta_helper(@NotNull Iterable<RationalPolynomialVector> input, @NotNull String output) {
+        aeqitLimit(TINY_LIMIT, delta(input), output);
+    }
+
+    private static void delta_helper(@NotNull String input, @NotNull String output) {
+        delta_helper(readRationalPolynomialVectorList(input), output);
+    }
+
+    private static void delta_fail_helper(@NotNull String input) {
+        try {
+            toList(delta(readRationalPolynomialVectorListWithNulls(input)));
+            fail();
+        } catch (IllegalArgumentException | ArithmeticException | NullPointerException ignored) {}
+    }
+
+    @Test
+    public void testDelta() {
+        delta_helper("[[]]", "[]");
+        delta_helper("[[], [], []]", "[[], []]");
+        delta_helper("[[5/3, -1/4*x+3, 23*x^5]]", "[]");
+        delta_helper("[[5/3, -1/4*x+3, 23*x^5], [0, 1/2*x^10, x-1/3], [x^2-1, 2, 4/3]]",
+                "[[-5/3, 1/2*x^10+1/4*x-3, -23*x^5+x-1/3], [x^2-1, -1/2*x^10+2, -x+5/3]]");
+        delta_helper("[[x], [1/2*x], [x-1/4]]", "[[-1/2*x], [1/2*x-1/4]]");
+        delta_helper(
+                map(
+                        i -> {
+                            RationalPolynomial p = RationalPolynomial.of(
+                                    Arrays.asList(Rational.of(1, -i), Rational.ONE)
+                            );
+                            return of(Arrays.asList(p, p.pow(2), p.pow(3)));
+                        },
+                        rangeUp(1)
+                ),
+                "[[1/2, x-3/4, 3/2*x^2-9/4*x+7/8], [1/6, 1/3*x-5/36, 1/2*x^2-5/12*x+19/216]," +
+                " [1/12, 1/6*x-7/144, 1/4*x^2-7/48*x+37/1728], [1/20, 1/10*x-9/400, 3/20*x^2-27/400*x+61/8000]," +
+                " [1/30, 1/15*x-11/900, 1/10*x^2-11/300*x+91/27000]," +
+                " [1/42, 1/21*x-13/1764, 1/14*x^2-13/588*x+127/74088]," +
+                " [1/56, 1/28*x-15/3136, 3/56*x^2-45/3136*x+169/175616]," +
+                " [1/72, 1/36*x-17/5184, 1/24*x^2-17/1728*x+217/373248]," +
+                " [1/90, 1/45*x-19/8100, 1/30*x^2-19/2700*x+271/729000]," +
+                " [1/110, 1/55*x-21/12100, 3/110*x^2-63/12100*x+331/1331000]," +
+                " [1/132, 1/66*x-23/17424, 1/44*x^2-23/5808*x+397/2299968]," +
+                " [1/156, 1/78*x-25/24336, 1/52*x^2-25/8112*x+469/3796416]," +
+                " [1/182, 1/91*x-27/33124, 3/182*x^2-81/33124*x+547/6028568]," +
+                " [1/210, 1/105*x-29/44100, 1/70*x^2-29/14700*x+631/9261000]," +
+                " [1/240, 1/120*x-31/57600, 1/80*x^2-31/19200*x+721/13824000]," +
+                " [1/272, 1/136*x-33/73984, 3/272*x^2-99/73984*x+817/20123648]," +
+                " [1/306, 1/153*x-35/93636, 1/102*x^2-35/31212*x+919/28652616]," +
+                " [1/342, 1/171*x-37/116964, 1/114*x^2-37/38988*x+1027/40001688]," +
+                " [1/380, 1/190*x-39/144400, 3/380*x^2-117/144400*x+1141/54872000]," +
+                " [1/420, 1/210*x-41/176400, 1/140*x^2-41/58800*x+1261/74088000], ...]"
+        );
+        delta_fail_helper("[]");
+        delta_fail_helper("[[x], [1/2*x], null]");
+        delta_fail_helper("[[1/2*x], [3, 4]]");
     }
 
     @Test

@@ -9,9 +9,7 @@ import mho.wheels.structures.Triple;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigInteger;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 
 import static mho.qbar.objects.PolynomialVector.*;
@@ -47,6 +45,9 @@ public class PolynomialVectorProperties extends QBarTestProperties {
         propertiesMultiply_int();
         propertiesShiftLeft();
         compareImplementationsShiftLeft();
+        propertiesSum();
+        compareImplementationsSum();
+        propertiesDelta();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -549,6 +550,203 @@ public class PolynomialVectorProperties extends QBarTestProperties {
         functions.put("standard", p -> p.a.shiftLeft(p.b));
         Iterable<Pair<PolynomialVector, Integer>> ps = P.pairs(P.polynomialVectors(), P.naturalIntegersGeometric());
         compareImplementations("shiftLeft(int)", take(LIMIT, ps), functions);
+    }
+
+    private static @NotNull PolynomialVector sum_alt(@NotNull Iterable<PolynomialVector> xs) {
+        List<Polynomial> coordinates = toList(map(Polynomial::sum, transpose(map(v -> v, xs))));
+        return coordinates.isEmpty() ? ZERO_DIMENSIONAL : of(coordinates);
+    }
+
+    private void propertiesSum() {
+        initialize("sum(Iterable<PolynomialVector>)");
+        Iterable<List<PolynomialVector>> vss = P.chooseLogarithmicOrder(
+                map(
+                        p -> p.b,
+                        P.dependentPairsInfiniteSquareRootOrder(
+                                P.pairs(P.positiveIntegersGeometric()),
+                                p -> P.lists(p.a, P.withScale(4).polynomialVectors(p.b))
+                        )
+                ),
+                map(i -> toList(replicate(i, ZERO_DIMENSIONAL)), P.positiveIntegersGeometric())
+        );
+        for (List<PolynomialVector> vs : take(LIMIT, vss)) {
+            PolynomialVector sum = sum(vs);
+            sum.validate();
+            assertEquals(vs, sum, sum_alt(vs));
+            assertEquals(vs, sum.dimension(), head(vs).dimension());
+        }
+
+        Iterable<Pair<List<PolynomialVector>, List<PolynomialVector>>> ps = filterInfinite(
+                q -> !q.a.equals(q.b),
+                P.dependentPairs(vss, P::permutationsFinite)
+        );
+        for (Pair<List<PolynomialVector>, List<PolynomialVector>> p : take(LIMIT, ps)) {
+            assertEquals(p, sum(p.a), sum(p.b));
+        }
+
+        for (PolynomialVector v : take(LIMIT, P.polynomialVectors())) {
+            assertEquals(v, sum(Collections.singletonList(v)), v);
+        }
+
+        Iterable<Pair<PolynomialVector, PolynomialVector>> ps2 = P.withElement(
+                new Pair<>(ZERO_DIMENSIONAL, ZERO_DIMENSIONAL),
+                map(
+                        p -> p.b,
+                        P.dependentPairsInfiniteLogarithmicOrder(
+                                P.positiveIntegersGeometric(),
+                                i -> P.pairs(P.polynomialVectors(i))
+                        )
+                )
+        );
+        for (Pair<PolynomialVector, PolynomialVector> p : take(LIMIT, ps2)) {
+            assertEquals(p, sum(Arrays.asList(p.a, p.b)), p.a.add(p.b));
+        }
+
+        for (List<Polynomial> xs : take(LIMIT, P.listsAtLeast(1, P.polynomials()))) {
+            homomorphic(
+                    ss -> toList(map(PolynomialVector::of, ss)),
+                    PolynomialVector::of,
+                    Polynomial::sum,
+                    PolynomialVector::sum,
+                    xs
+            );
+        }
+
+        Iterable<List<PolynomialVector>> vssFail = filterInfinite(
+                us -> !same(map(PolynomialVector::dimension, us)),
+                P.listsAtLeast(1, P.polynomialVectors())
+        );
+        for (List<PolynomialVector> vs : take(LIMIT, vssFail)) {
+            try {
+                sum(vs);
+                fail(vs);
+            } catch (ArithmeticException ignored) {}
+        }
+
+        vssFail = map(
+                p -> p.b,
+                P.dependentPairsInfiniteSquareRootOrder(
+                        P.positiveIntegersGeometric(),
+                        i -> P.listsWithElement(null, P.polynomialVectors(i))
+                )
+        );
+        for (List<PolynomialVector> vs : take(LIMIT, vssFail)) {
+            try {
+                sum(vs);
+                fail(vs);
+            } catch (NullPointerException ignored) {}
+        }
+    }
+
+    private void compareImplementationsSum() {
+        Map<String, Function<List<PolynomialVector>, PolynomialVector>> functions = new LinkedHashMap<>();
+        functions.put("alt", PolynomialVectorProperties::sum_alt);
+        functions.put("standard", PolynomialVector::sum);
+        Iterable<List<PolynomialVector>> vss = P.chooseLogarithmicOrder(
+                map(
+                        p -> p.b,
+                        P.dependentPairsInfiniteSquareRootOrder(
+                                P.pairs(P.positiveIntegersGeometric()),
+                                p -> P.lists(p.a, P.polynomialVectors(p.b))
+                        )
+                ),
+                map(i -> toList(replicate(i, ZERO_DIMENSIONAL)), P.positiveIntegersGeometric())
+        );
+        compareImplementations("sum(Iterable<PolynomialVector>)", take(LIMIT, vss), functions);
+    }
+
+    private void propertiesDelta() {
+        initialize("delta(Iterable<PolynomialVector>)");
+        Iterable<List<PolynomialVector>> vss = P.chooseLogarithmicOrder(
+                map(
+                        p -> p.b,
+                        P.dependentPairsInfiniteSquareRootOrder(
+                                P.pairs(P.positiveIntegersGeometric()),
+                                p -> P.lists(p.a, P.withScale(4).polynomialVectors(p.b))
+                        )
+                ),
+                map(i -> toList(replicate(i, ZERO_DIMENSIONAL)), P.positiveIntegersGeometric())
+        );
+        for (List<PolynomialVector> vs : take(LIMIT, vss)) {
+            Iterable<PolynomialVector> deltas = delta(vs);
+            deltas.forEach(PolynomialVector::validate);
+            assertTrue(vs, all(v -> v.dimension() == head(vs).dimension(), deltas));
+            assertEquals(vs, length(deltas), length(vs) - 1);
+            List<PolynomialVector> reversed = reverse(map(PolynomialVector::negate, delta(reverse(vs))));
+            aeqit(vs, deltas, reversed);
+            testNoRemove(TINY_LIMIT, deltas);
+            testHasNext(deltas);
+        }
+
+        for (PolynomialVector v : take(LIMIT, P.polynomialVectors())) {
+            assertTrue(v, isEmpty(delta(Collections.singletonList(v))));
+        }
+
+        Iterable<Pair<PolynomialVector, PolynomialVector>> ps = P.withElement(
+                new Pair<>(ZERO_DIMENSIONAL, ZERO_DIMENSIONAL),
+                map(
+                        p -> p.b,
+                        P.dependentPairsInfiniteLogarithmicOrder(
+                                P.positiveIntegersGeometric(),
+                                i -> P.pairs(P.polynomialVectors(i))
+                        )
+                )
+        );
+        for (Pair<PolynomialVector, PolynomialVector> p : take(LIMIT, ps)) {
+            aeqit(p, delta(Arrays.asList(p.a, p.b)), Collections.singletonList(p.b.subtract(p.a)));
+        }
+
+        Iterable<Iterable<PolynomialVector>> vss2 = P.withElement(
+                repeat(ZERO_DIMENSIONAL),
+                map(
+                        p -> p.b, P.dependentPairsInfiniteSquareRootOrder(
+                                P.positiveIntegersGeometric(),
+                                i -> EP.prefixPermutations(QBarTesting.QEP.polynomialVectors(i))
+                        )
+                )
+        );
+        for (Iterable<PolynomialVector> vs : take(LIMIT, vss2)) {
+            Iterable<PolynomialVector> deltas = delta(vs);
+            List<PolynomialVector> deltaPrefix = toList(take(TINY_LIMIT, deltas));
+            deltaPrefix.forEach(PolynomialVector::validate);
+            assertEquals(vs, length(deltaPrefix), TINY_LIMIT);
+            testNoRemove(TINY_LIMIT, deltas);
+        }
+
+        for (List<Polynomial> xs : take(LIMIT, P.listsAtLeast(1, P.polynomials()))) {
+            homomorphic(
+                    ss -> toList(map(PolynomialVector::of, ss)),
+                    ss -> toList(map(PolynomialVector::of, ss)),
+                    ss -> toList(Polynomial.delta(ss)),
+                    vs -> toList(delta(vs)),
+                    xs
+            );
+        }
+
+        Iterable<List<PolynomialVector>> vssFail = filterInfinite(
+                us -> !same(map(PolynomialVector::dimension, us)),
+                P.listsAtLeast(1, P.polynomialVectors())
+        );
+        for (List<PolynomialVector> vs : take(LIMIT, vssFail)) {
+            try {
+                toList(delta(vs));
+                fail(vs);
+            } catch (ArithmeticException ignored) {}
+        }
+
+        vssFail = map(
+                p -> p.b,
+                P.dependentPairsInfiniteSquareRootOrder(
+                        P.positiveIntegersGeometric(),
+                        i -> P.listsWithElement(null, P.polynomialVectors(i))
+                )
+        );
+        for (List<PolynomialVector> vs : take(LIMIT, vssFail)) {
+            try {
+                toList(delta(vs));
+                fail(vs);
+            } catch (NullPointerException ignored) {}
+        }
     }
 
     private void propertiesEquals() {

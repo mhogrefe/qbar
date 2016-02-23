@@ -157,6 +157,46 @@ public class PolynomialVectorDemos extends QBarDemos {
         }
     }
 
+    private void demoSum() {
+        Iterable<List<PolynomialVector>> vss = P.chooseLogarithmicOrder(
+                map(
+                        p -> p.b,
+                        P.dependentPairsInfiniteSquareRootOrder(
+                                P.pairs(P.withScale(4).positiveIntegersGeometric()),
+                                p -> P.withScale(4).lists(
+                                        p.a,
+                                        P.withScale(4).withSecondaryScale(4).polynomialVectors(p.b)
+                                )
+                        )
+                ),
+                map(i -> toList(replicate(i, ZERO_DIMENSIONAL)), P.withScale(4).positiveIntegersGeometric())
+        );
+        for (List<PolynomialVector> vs : take(LIMIT, vss)) {
+            String listString = tail(init(vs.toString()));
+            System.out.println("Σ(" + listString + ") = " + sum(vs));
+        }
+    }
+
+    private void demoDelta() {
+        Iterable<List<PolynomialVector>> vss = P.chooseLogarithmicOrder(
+                map(
+                        p -> p.b,
+                        P.dependentPairsInfiniteSquareRootOrder(
+                                P.pairs(P.withScale(4).positiveIntegersGeometric()),
+                                p -> P.withScale(4).lists(
+                                        p.a,
+                                        P.withScale(4).withSecondaryScale(4).polynomialVectors(p.b)
+                                )
+                        )
+                ),
+                map(i -> toList(replicate(i, ZERO_DIMENSIONAL)), P.withScale(4).positiveIntegersGeometric())
+        );
+        for (List<PolynomialVector> vs : take(LIMIT, vss)) {
+            String listString = tail(init(vs.toString()));
+            System.out.println("Δ(" + listString + ") = " + its(delta(vs)));
+        }
+    }
+
     private void demoEquals_PolynomialVector() {
         Iterable<Pair<PolynomialVector, PolynomialVector>> ps = P.pairs(
                 P.withScale(4).withSecondaryScale(4).polynomialVectors()
