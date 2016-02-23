@@ -280,6 +280,36 @@ public final class Polynomial implements
     }
 
     /**
+     * Returns a degree-1 {@code Polynomial} whose root is a given {@code BigInteger}.
+     *
+     * <ul>
+     *  <li>{@code i} cannot be null.</li>
+     *  <li>The result is monic and has degree 1.</li>
+     * </ul>
+     *
+     * @param i the root of a {@code Polynomial}
+     * @return the minimal polynomial of {@code i}
+     */
+    public static @NotNull Polynomial fromRoot(@NotNull BigInteger i) {
+        return new Polynomial(Arrays.asList(i.negate(), BigInteger.ONE));
+    }
+
+    /**
+     * Returns a degree-1 {@code Polynomial} whose root is a given {@code Rational}.
+     *
+     * <ul>
+     *  <li>{@code r} cannot be null.</li>
+     *  <li>The result is primitive and has degree 1.</li>
+     * </ul>
+     *
+     * @param r the root of a {@code Polynomial}
+     * @return the minimal polynomial of {@code r}
+     */
+    public static @NotNull Polynomial fromRoot(@NotNull Rational r) {
+        return new Polynomial(Arrays.asList(r.getNumerator().negate(), r.getDenominator()));
+    }
+
+    /**
      * Returns the maximum bit length of any coefficient, or 0 if {@code this} is 0.
      *
      * <ul>
@@ -1505,8 +1535,9 @@ public final class Polynomial implements
      *  <li>The result is not null.</li>
      * </ul>
      *
-     * @return {@code this} reflected across the y-axis
+     * @return (–1)<sup>deg({@code this})</sup>{@code this}(–x)
      */
+    @SuppressWarnings("JavaDoc")
     public @NotNull Polynomial reflect() {
         if (degree() < 1) return this;
         List<BigInteger> reflectedCoefficients = new ArrayList<>();

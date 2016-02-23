@@ -47,6 +47,8 @@ public class PolynomialProperties extends QBarTestProperties {
         propertiesOf_List_BigInteger();
         propertiesOf_BigInteger();
         propertiesOf_BigInteger_int();
+        propertiesFromRoot_BigInteger();
+        propertiesFromRoot_Rational();
         propertiesMaxCoefficientBitLength();
         propertiesDegree();
         propertiesLeading();
@@ -441,6 +443,33 @@ public class PolynomialProperties extends QBarTestProperties {
                 of(p.a, p.b);
                 fail(p);
             } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesFromRoot_BigInteger() {
+        initialize("fromRoot(BigInteger)");
+        for (BigInteger i : take(LIMIT, P.bigIntegers())) {
+            Polynomial p = fromRoot(i);
+            p.validate();
+            assertEquals(i, p.degree(), 1);
+            assertTrue(i, p.isMonic());
+            inverse(Polynomial::fromRoot, (Polynomial q) -> q.coefficient(0).negate(), i);
+        }
+    }
+
+    private void propertiesFromRoot_Rational() {
+        initialize("fromRoot(Rational)");
+        for (Rational r : take(LIMIT, P.rationals())) {
+            Polynomial p = fromRoot(r);
+            p.validate();
+            assertEquals(r, p.degree(), 1);
+            assertTrue(r, p.isPrimitive());
+            assertEquals(r, p.signum(), 1);
+            inverse(
+                    Polynomial::fromRoot,
+                    (Polynomial q) -> Rational.of(q.coefficient(0).negate(), q.coefficient(1)),
+                    r
+            );
         }
     }
 
@@ -2604,16 +2633,27 @@ public class PolynomialProperties extends QBarTestProperties {
         initialize("reflect()");
         for (Polynomial p : take(LIMIT, P.polynomials())) {
             Polynomial reflected = p.reflect();
+            reflected.validate();
+            assertEquals(p, p.degree(), reflected.degree());
             assertEquals(p, p.signum(), reflected.signum());
-            assertEquals(p, p.isPrimitive(), reflected.isPrimitive());
             involution(Polynomial::reflect, p);
         }
 
-        for (List<BigInteger> is : take(LIMIT, P.withScale(4).bags(P.withScale(4).bigIntegers()))) {
-            Polynomial p = product(map(i -> of(Arrays.asList(i.negate(), BigInteger.ONE)), is));
-            Polynomial reflected = p.reflect();
-            List<BigInteger> negatedRoots = reverse(map(f -> f.coefficient(0).negate(), reflected.factor()));
-            assertEquals(is, reverse(map(BigInteger::negate, is)), negatedRoots);
+        for (Polynomial p : take(LIMIT, P.withScale(4).polynomialsAtLeast(0))) {
+            assertEquals(p, p.isIrreducible(), p.reflect().isIrreducible());
+        }
+
+        for (List<Rational> rs : take(LIMIT, P.withScale(4).bags(P.withScale(4).rationals()))) {
+            Polynomial p = product(map(Polynomial::fromRoot, rs));
+            List<Rational> negativeRs = reverse(map(Rational::negate, rs));
+            //noinspection RedundantCast
+            List<Rational> reflectRoots = sort(
+                    (Iterable<Rational>) map(
+                            f -> Rational.of(f.coefficient(0).negate(), f.coefficient(1)),
+                            p.reflect().factor()
+                    )
+            );
+            assertEquals(rs, negativeRs, reflectRoots);
         }
     }
 

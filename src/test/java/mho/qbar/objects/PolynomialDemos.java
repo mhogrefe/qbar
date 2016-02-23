@@ -89,6 +89,18 @@ public class PolynomialDemos extends QBarDemos {
         }
     }
 
+    private void demoFromRoot_BigInteger() {
+        for (BigInteger i : take(LIMIT, P.bigIntegers())) {
+            System.out.println("fromRoot(" + i + ") = " + fromRoot(i));
+        }
+    }
+
+    private void demoFromRoot_Rational() {
+        for (Rational r : take(LIMIT, P.rationals())) {
+            System.out.println("fromRoot(" + r + ") = " + fromRoot(r));
+        }
+    }
+
     private void demoMaxCoefficientBitLength() {
         for (Polynomial p : take(LIMIT, P.withScale(4).polynomials())) {
             System.out.println("maxCoefficientBitLength(" + p + ") = " + p.maxCoefficientBitLength());

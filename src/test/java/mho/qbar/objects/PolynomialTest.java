@@ -314,6 +314,30 @@ public class PolynomialTest {
         of_BigInteger_int_fail_helper("3", -1);
     }
 
+    private static void fromRoot_BigInteger_helper(@NotNull String input, @NotNull String output) {
+        aeq(fromRoot(Readers.readBigInteger(input).get()), output);
+    }
+
+    @Test
+    public void testFromRoot_BigInteger() {
+        fromRoot_BigInteger_helper("0", "x");
+        fromRoot_BigInteger_helper("1", "x-1");
+        fromRoot_BigInteger_helper("5", "x-5");
+        fromRoot_BigInteger_helper("-7", "x+7");
+    }
+
+    private static void fromRoot_Rational_helper(@NotNull String input, @NotNull String output) {
+        aeq(fromRoot(Rational.read(input).get()), output);
+    }
+
+    @Test
+    public void testFromRoot_Rational() {
+        fromRoot_Rational_helper("0", "x");
+        fromRoot_Rational_helper("1/2", "2*x-1");
+        fromRoot_Rational_helper("-4/3", "3*x+4");
+        fromRoot_Rational_helper("-7", "x+7");
+    }
+
     private static void maxCoefficientBitLength_helper(@NotNull String input, int output) {
         aeq(read(input).get().maxCoefficientBitLength(), output);
     }
