@@ -7,10 +7,8 @@ import mho.wheels.ordering.comparators.LexComparator;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.math.BigInteger;
+import java.util.*;
 
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.testing.Testing.assertTrue;
@@ -241,7 +239,7 @@ public class PolynomialMatrix implements Comparable<PolynomialMatrix> {
                     toList(
                             map(
                                     PolynomialVector::of,
-                                    transpose(
+                                    IterableUtils.transpose(
                                             (Iterable<Iterable<Polynomial>>)
                                                     map(c -> (Iterable<Polynomial>) c, columns)
                                     )
@@ -391,6 +389,442 @@ public class PolynomialMatrix implements Comparable<PolynomialMatrix> {
                 toList(map(i -> PolynomialVector.standard(dimension, i), range(0, dimension - 1))),
                 dimension
         );
+    }
+
+    /**
+     * Returns the trace of {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} must be square.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @return tr({@code this})
+     */
+    @SuppressWarnings("JavaDoc")
+    public @NotNull Polynomial trace() {
+        if (!isSquare()) {
+            throw new IllegalArgumentException("this must be square. Invalid this: " + this);
+        }
+        Polynomial sum = Polynomial.ZERO;
+        for (int i = 0; i < width; i++) {
+            sum = sum.add(get(i, i));
+        }
+        return sum;
+    }
+
+    /**
+     * Returns a submatrix of {@code this} containing the rows and columns selected by a list of row indices and column
+     * indices (both 0-based, in ascending order, with no repetitions).
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code PolynomialMatrix}.</li>
+     *  <li>{@code rowIndices} must be in ascending order, cannot have any repetitions, and cannot contain negative
+     *  numbers.</li>
+     *  <li>{@code columnIndices} must be in ascending order, cannot have any repetitions, and cannot contain negative
+     *  numbers.</li>
+     *  <li>The elements of {@code rowIndices} must all be less than height({@code this}).</li>
+     *  <li>The elements of {@code columnIndices} must all be less than width({@code this}).</li>
+     * </ul>
+     *
+     * Size is |{@code rowIndices}|×|{@code columnIndices}|
+     *
+     * @param rowIndices the indices of the rows in the result
+     * @param columnIndices the indices of the columns in the result
+     * @return a submatrix of {@code this}
+     */
+    public @NotNull PolynomialMatrix submatrix(
+            @NotNull List<Integer> rowIndices,
+            @NotNull List<Integer> columnIndices
+    ) {
+        if (!increasing(rowIndices)) {
+            throw new IllegalArgumentException("rowIndices must be in ascending order and cannot have any" +
+                    " repetitions. Invalid rowIndices: " + rowIndices);
+        } else if (!increasing(columnIndices)) {
+            throw new IllegalArgumentException("columnIndices must be in ascending order and cannot have any" +
+                    " repetitions. Invalid columnIndices: " + columnIndices);
+        } else if (!rowIndices.isEmpty() && (head(rowIndices) < 0 || last(rowIndices) >= height())) {
+            throw new IllegalArgumentException("rowIndices cannot contain negative numbers or any elements greater" +
+                    " than or equal to height(this). rowIndices: " + rowIndices + ", height(this): " + height());
+        } else if (!columnIndices.isEmpty() && (head(columnIndices) < 0 || last(columnIndices) >= width)) {
+            throw new IllegalArgumentException("columnIndices cannot contain negative numbers or any elements" +
+                    " greater than or equal to width(this). columnIndices: " + columnIndices + ", width(this): " +
+                    width());
+        } else if (rowIndices.isEmpty() || columnIndices.isEmpty()) {
+            return zero(rowIndices.size(), columnIndices.size());
+        } else if (rowIndices.size() == height() && columnIndices.size() == width) {
+            return this;
+        } else if (columnIndices.size() == width) {
+            return new PolynomialMatrix(toList(map(rows::get, rowIndices)), width);
+        } else {
+            List<PolynomialVector> submatrixRows = new ArrayList<>();
+            for (int i : rowIndices) {
+                PolynomialVector row = rows.get(i);
+                submatrixRows.add(PolynomialVector.of(toList(map(row::get, columnIndices))));
+            }
+            return new PolynomialMatrix(submatrixRows, columnIndices.size());
+        }
+    }
+
+    /**
+     * Returns the transpose of {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code PolynomialMatrix}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * Size is width({@code this})×height({@code this})
+     *
+     * @return {@code this}<sup>T</sup>
+     */
+    public @NotNull PolynomialMatrix transpose() {
+        int height = height();
+        if (height == 0 || width == 0) {
+            //noinspection SuspiciousNameCombination
+            return zero(width, height);
+        }
+        Polynomial[][] elements = new Polynomial[width][height];
+        for (int i = 0; i < height; i++) {
+            PolynomialVector row = rows.get(i);
+            for (int j = 0; j < width; j++) {
+                elements[j][i] = row.get(j);
+            }
+        }
+        //noinspection SuspiciousNameCombination
+        return new PolynomialMatrix(
+                toList(map(i -> PolynomialVector.of(Arrays.asList(elements[i])), range(0, width - 1))),
+                height
+        );
+    }
+
+    /**
+     * Returns the {@code PolynomialMatrix} produced by concatenating the rows of {@code this} with the rows of
+     * {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code PolynomialMatrix}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>{@code this} and {@code that} must have the same width.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * Size is (height({@code this}+height({@code that}))×width({@code this})
+     *
+     * @param that the {@code PolynomialMatrix} that {@code this} is concatenated with
+     * @return {@code this} concatenated with {@code that}
+     */
+    public @NotNull PolynomialMatrix concat(@NotNull PolynomialMatrix that) {
+        if (width != that.width) {
+            throw new IllegalArgumentException("this and that must have the same width. this: " + this + ", that: " +
+                    that);
+        }
+        if (height() == 0) return that;
+        if (that.height() == 0) return this;
+        return new PolynomialMatrix(toList(IterableUtils.concat(rows, that.rows)), width);
+    }
+
+    /**
+     * Returns {@code this} augmented with {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code PolynomialMatrix}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>{@code this} and {@code that} must have the same height.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * Size is height({@code this})×(width({@code this}+width({@code that}))
+     *
+     * @param that the {@code PolynomialMatrix} that {@code this} is augmented by
+     * @return {@code this}|{@code that}
+     */
+    public @NotNull PolynomialMatrix augment(@NotNull PolynomialMatrix that) {
+        if (height() != that.height()) {
+            throw new IllegalArgumentException("this and that must have the same height. this: " + this + ", that: " +
+                    that);
+        }
+        if (width == 0) return that;
+        if (that.width == 0) return this;
+        return new PolynomialMatrix(
+                toList(zipWith((r, s) -> PolynomialVector.of(toList(IterableUtils.concat(r, s))), rows, that.rows)),
+                width + that.width
+        );
+    }
+
+    /**
+     * Returns the sum of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code PolynomialMatrix}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>{@code this} and {@code that} must have the same height and the same width.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * Size is height({@code this})×width({@code this})
+     *
+     * @param that the {@code PolynomialMatrix} added to {@code this}
+     * @return {@code this}+{@code that}
+     */
+    public @NotNull PolynomialMatrix add(@NotNull PolynomialMatrix that) {
+        int height = height();
+        if (width != that.width || height != that.height()) {
+            throw new ArithmeticException("this and that must have the same width and height. this: " +
+                    this + ", that: " + that);
+        }
+        if (height == 0 || width == 0) return this;
+        return new PolynomialMatrix(toList(zipWith(PolynomialVector::add, rows, that.rows)), width);
+    }
+
+    /**
+     * Returns the negative of {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code PolynomialMatrix}.</li>
+     *  <li>The result is non-null.</li>
+     * </ul>
+     *
+     * Size is height({@code this})×width({@code this})
+     *
+     * @return –{@code this}
+     */
+    public @NotNull PolynomialMatrix negate() {
+        int height = height();
+        if (height == 0 || width == 0) return this;
+        return new PolynomialMatrix(toList(map(PolynomialVector::negate, rows)), width);
+    }
+
+    /**
+     * Returns the difference of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code PolynomialMatrix}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>{@code this} and {@code that} must have the same height and the same width.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * Size is height({@code this})×width({@code this})
+     *
+     * @param that the {@code PolynomialMatrix} subtracted from {@code this}
+     * @return {@code this}–{@code that}
+     */
+    public @NotNull PolynomialMatrix subtract(@NotNull PolynomialMatrix that) {
+        int height = height();
+        if (width != that.width || height != that.height()) {
+            throw new ArithmeticException("this and that must have the same width and height. this: " +
+                    this + ", that: " + that);
+        }
+        if (height == 0 || width == 0) return this;
+        return new PolynomialMatrix(toList(zipWith(PolynomialVector::subtract, rows, that.rows)), width);
+    }
+
+    /**
+     * Returns the scalar product of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} can be any {@code PolynomialMatrix}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * Size is height({@code this})×width({@code this})
+     *
+     * @param that the {@code Polynomial} {@code this} is multiplied by
+     * @return {@code this}×{@code that}
+     */
+    public @NotNull PolynomialMatrix multiply(@NotNull Polynomial that) {
+        if (height() == 0 || width == 0 || that == Polynomial.ONE) return this;
+        return new PolynomialMatrix(toList(map(r -> r.multiply(that), rows)), width);
+    }
+
+    /**
+     * Returns the scalar product of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} can be any {@code PolynomialMatrix}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * Size is height({@code this})×width({@code this})
+     *
+     * @param that the {@code BigInteger} {@code this} is multiplied by
+     * @return {@code this}×{@code that}
+     */
+    public @NotNull PolynomialMatrix multiply(@NotNull BigInteger that) {
+        if (height() == 0 || width == 0 || that.equals(BigInteger.ONE)) return this;
+        return new PolynomialMatrix(toList(map(r -> r.multiply(that), rows)), width);
+    }
+
+    /**
+     * Returns the scalar product of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} can be any {@code PolynomialMatrix}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * Size is height({@code this})×width({@code this})
+     *
+     * @param that the {@code int} {@code this} is multiplied by
+     * @return {@code this}×{@code that}
+     */
+    public @NotNull PolynomialMatrix multiply(int that) {
+        if (height() == 0 || width == 0 || that == 1) return this;
+        return new PolynomialMatrix(toList(map(r -> r.multiply(that), rows)), width);
+    }
+
+    /**
+     * Returns the product of {@code this} and {@code that}. The result is {@code that} after a linear transformation
+     * whose basis vectors are the columns of {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} can be any {@code PolynomialMatrix}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>The width of {@code this} must equal the dimension of {@code that}.</li>
+     * </ul>
+     *
+     * Length is height({@code this})
+     *
+     * @param that the {@code PolynomialVector} {@code this} is multiplied by
+     * @return {@code this}×{@code that}
+     */
+    public @NotNull PolynomialVector multiply(@NotNull PolynomialVector that) {
+        if (width != that.dimension()) {
+            throw new ArithmeticException("The width of this must equal the dimension of that. this: " +
+                    this + ", that: " + that);
+        }
+        return PolynomialVector.of(toList(map(r -> r.dot(that), rows)));
+    }
+
+    /**
+     * Returns the matrix product of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} can be any {@code PolynomialMatrix}</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>The width of {@code this} must equal the height of {@code that}.</li>
+     * </ul>
+     *
+     * Size is height({@code this})×width({@code that})
+     *
+     * @param that the {@code PolynomialMatrix} {@code this} is multiplied by
+     * @return {@code this}×{@code that}
+     */
+    public @NotNull PolynomialMatrix multiply(@NotNull PolynomialMatrix that) {
+        int n = height();
+        int m = width;
+        if (m != that.height()) {
+            throw new ArithmeticException("the width of this must equal the height of that. this: " +
+                    this + ", that: " + that);
+        }
+        int l = that.width;
+        if (n == 0) {
+            return zero(0, l);
+        }
+        List<PolynomialVector> rows = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            PolynomialVector row = row(i);
+            List<Polynomial> productRow = new ArrayList<>();
+            for (int k = 0; k < l; k++) {
+                Polynomial sum = Polynomial.ZERO;
+                for (int j = 0; j < m; j++) {
+                    sum = sum.add(row.get(j).multiply(that.get(j, k)));
+                }
+                productRow.add(sum);
+            }
+            rows.add(PolynomialVector.of(productRow));
+        }
+        return fromRows(rows);
+    }
+
+    /**
+     * Returns the left shift of {@code this} by {@code bits}; {@code this}×2<sup>{@code bits}</sup>.
+     *
+     * <ul>
+     *  <li>{@code this} can be any {@code PolynomialMatrix}.</li>
+     *  <li>{@code bits} cannot be negative.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * Size is height({@code this})×width({@code this})
+     *
+     * @param bits the number of bits to left-shift by
+     * @return {@code this}≪{@code bits}
+     */
+    public @NotNull PolynomialMatrix shiftLeft(int bits) {
+        if (bits < 0) {
+            throw new ArithmeticException("bits cannot be negative. Invalid bits: " + bits);
+        }
+        if (isZero() || bits == 0) return this;
+        return new PolynomialMatrix(toList(map(r -> r.shiftLeft(bits), rows)), width);
+    }
+
+    /**
+     * Computes the determinant of {@code this} using the Dogdson-Jordan-Gauss algorithm (Basu, Pollack, and Roy 2006).
+     *
+     * <ul>
+     *  <li>{@code this} must be square.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @return |{@code this}|
+     */
+    public @NotNull Polynomial determinant() {
+        if (width != height()) {
+            throw new IllegalArgumentException("this must be square. Invalid this: " + this);
+        }
+        int n = width;
+        if (n == 0) return Polynomial.ONE;
+        if (n == 1) return get(0, 0);
+        Polynomial[][] arrayA = new Polynomial[n][n];
+        for (int i = 0; i < n; i++) {
+            PolynomialVector row = row(i);
+            arrayA[i] = new Polynomial[n];
+            for (int j = 0; j < n; j++) {
+                arrayA[i][j] = row.get(j);
+            }
+        }
+        Polynomial[][] arrayB = new Polynomial[n - 1][n - 1];
+        arrayB[0][0] = Polynomial.ONE;
+        boolean swapSign = true;
+        for (int k = 0; k < n - 1; k++) {
+            int firstNonzeroColumnIndex = -1;
+            for (int j = 0; j < n - k; j++) {
+                if (arrayA[0][j] != Polynomial.ZERO) {
+                    firstNonzeroColumnIndex = j;
+                    break;
+                }
+            }
+            if (firstNonzeroColumnIndex == -1) {
+                return Polynomial.ZERO;
+            }
+            if (firstNonzeroColumnIndex != 0) {
+                for (Polynomial[] row : arrayA) {
+                    Polynomial temp = row[firstNonzeroColumnIndex];
+                    row[firstNonzeroColumnIndex] = row[0];
+                    row[0] = temp;
+                }
+                swapSign = !swapSign;
+            }
+            Polynomial denominator = arrayB[0][0];
+            for (int i = 1; i < n - k; i++) {
+                arrayB[i - 1][0] = Polynomial.ZERO;
+                for (int j = 1; j < n - k; j++) {
+                    Polynomial numerator = arrayA[0][0].multiply(arrayA[i][j])
+                            .subtract(arrayA[i][0].multiply(arrayA[0][j]));
+                    arrayB[i - 1][j - 1] = numerator.divideExact(denominator);
+                }
+            }
+            Polynomial[][] temp = arrayA;
+            arrayA = arrayB;
+            arrayB = temp;
+        }
+        Polynomial determinant = arrayA[0][0];
+        return swapSign ? determinant : determinant.negate();
     }
 
     /**

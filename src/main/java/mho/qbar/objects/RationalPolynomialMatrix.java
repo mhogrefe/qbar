@@ -7,10 +7,8 @@ import mho.wheels.ordering.comparators.LexComparator;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.math.BigInteger;
+import java.util.*;
 
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.testing.Testing.assertTrue;
@@ -258,7 +256,7 @@ public class RationalPolynomialMatrix implements Comparable<RationalPolynomialMa
                     toList(
                             map(
                                     RationalPolynomialVector::of,
-                                    transpose(
+                                    IterableUtils.transpose(
                                             (Iterable<Iterable<RationalPolynomial>>)
                                                     map(c -> (Iterable<RationalPolynomial>) c, columns)
                                     )
@@ -384,6 +382,544 @@ public class RationalPolynomialMatrix implements Comparable<RationalPolynomialMa
             }
         }
         return true;
+    }
+
+    /**
+     * Creates an identity matrix. The dimension must be positive.
+     *
+     * <ul>
+     *  <li>{@code dimension} cannot be negative.</li>
+     *  <li>The result is a square {@code RationalPolynomialMatrix}, with height and width at least 1, with ones on the
+     *  diagonal and zeros everywhere else.</li>
+     * </ul>
+     *
+     * Size is {@code dimension}×{@code dimension}
+     *
+     * @param dimension the matrix's dimension (width and height)
+     * @return I<sub>{@code dimension}</sub>
+     */
+    public static @NotNull RationalPolynomialMatrix identity(int dimension) {
+        if (dimension < 0) {
+            throw new IllegalArgumentException("dimension cannot be negative. Invalid dimension: " + dimension);
+        }
+        return new RationalPolynomialMatrix(
+                toList(map(i -> RationalPolynomialVector.standard(dimension, i), range(0, dimension - 1))),
+                dimension
+        );
+    }
+
+    /**
+     * Returns a submatrix of {@code this} containing the rows and columns selected by a list of row indices and column
+     * indices (both 0-based, in ascending order, with no repetitions).
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalPolynomialMatrix}.</li>
+     *  <li>{@code rowIndices} must be in ascending order, cannot have any repetitions, and cannot contain negative
+     *  numbers.</li>
+     *  <li>{@code columnIndices} must be in ascending order, cannot have any repetitions, and cannot contain negative
+     *  numbers.</li>
+     *  <li>The elements of {@code rowIndices} must all be less than height({@code this}).</li>
+     *  <li>The elements of {@code columnIndices} must all be less than width({@code this}).</li>
+     * </ul>
+     *
+     * Size is |{@code rowIndices}|×|{@code columnIndices}|
+     *
+     * @param rowIndices the indices of the rows in the result
+     * @param columnIndices the indices of the columns in the result
+     * @return a submatrix of {@code this}
+     */
+    public @NotNull RationalPolynomialMatrix submatrix(
+            @NotNull List<Integer> rowIndices,
+            @NotNull List<Integer> columnIndices
+    ) {
+        if (!increasing(rowIndices)) {
+            throw new IllegalArgumentException("rowIndices must be in ascending order and cannot have any" +
+                    " repetitions. Invalid rowIndices: " + rowIndices);
+        } else if (!increasing(columnIndices)) {
+            throw new IllegalArgumentException("columnIndices must be in ascending order and cannot have any" +
+                    " repetitions. Invalid columnIndices: " + columnIndices);
+        } else if (!rowIndices.isEmpty() && (head(rowIndices) < 0 || last(rowIndices) >= height())) {
+            throw new IllegalArgumentException("rowIndices cannot contain negative numbers or any elements greater" +
+                    " than or equal to height(this). rowIndices: " + rowIndices + ", height(this): " + height());
+        } else if (!columnIndices.isEmpty() && (head(columnIndices) < 0 || last(columnIndices) >= width)) {
+            throw new IllegalArgumentException("columnIndices cannot contain negative numbers or any elements" +
+                    " greater than or equal to width(this). columnIndices: " + columnIndices + ", width(this): " +
+                    width());
+        } else if (rowIndices.isEmpty() || columnIndices.isEmpty()) {
+            return zero(rowIndices.size(), columnIndices.size());
+        } else if (rowIndices.size() == height() && columnIndices.size() == width) {
+            return this;
+        } else if (columnIndices.size() == width) {
+            return new RationalPolynomialMatrix(toList(map(rows::get, rowIndices)), width);
+        } else {
+            List<RationalPolynomialVector> submatrixRows = new ArrayList<>();
+            for (int i : rowIndices) {
+                RationalPolynomialVector row = rows.get(i);
+                submatrixRows.add(RationalPolynomialVector.of(toList(map(row::get, columnIndices))));
+            }
+            return new RationalPolynomialMatrix(submatrixRows, columnIndices.size());
+        }
+    }
+
+    /**
+     * Returns the transpose of {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalPolynomialMatrix}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * Size is width({@code this})×height({@code this})
+     *
+     * @return {@code this}<sup>T</sup>
+     */
+    public @NotNull RationalPolynomialMatrix transpose() {
+        int height = height();
+        if (height == 0 || width == 0) {
+            //noinspection SuspiciousNameCombination
+            return zero(width, height);
+        }
+        RationalPolynomial[][] elements = new RationalPolynomial[width][height];
+        for (int i = 0; i < height; i++) {
+            RationalPolynomialVector row = rows.get(i);
+            for (int j = 0; j < width; j++) {
+                elements[j][i] = row.get(j);
+            }
+        }
+        //noinspection SuspiciousNameCombination
+        return new RationalPolynomialMatrix(
+                toList(map(i -> RationalPolynomialVector.of(Arrays.asList(elements[i])), range(0, width - 1))),
+                height
+        );
+    }
+
+    /**
+     * Returns the {@code RationalPolynomialMatrix} produced by concatenating the rows of {@code this} with the rows of
+     * {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalPolynomialMatrix}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>{@code this} and {@code that} must have the same width.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * Size is (height({@code this}+height({@code that}))×width({@code this})
+     *
+     * @param that the {@code RationalPolynomialMatrix} that {@code this} is concatenated with
+     * @return {@code this} concatenated with {@code that}
+     */
+    public @NotNull RationalPolynomialMatrix concat(@NotNull RationalPolynomialMatrix that) {
+        if (width != that.width) {
+            throw new IllegalArgumentException("this and that must have the same width. this: " + this + ", that: " +
+                    that);
+        }
+        if (height() == 0) return that;
+        if (that.height() == 0) return this;
+        return new RationalPolynomialMatrix(toList(IterableUtils.concat(rows, that.rows)), width);
+    }
+
+    /**
+     * Returns {@code this} augmented with {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalPolynomialMatrix}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>{@code this} and {@code that} must have the same height.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * Size is height({@code this})×(width({@code this}+width({@code that}))
+     *
+     * @param that the {@code RationalPolynomialMatrix} that {@code this} is augmented by
+     * @return {@code this}|{@code that}
+     */
+    public @NotNull RationalPolynomialMatrix augment(@NotNull RationalPolynomialMatrix that) {
+        if (height() != that.height()) {
+            throw new IllegalArgumentException("this and that must have the same height. this: " + this + ", that: " +
+                    that);
+        }
+        if (width == 0) return that;
+        if (that.width == 0) return this;
+        return new RationalPolynomialMatrix(
+                toList(
+                        zipWith(
+                                (r, s) -> RationalPolynomialVector.of(toList(IterableUtils.concat(r, s))),
+                                rows,
+                                that.rows
+                        )
+                ),
+                width + that.width
+        );
+    }
+
+    /**
+     * Returns the sum of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalPolynomialMatrix}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>{@code this} and {@code that} must have the same height and the same width.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * Size is height({@code this})×width({@code this})
+     *
+     * @param that the {@code RationalPolynomialMatrix} added to {@code this}
+     * @return {@code this}+{@code that}
+     */
+    public @NotNull RationalPolynomialMatrix add(@NotNull RationalPolynomialMatrix that) {
+        int height = height();
+        if (width != that.width || height != that.height()) {
+            throw new ArithmeticException("this and that must have the same width and height. this: " +
+                    this + ", that: " + that);
+        }
+        if (height == 0 || width == 0) return this;
+        return new RationalPolynomialMatrix(toList(zipWith(RationalPolynomialVector::add, rows, that.rows)), width);
+    }
+
+    /**
+     * Returns the negative of {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalPolynomialMatrix}.</li>
+     *  <li>The result is non-null.</li>
+     * </ul>
+     *
+     * Size is height({@code this})×width({@code this})
+     *
+     * @return –{@code this}
+     */
+    public @NotNull RationalPolynomialMatrix negate() {
+        int height = height();
+        if (height == 0 || width == 0) return this;
+        return new RationalPolynomialMatrix(toList(map(RationalPolynomialVector::negate, rows)), width);
+    }
+
+    /**
+     * Returns the difference of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalPolynomialMatrix}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>{@code this} and {@code that} must have the same height and the same width.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * Size is height({@code this})×width({@code this})
+     *
+     * @param that the {@code RationalPolynomialMatrix} subtracted from {@code this}
+     * @return {@code this}–{@code that}
+     */
+    public @NotNull RationalPolynomialMatrix subtract(@NotNull RationalPolynomialMatrix that) {
+        int height = height();
+        if (width != that.width || height != that.height()) {
+            throw new ArithmeticException("this and that must have the same width and height. this: " +
+                    this + ", that: " + that);
+        }
+        if (height == 0 || width == 0) return this;
+        return new RationalPolynomialMatrix(
+                toList(zipWith(RationalPolynomialVector::subtract, rows, that.rows)),
+                width
+        );
+    }
+
+    /**
+     * Returns the scalar product of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} can be any {@code RationalPolynomialMatrix}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * Size is height({@code this})×width({@code this})
+     *
+     * @param that the {@code RationalPolynomial} {@code this} is multiplied by
+     * @return {@code this}×{@code that}
+     */
+    public @NotNull RationalPolynomialMatrix multiply(@NotNull RationalPolynomial that) {
+        if (height() == 0 || width == 0 || that == RationalPolynomial.ONE) return this;
+        return new RationalPolynomialMatrix(toList(map(r -> r.multiply(that), rows)), width);
+    }
+
+    /**
+     * Returns the scalar product of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} can be any {@code RationalPolynomialMatrix}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * Size is height({@code this})×width({@code this})
+     *
+     * @param that the {@code Rational} {@code this} is multiplied by
+     * @return {@code this}×{@code that}
+     */
+    public @NotNull RationalPolynomialMatrix multiply(@NotNull Rational that) {
+        if (height() == 0 || width == 0 || that == Rational.ONE) return this;
+        return new RationalPolynomialMatrix(toList(map(r -> r.multiply(that), rows)), width);
+    }
+
+    /**
+     * Returns the scalar product of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} can be any {@code RationalPolynomialMatrix}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * Size is height({@code this})×width({@code this})
+     *
+     * @param that the {@code BigInteger} {@code this} is multiplied by
+     * @return {@code this}×{@code that}
+     */
+    public @NotNull RationalPolynomialMatrix multiply(@NotNull BigInteger that) {
+        if (height() == 0 || width == 0 || that.equals(BigInteger.ONE)) return this;
+        return new RationalPolynomialMatrix(toList(map(r -> r.multiply(that), rows)), width);
+    }
+
+    /**
+     * Returns the scalar product of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} can be any {@code RationalPolynomialMatrix}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * Size is height({@code this})×width({@code this})
+     *
+     * @param that the {@code int} {@code this} is multiplied by
+     * @return {@code this}×{@code that}
+     */
+    public @NotNull RationalPolynomialMatrix multiply(int that) {
+        if (height() == 0 || width == 0 || that == 1) return this;
+        return new RationalPolynomialMatrix(toList(map(r -> r.multiply(that), rows)), width);
+    }
+
+    /**
+     * Returns the scalar product of {@code this} and the inverse of {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} can be any {@code RationalPolynomialMatrix}.</li>
+     *  <li>{@code that} cannot be zero.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * Size is height({@code this})×width({@code this})
+     *
+     * @param that the {@code Rational} {@code this} is divided by
+     * @return {@code this}/{@code that}
+     */
+    public @NotNull RationalPolynomialMatrix divide(@NotNull Rational that) {
+        return multiply(that.invert());
+    }
+
+    /**
+     * Returns the scalar product of {@code this} and the inverse of {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} can be any {@code RationalPolynomialMatrix}.</li>
+     *  <li>{@code that} cannot be zero.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * Size is height({@code this})×width({@code this})
+     *
+     * @param that the {@code BigInteger} {@code this} is divided by
+     * @return {@code this}/{@code that}
+     */
+    public @NotNull RationalPolynomialMatrix divide(@NotNull BigInteger that) {
+        return multiply(Rational.of(BigInteger.ONE, that));
+    }
+
+    /**
+     * Returns the scalar product of {@code this} and the inverse of {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} can be any {@code RationalPolynomialMatrix}.</li>
+     *  <li>{@code that} cannot be zero.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * Size is height({@code this})×width({@code this})
+     *
+     * @param that the {@code int} {@code this} is divided by
+     * @return {@code this}/{@code that}
+     */
+    public @NotNull RationalPolynomialMatrix divide(int that) {
+        return multiply(Rational.of(1, that));
+    }
+
+    /**
+     * Returns the product of {@code this} and {@code that}. The result is {@code that} after a linear transformation
+     * whose basis vectors are the columns of {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} can be any {@code RationalPolynomialMatrix}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>The width of {@code this} must equal the dimension of {@code that}.</li>
+     * </ul>
+     *
+     * Length is height({@code this})
+     *
+     * @param that the {@code RationalPolynomialVector} {@code this} is multiplied by
+     * @return {@code this}×{@code that}
+     */
+    public @NotNull RationalPolynomialVector multiply(@NotNull RationalPolynomialVector that) {
+        if (width != that.dimension()) {
+            throw new ArithmeticException("The width of this must equal the dimension of that. this: " +
+                    this + ", that: " + that);
+        }
+        return RationalPolynomialVector.of(toList(map(r -> r.dot(that), rows)));
+    }
+
+    /**
+     * Returns the matrix product of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} can be any {@code RationalPolynomialMatrix}</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>The width of {@code this} must equal the height of {@code that}.</li>
+     * </ul>
+     *
+     * Size is height({@code this})×width({@code that})
+     *
+     * @param that the {@code RationalPolynomialMatrix} {@code this} is multiplied by
+     * @return {@code this}×{@code that}
+     */
+    public @NotNull RationalPolynomialMatrix multiply(@NotNull RationalPolynomialMatrix that) {
+        int n = height();
+        int m = width;
+        if (m != that.height()) {
+            throw new ArithmeticException("the width of this must equal the height of that. this: " +
+                    this + ", that: " + that);
+        }
+        int l = that.width;
+        if (n == 0) {
+            return zero(0, l);
+        }
+        List<RationalPolynomialVector> rows = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            RationalPolynomialVector row = row(i);
+            List<RationalPolynomial> productRow = new ArrayList<>();
+            for (int k = 0; k < l; k++) {
+                RationalPolynomial sum = RationalPolynomial.ZERO;
+                for (int j = 0; j < m; j++) {
+                    sum = sum.add(row.get(j).multiply(that.get(j, k)));
+                }
+                productRow.add(sum);
+            }
+            rows.add(RationalPolynomialVector.of(productRow));
+        }
+        return fromRows(rows);
+    }
+
+    /**
+     * Returns the left shift of {@code this} by {@code bits}; {@code this}×2<sup>{@code bits}</sup>. Negative
+     * {@code bits} corresponds to a right shift.
+     *
+     * <ul>
+     *  <li>{@code this} can be any {@code RationalPolynomialMatrix}.</li>
+     *  <li>{@code bits} may be any {@code int}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * Size is height({@code this})×width({@code this})
+     *
+     * @param bits the number of bits to left-shift by
+     * @return {@code this}≪{@code bits}
+     */
+    public @NotNull RationalPolynomialMatrix shiftLeft(int bits) {
+        if (isZero() || bits == 0) return this;
+        return new RationalPolynomialMatrix(toList(map(r -> r.shiftLeft(bits), rows)), width);
+    }
+
+    /**
+     * Returns the right shift of {@code this} by {@code bits}; {@code this}×2<sup>–{@code bits}</sup>. Negative
+     * {@code bits} corresponds to a left shift.
+     *
+     * <ul>
+     *  <li>{@code this} can be any {@code RationalPolynomialMatrix}.</li>
+     *  <li>{@code bits} may be any {@code int}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * Size is height({@code this})×width({@code this})
+     *
+     * @param bits the number of bits to right-shift by
+     * @return {@code this}≫{@code bits}
+     */
+    public @NotNull RationalPolynomialMatrix shiftRight(int bits) {
+        if (isZero() || bits == 0) return this;
+        return new RationalPolynomialMatrix(toList(map(r -> r.shiftRight(bits), rows)), width);
+    }
+
+    /**
+     * Computes the determinant of {@code this} using the Dogdson-Jordan-Gauss algorithm (Basu, Pollack, and Roy 2006).
+     *
+     * <ul>
+     *  <li>{@code this} must be square.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @return |{@code this}|
+     */
+    public @NotNull RationalPolynomial determinant() {
+        if (width != height()) {
+            throw new IllegalArgumentException("this must be square. Invalid this: " + this);
+        }
+        int n = width;
+        if (n == 0) return RationalPolynomial.ONE;
+        if (n == 1) return get(0, 0);
+        RationalPolynomial[][] arrayA = new RationalPolynomial[n][n];
+        for (int i = 0; i < n; i++) {
+            RationalPolynomialVector row = row(i);
+            arrayA[i] = new RationalPolynomial[n];
+            for (int j = 0; j < n; j++) {
+                arrayA[i][j] = row.get(j);
+            }
+        }
+        RationalPolynomial[][] arrayB = new RationalPolynomial[n - 1][n - 1];
+        arrayB[0][0] = RationalPolynomial.ONE;
+        boolean swapSign = true;
+        for (int k = 0; k < n - 1; k++) {
+            int firstNonzeroColumnIndex = -1;
+            for (int j = 0; j < n - k; j++) {
+                if (arrayA[0][j] != RationalPolynomial.ZERO) {
+                    firstNonzeroColumnIndex = j;
+                    break;
+                }
+            }
+            if (firstNonzeroColumnIndex == -1) {
+                return RationalPolynomial.ZERO;
+            }
+            if (firstNonzeroColumnIndex != 0) {
+                for (RationalPolynomial[] row : arrayA) {
+                    RationalPolynomial temp = row[firstNonzeroColumnIndex];
+                    row[firstNonzeroColumnIndex] = row[0];
+                    row[0] = temp;
+                }
+                swapSign = !swapSign;
+            }
+            RationalPolynomial denominator = arrayB[0][0];
+            for (int i = 1; i < n - k; i++) {
+                arrayB[i - 1][0] = RationalPolynomial.ZERO;
+                for (int j = 1; j < n - k; j++) {
+                    RationalPolynomial numerator = arrayA[0][0].multiply(arrayA[i][j])
+                            .subtract(arrayA[i][0].multiply(arrayA[0][j]));
+                    arrayB[i - 1][j - 1] = numerator.divide(denominator).a;
+                }
+            }
+            RationalPolynomial[][] temp = arrayA;
+            arrayA = arrayB;
+            arrayB = temp;
+        }
+        RationalPolynomial determinant = arrayA[0][0];
+        return swapSign ? determinant : determinant.negate();
     }
 
     /**

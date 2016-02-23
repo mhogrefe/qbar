@@ -1039,6 +1039,7 @@ public final class Polynomial implements
         if (m < n) {
             throw new ArithmeticException("this must be divisible by that. this: " + this + ", that: " + that);
         }
+        if (that == ONE) return this;
         List<BigInteger> q = new ArrayList<>();
         List<BigInteger> r = toList(coefficients);
         for (int k = m - n; k >= 0; k--) {
@@ -1078,6 +1079,7 @@ public final class Polynomial implements
         int m = degree();
         int n = that.degree();
         if (m < n) return this;
+        if (that == ONE) return ZERO;
         List<BigInteger> r = toList(coefficients);
         for (int k = m - n; k >= 0; k--) {
             BigInteger[] qCoefficient = r.get(n + k).divideAndRemainder(that.coefficient(n));

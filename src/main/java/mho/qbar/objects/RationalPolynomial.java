@@ -821,6 +821,7 @@ public final class RationalPolynomial implements
         int m = degree();
         int n = that.degree();
         if (m < n) return new Pair<>(ZERO, this);
+        if (that == ONE) return new Pair<>(this, ZERO);
         List<Rational> q = new ArrayList<>();
         List<Rational> r = toList(coefficients);
         for (int k = m - n; k >= 0; k--) {
