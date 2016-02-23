@@ -147,6 +147,16 @@ public class PolynomialVectorDemos extends QBarDemos {
         }
     }
 
+    private void demoShiftLeft() {
+        Iterable<Pair<PolynomialVector, Integer>> ps = P.pairs(
+                P.withScale(4).polynomialVectors(),
+                P.naturalIntegersGeometric()
+        );
+        for (Pair<PolynomialVector, Integer> p : take(LIMIT, ps)) {
+            System.out.println(p.a + " << " + p.b + " = " + p.a.shiftLeft(p.b));
+        }
+    }
+
     private void demoEquals_PolynomialVector() {
         Iterable<Pair<PolynomialVector, PolynomialVector>> ps = P.pairs(
                 P.withScale(4).withSecondaryScale(4).polynomialVectors()

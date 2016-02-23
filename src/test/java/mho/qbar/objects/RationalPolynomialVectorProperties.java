@@ -50,6 +50,10 @@ public class RationalPolynomialVectorProperties extends QBarTestProperties {
         propertiesDivide_Rational();
         propertiesDivide_BigInteger();
         propertiesDivide_int();
+        propertiesShiftLeft();
+        compareImplementationsShiftLeft();
+        propertiesShiftRight();
+        compareImplementationsShiftRight();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -749,6 +753,146 @@ public class RationalPolynomialVectorProperties extends QBarTestProperties {
                 fail(v);
             } catch (ArithmeticException ignored) {}
         }
+    }
+
+    private static @NotNull RationalPolynomialVector shiftLeft_simplest(
+            @NotNull RationalPolynomialVector v,
+            int bits
+    ) {
+        if (bits < 0) {
+            return v.divide(BigInteger.ONE.shiftLeft(-bits));
+        } else {
+            return v.multiply(BigInteger.ONE.shiftLeft(bits));
+        }
+    }
+
+    private void propertiesShiftLeft() {
+        initialize("shiftLeft(int)");
+        Iterable<Pair<RationalPolynomialVector, Integer>> ps = P.pairs(
+                P.rationalPolynomialVectors(),
+                P.integersGeometric()
+        );
+        for (Pair<RationalPolynomialVector, Integer> p : take(LIMIT, ps)) {
+            RationalPolynomialVector shifted = p.a.shiftLeft(p.b);
+            shifted.validate();
+            assertEquals(p, shifted, shiftLeft_simplest(p.a, p.b));
+            aeqit(p, map(RationalPolynomial::signum, p.a), map(RationalPolynomial::signum, shifted));
+            assertEquals(p, p.a.dimension(), shifted.dimension());
+            assertEquals(p, p.a.negate().shiftLeft(p.b), shifted.negate());
+            inverse(a -> a.shiftLeft(p.b), (RationalPolynomialVector v) -> v.shiftRight(p.b), p.a);
+            assertEquals(p, shifted, p.a.shiftRight(-p.b));
+            homomorphic(
+                    RationalPolynomialVector::negate,
+                    Function.identity(),
+                    RationalPolynomialVector::negate,
+                    RationalPolynomialVector::shiftLeft,
+                    RationalPolynomialVector::shiftLeft,
+                    p
+            );
+        }
+
+        for (RationalPolynomialVector v : take(LIMIT, P.rationalPolynomialVectors())) {
+            fixedPoint(u -> u.shiftLeft(0), v);
+        }
+
+        ps = P.pairs(P.rationalPolynomialVectors(), P.naturalIntegersGeometric());
+        for (Pair<RationalPolynomialVector, Integer> p : take(LIMIT, ps)) {
+            assertEquals(p, p.a.shiftLeft(p.b), p.a.multiply(BigInteger.ONE.shiftLeft(p.b)));
+        }
+
+        Iterable<Pair<RationalPolynomial, Integer>> ps2 = P.pairs(P.rationalPolynomials(), P.integersGeometric());
+        for (Pair<RationalPolynomial, Integer> p : take(LIMIT, ps2)) {
+            homomorphic(
+                    RationalPolynomialVector::of,
+                    Function.identity(),
+                    RationalPolynomialVector::of,
+                    RationalPolynomial::shiftLeft,
+                    RationalPolynomialVector::shiftLeft,
+                    p
+            );
+        }
+    }
+
+    private void compareImplementationsShiftLeft() {
+        Map<String, Function<Pair<RationalPolynomialVector, Integer>, RationalPolynomialVector>> functions =
+                new LinkedHashMap<>();
+        functions.put("simplest", p -> shiftLeft_simplest(p.a, p.b));
+        functions.put("standard", p -> p.a.shiftLeft(p.b));
+        Iterable<Pair<RationalPolynomialVector, Integer>> ps = P.pairs(
+                P.rationalPolynomialVectors(),
+                P.integersGeometric()
+        );
+        compareImplementations("shiftLeft(int)", take(LIMIT, ps), functions);
+    }
+
+    private static @NotNull RationalPolynomialVector shiftRight_simplest(
+            @NotNull RationalPolynomialVector v,
+            int bits
+    ) {
+        if (bits < 0) {
+            return v.multiply(BigInteger.ONE.shiftLeft(-bits));
+        } else {
+            return v.divide(BigInteger.ONE.shiftLeft(bits));
+        }
+    }
+
+    private void propertiesShiftRight() {
+        initialize("shiftRight(int)");
+        Iterable<Pair<RationalPolynomialVector, Integer>> ps = P.pairs(
+                P.rationalPolynomialVectors(),
+                P.integersGeometric()
+        );
+        for (Pair<RationalPolynomialVector, Integer> p : take(LIMIT, ps)) {
+            RationalPolynomialVector shifted = p.a.shiftRight(p.b);
+            shifted.validate();
+            assertEquals(p, shifted, shiftRight_simplest(p.a, p.b));
+            aeqit(p, map(RationalPolynomial::signum, p.a), map(RationalPolynomial::signum, shifted));
+            assertEquals(p, p.a.dimension(), shifted.dimension());
+            assertEquals(p, p.a.negate().shiftRight(p.b), shifted.negate());
+            inverse(a -> a.shiftRight(p.b), (RationalPolynomialVector v) -> v.shiftLeft(p.b), p.a);
+            assertEquals(p, shifted, p.a.shiftLeft(-p.b));
+            homomorphic(
+                    RationalPolynomialVector::negate,
+                    Function.identity(),
+                    RationalPolynomialVector::negate,
+                    RationalPolynomialVector::shiftRight,
+                    RationalPolynomialVector::shiftRight,
+                    p
+            );
+        }
+
+        for (RationalPolynomialVector v : take(LIMIT, P.rationalPolynomialVectors())) {
+            assertEquals(v, v.shiftRight(0), v);
+        }
+
+        ps = P.pairs(P.rationalPolynomialVectors(), P.naturalIntegersGeometric());
+        for (Pair<RationalPolynomialVector, Integer> p : take(LIMIT, ps)) {
+            assertEquals(p, p.a.shiftRight(p.b), p.a.divide(BigInteger.ONE.shiftLeft(p.b)));
+        }
+
+        Iterable<Pair<RationalPolynomial, Integer>> ps2 = P.pairs(P.rationalPolynomials(), P.integersGeometric());
+        for (Pair<RationalPolynomial, Integer> p : take(LIMIT, ps2)) {
+            homomorphic(
+                    RationalPolynomialVector::of,
+                    Function.identity(),
+                    RationalPolynomialVector::of,
+                    RationalPolynomial::shiftRight,
+                    RationalPolynomialVector::shiftRight,
+                    p
+            );
+        }
+    }
+
+    private void compareImplementationsShiftRight() {
+        Map<String, Function<Pair<RationalPolynomialVector, Integer>, RationalPolynomialVector>> functions =
+                new LinkedHashMap<>();
+        functions.put("simplest", p -> shiftRight_simplest(p.a, p.b));
+        functions.put("standard", p -> p.a.shiftRight(p.b));
+        Iterable<Pair<RationalPolynomialVector, Integer>> ps = P.pairs(
+                P.rationalPolynomialVectors(),
+                P.integersGeometric()
+        );
+        compareImplementations("shiftRight(int)", take(LIMIT, ps), functions);
     }
 
     private void propertiesEquals() {

@@ -210,6 +210,26 @@ public class RationalPolynomialVectorDemos extends QBarDemos {
         }
     }
 
+    private void demoShiftLeft() {
+        Iterable<Pair<RationalPolynomialVector, Integer>> ps = P.pairs(
+                P.withScale(4).rationalPolynomialVectors(),
+                P.integersGeometric()
+        );
+        for (Pair<RationalPolynomialVector, Integer> p : take(LIMIT, ps)) {
+            System.out.println(p.a + " << " + p.b + " = " + p.a.shiftLeft(p.b));
+        }
+    }
+
+    private void demoShiftRight() {
+        Iterable<Pair<RationalPolynomialVector, Integer>> ps = P.pairs(
+                P.withScale(4).rationalPolynomialVectors(),
+                P.integersGeometric()
+        );
+        for (Pair<RationalPolynomialVector, Integer> p : take(LIMIT, ps)) {
+            System.out.println(p.a + " >> " + p.b + " = " + p.a.shiftRight(p.b));
+        }
+    }
+
     private void demoEquals_RationalPolynomialVector() {
         Iterable<Pair<RationalPolynomialVector, RationalPolynomialVector>> ps = P.pairs(
                 P.withScale(4).withSecondaryScale(4).rationalPolynomialVectors()

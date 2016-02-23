@@ -292,6 +292,41 @@ public class PolynomialVectorTest {
         multiply_int_helper("[5, -4*x+3, 23*x^5]", 5, "[25, -20*x+15, 115*x^5]");
     }
 
+    private static void shiftLeft_helper(@NotNull String a, int bits, @NotNull String output) {
+        aeq(read(a).get().shiftLeft(bits), output);
+    }
+
+    private static void shiftLeft_fail_helper(@NotNull String a, int bits) {
+        try {
+            read(a).get().shiftLeft(bits);
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testShiftLeft() {
+        shiftLeft_helper("[]", 0, "[]");
+        shiftLeft_helper("[]", 1, "[]");
+        shiftLeft_helper("[]", 2, "[]");
+        shiftLeft_helper("[]", 3, "[]");
+        shiftLeft_helper("[]", 4, "[]");
+
+        shiftLeft_helper("[x]", 0, "[x]");
+        shiftLeft_helper("[x]", 1, "[2*x]");
+        shiftLeft_helper("[x]", 2, "[4*x]");
+        shiftLeft_helper("[x]", 3, "[8*x]");
+        shiftLeft_helper("[x]", 4, "[16*x]");
+
+        shiftLeft_helper("[5, -4*x+3, 23*x^5]", 0, "[5, -4*x+3, 23*x^5]");
+        shiftLeft_helper("[5, -4*x+3, 23*x^5]", 1, "[10, -8*x+6, 46*x^5]");
+        shiftLeft_helper("[5, -4*x+3, 23*x^5]", 2, "[20, -16*x+12, 92*x^5]");
+        shiftLeft_helper("[5, -4*x+3, 23*x^5]", 3, "[40, -32*x+24, 184*x^5]");
+        shiftLeft_helper("[5, -4*x+3, 23*x^5]", 4, "[80, -64*x+48, 368*x^5]");
+
+        shiftLeft_fail_helper("[]", -1);
+        shiftLeft_fail_helper("[5, -4*x+3, 23*x^5]", -1);
+    }
+
     @Test
     public void testEquals() {
         testEqualsHelper(

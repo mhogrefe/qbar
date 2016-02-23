@@ -415,6 +415,80 @@ public class RationalPolynomialVectorTest {
         divide_int_fail_helper("[5/3, -1/4*x+3, 23*x^5]", 0);
     }
 
+    private static void shiftLeft_helper(@NotNull String a, int bits, @NotNull String output) {
+        aeq(read(a).get().shiftLeft(bits), output);
+    }
+
+    @Test
+    public void testShiftLeft() {
+        shiftLeft_helper("[]", 0, "[]");
+        shiftLeft_helper("[]", 1, "[]");
+        shiftLeft_helper("[]", 2, "[]");
+        shiftLeft_helper("[]", 3, "[]");
+        shiftLeft_helper("[]", 4, "[]");
+        shiftLeft_helper("[]", -1, "[]");
+        shiftLeft_helper("[]", -2, "[]");
+        shiftLeft_helper("[]", -3, "[]");
+        shiftLeft_helper("[]", -4, "[]");
+
+        shiftLeft_helper("[1/2*x]", 0, "[1/2*x]");
+        shiftLeft_helper("[1/2*x]", 1, "[x]");
+        shiftLeft_helper("[1/2*x]", 2, "[2*x]");
+        shiftLeft_helper("[1/2*x]", 3, "[4*x]");
+        shiftLeft_helper("[1/2*x]", 4, "[8*x]");
+        shiftLeft_helper("[1/2*x]", -1, "[1/4*x]");
+        shiftLeft_helper("[1/2*x]", -2, "[1/8*x]");
+        shiftLeft_helper("[1/2*x]", -3, "[1/16*x]");
+        shiftLeft_helper("[1/2*x]", -4, "[1/32*x]");
+
+        shiftLeft_helper("[5/3, -1/4*x+3, 23*x^5]", 0, "[5/3, -1/4*x+3, 23*x^5]");
+        shiftLeft_helper("[5/3, -1/4*x+3, 23*x^5]", 1, "[10/3, -1/2*x+6, 46*x^5]");
+        shiftLeft_helper("[5/3, -1/4*x+3, 23*x^5]", 2, "[20/3, -x+12, 92*x^5]");
+        shiftLeft_helper("[5/3, -1/4*x+3, 23*x^5]", 3, "[40/3, -2*x+24, 184*x^5]");
+        shiftLeft_helper("[5/3, -1/4*x+3, 23*x^5]", 4, "[80/3, -4*x+48, 368*x^5]");
+        shiftLeft_helper("[5/3, -1/4*x+3, 23*x^5]", -1, "[5/6, -1/8*x+3/2, 23/2*x^5]");
+        shiftLeft_helper("[5/3, -1/4*x+3, 23*x^5]", -2, "[5/12, -1/16*x+3/4, 23/4*x^5]");
+        shiftLeft_helper("[5/3, -1/4*x+3, 23*x^5]", -3, "[5/24, -1/32*x+3/8, 23/8*x^5]");
+        shiftLeft_helper("[5/3, -1/4*x+3, 23*x^5]", -4, "[5/48, -1/64*x+3/16, 23/16*x^5]");
+    }
+
+    private static void shiftRight_helper(@NotNull String a, int bits, @NotNull String output) {
+        aeq(read(a).get().shiftRight(bits), output);
+    }
+
+    @Test
+    public void testShiftRight() {
+        shiftRight_helper("[]", 0, "[]");
+        shiftRight_helper("[]", 1, "[]");
+        shiftRight_helper("[]", 2, "[]");
+        shiftRight_helper("[]", 3, "[]");
+        shiftRight_helper("[]", 4, "[]");
+        shiftRight_helper("[]", -1, "[]");
+        shiftRight_helper("[]", -2, "[]");
+        shiftRight_helper("[]", -3, "[]");
+        shiftRight_helper("[]", -4, "[]");
+
+        shiftRight_helper("[1/2*x]", 0, "[1/2*x]");
+        shiftRight_helper("[1/2*x]", 1, "[1/4*x]");
+        shiftRight_helper("[1/2*x]", 2, "[1/8*x]");
+        shiftRight_helper("[1/2*x]", 3, "[1/16*x]");
+        shiftRight_helper("[1/2*x]", 4, "[1/32*x]");
+        shiftRight_helper("[1/2*x]", -1, "[x]");
+        shiftRight_helper("[1/2*x]", -2, "[2*x]");
+        shiftRight_helper("[1/2*x]", -3, "[4*x]");
+        shiftRight_helper("[1/2*x]", -4, "[8*x]");
+
+        shiftRight_helper("[5/3, -1/4*x+3, 23*x^5]", 0, "[5/3, -1/4*x+3, 23*x^5]");
+        shiftRight_helper("[5/3, -1/4*x+3, 23*x^5]", 1, "[5/6, -1/8*x+3/2, 23/2*x^5]");
+        shiftRight_helper("[5/3, -1/4*x+3, 23*x^5]", 2, "[5/12, -1/16*x+3/4, 23/4*x^5]");
+        shiftRight_helper("[5/3, -1/4*x+3, 23*x^5]", 3, "[5/24, -1/32*x+3/8, 23/8*x^5]");
+        shiftRight_helper("[5/3, -1/4*x+3, 23*x^5]", 4, "[5/48, -1/64*x+3/16, 23/16*x^5]");
+        shiftRight_helper("[5/3, -1/4*x+3, 23*x^5]", -1, "[10/3, -1/2*x+6, 46*x^5]");
+        shiftRight_helper("[5/3, -1/4*x+3, 23*x^5]", -2, "[20/3, -x+12, 92*x^5]");
+        shiftRight_helper("[5/3, -1/4*x+3, 23*x^5]", -3, "[40/3, -2*x+24, 184*x^5]");
+        shiftRight_helper("[5/3, -1/4*x+3, 23*x^5]", -4, "[80/3, -4*x+48, 368*x^5]");
+    }
+
     @Test
     public void testEquals() {
         testEqualsHelper(

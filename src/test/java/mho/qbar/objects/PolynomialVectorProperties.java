@@ -45,6 +45,8 @@ public class PolynomialVectorProperties extends QBarTestProperties {
         propertiesMultiply_Polynomial();
         propertiesMultiply_BigInteger();
         propertiesMultiply_int();
+        propertiesShiftLeft();
+        compareImplementationsShiftLeft();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -485,6 +487,68 @@ public class PolynomialVectorProperties extends QBarTestProperties {
                     p
             );
         }
+    }
+
+    private static @NotNull PolynomialVector shiftLeft_simplest(@NotNull PolynomialVector v, int bits) {
+        if (bits < 0) {
+            throw new ArithmeticException("bits cannot be negative. Invalid bits: " + bits);
+        }
+        return v.multiply(BigInteger.ONE.shiftLeft(bits));
+    }
+
+    private void propertiesShiftLeft() {
+        initialize("shiftLeft(int)");
+        Iterable<Pair<PolynomialVector, Integer>> ps = P.pairs(P.polynomialVectors(), P.naturalIntegersGeometric());
+        for (Pair<PolynomialVector, Integer> p : take(LIMIT, ps)) {
+            PolynomialVector shifted = p.a.shiftLeft(p.b);
+            shifted.validate();
+            assertEquals(p, shifted, shiftLeft_simplest(p.a, p.b));
+            aeqit(p, map(Polynomial::signum, p.a), map(Polynomial::signum, shifted));
+            assertEquals(p, p.a.dimension(), shifted.dimension());
+            assertEquals(p, p.a.negate().shiftLeft(p.b), shifted.negate());
+            homomorphic(
+                    PolynomialVector::negate,
+                    Function.identity(),
+                    PolynomialVector::negate,
+                    PolynomialVector::shiftLeft,
+                    PolynomialVector::shiftLeft,
+                    p
+            );
+        }
+
+        for (PolynomialVector v : take(LIMIT, P.polynomialVectors())) {
+            fixedPoint(u -> u.shiftLeft(0), v);
+        }
+
+        for (Pair<Polynomial, Integer> p : take(LIMIT, P.pairs(P.polynomials(), P.naturalIntegersGeometric()))) {
+            homomorphic(
+                    PolynomialVector::of,
+                    Function.identity(),
+                    PolynomialVector::of,
+                    Polynomial::shiftLeft,
+                    PolynomialVector::shiftLeft,
+                    p
+            );
+        }
+
+        Iterable<Pair<PolynomialVector, Integer>> psFail = P.pairs(
+                P.polynomialVectors(),
+                P.negativeIntegersGeometric()
+        );
+        for (Pair<PolynomialVector, Integer> p : take(LIMIT, psFail)) {
+            try {
+                p.a.shiftLeft(p.b);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void compareImplementationsShiftLeft() {
+        Map<String, Function<Pair<PolynomialVector, Integer>, PolynomialVector>> functions = new LinkedHashMap<>();
+        functions.put("simplest", p -> shiftLeft_simplest(p.a, p.b));
+        functions.put("standard", p -> p.a.shiftLeft(p.b));
+        Iterable<Pair<PolynomialVector, Integer>> ps = P.pairs(P.polynomialVectors(), P.naturalIntegersGeometric());
+        compareImplementations("shiftLeft(int)", take(LIMIT, ps), functions);
     }
 
     private void propertiesEquals() {
