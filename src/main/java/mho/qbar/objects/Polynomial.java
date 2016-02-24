@@ -1528,6 +1528,56 @@ public final class Polynomial implements
     }
 
     /**
+     * Returns a square {@code PolynomialMatrix} derived from a {@code List} of {@code Polynomial}s.
+     *
+     * <ul>
+     *  <li>{@code ps} may not have more elements than one more than the maximum degree of {@code ps}.</li>
+     *  <li>The result is square, and all elements not in the last column are constant.</li>
+     * </ul>
+     *
+     * Size is length({@code ps})×length({@code ps})
+     *
+     * @param ps a {@code List} of {@code Polynomial}s
+     * @return Mat({@code ps})*
+     */
+    @SuppressWarnings("JavaDoc")
+    public static @NotNull PolynomialMatrix augmentedCoefficientMatrix(@NotNull List<Polynomial> ps) {
+        if (ps.isEmpty()) return PolynomialMatrix.zero(0, 0);
+        Matrix coefficientMatrix = coefficientMatrix(ps);
+        int m = ps.size();
+        return PolynomialMatrix.of(coefficientMatrix.submatrix(toList(range(0, m - 1)), toList(range(0, m - 2))))
+                .augment(PolynomialMatrix.fromColumns(Collections.singletonList(PolynomialVector.of(ps))));
+    }
+
+    /**
+     * Returns the polynomial determinant of a {@code List} of {@code Polynomial}s.
+     *
+     * <ul>
+     *  <li>{@code ps} may not have more elements than one more than the maximum degree of {@code ps}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param ps a {@code List} of {@code Polynomial}s
+     * @return pdet({@code ps})
+     */
+    @SuppressWarnings("JavaDoc")
+    public static @NotNull Polynomial determinant(@NotNull List<Polynomial> ps) {
+        Matrix coefficientMatrix = coefficientMatrix(ps);
+        int m = ps.size();
+        int n = coefficientMatrix.width();
+        if (m == n) return of(coefficientMatrix.determinant());
+        List<BigInteger> detCoefficients = new ArrayList<>();
+        for (int i = 0; i <= n - m; i++) {
+            Matrix sub = coefficientMatrix.submatrix(
+                    toList(range(0, m - 1)),
+                    toList(concat(range(0, m - 2), Collections.singletonList(n - i - 1)))
+            );
+            detCoefficients.add(sub.determinant());
+        }
+        return of(detCoefficients);
+    }
+
+    /**
      * Returns the reflection of {@code this} across the y-axis. If {@code this} has odd degree, the result is negated
      * as well; this preserves the sign of the leading coefficient. The roots of the result are the negatives of the
      * roots of {@code this}.

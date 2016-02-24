@@ -469,6 +469,36 @@ public class PolynomialDemos extends QBarDemos {
         }
     }
 
+    //todo props
+    private void demoAugmentedCoefficientMatrix() {
+        Iterable<List<Polynomial>> pss = P.withElement(
+                Collections.emptyList(),
+                filterInfinite(
+                        ps -> ps.size() <= maximum(map(Polynomial::degree, ps)) + 1,
+                        P.withScale(4).listsAtLeast(1, P.withScale(4).polynomials())
+                )
+        );
+        for (List<Polynomial> ps : take(LIMIT, pss)) {
+            String listString = tail(init(ps.toString()));
+            System.out.println("augmentedCoefficientMatrix(" + listString + ") = " + augmentedCoefficientMatrix(ps));
+        }
+    }
+
+    //todo props
+    private void demoDeterminant() {
+        Iterable<List<Polynomial>> pss = P.withElement(
+                Collections.emptyList(),
+                filterInfinite(
+                        ps -> ps.size() <= maximum(map(Polynomial::degree, ps)) + 1,
+                        P.withScale(4).listsAtLeast(1, P.withScale(4).polynomials())
+                )
+        );
+        for (List<Polynomial> ps : take(LIMIT, pss)) {
+            String listString = tail(init(ps.toString()));
+            System.out.println("determinant(" + listString + ") = " + determinant(ps));
+        }
+    }
+
     private void demoReflect() {
         for (Polynomial p : take(LIMIT, P.withScale(4).polynomials())) {
             System.out.println("reflect(" + p + ") = " + p.reflect());

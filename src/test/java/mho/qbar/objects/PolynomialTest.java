@@ -2320,13 +2320,66 @@ public class PolynomialTest {
         coefficientMatrix_helper("[]", "[]#0");
         coefficientMatrix_helper("[0, x]", "[[0, 0], [1, 0]]");
         coefficientMatrix_helper("[1]", "[[1]]");
-        coefficientMatrix_helper("[1, x, x^3-17]", "[[0, 0, 0, 1], [0, 0, 1, 0], [1, 0, 0, -17]]");
+        coefficientMatrix_helper("[x, x]", "[[1, 0], [1, 0]]");
+        coefficientMatrix_helper("[1, 2*x^2-5*x+2, x^3-17]", "[[0, 0, 0, 1], [0, 2, -5, 2], [1, 0, 0, -17]]");
+        coefficientMatrix_helper("[x^2-4*x+7, x^3, 4]", "[[0, 1, -4, 7], [1, 0, 0, 0], [0, 0, 0, 4]]");
         coefficientMatrix_helper("[x^2-4*x+7, x^10, 4]",
                 "[[0, 0, 0, 0, 0, 0, 0, 0, 1, -4, 7], [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]," +
                 " [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4]]");
 
         coefficientMatrix_fail_helper("[0]");
         coefficientMatrix_fail_helper("[1, x, -17]");
+    }
+
+    private static void augmentedCoefficientMatrix_helper(@NotNull String input, @NotNull String output) {
+        aeq(augmentedCoefficientMatrix(readPolynomialList(input)), output);
+    }
+
+    private static void augmentedCoefficientMatrix_fail_helper(@NotNull String input) {
+        try {
+            augmentedCoefficientMatrix(readPolynomialList(input));
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testAugmentedCoefficientMatrix() {
+        augmentedCoefficientMatrix_helper("[]", "[]#0");
+        augmentedCoefficientMatrix_helper("[0, x]", "[[0, 0], [1, x]]");
+        augmentedCoefficientMatrix_helper("[1]", "[[1]]");
+        augmentedCoefficientMatrix_helper("[x, x]", "[[1, x], [1, x]]");
+        augmentedCoefficientMatrix_helper("[1, 2*x^2-5*x+2, x^3-17]",
+                "[[0, 0, 1], [0, 2, 2*x^2-5*x+2], [1, 0, x^3-17]]");
+        augmentedCoefficientMatrix_helper("[x^2-4*x+7, x^3, 4]", "[[0, 1, x^2-4*x+7], [1, 0, x^3], [0, 0, 4]]");
+        augmentedCoefficientMatrix_helper("[x^2-4*x+7, x^10, 4]", "[[0, 0, x^2-4*x+7], [1, 0, x^10], [0, 0, 4]]");
+
+        augmentedCoefficientMatrix_fail_helper("[0]");
+        augmentedCoefficientMatrix_fail_helper("[1, x, -17]");
+    }
+
+    private static void determinant_helper(@NotNull String input, @NotNull String output) {
+        aeq(determinant(readPolynomialList(input)), output);
+    }
+
+    private static void determinant_fail_helper(@NotNull String input) {
+        try {
+            determinant(readPolynomialList(input));
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testDeterminant() {
+        determinant_helper("[]", "1");
+        determinant_helper("[0, x]", "0");
+        determinant_helper("[1]", "1");
+        determinant_helper("[x, x]", "0");
+        determinant_helper("[1, 2*x^2-5*x+2, x^3-17]", "-2");
+        determinant_helper("[x^2-4*x+7, x^3, 4]", "-4");
+        determinant_helper("[x^2-4*x+7, x^10, 4]", "0");
+
+        determinant_fail_helper("[0]");
+        determinant_fail_helper("[1, x, -17]");
     }
 
     private static void reflect_helper(@NotNull String input, @NotNull String output) {
