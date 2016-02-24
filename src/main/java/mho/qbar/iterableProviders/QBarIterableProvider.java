@@ -3160,6 +3160,42 @@ public strictfp abstract class QBarIterableProvider {
     public abstract @NotNull Iterable<RationalMatrix> squareRationalMatrices();
 
     /**
+     * Generates {@code PolynomialMatrix}es with a given {@code height} and {@code width}.
+     *
+     * @param height the height (number of rows) of the generated {@code PolynomialMatrix}es
+     * @param width the width (number of columns) of the generated {@code PolynomialMatrix}es
+     */
+    public abstract @NotNull Iterable<PolynomialMatrix> polynomialMatrices(int height, int width);
+
+    /**
+     * Generates {@code PolynomialMatrix}es.
+     */
+    public abstract @NotNull Iterable<PolynomialMatrix> polynomialMatrices();
+
+    /**
+     * Generates square {@code PolynomialMatrix}es.
+     */
+    public abstract @NotNull Iterable<PolynomialMatrix> squarePolynomialMatrices();
+
+    /**
+     * Generates {@code RationalPolynomialMatrix}es with a given {@code height} and {@code width}.
+     *
+     * @param height the height (number of rows) of the generated {@code RationalPolynomialMatrix}es
+     * @param width the width (number of columns) of the generated {@code RationalPolynomialMatrix}es
+     */
+    public abstract @NotNull Iterable<RationalPolynomialMatrix> rationalPolynomialMatrices(int height, int width);
+
+    /**
+     * Generates {@code RationalPolynomialMatrix}es.
+     */
+    public abstract @NotNull Iterable<RationalPolynomialMatrix> rationalPolynomialMatrices();
+
+    /**
+     * Generates square {@code RationalPolynomialMatrix}es.
+     */
+    public abstract @NotNull Iterable<RationalPolynomialMatrix> squareRationalPolynomialMatrices();
+
+    /**
      * Generates {@code Polynomial}s with a given degree.
      *
      * @param degree the degree of the generated {@code Polynomial}s
@@ -3382,6 +3418,27 @@ public strictfp abstract class QBarIterableProvider {
      * Generates {@code ExponentVector}s.
      */
     public abstract @NotNull Iterable<ExponentVector> exponentVectors();
+
+    /**
+     * Generates {@code ExponentVector}s containing only (a subset of) the given variables.
+     *
+     * <ul>
+     *  <li>{@code variables} must be in increasing order and cannot contain repetitions.</li>
+     * </ul>
+     *
+     * @param variables the allowed variables in the result
+     */
+    public @NotNull Iterable<ExponentVector> exponentVectors(@NotNull List<Variable> variables) {
+        if (!increasing(variables)) {
+            throw new IllegalArgumentException("variables must be in increasing order and cannot contain " +
+                    "repetitions. Invalid variables: " + variables);
+        }
+        List<Variable> reversed = reverse(variables);
+        return map(
+                es -> ExponentVector.fromTerms(toList(filter(p -> p.b != 0, zip(reversed, es)))),
+                lists(variables.size(), naturalIntegersGeometric())
+        );
+    }
 
     public @NotNull Iterable<QBarRandomProvider> qbarRandomProvidersFixedScales(
             int scale,

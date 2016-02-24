@@ -1055,6 +1055,220 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
     }
 
     /**
+     * An {@code Iterable} that generates all {@code Matrix}es with a given height and width. Each coordinate's bit
+     * size is chosen from a geometric distribution with mean approximately {@code scale}. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a positive {@code scale}.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing {@code Matrix}es.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param height the height (number of rows) of the generated {@code Matrix}es
+     * @param width the width (number of columns) of the generated {@code Matrix}es
+     * @return {@code Matrix}es with height {@code height} and width {@code width}
+     */
+    @Override
+    public @NotNull Iterable<PolynomialMatrix> polynomialMatrices(int height, int width) {
+        return null;
+//        if (height == 0 || width == 0) {
+//            int scale = getScale();
+//            if (scale < 1) {
+//                throw new IllegalStateException("this must have a positive scale. Invalid scale: " + scale);
+//            }
+//            return repeat(Matrix.zero(height, width));
+//        } else {
+//            return map(Matrix::fromRows, lists(height, vectors(width)));
+//        }
+    }
+
+    /**
+     * An {@code Iterable} that generates all {@code Matrix}es. Each {@code Rational}'s element count is chosen from a
+     * geometric distribution with mean approximately {@code secondaryScale}, and each coordinate's bit size is chosen
+     * from a geometric distribution with mean approximately {@code scale}. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a positive {@code scale} and a {@code secondaryScale} of at least 2.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing {@code RationalMatrix}es.</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
+    @Override
+    public @NotNull Iterable<PolynomialMatrix> polynomialMatrices() {
+        return null;
+//        int scale = getScale();
+//        if (scale < 1) {
+//            throw new IllegalStateException("this must have a positive scale. Invalid scale: " + scale);
+//        }
+//        int secondaryScale = getSecondaryScale();
+//        if (secondaryScale < 2) {
+//            throw new IllegalStateException("this must have a secondaryScale of at least 2. Invalid secondaryScale: " +
+//                    secondaryScale);
+//        }
+//        QBarRandomProvider dimensionProvider = (QBarRandomProvider) withScale(
+//                MathUtils.ceilingRoot(IntegerUtils.TWO, BigInteger.valueOf(secondaryScale)).intValueExact()
+//        );
+//        return chooseLogarithmicOrder(
+//                map(
+//                        p -> Matrix.fromRows(p.b),
+//                        dependentPairsInfiniteSquareRootOrder(
+//                                pairs(dimensionProvider.positiveIntegersGeometric()),
+//                                p -> lists(p.a, vectors(p.b))
+//                        )
+//                ),
+//                choose(
+//                        map(i -> Matrix.zero(0, i), dimensionProvider.naturalIntegersGeometric()),
+//                        map(i -> Matrix.zero(i, 0), dimensionProvider.positiveIntegersGeometric())
+//                )
+//        );
+    }
+
+    /**
+     * An {@code Iterable} that generates all square {@code Matrix}es. Each {@code Matrix}'s element count is chosen
+     * from a geometric distribution with mean approximately {@code secondaryScale}, and each coordinate's bit size is
+     * chosen from a geometric distribution with mean approximately {@code scale}. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a {@code scale} of at least 2 and a {@code secondaryScale} of at least 2.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing square {@code Matrix}es.</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
+    @Override
+    public @NotNull Iterable<PolynomialMatrix> squarePolynomialMatrices() {
+        return null;
+//        int scale = getScale();
+//        if (scale < 2) {
+//            throw new IllegalStateException("this must have a scale of at least 2. Invalid scale: " + scale);
+//        }
+//        int secondaryScale = getSecondaryScale();
+//        if (secondaryScale < 2) {
+//            throw new IllegalStateException("this must have a secondaryScale of at least 2. Invalid secondaryScale: " +
+//                    secondaryScale);
+//        }
+//        QBarRandomProvider dimensionProvider = (QBarRandomProvider) withScale(
+//                MathUtils.ceilingRoot(IntegerUtils.TWO, BigInteger.valueOf(secondaryScale)).intValueExact()
+//        );
+//        return withElement(
+//                Matrix.zero(0, 0),
+//                map(p -> p.b, dependentPairsInfiniteLogarithmicOrder(
+//                        dimensionProvider.positiveIntegersGeometric(),
+//                        i -> matrices(i, i))
+//                )
+//        );
+    }
+
+    /**
+     * An {@code Iterable} that generates all {@code Matrix}es with a given height and width. Each coordinate's bit
+     * size is chosen from a geometric distribution with mean approximately {@code scale}. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a positive {@code scale}.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing {@code Matrix}es.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param height the height (number of rows) of the generated {@code Matrix}es
+     * @param width the width (number of columns) of the generated {@code Matrix}es
+     * @return {@code Matrix}es with height {@code height} and width {@code width}
+     */
+    @Override
+    public @NotNull Iterable<RationalPolynomialMatrix> rationalPolynomialMatrices(int height, int width) {
+        return null;
+//        if (height == 0 || width == 0) {
+//            int scale = getScale();
+//            if (scale < 1) {
+//                throw new IllegalStateException("this must have a positive scale. Invalid scale: " + scale);
+//            }
+//            return repeat(Matrix.zero(height, width));
+//        } else {
+//            return map(Matrix::fromRows, lists(height, vectors(width)));
+//        }
+    }
+
+    /**
+     * An {@code Iterable} that generates all {@code Matrix}es. Each {@code Rational}'s element count is chosen from a
+     * geometric distribution with mean approximately {@code secondaryScale}, and each coordinate's bit size is chosen
+     * from a geometric distribution with mean approximately {@code scale}. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a positive {@code scale} and a {@code secondaryScale} of at least 2.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing {@code RationalMatrix}es.</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
+    @Override
+    public @NotNull Iterable<RationalPolynomialMatrix> rationalPolynomialMatrices() {
+        return null;
+//        int scale = getScale();
+//        if (scale < 1) {
+//            throw new IllegalStateException("this must have a positive scale. Invalid scale: " + scale);
+//        }
+//        int secondaryScale = getSecondaryScale();
+//        if (secondaryScale < 2) {
+//            throw new IllegalStateException("this must have a secondaryScale of at least 2. Invalid secondaryScale: " +
+//                    secondaryScale);
+//        }
+//        QBarRandomProvider dimensionProvider = (QBarRandomProvider) withScale(
+//                MathUtils.ceilingRoot(IntegerUtils.TWO, BigInteger.valueOf(secondaryScale)).intValueExact()
+//        );
+//        return chooseLogarithmicOrder(
+//                map(
+//                        p -> Matrix.fromRows(p.b),
+//                        dependentPairsInfiniteSquareRootOrder(
+//                                pairs(dimensionProvider.positiveIntegersGeometric()),
+//                                p -> lists(p.a, vectors(p.b))
+//                        )
+//                ),
+//                choose(
+//                        map(i -> Matrix.zero(0, i), dimensionProvider.naturalIntegersGeometric()),
+//                        map(i -> Matrix.zero(i, 0), dimensionProvider.positiveIntegersGeometric())
+//                )
+//        );
+    }
+
+    /**
+     * An {@code Iterable} that generates all square {@code Matrix}es. Each {@code Matrix}'s element count is chosen
+     * from a geometric distribution with mean approximately {@code secondaryScale}, and each coordinate's bit size is
+     * chosen from a geometric distribution with mean approximately {@code scale}. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a {@code scale} of at least 2 and a {@code secondaryScale} of at least 2.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing square {@code Matrix}es.</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
+    @Override
+    public @NotNull Iterable<RationalPolynomialMatrix> squareRationalPolynomialMatrices() {
+        return null;
+//        int scale = getScale();
+//        if (scale < 2) {
+//            throw new IllegalStateException("this must have a scale of at least 2. Invalid scale: " + scale);
+//        }
+//        int secondaryScale = getSecondaryScale();
+//        if (secondaryScale < 2) {
+//            throw new IllegalStateException("this must have a secondaryScale of at least 2. Invalid secondaryScale: " +
+//                    secondaryScale);
+//        }
+//        QBarRandomProvider dimensionProvider = (QBarRandomProvider) withScale(
+//                MathUtils.ceilingRoot(IntegerUtils.TWO, BigInteger.valueOf(secondaryScale)).intValueExact()
+//        );
+//        return withElement(
+//                Matrix.zero(0, 0),
+//                map(p -> p.b, dependentPairsInfiniteLogarithmicOrder(
+//                        dimensionProvider.positiveIntegersGeometric(),
+//                        i -> matrices(i, i))
+//                )
+//        );
+    }
+
+    /**
      * An {@code Iterable} that generates all {@code Polynomial}s. Each {@code Polynomial}'s degree is chosen from a
      * geometric distribution with mean {@code secondaryScale}, and each coefficient's bit size is chosen from a
      * geometric distribution with mean approximately {@code scale}. Does not support removal.

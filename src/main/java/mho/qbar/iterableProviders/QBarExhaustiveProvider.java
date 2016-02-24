@@ -426,7 +426,7 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
     }
 
     /**
-     * An {@code Iterable} that generates all {@code Matrix}.
+     * An {@code Iterable} that generates all {@code Matrix}es.
      *
      * <ul>
      *  <li>{@code height} cannot be negative.</li>
@@ -491,7 +491,7 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
     }
 
     /**
-     * An {@code Iterable} that generates all {@code RationalMatrix}.
+     * An {@code Iterable} that generates all {@code RationalMatrix}es.
      *
      * <ul>
      *  <li>{@code height} cannot be negative.</li>
@@ -534,6 +534,157 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
         return cons(
                 RationalMatrix.zero(0, 0),
                 map(p -> p.b, dependentPairsInfiniteLogarithmicOrder(positiveIntegers(), i -> rationalMatrices(i, i)))
+        );
+    }
+
+    /**
+     * An {@code Iterable} that generates all {@code PolynomialMatrix}es with a given height and width.
+     *
+     * <ul>
+     *  <li>{@code height} cannot be negative.</li>
+     *  <li>{@code width} cannot be negative.</li>
+     *  <li>The result is a non-removable {@code Iterable} containing {@code PolynomialMatrix}es.</li>
+     * </ul>
+     *
+     * Length is 1 if either {@code height} or {@code width} are 0, infinite otherwise
+     *
+     * @param height the height (number of rows) of the generated {@code PolynomialMatrix}es
+     * @param width the width (number of columns) of the generated {@code PolynomialMatrix}es
+     * @return all {@code PolynomialMatrix}es with height {@code height} and width {@code width}
+     */
+    @Override
+    public @NotNull Iterable<PolynomialMatrix> polynomialMatrices(int height, int width) {
+        if (height == 0 || width == 0) {
+            return Collections.singletonList(PolynomialMatrix.zero(height, width));
+        } else {
+            return map(PolynomialMatrix::fromRows, lists(height, polynomialVectors(width)));
+        }
+    }
+
+    /**
+     * An {@code Iterable} that generates all {@code PolynomialMatrix}es.
+     *
+     * <ul>
+     *  <li>{@code height} cannot be negative.</li>
+     *  <li>{@code width} cannot be negative.</li>
+     *  <li>The result is a non-removable {@code Iterable} containing {@code PolynomialMatrix}es.</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
+    @Override
+    public @NotNull Iterable<PolynomialMatrix> polynomialMatrices() {
+        return chooseLogarithmicOrder(
+                map(
+                        p -> PolynomialMatrix.fromRows(p.b),
+                        dependentPairsInfiniteSquareRootOrder(
+                                pairs(positiveIntegers()),
+                                p -> lists(p.a, polynomialVectors(p.b))
+                        )
+                ),
+                choose(
+                        map(i -> PolynomialMatrix.zero(0, i), naturalIntegers()),
+                        map(i -> PolynomialMatrix.zero(i, 0), positiveIntegers())
+                )
+        );
+    }
+
+    /**
+     * An {@code Iterable} that generates all square {@code PolynomialMatrix}es.
+     *
+     * <ul>
+     *  <li>{@code height} cannot be negative.</li>
+     *  <li>{@code width} cannot be negative.</li>
+     *  <li>The result is a non-removable {@code Iterable} containing square {@code PolynomialMatrix}es.</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
+    @Override
+    public @NotNull Iterable<PolynomialMatrix> squarePolynomialMatrices() {
+        return cons(
+                PolynomialMatrix.zero(0, 0),
+                map(
+                        p -> p.b,
+                        dependentPairsInfiniteLogarithmicOrder(positiveIntegers(), i -> polynomialMatrices(i, i))
+                )
+        );
+    }
+
+    /**
+     * An {@code Iterable} that generates all {@code RationalPolynomialMatrix}es with a given height and width.
+     *
+     * <ul>
+     *  <li>{@code height} cannot be negative.</li>
+     *  <li>{@code width} cannot be negative.</li>
+     *  <li>The result is a non-removable {@code Iterable} containing {@code RationalPolynomialMatrix}es.</li>
+     * </ul>
+     *
+     * Length is 1 if either {@code height} or {@code width} are 0, infinite otherwise
+     *
+     * @param height the height (number of rows) of the generated {@code RationalPolynomialMatrix}es
+     * @param width the width (number of columns) of the generated {@code RationalPolynomialMatrix}es
+     * @return all {@code PolynomialMatrix}es with height {@code height} and width {@code width}
+     */
+    @Override
+    public @NotNull Iterable<RationalPolynomialMatrix> rationalPolynomialMatrices(int height, int width) {
+        if (height == 0 || width == 0) {
+            return Collections.singletonList(RationalPolynomialMatrix.zero(height, width));
+        } else {
+            return map(RationalPolynomialMatrix::fromRows, lists(height, rationalPolynomialVectors(width)));
+        }
+    }
+
+    /**
+     * An {@code Iterable} that generates all {@code RationalPolynomialMatrix}es.
+     *
+     * <ul>
+     *  <li>{@code height} cannot be negative.</li>
+     *  <li>{@code width} cannot be negative.</li>
+     *  <li>The result is a non-removable {@code Iterable} containing {@code RationalPolynomialMatrix}es.</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
+    @Override
+    public @NotNull Iterable<RationalPolynomialMatrix> rationalPolynomialMatrices() {
+        return chooseLogarithmicOrder(
+                map(
+                        p -> RationalPolynomialMatrix.fromRows(p.b),
+                        dependentPairsInfiniteSquareRootOrder(
+                                pairs(positiveIntegers()),
+                                p -> lists(p.a, rationalPolynomialVectors(p.b))
+                        )
+                ),
+                choose(
+                        map(i ->RationalPolynomialMatrix.zero(0, i), naturalIntegers()),
+                        map(i ->RationalPolynomialMatrix.zero(i, 0), positiveIntegers())
+                )
+        );
+    }
+
+    /**
+     * An {@code Iterable} that generates all square {@code RationalPolynomialMatrix}es.
+     *
+     * <ul>
+     *  <li>{@code height} cannot be negative.</li>
+     *  <li>{@code width} cannot be negative.</li>
+     *  <li>The result is a non-removable {@code Iterable} containing square {@code RationalPolynomialMatrix}es.</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
+    @Override
+    public @NotNull Iterable<RationalPolynomialMatrix> squareRationalPolynomialMatrices() {
+        return cons(
+                RationalPolynomialMatrix.zero(0, 0),
+                map(
+                        p -> p.b,
+                        dependentPairsInfiniteLogarithmicOrder(
+                                positiveIntegers(),
+                                i -> rationalPolynomialMatrices(i, i)
+                        )
+                )
         );
     }
 
