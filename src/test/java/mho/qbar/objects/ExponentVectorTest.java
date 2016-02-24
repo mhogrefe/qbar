@@ -121,6 +121,8 @@ public class ExponentVectorTest {
         fromTerms_helper("[(a, 1)]", "a");
         fromTerms_helper("[(a, 2)]", "a^2");
         fromTerms_helper("[(a, 3)]", "a^3");
+        fromTerms_helper("[(b, 2), (b, 3)]", "b^5");
+        fromTerms_helper("[(b, 2), (a, 3)]", "a^3*b^2");
         fromTerms_helper("[(x, 2), (y, 1), (z, 3)]", "x^2*y*z^3");
 
         fromTerms_fail_helper("[null]");
@@ -128,8 +130,7 @@ public class ExponentVectorTest {
         fromTerms_fail_helper("[(a, null)]");
         fromTerms_fail_helper("[(null, 1)]");
         fromTerms_fail_helper("[(a, -1)]");
-        fromTerms_fail_helper("[(b, 2), (b, 3)]");
-        fromTerms_fail_helper("[(b, 2), (a, 3)]");
+        fromTerms_fail_helper("[(a, 0)]");
     }
 
     private static void degree_helper(@NotNull String ev, int output) {

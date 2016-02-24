@@ -125,42 +125,35 @@ public class ExponentVectorProperties extends QBarTestProperties {
                 map(
                         p -> toList(zip(p.a, p.b)),
                         P.dependentPairsInfinite(
-                                P.subsetsAtLeast(1, P.variables()),
-                                vs -> filterInfinite(
-                                        is -> last(is) != 0,
-                                        P.lists(vs.size(), P.positiveIntegersGeometric())
-                                )
+                                P.listsAtLeast(1, P.variables()),
+                                vs -> P.lists(vs.size(), P.positiveIntegersGeometric())
                         )
                 )
         );
         for (List<Pair<Variable, Integer>> ps : take(LIMIT, pss)) {
             ExponentVector ev = fromTerms(ps);
             ev.validate();
+        }
+
+        pss = P.withElement(
+                Collections.emptyList(),
+                map(
+                        p -> toList(zip(p.a, p.b)),
+                        P.dependentPairsInfinite(
+                                P.subsetsAtLeast(1, P.variables()),
+                                vs -> P.lists(vs.size(), P.positiveIntegersGeometric())
+                        )
+                )
+        );
+        for (List<Pair<Variable, Integer>> ps : take(LIMIT, pss)) {
             inverse(ExponentVector::fromTerms, u -> toList(u.terms()), ps);
         }
 
         Iterable<List<Pair<Variable, Integer>>> pssFail = map(
                 p -> toList(zip(p.a, p.b)),
                 P.dependentPairsInfinite(
-                        P.subsetsAtLeast(1, P.variables()),
-                        vs -> filterInfinite(
-                                is -> last(is) == 0 || any(i -> i <= 0, is),
-                                P.lists(vs.size(), P.integersGeometric())
-                        )
-                )
-        );
-        for (List<Pair<Variable, Integer>> ps : take(LIMIT, pssFail)) {
-            try {
-                fromTerms(ps);
-                fail(ps);
-            } catch (IllegalArgumentException ignored) {}
-        }
-
-        pssFail = map(
-                p -> toList(zip(p.a, p.b)),
-                P.dependentPairsInfinite(
-                        filterInfinite(is -> !increasing(is), P.listsAtLeast(1, P.variables())),
-                        vs -> filterInfinite(is -> last(is) != 0, P.lists(vs.size(), P.integersGeometric()))
+                        P.listsAtLeast(1, P.variables()),
+                        vs -> filterInfinite(is -> any(i -> i <= 0, is), P.lists(vs.size(), P.integersGeometric()))
                 )
         );
         for (List<Pair<Variable, Integer>> ps : take(LIMIT, pssFail)) {

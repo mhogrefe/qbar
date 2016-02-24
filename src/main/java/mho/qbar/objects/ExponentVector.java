@@ -157,11 +157,10 @@ public class ExponentVector implements Comparable<ExponentVector> {
 
     /**
      * Creates an {@code ExponentVector} from a list of pairs, where the first element is a variable and the second is
-     * the variable's exponent.
+     * the variable's exponent. The terms do not have to be in any particular order, and the variables can be repeated.
      *
      * <ul>
-     *  <li>{@code term}s cannot contain any nulls. The second element of every pair must be positive and the first
-     *  elements must be unique and in ascending order.</li>
+     *  <li>{@code term}s cannot contain any nulls. The second element of every pair must be positive.</li>
      *  <li>The result is not null.</li>
      * </ul>
      *
@@ -176,13 +175,14 @@ public class ExponentVector implements Comparable<ExponentVector> {
             throw new IllegalArgumentException("The second element of every pair in terms must be positive." +
                     " Invalid terms: " + terms);
         }
+
         //noinspection RedundantCast
-        if (!increasing((Iterable<Variable>) map(t -> t.a, terms))) {
-            throw new IllegalArgumentException();
-        }
-        List<Integer> exponents = toList(replicate(last(terms).a.getIndex() + 1, 0));
+        List<Integer> exponents = toList(
+                replicate(maximum((Iterable<Variable>) map(p -> p.a, terms)).getIndex() + 1, 0)
+        );
         for (Pair<Variable, Integer> term : terms) {
-            exponents.set(term.a.getIndex(), term.b);
+            int i = term.a.getIndex();
+            exponents.set(i, exponents.get(i) + term.b);
         }
         return new ExponentVector(exponents);
     }

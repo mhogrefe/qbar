@@ -58,11 +58,8 @@ public class ExponentVectorDemos extends QBarDemos {
                 map(
                         p -> toList(zip(p.a, p.b)),
                         P.dependentPairsInfinite(
-                                P.subsetsAtLeast(1, P.variables()),
-                                vs -> filterInfinite(
-                                        is -> last(is) != 0,
-                                        P.lists(vs.size(), P.positiveIntegersGeometric())
-                                )
+                                P.listsAtLeast(1, P.variables()),
+                                vs -> P.lists(vs.size(), P.positiveIntegersGeometric())
                         )
                 )
         );
