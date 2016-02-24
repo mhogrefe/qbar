@@ -146,6 +146,21 @@ public class ExponentVectorTest {
         degree_helper("x^2*y*z^3", 6);
     }
 
+    private static void variables_helper(@NotNull String x, @NotNull String output) {
+        aeq(read(x).get().variables(), output);
+    }
+
+    @Test
+    public void testVariables() {
+        variables_helper("1", "[]");
+        variables_helper("a", "[a]");
+        variables_helper("a^2", "[a]");
+        variables_helper("a^3", "[a]");
+        variables_helper("a*b", "[a, b]");
+        variables_helper("ooo", "[ooo]");
+        variables_helper("x^2*y*z^3", "[x, y, z]");
+    }
+
     @Test
     public void testEquals() {
         testEqualsHelper(

@@ -29,6 +29,7 @@ public class ExponentVectorProperties extends QBarTestProperties {
         propertiesOf();
         propertiesFromTerms();
         propertiesDegree();
+        propertiesVariables();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -188,6 +189,18 @@ public class ExponentVectorProperties extends QBarTestProperties {
         for (ExponentVector ev : take(LIMIT, P.exponentVectors())) {
             int degree = ev.degree();
             assertTrue(ev, degree >= 0);
+        }
+    }
+
+    private void propertiesVariables() {
+        initialize("variables()");
+        for (ExponentVector ev : take(LIMIT, P.exponentVectors())) {
+            List<Variable> variables = ev.variables();
+            assertTrue(ev, increasing(variables));
+            String s = ev.toString();
+            for (Variable v : variables) {
+                assertTrue(ev, s.contains(v.toString()));
+            }
         }
     }
 

@@ -203,6 +203,26 @@ public class ExponentVector implements Comparable<ExponentVector> {
     }
 
     /**
+     * Returns the variables used by {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code ExponentVector}.</li>
+     *  <li>The result is in ascending order and has no repetitions.</li>
+     * </ul>
+     *
+     * @return {@code this}'s variables
+     */
+    public @NotNull List<Variable> variables() {
+        List<Variable> variables = new ArrayList<>();
+        for (int i = 0; i < exponents.size(); i++) {
+            if (exponents.get(i) != 0) {
+                variables.add(Variable.of(i));
+            }
+        }
+        return variables;
+    }
+
+    /**
      * Determines whether {@code this} is equal to {@code that}.
      *
      * <ul>
