@@ -78,6 +78,7 @@ public class RationalMatrixProperties extends QBarTestProperties {
         propertiesDeterminant();
         compareImplementationsDeterminant();
         propertiesCharacteristicPolynomial();
+        compareImplementationsCharacteristicPolynomial();
         propertiesEquals();
         propertiesKroneckerMultiply();
         propertiesKroneckerAdd();
@@ -1650,10 +1651,16 @@ public class RationalMatrixProperties extends QBarTestProperties {
         compareImplementations("determinant()", take(LIMIT, P.withScale(4).squareRationalMatrices()), functions);
     }
 
+    private static @NotNull RationalPolynomial characteristicPolynomial_alt(@NotNull RationalMatrix a) {
+        return RationalPolynomialMatrix.identity(a.width()).multiply(RationalPolynomial.X)
+                .subtract(RationalPolynomialMatrix.of(a)).determinant();
+    }
+
     private void propertiesCharacteristicPolynomial() {
         initialize("characteristicPolynomial()");
         for (RationalMatrix m : take(LIMIT, P.withScale(4).squareRationalMatrices())) {
             RationalPolynomial p = m.characteristicPolynomial();
+            assertEquals(m, characteristicPolynomial_alt(m), p);
             assertTrue(m, p.isMonic());
             Rational det = m.determinant();
             assertEquals(m, p.coefficient(0), m.height() % 2 == 0 ? det : det.negate());
@@ -1675,6 +1682,14 @@ public class RationalMatrixProperties extends QBarTestProperties {
                     RationalPolynomial.of(Arrays.asList(Rational.NEGATIVE_ONE, Rational.ONE)).pow(i)
             );
         }
+    }
+
+    private void compareImplementationsCharacteristicPolynomial() {
+        Map<String, Function<RationalMatrix, RationalPolynomial>> functions = new LinkedHashMap<>();
+        functions.put("alt", RationalMatrixProperties::characteristicPolynomial_alt);
+        functions.put("standard", RationalMatrix::characteristicPolynomial);
+        Iterable<RationalMatrix> ms = P.withScale(4).squareRationalMatrices();
+        compareImplementations("characteristicPolynomial()", take(LIMIT, ms), functions);
     }
 
     private void propertiesKroneckerMultiply() {

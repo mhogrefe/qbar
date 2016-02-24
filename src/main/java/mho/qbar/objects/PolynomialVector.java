@@ -143,6 +143,11 @@ public class PolynomialVector implements Comparable<PolynomialVector>, Iterable<
         return new PolynomialVector(Collections.singletonList(a));
     }
 
+    //todo
+    public static @NotNull PolynomialVector of(@NotNull Vector v) {
+        return new PolynomialVector(toList(map(Polynomial::of, v)));
+    }
+
     /**
      * Returns the maximum bit length of any coefficient of any coordinate, or 0 if {@code this} is 0-dimensional.
      *

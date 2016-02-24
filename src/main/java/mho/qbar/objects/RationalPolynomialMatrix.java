@@ -267,6 +267,12 @@ public class RationalPolynomialMatrix implements Comparable<RationalPolynomialMa
         }
     }
 
+    //todo
+    public static @NotNull RationalPolynomialMatrix of(@NotNull RationalMatrix m) {
+        if (m.height() == 0 || m.width() == 0) return zero(m.height(), m.width());
+        return fromRows(toList(map(RationalPolynomialVector::of, m.rows())));
+    }
+
     /**
      * Returns the maximum bit length of any element, or 0 if {@code this} has no elements.
      *

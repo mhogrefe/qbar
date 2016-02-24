@@ -1648,11 +1648,17 @@ public class MatrixProperties extends QBarTestProperties {
         return m.toRationalMatrix().characteristicPolynomial().toPolynomial();
     }
 
+    private static @NotNull Polynomial characteristicPolynomial_alt(@NotNull Matrix a) {
+        return PolynomialMatrix.identity(a.width()).multiply(Polynomial.X).subtract(PolynomialMatrix.of(a))
+                .determinant();
+    }
+
     private void propertiesCharacteristicPolynomial() {
         initialize("characteristicPolynomial()");
         for (Matrix m : take(LIMIT, P.withScale(4).squareMatrices())) {
             Polynomial p = m.characteristicPolynomial();
             assertEquals(m, characteristicPolynomial_simplest(m), p);
+            assertEquals(m, characteristicPolynomial_alt(m), p);
             assertTrue(m, p.isMonic());
             BigInteger det = m.determinant();
             assertEquals(m, p.coefficient(0), m.height() % 2 == 0 ? det : det.negate());
@@ -1679,6 +1685,7 @@ public class MatrixProperties extends QBarTestProperties {
     private void compareImplementationsCharacteristicPolynomial() {
         Map<String, Function<Matrix, Polynomial>> functions = new LinkedHashMap<>();
         functions.put("simplest", MatrixProperties::characteristicPolynomial_simplest);
+        functions.put("alt", MatrixProperties::characteristicPolynomial_alt);
         functions.put("standard", Matrix::characteristicPolynomial);
         compareImplementations("characteristicPolynomial()", take(LIMIT, P.withScale(4).squareMatrices()), functions);
     }

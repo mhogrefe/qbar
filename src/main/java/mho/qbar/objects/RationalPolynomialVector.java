@@ -158,6 +158,11 @@ public class RationalPolynomialVector implements Comparable<RationalPolynomialVe
         return new RationalPolynomialVector(Collections.singletonList(a));
     }
 
+    //todo
+    public static @NotNull RationalPolynomialVector of(@NotNull RationalVector v) {
+        return new RationalPolynomialVector(toList(map(RationalPolynomial::of, v)));
+    }
+
     /**
      * Returns the maximum bit length of any coefficient of any coordinate, or 0 if {@code this} is 0-dimensional.
      *

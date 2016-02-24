@@ -250,6 +250,12 @@ public class PolynomialMatrix implements Comparable<PolynomialMatrix> {
         }
     }
 
+    //todo
+    public static @NotNull PolynomialMatrix of(@NotNull Matrix m) {
+        if (m.height() == 0 || m.width() == 0) return zero(m.height(), m.width());
+        return fromRows(toList(map(PolynomialVector::of, m.rows())));
+    }
+
     /**
      * Returns the maximum bit length of any element, or 0 if {@code this} has no elements.
      *
