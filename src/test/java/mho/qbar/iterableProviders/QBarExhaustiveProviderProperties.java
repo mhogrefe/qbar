@@ -6,6 +6,7 @@ import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.function.Predicate;
 
 import static mho.qbar.testing.QBarTesting.QEP;
@@ -36,6 +37,10 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
         propertiesSquareMatrices();
         propertiesRationalMatrices();
         propertiesSquareRationalMatrices();
+        propertiesPolynomialMatrices();
+        propertiesSquarePolynomialMatrices();
+        propertiesRationalPolynomialMatrices();
+        propertiesSquareRationalPolynomialMatrices();
         propertiesPolynomials();
         propertiesPrimitivePolynomials();
         propertiesPositivePrimitivePolynomials();
@@ -68,6 +73,8 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
         propertiesRationalPolynomialVectorsAtLeast();
         propertiesMatrices_int_int();
         propertiesRationalMatrices_int_int();
+        propertiesPolynomialMatrices_int_int();
+        propertiesRationalPolynomialMatrices_int_int();
         propertiesPolynomials_int();
         propertiesPolynomialsAtLeast();
         propertiesPrimitivePolynomials_int();
@@ -84,6 +91,7 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
         propertiesRationalPolynomialsAtLeast();
         propertiesMonicRationalPolynomials_int();
         propertiesMonicRationalPolynomialsAtLeast();
+        propertiesExponentVectors_List_Variable();
     }
 
     private static <T> void test_helper(
@@ -475,6 +483,76 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
         take(TINY_LIMIT, QEP.squareRationalMatrices()).forEach(RationalMatrix::validate);
     }
 
+    private void propertiesPolynomialMatrices_int_int() {
+        initialize("polynomialMatrices(int, int)");
+        for (Pair<Integer, Integer> p : take(SMALL_LIMIT, P.pairs(P.naturalIntegersGeometric()))) {
+            Iterable<PolynomialMatrix> ms = QEP.polynomialMatrices(p.a, p.b);
+            simpleTest(p, ms, n -> n.height() == p.a && n.width() == p.b);
+            take(TINY_LIMIT, ms).forEach(PolynomialMatrix::validate);
+        }
+
+        for (Pair<Integer, Integer> p : take(LIMIT, P.pairs(P.negativeIntegers(), P.positiveIntegers()))) {
+            try {
+                QEP.polynomialMatrices(p.a, p.b);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
+        }
+
+        for (Pair<Integer, Integer> p : take(LIMIT, P.pairs(P.positiveIntegers(), P.negativeIntegers()))) {
+            try {
+                QEP.polynomialMatrices(p.a, p.b);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesPolynomialMatrices() {
+        initializeConstant("polynomialMatrices()");
+        biggerTest(QEP, QEP.polynomialMatrices(), m -> true);
+        take(TINY_LIMIT, QEP.polynomialMatrices()).forEach(PolynomialMatrix::validate);
+    }
+
+    private void propertiesSquarePolynomialMatrices() {
+        initializeConstant("squarePolynomialMatrices()");
+        biggerTest(QEP, QEP.squarePolynomialMatrices(), PolynomialMatrix::isSquare);
+        take(TINY_LIMIT, QEP.squarePolynomialMatrices()).forEach(PolynomialMatrix::validate);
+    }
+
+    private void propertiesRationalPolynomialMatrices_int_int() {
+        initialize("rationalPolynomialMatrices(int, int)");
+        for (Pair<Integer, Integer> p : take(SMALL_LIMIT, P.pairs(P.naturalIntegersGeometric()))) {
+            Iterable<RationalPolynomialMatrix> ms = QEP.rationalPolynomialMatrices(p.a, p.b);
+            simpleTest(p, ms, n -> n.height() == p.a && n.width() == p.b);
+            take(TINY_LIMIT, ms).forEach(RationalPolynomialMatrix::validate);
+        }
+
+        for (Pair<Integer, Integer> p : take(LIMIT, P.pairs(P.negativeIntegers(), P.positiveIntegers()))) {
+            try {
+                QEP.rationalPolynomialMatrices(p.a, p.b);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
+        }
+
+        for (Pair<Integer, Integer> p : take(LIMIT, P.pairs(P.positiveIntegers(), P.negativeIntegers()))) {
+            try {
+                QEP.rationalPolynomialMatrices(p.a, p.b);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesRationalPolynomialMatrices() {
+        initializeConstant("rationalPolynomialMatrices()");
+        biggerTest(QEP, QEP.rationalPolynomialMatrices(), m -> true);
+        take(TINY_LIMIT, QEP.rationalPolynomialMatrices()).forEach(RationalPolynomialMatrix::validate);
+    }
+
+    private void propertiesSquareRationalPolynomialMatrices() {
+        initializeConstant("squareRationalPolynomialMatrices()");
+        biggerTest(QEP, QEP.squareRationalPolynomialMatrices(), RationalPolynomialMatrix::isSquare);
+        take(TINY_LIMIT, QEP.squareRationalPolynomialMatrices()).forEach(RationalPolynomialMatrix::validate);
+    }
+
     private void propertiesPolynomials_int() {
         initialize("polynomials(int)");
         for (int i : take(SMALL_LIMIT, P.rangeUpGeometric(-1))) {
@@ -798,5 +876,21 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
         initializeConstant("exponentVectors()");
         biggerTest(QEP, QEP.exponentVectors(), ev -> true);
         take(TINY_LIMIT, QEP.exponentVectors()).forEach(ExponentVector::validate);
+    }
+
+    private void propertiesExponentVectors_List_Variable() {
+        initialize("exponentVectors(List<Variable>)");
+        for (List<Variable> vs : take(LIMIT, P.subsets(P.variables()))) {
+            Iterable<ExponentVector> evs = QEP.exponentVectors(vs);
+            simpleTest(vs, evs, ev -> isSubsetOf(ev.variables(), vs));
+            take(TINY_LIMIT, evs).forEach(ExponentVector::validate);
+        }
+
+        for (List<Variable> vs : take(LIMIT, filterInfinite(us -> !increasing(us), P.lists(P.variables())))) {
+            try {
+                QEP.exponentVectors(vs);
+                fail(vs);
+            } catch (IllegalArgumentException ignored) {}
+        }
     }
 }

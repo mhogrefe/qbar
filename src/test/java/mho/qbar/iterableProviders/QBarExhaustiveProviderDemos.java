@@ -2,10 +2,14 @@ package mho.qbar.iterableProviders;
 
 import mho.qbar.objects.Interval;
 import mho.qbar.objects.Rational;
+import mho.qbar.objects.Variable;
 import mho.qbar.testing.QBarDemos;
 import mho.wheels.structures.Pair;
 
+import java.util.List;
+
 import static mho.qbar.testing.QBarTesting.QEP;
+import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.iterables.IterableUtils.take;
 import static mho.wheels.testing.Testing.*;
 
@@ -119,6 +123,20 @@ public class QBarExhaustiveProviderDemos extends QBarDemos {
         }
     }
 
+    private void demoPolynomialMatrices_int_int() {
+        for (Pair<Integer, Integer> p : take(SMALL_LIMIT, P.pairs(P.withScale(4).naturalIntegersGeometric()))) {
+            System.out.println("polynomialMatrices(" + p.a + ", " + p.b + ") = " +
+                    its(QEP.polynomialMatrices(p.a, p.b)));
+        }
+    }
+
+    private void demoRationalPolynomialMatrices_int_int() {
+        for (Pair<Integer, Integer> p : take(SMALL_LIMIT, P.pairs(P.withScale(4).naturalIntegersGeometric()))) {
+            System.out.println("rationalPolynomialMatrices(" + p.a + ", " + p.b + ") = " +
+                    its(QEP.rationalPolynomialMatrices(p.a, p.b)));
+        }
+    }
+
     private void demoPolynomials_int() {
         for (int i : take(SMALL_LIMIT, P.rangeUpGeometric(-1))) {
             System.out.println("polynomials(" + i + ") = " + its(QEP.polynomials(i)));
@@ -219,6 +237,13 @@ public class QBarExhaustiveProviderDemos extends QBarDemos {
         for (int i : take(SMALL_LIMIT, P.rangeUpGeometric(-1))) {
             System.out.println("monicRationalPolynomialsAtLeast(" + i + ") = " +
                     its(QEP.monicRationalPolynomialsAtLeast(i)));
+        }
+    }
+
+    private void demoExponentVectors_List_Variable() {
+        for (List<Variable> vs : take(MEDIUM_LIMIT, P.subsets(P.variables()))) {
+            String listString = tail(init(vs.toString()));
+            System.out.println("exponentVectors(" + listString + ") = " + its(QEP.exponentVectors(vs)));
         }
     }
 }
