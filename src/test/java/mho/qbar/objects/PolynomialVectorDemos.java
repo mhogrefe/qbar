@@ -55,6 +55,12 @@ public class PolynomialVectorDemos extends QBarDemos {
         }
     }
 
+    private void demoOf_Vector() {
+        for (Vector v : take(LIMIT, P.withScale(4).vectors())) {
+            System.out.println("of(" + v + ") = " + of(v));
+        }
+    }
+
     private void demoMaxCoordinateBitLength() {
         for (PolynomialVector v : take(LIMIT, P.withScale(4).withSecondaryScale(4).polynomialVectors())) {
             System.out.println("maxCoordinateBitLength(" + v + ") = " + v.maxCoordinateBitLength());

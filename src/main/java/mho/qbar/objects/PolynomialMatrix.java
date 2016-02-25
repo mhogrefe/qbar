@@ -250,7 +250,19 @@ public class PolynomialMatrix implements Comparable<PolynomialMatrix> {
         }
     }
 
-    //todo
+    /**
+     * Creates a {@code PolynomialMatrix} from a {@code Matrix}.
+     *
+     * <ul>
+     *  <li>{@code m} cannot be null.</li>
+     *  <li>The result has constant elements.</li>
+     * </ul>
+     *
+     * Length is height({@code m})×width({@code m})
+     *
+     * @param m a {@code Matrix}
+     * @return the {@code PolynomialMatrix} with the same elements as {@code m}
+     */
     public static @NotNull PolynomialMatrix of(@NotNull Matrix m) {
         if (m.height() == 0 || m.width() == 0) return zero(m.height(), m.width());
         return fromRows(toList(map(PolynomialVector::of, m.rows())));

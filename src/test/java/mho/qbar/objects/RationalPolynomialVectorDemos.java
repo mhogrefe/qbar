@@ -70,6 +70,12 @@ public class RationalPolynomialVectorDemos extends QBarDemos {
         }
     }
 
+    private void demoOf_RationalVector() {
+        for (RationalVector v : take(LIMIT, P.withScale(4).rationalVectors())) {
+            System.out.println("of(" + v + ") = " + of(v));
+        }
+    }
+
     private void demoMaxCoordinateBitLength() {
         Iterable<RationalPolynomialVector> vs = P.withScale(4).withSecondaryScale(4).rationalPolynomialVectors();
         for (RationalPolynomialVector v : take(LIMIT, vs)) {

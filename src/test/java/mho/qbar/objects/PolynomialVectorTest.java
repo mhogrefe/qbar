@@ -97,6 +97,17 @@ public class PolynomialVectorTest {
         of_Polynomial_helper("0", "[0]");
     }
 
+    private static void of_Vector_helper(@NotNull String input) {
+        aeq(of(Vector.read(input).get()), input);
+    }
+
+    @Test
+    public void testOf_Vector() {
+        of_Vector_helper("[]");
+        of_Vector_helper("[2]");
+        of_Vector_helper("[5, -4, 23]");
+    }
+
     private static void maxCoordinateBitLength_helper(@NotNull String input, int output) {
         aeq(read(input).get().maxCoordinateBitLength(), output);
     }

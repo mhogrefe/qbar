@@ -143,8 +143,21 @@ public class PolynomialVector implements Comparable<PolynomialVector>, Iterable<
         return new PolynomialVector(Collections.singletonList(a));
     }
 
-    //todo
+    /**
+     * Creates a {@code PolynomialVector} from a {@code Vector}.
+     *
+     * <ul>
+     *  <li>{@code v} cannot be null.</li>
+     *  <li>The result has constant coordinates.</li>
+     * </ul>
+     *
+     * Length is dim({@code v})
+     *
+     * @param v a {@code Vector}
+     * @return the {@code PolynomialVector} with the same coordinates as {@code v}
+     */
     public static @NotNull PolynomialVector of(@NotNull Vector v) {
+        if (v == Vector.ZERO_DIMENSIONAL) return ZERO_DIMENSIONAL;
         return new PolynomialVector(toList(map(Polynomial::of, v)));
     }
 

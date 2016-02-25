@@ -267,7 +267,19 @@ public class RationalPolynomialMatrix implements Comparable<RationalPolynomialMa
         }
     }
 
-    //todo
+    /**
+     * Creates a {@code RationalPolynomialMatrix} from a {@code RationalMatrix}.
+     *
+     * <ul>
+     *  <li>{@code m} cannot be null.</li>
+     *  <li>The result has constant elements.</li>
+     * </ul>
+     *
+     * Length is height({@code m})×width({@code m})
+     *
+     * @param m a {@code RationalMatrix}
+     * @return the {@code RationalPolynomialMatrix} with the same elements as {@code m}
+     */
     public static @NotNull RationalPolynomialMatrix of(@NotNull RationalMatrix m) {
         if (m.height() == 0 || m.width() == 0) return zero(m.height(), m.width());
         return fromRows(toList(map(RationalPolynomialVector::of, m.rows())));

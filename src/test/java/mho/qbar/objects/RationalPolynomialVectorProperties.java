@@ -32,6 +32,7 @@ public class RationalPolynomialVectorProperties extends QBarTestProperties {
         propertiesGet();
         propertiesOf_List_RationalPolynomial();
         propertiesOf_RationalPolynomial();
+        propertiesOf_RationalVector();
         propertiesMaxCoordinateBitLength();
         propertiesDimension();
         propertiesIsZero();
@@ -167,6 +168,16 @@ public class RationalPolynomialVectorProperties extends QBarTestProperties {
             assertEquals(p, v.dimension(), 1);
             assertEquals(p, v.get(0), p);
             inverse(RationalPolynomialVector::of, (RationalPolynomialVector u) -> u.get(0), p);
+        }
+    }
+
+    private void propertiesOf_RationalVector() {
+        initialize("of(RationalVector)");
+        for (RationalVector v : take(LIMIT, P.rationalVectors())) {
+            RationalPolynomialVector pv = of(v);
+            pv.validate();
+            assertEquals(v, pv.dimension(), v.dimension());
+            assertEquals(v, pv.toString(), pv.toString());
         }
     }
 

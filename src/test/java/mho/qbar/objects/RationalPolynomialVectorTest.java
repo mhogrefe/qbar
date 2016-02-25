@@ -112,10 +112,21 @@ public class RationalPolynomialVectorTest {
     }
 
     @Test
-    public void testOf_Rational() {
+    public void testOf_RationalPolynomial() {
         of_RationalPolynomial_helper("1/2*x", "[1/2*x]");
         of_RationalPolynomial_helper("-5", "[-5]");
         of_RationalPolynomial_helper("0", "[0]");
+    }
+
+    private static void of_RationalVector_helper(@NotNull String input) {
+        aeq(of(RationalVector.read(input).get()), input);
+    }
+
+    @Test
+    public void testOf_RationalVector() {
+        of_RationalVector_helper("[]");
+        of_RationalVector_helper("[1/2]");
+        of_RationalVector_helper("[5/3, -1/4, 23]");
     }
 
     private static void maxCoordinateBitLength_helper(@NotNull String input, int output) {

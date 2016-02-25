@@ -31,6 +31,7 @@ public class PolynomialVectorProperties extends QBarTestProperties {
         propertiesGet();
         propertiesOf_List_Polynomial();
         propertiesOf_Polynomial();
+        propertiesOf_Vector();
         propertiesMaxCoordinateBitLength();
         propertiesDimension();
         propertiesIsZero();
@@ -132,6 +133,16 @@ public class PolynomialVectorProperties extends QBarTestProperties {
             assertEquals(p, v.dimension(), 1);
             assertEquals(p, v.get(0), p);
             inverse(PolynomialVector::of, (PolynomialVector u) -> u.get(0), p);
+        }
+    }
+
+    private void propertiesOf_Vector() {
+        initialize("of(Vector)");
+        for (Vector v : take(LIMIT, P.vectors())) {
+            PolynomialVector pv = of(v);
+            pv.validate();
+            assertEquals(v, pv.dimension(), v.dimension());
+            assertEquals(v, pv.toString(), pv.toString());
         }
     }
 

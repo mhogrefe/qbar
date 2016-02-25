@@ -158,8 +158,21 @@ public class RationalPolynomialVector implements Comparable<RationalPolynomialVe
         return new RationalPolynomialVector(Collections.singletonList(a));
     }
 
-    //todo
+    /**
+     * Creates a {@code RationalPolynomialVector} from a {@code RationalVector}.
+     *
+     * <ul>
+     *  <li>{@code v} cannot be null.</li>
+     *  <li>The result has constant coordinates.</li>
+     * </ul>
+     *
+     * Length is dim({@code v})
+     *
+     * @param v a {@code Vector}
+     * @return the {@code RationalPolynomialVector} with the same coordinates as {@code v}
+     */
     public static @NotNull RationalPolynomialVector of(@NotNull RationalVector v) {
+        if (v == RationalVector.ZERO_DIMENSIONAL) return ZERO_DIMENSIONAL;
         return new RationalPolynomialVector(toList(map(RationalPolynomial::of, v)));
     }
 
