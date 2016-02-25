@@ -124,6 +124,7 @@ public class PolynomialProperties extends QBarTestProperties {
         propertiesDeterminant();
         compareImplementationsDeterminant();
         propertiesReflect();
+        propertiesTranslate();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -2750,8 +2751,8 @@ public class PolynomialProperties extends QBarTestProperties {
             involution(Polynomial::reflect, p);
         }
 
-        for (Polynomial p : take(LIMIT, P.withScale(4).polynomialsAtLeast(0))) {
-            assertEquals(p, p.isIrreducible(), p.reflect().isIrreducible());
+        for (Polynomial p : take(LIMIT, P.withScale(4).irreduciblePolynomials())) {
+            assertTrue(p, p.isIrreducible());
         }
 
         for (List<Rational> rs : take(LIMIT, P.withScale(4).bags(P.withScale(4).rationals()))) {
@@ -2765,6 +2766,44 @@ public class PolynomialProperties extends QBarTestProperties {
                     )
             );
             assertEquals(rs, negativeRs, reflectRoots);
+        }
+    }
+
+    private void propertiesTranslate() {
+        initialize("translate(BigInteger)");
+        for (Pair<Polynomial, BigInteger> p : take(LIMIT, P.pairs(P.polynomials(), P.bigIntegers()))) {
+            Polynomial translated = p.a.translate(p.b);
+            translated.validate();
+            assertEquals(p, p.a.degree(), translated.degree());
+            assertEquals(p, p.a.signum(), translated.signum());
+            inverse(q -> q.translate(p.b), (Polynomial q) -> q.translate(p.b.negate()), p.a);
+        }
+
+        for (Pair<BigInteger, BigInteger> p : take(LIMIT, P.pairs(P.bigIntegers()))) {
+            Polynomial q = of(p.a);
+            assertEquals(p, q, q.translate(p.b));
+        }
+
+        Iterable<Pair<Polynomial, BigInteger>> ps = P.pairs(P.withScale(4).irreduciblePolynomials(), P.bigIntegers());
+        for (Pair<Polynomial, BigInteger> p : take(LIMIT, ps)) {
+            assertTrue(p, p.a.translate(p.b).isIrreducible());
+        }
+
+        Iterable<Pair<BigInteger, List<Rational>>> qs = P.pairs(
+                P.bigIntegers(),
+                P.withScale(4).bags(P.withScale(4).rationals())
+        );
+        for (Pair<BigInteger, List<Rational>> p : take(LIMIT, qs)) {
+            Polynomial q = product(map(Polynomial::fromRoot, p.b));
+            List<Rational> translatedRs = toList(map(r -> r.add(Rational.of(p.a)), p.b));
+            //noinspection RedundantCast
+            List<Rational> translateRoots = sort(
+                    (Iterable<Rational>) map(
+                            f -> Rational.of(f.coefficient(0).negate(), f.coefficient(1)),
+                            q.translate(p.a).factor()
+                    )
+            );
+            assertEquals(p, translatedRs, translateRoots);
         }
     }
 

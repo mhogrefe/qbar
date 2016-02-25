@@ -503,6 +503,12 @@ public class PolynomialDemos extends QBarDemos {
         }
     }
 
+    private void demoTranslate() {
+        for (Pair<Polynomial, BigInteger> p : take(LIMIT, P.pairs(P.withScale(4).polynomials(), P.bigIntegers()))) {
+            System.out.println("translate(" + p.a + ", " + p.b + ") = " + p.a.translate(p.b));
+        }
+    }
+
     private void demoEquals_Polynomial() {
         for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(P.withScale(4).polynomials()))) {
             System.out.println(p.a + (p.a.equals(p.b) ? " = " : " ≠ ") + p.b);

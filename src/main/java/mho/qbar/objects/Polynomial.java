@@ -1601,6 +1601,22 @@ public final class Polynomial implements
     }
 
     /**
+     * Returns the translation of {@code this} by x.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>{@code t} is not null.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param t the amount that {@code this} is translated by in the x-direction.
+     * @return {@code this}(x–t)
+     */
+    public @NotNull Polynomial translate(@NotNull BigInteger t) {
+        return substitute(fromRoot(t));
+    }
+
+    /**
      * Determines whether {@code this} is equal to {@code that}.
      *
      * <ul>

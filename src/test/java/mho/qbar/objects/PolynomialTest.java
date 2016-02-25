@@ -2397,6 +2397,47 @@ public class PolynomialTest {
         reflect_helper("3*x^10", "3*x^10");
     }
 
+    private static void translate_helper(@NotNull String p, @NotNull String t, @NotNull String output) {
+        aeq(read(p).get().translate(Readers.readBigInteger(t).get()), output);
+    }
+
+    @Test
+    public void testTranslate() {
+        translate_helper("0", "0", "0");
+        translate_helper("0", "1", "0");
+        translate_helper("0", "-1", "0");
+        translate_helper("0", "100", "0");
+
+        translate_helper("1", "0", "1");
+        translate_helper("1", "1", "1");
+        translate_helper("1", "-1", "1");
+        translate_helper("1", "100", "1");
+
+        translate_helper("-17", "0", "-17");
+        translate_helper("-17", "1", "-17");
+        translate_helper("-17", "-1", "-17");
+        translate_helper("-17", "100", "-17");
+
+        translate_helper("x^2-4*x+7", "0", "x^2-4*x+7");
+        translate_helper("x^2-4*x+7", "1", "x^2-6*x+12");
+        translate_helper("x^2-4*x+7", "-1", "x^2-2*x+4");
+        translate_helper("x^2-4*x+7", "100", "x^2-204*x+10407");
+
+        translate_helper("-x^3-1", "0", "-x^3-1");
+        translate_helper("-x^3-1", "1", "-x^3+3*x^2-3*x");
+        translate_helper("-x^3-1", "-1", "-x^3-3*x^2-3*x-2");
+        translate_helper("-x^3-1", "100", "-x^3+300*x^2-30000*x+999999");
+
+        translate_helper("3*x^10", "0", "3*x^10");
+        translate_helper("3*x^10", "1",
+                "3*x^10-30*x^9+135*x^8-360*x^7+630*x^6-756*x^5+630*x^4-360*x^3+135*x^2-30*x+3");
+        translate_helper("3*x^10", "-1",
+                "3*x^10+30*x^9+135*x^8+360*x^7+630*x^6+756*x^5+630*x^4+360*x^3+135*x^2+30*x+3");
+        translate_helper("3*x^10", "100",
+                "3*x^10-3000*x^9+1350000*x^8-360000000*x^7+63000000000*x^6-7560000000000*x^5+630000000000000*x^4-" +
+                "36000000000000000*x^3+1350000000000000000*x^2-30000000000000000000*x+300000000000000000000");
+    }
+
     @Test
     public void testEquals() {
         testEqualsHelper(
