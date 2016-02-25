@@ -469,7 +469,6 @@ public class PolynomialDemos extends QBarDemos {
         }
     }
 
-    //todo props
     private void demoAugmentedCoefficientMatrix() {
         Iterable<List<Polynomial>> pss = P.withElement(
                 Collections.emptyList(),
@@ -484,7 +483,6 @@ public class PolynomialDemos extends QBarDemos {
         }
     }
 
-    //todo props
     private void demoDeterminant() {
         Iterable<List<Polynomial>> pss = P.withElement(
                 Collections.emptyList(),

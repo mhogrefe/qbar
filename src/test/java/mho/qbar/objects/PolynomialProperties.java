@@ -120,6 +120,9 @@ public class PolynomialProperties extends QBarTestProperties {
         compareImplementationsInterpolate();
         propertiesCompanionMatrix();
         propertiesCoefficientMatrix();
+        propertiesAugmentedCoefficientMatrix();
+        propertiesDeterminant();
+        compareImplementationsDeterminant();
         propertiesReflect();
         propertiesEquals();
         propertiesHashCode();
@@ -2617,6 +2620,14 @@ public class PolynomialProperties extends QBarTestProperties {
             }
         }
 
+        for (int i : take(SMALL_LIMIT, P.naturalIntegersGeometric())) {
+            List<Polynomial> ps = new ArrayList<>();
+            for (int j = i - 1; j >= 0; j--) {
+                ps.add(of(BigInteger.ONE, j));
+            }
+            assertEquals(i, coefficientMatrix(ps), Matrix.identity(i));
+        }
+
         Iterable<List<Polynomial>> pssFail = filterInfinite(
                 ps -> ps.size() > maximum(map(Polynomial::degree, ps)) + 1,
                 P.listsAtLeast(1, P.polynomials())
@@ -2627,6 +2638,106 @@ public class PolynomialProperties extends QBarTestProperties {
                 fail(ps);
             } catch (IllegalArgumentException ignored) {}
         }
+    }
+
+    private void propertiesAugmentedCoefficientMatrix() {
+        initialize("augmentedCoefficientMatrix(List<Polynomial>)");
+        Iterable<List<Polynomial>> pss = P.withElement(
+                Collections.emptyList(),
+                filterInfinite(
+                        ps -> ps.size() <= maximum(map(Polynomial::degree, ps)) + 1,
+                        P.listsAtLeast(1, P.polynomials())
+                )
+        );
+        for (List<Polynomial> ps : take(LIMIT, pss)) {
+            PolynomialMatrix m = augmentedCoefficientMatrix(ps);
+            assertEquals(ps, m.height(), ps.size());
+            assertTrue(ps, m.height() <= m.width());
+        }
+
+        Iterable<List<Polynomial>> pssFail = filterInfinite(
+                ps -> ps.size() > maximum(map(Polynomial::degree, ps)) + 1,
+                P.listsAtLeast(1, P.polynomials())
+        );
+        for (List<Polynomial> ps : take(LIMIT, pssFail)) {
+            try {
+                augmentedCoefficientMatrix(ps);
+                fail(ps);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private static @NotNull Polynomial determinant_simplest(@NotNull List<Polynomial> ps) {
+        return augmentedCoefficientMatrix(ps).determinant();
+    }
+
+    private void propertiesDeterminant() {
+        initialize("determinant(List<Polynomial>)");
+        Iterable<List<Polynomial>> pss = P.withElement(
+                Collections.emptyList(),
+                filterInfinite(
+                        ps -> ps.size() <= maximum(map(Polynomial::degree, ps)) + 1,
+                        P.listsAtLeast(1, P.polynomials())
+                )
+        );
+        for (List<Polynomial> ps : take(LIMIT, pss)) {
+            Polynomial det = determinant(ps);
+            assertEquals(ps, determinant_simplest(ps), det);
+        }
+
+        Iterable<Pair<List<Polynomial>, Pair<Integer, Integer>>> ps = P.dependentPairs(
+                filterInfinite(
+                        qs -> qs.size() <= maximum(map(Polynomial::degree, qs)) + 1,
+                        P.listsAtLeast(2, P.polynomials())
+                ),
+                qs -> P.subsetPairs(P.range(0, qs.size() - 1))
+        );
+        for (Pair<List<Polynomial>, Pair<Integer, Integer>> p : take(LIMIT, ps)) {
+            List<Polynomial> rows = toList(p.a);
+            Collections.swap(rows, p.b.a, p.b.b);
+            assertEquals(p, determinant(rows), determinant(p.a).negate());
+        }
+
+        Iterable<Pair<Pair<List<Polynomial>, BigInteger>, Integer>> ps2 = P.dependentPairs(
+                P.pairs(
+                        filterInfinite(
+                                qs -> qs.size() <= maximum(map(Polynomial::degree, qs)) + 1,
+                                P.listsAtLeast(1, P.polynomials())
+                        ),
+                        P.nonzeroBigIntegers()
+                ),
+                p -> P.range(0, p.a.size() - 1)
+        );
+        for (Pair<Pair<List<Polynomial>, BigInteger>, Integer> p : take(LIMIT, ps2)) {
+            List<Polynomial> rows = toList(p.a.a);
+            rows.set(p.b, rows.get(p.b).multiply(p.a.b));
+            assertEquals(p, determinant(rows), determinant(p.a.a).multiply(p.a.b));
+        }
+
+        Iterable<List<Polynomial>> pssFail = filterInfinite(
+                qs -> qs.size() > maximum(map(Polynomial::degree, qs)) + 1,
+                P.listsAtLeast(1, P.polynomials())
+        );
+        for (List<Polynomial> qs : take(LIMIT, pssFail)) {
+            try {
+                determinant(qs);
+                fail(ps);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void compareImplementationsDeterminant() {
+        Map<String, Function<List<Polynomial>, Polynomial>> functions = new LinkedHashMap<>();
+        functions.put("simplest", PolynomialProperties::determinant_simplest);
+        functions.put("standard", Polynomial::determinant);
+        Iterable<List<Polynomial>> pss = P.withElement(
+                Collections.emptyList(),
+                filterInfinite(
+                        ps -> ps.size() <= maximum(map(Polynomial::degree, ps)) + 1,
+                        P.listsAtLeast(1, P.polynomials())
+                )
+        );
+        compareImplementations("determinant(List<Polynomial>)", take(SMALL_LIMIT, pss), functions);
     }
 
     private void propertiesReflect() {
