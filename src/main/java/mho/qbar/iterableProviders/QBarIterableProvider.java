@@ -3429,6 +3429,9 @@ public strictfp abstract class QBarIterableProvider {
      * @param variables the allowed variables in the result
      */
     public @NotNull Iterable<ExponentVector> exponentVectors(@NotNull List<Variable> variables) {
+        if (any(v -> v == null, variables)) {
+            throw new NullPointerException();
+        }
         if (!increasing(variables)) {
             throw new IllegalArgumentException("variables must be in increasing order and cannot contain " +
                     "repetitions. Invalid variables: " + variables);

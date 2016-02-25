@@ -892,5 +892,16 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
                 fail(vs);
             } catch (IllegalArgumentException ignored) {}
         }
+
+        Iterable<List<Variable>> vsFail = filterInfinite(
+                us -> increasing(filter(u -> u != null, us)),
+                P.listsWithElement(null, P.variables())
+        );
+        for (List<Variable> vs : take(LIMIT, vsFail)) {
+            try {
+                QEP.exponentVectors(vs);
+                fail(vs);
+            } catch (NullPointerException ignored) {}
+        }
     }
 }

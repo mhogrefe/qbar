@@ -1071,16 +1071,20 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
      */
     @Override
     public @NotNull Iterable<PolynomialMatrix> polynomialMatrices(int height, int width) {
-        return null;
-//        if (height == 0 || width == 0) {
-//            int scale = getScale();
-//            if (scale < 1) {
-//                throw new IllegalStateException("this must have a positive scale. Invalid scale: " + scale);
-//            }
-//            return repeat(Matrix.zero(height, width));
-//        } else {
-//            return map(Matrix::fromRows, lists(height, vectors(width)));
-//        }
+        if (height == 0 || width == 0) {
+            int scale = getScale();
+            if (scale < 1) {
+                throw new IllegalStateException("this must have a positive scale. Invalid scale: " + scale);
+            }
+            int secondaryScale = getSecondaryScale();
+            if (secondaryScale < 0) {
+                throw new IllegalStateException("this cannot have a secondaryScale. Invalid secondaryScale: " +
+                        secondaryScale);
+            }
+            return repeat(PolynomialMatrix.zero(height, width));
+        } else {
+            return map(PolynomialMatrix::fromRows, lists(height, polynomialVectors(width)));
+        }
     }
 
     /**
@@ -1097,32 +1101,31 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
      */
     @Override
     public @NotNull Iterable<PolynomialMatrix> polynomialMatrices() {
-        return null;
 //        int scale = getScale();
 //        if (scale < 1) {
 //            throw new IllegalStateException("this must have a positive scale. Invalid scale: " + scale);
 //        }
-//        int secondaryScale = getSecondaryScale();
-//        if (secondaryScale < 2) {
-//            throw new IllegalStateException("this must have a secondaryScale of at least 2. Invalid secondaryScale: " +
-//                    secondaryScale);
-//        }
-//        QBarRandomProvider dimensionProvider = (QBarRandomProvider) withScale(
-//                MathUtils.ceilingRoot(IntegerUtils.TWO, BigInteger.valueOf(secondaryScale)).intValueExact()
-//        );
-//        return chooseLogarithmicOrder(
-//                map(
-//                        p -> Matrix.fromRows(p.b),
-//                        dependentPairsInfiniteSquareRootOrder(
-//                                pairs(dimensionProvider.positiveIntegersGeometric()),
-//                                p -> lists(p.a, vectors(p.b))
-//                        )
-//                ),
-//                choose(
-//                        map(i -> Matrix.zero(0, i), dimensionProvider.naturalIntegersGeometric()),
-//                        map(i -> Matrix.zero(i, 0), dimensionProvider.positiveIntegersGeometric())
-//                )
-//        );
+        int tertiaryScale = getTertiaryScale();
+        if (tertiaryScale < 2) {
+            throw new IllegalStateException("this must have a tertiaryScale of at least 2. Invalid tertiaryScale: " +
+                    tertiaryScale);
+        }
+        QBarRandomProvider dimensionProvider = (QBarRandomProvider) withScale(
+                MathUtils.ceilingRoot(IntegerUtils.TWO, BigInteger.valueOf(tertiaryScale)).intValueExact()
+        );
+        return chooseLogarithmicOrder(
+                map(
+                        p -> PolynomialMatrix.fromRows(p.b),
+                        dependentPairsInfiniteSquareRootOrder(
+                                pairs(dimensionProvider.positiveIntegersGeometric()),
+                                p -> lists(p.a, polynomialVectors(p.b))
+                        )
+                ),
+                choose(
+                        map(i -> PolynomialMatrix.zero(0, i), dimensionProvider.naturalIntegersGeometric()),
+                        map(i -> PolynomialMatrix.zero(i, 0), dimensionProvider.positiveIntegersGeometric())
+                )
+        );
     }
 
     /**
@@ -1139,26 +1142,25 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
      */
     @Override
     public @NotNull Iterable<PolynomialMatrix> squarePolynomialMatrices() {
-        return null;
 //        int scale = getScale();
 //        if (scale < 2) {
 //            throw new IllegalStateException("this must have a scale of at least 2. Invalid scale: " + scale);
 //        }
-//        int secondaryScale = getSecondaryScale();
-//        if (secondaryScale < 2) {
-//            throw new IllegalStateException("this must have a secondaryScale of at least 2. Invalid secondaryScale: " +
-//                    secondaryScale);
-//        }
-//        QBarRandomProvider dimensionProvider = (QBarRandomProvider) withScale(
-//                MathUtils.ceilingRoot(IntegerUtils.TWO, BigInteger.valueOf(secondaryScale)).intValueExact()
-//        );
-//        return withElement(
-//                Matrix.zero(0, 0),
-//                map(p -> p.b, dependentPairsInfiniteLogarithmicOrder(
-//                        dimensionProvider.positiveIntegersGeometric(),
-//                        i -> matrices(i, i))
-//                )
-//        );
+        int tertiaryScale = getTertiaryScale();
+        if (tertiaryScale < 2) {
+            throw new IllegalStateException("this must have a tertiaryScale of at least 2. Invalid tertiaryScale: " +
+                    tertiaryScale);
+        }
+        QBarRandomProvider dimensionProvider = (QBarRandomProvider) withScale(
+                MathUtils.ceilingRoot(IntegerUtils.TWO, BigInteger.valueOf(tertiaryScale)).intValueExact()
+        );
+        return withElement(
+                PolynomialMatrix.zero(0, 0),
+                map(p -> p.b, dependentPairsInfiniteLogarithmicOrder(
+                        dimensionProvider.positiveIntegersGeometric(),
+                        i -> polynomialMatrices(i, i))
+                )
+        );
     }
 
     /**

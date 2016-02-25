@@ -2128,7 +2128,7 @@ public class QBarExhaustiveProviderTest {
         try {
             QEP.exponentVectors(readVariableListWithNulls(variables));
             fail();
-        } catch (IllegalArgumentException ignored) {}
+        } catch (IllegalArgumentException | NullPointerException ignored) {}
     }
 
     @Test
@@ -2163,6 +2163,7 @@ public class QBarExhaustiveProviderTest {
 
         exponentVectors_List_Variable_fail_helper("[a, a]");
         exponentVectors_List_Variable_fail_helper("[b, a]");
+        exponentVectors_List_Variable_fail_helper("[a, null]");
     }
 
     @Test
