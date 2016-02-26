@@ -2755,17 +2755,11 @@ public class PolynomialProperties extends QBarTestProperties {
             assertTrue(p, p.isIrreducible());
         }
 
-        for (List<Rational> rs : take(LIMIT, P.withScale(4).bags(P.withScale(4).rationals()))) {
+        for (List<Rational> rs : take(LIMIT, P.bags(P.rationals()))) {
             Polynomial p = product(map(Polynomial::fromRoot, rs));
             List<Rational> negativeRs = reverse(map(Rational::negate, rs));
-            //noinspection RedundantCast
-            List<Rational> reflectRoots = sort(
-                    (Iterable<Rational>) map(
-                            f -> Rational.of(f.coefficient(0).negate(), f.coefficient(1)),
-                            p.reflect().factor()
-                    )
-            );
-            assertEquals(rs, negativeRs, reflectRoots);
+            Polynomial negativeRootsP = product(map(Polynomial::fromRoot, negativeRs));
+            assertEquals(rs, p.reflect(), negativeRootsP);
         }
     }
 
@@ -2789,21 +2783,12 @@ public class PolynomialProperties extends QBarTestProperties {
             assertTrue(p, p.a.translate(p.b).isIrreducible());
         }
 
-        Iterable<Pair<BigInteger, List<Rational>>> qs = P.pairs(
-                P.bigIntegers(),
-                P.withScale(4).bags(P.withScale(4).rationals())
-        );
+        Iterable<Pair<BigInteger, List<Rational>>> qs = P.pairs(P.bigIntegers(), P.withScale(4).bags(P.rationals()));
         for (Pair<BigInteger, List<Rational>> p : take(LIMIT, qs)) {
             Polynomial q = product(map(Polynomial::fromRoot, p.b));
             List<Rational> translatedRs = toList(map(r -> r.add(Rational.of(p.a)), p.b));
-            //noinspection RedundantCast
-            List<Rational> translateRoots = sort(
-                    (Iterable<Rational>) map(
-                            f -> Rational.of(f.coefficient(0).negate(), f.coefficient(1)),
-                            q.translate(p.a).factor()
-                    )
-            );
-            assertEquals(p, translatedRs, translateRoots);
+            Polynomial translatedRootsP = product(map(Polynomial::fromRoot, translatedRs));
+            assertEquals(p, q.translate(p.a), translatedRootsP);
         }
     }
 
