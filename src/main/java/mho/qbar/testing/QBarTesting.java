@@ -33,7 +33,7 @@ public class QBarTesting {
         List<String> list = new ArrayList<>();
         Map<String, String> map = new HashMap<>();
         String key = null;
-        for (String line : new TextInput(QBarTesting.class, "propertiesOutput.txt")) {
+        for (String line : new TextInput(QBarTesting.class, "testOutput.txt")) {
             switch (state) {
                 case NONE:
                     if (line.isEmpty()) break;
