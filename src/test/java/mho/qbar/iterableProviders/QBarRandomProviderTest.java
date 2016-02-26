@@ -2994,13 +2994,12 @@ public class QBarRandomProviderTest {
     private static void matrices_helper(
             @NotNull Iterable<Matrix> input,
             @NotNull String output,
-            @NotNull String topSampleCount,
             double meanElementCount,
             double meanCoordinateBitSize
     ) {
         List<Matrix> sample = toList(take(DEFAULT_SAMPLE_SIZE, input));
         QBarTesting.aeqitLimitQBarLog(TINY_LIMIT, sample, output);
-        QBarTesting.aeqMapQBarLog(topSampleCount(DEFAULT_TOP_COUNT, sample), topSampleCount);
+        QBarTesting.aeqMapQBarLog(topSampleCount(DEFAULT_TOP_COUNT, sample), output);
         aeq(meanOfIntegers(toList(map(m -> m.height() * m.width(), sample))), meanElementCount);
         aeq(
                 meanOfIntegers(
@@ -3016,14 +3015,12 @@ public class QBarRandomProviderTest {
             int height,
             int width,
             @NotNull String output,
-            @NotNull String topSampleCount,
             double meanElementCount,
             double meanCoordinateBitSize
     ) {
         matrices_helper(
                 P.withScale(scale).matrices(height, width),
                 output,
-                topSampleCount,
                 meanElementCount,
                 meanCoordinateBitSize
         );
@@ -3046,7 +3043,6 @@ public class QBarRandomProviderTest {
                 0,
                 0,
                 "QBarRandomProvider_matrices_1_0_0",
-                "QBarRandomProvider_matrices_1_0_0",
                 0.0,
                 0.0
         );
@@ -3054,7 +3050,6 @@ public class QBarRandomProviderTest {
                 5,
                 0,
                 0,
-                "QBarRandomProvider_matrices_5_0_0",
                 "QBarRandomProvider_matrices_5_0_0",
                 0.0,
                 0.0
@@ -3064,7 +3059,6 @@ public class QBarRandomProviderTest {
                 0,
                 0,
                 "QBarRandomProvider_matrices_10_0_0",
-                "QBarRandomProvider_matrices_10_0_0",
                 0.0,
                 0.0
         );
@@ -3072,7 +3066,6 @@ public class QBarRandomProviderTest {
                 1,
                 0,
                 3,
-                "QBarRandomProvider_matrices_1_0_3",
                 "QBarRandomProvider_matrices_1_0_3",
                 0.0,
                 0.0
@@ -3082,7 +3075,6 @@ public class QBarRandomProviderTest {
                 0,
                 3,
                 "QBarRandomProvider_matrices_5_0_3",
-                "QBarRandomProvider_matrices_5_0_3",
                 0.0,
                 0.0
         );
@@ -3091,7 +3083,6 @@ public class QBarRandomProviderTest {
                 0,
                 3,
                 "QBarRandomProvider_matrices_10_0_3",
-                "QBarRandomProvider_matrices_10_0_3",
                 0.0,
                 0.0
         );
@@ -3099,7 +3090,6 @@ public class QBarRandomProviderTest {
                 3,
                 3,
                 0,
-                "QBarRandomProvider_matrices_3_3_0",
                 "QBarRandomProvider_matrices_3_3_0",
                 0.0,
                 0.0
@@ -3109,7 +3099,6 @@ public class QBarRandomProviderTest {
                 3,
                 0,
                 "QBarRandomProvider_matrices_5_3_0",
-                "QBarRandomProvider_matrices_5_3_0",
                 0.0,
                 0.0
         );
@@ -3118,7 +3107,6 @@ public class QBarRandomProviderTest {
                 3,
                 0,
                 "QBarRandomProvider_matrices_10_3_0",
-                "QBarRandomProvider_matrices_10_3_0",
                 0.0,
                 0.0
         );
@@ -3126,7 +3114,6 @@ public class QBarRandomProviderTest {
                 1,
                 1,
                 1,
-                "QBarRandomProvider_matrices_1_1_1",
                 "QBarRandomProvider_matrices_1_1_1",
                 1.000000000007918,
                 0.8333389999976124
@@ -3136,7 +3123,6 @@ public class QBarRandomProviderTest {
                 1,
                 1,
                 "QBarRandomProvider_matrices_5_1_1",
-                "QBarRandomProvider_matrices_5_1_1",
                 1.000000000007918,
                 4.889747000000939
         );
@@ -3144,7 +3130,6 @@ public class QBarRandomProviderTest {
                 10,
                 1,
                 1,
-                "QBarRandomProvider_matrices_10_1_1",
                 "QBarRandomProvider_matrices_10_1_1",
                 1.000000000007918,
                 9.918277000004432
@@ -3154,7 +3139,6 @@ public class QBarRandomProviderTest {
                 2,
                 2,
                 "QBarRandomProvider_matrices_1_2_2",
-                "QBarRandomProvider_matrices_1_2_2",
                 4.000000000031672,
                 0.8338739999974718
         );
@@ -3162,7 +3146,6 @@ public class QBarRandomProviderTest {
                 5,
                 2,
                 2,
-                "QBarRandomProvider_matrices_5_2_2",
                 "QBarRandomProvider_matrices_5_2_2",
                 4.000000000031672,
                 4.8827345000031865
@@ -3172,7 +3155,6 @@ public class QBarRandomProviderTest {
                 2,
                 2,
                 "QBarRandomProvider_matrices_10_2_2",
-                "QBarRandomProvider_matrices_10_2_2",
                 4.000000000031672,
                 9.922179249978022
         );
@@ -3180,7 +3162,6 @@ public class QBarRandomProviderTest {
                 1,
                 3,
                 4,
-                "QBarRandomProvider_matrices_1_3_4",
                 "QBarRandomProvider_matrices_1_3_4",
                 11.999999999910093,
                 0.8332544167092473
@@ -3190,7 +3171,6 @@ public class QBarRandomProviderTest {
                 3,
                 4,
                 "QBarRandomProvider_matrices_5_3_4",
-                "QBarRandomProvider_matrices_5_3_4",
                 11.999999999910093,
                 4.8834181664187115
         );
@@ -3198,7 +3178,6 @@ public class QBarRandomProviderTest {
                 10,
                 3,
                 4,
-                "QBarRandomProvider_matrices_10_3_4",
                 "QBarRandomProvider_matrices_10_3_4",
                 11.999999999910093,
                 9.92268041633897
@@ -3218,14 +3197,12 @@ public class QBarRandomProviderTest {
             int scale,
             int secondaryScale,
             @NotNull String output,
-            @NotNull String topSampleCount,
             double meanElementCount,
             double meanCoordinateBitSize
     ) {
         matrices_helper(
                 P.withScale(scale).withSecondaryScale(secondaryScale).matrices(),
                 output,
-                topSampleCount,
                 meanElementCount,
                 meanCoordinateBitSize
         );
@@ -3247,7 +3224,6 @@ public class QBarRandomProviderTest {
                 1,
                 2,
                 "QBarRandomProvider_matrices_1_2",
-                "QBarRandomProvider_matrices_1_2",
                 1.9983549999915837,
                 0.8338733608407535
         );
@@ -3255,14 +3231,12 @@ public class QBarRandomProviderTest {
                 5,
                 3,
                 "QBarRandomProvider_matrices_5_3",
-                "QBarRandomProvider_matrices_5_3",
                 3.3335839999865646,
                 4.882194059052771
         );
         matrices_helper(
                 10,
                 8,
-                "QBarRandomProvider_matrices_10_8",
                 "QBarRandomProvider_matrices_10_8",
                 8.189681000015133,
                 9.921846650751569
@@ -3276,14 +3250,12 @@ public class QBarRandomProviderTest {
             int scale,
             int secondaryScale,
             @NotNull String output,
-            @NotNull String topSampleCount,
             double meanElementCount,
             double meanCoordinateBitSize
     ) {
         matrices_helper(
                 P.withScale(scale).withSecondaryScale(secondaryScale).squareMatrices(),
                 output,
-                topSampleCount,
                 meanElementCount,
                 meanCoordinateBitSize
         );
@@ -3305,7 +3277,6 @@ public class QBarRandomProviderTest {
                 2,
                 2,
                 "QBarRandomProvider_squareMatrices_2_2",
-                "QBarRandomProvider_squareMatrices_2_2",
                 3.0031260000035953,
                 1.833468525820871
         );
@@ -3313,14 +3284,12 @@ public class QBarRandomProviderTest {
                 5,
                 3,
                 "QBarRandomProvider_squareMatrices_5_3",
-                "QBarRandomProvider_squareMatrices_5_3",
                 4.821780000018768,
                 4.883059368202011
         );
         squareMatrices_helper(
                 10,
                 8,
-                "QBarRandomProvider_squareMatrices_10_8",
                 "QBarRandomProvider_squareMatrices_10_8",
                 13.49856700000753,
                 9.923964892149032
@@ -3929,14 +3898,13 @@ public class QBarRandomProviderTest {
     private static void polynomialMatrices_helper(
             @NotNull Iterable<PolynomialMatrix> input,
             @NotNull String output,
-            @NotNull String topSampleCount,
             double meanElementCount,
             double meanCoordinateDegree,
             double meanCoordinateCoefficientBitSize
     ) {
         List<PolynomialMatrix> sample = toList(take(DEFAULT_SAMPLE_SIZE / 10, input));
         QBarTesting.aeqitLimitQBarLog(TINY_LIMIT, sample, output);
-        QBarTesting.aeqMapQBarLog(topSampleCount(DEFAULT_TOP_COUNT, sample), topSampleCount);
+        QBarTesting.aeqMapQBarLog(topSampleCount(DEFAULT_TOP_COUNT, sample), output);
         aeq(meanOfIntegers(toList(map(m -> m.height() * m.width(), sample))), meanElementCount);
         aeq(
                 meanOfIntegers(
@@ -3967,7 +3935,6 @@ public class QBarRandomProviderTest {
             int height,
             int width,
             @NotNull String output,
-            @NotNull String topSampleCount,
             double meanElementCount,
             double meanCoordinateDegree,
             double meanCoordinateCoefficientBitSize
@@ -3975,7 +3942,6 @@ public class QBarRandomProviderTest {
         polynomialMatrices_helper(
                 P.withScale(scale).withSecondaryScale(secondaryScale).polynomialMatrices(height, width),
                 output,
-                topSampleCount,
                 meanElementCount,
                 meanCoordinateDegree,
                 meanCoordinateCoefficientBitSize
@@ -4000,7 +3966,6 @@ public class QBarRandomProviderTest {
                 0,
                 0,
                 "QBarRandomProvider_polynomialMatrices_1_0_0_0",
-                "QBarRandomProvider_polynomialMatrices_1_0_0_0",
                 0.0,
                 0.0,
                 0.0
@@ -4010,7 +3975,6 @@ public class QBarRandomProviderTest {
                 2,
                 0,
                 0,
-                "QBarRandomProvider_polynomialMatrices_5_2_0_0",
                 "QBarRandomProvider_polynomialMatrices_5_2_0_0",
                 0.0,
                 0.0,
@@ -4022,7 +3986,6 @@ public class QBarRandomProviderTest {
                 0,
                 3,
                 "QBarRandomProvider_polynomialMatrices_1_0_0_3",
-                "QBarRandomProvider_polynomialMatrices_1_0_0_3",
                 0.0,
                 0.0,
                 0.0
@@ -4032,7 +3995,6 @@ public class QBarRandomProviderTest {
                 2,
                 0,
                 3,
-                "QBarRandomProvider_polynomialMatrices_5_2_0_3",
                 "QBarRandomProvider_polynomialMatrices_5_2_0_3",
                 0.0,
                 0.0,
@@ -4044,7 +4006,6 @@ public class QBarRandomProviderTest {
                 3,
                 0,
                 "QBarRandomProvider_polynomialMatrices_1_0_3_0",
-                "QBarRandomProvider_polynomialMatrices_1_0_3_0",
                 0.0,
                 0.0,
                 0.0
@@ -4055,7 +4016,6 @@ public class QBarRandomProviderTest {
                 3,
                 0,
                 "QBarRandomProvider_polynomialMatrices_5_2_3_0",
-                "QBarRandomProvider_polynomialMatrices_5_2_3_0",
                 0.0,
                 0.0,
                 0.0
@@ -4065,7 +4025,6 @@ public class QBarRandomProviderTest {
                 0,
                 1,
                 1,
-                "QBarRandomProvider_polynomialMatrices_1_0_1_1",
                 "QBarRandomProvider_polynomialMatrices_1_0_1_1",
                 0.9999999999980838,
                 -0.32367000000033347,
@@ -4077,7 +4036,6 @@ public class QBarRandomProviderTest {
                 1,
                 1,
                 "QBarRandomProvider_polynomialMatrices_5_2_1_1",
-                "QBarRandomProvider_polynomialMatrices_5_2_1_1",
                 0.9999999999980838,
                 1.8524199999994737,
                 5.144137258885894
@@ -4087,7 +4045,6 @@ public class QBarRandomProviderTest {
                 0,
                 2,
                 2,
-                "QBarRandomProvider_polynomialMatrices_1_0_2_2",
                 "QBarRandomProvider_polynomialMatrices_1_0_2_2",
                 3.999999999992335,
                 -0.33104500000017434,
@@ -4099,7 +4056,6 @@ public class QBarRandomProviderTest {
                 2,
                 2,
                 "QBarRandomProvider_polynomialMatrices_5_2_2_2",
-                "QBarRandomProvider_polynomialMatrices_5_2_2_2",
                 3.999999999992335,
                 1.857595000003193,
                 5.132331558515564
@@ -4109,7 +4065,6 @@ public class QBarRandomProviderTest {
                 0,
                 3,
                 4,
-                "QBarRandomProvider_polynomialMatrices_1_0_3_4",
                 "QBarRandomProvider_polynomialMatrices_1_0_3_4",
                 12.000000000020316,
                 -0.33313666666926983,
@@ -4121,7 +4076,6 @@ public class QBarRandomProviderTest {
                 3,
                 4,
                 "QBarRandomProvider_polynomialMatrices_5_2_3_4",
-                "QBarRandomProvider_polynomialMatrices_5_2_3_4",
                 12.000000000020316,
                 1.8581416666733686,
                 5.124858226625802
@@ -4130,6 +4084,126 @@ public class QBarRandomProviderTest {
         polynomialMatrices_int_int_fail_helper(1, 0, -1, 0);
         polynomialMatrices_int_int_fail_helper(1, -1, 0, 0);
         polynomialMatrices_int_int_fail_helper(0, 0, 0, 0);
+    }
+
+    private static void polynomialMatrices_helper(
+            int scale,
+            int secondaryScale,
+            int tertiaryScale,
+            @NotNull String output,
+            double meanElementCount,
+            double meanCoordinateDegree,
+            double meanCoordinateCoefficientBitSize
+    ) {
+        polynomialMatrices_helper(
+                P.withScale(scale).withSecondaryScale(secondaryScale).withTertiaryScale(tertiaryScale)
+                        .polynomialMatrices(),
+                output,
+                meanElementCount,
+                meanCoordinateDegree,
+                meanCoordinateCoefficientBitSize
+        );
+    }
+
+    private static void polynomialMatrices_fail_helper(int scale, int secondaryScale, int tertiaryScale) {
+        try {
+            P.withScale(scale).withSecondaryScale(secondaryScale).withTertiaryScale(tertiaryScale)
+                    .polynomialMatrices();
+            fail();
+        } catch (IllegalStateException ignored) {}
+        finally {
+            P.reset();
+        }
+    }
+
+    @Test
+    public void testPolynomialMatrices() {
+        polynomialMatrices_helper(
+                1,
+                0,
+                2,
+                "QBarRandomProvider_polynomialMatrices_1_0_2",
+                2.0046799999997904,
+                -0.3324770038113362,
+                1.2498486739347054
+        );
+        polynomialMatrices_helper(
+                5,
+                2,
+                3,
+                "QBarRandomProvider_polynomialMatrices_5_2_3",
+                3.321210000001476,
+                1.858843614221727,
+                5.134214234689339
+        );
+
+        polynomialMatrices_fail_helper(0, 0, 2);
+        polynomialMatrices_fail_helper(1, -1, 2);
+        polynomialMatrices_fail_helper(1, 0, 1);
+    }
+
+    private static void squarePolynomialMatrices_helper(
+            int scale,
+            int secondaryScale,
+            int tertiaryScale,
+            @NotNull String output,
+            double meanElementCount,
+            double meanCoordinateDegree,
+            double meanCoordinateCoefficientBitSize
+    ) {
+        polynomialMatrices_helper(
+                P.withScale(scale).withSecondaryScale(secondaryScale).withTertiaryScale(tertiaryScale)
+                        .squarePolynomialMatrices(),
+                output,
+                meanElementCount,
+                meanCoordinateDegree,
+                meanCoordinateCoefficientBitSize
+        );
+    }
+
+    private static void squarePolynomialMatrices_fail_helper(int scale, int secondaryScale, int tertiaryScale) {
+        try {
+            P.withScale(scale).withSecondaryScale(secondaryScale).withTertiaryScale(tertiaryScale).squareMatrices();
+            fail();
+        } catch (IllegalStateException ignored) {}
+        finally {
+            P.reset();
+        }
+    }
+
+    @Test
+    public void testSquarePolynomialMatrices() {
+        squarePolynomialMatrices_helper(
+                2,
+                0,
+                2,
+                "QBarRandomProvider_squarePolynomialMatrices_2_0_2",
+                2.970210000000717,
+                -0.19636995364005183,
+                2.292021198601562
+        );
+        squarePolynomialMatrices_helper(
+                5,
+                1,
+                3,
+                "QBarRandomProvider_squarePolynomialMatrices_5_1_3",
+                4.829039999999811,
+                0.8766483607524744,
+                5.212007622686154
+        );
+        squarePolynomialMatrices_helper(
+                10,
+                2,
+                8,
+                "QBarRandomProvider_squarePolynomialMatrices_10_2_8",
+                13.574059999994397,
+                1.9278793522265476,
+                10.172884877796545
+        );
+
+        squarePolynomialMatrices_fail_helper(1, 0, 2);
+        squarePolynomialMatrices_fail_helper(2, -1, 2);
+        squarePolynomialMatrices_fail_helper(2, 0, 1);
     }
 
     private static void polynomials_helper(
