@@ -761,7 +761,7 @@ public class QBarRandomProviderTest {
         rationalsIn_helper(
                 32,
                 "(-Infinity, Infinity)",
-                "QBarRandomProvider_rationalsIn_4_(-Infinity,_Infinity)",
+                "QBarRandomProvider_rationalsIn_32_(-Infinity,_Infinity)",
                 -3.784942556617747E71,
                 31.82849000002398
         );
@@ -3882,6 +3882,327 @@ public class QBarRandomProviderTest {
         squarePolynomialMatrices_fail_helper(1, 0, 2);
         squarePolynomialMatrices_fail_helper(2, -1, 2);
         squarePolynomialMatrices_fail_helper(2, 0, 1);
+    }
+
+    private static void rationalPolynomialMatrices_helper(
+            @NotNull Iterable<RationalPolynomialMatrix> input,
+            @NotNull String output,
+            double meanElementCount,
+            double meanCoordinateDegree,
+            double meanCoordinateCoefficientBitSize
+    ) {
+        List<RationalPolynomialMatrix> sample = toList(take(DEFAULT_SAMPLE_SIZE / 10, input));
+        QBarTesting.aeqitLimitQBarLog(TINY_LIMIT, sample, output);
+        QBarTesting.aeqMapQBarLog(topSampleCount(DEFAULT_TOP_COUNT, sample), output);
+        aeq(meanOfIntegers(toList(map(m -> m.height() * m.width(), sample))), meanElementCount);
+        aeq(
+                meanOfIntegers(
+                        toList(concatMap(m -> concatMap(v -> map(RationalPolynomial::degree, v), m.rows()), sample))
+                ),
+                meanCoordinateDegree
+        );
+        aeq(
+                meanOfIntegers(
+                        toList(
+                                concatMap(
+                                        m -> concatMap(
+                                                v -> concatMap(p -> map(Rational::bitLength, p), v),
+                                                m.rows()
+                                        ),
+                                        sample
+                                )
+                        )
+                ),
+                meanCoordinateCoefficientBitSize
+        );
+        P.reset();
+    }
+
+    private static void rationalPolynomialMatrices_int_int_helper(
+            int scale,
+            int secondaryScale,
+            int height,
+            int width,
+            @NotNull String output,
+            double meanElementCount,
+            double meanCoordinateDegree,
+            double meanCoordinateCoefficientBitSize
+    ) {
+        rationalPolynomialMatrices_helper(
+                P.withScale(scale).withSecondaryScale(secondaryScale).rationalPolynomialMatrices(height, width),
+                output,
+                meanElementCount,
+                meanCoordinateDegree,
+                meanCoordinateCoefficientBitSize
+        );
+    }
+
+    private static void rationalPolynomialMatrices_int_int_fail_helper(
+            int scale,
+            int secondaryScale,
+            int height,
+            int width
+    ) {
+        try {
+            P.withScale(scale).withSecondaryScale(secondaryScale).rationalPolynomialMatrices(height, width);
+            fail();
+        } catch (IllegalArgumentException | IllegalStateException ignored) {}
+        finally {
+            P.reset();
+        }
+    }
+
+    @Test
+    public void testRationalPolynomialMatrices_int_int() {
+        rationalPolynomialMatrices_int_int_helper(
+                3,
+                0,
+                0,
+                0,
+                "QBarRandomProvider_rationalPolynomialMatrices_1_0_0_0",
+                0.0,
+                0.0,
+                0.0
+        );
+        rationalPolynomialMatrices_int_int_helper(
+                5,
+                2,
+                0,
+                0,
+                "QBarRandomProvider_rationalPolynomialMatrices_5_2_0_0",
+                0.0,
+                0.0,
+                0.0
+        );
+        rationalPolynomialMatrices_int_int_helper(
+                3,
+                0,
+                0,
+                3,
+                "QBarRandomProvider_rationalPolynomialMatrices_1_0_0_3",
+                0.0,
+                0.0,
+                0.0
+        );
+        rationalPolynomialMatrices_int_int_helper(
+                5,
+                2,
+                0,
+                3,
+                "QBarRandomProvider_rationalPolynomialMatrices_5_2_0_3",
+                0.0,
+                0.0,
+                0.0
+        );
+        rationalPolynomialMatrices_int_int_helper(
+                3,
+                0,
+                3,
+                0,
+                "QBarRandomProvider_rationalPolynomialMatrices_1_0_3_0",
+                0.0,
+                0.0,
+                0.0
+        );
+        rationalPolynomialMatrices_int_int_helper(
+                5,
+                2,
+                3,
+                0,
+                "QBarRandomProvider_rationalPolynomialMatrices_5_2_3_0",
+                0.0,
+                0.0,
+                0.0
+        );
+        rationalPolynomialMatrices_int_int_helper(
+                3,
+                0,
+                1,
+                1,
+                "QBarRandomProvider_rationalPolynomialMatrices_1_0_1_1",
+                0.9999999999980838,
+                -0.22369000000018416,
+                3.272416946837637
+        );
+        rationalPolynomialMatrices_int_int_helper(
+                5,
+                2,
+                1,
+                1,
+                "QBarRandomProvider_rationalPolynomialMatrices_5_2_1_1",
+                0.9999999999980838,
+                1.863679999999461,
+                5.007410045814251
+        );
+        rationalPolynomialMatrices_int_int_helper(
+                3,
+                0,
+                2,
+                2,
+                "QBarRandomProvider_rationalPolynomialMatrices_1_0_2_2",
+                3.999999999992335,
+                -0.2205149999991518,
+                3.2797006998225884
+        );
+        rationalPolynomialMatrices_int_int_helper(
+                5,
+                2,
+                2,
+                2,
+                "QBarRandomProvider_rationalPolynomialMatrices_5_2_2_2",
+                3.999999999992335,
+                1.8569400000032832,
+                5.003229854370796
+        );
+        rationalPolynomialMatrices_int_int_helper(
+                3,
+                0,
+                3,
+                4,
+                "QBarRandomProvider_rationalPolynomialMatrices_1_0_3_4",
+                12.000000000020316,
+                -0.22018500000217706,
+                3.2814545757482825
+        );
+        rationalPolynomialMatrices_int_int_helper(
+                5,
+                2,
+                3,
+                4,
+                "QBarRandomProvider_rationalPolynomialMatrices_5_2_3_4",
+                12.000000000020316,
+                1.856026666673493,
+                5.001508505901974
+        );
+        rationalPolynomialMatrices_int_int_fail_helper(3, 0, 0, -1);
+        rationalPolynomialMatrices_int_int_fail_helper(3, 0, -1, 0);
+        rationalPolynomialMatrices_int_int_fail_helper(3, -1, 0, 0);
+        rationalPolynomialMatrices_int_int_fail_helper(2, 0, 0, 0);
+    }
+
+    private static void rationalPolynomialMatrices_helper(
+            int scale,
+            int secondaryScale,
+            int tertiaryScale,
+            @NotNull String output,
+            double meanElementCount,
+            double meanCoordinateDegree,
+            double meanCoordinateCoefficientBitSize
+    ) {
+        rationalPolynomialMatrices_helper(
+                P.withScale(scale).withSecondaryScale(secondaryScale).withTertiaryScale(tertiaryScale)
+                        .rationalPolynomialMatrices(),
+                output,
+                meanElementCount,
+                meanCoordinateDegree,
+                meanCoordinateCoefficientBitSize
+        );
+    }
+
+    private static void rationalPolynomialMatrices_fail_helper(int scale, int secondaryScale, int tertiaryScale) {
+        try {
+            P.withScale(scale).withSecondaryScale(secondaryScale).withTertiaryScale(tertiaryScale)
+                    .rationalPolynomialMatrices();
+            fail();
+        } catch (IllegalStateException ignored) {}
+        finally {
+            P.reset();
+        }
+    }
+
+    @Test
+    public void testRationalPolynomialMatrices() {
+        rationalPolynomialMatrices_helper(
+                3,
+                0,
+                2,
+                "QBarRandomProvider_rationalPolynomialMatrices_1_0_2",
+                3.029410000001085,
+                -0.2227958579398594,
+                3.277140927676659
+        );
+        rationalPolynomialMatrices_helper(
+                5,
+                2,
+                3,
+                "QBarRandomProvider_rationalPolynomialMatrices_5_2_3",
+                3.33301000000145,
+                1.8598624066504423,
+                5.000145825345007
+        );
+
+        rationalPolynomialMatrices_fail_helper(2, 0, 2);
+        rationalPolynomialMatrices_fail_helper(3, -1, 2);
+        rationalPolynomialMatrices_fail_helper(3, 0, 1);
+    }
+
+    private static void squareRationalPolynomialMatrices_helper(
+            int scale,
+            int secondaryScale,
+            int tertiaryScale,
+            @NotNull String output,
+            double meanElementCount,
+            double meanCoordinateDegree,
+            double meanCoordinateCoefficientBitSize
+    ) {
+        rationalPolynomialMatrices_helper(
+                P.withScale(scale).withSecondaryScale(secondaryScale).withTertiaryScale(tertiaryScale)
+                        .squareRationalPolynomialMatrices(),
+                output,
+                meanElementCount,
+                meanCoordinateDegree,
+                meanCoordinateCoefficientBitSize
+        );
+    }
+
+    private static void squareRationalPolynomialMatrices_fail_helper(
+            int scale,
+            int secondaryScale,
+            int tertiaryScale
+    ) {
+        try {
+            P.withScale(scale).withSecondaryScale(secondaryScale).withTertiaryScale(tertiaryScale)
+                    .squareRationalMatrices();
+            fail();
+        } catch (IllegalStateException ignored) {}
+        finally {
+            P.reset();
+        }
+    }
+
+    @Test
+    public void testSquareRationalPolynomialMatrices() {
+        squareRationalPolynomialMatrices_helper(
+                3,
+                0,
+                2,
+                "QBarRandomProvider_squareRationalPolynomialMatrices_2_0_2",
+                4.066370000000857,
+                -0.2180691870136281,
+                3.280631018804514
+        );
+        squareRationalPolynomialMatrices_helper(
+                5,
+                1,
+                3,
+                "QBarRandomProvider_squareRationalPolynomialMatrices_5_1_3",
+                4.755019999999816,
+                0.8735799218534637,
+                5.06617307847439
+        );
+        squareRationalPolynomialMatrices_helper(
+                10,
+                2,
+                8,
+                "QBarRandomProvider_squareRationalPolynomialMatrices_10_2_8",
+                13.398729999994606,
+                1.9599462038549331,
+                9.955424573932891
+        );
+
+        squareRationalPolynomialMatrices_fail_helper(2, 0, 2);
+        squareRationalPolynomialMatrices_fail_helper(3, -1, 2);
+        squareRationalPolynomialMatrices_fail_helper(3, 0, 1);
     }
 
     private static void polynomials_helper(

@@ -141,6 +141,7 @@ public class RationalProperties extends QBarTestProperties {
         propertiesToStringBase_BigInteger_int();
         propertiesFromStringBase();
         propertiesCancelDenominators();
+        propertiesRoundUpToPowerOfTwo();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -3447,6 +3448,23 @@ public class RationalProperties extends QBarTestProperties {
                 cancelDenominators(rs);
                 fail(rs);
             } catch (NullPointerException ignored) {}
+        }
+    }
+
+    private void propertiesRoundUpToPowerOfTwo() {
+        initialize("roundUpToPowerOfTwo()");
+        for (Rational r : take(LIMIT, P.positiveRationals())) {
+            Rational powerOfTwo = r.roundUpToPowerOfTwo();
+            assertTrue(r, powerOfTwo.isPowerOfTwo());
+            assertTrue(r, le(r, powerOfTwo));
+            assertTrue(r, lt(powerOfTwo.shiftRight(1), r));
+        }
+
+        for (Rational r : take(LIMIT, P.withElement(ZERO, P.negativeRationals()))) {
+            try {
+                r.roundUpToPowerOfTwo();
+                fail(r);
+            } catch (ArithmeticException ignored) {}
         }
     }
 

@@ -1073,9 +1073,9 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
      *
      * Length is infinite
      *
-     * @param height the height (number of rows) of the generated {@code Matrix}es
-     * @param width the width (number of columns) of the generated {@code Matrix}es
-     * @return {@code Matrix}es with height {@code height} and width {@code width}
+     * @param height the height (number of rows) of the generated {@code PolynomialMatrix}es
+     * @param width the width (number of columns) of the generated {@code PolynomialMatrix}es
+     * @return {@code PolynomialMatrix}es with height {@code height} and width {@code width}
      */
     @Override
     public @NotNull Iterable<PolynomialMatrix> polynomialMatrices(int height, int width) {
@@ -1176,110 +1176,126 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
     }
 
     /**
-     * An {@code Iterable} that generates all {@code Matrix}es with a given height and width. Each coordinate's bit
-     * size is chosen from a geometric distribution with mean approximately {@code scale}. Does not support removal.
+     * An {@code Iterable} that generates all {@code RationalPolynomialMatrix}es with a given height and width. Each
+     * element's coefficient's bit size is chosen from a geometric distribution with mean approximately {@code scale},
+     * and each element's degree is chosen from a geometric distribution with mean approximately
+     * {@code secondaryScale}. Does not support removal.
      *
      * <ul>
-     *  <li>{@code this} must have a positive {@code scale}.</li>
-     *  <li>The result is an infinite, non-removable {@code Iterable} containing {@code Matrix}es.</li>
+     *  <li>{@code this} must have a {@code scale} of at least 3 and a non-negative {@code secondaryScale}.</li>
+     *  <li>{@code height} cannot be negative.</li>
+     *  <li>{@code width} cannot be negative.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing
+     *  {@code RationalPolynomialMatrix}es.</li>
      * </ul>
      *
      * Length is infinite
      *
-     * @param height the height (number of rows) of the generated {@code Matrix}es
-     * @param width the width (number of columns) of the generated {@code Matrix}es
-     * @return {@code Matrix}es with height {@code height} and width {@code width}
+     * @param height the height (number of rows) of the generated {@code RationalPolynomialMatrix}es
+     * @param width the width (number of columns) of the generated {@code RationalPolynomialMatrix}es
+     * @return {@code RationalPolynomialMatrix}es with height {@code height} and width {@code width}
      */
     @Override
     public @NotNull Iterable<RationalPolynomialMatrix> rationalPolynomialMatrices(int height, int width) {
-        return null;
-//        if (height == 0 || width == 0) {
-//            int scale = getScale();
-//            if (scale < 1) {
-//                throw new IllegalStateException("this must have a positive scale. Invalid scale: " + scale);
-//            }
-//            return repeat(Matrix.zero(height, width));
-//        } else {
-//            return map(Matrix::fromRows, lists(height, vectors(width)));
-//        }
+        if (height == 0 || width == 0) {
+            int scale = getScale();
+            if (scale < 3) {
+                throw new IllegalStateException("this must have a scale of at least 3. Invalid scale: " + scale);
+            }
+            int secondaryScale = getSecondaryScale();
+            if (secondaryScale < 0) {
+                throw new IllegalStateException("this cannot have a negative secondaryScale. Invalid" +
+                        " secondaryScale: " + secondaryScale);
+            }
+            return repeat(RationalPolynomialMatrix.zero(height, width));
+        } else {
+            return map(RationalPolynomialMatrix::fromRows, lists(height, rationalPolynomialVectors(width)));
+        }
     }
 
     /**
-     * An {@code Iterable} that generates all {@code Matrix}es. Each {@code Rational}'s element count is chosen from a
-     * geometric distribution with mean approximately {@code secondaryScale}, and each coordinate's bit size is chosen
-     * from a geometric distribution with mean approximately {@code scale}. Does not support removal.
+     * An {@code Iterable} that generates all {@code RationalPolynomialMatrix}es. Each
+     * {@code RationalPolynomialMatrix}'s element's coefficient's bit size is chosen from a geometric distribution with
+     * mean approximately {@code scale}, each element's degree is chosen from a geometric distribution with mean
+     * approximately {@code secondaryScale}, and the {@code RationalPolynomialMatrix}'s element count is chosen from a
+     * geometric distribution with mean approximately {@code tertiaryScale}. Does not support removal.
      *
      * <ul>
-     *  <li>{@code this} must have a positive {@code scale} and a {@code secondaryScale} of at least 2.</li>
-     *  <li>The result is an infinite, non-removable {@code Iterable} containing {@code RationalMatrix}es.</li>
+     *  <li>{@code this} must have a {@code scale} of at least 3, a non-negative {@code secondaryScale}, and a
+     *  {@code tertiaryScale} of at least 2.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing
+     *  {@code RationalPolynomialMatrix}es.</li>
      * </ul>
      *
      * Length is infinite
      */
     @Override
     public @NotNull Iterable<RationalPolynomialMatrix> rationalPolynomialMatrices() {
-        return null;
-//        int scale = getScale();
-//        if (scale < 1) {
-//            throw new IllegalStateException("this must have a positive scale. Invalid scale: " + scale);
-//        }
-//        int secondaryScale = getSecondaryScale();
-//        if (secondaryScale < 2) {
-//            throw new IllegalStateException("this must have a secondaryScale of at least 2. Invalid secondaryScale: " +
-//                    secondaryScale);
-//        }
-//        QBarRandomProvider dimensionProvider = (QBarRandomProvider) withScale(
-//                MathUtils.ceilingRoot(IntegerUtils.TWO, BigInteger.valueOf(secondaryScale)).intValueExact()
-//        );
-//        return chooseLogarithmicOrder(
-//                map(
-//                        p -> Matrix.fromRows(p.b),
-//                        dependentPairsInfiniteSquareRootOrder(
-//                                pairs(dimensionProvider.positiveIntegersGeometric()),
-//                                p -> lists(p.a, vectors(p.b))
-//                        )
-//                ),
-//                choose(
-//                        map(i -> Matrix.zero(0, i), dimensionProvider.naturalIntegersGeometric()),
-//                        map(i -> Matrix.zero(i, 0), dimensionProvider.positiveIntegersGeometric())
-//                )
-//        );
+        int scale = getScale();
+        if (scale < 3) {
+            throw new IllegalStateException("this must have a scale of at least 3. Invalid scale: " + scale);
+        }
+        int secondaryScale = getSecondaryScale();
+        if (secondaryScale < 0) {
+            throw new IllegalStateException("this cannot have a negative secondaryScale. Invalid secondaryScale: " +
+                    secondaryScale);
+        }
+        int tertiaryScale = getTertiaryScale();
+        if (tertiaryScale < 2) {
+            throw new IllegalStateException("this must have a tertiaryScale of at least 2. Invalid tertiaryScale: " +
+                    tertiaryScale);
+        }
+        QBarRandomProvider dimensionProvider = (QBarRandomProvider) withScale(
+                MathUtils.ceilingRoot(IntegerUtils.TWO, BigInteger.valueOf(tertiaryScale)).intValueExact()
+        );
+        return chooseLogarithmicOrder(
+                map(
+                        p -> RationalPolynomialMatrix.fromRows(p.b),
+                        dependentPairsInfiniteSquareRootOrder(
+                                pairs(dimensionProvider.positiveIntegersGeometric()),
+                                p -> lists(p.a, rationalPolynomialVectors(p.b))
+                        )
+                ),
+                choose(
+                        map(i -> RationalPolynomialMatrix.zero(0, i), dimensionProvider.naturalIntegersGeometric()),
+                        map(i -> RationalPolynomialMatrix.zero(i, 0), dimensionProvider.positiveIntegersGeometric())
+                )
+        );
     }
 
     /**
-     * An {@code Iterable} that generates all square {@code Matrix}es. Each {@code Matrix}'s element count is chosen
-     * from a geometric distribution with mean approximately {@code secondaryScale}, and each coordinate's bit size is
-     * chosen from a geometric distribution with mean approximately {@code scale}. Does not support removal.
+     * An {@code Iterable} that generates all square {@code RationalPolynomialMatrix}es. Each element's coefficient's
+     * bit size is chosen from a geometric distribution with mean approximately {@code scale}, each element's degree is
+     * chosen from a geometric distribution with mean approximately {@code secondaryScale}, and each
+     * {@code RationalPolynomialMatrix}'s element count is chosen from a geometric distribution with mean approximately
+     * {@code tertiaryScale}. Does not support removal.
      *
      * <ul>
-     *  <li>{@code this} must have a {@code scale} of at least 2 and a {@code secondaryScale} of at least 2.</li>
-     *  <li>The result is an infinite, non-removable {@code Iterable} containing square {@code Matrix}es.</li>
+     *  <li>{@code this} must have a {@code scale} of at least 3, a non-negative {@code secondaryScale}, and a
+     *  {@code tertiaryScale} of at least 2.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing square
+     *  {@code PolynomialMatrix}es.</li>
      * </ul>
      *
      * Length is infinite
      */
     @Override
     public @NotNull Iterable<RationalPolynomialMatrix> squareRationalPolynomialMatrices() {
-        return null;
-//        int scale = getScale();
-//        if (scale < 2) {
-//            throw new IllegalStateException("this must have a scale of at least 2. Invalid scale: " + scale);
-//        }
-//        int secondaryScale = getSecondaryScale();
-//        if (secondaryScale < 2) {
-//            throw new IllegalStateException("this must have a secondaryScale of at least 2. Invalid secondaryScale: " +
-//                    secondaryScale);
-//        }
-//        QBarRandomProvider dimensionProvider = (QBarRandomProvider) withScale(
-//                MathUtils.ceilingRoot(IntegerUtils.TWO, BigInteger.valueOf(secondaryScale)).intValueExact()
-//        );
-//        return withElement(
-//                Matrix.zero(0, 0),
-//                map(p -> p.b, dependentPairsInfiniteLogarithmicOrder(
-//                        dimensionProvider.positiveIntegersGeometric(),
-//                        i -> matrices(i, i))
-//                )
-//        );
+        int tertiaryScale = getTertiaryScale();
+        if (tertiaryScale < 2) {
+            throw new IllegalStateException("this must have a tertiaryScale of at least 2. Invalid tertiaryScale: " +
+                    tertiaryScale);
+        }
+        QBarRandomProvider dimensionProvider = (QBarRandomProvider) withScale(
+                MathUtils.ceilingRoot(IntegerUtils.TWO, BigInteger.valueOf(tertiaryScale)).intValueExact()
+        );
+        return withElement(
+                RationalPolynomialMatrix.zero(0, 0),
+                map(p -> p.b, dependentPairsInfiniteLogarithmicOrder(
+                        dimensionProvider.positiveIntegersGeometric(),
+                        i -> rationalPolynomialMatrices(i, i))
+                )
+        );
     }
 
     /**

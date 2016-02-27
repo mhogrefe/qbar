@@ -4123,6 +4123,31 @@ public class RationalTest {
         cancelDenominators_fail_helper("[1, null, 0]");
     }
 
+    private static void roundUpToPowerOfTwo_helper(@NotNull String input, @NotNull String output) {
+        aeq(read(input).get().roundUpToPowerOfTwo(), output);
+    }
+
+    private static void roundUpToPowerOfTwo_fail_helper(@NotNull String input) {
+        try {
+            read(input).get().roundUpToPowerOfTwo();
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testRoundUpToPowerOfTwo() {
+        roundUpToPowerOfTwo_helper("1", "1");
+        roundUpToPowerOfTwo_helper("4", "4");
+        roundUpToPowerOfTwo_helper("2/3", "1");
+        roundUpToPowerOfTwo_helper("1/100", "1/64");
+        roundUpToPowerOfTwo_helper("100", "128");
+        roundUpToPowerOfTwo_helper("22/7", "4");
+
+        roundUpToPowerOfTwo_fail_helper("0");
+        roundUpToPowerOfTwo_fail_helper("-1");
+        roundUpToPowerOfTwo_fail_helper("-2/3");
+    }
+
     @Test
     public void testEquals() {
         testEqualsHelper(

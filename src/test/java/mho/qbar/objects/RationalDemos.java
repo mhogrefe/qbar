@@ -622,6 +622,12 @@ public class RationalDemos extends QBarDemos {
         }
     }
 
+    private void demoRoundUpToPowerOfTwo() {
+        for (Rational r : take(LIMIT, P.positiveRationals())) {
+            System.out.println("roundUpToPowerOfTwo(" + r + ") = " + r.roundUpToPowerOfTwo());
+        }
+    }
+
     private void demoEquals_Rational() {
         for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
             System.out.println(p.a + (p.a.equals(p.b) ? " = " : " ≠ ") + p.b);
