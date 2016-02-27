@@ -71,6 +71,7 @@ public class RationalProperties extends QBarTestProperties {
         propertiesIntValueExact();
         propertiesLongValueExact();
         propertiesIsPowerOfTwo();
+        propertiesRoundUpToPowerOfTwo();
         propertiesIsBinaryFraction();
         propertiesBinaryFractionValueExact();
         propertiesBinaryExponent();
@@ -141,7 +142,6 @@ public class RationalProperties extends QBarTestProperties {
         propertiesToStringBase_BigInteger_int();
         propertiesFromStringBase();
         propertiesCancelDenominators();
-        propertiesRoundUpToPowerOfTwo();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -677,6 +677,23 @@ public class RationalProperties extends QBarTestProperties {
         for (Rational r : take(LIMIT, P.withElement(ZERO, P.negativeRationals()))) {
             try {
                 r.isPowerOfTwo();
+                fail(r);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void propertiesRoundUpToPowerOfTwo() {
+        initialize("roundUpToPowerOfTwo()");
+        for (Rational r : take(LIMIT, P.positiveRationals())) {
+            Rational powerOfTwo = r.roundUpToPowerOfTwo();
+            assertTrue(r, powerOfTwo.isPowerOfTwo());
+            assertTrue(r, le(r, powerOfTwo));
+            assertTrue(r, lt(powerOfTwo.shiftRight(1), r));
+        }
+
+        for (Rational r : take(LIMIT, P.withElement(ZERO, P.negativeRationals()))) {
+            try {
+                r.roundUpToPowerOfTwo();
                 fail(r);
             } catch (ArithmeticException ignored) {}
         }
@@ -3448,23 +3465,6 @@ public class RationalProperties extends QBarTestProperties {
                 cancelDenominators(rs);
                 fail(rs);
             } catch (NullPointerException ignored) {}
-        }
-    }
-
-    private void propertiesRoundUpToPowerOfTwo() {
-        initialize("roundUpToPowerOfTwo()");
-        for (Rational r : take(LIMIT, P.positiveRationals())) {
-            Rational powerOfTwo = r.roundUpToPowerOfTwo();
-            assertTrue(r, powerOfTwo.isPowerOfTwo());
-            assertTrue(r, le(r, powerOfTwo));
-            assertTrue(r, lt(powerOfTwo.shiftRight(1), r));
-        }
-
-        for (Rational r : take(LIMIT, P.withElement(ZERO, P.negativeRationals()))) {
-            try {
-                r.roundUpToPowerOfTwo();
-                fail(r);
-            } catch (ArithmeticException ignored) {}
         }
     }
 

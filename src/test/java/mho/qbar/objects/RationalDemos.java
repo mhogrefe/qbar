@@ -185,6 +185,12 @@ public class RationalDemos extends QBarDemos {
         }
     }
 
+    private void demoRoundUpToPowerOfTwo() {
+        for (Rational r : take(LIMIT, P.positiveRationals())) {
+            System.out.println("roundUpToPowerOfTwo(" + r + ") = " + r.roundUpToPowerOfTwo());
+        }
+    }
+
     private void demoIsBinaryFraction() {
         for (Rational r : take(LIMIT, P.rationals())) {
             System.out.println(r + " is " + (r.isBinaryFraction() ? "a" : "not a") + " binary fraction");
@@ -619,12 +625,6 @@ public class RationalDemos extends QBarDemos {
         for (List<Rational> rs : take(LIMIT, P.withScale(4).lists(P.rationals()))) {
             String listString = tail(init(rs.toString()));
             System.out.println("cancelDenominators(" + listString + ") = " + cancelDenominators(rs));
-        }
-    }
-
-    private void demoRoundUpToPowerOfTwo() {
-        for (Rational r : take(LIMIT, P.positiveRationals())) {
-            System.out.println("roundUpToPowerOfTwo(" + r + ") = " + r.roundUpToPowerOfTwo());
         }
     }
 

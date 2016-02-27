@@ -686,6 +686,24 @@ public final class Rational implements Comparable<Rational> {
     }
 
     /**
+     * Rounds {@code this} to the next-highest power of two. If {@code this} is a power of two, it is returned.
+     *
+     * <ul>
+     *  <li>{@code this} must be positive.</li>
+     *  <li>The result is a power of two.</li>
+     * </ul>
+     *
+     * @return the smallest power of 2 greater than or equal to {@code this}.
+     */
+    public @NotNull Rational roundUpToPowerOfTwo() {
+        if (signum() != 1) {
+            throw new ArithmeticException("this must be positive. Invalid this: " + this);
+        }
+        if (isPowerOfTwo()) return this;
+        return ONE.shiftLeft(binaryExponent() + 1);
+    }
+
+    /**
      * Determines whether {@code this} is a binary fraction (whether its denominator is a power of 2).
      *
      * <ul>
@@ -2314,24 +2332,6 @@ public final class Rational implements Comparable<Rational> {
         return gcd.equals(BigInteger.ZERO) || gcd.equals(BigInteger.ONE) ?
                 canceled :
                 toList(map(x -> x.divide(gcd), canceled));
-    }
-
-    /**
-     * Rounds {@code this} to the next-highest power of two. If {@code this} is a power of two, it is returned.
-     *
-     * <ul>
-     *  <li>{@code this} must be positive.</li>
-     *  <li>The result is a power of two.</li>
-     * </ul>
-     *
-     * @return the smallest power of 2 greater than or equal to {@code this}.
-     */
-    public @NotNull Rational roundUpToPowerOfTwo() {
-        if (signum() != 1) {
-            throw new ArithmeticException("this must be positive. Invalid this: " + this);
-        }
-        if (isPowerOfTwo()) return this;
-        return ONE.shiftLeft(binaryExponent() + 1);
     }
 
     /**
