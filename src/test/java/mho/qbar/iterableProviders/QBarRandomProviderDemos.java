@@ -2,9 +2,12 @@ package mho.qbar.iterableProviders;
 
 import mho.qbar.objects.Interval;
 import mho.qbar.objects.Rational;
+import mho.qbar.objects.Variable;
 import mho.qbar.testing.QBarDemos;
 import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
+
+import java.util.List;
 
 import static mho.wheels.iterables.IterableUtils.filterInfinite;
 import static mho.wheels.iterables.IterableUtils.take;
@@ -422,6 +425,77 @@ public class QBarRandomProviderDemos extends QBarDemos {
         }
     }
 
+    private void demoPolynomialMatrices_int_int() {
+        Iterable<Triple<QBarRandomProvider, Integer, Integer>> ts = P.triples(
+                filterInfinite(
+                        rp -> rp.getScale() > 0 && rp.getSecondaryScale() >= 0,
+                        P.withScale(4).qbarRandomProvidersDefaultTertiaryScale()
+                ),
+                P.withScale(4).naturalIntegersGeometric(),
+                P.withScale(4).naturalIntegersGeometric()
+        );
+        for (Triple<QBarRandomProvider, Integer, Integer> t : take(SMALL_LIMIT, ts)) {
+            System.out.println("polynomialMatrices(" + t.a + ", " + t.b + ", " + t.c + ") = " +
+                    its(t.a.polynomialMatrices(t.b, t.c)));
+        }
+    }
+
+    private void demoPolynomialMatrices() {
+        Iterable<QBarRandomProvider> rps = filterInfinite(
+                rp -> rp.getScale() > 0 && rp.getSecondaryScale() >= 0 && rp.getTertiaryScale() >= 2,
+                P.withScale(4).qbarRandomProviders()
+        );
+        for (QBarRandomProvider rp : take(SMALL_LIMIT, rps)) {
+            System.out.println("polynomialMatrices(" + rp + ") = " + its(rp.polynomialMatrices()));
+        }
+    }
+
+    private void demoSquarePolynomialMatrices() {
+        Iterable<QBarRandomProvider> rps = filterInfinite(
+                rp -> rp.getScale() >= 2 && rp.getSecondaryScale() >= 0 && rp.getTertiaryScale() >= 2,
+                P.withScale(4).qbarRandomProviders()
+        );
+        for (QBarRandomProvider rp : take(SMALL_LIMIT, rps)) {
+            System.out.println("squarePolynomialMatrices(" + rp + ") = " + its(rp.squarePolynomialMatrices()));
+        }
+    }
+
+    private void demoRationalPolynomialMatrices_int_int() {
+        Iterable<Triple<QBarRandomProvider, Integer, Integer>> ts = P.triples(
+                filterInfinite(
+                        rp -> rp.getScale() >= 3 && rp.getSecondaryScale() >= 0,
+                        P.withScale(4).qbarRandomProvidersDefaultTertiaryScale()
+                ),
+                P.withScale(4).naturalIntegersGeometric(),
+                P.withScale(4).naturalIntegersGeometric()
+        );
+        for (Triple<QBarRandomProvider, Integer, Integer> t : take(SMALL_LIMIT, ts)) {
+            System.out.println("rationalPolynomialMatrices(" + t.a + ", " + t.b + ", " + t.c + ") = " +
+                    its(t.a.rationalPolynomialMatrices(t.b, t.c)));
+        }
+    }
+
+    private void demoRationalPolynomialMatrices() {
+        Iterable<QBarRandomProvider> rps = filterInfinite(
+                rp -> rp.getScale() >= 3 && rp.getSecondaryScale() >= 0 && rp.getTertiaryScale() >= 2,
+                P.withScale(4).qbarRandomProviders()
+        );
+        for (QBarRandomProvider rp : take(SMALL_LIMIT, rps)) {
+            System.out.println("rationalPolynomialMatrices(" + rp + ") = " + its(rp.rationalPolynomialMatrices()));
+        }
+    }
+
+    private void demoSquareRationalPolynomialMatrices() {
+        Iterable<QBarRandomProvider> rps = filterInfinite(
+                rp -> rp.getScale() >= 3 && rp.getSecondaryScale() >= 0 && rp.getTertiaryScale() >= 2,
+                P.withScale(4).qbarRandomProviders()
+        );
+        for (QBarRandomProvider rp : take(SMALL_LIMIT, rps)) {
+            System.out.println("squareRationalPolynomialMatrices(" + rp + ") = " +
+                    its(rp.squareRationalPolynomialMatrices()));
+        }
+    }
+
     private void demoPolynomials_int() {
         Iterable<Pair<QBarRandomProvider, Integer>> ps = P.pairsSquareRootOrder(
                 filterInfinite(
@@ -771,6 +845,19 @@ public class QBarRandomProviderDemos extends QBarDemos {
         );
         for (QBarRandomProvider rp : take(MEDIUM_LIMIT, rps)) {
             System.out.println("exponentVectors(" + rp + ") = " + its(rp.exponentVectors()));
+        }
+    }
+
+    private void demoExponentVectors_List_Variable() {
+        Iterable<Pair<QBarRandomProvider, List<Variable>>> ps = P.pairs(
+                filterInfinite(
+                        s -> s.getScale() > 0,
+                        P.withScale(4).qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
+                ),
+                P.subsets(P.variables())
+        );
+        for (Pair<QBarRandomProvider, List<Variable>> p : take(SMALL_LIMIT, ps)) {
+            System.out.println("exponentVectors(" + p.a + ", " + p.b + ") = " + its(p.a.exponentVectors(p.b)));
         }
     }
 }
