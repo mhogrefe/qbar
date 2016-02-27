@@ -1,7 +1,6 @@
 package mho.qbar.iterableProviders;
 
 import mho.qbar.objects.*;
-import mho.qbar.testing.QBarTesting;
 import mho.wheels.io.Readers;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Before;
@@ -10,6 +9,7 @@ import org.junit.Test;
 import java.math.BigInteger;
 import java.util.List;
 
+import static mho.qbar.testing.QBarTesting.*;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.testing.Testing.*;
 import static org.junit.Assert.fail;
@@ -29,8 +29,8 @@ public class QBarRandomProviderTest {
             double bitSizeMean
     ) {
         List<Rational> sample = toList(take(DEFAULT_SAMPLE_SIZE, xs));
-        QBarTesting.aeqitLimitQBarLog(TINY_LIMIT, sample, output);
-        QBarTesting.aeqMapQBarLog(topSampleCount(DEFAULT_TOP_COUNT, sample), output);
+        aeqitLimitQBarLog(TINY_LIMIT, sample, output);
+        aeqMapQBarLog(topSampleCount(DEFAULT_TOP_COUNT, sample), output);
         aeq(meanOfRationals(sample), sampleMean);
         aeq(meanOfIntegers(toList(map(Rational::bitLength, sample))), bitSizeMean);
     }
@@ -583,25 +583,15 @@ public class QBarRandomProviderTest {
         range_Rational_Rational_fail_helper(4, "1/2", "1/3");
     }
 
-    private static void intervalHelper(
-            @NotNull Iterable<Interval> xs,
-            @NotNull String output,
-            @NotNull String topSampleCount,
-            double bitSizeMean
-    ) {
+    private static void intervalHelper(@NotNull Iterable<Interval> xs, @NotNull String output, double bitSizeMean) {
         List<Interval> sample = toList(take(DEFAULT_SAMPLE_SIZE, xs));
-        aeqitLimit(TINY_LIMIT, sample, output);
-        aeq(topSampleCount(DEFAULT_TOP_COUNT, sample), topSampleCount);
+        aeqitLimitQBarLog(TINY_LIMIT, sample, output);
+        aeqMapQBarLog(topSampleCount(DEFAULT_TOP_COUNT, sample), output);
         aeq(meanOfIntegers(toList(map(Interval::bitLength, sample))), bitSizeMean);
     }
 
-    private static void finitelyBoundedIntervals_helper(
-            int meanBitSize,
-            @NotNull String output,
-            @NotNull String topSampleCount,
-            double bitSizeMean
-    ) {
-        intervalHelper(P.withScale(meanBitSize).finitelyBoundedIntervals(), output, topSampleCount, bitSizeMean);
+    private static void finitelyBoundedIntervals_helper(int meanBitSize, @NotNull String output, double bitSizeMean) {
+        intervalHelper(P.withScale(meanBitSize).finitelyBoundedIntervals(), output, bitSizeMean);
         P.reset();
     }
 
@@ -617,47 +607,16 @@ public class QBarRandomProviderTest {
 
     @Test
     public void testFinitelyBoundedIntervals() {
-        finitelyBoundedIntervals_helper(
-                6,
-                "[[5, 221], [-1/2, 0], [0, 5/6], [0, 2], [-3/4, 0], [0, 1/6], [-14/3, 0], [-6, 0], [-1, 0]," +
-                " [-16, -1/4], [0, 0], [0, 167/17], [0, 1], [0, 0], [0, 1/3], [-1, 1], [0, 10], [0, 0], [-5, 4/21]," +
-                " [-1, 0], ...]",
-                "{[0, 0]=224347, [0, 1]=55754, [-1, 0]=55558, [-1, 1]=14214, [0, 1/2]=14146, [1, 1]=14140," +
-                " [-1/2, 0]=14088, [0, 3]=14072, [-3, 0]=14048, [-1, -1]=14002}",
-                5.139956999987673
-        );
-        finitelyBoundedIntervals_helper(
-                16,
-                "[[-5/4, -1], [0, 1/2], [-1, 0], [-59/3, 1493/24932], [0, 3], [-6/1201, 5/19], [-24, -7/29], [0, 1]," +
-                " [31/7787, 3/5], [1/21, 1/10], [-49/8, -2/937], [-3453, -10], [-739/31, 1/7], [-1/9, 3217/7]," +
-                " [-5/11, 3/2], [-3, -2/13], [-14/3, 1/3], [-15, 1/87], [-42, 2/9], [-46/177, 11969], ...]",
-                "{[0, 0]=11462, [-1, 0]=4695, [0, 1]=4595, [1, 1]=1879, [-1, -1]=1857, [0, 2]=1830, [-3, 0]=1828," +
-                " [-2, 0]=1823, [-1, 1]=1805, [0, 1/2]=1791}",
-                15.568145999994938
-        );
-        finitelyBoundedIntervals_helper(
-                32,
-                "[[-243045529/1963, -409/7232], [-47/15, 1/2], [-70/512703, 25056015375/8548], [-4/9, -1/7790]," +
-                " [-238/29, 78/155], [-72/31, 1419/29086], [68578/49, 514016/3], [-2591362/23, 23]," +
-                " [-1/122, 4266773419/17], [-455, -3656/177], [449/6, 3346], [0, 856/475357657], [-3, 3133/841]," +
-                " [733/37, 2144/21], [-53/27, -15/53], [-2719/26, 5929/34], [3/332735, 26/5]," +
-                " [-277/11, -1373/46121], [-3/19, 56820544/123], [-192790039594/15, 17/54], ...]",
-                "{[0, 0]=1021, [-1, 0]=438, [0, 1]=419, [0, 2]=209, [0, 1/3]=208, [0, 1/2]=206, [-1/2, 0]=201," +
-                " [-1, -1]=197, [0, 3]=195, [-1, 1]=190}",
-                31.618885000011975
-        );
+        finitelyBoundedIntervals_helper(6, "QBarRandomProvider_finitelyBoundedIntervals_6", 5.139956999987673);
+        finitelyBoundedIntervals_helper(16, "QBarRandomProvider_finitelyBoundedIntervals_16", 15.568145999994938);
+        finitelyBoundedIntervals_helper(32, "QBarRandomProvider_finitelyBoundedIntervals_32", 31.618885000011975);
         finitelyBoundedIntervals_fail_helper(5);
         finitelyBoundedIntervals_fail_helper(0);
         finitelyBoundedIntervals_fail_helper(-1);
     }
 
-    private static void intervals_helper(
-            int meanBitSize,
-            @NotNull String output,
-            @NotNull String topSampleCount,
-            double bitSizeMean
-    ) {
-        intervalHelper(P.withScale(meanBitSize).intervals(), output, topSampleCount, bitSizeMean);
+    private static void intervals_helper(int meanBitSize, @NotNull String output, double bitSizeMean) {
+        intervalHelper(P.withScale(meanBitSize).intervals(), output, bitSizeMean);
         P.reset();
     }
 
@@ -673,40 +632,9 @@ public class QBarRandomProviderTest {
 
     @Test
     public void testIntervals() {
-        intervals_helper(
-                6,
-                "[[1, 13], [0, 0], (-Infinity, 0], (-Infinity, Infinity), [-1/2, 0], (-Infinity, Infinity)," +
-                " [-3/4, 0], [1/6, Infinity), [0, Infinity), (-Infinity, 1], (-Infinity, -1], [-1, 0]," +
-                " (-Infinity, 0], [0, 6], (-Infinity, Infinity), [0, Infinity), (-Infinity, -2], (-Infinity, 0]," +
-                " (-Infinity, 0], (-Infinity, Infinity), ...]",
-                "{(-Infinity, Infinity)=136618, (-Infinity, 0]=98468, [0, Infinity)=97756, [0, 0]=70368," +
-                " (-Infinity, -1]=24761, (-Infinity, 1]=24665, [-1, Infinity)=24632, [1, Infinity)=24487," +
-                " [0, 1]=17600, [-1, 0]=17450}",
-                3.146318999988329
-        );
-        intervals_helper(
-                16,
-                "[(-Infinity, 1/41], [-2/533, Infinity), [-221/3755, 1/18], (-Infinity, 2/13], [-1, Infinity)," +
-                " [1493/24932, Infinity), (-Infinity, 1], [-1/6, 0], [0, 3], [-1/89, -1/1201], [3/19, 30/13]," +
-                " [-1/29, 5/146], [-26/3, 0], (-Infinity, 1], [7/7787, 14/11], [3/5, 1], (-Infinity, 26]," +
-                " [-49/8, 0], [31, Infinity), (-Infinity, -2/9], ...]",
-                "{(-Infinity, Infinity)=25200, [0, Infinity)=13341, (-Infinity, 0]=13229, [0, 0]=7053," +
-                " (-Infinity, -1]=5441, [-1, Infinity)=5387, (-Infinity, 1]=5376, [1, Infinity)=5369, [-1, 0]=2931," +
-                " [0, 1]=2918}",
-                12.45336999999764
-        );
-        intervals_helper(
-                32,
-                "[[-3/94, 5/4], [-31/15, 1/2], [-38/512703, 25056015375/8548], (-Infinity, -2/67], [-1/9, -1/7790]," +
-                " [-15086/29, 410411/24], [1/7, 15017244/161], (-Infinity, -3/458722], [-10397738, -40/31]," +
-                " [395/29086, 3217/571], [35810/49, 251872/3], [-1018498/23, 7], [-1/122, 4266773419/17]," +
-                " [-584/177, 3346], (-Infinity, 23/475357657], [-3, -1/3], [573/841, 477/37], [-53/27, -3/53]," +
-                " [-10/3, 3/25], [-1695/26, 3881/34], ...]",
-                "{(-Infinity, Infinity)=6930, (-Infinity, 0]=2390, [0, Infinity)=2350, [1, Infinity)=1025," +
-                " (-Infinity, -1]=1022, (-Infinity, 1]=1018, [-1, Infinity)=1006, [0, 0]=764, (-Infinity, 1/2]=496," +
-                " (-Infinity, 2]=494}",
-                28.10473700001665
-        );
+        intervals_helper(6, "QBarRandomProvider_intervals_6", 3.146318999988329);
+        intervals_helper(16, "QBarRandomProvider_intervals_16", 12.45336999999764);
+        intervals_helper(32, "QBarRandomProvider_intervals_32", 28.10473700001665);
         intervals_fail_helper(5);
         intervals_fail_helper(0);
         intervals_fail_helper(-1);
@@ -2676,8 +2604,8 @@ public class QBarRandomProviderTest {
             double meanCoordinateBitSize
     ) {
         List<Matrix> sample = toList(take(DEFAULT_SAMPLE_SIZE, input));
-        QBarTesting.aeqitLimitQBarLog(TINY_LIMIT, sample, output);
-        QBarTesting.aeqMapQBarLog(topSampleCount(DEFAULT_TOP_COUNT, sample), output);
+        aeqitLimitQBarLog(TINY_LIMIT, sample, output);
+        aeqMapQBarLog(topSampleCount(DEFAULT_TOP_COUNT, sample), output);
         aeq(meanOfIntegers(toList(map(m -> m.height() * m.width(), sample))), meanElementCount);
         aeq(
                 meanOfIntegers(
@@ -3581,8 +3509,8 @@ public class QBarRandomProviderTest {
             double meanCoordinateCoefficientBitSize
     ) {
         List<PolynomialMatrix> sample = toList(take(DEFAULT_SAMPLE_SIZE / 10, input));
-        QBarTesting.aeqitLimitQBarLog(TINY_LIMIT, sample, output);
-        QBarTesting.aeqMapQBarLog(topSampleCount(DEFAULT_TOP_COUNT, sample), output);
+        aeqitLimitQBarLog(TINY_LIMIT, sample, output);
+        aeqMapQBarLog(topSampleCount(DEFAULT_TOP_COUNT, sample), output);
         aeq(meanOfIntegers(toList(map(m -> m.height() * m.width(), sample))), meanElementCount);
         aeq(
                 meanOfIntegers(
@@ -3892,8 +3820,8 @@ public class QBarRandomProviderTest {
             double meanCoordinateCoefficientBitSize
     ) {
         List<RationalPolynomialMatrix> sample = toList(take(DEFAULT_SAMPLE_SIZE / 10, input));
-        QBarTesting.aeqitLimitQBarLog(TINY_LIMIT, sample, output);
-        QBarTesting.aeqMapQBarLog(topSampleCount(DEFAULT_TOP_COUNT, sample), output);
+        aeqitLimitQBarLog(TINY_LIMIT, sample, output);
+        aeqMapQBarLog(topSampleCount(DEFAULT_TOP_COUNT, sample), output);
         aeq(meanOfIntegers(toList(map(m -> m.height() * m.width(), sample))), meanElementCount);
         aeq(
                 meanOfIntegers(

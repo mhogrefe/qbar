@@ -108,6 +108,7 @@ public class QBarTesting {
             for (String s : list) {
                 System.out.println(s);
             }
+            fail("No match for " + b);
         }
     }
 
