@@ -123,6 +123,8 @@ public class PolynomialProperties extends QBarTestProperties {
         propertiesAugmentedCoefficientMatrix();
         propertiesDeterminant();
         compareImplementationsDeterminant();
+        propertiesSylvesterMatrix();
+        propertiesResultant();
         propertiesReflect();
         propertiesTranslate();
         propertiesEquals();
@@ -2195,6 +2197,14 @@ public class PolynomialProperties extends QBarTestProperties {
         return a.gcd(b) == ONE;
     }
 
+    private static boolean isRelativelyPrimeTo_alt2(@NotNull Polynomial a, @NotNull Polynomial b) {
+        if (a == ZERO && b == ZERO) {
+            throw new ArithmeticException();
+        }
+        return a.degree() == 0 || b.degree() == 0 ||
+                a != ZERO && b != ZERO && !a.resultant(b).equals(BigInteger.ZERO);
+    }
+
     private void propertiesIsRelativelyPrimeTo() {
         initialize("isRelativelyPrimeTo(Polynomial)");
         Iterable<Pair<Polynomial, Polynomial>> ps = filterInfinite(
@@ -2210,6 +2220,7 @@ public class PolynomialProperties extends QBarTestProperties {
             boolean isRelativelyPrimeTo = p.a.isRelativelyPrimeTo(p.b);
             assertEquals(p, isRelativelyPrimeTo, isRelativelyPrimeTo_simplest(p.a, p.b));
             assertEquals(p, isRelativelyPrimeTo, isRelativelyPrimeTo_alt(p.a, p.b));
+            assertEquals(p, isRelativelyPrimeTo, isRelativelyPrimeTo_alt2(p.a, p.b));
         }
 
         for (Polynomial p : take(LIMIT, P.polynomials())) {
@@ -2227,6 +2238,7 @@ public class PolynomialProperties extends QBarTestProperties {
         Map<String, Function<Pair<Polynomial, Polynomial>, Boolean>> functions = new LinkedHashMap<>();
         functions.put("simplest", p -> isRelativelyPrimeTo_simplest(p.a, p.b));
         functions.put("alt", p -> isRelativelyPrimeTo_alt(p.a, p.b));
+        functions.put("alt2", p -> isRelativelyPrimeTo_alt2(p.a, p.b));
         functions.put("standard", p -> p.a.isRelativelyPrimeTo(p.b));
         Iterable<Pair<Polynomial, Polynomial>> ps = filterInfinite(
                 p -> p.a != ZERO || p.b != ZERO,
@@ -2739,6 +2751,63 @@ public class PolynomialProperties extends QBarTestProperties {
                 )
         );
         compareImplementations("determinant(List<Polynomial>)", take(SMALL_LIMIT, pss), functions);
+    }
+
+    private void propertiesSylvesterMatrix() {
+        initialize("sylvesterMatrix(Polynomial)");
+        for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(P.polynomialsAtLeast(0)))) {
+            Matrix m = p.a.sylvesterMatrix(p.b);
+            assertTrue(p, m.isSquare());
+            assertEquals(p, m.width(), p.a.degree() + p.b.degree());
+        }
+
+        for (Polynomial p : take(LIMIT, P.polynomialsAtLeast(0))) {
+            assertTrue(p, p.sylvesterMatrix(ONE).isIdentity());
+            assertTrue(p, ONE.sylvesterMatrix(p).isIdentity());
+        }
+
+        for (Polynomial p : take(LIMIT, P.polynomialsAtLeast(0))) {
+            try {
+                p.sylvesterMatrix(ZERO);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
+            try {
+                ZERO.sylvesterMatrix(p);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void propertiesResultant() {
+        initialize("resultant(Polynomial)");
+        for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(P.polynomialsAtLeast(0)))) {
+            BigInteger resultant = p.a.resultant(p.b);
+            assertNotEquals(p, resultant.equals(BigInteger.ZERO), p.a.isRelativelyPrimeTo(p.b));
+            BigInteger reverseResultant = resultant;
+            if ((p.a.degree() * p.b.degree() % 2) != 0) reverseResultant = reverseResultant.negate();
+            assertEquals(p, p.b.resultant(p.a), reverseResultant);
+        }
+
+        for (Polynomial p : take(LIMIT, P.polynomialsAtLeast(0))) {
+            assertEquals(p, p.resultant(ONE), BigInteger.ONE);
+            assertEquals(p, ONE.resultant(p), BigInteger.ONE);
+        }
+
+        Iterable<Triple<Polynomial, Polynomial, Polynomial>> ts = P.withScale(4).triples(P.polynomialsAtLeast(0));
+        for (Triple<Polynomial, Polynomial, Polynomial> t : take(LIMIT, ts)) {
+            assertEquals(t, t.a.multiply(t.b).resultant(t.c), t.a.resultant(t.c).multiply(t.b.resultant(t.c)));
+        }
+
+        for (Polynomial p : take(LIMIT, P.polynomialsAtLeast(0))) {
+            try {
+                p.resultant(ZERO);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
+            try {
+                ZERO.resultant(p);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
+        }
     }
 
     private void propertiesReflect() {

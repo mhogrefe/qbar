@@ -49,9 +49,15 @@ public class QBarTesting {
                     if (counter == 0) break;
                     switch (tokens[1]) {
                         case "list":
+                            if (testingLists.containsKey(name)) {
+                                throw new IllegalStateException("Duplicate list name: " + name);
+                            }
                             state = ReadState.LIST;
                             break;
                         case "map":
+                            if (testingMaps.containsKey(name)) {
+                                throw new IllegalStateException("Duplicate map name: " + name);
+                            }
                             state = ReadState.MAP;
                             break;
                         default:

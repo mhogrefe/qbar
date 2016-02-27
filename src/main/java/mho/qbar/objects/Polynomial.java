@@ -1578,6 +1578,74 @@ public final class Polynomial implements
     }
 
     /**
+     * Returns the Sylvester matrix of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} cannot be zero.</li>
+     *  <li>{@code that} cannot be zero.</li>
+     *  <li>The result is a Sylvester matrix.</li>
+     * </ul>
+     *
+     * Size is (length({@code ps})+length({@code ps})–2)×(length({@code ps})+length({@code ps})–2)
+     *
+     * @param that a {@code Polynomial}
+     * @return S<sub>{@code this},{@code that}</sub>
+     */
+    public @NotNull Matrix sylvesterMatrix(@NotNull Polynomial that) {
+        if (this == ZERO) {
+            throw new ArithmeticException("this cannot be zero.");
+        }
+        if (that == ZERO) {
+            throw new ArithmeticException("that cannot be zero.");
+        }
+        int thisDegree = degree();
+        int thatDegree = that.degree();
+        List<BigInteger> thisCoefficients = reverse(this);
+        List<BigInteger> thatCoefficients = reverse(that);
+        List<Vector> rows = new ArrayList<>();
+        for (int i = 0; i < thatDegree; i++) {
+            List<BigInteger> row = new ArrayList<>();
+            for (int j = 0; j < i; j++) {
+                row.add(BigInteger.ZERO);
+            }
+            row.addAll(thisCoefficients);
+            for (int j = 0; j < thatDegree - i - 1; j++) {
+                row.add(BigInteger.ZERO);
+            }
+            rows.add(Vector.of(row));
+        }
+        for (int i = 0; i < thisDegree; i++) {
+            List<BigInteger> row = new ArrayList<>();
+            for (int j = 0; j < i; j++) {
+                row.add(BigInteger.ZERO);
+            }
+            row.addAll(thatCoefficients);
+            for (int j = 0; j < thisDegree - i - 1; j++) {
+                row.add(BigInteger.ZERO);
+            }
+            rows.add(Vector.of(row));
+        }
+        return Matrix.fromRows(rows);
+    }
+
+    /**
+     * Returns the resultant of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} cannot be zero.</li>
+     *  <li>{@code that} cannot be zero.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param that a {@code Polynomial}
+     * @return Res({@code this},{@code that})
+     */
+    @SuppressWarnings("JavaDoc")
+    public @NotNull BigInteger resultant(@NotNull Polynomial that) {
+        return sylvesterMatrix(that).determinant();
+    }
+
+    /**
      * Returns the reflection of {@code this} across the y-axis. If {@code this} has odd degree, the result is negated
      * as well; this preserves the sign of the leading coefficient. The roots of the result are the negatives of the
      * roots of {@code this}.

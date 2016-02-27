@@ -497,6 +497,21 @@ public class PolynomialDemos extends QBarDemos {
         }
     }
 
+    private void demoSylvesterMatrix() {
+        Iterable<Pair<Polynomial, Polynomial>> ps = P.pairs(
+                P.withScale(4).withSecondaryScale(4).polynomialsAtLeast(0)
+        );
+        for (Pair<Polynomial, Polynomial> p : take(LIMIT, ps)) {
+            System.out.println("sylvesterMatrix(" + p.a + ", " + p.b + ") = " + p.a.sylvesterMatrix(p.b));
+        }
+    }
+
+    private void demoResultant() {
+        for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(P.withScale(4).polynomialsAtLeast(0)))) {
+            System.out.println("resultant(" + p.a + ", " + p.b + ") = " + p.a.resultant(p.b));
+        }
+    }
+
     private void demoReflect() {
         for (Polynomial p : take(LIMIT, P.withScale(4).polynomials())) {
             System.out.println("reflect(" + p + ") = " + p.reflect());
