@@ -53,6 +53,7 @@ public class PolynomialProperties extends QBarTestProperties {
         propertiesDegree();
         propertiesLeading();
         propertiesMultiplyByPowerOfX();
+        compareImplementationsMultiplyByPowerOfX();
         propertiesAdd();
         propertiesNegate();
         propertiesAbs();
@@ -522,6 +523,10 @@ public class PolynomialProperties extends QBarTestProperties {
         }
     }
 
+    private static @NotNull Polynomial multiplyByPowerOfX_alt(@NotNull Polynomial a, int p) {
+        return a.multiply(of(BigInteger.ONE, p));
+    }
+
     private void propertiesMultiplyByPowerOfX() {
         initialize("multiplyByPowerOfX(int)");
         Iterable<Pair<Polynomial, Integer>> ps = P.pairsLogarithmicOrder(
@@ -531,6 +536,7 @@ public class PolynomialProperties extends QBarTestProperties {
         for (Pair<Polynomial, Integer> p : take(LIMIT, ps)) {
             Polynomial q = p.a.multiplyByPowerOfX(p.b);
             q.validate();
+            assertEquals(p, multiplyByPowerOfX_alt(p.a, p.b), q);
         }
 
         ps = P.pairsLogarithmicOrder(P.withScale(4).polynomialsAtLeast(0), P.withScale(4).naturalIntegersGeometric());
@@ -544,6 +550,17 @@ public class PolynomialProperties extends QBarTestProperties {
                 fail(p);
             } catch (ArithmeticException ignored) {}
         }
+    }
+
+    private void compareImplementationsMultiplyByPowerOfX() {
+        Map<String, Function<Pair<Polynomial, Integer>, Polynomial>> functions = new LinkedHashMap<>();
+        functions.put("alt", p -> multiplyByPowerOfX_alt(p.a, p.b));
+        functions.put("standard", p -> p.a.multiplyByPowerOfX(p.b));
+        Iterable<Pair<Polynomial, Integer>> ps = P.pairsLogarithmicOrder(
+                P.withScale(4).polynomials(),
+                P.withScale(4).naturalIntegersGeometric()
+        );
+        compareImplementations("multiplyByPowerOfX(int)", take(LIMIT, ps), functions);
     }
 
     private void propertiesAdd() {
@@ -2844,10 +2861,10 @@ public class PolynomialProperties extends QBarTestProperties {
         }
         List<Polynomial> ps = new ArrayList<>();
         for (int i = q.degree() - j - 1; i >= 0; i--) {
-            ps.add(p.multiply(of(BigInteger.ONE, i)));
+            ps.add(p.multiplyByPowerOfX(i));
         }
         for (int i = 0; i < p.degree() - j; i++) {
-            ps.add(q.multiply(of(BigInteger.ONE, i)));
+            ps.add(q.multiplyByPowerOfX(i));
         }
         return coefficientMatrix(ps);
     }

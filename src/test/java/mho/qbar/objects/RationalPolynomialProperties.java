@@ -47,6 +47,8 @@ public class RationalPolynomialProperties extends QBarTestProperties {
         propertiesMaxCoefficientBitLength();
         propertiesDegree();
         propertiesLeading();
+        propertiesMultiplyByPowerOfX();
+        compareImplementationsMultiplyByPowerOfX();
         propertiesAdd();
         propertiesNegate();
         propertiesAbs();
@@ -348,6 +350,10 @@ public class RationalPolynomialProperties extends QBarTestProperties {
         }
     }
 
+    private static @NotNull RationalPolynomial multiplyByPowerOfX_alt(@NotNull RationalPolynomial a, int p) {
+        return a.multiply(of(Rational.ONE, p));
+    }
+
     private void propertiesMultiplyByPowerOfX() {
         initialize("multiplyByPowerOfX(int)");
         Iterable<Pair<RationalPolynomial, Integer>> ps = P.pairsLogarithmicOrder(
@@ -357,6 +363,7 @@ public class RationalPolynomialProperties extends QBarTestProperties {
         for (Pair<RationalPolynomial, Integer> p : take(LIMIT, ps)) {
             RationalPolynomial q = p.a.multiplyByPowerOfX(p.b);
             q.validate();
+            assertEquals(p, multiplyByPowerOfX_alt(p.a, p.b), q);
         }
 
         ps = P.pairsLogarithmicOrder(
@@ -374,6 +381,17 @@ public class RationalPolynomialProperties extends QBarTestProperties {
                 fail(p);
             } catch (ArithmeticException ignored) {}
         }
+    }
+
+    private void compareImplementationsMultiplyByPowerOfX() {
+        Map<String, Function<Pair<RationalPolynomial, Integer>, RationalPolynomial>> functions = new LinkedHashMap<>();
+        functions.put("alt", p -> multiplyByPowerOfX_alt(p.a, p.b));
+        functions.put("standard", p -> p.a.multiplyByPowerOfX(p.b));
+        Iterable<Pair<RationalPolynomial, Integer>> ps = P.pairsLogarithmicOrder(
+                P.withScale(4).rationalPolynomials(),
+                P.withScale(4).naturalIntegersGeometric()
+        );
+        compareImplementations("multiplyByPowerOfX(int)", take(LIMIT, ps), functions);
     }
 
     private void propertiesAdd() {
