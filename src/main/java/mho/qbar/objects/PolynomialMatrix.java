@@ -950,7 +950,7 @@ public class PolynomialMatrix implements Comparable<PolynomialMatrix> {
      * @return the first {@code PolynomialMatrix} found in {@code s}, and the index at which it was found
      */
     public static @NotNull Optional<Pair<PolynomialMatrix, Integer>> findIn(@NotNull String s) {
-        return Readers.genericFindIn(PolynomialMatrix::read, " #+,-0123456789[]^x").apply(s);
+        return Readers.genericFindIn(PolynomialMatrix::read, " #*+,-0123456789[]^x").apply(s);
     }
 
     /**

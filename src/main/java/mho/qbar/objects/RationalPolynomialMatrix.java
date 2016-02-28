@@ -1047,7 +1047,7 @@ public class RationalPolynomialMatrix implements Comparable<RationalPolynomialMa
      * @return the first {@code RationalPolynomialMatrix} found in {@code s}, and the index at which it was found
      */
     public static @NotNull Optional<Pair<RationalPolynomialMatrix, Integer>> findIn(@NotNull String s) {
-        return Readers.genericFindIn(RationalPolynomialMatrix::read, " #+,-/0123456789[]^x").apply(s);
+        return Readers.genericFindIn(RationalPolynomialMatrix::read, " #*+,-/0123456789[]^x").apply(s);
     }
 
     /**
