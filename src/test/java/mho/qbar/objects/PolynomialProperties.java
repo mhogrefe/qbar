@@ -52,6 +52,7 @@ public class PolynomialProperties extends QBarTestProperties {
         propertiesMaxCoefficientBitLength();
         propertiesDegree();
         propertiesLeading();
+        propertiesMultiplyByPowerOfX();
         propertiesAdd();
         propertiesNegate();
         propertiesAbs();
@@ -433,6 +434,7 @@ public class PolynomialProperties extends QBarTestProperties {
         for (Pair<BigInteger, Integer> p : take(LIMIT, ps)) {
             Polynomial q = of(p.a, p.b);
             q.validate();
+            assertEquals(p, q, of(p.a).multiplyByPowerOfX(p.b));
         }
 
         ps = P.pairsLogarithmicOrder(P.nonzeroBigIntegers(), P.naturalIntegersGeometric());
@@ -517,6 +519,30 @@ public class PolynomialProperties extends QBarTestProperties {
         for (BigInteger i : take(LIMIT, P.nonzeroBigIntegers())) {
             Polynomial p = of(i);
             assertEquals(i, p.leading().get(), p.coefficient(0));
+        }
+    }
+
+    private void propertiesMultiplyByPowerOfX() {
+        initialize("multiplyByPowerOfX(int)");
+        Iterable<Pair<Polynomial, Integer>> ps = P.pairsLogarithmicOrder(
+                P.withScale(4).polynomials(),
+                P.withScale(4).naturalIntegersGeometric()
+        );
+        for (Pair<Polynomial, Integer> p : take(LIMIT, ps)) {
+            Polynomial q = p.a.multiplyByPowerOfX(p.b);
+            q.validate();
+        }
+
+        ps = P.pairsLogarithmicOrder(P.withScale(4).polynomialsAtLeast(0), P.withScale(4).naturalIntegersGeometric());
+        for (Pair<Polynomial, Integer> p : take(LIMIT, ps)) {
+            assertEquals(p, p.a.multiplyByPowerOfX(p.b).degree(), p.a.degree() + p.b);
+        }
+
+        for (Pair<Polynomial, Integer> p : take(LIMIT, P.pairs(P.polynomials(), P.negativeIntegers()))) {
+            try {
+                p.a.multiplyByPowerOfX(p.b);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
         }
     }
 

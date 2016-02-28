@@ -102,6 +102,16 @@ public class RationalPolynomialDemos extends QBarDemos {
         }
     }
 
+    private void demoMultiplyByPowerOfX() {
+        Iterable<Pair<RationalPolynomial, Integer>> ps = P.pairsLogarithmicOrder(
+                P.withScale(4).rationalPolynomials(),
+                P.withScale(4).naturalIntegersGeometric()
+        );
+        for (Pair<RationalPolynomial, Integer> p : take(LIMIT, ps)) {
+            System.out.println("multiplyByPowerOfX(" + p.a + ", " + p.b + ") = " + p.a.multiplyByPowerOfX(p.b));
+        }
+    }
+
     private void demoAdd() {
         Iterable<Pair<RationalPolynomial, RationalPolynomial>> ps = P.pairs(P.withScale(4).rationalPolynomials());
         for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, ps)) {

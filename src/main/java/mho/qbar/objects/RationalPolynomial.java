@@ -285,6 +285,27 @@ public final class RationalPolynomial implements
     }
 
     /**
+     * Multiplies {@code this} by a power of x.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalPolynomial}.</li>
+     *  <li>{@code p} cannot be negative.</li>
+     * </ul>
+     *
+     * Length is deg({@code this})+{@code p}+1
+     *
+     * @param p the power of x that {@code this} is multiplied by
+     * @return {@code this}×x<sup>{@code p}</sup>
+     */
+    public @NotNull RationalPolynomial multiplyByPowerOfX(int p) {
+        if (p < 0) {
+            throw new ArithmeticException("p cannot be negative. Invalid p: " + p);
+        }
+        if (this == ZERO || p == 0) return this;
+        return new RationalPolynomial(toList(concat(replicate(p, Rational.ZERO), coefficients)));
+    }
+
+    /**
      * Returns the sum of {@code this} and {@code that}.
      *
      * <ul>

@@ -287,6 +287,7 @@ public class RationalPolynomialProperties extends QBarTestProperties {
         for (Pair<Rational, Integer> p : take(LIMIT, ps)) {
             RationalPolynomial q = of(p.a, p.b);
             q.validate();
+            assertEquals(p, q, of(p.a).multiplyByPowerOfX(p.b));
         }
 
         ps = P.pairsLogarithmicOrder(P.nonzeroRationals(), P.naturalIntegersGeometric());
@@ -344,6 +345,34 @@ public class RationalPolynomialProperties extends QBarTestProperties {
         for (Rational r : take(LIMIT, P.nonzeroRationals())) {
             RationalPolynomial p = of(r);
             assertEquals(r, p.leading().get(), p.coefficient(0));
+        }
+    }
+
+    private void propertiesMultiplyByPowerOfX() {
+        initialize("multiplyByPowerOfX(int)");
+        Iterable<Pair<RationalPolynomial, Integer>> ps = P.pairsLogarithmicOrder(
+                P.withScale(4).rationalPolynomials(),
+                P.withScale(4).naturalIntegersGeometric()
+        );
+        for (Pair<RationalPolynomial, Integer> p : take(LIMIT, ps)) {
+            RationalPolynomial q = p.a.multiplyByPowerOfX(p.b);
+            q.validate();
+        }
+
+        ps = P.pairsLogarithmicOrder(
+                P.withScale(4).rationalPolynomialsAtLeast(0),
+                P.withScale(4).naturalIntegersGeometric()
+        );
+        for (Pair<RationalPolynomial, Integer> p : take(LIMIT, ps)) {
+            assertEquals(p, p.a.multiplyByPowerOfX(p.b).degree(), p.a.degree() + p.b);
+        }
+
+        Iterable<Pair<RationalPolynomial, Integer>> psFail = P.pairs(P.rationalPolynomials(), P.negativeIntegers());
+        for (Pair<RationalPolynomial, Integer> p : take(LIMIT, psFail)) {
+            try {
+                p.a.multiplyByPowerOfX(p.b);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
         }
     }
 

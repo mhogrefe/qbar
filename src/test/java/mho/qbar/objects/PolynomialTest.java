@@ -387,6 +387,54 @@ public class PolynomialTest {
         leading_empty_helper("0");
     }
 
+    private static void multiplyByPowerOfX_helper(@NotNull String a, int p, @NotNull String output) {
+        aeq(read(a).get().multiplyByPowerOfX(p), output);
+    }
+
+    private static void multiplyByPowerOfX_fail_helper(@NotNull String a, int p) {
+        try {
+            read(a).get().multiplyByPowerOfX(p);
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testMultiplyByPowerOfX() {
+        multiplyByPowerOfX_helper("0", 0, "0");
+        multiplyByPowerOfX_helper("0", 1, "0");
+        multiplyByPowerOfX_helper("0", 2, "0");
+        multiplyByPowerOfX_helper("0", 3, "0");
+
+        multiplyByPowerOfX_helper("1", 0, "1");
+        multiplyByPowerOfX_helper("1", 1, "x");
+        multiplyByPowerOfX_helper("1", 2, "x^2");
+        multiplyByPowerOfX_helper("1", 3, "x^3");
+
+        multiplyByPowerOfX_helper("-17", 0, "-17");
+        multiplyByPowerOfX_helper("-17", 1, "-17*x");
+        multiplyByPowerOfX_helper("-17", 2, "-17*x^2");
+        multiplyByPowerOfX_helper("-17", 3, "-17*x^3");
+
+        multiplyByPowerOfX_helper("x^2-4*x+7", 0, "x^2-4*x+7");
+        multiplyByPowerOfX_helper("x^2-4*x+7", 1, "x^3-4*x^2+7*x");
+        multiplyByPowerOfX_helper("x^2-4*x+7", 2, "x^4-4*x^3+7*x^2");
+        multiplyByPowerOfX_helper("x^2-4*x+7", 3, "x^5-4*x^4+7*x^3");
+
+        multiplyByPowerOfX_helper("-x^3-1", 0, "-x^3-1");
+        multiplyByPowerOfX_helper("-x^3-1", 1, "-x^4-x");
+        multiplyByPowerOfX_helper("-x^3-1", 2, "-x^5-x^2");
+        multiplyByPowerOfX_helper("-x^3-1", 3, "-x^6-x^3");
+
+        multiplyByPowerOfX_helper("3*x^10", 0, "3*x^10");
+        multiplyByPowerOfX_helper("3*x^10", 1, "3*x^11");
+        multiplyByPowerOfX_helper("3*x^10", 2, "3*x^12");
+        multiplyByPowerOfX_helper("3*x^10", 3, "3*x^13");
+
+        multiplyByPowerOfX_fail_helper("3*x^10", -1);
+        multiplyByPowerOfX_fail_helper("0", -1);
+        multiplyByPowerOfX_fail_helper("1", -1);
+    }
+
     private static void add_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
         aeq(read(a).get().add(read(b).get()), output);
     }

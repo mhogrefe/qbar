@@ -120,6 +120,16 @@ public class PolynomialDemos extends QBarDemos {
         }
     }
 
+    private void demoMultiplyByPowerOfX() {
+        Iterable<Pair<Polynomial, Integer>> ps = P.pairsLogarithmicOrder(
+                P.withScale(4).polynomials(),
+                P.withScale(4).naturalIntegersGeometric()
+        );
+        for (Pair<Polynomial, Integer> p : take(LIMIT, ps)) {
+            System.out.println("multiplyByPowerOfX(" + p.a + ", " + p.b + ") = " + p.a.multiplyByPowerOfX(p.b));
+        }
+    }
+
     private void demoAdd() {
         for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(P.withScale(4).polynomials()))) {
             System.out.println("(" + p.a + ") + (" + p.b + ") = " + p.a.add(p.b));

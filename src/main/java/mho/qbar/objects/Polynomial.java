@@ -354,6 +354,27 @@ public final class Polynomial implements
     }
 
     /**
+     * Multiplies {@code this} by a power of x.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>{@code p} cannot be negative.</li>
+     * </ul>
+     *
+     * Length is deg({@code this})+{@code p}+1
+     *
+     * @param p the power of x that {@code this} is multiplied by
+     * @return {@code this}×x<sup>{@code p}</sup>
+     */
+    public @NotNull Polynomial multiplyByPowerOfX(int p) {
+        if (p < 0) {
+            throw new ArithmeticException("p cannot be negative. Invalid p: " + p);
+        }
+        if (this == ZERO || p == 0) return this;
+        return new Polynomial(toList(concat(replicate(p, BigInteger.ZERO), coefficients)));
+    }
+
+    /**
      * Returns the sum of {@code this} and {@code that}.
      *
      * <ul>
@@ -1672,10 +1693,15 @@ public final class Polynomial implements
         int thisDegree = degree();
         int thatDegree = that.degree();
         if (thisDegree <= thatDegree) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("this must have a degree greater than that. this: " +
+                    this + ", that: " + that);
         }
-        if (j < 0 || j > thatDegree) {
-            throw new IllegalArgumentException();
+        if (j < 0) {
+            throw new IllegalArgumentException("j cannot be negative. Invalid j: " + j);
+        }
+        if (j > thatDegree) {
+            throw new IllegalArgumentException("j cannot be greater than the degree of that. j: " + j + ", that: " +
+                    that);
         }
         List<BigInteger> thisCoefficients = reverse(coefficients);
         List<BigInteger> thatCoefficients = reverse(that.coefficients);
@@ -1703,6 +1729,27 @@ public final class Polynomial implements
             rows.add(Vector.of(row));
         }
         return Matrix.fromRows(rows);
+    }
+
+    public @NotNull BigInteger signedSubresultantCoefficient(@NotNull Polynomial that, int j) {
+        int thisDegree = degree();
+        int thatDegree = that.degree();
+        if (j < 0) {
+            throw new IllegalArgumentException("j cannot be negative. Invalid j: " + j);
+        } else if (j <= thatDegree) {
+            Matrix sylvesterHabichtMatrix = sylvesterHabichtMatrix(that, j);
+            List<Integer> range = toList(range(0, sylvesterHabichtMatrix.height() - 1));
+            return sylvesterHabichtMatrix.submatrix(range, range).determinant();
+        } else if (j < thisDegree - 1) {
+            return BigInteger.ZERO;
+        } else if (j == thisDegree - 1) {
+            return that.leading().get();
+        } else if (j == thisDegree) {
+            return leading().get();
+        } else {
+            throw new IllegalArgumentException("j cannot be greater than the degree of that. j: " + j + ", that: " +
+                    that);
+        }
     }
 
     /**
