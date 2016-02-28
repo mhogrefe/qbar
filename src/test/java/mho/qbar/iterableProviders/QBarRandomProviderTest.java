@@ -3769,7 +3769,8 @@ public class QBarRandomProviderTest {
 
     private static void squarePolynomialMatrices_fail_helper(int scale, int secondaryScale, int tertiaryScale) {
         try {
-            P.withScale(scale).withSecondaryScale(secondaryScale).withTertiaryScale(tertiaryScale).squareMatrices();
+            P.withScale(scale).withSecondaryScale(secondaryScale).withTertiaryScale(tertiaryScale)
+                    .squarePolynomialMatrices();
             fail();
         } catch (IllegalStateException ignored) {}
         finally {
@@ -4090,7 +4091,7 @@ public class QBarRandomProviderTest {
     ) {
         try {
             P.withScale(scale).withSecondaryScale(secondaryScale).withTertiaryScale(tertiaryScale)
-                    .squareRationalMatrices();
+                    .squareRationalPolynomialMatrices();
             fail();
         } catch (IllegalStateException ignored) {}
         finally {

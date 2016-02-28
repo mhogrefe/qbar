@@ -1158,6 +1158,11 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
      */
     @Override
     public @NotNull Iterable<PolynomialMatrix> squarePolynomialMatrices() {
+        int secondaryScale = getSecondaryScale();
+        if (secondaryScale < 0) {
+            throw new IllegalStateException("this cannot have a negative secondaryScale. Invalid secondaryScale: " +
+                    secondaryScale);
+        }
         int tertiaryScale = getTertiaryScale();
         if (tertiaryScale < 2) {
             throw new IllegalStateException("this must have a tertiaryScale of at least 2. Invalid tertiaryScale: " +
@@ -1281,6 +1286,15 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
      */
     @Override
     public @NotNull Iterable<RationalPolynomialMatrix> squareRationalPolynomialMatrices() {
+        int scale = getScale();
+        if (scale < 3) {
+            throw new IllegalStateException("this must have a scale of at least 3. Invalid scale: " + scale);
+        }
+        int secondaryScale = getSecondaryScale();
+        if (secondaryScale < 0) {
+            throw new IllegalStateException("this cannot have a negative secondaryScale. Invalid secondaryScale: " +
+                    secondaryScale);
+        }
         int tertiaryScale = getTertiaryScale();
         if (tertiaryScale < 2) {
             throw new IllegalStateException("this must have a tertiaryScale of at least 2. Invalid tertiaryScale: " +
