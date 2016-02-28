@@ -138,6 +138,7 @@ public class RationalProperties extends QBarTestProperties {
         propertiesFromPositionalNotation();
         propertiesDigits();
         compareImplementationsDigits();
+        propertiesCommonLeadingDigits();
         propertiesToStringBase_BigInteger();
         propertiesToStringBase_BigInteger_int();
         propertiesFromStringBase();
@@ -3272,6 +3273,86 @@ public class RationalProperties extends QBarTestProperties {
                 P.withScale(8).rangeUp(IntegerUtils.TWO)
         );
         compareImplementations("digits(BigInteger)", take(LIMIT, ps), functions);
+    }
+
+    private void propertiesCommonLeadingDigits() {
+        initialize("commonLeadingDigits(BigInteger, Rational, Rational)");
+        //noinspection Convert2MethodRef
+        Iterable<Triple<BigInteger, Rational, Rational>> ts = map(
+                p -> new Triple<>(p.b, p.a.a, p.a.b),
+                P.pairsSquareRootOrder(
+                        filterInfinite(p -> p.a != p.b, P.pairs(P.withElement(ZERO, P.positiveRationals()))),
+                        map(i -> BigInteger.valueOf(i), P.rangeUpGeometric(2))
+                )
+        );
+        for (Triple<BigInteger, Rational, Rational> t : take(LIMIT, ts)) {
+            Pair<List<BigInteger>, Integer> cld = commonLeadingDigits(t.a, t.b, t.c);
+            assertNotEquals(t, cld.a, null);
+            assertNotEquals(t, cld.b, null);
+            assertTrue(t, cld.a.isEmpty() || !head(cld.a).equals(BigInteger.ZERO));
+            BigInteger approx = IntegerUtils.fromBigEndianDigits(t.a, cld.a);
+            Rational pow = of(t.a).pow(cld.b);
+            assertTrue(t, le(pow.multiply(approx), t.b));
+            assertTrue(t, le(pow.multiply(approx), t.c));
+            assertTrue(t, gt(pow.multiply(approx.add(BigInteger.ONE)), t.b));
+            assertTrue(t, gt(pow.multiply(approx.add(BigInteger.ONE)), t.c));
+        }
+
+        Iterable<Triple<BigInteger, Rational, Rational>> tsFail = map(
+                p -> new Triple<>(p.b, p.a.a, p.a.b),
+                P.pairsSquareRootOrder(
+                        filterInfinite(p -> p.a != p.b, P.pairs(P.withElement(ZERO, P.positiveRationals()))),
+                        P.rangeDown(BigInteger.valueOf(-2))
+                )
+        );
+        for (Triple<BigInteger, Rational, Rational> t : take(LIMIT, tsFail)) {
+            try {
+                commonLeadingDigits(t.a, t.b, t.c);
+                fail(t);
+            } catch (IllegalArgumentException ignored) {}
+        }
+
+        //noinspection Convert2MethodRef
+        tsFail = map(
+                p -> new Triple<>(p.b, p.a.a, p.a.b),
+                P.pairsSquareRootOrder(
+                        P.pairs(P.withElement(ZERO, P.positiveRationals()), P.negativeRationals()),
+                        map(i -> BigInteger.valueOf(i), P.rangeUpGeometric(2))
+                )
+        );
+        for (Triple<BigInteger, Rational, Rational> t : take(LIMIT, tsFail)) {
+            try {
+                commonLeadingDigits(t.a, t.b, t.c);
+                fail(t);
+            } catch (IllegalArgumentException ignored) {}
+        }
+
+        //noinspection Convert2MethodRef
+        tsFail = map(
+                p -> new Triple<>(p.b, p.a.a, p.a.b),
+                P.pairsSquareRootOrder(
+                        P.pairs(P.negativeRationals(), P.withElement(ZERO, P.positiveRationals())),
+                        map(i -> BigInteger.valueOf(i), P.rangeUpGeometric(2))
+                )
+        );
+        for (Triple<BigInteger, Rational, Rational> t : take(LIMIT, tsFail)) {
+            try {
+                commonLeadingDigits(t.a, t.b, t.c);
+                fail(t);
+            } catch (IllegalArgumentException ignored) {}
+        }
+
+        //noinspection Convert2MethodRef
+        Iterable<Pair<Rational, BigInteger>> psFail = P.pairsSquareRootOrder(
+                P.withElement(ZERO, P.positiveRationals()),
+                map(i -> BigInteger.valueOf(i), P.rangeUpGeometric(2))
+        );
+        for (Pair<Rational, BigInteger> p : take(LIMIT, psFail)) {
+            try {
+                commonLeadingDigits(p.b, p.a, p.a);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
+        }
     }
 
     private void propertiesToStringBase_BigInteger() {

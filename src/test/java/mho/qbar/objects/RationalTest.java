@@ -3872,6 +3872,51 @@ public class RationalTest {
         digitsFail("1/2", "-1");
     }
 
+    private static void commonLeadingDigits_helper(
+            @NotNull String base,
+            @NotNull String a,
+            @NotNull String b,
+            @NotNull String digits,
+            int offset
+    ) {
+        Pair<List<BigInteger>, Integer> cld = commonLeadingDigits(
+                Readers.readBigInteger(base).get(),
+                read(a).get(),
+                read(b).get()
+        );
+        aeq(cld.a, digits);
+        aeq(cld.b, offset);
+    }
+
+    private static void commonLeadingDigits_fail_helper(@NotNull String base, @NotNull String a, @NotNull String b) {
+        try {
+            commonLeadingDigits(Readers.readBigInteger(base).get(), read(a).get(), read(b).get());
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testCommonLeadingDigits() {
+        commonLeadingDigits_helper("2", "1/2", "1/3", "[]", 0);
+        commonLeadingDigits_helper("10", "1/2", "1/3", "[]", 0);
+        commonLeadingDigits_helper("2", "2", "3", "[1]", 1);
+        commonLeadingDigits_helper("10", "2", "3", "[]", 1);
+        commonLeadingDigits_helper("2", "22/7", "157/50", "[1, 1, 0, 0, 1, 0, 0]", -5);
+        commonLeadingDigits_helper("10", "22/7", "157/50", "[3, 1, 4]", -2);
+        commonLeadingDigits_helper("2", "123456", "123457", "[1, 1, 1, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0]", 1);
+        commonLeadingDigits_helper("10", "123456", "123457", "[1, 2, 3, 4, 5]", 1);
+        commonLeadingDigits_helper("2", "222", "2222", "[]", 12);
+        commonLeadingDigits_helper("10", "222", "2222", "[]", 4);
+        commonLeadingDigits_helper("2", "1/10", "1/100", "[]", -3);
+        commonLeadingDigits_helper("10", "1/10", "1/100", "[]", 0);
+
+        commonLeadingDigits_fail_helper("0", "1", "2");
+        commonLeadingDigits_fail_helper("-1", "1", "2");
+        commonLeadingDigits_fail_helper("2", "1", "1");
+        commonLeadingDigits_fail_helper("2", "-1", "1");
+        commonLeadingDigits_fail_helper("2", "1", "-1");
+    }
+
     private static void toStringBase_BigInteger_helper(
             @NotNull Rational r,
             @NotNull String base,

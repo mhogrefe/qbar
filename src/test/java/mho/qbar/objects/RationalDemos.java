@@ -567,6 +567,21 @@ public class RationalDemos extends QBarDemos {
         }
     }
 
+    private void demoCommonLeadingDigits() {
+        //noinspection Convert2MethodRef
+        Iterable<Triple<BigInteger, Rational, Rational>> ts = map(
+                p -> new Triple<>(p.b, p.a.a, p.a.b),
+                P.pairsSquareRootOrder(
+                        filterInfinite(p -> p.a != p.b, P.pairs(P.withElement(ZERO, P.positiveRationals()))),
+                        map(i -> BigInteger.valueOf(i), P.rangeUpGeometric(2))
+                )
+        );
+        for (Triple<BigInteger, Rational, Rational> t : take(LIMIT, ts)) {
+            System.out.println("commonLeadingDigits(" + t.a + ", " + t.b + ", " + t.c + ") = " +
+                    commonLeadingDigits(t.a, t.b, t.c));
+        }
+    }
+
     private void demoToStringBase_BigInteger() {
         //noinspection Convert2MethodRef
         Iterable<Pair<Rational, BigInteger>> ps = filterInfinite(
