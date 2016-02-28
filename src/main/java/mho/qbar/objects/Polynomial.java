@@ -1752,6 +1752,57 @@ public final class Polynomial implements
         }
     }
 
+    public @NotNull PolynomialMatrix sylvesterHabichtPolynomialMatrix(@NotNull Polynomial that, int j) {
+        if (this == ZERO) {
+            throw new ArithmeticException("this cannot be zero.");
+        }
+        if (that == ZERO) {
+            throw new ArithmeticException("that cannot be zero.");
+        }
+        int thisDegree = degree();
+        int thatDegree = that.degree();
+        if (thisDegree <= thatDegree) {
+            throw new IllegalArgumentException("this must have a degree greater than that. this: " +
+                    this + ", that: " + that);
+        }
+        if (j < 0) {
+            throw new IllegalArgumentException("j cannot be negative. Invalid j: " + j);
+        }
+        if (j > thatDegree) {
+            throw new IllegalArgumentException("j cannot be greater than the degree of that. j: " + j + ", that: " +
+                    that);
+        }
+        List<Polynomial> ps = new ArrayList<>();
+        for (int i = thatDegree - j - 1; i >= 0; i--) {
+            ps.add(multiplyByPowerOfX(i));
+        }
+        for (int i = 0; i < thisDegree - j; i++) {
+            ps.add(that.multiplyByPowerOfX(i));
+        }
+        return augmentedCoefficientMatrix(ps);
+    }
+
+    public @NotNull Polynomial signedSubresultant(@NotNull Polynomial that, int j) {
+        int thisDegree = degree();
+        int thatDegree = that.degree();
+        if (j < 0) {
+            throw new IllegalArgumentException("j cannot be negative. Invalid j: " + j);
+        } else if (j <= thatDegree) {
+            PolynomialMatrix sylvesterHabichtPolynomialMatrix = sylvesterHabichtPolynomialMatrix(that, j);
+            List<Integer> range = toList(range(0, sylvesterHabichtPolynomialMatrix.height() - 1));
+            return sylvesterHabichtPolynomialMatrix.submatrix(range, range).determinant();
+        } else if (j < thisDegree - 1) {
+            return ZERO;
+        } else if (j == thisDegree - 1) {
+            return that;
+        } else if (j == thisDegree) {
+            return this;
+        } else {
+            throw new IllegalArgumentException("j cannot be greater than the degree of that. j: " + j + ", that: " +
+                    that);
+        }
+    }
+
     /**
      * Returns the reflection of {@code this} across the y-axis. If {@code this} has odd degree, the result is negated
      * as well; this preserves the sign of the leading coefficient. The roots of the result are the negatives of the
