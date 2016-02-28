@@ -46,7 +46,6 @@ public class QBarTesting {
                     if (counter < 0) {
                         throw new IllegalStateException("Bad counter: " + counter);
                     }
-                    if (counter == 0) break;
                     switch (tokens[1]) {
                         case "list":
                             if (testingLists.containsKey(name)) {
@@ -62,6 +61,15 @@ public class QBarTesting {
                             break;
                         default:
                             throw new IllegalStateException("Bad data type: " + tokens[1]);
+                    }
+                    if (counter == 0) {
+                        if (state == ReadState.LIST) {
+                            testingLists.put(name, list);
+                            state = ReadState.NONE;
+                        } else {
+                            testingMaps.put(name, map);
+                            state = ReadState.NONE;
+                        }
                     }
                     break;
                 case LIST:
@@ -97,11 +105,8 @@ public class QBarTesting {
             initializeTestData();
         }
         List<String> list = testingLists.get(b);
-        if (list == null) {
-            list = new ArrayList<>();
-        }
         List<String> actual = toList(map(Object::toString, a));
-        if (!list.equals(actual)) {
+        if (!Objects.equals(list, actual)) {
             System.out.println("Error! No match for " + b);
             System.out.println();
             System.out.println(b + " list " + list.size());
@@ -117,11 +122,8 @@ public class QBarTesting {
             initializeTestData();
         }
         List<String> list = testingLists.get(b);
-        if (list == null) {
-            list = new ArrayList<>();
-        }
         List<String> actual = itsList(limit, a);
-        if (!list.equals(actual)) {
+        if (!Objects.equals(list, actual)) {
             System.out.println();
             System.out.println(b + " list " + actual.size());
             for (String s : actual) {
@@ -136,11 +138,8 @@ public class QBarTesting {
             initializeTestData();
         }
         Map<String, String> map = testingMaps.get(b);
-        if (map == null) {
-            map = new HashMap<>();
-        }
         Map<String, String> actual = itsMap(a);
-        if (!map.equals(actual)) {
+        if (!Objects.equals(map, actual)) {
             System.out.println();
             System.out.println(b + " map " + actual.size());
             for (Map.Entry<String, String> entry : actual.entrySet()) {

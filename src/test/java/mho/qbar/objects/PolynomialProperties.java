@@ -125,6 +125,8 @@ public class PolynomialProperties extends QBarTestProperties {
         compareImplementationsDeterminant();
         propertiesSylvesterMatrix();
         propertiesResultant();
+        propertiesSylvesterHabichtMatrix();
+        compareImplementationsSylvesterHabichtMatrix();
         propertiesReflect();
         propertiesTranslate();
         propertiesEquals();
@@ -2808,6 +2810,91 @@ public class PolynomialProperties extends QBarTestProperties {
                 fail(p);
             } catch (ArithmeticException ignored) {}
         }
+    }
+
+    private static @NotNull Matrix sylvesterHabichtMatrix_alt(@NotNull Polynomial p, @NotNull Polynomial q, int j) {
+        if (p == ZERO || q == ZERO || p.degree() <= q.degree() || j < 0 || j > q.degree()) {
+            throw new IllegalArgumentException();
+        }
+        List<Polynomial> ps = new ArrayList<>();
+        for (int i = q.degree() - j - 1; i >= 0; i--) {
+            ps.add(p.multiply(of(BigInteger.ONE, i)));
+        }
+        for (int i = 0; i < p.degree() - j; i++) {
+            ps.add(q.multiply(of(BigInteger.ONE, i)));
+        }
+        return coefficientMatrix(ps);
+    }
+
+    private void propertiesSylvesterHabichtMatrix() {
+        initialize("sylvesterHabichtMatrix(Polynomial, int)");
+        Iterable<Triple<Polynomial, Polynomial, Integer>> ts = map(p -> new Triple<>(
+                p.a.a, p.a.b, p.b),
+                P.dependentPairs(
+                        filterInfinite(p -> p.a.degree() > p.b.degree(), P.pairs(P.polynomialsAtLeast(0))),
+                        p -> P.range(0, p.b.degree())
+                )
+        );
+        for (Triple<Polynomial, Polynomial, Integer> t : take(LIMIT, ts)) {
+            Matrix m = t.a.sylvesterHabichtMatrix(t.b, t.c);
+            assertEquals(t, m, sylvesterHabichtMatrix_alt(t.a, t.b, t.c));
+            assertEquals(t, m.height(), t.a.degree() + t.b.degree() - 2 * t.c);
+            assertEquals(t, m.width(), t.a.degree() + t.b.degree() - t.c);
+        }
+
+        Iterable<Triple<Polynomial, Polynomial, Integer>> tsFail = map(p -> new Triple<>(
+                p.a.a, p.a.b, p.b),
+                P.dependentPairs(
+                        filterInfinite(p -> p.a.degree() <= p.b.degree(), P.pairs(P.polynomialsAtLeast(0))),
+                        p -> P.range(0, p.b.degree())
+                )
+        );
+        for (Triple<Polynomial, Polynomial, Integer> t : take(LIMIT, tsFail)) {
+            try {
+                t.a.sylvesterHabichtMatrix(t.b, t.c);
+                fail(t);
+            } catch (IllegalArgumentException ignored) {}
+        }
+
+        tsFail = map(p -> new Triple<>(
+                p.a.a, p.a.b, p.b),
+                P.dependentPairs(
+                        filterInfinite(p -> p.a.degree() > p.b.degree(), P.pairs(P.polynomialsAtLeast(0))),
+                        p -> filterInfinite(i -> i < 0 || i > p.b.degree(), P.integers())
+                )
+        );
+        for (Triple<Polynomial, Polynomial, Integer> t : take(LIMIT, tsFail)) {
+            try {
+                t.a.sylvesterHabichtMatrix(t.b, t.c);
+                fail(t);
+            } catch (IllegalArgumentException ignored) {}
+        }
+
+        for (Pair<Polynomial, Integer> p : take(LIMIT, P.pairs(P.polynomialsAtLeast(0), P.positiveIntegers()))) {
+            try {
+                p.a.sylvesterHabichtMatrix(ZERO, p.b);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
+
+            try {
+                ZERO.sylvesterHabichtMatrix(p.a, p.b);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void compareImplementationsSylvesterHabichtMatrix() {
+        Map<String, Function<Triple<Polynomial, Polynomial, Integer>, Matrix>> functions = new LinkedHashMap<>();
+        functions.put("alt", t -> sylvesterHabichtMatrix_alt(t.a, t.b, t.c));
+        functions.put("standard", t -> t.a.sylvesterHabichtMatrix(t.b, t.c));
+        Iterable<Triple<Polynomial, Polynomial, Integer>> ts = map(p -> new Triple<>(
+                p.a.a, p.a.b, p.b),
+                P.dependentPairs(
+                        filterInfinite(p -> p.a.degree() > p.b.degree(), P.pairs(P.polynomialsAtLeast(0))),
+                        p -> P.range(0, p.b.degree())
+                )
+        );
+        compareImplementations("sylvesterHabichtMatrix(Polynomial, int)", take(SMALL_LIMIT, ts), functions);
     }
 
     private void propertiesReflect() {

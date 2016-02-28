@@ -4,6 +4,7 @@ import mho.qbar.testing.QBarDemos;
 import mho.wheels.io.Readers;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
+import mho.wheels.structures.Triple;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigInteger;
@@ -509,6 +510,23 @@ public class PolynomialDemos extends QBarDemos {
     private void demoResultant() {
         for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(P.withScale(4).polynomialsAtLeast(0)))) {
             System.out.println("resultant(" + p.a + ", " + p.b + ") = " + p.a.resultant(p.b));
+        }
+    }
+
+    private void demoSylvesterHabichtMatrix() {
+        Iterable<Triple<Polynomial, Polynomial, Integer>> ts = map(p -> new Triple<>(
+                p.a.a, p.a.b, p.b),
+                P.dependentPairs(
+                        filterInfinite(
+                                p -> p.a.degree() > p.b.degree(),
+                                P.pairs(P.withScale(4).withSecondaryScale(4).polynomialsAtLeast(0))
+                        ),
+                        p -> P.range(0, p.b.degree())
+                )
+        );
+        for (Triple<Polynomial, Polynomial, Integer> t : take(LIMIT, ts)) {
+            System.out.println("sylvesterHabichtMatrix(" + t.a + ", " + t.b + ", " + t.c + ") = " +
+                    t.a.sylvesterHabichtMatrix(t.b, t.c));
         }
     }
 

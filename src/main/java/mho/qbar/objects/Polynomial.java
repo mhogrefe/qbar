@@ -1600,8 +1600,8 @@ public final class Polynomial implements
         }
         int thisDegree = degree();
         int thatDegree = that.degree();
-        List<BigInteger> thisCoefficients = reverse(this);
-        List<BigInteger> thatCoefficients = reverse(that);
+        List<BigInteger> thisCoefficients = reverse(coefficients);
+        List<BigInteger> thatCoefficients = reverse(that.coefficients);
         List<Vector> rows = new ArrayList<>();
         for (int i = 0; i < thatDegree; i++) {
             List<BigInteger> row = new ArrayList<>();
@@ -1643,6 +1643,66 @@ public final class Polynomial implements
     @SuppressWarnings("JavaDoc")
     public @NotNull BigInteger resultant(@NotNull Polynomial that) {
         return sylvesterMatrix(that).determinant();
+    }
+
+    /**
+     * Returns the {@code j}th Sylvester-Habicht matrix of {@code this} and {@code that}. This matrix is useful in
+     * defining subresultants and subresultant coefficients.
+     *
+     * <ul>
+     *  <li>{@code this} cannot be zero.</li>
+     *  <li>{@code that} cannot be zero.</li>
+     *  <li>{@code this} must have a degree greater than {@code that}.</li>
+     *  <li>{@code j} cannot be negative.</li>
+     *  <li>{@code j} cannot be greater than the degree of {@code that}.</li>
+     *  <li>The result is a Sylvester-Habicht matrix.</li>
+     * </ul>
+     *
+     * @param that a {@code Polynomial}
+     * @param j the index of the matrix
+     * @return SyHa<sub>j</sub>({@code this}, {@code that})
+     */
+    public @NotNull Matrix sylvesterHabichtMatrix(@NotNull Polynomial that, int j) {
+        if (this == ZERO) {
+            throw new ArithmeticException("this cannot be zero.");
+        }
+        if (that == ZERO) {
+            throw new ArithmeticException("that cannot be zero.");
+        }
+        int thisDegree = degree();
+        int thatDegree = that.degree();
+        if (thisDegree <= thatDegree) {
+            throw new IllegalArgumentException();
+        }
+        if (j < 0 || j > thatDegree) {
+            throw new IllegalArgumentException();
+        }
+        List<BigInteger> thisCoefficients = reverse(coefficients);
+        List<BigInteger> thatCoefficients = reverse(that.coefficients);
+        List<Vector> rows = new ArrayList<>();
+        for (int i = 0; i < thatDegree - j; i++) {
+            List<BigInteger> row = new ArrayList<>();
+            for (int k = 0; k < i; k++) {
+                row.add(BigInteger.ZERO);
+            }
+            row.addAll(thisCoefficients);
+            for (int k = 0; k < thatDegree - j - i - 1; k++) {
+                row.add(BigInteger.ZERO);
+            }
+            rows.add(Vector.of(row));
+        }
+        for (int i = 0; i < thisDegree - j; i++) {
+            List<BigInteger> row = new ArrayList<>();
+            for (int k = 0; k < thisDegree - j - i - 1; k++) {
+                row.add(BigInteger.ZERO);
+            }
+            row.addAll(thatCoefficients);
+            for (int k = 0; k < i; k++) {
+                row.add(BigInteger.ZERO);
+            }
+            rows.add(Vector.of(row));
+        }
+        return Matrix.fromRows(rows);
     }
 
     /**
