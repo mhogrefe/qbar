@@ -1607,7 +1607,7 @@ public final class Polynomial implements
      *  <li>The result is a Sylvester matrix.</li>
      * </ul>
      *
-     * Size is (length({@code ps})+length({@code ps})–2)×(length({@code ps})+length({@code ps})–2)
+     * Size is (length({@code this})+length({@code that})–2)×(length({@code this})+length({@code that})–2)
      *
      * @param that a {@code Polynomial}
      * @return S<sub>{@code this},{@code that}</sub>
@@ -1679,6 +1679,8 @@ public final class Polynomial implements
      *  <li>The result is a Sylvester-Habicht matrix.</li>
      * </ul>
      *
+     * Size is (length({@code this})+length({@code that})–2–2j)×(length({@code this})+length({@code that})–2–j)
+     *
      * @param that a {@code Polynomial}
      * @param j the index of the matrix
      * @return SyHa<sub>j</sub>({@code this}, {@code that})
@@ -1731,6 +1733,22 @@ public final class Polynomial implements
         return Matrix.fromRows(rows);
     }
 
+    /**
+     * Returns the {@code j}th signed subresultant coefficient of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} cannot be zero.</li>
+     *  <li>{@code that} cannot be zero.</li>
+     *  <li>{@code this} must have a degree greater than {@code that}.</li>
+     *  <li>{@code j} cannot be negative.</li>
+     *  <li>{@code j} cannot be greater than the degree of {@code this}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param that a {@code Polynomial}
+     * @param j the index of the coefficient
+     * @return sRes<sub>j</sub>({@code this}, {@code that})
+     */
     public @NotNull BigInteger signedSubresultantCoefficient(@NotNull Polynomial that, int j) {
         if (this == ZERO) {
             throw new ArithmeticException("this cannot be zero.");
@@ -1758,6 +1776,25 @@ public final class Polynomial implements
         }
     }
 
+    /**
+     * Returns the {@code j}th Sylvester-Habicht polynomial matrix of {@code this} and {@code that}. This matrix is
+     * useful in defining subresultants and subresultant coefficients.
+     *
+     * <ul>
+     *  <li>{@code this} cannot be zero.</li>
+     *  <li>{@code that} cannot be zero.</li>
+     *  <li>{@code this} must have a degree greater than {@code that}.</li>
+     *  <li>{@code j} cannot be negative.</li>
+     *  <li>{@code j} cannot be greater than the degree of {@code that}.</li>
+     *  <li>The result is a Sylvester-Habicht polynomial matrix.</li>
+     * </ul>
+     *
+     * Size is (length({@code this})+length({@code that})–2–2j)×(length({@code this})+length({@code that})–2–j)
+     *
+     * @param that a {@code Polynomial}
+     * @param j the index of the matrix
+     * @return SyHaPol<sub>j</sub>({@code this}, {@code that})
+     */
     public @NotNull PolynomialMatrix sylvesterHabichtPolynomialMatrix(@NotNull Polynomial that, int j) {
         if (this == ZERO) {
             throw new ArithmeticException("this cannot be zero.");
@@ -1788,6 +1825,22 @@ public final class Polynomial implements
         return augmentedCoefficientMatrix(ps);
     }
 
+    /**
+     * Returns the {@code j}th signed subresultant of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} cannot be zero.</li>
+     *  <li>{@code that} cannot be zero.</li>
+     *  <li>{@code this} must have a degree greater than {@code that}.</li>
+     *  <li>{@code j} cannot be negative.</li>
+     *  <li>{@code j} cannot be greater than the degree of {@code this}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param that a {@code Polynomial}
+     * @param j the index of the subresultant
+     * @return sResP<sub>j</sub>({@code this}, {@code that})
+     */
     public @NotNull Polynomial signedSubresultant(@NotNull Polynomial that, int j) {
         if (this == ZERO) {
             throw new ArithmeticException("this cannot be zero.");

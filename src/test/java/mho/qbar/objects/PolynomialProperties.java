@@ -129,6 +129,10 @@ public class PolynomialProperties extends QBarTestProperties {
         propertiesResultant();
         propertiesSylvesterHabichtMatrix();
         compareImplementationsSylvesterHabichtMatrix();
+        propertiesSignedSubresultantCoefficient();
+        propertiesSylvesterHabichtPolynomialMatrix();
+        propertiesSignedSubresultant();
+        propertiesSignedSubresultantSequence();
         propertiesReflect();
         propertiesTranslate();
         propertiesSpecialTranslate();
@@ -2942,6 +2946,281 @@ public class PolynomialProperties extends QBarTestProperties {
                 )
         );
         compareImplementations("sylvesterHabichtMatrix(Polynomial, int)", take(SMALL_LIMIT, ts), functions);
+    }
+
+    private void propertiesSignedSubresultantCoefficient() {
+        initialize("signedSubresultantCoefficient(Polynomial, int)");
+        Iterable<Triple<Polynomial, Polynomial, Integer>> ts = map(p -> new Triple<>(
+                p.a.a, p.a.b, p.b),
+                P.dependentPairs(
+                        filterInfinite(p -> p.a.degree() > p.b.degree(), P.pairs(P.polynomialsAtLeast(0))),
+                        p -> P.range(0, p.a.degree())
+                )
+        );
+        for (Triple<Polynomial, Polynomial, Integer> t : take(LIMIT, ts)) {
+            t.a.signedSubresultantCoefficient(t.b, t.c);
+        }
+
+        Iterable<Triple<Polynomial, Polynomial, Integer>> tsFail = map(p -> new Triple<>(
+                p.a.a, p.a.b, p.b),
+                P.dependentPairs(
+                        filterInfinite(p -> p.a.degree() <= p.b.degree(), P.pairs(P.polynomialsAtLeast(0))),
+                        p -> P.range(0, p.a.degree())
+                )
+        );
+        for (Triple<Polynomial, Polynomial, Integer> t : take(LIMIT, tsFail)) {
+            try {
+                t.a.signedSubresultantCoefficient(t.b, t.c);
+                fail(t);
+            } catch (IllegalArgumentException ignored) {}
+        }
+
+        tsFail = map(p -> new Triple<>(
+                p.a.a, p.a.b, p.b),
+                P.dependentPairs(
+                        filterInfinite(p -> p.a.degree() > p.b.degree(), P.pairs(P.polynomialsAtLeast(0))),
+                        p -> filterInfinite(i -> i < 0 || i > p.a.degree(), P.integers())
+                )
+        );
+        for (Triple<Polynomial, Polynomial, Integer> t : take(LIMIT, tsFail)) {
+            try {
+                t.a.signedSubresultantCoefficient(t.b, t.c);
+                fail(t);
+            } catch (IllegalArgumentException ignored) {}
+        }
+
+        for (Pair<Polynomial, Integer> p : take(LIMIT, P.pairs(P.polynomialsAtLeast(0), P.positiveIntegers()))) {
+            try {
+                p.a.signedSubresultantCoefficient(ZERO, p.b);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
+
+            try {
+                ZERO.signedSubresultantCoefficient(p.a, p.b);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void propertiesSylvesterHabichtPolynomialMatrix() {
+        initialize("sylvesterHabichtPolynomialMatrix(Polynomial, int)");
+        Iterable<Triple<Polynomial, Polynomial, Integer>> ts = map(p -> new Triple<>(
+                p.a.a, p.a.b, p.b),
+                P.dependentPairs(
+                        filterInfinite(p -> p.a.degree() > p.b.degree(), P.pairs(P.polynomialsAtLeast(0))),
+                        p -> P.range(0, p.b.degree())
+                )
+        );
+        for (Triple<Polynomial, Polynomial, Integer> t : take(LIMIT, ts)) {
+            PolynomialMatrix m = t.a.sylvesterHabichtPolynomialMatrix(t.b, t.c);
+            assertTrue(t, m.isSquare());
+            assertEquals(t, m.width(), t.a.degree() + t.b.degree() - 2 * t.c);
+        }
+
+        Iterable<Triple<Polynomial, Polynomial, Integer>> tsFail = map(p -> new Triple<>(
+                p.a.a, p.a.b, p.b),
+                P.dependentPairs(
+                        filterInfinite(p -> p.a.degree() <= p.b.degree(), P.pairs(P.polynomialsAtLeast(0))),
+                        p -> P.range(0, p.b.degree())
+                )
+        );
+        for (Triple<Polynomial, Polynomial, Integer> t : take(LIMIT, tsFail)) {
+            try {
+                t.a.sylvesterHabichtPolynomialMatrix(t.b, t.c);
+                fail(t);
+            } catch (IllegalArgumentException ignored) {}
+        }
+
+        tsFail = map(p -> new Triple<>(
+                p.a.a, p.a.b, p.b),
+                P.dependentPairs(
+                        filterInfinite(p -> p.a.degree() > p.b.degree(), P.pairs(P.polynomialsAtLeast(0))),
+                        p -> filterInfinite(i -> i < 0 || i > p.b.degree(), P.integers())
+                )
+        );
+        for (Triple<Polynomial, Polynomial, Integer> t : take(LIMIT, tsFail)) {
+            try {
+                t.a.sylvesterHabichtPolynomialMatrix(t.b, t.c);
+                fail(t);
+            } catch (IllegalArgumentException ignored) {}
+        }
+
+        for (Pair<Polynomial, Integer> p : take(LIMIT, P.pairs(P.polynomialsAtLeast(0), P.positiveIntegers()))) {
+            try {
+                p.a.sylvesterHabichtPolynomialMatrix(ZERO, p.b);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
+
+            try {
+                ZERO.sylvesterHabichtPolynomialMatrix(p.a, p.b);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void propertiesSignedSubresultant() {
+        initialize("signedSubresultant(Polynomial, int)");
+        Iterable<Triple<Polynomial, Polynomial, Integer>> ts = map(p -> new Triple<>(
+                p.a.a, p.a.b, p.b),
+                P.dependentPairs(
+                        filterInfinite(p -> p.a.degree() > p.b.degree(), P.pairs(P.polynomialsAtLeast(0))),
+                        p -> P.range(0, p.a.degree())
+                )
+        );
+        for (Triple<Polynomial, Polynomial, Integer> t : take(LIMIT, ts)) {
+            Polynomial p = t.a.signedSubresultant(t.b, t.c);
+            p.validate();
+            assertTrue(t, p.degree() <= t.c);
+        }
+
+        Iterable<Pair<Polynomial, Polynomial>> ps = filterInfinite(
+                p -> p.a.degree() > p.b.degree(),
+                P.pairs(P.polynomialsAtLeast(0))
+        );
+        for (Pair<Polynomial, Polynomial> p : take(LIMIT, ps)) {
+            Polynomial q = p.b.multiply(p.b.leading().get().pow(p.a.degree() - p.b.degree() - 1));
+            if (!MathUtils.reversePermutationSign(p.a.degree() - p.b.degree())) q = q.negate();
+            assertEquals(p, p.a.signedSubresultant(p.b, p.b.degree()), q);
+        }
+
+        Iterable<Triple<Polynomial, Polynomial, Integer>> tsFail = map(p -> new Triple<>(
+                p.a.a, p.a.b, p.b),
+                P.dependentPairs(
+                        filterInfinite(p -> p.a.degree() <= p.b.degree(), P.pairs(P.polynomialsAtLeast(0))),
+                        p -> P.range(0, p.a.degree())
+                )
+        );
+        for (Triple<Polynomial, Polynomial, Integer> t : take(LIMIT, tsFail)) {
+            try {
+                t.a.signedSubresultant(t.b, t.c);
+                fail(t);
+            } catch (IllegalArgumentException ignored) {}
+        }
+
+        tsFail = map(p -> new Triple<>(
+                p.a.a, p.a.b, p.b),
+                P.dependentPairs(
+                        filterInfinite(p -> p.a.degree() > p.b.degree(), P.pairs(P.polynomialsAtLeast(0))),
+                        p -> filterInfinite(i -> i < 0 || i > p.a.degree(), P.integers())
+                )
+        );
+        for (Triple<Polynomial, Polynomial, Integer> t : take(LIMIT, tsFail)) {
+            try {
+                t.a.signedSubresultant(t.b, t.c);
+                fail(t);
+            } catch (IllegalArgumentException ignored) {}
+        }
+
+        for (Pair<Polynomial, Integer> p : take(LIMIT, P.pairs(P.polynomialsAtLeast(0), P.positiveIntegers()))) {
+            try {
+                p.a.signedSubresultant(ZERO, p.b);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
+
+            try {
+                ZERO.signedSubresultant(p.a, p.b);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    //todo fix
+    private static @NotNull List<Polynomial> signedSubresultantSequence_alt(
+            @NotNull Polynomial p,
+            @NotNull Polynomial q
+    ) {
+        if (p.degree() <= q.degree()) {
+            throw new IllegalArgumentException();
+        }
+        Map<Integer, Polynomial> sResP = new HashMap<>();
+        sResP.put(p.degree(), p);
+        sResP.put(p.degree() - 1, q);
+        Polynomial x = q.multiply(q.leading().get().pow(p.degree() - q.degree() - 1));
+        boolean rps = MathUtils.reversePermutationSign(p.degree() - q.degree());
+        sResP.put(q.degree(), rps ? x : x.negate());
+        List<BigInteger> s = toList(replicate(p.degree() + 1, null));
+        Map<Integer, BigInteger> t = new HashMap<>();
+        s.set(p.degree(), BigInteger.ONE);
+        t.put(p.degree(), BigInteger.ONE);
+        t.put(p.degree() - 1, q.leading().get());
+        BigInteger y = q.leading().get().pow(p.degree() - q.degree());
+        s.set(q.degree(), rps ? y : y.negate());
+        for (int l = q.degree() + 1; l < p.degree() - 1; l++) {
+            sResP.put(l, ZERO);
+            s.set(l, BigInteger.ZERO);
+        }
+        int i = p.degree() + 1;
+        int j = p.degree();
+        while (!sResP.get(j - 1).equals(ZERO)) {
+            int k = sResP.get(j - 1).degree();
+            if (k == j - 1) {
+                s.set(j - 1, t.get(j - 1));
+                sResP.put(
+                        k - 1,
+                        sResP.get(i - 1).multiply(s.get(j - 1).pow(2)).remainderExact(sResP.get(j - 1)).negate()
+                                .divideExact(of(s.get(j).multiply(t.get(i - 1))))
+                );
+            } else {
+                s.set(j - 1, BigInteger.ZERO);
+                for (int d = 1; d < j - k; d++) {
+                    BigInteger z = t.get(j - 1).multiply(t.get(j - d)).divide(s.get(j));
+                    t.put(j - d - 1, (d & 1) == 0 ? z : z.negate());
+                    s.set(k, t.get(k));
+                    sResP.put(k, sResP.get(j - 1).multiply(s.get(k)).divideExact(of(t.get(j - 1))));
+                }
+                for (int l = j - 2; j <= k + 1; l++) {
+                    sResP.put(l, ZERO);
+                    s.set(l, BigInteger.ZERO);
+                }
+                sResP.put(
+                        k - 1,
+                        sResP.get(i - 1).multiply(t.get(j - 1).multiply(s.get(k))).remainderExact(sResP.get(j - 1))
+                                .negate().divideExact(of(s.get(j).multiply(t.get(i - 1))))
+                );
+            }
+            t.put(k - 1, sResP.get(k - 1).leading().orElse(BigInteger.ZERO));
+            i = j;
+            j = k;
+        }
+        for (int l = 0; l < j - 1; l++) {
+            sResP.put(l, ZERO);
+        }
+        return toList(map(sResP::get, rangeBy(p.degree(), -1, 0)));
+    }
+
+    private void propertiesSignedSubresultantSequence() {
+        initialize("signedSubresultantSequence(Polynomial)");
+        Iterable<Pair<Polynomial, Polynomial>> ps = filterInfinite(
+                q -> q.a.degree() > q.b.degree(),
+                P.pairs(P.withScale(4).polynomialsAtLeast(0))
+        );
+        for (Pair<Polynomial, Polynomial> p : take(LIMIT, ps)) {
+            List<Polynomial> sequence = p.a.signedSubresultantSequence(p.b);
+            sequence.forEach(Polynomial::validate);
+            //assertEquals(p, sequence, signedSubresultantSequence_alt(p.a, p.b));
+        }
+
+        Iterable<Pair<Polynomial, Polynomial>> psFail = filterInfinite(
+                q -> q.a.degree() <= q.b.degree(),
+                P.pairs(P.polynomialsAtLeast(0))
+        );
+        for (Pair<Polynomial, Polynomial> p : take(LIMIT, psFail)) {
+            try {
+                p.a.signedSubresultantSequence(p.b);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
+        }
+
+        for (Polynomial p : take(LIMIT, P.polynomialsAtLeast(0))) {
+            try {
+                p.signedSubresultantSequence(ZERO);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
+            try {
+                ZERO.subresultantSequence(p);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
+        }
     }
 
     private void propertiesReflect() {
