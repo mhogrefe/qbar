@@ -614,6 +614,21 @@ public class PolynomialDemos extends QBarDemos {
         }
     }
 
+    private void demoSpecialTranslate() {
+        Iterable<Pair<Polynomial, Rational>> ps = P.pairs(P.withScale(4).polynomials(), P.withScale(4).rationals());
+        for (Pair<Polynomial, Rational> p : take(LIMIT, ps)) {
+            System.out.println("specialTranslate(" + p.a + ", " + p.b + ") = " + p.a.specialTranslate(p.b));
+        }
+    }
+
+    private void demoPositivePrimitiveTranslate() {
+        Iterable<Pair<Polynomial, Rational>> ps = P.pairs(P.withScale(4).polynomials(), P.withScale(4).rationals());
+        for (Pair<Polynomial, Rational> p : take(LIMIT, ps)) {
+            System.out.println("positivePrimitiveTranslate(" + p.a + ", " + p.b + ") = " +
+                    p.a.positivePrimitiveTranslate(p.b));
+        }
+    }
+
     private void demoEquals_Polynomial() {
         for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(P.withScale(4).polynomials()))) {
             System.out.println(p.a + (p.a.equals(p.b) ? " = " : " ≠ ") + p.b);

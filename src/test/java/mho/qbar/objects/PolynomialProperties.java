@@ -131,6 +131,10 @@ public class PolynomialProperties extends QBarTestProperties {
         compareImplementationsSylvesterHabichtMatrix();
         propertiesReflect();
         propertiesTranslate();
+        propertiesSpecialTranslate();
+        compareImplementationsSpecialTranslate();
+        propertiesPositivePrimitiveTranslate();
+        compareImplementationsPositivePrimitiveTranslate();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -2989,6 +2993,93 @@ public class PolynomialProperties extends QBarTestProperties {
             Polynomial translatedRootsP = product(map(Polynomial::fromRoot, translatedRs));
             assertEquals(p, q.translate(p.a), translatedRootsP);
         }
+    }
+
+    private static @NotNull Polynomial specialTranslate_simplest(@NotNull Polynomial p, @NotNull Rational t) {
+        if (p.degree() < 1 || t == Rational.ZERO) return p;
+        return p.toRationalPolynomial().translate(t).multiply(t.getDenominator().pow(p.degree())).toPolynomial();
+    }
+
+    private void propertiesSpecialTranslate() {
+        initialize("specialTranslate(Rational)");
+        for (Pair<Polynomial, Rational> p : take(LIMIT, P.pairs(P.polynomials(), P.rationals()))) {
+            Polynomial translated = p.a.specialTranslate(p.b);
+            translated.validate();
+            assertEquals(p, specialTranslate_simplest(p.a, p.b), translated);
+            assertEquals(p, p.a.degree(), translated.degree());
+            assertEquals(p, p.a.signum(), translated.signum());
+        }
+
+        for (Pair<BigInteger, Rational> p : take(LIMIT, P.pairs(P.bigIntegers(), P.rationals()))) {
+            Polynomial q = of(p.a);
+            assertEquals(p, q, q.specialTranslate(p.b));
+        }
+    }
+
+    private void compareImplementationsSpecialTranslate() {
+        Map<String, Function<Pair<Polynomial, Rational>, Polynomial>> functions = new LinkedHashMap<>();
+        functions.put("simplest", p -> specialTranslate_simplest(p.a, p.b));
+        functions.put("standard", p -> p.a.specialTranslate(p.b));
+        Iterable<Pair<Polynomial, Rational>> ps = P.pairs(P.polynomials(), P.rationals());
+        compareImplementations("specialTranslate(Rational)", take(LIMIT, ps), functions);
+    }
+
+    private static @NotNull Polynomial positivePrimitiveTranslate_simplest(
+            @NotNull Polynomial p,
+            @NotNull Rational t
+    ) {
+        if (p == ZERO) return ZERO;
+        if (p.degree() == 0) return ONE;
+        return p.toRationalPolynomial().translate(t).constantFactor().b;
+    }
+
+    private void propertiesPositivePrimitiveTranslate() {
+        initialize("positivePrimitiveTranslate(Rational)");
+        for (Pair<Polynomial, Rational> p : take(LIMIT, P.pairs(P.polynomials(), P.rationals()))) {
+            Polynomial translated = p.a.positivePrimitiveTranslate(p.b);
+            translated.validate();
+            assertEquals(p, positivePrimitiveTranslate_simplest(p.a, p.b), translated);
+            assertEquals(p, p.a.degree(), translated.degree());
+            assertTrue(p, translated == ZERO || translated.isPrimitive());
+            assertNotEquals(p, translated.signum(), -1);
+        }
+
+        for (Pair<Polynomial, Rational> p : take(LIMIT, P.pairs(P.positivePrimitivePolynomials(), P.rationals()))) {
+            inverse(
+                    q -> q.positivePrimitiveTranslate(p.b),
+                    (Polynomial q) -> q.positivePrimitiveTranslate(p.b.negate()),
+                    p.a
+            );
+        }
+
+        for (Pair<BigInteger, Rational> p : take(LIMIT, P.pairs(P.bigIntegers(), P.rationals()))) {
+            Polynomial translated = of(p.a).positivePrimitiveTranslate(p.b);
+            assertTrue(p, translated == ZERO || translated == ONE);
+        }
+
+        Iterable<Pair<Polynomial, Rational>> ps = P.pairs(
+                P.withScale(4).withSecondaryScale(4).irreduciblePolynomials(),
+                P.rationals()
+        );
+        for (Pair<Polynomial, Rational> p : take(LIMIT, ps)) {
+            assertTrue(p, p.a.positivePrimitiveTranslate(p.b).isIrreducible());
+        }
+
+        Iterable<Pair<Rational, List<Rational>>> qs = P.pairs(P.rationals(), P.withScale(4).bags(P.rationals()));
+        for (Pair<Rational, List<Rational>> p : take(LIMIT, qs)) {
+            Polynomial q = product(map(Polynomial::fromRoot, p.b));
+            List<Rational> translatedRs = toList(map(r -> r.add(p.a), p.b));
+            Polynomial translatedRootsP = product(map(Polynomial::fromRoot, translatedRs));
+            assertEquals(p, q.positivePrimitiveTranslate(p.a), translatedRootsP);
+        }
+    }
+
+    private void compareImplementationsPositivePrimitiveTranslate() {
+        Map<String, Function<Pair<Polynomial, Rational>, Polynomial>> functions = new LinkedHashMap<>();
+        functions.put("simplest", p -> specialTranslate_simplest(p.a, p.b));
+        functions.put("standard", p -> p.a.specialTranslate(p.b));
+        Iterable<Pair<Polynomial, Rational>> ps = P.pairs(P.polynomials(), P.rationals());
+        compareImplementations("positivePrimitiveTranslate(Rational)", take(LIMIT, ps), functions);
     }
 
     private void propertiesEquals() {

@@ -1853,7 +1853,7 @@ public final class Polynomial implements
     }
 
     /**
-     * Returns the translation of {@code this} by x.
+     * Returns the translation of {@code this} by {@code t}.
      *
      * <ul>
      *  <li>{@code this} may be any {@code Polynomial}.</li>
@@ -1861,11 +1861,58 @@ public final class Polynomial implements
      *  <li>The result is not null.</li>
      * </ul>
      *
-     * @param t the amount that {@code this} is translated by in the x-direction.
+     * @param t the amount that {@code this} is translated by in the x-direction
      * @return {@code this}(x–t)
      */
     public @NotNull Polynomial translate(@NotNull BigInteger t) {
+        if (degree() < 1 || t.equals(BigInteger.ZERO)) return this;
         return substitute(fromRoot(t));
+    }
+
+    /**
+     * Returns {@code this} translated by {@code t} and multiplied by
+     * denominator({@code t})<sup>degree({@code this})</sup>.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>{@code t} is not null.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param t the amount that {@code this} is translated by in the x-direction
+     * @return denominator({@code t})<sup>deg({@code this})</sup>{@code this}(x–t)
+     */
+    @SuppressWarnings("JavaDoc")
+    public @NotNull Polynomial specialTranslate(@NotNull Rational t) {
+        if (degree() < 1 || t == Rational.ZERO) return this;
+        BigInteger denominator = t.getDenominator();
+        BigInteger d = BigInteger.ONE;
+        Polynomial r = fromRoot(t);
+        Polynomial result = of(last(coefficients));
+        for (int i = degree() - 1; i >= 0; i--) {
+            d = d.multiply(denominator);
+            result = result.multiply(r).add(of(coefficients.get(i).multiply(d)));
+        }
+        return result;
+    }
+
+    /**
+     * Returns {@code this} translated by {@code t} and scaled to either zero or a primitive {@code Polynomial} with a
+     * positive leading coefficient.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>{@code t} is not null.</li>
+     *  <li>The result is either zero or primitive with a positive leading coefficient.</li>
+     * </ul>
+     *
+     * @param t the amount that {@code this} is translated by in the x-direction
+     * @return {@code this}(x–t), scaled
+     */
+    public @NotNull Polynomial positivePrimitiveTranslate(@NotNull Rational t) {
+        if (this == ZERO) return ZERO;
+        if (degree() == 0) return ONE;
+        return specialTranslate(t).constantFactor().b;
     }
 
     /**

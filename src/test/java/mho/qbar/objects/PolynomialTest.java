@@ -3105,6 +3105,116 @@ public class PolynomialTest {
         translate_helper("3*x^10", "100",
                 "3*x^10-3000*x^9+1350000*x^8-360000000*x^7+63000000000*x^6-7560000000000*x^5+630000000000000*x^4-" +
                 "36000000000000000*x^3+1350000000000000000*x^2-30000000000000000000*x+300000000000000000000");
+
+        translate_helper("x+1", "1", "x");
+    }
+
+    private static void specialTranslate_helper(@NotNull String p, @NotNull String t, @NotNull String output) {
+        aeq(read(p).get().specialTranslate(Rational.read(t).get()), output);
+    }
+
+    @Test
+    public void testSpecialTranslate() {
+        specialTranslate_helper("0", "0", "0");
+        specialTranslate_helper("0", "1", "0");
+        specialTranslate_helper("0", "-1", "0");
+        specialTranslate_helper("0", "100/3", "0");
+        specialTranslate_helper("0", "1/100", "0");
+
+        specialTranslate_helper("1", "0", "1");
+        specialTranslate_helper("1", "1", "1");
+        specialTranslate_helper("1", "-1", "1");
+        specialTranslate_helper("1", "100/3", "1");
+        specialTranslate_helper("1", "1/100", "1");
+
+        specialTranslate_helper("-17", "0", "-17");
+        specialTranslate_helper("-17", "1", "-17");
+        specialTranslate_helper("-17", "-1", "-17");
+        specialTranslate_helper("-17", "100/3", "-17");
+        specialTranslate_helper("-17", "1/100", "-17");
+
+        specialTranslate_helper("x^2-4*x+7", "0", "x^2-4*x+7");
+        specialTranslate_helper("x^2-4*x+7", "1", "x^2-6*x+12");
+        specialTranslate_helper("x^2-4*x+7", "-1", "x^2-2*x+4");
+        specialTranslate_helper("x^2-4*x+7", "100/3", "9*x^2-636*x+11263");
+        specialTranslate_helper("x^2-4*x+7", "1/100", "10000*x^2-40200*x+70401");
+
+        specialTranslate_helper("-x^3-1", "0", "-x^3-1");
+        specialTranslate_helper("-x^3-1", "1", "-x^3+3*x^2-3*x");
+        specialTranslate_helper("-x^3-1", "-1", "-x^3-3*x^2-3*x-2");
+        specialTranslate_helper("-x^3-1", "100/3", "-27*x^3+2700*x^2-90000*x+999973");
+        specialTranslate_helper("-x^3-1", "1/100", "-1000000*x^3+30000*x^2-300*x-999999");
+
+        specialTranslate_helper("3*x^10", "0", "3*x^10");
+        specialTranslate_helper("3*x^10", "1",
+                "3*x^10-30*x^9+135*x^8-360*x^7+630*x^6-756*x^5+630*x^4-360*x^3+135*x^2-30*x+3");
+        specialTranslate_helper("3*x^10", "-1",
+                "3*x^10+30*x^9+135*x^8+360*x^7+630*x^6+756*x^5+630*x^4+360*x^3+135*x^2+30*x+3");
+        specialTranslate_helper("3*x^10", "100/3",
+                "177147*x^10-59049000*x^9+8857350000*x^8-787320000000*x^7+45927000000000*x^6-1837080000000000*x^5+" +
+                "51030000000000000*x^4-972000000000000000*x^3+12150000000000000000*x^2-90000000000000000000*x+" +
+                "300000000000000000000");
+        specialTranslate_helper("3*x^10", "1/100",
+                "300000000000000000000*x^10-30000000000000000000*x^9+1350000000000000000*x^8-36000000000000000*x^7+" +
+                "630000000000000*x^6-7560000000000*x^5+63000000000*x^4-360000000*x^3+1350000*x^2-3000*x+3");
+
+        specialTranslate_helper("2*x+1", "1/2", "4*x");
+    }
+
+    private static void positivePrimitiveTranslate_helper(
+            @NotNull String p,
+            @NotNull String t,
+            @NotNull String output
+    ) {
+        aeq(read(p).get().positivePrimitiveTranslate(Rational.read(t).get()), output);
+    }
+
+    @Test
+    public void testPositivePrimitiveTranslate() {
+        positivePrimitiveTranslate_helper("0", "0", "0");
+        positivePrimitiveTranslate_helper("0", "1", "0");
+        positivePrimitiveTranslate_helper("0", "-1", "0");
+        positivePrimitiveTranslate_helper("0", "100/3", "0");
+        positivePrimitiveTranslate_helper("0", "1/100", "0");
+
+        positivePrimitiveTranslate_helper("1", "0", "1");
+        positivePrimitiveTranslate_helper("1", "1", "1");
+        positivePrimitiveTranslate_helper("1", "-1", "1");
+        positivePrimitiveTranslate_helper("1", "100/3", "1");
+        positivePrimitiveTranslate_helper("1", "1/100", "1");
+
+        positivePrimitiveTranslate_helper("-17", "0", "1");
+        positivePrimitiveTranslate_helper("-17", "1", "1");
+        positivePrimitiveTranslate_helper("-17", "-1", "1");
+        positivePrimitiveTranslate_helper("-17", "100/3", "1");
+        positivePrimitiveTranslate_helper("-17", "1/100", "1");
+
+        positivePrimitiveTranslate_helper("x^2-4*x+7", "0", "x^2-4*x+7");
+        positivePrimitiveTranslate_helper("x^2-4*x+7", "1", "x^2-6*x+12");
+        positivePrimitiveTranslate_helper("x^2-4*x+7", "-1", "x^2-2*x+4");
+        positivePrimitiveTranslate_helper("x^2-4*x+7", "100/3", "9*x^2-636*x+11263");
+        positivePrimitiveTranslate_helper("x^2-4*x+7", "1/100", "10000*x^2-40200*x+70401");
+
+        positivePrimitiveTranslate_helper("-x^3-1", "0", "x^3+1");
+        positivePrimitiveTranslate_helper("-x^3-1", "1", "x^3-3*x^2+3*x");
+        positivePrimitiveTranslate_helper("-x^3-1", "-1", "x^3+3*x^2+3*x+2");
+        positivePrimitiveTranslate_helper("-x^3-1", "100/3", "27*x^3-2700*x^2+90000*x-999973");
+        positivePrimitiveTranslate_helper("-x^3-1", "1/100", "1000000*x^3-30000*x^2+300*x+999999");
+
+        positivePrimitiveTranslate_helper("3*x^10", "0", "x^10");
+        positivePrimitiveTranslate_helper("3*x^10", "1",
+                "x^10-10*x^9+45*x^8-120*x^7+210*x^6-252*x^5+210*x^4-120*x^3+45*x^2-10*x+1");
+        positivePrimitiveTranslate_helper("3*x^10", "-1",
+                "x^10+10*x^9+45*x^8+120*x^7+210*x^6+252*x^5+210*x^4+120*x^3+45*x^2+10*x+1");
+        positivePrimitiveTranslate_helper("3*x^10", "100/3",
+                "59049*x^10-19683000*x^9+2952450000*x^8-262440000000*x^7+15309000000000*x^6-612360000000000*x^5+" +
+                "17010000000000000*x^4-324000000000000000*x^3+4050000000000000000*x^2-30000000000000000000*x+" +
+                "100000000000000000000");
+        positivePrimitiveTranslate_helper("3*x^10", "1/100",
+                "100000000000000000000*x^10-10000000000000000000*x^9+450000000000000000*x^8-12000000000000000*x^7+" +
+                "210000000000000*x^6-2520000000000*x^5+21000000000*x^4-120000000*x^3+450000*x^2-1000*x+1");
+
+        positivePrimitiveTranslate_helper("2*x+1", "1/2", "x");
     }
 
     @Test
