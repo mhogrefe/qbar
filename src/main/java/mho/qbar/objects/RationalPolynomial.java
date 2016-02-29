@@ -1124,6 +1124,22 @@ public final class RationalPolynomial implements
     }
 
     /**
+     * Returns the translation of {@code this} by x.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalPolynomial}.</li>
+     *  <li>{@code t} is not null.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param t the amount that {@code this} is translated by in the x-direction.
+     * @return {@code this}(x–t)
+     */
+    public @NotNull RationalPolynomial translate(@NotNull Rational t) {
+        return substitute(new RationalPolynomial(Arrays.asList(t.negate(), Rational.ONE)));
+    }
+
+    /**
      * Determines whether {@code this} is equal to {@code that}.
      *
      * <ul>

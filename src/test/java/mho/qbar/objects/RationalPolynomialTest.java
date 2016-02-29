@@ -1815,6 +1815,56 @@ public class RationalPolynomialTest {
         reflect_helper("1/2*x^10", "1/2*x^10");
     }
 
+    private static void translate_helper(@NotNull String p, @NotNull String t, @NotNull String output) {
+        aeq(read(p).get().translate(Rational.read(t).get()), output);
+    }
+
+    @Test
+    public void testTranslate() {
+        translate_helper("0", "0", "0");
+        translate_helper("0", "1", "0");
+        translate_helper("0", "-1", "0");
+        translate_helper("0", "100/3", "0");
+        translate_helper("0", "1/100", "0");
+
+        translate_helper("1", "0", "1");
+        translate_helper("1", "1", "1");
+        translate_helper("1", "-1", "1");
+        translate_helper("1", "100/3", "1");
+        translate_helper("1", "1/100", "1");
+
+        translate_helper("-4/3", "0", "-4/3");
+        translate_helper("-4/3", "1", "-4/3");
+        translate_helper("-4/3", "-1", "-4/3");
+        translate_helper("-4/3", "100/3", "-4/3");
+        translate_helper("-4/3", "1/100", "-4/3");
+
+        translate_helper("x^2-7/4*x+1/3", "0", "x^2-7/4*x+1/3");
+        translate_helper("x^2-7/4*x+1/3", "1", "x^2-15/4*x+37/12");
+        translate_helper("x^2-7/4*x+1/3", "-1", "x^2+1/4*x-5/12");
+        translate_helper("x^2-7/4*x+1/3", "100/3", "x^2-821/12*x+10528/9");
+        translate_helper("x^2-7/4*x+1/3", "1/100", "x^2-177/100*x+658/1875");
+
+        translate_helper("-x^3-1", "0", "-x^3-1");
+        translate_helper("-x^3-1", "1", "-x^3+3*x^2-3*x");
+        translate_helper("-x^3-1", "-1", "-x^3-3*x^2-3*x-2");
+        translate_helper("-x^3-1", "100/3", "-x^3+100*x^2-10000/3*x+999973/27");
+        translate_helper("-x^3-1", "1/100", "-x^3+3/100*x^2-3/10000*x-999999/1000000");
+
+        translate_helper("1/2*x^10", "0", "1/2*x^10");
+        translate_helper("1/2*x^10", "1",
+                "1/2*x^10-5*x^9+45/2*x^8-60*x^7+105*x^6-126*x^5+105*x^4-60*x^3+45/2*x^2-5*x+1/2");
+        translate_helper("1/2*x^10", "-1",
+                "1/2*x^10+5*x^9+45/2*x^8+60*x^7+105*x^6+126*x^5+105*x^4+60*x^3+45/2*x^2+5*x+1/2");
+        translate_helper("1/2*x^10", "100/3",
+                "1/2*x^10-500/3*x^9+25000*x^8-20000000/9*x^7+3500000000/27*x^6-140000000000/27*x^5+" +
+                "35000000000000/243*x^4-2000000000000000/729*x^3+25000000000000000/729*x^2-" +
+                "5000000000000000000/19683*x+50000000000000000000/59049");
+        translate_helper("1/2*x^10", "1/100",
+                "1/2*x^10-1/20*x^9+9/4000*x^8-3/50000*x^7+21/20000000*x^6-63/5000000000*x^5+21/200000000000*x^4-" +
+                "3/5000000000000*x^3+9/4000000000000000*x^2-1/200000000000000000*x+1/200000000000000000000");
+    }
+
     @Test
     public void testEquals() {
         testEqualsHelper(

@@ -92,6 +92,7 @@ public class RationalPolynomialProperties extends QBarTestProperties {
         propertiesFromPowerSums();
         propertiesInterpolate();
         propertiesReflect();
+        propertiesTranslate();
         propertiesEquals();
         propertiesCompanionMatrix();
         propertiesCoefficientMatrix();
@@ -1913,6 +1914,27 @@ public class RationalPolynomialProperties extends QBarTestProperties {
             RationalPolynomial reflected = p.reflect();
             assertEquals(p, p.signum(), reflected.signum());
             involution(RationalPolynomial::reflect, p);
+        }
+    }
+
+    private void propertiesTranslate() {
+        initialize("translate(Rational)");
+        for (Pair<RationalPolynomial, Rational> p : take(LIMIT, P.pairs(P.rationalPolynomials(), P.rationals()))) {
+            RationalPolynomial translated = p.a.translate(p.b);
+            translated.validate();
+            assertEquals(p, p.a.degree(), translated.degree());
+            assertEquals(p, p.a.signum(), translated.signum());
+            inverse(q -> q.translate(p.b), (RationalPolynomial q) -> q.translate(p.b.negate()), p.a);
+        }
+
+        for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals()))) {
+            RationalPolynomial q = of(p.a);
+            assertEquals(p, q, q.translate(p.b));
+        }
+
+        Iterable<Pair<RationalPolynomial, Rational>> ps = P.pairs(P.monicRationalPolynomials(), P.rationals());
+        for (Pair<RationalPolynomial, Rational> p : take(LIMIT, ps)) {
+            assertTrue(p, p.a.translate(p.b).isMonic());
         }
     }
 
