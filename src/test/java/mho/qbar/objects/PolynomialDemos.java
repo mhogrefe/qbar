@@ -540,6 +540,68 @@ public class PolynomialDemos extends QBarDemos {
         }
     }
 
+    private void demoSignedSubresultantCoefficient() {
+        Iterable<Triple<Polynomial, Polynomial, Integer>> ts = map(p -> new Triple<>(
+                p.a.a, p.a.b, p.b),
+                P.dependentPairs(
+                        filterInfinite(
+                                p -> p.a.degree() > p.b.degree(),
+                                P.pairs(P.withScale(4).withSecondaryScale(4).polynomialsAtLeast(0))
+                        ),
+                        p -> P.range(0, p.a.degree())
+                )
+        );
+        for (Triple<Polynomial, Polynomial, Integer> t : take(LIMIT, ts)) {
+            System.out.println("signedSubresultantCoefficient(" + t.a + ", " + t.b + ", " + t.c + ") = " +
+                    t.a.signedSubresultantCoefficient(t.b, t.c));
+        }
+    }
+
+    private void demoSylvesterHabichtPolynomialMatrix() {
+        Iterable<Triple<Polynomial, Polynomial, Integer>> ts = map(p -> new Triple<>(
+                p.a.a, p.a.b, p.b),
+                P.dependentPairs(
+                        filterInfinite(
+                                p -> p.a.degree() > p.b.degree(),
+                                P.pairs(P.withScale(4).withSecondaryScale(4).polynomialsAtLeast(0))
+                        ),
+                        p -> P.range(0, p.b.degree())
+                )
+        );
+        for (Triple<Polynomial, Polynomial, Integer> t : take(LIMIT, ts)) {
+            System.out.println("sylvesterHabichtPolynomialMatrix(" + t.a + ", " + t.b + ", " + t.c + ") = " +
+                    t.a.sylvesterHabichtPolynomialMatrix(t.b, t.c));
+        }
+    }
+
+    private void demoSignedSubresultant() {
+        Iterable<Triple<Polynomial, Polynomial, Integer>> ts = map(p -> new Triple<>(
+                p.a.a, p.a.b, p.b),
+                P.dependentPairs(
+                        filterInfinite(
+                                p -> p.a.degree() > p.b.degree(),
+                                P.pairs(P.withScale(4).withSecondaryScale(4).polynomialsAtLeast(0))
+                        ),
+                        p -> P.range(0, p.a.degree())
+                )
+        );
+        for (Triple<Polynomial, Polynomial, Integer> t : take(LIMIT, ts)) {
+            System.out.println("signedSubresultant(" + t.a + ", " + t.b + ", " + t.c + ") = " +
+                    t.a.signedSubresultant(t.b, t.c));
+        }
+    }
+
+    private void demoSignedSubresultantSequence() {
+        Iterable<Pair<Polynomial, Polynomial>> ps = filterInfinite(
+                p -> p.a.degree() > p.b.degree(),
+                P.pairs(P.withScale(4).withSecondaryScale(4).polynomialsAtLeast(0))
+        );
+        for (Pair<Polynomial, Polynomial> p : take(LIMIT, ps)) {
+            System.out.println("signedSubresultantSequence(" + p.a + ", " + p.b + ") = " +
+                    p.a.signedSubresultantSequence(p.b));
+        }
+    }
+
     private void demoReflect() {
         for (Polynomial p : take(LIMIT, P.withScale(4).polynomials())) {
             System.out.println("reflect(" + p + ") = " + p.reflect());

@@ -2738,6 +2738,319 @@ public class PolynomialTest {
         sylvesterHabichtMatrix_fail_helper("x^2", "x", 2);
     }
 
+    private static void signedSubresultantCoefficient_helper(
+            @NotNull String p,
+            @NotNull String q,
+            int j,
+            @NotNull String output
+    ) {
+        aeq(read(p).get().signedSubresultantCoefficient(read(q).get(), j), output);
+    }
+
+    private static void signedSubresultantCoefficient_fail_helper(@NotNull String p, @NotNull String q, int j) {
+        try {
+            read(p).get().signedSubresultantCoefficient(read(q).get(), j);
+            fail();
+        } catch (ArithmeticException | IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testSignedSubresultantCoefficient() {
+        signedSubresultantCoefficient_helper("x", "1", 0, "1");
+        signedSubresultantCoefficient_helper("x", "1", 1, "1");
+        signedSubresultantCoefficient_helper("x", "-17", 0, "-17");
+        signedSubresultantCoefficient_helper("x", "-17", 1, "1");
+
+        signedSubresultantCoefficient_helper("x^2-4*x+7", "1", 0, "-1");
+        signedSubresultantCoefficient_helper("x^2-4*x+7", "1", 1, "1");
+        signedSubresultantCoefficient_helper("x^2-4*x+7", "1", 2, "1");
+        signedSubresultantCoefficient_helper("x^2-4*x+7", "x", 0, "-7");
+        signedSubresultantCoefficient_helper("x^2-4*x+7", "x", 1, "1");
+        signedSubresultantCoefficient_helper("x^2-4*x+7", "x", 2, "1");
+        signedSubresultantCoefficient_helper("x^2-4*x+7", "-17", 0, "-289");
+        signedSubresultantCoefficient_helper("x^2-4*x+7", "-17", 1, "-17");
+        signedSubresultantCoefficient_helper("x^2-4*x+7", "-17", 2, "1");
+
+        signedSubresultantCoefficient_helper("-x^3-1", "1", 0, "-1");
+        signedSubresultantCoefficient_helper("-x^3-1", "1", 1, "0");
+        signedSubresultantCoefficient_helper("-x^3-1", "1", 2, "1");
+        signedSubresultantCoefficient_helper("-x^3-1", "1", 3, "-1");
+        signedSubresultantCoefficient_helper("-x^3-1", "x", 0, "-1");
+        signedSubresultantCoefficient_helper("-x^3-1", "x", 1, "-1");
+        signedSubresultantCoefficient_helper("-x^3-1", "x", 2, "1");
+        signedSubresultantCoefficient_helper("-x^3-1", "x", 3, "-1");
+        signedSubresultantCoefficient_helper("-x^3-1", "-17", 0, "4913");
+        signedSubresultantCoefficient_helper("-x^3-1", "-17", 1, "0");
+        signedSubresultantCoefficient_helper("-x^3-1", "-17", 2, "-17");
+        signedSubresultantCoefficient_helper("-x^3-1", "-17", 3, "-1");
+        signedSubresultantCoefficient_helper("-x^3-1", "x^2-4*x+7", 0, "-324");
+        signedSubresultantCoefficient_helper("-x^3-1", "x^2-4*x+7", 1, "9");
+        signedSubresultantCoefficient_helper("-x^3-1", "x^2-4*x+7", 2, "1");
+        signedSubresultantCoefficient_helper("-x^3-1", "x^2-4*x+7", 3, "-1");
+
+        signedSubresultantCoefficient_helper("3*x^10", "1", 0, "-1");
+        signedSubresultantCoefficient_helper("3*x^10", "x", 0, "0");
+        signedSubresultantCoefficient_helper("3*x^10", "x", 1, "1");
+        signedSubresultantCoefficient_helper("3*x^10", "-17", 0, "-2015993900449");
+        signedSubresultantCoefficient_helper("3*x^10", "x^2-4*x+7", 0, "-2542277241");
+        signedSubresultantCoefficient_helper("3*x^10", "x^2-4*x+7", 1, "-21948");
+        signedSubresultantCoefficient_helper("3*x^10", "x^2-4*x+7", 2, "1");
+        signedSubresultantCoefficient_helper("3*x^10", "-x^3-1", 0, "-27");
+        signedSubresultantCoefficient_helper("3*x^10", "-x^3-1", 1, "-9");
+        signedSubresultantCoefficient_helper("3*x^10", "-x^3-1", 2, "0");
+        signedSubresultantCoefficient_helper("3*x^10", "-x^3-1", 3, "1");
+
+        signedSubresultantCoefficient_fail_helper("0", "x", 0);
+        signedSubresultantCoefficient_fail_helper("x", "0", 0);
+        signedSubresultantCoefficient_fail_helper("x", "x", 0);
+        signedSubresultantCoefficient_fail_helper("x", "x^2", 0);
+        signedSubresultantCoefficient_fail_helper("x^2", "x", -1);
+        signedSubresultantCoefficient_fail_helper("x^2", "x", 3);
+    }
+
+    private static void sylvesterHabichtPolynomialMatrix_helper(
+            @NotNull String p,
+            @NotNull String q,
+            int j,
+            @NotNull String output
+    ) {
+        aeq(read(p).get().sylvesterHabichtPolynomialMatrix(read(q).get(), j), output);
+    }
+
+    private static void sylvesterHabichtPolynomialMatrix_fail_helper(@NotNull String p, @NotNull String q, int j) {
+        try {
+            read(p).get().sylvesterHabichtPolynomialMatrix(read(q).get(), j);
+            fail();
+        } catch (ArithmeticException | IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testSylvesterHabichtPolynomialMatrix() {
+        sylvesterHabichtPolynomialMatrix_helper("x", "1", 0, "[[1]]");
+        sylvesterHabichtPolynomialMatrix_helper("x", "-17", 0, "[[-17]]");
+
+        sylvesterHabichtPolynomialMatrix_helper("x^2-4*x+7", "1", 0, "[[0, 1], [1, x]]");
+        sylvesterHabichtPolynomialMatrix_helper("x^2-4*x+7", "x", 0, "[[1, -4, x^2-4*x+7], [0, 1, x], [1, 0, x^2]]");
+        sylvesterHabichtPolynomialMatrix_helper("x^2-4*x+7", "x", 1, "[[x]]");
+        sylvesterHabichtPolynomialMatrix_helper("x^2-4*x+7", "-17", 0, "[[0, -17], [-17, -17*x]]");
+
+        sylvesterHabichtPolynomialMatrix_helper("-x^3-1", "1", 0, "[[0, 0, 1], [0, 1, x], [1, 0, x^2]]");
+        sylvesterHabichtPolynomialMatrix_helper("-x^3-1", "x", 0,
+                "[[-1, 0, 0, -x^3-1], [0, 0, 1, x], [0, 1, 0, x^2], [1, 0, 0, x^3]]");
+        sylvesterHabichtPolynomialMatrix_helper("-x^3-1", "x", 1, "[[0, x], [1, x^2]]");
+        sylvesterHabichtPolynomialMatrix_helper("-x^3-1", "-17", 0,
+                "[[0, 0, -17], [0, -17, -17*x], [-17, 0, -17*x^2]]");
+        sylvesterHabichtPolynomialMatrix_helper("-x^3-1", "x^2-4*x+7", 0,
+                "[[-1, 0, 0, -1, -x^4-x], [0, -1, 0, 0, -x^3-1], [0, 0, 1, -4, x^2-4*x+7]," +
+                " [0, 1, -4, 7, x^3-4*x^2+7*x], [1, -4, 7, 0, x^4-4*x^3+7*x^2]]");
+        sylvesterHabichtPolynomialMatrix_helper("-x^3-1", "x^2-4*x+7", 1,
+                "[[-1, 0, -x^3-1], [0, 1, x^2-4*x+7], [1, -4, x^3-4*x^2+7*x]]");
+        sylvesterHabichtPolynomialMatrix_helper("-x^3-1", "x^2-4*x+7", 2, "[[x^2-4*x+7]]");
+
+        sylvesterHabichtPolynomialMatrix_helper("3*x^10", "1", 0,
+                "[[0, 0, 0, 0, 0, 0, 0, 0, 0, 1], [0, 0, 0, 0, 0, 0, 0, 0, 1, x], [0, 0, 0, 0, 0, 0, 0, 1, 0, x^2]," +
+                " [0, 0, 0, 0, 0, 0, 1, 0, 0, x^3], [0, 0, 0, 0, 0, 1, 0, 0, 0, x^4]," +
+                " [0, 0, 0, 0, 1, 0, 0, 0, 0, x^5], [0, 0, 0, 1, 0, 0, 0, 0, 0, x^6]," +
+                " [0, 0, 1, 0, 0, 0, 0, 0, 0, x^7], [0, 1, 0, 0, 0, 0, 0, 0, 0, x^8]," +
+                " [1, 0, 0, 0, 0, 0, 0, 0, 0, x^9]]");
+        sylvesterHabichtPolynomialMatrix_helper("3*x^10", "x", 0,
+                "[[3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3*x^10], [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, x]," +
+                " [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, x^2], [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, x^3]," +
+                " [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, x^4], [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, x^5]," +
+                " [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, x^6], [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, x^7]," +
+                " [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, x^8], [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, x^9]," +
+                " [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, x^10]]");
+        sylvesterHabichtPolynomialMatrix_helper("3*x^10", "x", 1,
+                "[[0, 0, 0, 0, 0, 0, 0, 0, x], [0, 0, 0, 0, 0, 0, 0, 1, x^2], [0, 0, 0, 0, 0, 0, 1, 0, x^3]," +
+                " [0, 0, 0, 0, 0, 1, 0, 0, x^4], [0, 0, 0, 0, 1, 0, 0, 0, x^5], [0, 0, 0, 1, 0, 0, 0, 0, x^6]," +
+                " [0, 0, 1, 0, 0, 0, 0, 0, x^7], [0, 1, 0, 0, 0, 0, 0, 0, x^8], [1, 0, 0, 0, 0, 0, 0, 0, x^9]]");
+        sylvesterHabichtPolynomialMatrix_helper("3*x^10", "-17", 0,
+                "[[0, 0, 0, 0, 0, 0, 0, 0, 0, -17], [0, 0, 0, 0, 0, 0, 0, 0, -17, -17*x]," +
+                " [0, 0, 0, 0, 0, 0, 0, -17, 0, -17*x^2], [0, 0, 0, 0, 0, 0, -17, 0, 0, -17*x^3]," +
+                " [0, 0, 0, 0, 0, -17, 0, 0, 0, -17*x^4], [0, 0, 0, 0, -17, 0, 0, 0, 0, -17*x^5]," +
+                " [0, 0, 0, -17, 0, 0, 0, 0, 0, -17*x^6], [0, 0, -17, 0, 0, 0, 0, 0, 0, -17*x^7]," +
+                " [0, -17, 0, 0, 0, 0, 0, 0, 0, -17*x^8], [-17, 0, 0, 0, 0, 0, 0, 0, 0, -17*x^9]]");
+        sylvesterHabichtPolynomialMatrix_helper("3*x^10", "x^2-4*x+7", 0,
+                "[[3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3*x^11], [0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3*x^10]," +
+                " [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, -4, x^2-4*x+7], [0, 0, 0, 0, 0, 0, 0, 0, 1, -4, 7, x^3-4*x^2+7*x]," +
+                " [0, 0, 0, 0, 0, 0, 0, 1, -4, 7, 0, x^4-4*x^3+7*x^2]," +
+                " [0, 0, 0, 0, 0, 0, 1, -4, 7, 0, 0, x^5-4*x^4+7*x^3]," +
+                " [0, 0, 0, 0, 0, 1, -4, 7, 0, 0, 0, x^6-4*x^5+7*x^4]," +
+                " [0, 0, 0, 0, 1, -4, 7, 0, 0, 0, 0, x^7-4*x^6+7*x^5]," +
+                " [0, 0, 0, 1, -4, 7, 0, 0, 0, 0, 0, x^8-4*x^7+7*x^6]," +
+                " [0, 0, 1, -4, 7, 0, 0, 0, 0, 0, 0, x^9-4*x^8+7*x^7]," +
+                " [0, 1, -4, 7, 0, 0, 0, 0, 0, 0, 0, x^10-4*x^9+7*x^8]," +
+                " [1, -4, 7, 0, 0, 0, 0, 0, 0, 0, 0, x^11-4*x^10+7*x^9]]");
+        sylvesterHabichtPolynomialMatrix_helper("3*x^10", "x^2-4*x+7", 1,
+                "[[3, 0, 0, 0, 0, 0, 0, 0, 0, 3*x^10], [0, 0, 0, 0, 0, 0, 0, 0, 1, x^2-4*x+7]," +
+                " [0, 0, 0, 0, 0, 0, 0, 1, -4, x^3-4*x^2+7*x], [0, 0, 0, 0, 0, 0, 1, -4, 7, x^4-4*x^3+7*x^2]," +
+                " [0, 0, 0, 0, 0, 1, -4, 7, 0, x^5-4*x^4+7*x^3], [0, 0, 0, 0, 1, -4, 7, 0, 0, x^6-4*x^5+7*x^4]," +
+                " [0, 0, 0, 1, -4, 7, 0, 0, 0, x^7-4*x^6+7*x^5], [0, 0, 1, -4, 7, 0, 0, 0, 0, x^8-4*x^7+7*x^6]," +
+                " [0, 1, -4, 7, 0, 0, 0, 0, 0, x^9-4*x^8+7*x^7], [1, -4, 7, 0, 0, 0, 0, 0, 0, x^10-4*x^9+7*x^8]]");
+        sylvesterHabichtPolynomialMatrix_helper("3*x^10", "x^2-4*x+7", 2,
+                "[[0, 0, 0, 0, 0, 0, 0, x^2-4*x+7], [0, 0, 0, 0, 0, 0, 1, x^3-4*x^2+7*x]," +
+                " [0, 0, 0, 0, 0, 1, -4, x^4-4*x^3+7*x^2], [0, 0, 0, 0, 1, -4, 7, x^5-4*x^4+7*x^3]," +
+                " [0, 0, 0, 1, -4, 7, 0, x^6-4*x^5+7*x^4], [0, 0, 1, -4, 7, 0, 0, x^7-4*x^6+7*x^5]," +
+                " [0, 1, -4, 7, 0, 0, 0, x^8-4*x^7+7*x^6], [1, -4, 7, 0, 0, 0, 0, x^9-4*x^8+7*x^7]]");
+        sylvesterHabichtPolynomialMatrix_helper("3*x^10", "-x^3-1", 0,
+                "[[3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3*x^12], [0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3*x^11]," +
+                " [0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3*x^10], [0, 0, 0, 0, 0, 0, 0, 0, 0, -1, 0, 0, -x^3-1]," +
+                " [0, 0, 0, 0, 0, 0, 0, 0, -1, 0, 0, -1, -x^4-x], [0, 0, 0, 0, 0, 0, 0, -1, 0, 0, -1, 0, -x^5-x^2]," +
+                " [0, 0, 0, 0, 0, 0, -1, 0, 0, -1, 0, 0, -x^6-x^3]," +
+                " [0, 0, 0, 0, 0, -1, 0, 0, -1, 0, 0, 0, -x^7-x^4]," +
+                " [0, 0, 0, 0, -1, 0, 0, -1, 0, 0, 0, 0, -x^8-x^5]," +
+                " [0, 0, 0, -1, 0, 0, -1, 0, 0, 0, 0, 0, -x^9-x^6]," +
+                " [0, 0, -1, 0, 0, -1, 0, 0, 0, 0, 0, 0, -x^10-x^7]," +
+                " [0, -1, 0, 0, -1, 0, 0, 0, 0, 0, 0, 0, -x^11-x^8]," +
+                " [-1, 0, 0, -1, 0, 0, 0, 0, 0, 0, 0, 0, -x^12-x^9]]");
+        sylvesterHabichtPolynomialMatrix_helper("3*x^10", "-x^3-1", 1,
+                "[[3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3*x^11], [0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 3*x^10]," +
+                " [0, 0, 0, 0, 0, 0, 0, 0, -1, 0, -x^3-1], [0, 0, 0, 0, 0, 0, 0, -1, 0, 0, -x^4-x]," +
+                " [0, 0, 0, 0, 0, 0, -1, 0, 0, -1, -x^5-x^2], [0, 0, 0, 0, 0, -1, 0, 0, -1, 0, -x^6-x^3]," +
+                " [0, 0, 0, 0, -1, 0, 0, -1, 0, 0, -x^7-x^4], [0, 0, 0, -1, 0, 0, -1, 0, 0, 0, -x^8-x^5]," +
+                " [0, 0, -1, 0, 0, -1, 0, 0, 0, 0, -x^9-x^6], [0, -1, 0, 0, -1, 0, 0, 0, 0, 0, -x^10-x^7]," +
+                " [-1, 0, 0, -1, 0, 0, 0, 0, 0, 0, -x^11-x^8]]");
+        sylvesterHabichtPolynomialMatrix_helper("3*x^10", "-x^3-1", 2,
+                "[[3, 0, 0, 0, 0, 0, 0, 0, 3*x^10], [0, 0, 0, 0, 0, 0, 0, -1, -x^3-1]," +
+                " [0, 0, 0, 0, 0, 0, -1, 0, -x^4-x], [0, 0, 0, 0, 0, -1, 0, 0, -x^5-x^2]," +
+                " [0, 0, 0, 0, -1, 0, 0, -1, -x^6-x^3], [0, 0, 0, -1, 0, 0, -1, 0, -x^7-x^4]," +
+                " [0, 0, -1, 0, 0, -1, 0, 0, -x^8-x^5], [0, -1, 0, 0, -1, 0, 0, 0, -x^9-x^6]," +
+                " [-1, 0, 0, -1, 0, 0, 0, 0, -x^10-x^7]]");
+        sylvesterHabichtPolynomialMatrix_helper("3*x^10", "-x^3-1", 3,
+                "[[0, 0, 0, 0, 0, 0, -x^3-1], [0, 0, 0, 0, 0, -1, -x^4-x], [0, 0, 0, 0, -1, 0, -x^5-x^2]," +
+                " [0, 0, 0, -1, 0, 0, -x^6-x^3], [0, 0, -1, 0, 0, -1, -x^7-x^4], [0, -1, 0, 0, -1, 0, -x^8-x^5]," +
+                " [-1, 0, 0, -1, 0, 0, -x^9-x^6]]");
+
+        sylvesterHabichtPolynomialMatrix_fail_helper("0", "x", 0);
+        sylvesterHabichtPolynomialMatrix_fail_helper("x", "0", 0);
+        sylvesterHabichtPolynomialMatrix_fail_helper("x", "x", 0);
+        sylvesterHabichtPolynomialMatrix_fail_helper("x", "x^2", 0);
+        sylvesterHabichtPolynomialMatrix_fail_helper("x^2", "x", -1);
+        sylvesterHabichtPolynomialMatrix_fail_helper("x^2", "x", 2);
+    }
+
+    private static void signedSubresultant_helper(
+            @NotNull String p,
+            @NotNull String q,
+            int j,
+            @NotNull String output
+    ) {
+        aeq(read(p).get().signedSubresultant(read(q).get(), j), output);
+    }
+
+    private static void signedSubresultant_fail_helper(@NotNull String p, @NotNull String q, int j) {
+        try {
+            read(p).get().signedSubresultant(read(q).get(), j);
+            fail();
+        } catch (ArithmeticException | IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testSignedSubresultant() {
+        signedSubresultant_helper("x", "1", 0, "1");
+        signedSubresultant_helper("x", "1", 1, "x");
+        signedSubresultant_helper("x", "-17", 0, "-17");
+        signedSubresultant_helper("x", "-17", 1, "x");
+
+        signedSubresultant_helper("x^2-4*x+7", "1", 0, "-1");
+        signedSubresultant_helper("x^2-4*x+7", "1", 1, "1");
+        signedSubresultant_helper("x^2-4*x+7", "1", 2, "x^2-4*x+7");
+        signedSubresultant_helper("x^2-4*x+7", "x", 0, "-7");
+        signedSubresultant_helper("x^2-4*x+7", "x", 1, "x");
+        signedSubresultant_helper("x^2-4*x+7", "x", 2, "x^2-4*x+7");
+        signedSubresultant_helper("x^2-4*x+7", "-17", 0, "-289");
+        signedSubresultant_helper("x^2-4*x+7", "-17", 1, "-17");
+        signedSubresultant_helper("x^2-4*x+7", "-17", 2, "x^2-4*x+7");
+
+        signedSubresultant_helper("-x^3-1", "1", 0, "-1");
+        signedSubresultant_helper("-x^3-1", "1", 1, "0");
+        signedSubresultant_helper("-x^3-1", "1", 2, "1");
+        signedSubresultant_helper("-x^3-1", "1", 3, "-x^3-1");
+        signedSubresultant_helper("-x^3-1", "x", 0, "-1");
+        signedSubresultant_helper("-x^3-1", "x", 1, "-x");
+        signedSubresultant_helper("-x^3-1", "x", 2, "x");
+        signedSubresultant_helper("-x^3-1", "x", 3, "-x^3-1");
+        signedSubresultant_helper("-x^3-1", "-17", 0, "4913");
+        signedSubresultant_helper("-x^3-1", "-17", 1, "0");
+        signedSubresultant_helper("-x^3-1", "-17", 2, "-17");
+        signedSubresultant_helper("-x^3-1", "-17", 3, "-x^3-1");
+        signedSubresultant_helper("-x^3-1", "x^2-4*x+7", 0, "-324");
+        signedSubresultant_helper("-x^3-1", "x^2-4*x+7", 1, "9*x-27");
+        signedSubresultant_helper("-x^3-1", "x^2-4*x+7", 2, "x^2-4*x+7");
+        signedSubresultant_helper("-x^3-1", "x^2-4*x+7", 3, "-x^3-1");
+
+        signedSubresultant_helper("3*x^10", "1", 0, "-1");
+        signedSubresultant_helper("3*x^10", "x", 0, "0");
+        signedSubresultant_helper("3*x^10", "x", 1, "x");
+        signedSubresultant_helper("3*x^10", "-17", 0, "-2015993900449");
+        signedSubresultant_helper("3*x^10", "x^2-4*x+7", 0, "-2542277241");
+        signedSubresultant_helper("3*x^10", "x^2-4*x+7", 1, "-21948*x+10773");
+        signedSubresultant_helper("3*x^10", "x^2-4*x+7", 2, "x^2-4*x+7");
+        signedSubresultant_helper("3*x^10", "-x^3-1", 0, "-27");
+        signedSubresultant_helper("3*x^10", "-x^3-1", 1, "-9*x");
+        signedSubresultant_helper("3*x^10", "-x^3-1", 2, "-3*x");
+        signedSubresultant_helper("3*x^10", "-x^3-1", 3, "x^3+1");
+
+        signedSubresultant_fail_helper("0", "x", 0);
+        signedSubresultant_fail_helper("x", "0", 0);
+        signedSubresultant_fail_helper("x", "x", 0);
+        signedSubresultant_fail_helper("x", "x^2", 0);
+        signedSubresultant_fail_helper("x^2", "x", -1);
+        signedSubresultant_fail_helper("x^2", "x", 3);
+    }
+
+    private static void signedSubresultantSequence_helper(
+            @NotNull String a,
+            @NotNull String b,
+            @NotNull String output
+    ) {
+        aeq(read(a).get().signedSubresultantSequence(read(b).get()), output);
+    }
+
+    private static void signedSubresultantSequence_fail_helper(@NotNull String a, @NotNull String b) {
+        try {
+            read(a).get().signedSubresultantSequence(read(b).get());
+            fail();
+        } catch (ArithmeticException | IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testSignedSubresultantSequence() {
+        signedSubresultantSequence_helper("x", "1", "[x, 1]");
+        signedSubresultantSequence_helper("x", "-17", "[x, -17]");
+
+        signedSubresultantSequence_helper("x^2-4*x+7", "1", "[x^2-4*x+7, 1, -1]");
+        signedSubresultantSequence_helper("x^2-4*x+7", "x", "[x^2-4*x+7, x, -7]");
+        signedSubresultantSequence_helper("x^2-4*x+7", "-17", "[x^2-4*x+7, -17, -289]");
+
+        signedSubresultantSequence_helper("-x^3-1", "1", "[-x^3-1, 1, 0, -1]");
+        signedSubresultantSequence_helper("-x^3-1", "x", "[-x^3-1, x, -x, -1]");
+        signedSubresultantSequence_helper("-x^3-1", "-17", "[-x^3-1, -17, 0, 4913]");
+        signedSubresultantSequence_helper("-x^3-1", "x^2-4*x+7", "[-x^3-1, x^2-4*x+7, 9*x-27, -324]");
+
+        signedSubresultantSequence_helper("3*x^10", "1", "[3*x^10, 1, 0, 0, 0, 0, 0, 0, 0, 0, -1]");
+        signedSubresultantSequence_helper("3*x^10", "x", "[3*x^10, x, 0, 0, 0, 0, 0, 0, 0, x, 0]");
+        signedSubresultantSequence_helper("3*x^10", "-17", "[3*x^10, -17, 0, 0, 0, 0, 0, 0, 0, 0, -2015993900449]");
+        signedSubresultantSequence_helper("3*x^10", "x^2-4*x+7",
+                "[3*x^10, x^2-4*x+7, 0, 0, 0, 0, 0, 0, x^2-4*x+7, -21948*x+10773, -2542277241]");
+        signedSubresultantSequence_helper("3*x^10", "-x^3-1",
+                "[3*x^10, -x^3-1, 0, 0, 0, 0, 0, x^3+1, -3*x, -9*x, -27]");
+
+        signedSubresultantSequence_helper("x^8+x^6-3*x^4-3*x^3+8*x^2+2*x-5", "3*x^6+5*x^4-4*x^2-9*x+21",
+                "[x^8+x^6-3*x^4-3*x^3+8*x^2+2*x-5, 3*x^6+5*x^4-4*x^2-9*x+21, -9*x^6-15*x^4+12*x^2+27*x-63," +
+                " -15*x^4+3*x^2-9, 25*x^4-5*x^2+15, 65*x^2+125*x-245, -169*x^2-325*x+637, -9326*x+12300, 260708]");
+
+        signedSubresultantSequence_helper("x^11-x^10+1", "11*x^10-10*x^9",
+                "[x^11-x^10+1, 11*x^10-10*x^9, 10*x^9-121, -110*x+100, 0, 0, 0, 0, 0, 0, 2143588810*x-1948717100," +
+                " -275311670611]");
+
+        signedSubresultantSequence_fail_helper("0", "0");
+        signedSubresultantSequence_fail_helper("0", "x");
+        signedSubresultantSequence_fail_helper("x", "0");
+        signedSubresultantSequence_fail_helper("x^2", "x^3");
+        signedSubresultantSequence_fail_helper("x^2", "x^2");
+    }
+
     private static void reflect_helper(@NotNull String input, @NotNull String output) {
         aeq(read(input).get().reflect(), output);
     }

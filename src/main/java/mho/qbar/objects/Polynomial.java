@@ -1732,6 +1732,12 @@ public final class Polynomial implements
     }
 
     public @NotNull BigInteger signedSubresultantCoefficient(@NotNull Polynomial that, int j) {
+        if (this == ZERO) {
+            throw new ArithmeticException("this cannot be zero.");
+        }
+        if (that == ZERO) {
+            throw new ArithmeticException("that cannot be zero.");
+        }
         int thisDegree = degree();
         int thatDegree = that.degree();
         if (j < 0) {
@@ -1747,7 +1753,7 @@ public final class Polynomial implements
         } else if (j == thisDegree) {
             return leading().get();
         } else {
-            throw new IllegalArgumentException("j cannot be greater than the degree of that. j: " + j + ", that: " +
+            throw new IllegalArgumentException("j cannot be greater than the degree of this. j: " + j + ", this: " +
                     that);
         }
     }
@@ -1783,6 +1789,12 @@ public final class Polynomial implements
     }
 
     public @NotNull Polynomial signedSubresultant(@NotNull Polynomial that, int j) {
+        if (this == ZERO) {
+            throw new ArithmeticException("this cannot be zero.");
+        }
+        if (that == ZERO) {
+            throw new ArithmeticException("that cannot be zero.");
+        }
         int thisDegree = degree();
         int thatDegree = that.degree();
         if (j < 0) {
@@ -1798,9 +1810,23 @@ public final class Polynomial implements
         } else if (j == thisDegree) {
             return this;
         } else {
-            throw new IllegalArgumentException("j cannot be greater than the degree of that. j: " + j + ", that: " +
+            throw new IllegalArgumentException("j cannot be greater than the degree of this. j: " + j + ", this: " +
                     that);
         }
+    }
+
+    public @NotNull List<Polynomial> signedSubresultantSequence(@NotNull Polynomial that) {
+        if (this == ZERO) {
+            throw new ArithmeticException("this cannot be zero.");
+        }
+        if (that == ZERO) {
+            throw new ArithmeticException("that cannot be zero.");
+        }
+        List<Polynomial> sequence = new ArrayList<>();
+        for (int i = degree(); i >= 0; i--) {
+            sequence.add(signedSubresultant(that, i));
+        }
+        return sequence;
     }
 
     /**

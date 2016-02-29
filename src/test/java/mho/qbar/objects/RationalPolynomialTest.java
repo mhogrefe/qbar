@@ -1656,6 +1656,9 @@ public class RationalPolynomialTest {
                 "200117670554781699308164692478544184/1807309302290980501324553958871415645]"
         );
 
+        signedRemainderSequence_helper("x^11-x^10+1", "11*x^10-10*x^9",
+                "[x^11-x^10+1, 11*x^10-10*x^9, 10/121*x^9-1, -1331/10*x+121, 275311670611/285311670611]");
+
         signedRemainderSequence_fail_helper("0", "0");
     }
 
