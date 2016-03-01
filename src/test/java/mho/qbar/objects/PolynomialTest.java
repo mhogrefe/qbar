@@ -3044,6 +3044,8 @@ public class PolynomialTest {
                 "[x^11-x^10+1, 11*x^10-10*x^9, 10*x^9-121, -110*x+100, 0, 0, 0, 0, 0, 0, 2143588810*x-1948717100," +
                 " -275311670611]");
 
+        signedSubresultantSequence_helper("x^2", "1", "[x^2, 1, -1]");
+
         signedSubresultantSequence_fail_helper("0", "0");
         signedSubresultantSequence_fail_helper("0", "x");
         signedSubresultantSequence_fail_helper("x", "0");

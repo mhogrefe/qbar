@@ -131,6 +131,7 @@ public class PolynomialProperties extends QBarTestProperties {
         compareImplementationsSylvesterHabichtMatrix();
         propertiesSignedSubresultantCoefficient();
         propertiesSylvesterHabichtPolynomialMatrix();
+        compareImplementationsSylvesterHabichtPolynomialMatrix();
         propertiesSignedSubresultant();
         propertiesSignedSubresultantSequence();
         propertiesReflect();
@@ -2961,6 +2962,21 @@ public class PolynomialProperties extends QBarTestProperties {
             t.a.signedSubresultantCoefficient(t.b, t.c);
         }
 
+        ts = map(p -> new Triple<>(
+                p.a.a, p.a.b, p.b),
+                P.dependentPairs(
+                        filterInfinite(p -> p.a.degree() > p.b.degree(), P.pairs(P.polynomialsAtLeast(0))),
+                        p -> P.range(0, p.b.degree())
+                )
+        );
+        for (Triple<Polynomial, Polynomial, Integer> t : take(LIMIT, ts)) {
+            assertEquals(
+                    t,
+                    t.a.signedSubresultantCoefficient(t.b, t.c),
+                    t.a.signedSubresultant(t.b, t.c).coefficient(t.c)
+            );
+        }
+
         Iterable<Triple<Polynomial, Polynomial, Integer>> tsFail = map(p -> new Triple<>(
                 p.a.a, p.a.b, p.b),
                 P.dependentPairs(
@@ -3002,6 +3018,38 @@ public class PolynomialProperties extends QBarTestProperties {
         }
     }
 
+    private static @NotNull PolynomialMatrix sylvesterHabichtPolynomialMatrix_alt(
+            @NotNull Polynomial p,
+            @NotNull Polynomial q,
+            int j
+    ) {
+        if (p == ZERO) {
+            throw new ArithmeticException("this cannot be zero.");
+        }
+        if (q == ZERO) {
+            throw new ArithmeticException("that cannot be zero.");
+        }
+        int pDegree = p.degree();
+        int qDegree = q.degree();
+        if (pDegree <= qDegree) {
+            throw new IllegalArgumentException("this must have a degree greater than that. p: " + p + ", q: " + q);
+        }
+        if (j < 0) {
+            throw new IllegalArgumentException("j cannot be negative. Invalid j: " + j);
+        }
+        if (j > qDegree) {
+            throw new IllegalArgumentException("j cannot be greater than the degree of q. j: " + j + ", q: " + q);
+        }
+        List<Polynomial> ps = new ArrayList<>();
+        for (int i = qDegree - j - 1; i >= 0; i--) {
+            ps.add(p.multiplyByPowerOfX(i));
+        }
+        for (int i = 0; i < pDegree - j; i++) {
+            ps.add(q.multiplyByPowerOfX(i));
+        }
+        return augmentedCoefficientMatrix(ps);
+    }
+
     private void propertiesSylvesterHabichtPolynomialMatrix() {
         initialize("sylvesterHabichtPolynomialMatrix(Polynomial, int)");
         Iterable<Triple<Polynomial, Polynomial, Integer>> ts = map(p -> new Triple<>(
@@ -3013,6 +3061,7 @@ public class PolynomialProperties extends QBarTestProperties {
         );
         for (Triple<Polynomial, Polynomial, Integer> t : take(LIMIT, ts)) {
             PolynomialMatrix m = t.a.sylvesterHabichtPolynomialMatrix(t.b, t.c);
+            assertEquals(t, m, sylvesterHabichtPolynomialMatrix_alt(t.a, t.b, t.c));
             assertTrue(t, m.isSquare());
             assertEquals(t, m.width(), t.a.degree() + t.b.degree() - 2 * t.c);
         }
@@ -3056,6 +3105,21 @@ public class PolynomialProperties extends QBarTestProperties {
                 fail(p);
             } catch (ArithmeticException ignored) {}
         }
+    }
+
+    private void compareImplementationsSylvesterHabichtPolynomialMatrix() {
+        Map<String, Function<Triple<Polynomial, Polynomial, Integer>, PolynomialMatrix>> functions =
+                new LinkedHashMap<>();
+        functions.put("alt", t -> sylvesterHabichtPolynomialMatrix_alt(t.a, t.b, t.c));
+        functions.put("standard", t -> t.a.sylvesterHabichtPolynomialMatrix(t.b, t.c));
+        Iterable<Triple<Polynomial, Polynomial, Integer>> ts = map(p -> new Triple<>(
+                p.a.a, p.a.b, p.b),
+                P.dependentPairs(
+                        filterInfinite(p -> p.a.degree() > p.b.degree(), P.pairs(P.polynomialsAtLeast(0))),
+                        p -> P.range(0, p.b.degree())
+                )
+        );
+        compareImplementations("sylvesterHabichtPolynomialMatrix(Polynomial, int)", take(SMALL_LIMIT, ts), functions);
     }
 
     private void propertiesSignedSubresultant() {
@@ -3124,53 +3188,63 @@ public class PolynomialProperties extends QBarTestProperties {
         }
     }
 
-    //todo fix
     private static @NotNull List<Polynomial> signedSubresultantSequence_alt(
             @NotNull Polynomial p,
             @NotNull Polynomial q
     ) {
+        if (p == ZERO) {
+            throw new ArithmeticException("p cannot be zero.");
+        }
+        if (q == ZERO) {
+            throw new ArithmeticException("that cannot be zero.");
+        }
         if (p.degree() <= q.degree()) {
             throw new IllegalArgumentException();
         }
         Map<Integer, Polynomial> sResP = new HashMap<>();
         sResP.put(p.degree(), p);
-        sResP.put(p.degree() - 1, q);
-        Polynomial x = q.multiply(q.leading().get().pow(p.degree() - q.degree() - 1));
-        boolean rps = MathUtils.reversePermutationSign(p.degree() - q.degree());
-        sResP.put(q.degree(), rps ? x : x.negate());
-        List<BigInteger> s = toList(replicate(p.degree() + 1, null));
+        Map<Integer, BigInteger> s = new HashMap<>();
         Map<Integer, BigInteger> t = new HashMap<>();
-        s.set(p.degree(), BigInteger.ONE);
+        s.put(p.degree(), BigInteger.ONE);
         t.put(p.degree(), BigInteger.ONE);
-        t.put(p.degree() - 1, q.leading().get());
-        BigInteger y = q.leading().get().pow(p.degree() - q.degree());
-        s.set(q.degree(), rps ? y : y.negate());
-        for (int l = q.degree() + 1; l < p.degree() - 1; l++) {
+        sResP.put(p.degree() - 1, q);
+        t.put(p.degree() - 1, q.coefficient(q.degree()));
+        sResP.put(q.degree(), q.multiply(q.coefficient(q.degree()).pow(p.degree() - q.degree() - 1)));
+        if (!MathUtils.reversePermutationSign(p.degree() - q.degree())) {
+            sResP.put(q.degree(), sResP.get(q.degree()).negate());
+        }
+        s.put(q.degree(), q.coefficient(q.degree()).pow(p.degree() - q.degree()));
+        if (!MathUtils.reversePermutationSign(p.degree() - q.degree())) {
+            s.put(q.degree(), s.get(q.degree()).negate());
+        }
+        for (int l = q.degree() + 1; l <= p.degree() - 2; l++) {
             sResP.put(l, ZERO);
-            s.set(l, BigInteger.ZERO);
+            s.put(l, BigInteger.ZERO);
         }
         int i = p.degree() + 1;
         int j = p.degree();
-        while (!sResP.get(j - 1).equals(ZERO)) {
+        while (sResP.get(j - 1) != ZERO) {
             int k = sResP.get(j - 1).degree();
             if (k == j - 1) {
-                s.set(j - 1, t.get(j - 1));
+                s.put(j - 1, t.get(j - 1));
                 sResP.put(
                         k - 1,
                         sResP.get(i - 1).multiply(s.get(j - 1).pow(2)).remainderExact(sResP.get(j - 1)).negate()
                                 .divideExact(of(s.get(j).multiply(t.get(i - 1))))
                 );
             } else {
-                s.set(j - 1, BigInteger.ZERO);
-                for (int d = 1; d < j - k; d++) {
-                    BigInteger z = t.get(j - 1).multiply(t.get(j - d)).divide(s.get(j));
-                    t.put(j - d - 1, (d & 1) == 0 ? z : z.negate());
-                    s.set(k, t.get(k));
+                s.put(j - 1, BigInteger.ZERO);
+                for (int d = 1; d <= j - k - 1; d++) {
+                    t.put(j - d - 1, t.get(j - 1).multiply(t.get(j - d)).divide(s.get(j)));
+                    if ((d & 1) != 0) {
+                        t.put(j - d - 1, t.get(j - d - 1).negate());
+                    }
+                    s.put(k, t.get(k));
                     sResP.put(k, sResP.get(j - 1).multiply(s.get(k)).divideExact(of(t.get(j - 1))));
                 }
-                for (int l = j - 2; j <= k + 1; l++) {
+                for (int l = j - 2; l <= k + 1; l++) {
                     sResP.put(l, ZERO);
-                    s.set(l, BigInteger.ZERO);
+                    s.put(l, BigInteger.ZERO);
                 }
                 sResP.put(
                         k - 1,
@@ -3178,12 +3252,16 @@ public class PolynomialProperties extends QBarTestProperties {
                                 .negate().divideExact(of(s.get(j).multiply(t.get(i - 1))))
                 );
             }
-            t.put(k - 1, sResP.get(k - 1).leading().orElse(BigInteger.ZERO));
+            Polynomial x = sResP.get(k - 1);
+            if (x != ZERO) {
+                t.put(k - 1, x.leading().get());
+            }
             i = j;
             j = k;
         }
-        for (int l = 0; l < j - 1; l++) {
+        for (int l = 0; l <= j - 2; l++) {
             sResP.put(l, ZERO);
+            s.put(l, BigInteger.ZERO);
         }
         return toList(map(sResP::get, rangeBy(p.degree(), -1, 0)));
     }
@@ -3195,9 +3273,10 @@ public class PolynomialProperties extends QBarTestProperties {
                 P.pairs(P.withScale(4).polynomialsAtLeast(0))
         );
         for (Pair<Polynomial, Polynomial> p : take(LIMIT, ps)) {
+            System.out.println(p);
             List<Polynomial> sequence = p.a.signedSubresultantSequence(p.b);
             sequence.forEach(Polynomial::validate);
-            //assertEquals(p, sequence, signedSubresultantSequence_alt(p.a, p.b));
+            //todo fix assertEquals(p, sequence, signedSubresultantSequence_alt(p.a, p.b));
         }
 
         Iterable<Pair<Polynomial, Polynomial>> psFail = filterInfinite(

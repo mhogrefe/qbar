@@ -1815,14 +1815,17 @@ public final class Polynomial implements
             throw new IllegalArgumentException("j cannot be greater than the degree of that. j: " + j + ", that: " +
                     that);
         }
+        Matrix shm = sylvesterHabichtMatrix(that, j);
+        Matrix left = shm.submatrix(toList(range(0, shm.height() - 1)), toList(range(0, shm.height() - 2)));
         List<Polynomial> ps = new ArrayList<>();
-        for (int i = thatDegree - j - 1; i >= 0; i--) {
+        for (int i = thatDegree - 1 - j; i >= 0; i--) {
             ps.add(multiplyByPowerOfX(i));
         }
         for (int i = 0; i < thisDegree - j; i++) {
             ps.add(that.multiplyByPowerOfX(i));
         }
-        return augmentedCoefficientMatrix(ps);
+        PolynomialMatrix lastColumn = PolynomialMatrix.fromColumns(Collections.singletonList(PolynomialVector.of(ps)));
+        return PolynomialMatrix.of(left).augment(lastColumn);
     }
 
     /**
@@ -1853,9 +1856,7 @@ public final class Polynomial implements
         if (j < 0) {
             throw new IllegalArgumentException("j cannot be negative. Invalid j: " + j);
         } else if (j <= thatDegree) {
-            PolynomialMatrix sylvesterHabichtPolynomialMatrix = sylvesterHabichtPolynomialMatrix(that, j);
-            List<Integer> range = toList(range(0, sylvesterHabichtPolynomialMatrix.height() - 1));
-            return sylvesterHabichtPolynomialMatrix.submatrix(range, range).determinant();
+            return sylvesterHabichtPolynomialMatrix(that, j).determinant();
         } else if (j < thisDegree - 1) {
             return ZERO;
         } else if (j == thisDegree - 1) {
