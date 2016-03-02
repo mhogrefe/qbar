@@ -3362,6 +3362,38 @@ public class PolynomialProperties extends QBarTestProperties {
             Polynomial p = t.a.signedSubresultant(t.b, t.c);
             p.validate();
             assertTrue(t, p.degree() <= t.c);
+            if (p != ZERO) {
+                int i = t.c + 1;
+                int j = p.degree();
+                if (j == 0 || t.a.signedSubresultant(t.b, j - 1) == ZERO) {
+                    assertEquals(
+                            t,
+                            p.constantFactor().b,
+                            t.a.gcd(t.b).constantFactor().b
+                    );
+                    for (int l = 1; l < j; l++) {
+                        assertEquals(t, t.a.signedSubresultant(t.b, l), ZERO);
+                    }
+                } else {
+                    Polynomial sResPJMinus1 = t.a.signedSubresultant(t.b, j - 1);
+                    int k = sResPJMinus1.degree();
+                    Polynomial sResPKMinus1 = k == 0 ? ZERO : t.a.signedSubresultant(t.b, k - 1);
+                    Polynomial sResPIMinus1 = t.a.signedSubresultant(t.b, i - 1);
+                    Polynomial left = sResPKMinus1.multiply(
+                            t.a.signedSubresultantCoefficient(t.b, j)
+                                    .multiply(sResPIMinus1.leading().orElse(BigInteger.ONE))
+                    );
+                    Polynomial right = sResPIMinus1.multiply(
+                            t.a.signedSubresultantCoefficient(t.b, k)
+                                    .multiply(sResPJMinus1.leading().orElse(BigInteger.ONE))
+                    ).remainderExact(sResPJMinus1).negate();
+                    assertEquals(
+                            t,
+                            left == ZERO ? ZERO : left.contentAndPrimitive().b,
+                            right == ZERO ? ZERO : right.contentAndPrimitive().b
+                    );
+                }
+            }
         }
 
         Iterable<Pair<Polynomial, Polynomial>> ps = filterInfinite(
