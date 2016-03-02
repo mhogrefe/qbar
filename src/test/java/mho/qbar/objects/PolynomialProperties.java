@@ -68,6 +68,8 @@ public class PolynomialProperties extends QBarTestProperties {
         compareImplementationsMultiply_Polynomial();
         propertiesMultiply_BigInteger();
         propertiesMultiply_int();
+        propertiesDivideExact_BigInteger();
+        propertiesDivideExact_int();
         propertiesShiftLeft();
         compareImplementationsShiftLeft();
         propertiesSum();
@@ -92,10 +94,14 @@ public class PolynomialProperties extends QBarTestProperties {
         compareImplementationsAbsolutePseudoDivide();
         propertiesAbsolutePseudoRemainder();
         compareImplementationsAbsolutePseudoRemainder();
+        propertiesEvenPseudoDivide();
+        compareImplementationsEvenPseudoDivide();
+        propertiesEvenPseudoRemainder();
+        compareImplementationsEvenPseudoRemainder();
         propertiesIsDivisibleBy();
         compareImplementationsIsDivisibleBy();
-        propertiesDivideExact();
-        compareImplementationsDivideExact();
+        propertiesDivideExact_Polynomial();
+        compareImplementationsDivideExact_Polynomial();
         propertiesRemainderExact();
         compareImplementationsRemainderExact();
         propertiesTrivialPseudoRemainderSequence();
@@ -938,6 +944,10 @@ public class PolynomialProperties extends QBarTestProperties {
             assertEquals(p, product, of(p.b).multiply(p.a));
         }
 
+        for (Pair<Polynomial, BigInteger> p : take(LIMIT, P.pairs(P.polynomials(), P.nonzeroBigIntegers()))) {
+            inverse(q -> q.multiply(p.b), (Polynomial q) -> q.divideExact(p.b), p.a);
+        }
+
         Iterable<Triple<Polynomial, BigInteger, BigInteger>> ts = P.triples(
                 P.polynomials(),
                 P.bigIntegers(),
@@ -990,6 +1000,10 @@ public class PolynomialProperties extends QBarTestProperties {
             assertEquals(p, product, of(BigInteger.valueOf(p.b)).multiply(p.a));
         }
 
+        for (Pair<Polynomial, Integer> p : take(LIMIT, P.pairs(P.polynomials(), P.nonzeroIntegers()))) {
+            inverse(q -> q.multiply(p.b), (Polynomial q) -> q.divideExact(p.b), p.a);
+        }
+
         Iterable<Triple<Polynomial, Integer, BigInteger>> ts = P.triples(
                 P.polynomials(),
                 P.integers(),
@@ -1029,6 +1043,66 @@ public class PolynomialProperties extends QBarTestProperties {
             Polynomial expression1 = t.a.add(t.b).multiply(t.c);
             Polynomial expression2 = t.a.multiply(t.c).add(t.b.multiply(t.c));
             assertEquals(t, expression1, expression2);
+        }
+    }
+
+    private void propertiesDivideExact_BigInteger() {
+        initialize("divideExact(BigInteger)");
+        Iterable<Pair<Polynomial, BigInteger>> ps = map(
+                p -> new Pair<>(p.a.multiply(p.b), p.b),
+                P.pairs(P.withScale(4).polynomials(), P.nonzeroBigIntegers())
+        );
+        for (Pair<Polynomial, BigInteger> p : take(LIMIT, ps)) {
+            Polynomial quotient = p.a.divideExact(p.b);
+            quotient.validate();
+            assertTrue(p, quotient.degree() == p.a.degree());
+            assertEquals(p, quotient, p.a.divideExact(of(p.b)));
+            inverse(q -> q.divideExact(p.b), (Polynomial q) -> q.multiply(p.b), p.a);
+        }
+
+        for (BigInteger i : take(LIMIT, P.nonzeroBigIntegers())) {
+            fixedPoint(j -> j.divideExact(i), ZERO);
+        }
+
+        for (Polynomial p : take(LIMIT, P.polynomials())) {
+            fixedPoint(q -> q.divideExact(BigInteger.ONE), p);
+        }
+
+        for (Polynomial p : take(LIMIT, P.polynomials())) {
+            try {
+                p.divideExact(BigInteger.ZERO);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void propertiesDivideExact_int() {
+        initialize("divideExact(int)");
+        Iterable<Pair<Polynomial, Integer>> ps = map(
+                p -> new Pair<>(p.a.multiply(p.b), p.b),
+                P.pairs(P.withScale(4).polynomials(), P.nonzeroIntegers())
+        );
+        for (Pair<Polynomial, Integer> p : take(LIMIT, ps)) {
+            Polynomial quotient = p.a.divideExact(p.b);
+            quotient.validate();
+            assertTrue(p, quotient.degree() == p.a.degree());
+            assertEquals(p, quotient, p.a.divideExact(of(BigInteger.valueOf(p.b))));
+            inverse(q -> q.divideExact(p.b), (Polynomial q) -> q.multiply(p.b), p.a);
+        }
+
+        for (int i : take(LIMIT, P.nonzeroIntegers())) {
+            fixedPoint(j -> j.divideExact(i), ZERO);
+        }
+
+        for (Polynomial p : take(LIMIT, P.polynomials())) {
+            fixedPoint(q -> q.divideExact(1), p);
+        }
+
+        for (Polynomial p : take(LIMIT, P.polynomials())) {
+            try {
+                p.divideExact(0);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
         }
     }
 
@@ -1664,14 +1738,14 @@ public class PolynomialProperties extends QBarTestProperties {
             assertEquals(p, quotient.multiply(p.b).add(remainder), p.a.multiply(factor));
             assertTrue(p, remainder.degree() < p.b.degree());
 
-            if (absolutePseudoQuotRem.b != ZERO) {
-                Pair<RationalPolynomial, RationalPolynomial> quotRem =
+            Pair<RationalPolynomial, RationalPolynomial> quotRem =
                         p.a.toRationalPolynomial().divide(p.b.toRationalPolynomial());
-                assertEquals(p, absolutePseudoQuotRem.a.constantFactor().b, quotRem.a.constantFactor().b);
+            assertEquals(p, absolutePseudoQuotRem.a.constantFactor().b, quotRem.a.constantFactor().b);
+            if (absolutePseudoQuotRem.b != ZERO) {
                 assertEquals(p, absolutePseudoQuotRem.b.constantFactor().b, quotRem.b.constantFactor().b);
-                assertEquals(p, absolutePseudoQuotRem.a.signum(), quotRem.a.signum());
-                assertEquals(p, absolutePseudoQuotRem.b.signum(), quotRem.b.signum());
             }
+            assertEquals(p, absolutePseudoQuotRem.a.signum(), quotRem.a.signum());
+            assertEquals(p, absolutePseudoQuotRem.b.signum(), quotRem.b.signum());
         }
 
         ps = filterInfinite(
@@ -1712,7 +1786,7 @@ public class PolynomialProperties extends QBarTestProperties {
         Map<String, Function<Pair<Polynomial, Polynomial>, Pair<Polynomial, Polynomial>>> functions =
                 new LinkedHashMap<>();
         functions.put("simplest", p -> absolutePseudoDivide_simplest(p.a, p.b));
-        functions.put("standard", p -> p.a.pseudoDivide(p.b));
+        functions.put("standard", p -> p.a.absolutePseudoDivide(p.b));
         Iterable<Pair<Polynomial, Polynomial>> ps = filterInfinite(
                 q -> q.a.degree() >= q.b.degree(),
                 P.pairs(P.polynomials(), P.polynomialsAtLeast(0))
@@ -1770,6 +1844,153 @@ public class PolynomialProperties extends QBarTestProperties {
         compareImplementations("absolutePseudoRemainder(Polynomial)", take(LIMIT, ps), functions);
     }
 
+    private static @NotNull Pair<Polynomial, Polynomial> evenPseudoDivide_simplest(
+            @NotNull Polynomial a,
+            @NotNull Polynomial b
+    ) {
+        if (b == ZERO) {
+            throw new ArithmeticException("that cannot be zero.");
+        }
+        int m = a.degree();
+        int n = b.degree();
+        if (m < n) {
+            throw new ArithmeticException("The degree of this must be greater than the degree of that. this: " +
+                    a + ", that: " + b);
+        }
+        int d = m - n + 1;
+        if ((d & 1) != 0) d++;
+        BigInteger factor = b.leading().get().pow(d);
+        Pair<RationalPolynomial, RationalPolynomial> quotRem =
+                a.multiply(factor).toRationalPolynomial().divide(b.toRationalPolynomial());
+        return new Pair<>(quotRem.a.toPolynomial(), quotRem.b.toPolynomial());
+    }
+
+    private void propertiesEvenPseudoDivide() {
+        initialize("evenPseudoDivide(Polynomial)");
+        Iterable<Pair<Polynomial, Polynomial>> ps = filterInfinite(
+                q -> q.a.degree() >= q.b.degree(),
+                P.pairs(P.polynomials(), P.polynomialsAtLeast(0))
+        );
+        for (Pair<Polynomial, Polynomial> p : take(LIMIT, ps)) {
+            Pair<Polynomial, Polynomial> evenPseudoQuotRem = p.a.evenPseudoDivide(p.b);
+            assertEquals(p, evenPseudoQuotRem, evenPseudoDivide_simplest(p.a, p.b));
+            Polynomial quotient = evenPseudoQuotRem.a;
+            assertNotNull(p, quotient);
+            Polynomial remainder = evenPseudoQuotRem.b;
+            assertNotNull(p, remainder);
+            quotient.validate();
+            remainder.validate();
+            int d = p.a.degree() - p.b.degree() + 1;
+            if ((d & 1) != 0) d++;
+            BigInteger factor = p.b.leading().get().pow(d);
+            assertEquals(p, quotient.multiply(p.b).add(remainder), p.a.multiply(factor));
+            assertTrue(p, remainder.degree() < p.b.degree());
+
+            Pair<RationalPolynomial, RationalPolynomial> quotRem =
+                        p.a.toRationalPolynomial().divide(p.b.toRationalPolynomial());
+            assertEquals(p, evenPseudoQuotRem.a.constantFactor().b, quotRem.a.constantFactor().b);
+            if (evenPseudoQuotRem.b != ZERO) {
+                assertEquals(p, evenPseudoQuotRem.b.constantFactor().b, quotRem.b.constantFactor().b);
+            }
+            assertEquals(p, evenPseudoQuotRem.a.signum(), quotRem.a.signum());
+            assertEquals(p, evenPseudoQuotRem.b.signum(), quotRem.b.signum());
+        }
+
+        ps = filterInfinite(
+                q -> q.a.degree() >= q.b.degree(),
+                P.pairs(P.positivePrimitivePolynomials(), P.positivePrimitivePolynomialsAtLeast(0))
+        );
+        for (Pair<Polynomial, Polynomial> p : take(LIMIT, ps)) {
+            Pair<Polynomial, Polynomial> evenPseudoQuotRem = p.a.evenPseudoDivide(p.b);
+            assertEquals(p, evenPseudoQuotRem.a.signum(), 1);
+        }
+
+        for (Pair<BigInteger, BigInteger> p : take(LIMIT, P.pairs(P.nonzeroBigIntegers()))) {
+            Pair<Polynomial, Polynomial> evenPseudoQuotRem = of(p.a).evenPseudoDivide(of(p.b));
+            assertEquals(p, evenPseudoQuotRem.b, ZERO);
+        }
+
+        Iterable<Pair<Polynomial, Polynomial>> psFail = filterInfinite(
+                q -> q.a.degree() < q.b.degree(),
+                P.pairs(P.polynomials(), P.polynomialsAtLeast(0))
+        );
+        for (Pair<Polynomial, Polynomial> p : take(LIMIT, psFail)) {
+            try {
+                p.a.evenPseudoDivide(p.b);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
+        }
+
+        for (Polynomial p : take(LIMIT, P.polynomials())) {
+            try {
+                p.evenPseudoDivide(ZERO);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void compareImplementationsEvenPseudoDivide() {
+        Map<String, Function<Pair<Polynomial, Polynomial>, Pair<Polynomial, Polynomial>>> functions =
+                new LinkedHashMap<>();
+        functions.put("simplest", p -> evenPseudoDivide_simplest(p.a, p.b));
+        functions.put("standard", p -> p.a.evenPseudoDivide(p.b));
+        Iterable<Pair<Polynomial, Polynomial>> ps = filterInfinite(
+                q -> q.a.degree() >= q.b.degree(),
+                P.pairs(P.polynomials(), P.polynomialsAtLeast(0))
+        );
+        compareImplementations("evenPseudoDivide(Polynomial)", take(LIMIT, ps), functions);
+    }
+
+    private static @NotNull Polynomial evenPseudoRemainder_simplest(@NotNull Polynomial a, @NotNull Polynomial b) {
+        return a.evenPseudoDivide(b).b;
+    }
+
+    private void propertiesEvenPseudoRemainder() {
+        initialize("evenPseudoRemainder(Polynomial)");
+        Iterable<Pair<Polynomial, Polynomial>> ps = filterInfinite(
+                q -> q.a.degree() >= q.b.degree(),
+                P.pairs(P.polynomials(), P.polynomialsAtLeast(0))
+        );
+        for (Pair<Polynomial, Polynomial> p : take(LIMIT, ps)) {
+            Polynomial evenPseudoRemainder = p.a.evenPseudoRemainder(p.b);
+            evenPseudoRemainder.validate();
+            assertEquals(p, evenPseudoRemainder, evenPseudoRemainder_simplest(p.a, p.b));
+        }
+
+        for (Pair<BigInteger, BigInteger> p : take(LIMIT, P.pairs(P.nonzeroBigIntegers()))) {
+            assertEquals(p, of(p.a).evenPseudoRemainder(of(p.b)), ZERO);
+        }
+
+        Iterable<Pair<Polynomial, Polynomial>> psFail = filterInfinite(
+                q -> q.a.degree() < q.b.degree(),
+                P.pairs(P.polynomials(), P.polynomialsAtLeast(0))
+        );
+        for (Pair<Polynomial, Polynomial> p : take(LIMIT, psFail)) {
+            try {
+                p.a.evenPseudoRemainder(p.b);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
+        }
+
+        for (Polynomial p : take(LIMIT, P.polynomials())) {
+            try {
+                p.evenPseudoRemainder(ZERO);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void compareImplementationsEvenPseudoRemainder() {
+        Map<String, Function<Pair<Polynomial, Polynomial>, Polynomial>> functions = new LinkedHashMap<>();
+        functions.put("simplest", p -> evenPseudoRemainder_simplest(p.a, p.b));
+        functions.put("standard", p -> p.a.evenPseudoRemainder(p.b));
+        Iterable<Pair<Polynomial, Polynomial>> ps = filterInfinite(
+                q -> q.a.degree() >= q.b.degree(),
+                P.pairs(P.polynomials(), P.polynomialsAtLeast(0))
+        );
+        compareImplementations("evenPseudoRemainder(Polynomial)", take(LIMIT, ps), functions);
+    }
+
     private static boolean isDivisibleBy_alt(@NotNull Polynomial a, @NotNull Polynomial b) {
         return a.toRationalPolynomial().divide(b.toRationalPolynomial()).b == RationalPolynomial.ZERO;
     }
@@ -1816,7 +2037,7 @@ public class PolynomialProperties extends QBarTestProperties {
         compareImplementations("isDivisibleBy(Polynomial)", take(LIMIT, ps), functions);
     }
 
-    private static @NotNull Polynomial divideExact_simplest(@NotNull Polynomial a, @NotNull Polynomial b) {
+    private static @NotNull Polynomial divideExact_Polynomial_simplest(@NotNull Polynomial a, @NotNull Polynomial b) {
         Pair<RationalPolynomial, RationalPolynomial> quotRem =
                 a.toRationalPolynomial().divide(b.toRationalPolynomial());
         if (quotRem.b != RationalPolynomial.ZERO || !quotRem.a.hasIntegralCoefficients()) {
@@ -1825,7 +2046,7 @@ public class PolynomialProperties extends QBarTestProperties {
         return quotRem.a.toPolynomial();
     }
 
-    private void propertiesDivideExact() {
+    private void propertiesDivideExact_Polynomial() {
         initialize("divideExact(Polynomial)");
         Iterable<Pair<Polynomial, Polynomial>> ps = map(
                 p -> new Pair<>(p.a.multiply(p.b), p.a),
@@ -1834,7 +2055,7 @@ public class PolynomialProperties extends QBarTestProperties {
         for (Pair<Polynomial, Polynomial> p : take(LIMIT, ps)) {
             Polynomial quotient = p.a.divideExact(p.b);
             quotient.validate();
-            assertEquals(p, divideExact_simplest(p.a, p.b), quotient);
+            assertEquals(p, divideExact_Polynomial_simplest(p.a, p.b), quotient);
             inverse(q -> q.divideExact(p.b), (Polynomial q) -> q.multiply(p.b), p.a);
         }
 
@@ -1867,9 +2088,9 @@ public class PolynomialProperties extends QBarTestProperties {
         }
     }
 
-    private void compareImplementationsDivideExact() {
+    private void compareImplementationsDivideExact_Polynomial() {
         Map<String, Function<Pair<Polynomial, Polynomial>, Polynomial>> functions = new LinkedHashMap<>();
-        functions.put("simplest", p -> divideExact_simplest(p.a, p.b));
+        functions.put("simplest", p -> divideExact_Polynomial_simplest(p.a, p.b));
         functions.put("standard", p -> p.a.divideExact(p.b));
         Iterable<Pair<Polynomial, Polynomial>> ps = map(
                 p -> new Pair<>(p.a.multiply(p.b), p.a),

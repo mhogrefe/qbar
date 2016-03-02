@@ -190,6 +190,26 @@ public class PolynomialDemos extends QBarDemos {
         }
     }
 
+    private void demoDivideExact_BigInteger() {
+        Iterable<Pair<Polynomial, BigInteger>> ps = map(
+                p -> new Pair<>(p.a.multiply(p.b), p.b),
+                P.pairs(P.withScale(4).polynomials(), P.nonzeroBigIntegers())
+        );
+        for (Pair<Polynomial, BigInteger> p : take(LIMIT, ps)) {
+            System.out.println("(" + p.a + ") / " + p.b + " = " + p.a.divideExact(p.b));
+        }
+    }
+
+    private void demoDivideExact_int() {
+        Iterable<Pair<Polynomial, Integer>> ps = map(
+                p -> new Pair<>(p.a.multiply(p.b), p.b),
+                P.pairs(P.withScale(4).polynomials(), P.nonzeroIntegers())
+        );
+        for (Pair<Polynomial, Integer> p : take(LIMIT, ps)) {
+            System.out.println("(" + p.a + ") / " + p.b + " = " + p.a.divideExact(p.b));
+        }
+    }
+
     private void demoShiftLeft() {
         Iterable<Pair<Polynomial, Integer>> ps = P.pairs(
                 P.withScale(4).polynomials(),
@@ -309,6 +329,26 @@ public class PolynomialDemos extends QBarDemos {
         }
     }
 
+    private void demoEvenPseudoDivide() {
+        Iterable<Pair<Polynomial, Polynomial>> ps = filterInfinite(
+                p -> p.a.degree() >= p.b.degree(),
+                P.pairs(P.withScale(4).polynomials(), P.withScale(4).polynomialsAtLeast(0))
+        );
+        for (Pair<Polynomial, Polynomial> p : take(LIMIT, ps)) {
+            System.out.println("evenPseudoDivide(" + p.a + ", " + p.b + ") = " + p.a.evenPseudoDivide(p.b));
+        }
+    }
+
+    private void demoEvenPseudoRemainder() {
+        Iterable<Pair<Polynomial, Polynomial>> ps = filterInfinite(
+                p -> p.a.degree() >= p.b.degree(),
+                P.pairs(P.withScale(4).polynomials(), P.withScale(4).polynomialsAtLeast(0))
+        );
+        for (Pair<Polynomial, Polynomial> p : take(LIMIT, ps)) {
+            System.out.println("evenPseudoRemainder(" + p.a + ", " + p.b + ") = " + p.a.evenPseudoRemainder(p.b));
+        }
+    }
+
     private void demoIsDivisibleBy_Polynomial() {
         Iterable<Pair<Polynomial, Polynomial>> ps = P.pairs(
                 P.withScale(4).polynomials(),
@@ -319,7 +359,7 @@ public class PolynomialDemos extends QBarDemos {
         }
     }
 
-    private void demoDivideExact() {
+    private void demoDivideExact_Polynomial() {
         Iterable<Pair<Polynomial, Polynomial>> ps = map(
                 p -> new Pair<>(p.a.multiply(p.b), p.a),
                 P.pairs(P.withScale(4).polynomialsAtLeast(1), P.withScale(4).polynomials())

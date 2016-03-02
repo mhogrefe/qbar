@@ -600,6 +600,60 @@ public final class Polynomial implements
     }
 
     /**
+     * Returns the {@code this} divided by {@code that}, assuming that {@code that} divides each coefficient of
+     * {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>{@code that} cannot be zero.</li>
+     *  <li>{@code that must divide each coefficient of {@code this}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * Length is 0 if {@code this} is 0, or deg({@code this}))+1 otherwise
+     *
+     * @param that the {@code BigInteger} {@code this} is divided by
+     * @return {@code this}/{@code that}
+     */
+    public @NotNull Polynomial divideExact(@NotNull BigInteger that) {
+        if (that.equals(BigInteger.ZERO)) {
+            throw new ArithmeticException("that cannot be zero.");
+        }
+        if (this == ZERO) return ZERO;
+        if (that.equals(BigInteger.ONE)) return this;
+        List<BigInteger> quotientCoefficients = toList(map(c -> c.divide(that), coefficients));
+        if (quotientCoefficients.size() == 1 && quotientCoefficients.get(0).equals(BigInteger.ONE)) return ONE;
+        return new Polynomial(quotientCoefficients);
+    }
+
+    /**
+     * Returns the {@code this} divided by {@code that}, assuming that {@code that} divides each coefficient of
+     * {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>{@code that} cannot be zero.</li>
+     *  <li>{@code that must divide each coefficient of {@code this}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * Length is 0 if {@code this} is 0, or deg({@code this}))+1 otherwise
+     *
+     * @param that the {@code int} {@code this} is divided by
+     * @return {@code this}/{@code that}
+     */
+    public @NotNull Polynomial divideExact(int that) {
+        if (that == 0) {
+            throw new ArithmeticException("that cannot be zero.");
+        }
+        if (this == ZERO) return ZERO;
+        if (that == 1) return this;
+        List<BigInteger> quotientCoefficients = toList(map(c -> c.divide(BigInteger.valueOf(that)), coefficients));
+        if (quotientCoefficients.size() == 1 && quotientCoefficients.get(0).equals(BigInteger.ONE)) return ONE;
+        return new Polynomial(quotientCoefficients);
+    }
+
+    /**
      * Returns the left shift of {@code this} by {@code bits}; {@code this}×2<sup>{@code bits}</sup>. Negative
      * {@code bits} are not allowed, even if {@code this} is divisible by a power of 2.
      *
@@ -816,7 +870,7 @@ public final class Polynomial implements
         if (content.equals(BigInteger.ONE)) {
             return new Pair<>(BigInteger.ONE, this);
         } else {
-            return new Pair<>(content, new Polynomial(toList(map(c -> c.divide(content), coefficients))));
+            return new Pair<>(content, divideExact(content));
         }
     }
 
@@ -845,7 +899,7 @@ public final class Polynomial implements
         if (factor.equals(BigInteger.ONE)) {
             return new Pair<>(BigInteger.ONE, this);
         } else {
-            return new Pair<>(factor, new Polynomial(toList(map(c -> c.divide(factor), coefficients))));
+            return new Pair<>(factor, divideExact(factor));
         }
     }
 
@@ -943,7 +997,7 @@ public final class Polynomial implements
      * Returns a variant of the pseudo-quotient and pseudo-remainder when {@code this} is divided by {@code that}. To
      * be more precise, the result is (q, r) such that
      * {@code this}×|leading({@code that})|<sup>deg({@code a})–deg({@code n})+1</sup>={@code that}×q+r and
-     * deg(r){@literal <}deg({@code that}).\
+     * deg(r){@literal <}deg({@code that}).
      *
      * <ul>
      *  <li>{@code this} may be any {@code RationalPolynomial}.</li>
@@ -1006,6 +1060,86 @@ public final class Polynomial implements
                     " this: " + this + ", that: " + that);
         }
         List<BigInteger> r = toList(multiply(that.leading().get().abs().pow(m - n + 1)));
+        for (int k = m - n; k >= 0; k--) {
+            BigInteger qCoefficient = r.get(n + k).divide(that.coefficient(n));
+            for (int j = n + k - 1; j >= k; j--) {
+                r.set(j, r.get(j).subtract(qCoefficient.multiply(that.coefficient(j - k))));
+            }
+        }
+        return of(toList(take(n, r)));
+    }
+
+    /**
+     * Returns a variant of the pseudo-quotient and pseudo-remainder when {@code this} is divided by {@code that}. To
+     * be more precise, the result is (q, r) such that
+     * {@code this}×leading({@code that})<sup>d</sup>={@code that}×q+r and deg(r){@literal <}deg({@code that}), where
+     * d is the smallest even integer greater than or equal to deg({@code a})–deg({@code n})+1.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalPolynomial}.</li>
+     *  <li>{@code that} cannot be 0.</li>
+     *  <li>The degree of {@code this} must be greater than or equal to the degree of {@code that}.</li>
+     *  <li>Neither element of the result is null.</li>
+     * </ul>
+     *
+     * @param that the {@code RationalPolynomial} {@code this} is divided by
+     * @return ({@code this}/{@code that}, {@code this}%{code that})
+     */
+    @SuppressWarnings("JavaDoc")
+    public @NotNull Pair<Polynomial, Polynomial> evenPseudoDivide(@NotNull Polynomial that) {
+        if (that == ZERO) {
+            throw new ArithmeticException("that cannot be zero.");
+        }
+        int m = degree();
+        int n = that.degree();
+        if (m < n) {
+            throw new ArithmeticException("The degree of this must be greater than or equal to the degree of that." +
+                    " this: " + this + ", that: " + that);
+        }
+        List<BigInteger> q = new ArrayList<>();
+        int d = m - n + 1;
+        if ((d & 1) != 0) d++;
+        List<BigInteger> r = toList(multiply(that.leading().get().pow(d)));
+        for (int k = m - n; k >= 0; k--) {
+            BigInteger qCoefficient = r.get(n + k).divide(that.coefficient(n));
+            q.add(qCoefficient);
+            for (int j = n + k - 1; j >= k; j--) {
+                r.set(j, r.get(j).subtract(qCoefficient.multiply(that.coefficient(j - k))));
+            }
+        }
+        return new Pair<>(of(reverse(q)), of(toList(take(n, r))));
+    }
+
+    /**
+     * Returns a variant of the pseudo-remainder when {@code this} is divided by {@code that}. To be more precise, the
+     * result is r such that there exists a q such that
+     * {@code this}×leading({@code that})<sup>d</sup>={@code that}×q+r and deg(r){@literal <}deg({@code that}), where
+     * d is the smallest even integer greater than or equal to deg({@code a})–deg({@code n})+1.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>{@code that} cannot be 0.</li>
+     *  <li>The degree of {@code this} must be greater than or equal to the degree of {@code that}.</li>
+     *  <li>Neither element of the result is null.</li>
+     * </ul>
+     *
+     * @param that the {@code RationalPolynomial} {@code this} is divided by
+     * @return {@code this}%{code that}
+     */
+    @SuppressWarnings("JavaDoc")
+    public @NotNull Polynomial evenPseudoRemainder(@NotNull Polynomial that) {
+        if (that == ZERO) {
+            throw new ArithmeticException("that cannot be zero.");
+        }
+        int m = degree();
+        int n = that.degree();
+        if (m < n) {
+            throw new ArithmeticException("The degree of this must be greater than or equal to the degree of that." +
+                    " this: " + this + ", that: " + that);
+        }
+        int d = m - n + 1;
+        if ((d & 1) != 0) d++;
+        List<BigInteger> r = toList(multiply(that.leading().get().pow(d)));
         for (int k = m - n; k >= 0; k--) {
             BigInteger qCoefficient = r.get(n + k).divide(that.coefficient(n));
             for (int j = n + k - 1; j >= k; j--) {

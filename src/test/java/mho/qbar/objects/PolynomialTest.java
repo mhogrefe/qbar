@@ -860,6 +860,66 @@ public class PolynomialTest {
         multiply_int_helper("-1", -1, "1");
     }
 
+    private static void divideExact_BigInteger_helper(@NotNull String p, @NotNull String i, @NotNull String output) {
+        aeq(read(p).get().divideExact(Readers.readBigInteger(i).get()), output);
+    }
+
+    private static void divideExact_BigInteger_fail_helper(@NotNull String p, @NotNull String i) {
+        try {
+            read(p).get().divideExact(Readers.readBigInteger(i).get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testDivideExact_BigInteger() {
+        divideExact_BigInteger_helper("0", "1", "0");
+        divideExact_BigInteger_helper("0", "-3", "0");
+        divideExact_BigInteger_helper("0", "4", "0");
+        divideExact_BigInteger_helper("1", "1", "1");
+        divideExact_BigInteger_helper("x", "1", "x");
+        divideExact_BigInteger_helper("-17", "1", "-17");
+        divideExact_BigInteger_helper("x^2-4*x+7", "1", "x^2-4*x+7");
+        divideExact_BigInteger_helper("-x^3-1", "1", "-x^3-1");
+        divideExact_BigInteger_helper("3*x^10", "1", "3*x^10");
+        divideExact_BigInteger_helper("3*x^10", "-3", "-x^10");
+        divideExact_BigInteger_helper("-1", "-1", "1");
+
+        divideExact_BigInteger_fail_helper("0", "0");
+        divideExact_BigInteger_fail_helper("1", "0");
+        divideExact_BigInteger_fail_helper("x", "0");
+    }
+
+    private static void divideExact_int_helper(@NotNull String p, int i, @NotNull String output) {
+        aeq(read(p).get().divideExact(i), output);
+    }
+
+    private static void divideExact_int_fail_helper(@NotNull String p, int i) {
+        try {
+            read(p).get().divideExact(i);
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testDivideExact_int() {
+        divideExact_int_helper("0", 1, "0");
+        divideExact_int_helper("0", -3, "0");
+        divideExact_int_helper("0", 4, "0");
+        divideExact_int_helper("1", 1, "1");
+        divideExact_int_helper("x", 1, "x");
+        divideExact_int_helper("-17", 1, "-17");
+        divideExact_int_helper("x^2-4*x+7", 1, "x^2-4*x+7");
+        divideExact_int_helper("-x^3-1", 1, "-x^3-1");
+        divideExact_int_helper("3*x^10", 1, "3*x^10");
+        divideExact_int_helper("3*x^10", -3, "-x^10");
+        divideExact_int_helper("-1", -1, "1");
+
+        divideExact_int_fail_helper("0", 0);
+        divideExact_int_fail_helper("1", 0);
+        divideExact_int_fail_helper("x", 0);
+    }
+
     private static void shiftLeft_helper(@NotNull String p, int bits, @NotNull String output) {
         aeq(read(p).get().shiftLeft(bits), output);
     }
@@ -1488,6 +1548,135 @@ public class PolynomialTest {
         absolutePseudoRemainder_fail_helper("x^2", "x^3");
     }
 
+    private static void evenPseudoDivide_helper(
+            @NotNull String a,
+            @NotNull String b,
+            @NotNull String pseudoQuotient,
+            @NotNull String pseudoRemainder
+    ) {
+        Pair<Polynomial, Polynomial> result = read(a).get().evenPseudoDivide(read(b).get());
+        aeq(result.a, pseudoQuotient);
+        aeq(result.b, pseudoRemainder);
+    }
+
+    private static void evenPseudoDivide_fail_helper(@NotNull String a, @NotNull String b) {
+        try {
+            read(a).get().evenPseudoDivide(read(b).get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testEvenPseudoDivide() {
+        evenPseudoDivide_helper("1", "1", "1", "0");
+        evenPseudoDivide_helper("1", "-17", "-17", "0");
+
+        evenPseudoDivide_helper("x", "1", "x", "0");
+        evenPseudoDivide_helper("x", "x", "1", "0");
+        evenPseudoDivide_helper("x", "-17", "-17*x", "0");
+
+        evenPseudoDivide_helper("-17", "1", "-17", "0");
+        evenPseudoDivide_helper("-17", "-17", "289", "0");
+
+        evenPseudoDivide_helper("x^2-4*x+7", "1", "x^2-4*x+7", "0");
+        evenPseudoDivide_helper("x^2-4*x+7", "x", "x-4", "7");
+        evenPseudoDivide_helper("x^2-4*x+7", "-17", "-4913*x^2+19652*x-34391", "0");
+        evenPseudoDivide_helper("x^2-4*x+7", "x^2-4*x+7", "1", "0");
+
+        evenPseudoDivide_helper("-x^3-1", "1", "-x^3-1", "0");
+        evenPseudoDivide_helper("-x^3-1", "x", "-x^2", "-1");
+        evenPseudoDivide_helper("-x^3-1", "-17", "4913*x^3+4913", "0");
+        evenPseudoDivide_helper("-x^3-1", "x^2-4*x+7", "-x-4", "-9*x+27");
+        evenPseudoDivide_helper("-x^3-1", "-x^3-1", "1", "0");
+
+        evenPseudoDivide_helper("3*x^10", "1", "3*x^10", "0");
+        evenPseudoDivide_helper("3*x^10", "x", "3*x^9", "0");
+        evenPseudoDivide_helper("3*x^10", "-17", "-102815688922899*x^10", "0");
+        evenPseudoDivide_helper(
+                "3*x^10",
+                "x^2-4*x+7",
+                "3*x^8+12*x^7+27*x^6+24*x^5-93*x^4-540*x^3-1509*x^2-2256*x+1539",
+                "21948*x-10773"
+        );
+        evenPseudoDivide_helper("3*x^10", "-x^3-1", "-3*x^7+3*x^4-3*x", "-3*x");
+        evenPseudoDivide_helper("3*x^10", "3*x^10", "9", "0");
+
+        evenPseudoDivide_helper(
+                "x^8+x^6-3*x^4-3*x^3+8*x^2+2*x-5",
+                "3*x^6+5*x^4-4*x^2-9*x+21",
+                "27*x^2-18",
+                "-45*x^4+9*x^2-27"
+        );
+        evenPseudoDivide_helper("x^3+x+1", "3*x^2+x+1", "3*x-1", "7*x+10");
+        evenPseudoDivide_helper("x+1", "x-1", "1", "2");
+        evenPseudoDivide_helper("x", "x+1", "1", "-1");
+        evenPseudoDivide_helper("2*x+1", "x", "2", "1");
+
+        evenPseudoDivide_fail_helper("x", "0");
+        evenPseudoDivide_fail_helper("0", "x");
+        evenPseudoDivide_fail_helper("x^2", "x^3");
+    }
+
+    private static void evenPseudoRemainder_helper(
+            @NotNull String a,
+            @NotNull String b,
+            @NotNull String output
+    ) {
+        aeq(read(a).get().evenPseudoRemainder(read(b).get()), output);
+    }
+
+    private static void evenPseudoRemainder_fail_helper(@NotNull String a, @NotNull String b) {
+        try {
+            read(a).get().evenPseudoRemainder(read(b).get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testEvenPseudoRemainder() {
+        evenPseudoRemainder_helper("1", "1", "0");
+        evenPseudoRemainder_helper("1", "-17", "0");
+
+        evenPseudoRemainder_helper("x", "1", "0");
+        evenPseudoRemainder_helper("x", "x", "0");
+        evenPseudoRemainder_helper("x", "-17", "0");
+
+        evenPseudoRemainder_helper("-17", "1", "0");
+        evenPseudoRemainder_helper("-17", "-17", "0");
+
+        evenPseudoRemainder_helper("x^2-4*x+7", "1", "0");
+        evenPseudoRemainder_helper("x^2-4*x+7", "x", "7");
+        evenPseudoRemainder_helper("x^2-4*x+7", "-17", "0");
+        evenPseudoRemainder_helper("x^2-4*x+7", "x^2-4*x+7", "0");
+
+        evenPseudoRemainder_helper("-x^3-1", "1", "0");
+        evenPseudoRemainder_helper("-x^3-1", "x", "-1");
+        evenPseudoRemainder_helper("-x^3-1", "-17", "0");
+        evenPseudoRemainder_helper("-x^3-1", "x^2-4*x+7", "-9*x+27");
+        evenPseudoRemainder_helper("-x^3-1", "-x^3-1", "0");
+
+        evenPseudoRemainder_helper("3*x^10", "1", "0");
+        evenPseudoRemainder_helper("3*x^10", "x", "0");
+        evenPseudoRemainder_helper("3*x^10", "-17", "0");
+        evenPseudoRemainder_helper("3*x^10", "x^2-4*x+7", "21948*x-10773");
+        evenPseudoRemainder_helper("3*x^10", "-x^3-1", "-3*x");
+        evenPseudoRemainder_helper("3*x^10", "3*x^10", "0");
+
+        evenPseudoRemainder_helper(
+                "x^8+x^6-3*x^4-3*x^3+8*x^2+2*x-5",
+                "3*x^6+5*x^4-4*x^2-9*x+21",
+                "-45*x^4+9*x^2-27"
+        );
+        evenPseudoRemainder_helper("x^3+x+1", "3*x^2+x+1", "7*x+10");
+        evenPseudoRemainder_helper("x+1", "x-1", "2");
+        evenPseudoRemainder_helper("x", "x+1", "-1");
+        evenPseudoRemainder_helper("2*x+1", "x", "1");
+
+        evenPseudoRemainder_fail_helper("x", "0");
+        evenPseudoRemainder_fail_helper("0", "x");
+        evenPseudoRemainder_fail_helper("x^2", "x^3");
+    }
+
     private static void divisibleBy_helper(@NotNull String a, @NotNull String b, boolean output) {
         aeq(read(a).get().isDivisibleBy(read(b).get()), output);
     }
@@ -1530,11 +1719,11 @@ public class PolynomialTest {
         divisibleBy_fail_helper("x^2", "0");
     }
 
-    private static void divideExact_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
+    private static void divideExact_Polynomial_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
         aeq(read(a).get().divideExact(read(b).get()), output);
     }
 
-    private static void divideExact_fail_helper(@NotNull String a, @NotNull String b) {
+    private static void divideExact_Polynomial_fail_helper(@NotNull String a, @NotNull String b) {
         try {
             read(a).get().divideExact(read(b).get());
             fail();
@@ -1542,23 +1731,23 @@ public class PolynomialTest {
     }
 
     @Test
-    public void testDivideExact() {
-        divideExact_helper("0", "1", "0");
-        divideExact_helper("0", "x^2", "0");
-        divideExact_helper("6", "3", "2");
-        divideExact_helper("6*x-3", "3", "2*x-1");
-        divideExact_helper("x^2-1", "x+1", "x-1");
-        divideExact_helper("x^2-1", "x-1", "x+1");
-        divideExact_helper("6*x^10", "-2*x^3", "-3*x^7");
-        divideExact_helper("-x^5+4*x^4-7*x^3-x^2+4*x-7", "x^2-4*x+7", "-x^3-1");
-        divideExact_helper("-x^5+4*x^4-7*x^3-x^2+4*x-7", "-x^3-1", "x^2-4*x+7");
+    public void testDivideExact_Polynomial() {
+        divideExact_Polynomial_helper("0", "1", "0");
+        divideExact_Polynomial_helper("0", "x^2", "0");
+        divideExact_Polynomial_helper("6", "3", "2");
+        divideExact_Polynomial_helper("6*x-3", "3", "2*x-1");
+        divideExact_Polynomial_helper("x^2-1", "x+1", "x-1");
+        divideExact_Polynomial_helper("x^2-1", "x-1", "x+1");
+        divideExact_Polynomial_helper("6*x^10", "-2*x^3", "-3*x^7");
+        divideExact_Polynomial_helper("-x^5+4*x^4-7*x^3-x^2+4*x-7", "x^2-4*x+7", "-x^3-1");
+        divideExact_Polynomial_helper("-x^5+4*x^4-7*x^3-x^2+4*x-7", "-x^3-1", "x^2-4*x+7");
 
-        divideExact_fail_helper("0", "0");
-        divideExact_fail_helper("1", "0");
-        divideExact_fail_helper("2", "3");
-        divideExact_fail_helper("6*x-3", "4");
-        divideExact_fail_helper("x^5", "x+1");
-        divideExact_fail_helper("x^2+2*x+1", "x-1");
+        divideExact_Polynomial_fail_helper("0", "0");
+        divideExact_Polynomial_fail_helper("1", "0");
+        divideExact_Polynomial_fail_helper("2", "3");
+        divideExact_Polynomial_fail_helper("6*x-3", "4");
+        divideExact_Polynomial_fail_helper("x^5", "x+1");
+        divideExact_Polynomial_fail_helper("x^2+2*x+1", "x-1");
     }
 
     private static void remainderExact_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
