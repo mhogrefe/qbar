@@ -3420,79 +3420,16 @@ public class PolynomialProperties extends QBarTestProperties {
             @NotNull Polynomial b
     ) {
         if (a == ZERO) {
-            throw new ArithmeticException("p cannot be zero.");
+            throw new ArithmeticException("a cannot be zero.");
         }
         if (b == ZERO) {
-            throw new ArithmeticException("that cannot be zero.");
+            throw new ArithmeticException("b cannot be zero.");
         }
-        int p = a.degree();
-        int q = b.degree();
-        if (p <= q) {
-            throw new IllegalArgumentException();
+        List<Polynomial> sequence = new ArrayList<>();
+        for (int i = a.degree(); i >= 0; i--) {
+            sequence.add(a.signedSubresultant(b, i));
         }
-        List<Polynomial> sResP = toList(replicate(p + 2, ZERO));
-        sResP.set(p + 1, a);
-        Map<Integer, BigInteger> s = new HashMap<>();
-        Map<Integer, BigInteger> t = new HashMap<>();
-        s.put(p, BigInteger.ONE);
-        t.put(p, BigInteger.ONE);
-        sResP.set(p, b);
-        BigInteger bLeading = b.leading().get();
-        t.put(p - 1, bLeading);
-        sResP.set(q + 1, b.multiply(bLeading.pow(p - q - 1)));
-        boolean rps = MathUtils.reversePermutationSign(p - q);
-        if (!rps) {
-            sResP.set(q + 1, sResP.get(q + 1).negate());
-        }
-        s.put(q, bLeading.pow(p - q));
-        if (!rps) {
-            s.put(q, s.get(q).negate());
-        }
-        for (int l = q + 1; l < p - 1; l++) {
-            sResP.set(l + 1, ZERO);
-            s.put(l, BigInteger.ZERO);
-        }
-        int i = p + 1;
-        int j = p;
-        while (sResP.get(j) != ZERO) {
-            int k = sResP.get(j).degree();
-            if (k == j - 1) {
-                s.put(j - 1, t.get(j - 1));
-                sResP.set(
-                        k,
-                        sResP.get(i).multiply(s.get(j - 1).pow(2)).remainderExact(sResP.get(j)).negate()
-                                .divideExact(s.get(j).multiply(t.get(i - 1)))
-                );
-            } else if (k < j - 1) {
-                s.put(j - 1, BigInteger.ZERO);
-                for (int d = 1; d < j - k; d++) {
-                    t.put(j - d - 1, t.get(j - 1).multiply(t.get(j - d)).divide(s.get(j)));
-                    if ((d & 1) != 0) {
-                        t.put(j - d - 1, t.get(j - d - 1).negate());
-                    }
-                }
-                s.put(k, t.get(k));
-                sResP.set(k + 1, sResP.get(j).multiply(s.get(k)).divideExact(of(t.get(j - 1))));
-                for (int l = j - 2; l < k; l++) {
-                    sResP.set(l + 1, ZERO);
-                    s.put(l, BigInteger.ZERO);
-                }
-                sResP.set(
-                        k,
-                        sResP.get(i).multiply(t.get(j - 1).multiply(s.get(k))).remainderExact(sResP.get(j))
-                                .negate().divideExact(s.get(j).multiply(t.get(i - 1)))
-                );
-            }
-            Polynomial x = sResP.get(k);
-            t.put(k - 1, x.leading().orElse(BigInteger.ONE));
-            i = j;
-            j = k;
-        }
-        for (int l = 0; l < j - 1; l++) {
-            sResP.set(l + 1, ZERO);
-            s.put(l, BigInteger.ZERO);
-        }
-        return reverse(tail(sResP));
+        return sequence;
     }
 
     private void propertiesSignedSubresultantSequence() {
