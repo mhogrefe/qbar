@@ -134,6 +134,7 @@ public class PolynomialProperties extends QBarTestProperties {
         compareImplementationsSylvesterHabichtPolynomialMatrix();
         propertiesSignedSubresultant();
         propertiesSignedSubresultantSequence();
+        compareImplementationsSignedSubresultantSequence();
         propertiesReflect();
         propertiesTranslate();
         propertiesSpecialTranslate();
@@ -2975,6 +2976,11 @@ public class PolynomialProperties extends QBarTestProperties {
                     t.a.signedSubresultantCoefficient(t.b, t.c),
                     t.a.signedSubresultant(t.b, t.c).coefficient(t.c)
             );
+            assertEquals(
+                    t,
+                    t.a.signedSubresultant(t.b, t.c).degree() == t.c,
+                    !t.a.signedSubresultantCoefficient(t.b, t.c).equals(BigInteger.ZERO)
+            );
         }
 
         Iterable<Triple<Polynomial, Polynomial, Integer>> tsFail = map(p -> new Triple<>(
@@ -3232,17 +3238,17 @@ public class PolynomialProperties extends QBarTestProperties {
                         sResP.get(i - 1).multiply(s.get(j - 1).pow(2)).remainderExact(sResP.get(j - 1)).negate()
                                 .divideExact(of(s.get(j).multiply(t.get(i - 1))))
                 );
-            } else {
+            } else if (k < j - 1) {
                 s.put(j - 1, BigInteger.ZERO);
                 for (int d = 1; d <= j - k - 1; d++) {
                     t.put(j - d - 1, t.get(j - 1).multiply(t.get(j - d)).divide(s.get(j)));
                     if ((d & 1) != 0) {
                         t.put(j - d - 1, t.get(j - d - 1).negate());
                     }
-                    s.put(k, t.get(k));
-                    sResP.put(k, sResP.get(j - 1).multiply(s.get(k)).divideExact(of(t.get(j - 1))));
                 }
-                for (int l = j - 2; l <= k + 1; l++) {
+                s.put(k, t.get(k));
+                sResP.put(k, sResP.get(j - 1).multiply(s.get(k)).divideExact(of(t.get(j - 1))));
+                for (int l = j - 2; l <= k - 1; l++) {
                     sResP.put(l, ZERO);
                     s.put(l, BigInteger.ZERO);
                 }
@@ -3253,9 +3259,7 @@ public class PolynomialProperties extends QBarTestProperties {
                 );
             }
             Polynomial x = sResP.get(k - 1);
-            if (x != ZERO) {
-                t.put(k - 1, x.leading().get());
-            }
+            t.put(k - 1, x.leading().orElse(BigInteger.ONE));
             i = j;
             j = k;
         }
@@ -3263,7 +3267,7 @@ public class PolynomialProperties extends QBarTestProperties {
             sResP.put(l, ZERO);
             s.put(l, BigInteger.ZERO);
         }
-        return toList(map(sResP::get, rangeBy(p.degree(), -1, 0)));
+        return toList(map(index -> sResP.containsKey(index) ? sResP.get(index) : ZERO, rangeBy(p.degree(), -1, 0)));
     }
 
     private void propertiesSignedSubresultantSequence() {
@@ -3273,10 +3277,9 @@ public class PolynomialProperties extends QBarTestProperties {
                 P.pairs(P.withScale(4).polynomialsAtLeast(0))
         );
         for (Pair<Polynomial, Polynomial> p : take(LIMIT, ps)) {
-            System.out.println(p);
             List<Polynomial> sequence = p.a.signedSubresultantSequence(p.b);
             sequence.forEach(Polynomial::validate);
-            //todo fix assertEquals(p, sequence, signedSubresultantSequence_alt(p.a, p.b));
+            assertEquals(p, sequence, signedSubresultantSequence_alt(p.a, p.b));
         }
 
         Iterable<Pair<Polynomial, Polynomial>> psFail = filterInfinite(
@@ -3300,6 +3303,17 @@ public class PolynomialProperties extends QBarTestProperties {
                 fail(p);
             } catch (ArithmeticException ignored) {}
         }
+    }
+
+    private void compareImplementationsSignedSubresultantSequence() {
+        Map<String, Function<Pair<Polynomial, Polynomial>, List<Polynomial>>> functions = new LinkedHashMap<>();
+        functions.put("alt", p -> signedSubresultantSequence_alt(p.a, p.b));
+        functions.put("standard", p -> p.a.signedSubresultantSequence(p.b));
+        Iterable<Pair<Polynomial, Polynomial>> ps = filterInfinite(
+                q -> q.a.degree() > q.b.degree(),
+                P.pairs(P.withScale(4).polynomialsAtLeast(0))
+        );
+        compareImplementations("signedSubresultantSequence(Polynomial)", take(SMALL_LIMIT, ps), functions);
     }
 
     private void propertiesReflect() {

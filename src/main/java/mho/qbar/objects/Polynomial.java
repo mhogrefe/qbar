@@ -1869,6 +1869,19 @@ public final class Polynomial implements
         }
     }
 
+    /**
+     * Returns the signed subresultant sequence of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} cannot be zero.</li>
+     *  <li>{@code that} cannot be zero.</li>
+     *  <li>{@code this} must have a degree greater than {@code that}.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param that a {@code Polynomial}
+     * @return sResP<sub>deg({@code this})</sub>, ..., sResP<sub>0</sub>
+     */
     public @NotNull List<Polynomial> signedSubresultantSequence(@NotNull Polynomial that) {
         if (this == ZERO) {
             throw new ArithmeticException("this cannot be zero.");
