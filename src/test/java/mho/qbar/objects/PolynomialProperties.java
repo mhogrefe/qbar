@@ -3416,79 +3416,83 @@ public class PolynomialProperties extends QBarTestProperties {
     }
 
     private static @NotNull List<Polynomial> signedSubresultantSequence_alt(
-            @NotNull Polynomial p,
-            @NotNull Polynomial q
+            @NotNull Polynomial a,
+            @NotNull Polynomial b
     ) {
-        if (p == ZERO) {
+        if (a == ZERO) {
             throw new ArithmeticException("p cannot be zero.");
         }
-        if (q == ZERO) {
+        if (b == ZERO) {
             throw new ArithmeticException("that cannot be zero.");
         }
-        if (p.degree() <= q.degree()) {
+        int p = a.degree();
+        int q = b.degree();
+        if (p <= q) {
             throw new IllegalArgumentException();
         }
-        Map<Integer, Polynomial> sResP = new HashMap<>();
-        sResP.put(p.degree(), p);
+        List<Polynomial> sResP = toList(replicate(p + 2, ZERO));
+        sResP.set(p + 1, a);
         Map<Integer, BigInteger> s = new HashMap<>();
         Map<Integer, BigInteger> t = new HashMap<>();
-        s.put(p.degree(), BigInteger.ONE);
-        t.put(p.degree(), BigInteger.ONE);
-        sResP.put(p.degree() - 1, q);
-        t.put(p.degree() - 1, q.coefficient(q.degree()));
-        sResP.put(q.degree(), q.multiply(q.coefficient(q.degree()).pow(p.degree() - q.degree() - 1)));
-        if (!MathUtils.reversePermutationSign(p.degree() - q.degree())) {
-            sResP.put(q.degree(), sResP.get(q.degree()).negate());
+        s.put(p, BigInteger.ONE);
+        t.put(p, BigInteger.ONE);
+        sResP.set(p, b);
+        BigInteger bLeading = b.leading().get();
+        t.put(p - 1, bLeading);
+        sResP.set(q + 1, b.multiply(bLeading.pow(p - q - 1)));
+        boolean rps = MathUtils.reversePermutationSign(p - q);
+        if (!rps) {
+            sResP.set(q + 1, sResP.get(q + 1).negate());
         }
-        s.put(q.degree(), q.coefficient(q.degree()).pow(p.degree() - q.degree()));
-        if (!MathUtils.reversePermutationSign(p.degree() - q.degree())) {
-            s.put(q.degree(), s.get(q.degree()).negate());
+        s.put(q, bLeading.pow(p - q));
+        if (!rps) {
+            s.put(q, s.get(q).negate());
         }
-        for (int l = q.degree() + 1; l <= p.degree() - 2; l++) {
-            sResP.put(l, ZERO);
+        for (int l = q + 1; l < p - 1; l++) {
+            sResP.set(l + 1, ZERO);
             s.put(l, BigInteger.ZERO);
         }
-        int i = p.degree() + 1;
-        int j = p.degree();
-        while (sResP.get(j - 1) != ZERO) {
-            int k = sResP.get(j - 1).degree();
+        int i = p + 1;
+        int j = p;
+        while (sResP.get(j) != ZERO) {
+            int k = sResP.get(j).degree();
             if (k == j - 1) {
                 s.put(j - 1, t.get(j - 1));
-                sResP.put(
-                        k - 1,
-                        sResP.get(i - 1).multiply(s.get(j - 1).pow(2)).remainderExact(sResP.get(j - 1)).negate()
-                                .divideExact(of(s.get(j).multiply(t.get(i - 1))))
+                sResP.set(
+                        k,
+                        sResP.get(i).multiply(s.get(j - 1).pow(2)).remainderExact(sResP.get(j)).negate()
+                                .divideExact(s.get(j).multiply(t.get(i - 1)))
                 );
             } else if (k < j - 1) {
                 s.put(j - 1, BigInteger.ZERO);
-                for (int d = 1; d <= j - k - 1; d++) {
+                for (int d = 1; d < j - k; d++) {
                     t.put(j - d - 1, t.get(j - 1).multiply(t.get(j - d)).divide(s.get(j)));
                     if ((d & 1) != 0) {
                         t.put(j - d - 1, t.get(j - d - 1).negate());
                     }
                 }
                 s.put(k, t.get(k));
-                sResP.put(k, sResP.get(j - 1).multiply(s.get(k)).divideExact(of(t.get(j - 1))));
-                for (int l = j - 2; l <= k - 1; l++) {
-                    sResP.put(l, ZERO);
+                sResP.set(k + 1, sResP.get(j).multiply(s.get(k)).divideExact(of(t.get(j - 1))));
+                for (int l = j - 2; l < k; l++) {
+                    sResP.set(l + 1, ZERO);
                     s.put(l, BigInteger.ZERO);
                 }
-                sResP.put(
-                        k - 1,
-                        sResP.get(i - 1).multiply(t.get(j - 1).multiply(s.get(k))).remainderExact(sResP.get(j - 1))
-                                .negate().divideExact(of(s.get(j).multiply(t.get(i - 1))))
+                sResP.set(
+                        k,
+                        sResP.get(i).multiply(t.get(j - 1).multiply(s.get(k))).remainderExact(sResP.get(j))
+                                .negate().divideExact(s.get(j).multiply(t.get(i - 1)))
                 );
             }
-            Polynomial x = sResP.get(k - 1);
+            Polynomial x = sResP.get(k);
             t.put(k - 1, x.leading().orElse(BigInteger.ONE));
             i = j;
             j = k;
         }
-        for (int l = 0; l <= j - 2; l++) {
-            sResP.put(l, ZERO);
+        for (int l = 0; l < j - 1; l++) {
+            sResP.set(l + 1, ZERO);
             s.put(l, BigInteger.ZERO);
         }
-        return toList(map(index -> sResP.containsKey(index) ? sResP.get(index) : ZERO, rangeBy(p.degree(), -1, 0)));
+        return reverse(tail(sResP));
     }
 
     private void propertiesSignedSubresultantSequence() {
