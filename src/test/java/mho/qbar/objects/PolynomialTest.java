@@ -3242,6 +3242,120 @@ public class PolynomialTest {
         signedSubresultantSequence_fail_helper("x^2", "x^2");
     }
 
+    private static void primitiveSignedPseudoRemainderSequence_helper(
+            @NotNull String a,
+            @NotNull String b,
+            @NotNull String output
+    ) {
+        aeq(read(a).get().primitiveSignedPseudoRemainderSequence(read(b).get()), output);
+    }
+
+    private static void primitiveSignedPseudoRemainderSequence_fail_helper(@NotNull String a, @NotNull String b) {
+        try {
+            read(a).get().primitiveSignedPseudoRemainderSequence(read(b).get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testPrimitiveSignedPseudoRemainderSequence() {
+        primitiveSignedPseudoRemainderSequence_helper("1", "0", "[1]");
+        primitiveSignedPseudoRemainderSequence_helper("1", "1", "[1, 1]");
+        primitiveSignedPseudoRemainderSequence_helper("1", "-17", "[1, -1]");
+
+        primitiveSignedPseudoRemainderSequence_helper("x", "0", "[x]");
+        primitiveSignedPseudoRemainderSequence_helper("x", "1", "[x, 1]");
+        primitiveSignedPseudoRemainderSequence_helper("x", "x", "[x, x]");
+        primitiveSignedPseudoRemainderSequence_helper("x", "-17", "[x, -1]");
+
+        primitiveSignedPseudoRemainderSequence_helper("-17", "0", "[-1]");
+        primitiveSignedPseudoRemainderSequence_helper("-17", "1", "[-1, 1]");
+        primitiveSignedPseudoRemainderSequence_helper("-17", "-17", "[-1, -1]");
+
+        primitiveSignedPseudoRemainderSequence_helper("x^2-4*x+7", "0", "[x^2-4*x+7]");
+        primitiveSignedPseudoRemainderSequence_helper("x^2-4*x+7", "1", "[x^2-4*x+7, 1]");
+        primitiveSignedPseudoRemainderSequence_helper("x^2-4*x+7", "x", "[x^2-4*x+7, x, -1]");
+        primitiveSignedPseudoRemainderSequence_helper("x^2-4*x+7", "-17", "[x^2-4*x+7, -1]");
+        primitiveSignedPseudoRemainderSequence_helper("x^2-4*x+7", "x^2-4*x+7", "[x^2-4*x+7, x^2-4*x+7]");
+
+        primitiveSignedPseudoRemainderSequence_helper("-x^3-1", "0", "[-x^3-1]");
+        primitiveSignedPseudoRemainderSequence_helper("-x^3-1", "1", "[-x^3-1, 1]");
+        primitiveSignedPseudoRemainderSequence_helper("-x^3-1", "x", "[-x^3-1, x, 1]");
+        primitiveSignedPseudoRemainderSequence_helper("-x^3-1", "-17", "[-x^3-1, -1]");
+        primitiveSignedPseudoRemainderSequence_helper("-x^3-1", "x^2-4*x+7", "[-x^3-1, x^2-4*x+7, x-3, -1]");
+        primitiveSignedPseudoRemainderSequence_helper("-x^3-1", "-x^3-1", "[-x^3-1, -x^3-1]");
+
+        primitiveSignedPseudoRemainderSequence_helper("3*x^10", "0", "[x^10]");
+        primitiveSignedPseudoRemainderSequence_helper("3*x^10", "1", "[x^10, 1]");
+        primitiveSignedPseudoRemainderSequence_helper("3*x^10", "x", "[x^10, x]");
+        primitiveSignedPseudoRemainderSequence_helper("3*x^10", "-17", "[x^10, -1]");
+        primitiveSignedPseudoRemainderSequence_helper("3*x^10", "x^2-4*x+7", "[x^10, x^2-4*x+7, -7316*x+3591, -1]");
+        primitiveSignedPseudoRemainderSequence_helper("3*x^10", "-x^3-1", "[x^10, -x^3-1, x, 1]");
+        primitiveSignedPseudoRemainderSequence_helper("3*x^10", "3*x^10", "[x^10, x^10]");
+
+        primitiveSignedPseudoRemainderSequence_helper("x^8+x^6-3*x^4-3*x^3+8*x^2+2*x-5", "3*x^6+5*x^4-4*x^2-9*x+21",
+                "[x^8+x^6-3*x^4-3*x^3+8*x^2+2*x-5, 3*x^6+5*x^4-4*x^2-9*x+21, 5*x^4-x^2+3, 13*x^2+25*x-49," +
+                " 4663*x-6150, -1]");
+        primitiveSignedPseudoRemainderSequence_helper("x^11-x^10+1", "11*x^10-10*x^9",
+                "[x^11-x^10+1, 11*x^10-10*x^9, 10*x^9-121, -11*x+10, 1]");
+        primitiveSignedPseudoRemainderSequence_helper("x^2", "1", "[x^2, 1]");
+
+        primitiveSignedPseudoRemainderSequence_fail_helper("0", "0");
+        primitiveSignedPseudoRemainderSequence_fail_helper("0", "x");
+        primitiveSignedPseudoRemainderSequence_fail_helper("x^2", "x^3");
+    }
+
+    private static void abbreviatedSignedSubresultantSequence_helper(
+            @NotNull String a,
+            @NotNull String b,
+            @NotNull String output
+    ) {
+        aeq(read(a).get().abbreviatedSignedSubresultantSequence(read(b).get()), output);
+    }
+
+    private static void abbreviatedSignedSubresultantSequence_fail_helper(@NotNull String a, @NotNull String b) {
+        try {
+            read(a).get().abbreviatedSignedSubresultantSequence(read(b).get());
+            fail();
+        } catch (ArithmeticException | IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testAbbreviatedSignedSubresultantSequence() {
+        abbreviatedSignedSubresultantSequence_helper("x", "1", "[x, 1]");
+        abbreviatedSignedSubresultantSequence_helper("x", "-17", "[x, -17]");
+
+        abbreviatedSignedSubresultantSequence_helper("x^2-4*x+7", "1", "[x^2-4*x+7]");
+        abbreviatedSignedSubresultantSequence_helper("x^2-4*x+7", "x", "[x^2-4*x+7, x, -7]");
+        abbreviatedSignedSubresultantSequence_helper("x^2-4*x+7", "-17", "[x^2-4*x+7, -17]");
+
+        abbreviatedSignedSubresultantSequence_helper("-x^3-1", "1", "[-x^3-1]");
+        abbreviatedSignedSubresultantSequence_helper("-x^3-1", "x", "[-x^3-1, -1]");
+        abbreviatedSignedSubresultantSequence_helper("-x^3-1", "-17", "[-x^3-1]");
+        abbreviatedSignedSubresultantSequence_helper("-x^3-1", "x^2-4*x+7", "[-x^3-1, x^2-4*x+7, 9*x-27, -324]");
+
+        abbreviatedSignedSubresultantSequence_helper("3*x^10", "1", "[3*x^10]");
+        abbreviatedSignedSubresultantSequence_helper("3*x^10", "x", "[3*x^10, x]");
+        abbreviatedSignedSubresultantSequence_helper("3*x^10", "-17", "[3*x^10, -17]");
+        abbreviatedSignedSubresultantSequence_helper("3*x^10", "x^2-4*x+7",
+                "[3*x^10, x^2-4*x+7, -21948*x+10773, -2542277241]");
+        abbreviatedSignedSubresultantSequence_helper("3*x^10", "-x^3-1", "[3*x^10, -3*x, -27]");
+
+        abbreviatedSignedSubresultantSequence_helper("x^8+x^6-3*x^4-3*x^3+8*x^2+2*x-5", "3*x^6+5*x^4-4*x^2-9*x+21",
+                "[x^8+x^6-3*x^4-3*x^3+8*x^2+2*x-5, -9326*x+12300, 260708]");
+
+        abbreviatedSignedSubresultantSequence_helper("x^11-x^10+1", "11*x^10-10*x^9",
+                "[x^11-x^10+1, 11*x^10-10*x^9, 10*x^9-121, -275311670611]");
+
+        abbreviatedSignedSubresultantSequence_helper("x^2", "1", "[x^2]");
+
+        abbreviatedSignedSubresultantSequence_fail_helper("0", "0");
+        abbreviatedSignedSubresultantSequence_fail_helper("0", "x");
+        abbreviatedSignedSubresultantSequence_fail_helper("x", "0");
+        abbreviatedSignedSubresultantSequence_fail_helper("x^2", "x^3");
+        abbreviatedSignedSubresultantSequence_fail_helper("x^2", "x^2");
+    }
+
     private static void reflect_helper(@NotNull String input, @NotNull String output) {
         aeq(read(input).get().reflect(), output);
     }

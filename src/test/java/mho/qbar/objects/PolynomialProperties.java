@@ -141,6 +141,10 @@ public class PolynomialProperties extends QBarTestProperties {
         propertiesSignedSubresultant();
         propertiesSignedSubresultantSequence();
         compareImplementationsSignedSubresultantSequence();
+        propertiesPrimitiveSignedPseudoRemainderSequence();
+        propertiesAbbreviatedSignedSubresultantSequence();
+        propertiesRootCount();
+        compareImplementationsRootCount();
         propertiesReflect();
         propertiesTranslate();
         propertiesSpecialTranslate();
@@ -2186,6 +2190,17 @@ public class PolynomialProperties extends QBarTestProperties {
         for (Polynomial p : take(LIMIT, P.polynomialsAtLeast(0))) {
             assertEquals(p, p.trivialPseudoRemainderSequence(ZERO), Collections.singletonList(p));
         }
+
+        Iterable<Pair<Polynomial, Polynomial>> psFail = filterInfinite(
+                q -> q.a.degree() < q.b.degree(),
+                P.pairs(P.polynomials())
+        );
+        for (Pair<Polynomial, Polynomial> p : take(LIMIT, psFail)) {
+            try {
+                p.a.trivialPseudoRemainderSequence(p.b);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
+        }
     }
 
     private void propertiesPrimitivePseudoRemainderSequence() {
@@ -2210,6 +2225,21 @@ public class PolynomialProperties extends QBarTestProperties {
                     Collections.singletonList(p.contentAndPrimitive().b)
             );
         }
+
+        for (Polynomial p : take(LIMIT, P.polynomialsAtLeast(0))) {
+            assertEquals(p, p.trivialPseudoRemainderSequence(ZERO), Collections.singletonList(p));
+        }
+
+        Iterable<Pair<Polynomial, Polynomial>> psFail = filterInfinite(
+                q -> q.a.degree() < q.b.degree(),
+                P.pairs(P.polynomials())
+        );
+        for (Pair<Polynomial, Polynomial> p : take(LIMIT, psFail)) {
+            try {
+                p.a.primitivePseudoRemainderSequence(p.b);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
+        }
     }
 
     private void propertiesSubresultantSequence() {
@@ -2233,6 +2263,21 @@ public class PolynomialProperties extends QBarTestProperties {
 
         for (Polynomial p : take(LIMIT, P.polynomialsAtLeast(0))) {
             assertEquals(p, p.subresultantSequence(ZERO), Collections.singletonList(p));
+        }
+
+        for (Polynomial p : take(LIMIT, P.polynomialsAtLeast(0))) {
+            assertEquals(p, p.trivialPseudoRemainderSequence(ZERO), Collections.singletonList(p));
+        }
+
+        Iterable<Pair<Polynomial, Polynomial>> psFail = filterInfinite(
+                q -> q.a.degree() < q.b.degree(),
+                P.pairs(P.polynomials())
+        );
+        for (Pair<Polynomial, Polynomial> p : take(LIMIT, psFail)) {
+            try {
+                p.a.subresultantSequence(p.b);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
         }
     }
 
@@ -3493,7 +3538,7 @@ public class PolynomialProperties extends QBarTestProperties {
                 fail(p);
             } catch (ArithmeticException ignored) {}
             try {
-                ZERO.subresultantSequence(p);
+                ZERO.signedSubresultantSequence(p);
                 fail(p);
             } catch (ArithmeticException ignored) {}
         }
@@ -3508,6 +3553,131 @@ public class PolynomialProperties extends QBarTestProperties {
                 P.pairs(P.withScale(4).polynomialsAtLeast(0))
         );
         compareImplementations("signedSubresultantSequence(Polynomial)", take(SMALL_LIMIT, ps), functions);
+    }
+
+    private void propertiesPrimitiveSignedPseudoRemainderSequence() {
+        initialize("primitiveSignedPseudoRemainderSequence(Polynomial)");
+        Iterable<Pair<Polynomial, Polynomial>> ps = filterInfinite(
+                p -> (p.a != ZERO || p.b != ZERO) && p.a.degree() >= p.b.degree(),
+                P.pairs(P.withScale(4).polynomials())
+        );
+        for (Pair<Polynomial, Polynomial> p : take(LIMIT, ps)) {
+            List<Polynomial> sequence = p.a.primitiveSignedPseudoRemainderSequence(p.b);
+            sequence.forEach(Polynomial::validate);
+            assertFalse(p, sequence.isEmpty());
+            assertNotEquals(p, last(sequence), ZERO);
+            assertTrue(p, all(q -> q == ZERO || q.isPrimitive(), sequence));
+            assertEquals(p, last(sequence).constantFactor().b, p.a.gcd(p.b));
+        }
+
+        for (Polynomial p : take(LIMIT, P.polynomialsAtLeast(0))) {
+            assertEquals(
+                    p,
+                    p.primitivePseudoRemainderSequence(ZERO),
+                    Collections.singletonList(p.contentAndPrimitive().b)
+            );
+        }
+
+        for (Polynomial p : take(LIMIT, P.polynomialsAtLeast(0))) {
+            assertEquals(p, p.trivialPseudoRemainderSequence(ZERO), Collections.singletonList(p));
+        }
+
+        Iterable<Pair<Polynomial, Polynomial>> psFail = filterInfinite(
+                q -> q.a.degree() < q.b.degree(),
+                P.pairs(P.polynomials())
+        );
+        for (Pair<Polynomial, Polynomial> p : take(LIMIT, psFail)) {
+            try {
+                p.a.primitiveSignedPseudoRemainderSequence(p.b);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void propertiesAbbreviatedSignedSubresultantSequence() {
+        initialize("abbreviatedSignedSubresultantSequence(Polynomial)");
+        Iterable<Pair<Polynomial, Polynomial>> ps = filterInfinite(
+                q -> q.a.degree() > q.b.degree(),
+                P.pairs(P.withScale(4).polynomialsAtLeast(0))
+        );
+        for (Pair<Polynomial, Polynomial> p : take(LIMIT, ps)) {
+            List<Polynomial> sequence = p.a.abbreviatedSignedSubresultantSequence(p.b);
+            sequence.forEach(Polynomial::validate);
+            assertTrue(p, decreasing(map(Polynomial::degree, sequence)));
+        }
+
+        Iterable<Pair<Polynomial, Polynomial>> psFail = filterInfinite(
+                q -> q.a.degree() <= q.b.degree(),
+                P.pairs(P.polynomialsAtLeast(0))
+        );
+        for (Pair<Polynomial, Polynomial> p : take(LIMIT, psFail)) {
+            try {
+                p.a.abbreviatedSignedSubresultantSequence(p.b);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
+        }
+
+        for (Polynomial p : take(LIMIT, P.polynomialsAtLeast(0))) {
+            try {
+                p.abbreviatedSignedSubresultantSequence(ZERO);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
+            try {
+                ZERO.abbreviatedSignedSubresultantSequence(p);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private static int rootCount_alt(@NotNull Polynomial a, @NotNull Interval i) {
+        if (a.degree() < 1) return 0;
+        if (i.diameter().get() == Rational.ZERO) {
+            return a.signum(i.getLower().get()) == 0 ? 1 : 0;
+        }
+        int leftChanges = 0;
+        int rightChanges = 0;
+        int previousLeftSign = 0;
+        int previousRightSign = 0;
+        for (Polynomial p : a.abbreviatedSignedSubresultantSequence(a.differentiate())) {
+            int leftSign = p.signum(i.getLower().get());
+            if (leftSign != 0) {
+                if (leftSign == -previousLeftSign) {
+                    leftChanges++;
+                }
+                previousLeftSign = leftSign;
+            }
+            int rightSign = p.signum(i.getUpper().get());
+            if (rightSign != 0) {
+                if (rightSign == -previousRightSign) {
+                    rightChanges++;
+                }
+                previousRightSign = rightSign;
+            }
+        }
+        int rootCount = leftChanges - rightChanges;
+        if (a.signum(i.getLower().get()) == 0) {
+            rootCount++;
+        }
+        return rootCount;
+    }
+
+    private void propertiesRootCount() {
+        initialize("rootCount(int)");
+        Iterable<Pair<Polynomial, Interval>> ps = P.pairs(P.squareFreePolynomials(), P.finitelyBoundedIntervals());
+        for (Pair<Polynomial, Interval> p : take(LIMIT, ps)) {
+            int rootCount = p.a.rootCount(p.b);
+            assertEquals(p, rootCount_alt(p.a, p.b), rootCount);
+            assertTrue(p, rootCount >= 0);
+            assertTrue(p, rootCount <= p.a.degree());
+        }
+    }
+
+    private void compareImplementationsRootCount() {
+        Map<String, Function<Pair<Polynomial, Interval>, Integer>> functions = new LinkedHashMap<>();
+        functions.put("alt", p -> rootCount_alt(p.a, p.b));
+        functions.put("standard", p -> p.a.rootCount(p.b));
+        Iterable<Pair<Polynomial, Interval>> ps = P.pairs(P.squareFreePolynomials(), P.finitelyBoundedIntervals());
+        compareImplementations("rootCount(int)", take(LIMIT, ps), functions);
     }
 
     private void propertiesReflect() {

@@ -2010,7 +2010,7 @@ public final class Polynomial implements
      *  <li>{@code this} cannot be zero.</li>
      *  <li>{@code that} cannot be zero.</li>
      *  <li>{@code this} must have a degree greater than {@code that}.</li>
-     *  <li>The result is not null.</li>
+     *  <li>The result contains no nulls.</li>
      * </ul>
      *
      * @param that a {@code Polynomial}
@@ -2076,6 +2076,99 @@ public final class Polynomial implements
             j = k;
         }
         return reverse(tail(sResP));
+    }
+
+    /**
+     * Returns the signed pseudo-remainder sequence of {@code this} and {@code that}, all of whose elements are
+     * primitive. When applied to a polynomial and its derivative, the result is a Sturm sequence.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>{@code this} and {@code that} cannot both be zero.</li>
+     *  <li>The degree of {@code this} must be greater than or equal to the degree of {@code that}.</li>
+     *  <li>The result contains no nulls.</li>
+     * </ul>
+     *
+     * @param that a {@code Polynomial}
+     * @return the primitive pseudo-remainder sequence of {@code this} and {@code that}
+     */
+    public @NotNull List<Polynomial> primitiveSignedPseudoRemainderSequence(@NotNull Polynomial that) {
+        if (this == ZERO && that == ZERO) {
+            throw new ArithmeticException("this and that cannot both be zero.");
+        }
+        List<Polynomial> sequence = new ArrayList<>();
+        sequence.add(this == ZERO ? ZERO : contentAndPrimitive().b);
+        if (that == ZERO) return sequence;
+        sequence.add(that.contentAndPrimitive().b);
+        for (int i = 0; ; i++) {
+            Polynomial next = sequence.get(i).absolutePseudoRemainder(sequence.get(i + 1)).negate();
+            if (next == ZERO) return sequence;
+            sequence.add(next.contentAndPrimitive().b);
+        }
+    }
+
+    /**
+     * Returns a variation of the signed subresultant sequence which omits some terms while preserving its
+     * Sturm-sequence property. When applied to a polynomial and its derivative, the result is a Sturm sequence.
+     *
+     * <ul>
+     *  <li>{@code this} cannot be zero.</li>
+     *  <li>{@code that} cannot be zero.</li>
+     *  <li>{@code this} must have a degree greater than {@code that}.</li>
+     *  <li>The result contains no nulls, and the degrees of its elements are strictly decreasing.</li>
+     * </ul>
+     *
+     * @param that a {@code Polynomial}
+     * @return the abbreviated signed subresultant sequence of {@code this} and {@code that}
+     */
+    public @NotNull List<Polynomial> abbreviatedSignedSubresultantSequence(@NotNull Polynomial that) {
+        List<Polynomial> abbreviated = new ArrayList<>();
+        Polynomial previous = null;
+        for (Polynomial p : signedSubresultantSequence(that)) {
+            if (p != ZERO) {
+                if (previous == null || p.degree() < previous.degree()) {
+                    abbreviated.add(p);
+                    previous = p;
+                } else if (p.signum() != previous.signum()) {
+                    abbreviated.remove(abbreviated.size() - 1);
+                    previous = abbreviated.isEmpty() ? null : last(abbreviated);
+                }
+            }
+        }
+        return abbreviated;
+    }
+
+    public int rootCount(@NotNull Interval interval) {
+        if (degree() < 1) return 0;
+        if (interval.diameter().get() == Rational.ZERO) {
+            return signum(interval.getLower().get()) == 0 ? 1 : 0;
+        }
+        int leftChanges = 0;
+        int rightChanges = 0;
+        int previousLeftSign = 0;
+        int previousRightSign = 0;
+        for (Polynomial p : primitiveSignedPseudoRemainderSequence(differentiate())) {
+            int leftSign = p.signum(interval.getLower().get());
+            if (leftSign != 0) {
+                if (leftSign == -previousLeftSign) {
+                    leftChanges++;
+                }
+                previousLeftSign = leftSign;
+            }
+            int rightSign = p.signum(interval.getUpper().get());
+            if (rightSign != 0) {
+                if (rightSign == -previousRightSign) {
+                    rightChanges++;
+                }
+                previousRightSign = rightSign;
+            }
+        }
+        int rootCount = leftChanges - rightChanges;
+        if (signum(interval.getLower().get()) == 0) {
+            rootCount++;
+        }
+        return rootCount;
     }
 
     /**

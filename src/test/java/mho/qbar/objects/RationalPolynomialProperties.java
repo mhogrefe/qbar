@@ -1705,6 +1705,25 @@ public class RationalPolynomialProperties extends QBarTestProperties {
             );
         }
 
+        ps = filterInfinite(
+                p -> (p.a != ZERO || p.b != ZERO) && p.a.degree() >= p.b.degree(),
+                P.pairs(P.withScale(4).rationalPolynomials())
+        );
+        for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, ps)) {
+            List<RationalPolynomial> sequence = p.a.signedRemainderSequence(p.b);
+            Polynomial pa = p.a == ZERO ? Polynomial.ZERO : p.a.constantFactor().b;
+            Polynomial pb = p.b == ZERO ? Polynomial.ZERO : p.b.constantFactor().b;
+            if (p.a.signum() == -1) pa = pa.negate();
+            if (p.b.signum() == -1) pb = pb.negate();
+            List<Polynomial> psprs = pa.primitiveSignedPseudoRemainderSequence(pb);
+            assertEquals(
+                    p,
+                    toList(map(q -> q == ZERO ? Polynomial.ZERO : q.constantFactor().b, sequence)),
+                    toList(map(Polynomial::abs, psprs))
+            );
+            assertEquals(p, toList(map(RationalPolynomial::signum, sequence)), toList(map(Polynomial::signum, psprs)));
+        }
+
         for (RationalPolynomial p : take(LIMIT, P.rationalPolynomialsAtLeast(0))) {
             assertEquals(p, p.signedRemainderSequence(ZERO), Collections.singletonList(p));
             assertEquals(p, ZERO.signedRemainderSequence(p), Arrays.asList(ZERO, p));

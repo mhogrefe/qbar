@@ -642,6 +642,38 @@ public class PolynomialDemos extends QBarDemos {
         }
     }
 
+    private void demoPrimitiveSignedPseudoRemainderSequence() {
+        Iterable<Pair<Polynomial, Polynomial>> ps = filterInfinite(
+                p -> (p.a != ZERO || p.b != ZERO) && p.a.degree() >= p.b.degree(),
+                P.pairs(P.withScale(4).withSecondaryScale(4).polynomials())
+        );
+        for (Pair<Polynomial, Polynomial> p : take(LIMIT, ps)) {
+            System.out.println("primitiveSignedPseudoRemainderSequence(" + p.a + ", " + p.b + ") = " +
+                    p.a.primitiveSignedPseudoRemainderSequence(p.b));
+        }
+    }
+
+    private void demoAbbreviatedSignedSubresultantSequence() {
+        Iterable<Pair<Polynomial, Polynomial>> ps = filterInfinite(
+                p -> p.a.degree() > p.b.degree(),
+                P.pairs(P.withScale(4).withSecondaryScale(4).polynomialsAtLeast(0))
+        );
+        for (Pair<Polynomial, Polynomial> p : take(LIMIT, ps)) {
+            System.out.println("abbreviatedSignedSubresultantSequence(" + p.a + ", " + p.b + ") = " +
+                    p.a.abbreviatedSignedSubresultantSequence(p.b));
+        }
+    }
+
+    private void demoRootCount() {
+        Iterable<Pair<Polynomial, Interval>> ps = P.pairs(
+                P.withScale(4).squareFreePolynomials(),
+                P.withScale(8).finitelyBoundedIntervals()
+        );
+        for (Pair<Polynomial, Interval> p : take(LIMIT, ps)) {
+            System.out.println("rootCount(" + p.a + ", " + p.b + ") = " + p.a.rootCount(p.b));
+        }
+    }
+
     private void demoReflect() {
         for (Polynomial p : take(LIMIT, P.withScale(4).polynomials())) {
             System.out.println("reflect(" + p + ") = " + p.reflect());
