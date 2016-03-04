@@ -143,6 +143,8 @@ public class PolynomialProperties extends QBarTestProperties {
         compareImplementationsSignedSubresultantSequence();
         propertiesPrimitiveSignedPseudoRemainderSequence();
         propertiesAbbreviatedSignedSubresultantSequence();
+        propertiesRootBound();
+        propertiesPowerOfTwoRootBound();
         propertiesRootCount();
         compareImplementationsRootCount();
         propertiesReflect();
@@ -3626,6 +3628,48 @@ public class PolynomialProperties extends QBarTestProperties {
                 ZERO.abbreviatedSignedSubresultantSequence(p);
                 fail(p);
             } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void propertiesRootBound() {
+        initialize("rootBound()");
+        for (Polynomial p : take(LIMIT, P.polynomialsAtLeast(0))) {
+            Interval rootBound = p.rootBound();
+            assertTrue(p, rootBound.isFinitelyBounded());
+            Rational left = rootBound.getLower().get();
+            Rational right = rootBound.getUpper().get();
+            assertEquals(p, left, right.negate());
+
+            int leftSign = (p.degree() & 1) == 0 ? p.signum() : -p.signum();
+            for (Rational r : take(TINY_LIMIT, filterInfinite(s -> !s.equals(left), QEP.rangeDown(left)))) {
+                assertEquals(p, p.signum(r), leftSign);
+            }
+            int rightSign = p.signum();
+            for (Rational r : take(TINY_LIMIT, filterInfinite(s -> !s.equals(right), QEP.rangeUp(right)))) {
+                assertEquals(p, p.signum(r), rightSign);
+            }
+        }
+    }
+
+    private void propertiesPowerOfTwoRootBound() {
+        initialize("powerOfTwoRootBound()");
+        for (Polynomial p : take(LIMIT, P.polynomialsAtLeast(0))) {
+            Interval rootBound = p.powerOfTwoRootBound();
+            assertTrue(p, rootBound.isFinitelyBounded());
+            assertTrue(p, rootBound.contains(p.rootBound()));
+            Rational left = rootBound.getLower().get();
+            Rational right = rootBound.getUpper().get();
+            assertTrue(p, right.isPowerOfTwo());
+            assertEquals(p, left, right.negate());
+
+            int leftSign = (p.degree() & 1) == 0 ? p.signum() : -p.signum();
+            for (Rational r : take(TINY_LIMIT, filterInfinite(s -> !s.equals(left), QEP.rangeDown(left)))) {
+                assertEquals(p, p.signum(r), leftSign);
+            }
+            int rightSign = p.signum();
+            for (Rational r : take(TINY_LIMIT, filterInfinite(s -> !s.equals(right), QEP.rangeUp(right)))) {
+                assertEquals(p, p.signum(r), rightSign);
+            }
         }
     }
 

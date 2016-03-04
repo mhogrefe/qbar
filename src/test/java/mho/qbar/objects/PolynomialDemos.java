@@ -664,6 +664,18 @@ public class PolynomialDemos extends QBarDemos {
         }
     }
 
+    private void demoRootBound() {
+        for (Polynomial p : take(LIMIT, P.withScale(4).polynomialsAtLeast(0))) {
+            System.out.println("rootBound(" + p + ") = " + p.rootBound());
+        }
+    }
+
+    private void demoPowerOfTwoRootBound() {
+        for (Polynomial p : take(LIMIT, P.withScale(4).polynomialsAtLeast(0))) {
+            System.out.println("powerOfTwoRootBound(" + p + ") = " + p.powerOfTwoRootBound());
+        }
+    }
+
     private void demoRootCount() {
         Iterable<Pair<Polynomial, Interval>> ps = P.pairs(
                 P.withScale(4).squareFreePolynomials(),

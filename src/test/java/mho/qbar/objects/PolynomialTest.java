@@ -3356,6 +3356,62 @@ public class PolynomialTest {
         abbreviatedSignedSubresultantSequence_fail_helper("x^2", "x^2");
     }
 
+    private static void rootBound_helper(@NotNull String input, @NotNull String output) {
+        aeq(read(input).get().rootBound(), output);
+    }
+
+    private static void rootBound_fail_helper(@NotNull String input) {
+        try {
+            read(input).get().rootBound();
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testRootBound() {
+        rootBound_helper("1", "[0, 0]");
+        rootBound_helper("x", "[-1, 1]");
+        rootBound_helper("-17", "[0, 0]");
+        rootBound_helper("x^2-4*x+7", "[-8, 8]");
+        rootBound_helper("-x^3-1", "[-2, 2]");
+        rootBound_helper("3*x^10", "[-1, 1]");
+
+        rootBound_helper("x^2-2", "[-3, 3]");
+        rootBound_helper("x^2-3", "[-4, 4]");
+        rootBound_helper("x^2-x-1", "[-2, 2]");
+        rootBound_helper("x^5-x+1", "[-2, 2]");
+
+        rootBound_fail_helper("0");
+    }
+
+    private static void powerOfTwoRootBound_helper(@NotNull String input, @NotNull String output) {
+        aeq(read(input).get().powerOfTwoRootBound(), output);
+    }
+
+    private static void powerOfTwoRootBound_fail_helper(@NotNull String input) {
+        try {
+            read(input).get().powerOfTwoRootBound();
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testPowerOfTwoRootBound() {
+        powerOfTwoRootBound_helper("1", "[-1, 1]");
+        powerOfTwoRootBound_helper("x", "[-1, 1]");
+        powerOfTwoRootBound_helper("-17", "[-1, 1]");
+        powerOfTwoRootBound_helper("x^2-4*x+7", "[-8, 8]");
+        powerOfTwoRootBound_helper("-x^3-1", "[-2, 2]");
+        powerOfTwoRootBound_helper("3*x^10", "[-1, 1]");
+
+        powerOfTwoRootBound_helper("x^2-2", "[-4, 4]");
+        powerOfTwoRootBound_helper("x^2-3", "[-4, 4]");
+        powerOfTwoRootBound_helper("x^2-x-1", "[-2, 2]");
+        powerOfTwoRootBound_helper("x^5-x+1", "[-2, 2]");
+
+        powerOfTwoRootBound_fail_helper("0");
+    }
+
     private static void reflect_helper(@NotNull String input, @NotNull String output) {
         aeq(read(input).get().reflect(), output);
     }

@@ -7,6 +7,7 @@ import mho.wheels.iterables.IterableUtils;
 import mho.wheels.iterables.NoRemoveIterable;
 import mho.wheels.math.MathUtils;
 import mho.wheels.numberUtils.IntegerUtils;
+import mho.wheels.ordering.Ordering;
 import mho.wheels.ordering.comparators.ShortlexComparator;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
@@ -2137,6 +2138,56 @@ public final class Polynomial implements
             }
         }
         return abbreviated;
+    }
+
+    /**
+     * Returns an {@code Interval} with finite bounds that contains all the real roots of {@code this}. This is a
+     * modified Cauchy's bound.
+     *
+     * <ul>
+     *  <li>{@code this} cannot be zero.</li>
+     *  <li>The result is symmetric about 0 and has finite bounds.</li>
+     * </ul>
+     *
+     * @return an {@code Interval} containing all real roots of {@code this}
+     */
+    public @NotNull Interval rootBound() {
+        if (this == ZERO) {
+            throw new ArithmeticException("this cannot be zero");
+        }
+        if (degree() < 1) return Interval.ZERO;
+        BigInteger denominator = leading().get().abs();
+        //noinspection RedundantCast
+        Rational max = maximum(
+                (Iterable<Rational>) map(c -> Rational.of(c.abs(), denominator), init(coefficients))
+        ).add(Rational.ONE);
+        return Interval.of(max.negate(), max);
+    }
+
+    /**
+     * Returns an {@code Interval} with finite bounds that contains all the real roots of {@code this}. Additionally,
+     * the upper bound is a power of two and the lower bound is its negative, which may speed up the bisection of the
+     * interval.
+     *
+     * <ul>
+     *  <li>{@code this} cannot be zero.</li>
+     *  <li>The result is symmetric about 0 and has finite bounds. The upper bound is a power of two.</li>
+     * </ul>
+     *
+     * @return an {@code Interval} containing all real roots of {@code this}
+     */
+    public @NotNull Interval powerOfTwoRootBound() {
+        if (this == ZERO) {
+            throw new ArithmeticException("this cannot be zero");
+        }
+        if (degree() < 1) return Interval.of(Rational.NEGATIVE_ONE, Rational.ONE);
+        BigInteger denominator = leading().get().abs();
+        //noinspection RedundantCast
+        Rational max = maximum(
+                (Iterable<Rational>) map(c -> Rational.of(c.abs(), denominator), init(coefficients))
+        ).add(Rational.ONE);
+        max = max.roundUpToPowerOfTwo();
+        return Interval.of(max.negate(), max);
     }
 
     public int rootCount(@NotNull Interval interval) {
