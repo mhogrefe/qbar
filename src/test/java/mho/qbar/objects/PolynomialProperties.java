@@ -145,6 +145,8 @@ public class PolynomialProperties extends QBarTestProperties {
         propertiesAbbreviatedSignedSubresultantSequence();
         propertiesRootBound();
         propertiesPowerOfTwoRootBound();
+        propertiesRootCount_Interval();
+        compareImplementationsRootCount_Interval();
         propertiesRootCount();
         compareImplementationsRootCount();
         propertiesReflect();
@@ -3673,55 +3675,90 @@ public class PolynomialProperties extends QBarTestProperties {
         }
     }
 
-    private static int rootCount_alt(@NotNull Polynomial a, @NotNull Interval i) {
+    private static int signChanges(@NotNull List<Polynomial> sturmSequence, @NotNull Rational x) {
+        int changes = 0;
+        int previousSign = 0;
+        for (Polynomial p : sturmSequence) {
+            int sign = p.signum(x);
+            if (sign != 0) {
+                if (sign == -previousSign) {
+                    changes++;
+                }
+                previousSign = sign;
+            }
+        }
+        return changes;
+    }
+
+    private static int rootCount_Interval_alt(@NotNull Polynomial a, @NotNull Interval i) {
+        if (a == ZERO) {
+            throw new ArithmeticException("a cannot be zero.");
+        }
         if (a.degree() < 1) return 0;
-        if (i.diameter().get() == Rational.ZERO) {
-            return a.signum(i.getLower().get()) == 0 ? 1 : 0;
+        Rational lower = i.getLower().get();
+        Rational upper = i.getUpper().get();
+        int rootCount = a.signum(lower) == 0 ? 1 : 0;
+        if (lower.equals(upper)) {
+            return rootCount;
         }
-        int leftChanges = 0;
-        int rightChanges = 0;
-        int previousLeftSign = 0;
-        int previousRightSign = 0;
-        for (Polynomial p : a.abbreviatedSignedSubresultantSequence(a.differentiate())) {
-            int leftSign = p.signum(i.getLower().get());
-            if (leftSign != 0) {
-                if (leftSign == -previousLeftSign) {
-                    leftChanges++;
-                }
-                previousLeftSign = leftSign;
-            }
-            int rightSign = p.signum(i.getUpper().get());
-            if (rightSign != 0) {
-                if (rightSign == -previousRightSign) {
-                    rightChanges++;
-                }
-                previousRightSign = rightSign;
-            }
-        }
-        int rootCount = leftChanges - rightChanges;
-        if (a.signum(i.getLower().get()) == 0) {
-            rootCount++;
-        }
+        List<Polynomial> sturmSequence = a.primitiveSignedPseudoRemainderSequence(a.differentiate());
+        rootCount += signChanges(sturmSequence, lower) - signChanges(sturmSequence, upper);
         return rootCount;
     }
 
-    private void propertiesRootCount() {
-        initialize("rootCount(int)");
-        Iterable<Pair<Polynomial, Interval>> ps = P.pairs(P.squareFreePolynomials(), P.finitelyBoundedIntervals());
-        for (Pair<Polynomial, Interval> p : take(LIMIT, ps)) {
+    private void propertiesRootCount_Interval() {
+        initialize("rootCount(Interval)");
+        for (Pair<Polynomial, Interval> p : take(LIMIT, P.pairs(P.squareFreePolynomialsAtLeast(0), P.intervals()))) {
             int rootCount = p.a.rootCount(p.b);
-            assertEquals(p, rootCount_alt(p.a, p.b), rootCount);
             assertTrue(p, rootCount >= 0);
             assertTrue(p, rootCount <= p.a.degree());
+        }
+
+        Iterable<Pair<Polynomial, Interval>> ps = P.pairs(
+                P.squareFreePolynomialsAtLeast(0),
+                P.finitelyBoundedIntervals()
+        );
+        for (Pair<Polynomial, Interval> p : take(LIMIT, ps)) {
+            assertEquals(p, p.a.rootCount(p.b), rootCount_Interval_alt(p.a, p.b));
+        }
+
+        for (Interval a : take(LIMIT, P.intervals())) {
+            try {
+                ZERO.rootCount(a);
+                fail(a);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void compareImplementationsRootCount_Interval() {
+        Map<String, Function<Pair<Polynomial, Interval>, Integer>> functions = new LinkedHashMap<>();
+        functions.put("alt", p -> rootCount_Interval_alt(p.a, p.b));
+        functions.put("standard", p -> p.a.rootCount(p.b));
+        Iterable<Pair<Polynomial, Interval>> ps = P.pairs(
+                P.squareFreePolynomialsAtLeast(0),
+                P.finitelyBoundedIntervals()
+        );
+        compareImplementations("rootCount(Interval)", take(LIMIT, ps), functions);
+    }
+
+    private static int rootCount_alt(@NotNull Polynomial p) {
+        return p.rootCount(p.rootBound());
+    }
+
+    private void propertiesRootCount() {
+        for (Polynomial p : take(LIMIT, P.squareFreePolynomialsAtLeast(0))) {
+            int rootCount = p.rootCount();
+            assertEquals(p, rootCount, rootCount_alt(p));
+            assertTrue(p, rootCount >= 0);
+            assertTrue(p, rootCount <= p.degree());
         }
     }
 
     private void compareImplementationsRootCount() {
-        Map<String, Function<Pair<Polynomial, Interval>, Integer>> functions = new LinkedHashMap<>();
-        functions.put("alt", p -> rootCount_alt(p.a, p.b));
-        functions.put("standard", p -> p.a.rootCount(p.b));
-        Iterable<Pair<Polynomial, Interval>> ps = P.pairs(P.squareFreePolynomials(), P.finitelyBoundedIntervals());
-        compareImplementations("rootCount(int)", take(LIMIT, ps), functions);
+        Map<String, Function<Polynomial, Integer>> functions = new LinkedHashMap<>();
+        functions.put("alt", PolynomialProperties::rootCount_alt);
+        functions.put("standard", Polynomial::rootCount);
+        compareImplementations("rootCount()", take(LIMIT, P.squareFreePolynomialsAtLeast(0)), functions);
     }
 
     private void propertiesReflect() {

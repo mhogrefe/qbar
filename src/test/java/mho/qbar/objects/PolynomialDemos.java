@@ -676,13 +676,19 @@ public class PolynomialDemos extends QBarDemos {
         }
     }
 
-    private void demoRootCount() {
+    private void demoRootCount_Interval() {
         Iterable<Pair<Polynomial, Interval>> ps = P.pairs(
-                P.withScale(4).squareFreePolynomials(),
-                P.withScale(8).finitelyBoundedIntervals()
+                P.withScale(4).squareFreePolynomialsAtLeast(0),
+                P.withScale(8).intervals()
         );
         for (Pair<Polynomial, Interval> p : take(LIMIT, ps)) {
             System.out.println("rootCount(" + p.a + ", " + p.b + ") = " + p.a.rootCount(p.b));
+        }
+    }
+
+    private void demoRootCount() {
+        for (Polynomial p : take(LIMIT, P.withScale(4).squareFreePolynomialsAtLeast(0))) {
+            System.out.println("rootCount(" + p + ") = " + p.rootCount());
         }
     }
 

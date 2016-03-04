@@ -14,6 +14,7 @@ import static mho.qbar.objects.Polynomial.sum;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.testing.Testing.*;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class PolynomialTest {
@@ -2272,6 +2273,7 @@ public class PolynomialTest {
     }
 
     private static void squareFreeFactor_helper(@NotNull String input, @NotNull String output) {
+        assertTrue(read(input).get().isPrimitive());
         aeq(read(input).get().squareFreeFactor(), output);
     }
 
@@ -3410,6 +3412,68 @@ public class PolynomialTest {
         powerOfTwoRootBound_helper("x^5-x+1", "[-2, 2]");
 
         powerOfTwoRootBound_fail_helper("0");
+    }
+
+    private static void rootCount_Interval_helper(@NotNull String p, @NotNull String i, int output) {
+        assertTrue(read(p).get().isSquareFree());
+        aeq(read(p).get().rootCount(Interval.read(i).get()), output);
+    }
+
+    private static void rootCount_Interval_fail_helper(@NotNull String p, @NotNull String i) {
+        try {
+            read(p).get().rootCount(Interval.read(i).get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testRootCount_Interval() {
+        rootCount_Interval_helper("1", "(-Infinity, Infinity)", 0);
+        rootCount_Interval_helper("1", "[0, 0]", 0);
+        rootCount_Interval_helper("1", "[0, 10]", 0);
+
+        rootCount_Interval_helper("x", "(-Infinity, Infinity)", 1);
+        rootCount_Interval_helper("x", "[0, 0]", 1);
+        rootCount_Interval_helper("x", "[0, 10]", 1);
+        rootCount_Interval_helper("x", "[1, 10]", 0);
+
+        rootCount_Interval_helper("x^2-2", "(-Infinity, Infinity)", 2);
+        rootCount_Interval_helper("x^2-2", "[0, Infinity)", 1);
+        rootCount_Interval_helper("x^2-2", "[7/5, 8/5]", 1);
+
+        rootCount_Interval_helper("x^5-x+1", "(-Infinity, Infinity)", 1);
+        rootCount_Interval_helper("x^5-x+1", "[0, 0]", 0);
+        rootCount_Interval_helper("x^5-x+1", "[-5/4, 9/8]", 1);
+
+        rootCount_Interval_fail_helper("0", "[0, 1]");
+    }
+
+    private static void rootCount_helper(@NotNull String input, int output) {
+        assertTrue(read(input).get().isSquareFree());
+        aeq(read(input).get().rootCount(), output);
+    }
+
+    private static void rootCount_fail_helper(@NotNull String input) {
+        try {
+            read(input).get().rootCount();
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testRootCount() {
+        rootCount_helper("1", 0);
+        rootCount_helper("x", 1);
+        rootCount_helper("-17", 0);
+        rootCount_helper("x^2-4*x+7", 0);
+        rootCount_helper("-x^3-1", 1);
+
+        rootCount_helper("x^2-2", 2);
+        rootCount_helper("x^2-3", 2);
+        rootCount_helper("x^2-x-1", 2);
+        rootCount_helper("x^5-x+1", 1);
+
+        rootCount_fail_helper("0");
     }
 
     private static void reflect_helper(@NotNull String input, @NotNull String output) {

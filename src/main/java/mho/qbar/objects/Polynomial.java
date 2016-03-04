@@ -2190,36 +2190,79 @@ public final class Polynomial implements
         return Interval.of(max.negate(), max);
     }
 
+    /**
+     * Counts the sign changes, ignoring zeros, when evaluating each polynomial of a Sturm sequence at a point.
+     *
+     * <ul>
+     *  <li>{@code sturmSequence} must be a Sturm sequence.</li>
+     *  <li>{@code x} cannot be null.</li>
+     *  <li>The result is not negative.</li>
+     * </ul>
+     *
+     * @param sturmSequence a Sturm sequence
+     * @param x a point
+     * @return the number of sign changes in map(p({@code x}), p∈{@code sturmSequence})
+     */
+    private static int signChanges(@NotNull List<Polynomial> sturmSequence, @NotNull Rational x) {
+        int changes = 0;
+        int previousSign = 0;
+        for (Polynomial p : sturmSequence) {
+            int sign = p.signum(x);
+            if (sign != 0) {
+                if (sign == -previousSign) {
+                    changes++;
+                }
+                previousSign = sign;
+            }
+        }
+        return changes;
+    }
+
+    /**
+     * Returns the number of real roots of {@code this} in a given interval. {@code this} must be squarefree, so there
+     * is no possibility of multiple roots.
+     *
+     * <ul>
+     *  <li>{@code this} must be squarefree.</li>
+     *  <li>{@code interval} cannot be null.</li>
+     *  <li>The result is not negative.</li>
+     * </ul>
+     *
+     * @param interval the interval which we are checking for roots
+     * @return the number of roots in {@code interval} of {@code this}
+     */
     public int rootCount(@NotNull Interval interval) {
+        if (this == ZERO) {
+            throw new ArithmeticException("this cannot be zero.");
+        }
         if (degree() < 1) return 0;
-        if (interval.diameter().get() == Rational.ZERO) {
-            return signum(interval.getLower().get()) == 0 ? 1 : 0;
+        if (!interval.isFinitelyBounded()) {
+            interval = interval.intersection(powerOfTwoRootBound()).orElse(Interval.ZERO);
         }
-        int leftChanges = 0;
-        int rightChanges = 0;
-        int previousLeftSign = 0;
-        int previousRightSign = 0;
-        for (Polynomial p : primitiveSignedPseudoRemainderSequence(differentiate())) {
-            int leftSign = p.signum(interval.getLower().get());
-            if (leftSign != 0) {
-                if (leftSign == -previousLeftSign) {
-                    leftChanges++;
-                }
-                previousLeftSign = leftSign;
-            }
-            int rightSign = p.signum(interval.getUpper().get());
-            if (rightSign != 0) {
-                if (rightSign == -previousRightSign) {
-                    rightChanges++;
-                }
-                previousRightSign = rightSign;
-            }
+        Rational lower = interval.getLower().get();
+        Rational upper = interval.getUpper().get();
+        int rootCount = signum(lower) == 0 ? 1 : 0;
+        if (lower.equals(upper)) {
+            return rootCount;
         }
-        int rootCount = leftChanges - rightChanges;
-        if (signum(interval.getLower().get()) == 0) {
-            rootCount++;
-        }
+        List<Polynomial> sturmSequence = signedSubresultantSequence(differentiate());
+        rootCount += signChanges(sturmSequence, lower) - signChanges(sturmSequence, upper);
         return rootCount;
+    }
+
+    /**
+     * Returns the number of real roots of {@code this}. {@code this} must be squarefree, so there is no possibility of
+     * multiple roots.
+     *
+     * <ul>
+     *  <li>{@code this} must be squarefree.</li>
+     *  <li>The result is not negative.</li>
+     * </ul>
+     *
+     * @return the number of real roots of {@code this}
+     */
+    public int rootCount() {
+        return rootCount(powerOfTwoRootBound());
     }
 
     /**
