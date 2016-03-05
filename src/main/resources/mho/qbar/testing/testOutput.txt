@@ -8418,6 +8418,1400 @@ x^8+x^7+x^6+x^2+1
 x^9+x^6+x^4+1
 ...
 
+QBarExhaustiveProvider_rationalPolynomials_int_i list 1
+0
+
+QBarExhaustiveProvider_rationalPolynomials_int_ii list 51
+1
+1/2
+1/3
+1/4
+-1
+-1/2
+2
+-1/3
+-1/4
+2/3
+1/5
+1/6
+1/7
+1/8
+-1/5
+-1/6
+2/5
+-1/7
+-1/8
+2/7
+-2
+3
+3/2
+-2/3
+3/4
+-3
+-3/2
+4
+-3/4
+4/3
+-2/5
+3/5
+-2/7
+3/7
+3/8
+-3/5
+4/5
+-3/7
+-3/8
+4/7
+1/9
+1/10
+1/11
+1/12
+-1/9
+-1/10
+2/9
+-1/11
+-1/12
+2/11
+...
+
+QBarExhaustiveProvider_rationalPolynomials_int_iii list 51
+x
+x+1
+1/2*x
+1/3*x
+1/2*x+1
+1/3*x+1
+x+1/2
+x+1/3
+1/2*x+1/2
+1/3*x+1/2
+1/2*x+1/3
+1/3*x+1/3
+1/4*x
+-x
+1/4*x+1
+-x+1
+-1/2*x
+2*x
+-1/2*x+1
+2*x+1
+1/4*x+1/2
+-x+1/2
+1/4*x+1/3
+-x+1/3
+-1/2*x+1/2
+2*x+1/2
+-1/2*x+1/3
+2*x+1/3
+x+1/4
+x-1
+1/2*x+1/4
+1/3*x+1/4
+1/2*x-1
+1/3*x-1
+x-1/2
+x+2
+1/2*x-1/2
+1/3*x-1/2
+1/2*x+2
+1/3*x+2
+1/4*x+1/4
+-x+1/4
+1/4*x-1
+-x-1
+-1/2*x+1/4
+2*x+1/4
+-1/2*x-1
+2*x-1
+1/4*x-1/2
+-x-1/2
+...
+
+QBarExhaustiveProvider_rationalPolynomials_int_iv list 51
+x^2
+x^2+x
+x^2+1
+x^2+x+1
+1/2*x^2
+1/3*x^2
+1/2*x^2+x
+1/3*x^2+x
+1/2*x^2+1
+1/3*x^2+1
+1/2*x^2+x+1
+1/3*x^2+x+1
+x^2+1/2*x
+x^2+1/3*x
+x^2+1/2*x+1
+x^2+1/3*x+1
+1/2*x^2+1/2*x
+1/3*x^2+1/2*x
+1/2*x^2+1/3*x
+1/3*x^2+1/3*x
+1/2*x^2+1/2*x+1
+1/3*x^2+1/2*x+1
+1/2*x^2+1/3*x+1
+1/3*x^2+1/3*x+1
+x^2+1/2
+x^2+x+1/2
+x^2+1/3
+x^2+x+1/3
+1/2*x^2+1/2
+1/3*x^2+1/2
+1/2*x^2+x+1/2
+1/3*x^2+x+1/2
+1/2*x^2+1/3
+1/3*x^2+1/3
+1/2*x^2+x+1/3
+1/3*x^2+x+1/3
+x^2+1/2*x+1/2
+x^2+1/3*x+1/2
+x^2+1/2*x+1/3
+x^2+1/3*x+1/3
+1/2*x^2+1/2*x+1/2
+1/3*x^2+1/2*x+1/2
+1/2*x^2+1/3*x+1/2
+1/3*x^2+1/3*x+1/2
+1/2*x^2+1/2*x+1/3
+1/3*x^2+1/2*x+1/3
+1/2*x^2+1/3*x+1/3
+1/3*x^2+1/3*x+1/3
+1/4*x^2
+-x^2
+...
+
+QBarExhaustiveProvider_rationalPolynomials_int_v list 51
+x^9
+x^9+x^8
+x^9+x^7
+x^9+x^8+x^7
+x^9+x^6
+x^9+x^8+x^6
+x^9+x^7+x^6
+x^9+x^8+x^7+x^6
+x^9+x^5
+x^9+x^8+x^5
+x^9+x^7+x^5
+x^9+x^8+x^7+x^5
+x^9+x^6+x^5
+x^9+x^8+x^6+x^5
+x^9+x^7+x^6+x^5
+x^9+x^8+x^7+x^6+x^5
+x^9+x^4
+x^9+x^8+x^4
+x^9+x^7+x^4
+x^9+x^8+x^7+x^4
+x^9+x^6+x^4
+x^9+x^8+x^6+x^4
+x^9+x^7+x^6+x^4
+x^9+x^8+x^7+x^6+x^4
+x^9+x^5+x^4
+x^9+x^8+x^5+x^4
+x^9+x^7+x^5+x^4
+x^9+x^8+x^7+x^5+x^4
+x^9+x^6+x^5+x^4
+x^9+x^8+x^6+x^5+x^4
+x^9+x^7+x^6+x^5+x^4
+x^9+x^8+x^7+x^6+x^5+x^4
+x^9+x^3
+x^9+x^8+x^3
+x^9+x^7+x^3
+x^9+x^8+x^7+x^3
+x^9+x^6+x^3
+x^9+x^8+x^6+x^3
+x^9+x^7+x^6+x^3
+x^9+x^8+x^7+x^6+x^3
+x^9+x^5+x^3
+x^9+x^8+x^5+x^3
+x^9+x^7+x^5+x^3
+x^9+x^8+x^7+x^5+x^3
+x^9+x^6+x^5+x^3
+x^9+x^8+x^6+x^5+x^3
+x^9+x^7+x^6+x^5+x^3
+x^9+x^8+x^7+x^6+x^5+x^3
+x^9+x^4+x^3
+x^9+x^8+x^4+x^3
+...
+
+QBarExhaustiveProvider_rationalPolynomials list 51
+0
+1
+1/2
+x
+1/3
+1/4
+-1
+x^2
+-1/2
+x+1
+2
+-1/3
+1/2*x
+-1/4
+2/3
+1/3*x
+1/5
+x^3
+1/6
+1/2*x+1
+1/7
+x^2+x
+1/8
+1/3*x+1
+-1/5
+-1/6
+2/5
+-1/7
+x+1/2
+-1/8
+2/7
+-2
+x^2+1
+3
+x+1/3
+3/2
+x^4
+-2/3
+1/2*x+1/2
+3/4
+-3
+1/3*x+1/2
+-3/2
+x^3+x^2
+4
+1/2*x+1/3
+-3/4
+x^2+x+1
+4/3
+1/3*x+1/3
+...
+
+QBarExhaustiveProvider_rationalPolynomialsAtLeast_i list 51
+0
+1
+1/2
+x
+1/3
+1/4
+-1
+x^2
+-1/2
+x+1
+2
+-1/3
+1/2*x
+-1/4
+2/3
+1/3*x
+1/5
+x^3
+1/6
+1/2*x+1
+1/7
+x^2+x
+1/8
+1/3*x+1
+-1/5
+-1/6
+2/5
+-1/7
+x+1/2
+-1/8
+2/7
+-2
+x^2+1
+3
+x+1/3
+3/2
+x^4
+-2/3
+1/2*x+1/2
+3/4
+-3
+1/3*x+1/2
+-3/2
+x^3+x^2
+4
+1/2*x+1/3
+-3/4
+x^2+x+1
+4/3
+1/3*x+1/3
+...
+
+QBarExhaustiveProvider_rationalPolynomialsAtLeast_ii list 51
+1
+1/2
+x
+1/3
+1/4
+-1
+x^2
+-1/2
+x+1
+2
+-1/3
+1/2*x
+-1/4
+2/3
+1/3*x
+1/5
+x^3
+1/6
+1/2*x+1
+1/7
+x^2+x
+1/8
+1/3*x+1
+-1/5
+-1/6
+2/5
+-1/7
+x+1/2
+-1/8
+2/7
+-2
+x^2+1
+3
+x+1/3
+3/2
+x^4
+-2/3
+1/2*x+1/2
+3/4
+-3
+1/3*x+1/2
+-3/2
+x^3+x^2
+4
+1/2*x+1/3
+-3/4
+x^2+x+1
+4/3
+1/3*x+1/3
+-2/5
+...
+
+QBarExhaustiveProvider_rationalPolynomialsAtLeast_iii list 51
+x
+x^2
+x+1
+1/2*x
+1/3*x
+x^3
+1/2*x+1
+x^2+x
+1/3*x+1
+x+1/2
+x^2+1
+x+1/3
+x^4
+1/2*x+1/2
+1/3*x+1/2
+x^3+x^2
+1/2*x+1/3
+x^2+x+1
+1/3*x+1/3
+1/4*x
+1/2*x^2
+-x
+1/4*x+1
+1/3*x^2
+-x+1
+-1/2*x
+1/2*x^2+x
+2*x
+x^3+x
+-1/2*x+1
+1/3*x^2+x
+2*x+1
+x^5
+1/4*x+1/2
+1/2*x^2+1
+-x+1/2
+1/4*x+1/3
+1/3*x^2+1
+-x+1/3
+x^4+x^3
+-1/2*x+1/2
+1/2*x^2+x+1
+2*x+1/2
+x^3+x^2+x
+-1/2*x+1/3
+1/3*x^2+x+1
+2*x+1/3
+x+1/4
+x^2+1/2*x
+x-1
+...
+
+QBarExhaustiveProvider_rationalPolynomialsAtLeast_iv list 51
+x^2
+x^3
+x^2+x
+x^2+1
+x^4
+x^3+x^2
+x^2+x+1
+1/2*x^2
+1/3*x^2
+1/2*x^2+x
+x^3+x
+1/3*x^2+x
+x^5
+1/2*x^2+1
+1/3*x^2+1
+x^4+x^3
+1/2*x^2+x+1
+x^3+x^2+x
+1/3*x^2+x+1
+x^2+1/2*x
+x^3+1
+x^2+1/3*x
+x^2+1/2*x+1
+x^4+x^2
+x^3+x^2+1
+x^2+1/3*x+1
+x^6
+1/2*x^2+1/2*x
+1/3*x^2+1/2*x
+1/2*x^2+1/3*x
+x^3+x+1
+1/3*x^2+1/3*x
+x^5+x^4
+1/2*x^2+1/2*x+1
+1/3*x^2+1/2*x+1
+x^4+x^3+x^2
+1/2*x^2+1/3*x+1
+x^3+x^2+x+1
+1/3*x^2+1/3*x+1
+1/2*x^3
+x^2+1/2
+1/3*x^3
+x^2+x+1/2
+1/2*x^3+x^2
+x^2+1/3
+x^4+x
+1/3*x^3+x^2
+x^2+x+1/3
+1/2*x^2+1/2
+1/2*x^3+x
+...
+
+QBarExhaustiveProvider_rationalPolynomialsAtLeast_v list 51
+x^9
+x^10
+x^9+x^8
+x^9+x^7
+x^11
+x^10+x^9
+x^9+x^8+x^7
+x^9+x^6
+x^10+x^8
+x^9+x^8+x^6
+x^12
+x^9+x^7+x^6
+x^11+x^10
+x^10+x^9+x^8
+x^9+x^8+x^7+x^6
+x^9+x^5
+x^10+x^7
+x^9+x^8+x^5
+x^9+x^7+x^5
+x^11+x^9
+x^10+x^9+x^7
+x^9+x^8+x^7+x^5
+x^13
+x^9+x^6+x^5
+x^10+x^8+x^7
+x^9+x^8+x^6+x^5
+x^12+x^11
+x^9+x^7+x^6+x^5
+x^11+x^10+x^9
+x^10+x^9+x^8+x^7
+x^9+x^8+x^7+x^6+x^5
+x^9+x^4
+x^10+x^6
+x^9+x^8+x^4
+x^9+x^7+x^4
+x^11+x^8
+x^10+x^9+x^6
+x^9+x^8+x^7+x^4
+x^9+x^6+x^4
+x^10+x^8+x^6
+x^9+x^8+x^6+x^4
+x^12+x^10
+x^9+x^7+x^6+x^4
+x^11+x^10+x^8
+x^10+x^9+x^8+x^6
+x^9+x^8+x^7+x^6+x^4
+x^14
+x^9+x^5+x^4
+x^10+x^7+x^6
+x^9+x^8+x^5+x^4
+...
+
+QBarExhaustiveProvider_monicRationalPolynomials_int_i list 0
+
+QBarExhaustiveProvider_monicRationalPolynomials_int_ii list 1
+1
+
+QBarExhaustiveProvider_monicRationalPolynomials_int_iii list 51
+x
+x+1
+x+1/2
+x-1
+x+2
+x-1/2
+x+1/3
+x+1/4
+x-1/3
+x+2/3
+x-1/4
+x-2
+x+3
+x+3/2
+x-3
+x+4
+x-3/2
+x-2/3
+x+3/4
+x+4/3
+x-3/4
+x+1/5
+x+1/6
+x-1/5
+x+2/5
+x-1/6
+x+1/7
+x+1/8
+x-1/7
+x+2/7
+x-1/8
+x-2/5
+x+3/5
+x-3/5
+x+4/5
+x-2/7
+x+3/7
+x+3/8
+x-3/7
+x+4/7
+x-3/8
+x-4
+x+5
+x+5/2
+x-5
+x+6
+x-5/2
+x-4/3
+x+5/3
+x+5/4
+...
+
+QBarExhaustiveProvider_monicRationalPolynomials_int_iv list 51
+x^2
+x^2+x
+x^2+1
+x^2+x+1
+x^2+1/2*x
+x^2+1/2
+x^2+1/2*x+1/2
+x^2-x
+x^2+2*x
+x^2-x+1
+x^2+2*x+1
+x^2-1/2*x
+x^2-1/2*x+1/2
+x^2+x+1/2
+x^2-1
+x^2+x-1
+x^2+2
+x^2+x+2
+x^2-1/2
+x^2+1/2*x-1/2
+x^2+1/2*x+1
+x^2-x-1
+x^2+2*x-1
+x^2-x+2
+x^2+2*x+2
+x^2-1/2*x-1/2
+x^2+x-1/2
+x^2-1/2*x+1
+x^2+1/3*x
+x^2+1/3
+x^2+1/3*x+1/3
+x^2+1/4*x
+x^2+1/4
+x^2+1/4*x+1/4
+x^2-1/3*x
+x^2+2/3*x
+x^2-1/3*x+1/3
+x^2+2/3*x+1/3
+x^2-1/4*x
+x^2-1/4*x+1/4
+x^2+1/2*x+1/4
+x^2-1/3
+x^2+1/3*x-1/3
+x^2+2/3
+x^2+1/3*x+2/3
+x^2-1/4
+x^2+1/4*x-1/4
+x^2+1/4*x+1/2
+x^2-1/3*x-1/3
+x^2+2/3*x-1/3
+...
+
+QBarExhaustiveProvider_monicRationalPolynomials_int_v list 51
+x^8
+x^8+x^7
+x^8+x^6
+x^8+x^7+x^6
+x^8+x^5
+x^8+x^7+x^5
+x^8+x^6+x^5
+x^8+x^7+x^6+x^5
+x^8+x^4
+x^8+x^7+x^4
+x^8+x^6+x^4
+x^8+x^7+x^6+x^4
+x^8+x^5+x^4
+x^8+x^7+x^5+x^4
+x^8+x^6+x^5+x^4
+x^8+x^7+x^6+x^5+x^4
+x^8+x^3
+x^8+x^7+x^3
+x^8+x^6+x^3
+x^8+x^7+x^6+x^3
+x^8+x^5+x^3
+x^8+x^7+x^5+x^3
+x^8+x^6+x^5+x^3
+x^8+x^7+x^6+x^5+x^3
+x^8+x^4+x^3
+x^8+x^7+x^4+x^3
+x^8+x^6+x^4+x^3
+x^8+x^7+x^6+x^4+x^3
+x^8+x^5+x^4+x^3
+x^8+x^7+x^5+x^4+x^3
+x^8+x^6+x^5+x^4+x^3
+x^8+x^7+x^6+x^5+x^4+x^3
+x^8+x^2
+x^8+x^7+x^2
+x^8+x^6+x^2
+x^8+x^7+x^6+x^2
+x^8+x^5+x^2
+x^8+x^7+x^5+x^2
+x^8+x^6+x^5+x^2
+x^8+x^7+x^6+x^5+x^2
+x^8+x^4+x^2
+x^8+x^7+x^4+x^2
+x^8+x^6+x^4+x^2
+x^8+x^7+x^6+x^4+x^2
+x^8+x^5+x^4+x^2
+x^8+x^7+x^5+x^4+x^2
+x^8+x^6+x^5+x^4+x^2
+x^8+x^7+x^6+x^5+x^4+x^2
+x^8+x^3+x^2
+x^8+x^7+x^3+x^2
+...
+
+QBarExhaustiveProvider_monicRationalPolynomials list 51
+1
+x
+x^2
+x+1
+x^3
+x^2+x
+x+1/2
+x-1
+x^2+1
+x+2
+x^4
+x-1/2
+x^3+x^2
+x^2+x+1
+x+1/3
+x^3+x
+x^2+1/2*x
+x+1/4
+x^5
+x-1/3
+x^2+1/2
+x+2/3
+x^4+x^3
+x-1/4
+x^3+x^2+x
+x^2+1/2*x+1/2
+x-2
+x^2-x
+x+3
+x^3+1
+x^2+2*x
+x+3/2
+x-3
+x^2-x+1
+x+4
+x^4+x^2
+x-3/2
+x^3+x^2+1
+x^2+2*x+1
+x^6
+x-2/3
+x^2-1/2*x
+x^3+x+1
+x+3/4
+x^5+x^4
+x^2-1/2*x+1/2
+x+4/3
+x^4+x^3+x^2
+x-3/4
+x^3+x^2+x+1
+...
+
+QBarExhaustiveProvider_monicRationalPolynomialsAtLeast_i list 51
+1
+x
+x^2
+x+1
+x^3
+x^2+x
+x+1/2
+x-1
+x^2+1
+x+2
+x^4
+x-1/2
+x^3+x^2
+x^2+x+1
+x+1/3
+x^3+x
+x^2+1/2*x
+x+1/4
+x^5
+x-1/3
+x^2+1/2
+x+2/3
+x^4+x^3
+x-1/4
+x^3+x^2+x
+x^2+1/2*x+1/2
+x-2
+x^2-x
+x+3
+x^3+1
+x^2+2*x
+x+3/2
+x-3
+x^2-x+1
+x+4
+x^4+x^2
+x-3/2
+x^3+x^2+1
+x^2+2*x+1
+x^6
+x-2/3
+x^2-1/2*x
+x^3+x+1
+x+3/4
+x^5+x^4
+x^2-1/2*x+1/2
+x+4/3
+x^4+x^3+x^2
+x-3/4
+x^3+x^2+x+1
+...
+
+QBarExhaustiveProvider_monicRationalPolynomialsAtLeast_ii list 51
+1
+x
+x^2
+x+1
+x^3
+x^2+x
+x+1/2
+x-1
+x^2+1
+x+2
+x^4
+x-1/2
+x^3+x^2
+x^2+x+1
+x+1/3
+x^3+x
+x^2+1/2*x
+x+1/4
+x^5
+x-1/3
+x^2+1/2
+x+2/3
+x^4+x^3
+x-1/4
+x^3+x^2+x
+x^2+1/2*x+1/2
+x-2
+x^2-x
+x+3
+x^3+1
+x^2+2*x
+x+3/2
+x-3
+x^2-x+1
+x+4
+x^4+x^2
+x-3/2
+x^3+x^2+1
+x^2+2*x+1
+x^6
+x-2/3
+x^2-1/2*x
+x^3+x+1
+x+3/4
+x^5+x^4
+x^2-1/2*x+1/2
+x+4/3
+x^4+x^3+x^2
+x-3/4
+x^3+x^2+x+1
+...
+
+QBarExhaustiveProvider_monicRationalPolynomialsAtLeast_iii list 51
+x
+x^2
+x+1
+x^3
+x^2+x
+x+1/2
+x-1
+x^2+1
+x+2
+x^4
+x-1/2
+x^3+x^2
+x^2+x+1
+x+1/3
+x^3+x
+x^2+1/2*x
+x+1/4
+x^5
+x-1/3
+x^2+1/2
+x+2/3
+x^4+x^3
+x-1/4
+x^3+x^2+x
+x^2+1/2*x+1/2
+x-2
+x^2-x
+x+3
+x^3+1
+x^2+2*x
+x+3/2
+x-3
+x^2-x+1
+x+4
+x^4+x^2
+x-3/2
+x^3+x^2+1
+x^2+2*x+1
+x^6
+x-2/3
+x^2-1/2*x
+x^3+x+1
+x+3/4
+x^5+x^4
+x^2-1/2*x+1/2
+x+4/3
+x^4+x^3+x^2
+x-3/4
+x^3+x^2+x+1
+x^2+x+1/2
+...
+
+QBarExhaustiveProvider_monicRationalPolynomialsAtLeast_iv list 51
+x^2
+x^3
+x^2+x
+x^2+1
+x^4
+x^3+x^2
+x^2+x+1
+x^3+x
+x^2+1/2*x
+x^5
+x^2+1/2
+x^4+x^3
+x^3+x^2+x
+x^2+1/2*x+1/2
+x^2-x
+x^3+1
+x^2+2*x
+x^2-x+1
+x^4+x^2
+x^3+x^2+1
+x^2+2*x+1
+x^6
+x^2-1/2*x
+x^3+x+1
+x^5+x^4
+x^2-1/2*x+1/2
+x^4+x^3+x^2
+x^3+x^2+x+1
+x^2+x+1/2
+x^2-1
+x^2+x-1
+x^2+2
+x^4+x
+x^3+1/2*x^2
+x^2+x+2
+x^2-1/2
+x^3+1/2*x
+x^2+1/2*x-1/2
+x^5+x^3
+x^4+x^3+x
+x^3+1/2*x^2+1/2*x
+x^2+1/2*x+1
+x^7
+x^2-x-1
+x^3+1/2
+x^2+2*x-1
+x^2-x+2
+x^4+x^2+x
+x^3+1/2*x^2+1/2
+x^2+2*x+2
+...
+
+QBarExhaustiveProvider_monicRationalPolynomialsAtLeast_v list 51
+x^8
+x^9
+x^8+x^7
+x^8+x^6
+x^10
+x^9+x^8
+x^8+x^7+x^6
+x^8+x^5
+x^9+x^7
+x^8+x^7+x^5
+x^11
+x^8+x^6+x^5
+x^10+x^9
+x^9+x^8+x^7
+x^8+x^7+x^6+x^5
+x^8+x^4
+x^9+x^6
+x^8+x^7+x^4
+x^8+x^6+x^4
+x^10+x^8
+x^9+x^8+x^6
+x^8+x^7+x^6+x^4
+x^12
+x^8+x^5+x^4
+x^9+x^7+x^6
+x^8+x^7+x^5+x^4
+x^11+x^10
+x^8+x^6+x^5+x^4
+x^10+x^9+x^8
+x^9+x^8+x^7+x^6
+x^8+x^7+x^6+x^5+x^4
+x^8+x^3
+x^9+x^5
+x^8+x^7+x^3
+x^8+x^6+x^3
+x^10+x^7
+x^9+x^8+x^5
+x^8+x^7+x^6+x^3
+x^8+x^5+x^3
+x^9+x^7+x^5
+x^8+x^7+x^5+x^3
+x^11+x^9
+x^8+x^6+x^5+x^3
+x^10+x^9+x^7
+x^9+x^8+x^7+x^5
+x^8+x^7+x^6+x^5+x^3
+x^13
+x^8+x^4+x^3
+x^9+x^6+x^5
+x^8+x^7+x^4+x^3
+...
+
+QBarExhaustiveProvider_variables list 51
+a
+b
+c
+d
+e
+f
+g
+h
+i
+j
+k
+l
+m
+n
+o
+p
+q
+r
+s
+t
+u
+v
+w
+x
+y
+z
+aa
+bb
+cc
+dd
+ee
+ff
+gg
+hh
+ii
+jj
+kk
+ll
+mm
+nn
+oo
+pp
+qq
+rr
+ss
+tt
+uu
+vv
+ww
+xx
+...
+
+QBarExhaustiveProvider_monomialOrders list 3
+LEX
+GRLEX
+GREVLEX
+
+QBarExhaustiveProvider_exponentVectors list 51
+1
+a
+b
+a^2
+a*b
+c
+b^2
+a^3
+a^2*b
+b*c
+d
+a*c
+a*b^2
+c^2
+b^3
+a^4
+a^3*b
+b^2*c
+c*d
+a*b*c
+a*d
+e
+b*d
+a^2*c
+a^2*b^2
+b*c^2
+d^2
+a*c^2
+a*b^3
+c^3
+b^4
+a^5
+a^4*b
+b^3*c
+c^2*d
+a*b^2*c
+a*c*d
+d*e
+b*c*d
+a^2*b*c
+a^2*d
+b*e
+f
+a*e
+a*b*d
+c*e
+b^2*d
+a^3*c
+a^3*b^2
+b^2*c^2
+...
+
+QBarExhaustiveProvider_exponentVectors_List_Variable_i list 1
+1
+
+QBarExhaustiveProvider_exponentVectors_List_Variable_ii list 51
+1
+a
+a^2
+a^3
+a^4
+a^5
+a^6
+a^7
+a^8
+a^9
+a^10
+a^11
+a^12
+a^13
+a^14
+a^15
+a^16
+a^17
+a^18
+a^19
+a^20
+a^21
+a^22
+a^23
+a^24
+a^25
+a^26
+a^27
+a^28
+a^29
+a^30
+a^31
+a^32
+a^33
+a^34
+a^35
+a^36
+a^37
+a^38
+a^39
+a^40
+a^41
+a^42
+a^43
+a^44
+a^45
+a^46
+a^47
+a^48
+a^49
+...
+
+QBarExhaustiveProvider_exponentVectors_List_Variable_iii list 51
+1
+x
+x^2
+x^3
+x^4
+x^5
+x^6
+x^7
+x^8
+x^9
+x^10
+x^11
+x^12
+x^13
+x^14
+x^15
+x^16
+x^17
+x^18
+x^19
+x^20
+x^21
+x^22
+x^23
+x^24
+x^25
+x^26
+x^27
+x^28
+x^29
+x^30
+x^31
+x^32
+x^33
+x^34
+x^35
+x^36
+x^37
+x^38
+x^39
+x^40
+x^41
+x^42
+x^43
+x^44
+x^45
+x^46
+x^47
+x^48
+x^49
+...
+
+QBarExhaustiveProvider_exponentVectors_List_Variable_iv list 51
+1
+ooo
+ooo^2
+ooo^3
+ooo^4
+ooo^5
+ooo^6
+ooo^7
+ooo^8
+ooo^9
+ooo^10
+ooo^11
+ooo^12
+ooo^13
+ooo^14
+ooo^15
+ooo^16
+ooo^17
+ooo^18
+ooo^19
+ooo^20
+ooo^21
+ooo^22
+ooo^23
+ooo^24
+ooo^25
+ooo^26
+ooo^27
+ooo^28
+ooo^29
+ooo^30
+ooo^31
+ooo^32
+ooo^33
+ooo^34
+ooo^35
+ooo^36
+ooo^37
+ooo^38
+ooo^39
+ooo^40
+ooo^41
+ooo^42
+ooo^43
+ooo^44
+ooo^45
+ooo^46
+ooo^47
+ooo^48
+ooo^49
+...
+
+QBarExhaustiveProvider_exponentVectors_List_Variable_v list 51
+1
+x
+y
+x*y
+x^2
+x^3
+x^2*y
+x^3*y
+y^2
+x*y^2
+y^3
+x*y^3
+x^2*y^2
+x^3*y^2
+x^2*y^3
+x^3*y^3
+x^4
+x^5
+x^4*y
+x^5*y
+x^6
+x^7
+x^6*y
+x^7*y
+x^4*y^2
+x^5*y^2
+x^4*y^3
+x^5*y^3
+x^6*y^2
+x^7*y^2
+x^6*y^3
+x^7*y^3
+y^4
+x*y^4
+y^5
+x*y^5
+x^2*y^4
+x^3*y^4
+x^2*y^5
+x^3*y^5
+y^6
+x*y^6
+y^7
+x*y^7
+x^2*y^6
+x^3*y^6
+x^2*y^7
+x^3*y^7
+x^4*y^4
+x^5*y^4
+...
+
+QBarExhaustiveProvider_exponentVectors_List_Variable_vi list 51
+1
+x
+y
+x*y
+z
+x*z
+y*z
+x*y*z
+x^2
+x^3
+x^2*y
+x^3*y
+x^2*z
+x^3*z
+x^2*y*z
+x^3*y*z
+y^2
+x*y^2
+y^3
+x*y^3
+y^2*z
+x*y^2*z
+y^3*z
+x*y^3*z
+x^2*y^2
+x^3*y^2
+x^2*y^3
+x^3*y^3
+x^2*y^2*z
+x^3*y^2*z
+x^2*y^3*z
+x^3*y^3*z
+z^2
+x*z^2
+y*z^2
+x*y*z^2
+z^3
+x*z^3
+y*z^3
+x*y*z^3
+x^2*z^2
+x^3*z^2
+x^2*y*z^2
+x^3*y*z^2
+x^2*z^3
+x^3*z^3
+x^2*y*z^3
+x^3*y*z^3
+y^2*z^2
+x*y^2*z^2
+...
+
 QBarRandomProvider_positiveRationals_i list 21
 13/3
 2/3
@@ -9633,7 +11027,7 @@ QBarRandomProvider_rangeUp_Rational_xii map 10
 16/3
 1311
 
-QBarRandomProvider_rangeDown_Rational_4_0 list 21
+QBarRandomProvider_rangeDown_Rational_i list 21
 -2/3
 -1
 0
@@ -9656,7 +11050,7 @@ QBarRandomProvider_rangeDown_Rational_4_0 list 21
 -2/3
 ...
 
-QBarRandomProvider_rangeDown_Rational_4_0 map 10
+QBarRandomProvider_rangeDown_Rational_i map 10
 0
 249425
 -1/2
@@ -9678,7 +11072,7 @@ QBarRandomProvider_rangeDown_Rational_4_0 map 10
 -1/5
 13202
 
-QBarRandomProvider_rangeDown_Rational_32_0 list 21
+QBarRandomProvider_rangeDown_Rational_ii list 21
 -3143636824356594/152003
 -7132138827349/97061240400
 -1088
@@ -9701,7 +11095,7 @@ QBarRandomProvider_rangeDown_Rational_32_0 list 21
 -1694402446059/23
 ...
 
-QBarRandomProvider_rangeDown_Rational_32_0 map 10
+QBarRandomProvider_rangeDown_Rational_ii map 10
 0
 31320
 -1/2
@@ -9723,7 +11117,7 @@ QBarRandomProvider_rangeDown_Rational_32_0 map 10
 -1/5
 1275
 
-QBarRandomProvider_rangeDown_Rational_4_1 list 21
+QBarRandomProvider_rangeDown_Rational_iii list 21
 1/3
 0
 1
@@ -9746,7 +11140,7 @@ QBarRandomProvider_rangeDown_Rational_4_1 list 21
 1/3
 ...
 
-QBarRandomProvider_rangeDown_Rational_4_1 map 10
+QBarRandomProvider_rangeDown_Rational_iii map 10
 0
 210197
 1
@@ -9768,7 +11162,7 @@ QBarRandomProvider_rangeDown_Rational_4_1 map 10
 6/7
 13246
 
-QBarRandomProvider_rangeDown_Rational_32_1 list 21
+QBarRandomProvider_rangeDown_Rational_iv list 21
 -3143636824204591/152003
 -7035077586949/97061240400
 -1087
@@ -9791,7 +11185,7 @@ QBarRandomProvider_rangeDown_Rational_32_1 list 21
 -1694402446036/23
 ...
 
-QBarRandomProvider_rangeDown_Rational_32_1 map 10
+QBarRandomProvider_rangeDown_Rational_iv map 10
 0
 5903
 1
@@ -9813,7 +11207,7 @@ QBarRandomProvider_rangeDown_Rational_32_1 map 10
 6/7
 1271
 
-QBarRandomProvider_rangeDown_Rational_4_2 list 21
+QBarRandomProvider_rangeDown_Rational_v list 21
 4/3
 1
 2
@@ -9836,7 +11230,7 @@ QBarRandomProvider_rangeDown_Rational_4_2 list 21
 4/3
 ...
 
-QBarRandomProvider_rangeDown_Rational_4_2 map 10
+QBarRandomProvider_rangeDown_Rational_v map 10
 0
 52379
 1
@@ -9858,7 +11252,7 @@ QBarRandomProvider_rangeDown_Rational_4_2 map 10
 9/5
 13202
 
-QBarRandomProvider_rangeDown_Rational_32_2 list 21
+QBarRandomProvider_rangeDown_Rational_vi list 21
 -3143636824052588/152003
 -6938016346549/97061240400
 -1086
@@ -9881,7 +11275,7 @@ QBarRandomProvider_rangeDown_Rational_32_2 list 21
 -1694402446013/23
 ...
 
-QBarRandomProvider_rangeDown_Rational_32_2 map 10
+QBarRandomProvider_rangeDown_Rational_vi map 10
 0
 2623
 1
@@ -9903,7 +11297,7 @@ QBarRandomProvider_rangeDown_Rational_32_2 map 10
 9/5
 1275
 
-QBarRandomProvider_rangeDown_Rational_4_-2 list 21
+QBarRandomProvider_rangeDown_Rational_vii list 21
 -8/3
 -3
 -2
@@ -9926,7 +11320,7 @@ QBarRandomProvider_rangeDown_Rational_4_-2 list 21
 -8/3
 ...
 
-QBarRandomProvider_rangeDown_Rational_4_-2 map 10
+QBarRandomProvider_rangeDown_Rational_vii map 10
 -11/5
 13202
 -2
@@ -9948,7 +11342,7 @@ QBarRandomProvider_rangeDown_Rational_4_-2 map 10
 -5/2
 52243
 
-QBarRandomProvider_rangeDown_Rational_32_-2 list 21
+QBarRandomProvider_rangeDown_Rational_viii list 21
 -3143636824660600/152003
 -7326261308149/97061240400
 -1090
@@ -9971,7 +11365,7 @@ QBarRandomProvider_rangeDown_Rational_32_-2 list 21
 -1694402446105/23
 ...
 
-QBarRandomProvider_rangeDown_Rational_32_-2 map 10
+QBarRandomProvider_rangeDown_Rational_viii map 10
 -11/5
 1275
 -2
@@ -9993,7 +11387,7 @@ QBarRandomProvider_rangeDown_Rational_32_-2 map 10
 -5/2
 2625
 
-QBarRandomProvider_rangeDown_Rational_4_5/3 list 21
+QBarRandomProvider_rangeDown_Rational_ix list 21
 1
 2/3
 5/3
@@ -10016,7 +11410,7 @@ QBarRandomProvider_rangeDown_Rational_4_5/3 list 21
 1
 ...
 
-QBarRandomProvider_rangeDown_Rational_4_5/3 map 10
+QBarRandomProvider_rangeDown_Rational_ix map 10
 1
 13226
 -13/3
@@ -10038,7 +11432,7 @@ QBarRandomProvider_rangeDown_Rational_4_5/3 map 10
 -4/3
 52158
 
-QBarRandomProvider_rangeDown_Rational_32_5/3 list 21
+QBarRandomProvider_rangeDown_Rational_x list 21
 -9430910472309767/456009
 -2323456697783/32353746800
 -3259/3
@@ -10061,7 +11455,7 @@ QBarRandomProvider_rangeDown_Rational_32_5/3 list 21
 -5083207338062/69
 ...
 
-QBarRandomProvider_rangeDown_Rational_32_5/3 map 10
+QBarRandomProvider_rangeDown_Rational_x map 10
 2/3
 5903
 -16/3
@@ -10083,7 +11477,7 @@ QBarRandomProvider_rangeDown_Rational_32_5/3 map 10
 7/6
 2625
 
-QBarRandomProvider_rangeDown_Rational_4_-5/3 list 21
+QBarRandomProvider_rangeDown_Rational_xi list 21
 -7/3
 -8/3
 -5/3
@@ -10106,7 +11500,7 @@ QBarRandomProvider_rangeDown_Rational_4_-5/3 list 21
 -7/3
 ...
 
-QBarRandomProvider_rangeDown_Rational_4_-5/3 map 10
+QBarRandomProvider_rangeDown_Rational_xi map 10
 -11/3
 52379
 -23/3
@@ -10128,7 +11522,7 @@ QBarRandomProvider_rangeDown_Rational_4_-5/3 map 10
 -38/21
 13246
 
-QBarRandomProvider_rangeDown_Rational_32_-5/3 list 21
+QBarRandomProvider_rangeDown_Rational_xii list 21
 -9430910473829797/456009
 -7293907561349/97061240400
 -3269/3
@@ -10151,7 +11545,7 @@ QBarRandomProvider_rangeDown_Rational_32_-5/3 list 21
 -5083207338292/69
 ...
 
-QBarRandomProvider_rangeDown_Rational_32_-5/3 map 10
+QBarRandomProvider_rangeDown_Rational_xii map 10
 -11/3
 2623
 -26/3
@@ -10173,7 +11567,7 @@ QBarRandomProvider_rangeDown_Rational_32_-5/3 map 10
 -38/21
 1271
 
-QBarRandomProvider_range_Rational_Rational_4_0_0 list 21
+QBarRandomProvider_range_Rational_Rational_i list 21
 0
 0
 0
@@ -10196,11 +11590,11 @@ QBarRandomProvider_range_Rational_Rational_4_0_0 list 21
 0
 ...
 
-QBarRandomProvider_range_Rational_Rational_4_0_0 map 1
+QBarRandomProvider_range_Rational_Rational_i map 1
 0
 1000000
 
-QBarRandomProvider_range_Rational_Rational_32_0_0 list 21
+QBarRandomProvider_range_Rational_Rational_ii list 21
 0
 0
 0
@@ -10223,11 +11617,11 @@ QBarRandomProvider_range_Rational_Rational_32_0_0 list 21
 0
 ...
 
-QBarRandomProvider_range_Rational_Rational_32_0_0 map 1
+QBarRandomProvider_range_Rational_Rational_ii map 1
 0
 1000000
 
-QBarRandomProvider_range_Rational_Rational_4_5/3_5/3 list 21
+QBarRandomProvider_range_Rational_Rational_iii list 21
 5/3
 5/3
 5/3
@@ -10250,11 +11644,11 @@ QBarRandomProvider_range_Rational_Rational_4_5/3_5/3 list 21
 5/3
 ...
 
-QBarRandomProvider_range_Rational_Rational_4_5/3_5/3 map 1
+QBarRandomProvider_range_Rational_Rational_iii map 1
 5/3
 1000000
 
-QBarRandomProvider_range_Rational_Rational_32_5/3_5/3 list 21
+QBarRandomProvider_range_Rational_Rational_iv list 21
 5/3
 5/3
 5/3
@@ -10277,11 +11671,11 @@ QBarRandomProvider_range_Rational_Rational_32_5/3_5/3 list 21
 5/3
 ...
 
-QBarRandomProvider_range_Rational_Rational_32_5/3_5/3 map 1
+QBarRandomProvider_range_Rational_Rational_iv map 1
 5/3
 1000000
 
-QBarRandomProvider_range_Rational_Rational_4_0_1 list 21
+QBarRandomProvider_range_Rational_Rational_v list 21
 1/3
 49/85
 1/2
@@ -10304,7 +11698,7 @@ QBarRandomProvider_range_Rational_Rational_4_0_1 list 21
 0
 ...
 
-QBarRandomProvider_range_Rational_Rational_4_0_1 map 10
+QBarRandomProvider_range_Rational_Rational_v map 10
 0
 374651
 1
@@ -10326,7 +11720,7 @@ QBarRandomProvider_range_Rational_Rational_4_0_1 map 10
 5/6
 11928
 
-QBarRandomProvider_range_Rational_Rational_32_0_1 list 21
+QBarRandomProvider_range_Rational_Rational_vi list 21
 737254238953015/3143636824356594
 6793/10321
 59/1372
@@ -10349,7 +11743,7 @@ QBarRandomProvider_range_Rational_Rational_32_0_1 list 21
 13/70
 ...
 
-QBarRandomProvider_range_Rational_Rational_32_0_1 map 10
+QBarRandomProvider_range_Rational_Rational_vi map 10
 0
 60249
 1
@@ -10371,7 +11765,7 @@ QBarRandomProvider_range_Rational_Rational_32_0_1 map 10
 5/6
 6604
 
-QBarRandomProvider_range_Rational_Rational_4_-1_0 list 21
+QBarRandomProvider_range_Rational_Rational_vii list 21
 -2/3
 -36/85
 -1/2
@@ -10394,7 +11788,7 @@ QBarRandomProvider_range_Rational_Rational_4_-1_0 list 21
 -1
 ...
 
-QBarRandomProvider_range_Rational_Rational_4_-1_0 map 10
+QBarRandomProvider_range_Rational_Rational_vii map 10
 0
 249663
 -1/2
@@ -10416,7 +11810,7 @@ QBarRandomProvider_range_Rational_Rational_4_-1_0 map 10
 -3/4
 11621
 
-QBarRandomProvider_range_Rational_Rational_32_-1_0 list 21
+QBarRandomProvider_range_Rational_Rational_viii list 21
 -2406382585403579/3143636824356594
 -3528/10321
 -1313/1372
@@ -10439,7 +11833,7 @@ QBarRandomProvider_range_Rational_Rational_32_-1_0 list 21
 -57/70
 ...
 
-QBarRandomProvider_range_Rational_Rational_32_-1_0 map 10
+QBarRandomProvider_range_Rational_Rational_viii map 10
 0
 31400
 -1/2
@@ -10461,7 +11855,7 @@ QBarRandomProvider_range_Rational_Rational_32_-1_0 map 10
 -1/6
 6604
 
-QBarRandomProvider_range_Rational_Rational_4_1/3_1/2 list 21
+QBarRandomProvider_range_Rational_Rational_ix list 21
 7/18
 73/170
 5/12
@@ -10484,7 +11878,7 @@ QBarRandomProvider_range_Rational_Rational_4_1/3_1/2 list 21
 1/3
 ...
 
-QBarRandomProvider_range_Rational_Rational_4_1/3_1/2 map 10
+QBarRandomProvider_range_Rational_Rational_ix map 10
 17/36
 11928
 5/12
@@ -10506,7 +11900,7 @@ QBarRandomProvider_range_Rational_Rational_4_1/3_1/2 map 10
 4/9
 46703
 
-QBarRandomProvider_range_Rational_Rational_32_1/3_1/2 list 21
+QBarRandomProvider_range_Rational_Rational_x list 21
 7024527887666203/18861820946139564
 9145/20642
 2803/8232
@@ -10529,7 +11923,7 @@ QBarRandomProvider_range_Rational_Rational_32_1/3_1/2 list 21
 51/140
 ...
 
-QBarRandomProvider_range_Rational_Rational_32_1/3_1/2 map 10
+QBarRandomProvider_range_Rational_Rational_x map 10
 17/36
 6604
 5/12
@@ -10551,7 +11945,7 @@ QBarRandomProvider_range_Rational_Rational_32_1/3_1/2 map 10
 4/9
 14135
 
-QBarRandomProvider_range_Rational_Rational_4_-1_5/3 list 21
+QBarRandomProvider_range_Rational_Rational_xi list 21
 -1/9
 137/255
 1/3
@@ -10574,7 +11968,7 @@ QBarRandomProvider_range_Rational_Rational_4_-1_5/3 list 21
 -1
 ...
 
-QBarRandomProvider_range_Rational_Rational_4_-1_5/3 map 10
+QBarRandomProvider_range_Rational_Rational_xi map 10
 7/9
 46703
 1
@@ -10596,7 +11990,7 @@ QBarRandomProvider_range_Rational_Rational_4_-1_5/3 map 10
 -1/3
 11621
 
-QBarRandomProvider_range_Rational_Rational_32_-1_5/3 list 21
+QBarRandomProvider_range_Rational_Rational_xii list 21
 -1766438280722831/4715455236534891
 23381/30963
 -911/1029
@@ -10619,7 +12013,7 @@ QBarRandomProvider_range_Rational_Rational_32_-1_5/3 list 21
 -53/105
 ...
 
-QBarRandomProvider_range_Rational_Rational_32_-1_5/3 map 10
+QBarRandomProvider_range_Rational_Rational_xii map 10
 7/9
 14135
 1
@@ -10641,7 +12035,7 @@ QBarRandomProvider_range_Rational_Rational_32_-1_5/3 map 10
 11/9
 6604
 
-QBarRandomProvider_finitelyBoundedIntervals_6 list 21
+QBarRandomProvider_finitelyBoundedIntervals_i list 21
 [5, 221]
 [-1/2, 0]
 [0, 5/6]
@@ -10664,7 +12058,7 @@ QBarRandomProvider_finitelyBoundedIntervals_6 list 21
 [-1, 0]
 ...
 
-QBarRandomProvider_finitelyBoundedIntervals_6 map 10
+QBarRandomProvider_finitelyBoundedIntervals_i map 10
 [-1/2, 0]
 14088
 [0, 3]
@@ -10686,7 +12080,7 @@ QBarRandomProvider_finitelyBoundedIntervals_6 map 10
 [-1, -1]
 14002
 
-QBarRandomProvider_finitelyBoundedIntervals_16 list 21
+QBarRandomProvider_finitelyBoundedIntervals_ii list 21
 [-5/4, -1]
 [0, 1/2]
 [-1, 0]
@@ -10709,7 +12103,7 @@ QBarRandomProvider_finitelyBoundedIntervals_16 list 21
 [-46/177, 11969]
 ...
 
-QBarRandomProvider_finitelyBoundedIntervals_16 map 10
+QBarRandomProvider_finitelyBoundedIntervals_ii map 10
 [0, 1]
 4595
 [0, 2]
@@ -10731,7 +12125,7 @@ QBarRandomProvider_finitelyBoundedIntervals_16 map 10
 [-1, -1]
 1857
 
-QBarRandomProvider_finitelyBoundedIntervals_32 list 21
+QBarRandomProvider_finitelyBoundedIntervals_iii list 21
 [-243045529/1963, -409/7232]
 [-47/15, 1/2]
 [-70/512703, 25056015375/8548]
@@ -10754,7 +12148,7 @@ QBarRandomProvider_finitelyBoundedIntervals_32 list 21
 [-192790039594/15, 17/54]
 ...
 
-QBarRandomProvider_finitelyBoundedIntervals_32 map 10
+QBarRandomProvider_finitelyBoundedIntervals_iii map 10
 [-1/2, 0]
 201
 [0, 3]
@@ -10776,7 +12170,7 @@ QBarRandomProvider_finitelyBoundedIntervals_32 map 10
 [-1, -1]
 197
 
-QBarRandomProvider_intervals_6 list 21
+QBarRandomProvider_intervals_i list 21
 [1, 13]
 [0, 0]
 (-Infinity, 0]
@@ -10799,7 +12193,7 @@ QBarRandomProvider_intervals_6 list 21
 (-Infinity, Infinity)
 ...
 
-QBarRandomProvider_intervals_6 map 10
+QBarRandomProvider_intervals_i map 10
 [0, Infinity)
 97756
 [0, 1]
@@ -10821,7 +12215,7 @@ QBarRandomProvider_intervals_6 map 10
 (-Infinity, Infinity)
 136618
 
-QBarRandomProvider_intervals_16 list 21
+QBarRandomProvider_intervals_ii list 21
 (-Infinity, 1/41]
 [-2/533, Infinity)
 [-221/3755, 1/18]
@@ -10844,7 +12238,7 @@ QBarRandomProvider_intervals_16 list 21
 (-Infinity, -2/9]
 ...
 
-QBarRandomProvider_intervals_16 map 10
+QBarRandomProvider_intervals_ii map 10
 [0, Infinity)
 13341
 [0, 1]
@@ -10866,7 +12260,7 @@ QBarRandomProvider_intervals_16 map 10
 (-Infinity, Infinity)
 25200
 
-QBarRandomProvider_intervals_32 list 21
+QBarRandomProvider_intervals_iii list 21
 [-3/94, 5/4]
 [-31/15, 1/2]
 [-38/512703, 25056015375/8548]
@@ -10889,7 +12283,7 @@ QBarRandomProvider_intervals_32 list 21
 [-1695/26, 3881/34]
 ...
 
-QBarRandomProvider_intervals_32 map 10
+QBarRandomProvider_intervals_iii map 10
 [0, Infinity)
 2350
 [-1, Infinity)
@@ -10911,7 +12305,7 @@ QBarRandomProvider_intervals_32 map 10
 (-Infinity, Infinity)
 6930
 
-QBarRandomProvider_rationalsIn_4_[0,_0] list 21
+QBarRandomProvider_rationalsIn_i list 21
 0
 0
 0
@@ -10934,11 +12328,11 @@ QBarRandomProvider_rationalsIn_4_[0,_0] list 21
 0
 ...
 
-QBarRandomProvider_rationalsIn_4_[0,_0] map 1
+QBarRandomProvider_rationalsIn_i map 1
 0
 1000000
 
-QBarRandomProvider_rationalsIn_32_[0,_0] list 21
+QBarRandomProvider_rationalsIn_ii list 21
 0
 0
 0
@@ -10961,11 +12355,11 @@ QBarRandomProvider_rationalsIn_32_[0,_0] list 21
 0
 ...
 
-QBarRandomProvider_rationalsIn_32_[0,_0] map 1
+QBarRandomProvider_rationalsIn_ii map 1
 0
 1000000
 
-QBarRandomProvider_rationalsIn_4_[1,_1] list 21
+QBarRandomProvider_rationalsIn_iii list 21
 1
 1
 1
@@ -10988,11 +12382,11 @@ QBarRandomProvider_rationalsIn_4_[1,_1] list 21
 1
 ...
 
-QBarRandomProvider_rationalsIn_4_[1,_1] map 1
+QBarRandomProvider_rationalsIn_iii map 1
 1
 1000000
 
-QBarRandomProvider_rationalsIn_32_[1,_1] list 21
+QBarRandomProvider_rationalsIn_iv list 21
 1
 1
 1
@@ -11015,11 +12409,11 @@ QBarRandomProvider_rationalsIn_32_[1,_1] list 21
 1
 ...
 
-QBarRandomProvider_rationalsIn_32_[1,_1] map 1
+QBarRandomProvider_rationalsIn_iv map 1
 1
 1000000
 
-QBarRandomProvider_rationalsIn_4_(-Infinity,_Infinity) list 21
+QBarRandomProvider_rationalsIn_v list 21
 3
 -1/5
 1
@@ -11042,7 +12436,7 @@ QBarRandomProvider_rationalsIn_4_(-Infinity,_Infinity) list 21
 0
 ...
 
-QBarRandomProvider_rationalsIn_4_(-Infinity,_Infinity) map 10
+QBarRandomProvider_rationalsIn_v map 10
 0
 224431
 1
@@ -11064,7 +12458,7 @@ QBarRandomProvider_rationalsIn_4_(-Infinity,_Infinity) map 10
 -3
 25026
 
-QBarRandomProvider_rationalsIn_32_(-Infinity,_Infinity) list 21
+QBarRandomProvider_rationalsIn_vi list 21
 6499102/152003
 -5488/2734092316245
 -28331/46647
@@ -11087,7 +12481,7 @@ QBarRandomProvider_rationalsIn_32_(-Infinity,_Infinity) list 21
 -1706054384/1080390895815402467
 ...
 
-QBarRandomProvider_rationalsIn_32_(-Infinity,_Infinity) map 10
+QBarRandomProvider_rationalsIn_vi map 10
 0
 6058
 1
@@ -11109,7 +12503,7 @@ QBarRandomProvider_rationalsIn_32_(-Infinity,_Infinity) map 10
 -1/3
 1300
 
-QBarRandomProvider_rationalsIn_4_[1,_4] list 21
+QBarRandomProvider_rationalsIn_vii list 21
 2
 232/85
 5/2
@@ -11132,7 +12526,7 @@ QBarRandomProvider_rationalsIn_4_[1,_4] list 21
 1
 ...
 
-QBarRandomProvider_rationalsIn_4_[1,_4] map 10
+QBarRandomProvider_rationalsIn_vii map 10
 13/4
 11697
 1
@@ -11154,7 +12548,7 @@ QBarRandomProvider_rationalsIn_4_[1,_4] map 10
 8/5
 5962
 
-QBarRandomProvider_rationalsIn_32_[1,_4] list 21
+QBarRandomProvider_rationalsIn_viii list 21
 1785133180405213/1047878941452198
 30700/10321
 1549/1372
@@ -11177,7 +12571,7 @@ QBarRandomProvider_rationalsIn_32_[1,_4] list 21
 109/70
 ...
 
-QBarRandomProvider_rationalsIn_32_[1,_4] map 10
+QBarRandomProvider_rationalsIn_viii map 10
 13/4
 6615
 1
@@ -11199,7 +12593,7 @@ QBarRandomProvider_rationalsIn_32_[1,_4] map 10
 7/4
 6685
 
-QBarRandomProvider_rationalsIn_4_(-Infinity,_1/2] list 21
+QBarRandomProvider_rationalsIn_ix list 21
 -1/6
 -1/2
 1/2
@@ -11222,7 +12616,7 @@ QBarRandomProvider_rationalsIn_4_(-Infinity,_1/2] list 21
 -1/6
 ...
 
-QBarRandomProvider_rationalsIn_4_(-Infinity,_1/2] map 10
+QBarRandomProvider_rationalsIn_ix map 10
 0
 52243
 -11/2
@@ -11244,7 +12638,7 @@ QBarRandomProvider_rationalsIn_4_(-Infinity,_1/2] map 10
 -1/6
 13226
 
-QBarRandomProvider_rationalsIn_32_(-Infinity,_1/2] list 21
+QBarRandomProvider_rationalsIn_x list 21
 -6287273648561185/304006
 -7083608207149/97061240400
 -2175/2
@@ -11267,7 +12661,7 @@ QBarRandomProvider_rationalsIn_32_(-Infinity,_1/2] list 21
 -3388804892095/46
 ...
 
-QBarRandomProvider_rationalsIn_32_(-Infinity,_1/2] map 10
+QBarRandomProvider_rationalsIn_x map 10
 0
 2625
 -1/2
@@ -11289,7 +12683,7 @@ QBarRandomProvider_rationalsIn_32_(-Infinity,_1/2] map 10
 -5/2
 2709
 
-QBarRandomProvider_rationalsIn_4_[1/2,_Infinity) list 21
+QBarRandomProvider_rationalsIn_xi list 21
 7/6
 3/2
 1/2
@@ -11312,7 +12706,7 @@ QBarRandomProvider_rationalsIn_4_[1/2,_Infinity) list 21
 7/6
 ...
 
-QBarRandomProvider_rationalsIn_4_[1/2,_Infinity) map 10
+QBarRandomProvider_rationalsIn_xi map 10
 1
 52243
 13/2
@@ -11334,7 +12728,7 @@ QBarRandomProvider_rationalsIn_4_[1/2,_Infinity) map 10
 7/10
 13202
 
-QBarRandomProvider_rationalsIn_32_[1/2,_Infinity) list 21
+QBarRandomProvider_rationalsIn_xii list 21
 6287273648865191/304006
 7180669447549/97061240400
 2177/2
@@ -11357,7 +12751,7 @@ QBarRandomProvider_rationalsIn_32_[1/2,_Infinity) list 21
 3388804892141/46
 ...
 
-QBarRandomProvider_rationalsIn_32_[1/2,_Infinity) map 10
+QBarRandomProvider_rationalsIn_xii map 10
 15/2
 1311
 1
@@ -11379,7 +12773,7 @@ QBarRandomProvider_rationalsIn_32_[1/2,_Infinity) map 10
 7/10
 1275
 
-QBarRandomProvider_rationalsNotIn_4_[0,_0] list 21
+QBarRandomProvider_rationalsNotIn_i list 21
 3
 -1/5
 1
@@ -11402,7 +12796,7 @@ QBarRandomProvider_rationalsNotIn_4_[0,_0] list 21
 -1
 ...
 
-QBarRandomProvider_rationalsNotIn_4_[0,_0] map 10
+QBarRandomProvider_rationalsNotIn_i map 10
 1
 97333
 2
@@ -11424,7 +12818,7 @@ QBarRandomProvider_rationalsNotIn_4_[0,_0] map 10
 -1/3
 24086
 
-QBarRandomProvider_rationalsNotIn_32_[0,_0] list 21
+QBarRandomProvider_rationalsNotIn_ii list 21
 6499102/152003
 -5488/2734092316245
 -28331/46647
@@ -11447,7 +12841,7 @@ QBarRandomProvider_rationalsNotIn_32_[0,_0] list 21
 -1706054384/1080390895815402467
 ...
 
-QBarRandomProvider_rationalsNotIn_32_[0,_0] map 10
+QBarRandomProvider_rationalsNotIn_ii map 10
 1
 2829
 -1/2
@@ -11469,7 +12863,7 @@ QBarRandomProvider_rationalsNotIn_32_[0,_0] map 10
 -1/3
 1310
 
-QBarRandomProvider_rationalsNotIn_4_[1,_1] list 21
+QBarRandomProvider_rationalsNotIn_iii list 21
 3
 -1/5
 -5
@@ -11492,7 +12886,7 @@ QBarRandomProvider_rationalsNotIn_4_[1,_1] list 21
 -1/6
 ...
 
-QBarRandomProvider_rationalsNotIn_4_[1,_1] map 10
+QBarRandomProvider_rationalsNotIn_iii map 10
 0
 242751
 2
@@ -11514,7 +12908,7 @@ QBarRandomProvider_rationalsNotIn_4_[1,_1] map 10
 -1/3
 20185
 
-QBarRandomProvider_rationalsNotIn_32_[1,_1] list 21
+QBarRandomProvider_rationalsNotIn_iv list 21
 6499102/152003
 -5488/2734092316245
 -28331/46647
@@ -11537,7 +12931,7 @@ QBarRandomProvider_rationalsNotIn_32_[1,_1] list 21
 -1706054384/1080390895815402467
 ...
 
-QBarRandomProvider_rationalsNotIn_32_[1,_1] map 10
+QBarRandomProvider_rationalsNotIn_iv map 10
 0
 6079
 -1/2
@@ -11559,7 +12953,7 @@ QBarRandomProvider_rationalsNotIn_32_[1,_1] map 10
 -1/3
 1303
 
-QBarRandomProvider_rationalsNotIn_4_[1,_4] list 21
+QBarRandomProvider_rationalsNotIn_v list 21
 472/477
 -11
 1/2
@@ -11582,7 +12976,7 @@ QBarRandomProvider_rationalsNotIn_4_[1,_4] list 21
 1/2
 ...
 
-QBarRandomProvider_rationalsNotIn_4_[1,_4] map 10
+QBarRandomProvider_rationalsNotIn_v map 10
 0
 223597
 13/3
@@ -11604,7 +12998,7 @@ QBarRandomProvider_rationalsNotIn_4_[1,_4] map 10
 5/6
 14135
 
-QBarRandomProvider_rationalsNotIn_32_[1,_4] list 21
+QBarRandomProvider_rationalsNotIn_vi list 21
 -891837010519343/152003
 -7035077586949/97061240400
 -319
@@ -11627,7 +13021,7 @@ QBarRandomProvider_rationalsNotIn_32_[1,_4] list 21
 -809035873/6664274
 ...
 
-QBarRandomProvider_rationalsNotIn_32_[1,_4] map 10
+QBarRandomProvider_rationalsNotIn_vi map 10
 0
 5822
 1/2
@@ -11649,7 +13043,7 @@ QBarRandomProvider_rationalsNotIn_32_[1,_4] map 10
 6/7
 1299
 
-QBarRandomProvider_rationalsNotIn_4_(-Infinity,_1/2] list 21
+QBarRandomProvider_rationalsNotIn_vii list 21
 7/6
 3/2
 1
@@ -11672,7 +13066,7 @@ QBarRandomProvider_rationalsNotIn_4_(-Infinity,_1/2] list 21
 7/12
 ...
 
-QBarRandomProvider_rationalsNotIn_4_(-Infinity,_1/2] map 10
+QBarRandomProvider_rationalsNotIn_vii map 10
 1
 69744
 13/2
@@ -11694,7 +13088,7 @@ QBarRandomProvider_rationalsNotIn_4_(-Infinity,_1/2] map 10
 7/10
 17626
 
-QBarRandomProvider_rationalsNotIn_32_(-Infinity,_1/2] list 21
+QBarRandomProvider_rationalsNotIn_viii list 21
 6287273648865191/304006
 7180669447549/97061240400
 2177/2
@@ -11717,7 +13111,7 @@ QBarRandomProvider_rationalsNotIn_32_(-Infinity,_1/2] list 21
 3388804892141/46
 ...
 
-QBarRandomProvider_rationalsNotIn_32_(-Infinity,_1/2] map 10
+QBarRandomProvider_rationalsNotIn_viii map 10
 15/2
 1356
 1
@@ -11739,7 +13133,7 @@ QBarRandomProvider_rationalsNotIn_32_(-Infinity,_1/2] map 10
 7/10
 1311
 
-QBarRandomProvider_rationalsNotIn_4_[1/2,_Infinity) list 21
+QBarRandomProvider_rationalsNotIn_ix list 21
 -1/6
 -1/2
 0
@@ -11762,7 +13156,7 @@ QBarRandomProvider_rationalsNotIn_4_[1/2,_Infinity) list 21
 5/12
 ...
 
-QBarRandomProvider_rationalsNotIn_4_[1/2,_Infinity) map 10
+QBarRandomProvider_rationalsNotIn_ix map 10
 0
 69744
 -11/2
@@ -11784,7 +13178,7 @@ QBarRandomProvider_rationalsNotIn_4_[1/2,_Infinity) map 10
 -1/6
 17636
 
-QBarRandomProvider_rationalsNotIn_32_[1/2,_Infinity) list 21
+QBarRandomProvider_rationalsNotIn_x list 21
 -6287273648561185/304006
 -7083608207149/97061240400
 -2175/2
@@ -11807,7 +13201,7 @@ QBarRandomProvider_rationalsNotIn_32_[1/2,_Infinity) list 21
 -3388804892095/46
 ...
 
-QBarRandomProvider_rationalsNotIn_32_[1/2,_Infinity) map 10
+QBarRandomProvider_rationalsNotIn_x map 10
 0
 2710
 -1/2

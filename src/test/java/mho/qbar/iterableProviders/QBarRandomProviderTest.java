@@ -361,84 +361,84 @@ public class QBarRandomProviderTest {
         rangeDown_Rational_helper(
                 4,
                 "0",
-                "QBarRandomProvider_rangeDown_Rational_4_0",
+                "QBarRandomProvider_rangeDown_Rational_i",
                 -7.230916348852299,
                 3.083149999986345
         );
         rangeDown_Rational_helper(
                 32,
                 "0",
-                "QBarRandomProvider_rangeDown_Rational_32_0",
+                "QBarRandomProvider_rangeDown_Rational_ii",
                 -2.30035078376369E59,
                 30.041032000029976
         );
         rangeDown_Rational_helper(
                 4,
                 "1",
-                "QBarRandomProvider_rangeDown_Rational_4_1",
+                "QBarRandomProvider_rangeDown_Rational_iii",
                 -6.230916348820594,
                 3.3941509999804
         );
         rangeDown_Rational_helper(
                 32,
                 "1",
-                "QBarRandomProvider_rangeDown_Rational_32_1",
+                "QBarRandomProvider_rangeDown_Rational_iv",
                 -2.30035078376369E59,
                 37.41008700000551
         );
         rangeDown_Rational_helper(
                 4,
                 "2",
-                "QBarRandomProvider_rangeDown_Rational_4_2",
+                "QBarRandomProvider_rangeDown_Rational_v",
                 -5.230916348808398,
                 4.015000999973354
         );
         rangeDown_Rational_helper(
                 32,
                 "2",
-                "QBarRandomProvider_rangeDown_Rational_32_2",
+                "QBarRandomProvider_rangeDown_Rational_vi",
                 -2.30035078376369E59,
                 37.930548000008635
         );
         rangeDown_Rational_helper(
                 4,
                 "-2",
-                "QBarRandomProvider_rangeDown_Rational_4_-2",
+                "QBarRandomProvider_rangeDown_Rational_vii",
                 -9.23091634887471,
                 4.784373000006757
         );
         rangeDown_Rational_helper(
                 32,
                 "-2",
-                "QBarRandomProvider_rangeDown_Rational_32_-2",
+                "QBarRandomProvider_rangeDown_Rational_viii",
                 -2.30035078376369E59,
                 38.19239900001273
         );
         rangeDown_Rational_helper(
                 4,
                 "5/3",
-                "QBarRandomProvider_rangeDown_Rational_4_5/3",
+                "QBarRandomProvider_rangeDown_Rational_ix",
                 -5.564249682144554,
                 5.86250299994541
         );
         rangeDown_Rational_helper(
                 32,
                 "5/3",
-                "QBarRandomProvider_rangeDown_Rational_32_5/3",
+                "QBarRandomProvider_rangeDown_Rational_x",
                 -2.30035078376369E59,
                 39.967830000046504
         );
         rangeDown_Rational_helper(
                 4,
                 "-5/3",
-                "QBarRandomProvider_rangeDown_Rational_4_-5/3",
+                "QBarRandomProvider_rangeDown_Rational_xi",
                 -8.89758301551532,
                 6.751185999974823
         );
         rangeDown_Rational_helper(
                 32,
                 "-5/3",
-                "QBarRandomProvider_rangeDown_Rational_32_-5/3",
+                "QBarRandomProvider_rangeDown_Rational_xii",
                 -2.30035078376369E59,
                 40.232672000039464
         );
@@ -479,7 +479,7 @@ public class QBarRandomProviderTest {
                 4,
                 "0",
                 "0",
-                "QBarRandomProvider_range_Rational_Rational_4_0_0",
+                "QBarRandomProvider_range_Rational_Rational_i",
                 0.0,
                 1.000000000007918
         );
@@ -487,7 +487,7 @@ public class QBarRandomProviderTest {
                 32,
                 "0",
                 "0",
-                "QBarRandomProvider_range_Rational_Rational_32_0_0",
+                "QBarRandomProvider_range_Rational_Rational_ii",
                 0.0,
                 1.000000000007918
         );
@@ -495,7 +495,7 @@ public class QBarRandomProviderTest {
                 4,
                 "5/3",
                 "5/3",
-                "QBarRandomProvider_range_Rational_Rational_4_5/3_5/3",
+                "QBarRandomProvider_range_Rational_Rational_iii",
                 1.6666666666766063,
                 4.999999999895295
         );
@@ -503,7 +503,7 @@ public class QBarRandomProviderTest {
                 32,
                 "5/3",
                 "5/3",
-                "QBarRandomProvider_range_Rational_Rational_32_5/3_5/3",
+                "QBarRandomProvider_range_Rational_Rational_iv",
                 1.6666666666766063,
                 4.999999999895295
         );
@@ -511,7 +511,7 @@ public class QBarRandomProviderTest {
                 4,
                 "0",
                 "1",
-                "QBarRandomProvider_range_Rational_Rational_4_0_1",
+                "QBarRandomProvider_range_Rational_Rational_v",
                 0.43764761498431315,
                 2.771136999989421
         );
@@ -519,7 +519,7 @@ public class QBarRandomProviderTest {
                 32,
                 "0",
                 "1",
-                "QBarRandomProvider_range_Rational_Rational_32_0_1",
+                "QBarRandomProvider_range_Rational_Rational_vi",
                 0.4855748611217715,
                 29.795897000025235
         );
@@ -527,7 +527,7 @@ public class QBarRandomProviderTest {
                 4,
                 "-1",
                 "0",
-                "QBarRandomProvider_range_Rational_Rational_4_-1_0",
+                "QBarRandomProvider_range_Rational_Rational_vii",
                 -0.562352385009498,
                 2.89502099998304
         );
@@ -535,7 +535,7 @@ public class QBarRandomProviderTest {
                 32,
                 "-1",
                 "0",
-                "QBarRandomProvider_range_Rational_Rational_32_-1_0",
+                "QBarRandomProvider_range_Rational_Rational_viii",
                 -0.5144251388771651,
                 29.8250019999991
         );
@@ -543,7 +543,7 @@ public class QBarRandomProviderTest {
                 4,
                 "1/3",
                 "1/2",
-                "QBarRandomProvider_range_Rational_Rational_4_1/3_1/2",
+                "QBarRandomProvider_range_Rational_Rational_ix",
                 0.40627460249656705,
                 5.237116000060525
         );
@@ -551,7 +551,7 @@ public class QBarRandomProviderTest {
                 32,
                 "1/3",
                 "1/2",
-                "QBarRandomProvider_range_Rational_Rational_32_1/3_1/2",
+                "QBarRandomProvider_range_Rational_Rational_x",
                 0.41426247685353923,
                 33.696076999997224
         );
@@ -559,7 +559,7 @@ public class QBarRandomProviderTest {
                 4,
                 "-1",
                 "5/3",
-                "QBarRandomProvider_range_Rational_Rational_4_-1_5/3",
+                "QBarRandomProvider_range_Rational_Rational_xi",
                 0.1670603066320713,
                 4.350258999958008
         );
@@ -567,7 +567,7 @@ public class QBarRandomProviderTest {
                 32,
                 "-1",
                 "5/3",
-                "QBarRandomProvider_range_Rational_Rational_32_-1_5/3",
+                "QBarRandomProvider_range_Rational_Rational_xii",
                 0.29486629632591527,
                 31.072729000007964
         );
@@ -601,9 +601,9 @@ public class QBarRandomProviderTest {
 
     @Test
     public void testFinitelyBoundedIntervals() {
-        finitelyBoundedIntervals_helper(6, "QBarRandomProvider_finitelyBoundedIntervals_6", 5.139956999987673);
-        finitelyBoundedIntervals_helper(16, "QBarRandomProvider_finitelyBoundedIntervals_16", 15.568145999994938);
-        finitelyBoundedIntervals_helper(32, "QBarRandomProvider_finitelyBoundedIntervals_32", 31.618885000011975);
+        finitelyBoundedIntervals_helper(6, "QBarRandomProvider_finitelyBoundedIntervals_i", 5.139956999987673);
+        finitelyBoundedIntervals_helper(16, "QBarRandomProvider_finitelyBoundedIntervals_ii", 15.568145999994938);
+        finitelyBoundedIntervals_helper(32, "QBarRandomProvider_finitelyBoundedIntervals_iii", 31.618885000011975);
         finitelyBoundedIntervals_fail_helper(5);
         finitelyBoundedIntervals_fail_helper(0);
         finitelyBoundedIntervals_fail_helper(-1);
@@ -626,9 +626,9 @@ public class QBarRandomProviderTest {
 
     @Test
     public void testIntervals() {
-        intervals_helper(6, "QBarRandomProvider_intervals_6", 3.146318999988329);
-        intervals_helper(16, "QBarRandomProvider_intervals_16", 12.45336999999764);
-        intervals_helper(32, "QBarRandomProvider_intervals_32", 28.10473700001665);
+        intervals_helper(6, "QBarRandomProvider_intervals_i", 3.146318999988329);
+        intervals_helper(16, "QBarRandomProvider_intervals_ii", 12.45336999999764);
+        intervals_helper(32, "QBarRandomProvider_intervals_iii", 28.10473700001665);
         intervals_fail_helper(5);
         intervals_fail_helper(0);
         intervals_fail_helper(-1);
@@ -657,75 +657,75 @@ public class QBarRandomProviderTest {
 
     @Test
     public void testRationalsIn() {
-        rationalsIn_helper(4, "[0, 0]", "QBarRandomProvider_rationalsIn_4_[0,_0]", 0.0, 1.000000000007918);
-        rationalsIn_helper(32, "[0, 0]", "QBarRandomProvider_rationalsIn_32_[0,_0]", 0.0, 1.000000000007918);
+        rationalsIn_helper(4, "[0, 0]", "QBarRandomProvider_rationalsIn_i", 0.0, 1.000000000007918);
+        rationalsIn_helper(32, "[0, 0]", "QBarRandomProvider_rationalsIn_ii", 0.0, 1.000000000007918);
         rationalsIn_helper(
                 4,
                 "[1, 1]",
-                "QBarRandomProvider_rationalsIn_4_[1,_1]",
+                "QBarRandomProvider_rationalsIn_iii",
                 1.000000000007918,
                 2.000000000015836
         );
         rationalsIn_helper(
                 32,
                 "[1, 1]",
-                "QBarRandomProvider_rationalsIn_32_[1,_1]",
+                "QBarRandomProvider_rationalsIn_iv",
                 1.000000000007918,
                 2.000000000015836
         );
         rationalsIn_helper(
                 4,
                 "(-Infinity, Infinity)",
-                "QBarRandomProvider_rationalsIn_4_(-Infinity,_Infinity)",
+                "QBarRandomProvider_rationalsIn_v",
                 4459.875622663981,
                 3.869968999988822
         );
         rationalsIn_helper(
                 32,
                 "(-Infinity, Infinity)",
-                "QBarRandomProvider_rationalsIn_32_(-Infinity,_Infinity)",
+                "QBarRandomProvider_rationalsIn_vi",
                 -3.784942556617747E71,
                 31.82849000002398
         );
         rationalsIn_helper(
                 4,
                 "[1, 4]",
-                "QBarRandomProvider_rationalsIn_4_[1,_4]",
+                "QBarRandomProvider_rationalsIn_vii",
                 2.3129428449434144,
                 4.068563999969932
         );
         rationalsIn_helper(
                 32,
                 "[1, 4]",
-                "QBarRandomProvider_rationalsIn_32_[1,_4]",
+                "QBarRandomProvider_rationalsIn_viii",
                 2.456724583363463,
                 31.33094400000747
         );
         rationalsIn_helper(
                 4,
                 "(-Infinity, 1/2]",
-                "QBarRandomProvider_rationalsIn_4_(-Infinity,_1/2]",
+                "QBarRandomProvider_rationalsIn_ix",
                 -6.7309163488312524,
                 4.3459919999995815
         );
         rationalsIn_helper(
                 32,
                 "(-Infinity, 1/2]",
-                "QBarRandomProvider_rationalsIn_32_(-Infinity,_1/2]",
+                "QBarRandomProvider_rationalsIn_x",
                 -2.30035078376369E59,
                 37.958985000008944
         );
         rationalsIn_helper(
                 4,
                 "[1/2, Infinity)",
-                "QBarRandomProvider_rationalsIn_4_[1/2,_Infinity)",
+                "QBarRandomProvider_rationalsIn_xi",
                 7.73091634876883,
                 5.011827999992238
         );
         rationalsIn_helper(
                 32,
                 "[1/2, Infinity)",
-                "QBarRandomProvider_rationalsIn_32_[1/2,_Infinity)",
+                "QBarRandomProvider_rationalsIn_xii",
                 2.30035078376369E59,
                 38.21444000001194
         );
@@ -764,70 +764,70 @@ public class QBarRandomProviderTest {
         rationalsNotIn_helper(
                 4,
                 "[0, 0]",
-                "QBarRandomProvider_rationalsNotIn_4_[0,_0]",
+                "QBarRandomProvider_rationalsNotIn_i",
                 -1514.3998931402477,
                 4.699111999987303
         );
         rationalsNotIn_helper(
                 32,
                 "[0, 0]",
-                "QBarRandomProvider_rationalsNotIn_32_[0,_0]",
+                "QBarRandomProvider_rationalsNotIn_ii",
                 -3.784942556617747E71,
                 32.0148380000219
         );
         rationalsNotIn_helper(
                 4,
                 "[1, 1]",
-                "QBarRandomProvider_rationalsNotIn_4_[1,_1]",
+                "QBarRandomProvider_rationalsNotIn_iii",
                 3405.7680966854173,
                 4.0221769999945876
         );
         rationalsNotIn_helper(
                 32,
                 "[1, 1]",
-                "QBarRandomProvider_rationalsNotIn_32_[1,_1]",
+                "QBarRandomProvider_rationalsNotIn_iv",
                 -3.784942556617747E71,
                 31.911038000025872
         );
         rationalsNotIn_helper(
                 4,
                 "[1, 4]",
-                "QBarRandomProvider_rationalsNotIn_4_[1,_4]",
+                "QBarRandomProvider_rationalsNotIn_v",
                 -69.41248621922566,
                 4.310511999997506
         );
         rationalsNotIn_helper(
                 32,
                 "[1, 4]",
-                "QBarRandomProvider_rationalsNotIn_32_[1,_4]",
+                "QBarRandomProvider_rationalsNotIn_vi",
                 -4.8445650251622075E53,
                 38.611619000014095
         );
         rationalsNotIn_helper(
                 4,
                 "(-Infinity, 1/2]",
-                "QBarRandomProvider_rationalsNotIn_4_(-Infinity,_1/2]",
+                "QBarRandomProvider_rationalsNotIn_vii",
                 9.925816351081805,
                 5.681415999961638
         );
         rationalsNotIn_helper(
                 32,
                 "(-Infinity, 1/2]",
-                "QBarRandomProvider_rationalsNotIn_32_(-Infinity,_1/2]",
+                "QBarRandomProvider_rationalsNotIn_viii",
                 2.30035078376369E59,
                 39.36069900002264
         );
         rationalsNotIn_helper(
                 4,
                 "[1/2, Infinity)",
-                "QBarRandomProvider_rationalsNotIn_4_[1/2,_Infinity)",
+                "QBarRandomProvider_rationalsNotIn_ix",
                 -8.92581635109024,
                 4.794851000002666
         );
         rationalsNotIn_helper(
                 32,
                 "[1/2, Infinity)",
-                "QBarRandomProvider_rationalsNotIn_32_[1/2,_Infinity)",
+                "QBarRandomProvider_rationalsNotIn_x",
                 -2.30035078376369E59,
                 39.096911000018515
         );
