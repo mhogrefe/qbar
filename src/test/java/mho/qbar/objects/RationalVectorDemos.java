@@ -27,9 +27,10 @@ public class RationalVectorDemos extends QBarDemos {
         }
     }
 
-    private void demoHasIntegralCoordinates() {
+    private void demoOnlyHasIntegralCoordinates() {
         for (RationalVector v : take(LIMIT, P.withScale(4).rationalVectors())) {
-            System.out.println(v + (v.hasIntegralCoordinates() ? " has " : " doesn't have ") + "integral coordinates");
+            System.out.println(v + (v.onlyHasIntegralCoordinates() ? " only has " : " doesn't only have ") +
+                    "integral coordinates");
         }
     }
 

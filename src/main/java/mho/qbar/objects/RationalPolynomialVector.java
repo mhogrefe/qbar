@@ -81,8 +81,8 @@ public class RationalPolynomialVector implements Comparable<RationalPolynomialVe
      *
      * @return whether {@code this} only has coordinates with integral coefficients.
      */
-    public boolean hasIntegralCoordinates() {
-        return all(RationalPolynomial::hasIntegralCoefficients, coordinates);
+    public boolean onlyHasIntegralCoordinates() {
+        return all(RationalPolynomial::onlyHasIntegralCoefficients, coordinates);
     }
 
     /**

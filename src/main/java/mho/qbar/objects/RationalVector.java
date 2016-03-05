@@ -79,9 +79,9 @@ public final class RationalVector implements Comparable<RationalVector>, Iterabl
      *  <li>The result may be either {@code boolean}.</li>
      * </ul>
      *
-     * @return whether {@code this} has integral coordinates.
+     * @return whether {@code this} only has integral coordinates.
      */
-    public boolean hasIntegralCoordinates() {
+    public boolean onlyHasIntegralCoordinates() {
         return all(Rational::isInteger, coordinates);
     }
 

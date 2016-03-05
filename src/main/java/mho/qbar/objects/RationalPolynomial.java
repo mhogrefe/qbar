@@ -129,7 +129,7 @@ public final class RationalPolynomial implements
      *
      * @return whether {@code this} has integral coefficients.
      */
-    public boolean hasIntegralCoefficients() {
+    public boolean onlyHasIntegralCoefficients() {
         return all(Rational::isInteger, coefficients);
     }
 

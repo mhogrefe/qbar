@@ -103,20 +103,20 @@ public class RationalMatrixTest {
         column_fail_helper("[[1, 9, -13], [20, 5, -6]]", -1);
     }
 
-    private static void hasIntegralElements_helper(@NotNull String input, boolean output) {
-        aeq(read(input).get().hasIntegralElements(), output);
+    private static void onlyHasIntegralElements_helper(@NotNull String input, boolean output) {
+        aeq(read(input).get().onlyHasIntegralElements(), output);
     }
 
     @Test
     public void testHasIntegralElements() {
-        hasIntegralElements_helper("[]#0", true);
-        hasIntegralElements_helper("[]#1", true);
-        hasIntegralElements_helper("[]#3", true);
-        hasIntegralElements_helper("[[]]", true);
-        hasIntegralElements_helper("[[], [], []]", true);
-        hasIntegralElements_helper("[[-2/3]]", false);
-        hasIntegralElements_helper("[[-2/3, -8], [0, 5/7]]", false);
-        hasIntegralElements_helper("[[1, 9, -13], [20, 5, -6]]", true);
+        onlyHasIntegralElements_helper("[]#0", true);
+        onlyHasIntegralElements_helper("[]#1", true);
+        onlyHasIntegralElements_helper("[]#3", true);
+        onlyHasIntegralElements_helper("[[]]", true);
+        onlyHasIntegralElements_helper("[[], [], []]", true);
+        onlyHasIntegralElements_helper("[[-2/3]]", false);
+        onlyHasIntegralElements_helper("[[-2/3, -8], [0, 5/7]]", false);
+        onlyHasIntegralElements_helper("[[1, 9, -13], [20, 5, -6]]", true);
     }
 
     private static void toMatrix_helper(@NotNull String input) {

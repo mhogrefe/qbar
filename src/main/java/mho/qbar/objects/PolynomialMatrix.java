@@ -151,7 +151,7 @@ public class PolynomialMatrix implements Comparable<PolynomialMatrix> {
      *
      * <ul>
      *  <li>{@code this} may be any {@code PolynomialMatrix}.</li>
-     *  <li>The result is a {@code RationalPolynomialMatrix} with integral elements.</li>
+     *  <li>The result is a {@code RationalPolynomialMatrix} with only integral elements.</li>
      * </ul>
      *
      * Size is height({@code this})×width({@code this})

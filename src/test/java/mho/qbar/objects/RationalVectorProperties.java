@@ -29,7 +29,7 @@ public class RationalVectorProperties extends QBarTestProperties {
     @Override
     protected void testBothModes() {
         propertiesIterator();
-        propertiesHasIntegralCoordinates();
+        propertiesOnlyHasIntegralCoordinates();
         propertiesToVector();
         propertiesGet();
         propertiesOf_List_Rational();
@@ -86,14 +86,14 @@ public class RationalVectorProperties extends QBarTestProperties {
         }
     }
 
-    private void propertiesHasIntegralCoordinates() {
-        initialize("hasIntegralCoordinates()");
+    private void propertiesOnlyHasIntegralCoordinates() {
+        initialize("onlyHasIntegralCoordinates()");
         for (RationalVector v : take(LIMIT, P.rationalVectors())) {
-            v.hasIntegralCoordinates();
+            v.onlyHasIntegralCoordinates();
         }
 
         for (RationalVector v : take(LIMIT, map(Vector::toRationalVector, P.vectors()))) {
-            assertTrue(v, v.hasIntegralCoordinates());
+            assertTrue(v, v.onlyHasIntegralCoordinates());
         }
     }
 

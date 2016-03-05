@@ -150,7 +150,7 @@ public class Matrix implements Comparable<Matrix> {
      *
      * <ul>
      *  <li>{@code this} may be any {@code Matrix}.</li>
-     *  <li>The result is a {@code RationalMatrix} with integral elements.</li>
+     *  <li>The result is a {@code RationalMatrix} with only integral elements.</li>
      * </ul>
      *
      * Size is height({@code this})×width({@code this})

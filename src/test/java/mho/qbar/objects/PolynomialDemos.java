@@ -374,7 +374,7 @@ public class PolynomialDemos extends QBarDemos {
                 p -> {
                     Pair<RationalPolynomial, RationalPolynomial> qr =
                             p.a.toRationalPolynomial().divide(p.b.toRationalPolynomial());
-                    return qr.a.hasIntegralCoefficients() && qr.b.hasIntegralCoefficients();
+                    return qr.a.onlyHasIntegralCoefficients() && qr.b.onlyHasIntegralCoefficients();
                 },
                 P.pairs(P.withScale(4).polynomials(), P.withScale(4).polynomialsAtLeast(0))
         );

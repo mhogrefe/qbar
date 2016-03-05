@@ -31,17 +31,17 @@ public class RationalVectorTest {
         iterator_helper("[5/3, -1/4, 23]");
     }
 
-    private static void hasIntegralCoordinates_helper(@NotNull String input, boolean output) {
-        aeq(read(input).get().hasIntegralCoordinates(), output);
+    private static void onlyHasIntegralCoordinates_helper(@NotNull String input, boolean output) {
+        aeq(read(input).get().onlyHasIntegralCoordinates(), output);
     }
 
     @Test
     public void testHasIntegralCoordinates() {
-        hasIntegralCoordinates_helper("[]", true);
-        hasIntegralCoordinates_helper("[2]", true);
-        hasIntegralCoordinates_helper("[12, -4, 0, 2]", true);
-        hasIntegralCoordinates_helper("[1/2]", false);
-        hasIntegralCoordinates_helper("[5/3, -1/4, 23]", false);
+        onlyHasIntegralCoordinates_helper("[]", true);
+        onlyHasIntegralCoordinates_helper("[2]", true);
+        onlyHasIntegralCoordinates_helper("[12, -4, 0, 2]", true);
+        onlyHasIntegralCoordinates_helper("[1/2]", false);
+        onlyHasIntegralCoordinates_helper("[5/3, -1/4, 23]", false);
     }
 
     private static void toVector_helper(@NotNull String input) {

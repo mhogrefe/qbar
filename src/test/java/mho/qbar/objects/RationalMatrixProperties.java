@@ -168,11 +168,11 @@ public class RationalMatrixProperties extends QBarTestProperties {
     private void propertiesHasIntegralElements() {
         initialize("hasIntegralElements()");
         for (RationalMatrix m : take(LIMIT, P.rationalMatrices())) {
-            m.hasIntegralElements();
+            m.onlyHasIntegralElements();
         }
 
         for (RationalMatrix m : take(LIMIT, map(Matrix::toRationalMatrix, P.matrices()))) {
-            assertTrue(m, m.hasIntegralElements());
+            assertTrue(m, m.onlyHasIntegralElements());
         }
     }
 
@@ -187,7 +187,7 @@ public class RationalMatrixProperties extends QBarTestProperties {
         }
 
         Iterable<RationalMatrix> msFail = filterInfinite(
-                m -> any(r -> !r.hasIntegralCoordinates(),
+                m -> any(r -> !r.onlyHasIntegralCoordinates(),
                 m.rows()), P.rationalMatrices()
         );
         for (RationalMatrix m : take(LIMIT, msFail)) {

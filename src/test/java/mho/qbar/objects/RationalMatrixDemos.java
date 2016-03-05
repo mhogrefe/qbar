@@ -53,9 +53,10 @@ public class RationalMatrixDemos extends QBarDemos {
         }
     }
 
-    private void demoHasIntegralElements() {
+    private void demoOnlyHasIntegralElements() {
         for (RationalMatrix m : take(LIMIT, P.withScale(4).rationalMatrices())) {
-            System.out.println(m + (m.hasIntegralElements() ? " has " : " doesn't have ") + "integral elements");
+            System.out.println(m + (m.onlyHasIntegralElements() ? " only has " : " doesn't only have ") +
+                    "integral elements");
         }
     }
 

@@ -38,9 +38,9 @@ public class RationalPolynomialDemos extends QBarDemos {
         }
     }
 
-    private void demoHasIntegralCoefficients() {
+    private void demoOnlyHasIntegralCoefficients() {
         for (RationalPolynomial p : take(LIMIT, P.withScale(4).rationalPolynomials())) {
-            System.out.println(p + (p.hasIntegralCoefficients() ? " has " : " doesn't have ") +
+            System.out.println(p + (p.onlyHasIntegralCoefficients() ? " only has " : " doesn't only have ") +
                     "integral coefficients");
         }
     }

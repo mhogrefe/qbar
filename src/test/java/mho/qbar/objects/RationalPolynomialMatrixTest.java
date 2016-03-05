@@ -105,20 +105,20 @@ public class RationalPolynomialMatrixTest {
         column_fail_helper("[[1, x, x^10-1/2], [x^3-x^2+1, 5, 2/3*x+4]]", -1);
     }
 
-    private static void hasIntegralElements_helper(@NotNull String input, boolean output) {
-        aeq(read(input).get().hasIntegralElements(), output);
+    private static void onlyHasIntegralElements_helper(@NotNull String input, boolean output) {
+        aeq(read(input).get().onlyHasIntegralElements(), output);
     }
 
     @Test
-    public void testHasIntegralElements() {
-        hasIntegralElements_helper("[]#0", true);
-        hasIntegralElements_helper("[]#1", true);
-        hasIntegralElements_helper("[]#3", true);
-        hasIntegralElements_helper("[[]]", true);
-        hasIntegralElements_helper("[[], [], []]", true);
-        hasIntegralElements_helper("[[-2/3]]", false);
-        hasIntegralElements_helper("[[x-2/3, -8/5*x^2+x], [0, 7*x-1/2]]", false);
-        hasIntegralElements_helper("[[x, 9*x+3, -13], [20, 5*x^5, -6]]", true);
+    public void testOnlyHasIntegralElements() {
+        onlyHasIntegralElements_helper("[]#0", true);
+        onlyHasIntegralElements_helper("[]#1", true);
+        onlyHasIntegralElements_helper("[]#3", true);
+        onlyHasIntegralElements_helper("[[]]", true);
+        onlyHasIntegralElements_helper("[[], [], []]", true);
+        onlyHasIntegralElements_helper("[[-2/3]]", false);
+        onlyHasIntegralElements_helper("[[x-2/3, -8/5*x^2+x], [0, 7*x-1/2]]", false);
+        onlyHasIntegralElements_helper("[[x, 9*x+3, -13], [20, 5*x^5, -6]]", true);
     }
 
     private static void toPolynomialMatrix_helper(@NotNull String input) {

@@ -27,7 +27,7 @@ public class RationalPolynomialVectorProperties extends QBarTestProperties {
     @Override
     protected void testBothModes() {
         propertiesIterator();
-        propertiesHasIntegralCoordinates();
+        propertiesOnlyHasIntegralCoordinates();
         propertiesToPolynomialVector();
         propertiesGet();
         propertiesOf_List_RationalPolynomial();
@@ -79,10 +79,10 @@ public class RationalPolynomialVectorProperties extends QBarTestProperties {
         }
     }
 
-    private void propertiesHasIntegralCoordinates() {
-        initialize("hasIntegralCoordinates()");
+    private void propertiesOnlyHasIntegralCoordinates() {
+        initialize("onlyHasIntegralCoordinates()");
         for (RationalPolynomialVector v : take(LIMIT, P.rationalPolynomialVectors())) {
-            v.hasIntegralCoordinates();
+            v.onlyHasIntegralCoordinates();
         }
 
         Iterable<RationalPolynomialVector> vs = map(
@@ -90,7 +90,7 @@ public class RationalPolynomialVectorProperties extends QBarTestProperties {
                 P.polynomialVectors()
         );
         for (RationalPolynomialVector v : take(LIMIT, vs)) {
-            assertTrue(v, v.hasIntegralCoordinates());
+            assertTrue(v, v.onlyHasIntegralCoordinates());
         }
     }
 
@@ -108,7 +108,7 @@ public class RationalPolynomialVectorProperties extends QBarTestProperties {
         }
 
         Iterable<RationalPolynomialVector> psFail = filterInfinite(
-                p -> any(c -> !c.hasIntegralCoefficients(), p),
+                p -> any(c -> !c.onlyHasIntegralCoefficients(), p),
                 P.rationalPolynomialVectors()
         );
         for (RationalPolynomialVector v : take(LIMIT, psFail)) {

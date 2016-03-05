@@ -2052,7 +2052,7 @@ public class PolynomialProperties extends QBarTestProperties {
     private static @NotNull Polynomial divideExact_Polynomial_simplest(@NotNull Polynomial a, @NotNull Polynomial b) {
         Pair<RationalPolynomial, RationalPolynomial> quotRem =
                 a.toRationalPolynomial().divide(b.toRationalPolynomial());
-        if (quotRem.b != RationalPolynomial.ZERO || !quotRem.a.hasIntegralCoefficients()) {
+        if (quotRem.b != RationalPolynomial.ZERO || !quotRem.a.onlyHasIntegralCoefficients()) {
             throw new ArithmeticException();
         }
         return quotRem.a.toPolynomial();
@@ -2081,7 +2081,7 @@ public class PolynomialProperties extends QBarTestProperties {
                 p -> {
                     Pair<RationalPolynomial, RationalPolynomial> quotRem =
                             p.a.toRationalPolynomial().divide(p.b.toRationalPolynomial());
-                    return quotRem.b != RationalPolynomial.ZERO || !quotRem.a.hasIntegralCoefficients();
+                    return quotRem.b != RationalPolynomial.ZERO || !quotRem.a.onlyHasIntegralCoefficients();
                 },
                 P.pairs(P.polynomials(), P.polynomialsAtLeast(0))
         );
@@ -2114,7 +2114,7 @@ public class PolynomialProperties extends QBarTestProperties {
     private static @NotNull Polynomial remainderExact_simplest(@NotNull Polynomial a, @NotNull Polynomial b) {
         Pair<RationalPolynomial, RationalPolynomial> quotRem =
                 a.toRationalPolynomial().divide(b.toRationalPolynomial());
-        if (!quotRem.a.hasIntegralCoefficients() || !quotRem.b.hasIntegralCoefficients()) {
+        if (!quotRem.a.onlyHasIntegralCoefficients() || !quotRem.b.onlyHasIntegralCoefficients()) {
             throw new ArithmeticException();
         }
         return quotRem.b.toPolynomial();
@@ -2126,7 +2126,7 @@ public class PolynomialProperties extends QBarTestProperties {
                 p -> {
                     Pair<RationalPolynomial, RationalPolynomial> qr =
                             p.a.toRationalPolynomial().divide(p.b.toRationalPolynomial());
-                    return qr.a.hasIntegralCoefficients() && qr.b.hasIntegralCoefficients();
+                    return qr.a.onlyHasIntegralCoefficients() && qr.b.onlyHasIntegralCoefficients();
                 },
                 P.pairs(P.polynomials(), P.polynomialsAtLeast(0))
         );
@@ -2149,7 +2149,7 @@ public class PolynomialProperties extends QBarTestProperties {
                 p -> {
                     Pair<RationalPolynomial, RationalPolynomial> qr =
                             p.a.toRationalPolynomial().divide(p.b.toRationalPolynomial());
-                    return !qr.a.hasIntegralCoefficients() || !qr.b.hasIntegralCoefficients();
+                    return !qr.a.onlyHasIntegralCoefficients() || !qr.b.onlyHasIntegralCoefficients();
                 },
                 P.pairs(P.polynomials(), P.polynomialsAtLeast(0))
         );
@@ -2169,7 +2169,7 @@ public class PolynomialProperties extends QBarTestProperties {
                 p -> {
                     Pair<RationalPolynomial, RationalPolynomial> qr =
                             p.a.toRationalPolynomial().divide(p.b.toRationalPolynomial());
-                    return qr.a.hasIntegralCoefficients() && qr.b.hasIntegralCoefficients();
+                    return qr.a.onlyHasIntegralCoefficients() && qr.b.onlyHasIntegralCoefficients();
                 },
                 P.pairs(P.polynomials(), P.polynomialsAtLeast(0))
         );

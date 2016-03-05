@@ -157,10 +157,10 @@ public class RationalPolynomialMatrix implements Comparable<RationalPolynomialMa
      *  <li>The result may be either {@code boolean}.</li>
      * </ul>
      *
-     * @return whether {@code this} has integral elements.
+     * @return whether {@code this} only has integral elements.
      */
-    public boolean hasIntegralElements() {
-        return all(RationalPolynomialVector::hasIntegralCoordinates, rows);
+    public boolean onlyHasIntegralElements() {
+        return all(RationalPolynomialVector::onlyHasIntegralCoordinates, rows);
     }
 
     /**

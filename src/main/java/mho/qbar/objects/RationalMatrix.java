@@ -154,10 +154,10 @@ public final class RationalMatrix implements Comparable<RationalMatrix> {
      *  <li>The result may be either {@code boolean}.</li>
      * </ul>
      *
-     * @return whether {@code this} has integral elements.
+     * @return whether {@code this} only has integral elements.
      */
-    public boolean hasIntegralElements() {
-        return all(RationalVector::hasIntegralCoordinates, rows);
+    public boolean onlyHasIntegralElements() {
+        return all(RationalVector::onlyHasIntegralCoordinates, rows);
     }
 
     /**
