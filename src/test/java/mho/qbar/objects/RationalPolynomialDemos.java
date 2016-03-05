@@ -408,6 +408,16 @@ public class RationalPolynomialDemos extends QBarDemos {
         }
     }
 
+    private void demoStretch() {
+        Iterable<Pair<RationalPolynomial, Rational>> ps = P.pairs(
+                P.withScale(4).rationalPolynomials(),
+                P.withScale(4).positiveRationals()
+        );
+        for (Pair<RationalPolynomial, Rational> p : take(LIMIT, ps)) {
+            System.out.println("stretch(" + p.a + ", " + p.b + ") = " + p.a.stretch(p.b));
+        }
+    }
+
     private void demoEquals_RationalPolynomial() {
         Iterable<Pair<RationalPolynomial, RationalPolynomial>> ps = P.pairs(P.withScale(4).rationalPolynomials());
         for (Pair<RationalPolynomial, RationalPolynomial> p : take(LIMIT, ps)) {

@@ -1141,6 +1141,35 @@ public final class RationalPolynomial implements
     }
 
     /**
+     * Returns {@code this} stretched in the x-direction by a factor of {@code f}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code RationalPolynomial}.</li>
+     *  <li>{@code f} must be positive.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param f the amount that {@code this} is stretched in the x-direction
+     * @return {@code this}(x/f)
+     */
+    public @NotNull RationalPolynomial stretch(@NotNull Rational f) {
+        if (f.signum() != 1) {
+            throw new ArithmeticException("f must be positive. Invalid f: " + f);
+        }
+        int degree = degree();
+        if (degree < 1 || f == Rational.ONE) return this;
+        List<Rational> stretchedCoefficients = new ArrayList<>();
+        Rational d = Rational.ONE;
+        for (int i = 0; i <= degree; i++) {
+            stretchedCoefficients.add(coefficients.get(i).divide(d));
+            if (i != degree) {
+                d = d.multiply(f);
+            }
+        }
+        return new RationalPolynomial(stretchedCoefficients);
+    }
+
+    /**
      * Determines whether {@code this} is equal to {@code that}.
      *
      * <ul>

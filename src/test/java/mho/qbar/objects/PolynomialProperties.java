@@ -155,6 +155,10 @@ public class PolynomialProperties extends QBarTestProperties {
         compareImplementationsSpecialTranslate();
         propertiesPositivePrimitiveTranslate();
         compareImplementationsPositivePrimitiveTranslate();
+        propertiesStretch();
+        compareImplementationsStretch();
+        propertiesPositivePrimitiveStretch();
+        compareImplementationsPositivePrimitiveStretch();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -3897,6 +3901,91 @@ public class PolynomialProperties extends QBarTestProperties {
         functions.put("standard", p -> p.a.specialTranslate(p.b));
         Iterable<Pair<Polynomial, Rational>> ps = P.pairs(P.polynomials(), P.rationals());
         compareImplementations("positivePrimitiveTranslate(Rational)", take(LIMIT, ps), functions);
+    }
+
+    private static @NotNull Polynomial stretch_simplest(@NotNull Polynomial p, @NotNull Rational f) {
+        if (p.degree() < 1 || f == Rational.ONE) return p;
+        return p.toRationalPolynomial().stretch(f).multiply(f.getNumerator().pow(p.degree())).toPolynomial();
+    }
+
+    private void propertiesStretch() {
+        initialize("stretch(Rational)");
+        for (Pair<Polynomial, Rational> p : take(LIMIT, P.pairs(P.polynomials(), P.positiveRationals()))) {
+            Polynomial stretched = p.a.stretch(p.b);
+            stretched.validate();
+            assertEquals(p, stretch_simplest(p.a, p.b), stretched);
+            assertEquals(p, p.a.degree(), stretched.degree());
+            assertEquals(p, p.a.signum(), stretched.signum());
+        }
+
+        for (Pair<BigInteger, Rational> p : take(LIMIT, P.pairs(P.bigIntegers(), P.positiveRationals()))) {
+            Polynomial q = of(p.a);
+            assertEquals(p, q, q.specialTranslate(p.b));
+        }
+    }
+
+    private void compareImplementationsStretch() {
+        Map<String, Function<Pair<Polynomial, Rational>, Polynomial>> functions = new LinkedHashMap<>();
+        functions.put("simplest", p -> specialTranslate_simplest(p.a, p.b));
+        functions.put("standard", p -> p.a.specialTranslate(p.b));
+        Iterable<Pair<Polynomial, Rational>> ps = P.pairs(P.polynomials(), P.rationals());
+        compareImplementations("stretch(Rational)", take(LIMIT, ps), functions);
+    }
+
+    private static @NotNull Polynomial positivePrimitiveStretch_simplest(@NotNull Polynomial p, @NotNull Rational f) {
+        if (p == ZERO) return ZERO;
+        if (p.degree() == 0) return ONE;
+        return p.toRationalPolynomial().stretch(f).constantFactor().b;
+    }
+
+    private void propertiesPositivePrimitiveStretch() {
+        initialize("positivePrimitiveStretch(Rational)");
+        for (Pair<Polynomial, Rational> p : take(LIMIT, P.pairs(P.polynomials(), P.positiveRationals()))) {
+            Polynomial stretched = p.a.positivePrimitiveStretch(p.b);
+            stretched.validate();
+            assertEquals(p, positivePrimitiveStretch_simplest(p.a, p.b), stretched);
+            assertEquals(p, p.a.degree(), stretched.degree());
+            assertTrue(p, stretched == ZERO || stretched.isPrimitive());
+            assertNotEquals(p, stretched.signum(), -1);
+        }
+
+        Iterable<Pair<Polynomial, Rational>> ps = P.pairs(P.positivePrimitivePolynomials(), P.positiveRationals());
+        for (Pair<Polynomial, Rational> p : take(LIMIT, ps)) {
+            inverse(
+                    q -> q.positivePrimitiveStretch(p.b),
+                    (Polynomial q) -> q.positivePrimitiveStretch(p.b.invert()),
+                    p.a
+            );
+        }
+
+        for (Pair<BigInteger, Rational> p : take(LIMIT, P.pairs(P.bigIntegers(), P.positiveRationals()))) {
+            Polynomial stretched = of(p.a).positivePrimitiveStretch(p.b);
+            assertTrue(p, stretched == ZERO || stretched == ONE);
+        }
+
+        ps = P.pairs(P.withScale(4).withSecondaryScale(4).irreduciblePolynomials(), P.positiveRationals());
+        for (Pair<Polynomial, Rational> p : take(LIMIT, ps)) {
+            assertTrue(p, p.a.positivePrimitiveStretch(p.b).isIrreducible());
+        }
+
+        Iterable<Pair<Rational, List<Rational>>> qs = P.pairs(
+                P.positiveRationals(),
+                P.withScale(4).bags(P.rationals())
+        );
+        for (Pair<Rational, List<Rational>> p : take(LIMIT, qs)) {
+            Polynomial q = product(map(Polynomial::fromRoot, p.b));
+            List<Rational> stretchedRs = toList(map(r -> r.multiply(p.a), p.b));
+            Polynomial stretchedRootsP = product(map(Polynomial::fromRoot, stretchedRs));
+            assertEquals(p, q.positivePrimitiveStretch(p.a), stretchedRootsP);
+        }
+    }
+
+    private void compareImplementationsPositivePrimitiveStretch() {
+        Map<String, Function<Pair<Polynomial, Rational>, Polynomial>> functions = new LinkedHashMap<>();
+        functions.put("simplest", p -> stretch_simplest(p.a, p.b));
+        functions.put("standard", p -> p.a.stretch(p.b));
+        Iterable<Pair<Polynomial, Rational>> ps = P.pairs(P.polynomials(), P.positiveRationals());
+        compareImplementations("stretch(Rational)", take(LIMIT, ps), functions);
     }
 
     private void propertiesEquals() {

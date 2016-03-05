@@ -3642,6 +3642,118 @@ public class PolynomialTest {
         positivePrimitiveTranslate_helper("2*x+1", "1/2", "x");
     }
 
+    private static void stretch_helper(@NotNull String p, @NotNull String f, @NotNull String output) {
+        aeq(read(p).get().stretch(Rational.read(f).get()), output);
+    }
+
+    private static void stretch_fail_helper(@NotNull String p, @NotNull String f) {
+        try {
+            read(p).get().stretch(Rational.read(f).get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testStretch() {
+        stretch_helper("0", "1", "0");
+        stretch_helper("0", "2", "0");
+        stretch_helper("0", "1/2", "0");
+        stretch_helper("0", "100/3", "0");
+        stretch_helper("0", "1/100", "0");
+
+        stretch_helper("1", "1", "1");
+        stretch_helper("1", "2", "1");
+        stretch_helper("1", "1/2", "1");
+        stretch_helper("1", "100/3", "1");
+        stretch_helper("1", "1/100", "1");
+
+        stretch_helper("-17", "1", "-17");
+        stretch_helper("-17", "2", "-17");
+        stretch_helper("-17", "1/2", "-17");
+        stretch_helper("-17", "100/3", "-17");
+        stretch_helper("-17", "1/100", "-17");
+
+        stretch_helper("x^2-4*x+7", "1", "x^2-4*x+7");
+        stretch_helper("x^2-4*x+7", "2", "x^2-8*x+28");
+        stretch_helper("x^2-4*x+7", "1/2", "4*x^2-8*x+7");
+        stretch_helper("x^2-4*x+7", "100/3", "9*x^2-1200*x+70000");
+        stretch_helper("x^2-4*x+7", "1/100", "10000*x^2-400*x+7");
+
+        stretch_helper("-x^3-1", "1", "-x^3-1");
+        stretch_helper("-x^3-1", "2", "-x^3-8");
+        stretch_helper("-x^3-1", "1/2", "-8*x^3-1");
+        stretch_helper("-x^3-1", "100/3", "-27*x^3-1000000");
+        stretch_helper("-x^3-1", "1/100", "-1000000*x^3-1");
+
+        stretch_helper("3*x^10", "1", "3*x^10");
+        stretch_helper("3*x^10", "2", "3*x^10");
+        stretch_helper("3*x^10", "1/2", "3072*x^10");
+        stretch_helper("3*x^10", "100/3", "177147*x^10");
+        stretch_helper("3*x^10", "1/100", "300000000000000000000*x^10");
+
+        stretch_helper("2*x-1", "2", "2*x-2");
+        stretch_helper("x-2", "1/2", "2*x-2");
+
+        stretch_fail_helper("x^2-4*x+7", "0");
+        stretch_fail_helper("x^2-4*x+7", "-1");
+    }
+
+    private static void positivePrimitiveStretch_helper(@NotNull String p, @NotNull String f, @NotNull String output) {
+        aeq(read(p).get().positivePrimitiveStretch(Rational.read(f).get()), output);
+    }
+
+    private static void positivePrimitiveStretch_fail_helper(@NotNull String p, @NotNull String f) {
+        try {
+            read(p).get().positivePrimitiveStretch(Rational.read(f).get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testPositivePrimitiveStretch() {
+        positivePrimitiveStretch_helper("0", "1", "0");
+        positivePrimitiveStretch_helper("0", "2", "0");
+        positivePrimitiveStretch_helper("0", "1/2", "0");
+        positivePrimitiveStretch_helper("0", "100/3", "0");
+        positivePrimitiveStretch_helper("0", "1/100", "0");
+
+        positivePrimitiveStretch_helper("1", "1", "1");
+        positivePrimitiveStretch_helper("1", "2", "1");
+        positivePrimitiveStretch_helper("1", "1/2", "1");
+        positivePrimitiveStretch_helper("1", "100/3", "1");
+        positivePrimitiveStretch_helper("1", "1/100", "1");
+
+        positivePrimitiveStretch_helper("-17", "1", "1");
+        positivePrimitiveStretch_helper("-17", "2", "1");
+        positivePrimitiveStretch_helper("-17", "1/2", "1");
+        positivePrimitiveStretch_helper("-17", "100/3", "1");
+        positivePrimitiveStretch_helper("-17", "1/100", "1");
+
+        positivePrimitiveStretch_helper("x^2-4*x+7", "1", "x^2-4*x+7");
+        positivePrimitiveStretch_helper("x^2-4*x+7", "2", "x^2-8*x+28");
+        positivePrimitiveStretch_helper("x^2-4*x+7", "1/2", "4*x^2-8*x+7");
+        positivePrimitiveStretch_helper("x^2-4*x+7", "100/3", "9*x^2-1200*x+70000");
+        positivePrimitiveStretch_helper("x^2-4*x+7", "1/100", "10000*x^2-400*x+7");
+
+        positivePrimitiveStretch_helper("-x^3-1", "1", "x^3+1");
+        positivePrimitiveStretch_helper("-x^3-1", "2", "x^3+8");
+        positivePrimitiveStretch_helper("-x^3-1", "1/2", "8*x^3+1");
+        positivePrimitiveStretch_helper("-x^3-1", "100/3", "27*x^3+1000000");
+        positivePrimitiveStretch_helper("-x^3-1", "1/100", "1000000*x^3+1");
+
+        positivePrimitiveStretch_helper("3*x^10", "1", "x^10");
+        positivePrimitiveStretch_helper("3*x^10", "2", "x^10");
+        positivePrimitiveStretch_helper("3*x^10", "1/2", "x^10");
+        positivePrimitiveStretch_helper("3*x^10", "100/3", "x^10");
+        positivePrimitiveStretch_helper("3*x^10", "1/100", "x^10");
+
+        positivePrimitiveStretch_helper("2*x-1", "2", "x-1");
+        positivePrimitiveStretch_helper("x-2", "1/2", "x-1");
+
+        positivePrimitiveStretch_fail_helper("x^2-4*x+7", "0");
+        positivePrimitiveStretch_fail_helper("x^2-4*x+7", "-1");
+    }
+
     @Test
     public void testEquals() {
         testEqualsHelper(

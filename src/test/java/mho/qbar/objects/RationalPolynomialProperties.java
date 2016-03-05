@@ -93,6 +93,7 @@ public class RationalPolynomialProperties extends QBarTestProperties {
         propertiesInterpolate();
         propertiesReflect();
         propertiesTranslate();
+        propertiesStretch();
         propertiesEquals();
         propertiesCompanionMatrix();
         propertiesCoefficientMatrix();
@@ -1954,6 +1955,54 @@ public class RationalPolynomialProperties extends QBarTestProperties {
         Iterable<Pair<RationalPolynomial, Rational>> ps = P.pairs(P.monicRationalPolynomials(), P.rationals());
         for (Pair<RationalPolynomial, Rational> p : take(LIMIT, ps)) {
             assertTrue(p, p.a.translate(p.b).isMonic());
+        }
+
+        Iterable<Triple<RationalPolynomial, Rational, Rational>> ts = P.triples(
+                P.rationalPolynomials(),
+                P.rationals(),
+                P.rationals()
+        );
+        for (Triple<RationalPolynomial, Rational, Rational> t : take(LIMIT, ts)) {
+            RationalPolynomial translated = t.a.translate(t.b);
+            assertEquals(t, translated.apply(t.c), t.a.apply(t.c.subtract(t.b)));
+        }
+    }
+
+    private void propertiesStretch() {
+        initialize("stretch(Rational)");
+        Iterable<Pair<RationalPolynomial, Rational>> ps = P.pairs(P.rationalPolynomials(), P.positiveRationals());
+        for (Pair<RationalPolynomial, Rational> p : take(LIMIT, ps)) {
+            RationalPolynomial stretched = p.a.stretch(p.b);
+            stretched.validate();
+            assertEquals(p, p.a.degree(), stretched.degree());
+            assertEquals(p, p.a.signum(), stretched.signum());
+            inverse(q -> q.stretch(p.b), (RationalPolynomial q) -> q.stretch(p.b.invert()), p.a);
+        }
+
+        for (Pair<Rational, Rational> p : take(LIMIT, P.pairs(P.rationals(), P.positiveRationals()))) {
+            RationalPolynomial q = of(p.a);
+            assertEquals(p, q, q.stretch(p.b));
+        }
+
+        Iterable<Triple<RationalPolynomial, Rational, Rational>> ts = P.triples(
+                P.rationalPolynomials(),
+                P.positiveRationals(),
+                P.rationals()
+        );
+        for (Triple<RationalPolynomial, Rational, Rational> t : take(LIMIT, ts)) {
+            RationalPolynomial stretched = t.a.stretch(t.b);
+            assertEquals(t, stretched.apply(t.c), t.a.apply(t.c.divide(t.b)));
+        }
+
+        Iterable<Pair<RationalPolynomial, Rational>> psFail = P.pairs(
+                P.rationalPolynomials(),
+                P.withElement(Rational.ZERO, P.negativeRationals())
+        );
+        for (Pair<RationalPolynomial, Rational> p : take(LIMIT, psFail)) {
+            try {
+                p.a.stretch(p.b);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
         }
     }
 

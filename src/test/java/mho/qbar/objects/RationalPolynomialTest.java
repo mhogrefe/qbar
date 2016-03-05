@@ -1867,6 +1867,62 @@ public class RationalPolynomialTest {
         translate_helper("x+1/2", "1/2", "x");
     }
 
+    private static void stretch_helper(@NotNull String p, @NotNull String f, @NotNull String output) {
+        aeq(read(p).get().stretch(Rational.read(f).get()), output);
+    }
+
+    private static void stretch_fail_helper(@NotNull String p, @NotNull String f) {
+        try {
+            read(p).get().stretch(Rational.read(f).get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testStretch() {
+        stretch_helper("0", "1", "0");
+        stretch_helper("0", "2", "0");
+        stretch_helper("0", "1/2", "0");
+        stretch_helper("0", "100/3", "0");
+        stretch_helper("0", "1/100", "0");
+
+        stretch_helper("1", "1", "1");
+        stretch_helper("1", "2", "1");
+        stretch_helper("1", "1/2", "1");
+        stretch_helper("1", "100/3", "1");
+        stretch_helper("1", "1/100", "1");
+
+        stretch_helper("-4/3", "1", "-4/3");
+        stretch_helper("-4/3", "2", "-4/3");
+        stretch_helper("-4/3", "1/2", "-4/3");
+        stretch_helper("-4/3", "100/3", "-4/3");
+        stretch_helper("-4/3", "1/100", "-4/3");
+
+        stretch_helper("x^2-7/4*x+1/3", "1", "x^2-7/4*x+1/3");
+        stretch_helper("x^2-7/4*x+1/3", "2", "1/4*x^2-7/8*x+1/3");
+        stretch_helper("x^2-7/4*x+1/3", "1/2", "4*x^2-7/2*x+1/3");
+        stretch_helper("x^2-7/4*x+1/3", "100/3", "9/10000*x^2-21/400*x+1/3");
+        stretch_helper("x^2-7/4*x+1/3", "1/100", "10000*x^2-175*x+1/3");
+
+        stretch_helper("-x^3-1", "1", "-x^3-1");
+        stretch_helper("-x^3-1", "2", "-1/8*x^3-1");
+        stretch_helper("-x^3-1", "1/2", "-8*x^3-1");
+        stretch_helper("-x^3-1", "100/3", "-27/1000000*x^3-1");
+        stretch_helper("-x^3-1", "1/100", "-1000000*x^3-1");
+
+        stretch_helper("1/2*x^10", "1", "1/2*x^10");
+        stretch_helper("1/2*x^10", "2", "1/2048*x^10");
+        stretch_helper("1/2*x^10", "1/2", "512*x^10");
+        stretch_helper("1/2*x^10", "100/3", "59049/200000000000000000000*x^10");
+        stretch_helper("1/2*x^10", "1/100", "50000000000000000000*x^10");
+
+        stretch_helper("2*x-1", "2", "x-1");
+        stretch_helper("x-2", "1/2", "2*x-2");
+
+        stretch_fail_helper("x^2-7/4*x+1/3", "0");
+        stretch_fail_helper("x^2-7/4*x+1/3", "-1");
+    }
+
     @Test
     public void testEquals() {
         testEqualsHelper(

@@ -2352,6 +2352,61 @@ public final class Polynomial implements
     }
 
     /**
+     * Stretches a polynomial in the x-direction by a positive factor {@code f}, possibly scaling it vertically as well
+     * in order for its coefficients to remain integers.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>{@code f} must be positive.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param f a positive scaling factor
+     * @return numerator({@code f})<sup>deg({@code this})</sup>{@code this}(x/f)
+     */
+    @SuppressWarnings("JavaDoc")
+    public @NotNull Polynomial stretch(@NotNull Rational f) {
+        if (f.signum() != 1) {
+            throw new ArithmeticException("f must be positive. Invalid f: " + f);
+        }
+        int degree = degree();
+        if (degree < 1 || f == Rational.ONE) return this;
+        BigInteger numerator = f.getNumerator();
+        BigInteger denominator = f.getDenominator();
+        BigInteger d = numerator.pow(degree);
+        List<BigInteger> resultCoefficients = new ArrayList<>();
+        for (int i = 0; i < coefficients.size(); i++) {
+            resultCoefficients.add(coefficients.get(i).multiply(d));
+            if (i != degree) {
+                d = d.divide(numerator).multiply(denominator);
+            }
+        }
+        return new Polynomial(resultCoefficients);
+    }
+
+    /**
+     * Returns {@code this} stretched in the x-direction by a positive factor {@code f} and scaled to either zero or a
+     * primitive {@code Polynomial} with a positive leading coefficient.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>{@code f} must be positive.</li>
+     *  <li>The result is either zero or primitive with a positive leading coefficient.</li>
+     * </ul>
+     *
+     * @param f a positive scaling factor
+     * @return {@code this}(x/t), scaled
+     */
+    public @NotNull Polynomial positivePrimitiveStretch(@NotNull Rational f) {
+        if (f.signum() != 1) {
+            throw new ArithmeticException("f must be positive. Invalid f: " + f);
+        }
+        if (this == ZERO) return ZERO;
+        if (degree() == 0) return ONE;
+        return stretch(f).constantFactor().b;
+    }
+
+    /**
      * Determines whether {@code this} is equal to {@code that}.
      *
      * <ul>
