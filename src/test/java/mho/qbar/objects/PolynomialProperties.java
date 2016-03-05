@@ -146,7 +146,6 @@ public class PolynomialProperties extends QBarTestProperties {
         propertiesRootBound();
         propertiesPowerOfTwoRootBound();
         propertiesRootCount_Interval();
-        compareImplementationsRootCount_Interval();
         propertiesRootCount();
         compareImplementationsRootCount();
         propertiesReflect();
@@ -3679,37 +3678,6 @@ public class PolynomialProperties extends QBarTestProperties {
         }
     }
 
-    private static int signChanges(@NotNull List<Polynomial> sturmSequence, @NotNull Rational x) {
-        int changes = 0;
-        int previousSign = 0;
-        for (Polynomial p : sturmSequence) {
-            int sign = p.signum(x);
-            if (sign != 0) {
-                if (sign == -previousSign) {
-                    changes++;
-                }
-                previousSign = sign;
-            }
-        }
-        return changes;
-    }
-
-    private static int rootCount_Interval_alt(@NotNull Polynomial a, @NotNull Interval i) {
-        if (a == ZERO) {
-            throw new ArithmeticException("a cannot be zero.");
-        }
-        if (a.degree() < 1) return 0;
-        Rational lower = i.getLower().get();
-        Rational upper = i.getUpper().get();
-        int rootCount = a.signum(lower) == 0 ? 1 : 0;
-        if (lower.equals(upper)) {
-            return rootCount;
-        }
-        List<Polynomial> sturmSequence = a.primitiveSignedPseudoRemainderSequence(a.differentiate());
-        rootCount += signChanges(sturmSequence, lower) - signChanges(sturmSequence, upper);
-        return rootCount;
-    }
-
     private void propertiesRootCount_Interval() {
         initialize("rootCount(Interval)");
         for (Pair<Polynomial, Interval> p : take(LIMIT, P.pairs(P.squareFreePolynomialsAtLeast(0), P.intervals()))) {
@@ -3718,31 +3686,12 @@ public class PolynomialProperties extends QBarTestProperties {
             assertTrue(p, rootCount <= p.a.degree());
         }
 
-        Iterable<Pair<Polynomial, Interval>> ps = P.pairs(
-                P.squareFreePolynomialsAtLeast(0),
-                P.finitelyBoundedIntervals()
-        );
-        for (Pair<Polynomial, Interval> p : take(LIMIT, ps)) {
-            assertEquals(p, p.a.rootCount(p.b), rootCount_Interval_alt(p.a, p.b));
-        }
-
         for (Interval a : take(LIMIT, P.intervals())) {
             try {
                 ZERO.rootCount(a);
                 fail(a);
             } catch (ArithmeticException ignored) {}
         }
-    }
-
-    private void compareImplementationsRootCount_Interval() {
-        Map<String, Function<Pair<Polynomial, Interval>, Integer>> functions = new LinkedHashMap<>();
-        functions.put("alt", p -> rootCount_Interval_alt(p.a, p.b));
-        functions.put("standard", p -> p.a.rootCount(p.b));
-        Iterable<Pair<Polynomial, Interval>> ps = P.pairs(
-                P.squareFreePolynomialsAtLeast(0),
-                P.finitelyBoundedIntervals()
-        );
-        compareImplementations("rootCount(Interval)", take(LIMIT, ps), functions);
     }
 
     private static int rootCount_alt(@NotNull Polynomial p) {

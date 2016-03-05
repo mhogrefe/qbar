@@ -692,6 +692,27 @@ public class PolynomialDemos extends QBarDemos {
         }
     }
 
+    private void demoIsolatingInterval() {
+        Iterable<Pair<Polynomial, Integer>> ps = P.dependentPairs(
+                filterInfinite(p -> p.rootCount() > 0, P.withScale(4).squareFreePolynomialsAtLeast(1)),
+                q -> P.range(0, q.rootCount() - 1)
+        );
+        for (Pair<Polynomial, Integer> p : take(LIMIT, ps)) {
+            System.out.println("isolatingInterval(" + p.a + ", " + p.b + ") = " + p.a.isolatingInterval(p.b));
+        }
+    }
+
+    private void demoPowerOfTwoIsolatingInterval() {
+        Iterable<Pair<Polynomial, Integer>> ps = P.dependentPairs(
+                filterInfinite(p -> p.rootCount() > 0, P.withScale(4).squareFreePolynomialsAtLeast(1)),
+                q -> P.range(0, q.rootCount() - 1)
+        );
+        for (Pair<Polynomial, Integer> p : take(LIMIT, ps)) {
+            System.out.println("powerOfTwosolatingInterval(" + p.a + ", " + p.b + ") = " +
+                    p.a.powerOfTwoIsolatingInterval(p.b));
+        }
+    }
+
     private void demoReflect() {
         for (Polynomial p : take(LIMIT, P.withScale(4).polynomials())) {
             System.out.println("reflect(" + p + ") = " + p.reflect());

@@ -2140,6 +2140,20 @@ public final class Polynomial implements
         return abbreviated;
     }
 
+    private @NotNull Interval rootBoundHelper(@NotNull Function<Rational, Rational> postProcessor) {
+        if (this == ZERO) {
+            throw new ArithmeticException("this cannot be zero");
+        }
+        if (degree() < 1) return Interval.ZERO;
+        BigInteger denominator = leading().get().abs();
+        //noinspection RedundantCast
+        Rational max = maximum(
+                (Iterable<Rational>) map(c -> Rational.of(c.abs(), denominator), init(coefficients))
+        ).add(Rational.ONE);
+        max = postProcessor.apply(max);
+        return Interval.of(max.negate(), max);
+    }
+
     /**
      * Returns an {@code Interval} with finite bounds that contains all the real roots of {@code this}. This is a
      * modified Cauchy's bound.
@@ -2152,16 +2166,7 @@ public final class Polynomial implements
      * @return an {@code Interval} containing all real roots of {@code this}
      */
     public @NotNull Interval rootBound() {
-        if (this == ZERO) {
-            throw new ArithmeticException("this cannot be zero");
-        }
-        if (degree() < 1) return Interval.ZERO;
-        BigInteger denominator = leading().get().abs();
-        //noinspection RedundantCast
-        Rational max = maximum(
-                (Iterable<Rational>) map(c -> Rational.of(c.abs(), denominator), init(coefficients))
-        ).add(Rational.ONE);
-        return Interval.of(max.negate(), max);
+        return rootBoundHelper(Function.identity());
     }
 
     /**
@@ -2177,17 +2182,7 @@ public final class Polynomial implements
      * @return an {@code Interval} containing all real roots of {@code this}
      */
     public @NotNull Interval powerOfTwoRootBound() {
-        if (this == ZERO) {
-            throw new ArithmeticException("this cannot be zero");
-        }
-        if (degree() < 1) return Interval.of(Rational.NEGATIVE_ONE, Rational.ONE);
-        BigInteger denominator = leading().get().abs();
-        //noinspection RedundantCast
-        Rational max = maximum(
-                (Iterable<Rational>) map(c -> Rational.of(c.abs(), denominator), init(coefficients))
-        ).add(Rational.ONE);
-        max = max.roundUpToPowerOfTwo();
-        return Interval.of(max.negate(), max);
+        return rootBoundHelper(Rational::roundUpToPowerOfTwo);
     }
 
     /**
@@ -2245,7 +2240,7 @@ public final class Polynomial implements
         if (lower.equals(upper)) {
             return rootCount;
         }
-        List<Polynomial> sturmSequence = signedSubresultantSequence(differentiate());
+        List<Polynomial> sturmSequence = primitiveSignedPseudoRemainderSequence(differentiate());
         rootCount += signChanges(sturmSequence, lower) - signChanges(sturmSequence, upper);
         return rootCount;
     }
@@ -2263,6 +2258,60 @@ public final class Polynomial implements
      */
     public int rootCount() {
         return rootCount(powerOfTwoRootBound());
+    }
+
+    public @NotNull Interval isolatingIntervalHelper(@NotNull Interval rootBound, int rootIndex) {
+        List<Polynomial> sturmSequence = primitiveSignedPseudoRemainderSequence(differentiate());
+        Rational lower = rootBound.getLower().get();
+        Rational upper = rootBound.getUpper().get();
+        boolean rootAtLower = signum(lower) == 0;
+        int rootCount = rootAtLower ? 1 : 0;
+        int lowerSignChanges = signChanges(sturmSequence, lower);
+        int upperSignChanges = signChanges(sturmSequence, upper);
+        rootCount += lowerSignChanges - upperSignChanges;
+        if (rootIndex >= rootCount) {
+            throw new ArithmeticException();
+        }
+        if (rootCount == 1) {
+            return rootBound;
+        }
+        while (true) {
+            Rational mid = lower.add(upper).shiftRight(1);
+            int lowerMidRootCount = rootAtLower ? 1 : 0;
+            int midSignChanges = signChanges(sturmSequence, mid);
+            lowerMidRootCount += lowerSignChanges - midSignChanges;
+            if (rootIndex < lowerMidRootCount) {
+                rootBound = Interval.of(lower, mid);
+                rootCount = lowerMidRootCount;
+                if (rootCount == 1) {
+                    return rootBound;
+                }
+                upper = mid;
+            } else {
+                rootBound = Interval.of(mid, upper);
+                boolean rootAtMid = signum(mid) == 0;
+                if (rootAtMid) {
+                    rootIndex++;
+                    rootCount++;
+                }
+                rootIndex -= lowerMidRootCount;
+                rootCount -= lowerMidRootCount;
+                if (rootCount == 1) {
+                    return rootBound;
+                }
+                lower = mid;
+                rootAtLower = rootAtMid;
+                lowerSignChanges = midSignChanges;
+            }
+        }
+    }
+
+    public @NotNull Interval isolatingInterval(int rootIndex) {
+        return isolatingIntervalHelper(rootBound(), rootIndex);
+    }
+
+    public @NotNull Interval powerOfTwoIsolatingInterval(int rootIndex) {
+        return isolatingIntervalHelper(powerOfTwoRootBound(), rootIndex);
     }
 
     /**
