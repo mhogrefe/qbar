@@ -52,12 +52,14 @@ public class QBarTesting {
                                 throw new IllegalStateException("Duplicate list name: " + name);
                             }
                             state = ReadState.LIST;
+                            list = new ArrayList<>(counter);
                             break;
                         case "map":
                             if (testingMaps.containsKey(name)) {
                                 throw new IllegalStateException("Duplicate map name: " + name);
                             }
                             state = ReadState.MAP;
+                            map = new HashMap<>(counter);
                             break;
                         default:
                             throw new IllegalStateException("Bad data type: " + tokens[1]);

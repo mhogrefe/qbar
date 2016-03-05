@@ -450,52 +450,12 @@ public class QBarExhaustiveProviderTest {
 
     @Test
     public void testPolynomialMatrices_int_int() {
-        polynomialMatrices_int_int_helper(0, 0, "[[]#0]");
-        polynomialMatrices_int_int_helper(0, 3, "[[]#3]");
-        polynomialMatrices_int_int_helper(3, 0, "[[[], [], []]]");
-        polynomialMatrices_int_int_helper(1, 1,
-                "[[[0]], [[1]], [[-1]], [[x]], [[2]], [[-2]], [[3]], [[x^2]], [[-3]], [[x+1]], [[4]], [[-4]]," +
-                " [[-x]], [[5]], [[-5]], [[2*x]], [[6]], [[x^3]], [[-6]], [[-x+1]], [[7]], [[x^2+x]], [[-7]]," +
-                " [[2*x+1]], [[8]], [[-8]], [[9]], [[-9]], [[x-1]], [[10]], [[-10]], [[11]], [[x^2+1]], [[-11]]," +
-                " [[x+2]], [[12]], [[x^4]], [[-12]], [[-x-1]], [[13]], [[-13]], [[2*x-1]], [[14]], [[x^3+x^2]]," +
-                " [[-14]], [[-x+2]], [[15]], [[x^2+x+1]], [[-15]], [[2*x+2]], ...]");
-        polynomialMatrices_int_int_helper(2, 2,
-                "[[[0, 0], [0, 0]], [[0, 0], [0, 1]], [[0, 1], [0, 0]], [[0, 1], [0, 1]], [[0, 0], [1, 0]]," +
-                " [[0, 0], [1, 1]], [[0, 1], [1, 0]], [[0, 1], [1, 1]], [[1, 0], [0, 0]], [[1, 0], [0, 1]]," +
-                " [[1, 1], [0, 0]], [[1, 1], [0, 1]], [[1, 0], [1, 0]], [[1, 0], [1, 1]], [[1, 1], [1, 0]]," +
-                " [[1, 1], [1, 1]], [[0, 0], [0, -1]], [[0, 0], [0, x]], [[0, 1], [0, -1]], [[0, 1], [0, x]]," +
-                " [[0, 0], [1, -1]], [[0, 0], [1, x]], [[0, 1], [1, -1]], [[0, 1], [1, x]], [[1, 0], [0, -1]]," +
-                " [[1, 0], [0, x]], [[1, 1], [0, -1]], [[1, 1], [0, x]], [[1, 0], [1, -1]], [[1, 0], [1, x]]," +
-                " [[1, 1], [1, -1]], [[1, 1], [1, x]], [[0, -1], [0, 0]], [[0, -1], [0, 1]], [[0, x], [0, 0]]," +
-                " [[0, x], [0, 1]], [[0, -1], [1, 0]], [[0, -1], [1, 1]], [[0, x], [1, 0]], [[0, x], [1, 1]]," +
-                " [[1, -1], [0, 0]], [[1, -1], [0, 1]], [[1, x], [0, 0]], [[1, x], [0, 1]], [[1, -1], [1, 0]]," +
-                " [[1, -1], [1, 1]], [[1, x], [1, 0]], [[1, x], [1, 1]], [[0, -1], [0, -1]], [[0, -1], [0, x]], ...]");
-        polynomialMatrices_int_int_helper(3, 4,
-                "[[[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]], [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 1]]," +
-                " [[0, 0, 0, 0], [0, 0, 0, 1], [0, 0, 0, 0]], [[0, 0, 0, 0], [0, 0, 0, 1], [0, 0, 0, 1]]," +
-                " [[0, 0, 0, 1], [0, 0, 0, 0], [0, 0, 0, 0]], [[0, 0, 0, 1], [0, 0, 0, 0], [0, 0, 0, 1]]," +
-                " [[0, 0, 0, 1], [0, 0, 0, 1], [0, 0, 0, 0]], [[0, 0, 0, 1], [0, 0, 0, 1], [0, 0, 0, 1]]," +
-                " [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 1, 0]], [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 1, 1]]," +
-                " [[0, 0, 0, 0], [0, 0, 0, 1], [0, 0, 1, 0]], [[0, 0, 0, 0], [0, 0, 0, 1], [0, 0, 1, 1]]," +
-                " [[0, 0, 0, 1], [0, 0, 0, 0], [0, 0, 1, 0]], [[0, 0, 0, 1], [0, 0, 0, 0], [0, 0, 1, 1]]," +
-                " [[0, 0, 0, 1], [0, 0, 0, 1], [0, 0, 1, 0]], [[0, 0, 0, 1], [0, 0, 0, 1], [0, 0, 1, 1]]," +
-                " [[0, 0, 0, 0], [0, 0, 1, 0], [0, 0, 0, 0]], [[0, 0, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]]," +
-                " [[0, 0, 0, 0], [0, 0, 1, 1], [0, 0, 0, 0]], [[0, 0, 0, 0], [0, 0, 1, 1], [0, 0, 0, 1]]," +
-                " [[0, 0, 0, 1], [0, 0, 1, 0], [0, 0, 0, 0]], [[0, 0, 0, 1], [0, 0, 1, 0], [0, 0, 0, 1]]," +
-                " [[0, 0, 0, 1], [0, 0, 1, 1], [0, 0, 0, 0]], [[0, 0, 0, 1], [0, 0, 1, 1], [0, 0, 0, 1]]," +
-                " [[0, 0, 0, 0], [0, 0, 1, 0], [0, 0, 1, 0]], [[0, 0, 0, 0], [0, 0, 1, 0], [0, 0, 1, 1]]," +
-                " [[0, 0, 0, 0], [0, 0, 1, 1], [0, 0, 1, 0]], [[0, 0, 0, 0], [0, 0, 1, 1], [0, 0, 1, 1]]," +
-                " [[0, 0, 0, 1], [0, 0, 1, 0], [0, 0, 1, 0]], [[0, 0, 0, 1], [0, 0, 1, 0], [0, 0, 1, 1]]," +
-                " [[0, 0, 0, 1], [0, 0, 1, 1], [0, 0, 1, 0]], [[0, 0, 0, 1], [0, 0, 1, 1], [0, 0, 1, 1]]," +
-                " [[0, 0, 1, 0], [0, 0, 0, 0], [0, 0, 0, 0]], [[0, 0, 1, 0], [0, 0, 0, 0], [0, 0, 0, 1]]," +
-                " [[0, 0, 1, 0], [0, 0, 0, 1], [0, 0, 0, 0]], [[0, 0, 1, 0], [0, 0, 0, 1], [0, 0, 0, 1]]," +
-                " [[0, 0, 1, 1], [0, 0, 0, 0], [0, 0, 0, 0]], [[0, 0, 1, 1], [0, 0, 0, 0], [0, 0, 0, 1]]," +
-                " [[0, 0, 1, 1], [0, 0, 0, 1], [0, 0, 0, 0]], [[0, 0, 1, 1], [0, 0, 0, 1], [0, 0, 0, 1]]," +
-                " [[0, 0, 1, 0], [0, 0, 0, 0], [0, 0, 1, 0]], [[0, 0, 1, 0], [0, 0, 0, 0], [0, 0, 1, 1]]," +
-                " [[0, 0, 1, 0], [0, 0, 0, 1], [0, 0, 1, 0]], [[0, 0, 1, 0], [0, 0, 0, 1], [0, 0, 1, 1]]," +
-                " [[0, 0, 1, 1], [0, 0, 0, 0], [0, 0, 1, 0]], [[0, 0, 1, 1], [0, 0, 0, 0], [0, 0, 1, 1]]," +
-                " [[0, 0, 1, 1], [0, 0, 0, 1], [0, 0, 1, 0]], [[0, 0, 1, 1], [0, 0, 0, 1], [0, 0, 1, 1]]," +
-                " [[0, 0, 1, 0], [0, 0, 1, 0], [0, 0, 0, 0]], [[0, 0, 1, 0], [0, 0, 1, 0], [0, 0, 0, 1]], ...]");
+        polynomialMatrices_int_int_helper(0, 0, "QBarExhaustiveProvider_polynomialMatrices_int_int_i");
+        polynomialMatrices_int_int_helper(0, 3, "QBarExhaustiveProvider_polynomialMatrices_int_int_ii");
+        polynomialMatrices_int_int_helper(3, 0, "QBarExhaustiveProvider_polynomialMatrices_int_int_iii");
+        polynomialMatrices_int_int_helper(1, 1, "QBarExhaustiveProvider_polynomialMatrices_int_int_iv");
+        polynomialMatrices_int_int_helper(2, 2, "QBarExhaustiveProvider_polynomialMatrices_int_int_v");
+        polynomialMatrices_int_int_helper(3, 4, "QBarExhaustiveProvider_polynomialMatrices_int_int_vi");
         polynomialMatrices_int_int_fail_helper(-1, 0);
         polynomialMatrices_int_int_fail_helper(-1, 1);
         polynomialMatrices_int_int_fail_helper(0, -1);
@@ -505,31 +465,12 @@ public class QBarExhaustiveProviderTest {
 
     @Test
     public void testPolynomialMatrices() {
-        simpleProviderHelper(QEP.polynomialMatrices(),
-                "[[[0]], []#0, [[]], [[0, 0]], []#1, [[1]], [[0, 1]], [[-1]], [[], []], [[1, 0]], [[x]], [[1, 1]]," +
-                " [[0], [0]], [[0, 0], [0, 0]], [[0], [1]], [[0, 0], [0, 1]], []#2, [[1], [0]], [[0, 1], [0, 0]]," +
-                " [[1], [1]], [[0, 1], [0, 1]], [[2]], [[0, -1]], [[-2]], [[0, x]], [[3]], [[1, -1]], [[x^2]]," +
-                " [[1, x]], [[0], [-1]], [[0, 0], [1, 0]], [[0], [x]], [[], [], []], [[0, 0], [1, 1]], [[1], [-1]]," +
-                " [[0, 1], [1, 0]], [[1], [x]], [[0, 1], [1, 1]], [[-3]], [[-1, 0]], [[x+1]], [[-1, 1]], [[4]]," +
-                " [[x, 0]], [[-4]], [[x, 1]], [[-1], [0]], [[1, 0], [0, 0]], [[-1], [1]], [[1, 0], [0, 1]], ...]");
+        simpleProviderHelper(QEP.polynomialMatrices(), "QBarExhaustiveProvider_polynomialMatrices");
     }
 
     @Test
     public void testSquarePolynomialMatrices() {
-        simpleProviderHelper(QEP.squarePolynomialMatrices(),
-                "[[]#0, [[0]], [[0, 0], [0, 0]], [[1]], [[0, 0, 0], [0, 0, 0], [0, 0, 0]], [[-1]], [[0, 0], [0, 1]]," +
-                " [[x]], [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]], [[2]], [[0, 1], [0, 0]], [[-2]]," +
-                " [[0, 0, 0], [0, 0, 0], [0, 0, 1]], [[3]], [[0, 1], [0, 1]], [[x^2]]," +
-                " [[0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0]], [[-3]]," +
-                " [[0, 0], [1, 0]], [[x+1]], [[0, 0, 0], [0, 0, 1], [0, 0, 0]], [[4]], [[0, 0], [1, 1]], [[-4]]," +
-                " [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 1]], [[-x]], [[0, 1], [1, 0]], [[5]]," +
-                " [[0, 0, 0], [0, 0, 1], [0, 0, 1]], [[-5]], [[0, 1], [1, 1]], [[2*x]]," +
-                " [[0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0]," +
-                " [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0]], [[6]], [[1, 0], [0, 0]], [[x^3]]," +
-                " [[0, 0, 1], [0, 0, 0], [0, 0, 0]], [[-6]], [[1, 0], [0, 1]], [[-x+1]]," +
-                " [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 1], [0, 0, 0, 0]], [[7]], [[1, 1], [0, 0]], [[x^2+x]]," +
-                " [[0, 0, 1], [0, 0, 0], [0, 0, 1]], [[-7]], [[1, 1], [0, 1]], [[2*x+1]]," +
-                " [[0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 1]], [[8]], ...]");
+        simpleProviderHelper(QEP.squarePolynomialMatrices(), "QBarExhaustiveProvider_squarePolynomialMatrices");
     }
 
     private static void rationalPolynomialMatrices_int_int_helper(int height, int width, @NotNull String output) {
@@ -545,54 +486,16 @@ public class QBarExhaustiveProviderTest {
 
     @Test
     public void testRationalPolynomialMatrices_int_int() {
-        rationalPolynomialMatrices_int_int_helper(0, 0, "[[]#0]");
-        rationalPolynomialMatrices_int_int_helper(0, 3, "[[]#3]");
-        rationalPolynomialMatrices_int_int_helper(3, 0, "[[[], [], []]]");
+        rationalPolynomialMatrices_int_int_helper(0, 0, "QBarExhaustiveProvider_rationalPolynomialMatrices_int_int_i");
+        rationalPolynomialMatrices_int_int_helper(0, 3,
+                "QBarExhaustiveProvider_rationalPolynomialMatrices_int_int_ii");
+        rationalPolynomialMatrices_int_int_helper(3, 0,
+                "QBarExhaustiveProvider_rationalPolynomialMatrices_int_int_iii");
         rationalPolynomialMatrices_int_int_helper(1, 1,
-                "[[[0]], [[1]], [[1/2]], [[x]], [[1/3]], [[1/4]], [[-1]], [[x^2]], [[-1/2]], [[x+1]], [[2]]," +
-                " [[-1/3]], [[1/2*x]], [[-1/4]], [[2/3]], [[1/3*x]], [[1/5]], [[x^3]], [[1/6]], [[1/2*x+1]]," +
-                " [[1/7]], [[x^2+x]], [[1/8]], [[1/3*x+1]], [[-1/5]], [[-1/6]], [[2/5]], [[-1/7]], [[x+1/2]]," +
-                " [[-1/8]], [[2/7]], [[-2]], [[x^2+1]], [[3]], [[x+1/3]], [[3/2]], [[x^4]], [[-2/3]], [[1/2*x+1/2]]," +
-                " [[3/4]], [[-3]], [[1/3*x+1/2]], [[-3/2]], [[x^3+x^2]], [[4]], [[1/2*x+1/3]], [[-3/4]]," +
-                " [[x^2+x+1]], [[4/3]], [[1/3*x+1/3]], ...]");
-        rationalPolynomialMatrices_int_int_helper(2, 2,
-                "[[[0, 0], [0, 0]], [[0, 0], [0, 1]], [[0, 1], [0, 0]], [[0, 1], [0, 1]], [[0, 0], [1, 0]]," +
-                " [[0, 0], [1, 1]], [[0, 1], [1, 0]], [[0, 1], [1, 1]], [[1, 0], [0, 0]], [[1, 0], [0, 1]]," +
-                " [[1, 1], [0, 0]], [[1, 1], [0, 1]], [[1, 0], [1, 0]], [[1, 0], [1, 1]], [[1, 1], [1, 0]]," +
-                " [[1, 1], [1, 1]], [[0, 0], [0, 1/2]], [[0, 0], [0, x]], [[0, 1], [0, 1/2]], [[0, 1], [0, x]]," +
-                " [[0, 0], [1, 1/2]], [[0, 0], [1, x]], [[0, 1], [1, 1/2]], [[0, 1], [1, x]], [[1, 0], [0, 1/2]]," +
-                " [[1, 0], [0, x]], [[1, 1], [0, 1/2]], [[1, 1], [0, x]], [[1, 0], [1, 1/2]], [[1, 0], [1, x]]," +
-                " [[1, 1], [1, 1/2]], [[1, 1], [1, x]], [[0, 1/2], [0, 0]], [[0, 1/2], [0, 1]], [[0, x], [0, 0]]," +
-                " [[0, x], [0, 1]], [[0, 1/2], [1, 0]], [[0, 1/2], [1, 1]], [[0, x], [1, 0]], [[0, x], [1, 1]]," +
-                " [[1, 1/2], [0, 0]], [[1, 1/2], [0, 1]], [[1, x], [0, 0]], [[1, x], [0, 1]], [[1, 1/2], [1, 0]]," +
-                " [[1, 1/2], [1, 1]], [[1, x], [1, 0]], [[1, x], [1, 1]], [[0, 1/2], [0, 1/2]], [[0, 1/2], [0, x]]," +
-                " ...]");
+                "QBarExhaustiveProvider_rationalPolynomialMatrices_int_int_iv");
+        rationalPolynomialMatrices_int_int_helper(2, 2, "QBarExhaustiveProvider_rationalPolynomialMatrices_int_int_v");
         rationalPolynomialMatrices_int_int_helper(3, 4,
-                "[[[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]], [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 1]]," +
-                " [[0, 0, 0, 0], [0, 0, 0, 1], [0, 0, 0, 0]], [[0, 0, 0, 0], [0, 0, 0, 1], [0, 0, 0, 1]]," +
-                " [[0, 0, 0, 1], [0, 0, 0, 0], [0, 0, 0, 0]], [[0, 0, 0, 1], [0, 0, 0, 0], [0, 0, 0, 1]]," +
-                " [[0, 0, 0, 1], [0, 0, 0, 1], [0, 0, 0, 0]], [[0, 0, 0, 1], [0, 0, 0, 1], [0, 0, 0, 1]]," +
-                " [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 1, 0]], [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 1, 1]]," +
-                " [[0, 0, 0, 0], [0, 0, 0, 1], [0, 0, 1, 0]], [[0, 0, 0, 0], [0, 0, 0, 1], [0, 0, 1, 1]]," +
-                " [[0, 0, 0, 1], [0, 0, 0, 0], [0, 0, 1, 0]], [[0, 0, 0, 1], [0, 0, 0, 0], [0, 0, 1, 1]]," +
-                " [[0, 0, 0, 1], [0, 0, 0, 1], [0, 0, 1, 0]], [[0, 0, 0, 1], [0, 0, 0, 1], [0, 0, 1, 1]]," +
-                " [[0, 0, 0, 0], [0, 0, 1, 0], [0, 0, 0, 0]], [[0, 0, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]]," +
-                " [[0, 0, 0, 0], [0, 0, 1, 1], [0, 0, 0, 0]], [[0, 0, 0, 0], [0, 0, 1, 1], [0, 0, 0, 1]]," +
-                " [[0, 0, 0, 1], [0, 0, 1, 0], [0, 0, 0, 0]], [[0, 0, 0, 1], [0, 0, 1, 0], [0, 0, 0, 1]]," +
-                " [[0, 0, 0, 1], [0, 0, 1, 1], [0, 0, 0, 0]], [[0, 0, 0, 1], [0, 0, 1, 1], [0, 0, 0, 1]]," +
-                " [[0, 0, 0, 0], [0, 0, 1, 0], [0, 0, 1, 0]], [[0, 0, 0, 0], [0, 0, 1, 0], [0, 0, 1, 1]]," +
-                " [[0, 0, 0, 0], [0, 0, 1, 1], [0, 0, 1, 0]], [[0, 0, 0, 0], [0, 0, 1, 1], [0, 0, 1, 1]]," +
-                " [[0, 0, 0, 1], [0, 0, 1, 0], [0, 0, 1, 0]], [[0, 0, 0, 1], [0, 0, 1, 0], [0, 0, 1, 1]]," +
-                " [[0, 0, 0, 1], [0, 0, 1, 1], [0, 0, 1, 0]], [[0, 0, 0, 1], [0, 0, 1, 1], [0, 0, 1, 1]]," +
-                " [[0, 0, 1, 0], [0, 0, 0, 0], [0, 0, 0, 0]], [[0, 0, 1, 0], [0, 0, 0, 0], [0, 0, 0, 1]]," +
-                " [[0, 0, 1, 0], [0, 0, 0, 1], [0, 0, 0, 0]], [[0, 0, 1, 0], [0, 0, 0, 1], [0, 0, 0, 1]]," +
-                " [[0, 0, 1, 1], [0, 0, 0, 0], [0, 0, 0, 0]], [[0, 0, 1, 1], [0, 0, 0, 0], [0, 0, 0, 1]]," +
-                " [[0, 0, 1, 1], [0, 0, 0, 1], [0, 0, 0, 0]], [[0, 0, 1, 1], [0, 0, 0, 1], [0, 0, 0, 1]]," +
-                " [[0, 0, 1, 0], [0, 0, 0, 0], [0, 0, 1, 0]], [[0, 0, 1, 0], [0, 0, 0, 0], [0, 0, 1, 1]]," +
-                " [[0, 0, 1, 0], [0, 0, 0, 1], [0, 0, 1, 0]], [[0, 0, 1, 0], [0, 0, 0, 1], [0, 0, 1, 1]]," +
-                " [[0, 0, 1, 1], [0, 0, 0, 0], [0, 0, 1, 0]], [[0, 0, 1, 1], [0, 0, 0, 0], [0, 0, 1, 1]]," +
-                " [[0, 0, 1, 1], [0, 0, 0, 1], [0, 0, 1, 0]], [[0, 0, 1, 1], [0, 0, 0, 1], [0, 0, 1, 1]]," +
-                " [[0, 0, 1, 0], [0, 0, 1, 0], [0, 0, 0, 0]], [[0, 0, 1, 0], [0, 0, 1, 0], [0, 0, 0, 1]], ...]");
+                "QBarExhaustiveProvider_rationalPolynomialMatrices_int_int_vi");
         rationalPolynomialMatrices_int_int_fail_helper(-1, 0);
         rationalPolynomialMatrices_int_int_fail_helper(-1, 1);
         rationalPolynomialMatrices_int_int_fail_helper(0, -1);
@@ -602,33 +505,13 @@ public class QBarExhaustiveProviderTest {
 
     @Test
     public void testRationalPolynomialMatrices() {
-        simpleProviderHelper(QEP.rationalPolynomialMatrices(),
-                "[[[0]], []#0, [[]], [[0, 0]], []#1, [[1]], [[0, 1]], [[1/2]], [[], []], [[1, 0]], [[x]], [[1, 1]]," +
-                " [[0], [0]], [[0, 0], [0, 0]], [[0], [1]], [[0, 0], [0, 1]], []#2, [[1], [0]], [[0, 1], [0, 0]]," +
-                " [[1], [1]], [[0, 1], [0, 1]], [[1/3]], [[0, 1/2]], [[1/4]], [[0, x]], [[-1]], [[1, 1/2]], [[x^2]]," +
-                " [[1, x]], [[0], [1/2]], [[0, 0], [1, 0]], [[0], [x]], [[], [], []], [[0, 0], [1, 1]]," +
-                " [[1], [1/2]], [[0, 1], [1, 0]], [[1], [x]], [[0, 1], [1, 1]], [[-1/2]], [[1/2, 0]], [[x+1]]," +
-                " [[1/2, 1]], [[2]], [[x, 0]], [[-1/3]], [[x, 1]], [[1/2], [0]], [[1, 0], [0, 0]], [[1/2], [1]]," +
-                " [[1, 0], [0, 1]], ...]");
+        simpleProviderHelper(QEP.rationalPolynomialMatrices(), "QBarExhaustiveProvider_rationalPolynomialMatrices");
     }
 
     @Test
     public void testSquareRationalPolynomialMatrices() {
         simpleProviderHelper(QEP.squareRationalPolynomialMatrices(),
-                "[[]#0, [[0]], [[0, 0], [0, 0]], [[1]], [[0, 0, 0], [0, 0, 0], [0, 0, 0]], [[1/2]]," +
-                " [[0, 0], [0, 1]], [[x]], [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]], [[1/3]]," +
-                " [[0, 1], [0, 0]], [[1/4]], [[0, 0, 0], [0, 0, 0], [0, 0, 1]], [[-1]], [[0, 1], [0, 1]], [[x^2]]," +
-                " [[0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0]], [[-1/2]]," +
-                " [[0, 0], [1, 0]], [[x+1]], [[0, 0, 0], [0, 0, 1], [0, 0, 0]], [[2]], [[0, 0], [1, 1]], [[-1/3]]," +
-                " [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 1]], [[1/2*x]], [[0, 1], [1, 0]], [[-1/4]]," +
-                " [[0, 0, 0], [0, 0, 1], [0, 0, 1]], [[2/3]], [[0, 1], [1, 1]], [[1/3*x]]," +
-                " [[0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0]," +
-                " [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0]], [[1/5]], [[1, 0], [0, 0]], [[x^3]]," +
-                " [[0, 0, 1], [0, 0, 0], [0, 0, 0]], [[1/6]], [[1, 0], [0, 1]], [[1/2*x+1]]," +
-                " [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 1], [0, 0, 0, 0]], [[1/7]], [[1, 1], [0, 0]], [[x^2+x]]," +
-                " [[0, 0, 1], [0, 0, 0], [0, 0, 1]], [[1/8]], [[1, 1], [0, 1]], [[1/3*x+1]]," +
-                " [[0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 1]], [[-1/5]]," +
-                " ...]");
+                "QBarExhaustiveProvider_squareRationalPolynomialMatrices");
     }
 
     private static void polynomials_int_helper(int degree, @NotNull String output) {
@@ -644,41 +527,17 @@ public class QBarExhaustiveProviderTest {
 
     @Test
     public void testPolynomials_int() {
-        polynomials_int_helper(-1, "[0]");
-        polynomials_int_helper(0,
-                "[1, -1, 2, -2, 3, -3, 4, -4, 5, -5, 6, -6, 7, -7, 8, -8, 9, -9, 10, -10, 11, -11, 12, -12, 13, -13," +
-                " 14, -14, 15, -15, 16, -16, 17, -17, 18, -18, 19, -19, 20, -20, 21, -21, 22, -22, 23, -23, 24, -24," +
-                " 25, -25, ...]");
-        polynomials_int_helper(1,
-                "[x, x+1, -x, 2*x, -x+1, 2*x+1, x-1, x+2, -x-1, 2*x-1, -x+2, 2*x+2, -2*x, 3*x, -2*x+1, 3*x+1, -3*x," +
-                " 4*x, -3*x+1, 4*x+1, -2*x-1, 3*x-1, -2*x+2, 3*x+2, -3*x-1, 4*x-1, -3*x+2, 4*x+2, x-2, x+3, -x-2," +
-                " 2*x-2, -x+3, 2*x+3, x-3, x+4, -x-3, 2*x-3, -x+4, 2*x+4, -2*x-2, 3*x-2, -2*x+3, 3*x+3, -3*x-2," +
-                " 4*x-2, -3*x+3, 4*x+3, -2*x-3, 3*x-3, ...]");
-        polynomials_int_helper(2,
-                "[x^2, x^2+x, x^2+1, x^2+x+1, -x^2, 2*x^2, -x^2+x, 2*x^2+x, -x^2+1, 2*x^2+1, -x^2+x+1, 2*x^2+x+1," +
-                " x^2-x, x^2+2*x, x^2-x+1, x^2+2*x+1, -x^2-x, 2*x^2-x, -x^2+2*x, 2*x^2+2*x, -x^2-x+1, 2*x^2-x+1," +
-                " -x^2+2*x+1, 2*x^2+2*x+1, x^2-1, x^2+x-1, x^2+2, x^2+x+2, -x^2-1, 2*x^2-1, -x^2+x-1, 2*x^2+x-1," +
-                " -x^2+2, 2*x^2+2, -x^2+x+2, 2*x^2+x+2, x^2-x-1, x^2+2*x-1, x^2-x+2, x^2+2*x+2, -x^2-x-1, 2*x^2-x-1," +
-                " -x^2+2*x-1, 2*x^2+2*x-1, -x^2-x+2, 2*x^2-x+2, -x^2+2*x+2, 2*x^2+2*x+2, -2*x^2, 3*x^2, ...]");
-        polynomials_int_helper(9,
-                "[x^9, x^9+x^8, x^9+x^7, x^9+x^8+x^7, x^9+x^6, x^9+x^8+x^6, x^9+x^7+x^6, x^9+x^8+x^7+x^6, x^9+x^5," +
-                " x^9+x^8+x^5, x^9+x^7+x^5, x^9+x^8+x^7+x^5, x^9+x^6+x^5, x^9+x^8+x^6+x^5, x^9+x^7+x^6+x^5," +
-                " x^9+x^8+x^7+x^6+x^5, x^9+x^4, x^9+x^8+x^4, x^9+x^7+x^4, x^9+x^8+x^7+x^4, x^9+x^6+x^4," +
-                " x^9+x^8+x^6+x^4, x^9+x^7+x^6+x^4, x^9+x^8+x^7+x^6+x^4, x^9+x^5+x^4, x^9+x^8+x^5+x^4," +
-                " x^9+x^7+x^5+x^4, x^9+x^8+x^7+x^5+x^4, x^9+x^6+x^5+x^4, x^9+x^8+x^6+x^5+x^4, x^9+x^7+x^6+x^5+x^4," +
-                " x^9+x^8+x^7+x^6+x^5+x^4, x^9+x^3, x^9+x^8+x^3, x^9+x^7+x^3, x^9+x^8+x^7+x^3, x^9+x^6+x^3," +
-                " x^9+x^8+x^6+x^3, x^9+x^7+x^6+x^3, x^9+x^8+x^7+x^6+x^3, x^9+x^5+x^3, x^9+x^8+x^5+x^3," +
-                " x^9+x^7+x^5+x^3, x^9+x^8+x^7+x^5+x^3, x^9+x^6+x^5+x^3, x^9+x^8+x^6+x^5+x^3, x^9+x^7+x^6+x^5+x^3," +
-                " x^9+x^8+x^7+x^6+x^5+x^3, x^9+x^4+x^3, x^9+x^8+x^4+x^3, ...]");
+        polynomials_int_helper(-1, "QBarExhaustiveProvider_polynomials_int_i");
+        polynomials_int_helper(0, "QBarExhaustiveProvider_polynomials_int_ii");
+        polynomials_int_helper(1, "QBarExhaustiveProvider_polynomials_int_iii");
+        polynomials_int_helper(2, "QBarExhaustiveProvider_polynomials_int_iv");
+        polynomials_int_helper(9, "QBarExhaustiveProvider_polynomials_int_v");
         polynomials_int_fail_helper(-2);
     }
 
     @Test
     public void testPolynomials() {
-        simpleProviderHelper(QEP.polynomials(),
-                "[0, 1, -1, x, 2, -2, 3, x^2, -3, x+1, 4, -4, -x, 5, -5, 2*x, 6, x^3, -6, -x+1, 7, x^2+x, -7, 2*x+1," +
-                " 8, -8, 9, -9, x-1, 10, -10, 11, x^2+1, -11, x+2, 12, x^4, -12, -x-1, 13, -13, 2*x-1, 14, x^3+x^2," +
-                " -14, -x+2, 15, x^2+x+1, -15, 2*x+2, ...]");
+        simpleProviderHelper(QEP.polynomials(), "QBarExhaustiveProvider_polynomials");
     }
 
     private static void polynomialsAtLeast_helper(int minDegree, @NotNull String output) {
@@ -694,33 +553,11 @@ public class QBarExhaustiveProviderTest {
 
     @Test
     public void testPolynomialsAtLeast() {
-        polynomialsAtLeast_helper(-1,
-                "[0, 1, -1, x, 2, -2, 3, x^2, -3, x+1, 4, -4, -x, 5, -5, 2*x, 6, x^3, -6, -x+1, 7, x^2+x, -7, 2*x+1," +
-                " 8, -8, 9, -9, x-1, 10, -10, 11, x^2+1, -11, x+2, 12, x^4, -12, -x-1, 13, -13, 2*x-1, 14, x^3+x^2," +
-                " -14, -x+2, 15, x^2+x+1, -15, 2*x+2, ...]");
-        polynomialsAtLeast_helper(0,
-                "[1, -1, x, 2, -2, 3, x^2, -3, x+1, 4, -4, -x, 5, -5, 2*x, 6, x^3, -6, -x+1, 7, x^2+x, -7, 2*x+1, 8," +
-                " -8, 9, -9, x-1, 10, -10, 11, x^2+1, -11, x+2, 12, x^4, -12, -x-1, 13, -13, 2*x-1, 14, x^3+x^2," +
-                " -14, -x+2, 15, x^2+x+1, -15, 2*x+2, 16, ...]");
-        polynomialsAtLeast_helper(1,
-                "[x, x^2, x+1, -x, 2*x, x^3, -x+1, x^2+x, 2*x+1, x-1, x^2+1, x+2, x^4, -x-1, 2*x-1, x^3+x^2, -x+2," +
-                " x^2+x+1, 2*x+2, -2*x, -x^2, 3*x, -2*x+1, 2*x^2, 3*x+1, -3*x, -x^2+x, 4*x, x^3+x, -3*x+1, 2*x^2+x," +
-                " 4*x+1, x^5, -2*x-1, -x^2+1, 3*x-1, -2*x+2, 2*x^2+1, 3*x+2, x^4+x^3, -3*x-1, -x^2+x+1, 4*x-1," +
-                " x^3+x^2+x, -3*x+2, 2*x^2+x+1, 4*x+2, x-2, x^2-x, x+3, ...]");
-        polynomialsAtLeast_helper(2,
-                "[x^2, x^3, x^2+x, x^2+1, x^4, x^3+x^2, x^2+x+1, -x^2, 2*x^2, -x^2+x, x^3+x, 2*x^2+x, x^5, -x^2+1," +
-                " 2*x^2+1, x^4+x^3, -x^2+x+1, x^3+x^2+x, 2*x^2+x+1, x^2-x, x^3+1, x^2+2*x, x^2-x+1, x^4+x^2," +
-                " x^3+x^2+1, x^2+2*x+1, x^6, -x^2-x, 2*x^2-x, -x^2+2*x, x^3+x+1, 2*x^2+2*x, x^5+x^4, -x^2-x+1," +
-                " 2*x^2-x+1, x^4+x^3+x^2, -x^2+2*x+1, x^3+x^2+x+1, 2*x^2+2*x+1, -x^3, x^2-1, 2*x^3, x^2+x-1," +
-                " -x^3+x^2, x^2+2, x^4+x, 2*x^3+x^2, x^2+x+2, -x^2-1, -x^3+x, ...]");
-        polynomialsAtLeast_helper(9,
-                "[x^9, x^10, x^9+x^8, x^9+x^7, x^11, x^10+x^9, x^9+x^8+x^7, x^9+x^6, x^10+x^8, x^9+x^8+x^6, x^12," +
-                " x^9+x^7+x^6, x^11+x^10, x^10+x^9+x^8, x^9+x^8+x^7+x^6, x^9+x^5, x^10+x^7, x^9+x^8+x^5," +
-                " x^9+x^7+x^5, x^11+x^9, x^10+x^9+x^7, x^9+x^8+x^7+x^5, x^13, x^9+x^6+x^5, x^10+x^8+x^7," +
-                " x^9+x^8+x^6+x^5, x^12+x^11, x^9+x^7+x^6+x^5, x^11+x^10+x^9, x^10+x^9+x^8+x^7, x^9+x^8+x^7+x^6+x^5," +
-                " x^9+x^4, x^10+x^6, x^9+x^8+x^4, x^9+x^7+x^4, x^11+x^8, x^10+x^9+x^6, x^9+x^8+x^7+x^4, x^9+x^6+x^4," +
-                " x^10+x^8+x^6, x^9+x^8+x^6+x^4, x^12+x^10, x^9+x^7+x^6+x^4, x^11+x^10+x^8, x^10+x^9+x^8+x^6," +
-                " x^9+x^8+x^7+x^6+x^4, x^14, x^9+x^5+x^4, x^10+x^7+x^6, x^9+x^8+x^5+x^4, ...]");
+        polynomialsAtLeast_helper(-1, "QBarExhaustiveProvider_polynomialsAtLeast_i");
+        polynomialsAtLeast_helper(0, "QBarExhaustiveProvider_polynomialsAtLeast_ii");
+        polynomialsAtLeast_helper(1, "QBarExhaustiveProvider_polynomialsAtLeast_iii");
+        polynomialsAtLeast_helper(2, "QBarExhaustiveProvider_polynomialsAtLeast_iv");
+        polynomialsAtLeast_helper(9, "QBarExhaustiveProvider_polynomialsAtLeast_v");
         polynomialsAtLeast_fail_helper(-2);
     }
 
@@ -737,40 +574,17 @@ public class QBarExhaustiveProviderTest {
 
     @Test
     public void testPrimitivePolynomials_int() {
-        primitivePolynomials_int_helper(-1, "[]");
-        primitivePolynomials_int_helper(0, "[1, -1]");
-        primitivePolynomials_int_helper(1,
-                "[x, x+1, -x, -x+1, 2*x+1, x-1, x+2, -x-1, 2*x-1, -x+2, -2*x+1, 3*x+1, -3*x+1, 4*x+1, -2*x-1, 3*x-1," +
-                " 3*x+2, -3*x-1, 4*x-1, -3*x+2, x-2, x+3, -x-2, -x+3, 2*x+3, x-3, x+4, -x-3, 2*x-3, -x+4, 3*x-2," +
-                " -2*x+3, -3*x-2, 4*x+3, -2*x-3, 3*x+4, 4*x-3, -3*x+4, -4*x+1, 5*x+1, -5*x+1, 6*x+1, -4*x-1, 5*x-1," +
-                " 5*x+2, -5*x-1, 6*x-1, -5*x+2, -6*x+1, 7*x+1, ...]");
-        primitivePolynomials_int_helper(2,
-                "[x^2, x^2+x, x^2+1, x^2+x+1, -x^2, -x^2+x, 2*x^2+x, -x^2+1, 2*x^2+1, -x^2+x+1, 2*x^2+x+1, x^2-x," +
-                " x^2+2*x, x^2-x+1, x^2+2*x+1, -x^2-x, 2*x^2-x, -x^2+2*x, -x^2-x+1, 2*x^2-x+1, -x^2+2*x+1," +
-                " 2*x^2+2*x+1, x^2-1, x^2+x-1, x^2+2, x^2+x+2, -x^2-1, 2*x^2-1, -x^2+x-1, 2*x^2+x-1, -x^2+2," +
-                " -x^2+x+2, 2*x^2+x+2, x^2-x-1, x^2+2*x-1, x^2-x+2, x^2+2*x+2, -x^2-x-1, 2*x^2-x-1, -x^2+2*x-1," +
-                " 2*x^2+2*x-1, -x^2-x+2, 2*x^2-x+2, -x^2+2*x+2, -2*x^2+x, 3*x^2+x, -2*x^2+1, 3*x^2+1, -2*x^2+x+1," +
-                " 3*x^2+x+1, ...]");
-        primitivePolynomials_int_helper(8,
-                "[x^8, x^8+x^7, x^8+x^6, x^8+x^7+x^6, x^8+x^5, x^8+x^7+x^5, x^8+x^6+x^5, x^8+x^7+x^6+x^5, x^8+x^4," +
-                " x^8+x^7+x^4, x^8+x^6+x^4, x^8+x^7+x^6+x^4, x^8+x^5+x^4, x^8+x^7+x^5+x^4, x^8+x^6+x^5+x^4," +
-                " x^8+x^7+x^6+x^5+x^4, x^8+x^3, x^8+x^7+x^3, x^8+x^6+x^3, x^8+x^7+x^6+x^3, x^8+x^5+x^3," +
-                " x^8+x^7+x^5+x^3, x^8+x^6+x^5+x^3, x^8+x^7+x^6+x^5+x^3, x^8+x^4+x^3, x^8+x^7+x^4+x^3," +
-                " x^8+x^6+x^4+x^3, x^8+x^7+x^6+x^4+x^3, x^8+x^5+x^4+x^3, x^8+x^7+x^5+x^4+x^3, x^8+x^6+x^5+x^4+x^3," +
-                " x^8+x^7+x^6+x^5+x^4+x^3, x^8+x^2, x^8+x^7+x^2, x^8+x^6+x^2, x^8+x^7+x^6+x^2, x^8+x^5+x^2," +
-                " x^8+x^7+x^5+x^2, x^8+x^6+x^5+x^2, x^8+x^7+x^6+x^5+x^2, x^8+x^4+x^2, x^8+x^7+x^4+x^2," +
-                " x^8+x^6+x^4+x^2, x^8+x^7+x^6+x^4+x^2, x^8+x^5+x^4+x^2, x^8+x^7+x^5+x^4+x^2, x^8+x^6+x^5+x^4+x^2," +
-                " x^8+x^7+x^6+x^5+x^4+x^2, x^8+x^3+x^2, x^8+x^7+x^3+x^2, ...]");
+        primitivePolynomials_int_helper(-1, "QBarExhaustiveProvider_primitivePolynomials_int_i");
+        primitivePolynomials_int_helper(0, "QBarExhaustiveProvider_primitivePolynomials_int_ii");
+        primitivePolynomials_int_helper(1, "QBarExhaustiveProvider_primitivePolynomials_int_iii");
+        primitivePolynomials_int_helper(2, "QBarExhaustiveProvider_primitivePolynomials_int_iv");
+        primitivePolynomials_int_helper(8, "QBarExhaustiveProvider_primitivePolynomials_int_v");
         primitivePolynomials_int_fail_helper(-2);
     }
 
     @Test
     public void testPrimitivePolynomials() {
-        simpleProviderHelper(QEP.primitivePolynomials(),
-                "[1, -1, x, x^2, x+1, -x, x^3, -x+1, x^2+x, 2*x+1, x-1, x^2+1, x+2, x^4, -x-1, 2*x-1, x^3+x^2, -x+2," +
-                " x^2+x+1, -x^2, -2*x+1, 3*x+1, -x^2+x, x^3+x, -3*x+1, 2*x^2+x, 4*x+1, x^5, -2*x-1, -x^2+1, 3*x-1," +
-                " 2*x^2+1, 3*x+2, x^4+x^3, -3*x-1, -x^2+x+1, 4*x-1, x^3+x^2+x, -3*x+2, 2*x^2+x+1, x-2, x^2-x, x+3," +
-                " -x-2, x^3+1, -x+3, x^2+2*x, 2*x+3, x-3, x^2-x+1, ...]");
+        simpleProviderHelper(QEP.primitivePolynomials(), "QBarExhaustiveProvider_primitivePolynomials");
     }
 
     private static void primitivePolynomialsAtLeast_helper(int minDegree, @NotNull String output) {
@@ -786,35 +600,11 @@ public class QBarExhaustiveProviderTest {
 
     @Test
     public void testPrimitivePolynomialsAtLeast() {
-        primitivePolynomialsAtLeast_helper(-1,
-                "[1, -1, x, x^2, x+1, -x, x^3, -x+1, x^2+x, 2*x+1, x-1, x^2+1, x+2, x^4, -x-1, 2*x-1, x^3+x^2, -x+2," +
-                " x^2+x+1, -x^2, -2*x+1, 3*x+1, -x^2+x, x^3+x, -3*x+1, 2*x^2+x, 4*x+1, x^5, -2*x-1, -x^2+1, 3*x-1," +
-                " 2*x^2+1, 3*x+2, x^4+x^3, -3*x-1, -x^2+x+1, 4*x-1, x^3+x^2+x, -3*x+2, 2*x^2+x+1, x-2, x^2-x, x+3," +
-                " -x-2, x^3+1, -x+3, x^2+2*x, 2*x+3, x-3, x^2-x+1, ...]");
-        primitivePolynomialsAtLeast_helper(0,
-                "[1, -1, x, x^2, x+1, -x, x^3, -x+1, x^2+x, 2*x+1, x-1, x^2+1, x+2, x^4, -x-1, 2*x-1, x^3+x^2, -x+2," +
-                " x^2+x+1, -x^2, -2*x+1, 3*x+1, -x^2+x, x^3+x, -3*x+1, 2*x^2+x, 4*x+1, x^5, -2*x-1, -x^2+1, 3*x-1," +
-                " 2*x^2+1, 3*x+2, x^4+x^3, -3*x-1, -x^2+x+1, 4*x-1, x^3+x^2+x, -3*x+2, 2*x^2+x+1, x-2, x^2-x, x+3," +
-                " -x-2, x^3+1, -x+3, x^2+2*x, 2*x+3, x-3, x^2-x+1, ...]");
-        primitivePolynomialsAtLeast_helper(1,
-                "[x, x^2, x+1, -x, x^3, -x+1, x^2+x, 2*x+1, x-1, x^2+1, x+2, x^4, -x-1, 2*x-1, x^3+x^2, -x+2," +
-                " x^2+x+1, -x^2, -2*x+1, 3*x+1, -x^2+x, x^3+x, -3*x+1, 2*x^2+x, 4*x+1, x^5, -2*x-1, -x^2+1, 3*x-1," +
-                " 2*x^2+1, 3*x+2, x^4+x^3, -3*x-1, -x^2+x+1, 4*x-1, x^3+x^2+x, -3*x+2, 2*x^2+x+1, x-2, x^2-x, x+3," +
-                " -x-2, x^3+1, -x+3, x^2+2*x, 2*x+3, x-3, x^2-x+1, x+4, x^4+x^2, ...]");
-        primitivePolynomialsAtLeast_helper(2,
-                "[x^2, x^3, x^2+x, x^2+1, x^4, x^3+x^2, x^2+x+1, -x^2, -x^2+x, x^3+x, 2*x^2+x, x^5, -x^2+1, 2*x^2+1," +
-                " x^4+x^3, -x^2+x+1, x^3+x^2+x, 2*x^2+x+1, x^2-x, x^3+1, x^2+2*x, x^2-x+1, x^4+x^2, x^3+x^2+1," +
-                " x^2+2*x+1, x^6, -x^2-x, 2*x^2-x, -x^2+2*x, x^3+x+1, x^5+x^4, -x^2-x+1, 2*x^2-x+1, x^4+x^3+x^2," +
-                " -x^2+2*x+1, x^3+x^2+x+1, 2*x^2+2*x+1, -x^3, x^2-1, x^2+x-1, -x^3+x^2, x^2+2, x^4+x, 2*x^3+x^2," +
-                " x^2+x+2, -x^2-1, -x^3+x, 2*x^2-1, -x^2+x-1, 2*x^3+x, ...]");
-        primitivePolynomialsAtLeast_helper(8,
-                "[x^8, x^9, x^8+x^7, x^8+x^6, x^10, x^9+x^8, x^8+x^7+x^6, x^8+x^5, x^9+x^7, x^8+x^7+x^5, x^11," +
-                " x^8+x^6+x^5, x^10+x^9, x^9+x^8+x^7, x^8+x^7+x^6+x^5, x^8+x^4, x^9+x^6, x^8+x^7+x^4, x^8+x^6+x^4," +
-                " x^10+x^8, x^9+x^8+x^6, x^8+x^7+x^6+x^4, x^12, x^8+x^5+x^4, x^9+x^7+x^6, x^8+x^7+x^5+x^4," +
-                " x^11+x^10, x^8+x^6+x^5+x^4, x^10+x^9+x^8, x^9+x^8+x^7+x^6, x^8+x^7+x^6+x^5+x^4, x^8+x^3, x^9+x^5," +
-                " x^8+x^7+x^3, x^8+x^6+x^3, x^10+x^7, x^9+x^8+x^5, x^8+x^7+x^6+x^3, x^8+x^5+x^3, x^9+x^7+x^5," +
-                " x^8+x^7+x^5+x^3, x^11+x^9, x^8+x^6+x^5+x^3, x^10+x^9+x^7, x^9+x^8+x^7+x^5, x^8+x^7+x^6+x^5+x^3," +
-                " x^13, x^8+x^4+x^3, x^9+x^6+x^5, x^8+x^7+x^4+x^3, ...]");
+        primitivePolynomialsAtLeast_helper(-1, "QBarExhaustiveProvider_primitivePolynomialsAtLeast_i");
+        primitivePolynomialsAtLeast_helper(0, "QBarExhaustiveProvider_primitivePolynomialsAtLeast_ii");
+        primitivePolynomialsAtLeast_helper(1, "QBarExhaustiveProvider_primitivePolynomialsAtLeast_iii");
+        primitivePolynomialsAtLeast_helper(2, "QBarExhaustiveProvider_primitivePolynomialsAtLeast_iv");
+        primitivePolynomialsAtLeast_helper(8, "QBarExhaustiveProvider_primitivePolynomialsAtLeast_v");
         primitivePolynomialsAtLeast_fail_helper(-2);
     }
 
@@ -831,40 +621,18 @@ public class QBarExhaustiveProviderTest {
 
     @Test
     public void testPositivePrimitivePolynomials_int() {
-        positivePrimitivePolynomials_int_helper(-1, "[]");
-        positivePrimitivePolynomials_int_helper(0, "[1]");
-        positivePrimitivePolynomials_int_helper(1,
-                "[x, x+1, 2*x+1, x-1, x+2, 2*x-1, 3*x+1, 4*x+1, 3*x-1, 3*x+2, 4*x-1, x-2, x+3, 2*x+3, x-3, x+4," +
-                " 2*x-3, 3*x-2, 4*x+3, 3*x+4, 4*x-3, 5*x+1, 6*x+1, 5*x-1, 5*x+2, 6*x-1, 7*x+1, 8*x+1, 7*x-1, 7*x+2," +
-                " 8*x-1, 5*x-2, 5*x+3, 5*x-3, 5*x+4, 7*x-2, 7*x+3, 8*x+3, 7*x-3, 7*x+4, 8*x-3, x-4, x+5, 2*x+5, x-5," +
-                " x+6, 2*x-5, 3*x-4, 3*x+5, 4*x+5, ...]");
-        positivePrimitivePolynomials_int_helper(2,
-                "[x^2, x^2+x, x^2+1, x^2+x+1, 2*x^2+x, 2*x^2+1, 2*x^2+x+1, x^2-x, x^2+2*x, x^2-x+1, x^2+2*x+1," +
-                " 2*x^2-x, 2*x^2-x+1, 2*x^2+2*x+1, x^2-1, x^2+x-1, x^2+2, x^2+x+2, 2*x^2-1, 2*x^2+x-1, 2*x^2+x+2," +
-                " x^2-x-1, x^2+2*x-1, x^2-x+2, x^2+2*x+2, 2*x^2-x-1, 2*x^2+2*x-1, 2*x^2-x+2, 3*x^2+x, 3*x^2+1," +
-                " 3*x^2+x+1, 4*x^2+x, 4*x^2+1, 4*x^2+x+1, 3*x^2-x, 3*x^2+2*x, 3*x^2-x+1, 3*x^2+2*x+1, 4*x^2-x," +
-                " 4*x^2-x+1, 4*x^2+2*x+1, 3*x^2-1, 3*x^2+x-1, 3*x^2+2, 3*x^2+x+2, 4*x^2-1, 4*x^2+x-1, 4*x^2+x+2," +
-                " 3*x^2-x-1, 3*x^2+2*x-1, ...]");
-        positivePrimitivePolynomials_int_helper(8,
-                "[x^8, x^8+x^7, x^8+x^6, x^8+x^7+x^6, x^8+x^5, x^8+x^7+x^5, x^8+x^6+x^5, x^8+x^7+x^6+x^5, x^8+x^4," +
-                " x^8+x^7+x^4, x^8+x^6+x^4, x^8+x^7+x^6+x^4, x^8+x^5+x^4, x^8+x^7+x^5+x^4, x^8+x^6+x^5+x^4," +
-                " x^8+x^7+x^6+x^5+x^4, x^8+x^3, x^8+x^7+x^3, x^8+x^6+x^3, x^8+x^7+x^6+x^3, x^8+x^5+x^3," +
-                " x^8+x^7+x^5+x^3, x^8+x^6+x^5+x^3, x^8+x^7+x^6+x^5+x^3, x^8+x^4+x^3, x^8+x^7+x^4+x^3," +
-                " x^8+x^6+x^4+x^3, x^8+x^7+x^6+x^4+x^3, x^8+x^5+x^4+x^3, x^8+x^7+x^5+x^4+x^3, x^8+x^6+x^5+x^4+x^3," +
-                " x^8+x^7+x^6+x^5+x^4+x^3, x^8+x^2, x^8+x^7+x^2, x^8+x^6+x^2, x^8+x^7+x^6+x^2, x^8+x^5+x^2," +
-                " x^8+x^7+x^5+x^2, x^8+x^6+x^5+x^2, x^8+x^7+x^6+x^5+x^2, x^8+x^4+x^2, x^8+x^7+x^4+x^2," +
-                " x^8+x^6+x^4+x^2, x^8+x^7+x^6+x^4+x^2, x^8+x^5+x^4+x^2, x^8+x^7+x^5+x^4+x^2, x^8+x^6+x^5+x^4+x^2," +
-                " x^8+x^7+x^6+x^5+x^4+x^2, x^8+x^3+x^2, x^8+x^7+x^3+x^2, ...]");
+        positivePrimitivePolynomials_int_helper(-1, "QBarExhaustiveProvider_positivePrimitivePolynomials_int_i");
+        positivePrimitivePolynomials_int_helper(0, "QBarExhaustiveProvider_positivePrimitivePolynomials_int_ii");
+        positivePrimitivePolynomials_int_helper(1, "QBarExhaustiveProvider_positivePrimitivePolynomials_int_iii");
+        positivePrimitivePolynomials_int_helper(2, "QBarExhaustiveProvider_positivePrimitivePolynomials_int_iv");
+        positivePrimitivePolynomials_int_helper(8, "QBarExhaustiveProvider_positivePrimitivePolynomials_int_v");
         positivePrimitivePolynomials_int_fail_helper(-2);
     }
 
     @Test
     public void testPositivePrimitivePolynomials() {
         simpleProviderHelper(QEP.positivePrimitivePolynomials(),
-                "[1, x, x^2, x+1, x^3, x^2+x, 2*x+1, x-1, x^2+1, x+2, x^4, 2*x-1, x^3+x^2, x^2+x+1, 3*x+1, x^3+x," +
-                " 2*x^2+x, 4*x+1, x^5, 3*x-1, 2*x^2+1, 3*x+2, x^4+x^3, 4*x-1, x^3+x^2+x, 2*x^2+x+1, x-2, x^2-x, x+3," +
-                " x^3+1, x^2+2*x, 2*x+3, x-3, x^2-x+1, x+4, x^4+x^2, 2*x-3, x^3+x^2+1, x^2+2*x+1, x^6, 3*x-2," +
-                " 2*x^2-x, x^3+x+1, 4*x+3, x^5+x^4, 2*x^2-x+1, 3*x+4, x^4+x^3+x^2, 4*x-3, x^3+x^2+x+1, ...]");
+                "QBarExhaustiveProvider_positivePrimitivePolynomials");
     }
 
     private static void positivePrimitivePolynomialsAtLeast_helper(int minDegree, @NotNull String output) {
@@ -880,36 +648,12 @@ public class QBarExhaustiveProviderTest {
 
     @Test
     public void testPositivePrimitivePolynomialsAtLeast() {
-        positivePrimitivePolynomialsAtLeast_helper(-1,
-                "[1, x, x^2, x+1, x^3, x^2+x, 2*x+1, x-1, x^2+1, x+2, x^4, 2*x-1, x^3+x^2, x^2+x+1, 3*x+1, x^3+x," +
-                " 2*x^2+x, 4*x+1, x^5, 3*x-1, 2*x^2+1, 3*x+2, x^4+x^3, 4*x-1, x^3+x^2+x, 2*x^2+x+1, x-2, x^2-x, x+3," +
-                " x^3+1, x^2+2*x, 2*x+3, x-3, x^2-x+1, x+4, x^4+x^2, 2*x-3, x^3+x^2+1, x^2+2*x+1, x^6, 3*x-2," +
-                " 2*x^2-x, x^3+x+1, 4*x+3, x^5+x^4, 2*x^2-x+1, 3*x+4, x^4+x^3+x^2, 4*x-3, x^3+x^2+x+1, ...]");
-        positivePrimitivePolynomialsAtLeast_helper(0,
-                "[1, x, x^2, x+1, x^3, x^2+x, 2*x+1, x-1, x^2+1, x+2, x^4, 2*x-1, x^3+x^2, x^2+x+1, 3*x+1, x^3+x," +
-                " 2*x^2+x, 4*x+1, x^5, 3*x-1, 2*x^2+1, 3*x+2, x^4+x^3, 4*x-1, x^3+x^2+x, 2*x^2+x+1, x-2, x^2-x, x+3," +
-                " x^3+1, x^2+2*x, 2*x+3, x-3, x^2-x+1, x+4, x^4+x^2, 2*x-3, x^3+x^2+1, x^2+2*x+1, x^6, 3*x-2," +
-                " 2*x^2-x, x^3+x+1, 4*x+3, x^5+x^4, 2*x^2-x+1, 3*x+4, x^4+x^3+x^2, 4*x-3, x^3+x^2+x+1, ...]");
+        positivePrimitivePolynomialsAtLeast_helper(-1, "QBarExhaustiveProvider_positivePrimitivePolynomialsAtLeast_i");
+        positivePrimitivePolynomialsAtLeast_helper(0, "QBarExhaustiveProvider_positivePrimitivePolynomialsAtLeast_ii");
         positivePrimitivePolynomialsAtLeast_helper(1,
-                "[x, x^2, x+1, x^3, x^2+x, 2*x+1, x-1, x^2+1, x+2, x^4, 2*x-1, x^3+x^2, x^2+x+1, 3*x+1, x^3+x," +
-                " 2*x^2+x, 4*x+1, x^5, 3*x-1, 2*x^2+1, 3*x+2, x^4+x^3, 4*x-1, x^3+x^2+x, 2*x^2+x+1, x-2, x^2-x, x+3," +
-                " x^3+1, x^2+2*x, 2*x+3, x-3, x^2-x+1, x+4, x^4+x^2, 2*x-3, x^3+x^2+1, x^2+2*x+1, x^6, 3*x-2," +
-                " 2*x^2-x, x^3+x+1, 4*x+3, x^5+x^4, 2*x^2-x+1, 3*x+4, x^4+x^3+x^2, 4*x-3, x^3+x^2+x+1, 2*x^2+2*x+1," +
-                " ...]");
-        positivePrimitivePolynomialsAtLeast_helper(2,
-                "[x^2, x^3, x^2+x, x^2+1, x^4, x^3+x^2, x^2+x+1, x^3+x, 2*x^2+x, x^5, 2*x^2+1, x^4+x^3, x^3+x^2+x," +
-                " 2*x^2+x+1, x^2-x, x^3+1, x^2+2*x, x^2-x+1, x^4+x^2, x^3+x^2+1, x^2+2*x+1, x^6, 2*x^2-x, x^3+x+1," +
-                " x^5+x^4, 2*x^2-x+1, x^4+x^3+x^2, x^3+x^2+x+1, 2*x^2+2*x+1, x^2-1, x^2+x-1, x^2+2, x^4+x," +
-                " 2*x^3+x^2, x^2+x+2, 2*x^2-1, 2*x^3+x, 2*x^2+x-1, x^5+x^3, x^4+x^3+x, 2*x^3+x^2+x, 2*x^2+x+2, x^7," +
-                " x^2-x-1, 2*x^3+1, x^2+2*x-1, x^2-x+2, x^4+x^2+x, 2*x^3+x^2+1, x^2+2*x+2, ...]");
-        positivePrimitivePolynomialsAtLeast_helper(8,
-                "[x^8, x^9, x^8+x^7, x^8+x^6, x^10, x^9+x^8, x^8+x^7+x^6, x^8+x^5, x^9+x^7, x^8+x^7+x^5, x^11," +
-                " x^8+x^6+x^5, x^10+x^9, x^9+x^8+x^7, x^8+x^7+x^6+x^5, x^8+x^4, x^9+x^6, x^8+x^7+x^4, x^8+x^6+x^4," +
-                " x^10+x^8, x^9+x^8+x^6, x^8+x^7+x^6+x^4, x^12, x^8+x^5+x^4, x^9+x^7+x^6, x^8+x^7+x^5+x^4," +
-                " x^11+x^10, x^8+x^6+x^5+x^4, x^10+x^9+x^8, x^9+x^8+x^7+x^6, x^8+x^7+x^6+x^5+x^4, x^8+x^3, x^9+x^5," +
-                " x^8+x^7+x^3, x^8+x^6+x^3, x^10+x^7, x^9+x^8+x^5, x^8+x^7+x^6+x^3, x^8+x^5+x^3, x^9+x^7+x^5," +
-                " x^8+x^7+x^5+x^3, x^11+x^9, x^8+x^6+x^5+x^3, x^10+x^9+x^7, x^9+x^8+x^7+x^5, x^8+x^7+x^6+x^5+x^3," +
-                " x^13, x^8+x^4+x^3, x^9+x^6+x^5, x^8+x^7+x^4+x^3, ...]");
+                "QBarExhaustiveProvider_positivePrimitivePolynomialsAtLeast_iii");
+        positivePrimitivePolynomialsAtLeast_helper(2, "QBarExhaustiveProvider_positivePrimitivePolynomialsAtLeast_iv");
+        positivePrimitivePolynomialsAtLeast_helper(8, "QBarExhaustiveProvider_positivePrimitivePolynomialsAtLeast_v");
         positivePrimitivePolynomialsAtLeast_fail_helper(-2);
     }
 
@@ -926,43 +670,17 @@ public class QBarExhaustiveProviderTest {
 
     @Test
     public void testSquareFreePolynomials_int() {
-        squareFreePolynomials_int_helper(-1, "[]");
-        squareFreePolynomials_int_helper(0,
-                "[1, -1, 2, -2, 3, -3, 4, -4, 5, -5, 6, -6, 7, -7, 8, -8, 9, -9, 10, -10, 11, -11, 12, -12, 13, -13," +
-                " 14, -14, 15, -15, 16, -16, 17, -17, 18, -18, 19, -19, 20, -20, 21, -21, 22, -22, 23, -23, 24, -24," +
-                " 25, -25, ...]");
-        squareFreePolynomials_int_helper(1,
-                "[x, x+1, -x, 2*x, -x+1, 2*x+1, x-1, x+2, -x-1, 2*x-1, -x+2, 2*x+2, -2*x, 3*x, -2*x+1, 3*x+1, -3*x," +
-                " 4*x, -3*x+1, 4*x+1, -2*x-1, 3*x-1, -2*x+2, 3*x+2, -3*x-1, 4*x-1, -3*x+2, 4*x+2, x-2, x+3, -x-2," +
-                " 2*x-2, -x+3, 2*x+3, x-3, x+4, -x-3, 2*x-3, -x+4, 2*x+4, -2*x-2, 3*x-2, -2*x+3, 3*x+3, -3*x-2," +
-                " 4*x-2, -3*x+3, 4*x+3, -2*x-3, 3*x-3, ...]");
-        squareFreePolynomials_int_helper(2,
-                "[x^2+x, x^2+1, x^2+x+1, -x^2+x, 2*x^2+x, -x^2+1, 2*x^2+1, -x^2+x+1, 2*x^2+x+1, x^2-x, x^2+2*x," +
-                " x^2-x+1, -x^2-x, 2*x^2-x, -x^2+2*x, 2*x^2+2*x, -x^2-x+1, 2*x^2-x+1, -x^2+2*x+1, 2*x^2+2*x+1," +
-                " x^2-1, x^2+x-1, x^2+2, x^2+x+2, -x^2-1, 2*x^2-1, -x^2+x-1, 2*x^2+x-1, -x^2+2, 2*x^2+2, -x^2+x+2," +
-                " 2*x^2+x+2, x^2-x-1, x^2+2*x-1, x^2-x+2, x^2+2*x+2, -x^2-x-1, 2*x^2-x-1, 2*x^2+2*x-1, -x^2-x+2," +
-                " 2*x^2-x+2, -x^2+2*x+2, 2*x^2+2*x+2, -2*x^2+x, 3*x^2+x, -2*x^2+1, 3*x^2+1, -2*x^2+x+1, 3*x^2+x+1," +
-                " -3*x^2+x, ...]");
-        squareFreePolynomials_int_helper(8,
-                "[x^8+x, x^8+x^7+x, x^8+x^6+x, x^8+x^7+x^6+x, x^8+x^5+x, x^8+x^7+x^5+x, x^8+x^6+x^5+x," +
-                " x^8+x^7+x^6+x^5+x, x^8+x^4+x, x^8+x^7+x^4+x, x^8+x^6+x^4+x, x^8+x^7+x^6+x^4+x, x^8+x^5+x^4+x," +
-                " x^8+x^7+x^5+x^4+x, x^8+x^6+x^5+x^4+x, x^8+x^7+x^6+x^5+x^4+x, x^8+x^3+x, x^8+x^7+x^3+x," +
-                " x^8+x^6+x^3+x, x^8+x^7+x^6+x^3+x, x^8+x^5+x^3+x, x^8+x^7+x^5+x^3+x, x^8+x^6+x^5+x^3+x," +
-                " x^8+x^7+x^6+x^5+x^3+x, x^8+x^4+x^3+x, x^8+x^7+x^4+x^3+x, x^8+x^6+x^4+x^3+x, x^8+x^7+x^6+x^4+x^3+x," +
-                " x^8+x^5+x^4+x^3+x, x^8+x^7+x^5+x^4+x^3+x, x^8+x^7+x^6+x^5+x^4+x^3+x, x^8+x^2+x, x^8+x^7+x^2+x," +
-                " x^8+x^6+x^2+x, x^8+x^7+x^6+x^2+x, x^8+x^5+x^2+x, x^8+x^7+x^5+x^2+x, x^8+x^6+x^5+x^2+x," +
-                " x^8+x^7+x^6+x^5+x^2+x, x^8+x^4+x^2+x, x^8+x^7+x^4+x^2+x, x^8+x^6+x^4+x^2+x, x^8+x^7+x^6+x^4+x^2+x," +
-                " x^8+x^5+x^4+x^2+x, x^8+x^7+x^5+x^4+x^2+x, x^8+x^6+x^5+x^4+x^2+x, x^8+x^7+x^6+x^5+x^4+x^2+x," +
-                " x^8+x^3+x^2+x, x^8+x^7+x^3+x^2+x, x^8+x^6+x^3+x^2+x, ...]");
+        squareFreePolynomials_int_helper(-1, "QBarExhaustiveProvider_squareFreePolynomials_int_i");
+        squareFreePolynomials_int_helper(0, "QBarExhaustiveProvider_squareFreePolynomials_int_ii");
+        squareFreePolynomials_int_helper(1, "QBarExhaustiveProvider_squareFreePolynomials_int_iii");
+        squareFreePolynomials_int_helper(2, "QBarExhaustiveProvider_squareFreePolynomials_int_iv");
+        squareFreePolynomials_int_helper(8, "QBarExhaustiveProvider_squareFreePolynomials_int_v");
         squareFreePolynomials_int_fail_helper(-2);
     }
 
     @Test
     public void testSquareFreePolynomials() {
-        simpleProviderHelper(QEP.squareFreePolynomials(),
-                "[1, -1, x, 2, -2, 3, -3, x+1, 4, -4, -x, 5, -5, 2*x, 6, -6, -x+1, 7, x^2+x, -7, 2*x+1, 8, -8, 9," +
-                " -9, x-1, 10, -10, 11, x^2+1, -11, x+2, 12, -12, -x-1, 13, -13, 2*x-1, 14, -14, -x+2, 15, x^2+x+1," +
-                " -15, 2*x+2, 16, -16, -2*x, 17, -17, ...]");
+        simpleProviderHelper(QEP.squareFreePolynomials(), "QBarExhaustiveProvider_squareFreePolynomials");
     }
 
     private static void squareFreePolynomialsAtLeast_helper(int minDegree, @NotNull String output) {
@@ -978,36 +696,11 @@ public class QBarExhaustiveProviderTest {
 
     @Test
     public void testSquareFreePolynomialsAtLeast() {
-        squareFreePolynomialsAtLeast_helper(-1,
-                "[1, -1, x, 2, -2, 3, -3, x+1, 4, -4, -x, 5, -5, 2*x, 6, -6, -x+1, 7, x^2+x, -7, 2*x+1, 8, -8, 9," +
-                " -9, x-1, 10, -10, 11, x^2+1, -11, x+2, 12, -12, -x-1, 13, -13, 2*x-1, 14, -14, -x+2, 15, x^2+x+1," +
-                " -15, 2*x+2, 16, -16, -2*x, 17, -17, ...]");
-        squareFreePolynomialsAtLeast_helper(0,
-                "[1, -1, x, 2, -2, 3, -3, x+1, 4, -4, -x, 5, -5, 2*x, 6, -6, -x+1, 7, x^2+x, -7, 2*x+1, 8, -8, 9," +
-                " -9, x-1, 10, -10, 11, x^2+1, -11, x+2, 12, -12, -x-1, 13, -13, 2*x-1, 14, -14, -x+2, 15, x^2+x+1," +
-                " -15, 2*x+2, 16, -16, -2*x, 17, -17, ...]");
-        squareFreePolynomialsAtLeast_helper(1,
-                "[x, x+1, -x, 2*x, -x+1, x^2+x, 2*x+1, x-1, x^2+1, x+2, -x-1, 2*x-1, -x+2, x^2+x+1, 2*x+2, -2*x," +
-                " 3*x, -2*x+1, 3*x+1, -3*x, -x^2+x, 4*x, x^3+x, -3*x+1, 2*x^2+x, 4*x+1, -2*x-1, -x^2+1, 3*x-1," +
-                " -2*x+2, 2*x^2+1, 3*x+2, -3*x-1, -x^2+x+1, 4*x-1, x^3+x^2+x, -3*x+2, 2*x^2+x+1, 4*x+2, x-2, x^2-x," +
-                " x+3, -x-2, 2*x-2, x^3+1, -x+3, x^2+2*x, 2*x+3, x-3, x^2-x+1, ...]");
-        squareFreePolynomialsAtLeast_helper(2,
-                "[x^2+x, x^2+1, x^2+x+1, -x^2+x, x^3+x, 2*x^2+x, -x^2+1, 2*x^2+1, -x^2+x+1, x^3+x^2+x, 2*x^2+x+1," +
-                " x^2-x, x^3+1, x^2+2*x, x^2-x+1, x^3+x^2+1, -x^2-x, 2*x^2-x, -x^2+2*x, x^3+x+1, 2*x^2+2*x," +
-                " -x^2-x+1, 2*x^2-x+1, -x^2+2*x+1, x^3+x^2+x+1, 2*x^2+2*x+1, x^2-1, x^2+x-1, x^2+2, x^4+x, x^2+x+2," +
-                " -x^2-1, -x^3+x, 2*x^2-1, -x^2+x-1, 2*x^3+x, 2*x^2+x-1, -x^2+2, -x^3+x^2+x, 2*x^2+2, x^4+x^3+x," +
-                " -x^2+x+2, 2*x^3+x^2+x, 2*x^2+x+2, -x^3+1, x^2-x-1, 2*x^3+1, x^2+2*x-1, -x^3+x^2+1, x^2-x+2, ...]");
-        squareFreePolynomialsAtLeast_helper(8,
-                "[x^8+x, x^8+x^7+x, x^8+x^6+x, x^8+x^7+x^6+x, x^8+x^5+x, x^8+x^7+x^5+x, x^8+x^6+x^5+x," +
-                " x^8+x^7+x^6+x^5+x, x^8+x^4+x, x^8+x^7+x^4+x, x^8+x^6+x^4+x, x^8+x^7+x^6+x^4+x, x^8+x^5+x^4+x," +
-                " x^8+x^7+x^5+x^4+x, x^8+x^6+x^5+x^4+x, x^8+x^7+x^6+x^5+x^4+x, x^8+x^3+x, x^8+x^7+x^3+x," +
-                " x^8+x^6+x^3+x, x^8+x^7+x^6+x^3+x, x^8+x^5+x^3+x, x^8+x^7+x^5+x^3+x, x^8+x^6+x^5+x^3+x," +
-                " x^8+x^7+x^6+x^5+x^3+x, x^8+x^4+x^3+x, x^8+x^7+x^4+x^3+x, x^8+x^6+x^4+x^3+x, x^8+x^7+x^6+x^4+x^3+x," +
-                " x^8+x^5+x^4+x^3+x, x^8+x^7+x^5+x^4+x^3+x, x^8+x^7+x^6+x^5+x^4+x^3+x, x^8+x^2+x, x^8+x^7+x^2+x," +
-                " x^8+x^6+x^2+x, x^8+x^7+x^6+x^2+x, x^8+x^5+x^2+x, x^8+x^7+x^5+x^2+x, x^8+x^6+x^5+x^2+x," +
-                " x^8+x^7+x^6+x^5+x^2+x, x^8+x^4+x^2+x, x^8+x^7+x^4+x^2+x, x^8+x^6+x^4+x^2+x, x^8+x^7+x^6+x^4+x^2+x," +
-                " x^8+x^5+x^4+x^2+x, x^8+x^7+x^5+x^4+x^2+x, x^8+x^6+x^5+x^4+x^2+x, x^8+x^7+x^6+x^5+x^4+x^2+x," +
-                " x^8+x^3+x^2+x, x^8+x^7+x^3+x^2+x, x^8+x^6+x^3+x^2+x, ...]");
+        squareFreePolynomialsAtLeast_helper(-1, "QBarExhaustiveProvider_squareFreePolynomialsAtLeast_i");
+        squareFreePolynomialsAtLeast_helper(0, "QBarExhaustiveProvider_squareFreePolynomialsAtLeast_ii");
+        squareFreePolynomialsAtLeast_helper(1, "QBarExhaustiveProvider_squareFreePolynomialsAtLeast_iii");
+        squareFreePolynomialsAtLeast_helper(2, "QBarExhaustiveProvider_squareFreePolynomialsAtLeast_iv");
+        squareFreePolynomialsAtLeast_helper(8, "QBarExhaustiveProvider_squareFreePolynomialsAtLeast_v");
         squareFreePolynomialsAtLeast_fail_helper(-2);
     }
 
@@ -1024,41 +717,23 @@ public class QBarExhaustiveProviderTest {
 
     @Test
     public void testPositivePrimitiveSquareFreePolynomials_int() {
-        positivePrimitiveSquareFreePolynomials_int_helper(-1, "[]");
-        positivePrimitiveSquareFreePolynomials_int_helper(0, "[1]");
+        positivePrimitiveSquareFreePolynomials_int_helper(-1,
+                "QBarExhaustiveProvider_positivePrimitiveSquareFreePolynomials_int_i");
+        positivePrimitiveSquareFreePolynomials_int_helper(0,
+                "QBarExhaustiveProvider_positivePrimitiveSquareFreePolynomials_int_ii");
         positivePrimitiveSquareFreePolynomials_int_helper(1,
-                "[x, x+1, 2*x+1, x-1, x+2, 2*x-1, 3*x+1, 4*x+1, 3*x-1, 3*x+2, 4*x-1, x-2, x+3, 2*x+3, x-3, x+4," +
-                " 2*x-3, 3*x-2, 4*x+3, 3*x+4, 4*x-3, 5*x+1, 6*x+1, 5*x-1, 5*x+2, 6*x-1, 7*x+1, 8*x+1, 7*x-1, 7*x+2," +
-                " 8*x-1, 5*x-2, 5*x+3, 5*x-3, 5*x+4, 7*x-2, 7*x+3, 8*x+3, 7*x-3, 7*x+4, 8*x-3, x-4, x+5, 2*x+5, x-5," +
-                " x+6, 2*x-5, 3*x-4, 3*x+5, 4*x+5, ...]");
+                "QBarExhaustiveProvider_positivePrimitiveSquareFreePolynomials_int_iii");
         positivePrimitiveSquareFreePolynomials_int_helper(2,
-                "[x^2+x, x^2+1, x^2+x+1, 2*x^2+x, 2*x^2+1, 2*x^2+x+1, x^2-x, x^2+2*x, x^2-x+1, 2*x^2-x, 2*x^2-x+1," +
-                " 2*x^2+2*x+1, x^2-1, x^2+x-1, x^2+2, x^2+x+2, 2*x^2-1, 2*x^2+x-1, 2*x^2+x+2, x^2-x-1, x^2+2*x-1," +
-                " x^2-x+2, x^2+2*x+2, 2*x^2-x-1, 2*x^2+2*x-1, 2*x^2-x+2, 3*x^2+x, 3*x^2+1, 3*x^2+x+1, 4*x^2+x," +
-                " 4*x^2+1, 4*x^2+x+1, 3*x^2-x, 3*x^2+2*x, 3*x^2-x+1, 3*x^2+2*x+1, 4*x^2-x, 4*x^2-x+1, 4*x^2+2*x+1," +
-                " 3*x^2-1, 3*x^2+x-1, 3*x^2+2, 3*x^2+x+2, 4*x^2-1, 4*x^2+x-1, 4*x^2+x+2, 3*x^2-x-1, 3*x^2+2*x-1," +
-                " 3*x^2-x+2, 3*x^2+2*x+2, ...]");
+                "QBarExhaustiveProvider_positivePrimitiveSquareFreePolynomials_int_iv");
         positivePrimitiveSquareFreePolynomials_int_helper(8,
-                "[x^8+x, x^8+x^7+x, x^8+x^6+x, x^8+x^7+x^6+x, x^8+x^5+x, x^8+x^7+x^5+x, x^8+x^6+x^5+x," +
-                " x^8+x^7+x^6+x^5+x, x^8+x^4+x, x^8+x^7+x^4+x, x^8+x^6+x^4+x, x^8+x^7+x^6+x^4+x, x^8+x^5+x^4+x," +
-                " x^8+x^7+x^5+x^4+x, x^8+x^6+x^5+x^4+x, x^8+x^7+x^6+x^5+x^4+x, x^8+x^3+x, x^8+x^7+x^3+x," +
-                " x^8+x^6+x^3+x, x^8+x^7+x^6+x^3+x, x^8+x^5+x^3+x, x^8+x^7+x^5+x^3+x, x^8+x^6+x^5+x^3+x," +
-                " x^8+x^7+x^6+x^5+x^3+x, x^8+x^4+x^3+x, x^8+x^7+x^4+x^3+x, x^8+x^6+x^4+x^3+x, x^8+x^7+x^6+x^4+x^3+x," +
-                " x^8+x^5+x^4+x^3+x, x^8+x^7+x^5+x^4+x^3+x, x^8+x^7+x^6+x^5+x^4+x^3+x, x^8+x^2+x, x^8+x^7+x^2+x," +
-                " x^8+x^6+x^2+x, x^8+x^7+x^6+x^2+x, x^8+x^5+x^2+x, x^8+x^7+x^5+x^2+x, x^8+x^6+x^5+x^2+x," +
-                " x^8+x^7+x^6+x^5+x^2+x, x^8+x^4+x^2+x, x^8+x^7+x^4+x^2+x, x^8+x^6+x^4+x^2+x, x^8+x^7+x^6+x^4+x^2+x," +
-                " x^8+x^5+x^4+x^2+x, x^8+x^7+x^5+x^4+x^2+x, x^8+x^6+x^5+x^4+x^2+x, x^8+x^7+x^6+x^5+x^4+x^2+x," +
-                " x^8+x^3+x^2+x, x^8+x^7+x^3+x^2+x, x^8+x^6+x^3+x^2+x, ...]");
+                "QBarExhaustiveProvider_positivePrimitiveSquareFreePolynomials_int_v");
         positivePrimitiveSquareFreePolynomials_int_fail_helper(-2);
     }
 
     @Test
     public void testPositivePrimitiveSquareFreePolynomials() {
         simpleProviderHelper(QEP.positivePrimitiveSquareFreePolynomials(),
-                "[1, x, x+1, x^2+x, 2*x+1, x-1, x^2+1, x+2, 2*x-1, x^2+x+1, 3*x+1, x^3+x, 2*x^2+x, 4*x+1, 3*x-1," +
-                " 2*x^2+1, 3*x+2, 4*x-1, x^3+x^2+x, 2*x^2+x+1, x-2, x^2-x, x+3, x^3+1, x^2+2*x, 2*x+3, x-3, x^2-x+1," +
-                " x+4, 2*x-3, x^3+x^2+1, 3*x-2, 2*x^2-x, x^3+x+1, 4*x+3, 2*x^2-x+1, 3*x+4, 4*x-3, x^3+x^2+x+1," +
-                " 2*x^2+2*x+1, x^2-1, 5*x+1, x^2+x-1, 6*x+1, 5*x-1, x^2+2, 5*x+2, x^4+x, 6*x-1, x^2+x+2, ...]");
+                "QBarExhaustiveProvider_positivePrimitiveSquareFreePolynomials");
     }
 
     private static void positivePrimitiveSquareFreePolynomialsAtLeast_helper(int minDegree, @NotNull String output) {
@@ -1075,39 +750,15 @@ public class QBarExhaustiveProviderTest {
     @Test
     public void testPositivePrimitiveSquareFreePolynomialsAtLeast() {
         positivePrimitiveSquareFreePolynomialsAtLeast_helper(-1,
-                "[1, x, x+1, x^2+x, 2*x+1, x-1, x^2+1, x+2, 2*x-1, x^2+x+1, 3*x+1, x^3+x, 2*x^2+x, 4*x+1, 3*x-1," +
-                " 2*x^2+1, 3*x+2, 4*x-1, x^3+x^2+x, 2*x^2+x+1, x-2, x^2-x, x+3, x^3+1, x^2+2*x, 2*x+3, x-3, x^2-x+1," +
-                " x+4, 2*x-3, x^3+x^2+1, 3*x-2, 2*x^2-x, x^3+x+1, 4*x+3, 2*x^2-x+1, 3*x+4, 4*x-3, x^3+x^2+x+1," +
-                " 2*x^2+2*x+1, x^2-1, 5*x+1, x^2+x-1, 6*x+1, 5*x-1, x^2+2, 5*x+2, x^4+x, 6*x-1, x^2+x+2, ...]");
+                "QBarExhaustiveProvider_positivePrimitiveSquareFreePolynomialsAtLeast_i");
         positivePrimitiveSquareFreePolynomialsAtLeast_helper(0,
-                "[1, x, x+1, x^2+x, 2*x+1, x-1, x^2+1, x+2, 2*x-1, x^2+x+1, 3*x+1, x^3+x, 2*x^2+x, 4*x+1, 3*x-1," +
-                " 2*x^2+1, 3*x+2, 4*x-1, x^3+x^2+x, 2*x^2+x+1, x-2, x^2-x, x+3, x^3+1, x^2+2*x, 2*x+3, x-3, x^2-x+1," +
-                " x+4, 2*x-3, x^3+x^2+1, 3*x-2, 2*x^2-x, x^3+x+1, 4*x+3, 2*x^2-x+1, 3*x+4, 4*x-3, x^3+x^2+x+1," +
-                " 2*x^2+2*x+1, x^2-1, 5*x+1, x^2+x-1, 6*x+1, 5*x-1, x^2+2, 5*x+2, x^4+x, 6*x-1, x^2+x+2, ...]");
+                "QBarExhaustiveProvider_positivePrimitiveSquareFreePolynomialsAtLeast_ii");
         positivePrimitiveSquareFreePolynomialsAtLeast_helper(1,
-                "[x, x+1, x^2+x, 2*x+1, x-1, x^2+1, x+2, 2*x-1, x^2+x+1, 3*x+1, x^3+x, 2*x^2+x, 4*x+1, 3*x-1," +
-                " 2*x^2+1, 3*x+2, 4*x-1, x^3+x^2+x, 2*x^2+x+1, x-2, x^2-x, x+3, x^3+1, x^2+2*x, 2*x+3, x-3, x^2-x+1," +
-                " x+4, 2*x-3, x^3+x^2+1, 3*x-2, 2*x^2-x, x^3+x+1, 4*x+3, 2*x^2-x+1, 3*x+4, 4*x-3, x^3+x^2+x+1," +
-                " 2*x^2+2*x+1, x^2-1, 5*x+1, x^2+x-1, 6*x+1, 5*x-1, x^2+2, 5*x+2, x^4+x, 6*x-1, x^2+x+2, 2*x^2-1," +
-                " ...]");
+                "QBarExhaustiveProvider_positivePrimitiveSquareFreePolynomialsAtLeast_iii");
         positivePrimitiveSquareFreePolynomialsAtLeast_helper(2,
-                "[x^2+x, x^2+1, x^2+x+1, x^3+x, 2*x^2+x, 2*x^2+1, x^3+x^2+x, 2*x^2+x+1, x^2-x, x^3+1, x^2+2*x," +
-                " x^2-x+1, x^3+x^2+1, 2*x^2-x, x^3+x+1, 2*x^2-x+1, x^3+x^2+x+1, 2*x^2+2*x+1, x^2-1, x^2+x-1, x^2+2," +
-                " x^4+x, x^2+x+2, 2*x^2-1, 2*x^3+x, 2*x^2+x-1, x^4+x^3+x, 2*x^3+x^2+x, 2*x^2+x+2, x^2-x-1, 2*x^3+1," +
-                " x^2+2*x-1, x^2-x+2, x^4+x^2+x, 2*x^3+x^2+1, x^2+2*x+2, 2*x^2-x-1, 2*x^3+x+1, 2*x^2+2*x-1," +
-                " 2*x^2-x+2, x^4+x^3+x^2+x, 2*x^3+x^2+x+1, 3*x^2+x, 3*x^2+1, x^4+1, 3*x^2+x+1, x^3-x^2+x, 4*x^2+x," +
-                " 4*x^2+1, x^4+x^3+1, ...]");
+                "QBarExhaustiveProvider_positivePrimitiveSquareFreePolynomialsAtLeast_iv");
         positivePrimitiveSquareFreePolynomialsAtLeast_helper(8,
-                "[x^8+x, x^8+x^7+x, x^8+x^6+x, x^8+x^7+x^6+x, x^8+x^5+x, x^8+x^7+x^5+x, x^8+x^6+x^5+x," +
-                " x^8+x^7+x^6+x^5+x, x^8+x^4+x, x^8+x^7+x^4+x, x^8+x^6+x^4+x, x^8+x^7+x^6+x^4+x, x^8+x^5+x^4+x," +
-                " x^8+x^7+x^5+x^4+x, x^8+x^6+x^5+x^4+x, x^8+x^7+x^6+x^5+x^4+x, x^8+x^3+x, x^8+x^7+x^3+x," +
-                " x^8+x^6+x^3+x, x^8+x^7+x^6+x^3+x, x^8+x^5+x^3+x, x^8+x^7+x^5+x^3+x, x^8+x^6+x^5+x^3+x," +
-                " x^8+x^7+x^6+x^5+x^3+x, x^8+x^4+x^3+x, x^8+x^7+x^4+x^3+x, x^8+x^6+x^4+x^3+x, x^8+x^7+x^6+x^4+x^3+x," +
-                " x^8+x^5+x^4+x^3+x, x^8+x^7+x^5+x^4+x^3+x, x^8+x^7+x^6+x^5+x^4+x^3+x, x^8+x^2+x, x^8+x^7+x^2+x," +
-                " x^8+x^6+x^2+x, x^8+x^7+x^6+x^2+x, x^8+x^5+x^2+x, x^8+x^7+x^5+x^2+x, x^8+x^6+x^5+x^2+x," +
-                " x^8+x^7+x^6+x^5+x^2+x, x^8+x^4+x^2+x, x^8+x^7+x^4+x^2+x, x^8+x^6+x^4+x^2+x, x^8+x^7+x^6+x^4+x^2+x," +
-                " x^8+x^5+x^4+x^2+x, x^8+x^7+x^5+x^4+x^2+x, x^8+x^6+x^5+x^4+x^2+x, x^8+x^7+x^6+x^5+x^4+x^2+x," +
-                " x^8+x^3+x^2+x, x^8+x^7+x^3+x^2+x, x^8+x^6+x^3+x^2+x, ...]");
+                "QBarExhaustiveProvider_positivePrimitiveSquareFreePolynomialsAtLeast_v");
         positivePrimitiveSquareFreePolynomialsAtLeast_fail_helper(-2);
     }
 
@@ -1124,43 +775,17 @@ public class QBarExhaustiveProviderTest {
 
     @Test
     public void testIrreduciblePolynomials_int() {
-        irreduciblePolynomials_int_helper(-1, "[]");
-        irreduciblePolynomials_int_helper(0, "[1]");
-        irreduciblePolynomials_int_helper(1,
-                "[x, x+1, 2*x+1, x-1, x+2, 2*x-1, 3*x+1, 4*x+1, 3*x-1, 3*x+2, 4*x-1, x-2, x+3, 2*x+3, x-3, x+4," +
-                " 2*x-3, 3*x-2, 4*x+3, 3*x+4, 4*x-3, 5*x+1, 6*x+1, 5*x-1, 5*x+2, 6*x-1, 7*x+1, 8*x+1, 7*x-1, 7*x+2," +
-                " 8*x-1, 5*x-2, 5*x+3, 5*x-3, 5*x+4, 7*x-2, 7*x+3, 8*x+3, 7*x-3, 7*x+4, 8*x-3, x-4, x+5, 2*x+5, x-5," +
-                " x+6, 2*x-5, 3*x-4, 3*x+5, 4*x+5, ...]");
-        irreduciblePolynomials_int_helper(2,
-                "[x^2+1, x^2+x+1, 2*x^2+1, 2*x^2+x+1, x^2-x+1, 2*x^2-x+1, 2*x^2+2*x+1, x^2+x-1, x^2+2, x^2+x+2," +
-                " 2*x^2-1, 2*x^2+x+2, x^2-x-1, x^2+2*x-1, x^2-x+2, x^2+2*x+2, 2*x^2+2*x-1, 2*x^2-x+2, 3*x^2+1," +
-                " 3*x^2+x+1, 4*x^2+1, 4*x^2+x+1, 3*x^2-x+1, 3*x^2+2*x+1, 4*x^2-x+1, 4*x^2+2*x+1, 3*x^2-1, 3*x^2+x-1," +
-                " 3*x^2+2, 3*x^2+x+2, 4*x^2+x-1, 4*x^2+x+2, 3*x^2-x-1, 3*x^2-x+2, 3*x^2+2*x+2, 4*x^2-x-1," +
-                " 4*x^2+2*x-1, 4*x^2-x+2, x^2+3*x+1, 2*x^2-2*x+1, x^2-3*x+1, x^2+4*x+1, 2*x^2+4*x+1, x^2-2*x-1," +
-                " x^2+3*x-1, x^2-2*x+2, 2*x^2-2*x-1, 2*x^2+3*x-1, 2*x^2+3*x+2, x^2-3*x-1, ...]");
-        irreduciblePolynomials_int_helper(8,
-                "[x^8+1, x^8+x^6+1, x^8+x^7+x^6+1, x^8+x^5+1, x^8+x^6+x^5+1, x^8+x^7+x^6+x^5+1, x^8+x^7+x^4+1," +
-                " x^8+x^6+x^4+1, x^8+x^5+x^4+1, x^8+x^7+x^5+x^4+1, x^8+x^6+x^5+x^4+1, x^8+x^3+1, x^8+x^6+x^3+1," +
-                " x^8+x^7+x^6+x^3+1, x^8+x^7+x^5+x^3+1, x^8+x^6+x^5+x^3+1, x^8+x^4+x^3+1, x^8+x^7+x^4+x^3+1," +
-                " x^8+x^7+x^6+x^4+x^3+1, x^8+x^5+x^4+x^3+1, x^8+x^6+x^5+x^4+x^3+1, x^8+x^7+x^6+x^5+x^4+x^3+1," +
-                " x^8+x^2+1, x^8+x^7+x^2+1, x^8+x^7+x^6+x^2+1, x^8+x^5+x^2+1, x^8+x^7+x^5+x^2+1, x^8+x^6+x^5+x^2+1," +
-                " x^8+x^4+x^2+1, x^8+x^7+x^4+x^2+1, x^8+x^7+x^5+x^4+x^2+1, x^8+x^6+x^5+x^4+x^2+1," +
-                " x^8+x^7+x^6+x^5+x^4+x^2+1, x^8+x^3+x^2+1, x^8+x^7+x^3+x^2+1, x^8+x^6+x^3+x^2+1," +
-                " x^8+x^7+x^6+x^3+x^2+1, x^8+x^5+x^3+x^2+1, x^8+x^7+x^6+x^5+x^3+x^2+1, x^8+x^4+x^3+x^2+1," +
-                " x^8+x^6+x^4+x^3+x^2+1, x^8+x^7+x^6+x^4+x^3+x^2+1, x^8+x^5+x^4+x^3+x^2+1," +
-                " x^8+x^7+x^5+x^4+x^3+x^2+1, x^8+x^7+x^6+x^5+x^4+x^3+x^2+1, x^8+x^6+x+1, x^8+x^7+x^6+x+1," +
-                " x^8+x^7+x^5+x+1, x^8+x^6+x^5+x+1, x^8+x^4+x+1, ...]");
+        irreduciblePolynomials_int_helper(-1, "QBarExhaustiveProvider_irreduciblePolynomials_int_i");
+        irreduciblePolynomials_int_helper(0, "QBarExhaustiveProvider_irreduciblePolynomials_int_ii");
+        irreduciblePolynomials_int_helper(1, "QBarExhaustiveProvider_irreduciblePolynomials_int_iii");
+        irreduciblePolynomials_int_helper(2, "QBarExhaustiveProvider_irreduciblePolynomials_int_iv");
+        irreduciblePolynomials_int_helper(8, "QBarExhaustiveProvider_irreduciblePolynomials_int_v");
         irreduciblePolynomials_int_fail_helper(-2);
     }
 
     @Test
     public void testIrreduciblePolynomials() {
-        simpleProviderHelper(QEP.irreduciblePolynomials(),
-                "[1, x, x^2+1, x+1, x^3+x^2+1, 2*x+1, x^2+x+1, x-1, x^4+1, x+2, 2*x^2+1, 2*x-1, x^3+x+1, 3*x+1," +
-                " 2*x^2+x+1, 4*x+1, x^5+x^3+1, 3*x-1, x^2-x+1, 3*x+2, 2*x^3+1, 4*x-1, 2*x^2-x+1, x-2, x^4+x^3+1," +
-                " x+3, 2*x^2+2*x+1, 2*x+3, 2*x^3+x+1, x-3, x^2+x-1, x+4, x^6+x^5+1, 2*x-3, x^2+2, 3*x-2," +
-                " 2*x^3+x^2+x+1, 4*x+3, x^2+x+2, 3*x+4, x^4+x^3+x^2+1, 4*x-3, 2*x^2-1, 5*x+1, x^3-x^2+1, 6*x+1," +
-                " 2*x^2+x+2, 5*x-1, x^5+x^2+1, 5*x+2, ...]");
+        simpleProviderHelper(QEP.irreduciblePolynomials(), "QBarExhaustiveProvider_irreduciblePolynomials");
     }
 
     private static void irreduciblePolynomialsAtLeast_helper(int minDegree, @NotNull String output) {
@@ -1176,41 +801,11 @@ public class QBarExhaustiveProviderTest {
 
     @Test
     public void testIrreduciblePolynomialsAtLeast() {
-        irreduciblePolynomialsAtLeast_helper(-1,
-                "[1, x, x^2+1, x+1, x^3+x^2+1, 2*x+1, x^2+x+1, x-1, x^4+1, x+2, 2*x^2+1, 2*x-1, x^3+x+1, 3*x+1," +
-                " 2*x^2+x+1, 4*x+1, x^5+x^3+1, 3*x-1, x^2-x+1, 3*x+2, 2*x^3+1, 4*x-1, 2*x^2-x+1, x-2, x^4+x^3+1," +
-                " x+3, 2*x^2+2*x+1, 2*x+3, 2*x^3+x+1, x-3, x^2+x-1, x+4, x^6+x^5+1, 2*x-3, x^2+2, 3*x-2," +
-                " 2*x^3+x^2+x+1, 4*x+3, x^2+x+2, 3*x+4, x^4+x^3+x^2+1, 4*x-3, 2*x^2-1, 5*x+1, x^3-x^2+1, 6*x+1," +
-                " 2*x^2+x+2, 5*x-1, x^5+x^2+1, 5*x+2, ...]");
-        irreduciblePolynomialsAtLeast_helper(0,
-                "[1, x, x^2+1, x+1, x^3+x^2+1, 2*x+1, x^2+x+1, x-1, x^4+1, x+2, 2*x^2+1, 2*x-1, x^3+x+1, 3*x+1," +
-                " 2*x^2+x+1, 4*x+1, x^5+x^3+1, 3*x-1, x^2-x+1, 3*x+2, 2*x^3+1, 4*x-1, 2*x^2-x+1, x-2, x^4+x^3+1," +
-                " x+3, 2*x^2+2*x+1, 2*x+3, 2*x^3+x+1, x-3, x^2+x-1, x+4, x^6+x^5+1, 2*x-3, x^2+2, 3*x-2," +
-                " 2*x^3+x^2+x+1, 4*x+3, x^2+x+2, 3*x+4, x^4+x^3+x^2+1, 4*x-3, 2*x^2-1, 5*x+1, x^3-x^2+1, 6*x+1," +
-                " 2*x^2+x+2, 5*x-1, x^5+x^2+1, 5*x+2, ...]");
-        irreduciblePolynomialsAtLeast_helper(1,
-                "[x, x^2+1, x+1, x^3+x^2+1, 2*x+1, x^2+x+1, x-1, x^4+1, x+2, 2*x^2+1, 2*x-1, x^3+x+1, 3*x+1," +
-                " 2*x^2+x+1, 4*x+1, x^5+x^3+1, 3*x-1, x^2-x+1, 3*x+2, 2*x^3+1, 4*x-1, 2*x^2-x+1, x-2, x^4+x^3+1," +
-                " x+3, 2*x^2+2*x+1, 2*x+3, 2*x^3+x+1, x-3, x^2+x-1, x+4, x^6+x^5+1, 2*x-3, x^2+2, 3*x-2," +
-                " 2*x^3+x^2+x+1, 4*x+3, x^2+x+2, 3*x+4, x^4+x^3+x^2+1, 4*x-3, 2*x^2-1, 5*x+1, x^3-x^2+1, 6*x+1," +
-                " 2*x^2+x+2, 5*x-1, x^5+x^2+1, 5*x+2, x^2-x-1, ...]");
-        irreduciblePolynomialsAtLeast_helper(2,
-                "[x^2+1, x^3+x^2+1, x^2+x+1, x^4+1, 2*x^2+1, x^3+x+1, 2*x^2+x+1, x^5+x^3+1, x^2-x+1, 2*x^3+1," +
-                " 2*x^2-x+1, x^4+x^3+1, 2*x^2+2*x+1, 2*x^3+x+1, x^2+x-1, x^6+x^5+1, x^2+2, 2*x^3+x^2+x+1, x^2+x+2," +
-                " x^4+x^3+x^2+1, 2*x^2-1, x^3-x^2+1, 2*x^2+x+2, x^5+x^2+1, x^2-x-1, x^3+2*x^2+1, x^2+2*x-1, x^4+x+1," +
-                " x^2-x+2, x^3-x^2+x+1, x^2+2*x+2, x^7+x^6+1, 2*x^2+2*x-1, x^3+2*x^2+x+1, 2*x^2-x+2, x^4+x^2+x+1," +
-                " 3*x^2+1, 2*x^3-x^2+1, 3*x^2+x+1, x^5+x^4+x^2+1, 4*x^2+1, 2*x^3+2*x^2+1, 4*x^2+x+1," +
-                " x^4+x^3+x^2+x+1, 3*x^2-x+1, x^3-x+1, 3*x^2+2*x+1, x^6+x^4+1, 4*x^2-x+1, x^3+x^2-x+1, ...]");
-        irreduciblePolynomialsAtLeast_helper(8,
-                "[x^8+1, x^9+x^8+1, x^8+x^6+1, x^10+x^9+1, x^8+x^7+x^6+1, x^9+x^7+1, x^8+x^5+1, x^11+x^9+1," +
-                " x^8+x^6+x^5+1, x^9+x^6+1, x^8+x^7+x^6+x^5+1, x^10+x^9+x^8+1, x^8+x^7+x^4+1, x^9+x^8+x^6+1," +
-                " x^8+x^6+x^4+1, x^12+x^11+1, x^8+x^5+x^4+1, x^9+x^5+1, x^8+x^7+x^5+x^4+1, x^10+x^7+1," +
-                " x^8+x^6+x^5+x^4+1, x^9+x^7+x^5+1, x^8+x^3+1, x^11+x^8+1, x^8+x^6+x^3+1, x^9+x^8+x^7+x^5+1," +
-                " x^8+x^7+x^6+x^3+1, x^10+x^8+x^7+1, x^8+x^7+x^5+x^3+1, x^9+x^8+x^6+x^5+1, x^8+x^6+x^5+x^3+1," +
-                " x^13+x^12+1, x^8+x^4+x^3+1, x^9+x^7+x^6+x^5+1, x^8+x^7+x^4+x^3+1, x^10+x^9+x^8+x^7+1," +
-                " x^8+x^7+x^6+x^4+x^3+1, x^9+x^4+1, x^8+x^5+x^4+x^3+1, x^11+x^10+x^8+1, x^8+x^6+x^5+x^4+x^3+1," +
-                " x^9+x^8+x^4+1, x^8+x^7+x^6+x^5+x^4+x^3+1, x^10+x^6+1, x^8+x^2+1, x^9+x^8+x^7+x^4+1, x^8+x^7+x^2+1," +
-                " x^12+x^10+1, x^8+x^7+x^6+x^2+1, x^9+x^6+x^4+1, ...]");
+        irreduciblePolynomialsAtLeast_helper(-1, "QBarExhaustiveProvider_irreduciblePolynomialsAtLeast_i");
+        irreduciblePolynomialsAtLeast_helper(0, "QBarExhaustiveProvider_irreduciblePolynomialsAtLeast_ii");
+        irreduciblePolynomialsAtLeast_helper(1, "QBarExhaustiveProvider_irreduciblePolynomialsAtLeast_iii");
+        irreduciblePolynomialsAtLeast_helper(2, "QBarExhaustiveProvider_irreduciblePolynomialsAtLeast_iv");
+        irreduciblePolynomialsAtLeast_helper(8, "QBarExhaustiveProvider_irreduciblePolynomialsAtLeast_v");
         irreduciblePolynomialsAtLeast_fail_helper(-2);
     }
 
