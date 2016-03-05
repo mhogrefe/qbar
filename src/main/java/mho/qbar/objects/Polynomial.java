@@ -7,7 +7,6 @@ import mho.wheels.iterables.IterableUtils;
 import mho.wheels.iterables.NoRemoveIterable;
 import mho.wheels.math.MathUtils;
 import mho.wheels.numberUtils.IntegerUtils;
-import mho.wheels.ordering.Ordering;
 import mho.wheels.ordering.comparators.ShortlexComparator;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
@@ -2140,6 +2139,19 @@ public final class Polynomial implements
         return abbreviated;
     }
 
+    /**
+     * Finds a {@code Rational} r greater than the absolute value of any real root of {@code this}, applies some
+     * transformation to r, and then returns the {@code Interval} [–r, r].
+     *
+     * <ul>
+     *  <li>{@code this} cannot be zero.</li>
+     *  <li>{@code postProcessor} should not decrease the value of any positive {@code Rational}.</li>
+     *  <li>The result is symmetric about 0 and has finite bounds.</li>
+     * </ul>
+     *
+     * @param postProcessor a function that transforms the upper limit of the bounding interval
+     * @return an {@code Interval} containing all real roots of {@code this}
+     */
     private @NotNull Interval rootBoundHelper(@NotNull Function<Rational, Rational> postProcessor) {
         if (this == ZERO) {
             throw new ArithmeticException("this cannot be zero");
@@ -2182,6 +2194,9 @@ public final class Polynomial implements
      * @return an {@code Interval} containing all real roots of {@code this}
      */
     public @NotNull Interval powerOfTwoRootBound() {
+        if (degree() == 0) {
+            return Interval.of(Rational.NEGATIVE_ONE, Rational.ONE);
+        }
         return rootBoundHelper(Rational::roundUpToPowerOfTwo);
     }
 
@@ -2260,7 +2275,26 @@ public final class Polynomial implements
         return rootCount(powerOfTwoRootBound());
     }
 
+    /**
+     * Given a bound on all the real roots of {@code this} and a 0-based root index, returns an interval that contains
+     * the {@code rootIndex}th real root of {@code this} and no other real root.
+     *
+     * <ul>
+     *  <li>{@code this} must have a degree of at least 1.</li>
+     *  <li>{@code rootBound} must contain all real roots of {@code this}.</li>
+     *  <li>{@code rootIndex} cannot be negative.</li>
+     *  <li>{@code rootIndex} must be less than the number of real roots of {@code this}.</li>
+     *  <li>The result has finite bounds.</li>
+     * </ul>
+     *
+     * @param rootBound an {@code Interval} containing all real roots of {@code this}
+     * @param rootIndex the index of a real of root of {@code this}, starting from 0
+     * @return an interval that contains the {@code rootIndex}th real root of {@code this} and no other real root
+     */
     public @NotNull Interval isolatingIntervalHelper(@NotNull Interval rootBound, int rootIndex) {
+        if (rootIndex < 0) {
+            throw new ArithmeticException("rootIndex cannot be negative. Invalid rootIndex: " + rootIndex);
+        }
         List<Polynomial> sturmSequence = primitiveSignedPseudoRemainderSequence(differentiate());
         Rational lower = rootBound.getLower().get();
         Rational upper = rootBound.getUpper().get();
@@ -2270,7 +2304,8 @@ public final class Polynomial implements
         int upperSignChanges = signChanges(sturmSequence, upper);
         rootCount += lowerSignChanges - upperSignChanges;
         if (rootIndex >= rootCount) {
-            throw new ArithmeticException();
+            throw new ArithmeticException("rootIndex must be less than the number of real roots of this. rootIndex: " +
+                    rootIndex + ", number of real roots of this: " + rootCount);
         }
         if (rootCount == 1) {
             return rootBound;
@@ -2306,10 +2341,40 @@ public final class Polynomial implements
         }
     }
 
+    /**
+     * Given a 0-based root index, returns an interval that contains the {@code rootIndex}th real root of {@code this}
+     * and no other real root.
+     *
+     * <ul>
+     *  <li>{@code this} must have a degree of at least 1.</li>
+     *  <li>{@code rootIndex} cannot be negative.</li>
+     *  <li>{@code rootIndex} must be less than the number of real roots of {@code this}.</li>
+     *  <li>The result has finite bounds.</li>
+     * </ul>
+     *
+     * @param rootIndex the index of a real of root of {@code this}, starting from 0
+     * @return an interval that contains the {@code rootIndex}th real root of {@code this} and no other real root
+     */
     public @NotNull Interval isolatingInterval(int rootIndex) {
         return isolatingIntervalHelper(rootBound(), rootIndex);
     }
 
+    /**
+     * Given a 0-based root index, returns an interval that contains the {@code rootIndex}th real root of {@code this}
+     * and no other real root. The interval may be larger than the one given by
+     * {@link Polynomial#isolatingInterval(int)}, but its bounds are binary fractions and may have smaller numerators
+     * and denominators.
+     *
+     * <ul>
+     *  <li>{@code this} must have a degree of at least 1.</li>
+     *  <li>{@code rootIndex} cannot be negative.</li>
+     *  <li>{@code rootIndex} must be less than the number of real roots of {@code this}.</li>
+     *  <li>The result's are finite and are binary fractions.</li>
+     * </ul>
+     *
+     * @param rootIndex the index of a real of root of {@code this}, starting from 0
+     * @return an interval that contains the {@code rootIndex}th real root of {@code this} and no other real root
+     */
     public @NotNull Interval powerOfTwoIsolatingInterval(int rootIndex) {
         return isolatingIntervalHelper(powerOfTwoRootBound(), rootIndex);
     }

@@ -708,7 +708,7 @@ public class PolynomialDemos extends QBarDemos {
                 q -> P.range(0, q.rootCount() - 1)
         );
         for (Pair<Polynomial, Integer> p : take(LIMIT, ps)) {
-            System.out.println("powerOfTwosolatingInterval(" + p.a + ", " + p.b + ") = " +
+            System.out.println("powerOfTwoIsolatingInterval(" + p.a + ", " + p.b + ") = " +
                     p.a.powerOfTwoIsolatingInterval(p.b));
         }
     }

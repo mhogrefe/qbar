@@ -154,6 +154,8 @@ public class PolynomialProperties extends QBarTestProperties {
         compareImplementationsSpecialTranslate();
         propertiesPositivePrimitiveTranslate();
         compareImplementationsPositivePrimitiveTranslate();
+        propertiesIsolatingInterval();
+        propertiesPowerOfTwoIsolatingInterval();
         propertiesStretch();
         compareImplementationsStretch();
         propertiesPositivePrimitiveStretch();
@@ -3712,6 +3714,91 @@ public class PolynomialProperties extends QBarTestProperties {
         functions.put("alt", PolynomialProperties::rootCount_alt);
         functions.put("standard", Polynomial::rootCount);
         compareImplementations("rootCount()", take(LIMIT, P.squareFreePolynomialsAtLeast(0)), functions);
+    }
+
+    private void propertiesIsolatingInterval() {
+        initialize("isolatingInterval()");
+        Iterable<Pair<Polynomial, Integer>> ps = P.dependentPairs(
+                filterInfinite(p -> p.rootCount() > 0, P.withScale(4).squareFreePolynomialsAtLeast(1)),
+                q -> P.range(0, q.rootCount() - 1)
+        );
+        for (Pair<Polynomial, Integer> p : take(LIMIT, ps)) {
+            Interval interval = p.a.isolatingInterval(p.b);
+            assertTrue(p, interval.isFinitelyBounded());
+            assertEquals(p, p.a.rootCount(interval), 1);
+        }
+
+        for (int i : take(LIMIT, P.naturalIntegersGeometric())) {
+            try {
+                ZERO.isolatingInterval(i);
+                fail(i);
+            } catch (ArithmeticException ignored) {}
+        }
+
+        Iterable<Pair<Polynomial, Integer>> psFail = P.pairs(
+                P.squareFreePolynomialsAtLeast(1),
+                P.negativeIntegersGeometric()
+        );
+        for (Pair<Polynomial, Integer> p : take(LIMIT, psFail)) {
+            try {
+                p.a.isolatingInterval(p.b);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
+        }
+
+        psFail = P.dependentPairs(
+                filterInfinite(p -> p.rootCount() > 0, P.squareFreePolynomialsAtLeast(1)),
+                q -> P.rangeUpGeometric(q.rootCount())
+        );
+        for (Pair<Polynomial, Integer> p : take(LIMIT, psFail)) {
+            try {
+                p.a.isolatingInterval(p.b);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void propertiesPowerOfTwoIsolatingInterval() {
+        initialize("powerOfTwoIsolatingInterval()");
+        Iterable<Pair<Polynomial, Integer>> ps = P.dependentPairs(
+                filterInfinite(p -> p.rootCount() > 0, P.withScale(4).squareFreePolynomialsAtLeast(1)),
+                q -> P.range(0, q.rootCount() - 1)
+        );
+        for (Pair<Polynomial, Integer> p : take(LIMIT, ps)) {
+            Interval interval = p.a.powerOfTwoIsolatingInterval(p.b);
+            assertTrue(p, interval.isFinitelyBounded());
+            assertTrue(p, interval.getUpper().get().isBinaryFraction());
+            assertEquals(p, p.a.rootCount(interval), 1);
+        }
+
+        for (int i : take(LIMIT, P.naturalIntegersGeometric())) {
+            try {
+                ZERO.powerOfTwoIsolatingInterval(i);
+                fail(i);
+            } catch (ArithmeticException ignored) {}
+        }
+
+        Iterable<Pair<Polynomial, Integer>> psFail = P.pairs(
+                P.squareFreePolynomialsAtLeast(1),
+                P.negativeIntegersGeometric()
+        );
+        for (Pair<Polynomial, Integer> p : take(LIMIT, psFail)) {
+            try {
+                p.a.powerOfTwoIsolatingInterval(p.b);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
+        }
+
+        psFail = P.dependentPairs(
+                filterInfinite(p -> p.rootCount() > 0, P.squareFreePolynomialsAtLeast(1)),
+                q -> P.rangeUpGeometric(q.rootCount())
+        );
+        for (Pair<Polynomial, Integer> p : take(LIMIT, psFail)) {
+            try {
+                p.a.powerOfTwoIsolatingInterval(p.b);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
+        }
     }
 
     private void propertiesReflect() {
