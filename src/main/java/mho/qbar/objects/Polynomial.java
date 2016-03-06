@@ -672,8 +672,7 @@ public final class Polynomial implements
         if (bits < 0) {
             throw new ArithmeticException("bits cannot be negative. Invalid bits: " + bits);
         }
-        if (this == ZERO) return ZERO;
-        if (bits == 0) return this;
+        if (this == ZERO || bits == 0) return this;
         List<BigInteger> shiftedCoefficients = toList(map(r -> r.shiftLeft(bits), coefficients));
         if (shiftedCoefficients.size() == 1 && shiftedCoefficients.get(0).equals(BigInteger.ONE)) return ONE;
         return new Polynomial(shiftedCoefficients);
@@ -2436,12 +2435,12 @@ public final class Polynomial implements
     public @NotNull Polynomial specialTranslate(@NotNull Rational t) {
         if (degree() < 1 || t == Rational.ZERO) return this;
         BigInteger denominator = t.getDenominator();
-        BigInteger d = BigInteger.ONE;
+        BigInteger mutliplier = BigInteger.ONE;
         Polynomial r = fromRoot(t);
         Polynomial result = of(last(coefficients));
         for (int i = degree() - 1; i >= 0; i--) {
-            d = d.multiply(denominator);
-            result = result.multiply(r).add(of(coefficients.get(i).multiply(d)));
+            mutliplier = mutliplier.multiply(denominator);
+            result = result.multiply(r).add(of(coefficients.get(i).multiply(mutliplier)));
         }
         return result;
     }
@@ -2487,12 +2486,12 @@ public final class Polynomial implements
         if (degree < 1 || f == Rational.ONE) return this;
         BigInteger numerator = f.getNumerator();
         BigInteger denominator = f.getDenominator();
-        BigInteger d = numerator.pow(degree);
+        BigInteger multiplier = numerator.pow(degree);
         List<BigInteger> resultCoefficients = new ArrayList<>();
         for (int i = 0; i < coefficients.size(); i++) {
-            resultCoefficients.add(coefficients.get(i).multiply(d));
+            resultCoefficients.add(coefficients.get(i).multiply(multiplier));
             if (i != degree) {
-                d = d.divide(numerator).multiply(denominator);
+                multiplier = multiplier.divide(numerator).multiply(denominator);
             }
         }
         return new Polynomial(resultCoefficients);
@@ -2518,6 +2517,105 @@ public final class Polynomial implements
         if (this == ZERO) return ZERO;
         if (degree() == 0) return ONE;
         return stretch(f).constantFactor().b;
+    }
+
+    /**
+     * Returns {@code this} stretched so that the real roots of {@code this} are multiplied by 2<sup>bits</sup>.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>{@code bits} cannot be negative.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param bits the power of two that the roots of {@code this} are multiplied by
+     * @return (2<sup>deg({@code this)</sup>){@code this}(x/2<sup>{@code bits}</sup>)
+     */
+    @SuppressWarnings("JavaDoc")
+    public @NotNull Polynomial shiftRootsLeft(int bits) {
+        if (bits < 0) {
+            throw new IllegalArgumentException("bits cannot be negative. Invalid bits: " + bits);
+        }
+        int degree = degree();
+        if (degree < 1 || bits == 0) return this;
+        int exponent = bits * degree;
+        List<BigInteger> resultCoefficients = new ArrayList<>();
+        for (BigInteger coefficient : coefficients) {
+            resultCoefficients.add(coefficient.shiftLeft(exponent));
+            exponent -= bits;
+        }
+        return new Polynomial(resultCoefficients);
+    }
+
+    /**
+     * Returns {@code this} stretched so that the real roots of {@code this} are divided by 2<sup>bits</sup>.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>{@code bits} cannot be negative.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param bits the power of two that the roots of {@code this} are divided by
+     * @return {@code this}(2<sup>{@code bits}</sup>x)
+     */
+    public @NotNull Polynomial shiftRootsRight(int bits) {
+        if (bits < 0) {
+            throw new IllegalArgumentException("bits cannot be negative. Invalid bits: " + bits);
+        }
+        int degree = degree();
+        if (degree < 1 || bits == 0) return this;
+        int exponent = 0;
+        List<BigInteger> resultCoefficients = new ArrayList<>();
+        for (BigInteger coefficient : coefficients) {
+            resultCoefficients.add(coefficient.shiftLeft(exponent));
+            exponent += bits;
+        }
+        return new Polynomial(resultCoefficients);
+    }
+
+    /**
+     * Returns {@code this} stretched by a factor of 2<sup>{@code bits}</sup> and scaled to either zero or a primitive
+     * {@code Polynomial} with a positive leading coefficient.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>{@code bits} cannot be negative.</li>
+     *  <li>The result is either zero or primitive with a positive leading coefficient.</li>
+     * </ul>
+     *
+     * @param bits the power of two that the roots of {@code this} are multiplied by
+     * @return {@code this}(x/2<sup>{@code bits}</sup>), scaled
+     */
+    public @NotNull Polynomial positivePrimitiveShiftRootsLeft(int bits) {
+        if (bits < 0) {
+            throw new IllegalArgumentException("bits cannot be negative. Invalid bits: " + bits);
+        }
+        if (this == ZERO) return ZERO;
+        if (degree() == 0) return ONE;
+        return shiftRootsLeft(bits).constantFactor().b;
+    }
+
+    /**
+     * Returns {@code this} stretched by a factor of 2<sup>–{@code bits}</sup> and scaled to either zero or a primitive
+     * {@code Polynomial} with a positive leading coefficient.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>{@code bits} cannot be negative.</li>
+     *  <li>The result is either zero or primitive with a positive leading coefficient.</li>
+     * </ul>
+     *
+     * @param bits the power of two that the roots of {@code this} are divided by
+     * @return {@code this}(2<sup>{@code bits}</sup>x), scaled
+     */
+    public @NotNull Polynomial positivePrimitiveShiftRootsRight(int bits) {
+        if (bits < 0) {
+            throw new IllegalArgumentException("bits cannot be negative. Invalid bits: " + bits);
+        }
+        if (this == ZERO) return ZERO;
+        if (degree() == 0) return ONE;
+        return shiftRootsRight(bits).constantFactor().b;
     }
 
     /**

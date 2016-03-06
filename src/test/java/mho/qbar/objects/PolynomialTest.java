@@ -3821,6 +3821,178 @@ public class PolynomialTest {
         positivePrimitiveStretch_fail_helper("x^2-4*x+7", "-1");
     }
 
+    private static void shiftRootsLeft_helper(@NotNull String p, int bits, @NotNull String output) {
+        aeq(read(p).get().shiftRootsLeft(bits), output);
+    }
+
+    private static void shiftRootsLeft_fail_helper(@NotNull String p, int bits) {
+        try {
+            read(p).get().shiftRootsLeft(bits);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testShiftRootLeft() {
+        shiftRootsLeft_helper("0", 0, "0");
+        shiftRootsLeft_helper("0", 1, "0");
+        shiftRootsLeft_helper("0", 2, "0");
+
+        shiftRootsLeft_helper("1", 0, "1");
+        shiftRootsLeft_helper("1", 1, "1");
+        shiftRootsLeft_helper("1", 2, "1");
+
+        shiftRootsLeft_helper("-17", 0, "-17");
+        shiftRootsLeft_helper("-17", 1, "-17");
+        shiftRootsLeft_helper("-17", 2, "-17");
+
+        shiftRootsLeft_helper("x^2-4*x+7", 0, "x^2-4*x+7");
+        shiftRootsLeft_helper("x^2-4*x+7", 1, "x^2-8*x+28");
+        shiftRootsLeft_helper("x^2-4*x+7", 2, "x^2-16*x+112");
+
+        shiftRootsLeft_helper("-x^3-1", 0, "-x^3-1");
+        shiftRootsLeft_helper("-x^3-1", 1, "-x^3-8");
+        shiftRootsLeft_helper("-x^3-1", 2, "-x^3-64");
+
+        shiftRootsLeft_helper("3*x^10", 0, "3*x^10");
+        shiftRootsLeft_helper("3*x^10", 1, "3*x^10");
+        shiftRootsLeft_helper("3*x^10", 2, "3*x^10");
+
+        shiftRootsLeft_helper("2*x-1", 1, "2*x-2");
+
+        shiftRootsLeft_fail_helper("0", -1);
+        shiftRootsLeft_fail_helper("x", -1);
+    }
+
+    private static void shiftRootsRight_helper(@NotNull String p, int bits, @NotNull String output) {
+        aeq(read(p).get().shiftRootsRight(bits), output);
+    }
+
+    private static void shiftRootsRight_fail_helper(@NotNull String p, int bits) {
+        try {
+            read(p).get().shiftRootsRight(bits);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testShiftRootRight() {
+        shiftRootsRight_helper("0", 0, "0");
+        shiftRootsRight_helper("0", 1, "0");
+        shiftRootsRight_helper("0", 2, "0");
+
+        shiftRootsRight_helper("1", 0, "1");
+        shiftRootsRight_helper("1", 1, "1");
+        shiftRootsRight_helper("1", 2, "1");
+
+        shiftRootsRight_helper("-17", 0, "-17");
+        shiftRootsRight_helper("-17", 1, "-17");
+        shiftRootsRight_helper("-17", 2, "-17");
+
+        shiftRootsRight_helper("x^2-4*x+7", 0, "x^2-4*x+7");
+        shiftRootsRight_helper("x^2-4*x+7", 1, "4*x^2-8*x+7");
+        shiftRootsRight_helper("x^2-4*x+7", 2, "16*x^2-16*x+7");
+
+        shiftRootsRight_helper("-x^3-1", 0, "-x^3-1");
+        shiftRootsRight_helper("-x^3-1", 1, "-8*x^3-1");
+        shiftRootsRight_helper("-x^3-1", 2, "-64*x^3-1");
+
+        shiftRootsRight_helper("3*x^10", 0, "3*x^10");
+        shiftRootsRight_helper("3*x^10", 1, "3072*x^10");
+        shiftRootsRight_helper("3*x^10", 2, "3145728*x^10");
+
+        shiftRootsRight_helper("x-2", 1, "2*x-2");
+
+        shiftRootsRight_fail_helper("0", -1);
+        shiftRootsRight_fail_helper("x", -1);
+    }
+
+    private static void positivePrimitiveShiftRootsLeft_helper(@NotNull String p, int bits, @NotNull String output) {
+        aeq(read(p).get().positivePrimitiveShiftRootsLeft(bits), output);
+    }
+
+    private static void positivePrimitiveShiftRootsLeft_fail_helper(@NotNull String p, int bits) {
+        try {
+            read(p).get().positivePrimitiveShiftRootsLeft(bits);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testPositivePrimitiveShiftRootLeft() {
+        positivePrimitiveShiftRootsLeft_helper("0", 0, "0");
+        positivePrimitiveShiftRootsLeft_helper("0", 1, "0");
+        positivePrimitiveShiftRootsLeft_helper("0", 2, "0");
+
+        positivePrimitiveShiftRootsLeft_helper("1", 0, "1");
+        positivePrimitiveShiftRootsLeft_helper("1", 1, "1");
+        positivePrimitiveShiftRootsLeft_helper("1", 2, "1");
+
+        positivePrimitiveShiftRootsLeft_helper("-17", 0, "1");
+        positivePrimitiveShiftRootsLeft_helper("-17", 1, "1");
+        positivePrimitiveShiftRootsLeft_helper("-17", 2, "1");
+
+        positivePrimitiveShiftRootsLeft_helper("x^2-4*x+7", 0, "x^2-4*x+7");
+        positivePrimitiveShiftRootsLeft_helper("x^2-4*x+7", 1, "x^2-8*x+28");
+        positivePrimitiveShiftRootsLeft_helper("x^2-4*x+7", 2, "x^2-16*x+112");
+
+        positivePrimitiveShiftRootsLeft_helper("-x^3-1", 0, "x^3+1");
+        positivePrimitiveShiftRootsLeft_helper("-x^3-1", 1, "x^3+8");
+        positivePrimitiveShiftRootsLeft_helper("-x^3-1", 2, "x^3+64");
+
+        positivePrimitiveShiftRootsLeft_helper("3*x^10", 0, "x^10");
+        positivePrimitiveShiftRootsLeft_helper("3*x^10", 1, "x^10");
+        positivePrimitiveShiftRootsLeft_helper("3*x^10", 2, "x^10");
+
+        positivePrimitiveShiftRootsLeft_helper("2*x-1", 1, "x-1");
+
+        positivePrimitiveShiftRootsLeft_fail_helper("0", -1);
+        positivePrimitiveShiftRootsLeft_fail_helper("x", -1);
+    }
+
+    private static void positivePrimitiveShiftRootsRight_helper(@NotNull String p, int bits, @NotNull String output) {
+        aeq(read(p).get().positivePrimitiveShiftRootsRight(bits), output);
+    }
+
+    private static void positivePrimitivehiftRootsRight_fail_helper(@NotNull String p, int bits) {
+        try {
+            read(p).get().positivePrimitiveShiftRootsRight(bits);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testPositivePrimitiveShiftRootRight() {
+        positivePrimitiveShiftRootsRight_helper("0", 0, "0");
+        positivePrimitiveShiftRootsRight_helper("0", 1, "0");
+        positivePrimitiveShiftRootsRight_helper("0", 2, "0");
+
+        positivePrimitiveShiftRootsRight_helper("1", 0, "1");
+        positivePrimitiveShiftRootsRight_helper("1", 1, "1");
+        positivePrimitiveShiftRootsRight_helper("1", 2, "1");
+
+        positivePrimitiveShiftRootsRight_helper("-17", 0, "1");
+        positivePrimitiveShiftRootsRight_helper("-17", 1, "1");
+        positivePrimitiveShiftRootsRight_helper("-17", 2, "1");
+
+        positivePrimitiveShiftRootsRight_helper("x^2-4*x+7", 0, "x^2-4*x+7");
+        positivePrimitiveShiftRootsRight_helper("x^2-4*x+7", 1, "4*x^2-8*x+7");
+        positivePrimitiveShiftRootsRight_helper("x^2-4*x+7", 2, "16*x^2-16*x+7");
+
+        positivePrimitiveShiftRootsRight_helper("-x^3-1", 0, "x^3+1");
+        positivePrimitiveShiftRootsRight_helper("-x^3-1", 1, "8*x^3+1");
+        positivePrimitiveShiftRootsRight_helper("-x^3-1", 2, "64*x^3+1");
+
+        positivePrimitiveShiftRootsRight_helper("3*x^10", 0, "x^10");
+        positivePrimitiveShiftRootsRight_helper("3*x^10", 1, "x^10");
+        positivePrimitiveShiftRootsRight_helper("3*x^10", 2, "x^10");
+
+        positivePrimitiveShiftRootsRight_helper("x-2", 1, "x-1");
+
+        positivePrimitiveShiftRootsLeft_fail_helper("0", -1);
+        positivePrimitiveShiftRootsLeft_fail_helper("x", -1);
+    }
+
     @Test
     public void testEquals() {
         testEqualsHelper(

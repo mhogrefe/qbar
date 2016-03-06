@@ -760,6 +760,36 @@ public class PolynomialDemos extends QBarDemos {
         }
     }
 
+    private void demoShiftRootsLeft() {
+        Iterable<Pair<Polynomial, Integer>> ps = P.pairs(P.withScale(4).polynomials(), P.naturalIntegersGeometric());
+        for (Pair<Polynomial, Integer> p : take(LIMIT, ps)) {
+            System.out.println("shiftRootsLeft(" + p.a + ", " + p.b + ") = " + p.a.shiftRootsLeft(p.b));
+        }
+    }
+
+    private void demoShiftRootsRight() {
+        Iterable<Pair<Polynomial, Integer>> ps = P.pairs(P.withScale(4).polynomials(), P.naturalIntegersGeometric());
+        for (Pair<Polynomial, Integer> p : take(LIMIT, ps)) {
+            System.out.println("shiftRootsRight(" + p.a + ", " + p.b + ") = " + p.a.shiftRootsRight(p.b));
+        }
+    }
+
+    private void demoPositivePrimitiveShiftRootsLeft() {
+        Iterable<Pair<Polynomial, Integer>> ps = P.pairs(P.withScale(4).polynomials(), P.naturalIntegersGeometric());
+        for (Pair<Polynomial, Integer> p : take(LIMIT, ps)) {
+            System.out.println("positivePrimitiveShiftRootsLeft(" + p.a + ", " + p.b + ") = " +
+                    p.a.positivePrimitiveShiftRootsLeft(p.b));
+        }
+    }
+
+    private void demoPositivePrimitiveShiftRootsRight() {
+        Iterable<Pair<Polynomial, Integer>> ps = P.pairs(P.withScale(4).polynomials(), P.naturalIntegersGeometric());
+        for (Pair<Polynomial, Integer> p : take(LIMIT, ps)) {
+            System.out.println("positivePrimitiveShiftRootsRight(" + p.a + ", " + p.b + ") = " +
+                    p.a.positivePrimitiveShiftRootsRight(p.b));
+        }
+    }
+
     private void demoEquals_Polynomial() {
         for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(P.withScale(4).polynomials()))) {
             System.out.println(p.a + (p.a.equals(p.b) ? " = " : " ≠ ") + p.b);

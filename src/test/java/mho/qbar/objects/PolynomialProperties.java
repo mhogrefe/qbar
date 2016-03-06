@@ -160,6 +160,14 @@ public class PolynomialProperties extends QBarTestProperties {
         compareImplementationsStretch();
         propertiesPositivePrimitiveStretch();
         compareImplementationsPositivePrimitiveStretch();
+        propertiesShiftRootsLeft();
+        compareImplementationsShiftRootsLeft();
+        propertiesShiftRootsRight();
+        compareImplementationsShiftRootsRight();
+        propertiesPositiveShiftRootsLeft();
+        compareImplementationsPositivePrimitiveShiftRootsLeft();
+        propertiesPositiveShiftRootsRight();
+        compareImplementationsPositivePrimitiveShiftRootsRight();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -4022,6 +4030,204 @@ public class PolynomialProperties extends QBarTestProperties {
         functions.put("standard", p -> p.a.stretch(p.b));
         Iterable<Pair<Polynomial, Rational>> ps = P.pairs(P.polynomials(), P.positiveRationals());
         compareImplementations("stretch(Rational)", take(LIMIT, ps), functions);
+    }
+
+    private static @NotNull Polynomial shiftRootsLeft_simplest(@NotNull Polynomial p, int bits) {
+        return p.stretch(Rational.ONE.shiftLeft(bits));
+    }
+
+    private void propertiesShiftRootsLeft() {
+        initialize("shiftRootsLeft(int)");
+        for (Pair<Polynomial, Integer> p : take(LIMIT, P.pairs(P.polynomials(), P.naturalIntegersGeometric()))) {
+            Polynomial shifted = p.a.shiftRootsLeft(p.b);
+            shifted.validate();
+            assertEquals(p, shifted, shiftRootsLeft_simplest(p.a, p.b));
+            assertEquals(p, p.a.degree(), shifted.degree());
+            assertEquals(p, p.a.signum(), shifted.signum());
+        }
+
+        for (Pair<BigInteger, Integer> p : take(LIMIT, P.pairs(P.bigIntegers(), P.naturalIntegers()))) {
+            Polynomial q = of(p.a);
+            assertEquals(p, q, q.shiftRootsLeft(p.b));
+        }
+
+        for (Pair<Polynomial, Integer> p : take(LIMIT, P.pairs(P.polynomials(), P.negativeIntegers()))) {
+            try {
+                p.a.shiftRootsLeft(p.b);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void compareImplementationsShiftRootsLeft() {
+        Map<String, Function<Pair<Polynomial, Integer>, Polynomial>> functions = new LinkedHashMap<>();
+        functions.put("simplest", p -> shiftRootsLeft_simplest(p.a, p.b));
+        functions.put("standard", p -> p.a.shiftRootsLeft(p.b));
+        Iterable<Pair<Polynomial, Integer>> ps = P.pairs(P.polynomials(), P.naturalIntegersGeometric());
+        compareImplementations("shiftRootsLeft(int)", take(LIMIT, ps), functions);
+    }
+
+    private static @NotNull Polynomial shiftRootsRight_simplest(@NotNull Polynomial p, int bits) {
+        return p.stretch(Rational.ONE.shiftRight(bits));
+    }
+
+    private void propertiesShiftRootsRight() {
+        initialize("shiftRootsRight(int)");
+        for (Pair<Polynomial, Integer> p : take(LIMIT, P.pairs(P.polynomials(), P.naturalIntegersGeometric()))) {
+            Polynomial shifted = p.a.shiftRootsRight(p.b);
+            shifted.validate();
+            assertEquals(p, shifted, shiftRootsRight_simplest(p.a, p.b));
+            assertEquals(p, p.a.degree(), shifted.degree());
+            assertEquals(p, p.a.signum(), shifted.signum());
+        }
+
+        for (Pair<BigInteger, Integer> p : take(LIMIT, P.pairs(P.bigIntegers(), P.naturalIntegers()))) {
+            Polynomial q = of(p.a);
+            assertEquals(p, q, q.shiftRootsRight(p.b));
+        }
+
+        for (Pair<Polynomial, Integer> p : take(LIMIT, P.pairs(P.polynomials(), P.negativeIntegers()))) {
+            try {
+                p.a.shiftRootsRight(p.b);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void compareImplementationsShiftRootsRight() {
+        Map<String, Function<Pair<Polynomial, Integer>, Polynomial>> functions = new LinkedHashMap<>();
+        functions.put("simplest", p -> shiftRootsRight_simplest(p.a, p.b));
+        functions.put("standard", p -> p.a.shiftRootsRight(p.b));
+        Iterable<Pair<Polynomial, Integer>> ps = P.pairs(P.polynomials(), P.naturalIntegersGeometric());
+        compareImplementations("shiftRootsRight(int)", take(LIMIT, ps), functions);
+    }
+
+    private static @NotNull Polynomial positivePrimitiveShiftRootsLeft_simplest(@NotNull Polynomial p, int bits) {
+        return p.positivePrimitiveStretch(Rational.ONE.shiftLeft(bits));
+    }
+
+    private void propertiesPositiveShiftRootsLeft() {
+        initialize("positivePrimitiveShiftRootsLeft(int)");
+        for (Pair<Polynomial, Integer> p : take(LIMIT, P.pairs(P.polynomials(), P.naturalIntegersGeometric()))) {
+            Polynomial shifted = p.a.positivePrimitiveShiftRootsLeft(p.b);
+            shifted.validate();
+            assertEquals(p, positivePrimitiveShiftRootsLeft_simplest(p.a, p.b), shifted);
+            assertEquals(p, p.a.degree(), shifted.degree());
+            assertTrue(p, shifted == ZERO || shifted.isPrimitive());
+            assertNotEquals(p, shifted.signum(), -1);
+        }
+
+        Iterable<Pair<Polynomial, Integer>> ps = P.pairs(
+                P.positivePrimitivePolynomials(),
+                P.naturalIntegersGeometric()
+        );
+        for (Pair<Polynomial, Integer> p : take(LIMIT, ps)) {
+            inverse(
+                    q -> q.positivePrimitiveShiftRootsLeft(p.b),
+                    (Polynomial q) -> q.positivePrimitiveShiftRootsRight(p.b),
+                    p.a
+            );
+        }
+
+        for (Pair<BigInteger, Integer> p : take(LIMIT, P.pairs(P.bigIntegers(), P.naturalIntegersGeometric()))) {
+            Polynomial stretched = of(p.a).positivePrimitiveShiftRootsLeft(p.b);
+            assertTrue(p, stretched == ZERO || stretched == ONE);
+        }
+
+        ps = P.pairs(P.withScale(4).withSecondaryScale(4).irreduciblePolynomials(), P.naturalIntegersGeometric());
+        for (Pair<Polynomial, Integer> p : take(LIMIT, ps)) {
+            assertTrue(p, p.a.positivePrimitiveShiftRootsLeft(p.b).isIrreducible());
+        }
+
+        Iterable<Pair<Integer, List<Rational>>> qs = P.pairs(
+                P.naturalIntegersGeometric(),
+                P.withScale(4).bags(P.rationals())
+        );
+        for (Pair<Integer, List<Rational>> p : take(LIMIT, qs)) {
+            Polynomial q = product(map(Polynomial::fromRoot, p.b));
+            List<Rational> shiftedRs = toList(map(r -> r.shiftLeft(p.a), p.b));
+            Polynomial shiftedRootsP = product(map(Polynomial::fromRoot, shiftedRs));
+            assertEquals(p, q.positivePrimitiveShiftRootsLeft(p.a), shiftedRootsP);
+        }
+
+        for (Pair<Polynomial, Integer> p : take(LIMIT, P.pairs(P.polynomials(), P.negativeIntegers()))) {
+            try {
+                p.a.positivePrimitiveShiftRootsLeft(p.b);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void compareImplementationsPositivePrimitiveShiftRootsLeft() {
+        Map<String, Function<Pair<Polynomial, Integer>, Polynomial>> functions = new LinkedHashMap<>();
+        functions.put("simplest", p -> positivePrimitiveShiftRootsLeft_simplest(p.a, p.b));
+        functions.put("standard", p -> p.a.positivePrimitiveShiftRootsLeft(p.b));
+        Iterable<Pair<Polynomial, Integer>> ps = P.pairs(P.polynomials(), P.naturalIntegersGeometric());
+        compareImplementations("positivePrimitiveShiftRootsLeft(int)", take(LIMIT, ps), functions);
+    }
+
+    private static @NotNull Polynomial positivePrimitiveShiftRootsRight_simplest(@NotNull Polynomial p, int bits) {
+        return p.positivePrimitiveStretch(Rational.ONE.shiftRight(bits));
+    }
+
+    private void propertiesPositiveShiftRootsRight() {
+        initialize("positivePrimitiveShiftRootsRight(int)");
+        for (Pair<Polynomial, Integer> p : take(LIMIT, P.pairs(P.polynomials(), P.naturalIntegersGeometric()))) {
+            Polynomial shifted = p.a.positivePrimitiveShiftRootsRight(p.b);
+            shifted.validate();
+            assertEquals(p, positivePrimitiveShiftRootsRight_simplest(p.a, p.b), shifted);
+            assertEquals(p, p.a.degree(), shifted.degree());
+            assertTrue(p, shifted == ZERO || shifted.isPrimitive());
+            assertNotEquals(p, shifted.signum(), -1);
+        }
+
+        Iterable<Pair<Polynomial, Integer>> ps = P.pairs(
+                P.positivePrimitivePolynomials(),
+                P.naturalIntegersGeometric()
+        );
+        for (Pair<Polynomial, Integer> p : take(LIMIT, ps)) {
+            inverse(
+                    q -> q.positivePrimitiveShiftRootsRight(p.b),
+                    (Polynomial q) -> q.positivePrimitiveShiftRootsLeft(p.b),
+                    p.a
+            );
+        }
+
+        for (Pair<BigInteger, Integer> p : take(LIMIT, P.pairs(P.bigIntegers(), P.naturalIntegersGeometric()))) {
+            Polynomial stretched = of(p.a).positivePrimitiveShiftRootsRight(p.b);
+            assertTrue(p, stretched == ZERO || stretched == ONE);
+        }
+
+        ps = P.pairs(P.withScale(4).withSecondaryScale(4).irreduciblePolynomials(), P.naturalIntegersGeometric());
+        for (Pair<Polynomial, Integer> p : take(LIMIT, ps)) {
+            assertTrue(p, p.a.positivePrimitiveShiftRootsRight(p.b).isIrreducible());
+        }
+
+        Iterable<Pair<Integer, List<Rational>>> qs = P.pairs(
+                P.naturalIntegersGeometric(),
+                P.withScale(4).bags(P.rationals())
+        );
+        for (Pair<Integer, List<Rational>> p : take(LIMIT, qs)) {
+            Polynomial q = product(map(Polynomial::fromRoot, p.b));
+            List<Rational> shiftedRs = toList(map(r -> r.shiftRight(p.a), p.b));
+            Polynomial shiftedRootsP = product(map(Polynomial::fromRoot, shiftedRs));
+            assertEquals(p, q.positivePrimitiveShiftRootsRight(p.a), shiftedRootsP);
+        }
+
+        for (Pair<Polynomial, Integer> p : take(LIMIT, P.pairs(P.polynomials(), P.negativeIntegers()))) {
+            try {
+                p.a.positivePrimitiveShiftRootsRight(p.b);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void compareImplementationsPositivePrimitiveShiftRootsRight() {
+        Map<String, Function<Pair<Polynomial, Integer>, Polynomial>> functions = new LinkedHashMap<>();
+        functions.put("simplest", p -> positivePrimitiveShiftRootsRight_simplest(p.a, p.b));
+        functions.put("standard", p -> p.a.positivePrimitiveShiftRootsRight(p.b));
+        Iterable<Pair<Polynomial, Integer>> ps = P.pairs(P.polynomials(), P.naturalIntegersGeometric());
+        compareImplementations("positivePrimitiveShiftRootsRight(int)", take(LIMIT, ps), functions);
     }
 
     private void propertiesEquals() {
