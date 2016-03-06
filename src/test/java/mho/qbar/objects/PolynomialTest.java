@@ -3543,6 +3543,64 @@ public class PolynomialTest {
         powerOfTwoIsolatingInterval_fail_helper("x^2-2", -1);
     }
 
+    private static void isolatingIntervals_helper(@NotNull String input, @NotNull String output) {
+        aeq(read(input).get().isolatingIntervals(), output);
+    }
+
+    private static void isolatingIntervals_fail_helper(@NotNull String input) {
+        try {
+            read(input).get().isolatingIntervals();
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testIsolatingIntervals() {
+        isolatingIntervals_helper("1", "[]");
+        isolatingIntervals_helper("x", "[[-1, 1]]");
+        isolatingIntervals_helper("-17", "[]");
+        isolatingIntervals_helper("x^2-4*x+7", "[]");
+        isolatingIntervals_helper("-x^3-1", "[[-2, 2]]");
+        isolatingIntervals_helper("3*x^10", "[[-1, 1]]");
+
+        isolatingIntervals_helper("x^2-2", "[[-3, 0], [0, 3]]");
+        isolatingIntervals_helper("x^2-3", "[[-4, 0], [0, 4]]");
+        isolatingIntervals_helper("x^2-x-1", "[[-2, 0], [0, 2]]");
+        isolatingIntervals_helper("x^5-x+1", "[[-2, 2]]");
+        isolatingIntervals_helper("-x^4+x", "[[-2, 0], [1/2, 1]]");
+
+        isolatingIntervals_fail_helper("0");
+    }
+
+    private static void powerOfTwoIsolatingIntervals_helper(@NotNull String input, @NotNull String output) {
+        aeq(read(input).get().powerOfTwoIsolatingIntervals(), output);
+    }
+
+    private static void powerOfTwoIsolatingIntervals_fail_helper(@NotNull String input) {
+        try {
+            read(input).get().powerOfTwoIsolatingIntervals();
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testPowerOfTwoIsolatingIntervals() {
+        powerOfTwoIsolatingIntervals_helper("1", "[]");
+        powerOfTwoIsolatingIntervals_helper("x", "[[-1, 1]]");
+        powerOfTwoIsolatingIntervals_helper("-17", "[]");
+        powerOfTwoIsolatingIntervals_helper("x^2-4*x+7", "[]");
+        powerOfTwoIsolatingIntervals_helper("-x^3-1", "[[-2, 2]]");
+        powerOfTwoIsolatingIntervals_helper("3*x^10", "[[-1, 1]]");
+
+        powerOfTwoIsolatingIntervals_helper("x^2-2", "[[-4, 0], [0, 4]]");
+        powerOfTwoIsolatingIntervals_helper("x^2-3", "[[-4, 0], [0, 4]]");
+        powerOfTwoIsolatingIntervals_helper("x^2-x-1", "[[-2, 0], [0, 2]]");
+        powerOfTwoIsolatingIntervals_helper("x^5-x+1", "[[-2, 2]]");
+        powerOfTwoIsolatingIntervals_helper("-x^4+x", "[[-2, 0], [1/2, 1]]");
+
+        powerOfTwoIsolatingIntervals_fail_helper("0");
+    }
+
     private static void reflect_helper(@NotNull String input, @NotNull String output) {
         aeq(read(input).get().reflect(), output);
     }

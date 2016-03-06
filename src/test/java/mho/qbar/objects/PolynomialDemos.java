@@ -713,6 +713,18 @@ public class PolynomialDemos extends QBarDemos {
         }
     }
 
+    private void demoIsolatingIntervals() {
+        for (Polynomial p : take(LIMIT, P.withScale(4).squareFreePolynomials())) {
+            System.out.println("isolatingIntervals(" + p + ") = " + p.isolatingIntervals());
+        }
+    }
+
+    private void demoPowerOfTwoIsolatingIntervals() {
+        for (Polynomial p : take(LIMIT, P.withScale(4).squareFreePolynomials())) {
+            System.out.println("powerOfTwoIsolatingIntervals(" + p + ") = " + p.powerOfTwoIsolatingIntervals());
+        }
+    }
+
     private void demoReflect() {
         for (Polynomial p : take(LIMIT, P.withScale(4).polynomials())) {
             System.out.println("reflect(" + p + ") = " + p.reflect());

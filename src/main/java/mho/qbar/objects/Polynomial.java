@@ -2203,16 +2203,30 @@ public final class Polynomial implements
      * Counts the sign changes, ignoring zeros, when evaluating each polynomial of a Sturm sequence at a point.
      *
      * <ul>
+     *  <li>{@code signChangeMap} must either be null or a correct mapping from some {@code Rational}s to sign
+     *  changes.</li>
      *  <li>{@code sturmSequence} must be a Sturm sequence.</li>
      *  <li>{@code x} cannot be null.</li>
      *  <li>The result is not negative.</li>
      * </ul>
      *
+     * @param signChangeMap a mapping from {@code Rational}s to sign changes. If {@code signChangeMap} is not null, it
+     * is used as a cache of sign changes.
      * @param sturmSequence a Sturm sequence
      * @param x a point
      * @return the number of sign changes in map(p({@code x}), p∈{@code sturmSequence})
      */
-    private static int signChanges(@NotNull List<Polynomial> sturmSequence, @NotNull Rational x) {
+    private static int signChanges(
+            Map<Rational, Integer> signChangeMap,
+            @NotNull List<Polynomial> sturmSequence,
+            @NotNull Rational x
+    ) {
+        if (signChangeMap != null) {
+            Integer cachedChanges = signChangeMap.get(x);
+            if (cachedChanges != null) {
+                return cachedChanges;
+            }
+        }
         int changes = 0;
         int previousSign = 0;
         for (Polynomial p : sturmSequence) {
@@ -2223,6 +2237,9 @@ public final class Polynomial implements
                 }
                 previousSign = sign;
             }
+        }
+        if (signChangeMap != null) {
+            signChangeMap.put(x, changes);
         }
         return changes;
     }
@@ -2255,7 +2272,7 @@ public final class Polynomial implements
             return rootCount;
         }
         List<Polynomial> sturmSequence = primitiveSignedPseudoRemainderSequence(differentiate());
-        rootCount += signChanges(sturmSequence, lower) - signChanges(sturmSequence, upper);
+        rootCount += signChanges(null, sturmSequence, lower) - signChanges(null, sturmSequence, upper);
         return rootCount;
     }
 
@@ -2279,28 +2296,36 @@ public final class Polynomial implements
      * the {@code rootIndex}th real root of {@code this} and no other real root.
      *
      * <ul>
-     *  <li>{@code this} must have a degree of at least 1.</li>
-     *  <li>{@code rootBound} must contain all real roots of {@code this}.</li>
+     *  <li>{@code this} must be squarefree.</li>
+     *  <li>{@code signChangeMap} must either be null or a correct mapping from some {@code Rational}s to sign
+     *  changes.</li>
+     *  <li>{@code rootBound} must contain all real roots of {@code this} and have finite bounds.</li>
      *  <li>{@code rootIndex} cannot be negative.</li>
      *  <li>{@code rootIndex} must be less than the number of real roots of {@code this}.</li>
      *  <li>The result has finite bounds.</li>
      * </ul>
      *
+     * @param signChangeMap a mapping from {@code Rational}s to sign changes. If {@code signChangeMap} is not null, it
+     * is used as a cache of sign changes.
      * @param rootBound an {@code Interval} containing all real roots of {@code this}
      * @param rootIndex the index of a real of root of {@code this}, starting from 0
      * @return an interval that contains the {@code rootIndex}th real root of {@code this} and no other real root
      */
-    public @NotNull Interval isolatingIntervalHelper(@NotNull Interval rootBound, int rootIndex) {
+    private @NotNull Interval isolatingIntervalHelper(
+            Map<Rational, Integer> signChangeMap,
+            @NotNull List<Polynomial> sturmSequence,
+            @NotNull Interval rootBound,
+            int rootIndex
+    ) {
         if (rootIndex < 0) {
             throw new ArithmeticException("rootIndex cannot be negative. Invalid rootIndex: " + rootIndex);
         }
-        List<Polynomial> sturmSequence = primitiveSignedPseudoRemainderSequence(differentiate());
         Rational lower = rootBound.getLower().get();
         Rational upper = rootBound.getUpper().get();
         boolean rootAtLower = signum(lower) == 0;
         int rootCount = rootAtLower ? 1 : 0;
-        int lowerSignChanges = signChanges(sturmSequence, lower);
-        int upperSignChanges = signChanges(sturmSequence, upper);
+        int lowerSignChanges = signChanges(signChangeMap, sturmSequence, lower);
+        int upperSignChanges = signChanges(signChangeMap, sturmSequence, upper);
         rootCount += lowerSignChanges - upperSignChanges;
         if (rootIndex >= rootCount) {
             throw new ArithmeticException("rootIndex must be less than the number of real roots of this. rootIndex: " +
@@ -2312,7 +2337,7 @@ public final class Polynomial implements
         while (true) {
             Rational mid = lower.add(upper).shiftRight(1);
             int lowerMidRootCount = rootAtLower ? 1 : 0;
-            int midSignChanges = signChanges(sturmSequence, mid);
+            int midSignChanges = signChanges(signChangeMap, sturmSequence, mid);
             lowerMidRootCount += lowerSignChanges - midSignChanges;
             if (rootIndex < lowerMidRootCount) {
                 rootBound = Interval.of(lower, mid);
@@ -2345,7 +2370,7 @@ public final class Polynomial implements
      * and no other real root.
      *
      * <ul>
-     *  <li>{@code this} must have a degree of at least 1.</li>
+     *  <li>{@code this} must be squarefree.</li>
      *  <li>{@code rootIndex} cannot be negative.</li>
      *  <li>{@code rootIndex} must be less than the number of real roots of {@code this}.</li>
      *  <li>The result has finite bounds.</li>
@@ -2355,7 +2380,12 @@ public final class Polynomial implements
      * @return an interval that contains the {@code rootIndex}th real root of {@code this} and no other real root
      */
     public @NotNull Interval isolatingInterval(int rootIndex) {
-        return isolatingIntervalHelper(rootBound(), rootIndex);
+        return isolatingIntervalHelper(
+                null,
+                primitiveSignedPseudoRemainderSequence(differentiate()),
+                rootBound(),
+                rootIndex
+        );
     }
 
     /**
@@ -2365,17 +2395,84 @@ public final class Polynomial implements
      * and denominators.
      *
      * <ul>
-     *  <li>{@code this} must have a degree of at least 1.</li>
+     *  <li>{@code this} must be squarefree.</li>
      *  <li>{@code rootIndex} cannot be negative.</li>
      *  <li>{@code rootIndex} must be less than the number of real roots of {@code this}.</li>
-     *  <li>The result's are finite and are binary fractions.</li>
+     *  <li>The results are finite and are binary fractions.</li>
      * </ul>
      *
      * @param rootIndex the index of a real of root of {@code this}, starting from 0
      * @return an interval that contains the {@code rootIndex}th real root of {@code this} and no other real root
      */
     public @NotNull Interval powerOfTwoIsolatingInterval(int rootIndex) {
-        return isolatingIntervalHelper(powerOfTwoRootBound(), rootIndex);
+        return isolatingIntervalHelper(
+                null,
+                primitiveSignedPseudoRemainderSequence(differentiate()),
+                powerOfTwoRootBound(),
+                rootIndex
+        );
+    }
+
+    /**
+     * Given a bound on all the real roots of {@code this}, returns a {@code List} of {@code Interval}s such that for
+     * each real root of {@code this}, there is exactly one {@code Interval} that contains that root and no others.
+     *
+     * <ul>
+     *  <li>{@code this} must be squarefree.</li>
+     *  <li>{@code rootBound} must contain all real roots of {@code this} and have finite bounds.</li>
+     *  <li>Every element of the result has finite bounds.</li>
+     * </ul>
+     *
+     * @param rootBound an {@code Interval} containing all real roots of {@code this}
+     * @return a list of root-isolating {@code Interval}s of {@code this}
+     */
+    private @NotNull List<Interval> isolatingIntervalsHelper(@NotNull Interval rootBound) {
+        List<Polynomial> sturmSequence = primitiveSignedPseudoRemainderSequence(differentiate());
+        Map<Rational, Integer> signChangeMap = new HashMap<>();
+        Rational lower = rootBound.getLower().get();
+        Rational upper = rootBound.getUpper().get();
+        boolean rootAtLower = signum(lower) == 0;
+        int rootCount = rootAtLower ? 1 : 0;
+        int lowerSignChanges = signChanges(signChangeMap, sturmSequence, lower);
+        int upperSignChanges = signChanges(signChangeMap, sturmSequence, upper);
+        rootCount += lowerSignChanges - upperSignChanges;
+        List<Interval> isolatingIntervals = new ArrayList<>();
+        for (int i = 0; i < rootCount; i++) {
+            isolatingIntervals.add(isolatingIntervalHelper(signChangeMap, sturmSequence, rootBound, i));
+        }
+        return isolatingIntervals;
+    }
+
+    /**
+     * Returns a {@code List} of {@code Interval}s such that for each real root of {@code this}, there is exactly one
+     * {@code Interval} that contains that root and no others.
+     *
+     * <ul>
+     *  <li>{@code this} must be squarefree.</li>
+     *  <li>Every element of the result has finite bounds.</li>
+     * </ul>
+     *
+     * @return a list of root-isolating {@code Interval}s of {@code this}
+     */
+    public @NotNull List<Interval> isolatingIntervals() {
+        return isolatingIntervalsHelper(rootBound());
+    }
+
+    /**
+     * Returns a {@code List} of {@code Interval}s such that for each real root of {@code this}, there is exactly one
+     * {@code Interval} that contains that root and no others. The intervals may be larger than the ones given by
+     * {@link Polynomial#isolatingIntervals()}, but their bounds are binary fractions and may have smaller numerators
+     * and denominators.
+     *
+     * <ul>
+     *  <li>{@code this} must be squarefree.</li>
+     *  <li>Every element of the result has finite bounds, and all bounds are binary fractions.</li>
+     * </ul>
+     *
+     * @return a list of root-isolating {@code Interval}s of {@code this}
+     */
+    public @NotNull List<Interval> powerOfTwoIsolatingIntervals() {
+        return isolatingIntervalsHelper(powerOfTwoRootBound());
     }
 
     /**

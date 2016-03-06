@@ -148,14 +148,18 @@ public class PolynomialProperties extends QBarTestProperties {
         propertiesRootCount_Interval();
         propertiesRootCount();
         compareImplementationsRootCount();
+        propertiesIsolatingInterval();
+        propertiesPowerOfTwoIsolatingInterval();
+        propertiesIsolatingIntervals();
+        compareImplementationsIsolatingIntervals();
+        propertiesPowerOfTwoIsolatingIntervals();
+        compareImplementationsPowerOfTwoIsolatingIntervals();
         propertiesReflect();
         propertiesTranslate();
         propertiesSpecialTranslate();
         compareImplementationsSpecialTranslate();
         propertiesPositivePrimitiveTranslate();
         compareImplementationsPositivePrimitiveTranslate();
-        propertiesIsolatingInterval();
-        propertiesPowerOfTwoIsolatingInterval();
         propertiesStretch();
         compareImplementationsStretch();
         propertiesPositivePrimitiveStretch();
@@ -3775,6 +3779,7 @@ public class PolynomialProperties extends QBarTestProperties {
         for (Pair<Polynomial, Integer> p : take(LIMIT, ps)) {
             Interval interval = p.a.powerOfTwoIsolatingInterval(p.b);
             assertTrue(p, interval.isFinitelyBounded());
+            assertTrue(p, interval.getLower().get().isBinaryFraction());
             assertTrue(p, interval.getUpper().get().isBinaryFraction());
             assertEquals(p, p.a.rootCount(interval), 1);
         }
@@ -3807,6 +3812,64 @@ public class PolynomialProperties extends QBarTestProperties {
                 fail(p);
             } catch (ArithmeticException ignored) {}
         }
+    }
+
+    private static @NotNull List<Interval> isolatingIntervals_alt(@NotNull Polynomial p) {
+        return toList(map(p::isolatingInterval, range(0, p.rootCount() - 1)));
+    }
+
+    private void propertiesIsolatingIntervals() {
+        initialize("isolatingIntervals()");
+        for (Polynomial p : take(LIMIT, P.withScale(4).withSecondaryScale(4).squareFreePolynomials())) {
+            List<Interval> intervals = p.isolatingIntervals();
+            assertEquals(p, intervals.size(), p.rootCount());
+            for (Interval a : intervals) {
+                assertTrue(p, a.isFinitelyBounded());
+                assertEquals(p, p.rootCount(a), 1);
+            }
+        }
+
+        for (Polynomial p : take(LIMIT, P.polynomials(0))) {
+            assertTrue(p, p.isolatingIntervals().isEmpty());
+        }
+    }
+
+    private void compareImplementationsIsolatingIntervals() {
+        Map<String, Function<Polynomial, List<Interval>>> functions = new LinkedHashMap<>();
+        functions.put("alt", PolynomialProperties::isolatingIntervals_alt);
+        functions.put("standard", Polynomial::isolatingIntervals);
+        Iterable<Polynomial> ps = P.withScale(4).withSecondaryScale(4).squareFreePolynomials();
+        compareImplementations("isolatingIntervals()", take(LIMIT, ps), functions);
+    }
+
+    private static @NotNull List<Interval> powerOfTwoIsolatingIntervals_alt(@NotNull Polynomial p) {
+        return toList(map(p::powerOfTwoIsolatingInterval, range(0, p.rootCount() - 1)));
+    }
+
+    private void propertiesPowerOfTwoIsolatingIntervals() {
+        initialize("powerOfTwoIsolatingIntervals()");
+        for (Polynomial p : take(LIMIT, P.withScale(4).withSecondaryScale(4).squareFreePolynomials())) {
+            List<Interval> intervals = p.powerOfTwoIsolatingIntervals();
+            assertEquals(p, intervals.size(), p.rootCount());
+            for (Interval a : intervals) {
+                assertTrue(p, a.isFinitelyBounded());
+                assertTrue(p, a.getLower().get().isBinaryFraction());
+                assertTrue(p, a.getUpper().get().isBinaryFraction());
+                assertEquals(p, p.rootCount(a), 1);
+            }
+        }
+
+        for (Polynomial p : take(LIMIT, P.polynomials(0))) {
+            assertTrue(p, p.powerOfTwoIsolatingIntervals().isEmpty());
+        }
+    }
+
+    private void compareImplementationsPowerOfTwoIsolatingIntervals() {
+        Map<String, Function<Polynomial, List<Interval>>> functions = new LinkedHashMap<>();
+        functions.put("alt", PolynomialProperties::powerOfTwoIsolatingIntervals_alt);
+        functions.put("standard", Polynomial::powerOfTwoIsolatingIntervals);
+        Iterable<Polynomial> ps = P.withScale(4).withSecondaryScale(4).squareFreePolynomials();
+        compareImplementations("powerOfTwoIsolatingIntervals()", take(LIMIT, ps), functions);
     }
 
     private void propertiesReflect() {
