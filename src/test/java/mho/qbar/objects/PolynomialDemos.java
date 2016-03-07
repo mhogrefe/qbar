@@ -802,6 +802,12 @@ public class PolynomialDemos extends QBarDemos {
         }
     }
 
+    private void demoInvertRoots() {
+        for (Polynomial p : take(LIMIT, P.withScale(4).polynomials())) {
+            System.out.println("invertRoots(" + p + ") = " + p.invertRoots());
+        }
+    }
+
     private void demoEquals_Polynomial() {
         for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(P.withScale(4).polynomials()))) {
             System.out.println(p.a + (p.a.equals(p.b) ? " = " : " ≠ ") + p.b);

@@ -4051,6 +4051,21 @@ public class PolynomialTest {
         positivePrimitiveShiftRootsLeft_fail_helper("x", -1);
     }
 
+    private static void invertRoots_helper(@NotNull String input, @NotNull String output) {
+        aeq(read(input).get().invertRoots(), output);
+    }
+
+    @Test
+    public void testInvertRoots() {
+        invertRoots_helper("0", "0");
+        invertRoots_helper("1", "1");
+        invertRoots_helper("x", "1");
+        invertRoots_helper("-17", "17");
+        invertRoots_helper("x^2-4*x+7", "7*x^2-4*x+1");
+        invertRoots_helper("-x^3-1", "x^3+1");
+        invertRoots_helper("3*x^10", "3");
+    }
+
     @Test
     public void testEquals() {
         testEqualsHelper(

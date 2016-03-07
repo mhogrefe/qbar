@@ -2716,6 +2716,22 @@ public final class Polynomial implements
     }
 
     /**
+     * Returns a {@code Polynomial} whose roots are the inverses of the roots of {@code this}. If {@code this} has a
+     * positive leading coefficient, so does the result.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>The result is zero or has a positive leading coefficient.</li>
+     * </ul>
+     *
+     * @return |x<sup>deg({@code this})</sup>{@code this}(1/x)|
+     */
+    public @NotNull Polynomial invertRoots() {
+        if (degree() < 1) return abs();
+        return of(reverse(coefficients)).abs();
+    }
+
+    /**
      * Determines whether {@code this} is equal to {@code that}.
      *
      * <ul>

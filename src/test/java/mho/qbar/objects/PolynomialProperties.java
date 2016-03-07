@@ -172,6 +172,7 @@ public class PolynomialProperties extends QBarTestProperties {
         compareImplementationsPositivePrimitiveShiftRootsLeft();
         propertiesPositiveShiftRootsRight();
         compareImplementationsPositivePrimitiveShiftRootsRight();
+        propertiesInvertRoots();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -3883,7 +3884,7 @@ public class PolynomialProperties extends QBarTestProperties {
         }
 
         for (Polynomial p : take(LIMIT, P.withScale(4).irreduciblePolynomials())) {
-            assertTrue(p, p.isIrreducible());
+            assertTrue(p, p.reflect().isIrreducible());
         }
 
         for (List<Rational> rs : take(LIMIT, P.bags(P.rationals()))) {
@@ -4291,6 +4292,35 @@ public class PolynomialProperties extends QBarTestProperties {
         functions.put("standard", p -> p.a.positivePrimitiveShiftRootsRight(p.b));
         Iterable<Pair<Polynomial, Integer>> ps = P.pairs(P.polynomials(), P.naturalIntegersGeometric());
         compareImplementations("positivePrimitiveShiftRootsRight(int)", take(LIMIT, ps), functions);
+    }
+
+    private void propertiesInvertRoots() {
+        initialize("invertRoots()");
+        for (Polynomial p : take(LIMIT, P.polynomials())) {
+            Polynomial inverted = p.invertRoots();
+            inverted.validate();
+            assertTrue(p, p.degree() >= inverted.degree());
+            assertNotEquals(p, inverted.signum(), -1);
+        }
+
+        Iterable<Polynomial> ps = filterInfinite(
+                q -> q.signum() != -1 && !q.coefficient(0).equals(BigInteger.ZERO),
+                P.polynomials()
+        );
+        for (Polynomial p : take(LIMIT, ps)) {
+            involution(Polynomial::invertRoots, p);
+        }
+
+        for (Polynomial p : take(LIMIT, P.withScale(4).irreduciblePolynomials())) {
+            assertTrue(p, p.invertRoots().isIrreducible());
+        }
+
+        for (List<Rational> rs : take(LIMIT, P.bags(P.nonzeroRationals()))) {
+            Polynomial p = product(map(Polynomial::fromRoot, rs));
+            List<Rational> invertedRs = reverse(map(Rational::invert, rs));
+            Polynomial invertedRootsP = product(map(Polynomial::fromRoot, invertedRs));
+            assertEquals(rs, p.invertRoots(), invertedRootsP);
+        }
     }
 
     private void propertiesEquals() {
