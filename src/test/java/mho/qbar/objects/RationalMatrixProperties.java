@@ -79,9 +79,9 @@ public class RationalMatrixProperties extends QBarTestProperties {
         compareImplementationsDeterminant();
         propertiesCharacteristicPolynomial();
         compareImplementationsCharacteristicPolynomial();
-        propertiesEquals();
         propertiesKroneckerMultiply();
         propertiesKroneckerAdd();
+        propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
         propertiesRead();
