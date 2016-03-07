@@ -22,7 +22,7 @@ import static mho.wheels.testing.Testing.assertTrue;
  */
 public class MultivariatePolynomial implements
         Comparable<MultivariatePolynomial>,
-        Iterable<Pair<BigInteger, ExponentVector>> {
+        Iterable<Pair<ExponentVector, BigInteger>> {
     /**
      * 0
      */
@@ -32,13 +32,13 @@ public class MultivariatePolynomial implements
      * 1
      */
     public static final @NotNull MultivariatePolynomial ONE =
-            new MultivariatePolynomial(Collections.singletonList(new Pair<>(BigInteger.ONE, ExponentVector.ONE)));
+            new MultivariatePolynomial(Collections.singletonList(new Pair<>(ExponentVector.ONE, BigInteger.ONE)));
 
     /**
-     * This {@code MultivariatePolynomial}'s terms. The first element of each pair is the coefficient of the
-     * {@code ExponentVector} in the second slot. The terms are in grevlex order.
+     * This {@code MultivariatePolynomial}'s terms. The second element of each pair is the coefficient of the
+     * {@code ExponentVector} in the first slot. The terms are in grevlex order.
      */
-    private final @NotNull List<Pair<BigInteger, ExponentVector>> terms;
+    private final @NotNull List<Pair<ExponentVector, BigInteger>> terms;
 
     /**
      * Private constructor for {@code MultivariatePolynomial}; assumes argument is valid
@@ -51,7 +51,7 @@ public class MultivariatePolynomial implements
      *
      * @param terms the polynomial's terms
      */
-    private MultivariatePolynomial(@NotNull List<Pair<BigInteger, ExponentVector>> terms) {
+    private MultivariatePolynomial(@NotNull List<Pair<ExponentVector, BigInteger>> terms) {
         this.terms = terms;
     }
 
@@ -68,8 +68,24 @@ public class MultivariatePolynomial implements
      * @return an {@code Iterator} over this {@code MultivariatePolynomial}'s terms
      */
     @Override
-    public @NotNull Iterator<Pair<BigInteger, ExponentVector>> iterator() {
+    public @NotNull Iterator<Pair<ExponentVector, BigInteger>> iterator() {
         return new NoRemoveIterable<>(terms).iterator();
+    }
+
+    /**
+     * Returns the coefficient of a given {@code exponentVector}. If the coefficient is not present, 0 is returned.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code MultivariatePolynomial}.</li>
+     *  <li>{@code exponentVector} cannot be null.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param exponentVector the {@code ExponentVector} that the coefficient belongs to
+     * @return the coefficient of {@code exponentVector} in {@code this}
+     */
+    public @NotNull BigInteger coefficient(@NotNull ExponentVector exponentVector) {
+        return lookupSorted(terms, exponentVector).orElse(BigInteger.ZERO);
     }
 
     /**
@@ -127,11 +143,11 @@ public class MultivariatePolynomial implements
         int i = terms.size() - 1;
         int j = that.terms.size() - 1;
         while (i >= 0 && j >= 0) {
-            Pair<BigInteger, ExponentVector> thisTerm = terms.get(i);
-            Pair<BigInteger, ExponentVector> thatTerm = that.terms.get(i);
-            int evCompare = thisTerm.b.compareTo(thatTerm.b);
+            Pair<ExponentVector, BigInteger> thisTerm = terms.get(i);
+            Pair<ExponentVector, BigInteger> thatTerm = that.terms.get(i);
+            int evCompare = thisTerm.a.compareTo(thatTerm.a);
             if (evCompare != 0) return evCompare;
-            int iCompare = thisTerm.a.compareTo(thisTerm.a);
+            int iCompare = thisTerm.b.compareTo(thisTerm.b);
             if (iCompare != 0) return iCompare;
             i--;
             j--;
@@ -183,7 +199,7 @@ public class MultivariatePolynomial implements
             monomialStrings.add(monomialString);
         }
 
-        List<Pair<BigInteger, ExponentVector>> terms = new ArrayList<>();
+        List<Pair<ExponentVector, BigInteger>> terms = new ArrayList<>();
         for (int i = monomialStrings.size() - 1; i >= 0; i--) {
             monomialString = monomialStrings.get(i);
             if (monomialString.isEmpty()) return Optional.empty();
@@ -193,11 +209,11 @@ public class MultivariatePolynomial implements
                 if (!oConstant.isPresent()) return Optional.empty();
                 BigInteger constant = oConstant.get();
                 if (constant.equals(BigInteger.ZERO)) return Optional.empty();
-                terms.add(new Pair<>(constant, ExponentVector.ONE));
+                terms.add(new Pair<>(ExponentVector.ONE, constant));
             } else if (head >= 'a' && head <= 'z') {
                 Optional<ExponentVector> oExponentVector = ExponentVector.read(monomialString);
                 if (!oExponentVector.isPresent()) return Optional.empty();
-                terms.add(new Pair<>(BigInteger.ONE, oExponentVector.get()));
+                terms.add(new Pair<>(oExponentVector.get(), BigInteger.ONE));
             } else {
                 if (head == '-') {
                     if (monomialString.length() == 1) return Optional.empty();
@@ -205,7 +221,7 @@ public class MultivariatePolynomial implements
                     if (second >= 'a' && second <= 'z') {
                         Optional<ExponentVector> oExponentVector = ExponentVector.read(tail(monomialString));
                         if (!oExponentVector.isPresent()) return Optional.empty();
-                        terms.add(new Pair<>(IntegerUtils.NEGATIVE_ONE, oExponentVector.get()));
+                        terms.add(new Pair<>(oExponentVector.get(), IntegerUtils.NEGATIVE_ONE));
                         continue;
                     }
                 }
@@ -222,11 +238,11 @@ public class MultivariatePolynomial implements
                         ExponentVector.read(monomialString.substring(starIndex + 1));
                 if (!oExponentVector.isPresent()) return Optional.empty();
                 ExponentVector exponentVector = oExponentVector.get();
-                terms.add(new Pair<>(factor, exponentVector));
+                terms.add(new Pair<>(exponentVector, factor));
             }
         }
         //noinspection RedundantCast
-        if (!increasing((Iterable<ExponentVector>) map(t -> t.b, terms))) return Optional.empty();
+        if (!increasing((Iterable<ExponentVector>) map(t -> t.a, terms))) return Optional.empty();
         return Optional.of(new MultivariatePolynomial(terms));
     }
 
@@ -266,19 +282,19 @@ public class MultivariatePolynomial implements
         StringBuilder sb = new StringBuilder();
         boolean first = true;
         for (int i = terms.size() - 1; i >= 0; i--) {
-            Pair<BigInteger, ExponentVector> term = terms.get(i);
-            if (term.a.signum() == 1 && !first) {
+            Pair<ExponentVector, BigInteger> term = terms.get(i);
+            if (term.b.signum() == 1 && !first) {
                 sb.append('+');
             }
             if (first) {
                 first = false;
             }
-            if (term.a.equals(IntegerUtils.NEGATIVE_ONE)) {
+            if (term.b.equals(IntegerUtils.NEGATIVE_ONE)) {
                 sb.append('-');
-            } else if (!term.a.equals(BigInteger.ONE)) {
-                sb.append(term.a.toString()).append('*');
+            } else if (!term.b.equals(BigInteger.ONE)) {
+                sb.append(term.b.toString()).append('*');
             }
-            sb.append(term.b);
+            sb.append(term.a);
         }
         return sb.toString();
     }
@@ -288,9 +304,9 @@ public class MultivariatePolynomial implements
      * outside this class.
      */
     public void validate() {
-        assertTrue(this, all(t -> t != null && t.a != null && t.b != null && !t.a.equals(BigInteger.ZERO), terms));
+        assertTrue(this, all(t -> t != null && t.a != null && t.b != null && !t.b.equals(BigInteger.ZERO), terms));
         //noinspection RedundantCast
-        assertTrue(this, increasing((Iterable<ExponentVector>) map(t -> t.b, terms)));
+        assertTrue(this, increasing((Iterable<ExponentVector>) map(t -> t.a, terms)));
         if (equals(ZERO)) {
             assertTrue(this, this == ZERO);
         }
