@@ -2732,6 +2732,57 @@ public final class Polynomial implements
     }
 
     /**
+     * Returns a {@code Polynomial} whose roots are the sums of each pair of roots of {@code this} and {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>The result is primitive and has a positive leading coefficient.</li>
+     * </ul>
+     *
+     * @param that the {@code Polynomial} whose roots are being added to the roots of {@code this}
+     * @return a {@code Polynomial} whose roots are the sums of the roots of {@code this} and {@code that}
+     */
+    public @NotNull Polynomial addRoots(@NotNull Polynomial that) {
+        if (degree() < 1 || that.degree() < 1) return ONE;
+        if (isMonic() && that.isMonic()) {
+            return companionMatrix().kroneckerAdd(that.companionMatrix()).characteristicPolynomial();
+        } else {
+            RationalPolynomial rThis = toRationalPolynomial().makeMonic();
+            RationalPolynomial rThat = that.toRationalPolynomial().makeMonic();
+            RationalPolynomial cp = rThis.companionMatrix().kroneckerAdd(rThat.companionMatrix())
+                    .characteristicPolynomial();
+            return cp.constantFactor().b;
+        }
+    }
+
+    /**
+     * Returns a {@code Polynomial} whose roots are the products of each pair of roots of {@code this} and
+     * {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Polynomial}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>The result is primitive and has a positive leading coefficient.</li>
+     * </ul>
+     *
+     * @param that the {@code Polynomial} whose roots are being multiplied by the roots of {@code this}
+     * @return a {@code Polynomial} whose roots are the products of the roots of {@code this} and {@code that}
+     */
+    public @NotNull Polynomial multiplyRoots(@NotNull Polynomial that) {
+        if (degree() < 1 || that.degree() < 1) return ONE;
+        if (isMonic() && that.isMonic()) {
+            return companionMatrix().kroneckerMultiply(that.companionMatrix()).characteristicPolynomial();
+        } else {
+            RationalPolynomial rThis = toRationalPolynomial().makeMonic();
+            RationalPolynomial rThat = that.toRationalPolynomial().makeMonic();
+            RationalPolynomial cp = rThis.companionMatrix().kroneckerMultiply(rThat.companionMatrix())
+                    .characteristicPolynomial();
+            return cp.constantFactor().b;
+        }
+    }
+
+    /**
      * Determines whether {@code this} is equal to {@code that}.
      *
      * <ul>

@@ -808,6 +808,20 @@ public class PolynomialDemos extends QBarDemos {
         }
     }
 
+    private void demoAddRoots() {
+        Iterable<Pair<Polynomial, Polynomial>> ps = P.pairs(P.withScale(4).withSecondaryScale(0).polynomials());
+        for (Pair<Polynomial, Polynomial> p : take(LIMIT, ps)) {
+            System.out.println("addRoots(" + p.a + ", " + p.b + ") = " + p.a.addRoots(p.b));
+        }
+    }
+
+    private void demoMultiplyRoots() {
+        Iterable<Pair<Polynomial, Polynomial>> ps = P.pairs(P.withScale(4).withSecondaryScale(0).polynomials());
+        for (Pair<Polynomial, Polynomial> p : take(LIMIT, ps)) {
+            System.out.println("multiplyRoots(" + p.a + ", " + p.b + ") = " + p.a.multiplyRoots(p.b));
+        }
+    }
+
     private void demoEquals_Polynomial() {
         for (Pair<Polynomial, Polynomial> p : take(LIMIT, P.pairs(P.withScale(4).polynomials()))) {
             System.out.println(p.a + (p.a.equals(p.b) ? " = " : " ≠ ") + p.b);

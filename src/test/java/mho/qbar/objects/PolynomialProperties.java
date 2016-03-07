@@ -173,6 +173,8 @@ public class PolynomialProperties extends QBarTestProperties {
         propertiesPositiveShiftRootsRight();
         compareImplementationsPositivePrimitiveShiftRootsRight();
         propertiesInvertRoots();
+        propertiesAddRoots();
+        propertiesMultiplyRoots();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -3889,7 +3891,7 @@ public class PolynomialProperties extends QBarTestProperties {
 
         for (List<Rational> rs : take(LIMIT, P.bags(P.rationals()))) {
             Polynomial p = product(map(Polynomial::fromRoot, rs));
-            List<Rational> negativeRs = reverse(map(Rational::negate, rs));
+            List<Rational> negativeRs = toList(map(Rational::negate, rs));
             Polynomial negativeRootsP = product(map(Polynomial::fromRoot, negativeRs));
             assertEquals(rs, p.reflect(), negativeRootsP);
         }
@@ -4317,9 +4319,71 @@ public class PolynomialProperties extends QBarTestProperties {
 
         for (List<Rational> rs : take(LIMIT, P.bags(P.nonzeroRationals()))) {
             Polynomial p = product(map(Polynomial::fromRoot, rs));
-            List<Rational> invertedRs = reverse(map(Rational::invert, rs));
+            List<Rational> invertedRs = toList(map(Rational::invert, rs));
             Polynomial invertedRootsP = product(map(Polynomial::fromRoot, invertedRs));
             assertEquals(rs, p.invertRoots(), invertedRootsP);
+        }
+    }
+
+    private void propertiesAddRoots() {
+        initialize("addRoots(Polynomial)");
+        Iterable<Pair<Polynomial, Polynomial>> ps = P.pairs(P.withScale(4).withSecondaryScale(0).polynomials());
+        for (Pair<Polynomial, Polynomial> p : take(LIMIT, ps)) {
+            Polynomial q = p.a.addRoots(p.b);
+            q.validate();
+            assertTrue(p, q.isPrimitive());
+            assertNotEquals(p, q.signum(), -1);
+            commutative(Polynomial::addRoots, p);
+        }
+
+        ps = filterInfinite(
+                p -> MathUtils.gcd(p.a.degree(), p.b.degree()) == 1,
+                P.pairs(P.withScale(4).withSecondaryScale(2).irreduciblePolynomialsAtLeast(1))
+        );
+        for (Pair<Polynomial, Polynomial> p : take(LIMIT, ps)) {
+            assertTrue(p, p.a.addRoots(p.b).isIrreducible());
+        }
+
+        Iterable<Pair<List<Rational>, List<Rational>>> ps2 = P.pairs(P.withScale(1).bags(P.withScale(3).rationals()));
+        for (Pair<List<Rational>, List<Rational>> p : take(LIMIT, ps2)) {
+            Polynomial a = product(map(Polynomial::fromRoot, p.a));
+            Polynomial b = product(map(Polynomial::fromRoot, p.b));
+            List<Rational> sumRs = toList(map(q -> q.a.add(q.b), EP.pairsLex(p.a, p.b)));
+            Polynomial sumRootsP = product(map(Polynomial::fromRoot, sumRs));
+            assertEquals(p, a.addRoots(b), sumRootsP);
+        }
+    }
+
+    private void propertiesMultiplyRoots() {
+        initialize("multiplyRoots(Polynomial)");
+        Iterable<Pair<Polynomial, Polynomial>> ps = P.pairs(P.withScale(4).withSecondaryScale(0).polynomials());
+        for (Pair<Polynomial, Polynomial> p : take(LIMIT, ps)) {
+            Polynomial q = p.a.multiplyRoots(p.b);
+            q.validate();
+            assertTrue(p, q.isPrimitive());
+            assertNotEquals(p, q.signum(), -1);
+            commutative(Polynomial::multiplyRoots, p);
+        }
+
+        //todo is this true in general?
+        ps = filterInfinite(
+                p -> MathUtils.gcd(p.a.degree(), p.b.degree()) == 1,
+                P.pairs(filterInfinite(
+                        p -> !p.equals(X) && p.rootCount() > 0,
+                        P.withScale(4).withSecondaryScale(2).irreduciblePolynomialsAtLeast(1))
+                )
+        );
+        for (Pair<Polynomial, Polynomial> p : take(LIMIT, ps)) {
+            assertTrue(p, p.a.multiplyRoots(p.b).isIrreducible());
+        }
+
+        Iterable<Pair<List<Rational>, List<Rational>>> ps2 = P.pairs(P.withScale(1).bags(P.withScale(3).rationals()));
+        for (Pair<List<Rational>, List<Rational>> p : take(LIMIT, ps2)) {
+            Polynomial a = product(map(Polynomial::fromRoot, p.a));
+            Polynomial b = product(map(Polynomial::fromRoot, p.b));
+            List<Rational> productRs = toList(map(q -> q.a.multiply(q.b), EP.pairsLex(p.a, p.b)));
+            Polynomial productRootsP = product(map(Polynomial::fromRoot, productRs));
+            assertEquals(p, a.multiplyRoots(b), productRootsP);
         }
     }
 

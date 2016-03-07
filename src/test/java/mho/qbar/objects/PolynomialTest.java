@@ -4066,6 +4066,84 @@ public class PolynomialTest {
         invertRoots_helper("3*x^10", "3");
     }
 
+    private static void addRoots_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
+        aeq(read(a).get().addRoots(read(b).get()), output);
+    }
+
+    @Test
+    public void testAddRoots() {
+        addRoots_helper("0", "0", "1");
+        addRoots_helper("1", "0", "1");
+        addRoots_helper("x", "0", "1");
+        addRoots_helper("x^2-2", "0", "1");
+        addRoots_helper("x^2-3", "0", "1");
+        addRoots_helper("x^2-x-1", "0", "1");
+        addRoots_helper("x^5-x+1", "0", "1");
+
+        addRoots_helper("1", "x", "1");
+        addRoots_helper("x", "x", "x");
+        addRoots_helper("x^2-2", "x", "x^2-2");
+        addRoots_helper("x^2-3", "x", "x^2-3");
+        addRoots_helper("x^2-x-1", "x", "x^2-x-1");
+        addRoots_helper("x^5-x+1", "x", "x^5-x+1");
+
+        addRoots_helper("x^2-2", "x^2-2", "x^4-8*x^2");
+        addRoots_helper("x^2-3", "x^2-2", "x^4-10*x^2+1");
+        addRoots_helper("x^2-x-1", "x^2-2", "x^4-2*x^3-5*x^2+6*x-1");
+        addRoots_helper("x^5-x+1", "x^2-2", "x^10-10*x^8+38*x^6+2*x^5-100*x^4+40*x^3+121*x^2+38*x-17");
+
+        addRoots_helper("x^2-3", "x^2-3", "x^4-12*x^2");
+        addRoots_helper("x^2-x-1", "x^2-3", "x^4-2*x^3-7*x^2+8*x+1");
+        addRoots_helper("x^5-x+1", "x^2-3", "x^10-15*x^8+88*x^6+2*x^5-300*x^4+60*x^3+496*x^2+88*x-191");
+
+        addRoots_helper("x^2-x-1", "x^2-x-1", "x^4-4*x^3+x^2+6*x-4");
+        addRoots_helper("x^5-x+1", "x^2-x-1", "x^10-5*x^9+5*x^8+10*x^7-17*x^6-3*x^5-10*x^4+70*x^3-49*x^2+18*x-4");
+
+        addRoots_helper("x^5-x+1", "x^5-x+1",
+                "x^25-10*x^21+10*x^20-95*x^17+470*x^16-585*x^15-40*x^13+1280*x^12-4190*x^11+3830*x^10+400*x^9-" +
+                "1760*x^8+760*x^7+2280*x^6+449*x^5+640*x^3+640*x^2+240*x+32");
+    }
+
+    private static void multiplyRoots_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
+        aeq(read(a).get().multiplyRoots(read(b).get()), output);
+    }
+
+    @Test
+    public void testMultiplyRoots() {
+        multiplyRoots_helper("0", "0", "1");
+        multiplyRoots_helper("1", "0", "1");
+        multiplyRoots_helper("x", "0", "1");
+        multiplyRoots_helper("x^2-2", "0", "1");
+        multiplyRoots_helper("x^2-3", "0", "1");
+        multiplyRoots_helper("x^2-x-1", "0", "1");
+        multiplyRoots_helper("x^5-x+1", "0", "1");
+
+        multiplyRoots_helper("1", "x", "1");
+        multiplyRoots_helper("x", "x", "x");
+        multiplyRoots_helper("x^2-2", "x", "x^2");
+        multiplyRoots_helper("x^2-3", "x", "x^2");
+        multiplyRoots_helper("x^2-x-1", "x", "x^2");
+        multiplyRoots_helper("x^5-x+1", "x", "x^5");
+
+        multiplyRoots_helper("x^2-2", "x^2-2", "x^4-8*x^2+16");
+        multiplyRoots_helper("x^2-3", "x^2-2", "x^4-12*x^2+36");
+        multiplyRoots_helper("x^2-x-1", "x^2-2", "x^4-6*x^2+4");
+        multiplyRoots_helper("x^5-x+1", "x^2-2", "x^10-8*x^6+16*x^2-32");
+
+        multiplyRoots_helper("x^2-3", "x^2-3", "x^4-18*x^2+81");
+        multiplyRoots_helper("x^2-x-1", "x^2-3", "x^4-9*x^2+9");
+        multiplyRoots_helper("x^5-x+1", "x^2-3", "x^10-18*x^6+81*x^2-243");
+
+        multiplyRoots_helper("x^2-x-1", "x^2-x-1", "x^4-x^3-4*x^2-x+1");
+        multiplyRoots_helper("x^5-x+1", "x^2-x-1", "x^10-7*x^6+11*x^5+x^2-x-1");
+
+        multiplyRoots_helper("x^5-x+1", "x^5-x+1",
+                "x^25-4*x^21-5*x^20+6*x^17+11*x^16+10*x^15-4*x^13-7*x^12-9*x^11-10*x^10+x^9+x^8+x^7+x^6+3*x^5+x-1");
+
+        multiplyRoots_helper("x^2+x+1", "2*x^3+1", "4*x^6+4*x^3+1");
+        System.out.println(read("4*x^6+4*x^3+1").get().factor());
+    }
+
     @Test
     public void testEquals() {
         testEqualsHelper(
