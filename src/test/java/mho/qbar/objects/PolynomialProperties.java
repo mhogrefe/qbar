@@ -3434,7 +3434,9 @@ public class PolynomialProperties extends QBarTestProperties {
             if (p != ZERO) {
                 int i = t.c + 1;
                 int j = p.degree();
-                if (j == 0 || t.a.signedSubresultant(t.b, j - 1) == ZERO) {
+                Polynomial sResPJMinus1 = j == 0 ? ZERO : t.a.signedSubresultant(t.b, j - 1);
+                int k = sResPJMinus1.degree();
+                if (j == 0 || sResPJMinus1 == ZERO) {
                     assertEquals(
                             t,
                             p.constantFactor().b,
@@ -3444,8 +3446,6 @@ public class PolynomialProperties extends QBarTestProperties {
                         assertEquals(t, t.a.signedSubresultant(t.b, l), ZERO);
                     }
                 } else {
-                    Polynomial sResPJMinus1 = t.a.signedSubresultant(t.b, j - 1);
-                    int k = sResPJMinus1.degree();
                     Polynomial sResPKMinus1 = k == 0 ? ZERO : t.a.signedSubresultant(t.b, k - 1);
                     Polynomial sResPIMinus1 = t.a.signedSubresultant(t.b, i - 1);
                     Polynomial left = sResPKMinus1.multiply(
@@ -3461,6 +3461,20 @@ public class PolynomialProperties extends QBarTestProperties {
                             left == ZERO ? ZERO : left.contentAndPrimitive().b,
                             right == ZERO ? ZERO : right.contentAndPrimitive().b
                     );
+                }
+                if (j <= t.b.degree() && k < j - 1) {
+                    for (int l = k + 1; l < j - 1; l++) {
+                        assertTrue(t, t.a.signedSubresultant(t.b, l) == ZERO);
+                    }
+                    BigInteger sk = sResPJMinus1.leading().orElse(BigInteger.ONE).pow(j - k)
+                            .divide(t.a.signedSubresultantCoefficient(t.b, j).pow(j - k -1));
+                    if (!MathUtils.reversePermutationSign(j - k)) {
+                        sk = sk.negate();
+                    }
+                    Polynomial left = (k == -1 ? ZERO : t.a.signedSubresultant(t.b, k)).multiply(sResPJMinus1.leading()
+                            .orElse(BigInteger.ONE));
+                    Polynomial right = sResPJMinus1.multiply(sk);
+                    assertEquals(t, left, right);
                 }
             }
         }
