@@ -3443,6 +3443,24 @@ public strictfp abstract class QBarIterableProvider {
         );
     }
 
+    /**
+     * Generates {@code MultivariatePolynomials}.
+     */
+    public abstract @NotNull Iterable<MultivariatePolynomial> multivariatePolynomials();
+
+    /**
+     * Generates {@code MultivariatePolynomial}s containing only (a subset of) the given variables.
+     *
+     * <ul>
+     *  <li>{@code variables} must be in increasing order and cannot contain repetitions.</li>
+     * </ul>
+     *
+     * @param variables the allowed variables in the result
+     */
+    public abstract @NotNull Iterable<MultivariatePolynomial> multivariatePolynomials(
+            @NotNull List<Variable> variables
+    );
+
     public @NotNull Iterable<QBarRandomProvider> qbarRandomProvidersFixedScales(
             int scale,
             int secondaryScale,

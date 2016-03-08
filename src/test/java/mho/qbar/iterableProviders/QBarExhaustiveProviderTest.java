@@ -944,6 +944,45 @@ public class QBarExhaustiveProviderTest {
     }
 
     @Test
+    public void testMultivariatePolynomials() {
+        simpleProviderHelper(QEP.multivariatePolynomials(), "QBarExhaustiveProvider_multivariatePolynomials");
+    }
+
+    private static void multivariatePolynomials_List_Variable_helper(
+            @NotNull String variables,
+            @NotNull String output
+    ) {
+        simpleProviderHelper(QEP.multivariatePolynomials(readVariableList(variables)), output);
+    }
+
+    private static void multivariatePolynomials_List_Variable_fail_helper(@NotNull String variables) {
+        try {
+            QEP.multivariatePolynomials(readVariableListWithNulls(variables));
+            fail();
+        } catch (IllegalArgumentException | NullPointerException ignored) {}
+    }
+
+    @Test
+    public void testMultivariatePolynomials_List_Variable() {
+        multivariatePolynomials_List_Variable_helper("[]",
+                "QBarExhaustiveProvider_multivariatePolynomials_List_Variable_i");
+        multivariatePolynomials_List_Variable_helper("[a]",
+                "QBarExhaustiveProvider_multivariatePolynomials_List_Variable_ii");
+        multivariatePolynomials_List_Variable_helper("[x]",
+                "QBarExhaustiveProvider_multivariatePolynomials_List_Variable_iii");
+        multivariatePolynomials_List_Variable_helper("[ooo]",
+                "QBarExhaustiveProvider_multivariatePolynomials_List_Variable_iv");
+        multivariatePolynomials_List_Variable_helper("[x, y]",
+                "QBarExhaustiveProvider_multivariatePolynomials_List_Variable_v");
+        multivariatePolynomials_List_Variable_helper("[x, y, z]",
+                "QBarExhaustiveProvider_multivariatePolynomials_List_Variable_vi");
+
+        multivariatePolynomials_List_Variable_fail_helper("[a, a]");
+        multivariatePolynomials_List_Variable_fail_helper("[b, a]");
+        multivariatePolynomials_List_Variable_fail_helper("[a, null]");
+    }
+
+    @Test
     public void testEquals() {
         //noinspection EqualsWithItself
         assertTrue(QEP.equals(QEP));

@@ -1755,6 +1755,16 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
         );
     }
 
+    @Override
+    public @NotNull Iterable<MultivariatePolynomial> multivariatePolynomials() {
+        return null;
+    }
+
+    @Override
+    public @NotNull Iterable<MultivariatePolynomial> multivariatePolynomials(@NotNull List<Variable> variables) {
+        return null;
+    }
+
     /**
      * Determines whether {@code this} is equal to {@code that}.
      *

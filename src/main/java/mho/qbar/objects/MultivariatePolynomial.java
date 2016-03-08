@@ -101,7 +101,7 @@ public class MultivariatePolynomial implements
      * @return the {@code MultivariatePolynomial} with the specified terms
      */
     public static @NotNull MultivariatePolynomial of(@NotNull List<Pair<ExponentVector, BigInteger>> terms) {
-        SortedMap<ExponentVector, BigInteger> termMap = new TreeMap<>(Comparator.reverseOrder());
+        SortedMap<ExponentVector, BigInteger> termMap = new TreeMap<>();
         for (Pair<ExponentVector, BigInteger> term : terms) {
             BigInteger coefficient = termMap.get(term.a);
             if (coefficient == null) coefficient = BigInteger.ZERO;
@@ -114,7 +114,20 @@ public class MultivariatePolynomial implements
                 sortedTerms.add(new Pair<>(entry.getKey(), entry.getValue()));
             }
         }
+        if (sortedTerms.isEmpty()) return ZERO;
+        if (sortedTerms.size() == 1) {
+            Pair<ExponentVector, BigInteger> term = head(sortedTerms);
+            if (term.a == ExponentVector.ONE && term.b.equals(BigInteger.ONE)) {
+                return ONE;
+            }
+        }
         return new MultivariatePolynomial(sortedTerms);
+    }
+
+    public static @NotNull MultivariatePolynomial of(@NotNull BigInteger c) {
+        if (c.equals(BigInteger.ZERO)) return ZERO;
+        if (c.equals(BigInteger.ONE)) return ONE;
+        return new MultivariatePolynomial(Collections.singletonList(new Pair<>(ExponentVector.ONE, c)));
     }
 
     /**
@@ -318,12 +331,16 @@ public class MultivariatePolynomial implements
             if (first) {
                 first = false;
             }
-            if (term.b.equals(IntegerUtils.NEGATIVE_ONE)) {
-                sb.append('-');
-            } else if (!term.b.equals(BigInteger.ONE)) {
-                sb.append(term.b.toString()).append('*');
+            if (term.a == ExponentVector.ONE) {
+                sb.append(term.b);
+            } else {
+                if (term.b.equals(IntegerUtils.NEGATIVE_ONE)) {
+                    sb.append('-');
+                } else if (!term.b.equals(BigInteger.ONE)) {
+                    sb.append(term.b.toString()).append('*');
+                }
+                sb.append(term.a);
             }
-            sb.append(term.a);
         }
         return sb.toString();
     }

@@ -987,6 +987,59 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
     }
 
     /**
+     * An {@code Iterable} that generates all {@code MultivariatePolynomial}s.
+     *
+     * <ul>
+     *  <li>The result is a non-removable {@code Iterable} containing {@code MultivariatePolynomial}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
+    @Override
+    public @NotNull Iterable<MultivariatePolynomial> multivariatePolynomials() {
+        return cons(
+                MultivariatePolynomial.ZERO,
+                map(
+                        p -> MultivariatePolynomial.of(toList(zip(p.a, p.b))),
+                        dependentPairsInfinite(
+                                subsetsAtLeast(1, exponentVectors()),
+                                evs -> lists(evs.size(), nonzeroBigIntegers())
+                        )
+                )
+        );
+    }
+
+    /**
+     * An {@code Iterable} that generates all {@code MultivariatePolynomial}s containing only (a subset of) the given
+     * variables.
+     *
+     * <ul>
+     *  <li>{@code variables} must be in increasing order and cannot contain repetitions.</li>
+     *  <li>The result is a non-removable {@code Iterable} containing {@code MultivariatePolynomial}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     *
+     * @param variables the allowed variables in the result
+     */
+    @Override
+    public @NotNull Iterable<MultivariatePolynomial> multivariatePolynomials(@NotNull List<Variable> variables) {
+        if (variables.isEmpty()) {
+            return map(MultivariatePolynomial::of, bigIntegers());
+        }
+        return cons(
+                MultivariatePolynomial.ZERO,
+                map(
+                        p -> MultivariatePolynomial.of(toList(zip(p.a, p.b))),
+                        dependentPairsInfinite(
+                                subsetsAtLeast(1, exponentVectors(variables)),
+                                evs -> lists(evs.size(), nonzeroBigIntegers())
+                        )
+                )
+        );
+    }
+
+    /**
      * Determines whether {@code this} is equal to {@code that}. This implementation is the same as in
      * {@link java.lang.Object#equals}, but repeated here for clarity.
      *
