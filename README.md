@@ -12,6 +12,7 @@ Progress
 | QBarExhaustiveProvider   | ✘       | ✘       | ✘     | ✘     | ✘          |
 | QBarIterableProvider     | ✘       | ✘       | ✘     | ✘     | ✘          |
 | QBarRandomProvider       | ✘       | ✘       | ✘     | ✘     | ✘          |
+| Algebraic                | ✘       | ✘       | ✘     | ✘     | ✘          |
 | ExponentVector           | ✘       | ✘       | ✘     | ✘     | ✘          |
 | Interval                 | ✔       | ✔       | ✔     | ✔     | ✔          |
 | Matrix                   | ✘       | ✘       | ✘     | ✘     | ✘          |
@@ -26,6 +27,7 @@ Progress
 | RationalPolynomialMatrix | ✔       | ✔       | ✘     | ✘     | ✘          |
 | RationalPolynomialVector | ✔       | ✔       | ✔     | ✔     | ✔          |
 | RationalVector           | ✔       | ✔       | ✔     | ✔     | ✔          |
+| Real                     | ✘       | ✘       | ✘     | ✘     | ✘          |
 | Variable                 | ✔       | ✔       | ✔     | ✔     | ✔          |
 | Vector                   | ✔       | ✔       | ✔     | ✔     | ✔          |
 | QBarDemos                | ✘       | ✘       | ✘     | ✘     | ✘          |

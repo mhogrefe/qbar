@@ -2782,6 +2782,10 @@ public final class Polynomial implements
         }
     }
 
+    public @NotNull Real realRoot(int rootIndex) {
+        return new Real(this::signum, powerOfTwoIsolatingInterval(rootIndex));
+    }
+
     /**
      * Determines whether {@code this} is equal to {@code that}.
      *
