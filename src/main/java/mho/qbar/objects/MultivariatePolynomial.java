@@ -89,6 +89,35 @@ public class MultivariatePolynomial implements
     }
 
     /**
+     * Creates a {@code MultivariatePolynomial} from a list of terms. Throws an exception if any term is null. Makes a
+     * defensive copy of {@code terms}. Merges duplicates and throws out zero terms.
+     *
+     * <ul>
+     *  <li>{@code terms} cannot have any null elements.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @param terms the polynomial's terms
+     * @return the {@code MultivariatePolynomial} with the specified terms
+     */
+    public static @NotNull MultivariatePolynomial of(@NotNull List<Pair<ExponentVector, BigInteger>> terms) {
+        SortedMap<ExponentVector, BigInteger> termMap = new TreeMap<>(Comparator.reverseOrder());
+        for (Pair<ExponentVector, BigInteger> term : terms) {
+            BigInteger coefficient = termMap.get(term.a);
+            if (coefficient == null) coefficient = BigInteger.ZERO;
+            termMap.put(term.a, coefficient.add(term.b));
+        }
+        List<Pair<ExponentVector, BigInteger>> sortedTerms = new ArrayList<>();
+        //noinspection Convert2streamapi
+        for (Map.Entry<ExponentVector, BigInteger> entry : termMap.entrySet()) {
+            if (!entry.getValue().equals(BigInteger.ZERO)) {
+                sortedTerms.add(new Pair<>(entry.getKey(), entry.getValue()));
+            }
+        }
+        return new MultivariatePolynomial(sortedTerms);
+    }
+
+    /**
      * Determines whether {@code this} is equal to {@code that}.
      *
      * <ul>
