@@ -161,6 +161,182 @@ public class PolynomialMatrixDemos extends QBarDemos {
         }
     }
 
+    private void demoTrace() {
+        for (PolynomialMatrix m : take(LIMIT, P.withScale(4).squarePolynomialMatrices())) {
+            System.out.println("trace(" + m + ") = " + m.trace());
+        }
+    }
+
+    private void demoSubmatrix() {
+        Iterable<Triple<PolynomialMatrix, List<Integer>, List<Integer>>> ts = map(
+                p -> new Triple<>(p.a, p.b.a, p.b.b),
+                P.dependentPairs(
+                        P.withScale(4).polynomialMatrices(),
+                        m -> {
+                            List<Integer> allRows = toList(EP.range(0, m.height() - 1));
+                            List<Integer> allColumns = toList(EP.range(0, m.width() - 1));
+                            return P.pairs(
+                                    map(bs -> toList(select(bs, allRows)), P.lists(m.height(), P.booleans())),
+                                    map(bs -> toList(select(bs, allColumns)), P.lists(m.width(), P.booleans()))
+                            );
+                        }
+                )
+        );
+        for (Triple<PolynomialMatrix, List<Integer>, List<Integer>> t : take(LIMIT, ts)) {
+            System.out.println("submatrix(" + t.a + ", " + t.b + ", " + t.c + ") = " + t.a.submatrix(t.b, t.c));
+        }
+    }
+
+    private void demoTranspose() {
+        for (PolynomialMatrix m : take(LIMIT, P.withScale(4).polynomialMatrices())) {
+            System.out.println("transpose(" + m + ") = " + m.transpose());
+        }
+    }
+
+    private void demoConcat() {
+        Iterable<Pair<PolynomialMatrix, PolynomialMatrix>> ps = P.chooseLogarithmicOrder(
+                map(
+                        q -> q.b,
+                        P.dependentPairsInfiniteSquareRootOrder(
+                                filterInfinite(
+                                        t -> t.a != 0 || t.b != 0,
+                                        P.triples(
+                                                P.withScale(4).naturalIntegersGeometric(),
+                                                P.withScale(4).naturalIntegersGeometric(),
+                                                P.withScale(4).positiveIntegersGeometric()
+                                        )
+                                ),
+                                t -> P.pairs(
+                                        P.withScale(4).withSecondaryScale(4).polynomialMatrices(t.a, t.c),
+                                        P.withScale(4).withSecondaryScale(4).polynomialMatrices(t.b, t.c)
+                                )
+                        )
+                ),
+                P.choose(
+                        map(
+                                p -> new Pair<>(zero(p.a, 0), zero(p.b, 0)),
+                                P.pairs(P.withScale(4).naturalIntegersGeometric())
+                        ),
+                        map(
+                                i -> {
+                                    PolynomialMatrix m = zero(0, i);
+                                    return new Pair<>(m, m);
+                                },
+                                P.withScale(4).positiveIntegersGeometric()
+                        )
+                )
+        );
+        for (Pair<PolynomialMatrix, PolynomialMatrix> p : take(SMALL_LIMIT, ps)) {
+            System.out.println("concat(" + p.a + ", " + p.b + ") = " + p.a.concat(p.b));
+        }
+    }
+
+    private void demoAugment() {
+        Iterable<Pair<PolynomialMatrix, PolynomialMatrix>> ps = P.chooseLogarithmicOrder(
+                map(
+                        q -> q.b,
+                        P.dependentPairsInfiniteSquareRootOrder(
+                                filterInfinite(
+                                        t -> t.b != 0 || t.c != 0,
+                                        P.triples(
+                                                P.withScale(4).positiveIntegersGeometric(),
+                                                P.withScale(4).naturalIntegersGeometric(),
+                                                P.withScale(4).naturalIntegersGeometric()
+                                        )
+                                ),
+                                t -> P.pairs(
+                                        P.withScale(4).withSecondaryScale(4).polynomialMatrices(t.a, t.b),
+                                        P.withScale(4).withSecondaryScale(4).polynomialMatrices(t.a, t.c)
+                                )
+                        )
+                ),
+                P.choose(
+                        map(
+                                p -> new Pair<>(zero(0, p.a), zero(0, p.b)),
+                                P.pairs(P.withScale(4).naturalIntegersGeometric())
+                        ),
+                        map(
+                                i -> {
+                                    PolynomialMatrix m = zero(i, 0);
+                                    return new Pair<>(m, m);
+                                },
+                                P.withScale(4).positiveIntegersGeometric()
+                        )
+                )
+        );
+        for (Pair<PolynomialMatrix, PolynomialMatrix> p : take(SMALL_LIMIT, ps)) {
+            System.out.println(p.a + " | " + p.b + " = " + p.a.augment(p.b));
+        }
+    }
+
+    private void demoAdd() {
+        Iterable<Pair<PolynomialMatrix, PolynomialMatrix>> ps = P.chooseLogarithmicOrder(
+                map(
+                        q -> q.b,
+                        P.dependentPairsInfiniteSquareRootOrder(
+                                P.pairs(P.withScale(4).positiveIntegersGeometric()),
+                                p -> P.pairs(P.withScale(4).withSecondaryScale(4).polynomialMatrices(p.a, p.b))
+                        )
+                ),
+                P.choose(
+                        map(
+                                i -> {
+                                    PolynomialMatrix m = PolynomialMatrix.zero(0, i);
+                                    return new Pair<>(m, m);
+                                },
+                                P.withScale(4).naturalIntegersGeometric()
+                        ),
+                        map(
+                                i -> {
+                                    PolynomialMatrix m = PolynomialMatrix.zero(i, 0);
+                                    return new Pair<>(m, m);
+                                },
+                                P.withScale(4).positiveIntegersGeometric()
+                        )
+                )
+        );
+        for (Pair<PolynomialMatrix, PolynomialMatrix> m : take(SMALL_LIMIT, ps)) {
+            System.out.println(m.a + " + " + m.b + " = " + m.a.add(m.b));
+        }
+    }
+
+    private void demoNegate() {
+        for (PolynomialMatrix m : take(LIMIT, P.withScale(4).polynomialMatrices())) {
+            System.out.println("-" + m + " = " + m.negate());
+        }
+    }
+
+    private void demoSubtract() {
+        Iterable<Pair<PolynomialMatrix, PolynomialMatrix>> ps = P.chooseLogarithmicOrder(
+                map(
+                        q -> q.b,
+                        P.dependentPairsInfiniteSquareRootOrder(
+                                P.pairs(P.withScale(4).positiveIntegersGeometric()),
+                                p -> P.pairs(P.withScale(4).withSecondaryScale(4).polynomialMatrices(p.a, p.b))
+                        )
+                ),
+                P.choose(
+                        map(
+                                i -> {
+                                    PolynomialMatrix m = PolynomialMatrix.zero(0, i);
+                                    return new Pair<>(m, m);
+                                },
+                                P.withScale(4).naturalIntegersGeometric()
+                        ),
+                        map(
+                                i -> {
+                                    PolynomialMatrix m = PolynomialMatrix.zero(i, 0);
+                                    return new Pair<>(m, m);
+                                },
+                                P.withScale(4).positiveIntegersGeometric()
+                        )
+                )
+        );
+        for (Pair<PolynomialMatrix, PolynomialMatrix> m : take(SMALL_LIMIT, ps)) {
+            System.out.println(m.a + " - " + m.b + " = " + m.a.subtract(m.b));
+        }
+    }
+
     private void demoEquals_PolynomialMatrix() {
         for (Pair<PolynomialMatrix, PolynomialMatrix> p : take(LIMIT, P.pairs(P.withScale(4).polynomialMatrices()))) {
             System.out.println(p.a + (p.a.equals(p.b) ? " = " : " ≠ ") + p.b);
