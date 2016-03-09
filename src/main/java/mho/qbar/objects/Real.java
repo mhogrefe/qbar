@@ -1,6 +1,7 @@
 package mho.qbar.objects;
 
 import mho.wheels.numberUtils.IntegerUtils;
+import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 import mho.wheels.testing.Testing;
 import org.jetbrains.annotations.NotNull;
@@ -17,7 +18,7 @@ import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.ordering.Ordering.le;
 import static mho.wheels.ordering.Ordering.lt;
 
-public class Real implements Iterable<Interval> {
+public class Real implements Iterable<Interval>, Comparable<Real> {
     public static final Real ZERO = of(Rational.ZERO);
 
     public static final Real ONE = of(Rational.ONE);
@@ -247,5 +248,28 @@ public class Real implements Iterable<Interval> {
 
     public @NotNull String toString() {
         return toStringBase(BigInteger.TEN, Testing.TINY_LIMIT);
+    }
+
+    @Override
+    public int compareTo(@NotNull Real that) {
+        if (this == that) return 0;
+        Iterator<Interval> thisIntervals = intervals.iterator();
+        Iterator<Interval> thatIntervals = that.intervals.iterator();
+        while (true) {
+            Optional<Ordering> o = thisIntervals.next().elementCompare(thatIntervals.next());
+            if (o.isPresent()) return o.get().toInt();
+        }
+    }
+
+    public int compareTo(@NotNull Rational that) {
+        for (Interval interval : intervals) {
+            if (!interval.contains(that)) {
+                Rational sample = interval.getLower().isPresent() ?
+                        interval.getLower().get() :
+                        interval.getUpper().get();
+                return sample.compareTo(that);
+            }
+        }
+        throw new IllegalStateException("unreachable");
     }
 }

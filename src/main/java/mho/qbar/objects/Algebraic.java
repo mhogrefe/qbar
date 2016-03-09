@@ -1,7 +1,5 @@
 package mho.qbar.objects;
 
-import mho.wheels.iterables.IterableUtils;
-import mho.wheels.iterables.RandomProvider;
 import mho.wheels.math.MathUtils;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
@@ -19,7 +17,7 @@ import static mho.wheels.testing.Testing.*;
  *
  * <p>This class is immutable.</p>
  */
-public class Algebraic {
+public class Algebraic implements Comparable<Algebraic> {
     /**
      * 0
      */
@@ -167,6 +165,20 @@ public class Algebraic {
             return 31 + rational.get().hashCode();
         } else {
             return 31 * rootIndex + minimalPolynomial.hashCode();
+        }
+    }
+
+    @Override
+    public int compareTo(@NotNull Algebraic that) {
+        if (this == that) return 0;
+        if (rational.isPresent() && that.rational.isPresent()) {
+            return rational.get().compareTo(that.rational.get());
+        } else if (rational.isPresent()) {
+            return -that.realValue().compareTo(rational.get());
+        } else if (that.rational.isPresent()) {
+            return realValue().compareTo(that.rational.get());
+        } else {
+            return realValue().compareTo(that.realValue());
         }
     }
 
