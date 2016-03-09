@@ -130,6 +130,14 @@ public class MultivariatePolynomial implements
         return new MultivariatePolynomial(Collections.singletonList(new Pair<>(ExponentVector.ONE, c)));
     }
 
+    public @NotNull List<Variable> variables() {
+        SortedSet<Variable> variables = new TreeSet<>();
+        for (Pair<ExponentVector, BigInteger> term : terms) {
+            variables.addAll(term.a.variables());
+        }
+        return toList(variables);
+    }
+
     /**
      * Determines whether {@code this} is equal to {@code that}.
      *

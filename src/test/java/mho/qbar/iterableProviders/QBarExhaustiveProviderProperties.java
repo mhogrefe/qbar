@@ -35,10 +35,12 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
         propertiesRationalPolynomialVectors();
         propertiesMatrices();
         propertiesSquareMatrices();
+        propertiesInvertibleMatrices();
         propertiesRationalMatrices();
         propertiesSquareRationalMatrices();
         propertiesPolynomialMatrices();
         propertiesSquarePolynomialMatrices();
+        propertiesInvertibleRationalMatrices();
         propertiesRationalPolynomialMatrices();
         propertiesSquareRationalPolynomialMatrices();
         propertiesPolynomials();
@@ -52,6 +54,7 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
         propertiesVariables();
         propertiesMonomialOrders();
         propertiesExponentVectors();
+        propertiesMultivariatePolynomials();
     }
 
     @Override
@@ -92,6 +95,7 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
         propertiesMonicRationalPolynomials_int();
         propertiesMonicRationalPolynomialsAtLeast();
         propertiesExponentVectors_List_Variable();
+        propertiesMultivariatePolynomials_List_Variable();
     }
 
     private static <T> void test_helper(
@@ -448,6 +452,12 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
         take(TINY_LIMIT, QEP.squareMatrices()).forEach(Matrix::validate);
     }
 
+    private void propertiesInvertibleMatrices() {
+        initializeConstant("invertibleMatrices()");
+        biggerTest(QEP, QEP.invertibleMatrices(), Matrix::isInvertible);
+        take(TINY_LIMIT, QEP.invertibleMatrices()).forEach(Matrix::validate);
+    }
+
     private void propertiesRationalMatrices_int_int() {
         initialize("rationalMatrices(int, int)");
         for (Pair<Integer, Integer> p : take(SMALL_LIMIT, P.pairs(P.naturalIntegersGeometric()))) {
@@ -481,6 +491,12 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
         initializeConstant("squareRationalMatrices()");
         biggerTest(QEP, QEP.squareRationalMatrices(), RationalMatrix::isSquare);
         take(TINY_LIMIT, QEP.squareRationalMatrices()).forEach(RationalMatrix::validate);
+    }
+
+    private void propertiesInvertibleRationalMatrices() {
+        initializeConstant("invertibleRationalMatrices()");
+        biggerTest(QEP, QEP.invertibleRationalMatrices(), RationalMatrix::isInvertible);
+        take(TINY_LIMIT, QEP.invertibleRationalMatrices()).forEach(RationalMatrix::validate);
     }
 
     private void propertiesPolynomialMatrices_int_int() {
@@ -900,6 +916,39 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
         for (List<Variable> vs : take(LIMIT, vsFail)) {
             try {
                 QEP.exponentVectors(vs);
+                fail(vs);
+            } catch (NullPointerException ignored) {}
+        }
+    }
+
+    private void propertiesMultivariatePolynomials() {
+        initializeConstant("multivariatePolynomials()");
+        biggerTest(QEP, QEP.multivariatePolynomials(), p -> true);
+        take(TINY_LIMIT, QEP.multivariatePolynomials()).forEach(MultivariatePolynomial::validate);
+    }
+
+    private void propertiesMultivariatePolynomials_List_Variable() {
+        initialize("multivariatePolynomials(List<Variable>)");
+        for (List<Variable> vs : take(LIMIT, P.subsets(P.variables()))) {
+            Iterable<MultivariatePolynomial> ps = QEP.multivariatePolynomials(vs);
+            simpleTest(vs, ps, p -> isSubsetOf(p.variables(), vs));
+            take(TINY_LIMIT, ps).forEach(MultivariatePolynomial::validate);
+        }
+
+        for (List<Variable> vs : take(LIMIT, filterInfinite(us -> !increasing(us), P.lists(P.variables())))) {
+            try {
+                QEP.multivariatePolynomials(vs);
+                fail(vs);
+            } catch (IllegalArgumentException ignored) {}
+        }
+
+        Iterable<List<Variable>> vsFail = filterInfinite(
+                us -> increasing(filter(u -> u != null, us)),
+                P.listsWithElement(null, P.variables())
+        );
+        for (List<Variable> vs : take(LIMIT, vsFail)) {
+            try {
+                QEP.multivariatePolynomials(vs);
                 fail(vs);
             } catch (NullPointerException ignored) {}
         }

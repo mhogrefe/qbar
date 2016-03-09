@@ -401,6 +401,11 @@ public class QBarExhaustiveProviderTest {
         simpleProviderHelper(QEP.squareMatrices(), "QBarExhaustiveProvider_squareMatrices");
     }
 
+    @Test
+    public void testInvertibleMatrices() {
+        simpleProviderHelper(QEP.invertibleMatrices(), "QBarExhaustiveProvider_invertibleMatrices");
+    }
+
     private static void rationalMatrices_int_int_helper(int height, int width, @NotNull String output) {
         simpleProviderHelper(QEP.rationalMatrices(height, width), output);
     }
@@ -435,6 +440,11 @@ public class QBarExhaustiveProviderTest {
     @Test
     public void testSquareRationalMatrices() {
         simpleProviderHelper(QEP.squareRationalMatrices(), "QBarExhaustiveProvider_squareRationalMatrices");
+    }
+
+    @Test
+    public void testInvertibleRationalMatrices() {
+        simpleProviderHelper(QEP.invertibleRationalMatrices(), "QBarExhaustiveProvider_invertibleRationalMatrices");
     }
 
     private static void polynomialMatrices_int_int_helper(int height, int width, @NotNull String output) {

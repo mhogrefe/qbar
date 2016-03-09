@@ -3142,6 +3142,13 @@ public strictfp abstract class QBarIterableProvider {
     public abstract @NotNull Iterable<Matrix> squareMatrices();
 
     /**
+     * Generates invertible {@code Matrix}es.
+     */
+    public @NotNull Iterable<Matrix> invertibleMatrices() {
+        return filter(Matrix::isInvertible, squareMatrices());
+    }
+
+    /**
      * Generates {@code RationalMatrix}es with a given {@code height} and {@code width}.
      *
      * @param height the height (number of rows) of the generated {@code RationalMatrix}es
@@ -3158,6 +3165,13 @@ public strictfp abstract class QBarIterableProvider {
      * Generates square {@code RationalMatrix}es.
      */
     public abstract @NotNull Iterable<RationalMatrix> squareRationalMatrices();
+
+    /**
+     * Generates invertible {@code RationalMatrix}es.
+     */
+    public @NotNull Iterable<RationalMatrix> invertibleRationalMatrices() {
+        return filter(RationalMatrix::isInvertible, squareRationalMatrices());
+    }
 
     /**
      * Generates {@code PolynomialMatrix}es with a given {@code height} and {@code width}.
