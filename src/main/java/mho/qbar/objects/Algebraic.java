@@ -53,37 +53,34 @@ public class Algebraic {
     /**
      * φ, the golden ratio
      */
-    public static final @NotNull Algebraic PHI = new Algebraic(Polynomial.read("x^2-x-1").get(), 1);
+    public static final @NotNull Algebraic PHI = of(Polynomial.read("x^2-x-1").get(), 1);
 
     private final int rootIndex;
     private final @NotNull Polynomial minimalPolynomial;
     private final @NotNull Optional<Rational> rational;
-    private @NotNull Optional<Interval> isolatingInterval;
 
-    private Algebraic(@NotNull Polynomial minimalPolynomial, int rootIndex) {
+    private final @NotNull  Interval isolatingInterval;
+    private final int mpRootCount;
+
+    private Algebraic(
+            @NotNull Polynomial minimalPolynomial,
+            int rootIndex,
+            @NotNull Interval isolatingInterval,
+            int mpRootCount
+    ) {
         this.rootIndex = rootIndex;
         this.minimalPolynomial = minimalPolynomial;
         rational = Optional.empty();
+        this.isolatingInterval = isolatingInterval;
+        this.mpRootCount = mpRootCount;
     }
 
     private Algebraic(@NotNull Rational rational) {
         rootIndex = 0;
         minimalPolynomial = Polynomial.fromRoot(rational);
         this.rational = Optional.of(rational);
-    }
-
-    public @NotNull Interval isolatingInterval() {
-        if (isolatingInterval.isPresent()) {
-            return isolatingInterval.get();
-        } else {
-            Interval interval = minimalPolynomial.isolatingInterval(rootIndex);
-            isolatingInterval = Optional.of(interval);
-            return interval;
-        }
-    }
-
-    private void setIsolatingInterval(@NotNull Interval isolatingInterval) {
-        this.isolatingInterval = Optional.of(isolatingInterval);
+        isolatingInterval = Interval.of(rational);
+        mpRootCount = 1;
     }
 
     public static @NotNull Algebraic of(@NotNull Polynomial polynomial, int rootIndex) {
@@ -103,22 +100,26 @@ public class Algebraic {
         if (polynomial == Polynomial.ONE) {
             throw new IllegalArgumentException();
         }
-        if (rootIndex >= polynomial.rootCount()) {
+        int rootCount = polynomial.rootCount();
+        if (rootIndex >= rootCount) {
             throw new IllegalArgumentException();
         }
         List<Polynomial> factors = polynomial.factor();
         if (factors.size() == 1) {
-            return new Algebraic(polynomial, rootIndex);
+            return new Algebraic(polynomial, rootIndex, polynomial.powerOfTwoIsolatingInterval(rootIndex), rootCount);
         }
         List<Pair<Polynomial, Integer>> polyRootPairs = new ArrayList<>();
         List<Real> realRoots = new ArrayList<>();
         List<Interval> isolatingIntervals = new ArrayList<>();
+        List<Integer> rootCounts = new ArrayList<>();
         for (Polynomial factor : factors) {
             List<Interval> factorIsolatingIntervals = factor.powerOfTwoIsolatingIntervals();
-            for (int i = 0; i < factor.rootCount(); i++) {
+            int factorRootCount = factor.rootCount();
+            for (int i = 0; i < factorRootCount; i++) {
                 polyRootPairs.add(new Pair<>(factor, i));
                 realRoots.add(Real.root(factor::signum, factorIsolatingIntervals.get(i)));
                 isolatingIntervals.add(factorIsolatingIntervals.get(i));
+                rootCounts.add(factorRootCount);
             }
         }
         Interval isolatingInterval = polynomial.isolatingInterval(rootIndex);
@@ -132,9 +133,7 @@ public class Algebraic {
             }
             return new Algebraic(Rational.of(polynomial.coefficient(0).negate(), polynomial.coefficient(1)));
         }
-        Algebraic x = new Algebraic(pair.a, pair.b);
-        x.setIsolatingInterval(isolatingIntervals.get(matchIndex));
-        return x;
+        return new Algebraic(pair.a, pair.b, isolatingIntervals.get(matchIndex), rootCounts.get(matchIndex));
     }
 
     public @NotNull Algebraic of(@NotNull Rational rational) {
@@ -145,7 +144,7 @@ public class Algebraic {
         if (rational.isPresent()) {
             return Real.of(rational.get());
         } else {
-            return Real.root(minimalPolynomial::signum, isolatingInterval());
+            return Real.root(minimalPolynomial::signum, isolatingInterval);
         }
     }
 
@@ -226,11 +225,15 @@ public class Algebraic {
         if (rational.isPresent()) {
             assertEquals(this, rootIndex, 0);
             assertEquals(this, minimalPolynomial, Polynomial.fromRoot(rational.get()));
+            assertEquals(this, isolatingInterval, Interval.of(rational.get()));
+            assertEquals(this, mpRootCount, 0);
         } else {
             assertTrue(this, minimalPolynomial.degree() > 1);
             assertTrue(this, minimalPolynomial.isIrreducible());
             assertTrue(this, rootIndex >= 0);
             assertTrue(this, rootIndex < minimalPolynomial.rootCount());
+            assertEquals(this, isolatingInterval, minimalPolynomial.powerOfTwoIsolatingInterval(rootIndex));
+            assertEquals(this, mpRootCount, minimalPolynomial.rootCount());
         }
         if (equals(ZERO)) {
             assertTrue(this, this == ZERO);
