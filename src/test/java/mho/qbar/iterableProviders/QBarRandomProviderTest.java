@@ -1955,6 +1955,52 @@ public class QBarRandomProviderTest {
         squareMatrices_fail_helper(2, -1);
     }
 
+    private static void invertibleMatrices_helper(
+            int scale,
+            int secondaryScale,
+            @NotNull String output,
+            double meanElementCount,
+            double meanCoordinateBitSize
+    ) {
+        matrices_helper(
+                P.withScale(scale).withSecondaryScale(secondaryScale).invertibleMatrices(),
+                output,
+                meanElementCount,
+                meanCoordinateBitSize
+        );
+    }
+
+    private static void invertibleMatrices_fail_helper(int scale, int secondaryScale) {
+        try {
+            P.withScale(scale).withSecondaryScale(secondaryScale).invertibleMatrices();
+            fail();
+        } catch (IllegalStateException ignored) {}
+        finally {
+            P.reset();
+        }
+    }
+
+    @Test
+    public void testInvertibleMatrices() {
+        invertibleMatrices_helper(
+                2,
+                2,
+                "QBarRandomProvider_invertibleMatrices_i",
+                2.9828460000023997,
+                1.9746480374547664
+        );
+        invertibleMatrices_helper(
+                5,
+                3,
+                "QBarRandomProvider_invertibleMatrices_ii",
+                5.099691000015061,
+                4.999944310336789
+        );
+        invertibleMatrices_fail_helper(1, 2);
+        invertibleMatrices_fail_helper(2, 1);
+        invertibleMatrices_fail_helper(2, -1);
+    }
+
     private static void rationalMatrices_helper(
             @NotNull Iterable<RationalMatrix> input,
             @NotNull String output,
@@ -2174,6 +2220,52 @@ public class QBarRandomProviderTest {
                 "QBarRandomProvider_squareRationalMatrices_iii",
                 13.395589999994662,
                 9.83388861560576
+        );
+        squareRationalMatrices_fail_helper(2, 2);
+        squareRationalMatrices_fail_helper(3, 1);
+        squareRationalMatrices_fail_helper(3, -1);
+    }
+
+    private static void invertibleRationalMatrices_helper(
+            int scale,
+            int secondaryScale,
+            @NotNull String output,
+            double meanElementCount,
+            double meanCoordinateBitSize
+    ) {
+        rationalMatrices_helper(
+                P.withScale(scale).withSecondaryScale(secondaryScale).invertibleRationalMatrices(),
+                output,
+                meanElementCount,
+                meanCoordinateBitSize
+        );
+    }
+
+    private static void invertibleRationalMatrices_fail_helper(int scale, int secondaryScale) {
+        try {
+            P.withScale(scale).withSecondaryScale(secondaryScale).invertibleRationalMatrices();
+            fail();
+        } catch (IllegalStateException ignored) {}
+        finally {
+            P.reset();
+        }
+    }
+
+    @Test
+    public void testInvertibleRationalMatrices() {
+        squareRationalMatrices_helper(
+                3,
+                2,
+                "QBarRandomProvider_invertibleRationalMatrices_i",
+                4.039990000000922,
+                2.778798957428391
+        );
+        squareRationalMatrices_helper(
+                5,
+                3,
+                "QBarRandomProvider_invertibleRationalMatrices_ii",
+                4.8123099999997105,
+                4.8100080834360694
         );
         squareRationalMatrices_fail_helper(2, 2);
         squareRationalMatrices_fail_helper(3, 1);
