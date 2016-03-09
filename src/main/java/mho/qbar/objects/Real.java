@@ -1,5 +1,7 @@
 package mho.qbar.objects;
 
+import mho.wheels.numberUtils.IntegerUtils;
+import mho.wheels.structures.Pair;
 import mho.wheels.testing.Testing;
 import org.jetbrains.annotations.NotNull;
 
@@ -7,18 +9,38 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
+import static mho.wheels.iterables.IterableUtils.*;
+import static mho.wheels.ordering.Ordering.le;
+import static mho.wheels.ordering.Ordering.lt;
+
 public class Real implements Iterable<Interval> {
+    public static final Real ZERO = of(Rational.ZERO);
+
+    public static final Real ONE = of(Rational.ONE);
+
     private final @NotNull Iterable<Interval> intervals;
 
     public Real(@NotNull Iterable<Interval> intervals) {
         this.intervals = intervals;
     }
 
-    public Real(@NotNull Function<Rational, Integer> signTest, @NotNull Interval boundingInterval) {
-        intervals = () -> new Iterator<Interval>() {
+    public static @NotNull Real of(@NotNull Rational r) {
+        return new Real(repeat(Interval.of(r)));
+    }
+
+    public static @NotNull Real of(@NotNull BigInteger i) {
+        return new Real(repeat(Interval.of(Rational.of(i))));
+    }
+
+    public static @NotNull Real root(
+            @NotNull Function<Rational, Integer> signTest,
+            @NotNull Interval boundingInterval
+    ) {
+        return new Real(() -> new Iterator<Interval>() {
             private boolean first = true;
             private @NotNull Interval interval = boundingInterval;
             private @NotNull Rational lower = interval.getLower().get();
@@ -64,7 +86,11 @@ public class Real implements Iterable<Interval> {
                 interval = Interval.of(lower, upper);
                 return interval;
             }
-        };
+        });
+    }
+
+    public static @NotNull Real root(@NotNull Polynomial p, int rootIndex) {
+        return Real.root(p::signum, p.powerOfTwoIsolatingInterval(rootIndex));
     }
 
     @Override
@@ -72,17 +98,128 @@ public class Real implements Iterable<Interval> {
         return intervals.iterator();
     }
 
-    public float floatValue(@NotNull RoundingMode roundingMode) {
+    public int match(@NotNull List<Real> targets) {
+        Iterator<Interval> iterator = intervals.iterator();
+        List<Iterator<Interval>> targetIterators = toList(map(Iterable::iterator, targets));
+        outer:
+        while (true) {
+            Interval interval = iterator.next();
+            List<Interval> targetIntervals = toList(map(Iterator::next, targetIterators));
+            int matchIndex = -1;
+            for (int i = 0; i < targetIntervals.size(); i++) {
+                Interval targetInterval = targetIntervals.get(i);
+                if (!interval.disjoint(targetInterval)) {
+                    if (matchIndex != -1) {
+                        continue outer;
+                    }
+                    matchIndex = i;
+                }
+            }
+            if (matchIndex == -1) {
+                throw new IllegalArgumentException();
+            }
+            return matchIndex;
+        }
+    }
+
+    private <T> T limitValue(@NotNull Function<Rational, T> f) {
         for (Interval a : intervals) {
             if (a.isFinitelyBounded()) {
-                float lower = a.getLower().get().floatValue(roundingMode);
-                float upper = a.getUpper().get().floatValue(roundingMode);
-                if (lower == upper) {
+                T lower = f.apply(a.getLower().get());
+                T upper = f.apply(a.getUpper().get());
+                if (lower.equals(upper)) {
                     return lower;
                 }
             }
         }
         throw new IllegalStateException("unreachable");
+    }
+
+    public @NotNull Real negate() {
+        return new Real(map(Interval::negate, intervals));
+    }
+
+    public @NotNull Real add(@NotNull Real that) {
+        return new Real(zipWith(Interval::add, intervals, that.intervals));
+    }
+
+    public @NotNull Real subtract(@NotNull Real that) {
+        if (this == that) return ZERO;
+        return new Real(zipWith(Interval::subtract, intervals, that.intervals));
+    }
+
+    public int signum() {
+        return limitValue(Rational::signum);
+    }
+
+    public @NotNull Real abs() {
+        return signum() == -1 ? negate() : this;
+    }
+
+    public @NotNull BigInteger floor() {
+        return limitValue(Rational::floor);
+    }
+
+    public @NotNull Pair<List<BigInteger>, Iterable<BigInteger>> digits(@NotNull BigInteger base) {
+        if (signum() == -1) {
+            throw new IllegalArgumentException("this cannot be negative. Invalid this: " + this);
+        }
+        BigInteger floor = floor();
+        List<BigInteger> beforeDecimal = IntegerUtils.bigEndianDigits(base, floor);
+        Iterable<BigInteger> afterDecimal = () -> new Iterator<BigInteger>() {
+            Iterator<Interval> fractionIntervals = subtract(of(floor)).iterator();
+            BigInteger power = base;
+            Interval interval;
+            {
+                do {
+                    interval = fractionIntervals.next();
+                } while (!interval.isFinitelyBounded());
+                interval = interval.multiply(power);
+            }
+
+            @Override
+            public boolean hasNext() {
+                return true;
+            }
+
+            @Override
+            public BigInteger next() {
+                while (true) {
+                    BigInteger lowerFloor = interval.getLower().get().floor();
+                    BigInteger upperFloor = interval.getUpper().get().floor();
+                    if (lowerFloor.equals(upperFloor)) {
+                        power = power.multiply(base);
+                        interval = interval.multiply(base);
+                        return lowerFloor.mod(base);
+                    } else {
+                        interval = fractionIntervals.next().multiply(power);
+                    }
+                }
+            }
+        };
+        return new Pair<>(beforeDecimal, afterDecimal);
+    }
+
+    public @NotNull String toStringBase(@NotNull BigInteger base, int scale) {
+        if (lt(base, IntegerUtils.TWO)) {
+            throw new IllegalArgumentException("base must be at least 2. Invalid base: " + base);
+        }
+        boolean baseIsSmall = le(base, BigInteger.valueOf(36));
+        Pair<List<BigInteger>, Iterable<BigInteger>> digits = abs().digits(base);
+        Function<BigInteger, String> digitFunction = baseIsSmall ?
+                i -> Character.toString(IntegerUtils.toDigit(i.intValueExact())) :
+                i -> "(" + i + ")";
+        String beforeDecimal = digits.a.isEmpty() ?
+                (baseIsSmall ? "0" : "(0)") :
+                concatStrings(map(digitFunction, digits.a));
+        String result;
+        String afterDecimal = concatStrings(map(digitFunction, take(scale, digits.b)));
+        result = beforeDecimal + "." + afterDecimal;
+        return (signum() == -1 ? "-" + result : result) + "...";
+    }
+
+    public float floatValue(@NotNull RoundingMode roundingMode) {
+        return limitValue(r -> r.floatValue(roundingMode));
     }
 
     public float floatValue() {
@@ -90,16 +227,7 @@ public class Real implements Iterable<Interval> {
     }
 
     public double doubleValue(@NotNull RoundingMode roundingMode) {
-        for (Interval a : intervals) {
-            if (a.isFinitelyBounded()) {
-                double lower = a.getLower().get().doubleValue(roundingMode);
-                double upper = a.getUpper().get().doubleValue(roundingMode);
-                if (lower == upper) {
-                    return lower;
-                }
-            }
-        }
-        throw new IllegalStateException("unreachable");
+        return limitValue(r -> r.doubleValue(roundingMode));
     }
 
     public double doubleValue() {
@@ -107,29 +235,11 @@ public class Real implements Iterable<Interval> {
     }
 
     public @NotNull BigDecimal bigDecimalValueByPrecision(int precision, @NotNull RoundingMode roundingMode) {
-        for (Interval a : intervals) {
-            if (a.isFinitelyBounded()) {
-                BigDecimal lower = a.getLower().get().bigDecimalValueByPrecision(precision, roundingMode);
-                BigDecimal upper = a.getUpper().get().bigDecimalValueByPrecision(precision, roundingMode);
-                if (lower.equals(upper)) {
-                    return lower;
-                }
-            }
-        }
-        throw new IllegalStateException("unreachable");
+        return limitValue(r -> r.bigDecimalValueByPrecision(precision, roundingMode));
     }
 
     public @NotNull BigDecimal bigDecimalValueByScale(int scale, @NotNull RoundingMode roundingMode) {
-        for (Interval a : intervals) {
-            if (a.isFinitelyBounded()) {
-                BigDecimal lower = a.getLower().get().bigDecimalValueByScale(scale, roundingMode);
-                BigDecimal upper = a.getUpper().get().bigDecimalValueByScale(scale, roundingMode);
-                if (lower.equals(upper)) {
-                    return lower;
-                }
-            }
-        }
-        throw new IllegalStateException("unreachable");
+        return limitValue(r -> r.bigDecimalValueByScale(scale, roundingMode));
     }
 
     public @NotNull BigDecimal bigDecimalValueByPrecision(int precision) {
@@ -138,19 +248,6 @@ public class Real implements Iterable<Interval> {
 
     public @NotNull BigDecimal bigDecimalValueByScale(int scale) {
         return bigDecimalValueByScale(scale, RoundingMode.HALF_EVEN);
-    }
-
-    public @NotNull String toStringBase(@NotNull BigInteger base, int scale) {
-        for (Interval a : intervals) {
-            if (a.isFinitelyBounded()) {
-                String lower = a.getLower().get().toStringBase(base, scale);
-                String upper = a.getUpper().get().toStringBase(base, scale);
-                if (lower.equals(upper)) {
-                    return lower;
-                }
-            }
-        }
-        throw new IllegalStateException("unreachable");
     }
 
     public @NotNull String toString() {

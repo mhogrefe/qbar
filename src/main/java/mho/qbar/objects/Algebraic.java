@@ -1,6 +1,10 @@
 package mho.qbar.objects;
 
+import mho.wheels.iterables.IterableUtils;
+import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.*;
 
 import static mho.wheels.testing.Testing.*;
 
@@ -50,18 +54,74 @@ public class Algebraic {
 
     private final int rootIndex;
     private final Polynomial minimalPolynomial;
-    private final Rational rational;
+    private final @NotNull Optional<Rational> rational;
 
     private Algebraic(@NotNull Polynomial minimalPolynomial, int rootIndex) {
         this.rootIndex = rootIndex;
         this.minimalPolynomial = minimalPolynomial;
-        rational = null;
+        rational = Optional.empty();
     }
 
     private Algebraic(@NotNull Rational rational) {
         rootIndex = 0;
-        minimalPolynomial = null;
-        this.rational = rational;
+        minimalPolynomial = Polynomial.fromRoot(rational);
+        this.rational = Optional.of(rational);
+    }
+
+    public static @NotNull Algebraic of(@NotNull Polynomial polynomial, int rootIndex) {
+        if (rootIndex < 0) {
+            throw new IllegalArgumentException();
+        }
+        if (polynomial == Polynomial.ZERO) {
+            throw new IllegalArgumentException();
+        }
+        if (polynomial.degree() == 1) {
+            if (rootIndex != 0) {
+                throw new IllegalArgumentException();
+            }
+            return new Algebraic(Rational.of(polynomial.coefficient(0).negate(), polynomial.coefficient(1)));
+        }
+        polynomial = polynomial.squareFreePart();
+        if (polynomial == Polynomial.ONE) {
+            throw new IllegalArgumentException();
+        }
+        if (rootIndex >= polynomial.rootCount()) {
+            throw new IllegalArgumentException();
+        }
+        List<Polynomial> factors = polynomial.factor();
+        if (factors.size() == 1) {
+            return new Algebraic(polynomial, rootIndex);
+        }
+        List<Pair<Polynomial, Integer>> polyRootPairs = new ArrayList<>();
+        List<Real> realRoots = new ArrayList<>();
+        for (Polynomial factor : factors) {
+            for (int i = 0; i < factor.rootCount(); i++) {
+                polyRootPairs.add(new Pair<>(factor, i));
+                realRoots.add(Real.root(factor, i));
+            }
+        }
+        Pair<Polynomial, Integer> pair = polyRootPairs.get(Real.root(polynomial, rootIndex).match(realRoots));
+        polynomial = pair.a;
+        rootIndex = pair.b;
+        if (polynomial.degree() == 1) {
+            if (rootIndex != 0) {
+                throw new IllegalArgumentException();
+            }
+            return new Algebraic(Rational.of(polynomial.coefficient(0).negate(), polynomial.coefficient(1)));
+        }
+        return new Algebraic(pair.a, pair.b);
+    }
+
+    public @NotNull Algebraic of(@NotNull Rational rational) {
+        return new Algebraic(rational);
+    }
+
+    public @NotNull Real realValue() {
+        if (rational.isPresent()) {
+            return Real.of(rational.get());
+        } else {
+            return Real.root(minimalPolynomial::signum, minimalPolynomial.powerOfTwoIsolatingInterval(rootIndex));
+        }
     }
 
     /**
@@ -69,11 +129,11 @@ public class Algebraic {
      * class.
      */
     public void validate() {
-        if (minimalPolynomial == null) {
+        if (rational.isPresent()) {
             assertEquals(this, rootIndex, 0);
-            assertNotNull(this, rational);
+            assertEquals(this, minimalPolynomial, Polynomial.fromRoot(rational.get()));
         } else {
-            assertNull(this, rational);
+            assertTrue(this, minimalPolynomial.degree() > 1);
             assertTrue(this, minimalPolynomial.isIrreducible());
             assertTrue(this, rootIndex >= 0);
             assertTrue(this, rootIndex < minimalPolynomial.rootCount());
