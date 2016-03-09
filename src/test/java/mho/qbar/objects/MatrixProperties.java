@@ -1805,10 +1805,7 @@ public class MatrixProperties extends QBarTestProperties {
             );
         }
 
-        //todo use invertible generators
-        Iterable<Pair<Matrix, Matrix>> ps = P.pairs(
-                filterInfinite(Matrix::isInvertible, P.withScale(2).withSecondaryScale(2).squareMatrices())
-        );
+        Iterable<Pair<Matrix, Matrix>> ps = P.pairs(P.withScale(2).withSecondaryScale(2).invertibleMatrices());
         for (Pair<Matrix, Matrix> p : take(LIMIT, ps)) {
             assertEquals(
                     p,

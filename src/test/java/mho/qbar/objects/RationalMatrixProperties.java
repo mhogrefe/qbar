@@ -1814,13 +1814,7 @@ public class RationalMatrixProperties extends QBarTestProperties {
             );
         }
 
-        //todo use invertible generators
-        ps = P.pairs(
-                filterInfinite(
-                        RationalMatrix::isInvertible,
-                        P.withScale(3).withSecondaryScale(2).squareRationalMatrices()
-                )
-        );
+        ps = P.pairs(P.withScale(3).withSecondaryScale(2).invertibleRationalMatrices());
         for (Pair<RationalMatrix, RationalMatrix> p : take(LIMIT, ps)) {
             assertEquals(
                     p,
