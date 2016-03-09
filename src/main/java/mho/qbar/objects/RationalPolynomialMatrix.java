@@ -427,6 +427,28 @@ public class RationalPolynomialMatrix implements Comparable<RationalPolynomialMa
     }
 
     /**
+     * Returns the trace of {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} must be square.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @return tr({@code this})
+     */
+    @SuppressWarnings("JavaDoc")
+    public @NotNull RationalPolynomial trace() {
+        if (!isSquare()) {
+            throw new IllegalArgumentException("this must be square. Invalid this: " + this);
+        }
+        RationalPolynomial sum = RationalPolynomial.ZERO;
+        for (int i = 0; i < width; i++) {
+            sum = sum.add(get(i, i));
+        }
+        return sum;
+    }
+
+    /**
      * Returns a submatrix of {@code this} containing the rows and columns selected by a list of row indices and column
      * indices (both 0-based, in ascending order, with no repetitions).
      *

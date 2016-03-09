@@ -363,6 +363,217 @@ public class RationalPolynomialMatrixTest {
         identity_fail_helper(-1);
     }
 
+    private static void trace_helper(@NotNull String input, @NotNull String output) {
+        aeq(read(input).get().trace(), output);
+    }
+
+    private static void trace_fail_helper(@NotNull String input) {
+        try {
+            read(input).get().trace();
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testTrace() {
+        trace_helper("[]#0", "0");
+        trace_helper("[[-1/2*x]]", "-1/2*x");
+        trace_helper("[[x-2/3, -8/5*x^2+x], [0, 7*x-1/2]]", "8*x-7/6");
+
+        trace_fail_helper("[]#1");
+        trace_fail_helper("[]#3");
+        trace_fail_helper("[[]]");
+        trace_fail_helper("[[], [], []]");
+        trace_fail_helper("[[x-2/3, -8/5*x^2+x, x], [0, 7*x-1/2, 4]]");
+    }
+
+    private static void submatrix_helper(
+            @NotNull String m,
+            @NotNull String rowIndices,
+            @NotNull String columnIndices,
+            @NotNull String output
+    ) {
+        aeq(read(m).get().submatrix(readIntegerList(rowIndices), readIntegerList(columnIndices)), output);
+    }
+
+    private static void submatrix_fail_helper(
+            @NotNull String m,
+            @NotNull String rowIndices,
+            @NotNull String columnIndices
+    ) {
+        try {
+            read(m).get().submatrix(readIntegerListWithNulls(rowIndices), readIntegerListWithNulls(columnIndices));
+            fail();
+        } catch (IllegalArgumentException | NullPointerException ignored) {}
+    }
+
+    @Test
+    public void testSubmatrix() {
+        submatrix_helper("[]#0", "[]", "[]", "[]#0");
+        submatrix_helper("[]#3", "[]", "[]", "[]#0");
+        submatrix_helper("[]#3", "[]", "[0, 2]", "[]#2");
+        submatrix_helper("[]#3", "[]", "[0, 1, 2]", "[]#3");
+        submatrix_helper("[[], [], []]", "[]", "[]", "[]#0");
+        submatrix_helper("[[], [], []]", "[0, 2]", "[]", "[[], []]");
+        submatrix_helper("[[], [], []]", "[0, 1, 2]", "[]", "[[], [], []]");
+        submatrix_helper("[[1, x, x^10-1/2], [x^3-x^2+1, 5, 2/3*x+4]]", "[]", "[]", "[]#0");
+        submatrix_helper("[[1, x, x^10-1/2], [x^3-x^2+1, 5, 2/3*x+4]]", "[]", "[1, 2]", "[]#2");
+        submatrix_helper("[[1, x, x^10-1/2], [x^3-x^2+1, 5, 2/3*x+4]]", "[0, 1]", "[]", "[[], []]");
+        submatrix_helper("[[1, x, x^10-1/2], [x^3-x^2+1, 5, 2/3*x+4]]", "[1]", "[0, 2]", "[[x^3-x^2+1, 2/3*x+4]]");
+        submatrix_fail_helper("[[0]]", "[null]", "[]");
+        submatrix_fail_helper("[[1, x, x^10-1/2], [x^3-x^2+1, 5, 2/3*x+4]]", "[1]", "[0, null]");
+        submatrix_fail_helper("[[1, x, x^10-1/2], [x^3-x^2+1, 5, 2/3*x+4]]", "[1]", "[2, 0]");
+        submatrix_fail_helper("[[1, x, x^10-1/2], [x^3-x^2+1, 5, 2/3*x+4]]", "[1]", "[0, 0, 2]");
+        submatrix_fail_helper("[[1, x, x^10-1/2], [x^3-x^2+1, 5, 2/3*x+4]]", "[1, 0]", "[0, 2]");
+        submatrix_fail_helper("[[1, x, x^10-1/2], [x^3-x^2+1, 5, 2/3*x+4]]", "[1, 1]", "[0, 2]");
+        submatrix_fail_helper("[[1, x, x^10-1/2], [x^3-x^2+1, 5, 2/3*x+4]]", "[-1]", "[0, 2]");
+        submatrix_fail_helper("[[1, x, x^10-1/2], [x^3-x^2+1, 5, 2/3*x+4]]", "[1]", "[-1, 2]");
+        submatrix_fail_helper("[[1, x, x^10-1/2], [x^3-x^2+1, 5, 2/3*x+4]]", "[2]", "[0, 2]");
+        submatrix_fail_helper("[[1, x, x^10-1/2], [x^3-x^2+1, 5, 2/3*x+4]]", "[1]", "[0, 3]");
+    }
+
+    private static void transpose_helper(@NotNull String input, @NotNull String output) {
+        aeq(read(input).get().transpose(), output);
+    }
+
+    @Test
+    public void testTranspose() {
+        transpose_helper("[]#0", "[]#0");
+        transpose_helper("[]#1", "[[]]");
+        transpose_helper("[]#3", "[[], [], []]");
+        transpose_helper("[[]]", "[]#1");
+        transpose_helper("[[], [], []]", "[]#3");
+        transpose_helper("[[-x]]", "[[-x]]");
+        transpose_helper("[[x-2/3, -8/5*x^2+x], [0, 7*x-1/2]]", "[[x-2/3, 0], [-8/5*x^2+x, 7*x-1/2]]");
+        transpose_helper("[[1, x, x^10-1/2], [x^3-x^2+1, 5, 2/3*x+4]]",
+                "[[1, x^3-x^2+1], [x, 5], [x^10-1/2, 2/3*x+4]]");
+    }
+
+    private static void concat_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
+        aeq(read(a).get().concat(read(b).get()), output);
+    }
+
+    private static void concat_fail_helper(@NotNull String a, @NotNull String b) {
+        try {
+            read(a).get().concat(read(b).get());
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testConcat() {
+        concat_helper("[]#0", "[]#0", "[]#0");
+        concat_helper("[[]]", "[[], []]", "[[], [], []]");
+        concat_helper("[[-1/2*x]]", "[[3], [4]]", "[[-1/2*x], [3], [4]]");
+        concat_helper(
+                "[[1, x, x^10-1/2], [x^3-x^2+1, 5, 2/3*x+4]]",
+                "[[4, 3, 1]]",
+                "[[1, x, x^10-1/2], [x^3-x^2+1, 5, 2/3*x+4], [4, 3, 1]]"
+        );
+        concat_fail_helper("[]#0", "[]#1");
+        concat_fail_helper("[]#3", "[]#4");
+        concat_fail_helper("[[]]", "[[2]]");
+        concat_fail_helper("[[2]]", "[[]]");
+        concat_fail_helper("[[2]]", "[[3, 4]]");
+    }
+
+    private static void augment_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
+        aeq(read(a).get().augment(read(b).get()), output);
+    }
+
+    private static void augment_fail_helper(@NotNull String a, @NotNull String b) {
+        try {
+            read(a).get().augment(read(b).get());
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testAugment() {
+        augment_helper("[]#0", "[]#0", "[]#0");
+        augment_helper("[]#3", "[]#4", "[]#7");
+        augment_helper("[[]]", "[[2]]", "[[2]]");
+        augment_helper("[[2]]", "[[]]", "[[2]]");
+        augment_helper("[[-x]]", "[[3, 4]]", "[[-x, 3, 4]]");
+        augment_helper(
+                "[[1, x, x^10-1/2], [x^3-x^2+1, 5, 2/3*x+4]]",
+                "[[4], [3]]",
+                "[[1, x, x^10-1/2, 4], [x^3-x^2+1, 5, 2/3*x+4, 3]]"
+        );
+        augment_fail_helper("[]#0", "[[]]");
+        augment_fail_helper("[[]]", "[[], []]");
+        augment_fail_helper("[[2]]", "[[3], [4]]");
+    }
+
+    private static void add_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
+        aeq(read(a).get().add(read(b).get()), output);
+    }
+
+    private static void add_fail_helper(@NotNull String a, @NotNull String b) {
+        try {
+            read(a).get().add(read(b).get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testAdd() {
+        add_helper("[]#0", "[]#0", "[]#0");
+        add_helper("[]#1", "[]#1", "[]#1");
+        add_helper("[]#3", "[]#3", "[]#3");
+        add_helper("[[]]", "[[]]", "[[]]");
+        add_helper("[[], [], []]", "[[], [], []]", "[[], [], []]");
+        add_helper("[[-1/2*x]]", "[[5]]", "[[-1/2*x+5]]");
+        add_helper("[[x-2/3, -8/5*x^2+x], [0, 7*x-1/2]]", "[[x^5-3/2*x, -x+3], [1/2*x+1, 4]]",
+                "[[x^5-1/2*x-2/3, -8/5*x^2+3], [1/2*x+1, 7*x+7/2]]");
+        add_fail_helper("[]#0", "[]#1");
+        add_fail_helper("[]#0", "[[]]");
+        add_fail_helper("[[-x]]", "[[3], [5]]");
+    }
+
+    private static void negate_helper(@NotNull String input, @NotNull String output) {
+        aeq(read(input).get().negate(), output);
+    }
+
+    @Test
+    public void testNegate() {
+        negate_helper("[]#0", "[]#0");
+        negate_helper("[]#1", "[]#1");
+        negate_helper("[]#3", "[]#3");
+        negate_helper("[[]]", "[[]]");
+        negate_helper("[[], [], []]", "[[], [], []]");
+        negate_helper("[[-x]]", "[[x]]");
+        negate_helper("[[x-2/3, -8/5*x^2+x], [0, 7*x-1/2]]", "[[-x+2/3, 8/5*x^2-x], [0, -7*x+1/2]]");
+        negate_helper("[[1, x, x^10-1/2], [x^3-x^2+1, 5, 2/3*x+4]]",
+                "[[-1, -x, -x^10+1/2], [-x^3+x^2-1, -5, -2/3*x-4]]");
+    }
+
+    private static void subtract_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
+        aeq(read(a).get().subtract(read(b).get()), output);
+    }
+
+    private static void subtract_fail_helper(@NotNull String a, @NotNull String b) {
+        try {
+            read(a).get().subtract(read(b).get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testSubtract() {
+        subtract_helper("[]#0", "[]#0", "[]#0");
+        subtract_helper("[]#1", "[]#1", "[]#1");
+        subtract_helper("[]#3", "[]#3", "[]#3");
+        subtract_helper("[[]]", "[[]]", "[[]]");
+        subtract_helper("[[], [], []]", "[[], [], []]", "[[], [], []]");
+        subtract_helper("[[-x]]", "[[5]]", "[[-x-5]]");
+        subtract_helper("[[x-2/3, -8/5*x^2+x], [0, 7*x-1/2]]", "[[x^5-3/2*x, -x+3], [1/2*x+1, 4]]",
+                "[[-x^5+5/2*x-2/3, -8/5*x^2+2*x-3], [-1/2*x-1, 7*x-9/2]]");
+        subtract_fail_helper("[]#0", "[]#1");
+        subtract_fail_helper("[]#0", "[[]]");
+        subtract_fail_helper("[[-x]]", "[[3], [5]]");
+    }
+
     @Test
     public void testEquals() {
         testEqualsHelper(
