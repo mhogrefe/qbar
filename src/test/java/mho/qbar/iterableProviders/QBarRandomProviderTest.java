@@ -292,42 +292,42 @@ public class QBarRandomProviderTest {
         rangeUp_Rational_helper(
                 4,
                 "-2",
-                "QBarRandomProvider_rangeUp_Rational_vi",
+                "QBarRandomProvider_rangeUp_Rational_vii",
                 5.230916348808398,
                 4.015000999973354
         );
         rangeUp_Rational_helper(
                 32,
                 "-2",
-                "QBarRandomProvider_rangeUp_Rational_vii",
+                "QBarRandomProvider_rangeUp_Rational_viii",
                 2.30035078376369E59,
                 37.930548000008635
         );
         rangeUp_Rational_helper(
                 4,
                 "5/3",
-                "QBarRandomProvider_rangeUp_Rational_viii",
+                "QBarRandomProvider_rangeUp_Rational_ix",
                 8.89758301551532,
                 6.751185999974823
         );
         rangeUp_Rational_helper(
                 32,
                 "5/3",
-                "QBarRandomProvider_rangeUp_Rational_ix",
+                "QBarRandomProvider_rangeUp_Rational_x",
                 2.30035078376369E59,
                 40.232672000039464
         );
         rangeUp_Rational_helper(
                 4,
                 "-5/3",
-                "QBarRandomProvider_rangeUp_Rational_x",
+                "QBarRandomProvider_rangeUp_Rational_xi",
                 5.564249682144554,
                 5.86250299994541
         );
         rangeUp_Rational_helper(
                 32,
                 "-5/3",
-                "QBarRandomProvider_rangeUp_Rational_xi",
+                "QBarRandomProvider_rangeUp_Rational_xii",
                 2.30035078376369E59,
                 39.967830000046504
         );
