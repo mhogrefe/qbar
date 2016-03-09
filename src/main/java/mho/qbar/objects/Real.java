@@ -77,8 +77,7 @@ public class Real implements Iterable<Interval> {
                 if (midSign == 0) {
                     exact = Optional.of(Interval.of(mid));
                     return exact.get();
-                }
-                if (midSign == lowerSign) {
+                } else if (midSign == lowerSign) {
                     lower = mid;
                 } else {
                     upper = mid;
@@ -87,10 +86,6 @@ public class Real implements Iterable<Interval> {
                 return interval;
             }
         });
-    }
-
-    public static @NotNull Real root(@NotNull Polynomial p, int rootIndex) {
-        return Real.root(p::signum, p.powerOfTwoIsolatingInterval(rootIndex));
     }
 
     @Override
