@@ -2253,23 +2253,23 @@ public class QBarRandomProviderTest {
 
     @Test
     public void testInvertibleRationalMatrices() {
-        squareRationalMatrices_helper(
+        invertibleRationalMatrices_helper(
                 3,
                 2,
                 "QBarRandomProvider_invertibleRationalMatrices_i",
-                4.039990000000922,
-                2.778798957428391
+                4.212430000000649,
+                2.937190647688096
         );
-        squareRationalMatrices_helper(
+        invertibleRationalMatrices_helper(
                 5,
                 3,
                 "QBarRandomProvider_invertibleRationalMatrices_ii",
-                4.8123099999997105,
-                4.8100080834360694
+                5.094529999999642,
+                4.902308947073661
         );
-        squareRationalMatrices_fail_helper(2, 2);
-        squareRationalMatrices_fail_helper(3, 1);
-        squareRationalMatrices_fail_helper(3, -1);
+        invertibleRationalMatrices_fail_helper(2, 2);
+        invertibleRationalMatrices_fail_helper(3, 1);
+        invertibleRationalMatrices_fail_helper(3, -1);
     }
 
     private static void polynomialMatrices_helper(
