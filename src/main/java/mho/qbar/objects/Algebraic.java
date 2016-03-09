@@ -92,7 +92,10 @@ public class Algebraic implements Comparable<Algebraic> {
             if (rootIndex != 0) {
                 throw new IllegalArgumentException();
             }
-            return new Algebraic(Rational.of(polynomial.coefficient(0).negate(), polynomial.coefficient(1)));
+            Rational r = Rational.of(polynomial.coefficient(0).negate(), polynomial.coefficient(1));
+            if (r == Rational.ZERO) return ZERO;
+            if (r == Rational.ONE) return ONE;
+            return new Algebraic(r);
         }
         polynomial = polynomial.squareFreePart();
         if (polynomial == Polynomial.ONE) {
@@ -129,12 +132,17 @@ public class Algebraic implements Comparable<Algebraic> {
             if (rootIndex != 0) {
                 throw new IllegalArgumentException();
             }
-            return new Algebraic(Rational.of(polynomial.coefficient(0).negate(), polynomial.coefficient(1)));
+            Rational r = Rational.of(polynomial.coefficient(0).negate(), polynomial.coefficient(1));
+            if (r == Rational.ZERO) return ZERO;
+            if (r == Rational.ONE) return ONE;
+            return new Algebraic(r);
         }
         return new Algebraic(pair.a, pair.b, isolatingIntervals.get(matchIndex), rootCounts.get(matchIndex));
     }
 
     public @NotNull Algebraic of(@NotNull Rational rational) {
+        if (rational == Rational.ZERO) return ZERO;
+        if (rational == Rational.ONE) return ONE;
         return new Algebraic(rational);
     }
 
