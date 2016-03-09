@@ -1793,83 +1793,20 @@ public class QBarRandomProviderTest {
 
     @Test
     public void testMatrices_int_int() {
-        matrices_int_int_helper(
-                1,
-                0,
-                0,
-                "QBarRandomProvider_matrices_1_0_0",
-                0.0,
-                0.0
-        );
-        matrices_int_int_helper(
-                5,
-                0,
-                0,
-                "QBarRandomProvider_matrices_5_0_0",
-                0.0,
-                0.0
-        );
-        matrices_int_int_helper(
-                10,
-                0,
-                0,
-                "QBarRandomProvider_matrices_10_0_0",
-                0.0,
-                0.0
-        );
-        matrices_int_int_helper(
-                1,
-                0,
-                3,
-                "QBarRandomProvider_matrices_1_0_3",
-                0.0,
-                0.0
-        );
-        matrices_int_int_helper(
-                5,
-                0,
-                3,
-                "QBarRandomProvider_matrices_5_0_3",
-                0.0,
-                0.0
-        );
-        matrices_int_int_helper(
-                10,
-                0,
-                3,
-                "QBarRandomProvider_matrices_10_0_3",
-                0.0,
-                0.0
-        );
-        matrices_int_int_helper(
-                3,
-                3,
-                0,
-                "QBarRandomProvider_matrices_3_3_0",
-                0.0,
-                0.0
-        );
-        matrices_int_int_helper(
-                5,
-                3,
-                0,
-                "QBarRandomProvider_matrices_5_3_0",
-                0.0,
-                0.0
-        );
-        matrices_int_int_helper(
-                10,
-                3,
-                0,
-                "QBarRandomProvider_matrices_10_3_0",
-                0.0,
-                0.0
-        );
+        matrices_int_int_helper(1, 0, 0, "QBarRandomProvider_matrices_int_int_i", 0.0, 0.0);
+        matrices_int_int_helper(5, 0, 0, "QBarRandomProvider_matrices_int_int_ii", 0.0, 0.0);
+        matrices_int_int_helper(10, 0, 0, "QBarRandomProvider_matrices_int_int_iii", 0.0, 0.0);
+        matrices_int_int_helper(1, 0, 3, "QBarRandomProvider_matrices_int_int_iv", 0.0, 0.0);
+        matrices_int_int_helper(5, 0, 3, "QBarRandomProvider_matrices_int_int_v", 0.0, 0.0);
+        matrices_int_int_helper(10, 0, 3, "QBarRandomProvider_matrices_int_int_vi", 0.0, 0.0);
+        matrices_int_int_helper(3, 3, 0, "QBarRandomProvider_matrices_int_int_vii", 0.0, 0.0);
+        matrices_int_int_helper(5, 3, 0, "QBarRandomProvider_matrices_int_int_viii", 0.0, 0.0);
+        matrices_int_int_helper(10, 3, 0, "QBarRandomProvider_matrices_int_int_ix", 0.0, 0.0);
         matrices_int_int_helper(
                 1,
                 1,
                 1,
-                "QBarRandomProvider_matrices_1_1_1",
+                "QBarRandomProvider_matrices_int_int_x",
                 1.000000000007918,
                 0.8333389999976124
         );
@@ -1877,7 +1814,7 @@ public class QBarRandomProviderTest {
                 5,
                 1,
                 1,
-                "QBarRandomProvider_matrices_5_1_1",
+                "QBarRandomProvider_matrices_int_int_xi",
                 1.000000000007918,
                 4.889747000000939
         );
@@ -1885,7 +1822,7 @@ public class QBarRandomProviderTest {
                 10,
                 1,
                 1,
-                "QBarRandomProvider_matrices_10_1_1",
+                "QBarRandomProvider_matrices_int_int_xii",
                 1.000000000007918,
                 9.918277000004432
         );
@@ -1893,7 +1830,7 @@ public class QBarRandomProviderTest {
                 1,
                 2,
                 2,
-                "QBarRandomProvider_matrices_1_2_2",
+                "QBarRandomProvider_matrices_int_int_xiii",
                 4.000000000031672,
                 0.8338739999974718
         );
@@ -1901,7 +1838,7 @@ public class QBarRandomProviderTest {
                 5,
                 2,
                 2,
-                "QBarRandomProvider_matrices_5_2_2",
+                "QBarRandomProvider_matrices_int_int_xiv",
                 4.000000000031672,
                 4.8827345000031865
         );
@@ -1909,7 +1846,7 @@ public class QBarRandomProviderTest {
                 10,
                 2,
                 2,
-                "QBarRandomProvider_matrices_10_2_2",
+                "QBarRandomProvider_matrices_int_int_xv",
                 4.000000000031672,
                 9.922179249978022
         );
@@ -1917,7 +1854,7 @@ public class QBarRandomProviderTest {
                 1,
                 3,
                 4,
-                "QBarRandomProvider_matrices_1_3_4",
+                "QBarRandomProvider_matrices_int_int_xvi",
                 11.999999999910093,
                 0.8332544167092473
         );
@@ -1925,7 +1862,7 @@ public class QBarRandomProviderTest {
                 5,
                 3,
                 4,
-                "QBarRandomProvider_matrices_5_3_4",
+                "QBarRandomProvider_matrices_int_int_xvii",
                 11.999999999910093,
                 4.8834181664187115
         );
@@ -1933,7 +1870,7 @@ public class QBarRandomProviderTest {
                 10,
                 3,
                 4,
-                "QBarRandomProvider_matrices_10_3_4",
+                "QBarRandomProvider_matrices_int_int_xviii",
                 11.999999999910093,
                 9.92268041633897
         );
@@ -1975,27 +1912,9 @@ public class QBarRandomProviderTest {
 
     @Test
     public void testMatrices() {
-        matrices_helper(
-                1,
-                2,
-                "QBarRandomProvider_matrices_1_2",
-                1.9983549999915837,
-                0.8338733608407535
-        );
-        matrices_helper(
-                5,
-                3,
-                "QBarRandomProvider_matrices_5_3",
-                3.3335839999865646,
-                4.882194059052771
-        );
-        matrices_helper(
-                10,
-                8,
-                "QBarRandomProvider_matrices_10_8",
-                8.189681000015133,
-                9.921846650751569
-        );
+        matrices_helper(1, 2, "QBarRandomProvider_matrices_i", 1.9983549999915837, 0.8338733608407535);
+        matrices_helper(5, 3, "QBarRandomProvider_matrices_ii", 3.3335839999865646, 4.882194059052771);
+        matrices_helper(10, 8, "QBarRandomProvider_matrices_iii", 8.189681000015133, 9.921846650751569);
         matrices_fail_helper(0, 2);
         matrices_fail_helper(1, 1);
         matrices_fail_helper(1, -1);
@@ -2028,27 +1947,9 @@ public class QBarRandomProviderTest {
 
     @Test
     public void testSquareMatrices() {
-        squareMatrices_helper(
-                2,
-                2,
-                "QBarRandomProvider_squareMatrices_2_2",
-                3.0031260000035953,
-                1.833468525820871
-        );
-        squareMatrices_helper(
-                5,
-                3,
-                "QBarRandomProvider_squareMatrices_5_3",
-                4.821780000018768,
-                4.883059368202011
-        );
-        squareMatrices_helper(
-                10,
-                8,
-                "QBarRandomProvider_squareMatrices_10_8",
-                13.49856700000753,
-                9.923964892149032
-        );
+        squareMatrices_helper(2, 2, "QBarRandomProvider_squareMatrices_i", 3.0031260000035953, 1.833468525820871);
+        squareMatrices_helper(5, 3, "QBarRandomProvider_squareMatrices_ii", 4.821780000018768, 4.883059368202011);
+        squareMatrices_helper(10, 8, "QBarRandomProvider_squareMatrices_iii", 13.49856700000753, 9.923964892149032);
         squareMatrices_fail_helper(1, 2);
         squareMatrices_fail_helper(2, 1);
         squareMatrices_fail_helper(2, -1);
