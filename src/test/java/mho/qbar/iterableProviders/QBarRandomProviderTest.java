@@ -5854,6 +5854,74 @@ public class QBarRandomProviderTest {
         exponentVectors_List_Variable_fail_helper(1, "[b, a]");
     }
 
+    private static void multivariatePolynomials_helper(
+            @NotNull Iterable<MultivariatePolynomial> input,
+            @NotNull String output,
+            double meanTermCount,
+            double meanDegree
+    ) {
+        List<MultivariatePolynomial> sample = toList(take(DEFAULT_SAMPLE_SIZE / 10, input));
+        aeqitLimitQBarLog(TINY_LIMIT, sample, output);
+        aeqMapQBarLog(topSampleCount(DEFAULT_TOP_COUNT, sample), output);
+        aeq(meanOfIntegers(toList(map(MultivariatePolynomial::termCount, sample))), meanTermCount);
+        aeq(meanOfIntegers(toList(map(MultivariatePolynomial::degree, sample))), meanDegree);
+        P.reset();
+    }
+
+    private static void multivariatePolynomials_helper(
+            int scale,
+            int secondaryScale,
+            @NotNull String output,
+            double meanTermCount,
+            double meanDegree
+    ) {
+        multivariatePolynomials_helper(
+                P.withScale(scale).withSecondaryScale(secondaryScale).multivariatePolynomials(),
+                output,
+                meanTermCount,
+                meanDegree
+        );
+        P.reset();
+    }
+
+    private static void multivariatePolynomials_fail_helper(int scale, int secondaryScale) {
+        try {
+            P.withScale(scale).withSecondaryScale(secondaryScale).multivariatePolynomials();
+            fail();
+        } catch (IllegalStateException ignored) {}
+        finally {
+            P.reset();
+        }
+    }
+
+    @Test
+    public void testMultivariatePolynomials() {
+        multivariatePolynomials_helper(
+                2,
+                2,
+                "QBarRandomProvider_multivariatePolynomials_i",
+                0.8646899999996744,
+                0.7044800000003882
+        );
+        multivariatePolynomials_helper(
+                5,
+                3,
+                "QBarRandomProvider_multivariatePolynomials_ii",
+                2.1347100000003274,
+                5.328380000001406
+        );
+        multivariatePolynomials_helper(
+                10,
+                8,
+                "QBarRandomProvider_multivariatePolynomials_iii",
+                6.196000000000041,
+                7.59621000000156
+        );
+
+        multivariatePolynomials_fail_helper(1, 2);
+        multivariatePolynomials_fail_helper(2, 1);
+    }
+
     private static double meanOfIntegers(@NotNull List<Integer> xs) {
         int size = xs.size();
         return sumDouble(map(i -> (double) i / size, xs));

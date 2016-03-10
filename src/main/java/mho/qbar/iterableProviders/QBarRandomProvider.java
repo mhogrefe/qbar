@@ -1757,12 +1757,33 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
 
     @Override
     public @NotNull Iterable<MultivariatePolynomial> multivariatePolynomials() {
-        return null;
+        return withElement(
+                MultivariatePolynomial.ZERO,
+                map(
+                        p -> MultivariatePolynomial.of(toList(zip(p.a, p.b))),
+                        dependentPairsInfinite(
+                                withScale(getSecondaryScale()).subsetsAtLeast(1, exponentVectors()),
+                                evs -> lists(evs.size(), nonzeroBigIntegers())
+                        )
+                )
+        );
     }
 
     @Override
     public @NotNull Iterable<MultivariatePolynomial> multivariatePolynomials(@NotNull List<Variable> variables) {
-        return null;
+        if (variables.isEmpty()) {
+            return map(MultivariatePolynomial::of, bigIntegers());
+        }
+        return withElement(
+                MultivariatePolynomial.ZERO,
+                map(
+                        p -> MultivariatePolynomial.of(toList(zip(p.a, p.b))),
+                        dependentPairsInfinite(
+                                withScale(getSecondaryScale()).subsetsAtLeast(1, exponentVectors(variables)),
+                                evs -> lists(evs.size(), nonzeroBigIntegers())
+                        )
+                )
+        );
     }
 
     /**

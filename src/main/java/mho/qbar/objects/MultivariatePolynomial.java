@@ -138,6 +138,14 @@ public class MultivariatePolynomial implements
         return toList(variables);
     }
 
+    public int degree() {
+        return terms.isEmpty() ? -1 : head(terms).a.degree();
+    }
+
+    public int termCount() {
+        return terms.size();
+    }
+
     /**
      * Determines whether {@code this} is equal to {@code that}.
      *
@@ -194,7 +202,7 @@ public class MultivariatePolynomial implements
         int j = that.terms.size() - 1;
         while (i >= 0 && j >= 0) {
             Pair<ExponentVector, BigInteger> thisTerm = terms.get(i);
-            Pair<ExponentVector, BigInteger> thatTerm = that.terms.get(i);
+            Pair<ExponentVector, BigInteger> thatTerm = that.terms.get(j);
             int evCompare = thisTerm.a.compareTo(thatTerm.a);
             if (evCompare != 0) return evCompare;
             int iCompare = thisTerm.b.compareTo(thisTerm.b);
