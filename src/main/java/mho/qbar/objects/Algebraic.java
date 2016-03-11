@@ -251,7 +251,7 @@ public class Algebraic implements Comparable<Algebraic> {
             assertTrue(this, minimalPolynomial.degree() > 1);
             assertTrue(this, minimalPolynomial.isIrreducible());
             assertTrue(this, rootIndex >= 0);
-            assertTrue(this, rootIndex < minimalPolynomial.rootCount());
+            assertTrue(this, rootIndex < mpRootCount);
             assertEquals(this, isolatingInterval, minimalPolynomial.powerOfTwoIsolatingInterval(rootIndex));
             assertEquals(this, mpRootCount, minimalPolynomial.rootCount());
         }
