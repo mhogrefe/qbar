@@ -281,14 +281,14 @@ public class PolynomialMatrixDemos extends QBarDemos {
                 P.choose(
                         map(
                                 i -> {
-                                    PolynomialMatrix m = PolynomialMatrix.zero(0, i);
+                                    PolynomialMatrix m = zero(0, i);
                                     return new Pair<>(m, m);
                                 },
                                 P.withScale(4).naturalIntegersGeometric()
                         ),
                         map(
                                 i -> {
-                                    PolynomialMatrix m = PolynomialMatrix.zero(i, 0);
+                                    PolynomialMatrix m = zero(i, 0);
                                     return new Pair<>(m, m);
                                 },
                                 P.withScale(4).positiveIntegersGeometric()
@@ -318,14 +318,14 @@ public class PolynomialMatrixDemos extends QBarDemos {
                 P.choose(
                         map(
                                 i -> {
-                                    PolynomialMatrix m = PolynomialMatrix.zero(0, i);
+                                    PolynomialMatrix m = zero(0, i);
                                     return new Pair<>(m, m);
                                 },
                                 P.withScale(4).naturalIntegersGeometric()
                         ),
                         map(
                                 i -> {
-                                    PolynomialMatrix m = PolynomialMatrix.zero(i, 0);
+                                    PolynomialMatrix m = zero(i, 0);
                                     return new Pair<>(m, m);
                                 },
                                 P.withScale(4).positiveIntegersGeometric()

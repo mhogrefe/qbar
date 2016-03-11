@@ -289,14 +289,14 @@ public class RationalMatrixDemos extends QBarDemos {
                 P.choose(
                         map(
                                 i -> {
-                                    RationalMatrix m = RationalMatrix.zero(0, i);
+                                    RationalMatrix m = zero(0, i);
                                     return new Pair<>(m, m);
                                 },
                                 P.withScale(4).naturalIntegersGeometric()
                         ),
                         map(
                                 i -> {
-                                    RationalMatrix m = RationalMatrix.zero(i, 0);
+                                    RationalMatrix m = zero(i, 0);
                                     return new Pair<>(m, m);
                                 },
                                 P.withScale(4).positiveIntegersGeometric()
@@ -326,14 +326,14 @@ public class RationalMatrixDemos extends QBarDemos {
                 P.choose(
                         map(
                                 i -> {
-                                    RationalMatrix m = RationalMatrix.zero(0, i);
+                                    RationalMatrix m = zero(0, i);
                                     return new Pair<>(m, m);
                                 },
                                 P.withScale(4).naturalIntegersGeometric()
                         ),
                         map(
                                 i -> {
-                                    RationalMatrix m = RationalMatrix.zero(i, 0);
+                                    RationalMatrix m = zero(i, 0);
                                     return new Pair<>(m, m);
                                 },
                                 P.withScale(4).positiveIntegersGeometric()

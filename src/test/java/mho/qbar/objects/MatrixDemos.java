@@ -270,14 +270,14 @@ public class MatrixDemos extends QBarDemos {
                 P.choose(
                         map(
                                 i -> {
-                                    Matrix m = Matrix.zero(0, i);
+                                    Matrix m = zero(0, i);
                                     return new Pair<>(m, m);
                                 },
                                 P.withScale(4).naturalIntegersGeometric()
                         ),
                         map(
                                 i -> {
-                                    Matrix m = Matrix.zero(i, 0);
+                                    Matrix m = zero(i, 0);
                                     return new Pair<>(m, m);
                                 },
                                 P.withScale(4).positiveIntegersGeometric()
@@ -307,14 +307,14 @@ public class MatrixDemos extends QBarDemos {
                 P.choose(
                         map(
                                 i -> {
-                                    Matrix m = Matrix.zero(0, i);
+                                    Matrix m = zero(0, i);
                                     return new Pair<>(m, m);
                                 },
                                 P.withScale(4).naturalIntegersGeometric()
                         ),
                         map(
                                 i -> {
-                                    Matrix m = Matrix.zero(i, 0);
+                                    Matrix m = zero(i, 0);
                                     return new Pair<>(m, m);
                                 },
                                 P.withScale(4).positiveIntegersGeometric()
