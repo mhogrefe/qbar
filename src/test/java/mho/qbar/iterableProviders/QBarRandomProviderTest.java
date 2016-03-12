@@ -5114,13 +5114,15 @@ public class QBarRandomProviderTest {
             @NotNull Iterable<MultivariatePolynomial> input,
             @NotNull String output,
             double meanTermCount,
-            double meanDegree
+            double meanDegree,
+            double meanCoefficientBitSize
     ) {
         List<MultivariatePolynomial> sample = toList(take(DEFAULT_SAMPLE_SIZE / 10, input));
         aeqitLimitQBarLog(TINY_LIMIT, sample, output);
         aeqMapQBarLog(topSampleCount(DEFAULT_TOP_COUNT, sample), output);
         aeq(meanOfIntegers(toList(map(MultivariatePolynomial::termCount, sample))), meanTermCount);
         aeq(meanOfIntegers(toList(map(MultivariatePolynomial::degree, sample))), meanDegree);
+        aeq(meanOfIntegers(toList(concatMap(ts -> map(t -> t.b.bitLength(), ts), sample))), meanCoefficientBitSize);
         P.reset();
     }
 
@@ -5129,13 +5131,15 @@ public class QBarRandomProviderTest {
             int secondaryScale,
             @NotNull String output,
             double meanTermCount,
-            double meanDegree
+            double meanDegree,
+            double meanCoefficientBitSize
     ) {
         multivariatePolynomials_helper(
                 P.withScale(scale).withSecondaryScale(secondaryScale).multivariatePolynomials(),
                 output,
                 meanTermCount,
-                meanDegree
+                meanDegree,
+                meanCoefficientBitSize
         );
         P.reset();
     }
@@ -5157,25 +5161,143 @@ public class QBarRandomProviderTest {
                 2,
                 "QBarRandomProvider_multivariatePolynomials_i",
                 0.8646899999996744,
-                0.7044800000003882
+                0.7044800000003882,
+                1.659022308572449
         );
         multivariatePolynomials_helper(
                 5,
                 3,
                 "QBarRandomProvider_multivariatePolynomials_ii",
                 2.1347100000003274,
-                5.328380000001406
+                5.328380000001406,
+                4.814035630130487
         );
         multivariatePolynomials_helper(
                 10,
                 8,
                 "QBarRandomProvider_multivariatePolynomials_iii",
                 6.196000000000041,
-                7.59621000000156
+                7.59621000000156,
+                9.893831504142991
         );
 
         multivariatePolynomials_fail_helper(1, 2);
         multivariatePolynomials_fail_helper(2, 1);
+    }
+
+    private static void multivariatePolynomials_List_Variable_helper(
+            int scale,
+            int secondaryScale,
+            @NotNull String variables,
+            @NotNull String output,
+            double meanTermCount,
+            double meanDegree,
+            double meanCoefficientBitSize
+    ) {
+        multivariatePolynomials_helper(
+                P.withScale(scale).withSecondaryScale(secondaryScale)
+                        .multivariatePolynomials(readVariableList(variables)),
+                output,
+                meanTermCount,
+                meanDegree,
+                meanCoefficientBitSize
+        );
+        P.reset();
+    }
+
+    private static void multivariatePolynomials_List_Variable_fail_helper(
+            int scale,
+            int secondaryScale,
+            @NotNull String variables
+    ) {
+        try {
+            P.withScale(scale).withSecondaryScale(secondaryScale)
+                    .multivariatePolynomials(readVariableListWithNulls(variables));
+            fail();
+        } catch (IllegalStateException | IllegalArgumentException ignored) {}
+        finally {
+            P.reset();
+        }
+    }
+
+    @Test
+    public void testMultivariatePolynomials_List_Variable() {
+        multivariatePolynomials_List_Variable_helper(
+                2,
+                2,
+                "[]",
+                "QBarRandomProvider_multivariatePolynomials_List_Variable_i",
+                0.667929999999595,
+                -0.3320700000001913,
+                2.748207147455013
+        );
+        multivariatePolynomials_List_Variable_helper(
+                10,
+                8,
+                "[]",
+                "QBarRandomProvider_multivariatePolynomials_List_Variable_ii",
+                0.9090499999984977,
+                -0.09094999999999744,
+                10.947516638247059
+        );
+        multivariatePolynomials_List_Variable_helper(
+                2,
+                2,
+                "[a]",
+                "QBarRandomProvider_multivariatePolynomials_List_Variable_iii",
+                0.8438099999997009,
+                0.14391000000000823,
+                1.661558881738211
+        );
+        multivariatePolynomials_List_Variable_helper(
+                10,
+                8,
+                "[a]",
+                "QBarRandomProvider_multivariatePolynomials_List_Variable_iv",
+                5.518960000000292,
+                2.315360000000155,
+                9.900135170388857
+        );
+        multivariatePolynomials_List_Variable_helper(
+                2,
+                2,
+                "[x, y]",
+                "QBarRandomProvider_multivariatePolynomials_List_Variable_v",
+                0.9670199999996393,
+                0.9241300000007161,
+                1.6618477384139265
+        );
+        multivariatePolynomials_List_Variable_helper(
+                10,
+                8,
+                "[x, y]",
+                "QBarRandomProvider_multivariatePolynomials_List_Variable_vi",
+                7.134619999999812,
+                6.782810000001361,
+                9.903858930123924
+        );
+        multivariatePolynomials_List_Variable_helper(
+                2,
+                2,
+                "[a, b, c]",
+                "QBarRandomProvider_multivariatePolynomials_List_Variable_vii",
+                0.9904299999996112,
+                1.7522899999991948,
+                1.6632270831838998
+        );
+        multivariatePolynomials_List_Variable_helper(
+                10,
+                8,
+                "[a, b, c]",
+                "QBarRandomProvider_multivariatePolynomials_List_Variable_viii",
+                7.173459999999837,
+                12.365270000001479,
+                9.90831063391548
+        );
+        multivariatePolynomials_List_Variable_fail_helper(1, 2, "[]");
+        multivariatePolynomials_List_Variable_fail_helper(2, 1, "[]");
+        multivariatePolynomials_List_Variable_fail_helper(1, 2, "[a]");
+        multivariatePolynomials_List_Variable_fail_helper(2, 1, "[a]");
     }
 
     private static double meanOfIntegers(@NotNull List<Integer> xs) {

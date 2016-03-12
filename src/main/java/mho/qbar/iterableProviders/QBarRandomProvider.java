@@ -1771,6 +1771,15 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
 
     @Override
     public @NotNull Iterable<MultivariatePolynomial> multivariatePolynomials(@NotNull List<Variable> variables) {
+        int scale = getScale();
+        if (scale < 2) {
+            throw new IllegalStateException("this must have a scale of at least 2. Invalid scale: " + scale);
+        }
+        int secondaryScale = getSecondaryScale();
+        if (secondaryScale < 2) {
+            throw new IllegalStateException("this must have a secondaryScale of at least 2. Invalid secondaryScale: " +
+                    secondaryScale);
+        }
         if (variables.isEmpty()) {
             return map(MultivariatePolynomial::of, bigIntegers());
         }
@@ -1779,7 +1788,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
                 map(
                         p -> MultivariatePolynomial.of(toList(zip(p.a, p.b))),
                         dependentPairsInfinite(
-                                withScale(getSecondaryScale()).subsetsAtLeast(1, exponentVectors(variables)),
+                                withScale(secondaryScale).subsetsAtLeast(1, exponentVectors(variables)),
                                 evs -> lists(evs.size(), nonzeroBigIntegers())
                         )
                 )
