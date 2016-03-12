@@ -158,6 +158,52 @@ public class Algebraic implements Comparable<Algebraic> {
         }
     }
 
+    public int signum() {
+        if (rational.isPresent()) {
+            return rational.get().signum();
+        } else {
+            return realValue().signum();
+        }
+    }
+
+    public @NotNull Algebraic negate() {
+        if (this == ZERO) return ZERO;
+        if (rational.isPresent()) {
+            Rational r = rational.get();
+            if (r.equals(Rational.NEGATIVE_ONE)) return ONE;
+            return new Algebraic(r.negate());
+        } else {
+            return new Algebraic(
+                    minimalPolynomial.reflect(),
+                    mpRootCount - rootIndex - 1,
+                    isolatingInterval.negate(),
+                    mpRootCount
+            );
+        }
+    }
+
+    public @NotNull Algebraic invert() {
+        if (this == ZERO) {
+            throw new ArithmeticException();
+        }
+        if (this == ONE) return ONE;
+        if (rational.isPresent()) {
+            return new Algebraic(rational.get().invert());
+        } else {
+            Polynomial inverseMP = minimalPolynomial.invertRoots();
+            int negativeRootCount = minimalPolynomial.rootCount(Interval.lessThanOrEqualTo(Rational.ZERO));
+            int positiveRootCount = mpRootCount - negativeRootCount;
+            int inverseRootIndex;
+            if (signum() == 1) {
+                inverseRootIndex = 2 * negativeRootCount + positiveRootCount - rootIndex - 1;
+            } else {
+                inverseRootIndex = negativeRootCount - rootIndex - 1;
+            }
+            Interval inverseIsolatingInterval = inverseMP.isolatingInterval(inverseRootIndex);
+            return new Algebraic(inverseMP, inverseRootIndex, inverseIsolatingInterval, mpRootCount);
+        }
+    }
+
     @Override
     public boolean equals(Object that) {
         if (this == that) return true;

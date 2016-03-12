@@ -13,6 +13,7 @@ import org.jetbrains.annotations.Nullable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -3454,6 +3455,33 @@ public strictfp abstract class QBarIterableProvider {
         return map(
                 es -> ExponentVector.fromTerms(toList(filter(p -> p.b != 0, zip(reversed, es)))),
                 lists(variables.size(), naturalIntegersGeometric())
+        );
+    }
+
+    public @NotNull Iterable<Algebraic> algebraics(int degree) {
+        List<Integer> noRealRootsFlag = Collections.singletonList(-1);
+        return map(
+                p -> {
+                    Algebraic x = Algebraic.of(p.a, p.b);
+                    return x == Algebraic.ZERO ? x : x.negate().invert();
+                },
+                filterInfinite(
+                        q -> q.b != -1,
+                        dependentPairs(
+                                irreduciblePolynomials(degree),
+                                q -> {
+                                    int rootCount = q.rootCount();
+                                    return rootCount == 0 ? noRealRootsFlag : range(0, rootCount - 1);
+                                }
+                        )
+                )
+        );
+    }
+
+    public @NotNull Iterable<Algebraic> algebraics() {
+        return map(
+                p -> p.b,
+                dependentPairsInfiniteLogarithmicOrder(positiveBigIntegers(), i -> algebraics(i.intValueExact()))
         );
     }
 
