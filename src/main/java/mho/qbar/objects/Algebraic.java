@@ -1,12 +1,16 @@
 package mho.qbar.objects;
 
+import mho.wheels.io.Readers;
 import mho.wheels.math.MathUtils;
+import mho.wheels.numberUtils.IntegerUtils;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigInteger;
 import java.util.*;
+import java.util.function.Function;
 
+import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.testing.Testing.*;
 
 /**
@@ -140,7 +144,7 @@ public class Algebraic implements Comparable<Algebraic> {
         return new Algebraic(pair.a, pair.b, isolatingIntervals.get(matchIndex), rootCounts.get(matchIndex));
     }
 
-    public @NotNull Algebraic of(@NotNull Rational rational) {
+    public static @NotNull Algebraic of(@NotNull Rational rational) {
         if (rational == Rational.ZERO) return ZERO;
         if (rational == Rational.ONE) return ONE;
         return new Algebraic(rational);
@@ -188,6 +192,125 @@ public class Algebraic implements Comparable<Algebraic> {
         } else {
             return realValue().compareTo(that.realValue());
         }
+    }
+
+    public static @NotNull Optional<Algebraic> genericRead(
+            @NotNull String s,
+            @NotNull Function<String, Optional<Polynomial>> polynomialHandler
+    ) {
+        if (s.startsWith("root ")) {
+            s = s.substring(5);
+            int ofIndex = s.indexOf(" of ");
+            if (ofIndex == -1) return Optional.empty();
+            Optional<Integer> oRootIndex = Readers.readInteger(s.substring(0, ofIndex));
+            if (!oRootIndex.isPresent()) return Optional.empty();
+            int rootIndex = oRootIndex.get();
+            if (rootIndex < 0) return Optional.empty();
+            Optional<Polynomial> oMinimalPolynomial = polynomialHandler.apply(s.substring(ofIndex + 4));
+            if (!oMinimalPolynomial.isPresent()) return Optional.empty();
+            Algebraic x;
+            try {
+                x = of(oMinimalPolynomial.get(), rootIndex);
+            } catch (IllegalArgumentException e) {
+                return Optional.empty();
+            }
+            if (x.toString().equals(s)) {
+                return Optional.of(x);
+            } else {
+                return Optional.empty();
+            }
+        } else if (s.contains("sqrt(")) {
+            BigInteger denominator;
+            int slashIndex = s.indexOf('/');
+            if (slashIndex != -1) {
+                if (head(s) != '(') return Optional.empty();
+                if (s.charAt(slashIndex - 1) != ')') return Optional.empty();
+                Optional<BigInteger> oDenominator = Readers.readBigInteger(s.substring(slashIndex + 1));
+                if (!oDenominator.isPresent()) return Optional.empty();
+                denominator = oDenominator.get();
+                if (denominator.signum() != 1) return Optional.empty();
+                s = s.substring(1, slashIndex - 1);
+            } else {
+                denominator = BigInteger.ONE;
+            }
+            int plusIndex = s.indexOf('+');
+            int minusIndex = s.indexOf('-', 1);
+            BigInteger constant;
+            if (plusIndex != -1) {
+                Optional<BigInteger> oConstant = Readers.readBigInteger(s.substring(0, plusIndex));
+                if (!oConstant.isPresent()) return Optional.empty();
+                constant = oConstant.get();
+                if (constant.equals(BigInteger.ZERO)) return Optional.empty();
+                s = s.substring(plusIndex + 1);
+            } else if (minusIndex != -1) {
+                Optional<BigInteger> oConstant = Readers.readBigInteger(s.substring(0, minusIndex));
+                if (oConstant.isPresent()) return Optional.empty();
+                constant = oConstant.get();
+                if (constant.equals(BigInteger.ZERO)) return Optional.empty();
+                s = s.substring(minusIndex);
+            } else {
+                constant = BigInteger.ZERO;
+            }
+            BigInteger beforeRadical;
+            int starIndex = s.indexOf('*');
+            if (starIndex == -1) {
+                if (s.isEmpty()) return Optional.empty();
+                if (head(s) == '-') {
+                    beforeRadical = IntegerUtils.NEGATIVE_ONE;
+                    s = tail(s);
+                } else {
+                    beforeRadical = BigInteger.ONE;
+                }
+            } else {
+                Optional<BigInteger> oBeforeRadical = Readers.readBigInteger(s.substring(0, starIndex));
+                if (!oBeforeRadical.isPresent()) return Optional.empty();
+                beforeRadical = oBeforeRadical.get();
+                if (beforeRadical.equals(BigInteger.ZERO)) return Optional.empty();
+                if (beforeRadical.abs().equals(BigInteger.ONE)) return Optional.empty();
+                s = s.substring(starIndex + 1);
+            }
+            if (!s.startsWith("sqrt(")) return Optional.empty();
+            if (last(s) != ')') return Optional.empty();
+            Optional<BigInteger> oUnderRadical = Readers.readBigInteger(s.substring(5, s.length() - 1));
+            if (!oUnderRadical.isPresent()) return Optional.empty();
+            BigInteger underRadical = oUnderRadical.get();
+            if (underRadical.signum() != 1) return Optional.empty();
+            Optional<Algebraic> ox = fromQEForm(constant, beforeRadical, underRadical, denominator);
+            if (!ox.isPresent()) return Optional.empty();
+            return ox;
+        } else {
+            Optional<Rational> or = Rational.read(s);
+            if (!or.isPresent()) return Optional.empty();
+            return Optional.of(of(or.get()));
+        }
+    }
+
+    private static @NotNull Optional<Algebraic> fromQEForm(
+            @NotNull BigInteger constant,
+            @NotNull BigInteger beforeRadical,
+            @NotNull BigInteger underRadical,
+            @NotNull BigInteger denominator
+    ) {
+        if (!MathUtils.gcd(Arrays.asList(constant, beforeRadical, denominator)).equals(BigInteger.ONE)) {
+            return Optional.empty();
+        }
+        Rational a = Rational.of(denominator).shiftRight(1);
+        Rational b = Rational.of(constant.negate());
+        int rootIndex = beforeRadical.signum() == 1 ? 1 : 0;
+        BigInteger discriminant = underRadical.multiply(beforeRadical.abs().pow(2));
+        if (discriminant.bitLength() >= 32) return Optional.empty();
+        if (!MathUtils.largestPerfectPowerFactor(2, discriminant).equals(beforeRadical.abs())) return Optional.empty();
+        Rational c = b.pow(2).subtract(Rational.of(discriminant)).divide(a).shiftRight(2);
+        Polynomial mp = RationalPolynomial.of(Arrays.asList(c, b, a)).constantFactor().b;
+        return Optional.of(of(mp, rootIndex));
+    }
+
+    public static @NotNull Optional<Algebraic> read(@NotNull String s) {
+        return genericRead(s, Polynomial::read);
+    }
+
+    public static @NotNull Optional<Algebraic> read(int maxExponent, @NotNull String s) {
+        return genericRead(s, t -> Polynomial.read(maxExponent, t));
     }
 
     public @NotNull String toString() {
