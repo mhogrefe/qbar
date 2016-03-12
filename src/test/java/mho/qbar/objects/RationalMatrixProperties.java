@@ -706,14 +706,14 @@ public class RationalMatrixProperties extends QBarTestProperties {
                 P.choose(
                         map(
                                 i -> {
-                                    RationalMatrix m = RationalMatrix.zero(0, i);
+                                    RationalMatrix m = zero(0, i);
                                     return new Pair<>(m, m);
                                 },
                                 P.naturalIntegersGeometric()
                         ),
                         map(
                                 i -> {
-                                    RationalMatrix m = RationalMatrix.zero(i, 0);
+                                    RationalMatrix m = zero(i, 0);
                                     return new Pair<>(m, m);
                                 },
                                 P.positiveIntegersGeometric()
@@ -746,14 +746,14 @@ public class RationalMatrixProperties extends QBarTestProperties {
                 P.choose(
                         map(
                                 i -> {
-                                    RationalMatrix m = RationalMatrix.zero(0, i);
+                                    RationalMatrix m = zero(0, i);
                                     return new Triple<>(m, m, m);
                                 },
                                 P.naturalIntegersGeometric()
                         ),
                         map(
                                 i -> {
-                                    RationalMatrix m = RationalMatrix.zero(i, 0);
+                                    RationalMatrix m = zero(i, 0);
                                     return new Triple<>(m, m, m);
                                 },
                                 P.positiveIntegersGeometric()
@@ -809,14 +809,14 @@ public class RationalMatrixProperties extends QBarTestProperties {
                 P.choose(
                         map(
                                 i -> {
-                                    RationalMatrix m = RationalMatrix.zero(0, i);
+                                    RationalMatrix m = zero(0, i);
                                     return new Pair<>(m, m);
                                 },
                                 P.naturalIntegersGeometric()
                         ),
                         map(
                                 i -> {
-                                    RationalMatrix m = RationalMatrix.zero(i, 0);
+                                    RationalMatrix m = zero(i, 0);
                                     return new Pair<>(m, m);
                                 },
                                 P.positiveIntegersGeometric()
@@ -866,14 +866,14 @@ public class RationalMatrixProperties extends QBarTestProperties {
                 P.choose(
                         map(
                                 i -> {
-                                    RationalMatrix m = RationalMatrix.zero(0, i);
+                                    RationalMatrix m = zero(0, i);
                                     return new Pair<>(m, m);
                                 },
                                 P.naturalIntegersGeometric()
                         ),
                         map(
                                 i -> {
-                                    RationalMatrix m = RationalMatrix.zero(i, 0);
+                                    RationalMatrix m = zero(i, 0);
                                     return new Pair<>(m, m);
                                 },
                                 P.positiveIntegersGeometric()
