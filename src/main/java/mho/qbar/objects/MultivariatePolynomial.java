@@ -124,10 +124,76 @@ public class MultivariatePolynomial implements
         return new MultivariatePolynomial(sortedTerms);
     }
 
+    public static @NotNull MultivariatePolynomial of(@NotNull ExponentVector ev, @NotNull BigInteger c) {
+        if (ev == ExponentVector.ONE && c.equals(BigInteger.ONE)) return ONE;
+        return new MultivariatePolynomial(Collections.singletonList(new Pair<>(ev, c)));
+    }
+
+    /**
+     * Creates a constant {@code MultivariatePolynomial} equal to a given {@code BigInteger}.
+     *
+     * <ul>
+     *  <li>{@code c} cannot be null.</li>
+     *  <li>The result is constant.</li>
+     * </ul>
+     *
+     * @param c a constant
+     * @return the {@code MultivariatePolynomial} equal to c
+     */
     public static @NotNull MultivariatePolynomial of(@NotNull BigInteger c) {
         if (c.equals(BigInteger.ZERO)) return ZERO;
         if (c.equals(BigInteger.ONE)) return ONE;
         return new MultivariatePolynomial(Collections.singletonList(new Pair<>(ExponentVector.ONE, c)));
+    }
+
+    /**
+     * Creates a constant {@code MultivariatePolynomial} equal to a given {@code int}.
+     *
+     * <ul>
+     *  <li>{@code c} may be any {@code int}.</li>
+     *  <li>The result is constant.</li>
+     * </ul>
+     *
+     * @param c a constant
+     * @return the {@code MultivariatePolynomial} equal to c
+     */
+    public static @NotNull MultivariatePolynomial of(int c) {
+        if (c == 0) return ZERO;
+        if (c == 1) return ONE;
+        return new MultivariatePolynomial(
+                Collections.singletonList(new Pair<>(ExponentVector.ONE, BigInteger.valueOf(c)))
+        );
+    }
+
+    public static @NotNull MultivariatePolynomial of(@NotNull Polynomial p, @NotNull Variable v) {
+        if (p == Polynomial.ZERO) return ZERO;
+        if (p == Polynomial.ONE) return ONE;
+        List<Integer> exponents = toList(replicate(v.getIndex() + 1, 0));
+        int lastIndex = exponents.size() - 1;
+        List<Pair<ExponentVector, BigInteger>> terms = new ArrayList<>();
+        for (int i = 0; i <= p.degree(); i++) {
+            BigInteger coefficient = p.coefficient(i);
+            if (!coefficient.equals(BigInteger.ZERO)) {
+                exponents.set(lastIndex, i);
+                terms.add(new Pair<>(ExponentVector.of(exponents), p.coefficient(i)));
+            }
+        }
+        return new MultivariatePolynomial(terms);
+    }
+
+    public @NotNull Polynomial toPolynomial() {
+        if (this == ZERO) return Polynomial.ZERO;
+        if (this == ONE) return Polynomial.ONE;
+        List<Variable> variables = variables();
+        if (variables.size() > 1) {
+            throw new IllegalArgumentException();
+        }
+        List<BigInteger> coefficients = toList(replicate(degree() + 1, BigInteger.ZERO));
+        for (Pair<ExponentVector, BigInteger> term : terms) {
+            int exponent = head(dropWhile(i -> i == 0, term.a.getExponents()));
+            coefficients.set(exponent, term.b);
+        }
+        return Polynomial.of(coefficients);
     }
 
     public @NotNull List<Variable> variables() {
