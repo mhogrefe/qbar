@@ -294,7 +294,7 @@ public class MultivariatePolynomial implements
      * @return the {@code MultivariatePolynomial} represented by {@code s}, or an empty {@code Optional} if {@code s}
      * is invalid
      */
-    private static @NotNull Optional<MultivariatePolynomial> read(@NotNull String s) {
+    public static @NotNull Optional<MultivariatePolynomial> read(@NotNull String s) {
         if (s.equals("0")) return Optional.of(ZERO);
         if (s.equals("1")) return Optional.of(ONE);
         if (s.isEmpty() || head(s) == '+') return Optional.empty();

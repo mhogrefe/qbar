@@ -42,6 +42,7 @@
                         <include>**/MatrixProperties.java</include>
                         <include>**/MonomialOrderTest.java</include>
                         <include>**/MonomialOrderProperties.java</include>
+                        <include>**/MultivariatePolynomialTest.java</include>
                         <include>**/PolynomialMatrixTest.java</include>
                         <include>**/PolynomialMatrixProperties.java</include>
                         <include>**/PolynomialTest.java</include>
