@@ -528,7 +528,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
     }
 
     private void propertiesVectorsAtLeast() {
-        initialize("vectorsAtLeast()");
+        initialize("vectorsAtLeast(int)");
         Iterable<Pair<QBarRandomProvider, Integer>> ps = filterInfinite(
                 p -> p.a.getSecondaryScale() > p.b,
                 P.pairsSquareRootOrder(
@@ -659,7 +659,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
     }
 
     private void propertiesRationalVectorsAtLeast() {
-        initialize("rationalVectorsAtLeast()");
+        initialize("rationalVectorsAtLeast(int)");
         Iterable<Pair<QBarRandomProvider, Integer>> ps = filterInfinite(
                 p -> p.a.getSecondaryScale() > p.b,
                 P.pairsSquareRootOrder(
@@ -790,7 +790,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
     }
 
     private void propertiesReducedRationalVectorsAtLeast() {
-        initialize("reducedRationalVectorsAtLeast()");
+        initialize("reducedRationalVectorsAtLeast(int)");
         Iterable<Pair<QBarRandomProvider, Integer>> ps = filterInfinite(
                 p -> p.a.getSecondaryScale() > p.b,
                 P.pairsSquareRootOrder(
@@ -955,7 +955,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
     }
 
     private void propertiesPolynomialVectorsAtLeast() {
-        initialize("vectorsAtLeast()");
+        initialize("vectorsAtLeast(int)");
         Iterable<Pair<QBarRandomProvider, Integer>> ps = filterInfinite(
                 p -> p.a.getTertiaryScale() > p.b,
                 P.pairsSquareRootOrder(
@@ -1149,7 +1149,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
     }
 
     private void propertiesRationalPolynomialVectorsAtLeast() {
-        initialize("vectorsAtLeast()");
+        initialize("rationalPolynomialVectorsAtLeast(int)");
         Iterable<Pair<QBarRandomProvider, Integer>> ps = filterInfinite(
                 p -> p.a.getTertiaryScale() > p.b,
                 P.pairsSquareRootOrder(
@@ -1923,7 +1923,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
     }
 
     private void propertiesPolynomialsAtLeast() {
-        initialize("polynomialsAtLeast()");
+        initialize("polynomialsAtLeast(int)");
         Iterable<Pair<QBarRandomProvider, Integer>> ps = filterInfinite(
                 p -> p.a.getSecondaryScale() > p.b,
                 P.pairsSquareRootOrder(
@@ -2054,7 +2054,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
     }
 
     private void propertiesPrimitivePolynomialsAtLeast() {
-        initialize("primitivePolynomialsAtLeast()");
+        initialize("primitivePolynomialsAtLeast(int)");
         Iterable<Pair<QBarRandomProvider, Integer>> ps = filterInfinite(
                 p -> p.a.getSecondaryScale() > 0 && p.a.getSecondaryScale() > p.b,
                 P.pairsSquareRootOrder(
@@ -2185,7 +2185,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
     }
 
     private void propertiesPositivePrimitivePolynomialsAtLeast() {
-        initialize("positivePrimitivePolynomialsAtLeast()");
+        initialize("positivePrimitivePolynomialsAtLeast(int)");
         Iterable<Pair<QBarRandomProvider, Integer>> ps = filterInfinite(
                 p -> p.a.getSecondaryScale() > 0 && p.a.getSecondaryScale() > p.b,
                 P.pairsSquareRootOrder(
@@ -2319,7 +2319,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
     }
 
     private void propertiesSquareFreePolynomialsAtLeast() {
-        initialize("squareFreePolynomialsAtLeast()");
+        initialize("squareFreePolynomialsAtLeast(int)");
         Iterable<Pair<QBarRandomProvider, Integer>> ps = filterInfinite(
                 p -> p.a.getSecondaryScale() >= 0 && p.a.getSecondaryScale() > p.b,
                 P.pairsSquareRootOrder(
@@ -2456,7 +2456,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
     }
 
     private void propertiesPositivePrimitiveSquareFreePolynomialsAtLeast() {
-        initialize("positivePrimitiveSquareFreePolynomialsAtLeast()");
+        initialize("positivePrimitiveSquareFreePolynomialsAtLeast(int)");
         Iterable<Pair<QBarRandomProvider, Integer>> ps = filterInfinite(
                 p -> p.a.getSecondaryScale() > 0 && p.a.getSecondaryScale() > p.b,
                 P.pairsSquareRootOrder(
@@ -2593,7 +2593,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
     }
 
     private void propertiesIrreduciblePolynomialsAtLeast() {
-        initialize("irreduciblePolynomialsAtLeast()");
+        initialize("irreduciblePolynomialsAtLeast(int)");
         Iterable<Pair<QBarRandomProvider, Integer>> ps = filterInfinite(
                 p -> p.a.getSecondaryScale() >= 2 && p.a.getSecondaryScale() > p.b,
                 P.pairsSquareRootOrder(
@@ -2727,7 +2727,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
     }
 
     private void propertiesRationalPolynomialsAtLeast() {
-        initialize("rationalPolynomialsAtLeast()");
+        initialize("rationalPolynomialsAtLeast(int)");
         Iterable<Pair<QBarRandomProvider, Integer>> ps = filterInfinite(
                 p -> p.a.getSecondaryScale() > p.b,
                 P.pairsSquareRootOrder(
@@ -2858,7 +2858,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
     }
 
     private void propertiesMonicRationalPolynomialsAtLeast() {
-        initialize("positivePrimitivePolynomialsAtLeast()");
+        initialize("positivePrimitivePolynomialsAtLeast(int)");
         Iterable<Pair<QBarRandomProvider, Integer>> ps = filterInfinite(
                 p -> p.a.getSecondaryScale() > 0 && p.a.getSecondaryScale() > p.b,
                 P.pairsSquareRootOrder(

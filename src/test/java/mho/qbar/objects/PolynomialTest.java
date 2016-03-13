@@ -4012,7 +4012,7 @@ public class PolynomialTest {
         aeq(read(p).get().positivePrimitiveShiftRootsRight(bits), output);
     }
 
-    private static void positivePrimitivehiftRootsRight_fail_helper(@NotNull String p, int bits) {
+    private static void positivePrimitiveShiftRootsRight_fail_helper(@NotNull String p, int bits) {
         try {
             read(p).get().positivePrimitiveShiftRootsRight(bits);
             fail();
@@ -4047,8 +4047,8 @@ public class PolynomialTest {
 
         positivePrimitiveShiftRootsRight_helper("x-2", 1, "x-1");
 
-        positivePrimitiveShiftRootsLeft_fail_helper("0", -1);
-        positivePrimitiveShiftRootsLeft_fail_helper("x", -1);
+        positivePrimitiveShiftRootsRight_fail_helper("0", -1);
+        positivePrimitiveShiftRootsRight_fail_helper("x", -1);
     }
 
     private static void invertRoots_helper(@NotNull String input, @NotNull String output) {
@@ -4141,7 +4141,6 @@ public class PolynomialTest {
                 "x^25-4*x^21-5*x^20+6*x^17+11*x^16+10*x^15-4*x^13-7*x^12-9*x^11-10*x^10+x^9+x^8+x^7+x^6+3*x^5+x-1");
 
         multiplyRoots_helper("x^2+x+1", "2*x^3+1", "4*x^6+4*x^3+1");
-        System.out.println(read("4*x^6+4*x^3+1").get().factor());
     }
 
     @Test
