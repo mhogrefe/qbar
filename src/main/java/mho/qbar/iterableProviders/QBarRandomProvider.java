@@ -1755,6 +1755,21 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
         );
     }
 
+    /**
+     * An {@code Iterable} that generates all {@code MultivariatePolynomial}s. A larger {@code scale} corresponds to a
+     * {@code MultivariatePolynomial} with larger coefficients on average, a larger {@code secondaryScale} corresponds
+     * to more variables and higher exponents, and a larger {@code tertiaryScale} corresponds to more terms. Does not
+     * support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a {@code scale} of at least 2.</li>
+     *  <li>{@code this} must have a positive {@code secondaryScale}.</li>
+     *  <li>{@code this} must have a {@code tertiaryScale} of at least 2.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing {@code MultivariatePolynomial}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
     @Override
     public @NotNull Iterable<MultivariatePolynomial> multivariatePolynomials() {
         return withElement(
@@ -1762,13 +1777,30 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
                 map(
                         p -> MultivariatePolynomial.of(toList(zip(p.a, p.b))),
                         dependentPairsInfinite(
-                                withScale(getSecondaryScale()).subsetsAtLeast(1, exponentVectors()),
+                                withScale(getTertiaryScale())
+                                        .subsetsAtLeast(1, withScale(getSecondaryScale()).exponentVectors()),
                                 evs -> lists(evs.size(), nonzeroBigIntegers())
                         )
                 )
         );
     }
 
+    /**
+     * An {@code Iterable} that generates all {@code MultivariatePolynomial}s containing only (a subset of) the given
+     * variables. A larger {@code scale} corresponds to a {@code MultivariatePolynomial} with larger coefficients on
+     * average, a larger {@code secondaryScale} corresponds to more variables and higher exponents, and a larger
+     * {@code tertiaryScale} corresponds to more terms. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a {@code scale} of at least 2.</li>
+     *  <li>{@code this} must have a positive {@code secondaryScale}.</li>
+     *  <li>{@code this} must have a {@code tertiaryScale} of at least 2.</li>
+     *  <li>{@code variables} must be in increasing order and must contain no repetitions.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing {@code MultivariatePolynomial}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
     @Override
     public @NotNull Iterable<MultivariatePolynomial> multivariatePolynomials(@NotNull List<Variable> variables) {
         int scale = getScale();
@@ -1776,9 +1808,14 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
             throw new IllegalStateException("this must have a scale of at least 2. Invalid scale: " + scale);
         }
         int secondaryScale = getSecondaryScale();
-        if (secondaryScale < 2) {
-            throw new IllegalStateException("this must have a secondaryScale of at least 2. Invalid secondaryScale: " +
+        if (secondaryScale < 1) {
+            throw new IllegalStateException("this must have a positive secondaryScale. Invalid secondaryScale: " +
                     secondaryScale);
+        }
+        int tertiaryScale = getTertiaryScale();
+        if (tertiaryScale < 2) {
+            throw new IllegalStateException("this must have a tertiaryScale of at least 2. Invalid tertiaryScale: " +
+                    tertiaryScale);
         }
         if (variables.isEmpty()) {
             return map(MultivariatePolynomial::of, bigIntegers());
@@ -1788,7 +1825,8 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
                 map(
                         p -> MultivariatePolynomial.of(toList(zip(p.a, p.b))),
                         dependentPairsInfinite(
-                                withScale(secondaryScale).subsetsAtLeast(1, exponentVectors(variables)),
+                                withScale(tertiaryScale)
+                                        .subsetsAtLeast(1, withScale(secondaryScale).exponentVectors(variables)),
                                 evs -> lists(evs.size(), nonzeroBigIntegers())
                         )
                 )
