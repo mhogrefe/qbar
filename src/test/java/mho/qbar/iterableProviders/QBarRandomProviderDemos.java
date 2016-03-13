@@ -390,6 +390,16 @@ public class QBarRandomProviderDemos extends QBarDemos {
         }
     }
 
+    private void demoInvertibleMatrices() {
+        Iterable<QBarRandomProvider> rps = filterInfinite(
+                rp -> rp.getScale() >= 2 && rp.getSecondaryScale() >= 2,
+                P.withScale(2).qbarRandomProvidersDefaultTertiaryScale()
+        );
+        for (QBarRandomProvider rp : take(SMALL_LIMIT, rps)) {
+            System.out.println("invertibleMatrices(" + rp + ") = " + its(rp.invertibleMatrices()));
+        }
+    }
+
     private void demoRationalMatrices_int_int() {
         Iterable<Triple<QBarRandomProvider, Integer, Integer>> ts = P.triples(
                 filterInfinite(
@@ -422,6 +432,16 @@ public class QBarRandomProviderDemos extends QBarDemos {
         );
         for (QBarRandomProvider rp : take(SMALL_LIMIT, rps)) {
             System.out.println("squareRationalMatrices(" + rp + ") = " + its(rp.squareRationalMatrices()));
+        }
+    }
+
+    private void demoInvertibleRationalMatrices() {
+        Iterable<QBarRandomProvider> rps = filterInfinite(
+                rp -> rp.getScale() >= 3 && rp.getSecondaryScale() >= 2,
+                P.withScale(2).qbarRandomProvidersDefaultTertiaryScale()
+        );
+        for (QBarRandomProvider rp : take(SMALL_LIMIT, rps)) {
+            System.out.println("invertibleRationalMatrices(" + rp + ") = " + its(rp.invertibleRationalMatrices()));
         }
     }
 
@@ -858,6 +878,30 @@ public class QBarRandomProviderDemos extends QBarDemos {
         );
         for (Pair<QBarRandomProvider, List<Variable>> p : take(SMALL_LIMIT, ps)) {
             System.out.println("exponentVectors(" + p.a + ", " + p.b + ") = " + its(p.a.exponentVectors(p.b)));
+        }
+    }
+
+    private void demoMultivariatePolynomials() {
+        Iterable<QBarRandomProvider> rps = filterInfinite(
+                s -> s.getScale() >= 2 && s.getSecondaryScale() > 0 && s.getTertiaryScale() >= 2,
+                P.withScale(4).qbarRandomProviders()
+        );
+        for (QBarRandomProvider rp : take(MEDIUM_LIMIT, rps)) {
+            System.out.println("multivariatePolynomials(" + rp + ") = " + its(rp.multivariatePolynomials()));
+        }
+    }
+
+    private void demoMultivariatePolynomials_List_Variable() {
+        Iterable<Pair<QBarRandomProvider, List<Variable>>> ps = P.pairs(
+                filterInfinite(
+                        s -> s.getScale() >= 2 && s.getSecondaryScale() > 0 && s.getTertiaryScale() >= 2,
+                        P.withScale(4).qbarRandomProviders()
+                ),
+                P.subsets(P.variables())
+        );
+        for (Pair<QBarRandomProvider, List<Variable>> p : take(SMALL_LIMIT, ps)) {
+            System.out.println("multivariatePolynomials(" + p.a + ", " + p.b + ") = " +
+                    its(p.a.multivariatePolynomials(p.b)));
         }
     }
 }
