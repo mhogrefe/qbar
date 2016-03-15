@@ -268,14 +268,21 @@ public class Algebraic implements Comparable<Algebraic> {
         } else if (s.contains("sqrt(")) {
             BigInteger denominator;
             int slashIndex = s.indexOf('/');
+            boolean numeratorParens = false;
             if (slashIndex != -1) {
-                if (head(s) != '(') return Optional.empty();
-                if (s.charAt(slashIndex - 1) != ')') return Optional.empty();
+                if (head(s) == '(') {
+                    numeratorParens = true;
+                    if (s.charAt(slashIndex - 1) != ')') return Optional.empty();
+                }
                 Optional<BigInteger> oDenominator = Readers.readBigInteger(s.substring(slashIndex + 1));
                 if (!oDenominator.isPresent()) return Optional.empty();
                 denominator = oDenominator.get();
                 if (denominator.signum() != 1) return Optional.empty();
-                s = s.substring(1, slashIndex - 1);
+                if (numeratorParens) {
+                    s = s.substring(1, slashIndex - 1);
+                } else {
+                    s = s.substring(0, slashIndex);
+                }
             } else {
                 denominator = BigInteger.ONE;
             }
@@ -295,6 +302,7 @@ public class Algebraic implements Comparable<Algebraic> {
                 if (constant.equals(BigInteger.ZERO)) return Optional.empty();
                 s = s.substring(minusIndex);
             } else {
+                if (numeratorParens) return Optional.empty();
                 constant = BigInteger.ZERO;
             }
             BigInteger beforeRadical;
@@ -381,7 +389,7 @@ public class Algebraic implements Comparable<Algebraic> {
                     boolean nonTrivialDenominator = !denominator.equals(BigInteger.ONE);
 
                     StringBuilder sb = new StringBuilder();
-                    if (nonTrivialDenominator) {
+                    if (nonTrivialDenominator && nonTrivialConstant) {
                         sb.append('(');
                     }
                     if (nonTrivialConstant) {
@@ -397,7 +405,10 @@ public class Algebraic implements Comparable<Algebraic> {
                     }
                     sb.append("sqrt(").append(underRadical).append(')');
                     if (nonTrivialDenominator) {
-                        sb.append(")/").append(denominator);
+                        if (nonTrivialConstant) {
+                            sb.append(')');
+                        }
+                        sb.append('/').append(denominator);
                     }
                     return sb.toString();
                 }

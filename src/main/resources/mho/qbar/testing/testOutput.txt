@@ -10289,6 +10289,1596 @@ x*y-x+y+1
 3*y
 ...
 
+QBarExhaustiveProvider_positiveAlgebraics_int_i list 51
+1
+2
+1/2
+3
+4
+3/2
+1/3
+2/3
+1/4
+4/3
+3/4
+5
+6
+5/2
+7
+8
+7/2
+5/3
+5/4
+7/3
+8/3
+7/4
+1/5
+2/5
+1/6
+3/5
+4/5
+1/7
+2/7
+1/8
+3/7
+4/7
+3/8
+6/5
+5/6
+7/5
+8/5
+7/6
+5/7
+6/7
+5/8
+8/7
+7/8
+9
+10
+9/2
+11
+12
+11/2
+10/3
+...
+
+QBarExhaustiveProvider_positiveAlgebraics_int_ii list 51
+(-1+sqrt(5))/2
+sqrt(2)
+(1+sqrt(5))/2
+-1+sqrt(2)
+-1+sqrt(3)
+sqrt(3)
+(-1+sqrt(13))/2
+(-1+sqrt(17))/2
+(1+sqrt(13))/2
+(1+sqrt(17))/2
+-1+sqrt(5)
+(3-sqrt(5))/2
+(3+sqrt(5))/2
+2-sqrt(3)
+2+sqrt(3)
+2-sqrt(2)
+2+sqrt(2)
+1+sqrt(2)
+(-3+sqrt(13))/2
+1+sqrt(3)
+(-3+sqrt(17))/2
+(3+sqrt(13))/2
+-2+sqrt(5)
+(2-sqrt(2))/2
+(2+sqrt(2))/2
+(3+sqrt(17))/2
+-2+sqrt(6)
+(-3+sqrt(21))/2
+1+sqrt(5)
+(3+sqrt(21))/2
+-2+sqrt(7)
+-2+2*sqrt(2)
+sqrt(2)/2
+(-1+sqrt(17))/4
+(-1+sqrt(3))/2
+(1+sqrt(17))/4
+sqrt(3)/3
+(-1+sqrt(13))/6
+sqrt(6)/3
+(1+sqrt(13))/6
+(-1+sqrt(7))/3
+sqrt(6)/2
+(-1+sqrt(33))/4
+(-1+sqrt(7))/2
+(1+sqrt(33))/4
+(-1+sqrt(37))/6
+2*sqrt(3)/3
+(1+sqrt(37))/6
+(-1+sqrt(10))/3
+(-1+sqrt(13))/3
+...
+
+QBarExhaustiveProvider_positiveAlgebraics_int_iii list 51
+root 0 of x^3+x-1
+root 0 of x^3-x^2-1
+root 0 of x^3-2
+root 0 of x^3-x^2-2
+root 0 of x^3-x^2+x-2
+root 0 of x^3-x-1
+root 0 of x^3+2*x-1
+root 0 of x^3-x^2-x-1
+root 0 of x^3-x^2+2*x-1
+root 0 of x^3-x-2
+root 0 of x^3+2*x-2
+root 0 of x^3+x^2-1
+root 0 of x^3+x^2+x-1
+root 0 of x^3-2*x^2-1
+root 0 of x^3-2*x^2+x-1
+root 0 of x^3+x^2+x-2
+root 0 of x^3-2*x^2-2
+root 0 of x^3+x^2+2*x-1
+root 0 of x^3-2*x^2-x-1
+root 0 of x^3+x^2-x-2
+root 0 of x^3+x^2+2*x-2
+root 0 of x^3-2*x^2-x-2
+root 0 of x^3-2*x^2+2*x-2
+root 0 of 2*x^3-1
+root 0 of 2*x^3+x-1
+root 0 of 2*x^3-x^2+x-1
+root 0 of 2*x^3+x-2
+root 0 of 2*x^3-x^2-2
+root 0 of 2*x^3+2*x-1
+root 0 of 2*x^3-x^2-x-1
+root 0 of 2*x^3-x-2
+root 0 of 2*x^3-x^2-x-2
+root 0 of 2*x^3-x^2+2*x-2
+root 0 of 2*x^3+x^2-1
+root 0 of 2*x^3-2*x^2-1
+root 0 of 2*x^3+x^2-2
+root 0 of 2*x^3+x^2+x-2
+root 0 of 2*x^3-2*x^2+x-2
+root 1 of x^3-x^2-2*x+1
+root 2 of x^3-x^2-2*x+1
+root 0 of 2*x^3+x^2-x-1
+root 0 of 2*x^3+x^2+2*x-1
+root 0 of 2*x^3-2*x^2-x-1
+root 0 of 2*x^3-2*x^2+2*x-1
+root 0 of 2*x^3+x^2+2*x-2
+root 0 of 2*x^3-2*x^2-x-2
+root 0 of x^3-3
+root 0 of x^3+x-3
+root 0 of x^3-x^2-3
+root 0 of x^3-x^2+x-3
+...
+
+QBarExhaustiveProvider_positiveAlgebraics_int_iv list 51
+root 0 of x^4-x^3-2*x+1
+root 1 of x^4-x^3-2*x+1
+root 0 of x^4-x^3-x^2-x+1
+root 1 of x^4-x^3-x^2-x+1
+root 0 of x^4-x^2-2*x+1
+root 1 of x^4-x^2-2*x+1
+root 0 of x^4-x^3-x^2-2*x+1
+root 1 of x^4-x^3-x^2-2*x+1
+root 0 of x^4-x^3-x^2-2*x+2
+root 1 of x^4-x^3-x^2-2*x+2
+root 0 of x^4-2*x^3-x+1
+root 1 of x^4-2*x^3-x+1
+root 0 of x^4-2*x^3-2*x+1
+root 1 of x^4-2*x^3-2*x+1
+root 0 of x^4-2*x^3+x^2-2*x+1
+root 1 of x^4-2*x^3+x^2-2*x+1
+root 0 of x^4-2*x^3-2*x+2
+root 1 of x^4-2*x^3-2*x+2
+root 0 of x^4-2*x^3-x^2+1
+root 1 of x^4-2*x^3-x^2+1
+root 0 of x^4-2*x^3-x^2-x+1
+root 1 of x^4-2*x^3-x^2-x+1
+root 0 of x^4-2*x^3-x^2-x+2
+root 1 of x^4-2*x^3-x^2-x+2
+root 0 of x^4-2*x^3-x^2-2*x+2
+root 1 of x^4-2*x^3-x^2-2*x+2
+root 1 of x^4+x-1
+root 1 of x^4-x^2-1
+root 1 of x^4+x^3-1
+root 1 of x^4+x^3-x^2+x-1
+root 1 of x^4-2
+root 1 of x^4-x^2+x-2
+root 1 of x^4+x^3+x-2
+root 1 of x^4+x^3-x^2-2
+root 1 of x^4-x-1
+root 1 of x^4+2*x-1
+root 1 of x^4+x^3+2*x-1
+root 1 of x^4+x^3-x^2-x-1
+root 1 of x^4+x^3-x^2+2*x-1
+root 1 of x^4+2*x-2
+root 1 of x^4-x^2-x-2
+root 1 of x^4+x^3-x-2
+root 1 of x^4+x^3+2*x-2
+root 1 of x^4+x^3-x^2-x-2
+root 1 of x^4+x^3-x^2+2*x-2
+root 1 of x^4+x^2-1
+root 1 of x^4-2*x^2-1
+root 1 of x^4-2*x^2+x-1
+root 1 of x^4+x^3+x^2+x-1
+root 1 of x^4+x^3-2*x^2-1
+...
+
+QBarExhaustiveProvider_positiveAlgebraics_int_v list 51
+root 0 of x^10-x^5-x^3-x+1
+root 1 of x^10-x^5-x^3-x+1
+root 0 of x^10-x^7-x^3-x+1
+root 1 of x^10-x^7-x^3-x+1
+root 0 of x^10-x^7-x^5-x+1
+root 1 of x^10-x^7-x^5-x+1
+root 0 of x^10-x^7-x^5-x^3+1
+root 1 of x^10-x^7-x^5-x^3+1
+root 0 of x^10-x^7-x^5-x^3+x^2-x+1
+root 1 of x^10-x^7-x^5-x^3+x^2-x+1
+root 0 of x^10-x^7-x^5+x^4-x^3-x+1
+root 1 of x^10-x^7-x^5+x^4-x^3-x+1
+root 0 of x^10-x^7+x^6-x^5-x^3-x+1
+root 1 of x^10-x^7+x^6-x^5-x^3-x+1
+root 0 of x^10+x^8-x^3-x+1
+root 1 of x^10+x^8-x^3-x+1
+root 0 of x^10+x^8+x^6-x^5-x^3-x+1
+root 1 of x^10+x^8+x^6-x^5-x^3-x+1
+root 0 of x^10+x^8-x^7-x^5-x^3-x+1
+root 1 of x^10+x^8-x^7-x^5-x^3-x+1
+root 0 of x^10-x^9-x^3-x+1
+root 1 of x^10-x^9-x^3-x+1
+root 0 of x^10-x^9-x^5-x+1
+root 1 of x^10-x^9-x^5-x+1
+root 0 of x^10-x^9-x^5-x^3+1
+root 1 of x^10-x^9-x^5-x^3+1
+root 0 of x^10-x^9-x^5-x^3-x+1
+root 1 of x^10-x^9-x^5-x^3-x+1
+root 0 of x^10-x^9-x^5-x^3+x^2-x+1
+root 1 of x^10-x^9-x^5-x^3+x^2-x+1
+root 0 of x^10-x^9-x^5+x^4-x^3-x+1
+root 1 of x^10-x^9-x^5+x^4-x^3-x+1
+root 0 of x^10-x^9+x^6-x^5-x^3-x+1
+root 1 of x^10-x^9+x^6-x^5-x^3-x+1
+root 0 of x^10-x^9-x^7-x+1
+root 1 of x^10-x^9-x^7-x+1
+root 0 of x^10-x^9-x^7+x^2+1
+root 1 of x^10-x^9-x^7+x^2+1
+root 0 of x^10-x^9-x^7-x^3+1
+root 1 of x^10-x^9-x^7-x^3+1
+root 0 of x^10-x^9-x^7-x^3+x^2-x+1
+root 1 of x^10-x^9-x^7-x^3+x^2-x+1
+root 0 of x^10-x^9-x^7+x^4-x^3-x+1
+root 1 of x^10-x^9-x^7+x^4-x^3-x+1
+root 0 of x^10-x^9-x^7-x^5+1
+root 1 of x^10-x^9-x^7-x^5+1
+root 0 of x^10-x^9-x^7-x^5-x+1
+root 1 of x^10-x^9-x^7-x^5-x+1
+root 0 of x^10-x^9-x^7-x^5+x^2-x+1
+root 1 of x^10-x^9-x^7-x^5+x^2-x+1
+...
+
+QBarExhaustiveProvider_positiveAlgebraics list 51
+1
+(-1+sqrt(5))/2
+2
+root 0 of x^3+x-1
+1/2
+sqrt(2)
+3
+root 0 of x^4-x^3-2*x+1
+4
+(1+sqrt(5))/2
+3/2
+root 0 of x^3-x^2-1
+1/3
+-1+sqrt(2)
+2/3
+root 0 of x^5-x^2-1
+1/4
+-1+sqrt(3)
+4/3
+root 0 of x^3-2
+3/4
+sqrt(3)
+5
+root 1 of x^4-x^3-2*x+1
+6
+(-1+sqrt(13))/2
+5/2
+root 0 of x^3-x^2-2
+7
+(-1+sqrt(17))/2
+8
+root 0 of x^6-x^5-x^3-x+1
+7/2
+(1+sqrt(13))/2
+5/3
+root 0 of x^3-x^2+x-2
+5/4
+(1+sqrt(17))/2
+7/3
+root 0 of x^4-x^3-x^2-x+1
+8/3
+-1+sqrt(5)
+7/4
+root 0 of x^3-x-1
+1/5
+(3-sqrt(5))/2
+2/5
+root 0 of x^5+x^3-1
+1/6
+(3+sqrt(5))/2
+...
+
+QBarExhaustiveProvider_negativeAlgebraics_int_i list 51
+-1
+-2
+-3
+-4
+-1/2
+-1/3
+-2/3
+-3/2
+-4/3
+-5
+-6
+-7
+-8
+-5/2
+-5/3
+-7/2
+-7/3
+-8/3
+-1/4
+-1/5
+-2/5
+-3/4
+-3/5
+-4/5
+-1/6
+-1/7
+-2/7
+-3/7
+-4/7
+-5/4
+-6/5
+-7/4
+-7/5
+-8/5
+-5/6
+-5/7
+-6/7
+-7/6
+-8/7
+-9
+-10
+-11
+-12
+-9/2
+-10/3
+-11/2
+-11/3
+-13
+-14
+-15
+...
+
+QBarExhaustiveProvider_negativeAlgebraics_int_ii list 51
+(-1-sqrt(5))/2
+-sqrt(2)
+(1-sqrt(5))/2
+-1-sqrt(2)
+-1-sqrt(3)
+-sqrt(3)
+(-1-sqrt(13))/2
+(-1-sqrt(17))/2
+(1-sqrt(13))/2
+(1-sqrt(17))/2
+-1-sqrt(5)
+(-3-sqrt(5))/2
+(-3+sqrt(5))/2
+1-sqrt(2)
+(-3-sqrt(13))/2
+1-sqrt(3)
+(-3-sqrt(17))/2
+(3-sqrt(13))/2
+-2-sqrt(5)
+(3-sqrt(17))/2
+-2-sqrt(6)
+(-3-sqrt(21))/2
+1-sqrt(5)
+(3-sqrt(21))/2
+-2-sqrt(7)
+-2-2*sqrt(2)
+-sqrt(2)/2
+(-1-sqrt(17))/4
+(-1-sqrt(3))/2
+(1-sqrt(17))/4
+-sqrt(3)/3
+(-1-sqrt(13))/6
+-sqrt(6)/3
+(1-sqrt(13))/6
+(-1-sqrt(7))/3
+-sqrt(6)/2
+(-1-sqrt(33))/4
+(-1-sqrt(7))/2
+(1-sqrt(33))/4
+(-1-sqrt(37))/6
+-2*sqrt(3)/3
+(1-sqrt(37))/6
+(-1-sqrt(10))/3
+(-1-sqrt(13))/3
+(1-sqrt(3))/2
+(-3-sqrt(17))/4
+(3-sqrt(17))/4
+(-2-sqrt(6))/2
+(-3-sqrt(21))/6
+(1-sqrt(7))/3
+...
+
+QBarExhaustiveProvider_negativeAlgebraics_int_iii list 51
+root 0 of x^3-x+1
+root 0 of x^3+x^2+1
+root 0 of x^3+x^2-x+1
+root 0 of x^3+2
+root 0 of x^3-x+2
+root 0 of x^3+x^2+2
+root 0 of x^3+x+1
+root 0 of x^3+x^2-2*x+1
+root 0 of x^3-2*x+2
+root 0 of x^3+x^2+x+2
+root 0 of x^3+x^2-2*x+2
+root 0 of x^3-x^2+1
+root 0 of x^3+2*x^2+1
+root 0 of x^3+2*x^2-x+1
+root 0 of x^3-x^2-x+2
+root 0 of x^3+2*x^2+2
+root 0 of x^3+2*x^2-x+2
+root 0 of x^3-x^2+x+1
+root 0 of x^3-x^2-2*x+1
+root 0 of x^3+2*x^2+x+1
+root 0 of x^3+2*x^2-2*x+1
+root 0 of x^3-x^2+x+2
+root 0 of x^3+2*x^2-2*x+2
+root 0 of x^3+3
+root 0 of x^3-x+3
+root 0 of x^3+x^2+3
+root 0 of x^3+x^2-x+3
+root 0 of x^3+4
+root 0 of x^3-x+4
+root 0 of x^3+x^2-x+4
+root 0 of x^3+x+3
+root 0 of x^3-2*x+3
+root 0 of x^3+x^2+x+3
+root 0 of x^3+x^2-2*x+3
+root 0 of x^3+x+4
+root 0 of x^3+x^2+x+4
+root 0 of x^3+x^2-2*x+4
+root 0 of x^3-x^2+3
+root 0 of x^3-x^2-x+3
+root 0 of x^3+2*x^2+3
+root 0 of x^3+2*x^2-x+3
+root 0 of x^3-x^2+4
+root 0 of x^3-x^2-x+4
+root 0 of x^3+2*x^2+4
+root 0 of x^3+2*x^2-x+4
+root 0 of x^3-x^2-2*x+3
+root 0 of x^3+2*x^2+x+3
+root 0 of x^3-x^2+x+4
+root 0 of x^3-x^2-2*x+4
+root 0 of x^3+2*x^2+x+4
+...
+
+QBarExhaustiveProvider_negativeAlgebraics_int_iv list 51
+root 0 of x^4+x^3-x^2+x+1
+root 1 of x^4+x^3-x^2+x+1
+root 0 of x^4+x-1
+root 0 of x^4-x^2-1
+root 0 of x^4+x^3-1
+root 0 of x^4+x^3-x^2+x-1
+root 0 of x^4-2
+root 0 of x^4-x^2+x-2
+root 0 of x^4+x^3+x-2
+root 0 of x^4+x^3-x^2-2
+root 0 of x^4-x-1
+root 0 of x^4+2*x-1
+root 0 of x^4+x^3+2*x-1
+root 0 of x^4+x^3-x^2-x-1
+root 0 of x^4+x^3-x^2+2*x-1
+root 0 of x^4+2*x-2
+root 0 of x^4-x^2-x-2
+root 0 of x^4+x^3-x-2
+root 0 of x^4+x^3+2*x-2
+root 0 of x^4+x^3-x^2-x-2
+root 0 of x^4+x^3-x^2+2*x-2
+root 0 of x^4+x^2-1
+root 0 of x^4-2*x^2-1
+root 0 of x^4-2*x^2+x-1
+root 0 of x^4+x^3+x^2+x-1
+root 0 of x^4+x^3-2*x^2-1
+root 0 of x^4+x^2+x-2
+root 0 of x^4-2*x^2-2
+root 0 of x^4-2*x^2+x-2
+root 0 of x^4+x^3+x^2-2
+root 0 of x^4+x^3+x^2+x-2
+root 0 of x^4+x^3-2*x^2-2
+root 0 of x^4+x^3-2*x^2+x-2
+root 0 of x^4+x^2+2*x-1
+root 0 of x^4-2*x^2-x-1
+root 0 of x^4+x^3+x^2-x-1
+root 0 of x^4+x^3+x^2+2*x-1
+root 0 of x^4+x^3-2*x^2-x-1
+root 0 of x^4+x^3-2*x^2+2*x-1
+root 0 of x^4+x^2-x-2
+root 0 of x^4+x^2+2*x-2
+root 0 of x^4-2*x^2-x-2
+root 0 of x^4-2*x^2+2*x-2
+root 0 of x^4-x^3-1
+root 0 of x^4-x^3-x^2+x-1
+root 0 of x^4+2*x^3-1
+root 0 of x^4+2*x^3+x-1
+root 0 of x^4+2*x^3-x^2-1
+root 0 of x^4+2*x^3-x^2+x-1
+root 0 of x^4-x^3+x-2
+...
+
+QBarExhaustiveProvider_negativeAlgebraics_int_v list 51
+root 0 of x^10-x^5-x^2+x+1
+root 1 of x^10-x^5-x^2+x+1
+root 0 of x^10+x^6-x^2+x+1
+root 1 of x^10+x^6-x^2+x+1
+root 0 of x^10-x^7-x^2+x+1
+root 1 of x^10-x^7-x^2+x+1
+root 0 of x^10+x^8-x^2+x+1
+root 1 of x^10+x^8-x^2+x+1
+root 0 of x^10+x^8-x^7-x^2+x+1
+root 1 of x^10+x^8-x^7-x^2+x+1
+root 0 of x^10-x^9-x^2+x+1
+root 1 of x^10-x^9-x^2+x+1
+root 0 of x^10-x^9+x^8-x^2+x+1
+root 1 of x^10-x^9+x^8-x^2+x+1
+root 0 of x^10+x^8+x^3+x+1
+root 1 of x^10+x^8+x^3+x+1
+root 0 of x^10-x^9+x^3+x+1
+root 1 of x^10-x^9+x^3+x+1
+root 0 of x^10+x^3-x^2+x+1
+root 1 of x^10+x^3-x^2+x+1
+root 0 of x^10-x^5+x^4+x^3-x^2+x+1
+root 1 of x^10-x^5+x^4+x^3-x^2+x+1
+root 0 of x^10+x^6+x^4+x^3-x^2+x+1
+root 1 of x^10+x^6+x^4+x^3-x^2+x+1
+root 0 of x^10+x^6-x^5+x^3-x^2+x+1
+root 1 of x^10+x^6-x^5+x^3-x^2+x+1
+root 0 of x^10-x^7+x^4+x^3-x^2+x+1
+root 1 of x^10-x^7+x^4+x^3-x^2+x+1
+root 0 of x^10-x^7-x^5+x^3-x^2+x+1
+root 1 of x^10-x^7-x^5+x^3-x^2+x+1
+root 0 of x^10-x^7-x^5+x^4+x^3-x^2+x+1
+root 1 of x^10-x^7-x^5+x^4+x^3-x^2+x+1
+root 0 of x^10-x^7+x^6+x^3-x^2+x+1
+root 1 of x^10-x^7+x^6+x^3-x^2+x+1
+root 0 of x^10-x^7+x^6+x^4+x^3-x^2+x+1
+root 1 of x^10-x^7+x^6+x^4+x^3-x^2+x+1
+root 0 of x^10+x^8+x^4+x^3-x^2+x+1
+root 1 of x^10+x^8+x^4+x^3-x^2+x+1
+root 0 of x^10+x^8-x^5+x^3-x^2+x+1
+root 1 of x^10+x^8-x^5+x^3-x^2+x+1
+root 0 of x^10+x^8-x^5+x^4+x^3-x^2+x+1
+root 1 of x^10+x^8-x^5+x^4+x^3-x^2+x+1
+root 0 of x^10+x^8+x^6+x^3-x^2+x+1
+root 1 of x^10+x^8+x^6+x^3-x^2+x+1
+root 0 of x^10+x^8+x^6+x^4+x^3-x^2+x+1
+root 1 of x^10+x^8+x^6+x^4+x^3-x^2+x+1
+root 0 of x^10+x^8+x^6-x^5+x^3-x^2+x+1
+root 1 of x^10+x^8+x^6-x^5+x^3-x^2+x+1
+root 0 of x^10+x^8-x^7+x^3-x^2+x+1
+root 1 of x^10+x^8-x^7+x^3-x^2+x+1
+...
+
+QBarExhaustiveProvider_negativeAlgebraics list 51
+-1
+(-1-sqrt(5))/2
+-2
+root 0 of x^3-x+1
+-3
+-sqrt(2)
+-4
+root 0 of x^4+x^3-x^2+x+1
+-1/2
+(1-sqrt(5))/2
+-1/3
+root 0 of x^3+x^2+1
+-2/3
+-1-sqrt(2)
+-3/2
+root 0 of x^5-x^3+x^2-x-1
+-4/3
+-1-sqrt(3)
+-5
+root 0 of x^3+x^2-x+1
+-6
+-sqrt(3)
+-7
+root 1 of x^4+x^3-x^2+x+1
+-8
+(-1-sqrt(13))/2
+-5/2
+root 0 of x^3+2
+-5/3
+(-1-sqrt(17))/2
+-7/2
+root 0 of x^6+x^3-x^2+x+1
+-7/3
+(1-sqrt(13))/2
+-8/3
+root 0 of x^3-x+2
+-1/4
+(1-sqrt(17))/2
+-1/5
+root 0 of x^4+x-1
+-2/5
+-1-sqrt(5)
+-3/4
+root 0 of x^3+x^2+2
+-3/5
+(-3-sqrt(5))/2
+-4/5
+root 1 of x^5-x^3+x^2-x-1
+-1/6
+(-3+sqrt(5))/2
+...
+
+QBarExhaustiveProvider_nonzeroAlgebraics_int_i list 51
+1
+2
+-1
+1/2
+-2
+3
+4
+-3
+3/2
+-4
+-1/2
+1/3
+2/3
+-1/3
+1/4
+-2/3
+-3/2
+4/3
+3/4
+-4/3
+5
+6
+-5
+5/2
+-6
+7
+8
+-7
+7/2
+-8
+-5/2
+5/3
+-5/3
+5/4
+-7/2
+7/3
+8/3
+-7/3
+7/4
+-8/3
+-1/4
+1/5
+2/5
+-1/5
+1/6
+-2/5
+-3/4
+3/5
+4/5
+-3/5
+...
+
+QBarExhaustiveProvider_nonzeroAlgebraics_int_ii list 51
+(-1+sqrt(5))/2
+(-1-sqrt(5))/2
+sqrt(2)
+-sqrt(2)
+(1+sqrt(5))/2
+(1-sqrt(5))/2
+-1+sqrt(2)
+-1-sqrt(2)
+-1+sqrt(3)
+-1-sqrt(3)
+sqrt(3)
+-sqrt(3)
+(-1+sqrt(13))/2
+(-1-sqrt(13))/2
+(-1+sqrt(17))/2
+(-1-sqrt(17))/2
+(1+sqrt(13))/2
+(1-sqrt(13))/2
+(1+sqrt(17))/2
+(1-sqrt(17))/2
+-1+sqrt(5)
+-1-sqrt(5)
+(3-sqrt(5))/2
+(3+sqrt(5))/2
+(-3-sqrt(5))/2
+(-3+sqrt(5))/2
+2-sqrt(3)
+2+sqrt(3)
+2-sqrt(2)
+2+sqrt(2)
+1+sqrt(2)
+1-sqrt(2)
+(-3+sqrt(13))/2
+(-3-sqrt(13))/2
+1+sqrt(3)
+1-sqrt(3)
+(-3+sqrt(17))/2
+(-3-sqrt(17))/2
+(3+sqrt(13))/2
+(3-sqrt(13))/2
+-2+sqrt(5)
+-2-sqrt(5)
+(2-sqrt(2))/2
+(2+sqrt(2))/2
+(3+sqrt(17))/2
+(3-sqrt(17))/2
+-2+sqrt(6)
+-2-sqrt(6)
+(-3+sqrt(21))/2
+(-3-sqrt(21))/2
+...
+
+QBarExhaustiveProvider_nonzeroAlgebraics_int_iii list 51
+root 0 of x^3+x-1
+root 0 of x^3-x^2-1
+root 0 of x^3-2
+root 0 of x^3-x^2-2
+root 0 of x^3-x^2+x-2
+root 0 of x^3-x-1
+root 0 of x^3+2*x-1
+root 0 of x^3-x^2-x-1
+root 0 of x^3-x^2+2*x-1
+root 0 of x^3-x-2
+root 0 of x^3+2*x-2
+root 0 of x^3+x^2-1
+root 0 of x^3+x^2+x-1
+root 0 of x^3-2*x^2-1
+root 0 of x^3-2*x^2+x-1
+root 0 of x^3+x^2+x-2
+root 0 of x^3-2*x^2-2
+root 0 of x^3+x^2+2*x-1
+root 0 of x^3-2*x^2-x-1
+root 0 of x^3+x^2-x-2
+root 0 of x^3+x^2+2*x-2
+root 0 of x^3-2*x^2-x-2
+root 0 of x^3-2*x^2+2*x-2
+root 0 of x^3-x+1
+root 0 of x^3+x^2+1
+root 0 of x^3+x^2-x+1
+root 0 of 2*x^3-1
+root 0 of 2*x^3+x-1
+root 0 of 2*x^3-x^2+x-1
+root 0 of x^3+2
+root 0 of x^3-x+2
+root 0 of x^3+x^2+2
+root 0 of 2*x^3+x-2
+root 0 of 2*x^3-x^2-2
+root 0 of x^3+x+1
+root 0 of x^3+x^2-2*x+1
+root 0 of 2*x^3+2*x-1
+root 0 of 2*x^3-x^2-x-1
+root 0 of x^3-2*x+2
+root 0 of x^3+x^2+x+2
+root 0 of x^3+x^2-2*x+2
+root 0 of 2*x^3-x-2
+root 0 of 2*x^3-x^2-x-2
+root 0 of 2*x^3-x^2+2*x-2
+root 0 of x^3-x^2+1
+root 0 of x^3+2*x^2+1
+root 0 of x^3+2*x^2-x+1
+root 0 of 2*x^3+x^2-1
+root 0 of 2*x^3-2*x^2-1
+root 0 of x^3-x^2-x+2
+...
+
+QBarExhaustiveProvider_nonzeroAlgebraics_int_iv list 51
+root 0 of x^4-x^3-2*x+1
+root 1 of x^4-x^3-2*x+1
+root 0 of x^4-x^3-x^2-x+1
+root 1 of x^4-x^3-x^2-x+1
+root 0 of x^4-x^2-2*x+1
+root 1 of x^4-x^2-2*x+1
+root 0 of x^4-x^3-x^2-2*x+1
+root 1 of x^4-x^3-x^2-2*x+1
+root 0 of x^4-x^3-x^2-2*x+2
+root 1 of x^4-x^3-x^2-2*x+2
+root 0 of x^4-2*x^3-x+1
+root 1 of x^4-2*x^3-x+1
+root 0 of x^4-2*x^3-2*x+1
+root 1 of x^4-2*x^3-2*x+1
+root 0 of x^4-2*x^3+x^2-2*x+1
+root 1 of x^4-2*x^3+x^2-2*x+1
+root 0 of x^4-2*x^3-2*x+2
+root 1 of x^4-2*x^3-2*x+2
+root 0 of x^4-2*x^3-x^2+1
+root 1 of x^4-2*x^3-x^2+1
+root 0 of x^4-2*x^3-x^2-x+1
+root 1 of x^4-2*x^3-x^2-x+1
+root 0 of x^4-2*x^3-x^2-x+2
+root 1 of x^4-2*x^3-x^2-x+2
+root 0 of x^4+x^3-x^2+x+1
+root 1 of x^4+x^3-x^2+x+1
+root 0 of x^4-2*x^3-x^2-2*x+2
+root 1 of x^4-2*x^3-x^2-2*x+2
+root 1 of x^4+x-1
+root 0 of x^4+x-1
+root 1 of x^4-x^2-1
+root 0 of x^4-x^2-1
+root 1 of x^4+x^3-1
+root 0 of x^4+x^3-1
+root 1 of x^4+x^3-x^2+x-1
+root 0 of x^4+x^3-x^2+x-1
+root 1 of x^4-2
+root 0 of x^4-2
+root 1 of x^4-x^2+x-2
+root 0 of x^4-x^2+x-2
+root 1 of x^4+x^3+x-2
+root 0 of x^4+x^3+x-2
+root 1 of x^4+x^3-x^2-2
+root 0 of x^4+x^3-x^2-2
+root 1 of x^4-x-1
+root 0 of x^4-x-1
+root 1 of x^4+2*x-1
+root 0 of x^4+2*x-1
+root 1 of x^4+x^3+2*x-1
+root 0 of x^4+x^3+2*x-1
+...
+
+QBarExhaustiveProvider_nonzeroAlgebraics_int_v list 51
+root 0 of x^10-x^5-x^3-x+1
+root 1 of x^10-x^5-x^3-x+1
+root 0 of x^10-x^7-x^3-x+1
+root 1 of x^10-x^7-x^3-x+1
+root 0 of x^10-x^7-x^5-x+1
+root 1 of x^10-x^7-x^5-x+1
+root 0 of x^10-x^7-x^5-x^3+1
+root 1 of x^10-x^7-x^5-x^3+1
+root 0 of x^10-x^7-x^5-x^3+x^2-x+1
+root 1 of x^10-x^7-x^5-x^3+x^2-x+1
+root 0 of x^10-x^7-x^5+x^4-x^3-x+1
+root 1 of x^10-x^7-x^5+x^4-x^3-x+1
+root 0 of x^10-x^7+x^6-x^5-x^3-x+1
+root 1 of x^10-x^7+x^6-x^5-x^3-x+1
+root 0 of x^10+x^8-x^3-x+1
+root 1 of x^10+x^8-x^3-x+1
+root 0 of x^10+x^8+x^6-x^5-x^3-x+1
+root 1 of x^10+x^8+x^6-x^5-x^3-x+1
+root 0 of x^10+x^8-x^7-x^5-x^3-x+1
+root 1 of x^10+x^8-x^7-x^5-x^3-x+1
+root 0 of x^10-x^9-x^3-x+1
+root 1 of x^10-x^9-x^3-x+1
+root 0 of x^10-x^9-x^5-x+1
+root 1 of x^10-x^9-x^5-x+1
+root 0 of x^10-x^9-x^5-x^3+1
+root 1 of x^10-x^9-x^5-x^3+1
+root 0 of x^10-x^9-x^5-x^3-x+1
+root 1 of x^10-x^9-x^5-x^3-x+1
+root 0 of x^10-x^9-x^5-x^3+x^2-x+1
+root 1 of x^10-x^9-x^5-x^3+x^2-x+1
+root 0 of x^10-x^9-x^5+x^4-x^3-x+1
+root 1 of x^10-x^9-x^5+x^4-x^3-x+1
+root 0 of x^10-x^9+x^6-x^5-x^3-x+1
+root 1 of x^10-x^9+x^6-x^5-x^3-x+1
+root 0 of x^10-x^9-x^7-x+1
+root 1 of x^10-x^9-x^7-x+1
+root 0 of x^10-x^9-x^7+x^2+1
+root 1 of x^10-x^9-x^7+x^2+1
+root 0 of x^10-x^9-x^7-x^3+1
+root 1 of x^10-x^9-x^7-x^3+1
+root 0 of x^10-x^9-x^7-x^3+x^2-x+1
+root 1 of x^10-x^9-x^7-x^3+x^2-x+1
+root 0 of x^10-x^9-x^7+x^4-x^3-x+1
+root 1 of x^10-x^9-x^7+x^4-x^3-x+1
+root 0 of x^10-x^9-x^7-x^5+1
+root 1 of x^10-x^9-x^7-x^5+1
+root 0 of x^10-x^9-x^7-x^5-x+1
+root 1 of x^10-x^9-x^7-x^5-x+1
+root 0 of x^10-x^9-x^7-x^5+x^2-x+1
+root 1 of x^10-x^9-x^7-x^5+x^2-x+1
+...
+
+QBarExhaustiveProvider_nonzeroAlgebraics list 51
+(-1+sqrt(5))/2
+1
+root 0 of x^3+x-1
+2
+(-1-sqrt(5))/2
+-1
+root 0 of x^4-x^3-2*x+1
+1/2
+sqrt(2)
+-2
+root 0 of x^3-x^2-1
+3
+-sqrt(2)
+4
+root 0 of x^5-x^2-1
+-3
+(1+sqrt(5))/2
+3/2
+root 0 of x^3-2
+-4
+(1-sqrt(5))/2
+-1/2
+root 1 of x^4-x^3-2*x+1
+1/3
+-1+sqrt(2)
+2/3
+root 0 of x^3-x^2-2
+-1/3
+-1-sqrt(2)
+1/4
+root 0 of x^6-x^5-x^3-x+1
+-2/3
+-1+sqrt(3)
+-3/2
+root 0 of x^3-x^2+x-2
+4/3
+-1-sqrt(3)
+3/4
+root 0 of x^4-x^3-x^2-x+1
+-4/3
+sqrt(3)
+5
+root 0 of x^3-x-1
+6
+-sqrt(3)
+-5
+root 0 of x^5+x^3-1
+5/2
+(-1+sqrt(13))/2
+-6
+...
+
+QBarExhaustiveProvider_algebraics_int_i list 51
+0
+1
+2
+-1
+1/2
+-2
+3
+4
+-3
+3/2
+-4
+-1/2
+1/3
+2/3
+-1/3
+1/4
+-2/3
+-3/2
+4/3
+3/4
+-4/3
+5
+6
+-5
+5/2
+-6
+7
+8
+-7
+7/2
+-8
+-5/2
+5/3
+-5/3
+5/4
+-7/2
+7/3
+8/3
+-7/3
+7/4
+-8/3
+-1/4
+1/5
+2/5
+-1/5
+1/6
+-2/5
+-3/4
+3/5
+4/5
+...
+
+QBarExhaustiveProvider_algebraics_int_ii list 51
+(-1+sqrt(5))/2
+(-1-sqrt(5))/2
+sqrt(2)
+-sqrt(2)
+(1+sqrt(5))/2
+(1-sqrt(5))/2
+-1+sqrt(2)
+-1-sqrt(2)
+-1+sqrt(3)
+-1-sqrt(3)
+sqrt(3)
+-sqrt(3)
+(-1+sqrt(13))/2
+(-1-sqrt(13))/2
+(-1+sqrt(17))/2
+(-1-sqrt(17))/2
+(1+sqrt(13))/2
+(1-sqrt(13))/2
+(1+sqrt(17))/2
+(1-sqrt(17))/2
+-1+sqrt(5)
+-1-sqrt(5)
+(3-sqrt(5))/2
+(3+sqrt(5))/2
+(-3-sqrt(5))/2
+(-3+sqrt(5))/2
+2-sqrt(3)
+2+sqrt(3)
+2-sqrt(2)
+2+sqrt(2)
+1+sqrt(2)
+1-sqrt(2)
+(-3+sqrt(13))/2
+(-3-sqrt(13))/2
+1+sqrt(3)
+1-sqrt(3)
+(-3+sqrt(17))/2
+(-3-sqrt(17))/2
+(3+sqrt(13))/2
+(3-sqrt(13))/2
+-2+sqrt(5)
+-2-sqrt(5)
+(2-sqrt(2))/2
+(2+sqrt(2))/2
+(3+sqrt(17))/2
+(3-sqrt(17))/2
+-2+sqrt(6)
+-2-sqrt(6)
+(-3+sqrt(21))/2
+(-3-sqrt(21))/2
+...
+
+QBarExhaustiveProvider_algebraics_int_iii list 51
+root 0 of x^3+x-1
+root 0 of x^3-x^2-1
+root 0 of x^3-2
+root 0 of x^3-x^2-2
+root 0 of x^3-x^2+x-2
+root 0 of x^3-x-1
+root 0 of x^3+2*x-1
+root 0 of x^3-x^2-x-1
+root 0 of x^3-x^2+2*x-1
+root 0 of x^3-x-2
+root 0 of x^3+2*x-2
+root 0 of x^3+x^2-1
+root 0 of x^3+x^2+x-1
+root 0 of x^3-2*x^2-1
+root 0 of x^3-2*x^2+x-1
+root 0 of x^3+x^2+x-2
+root 0 of x^3-2*x^2-2
+root 0 of x^3+x^2+2*x-1
+root 0 of x^3-2*x^2-x-1
+root 0 of x^3+x^2-x-2
+root 0 of x^3+x^2+2*x-2
+root 0 of x^3-2*x^2-x-2
+root 0 of x^3-2*x^2+2*x-2
+root 0 of x^3-x+1
+root 0 of x^3+x^2+1
+root 0 of x^3+x^2-x+1
+root 0 of 2*x^3-1
+root 0 of 2*x^3+x-1
+root 0 of 2*x^3-x^2+x-1
+root 0 of x^3+2
+root 0 of x^3-x+2
+root 0 of x^3+x^2+2
+root 0 of 2*x^3+x-2
+root 0 of 2*x^3-x^2-2
+root 0 of x^3+x+1
+root 0 of x^3+x^2-2*x+1
+root 0 of 2*x^3+2*x-1
+root 0 of 2*x^3-x^2-x-1
+root 0 of x^3-2*x+2
+root 0 of x^3+x^2+x+2
+root 0 of x^3+x^2-2*x+2
+root 0 of 2*x^3-x-2
+root 0 of 2*x^3-x^2-x-2
+root 0 of 2*x^3-x^2+2*x-2
+root 0 of x^3-x^2+1
+root 0 of x^3+2*x^2+1
+root 0 of x^3+2*x^2-x+1
+root 0 of 2*x^3+x^2-1
+root 0 of 2*x^3-2*x^2-1
+root 0 of x^3-x^2-x+2
+...
+
+QBarExhaustiveProvider_algebraics_int_iv list 51
+root 0 of x^4-x^3-2*x+1
+root 1 of x^4-x^3-2*x+1
+root 0 of x^4-x^3-x^2-x+1
+root 1 of x^4-x^3-x^2-x+1
+root 0 of x^4-x^2-2*x+1
+root 1 of x^4-x^2-2*x+1
+root 0 of x^4-x^3-x^2-2*x+1
+root 1 of x^4-x^3-x^2-2*x+1
+root 0 of x^4-x^3-x^2-2*x+2
+root 1 of x^4-x^3-x^2-2*x+2
+root 0 of x^4-2*x^3-x+1
+root 1 of x^4-2*x^3-x+1
+root 0 of x^4-2*x^3-2*x+1
+root 1 of x^4-2*x^3-2*x+1
+root 0 of x^4-2*x^3+x^2-2*x+1
+root 1 of x^4-2*x^3+x^2-2*x+1
+root 0 of x^4-2*x^3-2*x+2
+root 1 of x^4-2*x^3-2*x+2
+root 0 of x^4-2*x^3-x^2+1
+root 1 of x^4-2*x^3-x^2+1
+root 0 of x^4-2*x^3-x^2-x+1
+root 1 of x^4-2*x^3-x^2-x+1
+root 0 of x^4-2*x^3-x^2-x+2
+root 1 of x^4-2*x^3-x^2-x+2
+root 0 of x^4+x^3-x^2+x+1
+root 1 of x^4+x^3-x^2+x+1
+root 0 of x^4-2*x^3-x^2-2*x+2
+root 1 of x^4-2*x^3-x^2-2*x+2
+root 1 of x^4+x-1
+root 0 of x^4+x-1
+root 1 of x^4-x^2-1
+root 0 of x^4-x^2-1
+root 1 of x^4+x^3-1
+root 0 of x^4+x^3-1
+root 1 of x^4+x^3-x^2+x-1
+root 0 of x^4+x^3-x^2+x-1
+root 1 of x^4-2
+root 0 of x^4-2
+root 1 of x^4-x^2+x-2
+root 0 of x^4-x^2+x-2
+root 1 of x^4+x^3+x-2
+root 0 of x^4+x^3+x-2
+root 1 of x^4+x^3-x^2-2
+root 0 of x^4+x^3-x^2-2
+root 1 of x^4-x-1
+root 0 of x^4-x-1
+root 1 of x^4+2*x-1
+root 0 of x^4+2*x-1
+root 1 of x^4+x^3+2*x-1
+root 0 of x^4+x^3+2*x-1
+...
+
+QBarExhaustiveProvider_algebraics_int_v list 51
+root 0 of x^10-x^5-x^3-x+1
+root 1 of x^10-x^5-x^3-x+1
+root 0 of x^10-x^7-x^3-x+1
+root 1 of x^10-x^7-x^3-x+1
+root 0 of x^10-x^7-x^5-x+1
+root 1 of x^10-x^7-x^5-x+1
+root 0 of x^10-x^7-x^5-x^3+1
+root 1 of x^10-x^7-x^5-x^3+1
+root 0 of x^10-x^7-x^5-x^3+x^2-x+1
+root 1 of x^10-x^7-x^5-x^3+x^2-x+1
+root 0 of x^10-x^7-x^5+x^4-x^3-x+1
+root 1 of x^10-x^7-x^5+x^4-x^3-x+1
+root 0 of x^10-x^7+x^6-x^5-x^3-x+1
+root 1 of x^10-x^7+x^6-x^5-x^3-x+1
+root 0 of x^10+x^8-x^3-x+1
+root 1 of x^10+x^8-x^3-x+1
+root 0 of x^10+x^8+x^6-x^5-x^3-x+1
+root 1 of x^10+x^8+x^6-x^5-x^3-x+1
+root 0 of x^10+x^8-x^7-x^5-x^3-x+1
+root 1 of x^10+x^8-x^7-x^5-x^3-x+1
+root 0 of x^10-x^9-x^3-x+1
+root 1 of x^10-x^9-x^3-x+1
+root 0 of x^10-x^9-x^5-x+1
+root 1 of x^10-x^9-x^5-x+1
+root 0 of x^10-x^9-x^5-x^3+1
+root 1 of x^10-x^9-x^5-x^3+1
+root 0 of x^10-x^9-x^5-x^3-x+1
+root 1 of x^10-x^9-x^5-x^3-x+1
+root 0 of x^10-x^9-x^5-x^3+x^2-x+1
+root 1 of x^10-x^9-x^5-x^3+x^2-x+1
+root 0 of x^10-x^9-x^5+x^4-x^3-x+1
+root 1 of x^10-x^9-x^5+x^4-x^3-x+1
+root 0 of x^10-x^9+x^6-x^5-x^3-x+1
+root 1 of x^10-x^9+x^6-x^5-x^3-x+1
+root 0 of x^10-x^9-x^7-x+1
+root 1 of x^10-x^9-x^7-x+1
+root 0 of x^10-x^9-x^7+x^2+1
+root 1 of x^10-x^9-x^7+x^2+1
+root 0 of x^10-x^9-x^7-x^3+1
+root 1 of x^10-x^9-x^7-x^3+1
+root 0 of x^10-x^9-x^7-x^3+x^2-x+1
+root 1 of x^10-x^9-x^7-x^3+x^2-x+1
+root 0 of x^10-x^9-x^7+x^4-x^3-x+1
+root 1 of x^10-x^9-x^7+x^4-x^3-x+1
+root 0 of x^10-x^9-x^7-x^5+1
+root 1 of x^10-x^9-x^7-x^5+1
+root 0 of x^10-x^9-x^7-x^5-x+1
+root 1 of x^10-x^9-x^7-x^5-x+1
+root 0 of x^10-x^9-x^7-x^5+x^2-x+1
+root 1 of x^10-x^9-x^7-x^5+x^2-x+1
+...
+
+QBarExhaustiveProvider_algebraics list 51
+0
+(-1+sqrt(5))/2
+1
+root 0 of x^3+x-1
+2
+(-1-sqrt(5))/2
+-1
+root 0 of x^4-x^3-2*x+1
+1/2
+sqrt(2)
+-2
+root 0 of x^3-x^2-1
+3
+-sqrt(2)
+4
+root 0 of x^5-x^2-1
+-3
+(1+sqrt(5))/2
+3/2
+root 0 of x^3-2
+-4
+(1-sqrt(5))/2
+-1/2
+root 1 of x^4-x^3-2*x+1
+1/3
+-1+sqrt(2)
+2/3
+root 0 of x^3-x^2-2
+-1/3
+-1-sqrt(2)
+1/4
+root 0 of x^6-x^5-x^3-x+1
+-2/3
+-1+sqrt(3)
+-3/2
+root 0 of x^3-x^2+x-2
+4/3
+-1-sqrt(3)
+3/4
+root 0 of x^4-x^3-x^2-x+1
+-4/3
+sqrt(3)
+5
+root 0 of x^3-x-1
+6
+-sqrt(3)
+-5
+root 0 of x^5+x^3-1
+5/2
+(-1+sqrt(13))/2
+...
+
+QBarExhaustiveProvider_nonNegativeAlgebraicsLessThanOne_int_i list 51
+0
+1/2
+1/3
+1/4
+2/3
+3/4
+1/5
+1/6
+1/7
+1/8
+2/5
+3/5
+2/7
+3/7
+3/8
+4/5
+5/6
+4/7
+5/7
+5/8
+6/7
+7/8
+1/9
+1/10
+1/11
+1/12
+2/9
+3/10
+2/11
+3/11
+1/13
+1/14
+1/15
+1/16
+2/13
+3/13
+3/14
+2/15
+3/16
+4/9
+5/9
+4/11
+5/11
+5/12
+7/9
+7/10
+6/11
+7/11
+7/12
+4/13
+...
+
+QBarExhaustiveProvider_nonNegativeAlgebraicsLessThanOne_int_ii list 51
+(-1+sqrt(5))/2
+sqrt(2)/2
+-1+sqrt(2)
+(-1+sqrt(3))/2
+sqrt(3)/3
+(-1+sqrt(13))/6
+(-1+sqrt(17))/8
+(1+sqrt(13))/6
+(1+sqrt(17))/8
+(-1+sqrt(5))/4
+(3-sqrt(5))/2
+(-3+sqrt(13))/2
+(-3+sqrt(17))/4
+-2+sqrt(5)
+(-2+sqrt(6))/2
+(-3+sqrt(21))/6
+(1+sqrt(5))/4
+(-2+sqrt(7))/3
+(-1+sqrt(2))/2
+(-1+sqrt(17))/4
+-1+sqrt(3)
+(-1+sqrt(7))/2
+sqrt(6)/3
+(-1+sqrt(33))/8
+(-1+sqrt(7))/3
+(1+sqrt(33))/8
+(-1+sqrt(37))/6
+sqrt(3)/2
+(-1+sqrt(10))/3
+(-1+sqrt(13))/4
+(-3+sqrt(17))/2
+-2+sqrt(6)
+(-3+sqrt(21))/2
+(-3+sqrt(33))/4
+-2+sqrt(7)
+(-2+sqrt(10))/2
+(-3+sqrt(33))/6
+(-3+sqrt(41))/8
+(-2+sqrt(10))/3
+(-3+sqrt(57))/8
+(-2+sqrt(13))/3
+sqrt(5)/5
+(-1+sqrt(21))/10
+sqrt(6)/6
+(1+sqrt(21))/10
+(-1+sqrt(6))/5
+(-1+sqrt(7))/6
+sqrt(7)/7
+(-1+sqrt(29))/14
+sqrt(2)/4
+...
+
+QBarExhaustiveProvider_nonNegativeAlgebraicsLessThanOne_int_iii list 51
+root 0 of x^3+x^2-1
+root 0 of x^3+x-1
+root 0 of x^3+x^2+x-1
+root 0 of 2*x^3-1
+root 0 of 2*x^3+x^2-1
+root 0 of 2*x^3+x-1
+root 0 of x^3+2*x^2+x-1
+root 0 of 2*x^3+2*x^2-1
+root 0 of 2*x^3-x^2+x-1
+root 0 of 2*x^3+2*x^2+x-1
+root 0 of x^3+2*x-1
+root 0 of x^3+x^2+2*x-1
+root 0 of 2*x^3+x^2-x-1
+root 0 of 2*x^3+2*x-1
+root 0 of 2*x^3+x^2+2*x-1
+root 2 of x^3+2*x^2-x-1
+root 0 of x^3-x^2+2*x-1
+root 0 of x^3+2*x^2+2*x-1
+root 0 of 2*x^3+2*x^2+2*x-1
+root 0 of 3*x^3-1
+root 0 of 3*x^3+x^2-1
+root 0 of 3*x^3+x-1
+root 0 of 3*x^3+x^2+x-1
+root 0 of 4*x^3-1
+root 0 of 4*x^3+x^2-1
+root 0 of 4*x^3+x^2+x-1
+root 0 of 3*x^3-x^2-1
+root 0 of 3*x^3+2*x^2-1
+root 0 of 3*x^3-x^2+x-1
+root 0 of 3*x^3+2*x^2+x-1
+root 0 of 4*x^3-x^2-1
+root 0 of 4*x^3-x^2+x-1
+root 0 of 4*x^3+2*x^2+x-1
+root 0 of 3*x^3-x-1
+root 0 of 3*x^3+x^2-x-1
+root 0 of 3*x^3+2*x-1
+root 0 of 3*x^3+x^2+2*x-1
+root 0 of 4*x^3-x-1
+root 0 of 4*x^3+x^2-x-1
+root 0 of 4*x^3+2*x-1
+root 0 of 4*x^3+x^2+2*x-1
+root 0 of 3*x^3+2*x^2-x-1
+root 0 of 3*x^3-x^2+2*x-1
+root 0 of 4*x^3-x^2-x-1
+root 0 of 4*x^3+2*x^2-x-1
+root 0 of 4*x^3-x^2+2*x-1
+root 0 of 4*x^3+2*x^2+2*x-1
+root 1 of x^3-3*x^2+1
+root 1 of x^3-2*x^2-x+1
+root 1 of x^3-3*x^2-x+1
+...
+
+QBarExhaustiveProvider_nonNegativeAlgebraicsLessThanOne_int_iv list 51
+root 0 of x^4-x^3-x^2-x+1
+root 1 of x^4+x^3-1
+root 1 of x^4+x^2-1
+root 1 of x^4+x-1
+root 1 of x^4+x^3+x^2+x-1
+root 1 of 2*x^4-1
+root 1 of 2*x^4+x^3+x^2-1
+root 1 of 2*x^4+x^3+x-1
+root 1 of 2*x^4+x^2+x-1
+root 1 of x^4+2*x^3-1
+root 1 of x^4+2*x^3+x-1
+root 1 of x^4-x^3+x^2+x-1
+root 1 of x^4+2*x^3+x^2+x-1
+root 1 of 2*x^4+2*x^3-1
+root 1 of 2*x^4-x^3+x^2-1
+root 1 of 2*x^4-x^3+x-1
+root 1 of 2*x^4+2*x^3+x-1
+root 1 of 2*x^4-x^3+x^2+x-1
+root 1 of 2*x^4+2*x^3+x^2+x-1
+root 1 of x^4+2*x^2-1
+root 1 of x^4+x^3+2*x^2-1
+root 1 of x^4+x^3-x^2+x-1
+root 1 of x^4+2*x^2+x-1
+root 1 of 2*x^4+x^3-x^2-1
+root 1 of 2*x^4+2*x^2-1
+root 1 of 2*x^4+x^3+2*x^2-1
+root 1 of 2*x^4-x^2+x-1
+root 1 of 2*x^4+x^3-x^2+x-1
+root 1 of 2*x^4+2*x^2+x-1
+root 1 of 2*x^4+x^3+2*x^2+x-1
+root 1 of x^4+2*x^3-x^2-1
+root 1 of x^4-x^3+2*x^2-1
+root 1 of x^4+2*x^3-x^2+x-1
+root 1 of x^4-x^3+2*x^2+x-1
+root 1 of x^4+2*x^3+2*x^2+x-1
+root 1 of 2*x^4+2*x^3-x^2-1
+root 1 of 2*x^4-x^3+2*x^2-1
+root 1 of 2*x^4+2*x^3+2*x^2-1
+root 1 of x^4+x^3+x^2-x-1
+root 1 of x^4+2*x-1
+root 1 of x^4+x^3+2*x-1
+root 1 of x^4+x^2+2*x-1
+root 1 of x^4+x^3+x^2+2*x-1
+root 1 of 2*x^4+x^3-x-1
+root 1 of 2*x^4+x^2-x-1
+root 1 of 2*x^4+x^3+x^2-x-1
+root 1 of 2*x^4+2*x-1
+root 1 of 2*x^4+x^3+2*x-1
+root 1 of 2*x^4+x^3+x^2+2*x-1
+root 1 of x^4+2*x^3-x-1
+...
+
+QBarExhaustiveProvider_nonNegativeAlgebraicsLessThanOne_int_v list 51
+root 0 of x^10-x^9-x^8-x^7+1
+root 0 of x^10-x^9-x^8-x^6+1
+root 0 of x^10-x^9-x^7-x^6+1
+root 0 of x^10-x^8-x^7-x^6+1
+root 0 of x^10-x^9-x^8-x^7-x^6+x^5+1
+root 0 of x^10-x^9-x^8-x^7-x^6+x^4+1
+root 0 of x^10-x^9-x^8-x^7-x^6+x^3+1
+root 0 of x^10-x^9-x^8-x^7-x^6+x^2+1
+root 0 of x^10-x^9-x^8-x^7-x^6+x+1
+root 0 of 2*x^10-x^9-x^8-x^7-x^6+1
+root 0 of x^10-x^9-x^8-x^5+1
+root 0 of x^10-x^9-x^7-x^5+1
+root 0 of x^10-x^8-x^7-x^5+1
+root 0 of x^10-x^9-x^8-x^7-x^5+1
+root 0 of x^10-x^9-x^8-x^7+x^6-x^5+1
+root 0 of x^10-x^9-x^8-x^7-x^5+x^4+1
+root 0 of x^10-x^9-x^8-x^7-x^5+x^3+1
+root 0 of x^10-x^9-x^8-x^7-x^5+x^2+1
+root 0 of x^10-x^9-x^8-x^7-x^5+x+1
+root 0 of 2*x^10-x^9-x^8-x^7-x^5+1
+root 0 of x^10-x^8-x^6-x^5+1
+root 0 of x^10-x^9-x^8-x^6-x^5+1
+root 0 of x^10-x^9-x^8+x^7-x^6-x^5+1
+root 0 of x^10-x^9-x^8-x^6-x^5+x^4+1
+root 0 of x^10-x^9-x^8-x^6-x^5+x^3+1
+root 0 of x^10-x^9-x^8-x^6-x^5+x+1
+root 0 of 2*x^10-x^9-x^8-x^6-x^5+1
+root 0 of x^10-x^7-x^6-x^5+1
+root 0 of x^10-x^9-x^7-x^6-x^5+1
+root 0 of x^10-x^9+x^8-x^7-x^6-x^5+1
+root 0 of x^10-x^9-x^7-x^6-x^5+x^4+1
+root 0 of x^10-x^9-x^7-x^6-x^5+x^3+1
+root 0 of x^10-x^9-x^7-x^6-x^5+x^2+1
+root 0 of 2*x^10-x^9-x^7-x^6-x^5+1
+root 0 of x^10+x^9-x^8-x^7-x^6-x^5+1
+root 0 of x^10-x^8-x^7-x^6-x^5+x^4+1
+root 0 of x^10-x^8-x^7-x^6-x^5+x^3+1
+root 0 of x^10-x^8-x^7-x^6-x^5+x^2+1
+root 0 of x^10-x^8-x^7-x^6-x^5+x+1
+root 0 of 2*x^10-x^8-x^7-x^6-x^5+1
+root 0 of x^10-x^9-x^8-x^7-x^6-x^5+1
+root 0 of x^10-x^9-x^8-x^7-x^6-x^5+x^4+1
+root 0 of x^10-x^9-x^8-x^7-x^6-x^5+x^3+1
+root 0 of x^10-x^9-x^8-x^7-x^6-x^5+x^4+x^3+1
+root 0 of x^10-x^9-x^8-x^7-x^6-x^5+x^2+1
+root 0 of x^10-x^9-x^8-x^7-x^6-x^5+x^4+x^2+1
+root 0 of x^10-x^9-x^8-x^7-x^6-x^5+x^3+x^2+1
+root 0 of x^10-x^9-x^8-x^7-x^6-x^5+x^4+x+1
+root 0 of x^10-x^9-x^8-x^7-x^6-x^5+x^3+x+1
+root 0 of 2*x^10-x^9-x^8-x^7-x^6-x^5+1
+...
+
+QBarExhaustiveProvider_nonNegativeAlgebraicsLessThanOne list 51
+0
+(-1+sqrt(5))/2
+1/2
+root 0 of x^3+x^2-1
+1/3
+(sqrt(2))/2
+1/4
+root 0 of x^4-x^3-x^2-x+1
+2/3
+-1+sqrt(2)
+3/4
+root 0 of x^3+x-1
+1/5
+(-1+sqrt(3))/2
+1/6
+root 1 of x^5-x^4-x^3-x^2+1
+1/7
+(sqrt(3))/3
+1/8
+root 0 of x^3+x^2+x-1
+2/5
+(-1+sqrt(13))/6
+3/5
+root 1 of x^4+x^3-1
+2/7
+(-1+sqrt(17))/8
+3/7
+root 0 of 2*x^3-1
+3/8
+(1+sqrt(13))/6
+4/5
+root 0 of x^6-x^5-x^4-x^3+1
+5/6
+(1+sqrt(17))/8
+4/7
+root 0 of 2*x^3+x^2-1
+5/7
+(-1+sqrt(5))/4
+5/8
+root 1 of x^4+x^2-1
+6/7
+(3-sqrt(5))/2
+7/8
+root 0 of 2*x^3+x-1
+1/9
+(-3+sqrt(13))/2
+1/10
+root 1 of x^5-x^4-x^3-x+1
+1/11
+(-3+sqrt(17))/4
+...
+
 QBarRandomProvider_positiveRationals_i list 21
 13/3
 2/3

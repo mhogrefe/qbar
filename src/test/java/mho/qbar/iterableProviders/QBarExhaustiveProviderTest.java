@@ -992,6 +992,162 @@ public class QBarExhaustiveProviderTest {
         multivariatePolynomials_List_Variable_fail_helper("[a, null]");
     }
 
+    private static void positiveAlgebraics_int_helper(int degree, @NotNull String output) {
+        simpleProviderHelper(QEP.positiveAlgebraics(degree), output);
+    }
+
+    private static void positiveAlgebraics_int_fail_helper(int degree) {
+        try {
+            QEP.positiveAlgebraics(degree);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testPositiveAlgebraics_int() {
+        positiveAlgebraics_int_helper(1, "QBarExhaustiveProvider_positiveAlgebraics_int_i");
+        positiveAlgebraics_int_helper(2, "QBarExhaustiveProvider_positiveAlgebraics_int_ii");
+        positiveAlgebraics_int_helper(3, "QBarExhaustiveProvider_positiveAlgebraics_int_iii");
+        positiveAlgebraics_int_helper(4, "QBarExhaustiveProvider_positiveAlgebraics_int_iv");
+        positiveAlgebraics_int_helper(10, "QBarExhaustiveProvider_positiveAlgebraics_int_v");
+
+        positiveAlgebraics_int_fail_helper(0);
+        positiveAlgebraics_int_fail_helper(-1);
+    }
+
+    @Test
+    public void testPositiveAlgebraics() {
+        simpleProviderHelper(QEP.positiveAlgebraics(), "QBarExhaustiveProvider_positiveAlgebraics");
+    }
+
+    private static void negativeAlgebraics_int_helper(int degree, @NotNull String output) {
+        simpleProviderHelper(QEP.negativeAlgebraics(degree), output);
+    }
+
+    private static void negativeAlgebraics_int_fail_helper(int degree) {
+        try {
+            QEP.negativeAlgebraics(degree);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testNegativeAlgebraics_int() {
+        negativeAlgebraics_int_helper(1, "QBarExhaustiveProvider_negativeAlgebraics_int_i");
+        negativeAlgebraics_int_helper(2, "QBarExhaustiveProvider_negativeAlgebraics_int_ii");
+        negativeAlgebraics_int_helper(3, "QBarExhaustiveProvider_negativeAlgebraics_int_iii");
+        negativeAlgebraics_int_helper(4, "QBarExhaustiveProvider_negativeAlgebraics_int_iv");
+        negativeAlgebraics_int_helper(10, "QBarExhaustiveProvider_negativeAlgebraics_int_v");
+
+        negativeAlgebraics_int_fail_helper(0);
+        negativeAlgebraics_int_fail_helper(-1);
+    }
+
+    @Test
+    public void testNegativeAlgebraics() {
+        simpleProviderHelper(QEP.negativeAlgebraics(), "QBarExhaustiveProvider_negativeAlgebraics");
+    }
+
+    private static void nonzeroAlgebraics_int_helper(int degree, @NotNull String output) {
+        simpleProviderHelper(QEP.nonzeroAlgebraics(degree), output);
+    }
+
+    private static void nonzeroAlgebraics_int_fail_helper(int degree) {
+        try {
+            QEP.nonzeroAlgebraics(degree);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testNonzeroAlgebraics_int() {
+        nonzeroAlgebraics_int_helper(1, "QBarExhaustiveProvider_nonzeroAlgebraics_int_i");
+        nonzeroAlgebraics_int_helper(2, "QBarExhaustiveProvider_nonzeroAlgebraics_int_ii");
+        nonzeroAlgebraics_int_helper(3, "QBarExhaustiveProvider_nonzeroAlgebraics_int_iii");
+        nonzeroAlgebraics_int_helper(4, "QBarExhaustiveProvider_nonzeroAlgebraics_int_iv");
+        nonzeroAlgebraics_int_helper(10, "QBarExhaustiveProvider_nonzeroAlgebraics_int_v");
+
+        nonzeroAlgebraics_int_fail_helper(0);
+        nonzeroAlgebraics_int_fail_helper(-1);
+    }
+
+    @Test
+    public void testNonzeroAlgebraics() {
+        simpleProviderHelper(QEP.nonzeroAlgebraics(), "QBarExhaustiveProvider_nonzeroAlgebraics");
+    }
+
+    private static void algebraics_int_helper(int degree, @NotNull String output) {
+        simpleProviderHelper(QEP.algebraics(degree), output);
+    }
+
+    private static void algebraics_int_fail_helper(int degree) {
+        try {
+            QEP.algebraics(degree);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testAlgebraics_int() {
+        algebraics_int_helper(1, "QBarExhaustiveProvider_algebraics_int_i");
+        algebraics_int_helper(2, "QBarExhaustiveProvider_algebraics_int_ii");
+        algebraics_int_helper(3, "QBarExhaustiveProvider_algebraics_int_iii");
+        algebraics_int_helper(4, "QBarExhaustiveProvider_algebraics_int_iv");
+        algebraics_int_helper(10, "QBarExhaustiveProvider_algebraics_int_v");
+
+        algebraics_int_fail_helper(0);
+        algebraics_int_fail_helper(-1);
+    }
+
+    @Test
+    public void testAlgebraics() {
+        simpleProviderHelper(QEP.algebraics(), "QBarExhaustiveProvider_algebraics");
+    }
+
+    private static void nonNegativeAlgebraicsLessThanOne_int_helper(int degree, @NotNull String output) {
+        simpleProviderHelper(QEP.nonNegativeAlgebraicsLessThanOne(degree), output);
+    }
+
+    private static void nonNegativeAlgebraicsLessThanOne_int_fail_helper(int degree) {
+        try {
+            QEP.nonNegativeAlgebraicsLessThanOne(degree);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testNonNegativeAlgebraicsLessThanOne_int() {
+        nonNegativeAlgebraicsLessThanOne_int_helper(
+                1,
+                "QBarExhaustiveProvider_nonNegativeAlgebraicsLessThanOne_int_i"
+        );
+        nonNegativeAlgebraicsLessThanOne_int_helper(
+                2,
+                "QBarExhaustiveProvider_nonNegativeAlgebraicsLessThanOne_int_ii"
+        );
+        nonNegativeAlgebraicsLessThanOne_int_helper(
+                3,
+                "QBarExhaustiveProvider_nonNegativeAlgebraicsLessThanOne_int_iii"
+        );
+        nonNegativeAlgebraicsLessThanOne_int_helper(
+                4,
+                "QBarExhaustiveProvider_nonNegativeAlgebraicsLessThanOne_int_iv"
+        );
+        nonNegativeAlgebraicsLessThanOne_int_helper(
+                10,
+                "QBarExhaustiveProvider_nonNegativeAlgebraicsLessThanOne_int_v"
+        );
+
+        nonNegativeAlgebraicsLessThanOne_int_fail_helper(0);
+        nonNegativeAlgebraicsLessThanOne_int_fail_helper(-1);
+    }
+
+    @Test
+    public void testNonNegativeAlgebraicsLessThanOne() {
+        simpleProviderHelper(QEP.nonNegativeAlgebraicsLessThanOne(),
+                "QBarExhaustiveProvider_nonNegativeAlgebraicsLessThanOne");
+    }
+
     @Test
     public void testEquals() {
         //noinspection EqualsWithItself

@@ -3476,7 +3476,90 @@ public strictfp abstract class QBarIterableProvider {
             @NotNull List<Variable> variables
     );
 
+    public @NotNull Iterable<Algebraic> positiveAlgebraics(int degree) {
+        if (degree < 1) {
+            throw new IllegalArgumentException("degree must be positive. Invalid degree: " + degree);
+        }
+        List<Integer> noRealRootsFlag = Collections.singletonList(-1);
+        return map(
+                x -> x.negate().invert(),
+                filterInfinite(
+                        x -> x.signum() == -1,
+                        map(
+                                p -> Algebraic.of(p.a, p.b),
+                                filterInfinite(
+                                        q -> q.b != -1,
+                                        dependentPairs(
+                                                irreduciblePolynomials(degree),
+                                                q -> {
+                                                    int rootCount = q.rootCount();
+                                                    return rootCount == 0 ? noRealRootsFlag : range(0, rootCount - 1);
+                                                }
+                                        )
+                                )
+                        )
+                )
+        );
+    }
+
+    public @NotNull Iterable<Algebraic> positiveAlgebraics() {
+        return map(
+                p -> p.b,
+                dependentPairsInfiniteLogarithmicOrder(
+                        positiveBigIntegers(),
+                        i -> positiveAlgebraics(i.intValueExact())
+                )
+        );
+    }
+
+    public @NotNull Iterable<Algebraic> negativeAlgebraics(int degree) {
+        if (degree < 1) {
+            throw new IllegalArgumentException("degree must be positive. Invalid degree: " + degree);
+        }
+        List<Integer> noRealRootsFlag = Collections.singletonList(-1);
+        return map(
+                x -> x.negate().invert(),
+                filterInfinite(
+                        x -> x.signum() == 1,
+                        map(
+                                p -> Algebraic.of(p.a, p.b),
+                                filterInfinite(
+                                        q -> q.b != -1,
+                                        dependentPairs(
+                                                irreduciblePolynomials(degree),
+                                                q -> {
+                                                    int rootCount = q.rootCount();
+                                                    return rootCount == 0 ? noRealRootsFlag : range(0, rootCount - 1);
+                                                }
+                                        )
+                                )
+                        )
+                )
+        );
+    }
+
+    public @NotNull Iterable<Algebraic> negativeAlgebraics() {
+        return map(
+                p -> p.b,
+                dependentPairsInfiniteLogarithmicOrder(
+                        positiveBigIntegers(),
+                        i -> negativeAlgebraics(i.intValueExact())
+                )
+        );
+    }
+
+    public @NotNull Iterable<Algebraic> nonzeroAlgebraics(int degree) {
+        return degree == 1 ? tail(algebraics(degree)) : algebraics(degree);
+    }
+
+    public @NotNull Iterable<Algebraic> nonzeroAlgebraics() {
+        return tail(algebraics());
+    }
+
     public @NotNull Iterable<Algebraic> algebraics(int degree) {
+        if (degree < 1) {
+            throw new IllegalArgumentException("degree must be positive. Invalid degree: " + degree);
+        }
         List<Integer> noRealRootsFlag = Collections.singletonList(-1);
         return map(
                 p -> {
@@ -3504,6 +3587,9 @@ public strictfp abstract class QBarIterableProvider {
     }
 
     public @NotNull Iterable<Algebraic> nonNegativeAlgebraicsLessThanOne(int degree) {
+        if (degree < 1) {
+            throw new IllegalArgumentException("degree must be positive. Invalid degree: " + degree);
+        }
         List<Integer> noRealRootsFlag = Collections.singletonList(-1);
         return filterInfinite(
                 x -> x.signum() != -1 && Ordering.lt(x, Algebraic.ONE),
