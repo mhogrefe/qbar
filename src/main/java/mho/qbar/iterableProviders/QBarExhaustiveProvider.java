@@ -1039,6 +1039,11 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
         );
     }
 
+    @Override
+    public @NotNull Iterable<Real> reals() {
+        return map(Algebraic::realValue, algebraics());
+    }
+
     /**
      * Determines whether {@code this} is equal to {@code that}. This implementation is the same as in
      * {@link java.lang.Object#equals}, but repeated here for clarity.

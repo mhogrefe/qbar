@@ -3476,6 +3476,8 @@ public strictfp abstract class QBarIterableProvider {
             @NotNull List<Variable> variables
     );
 
+    public abstract @NotNull Iterable<Real> reals();
+
     public @NotNull Iterable<Algebraic> positiveAlgebraics(int degree) {
         if (degree < 1) {
             throw new IllegalArgumentException("degree must be positive. Invalid degree: " + degree);

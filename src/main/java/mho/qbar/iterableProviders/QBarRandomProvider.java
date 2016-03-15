@@ -9,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.math.BigInteger;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static mho.wheels.iterables.IterableUtils.*;
@@ -1830,6 +1831,19 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
                                 evs -> lists(evs.size(), nonzeroBigIntegers())
                         )
                 )
+        );
+    }
+
+    @Override
+    public @NotNull Iterable<Real> reals() {
+        int base = 1 << 30;
+        return map(
+                rp -> Real.fromDigits(
+                        BigInteger.valueOf(base),
+                        Collections.emptyList(),
+                        map(i -> BigInteger.valueOf(i & (base - 1)), rp.integers())
+                ),
+                randomProvidersDefault()
         );
     }
 
