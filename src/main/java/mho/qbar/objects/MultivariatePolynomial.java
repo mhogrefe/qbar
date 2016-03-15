@@ -124,7 +124,15 @@ public class MultivariatePolynomial implements
         return new MultivariatePolynomial(sortedTerms);
     }
 
+    /**
+     * Creates a {@code MultivariatePolynomial} containing a single term (or zero terms if the coefficient is zero).
+     *
+     * @param ev an {@code ExponentVector}
+     * @param c the coefficient of {@code ev}
+     * @return a {@code MultivariatePolynomial} equal to {@code ev} multiplied by {@code c}
+     */
     public static @NotNull MultivariatePolynomial of(@NotNull ExponentVector ev, @NotNull BigInteger c) {
+        if (c.equals(BigInteger.ZERO)) return ZERO;
         if (ev == ExponentVector.ONE && c.equals(BigInteger.ONE)) return ONE;
         return new MultivariatePolynomial(Collections.singletonList(new Pair<>(ev, c)));
     }
