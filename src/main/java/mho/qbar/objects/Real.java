@@ -1,5 +1,6 @@
 package mho.qbar.objects;
 
+import mho.wheels.math.MathUtils;
 import mho.wheels.numberUtils.IntegerUtils;
 import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
@@ -9,6 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -65,7 +67,7 @@ public class Real implements Iterable<Interval>, Comparable<Real> {
             }
 
             @Override
-            public Interval next() {
+            public @NotNull Interval next() {
                 if (exact.isPresent()) {
                     return exact.get();
                 }
@@ -87,6 +89,33 @@ public class Real implements Iterable<Interval>, Comparable<Real> {
                 return interval;
             }
         });
+    }
+
+    public static @NotNull Real fromDigits(
+            @NotNull BigInteger base,
+            @NotNull List<BigInteger> beforeDecimal,
+            @NotNull Iterable<BigInteger> afterDecimal
+    ) {
+        return of(Rational.of(IntegerUtils.fromBigEndianDigits(base, beforeDecimal))).add(
+                new Real(() -> new Iterator<Interval>() {
+                    private final @NotNull Iterator<BigInteger> digits = afterDecimal.iterator();
+                    private @NotNull BigInteger acc = BigInteger.ZERO;
+                    private @NotNull BigInteger power = BigInteger.ONE;
+
+                    @Override
+                    public boolean hasNext() {
+                        return true;
+                    }
+
+                    @Override
+                    public @NotNull Interval next() {
+                        acc = acc.multiply(base).add(digits.next());
+                        power = power.multiply(base);
+                        Rational r = Rational.of(acc);
+                        return Interval.of(r.divide(power), r.add(Rational.ONE).divide(power));
+                    }
+                })
+        );
     }
 
     @Override
@@ -179,7 +208,7 @@ public class Real implements Iterable<Interval>, Comparable<Real> {
             }
 
             @Override
-            public BigInteger next() {
+            public @NotNull BigInteger next() {
                 while (true) {
                     BigInteger lowerFloor = interval.getLower().get().floor();
                     BigInteger upperFloor = interval.getUpper().get().floor();
@@ -245,6 +274,29 @@ public class Real implements Iterable<Interval>, Comparable<Real> {
     public @NotNull BigDecimal bigDecimalValueByScale(int scale) {
         return bigDecimalValueByScale(scale, RoundingMode.HALF_EVEN);
     }
+
+    public static @NotNull Real champernowne(@NotNull BigInteger base) {
+        return fromDigits(
+                base,
+                Collections.emptyList(),
+                concatMap(i -> IntegerUtils.bigEndianDigits(base, i), rangeUp(BigInteger.ONE))
+        );
+    }
+
+    public static @NotNull Real copelandErdős(@NotNull BigInteger base) {
+        return fromDigits(
+                base,
+                Collections.emptyList(),
+                concatMap(i -> IntegerUtils.bigEndianDigits(base, i), MathUtils.primes())
+        );
+    }
+
+    public static final @NotNull Real BINARY_INDICATOR =
+        fromDigits(
+                IntegerUtils.TWO,
+                Collections.emptyList(),
+                map(i -> MathUtils.isPrime(i) ? BigInteger.ONE : BigInteger.ZERO, rangeUp(BigInteger.ONE))
+        );
 
     public @NotNull String toString() {
         return toStringBase(BigInteger.TEN, Testing.TINY_LIMIT);
