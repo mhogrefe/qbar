@@ -254,4 +254,35 @@ public class QBarExhaustiveProviderDemos extends QBarDemos {
                     its(QEP.multivariatePolynomials(vs)));
         }
     }
+
+    private void demoPositiveAlgebraics_int() {
+        for (int i : take(TINY_LIMIT, P.withScale(2).positiveIntegersGeometric())) {
+            System.out.println("positiveAlgebraics(" + i + ") = " + its(QEP.positiveAlgebraics(i)));
+        }
+    }
+
+    private void demoNegativeAlgebraics_int() {
+        for (int i : take(TINY_LIMIT / 2, P.withScale(2).positiveIntegersGeometric())) {
+            System.out.println("negativeAlgebraics(" + i + ") = " + its(QEP.negativeAlgebraics(i)));
+        }
+    }
+
+    private void demoNonzeroAlgebraics_int() {
+        for (int i : take(TINY_LIMIT, P.withScale(2).positiveIntegersGeometric())) {
+            System.out.println("nonzeroAlgebraics(" + i + ") = " + its(QEP.nonzeroAlgebraics(i)));
+        }
+    }
+
+    private void demoAlgebraics_int() {
+        for (int i : take(TINY_LIMIT, P.withScale(2).positiveIntegersGeometric())) {
+            System.out.println("algebraics(" + i + ") = " + its(QEP.algebraics(i)));
+        }
+    }
+
+    private void demoNonNegativeAlgebraicsLessThanOne_int() {
+        for (int i : take(TINY_LIMIT / 2, P.withScale(2).positiveIntegersGeometric())) {
+            System.out.println("nonNegativeAlgebraicsLessThanOne(" + i + ") = " +
+                    its(QEP.nonNegativeAlgebraicsLessThanOne(i)));
+        }
+    }
 }

@@ -10,10 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 
 import static mho.wheels.iterables.IterableUtils.*;
@@ -124,16 +121,24 @@ public class Real implements Iterable<Interval>, Comparable<Real> {
     }
 
     public int match(@NotNull List<Real> targets) {
+        Set<Integer> skipIndices = new HashSet<>(); //stop refining intervals that are disjoint from this's intervals
         Iterator<Interval> iterator = intervals.iterator();
         List<Iterator<Interval>> targetIterators = toList(map(Iterable::iterator, targets));
+        List<Interval> targetIntervals = toList(replicate(targetIterators.size(), null));
         outer:
         while (true) {
             Interval interval = iterator.next();
-            List<Interval> targetIntervals = toList(map(Iterator::next, targetIterators));
+            for (int i = 0; i < targetIntervals.size(); i++) {
+                if (skipIndices.contains(i)) continue;
+                targetIntervals.set(i, targetIterators.get(i).next());
+            }
             int matchIndex = -1;
             for (int i = 0; i < targetIntervals.size(); i++) {
+                if (skipIndices.contains(i)) continue;
                 Interval targetInterval = targetIntervals.get(i);
-                if (!interval.disjoint(targetInterval)) {
+                if (interval.disjoint(targetInterval)) {
+                    skipIndices.add(i);
+                } else {
                     if (matchIndex != -1) {
                         continue outer;
                     }
