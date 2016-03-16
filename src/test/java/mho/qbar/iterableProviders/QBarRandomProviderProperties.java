@@ -50,9 +50,11 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         propertiesMatrices_int_int();
         propertiesMatrices();
         propertiesSquareMatrices();
+        propertiesInvertibleMatrices();
         propertiesRationalMatrices_int_int();
         propertiesRationalMatrices();
         propertiesSquareRationalMatrices();
+        propertiesInvertibleRationalMatrices();
         propertiesPolynomialMatrices_int_int();
         propertiesPolynomialMatrices();
         propertiesSquarePolynomialMatrices();
@@ -87,6 +89,8 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         propertiesMonomialOrders();
         propertiesExponentVectors();
         propertiesExponentVectors_List_Variable();
+        propertiesMultivariatePolynomials();
+        propertiesMultivariatePolynomials_List_Variable();
     }
 
     private static <T> void simpleTestWithNulls(
@@ -1350,7 +1354,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
 
         Iterable<QBarRandomProvider> rpsFail = filterInfinite(
                 rp -> rp.getScale() < 2 && rp.getSecondaryScale() >= 2,
-                P.withScale(4).qbarRandomProvidersDefaultTertiaryScale()
+                P.qbarRandomProvidersDefaultTertiaryScale()
         );
         for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
             try {
@@ -1361,11 +1365,47 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
 
         rpsFail = filterInfinite(
                 rp -> rp.getScale() >= 2 && rp.getSecondaryScale() < 2,
-                P.withScale(4).qbarRandomProvidersDefaultTertiaryScale()
+                P.qbarRandomProvidersDefaultTertiaryScale()
         );
         for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
             try {
                 rp.squareMatrices();
+                fail(rp);
+            } catch (IllegalStateException ignored) {}
+        }
+    }
+
+    private void propertiesInvertibleMatrices() {
+        initialize("invertibleMatrices()");
+        Iterable<QBarRandomProvider> rps = filterInfinite(
+                rp -> rp.getScale() >= 2 && rp.getSecondaryScale() >= 2,
+                P.withScale(2).qbarRandomProvidersDefaultTertiaryScale()
+        );
+        for (QBarRandomProvider rp : take(SMALL_LIMIT, rps)) {
+            Iterable<Matrix> ms = rp.invertibleMatrices();
+            rp.reset();
+            take(TINY_LIMIT, ms).forEach(Matrix::validate);
+            simpleTest(rp, ms, Matrix::isInvertible);
+        }
+
+        Iterable<QBarRandomProvider> rpsFail = filterInfinite(
+                rp -> rp.getScale() < 2 && rp.getSecondaryScale() >= 2,
+                P.qbarRandomProvidersDefaultTertiaryScale()
+        );
+        for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
+            try {
+                rp.invertibleMatrices();
+                fail(rp);
+            } catch (IllegalStateException ignored) {}
+        }
+
+        rpsFail = filterInfinite(
+                rp -> rp.getScale() >= 2 && rp.getSecondaryScale() < 2,
+                P.qbarRandomProvidersDefaultTertiaryScale()
+        );
+        for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
+            try {
+                rp.invertibleMatrices();
                 fail(rp);
             } catch (IllegalStateException ignored) {}
         }
@@ -1485,7 +1525,7 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
 
         Iterable<QBarRandomProvider> rpsFail = filterInfinite(
                 rp -> rp.getScale() < 3 && rp.getSecondaryScale() >= 2,
-                P.withScale(4).qbarRandomProvidersDefaultTertiaryScale()
+                P.qbarRandomProvidersDefaultTertiaryScale()
         );
         for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
             try {
@@ -1496,11 +1536,47 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
 
         rpsFail = filterInfinite(
                 rp -> rp.getScale() >= 3 && rp.getSecondaryScale() < 2,
-                P.withScale(4).qbarRandomProvidersDefaultTertiaryScale()
+                P.qbarRandomProvidersDefaultTertiaryScale()
         );
         for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
             try {
                 rp.squareRationalMatrices();
+                fail(rp);
+            } catch (IllegalStateException ignored) {}
+        }
+    }
+
+    private void propertiesInvertibleRationalMatrices() {
+        initialize("invertibleRationalMatrices()");
+        Iterable<QBarRandomProvider> rps = filterInfinite(
+                rp -> rp.getScale() >= 3 && rp.getSecondaryScale() >= 2,
+                P.withScale(2).qbarRandomProvidersDefaultTertiaryScale()
+        );
+        for (QBarRandomProvider rp : take(SMALL_LIMIT, rps)) {
+            Iterable<RationalMatrix> ms = rp.invertibleRationalMatrices();
+            rp.reset();
+            take(TINY_LIMIT, ms).forEach(RationalMatrix::validate);
+            simpleTest(rp, ms, RationalMatrix::isInvertible);
+        }
+
+        Iterable<QBarRandomProvider> rpsFail = filterInfinite(
+                rp -> rp.getScale() < 3 && rp.getSecondaryScale() >= 2,
+                P.qbarRandomProvidersDefaultTertiaryScale()
+        );
+        for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
+            try {
+                rp.invertibleRationalMatrices();
+                fail(rp);
+            } catch (IllegalStateException ignored) {}
+        }
+
+        rpsFail = filterInfinite(
+                rp -> rp.getScale() >= 3 && rp.getSecondaryScale() < 2,
+                P.qbarRandomProvidersDefaultTertiaryScale()
+        );
+        for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
+            try {
+                rp.invertibleRationalMatrices();
                 fail(rp);
             } catch (IllegalStateException ignored) {}
         }
@@ -3006,6 +3082,126 @@ public class QBarRandomProviderProperties extends QBarTestProperties {
         for (Pair<QBarRandomProvider, List<Variable>> p : take(LIMIT, psFail)) {
             try {
                 p.a.exponentVectors(p.b);
+                fail(p);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesMultivariatePolynomials() {
+        initialize("multivariatePolynomials()");
+        Iterable<QBarRandomProvider> rps = filterInfinite(
+                s -> s.getScale() >= 2 && s.getSecondaryScale() > 0 && s.getTertiaryScale() >= 2,
+                P.qbarRandomProviders()
+        );
+        for (QBarRandomProvider rp : take(LIMIT, rps)) {
+            Iterable<MultivariatePolynomial> ps = rp.multivariatePolynomials();
+            rp.reset();
+            take(TINY_LIMIT, ps).forEach(MultivariatePolynomial::validate);
+            simpleTest(rp, ps, p -> true);
+        }
+
+        Iterable<QBarRandomProvider> rpsFail = filterInfinite(
+                s -> s.getScale() < 2 && s.getSecondaryScale() > 0 && s.getTertiaryScale() >= 2,
+                P.qbarRandomProviders()
+        );
+        for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
+            try {
+                rp.multivariatePolynomials();
+                fail(rp);
+            } catch (IllegalStateException ignored) {}
+        }
+
+        rpsFail = filterInfinite(
+                s -> s.getScale() >= 0 && s.getSecondaryScale() <= 0 && s.getTertiaryScale() >= 2,
+                P.qbarRandomProviders()
+        );
+        for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
+            try {
+                rp.multivariatePolynomials();
+                fail(rp);
+            } catch (IllegalStateException ignored) {}
+        }
+
+        rpsFail = filterInfinite(
+                s -> s.getScale() >= 0 && s.getSecondaryScale() > 0 && s.getTertiaryScale() < 2,
+                P.qbarRandomProviders()
+        );
+        for (QBarRandomProvider rp : take(LIMIT, rpsFail)) {
+            try {
+                rp.multivariatePolynomials();
+                fail(rp);
+            } catch (IllegalStateException ignored) {}
+        }
+    }
+
+    private void propertiesMultivariatePolynomials_List_Variable() {
+        initialize("multivariatePolynomials(List<Variable>)");
+        Iterable<Pair<QBarRandomProvider, List<Variable>>> ps = P.pairs(
+                filterInfinite(
+                        s -> s.getScale() >= 2 && s.getSecondaryScale() > 0 && s.getTertiaryScale() >= 2,
+                        P.qbarRandomProviders()
+                ),
+                P.subsets(P.variables())
+        );
+        for (Pair<QBarRandomProvider, List<Variable>> p : take(LIMIT, ps)) {
+            Iterable<MultivariatePolynomial> qs = p.a.multivariatePolynomials(p.b);
+            p.a.reset();
+            take(TINY_LIMIT, qs).forEach(MultivariatePolynomial::validate);
+            simpleTest(p.a, qs, q -> isSubsetOf(q.variables(), p.b));
+        }
+
+        Iterable<Pair<QBarRandomProvider, List<Variable>>> psFail = P.pairs(
+                filterInfinite(
+                        s -> s.getScale() < 2 && s.getSecondaryScale() > 0 && s.getTertiaryScale() >= 2,
+                        P.qbarRandomProviders()
+                ),
+                P.subsets(P.variables())
+        );
+        for (Pair<QBarRandomProvider, List<Variable>> p : take(LIMIT, psFail)) {
+            try {
+                p.a.multivariatePolynomials(p.b);
+                fail(p);
+            } catch (IllegalStateException ignored) {}
+        }
+
+        psFail = P.pairs(
+                filterInfinite(
+                        s -> s.getScale() >= 2 && s.getSecondaryScale() <= 0 && s.getTertiaryScale() >= 2,
+                        P.qbarRandomProviders()
+                ),
+                P.subsets(P.variables())
+        );
+        for (Pair<QBarRandomProvider, List<Variable>> p : take(LIMIT, psFail)) {
+            try {
+                p.a.multivariatePolynomials(p.b);
+                fail(p);
+            } catch (IllegalStateException ignored) {}
+        }
+
+        psFail = P.pairs(
+                filterInfinite(
+                        s -> s.getScale() >= 2 && s.getSecondaryScale() > 0 && s.getTertiaryScale() < 2,
+                        P.qbarRandomProviders()
+                ),
+                P.subsets(P.variables())
+        );
+        for (Pair<QBarRandomProvider, List<Variable>> p : take(LIMIT, psFail)) {
+            try {
+                p.a.multivariatePolynomials(p.b);
+                fail(p);
+            } catch (IllegalStateException ignored) {}
+        }
+
+        psFail = P.pairs(
+                filterInfinite(
+                        s -> s.getScale() >= 2 && s.getSecondaryScale() > 0 && s.getTertiaryScale() >= 2,
+                        P.qbarRandomProviders()
+                ),
+                filterInfinite(vs -> !increasing(vs), P.lists(P.variables()))
+        );
+        for (Pair<QBarRandomProvider, List<Variable>> p : take(LIMIT, psFail)) {
+            try {
+                p.a.multivariatePolynomials(p.b);
                 fail(p);
             } catch (IllegalArgumentException ignored) {}
         }
