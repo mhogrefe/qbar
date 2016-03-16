@@ -23,7 +23,7 @@ import static org.junit.Assert.assertTrue;
  * {@link QBarRandomProvider#reset}.</p>
  *
  * <p>{@code QBarRandomProvider} uses the cryptographically-secure ISAAC pseudorandom number generator, implemented in
- * {@link mho.wheels.random.IsaacPRNG}. The source of its randomness is a {@code int[]} seed. It contains two scale
+ * {@link mho.wheels.random.IsaacPRNG}. The source of its randomness is a {@code int[]} seed. It contains three scale
  * parameters which some of the distributions depend on; the exact relationship between the parameters and the
  * distributions is specified in the distribution's documentation.</p>
  *

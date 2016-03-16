@@ -571,7 +571,443 @@ public class RationalPolynomialMatrixTest {
                 "[[-x^5+5/2*x-2/3, -8/5*x^2+2*x-3], [-1/2*x-1, 7*x-9/2]]");
         subtract_fail_helper("[]#0", "[]#1");
         subtract_fail_helper("[]#0", "[[]]");
-        subtract_fail_helper("[[-x]]", "[[3], [5]]");
+        subtract_fail_helper("[[-1/2*x]]", "[[3], [5]]");
+    }
+
+    private static void multiply_RationalPolynomial_helper(
+            @NotNull String a,
+            @NotNull String b,
+            @NotNull String output
+    ) {
+        aeq(read(a).get().multiply(RationalPolynomial.read(b).get()), output);
+    }
+
+    @Test
+    public void testMultiply_RationalPolynomial() {
+        multiply_RationalPolynomial_helper("[]#0", "0", "[]#0");
+        multiply_RationalPolynomial_helper("[]#0", "1", "[]#0");
+        multiply_RationalPolynomial_helper("[]#0", "x", "[]#0");
+        multiply_RationalPolynomial_helper("[]#0", "x^2-7/4*x+1/3", "[]#0");
+
+        multiply_RationalPolynomial_helper("[]#3", "0", "[]#3");
+        multiply_RationalPolynomial_helper("[]#3", "1", "[]#3");
+        multiply_RationalPolynomial_helper("[]#3", "x", "[]#3");
+        multiply_RationalPolynomial_helper("[]#3", "x^2-7/4*x+1/3", "[]#3");
+
+        multiply_RationalPolynomial_helper("[[], [], []]", "0", "[[], [], []]");
+        multiply_RationalPolynomial_helper("[[], [], []]", "1", "[[], [], []]");
+        multiply_RationalPolynomial_helper("[[], [], []]", "x", "[[], [], []]");
+        multiply_RationalPolynomial_helper("[[], [], []]", "x^2-7/4*x+1/3", "[[], [], []]");
+
+        multiply_RationalPolynomial_helper("[[-1/2*x]]", "0", "[[0]]");
+        multiply_RationalPolynomial_helper("[[-1/2*x]]", "1", "[[-1/2*x]]");
+        multiply_RationalPolynomial_helper("[[-1/2*x]]", "x", "[[-1/2*x^2]]");
+        multiply_RationalPolynomial_helper("[[-1/2*x]]", "x^2-7/4*x+1/3", "[[-1/2*x^3+7/8*x^2-1/6*x]]");
+
+        multiply_RationalPolynomial_helper("[[x-2/3, -8/5*x^2+x], [0, 7*x-1/2]]", "0", "[[0, 0], [0, 0]]");
+        multiply_RationalPolynomial_helper("[[x-2/3, -8/5*x^2+x], [0, 7*x-1/2]]", "1",
+                "[[x-2/3, -8/5*x^2+x], [0, 7*x-1/2]]");
+        multiply_RationalPolynomial_helper("[[x-2/3, -8/5*x^2+x], [0, 7*x-1/2]]", "x",
+                "[[x^2-2/3*x, -8/5*x^3+x^2], [0, 7*x^2-1/2*x]]");
+        multiply_RationalPolynomial_helper("[[x-2/3, -8/5*x^2+x], [0, 7*x-1/2]]", "x^2-7/4*x+1/3",
+                "[[x^3-29/12*x^2+3/2*x-2/9, -8/5*x^4+19/5*x^3-137/60*x^2+1/3*x], [0, 7*x^3-51/4*x^2+77/24*x-1/6]]");
+    }
+
+    private static void multiply_Rational_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
+        aeq(read(a).get().multiply(Rational.read(b).get()), output);
+    }
+
+    @Test
+    public void testMultiply_Rational() {
+        multiply_Rational_helper("[]#0", "0", "[]#0");
+        multiply_Rational_helper("[]#0", "1", "[]#0");
+        multiply_Rational_helper("[]#0", "5/3", "[]#0");
+
+        multiply_Rational_helper("[]#3", "0", "[]#3");
+        multiply_Rational_helper("[]#3", "1", "[]#3");
+        multiply_Rational_helper("[]#3", "5/3", "[]#3");
+
+        multiply_Rational_helper("[[], [], []]", "0", "[[], [], []]");
+        multiply_Rational_helper("[[], [], []]", "1", "[[], [], []]");
+        multiply_Rational_helper("[[], [], []]", "5/3", "[[], [], []]");
+
+        multiply_Rational_helper("[[-1/2*x]]", "0", "[[0]]");
+        multiply_Rational_helper("[[-1/2*x]]", "1", "[[-1/2*x]]");
+        multiply_Rational_helper("[[-1/2*x]]", "5/3", "[[-5/6*x]]");
+
+        multiply_Rational_helper("[[x-2/3, -8/5*x^2+x], [0, 7*x-1/2]]", "0", "[[0, 0], [0, 0]]");
+        multiply_Rational_helper("[[x-2/3, -8/5*x^2+x], [0, 7*x-1/2]]", "1", "[[x-2/3, -8/5*x^2+x], [0, 7*x-1/2]]");
+        multiply_Rational_helper("[[x-2/3, -8/5*x^2+x], [0, 7*x-1/2]]", "5/3",
+                "[[5/3*x-10/9, -8/3*x^2+5/3*x], [0, 35/3*x-5/6]]");
+    }
+
+    private static void multiply_BigInteger_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
+        aeq(read(a).get().multiply(Readers.readBigInteger(b).get()), output);
+    }
+
+    @Test
+    public void testMultiply_BigInteger() {
+        multiply_BigInteger_helper("[]#0", "0", "[]#0");
+        multiply_BigInteger_helper("[]#0", "1", "[]#0");
+        multiply_BigInteger_helper("[]#0", "5", "[]#0");
+
+        multiply_BigInteger_helper("[]#3", "0", "[]#3");
+        multiply_BigInteger_helper("[]#3", "1", "[]#3");
+        multiply_BigInteger_helper("[]#3", "5", "[]#3");
+
+        multiply_BigInteger_helper("[[], [], []]", "0", "[[], [], []]");
+        multiply_BigInteger_helper("[[], [], []]", "1", "[[], [], []]");
+        multiply_BigInteger_helper("[[], [], []]", "5", "[[], [], []]");
+
+        multiply_BigInteger_helper("[[-1/2*x]]", "0", "[[0]]");
+        multiply_BigInteger_helper("[[-1/2*x]]", "1", "[[-1/2*x]]");
+        multiply_BigInteger_helper("[[-1/2*x]]", "5", "[[-5/2*x]]");
+
+        multiply_BigInteger_helper("[[x-2/3, -8/5*x^2+x], [0, 7*x-1/2]]", "0", "[[0, 0], [0, 0]]");
+        multiply_BigInteger_helper("[[x-2/3, -8/5*x^2+x], [0, 7*x-1/2]]", "1", "[[x-2/3, -8/5*x^2+x], [0, 7*x-1/2]]");
+        multiply_BigInteger_helper("[[x-2/3, -8/5*x^2+x], [0, 7*x-1/2]]", "5",
+                "[[5*x-10/3, -8*x^2+5*x], [0, 35*x-5/2]]");
+    }
+
+    private static void multiply_int_helper(@NotNull String a, int b, @NotNull String output) {
+        aeq(read(a).get().multiply(b), output);
+    }
+
+    @Test
+    public void testMultiply_int() {
+        multiply_int_helper("[]#0", 0, "[]#0");
+        multiply_int_helper("[]#0", 1, "[]#0");
+        multiply_int_helper("[]#0", 5, "[]#0");
+
+        multiply_int_helper("[]#3", 0, "[]#3");
+        multiply_int_helper("[]#3", 1, "[]#3");
+        multiply_int_helper("[]#3", 5, "[]#3");
+
+        multiply_int_helper("[[], [], []]", 0, "[[], [], []]");
+        multiply_int_helper("[[], [], []]", 1, "[[], [], []]");
+        multiply_int_helper("[[], [], []]", 5, "[[], [], []]");
+
+        multiply_int_helper("[[-1/2*x]]", 0, "[[0]]");
+        multiply_int_helper("[[-1/2*x]]", 1, "[[-1/2*x]]");
+        multiply_int_helper("[[-1/2*x]]", 5, "[[-5/2*x]]");
+
+        multiply_int_helper("[[x-2/3, -8/5*x^2+x], [0, 7*x-1/2]]", 0, "[[0, 0], [0, 0]]");
+        multiply_int_helper("[[x-2/3, -8/5*x^2+x], [0, 7*x-1/2]]", 1, "[[x-2/3, -8/5*x^2+x], [0, 7*x-1/2]]");
+        multiply_int_helper("[[x-2/3, -8/5*x^2+x], [0, 7*x-1/2]]", 5, "[[5*x-10/3, -8*x^2+5*x], [0, 35*x-5/2]]");
+    }
+
+    private static void divide_Rational_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
+        aeq(read(a).get().divide(Rational.read(b).get()), output);
+    }
+
+    private static void divide_Rational_fail_helper(@NotNull String a, @NotNull String b) {
+        try {
+            read(a).get().divide(Rational.read(b).get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testDivide_Rational() {
+        divide_Rational_helper("[]#0", "1", "[]#0");
+        divide_Rational_helper("[]#0", "5/3", "[]#0");
+
+        divide_Rational_helper("[]#3", "1", "[]#3");
+        divide_Rational_helper("[]#3", "5/3", "[]#3");
+
+        divide_Rational_helper("[[], [], []]", "1", "[[], [], []]");
+        divide_Rational_helper("[[], [], []]", "5/3", "[[], [], []]");
+
+        divide_Rational_helper("[[-1/2*x]]", "1", "[[-1/2*x]]");
+        divide_Rational_helper("[[-1/2*x]]", "5/3", "[[-3/10*x]]");
+
+        divide_Rational_helper("[[x-2/3, -8/5*x^2+x], [0, 7*x-1/2]]", "1", "[[x-2/3, -8/5*x^2+x], [0, 7*x-1/2]]");
+        divide_Rational_helper("[[x-2/3, -8/5*x^2+x], [0, 7*x-1/2]]", "5/3",
+                "[[3/5*x-2/5, -24/25*x^2+3/5*x], [0, 21/5*x-3/10]]");
+
+        divide_Rational_fail_helper("[]#0", "0");
+    }
+
+    private static void divide_BigInteger_helper(@NotNull String a, @NotNull String b, @NotNull String output) {
+        aeq(read(a).get().divide(Readers.readBigInteger(b).get()), output);
+    }
+
+    private static void divide_BigInteger_fail_helper(@NotNull String a, @NotNull String b) {
+        try {
+            read(a).get().divide(Readers.readBigInteger(b).get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testDivide_BigInteger() {
+        divide_BigInteger_helper("[]#0", "1", "[]#0");
+        divide_BigInteger_helper("[]#0", "5", "[]#0");
+
+        divide_BigInteger_helper("[]#3", "1", "[]#3");
+        divide_BigInteger_helper("[]#3", "5", "[]#3");
+
+        divide_BigInteger_helper("[[], [], []]", "1", "[[], [], []]");
+        divide_BigInteger_helper("[[], [], []]", "5", "[[], [], []]");
+
+        divide_BigInteger_helper("[[-1/2*x]]", "1", "[[-1/2*x]]");
+        divide_BigInteger_helper("[[-1/2*x]]", "5", "[[-1/10*x]]");
+
+        divide_BigInteger_helper("[[x-2/3, -8/5*x^2+x], [0, 7*x-1/2]]", "1", "[[x-2/3, -8/5*x^2+x], [0, 7*x-1/2]]");
+        divide_BigInteger_helper("[[x-2/3, -8/5*x^2+x], [0, 7*x-1/2]]", "5",
+                "[[1/5*x-2/15, -8/25*x^2+1/5*x], [0, 7/5*x-1/10]]");
+
+        divide_BigInteger_fail_helper("[]#0", "0");
+    }
+
+    private static void divide_int_helper(@NotNull String a, int b, @NotNull String output) {
+        aeq(read(a).get().divide(b), output);
+    }
+
+    private static void divide_int_fail_helper(@NotNull String a, int b) {
+        try {
+            read(a).get().divide(b);
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testDivide_int() {
+        divide_int_helper("[]#0", 1, "[]#0");
+        divide_int_helper("[]#0", 5, "[]#0");
+
+        divide_int_helper("[]#3", 1, "[]#3");
+        divide_int_helper("[]#3", 5, "[]#3");
+
+        divide_int_helper("[[], [], []]", 1, "[[], [], []]");
+        divide_int_helper("[[], [], []]", 5, "[[], [], []]");
+
+        divide_int_helper("[[-1/2*x]]", 1, "[[-1/2*x]]");
+        divide_int_helper("[[-1/2*x]]", 5, "[[-1/10*x]]");
+
+        divide_int_helper("[[x-2/3, -8/5*x^2+x], [0, 7*x-1/2]]", 1, "[[x-2/3, -8/5*x^2+x], [0, 7*x-1/2]]");
+        divide_int_helper("[[x-2/3, -8/5*x^2+x], [0, 7*x-1/2]]", 5,
+                "[[1/5*x-2/15, -8/25*x^2+1/5*x], [0, 7/5*x-1/10]]");
+
+        divide_int_fail_helper("[]#0", 0);
+    }
+
+    private static void multiply_RationalPolynomialVector_helper(
+            @NotNull String a,
+            @NotNull String b,
+            @NotNull String output
+    ) {
+        aeq(read(a).get().multiply(RationalPolynomialVector.read(b).get()), output);
+    }
+
+    private static void multiply_RationalPolynomialVector_fail_helper(@NotNull String a, @NotNull String b) {
+        try {
+            read(a).get().multiply(RationalPolynomialVector.read(b).get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testMultiply_RationalPolynomialVector() {
+        multiply_RationalPolynomialVector_helper("[]#0", "[]", "[]");
+        multiply_RationalPolynomialVector_helper("[]#1", "[3]", "[]");
+        multiply_RationalPolynomialVector_helper("[]#3", "[3, 0, -3]", "[]");
+        multiply_RationalPolynomialVector_helper("[[]]", "[]", "[0]");
+        multiply_RationalPolynomialVector_helper("[[], [], []]", "[]", "[0, 0, 0]");
+        multiply_RationalPolynomialVector_helper("[[-1/2*x]]", "[-3]", "[3/2*x]");
+        multiply_RationalPolynomialVector_helper("[[0, 0], [0, 0]]", "[3/2, 2]", "[0, 0]");
+        multiply_RationalPolynomialVector_helper("[[1, 0], [0, 1]]", "[3/2, 2]", "[3/2, 2]");
+        multiply_RationalPolynomialVector_helper("[[1, x, x^10-1/2], [x^3-x^2+1, 5, 2/3*x+4]]", "[3/2, 2*x, x^7]",
+                "[x^17-1/2*x^7+2*x^2+3/2, 2/3*x^8+4*x^7+3/2*x^3-3/2*x^2+10*x+3/2]");
+
+        multiply_RationalPolynomialVector_fail_helper("[]#0", "[0]");
+        multiply_RationalPolynomialVector_fail_helper("[]#3", "[1, 2]");
+        multiply_RationalPolynomialVector_fail_helper("[[1, 0], [0, 1]]", "[1, -1/2*x, 3]");
+    }
+
+    private static void multiply_RationalPolynomialMatrix_helper(
+            @NotNull String a,
+            @NotNull String b,
+            @NotNull String output
+    ) {
+        aeq(read(a).get().multiply(read(b).get()), output);
+    }
+
+    private static void multiply_RationalPolynomialMatrix_fail_helper(@NotNull String a, @NotNull String b) {
+        try {
+            read(a).get().multiply(read(b).get());
+            fail();
+        } catch (ArithmeticException ignored) {}
+    }
+
+    @Test
+    public void testMultiply_RationalPolynomialMatrix() {
+        multiply_RationalPolynomialMatrix_helper("[]#0", "[]#0", "[]#0");
+        multiply_RationalPolynomialMatrix_helper("[]#1", "[[3, 4]]", "[]#2");
+        multiply_RationalPolynomialMatrix_helper("[[], [], []]", "[]#5",
+                "[[0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0]]");
+        multiply_RationalPolynomialMatrix_helper("[[1], [x], [1/5*x^2], [x^4]]", "[[]]", "[[], [], [], []]");
+        multiply_RationalPolynomialMatrix_helper("[[1, x, x^10]]", "[[-2/3*x], [3*x-1/8], [3]]",
+                "[[3*x^10+3*x^2-19/24*x]]");
+        multiply_RationalPolynomialMatrix_helper("[[x-2/3, -8/5*x^2+x], [0, 7*x-1/2]]", "[[0, 0], [0, 0]]",
+                "[[0, 0], [0, 0]]");
+        multiply_RationalPolynomialMatrix_helper("[[x-2/3, -8/5*x^2+x], [0, 7*x-1/2]]", "[[1, 0], [0, 1]]",
+                "[[x-2/3, -8/5*x^2+x], [0, 7*x-1/2]]");
+
+        multiply_RationalPolynomialMatrix_helper("[[x-3/2, -8*x^2+x], [0, 7*x-1]]", "[[x^5], [40*x]]",
+                "[[x^6-3/2*x^5-320*x^3+40*x^2], [280*x^2-40*x]]");
+        multiply_RationalPolynomialMatrix_helper(
+                "[[1, 2], [3, 4], [5, 6*x^2]]",
+                "[[1, x-2/3, 3, 4], [5, 6, 7, 8]]",
+                "[[11, x+34/3, 17, 20], [23, 3*x+22, 37, 44], [30*x^2+5, 36*x^2+5*x-10/3, 42*x^2+15, 48*x^2+20]]"
+        );
+
+        multiply_RationalPolynomialMatrix_fail_helper("[]#0", "[[]]");
+        multiply_RationalPolynomialMatrix_fail_helper("[[1, 2, 3, 4], [5, 6, 7, 8]]", "[[1, 2], [3, 4], [5, 6]]");
+    }
+
+    private static void shiftLeft_helper(@NotNull String a, int bits, @NotNull String output) {
+        aeq(read(a).get().shiftLeft(bits), output);
+    }
+
+    @Test
+    public void testShiftLeft() {
+        shiftLeft_helper("[]#0", 0, "[]#0");
+        shiftLeft_helper("[]#0", 1, "[]#0");
+        shiftLeft_helper("[]#0", 2, "[]#0");
+        shiftLeft_helper("[]#0", 3, "[]#0");
+        shiftLeft_helper("[]#0", 4, "[]#0");
+        shiftLeft_helper("[]#0", -1, "[]#0");
+        shiftLeft_helper("[]#0", -2, "[]#0");
+        shiftLeft_helper("[]#0", -3, "[]#0");
+        shiftLeft_helper("[]#0", -4, "[]#0");
+
+        shiftLeft_helper("[]#3", 0, "[]#3");
+        shiftLeft_helper("[]#3", 1, "[]#3");
+        shiftLeft_helper("[]#3", 2, "[]#3");
+        shiftLeft_helper("[]#3", 3, "[]#3");
+        shiftLeft_helper("[]#3", 4, "[]#3");
+        shiftLeft_helper("[]#3", -1, "[]#3");
+        shiftLeft_helper("[]#3", -2, "[]#3");
+        shiftLeft_helper("[]#3", -3, "[]#3");
+        shiftLeft_helper("[]#3", -4, "[]#3");
+
+        shiftLeft_helper("[[], [], []]", 0, "[[], [], []]");
+        shiftLeft_helper("[[], [], []]", 1, "[[], [], []]");
+        shiftLeft_helper("[[], [], []]", 2, "[[], [], []]");
+        shiftLeft_helper("[[], [], []]", 3, "[[], [], []]");
+        shiftLeft_helper("[[], [], []]", 4, "[[], [], []]");
+        shiftLeft_helper("[[], [], []]", -1, "[[], [], []]");
+        shiftLeft_helper("[[], [], []]", -2, "[[], [], []]");
+        shiftLeft_helper("[[], [], []]", -3, "[[], [], []]");
+        shiftLeft_helper("[[], [], []]", -4, "[[], [], []]");
+
+        shiftLeft_helper("[[-1/2*x]]", 0, "[[-1/2*x]]");
+        shiftLeft_helper("[[-1/2*x]]", 1, "[[-x]]");
+        shiftLeft_helper("[[-1/2*x]]", 2, "[[-2*x]]");
+        shiftLeft_helper("[[-1/2*x]]", 3, "[[-4*x]]");
+        shiftLeft_helper("[[-1/2*x]]", 4, "[[-8*x]]");
+        shiftLeft_helper("[[-1/2*x]]", -1, "[[-1/4*x]]");
+        shiftLeft_helper("[[-1/2*x]]", -2, "[[-1/8*x]]");
+        shiftLeft_helper("[[-1/2*x]]", -3, "[[-1/16*x]]");
+        shiftLeft_helper("[[-1/2*x]]", -4, "[[-1/32*x]]");
+
+        shiftLeft_helper("[[x-2/3, -8/5*x^2+x], [0, 7*x-1/2]]", 0, "[[x-2/3, -8/5*x^2+x], [0, 7*x-1/2]]");
+        shiftLeft_helper("[[x-2/3, -8/5*x^2+x], [0, 7*x-1/2]]", 1, "[[2*x-4/3, -16/5*x^2+2*x], [0, 14*x-1]]");
+        shiftLeft_helper("[[x-2/3, -8/5*x^2+x], [0, 7*x-1/2]]", 2, "[[4*x-8/3, -32/5*x^2+4*x], [0, 28*x-2]]");
+        shiftLeft_helper("[[x-2/3, -8/5*x^2+x], [0, 7*x-1/2]]", 3, "[[8*x-16/3, -64/5*x^2+8*x], [0, 56*x-4]]");
+        shiftLeft_helper("[[x-2/3, -8/5*x^2+x], [0, 7*x-1/2]]", 4, "[[16*x-32/3, -128/5*x^2+16*x], [0, 112*x-8]]");
+        shiftLeft_helper("[[x-2/3, -8/5*x^2+x], [0, 7*x-1/2]]", -1, "[[1/2*x-1/3, -4/5*x^2+1/2*x], [0, 7/2*x-1/4]]");
+        shiftLeft_helper("[[x-2/3, -8/5*x^2+x], [0, 7*x-1/2]]", -2, "[[1/4*x-1/6, -2/5*x^2+1/4*x], [0, 7/4*x-1/8]]");
+        shiftLeft_helper("[[x-2/3, -8/5*x^2+x], [0, 7*x-1/2]]", -3, "[[1/8*x-1/12, -1/5*x^2+1/8*x], [0, 7/8*x-1/16]]");
+        shiftLeft_helper("[[x-2/3, -8/5*x^2+x], [0, 7*x-1/2]]", -4,
+                "[[1/16*x-1/24, -1/10*x^2+1/16*x], [0, 7/16*x-1/32]]");
+    }
+
+    private static void shiftRight_helper(@NotNull String a, int bits, @NotNull String output) {
+        aeq(read(a).get().shiftRight(bits), output);
+    }
+
+    @Test
+    public void testShiftRight() {
+        shiftRight_helper("[]#0", 0, "[]#0");
+        shiftRight_helper("[]#0", 1, "[]#0");
+        shiftRight_helper("[]#0", 2, "[]#0");
+        shiftRight_helper("[]#0", 3, "[]#0");
+        shiftRight_helper("[]#0", 4, "[]#0");
+        shiftRight_helper("[]#0", -1, "[]#0");
+        shiftRight_helper("[]#0", -2, "[]#0");
+        shiftRight_helper("[]#0", -3, "[]#0");
+        shiftRight_helper("[]#0", -4, "[]#0");
+
+        shiftRight_helper("[]#3", 0, "[]#3");
+        shiftRight_helper("[]#3", 1, "[]#3");
+        shiftRight_helper("[]#3", 2, "[]#3");
+        shiftRight_helper("[]#3", 3, "[]#3");
+        shiftRight_helper("[]#3", 4, "[]#3");
+        shiftRight_helper("[]#3", -1, "[]#3");
+        shiftRight_helper("[]#3", -2, "[]#3");
+        shiftRight_helper("[]#3", -3, "[]#3");
+        shiftRight_helper("[]#3", -4, "[]#3");
+
+        shiftRight_helper("[[], [], []]", 0, "[[], [], []]");
+        shiftRight_helper("[[], [], []]", 1, "[[], [], []]");
+        shiftRight_helper("[[], [], []]", 2, "[[], [], []]");
+        shiftRight_helper("[[], [], []]", 3, "[[], [], []]");
+        shiftRight_helper("[[], [], []]", 4, "[[], [], []]");
+        shiftRight_helper("[[], [], []]", -1, "[[], [], []]");
+        shiftRight_helper("[[], [], []]", -2, "[[], [], []]");
+        shiftRight_helper("[[], [], []]", -3, "[[], [], []]");
+        shiftRight_helper("[[], [], []]", -4, "[[], [], []]");
+
+        shiftRight_helper("[[-1/2*x]]", 0, "[[-1/2*x]]");
+        shiftRight_helper("[[-1/2*x]]", 1, "[[-1/4*x]]");
+        shiftRight_helper("[[-1/2*x]]", 2, "[[-1/8*x]]");
+        shiftRight_helper("[[-1/2*x]]", 3, "[[-1/16*x]]");
+        shiftRight_helper("[[-1/2*x]]", 4, "[[-1/32*x]]");
+        shiftRight_helper("[[-1/2*x]]", -1, "[[-x]]");
+        shiftRight_helper("[[-1/2*x]]", -2, "[[-2*x]]");
+        shiftRight_helper("[[-1/2*x]]", -3, "[[-4*x]]");
+        shiftRight_helper("[[-1/2*x]]", -4, "[[-8*x]]");
+
+        shiftRight_helper("[[x-2/3, -8/5*x^2+x], [0, 7*x-1/2]]", 0, "[[x-2/3, -8/5*x^2+x], [0, 7*x-1/2]]");
+        shiftRight_helper("[[x-2/3, -8/5*x^2+x], [0, 7*x-1/2]]", 1, "[[1/2*x-1/3, -4/5*x^2+1/2*x], [0, 7/2*x-1/4]]");
+        shiftRight_helper("[[x-2/3, -8/5*x^2+x], [0, 7*x-1/2]]", 2, "[[1/4*x-1/6, -2/5*x^2+1/4*x], [0, 7/4*x-1/8]]");
+        shiftRight_helper("[[x-2/3, -8/5*x^2+x], [0, 7*x-1/2]]", 3, "[[1/8*x-1/12, -1/5*x^2+1/8*x], [0, 7/8*x-1/16]]");
+        shiftRight_helper("[[x-2/3, -8/5*x^2+x], [0, 7*x-1/2]]", 4,
+                "[[1/16*x-1/24, -1/10*x^2+1/16*x], [0, 7/16*x-1/32]]");
+        shiftRight_helper("[[x-2/3, -8/5*x^2+x], [0, 7*x-1/2]]", -1, "[[2*x-4/3, -16/5*x^2+2*x], [0, 14*x-1]]");
+        shiftRight_helper("[[x-2/3, -8/5*x^2+x], [0, 7*x-1/2]]", -2, "[[4*x-8/3, -32/5*x^2+4*x], [0, 28*x-2]]");
+        shiftRight_helper("[[x-2/3, -8/5*x^2+x], [0, 7*x-1/2]]", -3, "[[8*x-16/3, -64/5*x^2+8*x], [0, 56*x-4]]");
+        shiftRight_helper("[[x-2/3, -8/5*x^2+x], [0, 7*x-1/2]]", -4, "[[16*x-32/3, -128/5*x^2+16*x], [0, 112*x-8]]");
+    }
+
+    private static void determinant_helper(@NotNull String input, @NotNull String output) {
+        aeq(read(input).get().determinant(), output);
+    }
+
+    private static void determinant_fail_helper(@NotNull String input) {
+        try {
+            read(input).get().determinant();
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testDeterminant() {
+        determinant_helper("[]#0", "1");
+        determinant_helper("[[1]]", "1");
+        determinant_helper("[[-1]]", "-1");
+        determinant_helper("[[-1/2*x]]", "-1/2*x");
+        determinant_helper("[[1, 0], [0, 1]]", "1");
+        determinant_helper("[[0, 1], [1, 0]]", "-1");
+        determinant_helper("[[x-2/3, -8/5*x^2+x], [0, 7*x-1/2]]", "7*x^2-31/6*x+1/3");
+        determinant_helper("[[1, x, x^10-1/2], [x^3-x^2+1, 5, 2/3*x+4], [2*x, 3*x-1/2, 201/5]]",
+                "3*x^14-7/2*x^13+1/2*x^12-7*x^11-1/2*x^10-417/10*x^4+2597/60*x^3+23/4*x^2-1451/30*x+813/4");
+
+        determinant_fail_helper("[]#3");
+        determinant_fail_helper("[[], [], []]");
+        determinant_fail_helper("[[1, 9, -13], [20, 5, -6]]");
     }
 
     @Test
