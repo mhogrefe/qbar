@@ -153,13 +153,25 @@ public class Real implements Iterable<Interval>, Comparable<Real> {
     }
 
     private <T> T limitValue(@NotNull Function<Rational, T> f) {
+        Optional<Rational> previousLower = Optional.empty();
+        Optional<Rational> previousUpper = Optional.empty();
+        T lowerValue = null;
+        T upperValue = null;
         for (Interval a : intervals) {
             if (a.isFinitelyBounded()) {
-                T lower = f.apply(a.getLower().get());
-                T upper = f.apply(a.getUpper().get());
-                if (lower.equals(upper)) {
-                    return lower;
+                Rational lower = a.getLower().get();
+                Rational upper = a.getUpper().get();
+                if (!previousLower.isPresent() || !previousLower.get().equals(lower)) {
+                    lowerValue = f.apply(lower);
                 }
+                if (!previousUpper.isPresent() || !previousUpper.get().equals(upper)) {
+                    upperValue = f.apply(upper);
+                }
+                if (Objects.equals(lowerValue, upperValue)) {
+                    return lowerValue;
+                }
+                previousLower = Optional.of(lower);
+                previousUpper = Optional.of(upper);
             }
         }
         throw new IllegalStateException("unreachable");

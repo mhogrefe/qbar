@@ -55,6 +55,11 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
         propertiesMonomialOrders();
         propertiesExponentVectors();
         propertiesMultivariatePolynomials();
+        propertiesPositiveAlgebraics();
+        propertiesNegativeAlgebraics();
+        propertiesNonzeroAlgebraics();
+        propertiesAlgebraics();
+        propertiesNonNegativeAlgebraicsLessThanOne();
     }
 
     @Override
@@ -96,6 +101,11 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
         propertiesMonicRationalPolynomialsAtLeast();
         propertiesExponentVectors_List_Variable();
         propertiesMultivariatePolynomials_List_Variable();
+        propertiesPositiveAlgebraics_int();
+        propertiesNegativeAlgebraics_int();
+        propertiesNonzeroAlgebraics_int();
+        propertiesAlgebraics_int();
+        propertiesNonNegativeAlgebraicsLessThanOne_int();
     }
 
     private static <T> void test_helper(
@@ -952,5 +962,115 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
                 fail(vs);
             } catch (NullPointerException ignored) {}
         }
+    }
+
+    private void propertiesPositiveAlgebraics_int() {
+        initialize("positiveAlgebraics(int)");
+        for (int i : take(TINY_LIMIT, P.withScale(2).positiveIntegersGeometric())) {
+            Iterable<Algebraic> xs = QEP.positiveAlgebraics(i);
+            simpleTest(i, xs, x -> x.signum() == 1);
+            take(TINY_LIMIT, xs).forEach(Algebraic::validate);
+        }
+
+        for (int i : take(LIMIT, P.withElement(0, P.negativeIntegers()))) {
+            try {
+                QEP.positiveAlgebraics(i);
+                fail(i);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesPositiveAlgebraics() {
+        initializeConstant("positiveAlgebraics()");
+        simpleTest(QEP, QEP.positiveAlgebraics(), x -> x.signum() == 1);
+        take(TINY_LIMIT, QEP.positiveAlgebraics()).forEach(Algebraic::validate);
+    }
+
+    private void propertiesNegativeAlgebraics_int() {
+        initialize("negativeAlgebraics(int)");
+        for (int i : take(TINY_LIMIT / 2, P.withScale(2).positiveIntegersGeometric())) {
+            Iterable<Algebraic> xs = QEP.negativeAlgebraics(i);
+            simpleTest(i, xs, x -> x.signum() == -1);
+            take(TINY_LIMIT, xs).forEach(Algebraic::validate);
+        }
+
+        for (int i : take(LIMIT, P.withElement(0, P.negativeIntegers()))) {
+            try {
+                QEP.negativeAlgebraics(i);
+                fail(i);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesNegativeAlgebraics() {
+        initializeConstant("negativeAlgebraics()");
+        simpleTest(QEP, QEP.negativeAlgebraics(), x -> x.signum() == -1);
+        take(TINY_LIMIT, QEP.negativeAlgebraics()).forEach(Algebraic::validate);
+    }
+
+    private void propertiesNonzeroAlgebraics_int() {
+        initialize("nonzeroAlgebraics(int)");
+        for (int i : take(TINY_LIMIT, P.withScale(2).positiveIntegersGeometric())) {
+            Iterable<Algebraic> xs = QEP.nonzeroAlgebraics(i);
+            simpleTest(i, xs, x -> x != Algebraic.ZERO);
+            take(TINY_LIMIT, xs).forEach(Algebraic::validate);
+        }
+
+        for (int i : take(LIMIT, P.withElement(0, P.negativeIntegers()))) {
+            try {
+                QEP.nonzeroAlgebraics(i);
+                fail(i);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesNonzeroAlgebraics() {
+        initializeConstant("nonzeroAlgebraics()");
+        simpleTest(QEP, QEP.nonzeroAlgebraics(), x -> x != Algebraic.ZERO);
+        take(TINY_LIMIT, QEP.nonzeroAlgebraics()).forEach(Algebraic::validate);
+    }
+
+    private void propertiesAlgebraics_int() {
+        initialize("algebraics(int)");
+        for (int i : take(TINY_LIMIT, P.withScale(2).positiveIntegersGeometric())) {
+            Iterable<Algebraic> xs = QEP.nonzeroAlgebraics(i);
+            simpleTest(i, xs, x -> true);
+            take(TINY_LIMIT, xs).forEach(Algebraic::validate);
+        }
+
+        for (int i : take(LIMIT, P.withElement(0, P.negativeIntegers()))) {
+            try {
+                QEP.algebraics(i);
+                fail(i);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesAlgebraics() {
+        initializeConstant("algebraics()");
+        simpleTest(QEP, QEP.algebraics(), x -> true);
+        take(TINY_LIMIT, QEP.algebraics()).forEach(Algebraic::validate);
+    }
+
+    private void propertiesNonNegativeAlgebraicsLessThanOne_int() {
+        initialize("nonNegativeAlgebraicsLessThanOne(int)");
+        for (int i : take(TINY_LIMIT / 2, P.withScale(2).positiveIntegersGeometric())) {
+            Iterable<Algebraic> xs = QEP.nonNegativeAlgebraicsLessThanOne(i);
+            simpleTest(i, xs, x -> x.signum() != -1 && lt(x, Algebraic.ONE));
+            take(TINY_LIMIT, xs).forEach(Algebraic::validate);
+        }
+
+        for (int i : take(LIMIT, P.withElement(0, P.negativeIntegers()))) {
+            try {
+                QEP.nonNegativeAlgebraicsLessThanOne(i);
+                fail(i);
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    private void propertiesNonNegativeAlgebraicsLessThanOne() {
+        initializeConstant("nonNegativeAlgebraicsLessThanOne()");
+        simpleTest(QEP, QEP.nonNegativeAlgebraicsLessThanOne(), x -> x.signum() != -1 && lt(x, Algebraic.ONE));
+        take(TINY_LIMIT, QEP.nonNegativeAlgebraicsLessThanOne()).forEach(Algebraic::validate);
     }
 }

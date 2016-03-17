@@ -127,7 +127,7 @@ public class Algebraic implements Comparable<Algebraic> {
                 rootCounts.add(factorRootCount);
             }
         }
-        Interval isolatingInterval = polynomial.isolatingInterval(rootIndex);
+        Interval isolatingInterval = polynomial.powerOfTwoIsolatingInterval(rootIndex);
         int matchIndex = Real.root(polynomial::signum, isolatingInterval).match(realRoots);
         Pair<Polynomial, Integer> pair = polyRootPairs.get(matchIndex);
         polynomial = pair.a;
@@ -199,7 +199,7 @@ public class Algebraic implements Comparable<Algebraic> {
             } else {
                 inverseRootIndex = negativeRootCount - rootIndex - 1;
             }
-            Interval inverseIsolatingInterval = inverseMP.isolatingInterval(inverseRootIndex);
+            Interval inverseIsolatingInterval = inverseMP.powerOfTwoIsolatingInterval(inverseRootIndex);
             return new Algebraic(inverseMP, inverseRootIndex, inverseIsolatingInterval, mpRootCount);
         }
     }
@@ -426,7 +426,7 @@ public class Algebraic implements Comparable<Algebraic> {
             assertEquals(this, rootIndex, 0);
             assertEquals(this, minimalPolynomial, Polynomial.fromRoot(rational.get()));
             assertEquals(this, isolatingInterval, Interval.of(rational.get()));
-            assertEquals(this, mpRootCount, 0);
+            assertEquals(this, mpRootCount, 1);
         } else {
             assertTrue(this, minimalPolynomial.degree() > 1);
             assertTrue(this, minimalPolynomial.isIrreducible());
