@@ -18,9 +18,14 @@ import static mho.wheels.ordering.Ordering.le;
 import static mho.wheels.ordering.Ordering.lt;
 
 public class Real implements Iterable<Interval>, Comparable<Real> {
-    public static final Real ZERO = of(Rational.ZERO);
+    public static final @NotNull Real ZERO = of(Rational.ZERO);
 
-    public static final Real ONE = of(Rational.ONE);
+    public static final @NotNull Real ONE = of(Rational.ONE);
+
+    public static final @NotNull Real E = exp(Rational.ONE);
+
+    public static final @NotNull Real PI =
+            atan(Rational.of(1, 5)).shiftLeft(2).subtract(atan(Rational.of(1, 239))).shiftLeft(2);
 
     private final @NotNull Iterable<Interval> intervals;
 
@@ -190,6 +195,10 @@ public class Real implements Iterable<Interval>, Comparable<Real> {
         return new Real(zipWith(Interval::subtract, intervals, that.intervals));
     }
 
+    public @NotNull Real shiftLeft(int bits) {
+        return new Real(map(a -> a.shiftLeft(bits), intervals));
+    }
+
     public int signum() {
         return limitValue(Rational::signum);
     }
@@ -314,6 +323,95 @@ public class Real implements Iterable<Interval>, Comparable<Real> {
                 Collections.emptyList(),
                 map(i -> MathUtils.isPrime(i) ? BigInteger.ONE : BigInteger.ZERO, rangeUp(BigInteger.ONE))
         );
+
+    public static @NotNull Real fromMaclaurinSeries(
+            @NotNull Iterable<Rational> maclaurinCoefficients,
+            @NotNull Function<Integer, Interval> derivativeBound,
+            @NotNull Rational x
+    ) {
+        return new Real(() -> new Iterator<Interval>() {
+            private int k = 0;
+            private final @NotNull Iterator<Rational> maclaurinIterator = maclaurinCoefficients.iterator();
+            private @NotNull Rational center = Rational.ZERO;
+            private @NotNull Rational xPower = Rational.ONE;
+            private @NotNull BigInteger errorDenominator = BigInteger.ONE;
+
+            @Override
+            public boolean hasNext() {
+                return true;
+            }
+
+            @Override
+            public Interval next() {
+                Rational coefficient = maclaurinIterator.next();
+                if (coefficient != Rational.ZERO) {
+                    center = center.add(xPower.multiply(coefficient));
+                }
+                xPower = xPower.multiply(x);
+                k++;
+                errorDenominator = errorDenominator.multiply(BigInteger.valueOf(k));
+                Interval error = derivativeBound.apply(k).multiply(xPower.divide(errorDenominator));
+                return Interval.of(center).add(error);
+            }
+        });
+    }
+
+    public static @NotNull Real exp(@NotNull Rational x) {
+        if (x == Rational.ZERO) return ONE;
+        Interval derivativeBounds;
+        if (x.signum() == 1) {
+            derivativeBounds = Interval.of(Rational.ONE, Rational.of(3).pow(x.ceiling().intValueExact()));
+        } else {
+            derivativeBounds = Interval.of(Rational.ZERO, Rational.ONE);
+        }
+        return fromMaclaurinSeries(
+                map(i -> Rational.of(BigInteger.ONE, MathUtils.factorial(i)), rangeUp(BigInteger.ZERO)),
+                k -> derivativeBounds,
+                x
+        );
+    }
+
+    public static @NotNull Real sin(@NotNull Rational x) {
+        if (x == Rational.ZERO) return ZERO;
+        Interval derivativeBounds = Interval.of(Rational.NEGATIVE_ONE, Rational.ONE);
+        return fromMaclaurinSeries(
+                map(
+                        i -> i.and(BigInteger.ONE).equals(BigInteger.ZERO) ?
+                                Rational.ZERO :
+                                Rational.of(
+                                        i.and(IntegerUtils.TWO).equals(BigInteger.ZERO) ?
+                                                BigInteger.ONE :
+                                                IntegerUtils.NEGATIVE_ONE,
+                                        MathUtils.factorial(i)
+                                ),
+                        rangeUp(BigInteger.ZERO)
+                ),
+                k -> derivativeBounds,
+                x
+        );
+    }
+
+    public static @NotNull Real atan(@NotNull Rational x) {
+        if (x == Rational.ZERO) return ZERO;
+        return fromMaclaurinSeries(
+                map(
+                        i -> i.and(BigInteger.ONE).equals(BigInteger.ZERO) ?
+                                Rational.ZERO :
+                                Rational.of(
+                                        i.and(IntegerUtils.TWO).equals(BigInteger.ZERO) ?
+                                                BigInteger.ONE :
+                                                IntegerUtils.NEGATIVE_ONE,
+                                        i
+                                ),
+                        rangeUp(BigInteger.ZERO)
+                ),
+                k -> {
+                    Rational bound = Rational.of(MathUtils.factorial(k - 1));
+                    return Interval.of(bound.negate(), bound);
+                },
+                x
+        );
+    }
 
     public @NotNull String toString() {
         return toStringBase(BigInteger.TEN, Testing.TINY_LIMIT);
