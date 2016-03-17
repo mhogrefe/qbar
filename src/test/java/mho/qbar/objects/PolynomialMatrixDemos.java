@@ -6,6 +6,7 @@ import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
 import org.jetbrains.annotations.NotNull;
 
+import java.math.BigInteger;
 import java.util.List;
 
 import static mho.qbar.objects.PolynomialMatrix.*;
@@ -334,6 +335,117 @@ public class PolynomialMatrixDemos extends QBarDemos {
         );
         for (Pair<PolynomialMatrix, PolynomialMatrix> m : take(SMALL_LIMIT, ps)) {
             System.out.println(m.a + " - " + m.b + " = " + m.a.subtract(m.b));
+        }
+    }
+
+    private void demoMultiply_Polynomial() {
+        Iterable<Pair<PolynomialMatrix, Polynomial>> ps = P.pairs(
+                P.withScale(4).polynomialMatrices(),
+                P.withScale(4).polynomials()
+        );
+        for (Pair<PolynomialMatrix, Polynomial> p : take(LIMIT, ps)) {
+            System.out.println(p.a + " * " + p.b + " = " + p.a.multiply(p.b));
+        }
+    }
+
+    private void demoMultiply_BigInteger() {
+        Iterable<Pair<PolynomialMatrix, BigInteger>> ps = P.pairs(
+                P.withScale(4).polynomialMatrices(),
+                P.bigIntegers()
+        );
+        for (Pair<PolynomialMatrix, BigInteger> p : take(LIMIT, ps)) {
+            System.out.println(p.a + " * " + p.b + " = " + p.a.multiply(p.b));
+        }
+    }
+
+    private void demoMultiply_int() {
+        Iterable<Pair<PolynomialMatrix, Integer>> ps = P.pairs(P.withScale(4).polynomialMatrices(), P.integers());
+        for (Pair<PolynomialMatrix, Integer> p : take(LIMIT, ps)) {
+            System.out.println(p.a + " * " + p.b + " = " + p.a.multiply(p.b));
+        }
+    }
+
+    private void demoMultiply_PolynomialVector() {
+        Iterable<Pair<PolynomialMatrix, PolynomialVector>> ps = P.chooseLogarithmicOrder(
+                map(
+                        q -> q.b,
+                        P.dependentPairsInfiniteSquareRootOrder(
+                                P.pairs(P.withScale(4).positiveIntegersGeometric()),
+                                p -> P.pairs(
+                                        P.withScale(4).withSecondaryScale(4).polynomialMatrices(p.a, p.b),
+                                        P.withScale(4).withSecondaryScale(4).polynomialVectors(p.b)
+                                )
+                        )
+                ),
+                P.choose(
+                        map(
+                                i -> new Pair<>(zero(i, 0), PolynomialVector.ZERO_DIMENSIONAL),
+                                P.withScale(4).naturalIntegersGeometric()
+                        ),
+                        map(
+                                v -> new Pair<>(zero(0, v.dimension()), v),
+                                P.withScale(4).withSecondaryScale(4).polynomialVectorsAtLeast(1)
+                        )
+                )
+        );
+        for (Pair<PolynomialMatrix, PolynomialVector> p : take(SMALL_LIMIT, ps)) {
+            System.out.println(p.a + " * " + p.b + " = " + p.a.multiply(p.b));
+        }
+    }
+
+    private void demoMultiply_PolynomialMatrix() {
+        Iterable<Pair<PolynomialMatrix, PolynomialMatrix>> ps = P.chooseLogarithmicOrder(
+                map(
+                        q -> q.b,
+                        P.dependentPairsInfiniteSquareRootOrder(
+                                P.triples(P.withScale(4).positiveIntegersGeometric()),
+                                t -> P.pairs(
+                                        P.withScale(4).withSecondaryScale(4).polynomialMatrices(t.a, t.b),
+                                        P.withScale(4).withSecondaryScale(4).polynomialMatrices(t.b, t.c)
+                                )
+                        )
+                ),
+                P.choose(
+                    P.choose(
+                            map(
+                                    m -> new Pair<>(m, zero(m.width(), 0)),
+                                    filterInfinite(
+                                            m -> m.height() != 0 && m.width() != 0,
+                                            P.withScale(4).withSecondaryScale(4).polynomialMatrices()
+                                    )
+                            ),
+                            map(
+                                    m -> new Pair<>(zero(0, m.height()), m),
+                                    filterInfinite(
+                                            m -> m.height() != 0 && m.width() != 0,
+                                            P.withScale(4).withSecondaryScale(4).polynomialMatrices()
+                                    )
+                            )
+                    ),
+                    map(
+                            p -> new Pair<>(zero(p.a, 0), zero(0, p.b)),
+                            P.pairs(P.withScale(4).positiveIntegersGeometric())
+                    )
+                )
+        );
+        for (Pair<PolynomialMatrix, PolynomialMatrix> p : take(SMALL_LIMIT, ps)) {
+            System.out.println(p.a + " * " + p.b + " = " + p.a.multiply(p.b));
+        }
+    }
+
+    private void demoShiftLeft() {
+        Iterable<Pair<PolynomialMatrix, Integer>> ps = P.pairs(
+                P.withScale(4).polynomialMatrices(),
+                P.naturalIntegersGeometric()
+        );
+        for (Pair<PolynomialMatrix, Integer> p : take(LIMIT, ps)) {
+            System.out.println(p.a + " << " + p.b + " = " + p.a.shiftLeft(p.b));
+        }
+    }
+
+    private void demoDeterminant() {
+        for (PolynomialMatrix m : take(LIMIT, P.withScale(4).squarePolynomialMatrices())) {
+            System.out.println("det(" + m + ") = " + m.determinant());
         }
     }
 
