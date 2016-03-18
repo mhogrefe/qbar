@@ -173,6 +173,20 @@ public class MultivariatePolynomial implements
         );
     }
 
+    /**
+     * Given a (univariate) {@code Polynomial} and a variable, returns a {@code MultivariatePolynomial} equal to the
+     * polynomial applied to the variable.
+     *
+     * <ul>
+     *  <li>{@code p} cannot be null.</li>
+     *  <li>{@code v} cannot be null.</li>
+     *  <li>The result is univariate.</li>
+     * </ul>
+     *
+     * @param p a {@code Polynomial}
+     * @param v the independent variable of the result
+     * @return {@code p} with {@code v}
+     */
     public static @NotNull MultivariatePolynomial of(@NotNull Polynomial p, @NotNull Variable v) {
         if (p == Polynomial.ZERO) return ZERO;
         if (p == Polynomial.ONE) return ONE;
@@ -189,21 +203,46 @@ public class MultivariatePolynomial implements
         return new MultivariatePolynomial(terms);
     }
 
+    /**
+     * Converts {@code this} to a univariate {@code Polynomial}.
+     *
+     * <ul>
+     *  <li>{@code this} cannot have more than one variable.</li>
+     *  <li>The result is not null.</li>
+     * </ul>
+     *
+     * @return a {@code Polynomial} equal to {@code this}
+     */
     public @NotNull Polynomial toPolynomial() {
         if (this == ZERO) return Polynomial.ZERO;
         if (this == ONE) return Polynomial.ONE;
         List<Variable> variables = variables();
         if (variables.size() > 1) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("this cannot have more than one variable. Invalid this: " + this);
         }
+        Optional<Variable> variable = variables.isEmpty() ? Optional.empty() : Optional.of(head(variables));
         List<BigInteger> coefficients = toList(replicate(degree() + 1, BigInteger.ZERO));
         for (Pair<ExponentVector, BigInteger> term : terms) {
-            int exponent = head(dropWhile(i -> i == 0, term.a.getExponents()));
-            coefficients.set(exponent, term.b);
+            if (term.a == ExponentVector.ONE) {
+                coefficients.set(0, term.b);
+            } else {
+                int exponent = term.a.exponent(variable.get());
+                coefficients.set(exponent, term.b);
+            }
         }
         return Polynomial.of(coefficients);
     }
 
+    /**
+     * Returns all the variables in {@code this}, in ascending order.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code MultivariatePolynomial}.</li>
+     *  <li>The result is in ascending order and has no repetitions.</li>
+     * </ul>
+     *
+     * @return the variables in {@code this}
+     */
     public @NotNull List<Variable> variables() {
         SortedSet<Variable> variables = new TreeSet<>();
         for (Pair<ExponentVector, BigInteger> term : terms) {
@@ -212,12 +251,64 @@ public class MultivariatePolynomial implements
         return toList(variables);
     }
 
-    public int degree() {
-        return terms.isEmpty() ? -1 : head(terms).a.degree();
+    /**
+     * Returns the number of variables in {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code MultivariatePolynomial}.</li>
+     *  <li>The result is non-negative.</li>
+     * </ul>
+     *
+     * @return the number of variables in {@code this}
+     */
+    public int variableCount() {
+        return variables().size();
     }
 
+    /**
+     * Returns the number of terms in {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code MultivariatePolynomial}.</li>
+     *  <li>The result is non-negative.</li>
+     * </ul>
+     *
+     * @return the number of terms in {@code this}
+     */
     public int termCount() {
         return terms.size();
+    }
+
+    /**
+     * Returns the maximum bit length of any coefficient, or 0 if {@code this} is 0.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code MultivariatePolynomial}.</li>
+     *  <li>The result is non-negative.</li>
+     * </ul>
+     *
+     * @return the maximum coefficient bit length
+     */
+    public int maxCoefficientBitLength() {
+        if (this == ZERO) return 0;
+        //noinspection RedundantCast
+        return maximum((Iterable<Integer>) map(t -> t.b.abs().bitLength(), terms));
+    }
+
+    /**
+     * Returns the degree of {@code this}, which is the highest degree of any {@code term}. We consider 0 to have
+     * degree –1.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code MultivariatePolynomial}.</li>
+     *  <li>The result is at least –1.</li>
+     * </ul>
+     *
+     * @return deg({@code this}
+     */
+    @SuppressWarnings("JavaDoc")
+    public int degree() {
+        return terms.isEmpty() ? -1 : last(terms).a.degree();
     }
 
     /**

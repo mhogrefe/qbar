@@ -153,6 +153,130 @@ public class MultivariatePolynomialTest {
         of_int_helper(-5);
     }
 
+    private static void of_Polynomial_Variable_helper(@NotNull String p, @NotNull String v, @NotNull String output) {
+        aeq(of(Polynomial.read(p).get(), Variable.read(v).get()), output);
+    }
+
+    @Test
+    public void testOf_Polynomial_Variable() {
+        of_Polynomial_Variable_helper("0", "x", "0");
+        of_Polynomial_Variable_helper("1", "x", "1");
+        of_Polynomial_Variable_helper("x", "x", "x");
+        of_Polynomial_Variable_helper("x", "ooo", "ooo");
+        of_Polynomial_Variable_helper("-17", "x", "-17");
+        of_Polynomial_Variable_helper("x^2-4*x+7", "x", "x^2-4*x+7");
+        of_Polynomial_Variable_helper("x^2-4*x+7", "ooo", "ooo^2-4*ooo+7");
+        of_Polynomial_Variable_helper("x^3-1", "x", "x^3-1");
+        of_Polynomial_Variable_helper("x^3-1", "ooo", "ooo^3-1");
+        of_Polynomial_Variable_helper("3*x^10", "x", "3*x^10");
+        of_Polynomial_Variable_helper("3*x^10", "ooo", "3*ooo^10");
+    }
+
+    private static void toPolynomial_helper(@NotNull String input, @NotNull String output) {
+        aeq(read(input).get().toPolynomial(), output);
+    }
+
+    private static void toPolynomial_fail_helper(@NotNull String input) {
+        try {
+            read(input).get().toPolynomial();
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testToPolynomial() {
+        toPolynomial_helper("0", "0");
+        toPolynomial_helper("1", "1");
+        toPolynomial_helper("ooo", "x");
+        toPolynomial_helper("-17", "-17");
+        toPolynomial_helper("x^2-4*x+7", "x^2-4*x+7");
+        toPolynomial_helper("a^2-4*a+7", "x^2-4*x+7");
+
+        toPolynomial_fail_helper("a*b*c");
+        toPolynomial_fail_helper("x^2+2*x*y+y^2");
+        toPolynomial_fail_helper("a+b+c+d+e+f");
+    }
+
+    private static void variables_helper(@NotNull String input, @NotNull String output) {
+        aeq(read(input).get().variables(), output);
+    }
+
+    @Test
+    public void testVariables() {
+        variables_helper("0", "[]");
+        variables_helper("1", "[]");
+        variables_helper("ooo", "[ooo]");
+        variables_helper("-17", "[]");
+        variables_helper("a*b*c", "[a, b, c]");
+        variables_helper("x^2-4*x+7", "[x]");
+        variables_helper("x^2+2*x*y+y^2", "[x, y]");
+        variables_helper("a+b+c+d+e+f", "[a, b, c, d, e, f]");
+    }
+
+    private static void variableCount_helper(@NotNull String input, int output) {
+        aeq(read(input).get().variableCount(), output);
+    }
+
+    @Test
+    public void testVariableCount() {
+        variableCount_helper("0", 0);
+        variableCount_helper("1", 0);
+        variableCount_helper("ooo", 1);
+        variableCount_helper("-17", 0);
+        variableCount_helper("a*b*c", 3);
+        variableCount_helper("x^2-4*x+7", 1);
+        variableCount_helper("x^2+2*x*y+y^2", 2);
+        variableCount_helper("a+b+c+d+e+f", 6);
+    }
+
+    private static void termCount_helper(@NotNull String input, int output) {
+        aeq(read(input).get().termCount(), output);
+    }
+
+    @Test
+    public void testTermCount() {
+        termCount_helper("0", 0);
+        termCount_helper("1", 1);
+        termCount_helper("ooo", 1);
+        termCount_helper("-17", 1);
+        termCount_helper("a*b*c", 1);
+        termCount_helper("x^2-4*x+7", 3);
+        termCount_helper("x^2+2*x*y+y^2", 3);
+        termCount_helper("a+b+c+d+e+f", 6);
+    }
+
+    private static void maxCoefficientBitLength_helper(@NotNull String input, int output) {
+        aeq(read(input).get().maxCoefficientBitLength(), output);
+    }
+
+    @Test
+    public void testMaxCoefficientBitLength() {
+        maxCoefficientBitLength_helper("0", 0);
+        maxCoefficientBitLength_helper("1", 1);
+        maxCoefficientBitLength_helper("ooo", 1);
+        maxCoefficientBitLength_helper("-17", 5);
+        maxCoefficientBitLength_helper("a*b*c", 1);
+        maxCoefficientBitLength_helper("x^2-4*x+7", 3);
+        maxCoefficientBitLength_helper("x^2+2*x*y+y^2", 2);
+        maxCoefficientBitLength_helper("a+b+c+d+e+f", 1);
+    }
+
+    private static void degree_helper(@NotNull String input, int output) {
+        aeq(read(input).get().degree(), output);
+    }
+
+    @Test
+    public void testDegree() {
+        degree_helper("0", -1);
+        degree_helper("1", 0);
+        degree_helper("ooo", 1);
+        degree_helper("-17", 0);
+        degree_helper("a*b*c", 3);
+        degree_helper("x^2-4*x+7", 2);
+        degree_helper("x^2+2*x*y+y^2", 2);
+        degree_helper("a+b+c+d+e+f", 1);
+    }
+
     private static @NotNull List<Pair<ExponentVector, BigInteger>> readExponentVectorBigIntegerPairList(
             @NotNull String s
     ) {

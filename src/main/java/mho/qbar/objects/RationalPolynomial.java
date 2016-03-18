@@ -264,8 +264,9 @@ public final class RationalPolynomial implements
      *  <li>The result is at least –1.</li>
      * </ul>
      *
-     * @return this {@code RationalPolynomial}'s degree
+     * @return deg({@code this})
      */
+    @SuppressWarnings("JavaDoc")
     public int degree() {
         return coefficients.size() - 1;
     }

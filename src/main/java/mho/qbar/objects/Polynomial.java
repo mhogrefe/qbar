@@ -333,8 +333,9 @@ public final class Polynomial implements
      *  <li>The result is at least –1.</li>
      * </ul>
      *
-     * @return this {@code Polynomial}'s degree
+     * @return deg({@code this})
      */
+    @SuppressWarnings("JavaDoc")
     public int degree() {
         return coefficients.size() - 1;
     }
