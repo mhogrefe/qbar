@@ -6,6 +6,7 @@ import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
 import org.jetbrains.annotations.NotNull;
 
+import java.math.BigInteger;
 import java.util.List;
 
 import static mho.qbar.objects.RationalPolynomialMatrix.*;
@@ -348,6 +349,172 @@ public class RationalPolynomialMatrixDemos extends QBarDemos {
         );
         for (Pair<RationalPolynomialMatrix, RationalPolynomialMatrix> m : take(SMALL_LIMIT, ps)) {
             System.out.println(m.a + " - " + m.b + " = " + m.a.subtract(m.b));
+        }
+    }
+
+    private void demoMultiply_RationalPolynomial() {
+        Iterable<Pair<RationalPolynomialMatrix, RationalPolynomial>> ps = P.pairs(
+                P.withScale(4).rationalPolynomialMatrices(),
+                P.withScale(4).rationalPolynomials()
+        );
+        for (Pair<RationalPolynomialMatrix, RationalPolynomial> p : take(LIMIT, ps)) {
+            System.out.println(p.a + " * " + p.b + " = " + p.a.multiply(p.b));
+        }
+    }
+
+    private void demoMultiply_Rational() {
+        Iterable<Pair<RationalPolynomialMatrix, Rational>> ps = P.pairs(
+                P.withScale(4).rationalPolynomialMatrices(),
+                P.rationals()
+        );
+        for (Pair<RationalPolynomialMatrix, Rational> p : take(LIMIT, ps)) {
+            System.out.println(p.a + " * " + p.b + " = " + p.a.multiply(p.b));
+        }
+    }
+
+    private void demoMultiply_BigInteger() {
+        Iterable<Pair<RationalPolynomialMatrix, BigInteger>> ps = P.pairs(
+                P.withScale(4).rationalPolynomialMatrices(),
+                P.bigIntegers()
+        );
+        for (Pair<RationalPolynomialMatrix, BigInteger> p : take(LIMIT, ps)) {
+            System.out.println(p.a + " * " + p.b + " = " + p.a.multiply(p.b));
+        }
+    }
+
+    private void demoMultiply_int() {
+        Iterable<Pair<RationalPolynomialMatrix, Integer>> ps = P.pairs(
+                P.withScale(4).rationalPolynomialMatrices(),
+                P.integers()
+        );
+        for (Pair<RationalPolynomialMatrix, Integer> p : take(LIMIT, ps)) {
+            System.out.println(p.a + " * " + p.b + " = " + p.a.multiply(p.b));
+        }
+    }
+
+    private void demoDivide_Rational() {
+        Iterable<Pair<RationalPolynomialMatrix, Rational>> ps = P.pairs(
+                P.withScale(4).rationalPolynomialMatrices(),
+                P.nonzeroRationals()
+        );
+        for (Pair<RationalPolynomialMatrix, Rational> p : take(LIMIT, ps)) {
+            System.out.println(p.a + " / " + p.b + " = " + p.a.divide(p.b));
+        }
+    }
+
+    private void demoDivide_BigInteger() {
+        Iterable<Pair<RationalPolynomialMatrix, BigInteger>> ps = P.pairs(
+                P.withScale(4).rationalPolynomialMatrices(),
+                P.nonzeroBigIntegers()
+        );
+        for (Pair<RationalPolynomialMatrix, BigInteger> p : take(LIMIT, ps)) {
+            System.out.println(p.a + " / " + p.b + " = " + p.a.divide(p.b));
+        }
+    }
+
+    private void demoDivide_int() {
+        Iterable<Pair<RationalPolynomialMatrix, Integer>> ps = P.pairs(
+                P.withScale(4).rationalPolynomialMatrices(),
+                P.nonzeroIntegers()
+        );
+        for (Pair<RationalPolynomialMatrix, Integer> p : take(LIMIT, ps)) {
+            System.out.println(p.a + " / " + p.b + " = " + p.a.divide(p.b));
+        }
+    }
+
+    private void demoMultiply_RationalPolynomialVector() {
+        Iterable<Pair<RationalPolynomialMatrix, RationalPolynomialVector>> ps = P.chooseLogarithmicOrder(
+                map(
+                        q -> q.b,
+                        P.dependentPairsInfiniteSquareRootOrder(
+                                P.pairs(P.withScale(4).positiveIntegersGeometric()),
+                                p -> P.pairs(
+                                        P.withScale(4).withSecondaryScale(4).rationalPolynomialMatrices(p.a, p.b),
+                                        P.withScale(4).withSecondaryScale(4).rationalPolynomialVectors(p.b)
+                                )
+                        )
+                ),
+                P.choose(
+                        map(
+                                i -> new Pair<>(zero(i, 0), RationalPolynomialVector.ZERO_DIMENSIONAL),
+                                P.withScale(4).naturalIntegersGeometric()
+                        ),
+                        map(
+                                v -> new Pair<>(zero(0, v.dimension()), v),
+                                P.withScale(4).withSecondaryScale(4).rationalPolynomialVectorsAtLeast(1)
+                        )
+                )
+        );
+        for (Pair<RationalPolynomialMatrix, RationalPolynomialVector> p : take(SMALL_LIMIT, ps)) {
+            System.out.println(p.a + " * " + p.b + " = " + p.a.multiply(p.b));
+        }
+    }
+
+    private void demoMultiply_RationalPolynomialMatrix() {
+        Iterable<Pair<RationalPolynomialMatrix, RationalPolynomialMatrix>> ps = P.chooseLogarithmicOrder(
+                map(
+                        q -> q.b,
+                        P.dependentPairsInfiniteSquareRootOrder(
+                                P.triples(P.withScale(4).positiveIntegersGeometric()),
+                                t -> P.pairs(
+                                        P.withScale(4).withSecondaryScale(4).rationalPolynomialMatrices(t.a, t.b),
+                                        P.withScale(4).withSecondaryScale(4).rationalPolynomialMatrices(t.b, t.c)
+                                )
+                        )
+                ),
+                P.choose(
+                    P.choose(
+                            map(
+                                    m -> new Pair<>(m, zero(m.width(), 0)),
+                                    filterInfinite(
+                                            m -> m.height() != 0 && m.width() != 0,
+                                            P.withScale(4).withSecondaryScale(4).rationalPolynomialMatrices()
+                                    )
+                            ),
+                            map(
+                                    m -> new Pair<>(zero(0, m.height()), m),
+                                    filterInfinite(
+                                            m -> m.height() != 0 && m.width() != 0,
+                                            P.withScale(4).withSecondaryScale(4).rationalPolynomialMatrices()
+                                    )
+                            )
+                    ),
+                    map(
+                            p -> new Pair<>(zero(p.a, 0), zero(0, p.b)),
+                            P.pairs(P.withScale(4).positiveIntegersGeometric())
+                    )
+                )
+        );
+        for (Pair<RationalPolynomialMatrix, RationalPolynomialMatrix> p : take(SMALL_LIMIT, ps)) {
+            System.out.println(p.a + " * " + p.b + " = " + p.a.multiply(p.b));
+        }
+    }
+
+    private void demoShiftLeft() {
+        Iterable<Pair<RationalPolynomialMatrix, Integer>> ps = P.pairs(
+                P.withScale(4).rationalPolynomialMatrices(),
+                P.naturalIntegersGeometric()
+        );
+        for (Pair<RationalPolynomialMatrix, Integer> p : take(LIMIT, ps)) {
+            System.out.println(p.a + " << " + p.b + " = " + p.a.shiftLeft(p.b));
+        }
+    }
+
+    private void demoShiftRight() {
+        Iterable<Pair<RationalPolynomialMatrix, Integer>> ps = P.pairs(
+                P.withScale(4).rationalPolynomialMatrices(),
+                P.naturalIntegersGeometric()
+        );
+        for (Pair<RationalPolynomialMatrix, Integer> p : take(LIMIT, ps)) {
+            System.out.println(p.a + " >> " + p.b + " = " + p.a.shiftRight(p.b));
+        }
+    }
+
+    private void demoDeterminant() {
+        Iterable<RationalPolynomialMatrix> ms =
+                P.withScale(4).withSecondaryScale(4).squareRationalPolynomialMatrices();
+        for (RationalPolynomialMatrix m : take(LIMIT, ms)) {
+            System.out.println("det(" + m + ") = " + m.determinant());
         }
     }
 
