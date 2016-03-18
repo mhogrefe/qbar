@@ -12,6 +12,8 @@ import java.util.List;
 import static mho.qbar.objects.MultivariatePolynomial.*;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.testing.Testing.aeq;
+import static mho.wheels.testing.Testing.testCompareToHelper;
+import static mho.wheels.testing.Testing.testEqualsHelper;
 import static org.junit.Assert.fail;
 
 public class MultivariatePolynomialTest {
@@ -277,6 +279,37 @@ public class MultivariatePolynomialTest {
         degree_helper("a+b+c+d+e+f", 1);
     }
 
+    @Test
+    public void testEquals() {
+        testEqualsHelper(
+                readMultivariatePolynomialList("[0, 1, ooo, -17, a*b*c, x^2-4*x+7, x^2+2*x*y+y^2, a+b+c+d+e+f]"),
+                readMultivariatePolynomialList("[0, 1, ooo, -17, a*b*c, x^2-4*x+7, x^2+2*x*y+y^2, a+b+c+d+e+f]")
+        );
+    }
+
+    private static void hashCode_helper(@NotNull String input, int hashCode) {
+        aeq(read(input).get().hashCode(), hashCode);
+    }
+
+    @Test
+    public void testHashCode() {
+        hashCode_helper("0", 1);
+        hashCode_helper("1", 63);
+        hashCode_helper("ooo", -246313024);
+        hashCode_helper("-17", 45);
+        hashCode_helper("a*b*c", 954336);
+        hashCode_helper("x^2-4*x+7", 992701033);
+        hashCode_helper("x^2+2*x*y+y^2", 469506170);
+        hashCode_helper("a+b+c+d+e+f", -1175206393);
+    }
+
+    @Test
+    public void testCompareTo() {
+        testCompareToHelper(
+                readMultivariatePolynomialList("[0, -17, 1, ooo, a+b+c+d+e+f, x^2-4*x+7, x^2+2*x*y+y^2, a*b*c]")
+        );
+    }
+
     private static @NotNull List<Pair<ExponentVector, BigInteger>> readExponentVectorBigIntegerPairList(
             @NotNull String s
     ) {
@@ -298,5 +331,9 @@ public class MultivariatePolynomialTest {
                         Readers.readWithNulls(Readers::readBigInteger)
                 )
         ).apply(s).get();
+    }
+
+    private static @NotNull List<MultivariatePolynomial> readMultivariatePolynomialList(@NotNull String s) {
+        return Readers.readList(MultivariatePolynomial::read).apply(s).get();
     }
 }

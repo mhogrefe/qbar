@@ -370,7 +370,7 @@ public class MultivariatePolynomial implements
             Pair<ExponentVector, BigInteger> thatTerm = that.terms.get(j);
             int evCompare = thisTerm.a.compareTo(thatTerm.a);
             if (evCompare != 0) return evCompare;
-            int iCompare = thisTerm.b.compareTo(thisTerm.b);
+            int iCompare = thisTerm.b.compareTo(thatTerm.b);
             if (iCompare != 0) return iCompare;
             i--;
             j--;
