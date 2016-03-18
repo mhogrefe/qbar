@@ -1044,6 +1044,52 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
         return map(Algebraic::realValue, algebraics());
     }
 
+    @Override
+    public @NotNull Iterable<Algebraic> positiveAlgebraics() {
+        return map(
+                p -> p.b,
+                dependentPairsInfiniteLogarithmicOrder(
+                        positiveBigIntegers(),
+                        i -> positiveAlgebraics(i.intValueExact())
+                )
+        );
+    }
+
+    @Override
+    public @NotNull Iterable<Algebraic> negativeAlgebraics() {
+        return map(
+                p -> p.b,
+                dependentPairsInfiniteLogarithmicOrder(
+                        positiveBigIntegers(),
+                        i -> negativeAlgebraics(i.intValueExact())
+                )
+        );
+    }
+
+    @Override
+    public @NotNull Iterable<Algebraic> nonzeroAlgebraics() {
+        return tail(algebraics());
+    }
+
+    @Override
+    public @NotNull Iterable<Algebraic> algebraics() {
+        return map(
+                p -> p.b,
+                dependentPairsInfiniteLogarithmicOrder(positiveBigIntegers(), i -> algebraics(i.intValueExact()))
+        );
+    }
+
+    @Override
+    public @NotNull Iterable<Algebraic> nonNegativeAlgebraicsLessThanOne() {
+        return map(
+                p -> p.b,
+                dependentPairsInfiniteLogarithmicOrder(
+                        positiveBigIntegers(),
+                        i -> nonNegativeAlgebraicsLessThanOne(i.intValueExact())
+                )
+        );
+    }
+
     /**
      * Determines whether {@code this} is equal to {@code that}. This implementation is the same as in
      * {@link java.lang.Object#equals}, but repeated here for clarity.

@@ -1847,6 +1847,55 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
         );
     }
 
+    @Override
+    public @NotNull Iterable<Algebraic> positiveAlgebraics() {
+        return map(
+                p -> p.b,
+                dependentPairsInfiniteLogarithmicOrder(
+                        withScale(getTertiaryScale()).positiveBigIntegers(),
+                        i -> positiveAlgebraics(i.intValueExact())
+                )
+        );
+    }
+
+    @Override
+    public @NotNull Iterable<Algebraic> negativeAlgebraics() {
+        return map(
+                p -> p.b,
+                dependentPairsInfiniteLogarithmicOrder(
+                        withScale(getTertiaryScale()).positiveBigIntegers(),
+                        i -> negativeAlgebraics(i.intValueExact())
+                )
+        );
+    }
+
+    @Override
+    public @NotNull Iterable<Algebraic> nonzeroAlgebraics() {
+        return filterInfinite(x -> x != Algebraic.ZERO, nonzeroAlgebraics());
+    }
+
+    @Override
+    public @NotNull Iterable<Algebraic> algebraics() {
+        return map(
+                p -> p.b,
+                dependentPairsInfiniteLogarithmicOrder(
+                        withScale(getTertiaryScale()).positiveBigIntegers(),
+                        i -> algebraics(i.intValueExact())
+                )
+        );
+    }
+
+    @Override
+    public @NotNull Iterable<Algebraic> nonNegativeAlgebraicsLessThanOne() {
+        return map(
+                p -> p.b,
+                dependentPairsInfiniteLogarithmicOrder(
+                        withScale(getTertiaryScale()).positiveBigIntegers(),
+                        i -> nonNegativeAlgebraicsLessThanOne(i.intValueExact())
+                )
+        );
+    }
+
     /**
      * Determines whether {@code this} is equal to {@code that}.
      *

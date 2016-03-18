@@ -3504,15 +3504,7 @@ public strictfp abstract class QBarIterableProvider {
         );
     }
 
-    public @NotNull Iterable<Algebraic> positiveAlgebraics() {
-        return map(
-                p -> p.b,
-                dependentPairsInfiniteLogarithmicOrder(
-                        positiveBigIntegers(),
-                        i -> positiveAlgebraics(i.intValueExact())
-                )
-        );
-    }
+    public abstract @NotNull Iterable<Algebraic> positiveAlgebraics();
 
     public @NotNull Iterable<Algebraic> negativeAlgebraics(int degree) {
         if (degree < 1) {
@@ -3540,23 +3532,13 @@ public strictfp abstract class QBarIterableProvider {
         );
     }
 
-    public @NotNull Iterable<Algebraic> negativeAlgebraics() {
-        return map(
-                p -> p.b,
-                dependentPairsInfiniteLogarithmicOrder(
-                        positiveBigIntegers(),
-                        i -> negativeAlgebraics(i.intValueExact())
-                )
-        );
-    }
+    public abstract @NotNull Iterable<Algebraic> negativeAlgebraics();
 
     public @NotNull Iterable<Algebraic> nonzeroAlgebraics(int degree) {
         return degree == 1 ? tail(algebraics(degree)) : algebraics(degree);
     }
 
-    public @NotNull Iterable<Algebraic> nonzeroAlgebraics() {
-        return tail(algebraics());
-    }
+    public abstract @NotNull Iterable<Algebraic> nonzeroAlgebraics();
 
     public @NotNull Iterable<Algebraic> algebraics(int degree) {
         if (degree < 1) {
@@ -3581,12 +3563,7 @@ public strictfp abstract class QBarIterableProvider {
         );
     }
 
-    public @NotNull Iterable<Algebraic> algebraics() {
-        return map(
-                p -> p.b,
-                dependentPairsInfiniteLogarithmicOrder(positiveBigIntegers(), i -> algebraics(i.intValueExact()))
-        );
-    }
+    public abstract @NotNull Iterable<Algebraic> algebraics();
 
     public @NotNull Iterable<Algebraic> nonNegativeAlgebraicsLessThanOne(int degree) {
         if (degree < 1) {
@@ -3611,15 +3588,7 @@ public strictfp abstract class QBarIterableProvider {
         );
     }
 
-    public @NotNull Iterable<Algebraic> nonNegativeAlgebraicsLessThanOne() {
-        return map(
-                p -> p.b,
-                dependentPairsInfiniteLogarithmicOrder(
-                        positiveBigIntegers(),
-                        i -> nonNegativeAlgebraicsLessThanOne(i.intValueExact())
-                )
-        );
-    }
+    public abstract @NotNull Iterable<Algebraic> nonNegativeAlgebraicsLessThanOne();
 
     public @NotNull Iterable<QBarRandomProvider> qbarRandomProvidersFixedScales(
             int scale,
