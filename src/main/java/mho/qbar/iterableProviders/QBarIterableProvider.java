@@ -3509,9 +3509,9 @@ public strictfp abstract class QBarIterableProvider {
             throw new IllegalArgumentException("degree must be positive. Invalid degree: " + degree);
         }
         return map(
-                x -> x.negate().invert(),
+                Algebraic::invert,
                 filterInfinite(
-                        x -> x.signum() == 1,
+                        x -> x.signum() == -1,
                         map(
                                 p -> Algebraic.of(p.a, p.b),
                                 filterInfinite(

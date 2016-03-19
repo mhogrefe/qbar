@@ -4966,6 +4966,138 @@ public class QBarRandomProviderTest {
         positiveAlgebraics_fail_helper(1, 1);
     }
 
+    private static void negativeAlgebraics_int_helper(
+            int scale,
+            int degree,
+            @NotNull String output,
+            double meanDegree,
+            double meanCoefficientBitSize,
+            double meanValue
+    ) {
+        algebraics_helper(
+                P.withScale(scale).negativeAlgebraics(degree),
+                output,
+                meanDegree,
+                meanCoefficientBitSize,
+                meanValue
+        );
+        P.reset();
+    }
+
+    private static void negativeAlgebraics_int_fail_helper(int scale, int degree) {
+        try {
+            P.withScale(scale).negativeAlgebraics(degree);
+            fail();
+        } catch (IllegalStateException | IllegalArgumentException ignored) {}
+        finally {
+            P.reset();
+        }
+    }
+
+    @Test
+    public void testNegativeAlgebraics_int() {
+        negativeAlgebraics_int_helper(
+                1,
+                1,
+                "QBarRandomProvider_negativeAlgebraics_int_i",
+                0.9999999999999062,
+                1.8904500000005682,
+                -6.315925658558994
+        );
+        negativeAlgebraics_int_helper(
+                5,
+                1,
+                "QBarRandomProvider_negativeAlgebraics_int_ii",
+                0.9999999999999062,
+                5.741199999999953,
+                -1.8103721442127808E11
+        );
+        negativeAlgebraics_int_helper(
+                1,
+                2,
+                "QBarRandomProvider_negativeAlgebraics_int_iii",
+                1.9999999999998124,
+                1.6303666666665126,
+                -5.42559674046746
+        );
+        negativeAlgebraics_int_helper(
+                5,
+                2,
+                "QBarRandomProvider_negativeAlgebraics_int_iv",
+                1.9999999999998124,
+                5.806200000001735,
+                -6.734225118513345E11
+        );
+        negativeAlgebraics_int_helper(
+                1,
+                3,
+                "QBarRandomProvider_negativeAlgebraics_int_v",
+                3.0000000000004805,
+                1.4807000000002934,
+                -3.7230896778068794
+        );
+        negativeAlgebraics_int_helper(
+                5,
+                3,
+                "QBarRandomProvider_negativeAlgebraics_int_vi",
+                3.0000000000004805,
+                5.495149999999198,
+                -8.64470511038894E8
+        );
+        negativeAlgebraics_int_fail_helper(0, 0);
+        negativeAlgebraics_int_fail_helper(1, -1);
+    }
+
+    private static void negativeAlgebraics_helper(
+            int scale,
+            int secondaryScale,
+            @NotNull String output,
+            double meanDegree,
+            double meanCoefficientBitSize,
+            double meanValue
+    ) {
+        algebraics_helper(
+                P.withScale(scale).withSecondaryScale(secondaryScale).negativeAlgebraics(),
+                output,
+                meanDegree,
+                meanCoefficientBitSize,
+                meanValue
+        );
+        P.reset();
+    }
+
+    private static void negativeAlgebraics_fail_helper(int scale, int secondaryScale) {
+        try {
+            P.withScale(scale).withSecondaryScale(secondaryScale).negativeAlgebraics();
+            fail();
+        } catch (IllegalStateException | IllegalArgumentException ignored) {}
+        finally {
+            P.reset();
+        }
+    }
+
+    @Test
+    public void testNegativeAlgebraics() {
+        negativeAlgebraics_helper(
+                1,
+                2,
+                "QBarRandomProvider_negativeAlgebraics_i",
+                1.9975999999998322,
+                1.4489925273554884,
+                -35.35899085466008
+        );
+        negativeAlgebraics_helper(
+                5,
+                3,
+                "QBarRandomProvider_negativeAlgebraics_ii",
+                2.9775000000002008,
+                5.409729729729074,
+                -5.1291800819379814E10
+        );
+        negativeAlgebraics_fail_helper(0, 2);
+        negativeAlgebraics_fail_helper(1, 1);
+    }
+
     private static double meanOfIntegers(@NotNull List<Integer> xs) {
         int size = xs.size();
         return sumDouble(map(i -> (double) i / size, xs));

@@ -262,7 +262,7 @@ public class QBarExhaustiveProviderDemos extends QBarDemos {
     }
 
     private void demoNegativeAlgebraics_int() {
-        for (int i : take(TINY_LIMIT / 2, P.withScale(2).positiveIntegersGeometric())) {
+        for (int i : take(TINY_LIMIT, P.withScale(2).positiveIntegersGeometric())) {
             System.out.println("negativeAlgebraics(" + i + ") = " + its(QEP.negativeAlgebraics(i)));
         }
     }

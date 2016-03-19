@@ -988,7 +988,7 @@ public class QBarExhaustiveProviderProperties extends QBarTestProperties {
 
     private void propertiesNegativeAlgebraics_int() {
         initialize("negativeAlgebraics(int)");
-        for (int i : take(TINY_LIMIT / 2, P.withScale(2).positiveIntegersGeometric())) {
+        for (int i : take(TINY_LIMIT, P.withScale(2).positiveIntegersGeometric())) {
             Iterable<Algebraic> xs = QEP.negativeAlgebraics(i);
             simpleTest(i, xs, x -> x.signum() == -1);
             take(TINY_LIMIT, xs).forEach(Algebraic::validate);
