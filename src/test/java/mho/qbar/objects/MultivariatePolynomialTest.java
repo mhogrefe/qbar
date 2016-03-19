@@ -14,6 +14,7 @@ import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.testing.Testing.aeq;
 import static mho.wheels.testing.Testing.testCompareToHelper;
 import static mho.wheels.testing.Testing.testEqualsHelper;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 
 public class MultivariatePolynomialTest {
@@ -31,8 +32,8 @@ public class MultivariatePolynomialTest {
     public void testIterator() {
         iterator_helper("0", "[]");
         iterator_helper("1", "[(1, 1)]");
-        iterator_helper("ooo", "[(ooo, 1)]");
         iterator_helper("-17", "[(1, -17)]");
+        iterator_helper("ooo", "[(ooo, 1)]");
         iterator_helper("a*b*c", "[(a*b*c, 1)]");
         iterator_helper("x^2-4*x+7", "[(1, 7), (x, -4), (x^2, 1)]");
         iterator_helper("x^2+2*x*y+y^2", "[(y^2, 1), (x*y, 2), (x^2, 1)]");
@@ -163,9 +164,9 @@ public class MultivariatePolynomialTest {
     public void testOf_Polynomial_Variable() {
         of_Polynomial_Variable_helper("0", "x", "0");
         of_Polynomial_Variable_helper("1", "x", "1");
+        of_Polynomial_Variable_helper("-17", "x", "-17");
         of_Polynomial_Variable_helper("x", "x", "x");
         of_Polynomial_Variable_helper("x", "ooo", "ooo");
-        of_Polynomial_Variable_helper("-17", "x", "-17");
         of_Polynomial_Variable_helper("x^2-4*x+7", "x", "x^2-4*x+7");
         of_Polynomial_Variable_helper("x^2-4*x+7", "ooo", "ooo^2-4*ooo+7");
         of_Polynomial_Variable_helper("x^3-1", "x", "x^3-1");
@@ -189,8 +190,8 @@ public class MultivariatePolynomialTest {
     public void testToPolynomial() {
         toPolynomial_helper("0", "0");
         toPolynomial_helper("1", "1");
-        toPolynomial_helper("ooo", "x");
         toPolynomial_helper("-17", "-17");
+        toPolynomial_helper("ooo", "x");
         toPolynomial_helper("x^2-4*x+7", "x^2-4*x+7");
         toPolynomial_helper("a^2-4*a+7", "x^2-4*x+7");
 
@@ -207,8 +208,8 @@ public class MultivariatePolynomialTest {
     public void testVariables() {
         variables_helper("0", "[]");
         variables_helper("1", "[]");
-        variables_helper("ooo", "[ooo]");
         variables_helper("-17", "[]");
+        variables_helper("ooo", "[ooo]");
         variables_helper("a*b*c", "[a, b, c]");
         variables_helper("x^2-4*x+7", "[x]");
         variables_helper("x^2+2*x*y+y^2", "[x, y]");
@@ -223,8 +224,8 @@ public class MultivariatePolynomialTest {
     public void testVariableCount() {
         variableCount_helper("0", 0);
         variableCount_helper("1", 0);
-        variableCount_helper("ooo", 1);
         variableCount_helper("-17", 0);
+        variableCount_helper("ooo", 1);
         variableCount_helper("a*b*c", 3);
         variableCount_helper("x^2-4*x+7", 1);
         variableCount_helper("x^2+2*x*y+y^2", 2);
@@ -239,8 +240,8 @@ public class MultivariatePolynomialTest {
     public void testTermCount() {
         termCount_helper("0", 0);
         termCount_helper("1", 1);
-        termCount_helper("ooo", 1);
         termCount_helper("-17", 1);
+        termCount_helper("ooo", 1);
         termCount_helper("a*b*c", 1);
         termCount_helper("x^2-4*x+7", 3);
         termCount_helper("x^2+2*x*y+y^2", 3);
@@ -255,8 +256,8 @@ public class MultivariatePolynomialTest {
     public void testMaxCoefficientBitLength() {
         maxCoefficientBitLength_helper("0", 0);
         maxCoefficientBitLength_helper("1", 1);
-        maxCoefficientBitLength_helper("ooo", 1);
         maxCoefficientBitLength_helper("-17", 5);
+        maxCoefficientBitLength_helper("ooo", 1);
         maxCoefficientBitLength_helper("a*b*c", 1);
         maxCoefficientBitLength_helper("x^2-4*x+7", 3);
         maxCoefficientBitLength_helper("x^2+2*x*y+y^2", 2);
@@ -271,8 +272,8 @@ public class MultivariatePolynomialTest {
     public void testDegree() {
         degree_helper("0", -1);
         degree_helper("1", 0);
-        degree_helper("ooo", 1);
         degree_helper("-17", 0);
+        degree_helper("ooo", 1);
         degree_helper("a*b*c", 3);
         degree_helper("x^2-4*x+7", 2);
         degree_helper("x^2+2*x*y+y^2", 2);
@@ -295,8 +296,8 @@ public class MultivariatePolynomialTest {
     public void testHashCode() {
         hashCode_helper("0", 1);
         hashCode_helper("1", 63);
-        hashCode_helper("ooo", -246313024);
         hashCode_helper("-17", 45);
+        hashCode_helper("ooo", -246313024);
         hashCode_helper("a*b*c", 954336);
         hashCode_helper("x^2-4*x+7", 992701033);
         hashCode_helper("x^2+2*x*y+y^2", 469506170);
@@ -308,6 +309,75 @@ public class MultivariatePolynomialTest {
         testCompareToHelper(
                 readMultivariatePolynomialList("[0, -17, 1, ooo, a+b+c+d+e+f, x^2-4*x+7, x^2+2*x*y+y^2, a*b*c]")
         );
+    }
+
+    private static void read_helper(@NotNull String input) {
+        aeq(read(input).get(), input);
+    }
+
+    private static void read_fail_helper(@NotNull String input) {
+        assertFalse(read(input).isPresent());
+    }
+
+    @Test
+    public void testRead() {
+        read_helper("0");
+        read_helper("1");
+        read_helper("-17");
+        read_helper("ooo");
+        read_helper("-ooo");
+        read_helper("a*b*c");
+        read_helper("x^2-4*x+7");
+        read_helper("a+b+c+d+e+f");
+        read_fail_helper("");
+        read_fail_helper("hello");
+        read_fail_helper(" ");
+        read_fail_helper("00");
+        read_fail_helper("-0");
+        read_fail_helper("1/2");
+        read_fail_helper("1*x");
+        read_fail_helper("x*2");
+        read_fail_helper("0*x");
+        read_fail_helper("-1*x");
+        read_fail_helper("a*a");
+        read_fail_helper("a^1");
+        read_fail_helper("a^0");
+        read_fail_helper("a^-1");
+        read_fail_helper("b*a");
+        read_fail_helper("-4*x+x^2+7");
+        read_fail_helper("b+a+c+d+e+f");
+        read_fail_helper("a+a");
+        read_fail_helper("a+0");
+        read_fail_helper("a+-1");
+        read_fail_helper("*x");
+        read_fail_helper("+x");
+        read_fail_helper("+1");
+        read_fail_helper("+0");
+    }
+
+    private static void findIn_helper(@NotNull String input, @NotNull String output, int index) {
+        Pair<MultivariatePolynomial, Integer> result = findIn(input).get();
+        aeq(result.a, output);
+        aeq(result.b, index);
+    }
+
+    private static void findIn_fail_helper(@NotNull String input) {
+        assertFalse(findIn(input).isPresent());
+    }
+
+    @Test
+    public void testFindIn() {
+        findIn_helper("foobar", "f", 0);
+        findIn_helper("oobar", "oo", 0);
+        findIn_helper("3*x^2", "3*x^2", 0);
+        findIn_helper("03*x^2", "0", 0);
+        findIn_helper("^3*x^2", "3*x^2", 1);
+
+        findIn_fail_helper("");
+        findIn_fail_helper("*");
+        findIn_fail_helper("^");
+        findIn_fail_helper("-");
+        findIn_fail_helper("+");
     }
 
     private static @NotNull List<Pair<ExponentVector, BigInteger>> readExponentVectorBigIntegerPairList(
