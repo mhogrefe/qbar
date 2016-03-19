@@ -13,7 +13,6 @@ import org.jetbrains.annotations.Nullable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -3482,7 +3481,6 @@ public strictfp abstract class QBarIterableProvider {
         if (degree < 1) {
             throw new IllegalArgumentException("degree must be positive. Invalid degree: " + degree);
         }
-        List<Integer> noRealRootsFlag = Collections.singletonList(-1);
         return map(
                 x -> x.negate().invert(),
                 filterInfinite(
@@ -3495,7 +3493,7 @@ public strictfp abstract class QBarIterableProvider {
                                                 irreduciblePolynomials(degree),
                                                 q -> {
                                                     int rootCount = q.rootCount();
-                                                    return rootCount == 0 ? noRealRootsFlag : range(0, rootCount - 1);
+                                                    return rootCount == 0 ? range(-1, -1) : range(0, rootCount - 1);
                                                 }
                                         )
                                 )
@@ -3510,7 +3508,6 @@ public strictfp abstract class QBarIterableProvider {
         if (degree < 1) {
             throw new IllegalArgumentException("degree must be positive. Invalid degree: " + degree);
         }
-        List<Integer> noRealRootsFlag = Collections.singletonList(-1);
         return map(
                 x -> x.negate().invert(),
                 filterInfinite(
@@ -3523,7 +3520,7 @@ public strictfp abstract class QBarIterableProvider {
                                                 irreduciblePolynomials(degree),
                                                 q -> {
                                                     int rootCount = q.rootCount();
-                                                    return rootCount == 0 ? noRealRootsFlag : range(0, rootCount - 1);
+                                                    return rootCount == 0 ? range(-1, -1) : range(0, rootCount - 1);
                                                 }
                                         )
                                 )
@@ -3544,7 +3541,6 @@ public strictfp abstract class QBarIterableProvider {
         if (degree < 1) {
             throw new IllegalArgumentException("degree must be positive. Invalid degree: " + degree);
         }
-        List<Integer> noRealRootsFlag = Collections.singletonList(-1);
         return map(
                 p -> {
                     Algebraic x = Algebraic.of(p.a, p.b);
@@ -3556,7 +3552,7 @@ public strictfp abstract class QBarIterableProvider {
                                 irreduciblePolynomials(degree),
                                 q -> {
                                     int rootCount = q.rootCount();
-                                    return rootCount == 0 ? noRealRootsFlag : range(0, rootCount - 1);
+                                    return rootCount == 0 ? range(-1, -1) : range(0, rootCount - 1);
                                 }
                         )
                 )
@@ -3569,7 +3565,6 @@ public strictfp abstract class QBarIterableProvider {
         if (degree < 1) {
             throw new IllegalArgumentException("degree must be positive. Invalid degree: " + degree);
         }
-        List<Integer> noRealRootsFlag = Collections.singletonList(-1);
         return filterInfinite(
                 x -> x.signum() != -1 && Ordering.lt(x, Algebraic.ONE),
                 map(
@@ -3580,7 +3575,7 @@ public strictfp abstract class QBarIterableProvider {
                                         irreduciblePolynomials(degree),
                                         q -> {
                                             int rootCount = q.rootCount();
-                                            return rootCount == 0 ? noRealRootsFlag : range(0, rootCount - 1);
+                                            return rootCount == 0 ? range(-1, -1) : range(0, rootCount - 1);
                                         }
                                 )
                         )

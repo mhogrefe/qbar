@@ -150,11 +150,31 @@ public class Algebraic implements Comparable<Algebraic> {
         return new Algebraic(rational);
     }
 
+    public int degree() {
+        return minimalPolynomial.degree();
+    }
+
+    public int getRootIndex() {
+        return rootIndex;
+    }
+
+    public @NotNull Polynomial getMinimalPolynomial() {
+        return minimalPolynomial;
+    }
+
     public @NotNull Real realValue() {
         if (rational.isPresent()) {
             return Real.of(rational.get());
         } else {
             return Real.root(minimalPolynomial::signum, isolatingInterval);
+        }
+    }
+
+    public double doubleValue() {
+        if (rational.isPresent()) {
+            return rational.get().doubleValue();
+        } else {
+            return realValue().doubleValue();
         }
     }
 

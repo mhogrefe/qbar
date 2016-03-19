@@ -1849,11 +1849,15 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
 
     @Override
     public @NotNull Iterable<Algebraic> positiveAlgebraics() {
+        int scale = getScale();
+        if (scale < 1) {
+            throw new IllegalStateException("this must have a positive scale. Invalid scale: " + scale);
+        }
         return map(
                 p -> p.b,
                 dependentPairsInfiniteLogarithmicOrder(
-                        withScale(getTertiaryScale()).positiveBigIntegers(),
-                        i -> positiveAlgebraics(i.intValueExact())
+                        withScale(getSecondaryScale()).positiveIntegersGeometric(),
+                        this::positiveAlgebraics
                 )
         );
     }
@@ -1863,15 +1867,15 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
         return map(
                 p -> p.b,
                 dependentPairsInfiniteLogarithmicOrder(
-                        withScale(getTertiaryScale()).positiveBigIntegers(),
-                        i -> negativeAlgebraics(i.intValueExact())
+                        withScale(getSecondaryScale()).positiveIntegersGeometric(),
+                        this::negativeAlgebraics
                 )
         );
     }
 
     @Override
     public @NotNull Iterable<Algebraic> nonzeroAlgebraics() {
-        return filterInfinite(x -> x != Algebraic.ZERO, nonzeroAlgebraics());
+        return filterInfinite(x -> x != Algebraic.ZERO, algebraics());
     }
 
     @Override
@@ -1879,8 +1883,8 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
         return map(
                 p -> p.b,
                 dependentPairsInfiniteLogarithmicOrder(
-                        withScale(getTertiaryScale()).positiveBigIntegers(),
-                        i -> algebraics(i.intValueExact())
+                        withScale(getSecondaryScale()).positiveIntegersGeometric(),
+                        this::algebraics
                 )
         );
     }
@@ -1890,8 +1894,8 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
         return map(
                 p -> p.b,
                 dependentPairsInfiniteLogarithmicOrder(
-                        withScale(getTertiaryScale()).positiveBigIntegers(),
-                        i -> nonNegativeAlgebraicsLessThanOne(i.intValueExact())
+                        withScale(getSecondaryScale()).positiveIntegersGeometric(),
+                        this::nonNegativeAlgebraicsLessThanOne
                 )
         );
     }

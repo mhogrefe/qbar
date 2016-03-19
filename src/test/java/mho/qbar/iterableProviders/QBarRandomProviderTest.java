@@ -4815,12 +4815,168 @@ public class QBarRandomProviderTest {
         multivariatePolynomials_List_Variable_fail_helper(2, 1, 1, "[a]");
     }
 
+    private static void algebraics_helper(
+            @NotNull Iterable<Algebraic> input,
+            @NotNull String output,
+            double meanDegree,
+            double meanCoefficientBitSize,
+            double meanValue
+    ) {
+        List<Algebraic> sample = toList(take(DEFAULT_SAMPLE_SIZE / 100, input));
+        aeqitLimitQBarLog(TINY_LIMIT, sample, output);
+        aeqMapQBarLog(topSampleCount(DEFAULT_TOP_COUNT, sample), output);
+        aeq(meanOfIntegers(toList(map(Algebraic::degree, sample))), meanDegree);
+        aeq(
+                meanOfIntegers(toList(concatMap(p -> map(BigInteger::bitLength, p.getMinimalPolynomial()), sample))),
+                meanCoefficientBitSize
+        );
+        aeq(meanOfAlgebraics(sample), meanValue);
+        P.reset();
+    }
+
+    private static void positiveAlgebraics_int_helper(
+            int scale,
+            int degree,
+            @NotNull String output,
+            double meanDegree,
+            double meanCoefficientBitSize,
+            double meanValue
+    ) {
+        algebraics_helper(
+                P.withScale(scale).positiveAlgebraics(degree),
+                output,
+                meanDegree,
+                meanCoefficientBitSize,
+                meanValue
+        );
+        P.reset();
+    }
+
+    private static void positiveAlgebraics_int_fail_helper(int scale, int degree) {
+        try {
+            P.withScale(scale).positiveAlgebraics(degree);
+            fail();
+        } catch (IllegalStateException | IllegalArgumentException ignored) {}
+        finally {
+            P.reset();
+        }
+    }
+
+    @Test
+    public void testPositiveAlgebraics_int() {
+        positiveAlgebraics_int_helper(
+                1,
+                1,
+                "QBarRandomProvider_positiveAlgebraics_int_i",
+                0.9999999999999062,
+                1.5375500000002322,
+                6.315925658558994
+        );
+        positiveAlgebraics_int_helper(
+                5,
+                1,
+                "QBarRandomProvider_positiveAlgebraics_int_ii",
+                0.9999999999999062,
+                5.578900000000063,
+                1.8103721442127808E11
+        );
+        positiveAlgebraics_int_helper(
+                1,
+                2,
+                "QBarRandomProvider_positiveAlgebraics_int_iii",
+                1.9999999999998124,
+                1.62333333333318,
+                5.42559674046746
+        );
+        positiveAlgebraics_int_helper(
+                5,
+                2,
+                "QBarRandomProvider_positiveAlgebraics_int_iv",
+                1.9999999999998124,
+                5.802966666668402,
+                6.734225118513345E11
+        );
+        positiveAlgebraics_int_helper(
+                1,
+                3,
+                "QBarRandomProvider_positiveAlgebraics_int_v",
+                3.0000000000004805,
+                1.3488000000002673,
+                3.7230896778068794
+        );
+        positiveAlgebraics_int_helper(
+                5,
+                3,
+                "QBarRandomProvider_positiveAlgebraics_int_vi",
+                3.0000000000004805,
+                5.455049999999257,
+                8.64470511038894E8
+        );
+        positiveAlgebraics_int_fail_helper(0, 0);
+        positiveAlgebraics_int_fail_helper(1, -1);
+    }
+
+    private static void positiveAlgebraics_helper(
+            int scale,
+            int secondaryScale,
+            @NotNull String output,
+            double meanDegree,
+            double meanCoefficientBitSize,
+            double meanValue
+    ) {
+        algebraics_helper(
+                P.withScale(scale).withSecondaryScale(secondaryScale).positiveAlgebraics(),
+                output,
+                meanDegree,
+                meanCoefficientBitSize,
+                meanValue
+        );
+        P.reset();
+    }
+
+    private static void positiveAlgebraics_fail_helper(int scale, int secondaryScale) {
+        try {
+            P.withScale(scale).withSecondaryScale(secondaryScale).positiveAlgebraics();
+            fail();
+        } catch (IllegalStateException | IllegalArgumentException ignored) {}
+        finally {
+            P.reset();
+        }
+    }
+
+    @Test
+    public void testPositiveAlgebraics() {
+        positiveAlgebraics_helper(
+                1,
+                2,
+                "QBarRandomProvider_positiveAlgebraics_i",
+                1.9975999999998322,
+                1.4489925273554884,
+                35.35899085466008
+        );
+        positiveAlgebraics_helper(
+                5,
+                3,
+                "QBarRandomProvider_positiveAlgebraics_ii",
+                2.9775000000002008,
+                5.409729729729074,
+                5.1291800819379814E10
+        );
+        positiveAlgebraics_fail_helper(0, 2);
+        positiveAlgebraics_fail_helper(1, 1);
+    }
+
     private static double meanOfIntegers(@NotNull List<Integer> xs) {
         int size = xs.size();
         return sumDouble(map(i -> (double) i / size, xs));
     }
 
     private static double meanOfRationals(@NotNull List<Rational> xs) {
+        int size = xs.size();
+        return sumDouble(map(r -> r.doubleValue() / size, xs));
+    }
+
+    private static double meanOfAlgebraics(@NotNull List<Algebraic> xs) {
         int size = xs.size();
         return sumDouble(map(r -> r.doubleValue() / size, xs));
     }
