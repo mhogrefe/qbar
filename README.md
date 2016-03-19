@@ -24,7 +24,7 @@ Progress
 | Rational                 | ✔       | ✔       | ✔     | ✔     | ✔          |
 | RationalMatrix           | ✘       | ✘       | ✘     | ✘     | ✘          |
 | RationalPolynomial       | ✘       | ✘       | ✘     | ✘     | ✘          |
-| RationalPolynomialMatrix | ✔       | ✔       | ✔     | ✔     | ✘          |
+| RationalPolynomialMatrix | ✔       | ✔       | ✔     | ✔     | ✔          |
 | RationalPolynomialVector | ✔       | ✔       | ✔     | ✔     | ✔          |
 | RationalVector           | ✔       | ✔       | ✔     | ✔     | ✔          |
 | Real                     | ✘       | ✘       | ✘     | ✘     | ✘          |

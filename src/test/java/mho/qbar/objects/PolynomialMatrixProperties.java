@@ -909,7 +909,7 @@ public class PolynomialMatrixProperties extends QBarTestProperties {
             assertEquals(p, m.width(), p.a.width());
         }
 
-        for (Matrix m : take(LIMIT, P.matrices())) {
+        for (PolynomialMatrix m : take(LIMIT, P.polynomialMatrices())) {
             fixedPoint(n -> n.multiply(1), m);
             assertTrue(m, m.multiply(0).isZero());
         }
@@ -1045,12 +1045,6 @@ public class PolynomialMatrixProperties extends QBarTestProperties {
             assertEquals(p, multiply_PolynomialMatrix_alt(p.a, p.b), product);
             assertEquals(p, product.height(), p.a.height());
             assertEquals(p, product.width(), p.b.width());
-            assertTrue(
-                    p,
-                    p.a.multiply(p.b).maxElementBitLength() <=
-                            p.a.maxElementBitLength() + p.b.maxElementBitLength() +
-                            BigInteger.valueOf(p.a.width()).bitLength()
-            );
         }
 
         Iterable<Pair<PolynomialVector, PolynomialVector>> ps2 = P.withElement(

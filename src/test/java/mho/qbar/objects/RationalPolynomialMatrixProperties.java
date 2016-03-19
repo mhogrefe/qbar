@@ -8,6 +8,7 @@ import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
 import org.jetbrains.annotations.NotNull;
 
+import java.math.BigInteger;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -55,6 +56,22 @@ public class RationalPolynomialMatrixProperties extends QBarTestProperties {
         propertiesNegate();
         propertiesSubtract();
         compareImplementationsSubtract();
+        propertiesMultiply_RationalPolynomial();
+        propertiesMultiply_Rational();
+        propertiesMultiply_BigInteger();
+        propertiesMultiply_int();
+        propertiesDivide_Rational();
+        propertiesDivide_BigInteger();
+        propertiesDivide_int();
+        propertiesMultiply_RationalPolynomialVector();
+        propertiesMultiply_RationalPolynomialMatrix();
+        compareImplementationsMultiply_RationalPolynomialMatrix();
+        propertiesShiftLeft();
+        compareImplementationsShiftLeft();
+        propertiesShiftRight();
+        compareImplementationsShiftRight();
+        propertiesDeterminant();
+        compareImplementationsDeterminant();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -889,6 +906,664 @@ public class RationalPolynomialMatrixProperties extends QBarTestProperties {
                 )
         );
         compareImplementations("subtract(RationalPolynomialMatrix)", take(LIMIT, ps), functions);
+    }
+
+    private void propertiesMultiply_RationalPolynomial() {
+        initialize("multiply(RationalPolynomial)");
+        Iterable<Pair<RationalPolynomialMatrix, RationalPolynomial>> ps = P.pairs(
+                P.rationalPolynomialMatrices(),
+                P.rationalPolynomials()
+        );
+        for (Pair<RationalPolynomialMatrix, RationalPolynomial> p : take(LIMIT, ps)) {
+            RationalPolynomialMatrix m = p.a.multiply(p.b);
+            m.validate();
+            assertEquals(p, m.height(), p.a.height());
+            assertEquals(p, m.width(), p.a.width());
+        }
+
+        for (RationalPolynomialMatrix m : take(LIMIT, P.rationalPolynomialMatrices())) {
+            fixedPoint(n -> n.multiply(RationalPolynomial.ONE), m);
+            assertTrue(m, m.multiply(RationalPolynomial.ZERO).isZero());
+        }
+
+        Iterable<Triple<Integer, Integer, RationalPolynomial>> ts = map(
+                p -> new Triple<>(p.b.a, p.b.b, p.a),
+                P.pairsSquareRootOrder(P.rationalPolynomials(), P.pairs(P.naturalIntegersGeometric()))
+        );
+        for (Triple<Integer, Integer, RationalPolynomial> t : take(LIMIT, ts)) {
+            assertTrue(t, zero(t.a, t.b).multiply(t.c).isZero());
+        }
+    }
+
+    private void propertiesMultiply_Rational() {
+        initialize("multiply(Rational)");
+        Iterable<Pair<RationalPolynomialMatrix, Rational>> ps = P.pairs(P.rationalPolynomialMatrices(), P.rationals());
+        for (Pair<RationalPolynomialMatrix, Rational> p : take(LIMIT, ps)) {
+            RationalPolynomialMatrix m = p.a.multiply(p.b);
+            m.validate();
+            assertEquals(p, m.height(), p.a.height());
+            assertEquals(p, m.width(), p.a.width());
+        }
+
+        ps = P.pairs(P.rationalPolynomialMatrices(), P.nonzeroRationals());
+        for (Pair<RationalPolynomialMatrix, Rational> p : take(LIMIT, ps)) {
+            inverse(m -> m.multiply(p.b), (RationalPolynomialMatrix m) -> m.divide(p.b), p.a);
+        }
+
+        for (RationalPolynomialMatrix m : take(LIMIT, P.rationalPolynomialMatrices())) {
+            fixedPoint(n -> n.multiply(Rational.ONE), m);
+            assertTrue(m, m.multiply(Rational.ZERO).isZero());
+        }
+
+        Iterable<Triple<Integer, Integer, Rational>> ts = map(
+                p -> new Triple<>(p.b.a, p.b.b, p.a),
+                P.pairsSquareRootOrder(P.rationals(), P.pairs(P.naturalIntegersGeometric()))
+        );
+        for (Triple<Integer, Integer, Rational> t : take(LIMIT, ts)) {
+            assertTrue(t, zero(t.a, t.b).multiply(t.c).isZero());
+        }
+    }
+
+    private void propertiesMultiply_BigInteger() {
+        initialize("multiply(BigInteger)");
+        Iterable<Pair<RationalPolynomialMatrix, BigInteger>> ps = P.pairs(
+                P.rationalPolynomialMatrices(),
+                P.bigIntegers()
+        );
+        for (Pair<RationalPolynomialMatrix, BigInteger> p : take(LIMIT, ps)) {
+            RationalPolynomialMatrix m = p.a.multiply(p.b);
+            m.validate();
+            assertEquals(p, m.height(), p.a.height());
+            assertEquals(p, m.width(), p.a.width());
+        }
+
+        ps = P.pairs(P.rationalPolynomialMatrices(), P.nonzeroBigIntegers());
+        for (Pair<RationalPolynomialMatrix, BigInteger> p : take(LIMIT, ps)) {
+            inverse(m -> m.multiply(p.b), (RationalPolynomialMatrix m) -> m.divide(p.b), p.a);
+        }
+
+        for (RationalPolynomialMatrix m : take(LIMIT, P.rationalPolynomialMatrices())) {
+            fixedPoint(n -> n.multiply(BigInteger.ONE), m);
+            assertTrue(m, m.multiply(BigInteger.ZERO).isZero());
+        }
+
+        Iterable<Triple<Integer, Integer, BigInteger>> ts = map(
+                p -> new Triple<>(p.b.a, p.b.b, p.a),
+                P.pairsSquareRootOrder(P.bigIntegers(), P.pairs(P.naturalIntegersGeometric()))
+        );
+        for (Triple<Integer, Integer, BigInteger> t : take(LIMIT, ts)) {
+            assertTrue(t, zero(t.a, t.b).multiply(t.c).isZero());
+        }
+    }
+
+    private void propertiesMultiply_int() {
+        initialize("multiply(int)");
+        Iterable<Pair<RationalPolynomialMatrix, Integer>> ps = P.pairs(P.rationalPolynomialMatrices(), P.integers());
+        for (Pair<RationalPolynomialMatrix, Integer> p : take(LIMIT, ps)) {
+            RationalPolynomialMatrix m = p.a.multiply(p.b);
+            m.validate();
+            assertEquals(p, m.height(), p.a.height());
+            assertEquals(p, m.width(), p.a.width());
+        }
+
+        ps = P.pairs(P.rationalPolynomialMatrices(), P.nonzeroIntegers());
+        for (Pair<RationalPolynomialMatrix, Integer> p : take(LIMIT, ps)) {
+            inverse(m -> m.multiply(p.b), (RationalPolynomialMatrix m) -> m.divide(p.b), p.a);
+        }
+
+        for (RationalPolynomialMatrix m : take(LIMIT, P.rationalPolynomialMatrices())) {
+            fixedPoint(n -> n.multiply(1), m);
+            assertTrue(m, m.multiply(0).isZero());
+        }
+
+        Iterable<Triple<Integer, Integer, Integer>> ts = map(
+                p -> new Triple<>(p.b.a, p.b.b, p.a),
+                P.pairsSquareRootOrder(P.integers(), P.pairs(P.naturalIntegersGeometric()))
+        );
+        for (Triple<Integer, Integer, Integer> t : take(LIMIT, ts)) {
+            assertTrue(t, zero(t.a, t.b).multiply(t.c).isZero());
+        }
+    }
+
+    private void propertiesDivide_Rational() {
+        initialize("divide(Rational)");
+        Iterable<Pair<RationalPolynomialMatrix, Rational>> ps = P.pairs(
+                P.rationalPolynomialMatrices(),
+                P.nonzeroRationals()
+        );
+        for (Pair<RationalPolynomialMatrix, Rational> p : take(LIMIT, ps)) {
+            RationalPolynomialMatrix m = p.a.divide(p.b);
+            m.validate();
+            assertEquals(p, m.height(), p.a.height());
+            assertEquals(p, m.width(), p.a.width());
+            inverse(n -> n.divide(p.b), (RationalPolynomialMatrix n) -> n.multiply(p.b), p.a);
+            assertEquals(p, m, p.a.multiply(p.b.invert()));
+        }
+
+        for (RationalPolynomialMatrix m : take(LIMIT, P.rationalPolynomialMatrices())) {
+            fixedPoint(u -> u.divide(Rational.ONE), m);
+        }
+
+        Iterable<Triple<Integer, Integer, Rational>> ts = map(
+                p -> new Triple<>(p.b.a, p.b.b, p.a),
+                P.pairsSquareRootOrder(P.nonzeroRationals(), P.pairs(P.naturalIntegersGeometric()))
+        );
+        for (Triple<Integer, Integer, Rational> t : take(LIMIT, ts)) {
+            assertTrue(t, zero(t.a, t.b).divide(t.c).isZero());
+        }
+
+        for (RationalPolynomialMatrix m : take(LIMIT, P.rationalPolynomialMatrices())) {
+            try {
+                m.divide(Rational.ZERO);
+                fail(m);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void propertiesDivide_BigInteger() {
+        initialize("divide(BigInteger)");
+        Iterable<Pair<RationalPolynomialMatrix, BigInteger>> ps = P.pairs(
+                P.rationalPolynomialMatrices(),
+                P.nonzeroBigIntegers()
+        );
+        for (Pair<RationalPolynomialMatrix, BigInteger> p : take(LIMIT, ps)) {
+            RationalPolynomialMatrix m = p.a.divide(p.b);
+            m.validate();
+            assertEquals(p, m.height(), p.a.height());
+            assertEquals(p, m.width(), p.a.width());
+            inverse(n -> n.divide(p.b), (RationalPolynomialMatrix n) -> n.multiply(p.b), p.a);
+        }
+
+        for (RationalPolynomialMatrix m : take(LIMIT, P.rationalPolynomialMatrices())) {
+            fixedPoint(u -> u.divide(BigInteger.ONE), m);
+        }
+
+        Iterable<Triple<Integer, Integer, BigInteger>> ts = map(
+                p -> new Triple<>(p.b.a, p.b.b, p.a),
+                P.pairsSquareRootOrder(P.nonzeroBigIntegers(), P.pairs(P.naturalIntegersGeometric()))
+        );
+        for (Triple<Integer, Integer, BigInteger> t : take(LIMIT, ts)) {
+            assertTrue(t, zero(t.a, t.b).divide(t.c).isZero());
+        }
+
+        for (RationalPolynomialMatrix m : take(LIMIT, P.rationalPolynomialMatrices())) {
+            try {
+                m.divide(BigInteger.ZERO);
+                fail(m);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void propertiesDivide_int() {
+        initialize("divide(int)");
+        Iterable<Pair<RationalPolynomialMatrix, Integer>> ps = P.pairs(
+                P.rationalPolynomialMatrices(),
+                P.nonzeroIntegers()
+        );
+        for (Pair<RationalPolynomialMatrix, Integer> p : take(LIMIT, ps)) {
+            RationalPolynomialMatrix m = p.a.divide(p.b);
+            m.validate();
+            assertEquals(p, m.height(), p.a.height());
+            assertEquals(p, m.width(), p.a.width());
+            inverse(n -> n.divide(p.b), (RationalPolynomialMatrix n) -> n.multiply(p.b), p.a);
+        }
+
+        for (RationalPolynomialMatrix m : take(LIMIT, P.rationalPolynomialMatrices())) {
+            fixedPoint(u -> u.divide(1), m);
+        }
+
+        Iterable<Triple<Integer, Integer, Integer>> ts = map(
+                p -> new Triple<>(p.b.a, p.b.b, p.a),
+                P.pairsSquareRootOrder(P.nonzeroIntegers(), P.pairs(P.naturalIntegersGeometric()))
+        );
+        for (Triple<Integer, Integer, Integer> t : take(LIMIT, ts)) {
+            assertTrue(t, zero(t.a, t.b).divide(t.c).isZero());
+        }
+
+        for (RationalPolynomialMatrix m : take(LIMIT, P.rationalPolynomialMatrices())) {
+            try {
+                m.divide(0);
+                fail(m);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void propertiesMultiply_RationalPolynomialVector() {
+        initialize("multiply(RationalPolynomialVector)");
+        Iterable<Pair<RationalPolynomialMatrix, RationalPolynomialVector>> ps = P.chooseLogarithmicOrder(
+                map(
+                        q -> q.b,
+                        P.dependentPairsInfiniteSquareRootOrder(
+                                P.pairs(P.positiveIntegersGeometric()),
+                                p -> P.pairs(P.rationalPolynomialMatrices(p.a, p.b), P.rationalPolynomialVectors(p.b))
+                        )
+                ),
+                P.choose(
+                        map(
+                                i -> new Pair<>(zero(i, 0), RationalPolynomialVector.ZERO_DIMENSIONAL),
+                                P.naturalIntegersGeometric()
+                        ),
+                        map(v -> new Pair<>(zero(0, v.dimension()), v), P.rationalPolynomialVectorsAtLeast(1))
+                )
+        );
+        for (Pair<RationalPolynomialMatrix, RationalPolynomialVector> p : take(LIMIT, ps)) {
+            RationalPolynomialVector v = p.a.multiply(p.b);
+            assertEquals(p, v.dimension(), p.a.height());
+        }
+
+        Iterable<Pair<RationalPolynomialVector, RationalPolynomialVector>> ps2 = P.withElement(
+                new Pair<>(RationalPolynomialVector.ZERO_DIMENSIONAL, RationalPolynomialVector.ZERO_DIMENSIONAL),
+                map(
+                        p -> p.b,
+                        P.dependentPairsInfiniteLogarithmicOrder(
+                                P.positiveIntegersGeometric(),
+                                i -> P.pairs(P.rationalPolynomialVectors(i))
+                        )
+                )
+        );
+        for (Pair<RationalPolynomialVector, RationalPolynomialVector> p : take(LIMIT, ps2)) {
+            RationalPolynomial i = fromRows(Collections.singletonList(p.a)).multiply(p.b).get(0);
+            assertEquals(p, i, p.a.dot(p.b));
+        }
+
+        for (RationalPolynomialMatrix m : take(LIMIT, P.rationalPolynomialMatrices())) {
+            assertEquals(
+                    m,
+                    m.multiply(RationalPolynomialVector.zero(m.width())),
+                    RationalPolynomialVector.zero(m.height())
+            );
+        }
+
+        for (RationalPolynomialVector v : take(LIMIT, P.rationalPolynomialVectors())) {
+            assertEquals(v, identity(v.dimension()).multiply(v), v);
+        }
+
+        ps = map(
+                q -> new Pair<>(zero(q.a, q.b.dimension()), q.b),
+                P.pairs(P.naturalIntegersGeometric(), P.rationalPolynomialVectors())
+        );
+        for (Pair<RationalPolynomialMatrix, RationalPolynomialVector> p : take(LIMIT, ps)) {
+            assertEquals(p, p.a.multiply(p.b), RationalPolynomialVector.zero(p.a.height()));
+        }
+
+        Iterable<Pair<RationalPolynomialMatrix, RationalPolynomialVector>> psFail = filterInfinite(
+                p -> p.a.width() != p.b.dimension(),
+                P.pairs(P.rationalPolynomialMatrices(), P.rationalPolynomialVectors())
+        );
+        for (Pair<RationalPolynomialMatrix, RationalPolynomialVector> p : take(LIMIT, psFail)) {
+            try {
+                p.a.multiply(p.b);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private static @NotNull RationalPolynomialMatrix multiply_RationalPolynomialMatrix_alt(
+            @NotNull RationalPolynomialMatrix a,
+            @NotNull RationalPolynomialMatrix b
+    ) {
+        if (a.width() != b.height()) {
+            throw new ArithmeticException("the width of this must equal the height of that. this: " + a + ", that: " +
+                    b);
+        }
+        if (b.width() == 0) {
+            return zero(a.height(), 0);
+        } else {
+            return fromColumns(toList(map(a::multiply, b.columns())));
+        }
+    }
+
+    private void propertiesMultiply_RationalPolynomialMatrix() {
+        initialize("multiply(RationalPolynomialMatrix)");
+        Iterable<Pair<RationalPolynomialMatrix, RationalPolynomialMatrix>> ps = P.chooseLogarithmicOrder(
+                map(
+                        q -> q.b,
+                        P.dependentPairsInfiniteSquareRootOrder(
+                                P.triples(P.withScale(4).positiveIntegersGeometric()),
+                                t -> P.pairs(
+                                        P.withScale(4).withSecondaryScale(4).rationalPolynomialMatrices(t.a, t.b),
+                                        P.withScale(4).withSecondaryScale(4).rationalPolynomialMatrices(t.b, t.c)
+                                )
+                        )
+                ),
+                P.choose(
+                    P.choose(
+                            map(
+                                    m -> new Pair<>(m, zero(m.width(), 0)),
+                                    filterInfinite(
+                                            m -> m.height() != 0 && m.width() != 0,
+                                            P.withScale(4).withSecondaryScale(4).rationalPolynomialMatrices()
+                                    )
+                            ),
+                            map(
+                                    m -> new Pair<>(zero(0, m.height()), m),
+                                    filterInfinite(
+                                            m -> m.height() != 0 && m.width() != 0,
+                                            P.withScale(4).withSecondaryScale(4).rationalPolynomialMatrices()
+                                    )
+                            )
+                    ),
+                    map(
+                            p -> new Pair<>(zero(p.a, 0), zero(0, p.b)),
+                            P.pairs(P.positiveIntegersGeometric())
+                    )
+                )
+        );
+        for (Pair<RationalPolynomialMatrix, RationalPolynomialMatrix> p : take(LIMIT, ps)) {
+            RationalPolynomialMatrix product = p.a.multiply(p.b);
+            assertEquals(p, multiply_RationalPolynomialMatrix_alt(p.a, p.b), product);
+            assertEquals(p, product.height(), p.a.height());
+            assertEquals(p, product.width(), p.b.width());
+        }
+
+        Iterable<Pair<RationalPolynomialVector, RationalPolynomialVector>> ps2 = P.withElement(
+                new Pair<>(RationalPolynomialVector.ZERO_DIMENSIONAL, RationalPolynomialVector.ZERO_DIMENSIONAL),
+                map(
+                        p -> p.b,
+                        P.dependentPairsInfiniteLogarithmicOrder(
+                                P.positiveIntegersGeometric(),
+                                i -> P.pairs(P.rationalPolynomialVectors(i))
+                        )
+                )
+        );
+        for (Pair<RationalPolynomialVector, RationalPolynomialVector> p : take(LIMIT, ps2)) {
+            RationalPolynomial i = fromRows(Collections.singletonList(p.a))
+                    .multiply(fromColumns(Collections.singletonList(p.b))).get(0, 0);
+            assertEquals(p, i, p.a.dot(p.b));
+        }
+
+        Iterable<Pair<RationalPolynomialMatrix, RationalPolynomialVector>> ps3 = P.chooseLogarithmicOrder(
+                map(
+                        q -> q.b,
+                        P.dependentPairsInfiniteSquareRootOrder(
+                                P.pairs(P.withScale(4).positiveIntegersGeometric()),
+                                p -> P.pairs(
+                                        P.withScale(4).withSecondaryScale(4).rationalPolynomialMatrices(p.a, p.b),
+                                        P.withScale(4).withSecondaryScale(4).rationalPolynomialVectors(p.b)
+                                )
+                        )
+                ),
+                P.choose(
+                        map(
+                                i -> new Pair<>(zero(i, 0), RationalPolynomialVector.ZERO_DIMENSIONAL),
+                                P.naturalIntegersGeometric()
+                        ),
+                        map(
+                                v -> new Pair<>(zero(0, v.dimension()), v),
+                                P.withScale(4).withSecondaryScale(4).rationalPolynomialVectorsAtLeast(1)
+                        )
+                )
+        );
+        for (Pair<RationalPolynomialMatrix, RationalPolynomialVector> p : take(LIMIT, ps3)) {
+            assertEquals(p, p.a.multiply(p.b), p.a.multiply(fromColumns(Collections.singletonList(p.b))).column(0));
+        }
+
+        Iterable<Pair<RationalPolynomialMatrix, Integer>> ps4 = P.pairs(
+                P.rationalPolynomialMatrices(),
+                P.naturalIntegersGeometric()
+        );
+        for (Pair<RationalPolynomialMatrix, Integer> p : take(LIMIT, ps4)) {
+            assertEquals(p, p.a.multiply(zero(p.a.width(), p.b)), zero(p.a.height(), p.b));
+            assertEquals(p, zero(p.b, p.a.height()).multiply(p.a), zero(p.b, p.a.width()));
+        }
+
+        for (RationalPolynomialMatrix m : take(LIMIT, P.squareRationalPolynomialMatrices())) {
+            assertEquals(m, m.multiply(identity(m.width())), m);
+            assertEquals(m, identity(m.width()).multiply(m), m);
+        }
+
+        Iterable<Pair<RationalPolynomialMatrix, RationalPolynomialMatrix>> psFail = filterInfinite(
+                p -> p.a.width() != p.b.height(),
+                P.pairs(P.rationalPolynomialMatrices())
+        );
+        for (Pair<RationalPolynomialMatrix, RationalPolynomialMatrix> p : take(LIMIT, psFail)) {
+            try {
+                p.a.multiply(p.b);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void compareImplementationsMultiply_RationalPolynomialMatrix() {
+        Map<
+                String,
+                Function<Pair<RationalPolynomialMatrix, RationalPolynomialMatrix>, RationalPolynomialMatrix>
+        > functions = new LinkedHashMap<>();
+        functions.put("alt", p -> multiply_RationalPolynomialMatrix_alt(p.a, p.b));
+        functions.put("standard", p -> p.a.multiply(p.b));
+        Iterable<Pair<RationalPolynomialMatrix, RationalPolynomialMatrix>> ps = P.chooseLogarithmicOrder(
+                map(
+                        q -> q.b,
+                        P.dependentPairsInfiniteSquareRootOrder(
+                                P.triples(P.withScale(4).positiveIntegersGeometric()),
+                                t -> P.pairs(
+                                        P.withScale(4).withSecondaryScale(4).rationalPolynomialMatrices(t.a, t.b),
+                                        P.withScale(4).withSecondaryScale(4).rationalPolynomialMatrices(t.b, t.c)
+                                )
+                        )
+                ),
+                P.choose(
+                        P.choose(
+                                map(
+                                        m -> new Pair<>(m, zero(m.width(), 0)),
+                                        filterInfinite(
+                                                m -> m.height() != 0 && m.width() != 0,
+                                                P.withScale(4).withSecondaryScale(4).rationalPolynomialMatrices()
+                                        )
+                                ),
+                                map(
+                                        m -> new Pair<>(zero(0, m.height()), m),
+                                        filterInfinite(
+                                                m -> m.height() != 0 && m.width() != 0,
+                                                P.withScale(4).withSecondaryScale(4).rationalPolynomialMatrices()
+                                        )
+                                )
+                        ),
+                        map(
+                                p -> new Pair<>(zero(p.a, 0), zero(0, p.b)),
+                                P.pairs(P.positiveIntegersGeometric())
+                        )
+                )
+        );
+        compareImplementations("multiply(RationalPolynomialMatrix)", take(LIMIT, ps), functions);
+    }
+
+    private static @NotNull RationalPolynomialMatrix shiftLeft_simplest(
+            @NotNull RationalPolynomialMatrix m,
+            int bits
+    ) {
+        if (bits < 0) {
+            return m.divide(BigInteger.ONE.shiftLeft(-bits));
+        } else {
+            return m.multiply(BigInteger.ONE.shiftLeft(bits));
+        }
+    }
+
+    private void propertiesShiftLeft() {
+        initialize("shiftLeft(int)");
+        Iterable<Pair<RationalPolynomialMatrix, Integer>> ps = P.pairs(
+                P.rationalPolynomialMatrices(),
+                P.integersGeometric()
+        );
+        for (Pair<RationalPolynomialMatrix, Integer> p : take(LIMIT, ps)) {
+            RationalPolynomialMatrix shifted = p.a.shiftLeft(p.b);
+            shifted.validate();
+            assertEquals(p, shifted, shiftLeft_simplest(p.a, p.b));
+            assertEquals(p, p.a.height(), shifted.height());
+            assertEquals(p, p.a.width(), shifted.width());
+            assertEquals(p, p.a.negate().shiftLeft(p.b), shifted.negate());
+            inverse(a -> a.shiftLeft(p.b), (RationalPolynomialMatrix m) -> m.shiftRight(p.b), p.a);
+            assertEquals(p, shifted, p.a.shiftRight(-p.b));
+            homomorphic(
+                    RationalPolynomialMatrix::negate,
+                    Function.identity(),
+                    RationalPolynomialMatrix::negate,
+                    RationalPolynomialMatrix::shiftLeft,
+                    RationalPolynomialMatrix::shiftLeft,
+                    p
+            );
+        }
+
+        for (RationalPolynomialMatrix m : take(LIMIT, P.rationalPolynomialMatrices())) {
+            fixedPoint(n -> n.shiftLeft(0), m);
+        }
+
+        ps = P.pairs(P.rationalPolynomialMatrices(), P.naturalIntegersGeometric());
+        for (Pair<RationalPolynomialMatrix, Integer> p : take(LIMIT, ps)) {
+            assertEquals(p, p.a.shiftLeft(p.b), p.a.multiply(BigInteger.ONE.shiftLeft(p.b)));
+        }
+    }
+
+    private void compareImplementationsShiftLeft() {
+        Map<String, Function<Pair<RationalPolynomialMatrix, Integer>, RationalPolynomialMatrix>> functions =
+                new LinkedHashMap<>();
+        functions.put("simplest", p -> shiftLeft_simplest(p.a, p.b));
+        functions.put("standard", p -> p.a.shiftLeft(p.b));
+        Iterable<Pair<RationalPolynomialMatrix, Integer>> ps = P.pairs(
+                P.rationalPolynomialMatrices(),
+                P.naturalIntegersGeometric()
+        );
+        compareImplementations("shiftLeft(int)", take(LIMIT, ps), functions);
+    }
+
+    private static @NotNull RationalPolynomialMatrix shiftRight_simplest(
+            @NotNull RationalPolynomialMatrix m,
+            int bits
+    ) {
+        if (bits < 0) {
+            return m.multiply(BigInteger.ONE.shiftLeft(-bits));
+        } else {
+            return m.divide(BigInteger.ONE.shiftLeft(bits));
+        }
+    }
+
+    private void propertiesShiftRight() {
+        initialize("shiftRight(int)");
+        Iterable<Pair<RationalPolynomialMatrix, Integer>> ps = P.pairs(
+                P.rationalPolynomialMatrices(),
+                P.integersGeometric()
+        );
+        for (Pair<RationalPolynomialMatrix, Integer> p : take(LIMIT, ps)) {
+            RationalPolynomialMatrix shifted = p.a.shiftRight(p.b);
+            shifted.validate();
+            assertEquals(p, shifted, shiftRight_simplest(p.a, p.b));
+            assertEquals(p, p.a.height(), shifted.height());
+            assertEquals(p, p.a.width(), shifted.width());
+            assertEquals(p, p.a.negate().shiftRight(p.b), shifted.negate());
+            inverse(a -> a.shiftRight(p.b), (RationalPolynomialMatrix m) -> m.shiftLeft(p.b), p.a);
+            assertEquals(p, shifted, p.a.shiftLeft(-p.b));
+            homomorphic(
+                    RationalPolynomialMatrix::negate,
+                    Function.identity(),
+                    RationalPolynomialMatrix::negate,
+                    RationalPolynomialMatrix::shiftRight,
+                    RationalPolynomialMatrix::shiftRight,
+                    p
+            );
+        }
+
+        for (RationalPolynomialMatrix m : take(LIMIT, P.rationalPolynomialMatrices())) {
+            assertEquals(m, m.shiftRight(0), m);
+        }
+
+        ps = P.pairs(P.rationalPolynomialMatrices(), P.naturalIntegersGeometric());
+        for (Pair<RationalPolynomialMatrix, Integer> p : take(LIMIT, ps)) {
+            assertEquals(p, p.a.shiftRight(p.b), p.a.divide(BigInteger.ONE.shiftLeft(p.b)));
+        }
+    }
+
+    private void compareImplementationsShiftRight() {
+        Map<String, Function<Pair<RationalPolynomialMatrix, Integer>, RationalPolynomialMatrix>> functions =
+                new LinkedHashMap<>();
+        functions.put("simplest", p -> shiftRight_simplest(p.a, p.b));
+        functions.put("standard", p -> p.a.shiftRight(p.b));
+        Iterable<Pair<RationalPolynomialMatrix, Integer>> ps = P.pairs(
+                P.rationalPolynomialMatrices(),
+                P.integersGeometric()
+        );
+        compareImplementations("shiftRight(int)", take(LIMIT, ps), functions);
+    }
+
+    private static @NotNull RationalPolynomial determinant_Laplace(@NotNull RationalPolynomialMatrix m) {
+        if (m.width() == 0) return RationalPolynomial.ONE;
+        if (m.width() == 1) return m.get(0, 0);
+        RationalPolynomial determinant = RationalPolynomial.ZERO;
+        RationalPolynomialVector firstRow = m.row(0);
+        List<Integer> rowIndices = toList(range(1, m.width() - 1));
+        boolean sign = true;
+        for (int i = 0; i < m.width(); i++) {
+            RationalPolynomial factor = firstRow.get(i);
+            if (!sign) factor = factor.negate();
+            sign = !sign;
+            if (factor == RationalPolynomial.ZERO) continue;
+            RationalPolynomial minor = m.submatrix(
+                    rowIndices,
+                    toList(concat(range(0, i - 1), range(i + 1, m.width() - 1)))
+            ).determinant();
+            determinant = determinant.add(factor.multiply(minor));
+        }
+        return determinant;
+    }
+
+    private void propertiesDeterminant() {
+        initialize("determinant()");
+        Iterable<RationalPolynomialMatrix> ms =
+                P.withScale(3).withSecondaryScale(0).withTertiaryScale(2).squareRationalPolynomialMatrices();
+        for (RationalPolynomialMatrix m : take(LIMIT, ms)) {
+            RationalPolynomial determinant = m.determinant();
+            assertEquals(m, determinant, determinant_Laplace(m));
+            assertEquals(m, determinant, m.transpose().determinant());
+        }
+
+        Iterable<Pair<RationalPolynomialMatrix, Pair<Integer, Integer>>> ps = P.dependentPairs(
+                filterInfinite(
+                        m -> m.width() > 1,
+                        P.withScale(4).withSecondaryScale(4).squareRationalPolynomialMatrices()
+                ),
+                m -> P.subsetPairs(P.range(0, m.height() - 1))
+        );
+        for (Pair<RationalPolynomialMatrix, Pair<Integer, Integer>> p : take(LIMIT, ps)) {
+            List<RationalPolynomialVector> rows = toList(p.a.rows());
+            Collections.swap(rows, p.b.a, p.b.b);
+            RationalPolynomialMatrix swapped = fromRows(rows);
+            assertEquals(p, swapped.determinant(), p.a.determinant().negate());
+        }
+
+        Iterable<Pair<Pair<RationalPolynomialMatrix, RationalPolynomial>, Integer>> ps2 = P.dependentPairs(
+                P.pairs(
+                        filterInfinite(
+                                m -> m.width() > 0,
+                                P.withScale(4).withSecondaryScale(4).squareRationalPolynomialMatrices()
+                        ),
+                        P.withScale(4).withSecondaryScale(4).rationalPolynomials()
+                ),
+                p -> P.range(0, p.a.height() - 1)
+        );
+        for (Pair<Pair<RationalPolynomialMatrix, RationalPolynomial>, Integer> p : take(LIMIT, ps2)) {
+            List<RationalPolynomialVector> rows = toList(p.a.a.rows());
+            rows.set(p.b, rows.get(p.b).multiply(p.a.b));
+            RationalPolynomialMatrix rowScaled = fromRows(rows);
+            assertEquals(p, rowScaled.determinant(), p.a.a.determinant().multiply(p.a.b));
+        }
+
+        for (int i : take(SMALL_LIMIT, P.positiveIntegersGeometric())) {
+            RationalPolynomialMatrix zero = zero(i, i);
+            assertEquals(i, zero.determinant(), RationalPolynomial.ZERO);
+        }
+
+        for (int i : take(SMALL_LIMIT, P.naturalIntegersGeometric())) {
+            RationalPolynomialMatrix identity = identity(i);
+            assertEquals(i, identity.determinant(), RationalPolynomial.ONE);
+        }
+    }
+
+    private void compareImplementationsDeterminant() {
+        Map<String, Function<RationalPolynomialMatrix, RationalPolynomial>> functions = new LinkedHashMap<>();
+        functions.put("Laplace", RationalPolynomialMatrixProperties::determinant_Laplace);
+        functions.put("standard", RationalPolynomialMatrix::determinant);
+        Iterable<RationalPolynomialMatrix> ms =
+                P.withScale(3).withSecondaryScale(0).withTertiaryScale(2).squareRationalPolynomialMatrices();
+        compareImplementations("determinant()", take(LIMIT, ms), functions);
     }
 
     private void propertiesEquals() {
