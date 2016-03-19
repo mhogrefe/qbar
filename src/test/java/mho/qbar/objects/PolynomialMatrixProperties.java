@@ -9,6 +9,7 @@ import mho.wheels.structures.Pair;
 import mho.wheels.structures.Triple;
 import org.jetbrains.annotations.NotNull;
 
+import java.math.BigInteger;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -55,6 +56,16 @@ public class PolynomialMatrixProperties extends QBarTestProperties {
         propertiesNegate();
         propertiesSubtract();
         compareImplementationsSubtract();
+        propertiesMultiply_Polynomial();
+        propertiesMultiply_BigInteger();
+        propertiesMultiply_int();
+        propertiesMultiply_PolynomialVector();
+        propertiesMultiply_PolynomialMatrix();
+        compareImplementationsMultiply_PolynomialMatrix();
+        propertiesShiftLeft();
+        compareImplementationsShiftLeft();
+        propertiesDeterminant();
+        compareImplementationsDeterminant();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -841,6 +852,432 @@ public class PolynomialMatrixProperties extends QBarTestProperties {
                 )
         );
         compareImplementations("subtract(PolynomialMatrix)", take(LIMIT, ps), functions);
+    }
+
+    private void propertiesMultiply_Polynomial() {
+        initialize("multiply(Polynomial)");
+        for (Pair<PolynomialMatrix, Polynomial> p : take(LIMIT, P.pairs(P.polynomialMatrices(), P.polynomials()))) {
+            PolynomialMatrix m = p.a.multiply(p.b);
+            m.validate();
+            assertEquals(p, m.height(), p.a.height());
+            assertEquals(p, m.width(), p.a.width());
+        }
+
+        for (PolynomialMatrix m : take(LIMIT, P.polynomialMatrices())) {
+            fixedPoint(n -> n.multiply(Polynomial.ONE), m);
+            assertTrue(m, m.multiply(Polynomial.ZERO).isZero());
+        }
+
+        Iterable<Triple<Integer, Integer, Polynomial>> ts = map(
+                p -> new Triple<>(p.b.a, p.b.b, p.a),
+                P.pairsSquareRootOrder(P.polynomials(), P.pairs(P.naturalIntegersGeometric()))
+        );
+        for (Triple<Integer, Integer, Polynomial> t : take(LIMIT, ts)) {
+            assertTrue(t, zero(t.a, t.b).multiply(t.c).isZero());
+        }
+    }
+
+    private void propertiesMultiply_BigInteger() {
+        initialize("multiply(BigInteger)");
+        for (Pair<PolynomialMatrix, BigInteger> p : take(LIMIT, P.pairs(P.polynomialMatrices(), P.bigIntegers()))) {
+            PolynomialMatrix m = p.a.multiply(p.b);
+            m.validate();
+            assertEquals(p, m.height(), p.a.height());
+            assertEquals(p, m.width(), p.a.width());
+        }
+
+        for (PolynomialMatrix m : take(LIMIT, P.polynomialMatrices())) {
+            fixedPoint(n -> n.multiply(BigInteger.ONE), m);
+            assertTrue(m, m.multiply(BigInteger.ZERO).isZero());
+        }
+
+        Iterable<Triple<Integer, Integer, BigInteger>> ts = map(
+                p -> new Triple<>(p.b.a, p.b.b, p.a),
+                P.pairsSquareRootOrder(P.bigIntegers(), P.pairs(P.naturalIntegersGeometric()))
+        );
+        for (Triple<Integer, Integer, BigInteger> t : take(LIMIT, ts)) {
+            assertTrue(t, zero(t.a, t.b).multiply(t.c).isZero());
+        }
+    }
+
+    private void propertiesMultiply_int() {
+        initialize("multiply(int)");
+        for (Pair<PolynomialMatrix, Integer> p : take(LIMIT, P.pairs(P.polynomialMatrices(), P.integers()))) {
+            PolynomialMatrix m = p.a.multiply(p.b);
+            m.validate();
+            assertEquals(p, m.height(), p.a.height());
+            assertEquals(p, m.width(), p.a.width());
+        }
+
+        for (Matrix m : take(LIMIT, P.matrices())) {
+            fixedPoint(n -> n.multiply(1), m);
+            assertTrue(m, m.multiply(0).isZero());
+        }
+
+        Iterable<Triple<Integer, Integer, Integer>> ts = map(
+                p -> new Triple<>(p.b.a, p.b.b, p.a),
+                P.pairsSquareRootOrder(P.integers(), P.pairs(P.naturalIntegersGeometric()))
+        );
+        for (Triple<Integer, Integer, Integer> t : take(LIMIT, ts)) {
+            assertTrue(t, zero(t.a, t.b).multiply(t.c).isZero());
+        }
+    }
+
+    private void propertiesMultiply_PolynomialVector() {
+        initialize("multiply(PolynomialVector)");
+        Iterable<Pair<PolynomialMatrix, PolynomialVector>> ps = P.chooseLogarithmicOrder(
+                map(
+                        q -> q.b,
+                        P.dependentPairsInfiniteSquareRootOrder(
+                                P.pairs(P.positiveIntegersGeometric()),
+                                p -> P.pairs(P.polynomialMatrices(p.a, p.b), P.polynomialVectors(p.b))
+                        )
+                ),
+                P.choose(
+                        map(
+                                i -> new Pair<>(zero(i, 0), PolynomialVector.ZERO_DIMENSIONAL),
+                                P.naturalIntegersGeometric()
+                        ),
+                        map(v -> new Pair<>(zero(0, v.dimension()), v), P.polynomialVectorsAtLeast(1))
+                )
+        );
+        for (Pair<PolynomialMatrix, PolynomialVector> p : take(LIMIT, ps)) {
+            PolynomialVector v = p.a.multiply(p.b);
+            assertEquals(p, v.dimension(), p.a.height());
+        }
+
+        Iterable<Pair<PolynomialVector, PolynomialVector>> ps2 = P.withElement(
+                new Pair<>(PolynomialVector.ZERO_DIMENSIONAL, PolynomialVector.ZERO_DIMENSIONAL),
+                map(
+                        p -> p.b,
+                        P.dependentPairsInfiniteLogarithmicOrder(
+                                P.positiveIntegersGeometric(),
+                                i -> P.pairs(P.polynomialVectors(i))
+                        )
+                )
+        );
+        for (Pair<PolynomialVector, PolynomialVector> p : take(LIMIT, ps2)) {
+            Polynomial i = fromRows(Collections.singletonList(p.a)).multiply(p.b).get(0);
+            assertEquals(p, i, p.a.dot(p.b));
+        }
+
+        for (PolynomialMatrix m : take(LIMIT, P.polynomialMatrices())) {
+            assertEquals(m, m.multiply(PolynomialVector.zero(m.width())), PolynomialVector.zero(m.height()));
+        }
+
+        for (PolynomialVector v : take(LIMIT, P.polynomialVectors())) {
+            assertEquals(v, identity(v.dimension()).multiply(v), v);
+        }
+
+        ps = map(
+                q -> new Pair<>(zero(q.a, q.b.dimension()), q.b),
+                P.pairs(P.naturalIntegersGeometric(), P.polynomialVectors())
+        );
+        for (Pair<PolynomialMatrix, PolynomialVector> p : take(LIMIT, ps)) {
+            assertEquals(p, p.a.multiply(p.b), PolynomialVector.zero(p.a.height()));
+        }
+
+        Iterable<Pair<PolynomialMatrix, PolynomialVector>> psFail = filterInfinite(
+                p -> p.a.width() != p.b.dimension(),
+                P.pairs(P.polynomialMatrices(), P.polynomialVectors())
+        );
+        for (Pair<PolynomialMatrix, PolynomialVector> p : take(LIMIT, psFail)) {
+            try {
+                p.a.multiply(p.b);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private static @NotNull PolynomialMatrix multiply_PolynomialMatrix_alt(
+            @NotNull PolynomialMatrix a,
+            @NotNull PolynomialMatrix b
+    ) {
+        if (a.width() != b.height()) {
+            throw new ArithmeticException("the width of this must equal the height of that. this: " + a + ", that: " +
+                    b);
+        }
+        if (b.width() == 0) {
+            return zero(a.height(), 0);
+        } else {
+            return fromColumns(toList(map(a::multiply, b.columns())));
+        }
+    }
+
+    private void propertiesMultiply_PolynomialMatrix() {
+        initialize("multiply(PolynomialMatrix)");
+        Iterable<Pair<PolynomialMatrix, PolynomialMatrix>> ps = P.chooseLogarithmicOrder(
+                map(
+                        q -> q.b,
+                        P.dependentPairsInfiniteSquareRootOrder(
+                                P.triples(P.withScale(4).positiveIntegersGeometric()),
+                                t -> P.pairs(
+                                        P.withScale(4).withSecondaryScale(4).polynomialMatrices(t.a, t.b),
+                                        P.withScale(4).withSecondaryScale(4).polynomialMatrices(t.b, t.c)
+                                )
+                        )
+                ),
+                P.choose(
+                    P.choose(
+                            map(
+                                    m -> new Pair<>(m, zero(m.width(), 0)),
+                                    filterInfinite(
+                                            m -> m.height() != 0 && m.width() != 0,
+                                            P.withScale(4).withSecondaryScale(4).polynomialMatrices()
+                                    )
+                            ),
+                            map(
+                                    m -> new Pair<>(zero(0, m.height()), m),
+                                    filterInfinite(
+                                            m -> m.height() != 0 && m.width() != 0,
+                                            P.withScale(4).withSecondaryScale(4).polynomialMatrices()
+                                    )
+                            )
+                    ),
+                    map(
+                            p -> new Pair<>(zero(p.a, 0), zero(0, p.b)),
+                            P.pairs(P.positiveIntegersGeometric())
+                    )
+                )
+        );
+        for (Pair<PolynomialMatrix, PolynomialMatrix> p : take(LIMIT, ps)) {
+            PolynomialMatrix product = p.a.multiply(p.b);
+            assertEquals(p, multiply_PolynomialMatrix_alt(p.a, p.b), product);
+            assertEquals(p, product.height(), p.a.height());
+            assertEquals(p, product.width(), p.b.width());
+            assertTrue(
+                    p,
+                    p.a.multiply(p.b).maxElementBitLength() <=
+                            p.a.maxElementBitLength() + p.b.maxElementBitLength() +
+                            BigInteger.valueOf(p.a.width()).bitLength()
+            );
+        }
+
+        Iterable<Pair<PolynomialVector, PolynomialVector>> ps2 = P.withElement(
+                new Pair<>(PolynomialVector.ZERO_DIMENSIONAL, PolynomialVector.ZERO_DIMENSIONAL),
+                map(
+                        p -> p.b,
+                        P.dependentPairsInfiniteLogarithmicOrder(
+                                P.positiveIntegersGeometric(),
+                                i -> P.pairs(P.polynomialVectors(i))
+                        )
+                )
+        );
+        for (Pair<PolynomialVector, PolynomialVector> p : take(LIMIT, ps2)) {
+            Polynomial i = fromRows(Collections.singletonList(p.a))
+                    .multiply(fromColumns(Collections.singletonList(p.b))).get(0, 0);
+            assertEquals(p, i, p.a.dot(p.b));
+        }
+
+        Iterable<Pair<PolynomialMatrix, PolynomialVector>> ps3 = P.chooseLogarithmicOrder(
+                map(
+                        q -> q.b,
+                        P.dependentPairsInfiniteSquareRootOrder(
+                                P.pairs(P.withScale(4).positiveIntegersGeometric()),
+                                p -> P.pairs(
+                                        P.withScale(4).withSecondaryScale(4).polynomialMatrices(p.a, p.b),
+                                        P.withScale(4).withSecondaryScale(4).polynomialVectors(p.b)
+                                )
+                        )
+                ),
+                P.choose(
+                        map(
+                                i -> new Pair<>(zero(i, 0), PolynomialVector.ZERO_DIMENSIONAL),
+                                P.naturalIntegersGeometric()
+                        ),
+                        map(
+                                v -> new Pair<>(zero(0, v.dimension()), v),
+                                P.withScale(4).withSecondaryScale(4).polynomialVectorsAtLeast(1)
+                        )
+                )
+        );
+        for (Pair<PolynomialMatrix, PolynomialVector> p : take(LIMIT, ps3)) {
+            assertEquals(p, p.a.multiply(p.b), p.a.multiply(fromColumns(Collections.singletonList(p.b))).column(0));
+        }
+
+        Iterable<Pair<PolynomialMatrix, Integer>> ps4 = P.pairs(P.polynomialMatrices(), P.naturalIntegersGeometric());
+        for (Pair<PolynomialMatrix, Integer> p : take(LIMIT, ps4)) {
+            assertEquals(p, p.a.multiply(zero(p.a.width(), p.b)), zero(p.a.height(), p.b));
+            assertEquals(p, zero(p.b, p.a.height()).multiply(p.a), zero(p.b, p.a.width()));
+        }
+
+        for (PolynomialMatrix m : take(LIMIT, P.squarePolynomialMatrices())) {
+            assertEquals(m, m.multiply(identity(m.width())), m);
+            assertEquals(m, identity(m.width()).multiply(m), m);
+        }
+
+        Iterable<Pair<PolynomialMatrix, PolynomialMatrix>> psFail = filterInfinite(
+                p -> p.a.width() != p.b.height(),
+                P.pairs(P.polynomialMatrices())
+        );
+        for (Pair<PolynomialMatrix, PolynomialMatrix> p : take(LIMIT, psFail)) {
+            try {
+                p.a.multiply(p.b);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void compareImplementationsMultiply_PolynomialMatrix() {
+        Map<String, Function<Pair<PolynomialMatrix, PolynomialMatrix>, PolynomialMatrix>> functions =
+                new LinkedHashMap<>();
+        functions.put("alt", p -> multiply_PolynomialMatrix_alt(p.a, p.b));
+        functions.put("standard", p -> p.a.multiply(p.b));
+        Iterable<Pair<PolynomialMatrix, PolynomialMatrix>> ps = P.chooseLogarithmicOrder(
+                map(
+                        q -> q.b,
+                        P.dependentPairsInfiniteSquareRootOrder(
+                                P.triples(P.withScale(4).positiveIntegersGeometric()),
+                                t -> P.pairs(
+                                        P.withScale(4).withSecondaryScale(4).polynomialMatrices(t.a, t.b),
+                                        P.withScale(4).withSecondaryScale(4).polynomialMatrices(t.b, t.c)
+                                )
+                        )
+                ),
+                P.choose(
+                        P.choose(
+                                map(
+                                        m -> new Pair<>(m, zero(m.width(), 0)),
+                                        filterInfinite(
+                                                m -> m.height() != 0 && m.width() != 0,
+                                                P.withScale(4).withSecondaryScale(4).polynomialMatrices()
+                                        )
+                                ),
+                                map(
+                                        m -> new Pair<>(zero(0, m.height()), m),
+                                        filterInfinite(
+                                                m -> m.height() != 0 && m.width() != 0,
+                                                P.withScale(4).withSecondaryScale(4).polynomialMatrices()
+                                        )
+                                )
+                        ),
+                        map(
+                                p -> new Pair<>(zero(p.a, 0), zero(0, p.b)),
+                                P.pairs(P.positiveIntegersGeometric())
+                        )
+                )
+        );
+        compareImplementations("multiply(PolynomialMatrix)", take(LIMIT, ps), functions);
+    }
+
+    private static @NotNull PolynomialMatrix shiftLeft_simplest(@NotNull PolynomialMatrix m, int bits) {
+        if (bits < 0) {
+            throw new ArithmeticException("bits cannot be negative. Invalid bits: " + bits);
+        }
+        return m.multiply(BigInteger.ONE.shiftLeft(bits));
+    }
+
+    private void propertiesShiftLeft() {
+        initialize("shiftLeft(int)");
+        Iterable<Pair<PolynomialMatrix, Integer>> ps = P.pairs(P.polynomialMatrices(), P.naturalIntegersGeometric());
+        for (Pair<PolynomialMatrix, Integer> p : take(LIMIT, ps)) {
+            PolynomialMatrix shifted = p.a.shiftLeft(p.b);
+            shifted.validate();
+            assertEquals(p, shifted, shiftLeft_simplest(p.a, p.b));
+            assertEquals(p, p.a.height(), shifted.height());
+            assertEquals(p, p.a.width(), shifted.width());
+            assertEquals(p, p.a.negate().shiftLeft(p.b), shifted.negate());
+            homomorphic(
+                    PolynomialMatrix::negate,
+                    Function.identity(),
+                    PolynomialMatrix::negate,
+                    PolynomialMatrix::shiftLeft,
+                    PolynomialMatrix::shiftLeft,
+                    p
+            );
+        }
+
+        for (PolynomialMatrix m : take(LIMIT, P.polynomialMatrices())) {
+            fixedPoint(n -> n.shiftLeft(0), m);
+        }
+
+        ps = P.pairs(P.polynomialMatrices(), P.negativeIntegersGeometric());
+        for (Pair<PolynomialMatrix, Integer> p : take(LIMIT, ps)) {
+            try {
+                p.a.shiftLeft(p.b);
+                fail(p);
+            } catch (ArithmeticException ignored) {}
+        }
+    }
+
+    private void compareImplementationsShiftLeft() {
+        Map<String, Function<Pair<PolynomialMatrix, Integer>, PolynomialMatrix>> functions = new LinkedHashMap<>();
+        functions.put("simplest", p -> shiftLeft_simplest(p.a, p.b));
+        functions.put("standard", p -> p.a.shiftLeft(p.b));
+        Iterable<Pair<PolynomialMatrix, Integer>> ps = P.pairs(P.polynomialMatrices(), P.naturalIntegersGeometric());
+        compareImplementations("shiftLeft(int)", take(LIMIT, ps), functions);
+    }
+
+    private static @NotNull Polynomial determinant_Laplace(@NotNull PolynomialMatrix m) {
+        if (m.width() == 0) return Polynomial.ONE;
+        if (m.width() == 1) return m.get(0, 0);
+        Polynomial determinant = Polynomial.ZERO;
+        PolynomialVector firstRow = m.row(0);
+        List<Integer> rowIndices = toList(range(1, m.width() - 1));
+        boolean sign = true;
+        for (int i = 0; i < m.width(); i++) {
+            Polynomial factor = firstRow.get(i);
+            if (!sign) factor = factor.negate();
+            sign = !sign;
+            if (factor == Polynomial.ZERO) continue;
+            Polynomial minor = m.submatrix(
+                    rowIndices,
+                    toList(concat(range(0, i - 1), range(i + 1, m.width() - 1)))
+            ).determinant();
+            determinant = determinant.add(factor.multiply(minor));
+        }
+        return determinant;
+    }
+
+    private void propertiesDeterminant() {
+        initialize("determinant()");
+        for (PolynomialMatrix m : take(LIMIT, P.withScale(4).withSecondaryScale(4).squarePolynomialMatrices())) {
+            Polynomial determinant = m.determinant();
+            assertEquals(m, determinant, determinant_Laplace(m));
+            assertEquals(m, determinant, m.transpose().determinant());
+        }
+
+        Iterable<Pair<PolynomialMatrix, Pair<Integer, Integer>>> ps = P.dependentPairs(
+                filterInfinite(m -> m.width() > 1, P.withScale(4).squarePolynomialMatrices()),
+                m -> P.subsetPairs(P.range(0, m.height() - 1))
+        );
+        for (Pair<PolynomialMatrix, Pair<Integer, Integer>> p : take(LIMIT, ps)) {
+            List<PolynomialVector> rows = toList(p.a.rows());
+            Collections.swap(rows, p.b.a, p.b.b);
+            PolynomialMatrix swapped = fromRows(rows);
+            assertEquals(p, swapped.determinant(), p.a.determinant().negate());
+        }
+
+        Iterable<Pair<Pair<PolynomialMatrix, Polynomial>, Integer>> ps2 = P.dependentPairs(
+                P.pairs(
+                        filterInfinite(m -> m.width() > 0, P.withScale(4).squarePolynomialMatrices()),
+                        P.withScale(4).polynomials()
+                ),
+                p -> P.range(0, p.a.height() - 1)
+        );
+        for (Pair<Pair<PolynomialMatrix, Polynomial>, Integer> p : take(LIMIT, ps2)) {
+            List<PolynomialVector> rows = toList(p.a.a.rows());
+            rows.set(p.b, rows.get(p.b).multiply(p.a.b));
+            PolynomialMatrix rowScaled = fromRows(rows);
+            assertEquals(p, rowScaled.determinant(), p.a.a.determinant().multiply(p.a.b));
+        }
+
+        for (int i : take(SMALL_LIMIT, P.positiveIntegersGeometric())) {
+            PolynomialMatrix zero = zero(i, i);
+            assertEquals(i, zero.determinant(), Polynomial.ZERO);
+        }
+
+        for (int i : take(SMALL_LIMIT, P.naturalIntegersGeometric())) {
+            PolynomialMatrix identity = identity(i);
+            assertEquals(i, identity.determinant(), Polynomial.ONE);
+        }
+    }
+
+    private void compareImplementationsDeterminant() {
+        Map<String, Function<PolynomialMatrix, Polynomial>> functions = new LinkedHashMap<>();
+        functions.put("Laplace", PolynomialMatrixProperties::determinant_Laplace);
+        functions.put("standard", PolynomialMatrix::determinant);
+        compareImplementations("determinant()", take(LIMIT, P.withScale(4).squarePolynomialMatrices()), functions);
     }
 
     private void propertiesEquals() {
