@@ -3532,7 +3532,7 @@ public strictfp abstract class QBarIterableProvider {
     public abstract @NotNull Iterable<Algebraic> negativeAlgebraics();
 
     public @NotNull Iterable<Algebraic> nonzeroAlgebraics(int degree) {
-        return degree == 1 ? tail(algebraics(degree)) : algebraics(degree);
+        return degree == 1 ? filterInfinite(x -> x != Algebraic.ZERO, algebraics(1)) : algebraics(degree);
     }
 
     public abstract @NotNull Iterable<Algebraic> nonzeroAlgebraics();

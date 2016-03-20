@@ -10872,6 +10872,59 @@ root 1 of x^10+x^9+x^7+x^5+x^2+x+1
 root 0 of x^10+x^9+x^7+x^5+x^2+x+1
 ...
 
+QBarExhaustiveProvider_negativeAlgebraics list 51
+-1
+(1-sqrt(5))/2
+-2
+root 0 of x^3+x+1
+-1/2
+-sqrt(2)
+-3
+root 1 of x^4+x^3+2*x+1
+-4
+(-1-sqrt(5))/2
+-3/2
+root 0 of x^3+x^2+1
+-1/3
+1-sqrt(2)
+-2/3
+root 0 of x^5+x^2+1
+-1/4
+1-sqrt(3)
+-4/3
+root 0 of x^3+2
+-3/4
+-sqrt(3)
+-5
+root 0 of x^4+x^3+2*x+1
+-6
+(1-sqrt(13))/2
+-5/2
+root 0 of x^3+x^2+2
+-7
+(1-sqrt(17))/2
+-8
+root 1 of x^6+x^5+x^3+x+1
+-7/2
+(-1-sqrt(13))/2
+-5/3
+root 0 of x^3+x^2+x+2
+-5/4
+(-1-sqrt(17))/2
+-7/3
+root 1 of x^4+x^3-x^2+x+1
+-8/3
+1-sqrt(5)
+-7/4
+root 0 of x^3-x+1
+-1/5
+(-3+sqrt(5))/2
+-2/5
+root 0 of x^5+x^3+1
+-1/6
+(-3-sqrt(5))/2
+...
+
 QBarExhaustiveProvider_nonzeroAlgebraics_int_i list 51
 1
 2
@@ -27151,3 +27204,453 @@ root 0 of 3*x^3+1
 4
 root 0 of 3*x^3+x^2+1
 4
+
+QBarRandomProvider_negativeAlgebraics_i list 21
+root 0 of 2*x^4-1
+-1/2
+root 0 of x^3+x^2+3*x+1
+2-sqrt(5)
+-1/3
+root 0 of 2*x^3+7*x^2+3
+-3
+-1/2
+-1
+-sqrt(3)/3
+root 0 of x^3+7*x^2+x+2
+-1
+-sqrt(6)/6
+(3-sqrt(21))/2
+(1-sqrt(3))/2
+-sqrt(5)/5
+-2*sqrt(6)/3
+-2*sqrt(7)
+root 0 of x^3-x+1
+-sqrt(1365)/13
+...
+
+QBarRandomProvider_negativeAlgebraics_i map 10
+-sqrt(3)
+105
+-1/2
+387
+-sqrt(2)
+94
+-1
+1392
+-2
+349
+-3
+360
+-sqrt(3)/3
+110
+-sqrt(2)/2
+102
+-2/3
+94
+-1/3
+317
+
+QBarRandomProvider_negativeAlgebraics_ii list 21
+root 0 of 85*x^5+1256222*x^4-233*x^3-x^2+1
+-91/122224
+root 2 of 8*x^13+13*x^12-117*x^11+5*x^10+8*x^9-13*x^8-21*x^6+3*x^5-3*x^3+13*x^2+12*x+1
+-1
+root 0 of x^11+x^10-x^8+11*x^7+1992*x^6+5*x^5+x^3+92*x^2-186
+(-3-sqrt(1185))/294
+(1-sqrt(41))/20
+(573-sqrt(523839))/49
+root 0 of 406*x^4-638*x^3+5*x^2+319*x-1712
+-sqrt(616839)/127
+-1/55
+root 0 of 737*x^3-30*x^2-3*x+6
+root 0 of 124*x^3+7*x+152
+-456103
+-11/28
+root 0 of 3*x^7-16*x^5+102*x^4+x^3+48*x^2+14658358
+root 0 of 51*x^3+2*x+18
+-11/46
+(-21903-sqrt(479741401))/2
+root 2 of 9*x^10+2577*x^9-5*x^8-196*x^7-x^6-28*x^5-x^4+60*x^3+185*x^2+15*x-1
+...
+
+QBarRandomProvider_negativeAlgebraics_ii map 10
+-1/2
+48
+-1
+126
+-2
+60
+-3
+48
+-4
+28
+-5
+26
+-6
+25
+-1/3
+47
+-1/6
+26
+-1/5
+27
+
+QBarRandomProvider_nonzeroAlgebraics_int_i list 21
+-3/2
+1
+-19
+-1
+115
+-1/9
+-4/11
+1/4
+-1/38
+6
+-13/77
+-1/2
+-11/5
+-1
+1/2
+1/3
+-7/13
+-1
+-1/6
+3/7
+...
+
+QBarRandomProvider_nonzeroAlgebraics_int_i map 10
+1
+1391
+2
+384
+-1/2
+370
+3
+354
+-1
+1362
+1/2
+359
+1/3
+358
+-2
+325
+-3
+343
+-1/3
+330
+
+QBarRandomProvider_nonzeroAlgebraics_int_ii list 21
+9
+2
+-1/4551
+-1/7
+-1/3026
+-5/4
+7818/41
+-5/122
+-62
+-1/224
+-633/4
+1
+122224/111
+11/91
+223/114
+-7/2
+-1/10
+-4
+1/27
+23/9
+...
+
+QBarRandomProvider_nonzeroAlgebraics_int_ii map 10
+1
+195
+2
+96
+-1/2
+80
+3
+93
+-1
+174
+1/2
+78
+-2
+93
+1/3
+61
+-3
+64
+-1/3
+78
+
+QBarRandomProvider_nonzeroAlgebraics_int_iii list 21
+(-2+4*sqrt(3))/11
+(-5-sqrt(5))/2
+(3+sqrt(33))/2
+(5+sqrt(53))/2
+-sqrt(2)/4
+(1+sqrt(109))/6
+-sqrt(3)/3
+(13-sqrt(181))/2
+(10-7*sqrt(2))/2
+-sqrt(7)
+(-3+sqrt(21))/2
+(-1+sqrt(3))/2
+sqrt(5)/5
+-sqrt(3)/3
+2*sqrt(6)/3
+-sqrt(2)
+2*sqrt(7)
+-sqrt(1365)/13
+(1-sqrt(41))/4
+(1+sqrt(21))/2
+...
+
+QBarRandomProvider_nonzeroAlgebraics_int_iii map 10
+-sqrt(3)
+191
+-sqrt(2)
+208
+sqrt(2)
+203
+sqrt(3)/3
+196
+sqrt(2)/2
+179
+-sqrt(2)/2
+203
+(-1+sqrt(5))/2
+185
+-sqrt(3)/3
+183
+(1-sqrt(5))/2
+187
+(1+sqrt(5))/2
+197
+
+QBarRandomProvider_nonzeroAlgebraics_int_iv list 21
+(-15-sqrt(271))/46
+(1513+sqrt(2289239))/70
+(2+3*sqrt(11))/19
+(-41-sqrt(2019547441))/129160
+(61-sqrt(5691))/394
+(13+sqrt(469))/30
+(-1-sqrt(98481))/20
+(11815+sqrt(139598329))/76
+-249+sqrt(61998)
+(-15-sqrt(105))/4
+(-365-sqrt(111011))/29
+(-9-sqrt(541))/10
+(-37+sqrt(1501))/2
+-sqrt(15)/15
+5*sqrt(6)/6
+-3+sqrt(5218)
+sqrt(48401)/48401
+103-sqrt(10498)
+(477+sqrt(187257))/6712
+(-133-sqrt(1872409))/3312
+...
+
+QBarRandomProvider_nonzeroAlgebraics_int_iv map 10
+-sqrt(3)
+11
+-sqrt(2)
+8
+sqrt(2)/2
+17
+sqrt(3)/3
+16
+-sqrt(2)/2
+12
+(-1+sqrt(5))/2
+11
+-sqrt(3)/3
+10
+(1-sqrt(5))/2
+9
+(1+sqrt(5))/2
+9
+(-1-sqrt(5))/2
+10
+
+QBarRandomProvider_nonzeroAlgebraics_int_v list 21
+root 0 of x^3-2*x-3
+root 0 of x^3-x^2-21
+root 0 of x^3+19*x^2+x+1
+root 0 of 9*x^3+x^2+11*x+4
+root 0 of 13*x^3+x^2-77*x-13
+root 2 of x^3-3*x+1
+root 0 of x^3+x+1
+root 0 of 13*x^3+13*x+7
+root 0 of 2*x^3-x-7
+root 0 of x^3+10*x-1
+root 0 of x^3+3*x^2-x-9
+root 0 of 3*x^3-2
+root 0 of 27*x^3-x^2+13*x+3
+root 0 of 21*x^3-1
+root 0 of 3*x^3+x^2+7
+root 0 of x^3-x^2-x-6
+root 0 of 7*x^3-x^2+2*x-1
+root 0 of 20*x^3-x^2-4
+root 0 of x^3+x^2+1
+root 0 of 3*x^3-2
+...
+
+QBarRandomProvider_nonzeroAlgebraics_int_v map 10
+root 0 of x^3+x+1
+101
+root 0 of x^3+x-1
+107
+root 0 of x^3+x^2+1
+96
+root 0 of x^3-x-1
+124
+root 0 of x^3+x^2-1
+109
+root 0 of 2*x^3+1
+98
+root 0 of x^3+3
+111
+root 0 of x^3+2
+101
+root 0 of x^3-x^2+1
+98
+root 0 of x^3-3
+113
+
+QBarRandomProvider_nonzeroAlgebraics_int_vi list 21
+root 0 of x^3-x+9
+root 2 of 38*x^3-16989*x^2+46*x+30
+root 0 of 62*x^3-4551*x-1
+root 1 of x^3+181301872*x^2+4*x-54644
+root 1 of 5*x^3-64580*x-41
+root 0 of x^3+x^2-x+111
+root 1 of 2*x^3-7350*x^2-2*x+47
+root 0 of 102910*x^3+26*x^2-97*x-41
+root 0 of 27*x^3-x^2-498*x-3
+root 0 of 51*x^3+20161*x^2+2*x+9
+root 0 of 2*x^3-344*x^2+1856865*x-46834
+root 0 of 3*x^3-x^2-37*x+33
+root 0 of x^3-15*x^2+1
+root 1 of 3*x^3+13*x^2-12*x+1
+root 0 of 42*x^3-13*x+3
+root 0 of 680*x^3-15*x^2-10*x-6
+root 0 of 3347*x^3+2*x^2+x-1
+root 0 of 67*x^3-3*x^2+x+6
+root 0 of 233*x^3+246
+root 0 of 48401*x^3-x+1
+...
+
+QBarRandomProvider_nonzeroAlgebraics_int_vi map 10
+root 0 of x^3-x+1
+4
+root 0 of x^3+2*x-1
+3
+root 0 of x^3+2*x^2+1
+3
+root 0 of x^3-x-3
+3
+root 0 of x^3+4*x-3
+3
+root 0 of x^3-x^2-10
+2
+root 0 of 2*x^3+1
+4
+root 0 of x^3+3*x^2+1
+2
+root 0 of x^3+7
+3
+root 0 of x^3-3
+4
+
+QBarRandomProvider_nonzeroAlgebraics_i list 21
+root 0 of x^4+11*x^3+4*x^2-4*x+1
+-1/22
+-1
+(-5-sqrt(5))/2
+(3+sqrt(33))/2
+root 0 of 2*x^3+x^2-x-3
+7/2
+(5-sqrt(53))/2
+-3/2
+-9
+3
+root 1 of x^6+x^5+3*x^4+3*x^3-3
+-2+sqrt(5)
+(10-7*sqrt(2))/2
+-sqrt(7)
+1
+root 0 of 3*x^3-x^2-3*x-2
+-3
+-1
+root 2 of x^7-3*x^5+1
+...
+
+QBarRandomProvider_nonzeroAlgebraics_i map 10
+1
+565
+-1/2
+156
+2
+137
+3
+140
+-1
+567
+1/2
+144
+1/3
+143
+-2
+137
+-3
+128
+-1/3
+137
+
+QBarRandomProvider_nonzeroAlgebraics_ii list 21
+root 0 of 85*x^5-1256222*x^4-233*x^3+x^2-1
+91/122224
+root 0 of 46*x^13+438*x^12+2*x^11+7*x^10-4*x^8+16624788*x^7-98*x^6-2275*x^4+7*x^3+10*x+1
+root 1 of 54*x^6+12*x^5+6*x^2-25
+root 1 of 227*x^4-x^2+17*x-14
+root 0 of 13*x^5+5*x^4+2708*x^3-x^2+x+1
+-16127/7
+root 2 of 6*x^6-5209*x^5+17*x^4+61*x^3-308*x^2+12135*x+6
+-3/113
+root 0 of 5*x^3-567*x^2+1656*x+133
+root 1 of x^5-x^4-74966*x^3-19*x^2+7*x-237
+(-7-sqrt(451))/3
+-6/631
+root 0 of x^3-x^2-3*x+21
+root 0 of 219*x^3+87*x^2+146
+root 0 of x^8+203*x^6+177*x^5-x^4-x^3-33*x^2-257389*x-15891
+(-1+sqrt(4917301))/22150
+root 0 of x^3-6*x^2+11617*x+1
+53/2
+2/7
+...
+
+QBarRandomProvider_nonzeroAlgebraics_ii map 10
+1
+61
+2
+23
+3
+27
+-1
+52
+1/2
+26
+-2
+33
+1/3
+25
+-3
+26
+-1/3
+22
+-1/6
+21

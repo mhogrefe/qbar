@@ -5083,7 +5083,7 @@ public class QBarRandomProviderTest {
                 2,
                 "QBarRandomProvider_negativeAlgebraics_i",
                 1.9975999999998322,
-                1.4489925273554884,
+                1.6003469442224292,
                 -35.35899085466008
         );
         negativeAlgebraics_helper(
@@ -5091,11 +5091,143 @@ public class QBarRandomProviderTest {
                 3,
                 "QBarRandomProvider_negativeAlgebraics_ii",
                 2.9775000000002008,
-                5.409729729729074,
+                5.447316153362046,
                 -5.1291800819379814E10
         );
         negativeAlgebraics_fail_helper(0, 2);
         negativeAlgebraics_fail_helper(1, 1);
+    }
+
+    private static void nonzeroAlgebraics_int_helper(
+            int scale,
+            int degree,
+            @NotNull String output,
+            double meanDegree,
+            double meanCoefficientBitSize,
+            double meanValue
+    ) {
+        algebraics_helper(
+                P.withScale(scale).nonzeroAlgebraics(degree),
+                output,
+                meanDegree,
+                meanCoefficientBitSize,
+                meanValue
+        );
+        P.reset();
+    }
+
+    private static void nonzeroAlgebraics_int_fail_helper(int scale, int degree) {
+        try {
+            P.withScale(scale).nonzeroAlgebraics(degree);
+            fail();
+        } catch (IllegalStateException | IllegalArgumentException ignored) {}
+        finally {
+            P.reset();
+        }
+    }
+
+    @Test
+    public void testNonzeroAlgebraics_int() {
+        nonzeroAlgebraics_int_helper(
+                1,
+                1,
+                "QBarRandomProvider_nonzeroAlgebraics_int_i",
+                0.9999999999999062,
+                1.7221500000003995,
+                0.8935028033939707
+        );
+        nonzeroAlgebraics_int_helper(
+                5,
+                1,
+                "QBarRandomProvider_nonzeroAlgebraics_int_ii",
+                0.9999999999999062,
+                5.564949999999988,
+                1.7969149681278552E11
+        );
+        nonzeroAlgebraics_int_helper(
+                1,
+                2,
+                "QBarRandomProvider_nonzeroAlgebraics_int_iii",
+                1.9999999999998124,
+                1.6340999999998453,
+                -1.3432208068582625
+        );
+        nonzeroAlgebraics_int_helper(
+                5,
+                2,
+                "QBarRandomProvider_nonzeroAlgebraics_int_iv",
+                1.9999999999998124,
+                5.7860000000016685,
+                -3.434101876855312E14
+        );
+        nonzeroAlgebraics_int_helper(
+                1,
+                3,
+                "QBarRandomProvider_nonzeroAlgebraics_int_v",
+                3.0000000000004805,
+                1.4121750000002737,
+                0.8349869306633381
+        );
+        nonzeroAlgebraics_int_helper(
+                5,
+                3,
+                "QBarRandomProvider_nonzeroAlgebraics_int_vi",
+                3.0000000000004805,
+                5.427124999999181,
+                -3.996771507650188E9
+        );
+        nonzeroAlgebraics_int_fail_helper(0, 0);
+        nonzeroAlgebraics_int_fail_helper(1, -1);
+    }
+
+    private static void nonzeroAlgebraics_helper(
+            int scale,
+            int secondaryScale,
+            @NotNull String output,
+            double meanDegree,
+            double meanCoefficientBitSize,
+            double meanValue
+    ) {
+        algebraics_helper(
+                P.withScale(scale).withSecondaryScale(secondaryScale).nonzeroAlgebraics(),
+                output,
+                meanDegree,
+                meanCoefficientBitSize,
+                meanValue
+        );
+        P.reset();
+    }
+
+    private static void nonzeroAlgebraics_fail_helper(int scale, int secondaryScale) {
+        try {
+            P.withScale(scale).withSecondaryScale(secondaryScale).nonzeroAlgebraics();
+            fail();
+        } catch (IllegalStateException | IllegalArgumentException ignored) {}
+        finally {
+            P.reset();
+        }
+    }
+
+    @Test
+    public void testNonzeroAlgebraics() {
+        nonzeroAlgebraics_helper(
+                1,
+                2,
+                "QBarRandomProvider_nonzeroAlgebraics_i",
+                2.185799999999937,
+                1.508035658233894,
+                2.805596585809969
+        );
+        nonzeroAlgebraics_helper(
+                5,
+                3,
+                "QBarRandomProvider_nonzeroAlgebraics_ii",
+                3.0289000000002093,
+                5.422050683809328,
+                1.069223599469271E15
+        );
+        nonzeroAlgebraics_fail_helper(0, 2);
+        nonzeroAlgebraics_fail_helper(1, 1);
     }
 
     private static double meanOfIntegers(@NotNull List<Integer> xs) {
