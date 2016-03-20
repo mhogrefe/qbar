@@ -257,7 +257,7 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
 
     /**
      * An {@code Iterable} that generates all positive {@code Rational}s. Each {@code Rational}'s bit size (defined as
-     * the sum of the numerator 'sand denominator's bit sizes) is chosen from a geometric distribution with mean
+     * the sum of the numerator's and denominator's bit sizes) is chosen from a geometric distribution with mean
      * approximately {@code scale}. Does not support removal.
      *
      * <ul>
@@ -1847,6 +1847,18 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
         );
     }
 
+    /**
+     * An {@code Iterable} that generates all positive {@code Algebraic}s. A larger {@code scale} corresponds to an
+     * {@code Algebraic} whose minimal polynomial has larger coefficients, and the {@code secondaryScale} is the mean
+     * of the {@code Algebraic}s' degrees. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a positive {@code scale} and a {@code secondaryScale} of at least 2.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing positive {@code Algebraic}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
     @Override
     public @NotNull Iterable<Algebraic> positiveAlgebraics() {
         int scale = getScale();
@@ -1862,6 +1874,18 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
         );
     }
 
+    /**
+     * An {@code Iterable} that generates all negative {@code Algebraic}s. A larger {@code scale} corresponds to an
+     * {@code Algebraic} whose minimal polynomial has larger coefficients, and the {@code secondaryScale} is the mean
+     * of the {@code Algebraic}s' degrees. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a negative {@code scale} and a {@code secondaryScale} of at least 2.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing negative {@code Algebraic}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
     @Override
     public @NotNull Iterable<Algebraic> negativeAlgebraics() {
         int scale = getScale();
@@ -1877,11 +1901,35 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
         );
     }
 
+    /**
+     * An {@code Iterable} that generates all nonzero {@code Algebraic}s. A larger {@code scale} corresponds to an
+     * {@code Algebraic} whose minimal polynomial has larger coefficients, and the {@code secondaryScale} is the mean
+     * of the {@code Algebraic}s' degrees. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a positive {@code scale} and a {@code secondaryScale} of at least 2.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing nonzero {@code Algebraic}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
     @Override
     public @NotNull Iterable<Algebraic> nonzeroAlgebraics() {
         return filterInfinite(x -> x != Algebraic.ZERO, algebraics());
     }
 
+    /**
+     * An {@code Iterable} that generates all {@code Algebraic}s. A larger {@code scale} corresponds to an
+     * {@code Algebraic} whose minimal polynomial has larger coefficients, and the {@code secondaryScale} is the mean
+     * of the {@code Algebraic}s' degrees. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a positive {@code scale} and a {@code secondaryScale} of at least 2.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing {@code Algebraic}s.</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
     @Override
     public @NotNull Iterable<Algebraic> algebraics() {
         int scale = getScale();
@@ -1897,6 +1945,19 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
         );
     }
 
+    /**
+     * An {@code Iterable} that generates all {@code Algebraic}s in the interval [0, 1). A larger {@code scale}
+     * corresponds to an {@code Algebraic} whose minimal polynomial has larger coefficients, and the
+     * {@code secondaryScale} is the mean of the {@code Algebraic}s' degrees. Does not support removal.
+     *
+     * <ul>
+     *  <li>{@code this} must have a positive {@code scale} and a {@code secondaryScale} of at least 2.</li>
+     *  <li>The result is an infinite, non-removable {@code Iterable} containing {@code Algebraic}s in the interval
+     *  [0, 1).</li>
+     * </ul>
+     *
+     * Length is infinite
+     */
     @Override
     public @NotNull Iterable<Algebraic> nonNegativeAlgebraicsLessThanOne() {
         int scale = getScale();

@@ -1044,6 +1044,11 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
         return map(Algebraic::realValue, algebraics());
     }
 
+    /**
+     * An {@code Iterable} that generates every positive {@link Algebraic}. Does not support removal.
+     *
+     * Length is infinite
+     */
     @Override
     public @NotNull Iterable<Algebraic> positiveAlgebraics() {
         return map(
@@ -1055,6 +1060,11 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
         );
     }
 
+    /**
+     * An {@code Iterable} that generates every negative {@link Algebraic}. Does not support removal.
+     *
+     * Length is infinite
+     */
     @Override
     public @NotNull Iterable<Algebraic> negativeAlgebraics() {
         return map(
@@ -1066,11 +1076,21 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
         );
     }
 
+    /**
+     * An {@code Iterable} that generates every nonzero {@link Algebraic}. Does not support removal.
+     *
+     * Length is infinite
+     */
     @Override
     public @NotNull Iterable<Algebraic> nonzeroAlgebraics() {
         return tail(algebraics());
     }
 
+    /**
+     * An {@code Iterable} that generates every {@link Algebraic}. Does not support removal.
+     *
+     * Length is infinite
+     */
     @Override
     public @NotNull Iterable<Algebraic> algebraics() {
         return map(
@@ -1079,6 +1099,11 @@ public final strictfp class QBarExhaustiveProvider extends QBarIterableProvider 
         );
     }
 
+    /**
+     * An {@code Iterable} that generates every {@link Algebraic} in the interval [0, 1). Does not support removal.
+     *
+     * Length is infinite
+     */
     @Override
     public @NotNull Iterable<Algebraic> nonNegativeAlgebraicsLessThanOne() {
         return map(

@@ -3477,6 +3477,15 @@ public strictfp abstract class QBarIterableProvider {
 
     public abstract @NotNull Iterable<Real> reals();
 
+    /**
+     * Generates positive {@code Algebraic}s with a given degree.
+     *
+     * <ul>
+     *  <li>{@code degree} must be positive.</li>
+     * </ul>
+     *
+     * @param degree the degree of the {@code Algebraic}s in the result
+     */
     public @NotNull Iterable<Algebraic> positiveAlgebraics(int degree) {
         if (degree < 1) {
             throw new IllegalArgumentException("degree must be positive. Invalid degree: " + degree);
@@ -3502,8 +3511,20 @@ public strictfp abstract class QBarIterableProvider {
         );
     }
 
+    /**
+     * Generates positive {@code Algebraic}s.
+     */
     public abstract @NotNull Iterable<Algebraic> positiveAlgebraics();
 
+    /**
+     * Generates negative {@code Algebraic}s with a given degree.
+     *
+     * <ul>
+     *  <li>{@code degree} must be positive.</li>
+     * </ul>
+     *
+     * @param degree the degree of the {@code Algebraic}s in the result
+     */
     public @NotNull Iterable<Algebraic> negativeAlgebraics(int degree) {
         if (degree < 1) {
             throw new IllegalArgumentException("degree must be positive. Invalid degree: " + degree);
@@ -3529,14 +3550,38 @@ public strictfp abstract class QBarIterableProvider {
         );
     }
 
+    /**
+     * Generates negative {@code Algebraic}s.
+     */
     public abstract @NotNull Iterable<Algebraic> negativeAlgebraics();
 
+    /**
+     * Generates nonzero {@code Algebraic}s with a given degree.
+     *
+     * <ul>
+     *  <li>{@code degree} must be positive.</li>
+     * </ul>
+     *
+     * @param degree the degree of the {@code Algebraic}s in the result
+     */
     public @NotNull Iterable<Algebraic> nonzeroAlgebraics(int degree) {
         return degree == 1 ? filterInfinite(x -> x != Algebraic.ZERO, algebraics(1)) : algebraics(degree);
     }
 
+    /**
+     * Generates nonzero {@code Algebraic}s.
+     */
     public abstract @NotNull Iterable<Algebraic> nonzeroAlgebraics();
 
+    /**
+     * Generates {@code Algebraic}s with a given degree.
+     *
+     * <ul>
+     *  <li>{@code degree} must be positive.</li>
+     * </ul>
+     *
+     * @param degree the degree of the {@code Algebraic}s in the result
+     */
     public @NotNull Iterable<Algebraic> algebraics(int degree) {
         if (degree < 1) {
             throw new IllegalArgumentException("degree must be positive. Invalid degree: " + degree);
@@ -3559,8 +3604,20 @@ public strictfp abstract class QBarIterableProvider {
         );
     }
 
+    /**
+     * Generates {@code Algebraic}s.
+     */
     public abstract @NotNull Iterable<Algebraic> algebraics();
 
+    /**
+     * Generates {@code Algebraic}s in the interval [0, 1) with a given degree.
+     *
+     * <ul>
+     *  <li>{@code degree} must be positive.</li>
+     * </ul>
+     *
+     * @param degree the degree of the {@code Algebraic}s in the result
+     */
     public @NotNull Iterable<Algebraic> nonNegativeAlgebraicsLessThanOne(int degree) {
         if (degree < 1) {
             throw new IllegalArgumentException("degree must be positive. Invalid degree: " + degree);
@@ -3583,6 +3640,9 @@ public strictfp abstract class QBarIterableProvider {
         );
     }
 
+    /**
+     * Generates {@code Algebraic}s in the interval [0, 1).
+     */
     public abstract @NotNull Iterable<Algebraic> nonNegativeAlgebraicsLessThanOne();
 
     public @NotNull Iterable<QBarRandomProvider> qbarRandomProvidersFixedScales(
