@@ -5230,6 +5230,138 @@ public class QBarRandomProviderTest {
         nonzeroAlgebraics_fail_helper(1, 1);
     }
 
+    private static void algebraics_int_helper(
+            int scale,
+            int degree,
+            @NotNull String output,
+            double meanDegree,
+            double meanCoefficientBitSize,
+            double meanValue
+    ) {
+        algebraics_helper(
+                P.withScale(scale).algebraics(degree),
+                output,
+                meanDegree,
+                meanCoefficientBitSize,
+                meanValue
+        );
+        P.reset();
+    }
+
+    private static void algebraics_int_fail_helper(int scale, int degree) {
+        try {
+            P.withScale(scale).algebraics(degree);
+            fail();
+        } catch (IllegalStateException | IllegalArgumentException ignored) {}
+        finally {
+            P.reset();
+        }
+    }
+
+    @Test
+    public void testAlgebraics_int() {
+        algebraics_int_helper(
+                1,
+                1,
+                "QBarRandomProvider_algebraics_int_i",
+                0.9999999999999062,
+                1.2992500000001745,
+                0.9995577505177307
+        );
+        algebraics_int_helper(
+                5,
+                1,
+                "QBarRandomProvider_algebraics_int_ii",
+                0.9999999999999062,
+                5.323499999999987,
+                1.796919469664356E11
+        );
+        algebraics_int_helper(
+                1,
+                2,
+                "QBarRandomProvider_algebraics_int_iii",
+                1.9999999999998124,
+                1.6340999999998453,
+                -1.3432208068582625
+        );
+        algebraics_int_helper(
+                5,
+                2,
+                "QBarRandomProvider_algebraics_int_iv",
+                1.9999999999998124,
+                5.7860000000016685,
+                -3.434101876855312E14
+        );
+        algebraics_int_helper(
+                1,
+                3,
+                "QBarRandomProvider_algebraics_int_v",
+                3.0000000000004805,
+                1.4121750000002737,
+                0.8349869306633381
+        );
+        algebraics_int_helper(
+                5,
+                3,
+                "QBarRandomProvider_algebraics_int_vi",
+                3.0000000000004805,
+                5.427124999999181,
+                -3.996771507650188E9
+        );
+        algebraics_int_fail_helper(0, 0);
+        algebraics_int_fail_helper(1, -1);
+    }
+
+    private static void algebraics_helper(
+            int scale,
+            int secondaryScale,
+            @NotNull String output,
+            double meanDegree,
+            double meanCoefficientBitSize,
+            double meanValue
+    ) {
+        algebraics_helper(
+                P.withScale(scale).withSecondaryScale(secondaryScale).algebraics(),
+                output,
+                meanDegree,
+                meanCoefficientBitSize,
+                meanValue
+        );
+        P.reset();
+    }
+
+    private static void algebraics_fail_helper(int scale, int secondaryScale) {
+        try {
+            P.withScale(scale).withSecondaryScale(secondaryScale).algebraics();
+            fail();
+        } catch (IllegalStateException | IllegalArgumentException ignored) {}
+        finally {
+            P.reset();
+        }
+    }
+
+    @Test
+    public void testAlgebraics() {
+        algebraics_helper(
+                1,
+                2,
+                "QBarRandomProvider_algebraics_i",
+                1.9695999999998353,
+                1.3931505926726353,
+                0.020347302119350985
+        );
+        algebraics_helper(
+                5,
+                3,
+                "QBarRandomProvider_algebraics_ii",
+                3.0044000000002047,
+                5.37798421736037,
+                1.0692235994147452E15
+        );
+        algebraics_fail_helper(0, 2);
+        algebraics_fail_helper(1, 1);
+    }
+
     private static double meanOfIntegers(@NotNull List<Integer> xs) {
         int size = xs.size();
         return sumDouble(map(i -> (double) i / size, xs));
