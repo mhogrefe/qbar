@@ -5,6 +5,10 @@ import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 
+import java.math.BigInteger;
+import java.util.Collections;
+import java.util.List;
+
 import static mho.qbar.objects.MultivariatePolynomial.*;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.testing.Testing.nicePrint;
@@ -30,6 +34,94 @@ public class MultivariatePolynomialDemos extends QBarDemos {
         );
         for (Pair<MultivariatePolynomial, ExponentVector> p : take(LIMIT, ps)) {
             System.out.println("coefficient(" + p.a + ", " + p.b + ") = " + p.a.coefficient(p.b));
+        }
+    }
+
+    private void demoOf_List_Pair_ExponentVector_BigInteger() {
+        Iterable<List<Pair<ExponentVector, BigInteger>>> pss = P.withScale(4).lists(
+                P.pairs(P.withScale(4).exponentVectors(), P.bigIntegers())
+        );
+        for (List<Pair<ExponentVector, BigInteger>> ps : take(LIMIT, pss)) {
+            String listString = tail(init(ps.toString()));
+            System.out.println("of(" + listString + ") = " + of(ps));
+        }
+    }
+
+    private void demoOf_ExponentVector_BigInteger() {
+        Iterable<Pair<ExponentVector, BigInteger>> ps = P.pairs(P.withScale(4).exponentVectors(), P.bigIntegers());
+        for (Pair<ExponentVector, BigInteger> p : take(LIMIT, ps)) {
+            System.out.println("of(" + p.a + ", " + p.b + ") = " + of(p.a, p.b));
+        }
+    }
+
+    private void demoOf_BigInteger() {
+        for (BigInteger i : take(LIMIT, P.bigIntegers())) {
+            System.out.println("of(" + i + ") = " + of(i));
+        }
+    }
+
+    private void demoOf_int() {
+        for (int i : take(LIMIT, P.integers())) {
+            System.out.println("of(" + i + ") = " + of(i));
+        }
+    }
+
+    private void demoOf_Polynomial_Variable() {
+        for (Pair<Polynomial, Variable> p : take(LIMIT, P.pairs(P.withScale(4).polynomials(), P.variables()))) {
+            System.out.println("of(" + p.a + ", " + p.b + ") = " + of(p.a, p.b));
+        }
+    }
+
+    private void demoToPolynomial() {
+        Iterable<MultivariatePolynomial> ps = P.withElement(
+                ZERO,
+                map(
+                        p -> p.b,
+                        P.dependentPairsInfiniteLogarithmicOrder(
+                                P.optionals(P.variables()),
+                                v -> v.isPresent() ?
+                                        filterInfinite(
+                                                q -> q.degree() > 0,
+                                                P.withScale(4).multivariatePolynomials(
+                                                        Collections.singletonList(v.get())
+                                                )
+                                        ) :
+                                        map(q -> of(q, Variable.of(0)), P.withScale(4).polynomials(0))
+                        )
+                )
+        );
+        for (MultivariatePolynomial p : take(LIMIT, ps)) {
+            System.out.println("toPolynomial(" + p + ") = " + p.toPolynomial());
+        }
+    }
+
+    private void demoVariables() {
+        for (MultivariatePolynomial p : take(LIMIT, P.withScale(4).multivariatePolynomials())) {
+            System.out.println("variables(" + p + ") = " + p.variables());
+        }
+    }
+
+    private void demoVariableCount() {
+        for (MultivariatePolynomial p : take(LIMIT, P.withScale(4).multivariatePolynomials())) {
+            System.out.println("variableCount(" + p + ") = " + p.variableCount());
+        }
+    }
+
+    private void demoTermCount() {
+        for (MultivariatePolynomial p : take(LIMIT, P.withScale(4).multivariatePolynomials())) {
+            System.out.println("termCount(" + p + ") = " + p.termCount());
+        }
+    }
+
+    private void demoMaxCoefficientBitLength() {
+        for (MultivariatePolynomial p : take(LIMIT, P.withScale(4).multivariatePolynomials())) {
+            System.out.println("maxCoefficientBitLength(" + p + ") = " + p.maxCoefficientBitLength());
+        }
+    }
+
+    private void demoDegree() {
+        for (MultivariatePolynomial p : take(LIMIT, P.withScale(4).multivariatePolynomials())) {
+            System.out.println("degree(" + p + ") = " + p.degree());
         }
     }
 
