@@ -1899,6 +1899,10 @@ public final strictfp class QBarRandomProvider extends QBarIterableProvider {
 
     @Override
     public @NotNull Iterable<Algebraic> nonNegativeAlgebraicsLessThanOne() {
+        int scale = getScale();
+        if (scale < 1) {
+            throw new IllegalStateException("this must have a positive scale. Invalid scale: " + scale);
+        }
         return map(
                 p -> p.b,
                 dependentPairsInfiniteLogarithmicOrder(

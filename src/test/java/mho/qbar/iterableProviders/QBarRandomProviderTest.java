@@ -5362,6 +5362,138 @@ public class QBarRandomProviderTest {
         algebraics_fail_helper(1, 1);
     }
 
+    private static void nonNegativeAlgebraicsLessThanOne_int_helper(
+            int scale,
+            int degree,
+            @NotNull String output,
+            double meanDegree,
+            double meanCoefficientBitSize,
+            double meanValue
+    ) {
+        algebraics_helper(
+                P.withScale(scale).nonNegativeAlgebraicsLessThanOne(degree),
+                output,
+                meanDegree,
+                meanCoefficientBitSize,
+                meanValue
+        );
+        P.reset();
+    }
+
+    private static void nonNegativeAlgebraicsLessThanOne_int_fail_helper(int scale, int degree) {
+        try {
+            P.withScale(scale).nonNegativeAlgebraicsLessThanOne(degree);
+            fail();
+        } catch (IllegalStateException | IllegalArgumentException ignored) {}
+        finally {
+            P.reset();
+        }
+    }
+
+    @Test
+    public void testNonNegativeAlgebraicsLessThanOne_int() {
+        nonNegativeAlgebraicsLessThanOne_int_helper(
+                1,
+                1,
+                "QBarRandomProvider_nonNegativeAlgebraicsLessThanOne_int_i",
+                0.9999999999999062,
+                0.8129999999999316,
+                0.07732253219575332
+        );
+        nonNegativeAlgebraicsLessThanOne_int_helper(
+                5,
+                1,
+                "QBarRandomProvider_nonNegativeAlgebraicsLessThanOne_int_ii",
+                0.9999999999999062,
+                4.739450000000113,
+                0.13594263152384084
+        );
+        nonNegativeAlgebraicsLessThanOne_int_helper(
+                1,
+                2,
+                "QBarRandomProvider_nonNegativeAlgebraicsLessThanOne_int_iii",
+                1.9999999999998124,
+                1.5923999999998508,
+                0.4365036437757487
+        );
+        nonNegativeAlgebraicsLessThanOne_int_helper(
+                5,
+                2,
+                "QBarRandomProvider_nonNegativeAlgebraicsLessThanOne_int_iv",
+                1.9999999999998124,
+                5.77880000000158,
+                0.1939323481207809
+        );
+        nonNegativeAlgebraicsLessThanOne_int_helper(
+                1,
+                3,
+                "QBarRandomProvider_nonNegativeAlgebraicsLessThanOne_int_v",
+                3.0000000000004805,
+                1.334525000000266,
+                0.5251921484950018
+        );
+        nonNegativeAlgebraicsLessThanOne_int_helper(
+                5,
+                3,
+                "QBarRandomProvider_nonNegativeAlgebraicsLessThanOne_int_vi",
+                3.0000000000004805,
+                5.384199999999304,
+                0.2333289111213644
+        );
+        nonNegativeAlgebraicsLessThanOne_int_fail_helper(0, 0);
+        nonNegativeAlgebraicsLessThanOne_int_fail_helper(1, -1);
+    }
+
+    private static void nonNegativeAlgebraicsLessThanOne_helper(
+            int scale,
+            int secondaryScale,
+            @NotNull String output,
+            double meanDegree,
+            double meanCoefficientBitSize,
+            double meanValue
+    ) {
+        algebraics_helper(
+                P.withScale(scale).withSecondaryScale(secondaryScale).nonNegativeAlgebraicsLessThanOne(),
+                output,
+                meanDegree,
+                meanCoefficientBitSize,
+                meanValue
+        );
+        P.reset();
+    }
+
+    private static void nonNegativeAlgebraicsLessThanOne_fail_helper(int scale, int secondaryScale) {
+        try {
+            P.withScale(scale).withSecondaryScale(secondaryScale).nonNegativeAlgebraicsLessThanOne();
+            fail();
+        } catch (IllegalStateException | IllegalArgumentException ignored) {}
+        finally {
+            P.reset();
+        }
+    }
+
+    @Test
+    public void testNonNegativeAlgebraicsLessThanOne() {
+        nonNegativeAlgebraicsLessThanOne_helper(
+                1,
+                2,
+                "QBarRandomProvider_nonNegativeAlgebraicsLessThanOne_i",
+                1.9699999999998343,
+                1.1894276094277596,
+                0.2781035980325599
+        );
+        nonNegativeAlgebraicsLessThanOne_helper(
+                5,
+                3,
+                "QBarRandomProvider_nonNegativeAlgebraicsLessThanOne_ii",
+                2.9635000000001956,
+                5.271704301752999,
+                0.20190432263300273
+        );
+        nonNegativeAlgebraicsLessThanOne_fail_helper(0, 2);
+        nonNegativeAlgebraicsLessThanOne_fail_helper(1, 1);
+    }
+
     private static double meanOfIntegers(@NotNull List<Integer> xs) {
         int size = xs.size();
         return sumDouble(map(i -> (double) i / size, xs));
