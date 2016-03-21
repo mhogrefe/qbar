@@ -4661,7 +4661,7 @@ public class QBarRandomProviderTest {
                 2,
                 "QBarRandomProvider_multivariatePolynomials_i",
                 0.7250899999997853,
-                -0.22344000000016942,
+                0.34225999999973494,
                 1.6671999338014827
         );
         multivariatePolynomials_helper(
@@ -4670,7 +4670,7 @@ public class QBarRandomProviderTest {
                 3,
                 "QBarRandomProvider_multivariatePolynomials_ii",
                 1.9789300000000163,
-                2.6218099999995066,
+                12.226700000004135,
                 4.8293370659824255
         );
         multivariatePolynomials_helper(
@@ -4679,8 +4679,8 @@ public class QBarRandomProviderTest {
                 8,
                 "QBarRandomProvider_multivariatePolynomials_iii",
                 5.723920000000159,
-                7.59621000000156,
-                2.5867999999997777
+                38.116899999997244,
+                9.913007169906928
         );
 
         multivariatePolynomials_fail_helper(2, 1, 1);
@@ -4754,7 +4754,7 @@ public class QBarRandomProviderTest {
                 "[a]",
                 "QBarRandomProvider_multivariatePolynomials_List_Variable_iii",
                 0.7632599999997848,
-                -0.1992500000001196,
+                0.2646199999998356,
                 1.6640070225082857
         );
         multivariatePolynomials_List_Variable_helper(
@@ -4764,7 +4764,7 @@ public class QBarRandomProviderTest {
                 "[a]",
                 "QBarRandomProvider_multivariatePolynomials_List_Variable_iv",
                 5.387540000000384,
-                2.0678099999999424,
+                19.702560000001554,
                 9.928789391778363
         );
         multivariatePolynomials_List_Variable_helper(
@@ -4774,7 +4774,7 @@ public class QBarRandomProviderTest {
                 "[x, y]",
                 "QBarRandomProvider_multivariatePolynomials_List_Variable_v",
                 0.9100499999996577,
-                0.17928999999991715,
+                0.8940900000006846,
                 1.660117575956004
         );
         multivariatePolynomials_List_Variable_helper(
@@ -4784,7 +4784,7 @@ public class QBarRandomProviderTest {
                 "[x, y]",
                 "QBarRandomProvider_multivariatePolynomials_List_Variable_vi",
                 7.064559999999852,
-                6.114220000001168,
+                32.12952000000327,
                 9.908040982025039
         );
         multivariatePolynomials_List_Variable_helper(
@@ -4794,7 +4794,7 @@ public class QBarRandomProviderTest {
                 "[a, b, c]",
                 "QBarRandomProvider_multivariatePolynomials_List_Variable_vii",
                 0.9648699999996267,
-                0.5838600000000341,
+                1.4850999999995709,
                 1.66630737819548
         );
         multivariatePolynomials_List_Variable_helper(
@@ -4804,7 +4804,7 @@ public class QBarRandomProviderTest {
                 "[a, b, c]",
                 "QBarRandomProvider_multivariatePolynomials_List_Variable_viii",
                 7.172659999999885,
-                11.044810000001396,
+                43.42678999999441,
                 9.902224558273495
         );
         multivariatePolynomials_List_Variable_fail_helper(1, 1, 2, "[]");
