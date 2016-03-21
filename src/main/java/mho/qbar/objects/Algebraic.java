@@ -363,12 +363,13 @@ public class Algebraic implements Comparable<Algebraic> {
             } catch (IllegalArgumentException e) {
                 return Optional.empty();
             }
-            if (x.toString().equals(s)) {
+            if (x.toString().equals("root " + s)) {
                 return Optional.of(x);
             } else {
                 return Optional.empty();
             }
         } else if (s.contains("sqrt(")) {
+            if (s.contains("sqrt(-")) return Optional.empty();
             BigInteger denominator;
             int slashIndex = s.indexOf('/');
             boolean numeratorParens = false;
@@ -380,7 +381,7 @@ public class Algebraic implements Comparable<Algebraic> {
                 Optional<BigInteger> oDenominator = Readers.readBigInteger(s.substring(slashIndex + 1));
                 if (!oDenominator.isPresent()) return Optional.empty();
                 denominator = oDenominator.get();
-                if (denominator.signum() != 1) return Optional.empty();
+                if (denominator.signum() != 1 || denominator.equals(BigInteger.ONE)) return Optional.empty();
                 if (numeratorParens) {
                     s = s.substring(1, slashIndex - 1);
                 } else {
