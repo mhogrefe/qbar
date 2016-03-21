@@ -506,7 +506,7 @@ public class Algebraic implements Comparable<Algebraic> {
      * {@code maxDegree}.
      *
      * <ul>
-     *  <li>{@code maxDegree} must be positive.</li>
+     *  <li>{@code maxDegree} must be at least 2.</li>
      *  <li>{@code s} cannot be null.</li>
      *  <li>The result may be any {@code Optional<Algbraic>}.</li>
      * </ul>
@@ -548,7 +548,7 @@ public class Algebraic implements Comparable<Algebraic> {
      * {@code Algebraic} is parsed. The input {@code Algebraic} cannot have a degree greater than {@code maxDegree}.
      *
      * <ul>
-     *  <li>{@code maxDegree} must be positive.</li>
+     *  <li>{@code maxDegree} must be at least 2.</li>
      *  <li>{@code s} must be non-null.</li>
      *  <li>The result is non-null. If it is non-empty, then neither of the {@code Pair}'s components is null, and the
      *  second component is non-negative.</li>

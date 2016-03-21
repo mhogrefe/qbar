@@ -11,6 +11,7 @@ import static mho.wheels.testing.Testing.aeq;
 import static mho.wheels.testing.Testing.testCompareToHelper;
 import static mho.wheels.testing.Testing.testEqualsHelper;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.fail;
 
 public class AlgebraicTest {
     @Test
@@ -101,6 +102,8 @@ public class AlgebraicTest {
         read_String_fail_helper("sqrt(2)/1");
         read_String_fail_helper("sqrt(2)/0");
         read_String_fail_helper("sqrt(2)/-1");
+        read_String_fail_helper("sqrt(2)+1");
+        read_String_fail_helper("sqrt(2)+sqrt(3)");
         read_String_fail_helper("(2+2*sqrt(2))/2");
         read_String_fail_helper("root -1 of x^5-x-1");
         read_String_fail_helper("root 1 of x^5-x-1");
@@ -108,6 +111,37 @@ public class AlgebraicTest {
         read_String_fail_helper("root 0 of x^10");
         read_String_fail_helper("roof 0 of x^5-x-1");
         read_String_fail_helper("root 0 on x^5-x-1");
+        read_String_fail_helper("root 0 on 0");
+        read_String_fail_helper("root 0 on 1");
+    }
+
+    private static void read_int_String_helper(int maxDegree, @NotNull String input) {
+        aeq(read(maxDegree, input).get(), input);
+    }
+
+    private static void read_int_String_fail_helper(int maxDegree, @NotNull String input) {
+        assertFalse(read(maxDegree, input).isPresent());
+    }
+
+    private static void read_int_String_bad_maxExponent_fail_helper(int maxDegree, @NotNull String input) {
+        try {
+            read(maxDegree, input);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    @Test
+    public void testRead_int_String() {
+        read_int_String_helper(1, "0");
+        read_int_String_helper(1, "1");
+        read_int_String_helper(1, "1/2");
+        read_int_String_helper(1, "-4/3");
+        read_int_String_helper(2, "sqrt(2)");
+        read_int_String_helper(2, "-sqrt(2)");
+        read_int_String_helper(2, "(1+sqrt(5))/2");
+        read_int_String_helper(5, "root 0 of x^5-x-1");
+
+        read_int_String_fail_helper(4, "root 0 of x^5-x-1");
     }
 
     private static @NotNull List<Algebraic> readAlgebraicList(@NotNull String s) {
