@@ -904,4 +904,121 @@ public class QBarRandomProviderDemos extends QBarDemos {
                     its(p.a.multivariatePolynomials(p.b)));
         }
     }
+
+    private void demoPositiveAlgebraics_int() {
+        Iterable<Pair<QBarRandomProvider, Integer>> ps = P.pairs(
+                filterInfinite(
+                        s -> s.getScale() > 0,
+                        P.withScale(4).qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
+                ),
+                P.withScale(4).positiveIntegersGeometric()
+        );
+        for (Pair<QBarRandomProvider, Integer> p : take(SMALL_LIMIT, ps)) {
+            System.out.println("positiveAlgebraics(" + p.a + ", " + p.b + ") = " + its(p.a.positiveAlgebraics(p.b)));
+        }
+    }
+
+    private void demoPositiveAlgebraics() {
+        Iterable<QBarRandomProvider> rps = filterInfinite(
+                s -> s.getScale() > 0 && s.getSecondaryScale() >= 2,
+                P.withScale(2).qbarRandomProvidersDefaultTertiaryScale()
+        );
+        for (QBarRandomProvider rp : take(SMALL_LIMIT, rps)) {
+            System.out.println("positiveAlgebraics(" + rp + ") = " + its(rp.positiveAlgebraics()));
+        }
+    }
+
+    private void demoNegativeAlgebraics_int() {
+        Iterable<Pair<QBarRandomProvider, Integer>> ps = P.pairs(
+                filterInfinite(
+                        s -> s.getScale() > 0,
+                        P.withScale(4).qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
+                ),
+                P.withScale(4).positiveIntegersGeometric()
+        );
+        for (Pair<QBarRandomProvider, Integer> p : take(SMALL_LIMIT, ps)) {
+            System.out.println("negativeAlgebraics(" + p.a + ", " + p.b + ") = " + its(p.a.negativeAlgebraics(p.b)));
+        }
+    }
+
+    private void demoNegativeAlgebraics() {
+        Iterable<QBarRandomProvider> rps = filterInfinite(
+                s -> s.getScale() > 0 && s.getSecondaryScale() >= 2,
+                P.withScale(2).qbarRandomProvidersDefaultTertiaryScale()
+        );
+        for (QBarRandomProvider rp : take(SMALL_LIMIT, rps)) {
+            System.out.println("negativeAlgebraics(" + rp + ") = " + its(rp.negativeAlgebraics()));
+        }
+    }
+
+    private void demoNonzeroAlgebraics_int() {
+        Iterable<Pair<QBarRandomProvider, Integer>> ps = P.pairs(
+                filterInfinite(
+                        s -> s.getScale() > 0,
+                        P.withScale(4).qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
+                ),
+                P.withScale(4).positiveIntegersGeometric()
+        );
+        for (Pair<QBarRandomProvider, Integer> p : take(SMALL_LIMIT, ps)) {
+            System.out.println("nonzeroAlgebraics(" + p.a + ", " + p.b + ") = " + its(p.a.nonzeroAlgebraics(p.b)));
+        }
+    }
+
+    private void demoNonzeroAlgebraics() {
+        Iterable<QBarRandomProvider> rps = filterInfinite(
+                s -> s.getScale() > 0 && s.getSecondaryScale() >= 2,
+                P.withScale(2).qbarRandomProvidersDefaultTertiaryScale()
+        );
+        for (QBarRandomProvider rp : take(SMALL_LIMIT, rps)) {
+            System.out.println("nonzeroAlgebraics(" + rp + ") = " + its(rp.nonzeroAlgebraics()));
+        }
+    }
+
+    private void demoAlgebraics_int() {
+        Iterable<Pair<QBarRandomProvider, Integer>> ps = P.pairs(
+                filterInfinite(
+                        s -> s.getScale() > 0,
+                        P.withScale(4).qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
+                ),
+                P.withScale(4).positiveIntegersGeometric()
+        );
+        for (Pair<QBarRandomProvider, Integer> p : take(SMALL_LIMIT, ps)) {
+            System.out.println("algebraics(" + p.a + ", " + p.b + ") = " + its(p.a.algebraics(p.b)));
+        }
+    }
+
+    private void demoAlgebraics() {
+        Iterable<QBarRandomProvider> rps = filterInfinite(
+                s -> s.getScale() > 0 && s.getSecondaryScale() >= 2,
+                P.withScale(2).qbarRandomProvidersDefaultTertiaryScale()
+        );
+        for (QBarRandomProvider rp : take(SMALL_LIMIT, rps)) {
+            System.out.println("algebraics(" + rp + ") = " + its(rp.algebraics()));
+        }
+    }
+
+    private void demoNonNegativeAlgebraicsLessThanOne_int() {
+        Iterable<Pair<QBarRandomProvider, Integer>> ps = P.pairs(
+                filterInfinite(
+                        s -> s.getScale() > 0,
+                        P.withScale(4).qbarRandomProvidersDefaultSecondaryAndTertiaryScale()
+                ),
+                P.withScale(4).positiveIntegersGeometric()
+        );
+        for (Pair<QBarRandomProvider, Integer> p : take(SMALL_LIMIT, ps)) {
+            System.out.println("nonNegativeAlgebraicsLessThanOne(" + p.a + ", " + p.b + ") = " +
+                    its(p.a.nonNegativeAlgebraicsLessThanOne(p.b)));
+        }
+    }
+
+    private void demoNonNegativeAlgebraicsLessThanOne() {
+        Iterable<QBarRandomProvider> rps = filterInfinite(
+                s -> s.getScale() > 0 && s.getSecondaryScale() >= 2,
+                P.withScale(2).qbarRandomProvidersDefaultTertiaryScale()
+        );
+        for (QBarRandomProvider rp : take(SMALL_LIMIT, rps)) {
+            System.out.println("nonNegativeAlgebraicsLessThanOne(" + rp + ") = " +
+                    its(rp.nonNegativeAlgebraicsLessThanOne()));
+        }
+    }
 }

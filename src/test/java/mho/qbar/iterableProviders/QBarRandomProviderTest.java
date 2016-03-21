@@ -4912,8 +4912,8 @@ public class QBarRandomProviderTest {
                 5.455049999999257,
                 8.64470511038894E8
         );
-        positiveAlgebraics_int_fail_helper(0, 0);
-        positiveAlgebraics_int_fail_helper(1, -1);
+        positiveAlgebraics_int_fail_helper(0, 1);
+        positiveAlgebraics_int_fail_helper(1, 0);
     }
 
     private static void positiveAlgebraics_helper(
@@ -5044,8 +5044,8 @@ public class QBarRandomProviderTest {
                 5.495149999999198,
                 -8.64470511038894E8
         );
-        negativeAlgebraics_int_fail_helper(0, 0);
-        negativeAlgebraics_int_fail_helper(1, -1);
+        negativeAlgebraics_int_fail_helper(0, 1);
+        negativeAlgebraics_int_fail_helper(1, 0);
     }
 
     private static void negativeAlgebraics_helper(
@@ -5176,8 +5176,8 @@ public class QBarRandomProviderTest {
                 5.427124999999181,
                 -3.996771507650188E9
         );
-        nonzeroAlgebraics_int_fail_helper(0, 0);
-        nonzeroAlgebraics_int_fail_helper(1, -1);
+        nonzeroAlgebraics_int_fail_helper(0, 1);
+        nonzeroAlgebraics_int_fail_helper(1, 0);
     }
 
     private static void nonzeroAlgebraics_helper(
@@ -5308,8 +5308,8 @@ public class QBarRandomProviderTest {
                 5.427124999999181,
                 -3.996771507650188E9
         );
-        algebraics_int_fail_helper(0, 0);
-        algebraics_int_fail_helper(1, -1);
+        algebraics_int_fail_helper(0, 1);
+        algebraics_int_fail_helper(1, 0);
     }
 
     private static void algebraics_helper(
@@ -5440,8 +5440,8 @@ public class QBarRandomProviderTest {
                 5.384199999999304,
                 0.2333289111213644
         );
-        nonNegativeAlgebraicsLessThanOne_int_fail_helper(0, 0);
-        nonNegativeAlgebraicsLessThanOne_int_fail_helper(1, -1);
+        nonNegativeAlgebraicsLessThanOne_int_fail_helper(0, 1);
+        nonNegativeAlgebraicsLessThanOne_int_fail_helper(1, 0);
     }
 
     private static void nonNegativeAlgebraicsLessThanOne_helper(
