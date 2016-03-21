@@ -2842,9 +2842,9 @@ public final class Polynomial implements
     }
 
     /**
-     * Creates an {@code Polynomial} from a {@code String}. Valid input takes the form of a {@code String} that could
+     * Creates a {@code Polynomial} from a {@code String}. Valid input takes the form of a {@code String} that could
      * have been returned by {@link mho.qbar.objects.Polynomial#toString}. This method also takes
-     * {@code exponentHandler}, which reads an exponent for a {@code String} if the {@code String} is valid.
+     * {@code exponentHandler}, which reads an exponent from a {@code String} if the {@code String} is valid.
      *
      * <ul>
      *  <li>{@code s} cannot be null.</li>
@@ -2950,7 +2950,7 @@ public final class Polynomial implements
     }
 
     /**
-     * Creates an {@code Polynomial} from a {@code String}. Valid input takes the form of a {@code String} that could
+     * Creates a {@code Polynomial} from a {@code String}. Valid input takes the form of a {@code String} that could
      * have been returned by {@link mho.qbar.objects.Polynomial#toString}. Caution: It's easy to run out of time and
      * memory reading something like {@code "x^1000000000"}. If such an input is possible, consider using
      * {@link Polynomial#read(int, String)} instead.
@@ -2968,7 +2968,7 @@ public final class Polynomial implements
     }
 
     /**
-     * Creates an {@code Polynomial} from a {@code String}. Valid input takes the form of a {@code String} that could
+     * Creates a {@code Polynomial} from a {@code String}. Valid input takes the form of a {@code String} that could
      * have been returned by {@link mho.qbar.objects.Polynomial#toString}. The input {@code Polynomial} cannot have a
      * degree greater than {@code maxExponent}.
      *
@@ -2978,7 +2978,8 @@ public final class Polynomial implements
      *  <li>The result may be any {@code Optional<Polynomial>}.</li>
      * </ul>
      *
-     * @param s a string representation of a {@code Polynomial}.
+     * @param maxExponent the largest accepted exponent
+     * @param s a string representation of a {@code Polynomial}
      * @return the wrapped {@code Polynomial} (with degree no greater than {@code maxExponent}) represented by
      * {@code s}, or {@code empty} if {@code s} is invalid.
      */
@@ -2996,7 +2997,7 @@ public final class Polynomial implements
     }
 
     /**
-     * Finds the first occurrence of an {@code Polynomial} in a {@code String}. Returns the {@code Polynomial} and the
+     * Finds the first occurrence of a {@code Polynomial} in a {@code String}. Returns the {@code Polynomial} and the
      * index at which it was found. Returns an empty {@code Optional} if no {@code Polynomial} is found. Only
      * {@code String}s which could have been emitted by {@link mho.qbar.objects.Polynomial#toString} are recognized.
      * The longest possible {@code Polynomial} is parsed. Caution: It's easy to run out of time and memory finding
@@ -3017,19 +3018,20 @@ public final class Polynomial implements
     }
 
     /**
-     * Finds the first occurrence of an {@code Polynomial} in a {@code String}. Returns the {@code Polynomial} and the
+     * Finds the first occurrence of a {@code Polynomial} in a {@code String}. Returns the {@code Polynomial} and the
      * index at which it was found. Returns an empty {@code Optional} if no {@code Polynomial} is found. Only
      * {@code String}s which could have been emitted by {@link mho.qbar.objects.Polynomial#toString} are recognized.
      * The longest possible {@code Polynomial} is parsed. The input {@code Polynomial} cannot have a degree greater
      * than {@code maxExponent}.
      *
      * <ul>
-     *  <li>{@code maxExponent} can be any {@code int}.</li>
+     *  <li>{@code maxExponent} must be positive.</li>
      *  <li>{@code s} must be non-null.</li>
      *  <li>The result is non-null. If it is non-empty, then neither of the {@code Pair}'s components is null, and the
      *  second component is non-negative.</li>
      * </ul>
      *
+     * @param maxExponent the largest accepted exponent
      * @param s the input {@code String}
      * @return the first {@code Polynomial} found in {@code s} (with degree no greater than {@code maxExponent}), and
      * the index at which it was found

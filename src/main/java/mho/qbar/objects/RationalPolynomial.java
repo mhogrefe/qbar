@@ -1355,7 +1355,7 @@ public final class RationalPolynomial implements
     }
 
     /**
-     * Creates an {@code RationalPolynomial} from a {@code String}. Valid input takes the form of a {@code String} that
+     * Creates a {@code RationalPolynomial} from a {@code String}. Valid input takes the form of a {@code String} that
      * could have been returned by {@link mho.qbar.objects.RationalPolynomial#toString}. The input
      * {@code RationalPolynomial} cannot have a degree greater than {@code maxExponent}.
      *
@@ -1365,6 +1365,7 @@ public final class RationalPolynomial implements
      *  <li>The result may be any {@code Optional<RationalPolynomial>}.</li>
      * </ul>
      *
+     * @param maxExponent the largest accepted exponent
      * @param s a string representation of a {@code RationalPolynomial}.
      * @return the wrapped {@code RationalPolynomial} (with degree no greater than {@code maxExponent}) represented by
      * {@code s}, or {@code empty} if {@code s} is invalid.
@@ -1413,12 +1414,13 @@ public final class RationalPolynomial implements
      * {@code maxExponent}.
      *
      * <ul>
-     *  <li>{@code maxExponent} can be any {@code int}.</li>
+     *  <li>{@code maxExponent} must be positive.</li>
      *  <li>{@code s} must be non-null.</li>
      *  <li>The result is non-null. If it is non-empty, then neither of the {@code Pair}'s components is null, and the
      *  second component is non-negative.</li>
      * </ul>
      *
+     * @param maxExponent the largest accepted exponent
      * @param s the input {@code String}
      * @return the first {@code RationalPolynomial} found in {@code s} (with degree no greater than
      * {@code maxExponent}), and the index at which it was found

@@ -62,7 +62,7 @@ public final class Rational implements Comparable<Rational> {
     public static final @NotNull Rational NEGATIVE_ONE = of(-1);
 
     /**
-     * -1
+     * 1/2
      */
     public static final @NotNull Rational ONE_HALF = of(1, 2);
 

@@ -14,7 +14,10 @@ import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.testing.Testing.*;
 
 /**
- * <p>The {@code Algebraic} class uniquely represents real algebraic numbers.</p>
+ * <p>The {@code Algebraic} class uniquely represents real algebraic numbers. {@code minimalPolynomial} is the number's
+ * minimal polynomial, {@code rootIndex} is the number of real roots of {@code minimalPolynomial} less than
+ * {@code this}, and {@code rational} is the {@code Rational} equal to {@code this}, or empty if {@code this} is
+ * irrational.</p>
  *
  * <p>There is only one instance of {@code ZERO} and one instance of {@code ONE}, so these may be compared with other
  * {@code Algebraic}s using {@code ==}.</p>
@@ -48,20 +51,47 @@ public class Algebraic implements Comparable<Algebraic> {
     public static final @NotNull Algebraic NEGATIVE_ONE = new Algebraic(Rational.NEGATIVE_ONE);
 
     /**
-     * -1
+     * 1/2
      */
     public static final @NotNull Algebraic ONE_HALF = new Algebraic(Rational.ONE_HALF);
+
+    /**
+     * the square root of 2
+     */
+    public static final @NotNull Algebraic SQRT_TWO = of(Polynomial.read("x^2-2").get(), 1);
 
     /**
      * φ, the golden ratio
      */
     public static final @NotNull Algebraic PHI = of(Polynomial.read("x^2-x-1").get(), 1);
 
-    private final int rootIndex;
+    /**
+     * The minimal polynomial of {@code this}; the unique primitive, irreducible polynomial of minimal degree with
+     * positive leading coefficient that has {@code this} as a root
+     */
     private final @NotNull Polynomial minimalPolynomial;
+
+    /**
+     * The number of real roots of {@code minimalPolynomial} less than {@code this}
+     */
+    private final int rootIndex;
+
+    /**
+     * If {@code this} is rational, the {@code Rational} equal to {@code this}; otherwise, empty
+     */
     private final @NotNull Optional<Rational> rational;
 
-    private final @NotNull  Interval isolatingInterval;
+    /**
+     * An {@code Interval} with finite, binary-fraction bounds that contains {@code this} and no other real root of
+     * {@code minimalPolynomial}. This field is redundant, as it can be derived from {@code minimalPolynomial} and
+     * {@code rootIndex}.
+     */
+    private final @NotNull Interval isolatingInterval;
+
+    /**
+     * The number of real roots of {@code minimalPolynomial}. This field is redundant, as it can be derived from
+     * {@code minimalPolynomial}.
+     */
     private final int mpRootCount;
 
     private Algebraic(
@@ -224,6 +254,18 @@ public class Algebraic implements Comparable<Algebraic> {
         }
     }
 
+    /**
+     * Determines whether {@code this} is equal to {@code that}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Algebraic}.</li>
+     *  <li>{@code that} may be any {@code Object}.</li>
+     *  <li>The result may be either {@code boolean}.</li>
+     * </ul>
+     *
+     * @param that The {@code Object} to be compared with {@code this}
+     * @return {@code this}={@code that}
+     */
     @Override
     public boolean equals(Object that) {
         if (this == that) return true;
@@ -237,6 +279,16 @@ public class Algebraic implements Comparable<Algebraic> {
         }
     }
 
+    /**
+     * Calculates the hash code of {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Algebraic}.</li>
+     *  <li>(conjecture) The result may be any {@code int}.</li>
+     * </ul>
+     *
+     * @return {@code this}'s hash code.
+     */
     @Override
     public int hashCode() {
         if (rational.isPresent()) {
@@ -246,9 +298,25 @@ public class Algebraic implements Comparable<Algebraic> {
         }
     }
 
+    /**
+     * Compares {@code this} to {@code that}, returning 1, –1, or 0 if the answer is "greater than", "less than", or
+     * "equal to", respectively.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Algebraic}.</li>
+     *  <li>{@code that} cannot be null.</li>
+     *  <li>The result may be –1, 0, or 1.</li>
+     * </ul>
+     *
+     * @param that the {@code Algebraic} to be compared with {@code this}
+     * @return {@code this} compared to {@code that}
+     */
     @Override
     public int compareTo(@NotNull Algebraic that) {
         if (this == that) return 0;
+        if (minimalPolynomial.equals(that.minimalPolynomial)) {
+            return Integer.compare(rootIndex, that.rootIndex);
+        }
         if (rational.isPresent() && that.rational.isPresent()) {
             return rational.get().compareTo(that.rational.get());
         } else if (rational.isPresent()) {
@@ -260,7 +328,22 @@ public class Algebraic implements Comparable<Algebraic> {
         }
     }
 
-    public static @NotNull Optional<Algebraic> genericRead(
+    /**
+     * Creates an {@code Algebraic} from a {@code String}. Valid input takes the form of a {@code String} that could
+     * have been returned by {@link Algebraic#toString}. This method also takes {@code polynomialHandler}, which reads
+     * a {@code Polynomial} from a {@code String} if the {@code String} is valid.
+     *
+     * <ul>
+     *  <li>{@code s} cannot be null.</li>
+     *  <li>{@code exponentHandler} must terminate on all possible {@code String}s without throwing an exception, and
+     *  cannot return nulls.</li>
+     *  <li>The result may be any {@code Optional<Algebraic>}.</li>
+     * </ul>
+     *
+     * @param s a string representation of an {@code Algebraic}.
+     * @return the wrapped {@code Algebraic} represented by {@code s}, or {@code empty} if {@code s} is invalid.
+     */
+    private static @NotNull Optional<Algebraic> genericRead(
             @NotNull String s,
             @NotNull Function<String, Optional<Polynomial>> polynomialHandler
     ) {
@@ -349,7 +432,7 @@ public class Algebraic implements Comparable<Algebraic> {
             if (!oUnderRadical.isPresent()) return Optional.empty();
             BigInteger underRadical = oUnderRadical.get();
             if (underRadical.signum() != 1) return Optional.empty();
-            Optional<Algebraic> ox = fromQEForm(constant, beforeRadical, underRadical, denominator);
+            Optional<Algebraic> ox = fromQuadraticFormula(constant, beforeRadical, underRadical, denominator);
             if (!ox.isPresent()) return Optional.empty();
             return ox;
         } else {
@@ -359,7 +442,26 @@ public class Algebraic implements Comparable<Algebraic> {
         }
     }
 
-    private static @NotNull Optional<Algebraic> fromQEForm(
+    /**
+     * Given four {@code BigInteger}s, returns the {@code Algebraic} equal to
+     * ({@code constant}+{@code beforeRadical}*sqrt({@code underRadical}))/{@code denominator}. If the arguments are
+     * invalid–for example, if they share a nontrivial factor–an empty result is returned.
+     *
+     * <ul>
+     *  <li>{@code constant} may be any {@code BigInteger}.</li>
+     *  <li>{@code beforeRadical} cannot be zero.</li>
+     *  <li>{@code underRadical} must be positive.</li>
+     *  <li>{@code denominator} may be any {@code BigInteger}.</li>
+     *  <li>The result is empty or has degree 2.</li>
+     * </ul>
+     *
+     * @param constant the constant added to the radical in the quadratic formula
+     * @param beforeRadical the factor the radical is multiplied by in the quadratic formula
+     * @param underRadical the integer under the radical in the quadratic formula
+     * @param denominator the denominator of the quadratic formula
+     * @return the {@code Algebraic} described by a quadratic formula
+     */
+    private static @NotNull Optional<Algebraic> fromQuadraticFormula(
             @NotNull BigInteger constant,
             @NotNull BigInteger beforeRadical,
             @NotNull BigInteger underRadical,
@@ -379,14 +481,97 @@ public class Algebraic implements Comparable<Algebraic> {
         return Optional.of(of(mp, rootIndex));
     }
 
+    /**
+     * Creates an {@code Algebraic} from a {@code String}. Valid input takes the form of a {@code String} that could
+     * have been returned by {@link Algebraic#toString}. Caution: It's easy to run out of time and memory reading
+     * something like {@code "x^1000000000"}. If such an input is possible, consider using
+     * {@link Algebraic#read(int, String)} instead.
+     *
+     * <ul>
+     *  <li>{@code s} cannot be null.</li>
+     *  <li>The result may be any {@code Optional<Algebraic>}.</li>
+     * </ul>
+     *
+     * @param s a string representation of an {@code Algebraic}.
+     * @return the wrapped {@code Algebraic} represented by {@code s}, or {@code empty} if {@code s} is invalid.
+     */
     public static @NotNull Optional<Algebraic> read(@NotNull String s) {
         return genericRead(s, Polynomial::read);
     }
 
-    public static @NotNull Optional<Algebraic> read(int maxExponent, @NotNull String s) {
-        return genericRead(s, t -> Polynomial.read(maxExponent, t));
+    /**
+     * Creates an {@code Algebraic} from a {@code String}. Valid input takes the form of a {@code String} that could
+     * have been returned by {@link Algebraic#toString}. The input {@code Algebraic} cannot have a degree greater than
+     * {@code maxDegree}.
+     *
+     * <ul>
+     *  <li>{@code maxDegree} must be positive.</li>
+     *  <li>{@code s} cannot be null.</li>
+     *  <li>The result may be any {@code Optional<Algbraic>}.</li>
+     * </ul>
+     *
+     * @param maxDegree the largest accepted degree
+     * @param s a string representation of an {@code Algebraic}.
+     * @return the wrapped {@code Algebraic} (with degree no greater than {@code maxDegree}) represented by {@code s},
+     * or {@code empty} if {@code s} is invalid.
+     */
+    public static @NotNull Optional<Algebraic> read(int maxDegree, @NotNull String s) {
+        return genericRead(s, t -> Polynomial.read(maxDegree, t));
     }
 
+    /**
+     * Finds the first occurrence of an {@code Algebraic} in a {@code String}. Returns the {@code Algebraic} and the
+     * index at which it was found. Returns an empty {@code Optional} if no {@code Algebraic} is found. Only
+     * {@code String}s which could have been emitted by {@link Algebraic#toString} are recognized. The longest possible
+     * {@code Algebraic} is parsed. Caution: It's easy to run out of time and memory finding something like
+     * {@code "x^1000000000"}. If such an input is possible, consider using {@link Algebraic#findIn(int, String)}
+     * instead.
+     *
+     * <ul>
+     *  <li>{@code s} must be non-null.</li>
+     *  <li>The result is non-null. If it is non-empty, then neither of the {@code Pair}'s components is null, and the
+     *  second component is non-negative.</li>
+     * </ul>
+     *
+     * @param s the input {@code String}
+     * @return the first {@code Algebraic} found in {@code s}, and the index at which it was found
+     */
+    public static @NotNull Optional<Pair<Algebraic, Integer>> findIn(@NotNull String s) {
+        return Readers.genericFindIn(Algebraic::read, " ()*+-/0123456789^foqrstx").apply(s);
+    }
+
+    /**
+     * Finds the first occurrence of an {@code Algebraic} in a {@code String}. Returns the {@code Algebraic} and the
+     * index at which it was found. Returns an empty {@code Optional} if no {@code Algebraic} is found. Only
+     * {@code String}s which could have been emitted by {@link Algebraic#toString} are recognized. The longest possible
+     * {@code Algebraic} is parsed. The input {@code Algebraic} cannot have a degree greater than {@code maxDegree}.
+     *
+     * <ul>
+     *  <li>{@code maxDegree} must be positive.</li>
+     *  <li>{@code s} must be non-null.</li>
+     *  <li>The result is non-null. If it is non-empty, then neither of the {@code Pair}'s components is null, and the
+     *  second component is non-negative.</li>
+     * </ul>
+     *
+     * @param maxDegree the largest accepted degree
+     * @param s the input {@code String}
+     * @return the first {@code Algebraic} found in {@code s} (with degree no greater than {@code maxDegree}), and the
+     * index at which it was found
+     */
+    public static @NotNull Optional<Pair<Algebraic, Integer>> findIn(int maxDegree, @NotNull String s) {
+        return Readers.genericFindIn(t -> read(maxDegree, t), " ()*+-/0123456789^foqrstx").apply(s);
+    }
+
+    /**
+     * Creates a {@code String} representation of {@code this}.
+     *
+     * <ul>
+     *  <li>{@code this} may be any {@code Algebraic}.</li>
+     *  <li>See tests and demos for example results.</li>
+     * </ul>
+     *
+     * @return a {@code String} representation of {@code this}
+     */
     public @NotNull String toString() {
         if (rational.isPresent()) {
             return rational.get().toString();
