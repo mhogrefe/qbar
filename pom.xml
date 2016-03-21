@@ -43,6 +43,7 @@
                         <include>**/MonomialOrderTest.java</include>
                         <include>**/MonomialOrderProperties.java</include>
                         <include>**/MultivariatePolynomialTest.java</include>
+                        <include>**/MultivariatePolynomialProperties.java</include>
                         <include>**/PolynomialMatrixTest.java</include>
                         <include>**/PolynomialMatrixProperties.java</include>
                         <include>**/PolynomialTest.java</include>
