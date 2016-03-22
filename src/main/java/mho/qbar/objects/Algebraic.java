@@ -369,7 +369,6 @@ public class Algebraic implements Comparable<Algebraic> {
                 return Optional.empty();
             }
         } else if (s.contains("sqrt(")) {
-            if (s.contains("sqrt(-")) return Optional.empty();
             BigInteger denominator;
             int slashIndex = s.indexOf('/');
             boolean numeratorParens = false;
@@ -401,7 +400,7 @@ public class Algebraic implements Comparable<Algebraic> {
                 s = s.substring(plusIndex + 1);
             } else if (minusIndex != -1) {
                 Optional<BigInteger> oConstant = Readers.readBigInteger(s.substring(0, minusIndex));
-                if (oConstant.isPresent()) return Optional.empty();
+                if (!oConstant.isPresent()) return Optional.empty();
                 constant = oConstant.get();
                 if (constant.equals(BigInteger.ZERO)) return Optional.empty();
                 s = s.substring(minusIndex);
@@ -517,6 +516,9 @@ public class Algebraic implements Comparable<Algebraic> {
      * or {@code empty} if {@code s} is invalid.
      */
     public static @NotNull Optional<Algebraic> read(int maxDegree, @NotNull String s) {
+        if (maxDegree < 2) {
+            throw new IllegalArgumentException("maxDegree must be at least 2. Invalid maxDegree: " + maxDegree);
+        }
         return genericRead(s, t -> Polynomial.read(maxDegree, t));
     }
 

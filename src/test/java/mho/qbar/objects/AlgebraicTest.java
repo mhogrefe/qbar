@@ -87,12 +87,15 @@ public class AlgebraicTest {
         read_String_fail_helper("-0");
         read_String_fail_helper("+0");
         read_String_fail_helper("+2");
+        read_String_fail_helper("sqrt(a)");
         read_String_fail_helper("sqrt(4)");
         read_String_fail_helper("sqrt(-1)");
         read_String_fail_helper("sqrt(0)");
         read_String_fail_helper("0*sqrt(2)");
+        read_String_fail_helper("a*sqrt(2)");
         read_String_fail_helper("1*sqrt(2)");
         read_String_fail_helper("-1*sqrt(2)");
+        read_String_fail_helper("a+sqrt(2)");
         read_String_fail_helper("0+sqrt(2)");
         read_String_fail_helper("0-sqrt(2)");
         read_String_fail_helper("(sqrt(2))");
@@ -111,8 +114,10 @@ public class AlgebraicTest {
         read_String_fail_helper("root 0 of x^10");
         read_String_fail_helper("roof 0 of x^5-x-1");
         read_String_fail_helper("root 0 on x^5-x-1");
-        read_String_fail_helper("root 0 on 0");
-        read_String_fail_helper("root 0 on 1");
+        read_String_fail_helper("root 0 of 0");
+        read_String_fail_helper("root 0 of 1");
+        read_String_fail_helper("root 0 of x^2-2");
+        read_String_fail_helper("root 0 of x-2");
     }
 
     private static void read_int_String_helper(int maxDegree, @NotNull String input) {
@@ -123,7 +128,7 @@ public class AlgebraicTest {
         assertFalse(read(maxDegree, input).isPresent());
     }
 
-    private static void read_int_String_bad_maxExponent_fail_helper(int maxDegree, @NotNull String input) {
+    private static void read_int_String_bad_maxDegree_fail_helper(int maxDegree, @NotNull String input) {
         try {
             read(maxDegree, input);
             fail();
@@ -132,16 +137,60 @@ public class AlgebraicTest {
 
     @Test
     public void testRead_int_String() {
-        read_int_String_helper(1, "0");
-        read_int_String_helper(1, "1");
-        read_int_String_helper(1, "1/2");
-        read_int_String_helper(1, "-4/3");
+        read_int_String_helper(2, "0");
+        read_int_String_helper(2, "1");
+        read_int_String_helper(2, "1/2");
+        read_int_String_helper(2, "-4/3");
         read_int_String_helper(2, "sqrt(2)");
         read_int_String_helper(2, "-sqrt(2)");
         read_int_String_helper(2, "(1+sqrt(5))/2");
         read_int_String_helper(5, "root 0 of x^5-x-1");
 
         read_int_String_fail_helper(4, "root 0 of x^5-x-1");
+        read_int_String_fail_helper(10, "");
+        read_int_String_fail_helper(10, " ");
+        read_int_String_fail_helper(10, "x");
+        read_int_String_fail_helper(10, "x^2+3");
+        read_int_String_fail_helper(10, "2/4");
+        read_int_String_fail_helper(10, "-");
+        read_int_String_fail_helper(10, "00");
+        read_int_String_fail_helper(10, "01");
+        read_int_String_fail_helper(10, "-0");
+        read_int_String_fail_helper(10, "+0");
+        read_int_String_fail_helper(10, "+2");
+        read_int_String_fail_helper(10, "sqrt(a)");
+        read_int_String_fail_helper(10, "sqrt(4)");
+        read_int_String_fail_helper(10, "sqrt(-1)");
+        read_int_String_fail_helper(10, "sqrt(0)");
+        read_int_String_fail_helper(10, "0*sqrt(2)");
+        read_int_String_fail_helper(10, "a*sqrt(2)");
+        read_int_String_fail_helper(10, "1*sqrt(2)");
+        read_int_String_fail_helper(10, "-1*sqrt(2)");
+        read_int_String_fail_helper(10, "a+sqrt(2)");
+        read_int_String_fail_helper(10, "0+sqrt(2)");
+        read_int_String_fail_helper(10, "0-sqrt(2)");
+        read_int_String_fail_helper(10, "(sqrt(2))");
+        read_int_String_fail_helper(10, "*sqrt(2)");
+        read_int_String_fail_helper(10, "+sqrt(2)");
+        read_int_String_fail_helper(10, "(sqrt(2))/2");
+        read_int_String_fail_helper(10, "sqrt(2)/1");
+        read_int_String_fail_helper(10, "sqrt(2)/0");
+        read_int_String_fail_helper(10, "sqrt(2)/-1");
+        read_int_String_fail_helper(10, "sqrt(2)+1");
+        read_int_String_fail_helper(10, "sqrt(2)+sqrt(3)");
+        read_int_String_fail_helper(10, "(2+2*sqrt(2))/2");
+        read_int_String_fail_helper(10, "root -1 of x^5-x-1");
+        read_int_String_fail_helper(10, "root 1 of x^5-x-1");
+        read_int_String_fail_helper(10, "root 0 of x^2-1");
+        read_int_String_fail_helper(10, "root 0 of x^10");
+        read_int_String_fail_helper(10, "roof 0 of x^5-x-1");
+        read_int_String_fail_helper(10, "root 0 on x^5-x-1");
+        read_int_String_fail_helper(10, "root 0 of 0");
+        read_int_String_fail_helper(10, "root 0 of 1");
+        read_int_String_fail_helper(10, "root 0 of x^2-2");
+        read_int_String_fail_helper(10, "root 0 of x-2");
+        read_int_String_bad_maxDegree_fail_helper(0, "sqrt(2)");
+        read_int_String_bad_maxDegree_fail_helper(-1, "sqrt(2)");
     }
 
     private static @NotNull List<Algebraic> readAlgebraicList(@NotNull String s) {
