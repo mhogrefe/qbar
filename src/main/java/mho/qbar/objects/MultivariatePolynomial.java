@@ -127,6 +127,12 @@ public class MultivariatePolynomial implements
     /**
      * Creates a {@code MultivariatePolynomial} containing a single term (or zero terms if the coefficient is zero).
      *
+     * <ul>
+     *  <li>{@code ExponentVector} cannot be null.</li>
+     *  <li>{@code BigInteger} cannot be null.</li>
+     *  <li>The result has no more than one term.</li>
+     * </ul>
+     *
      * @param ev an {@code ExponentVector}
      * @param c the coefficient of {@code ev}
      * @return a {@code MultivariatePolynomial} equal to {@code ev} multiplied by {@code c}

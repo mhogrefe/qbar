@@ -8,7 +8,11 @@ import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigInteger;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 
 import static mho.qbar.objects.MultivariatePolynomial.*;
 import static mho.wheels.iterables.IterableUtils.*;
@@ -25,6 +29,10 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
     @Override
     protected void testBothModes() {
         propertiesIterator();
+        propertiesCoefficient();
+        propertiesOf_List_Pair_ExponentVector_BigInteger();
+        propertiesOf_ExponentVector_BigInteger();
+        compareImplementationsOf_ExponentVector_BigInteger();
         propertiesEquals();
         propertiesHashCode();
         propertiesCompareTo();
@@ -45,6 +53,66 @@ public class MultivariatePolynomialProperties extends QBarTestProperties {
             testNoRemove(p);
             testHasNext(p);
         }
+    }
+
+    private void propertiesCoefficient() {
+        initialize("coefficient(ExponentVector)");
+        Iterable<Pair<MultivariatePolynomial, ExponentVector>> ps = P.pairs(
+                P.multivariatePolynomials(),
+                P.exponentVectors()
+        );
+        for (Pair<MultivariatePolynomial, ExponentVector> p : take(LIMIT, ps)) {
+            p.a.coefficient(p.b);
+        }
+    }
+
+    private void propertiesOf_List_Pair_ExponentVector_BigInteger() {
+        initialize("of(List<Pair<ExponentVector, BigInteger>>)");
+        Iterable<List<Pair<ExponentVector, BigInteger>>> pss = P.lists(P.pairs(P.exponentVectors(), P.bigIntegers()));
+        for (List<Pair<ExponentVector, BigInteger>> ps : take(LIMIT, pss)) {
+            MultivariatePolynomial p = of(ps);
+            p.validate();
+            for (List<Pair<ExponentVector, BigInteger>> qs : take(TINY_LIMIT, P.permutationsFinite(ps))) {
+                assertEquals(ps, of(qs), p);
+            }
+        }
+
+        Iterable<List<Pair<ExponentVector, BigInteger>>> pssFail = filterInfinite(
+                ps -> any(p -> p == null || p.a == null || p.b == null, ps),
+                P.lists(P.withNull(P.pairs(P.withNull(P.exponentVectors()), P.withNull(P.bigIntegers()))))
+        );
+        for (List<Pair<ExponentVector, BigInteger>> ps : take(LIMIT, pssFail)) {
+            try {
+                of(ps);
+                fail(ps);
+            } catch (NullPointerException ignored) {}
+        }
+    }
+
+    private static @NotNull MultivariatePolynomial of_ExponentVector_BigInteger_simplest(
+            @NotNull ExponentVector ev,
+            @NotNull BigInteger c
+    ) {
+        return of(Collections.singletonList(new Pair<>(ev, c)));
+    }
+
+    private void propertiesOf_ExponentVector_BigInteger() {
+        initialize("of(ExponentVector, BigInteger)");
+        for (Pair<ExponentVector, BigInteger> p : take(LIMIT, P.pairs(P.exponentVectors(), P.bigIntegers()))) {
+            MultivariatePolynomial q = of(p.a, p.b);
+            q.validate();
+            assertEquals(p, of_ExponentVector_BigInteger_simplest(p.a, p.b), q);
+            assertTrue(p, q.termCount() < 2);
+        }
+    }
+
+    private void compareImplementationsOf_ExponentVector_BigInteger() {
+        Map<String, Function<Pair<ExponentVector, BigInteger>, MultivariatePolynomial>> functions =
+                new LinkedHashMap<>();
+        functions.put("simplest", p -> of_ExponentVector_BigInteger_simplest(p.a, p.b));
+        functions.put("standard", p -> of(p.a, p.b));
+        Iterable<Pair<ExponentVector, BigInteger>> ps = P.pairs(P.exponentVectors(), P.bigIntegers());
+        compareImplementations("of(ExponentVector, BigInteger)", take(LIMIT, ps), functions);
     }
 
     private void propertiesEquals() {
