@@ -220,6 +220,8 @@ public class AlgebraicTest {
         findIn_String_fail_helper("hello");
     }
 
+    //todo other findIn
+
     private static @NotNull List<Algebraic> readAlgebraicList(@NotNull String s) {
         return Readers.readList(Algebraic::read).apply(s).get();
     }
