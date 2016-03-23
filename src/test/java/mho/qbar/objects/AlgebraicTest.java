@@ -1,6 +1,7 @@
 package mho.qbar.objects;
 
 import mho.wheels.io.Readers;
+import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
@@ -75,6 +76,7 @@ public class AlgebraicTest {
         read_String_helper("-sqrt(2)");
         read_String_helper("(1+sqrt(5))/2");
         read_String_helper("root 0 of x^5-x-1");
+        read_String_helper("root 1 of x^2-10000000000000");
 
         read_String_fail_helper("");
         read_String_fail_helper(" ");
@@ -145,6 +147,7 @@ public class AlgebraicTest {
         read_int_String_helper(2, "-sqrt(2)");
         read_int_String_helper(2, "(1+sqrt(5))/2");
         read_int_String_helper(5, "root 0 of x^5-x-1");
+        read_int_String_helper(2, "root 1 of x^2-10000000000000");
 
         read_int_String_fail_helper(4, "root 0 of x^5-x-1");
         read_int_String_fail_helper(10, "");
@@ -191,6 +194,30 @@ public class AlgebraicTest {
         read_int_String_fail_helper(10, "root 0 of x-2");
         read_int_String_bad_maxDegree_fail_helper(0, "sqrt(2)");
         read_int_String_bad_maxDegree_fail_helper(-1, "sqrt(2)");
+    }
+
+    private static void findIn_String_helper(@NotNull String input, @NotNull String output, int index) {
+        Pair<Algebraic, Integer> result = findIn(input).get();
+        aeq(result.a, output);
+        aeq(result.b, index);
+    }
+
+    private static void findIn_String_fail_helper(@NotNull String input) {
+        assertFalse(findIn(input).isPresent());
+    }
+
+    @Test
+    public void testFindIn_String() {
+        findIn_String_helper("sqrt(2)", "sqrt(2)", 0);
+        findIn_String_helper("sqrt(-2)", "-2", 5);
+        findIn_String_helper("03+sqrt(2)", "0", 0);
+        findIn_String_helper("x3+sqrt(2)", "3+sqrt(2)", 1);
+        findIn_String_helper("root 2 of x^2-2", "2", 5);
+        findIn_String_helper("(2+4*sqrt(2))/2", "2+4*sqrt(2)", 1);
+
+        findIn_String_fail_helper("");
+        findIn_String_fail_helper("o");
+        findIn_String_fail_helper("hello");
     }
 
     private static @NotNull List<Algebraic> readAlgebraicList(@NotNull String s) {
