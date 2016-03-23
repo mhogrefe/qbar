@@ -9,7 +9,10 @@ import jas.util.KsubSet;
 import mho.wheels.math.MathUtils;
 
 import java.math.BigInteger;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.Iterator;
+import java.util.List;
 
 public class FactorInteger {
     final GreatestCommonDivisorModular engine;

@@ -10,7 +10,6 @@ import java.util.List;
 
 import static mho.qbar.testing.QBarTesting.QEP;
 import static mho.wheels.iterables.IterableUtils.*;
-import static mho.wheels.iterables.IterableUtils.take;
 import static mho.wheels.testing.Testing.*;
 
 @SuppressWarnings("UnusedDeclaration")

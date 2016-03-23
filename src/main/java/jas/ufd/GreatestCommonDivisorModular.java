@@ -1,6 +1,6 @@
 package jas.ufd;
 
-import jas.arith.*;
+import jas.arith.JasBigInteger;
 import jas.poly.GenPolynomial;
 
 /**

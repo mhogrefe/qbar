@@ -7,7 +7,8 @@ import org.jetbrains.annotations.NotNull;
 
 import static mho.qbar.objects.Variable.*;
 import static mho.wheels.iterables.IterableUtils.*;
-import static mho.wheels.testing.Testing.*;
+import static mho.wheels.testing.Testing.MEDIUM_LIMIT;
+import static mho.wheels.testing.Testing.nicePrint;
 
 @SuppressWarnings("UnusedDeclaration")
 public class VariableDemos extends QBarDemos {

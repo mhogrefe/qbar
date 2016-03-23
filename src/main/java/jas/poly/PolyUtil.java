@@ -1,6 +1,9 @@
 package jas.poly;
 
-import jas.arith.*;
+import jas.arith.JasBigInteger;
+import jas.arith.ModInteger;
+import jas.arith.ModLong;
+import jas.arith.Modular;
 import jas.structure.RingElem;
 import jas.structure.RingFactory;
 import mho.wheels.iterables.IterableUtils;

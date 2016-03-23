@@ -1,7 +1,10 @@
 package jas.ufd;
 
 import jas.arith.*;
-import jas.poly.*;
+import jas.poly.GenPolynomial;
+import jas.poly.GenPolynomialRing;
+import jas.poly.PolyUtil;
+import jas.poly.PolyUtil_ModLong;
 import jas.structure.Power;
 import jas.structure.RingFactory;
 

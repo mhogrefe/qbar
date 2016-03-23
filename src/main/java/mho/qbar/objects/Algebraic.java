@@ -7,11 +7,15 @@ import mho.wheels.structures.Pair;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigInteger;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 
 import static mho.wheels.iterables.IterableUtils.*;
-import static mho.wheels.testing.Testing.*;
+import static mho.wheels.testing.Testing.assertEquals;
+import static mho.wheels.testing.Testing.assertTrue;
 
 /**
  * <p>The {@code Algebraic} class uniquely represents real algebraic numbers. {@code minimalPolynomial} is the number's

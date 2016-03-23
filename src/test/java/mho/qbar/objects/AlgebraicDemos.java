@@ -8,8 +8,10 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 
-import static mho.qbar.objects.Algebraic.*;
-import static mho.wheels.iterables.IterableUtils.*;
+import static mho.qbar.objects.Algebraic.findIn;
+import static mho.qbar.objects.Algebraic.read;
+import static mho.wheels.iterables.IterableUtils.filterInfinite;
+import static mho.wheels.iterables.IterableUtils.take;
 import static mho.wheels.testing.Testing.nicePrint;
 
 @SuppressWarnings("UnusedDeclaration")

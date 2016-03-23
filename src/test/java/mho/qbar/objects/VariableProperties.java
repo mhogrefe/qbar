@@ -5,7 +5,7 @@ import mho.qbar.testing.QBarTestProperties;
 import mho.qbar.testing.QBarTesting;
 import org.jetbrains.annotations.NotNull;
 
-import static mho.qbar.objects.Variable.*;
+import static mho.qbar.objects.Variable.of;
 import static mho.qbar.testing.QBarTesting.propertiesCompareToHelper;
 import static mho.qbar.testing.QBarTesting.propertiesEqualsHelper;
 import static mho.qbar.testing.QBarTesting.propertiesHashCodeHelper;

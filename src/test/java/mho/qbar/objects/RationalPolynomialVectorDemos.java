@@ -9,11 +9,9 @@ import java.math.BigInteger;
 import java.util.List;
 
 import static mho.qbar.objects.RationalPolynomialVector.*;
+import static mho.qbar.objects.RationalPolynomialVector.sum;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.testing.Testing.*;
-import static mho.wheels.testing.Testing.MEDIUM_LIMIT;
-import static mho.wheels.testing.Testing.SMALL_LIMIT;
-import static mho.wheels.testing.Testing.nicePrint;
 
 @SuppressWarnings("UnusedDeclaration")
 public class RationalPolynomialVectorDemos extends QBarDemos {

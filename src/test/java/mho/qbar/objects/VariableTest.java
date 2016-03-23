@@ -8,9 +8,7 @@ import org.junit.Test;
 import java.util.List;
 
 import static mho.qbar.objects.Variable.*;
-import static mho.wheels.testing.Testing.aeq;
-import static mho.wheels.testing.Testing.testCompareToHelper;
-import static mho.wheels.testing.Testing.testEqualsHelper;
+import static mho.wheels.testing.Testing.*;
 import static org.junit.Assert.assertFalse;
 
 public class VariableTest {

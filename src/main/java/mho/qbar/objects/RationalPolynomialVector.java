@@ -10,7 +10,7 @@ import java.math.BigInteger;
 import java.util.*;
 
 import static mho.wheels.iterables.IterableUtils.*;
-import static mho.wheels.testing.Testing.*;
+import static mho.wheels.testing.Testing.assertTrue;
 
 /**
  * <p>A vector with {@link RationalPolynomial} coordinates. May be zero-dimensional.</p>

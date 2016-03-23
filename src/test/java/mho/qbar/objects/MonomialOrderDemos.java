@@ -5,7 +5,8 @@ import mho.wheels.ordering.Ordering;
 import mho.wheels.structures.Triple;
 import org.jetbrains.annotations.NotNull;
 
-import static mho.qbar.objects.MonomialOrder.*;
+import static mho.qbar.objects.MonomialOrder.findIn;
+import static mho.qbar.objects.MonomialOrder.read;
 import static mho.wheels.iterables.IterableUtils.take;
 import static mho.wheels.testing.Testing.nicePrint;
 

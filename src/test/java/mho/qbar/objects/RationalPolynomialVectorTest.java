@@ -9,11 +9,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import static mho.qbar.objects.RationalPolynomialVector.*;
+import static mho.qbar.objects.RationalPolynomialVector.sum;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.testing.Testing.*;
-import static mho.wheels.testing.Testing.aeq;
-import static mho.wheels.testing.Testing.testCompareToHelper;
-import static mho.wheels.testing.Testing.testEqualsHelper;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 

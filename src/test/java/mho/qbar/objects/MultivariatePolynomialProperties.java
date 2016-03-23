@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-import static mho.qbar.objects.MultivariatePolynomial.*;
+import static mho.qbar.objects.MultivariatePolynomial.of;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.ordering.Ordering.compare;
 import static mho.wheels.testing.Testing.*;

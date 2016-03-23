@@ -10,8 +10,8 @@ import java.util.List;
 
 import static mho.qbar.objects.ExponentVector.*;
 import static mho.wheels.testing.Testing.*;
-import static org.junit.Assert.fail;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.fail;
 
 public class ExponentVectorTest {
     @Test

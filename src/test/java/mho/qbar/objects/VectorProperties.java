@@ -14,8 +14,9 @@ import java.util.*;
 import java.util.function.Function;
 
 import static mho.qbar.objects.Vector.*;
+import static mho.qbar.objects.Vector.sum;
 import static mho.wheels.iterables.IterableUtils.*;
-import static mho.wheels.ordering.Ordering.*;
+import static mho.wheels.ordering.Ordering.compare;
 import static mho.wheels.testing.Testing.*;
 
 public class VectorProperties extends QBarTestProperties {

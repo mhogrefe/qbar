@@ -4,7 +4,7 @@ import jas.structure.RingElem;
 import jas.structure.RingFactory;
 
 import java.math.BigInteger;
-import java.util.*;
+import java.util.Random;
 
 /**
  * GenPolynomialRing generic polynomial factory implementing RingFactory;

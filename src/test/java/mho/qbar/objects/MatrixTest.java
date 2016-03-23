@@ -8,10 +8,10 @@ import org.junit.Test;
 import java.util.List;
 
 import static mho.qbar.objects.Matrix.*;
-import static mho.wheels.iterables.IterableUtils.*;
+import static mho.wheels.iterables.IterableUtils.toList;
 import static mho.wheels.testing.Testing.*;
-import static org.junit.Assert.fail;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.fail;
 
 public class MatrixTest {
     private static void rows_helper(@NotNull String input, @NotNull String output) {

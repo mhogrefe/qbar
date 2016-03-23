@@ -11,7 +11,7 @@ import java.math.BigInteger;
 import java.util.*;
 
 import static mho.wheels.iterables.IterableUtils.*;
-import static mho.wheels.testing.Testing.*;
+import static mho.wheels.testing.Testing.assertTrue;
 
 /**
  * <p>A matrix with {@link java.math.BigInteger} elements. The number of rows is the height, and the number of rows is

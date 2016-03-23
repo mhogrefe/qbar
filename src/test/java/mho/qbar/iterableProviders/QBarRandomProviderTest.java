@@ -9,7 +9,8 @@ import org.junit.Test;
 import java.math.BigInteger;
 import java.util.List;
 
-import static mho.qbar.testing.QBarTesting.*;
+import static mho.qbar.testing.QBarTesting.aeqMapQBarLog;
+import static mho.qbar.testing.QBarTesting.aeqitLimitQBarLog;
 import static mho.wheels.iterables.IterableUtils.*;
 import static mho.wheels.testing.Testing.*;
 import static org.junit.Assert.fail;
